@@ -1,0 +1,75 @@
+{
+ "reglage": "4-hydrogen@low",
+ "cas": "A-anomalies-1",
+ "tache": "detectAnomalies",
+ "moitie": "choix",
+ "note": {
+  "qualite": 1,
+  "utilisable": true,
+  "passes": [],
+  "manques": [],
+  "detail": {
+   "rappel": 1,
+   "precision": 1,
+   "types": 1,
+   "fauxPositifs": 0,
+   "anomalies": 5,
+   "manques": [],
+   "qualite": 1
+  }
+ },
+ "ms": 8221,
+ "coutMicro": 23826,
+ "etat": "STOP",
+ "valeur": {
+  "anomalies": [
+   {
+    "transactionIds": [
+     "T05",
+     "T06"
+    ],
+    "type": "doublon",
+    "severity": "attention",
+    "explanation": "Même fournisseur (Brau- und Rauchshop), même libellé (Levure SafAle US-05 x10) et même montant (184.50 CHF) saisis à un jour d'intervalle (2026-08-02 et 2026-08-03).",
+    "suggestion": "Vérifier s'il s'agit d'une double saisie ou de deux livraisons distinctes, et archiver ou corriger l'écriture en trop le cas échéant."
+   },
+   {
+    "transactionIds": [
+     "T09"
+    ],
+    "type": "montant",
+    "severity": "grave",
+    "explanation": "Facture d'électricité (SIG Fribourg) de 1150.00 CHF, soit plus de dix fois supérieure aux autres mensualités de la catégorie Énergie (96.20 CHF en juillet, 104.10 CHF en août, 99.80 CHF en octobre).",
+    "suggestion": "Vérifier le justificatif pour confirmer s'il s'agit d'une erreur de saisie (ex. 115.00 CHF au lieu de 1150.00 CHF) ou d'un décompte annuel."
+   },
+   {
+    "transactionIds": [
+     "T11"
+    ],
+    "type": "tva",
+    "severity": "attention",
+    "explanation": "Taux de TVA de 19 % (0.19) saisi pour du malt (ingrédient alimentaire), ce qui ne correspond pas aux taux suisses (taux réduit de 2.6 % pour le malt).",
+    "suggestion": "Vérifier le justificatif d'Eckenstein et corriger le taux de TVA selon la facture réelle."
+   },
+   {
+    "transactionIds": [
+     "T13"
+    ],
+    "type": "justificatif",
+    "severity": "grave",
+    "explanation": "Justificatif manquant pour un achat d'équipement d'un montant élevé de 2480.00 CHF (Cuve inox 300 L chez Frigo Service SA).",
+    "suggestion": "Joindre la facture ou le justificatif d'achat correspondant."
+   },
+   {
+    "transactionIds": [
+     "T15"
+    ],
+    "type": "date",
+    "severity": "grave",
+    "explanation": "Date future (2027-03-14) par rapport à la date du jour (2026-11-14) pour l'achat de fûts chez SIOS.",
+    "suggestion": "Vérifier la date réelle sur la facture et corriger la date de l'écriture."
+   }
+  ],
+  "checkedCount": 18
+ }
+}

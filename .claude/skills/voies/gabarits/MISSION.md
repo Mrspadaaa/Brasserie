@@ -3,6 +3,12 @@
 ## Objectif
 <La demande, ses mots, et ce que « fini » veut dire ici.>
 
+## État de l'art
+<Exigé dès qu'une voie écrit du code (src/, functions/src/, scripts/) : `systeme.mjs mission` le contrôle (L29).>
+- Problème type : <le problème d'école : « scanner de document », « dédoublonnage approximatif »…>
+- Examiné : <méthode standard et bibliothèques maintenues, avec licence, poids, vitesse, source (lien ou paquet)>
+- Décision : <la bibliothèque, la méthode standard, ou du sur-mesure avec sa raison mesurée>
+
 ## Décisions
 | Décision | Options | Décideur | État |
 |---|---|---|---|

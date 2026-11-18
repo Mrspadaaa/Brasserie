@@ -1,0 +1,241 @@
+<!doctype html><html lang="fr" data-theme="clair"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>s3d — compagnon brasseur — la cuve parle : on demande en touchant la cuve, la réponse se dessine dedans</title><style>
+:root{--page:#FFFFFF;--pan:#F5F5F5;--sur:#EBEBEB;--bord:#DDDDDD;--bordm:#BFBFBF;--trait:#9E9E9E;--t2:#666666;--t:#333333;--t0:#111111;
+--act:#111111;--sur-act:#FFFFFF;--hop:#567F45;--hopt:#3F6B2E;--hopf:#EEF4EA;--eau:#4F7E9B;--eaut:#2F5F7D;--eauf:#EAF1F6;
+--alr:#C8382F;--alrt:#A8291F;--alrf:#FBEBEA;--att:#9C7020;--attt:#7F5B10;--attf:#FBF3E2;--fin:#1F64A3;
+--fond:#D4D4D4;--voile:rgba(17,17,17,.30);--ombre:0 -6px 24px rgba(0,0,0,.14);
+--sans:"Source Sans 3","Source Sans Pro",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;--mono:"IBM Plex Mono",ui-monospace,"Cascadia Mono",Consolas,monospace;color-scheme:light}
+[data-theme="cave"]{--page:#12100E;--pan:#1A1613;--sur:#221D19;--bord:#2C2521;--bordm:#3D342E;--trait:#574A42;--t2:#9A8A7E;--t:#D8CEC5;--t0:#F5F0EA;
+--act:#F2C14E;--sur-act:#12100E;--hop:#6E9B5B;--hopt:#86B573;--hopf:#1B2417;--eau:#5B8AA6;--eaut:#5E8CA8;--eauf:#16202A;
+--alr:#D6453D;--alrt:#DC5F58;--alrf:#2A1715;--att:#E3B55D;--attt:#E3B55D;--attf:#2A2114;--fin:#86B9E6;
+--fond:#070605;--voile:rgba(0,0,0,.55);--ombre:0 -8px 32px rgba(0,0,0,.6);color-scheme:dark}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{background:var(--fond);font-family:var(--sans);color:var(--t);-webkit-font-smoothing:antialiased}
+button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
+svg.s3d-i{width:16px;height:16px;flex:none}
+.s3d-n{font-family:var(--mono);font-variant-numeric:tabular-nums}
+.s3d-planche{display:flex;flex-wrap:wrap;gap:28px 20px;padding:20px;align-items:flex-start}
+.s3d-cadre{display:flex;flex-direction:column;gap:8px}
+.s3d-cadre>figcaption{font-size:14px;font-weight:600;color:var(--t0)}
+.s3d-cadre>figcaption span{font-weight:400;color:var(--t2)}
+.s3d-tel{position:relative;width:390px;height:760px;border-radius:28px;overflow:hidden;background:var(--page);border:1px solid var(--bordm);flex:none}
+.s3d-tel.s3d-large{width:1280px}
+.s3d-fond{position:absolute;inset:0;filter:blur(2.5px);pointer-events:none}
+.s3d-voile{position:absolute;inset:0;background:var(--voile)}
+.s3d-ap-tete{height:44px;display:flex;align-items:center;gap:8px;padding:0 12px;border-bottom:1px solid var(--bord);font-weight:700;color:var(--t0);font-size:16px}
+.s3d-ap-ong{display:flex;gap:16px;padding:8px 12px;font-size:13px;color:var(--t2);border-bottom:1px solid var(--bord)}
+.s3d-ap-ong b{color:var(--t0)}
+.s3d-ap-gros{display:flex;align-items:baseline;gap:12px;padding:16px 12px 8px}
+.s3d-ap-gros .s3d-n{font-size:40px;color:var(--t0)}
+@media (max-width:600px){.s3d-planche{padding:0;gap:16px 0}.s3d-cadre>figcaption{padding:0 8px}.s3d-tel.s3d-large{width:390px}}
+.s3d-ap-logo{width:20px;height:20px}
+.s3d-ap-ligne{display:flex;justify-content:space-between;padding:10px 12px;border-bottom:1px solid var(--bord);font-size:14px}
+.s3d-ap-barre{margin:12px;height:10px;border-radius:5px;background:var(--sur);position:relative}
+.s3d-ap-barre i{position:absolute;inset:0 62% 0 0;border-radius:5px;background:var(--hop)}
+
+.s3d-feuille{position:absolute;left:0;right:0;bottom:0;top:28px;background:var(--pan);border-radius:24px 24px 0 0;box-shadow:var(--ombre);display:flex;flex-direction:column;overflow:hidden}
+.s3d-tete{display:flex;align-items:center;gap:2px;height:44px;padding:0 6px 0 12px;border-bottom:1px solid var(--bord)}
+.s3d-tete h2{font-size:16px;font-weight:700;color:var(--t0);flex:1;white-space:nowrap}
+.s3d-tete h2 span{font-weight:400;color:var(--t2);font-size:13px}
+.s3d-ic{width:28px;height:28px;display:grid;place-items:center;border-radius:10px;color:var(--t2)}
+.s3d-corps{flex:1;overflow:hidden;padding:10px;display:flex;flex-direction:column;gap:10px}
+.s3d-scene{display:grid;grid-template-columns:128px 1fr;gap:10px;align-items:stretch}
+.s3d-cuve{width:128px;height:300px}
+.s3d-cuve .s3d-paroi{fill:var(--page);stroke:var(--bordm);stroke-width:2}
+.s3d-cuve .s3d-biere{fill:var(--attf)}
+.s3d-cuve .s3d-pied-c{stroke:var(--bordm);stroke-width:3}
+.s3d-cuve .s3d-hb{fill:var(--hop)}
+.s3d-cuve .s3d-hb2{fill:var(--hop);opacity:.7}
+.s3d-cuve .s3d-hb3{fill:var(--hop);opacity:.45}
+.s3d-cuve .s3d-ancien{fill:none;stroke:var(--t2);stroke-dasharray:3 3;stroke-width:1.5}
+.s3d-cuve text{font-family:var(--mono);font-size:12px;fill:var(--t0)}
+.s3d-cuve .s3d-lbl{font-family:var(--sans);fill:var(--t2)}
+.s3d-cuve .s3d-mano{fill:var(--page);stroke:var(--t);stroke-width:2}
+.s3d-cuve .s3d-mano.s3d-chaud{stroke:var(--att);fill:var(--attf)}
+.s3d-cuve .s3d-aig{stroke:var(--t0);stroke-width:2;stroke-linecap:round}
+.s3d-cuve .s3d-repere{fill:var(--eau)}
+.s3d-cuve.s3d-eteinte{opacity:.5}
+.s3d-points{display:flex;flex-direction:column;justify-content:space-between;gap:6px}
+.s3d-pt{display:flex;flex-direction:column;gap:2px;text-align:left;padding:8px 10px;border-radius:16px;background:var(--page);border:1px solid var(--bord);position:relative}
+.s3d-pt::before{content:"";position:absolute;left:-11px;top:50%;width:10px;border-top:1px dashed var(--bordm)}
+.s3d-pt b{font-size:12px;color:var(--t2);font-weight:700;display:flex;gap:4px;align-items:center}
+.s3d-pt b svg.s3d-i{width:13px;height:13px}
+.s3d-pt span{font-size:14px;color:var(--t0);line-height:1.25}
+.s3d-pt.s3d-vif{border-color:var(--att);background:var(--attf)}
+.s3d-pt.s3d-vif b{color:var(--attt)}
+.s3d-pied{padding:8px 10px 10px;border-top:1px solid var(--bord);display:flex;flex-direction:column;gap:6px}
+.s3d-saisie{display:flex;gap:6px;align-items:center}
+.s3d-champ{flex:1;min-width:0;height:40px;border:1px solid var(--bordm);border-radius:10px;background:var(--page);font-size:16px;color:var(--t2);display:flex;align-items:center;padding:0 10px;white-space:nowrap;overflow:hidden}
+.s3d-modes{display:flex;border:1px solid var(--bord);border-radius:10px;overflow:hidden;height:40px}
+.s3d-modes button{width:34px;display:grid;place-items:center;color:var(--t2)}
+.s3d-modes button.s3d-sel{background:var(--act);color:var(--sur-act)}
+.s3d-env{width:40px;height:40px;border-radius:10px;background:var(--sur);color:var(--t2);display:grid;place-items:center}
+.s3d-lim{display:flex;gap:10px;font-size:12px;color:var(--t2)}
+.s3d-lim b{color:var(--t0)}
+.s3d-colonne{display:flex;flex-direction:column;gap:8px;min-width:0}
+.s3d-q{font-size:14px;color:var(--t0);background:var(--sur);border-radius:16px 16px 16px 4px;padding:8px 10px;line-height:1.3}
+.s3d-chrono{display:flex;align-items:baseline;gap:6px;font-size:13px;color:var(--t2)}
+.s3d-chrono .s3d-n{font-size:28px;color:var(--t0);line-height:1}
+.s3d-et{list-style:none;display:flex;flex-direction:column;gap:2px;font-size:14px}
+.s3d-et li{display:flex;gap:6px;align-items:center;min-height:24px;color:var(--t)}
+.s3d-et li svg.s3d-i{width:14px;height:14px;color:var(--hopt)}
+.s3d-et li.s3d-c{font-weight:700;color:var(--t0)}
+.s3d-et li.s3d-a{color:var(--t2)}
+.s3d-et li i{width:14px;height:14px;border-radius:50%;border:2px solid var(--bordm)}
+.s3d-et li.s3d-c i{border-color:var(--att);border-right-color:transparent}
+.s3d-pet{font-size:13px;color:var(--t2);line-height:1.3}
+.s3d-file{display:flex;align-items:center;gap:8px;border:1px dashed var(--bordm);border-radius:16px;padding:8px 10px;font-size:14px;color:var(--t0)}
+.s3d-file div{flex:1}.s3d-file small{display:block;font-size:12px;color:var(--t2)}
+.s3d-niv{font-size:12px;font-weight:700;color:var(--attt);display:flex;gap:4px;align-items:center}
+.s3d-niv svg.s3d-i{width:13px;height:13px}
+.s3d-colonne h3{font-size:17px;color:var(--t0);line-height:1.2}
+.s3d-geste{font-size:15px;font-weight:600;color:var(--t0);background:var(--attf);border-radius:10px;padding:8px}
+.s3d-prop{border:1px solid var(--bord);border-radius:16px;background:var(--page);padding:2px 10px 8px}
+.s3d-ch{display:flex;align-items:center;gap:8px;min-height:34px;font-size:14px;color:var(--t0);border-bottom:1px solid var(--bord)}
+.s3d-ch .s3d-nom{flex:1}.s3d-ch s{color:var(--t2);font-size:13px}
+.s3d-case{width:20px;height:20px;border-radius:6px;background:var(--hop);color:#fff;display:grid;place-items:center}
+.s3d-case svg.s3d-i{width:14px;height:14px;stroke-width:3}
+.s3d-act{display:flex;gap:8px;justify-content:flex-end;margin-top:8px;align-items:center}
+.s3d-act .s3d-mini{flex:1;font-size:12px;color:var(--t2);display:flex;gap:4px;align-items:center}
+.s3d-btn{height:32px;padding:0 12px;border-radius:10px;font-size:13px;font-weight:600;display:inline-flex;align-items:center;gap:6px}
+.s3d-btn.s3d-p{background:var(--act);color:var(--sur-act)}
+.s3d-btn.s3d-s{border:1px solid var(--bordm);background:var(--page);color:var(--t0)}
+.s3d-btn.s3d-g{color:var(--t)}
+.s3d-ctl{display:flex;gap:8px;align-items:center;font-size:14px;color:var(--t);padding:8px 10px;border-radius:16px;border:1px solid var(--bord);background:var(--page)}
+.s3d-ctl span{flex:1}.s3d-ctl b{color:var(--eaut)}
+.s3d-echec{border:1px solid var(--att);background:var(--attf);border-radius:16px;padding:10px;display:flex;flex-direction:column;gap:6px}
+.s3d-echec h3{font-size:16px;color:var(--t0);display:flex;gap:6px;align-items:center}
+.s3d-echec h3 svg{color:var(--attt)}
+.s3d-echec p{font-size:14px;color:var(--t)}
+.s3d-bandeau{display:flex;align-items:center;gap:6px;font-size:12px;font-weight:600;color:var(--attt)}
+</style></head><body><svg width="0" height="0" style="position:absolute" aria-hidden="true"><symbol id="s3d-i-x" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18M6 6l12 12"/></symbol><symbol id="s3d-i-fil" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 9a2 2 0 0 1-2 2H6l-4 4V4a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2z"/><path d="M18 9h2a2 2 0 0 1 2 2v11l-4-4h-6a2 2 0 0 1-2-2v-1"/></symbol><symbol id="s3d-i-cloche" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/></symbol><symbol id="s3d-i-bouclier" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z"/></symbol><symbol id="s3d-i-zero" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/></symbol><symbol id="s3d-i-envoyer" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.54 21.69a.5.5 0 0 0 .94-.03l6.5-19a.5.5 0 0 0-.64-.63l-19 6.5a.5.5 0 0 0-.02.93l7.93 3.18a2 2 0 0 1 1.11 1.11z"/><path d="m21.85 2.15-10.94 10.94"/></symbol><symbol id="s3d-i-bas" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></symbol><symbol id="s3d-i-droite" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></symbol><symbol id="s3d-i-gauche" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></symbol><symbol id="s3d-i-ok" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></symbol><symbol id="s3d-i-alerte" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3"/><path d="M12 9v4M12 17h.01"/></symbol><symbol id="s3d-i-horsligne" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h.01M8.5 16.43a5 5 0 0 1 7 0M5 12.86a10 10 0 0 1 5.17-2.69M19 12.86a10 10 0 0 0-2-1.52M2 8.82a15 15 0 0 1 4.18-2.64M22 8.82a15 15 0 0 0-11.29-3.76"/><path d="m2 2 20 20"/></symbol><symbol id="s3d-i-horloge" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></symbol><symbol id="s3d-i-journal" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1 0-5H20"/><path d="M8 7h8M8 11h6"/></symbol><symbol id="s3d-i-eclair" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2 3 14h9l-1 8 10-12h-9z"/></symbol><symbol id="s3d-i-loupe" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></symbol><symbol id="s3d-i-thermo" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 4v10.54a4 4 0 1 1-4 0V4a2 2 0 0 1 4 0Z"/></symbol><symbol id="s3d-i-calcul" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="2" width="16" height="20" rx="2"/><path d="M8 6h8M8 14h.01M12 14h.01M16 14h.01M8 18h.01M12 18h.01M16 18h.01M8 10h.01M12 10h.01M16 10h.01"/></symbol><symbol id="s3d-i-crayon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21.17 6.81a1 1 0 0 0-3.99-3.99L3.84 16.17a2 2 0 0 0-.5.83l-1.32 4.35a.5.5 0 0 0 .62.62l4.35-1.32a2 2 0 0 0 .83-.5z"/></symbol><symbol id="s3d-i-relancer" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8"/><path d="M21 3v5h-5"/><path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16"/><path d="M8 16H3v5"/></symbol><symbol id="s3d-i-fleche" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></symbol><symbol id="s3d-i-telephone" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="2" width="14" height="20" rx="2"/><path d="M12 18h.01"/></symbol><symbol id="s3d-i-livre" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2zM22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></symbol><symbol id="s3d-i-relu" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z"/><path d="m9 12 2 2 4-4"/></symbol><symbol id="s3d-i-panier" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="8" cy="21" r="1"/><circle cx="19" cy="21" r="1"/><path d="M2.05 2.05h2l2.66 12.42a2 2 0 0 0 2 1.58h9.78a2 2 0 0 0 1.95-1.57l1.65-7.43H5.12"/></symbol><symbol id="s3d-i-feuille" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 20A7 7 0 0 1 9.8 6.1C15.5 5 17 4.48 19 2c1 2 2 4.18 2 8 0 5.5-4.78 10-10 10Z"/><path d="M2 21c0-3 1.85-5.36 5.08-6C9.5 14.52 12 13 13 12"/></symbol><symbol id="s3d-i-pression" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m12 14 4-4"/><path d="M3.34 19a10 10 0 1 1 17.32 0"/></symbol><symbol id="s3d-i-question" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3M12 17h.01"/></symbol><symbol id="s3d-i-plus" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14"/></symbol><symbol id="s3d-i-panneau" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M15 3v18"/></symbol><symbol id="s3d-i-goutte" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22a7 7 0 0 0 7-7c0-2-1-3.9-3-5.5s-3.5-4-4-6.5c-.5 2.5-2 4.9-4 6.5C6 11.1 5 13 5 15a7 7 0 0 0 7 7z"/></symbol><symbol id="s3d-i-pause" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="14" y="4" width="4" height="16" rx="1"/><rect x="6" y="4" width="4" height="16" rx="1"/></symbol></svg>
+<main class="s3d-planche"><!--titre:la cuve parle : on demande en touchant la cuve, la réponse se dessine dedans-->
+<figure class="s3d-cadre"><figcaption>accueil <span>· touche une partie de la cuve pour demander</span></figcaption>
+<div class="s3d-tel" data-cadre="accueil"><div class="s3d-fond" aria-hidden="true"><div class="s3d-ap-tete"><img class="s3d-ap-logo" alt="" width="20" height="20" src="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 24 24%27%3E%3Ccircle cx=%2712%27 cy=%2712%27 r=%2710%27 fill=%27%23567F45%27/%3E%3C/svg%3E">Brassin 31 · New England IPA</div>
+<div class="s3d-ap-ong"><span>Recette</span><span>Brassage</span><b>Fermentation</b><span>Journal</span></div>
+<div class="s3d-ap-gros"><span class="s3d-n">19 °C</span><span>J+4 · 19 L</span></div><div class="s3d-ap-barre"><i></i></div>
+<div class="s3d-ap-ligne"><span>Citra · dry hop J+2</span><span class="s3d-n">85 g</span></div>
+<div class="s3d-ap-ligne"><span>Galaxy · dry hop J+6</span><span class="s3d-n">43 g</span></div>
+<div class="s3d-ap-ligne"><span>Mosaic · dry hop J+9</span><span class="s3d-n">43 g</span></div>
+<div class="s3d-ap-ligne"><span>DF relevée</span><span class="s3d-n">1,012</span></div>
+<div class="s3d-ap-ligne"><span>pH de maische visé</span><span class="s3d-n">5,3</span></div></div><div class="s3d-voile"></div>
+<section class="s3d-feuille"><header class="s3d-tete"><h2>Compagnon <span>· Brassin 31, J+4</span></h2>
+<button class="s3d-ic" aria-label="Mes conversations"><svg class="s3d-i"><use href="#s3d-i-fil"/></svg></button><button class="s3d-ic" aria-label="Me notifier : activé" style="color:var(--hopt)"><svg class="s3d-i"><use href="#s3d-i-cloche"/></svg></button><button class="s3d-ic" aria-label="Limites IA"><svg class="s3d-i"><use href="#s3d-i-bouclier"/></svg></button><button class="s3d-ic" aria-label="Repartir à zéro"><svg class="s3d-i"><use href="#s3d-i-zero"/></svg></button><button class="s3d-ic" aria-label="Fermer"><svg class="s3d-i"><use href="#s3d-i-x"/></svg></button></header>
+<div class="s3d-corps">
+<div class="s3d-scene" data-booster="cuve-a-toucher">
+<svg class="s3d-cuve" viewBox="0 0 128 300" role="img" aria-label="Cuve du brassin 31 : 19 °C, pression qui monte, dry hop 171 g">
+<circle class="s3d-mano s3d-chaud" cx="64" cy="22" r="16"/><line class="s3d-aig" x1="64" y1="22" x2="73" y2="13"/>
+<path class="s3d-paroi" d="M14 44h100v170l-50 50-50-50z"/><path class="s3d-biere" d="M16 84h96v129l-48 48-48-48z"/>
+<rect class="s3d-hb" x="34" y="92" width="60" height="42" rx="3"/><rect class="s3d-hb2" x="34" y="136" width="60" height="21" rx="3"/><rect class="s3d-hb3" x="34" y="159" width="60" height="21" rx="3"/>
+<circle class="s3d-repere" cx="14" cy="196" r="5"/><text x="20" y="226">19 °C</text><text x="38" y="80" class="s3d-lbl">19 L</text>
+<line class="s3d-pied-c" x1="24" y1="224" x2="18" y2="296"/><line class="s3d-pied-c" x1="104" y1="224" x2="110" y2="296"/><line class="s3d-pied-c" x1="64" y1="264" x2="64" y2="290"/></svg>
+<div class="s3d-points">
+<button class="s3d-pt s3d-vif"><b><svg class="s3d-i"><use href="#s3d-i-pression"/></svg>Pression · monte doucement</b><span>Que faire maintenant ?</span></button>
+<button class="s3d-pt"><b><svg class="s3d-i"><use href="#s3d-i-feuille"/></svg>Dry hop · <span class="s3d-n">171 g</span></b><span><span class="s3d-n">9,0 g/L</span> : trop chargé ?</span></button>
+<button class="s3d-pt"><b><svg class="s3d-i"><use href="#s3d-i-thermo"/></svg>Température · <span class="s3d-n">19 °C</span></b><span>Quand descendre à <span class="s3d-n">18 °C</span> ?</span></button>
+<button class="s3d-pt"><b><svg class="s3d-i"><use href="#s3d-i-goutte"/></svg>Densité · <span class="s3d-n">1,012</span></b><span>La fermentation est finie ?</span></button>
+</div></div>
+<p class="s3d-pet">Ou décris ce que tu vois : je relis la recette, le brassin et le journal à chaque question.</p>
+</div>
+<footer class="s3d-pied"><div class="s3d-saisie"><div class="s3d-champ">Décris ce que tu observes…</div>
+<div class="s3d-modes" role="radiogroup" aria-label="Mode" data-booster="mode-en-trois-icones"><button aria-label="Rapide"><svg class="s3d-i"><use href="#s3d-i-eclair"/></svg></button><button class="s3d-sel" aria-label="Auto"><svg class="s3d-i"><use href="#s3d-i-horloge"/></svg></button><button aria-label="Approfondi"><svg class="s3d-i"><use href="#s3d-i-loupe"/></svg></button></div>
+<button class="s3d-env" aria-label="Envoyer"><svg class="s3d-i"><use href="#s3d-i-envoyer"/></svg></button></div>
+<div class="s3d-lim"><span>Auto · <span class="s3d-n">15</span> à <span class="s3d-n">30 s</span></span><span><b class="s3d-n">4</b> sur <span class="s3d-n">120</span> aujourd'hui · <b class="s3d-n">2,10</b> sur <span class="s3d-n">15 CHF</span></span></div></footer>
+</section></div></figure>
+
+<figure class="s3d-cadre"><figcaption>attente <span>· la question reste accrochée à la pression</span></figcaption>
+<div class="s3d-tel" data-cadre="attente"><div class="s3d-fond" aria-hidden="true"><div class="s3d-ap-tete"><img class="s3d-ap-logo" alt="" width="20" height="20" src="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 24 24%27%3E%3Ccircle cx=%2712%27 cy=%2712%27 r=%2710%27 fill=%27%23567F45%27/%3E%3C/svg%3E">Brassin 31 · New England IPA</div>
+<div class="s3d-ap-ong"><span>Recette</span><span>Brassage</span><b>Fermentation</b><span>Journal</span></div>
+<div class="s3d-ap-gros"><span class="s3d-n">19 °C</span><span>J+4 · 19 L</span></div><div class="s3d-ap-barre"><i></i></div>
+<div class="s3d-ap-ligne"><span>Citra · dry hop J+2</span><span class="s3d-n">85 g</span></div>
+<div class="s3d-ap-ligne"><span>Galaxy · dry hop J+6</span><span class="s3d-n">43 g</span></div>
+<div class="s3d-ap-ligne"><span>Mosaic · dry hop J+9</span><span class="s3d-n">43 g</span></div>
+<div class="s3d-ap-ligne"><span>DF relevée</span><span class="s3d-n">1,012</span></div>
+<div class="s3d-ap-ligne"><span>pH de maische visé</span><span class="s3d-n">5,3</span></div></div><div class="s3d-voile"></div>
+<section class="s3d-feuille"><header class="s3d-tete"><h2>Compagnon <span>· Brassin 31, J+4</span></h2>
+<button class="s3d-ic" aria-label="Mes conversations"><svg class="s3d-i"><use href="#s3d-i-fil"/></svg></button><button class="s3d-ic" aria-label="Me notifier : activé" style="color:var(--hopt)"><svg class="s3d-i"><use href="#s3d-i-cloche"/></svg></button><button class="s3d-ic" aria-label="Fermer"><svg class="s3d-i"><use href="#s3d-i-x"/></svg></button></header>
+<div class="s3d-corps">
+<div class="s3d-scene">
+<svg class="s3d-cuve" viewBox="0 0 128 300" role="img" aria-label="Cuve, pression mise en avant">
+<circle class="s3d-mano s3d-chaud" cx="64" cy="22" r="16"/><line class="s3d-aig" x1="64" y1="22" x2="73" y2="13"/>
+<path class="s3d-paroi" d="M14 44h100v170l-50 50-50-50z"/><path class="s3d-biere" d="M16 84h96v129l-48 48-48-48z"/>
+<rect class="s3d-hb" x="34" y="92" width="60" height="42" rx="3"/><rect class="s3d-hb2" x="34" y="136" width="60" height="21" rx="3"/><rect class="s3d-hb3" x="34" y="159" width="60" height="21" rx="3"/>
+<text x="20" y="226">19 °C</text>
+<line class="s3d-pied-c" x1="24" y1="224" x2="18" y2="296"/><line class="s3d-pied-c" x1="104" y1="224" x2="110" y2="296"/><line class="s3d-pied-c" x1="64" y1="264" x2="64" y2="290"/></svg>
+<div class="s3d-colonne" data-booster="etapes-reelles">
+<p class="s3d-q">La fermentation est à <span class="s3d-n">19 °C</span> depuis <span class="s3d-n">36 h</span> et la pression monte doucement : que faire ?</p>
+<p class="s3d-chrono"><span class="s3d-n">2:29</span>en Auto</p>
+<ol class="s3d-et"><li><svg class="s3d-i"><use href="#s3d-i-ok"/></svg>Brassin lu</li><li><svg class="s3d-i"><use href="#s3d-i-ok"/></svg>Dry hop calculé</li><li><svg class="s3d-i"><use href="#s3d-i-ok"/></svg>3 sources lues</li><li class="s3d-c"><i></i>Rédaction</li><li class="s3d-a"><i></i>Relecture</li></ol>
+<p class="s3d-pet">Plus long que d'habitude (<span class="s3d-n">15</span> à <span class="s3d-n">30 s</span>). Arrêt au plus tard à <span class="s3d-n">3:40</span>. Je te notifie.</p></div></div>
+<div class="s3d-file"><svg class="s3d-i"><use href="#s3d-i-pause"/></svg><div>Et combien de jours de garde à <span class="s3d-n">18 °C</span> ?<small>En file · partira après la réponse</small></div><button class="s3d-ic" aria-label="Retirer de la file"><svg class="s3d-i"><use href="#s3d-i-x"/></svg></button></div>
+</div>
+<footer class="s3d-pied"><div class="s3d-saisie"><div class="s3d-champ">Ajouter une question…</div><button class="s3d-env" aria-label="Envoyer"><svg class="s3d-i"><use href="#s3d-i-envoyer"/></svg></button></div></footer>
+</section></div></figure>
+
+<figure class="s3d-cadre"><figcaption>reponse <span>· le dry hop se redessine dans la cuve</span></figcaption>
+<div class="s3d-tel" data-cadre="reponse"><div class="s3d-fond" aria-hidden="true"><div class="s3d-ap-tete"><img class="s3d-ap-logo" alt="" width="20" height="20" src="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 24 24%27%3E%3Ccircle cx=%2712%27 cy=%2712%27 r=%2710%27 fill=%27%23567F45%27/%3E%3C/svg%3E">Brassin 31 · New England IPA</div>
+<div class="s3d-ap-ong"><span>Recette</span><span>Brassage</span><b>Fermentation</b><span>Journal</span></div>
+<div class="s3d-ap-gros"><span class="s3d-n">19 °C</span><span>J+4 · 19 L</span></div><div class="s3d-ap-barre"><i></i></div>
+<div class="s3d-ap-ligne"><span>Citra · dry hop J+2</span><span class="s3d-n">85 g</span></div>
+<div class="s3d-ap-ligne"><span>Galaxy · dry hop J+6</span><span class="s3d-n">43 g</span></div>
+<div class="s3d-ap-ligne"><span>Mosaic · dry hop J+9</span><span class="s3d-n">43 g</span></div>
+<div class="s3d-ap-ligne"><span>DF relevée</span><span class="s3d-n">1,012</span></div>
+<div class="s3d-ap-ligne"><span>pH de maische visé</span><span class="s3d-n">5,3</span></div></div><div class="s3d-voile"></div>
+<section class="s3d-feuille"><header class="s3d-tete"><h2>Compagnon <span>· Brassin 31, J+4</span></h2>
+<button class="s3d-ic" aria-label="Mes conversations"><svg class="s3d-i"><use href="#s3d-i-fil"/></svg></button><button class="s3d-ic" aria-label="Fermer"><svg class="s3d-i"><use href="#s3d-i-x"/></svg></button></header>
+<div class="s3d-corps">
+<div class="s3d-scene" data-booster="cuve-avant-apres">
+<svg class="s3d-cuve" viewBox="0 0 128 300" role="img" aria-label="Dry hop : Citra 85 vers 70 g, Galaxy 43 g, Mosaic 43 vers 21 g">
+<circle class="s3d-mano s3d-chaud" cx="64" cy="22" r="16"/><line class="s3d-aig" x1="64" y1="22" x2="73" y2="13"/>
+<path class="s3d-paroi" d="M14 44h100v170l-50 50-50-50z"/><path class="s3d-biere" d="M16 84h96v129l-48 48-48-48z"/>
+<rect class="s3d-ancien" x="34" y="92" width="60" height="42" rx="3"/><rect class="s3d-hb" x="34" y="99" width="60" height="35" rx="3"/>
+<rect class="s3d-hb2" x="34" y="136" width="60" height="21" rx="3"/>
+<rect class="s3d-ancien" x="34" y="159" width="60" height="21" rx="3"/><rect class="s3d-hb3" x="34" y="170" width="60" height="10" rx="2"/>
+<text x="98" y="120">C</text><text x="98" y="151">G</text><text x="98" y="179">M</text>
+<text x="20" y="226">19 °C</text><text x="40" y="70" class="s3d-lbl">7,1 g/L</text>
+<line class="s3d-pied-c" x1="24" y1="224" x2="18" y2="296"/><line class="s3d-pied-c" x1="104" y1="224" x2="110" y2="296"/><line class="s3d-pied-c" x1="64" y1="264" x2="64" y2="290"/></svg>
+<div class="s3d-colonne"><span class="s3d-niv"><svg class="s3d-i"><use href="#s3d-i-alerte"/></svg>Attention</span>
+<h3>Dry hop chargé : réduis le dernier apport.</h3>
+<p class="s3d-geste">Mosaic J+9 : <span class="s3d-n">43</span> → <span class="s3d-n">21 g</span></p>
+<p class="s3d-pet">Pointillés : la dose d'avant. <span class="s3d-n">9,0</span> → <span class="s3d-n">7,1 g/L</span>.</p>
+<button class="s3d-btn s3d-s" style="align-self:flex-start"><svg class="s3d-i"><use href="#s3d-i-bas"/></svg>Pourquoi</button></div></div>
+<div class="s3d-prop" data-booster="proposition-cases">
+<div class="s3d-ch"><span class="s3d-case"><svg class="s3d-i"><use href="#s3d-i-ok"/></svg></span><span class="s3d-nom">Citra J+2</span><s class="s3d-n">85 g</s>→<b class="s3d-n">70 g</b></div>
+<div class="s3d-ch"><span class="s3d-case"><svg class="s3d-i"><use href="#s3d-i-ok"/></svg></span><span class="s3d-nom">Mosaic J+9</span><s class="s3d-n">43 g</s>→<b class="s3d-n">21 g</b></div>
+<div class="s3d-ch"><span class="s3d-case"><svg class="s3d-i"><use href="#s3d-i-ok"/></svg></span><span class="s3d-nom">Durée du dry hop</span><s class="s3d-n">2 j</s>→<b class="s3d-n">3 j</b></div>
+<div class="s3d-act"><span class="s3d-mini"><svg class="s3d-i"><use href="#s3d-i-relu"/></svg>Relu, calculs refaits</span><button class="s3d-btn s3d-g">Écarter</button><button class="s3d-btn s3d-p">Valider 3</button></div></div>
+<div class="s3d-ctl"><svg class="s3d-i"><use href="#s3d-i-horloge"/></svg><span><b>J+9</b> · goût et odeur à la purge : l'herbacé apparaît ?</span><button class="s3d-ic" aria-label="Garder au journal"><svg class="s3d-i"><use href="#s3d-i-journal"/></svg></button></div>
+</div>
+<footer class="s3d-pied"><div class="s3d-saisie"><div class="s3d-champ">Décris ce que tu observes…</div><button class="s3d-env" aria-label="Envoyer"><svg class="s3d-i"><use href="#s3d-i-envoyer"/></svg></button></div></footer>
+</section></div></figure>
+
+<figure class="s3d-cadre"><figcaption>erreur <span>· hors ligne : la question reste sur la cuve</span></figcaption>
+<div class="s3d-tel" data-cadre="erreur"><div class="s3d-fond" aria-hidden="true"><div class="s3d-ap-tete"><img class="s3d-ap-logo" alt="" width="20" height="20" src="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 24 24%27%3E%3Ccircle cx=%2712%27 cy=%2712%27 r=%2710%27 fill=%27%23567F45%27/%3E%3C/svg%3E">Brassin 31 · New England IPA</div>
+<div class="s3d-ap-ong"><span>Recette</span><span>Brassage</span><b>Fermentation</b><span>Journal</span></div>
+<div class="s3d-ap-gros"><span class="s3d-n">19 °C</span><span>J+4 · 19 L</span></div><div class="s3d-ap-barre"><i></i></div>
+<div class="s3d-ap-ligne"><span>Citra · dry hop J+2</span><span class="s3d-n">85 g</span></div>
+<div class="s3d-ap-ligne"><span>Galaxy · dry hop J+6</span><span class="s3d-n">43 g</span></div>
+<div class="s3d-ap-ligne"><span>Mosaic · dry hop J+9</span><span class="s3d-n">43 g</span></div>
+<div class="s3d-ap-ligne"><span>DF relevée</span><span class="s3d-n">1,012</span></div>
+<div class="s3d-ap-ligne"><span>pH de maische visé</span><span class="s3d-n">5,3</span></div></div><div class="s3d-voile"></div>
+<section class="s3d-feuille"><header class="s3d-tete"><h2>Compagnon <span>· Brassin 31, J+4</span></h2>
+<button class="s3d-ic" aria-label="Mes conversations"><svg class="s3d-i"><use href="#s3d-i-fil"/></svg></button><button class="s3d-ic" aria-label="Fermer"><svg class="s3d-i"><use href="#s3d-i-x"/></svg></button></header>
+<div class="s3d-corps">
+<div class="s3d-scene">
+<svg class="s3d-cuve" viewBox="0 0 128 300" role="img" aria-label="Cuve, question gardée sur le téléphone">
+<circle class="s3d-mano s3d-chaud" cx="64" cy="22" r="16"/><line class="s3d-aig" x1="64" y1="22" x2="73" y2="13"/>
+<path class="s3d-paroi" d="M14 44h100v170l-50 50-50-50z"/><path class="s3d-biere" d="M16 84h96v129l-48 48-48-48z"/>
+<rect class="s3d-hb" x="34" y="92" width="60" height="42" rx="3"/><rect class="s3d-hb2" x="34" y="136" width="60" height="21" rx="3"/><rect class="s3d-hb3" x="34" y="159" width="60" height="21" rx="3"/>
+<text x="20" y="226">19 °C</text>
+<line class="s3d-pied-c" x1="24" y1="224" x2="18" y2="296"/><line class="s3d-pied-c" x1="104" y1="224" x2="110" y2="296"/><line class="s3d-pied-c" x1="64" y1="264" x2="64" y2="290"/></svg>
+<div class="s3d-colonne">
+<p class="s3d-q" style="border:1px dashed var(--att)">La fermentation est à <span class="s3d-n">19 °C</span> depuis <span class="s3d-n">36 h</span> et la pression monte doucement : que faire ?</p>
+<div class="s3d-echec" data-booster="envoi-a-confirmer"><h3><svg class="s3d-i"><use href="#s3d-i-horsligne"/></svg>Envoi à confirmer</h3>
+<p>Pas de réseau. Gardée sur ce téléphone, elle partira une seule fois.</p>
+<button class="s3d-btn s3d-p"><svg class="s3d-i"><use href="#s3d-i-relancer"/></svg>Réessayer l'envoi</button><button class="s3d-btn s3d-s"><svg class="s3d-i"><use href="#s3d-i-crayon"/></svg>Reformuler</button></div></div></div>
+<p class="s3d-pet">Ta cuve, ta recette et tes notes restent lisibles hors ligne.</p>
+</div>
+<footer class="s3d-pied"><p class="s3d-bandeau" data-booster="hors-ligne-avant-envoi"><svg class="s3d-i"><use href="#s3d-i-horsligne"/></svg>Hors ligne · une nouvelle question attendra ici</p>
+<div class="s3d-saisie"><div class="s3d-champ">Décris ce que tu observes…</div><button class="s3d-env" aria-label="Garder la question"><svg class="s3d-i"><use href="#s3d-i-envoyer"/></svg></button></div></footer>
+</section></div></figure>
+</main></body></html>

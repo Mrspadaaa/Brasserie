@@ -1,0 +1,19 @@
+{
+ "cas": "rel-defauts-helles",
+ "usage": "relecture",
+ "half": "choix",
+ "cellule": "ar@low",
+ "ok": true,
+ "ms": 17180,
+ "microChf": 14920,
+ "microDecembre": 29840,
+ "entree": 1508,
+ "sortie": 892,
+ "etat": "STOP",
+ "ancrage": "sans objet",
+ "note": 1,
+ "utilisable": true,
+ "inventes": 0,
+ "detail": "3/3 défauts · 1 bloquant(s) dont 0 injustifié(s)",
+ "reponse": "{\n  \"verdict\": \"Non, la recette est impossible à brasser en l'état (palier d'empâtage à 78 °C qui détruit les enzymes) et le houblonnage ainsi que le profil d'eau sont à l'opposé d'une Munich Helles.\",\n  \"findings\": [\n    {\n      \"severity\": \"bloquant\",\n      \"topic\": \"Paliers\",\n      \"observation\": \"Le palier de saccharification est programmé à 78 °C pendant 60 min (même température que le mash-out). À 78 °C, les amylases sont dénaturées : l'amidon ne sera pas converti en sucres fermentescibles et la densité finale de 1.010 sera impossible à atteindre.\",\n      \"suggestion\": \"Abaisser le palier de saccharification entre 64 °C et 66 °C pendant 60 min, puis monter à 78 °C pendant 10 min pour le mash-out.\"\n    },\n    {\n      \"severity\": \"gout\",\n      \"topic\": \"Houblons\",\n      \"observation\": \"L'ajout de 60 g de Magnum à 14 % d'acides alpha pendant 60 min dans 20 L apportera environ 90 à 100 IBU à lui seul, soit près de cinq fois la cible de 20 IBU. De plus, le taux d'acides alpha du Hallertauer Mittelfrüh (30 g à 10 min) n'est pas renseigné.\",\n      \"suggestion\": \"Renseigner le taux d'acides alpha du Hallertauer Mittelfrüh pour calculer son apport, puis réduire le Magnum (à 60 min) aux alentours de 10 à 12 g pour viser 20 IBU au total.\"\n    },\n    {\n      \"severity\": \"gout\",\n      \"topic\": \"Eau\",\n      \"observation\": \"L'ajout de 12 g de gypse (et 0 g de chlorure de calcium) pousse les sulfates à 350 ppm pour seulement 20 ppm de chlorures (rapport SO4/Cl de 17,5) et le calcium à 160 ppm. Ce profil très minéral et sulfaté donnera une amertume sèche et tranchante, à contresens du profil malté et doux d'une Munich Helles.\",\n      \"suggestion\": \"Supprimer les 12 g de gypse. Après obtention de l'analyse de l'eau du réseau, viser une eau peu minéralisée avec un équilibre penché vers les chlorures plutôt que les sulfates.\"\n    }\n  ],\n  \"missing\": [\n    \"Taux d'acides alpha du houblon Hallertauer Mittelfrüh (30 g à 10 min).\",\n    \"Analyse de l'eau source (« eau du réseau ») et volumes d'eau (empâtage et rinçage) pour recalculer le traitement.\",\n    \"Température de fermentation de la levure SafLager W-34/70.\"\n  ],\n  \"styleFit\": \"Si le palier d'empâtage à 78 °C n'est pas corrigé, le moût sera non fermentescible et amidonné. Même avec un empâtage corrigé, les 60 g de Magnum et les 350 ppm de sulfates produiront une lager blonde extrêmement amère, sèche et minérale (proche d'une West Coast IPL sur l'amertume), très loin de la rondeur maltée et de la faible amertume (20 IBU) attendues pour une Munich Helles, bien que la base maltée (Pilsner et Munich clair pour 8 EBC et 1.048 de densité initiale) et la levure W-34/70 soient adaptées.\"\n}"
+}

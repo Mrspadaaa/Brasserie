@@ -1,0 +1,4 @@
+ok t1.html : courbe 70 px (min 70), bande des semaines 35 px (max 40, présente), en-tête 120 px (max 120), 10 textes (max 14), mois → bande sans mois au-dessus
+ok t2.html : courbe 78 px (min 70), bande des semaines 35 px (max 40, présente), en-tête 120 px (max 120), 7 textes (max 14), mois → bande sans mois au-dessus
+ok t3.html : courbe 70 px (min 70), bande des semaines 35 px (max 40, présente), en-tête 120 px (max 120), 10 textes (max 14), mois → bande sans mois au-dessus
+ENTETE OK

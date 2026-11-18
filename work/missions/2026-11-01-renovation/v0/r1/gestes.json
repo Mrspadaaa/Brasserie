@@ -1,0 +1,5 @@
+[
+  ["monter-armoire", "encours", "[data-monte=\"3\"]"],
+  ["reste-ouvert", "encours", "[data-reste]"],
+  ["nature-achat", "ajout", ".renor1-nat button"]
+]

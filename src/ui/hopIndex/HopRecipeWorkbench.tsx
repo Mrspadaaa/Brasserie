@@ -21,6 +21,7 @@ import { SegmentedControl } from '../SegmentedControl';
 import { HopIbuRange } from './HopIbuRange';
 export { HopIbuRange } from './HopIbuRange';
 import './hop-recipe.css';
+import { nombreFr } from '../../domain/nombreAffiche';
 
 const fmt = (value?: number | null, digits = 1) => value != null && Number.isFinite(value) ? value.toLocaleString('fr-FR', { maximumFractionDigits: digits }) : '—';
 const stageNames: Record<HopStage, string> = { firstWort: 'Premier moût', boil: 'Ébullition', whirlpool: 'Whirlpool', dryHop: 'À cru' };
@@ -197,7 +198,7 @@ export function HopRecipeWorkbench({ recipe, onChange, onNavigate, onPlanYeast, 
         {(draft.stage === 'boil' || draft.stage === 'whirlpool') && numeric(draft.stage === 'boil' ? 'Minutes avant la fin' : 'Contact au whirlpool', 'timeMin', 'min')}
         {draft.stage === 'whirlpool' && numeric('Température du whirlpool', 'tempC', '°C')}
         {draft.mode === 'ibu' ? <>{numeric('Cible totale à chaud', 'targetIbu', 'IBU')}
-          {analysis.style.ibu && <div className="hop-presets"><span>Repères :</span>{[analysis.style.ibu.min, Math.round((analysis.style.ibu.min + analysis.style.ibu.max) / 2), analysis.style.ibu.max].map(n => <button key={n} type="button" onClick={() => patch({ targetIbu: n })}>{n} IBU</button>)}</div>}</>
+          {analysis.style.ibu && <div className="hop-presets"><span>Repères :</span>{[analysis.style.ibu.min, Math.round((analysis.style.ibu.min + analysis.style.ibu.max) / 2), analysis.style.ibu.max].map(n => <button key={n} type="button" onClick={() => patch({ targetIbu: n })}>{nombreFr(n, 1)} IBU</button>)}</div>}</>
           : draft.mode === 'move' && <><label className="hop-check"><input type="checkbox" checked={draft.keepIbu} onChange={e => patch({ keepIbu: e.target.checked })} />Recalculer la masse pour garder les IBU actuels</label>{!draft.keepIbu && numeric('Masse du scénario', 'weightG', 'g')}</>}
       </> : <>
         {numeric('Dose de cet ajout à cru', 'doseGL', 'g/L')}

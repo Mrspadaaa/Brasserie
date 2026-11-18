@@ -1,0 +1,13 @@
+import path from 'node:path'; import fs from 'node:fs'; import { createRequire } from 'node:module';
+const require = createRequire('C:/Users/mrspa/Documents/Brasserie/.claude/worktrees/optimistic-ptolemy-2d1278/package.json');
+const puppeteer = require('puppeteer-core');
+const proto='file:///C:/Users/mrspa/.codex/worktrees/openai-clean-start/Brasserie/work/missions/2026-11-16-carnet-decision/ra-p5f/proto.html';
+const nav = await puppeteer.launch({ executablePath: 'C:/Program Files/Google/Chrome/Application/chrome.exe', headless: 'new' });
+const p = await nav.newPage();
+await p.setViewport({ width: 390, height: 844, isMobile: true, hasTouch: true, deviceScaleFactor: 1 });
+await p.goto(proto+(process.argv[2]||''),{waitUntil:'load'});
+await new Promise(r=>setTimeout(r,800));
+await p.screenshot({path:'cap/'+(process.argv[3]||'a')+'.png'});
+console.log(await p.evaluate(()=>document.body.innerText.slice(0,1500)));
+console.log(await p.evaluate(()=>[...document.querySelectorAll('button,[data-act],input,textarea,a')].filter(n=>n.getBoundingClientRect().width>0).map(n=>(n.dataset.act||n.id||n.tagName)+':'+(n.innerText||n.placeholder||n.getAttribute('aria-label')||'').slice(0,30).replace(/\n/g,' ')).join('\n')));
+await nav.close();

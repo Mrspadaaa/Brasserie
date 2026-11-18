@@ -30,6 +30,14 @@ export function isGeminiModelHost(host: string): boolean {
   return MODEL_HOSTS.test(host.replace(/\.$/u, ''));
 }
 
+// Deployed Functions (aiTask calls Gemini behind them): an unmocked AiClient.run from a screen test never leaves the worker. Emulator stays at 127.0.0.1.
+const DEPLOYED_FUNCTION_HOSTS = /\.(cloudfunctions\.net|run\.app)$/iu;
+
+/** True for a deployed Cloud Functions or Cloud Run host. */
+export function isDeployedFunctionHost(host: string): boolean {
+  return DEPLOYED_FUNCTION_HOSTS.test(host.replace(/\.$/u, ''));
+}
+
 delete process.env.GEMINI_API_KEY;
 delete process.env.GOOGLE_API_KEY;
 delete process.env.GOOGLE_GENAI_API_KEY;
@@ -53,6 +61,7 @@ function hostOf(target: unknown, base?: string): string | undefined {
 
 function refuse(host: string | undefined): void {
   if (host && isGeminiModelHost(host)) throw new Error(`Appel Gemini réel interdit pendant Vitest : ${host}`);
+  if (host && isDeployedFunctionHost(host)) throw new Error(`Appel d'une Function déployée interdit pendant Vitest : ${host}`);
 }
 
 const isGuarded = (value: unknown) => (value as Record<symbol, unknown> | undefined)?.[GUARD] === true;

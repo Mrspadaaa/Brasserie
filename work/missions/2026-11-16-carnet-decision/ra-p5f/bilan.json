@@ -1,0 +1,534 @@
+{
+ "bilan": [
+  {
+   "n": 0,
+   "nom": "carnet vide, aucune donnée",
+   "ok": true,
+   "T": 0,
+   "K": 0
+  },
+  {
+   "n": 1,
+   "nom": "créer l’idée « embouteillage »",
+   "ok": true,
+   "T": 1,
+   "K": 14
+  },
+  {
+   "n": 2,
+   "nom": "façon « gravité », avec ce qu’il en pense",
+   "ok": true,
+   "T": 0,
+   "K": 38
+  },
+  {
+   "n": 3,
+   "nom": "façon « isobarique »",
+   "ok": true,
+   "T": 0,
+   "K": 51
+  },
+  {
+   "n": 4,
+   "nom": "critère « minimiser l’oxygène » ; l’IA penche pour Isobarique",
+   "ok": true,
+   "T": 1,
+   "K": 28
+  },
+  {
+   "n": 5,
+   "nom": "retenir Isobarique, avec son pourquoi",
+   "ok": true,
+   "T": 1,
+   "K": 42
+  },
+  {
+   "n": 6,
+   "nom": "noter une recherche",
+   "ok": true,
+   "T": 1,
+   "K": 74
+  },
+  {
+   "n": 7,
+   "nom": "coller le lien 1 (www.brasserie-shop-valais.ch)",
+   "ok": true,
+   "T": 1,
+   "K": 0
+  },
+  {
+   "n": 8,
+   "nom": "coller le lien 2 (brassage-romandie.ch)",
+   "ok": true,
+   "T": 1,
+   "K": 0
+  },
+  {
+   "n": 9,
+   "nom": "coller le lien 3 (brassage-romandie.ch)",
+   "ok": true,
+   "T": 1,
+   "K": 0
+  },
+  {
+   "n": 10,
+   "nom": "coller le lien 4 (abfuelltechnik-west.de)",
+   "ok": true,
+   "T": 1,
+   "K": 0
+  },
+  {
+   "n": 11,
+   "nom": "coller le lien 5 (imbottigliatrici-nord.it)",
+   "ok": true,
+   "T": 1,
+   "K": 0
+  },
+  {
+   "n": 12,
+   "nom": "coller le lien 6 (brew-equip-lyon.fr)",
+   "ok": true,
+   "T": 1,
+   "K": 0
+  },
+  {
+   "n": "7-12",
+   "nom": "les 6 articles : 5 fournisseurs, 4 pays",
+   "ok": true,
+   "T": 2,
+   "K": 0
+  },
+  {
+   "n": 13,
+   "nom": "caractéristiques de l’IA gardées, une à soi",
+   "ok": true,
+   "T": 5,
+   "K": 25
+  },
+  {
+   "n": 14,
+   "nom": "comparer sur l’oxygène puis le prix, noms courts",
+   "ok": true,
+   "T": 2,
+   "K": 0
+  },
+  {
+   "n": 15,
+   "nom": "demander à l’IA si c’est disponible",
+   "ok": true,
+   "T": 3,
+   "K": 0
+  },
+  {
+   "n": 16,
+   "nom": "choisir produit et fournisseur, pourquoi coché (0 frappe)",
+   "ok": true,
+   "T": 6,
+   "K": 0
+  },
+  {
+   "n": 17,
+   "nom": "plus tard : la liste, puis pourquoi iso",
+   "ok": true,
+   "T": 4,
+   "K": 0
+  },
+  {
+   "n": 18,
+   "nom": "pourquoi ce fournisseur",
+   "ok": true,
+   "T": 1,
+   "K": 0
+  },
+  {
+   "n": "19.1",
+   "nom": "frigo de garde pour fûts : créer l’idée",
+   "ok": true,
+   "T": 3,
+   "K": 25
+  },
+  {
+   "n": "19.2",
+   "nom": "frigo de garde pour fûts : deux façons",
+   "ok": true,
+   "T": 0,
+   "K": 82
+  },
+  {
+   "n": "19.3",
+   "nom": "frigo de garde pour fûts : critère, façon retenue avec pourquoi",
+   "ok": true,
+   "T": 2,
+   "K": 80
+  },
+  {
+   "n": "19.4",
+   "nom": "frigo de garde pour fûts : 3 liens collés",
+   "ok": true,
+   "T": 4,
+   "K": 0
+  },
+  {
+   "n": "19.5",
+   "nom": "frigo de garde pour fûts : comparer sur le critère puis le prix",
+   "ok": true,
+   "T": 4,
+   "K": 0
+  },
+  {
+   "n": "19.6",
+   "nom": "frigo de garde pour fûts : disponibilité par l’IA",
+   "ok": true,
+   "T": 3,
+   "K": 0
+  },
+  {
+   "n": "19.7",
+   "nom": "frigo de garde pour fûts : choisir, pourquoi coché",
+   "ok": true,
+   "T": 3,
+   "K": 0
+  },
+  {
+   "n": "19.7b",
+   "nom": "frigo de garde pour fûts : piège — un pourquoi tapé que les tableaux contredisent",
+   "ok": true,
+   "T": 2,
+   "K": 16
+  },
+  {
+   "n": "19.8",
+   "nom": "frigo de garde pour fûts : retrouver pourquoi",
+   "ok": true,
+   "T": 4,
+   "K": 0
+  },
+  {
+   "n": "20.1",
+   "nom": "ventilation : créer l’idée",
+   "ok": true,
+   "T": 3,
+   "K": 36
+  },
+  {
+   "n": "20.2",
+   "nom": "ventilation : deux façons",
+   "ok": true,
+   "T": 3,
+   "K": 46
+  },
+  {
+   "n": "20.3",
+   "nom": "ventilation : toucher Ensuite, écrire ce qui compte avec ses mots",
+   "ok": true,
+   "T": 2,
+   "K": 32
+  },
+  {
+   "n": "20.4",
+   "nom": "ventilation : cinq liens, un sans aperçu",
+   "ok": true,
+   "T": 6,
+   "K": 0
+  },
+  {
+   "n": "20.5",
+   "nom": "ventilation : comparer, « consommation » retirée",
+   "ok": true,
+   "T": 4,
+   "K": 0
+  },
+  {
+   "n": "20.6",
+   "nom": "ventilation : rien de choisi, « attendre l’avis du ferblantier »",
+   "ok": true,
+   "T": 2,
+   "K": 31
+  },
+  {
+   "n": "20.7",
+   "nom": "ventilation : la ligne de la liste",
+   "ok": true,
+   "T": 1,
+   "K": 0
+  },
+  {
+   "n": "21.1",
+   "nom": "évier inox pour laver les fûts : créer l’idée",
+   "ok": true,
+   "T": 1,
+   "K": 31
+  },
+  {
+   "n": "21.2",
+   "nom": "évier inox pour laver les fûts : deux façons",
+   "ok": true,
+   "T": 1,
+   "K": 0
+  },
+  {
+   "n": "21.3",
+   "nom": "évier inox pour laver les fûts : critère, façon retenue avec pourquoi",
+   "ok": true,
+   "T": 3,
+   "K": 98
+  },
+  {
+   "n": "21.4",
+   "nom": "évier inox pour laver les fûts : 3 liens collés",
+   "ok": true,
+   "T": 4,
+   "K": 0
+  },
+  {
+   "n": "21.5",
+   "nom": "évier inox pour laver les fûts : comparer sur le critère puis le prix",
+   "ok": true,
+   "T": 4,
+   "K": 0
+  },
+  {
+   "n": "21.6",
+   "nom": "évier inox pour laver les fûts : disponibilité par l’IA",
+   "ok": true,
+   "T": 3,
+   "K": 0
+  },
+  {
+   "n": "21.7",
+   "nom": "évier inox pour laver les fûts : choisir, pourquoi coché",
+   "ok": true,
+   "T": 3,
+   "K": 0
+  },
+  {
+   "n": "21.7b",
+   "nom": "évier inox pour laver les fûts : piège — un pourquoi tapé que les tableaux contredisent",
+   "ok": true,
+   "T": 2,
+   "K": 14
+  },
+  {
+   "n": "21.8",
+   "nom": "évier inox pour laver les fûts : retrouver pourquoi",
+   "ok": true,
+   "T": 4,
+   "K": 0
+  }
+ ],
+ "shots": [
+  [
+   "E00-vide.png",
+   "E0 · rien : au repos, le + est le seul bouton plein"
+  ],
+  [
+   "E01a-idee-tapee.png",
+   "E1 · idée tapée : la flèche d’envoi paraît"
+  ],
+  [
+   "E01b-carnet-cree.png",
+   "E1 · Entrée : le carnet est créé, l’IA propose quoi comparer"
+  ],
+  [
+   "E02-gravite.png",
+   "E2 · façon Gravité rangée"
+  ],
+  [
+   "E03-iso.png",
+   "E3 · façon Isobarique rangée"
+  ],
+  [
+   "E04a-propose.png",
+   "E4 · l’IA propose d’en faire le critère"
+  ],
+  [
+   "E04b-critere.png",
+   "E4 · critère en tête ; « Retenir Isobarique » seul bouton plein"
+  ],
+  [
+   "E05a-pourquoi.png",
+   "E5 · « Retenir Isobarique plutôt que Gravité : pourquoi ? »"
+  ],
+  [
+   "E05b-retenue.png",
+   "E5 · tuile Façons : Gravité barrée et sa raison, Isobarique retenue et son pourquoi"
+  ],
+  [
+   "E06-note.png",
+   "E6 · note de recherche"
+  ],
+  [
+   "E07a-puce-coller.png",
+   "E7 · la puce « Coller le lien copié » au-dessus du clavier, lien 1 lu"
+  ],
+  [
+   "E12-lien6.png",
+   "E12 · lien 6 lu"
+  ],
+  [
+   "E12b-articles.png",
+   "E7-12 · les 6 articles, aperçu et veille"
+  ],
+  [
+   "E13a-proposees.png",
+   "E13 · 8 proposées pour embouteillage"
+  ],
+  [
+   "E13b-a-vous.png",
+   "E13 · gardées + « à vous », remplie par l’IA"
+  ],
+  [
+   "E14a-oxygene.png",
+   "E14 · classé par oxygène, « Isobarique » n’est plus répété"
+  ],
+  [
+   "E14b-prix.png",
+   "E14 · classé par prix"
+  ],
+  [
+   "E15-dispo.png",
+   "E15 · disponibilité (IA, exemple)"
+  ],
+  [
+   "E16a-choisi.png",
+   "E16 · choisi d’un toucher : le pourquoi proposé, à cocher"
+  ],
+  [
+   "E16b-coche.png",
+   "E16 · deux raisons cochées"
+  ],
+  [
+   "E16c-ecartes.png",
+   "E16 · les 5 écartés gardent leur raison, lue dans les tableaux"
+  ],
+  [
+   "E16d-carte.png",
+   "E16 · carte de décision : pourquoi, et « Envoyer dans À venir »"
+  ],
+  [
+   "E16e-a-venir.png",
+   "E16 · envoyé dans À venir, sans toast"
+  ],
+  [
+   "E17a-liste.png",
+   "E17 · plus tard, la liste : choix, fournisseur et pays, pourquoi"
+  ],
+  [
+   "E17b-fiche.png",
+   "E17 · la fiche du choix : pourquoi coché, écartés"
+  ],
+  [
+   "E17c-pourquoi-iso.png",
+   "E17 · « Pourquoi cette façon ? » : réponse datée, en tête"
+  ],
+  [
+   "E18-pourquoi-fournisseur.png",
+   "E18 · « Pourquoi ce fournisseur ? » : relit les raisons cochées"
+  ],
+  [
+   "E19a-idee.png",
+   "E19 · frigo de garde pour fûts créé"
+  ],
+  [
+   "E19b-critere-propose.png",
+   "E19 · critère proposé, relié à une caractéristique"
+  ],
+  [
+   "E19c-retenue.png",
+   "E19 · critère en tête, façons avec leur pourquoi"
+  ],
+  [
+   "E19d-liens.png",
+   "E19 · liens lus"
+  ],
+  [
+   "E19e-critere.png",
+   "E19 · classé par le critère"
+  ],
+  [
+   "E19f-dispo.png",
+   "E19 · disponibilité (IA, exemple)"
+  ],
+  [
+   "E19g-choisi.png",
+   "E19 · choisi, pourquoi coché"
+  ],
+  [
+   "E19g1-faux.png",
+   "E19 · « le plus de fûts » : vos tableaux disent l’inverse"
+  ],
+  [
+   "E19h-pourquoi.png",
+   "E19 · « Pourquoi ce fournisseur ? »"
+  ],
+  [
+   "E20a-idee.png",
+   "E20 · ventilation de la salle de brassage créée"
+  ],
+  [
+   "E20b-critere-propose.png",
+   "E20 · « plus de condensation au plafond » : en faire le critère ?"
+  ],
+  [
+   "E20c-critere.png",
+   "E20 · critère en tête ; Comparer : 6 proposées, 1 gardée"
+  ],
+  [
+   "E20d-liens.png",
+   "E20 · cinq liens ; celui sans aperçu porte le nom de son site"
+  ],
+  [
+   "E20e-critere.png",
+   "E20 · classé par débit ; les liens sans valeurs en une ligne"
+  ],
+  [
+   "E20f-attente.png",
+   "E20 · la note d’attente est rangée"
+  ],
+  [
+   "E20g-carnet.png",
+   "E20 · au repos : Ensuite, attendre l’avis du ferblantier"
+  ],
+  [
+   "E20h-liste.png",
+   "E20 · la liste : la ventilation attend le ferblantier"
+  ],
+  [
+   "E21a-idee.png",
+   "E21 · évier inox pour laver les fûts créé"
+  ],
+  [
+   "E21b-critere-propose.png",
+   "E21 · critère proposé, relié à une caractéristique"
+  ],
+  [
+   "E21c-retenue.png",
+   "E21 · critère en tête, façons avec leur pourquoi"
+  ],
+  [
+   "E21d-liens.png",
+   "E21 · liens lus"
+  ],
+  [
+   "E21e-critere.png",
+   "E21 · classé par le critère"
+  ],
+  [
+   "E21f-dispo.png",
+   "E21 · disponibilité (IA, exemple)"
+  ],
+  [
+   "E21g-choisi.png",
+   "E21 · choisi, pourquoi coché"
+  ],
+  [
+   "E21g1-faux.png",
+   "E21 · « le moins cher » : vos tableaux disent l’inverse"
+  ],
+  [
+   "E21h-pourquoi.png",
+   "E21 · « Pourquoi ce fournisseur ? »"
+  ]
+ ],
+ "defauts": []
+}

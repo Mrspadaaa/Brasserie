@@ -1,0 +1,6 @@
+KO w2 : bande en 155 px (35 px de haut, 13 semaines), frise en 190 px, 44 textes · petits 0 · hors 0 · chevauchés 0 · sur trait 0 · + volant 14 px au-dessus des onglets · corps : sous le + 11, sur un lien 1, chevauchés 0 · légende dans le rang des mois (déc.), dans le rang des mois (mars), dans le rang des mois (juin), dans le rang des mois (sept.)
+  sousPlus: ["IPA houblon à cru","Dégustation à la brasserie","+420","Commande groupée de malt","−540","Frigo (chambre froide)","−1 800","Photos et site web","2 j","Assurance annuelle","−380"]
+  surLien: ["Dégustation à la brasserie"]
+KO w3 : bande en 179 px (35 px de haut, 13 semaines), frise en 214 px, 45 textes · petits 0 · hors 0 · chevauchés 0 · sur trait 0 · + volant 14 px au-dessus des onglets · corps : sous le + 11, sur un lien 1, chevauchés 0 · légende collée à « Mariage +1 100 » (8 px)
+  sousPlus: ["IPA houblon à cru","Dégustation à la brasserie","+420","Commande groupée de malt","−540","Frigo (chambre froide)","−1 800","Photos et site web","2 j","Assurance annuelle","−380"]
+  surLien: ["Dégustation à la brasserie"]

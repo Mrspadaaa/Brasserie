@@ -1,0 +1,160 @@
+[
+  {
+    "nom": "liste-390-clair",
+    "erreursConsole": 1,
+    "exceptions": 0,
+    "bloquees": 1,
+    "mesure": {
+      "lignesPremierEcran": 9,
+      "hauteurLigne": 54,
+      "total": 9
+    }
+  },
+  {
+    "nom": "liste-390-cave",
+    "erreursConsole": 1,
+    "exceptions": 0,
+    "bloquees": 1,
+    "mesure": {
+      "lignesPremierEcran": 9,
+      "hauteurLigne": 54,
+      "total": 9
+    }
+  },
+  {
+    "nom": "liste-1280-clair",
+    "erreursConsole": 1,
+    "exceptions": 0,
+    "bloquees": 1,
+    "mesure": {
+      "lignesPremierEcran": 11,
+      "hauteurLigne": 54,
+      "total": 11
+    }
+  },
+  {
+    "nom": "liste-1280-cave",
+    "erreursConsole": 1,
+    "exceptions": 0,
+    "bloquees": 1,
+    "mesure": {
+      "lignesPremierEcran": 11,
+      "hauteurLigne": 54,
+      "total": 11
+    }
+  },
+  {
+    "nom": "a-traiter-390-clair",
+    "erreursConsole": 1,
+    "exceptions": 0,
+    "bloquees": 1
+  },
+  {
+    "nom": "a-traiter-390-cave",
+    "erreursConsole": 1,
+    "exceptions": 0,
+    "bloquees": 1
+  },
+  {
+    "nom": "a-traiter-1280-clair",
+    "erreursConsole": 1,
+    "exceptions": 0,
+    "bloquees": 1
+  },
+  {
+    "nom": "a-traiter-1280-cave",
+    "erreursConsole": 1,
+    "exceptions": 0,
+    "bloquees": 1
+  },
+  {
+    "nom": "recherche-390-clair",
+    "erreursConsole": 1,
+    "exceptions": 0,
+    "bloquees": 1
+  },
+  {
+    "nom": "recherche-vide-390-clair",
+    "erreursConsole": 1,
+    "exceptions": 0,
+    "bloquees": 1
+  },
+  {
+    "nom": "actions-390-clair",
+    "erreursConsole": 1,
+    "exceptions": 0,
+    "bloquees": 1
+  },
+  {
+    "nom": "actions-390-cave",
+    "erreursConsole": 1,
+    "exceptions": 0,
+    "bloquees": 1
+  },
+  {
+    "nom": "actions-1280-clair",
+    "erreursConsole": 1,
+    "exceptions": 0,
+    "bloquees": 1
+  },
+  {
+    "nom": "actions-1280-cave",
+    "erreursConsole": 1,
+    "exceptions": 0,
+    "bloquees": 1
+  },
+  {
+    "nom": "fiche-390-clair",
+    "erreursConsole": 1,
+    "exceptions": 0,
+    "bloquees": 1
+  },
+  {
+    "nom": "fiche-390-cave",
+    "erreursConsole": 1,
+    "exceptions": 0,
+    "bloquees": 1
+  },
+  {
+    "nom": "fiche-1280-clair",
+    "erreursConsole": 1,
+    "exceptions": 0,
+    "bloquees": 1
+  },
+  {
+    "nom": "fiche-1280-cave",
+    "erreursConsole": 1,
+    "exceptions": 0,
+    "bloquees": 1
+  },
+  {
+    "nom": "fiche-achat-390-clair",
+    "erreursConsole": 1,
+    "exceptions": 0,
+    "bloquees": 1
+  },
+  {
+    "nom": "fiche-reparer-390-clair",
+    "erreursConsole": 1,
+    "exceptions": 0,
+    "bloquees": 1
+  },
+  {
+    "nom": "fiche-gestion-390-clair",
+    "erreursConsole": 1,
+    "exceptions": 0,
+    "bloquees": 1
+  },
+  {
+    "nom": "nouveau-390-clair",
+    "erreursConsole": 1,
+    "exceptions": 0,
+    "bloquees": 1
+  },
+  {
+    "nom": "achat-390-clair",
+    "erreursConsole": 1,
+    "exceptions": 0,
+    "bloquees": 1
+  }
+]

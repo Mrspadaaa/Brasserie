@@ -1,0 +1,22 @@
+{
+ "reglage": "4-carbon@low",
+ "element": "grassy-controle",
+ "cas": "grassy",
+ "type": "controle",
+ "moitie": "choix",
+ "verdict": {
+  "utilisable": true,
+  "approved": false,
+  "proposalApproved": true,
+  "issues": [
+   "Ne pas présenter le hop creep comme une cause certaine (« Les enzymes du Cascade hydrolysent des dextrines résiduelles ») : la baisse de densité peut aussi provenir d'une fermentation primaire qui n'était pas terminée avant le dry-hop ; présenter les deux comme des hypothèses.",
+   "Retirer la suggestion de « séparer le houblon » sans connaître le matériel (sac, aimant, fermenteur sous pression ou simple seau), car ouvrir ou transférer la bière maintenant comporte un fort risque d'oxydation.",
+   "Distinguer clairement les causes possibles du profil « herbeux » : particules de houblon en suspension / hop burn (fréquent à J+3 sur un échantillon non clarifié) vs extraction végétale ou astringence.",
+   "Respecter la plage fabricant de l'US-05 (18–26 °C dans la recette) au lieu de restreindre arbitrairement la consigne à 18–20 °C.",
+   "Adapter la question (maximum deux questions) pour éclairer à la fois le suivi fermentaire et le diagnostic du goût herbeux : demander la température actuelle, la forme/mode d'ajout du houblon (pellets libres, sac...) et les derniers relevés de densité (et si la primaire était finie avant dry-hop)."
+  ]
+ },
+ "ms": 8628,
+ "coutMicro": 14895,
+ "etat": "STOP"
+}

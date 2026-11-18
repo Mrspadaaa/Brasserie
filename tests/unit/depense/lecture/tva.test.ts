@@ -93,7 +93,7 @@ describe('C4 — HT + TVA = TTC : conforme, un HT calculé n’est jamais lu', (
   });
 
   it('HT 82,35 + TVA 4,15 = 86,50 : ok', () => {
-    const r = lire(entete({ amountHT: 82.35, tvaAmount: 4.15, amountTTC: 86.5 }));
+    const r = lire(entete({ amountHT: 82.35, tvaAmount: 4.15, amountTTC: 86.5, items: [ligne({ price: 86.5, amountTTC: 86.5 })] }));
     expect(r.controls.totals.statut).toBe('ok');
     expect(r.points).toEqual([]);
   });

@@ -1,5 +1,5 @@
 {
-  "maj": "2026-11-01",
+  "maj": "2026-11-09",
   "regle": "« C'est critique que mes choix soient respectés. SI non, rien n'a de valeur. » (23.10). Chaque écran de l'app repart de la maquette qu'il a choisie, telle qu'il l'a vue (CLAUDE.md, règle n° 1 ; D105, D206).",
   "usage": "Le registre des écrans de l'APP (ecrans.json ne couvre que la maquette houblons : y inscrire Identité casserait son contrôle, qui veut une page par écran dans le dossier construit). controle-choix.mjs --registre=work/refonte-frontend/v4/choix/ecrans-app.json : le registre seul ; controle-choix.mjs work/missions/2026-10-31-ecran-identite/v1 --registre=… lit v1/r4-a/etat.html (la maquette) et son NOTE.md. À mettre à jour à chacun de ses choix, avec ses mots.",
   "ecrans": [
@@ -39,6 +39,42 @@
       "provisoire": "r2b (le ticket, choisi par le pilote, D223, D227)",
       "page": "https://claude.ai/artifact/PyodUeikFKc9SwD7M9k4wu",
       "maquettes": "work/missions/2026-10-31-ecran-depense/v1"
+    },
+    {
+      "ecran": "levure",
+      "route": "l5b",
+      "statut": "choisi",
+      "choix": "l5b (effets en jauges, + entre les paliers ; conduite l4b)",
+      "mots": "s5a · effets de fermentation en tête / Candidate / l5b · effets en jauges, + entre les paliers / Top !",
+      "capture": "work/missions/2026-11-09-ecran-levure/p2/l5b/l5b-cadres.png",
+      "page": "https://claude.ai/artifact/XeAsjYdnSkosrRTTWR23Gz"
+    },
+    {
+      "ecran": "levure-comparer",
+      "route": "s5a",
+      "statut": "choisi",
+      "choix": "s5a (colonnes s1b, effets de fermentation en tête)",
+      "mots": "s5a · effets de fermentation en tête / Candidate / l5b · effets en jauges, + entre les paliers / Top !",
+      "capture": "work/missions/2026-11-09-ecran-levure/p2/s5a/s5a-cadres.png",
+      "page": "https://claude.ai/artifact/XeAsjYdnSkosrRTTWR23Gz"
+    },
+    {
+      "ecran": "levure-chercher",
+      "route": "c6b",
+      "statut": "choisi",
+      "page": "https://claude.ai/artifact/DW4PfrQci56fx2YJ9hCAHd",
+      "choix": "c6b (résumé d'une ligne, puces, feuille à index des 18 filtres)",
+      "mots": "Les deux suggestions sont bien, IMPLÉMENTE toutes ces vues maintenant",
+      "capture": "work/missions/2026-11-09-ecran-levure/p2/c6b/c6b-cadres.png"
+    },
+    {
+      "ecran": "levure-suggerer",
+      "route": "s7a",
+      "statut": "choisi",
+      "choix": "s7a (s6a rendu générique : chaque caractéristique en − / +, Arômes · Corps · Conduite)",
+      "mots": "Les deux suggestions sont bien, IMPLÉMENTE toutes ces vues maintenant",
+      "capture": "work/missions/2026-11-09-ecran-levure/p2/s7a/s7a-cadres.png",
+      "page": "https://claude.ai/artifact/DW4PfrQci56fx2YJ9hCAHd"
     }
   ]
 }

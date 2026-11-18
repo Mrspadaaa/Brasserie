@@ -59,6 +59,10 @@
   font-size: 13px;
   line-height: 1.5;
 }
+/* AM-49 : la borne refusée se lit en rouge, pas dans le gris des aides. */
+.equipment-settings .equipment-field small[role='alert'] {
+  color: theme('colors.alert-strong');
+}
 .equipment-summary strong,
 .equipment-target strong {
   color: rgb(var(--ct-b8dcef));

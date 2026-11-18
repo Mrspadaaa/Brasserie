@@ -2,7 +2,7 @@ import React, { useMemo, useState } from 'react';
 import type { HopIngredient } from '../types';
 import { useStorageValue } from '../hooks/useLiveData';
 import { StorageService } from '../services/storage';
-import { hotBitterness, bitternessScience, type HotBitterness } from '../domain/hopBitterness';
+import { hotBitterness, bitternessScience, phraseIbuIncomplet, type HotBitterness } from '../domain/hopBitterness';
 import { dryHopBitterness } from '../../functions/src/hopBitternessCore';
 import { NumberInput } from './NumberInput';
 import { formatDecimal } from './numericInput';
@@ -28,7 +28,7 @@ export function HopBitternessPanel({ hops, volumeL, og, boilMin, hot: supplied }
       <span className="font-semibold text-cave-50">IBU à chaud · Tinseth</span>
       <strong data-hot-ibu={hot.total ?? ''} className="reading text-ebc-straw">{hot.total == null ? 'À compléter' : formatDecimal(Math.round(hot.total * 10) / 10)}</strong>
     </div>
-    {hot.missing.length > 0 && <p role="status" className="text-xs text-ebc-amber">{hot.missing.join(' · ')}.{hot.known > 0 && ` Part connue : ${formatDecimal(Math.round(hot.known*10)/10)} IBU.`}</p>}
+    {hot.missing.length > 0 && <p role="status" className="text-xs text-ebc-amber">{phraseIbuIncomplet(hot.missing)}{hot.known > 0 && ` Part connue : ${formatDecimal(Math.round(hot.known*10)/10)} IBU.`}</p>}
     {cold.length > 0 && <>
       <label className="flex items-center gap-2 min-h-11 cursor-pointer text-cave-50"><input type="checkbox" aria-label="Simuler l’amertume à cru" checked={simulate} onChange={e=>setSimulate(e.target.checked)} className="accent-ebc-straw w-4 h-4"/>Simuler l’amertume à cru<span className="ml-auto text-xs reading text-cave-200">{grams != null && volumeL > 0 ? `${formatDecimal(Math.round(grams/volumeL*100)/100)} g/L` : 'dose à préciser'}</span></label>
       {!simulate && <p className="text-xs text-cave-200">Le dry hop peut modifier l’amertume. Il n’entre pas dans la formule Tinseth.</p>}

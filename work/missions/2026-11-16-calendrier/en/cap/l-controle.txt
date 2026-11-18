@@ -1,0 +1,32 @@
+## base : en-tête 174 px (44.6 %) ; courbe(s) 45 px ; tailles 13/16/36 px ; mots 78
+  aucun défaut
+## l1 : en-tête 171 px (43.8 %) ; courbe(s) 54 px ; tailles 14/32 px ; mots 40 ; frise identique ; + identique ; code frise identique
+  aucun défaut
+## l2 : en-tête 137 px (35.1 %) ; courbe(s) 50/24 px ; tailles 14/32 px ; mots 20 ; frise identique ; + identique ; code frise identique
+  aucun défaut
+## l3 : en-tête 152 px (39.0 %) ; courbe(s) 70 px ; tailles 14/32 px ; mots 28 ; frise identique ; + identique ; code frise identique
+  aucun défaut
+## l4 : en-tête 140 px (35.9 %) ; courbe(s) 96 px ; tailles 14/32 px ; mots 19 ; frise identique ; + identique ; code frise identique
+  aucun défaut
+## l5 : en-tête 165 px (42.3 %) ; courbe(s) 50/45 px ; tailles 14/32 px ; mots 37 ; frise identique ; + identique ; code frise identique
+  aucun défaut
+## l-temoin : en-tête 171 px (43.8 %) ; courbe(s) 54 px ; tailles 13/14/16/32 px ; mots 41 ; frise identique ; + identique ; code frise identique
+  TEXTE×TEXTE 113 / S47
+  TEXTE×TEXTE 113 / S48
+  TEXTE×TEXTE CHF / S49
+  TEXTE×TEXTE +1 180 / S1
+  TEXTE×TEXTE +1 180 / S2
+  TEXTE×TEXTE +1 180 / S3
+  TEXTE×TEXTE +1 180 / +1 180 Noël
+  TEXTE×TEXTE Noël / S3
+  TEXTE×TEXTE Noël / S4
+  TEXTE×TEXTE Noël / S5
+  TEXTE×TEXTE Noël / +1 180 Noël
+  TEXTE×TEXTE S1 / +1 180 Noël
+  TEXTE×TEXTE S2 / +1 180 Noël
+  TEXTE×TEXTE S3 / +1 180 Noël
+  TEXTE×TEXTE S4 / +1 180 Noël
+  TEXTE×TEXTE S5 / +1 180 Noël
+  SOUS 14 PX +1 180 Noël
+  TEMOIN ECHOUE comme attendu
+CONTROLE OK

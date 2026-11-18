@@ -1,0 +1,157 @@
+{"sujet":"onglet","theme":"clair","pas":"repos","geste":"ouvre ","res":"ok","petits":0,"coupes":0,"debord":false,"exemple":true,"sousFabRepos":0,"sousFabFin":0,"finGeo":0}
+{"sujet":"onglet","theme":"clair","pas":"cal","geste":"tap [data-go=\"cal\"]","res":"ok","petits":0,"coupes":0,"debord":false,"exemple":true,"sousFabRepos":0,"sousFabFin":0,"finGeo":0}
+{"sujet":"onglet","theme":"clair","pas":"semaine","geste":"tap [data-w=\"2\"]","res":"ok","petits":0,"coupes":0,"debord":false,"exemple":true,"sousFabRepos":0,"sousFabFin":0,"finGeo":0}
+{"sujet":"onglet","theme":"clair","pas":"plus","geste":"tap #fab","res":"ok","petits":0,"coupes":0,"debord":false,"exemple":true,"sousFabRepos":0,"sousFabFin":0,"finGeo":0}
+{"sujet":"onglet","theme":"clair","pas":"pose","geste":"tap [data-a^=\"Poser un brassin\"]","res":"ok","petits":0,"coupes":0,"debord":false,"exemple":true,"sousFabRepos":0,"sousFabFin":0,"finGeo":0}
+{"sujet":"onglet","theme":"clair","geste":"tap [data-ev=\"0\"]","res":"ok"}
+{"sujet":"onglet","theme":"clair","geste":"tap .wpanel .hd button","res":"ok"}
+{"sujet":"onglet","theme":"clair","pas":"finances","geste":"tap [data-tab=\"fin\"]","res":"ok","petits":0,"coupes":0,"debord":false,"exemple":true,"sousFabRepos":0,"sousFabFin":0,"finGeo":0}
+{"sujet":"onglet","theme":"clair","geste":"tap [data-tab=\"bord\"]","res":"ok"}
+{"sujet":"onglet","theme":"clair","geste":"tap [data-t=\"0\"]","res":"ok"}
+{"sujet":"onglet","theme":"clair","pas":"vide","geste":"tap [data-act=\"vide\"]","res":"ok","petits":0,"coupes":0,"debord":false,"exemple":false,"sousFabRepos":0,"sousFabFin":0,"finGeo":0}
+{"sujet":"onglet","theme":"clair","pas":"cave","geste":"tap .jx-th","res":"ok","petits":0,"coupes":0,"debord":false,"exemple":false,"sousFabRepos":0,"sousFabFin":0,"finGeo":0}
+{"sujet":"onglet","theme":"clair","pas":"cal-cave","geste":"tap [data-tab=\"cal\"]","res":"ok","petits":0,"coupes":0,"debord":false,"exemple":false,"sousFabRepos":0,"sousFabFin":0,"finGeo":0}
+{"sujet":"fournisseur","theme":"clair","pas":"repos","geste":"ouvre ","res":"ok","petits":0,"coupes":0,"debord":false,"exemple":true,"sousFabRepos":0,"sousFabFin":0,"finGeo":0}
+{"sujet":"fournisseur","theme":"clair","geste":"tap [data-d=\"4\"]","res":"ok"}
+{"sujet":"fournisseur","theme":"clair","pas":"prix","geste":"tap [data-a=\"0\"]","res":"ok","petits":0,"coupes":0,"debord":false,"exemple":true,"sousFabRepos":0,"sousFabFin":0,"finGeo":0}
+{"sujet":"fournisseur","theme":"clair","pas":"reunir","geste":"tap [data-x=\"fus\"]","res":"ok","petits":0,"coupes":0,"debord":false,"exemple":true,"sousFabRepos":0,"sousFabFin":0,"finGeo":0}
+{"sujet":"fournisseur","theme":"clair","geste":"tap .p1-nm[data-n=\"brouwland.com\"]","res":"ok"}
+{"sujet":"fournisseur","theme":"clair","geste":"tap .p1-nm[data-n=\"brouwland.com\"]","res":"ok"}
+{"sujet":"fournisseur","theme":"clair","pas":"apres","geste":"tap [data-y=oui]","res":"ok","petits":0,"coupes":0,"debord":false,"exemple":true,"sousFabRepos":0,"sousFabFin":0,"finGeo":0}
+{"sujet":"fournisseur","theme":"clair","geste":"tap [data-x=\"annul\"]","res":"ok"}
+{"sujet":"fournisseur","theme":"clair","geste":"tap [data-x=\"fus\"]","res":"ok"}
+{"sujet":"fournisseur","theme":"clair","geste":"glisse #s-sheet","res":"ok"}
+{"sujet":"fournisseur","theme":"clair","geste":"tap [data-x=\"fac\"]","res":"ok"}
+{"sujet":"fournisseur","theme":"clair","pas":"plus","geste":"tap #s-fab","res":"ok","petits":0,"coupes":0,"debord":false,"exemple":true,"sousFabRepos":0,"sousFabFin":0,"finGeo":0}
+{"sujet":"fournisseur","theme":"clair","geste":"tap #s-dim","res":"ok"}
+{"sujet":"fournisseur","theme":"clair","pas":"liste","geste":"tap .s-back","res":"ok","petits":0,"coupes":0,"debord":false,"exemple":true,"sousFabRepos":0,"sousFabFin":0,"finGeo":0}
+{"sujet":"fournisseur","theme":"clair","pas":"vide","geste":"tap [data-fo=\"lac\"]","res":"ok","petits":0,"coupes":0,"debord":false,"exemple":true,"sousFabRepos":0,"sousFabFin":0,"finGeo":0}
+{"sujet":"fournisseur","theme":"clair","geste":"tap [data-r=\"livre vite\"]","res":"ok"}
+{"sujet":"fournisseur","theme":"clair","geste":"tap .s-back","res":"ok"}
+{"sujet":"fournisseur","theme":"clair","geste":"tap [data-fo=\"brouwland\"]","res":"ok"}
+{"sujet":"suppression","theme":"clair","pas":"repos","geste":"ouvre ","res":"ok","petits":0,"coupes":0,"debord":false,"exemple":true,"sousFabRepos":0,"sousFabFin":0,"finGeo":0}
+{"sujet":"suppression","theme":"clair","pas":"refus","geste":"tap [data-del=\"F-07\"]","res":"ok","petits":0,"coupes":0,"debord":false,"exemple":true,"sousFabRepos":0,"sousFabFin":0,"finGeo":0}
+{"sujet":"suppression","theme":"clair","pas":"regle","geste":"tap #sh [data-f=\"0\"]","res":"ok","petits":0,"coupes":0,"debord":false,"exemple":true,"sousFabRepos":0,"sousFabFin":0,"finGeo":0}
+{"sujet":"suppression","theme":"clair","pas":"mouvement","geste":"tap #sh [data-f=\"1\"]","res":"ok","petits":0,"coupes":0,"debord":false,"exemple":true,"sousFabRepos":0,"sousFabFin":0,"finGeo":0}
+{"sujet":"suppression","theme":"clair","geste":"tap #sh [data-jm=\"ret\"]","res":"ok"}
+{"sujet":"suppression","theme":"clair","geste":"tap #sh [data-f=\"1\"]","res":"ok"}
+{"sujet":"suppression","theme":"clair","pas":"mouvement-motif","geste":"tap #sh [data-mo=\"Vendus\"]","res":"ok","petits":0,"coupes":0,"debord":false,"exemple":true,"sousFabRepos":0,"sousFabFin":0,"finGeo":0}
+{"sujet":"suppression","theme":"clair","geste":"tap #sh [data-jm=\"ok\"]","res":"ok"}
+{"sujet":"suppression","theme":"clair","pas":"libre","geste":"tap #sh [data-f=\"2\"]","res":"ok","petits":0,"coupes":0,"debord":false,"exemple":true,"sousFabRepos":0,"sousFabFin":0,"finGeo":0}
+{"sujet":"suppression","theme":"clair","pas":"supprime","geste":"tap #sh [data-delok]","res":"ok","petits":0,"coupes":0,"debord":false,"exemple":true,"sousFabRepos":0,"sousFabFin":0,"finGeo":0}
+{"sujet":"suppression","theme":"clair","geste":"tap #toast button","res":"ok"}
+{"sujet":"suppression","theme":"clair","geste":"tap [data-k=\"brassin\"]","res":"ok"}
+{"sujet":"suppression","theme":"clair","pas":"refus-brassin","geste":"tap [data-del=\"L-014\"]","res":"ok","petits":0,"coupes":0,"debord":false,"exemple":true,"sousFabRepos":0,"sousFabFin":0,"finGeo":0}
+{"sujet":"suppression","theme":"clair","geste":"glisse #sh","res":"ok"}
+{"sujet":"suppression","theme":"clair","geste":"tap [data-del=\"L-014\"]","res":"ok"}
+{"sujet":"suppression","theme":"clair","pas":"archive","geste":"tap #sh [data-archive]","res":"ok","petits":0,"coupes":0,"debord":false,"exemple":true,"sousFabRepos":0,"sousFabFin":0,"finGeo":0}
+{"sujet":"suppression","theme":"clair","geste":"tap [data-ress=\"L-014\"]","res":"ok"}
+{"sujet":"suppression","theme":"clair","pas":"clients","geste":"tap [data-k=\"client\"]","res":"ok","petits":0,"coupes":0,"debord":false,"exemple":true,"sousFabRepos":0,"sousFabFin":0,"finGeo":0}
+{"sujet":"suppression","theme":"clair","geste":"tap #fab","res":"ok"}
+{"sujet":"lot","theme":"clair","pas":"repos","geste":"ouvre ","res":"ok","petits":0,"coupes":0,"debord":false,"exemple":true,"sousFabRepos":0,"sousFabFin":0,"finGeo":0}
+{"sujet":"lot","theme":"clair","pas":"branche","geste":"tap [data-client=\"pont\"] .v1row","res":"ok","petits":0,"coupes":0,"debord":false,"exemple":true,"sousFabRepos":0,"sousFabFin":0,"finGeo":0}
+{"sujet":"lot","theme":"clair","pas":"appeler","geste":"tap [data-tel]","res":"ok","petits":0,"coupes":0,"debord":false,"exemple":true,"sousFabRepos":0,"sousFabFin":0,"finGeo":0}
+{"sujet":"lot","theme":"clair","pas":"plus","geste":"tap [data-fab]","res":"ok","petits":0,"coupes":0,"debord":false,"exemple":true,"sousFabRepos":0,"sousFabFin":0,"finGeo":0}
+{"sujet":"lot","theme":"clair","pas":"livrer","geste":"tap [data-dial-action=\"livrer\"]","res":"ok","petits":0,"coupes":0,"debord":false,"exemple":true,"sousFabRepos":0,"sousFabFin":0,"finGeo":0}
+{"sujet":"lot","theme":"clair","pas":"livre","geste":"tap [data-liv=\"tilleul\"]","res":"ok","petits":0,"coupes":0,"debord":false,"exemple":true,"sousFabRepos":0,"sousFabFin":0,"finGeo":0}
+{"sujet":"lot","theme":"clair","geste":"tap #jx-toast button","res":"ok"}
+{"sujet":"lot","theme":"clair","geste":"tap [data-fab]","res":"ok"}
+{"sujet":"lot","theme":"clair","pas":"rentrer","geste":"tap [data-dial-action=\"rentrer\"]","res":"ok","petits":0,"coupes":0,"debord":false,"exemple":true,"sousFabRepos":0,"sousFabFin":0,"finGeo":0}
+{"sujet":"lot","theme":"clair","geste":"tap [data-ren=\"0\"]","res":"ok"}
+{"sujet":"lot","theme":"clair","geste":"tap [data-fab]","res":"ok"}
+{"sujet":"lot","theme":"clair","geste":"tap [data-dial-action=\"livrer\"]","res":"ok"}
+{"sujet":"lot","theme":"clair","geste":"glisse [data-jxs]","res":"ok"}
+{"sujet":"lot","theme":"clair","pas":"vide","geste":"tap [data-lot=\"42\"]","res":"ok","petits":0,"coupes":0,"debord":false,"exemple":true,"sousFabRepos":0,"sousFabFin":0,"finGeo":0}
+{"sujet":"lot","theme":"clair","pas":"liste","geste":"tap [data-jxret]","res":"ok","petits":0,"coupes":0,"debord":false,"exemple":true,"sousFabRepos":0,"sousFabFin":0,"finGeo":0}
+{"sujet":"lot","theme":"clair","geste":"tap [data-jxlot=\"41\"]","res":"ok"}
+{"sujet":"pastille","theme":"clair","pas":"repos","geste":"ouvre ","res":"ok","petits":0,"coupes":0,"debord":false,"exemple":true,"sousFabRepos":0,"sousFabFin":0,"finGeo":0}
+{"sujet":"pastille","theme":"clair","pas":"six","geste":"tap [data-h=\"52\"]","res":"ok","petits":0,"coupes":0,"debord":false,"exemple":true,"sousFabRepos":0,"sousFabFin":0,"finGeo":0}
+{"sujet":"pastille","theme":"clair","pas":"tout","geste":"tap [data-h=\"99\"]","res":"ok","petits":0,"coupes":0,"debord":false,"exemple":true,"sousFabRepos":0,"sousFabFin":0,"finGeo":0}
+{"sujet":"pastille","theme":"clair","geste":"tap #v3l .row","res":"ok"}
+{"sujet":"pastille","theme":"clair","pas":"plus","geste":"tap .fab","res":"ok","petits":0,"coupes":0,"debord":false,"exemple":true,"sousFabRepos":0,"sousFabFin":0,"finGeo":0}
+{"sujet":"pastille","theme":"clair","geste":"tap [data-jxv]","res":"ok"}
+{"sujet":"pastille","theme":"clair","geste":"tap [data-h=\"49\"]","res":"ok"}
+{"sujet":"pastille","theme":"clair","pas":"vide","geste":"tap #demo","res":"ok","petits":0,"coupes":0,"debord":false,"exemple":true,"sousFabRepos":0,"sousFabFin":0,"finGeo":0}
+{"sujet":"pastille","theme":"clair","geste":"tap #demo","res":"ok"}
+{"sujet":"onglet","theme":"cave","pas":"repos","geste":"ouvre ","res":"ok","petits":0,"coupes":0,"debord":false,"exemple":true,"sousFabRepos":0,"sousFabFin":0,"finGeo":0}
+{"sujet":"onglet","theme":"cave","pas":"cal","geste":"tap [data-go=\"cal\"]","res":"ok","petits":0,"coupes":0,"debord":false,"exemple":true,"sousFabRepos":0,"sousFabFin":0,"finGeo":0}
+{"sujet":"onglet","theme":"cave","pas":"semaine","geste":"tap [data-w=\"2\"]","res":"ok","petits":0,"coupes":0,"debord":false,"exemple":true,"sousFabRepos":0,"sousFabFin":0,"finGeo":0}
+{"sujet":"onglet","theme":"cave","pas":"plus","geste":"tap #fab","res":"ok","petits":0,"coupes":0,"debord":false,"exemple":true,"sousFabRepos":0,"sousFabFin":0,"finGeo":0}
+{"sujet":"onglet","theme":"cave","pas":"pose","geste":"tap [data-a^=\"Poser un brassin\"]","res":"ok","petits":0,"coupes":0,"debord":false,"exemple":true,"sousFabRepos":0,"sousFabFin":0,"finGeo":0}
+{"sujet":"onglet","theme":"cave","geste":"tap [data-ev=\"0\"]","res":"ok"}
+{"sujet":"onglet","theme":"cave","geste":"tap .wpanel .hd button","res":"ok"}
+{"sujet":"onglet","theme":"cave","pas":"finances","geste":"tap [data-tab=\"fin\"]","res":"ok","petits":0,"coupes":0,"debord":false,"exemple":true,"sousFabRepos":0,"sousFabFin":0,"finGeo":0}
+{"sujet":"onglet","theme":"cave","geste":"tap [data-tab=\"bord\"]","res":"ok"}
+{"sujet":"onglet","theme":"cave","geste":"tap [data-t=\"0\"]","res":"ok"}
+{"sujet":"onglet","theme":"cave","pas":"vide","geste":"tap [data-act=\"vide\"]","res":"ok","petits":0,"coupes":0,"debord":false,"exemple":false,"sousFabRepos":0,"sousFabFin":0,"finGeo":0}
+{"sujet":"onglet","theme":"cave","pas":"cave","geste":"tap .jx-th","res":"ok","petits":0,"coupes":0,"debord":false,"exemple":false,"sousFabRepos":0,"sousFabFin":0,"finGeo":0}
+{"sujet":"onglet","theme":"cave","pas":"cal-cave","geste":"tap [data-tab=\"cal\"]","res":"ok","petits":0,"coupes":0,"debord":false,"exemple":false,"sousFabRepos":0,"sousFabFin":0,"finGeo":0}
+{"sujet":"fournisseur","theme":"cave","pas":"repos","geste":"ouvre ","res":"ok","petits":0,"coupes":0,"debord":false,"exemple":true,"sousFabRepos":0,"sousFabFin":0,"finGeo":0}
+{"sujet":"fournisseur","theme":"cave","geste":"tap [data-d=\"4\"]","res":"ok"}
+{"sujet":"fournisseur","theme":"cave","pas":"prix","geste":"tap [data-a=\"0\"]","res":"ok","petits":0,"coupes":0,"debord":false,"exemple":true,"sousFabRepos":0,"sousFabFin":0,"finGeo":0}
+{"sujet":"fournisseur","theme":"cave","pas":"reunir","geste":"tap [data-x=\"fus\"]","res":"ok","petits":0,"coupes":0,"debord":false,"exemple":true,"sousFabRepos":0,"sousFabFin":0,"finGeo":0}
+{"sujet":"fournisseur","theme":"cave","geste":"tap .p1-nm[data-n=\"brouwland.com\"]","res":"ok"}
+{"sujet":"fournisseur","theme":"cave","geste":"tap .p1-nm[data-n=\"brouwland.com\"]","res":"ok"}
+{"sujet":"fournisseur","theme":"cave","pas":"apres","geste":"tap [data-y=oui]","res":"ok","petits":0,"coupes":0,"debord":false,"exemple":true,"sousFabRepos":0,"sousFabFin":0,"finGeo":0}
+{"sujet":"fournisseur","theme":"cave","geste":"tap [data-x=\"annul\"]","res":"ok"}
+{"sujet":"fournisseur","theme":"cave","geste":"tap [data-x=\"fus\"]","res":"ok"}
+{"sujet":"fournisseur","theme":"cave","geste":"glisse #s-sheet","res":"ok"}
+{"sujet":"fournisseur","theme":"cave","geste":"tap [data-x=\"fac\"]","res":"ok"}
+{"sujet":"fournisseur","theme":"cave","pas":"plus","geste":"tap #s-fab","res":"ok","petits":0,"coupes":0,"debord":false,"exemple":true,"sousFabRepos":0,"sousFabFin":0,"finGeo":0}
+{"sujet":"fournisseur","theme":"cave","geste":"tap #s-dim","res":"ok"}
+{"sujet":"fournisseur","theme":"cave","pas":"liste","geste":"tap .s-back","res":"ok","petits":0,"coupes":0,"debord":false,"exemple":true,"sousFabRepos":0,"sousFabFin":0,"finGeo":0}
+{"sujet":"fournisseur","theme":"cave","pas":"vide","geste":"tap [data-fo=\"lac\"]","res":"ok","petits":0,"coupes":0,"debord":false,"exemple":true,"sousFabRepos":0,"sousFabFin":0,"finGeo":0}
+{"sujet":"fournisseur","theme":"cave","geste":"tap [data-r=\"livre vite\"]","res":"ok"}
+{"sujet":"fournisseur","theme":"cave","geste":"tap .s-back","res":"ok"}
+{"sujet":"fournisseur","theme":"cave","geste":"tap [data-fo=\"brouwland\"]","res":"ok"}
+{"sujet":"suppression","theme":"cave","pas":"repos","geste":"ouvre ","res":"ok","petits":0,"coupes":0,"debord":false,"exemple":true,"sousFabRepos":0,"sousFabFin":0,"finGeo":0}
+{"sujet":"suppression","theme":"cave","pas":"refus","geste":"tap [data-del=\"F-07\"]","res":"ok","petits":0,"coupes":0,"debord":false,"exemple":true,"sousFabRepos":0,"sousFabFin":0,"finGeo":0}
+{"sujet":"suppression","theme":"cave","pas":"regle","geste":"tap #sh [data-f=\"0\"]","res":"ok","petits":0,"coupes":0,"debord":false,"exemple":true,"sousFabRepos":0,"sousFabFin":0,"finGeo":0}
+{"sujet":"suppression","theme":"cave","pas":"mouvement","geste":"tap #sh [data-f=\"1\"]","res":"ok","petits":0,"coupes":0,"debord":false,"exemple":true,"sousFabRepos":0,"sousFabFin":0,"finGeo":0}
+{"sujet":"suppression","theme":"cave","geste":"tap #sh [data-jm=\"ret\"]","res":"ok"}
+{"sujet":"suppression","theme":"cave","geste":"tap #sh [data-f=\"1\"]","res":"ok"}
+{"sujet":"suppression","theme":"cave","pas":"mouvement-motif","geste":"tap #sh [data-mo=\"Vendus\"]","res":"ok","petits":0,"coupes":0,"debord":false,"exemple":true,"sousFabRepos":0,"sousFabFin":0,"finGeo":0}
+{"sujet":"suppression","theme":"cave","geste":"tap #sh [data-jm=\"ok\"]","res":"ok"}
+{"sujet":"suppression","theme":"cave","pas":"libre","geste":"tap #sh [data-f=\"2\"]","res":"ok","petits":0,"coupes":0,"debord":false,"exemple":true,"sousFabRepos":0,"sousFabFin":0,"finGeo":0}
+{"sujet":"suppression","theme":"cave","pas":"supprime","geste":"tap #sh [data-delok]","res":"ok","petits":0,"coupes":0,"debord":false,"exemple":true,"sousFabRepos":0,"sousFabFin":0,"finGeo":0}
+{"sujet":"suppression","theme":"cave","geste":"tap #toast button","res":"ok"}
+{"sujet":"suppression","theme":"cave","geste":"tap [data-k=\"brassin\"]","res":"ok"}
+{"sujet":"suppression","theme":"cave","pas":"refus-brassin","geste":"tap [data-del=\"L-014\"]","res":"ok","petits":0,"coupes":0,"debord":false,"exemple":true,"sousFabRepos":0,"sousFabFin":0,"finGeo":0}
+{"sujet":"suppression","theme":"cave","geste":"glisse #sh","res":"ok"}
+{"sujet":"suppression","theme":"cave","geste":"tap [data-del=\"L-014\"]","res":"ok"}
+{"sujet":"suppression","theme":"cave","pas":"archive","geste":"tap #sh [data-archive]","res":"ok","petits":0,"coupes":0,"debord":false,"exemple":true,"sousFabRepos":0,"sousFabFin":0,"finGeo":0}
+{"sujet":"suppression","theme":"cave","geste":"tap [data-ress=\"L-014\"]","res":"ok"}
+{"sujet":"suppression","theme":"cave","pas":"clients","geste":"tap [data-k=\"client\"]","res":"ok","petits":0,"coupes":0,"debord":false,"exemple":true,"sousFabRepos":0,"sousFabFin":0,"finGeo":0}
+{"sujet":"suppression","theme":"cave","geste":"tap #fab","res":"ok"}
+{"sujet":"lot","theme":"cave","pas":"repos","geste":"ouvre ","res":"ok","petits":0,"coupes":0,"debord":false,"exemple":true,"sousFabRepos":0,"sousFabFin":0,"finGeo":0}
+{"sujet":"lot","theme":"cave","pas":"branche","geste":"tap [data-client=\"pont\"] .v1row","res":"ok","petits":0,"coupes":0,"debord":false,"exemple":true,"sousFabRepos":0,"sousFabFin":0,"finGeo":0}
+{"sujet":"lot","theme":"cave","pas":"appeler","geste":"tap [data-tel]","res":"ok","petits":0,"coupes":0,"debord":false,"exemple":true,"sousFabRepos":0,"sousFabFin":0,"finGeo":0}
+{"sujet":"lot","theme":"cave","pas":"plus","geste":"tap [data-fab]","res":"ok","petits":0,"coupes":0,"debord":false,"exemple":true,"sousFabRepos":0,"sousFabFin":0,"finGeo":0}
+{"sujet":"lot","theme":"cave","pas":"livrer","geste":"tap [data-dial-action=\"livrer\"]","res":"ok","petits":0,"coupes":0,"debord":false,"exemple":true,"sousFabRepos":0,"sousFabFin":0,"finGeo":0}
+{"sujet":"lot","theme":"cave","pas":"livre","geste":"tap [data-liv=\"tilleul\"]","res":"ok","petits":0,"coupes":0,"debord":false,"exemple":true,"sousFabRepos":0,"sousFabFin":0,"finGeo":0}
+{"sujet":"lot","theme":"cave","geste":"tap #jx-toast button","res":"ok"}
+{"sujet":"lot","theme":"cave","geste":"tap [data-fab]","res":"ok"}
+{"sujet":"lot","theme":"cave","pas":"rentrer","geste":"tap [data-dial-action=\"rentrer\"]","res":"ok","petits":0,"coupes":0,"debord":false,"exemple":true,"sousFabRepos":0,"sousFabFin":0,"finGeo":0}
+{"sujet":"lot","theme":"cave","geste":"tap [data-ren=\"0\"]","res":"ok"}
+{"sujet":"lot","theme":"cave","geste":"tap [data-fab]","res":"ok"}
+{"sujet":"lot","theme":"cave","geste":"tap [data-dial-action=\"livrer\"]","res":"ok"}
+{"sujet":"lot","theme":"cave","geste":"glisse [data-jxs]","res":"ok"}
+{"sujet":"lot","theme":"cave","pas":"vide","geste":"tap [data-lot=\"42\"]","res":"ok","petits":0,"coupes":0,"debord":false,"exemple":true,"sousFabRepos":0,"sousFabFin":0,"finGeo":0}
+{"sujet":"lot","theme":"cave","pas":"liste","geste":"tap [data-jxret]","res":"ok","petits":0,"coupes":0,"debord":false,"exemple":true,"sousFabRepos":0,"sousFabFin":0,"finGeo":0}
+{"sujet":"lot","theme":"cave","geste":"tap [data-jxlot=\"41\"]","res":"ok"}
+{"sujet":"pastille","theme":"cave","pas":"repos","geste":"ouvre ","res":"ok","petits":0,"coupes":0,"debord":false,"exemple":true,"sousFabRepos":0,"sousFabFin":0,"finGeo":0}
+{"sujet":"pastille","theme":"cave","pas":"six","geste":"tap [data-h=\"52\"]","res":"ok","petits":0,"coupes":0,"debord":false,"exemple":true,"sousFabRepos":0,"sousFabFin":0,"finGeo":0}
+{"sujet":"pastille","theme":"cave","pas":"tout","geste":"tap [data-h=\"99\"]","res":"ok","petits":0,"coupes":0,"debord":false,"exemple":true,"sousFabRepos":0,"sousFabFin":0,"finGeo":0}
+{"sujet":"pastille","theme":"cave","geste":"tap #v3l .row","res":"ok"}
+{"sujet":"pastille","theme":"cave","pas":"plus","geste":"tap .fab","res":"ok","petits":0,"coupes":0,"debord":false,"exemple":true,"sousFabRepos":0,"sousFabFin":0,"finGeo":0}
+{"sujet":"pastille","theme":"cave","geste":"tap [data-jxv]","res":"ok"}
+{"sujet":"pastille","theme":"cave","geste":"tap [data-h=\"49\"]","res":"ok"}
+{"sujet":"pastille","theme":"cave","pas":"vide","geste":"tap #demo","res":"ok","petits":0,"coupes":0,"debord":false,"exemple":true,"sousFabRepos":0,"sousFabFin":0,"finGeo":0}
+{"sujet":"pastille","theme":"cave","geste":"tap #demo","res":"ok"}
+{"sujet":"porte","petits":0,"coupes":[],"debord":false,"exemple":true}
+{"porte":"onglet","ouvre":true,"retour":true}
+{"porte":"fournisseur","ouvre":true,"retour":true}
+{"porte":"suppression","ouvre":true,"retour":true}
+{"porte":"lot","ouvre":true,"retour":true}
+{"porte":"pastille","ouvre":true,"retour":true}
+EXTERNES []

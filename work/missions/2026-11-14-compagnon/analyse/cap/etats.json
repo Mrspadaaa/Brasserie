@@ -1,0 +1,87 @@
+[
+  {
+    "id": "e01",
+    "titre": "Accueil recette",
+    "geste": "ouvrir le compagnon ; budget déplié ; champ vide ; aucun envoi"
+  },
+  {
+    "id": "e02",
+    "titre": "Accueil finances (question pré-remplie)",
+    "geste": "question de Finances tapée, non envoyée"
+  },
+  {
+    "id": "e03",
+    "titre": "Question tapée, Approfondi choisi",
+    "geste": "mode Approfondi coché ; question tapée ; avant envoi"
+  },
+  {
+    "id": "e04",
+    "titre": "Envoi en cours",
+    "geste": "envoi ; accusé de réception retardé de 20 s"
+  },
+  {
+    "id": "e05",
+    "titre": "Attente courte (recherche, 0:12)",
+    "geste": "job running, stage research, « Recherche de sources… », créé il y a 12 s"
+  },
+  {
+    "id": "e06",
+    "titre": "Attente longue (« Cette étape prend du temps »)",
+    "geste": "job running, créé et mis à jour il y a 2 min"
+  },
+  {
+    "id": "e07",
+    "titre": "Deux questions : une en cours, une en attente",
+    "geste": "envoi de deux questions ; la 2e reste queued"
+  },
+  {
+    "id": "e08",
+    "titre": "Réponse courte, info, détails repliés",
+    "geste": "réponse niveau info ; détails « Conseil » repliés"
+  },
+  {
+    "id": "e09",
+    "titre": "Réponse longue, attention, détails ouverts",
+    "geste": "réponse attention ; 6 phrases ; 3 preuves ; 3 sources https ; détails ouverts"
+  },
+  {
+    "id": "e10",
+    "titre": "Réponse urgente",
+    "geste": "réponse niveau urgent : température de fermentation qui s’emballe"
+  },
+  {
+    "id": "e11",
+    "titre": "Proposition applicable (avant / après)",
+    "geste": "réponse avec proposition à 3 champs ; boutons de décision visibles"
+  },
+  {
+    "id": "e12",
+    "titre": "Fournisseurs (2 produits, stock et prix)",
+    "geste": "réponse avec evidence.products (2 produits) ; bloc « Où acheter »"
+  },
+  {
+    "id": "e13",
+    "titre": "Erreur relançable",
+    "geste": "job status error, error.retryable true ; bouton Relancer"
+  },
+  {
+    "id": "e14",
+    "titre": "Plafond de dépense",
+    "geste": "job error gemini-spend-cap ; lien Ouvrir les dépenses Google"
+  },
+  {
+    "id": "e15",
+    "titre": "Hors ligne : envoi échoué",
+    "geste": "mode hors ligne coupé avant envoi ; bandeau de connexion si présent"
+  },
+  {
+    "id": "e16",
+    "titre": "Confirmation « Repartir à zéro ? »",
+    "geste": "conversation existante ; bouton Réinitialiser ouvert, confirmation non cliquée"
+  },
+  {
+    "id": "e17",
+    "titre": "Mes conversations",
+    "geste": "trois conversations ; boîte « Mes conversations » ouverte depuis le compagnon"
+  }
+]

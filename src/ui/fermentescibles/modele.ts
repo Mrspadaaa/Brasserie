@@ -4,11 +4,20 @@
 import type { Fermentable, FermentableKind, FermentableUse, StockItem } from '../../types';
 // Les noms courants (« Munich » → Münchner Malz) viennent de la voie a1 (D220, D222) : une seule table, celle des tuiles aussi.
 import { nomsParAlias, normaliser } from '../../domain/fermentables/noms';
+import { BORNES } from '../../domain/bornesMetier';
+import {
+  grainEmpate, grainHorsEmpatage, messageMoment, momentParDefaut, momentPermis, momentsPermis, momentSuivant, momentTourne,
+} from '../../domain/fermentables/moments';
 
 export const MOMENTS: readonly FermentableUse[] = ['empatage', 'ebullition', 'fermentation'];
 /** Le mot du moment sur la ligne (D218, forme m1 : sans pilule). */
 export const MOT_MOMENT: Record<FermentableUse, string> = { empatage: 'empâtage', ebullition: 'ébullition', fermentation: 'fermentation' };
-export const MOMENT_SUIVANT = (u: FermentableUse): FermentableUse => MOMENTS[(MOMENTS.indexOf(u) + 1) % MOMENTS.length];
+/**
+ * Le moment suivant d'une ligne, dans les moments que sa famille permet (table unique `domain/fermentables/moments.ts`, audit du 08.11, AM 1 et 2) :
+ * un grain reste à l'empâtage, un sucre tourne entre ébullition et fermentation. Un moment interdit (donnée ancienne) revient au premier permis.
+ */
+export const MOMENT_SUIVANT = (f: Pick<Fermentable, 'kind' | 'use'>): FermentableUse => momentSuivant(f);
+export { grainEmpate, grainHorsEmpatage, momentPermis, momentTourne, messageMoment, momentParDefaut, momentsPermis };
 export const JOUR_PAR_DEFAUT = 3;
 
 export const FAMILLES: readonly FermentableKind[] = ['grain', 'sucre', 'fruit'];
@@ -23,14 +32,23 @@ export function kgTxt(x: number): string {
   return s.replace('.', ',');
 }
 export const qteTxt = (x: number) => String(Math.round(x * 100) / 100).replace('.', ',');
-/** Un nombre tapé : « 2,5 », « 2.5 kg ». Rien de lisible : `null` (jamais 0). */
+/**
+ * Un nombre tapé : « 2,5 », « 2.5 kg », « J+3 ». Rien de lisible : `null` (jamais 0). Seule une unité (kg, g, EBC, PPG, °C) ou le « J+ » d'un jour
+ * s'accepte autour du nombre : « Crystal 60 » tapé dans un jour n'est PAS 60 (BR-18 : « J+60 » depuis du texte).
+ */
 export function lit(s: string): number | null {
-  const v = parseFloat(String(s).replace(',', '.').replace(/[^0-9.]/g, ''));
+  const t = String(s).trim().replace(/^j\s*\+?\s*/i, '').replace(/\s*(kg|g|ebc|ppg|°\s*c)\s*$/i, '').replace(/(\d)[\s  ](?=\d)/g, '$1').replace(',', '.');
+  if (!/^(\d+(\.\d*)?|\.\d+)$/.test(t)) return null;
+  const v = parseFloat(t);
   return Number.isFinite(v) ? v : null;
 }
-/** La masse la plus grande qu'une ligne accepte (10 t) : au-delà, la saisie est ramenée là (fuzzSaisie : 999999999999). */
-export const MASSE_MAX_KG = 10000;
-export const arrondiKg = (v: number) => (Number.isFinite(v) ? Math.min(MASSE_MAX_KG, Math.round(v * 1000) / 1000) : MASSE_MAX_KG);
+/** La masse la plus grande qu'une ligne accepte (10 t) : au-delà, la saisie est ramenée là (fuzzSaisie : 999999999999) et l'écran le dit (B1 n° 12). */
+export const MASSE_MAX_KG = BORNES.masseLigneKg.max;
+/**
+ * Une masse tapée, au centième de kg (10 g : la précision d'une balance de brasserie ; « 0,004 » devient 0, à compléter, au lieu d'un bandeau à trois décimales).
+ * Le plafond n'est PAS appliqué ici : `setKg` de l'étape le fait et le dit. Illisible ou infini : le plafond.
+ */
+export const arrondiKg = (v: number) => (Number.isFinite(v) ? Math.round(v * 100) / 100 : MASSE_MAX_KG);
 
 // ---------------------------------------------------------------------------------------------------------------- crans
 /** Le cran de la masse : 50 g sous 1 kg, 100 g au-dessus (la piste du plateau). */
@@ -51,18 +69,28 @@ export function cranPas(x: number, dir: number): number {
 }
 /** La plage de la piste du plateau : 0–2 kg sous 1 kg, sinon la graduation ronde au-dessus d'une fois et demie la masse. */
 export function pmax(kg: number): number {
-  if (kg < 1) return 2;
+  // Une masse absente (champ vidé au récapitulatif : NaN, « à renseigner ») garde la piste de 0 à 2 kg, jamais « NaN › » (monkey, graine 3, 08.11).
+  if (!(kg >= 1)) return 2;
   const N = [2, 3, 4, 5, 6, 8, 10, 12, 15, 20, 25, 30, 40, 50];
   for (const n of N) if (n >= kg * 1.5) return n;
   return Math.ceil((kg * 1.5) / 10) * 10;
 }
 
-/** Les graduations de la piste du plateau (0 à `m` kg) : un pas de 0,1 sous 2 kg, 0,5 sous 6, 1 au-delà ; jamais plus de 200 (le pas s'élargit). */
+/** Le nombre de graduations au plus sur la piste du plateau : au-delà, sur 330 px, le trait fait une barre noire (B1 n° 12). */
+export const GRADUATIONS_MAX = 60;
+/**
+ * Les graduations de la piste du plateau (0 à `m` kg) : un pas de 0,1 sous 2 kg, 0,5 sous 6, 1 au-delà ; jamais plus de 60 intervalles.
+ * Au-delà, le pas monte sur une suite ronde (1, 2, 5, 10, 20, 50…) et le gros trait tombe sur une valeur ronde (tous les 5 pas, tous les 2 pour un pas de 5).
+ */
 export function graduationsPiste(m: number): Array<{ v: number; grosse: boolean }> {
-  const gros = m <= 6 ? 1 : m <= 12 ? 2 : 5;
+  let gros = m <= 6 ? 1 : m <= 12 ? 2 : 5;
   let pas = m <= 2 ? 0.1 : m <= 6 ? 0.5 : 1;
-  if (m / pas > 200) pas = m / 200;
-  const n = Math.min(200, Math.round(m / pas));
+  if (m / pas > GRADUATIONS_MAX) {
+    pas = Math.pow(10, Math.floor(Math.log10(m / GRADUATIONS_MAX)));
+    for (const f of [1, 2, 5, 10]) if (m / (pas * f) <= GRADUATIONS_MAX) { pas *= f; break; }
+    gros = pas * (Math.round(pas / Math.pow(10, Math.floor(Math.log10(pas)))) === 5 ? 2 : 5);
+  }
+  const n = Math.floor(m / pas + 1e-9);
   const g: Array<{ v: number; grosse: boolean }> = [];
   for (let k = 0; k <= n; k++) {
     const v = k * pas;
@@ -72,10 +100,11 @@ export function graduationsPiste(m: number): Array<{ v: number; grosse: boolean 
 }
 
 // ---------------------------------------------------------------------------------------------------------------- part du grain
-export const grainsDe = (l: readonly Fermentable[]) => l.filter((f) => f.kind === 'grain');
+// La part se calcule sur le grain EMPÂTÉ : un grain mal placé (donnée ancienne, au fermenteur ou bouilli) n'est pas dans la maische (A10, 08.11).
+export const grainsDe = (l: readonly Fermentable[]) => l.filter(grainEmpate);
 export const grainKg = (l: readonly Fermentable[]) => grainsDe(l).reduce((s, f) => s + f.weightKg, 0);
-/** Masse des autres grains que la ligne i. */
-export const autresKg = (l: readonly Fermentable[], i: number) => l.reduce((s, f, k) => s + (k !== i && f.kind === 'grain' ? f.weightKg : 0), 0);
+/** Masse des autres grains empâtés que la ligne i. */
+export const autresKg = (l: readonly Fermentable[], i: number) => l.reduce((s, f, k) => s + (k !== i && grainEmpate(f) ? f.weightKg : 0), 0);
 /** La masse qui donne la part p (en %) à la ligne i, les autres grains restant ce qu'ils sont ; `null` si impossible. */
 export function kgPourPart(l: readonly Fermentable[], i: number, p: number | null): number | null {
   const o = autresKg(l, i);
@@ -142,6 +171,36 @@ export interface Candidat {
   article?: StockItem;
   /** L'indice de la ligne de la recette, quand l'article y est déjà. */
   ligne: number;
+  /** La famille de l'article quand il vient d'un autre rayon que celle du champ (« dext » en Grain trouve Dextrose, rayon Sucre) ; absent : celle du champ. */
+  famille?: FermentableKind;
+}
+
+/**
+ * Les autres rayons : pour chaque article trouvé hors de la famille du champ, la famille qui l'accueille (critique B1 n° 4, 07.11).
+ * Une famille par article : la première, dans l'ordre des familles, dont le rayon le contient, mais celle qui porte son nom d'abord (Lactose → famille Lactose).
+ */
+export function chercherAilleurs(
+  texte: string,
+  courante: FermentableKind,
+  familles: readonly FermentableKind[],
+  rayons: Record<FermentableKind, { label: string; stock: string[] }>,
+  stockItems: readonly StockItem[],
+  fermentables: readonly Fermentable[],
+): Candidat[] {
+  const dans = (k: FermentableKind, a: StockItem) => rayons[k].stock.some((c) => c.toLowerCase() === a.category.toLowerCase());
+  const autres = familles.filter((k) => k !== courante);
+  const familleDe = (a: StockItem): FermentableKind | undefined => {
+    const ks = autres.filter((k) => dans(k, a));
+    return ks.find((k) => nu(k) === nu(a.name)) ?? ks[0]; // « Lactose » (l'article) va dans la famille `lactose`
+  };
+  const o: Candidat[] = [];
+  for (const k of autres) {
+    const articles = stockItems.filter((a) => !dans(courante, a) && familleDe(a) === k);
+    const lignes = fermentables.map((f, i) => ({ f, i })).filter(({ f }) => f.kind === k);
+    // Pas de faute d'une lettre dans un autre rayon (rang 4) : trop de bruit.
+    for (const c of chercher(texte, articles, lignes)) if (c.rang <= 3) o.push({ ...c, famille: k });
+  }
+  return o.sort((x, y) => x.rang - y.rang);
 }
 
 /** Cette ligne de la recette est-elle cet article du stock ? Par le lien `stockItemRef`, sinon par le nom (les recettes importées). */
@@ -175,11 +234,25 @@ export function chercher(texte: string, articles: readonly StockItem[], lignes: 
     .map(({ k: _k, ...c }) => c);
 }
 
-/** « cara 0,3 » : le nom, puis la masse si elle est tapée. */
-export function lireAjout(v: string): { nom: string; kg: number | null } {
+/**
+ * « cara 0,3 » : le nom, puis la masse si elle est tapée. Un nombre ENTIER sans « kg » n'est une masse que derrière un nom connu (`connu`) qui ne
+ * le contient pas lui-même : « Crystal 60 », « Munich 10 » sont des noms (critique B1 n° 2, 07.11 : « Crystal 60 » devenait 60 kg).
+ */
+/**
+ * `sucre` : hors du grain (sucre, sucre de lait, fruit, extrait), un entier de 1 à 25 au bout d'un nom inconnu est une masse (RO-2, 08.11 : « sirop candi 1 » créait un sucre
+ * à 0 kg ; MV-10 : « Mangue 20 » créait un fruit « Mangue 20 » à 0 kg).
+ * Les noms de sucre ne finissent pas par un petit entier (« Candi D-180 », « Candi D 90 » : au-delà de 25) ; ceux des malts si (« Caramunich 2 »).
+ */
+export function lireAjout(v: string, connu?: (nom: string) => boolean, sucre = false, exact?: (nom: string) => boolean): { nom: string; kg: number | null } {
   const s = v.trim(), m = s.match(/^(.*?)\s+(\d+(?:[.,]\d+)?)\s*(kg)?$/);
-  return m ? { nom: m[1].trim(), kg: lit(m[2]) } : { nom: s, kg: null };
+  if (!m) return { nom: s, kg: null };
+  const petitEntier = /^\d+$/.test(m[2]) && Number(m[2]) >= 1 && Number(m[2]) <= 25;
+  const masse = Boolean(m[3]) || /[.,]/.test(m[2]) || (sucre && petitEntier && !((exact ?? connu)?.(s) ?? false)) || (connu !== undefined && connu(m[1].trim()) && !connu(s));
+  return masse ? { nom: m[1].trim(), kg: lit(m[2]) } : { nom: s, kg: null };
 }
+
+/** Un nom d'ingrédient a au moins une lettre : « 0,2 » ou « 60 » seuls ne créent rien (critique B1 n° 3, 07.11). */
+export const nomPossible = (t: string) => /\p{L}/u.test(t);
 
 /** Les lettres tapées, en gras dans le nom (rien en gras si le nom courant ou une faute l'a trouvé). */
 export function decouper(nom: string, texte: string): [string, string, string] {

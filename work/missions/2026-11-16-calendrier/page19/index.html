@@ -1,0 +1,49 @@
+<title>Calendrier en-tête · 17.11</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<style>
+:root{--bg:#f7f5f1;--carte:#fff;--fg:#221d17;--doux:#6b6258;--ligne:#e3ddd3;--accent:#9a4f1c;--ok:#2f6b3a;color-scheme:light}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#17140f;--carte:#221e18;--fg:#f1ece4;--doux:#b0a596;--ligne:#3a332a;--accent:#e08a4a;--ok:#7cc48a;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#17140f;--carte:#221e18;--fg:#f1ece4;--doux:#b0a596;--ligne:#3a332a;--accent:#e08a4a;--ok:#7cc48a;color-scheme:dark}
+body{background:var(--bg);color:var(--fg);font:15px/1.45 system-ui,-apple-system,"Segoe UI",sans-serif}
+.page{max-width:1100px;margin:0 auto;padding-block:20px 48px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+h1{font-size:22px;margin:0 0 6px;text-wrap:balance}
+h2{font-size:14px;letter-spacing:.06em;text-transform:uppercase;color:var(--doux);margin:26px 0 10px}
+p{margin:0 0 8px}
+.doux{color:var(--doux)}
+.cite{border-left:3px solid var(--accent);padding:4px 10px;margin:8px 0 14px;color:var(--doux)}
+#a-choisir{background:var(--carte);border:1px solid var(--ligne);border-radius:12px;padding:12px 14px;display:flex;flex-direction:column;gap:4px}
+.duo{display:grid;grid-template-columns:repeat(auto-fit,minmax(340px,1fr));gap:14px}
+figure{margin:0;background:var(--carte);border:1px solid var(--ligne);border-radius:12px;overflow:hidden;min-width:0}
+figure img{display:block;width:100%;height:auto;border-bottom:1px solid var(--ligne)}
+figcaption{padding:8px 12px;font-size:14px}
+figcaption b{display:block;font-size:15px}
+.avant{max-width:420px}
+ul{margin:0;padding-left:18px}
+li{margin:2px 0}
+</style>
+<div class="page">
+<h1>Calendrier : en-tête corrigé</h1>
+<div class="cite">« C'était mieux, beaucoup mieux avant sur le graph, je veux juste les dates… Ces chiffres aléatoire m'apporte rien, je veux juste la semaine, et les +/- que je puisse afficher avec un bouton, pareil pour les petites icônes »</div>
+<div id="a-choisir"><b>À regarder</b><span class="doux">Ta phrase d'hier visait la bande, et j'avais vidé la courbe. La courbe de z2 est revenue avec tous ses noms et montants. La bande ne montre que la semaine. Le bouton ± affiche les + et − et les icônes. Dis si le ± est bien placé.</span></div>
+
+<h2>Portrait</h2>
+<div class="duo">
+ <figure><img src="img/portrait-repos.webp" width="780" height="1688" alt="Portrait au repos : courbe complète, bande S47 à S52 seule"><figcaption><b>Au repos</b>Courbe complète. Bande : S47 … S52, rien d'autre.</figcaption></figure>
+ <figure><img src="img/portrait-plus.webp" width="780" height="1688" alt="Portrait après ± : chaque semaine montre son + ou − et ses icônes"><figcaption><b>Après ± (en haut, à côté de « 6 sem. »)</b>Chaque semaine montre son + ou − et ses petites icônes. Les soldes (4 032…) sont retirés.</figcaption></figure>
+</div>
+
+<h2>Paysage</h2>
+<div class="duo">
+ <figure><img src="img/paysage-repos.webp" width="1688" height="780" alt="Paysage au repos : courbe complète, bande S47 à S6 seule"><figcaption><b>Au repos</b>Même règle : courbe de w3 complète, bande des semaines seule, plus fine (33 px au lieu de 55).</figcaption></figure>
+ <figure><img src="img/paysage-plus.webp" width="1688" height="780" alt="Paysage après ±"><figcaption><b>Après ±</b>Les + et − de chaque semaine.</figcaption></figure>
+</div>
+
+<h2>Refusé : la version sobre</h2>
+<figure class="avant"><img src="img/avant-s1.webp" width="780" height="1688" alt="s1 : courbe vidée de ses montants, bande de chiffres"><figcaption><b>s1 (page18)</b>Courbe vidée, bande pleine de chiffres : l'inverse de ce que tu voulais.</figcaption></figure>
+
+<h2>Encore ouvert</h2>
+<ul class="doux">
+ <li>Paysage : la frise commence à 182 px sur 390. Ta plainte « trop peu de place pour la frise » tient toujours.</li>
+ <li>Paysage : 8 semaines lisibles d'un coup ; la règle d'origine en voulait 10 au moins.</li>
+</ul>
+</div>

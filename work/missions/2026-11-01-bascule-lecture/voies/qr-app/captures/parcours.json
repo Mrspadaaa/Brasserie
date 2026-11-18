@@ -1,0 +1,35 @@
+{
+  "url": "http://localhost:3457",
+  "etats": {
+    "ecart": {
+      "sceau": {
+        "q": "diff",
+        "verdict": "écart",
+        "nom": "QR-facture : écart avec la lecture",
+        "rect": {
+          "x": 302,
+          "y": 169,
+          "w": 64,
+          "h": 72
+        },
+        "contraste": 4.42
+      },
+      "sansQr": false,
+      "bandeau": {
+        "x": 13,
+        "y": 132,
+        "w": 364,
+        "h": 116
+      },
+      "debordH": false,
+      "duel": null,
+      "total": "110,40",
+      "msJusquAuSceau": 61
+    }
+  },
+  "gestes": {},
+  "erreurs": [],
+  "externes": [
+    "ecart: fonts.googleapis.com"
+  ]
+}

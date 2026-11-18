@@ -189,7 +189,9 @@ export const ConfirmSheet: React.FC<{
     open={open}
     onClose={onClose}
     title={title}
-    className={className}
+    // RJ-13, PD-12 (08.11) : au bureau, la confirmation s'étalait sur toute la largeur (1264 px) et collait à gauche de la fiche centrée à ~670 px.
+    // Un panneau fixe à bords 0 et largeur bornée se centre par ses marges automatiques.
+    className={`lg:max-w-xl lg:mx-auto ${className ?? ''}`}
     footer={
       <div className="flex gap-3">
         <button

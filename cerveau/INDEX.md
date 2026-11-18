@@ -62,16 +62,16 @@ sont chargés à chaque session par CLAUDE.md. Les notes se lisent à la demande
 - [[agents-sans-openai]] — plus d'agent OpenAI depuis le 08.10
 - [[controles-mecanises]] — leçons devenues contrôles, sorties de LECONS (plafond de 8 lignes)
 - [[autonomie-decisions]] — pas de question bloquante ; l'irréversible attend l'utilisateur
-- [[fermeture-et-quota]] — fermer sans bloquant ; agents < 98 % hebdo, arrêt 99 % ; 450 k
+- [[fermeture-et-quota]] — fermer sans bloquant ; tâches finies à 90 % hebdo ; 450 k
 - [[verification-locale]] — ?dev-local, scripts de contrôle locaux
 - [[monkey-testing]] — trois règles, deux angles morts, le cumul de stock
 - [[pieges-controles-maquette]] — pièges des contrôles Chrome de la maquette
 - [[gemini-tests-reels]] — Gemini réel en test seulement, journalisé, jamais dans npm test
 - [[poste-windows-msix]] — pièges Windows : MSIX, tâches planifiées, Bash et barres inverses
+- [[maquettes-16-11]] — ajouts du 16.11 aux leçons : maquettes, notes de juges, tactile
 
 ### sources/ — références externes
-- [[moneaudebrassage]] — la référence visuelle de l'atelier de l'eau
-- [[beermaverick-radar]] — le radar de référence : anneaux chiffrés, zéro hors du centre
+- [[moneaudebrassage]] (atelier de l'eau), [[beermaverick-radar]] (radar : anneaux chiffrés, zéro hors du centre) — références visuelles
 
 ### decisions/ — transcriptions du conseil
 - [[2026-10-22-carte-outils-houblons]] — un facteur libre par écran

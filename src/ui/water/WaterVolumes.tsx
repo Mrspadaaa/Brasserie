@@ -1,8 +1,12 @@
+import { useState } from "react";
 import { InlineNum } from "../FormNav";
 import { NumberInput } from '../NumberInput';
+import { messageRefus } from "../numericInput";
 import { equipmentCheck, r1 } from "../../domain/brewEquipment";
+import { waterBalance } from "../../domain/water/volumeBalance";
 
 import type { WaterWorkshopModel } from "./useWaterWorkshop";
+import { nombreFr } from '../../domain/nombreAffiche';
 type Props = Pick<
   WaterWorkshopModel,
   | "beerVolumeL"
@@ -26,6 +30,10 @@ export function WaterVolumes({
   vol,
   hasSparge,
 }: Props) {
+  // BR-84 : « 2,5 » tapé revenait « 2,51 » (recalculé depuis le volume arrondi au dixième). Le nombre tapé reste affiché tant que
+  // le volume qu'il donne (ratio × grain, au dixième) est celui du plan ; BR-85 : « −1 L/kg » est refusé et dit.
+  const [ratioSaisi, setRatioSaisi] = useState<number | null>(null);
+  const [refusRatio, setRefusRatio] = useState<string | null>(null);
   const litres = (n: number) => Number.isFinite(n) ? n.toLocaleString('fr-FR', { maximumFractionDigits: 1 }) : '—';
   const grainKg = brew?.totalGristKg ?? 0;
   const moreSparge = hasSparge && grainKg > 0 && state.spargeWaterL > state.mashWaterL;
@@ -37,7 +45,14 @@ export function WaterVolumes({
     preBoilHotL: vol?.preBoilHotL,
     preferences: brew?.preferences,
   });
+  // MV-31 : le moût collecté avec CES volumes d'eau, pas la cible du calcul.
+  const balance = vol && vol.preBoilVolumeL > 0
+    ? waterBalance({ mashWaterL: state.mashWaterL, spargeWaterL: hasSparge ? state.spargeWaterL : 0, preBoilVolumeL: vol.preBoilVolumeL, grainAbsorptionL: vol.grainAbsorptionL })
+    : null;
   const physicalRatio = brew?.equipment && grainKg > 0 ? (brew.equipment.kettleWorkingL-grainKg*brew.equipment.grainDisplacementLPerKg)/1.03/grainKg : 6;
+  const ratioAffiche = ratioSaisi !== null && Number.isFinite(state.mashWaterL) && grainKg > 0 && r1(ratioSaisi * grainKg) === r1(state.mashWaterL)
+    ? ratioSaisi
+    : Number(mashRatioLPerKg.toPrecision(15));
   const ratioMax = Math.max(6,Number.isFinite(physicalRatio)?physicalRatio:6,Number.isFinite(mashRatioLPerKg)?mashRatioLPerKg:6);
   return (
     <>
@@ -73,7 +88,7 @@ export function WaterVolumes({
           </div>
         </div>
 
-        <div className="flex flex-wrap items-center gap-x-3 gap-y-1.5">
+        <div className="flex flex-wrap items-center gap-x-5 gap-y-1.5">
           <InlineNum
             id="wz-mash-water"
             emptyValue={Number.NaN}
@@ -118,16 +133,26 @@ export function WaterVolumes({
               </span>
             </div>
             <div className="flex items-baseline justify-between gap-2">
-              <span className="text-cave-400">Moût avant ébullition · à froid</span>
-              <span className="reading text-cave-50 shrink-0">{litres(vol.preBoilVolumeL)} L</span>
+              <span className="text-cave-400">{balance?.shortL ? 'Moût collecté avec cette eau · à froid' : 'Moût avant ébullition · à froid'}</span>
+              <span className="reading text-cave-50 shrink-0">{litres(balance?.shortL ? balance.collectedL : vol.preBoilVolumeL)} L</span>
             </div>
-            {check && hasSparge && (
+            {balance?.shortL ? (
+              <p role="alert" className="text-ebc-amber" data-role="eau-insuffisante">
+                <strong>Il manque {litres(balance.shortL)} L d’eau.</strong> Avec {litres(r1(state.mashWaterL + (hasSparge ? state.spargeWaterL : 0)))} L et {litres(vol.grainAbsorptionL)} L retenus par le grain, tu ne collectes que {litres(balance.collectedL)} L de moût pour {litres(balance.targetL)} L visés.
+              </p>
+            ) : null}
+            {check && hasSparge && state.spargeWaterL > 0 && (
               <p className="text-cave-200" role="status">
-                <strong>Rinçage à chaud : {litres(check.spargeHotL)} L.</strong>{' '}
-                {litres(check.spargeMainHotL)} L dans le récipient principal{check.spargeAuxiliaryHotL > .01 ? ` + ${litres(check.spargeAuxiliaryHotL)} L avec la bouilloire annexe` : ''}.
+                {/* Une seule phrase quand tout va dans le récipient principal (test en ligne n° 29 : « 13,9 L. 13,9 L dans le récipient principal »). */}
+                {check.spargeAuxiliaryHotL > .01 ? (
+                  <><strong>Rinçage à chaud : {litres(check.spargeHotL)} L.</strong>{' '}
+                    {litres(check.spargeMainHotL)} L dans le récipient principal + {litres(check.spargeAuxiliaryHotL)} L avec la bouilloire annexe.</>
+                ) : (
+                  <><strong>Rinçage à chaud : {litres(check.spargeHotL)} L</strong> dans le récipient principal.</>
+                )}
               </p>
             )}
-            {check?.spargeTooMuch && <p role="alert" className="text-ebc-amber">Au-dessus des {check.spargeMaximumHotL} L exceptionnels à chaud. Augmente l’eau d’empâtage si la cuve le permet, ou réduis le brassin.</p>}
+            {check?.spargeTooMuch && <p role="alert" className="text-ebc-amber">Au-dessus des {nombreFr(check.spargeMaximumHotL, 1)} L exceptionnels à chaud. Augmente l’eau d’empâtage si la cuve le permet, ou réduis le brassin.</p>}
             {check?.spargeStatus === 'exception' && <p className="text-ebc-amber">Rinçage exceptionnel : confirme la bouilloire annexe dans les choix de cette recette.</p>}
             {check?.mashTooFull && (
               <p role="alert" className="text-cave-50">
@@ -167,10 +192,11 @@ export function WaterVolumes({
                 Épaisseur de maische
               </label>
               <span className="reading text-sm text-cave-50 flex items-center gap-1 shrink-0">
-                <NumberInput aria-label="Rapport eau grain exact en litres par kilogramme" value={Number(mashRatioLPerKg.toPrecision(15))} onValue={onMashRatioChange} min={0.1} className="w-16 min-h-touch-lg rounded-control border border-cave-600 bg-cave-950 px-1 text-base"/>
+                <NumberInput aria-label="Rapport eau grain exact en litres par kilogramme" value={ratioAffiche} fractionDigits={2} onValue={(v) => { setRatioSaisi(v); onMashRatioChange(v); }} min={0.1} rejeter onRefus={(r) => setRefusRatio(r ? messageRefus(r.saisi, r.retenu, { min: 0.1, unite: "L/kg" }) : null)} className="w-16 min-h-touch-lg rounded-control border border-cave-600 bg-cave-950 px-1 text-base"/>
                 <span className="reading-unit"> L/kg</span>
               </span>
             </div>
+            {refusRatio && <p role="alert" data-role="refus" className="text-xs text-alert-strong">{refusRatio}</p>}
             <input
               id="w-mash-ratio"
               name="water_mash_ratio_range"
@@ -184,7 +210,7 @@ export function WaterVolumes({
               max={ratioMax}
               step={0.1}
               value={Math.max(2.5, Number.isFinite(mashRatioLPerKg) ? mashRatioLPerKg : 4.2)}
-              onChange={(e) => onMashRatioChange(parseFloat(e.target.value))}
+              onChange={(e) => { setRatioSaisi(null); onMashRatioChange(parseFloat(e.target.value)); }}
               className="w-full h-11 cursor-pointer appearance-none bg-transparent focus:outline-none
                            [&::-webkit-slider-runnable-track]:h-1.5
                            [&::-webkit-slider-runnable-track]:rounded-full

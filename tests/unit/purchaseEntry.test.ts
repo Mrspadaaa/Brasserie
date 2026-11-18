@@ -13,7 +13,7 @@ describe('Achat confirmé : une écriture et seulement les effets choisis',()=>{
     Object.assign(value,{sourceDocumentType:'delivery_note',sourceOrderNumber:'ORDER-TEST',sourceTotalBasis:'line_sum',sourceAmount:undefined,scanModel:'gemini-3.8-flash'});
     value.lines[0].sourceReference='MALT-TEST';
     savePurchase(value);
-    expect(state.transactions[0].finance).toMatchObject({sourceDocumentType:'delivery_note',sourceOrderNumber:'ORDER-TEST',sourceTotalBasis:'line_sum',sourceAmount:undefined,scanProvenance:{promptVersion:'invoice-v5'}});
+    expect(state.transactions[0].finance).toMatchObject({sourceDocumentType:'delivery_note',sourceOrderNumber:'ORDER-TEST',sourceTotalBasis:'line_sum',sourceAmount:undefined,scanProvenance:{promptVersion:'invoice-v6'}});
     expect(state.transactions[0].finance.lines[0].sourceReference).toBe('MALT-TEST');
   });
   it('valide paiement et projet avant tout envoi Drive',async()=>{
@@ -176,7 +176,8 @@ describe('Correction V3 n° 1 : commande répétée, candidate la plus forte, fo
     expect(purchaseDuplicateReasons(order({invoiceNumber:'mb 100'}),earlier())).toEqual(['Même facture n° mb 100']);
     // Lecture « 1O0 » pour « 100 » : même n°, donc jamais un veto.
     expect(purchaseDuplicateReasons(order({invoiceNumber:'MB-1O0'}),earlier())).toEqual(['Même facture n° MB-1O0']);
-    expect(purchaseDuplicateReasons(order({invoiceNumber:'MB.100',vendor:'MALTERIE DU BANC'}),earlier())).toEqual(['Même fournisseur et même total','1 référence d’article en commun','29 jours d’écart']);
+    // AM n° 7 : « MALTERIE DU BANC » et « Malterie du Banc SA » sont le même fournisseur (forme normalisée) : le même n° est la même facture, quel que soit le total (l'ancien attendu épinglait le défaut).
+    expect(purchaseDuplicateReasons(order({invoiceNumber:'MB.100',vendor:'MALTERIE DU BANC'}),earlier())).toEqual(['Même facture n° MB.100']);
     expect(purchaseDuplicateReasons(order({invoiceNumber:''}),earlier())).toEqual(['Même fournisseur et même total','1 référence d’article en commun','29 jours d’écart']);
     expect(purchaseDuplicateReasons(order(),earlier({},{invoiceNumber:undefined}))).toHaveLength(3);
     expect(purchaseProofAttachable(order(),earlier({},{invoiceNumber:undefined}))).toBe(true);

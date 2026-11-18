@@ -1,0 +1,215 @@
+<!doctype html>
+<html lang="fr" data-theme="clair">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>z1 · Ce qui me manque, une carte du Bord</title>
+<style>
+:root{--renoz1-line:#DDDDDD;--renoz1-surf:#F5F5F5;--renoz1-surf2:#EBEBEB;--renoz1-fin:#1F64A3;--renoz1-prod:#9A4F1E;--renoz1-stock:#4C6B2A;--renoz1-ag:#6A4FB0;--renoz1-trav:#8A4A2A;--renoz1-travbg:rgba(210,123,86,.12);--renoz1-travbd:rgba(210,123,86,.35);--renoz1-ok:#3F6B2E;--renoz1-att:#7F5B10;--renoz1-al:#A8291F;--renoz1-mono:"IBM Plex Mono",Consolas,ui-monospace,monospace}
+*{box-sizing:border-box}
+body{margin:0;font-family:"Source Sans 3","Segoe UI",system-ui,sans-serif;font-size:14px;line-height:1.3;color:#111;background:#fff}
+button{font:inherit;color:inherit;background:none;border:0;padding:0;cursor:pointer;text-align:left}
+.renoz1-m{font-family:var(--renoz1-mono);font-variant-numeric:tabular-nums;letter-spacing:-.01em}
+.renoz1-head{border-bottom:1px solid var(--renoz1-line);background:#fff}
+.renoz1-head-in{max-width:880px;margin:0 auto;height:40px;display:flex;align-items:center;gap:8px;padding:0 8px}
+.renoz1-logo{width:30px;height:30px;border-radius:10px;background:#111;color:#fff;display:grid;place-items:center}
+.renoz1-brand{font-size:18px;font-weight:500;flex:1}
+.renoz1-hbtn{width:30px;height:30px;border-radius:50%;display:grid;place-items:center;color:#333}
+.renoz1-hbtn.renoz1-f{background:var(--renoz1-surf2);border:1px solid #BFBFBF}
+.renoz1-wrap{max-width:872px;margin:0 auto;padding:8px 12px 76px;display:grid;gap:8px}
+.renoz1-off{display:flex;gap:6px;align-items:center;padding:6px 10px;border-radius:10px;background:var(--renoz1-surf);font-size:13px;color:#333}
+.renoz1-card{border-radius:16px;border:1px solid;background:var(--renoz1-surf);overflow:hidden}
+.renoz1-ch{display:flex;align-items:center;gap:8px;min-height:32px;padding:4px 10px;font-weight:600;font-size:16px}
+.renoz1-ch .renoz1-r{margin-left:auto;display:flex;align-items:center;gap:8px;font-weight:400;font-size:14px;color:#333}
+.renoz1-ch .renoz1-r b{font-weight:600}
+.renoz1-cb{padding:6px 10px 8px}
+.renoz1-c-prod{border-color:rgba(154,79,30,.3)}.renoz1-c-prod .renoz1-ch{background:rgba(231,160,112,.18);color:var(--renoz1-prod)}
+.renoz1-c-stock{border-color:rgba(76,107,42,.3)}.renoz1-c-stock .renoz1-ch{background:rgba(163,201,122,.18);color:var(--renoz1-stock)}
+.renoz1-c-fin{border-color:rgba(31,100,163,.3)}.renoz1-c-fin .renoz1-ch{background:rgba(134,185,230,.18);color:var(--renoz1-fin)}
+.renoz1-c-ag{border-color:rgba(106,79,176,.3)}.renoz1-c-ag .renoz1-ch{background:rgba(188,165,232,.18);color:var(--renoz1-ag)}
+.renoz1-c-trav{border-color:var(--renoz1-travbd)}.renoz1-c-trav .renoz1-ch{background:var(--renoz1-travbg);color:var(--renoz1-trav)}
+.renoz1-chips{display:flex;gap:6px;flex-wrap:wrap;padding:2px 0 4px}
+.renoz1-chip{display:inline-flex;align-items:center;gap:5px;height:26px;padding:0 9px;border-radius:10px;border:1px solid #BFBFBF;background:#fff;font-size:13px;color:#333}
+.renoz1-chip[aria-pressed=true]{background:#111;color:#fff;border-color:#111}
+.renoz1-chip .renoz1-m{font-weight:600}
+.renoz1-ctx{font-size:13px;color:#333;padding:0 0 4px}
+.renoz1-ctx b{font-family:var(--renoz1-mono);font-weight:600;color:#111}
+.renoz1-row{display:grid;grid-template-columns:22px 1fr auto 24px;gap:8px;align-items:center;width:100%;min-height:36px;border-top:1px solid var(--renoz1-line)}
+.renoz1-row.renoz1-dim{opacity:.55}
+.renoz1-row:first-of-type{border-top:0}
+.renoz1-t{font-size:14px;color:#111}
+.renoz1-t small{display:block;font-size:12px;color:#333}
+.renoz1-v{font-family:var(--renoz1-mono);font-weight:600;font-size:14px;text-align:right;white-space:nowrap}
+.renoz1-v.renoz1-e{font-family:inherit;font-weight:400;font-size:12px;color:#333}
+.renoz1-v.renoz1-al{color:var(--renoz1-al)}
+.renoz1-tag{display:inline-block;font-size:12px;font-weight:600;padding:1px 6px;border-radius:10px;background:#111;color:#fff;margin-right:6px;vertical-align:1px}
+.renoz1-grip{width:24px;height:36px;display:grid;place-items:center;color:#666;touch-action:none}
+.renoz1-dot{width:18px;height:18px;border-radius:50%;border:2px solid #9E9E9E;display:grid;place-items:center;color:#fff;background:#fff}
+.renoz1-dot.renoz1-s-enc{border-color:#567F45;background:#567F45}
+.renoz1-dot.renoz1-s-pay{border-color:var(--renoz1-fin);background:var(--renoz1-fin)}
+.renoz1-dot.renoz1-s-dev{border-color:#9C7020;background:#9C7020}
+.renoz1-dot.renoz1-s-blo{border-style:dashed;border-color:#666;color:#666}
+.renoz1-dot.renoz1-s-fait{border-color:var(--renoz1-ok);background:var(--renoz1-ok)}
+.renoz1-dot.renoz1-s-dep{border-color:#C8382F;background:#C8382F}
+.renoz1-add{display:flex;align-items:center;gap:8px;min-height:36px;border-top:1px solid var(--renoz1-line);width:100%;color:#333;font-size:14px}
+.renoz1-in{display:flex;align-items:center;gap:6px;border-top:1px solid var(--renoz1-line);padding:6px 0 2px}
+.renoz1-in input{flex:1;height:32px;border:1px solid #BFBFBF;border-radius:10px;padding:0 10px;font:inherit;font-size:16px;color:#111;background:#fff}
+.renoz1-in input:focus{outline:2px solid #111;outline-offset:1px}
+.renoz1-btn{height:32px;padding:0 12px;border-radius:10px;background:#111;color:#fff;font-weight:600;font-size:13px;display:inline-flex;align-items:center;gap:6px}
+.renoz1-btn2{height:28px;padding:0 10px;border-radius:10px;border:1px solid #BFBFBF;background:#fff;font-size:13px;display:inline-flex;align-items:center;gap:6px;color:#111}
+.renoz1-pay{display:grid;grid-template-columns:1fr auto;gap:2px 8px;align-items:center;font-size:13px;color:#333;padding:4px 0 0}
+.renoz1-bar{grid-column:1/-1;height:8px;border-radius:4px;background:var(--renoz1-surf2);overflow:hidden;display:flex}
+.renoz1-bar i{display:block;height:100%}
+.renoz1-kb{position:fixed;left:0;right:0;bottom:0;height:240px;background:#D9DCE1;border-top:1px solid #BFBFBF;z-index:6}.renoz1-kb svg{display:block;width:100%;height:100%}
+.renoz1-sheet{position:fixed;left:0;right:0;bottom:0;z-index:7;background:#fff;border-radius:24px 24px 0 0;box-shadow:0 -6px 24px rgba(0,0,0,.18);padding:8px 12px 10px;max-width:560px;margin:0 auto}
+.renoz1-sheet h3{margin:0;font-size:18px;font-weight:600;display:flex;align-items:center;gap:8px}
+.renoz1-sheet h3 .renoz1-x{margin-left:auto;width:28px;height:28px;border-radius:50%;display:grid;place-items:center;background:var(--renoz1-surf2)}
+.renoz1-seg{display:flex;gap:2px;border:1px solid #BFBFBF;border-radius:10px;overflow:hidden}
+.renoz1-seg button{flex:1;height:28px;text-align:center;font-size:13px;color:#333}
+.renoz1-seg button[aria-pressed=true]{background:#111;color:#fff;font-weight:600}
+.renoz1-form{display:grid;grid-template-columns:72px 1fr;gap:5px 8px;align-items:center;padding:6px 0;font-size:13px;color:#333}
+.renoz1-form .renoz1-m{font-size:14px;color:#111;font-weight:600}
+.renoz1-form .renoz1-l{color:#333}
+.renoz1-acts{display:flex;gap:8px;align-items:center;padding-top:6px}
+.renoz1-scrim{position:fixed;inset:0;background:rgba(0,0,0,.25);z-index:6}
+.renoz1-nav{position:fixed;left:0;right:0;bottom:0;background:#fff;border-top:1px solid var(--renoz1-line);z-index:5}
+.renoz1-nav-in{max-width:872px;margin:0 auto;display:grid;grid-template-columns:repeat(5,1fr) 76px;height:46px}
+.renoz1-nav a{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px;font-size:12px;color:#333;text-decoration:none}
+.renoz1-nav a.renoz1-on{background:var(--renoz1-surf2);color:#111;box-shadow:inset 0 3px 0 #111}
+.renoz1-fab{align-self:center;justify-self:center;width:64px;height:40px;border-radius:20px;background:#111;color:#fff;display:grid;place-items:center}
+.renoz1-link{color:var(--renoz1-fin);font-weight:600;display:inline-flex;align-items:center;gap:2px}
+@media (min-width:900px){.renoz1-wrap{grid-template-columns:1fr 1fr;align-items:start}.renoz1-c-trav{grid-row:span 3}.renoz1-head-in{padding:0}}
+</style>
+</head>
+<body>
+<div id="renoz1-root"></div>
+<script>
+(function(){
+  var etat=new URLSearchParams(location.search).get('etat')||'jour1';
+  if(['jour1','encours','ajout','ouvert','depasse','caisse','fini','horsligne'].indexOf(etat)<0)etat='jour1';
+  var P={
+    mug:'<path d="M6 7h9v12a1 1 0 0 1-1 1H7a1 1 0 0 1-1-1z"/><path d="M15 10h2a2 2 0 0 1 2 2v2a2 2 0 0 1-2 2h-2"/><path d="M6 7c0-2 1.5-3 3-3 1 0 1.6.5 2 1 .5-.6 1.2-1 2-1 1.4 0 2 1 2 3"/>',
+    moon:'<path d="M20 14.5A8 8 0 0 1 9.5 4a8 8 0 1 0 10.5 10.5z"/>',
+    search:'<circle cx="11" cy="11" r="6.5"/><path d="m16 16 4 4"/>',
+    bulle:'<path d="M5 18.5V7a3 3 0 0 1 3-3h8a3 3 0 0 1 3 3v6a3 3 0 0 1-3 3H8z"/><path d="M9 9.5h6M9 12.5h4"/>',
+    grid:'<rect x="4" y="4" width="7" height="7" rx="1.5"/><rect x="13" y="4" width="7" height="7" rx="1.5"/><rect x="4" y="13" width="7" height="7" rx="1.5"/><rect x="13" y="13" width="7" height="7" rx="1.5"/>',
+    wallet:'<path d="M4 7.5A2.5 2.5 0 0 1 6.5 5H18v3"/><rect x="4" y="8" width="16" height="11" rx="2"/><path d="M15 13.5h2"/>',
+    cubes:'<path d="M12 3 8 5v4l4 2 4-2V5z"/><path d="M8 11 4 13v4l4 2 4-2v-4z"/><path d="M16 11l-4 2v4l4 2 4-2v-4z"/>',
+    users:'<circle cx="9" cy="8" r="3.5"/><path d="M3 19c.7-3.4 3-5 6-5s5.3 1.6 6 5"/><path d="M15.5 4.8a3.5 3.5 0 0 1 0 6.4M17.5 14.3c1.7.8 2.9 2.4 3.3 4.7"/>',
+    plus:'<path d="M12 5v14M5 12h14"/>',
+    right:'<path d="m9 6 6 6-6 6"/>',
+    down:'<path d="m6 9 6 6 6-6"/>',
+    check:'<path d="m5 12.5 4.5 4.5L19 7"/>',
+    grip:'<path d="M8 7h8M8 12h8M8 17h8"/>',
+    cal:'<rect x="4" y="5" width="16" height="15" rx="2"/><path d="M4 10h16M8 3v4M16 3v4"/>',
+    truelle:'<path d="M3 13 11 5l5 5-8 8H5z"/><path d="M14 8l6-4"/><path d="M5 15l4 4"/>',
+    chain:'<path d="M10 14a3.5 3.5 0 0 0 5 0l3-3a3.5 3.5 0 0 0-5-5l-1 1"/><path d="M14 10a3.5 3.5 0 0 0-5 0l-3 3a3.5 3.5 0 0 0 5 5l1-1"/>',
+    cloud:'<path d="M7 18h10a4 4 0 0 0 .5-8A5.5 5.5 0 0 0 7 9.5 4.3 4.3 0 0 0 7 18z"/><path d="M4 4l16 16"/>',
+    x:'<path d="M6 6l12 12M18 6 6 18"/>',
+    recu:'<path d="M6 3h12v18l-2-1.5L14 21l-2-1.5L10 21l-2-1.5L6 21z"/><path d="M9 8h6M9 12h6"/>',
+    clock:'<circle cx="12" cy="12" r="8"/><path d="M12 8v4l3 2"/>'
+  };
+  function ico(n,s){s=s||16;return '<svg width="'+s+'" height="'+s+'" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="'+(36/s).toFixed(3)+'" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">'+P[n]+'</svg>';}
+  function chf(v){return v.toFixed(2).replace('.',',').replace(/\B(?=(\d{3})+(?!\d))/g,' ');}
+
+  // Les cinq manques : ses mots ; tout le reste est inventé. s = état ; r = reste à payer connu ; e = « à estimer ».
+  var J1=[
+    {t:'Installation de la hotte',s:'afaire'},{t:'2ᵉ évier',s:'afaire'},{t:'Armoire extérieure',s:'afaire'},
+    {t:'Seconde passe sur les sols',s:'afaire'},{t:'Site web vitrine',s:'afaire'}];
+  var ENC=[
+    {t:'Seconde passe sur les sols',s:'enc',mot:'en cours',r:720,prix:1200,paye:480,fact:'Sols Fictifs Sàrl · 480,00'},
+    {t:'Installation de la hotte',s:'pay',mot:'payée, à poser',r:0,prix:1850,paye:1850,e:'pose à estimer'},
+    {t:'2ᵉ évier',s:'dev',mot:'devis Sanitaire Fictif SA',r:640,prix:640,paye:0},
+    {t:'Armoire extérieure',s:'blo',mot:'attend les sols',e:'à estimer'},
+    {t:'Site web vitrine',s:'enc',mot:'en cours, sans achat',h:'4 h'}];
+  var DEP=ENC.map(function(m){return m;});
+  DEP[0]={t:'Seconde passe sur les sols',s:'dep',mot:'dépassé de 184,50',r:0,prix:1200,paye:1384.5,fact:'2 factures · 1 384,50'};
+  var FIN=[
+    {t:'2ᵉ évier',s:'enc',mot:'en cours',r:640,prix:640,paye:0},
+    {t:'Armoire extérieure',s:'afaire',mot:'',e:'à estimer'},
+    {t:'Seconde passe sur les sols',s:'fait',mot:'faite',prix:1200,paye:1200,dim:1},
+    {t:'Installation de la hotte',s:'fait',mot:'posée',prix:1850,paye:1850,dim:1},
+    {t:'Site web vitrine',s:'fait',mot:'fait, sans facture',dim:1}];
+  var L = etat==='jour1'||etat==='ajout'||etat==='horsligne' ? J1 : etat==='fini' ? FIN : etat==='depasse' ? DEP : ENC;
+  var caisseConnue=false;
+
+  function dot(s){var cls={afaire:'',enc:'renoz1-s-enc',pay:'renoz1-s-pay',dev:'renoz1-s-dev',blo:'renoz1-s-blo',fait:'renoz1-s-fait',dep:'renoz1-s-dep'}[s]||'';
+    var inner=s==='fait'?ico('check',11):s==='blo'?ico('chain',11):'';return '<span class="renoz1-dot '+cls+'">'+inner+'</span>';}
+
+  function chips(){
+    var c={};L.forEach(function(m){c[m.s]=(c[m.s]||0)+1;});
+    var reste=L.reduce(function(a,m){return a+(m.r||0);},0), est=L.filter(function(m){return m.e;}).length;
+    var out='';
+    function chip(k,lab,n,pressed){if(!n&&k!=='fait')return;out+='<button class="renoz1-chip" data-booster="filtre" data-k="'+k+'" aria-pressed="'+(!!pressed)+'">'+(k==='tous'?'':dot(k))+lab+' <span class="renoz1-m">'+n+'</span></button>';}
+    if(etat==='jour1'||etat==='ajout'||etat==='horsligne'){chip('tous','à faire',L.length,true);chip('fait','fait',0);}
+    else{chip('enc','en cours',c.enc);chip('pay','payé',c.pay);chip('dev','devis',c.dev);chip('blo','bloqué',c.blo);chip('dep','dépassé',c.dep);chip('fait','fait',c.fait||0);}
+    var ctx='';
+    if(reste||est)ctx='<p class="renoz1-ctx">Reste à payer <b>'+chf(reste)+' CHF</b>'+(est?' · '+est+' à estimer':'')+(etat==='caisse'?(caisseConnue?' · caisse <b>6 240,00</b>, ça passe':' · <button class="renoz1-link" data-booster="caisse" data-capture-apres>caisse à renseigner'+ico('right',14)+'</button>'):'')+'</p>';
+    if(etat==='depasse')ctx='<p class="renoz1-ctx">Sols : <b>1 384,50</b> de factures pour <b>1 200,00</b> prévus · reste à payer <b>640,00 CHF</b></p>';
+    return '<div class="renoz1-chips">'+out+'</div>'+ctx;
+  }
+
+  function rows(){
+    var filtre=document.querySelector('[data-k][aria-pressed=true]');
+    var k=filtre&&filtre.getAttribute('data-k'); if(k==='tous')k=null;
+    var out='';
+    L.forEach(function(m,i){
+      if(k&&m.s!==k)return;
+      var v=m.s==='fait'?'<span class="renoz1-v renoz1-e">'+ (m.paye?chf(m.paye):'—') +'</span>':
+        m.s==='dep'?'<span class="renoz1-v renoz1-al">+184,50</span>':
+        m.r?'<span class="renoz1-v">'+chf(m.r)+'</span>':m.h?'<span class="renoz1-v">'+m.h+'</span>':m.e?'<span class="renoz1-v renoz1-e">'+m.e+'</span>':'<span class="renoz1-v renoz1-e"></span>';
+      var sub=m.mot?'<small>'+m.mot+'</small>':'';
+      var ens=i===0&&m.s!=='fait'?'<span class="renoz1-tag">Ensuite</span>':'';
+      out+='<button class="renoz1-row'+(m.dim?' renoz1-dim':'')+'" data-booster="ouvrir" data-i="'+i+'">'+dot(m.s)+'<span class="renoz1-t"><span data-mots="lignes">'+ens+m.t+'</span>'+sub+'</span>'+v+'<span class="renoz1-grip" data-booster="ordre" aria-label="Déplacer dans la suite">'+ico('grip',16)+'</span></button>';
+    });
+    if(etat==='ajout')out='<div class="renoz1-in"><input type="text" value="Étagère pour les fûts" aria-label="Noter un manque" autofocus><button class="renoz1-btn" data-booster="noter">Noter</button></div>'+out;
+    else out+='<button class="renoz1-add" data-booster="ajouter">'+ico('plus',16)+'Noter un manque</button>';
+    return out;
+  }
+
+  function carte(){
+    return '<section class="renoz1-card renoz1-c-trav" aria-label="Ce qui me manque"><div class="renoz1-ch">'+ico('truelle',18)+'Ce qui me manque<span class="renoz1-r"><b class="renoz1-m">'+L.filter(function(m){return m.s!=='fait';}).length+'</b> à faire <span class="renoz1-link">Tous'+ico('right',14)+'</span></span></div>'+
+      '<div class="renoz1-cb">'+chips()+'<div id="renoz1-rows">'+rows()+'</div></div></section>';
+  }
+  function bande(){
+    return '<section class="renoz1-card renoz1-c-prod"><div class="renoz1-ch">'+ico('mug',18)+'Brassins<span class="renoz1-r">0 en cuve <span class="renoz1-link">Tous'+ico('right',14)+'</span></span></div><div class="renoz1-cb" style="color:#333">Aucun brassin en cuve.</div></section>'+
+      '<section class="renoz1-card renoz1-c-stock"><div class="renoz1-ch">'+ico('cubes',18)+'Stocks<span class="renoz1-r"><span class="renoz1-link">Voir'+ico('right',14)+'</span></span></div><div class="renoz1-cb" style="display:flex;gap:8px;align-items:center;color:#333"><span style="color:#4C6B2A">'+ico('check',16)+'</span>Stocks suffisants</div></section>'+
+      '<section class="renoz1-card renoz1-c-fin"><div class="renoz1-ch">'+ico('wallet',18)+'Finances<span class="renoz1-r">Ce mois '+ico('down',16)+'</span></div><div class="renoz1-cb" style="display:flex;justify-content:space-between;color:#333">Charges<span class="renoz1-m" style="color:#111">0,00 CHF</span></div></section>'+
+      '<section class="renoz1-card renoz1-c-ag"><div class="renoz1-ch">'+ico('cal',18)+'Agenda<span class="renoz1-r">0 à faire <span class="renoz1-link">Gérer'+ico('right',14)+'</span></span></div><div class="renoz1-cb" style="color:#333">Rien à faire.</div></section>'+
+      '<section class="renoz1-card renoz1-c-ag"><div class="renoz1-ch">'+ico('cal',18)+'Échéances et démarches<span class="renoz1-r">'+ico('down',16)+'</span></div><div class="renoz1-cb" style="color:#333">6 points à suivre · Fribourg / OFDF</div></section>';
+  }
+  function sheet(){
+    if(etat!=='ouvert')return '';
+    var m=ENC[0];
+    return '<div class="renoz1-scrim"></div><div class="renoz1-sheet" role="dialog" aria-label="Seconde passe sur les sols"><h3>'+dot('enc')+'<span data-mots="lignes">Seconde passe sur les sols</span><button class="renoz1-x" aria-label="Fermer">'+ico('x',14)+'</button></h3>'+
+      '<div class="renoz1-form"><span class="renoz1-l">Nature</span><div class="renoz1-seg" data-booster="nature"><button aria-pressed="false">Achat</button><button aria-pressed="false">Travail</button><button aria-pressed="true">Les deux</button></div>'+
+      '<span class="renoz1-l">Place</span><div class="renoz1-seg" data-booster="place"><button aria-pressed="true">Ensuite</button><button aria-pressed="false">Plus tard</button></div>'+
+      '<span class="renoz1-l">Prix</span><span><span class="renoz1-m">1 200,00 CHF</span> · estimation</span>'+
+      '<span class="renoz1-l">Payé</span><div class="renoz1-pay"><span><span class="renoz1-m">480,00</span> · reste <span class="renoz1-m">720,00</span></span><span class="renoz1-link">'+ico('recu',14)+' 1 facture</span><div class="renoz1-bar" data-booster="jauge"><i style="width:40%;background:#1F64A3"></i></div></div>'+
+      '<span class="renoz1-l">Bloqué par</span><span class="renoz1-btn2">'+ico('chain',14)+'rien</span></div>'+
+      '<div class="renoz1-acts"><button class="renoz1-btn" data-booster="noter-achat">'+ico('recu',14)+'Noter l’achat</button><button class="renoz1-btn2">'+ico('check',14)+'Fait</button></div></div>';
+  }
+  function chrome(){
+    return '<header class="renoz1-head"><div class="renoz1-head-in"><span class="renoz1-logo" aria-hidden="true">'+ico('mug',20)+'</span><span class="renoz1-brand">L’Affinée</span>'+
+      '<button class="renoz1-hbtn" aria-label="Thème sombre">'+ico('moon',18)+'</button><button class="renoz1-hbtn renoz1-f" aria-label="Rechercher">'+ico('search',18)+'</button><button class="renoz1-hbtn renoz1-f" aria-label="Compagnon">'+ico('bulle',18)+'</button></div></header>'+
+      '<main class="renoz1-wrap">'+(etat==='horsligne'?'<div class="renoz1-off" style="grid-column:1/-1">'+ico('cloud',16)+'Hors ligne · gardé sur ce téléphone, envoyé au retour du réseau</div>':'')+carte()+bande()+'</main>';
+  }
+  function nav(){
+    var it=[['grid','Bord','#333'],['wallet','Finances','#1F64A3'],['mug','Brassins','#9A4F1E'],['cubes','Stocks','#4C6B2A'],['users','Clients','#333']];
+    return '<nav class="renoz1-nav" aria-label="Navigation principale"><div class="renoz1-nav-in">'+it.map(function(x){return '<a href="#" class="'+(x[1]==='Bord'?'renoz1-on':'')+'"><span style="color:'+x[2]+'">'+ico(x[0],18)+'</span>'+x[1]+'</a>';}).join('')+
+      '<button class="renoz1-fab" data-commun aria-label="Actions rapides">'+ico('plus',22)+'</button></div></nav>';
+  }
+  function kb(){if(etat!=='ajout')return '';var k='';[10,9,7].forEach(function(n,r){var w=(378-(n-1)*5)/n;for(var i=0;i<n;i++)k+='<rect x="'+(6+i*(w+5)).toFixed(1)+'" y="'+(44+r*48)+'" width="'+w.toFixed(1)+'" height="38" rx="5" fill="#fff"/>';});k+='<rect x="100" y="188" width="190" height="38" rx="5" fill="#fff"/>';return '<div class="renoz1-kb" aria-hidden="true"><svg viewBox="0 0 390 240" preserveAspectRatio="none"><text x="12" y="26" font-size="13" fill="#333" font-family="Source Sans 3,sans-serif">clavier</text>'+k+'</svg></div>';}
+
+  var root=document.getElementById('renoz1-root');
+  root.innerHTML=chrome()+nav()+sheet()+kb();
+  root.addEventListener('click',function(ev){
+    var b=ev.target.closest('[data-booster]');if(!b)return;
+    var k=b.getAttribute('data-booster');
+    if(k==='filtre'){var on=b.getAttribute('aria-pressed')==='true';root.querySelectorAll('[data-k]').forEach(function(x){x.setAttribute('aria-pressed','false');});b.setAttribute('aria-pressed',on?'false':'true');document.getElementById('renoz1-rows').innerHTML=rows();ev.preventDefault();}
+    if(k==='caisse'){caisseConnue=true;var c=root.querySelector('.renoz1-cb');c.innerHTML=chips()+'<div id="renoz1-rows">'+rows()+'</div>';ev.preventDefault();}
+  });
+})();
+</script>
+</body>
+</html>

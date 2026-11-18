@@ -13,6 +13,7 @@ import type { HopV55SemanticAnnotationV1, HopV55SemanticQuestionReadingV1 } from
 import type { HopV55QuestionScopeLedgerEntryV1 } from '../../services/hopV55/questionScopeReading';
 import { Input, Textarea } from '../Input';
 import './qualified-advice-preparation-controls.css';
+import { nombreFr } from '../../domain/nombreAffiche';
 
 export interface HopV55QualifiedAdvicePreparationControlsProps {
   /** Exact V2/V3/V4 source reading; a semantic V4 annotation is never reduced to legacy drafts. */
@@ -197,7 +198,7 @@ function formatValue(assertion: HopAdviceAssertion): string {
 function formatAddition(addition: HopDecisionProgram['additions'][number], materials: readonly HopDecisionMaterial[]): string {
   const material = materials.find(row => row.id === addition.materialId);
   const identity = material?.name ?? addition.materialId;
-  const quantity = addition.grams === null ? 'masse non fournie' : `${addition.grams} g`;
+  const quantity = addition.grams === null ? 'masse non fournie' : `${nombreFr(addition.grams, 1)} g`;
   const timing = addition.use === 'boil' ? (addition.boilMinutes == null ? 'durée d’ébullition non précisée' : `${addition.boilMinutes} min d’ébullition`)
     : addition.use === 'whirlpool' || addition.use === 'fermentation' || addition.use === 'postFermentation'
       ? (addition.contactHours == null ? 'contact non précisé' : `${addition.contactHours} h de contact`)
@@ -464,7 +465,7 @@ export function HopV55QualifiedAdvicePreparationControls({ archive, prepared, ba
           </li>)}</ul></section> : null}
           {source.kind === 'fixed' ? <section><h5>Programme repris · hors périmètre de matières</h5>
             {source.program ? <>
-              <p>{source.program.volumeL === null ? 'Volume non fourni' : `${source.program.volumeL} L`}</p>
+              <p>{source.program.volumeL === null ? 'Volume non fourni' : `${nombreFr(source.program.volumeL, 1)} L`}</p>
               {source.program.additions.length ? <ul>{source.program.additions.map(addition => <li key={addition.id}>{formatAddition(addition, materials)}
                 <details><summary>Identité de la ligne</summary><code>{addition.id}</code><code>{addition.materialId}</code></details></li>)}</ul>
                 : <p>Aucune ligne de houblon dans le programme fourni.</p>}

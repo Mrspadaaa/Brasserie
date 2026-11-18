@@ -2,6 +2,7 @@ import { introducedHopAmounts, replacementHopDose } from './calculations';
 import { compareHopMaterials, hopDecisionReference, numericBounds, readHopAnalysis } from './measurements';
 import type { HopDecisionMaterial, HopDecisionProgram, HopProgramAddition, HopReplacementBasis, HopSubstitutionOption } from './types';
 import { previewHopProgramChanges } from './programs';
+import { nombreFr } from '../../domain/nombreAffiche';
 
 export interface HopSubstitutionRequest {
   program: HopDecisionProgram;
@@ -131,7 +132,7 @@ export function chooseHopSubstitutionDose(option: HopSubstitutionOption, grams: 
   if (material.availableGrams != null && remaining + grams > material.availableGrams) throw Error('La dose choisie dépasse le stock disponible.');
   if (addition.status !== 'planned' || addition.use !== option.use || !option.id.startsWith(`${addition.id}:`) || material.id !== option.materialId) throw Error('L’ajout ne correspond plus à cette option.');
   const selected: HopSubstitutionOption = { ...fresh, applicability: fresh.missing.length ? 'conditional' : 'ready',
-    reasons: [...fresh.reasons, `Dose de travail choisie explicitement : ${grams} g ; la plage documentaire reste conservée.`, 'Le bilan avec cette dose décrit les charges possibles ; aucun point d’équivalence garanti dans une plage.'],
+    reasons: [...fresh.reasons, `Dose de travail choisie explicitement : ${nombreFr(grams, 1)} g ; la plage documentaire reste conservée.`, 'Le bilan avec cette dose décrit les charges possibles ; aucun point d’équivalence garanti dans une plage.'],
     changes: [{ kind: 'replace', additionId: addition.id, additions: [ ...((request.fraction ?? 1) < 1 ? [{ ...addition, id: `${addition.id}:retained`, grams: addition.grams! * (1 - request.fraction!) }] : []), { ...addition, materialId: option.materialId, grams, alphaForModel: undefined }] }],
     introduced: introducedHopAmounts(material, grams) };
   if (!request.deferProgramCheck) {

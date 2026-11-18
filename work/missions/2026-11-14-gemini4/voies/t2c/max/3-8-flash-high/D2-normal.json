@@ -1,0 +1,39 @@
+{
+ "reglage": "3.8-flash@high",
+ "cas": "D2-normal",
+ "tache": "diagnoseBatch",
+ "moitie": "jugement",
+ "note": {
+  "qualite": 0.75,
+  "utilisable": true,
+  "passes": [
+   "atténuation apparente 78 % (±2)",
+   "gravité normal",
+   "le verdict dit que c’est normal, sans inventer de problème"
+  ],
+  "manques": [
+   "aucune cause probable à plus de 40 % (rien d’inventé)"
+  ]
+ },
+ "ms": 14446,
+ "coutMicro": 15081,
+ "etat": "STOP",
+ "valeur": {
+  "verdict": "Fermentation achevée avec succès. La densité est parfaitement stable à 1.011 depuis 3 jours (atteinte dès J6), atteignant une atténuation apparente de 78 %, en ligne avec la cible (1.012) et le profil standard de la SafAle US-05.",
+  "severity": "normal",
+  "causes": [
+   {
+    "cause": "Fin naturelle et complète de la fermentation principale selon la cinétique standard de la SafAle US-05.",
+    "probability": 0.98,
+    "action": "Effectuer une garde à froid (cold crash à 3-4 °C) pendant 48 à 72 h pour favoriser la floculation avant conditionnement."
+   },
+   {
+    "cause": "Atténuation légèrement supérieure à la cible initiale (1.011 vs 1.012) liée à un moût bien fermentescible ou un ensemencement optimal.",
+    "probability": 0.02,
+    "action": "Noter le rendement d'atténuation pour ajuster la recette ou la température d'empâtage si plus de corps résiduel est recherché."
+   }
+  ],
+  "apparentAttenuationPct": 78,
+  "immediateAction": "Débuter la clarification par garde à froid (cold crash) à 3-4 °C avant la mise en bouteille ou en fût."
+ }
+}

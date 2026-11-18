@@ -1,0 +1,11 @@
+{
+  "port-r3": {
+    "titre": "la recherche r3p2 (le geste d'abord, au pouce)",
+    "port": 3035,
+    "test": "tests/unit/recherche",
+    "base": "`voies/voie-p2-r3/r3p2.html`, `NOTE.md`, `RESULTAT.md` et toutes ses captures (`r3p2-*.png` : ouverte sans rien taper, « cit » tapé, rien trouvé, cave, ordinateur) ; `voies/voie-critique/PASSE2.md` section r3p2 (problèmes 1 à 5 à corriger au port : l'action de l'écran identique à la zone « Sur cet écran » du + porté, mêmes α, pas de doublon dans Aller à)",
+    "mots": "« r3p2 top » (15.11)",
+    "obj": "la recherche r3p2 : feuille au pouce à 390, champ collé au clavier, pastille de la rubrique d'où elle s'ouvre, « Ici » avec les gestes de l'écran (réemploie la table par écran de `src/domain/fabActions.ts` portée par port-b1, jamais une seconde liste), Reprendre (récents), Créer, Aller à, résultats par type avec leur valeur utile et leurs gestes sur la ligne (seulement ceux que l'app sait faire : Retirer, Brasser, Mesure…), archives en pointillé « N de plus dans les archives », rien trouvé, et au 1280 la palette clavier avec l'aperçu de la ligne choisie. cmdk et fuse.js sont déjà en place (État de l'art de MISSION.md) : aucun moteur de recherche neuf",
+    "possede": "`src/ui/CommandPalette.tsx`, la construction des groupes de la palette (trouve-la par grep « searchCommandGroups » ; seulement elle), un dossier neuf `src/components/recherche/**`, de petites éditions ciblées de `src/App.tsx` (Edit seulement, relire avant chaque édition : la voie port-m3 peut y écrire aussi), `tests/unit/recherche*.test.ts`"
+  }
+}

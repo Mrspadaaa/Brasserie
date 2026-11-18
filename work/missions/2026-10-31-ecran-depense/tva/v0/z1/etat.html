@@ -1,0 +1,269 @@
+<!doctype html>
+<html lang="fr"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>z1 — Finances · mode TVA à côté de Situation / Coûts : récap à renvois, liste à pastilles (v0 TVA, 01.11)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Source+Sans+3:wght@400;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{--page:#FFFFFF;--panel:#F5F5F5;--haut:#EBEBEB;--bord:#DDDDDD;--bordm:#BFBFBF;--t2:#666666;--t1:#333333;--t0:#111111;
+--fin:#1F64A3;--finf:#E6EFF8;--red:#3E7D2C;--redf:#E9F2E3;--etr:#6A4FB0;--etrf:#EEEAF8;--inc:#7F5B10;--incf:#FBF4E4;--err:#A3322A;
+--sans:"Source Sans 3",system-ui,sans-serif;--mono:"IBM Plex Mono",ui-monospace,monospace;
+--hach:repeating-linear-gradient(135deg,#C9A24A 0 2px,#fff 2px 5px)}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{background:var(--page);color:var(--t1);font-family:var(--sans);font-size:14px;line-height:1.3;-webkit-font-smoothing:antialiased}
+button{font:inherit;color:inherit;background:none;border:0;cursor:pointer;text-align:left}
+a{color:inherit}
+[hidden]{display:none!important}
+svg{flex-shrink:0}
+.tvaz1-m{font-family:var(--mono);font-variant-numeric:tabular-nums}
+/* La coquille de l'app en ligne : en-tête, onglets Finances, navigation du bas (fin-synthese-390.png). */
+.tvaz1-app{height:100vh;height:100dvh;display:flex;flex-direction:column;max-width:1080px;margin:0 auto}
+.tvaz1-hd{flex:none;height:36px;display:flex;align-items:center;gap:6px;padding:0 8px;border-bottom:1px solid var(--bord)}
+.tvaz1-logo{width:26px;height:26px;border-radius:10px;background:var(--t0);display:flex;align-items:center;justify-content:center;color:#F2C14E}
+.tvaz1-hd h1{font-size:16px;font-weight:600;color:var(--t0);flex:1}
+.tvaz1-ib{width:28px;height:28px;border-radius:10px;display:flex;align-items:center;justify-content:center;border:1px solid var(--bord);color:var(--t0)}
+.tvaz1-ib.tvaz1-nb{border:0}
+.tvaz1-tabs{flex:none;display:flex;border-bottom:1px solid var(--bord)}
+.tvaz1-tabs button{flex:1;min-height:32px;text-align:center;color:var(--t1);font-size:14px;border-bottom:2px solid transparent}
+.tvaz1-tabs button[aria-selected="true"]{color:var(--fin);border-bottom-color:var(--fin);background:var(--panel)}
+.tvaz1-corps{flex:1;min-height:0;overflow:auto;overscroll-behavior:contain;padding:0 8px 12px}
+.tvaz1-titre{display:flex;align-items:center;gap:6px;min-height:40px;border-bottom:1px solid var(--bord)}
+.tvaz1-titre h2{font-size:18px;font-weight:600;color:var(--t0);flex:1;white-space:nowrap}
+.tvaz1-seg{display:inline-flex;gap:2px}
+.tvaz1-seg button{min-height:28px;padding:0 8px;border-radius:10px;border:1px solid transparent;font-size:14px;color:var(--t1)}
+.tvaz1-seg button[aria-pressed="true"]{border-color:var(--bordm);background:var(--haut);color:var(--fin);font-weight:600}
+.tvaz1-bas{flex:none;position:relative;height:40px;display:flex;align-items:stretch;border-top:1px solid var(--bord);background:var(--page);padding-right:60px}
+.tvaz1-bas button{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px;font-size:12px;color:var(--t1)}
+.tvaz1-bas button[aria-current="page"]{color:var(--fin);background:var(--finf)}
+.tvaz1-bas .tvaz1-c1{color:#9A4F1E}.tvaz1-bas .tvaz1-c2{color:#4C6B2A}
+.tvaz1-fab{position:absolute;right:8px;bottom:6px;width:44px;height:44px;border-radius:50%;background:var(--t0);color:#fff;display:flex;align-items:center;justify-content:center;flex:none!important}
+/* Ligne de contexte : la période (le seul facteur libre) et le statut, dit comme un réglage. */
+.tvaz1-ctx{display:flex;align-items:center;gap:6px;min-height:36px;padding:4px 0}
+.tvaz1-per{display:inline-flex;align-items:center;border:1px solid var(--bordm);border-radius:10px;overflow:hidden;background:#fff}
+.tvaz1-per button{width:28px;height:28px;display:flex;align-items:center;justify-content:center;color:var(--t1)}
+.tvaz1-per b{font-family:var(--mono);font-weight:600;font-size:14px;color:var(--t0);padding:0 4px;min-width:48px;text-align:center}
+.tvaz1-st{margin-left:auto;min-height:28px;display:inline-flex;align-items:center;gap:5px;padding:0 8px;border-radius:10px;border:1px solid var(--bord);font-size:12px;color:var(--t1)}
+.tvaz1-st i{width:22px;height:12px;border-radius:12px;background:var(--bordm);position:relative;display:inline-block}
+.tvaz1-st i::after{content:"";position:absolute;left:1px;top:1px;width:10px;height:10px;border-radius:50%;background:#fff}
+/* Le récap : la réponse, puis les chips à pastille qui renvoient dans la liste. */
+.tvaz1-rec{border:1px solid var(--bord);border-radius:16px;padding:6px 10px 8px;display:flex;flex-direction:column;gap:6px;background:var(--panel)}
+.tvaz1-r1{display:flex;align-items:baseline;gap:8px;flex-wrap:wrap}
+.tvaz1-tot{font-family:var(--mono);font-size:28px;line-height:1.05;font-weight:600;color:var(--t0);font-variant-numeric:tabular-nums}
+.tvaz1-tot small{font-size:12px;font-weight:500;color:var(--t2)}
+.tvaz1-lab{font-size:14px;color:var(--t1)}
+.tvaz1-lab b{font-family:var(--mono);font-weight:500;color:var(--t0)}
+.tvaz1-part{font-style:normal;color:var(--inc);font-weight:600}
+.tvaz1-rem{display:flex;align-items:center;gap:6px;min-height:24px;font-size:14px;color:var(--t1);width:100%;border-radius:10px}
+.tvaz1-rem b{font-family:var(--mono);font-weight:600;color:var(--t0)}
+.tvaz1-rem em{font-style:normal;font-size:12px;color:var(--t2);margin-left:auto;display:inline-flex;align-items:center;gap:3px}
+.tvaz1-chips{display:flex;flex-wrap:wrap;gap:4px}
+.tvaz1-ch{min-height:28px;display:inline-flex;align-items:center;gap:5px;padding:0 8px 0 6px;border-radius:14px;border:1px solid var(--bord);background:#fff;font-size:12px;color:var(--t1)}
+.tvaz1-ch b{font-family:var(--mono);font-weight:600;color:var(--t0);font-size:14px}
+.tvaz1-ch small{font-family:var(--mono);font-size:12px;color:var(--t2)}
+.tvaz1-ch[aria-pressed="true"]{border-color:var(--t0);background:var(--t0);color:#fff}
+.tvaz1-ch[aria-pressed="true"] b,.tvaz1-ch[aria-pressed="true"] small{color:#fff}
+.tvaz1-p{width:14px;height:14px;border-radius:50%;flex:none;border:2px solid transparent}
+.tvaz1-p.tvaz1-k8{background:var(--fin)}.tvaz1-p.tvaz1-k2{background:var(--red)}.tvaz1-p.tvaz1-ketr{background:var(--etr)}
+.tvaz1-p.tvaz1-kinc{background:var(--hach);border-color:var(--inc)}.tvaz1-p.tvaz1-kdou{background:#fff;border:2px dashed var(--inc)}
+.tvaz1-ch.tvaz1-alerte{border:1.5px dashed var(--inc);background:var(--incf)}
+.tvaz1-inc{border:1.5px dashed var(--inc);background:var(--incf);border-radius:10px;padding:4px 8px;font-size:14px;color:var(--t0);display:flex;align-items:center;gap:6px;min-height:28px;width:100%}
+.tvaz1-inc b{font-family:var(--mono);font-weight:600}
+.tvaz1-inc em{font-style:normal;font-size:12px;color:var(--inc);margin-left:auto}
+/* La liste : une facture par rangée, la pastille du taux devant la TVA. */
+.tvaz1-liste{padding-top:6px}
+.tvaz1-lh{display:flex;align-items:center;gap:6px;min-height:28px;font-size:12px;color:var(--t2);border-bottom:1px solid var(--bord)}
+.tvaz1-lh b{font-weight:600;color:var(--t1);font-size:14px}
+.tvaz1-lh span{margin-left:auto}
+.tvaz1-li{display:flex;align-items:center;gap:6px;min-height:36px;border-bottom:1px solid var(--bord);width:100%;padding:0 2px;scroll-margin-top:8px}
+.tvaz1-li .tvaz1-d{font-family:var(--mono);font-size:12px;color:var(--t2);width:38px;flex:none}
+.tvaz1-li .tvaz1-f{min-width:0;flex:1;display:flex;flex-direction:column;line-height:1.15}
+.tvaz1-li .tvaz1-f span{font-size:14px;color:var(--t0);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.tvaz1-li .tvaz1-f small{font-size:12px;color:var(--t2)}
+.tvaz1-li .tvaz1-ttc{font-family:var(--mono);font-size:12px;color:var(--t2);white-space:nowrap}
+.tvaz1-li .tvaz1-tx{display:inline-flex;align-items:center;gap:4px;font-family:var(--mono);font-size:12px;color:var(--t1);width:74px;flex:none;white-space:nowrap}
+.tvaz1-li .tvaz1-tv{font-family:var(--mono);font-size:14px;font-weight:500;color:var(--t0);width:52px;flex:none;text-align:right;font-variant-numeric:tabular-nums}
+.tvaz1-li .tvaz1-tv.tvaz1-q{color:var(--inc);font-weight:600}
+.tvaz1-li.tvaz1-sel{background:var(--incf)}
+.tvaz1-li:active{background:var(--haut)}
+@keyframes tvaz1-eclair{0%{background:#F3D27A}100%{background:transparent}}
+.tvaz1-eclair{animation:tvaz1-eclair 1.6s ease-out 1}
+@media (prefers-reduced-motion:reduce){.tvaz1-eclair{animation:none;background:#F7E3B0}}
+.tvaz1-vide{padding:16px 8px;display:flex;flex-direction:column;gap:8px;align-items:flex-start;color:var(--t1)}
+.tvaz1-bt{min-height:32px;padding:0 12px;border-radius:10px;border:1px solid var(--bordm);font-size:14px;background:#fff;display:inline-flex;align-items:center;gap:6px}
+.tvaz1-bt.tvaz1-pri{background:var(--t0);border-color:var(--t0);color:#fff;font-weight:600}
+.tvaz1-hl{display:flex;align-items:center;gap:6px;min-height:28px;padding:0 8px;background:var(--haut);border-radius:10px;font-size:12px;color:var(--t1);margin-top:4px}
+.tvaz1-hl b{font-weight:600;color:var(--t0)}
+/* La feuille « si j'étais assujetti » : aucun chiffre, un renvoi vers l'AFC et la fiduciaire. */
+.tvaz1-voile{position:fixed;inset:0;background:rgba(17,17,17,.35);display:flex;align-items:flex-end;justify-content:center;z-index:20}
+.tvaz1-sheet{width:100%;max-width:520px;background:#fff;border-radius:24px 24px 0 0;padding:8px 12px 16px;display:flex;flex-direction:column;gap:8px}
+.tvaz1-sheet header{display:flex;align-items:center;gap:8px;min-height:32px}
+.tvaz1-sheet header b{font-size:14px;font-weight:600;color:var(--t0);flex:1}
+.tvaz1-kv{display:grid;grid-template-columns:auto 1fr;gap:4px 10px;font-size:14px}
+.tvaz1-kv span{font-size:12px;color:var(--t2)}
+.tvaz1-kv b{font-weight:500;color:var(--t0)}
+.tvaz1-lien{min-height:36px;display:flex;align-items:center;gap:8px;padding:0 10px;border:1px solid var(--bord);border-radius:10px;font-size:14px;color:var(--t0);text-decoration:none}
+.tvaz1-lien small{margin-left:auto;font-size:12px;color:var(--t2)}
+@media (min-width:900px){.tvaz1-corps{padding:0 16px 16px}.tvaz1-bas{max-width:1080px}}
+</style></head>
+<body><div class="tvaz1-app" id="tvaz1-app"></div>
+<script>
+(function(){
+'use strict';
+var P='tvaz1-';
+var ETAT=(new URLSearchParams(location.search).get('etat')||'annee');
+var ANNEE=2026;
+function n2(x){return x.toFixed(2).replace('.',',').replace(/\B(?=(\d{3})+(?!\d))/g,' ');}
+function tvaDe(ttc,r){return Math.round((ttc-ttc/(1+r/100))*100)/100;}
+// Dépenses fictives de l'année (aucune valeur de ses pièces) ; taux et TVA tels que l'app les enregistre.
+// k : '2' réduit 2,6 %, '8' normal 8,1 %, 'inc' TVA inconnue (0 enregistré avant le changement), 'etr' étrangère, 'dou' choisie à la saisie.
+var BASE=[
+ ['12.01','Malterie Fictive SA','Malts · 120 kg',486.00,'2'],
+ ['15.01','Quincaillerie Fictive','Petit matériel',56.80,'inc'],
+ ['03.02','Houblons du Jura Sàrl','Houblons · 4 kg',212.40,'2'],
+ ['18.02','Inox Demo GmbH · DE','Cuve 300 L',1428.00,'etr'],
+ ['05.03','Nettoyage Demo SA','Soude, acide',138.90,'8'],
+ ['22.03','Levures Demo AG','Levures',96.30,'2'],
+ ['08.04','Brico Demo','Raccords, tuyaux',129.00,'inc'],
+ ['14.04','Fûts Fictifs Sàrl','Fûts 20 L ×4',642.00,'8'],
+ ['02.05','Malterie Fictive SA','Malts · 125 kg',512.50,'2'],
+ ['19.05','Verre Demo SA','Bouteilles 33 cl',388.00,'8'],
+ ['30.06','Houblons du Jura Sàrl','Houblons · 3 kg',174.20,'2'],
+ ['11.07','Étiquettes Fictives Sàrl','Étiquettes',215.00,'8'],
+ ['21.08','Papeterie Demo','Fournitures',42.30,'inc'],
+ ['09.09','Malterie Fictive SA','Malts · 120 kg',498.00,'2'],
+ ['27.09','Gaz Demo SA','CO₂',84.50,'8']
+];
+var DOUTEUSE=['27.04','Brasse-Shop Fictif','23 lignes · MWST ≠ N + R',86.50,'dou'];
+var INCONNUES_ANCIENNES=[
+ ['09.01','Malterie Fictive SA','Malts',472.00],['23.01','Brico Demo','Outillage',188.40],['06.02','Houblons du Jura Sàrl','Houblons',201.60],
+ ['19.02','Verre Demo SA','Bouteilles',366.00],['04.03','Nettoyage Demo SA','Soude',121.30],['17.03','Gaz Demo SA','CO₂',84.50],
+ ['02.04','Malterie Fictive SA','Malts',505.00],['15.04','Levures Demo AG','Levures',92.80],['29.04','Fûts Fictifs Sàrl','Fûts',640.00],
+ ['12.05','Étiquettes Fictives Sàrl','Étiquettes',210.00],['26.05','Brico Demo','Raccords',77.90],['10.06','Houblons du Jura Sàrl','Houblons',168.30],
+ ['24.06','Papeterie Demo','Fournitures',39.80],['08.07','Malterie Fictive SA','Malts',245.00]
+];
+function construire(){
+ var l=[];
+ if(ETAT==='vide')return l;
+ if(ETAT==='inconnues'){
+  INCONNUES_ANCIENNES.forEach(function(d){l.push({d:d[0],f:d[1],c:d[2],ttc:d[3],k:'inc'});});
+  [['12.08','Malterie Fictive SA','Malts · 120 kg',486.00,'2'],['21.08','Nettoyage Demo SA','Soude, acide',138.90,'8'],['09.09','Houblons du Jura Sàrl','Houblons · 3 kg',174.20,'2'],['27.09','Gaz Demo SA','CO₂',84.50,'8']]
+   .forEach(function(d){l.push({d:d[0],f:d[1],c:d[2],ttc:d[3],k:d[4]});});
+  return l;
+ }
+ BASE.forEach(function(d){l.push({d:d[0],f:d[1],c:d[2],ttc:d[3],k:d[4]});});
+ if(ETAT==='douteuse')l.splice(8,0,{d:DOUTEUSE[0],f:DOUTEUSE[1],c:DOUTEUSE[2],ttc:DOUTEUSE[3],k:'dou'});
+ return l;
+}
+var L=construire().map(function(x,i){
+ x.id=i;
+ if(x.k==='2')x.tva=tvaDe(x.ttc,2.6);else if(x.k==='8')x.tva=tvaDe(x.ttc,8.1);
+ else if(x.k==='etr')x.tva=tvaDe(x.ttc,19);else if(x.k==='dou')x.tva=2.80;else x.tva=null;
+ return x;
+});
+var S={t2:0,n2:0,t8:0,n8:0,ninc:0,ttcinc:0,netr:0,tetr:0,ndou:0,tdou:0};
+L.forEach(function(x){
+ if(x.k==='2'){S.t2+=x.tva;S.n2++;}else if(x.k==='8'){S.t8+=x.tva;S.n8++;}
+ else if(x.k==='inc'){S.ninc++;S.ttcinc+=x.ttc;}else if(x.k==='etr'){S.netr++;S.tetr+=x.tva;}else{S.ndou++;S.tdou+=x.tva;}
+});
+var TOTAL=S.t2+S.t8+S.tdou, NCONNU=S.n2+S.n8+S.ndou;
+var filtre=null, siOuvert=(ETAT==='si');
+var ic={
+ lune:'<svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M13 9.5A5.5 5.5 0 0 1 6.5 3a5.5 5.5 0 1 0 6.5 6.5z"/></svg>',
+ loupe:'<svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><circle cx="7" cy="7" r="4.5"/><path d="M10.5 10.5 14 14"/></svg>',
+ quoi:'<svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M6 6a2 2 0 1 1 3 1.7c-.7.4-1 .9-1 1.6"/><path d="M8 12h.01"/></svg>',
+ regl:'<svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M2 5h6M11 5h3M2 11h3M8 11h6"/><circle cx="9.5" cy="5" r="1.5"/><circle cx="6.5" cy="11" r="1.5"/></svg>',
+ g:'<svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M10 3 5 8l5 5"/></svg>',
+ d:'<svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M6 3l5 5-5 5"/></svg>',
+ chev:'<svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M6 3l5 5-5 5"/></svg>',
+ bord:'<svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2" y="2" width="5.5" height="5.5" rx="1.5"/><rect x="10.5" y="2" width="5.5" height="5.5" rx="1.5"/><rect x="2" y="10.5" width="5.5" height="5.5" rx="1.5"/><rect x="10.5" y="10.5" width="5.5" height="5.5" rx="1.5"/></svg>',
+ fin:'<svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2" y="4" width="14" height="11" rx="2"/><path d="M2 7h14M11 11h2.5"/></svg>',
+ bra:'<svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M4 4h8v10a1.5 1.5 0 0 1-1.5 1.5h-5A1.5 1.5 0 0 1 4 14z"/><path d="M12 7h2a1.5 1.5 0 0 1 1.5 1.5v2A1.5 1.5 0 0 1 14 12h-2"/></svg>',
+ sto:'<svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"><path d="M9 2l6 3.5v7L9 16l-6-3.5v-7z"/><path d="M3 5.5 9 9l6-3.5M9 9v7"/></svg>',
+ cli:'<svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><circle cx="7" cy="6" r="2.5"/><path d="M2.5 15c0-2.5 2-4 4.5-4s4.5 1.5 4.5 4"/><circle cx="12.5" cy="6.5" r="2"/><path d="M13 11c1.8.3 3 1.6 3 4"/></svg>',
+ plus:'<svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" data-commun><path d="M10 4v12M4 10h12"/></svg>',
+ x:'<svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M4 4l8 8M12 4l-8 8"/></svg>',
+ ext:'<svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M9 3h4v4M13 3 7 9M11 9v4H3V5h4"/></svg>',
+ nuage:'<svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M4.5 12.5A3 3 0 0 1 5 6.6a4 4 0 0 1 7.6 1.2A2.5 2.5 0 0 1 12 12.5z"/><path d="M2 2l12 12"/></svg>'
+};
+var KL={'2':'2,6 %','8':'8,1 %','inc':'inconnue','etr':'MwSt 19 %','dou':'choisie'};
+function pastille(k){return '<i class="'+P+'p '+P+'k'+k+'"></i>';}
+function coquille(){
+ return '<header class="'+P+'hd"><span class="'+P+'logo"><svg width="14" height="14" viewBox="0 0 16 16" fill="currentColor"><path d="M4 2h7v3h2v6h-2v3H4z"/></svg></span><h1>L\'Affinée</h1>'+
+  '<button class="'+P+'ib '+P+'nb" aria-label="Thème cave" data-role="theme">'+ic.lune+'</button><button class="'+P+'ib" aria-label="Rechercher" data-role="rechercher">'+ic.loupe+'</button><button class="'+P+'ib" aria-label="Aide" data-role="aide">'+ic.quoi+'</button></header>'+
+  '<nav class="'+P+'tabs" role="tablist"><button role="tab" aria-selected="true">Synthèse</button><button role="tab">Opérations</button><button role="tab">Prévisions</button><button role="tab">Annuel</button></nav>';
+}
+function bas(){
+ return '<nav class="'+P+'bas"><button>'+ic.bord+'Bord</button><button aria-current="page">'+ic.fin+'Finances</button><button class="'+P+'c1">'+ic.bra+'Brassins</button><button class="'+P+'c2">'+ic.sto+'Stocks</button><button>'+ic.cli+'Clients</button><button class="'+P+'fab" aria-label="Actions rapides" data-role="plus">'+ic.plus+'</button></nav>';
+}
+function recap(){
+ var h='<section class="'+P+'rec" aria-label="TVA de l\'année">';
+ if(ETAT==='vide'){
+  h+='<div class="'+P+'r1"><span class="'+P+'tot">—<small> CHF</small></span><span class="'+P+'lab">Aucune dépense en <b>'+ANNEE+'</b></span></div>';
+  h+='<button class="'+P+'rem" data-booster="si-assujetti" data-role="si">Remboursée : <b>—</b> · non assujetti <em>si assujetti '+ic.chev+'</em></button>';
+  h+='<div class="'+P+'chips">'+['2','8','inc','etr'].map(function(k){return '<button class="'+P+'ch" data-booster="chip-taux" data-k="'+k+'">'+pastille(k)+KL[k]+' <small>0</small></button>';}).join('')+'</div>';
+  return h+'</section>';
+ }
+ h+='<div class="'+P+'r1"><span class="'+P+'tot">'+n2(TOTAL)+'<small> CHF</small></span><span class="'+P+'lab">TVA payée · <b>'+NCONNU+'</b> factures'+(ETAT==='inconnues'?' · <em class="'+P+'part">total partiel</em>':'')+'</span></div>';
+ if(S.ninc){
+  h+='<button class="'+P+'inc" data-booster="chip-taux" data-k="inc" data-role="inconnues">'+pastille('inc')+'+ <b>'+S.ninc+'</b> sans TVA lue · <b>'+n2(S.ttcinc)+'</b> CHF</button>';
+ }
+ h+='<button class="'+P+'rem" data-booster="si-assujetti" data-role="si">Remboursée : <b>0,00</b> · non assujetti <em>si assujetti '+ic.chev+'</em></button>';
+ h+='<div class="'+P+'chips">';
+ h+='<button class="'+P+'ch" data-booster="chip-taux" data-k="2">'+pastille('2')+'2,6 % <b>'+n2(S.t2)+'</b><small>'+S.n2+'</small></button>';
+ h+='<button class="'+P+'ch" data-booster="chip-taux" data-k="8">'+pastille('8')+'8,1 % <b>'+n2(S.t8)+'</b><small>'+S.n8+'</small></button>';
+ if(S.ndou)h+='<button class="'+P+'ch '+P+'alerte" data-booster="chip-taux" data-k="dou">'+pastille('dou')+'choisie <b>'+n2(S.tdou)+'</b><small>'+S.ndou+'</small></button>';
+ if(S.netr)h+='<button class="'+P+'ch" data-booster="chip-taux" data-k="etr">'+pastille('etr')+'DE <b>'+n2(S.tetr)+'</b><small>hors CH</small></button>';
+ h+='</div></section>';
+ return h;
+}
+function ligne(x){
+ var tv=x.k==='inc'?'<span class="'+P+'tv '+P+'q">?</span>':'<span class="'+P+'tv">'+n2(x.tva)+'</span>';
+ var tx=pastille(x.k)+(x.k==='inc'?'inconnue':x.k==='etr'?'DE 19 %':x.k==='dou'?'choisie':KL[x.k]);
+ return '<button class="'+P+'li" data-id="'+x.id+'" data-k="'+x.k+'" data-role="facture"><span class="'+P+'d">'+x.d+'</span><span class="'+P+'f"><span>'+x.f+'</span><small>'+x.c+' · <span class="'+P+'ttc">'+n2(x.ttc)+' CHF</span></small></span><span class="'+P+'tx">'+tx+'</span>'+tv+'</button>';
+}
+function liste(){
+ if(ETAT==='vide')return '<div class="'+P+'vide"><span>Le cadre reste : la TVA se lit dès la première facture.</span><button class="'+P+'bt '+P+'pri" data-role="plus">'+ic.plus+'Nouvelle dépense</button></div>';
+ var vis=L.filter(function(x){return !filtre||x.k===filtre;});
+ var h='<div class="'+P+'liste" data-mots="lignes"><div class="'+P+'lh"><b>'+(filtre?KL[filtre]:'Toutes')+'</b> '+vis.length+' factures<span>TTC · taux · TVA</span></div>';
+ h+=vis.map(ligne).join('');
+ h+='</div>';
+ return h;
+}
+function sheet(){
+ if(!siOuvert)return '';
+ return '<div class="'+P+'voile" data-role="voile"><div class="'+P+'sheet" role="dialog" aria-label="Si j\'étais assujetti"><header><b>Si j\'étais assujetti</b><button class="'+P+'ib" aria-label="Fermer" data-role="fermer">'+ic.x+'</button></header>'+
+  '<div class="'+P+'kv"><span>Aujourd\'hui</span><b>Non assujetti · réglage de l\'app</b><span>Payée en '+ANNEE+'</span><b class="'+P+'m">'+n2(TOTAL)+' CHF</b></div>'+
+  '<a class="'+P+'lien" href="https://www.estv.admin.ch/estv/fr/accueil/taxe-sur-la-valeur-ajoutee.html" target="_blank" rel="noopener">'+ic.ext+'AFC · assujettissement<small>estv.admin.ch</small></a>'+
+  '<a class="'+P+'lien" href="#fiduciaire">'+ic.chev+'Ma fiduciaire<small>Clients</small></a>'+
+  '<button class="'+P+'bt" data-role="reglage">'+ic.regl+'Réglages · TVA</button></div></div>';
+}
+function rendu(){
+ var app=document.getElementById(P+'app');
+ var hors=ETAT==='horsligne'?'<div class="'+P+'hl">'+ic.nuage+'<b>Hors ligne</b> · lu sur l\'appareil, <b>'+L.length+'</b> factures</div>':'';
+ app.innerHTML=coquille()+'<div class="'+P+'corps">'+
+  '<div class="'+P+'titre"><h2>Situation financière</h2>'+ic.regl+'<div class="'+P+'seg" role="group"><button aria-pressed="false">Situation</button><button aria-pressed="false">Coûts</button><button aria-pressed="true" data-booster="mode-tva">TVA</button></div></div>'+
+  hors+
+  '<div class="'+P+'ctx"><div class="'+P+'per" data-booster="periode"><button aria-label="Année précédente" data-role="per-moins">'+ic.g+'</button><b>'+ANNEE+'</b><button aria-label="Année suivante" data-role="per-plus">'+ic.d+'</button></div>'+
+  '<button class="'+P+'st" data-booster="statut" data-role="reglage"><i></i>Non assujetti · réglage</button></div>'+
+  recap()+liste()+'</div>'+bas()+sheet();
+ brancher();
+}
+function brancher(){
+ var app=document.getElementById(P+'app');
+ app.querySelectorAll('[data-k][data-booster="chip-taux"]').forEach(function(b){
+  b.addEventListener('click',function(){
+   var k=b.getAttribute('data-k');
+   filtre=(filtre===k)?null:k;rendu();
+   app.querySelectorAll('[data-booster="chip-taux"]').forEach(function(c){c.setAttribute('aria-pressed',String(filtre!==null&&c.getAttribute('data-k')===filtre));});
+   var l=app.querySelector('.'+P+'liste');if(l)l.scrollIntoView({block:'nearest'});
+   if(k==='dou'){var li=app.querySelector('.'+P+'li[data-k="dou"]');if(li){li.classList.add(P+'eclair');li.scrollIntoView({block:'center'});}}
+  });
+ });
+ app.querySelectorAll('[data-role="si"]').forEach(function(b){b.addEventListener('click',function(){siOuvert=true;rendu();});});
+ app.querySelectorAll('[data-role="fermer"],[data-role="voile"]').forEach(function(b){b.addEventListener('click',function(e){if(e.target===b||b.getAttribute('data-role')==='fermer'){siOuvert=false;rendu();}});});
+ app.querySelectorAll('[data-role="per-moins"],[data-role="per-plus"]').forEach(function(b){b.addEventListener('click',function(){ANNEE+=b.getAttribute('data-role')==='per-plus'?1:-1;rendu();});});
+ app.querySelectorAll('[data-role="facture"]').forEach(function(b){b.addEventListener('click',function(){b.classList.toggle(P+'sel');});});
+}
+rendu();
+})();
+</script></body></html>

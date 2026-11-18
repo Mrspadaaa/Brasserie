@@ -1,0 +1,2001 @@
+/* Feuille des maquettes : la feuille de l'app (thèmes, base, utilitaires), les règles de l'écran Dépense (p3c.css), puis les seules règles neuves (sf-…). */
+
+/* Thèmes clair (défaut) et cave : variables lues par tailwind.config.js. */
+
+/*
+ * Thèmes de l'app (#144, D106). Jetons en canaux RGB, lus par tailwind.config.js (`rgb(var(--x) / <alpha-value>)`) :
+ * les noms de l'app ne changent pas (`cave-*`, `ebc-straw`, `hop`…) et les opacités (`bg-water/50`) restent valides.
+ * Mécanisme repris de prototypes/houblons-v4/ecran/THEMES.md ; valeurs du clair = ses maquettes choisies
+ * (prototypes/houblons-v4/parcours/src/theme-maquettes.css) : page blanche, gris neutres, texte presque noir, action
+ * principale noire. Le « clair » à papier chaud du prototype est rejeté (« Pourquoi c'est en thème pastel horrible ??? »).
+ *
+ * `data-theme` est posé sur <html> avant le premier rendu (index.html, src/theme/theme.ts) ; clair par défaut, « cave »
+ * au choix (bouton de l'en-tête), gardé sur l'appareil. Seuils et contrastes mesurés : DESIGN.md, scripts/theme/contraste.mjs.
+ *
+ * Piège des noms, comme dans le prototype : texte et aplat ont des variables distinctes. En clair, `bg-cave-950` est la
+ * page blanche, mais `text-cave-950` reste une encre sombre, car l'app ne l'emploie que pour un texte posé sur la paille.
+ */
+
+/* Clair : le thème par défaut, ses maquettes choisies. */
+
+:root,
+[data-theme='clair'] {
+  color-scheme: light;
+  --cave-950: 255 255 255;
+  --cave-900: 245 245 245;
+  --cave-850: 235 235 235;
+  --cave-800: 221 221 221;
+  --cave-700: 191 191 191;
+  --cave-600: 158 158 158;
+  --cave-400: 102 102 102;
+  --cave-200: 51 51 51;
+  --cave-50: 17 17 17;
+  --cave-texte-950: 17 17 17;
+  --cave-texte-900: 17 17 17;
+  --cave-texte-850: 26 26 26;
+  --cave-texte-800: 34 34 34;
+  --cave-texte-700: 51 51 51;
+  --cave-texte-600: 102 102 102;
+  --cave-texte-400: 102 102 102;
+  --cave-texte-200: 51 51 51;
+  --cave-texte-50: 17 17 17;
+  /* L'action principale de ses maquettes est noire, texte blanc. */
+  --ebc-straw: 17 17 17;
+  --ebc-straw-texte: 17 17 17;
+  --ebc-straw-bord: 17 17 17;
+  --sur-paille: 255 255 255;
+  /* texte posé sur l'aplat d'action (CSS des composants) */
+  /* L'échelle EBC décrit la bière : ses aplats ne changent pas ; ses textes foncent pour tenir 4,5:1 sur le blanc. */
+  --ebc-gold-texte: 122 90 18;
+  --ebc-amber-texte: 138 82 18;
+  --ebc-copper-texte: 141 68 44;
+  --area-production: 154 79 30;
+  --area-finances: 31 100 163;
+  --area-stocks: 76 107 42;
+  --area-agenda: 106 79 176;
+  --area-production-texte: 154 79 30;
+  --area-finances-texte: 31 100 163;
+  --area-stocks-texte: 76 107 42;
+  --area-agenda-texte: 106 79 176;
+  --attention: 156 112 32;
+  --attention-texte: 127 91 16;
+  --alert-strong: 179 51 43;
+  --alert-strong-texte: 168 41 31;
+  --alert: 200 56 47;
+  --alert-texte: 168 41 31;
+  --hop: 86 127 69;
+  --hop-texte: 63 107 46;
+  --water: 79 126 155;
+  --water-texte: 47 95 125;
+  /* Marque : la valeur de sa maquette (theme-maquettes.css), 2,25:1 ; employée par la maquette seule, pas par l'app. */
+  --marque: 158 158 158;
+  --repere: 17 17 17;
+  --repere-texte: 17 17 17;
+  /* Ombres : la profondeur vient d'une ombre légère sur le blanc. */
+  --ombre-lift: 0.16;
+  --ombre-sheet: 0.18;
+  --theme-color: #ffffff;
+}
+
+/* Cave : le thème sombre, valeurs de l'app avant le 25.10. Seuls trois textes colorés s'éclaircissent pour tenir 4,5:1. */
+
+[data-theme='cave'] {
+  color-scheme: dark;
+  --cave-950: 18 16 14;
+  --cave-900: 26 22 19;
+  --cave-850: 34 29 25;
+  --cave-800: 44 37 33;
+  --cave-700: 61 52 46;
+  --cave-600: 87 74 66;
+  --cave-400: 154 138 126;
+  --cave-200: 216 206 197;
+  --cave-50: 245 240 234;
+  --cave-texte-950: 18 16 14;
+  --cave-texte-900: 26 22 19;
+  --cave-texte-850: 34 29 25;
+  --cave-texte-800: 44 37 33;
+  --cave-texte-700: 61 52 46;
+  --cave-texte-600: 87 74 66;
+  --cave-texte-400: 154 138 126;
+  --cave-texte-200: 216 206 197;
+  --cave-texte-50: 245 240 234;
+  --ebc-straw: 242 193 78;
+  --ebc-straw-texte: 242 193 78;
+  --ebc-straw-bord: 242 193 78;
+  --sur-paille: 18 16 14;
+  --ebc-gold-texte: 224 160 46;
+  --ebc-amber-texte: 200 122 44;
+  --ebc-copper-texte: 181 120 91;
+  /* #A0522D ne faisait que 2,97:1 sur cave-850 */
+  --area-production: 231 160 112;
+  --area-finances: 134 185 230;
+  --area-stocks: 163 201 122;
+  --area-agenda: 188 165 232;
+  --area-production-texte: 231 160 112;
+  --area-finances-texte: 134 185 230;
+  --area-stocks-texte: 163 201 122;
+  --area-agenda-texte: 188 165 232;
+  --attention: 227 181 93;
+  --attention-texte: 227 181 93;
+  --alert-strong: 242 146 137;
+  --alert-strong-texte: 242 146 137;
+  --alert: 214 69 61;
+  --alert-texte: 220 95 88;
+  /* #D6453D : 3,80:1 sur cave-850 ; l'aplat garde sa valeur */
+  --hop: 110 155 91;
+  --hop-texte: 110 155 91;
+  --water: 91 138 166;
+  --water-texte: 94 140 168;
+  /* #5B8AA6 : 4,48:1 sur cave-850 */
+  --marque: 154 138 126;
+  --repere: 242 193 78;
+  --repere-texte: 242 193 78;
+  --ombre-lift: 0.7;
+  --ombre-sheet: 0.8;
+  --theme-color: #12100e;
+}
+
+/* ---- Règles propres au clair (reprises de theme-maquettes.css) ---- */
+
+/* Un aplat d'action noir porte un texte blanc (l'app y pose text-cave-950, une encre sombre). */
+
+:root:not([data-theme='cave']) .bg-ebc-straw,
+:root:not([data-theme='cave']) .bg-ebc-straw * {
+  color: rgb(255 255 255);
+}
+
+/* Les boutons en dégradé paille → ambre deviennent l'action noire de ses maquettes. */
+
+:root:not([data-theme='cave']) .from-ebc-straw {
+  background-image: none;
+  background-color: rgb(var(--ebc-straw));
+  color: rgb(255 255 255);
+}
+
+/* Au survol, l'action noire s'éclaircit à peine au lieu de virer à l'or. */
+
+:root:not([data-theme='cave']) .hover\:bg-ebc-gold:hover,
+:root:not([data-theme='cave']) .hover\:from-ebc-gold:hover {
+  background-color: rgb(51 51 51);
+}
+
+:root:not([data-theme='cave']) .hover\:bg-ebc-gold:hover * {
+  color: rgb(255 255 255);
+}
+
+/* Sélection de texte : noire sur blanc. */
+
+:root:not([data-theme='cave']) ::-moz-selection {
+  background: rgb(17 17 17);
+  color: rgb(255 255 255);
+}
+
+:root:not([data-theme='cave']) ::selection {
+  background: rgb(17 17 17);
+  color: rgb(255 255 255);
+}
+
+/* Les chevrons dessinés par src/index.css passent à l'encre secondaire neutre. */
+
+:root:not([data-theme='cave']) summary:not(:has([class*='chevron'])) {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23666666' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
+}
+
+:root:not([data-theme='cave']) details[open] > summary:not(:has([class*='chevron'])) {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23666666' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m18 15-6-6-6 6'/%3E%3C/svg%3E");
+}
+
+/* Généré par scripts/theme/porter-reste.mjs (#144) : les teintes propres des composants, par thème.
+ * Cave : la valeur d'origine exacte. Clair : la valeur dérivée par la règle écrite en tête du script. Ne pas éditer à la
+ * main ; relancer le script. */
+
+:root,
+[data-theme='clair'] {
+  --c-101611: 245 245 245;
+  --c-151717: 245 245 245;
+  --c-18312c: 235 240 233;
+  --c-1b1714: 245 245 245;
+  --c-1c292e: 234 240 243;
+  --c-1d2933: 234 240 243;
+  --c-20231e: 235 235 235;
+  --c-20311d: 235 240 233;
+  --c-20352d: 235 240 233;
+  --c-223d34: 235 240 233;
+  --c-231e19: 235 235 235;
+  --c-232b28: 221 221 221;
+  --c-23322c: 191 191 191;
+  --c-241e19: 235 235 235;
+  --c-242625: 221 221 221;
+  --c-24333a: 234 240 243;
+  --c-253356: 234 240 243;
+  --c-254f56: 234 240 243;
+  --c-255633: 235 240 233;
+  --c-29221d: 221 221 221;
+  --c-302719: 243 238 228;
+  --c-302820: 221 221 221;
+  --c-35271d: 243 234 228;
+  --c-355441: 235 240 233;
+  --c-362621: 248 231 230;
+  --c-384039: 191 191 191;
+  --c-39281e: 243 234 228;
+  --c-395233: 235 240 233;
+  --c-3a3028: 191 191 191;
+  --c-3b4942: 158 158 158;
+  --c-3f2556: 237 234 246;
+  --c-402320: 248 231 230;
+  --c-435936: 235 240 233;
+  --c-435b32: 235 240 233;
+  --c-463029: 248 231 230;
+  --c-46736a: 86 127 69;
+  --c-472d26: 248 231 230;
+  --c-4b251b: 248 231 230;
+  --c-4b4037: 158 158 158;
+  --c-4c4135: 158 158 158;
+  --c-4d4138: 158 158 158;
+  --c-514335: 158 158 158;
+  --c-53604d: 158 158 158;
+  --c-562544: 237 234 246;
+  --c-563325: 248 231 230;
+  --c-564925: 243 238 228;
+  --c-565a4e: 158 158 158;
+  --c-567362: 102 102 102;
+  --c-567bd2: 79 126 155;
+  --c-56c1d2: 79 126 155;
+  --c-56d27b: 86 127 69;
+  --c-62705f: 102 102 102;
+  --c-648e72: 102 102 102;
+  --c-665548: 158 158 158;
+  --c-685a4e: 158 158 158;
+  --c-697957: 102 102 102;
+  --c-6b3930: 248 231 230;
+  --c-6c96a9: 79 126 155;
+  --c-6d5547: 158 158 158;
+  --c-704931: 243 234 228;
+  --c-8fbfd5: 79 126 155;
+  --c-92b9cf: 79 126 155;
+  --c-96594b: 200 56 47;
+  --c-97b383: 86 127 69;
+  --c-9856d2: 106 79 176;
+  --c-9ac5a3: 86 127 69;
+  --c-9cc4db: 79 126 155;
+  --c-a1c58f: 86 127 69;
+  --c-a4c595: 86 127 69;
+  --c-a67058: 154 79 30;
+  --c-a6cb92: 86 127 69;
+  --c-a7cee4: 79 126 155;
+  --c-b4d8a1: 86 127 69;
+  --c-b67d66: 200 56 47;
+  --c-b6c4b8: 51 51 51;
+  --c-b9cf9e: 86 127 69;
+  --c-bbcfa0: 86 127 69;
+  --c-bed19a: 86 127 69;
+  --c-c0a466: 156 112 32;
+  --c-c2d3a4: 86 127 69;
+  --c-c7d4aa: 86 127 69;
+  --c-c7ddbe: 86 127 69;
+  --c-d256a4: 106 79 176;
+  --c-d27b56: 200 56 47;
+  --c-d2b356: 156 112 32;
+  --c-d2c5a8: 156 112 32;
+  --c-deb769: 156 112 32;
+  --c-e0af3c: 156 112 32;
+  --c-e0b172: 154 79 30;
+  --c-e39476: 200 56 47;
+  --c-e3f2fa: 79 126 155;
+  --c-e8a986: 154 79 30;
+  --c-f7ce6a: 156 112 32;
+  --c-ffb49b: 200 56 47;
+  --c-ffd18a: 156 112 32;
+  --ct-21150e: 154 79 30;
+  --ct-211b15: 154 79 30;
+  --ct-212820: 34 34 34;
+  --ct-233023: 34 34 34;
+  --ct-a7c5d7: 47 95 125;
+  --ct-a7cee4: 47 95 125;
+  --ct-a8ada3: 102 102 102;
+  --ct-a9b69f: 51 51 51;
+  --ct-a9b6ba: 51 51 51;
+  --ct-aaa79b: 102 102 102;
+  --ct-acd6ad: 63 107 46;
+  --ct-aeb5a6: 51 51 51;
+  --ct-aeb7ad: 51 51 51;
+  --ct-b0bcb4: 51 51 51;
+  --ct-b3a397: 102 102 102;
+  --ct-b4a294: 102 102 102;
+  --ct-b4b2aa: 51 51 51;
+  --ct-b4c7af: 51 51 51;
+  --ct-b4caad: 51 51 51;
+  --ct-b4d8a1: 63 107 46;
+  --ct-b5a69a: 102 102 102;
+  --ct-b5c9bd: 51 51 51;
+  --ct-b5caa1: 63 107 46;
+  --ct-b6aaa0: 102 102 102;
+  --ct-b6b0a1: 51 51 51;
+  --ct-b6c4b8: 51 51 51;
+  --ct-b6c6bc: 51 51 51;
+  --ct-b7cc9d: 63 107 46;
+  --ct-b8bdb1: 51 51 51;
+  --ct-b8cabe: 51 51 51;
+  --ct-b8dcef: 47 95 125;
+  --ct-b9b9b0: 51 51 51;
+  --ct-b9c1b3: 51 51 51;
+  --ct-b9caf4: 47 95 125;
+  --ct-b9d0a7: 63 107 46;
+  --ct-b9ecf4: 47 95 125;
+  --ct-b9f4ca: 63 107 46;
+  --ct-bad7ac: 63 107 46;
+  --ct-bbd49b: 63 107 46;
+  --ct-bcdda9: 63 107 46;
+  --ct-bec8b5: 51 51 51;
+  --ct-bfd3a4: 63 107 46;
+  --ct-c2c0b6: 51 51 51;
+  --ct-c2c8ba: 51 51 51;
+  --ct-c3c3b3: 51 51 51;
+  --ct-c5d9ac: 63 107 46;
+  --ct-c6bbb0: 51 51 51;
+  --ct-c6c8be: 51 51 51;
+  --ct-c7d4aa: 63 107 46;
+  --ct-c7ddbe: 63 107 46;
+  --ct-c9b8a9: 154 79 30;
+  --ct-cbbcaf: 51 51 51;
+  --ct-cbd4bf: 51 51 51;
+  --ct-d0d8c6: 51 51 51;
+  --ct-d1c2b5: 154 79 30;
+  --ct-d1d9c5: 51 51 51;
+  --ct-d2c5a8: 127 91 16;
+  --ct-d4e7dc: 63 107 46;
+  --ct-d5dac9: 51 51 51;
+  --ct-d5edc9: 63 107 46;
+  --ct-d6e8c9: 63 107 46;
+  --ct-d7ccc1: 51 51 51;
+  --ct-d8b9f4: 106 79 176;
+  --ct-d9aa95: 154 79 30;
+  --ct-deebdc: 63 107 46;
+  --ct-e0e5d4: 63 107 46;
+  --ct-e1edc4: 63 107 46;
+  --ct-e3ddcd: 127 91 16;
+  --ct-e4c7a0: 154 79 30;
+  --ct-e4ddbe: 127 91 16;
+  --ct-e4ece5: 17 17 17;
+  --ct-e5e9df: 17 17 17;
+  --ct-e6e4d9: 17 17 17;
+  --ct-edbaab: 168 41 31;
+  --ct-edbb98: 154 79 30;
+  --ct-ede9e1: 127 91 16;
+  --ct-eee9dd: 127 91 16;
+  --ct-eee9df: 127 91 16;
+  --ct-f0e5c6: 127 91 16;
+  --ct-f0e9da: 127 91 16;
+  --ct-f0ecdf: 127 91 16;
+  --ct-f1b99b: 154 79 30;
+  --ct-f1d4bc: 154 79 30;
+  --ct-f2c0a5: 154 79 30;
+  --ct-f3bea3: 154 79 30;
+  --ct-f4b9de: 106 79 176;
+  --ct-f4cab9: 168 41 31;
+  --ct-f4d2bd: 154 79 30;
+  --ct-f4e5b9: 127 91 16;
+  --ct-f9e7d8: 154 79 30;
+  --ct-ffb49b: 168 41 31;
+  --ct-ffcfbf: 168 41 31;
+  --ct-ffd18a: 127 91 16;
+  --ct-fff1eb: 154 79 30;
+  --ct-fff2e9: 154 79 30;
+}
+
+[data-theme='cave'] {
+  --c-101611: 16 22 17;
+  --c-151717: 21 23 23;
+  --c-18312c: 24 49 44;
+  --c-1b1714: 27 23 20;
+  --c-1c292e: 28 41 46;
+  --c-1d2933: 29 41 51;
+  --c-20231e: 32 35 30;
+  --c-20311d: 32 49 29;
+  --c-20352d: 32 53 45;
+  --c-223d34: 34 61 52;
+  --c-231e19: 35 30 25;
+  --c-232b28: 35 43 40;
+  --c-23322c: 35 50 44;
+  --c-241e19: 36 30 25;
+  --c-242625: 36 38 37;
+  --c-24333a: 36 51 58;
+  --c-253356: 37 51 86;
+  --c-254f56: 37 79 86;
+  --c-255633: 37 86 51;
+  --c-29221d: 41 34 29;
+  --c-302719: 48 39 25;
+  --c-302820: 48 40 32;
+  --c-35271d: 53 39 29;
+  --c-355441: 53 84 65;
+  --c-362621: 54 38 33;
+  --c-384039: 56 64 57;
+  --c-39281e: 57 40 30;
+  --c-395233: 57 82 51;
+  --c-3a3028: 58 48 40;
+  --c-3b4942: 59 73 66;
+  --c-3f2556: 63 37 86;
+  --c-402320: 64 35 32;
+  --c-435936: 67 89 54;
+  --c-435b32: 67 91 50;
+  --c-463029: 70 48 41;
+  --c-46736a: 70 115 106;
+  --c-472d26: 71 45 38;
+  --c-4b251b: 75 37 27;
+  --c-4b4037: 75 64 55;
+  --c-4c4135: 76 65 53;
+  --c-4d4138: 77 65 56;
+  --c-514335: 81 67 53;
+  --c-53604d: 83 96 77;
+  --c-562544: 86 37 68;
+  --c-563325: 86 51 37;
+  --c-564925: 86 73 37;
+  --c-565a4e: 86 90 78;
+  --c-567362: 86 115 98;
+  --c-567bd2: 86 123 210;
+  --c-56c1d2: 86 193 210;
+  --c-56d27b: 86 210 123;
+  --c-62705f: 98 112 95;
+  --c-648e72: 100 142 114;
+  --c-665548: 102 85 72;
+  --c-685a4e: 104 90 78;
+  --c-697957: 105 121 87;
+  --c-6b3930: 107 57 48;
+  --c-6c96a9: 108 150 169;
+  --c-6d5547: 109 85 71;
+  --c-704931: 112 73 49;
+  --c-8fbfd5: 143 191 213;
+  --c-92b9cf: 146 185 207;
+  --c-96594b: 150 89 75;
+  --c-97b383: 151 179 131;
+  --c-9856d2: 152 86 210;
+  --c-9ac5a3: 154 197 163;
+  --c-9cc4db: 156 196 219;
+  --c-a1c58f: 161 197 143;
+  --c-a4c595: 164 197 149;
+  --c-a67058: 166 112 88;
+  --c-a6cb92: 166 203 146;
+  --c-a7cee4: 167 206 228;
+  --c-b4d8a1: 180 216 161;
+  --c-b67d66: 182 125 102;
+  --c-b6c4b8: 182 196 184;
+  --c-b9cf9e: 185 207 158;
+  --c-bbcfa0: 187 207 160;
+  --c-bed19a: 190 209 154;
+  --c-c0a466: 192 164 102;
+  --c-c2d3a4: 194 211 164;
+  --c-c7d4aa: 199 212 170;
+  --c-c7ddbe: 199 221 190;
+  --c-d256a4: 210 86 164;
+  --c-d27b56: 210 123 86;
+  --c-d2b356: 210 179 86;
+  --c-d2c5a8: 210 197 168;
+  --c-deb769: 222 183 105;
+  --c-e0af3c: 224 175 60;
+  --c-e0b172: 224 177 114;
+  --c-e39476: 227 148 118;
+  --c-e3f2fa: 227 242 250;
+  --c-e8a986: 232 169 134;
+  --c-f7ce6a: 247 206 106;
+  --c-ffb49b: 255 180 155;
+  --c-ffd18a: 255 209 138;
+  --ct-21150e: 33 21 14;
+  --ct-211b15: 33 27 21;
+  --ct-212820: 33 40 32;
+  --ct-233023: 35 48 35;
+  --ct-a7c5d7: 167 197 215;
+  --ct-a7cee4: 167 206 228;
+  --ct-a8ada3: 168 173 163;
+  --ct-a9b69f: 169 182 159;
+  --ct-a9b6ba: 169 182 186;
+  --ct-aaa79b: 170 167 155;
+  --ct-acd6ad: 172 214 173;
+  --ct-aeb5a6: 174 181 166;
+  --ct-aeb7ad: 174 183 173;
+  --ct-b0bcb4: 176 188 180;
+  --ct-b3a397: 179 163 151;
+  --ct-b4a294: 180 162 148;
+  --ct-b4b2aa: 180 178 170;
+  --ct-b4c7af: 180 199 175;
+  --ct-b4caad: 180 202 173;
+  --ct-b4d8a1: 180 216 161;
+  --ct-b5a69a: 181 166 154;
+  --ct-b5c9bd: 181 201 189;
+  --ct-b5caa1: 181 202 161;
+  --ct-b6aaa0: 182 170 160;
+  --ct-b6b0a1: 182 176 161;
+  --ct-b6c4b8: 182 196 184;
+  --ct-b6c6bc: 182 198 188;
+  --ct-b7cc9d: 183 204 157;
+  --ct-b8bdb1: 184 189 177;
+  --ct-b8cabe: 184 202 190;
+  --ct-b8dcef: 184 220 239;
+  --ct-b9b9b0: 185 185 176;
+  --ct-b9c1b3: 185 193 179;
+  --ct-b9caf4: 185 202 244;
+  --ct-b9d0a7: 185 208 167;
+  --ct-b9ecf4: 185 236 244;
+  --ct-b9f4ca: 185 244 202;
+  --ct-bad7ac: 186 215 172;
+  --ct-bbd49b: 187 212 155;
+  --ct-bcdda9: 188 221 169;
+  --ct-bec8b5: 190 200 181;
+  --ct-bfd3a4: 191 211 164;
+  --ct-c2c0b6: 194 192 182;
+  --ct-c2c8ba: 194 200 186;
+  --ct-c3c3b3: 195 195 179;
+  --ct-c5d9ac: 197 217 172;
+  --ct-c6bbb0: 198 187 176;
+  --ct-c6c8be: 198 200 190;
+  --ct-c7d4aa: 199 212 170;
+  --ct-c7ddbe: 199 221 190;
+  --ct-c9b8a9: 201 184 169;
+  --ct-cbbcaf: 203 188 175;
+  --ct-cbd4bf: 203 212 191;
+  --ct-d0d8c6: 208 216 198;
+  --ct-d1c2b5: 209 194 181;
+  --ct-d1d9c5: 209 217 197;
+  --ct-d2c5a8: 210 197 168;
+  --ct-d4e7dc: 212 231 220;
+  --ct-d5dac9: 213 218 201;
+  --ct-d5edc9: 213 237 201;
+  --ct-d6e8c9: 214 232 201;
+  --ct-d7ccc1: 215 204 193;
+  --ct-d8b9f4: 216 185 244;
+  --ct-d9aa95: 217 170 149;
+  --ct-deebdc: 222 235 220;
+  --ct-e0e5d4: 224 229 212;
+  --ct-e1edc4: 225 237 196;
+  --ct-e3ddcd: 227 221 205;
+  --ct-e4c7a0: 228 199 160;
+  --ct-e4ddbe: 228 221 190;
+  --ct-e4ece5: 228 236 229;
+  --ct-e5e9df: 229 233 223;
+  --ct-e6e4d9: 230 228 217;
+  --ct-edbaab: 237 186 171;
+  --ct-edbb98: 237 187 152;
+  --ct-ede9e1: 237 233 225;
+  --ct-eee9dd: 238 233 221;
+  --ct-eee9df: 238 233 223;
+  --ct-f0e5c6: 240 229 198;
+  --ct-f0e9da: 240 233 218;
+  --ct-f0ecdf: 240 236 223;
+  --ct-f1b99b: 241 185 155;
+  --ct-f1d4bc: 241 212 188;
+  --ct-f2c0a5: 242 192 165;
+  --ct-f3bea3: 243 190 163;
+  --ct-f4b9de: 244 185 222;
+  --ct-f4cab9: 244 202 185;
+  --ct-f4d2bd: 244 210 189;
+  --ct-f4e5b9: 244 229 185;
+  --ct-f9e7d8: 249 231 216;
+  --ct-ffb49b: 255 180 155;
+  --ct-ffcfbf: 255 207 191;
+  --ct-ffd18a: 255 209 138;
+  --ct-fff1eb: 255 241 235;
+  --ct-fff2e9: 255 242 233;
+}
+
+*, ::before, ::after {
+  --tw-border-spacing-x: 0;
+  --tw-border-spacing-y: 0;
+  --tw-translate-x: 0;
+  --tw-translate-y: 0;
+  --tw-rotate: 0;
+  --tw-skew-x: 0;
+  --tw-skew-y: 0;
+  --tw-scale-x: 1;
+  --tw-scale-y: 1;
+  --tw-pan-x:  ;
+  --tw-pan-y:  ;
+  --tw-pinch-zoom:  ;
+  --tw-scroll-snap-strictness: proximity;
+  --tw-gradient-from-position:  ;
+  --tw-gradient-via-position:  ;
+  --tw-gradient-to-position:  ;
+  --tw-ordinal:  ;
+  --tw-slashed-zero:  ;
+  --tw-numeric-figure:  ;
+  --tw-numeric-spacing:  ;
+  --tw-numeric-fraction:  ;
+  --tw-ring-inset:  ;
+  --tw-ring-offset-width: 0px;
+  --tw-ring-offset-color: #fff;
+  --tw-ring-color: rgb(59 130 246 / 0.5);
+  --tw-ring-offset-shadow: 0 0 #0000;
+  --tw-ring-shadow: 0 0 #0000;
+  --tw-shadow: 0 0 #0000;
+  --tw-shadow-colored: 0 0 #0000;
+  --tw-blur:  ;
+  --tw-brightness:  ;
+  --tw-contrast:  ;
+  --tw-grayscale:  ;
+  --tw-hue-rotate:  ;
+  --tw-invert:  ;
+  --tw-saturate:  ;
+  --tw-sepia:  ;
+  --tw-drop-shadow:  ;
+  --tw-backdrop-blur:  ;
+  --tw-backdrop-brightness:  ;
+  --tw-backdrop-contrast:  ;
+  --tw-backdrop-grayscale:  ;
+  --tw-backdrop-hue-rotate:  ;
+  --tw-backdrop-invert:  ;
+  --tw-backdrop-opacity:  ;
+  --tw-backdrop-saturate:  ;
+  --tw-backdrop-sepia:  ;
+  --tw-contain-size:  ;
+  --tw-contain-layout:  ;
+  --tw-contain-paint:  ;
+  --tw-contain-style:  ;
+}
+
+::backdrop {
+  --tw-border-spacing-x: 0;
+  --tw-border-spacing-y: 0;
+  --tw-translate-x: 0;
+  --tw-translate-y: 0;
+  --tw-rotate: 0;
+  --tw-skew-x: 0;
+  --tw-skew-y: 0;
+  --tw-scale-x: 1;
+  --tw-scale-y: 1;
+  --tw-pan-x:  ;
+  --tw-pan-y:  ;
+  --tw-pinch-zoom:  ;
+  --tw-scroll-snap-strictness: proximity;
+  --tw-gradient-from-position:  ;
+  --tw-gradient-via-position:  ;
+  --tw-gradient-to-position:  ;
+  --tw-ordinal:  ;
+  --tw-slashed-zero:  ;
+  --tw-numeric-figure:  ;
+  --tw-numeric-spacing:  ;
+  --tw-numeric-fraction:  ;
+  --tw-ring-inset:  ;
+  --tw-ring-offset-width: 0px;
+  --tw-ring-offset-color: #fff;
+  --tw-ring-color: rgb(59 130 246 / 0.5);
+  --tw-ring-offset-shadow: 0 0 #0000;
+  --tw-ring-shadow: 0 0 #0000;
+  --tw-shadow: 0 0 #0000;
+  --tw-shadow-colored: 0 0 #0000;
+  --tw-blur:  ;
+  --tw-brightness:  ;
+  --tw-contrast:  ;
+  --tw-grayscale:  ;
+  --tw-hue-rotate:  ;
+  --tw-invert:  ;
+  --tw-saturate:  ;
+  --tw-sepia:  ;
+  --tw-drop-shadow:  ;
+  --tw-backdrop-blur:  ;
+  --tw-backdrop-brightness:  ;
+  --tw-backdrop-contrast:  ;
+  --tw-backdrop-grayscale:  ;
+  --tw-backdrop-hue-rotate:  ;
+  --tw-backdrop-invert:  ;
+  --tw-backdrop-opacity:  ;
+  --tw-backdrop-saturate:  ;
+  --tw-backdrop-sepia:  ;
+  --tw-contain-size:  ;
+  --tw-contain-layout:  ;
+  --tw-contain-paint:  ;
+  --tw-contain-style:  ;
+}
+
+/* ! tailwindcss v3.4.19 | MIT License | https://tailwindcss.com */
+
+/*
+1. Prevent padding and border from affecting element width. (https://github.com/mozdevs/cssremedy/issues/4)
+2. Allow adding a border to an element by just adding a border-width. (https://github.com/tailwindcss/tailwindcss/pull/116)
+*/
+
+*,
+::before,
+::after {
+  box-sizing: border-box;
+  /* 1 */
+  border-width: 0;
+  /* 2 */
+  border-style: solid;
+  /* 2 */
+  border-color: #e5e7eb;
+  /* 2 */
+}
+
+::before,
+::after {
+  --tw-content: '';
+}
+
+/*
+1. Use a consistent sensible line-height in all browsers.
+2. Prevent adjustments of font size after orientation changes in iOS.
+3. Use a more readable tab size.
+4. Use the user's configured `sans` font-family by default.
+5. Use the user's configured `sans` font-feature-settings by default.
+6. Use the user's configured `sans` font-variation-settings by default.
+7. Disable tap highlights on iOS
+*/
+
+html,
+:host {
+  line-height: 1.5;
+  /* 1 */
+  -webkit-text-size-adjust: 100%;
+  /* 2 */
+  -moz-tab-size: 4;
+  /* 3 */
+  -o-tab-size: 4;
+     tab-size: 4;
+  /* 3 */
+  font-family: "Source Sans 3", system-ui, -apple-system, sans-serif;
+  /* 4 */
+  font-feature-settings: normal;
+  /* 5 */
+  font-variation-settings: normal;
+  /* 6 */
+  -webkit-tap-highlight-color: transparent;
+  /* 7 */
+}
+
+/*
+1. Remove the margin in all browsers.
+2. Inherit line-height from `html` so users can set them as a class directly on the `html` element.
+*/
+
+body {
+  margin: 0;
+  /* 1 */
+  line-height: inherit;
+  /* 2 */
+}
+
+/*
+1. Add the correct height in Firefox.
+2. Correct the inheritance of border color in Firefox. (https://bugzilla.mozilla.org/show_bug.cgi?id=190655)
+3. Ensure horizontal rules are visible by default.
+*/
+
+hr {
+  height: 0;
+  /* 1 */
+  color: inherit;
+  /* 2 */
+  border-top-width: 1px;
+  /* 3 */
+}
+
+/*
+Add the correct text decoration in Chrome, Edge, and Safari.
+*/
+
+abbr:where([title]) {
+  -webkit-text-decoration: underline dotted;
+          text-decoration: underline dotted;
+}
+
+/*
+Remove the default font size and weight for headings.
+*/
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-size: inherit;
+  font-weight: inherit;
+}
+
+/*
+Reset links to optimize for opt-in styling instead of opt-out.
+*/
+
+a {
+  color: inherit;
+  text-decoration: inherit;
+}
+
+/*
+Add the correct font weight in Edge and Safari.
+*/
+
+b,
+strong {
+  font-weight: bolder;
+}
+
+/*
+1. Use the user's configured `mono` font-family by default.
+2. Use the user's configured `mono` font-feature-settings by default.
+3. Use the user's configured `mono` font-variation-settings by default.
+4. Correct the odd `em` font sizing in all browsers.
+*/
+
+code,
+kbd,
+samp,
+pre {
+  font-family: "IBM Plex Mono", ui-monospace, SFMono-Regular, monospace;
+  /* 1 */
+  font-feature-settings: normal;
+  /* 2 */
+  font-variation-settings: normal;
+  /* 3 */
+  font-size: 1em;
+  /* 4 */
+}
+
+/*
+Add the correct font size in all browsers.
+*/
+
+small {
+  font-size: 80%;
+}
+
+/*
+Prevent `sub` and `sup` elements from affecting the line height in all browsers.
+*/
+
+sub,
+sup {
+  font-size: 75%;
+  line-height: 0;
+  position: relative;
+  vertical-align: baseline;
+}
+
+sub {
+  bottom: -0.25em;
+}
+
+sup {
+  top: -0.5em;
+}
+
+/*
+1. Remove text indentation from table contents in Chrome and Safari. (https://bugs.chromium.org/p/chromium/issues/detail?id=999088, https://bugs.webkit.org/show_bug.cgi?id=201297)
+2. Correct table border color inheritance in all Chrome and Safari. (https://bugs.chromium.org/p/chromium/issues/detail?id=935729, https://bugs.webkit.org/show_bug.cgi?id=195016)
+3. Remove gaps between table borders by default.
+*/
+
+table {
+  text-indent: 0;
+  /* 1 */
+  border-color: inherit;
+  /* 2 */
+  border-collapse: collapse;
+  /* 3 */
+}
+
+/*
+1. Change the font styles in all browsers.
+2. Remove the margin in Firefox and Safari.
+3. Remove default padding in all browsers.
+*/
+
+button,
+input,
+optgroup,
+select,
+textarea {
+  font-family: inherit;
+  /* 1 */
+  font-feature-settings: inherit;
+  /* 1 */
+  font-variation-settings: inherit;
+  /* 1 */
+  font-size: 100%;
+  /* 1 */
+  font-weight: inherit;
+  /* 1 */
+  line-height: inherit;
+  /* 1 */
+  letter-spacing: inherit;
+  /* 1 */
+  color: inherit;
+  /* 1 */
+  margin: 0;
+  /* 2 */
+  padding: 0;
+  /* 3 */
+}
+
+/*
+Remove the inheritance of text transform in Edge and Firefox.
+*/
+
+button,
+select {
+  text-transform: none;
+}
+
+/*
+1. Correct the inability to style clickable types in iOS and Safari.
+2. Remove default button styles.
+*/
+
+button,
+input:where([type='button']),
+input:where([type='reset']),
+input:where([type='submit']) {
+  -webkit-appearance: button;
+  /* 1 */
+  background-color: transparent;
+  /* 2 */
+  background-image: none;
+  /* 2 */
+}
+
+/*
+Use the modern Firefox focus style for all focusable elements.
+*/
+
+:-moz-focusring {
+  outline: auto;
+}
+
+/*
+Remove the additional `:invalid` styles in Firefox. (https://github.com/mozilla/gecko-dev/blob/2f9eacd9d3d995c937b4251a5557d95d494c9be1/layout/style/res/forms.css#L728-L737)
+*/
+
+:-moz-ui-invalid {
+  box-shadow: none;
+}
+
+/*
+Add the correct vertical alignment in Chrome and Firefox.
+*/
+
+progress {
+  vertical-align: baseline;
+}
+
+/*
+Correct the cursor style of increment and decrement buttons in Safari.
+*/
+
+::-webkit-inner-spin-button,
+::-webkit-outer-spin-button {
+  height: auto;
+}
+
+/*
+1. Correct the odd appearance in Chrome and Safari.
+2. Correct the outline style in Safari.
+*/
+
+[type='search'] {
+  -webkit-appearance: textfield;
+  /* 1 */
+  outline-offset: -2px;
+  /* 2 */
+}
+
+/*
+Remove the inner padding in Chrome and Safari on macOS.
+*/
+
+::-webkit-search-decoration {
+  -webkit-appearance: none;
+}
+
+/*
+1. Correct the inability to style clickable types in iOS and Safari.
+2. Change font properties to `inherit` in Safari.
+*/
+
+::-webkit-file-upload-button {
+  -webkit-appearance: button;
+  /* 1 */
+  font: inherit;
+  /* 2 */
+}
+
+/*
+Add the correct display in Chrome and Safari.
+*/
+
+summary {
+  display: list-item;
+}
+
+/*
+Removes the default spacing and border for appropriate elements.
+*/
+
+blockquote,
+dl,
+dd,
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+hr,
+figure,
+p,
+pre {
+  margin: 0;
+}
+
+fieldset {
+  margin: 0;
+  padding: 0;
+}
+
+legend {
+  padding: 0;
+}
+
+ol,
+ul,
+menu {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+/*
+Reset default styling for dialogs.
+*/
+
+dialog {
+  padding: 0;
+}
+
+/*
+Prevent resizing textareas horizontally by default.
+*/
+
+textarea {
+  resize: vertical;
+}
+
+/*
+1. Reset the default placeholder opacity in Firefox. (https://github.com/tailwindlabs/tailwindcss/issues/3300)
+2. Set the default placeholder color to the user's configured gray 400 color.
+*/
+
+input::-moz-placeholder, textarea::-moz-placeholder {
+  opacity: 1;
+  /* 1 */
+  color: #9ca3af;
+  /* 2 */
+}
+
+input::placeholder,
+textarea::placeholder {
+  opacity: 1;
+  /* 1 */
+  color: #9ca3af;
+  /* 2 */
+}
+
+/*
+Set the default cursor for buttons.
+*/
+
+button,
+[role="button"] {
+  cursor: pointer;
+}
+
+/*
+Make sure disabled buttons don't get the pointer cursor.
+*/
+
+:disabled {
+  cursor: default;
+}
+
+/*
+1. Make replaced elements `display: block` by default. (https://github.com/mozdevs/cssremedy/issues/14)
+2. Add `vertical-align: middle` to align replaced elements more sensibly by default. (https://github.com/jensimmons/cssremedy/issues/14#issuecomment-634934210)
+   This can trigger a poorly considered lint error in some tools but is included by design.
+*/
+
+img,
+svg,
+video,
+canvas,
+audio,
+iframe,
+embed,
+object {
+  display: block;
+  /* 1 */
+  vertical-align: middle;
+  /* 2 */
+}
+
+/*
+Constrain images and videos to the parent width and preserve their intrinsic aspect ratio. (https://github.com/mozdevs/cssremedy/issues/14)
+*/
+
+img,
+video {
+  max-width: 100%;
+  height: auto;
+}
+
+/* Make elements with the HTML hidden attribute stay hidden by default */
+
+[hidden]:where(:not([hidden="until-found"])) {
+  display: none;
+}
+
+summary.list-none::-webkit-details-marker {
+  display: none;
+}
+
+html,
+  body {
+  --tw-bg-opacity: 1;
+  background-color: rgb(var(--cave-950) / var(--tw-bg-opacity, 1));
+  --tw-text-opacity: 1;
+  color: rgb(var(--cave-texte-200) / var(--tw-text-opacity, 1));
+  /* 16 px de base : toute l'échelle typographique en dépend. */
+  font-size: 16px;
+  -webkit-tap-highlight-color: transparent;
+}
+
+/**
+   * Chiffres tabulaires PARTOUT.
+   *
+   * Sans ça, une colonne de montants danse d'une ligne à l'autre parce que le
+   * « 1 » est plus étroit que le « 8 » — on ne peut plus comparer deux nombres
+   * d'un coup d'œil, ce qui est précisément le geste qu'on fait toute la
+   * journée dans une compta.
+   */
+
+.font-mono,
+  [class*='font-mono'] {
+  font-variant-numeric: tabular-nums;
+  font-feature-settings: 'tnum' 1, 'zero' 1;
+}
+
+/* Un focus visible et franc : l'app se manipule aussi au clavier, au bureau. */
+
+:focus-visible {
+  outline: 2px solid rgb(var(--ebc-straw) / 1);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+/* Les champs ne doivent jamais déclencher le zoom automatique d'iOS :
+     en dessous de 16 px, Safari zoome à chaque prise de focus. */
+
+input,
+  select,
+  textarea {
+  font-size: 16px;
+}
+
+/* Supprime la croix de suppression et la loupe natives des input[type="search"] */
+
+input[type="search"]::-webkit-search-decoration,
+  input[type="search"]::-webkit-search-cancel-button,
+  input[type="search"]::-webkit-search-results-button,
+  input[type="search"]::-webkit-search-results-decoration {
+  -webkit-appearance: none;
+  appearance: none;
+  display: none;
+}
+
+/**
+   * Cible tactile minimale. Utilisée sur tout élément interactif : dans la
+   * cuverie, l'app se manipule avec des gants ou les doigts mouillés.
+   */
+
+/* Surface de contenu — remplace la carte `rounded-3xl` omniprésente. */
+
+/* Lecture d'instrument : le grand nombre et son unité. */
+
+.relative {
+  position: relative;
+}
+
+.mx-2 {
+  margin-left: 0.5rem;
+  margin-right: 0.5rem;
+}
+
+.ml-0\.5 {
+  margin-left: 0.125rem;
+}
+
+.ml-auto {
+  margin-left: auto;
+}
+
+.mr-\[57px\] {
+  margin-right: 57px;
+}
+
+.mt-2 {
+  margin-top: 0.5rem;
+}
+
+.flex {
+  display: flex;
+}
+
+.inline-flex {
+  display: inline-flex;
+}
+
+.hidden {
+  display: none;
+}
+
+.size-2\.5 {
+  width: 0.625rem;
+  height: 0.625rem;
+}
+
+.size-8 {
+  width: 2rem;
+  height: 2rem;
+}
+
+.h-10 {
+  height: 2.5rem;
+}
+
+.h-\[22px\] {
+  height: 22px;
+}
+
+.h-\[52px\] {
+  height: 52px;
+}
+
+.min-h-6 {
+  min-height: 1.5rem;
+}
+
+.min-h-7 {
+  min-height: 1.75rem;
+}
+
+.min-h-8 {
+  min-height: 2rem;
+}
+
+.min-h-9 {
+  min-height: 2.25rem;
+}
+
+.min-h-\[37px\] {
+  min-height: 37px;
+}
+
+.w-\[18px\] {
+  width: 18px;
+}
+
+.w-\[54px\] {
+  width: 54px;
+}
+
+.w-full {
+  width: 100%;
+}
+
+.min-w-0 {
+  min-width: 0px;
+}
+
+.min-w-\[54px\] {
+  min-width: 54px;
+}
+
+.flex-1 {
+  flex: 1 1 0%;
+}
+
+.shrink-0 {
+  flex-shrink: 0;
+}
+
+.cursor-pointer {
+  cursor: pointer;
+}
+
+.scroll-mt-9 {
+  scroll-margin-top: 2.25rem;
+}
+
+.list-none {
+  list-style-type: none;
+}
+
+.flex-wrap {
+  flex-wrap: wrap;
+}
+
+.items-center {
+  align-items: center;
+}
+
+.justify-center {
+  justify-content: center;
+}
+
+.gap-1 {
+  gap: 0.25rem;
+}
+
+.gap-1\.5 {
+  gap: 0.375rem;
+}
+
+.gap-2 {
+  gap: 0.5rem;
+}
+
+.gap-x-1\.5 {
+  -moz-column-gap: 0.375rem;
+       column-gap: 0.375rem;
+}
+
+.overflow-hidden {
+  overflow: hidden;
+}
+
+.truncate {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.whitespace-nowrap {
+  white-space: nowrap;
+}
+
+.rounded-control {
+  border-radius: 0.625rem;
+}
+
+.rounded-full {
+  border-radius: 9999px;
+}
+
+.border {
+  border-width: 1px;
+}
+
+.border-b {
+  border-bottom-width: 1px;
+}
+
+.border-l-4 {
+  border-left-width: 4px;
+}
+
+.border-t {
+  border-top-width: 1px;
+}
+
+.border-dashed {
+  border-style: dashed;
+}
+
+.border-cave-600 {
+  --tw-border-opacity: 1;
+  border-color: rgb(var(--cave-600) / var(--tw-border-opacity, 1));
+}
+
+.border-cave-800 {
+  --tw-border-opacity: 1;
+  border-color: rgb(var(--cave-800) / var(--tw-border-opacity, 1));
+}
+
+.border-ebc-straw {
+  --tw-border-opacity: 1;
+  border-color: rgb(var(--ebc-straw) / var(--tw-border-opacity, 1));
+}
+
+.border-l-hop {
+  --tw-border-opacity: 1;
+  border-left-color: rgb(var(--hop) / var(--tw-border-opacity, 1));
+}
+
+.bg-cave-950 {
+  --tw-bg-opacity: 1;
+  background-color: rgb(var(--cave-950) / var(--tw-bg-opacity, 1));
+}
+
+.bg-ebc-straw {
+  --tw-bg-opacity: 1;
+  background-color: rgb(var(--ebc-straw) / var(--tw-bg-opacity, 1));
+}
+
+.bg-hop {
+  --tw-bg-opacity: 1;
+  background-color: rgb(var(--hop) / var(--tw-bg-opacity, 1));
+}
+
+.px-1 {
+  padding-left: 0.25rem;
+  padding-right: 0.25rem;
+}
+
+.px-1\.5 {
+  padding-left: 0.375rem;
+  padding-right: 0.375rem;
+}
+
+.px-2 {
+  padding-left: 0.5rem;
+  padding-right: 0.5rem;
+}
+
+.px-2\.5 {
+  padding-left: 0.625rem;
+  padding-right: 0.625rem;
+}
+
+.px-3\.5 {
+  padding-left: 0.875rem;
+  padding-right: 0.875rem;
+}
+
+.py-0\.5 {
+  padding-top: 0.125rem;
+  padding-bottom: 0.125rem;
+}
+
+.py-1\.5 {
+  padding-top: 0.375rem;
+  padding-bottom: 0.375rem;
+}
+
+.py-2 {
+  padding-top: 0.5rem;
+  padding-bottom: 0.5rem;
+}
+
+.py-3 {
+  padding-top: 0.75rem;
+  padding-bottom: 0.75rem;
+}
+
+.pb-2 {
+  padding-bottom: 0.5rem;
+}
+
+.pl-1 {
+  padding-left: 0.25rem;
+}
+
+.pl-\[34px\] {
+  padding-left: 34px;
+}
+
+.pr-1 {
+  padding-right: 0.25rem;
+}
+
+.pr-2\.5 {
+  padding-right: 0.625rem;
+}
+
+.text-left {
+  text-align: left;
+}
+
+.text-right {
+  text-align: right;
+}
+
+.font-mono {
+  font-family: "IBM Plex Mono", ui-monospace, SFMono-Regular, monospace;
+}
+
+.font-sans {
+  font-family: "Source Sans 3", system-ui, -apple-system, sans-serif;
+}
+
+.text-base {
+  font-size: 1rem;
+  line-height: 1.5rem;
+}
+
+.text-sm {
+  font-size: 0.875rem;
+  line-height: 1.25rem;
+}
+
+.text-xs {
+  font-size: 0.75rem;
+  line-height: 1rem;
+}
+
+.font-medium {
+  font-weight: 500;
+}
+
+.font-normal {
+  font-weight: 400;
+}
+
+.font-semibold {
+  font-weight: 600;
+}
+
+.not-italic {
+  font-style: normal;
+}
+
+.leading-\[18px\] {
+  line-height: 18px;
+}
+
+.leading-tight {
+  line-height: 1.25;
+}
+
+.text-attention {
+  --tw-text-opacity: 1;
+  color: rgb(var(--attention-texte) / var(--tw-text-opacity, 1));
+}
+
+.text-cave-200 {
+  --tw-text-opacity: 1;
+  color: rgb(var(--cave-texte-200) / var(--tw-text-opacity, 1));
+}
+
+.text-cave-400 {
+  --tw-text-opacity: 1;
+  color: rgb(var(--cave-texte-400) / var(--tw-text-opacity, 1));
+}
+
+.text-cave-50 {
+  --tw-text-opacity: 1;
+  color: rgb(var(--cave-texte-50) / var(--tw-text-opacity, 1));
+}
+
+.text-cave-950 {
+  --tw-text-opacity: 1;
+  color: rgb(var(--cave-texte-950) / var(--tw-text-opacity, 1));
+}
+
+.underline {
+  text-decoration-line: underline;
+}
+
+.decoration-attention {
+  text-decoration-color: rgb(var(--attention) / 1);
+}
+
+.decoration-dotted {
+  text-decoration-style: dotted;
+}
+
+.underline-offset-2 {
+  text-underline-offset: 2px;
+}
+
+/* Barre de défilement discrète, accordée au fond chaud. */
+
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: rgb(var(--cave-950) / 1);
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgb(var(--cave-700) / 1);
+  border-radius: 9999px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #C87A2C;
+}
+
+/**
+ * Mouvement : uniquement en réponse à une action, jamais à l'ouverture d'un
+ * écran. Et respect strict de la préférence système.
+ */
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/**
+ * UN SEUL SIGNIFIANT PAR GESTE — le chevron des blocs dépliables.
+ *
+ * ⚠️ Mesuré sur le jour de brassage : 17 `<summary>` visibles y rendaient
+ * `display: list-item` avec `list-style-type: disclosure-closed`, c'est-à-dire
+ * le petit triangle ▸ du navigateur. Sur l'ensemble des sources, 158 des 178
+ * blocs dépliables n'avaient AUCUN signifiant dessiné et s'en remettaient à ce
+ * triangle ; les 20 autres dessinaient un chevron lucide. Le même geste —
+ * déplier — se présentait donc sous deux dessins différents sur un même écran,
+ * dont un qui n'appartient à aucun système de design et change de forme selon
+ * le navigateur.
+ *
+ * La règle pose le chevron de lucide (trait 2, bouts ronds) en image de fond,
+ * et ne touche PAS au mode de disposition : `flex`, `grid` et `block` gardent
+ * le leur. C'est le seul moyen sûr sur 158 blocs dont on ne relit pas la mise
+ * en page un par un.
+ *
+ * `:not(:has([class*="chevron"]))` laisse tranquilles les blocs qui dessinent
+ * déjà le leur — sans quoi ils en porteraient deux.
+ *
+ * Voir `DESIGN.md`, « Les surfaces du navigateur ».
+ */
+
+summary::-webkit-details-marker {
+  display: none;
+}
+
+/* Le marqueur natif saute pour TOUS les blocs, y compris ceux qui dessinent
+   déjà leur chevron : sans ça ils en portaient deux, le ▸ du navigateur et le
+   leur. */
+
+summary {
+  list-style: none;
+}
+
+summary:not(:has([class*='chevron'])) {
+  padding-right: 1.75rem;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%239A8A7E' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 0.25rem center;
+  background-size: 1.25rem 1.25rem;
+}
+
+details[open] > summary:not(:has([class*='chevron'])) {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%239A8A7E' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m18 15-6-6-6 6'/%3E%3C/svg%3E");
+}
+
+/* Écran « Nouvelle dépense » (p3c-3) : seulement ce que Tailwind rend mal. Préfixe dp-p3c- (L26). Jetons de l'app uniquement (le thème suit). */
+
+/* La colonne « qté × prix » : 94 px, quantité à droite (en gras), × centré, prix tel qu'imprimé ; le sous-total de bande tombe dans la même colonne (marge droite 57 px). */
+
+/* D273f : une quantité plus longue que sa colonne (« 100 Stk ») l'élargit vers la gauche ; le × et le prix gardent leur place, jamais recouverts. */
+
+.dp-p3c-dq {
+  margin-left: auto;
+  flex: none;
+  min-width: 94px;
+  display: inline-grid;
+  grid-template-columns: minmax(37px, max-content) 7px 44px;
+  -moz-column-gap: 3px;
+       column-gap: 3px;
+  font-family: ui-monospace, "IBM Plex Mono", monospace;
+  font-size: 12px;
+  color: rgb(var(--cave-400, 120 120 120));
+  white-space: nowrap;
+  font-variant-numeric: tabular-nums;
+}
+
+.dp-p3c-dq > span:first-child {
+  text-align: right;
+}
+
+.dp-p3c-dq > span:last-child {
+  text-align: left;
+}
+
+.dp-p3c-dq > i {
+  font-style: normal;
+  text-align: center;
+}
+
+/* l'en-tête de bande reste sous le haut du corps qui défile */
+
+.dp-p3c-bande-entete {
+  position: sticky;
+  top: 0;
+  z-index: 5;
+  height: 28px;
+}
+
+.dp-p3c-filtre {
+  position: sticky;
+  top: 0;
+  z-index: 6;
+}
+
+/* la frise de la lecture (« envoi ✓ · lecture · vérification ») : l'étape en cours défile en pointillés ; sans animation si le système la refuse */
+
+@keyframes dp-p3c-frise {
+  from {
+    background-position: 0 0;
+  }
+
+  to {
+    background-position: 24px 0;
+  }
+}
+
+.dp-p3c-frise-cours {
+  background: repeating-linear-gradient(90deg, rgb(var(--cave-200)) 0 6px, rgb(var(--cave-800)) 6px 12px);
+  background-size: 24px 6px;
+  animation: dp-p3c-frise 1s linear infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .dp-p3c-frise-cours {
+    animation: none;
+  }
+}
+
+/* hachure d'un point ouvert dans la barre */
+
+.dp-p3c-hachure {
+  background-image: repeating-linear-gradient(135deg, rgba(0,0,0,.35) 0 2px, transparent 2px 5px) !important;
+}
+
+/* l'éclair d'une ligne visée (1,6 s) */
+
+@keyframes dp-p3c-eclair {
+  0% {
+    background-color: rgba(243, 210, 122, .6);
+  }
+
+  100% {
+    background-color: transparent;
+  }
+}
+
+.dp-p3c-garde {
+  animation: dp-p3c-eclair 1.6s ease-out 1;
+  outline: 2px solid rgb(var(--attention, 180 120 20));
+  outline-offset: -2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .dp-p3c-garde {
+    animation: none;
+    background-color: rgba(243, 210, 122, .35);
+  }
+}
+
+.dp-p3c-visee {
+  outline: 2px solid rgb(var(--attention, 180 120 20));
+  outline-offset: 1px;
+}
+
+/* le « Détail » et les rangées ne dépassent jamais la largeur */
+
+.dp-p3c-corps {
+  overscroll-behavior: contain;
+}
+
+/* L'en-tête de bande est collant : son fond doit être OPAQUE (la page + une teinte), sinon les rangées passent dessous et se lisent à travers. */
+
+.dp-p3c-bande-entete {
+  background-color: rgb(var(--cave-950));
+  background-image: linear-gradient(var(--dp-p3c-teinte, transparent), var(--dp-p3c-teinte, transparent));
+}
+
+.dp-p3c-t-malt {
+  --dp-p3c-teinte: rgb(224 160 46 / .22);
+}
+
+.dp-p3c-t-houblon {
+  --dp-p3c-teinte: rgb(var(--hop) / .2);
+}
+
+.dp-p3c-t-levure {
+  --dp-p3c-teinte: rgb(var(--area-finances) / .2);
+}
+
+.dp-p3c-t-autres {
+  --dp-p3c-teinte: rgb(var(--cave-400) / .25);
+}
+
+/* Les familles de plus (D262c, D262d) : une teinte par jeton de l'app, distincte de ses voisines dans l'ordre des bandes ; le thème suit. */
+
+.dp-p3c-t-sucre {
+  --dp-p3c-teinte: rgb(200 122 44 / .24);
+}
+
+.dp-p3c-t-additif {
+  --dp-p3c-teinte: rgb(var(--area-agenda) / .22);
+}
+
+.dp-p3c-t-materiel {
+  --dp-p3c-teinte: rgb(var(--water) / .24);
+}
+
+/* D306 : la Rénovation, kaki (clair 120 112 28, cave 196 186 90), distincte des onze autres et du rouge d'alerte. Cinq familles ont leur propre couleur par thème (critique du 01.11 pour les quatre premières : Consommables = Autres en sombre, Nettoyage = vert du houblon en clair, Emballage et Services presque invisibles en sombre). */
+
+:root, [data-theme='clair'] {
+  --dp-fam-emballage: 107 58 30;
+  --dp-fam-nettoyage: 14 138 122;
+  --dp-fam-consommable: 168 62 108;
+  --dp-fam-service: 160 82 45;
+  --dp-fam-renovation: 120 112 28;
+}
+
+[data-theme='cave'] {
+  --dp-fam-emballage: 168 112 72;
+  --dp-fam-nettoyage: 80 200 170;
+  --dp-fam-consommable: 222 128 166;
+  --dp-fam-service: 214 110 70;
+  --dp-fam-renovation: 196 186 90;
+}
+
+.dp-p3c-t-emballage {
+  --dp-p3c-teinte: rgb(var(--dp-fam-emballage) / .26);
+}
+
+.dp-p3c-t-nettoyage {
+  --dp-p3c-teinte: rgb(var(--dp-fam-nettoyage) / .2);
+}
+
+.dp-p3c-t-consommable {
+  --dp-p3c-teinte: rgb(var(--dp-fam-consommable) / .2);
+}
+
+.dp-p3c-t-service {
+  --dp-p3c-teinte: rgb(var(--dp-fam-service) / .24);
+}
+
+.dp-p3c-t-renovation {
+  --dp-p3c-teinte: rgb(var(--dp-fam-renovation) / .22);
+}
+
+.dp-p3c-pt-emballage {
+  background-color: rgb(var(--dp-fam-emballage));
+}
+
+.dp-p3c-pt-nettoyage {
+  background-color: rgb(var(--dp-fam-nettoyage));
+}
+
+.dp-p3c-pt-consommable {
+  background-color: rgb(var(--dp-fam-consommable));
+}
+
+.dp-p3c-pt-service {
+  background-color: rgb(var(--dp-fam-service));
+}
+
+.dp-p3c-pt-renovation {
+  background-color: rgb(var(--dp-fam-renovation));
+}
+
+.dp-p3c-fi-emballage {
+  border-left-color: rgb(var(--dp-fam-emballage));
+}
+
+.dp-p3c-fi-nettoyage {
+  border-left-color: rgb(var(--dp-fam-nettoyage));
+}
+
+.dp-p3c-fi-consommable {
+  border-left-color: rgb(var(--dp-fam-consommable));
+}
+
+.dp-p3c-fi-service {
+  border-left-color: rgb(var(--dp-fam-service));
+}
+
+.dp-p3c-fi-renovation {
+  border-left-color: rgb(var(--dp-fam-renovation));
+}
+
+.dp-p3c-t-papier {
+  --dp-p3c-teinte: rgb(var(--cave-400) / .2);
+}
+
+/* D275c : le nom d'une rangée tient sur une ligne, deux au plus pour un nom long ; il passe à la ligne entre deux mots, jamais au milieu d'un mot. L'imprimé entier est au plateau. */
+
+.dp-p3c-nom {
+  overflow-wrap: normal;
+  word-break: normal;
+  hyphens: none;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
+  overflow: hidden;
+}
+
+/* Voie r2-sousfamilles (D306) : les seules règles neuves des maquettes. Préfixe sf- (L26). */
+
+/* La famille neuve « Rénovation », après Consommables, teinte kaki (D306). */
+
+:root, [data-theme='clair'] {
+  --sf-fam-renovation: 120 112 28;
+}
+
+[data-theme='cave'] {
+  --sf-fam-renovation: 196 186 90;
+}
+
+.sf-t-renovation {
+  --dp-p3c-teinte: rgb(var(--sf-fam-renovation) / .22);
+}
+
+.sf-pt-renovation {
+  background-color: rgb(var(--sf-fam-renovation));
+}
+
+.sf-fi-renovation {
+  border-left-color: rgb(var(--sf-fam-renovation));
+}
+
+/* La couleur de la famille de la bande, pour ce qui y est posé (sous-titre, pastille, sous-groupe). */
+
+.sf-c-nettoyage {
+  --sf-c: var(--dp-fam-nettoyage);
+}
+
+.sf-c-consommable {
+  --sf-c: var(--dp-fam-consommable);
+}
+
+.sf-c-renovation {
+  --sf-c: var(--sf-fam-renovation);
+}
+
+.sf-c-houblon {
+  --sf-c: var(--hop);
+}
+
+/* B : le sous-titre d'un groupe. */
+
+.sf-st {
+  background: rgb(var(--sf-c) / .07);
+}
+
+/* C : la pastille de sous-famille sur la rangée. */
+
+.sf-mot {
+  background: rgb(var(--sf-c) / .14);
+  box-shadow: inset 0 0 0 1px rgb(var(--sf-c) / .5);
+}
+
+/* D : la ligne d'un sous-groupe, et son ouverture. */
+
+.sf-sg[aria-expanded='true'] {
+  background: rgb(var(--sf-c) / .1);
+}
+
+/* E : la pastille-filtre active. */
+
+.sf-ch[aria-pressed='true'] {
+  background: rgb(var(--cave-50));
+  color: rgb(var(--cave-950));
+  border-color: rgb(var(--cave-50));
+}
+
+.sf-ch[aria-pressed='true'] .sf-ch-n {
+  color: rgb(var(--cave-950));
+}
+
+/* Cadre de la page de choix : ce qui change (repris de choix-captures). */
+
+.sf-vise {
+  outline: 2.5px solid #2d5f8a;
+  outline-offset: -2.5px;
+}
+
+/* E : une quantité « repris » dans la pastille active (fond noir) garde son jaune pointillé, éclairci pour rester lisible. */
+
+.sf-ch[aria-pressed='true'] [data-dp-niveau='repris'] {
+  color: rgb(243 210 122);
+  text-decoration-color: rgb(243 210 122);
+}

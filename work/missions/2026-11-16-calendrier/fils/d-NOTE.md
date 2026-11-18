@@ -1,0 +1,9 @@
+# Calendrier compact, mini maquettes d1 à d4 (16.11, statiques, sans JS, 390×844)
+Mesuré pour les 4 : rien sous 14 px, + à droite (12 px au-dessus des onglets, 14 px du bord), 0 script, 8 rangées de frise visibles (≥ 6), bande des semaines sur 2 lignes. Données de proto.html (S47 à S52). Captures : cap/d1.png, cap/d1-cave.png, cap/d2.png, cap/d3.png, cap/d4.png. Générateur hors dépôt (scratchpad dgen.cjs).
+
+- d1 « une ligne de tête » (froide) : en-tête de 46 px (113 CHF, S24 ⌄, 2 en retard, plein écran) ; « 6 sem. ⌄ » posé dans la courbe ; les 7 titres de rangée deviennent une seule légende soulignée (un toucher = + dans la voie) et un liseré de couleur à gauche. Tête : 222 px (26 %).
+- d2 « courbe calée sur la frise » (tiède) : la courbe des 6 semaines partage les colonnes de la frise ; ses marches portent les montants du « libre en fin de semaine » ; l'année devient une mini-courbe à côté du segment « 6 sem. ⌄ » ; titres de rangée remplacés par une gouttière d'icônes. Tête : 196 px (23 %).
+- d3 « tête repliée » (tiède) : le chiffre 113 CHF est posé sur la courbe de l'année (86 px), la fenêtre « 6 sem. » est le cadre bleu ; titres de rangée réduits à une légende sur un trait (nombre et total compris). Tête : 131 px (15,5 %), la plus compacte.
+- d4 « tout sur la courbe » (audacieuse, chaude) : pas d'en-tête ; « 113 CHF, au plus bas S24 » est écrit au creux de la courbe, « 2 en retard » est épinglé dessus puis rappelé par 2 points rouges sur les lignes concernées ; la bande des semaines est inversée (noire) ; les voies sont des tranches verticales. Tête : 194 px (23 %).
+
+Défauts connus (mini maquettes) : en d1, « S24 » touche la courbe ; en d3, « juin » touche le point bas ; en d4, « 6 sem. » chevauche la courbe. Le bas de la frise reste vide : les données réelles ne comptent que 8 rangées sur 6 semaines.

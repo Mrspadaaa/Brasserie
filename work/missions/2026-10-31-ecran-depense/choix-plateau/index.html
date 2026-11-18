@@ -1,0 +1,332 @@
+<title>Vue détail d'une ligne · panel v0 · 02.11</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<style>
+/* La vue détail d'une ligne de « Dépense » (le plateau) : le panel v0, seize idées classées par le critique, une rangée par cas.
+   Chaque vignette s'ouvre en grand au toucher (PUBLIER.md, D126). Modèle : choix-tva. */
+:root {
+  --fond: #f4f6f1;
+  --carte: #ffffff;
+  --encre: #1c2019;
+  --discret: #5a6155;
+  --trait: #dde2d6;
+  --houblon: #4a7426;
+  --choisir: #2d5f8a;
+  --alerte: #9a4a1c;
+  --voile: #0e100c;
+  --voile-encre: #eef2ea;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --fond: #151812; --carte: #1f241b; --encre: #e9eee4; --discret: #a7ae9f; --trait: #333a2d; --houblon: #8cc062;
+    --choisir: #8ab8e0; --alerte: #e8a878; color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --fond: #151812; --carte: #1f241b; --encre: #e9eee4; --discret: #a7ae9f; --trait: #333a2d; --houblon: #8cc062;
+  --choisir: #8ab8e0; --alerte: #e8a878; color-scheme: dark;
+}
+* { box-sizing: border-box; }
+body {
+  background: var(--fond); color: var(--encre); font: 16px/1.45 "Segoe UI", system-ui, sans-serif; margin: 0;
+  padding-block: 16px 64px;
+  padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px));
+}
+.page { max-width: 1320px; margin: 0 auto; display: grid; gap: 22px; }
+h1, h2 { margin: 0; line-height: 1.15; text-wrap: balance; }
+h1 { font-size: 1.7rem; font-weight: 800; }
+h2 { font-size: 1.1rem; font-weight: 800; }
+p { margin: 0; max-width: 70ch; }
+a { color: var(--choisir); font-weight: 700; }
+button:focus-visible { outline: 3px solid var(--houblon); outline-offset: 2px; }
+header { display: grid; gap: 10px; }
+.sur-titre { font-size: 0.875rem; letter-spacing: 0.06em; text-transform: uppercase; color: var(--discret); }
+#a-choisir { border-left: 4px solid var(--houblon); padding: 12px 14px; background: var(--carte); border-radius: 0 10px 10px 0; display: grid; gap: 6px; }
+#a-choisir p:first-child { font-size: 1.05rem; font-weight: 700; }
+.partout { display: grid; gap: 6px; }
+.partout ul { margin: 0; padding-left: 20px; display: grid; gap: 4px; max-width: 70ch; }
+.rangee { display: grid; gap: 10px; padding-top: 16px; border-top: 1px solid var(--trait); }
+.tete { display: grid; gap: 6px; align-content: start; justify-items: start; }
+.tete p { font-size: 0.875rem; color: var(--discret); }
+.id { font-size: 0.875rem; font-weight: 700; color: var(--discret); }
+.planche { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 14px 8px; align-items: start; min-width: 0; }
+.vue { margin: 0; display: grid; gap: 5px; align-content: start; min-width: 0; }
+.ecran { display: block; width: 100%; padding: 0; border: 1px solid var(--trait); border-radius: 10px; overflow: hidden; background: var(--carte); cursor: zoom-in; }
+.ecran img { display: block; width: 100%; height: auto; }
+.ref .ecran { border: 2px solid var(--houblon); }
+figcaption { font-size: 0.875rem; line-height: 1.35; display: grid; gap: 2px; }
+figcaption b { font-weight: 800; }
+.legende { color: var(--discret); }
+.pastille { display: inline-flex; align-items: center; gap: 5px; font-weight: 700; font-size: 0.875rem; }
+.pastille::before { content: ""; width: 10px; height: 10px; border-radius: 50%; background: currentColor; flex-shrink: 0; }
+.p-propose { color: var(--houblon); }
+.p-choisir { color: var(--choisir); }
+.p-reserve { color: var(--alerte); }
+@media (min-width: 760px) {
+  .rangee { grid-template-columns: 200px minmax(0, 1fr); gap: 16px; }
+  .planche { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+}
+@media (min-width: 1100px) {
+  .planche { grid-template-columns: repeat(6, minmax(0, 1fr)); }
+}
+dialog { border: 0; padding: 0; background: var(--voile); color: var(--voile-encre); width: min(96vw, 1100px); max-height: 94vh; border-radius: 12px; }
+dialog::backdrop { background: rgb(0 0 0 / 80%); }
+dialog .haut { display: flex; justify-content: space-between; align-items: center; gap: 8px; padding: 10px 12px; }
+dialog .titre { font-size: 0.875rem; font-weight: 700; margin: 0; }
+dialog button { font: 700 0.875rem system-ui, sans-serif; border: 0; border-radius: 999px; padding: 8px 14px; background: var(--voile-encre); color: var(--voile); cursor: pointer; }
+dialog img { display: block; width: 100%; height: auto; max-height: 82vh; object-fit: contain; background: var(--carte); }
+</style>
+
+<div class="page">
+  <header>
+    <p class="sur-titre">L'Affinée · Dépense · vue détail d'une ligne</p>
+    <h1>Vue détail d'une ligne · panel v0 · 02.11</h1>
+    <div id="a-choisir">
+      <p>La vue détail refaite : une ligne ouverte au téléphone, juste en un coup d'œil, et ce qui manque se règle au pouce.</p>
+      <p>Seize idées sur six cas, classées par le critique. Dis laquelle te parle, ou quels morceaux prendre. pu4, pz2 et pa1 sont déjà en passe 2.</p>
+    </div>
+    <p class="legende">Base : ton choix p3c-3 (<a href="https://claude.ai/artifact/DFn4eoEbiUiD1orENfkDoF">page du 01.11</a>), avec le nom en B, la 3e lecture en d-lue, et sûr = rien, jaune = repris, rouge = à remplir.</p>
+  </header>
+
+  <section class="partout" aria-labelledby="t-partout">
+    <h2 id="t-partout">Corrigé partout en passe 2</h2>
+    <ul>
+      <li>L'unité dans un seul contrôle : des cases de 44 px quand elle manque.</li>
+      <li>Sûr = rien : aucune coche sur une valeur sûre, aucune question sur une ligne sûre.</li>
+      <li>La mouture dite une fois.</li>
+      <li>Le bis proposé quand l'α diffère, jamais « Relier » (la série pz se trompe ici).</li>
+      <li>« Stk » devient pièce ou sachet.</li>
+    </ul>
+  </section>
+
+  <section class="rangee" aria-labelledby="t-b">
+    <div class="tete">
+      <h2 id="t-b">Un houblon absent du stock</h2>
+      <p>Cas <span class="id">b</span> · « Citra 12.5% », le stock a Citra 2024 à α 13,1 · 390 px</p>
+    </div>
+    <div class="planche">
+      <figure class="vue ref" data-vignette><button class="ecran" type="button" data-agrandir data-src="img/ref-p3c-3.png" data-titre="Ton choix p3c-3 · le plateau"><img src="img/ref-p3c-3.png" alt="Ton choix p3c-3, le plateau"></button><figcaption><span class="pastille p-choisir">ton choix</span><span><b>p3c-3, le plateau</b></span><span class="legende">La base de toutes les variantes.</span></figcaption></figure>
+      <figure class="vue" data-vignette><button class="ecran" type="button" data-agrandir data-src="img/pu4-b.png" data-titre="pu4 · houblon absent · Face à face"><img src="img/pu4-b.png" alt="pu4, houblon absent"></button><figcaption><span class="pastille p-propose">n° 1 · en passe 2</span><span><b>Face à face facture | stock</b> <span class="id">pu4</span></span><span class="legende">La ligne lue à gauche, l'article du stock à droite, le lien au milieu. Dit ce que la ligne fait au stock.</span></figcaption></figure>
+      <figure class="vue" data-vignette><button class="ecran" type="button" data-agrandir data-src="img/pz4-b.png" data-titre="pz4 · houblon absent · La rangée s'édite"><img src="img/pz4-b.png" alt="pz4, houblon absent"></button><figcaption><span class="pastille p-reserve">n° 2 · Relier par défaut, à corriger</span><span><b>La rangée s'édite</b> <span class="id">pz4</span></span><span class="legende">Rien ne s'ouvre : la rangée devient le plateau. Le plus court.</span></figcaption></figure>
+      <figure class="vue" data-vignette><button class="ecran" type="button" data-agrandir data-src="img/pu3-b.png" data-titre="pu3 · houblon absent · Phrase et tiroir"><img src="img/pu3-b.png" alt="pu3, houblon absent"></button><figcaption><span>n° 3</span><span><b>La phrase et le tiroir au pouce</b> <span class="id">pu3</span></span><span class="legende">La ligne en phrase ; ce qui attend un geste ouvre un tiroir en bas.</span></figcaption></figure>
+      <figure class="vue" data-vignette><button class="ecran" type="button" data-agrandir data-src="img/pg3-b.png" data-titre="pg3 · houblon absent · Le dock du pouce"><img src="img/pg3-b.png" alt="pg3, houblon absent"></button><figcaption><span>n° 4</span><span><b>Le dock du pouce</b> <span class="id">pg3</span></span><span class="legende">Le geste descend sur le pied, « 1 sur 2 à régler ‹ › ».</span></figcaption></figure>
+      <figure class="vue" data-vignette><button class="ecran" type="button" data-agrandir data-src="img/pa3-b.png" data-titre="pa3 · houblon absent · La facture traduite"><img src="img/pa3-b.png" alt="pa3, houblon absent"></button><figcaption><span>n° 5</span><span><b>La facture traduite</b> <span class="id">pa3</span></span><span class="legende">L'imprimé à gauche, ce qui est compris à droite, valeur face à valeur.</span></figcaption></figure>
+      <figure class="vue" data-vignette><button class="ecran" type="button" data-agrandir data-src="img/pa4-b.png" data-titre="pa4 · houblon absent · La phrase à trous"><img src="img/pa4-b.png" alt="pa4, houblon absent"></button><figcaption><span>n° 6</span><span><b>La phrase à trous</b> <span class="id">pa4</span></span><span class="legende">La ligne se relit en une phrase ; les raisons « ✓ variété · ≠ α 13,1 ».</span></figcaption></figure>
+      <figure class="vue" data-vignette><button class="ecran" type="button" data-agrandir data-src="img/pz2-b.png" data-titre="pz2 · houblon absent · Le bandeau au pouce"><img src="img/pz2-b.png" alt="pz2, houblon absent"></button><figcaption><span class="pastille p-propose">n° 7 · en passe 2</span><span><b>Le bandeau au pouce</b> <span class="id">pz2</span></span><span class="legende">La ligne reste en haut ; trois prises en bas : article, unité, quantité.</span></figcaption></figure>
+      <figure class="vue" data-vignette><button class="ecran" type="button" data-agrandir data-src="img/pu2-b.png" data-titre="pu2 · houblon absent · Une question à la fois"><img src="img/pu2-b.png" alt="pu2, houblon absent"></button><figcaption><span>n° 8</span><span><b>Une question à la fois</b> <span class="id">pu2</span></span><span class="legende">Seule la question qui manque, en grandes tuiles ; le reste en une ligne.</span></figcaption></figure>
+      <figure class="vue" data-vignette><button class="ecran" type="button" data-agrandir data-src="img/pg2-b.png" data-titre="pg2 · houblon absent · Le geste en tête"><img src="img/pg2-b.png" alt="pg2, houblon absent"></button><figcaption><span>n° 9</span><span><b>Le geste en tête</b> <span class="id">pg2</span></span><span class="legende">S'ouvre sur le verbe : rien, choisir, remplir, garder ?</span></figcaption></figure>
+      <figure class="vue" data-vignette><button class="ecran" type="button" data-agrandir data-src="img/pz3-b.png" data-titre="pz3 · houblon absent · Le ticket tamponné"><img src="img/pz3-b.png" alt="pz3, houblon absent"></button><figcaption><span class="pastille p-reserve">n° 10 · Relier par défaut, à corriger</span><span><b>Le ticket tamponné</b> <span class="id">pz3</span></span><span class="legende">La ligne telle qu'imprimée, tamponnée de ce qui est compris.</span></figcaption></figure>
+      <figure class="vue" data-vignette><button class="ecran" type="button" data-agrandir data-src="img/pa2-b.png" data-titre="pa2 · houblon absent · La file des propositions"><img src="img/pa2-b.png" alt="pa2, houblon absent"></button><figcaption><span>n° 11</span><span><b>La file des propositions</b> <span class="id">pa2</span></span><span class="legende">Une carte par proposition à accepter, avec sa raison.</span></figcaption></figure>
+      <figure class="vue" data-vignette><button class="ecran" type="button" data-agrandir data-src="img/pg4-b.png" data-titre="pg4 · houblon absent · Le pont"><img src="img/pg4-b.png" alt="pg4, houblon absent"></button><figcaption><span>n° 12</span><span><b>Le pont facture → stock</b> <span class="id">pg4</span></span><span class="legende">Le trait entre facture et stock dit l'état : plein, tireté, rompu, ∅.</span></figcaption></figure>
+      <figure class="vue" data-vignette><button class="ecran" type="button" data-agrandir data-src="img/pa1-b.png" data-titre="pa1 · houblon absent · p3c-3 au propre"><img src="img/pa1-b.png" alt="pa1, houblon absent"></button><figcaption><span class="pastille p-propose">n° 13 · en passe 2</span><span><b>p3c-3 au propre</b> <span class="id">pa1</span></span><span class="legende">Ton plateau, chaque valeur proposée porte son état sur le champ.</span></figcaption></figure>
+      <figure class="vue" data-vignette><button class="ecran" type="button" data-agrandir data-src="img/pu1-b.png" data-titre="pu1 · houblon absent · p3c-3 sans doublons"><img src="img/pu1-b.png" alt="pu1, houblon absent"></button><figcaption><span>n° 14</span><span><b>p3c-3 sans doublons</b> <span class="id">pu1</span></span><span class="legende">Ton plateau, une chose dans un seul champ.</span></figcaption></figure>
+      <figure class="vue" data-vignette><button class="ecran" type="button" data-agrandir data-src="img/pz1-b.png" data-titre="pz1 · houblon absent · p3c-3, rouge sur le champ"><img src="img/pz1-b.png" alt="pz1, houblon absent"></button><figcaption><span class="pastille p-reserve">n° 15 · Relier par défaut, à corriger</span><span><b>p3c-3, le rouge sur le champ</b> <span class="id">pz1</span></span><span class="legende">Ton plateau, dit une fois, le signal sur le champ.</span></figcaption></figure>
+      <figure class="vue" data-vignette><button class="ecran" type="button" data-agrandir data-src="img/pg1-b.png" data-titre="pg1 · houblon absent · p3c-3 affinée"><img src="img/pg1-b.png" alt="pg1, houblon absent"></button><figcaption><span>n° 16</span><span><b>p3c-3 affinée</b> <span class="id">pg1</span></span><span class="legende">Ton plateau au plus près ; le rare derrière « ⋯ ».</span></figcaption></figure>
+    </div>
+  </section>
+
+  <section class="rangee" aria-labelledby="t-d">
+    <div class="tete">
+      <h2 id="t-d">L'unité illisible</h2>
+      <p>Cas <span class="id">d</span> · « Lactose » 1 ? × 6,20 · 390 px</p>
+    </div>
+    <div class="planche">
+      <figure class="vue ref" data-vignette><button class="ecran" type="button" data-agrandir data-src="img/ref-p3c-3.png" data-titre="Ton choix p3c-3 · le plateau"><img src="img/ref-p3c-3.png" alt="Ton choix p3c-3, le plateau"></button><figcaption><span class="pastille p-choisir">ton choix</span><span><b>p3c-3</b></span></figcaption></figure>
+      <figure class="vue" data-vignette><button class="ecran" type="button" data-agrandir data-src="img/pu4-d.png" data-titre="pu4 · unité illisible"><img src="img/pu4-d.png" alt="pu4, unité illisible"></button><figcaption><span class="pastille p-propose">en passe 2</span><span><b>Face à face</b> <span class="id">pu4</span></span></figcaption></figure>
+      <figure class="vue" data-vignette><button class="ecran" type="button" data-agrandir data-src="img/pz4-d.png" data-titre="pz4 · unité illisible"><img src="img/pz4-d.png" alt="pz4, unité illisible"></button><figcaption><span><b>La rangée s'édite</b> <span class="id">pz4</span></span></figcaption></figure>
+      <figure class="vue" data-vignette><button class="ecran" type="button" data-agrandir data-src="img/pu3-d.png" data-titre="pu3 · unité illisible"><img src="img/pu3-d.png" alt="pu3, unité illisible"></button><figcaption><span><b>Phrase et tiroir</b> <span class="id">pu3</span></span></figcaption></figure>
+      <figure class="vue" data-vignette><button class="ecran" type="button" data-agrandir data-src="img/pg3-d.png" data-titre="pg3 · unité illisible"><img src="img/pg3-d.png" alt="pg3, unité illisible"></button><figcaption><span><b>Le dock du pouce</b> <span class="id">pg3</span></span></figcaption></figure>
+      <figure class="vue" data-vignette><button class="ecran" type="button" data-agrandir data-src="img/pa3-d.png" data-titre="pa3 · unité illisible"><img src="img/pa3-d.png" alt="pa3, unité illisible"></button><figcaption><span><b>La facture traduite</b> <span class="id">pa3</span></span></figcaption></figure>
+      <figure class="vue" data-vignette><button class="ecran" type="button" data-agrandir data-src="img/pa4-d.png" data-titre="pa4 · unité illisible"><img src="img/pa4-d.png" alt="pa4, unité illisible"></button><figcaption><span><b>La phrase à trous</b> <span class="id">pa4</span></span></figcaption></figure>
+      <figure class="vue" data-vignette><button class="ecran" type="button" data-agrandir data-src="img/pz2-d.png" data-titre="pz2 · unité illisible"><img src="img/pz2-d.png" alt="pz2, unité illisible"></button><figcaption><span class="pastille p-propose">en passe 2</span><span><b>Le bandeau au pouce</b> <span class="id">pz2</span></span></figcaption></figure>
+      <figure class="vue" data-vignette><button class="ecran" type="button" data-agrandir data-src="img/pu2-d.png" data-titre="pu2 · unité illisible"><img src="img/pu2-d.png" alt="pu2, unité illisible"></button><figcaption><span><b>Une question à la fois</b> <span class="id">pu2</span></span></figcaption></figure>
+      <figure class="vue" data-vignette><button class="ecran" type="button" data-agrandir data-src="img/pg2-d.png" data-titre="pg2 · unité illisible"><img src="img/pg2-d.png" alt="pg2, unité illisible"></button><figcaption><span><b>Le geste en tête</b> <span class="id">pg2</span></span></figcaption></figure>
+      <figure class="vue" data-vignette><button class="ecran" type="button" data-agrandir data-src="img/pz3-d.png" data-titre="pz3 · unité illisible"><img src="img/pz3-d.png" alt="pz3, unité illisible"></button><figcaption><span><b>Le ticket tamponné</b> <span class="id">pz3</span></span></figcaption></figure>
+      <figure class="vue" data-vignette><button class="ecran" type="button" data-agrandir data-src="img/pa2-d.png" data-titre="pa2 · unité illisible"><img src="img/pa2-d.png" alt="pa2, unité illisible"></button><figcaption><span><b>La file des propositions</b> <span class="id">pa2</span></span></figcaption></figure>
+      <figure class="vue" data-vignette><button class="ecran" type="button" data-agrandir data-src="img/pg4-d.png" data-titre="pg4 · unité illisible"><img src="img/pg4-d.png" alt="pg4, unité illisible"></button><figcaption><span><b>Le pont</b> <span class="id">pg4</span></span></figcaption></figure>
+      <figure class="vue" data-vignette><button class="ecran" type="button" data-agrandir data-src="img/pa1-d.png" data-titre="pa1 · unité illisible"><img src="img/pa1-d.png" alt="pa1, unité illisible"></button><figcaption><span class="pastille p-propose">en passe 2</span><span><b>p3c-3 au propre</b> <span class="id">pa1</span></span></figcaption></figure>
+      <figure class="vue" data-vignette><button class="ecran" type="button" data-agrandir data-src="img/pu1-d.png" data-titre="pu1 · unité illisible"><img src="img/pu1-d.png" alt="pu1, unité illisible"></button><figcaption><span><b>p3c-3 sans doublons</b> <span class="id">pu1</span></span></figcaption></figure>
+      <figure class="vue" data-vignette><button class="ecran" type="button" data-agrandir data-src="img/pz1-d.png" data-titre="pz1 · unité illisible"><img src="img/pz1-d.png" alt="pz1, unité illisible"></button><figcaption><span><b>p3c-3, rouge sur le champ</b> <span class="id">pz1</span></span></figcaption></figure>
+      <figure class="vue" data-vignette><button class="ecran" type="button" data-agrandir data-src="img/pg1-d.png" data-titre="pg1 · unité illisible"><img src="img/pg1-d.png" alt="pg1, unité illisible"></button><figcaption><span><b>p3c-3 affinée</b> <span class="id">pg1</span></span></figcaption></figure>
+    </div>
+  </section>
+
+  <section class="rangee" aria-labelledby="t-a">
+    <div class="tete">
+      <h2 id="t-a">Un malt relié, sûr</h2>
+      <p>Cas <span class="id">a</span> · Maris Otter 6 Kg × 2,30 · 390 px</p>
+    </div>
+    <div class="planche">
+      <figure class="vue ref" data-vignette><button class="ecran" type="button" data-agrandir data-src="img/ref-p3c-3.png" data-titre="Ton choix p3c-3 · le plateau"><img src="img/ref-p3c-3.png" alt="Ton choix p3c-3, le plateau"></button><figcaption><span class="pastille p-choisir">ton choix</span><span><b>p3c-3</b></span></figcaption></figure>
+      <figure class="vue" data-vignette><button class="ecran" type="button" data-agrandir data-src="img/pu4-a.png" data-titre="pu4 · malt relié"><img src="img/pu4-a.png" alt="pu4, malt relié"></button><figcaption><span class="pastille p-propose">en passe 2</span><span><b>Face à face</b> <span class="id">pu4</span></span></figcaption></figure>
+      <figure class="vue" data-vignette><button class="ecran" type="button" data-agrandir data-src="img/pz4-a.png" data-titre="pz4 · malt relié"><img src="img/pz4-a.png" alt="pz4, malt relié"></button><figcaption><span><b>La rangée s'édite</b> <span class="id">pz4</span></span></figcaption></figure>
+      <figure class="vue" data-vignette><button class="ecran" type="button" data-agrandir data-src="img/pu3-a.png" data-titre="pu3 · malt relié"><img src="img/pu3-a.png" alt="pu3, malt relié"></button><figcaption><span><b>Phrase et tiroir</b> <span class="id">pu3</span></span></figcaption></figure>
+      <figure class="vue" data-vignette><button class="ecran" type="button" data-agrandir data-src="img/pg3-a.png" data-titre="pg3 · malt relié"><img src="img/pg3-a.png" alt="pg3, malt relié"></button><figcaption><span><b>Le dock du pouce</b> <span class="id">pg3</span></span></figcaption></figure>
+      <figure class="vue" data-vignette><button class="ecran" type="button" data-agrandir data-src="img/pa3-a.png" data-titre="pa3 · malt relié"><img src="img/pa3-a.png" alt="pa3, malt relié"></button><figcaption><span><b>La facture traduite</b> <span class="id">pa3</span></span></figcaption></figure>
+      <figure class="vue" data-vignette><button class="ecran" type="button" data-agrandir data-src="img/pa4-a.png" data-titre="pa4 · malt relié"><img src="img/pa4-a.png" alt="pa4, malt relié"></button><figcaption><span><b>La phrase à trous</b> <span class="id">pa4</span></span></figcaption></figure>
+      <figure class="vue" data-vignette><button class="ecran" type="button" data-agrandir data-src="img/pz2-a.png" data-titre="pz2 · malt relié"><img src="img/pz2-a.png" alt="pz2, malt relié"></button><figcaption><span class="pastille p-propose">en passe 2</span><span><b>Le bandeau au pouce</b> <span class="id">pz2</span></span></figcaption></figure>
+      <figure class="vue" data-vignette><button class="ecran" type="button" data-agrandir data-src="img/pu2-a.png" data-titre="pu2 · malt relié"><img src="img/pu2-a.png" alt="pu2, malt relié"></button><figcaption><span><b>Une question à la fois</b> <span class="id">pu2</span></span></figcaption></figure>
+      <figure class="vue" data-vignette><button class="ecran" type="button" data-agrandir data-src="img/pg2-a.png" data-titre="pg2 · malt relié"><img src="img/pg2-a.png" alt="pg2, malt relié"></button><figcaption><span><b>Le geste en tête</b> <span class="id">pg2</span></span></figcaption></figure>
+      <figure class="vue" data-vignette><button class="ecran" type="button" data-agrandir data-src="img/pz3-a.png" data-titre="pz3 · malt relié"><img src="img/pz3-a.png" alt="pz3, malt relié"></button><figcaption><span><b>Le ticket tamponné</b> <span class="id">pz3</span></span></figcaption></figure>
+      <figure class="vue" data-vignette><button class="ecran" type="button" data-agrandir data-src="img/pa2-a.png" data-titre="pa2 · malt relié"><img src="img/pa2-a.png" alt="pa2, malt relié"></button><figcaption><span><b>La file des propositions</b> <span class="id">pa2</span></span></figcaption></figure>
+      <figure class="vue" data-vignette><button class="ecran" type="button" data-agrandir data-src="img/pg4-a.png" data-titre="pg4 · malt relié"><img src="img/pg4-a.png" alt="pg4, malt relié"></button><figcaption><span><b>Le pont</b> <span class="id">pg4</span></span></figcaption></figure>
+      <figure class="vue" data-vignette><button class="ecran" type="button" data-agrandir data-src="img/pa1-a.png" data-titre="pa1 · malt relié"><img src="img/pa1-a.png" alt="pa1, malt relié"></button><figcaption><span class="pastille p-propose">en passe 2</span><span><b>p3c-3 au propre</b> <span class="id">pa1</span></span></figcaption></figure>
+      <figure class="vue" data-vignette><button class="ecran" type="button" data-agrandir data-src="img/pu1-a.png" data-titre="pu1 · malt relié"><img src="img/pu1-a.png" alt="pu1, malt relié"></button><figcaption><span><b>p3c-3 sans doublons</b> <span class="id">pu1</span></span></figcaption></figure>
+      <figure class="vue" data-vignette><button class="ecran" type="button" data-agrandir data-src="img/pz1-a.png" data-titre="pz1 · malt relié"><img src="img/pz1-a.png" alt="pz1, malt relié"></button><figcaption><span><b>p3c-3, rouge sur le champ</b> <span class="id">pz1</span></span></figcaption></figure>
+      <figure class="vue" data-vignette><button class="ecran" type="button" data-agrandir data-src="img/pg1-a.png" data-titre="pg1 · malt relié"><img src="img/pg1-a.png" alt="pg1, malt relié"></button><figcaption><span><b>p3c-3 affinée</b> <span class="id">pg1</span></span></figcaption></figure>
+    </div>
+  </section>
+
+  <section class="rangee" aria-labelledby="t-c">
+    <div class="tete">
+      <h2 id="t-c">Un nettoyant hors stock</h2>
+      <p>Cas <span class="id">c</span> · Détartrant express 1 L · Matériel · 390 px</p>
+    </div>
+    <div class="planche">
+      <figure class="vue ref" data-vignette><button class="ecran" type="button" data-agrandir data-src="img/ref-p3c-3.png" data-titre="Ton choix p3c-3 · le plateau"><img src="img/ref-p3c-3.png" alt="Ton choix p3c-3, le plateau"></button><figcaption><span class="pastille p-choisir">ton choix</span><span><b>p3c-3</b></span></figcaption></figure>
+      <figure class="vue" data-vignette><button class="ecran" type="button" data-agrandir data-src="img/pu4-c.png" data-titre="pu4 · nettoyant hors stock"><img src="img/pu4-c.png" alt="pu4, nettoyant hors stock"></button><figcaption><span class="pastille p-propose">en passe 2</span><span><b>Face à face</b> <span class="id">pu4</span></span></figcaption></figure>
+      <figure class="vue" data-vignette><button class="ecran" type="button" data-agrandir data-src="img/pz4-c.png" data-titre="pz4 · nettoyant hors stock"><img src="img/pz4-c.png" alt="pz4, nettoyant hors stock"></button><figcaption><span><b>La rangée s'édite</b> <span class="id">pz4</span></span></figcaption></figure>
+      <figure class="vue" data-vignette><button class="ecran" type="button" data-agrandir data-src="img/pu3-c.png" data-titre="pu3 · nettoyant hors stock"><img src="img/pu3-c.png" alt="pu3, nettoyant hors stock"></button><figcaption><span><b>Phrase et tiroir</b> <span class="id">pu3</span></span></figcaption></figure>
+      <figure class="vue" data-vignette><button class="ecran" type="button" data-agrandir data-src="img/pg3-c.png" data-titre="pg3 · nettoyant hors stock"><img src="img/pg3-c.png" alt="pg3, nettoyant hors stock"></button><figcaption><span><b>Le dock du pouce</b> <span class="id">pg3</span></span></figcaption></figure>
+      <figure class="vue" data-vignette><button class="ecran" type="button" data-agrandir data-src="img/pa3-c.png" data-titre="pa3 · nettoyant hors stock"><img src="img/pa3-c.png" alt="pa3, nettoyant hors stock"></button><figcaption><span><b>La facture traduite</b> <span class="id">pa3</span></span></figcaption></figure>
+      <figure class="vue" data-vignette><button class="ecran" type="button" data-agrandir data-src="img/pa4-c.png" data-titre="pa4 · nettoyant hors stock"><img src="img/pa4-c.png" alt="pa4, nettoyant hors stock"></button><figcaption><span><b>La phrase à trous</b> <span class="id">pa4</span></span></figcaption></figure>
+      <figure class="vue" data-vignette><button class="ecran" type="button" data-agrandir data-src="img/pz2-c.png" data-titre="pz2 · nettoyant hors stock"><img src="img/pz2-c.png" alt="pz2, nettoyant hors stock"></button><figcaption><span class="pastille p-propose">en passe 2</span><span><b>Le bandeau au pouce</b> <span class="id">pz2</span></span></figcaption></figure>
+      <figure class="vue" data-vignette><button class="ecran" type="button" data-agrandir data-src="img/pu2-c.png" data-titre="pu2 · nettoyant hors stock"><img src="img/pu2-c.png" alt="pu2, nettoyant hors stock"></button><figcaption><span><b>Une question à la fois</b> <span class="id">pu2</span></span></figcaption></figure>
+      <figure class="vue" data-vignette><button class="ecran" type="button" data-agrandir data-src="img/pg2-c.png" data-titre="pg2 · nettoyant hors stock"><img src="img/pg2-c.png" alt="pg2, nettoyant hors stock"></button><figcaption><span><b>Le geste en tête</b> <span class="id">pg2</span></span></figcaption></figure>
+      <figure class="vue" data-vignette><button class="ecran" type="button" data-agrandir data-src="img/pz3-c.png" data-titre="pz3 · nettoyant hors stock"><img src="img/pz3-c.png" alt="pz3, nettoyant hors stock"></button><figcaption><span><b>Le ticket tamponné</b> <span class="id">pz3</span></span></figcaption></figure>
+      <figure class="vue" data-vignette><button class="ecran" type="button" data-agrandir data-src="img/pa2-c.png" data-titre="pa2 · nettoyant hors stock"><img src="img/pa2-c.png" alt="pa2, nettoyant hors stock"></button><figcaption><span><b>La file des propositions</b> <span class="id">pa2</span></span></figcaption></figure>
+      <figure class="vue" data-vignette><button class="ecran" type="button" data-agrandir data-src="img/pg4-c.png" data-titre="pg4 · nettoyant hors stock"><img src="img/pg4-c.png" alt="pg4, nettoyant hors stock"></button><figcaption><span><b>Le pont</b> <span class="id">pg4</span></span></figcaption></figure>
+      <figure class="vue" data-vignette><button class="ecran" type="button" data-agrandir data-src="img/pa1-c.png" data-titre="pa1 · nettoyant hors stock"><img src="img/pa1-c.png" alt="pa1, nettoyant hors stock"></button><figcaption><span class="pastille p-propose">en passe 2</span><span><b>p3c-3 au propre</b> <span class="id">pa1</span></span></figcaption></figure>
+      <figure class="vue" data-vignette><button class="ecran" type="button" data-agrandir data-src="img/pu1-c.png" data-titre="pu1 · nettoyant hors stock"><img src="img/pu1-c.png" alt="pu1, nettoyant hors stock"></button><figcaption><span><b>p3c-3 sans doublons</b> <span class="id">pu1</span></span></figcaption></figure>
+      <figure class="vue" data-vignette><button class="ecran" type="button" data-agrandir data-src="img/pz1-c.png" data-titre="pz1 · nettoyant hors stock"><img src="img/pz1-c.png" alt="pz1, nettoyant hors stock"></button><figcaption><span><b>p3c-3, rouge sur le champ</b> <span class="id">pz1</span></span></figcaption></figure>
+      <figure class="vue" data-vignette><button class="ecran" type="button" data-agrandir data-src="img/pg1-c.png" data-titre="pg1 · nettoyant hors stock"><img src="img/pg1-c.png" alt="pg1, nettoyant hors stock"></button><figcaption><span><b>p3c-3 affinée</b> <span class="id">pg1</span></span></figcaption></figure>
+    </div>
+  </section>
+
+  <section class="rangee" aria-labelledby="t-e">
+    <div class="tete">
+      <h2 id="t-e">Une valeur corrigée par la 3e lecture</h2>
+      <p>Cas <span class="id">e</span> · Safale US-05, quantité 2 devenue 3 · 390 px</p>
+    </div>
+    <div class="planche">
+      <figure class="vue ref" data-vignette><button class="ecran" type="button" data-agrandir data-src="img/ref-p3c-3.png" data-titre="Ton choix p3c-3 · le plateau"><img src="img/ref-p3c-3.png" alt="Ton choix p3c-3, le plateau"></button><figcaption><span class="pastille p-choisir">ton choix</span><span><b>p3c-3</b></span></figcaption></figure>
+      <figure class="vue" data-vignette><button class="ecran" type="button" data-agrandir data-src="img/pu4-e.png" data-titre="pu4 · valeur corrigée"><img src="img/pu4-e.png" alt="pu4, valeur corrigée"></button><figcaption><span class="pastille p-propose">en passe 2</span><span><b>Face à face</b> <span class="id">pu4</span></span></figcaption></figure>
+      <figure class="vue" data-vignette><button class="ecran" type="button" data-agrandir data-src="img/pz4-e.png" data-titre="pz4 · valeur corrigée"><img src="img/pz4-e.png" alt="pz4, valeur corrigée"></button><figcaption><span><b>La rangée s'édite</b> <span class="id">pz4</span></span></figcaption></figure>
+      <figure class="vue" data-vignette><button class="ecran" type="button" data-agrandir data-src="img/pu3-e.png" data-titre="pu3 · valeur corrigée"><img src="img/pu3-e.png" alt="pu3, valeur corrigée"></button><figcaption><span><b>Phrase et tiroir</b> <span class="id">pu3</span></span></figcaption></figure>
+      <figure class="vue" data-vignette><button class="ecran" type="button" data-agrandir data-src="img/pg3-e.png" data-titre="pg3 · valeur corrigée"><img src="img/pg3-e.png" alt="pg3, valeur corrigée"></button><figcaption><span><b>Le dock du pouce</b> <span class="id">pg3</span></span></figcaption></figure>
+      <figure class="vue" data-vignette><button class="ecran" type="button" data-agrandir data-src="img/pa3-e.png" data-titre="pa3 · valeur corrigée"><img src="img/pa3-e.png" alt="pa3, valeur corrigée"></button><figcaption><span><b>La facture traduite</b> <span class="id">pa3</span></span></figcaption></figure>
+      <figure class="vue" data-vignette><button class="ecran" type="button" data-agrandir data-src="img/pa4-e.png" data-titre="pa4 · valeur corrigée"><img src="img/pa4-e.png" alt="pa4, valeur corrigée"></button><figcaption><span><b>La phrase à trous</b> <span class="id">pa4</span></span></figcaption></figure>
+      <figure class="vue" data-vignette><button class="ecran" type="button" data-agrandir data-src="img/pz2-e.png" data-titre="pz2 · valeur corrigée"><img src="img/pz2-e.png" alt="pz2, valeur corrigée"></button><figcaption><span class="pastille p-propose">en passe 2</span><span><b>Le bandeau au pouce</b> <span class="id">pz2</span></span></figcaption></figure>
+      <figure class="vue" data-vignette><button class="ecran" type="button" data-agrandir data-src="img/pu2-e.png" data-titre="pu2 · valeur corrigée"><img src="img/pu2-e.png" alt="pu2, valeur corrigée"></button><figcaption><span><b>Une question à la fois</b> <span class="id">pu2</span></span></figcaption></figure>
+      <figure class="vue" data-vignette><button class="ecran" type="button" data-agrandir data-src="img/pg2-e.png" data-titre="pg2 · valeur corrigée"><img src="img/pg2-e.png" alt="pg2, valeur corrigée"></button><figcaption><span><b>Le geste en tête</b> <span class="id">pg2</span></span></figcaption></figure>
+      <figure class="vue" data-vignette><button class="ecran" type="button" data-agrandir data-src="img/pz3-e.png" data-titre="pz3 · valeur corrigée"><img src="img/pz3-e.png" alt="pz3, valeur corrigée"></button><figcaption><span><b>Le ticket tamponné</b> <span class="id">pz3</span></span></figcaption></figure>
+      <figure class="vue" data-vignette><button class="ecran" type="button" data-agrandir data-src="img/pa2-e.png" data-titre="pa2 · valeur corrigée"><img src="img/pa2-e.png" alt="pa2, valeur corrigée"></button><figcaption><span><b>La file des propositions</b> <span class="id">pa2</span></span></figcaption></figure>
+      <figure class="vue" data-vignette><button class="ecran" type="button" data-agrandir data-src="img/pg4-e.png" data-titre="pg4 · valeur corrigée"><img src="img/pg4-e.png" alt="pg4, valeur corrigée"></button><figcaption><span><b>Le pont</b> <span class="id">pg4</span></span></figcaption></figure>
+      <figure class="vue" data-vignette><button class="ecran" type="button" data-agrandir data-src="img/pa1-e.png" data-titre="pa1 · valeur corrigée"><img src="img/pa1-e.png" alt="pa1, valeur corrigée"></button><figcaption><span class="pastille p-propose">en passe 2</span><span><b>p3c-3 au propre</b> <span class="id">pa1</span></span></figcaption></figure>
+      <figure class="vue" data-vignette><button class="ecran" type="button" data-agrandir data-src="img/pu1-e.png" data-titre="pu1 · valeur corrigée"><img src="img/pu1-e.png" alt="pu1, valeur corrigée"></button><figcaption><span><b>p3c-3 sans doublons</b> <span class="id">pu1</span></span></figcaption></figure>
+      <figure class="vue" data-vignette><button class="ecran" type="button" data-agrandir data-src="img/pz1-e.png" data-titre="pz1 · valeur corrigée"><img src="img/pz1-e.png" alt="pz1, valeur corrigée"></button><figcaption><span><b>p3c-3, rouge sur le champ</b> <span class="id">pz1</span></span></figcaption></figure>
+      <figure class="vue" data-vignette><button class="ecran" type="button" data-agrandir data-src="img/pg1-e.png" data-titre="pg1 · valeur corrigée"><img src="img/pg1-e.png" alt="pg1, valeur corrigée"></button><figcaption><span><b>p3c-3 affinée</b> <span class="id">pg1</span></span></figcaption></figure>
+    </div>
+  </section>
+
+  <section class="rangee" aria-labelledby="t-f">
+    <div class="tete">
+      <h2 id="t-f">Les gestes rares</h2>
+      <p>Cas <span class="id">f</span> · supprimer, voir l'extrait, le type d'achat fin · 390 px</p>
+    </div>
+    <div class="planche">
+      <figure class="vue ref" data-vignette><button class="ecran" type="button" data-agrandir data-src="img/ref-p3c-3.png" data-titre="Ton choix p3c-3 · le plateau"><img src="img/ref-p3c-3.png" alt="Ton choix p3c-3, le plateau"></button><figcaption><span class="pastille p-choisir">ton choix</span><span><b>p3c-3</b></span></figcaption></figure>
+      <figure class="vue" data-vignette><button class="ecran" type="button" data-agrandir data-src="img/pu4-f.png" data-titre="pu4 · gestes rares"><img src="img/pu4-f.png" alt="pu4, gestes rares"></button><figcaption><span class="pastille p-propose">en passe 2</span><span><b>Face à face</b> <span class="id">pu4</span></span></figcaption></figure>
+      <figure class="vue" data-vignette><button class="ecran" type="button" data-agrandir data-src="img/pz4-f.png" data-titre="pz4 · gestes rares"><img src="img/pz4-f.png" alt="pz4, gestes rares"></button><figcaption><span><b>La rangée s'édite</b> <span class="id">pz4</span></span></figcaption></figure>
+      <figure class="vue" data-vignette><button class="ecran" type="button" data-agrandir data-src="img/pu3-f.png" data-titre="pu3 · gestes rares"><img src="img/pu3-f.png" alt="pu3, gestes rares"></button><figcaption><span><b>Phrase et tiroir</b> <span class="id">pu3</span></span></figcaption></figure>
+      <figure class="vue" data-vignette><button class="ecran" type="button" data-agrandir data-src="img/pg3-f.png" data-titre="pg3 · gestes rares"><img src="img/pg3-f.png" alt="pg3, gestes rares"></button><figcaption><span><b>Le dock du pouce</b> <span class="id">pg3</span></span></figcaption></figure>
+      <figure class="vue" data-vignette><button class="ecran" type="button" data-agrandir data-src="img/pa3-f.png" data-titre="pa3 · gestes rares"><img src="img/pa3-f.png" alt="pa3, gestes rares"></button><figcaption><span><b>La facture traduite</b> <span class="id">pa3</span></span></figcaption></figure>
+      <figure class="vue" data-vignette><button class="ecran" type="button" data-agrandir data-src="img/pa4-f.png" data-titre="pa4 · gestes rares"><img src="img/pa4-f.png" alt="pa4, gestes rares"></button><figcaption><span><b>La phrase à trous</b> <span class="id">pa4</span></span></figcaption></figure>
+      <figure class="vue" data-vignette><button class="ecran" type="button" data-agrandir data-src="img/pz2-f.png" data-titre="pz2 · gestes rares"><img src="img/pz2-f.png" alt="pz2, gestes rares"></button><figcaption><span class="pastille p-propose">en passe 2</span><span><b>Le bandeau au pouce</b> <span class="id">pz2</span></span></figcaption></figure>
+      <figure class="vue" data-vignette><button class="ecran" type="button" data-agrandir data-src="img/pu2-f.png" data-titre="pu2 · gestes rares"><img src="img/pu2-f.png" alt="pu2, gestes rares"></button><figcaption><span><b>Une question à la fois</b> <span class="id">pu2</span></span></figcaption></figure>
+      <figure class="vue" data-vignette><button class="ecran" type="button" data-agrandir data-src="img/pg2-f.png" data-titre="pg2 · gestes rares"><img src="img/pg2-f.png" alt="pg2, gestes rares"></button><figcaption><span><b>Le geste en tête</b> <span class="id">pg2</span></span></figcaption></figure>
+      <figure class="vue" data-vignette><button class="ecran" type="button" data-agrandir data-src="img/pz3-f.png" data-titre="pz3 · gestes rares"><img src="img/pz3-f.png" alt="pz3, gestes rares"></button><figcaption><span><b>Le ticket tamponné</b> <span class="id">pz3</span></span></figcaption></figure>
+      <figure class="vue" data-vignette><button class="ecran" type="button" data-agrandir data-src="img/pa2-f.png" data-titre="pa2 · gestes rares"><img src="img/pa2-f.png" alt="pa2, gestes rares"></button><figcaption><span><b>La file des propositions</b> <span class="id">pa2</span></span></figcaption></figure>
+      <figure class="vue" data-vignette><button class="ecran" type="button" data-agrandir data-src="img/pg4-f.png" data-titre="pg4 · gestes rares"><img src="img/pg4-f.png" alt="pg4, gestes rares"></button><figcaption><span><b>Le pont</b> <span class="id">pg4</span></span></figcaption></figure>
+      <figure class="vue" data-vignette><button class="ecran" type="button" data-agrandir data-src="img/pa1-f.png" data-titre="pa1 · gestes rares"><img src="img/pa1-f.png" alt="pa1, gestes rares"></button><figcaption><span class="pastille p-propose">en passe 2</span><span><b>p3c-3 au propre</b> <span class="id">pa1</span></span></figcaption></figure>
+      <figure class="vue" data-vignette><button class="ecran" type="button" data-agrandir data-src="img/pu1-f.png" data-titre="pu1 · gestes rares"><img src="img/pu1-f.png" alt="pu1, gestes rares"></button><figcaption><span><b>p3c-3 sans doublons</b> <span class="id">pu1</span></span></figcaption></figure>
+      <figure class="vue" data-vignette><button class="ecran" type="button" data-agrandir data-src="img/pz1-f.png" data-titre="pz1 · gestes rares"><img src="img/pz1-f.png" alt="pz1, gestes rares"></button><figcaption><span><b>p3c-3, rouge sur le champ</b> <span class="id">pz1</span></span></figcaption></figure>
+      <figure class="vue" data-vignette><button class="ecran" type="button" data-agrandir data-src="img/pg1-f.png" data-titre="pg1 · gestes rares"><img src="img/pg1-f.png" alt="pg1, gestes rares"></button><figcaption><span><b>p3c-3 affinée</b> <span class="id">pg1</span></span></figcaption></figure>
+    </div>
+  </section>
+
+  <section class="rangee" aria-labelledby="t-sombre">
+    <div class="tete">
+      <h2 id="t-sombre">En sombre</h2>
+      <p>Un cas ouvert par variante, thème cave · 390 px</p>
+    </div>
+    <div class="planche">
+      <figure class="vue" data-vignette><button class="ecran" type="button" data-agrandir data-src="img/pu4-sombre.png" data-titre="pu4 · en sombre"><img src="img/pu4-sombre.png" alt="pu4, en sombre"></button><figcaption><span class="pastille p-propose">en passe 2</span><span><b>Face à face</b> <span class="id">pu4</span></span></figcaption></figure>
+      <figure class="vue" data-vignette><button class="ecran" type="button" data-agrandir data-src="img/pz4-sombre.png" data-titre="pz4 · en sombre"><img src="img/pz4-sombre.png" alt="pz4, en sombre"></button><figcaption><span><b>La rangée s'édite</b> <span class="id">pz4</span></span></figcaption></figure>
+      <figure class="vue" data-vignette><button class="ecran" type="button" data-agrandir data-src="img/pu3-sombre.png" data-titre="pu3 · en sombre"><img src="img/pu3-sombre.png" alt="pu3, en sombre"></button><figcaption><span><b>Phrase et tiroir</b> <span class="id">pu3</span></span></figcaption></figure>
+      <figure class="vue" data-vignette><button class="ecran" type="button" data-agrandir data-src="img/pg3-sombre.png" data-titre="pg3 · en sombre"><img src="img/pg3-sombre.png" alt="pg3, en sombre"></button><figcaption><span><b>Le dock du pouce</b> <span class="id">pg3</span></span></figcaption></figure>
+      <figure class="vue" data-vignette><button class="ecran" type="button" data-agrandir data-src="img/pa3-sombre.png" data-titre="pa3 · en sombre"><img src="img/pa3-sombre.png" alt="pa3, en sombre"></button><figcaption><span><b>La facture traduite</b> <span class="id">pa3</span></span></figcaption></figure>
+      <figure class="vue" data-vignette><button class="ecran" type="button" data-agrandir data-src="img/pa4-sombre.png" data-titre="pa4 · en sombre"><img src="img/pa4-sombre.png" alt="pa4, en sombre"></button><figcaption><span><b>La phrase à trous</b> <span class="id">pa4</span></span></figcaption></figure>
+      <figure class="vue" data-vignette><button class="ecran" type="button" data-agrandir data-src="img/pz2-sombre.png" data-titre="pz2 · en sombre"><img src="img/pz2-sombre.png" alt="pz2, en sombre"></button><figcaption><span class="pastille p-propose">en passe 2</span><span><b>Le bandeau au pouce</b> <span class="id">pz2</span></span></figcaption></figure>
+      <figure class="vue" data-vignette><button class="ecran" type="button" data-agrandir data-src="img/pu2-sombre.png" data-titre="pu2 · en sombre"><img src="img/pu2-sombre.png" alt="pu2, en sombre"></button><figcaption><span><b>Une question à la fois</b> <span class="id">pu2</span></span></figcaption></figure>
+      <figure class="vue" data-vignette><button class="ecran" type="button" data-agrandir data-src="img/pg2-sombre.png" data-titre="pg2 · en sombre"><img src="img/pg2-sombre.png" alt="pg2, en sombre"></button><figcaption><span><b>Le geste en tête</b> <span class="id">pg2</span></span></figcaption></figure>
+      <figure class="vue" data-vignette><button class="ecran" type="button" data-agrandir data-src="img/pz3-sombre.png" data-titre="pz3 · en sombre"><img src="img/pz3-sombre.png" alt="pz3, en sombre"></button><figcaption><span><b>Le ticket tamponné</b> <span class="id">pz3</span></span></figcaption></figure>
+      <figure class="vue" data-vignette><button class="ecran" type="button" data-agrandir data-src="img/pa2-sombre.png" data-titre="pa2 · en sombre"><img src="img/pa2-sombre.png" alt="pa2, en sombre"></button><figcaption><span><b>La file des propositions</b> <span class="id">pa2</span></span></figcaption></figure>
+      <figure class="vue" data-vignette><button class="ecran" type="button" data-agrandir data-src="img/pg4-sombre.png" data-titre="pg4 · en sombre"><img src="img/pg4-sombre.png" alt="pg4, en sombre"></button><figcaption><span><b>Le pont</b> <span class="id">pg4</span></span></figcaption></figure>
+      <figure class="vue" data-vignette><button class="ecran" type="button" data-agrandir data-src="img/pa1-sombre.png" data-titre="pa1 · en sombre"><img src="img/pa1-sombre.png" alt="pa1, en sombre"></button><figcaption><span class="pastille p-propose">en passe 2</span><span><b>p3c-3 au propre</b> <span class="id">pa1</span></span></figcaption></figure>
+      <figure class="vue" data-vignette><button class="ecran" type="button" data-agrandir data-src="img/pu1-sombre.png" data-titre="pu1 · en sombre"><img src="img/pu1-sombre.png" alt="pu1, en sombre"></button><figcaption><span><b>p3c-3 sans doublons</b> <span class="id">pu1</span></span></figcaption></figure>
+      <figure class="vue" data-vignette><button class="ecran" type="button" data-agrandir data-src="img/pz1-sombre.png" data-titre="pz1 · en sombre"><img src="img/pz1-sombre.png" alt="pz1, en sombre"></button><figcaption><span><b>p3c-3, rouge sur le champ</b> <span class="id">pz1</span></span></figcaption></figure>
+      <figure class="vue" data-vignette><button class="ecran" type="button" data-agrandir data-src="img/pg1-sombre.png" data-titre="pg1 · en sombre"><img src="img/pg1-sombre.png" alt="pg1, en sombre"></button><figcaption><span><b>p3c-3 affinée</b> <span class="id">pg1</span></span></figcaption></figure>
+    </div>
+  </section>
+
+  <section class="rangee" aria-labelledby="t-1280">
+    <div class="tete">
+      <h2 id="t-1280">À l'ordinateur</h2>
+      <p>Cas <span class="id">b</span> · 1280 px</p>
+    </div>
+    <div class="planche">
+      <figure class="vue" data-vignette><button class="ecran" type="button" data-agrandir data-src="img/pu4-1280.png" data-titre="pu4 · 1280"><img src="img/pu4-1280.png" alt="pu4, 1280"></button><figcaption><span class="pastille p-propose">en passe 2</span><span><b>Face à face</b> <span class="id">pu4</span></span></figcaption></figure>
+      <figure class="vue" data-vignette><button class="ecran" type="button" data-agrandir data-src="img/pz4-1280.png" data-titre="pz4 · 1280"><img src="img/pz4-1280.png" alt="pz4, 1280"></button><figcaption><span><b>La rangée s'édite</b> <span class="id">pz4</span></span></figcaption></figure>
+      <figure class="vue" data-vignette><button class="ecran" type="button" data-agrandir data-src="img/pu3-1280.png" data-titre="pu3 · 1280"><img src="img/pu3-1280.png" alt="pu3, 1280"></button><figcaption><span><b>Phrase et tiroir</b> <span class="id">pu3</span></span></figcaption></figure>
+      <figure class="vue" data-vignette><button class="ecran" type="button" data-agrandir data-src="img/pg3-1280.png" data-titre="pg3 · 1280"><img src="img/pg3-1280.png" alt="pg3, 1280"></button><figcaption><span><b>Le dock du pouce</b> <span class="id">pg3</span></span></figcaption></figure>
+      <figure class="vue" data-vignette><button class="ecran" type="button" data-agrandir data-src="img/pa3-1280.png" data-titre="pa3 · 1280"><img src="img/pa3-1280.png" alt="pa3, 1280"></button><figcaption><span><b>La facture traduite</b> <span class="id">pa3</span></span></figcaption></figure>
+      <figure class="vue" data-vignette><button class="ecran" type="button" data-agrandir data-src="img/pa4-1280.png" data-titre="pa4 · 1280"><img src="img/pa4-1280.png" alt="pa4, 1280"></button><figcaption><span><b>La phrase à trous</b> <span class="id">pa4</span></span></figcaption></figure>
+      <figure class="vue" data-vignette><button class="ecran" type="button" data-agrandir data-src="img/pz2-1280.png" data-titre="pz2 · 1280"><img src="img/pz2-1280.png" alt="pz2, 1280"></button><figcaption><span class="pastille p-propose">en passe 2</span><span><b>Le bandeau au pouce</b> <span class="id">pz2</span></span></figcaption></figure>
+      <figure class="vue" data-vignette><button class="ecran" type="button" data-agrandir data-src="img/pu2-1280.png" data-titre="pu2 · 1280"><img src="img/pu2-1280.png" alt="pu2, 1280"></button><figcaption><span><b>Une question à la fois</b> <span class="id">pu2</span></span></figcaption></figure>
+      <figure class="vue" data-vignette><button class="ecran" type="button" data-agrandir data-src="img/pg2-1280.png" data-titre="pg2 · 1280"><img src="img/pg2-1280.png" alt="pg2, 1280"></button><figcaption><span><b>Le geste en tête</b> <span class="id">pg2</span></span></figcaption></figure>
+      <figure class="vue" data-vignette><button class="ecran" type="button" data-agrandir data-src="img/pz3-1280.png" data-titre="pz3 · 1280"><img src="img/pz3-1280.png" alt="pz3, 1280"></button><figcaption><span><b>Le ticket tamponné</b> <span class="id">pz3</span></span></figcaption></figure>
+      <figure class="vue" data-vignette><button class="ecran" type="button" data-agrandir data-src="img/pa2-1280.png" data-titre="pa2 · 1280"><img src="img/pa2-1280.png" alt="pa2, 1280"></button><figcaption><span><b>La file des propositions</b> <span class="id">pa2</span></span></figcaption></figure>
+      <figure class="vue" data-vignette><button class="ecran" type="button" data-agrandir data-src="img/pg4-1280.png" data-titre="pg4 · 1280"><img src="img/pg4-1280.png" alt="pg4, 1280"></button><figcaption><span><b>Le pont</b> <span class="id">pg4</span></span></figcaption></figure>
+      <figure class="vue" data-vignette><button class="ecran" type="button" data-agrandir data-src="img/pa1-1280.png" data-titre="pa1 · 1280"><img src="img/pa1-1280.png" alt="pa1, 1280"></button><figcaption><span class="pastille p-propose">en passe 2</span><span><b>p3c-3 au propre</b> <span class="id">pa1</span></span></figcaption></figure>
+      <figure class="vue" data-vignette><button class="ecran" type="button" data-agrandir data-src="img/pu1-1280.png" data-titre="pu1 · 1280"><img src="img/pu1-1280.png" alt="pu1, 1280"></button><figcaption><span><b>p3c-3 sans doublons</b> <span class="id">pu1</span></span></figcaption></figure>
+      <figure class="vue" data-vignette><button class="ecran" type="button" data-agrandir data-src="img/pz1-1280.png" data-titre="pz1 · 1280"><img src="img/pz1-1280.png" alt="pz1, 1280"></button><figcaption><span><b>p3c-3, rouge sur le champ</b> <span class="id">pz1</span></span></figcaption></figure>
+      <figure class="vue" data-vignette><button class="ecran" type="button" data-agrandir data-src="img/pg1-1280.png" data-titre="pg1 · 1280"><img src="img/pg1-1280.png" alt="pg1, 1280"></button><figcaption><span><b>p3c-3 affinée</b> <span class="id">pg1</span></span></figcaption></figure>
+    </div>
+  </section>
+</div>
+
+<dialog id="grand" aria-label="Capture en grand">
+  <div class="haut">
+    <p class="titre" id="grand-titre"></p>
+    <button type="button" class="fermer">Fermer</button>
+  </div>
+  <img id="grand-img" alt="">
+</dialog>
+
+<script>
+(function () {
+  var dlg = document.getElementById('grand');
+  var img = document.getElementById('grand-img');
+  var titre = document.getElementById('grand-titre');
+  document.querySelectorAll('[data-agrandir]').forEach(function (b) {
+    b.addEventListener('click', function () {
+      img.setAttribute('src', b.getAttribute('data-src'));
+      img.setAttribute('alt', b.getAttribute('data-titre'));
+      titre.textContent = b.getAttribute('data-titre');
+      dlg.showModal();
+    });
+  });
+  dlg.querySelector('.fermer').addEventListener('click', function () { dlg.close(); });
+  dlg.addEventListener('click', function (e) { if (e.target === dlg) dlg.close(); });
+})();
+</script>

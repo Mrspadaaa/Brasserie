@@ -1,0 +1,18 @@
+{
+ "reglage": "4-hydrogen@low",
+ "element": "hops-plante",
+ "cas": "hops",
+ "type": "plante",
+ "moitie": "jugement",
+ "verdict": {
+  "utilisable": true,
+  "approved": false,
+  "proposalApproved": true,
+  "issues": [
+   "Le champ 'why' affirme une concentration en iso-alpha-acides de 38 mg/L au bout de 70 minutes, un chiffre qui ne figure dans aucune sortie d'outil."
+  ]
+ },
+ "ms": 3435,
+ "coutMicro": 17346,
+ "etat": "STOP"
+}

@@ -11,7 +11,8 @@ const parCode: Record<string, [() => any, boolean]> = {
   'ligne-montant': [() => propre({ amountTTC: 3, items: [ligne({ quantity: 2, price: 1, amountTTC: 3 })] }), true],
   'ligne-prix-par-lot': [() => propre({ amountTTC: 20, items: [ligne({ quantity: 250, unit: 'g', price: 8, amountTTC: 20 })] }), true],
   'somme-ecart': [() => propre({ amountTTC: 5 }), true],
-  'somme-incomplete': [() => propre({ items: [ligne({ price: 1, amountTTC: null })] }), true],
+  // fn-montant-seul : un `price` seul devient le montant de la ligne ; la ligne sans AUCUN montant (ni price ni amountTTC) reste incomplète.
+  'somme-incomplete': [() => propre({ items: [ligne({ price: null, amountTTC: null })] }), true],
   'tva-incoherente': [() => lectureA(), true],
   'ht-tva-ttc': [() => propre({ amountHT: 8, tvaAmount: 1 }), true],
   'lignes-perdues': [() => propre({ amountTTC: 5, printedLineCount: 2 }), true],

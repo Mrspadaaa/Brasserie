@@ -99,7 +99,9 @@ describe('Couleur de la bière', () => {
   });
 
   it('un malt torréfié fait basculer en noir', () => {
-    expect(computeBeerColor([malt(5, 6), malt(0.5, 1300)], 30)!.band).toBe('stout');
+    // CF-2 (08.11) : avec le °L de Daniels, 0,5 kg d'orge torréfiée dans 30 L donne une bière brune (55 EBC), plus noire.
+    expect(computeBeerColor([malt(5, 6), malt(0.8, 1300)], 20)!.band).toBe('stout');
+    expect(computeBeerColor([malt(5, 6), malt(0.5, 1300)], 30)!.band).toBe('brown');
   });
 
   it('l’EBC vaut 1.97 fois le SRM', () => {

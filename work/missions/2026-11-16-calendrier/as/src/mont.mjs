@@ -1,0 +1,11 @@
+import {createRequire} from 'module';
+const require=createRequire('C:/Users/mrspa/Documents/Brasserie/.claude/worktrees/optimistic-ptolemy-2d1278/package.json');
+const puppeteer=require('puppeteer-core');const fs=require('fs');
+const R='C:/Users/mrspa/.codex/worktrees/openai-clean-start/Brasserie/work/missions/2026-11-16-calendrier/as/cap/';
+const b=await puppeteer.launch({executablePath:'C:/Program Files/Google/Chrome/Application/chrome.exe'});
+const [name,cw,...imgs]=process.argv.slice(2);const W=+cw;
+const p=await b.newPage();await p.setViewport({width:imgs.length*(W+6),height:2000});
+fs.writeFileSync(R+'_m.html','<body style="margin:0;display:flex;gap:6px;align-items:flex-start;background:#888">'+imgs.map(i=>`<img src="${i}.png" style="width:${W}px">`).join('')+'</body>');
+await p.goto('file:///'+R+'_m.html');await new Promise(r=>setTimeout(r,300));
+const h=await p.evaluate(()=>Math.max(...[...document.images].map(i=>i.getBoundingClientRect().bottom)));
+await p.screenshot({path:R+'_'+name+'.png',clip:{x:0,y:0,width:imgs.length*(W+6),height:h}});fs.unlinkSync(R+'_m.html');await b.close();

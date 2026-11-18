@@ -1,0 +1,10 @@
+[2026-11-01T08:55:39.784Z] dossier temporaire : C:\Users\mrspa\AppData\Local\Temp\affinee-jus0-emu-VE8g2s
+[2026-11-01T08:55:39.786Z] règles générées depuis le gabarit (sha a66184ee3434) → C:\Users\mrspa\AppData\Local\Temp\affinee-jus0-emu-VE8g2s\firestore.rules
+[2026-11-01T08:55:42.653Z] tsc functions → C:\Users\mrspa\AppData\Local\Temp\affinee-jus0-emu-VE8g2s\functions\lib : exit 0
+
+[2026-11-01T08:55:42.899Z] emulators:exec --project demo-jus --config C:\Users\mrspa\AppData\Local\Temp\affinee-jus0-emu-VE8g2s\firebase.json
+[2026-11-01T08:55:42.907Z] firebase emulators:exec pid 23696
+[2026-11-01T09:06:27.701Z] emulators:exec terminé : exit 0
+[2026-11-01T09:06:29.202Z] ports émulateurs et serveur libérés
+[2026-11-01T09:06:29.359Z] fichiers protégés inchangés : [["firebase.json",true,"7fcc0820e4cf",""],[".firebaserc",false,null,""],["firestore.rules",true,"5f064a7a64ad",""],["firestore.indexes.json",true,"9c2610aec4ac",""]]
+[2026-11-01T09:06:29.380Z] EMU-INVOICE-JOURNEY-OK

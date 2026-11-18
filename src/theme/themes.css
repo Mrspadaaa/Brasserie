@@ -146,6 +146,9 @@
 :root:not([data-theme='cave']) .bg-ebc-straw * {
   color: rgb(255 255 255);
 }
+/* D328d : un contrôle clair (fond de page : bg-cave-950/900/850) posé DANS un aplat paille garde son texte foncé, lui et ses enfants (« ✕ Toutes les lignes » de la barre de filtre noire). */
+:root:not([data-theme='cave']) .bg-ebc-straw :is(.bg-cave-950, .bg-cave-900, .bg-cave-850) { color: rgb(var(--cave-texte-50)); }
+:root:not([data-theme='cave']) .bg-ebc-straw :is(.bg-cave-950, .bg-cave-900, .bg-cave-850) * { color: inherit; }
 /* Les boutons en dégradé paille → ambre deviennent l'action noire de ses maquettes. */
 :root:not([data-theme='cave']) .from-ebc-straw {
   background-image: none;

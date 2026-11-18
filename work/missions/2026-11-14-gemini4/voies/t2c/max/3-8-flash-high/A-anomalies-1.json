@@ -1,0 +1,75 @@
+{
+ "reglage": "3.8-flash@high",
+ "cas": "A-anomalies-1",
+ "tache": "detectAnomalies",
+ "moitie": "choix",
+ "note": {
+  "qualite": 1,
+  "utilisable": true,
+  "passes": [],
+  "manques": [],
+  "detail": {
+   "rappel": 1,
+   "precision": 1,
+   "types": 1,
+   "fauxPositifs": 0,
+   "anomalies": 5,
+   "manques": [],
+   "qualite": 1
+  }
+ },
+ "ms": 29004,
+ "coutMicro": 41112,
+ "etat": "STOP",
+ "valeur": {
+  "anomalies": [
+   {
+    "transactionIds": [
+     "T05",
+     "T06"
+    ],
+    "type": "doublon",
+    "severity": "attention",
+    "explanation": "Deux écritures identiques auprès de Brau- und Rauchshop pour 10 paquets de levure SafAle US-05 à 184.50 CHF enregistrées à un jour d'intervalle (2 et 3 août 2026).",
+    "suggestion": "Vérifier les justificatifs pour confirmer s'il s'agit d'une double livraison réelle ou d'une saisie en doublon de la même facture."
+   },
+   {
+    "transactionIds": [
+     "T09"
+    ],
+    "type": "montant",
+    "severity": "attention",
+    "explanation": "La facture d'électricité SIG Fribourg s'élève à 1'150.00 CHF, soit plus de dix fois la moyenne habituelle des autres mois (~100.00 CHF).",
+    "suggestion": "Contrôler le justificatif pour vérifier s'il s'agit d'une erreur de frappe (ex. 115.00 CHF) ou d'un décompte annuel de régularisation."
+   },
+   {
+    "transactionIds": [
+     "T11"
+    ],
+    "type": "tva",
+    "severity": "attention",
+    "explanation": "Le taux de TVA indiqué est de 19 % (taux standard étranger/allemand), alors que le malt en Suisse relève du taux réduit de 2.6 % pour les denrées alimentaires.",
+    "suggestion": "Vérifier la facture fournisseur Eckenstein et corriger le taux appliqué (taux réduit suisse de 2.6 % ou montant TTC total sans déduction si non assujetti)."
+   },
+   {
+    "transactionIds": [
+     "T13"
+    ],
+    "type": "justificatif",
+    "severity": "grave",
+    "explanation": "Justificatif manquant pour l'achat de la cuve inox 300 L d'un montant de 2'480.00 CHF auprès de Frigo Service SA.",
+    "suggestion": "Joindre la facture originale d'achat pour appuyer cette immobilisation matérielle dans les comptes de la brasserie."
+   },
+   {
+    "transactionIds": [
+     "T15"
+    ],
+    "type": "date",
+    "severity": "attention",
+    "explanation": "La date enregistrée est le 14 mars 2027, ce qui est postérieur à la date du jour (14 novembre 2026).",
+    "suggestion": "Corriger l'année de l'écriture en 2026 (ou vérifier la date réelle d'émission de la facture SIOS)."
+   }
+  ],
+  "checkedCount": 18
+ }
+}

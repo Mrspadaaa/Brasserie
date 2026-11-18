@@ -8,7 +8,8 @@
 // 5 pour une recette vide, puis 3, 2, 1. Le champ cherche dans tout le catalogue, pas seulement le stock (D21 : « je
 // fais une recette puis ensuite j'achète les ingrédients, souvent pas présent »).
 import { useDeferredValue, useMemo, useRef, useState } from 'react';
-import { Plus, ShoppingCart } from 'lucide-react';
+import { Plus, ShoppingCart, SlidersHorizontal } from 'lucide-react';
+import { ouvrirCouche } from '../ouvrirCouche';
 import { Input, type InputElement } from '../../Input';
 import { COULEURS, nombre } from './commun';
 import { useOuvrir } from './hote';
@@ -17,6 +18,7 @@ import { useGestes } from './hote';
 import { nouvelId, placer } from '../parcours/operations';
 import type { AjoutParcours, RecetteParcours } from '../parcours/types';
 import { donnees, houblon, ibuAjout, style } from '../parcours/adaptateur';
+import { styleFit } from '../../../domain/hopIndex/v4/hops';
 import type { QuickAdd } from '../../../domain/hopIndex/v4';
 import { buildFromEmpty, hopRole, quickAdds } from '../parcours/v4';
 import { AlphaLu, StockIcone, titreUsage } from './briques';
@@ -127,6 +129,13 @@ export function Ajouter({ recette, onGeste, onAjout, champRef }: {
         <Input ref={champRef} inputMode="search" value={cherche} onChange={(e) => setCherche(e.target.value)} placeholder="Ajouter — houblon…"
           data-etat="etat-etape-champ-ajouter" aria-label="Ajouter un houblon : stock ou catalogue"
           className="flex-1 min-w-0 h-10 px-4 py-2 leading-6 rounded-full border border-cave-700 bg-cave-900 text-base text-cave-50 placeholder:text-cave-400" />
+        {/* 09.11 (« je choisis la recherche avancée par moi même ») : la recherche de base reste ce champ ; la recherche avancée
+            (forme c6b de la levure : facettes à comptes, α, rôle, arômes, origine, huiles, stock) s'ouvre par son bouton, dans la pile. */}
+        <button type="button" data-role="recherche-avancee" aria-label="Recherche avancée" title="Recherche avancée : α, rôle, arômes, origine, huiles, stock"
+          onClick={() => { onGeste(); ouvrirCouche({ view: 'hopSearch' }); }}
+          className="shrink-0 inline-flex items-center gap-1 h-10 px-2 rounded-full text-sm text-cave-400">
+          <SlidersHorizontal className="w-4 h-4" aria-hidden="true" /><span className="hidden sm:inline">Recherche avancée</span><span className="sm:hidden">Avancée</span>
+        </button>
         {liste.length > 0 && <BoutonLegende ouverte={legende} onBasculer={basculerLegende} groupe="les icônes des ajouts proposés" controle="pq-ma-biere-legende-rapides" />}
       </div>
       <ul className="space-y-1" aria-label="Ajouts proposés par le moteur, chacun à son moment suggéré">
@@ -152,6 +161,7 @@ export function Ajouter({ recette, onGeste, onAjout, champRef }: {
                   <span data-houblon={h.cle} {...fiche.nom(h.cle)} className="shrink-0 font-semibold text-[15px] leading-5 text-cave-50 underline decoration-dotted decoration-cave-600 underline-offset-4">{h.nom}</span>
                   <AlphaLu h={h} mode="court" />
                   <UsageMot cle={h.cle} />
+                  {sansDonneeStyle(p.cle, sc) && <span data-role="non-documente" title="Ni usage attesté ni famille attendue citée pour ce style : le classement reste celui du moteur" className="text-xs text-attention whitespace-nowrap rounded-full border border-dashed border-cave-600 px-1.5">non documenté pour ce style</span>}
                   {p.statut === 'catalogue' ? <ShoppingCart role="img" aria-label="à acheter" className="w-3.5 h-3.5 text-cave-400 shrink-0" /> : <StockIcone h={h} />}
                   <MarquesCatalogue cle={h.cle} />
                 </span>
@@ -233,6 +243,15 @@ export function Ajouter({ recette, onGeste, onAjout, champRef }: {
       )}
     </section>
   );
+}
+
+/**
+ * Test en ligne n° 28 (option B du pilote) : le classement D107 reste ; une suggestion SANS donnée pour le style de la recette (ni usage attesté par un fournisseur, ni famille
+ * attendue citée dans sa fiche) le dit sur sa ligne, au lieu de passer pour une proposition du style. Un style sans plages (code vide ou inconnu) ne marque rien : tout y serait « non documenté ».
+ */
+function sansDonneeStyle(cle: string, sc: ReturnType<typeof style>): boolean {
+  if (!sc.documented) return false;
+  try { const fit = styleFit([cle], sc)[0]?.fit; return fit === 'non documenté' || fit === 'peu documenté'; } catch { return false; }
 }
 
 /** L'usage en mot, comme les ajouts de sa base (« double », « aromatique », « amérisant ») : D90. */

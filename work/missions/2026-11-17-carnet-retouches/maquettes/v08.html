@@ -1,0 +1,429 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Carnet v08 · axe B · on voit où ça tombe (17.11, passe de correction)</title>
+<!--
+  v08 · axe B (CARNET-AJOUT-FOUILLIS) · base : ra-p5f/proto.html (17.11), plancher à enrichir.
+  Parti pris, inchangé : « on voit où ça tombe, avant et après l'envoi ». Ce qu'on dépose (texte, lien, photo, voix)
+  apparaît en pointillé à la place exacte où il sera rangé ; l'IA présélectionne la case « Va dans », le brasseur la
+  change avant l'envoi ; après l'envoi, la ligne devient pleine, « à l'instant », avec Annuler.
+  Un geste, une porte : le + = une nouvelle idée ; dans une fiche, le champ du bas (texte, photo, voix, lien).
+  Passe de correction (critique du 17.11) :
+  - lien : icône lien dans chaque champ, case « Article », écran 5 où le lien collé montre l'objet (photo, prix, vendeur, veille) ;
+  - nouvelle idée : photo, voix, lien dans le champ ; la phrase d'aide retirée (le fantôme « arrive ici » suffit) ;
+  - écran 3 : le carnet juste créé et ce que l'IA y propose, à sa place ;
+  - voix (écran 6) : onde, durée, texte relu pendant l'enregistrement, Arrêter ; photo (écran 7) : aperçu et valeurs à valider ;
+  - profondeur : jamais lue en cm sur une photo (« ≈ 30 cm ? à mesurer ») ;
+  - façons : Retenir / Écarter sur chaque ligne ;
+  - la ligne fraîche remonte en tête de fiche, rien n'est rogné par le champ ;
+  - habit : barre « L'Affinée », segments de Stocks, 3 tailles de texte (14, 16, 18), rangées rayon 8, liseré 3 px ;
+  - couleurs avec un sens : étapes Idée (or) › Comparer (cuivre) › Choisi / À venir (houblon), zone Stocks pour la saisie ;
+    plus de violet ni de bleu ; « exemple » en gris, une fois par écran ;
+  - étapes nommées (légende en tête de liste) ; compteurs remplacés par le geste suivant ;
+  - écran 8 : l'onglet À venir répond et dit ce qui part (objet, vendeur, prix, date).
+  Huit écrans de 390 × 844 côte à côte.
+-->
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@500;600&family=Source+Sans+3:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#fff;--s1:#f5f5f5;--s2:#ebebeb;--line:#ddd;--line2:#bfbfbf;--mut:#666;--txt:#333;--ink:#111;--act:#111;--onact:#fff;
+  --stk:#4c6b2a;--houblon:#567F45;--ok:#3f6b2e;--or:#7a5a12;--cuivre:#8d442c;--bdg:#8a5212;--alerte:#a8291f;
+  --okbg:color-mix(in srgb,var(--ok) 11%,var(--bg));--zone:color-mix(in srgb,var(--stk) 8%,var(--bg));--botOn:color-mix(in srgb,var(--stk) 12%,var(--s1))}
+*{box-sizing:border-box}
+html,body{margin:0;background:var(--bg);color:var(--txt);font-family:"Source Sans 3","Segoe UI",system-ui,sans-serif}
+body{display:flex;flex-wrap:wrap;align-items:flex-start;gap:24px;font-size:14px;line-height:1.35}
+b,strong{font-weight:700;color:var(--ink)}
+.v8-tel{position:relative;width:390px;height:844px;overflow:hidden;background:var(--bg);flex:none;box-shadow:1px 0 0 var(--line),-1px 0 0 var(--line)}
+.v8-ico{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;flex:none}
+.v8-ico.s{width:16px;height:16px}
+.v8-mono{font-family:"IBM Plex Mono",ui-monospace,monospace;font-variant-numeric:tabular-nums;letter-spacing:-.02em;font-weight:500}
+.v8-ex{display:inline-block;border:1px solid var(--line2);color:var(--mut);border-radius:999px;font-size:14px;line-height:20px;padding:0 8px}
+.v8-m{color:var(--mut)}
+/* barre de l'app + segments de Stocks */
+.v8-app{display:flex;align-items:center;gap:8px;height:48px;padding:0 12px;border-bottom:1px solid var(--line)}
+.v8-logo{width:28px;height:28px;border-radius:8px;background:var(--act);color:var(--onact);display:grid;place-items:center}
+.v8-nom{font-size:16px;font-weight:700;color:var(--ink)}
+.v8-app .v8-ex{margin-left:auto}
+.v8-seg{display:flex;gap:2px;margin:8px 12px 0;padding:2px;border-radius:8px;background:var(--s1);border:1px solid var(--line)}
+.v8-seg>span{flex:1;display:flex;align-items:center;justify-content:center;gap:4px;min-height:32px;border-radius:8px;font-size:14px;font-weight:600;white-space:nowrap}
+.v8-seg>span.on{background:var(--stk);color:#fff}
+.v8-seg.sous{background:var(--bg);margin-top:6px}
+.v8-seg.sous>span.on{background:var(--s1);color:var(--ink);box-shadow:inset 0 0 0 1px var(--line2)}
+.v8-seg .n{font-family:"IBM Plex Mono",ui-monospace,monospace;font-weight:500;color:var(--mut)}
+.v8-wrap{padding:8px 12px}
+/* légende des étapes = la seule échelle d'avancement */
+.v8-leg{display:flex;align-items:center;gap:6px;font-size:14px;font-weight:600;margin:2px 0 8px}
+.v8-leg .sep{color:var(--line2)}
+.v8-i{color:var(--or)}.v8-c{color:var(--cuivre)}.v8-k{color:var(--ok)}
+/* cartes de carnet (base : liseré, une ligne par idée ; resserrées) */
+.v8-card{position:relative;border:1px solid var(--line);border-radius:8px;background:var(--bg);padding:8px 10px 8px 13px;margin:0 0 6px;overflow:hidden}
+.v8-card:before{content:"";position:absolute;left:0;top:0;bottom:0;width:3px;background:var(--st)}
+.v8-c1{display:flex;align-items:baseline;gap:8px}
+.v8-c1 b{flex:1;font-size:16px;line-height:1.25;min-width:0}
+.v8-st{display:inline-flex;align-items:center;gap:4px;font-size:14px;font-weight:700;color:var(--st);white-space:nowrap}
+.v8-c2{display:flex;align-items:center;gap:6px;margin-top:2px;font-size:14px;color:var(--mut)}
+.v8-c2 .go{margin-left:auto;color:var(--stk);font-weight:700;white-space:nowrap}
+.v8-c2 .eye{display:inline-flex;align-items:center;gap:3px;white-space:nowrap}
+/* LA décision : le fantôme, à la place exacte où ce sera rangé */
+.v8-ghost{border:2px dashed var(--stk);background:var(--zone)}
+.v8-ghost:before{display:none}
+.v8-ici{display:inline-flex;align-items:center;gap:3px;font-size:14px;font-weight:700;color:var(--stk);white-space:nowrap}
+.v8-caret{display:inline-block;width:2px;height:1.1em;background:var(--stk);vertical-align:-2px;margin-left:1px}
+.v8-dim{opacity:.5}
+/* coque */
+.v8-bot{position:absolute;left:0;right:0;bottom:0;height:56px;display:flex;background:var(--s1);border-top:1px solid var(--line);z-index:30}
+.v8-bot span{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;font-size:14px;letter-spacing:-.01em;position:relative;min-width:0}
+.v8-bot span.on{background:var(--botOn);font-weight:600;box-shadow:inset 0 3px 0 var(--stk);color:var(--stk)}
+.v8-bot .bdg{position:absolute;top:2px;left:calc(50% + 4px);background:var(--bdg);color:#fff;font-size:14px;font-weight:600;border-radius:999px;padding:0 5px;line-height:18px}
+.v8-fab{position:absolute;right:14px;bottom:68px;z-index:33;display:grid;place-items:center;width:56px;height:56px;border-radius:16px;background:var(--act);color:var(--onact);box-shadow:0 6px 18px rgba(0,0,0,.28),0 0 0 3px var(--bg)}
+.v8-fab .v8-ico{width:26px;height:26px;stroke-width:2.4}
+/* clavier simulé */
+.v8-kbd{position:absolute;left:0;right:0;bottom:0;height:300px;background:#cfd3d9;padding:8px 4px 0;z-index:40}
+.v8-kbd .rg{display:flex;gap:5px;justify-content:center;margin:0 0 9px}
+.v8-kbd .rg i{flex:1;max-width:34px;height:46px;border-radius:6px;background:#fff;box-shadow:0 1px 0 #8e9298;font-style:normal;display:grid;place-items:center;font-size:16px;color:#222}
+.v8-kbd .rg i.w{max-width:none;flex:5;font-size:14px}.v8-kbd .rg i.k{background:#aeb3bb;font-size:14px}.v8-kbd .rg i.go{background:var(--stk);color:#fff;font-size:16px;font-weight:700;max-width:72px;flex:2}
+/* champ du bas (au-dessus du clavier, ou au-dessus des onglets au repos) */
+.v8-dock{position:absolute;left:0;right:0;bottom:300px;z-index:39;background:var(--bg);border-top:1px solid var(--line);box-shadow:0 -6px 16px rgba(0,0,0,.07);padding:8px 12px}
+.v8-dock.repos{bottom:56px;box-shadow:none}
+.v8-comp{display:flex;align-items:center;gap:2px;background:var(--s1);border:1.5px solid var(--stk);border-radius:8px;padding:3px 3px 3px 10px;min-height:50px}
+.v8-dock.repos .v8-comp{border-color:var(--line2)}
+.v8-comp .tx{flex:1;min-width:0;font-size:16px;color:var(--ink);line-height:1.25}
+.v8-comp .tx.ph{color:var(--mut)}
+.v8-comp .cb{display:grid;place-items:center;width:36px;height:44px;color:var(--txt)}
+.v8-comp .cb.on{color:var(--stk)}
+.v8-go{display:inline-flex;align-items:center;gap:4px;height:42px;padding:0 10px;border-radius:8px;background:var(--stk);color:#fff;font-weight:700;font-size:14px;white-space:nowrap;margin-left:2px}
+.v8-url{display:inline-flex;align-items:center;gap:4px;max-width:100%;padding:2px 6px;border-radius:8px;background:var(--zone);color:var(--stk);font-size:14px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.v8-to{display:flex;align-items:center;gap:5px;margin:0 0 8px}
+.v8-to>span:first-child{font-size:14px;font-weight:700;color:var(--mut);flex:none}
+.v8-ch{display:inline-flex;align-items:center;min-height:36px;padding:0 8px;border-radius:999px;border:1.5px solid var(--line2);font-size:14px;font-weight:600;white-space:nowrap;background:var(--bg);color:var(--ink)}
+.v8-ch.on{border-color:var(--stk);background:var(--stk);color:#fff}
+/* fiche */
+.v8-fh{background:var(--zone);padding:4px 12px 8px;border-bottom:1px solid var(--line)}
+.v8-back{display:flex;align-items:center;gap:4px;font-weight:600;font-size:14px;min-height:32px}
+.v8-back .v8-st{margin-left:auto}
+.v8-fh h1{font-size:18px;font-weight:700;color:var(--ink);margin:0;line-height:1.25}
+.v8-sec{padding:8px 12px 0}
+.v8-sh{display:flex;align-items:center;gap:6px;font-size:14px;font-weight:700;color:var(--mut);margin:0 0 4px}
+.v8-sh .n{margin-left:auto;font-weight:600}
+.v8-row{display:flex;align-items:center;gap:8px;min-height:44px;padding:6px 8px;border:1px solid var(--line);border-radius:8px;background:var(--bg);margin:0 0 6px;font-size:14px}
+.v8-row .tx{flex:1;min-width:0;line-height:1.3}
+.v8-row .tx b{font-size:16px;font-weight:600}
+.v8-row .tx small{display:block;font-size:14px;color:var(--mut)}
+.v8-row.ghost{border:2px dashed var(--stk);background:var(--zone)}
+.v8-row.fresh{border-color:color-mix(in srgb,var(--ok) 55%,transparent);background:var(--okbg)}
+.v8-row.prop{border-style:dashed;border-color:var(--line2);background:var(--s1)}
+.v8-row .ph{width:44px;height:40px;border-radius:8px;flex:none}
+.v8-row .tg{color:var(--stk)}
+.v8-btns{display:flex;gap:4px;flex:none}
+.v8-mini{display:inline-flex;align-items:center;min-height:32px;padding:0 8px;border-radius:8px;border:1.5px solid var(--line2);font-size:14px;font-weight:700;background:var(--bg);white-space:nowrap;color:var(--ink)}
+.v8-mini.p{border-color:var(--stk);color:var(--stk)}
+.v8-un{display:inline-flex;align-items:center;min-height:32px;padding:0 4px;font-size:14px;font-weight:700;color:var(--ink);text-decoration:underline;text-underline-offset:3px;white-space:nowrap}
+.v8-slot{display:flex;align-items:center;gap:8px;min-height:56px;padding:8px 10px;border:2px dashed var(--line2);border-radius:8px;color:var(--mut);font-size:14px}
+.v8-slot .ics{margin-left:auto;display:flex;gap:10px;color:var(--stk)}
+/* article fantôme (lien collé) */
+.v8-art{display:flex;gap:10px;padding:8px;border:2px dashed var(--stk);border-radius:8px;background:var(--zone)}
+.v8-art .img{width:76px;height:76px;border-radius:8px;flex:none;background:#e9edf0}
+.v8-art .tx{flex:1;min-width:0}
+.v8-art .tx b{display:block;font-size:16px;font-weight:600;line-height:1.25}
+.v8-art .l{display:flex;align-items:center;gap:6px;font-size:14px;margin-top:2px}
+.v8-art .prix{font-size:16px;font-weight:600;color:var(--ink)}
+.v8-sw{margin-left:auto;width:36px;height:22px;border-radius:999px;background:var(--houblon);position:relative;flex:none}
+.v8-sw:after{content:"";position:absolute;right:3px;top:3px;width:16px;height:16px;border-radius:50%;background:#fff}
+/* voix */
+.v8-rec{position:absolute;left:0;right:0;bottom:0;z-index:40;background:var(--bg);border-top:1px solid var(--line);box-shadow:0 -6px 16px rgba(0,0,0,.08);padding:10px 12px 16px}
+.v8-wave{display:flex;align-items:center;gap:3px;height:48px;margin:6px 0}
+.v8-wave i{flex:1;border-radius:2px;background:var(--houblon)}
+.v8-wave i.q{background:var(--line2)}
+.v8-said{border:1px solid var(--line);border-radius:8px;background:var(--s1);padding:8px 10px;font-size:16px;color:var(--ink);line-height:1.3}
+.v8-said small{display:block;font-size:14px;color:var(--mut);margin-bottom:2px}
+.v8-acts{display:flex;gap:8px;margin-top:10px}
+.v8-btn{flex:1;display:inline-flex;align-items:center;justify-content:center;gap:6px;min-height:48px;border-radius:8px;border:1.5px solid var(--line2);font-size:16px;font-weight:700;color:var(--ink);background:var(--bg)}
+.v8-btn.p{background:var(--act);border-color:var(--act);color:var(--onact)}
+.v8-btn.z{background:var(--stk);border-color:var(--stk);color:#fff}
+.v8-dotrec{width:12px;height:12px;border-radius:50%;background:var(--alerte)}
+/* photo avant envoi */
+.v8-voile{position:absolute;inset:0;background:rgba(17,17,17,.35);z-index:38}
+.v8-sheet{position:absolute;left:0;right:0;bottom:0;z-index:41;background:var(--bg);border-radius:16px 16px 0 0;padding:6px 12px 14px}
+.v8-handle{width:40px;height:4px;border-radius:999px;background:var(--line2);margin:0 auto 8px}
+.v8-sht{display:flex;align-items:center;gap:8px;font-size:16px;font-weight:700;color:var(--ink);margin-bottom:8px}
+.v8-sht .v8-m{margin-left:auto;font-weight:400;font-size:14px}
+.v8-lu{display:flex;align-items:center;gap:8px;min-height:44px;border-bottom:1px solid var(--line);font-size:14px}
+.v8-lu .tx{flex:1}
+.v8-lu .tx b{font-size:16px;font-weight:600}
+.v8-cm{display:inline-flex;align-items:center;gap:4px;min-height:36px;width:92px;padding:0 8px;border:1.5px solid var(--stk);border-radius:8px;background:var(--bg);font-size:16px;color:var(--mut)}
+/* À venir */
+.v8-mois{font-size:14px;font-weight:700;color:var(--mut);margin:6px 0 4px}
+.v8-av{border:1px solid var(--line);border-radius:8px;padding:8px 10px;position:relative;overflow:hidden}
+.v8-av:before{content:"";position:absolute;left:0;top:0;bottom:0;width:3px;background:var(--ok)}
+.v8-av .h{display:flex;align-items:baseline;gap:8px}
+.v8-av .h b{flex:1;font-size:16px}
+.v8-av .date{font-size:16px;font-weight:600;color:var(--ink)}
+.v8-av .d{font-size:14px;color:var(--mut);margin-top:2px}
+.v8-av .lk{display:flex;gap:14px;margin-top:6px;font-size:14px;font-weight:700;color:var(--stk)}
+</style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+<symbol id="i-bord" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></symbol>
+<symbol id="i-wallet" viewBox="0 0 24 24"><path d="M19 7V4a1 1 0 0 0-1-1H5a2 2 0 0 0 0 4h15a1 1 0 0 1 1 1v4h-3a2 2 0 0 0 0 4h3a1 1 0 0 0 1-1v-2"/><path d="M3 5v14a2 2 0 0 0 2 2h15a1 1 0 0 0 1-1v-4"/></symbol>
+<symbol id="i-cal" viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/></symbol>
+<symbol id="i-beer" viewBox="0 0 24 24"><path d="M17 11h1a3 3 0 0 1 0 6h-1"/><path d="M9 12v6M13 12v6"/><path d="M5 8v12a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2V8"/><path d="M5 8a2.5 2.5 0 0 1 1-4.5c.8-1.5 3-2 4-1 1-1 3.5-1 4.5.5A2.5 2.5 0 0 1 17 8z"/></symbol>
+<symbol id="i-boxes" viewBox="0 0 24 24"><path d="M7 13 3 15v4l4 2 4-2v-4zM17 13l-4 2v4l4 2 4-2v-4zM12 3 8 5v4l4 2 4-2V5z"/></symbol>
+<symbol id="i-users" viewBox="0 0 24 24"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.9M16 3.1a4 4 0 0 1 0 7.8"/></symbol>
+<symbol id="i-plus" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></symbol>
+<symbol id="i-left" viewBox="0 0 24 24"><path d="m15 18-6-6 6-6"/></symbol>
+<symbol id="i-down" viewBox="0 0 24 24"><path d="M12 5v14M6 13l6 6 6-6"/></symbol>
+<symbol id="i-cam" viewBox="0 0 24 24"><path d="M4 8h3l2-3h6l2 3h3v11H4z"/><circle cx="12" cy="13" r="3.5"/></symbol>
+<symbol id="i-mic" viewBox="0 0 24 24"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3"/></symbol>
+<symbol id="i-link" viewBox="0 0 24 24"><path d="M10 14a4 4 0 0 0 5.7 0l3-3a4 4 0 0 0-5.7-5.7l-1 1"/><path d="M14 10a4 4 0 0 0-5.7 0l-3 3a4 4 0 0 0 5.7 5.7l1-1"/></symbol>
+<symbol id="i-eye" viewBox="0 0 24 24"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></symbol>
+<symbol id="i-target" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="1.5"/></symbol>
+<symbol id="i-fork" viewBox="0 0 24 24"><circle cx="6" cy="5" r="2"/><circle cx="18" cy="5" r="2"/><circle cx="12" cy="20" r="2"/><path d="M6 7v2a3 3 0 0 0 3 3h6a3 3 0 0 0 3-3V7M12 12v6"/></symbol>
+<symbol id="i-tag" viewBox="0 0 24 24"><path d="M20 12 12 20 4 12V4h8z"/><circle cx="8.5" cy="8.5" r="1.5"/></symbol>
+<symbol id="i-note" viewBox="0 0 24 24"><path d="M5 4h14v16H5z"/><path d="M9 9h6M9 13h6M9 17h3"/></symbol>
+<symbol id="i-book" viewBox="0 0 24 24"><path d="M4 4h11a3 3 0 0 1 3 3v13H7a3 3 0 0 1-3-3z"/><path d="M4 17a3 3 0 0 1 3-3h11"/><path d="M8 8h6"/></symbol>
+<symbol id="i-glass" viewBox="0 0 24 24"><path d="M6 4h12l-1.5 15a2 2 0 0 1-2 2h-5a2 2 0 0 1-2-2z"/><path d="M6.5 9h11"/></symbol>
+<symbol id="i-stop" viewBox="0 0 24 24"><rect x="6" y="6" width="12" height="12" rx="2" fill="currentColor"/></symbol>
+<symbol id="i-redo" viewBox="0 0 24 24"><path d="M3 12a9 9 0 1 0 3-6.7L3 8"/><path d="M3 3v5h5"/></symbol>
+<symbol id="i-right" viewBox="0 0 24 24"><path d="m9 18 6-6-6-6"/></symbol>
+</svg>
+
+<!-- ============ 1 · Liste au repos : l'habit de l'app, étapes nommées, le geste suivant sur chaque carte ============ -->
+<section class="v8-tel" aria-label="1 · Liste des carnets">
+  <header class="v8-app"><span class="v8-logo"><svg class="v8-ico"><use href="#i-glass"/></svg></span><span class="v8-nom">L'Affinée</span><span class="v8-ex">exemple</span></header>
+  <div class="v8-seg"><span>Articles</span><span>Courses</span><span>Fûts</span><span class="on">Matériel</span><span>Houblons</span></div>
+  <div class="v8-seg sous"><span>À venir <span class="n">1</span></span><span class="on">Carnets <span class="n">4</span></span><span>Réalisés <span class="n">2</span></span></div>
+  <div class="v8-wrap">
+    <div class="v8-leg"><span class="v8-i">Idée</span><span class="sep">›</span><span class="v8-c">Comparer</span><span class="sep">›</span><span class="v8-k">Choisi</span><span class="sep">›</span><span class="v8-k">À venir</span></div>
+    <div class="v8-card" style="--st:var(--or)">
+      <div class="v8-c1"><b>Évier inox</b><span class="v8-st">Idée</span></div>
+      <div class="v8-c2"><span>1 façon · 0 article</span><span class="go">Coller un lien ›</span></div>
+    </div>
+    <div class="v8-card" style="--st:var(--cuivre)">
+      <div class="v8-c1"><b>Ventilation</b><span class="v8-st">Comparer</span></div>
+      <div class="v8-c2"><span class="eye"><svg class="v8-ico s"><use href="#i-eye"/></svg>veille</span><span class="go">5 articles ›</span></div>
+    </div>
+    <div class="v8-card" style="--st:var(--ok)">
+      <div class="v8-c1"><b>Frigo de garde</b><span class="v8-st">Choisi</span></div>
+      <div class="v8-c2"><span><span class="v8-mono">4 900</span> CHF</span><span class="go">Vers À venir ›</span></div>
+    </div>
+    <div class="v8-card" style="--st:var(--ok)">
+      <div class="v8-c1"><b>Embouteillage</b><span class="v8-st"><svg class="v8-ico s"><use href="#i-cal"/></svg>À venir</span></div>
+      <div class="v8-c2"><span><span class="v8-mono">4</span> déc. · <span class="v8-mono">2 300</span> CHF</span><span class="go">Voir ›</span></div>
+    </div>
+  </div>
+  <span class="v8-fab" aria-label="Nouvelle idée"><svg class="v8-ico"><use href="#i-plus"/></svg></span>
+  <nav class="v8-bot" aria-label="Navigation">
+    <span><svg class="v8-ico"><use href="#i-bord"/></svg>Bord</span>
+    <span><svg class="v8-ico"><use href="#i-wallet"/></svg>Finances</span>
+    <span><svg class="v8-ico"><use href="#i-cal"/></svg>Calendrier</span>
+    <span><svg class="v8-ico"><use href="#i-beer"/></svg>Brassins</span>
+    <span class="on"><svg class="v8-ico"><use href="#i-boxes"/></svg>Stocks<b class="bdg">24</b></span>
+    <span><svg class="v8-ico"><use href="#i-users"/></svg>Clients</span>
+  </nav>
+</section>
+
+<!-- ============ 2 · Nouvelle idée (après le +) : le carnet apparaît déjà en tête de liste ; texte, photo, voix ou lien ============ -->
+<section class="v8-tel" aria-label="2 · Nouvelle idée en cours">
+  <header class="v8-app"><span class="v8-logo"><svg class="v8-ico"><use href="#i-glass"/></svg></span><span class="v8-nom">L'Affinée</span><span class="v8-ex">exemple</span></header>
+  <div class="v8-seg sous" style="margin-top:8px"><span>À venir <span class="n">1</span></span><span class="on">Carnets <span class="n">5</span></span><span>Réalisés <span class="n">2</span></span></div>
+  <div class="v8-wrap">
+    <div class="v8-card v8-ghost">
+      <div class="v8-c1"><b>Tireuse 4 becs<span class="v8-caret"></span></b><span class="v8-ici"><svg class="v8-ico s"><use href="#i-down"/></svg>arrive ici</span></div>
+      <div class="v8-c2"><span>Nouveau carnet · <span class="v8-i" style="font-weight:700">Idée</span></span></div>
+    </div>
+    <div class="v8-dim">
+      <div class="v8-card" style="--st:var(--or)"><div class="v8-c1"><b>Évier inox</b><span class="v8-st">Idée</span></div></div>
+      <div class="v8-card" style="--st:var(--cuivre)"><div class="v8-c1"><b>Ventilation</b><span class="v8-st">Comparer</span></div></div>
+      <div class="v8-card" style="--st:var(--ok)"><div class="v8-c1"><b>Frigo de garde</b><span class="v8-st">Choisi</span></div></div>
+    </div>
+  </div>
+  <div class="v8-dock">
+    <div class="v8-comp"><span class="tx">tireuse 4 becs<span class="v8-caret"></span></span><span class="cb"><svg class="v8-ico"><use href="#i-cam"/></svg></span><span class="cb"><svg class="v8-ico"><use href="#i-mic"/></svg></span><span class="cb"><svg class="v8-ico"><use href="#i-link"/></svg></span><span class="v8-go"><svg class="v8-ico s"><use href="#i-plus"/></svg>Créer</span></div>
+  </div>
+  <div class="v8-kbd" aria-hidden="true">
+    <div class="rg"><i>a</i><i>z</i><i>e</i><i>r</i><i>t</i><i>y</i><i>u</i><i>i</i><i>o</i><i>p</i></div>
+    <div class="rg"><i>q</i><i>s</i><i>d</i><i>f</i><i>g</i><i>h</i><i>j</i><i>k</i><i>l</i><i>m</i></div>
+    <div class="rg"><i class="k">⇧</i><i>w</i><i>x</i><i>c</i><i>v</i><i>b</i><i>n</i><i>’</i><i class="k">⌫</i></div>
+    <div class="rg"><i class="k">123</i><i>,</i><i class="w">espace</i><i>.</i><i class="go">↵</i></div>
+  </div>
+</section>
+
+<!-- ============ 3 · Le carnet juste créé : ce que l'IA propose arrive à sa place, en proposé ; la case Articles attend ============ -->
+<section class="v8-tel" aria-label="3 · Carnet créé">
+  <div class="v8-fh">
+    <div class="v8-back"><svg class="v8-ico"><use href="#i-left"/></svg>Carnets<span class="v8-st" style="--st:var(--or)">Idée · à l'instant</span><span class="v8-un">Annuler</span></div>
+    <h1>Tireuse 4 becs</h1>
+  </div>
+  <div class="v8-sec">
+    <div class="v8-sh"><svg class="v8-ico s"><use href="#i-target"/></svg>Ce qui compte<span class="n">proposé par l'IA</span></div>
+    <div class="v8-row prop"><span class="tx"><b>Servir 4 fûts de 20 L au frais, sans mousse</b><small>pas encore validé</small></span><span class="v8-btns"><span class="v8-mini p">Valider</span><span class="v8-mini">Changer</span></span></div>
+  </div>
+  <div class="v8-sec">
+    <div class="v8-sh"><svg class="v8-ico s"><use href="#i-fork"/></svg>Façons de faire<span class="n">2 proposées</span></div>
+    <div class="v8-row prop"><span class="tx"><b>Tireuse de comptoir, refroidisseur sec</b><small>mobile · ≈ <span class="v8-mono">1 200</span> CHF</small></span><span class="v8-btns"><span class="v8-mini p">Retenir</span><span class="v8-mini">Écarter</span></span></div>
+    <div class="v8-row prop"><span class="tx"><b>Colonne murale, fûts en chambre froide</b><small>fixe · utilise le frigo de garde</small></span><span class="v8-btns"><span class="v8-mini p">Retenir</span><span class="v8-mini">Écarter</span></span></div>
+  </div>
+  <div class="v8-sec">
+    <div class="v8-sh"><svg class="v8-ico s"><use href="#i-tag"/></svg>Articles</div>
+    <div class="v8-slot"><span>Un lien ou une photo : l'article arrive ici, avec son prix.</span><span class="ics"><svg class="v8-ico"><use href="#i-link"/></svg><svg class="v8-ico"><use href="#i-cam"/></svg></span></div>
+  </div>
+  <div class="v8-sec">
+    <div class="v8-sh"><svg class="v8-ico s"><use href="#i-note"/></svg>Notes</div>
+    <div class="v8-row"><span class="tx">« tireuse 4 becs »<small>votre phrase de départ</small></span></div>
+  </div>
+  <div class="v8-dock repos">
+    <div class="v8-comp"><span class="tx ph">Écrire, ou coller un lien…</span><span class="cb"><svg class="v8-ico"><use href="#i-cam"/></svg></span><span class="cb"><svg class="v8-ico"><use href="#i-mic"/></svg></span><span class="cb"><svg class="v8-ico"><use href="#i-link"/></svg></span></div>
+  </div>
+  <nav class="v8-bot" aria-label="Navigation">
+    <span><svg class="v8-ico"><use href="#i-bord"/></svg>Bord</span>
+    <span><svg class="v8-ico"><use href="#i-wallet"/></svg>Finances</span>
+    <span><svg class="v8-ico"><use href="#i-cal"/></svg>Calendrier</span>
+    <span><svg class="v8-ico"><use href="#i-beer"/></svg>Brassins</span>
+    <span class="on"><svg class="v8-ico"><use href="#i-boxes"/></svg>Stocks<b class="bdg">24</b></span>
+    <span><svg class="v8-ico"><use href="#i-users"/></svg>Clients</span>
+  </nav>
+</section>
+
+<!-- ============ 4 · Ajouter à une idée : la façon tapée apparaît dans sa case ; la case se change avant l'envoi ============ -->
+<section class="v8-tel" aria-label="4 · Ajouter une façon">
+  <div class="v8-fh">
+    <div class="v8-back"><svg class="v8-ico"><use href="#i-left"/></svg>Carnets<span class="v8-st" style="--st:var(--or)">Idée · 15 nov.</span><span class="v8-ex" style="margin-left:6px">exemple</span></div>
+    <h1>Évier inox</h1>
+  </div>
+  <div class="v8-sec">
+    <div class="v8-row fresh"><svg class="ph" viewBox="0 0 100 88" style="background:#e6eaee"><rect x="10" y="28" width="80" height="12" rx="2" fill="#b7c0c8" stroke="#6d7880" stroke-width="2"/><rect x="18" y="40" width="28" height="20" rx="3" fill="#dfe5ea" stroke="#6d7880" stroke-width="2"/><rect x="54" y="40" width="28" height="20" rx="3" fill="#dfe5ea" stroke="#6d7880" stroke-width="2"/><path d="M50 28V12h12v7" stroke="#55616b" stroke-width="3" fill="none"/></svg><span class="tx"><b>Votre évier actuel</b><small>à l'instant · dans Notes · 2 bacs, profondeur à mesurer</small></span><span class="v8-un">Annuler</span></div>
+  </div>
+  <div class="v8-sec">
+    <div class="v8-sh"><svg class="v8-ico s"><use href="#i-target"/></svg>Ce qui compte</div>
+    <div class="v8-row prop"><span class="tx"><b>Un fût de 20 L couché entre dans le bac</b><small>proposé par l'IA, pas encore validé</small></span><span class="v8-btns"><span class="v8-mini p">Valider</span><span class="v8-mini">Changer</span></span></div>
+  </div>
+  <div class="v8-sec">
+    <div class="v8-sh"><svg class="v8-ico s"><use href="#i-fork"/></svg>Façons de faire<span class="n">retenir l'une, écarter l'autre</span></div>
+    <div class="v8-row"><span class="tx"><b>Plan à 2 bacs, encastré</b><small>à creuser</small></span><span class="v8-btns"><span class="v8-mini p">Retenir</span><span class="v8-mini">Écarter</span></span></div>
+    <div class="v8-row ghost"><span class="tx"><b>Sur pieds, avec égouttoir<span class="v8-caret"></span></b><small style="color:var(--stk);font-weight:700">arrive ici à l'envoi</small></span></div>
+  </div>
+  <div class="v8-dock">
+    <div class="v8-to"><span>Va dans</span><span class="v8-ch on">Façon</span><span class="v8-ch">Ce qui compte</span><span class="v8-ch">Article</span><span class="v8-ch">Note</span></div>
+    <div class="v8-comp"><span class="tx">sur pieds, avec égouttoir<span class="v8-caret"></span></span><span class="cb"><svg class="v8-ico"><use href="#i-cam"/></svg></span><span class="cb"><svg class="v8-ico"><use href="#i-mic"/></svg></span><span class="cb"><svg class="v8-ico"><use href="#i-link"/></svg></span><span class="v8-go">Ajouter</span></div>
+  </div>
+  <div class="v8-kbd" aria-hidden="true">
+    <div class="rg"><i>a</i><i>z</i><i>e</i><i>r</i><i>t</i><i>y</i><i>u</i><i>i</i><i>o</i><i>p</i></div>
+    <div class="rg"><i>q</i><i>s</i><i>d</i><i>f</i><i>g</i><i>h</i><i>j</i><i>k</i><i>l</i><i>m</i></div>
+    <div class="rg"><i class="k">⇧</i><i>w</i><i>x</i><i>c</i><i>v</i><i>b</i><i>n</i><i>’</i><i class="k">⌫</i></div>
+    <div class="rg"><i class="k">123</i><i>,</i><i class="w">espace</i><i>.</i><i class="go">↵</i></div>
+  </div>
+</section>
+
+<!-- ============ 5 · Lien collé : la case Article se coche seule, l'objet apparaît (photo, prix, vendeur) là où il sera rangé ============ -->
+<section class="v8-tel" aria-label="5 · Lien collé">
+  <div class="v8-fh">
+    <div class="v8-back"><svg class="v8-ico"><use href="#i-left"/></svg>Carnets<span class="v8-st" style="--st:var(--or)">Idée · 15 nov.</span><span class="v8-ex" style="margin-left:6px">exemple</span></div>
+    <h1>Évier inox</h1>
+  </div>
+  <div class="v8-sec">
+    <div class="v8-row"><svg class="v8-ico tg"><use href="#i-target"/></svg><span class="tx"><b>Un fût de 20 L couché entre dans le bac</b></span></div>
+    <div class="v8-row"><svg class="v8-ico tg"><use href="#i-fork"/></svg><span class="tx"><b>2 façons :</b> encastré, sur pieds</span><svg class="v8-ico v8-m"><use href="#i-right"/></svg></div>
+  </div>
+  <div class="v8-sec">
+    <div class="v8-sh"><svg class="v8-ico s"><use href="#i-tag"/></svg>Articles<span class="n">1 en arrivée</span></div>
+    <div class="v8-art">
+      <svg class="img" viewBox="0 0 76 76"><rect width="76" height="76" fill="#e9edf0"/><rect x="8" y="22" width="60" height="9" rx="1.5" fill="#c9d1d8" stroke="#6d7880" stroke-width="1.5"/><rect x="13" y="31" width="22" height="14" rx="2" fill="#eef2f5" stroke="#6d7880" stroke-width="1.5"/><rect x="41" y="31" width="22" height="14" rx="2" fill="#eef2f5" stroke="#6d7880" stroke-width="1.5"/><path d="M14 45v22M62 45v22M14 58h48" stroke="#6d7880" stroke-width="2"/><path d="M38 22V10h8v5" stroke="#55616b" stroke-width="2" fill="none"/></svg>
+      <span class="tx">
+        <span class="v8-ici" style="float:right"><svg class="v8-ico s"><use href="#i-down"/></svg>arrive ici</span>
+        <b>Évier 2 bacs sur pieds</b>
+        <span class="l"><span class="prix v8-mono">1 290</span> CHF<span class="v8-m">· Inox Riviera (CH)</span></span>
+        <span class="l v8-m" style="display:block">bacs <span class="v8-mono">50×40×30</span> cm · lu sur la page</span>
+        <span class="l"><svg class="v8-ico s"><use href="#i-eye"/></svg>Veiller le prix, tous les 3 jours<span class="v8-sw"></span></span>
+      </span>
+    </div>
+  </div>
+  <div class="v8-dock">
+    <div class="v8-to"><span>Va dans</span><span class="v8-ch">Façon</span><span class="v8-ch">Ce qui compte</span><span class="v8-ch on">Article</span><span class="v8-ch">Note</span></div>
+    <div class="v8-comp"><span class="tx"><span class="v8-url"><svg class="v8-ico s"><use href="#i-link"/></svg>inox-riviera.ch/evier-2-bacs-pieds</span></span><span class="cb"><svg class="v8-ico"><use href="#i-cam"/></svg></span><span class="cb on"><svg class="v8-ico"><use href="#i-link"/></svg></span><span class="v8-go">Ajouter</span></div>
+  </div>
+  <div class="v8-kbd" aria-hidden="true">
+    <div class="rg"><i>a</i><i>z</i><i>e</i><i>r</i><i>t</i><i>y</i><i>u</i><i>i</i><i>o</i><i>p</i></div>
+    <div class="rg"><i>q</i><i>s</i><i>d</i><i>f</i><i>g</i><i>h</i><i>j</i><i>k</i><i>l</i><i>m</i></div>
+    <div class="rg"><i class="k">⇧</i><i>w</i><i>x</i><i>c</i><i>v</i><i>b</i><i>n</i><i>’</i><i class="k">⌫</i></div>
+    <div class="rg"><i class="k">123</i><i>,</i><i class="w">espace</i><i>.</i><i class="go">↵</i></div>
+  </div>
+</section>
+
+<!-- ============ 6 · Voix en cours : onde, durée, ce qui est compris (relu en direct), Arrêter ; la ligne attend dans sa case ============ -->
+<section class="v8-tel" aria-label="6 · Voix en cours">
+  <div class="v8-fh">
+    <div class="v8-back"><svg class="v8-ico"><use href="#i-left"/></svg>Carnets<span class="v8-st" style="--st:var(--or)">Idée · 15 nov.</span><span class="v8-ex" style="margin-left:6px">exemple</span></div>
+    <h1>Évier inox</h1>
+  </div>
+  <div class="v8-sec">
+    <div class="v8-sh"><svg class="v8-ico s"><use href="#i-target"/></svg>Ce qui compte</div>
+    <div class="v8-row"><span class="tx"><b>Un fût de 20 L couché entre dans le bac</b></span></div>
+    <div class="v8-row ghost"><span class="tx"><b>Bac de 45 cm de profond au moins<span class="v8-caret"></span></b><small style="color:var(--stk);font-weight:700">arrive ici à l'arrêt</small></span></div>
+  </div>
+  <div class="v8-sec">
+    <div class="v8-sh"><svg class="v8-ico s"><use href="#i-fork"/></svg>Façons de faire</div>
+    <div class="v8-row"><span class="tx"><b>Plan à 2 bacs, encastré</b></span><span class="v8-btns"><span class="v8-mini p">Retenir</span><span class="v8-mini">Écarter</span></span></div>
+    <div class="v8-row"><span class="tx"><b>Sur pieds, avec égouttoir</b></span><span class="v8-btns"><span class="v8-mini p">Retenir</span><span class="v8-mini">Écarter</span></span></div>
+  </div>
+  <div class="v8-rec">
+    <div class="v8-to"><span>Va dans</span><span class="v8-ch">Façon</span><span class="v8-ch on">Ce qui compte</span><span class="v8-ch">Article</span><span class="v8-ch">Note</span></div>
+    <div class="v8-sht" style="margin:0"><span class="v8-dotrec"></span>J'écoute<span class="v8-m v8-mono">0:07</span></div>
+    <div class="v8-wave" aria-hidden="true">
+      <i style="height:20%"></i><i style="height:45%"></i><i style="height:70%"></i><i style="height:35%"></i><i style="height:90%"></i><i style="height:60%"></i><i style="height:30%"></i><i style="height:75%"></i><i style="height:100%"></i><i style="height:55%"></i><i style="height:40%"></i><i style="height:80%"></i><i style="height:50%"></i><i style="height:25%"></i><i style="height:65%"></i><i style="height:85%"></i><i style="height:45%"></i><i style="height:30%"></i><i style="height:60%"></i><i style="height:40%"></i><i class="q" style="height:10%"></i><i class="q" style="height:10%"></i><i class="q" style="height:10%"></i><i class="q" style="height:10%"></i><i class="q" style="height:10%"></i><i class="q" style="height:10%"></i>
+    </div>
+    <div class="v8-said"><small>Ce que j'ai compris, à relire avant l'envoi</small>« il me faut au moins 45 de profond pour coucher le fût<span class="v8-caret"></span> »</div>
+    <div class="v8-acts"><span class="v8-btn"><svg class="v8-ico"><use href="#i-redo"/></svg>Recommencer</span><span class="v8-btn p"><svg class="v8-ico"><use href="#i-stop"/></svg>Arrêter</span></div>
+  </div>
+</section>
+
+<!-- ============ 7 · Photo, avant l'envoi : l'aperçu, ce qui est lu, à valider ; la cote ne se devine pas ============ -->
+<section class="v8-tel" aria-label="7 · Photo avant envoi">
+  <div class="v8-fh">
+    <div class="v8-back"><svg class="v8-ico"><use href="#i-left"/></svg>Carnets<span class="v8-st" style="--st:var(--or)">Idée · 15 nov.</span><span class="v8-ex" style="margin-left:6px">exemple</span></div>
+    <h1>Évier inox</h1>
+  </div>
+  <div class="v8-sec">
+    <div class="v8-sh"><svg class="v8-ico s"><use href="#i-note"/></svg>Notes</div>
+    <div class="v8-row ghost"><span class="tx"><b>Votre évier actuel</b><small style="color:var(--stk);font-weight:700">arrive ici à l'envoi</small></span></div>
+  </div>
+  <div class="v8-voile"></div>
+  <div class="v8-sheet">
+    <div class="v8-handle"></div>
+    <div class="v8-sht">Photo · avant l'envoi<span class="v8-m">à valider</span></div>
+    <svg viewBox="0 0 366 150" style="display:block;width:100%;height:150px;border-radius:8px;background:#dfe5ea"><rect x="0" y="0" width="366" height="150" fill="#d6dde3"/><rect x="0" y="0" width="366" height="56" fill="#eef1f3"/><rect x="40" y="50" width="286" height="20" rx="3" fill="#b7c0c8" stroke="#6d7880" stroke-width="2"/><rect x="62" y="70" width="110" height="52" rx="5" fill="#e6ebef" stroke="#6d7880" stroke-width="2"/><rect x="194" y="70" width="110" height="52" rx="5" fill="#e6ebef" stroke="#6d7880" stroke-width="2"/><path d="M183 50V16h22v12" stroke="#55616b" stroke-width="4" fill="none"/></svg>
+    <div class="v8-lu" style="margin-top:6px"><span class="tx"><b>2 bacs</b><span class="v8-m"> · lu sur la photo</span></span><span class="v8-btns"><span class="v8-mini p">Juste</span><span class="v8-mini">Corriger</span></span></div>
+    <div class="v8-lu"><span class="tx"><b>Inox 18/10</b><span class="v8-m"> (= 304) · étiquette du fabricant</span></span><span class="v8-btns"><span class="v8-mini p">Juste</span><span class="v8-mini">Corriger</span></span></div>
+    <div class="v8-lu"><span class="tx"><b>Profondeur ≈ 30 cm ?</b><span class="v8-m"> · à mesurer, la photo ne donne pas la cote</span></span><span class="v8-cm"><span class="v8-mono">__</span> cm</span></div>
+    <div class="v8-to" style="margin-top:10px"><span>Va dans</span><span class="v8-ch">Façon</span><span class="v8-ch">Ce qui compte</span><span class="v8-ch">Article</span><span class="v8-ch on">Note</span></div>
+    <div class="v8-acts"><span class="v8-btn"><svg class="v8-ico"><use href="#i-cam"/></svg>Reprendre</span><span class="v8-btn z">Ajouter</span></div>
+  </div>
+</section>
+
+<!-- ============ 8 · L'onglet À venir répond : ce qui part (objet, vendeur, prix, date), et d'où il vient ============ -->
+<section class="v8-tel" aria-label="8 · À venir">
+  <header class="v8-app"><span class="v8-logo"><svg class="v8-ico"><use href="#i-glass"/></svg></span><span class="v8-nom">L'Affinée</span><span class="v8-ex">exemple</span></header>
+  <div class="v8-seg"><span>Articles</span><span>Courses</span><span>Fûts</span><span class="on">Matériel</span><span>Houblons</span></div>
+  <div class="v8-seg sous"><span class="on">À venir <span class="n">1</span></span><span>Carnets <span class="n">4</span></span><span>Réalisés <span class="n">2</span></span></div>
+  <div class="v8-wrap">
+    <div class="v8-mois">Décembre</div>
+    <div class="v8-av">
+      <div class="h"><b>Remplisseuse isobarique 4 becs</b><span class="date"><span class="v8-mono">4</span> déc.</span></div>
+      <div class="d">Romandie Embouteillage (CH) · <b class="v8-mono">2 300</b> CHF · livraison</div>
+      <div class="d">Choisie le <span class="v8-mono">16</span> nov. dans le carnet Embouteillage</div>
+      <div class="lk"><span>Ouvrir le carnet ›</span><span>Voir au calendrier ›</span></div>
+    </div>
+  </div>
+  <span class="v8-fab" aria-label="Nouvelle idée"><svg class="v8-ico"><use href="#i-plus"/></svg></span>
+  <nav class="v8-bot" aria-label="Navigation">
+    <span><svg class="v8-ico"><use href="#i-bord"/></svg>Bord</span>
+    <span><svg class="v8-ico"><use href="#i-wallet"/></svg>Finances</span>
+    <span><svg class="v8-ico"><use href="#i-cal"/></svg>Calendrier</span>
+    <span><svg class="v8-ico"><use href="#i-beer"/></svg>Brassins</span>
+    <span class="on"><svg class="v8-ico"><use href="#i-boxes"/></svg>Stocks<b class="bdg">24</b></span>
+    <span><svg class="v8-ico"><use href="#i-users"/></svg>Clients</span>
+  </nav>
+</section>
+</body>
+</html>

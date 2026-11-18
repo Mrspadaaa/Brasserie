@@ -40,6 +40,6 @@ export function DriveConnection({ onConnected, always = false, compact = false }
     <button type="button" disabled={busy || (!ready && !error)} onClick={() => void connect()} className="flex min-h-11 w-full items-center justify-center gap-2 rounded-xl border border-cave-600 px-3 py-2 text-sm font-semibold text-cave-50 disabled:opacity-50">
       {busy ? <Loader2 size={16} className="animate-spin"/> : <Cloud size={16}/>} {busy ? 'Connexion…' : connected && FirebaseAuthService.hasDriveAccess() ? 'Renouveler la connexion Drive' : 'Connecter Drive'}
     </button>
-    {error && <p role="alert" className="text-sm text-amber-300">{error}</p>}
+    {error && <p role="alert" className="text-sm text-attention">{error}</p>}
   </div>;
 }

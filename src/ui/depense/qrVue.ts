@@ -1,0 +1,279 @@
+// Ce que le sceau QR dit (z2, D246) : l'état du sceau, son verdict en un mot, les lignes de la feuille « Ce que dit le QR » et le duel du total.
+// Fonctions pures : le résultat de la lecture du QR (`qrLecture.ts`) et la confrontation (`qrFacture.ts`) arrivent calculés ; rien n'est écrit, aucun champ n'est changé.
+import type { ChampConfronte, ConfrontationQr, ConditionS1, LectureQr, QrFacture } from '../../services/qrFacture';
+import type { ResultatQr } from '../../services/qrLecture';
+import { PAS_LISIBLE_PX } from '../../services/qrOptions';
+
+/** Les états dessinés par z2 : attente (lecture…), ok (QR ✓), diff (le montant du QR), partiel, off (illisible), sans (cercle vide « sans QR »). */
+export type EtatSceau = 'wait' | 'ok' | 'diff' | 'partiel' | 'off' | 'sans';
+export type StatutLigne = 'ok' | 'ko' | 'vide' | 'abs';
+
+export interface LigneFiche {
+  cle: 'qr' | 'montant' | 'facture' | 'date' | 'devise' | 'creancier' | 'iban' | 'reference' | 'conditions' | 'lignes' | 'probleme';
+  libelle: string;
+  valeur: string;
+  /** `ok` coche, `ko` écart, `vide` rien de décodé, `abs` « pas dans le QR » (le champ existe, le QR ne le porte pas). */
+  statut: StatutLigne | null;
+  note: string;
+  /** Le texte à copier (IBAN, référence), sans espace. */
+  copier?: string;
+  /** Mise en forme sur deux lignes (IBAN). */
+  surDeuxLignes?: boolean;
+}
+
+export interface Duel {
+  /** Le total lu sur la page, et celui du QR, tels qu'écrits (« 110,04 », « 110,40 »). */
+  lu: string; qr: string;
+  /** Le nombre, pour poser le champ quand le brasseur choisit. */
+  luNombre: number; qrNombre: number;
+  /** Début commun des deux écritures, puis la fin qui diffère (« 110, » + « 04 » / « 40 »). */
+  prefixe: string; resteLu: string; resteQr: string;
+  /**
+   * LO-1 : la pièce porte plusieurs bulletins QR. Le QR du duel est alors le PREMIER bulletin seulement ; `somme` dit que le total de la page est la somme
+   * des bulletins (un total calculé, jamais imprimé : la tuile « lu » ne dit pas « lu sur la page »), `detail` l'écrit (« 150,00 + 150,00 = 300,00 »).
+   */
+  bulletins?: { n: number; somme: boolean; detail: string };
+}
+
+/** LO-1 : un total de page qui n'est que la somme des bulletins QR de la pièce (aucun d'eux ne l'imprime). */
+export interface SommeBulletins { n: number; montants: number[]; somme: number; detail: string }
+
+export interface VueQr {
+  etat: EtatSceau;
+  /** Le mot sous le QR dessiné : « QR ✓ », « 110,40 », « partiel », « illisible », « lecture… », « écart », « invalide », « » pour sans. */
+  verdict: string;
+  /** Le libellé lu par un lecteur d'écran. */
+  aria: string;
+  lignes: LigneFiche[];
+  duel: Duel | null;
+  /** Le montant du QR contredit celui de la page : le total est douteux jusqu'au choix du brasseur. */
+  contredit: boolean;
+  /** L'illisible propose de photographier le QR, sauf s'il est vu net (LO-5 : barré ou abîmé sur la pièce, une photo n'y change rien). */
+  photographier: boolean;
+  /** Les champs (hors total) que le QR contredit : chacun est marqué dans le bandeau et désigné par une chip numérotée. */
+  ecarts?: Array<'facture' | 'date' | 'devise' | 'creancier'>;
+  /** Les champs (hors total, hors facture) que le brasseur peut trancher dans la feuille : ce que la page lit et ce que le QR dit, tels qu'ils s'écriraient dans la dépense. */
+  champs?: Partial<Record<ChampTranchable, DuelChamp>>;
+}
+
+/** Les champs qui se règlent par un choix devant leur rangée (« Facture » n'a pas de champ au bandeau : elle se règle à l'ouverture). */
+export type ChampTranchable = 'date' | 'devise' | 'creancier';
+export type ChoixChamps = Partial<Record<ChampTranchable, 'lu' | 'qr'>>;
+export interface DuelChamp { lu: string; qr: string }
+/** Ce que le brasseur a déjà décidé devant l'écart : un choix par champ tranchable, et si la rangée « Facture » a été ouverte (elle se règle ainsi). */
+export interface DecisionsQr { champs: ChoixChamps; factureVue: boolean }
+
+export const fr2 = (n: number): string => (Math.round(n * 100) / 100).toFixed(2).replace('.', ',');
+/** AAAA-MM-JJ → JJ.MM.AAAA ; une valeur d'une autre forme est rendue telle quelle. */
+const dateSuisse = (iso: string): string => iso.replace(/^(\d{4})-(\d{2})-(\d{2})$/, '$3.$2.$1');
+const groupes = (texte: string, taille: number, depuisLaFin: boolean): string => {
+  const morceaux: string[] = [];
+  if (depuisLaFin) { for (let fin = texte.length; fin > 0; fin -= taille) morceaux.unshift(texte.slice(Math.max(0, fin - taille), fin)); }
+  else for (let i = 0; i < texte.length; i += taille) morceaux.push(texte.slice(i, i + taille));
+  return morceaux.join(' ');
+};
+/** IBAN par groupes de 4 ; référence QRR par groupes de 5 depuis la droite (21 00000 00003 …), SCOR par 4. */
+export const ibanLisible = (iban: string): string => groupes(iban, 4, false);
+export const referenceLisible = (type: string, reference: string): string => (type === 'QRR' ? groupes(reference, 5, true) : groupes(reference, 4, false));
+
+/** Les montants de tous les bulletins de la pièce, quand il y en a plusieurs ET que chacun porte le sien (un montant inconnu n'est jamais compté pour 0). */
+function montantsDesBulletins(resultat: ResultatQr | null | undefined): number[] | null {
+  if (!resultat || resultat.statut !== 'lu' || !resultat.bulletins || resultat.bulletins < 2) return null;
+  const montants = resultat.montantsBulletins;
+  if (!montants || montants.length !== resultat.bulletins || montants.some(m => typeof m !== 'number' || !Number.isFinite(m))) return null;
+  return montants as number[];
+}
+const sommeEnCentimes = (montants: readonly number[]): number => montants.reduce((s, m) => s + Math.round(m * 100), 0);
+const detailBulletins = (montants: readonly number[]): string => `${montants.map(fr2).join(' + ')} = ${fr2(sommeEnCentimes(montants) / 100)}`;
+
+/**
+ * LO-1 (rejeu du 08.11, doc3) : le total lu sur la page est la SOMME des bulletins QR de la pièce, et aucun bulletin n'imprime ce montant. Un modèle qui additionne
+ * deux bulletins rend un total que rien d'imprimé ne porte, et la somme des lignes lui donne raison : seul le QR, lu dans l'appareil, sait qu'il y a plusieurs bulletins.
+ * Rend `null` quand le total est celui d'un bulletin, n'est pas la somme, manque, ou quand un bulletin n'a pas de montant lu.
+ */
+export function sommeDesBulletins(resultat: ResultatQr | null | undefined, lecture: { amountTTC?: number | null } | null | undefined): SommeBulletins | null {
+  const montants = montantsDesBulletins(resultat);
+  const lu = lecture?.amountTTC;
+  if (!montants || typeof lu !== 'number' || !Number.isFinite(lu)) return null;
+  const luCts = Math.round(lu * 100), sommeCts = sommeEnCentimes(montants);
+  if (luCts !== sommeCts || montants.some(m => Math.round(m * 100) === luCts)) return null;
+  return { n: montants.length, montants, somme: sommeCts / 100, detail: detailBulletins(montants) };
+}
+
+/** Début commun puis fin qui diffère de deux écritures (la colonne fautive du duel). */
+export function ecartMarque(a: string, b: string): { prefixe: string; resteA: string; resteB: string } {
+  let i = 0;
+  while (i < a.length && i < b.length && a[i] === b[i]) i++;
+  return { prefixe: a.slice(0, i), resteA: a.slice(i), resteB: b.slice(i) };
+}
+
+const phraseCondition = (c: ConditionS1): string => (c.escomptePct === 0 ? `net à ${c.jours} jours` : `${String(c.escomptePct).replace('.', ',')} % à ${c.jours} jours`);
+const conditionsTexte = (conditions: readonly ConditionS1[], net: number | null): string =>
+  conditions.length === 1 && net !== null ? `${net} jours` : conditions.map(phraseCondition).join(' · ');
+
+function ligneChamp<T extends string | number>(cle: LigneFiche['cle'], libelle: string, champ: ChampConfronte<T>, formate: (v: T) => string, suffixe = ''): LigneFiche {
+  const qr = champ.qr, lu = champ.lecture;
+  if (champ.statut === 'confirme') return { cle, libelle, valeur: formate(qr as T) + suffixe, statut: 'ok', note: '= lu' };
+  if (champ.statut === 'contredit') return { cle, libelle, valeur: formate(qr as T) + suffixe, statut: 'ko', note: `lu ${formate(lu as T)}` };
+  if (champ.statut === 'absent') return { cle, libelle, valeur: 'pas dans le QR', statut: 'abs', note: lu === null ? '' : `lu ${formate(lu)}` };
+  return { cle, libelle, valeur: formate(qr as T) + suffixe, statut: 'vide', note: 'non lu' };
+}
+
+/** Les lignes que le QR porte pour payer, jamais remplacées par la lecture : IBAN, référence, conditions. */
+function lignesPaiement(c: ConfrontationQr, qr: QrFacture): LigneFiche[] {
+  const sortie: LigneFiche[] = [];
+  // L'IBAN tient sur deux lignes (quatre groupes, puis le reste) : rien n'est rogné à 390 px.
+  if (c.iban) sortie.push({ cle: 'iban', libelle: 'IBAN', valeur: ibanLisible(c.iban).replace(/^((?:\S{4} ){3}\S{4}) /, (_tout, quatre: string) => `${quatre}\n`), statut: null, note: '', copier: c.iban, surDeuxLignes: true });
+  if (c.reference) sortie.push({ cle: 'reference', libelle: 'Référence', valeur: referenceLisible(c.reference.type, c.reference.valeur), statut: null, note: '', copier: c.reference.valeur });
+  if (c.conditions.length) sortie.push({ cle: 'conditions', libelle: 'Conditions', valeur: conditionsTexte(c.conditions, c.delaiNetJours), statut: null, note: '' });
+  void qr;
+  return sortie;
+}
+
+/** Les lignes de la feuille pour un QR valide confronté à la lecture. */
+function lignesConfrontees(c: ConfrontationQr, qr: QrFacture): LigneFiche[] {
+  const devise = qr.devise;
+  const sortie: LigneFiche[] = [
+    ligneChamp('montant', 'Montant', c.montant, fr2, ` ${devise}`),
+    ligneChamp('facture', 'Facture', c.numero, v => v),
+    ligneChamp('date', 'Date', c.date, dateSuisse),
+  ];
+  // La devise ne s'ajoute que si le montant ne la dit pas déjà, d'accord (montant absent du QR, ou devise en désaccord).
+  if (c.devise.statut !== 'confirme' || c.montant.statut === 'absent') sortie.push(ligneChamp('devise', 'Devise', c.devise, v => v));
+  sortie.push(ligneChamp('creancier', 'Créancier', c.creancier, v => v));
+  // Un montant absent du QR : la ligne « montant » n'a pas de suffixe de devise.
+  return [...sortie, ...lignesPaiement(c, qr)];
+}
+
+/**
+ * La ligne du bloc « Lecture et vérification… » (z2, état lecture) : ce que le QR dit seul, sans toucher le sceau (« QR : 110,40 CHF · 12.10.2026 · Malterie Fictive SA »).
+ * Seulement ce que le QR porte (un champ absent n'est pas écrit) ; `null` quand le QR n'est pas lu, ou n'est pas conforme (il ne confirme rien).
+ */
+export function resumeQr(resultat: ResultatQr | null | undefined): string | null {
+  if (!resultat || resultat.statut !== 'lu' || !resultat.qr.valid) return null;
+  const qr = resultat.qr;
+  const morceaux = [qr.montant === null ? '' : `${fr2(qr.montant)} ${qr.devise}`, qr.s1?.date?.debut ? dateSuisse(qr.s1.date.debut) : '', qr.creancier.nom];
+  const dit = morceaux.filter(Boolean);
+  if (!dit.length) return null;
+  // LP-1 : plusieurs bulletins sur la pièce : le total de la page peut les additionner, le QR n'en lit qu'un (le premier).
+  const montants = montantsDesBulletins(resultat);
+  return `QR : ${dit.join(' · ')}${resultat.bulletins && resultat.bulletins > 1 ? ` · ${resultat.bulletins} bulletins QR sur la pièce${montants ? ` (${montants.map(fr2).join(' · ')})` : ''} : le total de la page peut les additionner, ce QR n’en lit qu’un` : ''}`;
+}
+
+/** Les lignes avant que la lecture de la facture ne soit là : ce que le QR dit seul, « lu en 0,5 s ». */
+function lignesSeules(qr: QrFacture, ms: number, bulletins = 0): LigneFiche[] {
+  const sortie: LigneFiche[] = [];
+  const temps = `lu en ${(ms / 1000).toFixed(1).replace('.', ',')} s`;
+  // LO-1 : plusieurs bulletins : le montant du QR est celui du premier, jamais celui de la pièce.
+  const libelle = bulletins > 1 ? '1er bulletin' : 'Montant';
+  if (bulletins > 1) sortie.push({ cle: 'qr', libelle: 'Bulletins', valeur: `${bulletins} bulletins QR sur la pièce`, statut: 'vide', note: '' });
+  sortie.push(qr.montant === null ? { cle: 'montant', libelle, valeur: 'pas dans le QR', statut: 'abs', note: '' } : { cle: 'montant', libelle, valeur: `${fr2(qr.montant)} ${qr.devise}`, statut: 'ok', note: temps });
+  sortie.push(qr.s1?.numero ? { cle: 'facture', libelle: 'Facture', valeur: qr.s1.numero, statut: 'ok', note: '' } : { cle: 'facture', libelle: 'Facture', valeur: 'pas dans le QR', statut: 'abs', note: '' });
+  sortie.push(qr.s1?.date?.debut ? { cle: 'date', libelle: 'Date', valeur: dateSuisse(qr.s1.date.debut), statut: 'ok', note: '' } : { cle: 'date', libelle: 'Date', valeur: 'pas dans le QR', statut: 'abs', note: '' });
+  sortie.push({ cle: 'lignes', libelle: 'Lignes', valeur: 'lecture en cours…', statut: 'vide', note: '' });
+  return sortie;
+}
+
+/** Ce que la lecture de la facture dit seule, quand le QR n'a rien décodé (illisible) : une aide, jamais une confirmation. */
+function lignesIllisible(lecture: LectureQr | null, net = false): LigneFiche[] {
+  const sortie: LigneFiche[] = [{ cle: 'qr', libelle: 'QR', valeur: net ? 'vu net, mais barré ou abîmé : rien décodé' : 'vu, rien décodé', statut: 'vide', note: '' }];
+  if (!lecture) return sortie;
+  sortie.push({ cle: 'montant', libelle: 'Montant', valeur: typeof lecture.amountTTC === 'number' ? `lu ${fr2(lecture.amountTTC)} · à vérifier sur la page` : 'non lu', statut: 'vide', note: '' });
+  if (lecture.invoiceNumber?.trim()) sortie.push({ cle: 'facture', libelle: 'Facture', valeur: `lu ${lecture.invoiceNumber.trim()}`, statut: 'vide', note: '' });
+  if (lecture.date?.trim()) sortie.push({ cle: 'date', libelle: 'Date', valeur: `lu ${lecture.date.trim()}`, statut: 'vide', note: '' });
+  return sortie;
+}
+
+/**
+ * La vue du sceau. `resultat` : ce que la lecture du QR a rendu (`null` : elle court encore). `confrontation` : le QR face à la lecture de la facture
+ * (`null` : la lecture de la facture n'est pas là). Rend `null` quand il n'y a rien à dire : lecture non vérifiée (hors ligne, erreur) ou pas de fichier.
+ * « Sans QR » (`sans`) et « pas vérifié » (`null`) ne se confondent jamais.
+ */
+export function vueQr(resultat: ResultatQr | null, confrontation: ConfrontationQr | null, lecture: LectureQr | null, choix: 'lu' | 'qr' | null = null, decisions: DecisionsQr = { champs: {}, factureVue: false }): VueQr | null {
+  if (resultat === null) return { etat: 'wait', verdict: 'lecture…', aria: 'QR-facture : lecture en cours', lignes: [], duel: null, contredit: false, photographier: false };
+  if (resultat.statut === 'non-verifie') return null;
+  if (resultat.statut === 'sans') return { etat: 'sans', verdict: '', aria: 'Aucun QR-facture sur ce document', lignes: [], duel: null, contredit: false, photographier: false };
+  if (resultat.statut === 'illisible') {
+    // LO-5 : vu assez grand (pas ≥ 4 px), l'échec ne vient pas de la photo : le geste « Photographier le QR » n'est plus proposé.
+    const net = resultat.pasPx !== undefined && resultat.pasPx >= PAS_LISIBLE_PX;
+    return { etat: 'off', verdict: 'illisible', aria: net ? 'QR-facture : vu, mais barré ou abîmé' : 'QR-facture : illisible', lignes: lignesIllisible(lecture, net), duel: null, contredit: false, photographier: !net };
+  }
+  const qr = resultat.qr;
+  if (!qr.valid) {
+    const problemes = qr.problemes.slice(0, 3).map((p): LigneFiche => ({ cle: 'probleme', libelle: '', valeur: p, statut: 'vide', note: '' }));
+    return { etat: 'off', verdict: 'invalide', aria: 'QR-facture : lu, mais non conforme', lignes: [{ cle: 'qr', libelle: 'QR', valeur: 'lu, mais non conforme : il ne confirme rien', statut: 'vide', note: '' }, ...problemes], duel: null, contredit: false, photographier: true };
+  }
+  if (!confrontation || confrontation.etat !== 'valide') {
+    return { etat: 'wait', verdict: 'lecture…', aria: 'QR-facture : lu, en attente de la lecture de la facture', lignes: lignesSeules(qr, resultat.ms, resultat.bulletins), duel: null, contredit: false, photographier: false };
+  }
+  const c = confrontation;
+  const lignes = lignesConfrontees(c, qr);
+  // LO-1 : plusieurs bulletins sur la pièce. Le QR confronté est le premier ; la feuille le dit, et un total qui n'est que leur somme n'est jamais « lu sur la page ».
+  const nBulletins = resultat.bulletins && resultat.bulletins > 1 ? resultat.bulletins : 0;
+  const somme = sommeDesBulletins(resultat, lecture);
+  if (nBulletins) {
+    const montants = montantsDesBulletins(resultat);
+    const montant = lignes.find(l => l.cle === 'montant');
+    if (montant) montant.libelle = '1er bulletin';
+    if (montant && somme && c.montant.statut === 'contredit') montant.note = `somme ${fr2(somme.somme)}`;
+    lignes.unshift({ cle: 'qr', libelle: 'Bulletins', statut: somme ? 'ko' : 'vide', note: somme ? 'total non imprimé' : '',
+      valeur: `${nBulletins} bulletins QR sur la pièce${somme ? ` : ${somme.detail}` : montants ? ` : ${montants.map(fr2).join(' · ')}` : ''}` });
+  }
+  const montantContredit = c.montant.statut === 'contredit';
+  const autreContredit = [c.numero, c.date, c.creancier, c.devise].some(champ => champ.statut === 'contredit');
+  const deviseContredite = c.devise.statut === 'contredit';
+  const ecarts = (['facture', 'date', 'devise', 'creancier'] as const).filter(k => c[k === 'facture' ? 'numero' : k].statut === 'contredit');
+  if (montantContredit || autreContredit) {
+    let duel: Duel | null = null;
+    if (montantContredit && !deviseContredite && c.montant.qr !== null && c.montant.lecture !== null) {
+      const lu = fr2(c.montant.lecture), q = fr2(c.montant.qr), e = ecartMarque(lu, q);
+      duel = { lu, qr: q, luNombre: c.montant.lecture, qrNombre: c.montant.qr, prefixe: e.prefixe, resteLu: e.resteA, resteQr: e.resteB };
+      if (nBulletins) duel.bulletins = { n: nBulletins, somme: Boolean(somme), detail: somme?.detail ?? '' };
+    }
+    // Les champs hors total que le brasseur peut trancher dans la feuille : la page lit une chose, le QR en dit une autre (les deux écrites telles qu'elles iraient dans la dépense).
+    const champs: NonNullable<VueQr['champs']> = {};
+    const duelChamp = (cle: ChampTranchable, champ: ChampConfronte<string>, formate: (v: string) => string) => {
+      if (champ.statut === 'contredit' && champ.qr !== null && champ.lecture !== null) champs[cle] = { lu: formate(champ.lecture), qr: formate(champ.qr) };
+    };
+    duelChamp('date', c.date, dateSuisse); duelChamp('devise', c.devise, v => v); duelChamp('creancier', c.creancier, v => v);
+    // Le choix du brasseur (z2) : « pris » (le QR, « QR ✓ ») ou « lu gardé » (la page). Un écart non tranché reste « écart » : ouvrir la feuille ou toucher la chip ne tranche rien.
+    // La rangée touchée dit son choix ; le sceau dit la somme des choix. Rien d'autre ne change ici (le champ de la dépense, c'est l'écran qui l'écrit, au geste).
+    const decides: Array<'lu' | 'qr' | null> = [];
+    const montant = lignes.find(l => l.cle === 'montant');
+    if (duel) decides.push(choix);
+    for (const k of ['date', 'devise', 'creancier'] as const) {
+      const duelK = champs[k], ligne = lignes.find(l => l.cle === k), choisi = decisions.champs[k] ?? null;
+      if (!duelK) continue;
+      decides.push(choisi);
+      if (ligne && choisi === 'qr') { ligne.statut = 'ok'; ligne.note = 'pris'; }
+      if (ligne && choisi === 'lu') ligne.note = `lu ${duelK.lu} gardé`;
+    }
+    // « Facture » n'a pas de champ au bandeau : la rangée ouverte la règle (comme avant) ; non ouverte, elle empêche de dire « tranché ».
+    if (ecarts.includes('facture') && !decisions.factureVue) decides.push(null);
+    if (duel && montant && choix === 'qr') { montant.statut = 'ok'; montant.note = 'pris'; }
+    if (duel && montant && choix === 'lu') montant.note = somme ? `somme ${duel.lu} gardée` : `lu ${duel.lu} gardé`;
+    const tranche = decides.length > 0 && decides.every(d => d !== null);
+    if (tranche) {
+      const tousQr = decides.every(d => d === 'qr');
+      const seulTotal = Boolean(duel) && decides.length === 1;
+      if (tousQr) return { etat: 'ok', verdict: 'QR ✓', aria: seulTotal ? `QR-facture : le montant du QR (${duel!.qr}) est pris` : 'QR-facture : les valeurs du QR sont prises', lignes, duel, contredit: montantContredit, photographier: false, ecarts, champs };
+      if (somme && seulTotal) return { etat: 'diff', verdict: 'somme', aria: `QR-facture : la somme des ${somme.n} bulletins (${duel!.lu}) est gardée`, lignes, duel, contredit: montantContredit, photographier: false, ecarts, champs };
+      return { etat: 'diff', verdict: 'lu gardé', aria: seulTotal ? `QR-facture : la lecture de la page (${duel!.lu}) est gardée` : 'QR-facture : la lecture de la page est gardée', lignes, duel, contredit: montantContredit, photographier: false, ecarts, champs };
+    }
+    // LO-1 : plusieurs bulletins, le sceau ne garde pas le montant du premier comme s'il était celui de la pièce : « 2 QR ».
+    if (duel && nBulletins) {
+      return {
+        etat: 'diff', verdict: `${nBulletins} QR`, aria: `QR-facture : ${nBulletins} bulletins sur la pièce, le premier dit ${duel.qr}, ${somme ? `la page donne leur somme, ${duel.lu}` : `la page dit ${duel.lu}`}`,
+        lignes, duel, contredit: montantContredit, photographier: false, ecarts, champs,
+      };
+    }
+    return {
+      etat: 'diff', verdict: duel ? duel.qr : deviseContredite ? 'devise' : 'écart', aria: duel ? `QR-facture : le montant du QR est ${duel.qr}, la page dit ${duel.lu}` : 'QR-facture : écart avec la lecture',
+      lignes, duel, contredit: montantContredit, photographier: false, ecarts, champs,
+    };
+  }
+  // LO-1 : le total de la page est celui du premier bulletin seulement : la pièce en porte plusieurs, le QR ne confirme pas la pièce entière.
+  if (nBulletins) return { etat: 'partiel', verdict: `${nBulletins} QR`, aria: `QR-facture : ${nBulletins} bulletins sur la pièce, le premier confirme le total de la page`, lignes, duel: null, contredit: false, photographier: false };
+  if (c.montant.statut === 'confirme') return { etat: 'ok', verdict: 'QR ✓', aria: 'QR-facture : confirme la lecture', lignes, duel: null, contredit: false, photographier: false };
+  return { etat: 'partiel', verdict: 'partiel', aria: 'QR-facture : confirme en partie la lecture', lignes, duel: null, contredit: false, photographier: false };
+}

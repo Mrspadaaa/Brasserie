@@ -1,0 +1,249 @@
+<title>Contrôle QR · Nouvelle dépense · 01.11</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<style>
+/* Le contrôle QR de « Nouvelle dépense » : trois idées retravaillées (passe 2), puis les douze de départ (v0), une rangée par idée.
+   Ton écran en ligne ouvre chaque rangée ; chaque vignette s'ouvre en grand au toucher (PUBLIER.md, D126). */
+:root {
+  --fond: #f4f6f1;
+  --carte: #ffffff;
+  --encre: #1c2019;
+  --discret: #5a6155;
+  --trait: #dde2d6;
+  --houblon: #4a7426;
+  --choisir: #2d5f8a;
+  --alerte: #9a4a1c;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --fond: #151812; --carte: #1f241b; --encre: #e9eee4; --discret: #a7ae9f; --trait: #333a2d; --houblon: #8cc062;
+    --choisir: #8ab8e0; --alerte: #e8a878; color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --fond: #151812; --carte: #1f241b; --encre: #e9eee4; --discret: #a7ae9f; --trait: #333a2d; --houblon: #8cc062;
+  --choisir: #8ab8e0; --alerte: #e8a878; color-scheme: dark;
+}
+* { box-sizing: border-box; }
+body {
+  background: var(--fond); color: var(--encre); font: 16px/1.45 "Segoe UI", system-ui, sans-serif; margin: 0;
+  padding-block: 16px 64px;
+  padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px));
+}
+.page { max-width: 1320px; margin: 0 auto; display: grid; gap: 22px; }
+h1, h2, h3 { margin: 0; line-height: 1.15; text-wrap: balance; }
+h1 { font-size: 1.7rem; font-weight: 800; }
+h2 { font-size: 1.1rem; font-weight: 800; }
+p { margin: 0; max-width: 70ch; }
+ul { margin: 0; padding-left: 20px; display: grid; gap: 6px; max-width: 70ch; }
+a { color: var(--choisir); font-weight: 700; }
+button:focus-visible { outline: 3px solid var(--houblon); outline-offset: 2px; }
+header { display: grid; gap: 10px; }
+.sur-titre { font-size: 0.875rem; letter-spacing: 0.06em; text-transform: uppercase; color: var(--discret); }
+#a-choisir { border-left: 4px solid var(--houblon); padding: 12px 14px; background: var(--carte); border-radius: 0 10px 10px 0; display: grid; gap: 6px; }
+#a-choisir p:first-child { font-size: 1.05rem; font-weight: 700; }
+.rangee { display: grid; gap: 10px; padding-top: 16px; border-top: 1px solid var(--trait); }
+.tete { display: grid; gap: 6px; align-content: start; justify-items: start; }
+.tete p { font-size: 0.875rem; color: var(--discret); }
+.tete p.phrase { font-size: 1rem; color: var(--encre); }
+.tete .id { font-size: 0.875rem; font-weight: 700; color: var(--discret); }
+.tete .etiquette { font-size: 0.875rem; color: var(--discret); text-transform: uppercase; letter-spacing: 0.04em; }
+.planche { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 14px 8px; align-items: start; min-width: 0; }
+.vue { margin: 0; display: grid; gap: 5px; align-content: start; min-width: 0; }
+.ecran { display: block; width: 100%; padding: 0; border: 1px solid var(--trait); border-radius: 10px; overflow: hidden; background: var(--carte); cursor: zoom-in; }
+.ecran img { display: block; width: 100%; height: auto; }
+.ref .ecran { border: 3px solid var(--houblon); }
+figcaption { font-size: 0.875rem; line-height: 1.35; display: grid; gap: 2px; }
+figcaption b { font-weight: 800; }
+.pastille { display: inline-flex; align-items: center; gap: 5px; font-weight: 700; font-size: 0.875rem; }
+.pastille::before { content: ""; width: 10px; height: 10px; border-radius: 50%; background: currentColor; flex-shrink: 0; }
+.p-ref, .p-propose { color: var(--houblon); }
+.p-choisir { color: var(--choisir); }
+.p-reserve { color: var(--alerte); }
+.verdicts { display: grid; gap: 10px; }
+.verdicts p { font-size: 0.95rem; }
+.verdicts b { font-weight: 800; }
+@media (min-width: 760px) {
+  .rangee { grid-template-columns: 200px minmax(0, 1fr); gap: 16px; }
+  .planche { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+}
+@media (min-width: 1100px) {
+  .planche.sept { grid-template-columns: repeat(7, minmax(0, 1fr)); }
+}
+dialog { border: 0; padding: 0; background: #0e100c; color: #eef2ea; width: min(96vw, 1100px); max-height: 94vh; border-radius: 12px; }
+dialog::backdrop { background: rgb(0 0 0 / 80%); }
+dialog .haut { display: flex; justify-content: space-between; align-items: center; gap: 8px; padding: 10px 12px; }
+dialog .titre { font-size: 0.875rem; font-weight: 700; margin: 0; }
+dialog button { font: 700 0.875rem system-ui, sans-serif; border: 0; border-radius: 999px; padding: 8px 14px; background: #eef2ea; color: #1c2019; cursor: pointer; }
+dialog img { display: block; width: 100%; height: auto; max-height: 82vh; object-fit: contain; background: #fff; }
+</style>
+
+<div class="page">
+  <header>
+    <p class="sur-titre">L'Affinée · Nouvelle dépense · contrôle QR</p>
+    <h1>Contrôle QR · Nouvelle dépense · 01.11</h1>
+    <p class="sur-titre">Données fictives. Le QR se lit dans le téléphone, sans IA.</p>
+    <div id="a-choisir">
+      <p>Quand une facture porte un QR suisse, l'app le compare à la lecture : montant, devise, n° et date. Choisis comment ça se montre.</p>
+      <p>Trois idées retravaillées d'abord, puis les douze de départ. Le critique propose z2, le sceau QR ; un mélange est possible, par exemple z2 en haut et la section paiement de z4 dessous.</p>
+    </div>
+  </header>
+
+  <section class="rangee" aria-labelledby="t-z2">
+    <div class="tete">
+      <h2 id="t-z2">Le sceau QR <span class="id">z2</span></h2>
+      <span class="pastille p-propose">proposé par le critique</span>
+      <p class="etiquette">L'idée</p>
+      <p class="phrase">Ton QR dessiné en grand à côté du total, et son verdict en un mot. Un toucher : ce qu'il dit, IBAN et référence à copier.</p>
+    </div>
+    <div class="planche sept">
+      <figure class="vue ref" data-vignette><button class="ecran" type="button" data-agrandir data-src="img/base-repos.png" data-titre="Ton écran en ligne, au repos"><img src="img/base-repos.png" alt="Ton écran en ligne"></button><figcaption><b>Ton écran en ligne</b></figcaption></figure>
+      <figure class="vue" data-vignette><button class="ecran" type="button" data-agrandir data-src="img/z2-confirme.png" data-titre="z2 · le QR confirme"><img src="img/z2-confirme.png" alt="z2, le QR confirme"></button><figcaption><b>Tout concorde</b></figcaption></figure>
+      <figure class="vue" data-vignette><button class="ecran" type="button" data-agrandir data-src="img/z2-contredit.png" data-titre="z2 · le QR dit 110,40, la lecture 110,04"><img src="img/z2-contredit.png" alt="z2, désaccord"></button><figcaption><b>Désaccord</b> sur le montant</figcaption></figure>
+      <figure class="vue" data-vignette><button class="ecran" type="button" data-agrandir data-src="img/z2-partiel.png" data-titre="z2 · bulletin sans montant"><img src="img/z2-partiel.png" alt="z2, partiel"></button><figcaption><b>Sans montant</b> dans le QR</figcaption></figure>
+      <figure class="vue" data-vignette><button class="ecran" type="button" data-agrandir data-src="img/z2-illisible.png" data-titre="z2 · QR illisible"><img src="img/z2-illisible.png" alt="z2, illisible"></button><figcaption><b>QR illisible</b></figcaption></figure>
+      <figure class="vue" data-vignette><button class="ecran" type="button" data-agrandir data-src="img/z2-sans.png" data-titre="z2 · pas de QR sur la pièce"><img src="img/z2-sans.png" alt="z2, sans QR"></button><figcaption><b>Pas de QR</b></figcaption></figure>
+      <figure class="vue" data-vignette><button class="ecran" type="button" data-agrandir data-src="img/z2-lecture.png" data-titre="z2 · pendant la lecture"><img src="img/z2-lecture.png" alt="z2, lecture"></button><figcaption><b>Pendant la lecture</b></figcaption></figure>
+      <figure class="vue" data-vignette><button class="ecran" type="button" data-agrandir data-src="img/z2-geste.png" data-titre="z2 · un toucher sur le sceau : ce que dit le QR"><img src="img/z2-geste.png" alt="z2, feuille du QR"></button><figcaption><b>Un toucher</b> sur le sceau</figcaption></figure>
+      <figure class="vue" data-vignette><button class="ecran" type="button" data-agrandir data-src="img/z2-1280.png" data-titre="z2 · désaccord à 1280 px"><img src="img/z2-1280.png" alt="z2 à 1280 px"></button><figcaption><b>Ordinateur</b></figcaption></figure>
+    </div>
+  </section>
+
+  <section class="rangee" aria-labelledby="t-r4">
+    <div class="tete">
+      <h2 id="t-r4">Le total chiffre à chiffre <span class="id">r4</span></h2>
+      <span class="pastille p-choisir">à choisir</span>
+      <p class="etiquette">L'idée</p>
+      <p class="phrase">En désaccord, le total lu, celui du QR et la somme des lignes l'un sous l'autre ; le chiffre fautif entouré.</p>
+    </div>
+    <div class="planche sept">
+      <figure class="vue ref" data-vignette><button class="ecran" type="button" data-agrandir data-src="img/base-repos.png" data-titre="Ton écran en ligne, au repos"><img src="img/base-repos.png" alt="Ton écran en ligne"></button><figcaption><b>Ton écran en ligne</b></figcaption></figure>
+      <figure class="vue" data-vignette><button class="ecran" type="button" data-agrandir data-src="img/r4-confirme.png" data-titre="r4 · le QR confirme"><img src="img/r4-confirme.png" alt="r4, le QR confirme"></button><figcaption><b>Tout concorde</b></figcaption></figure>
+      <figure class="vue" data-vignette><button class="ecran" type="button" data-agrandir data-src="img/r4-contredit.png" data-titre="r4 · le QR dit 110,40, la lecture 110,04"><img src="img/r4-contredit.png" alt="r4, désaccord"></button><figcaption><b>Désaccord</b> sur le montant</figcaption></figure>
+      <figure class="vue" data-vignette><button class="ecran" type="button" data-agrandir data-src="img/r4-partiel.png" data-titre="r4 · bulletin sans montant"><img src="img/r4-partiel.png" alt="r4, partiel"></button><figcaption><b>Sans montant</b> dans le QR</figcaption></figure>
+      <figure class="vue" data-vignette><button class="ecran" type="button" data-agrandir data-src="img/r4-illisible.png" data-titre="r4 · QR illisible"><img src="img/r4-illisible.png" alt="r4, illisible"></button><figcaption><b>QR illisible</b></figcaption></figure>
+      <figure class="vue" data-vignette><button class="ecran" type="button" data-agrandir data-src="img/r4-sans.png" data-titre="r4 · pas de QR sur la pièce"><img src="img/r4-sans.png" alt="r4, sans QR"></button><figcaption><b>Pas de QR</b></figcaption></figure>
+      <figure class="vue" data-vignette><button class="ecran" type="button" data-agrandir data-src="img/r4-lecture.png" data-titre="r4 · pendant la lecture"><img src="img/r4-lecture.png" alt="r4, lecture"></button><figcaption><b>Pendant la lecture</b></figcaption></figure>
+      <figure class="vue" data-vignette><button class="ecran" type="button" data-agrandir data-src="img/r4-geste.png" data-titre="r4 · un toucher sur la rangée QR : ce qu'il dit"><img src="img/r4-geste.png" alt="r4, feuille du QR"></button><figcaption><b>Un toucher</b> sur la rangée QR</figcaption></figure>
+      <figure class="vue" data-vignette><button class="ecran" type="button" data-agrandir data-src="img/r4-1280.png" data-titre="r4 · désaccord à 1280 px"><img src="img/r4-1280.png" alt="r4 à 1280 px"></button><figcaption><b>Ordinateur</b></figcaption></figure>
+    </div>
+  </section>
+
+  <section class="rangee" aria-labelledby="t-z4">
+    <div class="tete">
+      <h2 id="t-z4">La section paiement <span class="id">z4</span></h2>
+      <span class="pastille p-choisir">à choisir</span>
+      <p class="etiquette">L'idée</p>
+      <p class="phrase">La partie paiement de ton bulletin, reprise dans la carte Règlement : IBAN et référence à copier, « À payer » proposé.</p>
+    </div>
+    <div class="planche sept">
+      <figure class="vue ref" data-vignette><button class="ecran" type="button" data-agrandir data-src="img/base-repos.png" data-titre="Ton écran en ligne, au repos"><img src="img/base-repos.png" alt="Ton écran en ligne"></button><figcaption><b>Ton écran en ligne</b></figcaption></figure>
+      <figure class="vue" data-vignette><button class="ecran" type="button" data-agrandir data-src="img/z4-confirme.png" data-titre="z4 · le QR confirme"><img src="img/z4-confirme.png" alt="z4, le QR confirme"></button><figcaption><b>Tout concorde</b></figcaption></figure>
+      <figure class="vue" data-vignette><button class="ecran" type="button" data-agrandir data-src="img/z4-contredit.png" data-titre="z4 · le QR dit 110,40, la lecture 110,04"><img src="img/z4-contredit.png" alt="z4, désaccord"></button><figcaption><b>Désaccord</b> sur le montant</figcaption></figure>
+      <figure class="vue" data-vignette><button class="ecran" type="button" data-agrandir data-src="img/z4-partiel.png" data-titre="z4 · bulletin sans montant"><img src="img/z4-partiel.png" alt="z4, partiel"></button><figcaption><b>Sans montant</b> dans le QR</figcaption></figure>
+      <figure class="vue" data-vignette><button class="ecran" type="button" data-agrandir data-src="img/z4-illisible.png" data-titre="z4 · QR illisible"><img src="img/z4-illisible.png" alt="z4, illisible"></button><figcaption><b>QR illisible</b></figcaption></figure>
+      <figure class="vue" data-vignette><button class="ecran" type="button" data-agrandir data-src="img/z4-sans.png" data-titre="z4 · pas de QR sur la pièce"><img src="img/z4-sans.png" alt="z4, sans QR"></button><figcaption><b>Pas de QR</b></figcaption></figure>
+      <figure class="vue" data-vignette><button class="ecran" type="button" data-agrandir data-src="img/z4-lecture.png" data-titre="z4 · pendant la lecture"><img src="img/z4-lecture.png" alt="z4, lecture"></button><figcaption><b>Pendant la lecture</b></figcaption></figure>
+      <figure class="vue" data-vignette><button class="ecran" type="button" data-agrandir data-src="img/z4-geste.png" data-titre="z4 · un toucher sur « À payer » : adopté"><img src="img/z4-geste.png" alt="z4, À payer adopté"></button><figcaption><b>Un toucher</b> sur « À payer »</figcaption></figure>
+      <figure class="vue" data-vignette><button class="ecran" type="button" data-agrandir data-src="img/z4-1280.png" data-titre="z4 · désaccord à 1280 px"><img src="img/z4-1280.png" alt="z4 à 1280 px"></button><figcaption><b>Ordinateur</b></figcaption></figure>
+    </div>
+  </section>
+
+  <section class="rangee" aria-labelledby="t-v0-contredit">
+    <div class="tete">
+      <h2 id="t-v0-contredit">Les douze de départ · désaccord</h2>
+      <p>Le QR dit un autre montant que la lecture. La série u montre la facture B&amp;R de l'aperçu, avec un désaccord inventé.</p>
+    </div>
+    <div class="planche sept">
+      <figure class="vue ref" data-vignette><button class="ecran" type="button" data-agrandir data-src="img/base-repos.png" data-titre="Ton écran en ligne, au repos"><img src="img/base-repos.png" alt="Ton écran en ligne"></button><figcaption><b>Ton écran en ligne</b></figcaption></figure>
+      <figure class="vue" data-vignette><button class="ecran" type="button" data-agrandir data-src="img/v0-r1-contredit.png" data-titre="r1 · la rangée de preuve"><img src="img/v0-r1-contredit.png" alt="r1, désaccord"></button><figcaption><b>La rangée de preuve</b> r1</figcaption></figure>
+      <figure class="vue" data-vignette><button class="ecran" type="button" data-agrandir data-src="img/v0-r2-contredit.png" data-titre="r2 · une pastille par champ"><img src="img/v0-r2-contredit.png" alt="r2, désaccord"></button><figcaption><b>Une pastille par champ</b> r2</figcaption></figure>
+      <figure class="vue" data-vignette><button class="ecran" type="button" data-agrandir data-src="img/v0-r3-contredit.png" data-titre="r3 · le talon détachable"><img src="img/v0-r3-contredit.png" alt="r3, désaccord"></button><figcaption><b>Le talon détachable</b> r3</figcaption></figure>
+      <figure class="vue" data-vignette><button class="ecran" type="button" data-agrandir data-src="img/v0-r4-contredit.png" data-titre="r4 · chiffre à chiffre, départ"><img src="img/v0-r4-contredit.png" alt="r4, désaccord"></button><figcaption><b>Chiffre à chiffre</b> r4</figcaption></figure>
+      <figure class="vue" data-vignette><button class="ecran" type="button" data-agrandir data-src="img/v0-z1-contredit.png" data-titre="z1 · un petit QR sur chaque champ"><img src="img/v0-z1-contredit.png" alt="z1, désaccord"></button><figcaption><b>Petits QR par champ</b> z1</figcaption></figure>
+      <figure class="vue" data-vignette><button class="ecran" type="button" data-agrandir data-src="img/v0-z2-contredit.png" data-titre="z2 · le sceau QR, départ"><img src="img/v0-z2-contredit.png" alt="z2, désaccord"></button><figcaption><b>Le sceau QR</b> z2</figcaption></figure>
+      <figure class="vue" data-vignette><button class="ecran" type="button" data-agrandir data-src="img/v0-z3-contredit.png" data-titre="z3 · la bande perforée"><img src="img/v0-z3-contredit.png" alt="z3, désaccord"></button><figcaption><b>La bande perforée</b> z3</figcaption></figure>
+      <figure class="vue" data-vignette><button class="ecran" type="button" data-agrandir data-src="img/v0-z4-contredit.png" data-titre="z4 · la section paiement, départ"><img src="img/v0-z4-contredit.png" alt="z4, désaccord"></button><figcaption><b>La section paiement</b> z4</figcaption></figure>
+      <figure class="vue" data-vignette><button class="ecran" type="button" data-agrandir data-src="img/v0-u1-contredit.png" data-titre="u1 · la rangée QR"><img src="img/v0-u1-contredit.png" alt="u1, désaccord"></button><figcaption><b>La rangée QR</b> u1</figcaption></figure>
+      <figure class="vue" data-vignette><button class="ecran" type="button" data-agrandir data-src="img/v0-u2-contredit.png" data-titre="u2 · les petits sceaux"><img src="img/v0-u2-contredit.png" alt="u2, désaccord"></button><figcaption><b>Les petits sceaux</b> u2</figcaption></figure>
+      <figure class="vue" data-vignette><button class="ecran" type="button" data-agrandir data-src="img/v0-u3-contredit.png" data-titre="u3 · la fermeture éclair"><img src="img/v0-u3-contredit.png" alt="u3, désaccord"></button><figcaption><b>La fermeture éclair</b> u3</figcaption></figure>
+      <figure class="vue" data-vignette><button class="ecran" type="button" data-agrandir data-src="img/v0-u4-contredit.png" data-titre="u4 · le tampon"><img src="img/v0-u4-contredit.png" alt="u4, désaccord"></button><figcaption><b>Le tampon</b> u4</figcaption></figure>
+    </div>
+  </section>
+
+  <section class="rangee" aria-labelledby="t-v0-confirme">
+    <div class="tete">
+      <h2 id="t-v0-confirme">Les douze de départ · tout concorde</h2>
+      <p>Le cas le plus fréquent : le QR dit la même chose que la lecture.</p>
+    </div>
+    <div class="planche sept">
+      <figure class="vue ref" data-vignette><button class="ecran" type="button" data-agrandir data-src="img/base-repos.png" data-titre="Ton écran en ligne, au repos"><img src="img/base-repos.png" alt="Ton écran en ligne"></button><figcaption><b>Ton écran en ligne</b></figcaption></figure>
+      <figure class="vue" data-vignette><button class="ecran" type="button" data-agrandir data-src="img/v0-r1-confirme.png" data-titre="r1 · la rangée de preuve"><img src="img/v0-r1-confirme.png" alt="r1, tout concorde"></button><figcaption><b>La rangée de preuve</b> r1</figcaption></figure>
+      <figure class="vue" data-vignette><button class="ecran" type="button" data-agrandir data-src="img/v0-r2-confirme.png" data-titre="r2 · une pastille par champ"><img src="img/v0-r2-confirme.png" alt="r2, tout concorde"></button><figcaption><b>Une pastille par champ</b> r2</figcaption></figure>
+      <figure class="vue" data-vignette><button class="ecran" type="button" data-agrandir data-src="img/v0-r3-confirme.png" data-titre="r3 · le talon détachable"><img src="img/v0-r3-confirme.png" alt="r3, tout concorde"></button><figcaption><b>Le talon détachable</b> r3</figcaption></figure>
+      <figure class="vue" data-vignette><button class="ecran" type="button" data-agrandir data-src="img/v0-r4-confirme.png" data-titre="r4 · chiffre à chiffre, départ"><img src="img/v0-r4-confirme.png" alt="r4, tout concorde"></button><figcaption><b>Chiffre à chiffre</b> r4</figcaption></figure>
+      <figure class="vue" data-vignette><button class="ecran" type="button" data-agrandir data-src="img/v0-z1-confirme.png" data-titre="z1 · un petit QR sur chaque champ"><img src="img/v0-z1-confirme.png" alt="z1, tout concorde"></button><figcaption><b>Petits QR par champ</b> z1</figcaption></figure>
+      <figure class="vue" data-vignette><button class="ecran" type="button" data-agrandir data-src="img/v0-z2-confirme.png" data-titre="z2 · le sceau QR, départ"><img src="img/v0-z2-confirme.png" alt="z2, tout concorde"></button><figcaption><b>Le sceau QR</b> z2</figcaption></figure>
+      <figure class="vue" data-vignette><button class="ecran" type="button" data-agrandir data-src="img/v0-z3-confirme.png" data-titre="z3 · la bande perforée"><img src="img/v0-z3-confirme.png" alt="z3, tout concorde"></button><figcaption><b>La bande perforée</b> z3</figcaption></figure>
+      <figure class="vue" data-vignette><button class="ecran" type="button" data-agrandir data-src="img/v0-z4-confirme.png" data-titre="z4 · la section paiement, départ"><img src="img/v0-z4-confirme.png" alt="z4, tout concorde"></button><figcaption><b>La section paiement</b> z4</figcaption></figure>
+      <figure class="vue" data-vignette><button class="ecran" type="button" data-agrandir data-src="img/v0-u1-confirme.png" data-titre="u1 · la rangée QR"><img src="img/v0-u1-confirme.png" alt="u1, tout concorde"></button><figcaption><b>La rangée QR</b> u1</figcaption></figure>
+      <figure class="vue" data-vignette><button class="ecran" type="button" data-agrandir data-src="img/v0-u2-confirme.png" data-titre="u2 · les petits sceaux"><img src="img/v0-u2-confirme.png" alt="u2, tout concorde"></button><figcaption><b>Les petits sceaux</b> u2</figcaption></figure>
+      <figure class="vue" data-vignette><button class="ecran" type="button" data-agrandir data-src="img/v0-u3-confirme.png" data-titre="u3 · la fermeture éclair"><img src="img/v0-u3-confirme.png" alt="u3, tout concorde"></button><figcaption><b>La fermeture éclair</b> u3</figcaption></figure>
+      <figure class="vue" data-vignette><button class="ecran" type="button" data-agrandir data-src="img/v0-u4-confirme.png" data-titre="u4 · le tampon"><img src="img/v0-u4-confirme.png" alt="u4, tout concorde"></button><figcaption><b>Le tampon</b> u4</figcaption></figure>
+    </div>
+  </section>
+
+  <section class="rangee" aria-labelledby="t-critique">
+    <div class="tete"><h2 id="t-critique">Le classement du critique</h2><p>Calibré sur ton portrait, toutes les captures ouvertes. Une proposition : tu vois tout.</p></div>
+    <div class="verdicts">
+      <p><b>Après retouche</b> : z2 retenu tel quel ; r4 ne bascule plus seul le règlement sur « À payer » ; z4 ne coupe plus l'IBAN.</p>
+      <p><b>Au départ, sur les douze</b> :</p>
+      <p><b>1. z2, le sceau QR</b> : reconnu en une seconde, verdict en un mot.</p>
+      <p><b>2. u4, le tampon</b> : frappant, six états sans un mot de plus ; il faut lire en rond.</p>
+      <p><b>3. r4, chiffre à chiffre</b> : le meilleur désaccord, l'inversion saute aux yeux.</p>
+      <p><b>4. z4, la section paiement</b> : ton bulletin, et tu paies depuis l'app.</p>
+      <p><b>5. r3, le talon</b> : l'IBAN à copier est utile ; les arcs se comprennent mal.</p>
+      <p><b>6. u3, la fermeture éclair</b> : on voit où ça coince, mais elle prend de la place.</p>
+      <p><b>7 à 12</b> : u1, r2, u2, r1, z3, z1 ; justes, mais cachés, trop discrets ou ambigus.</p>
+    </div>
+  </section>
+
+  <section class="rangee" aria-labelledby="t-greffes">
+    <div class="tete"><h2 id="t-greffes">Greffes possibles</h2><p>Ce qui peut passer d'une idée à celle que tu choisis.</p></div>
+    <ul>
+      <li>Du tampon u4 : le cercle vide « sans QR », pour ne pas confondre avec « pas vérifié ».</li>
+      <li>De r4 : le chiffre fautif entouré dans tout désaccord.</li>
+      <li>De z4 : IBAN et référence à copier, pour payer depuis l'app.</li>
+      <li>De u3 : « pas dans le QR » sur chaque champ qu'un bulletin ne porte pas.</li>
+    </ul>
+  </section>
+
+  <section class="rangee" aria-labelledby="t-avant">
+    <div class="tete"><h2 id="t-avant">Avant</h2></div>
+    <p>L'écran Dépense de la passe 3, où ce contrôle viendra se poser : <a href="https://claude.ai/artifact/Q7zqa6xvR8EGGAz3j14yh9">ouvrir la page de la passe 3</a>.</p>
+  </section>
+</div>
+<dialog id="grand" aria-label="Capture en grand">
+  <div class="haut">
+    <p class="titre" id="grand-titre"></p>
+    <button type="button" class="fermer">Fermer</button>
+  </div>
+  <img id="grand-img" alt="">
+</dialog>
+
+<script>
+(function () {
+  var dlg = document.getElementById('grand');
+  var img = document.getElementById('grand-img');
+  var titre = document.getElementById('grand-titre');
+  document.querySelectorAll('[data-agrandir]').forEach(function (b) {
+    b.addEventListener('click', function () {
+      img.setAttribute('src', b.getAttribute('data-src'));
+      img.setAttribute('alt', b.getAttribute('data-titre'));
+      titre.textContent = b.getAttribute('data-titre');
+      dlg.showModal();
+    });
+  });
+  dlg.querySelector('.fermer').addEventListener('click', function () { dlg.close(); });
+  dlg.addEventListener('click', function (e) { if (e.target === dlg) dlg.close(); });
+})();
+</script>

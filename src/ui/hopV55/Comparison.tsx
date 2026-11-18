@@ -26,12 +26,12 @@ type AxisScale = ViewAxis['scale'];
 
 // These markers and colors match the approved candidate's comparison palette.
 const SERIES = [
-  { color: '#2f6b3f', marker: '●', pattern: 'solid' },
-  { color: '#b8741a', marker: '▲', pattern: 'dashed' },
-  { color: '#2e5b86', marker: '■', pattern: 'dotted' },
-  { color: '#a83a2b', marker: '◆', pattern: 'double' },
-  { color: '#6b4fa0', marker: '✚', pattern: 'dash-dot' },
-  { color: '#4c4f49', marker: '✕', pattern: 'long-dash' }
+  { color: 'rgb(var(--hv-t-2f6b3f))', marker: '●', pattern: 'solid' },
+  { color: 'rgb(var(--hv-t-b8741a))', marker: '▲', pattern: 'dashed' },
+  { color: 'rgb(var(--hv-t-2e5b86))', marker: '■', pattern: 'dotted' },
+  { color: 'rgb(var(--hv-t-a83a2b))', marker: '◆', pattern: 'double' },
+  { color: 'rgb(var(--hv-t-6b4fa0))', marker: '✚', pattern: 'dash-dot' },
+  { color: 'rgb(var(--hv-t-4c4f49))', marker: '✕', pattern: 'long-dash' }
 ] as const;
 /** Hollow counterparts mark the upper bound of a range, so a bound never reads as a central value. */
 const RANGE_CAPS = ['○', '△', '□', '◇', '✛', '×'] as const;

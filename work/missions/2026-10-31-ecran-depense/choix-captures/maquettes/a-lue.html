@@ -1,0 +1,108 @@
+<!doctype html><html lang="fr"><head><meta charset="utf-8"><title>Option A · lue</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Source+Sans+3:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
+<style>
+:root{--c950:#fff;--c900:#f5f5f5;--c850:#ebebeb;--c800:#ddd;--c700:#bfbfbf;--c600:#9e9e9e;--c400:#666;--c200:#333;--c50:#111;
+--att:rgb(156 112 32);--attT:rgb(127 91 16);--gold:#E0A02E;--hop:rgb(63 107 46);--lev:rgb(47 98 150);--vise:#2d5f8a}
+*{box-sizing:border-box}
+body{margin:0;width:390px;background:#fff;color:var(--c50);font:14px/1.25 "Source Sans 3",system-ui,"Segoe UI",sans-serif;overflow:hidden;position:relative}
+body.gris{background:var(--c900)}
+.m{font-family:"IBM Plex Mono",ui-monospace,Consolas,monospace;font-variant-numeric:tabular-nums}
+.cp-h{display:flex;align-items:center;gap:4px;height:40px;border-bottom:1px solid var(--c800);padding:0 4px;background:#fff}
+.cp-h h2{flex:1;margin:0;font-size:16px;font-weight:600}
+.cp-ic{width:32px;height:32px;display:flex;align-items:center;justify-content:center;color:var(--c200);border-radius:10px}
+.cp-ic.on{background:var(--c850)}
+.cp-vise{outline:2.5px solid var(--vise);outline-offset:2px}
+/* entrée (état vide d'ExpenseSheet) */
+.cp-depot{margin:8px;padding:8px;border:1px dashed var(--c700);border-radius:14px;display:grid;gap:8px}
+.cp-pri{min-height:32px;border-radius:10px;background:#111;color:#fff;font-weight:600;font-size:13px;display:flex;align-items:center;justify-content:center;gap:8px}
+.cp-sec{min-height:28px;border-radius:10px;border:1px solid var(--c600);background:#fff;color:var(--c50);font-size:13px;display:flex;align-items:center;justify-content:center;gap:8px}
+.cp-note{margin:0;text-align:center;font-size:12px;color:var(--c400)}
+.cp-lien{margin:0 auto;font-size:14px;color:var(--c200);text-decoration:underline;text-underline-offset:4px}
+/* pages */
+.cp-pg{position:relative;flex:none;background:#fff;border:1px solid var(--c700);border-radius:6px;overflow:hidden;display:flex;flex-direction:column;gap:3px;padding:0 0 4px}
+.cp-pg .bar{height:9px;background:#2c3a2a}
+.cp-pg .t{height:4px;margin:3px 5px 1px;width:55%;background:#888;border-radius:2px}
+.cp-pg .l{display:flex;gap:3px;margin:0 5px;align-items:center}
+.cp-pg .l i{height:3px;background:#c9c9c9;border-radius:2px;flex:1}
+.cp-pg .l b{height:3px;width:9px;background:#9a9a9a;border-radius:2px}
+.cp-pg .tot{height:4px;margin:2px 5px 0 auto;width:30%;background:#333;border-radius:2px}
+.cp-pg.papier{background:#fbf9f3;border-color:#d8d2c2;border-radius:2px}
+.cp-pg.papier .bar{height:5px;background:none;border-bottom:2px solid #555;margin:4px 5px 0;width:40%}
+.cp-num{position:absolute;left:3px;bottom:3px;min-width:16px;height:16px;border-radius:8px;background:#111;color:#fff;font-size:11px;line-height:16px;text-align:center;font-weight:600}
+.cp-ret{position:absolute;right:2px;top:12px;width:18px;height:18px;border-radius:9px;background:rgb(255 255 255/.92);border:1px solid var(--c600);display:flex;align-items:center;justify-content:center;color:var(--c200)}
+.cp-cam{position:absolute;right:3px;bottom:3px;width:18px;height:18px;border-radius:9px;background:#fff;border:1px solid var(--c600);display:flex;align-items:center;justify-content:center}
+.cp-rang{display:flex;gap:8px;align-items:flex-end}
+.cp-plus{flex:none;width:62px;height:116px;border:1.5px dashed var(--c600);border-radius:8px;background:#fff;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;color:var(--c200);font-size:13px;font-weight:600}
+.cp-plus span{width:28px;height:28px;border-radius:14px;border:1px solid var(--c600);display:flex;align-items:center;justify-content:center}
+/* lecture (état « lecture » d'ExpenseSheet) */
+.cp-lect{margin:8px;border:1px solid var(--c800);border-radius:14px;background:rgb(245 245 245/.6);padding:5px 10px 7px;display:grid;gap:4px}
+.cp-lect .nom{display:flex;align-items:baseline;justify-content:space-between;gap:8px}
+.cp-lect .nom b{font-size:16px;font-weight:600}
+.cp-lect .nom span{font-size:12px;color:var(--c400)}
+.cp-frise{display:flex;gap:6px;font-size:12px;color:var(--c400)}
+.cp-frise span{flex:1;display:flex;flex-direction:column;gap:3px}
+.cp-frise i{display:block;height:6px;border-radius:10px;background:var(--c800)}
+.cp-frise .f1{color:var(--c200)} .cp-frise .f1 i{background:var(--c200)}
+.cp-frise .f2{color:var(--c50);font-weight:600} .cp-frise .f2 i{background:repeating-linear-gradient(90deg,#333 0 6px,#ddd 6px 12px)}
+.cp-arrivent{margin:0 8px;height:118px;border:1px dashed var(--c600);border-radius:14px;display:flex;align-items:center;justify-content:center;color:var(--c400);font-size:14px}
+.cp-ligne{margin:0 12px;display:flex;min-height:36px;align-items:center;border-bottom:1px solid var(--c800);font-size:14px;color:var(--c200)}
+.cp-ligne em{margin-left:auto;font-style:normal;font-size:12px;color:var(--c400)}
+.cp-souleve{transform:translateY(-10px) rotate(-4deg);box-shadow:0 8px 18px rgb(0 0 0/.25);outline:2.5px solid var(--vise);outline-offset:1px}
+.cp-trou{flex:none;width:4px;height:100px;border-radius:2px;background:var(--vise);align-self:center}
+.cp-dim{opacity:.5}
+/* hors de l'app (A) */
+.cp-ailleurs{margin:8px;border:1.5px dashed var(--att);border-radius:14px;padding:6px 10px 8px;background:rgb(156 112 32/.05)}
+.cp-ailleurs p{margin:0 0 6px;font-size:12px;font-weight:600;color:var(--attT)}
+.cp-ailleurs .flux{display:flex;align-items:center;gap:6px}
+.cp-fleche{font-size:20px;color:var(--attT);padding:0 2px}
+.cp-pdf{width:46px;height:62px;border:1.5px solid var(--attT);border-radius:4px;background:#fff;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:var(--attT)}
+/* appareil photo (D) */
+.cp-noir{background:#141414;color:#f2f2f2}
+.cp-noir .cp-h{background:#141414;border-color:#2a2a2a}
+.cp-noir .cp-ic{color:#eee}
+.cp-vue{margin:10px 24px 0;height:306px;border-radius:6px;background:#3a3a36;display:flex;align-items:center;justify-content:center}
+.cp-tir{display:flex;gap:8px;padding:10px 12px 0;align-items:flex-end}
+.cp-tir .cp-pg{border-color:#555}
+.cp-actif{outline:2px solid #fff;outline-offset:1px}
+.cp-boutons{position:absolute;left:0;right:0;bottom:0;display:flex;gap:8px;padding:10px 12px 12px}
+.cp-boutons span{flex:1;min-height:40px;border-radius:10px;display:flex;align-items:center;justify-content:center;gap:8px;font-size:15px;font-weight:600}
+.cp-boutons .plus{border:1.5px solid #ddd;color:#fff}
+.cp-boutons .fin{background:#fff;color:#111}
+/* dépense lue */
+.cp-justif{margin:8px 8px 0;border:1px solid var(--c800);border-radius:14px;background:rgb(245 245 245/.6);padding:8px;display:grid;gap:8px}
+.cp-justif .act{display:flex;align-items:center;gap:6px}
+.cp-bt{min-height:28px;border:1px solid var(--c600);border-radius:10px;padding:0 10px;display:inline-flex;align-items:center;gap:4px;font-size:14px;color:var(--c50);background:#fff}
+.cp-trace{display:inline-flex;align-items:center;gap:3px;height:32px;padding:0 6px;border-radius:10px;color:var(--c200)}
+.cp-trace .pile{position:relative;width:18px;height:20px}
+.cp-trace .pile i{position:absolute;width:11px;height:15px;border:1.5px solid currentColor;border-radius:2px;background:#fff}
+.cp-trace b{font-size:13px;font-weight:600}
+.cp-band{margin:8px 8px 0;border:1px solid var(--c800);border-radius:14px;background:rgb(245 245 245/.4);padding:5px 10px 7px;display:grid;gap:4px}
+.cp-band .r1{display:flex;align-items:baseline;justify-content:space-between}
+.cp-band .r1 b{font-size:16px;font-weight:600}
+.cp-band .r1 span{font-size:14px;color:var(--c200);border-bottom:1px dashed var(--c600)}
+.cp-band .r2{display:flex;align-items:center;gap:8px}
+.cp-band .tot{font-size:28px;font-weight:600;line-height:1.1}
+.cp-chip{margin-left:auto;min-height:28px;border:1px solid var(--c700);border-radius:10px;padding:0 8px;display:inline-flex;align-items:center;gap:4px;font-size:14px;color:var(--c200);background:#fff}
+.cp-barre{display:flex;height:10px;border:1px solid var(--c800);border-radius:999px;overflow:hidden}
+.cp-barre i{display:block;height:100%;border-right:1.5px solid #fff}
+.cp-preuve{margin:6px 8px 0;border:1px solid var(--c800);border-radius:14px;padding:2px 8px 4px;display:grid;grid-template-columns:1.12fr 1fr;column-gap:8px}
+.cp-preuve div{display:flex;align-items:center;gap:4px;min-height:26px;border-bottom:1px solid var(--c800);font-size:14px;color:var(--c200)}
+.cp-preuve div b{margin-left:auto;font-weight:500;color:var(--c50)}
+.cp-bande{display:flex;align-items:center;gap:6px;height:28px;padding:0 10px;margin-top:8px}
+.cp-bande strong{font-weight:600}
+.cp-pt{width:10px;height:10px;border-radius:50%}
+.cp-nb{border:1px solid var(--c600);background:#fff;border-radius:10px;padding:0 6px;font-size:12px;line-height:18px;color:var(--c200)}
+.cp-bande .q{margin-left:auto;margin-right:57px;font-size:12px;font-weight:600;color:var(--c200)}
+.cp-bande .t{min-width:54px;text-align:right;font-weight:600}
+.cp-li{display:flex;align-items:center;gap:6px;min-height:28px;padding:0 10px;border-bottom:1px solid var(--c800);border-left:4px solid var(--gold)}
+.cp-li .n{flex:1;min-width:0;font-size:14px}
+.cp-li .n small{font-size:12px;color:var(--c400)}
+.cp-dq{flex:none;min-width:94px;display:inline-grid;grid-template-columns:minmax(37px,max-content) 7px 44px;column-gap:3px;font-size:12px;color:var(--c400);white-space:nowrap}
+.cp-dq b{text-align:right;font-weight:600} .cp-dq i{font-style:normal;text-align:center}
+.cp-mt{width:54px;flex:none;text-align:right;font-size:14px}
+.cp-pied{position:absolute;left:0;right:0;bottom:0;display:flex;align-items:center;gap:8px;padding:8px;border-top:1px solid var(--c800);background:#fff}
+.cp-seg{display:inline-flex;border:1px solid var(--c600);border-radius:10px;overflow:hidden}
+.cp-seg span{min-height:28px;display:flex;align-items:center;padding:0 10px;font-size:14px;color:var(--c200)}
+.cp-seg span.on{background:#111;color:#fff;font-weight:600}
+.cp-pied .conf{margin-left:auto;height:36px;border-radius:10px;background:#111;color:#fff;font-weight:600;font-size:15px;display:flex;align-items:center;padding:0 22px}
+body{height:700px}</style></head><body class=""><header class="cp-h"><span class="cp-ic"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18M6 6l12 12"/></svg></span><h2>Nouvelle dépense</h2><span class="cp-ic on"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6M16 13H8M16 17H8"/></svg></span></header><div class="cp-justif"><div class="act"><span class="cp-bt" style="color:rgb(127 91 16)">Ouvrir le PDF original</span><span class="cp-bt" style="margin-left:auto"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6M16 13H8M16 17H8"/></svg>Changer</span></div></div><section class="cp-band"><div class="r1"><b>Malzhaus Nord</b><span class="m">14.10.2026</span></div><div class="r2"><span class="tot m">48,70</span><span style="font-size:12px;color:var(--c400)">CHF</span><span class="cp-chip"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="rgb(63 107 46)" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg><span class="m">6</span>&nbsp;lignes</span></div><div class="cp-barre"><i style="flex-grow:9.6;background:var(--gold)"></i><i style="flex-grow:14.5;background:var(--gold)"></i><i style="flex-grow:2.3;background:var(--gold)"></i><i style="flex-grow:5.8;background:var(--hop)"></i><i style="flex-grow:6.5;background:var(--hop)"></i><i style="flex-grow:10;background:var(--lev)"></i></div></section><section class="cp-preuve"><div><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="rgb(63 107 46)" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>Somme = imprimé<b class="m">48,70</b></div><div><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="rgb(63 107 46)" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>Qté × prix<b class="m">6/6</b></div><div style="border:0"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="rgb(63 107 46)" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg><span class="m">3</span>&nbsp;pages lues</div></section><div style="height:8px"></div><div class="cp-bande" style="background:linear-gradient(rgb(224 160 46/.22),rgb(224 160 46/.22)),#fff;margin-top:0"><i class="cp-pt" style="background:var(--gold)"></i><strong>Malts</strong><span class="cp-nb m">3</span><span class="q m">17 Kg</span><span class="t m">26,40</span></div><div class="cp-li" style="border-left-color:var(--gold)"><svg width="18" height="18" viewBox="0 0 20 20" fill="none" stroke="#111" stroke-width="1.67" style="flex:none"><path d="M10 2.5 17 6v8l-7 3.5L3 14V6z"/><path d="M3 6l7 3.5L17 6M10 9.5v8"/><circle cx="15" cy="15" r="4.6" fill="#111" stroke="none"/><path d="M12.8 15.1l1.6 1.6 2.9-3" stroke="#fff"/></svg><span class="n">Malt de Vienne</span><span class="cp-dq m"><b>6 Kg</b><i>×</i><span>1,60</span></span><span class="cp-mt m">9,60</span></div><div class="cp-li" style="border-left-color:var(--gold)"><svg width="18" height="18" viewBox="0 0 20 20" fill="none" stroke="#111" stroke-width="1.67" style="flex:none"><path d="M10 2.5 17 6v8l-7 3.5L3 14V6z"/><path d="M3 6l7 3.5L17 6M10 9.5v8"/><circle cx="15" cy="15" r="4.6" fill="#111" stroke="none"/><path d="M12.8 15.1l1.6 1.6 2.9-3" stroke="#fff"/></svg><span class="n">Malt pâle</span><span class="cp-dq m"><b>10 Kg</b><i>×</i><span>1,45</span></span><span class="cp-mt m">14,50</span></div><div class="cp-li" style="border-left-color:var(--gold)"><svg width="18" height="18" viewBox="0 0 20 20" fill="none" stroke="#111" stroke-width="1.67" style="flex:none"><path d="M10 2.5 17 6v8l-7 3.5L3 14V6z"/><path d="M3 6l7 3.5L17 6M10 9.5v8"/><circle cx="15" cy="15" r="4.6" fill="#111" stroke="none"/><path d="M12.8 15.1l1.6 1.6 2.9-3" stroke="#fff"/></svg><span class="n">Malt caramel belge</span><span class="cp-dq m"><b>1 Kg</b><i>×</i><span>2,30</span></span><span class="cp-mt m">2,30</span></div><div class="cp-bande" style="background:linear-gradient(rgb(63 107 46/.2),rgb(63 107 46/.2)),#fff;margin-top:0"><i class="cp-pt" style="background:var(--hop)"></i><strong>Houblons</strong><span class="cp-nb m">2</span><span class="q m">200 g</span><span class="t m">12,30</span></div><div class="cp-li" style="border-left-color:var(--hop)"><svg width="18" height="18" viewBox="0 0 20 20" fill="none" stroke="#111" stroke-width="1.67" style="flex:none"><path d="M10 2.5 17 6v8l-7 3.5L3 14V6z"/><path d="M3 6l7 3.5L17 6M10 9.5v8"/><circle cx="15" cy="15" r="4.6" fill="#111" stroke="none"/><path d="M12.8 15.1l1.6 1.6 2.9-3" stroke="#fff"/></svg><span class="n">Saaz <small class="m">α 3,5</small></span><span class="cp-dq m"><b>100 g</b><i>×</i><span>0,058</span></span><span class="cp-mt m">5,80</span></div><div class="cp-li" style="border-left-color:var(--hop)"><svg width="18" height="18" viewBox="0 0 20 20" fill="none" stroke="#111" stroke-width="1.67" style="flex:none"><path d="M10 2.5 17 6v8l-7 3.5L3 14V6z"/><path d="M3 6l7 3.5L17 6M10 9.5v8"/><circle cx="15" cy="15" r="4.6" fill="#111" stroke="none"/><path d="M12.8 15.1l1.6 1.6 2.9-3" stroke="#fff"/></svg><span class="n">Cascade <small class="m">α 6,8</small></span><span class="cp-dq m"><b>100 g</b><i>×</i><span>0,065</span></span><span class="cp-mt m">6,50</span></div><div class="cp-bande" style="background:linear-gradient(rgb(47 98 150/.2),rgb(47 98 150/.2)),#fff;margin-top:0"><i class="cp-pt" style="background:var(--lev)"></i><strong>Levures</strong><span class="cp-nb m">1</span><span class="q m">1 sachet</span><span class="t m">10,00</span></div><div class="cp-li" style="border-left-color:var(--lev)"><svg width="18" height="18" viewBox="0 0 20 20" fill="none" stroke="#111" stroke-width="1.67" style="flex:none"><path d="M10 2.5 17 6v8l-7 3.5L3 14V6z"/><path d="M3 6l7 3.5L17 6M10 9.5v8"/><circle cx="15" cy="15" r="4.6" fill="#111" stroke="none"/><path d="M12.8 15.1l1.6 1.6 2.9-3" stroke="#fff"/></svg><span class="n">Levure Ale sèche</span><span class="cp-dq m"><b>1 sachet</b><i>×</i><span>10,00</span></span><span class="cp-mt m">10,00</span></div><div class="cp-pied"><span class="cp-seg"><span class="on">Catégorie</span><span>Papier</span></span><span class="conf">✓ Confirmer</span></div></body></html>

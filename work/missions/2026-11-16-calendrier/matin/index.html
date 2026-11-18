@@ -1,0 +1,62 @@
+<title>Travaux de nuit 17.11</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<style>
+:root{--bg:#f7f5f1;--carte:#fff;--fg:#221d17;--doux:#6b6258;--ligne:#e3ddd3;--accent:#9a4f1c;--ok:#2f6b3a;--att:#a3561a;color-scheme:light}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#17140f;--carte:#221e18;--fg:#f1ece4;--doux:#b0a596;--ligne:#3a332a;--accent:#e08a4a;--ok:#7cc48a;--att:#e8a061;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#17140f;--carte:#221e18;--fg:#f1ece4;--doux:#b0a596;--ligne:#3a332a;--accent:#e08a4a;--ok:#7cc48a;--att:#e8a061;color-scheme:dark}
+body{background:var(--bg);color:var(--fg);font:15px/1.45 system-ui,-apple-system,"Segoe UI",sans-serif}
+.page{max-width:980px;margin:0 auto;padding-block:20px 48px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+h1{font-size:22px;margin:0 0 4px;text-wrap:balance}
+.sous{color:var(--doux);margin:0 0 20px}
+h2{font-size:14px;letter-spacing:.06em;text-transform:uppercase;color:var(--doux);margin:28px 0 10px}
+.grille{display:grid;grid-template-columns:repeat(auto-fill,minmax(340px,1fr));gap:14px}
+.carte{background:var(--carte);border:1px solid var(--ligne);border-radius:12px;overflow:hidden;display:flex;flex-direction:column;min-width:0}
+.carte img{display:block;width:100%;height:340px;object-fit:cover;object-position:top;border-bottom:1px solid var(--ligne)}
+.corps{padding:10px 12px 12px;display:flex;flex-direction:column;gap:6px}
+.corps h3{font-size:16px;margin:0}
+.corps p{margin:0;color:var(--doux)}
+.corps a{color:var(--accent);font-weight:600;text-decoration:none}
+.etat{font-size:14px;font-weight:600}
+.etat.ok{color:var(--ok)}.etat.att{color:var(--att)}
+ul.acc{margin:0;padding:0;list-style:none;display:flex;flex-direction:column;gap:8px}
+ul.acc li{background:var(--carte);border:1px solid var(--ligne);border-radius:10px;padding:10px 12px}
+ul.acc b{display:block}
+ul.acc span{color:var(--doux)}
+</style>
+<div class="page">
+<h1>Travaux de nuit</h1>
+<p class="sous">Nuit du 16 au 17.11. Ce qui est en ligne, ce que le critique a tranché pour toi, les accords à donner.</p>
+<div id="a-choisir" class="carte" style="padding:12px"><b>À choisir ce matin</b><span style="color:var(--doux)">En-tête sobre (s1 ou s4, t1 ou t3), mode graph (g4b, g2b, g3b), gestes du calendrier ; sans réponse, le choix du critique tient.</span></div>
+
+<h2>En ligne cette nuit</h2>
+<div class="grille">
+ <div class="carte"><img style="object-position:center 45%" src="img/port-pastille.webp" alt="Stocks : pastille C et fenêtre réglable au doigt">
+  <div class="corps"><span class="etat ok">En ligne</span><h3>Stocks : pastille C</h3><p>C tel quel. La fenêtre de l'histogramme se règle au doigt (poignées, « jusqu'à S50 »).</p></div></div>
+ <div class="carte"><img src="img/port-calendrier.webp" alt="Onglet Calendrier en ligne">
+  <div class="corps"><span class="etat ok">En ligne, provisoire</span><h3>Onglet Calendrier + fournisseur, suppression, lot</h3><p>Le 6e onglet est là. Son corps n'est pas encore gi2/r2-c : l'assemblage vient après tes choix ci-dessous. « Cette semaine » est trop chargé.</p></div></div>
+</div>
+<p class="sous" style="margin-top:10px">Critique sur chaque port : 6 bloquants corrigés et revus. Build vert, aucun test nouveau en échec. Pas encore joué en ligne : les gestes qui écrivent (sur des « ZZ TEST »).</p>
+
+<h2>À ajuster : le critique a tranché</h2>
+<div class="grille">
+ <div class="carte"><img src="img/entete-s1.webp" alt="En-tête sobre s1">
+  <div class="corps"><span class="etat att">Ton choix</span><h3>En-tête sobre du calendrier</h3><p>Juste quelle info et sa date. Critique : portrait s1 (s4 second), paysage t1 (t3 second).</p><a href="https://claude.ai/artifact/8RuCpADH7fFuYgNyPf53tz">Ouvrir la page</a></div></div>
+ <div class="carte"><img src="img/graph-g4b.webp" alt="Mode graph g4b">
+  <div class="corps"><span class="etat att">Ton choix</span><h3>Mode graph</h3><p>Courbe colorée par événement, frise en bande fine. Critique : g4b (g2b, g3b). Ses étiquettes gardent des montants : à alléger comme s1.</p><a href="https://claude.ai/artifact/EdifyzyYTXsS6aGoPRgwuP">Ouvrir la page</a></div></div>
+ <div class="carte"><img src="img/geste-f1b.webp" alt="Geste f1-b : déplacer">
+  <div class="corps"><span class="etat att">Ton choix</span><h3>Gestes du calendrier</h3><p>Déplacer, allonger, poser, ouvrir, appui long, période. Critique : f1-b, f2-a, f3-a, f3-b, f4-b, f5-b, f6-b, c1-b, c2-b…</p><a href="https://claude.ai/artifact/C6DF63RCtgTF5zp87rFVrf">Ouvrir la page</a></div></div>
+ <div class="carte"><img src="img/carnet.webp" alt="Carnet assemblé">
+  <div class="corps"><span class="etat att">À regarder</span><h3>Carnet ra + p5f assemblé</h3><p>Étape par étape, le meilleur des deux ; joué de zéro, critique corrigée.</p><a href="https://claude.ai/artifact/NkQVVR9yk5MGt7NmaAuuc2">Ouvrir la page</a></div></div>
+ <div class="carte"><img src="img/lien-l9b.webp" alt="Lien L9 b">
+  <div class="corps"><span class="etat ok">Choisi par toi</span><h3>Gestes des liens</h3><p>L9 b+c, L1 a+b, L4 a+b, L29 a, L14 a+b : notés, à porter après le calendrier.</p><a href="https://claude.ai/artifact/GWus9iVdYSBKtM2mBt1kb6">Revoir la page</a></div></div>
+</div>
+<p class="sous" style="margin-top:10px">Aussi : le <a href="https://claude.ai/artifact/CngKmMBWfCm5dDMQBu2t83" style="color:var(--accent)">jouable de tes cinq choix</a>. Un point ouvert : unifier les numéros de lot (B-, L-, « lot 28 »).</p>
+
+<h2>Accords à donner</h2>
+<ul class="acc">
+ <li><b>Pousser et fusionner les ports</b><span>Branche claude/ports-nuit-1611 (déjà en ligne, tag en-ligne/2026-11-17-ports-nuit).</span></li>
+ <li><b>Déployer la fonction du compagnon</b><span>brewerAppScreens : le compagnon connaît l'onglet Calendrier.</span></li>
+ <li><b>Simplicité : règle L9</b><span>Fusion, push et mise en ligne ; deux textes se contredisent, détail dans la session.</span></li>
+ <li><b>Fûts</b><span>La session attend ta réponse.</span></li>
+</ul>
+</div>

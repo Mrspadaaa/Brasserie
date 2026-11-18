@@ -1,0 +1,23 @@
+// TL-27 : « Calcul incomplet : durée d'ébullition » dans Potentiel aromatique de la fiche (RecipePage réelle, recette simulée) ; compte des sections repliées.
+import puppeteer from 'puppeteer-core';
+import { BASE, SORTIE, dormir } from './banc.mjs';
+import path from 'node:path';
+const largeur = Number(process.argv[2] ?? 1280);
+const fixture = process.argv[3] ?? 'demo';
+const browser = await puppeteer.launch({ executablePath: 'C:/Program Files/Google/Chrome/Application/chrome.exe', headless: true });
+const page = await browser.newPage();
+await page.setViewport({ width: largeur, height: 900, deviceScaleFactor: 1 });
+page.setDefaultNavigationTimeout(120000);
+await page.setRequestInterception(true);
+page.on('request', (r) => { const u = r.url(); if (/^(https?|ws)s?:\/\/(localhost|127\.0\.0\.1)/i.test(u) || /^(data|blob|about):/i.test(u)) r.continue(); else r.abort('blockedbyclient'); });
+await page.goto(`${BASE}/work/missions/2026-11-09-levure-port/voies/b-assistant/fiche.html?fixture=${fixture}`, { waitUntil: 'load' });
+await page.waitForFunction(() => /Couleur attendue/.test(document.body.innerText), { timeout: 150000 }).catch(() => {});
+await dormir(1500);
+const n = await page.evaluate(() => ({ summaries: document.querySelectorAll('summary').length, ouvertes: document.querySelectorAll('details[open]').length }));
+console.log('sections (summary) ->', JSON.stringify(n));
+await page.evaluate(() => { const b = [...document.querySelectorAll('summary,button[aria-expanded]')].find((e) => (e.textContent || '').trim().startsWith('Potentiel aromatique')); b?.click(); });
+await dormir(2500);
+const t = await page.evaluate(() => document.body.innerText);
+console.log('potentiel ->', JSON.stringify(t.split('\n').filter((l) => /incomplet|durée d.ébullition|Potentiel|aromatique|Calcul|Simuler/i.test(l)).slice(0, 12)));
+await page.screenshot({ path: path.join(SORTIE, `s17-potentiel-${fixture}-${largeur}.png`), fullPage: true });
+await browser.close();

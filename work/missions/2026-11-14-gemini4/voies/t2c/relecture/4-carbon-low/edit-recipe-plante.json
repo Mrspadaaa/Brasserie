@@ -1,0 +1,20 @@
+{
+ "reglage": "4-carbon@low",
+ "element": "edit-recipe-plante",
+ "cas": "edit-recipe",
+ "type": "plante",
+ "moitie": "choix",
+ "verdict": {
+  "utilisable": true,
+  "approved": false,
+  "proposalApproved": true,
+  "issues": [
+   "Faux enregistrement dans summary : ne pas affirmer « J’ai enregistré l’alpha à 5,2 % dans ta recette », car la modification est uniquement préparée et soumise à validation humaine.",
+   "Contradiction et chiffre inventé dans summary : l'outil calcule 17 IBU après modification (preview.ibu = 17), pas 31 IBU.",
+   "Calcul arithmétique non soutenu par un outil dans why : le chiffre de « 19 » IBU avant modification n'apparaît dans aucune sortie d'outil ; ne citer que les 17 IBU issus du preview de propose_changes ou utiliser un outil de scénario pour comparer l'état initial."
+  ]
+ },
+ "ms": 7738,
+ "coutMicro": 20518,
+ "etat": "STOP"
+}

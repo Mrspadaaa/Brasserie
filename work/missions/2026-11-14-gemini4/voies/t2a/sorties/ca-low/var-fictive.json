@@ -1,0 +1,19 @@
+{
+ "cas": "var-fictive",
+ "usage": "variete",
+ "half": "choix",
+ "cellule": "ca@low",
+ "ok": true,
+ "ms": 12857,
+ "microChf": 7958,
+ "microDecembre": 15915,
+ "entree": 2418,
+ "sortie": 153,
+ "etat": "STOP · ancrage non prouvé",
+ "ancrage": "non prouvé",
+ "note": 1,
+ "utilisable": true,
+ "inventes": 0,
+ "detail": "found false · 0 élément(s) inventé(s)",
+ "reponse": "{\"found\":false,\"source\":\"\",\"name\":\"Affinée Gold\",\"aliases\":[],\"form\":\"unknown\",\"analysis\":[],\"descriptions\":[],\"note\":\"Aucune fiche officielle, publication scientifique ou référence commerciale trouvée pour une variété de houblon nommée « Affinée Gold ».\"}"
+}

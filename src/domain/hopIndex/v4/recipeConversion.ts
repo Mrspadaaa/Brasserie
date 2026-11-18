@@ -19,11 +19,14 @@
 // - l'EBC vient du brouillon, sinon des grains (computeBeerColor) ;
 // - un moment incomplet (durée d'ébullition, de whirlpool ou température de whirlpool absentes) rend l'IBU de l'ajout
 //   inconnu, comme hotBitterness ; une DI d'ébullition inconnue rend l'IBU à chaud de toute la recette inconnu.
-import type { HopIngredient, MaltIngredient, Recipe as RecetteApp, YeastSpec } from '../../../types';
-import { computeBeerColor } from '../../beerColor';
+import type { HopIngredient, Recipe as RecetteApp, YeastSpec } from '../../../types';
+import { recipeBeerColor } from '../../beerColor';
+import { BORNES, frBorne, ogHorsBornes } from '../../bornesMetier';
 import type { RecipeWizardDraft } from '../../../services/recipeDraft';
 import protoData from '../../../data/hopV4/proto-data.json';
+import { varieteProche } from './nomProche';
 import { CATALOGUE, MOMENTS, STOCK, hopRef, yeastInfo, type Addition, type MomentId, type Recipe as RecetteMoteur } from './index';
+import { nombreFr } from '../../../domain/nombreAffiche';
 
 /** Un ajout de houblon du parcours : un Addition du moteur et ce que le parcours règle librement (même forme que
  * `AjoutParcours` de prototypes/houblons-v4/parcours/src/etat/types.ts, qui peut la réexporter d'ici). */
@@ -34,6 +37,8 @@ export interface AjoutParcours extends Addition {
   /** α du lot de la recette (HopIngredient.alpha), en % m/m : null = inconnu ; absent = l'α du stock ou de la plage
    * variétale. Posé par la conversion ; effacé quand le houblon change. */
   alphaLot?: number | null;
+  /** α confirmé par le brasseur (HopIngredient.alphaConfirme) : au-delà de 30 %, l'IBU n'attend plus que si cette valeur diffère de l'α du lot. */
+  alphaConfirme?: number;
   /** Whirlpool : température de contact (°C) de la recette de l'app ; absente = le préréglage du moteur (80 °C). */
   tempC?: number;
   /** Raison pour laquelle le moment de la recette de l'app est incomplet : l'IBU de l'ajout est alors inconnu. */
@@ -75,7 +80,7 @@ export interface LienAjout {
   /** Position dans `recipe.hops` (null : ajout neuf, posé par un outil). */
   index: number | null;
   /** Comment le houblon a été relié à une variété du moteur : l'identifiant de l'index, le nom exact, ou rien. */
-  relie: 'hopVarietyId' | 'nom' | null;
+  relie: 'hopVarietyId' | 'nom' | 'nom proche' | null;
   /** Ce que la conversion a supposé pour cet ajout (moment de dry hop, durée de contact…). */
   suppositions: string[];
 }
@@ -105,12 +110,16 @@ for (const h of CATALOGUE) for (const n of [h.name, ...h.aliases]) if (!PAR_NOM.
 // Styles BJCP du moteur par code, identifiant et nom pliés.
 const STYLES = protoData.styles as unknown as { id: string; code: string; name: string }[];
 
-function cleDe(h: HopIngredient): { cle: string; relie: LienAjout['relie'] } {
+function cleDe(h: HopIngredient): { cle: string; relie: LienAjout['relie']; proche?: string } {
   if (h.hopVarietyId && hopRef(h.hopVarietyId)) return { cle: h.hopVarietyId, relie: 'hopVarietyId' };
   const nom = plier(h.name);
   const cryo = /\bcryo\b/.test(nom);
   const id = PAR_NOM.get(cryo ? nom.split('cryo').join(' ').split('hops').join(' ').replace(/\s+/g, ' ').trim() : nom);
   if (id) return { cle: cryo ? `${id}:cryo` : id, relie: 'nom' };
+  // Faute de frappe ou forme voisine (« Nuget », « Hallertauer Mittelfruh ») : la variété la plus proche, si elle est seule, et dite comme telle (n° 9).
+  // Un brasseur qui a refusé la lecture (hopVarietyId vide, écrit par le geste « Refuser » de la carte) garde sa ligne sans variété : jamais relue une seconde fois.
+  const proche = h.hopVarietyId === '' ? null : varieteProche(nom.split('cryo').join(' ').split('hops').join(' ').replace(/\s+/g, ' ').trim(), CATALOGUE);
+  if (proche) return { cle: cryo ? `${proche.id}:cryo` : proche.id, relie: 'nom proche', proche: proche.nom };
   return { cle: `inconnu:${nom.split(' ').join('-')}`, relie: null };
 }
 
@@ -130,10 +139,13 @@ function styleDe(r: RecetteApp): { code: string; supposition: string | null } {
 const alphaDuLot = (a: number) => (fini(a) && a > 0 && a <= 100 ? a : undefined);
 
 function ajoutDe(h: HopIngredient, i: number, boilMin: number): { ajout: AjoutParcours; lien: LienAjout } {
-  const { cle, relie } = cleDe(h);
+  const { cle, relie, proche } = cleDe(h);
   const suppositions: string[] = [];
-  if (!relie) suppositions.push(`« ${h.name} » n'est relié à aucune variété du moteur (ni hopVarietyId, ni nom exact) : arôme non simulé`);
-  const base: AjoutParcours = { id: idAjout(i), hopKey: cle, moment: 'b60', grams: h.weightG, ...(alphaDuLot(h.alpha) !== undefined ? { alphaLot: alphaDuLot(h.alpha) } : {}) };
+  if (!relie) suppositions.push(`« ${h.name} » n'est relié à aucune variété du moteur (ni hopVarietyId, ni nom exact, aucun nom proche) : arôme non simulé`);
+  if (relie === 'nom proche') suppositions.push(`« ${h.name} » lu comme « ${proche} » (nom très proche, une seule variété) : à confirmer`);
+  const confirme = (h as HopIngredient & { alphaConfirme?: number }).alphaConfirme;
+  const base: AjoutParcours = { id: idAjout(i), hopKey: cle, moment: 'b60', grams: h.weightG, ...(alphaDuLot(h.alpha) !== undefined ? { alphaLot: alphaDuLot(h.alpha) } : {}),
+    ...(fini(confirme) ? { alphaConfirme: confirme } : {}) };
   let ajout: AjoutParcours;
   switch (h.stage) {
     case 'firstWort': ajout = { ...base, moment: 'fwh' }; break;
@@ -164,13 +176,18 @@ function ajoutDe(h: HopIngredient, i: number, boilMin: number): { ajout: AjoutPa
 }
 
 /** Ce que le bandeau lit de l'IBU d'une recette : l'OG (NaN = inconnue) et l'IBU total en plage, avec les ajouts incalculables. */
-export interface MesuresIbu { og: number; ibu: { valeur: number; min: number; max: number; inconnus: string[] } }
+export interface MesuresIbu { og: number; ibu: { valeur: number; min: number; max: number; inconnus: string[]; /** les raisons (distinctes) des ajouts inconnus */ raisons?: string[] } }
 /** Pourquoi le total d'IBU ne se chiffre pas ; null s'il se chiffre. Densité inconnue (recette sans malts) : aucun IBU à
- * chaud ne se calcule, même sans houblon, et le total n'est jamais un 0 (PRODUCT.md : « refuse d'inventer un chiffre »). */
+ * chaud ne se calcule, même sans houblon, et le total n'est jamais un 0 (PRODUCT.md : « refuse d'inventer un chiffre »).
+ * Une OG au-delà des bornes (9 000 kg de grain : DI de 105) n'est pas une densité : « — », jamais « IBU 0 » (RJ-4, 08.11). */
 export function raisonIbuIncalculable(m: MesuresIbu): string | null {
   if (!Number.isFinite(m.og)) return 'densité initiale inconnue : IBU incalculable';
+  if (ogHorsBornes(m.og)) return `densité initiale ${frBorne(m.og, 3)} au-delà de ${frBorne(BORNES.og.max, 3)} : IBU incalculable`;
   const n = m.ibu.inconnus.length;
-  if (n) return `IBU de ${n} ajout${n > 1 ? 's' : ''} incalculable${n > 1 ? 's' : ''}`;
+  if (n) {
+    const pourquoi = m.ibu.raisons?.length ? ` : ${m.ibu.raisons.join(' · ')}` : '';
+    return `IBU de ${n} ajout${n > 1 ? 's' : ''} incalculable${n > 1 ? 's' : ''}${pourquoi}`;
+  }
   return Number.isFinite(m.ibu.valeur) ? null : 'IBU incalculable';
 }
 /** L'IBU du bandeau : « ~7 » quand l'α du lot est absent (plage de la variété, bornes dans `titre`), « 7 » sinon ; `texte` null et
@@ -200,7 +217,7 @@ export function toHopRecipe(app: RecetteApp, options: OptionsConversion = {}): C
   // EBC : celui du brouillon s'il est posé, sinon celui des grains (Morey, comme l'étape Fermentescibles) ; null si une couleur
   // de grain manque (computeBeerColor), jamais 0.
   const ebc = fini(app.colorEbc) ? app.colorEbc
-    : computeBeerColor((app.fermentables ?? []).filter((f) => f.kind === 'grain') as MaltIngredient[], app.volumeL)?.ebc ?? null;
+    : recipeBeerColor(app.fermentables, app.volumeL)?.ebc ?? null;
   const yeastId = app.yeast?.hopIndexId ?? null;
   if (!yeastId) suppositions.push(`levure « ${app.yeast?.name ?? '?'} » sans identifiant de l’index (yeast.hopIndexId) : le moteur suppose US-05 pour l’arôme`);
   const ajouts: Record<string, LienAjout> = {};
@@ -256,7 +273,7 @@ export function versPatch(conv: Conversion, recette: RecetteParcours): { patch: 
 /** Ce que perd une ligne remplacée ou retirée : son lot au stock, son lot de réception et son α. */
 function perdu(h: HopIngredient): string {
   const morceaux = [h.stockItemRef ? `stockItemRef ${h.stockItemRef}` : null, h.hopLotId ? `hopLotId ${h.hopLotId}` : null,
-    fini(h.alpha) && h.alpha > 0 ? `α ${h.alpha} %` : null].filter((x): x is string => !!x);
+    fini(h.alpha) && h.alpha > 0 ? `α ${nombreFr(h.alpha, 1)} %` : null].filter((x): x is string => !!x);
   return morceaux.length ? morceaux.join(', ') : 'aucun lien de lot ni α';
 }
 

@@ -83,7 +83,7 @@ export function alertesDeMateriel(phrases: string[]): string[] {
 
 /** La ligne du résumé replié : « Volumes · 34,7 / 35 L avant ébullition ». Sans le moût d'avant ébullition : le fermenteur. */
 export function resumeVolumes(o: { avantL?: number | null; cuveL?: number; volumeL?: number; capaciteL?: number }): string {
-  if (fini(o.avantL) && o.avantL > 0 && fini(o.cuveL) && o.cuveL > 0) return `Volumes · ${fr(o.avantL)} / ${fr(o.cuveL)} L avant ébullition`;
+  if (fini(o.avantL) && o.avantL > 0 && fini(o.cuveL) && o.cuveL > 0) return `Volumes · ${fr(o.avantL)} / ${fr(o.cuveL)} L à chaud avant ébullition`;
   if (fini(o.volumeL) && o.volumeL > 0 && fini(o.capaciteL) && o.capaciteL > 0) return `Volumes · ${fr(o.volumeL)} / ${fr(o.capaciteL)} L au fermenteur`;
   return 'Volumes';
 }

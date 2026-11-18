@@ -9,7 +9,10 @@ import {
   ReferenceLine
 } from 'recharts';
 import type { Batch } from '../../types';
+import { formatDecimal } from '../../ui/numericInput';
 import { fermentationReadings } from '../../domain/fermentationReadings';
+import { densityAxisDomain } from '../../domain/gravityBounds';
+import { nombreFr } from '../../domain/nombreAffiche';
 
 export function FermentationCurveChart({ batch }: { batch: Batch }) {
   const { points, target, latest, attenuation } = fermentationReadings(batch);
@@ -24,7 +27,7 @@ export function FermentationCurveChart({ batch }: { batch: Batch }) {
           </p>
         </div>
         {latest !== undefined && (
-          <span className="reading text-lg text-hop">{latest.toFixed(3)}</span>
+          <span className="reading text-lg text-hop">{formatDecimal(latest, 3)}</span>
         )}
       </div>
       {points.length ? (
@@ -38,8 +41,8 @@ export function FermentationCurveChart({ batch }: { batch: Batch }) {
               <LineChart data={points} margin={{ left: -15, right: 8, top: 10 }}>
                 <XAxis dataKey="name" tick={{ fill: 'rgb(var(--cave-texte-400))', fontSize: 12 }} />
                 <YAxis
-                  domain={['auto', 'auto']}
-                  tickFormatter={(value: number) => value.toFixed(3)}
+                  domain={densityAxisDomain([...points.map((p) => p.sg), target])}
+                  tickFormatter={(value: number) => formatDecimal(value, 3)}
                   tick={{ fill: 'rgb(var(--cave-texte-400))', fontSize: 12 }}
                 />
                 <Tooltip
@@ -51,8 +54,8 @@ export function FermentationCurveChart({ batch }: { batch: Batch }) {
                           {p.name} · {p.date}
                         </p>
                         <p>
-                          {p.sg.toFixed(3)}
-                          {p.tempC != null ? ` · ${p.tempC} °C` : ''}
+                          {formatDecimal(p.sg, 3)}
+                          {p.tempC != null ? ` · ${nombreFr(p.tempC, 1)} °C` : ''}
                         </p>
                       </div>
                     ) : null;
@@ -93,7 +96,7 @@ export function FermentationCurveChart({ batch }: { batch: Batch }) {
                   <span>
                     {p.name} · {p.date}
                   </span>
-                  <span className="reading">{p.sg.toFixed(3)}</span>
+                  <span className="reading">{formatDecimal(p.sg, 3)}</span>
                 </li>
               ))}
             </ul>
@@ -105,7 +108,7 @@ export function FermentationCurveChart({ batch }: { batch: Batch }) {
         </p>
       )}
       <div className="flex flex-wrap gap-x-4 gap-y-1 text-sm text-cave-400">
-        {target !== undefined && <span>FG cible de la recette : {target.toFixed(3)}</span>}
+        {target !== undefined && <span>FG cible de la recette : {formatDecimal(target, 3)}</span>}
         {attenuation !== undefined && (
           <span>Atténuation apparente : {Math.round(attenuation)} %</span>
         )}

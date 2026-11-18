@@ -1,0 +1,6956 @@
+{
+ "1056": {
+  "total": 1308,
+  "resume": "bière · repères 19 °C · 7 % · proche de 1056 · 1 308",
+  "tapee": "wyeast-1056",
+  "n": 1307,
+  "tete": [
+   "fermentis-us05",
+   "lalbrew-pomona",
+   "lalbrew-verdant-ipa",
+   "wyeast-1084",
+   "lalbrew-novalager",
+   "wyeast-1007",
+   "yeast-yeastflow-yf-101-queen-of-hearts",
+   "wyeast-1275",
+   "white-labs-wlp008",
+   "yeast-fermentis-safale-s-e2-80-9104",
+   "yeast-whc-10292056097107",
+   "wyeast-3739-pc",
+   "white-labs-wlp4000",
+   "yeast-yeastflow-yf-207-witn-a-minute",
+   "yeast-yeastflow-yf-204-priest-dvill",
+   "white-labs-wlp073",
+   "yeast-yeastflow-yf-110-kolschermeister",
+   "white-labs-wlp029",
+   "wyeast-1450",
+   "yeast-whc-9867450941779",
+   "yeast-whc-9378483503443",
+   "white-labs-wlp003",
+   "wyeast-2565",
+   "yeast-yeastflow-yf-114-crazy-hazy",
+   "yeast-yeastflow-yf-116-st-hedwig"
+  ],
+  "empreinte": "fbd2e8f4",
+  "comptes": {
+   "boisson": {
+    "options": [
+     {
+      "valeur": "biere",
+      "libelle": "bière",
+      "n": 1308
+     },
+     {
+      "valeur": "vin",
+      "libelle": "vin",
+      "n": 354
+     },
+     {
+      "valeur": "cidre",
+      "libelle": "cidre · hydromel",
+      "n": 18
+     },
+     {
+      "valeur": "distillerie",
+      "libelle": "distillerie",
+      "n": 45
+     },
+     {
+      "valeur": "autre",
+      "libelle": "autre",
+      "n": 9
+     }
+    ],
+    "nonDocumentees": 0
+   },
+   "famille": {
+    "options": [
+     {
+      "valeur": "ale",
+      "libelle": "ale US · neutre",
+      "n": 369
+     },
+     {
+      "valeur": "anglaise",
+      "libelle": "anglaise",
+      "n": 106
+     },
+     {
+      "valeur": "belge",
+      "libelle": "belge",
+      "n": 86
+     },
+     {
+      "valeur": "saison",
+      "libelle": "saison",
+      "n": 53
+     },
+     {
+      "valeur": "ble",
+      "libelle": "blé",
+      "n": 195
+     },
+     {
+      "valeur": "lager",
+      "libelle": "lager",
+      "n": 180
+     },
+     {
+      "valeur": "kveik",
+      "libelle": "kveik",
+      "n": 55
+     },
+     {
+      "valeur": "brett",
+      "libelle": "Brett",
+      "n": 132
+     },
+     {
+      "valeur": "bacteries",
+      "libelle": "bactéries",
+      "n": 56
+     },
+     {
+      "valeur": "melange",
+      "libelle": "mélange",
+      "n": 76
+     }
+    ],
+    "nonDocumentees": 0
+   },
+   "style": {
+    "options": [
+     {
+      "valeur": "weissbier",
+      "libelle": "Weissbier · Hefeweizen",
+      "n": 5
+     },
+     {
+      "valeur": "witbier",
+      "libelle": "Witbier · blanche belge",
+      "n": 9
+     },
+     {
+      "valeur": "american-wheat",
+      "libelle": "Blé américain",
+      "n": 1
+     },
+     {
+      "valeur": "hazy-ipa",
+      "libelle": "Hazy · NEIPA",
+      "n": 35
+     },
+     {
+      "valeur": "clean-ale",
+      "libelle": "Ale nette · Pale / IPA",
+      "n": 78
+     },
+     {
+      "valeur": "english-ale",
+      "libelle": "Ale anglaise",
+      "n": 12
+     },
+     {
+      "valeur": "lager",
+      "libelle": "Lager",
+      "n": 46
+     },
+     {
+      "valeur": "saison",
+      "libelle": "Saison",
+      "n": 33
+     },
+     {
+      "valeur": "belgian-ale",
+      "libelle": "Ale belge · abbaye",
+      "n": 42
+     },
+     {
+      "valeur": "stout-porter",
+      "libelle": "Stout · Porter",
+      "n": 21
+     },
+     {
+      "valeur": "kolsch-alt",
+      "libelle": "Kölsch · Altbier",
+      "n": 9
+     },
+     {
+      "valeur": "sour",
+      "libelle": "Bières acidulées · fermentations mixtes",
+      "n": 40
+     }
+    ],
+    "nonDocumentees": 1075
+   },
+   "temperature": {
+    "options": [
+     {
+      "valeur": "<15",
+      "libelle": "< 15",
+      "n": 106
+     },
+     {
+      "valeur": "15-18",
+      "libelle": "15–18",
+      "n": 25
+     },
+     {
+      "valeur": "18-22",
+      "libelle": "18–22",
+      "n": 297
+     },
+     {
+      "valeur": "22-26",
+      "libelle": "22–26",
+      "n": 185
+     },
+     {
+      "valeur": ">=26",
+      "libelle": "≥ 26",
+      "n": 87
+     }
+    ],
+    "nonDocumentees": 608
+   },
+   "attenuation": {
+    "options": [
+     {
+      "valeur": "<70",
+      "libelle": "< 70",
+      "n": 37
+     },
+     {
+      "valeur": "70-75",
+      "libelle": "70–75",
+      "n": 184
+     },
+     {
+      "valeur": "75-80",
+      "libelle": "75–80",
+      "n": 381
+     },
+     {
+      "valeur": "80-85",
+      "libelle": "80–85",
+      "n": 172
+     },
+     {
+      "valeur": ">=85",
+      "libelle": "≥ 85",
+      "n": 104
+     }
+    ],
+    "nonDocumentees": 430
+   },
+   "tolerance": {
+    "options": [
+     {
+      "valeur": "<8",
+      "libelle": "< 8",
+      "n": 4
+     },
+     {
+      "valeur": "8-10",
+      "libelle": "8–10",
+      "n": 57
+     },
+     {
+      "valeur": "10-12",
+      "libelle": "10–12",
+      "n": 262
+     },
+     {
+      "valeur": ">=12",
+      "libelle": "≥ 12",
+      "n": 326
+     }
+    ],
+    "nonDocumentees": 659
+   },
+   "effets": {
+    "options": [
+     {
+      "valeur": "esters:plus",
+      "libelle": "Esters · fruité +",
+      "n": 298
+     },
+     {
+      "valeur": "esters:moins",
+      "libelle": "Esters · fruité −",
+      "n": 78
+     },
+     {
+      "valeur": "phenols:plus",
+      "libelle": "Phénols · épicé +",
+      "n": 209
+     },
+     {
+      "valeur": "phenols:moins",
+      "libelle": "Phénols · épicé −",
+      "n": 189
+     },
+     {
+      "valeur": "thiols:plus",
+      "libelle": "Thiols +",
+      "n": 48
+     },
+     {
+      "valeur": "thiols:moins",
+      "libelle": "Thiols −",
+      "n": 37
+     },
+     {
+      "valeur": "terpenes:plus",
+      "libelle": "Terpènes +",
+      "n": 4
+     },
+     {
+      "valeur": "terpenes:moins",
+      "libelle": "Terpènes −",
+      "n": 0
+     }
+    ],
+    "nonDocumentees": 732
+   },
+   "clarte": {
+    "options": [
+     {
+      "valeur": "faible",
+      "libelle": "faible",
+      "n": 197
+     },
+     {
+      "valeur": "moyen",
+      "libelle": "moyen",
+      "n": 576
+     },
+     {
+      "valeur": "eleve",
+      "libelle": "élevé",
+      "n": 110
+     }
+    ],
+    "nonDocumentees": 425
+   },
+   "forme": {
+    "options": [
+     {
+      "valeur": "seche",
+      "libelle": "sèche",
+      "n": 102
+     },
+     {
+      "valeur": "liquide",
+      "libelle": "liquide",
+      "n": 195
+     }
+    ],
+    "nonDocumentees": 1011
+   },
+   "disponibilite": {
+    "options": [
+     {
+      "valeur": "ici",
+      "libelle": "vendue CH · FR · DE",
+      "n": 6
+     },
+     {
+      "valeur": "europe",
+      "libelle": "fabricant présent en Europe",
+      "n": 690
+     },
+     {
+      "valeur": "rare",
+      "libelle": "rare",
+      "n": 612
+     }
+    ],
+    "nonDocumentees": 0
+   },
+   "stock": {
+    "options": [
+     {
+      "valeur": "oui",
+      "libelle": "j’en ai",
+      "n": 0
+     }
+    ],
+    "nonDocumentees": 0
+   },
+   "sansSta1": {
+    "options": [
+     {
+      "valeur": "oui",
+      "libelle": "sans STA1",
+      "n": 428
+     }
+    ],
+    "nonDocumentees": 770
+   },
+   "labo": {
+    "options": [
+     {
+      "valeur": "Bootleg Biology",
+      "libelle": "Bootleg Biology",
+      "n": 98
+     },
+     {
+      "valeur": "Brewferm / Brouwland",
+      "libelle": "Brewferm / Brouwland",
+      "n": 3
+     },
+     {
+      "valeur": "Brewing Science Institute",
+      "libelle": "Brewing Science Institute",
+      "n": 136
+     },
+     {
+      "valeur": "CellarScience",
+      "libelle": "CellarScience",
+      "n": 26
+     },
+     {
+      "valeur": "Doemens",
+      "libelle": "Doemens",
+      "n": 113
+     },
+     {
+      "valeur": "Escarpment Labs",
+      "libelle": "Escarpment Labs",
+      "n": 184
+     },
+     {
+      "valeur": "Fermentis",
+      "libelle": "Fermentis",
+      "n": 27
+     },
+     {
+      "valeur": "Fermentum Mobile",
+      "libelle": "Fermentum Mobile",
+      "n": 29
+     },
+     {
+      "valeur": "Hefebank Weihenstephan",
+      "libelle": "Hefebank Weihenstephan",
+      "n": 122
+     },
+     {
+      "valeur": "Imperial Yeast",
+      "libelle": "Imperial Yeast",
+      "n": 59
+     },
+     {
+      "valeur": "Kveik Yeastery",
+      "libelle": "Kveik Yeastery",
+      "n": 4
+     },
+     {
+      "valeur": "Lallemand Brewing",
+      "libelle": "Lallemand Brewing",
+      "n": 32
+     },
+     {
+      "valeur": "Mangrove Jack’s",
+      "libelle": "Mangrove Jack’s",
+      "n": 17
+     },
+     {
+      "valeur": "Omega Yeast",
+      "libelle": "Omega Yeast",
+      "n": 104
+     },
+     {
+      "valeur": "The Yeast Bay",
+      "libelle": "The Yeast Bay",
+      "n": 4
+     },
+     {
+      "valeur": "VLB Berlin",
+      "libelle": "VLB Berlin",
+      "n": 23
+     },
+     {
+      "valeur": "WHC Lab",
+      "libelle": "WHC Lab",
+      "n": 39
+     },
+     {
+      "valeur": "White Labs",
+      "libelle": "White Labs",
+      "n": 171
+     },
+     {
+      "valeur": "Wyeast",
+      "libelle": "Wyeast",
+      "n": 77
+     },
+     {
+      "valeur": "Yeastflow",
+      "libelle": "Yeastflow",
+      "n": 39
+     }
+    ],
+    "nonDocumentees": 1
+   },
+   "vitesse": {
+    "options": [
+     {
+      "valeur": "faible",
+      "libelle": "faible",
+      "n": 35
+     },
+     {
+      "valeur": "moyen",
+      "libelle": "moyen",
+      "n": 81
+     },
+     {
+      "valeur": "eleve",
+      "libelle": "élevé",
+      "n": 38
+     }
+    ],
+    "nonDocumentees": 1154
+   },
+   "rondeur": {
+    "options": [
+     {
+      "valeur": "faible",
+      "libelle": "faible",
+      "n": 4
+     },
+     {
+      "valeur": "moyen",
+      "libelle": "moyen",
+      "n": 1
+     },
+     {
+      "valeur": "eleve",
+      "libelle": "élevé",
+      "n": 2
+     }
+    ],
+    "nonDocumentees": 1301
+   },
+   "soufre": {
+    "options": [
+     {
+      "valeur": "faible",
+      "libelle": "faible",
+      "n": 1
+     },
+     {
+      "valeur": "moyen",
+      "libelle": "moyen",
+      "n": 0
+     },
+     {
+      "valeur": "eleve",
+      "libelle": "élevé",
+      "n": 0
+     }
+    ],
+    "nonDocumentees": 1307
+   },
+   "nutriments": {
+    "options": [
+     {
+      "valeur": "faible",
+      "libelle": "faible",
+      "n": 0
+     },
+     {
+      "valeur": "moyen",
+      "libelle": "moyen",
+      "n": 1
+     },
+     {
+      "valeur": "eleve",
+      "libelle": "élevé",
+      "n": 0
+     }
+    ],
+    "nonDocumentees": 1307
+   },
+   "sansAlcool": {
+    "options": [
+     {
+      "valeur": "oui",
+      "libelle": "sans alcool",
+      "n": 17
+     }
+    ],
+    "nonDocumentees": 0
+   }
+  }
+ },
+ "repos": {
+  "total": 1308,
+  "resume": "bière · 1 308",
+  "tapee": null,
+  "n": 1308,
+  "tete": [
+   "lalbrew-pomona",
+   "lalbrew-verdant-ipa",
+   "lalbrew-novalager",
+   "fermentis-us05",
+   "wyeast-1084",
+   "wyeast-1007",
+   "yeast-brewferm-20346-brewferm-brewing-yeast-blanche-6-g-html",
+   "yeast-brewferm-20347-brewferm-brewing-yeast-lager-6-g-html",
+   "yeast-brewferm-15660-brewing-yeast-brewferm-top-6-g-html",
+   "yeast-doemens-301",
+   "yeast-doemens-302",
+   "yeast-doemens-304",
+   "yeast-doemens-308",
+   "yeast-doemens-310",
+   "yeast-doemens-312",
+   "yeast-doemens-313",
+   "yeast-doemens-314",
+   "yeast-doemens-316",
+   "yeast-doemens-319",
+   "yeast-doemens-320",
+   "yeast-doemens-323",
+   "yeast-doemens-326",
+   "yeast-doemens-329",
+   "yeast-doemens-330",
+   "yeast-doemens-334"
+  ],
+  "empreinte": "8f369f7e",
+  "comptes": {
+   "boisson": {
+    "options": [
+     {
+      "valeur": "biere",
+      "libelle": "bière",
+      "n": 1308
+     },
+     {
+      "valeur": "vin",
+      "libelle": "vin",
+      "n": 354
+     },
+     {
+      "valeur": "cidre",
+      "libelle": "cidre · hydromel",
+      "n": 18
+     },
+     {
+      "valeur": "distillerie",
+      "libelle": "distillerie",
+      "n": 45
+     },
+     {
+      "valeur": "autre",
+      "libelle": "autre",
+      "n": 9
+     }
+    ],
+    "nonDocumentees": 0
+   },
+   "famille": {
+    "options": [
+     {
+      "valeur": "ale",
+      "libelle": "ale US · neutre",
+      "n": 369
+     },
+     {
+      "valeur": "anglaise",
+      "libelle": "anglaise",
+      "n": 106
+     },
+     {
+      "valeur": "belge",
+      "libelle": "belge",
+      "n": 86
+     },
+     {
+      "valeur": "saison",
+      "libelle": "saison",
+      "n": 53
+     },
+     {
+      "valeur": "ble",
+      "libelle": "blé",
+      "n": 195
+     },
+     {
+      "valeur": "lager",
+      "libelle": "lager",
+      "n": 180
+     },
+     {
+      "valeur": "kveik",
+      "libelle": "kveik",
+      "n": 55
+     },
+     {
+      "valeur": "brett",
+      "libelle": "Brett",
+      "n": 132
+     },
+     {
+      "valeur": "bacteries",
+      "libelle": "bactéries",
+      "n": 56
+     },
+     {
+      "valeur": "melange",
+      "libelle": "mélange",
+      "n": 76
+     }
+    ],
+    "nonDocumentees": 0
+   },
+   "style": {
+    "options": [
+     {
+      "valeur": "weissbier",
+      "libelle": "Weissbier · Hefeweizen",
+      "n": 5
+     },
+     {
+      "valeur": "witbier",
+      "libelle": "Witbier · blanche belge",
+      "n": 9
+     },
+     {
+      "valeur": "american-wheat",
+      "libelle": "Blé américain",
+      "n": 1
+     },
+     {
+      "valeur": "hazy-ipa",
+      "libelle": "Hazy · NEIPA",
+      "n": 35
+     },
+     {
+      "valeur": "clean-ale",
+      "libelle": "Ale nette · Pale / IPA",
+      "n": 78
+     },
+     {
+      "valeur": "english-ale",
+      "libelle": "Ale anglaise",
+      "n": 12
+     },
+     {
+      "valeur": "lager",
+      "libelle": "Lager",
+      "n": 46
+     },
+     {
+      "valeur": "saison",
+      "libelle": "Saison",
+      "n": 33
+     },
+     {
+      "valeur": "belgian-ale",
+      "libelle": "Ale belge · abbaye",
+      "n": 42
+     },
+     {
+      "valeur": "stout-porter",
+      "libelle": "Stout · Porter",
+      "n": 21
+     },
+     {
+      "valeur": "kolsch-alt",
+      "libelle": "Kölsch · Altbier",
+      "n": 9
+     },
+     {
+      "valeur": "sour",
+      "libelle": "Bières acidulées · fermentations mixtes",
+      "n": 40
+     }
+    ],
+    "nonDocumentees": 1075
+   },
+   "temperature": {
+    "options": [
+     {
+      "valeur": "<15",
+      "libelle": "< 15",
+      "n": 106
+     },
+     {
+      "valeur": "15-18",
+      "libelle": "15–18",
+      "n": 25
+     },
+     {
+      "valeur": "18-22",
+      "libelle": "18–22",
+      "n": 297
+     },
+     {
+      "valeur": "22-26",
+      "libelle": "22–26",
+      "n": 185
+     },
+     {
+      "valeur": ">=26",
+      "libelle": "≥ 26",
+      "n": 87
+     }
+    ],
+    "nonDocumentees": 608
+   },
+   "attenuation": {
+    "options": [
+     {
+      "valeur": "<70",
+      "libelle": "< 70",
+      "n": 37
+     },
+     {
+      "valeur": "70-75",
+      "libelle": "70–75",
+      "n": 184
+     },
+     {
+      "valeur": "75-80",
+      "libelle": "75–80",
+      "n": 381
+     },
+     {
+      "valeur": "80-85",
+      "libelle": "80–85",
+      "n": 172
+     },
+     {
+      "valeur": ">=85",
+      "libelle": "≥ 85",
+      "n": 104
+     }
+    ],
+    "nonDocumentees": 430
+   },
+   "tolerance": {
+    "options": [
+     {
+      "valeur": "<8",
+      "libelle": "< 8",
+      "n": 4
+     },
+     {
+      "valeur": "8-10",
+      "libelle": "8–10",
+      "n": 57
+     },
+     {
+      "valeur": "10-12",
+      "libelle": "10–12",
+      "n": 262
+     },
+     {
+      "valeur": ">=12",
+      "libelle": "≥ 12",
+      "n": 326
+     }
+    ],
+    "nonDocumentees": 659
+   },
+   "effets": {
+    "options": [
+     {
+      "valeur": "esters:plus",
+      "libelle": "Esters · fruité +",
+      "n": 298
+     },
+     {
+      "valeur": "esters:moins",
+      "libelle": "Esters · fruité −",
+      "n": 78
+     },
+     {
+      "valeur": "phenols:plus",
+      "libelle": "Phénols · épicé +",
+      "n": 209
+     },
+     {
+      "valeur": "phenols:moins",
+      "libelle": "Phénols · épicé −",
+      "n": 189
+     },
+     {
+      "valeur": "thiols:plus",
+      "libelle": "Thiols +",
+      "n": 48
+     },
+     {
+      "valeur": "thiols:moins",
+      "libelle": "Thiols −",
+      "n": 37
+     },
+     {
+      "valeur": "terpenes:plus",
+      "libelle": "Terpènes +",
+      "n": 4
+     },
+     {
+      "valeur": "terpenes:moins",
+      "libelle": "Terpènes −",
+      "n": 0
+     }
+    ],
+    "nonDocumentees": 732
+   },
+   "clarte": {
+    "options": [
+     {
+      "valeur": "faible",
+      "libelle": "faible",
+      "n": 197
+     },
+     {
+      "valeur": "moyen",
+      "libelle": "moyen",
+      "n": 576
+     },
+     {
+      "valeur": "eleve",
+      "libelle": "élevé",
+      "n": 110
+     }
+    ],
+    "nonDocumentees": 425
+   },
+   "forme": {
+    "options": [
+     {
+      "valeur": "seche",
+      "libelle": "sèche",
+      "n": 102
+     },
+     {
+      "valeur": "liquide",
+      "libelle": "liquide",
+      "n": 195
+     }
+    ],
+    "nonDocumentees": 1011
+   },
+   "disponibilite": {
+    "options": [
+     {
+      "valeur": "ici",
+      "libelle": "vendue CH · FR · DE",
+      "n": 6
+     },
+     {
+      "valeur": "europe",
+      "libelle": "fabricant présent en Europe",
+      "n": 690
+     },
+     {
+      "valeur": "rare",
+      "libelle": "rare",
+      "n": 612
+     }
+    ],
+    "nonDocumentees": 0
+   },
+   "stock": {
+    "options": [
+     {
+      "valeur": "oui",
+      "libelle": "j’en ai",
+      "n": 0
+     }
+    ],
+    "nonDocumentees": 0
+   },
+   "sansSta1": {
+    "options": [
+     {
+      "valeur": "oui",
+      "libelle": "sans STA1",
+      "n": 428
+     }
+    ],
+    "nonDocumentees": 770
+   },
+   "labo": {
+    "options": [
+     {
+      "valeur": "Bootleg Biology",
+      "libelle": "Bootleg Biology",
+      "n": 98
+     },
+     {
+      "valeur": "Brewferm / Brouwland",
+      "libelle": "Brewferm / Brouwland",
+      "n": 3
+     },
+     {
+      "valeur": "Brewing Science Institute",
+      "libelle": "Brewing Science Institute",
+      "n": 136
+     },
+     {
+      "valeur": "CellarScience",
+      "libelle": "CellarScience",
+      "n": 26
+     },
+     {
+      "valeur": "Doemens",
+      "libelle": "Doemens",
+      "n": 113
+     },
+     {
+      "valeur": "Escarpment Labs",
+      "libelle": "Escarpment Labs",
+      "n": 184
+     },
+     {
+      "valeur": "Fermentis",
+      "libelle": "Fermentis",
+      "n": 27
+     },
+     {
+      "valeur": "Fermentum Mobile",
+      "libelle": "Fermentum Mobile",
+      "n": 29
+     },
+     {
+      "valeur": "Hefebank Weihenstephan",
+      "libelle": "Hefebank Weihenstephan",
+      "n": 122
+     },
+     {
+      "valeur": "Imperial Yeast",
+      "libelle": "Imperial Yeast",
+      "n": 59
+     },
+     {
+      "valeur": "Kveik Yeastery",
+      "libelle": "Kveik Yeastery",
+      "n": 4
+     },
+     {
+      "valeur": "Lallemand Brewing",
+      "libelle": "Lallemand Brewing",
+      "n": 32
+     },
+     {
+      "valeur": "Mangrove Jack’s",
+      "libelle": "Mangrove Jack’s",
+      "n": 17
+     },
+     {
+      "valeur": "Omega Yeast",
+      "libelle": "Omega Yeast",
+      "n": 104
+     },
+     {
+      "valeur": "The Yeast Bay",
+      "libelle": "The Yeast Bay",
+      "n": 4
+     },
+     {
+      "valeur": "VLB Berlin",
+      "libelle": "VLB Berlin",
+      "n": 23
+     },
+     {
+      "valeur": "WHC Lab",
+      "libelle": "WHC Lab",
+      "n": 39
+     },
+     {
+      "valeur": "White Labs",
+      "libelle": "White Labs",
+      "n": 171
+     },
+     {
+      "valeur": "Wyeast",
+      "libelle": "Wyeast",
+      "n": 77
+     },
+     {
+      "valeur": "Yeastflow",
+      "libelle": "Yeastflow",
+      "n": 39
+     }
+    ],
+    "nonDocumentees": 1
+   },
+   "vitesse": {
+    "options": [
+     {
+      "valeur": "faible",
+      "libelle": "faible",
+      "n": 35
+     },
+     {
+      "valeur": "moyen",
+      "libelle": "moyen",
+      "n": 81
+     },
+     {
+      "valeur": "eleve",
+      "libelle": "élevé",
+      "n": 38
+     }
+    ],
+    "nonDocumentees": 1154
+   },
+   "rondeur": {
+    "options": [
+     {
+      "valeur": "faible",
+      "libelle": "faible",
+      "n": 4
+     },
+     {
+      "valeur": "moyen",
+      "libelle": "moyen",
+      "n": 1
+     },
+     {
+      "valeur": "eleve",
+      "libelle": "élevé",
+      "n": 2
+     }
+    ],
+    "nonDocumentees": 1301
+   },
+   "soufre": {
+    "options": [
+     {
+      "valeur": "faible",
+      "libelle": "faible",
+      "n": 1
+     },
+     {
+      "valeur": "moyen",
+      "libelle": "moyen",
+      "n": 0
+     },
+     {
+      "valeur": "eleve",
+      "libelle": "élevé",
+      "n": 0
+     }
+    ],
+    "nonDocumentees": 1307
+   },
+   "nutriments": {
+    "options": [
+     {
+      "valeur": "faible",
+      "libelle": "faible",
+      "n": 0
+     },
+     {
+      "valeur": "moyen",
+      "libelle": "moyen",
+      "n": 1
+     },
+     {
+      "valeur": "eleve",
+      "libelle": "élevé",
+      "n": 0
+     }
+    ],
+    "nonDocumentees": 1307
+   },
+   "sansAlcool": {
+    "options": [
+     {
+      "valeur": "oui",
+      "libelle": "sans alcool",
+      "n": 17
+     }
+    ],
+    "nonDocumentees": 0
+   }
+  }
+ },
+ "repos-reperes": {
+  "total": 1308,
+  "resume": "bière · repères 19 °C · 7 % · 1 308",
+  "tapee": null,
+  "n": 1308,
+  "tete": [
+   "lalbrew-pomona",
+   "lalbrew-verdant-ipa",
+   "lalbrew-novalager",
+   "fermentis-us05",
+   "wyeast-1084",
+   "wyeast-1007",
+   "yeast-brewferm-20346-brewferm-brewing-yeast-blanche-6-g-html",
+   "yeast-brewferm-15660-brewing-yeast-brewferm-top-6-g-html",
+   "yeast-fermentis-safale-be-e2-80-91256",
+   "yeast-fermentis-safale-be-134",
+   "yeast-fermentis-safale-bw-e2-80-9120",
+   "yeast-fermentis-safale-f-e2-80-912",
+   "yeast-fermentis-safale-k-e2-80-9197",
+   "yeast-fermentis-safale-s-e2-80-9104",
+   "yeast-fermentis-safale-s-e2-80-9133",
+   "yeast-fermentis-safale-t-e2-80-9158",
+   "yeast-fermentis-safale-wb-06",
+   "yeast-fermentis-safbrew-br-e2-80-918",
+   "yeast-fermentis-safbrew-la-01",
+   "yeast-fermentis-safbrew-ld-e2-80-9120",
+   "yeast-fermentis-safsour-barrel-instinct",
+   "yeast-fermentis-safsour-fruit-intuition",
+   "fermentis-w68",
+   "yeast-weihenstephan-w-127",
+   "yeast-weihenstephan-w-362"
+  ],
+  "empreinte": "63f1ddec",
+  "comptes": {
+   "boisson": {
+    "options": [
+     {
+      "valeur": "biere",
+      "libelle": "bière",
+      "n": 1308
+     },
+     {
+      "valeur": "vin",
+      "libelle": "vin",
+      "n": 354
+     },
+     {
+      "valeur": "cidre",
+      "libelle": "cidre · hydromel",
+      "n": 18
+     },
+     {
+      "valeur": "distillerie",
+      "libelle": "distillerie",
+      "n": 45
+     },
+     {
+      "valeur": "autre",
+      "libelle": "autre",
+      "n": 9
+     }
+    ],
+    "nonDocumentees": 0
+   },
+   "famille": {
+    "options": [
+     {
+      "valeur": "ale",
+      "libelle": "ale US · neutre",
+      "n": 369
+     },
+     {
+      "valeur": "anglaise",
+      "libelle": "anglaise",
+      "n": 106
+     },
+     {
+      "valeur": "belge",
+      "libelle": "belge",
+      "n": 86
+     },
+     {
+      "valeur": "saison",
+      "libelle": "saison",
+      "n": 53
+     },
+     {
+      "valeur": "ble",
+      "libelle": "blé",
+      "n": 195
+     },
+     {
+      "valeur": "lager",
+      "libelle": "lager",
+      "n": 180
+     },
+     {
+      "valeur": "kveik",
+      "libelle": "kveik",
+      "n": 55
+     },
+     {
+      "valeur": "brett",
+      "libelle": "Brett",
+      "n": 132
+     },
+     {
+      "valeur": "bacteries",
+      "libelle": "bactéries",
+      "n": 56
+     },
+     {
+      "valeur": "melange",
+      "libelle": "mélange",
+      "n": 76
+     }
+    ],
+    "nonDocumentees": 0
+   },
+   "style": {
+    "options": [
+     {
+      "valeur": "weissbier",
+      "libelle": "Weissbier · Hefeweizen",
+      "n": 5
+     },
+     {
+      "valeur": "witbier",
+      "libelle": "Witbier · blanche belge",
+      "n": 9
+     },
+     {
+      "valeur": "american-wheat",
+      "libelle": "Blé américain",
+      "n": 1
+     },
+     {
+      "valeur": "hazy-ipa",
+      "libelle": "Hazy · NEIPA",
+      "n": 35
+     },
+     {
+      "valeur": "clean-ale",
+      "libelle": "Ale nette · Pale / IPA",
+      "n": 78
+     },
+     {
+      "valeur": "english-ale",
+      "libelle": "Ale anglaise",
+      "n": 12
+     },
+     {
+      "valeur": "lager",
+      "libelle": "Lager",
+      "n": 46
+     },
+     {
+      "valeur": "saison",
+      "libelle": "Saison",
+      "n": 33
+     },
+     {
+      "valeur": "belgian-ale",
+      "libelle": "Ale belge · abbaye",
+      "n": 42
+     },
+     {
+      "valeur": "stout-porter",
+      "libelle": "Stout · Porter",
+      "n": 21
+     },
+     {
+      "valeur": "kolsch-alt",
+      "libelle": "Kölsch · Altbier",
+      "n": 9
+     },
+     {
+      "valeur": "sour",
+      "libelle": "Bières acidulées · fermentations mixtes",
+      "n": 40
+     }
+    ],
+    "nonDocumentees": 1075
+   },
+   "temperature": {
+    "options": [
+     {
+      "valeur": "<15",
+      "libelle": "< 15",
+      "n": 106
+     },
+     {
+      "valeur": "15-18",
+      "libelle": "15–18",
+      "n": 25
+     },
+     {
+      "valeur": "18-22",
+      "libelle": "18–22",
+      "n": 297
+     },
+     {
+      "valeur": "22-26",
+      "libelle": "22–26",
+      "n": 185
+     },
+     {
+      "valeur": ">=26",
+      "libelle": "≥ 26",
+      "n": 87
+     }
+    ],
+    "nonDocumentees": 608
+   },
+   "attenuation": {
+    "options": [
+     {
+      "valeur": "<70",
+      "libelle": "< 70",
+      "n": 37
+     },
+     {
+      "valeur": "70-75",
+      "libelle": "70–75",
+      "n": 184
+     },
+     {
+      "valeur": "75-80",
+      "libelle": "75–80",
+      "n": 381
+     },
+     {
+      "valeur": "80-85",
+      "libelle": "80–85",
+      "n": 172
+     },
+     {
+      "valeur": ">=85",
+      "libelle": "≥ 85",
+      "n": 104
+     }
+    ],
+    "nonDocumentees": 430
+   },
+   "tolerance": {
+    "options": [
+     {
+      "valeur": "<8",
+      "libelle": "< 8",
+      "n": 4
+     },
+     {
+      "valeur": "8-10",
+      "libelle": "8–10",
+      "n": 57
+     },
+     {
+      "valeur": "10-12",
+      "libelle": "10–12",
+      "n": 262
+     },
+     {
+      "valeur": ">=12",
+      "libelle": "≥ 12",
+      "n": 326
+     }
+    ],
+    "nonDocumentees": 659
+   },
+   "effets": {
+    "options": [
+     {
+      "valeur": "esters:plus",
+      "libelle": "Esters · fruité +",
+      "n": 298
+     },
+     {
+      "valeur": "esters:moins",
+      "libelle": "Esters · fruité −",
+      "n": 78
+     },
+     {
+      "valeur": "phenols:plus",
+      "libelle": "Phénols · épicé +",
+      "n": 209
+     },
+     {
+      "valeur": "phenols:moins",
+      "libelle": "Phénols · épicé −",
+      "n": 189
+     },
+     {
+      "valeur": "thiols:plus",
+      "libelle": "Thiols +",
+      "n": 48
+     },
+     {
+      "valeur": "thiols:moins",
+      "libelle": "Thiols −",
+      "n": 37
+     },
+     {
+      "valeur": "terpenes:plus",
+      "libelle": "Terpènes +",
+      "n": 4
+     },
+     {
+      "valeur": "terpenes:moins",
+      "libelle": "Terpènes −",
+      "n": 0
+     }
+    ],
+    "nonDocumentees": 732
+   },
+   "clarte": {
+    "options": [
+     {
+      "valeur": "faible",
+      "libelle": "faible",
+      "n": 197
+     },
+     {
+      "valeur": "moyen",
+      "libelle": "moyen",
+      "n": 576
+     },
+     {
+      "valeur": "eleve",
+      "libelle": "élevé",
+      "n": 110
+     }
+    ],
+    "nonDocumentees": 425
+   },
+   "forme": {
+    "options": [
+     {
+      "valeur": "seche",
+      "libelle": "sèche",
+      "n": 102
+     },
+     {
+      "valeur": "liquide",
+      "libelle": "liquide",
+      "n": 195
+     }
+    ],
+    "nonDocumentees": 1011
+   },
+   "disponibilite": {
+    "options": [
+     {
+      "valeur": "ici",
+      "libelle": "vendue CH · FR · DE",
+      "n": 6
+     },
+     {
+      "valeur": "europe",
+      "libelle": "fabricant présent en Europe",
+      "n": 690
+     },
+     {
+      "valeur": "rare",
+      "libelle": "rare",
+      "n": 612
+     }
+    ],
+    "nonDocumentees": 0
+   },
+   "stock": {
+    "options": [
+     {
+      "valeur": "oui",
+      "libelle": "j’en ai",
+      "n": 0
+     }
+    ],
+    "nonDocumentees": 0
+   },
+   "sansSta1": {
+    "options": [
+     {
+      "valeur": "oui",
+      "libelle": "sans STA1",
+      "n": 428
+     }
+    ],
+    "nonDocumentees": 770
+   },
+   "labo": {
+    "options": [
+     {
+      "valeur": "Bootleg Biology",
+      "libelle": "Bootleg Biology",
+      "n": 98
+     },
+     {
+      "valeur": "Brewferm / Brouwland",
+      "libelle": "Brewferm / Brouwland",
+      "n": 3
+     },
+     {
+      "valeur": "Brewing Science Institute",
+      "libelle": "Brewing Science Institute",
+      "n": 136
+     },
+     {
+      "valeur": "CellarScience",
+      "libelle": "CellarScience",
+      "n": 26
+     },
+     {
+      "valeur": "Doemens",
+      "libelle": "Doemens",
+      "n": 113
+     },
+     {
+      "valeur": "Escarpment Labs",
+      "libelle": "Escarpment Labs",
+      "n": 184
+     },
+     {
+      "valeur": "Fermentis",
+      "libelle": "Fermentis",
+      "n": 27
+     },
+     {
+      "valeur": "Fermentum Mobile",
+      "libelle": "Fermentum Mobile",
+      "n": 29
+     },
+     {
+      "valeur": "Hefebank Weihenstephan",
+      "libelle": "Hefebank Weihenstephan",
+      "n": 122
+     },
+     {
+      "valeur": "Imperial Yeast",
+      "libelle": "Imperial Yeast",
+      "n": 59
+     },
+     {
+      "valeur": "Kveik Yeastery",
+      "libelle": "Kveik Yeastery",
+      "n": 4
+     },
+     {
+      "valeur": "Lallemand Brewing",
+      "libelle": "Lallemand Brewing",
+      "n": 32
+     },
+     {
+      "valeur": "Mangrove Jack’s",
+      "libelle": "Mangrove Jack’s",
+      "n": 17
+     },
+     {
+      "valeur": "Omega Yeast",
+      "libelle": "Omega Yeast",
+      "n": 104
+     },
+     {
+      "valeur": "The Yeast Bay",
+      "libelle": "The Yeast Bay",
+      "n": 4
+     },
+     {
+      "valeur": "VLB Berlin",
+      "libelle": "VLB Berlin",
+      "n": 23
+     },
+     {
+      "valeur": "WHC Lab",
+      "libelle": "WHC Lab",
+      "n": 39
+     },
+     {
+      "valeur": "White Labs",
+      "libelle": "White Labs",
+      "n": 171
+     },
+     {
+      "valeur": "Wyeast",
+      "libelle": "Wyeast",
+      "n": 77
+     },
+     {
+      "valeur": "Yeastflow",
+      "libelle": "Yeastflow",
+      "n": 39
+     }
+    ],
+    "nonDocumentees": 1
+   },
+   "vitesse": {
+    "options": [
+     {
+      "valeur": "faible",
+      "libelle": "faible",
+      "n": 35
+     },
+     {
+      "valeur": "moyen",
+      "libelle": "moyen",
+      "n": 81
+     },
+     {
+      "valeur": "eleve",
+      "libelle": "élevé",
+      "n": 38
+     }
+    ],
+    "nonDocumentees": 1154
+   },
+   "rondeur": {
+    "options": [
+     {
+      "valeur": "faible",
+      "libelle": "faible",
+      "n": 4
+     },
+     {
+      "valeur": "moyen",
+      "libelle": "moyen",
+      "n": 1
+     },
+     {
+      "valeur": "eleve",
+      "libelle": "élevé",
+      "n": 2
+     }
+    ],
+    "nonDocumentees": 1301
+   },
+   "soufre": {
+    "options": [
+     {
+      "valeur": "faible",
+      "libelle": "faible",
+      "n": 1
+     },
+     {
+      "valeur": "moyen",
+      "libelle": "moyen",
+      "n": 0
+     },
+     {
+      "valeur": "eleve",
+      "libelle": "élevé",
+      "n": 0
+     }
+    ],
+    "nonDocumentees": 1307
+   },
+   "nutriments": {
+    "options": [
+     {
+      "valeur": "faible",
+      "libelle": "faible",
+      "n": 0
+     },
+     {
+      "valeur": "moyen",
+      "libelle": "moyen",
+      "n": 1
+     },
+     {
+      "valeur": "eleve",
+      "libelle": "élevé",
+      "n": 0
+     }
+    ],
+    "nonDocumentees": 1307
+   },
+   "sansAlcool": {
+    "options": [
+     {
+      "valeur": "oui",
+      "libelle": "sans alcool",
+      "n": 17
+     }
+    ],
+    "nonDocumentees": 0
+   }
+  }
+ },
+ "us-05": {
+  "total": 1308,
+  "resume": "bière · proche de SafAle US-05 (Fermentis) · 1 308",
+  "tapee": "fermentis-us05",
+  "n": 1307,
+  "tete": [
+   "lalbrew-verdant-ipa",
+   "lalbrew-pomona",
+   "lalbrew-novalager",
+   "wyeast-1084",
+   "wyeast-1007",
+   "yeast-fermentis-safbrew-la-02",
+   "yeast-yeastflow-yf-205-holy-colibate",
+   "yeast-yeastflow-yf-501-kingster",
+   "yeast-fermentis-safbrew-la-01",
+   "yeast-lallemand-brewing-18621-06-13",
+   "yeast-lallemand-brewing-18621-93-13",
+   "yeast-yeastflow-yf-201-st-colibate",
+   "yeast-lallemand-brewing-10372-77-11",
+   "white-labs-wlp4000",
+   "yeast-yeastflow-yf-112-vermonter",
+   "yeast-yeastflow-yf-203-father-tibi",
+   "white-labs-wlp001",
+   "yeast-yeastflow-yf-202-priest-dvel",
+   "white-labs-wlp090",
+   "lalbrew-new-england",
+   "yeast-whc-10292056097107",
+   "yeast-yeastflow-yf-204-priest-dvill",
+   "white-labs-wlp073",
+   "white-labs-wlp095",
+   "white-labs-wlp4040"
+  ],
+  "empreinte": "c84c933b",
+  "comptes": {
+   "boisson": {
+    "options": [
+     {
+      "valeur": "biere",
+      "libelle": "bière",
+      "n": 1308
+     },
+     {
+      "valeur": "vin",
+      "libelle": "vin",
+      "n": 354
+     },
+     {
+      "valeur": "cidre",
+      "libelle": "cidre · hydromel",
+      "n": 18
+     },
+     {
+      "valeur": "distillerie",
+      "libelle": "distillerie",
+      "n": 45
+     },
+     {
+      "valeur": "autre",
+      "libelle": "autre",
+      "n": 9
+     }
+    ],
+    "nonDocumentees": 0
+   },
+   "famille": {
+    "options": [
+     {
+      "valeur": "ale",
+      "libelle": "ale US · neutre",
+      "n": 369
+     },
+     {
+      "valeur": "anglaise",
+      "libelle": "anglaise",
+      "n": 106
+     },
+     {
+      "valeur": "belge",
+      "libelle": "belge",
+      "n": 86
+     },
+     {
+      "valeur": "saison",
+      "libelle": "saison",
+      "n": 53
+     },
+     {
+      "valeur": "ble",
+      "libelle": "blé",
+      "n": 195
+     },
+     {
+      "valeur": "lager",
+      "libelle": "lager",
+      "n": 180
+     },
+     {
+      "valeur": "kveik",
+      "libelle": "kveik",
+      "n": 55
+     },
+     {
+      "valeur": "brett",
+      "libelle": "Brett",
+      "n": 132
+     },
+     {
+      "valeur": "bacteries",
+      "libelle": "bactéries",
+      "n": 56
+     },
+     {
+      "valeur": "melange",
+      "libelle": "mélange",
+      "n": 76
+     }
+    ],
+    "nonDocumentees": 0
+   },
+   "style": {
+    "options": [
+     {
+      "valeur": "weissbier",
+      "libelle": "Weissbier · Hefeweizen",
+      "n": 5
+     },
+     {
+      "valeur": "witbier",
+      "libelle": "Witbier · blanche belge",
+      "n": 9
+     },
+     {
+      "valeur": "american-wheat",
+      "libelle": "Blé américain",
+      "n": 1
+     },
+     {
+      "valeur": "hazy-ipa",
+      "libelle": "Hazy · NEIPA",
+      "n": 35
+     },
+     {
+      "valeur": "clean-ale",
+      "libelle": "Ale nette · Pale / IPA",
+      "n": 78
+     },
+     {
+      "valeur": "english-ale",
+      "libelle": "Ale anglaise",
+      "n": 12
+     },
+     {
+      "valeur": "lager",
+      "libelle": "Lager",
+      "n": 46
+     },
+     {
+      "valeur": "saison",
+      "libelle": "Saison",
+      "n": 33
+     },
+     {
+      "valeur": "belgian-ale",
+      "libelle": "Ale belge · abbaye",
+      "n": 42
+     },
+     {
+      "valeur": "stout-porter",
+      "libelle": "Stout · Porter",
+      "n": 21
+     },
+     {
+      "valeur": "kolsch-alt",
+      "libelle": "Kölsch · Altbier",
+      "n": 9
+     },
+     {
+      "valeur": "sour",
+      "libelle": "Bières acidulées · fermentations mixtes",
+      "n": 40
+     }
+    ],
+    "nonDocumentees": 1075
+   },
+   "temperature": {
+    "options": [
+     {
+      "valeur": "<15",
+      "libelle": "< 15",
+      "n": 106
+     },
+     {
+      "valeur": "15-18",
+      "libelle": "15–18",
+      "n": 25
+     },
+     {
+      "valeur": "18-22",
+      "libelle": "18–22",
+      "n": 297
+     },
+     {
+      "valeur": "22-26",
+      "libelle": "22–26",
+      "n": 185
+     },
+     {
+      "valeur": ">=26",
+      "libelle": "≥ 26",
+      "n": 87
+     }
+    ],
+    "nonDocumentees": 608
+   },
+   "attenuation": {
+    "options": [
+     {
+      "valeur": "<70",
+      "libelle": "< 70",
+      "n": 37
+     },
+     {
+      "valeur": "70-75",
+      "libelle": "70–75",
+      "n": 184
+     },
+     {
+      "valeur": "75-80",
+      "libelle": "75–80",
+      "n": 381
+     },
+     {
+      "valeur": "80-85",
+      "libelle": "80–85",
+      "n": 172
+     },
+     {
+      "valeur": ">=85",
+      "libelle": "≥ 85",
+      "n": 104
+     }
+    ],
+    "nonDocumentees": 430
+   },
+   "tolerance": {
+    "options": [
+     {
+      "valeur": "<8",
+      "libelle": "< 8",
+      "n": 4
+     },
+     {
+      "valeur": "8-10",
+      "libelle": "8–10",
+      "n": 57
+     },
+     {
+      "valeur": "10-12",
+      "libelle": "10–12",
+      "n": 262
+     },
+     {
+      "valeur": ">=12",
+      "libelle": "≥ 12",
+      "n": 326
+     }
+    ],
+    "nonDocumentees": 659
+   },
+   "effets": {
+    "options": [
+     {
+      "valeur": "esters:plus",
+      "libelle": "Esters · fruité +",
+      "n": 298
+     },
+     {
+      "valeur": "esters:moins",
+      "libelle": "Esters · fruité −",
+      "n": 78
+     },
+     {
+      "valeur": "phenols:plus",
+      "libelle": "Phénols · épicé +",
+      "n": 209
+     },
+     {
+      "valeur": "phenols:moins",
+      "libelle": "Phénols · épicé −",
+      "n": 189
+     },
+     {
+      "valeur": "thiols:plus",
+      "libelle": "Thiols +",
+      "n": 48
+     },
+     {
+      "valeur": "thiols:moins",
+      "libelle": "Thiols −",
+      "n": 37
+     },
+     {
+      "valeur": "terpenes:plus",
+      "libelle": "Terpènes +",
+      "n": 4
+     },
+     {
+      "valeur": "terpenes:moins",
+      "libelle": "Terpènes −",
+      "n": 0
+     }
+    ],
+    "nonDocumentees": 732
+   },
+   "clarte": {
+    "options": [
+     {
+      "valeur": "faible",
+      "libelle": "faible",
+      "n": 197
+     },
+     {
+      "valeur": "moyen",
+      "libelle": "moyen",
+      "n": 576
+     },
+     {
+      "valeur": "eleve",
+      "libelle": "élevé",
+      "n": 110
+     }
+    ],
+    "nonDocumentees": 425
+   },
+   "forme": {
+    "options": [
+     {
+      "valeur": "seche",
+      "libelle": "sèche",
+      "n": 102
+     },
+     {
+      "valeur": "liquide",
+      "libelle": "liquide",
+      "n": 195
+     }
+    ],
+    "nonDocumentees": 1011
+   },
+   "disponibilite": {
+    "options": [
+     {
+      "valeur": "ici",
+      "libelle": "vendue CH · FR · DE",
+      "n": 6
+     },
+     {
+      "valeur": "europe",
+      "libelle": "fabricant présent en Europe",
+      "n": 690
+     },
+     {
+      "valeur": "rare",
+      "libelle": "rare",
+      "n": 612
+     }
+    ],
+    "nonDocumentees": 0
+   },
+   "stock": {
+    "options": [
+     {
+      "valeur": "oui",
+      "libelle": "j’en ai",
+      "n": 0
+     }
+    ],
+    "nonDocumentees": 0
+   },
+   "sansSta1": {
+    "options": [
+     {
+      "valeur": "oui",
+      "libelle": "sans STA1",
+      "n": 428
+     }
+    ],
+    "nonDocumentees": 770
+   },
+   "labo": {
+    "options": [
+     {
+      "valeur": "Bootleg Biology",
+      "libelle": "Bootleg Biology",
+      "n": 98
+     },
+     {
+      "valeur": "Brewferm / Brouwland",
+      "libelle": "Brewferm / Brouwland",
+      "n": 3
+     },
+     {
+      "valeur": "Brewing Science Institute",
+      "libelle": "Brewing Science Institute",
+      "n": 136
+     },
+     {
+      "valeur": "CellarScience",
+      "libelle": "CellarScience",
+      "n": 26
+     },
+     {
+      "valeur": "Doemens",
+      "libelle": "Doemens",
+      "n": 113
+     },
+     {
+      "valeur": "Escarpment Labs",
+      "libelle": "Escarpment Labs",
+      "n": 184
+     },
+     {
+      "valeur": "Fermentis",
+      "libelle": "Fermentis",
+      "n": 27
+     },
+     {
+      "valeur": "Fermentum Mobile",
+      "libelle": "Fermentum Mobile",
+      "n": 29
+     },
+     {
+      "valeur": "Hefebank Weihenstephan",
+      "libelle": "Hefebank Weihenstephan",
+      "n": 122
+     },
+     {
+      "valeur": "Imperial Yeast",
+      "libelle": "Imperial Yeast",
+      "n": 59
+     },
+     {
+      "valeur": "Kveik Yeastery",
+      "libelle": "Kveik Yeastery",
+      "n": 4
+     },
+     {
+      "valeur": "Lallemand Brewing",
+      "libelle": "Lallemand Brewing",
+      "n": 32
+     },
+     {
+      "valeur": "Mangrove Jack’s",
+      "libelle": "Mangrove Jack’s",
+      "n": 17
+     },
+     {
+      "valeur": "Omega Yeast",
+      "libelle": "Omega Yeast",
+      "n": 104
+     },
+     {
+      "valeur": "The Yeast Bay",
+      "libelle": "The Yeast Bay",
+      "n": 4
+     },
+     {
+      "valeur": "VLB Berlin",
+      "libelle": "VLB Berlin",
+      "n": 23
+     },
+     {
+      "valeur": "WHC Lab",
+      "libelle": "WHC Lab",
+      "n": 39
+     },
+     {
+      "valeur": "White Labs",
+      "libelle": "White Labs",
+      "n": 171
+     },
+     {
+      "valeur": "Wyeast",
+      "libelle": "Wyeast",
+      "n": 77
+     },
+     {
+      "valeur": "Yeastflow",
+      "libelle": "Yeastflow",
+      "n": 39
+     }
+    ],
+    "nonDocumentees": 1
+   },
+   "vitesse": {
+    "options": [
+     {
+      "valeur": "faible",
+      "libelle": "faible",
+      "n": 35
+     },
+     {
+      "valeur": "moyen",
+      "libelle": "moyen",
+      "n": 81
+     },
+     {
+      "valeur": "eleve",
+      "libelle": "élevé",
+      "n": 38
+     }
+    ],
+    "nonDocumentees": 1154
+   },
+   "rondeur": {
+    "options": [
+     {
+      "valeur": "faible",
+      "libelle": "faible",
+      "n": 4
+     },
+     {
+      "valeur": "moyen",
+      "libelle": "moyen",
+      "n": 1
+     },
+     {
+      "valeur": "eleve",
+      "libelle": "élevé",
+      "n": 2
+     }
+    ],
+    "nonDocumentees": 1301
+   },
+   "soufre": {
+    "options": [
+     {
+      "valeur": "faible",
+      "libelle": "faible",
+      "n": 1
+     },
+     {
+      "valeur": "moyen",
+      "libelle": "moyen",
+      "n": 0
+     },
+     {
+      "valeur": "eleve",
+      "libelle": "élevé",
+      "n": 0
+     }
+    ],
+    "nonDocumentees": 1307
+   },
+   "nutriments": {
+    "options": [
+     {
+      "valeur": "faible",
+      "libelle": "faible",
+      "n": 0
+     },
+     {
+      "valeur": "moyen",
+      "libelle": "moyen",
+      "n": 1
+     },
+     {
+      "valeur": "eleve",
+      "libelle": "élevé",
+      "n": 0
+     }
+    ],
+    "nonDocumentees": 1307
+   },
+   "sansAlcool": {
+    "options": [
+     {
+      "valeur": "oui",
+      "libelle": "sans alcool",
+      "n": 17
+     }
+    ],
+    "nonDocumentees": 0
+   }
+  }
+ },
+ "lallemand-seche": {
+  "total": 19,
+  "resume": "bière · sèche · 19",
+  "tapee": null,
+  "n": 19,
+  "tete": [
+   "lalbrew-pomona",
+   "lalbrew-verdant-ipa",
+   "lalbrew-novalager",
+   "lalbrew-bry97",
+   "lalbrew-diamond",
+   "lallemand-munich-classic",
+   "lalbrew-nottingham",
+   "lalbrew-abbaye",
+   "yeast-escarpment-8469645525158",
+   "lalbrew-belle-saison",
+   "lalbrew-cbc-1",
+   "lalbrew-farmhouse",
+   "lalbrew-lona",
+   "lalbrew-new-england",
+   "yeast-escarpment-8269802537126",
+   "lalbrew-voss",
+   "lalbrew-windsor",
+   "lalbrew-wit",
+   "lalbrew-house-ale"
+  ],
+  "empreinte": "2bc2f93e",
+  "comptes": {
+   "boisson": {
+    "options": [
+     {
+      "valeur": "biere",
+      "libelle": "bière",
+      "n": 19
+     },
+     {
+      "valeur": "vin",
+      "libelle": "vin",
+      "n": 2
+     },
+     {
+      "valeur": "cidre",
+      "libelle": "cidre · hydromel",
+      "n": 0
+     },
+     {
+      "valeur": "distillerie",
+      "libelle": "distillerie",
+      "n": 0
+     },
+     {
+      "valeur": "autre",
+      "libelle": "autre",
+      "n": 0
+     }
+    ],
+    "nonDocumentees": 0
+   },
+   "famille": {
+    "options": [
+     {
+      "valeur": "ale",
+      "libelle": "ale US · neutre",
+      "n": 7
+     },
+     {
+      "valeur": "anglaise",
+      "libelle": "anglaise",
+      "n": 2
+     },
+     {
+      "valeur": "belge",
+      "libelle": "belge",
+      "n": 4
+     },
+     {
+      "valeur": "saison",
+      "libelle": "saison",
+      "n": 2
+     },
+     {
+      "valeur": "ble",
+      "libelle": "blé",
+      "n": 1
+     },
+     {
+      "valeur": "lager",
+      "libelle": "lager",
+      "n": 2
+     },
+     {
+      "valeur": "kveik",
+      "libelle": "kveik",
+      "n": 1
+     },
+     {
+      "valeur": "brett",
+      "libelle": "Brett",
+      "n": 0
+     },
+     {
+      "valeur": "bacteries",
+      "libelle": "bactéries",
+      "n": 0
+     },
+     {
+      "valeur": "melange",
+      "libelle": "mélange",
+      "n": 0
+     }
+    ],
+    "nonDocumentees": 0
+   },
+   "style": {
+    "options": [
+     {
+      "valeur": "weissbier",
+      "libelle": "Weissbier · Hefeweizen",
+      "n": 0
+     },
+     {
+      "valeur": "witbier",
+      "libelle": "Witbier · blanche belge",
+      "n": 0
+     },
+     {
+      "valeur": "american-wheat",
+      "libelle": "Blé américain",
+      "n": 0
+     },
+     {
+      "valeur": "hazy-ipa",
+      "libelle": "Hazy · NEIPA",
+      "n": 0
+     },
+     {
+      "valeur": "clean-ale",
+      "libelle": "Ale nette · Pale / IPA",
+      "n": 0
+     },
+     {
+      "valeur": "english-ale",
+      "libelle": "Ale anglaise",
+      "n": 0
+     },
+     {
+      "valeur": "lager",
+      "libelle": "Lager",
+      "n": 1
+     },
+     {
+      "valeur": "saison",
+      "libelle": "Saison",
+      "n": 0
+     },
+     {
+      "valeur": "belgian-ale",
+      "libelle": "Ale belge · abbaye",
+      "n": 0
+     },
+     {
+      "valeur": "stout-porter",
+      "libelle": "Stout · Porter",
+      "n": 0
+     },
+     {
+      "valeur": "kolsch-alt",
+      "libelle": "Kölsch · Altbier",
+      "n": 0
+     },
+     {
+      "valeur": "sour",
+      "libelle": "Bières acidulées · fermentations mixtes",
+      "n": 0
+     }
+    ],
+    "nonDocumentees": 18
+   },
+   "temperature": {
+    "options": [
+     {
+      "valeur": "<15",
+      "libelle": "< 15",
+      "n": 1
+     },
+     {
+      "valeur": "15-18",
+      "libelle": "15–18",
+      "n": 2
+     },
+     {
+      "valeur": "18-22",
+      "libelle": "18–22",
+      "n": 7
+     },
+     {
+      "valeur": "22-26",
+      "libelle": "22–26",
+      "n": 3
+     },
+     {
+      "valeur": ">=26",
+      "libelle": "≥ 26",
+      "n": 2
+     }
+    ],
+    "nonDocumentees": 4
+   },
+   "attenuation": {
+    "options": [
+     {
+      "valeur": "<70",
+      "libelle": "< 70",
+      "n": 1
+     },
+     {
+      "valeur": "70-75",
+      "libelle": "70–75",
+      "n": 0
+     },
+     {
+      "valeur": "75-80",
+      "libelle": "75–80",
+      "n": 4
+     },
+     {
+      "valeur": "80-85",
+      "libelle": "80–85",
+      "n": 7
+     },
+     {
+      "valeur": ">=85",
+      "libelle": "≥ 85",
+      "n": 1
+     }
+    ],
+    "nonDocumentees": 6
+   },
+   "tolerance": {
+    "options": [
+     {
+      "valeur": "<8",
+      "libelle": "< 8",
+      "n": 0
+     },
+     {
+      "valeur": "8-10",
+      "libelle": "8–10",
+      "n": 1
+     },
+     {
+      "valeur": "10-12",
+      "libelle": "10–12",
+      "n": 1
+     },
+     {
+      "valeur": ">=12",
+      "libelle": "≥ 12",
+      "n": 11
+     }
+    ],
+    "nonDocumentees": 6
+   },
+   "effets": {
+    "options": [
+     {
+      "valeur": "esters:plus",
+      "libelle": "Esters · fruité +",
+      "n": 4
+     },
+     {
+      "valeur": "esters:moins",
+      "libelle": "Esters · fruité −",
+      "n": 0
+     },
+     {
+      "valeur": "phenols:plus",
+      "libelle": "Phénols · épicé +",
+      "n": 4
+     },
+     {
+      "valeur": "phenols:moins",
+      "libelle": "Phénols · épicé −",
+      "n": 5
+     },
+     {
+      "valeur": "thiols:plus",
+      "libelle": "Thiols +",
+      "n": 3
+     },
+     {
+      "valeur": "thiols:moins",
+      "libelle": "Thiols −",
+      "n": 2
+     },
+     {
+      "valeur": "terpenes:plus",
+      "libelle": "Terpènes +",
+      "n": 2
+     },
+     {
+      "valeur": "terpenes:moins",
+      "libelle": "Terpènes −",
+      "n": 0
+     }
+    ],
+    "nonDocumentees": 9
+   },
+   "clarte": {
+    "options": [
+     {
+      "valeur": "faible",
+      "libelle": "faible",
+      "n": 4
+     },
+     {
+      "valeur": "moyen",
+      "libelle": "moyen",
+      "n": 6
+     },
+     {
+      "valeur": "eleve",
+      "libelle": "élevé",
+      "n": 4
+     }
+    ],
+    "nonDocumentees": 5
+   },
+   "forme": {
+    "options": [
+     {
+      "valeur": "seche",
+      "libelle": "sèche",
+      "n": 19
+     },
+     {
+      "valeur": "liquide",
+      "libelle": "liquide",
+      "n": 0
+     }
+    ],
+    "nonDocumentees": 13
+   },
+   "disponibilite": {
+    "options": [
+     {
+      "valeur": "ici",
+      "libelle": "vendue CH · FR · DE",
+      "n": 3
+     },
+     {
+      "valeur": "europe",
+      "libelle": "fabricant présent en Europe",
+      "n": 16
+     },
+     {
+      "valeur": "rare",
+      "libelle": "rare",
+      "n": 0
+     }
+    ],
+    "nonDocumentees": 0
+   },
+   "stock": {
+    "options": [
+     {
+      "valeur": "oui",
+      "libelle": "j’en ai",
+      "n": 0
+     }
+    ],
+    "nonDocumentees": 0
+   },
+   "sansSta1": {
+    "options": [
+     {
+      "valeur": "oui",
+      "libelle": "sans STA1",
+      "n": 3
+     }
+    ],
+    "nonDocumentees": 15
+   },
+   "labo": {
+    "options": [
+     {
+      "valeur": "Bootleg Biology",
+      "libelle": "Bootleg Biology",
+      "n": 0
+     },
+     {
+      "valeur": "Brewferm / Brouwland",
+      "libelle": "Brewferm / Brouwland",
+      "n": 0
+     },
+     {
+      "valeur": "Brewing Science Institute",
+      "libelle": "Brewing Science Institute",
+      "n": 0
+     },
+     {
+      "valeur": "CellarScience",
+      "libelle": "CellarScience",
+      "n": 0
+     },
+     {
+      "valeur": "Doemens",
+      "libelle": "Doemens",
+      "n": 0
+     },
+     {
+      "valeur": "Escarpment Labs",
+      "libelle": "Escarpment Labs",
+      "n": 0
+     },
+     {
+      "valeur": "Fermentis",
+      "libelle": "Fermentis",
+      "n": 0
+     },
+     {
+      "valeur": "Fermentum Mobile",
+      "libelle": "Fermentum Mobile",
+      "n": 0
+     },
+     {
+      "valeur": "Hefebank Weihenstephan",
+      "libelle": "Hefebank Weihenstephan",
+      "n": 0
+     },
+     {
+      "valeur": "Imperial Yeast",
+      "libelle": "Imperial Yeast",
+      "n": 0
+     },
+     {
+      "valeur": "Kveik Yeastery",
+      "libelle": "Kveik Yeastery",
+      "n": 0
+     },
+     {
+      "valeur": "Lallemand Brewing",
+      "libelle": "Lallemand Brewing",
+      "n": 19
+     },
+     {
+      "valeur": "Mangrove Jack’s",
+      "libelle": "Mangrove Jack’s",
+      "n": 0
+     },
+     {
+      "valeur": "Omega Yeast",
+      "libelle": "Omega Yeast",
+      "n": 0
+     },
+     {
+      "valeur": "The Yeast Bay",
+      "libelle": "The Yeast Bay",
+      "n": 0
+     },
+     {
+      "valeur": "VLB Berlin",
+      "libelle": "VLB Berlin",
+      "n": 0
+     },
+     {
+      "valeur": "WHC Lab",
+      "libelle": "WHC Lab",
+      "n": 0
+     },
+     {
+      "valeur": "White Labs",
+      "libelle": "White Labs",
+      "n": 0
+     },
+     {
+      "valeur": "Wyeast",
+      "libelle": "Wyeast",
+      "n": 0
+     },
+     {
+      "valeur": "Yeastflow",
+      "libelle": "Yeastflow",
+      "n": 0
+     }
+    ],
+    "nonDocumentees": 0
+   },
+   "vitesse": {
+    "options": [
+     {
+      "valeur": "faible",
+      "libelle": "faible",
+      "n": 0
+     },
+     {
+      "valeur": "moyen",
+      "libelle": "moyen",
+      "n": 0
+     },
+     {
+      "valeur": "eleve",
+      "libelle": "élevé",
+      "n": 0
+     }
+    ],
+    "nonDocumentees": 19
+   },
+   "rondeur": {
+    "options": [
+     {
+      "valeur": "faible",
+      "libelle": "faible",
+      "n": 0
+     },
+     {
+      "valeur": "moyen",
+      "libelle": "moyen",
+      "n": 0
+     },
+     {
+      "valeur": "eleve",
+      "libelle": "élevé",
+      "n": 0
+     }
+    ],
+    "nonDocumentees": 19
+   },
+   "soufre": {
+    "options": [
+     {
+      "valeur": "faible",
+      "libelle": "faible",
+      "n": 1
+     },
+     {
+      "valeur": "moyen",
+      "libelle": "moyen",
+      "n": 0
+     },
+     {
+      "valeur": "eleve",
+      "libelle": "élevé",
+      "n": 0
+     }
+    ],
+    "nonDocumentees": 18
+   },
+   "nutriments": {
+    "options": [
+     {
+      "valeur": "faible",
+      "libelle": "faible",
+      "n": 0
+     },
+     {
+      "valeur": "moyen",
+      "libelle": "moyen",
+      "n": 0
+     },
+     {
+      "valeur": "eleve",
+      "libelle": "élevé",
+      "n": 0
+     }
+    ],
+    "nonDocumentees": 19
+   },
+   "sansAlcool": {
+    "options": [
+     {
+      "valeur": "oui",
+      "libelle": "sans alcool",
+      "n": 1
+     }
+    ],
+    "nonDocumentees": 0
+   }
+  }
+ },
+ "tolerance-famille": {
+  "total": 79,
+  "resume": "bière · ale US · neutre · ≥ 12 % · 79",
+  "tapee": null,
+  "n": 79,
+  "tete": [
+   "lalbrew-verdant-ipa",
+   "lalbrew-bry97",
+   "yeast-lallemand-brewing-10372-77-11",
+   "yeast-lallemand-brewing-1844606-mb",
+   "yeast-lallemand-brewing-18445-37-mb",
+   "yeast-whc-10292056097107",
+   "yeast-whc-9867450941779",
+   "yeast-whc-9378483503443",
+   "yeast-whc-9378483634515",
+   "white-labs-wlp029",
+   "white-labs-wlp036",
+   "white-labs-wlp095",
+   "white-labs-wlp099",
+   "white-labs-wlp4000",
+   "white-labs-wlp4040",
+   "wyeast-3463-pc",
+   "wyeast-3739-pc",
+   "wyeast-1728",
+   "yeast-yeastflow-yf-105-haggis",
+   "yeast-yeastflow-yf-106-redshamrock",
+   "yeast-yeastflow-yf-112-vermonter",
+   "yeast-yeastflow-yf-114-crazy-hazy",
+   "yeast-yeastflow-yf-116-st-hedwig",
+   "yeast-yeastflow-yf-201-st-colibate",
+   "yeast-yeastflow-yf-202-priest-dvel"
+  ],
+  "empreinte": "91ebcd38",
+  "comptes": {
+   "boisson": {
+    "options": [
+     {
+      "valeur": "biere",
+      "libelle": "bière",
+      "n": 79
+     },
+     {
+      "valeur": "vin",
+      "libelle": "vin",
+      "n": 130
+     },
+     {
+      "valeur": "cidre",
+      "libelle": "cidre · hydromel",
+      "n": 6
+     },
+     {
+      "valeur": "distillerie",
+      "libelle": "distillerie",
+      "n": 4
+     },
+     {
+      "valeur": "autre",
+      "libelle": "autre",
+      "n": 0
+     }
+    ],
+    "nonDocumentees": 0
+   },
+   "famille": {
+    "options": [
+     {
+      "valeur": "ale",
+      "libelle": "ale US · neutre",
+      "n": 79
+     },
+     {
+      "valeur": "anglaise",
+      "libelle": "anglaise",
+      "n": 22
+     },
+     {
+      "valeur": "belge",
+      "libelle": "belge",
+      "n": 51
+     },
+     {
+      "valeur": "saison",
+      "libelle": "saison",
+      "n": 29
+     },
+     {
+      "valeur": "ble",
+      "libelle": "blé",
+      "n": 15
+     },
+     {
+      "valeur": "lager",
+      "libelle": "lager",
+      "n": 40
+     },
+     {
+      "valeur": "kveik",
+      "libelle": "kveik",
+      "n": 25
+     },
+     {
+      "valeur": "brett",
+      "libelle": "Brett",
+      "n": 35
+     },
+     {
+      "valeur": "bacteries",
+      "libelle": "bactéries",
+      "n": 7
+     },
+     {
+      "valeur": "melange",
+      "libelle": "mélange",
+      "n": 23
+     }
+    ],
+    "nonDocumentees": 0
+   },
+   "style": {
+    "options": [
+     {
+      "valeur": "weissbier",
+      "libelle": "Weissbier · Hefeweizen",
+      "n": 0
+     },
+     {
+      "valeur": "witbier",
+      "libelle": "Witbier · blanche belge",
+      "n": 0
+     },
+     {
+      "valeur": "american-wheat",
+      "libelle": "Blé américain",
+      "n": 0
+     },
+     {
+      "valeur": "hazy-ipa",
+      "libelle": "Hazy · NEIPA",
+      "n": 1
+     },
+     {
+      "valeur": "clean-ale",
+      "libelle": "Ale nette · Pale / IPA",
+      "n": 3
+     },
+     {
+      "valeur": "english-ale",
+      "libelle": "Ale anglaise",
+      "n": 0
+     },
+     {
+      "valeur": "lager",
+      "libelle": "Lager",
+      "n": 0
+     },
+     {
+      "valeur": "saison",
+      "libelle": "Saison",
+      "n": 0
+     },
+     {
+      "valeur": "belgian-ale",
+      "libelle": "Ale belge · abbaye",
+      "n": 0
+     },
+     {
+      "valeur": "stout-porter",
+      "libelle": "Stout · Porter",
+      "n": 2
+     },
+     {
+      "valeur": "kolsch-alt",
+      "libelle": "Kölsch · Altbier",
+      "n": 0
+     },
+     {
+      "valeur": "sour",
+      "libelle": "Bières acidulées · fermentations mixtes",
+      "n": 0
+     }
+    ],
+    "nonDocumentees": 73
+   },
+   "temperature": {
+    "options": [
+     {
+      "valeur": "<15",
+      "libelle": "< 15",
+      "n": 3
+     },
+     {
+      "valeur": "15-18",
+      "libelle": "15–18",
+      "n": 0
+     },
+     {
+      "valeur": "18-22",
+      "libelle": "18–22",
+      "n": 44
+     },
+     {
+      "valeur": "22-26",
+      "libelle": "22–26",
+      "n": 15
+     },
+     {
+      "valeur": ">=26",
+      "libelle": "≥ 26",
+      "n": 7
+     }
+    ],
+    "nonDocumentees": 10
+   },
+   "attenuation": {
+    "options": [
+     {
+      "valeur": "<70",
+      "libelle": "< 70",
+      "n": 1
+     },
+     {
+      "valeur": "70-75",
+      "libelle": "70–75",
+      "n": 10
+     },
+     {
+      "valeur": "75-80",
+      "libelle": "75–80",
+      "n": 38
+     },
+     {
+      "valeur": "80-85",
+      "libelle": "80–85",
+      "n": 20
+     },
+     {
+      "valeur": ">=85",
+      "libelle": "≥ 85",
+      "n": 7
+     }
+    ],
+    "nonDocumentees": 3
+   },
+   "tolerance": {
+    "options": [
+     {
+      "valeur": "<8",
+      "libelle": "< 8",
+      "n": 1
+     },
+     {
+      "valeur": "8-10",
+      "libelle": "8–10",
+      "n": 13
+     },
+     {
+      "valeur": "10-12",
+      "libelle": "10–12",
+      "n": 92
+     },
+     {
+      "valeur": ">=12",
+      "libelle": "≥ 12",
+      "n": 79
+     }
+    ],
+    "nonDocumentees": 184
+   },
+   "effets": {
+    "options": [
+     {
+      "valeur": "esters:plus",
+      "libelle": "Esters · fruité +",
+      "n": 12
+     },
+     {
+      "valeur": "esters:moins",
+      "libelle": "Esters · fruité −",
+      "n": 5
+     },
+     {
+      "valeur": "phenols:plus",
+      "libelle": "Phénols · épicé +",
+      "n": 6
+     },
+     {
+      "valeur": "phenols:moins",
+      "libelle": "Phénols · épicé −",
+      "n": 19
+     },
+     {
+      "valeur": "thiols:plus",
+      "libelle": "Thiols +",
+      "n": 3
+     },
+     {
+      "valeur": "thiols:moins",
+      "libelle": "Thiols −",
+      "n": 0
+     },
+     {
+      "valeur": "terpenes:plus",
+      "libelle": "Terpènes +",
+      "n": 0
+     },
+     {
+      "valeur": "terpenes:moins",
+      "libelle": "Terpènes −",
+      "n": 0
+     }
+    ],
+    "nonDocumentees": 46
+   },
+   "clarte": {
+    "options": [
+     {
+      "valeur": "faible",
+      "libelle": "faible",
+      "n": 12
+     },
+     {
+      "valeur": "moyen",
+      "libelle": "moyen",
+      "n": 48
+     },
+     {
+      "valeur": "eleve",
+      "libelle": "élevé",
+      "n": 9
+     }
+    ],
+    "nonDocumentees": 10
+   },
+   "forme": {
+    "options": [
+     {
+      "valeur": "seche",
+      "libelle": "sèche",
+      "n": 13
+     },
+     {
+      "valeur": "liquide",
+      "libelle": "liquide",
+      "n": 1
+     }
+    ],
+    "nonDocumentees": 65
+   },
+   "disponibilite": {
+    "options": [
+     {
+      "valeur": "ici",
+      "libelle": "vendue CH · FR · DE",
+      "n": 1
+     },
+     {
+      "valeur": "europe",
+      "libelle": "fabricant présent en Europe",
+      "n": 41
+     },
+     {
+      "valeur": "rare",
+      "libelle": "rare",
+      "n": 37
+     }
+    ],
+    "nonDocumentees": 0
+   },
+   "stock": {
+    "options": [
+     {
+      "valeur": "oui",
+      "libelle": "j’en ai",
+      "n": 0
+     }
+    ],
+    "nonDocumentees": 0
+   },
+   "sansSta1": {
+    "options": [
+     {
+      "valeur": "oui",
+      "libelle": "sans STA1",
+      "n": 27
+     }
+    ],
+    "nonDocumentees": 45
+   },
+   "labo": {
+    "options": [
+     {
+      "valeur": "Bootleg Biology",
+      "libelle": "Bootleg Biology",
+      "n": 0
+     },
+     {
+      "valeur": "Brewferm / Brouwland",
+      "libelle": "Brewferm / Brouwland",
+      "n": 0
+     },
+     {
+      "valeur": "Brewing Science Institute",
+      "libelle": "Brewing Science Institute",
+      "n": 4
+     },
+     {
+      "valeur": "CellarScience",
+      "libelle": "CellarScience",
+      "n": 6
+     },
+     {
+      "valeur": "Doemens",
+      "libelle": "Doemens",
+      "n": 0
+     },
+     {
+      "valeur": "Escarpment Labs",
+      "libelle": "Escarpment Labs",
+      "n": 1
+     },
+     {
+      "valeur": "Fermentis",
+      "libelle": "Fermentis",
+      "n": 2
+     },
+     {
+      "valeur": "Fermentum Mobile",
+      "libelle": "Fermentum Mobile",
+      "n": 0
+     },
+     {
+      "valeur": "Hefebank Weihenstephan",
+      "libelle": "Hefebank Weihenstephan",
+      "n": 0
+     },
+     {
+      "valeur": "Imperial Yeast",
+      "libelle": "Imperial Yeast",
+      "n": 5
+     },
+     {
+      "valeur": "Kveik Yeastery",
+      "libelle": "Kveik Yeastery",
+      "n": 0
+     },
+     {
+      "valeur": "Lallemand Brewing",
+      "libelle": "Lallemand Brewing",
+      "n": 5
+     },
+     {
+      "valeur": "Mangrove Jack’s",
+      "libelle": "Mangrove Jack’s",
+      "n": 0
+     },
+     {
+      "valeur": "Omega Yeast",
+      "libelle": "Omega Yeast",
+      "n": 21
+     },
+     {
+      "valeur": "The Yeast Bay",
+      "libelle": "The Yeast Bay",
+      "n": 0
+     },
+     {
+      "valeur": "VLB Berlin",
+      "libelle": "VLB Berlin",
+      "n": 0
+     },
+     {
+      "valeur": "WHC Lab",
+      "libelle": "WHC Lab",
+      "n": 6
+     },
+     {
+      "valeur": "White Labs",
+      "libelle": "White Labs",
+      "n": 9
+     },
+     {
+      "valeur": "Wyeast",
+      "libelle": "Wyeast",
+      "n": 4
+     },
+     {
+      "valeur": "Yeastflow",
+      "libelle": "Yeastflow",
+      "n": 16
+     }
+    ],
+    "nonDocumentees": 0
+   },
+   "vitesse": {
+    "options": [
+     {
+      "valeur": "faible",
+      "libelle": "faible",
+      "n": 0
+     },
+     {
+      "valeur": "moyen",
+      "libelle": "moyen",
+      "n": 0
+     },
+     {
+      "valeur": "eleve",
+      "libelle": "élevé",
+      "n": 0
+     }
+    ],
+    "nonDocumentees": 79
+   },
+   "rondeur": {
+    "options": [
+     {
+      "valeur": "faible",
+      "libelle": "faible",
+      "n": 0
+     },
+     {
+      "valeur": "moyen",
+      "libelle": "moyen",
+      "n": 0
+     },
+     {
+      "valeur": "eleve",
+      "libelle": "élevé",
+      "n": 0
+     }
+    ],
+    "nonDocumentees": 79
+   },
+   "soufre": {
+    "options": [
+     {
+      "valeur": "faible",
+      "libelle": "faible",
+      "n": 0
+     },
+     {
+      "valeur": "moyen",
+      "libelle": "moyen",
+      "n": 0
+     },
+     {
+      "valeur": "eleve",
+      "libelle": "élevé",
+      "n": 0
+     }
+    ],
+    "nonDocumentees": 79
+   },
+   "nutriments": {
+    "options": [
+     {
+      "valeur": "faible",
+      "libelle": "faible",
+      "n": 0
+     },
+     {
+      "valeur": "moyen",
+      "libelle": "moyen",
+      "n": 0
+     },
+     {
+      "valeur": "eleve",
+      "libelle": "élevé",
+      "n": 0
+     }
+    ],
+    "nonDocumentees": 79
+   },
+   "sansAlcool": {
+    "options": [
+     {
+      "valeur": "oui",
+      "libelle": "sans alcool",
+      "n": 0
+     }
+    ],
+    "nonDocumentees": 0
+   }
+  }
+ },
+ "sans-sta1": {
+  "total": 428,
+  "resume": "bière · sans STA1 · 428",
+  "tapee": null,
+  "n": 428,
+  "tete": [
+   "lallemand-munich-classic",
+   "lalbrew-farmhouse",
+   "lalbrew-lona",
+   "yeast-white-labs-yeast-single-id-166-type-yeast",
+   "white-labs-wlp001",
+   "white-labs-wlp003",
+   "white-labs-wlp004",
+   "white-labs-wlp005",
+   "white-labs-wlp006",
+   "white-labs-wlp007",
+   "white-labs-wlp008",
+   "white-labs-wlp009",
+   "white-labs-wlp011",
+   "white-labs-wlp013",
+   "white-labs-wlp017",
+   "white-labs-wlp022",
+   "white-labs-wlp023",
+   "white-labs-wlp025",
+   "white-labs-wlp028",
+   "white-labs-wlp029",
+   "white-labs-wlp030",
+   "white-labs-wlp033",
+   "white-labs-wlp036",
+   "white-labs-wlp037",
+   "white-labs-wlp039"
+  ],
+  "empreinte": "680d99bc",
+  "comptes": {
+   "boisson": {
+    "options": [
+     {
+      "valeur": "biere",
+      "libelle": "bière",
+      "n": 428
+     },
+     {
+      "valeur": "vin",
+      "libelle": "vin",
+      "n": 30
+     },
+     {
+      "valeur": "cidre",
+      "libelle": "cidre · hydromel",
+      "n": 4
+     },
+     {
+      "valeur": "distillerie",
+      "libelle": "distillerie",
+      "n": 2
+     },
+     {
+      "valeur": "autre",
+      "libelle": "autre",
+      "n": 0
+     }
+    ],
+    "nonDocumentees": 0
+   },
+   "famille": {
+    "options": [
+     {
+      "valeur": "ale",
+      "libelle": "ale US · neutre",
+      "n": 98
+     },
+     {
+      "valeur": "anglaise",
+      "libelle": "anglaise",
+      "n": 68
+     },
+     {
+      "valeur": "belge",
+      "libelle": "belge",
+      "n": 38
+     },
+     {
+      "valeur": "saison",
+      "libelle": "saison",
+      "n": 7
+     },
+     {
+      "valeur": "ble",
+      "libelle": "blé",
+      "n": 31
+     },
+     {
+      "valeur": "lager",
+      "libelle": "lager",
+      "n": 113
+     },
+     {
+      "valeur": "kveik",
+      "libelle": "kveik",
+      "n": 36
+     },
+     {
+      "valeur": "brett",
+      "libelle": "Brett",
+      "n": 13
+     },
+     {
+      "valeur": "bacteries",
+      "libelle": "bactéries",
+      "n": 6
+     },
+     {
+      "valeur": "melange",
+      "libelle": "mélange",
+      "n": 18
+     }
+    ],
+    "nonDocumentees": 0
+   },
+   "style": {
+    "options": [
+     {
+      "valeur": "weissbier",
+      "libelle": "Weissbier · Hefeweizen",
+      "n": 5
+     },
+     {
+      "valeur": "witbier",
+      "libelle": "Witbier · blanche belge",
+      "n": 5
+     },
+     {
+      "valeur": "american-wheat",
+      "libelle": "Blé américain",
+      "n": 1
+     },
+     {
+      "valeur": "hazy-ipa",
+      "libelle": "Hazy · NEIPA",
+      "n": 28
+     },
+     {
+      "valeur": "clean-ale",
+      "libelle": "Ale nette · Pale / IPA",
+      "n": 66
+     },
+     {
+      "valeur": "english-ale",
+      "libelle": "Ale anglaise",
+      "n": 12
+     },
+     {
+      "valeur": "lager",
+      "libelle": "Lager",
+      "n": 44
+     },
+     {
+      "valeur": "saison",
+      "libelle": "Saison",
+      "n": 2
+     },
+     {
+      "valeur": "belgian-ale",
+      "libelle": "Ale belge · abbaye",
+      "n": 22
+     },
+     {
+      "valeur": "stout-porter",
+      "libelle": "Stout · Porter",
+      "n": 21
+     },
+     {
+      "valeur": "kolsch-alt",
+      "libelle": "Kölsch · Altbier",
+      "n": 7
+     },
+     {
+      "valeur": "sour",
+      "libelle": "Bières acidulées · fermentations mixtes",
+      "n": 9
+     }
+    ],
+    "nonDocumentees": 280
+   },
+   "temperature": {
+    "options": [
+     {
+      "valeur": "<15",
+      "libelle": "< 15",
+      "n": 71
+     },
+     {
+      "valeur": "15-18",
+      "libelle": "15–18",
+      "n": 9
+     },
+     {
+      "valeur": "18-22",
+      "libelle": "18–22",
+      "n": 147
+     },
+     {
+      "valeur": "22-26",
+      "libelle": "22–26",
+      "n": 44
+     },
+     {
+      "valeur": ">=26",
+      "libelle": "≥ 26",
+      "n": 32
+     }
+    ],
+    "nonDocumentees": 125
+   },
+   "attenuation": {
+    "options": [
+     {
+      "valeur": "<70",
+      "libelle": "< 70",
+      "n": 21
+     },
+     {
+      "valeur": "70-75",
+      "libelle": "70–75",
+      "n": 126
+     },
+     {
+      "valeur": "75-80",
+      "libelle": "75–80",
+      "n": 220
+     },
+     {
+      "valeur": "80-85",
+      "libelle": "80–85",
+      "n": 45
+     },
+     {
+      "valeur": ">=85",
+      "libelle": "≥ 85",
+      "n": 2
+     }
+    ],
+    "nonDocumentees": 14
+   },
+   "tolerance": {
+    "options": [
+     {
+      "valeur": "<8",
+      "libelle": "< 8",
+      "n": 1
+     },
+     {
+      "valeur": "8-10",
+      "libelle": "8–10",
+      "n": 17
+     },
+     {
+      "valeur": "10-12",
+      "libelle": "10–12",
+      "n": 173
+     },
+     {
+      "valeur": ">=12",
+      "libelle": "≥ 12",
+      "n": 142
+     }
+    ],
+    "nonDocumentees": 95
+   },
+   "effets": {
+    "options": [
+     {
+      "valeur": "esters:plus",
+      "libelle": "Esters · fruité +",
+      "n": 130
+     },
+     {
+      "valeur": "esters:moins",
+      "libelle": "Esters · fruité −",
+      "n": 49
+     },
+     {
+      "valeur": "phenols:plus",
+      "libelle": "Phénols · épicé +",
+      "n": 59
+     },
+     {
+      "valeur": "phenols:moins",
+      "libelle": "Phénols · épicé −",
+      "n": 168
+     },
+     {
+      "valeur": "thiols:plus",
+      "libelle": "Thiols +",
+      "n": 24
+     },
+     {
+      "valeur": "thiols:moins",
+      "libelle": "Thiols −",
+      "n": 29
+     },
+     {
+      "valeur": "terpenes:plus",
+      "libelle": "Terpènes +",
+      "n": 2
+     },
+     {
+      "valeur": "terpenes:moins",
+      "libelle": "Terpènes −",
+      "n": 0
+     }
+    ],
+    "nonDocumentees": 136
+   },
+   "clarte": {
+    "options": [
+     {
+      "valeur": "faible",
+      "libelle": "faible",
+      "n": 52
+     },
+     {
+      "valeur": "moyen",
+      "libelle": "moyen",
+      "n": 317
+     },
+     {
+      "valeur": "eleve",
+      "libelle": "élevé",
+      "n": 53
+     }
+    ],
+    "nonDocumentees": 6
+   },
+   "forme": {
+    "options": [
+     {
+      "valeur": "seche",
+      "libelle": "sèche",
+      "n": 3
+     },
+     {
+      "valeur": "liquide",
+      "libelle": "liquide",
+      "n": 46
+     }
+    ],
+    "nonDocumentees": 379
+   },
+   "disponibilite": {
+    "options": [
+     {
+      "valeur": "ici",
+      "libelle": "vendue CH · FR · DE",
+      "n": 0
+     },
+     {
+      "valeur": "europe",
+      "libelle": "fabricant présent en Europe",
+      "n": 99
+     },
+     {
+      "valeur": "rare",
+      "libelle": "rare",
+      "n": 329
+     }
+    ],
+    "nonDocumentees": 0
+   },
+   "stock": {
+    "options": [
+     {
+      "valeur": "oui",
+      "libelle": "j’en ai",
+      "n": 0
+     }
+    ],
+    "nonDocumentees": 0
+   },
+   "sansSta1": {
+    "options": [
+     {
+      "valeur": "oui",
+      "libelle": "sans STA1",
+      "n": 428
+     }
+    ],
+    "nonDocumentees": 770
+   },
+   "labo": {
+    "options": [
+     {
+      "valeur": "Bootleg Biology",
+      "libelle": "Bootleg Biology",
+      "n": 0
+     },
+     {
+      "valeur": "Brewferm / Brouwland",
+      "libelle": "Brewferm / Brouwland",
+      "n": 0
+     },
+     {
+      "valeur": "Brewing Science Institute",
+      "libelle": "Brewing Science Institute",
+      "n": 123
+     },
+     {
+      "valeur": "CellarScience",
+      "libelle": "CellarScience",
+      "n": 0
+     },
+     {
+      "valeur": "Doemens",
+      "libelle": "Doemens",
+      "n": 0
+     },
+     {
+      "valeur": "Escarpment Labs",
+      "libelle": "Escarpment Labs",
+      "n": 96
+     },
+     {
+      "valeur": "Fermentis",
+      "libelle": "Fermentis",
+      "n": 0
+     },
+     {
+      "valeur": "Fermentum Mobile",
+      "libelle": "Fermentum Mobile",
+      "n": 0
+     },
+     {
+      "valeur": "Hefebank Weihenstephan",
+      "libelle": "Hefebank Weihenstephan",
+      "n": 0
+     },
+     {
+      "valeur": "Imperial Yeast",
+      "libelle": "Imperial Yeast",
+      "n": 52
+     },
+     {
+      "valeur": "Kveik Yeastery",
+      "libelle": "Kveik Yeastery",
+      "n": 0
+     },
+     {
+      "valeur": "Lallemand Brewing",
+      "libelle": "Lallemand Brewing",
+      "n": 3
+     },
+     {
+      "valeur": "Mangrove Jack’s",
+      "libelle": "Mangrove Jack’s",
+      "n": 0
+     },
+     {
+      "valeur": "Omega Yeast",
+      "libelle": "Omega Yeast",
+      "n": 58
+     },
+     {
+      "valeur": "The Yeast Bay",
+      "libelle": "The Yeast Bay",
+      "n": 0
+     },
+     {
+      "valeur": "VLB Berlin",
+      "libelle": "VLB Berlin",
+      "n": 0
+     },
+     {
+      "valeur": "WHC Lab",
+      "libelle": "WHC Lab",
+      "n": 0
+     },
+     {
+      "valeur": "White Labs",
+      "libelle": "White Labs",
+      "n": 96
+     },
+     {
+      "valeur": "Wyeast",
+      "libelle": "Wyeast",
+      "n": 0
+     },
+     {
+      "valeur": "Yeastflow",
+      "libelle": "Yeastflow",
+      "n": 0
+     }
+    ],
+    "nonDocumentees": 0
+   },
+   "vitesse": {
+    "options": [
+     {
+      "valeur": "faible",
+      "libelle": "faible",
+      "n": 6
+     },
+     {
+      "valeur": "moyen",
+      "libelle": "moyen",
+      "n": 54
+     },
+     {
+      "valeur": "eleve",
+      "libelle": "élevé",
+      "n": 27
+     }
+    ],
+    "nonDocumentees": 341
+   },
+   "rondeur": {
+    "options": [
+     {
+      "valeur": "faible",
+      "libelle": "faible",
+      "n": 0
+     },
+     {
+      "valeur": "moyen",
+      "libelle": "moyen",
+      "n": 0
+     },
+     {
+      "valeur": "eleve",
+      "libelle": "élevé",
+      "n": 0
+     }
+    ],
+    "nonDocumentees": 428
+   },
+   "soufre": {
+    "options": [
+     {
+      "valeur": "faible",
+      "libelle": "faible",
+      "n": 1
+     },
+     {
+      "valeur": "moyen",
+      "libelle": "moyen",
+      "n": 0
+     },
+     {
+      "valeur": "eleve",
+      "libelle": "élevé",
+      "n": 0
+     }
+    ],
+    "nonDocumentees": 427
+   },
+   "nutriments": {
+    "options": [
+     {
+      "valeur": "faible",
+      "libelle": "faible",
+      "n": 0
+     },
+     {
+      "valeur": "moyen",
+      "libelle": "moyen",
+      "n": 0
+     },
+     {
+      "valeur": "eleve",
+      "libelle": "élevé",
+      "n": 0
+     }
+    ],
+    "nonDocumentees": 428
+   },
+   "sansAlcool": {
+    "options": [
+     {
+      "valeur": "oui",
+      "libelle": "sans alcool",
+      "n": 4
+     }
+    ],
+    "nonDocumentees": 0
+   }
+  }
+ },
+ "effets-cumul": {
+  "total": 68,
+  "resume": "bière · Esters · fruité + ou Phénols · épicé − · 68",
+  "tapee": null,
+  "n": 68,
+  "tete": [
+   "lalbrew-pomona",
+   "lalbrew-verdant-ipa",
+   "yeast-fermentis-safale-be-e2-80-91256",
+   "yeast-fermentis-safbrew-da-16",
+   "lalbrew-nottingham",
+   "yeast-escarpment-4559497461892",
+   "yeast-escarpment-4559497494660",
+   "yeast-escarpment-4559497855108",
+   "yeast-escarpment-4559497396356",
+   "yeast-escarpment-4559494447236",
+   "yeast-escarpment-4559494480004",
+   "yeast-escarpment-4559493300356",
+   "yeast-escarpment-4559494250628",
+   "yeast-escarpment-4559498739844",
+   "yeast-escarpment-4559498805380",
+   "yeast-escarpment-4559497003140",
+   "yeast-escarpment-4559497035908",
+   "yeast-escarpment-6608204923046",
+   "yeast-escarpment-6889900376230",
+   "yeast-escarpment-6684248375462",
+   "yeast-escarpment-6797706526886",
+   "yeast-escarpment-5840737534118",
+   "yeast-escarpment-5679104327846",
+   "yeast-escarpment-4559492972676",
+   "yeast-escarpment-4559493005444"
+  ],
+  "empreinte": "a67542bb",
+  "comptes": {
+   "boisson": {
+    "options": [
+     {
+      "valeur": "biere",
+      "libelle": "bière",
+      "n": 68
+     },
+     {
+      "valeur": "vin",
+      "libelle": "vin",
+      "n": 0
+     },
+     {
+      "valeur": "cidre",
+      "libelle": "cidre · hydromel",
+      "n": 0
+     },
+     {
+      "valeur": "distillerie",
+      "libelle": "distillerie",
+      "n": 0
+     },
+     {
+      "valeur": "autre",
+      "libelle": "autre",
+      "n": 0
+     }
+    ],
+    "nonDocumentees": 0
+   },
+   "famille": {
+    "options": [
+     {
+      "valeur": "ale",
+      "libelle": "ale US · neutre",
+      "n": 23
+     },
+     {
+      "valeur": "anglaise",
+      "libelle": "anglaise",
+      "n": 17
+     },
+     {
+      "valeur": "belge",
+      "libelle": "belge",
+      "n": 3
+     },
+     {
+      "valeur": "saison",
+      "libelle": "saison",
+      "n": 0
+     },
+     {
+      "valeur": "ble",
+      "libelle": "blé",
+      "n": 1
+     },
+     {
+      "valeur": "lager",
+      "libelle": "lager",
+      "n": 5
+     },
+     {
+      "valeur": "kveik",
+      "libelle": "kveik",
+      "n": 16
+     },
+     {
+      "valeur": "brett",
+      "libelle": "Brett",
+      "n": 2
+     },
+     {
+      "valeur": "bacteries",
+      "libelle": "bactéries",
+      "n": 0
+     },
+     {
+      "valeur": "melange",
+      "libelle": "mélange",
+      "n": 1
+     }
+    ],
+    "nonDocumentees": 0
+   },
+   "style": {
+    "options": [
+     {
+      "valeur": "weissbier",
+      "libelle": "Weissbier · Hefeweizen",
+      "n": 0
+     },
+     {
+      "valeur": "witbier",
+      "libelle": "Witbier · blanche belge",
+      "n": 0
+     },
+     {
+      "valeur": "american-wheat",
+      "libelle": "Blé américain",
+      "n": 0
+     },
+     {
+      "valeur": "hazy-ipa",
+      "libelle": "Hazy · NEIPA",
+      "n": 27
+     },
+     {
+      "valeur": "clean-ale",
+      "libelle": "Ale nette · Pale / IPA",
+      "n": 39
+     },
+     {
+      "valeur": "english-ale",
+      "libelle": "Ale anglaise",
+      "n": 6
+     },
+     {
+      "valeur": "lager",
+      "libelle": "Lager",
+      "n": 4
+     },
+     {
+      "valeur": "saison",
+      "libelle": "Saison",
+      "n": 0
+     },
+     {
+      "valeur": "belgian-ale",
+      "libelle": "Ale belge · abbaye",
+      "n": 3
+     },
+     {
+      "valeur": "stout-porter",
+      "libelle": "Stout · Porter",
+      "n": 8
+     },
+     {
+      "valeur": "kolsch-alt",
+      "libelle": "Kölsch · Altbier",
+      "n": 0
+     },
+     {
+      "valeur": "sour",
+      "libelle": "Bières acidulées · fermentations mixtes",
+      "n": 4
+     }
+    ],
+    "nonDocumentees": 18
+   },
+   "temperature": {
+    "options": [
+     {
+      "valeur": "<15",
+      "libelle": "< 15",
+      "n": 2
+     },
+     {
+      "valeur": "15-18",
+      "libelle": "15–18",
+      "n": 3
+     },
+     {
+      "valeur": "18-22",
+      "libelle": "18–22",
+      "n": 35
+     },
+     {
+      "valeur": "22-26",
+      "libelle": "22–26",
+      "n": 14
+     },
+     {
+      "valeur": ">=26",
+      "libelle": "≥ 26",
+      "n": 13
+     }
+    ],
+    "nonDocumentees": 1
+   },
+   "attenuation": {
+    "options": [
+     {
+      "valeur": "<70",
+      "libelle": "< 70",
+      "n": 4
+     },
+     {
+      "valeur": "70-75",
+      "libelle": "70–75",
+      "n": 15
+     },
+     {
+      "valeur": "75-80",
+      "libelle": "75–80",
+      "n": 37
+     },
+     {
+      "valeur": "80-85",
+      "libelle": "80–85",
+      "n": 9
+     },
+     {
+      "valeur": ">=85",
+      "libelle": "≥ 85",
+      "n": 2
+     }
+    ],
+    "nonDocumentees": 1
+   },
+   "tolerance": {
+    "options": [
+     {
+      "valeur": "<8",
+      "libelle": "< 8",
+      "n": 0
+     },
+     {
+      "valeur": "8-10",
+      "libelle": "8–10",
+      "n": 0
+     },
+     {
+      "valeur": "10-12",
+      "libelle": "10–12",
+      "n": 26
+     },
+     {
+      "valeur": ">=12",
+      "libelle": "≥ 12",
+      "n": 11
+     }
+    ],
+    "nonDocumentees": 31
+   },
+   "effets": {
+    "options": [
+     {
+      "valeur": "esters:plus",
+      "libelle": "Esters · fruité +",
+      "n": 298
+     },
+     {
+      "valeur": "esters:moins",
+      "libelle": "Esters · fruité −",
+      "n": 78
+     },
+     {
+      "valeur": "phenols:plus",
+      "libelle": "Phénols · épicé +",
+      "n": 209
+     },
+     {
+      "valeur": "phenols:moins",
+      "libelle": "Phénols · épicé −",
+      "n": 189
+     },
+     {
+      "valeur": "thiols:plus",
+      "libelle": "Thiols +",
+      "n": 48
+     },
+     {
+      "valeur": "thiols:moins",
+      "libelle": "Thiols −",
+      "n": 37
+     },
+     {
+      "valeur": "terpenes:plus",
+      "libelle": "Terpènes +",
+      "n": 4
+     },
+     {
+      "valeur": "terpenes:moins",
+      "libelle": "Terpènes −",
+      "n": 0
+     }
+    ],
+    "nonDocumentees": 732
+   },
+   "clarte": {
+    "options": [
+     {
+      "valeur": "faible",
+      "libelle": "faible",
+      "n": 4
+     },
+     {
+      "valeur": "moyen",
+      "libelle": "moyen",
+      "n": 51
+     },
+     {
+      "valeur": "eleve",
+      "libelle": "élevé",
+      "n": 12
+     }
+    ],
+    "nonDocumentees": 1
+   },
+   "forme": {
+    "options": [
+     {
+      "valeur": "seche",
+      "libelle": "sèche",
+      "n": 4
+     },
+     {
+      "valeur": "liquide",
+      "libelle": "liquide",
+      "n": 11
+     }
+    ],
+    "nonDocumentees": 53
+   },
+   "disponibilite": {
+    "options": [
+     {
+      "valeur": "ici",
+      "libelle": "vendue CH · FR · DE",
+      "n": 2
+     },
+     {
+      "valeur": "europe",
+      "libelle": "fabricant présent en Europe",
+      "n": 3
+     },
+     {
+      "valeur": "rare",
+      "libelle": "rare",
+      "n": 63
+     }
+    ],
+    "nonDocumentees": 0
+   },
+   "stock": {
+    "options": [
+     {
+      "valeur": "oui",
+      "libelle": "j’en ai",
+      "n": 0
+     }
+    ],
+    "nonDocumentees": 0
+   },
+   "sansSta1": {
+    "options": [
+     {
+      "valeur": "oui",
+      "libelle": "sans STA1",
+      "n": 57
+     }
+    ],
+    "nonDocumentees": 6
+   },
+   "labo": {
+    "options": [
+     {
+      "valeur": "Bootleg Biology",
+      "libelle": "Bootleg Biology",
+      "n": 0
+     },
+     {
+      "valeur": "Brewferm / Brouwland",
+      "libelle": "Brewferm / Brouwland",
+      "n": 0
+     },
+     {
+      "valeur": "Brewing Science Institute",
+      "libelle": "Brewing Science Institute",
+      "n": 0
+     },
+     {
+      "valeur": "CellarScience",
+      "libelle": "CellarScience",
+      "n": 0
+     },
+     {
+      "valeur": "Doemens",
+      "libelle": "Doemens",
+      "n": 0
+     },
+     {
+      "valeur": "Escarpment Labs",
+      "libelle": "Escarpment Labs",
+      "n": 36
+     },
+     {
+      "valeur": "Fermentis",
+      "libelle": "Fermentis",
+      "n": 2
+     },
+     {
+      "valeur": "Fermentum Mobile",
+      "libelle": "Fermentum Mobile",
+      "n": 0
+     },
+     {
+      "valeur": "Hefebank Weihenstephan",
+      "libelle": "Hefebank Weihenstephan",
+      "n": 0
+     },
+     {
+      "valeur": "Imperial Yeast",
+      "libelle": "Imperial Yeast",
+      "n": 13
+     },
+     {
+      "valeur": "Kveik Yeastery",
+      "libelle": "Kveik Yeastery",
+      "n": 0
+     },
+     {
+      "valeur": "Lallemand Brewing",
+      "libelle": "Lallemand Brewing",
+      "n": 3
+     },
+     {
+      "valeur": "Mangrove Jack’s",
+      "libelle": "Mangrove Jack’s",
+      "n": 0
+     },
+     {
+      "valeur": "Omega Yeast",
+      "libelle": "Omega Yeast",
+      "n": 14
+     },
+     {
+      "valeur": "The Yeast Bay",
+      "libelle": "The Yeast Bay",
+      "n": 0
+     },
+     {
+      "valeur": "VLB Berlin",
+      "libelle": "VLB Berlin",
+      "n": 0
+     },
+     {
+      "valeur": "WHC Lab",
+      "libelle": "WHC Lab",
+      "n": 0
+     },
+     {
+      "valeur": "White Labs",
+      "libelle": "White Labs",
+      "n": 0
+     },
+     {
+      "valeur": "Wyeast",
+      "libelle": "Wyeast",
+      "n": 0
+     },
+     {
+      "valeur": "Yeastflow",
+      "libelle": "Yeastflow",
+      "n": 0
+     }
+    ],
+    "nonDocumentees": 0
+   },
+   "vitesse": {
+    "options": [
+     {
+      "valeur": "faible",
+      "libelle": "faible",
+      "n": 0
+     },
+     {
+      "valeur": "moyen",
+      "libelle": "moyen",
+      "n": 23
+     },
+     {
+      "valeur": "eleve",
+      "libelle": "élevé",
+      "n": 10
+     }
+    ],
+    "nonDocumentees": 35
+   },
+   "rondeur": {
+    "options": [
+     {
+      "valeur": "faible",
+      "libelle": "faible",
+      "n": 1
+     },
+     {
+      "valeur": "moyen",
+      "libelle": "moyen",
+      "n": 0
+     },
+     {
+      "valeur": "eleve",
+      "libelle": "élevé",
+      "n": 0
+     }
+    ],
+    "nonDocumentees": 67
+   },
+   "soufre": {
+    "options": [
+     {
+      "valeur": "faible",
+      "libelle": "faible",
+      "n": 0
+     },
+     {
+      "valeur": "moyen",
+      "libelle": "moyen",
+      "n": 0
+     },
+     {
+      "valeur": "eleve",
+      "libelle": "élevé",
+      "n": 0
+     }
+    ],
+    "nonDocumentees": 68
+   },
+   "nutriments": {
+    "options": [
+     {
+      "valeur": "faible",
+      "libelle": "faible",
+      "n": 0
+     },
+     {
+      "valeur": "moyen",
+      "libelle": "moyen",
+      "n": 0
+     },
+     {
+      "valeur": "eleve",
+      "libelle": "élevé",
+      "n": 0
+     }
+    ],
+    "nonDocumentees": 68
+   },
+   "sansAlcool": {
+    "options": [
+     {
+      "valeur": "oui",
+      "libelle": "sans alcool",
+      "n": 0
+     }
+    ],
+    "nonDocumentees": 0
+   }
+  }
+ },
+ "temperature-ici": {
+  "total": 6,
+  "resume": "bière · 18–22 °C · vendue CH · FR · DE · 6",
+  "tapee": null,
+  "n": 6,
+  "tete": [
+   "lalbrew-pomona",
+   "lalbrew-verdant-ipa",
+   "lalbrew-novalager",
+   "fermentis-us05",
+   "wyeast-1084",
+   "wyeast-1007"
+  ],
+  "empreinte": "0867a741",
+  "comptes": {
+   "boisson": {
+    "options": [
+     {
+      "valeur": "biere",
+      "libelle": "bière",
+      "n": 6
+     },
+     {
+      "valeur": "vin",
+      "libelle": "vin",
+      "n": 0
+     },
+     {
+      "valeur": "cidre",
+      "libelle": "cidre · hydromel",
+      "n": 0
+     },
+     {
+      "valeur": "distillerie",
+      "libelle": "distillerie",
+      "n": 0
+     },
+     {
+      "valeur": "autre",
+      "libelle": "autre",
+      "n": 0
+     }
+    ],
+    "nonDocumentees": 0
+   },
+   "famille": {
+    "options": [
+     {
+      "valeur": "ale",
+      "libelle": "ale US · neutre",
+      "n": 4
+     },
+     {
+      "valeur": "anglaise",
+      "libelle": "anglaise",
+      "n": 1
+     },
+     {
+      "valeur": "belge",
+      "libelle": "belge",
+      "n": 0
+     },
+     {
+      "valeur": "saison",
+      "libelle": "saison",
+      "n": 0
+     },
+     {
+      "valeur": "ble",
+      "libelle": "blé",
+      "n": 0
+     },
+     {
+      "valeur": "lager",
+      "libelle": "lager",
+      "n": 1
+     },
+     {
+      "valeur": "kveik",
+      "libelle": "kveik",
+      "n": 0
+     },
+     {
+      "valeur": "brett",
+      "libelle": "Brett",
+      "n": 0
+     },
+     {
+      "valeur": "bacteries",
+      "libelle": "bactéries",
+      "n": 0
+     },
+     {
+      "valeur": "melange",
+      "libelle": "mélange",
+      "n": 0
+     }
+    ],
+    "nonDocumentees": 0
+   },
+   "style": {
+    "options": [
+     {
+      "valeur": "weissbier",
+      "libelle": "Weissbier · Hefeweizen",
+      "n": 0
+     },
+     {
+      "valeur": "witbier",
+      "libelle": "Witbier · blanche belge",
+      "n": 0
+     },
+     {
+      "valeur": "american-wheat",
+      "libelle": "Blé américain",
+      "n": 0
+     },
+     {
+      "valeur": "hazy-ipa",
+      "libelle": "Hazy · NEIPA",
+      "n": 0
+     },
+     {
+      "valeur": "clean-ale",
+      "libelle": "Ale nette · Pale / IPA",
+      "n": 0
+     },
+     {
+      "valeur": "english-ale",
+      "libelle": "Ale anglaise",
+      "n": 0
+     },
+     {
+      "valeur": "lager",
+      "libelle": "Lager",
+      "n": 1
+     },
+     {
+      "valeur": "saison",
+      "libelle": "Saison",
+      "n": 0
+     },
+     {
+      "valeur": "belgian-ale",
+      "libelle": "Ale belge · abbaye",
+      "n": 0
+     },
+     {
+      "valeur": "stout-porter",
+      "libelle": "Stout · Porter",
+      "n": 0
+     },
+     {
+      "valeur": "kolsch-alt",
+      "libelle": "Kölsch · Altbier",
+      "n": 0
+     },
+     {
+      "valeur": "sour",
+      "libelle": "Bières acidulées · fermentations mixtes",
+      "n": 0
+     }
+    ],
+    "nonDocumentees": 5
+   },
+   "temperature": {
+    "options": [
+     {
+      "valeur": "<15",
+      "libelle": "< 15",
+      "n": 0
+     },
+     {
+      "valeur": "15-18",
+      "libelle": "15–18",
+      "n": 2
+     },
+     {
+      "valeur": "18-22",
+      "libelle": "18–22",
+      "n": 3
+     },
+     {
+      "valeur": "22-26",
+      "libelle": "22–26",
+      "n": 1
+     },
+     {
+      "valeur": ">=26",
+      "libelle": "≥ 26",
+      "n": 0
+     }
+    ],
+    "nonDocumentees": 0
+   },
+   "attenuation": {
+    "options": [
+     {
+      "valeur": "<70",
+      "libelle": "< 70",
+      "n": 0
+     },
+     {
+      "valeur": "70-75",
+      "libelle": "70–75",
+      "n": 1
+     },
+     {
+      "valeur": "75-80",
+      "libelle": "75–80",
+      "n": 3
+     },
+     {
+      "valeur": "80-85",
+      "libelle": "80–85",
+      "n": 2
+     },
+     {
+      "valeur": ">=85",
+      "libelle": "≥ 85",
+      "n": 0
+     }
+    ],
+    "nonDocumentees": 0
+   },
+   "tolerance": {
+    "options": [
+     {
+      "valeur": "<8",
+      "libelle": "< 8",
+      "n": 0
+     },
+     {
+      "valeur": "8-10",
+      "libelle": "8–10",
+      "n": 0
+     },
+     {
+      "valeur": "10-12",
+      "libelle": "10–12",
+      "n": 3
+     },
+     {
+      "valeur": ">=12",
+      "libelle": "≥ 12",
+      "n": 3
+     }
+    ],
+    "nonDocumentees": 0
+   },
+   "effets": {
+    "options": [
+     {
+      "valeur": "esters:plus",
+      "libelle": "Esters · fruité +",
+      "n": 3
+     },
+     {
+      "valeur": "esters:moins",
+      "libelle": "Esters · fruité −",
+      "n": 2
+     },
+     {
+      "valeur": "phenols:plus",
+      "libelle": "Phénols · épicé +",
+      "n": 0
+     },
+     {
+      "valeur": "phenols:moins",
+      "libelle": "Phénols · épicé −",
+      "n": 3
+     },
+     {
+      "valeur": "thiols:plus",
+      "libelle": "Thiols +",
+      "n": 1
+     },
+     {
+      "valeur": "thiols:moins",
+      "libelle": "Thiols −",
+      "n": 0
+     },
+     {
+      "valeur": "terpenes:plus",
+      "libelle": "Terpènes +",
+      "n": 1
+     },
+     {
+      "valeur": "terpenes:moins",
+      "libelle": "Terpènes −",
+      "n": 0
+     }
+    ],
+    "nonDocumentees": 0
+   },
+   "clarte": {
+    "options": [
+     {
+      "valeur": "faible",
+      "libelle": "faible",
+      "n": 1
+     },
+     {
+      "valeur": "moyen",
+      "libelle": "moyen",
+      "n": 4
+     },
+     {
+      "valeur": "eleve",
+      "libelle": "élevé",
+      "n": 0
+     }
+    ],
+    "nonDocumentees": 1
+   },
+   "forme": {
+    "options": [
+     {
+      "valeur": "seche",
+      "libelle": "sèche",
+      "n": 4
+     },
+     {
+      "valeur": "liquide",
+      "libelle": "liquide",
+      "n": 0
+     }
+    ],
+    "nonDocumentees": 2
+   },
+   "disponibilite": {
+    "options": [
+     {
+      "valeur": "ici",
+      "libelle": "vendue CH · FR · DE",
+      "n": 6
+     },
+     {
+      "valeur": "europe",
+      "libelle": "fabricant présent en Europe",
+      "n": 293
+     },
+     {
+      "valeur": "rare",
+      "libelle": "rare",
+      "n": 269
+     }
+    ],
+    "nonDocumentees": 0
+   },
+   "stock": {
+    "options": [
+     {
+      "valeur": "oui",
+      "libelle": "j’en ai",
+      "n": 0
+     }
+    ],
+    "nonDocumentees": 0
+   },
+   "sansSta1": {
+    "options": [
+     {
+      "valeur": "oui",
+      "libelle": "sans STA1",
+      "n": 0
+     }
+    ],
+    "nonDocumentees": 6
+   },
+   "labo": {
+    "options": [
+     {
+      "valeur": "Bootleg Biology",
+      "libelle": "Bootleg Biology",
+      "n": 0
+     },
+     {
+      "valeur": "Brewferm / Brouwland",
+      "libelle": "Brewferm / Brouwland",
+      "n": 0
+     },
+     {
+      "valeur": "Brewing Science Institute",
+      "libelle": "Brewing Science Institute",
+      "n": 0
+     },
+     {
+      "valeur": "CellarScience",
+      "libelle": "CellarScience",
+      "n": 0
+     },
+     {
+      "valeur": "Doemens",
+      "libelle": "Doemens",
+      "n": 0
+     },
+     {
+      "valeur": "Escarpment Labs",
+      "libelle": "Escarpment Labs",
+      "n": 0
+     },
+     {
+      "valeur": "Fermentis",
+      "libelle": "Fermentis",
+      "n": 1
+     },
+     {
+      "valeur": "Fermentum Mobile",
+      "libelle": "Fermentum Mobile",
+      "n": 0
+     },
+     {
+      "valeur": "Hefebank Weihenstephan",
+      "libelle": "Hefebank Weihenstephan",
+      "n": 0
+     },
+     {
+      "valeur": "Imperial Yeast",
+      "libelle": "Imperial Yeast",
+      "n": 0
+     },
+     {
+      "valeur": "Kveik Yeastery",
+      "libelle": "Kveik Yeastery",
+      "n": 0
+     },
+     {
+      "valeur": "Lallemand Brewing",
+      "libelle": "Lallemand Brewing",
+      "n": 3
+     },
+     {
+      "valeur": "Mangrove Jack’s",
+      "libelle": "Mangrove Jack’s",
+      "n": 0
+     },
+     {
+      "valeur": "Omega Yeast",
+      "libelle": "Omega Yeast",
+      "n": 0
+     },
+     {
+      "valeur": "The Yeast Bay",
+      "libelle": "The Yeast Bay",
+      "n": 0
+     },
+     {
+      "valeur": "VLB Berlin",
+      "libelle": "VLB Berlin",
+      "n": 0
+     },
+     {
+      "valeur": "WHC Lab",
+      "libelle": "WHC Lab",
+      "n": 0
+     },
+     {
+      "valeur": "White Labs",
+      "libelle": "White Labs",
+      "n": 0
+     },
+     {
+      "valeur": "Wyeast",
+      "libelle": "Wyeast",
+      "n": 2
+     },
+     {
+      "valeur": "Yeastflow",
+      "libelle": "Yeastflow",
+      "n": 0
+     }
+    ],
+    "nonDocumentees": 0
+   },
+   "vitesse": {
+    "options": [
+     {
+      "valeur": "faible",
+      "libelle": "faible",
+      "n": 0
+     },
+     {
+      "valeur": "moyen",
+      "libelle": "moyen",
+      "n": 0
+     },
+     {
+      "valeur": "eleve",
+      "libelle": "élevé",
+      "n": 0
+     }
+    ],
+    "nonDocumentees": 6
+   },
+   "rondeur": {
+    "options": [
+     {
+      "valeur": "faible",
+      "libelle": "faible",
+      "n": 0
+     },
+     {
+      "valeur": "moyen",
+      "libelle": "moyen",
+      "n": 1
+     },
+     {
+      "valeur": "eleve",
+      "libelle": "élevé",
+      "n": 0
+     }
+    ],
+    "nonDocumentees": 5
+   },
+   "soufre": {
+    "options": [
+     {
+      "valeur": "faible",
+      "libelle": "faible",
+      "n": 0
+     },
+     {
+      "valeur": "moyen",
+      "libelle": "moyen",
+      "n": 0
+     },
+     {
+      "valeur": "eleve",
+      "libelle": "élevé",
+      "n": 0
+     }
+    ],
+    "nonDocumentees": 6
+   },
+   "nutriments": {
+    "options": [
+     {
+      "valeur": "faible",
+      "libelle": "faible",
+      "n": 0
+     },
+     {
+      "valeur": "moyen",
+      "libelle": "moyen",
+      "n": 0
+     },
+     {
+      "valeur": "eleve",
+      "libelle": "élevé",
+      "n": 0
+     }
+    ],
+    "nonDocumentees": 6
+   },
+   "sansAlcool": {
+    "options": [
+     {
+      "valeur": "oui",
+      "libelle": "sans alcool",
+      "n": 0
+     }
+    ],
+    "nonDocumentees": 0
+   }
+  }
+ },
+ "stock": {
+  "total": 1,
+  "resume": "bière · j’en ai · 1",
+  "tapee": null,
+  "n": 1,
+  "tete": [
+   "fermentis-us05"
+  ],
+  "empreinte": "7b0f77d6",
+  "comptes": {
+   "boisson": {
+    "options": [
+     {
+      "valeur": "biere",
+      "libelle": "bière",
+      "n": 1
+     },
+     {
+      "valeur": "vin",
+      "libelle": "vin",
+      "n": 0
+     },
+     {
+      "valeur": "cidre",
+      "libelle": "cidre · hydromel",
+      "n": 0
+     },
+     {
+      "valeur": "distillerie",
+      "libelle": "distillerie",
+      "n": 0
+     },
+     {
+      "valeur": "autre",
+      "libelle": "autre",
+      "n": 0
+     }
+    ],
+    "nonDocumentees": 0
+   },
+   "famille": {
+    "options": [
+     {
+      "valeur": "ale",
+      "libelle": "ale US · neutre",
+      "n": 1
+     },
+     {
+      "valeur": "anglaise",
+      "libelle": "anglaise",
+      "n": 0
+     },
+     {
+      "valeur": "belge",
+      "libelle": "belge",
+      "n": 0
+     },
+     {
+      "valeur": "saison",
+      "libelle": "saison",
+      "n": 0
+     },
+     {
+      "valeur": "ble",
+      "libelle": "blé",
+      "n": 0
+     },
+     {
+      "valeur": "lager",
+      "libelle": "lager",
+      "n": 0
+     },
+     {
+      "valeur": "kveik",
+      "libelle": "kveik",
+      "n": 0
+     },
+     {
+      "valeur": "brett",
+      "libelle": "Brett",
+      "n": 0
+     },
+     {
+      "valeur": "bacteries",
+      "libelle": "bactéries",
+      "n": 0
+     },
+     {
+      "valeur": "melange",
+      "libelle": "mélange",
+      "n": 0
+     }
+    ],
+    "nonDocumentees": 0
+   },
+   "style": {
+    "options": [
+     {
+      "valeur": "weissbier",
+      "libelle": "Weissbier · Hefeweizen",
+      "n": 0
+     },
+     {
+      "valeur": "witbier",
+      "libelle": "Witbier · blanche belge",
+      "n": 0
+     },
+     {
+      "valeur": "american-wheat",
+      "libelle": "Blé américain",
+      "n": 0
+     },
+     {
+      "valeur": "hazy-ipa",
+      "libelle": "Hazy · NEIPA",
+      "n": 0
+     },
+     {
+      "valeur": "clean-ale",
+      "libelle": "Ale nette · Pale / IPA",
+      "n": 0
+     },
+     {
+      "valeur": "english-ale",
+      "libelle": "Ale anglaise",
+      "n": 0
+     },
+     {
+      "valeur": "lager",
+      "libelle": "Lager",
+      "n": 0
+     },
+     {
+      "valeur": "saison",
+      "libelle": "Saison",
+      "n": 0
+     },
+     {
+      "valeur": "belgian-ale",
+      "libelle": "Ale belge · abbaye",
+      "n": 0
+     },
+     {
+      "valeur": "stout-porter",
+      "libelle": "Stout · Porter",
+      "n": 0
+     },
+     {
+      "valeur": "kolsch-alt",
+      "libelle": "Kölsch · Altbier",
+      "n": 0
+     },
+     {
+      "valeur": "sour",
+      "libelle": "Bières acidulées · fermentations mixtes",
+      "n": 0
+     }
+    ],
+    "nonDocumentees": 1
+   },
+   "temperature": {
+    "options": [
+     {
+      "valeur": "<15",
+      "libelle": "< 15",
+      "n": 0
+     },
+     {
+      "valeur": "15-18",
+      "libelle": "15–18",
+      "n": 0
+     },
+     {
+      "valeur": "18-22",
+      "libelle": "18–22",
+      "n": 0
+     },
+     {
+      "valeur": "22-26",
+      "libelle": "22–26",
+      "n": 1
+     },
+     {
+      "valeur": ">=26",
+      "libelle": "≥ 26",
+      "n": 0
+     }
+    ],
+    "nonDocumentees": 0
+   },
+   "attenuation": {
+    "options": [
+     {
+      "valeur": "<70",
+      "libelle": "< 70",
+      "n": 0
+     },
+     {
+      "valeur": "70-75",
+      "libelle": "70–75",
+      "n": 0
+     },
+     {
+      "valeur": "75-80",
+      "libelle": "75–80",
+      "n": 0
+     },
+     {
+      "valeur": "80-85",
+      "libelle": "80–85",
+      "n": 1
+     },
+     {
+      "valeur": ">=85",
+      "libelle": "≥ 85",
+      "n": 0
+     }
+    ],
+    "nonDocumentees": 0
+   },
+   "tolerance": {
+    "options": [
+     {
+      "valeur": "<8",
+      "libelle": "< 8",
+      "n": 0
+     },
+     {
+      "valeur": "8-10",
+      "libelle": "8–10",
+      "n": 0
+     },
+     {
+      "valeur": "10-12",
+      "libelle": "10–12",
+      "n": 1
+     },
+     {
+      "valeur": ">=12",
+      "libelle": "≥ 12",
+      "n": 0
+     }
+    ],
+    "nonDocumentees": 0
+   },
+   "effets": {
+    "options": [
+     {
+      "valeur": "esters:plus",
+      "libelle": "Esters · fruité +",
+      "n": 0
+     },
+     {
+      "valeur": "esters:moins",
+      "libelle": "Esters · fruité −",
+      "n": 1
+     },
+     {
+      "valeur": "phenols:plus",
+      "libelle": "Phénols · épicé +",
+      "n": 0
+     },
+     {
+      "valeur": "phenols:moins",
+      "libelle": "Phénols · épicé −",
+      "n": 0
+     },
+     {
+      "valeur": "thiols:plus",
+      "libelle": "Thiols +",
+      "n": 0
+     },
+     {
+      "valeur": "thiols:moins",
+      "libelle": "Thiols −",
+      "n": 0
+     },
+     {
+      "valeur": "terpenes:plus",
+      "libelle": "Terpènes +",
+      "n": 0
+     },
+     {
+      "valeur": "terpenes:moins",
+      "libelle": "Terpènes −",
+      "n": 0
+     }
+    ],
+    "nonDocumentees": 0
+   },
+   "clarte": {
+    "options": [
+     {
+      "valeur": "faible",
+      "libelle": "faible",
+      "n": 0
+     },
+     {
+      "valeur": "moyen",
+      "libelle": "moyen",
+      "n": 0
+     },
+     {
+      "valeur": "eleve",
+      "libelle": "élevé",
+      "n": 0
+     }
+    ],
+    "nonDocumentees": 1
+   },
+   "forme": {
+    "options": [
+     {
+      "valeur": "seche",
+      "libelle": "sèche",
+      "n": 1
+     },
+     {
+      "valeur": "liquide",
+      "libelle": "liquide",
+      "n": 0
+     }
+    ],
+    "nonDocumentees": 0
+   },
+   "disponibilite": {
+    "options": [
+     {
+      "valeur": "ici",
+      "libelle": "vendue CH · FR · DE",
+      "n": 1
+     },
+     {
+      "valeur": "europe",
+      "libelle": "fabricant présent en Europe",
+      "n": 0
+     },
+     {
+      "valeur": "rare",
+      "libelle": "rare",
+      "n": 0
+     }
+    ],
+    "nonDocumentees": 0
+   },
+   "stock": {
+    "options": [
+     {
+      "valeur": "oui",
+      "libelle": "j’en ai",
+      "n": 1
+     }
+    ],
+    "nonDocumentees": 0
+   },
+   "sansSta1": {
+    "options": [
+     {
+      "valeur": "oui",
+      "libelle": "sans STA1",
+      "n": 0
+     }
+    ],
+    "nonDocumentees": 1
+   },
+   "labo": {
+    "options": [
+     {
+      "valeur": "Bootleg Biology",
+      "libelle": "Bootleg Biology",
+      "n": 0
+     },
+     {
+      "valeur": "Brewferm / Brouwland",
+      "libelle": "Brewferm / Brouwland",
+      "n": 0
+     },
+     {
+      "valeur": "Brewing Science Institute",
+      "libelle": "Brewing Science Institute",
+      "n": 0
+     },
+     {
+      "valeur": "CellarScience",
+      "libelle": "CellarScience",
+      "n": 0
+     },
+     {
+      "valeur": "Doemens",
+      "libelle": "Doemens",
+      "n": 0
+     },
+     {
+      "valeur": "Escarpment Labs",
+      "libelle": "Escarpment Labs",
+      "n": 0
+     },
+     {
+      "valeur": "Fermentis",
+      "libelle": "Fermentis",
+      "n": 1
+     },
+     {
+      "valeur": "Fermentum Mobile",
+      "libelle": "Fermentum Mobile",
+      "n": 0
+     },
+     {
+      "valeur": "Hefebank Weihenstephan",
+      "libelle": "Hefebank Weihenstephan",
+      "n": 0
+     },
+     {
+      "valeur": "Imperial Yeast",
+      "libelle": "Imperial Yeast",
+      "n": 0
+     },
+     {
+      "valeur": "Kveik Yeastery",
+      "libelle": "Kveik Yeastery",
+      "n": 0
+     },
+     {
+      "valeur": "Lallemand Brewing",
+      "libelle": "Lallemand Brewing",
+      "n": 0
+     },
+     {
+      "valeur": "Mangrove Jack’s",
+      "libelle": "Mangrove Jack’s",
+      "n": 0
+     },
+     {
+      "valeur": "Omega Yeast",
+      "libelle": "Omega Yeast",
+      "n": 0
+     },
+     {
+      "valeur": "The Yeast Bay",
+      "libelle": "The Yeast Bay",
+      "n": 0
+     },
+     {
+      "valeur": "VLB Berlin",
+      "libelle": "VLB Berlin",
+      "n": 0
+     },
+     {
+      "valeur": "WHC Lab",
+      "libelle": "WHC Lab",
+      "n": 0
+     },
+     {
+      "valeur": "White Labs",
+      "libelle": "White Labs",
+      "n": 0
+     },
+     {
+      "valeur": "Wyeast",
+      "libelle": "Wyeast",
+      "n": 0
+     },
+     {
+      "valeur": "Yeastflow",
+      "libelle": "Yeastflow",
+      "n": 0
+     }
+    ],
+    "nonDocumentees": 0
+   },
+   "vitesse": {
+    "options": [
+     {
+      "valeur": "faible",
+      "libelle": "faible",
+      "n": 0
+     },
+     {
+      "valeur": "moyen",
+      "libelle": "moyen",
+      "n": 0
+     },
+     {
+      "valeur": "eleve",
+      "libelle": "élevé",
+      "n": 0
+     }
+    ],
+    "nonDocumentees": 1
+   },
+   "rondeur": {
+    "options": [
+     {
+      "valeur": "faible",
+      "libelle": "faible",
+      "n": 0
+     },
+     {
+      "valeur": "moyen",
+      "libelle": "moyen",
+      "n": 1
+     },
+     {
+      "valeur": "eleve",
+      "libelle": "élevé",
+      "n": 0
+     }
+    ],
+    "nonDocumentees": 0
+   },
+   "soufre": {
+    "options": [
+     {
+      "valeur": "faible",
+      "libelle": "faible",
+      "n": 0
+     },
+     {
+      "valeur": "moyen",
+      "libelle": "moyen",
+      "n": 0
+     },
+     {
+      "valeur": "eleve",
+      "libelle": "élevé",
+      "n": 0
+     }
+    ],
+    "nonDocumentees": 1
+   },
+   "nutriments": {
+    "options": [
+     {
+      "valeur": "faible",
+      "libelle": "faible",
+      "n": 0
+     },
+     {
+      "valeur": "moyen",
+      "libelle": "moyen",
+      "n": 0
+     },
+     {
+      "valeur": "eleve",
+      "libelle": "élevé",
+      "n": 0
+     }
+    ],
+    "nonDocumentees": 1
+   },
+   "sansAlcool": {
+    "options": [
+     {
+      "valeur": "oui",
+      "libelle": "sans alcool",
+      "n": 0
+     }
+    ],
+    "nonDocumentees": 0
+   }
+  }
+ },
+ "cidre": {
+  "total": 18,
+  "resume": "cidre · hydromel · 18",
+  "tapee": null,
+  "n": 18,
+  "tete": [
+   "yeast-fermentis-safcider-ab-1",
+   "yeast-fermentis-safcider-ac-4",
+   "yeast-fermentis-safcider-ac-4-bio",
+   "yeast-fermentis-safcider-as-2",
+   "yeast-fermentis-safcider-tf-6",
+   "yeast-fermentis-safmead-classic",
+   "yeast-fermentis-safmead-twist",
+   "yeast-mangrove-jacks-132048879",
+   "yeast-mangrove-jacks-3513162309",
+   "yeast-mangrove-jacks-9314046279868",
+   "yeast-whc-9596565520723",
+   "white-labs-wlp616",
+   "white-labs-wlp720",
+   "white-labs-wlp773",
+   "white-labs-wlp775",
+   "wyeast-4184",
+   "wyeast-4632",
+   "wyeast-4766"
+  ],
+  "empreinte": "49248060",
+  "comptes": {
+   "boisson": {
+    "options": [
+     {
+      "valeur": "biere",
+      "libelle": "bière",
+      "n": 1308
+     },
+     {
+      "valeur": "vin",
+      "libelle": "vin",
+      "n": 354
+     },
+     {
+      "valeur": "cidre",
+      "libelle": "cidre · hydromel",
+      "n": 18
+     },
+     {
+      "valeur": "distillerie",
+      "libelle": "distillerie",
+      "n": 45
+     },
+     {
+      "valeur": "autre",
+      "libelle": "autre",
+      "n": 9
+     }
+    ],
+    "nonDocumentees": 0
+   },
+   "famille": {
+    "options": [
+     {
+      "valeur": "ale",
+      "libelle": "ale US · neutre",
+      "n": 15
+     },
+     {
+      "valeur": "anglaise",
+      "libelle": "anglaise",
+      "n": 1
+     },
+     {
+      "valeur": "belge",
+      "libelle": "belge",
+      "n": 0
+     },
+     {
+      "valeur": "saison",
+      "libelle": "saison",
+      "n": 0
+     },
+     {
+      "valeur": "ble",
+      "libelle": "blé",
+      "n": 0
+     },
+     {
+      "valeur": "lager",
+      "libelle": "lager",
+      "n": 0
+     },
+     {
+      "valeur": "kveik",
+      "libelle": "kveik",
+      "n": 0
+     },
+     {
+      "valeur": "brett",
+      "libelle": "Brett",
+      "n": 0
+     },
+     {
+      "valeur": "bacteries",
+      "libelle": "bactéries",
+      "n": 1
+     },
+     {
+      "valeur": "melange",
+      "libelle": "mélange",
+      "n": 1
+     }
+    ],
+    "nonDocumentees": 0
+   },
+   "style": {
+    "options": [
+     {
+      "valeur": "weissbier",
+      "libelle": "Weissbier · Hefeweizen",
+      "n": 0
+     },
+     {
+      "valeur": "witbier",
+      "libelle": "Witbier · blanche belge",
+      "n": 0
+     },
+     {
+      "valeur": "american-wheat",
+      "libelle": "Blé américain",
+      "n": 0
+     },
+     {
+      "valeur": "hazy-ipa",
+      "libelle": "Hazy · NEIPA",
+      "n": 0
+     },
+     {
+      "valeur": "clean-ale",
+      "libelle": "Ale nette · Pale / IPA",
+      "n": 0
+     },
+     {
+      "valeur": "english-ale",
+      "libelle": "Ale anglaise",
+      "n": 0
+     },
+     {
+      "valeur": "lager",
+      "libelle": "Lager",
+      "n": 0
+     },
+     {
+      "valeur": "saison",
+      "libelle": "Saison",
+      "n": 0
+     },
+     {
+      "valeur": "belgian-ale",
+      "libelle": "Ale belge · abbaye",
+      "n": 0
+     },
+     {
+      "valeur": "stout-porter",
+      "libelle": "Stout · Porter",
+      "n": 0
+     },
+     {
+      "valeur": "kolsch-alt",
+      "libelle": "Kölsch · Altbier",
+      "n": 0
+     },
+     {
+      "valeur": "sour",
+      "libelle": "Bières acidulées · fermentations mixtes",
+      "n": 0
+     }
+    ],
+    "nonDocumentees": 18
+   },
+   "temperature": {
+    "options": [
+     {
+      "valeur": "<15",
+      "libelle": "< 15",
+      "n": 0
+     },
+     {
+      "valeur": "15-18",
+      "libelle": "15–18",
+      "n": 1
+     },
+     {
+      "valeur": "18-22",
+      "libelle": "18–22",
+      "n": 7
+     },
+     {
+      "valeur": "22-26",
+      "libelle": "22–26",
+      "n": 4
+     },
+     {
+      "valeur": ">=26",
+      "libelle": "≥ 26",
+      "n": 1
+     }
+    ],
+    "nonDocumentees": 5
+   },
+   "attenuation": {
+    "options": [
+     {
+      "valeur": "<70",
+      "libelle": "< 70",
+      "n": 0
+     },
+     {
+      "valeur": "70-75",
+      "libelle": "70–75",
+      "n": 0
+     },
+     {
+      "valeur": "75-80",
+      "libelle": "75–80",
+      "n": 1
+     },
+     {
+      "valeur": "80-85",
+      "libelle": "80–85",
+      "n": 1
+     },
+     {
+      "valeur": ">=85",
+      "libelle": "≥ 85",
+      "n": 3
+     }
+    ],
+    "nonDocumentees": 13
+   },
+   "tolerance": {
+    "options": [
+     {
+      "valeur": "<8",
+      "libelle": "< 8",
+      "n": 0
+     },
+     {
+      "valeur": "8-10",
+      "libelle": "8–10",
+      "n": 0
+     },
+     {
+      "valeur": "10-12",
+      "libelle": "10–12",
+      "n": 3
+     },
+     {
+      "valeur": ">=12",
+      "libelle": "≥ 12",
+      "n": 7
+     }
+    ],
+    "nonDocumentees": 8
+   },
+   "effets": {
+    "options": [
+     {
+      "valeur": "esters:plus",
+      "libelle": "Esters · fruité +",
+      "n": 3
+     },
+     {
+      "valeur": "esters:moins",
+      "libelle": "Esters · fruité −",
+      "n": 1
+     },
+     {
+      "valeur": "phenols:plus",
+      "libelle": "Phénols · épicé +",
+      "n": 0
+     },
+     {
+      "valeur": "phenols:moins",
+      "libelle": "Phénols · épicé −",
+      "n": 0
+     },
+     {
+      "valeur": "thiols:plus",
+      "libelle": "Thiols +",
+      "n": 0
+     },
+     {
+      "valeur": "thiols:moins",
+      "libelle": "Thiols −",
+      "n": 0
+     },
+     {
+      "valeur": "terpenes:plus",
+      "libelle": "Terpènes +",
+      "n": 0
+     },
+     {
+      "valeur": "terpenes:moins",
+      "libelle": "Terpènes −",
+      "n": 0
+     }
+    ],
+    "nonDocumentees": 12
+   },
+   "clarte": {
+    "options": [
+     {
+      "valeur": "faible",
+      "libelle": "faible",
+      "n": 2
+     },
+     {
+      "valeur": "moyen",
+      "libelle": "moyen",
+      "n": 4
+     },
+     {
+      "valeur": "eleve",
+      "libelle": "élevé",
+      "n": 3
+     }
+    ],
+    "nonDocumentees": 9
+   },
+   "forme": {
+    "options": [
+     {
+      "valeur": "seche",
+      "libelle": "sèche",
+      "n": 3
+     },
+     {
+      "valeur": "liquide",
+      "libelle": "liquide",
+      "n": 0
+     }
+    ],
+    "nonDocumentees": 15
+   },
+   "disponibilite": {
+    "options": [
+     {
+      "valeur": "ici",
+      "libelle": "vendue CH · FR · DE",
+      "n": 0
+     },
+     {
+      "valeur": "europe",
+      "libelle": "fabricant présent en Europe",
+      "n": 18
+     },
+     {
+      "valeur": "rare",
+      "libelle": "rare",
+      "n": 0
+     }
+    ],
+    "nonDocumentees": 0
+   },
+   "stock": {
+    "options": [
+     {
+      "valeur": "oui",
+      "libelle": "j’en ai",
+      "n": 0
+     }
+    ],
+    "nonDocumentees": 0
+   },
+   "sansSta1": {
+    "options": [
+     {
+      "valeur": "oui",
+      "libelle": "sans STA1",
+      "n": 4
+     }
+    ],
+    "nonDocumentees": 14
+   },
+   "labo": {
+    "options": [
+     {
+      "valeur": "Bootleg Biology",
+      "libelle": "Bootleg Biology",
+      "n": 0
+     },
+     {
+      "valeur": "Brewferm / Brouwland",
+      "libelle": "Brewferm / Brouwland",
+      "n": 0
+     },
+     {
+      "valeur": "Brewing Science Institute",
+      "libelle": "Brewing Science Institute",
+      "n": 0
+     },
+     {
+      "valeur": "CellarScience",
+      "libelle": "CellarScience",
+      "n": 0
+     },
+     {
+      "valeur": "Doemens",
+      "libelle": "Doemens",
+      "n": 0
+     },
+     {
+      "valeur": "Escarpment Labs",
+      "libelle": "Escarpment Labs",
+      "n": 0
+     },
+     {
+      "valeur": "Fermentis",
+      "libelle": "Fermentis",
+      "n": 7
+     },
+     {
+      "valeur": "Fermentum Mobile",
+      "libelle": "Fermentum Mobile",
+      "n": 0
+     },
+     {
+      "valeur": "Hefebank Weihenstephan",
+      "libelle": "Hefebank Weihenstephan",
+      "n": 0
+     },
+     {
+      "valeur": "Imperial Yeast",
+      "libelle": "Imperial Yeast",
+      "n": 0
+     },
+     {
+      "valeur": "Kveik Yeastery",
+      "libelle": "Kveik Yeastery",
+      "n": 0
+     },
+     {
+      "valeur": "Lallemand Brewing",
+      "libelle": "Lallemand Brewing",
+      "n": 0
+     },
+     {
+      "valeur": "Mangrove Jack’s",
+      "libelle": "Mangrove Jack’s",
+      "n": 3
+     },
+     {
+      "valeur": "Omega Yeast",
+      "libelle": "Omega Yeast",
+      "n": 0
+     },
+     {
+      "valeur": "The Yeast Bay",
+      "libelle": "The Yeast Bay",
+      "n": 0
+     },
+     {
+      "valeur": "VLB Berlin",
+      "libelle": "VLB Berlin",
+      "n": 0
+     },
+     {
+      "valeur": "WHC Lab",
+      "libelle": "WHC Lab",
+      "n": 1
+     },
+     {
+      "valeur": "White Labs",
+      "libelle": "White Labs",
+      "n": 4
+     },
+     {
+      "valeur": "Wyeast",
+      "libelle": "Wyeast",
+      "n": 3
+     },
+     {
+      "valeur": "Yeastflow",
+      "libelle": "Yeastflow",
+      "n": 0
+     }
+    ],
+    "nonDocumentees": 0
+   },
+   "vitesse": {
+    "options": [
+     {
+      "valeur": "faible",
+      "libelle": "faible",
+      "n": 0
+     },
+     {
+      "valeur": "moyen",
+      "libelle": "moyen",
+      "n": 0
+     },
+     {
+      "valeur": "eleve",
+      "libelle": "élevé",
+      "n": 0
+     }
+    ],
+    "nonDocumentees": 18
+   },
+   "rondeur": {
+    "options": [
+     {
+      "valeur": "faible",
+      "libelle": "faible",
+      "n": 0
+     },
+     {
+      "valeur": "moyen",
+      "libelle": "moyen",
+      "n": 0
+     },
+     {
+      "valeur": "eleve",
+      "libelle": "élevé",
+      "n": 0
+     }
+    ],
+    "nonDocumentees": 18
+   },
+   "soufre": {
+    "options": [
+     {
+      "valeur": "faible",
+      "libelle": "faible",
+      "n": 1
+     },
+     {
+      "valeur": "moyen",
+      "libelle": "moyen",
+      "n": 0
+     },
+     {
+      "valeur": "eleve",
+      "libelle": "élevé",
+      "n": 0
+     }
+    ],
+    "nonDocumentees": 17
+   },
+   "nutriments": {
+    "options": [
+     {
+      "valeur": "faible",
+      "libelle": "faible",
+      "n": 1
+     },
+     {
+      "valeur": "moyen",
+      "libelle": "moyen",
+      "n": 1
+     },
+     {
+      "valeur": "eleve",
+      "libelle": "élevé",
+      "n": 0
+     }
+    ],
+    "nonDocumentees": 16
+   },
+   "sansAlcool": {
+    "options": [
+     {
+      "valeur": "oui",
+      "libelle": "sans alcool",
+      "n": 0
+     }
+    ],
+    "nonDocumentees": 0
+   }
+  }
+ },
+ "trois-filtres": {
+  "total": 3,
+  "resume": "bière · 75–85 % · élevé · Fermentis · 3",
+  "tapee": null,
+  "n": 3,
+  "tete": [
+   "yeast-fermentis-safale-be-e2-80-91256",
+   "yeast-fermentis-saflager-s-189",
+   "yeast-fermentis-saflager-s-e2-80-9123"
+  ],
+  "empreinte": "541bea11",
+  "comptes": {
+   "boisson": {
+    "options": [
+     {
+      "valeur": "biere",
+      "libelle": "bière",
+      "n": 3
+     },
+     {
+      "valeur": "vin",
+      "libelle": "vin",
+      "n": 0
+     },
+     {
+      "valeur": "cidre",
+      "libelle": "cidre · hydromel",
+      "n": 0
+     },
+     {
+      "valeur": "distillerie",
+      "libelle": "distillerie",
+      "n": 0
+     },
+     {
+      "valeur": "autre",
+      "libelle": "autre",
+      "n": 0
+     }
+    ],
+    "nonDocumentees": 0
+   },
+   "famille": {
+    "options": [
+     {
+      "valeur": "ale",
+      "libelle": "ale US · neutre",
+      "n": 0
+     },
+     {
+      "valeur": "anglaise",
+      "libelle": "anglaise",
+      "n": 0
+     },
+     {
+      "valeur": "belge",
+      "libelle": "belge",
+      "n": 0
+     },
+     {
+      "valeur": "saison",
+      "libelle": "saison",
+      "n": 0
+     },
+     {
+      "valeur": "ble",
+      "libelle": "blé",
+      "n": 0
+     },
+     {
+      "valeur": "lager",
+      "libelle": "lager",
+      "n": 0
+     },
+     {
+      "valeur": "kveik",
+      "libelle": "kveik",
+      "n": 0
+     },
+     {
+      "valeur": "brett",
+      "libelle": "Brett",
+      "n": 0
+     },
+     {
+      "valeur": "bacteries",
+      "libelle": "bactéries",
+      "n": 0
+     },
+     {
+      "valeur": "melange",
+      "libelle": "mélange",
+      "n": 3
+     }
+    ],
+    "nonDocumentees": 0
+   },
+   "style": {
+    "options": [
+     {
+      "valeur": "weissbier",
+      "libelle": "Weissbier · Hefeweizen",
+      "n": 0
+     },
+     {
+      "valeur": "witbier",
+      "libelle": "Witbier · blanche belge",
+      "n": 0
+     },
+     {
+      "valeur": "american-wheat",
+      "libelle": "Blé américain",
+      "n": 0
+     },
+     {
+      "valeur": "hazy-ipa",
+      "libelle": "Hazy · NEIPA",
+      "n": 0
+     },
+     {
+      "valeur": "clean-ale",
+      "libelle": "Ale nette · Pale / IPA",
+      "n": 0
+     },
+     {
+      "valeur": "english-ale",
+      "libelle": "Ale anglaise",
+      "n": 0
+     },
+     {
+      "valeur": "lager",
+      "libelle": "Lager",
+      "n": 0
+     },
+     {
+      "valeur": "saison",
+      "libelle": "Saison",
+      "n": 0
+     },
+     {
+      "valeur": "belgian-ale",
+      "libelle": "Ale belge · abbaye",
+      "n": 1
+     },
+     {
+      "valeur": "stout-porter",
+      "libelle": "Stout · Porter",
+      "n": 0
+     },
+     {
+      "valeur": "kolsch-alt",
+      "libelle": "Kölsch · Altbier",
+      "n": 0
+     },
+     {
+      "valeur": "sour",
+      "libelle": "Bières acidulées · fermentations mixtes",
+      "n": 0
+     }
+    ],
+    "nonDocumentees": 2
+   },
+   "temperature": {
+    "options": [
+     {
+      "valeur": "<15",
+      "libelle": "< 15",
+      "n": 0
+     },
+     {
+      "valeur": "15-18",
+      "libelle": "15–18",
+      "n": 2
+     },
+     {
+      "valeur": "18-22",
+      "libelle": "18–22",
+      "n": 0
+     },
+     {
+      "valeur": "22-26",
+      "libelle": "22–26",
+      "n": 1
+     },
+     {
+      "valeur": ">=26",
+      "libelle": "≥ 26",
+      "n": 0
+     }
+    ],
+    "nonDocumentees": 0
+   },
+   "attenuation": {
+    "options": [
+     {
+      "valeur": "<70",
+      "libelle": "< 70",
+      "n": 0
+     },
+     {
+      "valeur": "70-75",
+      "libelle": "70–75",
+      "n": 0
+     },
+     {
+      "valeur": "75-80",
+      "libelle": "75–80",
+      "n": 0
+     },
+     {
+      "valeur": "80-85",
+      "libelle": "80–85",
+      "n": 3
+     },
+     {
+      "valeur": ">=85",
+      "libelle": "≥ 85",
+      "n": 0
+     }
+    ],
+    "nonDocumentees": 0
+   },
+   "tolerance": {
+    "options": [
+     {
+      "valeur": "<8",
+      "libelle": "< 8",
+      "n": 0
+     },
+     {
+      "valeur": "8-10",
+      "libelle": "8–10",
+      "n": 0
+     },
+     {
+      "valeur": "10-12",
+      "libelle": "10–12",
+      "n": 3
+     },
+     {
+      "valeur": ">=12",
+      "libelle": "≥ 12",
+      "n": 0
+     }
+    ],
+    "nonDocumentees": 0
+   },
+   "effets": {
+    "options": [
+     {
+      "valeur": "esters:plus",
+      "libelle": "Esters · fruité +",
+      "n": 1
+     },
+     {
+      "valeur": "esters:moins",
+      "libelle": "Esters · fruité −",
+      "n": 1
+     },
+     {
+      "valeur": "phenols:plus",
+      "libelle": "Phénols · épicé +",
+      "n": 0
+     },
+     {
+      "valeur": "phenols:moins",
+      "libelle": "Phénols · épicé −",
+      "n": 1
+     },
+     {
+      "valeur": "thiols:plus",
+      "libelle": "Thiols +",
+      "n": 0
+     },
+     {
+      "valeur": "thiols:moins",
+      "libelle": "Thiols −",
+      "n": 0
+     },
+     {
+      "valeur": "terpenes:plus",
+      "libelle": "Terpènes +",
+      "n": 0
+     },
+     {
+      "valeur": "terpenes:moins",
+      "libelle": "Terpènes −",
+      "n": 0
+     }
+    ],
+    "nonDocumentees": 1
+   },
+   "clarte": {
+    "options": [
+     {
+      "valeur": "faible",
+      "libelle": "faible",
+      "n": 1
+     },
+     {
+      "valeur": "moyen",
+      "libelle": "moyen",
+      "n": 3
+     },
+     {
+      "valeur": "eleve",
+      "libelle": "élevé",
+      "n": 3
+     }
+    ],
+    "nonDocumentees": 5
+   },
+   "forme": {
+    "options": [
+     {
+      "valeur": "seche",
+      "libelle": "sèche",
+      "n": 3
+     },
+     {
+      "valeur": "liquide",
+      "libelle": "liquide",
+      "n": 0
+     }
+    ],
+    "nonDocumentees": 0
+   },
+   "disponibilite": {
+    "options": [
+     {
+      "valeur": "ici",
+      "libelle": "vendue CH · FR · DE",
+      "n": 0
+     },
+     {
+      "valeur": "europe",
+      "libelle": "fabricant présent en Europe",
+      "n": 3
+     },
+     {
+      "valeur": "rare",
+      "libelle": "rare",
+      "n": 0
+     }
+    ],
+    "nonDocumentees": 0
+   },
+   "stock": {
+    "options": [
+     {
+      "valeur": "oui",
+      "libelle": "j’en ai",
+      "n": 0
+     }
+    ],
+    "nonDocumentees": 0
+   },
+   "sansSta1": {
+    "options": [
+     {
+      "valeur": "oui",
+      "libelle": "sans STA1",
+      "n": 0
+     }
+    ],
+    "nonDocumentees": 3
+   },
+   "labo": {
+    "options": [
+     {
+      "valeur": "Bootleg Biology",
+      "libelle": "Bootleg Biology",
+      "n": 0
+     },
+     {
+      "valeur": "Brewferm / Brouwland",
+      "libelle": "Brewferm / Brouwland",
+      "n": 0
+     },
+     {
+      "valeur": "Brewing Science Institute",
+      "libelle": "Brewing Science Institute",
+      "n": 9
+     },
+     {
+      "valeur": "CellarScience",
+      "libelle": "CellarScience",
+      "n": 2
+     },
+     {
+      "valeur": "Doemens",
+      "libelle": "Doemens",
+      "n": 0
+     },
+     {
+      "valeur": "Escarpment Labs",
+      "libelle": "Escarpment Labs",
+      "n": 12
+     },
+     {
+      "valeur": "Fermentis",
+      "libelle": "Fermentis",
+      "n": 3
+     },
+     {
+      "valeur": "Fermentum Mobile",
+      "libelle": "Fermentum Mobile",
+      "n": 0
+     },
+     {
+      "valeur": "Hefebank Weihenstephan",
+      "libelle": "Hefebank Weihenstephan",
+      "n": 0
+     },
+     {
+      "valeur": "Imperial Yeast",
+      "libelle": "Imperial Yeast",
+      "n": 6
+     },
+     {
+      "valeur": "Kveik Yeastery",
+      "libelle": "Kveik Yeastery",
+      "n": 0
+     },
+     {
+      "valeur": "Lallemand Brewing",
+      "libelle": "Lallemand Brewing",
+      "n": 8
+     },
+     {
+      "valeur": "Mangrove Jack’s",
+      "libelle": "Mangrove Jack’s",
+      "n": 9
+     },
+     {
+      "valeur": "Omega Yeast",
+      "libelle": "Omega Yeast",
+      "n": 2
+     },
+     {
+      "valeur": "The Yeast Bay",
+      "libelle": "The Yeast Bay",
+      "n": 0
+     },
+     {
+      "valeur": "VLB Berlin",
+      "libelle": "VLB Berlin",
+      "n": 0
+     },
+     {
+      "valeur": "WHC Lab",
+      "libelle": "WHC Lab",
+      "n": 0
+     },
+     {
+      "valeur": "White Labs",
+      "libelle": "White Labs",
+      "n": 10
+     },
+     {
+      "valeur": "Wyeast",
+      "libelle": "Wyeast",
+      "n": 6
+     },
+     {
+      "valeur": "Yeastflow",
+      "libelle": "Yeastflow",
+      "n": 6
+     }
+    ],
+    "nonDocumentees": 0
+   },
+   "vitesse": {
+    "options": [
+     {
+      "valeur": "faible",
+      "libelle": "faible",
+      "n": 0
+     },
+     {
+      "valeur": "moyen",
+      "libelle": "moyen",
+      "n": 0
+     },
+     {
+      "valeur": "eleve",
+      "libelle": "élevé",
+      "n": 1
+     }
+    ],
+    "nonDocumentees": 2
+   },
+   "rondeur": {
+    "options": [
+     {
+      "valeur": "faible",
+      "libelle": "faible",
+      "n": 1
+     },
+     {
+      "valeur": "moyen",
+      "libelle": "moyen",
+      "n": 0
+     },
+     {
+      "valeur": "eleve",
+      "libelle": "élevé",
+      "n": 0
+     }
+    ],
+    "nonDocumentees": 2
+   },
+   "soufre": {
+    "options": [
+     {
+      "valeur": "faible",
+      "libelle": "faible",
+      "n": 0
+     },
+     {
+      "valeur": "moyen",
+      "libelle": "moyen",
+      "n": 0
+     },
+     {
+      "valeur": "eleve",
+      "libelle": "élevé",
+      "n": 0
+     }
+    ],
+    "nonDocumentees": 3
+   },
+   "nutriments": {
+    "options": [
+     {
+      "valeur": "faible",
+      "libelle": "faible",
+      "n": 0
+     },
+     {
+      "valeur": "moyen",
+      "libelle": "moyen",
+      "n": 0
+     },
+     {
+      "valeur": "eleve",
+      "libelle": "élevé",
+      "n": 0
+     }
+    ],
+    "nonDocumentees": 3
+   },
+   "sansAlcool": {
+    "options": [
+     {
+      "valeur": "oui",
+      "libelle": "sans alcool",
+      "n": 0
+     }
+    ],
+    "nonDocumentees": 0
+   }
+  }
+ }
+}

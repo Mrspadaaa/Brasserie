@@ -25,8 +25,12 @@ export function HopTastingsPanel({ batch }: { batch?: Batch }) {
     setDraft({ id: crypto.randomUUID(), name: batch?.name ?? '', date, origin: batch ? 'batch' : 'commercial', ...(batch ? { batchId: batch.id } : {}), notes: '', predictionId: null, triplet: null, tripletSource: null,
       axes: structuredClone(axes.map(axis => ({ axis, perceived: null, confidence: 'low' as const }))) }); setError('');
   };
+  const [tried, setTried] = useState(false);
+  const nameMissing = !!draft && !draft.name.trim(), dateMissing = !!draft && !/^\d{4}-\d{2}-\d{2}$/.test(draft.date);
   const save = () => {
-    try { if (draft) StorageService.saveHopTasting(draft); setDraft(null); setError(''); }
+    // BR-108 : le champ fautif est marqué, au lieu d'un « Dégustation invalide. » sans champ.
+    if (nameMissing || dateMissing) { setTried(true); return; }
+    try { if (draft) StorageService.saveHopTasting(draft); setDraft(null); setError(''); setTried(false); }
     catch (e) { setError((e as Error).message); }
   };
   const entries = tastings.filter(t => !batch || t.batchId === batch.id).sort((a, b) => b.date.localeCompare(a.date));
@@ -48,8 +52,8 @@ export function HopTastingsPanel({ batch }: { batch?: Batch }) {
     <Sheet open={!!draft} onClose={() => setDraft(null)} title="Dégustation aromatique" footer={<Button full intent="primary" onClick={save}>Enregistrer la dégustation</Button>}>
       {draft && <div className="space-y-4 pb-4">
         {error && <p role="alert" className="text-alert">{error}</p>}
-        <HopField label="Bière dégustée"><TextInput value={draft.name} onChange={name => setDraft({ ...draft, name })} /></HopField>
-        <HopField label="Date de dégustation"><input type="date" className={inputClass} value={draft.date} onChange={e => setDraft({ ...draft, date: e.target.value })} /></HopField>
+        <HopField label="Bière dégustée" error={tried && nameMissing ? 'Indique la bière dégustée.' : undefined}><TextInput value={draft.name} onChange={name => setDraft({ ...draft, name })} /></HopField>
+        <HopField label="Date de dégustation" error={tried && dateMissing ? 'Indique la date de dégustation.' : undefined}><input type="date" className={inputClass} value={draft.date} onChange={e => setDraft({ ...draft, date: e.target.value })} /></HopField>
         {draft.origin === 'commercial' && <><HopField label="Brasserie"><TextInput value={draft.brewery ?? ''} onChange={brewery => setDraft({ ...draft, brewery })} /></HopField><HopField label="Lot commercial ou DDM"><TextInput value={draft.beerLot ?? ''} onChange={beerLot => setDraft({ ...draft, beerLot })} /></HopField></>}
         <HopField label="Prédiction de référence"><select className={inputClass} value={draft.predictionId ?? ''} onChange={e => {
           const snapshot = predictions.find(p => p.id === e.target.value), selectedAxes = snapshot?.evidence.knowledge.filter((k): k is HopAxis => k.kind === 'axis') ?? axes;

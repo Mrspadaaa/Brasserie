@@ -1,0 +1,315 @@
+<!doctype html><html lang="fr" data-theme="clair"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>s3a — compagnon brasseur — la base sur deux places, chrome sur une ligne</title><style>
+:root{--page:#FFFFFF;--pan:#F5F5F5;--sur:#EBEBEB;--bord:#DDDDDD;--bordm:#BFBFBF;--trait:#9E9E9E;--t2:#666666;--t:#333333;--t0:#111111;
+--act:#111111;--sur-act:#FFFFFF;--hop:#567F45;--hopt:#3F6B2E;--hopf:#EEF4EA;--eau:#4F7E9B;--eaut:#2F5F7D;--eauf:#EAF1F6;
+--alr:#C8382F;--alrt:#A8291F;--alrf:#FBEBEA;--att:#9C7020;--attt:#7F5B10;--attf:#FBF3E2;--fin:#1F64A3;
+--fond:#D4D4D4;--voile:rgba(17,17,17,.30);--ombre:0 -6px 24px rgba(0,0,0,.14);
+--sans:"Source Sans 3","Source Sans Pro",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;--mono:"IBM Plex Mono",ui-monospace,"Cascadia Mono",Consolas,monospace;color-scheme:light}
+[data-theme="cave"]{--page:#12100E;--pan:#1A1613;--sur:#221D19;--bord:#2C2521;--bordm:#3D342E;--trait:#574A42;--t2:#9A8A7E;--t:#D8CEC5;--t0:#F5F0EA;
+--act:#F2C14E;--sur-act:#12100E;--hop:#6E9B5B;--hopt:#86B573;--hopf:#1B2417;--eau:#5B8AA6;--eaut:#5E8CA8;--eauf:#16202A;
+--alr:#D6453D;--alrt:#DC5F58;--alrf:#2A1715;--att:#E3B55D;--attt:#E3B55D;--attf:#2A2114;--fin:#86B9E6;
+--fond:#070605;--voile:rgba(0,0,0,.55);--ombre:0 -8px 32px rgba(0,0,0,.6);color-scheme:dark}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{background:var(--fond);font-family:var(--sans);color:var(--t);-webkit-font-smoothing:antialiased}
+button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
+svg.s3a-i{width:16px;height:16px;flex:none}
+.s3a-n{font-family:var(--mono);font-variant-numeric:tabular-nums}
+.s3a-planche{display:flex;flex-wrap:wrap;gap:28px 20px;padding:20px;align-items:flex-start}
+.s3a-cadre{display:flex;flex-direction:column;gap:8px}
+.s3a-cadre>figcaption{font-size:14px;font-weight:600;color:var(--t0)}
+.s3a-cadre>figcaption span{font-weight:400;color:var(--t2)}
+.s3a-tel{position:relative;width:390px;height:760px;border-radius:28px;overflow:hidden;background:var(--page);border:1px solid var(--bordm);flex:none}
+.s3a-tel.s3a-large{width:1280px}
+.s3a-fond{position:absolute;inset:0;filter:blur(2.5px);pointer-events:none}
+.s3a-voile{position:absolute;inset:0;background:var(--voile)}
+.s3a-ap-tete{height:44px;display:flex;align-items:center;gap:8px;padding:0 12px;border-bottom:1px solid var(--bord);font-weight:700;color:var(--t0);font-size:16px}
+.s3a-ap-ong{display:flex;gap:16px;padding:8px 12px;font-size:13px;color:var(--t2);border-bottom:1px solid var(--bord)}
+.s3a-ap-ong b{color:var(--t0)}
+.s3a-ap-gros{display:flex;align-items:baseline;gap:12px;padding:16px 12px 8px}
+.s3a-ap-gros .s3a-n{font-size:40px;color:var(--t0)}
+@media (max-width:600px){.s3a-planche{padding:0;gap:16px 0}.s3a-cadre>figcaption{padding:0 8px}.s3a-tel.s3a-large{width:390px}}
+.s3a-ap-logo{width:20px;height:20px}
+.s3a-ap-ligne{display:flex;justify-content:space-between;padding:10px 12px;border-bottom:1px solid var(--bord);font-size:14px}
+.s3a-ap-barre{margin:12px;height:10px;border-radius:5px;background:var(--sur);position:relative}
+.s3a-ap-barre i{position:absolute;inset:0 62% 0 0;border-radius:5px;background:var(--hop)}
+
+.s3a-feuille{position:absolute;left:0;right:0;bottom:0;top:52px;background:var(--pan);border-radius:24px 24px 0 0;box-shadow:var(--ombre);display:flex;flex-direction:column;overflow:hidden}
+.s3a-poignee{width:36px;height:4px;border-radius:2px;background:var(--bordm);margin:6px auto 0}
+.s3a-tete{display:flex;align-items:center;gap:2px;height:40px;padding:0 6px 0 12px;border-bottom:1px solid var(--bord)}
+.s3a-tete h2{font-size:16px;font-weight:700;color:var(--t0);white-space:nowrap}
+.s3a-tete .s3a-ctx{font-size:13px;color:var(--t2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0;flex:1;margin-left:6px}
+.s3a-ic{width:28px;height:28px;display:grid;place-items:center;border-radius:10px;color:var(--t2);position:relative}
+.s3a-ic.s3a-on{color:var(--hopt)}
+.s3a-ic .s3a-pt{position:absolute;top:4px;right:4px;width:7px;height:7px;border-radius:50%;background:var(--hop);border:1.5px solid var(--pan)}
+.s3a-fil{flex:1;overflow:hidden;padding:12px 10px;display:flex;flex-direction:column;gap:12px}
+.s3a-pied{border-top:1px solid var(--bord);padding:8px 10px 10px;display:flex;flex-direction:column;gap:6px;background:var(--pan)}
+.s3a-saisie{display:flex;align-items:center;gap:6px}
+.s3a-champ{flex:1;min-width:0;height:40px;border:1px solid var(--bordm);border-radius:10px;background:var(--page);display:flex;align-items:center;gap:6px;padding:0 4px 0 4px}
+.s3a-champ .s3a-txt{font-size:16px;color:var(--t2);flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.s3a-champ .s3a-txt.s3a-plein{color:var(--t0)}
+.s3a-mode{height:28px;display:flex;align-items:center;gap:3px;padding:0 6px 0 8px;border-radius:8px;background:var(--sur);font-size:12px;font-weight:600;color:var(--t)}
+.s3a-mode svg.s3a-i{width:12px;height:12px}
+.s3a-env{width:40px;height:40px;border-radius:10px;background:var(--act);color:var(--sur-act);display:grid;place-items:center}
+.s3a-env.s3a-off{background:var(--sur);color:var(--t2)}
+.s3a-hl{display:flex;align-items:center;gap:6px;font-size:12px;color:var(--attt);font-weight:600}
+/* accueil */
+.s3a-bonjour h3{font-size:18px;color:var(--t0);font-weight:700}
+.s3a-bonjour p{font-size:14px;color:var(--t2);margin-top:2px}
+.s3a-sugg{display:flex;flex-direction:column;border:1px solid var(--bord);border-radius:16px;background:var(--page);overflow:hidden}
+.s3a-sugg button{display:flex;align-items:center;gap:8px;min-height:44px;padding:0 10px;font-size:14px;color:var(--t0);text-align:left;border-top:1px solid var(--bord)}
+.s3a-sugg button:first-child{border-top:0}
+.s3a-sugg button span{flex:1}
+.s3a-sugg button svg{color:var(--hopt)}
+.s3a-titre{font-size:12px;font-weight:600;color:var(--t2)}
+.s3a-lit{display:flex;flex-wrap:wrap;gap:6px}
+.s3a-puce{display:inline-flex;align-items:center;gap:5px;height:28px;padding:0 10px;border-radius:10px;border:1px solid var(--bord);background:var(--page);font-size:13px;color:var(--t)}
+.s3a-puce svg.s3a-i{width:14px;height:14px;color:var(--t2)}
+.s3a-lim{display:flex;align-items:center;gap:8px;font-size:13px;color:var(--t2);margin-top:auto;padding:8px 2px 0;border-top:1px solid var(--bord)}
+.s3a-lim b{color:var(--t0);font-weight:600}
+/* conversation */
+.s3a-q{align-self:flex-end;max-width:84%;background:var(--sur);color:var(--t0);border-radius:16px 16px 4px 16px;padding:8px 10px;font-size:14px;line-height:1.35}
+.s3a-q small{display:block;font-size:12px;color:var(--t2);margin-top:4px}
+.s3a-q.s3a-file{background:transparent;border:1px dashed var(--bordm)}
+.s3a-q.s3a-garde{border:1px solid var(--att)}
+.s3a-cours{border:1px solid var(--bord);background:var(--page);border-radius:16px;padding:10px}
+.s3a-cours-h{display:flex;align-items:center;gap:8px;font-size:14px;font-weight:600;color:var(--t0)}
+.s3a-cours-h .s3a-n{margin-left:auto;font-size:16px;font-weight:500}
+.s3a-etapes{list-style:none;margin:8px 0 6px;display:flex;flex-direction:column;gap:2px}
+.s3a-etapes li{display:flex;align-items:center;gap:8px;font-size:14px;color:var(--t);min-height:26px}
+.s3a-etapes li svg{color:var(--hopt)}
+.s3a-etapes li.s3a-ici{color:var(--t0);font-weight:600}
+.s3a-etapes li.s3a-pas{color:var(--t2)}
+.s3a-rond{width:16px;height:16px;border-radius:50%;border:2px solid var(--bordm);flex:none}
+.s3a-ici .s3a-rond{border-color:var(--hop);border-right-color:transparent}
+.s3a-note{font-size:13px;color:var(--t2);display:flex;gap:6px;align-items:flex-start;line-height:1.35}
+.s3a-note svg.s3a-i{width:14px;height:14px;margin-top:2px}
+.s3a-sep{height:1px;background:var(--bord);margin:6px 0}
+.s3a-lien{font-size:13px;font-weight:600;color:var(--t);height:28px;padding:0 8px;border-radius:10px;border:1px solid var(--bord);background:var(--page);display:inline-flex;align-items:center;gap:5px}
+/* réponse */
+.s3a-rep{display:flex;flex-direction:column;gap:8px}
+.s3a-meta{display:flex;align-items:center;gap:8px;font-size:12px;color:var(--t2)}
+.s3a-niv{display:inline-flex;align-items:center;gap:4px;height:22px;padding:0 8px;border-radius:10px;font-size:12px;font-weight:700}
+.s3a-niv.s3a-att{background:var(--attf);color:var(--attt)}
+.s3a-niv.s3a-info{background:var(--eauf);color:var(--eaut)}
+.s3a-niv svg.s3a-i{width:13px;height:13px}
+.s3a-rep h3{font-size:17px;line-height:1.25;color:var(--t0);font-weight:700}
+.s3a-geste{background:var(--attf);border-radius:10px;padding:8px 10px;font-size:15px;color:var(--t0);font-weight:600}
+.s3a-plie{display:flex;align-items:center;gap:6px;min-height:32px;font-size:13px;color:var(--t);border-top:1px solid var(--bord);padding-top:2px}
+.s3a-plie span{flex:1}
+.s3a-plie em{font-style:normal;color:var(--t2)}
+.s3a-ctl{display:flex;gap:8px;align-items:center;padding:8px 10px;border-radius:10px;background:var(--page);border:1px solid var(--bord)}
+.s3a-ctl div{flex:1;font-size:14px;line-height:1.3;color:var(--t)}
+.s3a-ctl div b{display:block;font-size:12px;color:var(--t2);font-weight:600}
+.s3a-prop{border:1px solid var(--bord);border-radius:16px;background:var(--page);padding:4px 10px 10px}
+.s3a-prop-h{font-size:13px;font-weight:700;color:var(--t0);padding:6px 0 2px}
+.s3a-ch{display:flex;align-items:center;gap:8px;min-height:36px;font-size:14px;border-bottom:1px solid var(--bord)}
+.s3a-ch .s3a-nom{flex:1;color:var(--t0)}
+.s3a-ch .s3a-av{color:var(--t2);text-decoration:line-through;font-size:13px}
+.s3a-ch .s3a-ap{color:var(--t0);font-weight:600;font-size:14px;min-width:38px;text-align:right}
+.s3a-ch svg.s3a-fl{width:13px;height:13px;color:var(--t2)}
+.s3a-case{width:20px;height:20px;border-radius:6px;background:var(--hop);color:#fff;display:grid;place-items:center;flex:none}
+.s3a-case svg.s3a-i{width:14px;height:14px;stroke-width:3}
+.s3a-act{display:flex;gap:8px;justify-content:flex-end;margin-top:8px}
+.s3a-btn{height:32px;padding:0 12px;border-radius:10px;font-size:13px;font-weight:600;display:inline-flex;align-items:center;gap:6px}
+.s3a-btn.s3a-p{background:var(--act);color:var(--sur-act)}
+.s3a-btn.s3a-s{border:1px solid var(--bordm);background:var(--page);color:var(--t0)}
+.s3a-btn.s3a-g{color:var(--t)}
+.s3a-ancien{opacity:.9;display:flex;flex-direction:column;gap:6px;padding-bottom:10px;border-bottom:1px solid var(--bord)}
+.s3a-ancien p{font-size:14px;color:var(--t)}
+.s3a-echec{border:1px solid var(--att);background:var(--attf);border-radius:16px;padding:10px;display:flex;flex-direction:column;gap:6px}
+.s3a-echec h3{display:flex;align-items:center;gap:8px;font-size:16px;color:var(--t0)}
+.s3a-echec h3 svg{color:var(--attt)}
+.s3a-echec p{font-size:14px;color:var(--t);line-height:1.35}
+/* 1280 */
+.s3a-bureau{position:absolute;inset:0;display:flex}
+.s3a-nav{width:200px;border-right:1px solid var(--bord);padding:16px 12px;display:flex;flex-direction:column;gap:4px;background:var(--pan)}
+.s3a-nav b{font-size:16px;color:var(--t0);margin-bottom:12px}
+.s3a-nav span{font-size:14px;color:var(--t2);height:32px;display:flex;align-items:center;padding:0 8px;border-radius:10px}
+.s3a-nav span.s3a-sel{background:var(--sur);color:var(--t0);font-weight:600}
+.s3a-page{flex:1;padding:20px 24px;display:flex;flex-direction:column;gap:12px;min-width:0}
+.s3a-page h1{font-size:20px;color:var(--t0)}
+.s3a-page .s3a-gr{display:flex;gap:24px;align-items:baseline;font-size:14px;color:var(--t2)}
+.s3a-page .s3a-gr .s3a-n{font-size:36px;color:var(--t0)}
+.s3a-tab{border:1px solid var(--bord);border-radius:16px;overflow:hidden}
+.s3a-tab div{display:flex;justify-content:space-between;padding:10px 12px;border-top:1px solid var(--bord);font-size:14px}
+.s3a-tab div:first-child{border-top:0;color:var(--t2);font-size:13px}
+.s3a-tab div.s3a-vise{background:var(--attf)}
+.s3a-lat{width:420px;border-left:1px solid var(--bordm);background:var(--pan);display:flex;flex-direction:column;box-shadow:-8px 0 24px rgba(0,0,0,.08)}
+
+.s3a-plie{text-align:left}
+.s3a-page .s3a-gr .s3a-n{font-size:14px;color:var(--t0)}
+.s3a-page .s3a-gr .s3a-n.s3a-big{font-size:36px}
+.s3a-repr{display:flex;align-items:center;gap:8px;min-height:48px;padding:6px 10px;border:1px solid var(--bord);border-radius:16px;background:var(--page);text-align:left}
+.s3a-repr>span:nth-child(2){flex:1;font-size:14px;color:var(--t0)}
+.s3a-repr small{display:block;font-size:12px;color:var(--t2)}
+.s3a-repr>svg:first-child{color:var(--t2)}
+.s3a-repr b{font-weight:600}
+</style></head><body><svg width="0" height="0" style="position:absolute" aria-hidden="true"><symbol id="s3a-i-x" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18M6 6l12 12"/></symbol><symbol id="s3a-i-fil" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 9a2 2 0 0 1-2 2H6l-4 4V4a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2z"/><path d="M18 9h2a2 2 0 0 1 2 2v11l-4-4h-6a2 2 0 0 1-2-2v-1"/></symbol><symbol id="s3a-i-cloche" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/></symbol><symbol id="s3a-i-bouclier" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z"/></symbol><symbol id="s3a-i-zero" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/></symbol><symbol id="s3a-i-envoyer" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.54 21.69a.5.5 0 0 0 .94-.03l6.5-19a.5.5 0 0 0-.64-.63l-19 6.5a.5.5 0 0 0-.02.93l7.93 3.18a2 2 0 0 1 1.11 1.11z"/><path d="m21.85 2.15-10.94 10.94"/></symbol><symbol id="s3a-i-bas" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></symbol><symbol id="s3a-i-droite" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></symbol><symbol id="s3a-i-gauche" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></symbol><symbol id="s3a-i-ok" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></symbol><symbol id="s3a-i-alerte" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3"/><path d="M12 9v4M12 17h.01"/></symbol><symbol id="s3a-i-horsligne" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h.01M8.5 16.43a5 5 0 0 1 7 0M5 12.86a10 10 0 0 1 5.17-2.69M19 12.86a10 10 0 0 0-2-1.52M2 8.82a15 15 0 0 1 4.18-2.64M22 8.82a15 15 0 0 0-11.29-3.76"/><path d="m2 2 20 20"/></symbol><symbol id="s3a-i-horloge" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></symbol><symbol id="s3a-i-journal" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1 0-5H20"/><path d="M8 7h8M8 11h6"/></symbol><symbol id="s3a-i-eclair" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2 3 14h9l-1 8 10-12h-9z"/></symbol><symbol id="s3a-i-loupe" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></symbol><symbol id="s3a-i-thermo" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 4v10.54a4 4 0 1 1-4 0V4a2 2 0 0 1 4 0Z"/></symbol><symbol id="s3a-i-calcul" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="2" width="16" height="20" rx="2"/><path d="M8 6h8M8 14h.01M12 14h.01M16 14h.01M8 18h.01M12 18h.01M16 18h.01M8 10h.01M12 10h.01M16 10h.01"/></symbol><symbol id="s3a-i-crayon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21.17 6.81a1 1 0 0 0-3.99-3.99L3.84 16.17a2 2 0 0 0-.5.83l-1.32 4.35a.5.5 0 0 0 .62.62l4.35-1.32a2 2 0 0 0 .83-.5z"/></symbol><symbol id="s3a-i-relancer" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8"/><path d="M21 3v5h-5"/><path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16"/><path d="M8 16H3v5"/></symbol><symbol id="s3a-i-fleche" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></symbol><symbol id="s3a-i-telephone" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="2" width="14" height="20" rx="2"/><path d="M12 18h.01"/></symbol><symbol id="s3a-i-livre" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2zM22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></symbol><symbol id="s3a-i-relu" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z"/><path d="m9 12 2 2 4-4"/></symbol><symbol id="s3a-i-panier" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="8" cy="21" r="1"/><circle cx="19" cy="21" r="1"/><path d="M2.05 2.05h2l2.66 12.42a2 2 0 0 0 2 1.58h9.78a2 2 0 0 0 1.95-1.57l1.65-7.43H5.12"/></symbol><symbol id="s3a-i-feuille" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 20A7 7 0 0 1 9.8 6.1C15.5 5 17 4.48 19 2c1 2 2 4.18 2 8 0 5.5-4.78 10-10 10Z"/><path d="M2 21c0-3 1.85-5.36 5.08-6C9.5 14.52 12 13 13 12"/></symbol><symbol id="s3a-i-pression" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m12 14 4-4"/><path d="M3.34 19a10 10 0 1 1 17.32 0"/></symbol><symbol id="s3a-i-question" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3M12 17h.01"/></symbol><symbol id="s3a-i-plus" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14"/></symbol><symbol id="s3a-i-panneau" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M15 3v18"/></symbol><symbol id="s3a-i-goutte" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22a7 7 0 0 0 7-7c0-2-1-3.9-3-5.5s-3.5-4-4-6.5c-.5 2.5-2 4.9-4 6.5C6 11.1 5 13 5 15a7 7 0 0 0 7 7z"/></symbol><symbol id="s3a-i-pause" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="14" y="4" width="4" height="16" rx="1"/><rect x="6" y="4" width="4" height="16" rx="1"/></symbol></svg>
+<main class="s3a-planche"><!--titre:la base sur deux places, chrome sur une ligne-->
+<figure class="s3a-cadre"><figcaption>accueil <span>· depuis la fermentation, J+4</span></figcaption>
+<div class="s3a-tel" data-cadre="accueil"><div class="s3a-fond" aria-hidden="true"><div class="s3a-ap-tete"><img class="s3a-ap-logo" alt="" width="20" height="20" src="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 24 24%27%3E%3Ccircle cx=%2712%27 cy=%2712%27 r=%2710%27 fill=%27%23567F45%27/%3E%3C/svg%3E">Brassin 31 · New England IPA</div>
+<div class="s3a-ap-ong"><span>Recette</span><span>Brassage</span><b>Fermentation</b><span>Journal</span></div>
+<div class="s3a-ap-gros"><span class="s3a-n">19 °C</span><span>J+4 · 19 L</span></div><div class="s3a-ap-barre"><i></i></div>
+<div class="s3a-ap-ligne"><span>Citra · dry hop J+2</span><span class="s3a-n">85 g</span></div>
+<div class="s3a-ap-ligne"><span>Galaxy · dry hop J+6</span><span class="s3a-n">43 g</span></div>
+<div class="s3a-ap-ligne"><span>Mosaic · dry hop J+9</span><span class="s3a-n">43 g</span></div>
+<div class="s3a-ap-ligne"><span>DF relevée</span><span class="s3a-n">1,012</span></div>
+<div class="s3a-ap-ligne"><span>pH de maische visé</span><span class="s3a-n">5,3</span></div></div><div class="s3a-voile"></div>
+<section class="s3a-feuille" aria-label="Compagnon brasseur"><div class="s3a-poignee"></div>
+<header class="s3a-tete"><h2>Compagnon</h2><span class="s3a-ctx">Brassin 31 · J+4</span>
+<button class="s3a-ic" aria-label="Mes conversations"><svg class="s3a-i"><use href="#s3a-i-fil"/></svg><i class="s3a-pt"></i></button>
+<button class="s3a-ic s3a-on" aria-label="Me notifier à la réponse : activé"><svg class="s3a-i"><use href="#s3a-i-cloche"/></svg></button>
+<button class="s3a-ic" aria-label="Limites IA"><svg class="s3a-i"><use href="#s3a-i-bouclier"/></svg></button>
+<button class="s3a-ic" aria-label="Repartir à zéro"><svg class="s3a-i"><use href="#s3a-i-zero"/></svg></button>
+<button class="s3a-ic" aria-label="Fermer"><svg class="s3a-i"><use href="#s3a-i-x"/></svg></button></header>
+<div class="s3a-fil">
+<div class="s3a-bonjour"><h3>On regarde ça ensemble.</h3><p>Brassin 31 en fermentation, <span class="s3a-n">J+4</span> à <span class="s3a-n">19 °C</span>.</p></div>
+<div class="s3a-sugg" data-booster="questions-suggerees">
+<button><svg class="s3a-i"><use href="#s3a-i-pression"/></svg><span>La pression monte doucement : que faire ?</span><svg class="s3a-i"><use href="#s3a-i-droite"/></svg></button>
+<button><svg class="s3a-i"><use href="#s3a-i-feuille"/></svg><span>Galaxy à J+6 : je garde 43 g ?</span><svg class="s3a-i"><use href="#s3a-i-droite"/></svg></button>
+<button><svg class="s3a-i"><use href="#s3a-i-goutte"/></svg><span>DF à 1,012 : la fermentation est finie ?</span><svg class="s3a-i"><use href="#s3a-i-droite"/></svg></button>
+</div>
+<div class="s3a-titre">Je lis, à chaque question</div>
+<div class="s3a-lit"><span class="s3a-puce"><svg class="s3a-i"><use href="#s3a-i-livre"/></svg>Recette NEIPA · 19 L</span><span class="s3a-puce"><svg class="s3a-i"><use href="#s3a-i-thermo"/></svg>Brassin 31</span><span class="s3a-puce"><svg class="s3a-i"><use href="#s3a-i-journal"/></svg>Journal</span><span class="s3a-puce"><svg class="s3a-i"><use href="#s3a-i-calcul"/></svg>Matériel</span></div>
+<div class="s3a-titre">Sur ce brassin</div>
+<button class="s3a-repr"><span class="s3a-niv s3a-info">Info</span><span><b>Densité finale dans la cible.</b><small>Hier · <span class="s3a-n">21:40</span> · DF <span class="s3a-n">1,012</span></small></span><svg class="s3a-i"><use href="#s3a-i-droite"/></svg></button>
+<button class="s3a-repr"><svg class="s3a-i"><use href="#s3a-i-fil"/></svg><span><b>Mes conversations</b><small>1 réponse prête · 1 en cours</small></span><svg class="s3a-i"><use href="#s3a-i-droite"/></svg></button>
+<div class="s3a-lim"><svg class="s3a-i"><use href="#s3a-i-bouclier"/></svg><span><b class="s3a-n">4</b> questions sur <span class="s3a-n">120</span> aujourd'hui · <b class="s3a-n">2,10</b> sur <span class="s3a-n">15 CHF</span> ce mois</span></div>
+</div>
+<footer class="s3a-pied"><div class="s3a-saisie"><div class="s3a-champ"><button class="s3a-mode" data-booster="mode-dans-le-champ" aria-label="Mode : Auto, changer">Auto<svg class="s3a-i"><use href="#s3a-i-bas"/></svg></button><span class="s3a-txt">Décris ce que tu observes…</span></div>
+<button class="s3a-env s3a-off" aria-label="Envoyer"><svg class="s3a-i"><use href="#s3a-i-envoyer"/></svg></button></div></footer>
+</section></div></figure>
+
+<figure class="s3a-cadre"><figcaption>attente <span>· 2:29, une 2e question en file</span></figcaption>
+<div class="s3a-tel" data-cadre="attente"><div class="s3a-fond" aria-hidden="true"><div class="s3a-ap-tete"><img class="s3a-ap-logo" alt="" width="20" height="20" src="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 24 24%27%3E%3Ccircle cx=%2712%27 cy=%2712%27 r=%2710%27 fill=%27%23567F45%27/%3E%3C/svg%3E">Brassin 31 · New England IPA</div>
+<div class="s3a-ap-ong"><span>Recette</span><span>Brassage</span><b>Fermentation</b><span>Journal</span></div>
+<div class="s3a-ap-gros"><span class="s3a-n">19 °C</span><span>J+4 · 19 L</span></div><div class="s3a-ap-barre"><i></i></div>
+<div class="s3a-ap-ligne"><span>Citra · dry hop J+2</span><span class="s3a-n">85 g</span></div>
+<div class="s3a-ap-ligne"><span>Galaxy · dry hop J+6</span><span class="s3a-n">43 g</span></div>
+<div class="s3a-ap-ligne"><span>Mosaic · dry hop J+9</span><span class="s3a-n">43 g</span></div>
+<div class="s3a-ap-ligne"><span>DF relevée</span><span class="s3a-n">1,012</span></div>
+<div class="s3a-ap-ligne"><span>pH de maische visé</span><span class="s3a-n">5,3</span></div></div><div class="s3a-voile"></div>
+<section class="s3a-feuille"><div class="s3a-poignee"></div>
+<header class="s3a-tete"><h2>Compagnon</h2><span class="s3a-ctx">Brassin 31 · J+4</span>
+<button class="s3a-ic" aria-label="Mes conversations"><svg class="s3a-i"><use href="#s3a-i-fil"/></svg></button>
+<button class="s3a-ic s3a-on" aria-label="Me notifier à la réponse : activé"><svg class="s3a-i"><use href="#s3a-i-cloche"/></svg></button>
+<button class="s3a-ic" aria-label="Limites IA"><svg class="s3a-i"><use href="#s3a-i-bouclier"/></svg></button>
+<button class="s3a-ic" aria-label="Repartir à zéro"><svg class="s3a-i"><use href="#s3a-i-zero"/></svg></button>
+<button class="s3a-ic" aria-label="Fermer"><svg class="s3a-i"><use href="#s3a-i-x"/></svg></button></header>
+<div class="s3a-fil">
+<div class="s3a-q">La fermentation est à <span class="s3a-n">19 °C</span> depuis <span class="s3a-n">36 h</span> et la pression monte doucement : que faire ?<small>Envoyée à <span class="s3a-n">22:03</span> · Auto</small></div>
+<div class="s3a-cours" data-booster="etapes-reelles"><div class="s3a-cours-h"><svg class="s3a-i"><use href="#s3a-i-horloge"/></svg>J'y travaille<span class="s3a-n">2:29</span></div>
+<ol class="s3a-etapes">
+<li><svg class="s3a-i"><use href="#s3a-i-ok"/></svg>Brassin et journal lus</li>
+<li><svg class="s3a-i"><use href="#s3a-i-ok"/></svg>Recette, IBU, dry hop et pH calculés</li>
+<li><svg class="s3a-i"><use href="#s3a-i-ok"/></svg>3 sources lues</li>
+<li class="s3a-ici"><span class="s3a-rond"></span>Rédaction</li>
+<li class="s3a-pas"><span class="s3a-rond"></span>Relecture</li></ol>
+<div class="s3a-sep"></div>
+<p class="s3a-note"><svg class="s3a-i"><use href="#s3a-i-alerte"/></svg><span>Plus long que d'habitude (<span class="s3a-n">15</span> à <span class="s3a-n">30 s</span> en Auto). Arrêt au plus tard à <span class="s3a-n">3:40</span>.</span></p>
+<p class="s3a-note"><svg class="s3a-i"><use href="#s3a-i-cloche"/></svg><span>Tu peux continuer ailleurs : je te notifie, la réponse reste ici.</span></p></div>
+<div class="s3a-q s3a-file">Et combien de jours de garde à <span class="s3a-n">18 °C</span> ?<small>En file · partira après cette réponse</small></div>
+<div style="align-self:flex-end"><button class="s3a-lien"><svg class="s3a-i"><use href="#s3a-i-x"/></svg>Retirer de la file</button></div>
+</div>
+<footer class="s3a-pied"><div class="s3a-saisie"><div class="s3a-champ"><button class="s3a-mode" aria-label="Mode : Auto, changer">Auto<svg class="s3a-i"><use href="#s3a-i-bas"/></svg></button><span class="s3a-txt">Ajouter une question…</span></div>
+<button class="s3a-env s3a-off" aria-label="Envoyer"><svg class="s3a-i"><use href="#s3a-i-envoyer"/></svg></button></div></footer>
+</section></div></figure>
+
+<figure class="s3a-cadre"><figcaption>reponse <span>· attention, proposition applicable</span></figcaption>
+<div class="s3a-tel" data-cadre="reponse"><div class="s3a-fond" aria-hidden="true"><div class="s3a-ap-tete"><img class="s3a-ap-logo" alt="" width="20" height="20" src="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 24 24%27%3E%3Ccircle cx=%2712%27 cy=%2712%27 r=%2710%27 fill=%27%23567F45%27/%3E%3C/svg%3E">Brassin 31 · New England IPA</div>
+<div class="s3a-ap-ong"><span>Recette</span><span>Brassage</span><b>Fermentation</b><span>Journal</span></div>
+<div class="s3a-ap-gros"><span class="s3a-n">19 °C</span><span>J+4 · 19 L</span></div><div class="s3a-ap-barre"><i></i></div>
+<div class="s3a-ap-ligne"><span>Citra · dry hop J+2</span><span class="s3a-n">85 g</span></div>
+<div class="s3a-ap-ligne"><span>Galaxy · dry hop J+6</span><span class="s3a-n">43 g</span></div>
+<div class="s3a-ap-ligne"><span>Mosaic · dry hop J+9</span><span class="s3a-n">43 g</span></div>
+<div class="s3a-ap-ligne"><span>DF relevée</span><span class="s3a-n">1,012</span></div>
+<div class="s3a-ap-ligne"><span>pH de maische visé</span><span class="s3a-n">5,3</span></div></div><div class="s3a-voile"></div>
+<section class="s3a-feuille"><div class="s3a-poignee"></div>
+<header class="s3a-tete"><h2>Compagnon</h2><span class="s3a-ctx">Brassin 31 · J+4</span>
+<button class="s3a-ic" aria-label="Mes conversations"><svg class="s3a-i"><use href="#s3a-i-fil"/></svg></button>
+<button class="s3a-ic s3a-on" aria-label="Me notifier à la réponse : activé"><svg class="s3a-i"><use href="#s3a-i-cloche"/></svg></button>
+<button class="s3a-ic" aria-label="Limites IA"><svg class="s3a-i"><use href="#s3a-i-bouclier"/></svg></button>
+<button class="s3a-ic" aria-label="Repartir à zéro"><svg class="s3a-i"><use href="#s3a-i-zero"/></svg></button>
+<button class="s3a-ic" aria-label="Fermer"><svg class="s3a-i"><use href="#s3a-i-x"/></svg></button></header>
+<div class="s3a-fil" style="gap:10px">
+<div class="s3a-rep">
+<div class="s3a-meta"><span class="s3a-niv s3a-att"><svg class="s3a-i"><use href="#s3a-i-alerte"/></svg>Attention</span>Réponse à <span class="s3a-n">22:05</span> · pression à 19 °C</div>
+<h3>Dry hop chargé : réduis le dernier apport.</h3>
+<div class="s3a-geste">Passe Mosaic J+9 de <span class="s3a-n">43 g</span> à <span class="s3a-n">21 g</span>.</div>
+<button class="s3a-plie"><span>Pourquoi <em>· herbacé, <span class="s3a-n">9,0 g/L</span>, garde</em></span><svg class="s3a-i"><use href="#s3a-i-bas"/></svg></button>
+<div class="s3a-ctl"><div><b>Prochain contrôle · J+9</b>Goût et odeur à la purge : note si l'herbacé apparaît.</div><button class="s3a-btn s3a-s" data-booster="garder-au-journal"><svg class="s3a-i"><use href="#s3a-i-journal"/></svg>Au journal</button></div>
+</div>
+<div class="s3a-prop" data-booster="proposition-cases"><div class="s3a-prop-h">Proposition · 3 modifications</div>
+<div class="s3a-ch"><span class="s3a-case" role="checkbox" aria-checked="true"><svg class="s3a-i"><use href="#s3a-i-ok"/></svg></span><span class="s3a-nom">Citra J+2</span><span class="s3a-av s3a-n">85 g</span><svg class="s3a-i s3a-fl"><use href="#s3a-i-fleche"/></svg><span class="s3a-ap s3a-n">70 g</span></div>
+<div class="s3a-ch"><span class="s3a-case" role="checkbox" aria-checked="true"><svg class="s3a-i"><use href="#s3a-i-ok"/></svg></span><span class="s3a-nom">Mosaic J+9</span><span class="s3a-av s3a-n">43 g</span><svg class="s3a-i s3a-fl"><use href="#s3a-i-fleche"/></svg><span class="s3a-ap s3a-n">21 g</span></div>
+<div class="s3a-ch"><span class="s3a-case" role="checkbox" aria-checked="true"><svg class="s3a-i"><use href="#s3a-i-ok"/></svg></span><span class="s3a-nom">Durée du dry hop</span><span class="s3a-av s3a-n">2 j</span><svg class="s3a-i s3a-fl"><use href="#s3a-i-fleche"/></svg><span class="s3a-ap s3a-n">3 j</span></div>
+<div class="s3a-act"><button class="s3a-btn s3a-g">Écarter</button><button class="s3a-btn s3a-p"><svg class="s3a-i"><use href="#s3a-i-ok"/></svg>Valider 3 modifications</button></div></div>
+<button class="s3a-plie"><svg class="s3a-i"><use href="#s3a-i-relu"/></svg><span>Conseil relu <em>· calculs refaits, 3 sources</em></span><svg class="s3a-i"><use href="#s3a-i-bas"/></svg></button>
+<div class="s3a-lit"><button class="s3a-puce"><svg class="s3a-i"><use href="#s3a-i-question"/></svg>Et la garde à 18 °C ?</button><button class="s3a-puce"><svg class="s3a-i"><use href="#s3a-i-question"/></svg>Quand purger ?</button></div>
+</div>
+<footer class="s3a-pied"><div class="s3a-saisie"><div class="s3a-champ"><button class="s3a-mode" aria-label="Mode : Auto, changer">Auto<svg class="s3a-i"><use href="#s3a-i-bas"/></svg></button><span class="s3a-txt">Décris ce que tu observes…</span></div>
+<button class="s3a-env s3a-off" aria-label="Envoyer"><svg class="s3a-i"><use href="#s3a-i-envoyer"/></svg></button></div></footer>
+</section></div></figure>
+
+<figure class="s3a-cadre"><figcaption>erreur <span>· hors ligne, envoi à confirmer</span></figcaption>
+<div class="s3a-tel" data-cadre="erreur"><div class="s3a-fond" aria-hidden="true"><div class="s3a-ap-tete"><img class="s3a-ap-logo" alt="" width="20" height="20" src="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 24 24%27%3E%3Ccircle cx=%2712%27 cy=%2712%27 r=%2710%27 fill=%27%23567F45%27/%3E%3C/svg%3E">Brassin 31 · New England IPA</div>
+<div class="s3a-ap-ong"><span>Recette</span><span>Brassage</span><b>Fermentation</b><span>Journal</span></div>
+<div class="s3a-ap-gros"><span class="s3a-n">19 °C</span><span>J+4 · 19 L</span></div><div class="s3a-ap-barre"><i></i></div>
+<div class="s3a-ap-ligne"><span>Citra · dry hop J+2</span><span class="s3a-n">85 g</span></div>
+<div class="s3a-ap-ligne"><span>Galaxy · dry hop J+6</span><span class="s3a-n">43 g</span></div>
+<div class="s3a-ap-ligne"><span>Mosaic · dry hop J+9</span><span class="s3a-n">43 g</span></div>
+<div class="s3a-ap-ligne"><span>DF relevée</span><span class="s3a-n">1,012</span></div>
+<div class="s3a-ap-ligne"><span>pH de maische visé</span><span class="s3a-n">5,3</span></div></div><div class="s3a-voile"></div>
+<section class="s3a-feuille"><div class="s3a-poignee"></div>
+<header class="s3a-tete"><h2>Compagnon</h2><span class="s3a-ctx">Brassin 31 · J+4</span>
+<button class="s3a-ic" aria-label="Mes conversations"><svg class="s3a-i"><use href="#s3a-i-fil"/></svg></button>
+<button class="s3a-ic s3a-on" aria-label="Me notifier à la réponse : activé"><svg class="s3a-i"><use href="#s3a-i-cloche"/></svg></button>
+<button class="s3a-ic" aria-label="Limites IA"><svg class="s3a-i"><use href="#s3a-i-bouclier"/></svg></button>
+<button class="s3a-ic" aria-label="Repartir à zéro"><svg class="s3a-i"><use href="#s3a-i-zero"/></svg></button>
+<button class="s3a-ic" aria-label="Fermer"><svg class="s3a-i"><use href="#s3a-i-x"/></svg></button></header>
+<div class="s3a-fil">
+<div class="s3a-ancien"><div class="s3a-q">La densité finale est-elle bonne ?</div>
+<div class="s3a-meta"><span class="s3a-niv s3a-info">Info</span>Réponse d'hier · <span class="s3a-n">21:40</span></div>
+<p><b style="color:var(--t0)">Densité finale dans la cible.</b> Rien à changer : passe au dry hop prévu.</p></div>
+<div class="s3a-q s3a-garde">La fermentation est à <span class="s3a-n">19 °C</span> depuis <span class="s3a-n">36 h</span> et la pression monte doucement : que faire ?<small>Gardée sur ce téléphone · pas encore partie</small></div>
+<div class="s3a-echec" data-booster="envoi-a-confirmer"><h3><svg class="s3a-i"><use href="#s3a-i-horsligne"/></svg>Envoi à confirmer</h3>
+<p>Pas de réseau : la réception n'est pas confirmée. Ta question est gardée ici et ne partira qu'une fois.</p>
+<div class="s3a-act" style="justify-content:flex-start"><button class="s3a-btn s3a-p"><svg class="s3a-i"><use href="#s3a-i-relancer"/></svg>Réessayer l'envoi</button><button class="s3a-btn s3a-s"><svg class="s3a-i"><use href="#s3a-i-crayon"/></svg>Reformuler</button></div></div>
+</div>
+<footer class="s3a-pied"><p class="s3a-hl" data-booster="hors-ligne-avant-envoi"><svg class="s3a-i"><use href="#s3a-i-horsligne"/></svg>Hors ligne · une nouvelle question restera sur ce téléphone</p>
+<div class="s3a-saisie"><div class="s3a-champ"><button class="s3a-mode" aria-label="Mode : Auto, changer">Auto<svg class="s3a-i"><use href="#s3a-i-bas"/></svg></button><span class="s3a-txt">Décris ce que tu observes…</span></div>
+<button class="s3a-env s3a-off" aria-label="Garder la question"><svg class="s3a-i"><use href="#s3a-i-envoyer"/></svg></button></div></footer>
+</section></div></figure>
+
+<figure class="s3a-cadre"><figcaption>reponse à 1280 <span>· la feuille devient un panneau latéral, la page reste lisible</span></figcaption>
+<div class="s3a-tel s3a-large" data-cadre="reponse-1280"><div class="s3a-bureau">
+<nav class="s3a-nav"><b>L'Affinée</b><span>Accueil</span><span class="s3a-sel">Production</span><span>Stocks</span><span>Finances</span><span>Agenda</span></nav>
+<div class="s3a-page"><h1>Brassin 31 · New England IPA</h1>
+<div class="s3a-gr"><span class="s3a-n s3a-big">19 °C</span><span>Fermentation <span class="s3a-n">J+4</span> · <span class="s3a-n">19 L</span> · DF <span class="s3a-n">1,012</span></span></div>
+<div class="s3a-tab"><div><span>Dry hop</span><span>Dose</span></div><div><span>Citra · J+2</span><span class="s3a-n">85 g</span></div><div><span>Galaxy · J+6</span><span class="s3a-n">43 g</span></div><div class="s3a-vise"><span>Mosaic · J+9 · visé par la proposition</span><span class="s3a-n">43 g</span></div><div><span>Total</span><span class="s3a-n">171 g · 9,0 g/L</span></div></div></div>
+<aside class="s3a-lat" aria-label="Compagnon brasseur">
+<header class="s3a-tete"><h2>Compagnon</h2><span class="s3a-ctx">Brassin 31 · J+4</span>
+<button class="s3a-ic" aria-label="Mes conversations"><svg class="s3a-i"><use href="#s3a-i-fil"/></svg></button>
+<button class="s3a-ic s3a-on" aria-label="Me notifier à la réponse : activé"><svg class="s3a-i"><use href="#s3a-i-cloche"/></svg></button>
+<button class="s3a-ic" aria-label="Limites IA"><svg class="s3a-i"><use href="#s3a-i-bouclier"/></svg></button>
+<button class="s3a-ic" aria-label="Repartir à zéro"><svg class="s3a-i"><use href="#s3a-i-zero"/></svg></button>
+<button class="s3a-ic" aria-label="Replier le panneau"><svg class="s3a-i"><use href="#s3a-i-panneau"/></svg></button></header>
+<div class="s3a-fil" style="gap:10px">
+<div class="s3a-q">La fermentation est à <span class="s3a-n">19 °C</span> depuis <span class="s3a-n">36 h</span> et la pression monte doucement : que faire ?</div>
+<div class="s3a-rep">
+<div class="s3a-meta"><span class="s3a-niv s3a-att"><svg class="s3a-i"><use href="#s3a-i-alerte"/></svg>Attention</span>Réponse à <span class="s3a-n">22:05</span></div>
+<h3>Dry hop chargé : réduis le dernier apport.</h3>
+<div class="s3a-geste">Passe Mosaic J+9 de <span class="s3a-n">43 g</span> à <span class="s3a-n">21 g</span>.</div>
+<button class="s3a-plie"><span>Pourquoi <em>· herbacé, <span class="s3a-n">9,0 g/L</span>, garde</em></span><svg class="s3a-i"><use href="#s3a-i-bas"/></svg></button>
+<div class="s3a-ctl"><div><b>Prochain contrôle · J+9</b>Goût et odeur à la purge : note si l'herbacé apparaît.</div><button class="s3a-btn s3a-s"><svg class="s3a-i"><use href="#s3a-i-journal"/></svg>Au journal</button></div></div>
+<div class="s3a-prop"><div class="s3a-prop-h">Proposition · 3 modifications</div>
+<div class="s3a-ch"><span class="s3a-case"><svg class="s3a-i"><use href="#s3a-i-ok"/></svg></span><span class="s3a-nom">Citra J+2</span><span class="s3a-av s3a-n">85 g</span><svg class="s3a-i s3a-fl"><use href="#s3a-i-fleche"/></svg><span class="s3a-ap s3a-n">70 g</span></div>
+<div class="s3a-ch"><span class="s3a-case"><svg class="s3a-i"><use href="#s3a-i-ok"/></svg></span><span class="s3a-nom">Mosaic J+9</span><span class="s3a-av s3a-n">43 g</span><svg class="s3a-i s3a-fl"><use href="#s3a-i-fleche"/></svg><span class="s3a-ap s3a-n">21 g</span></div>
+<div class="s3a-ch"><span class="s3a-case"><svg class="s3a-i"><use href="#s3a-i-ok"/></svg></span><span class="s3a-nom">Durée du dry hop</span><span class="s3a-av s3a-n">2 j</span><svg class="s3a-i s3a-fl"><use href="#s3a-i-fleche"/></svg><span class="s3a-ap s3a-n">3 j</span></div>
+<div class="s3a-act"><button class="s3a-btn s3a-g">Écarter</button><button class="s3a-btn s3a-p"><svg class="s3a-i"><use href="#s3a-i-ok"/></svg>Valider 3 modifications</button></div></div>
+<button class="s3a-plie"><svg class="s3a-i"><use href="#s3a-i-relu"/></svg><span>Conseil relu <em>· calculs refaits, 3 sources</em></span><svg class="s3a-i"><use href="#s3a-i-bas"/></svg></button>
+</div>
+<footer class="s3a-pied"><div class="s3a-saisie"><div class="s3a-champ"><button class="s3a-mode" aria-label="Mode : Auto, changer">Auto<svg class="s3a-i"><use href="#s3a-i-bas"/></svg></button><span class="s3a-txt">Décris ce que tu observes…</span></div>
+<button class="s3a-env s3a-off" aria-label="Envoyer"><svg class="s3a-i"><use href="#s3a-i-envoyer"/></svg></button></div></footer>
+</aside></div></div></figure>
+</main></body></html>

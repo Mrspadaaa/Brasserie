@@ -5,7 +5,7 @@ import { BrewWizard } from '../../src/pages/BrewWizard';
 import { defaultConfig } from '../../src/services/storage';
 import { adoptYeastDocumentary, readRecipeDraft, recipeServerBase, serializeRecipeDraft, writeRecipeDraft, type RecipeWizardDraft } from '../../src/services/recipeDraft';
 import { yeastFlowRecipe } from '../fixtures/yeastRecipeFlow';
-import { allerEtape } from '../helpers/wizard';
+import { allerEtape, ouvrirAtelierLevure } from '../helpers/wizard';
 import { captureSnapshot, normalizeRecipe } from '../../src/domain/recipeSnapshot';
 import { recipeSaveIssues } from '../../src/domain/recipeValidation';
 import { readRecipeText, writeRecipeText } from '../../src/domain/recipeTransfer';
@@ -202,6 +202,7 @@ describe('Fiches candidates — traversée du véritable Wizard', () => {
     writeRecipeDraft(key, serializeRecipeDraft(before));
     const save = vi.fn();
     const view = wizard(save);
+    ouvrirAtelierLevure(true);   // reprise d'un brouillon : l'ancienne étape est dans le repli « Atelier complet »
 
     await chooseDirect('M20', m20Label);
     const sheetA = openRecipeSheet(m20Label);
@@ -249,6 +250,7 @@ describe('Fiches candidates — traversée du véritable Wizard', () => {
     view.unmount();
 
     const reopened = wizard(save);
+    ouvrirAtelierLevure(true);   // réouverture du brouillon : l'ancienne étape est dans le repli « Atelier complet »
     await chooseDirect('3638', '3638 · Bavarian Wheat');
     await chooseDirect('M20', m20Label);
     returnedA = openRecipeSheet(m20Label);
@@ -346,6 +348,7 @@ describe('Fiches candidates — traversée du véritable Wizard', () => {
     writeRecipeDraft(key, serializeRecipeDraft(before));
     const save = vi.fn();
     const first = wizard(save);
+    ouvrirAtelierLevure(true);   // reprise d'un brouillon : l'ancienne étape est dans le repli « Atelier complet »
     const sheet = openRecipeSheet(m20Label);
     const hypothesis = within(sheet).getByLabelText('Atténuation retenue pour cette recette, en pourcent');
     fireEvent.change(hypothesis, { target: { value: '73' } }); fireEvent.blur(hypothesis);
@@ -398,6 +401,7 @@ describe('Fiches candidates — traversée du véritable Wizard', () => {
     const local = draft(); local.recipe = resumed; local.serverBase = recipeServerBase(savedSeed);
     writeRecipeDraft(key, serializeRecipeDraft(local));
     wizard(vi.fn(), savedSeed);
+    ouvrirAtelierLevure(true);   // reprise d'un brouillon : l'ancienne étape est dans le repli « Atelier complet »
 
     const state = screen.getByLabelText('État du choix de levure');
     expect(state).toHaveTextContent('Brouillon non enregistré');
@@ -416,6 +420,7 @@ describe('Fiches candidates — traversée du véritable Wizard', () => {
     const before = draft();
     writeRecipeDraft(key, serializeRecipeDraft(before));
     const view = wizard();
+    ouvrirAtelierLevure(true);   // reprise d'un brouillon : l'ancienne étape est dans le repli « Atelier complet »
     const sheet = await openM20();
     const notes = within(sheet).getByRole('group', { name: 'Notes documentaires de la souche' });
     expect(notes).toHaveTextContent('Note documentaire du candidat A.');
@@ -433,6 +438,7 @@ describe('Fiches candidates — traversée du véritable Wizard', () => {
     expect(await openM20()).toHaveTextContent('Note A corrigée localement.');
     view.unmount();
     const reopened = wizard();
+    ouvrirAtelierLevure(true);   // réouverture du brouillon : l'ancienne étape est dans le repli « Atelier complet »
     expect(await openM20()).toHaveTextContent('Note A corrigée localement.');
     expect(readRecipeDraft(key)?.candidateSheets?.[m20Id].documentaryNotes?.[0]).toMatchObject({
       text: 'Note A corrigée localement.', origin: 'personal', source: 'Fiche de test A', sourceUrl: 'https://example.test/a',
@@ -448,6 +454,7 @@ describe('Fiches candidates — traversée du véritable Wizard', () => {
     serialized.draft.candidateSheets = { wrongIdentity: before.candidateSheets![m20Id] };
     writeRecipeDraft(key, JSON.stringify(serialized));
     wizard();
+    ouvrirAtelierLevure(true);   // reprise d'un brouillon : l'ancienne étape est dans le repli « Atelier complet »
     await screen.findByText(/Les fiches candidates de ce brouillon sont invalides/);
     expect(screen.getByRole('region', { name: 'Levure de la recette' })).toHaveTextContent(before.recipe.yeast.name);
     expect(run).not.toHaveBeenCalled();

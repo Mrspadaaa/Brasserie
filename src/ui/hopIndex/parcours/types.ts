@@ -13,6 +13,8 @@ export interface AjoutParcours extends Addition {
   /** α du lot de la recette (HopIngredient.alpha), en % m/m : null = inconnu ; absent = l'α du stock ou de la plage
    * variétale (moteur/donnees.ts). Posé par la conversion de la recette de l'app ; effacé quand le houblon change. */
   alphaLot?: number | null;
+  /** α confirmé par le brasseur (HopIngredient.alphaConfirme) : au-delà de 30 % (BORNES.alphaPct), l'IBU attend cette confirmation. */
+  alphaConfirme?: number;
   /** Whirlpool : température de contact (°C) de la recette de l'app ; absente = le préréglage du moteur (80 °C). */
   tempC?: number;
   /** Raison pour laquelle le moment de la recette de l'app est incomplet (durée de contact inconnue…) : l'IBU de

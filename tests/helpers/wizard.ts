@@ -14,4 +14,15 @@ export function allerEtape(nom: string | RegExp): void {
   const cible = screen.getAllByRole('button', { name: nom })[0];
   if (!cible) throw new Error(`Étape « ${String(nom)} » introuvable dans le fil de l'assistant.`);
   fireEvent.click(cible);
+  ouvrirAtelierLevure();
+}
+
+/**
+ * L'étape Levure (mission levure-port) : l'ancienne étape (YeastRecipeChoice) vit dans le repli « Atelier complet » de Ma levure. Les tests
+ * qui jouent ses gestes l'ouvrent comme le brasseur le toucherait. Une reprise de brouillon ne l'ouvre pas seule : le test le fait ici.
+ */
+export function ouvrirAtelierLevure(strict = false): void {
+  const atelier = document.querySelector<HTMLDetailsElement>('[data-repli="atelier"]');
+  if (!atelier) { if (strict) throw new Error("Repli « Atelier complet » introuvable : l'étape Levure n'est pas affichée."); return; }
+  if (!atelier.open) { atelier.open = true; fireEvent(atelier, new Event('toggle')); }
 }

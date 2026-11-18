@@ -1,0 +1,162 @@
+Serveur 1/1 : npm run dev -- --port 3471 --strictPort  (journal : C:\Users\mrspa\AppData\Local\Temp\with-server-FEkOdf\serveur-1-3471.log)
+Attente du port 3471…
+Serveur prêt sur le port 3471
+
+Tous les serveurs sont prêts. Lancement : node C:/Users/mrspa/.codex/worktrees/openai-clean-start/Brasserie/work/missions/2026-10-31-ecran-depense/voies/e-ecran/capturer-lenteur.mjs --sortie=C:/Users/mrspa/.codex/worktrees/openai-clean-start/Brasserie/work/missions/2026-10-31-ecran-depense/voies/e-finitions/captures
+
+ok tactile390 · provisoire · le fil fait 22 px (maquette : 22 px)
+ok tactile390 · provisoire · Confirmer gris, aria « Vérification en cours »
+ok tactile390 · provisoire · la rangée « Lectures » de la preuve est là
+ok tactile390 · provisoire · aucun débordement horizontal (0 px)
+ok tactile390 · provisoire · aucune erreur de console
+ok tactile390 · lue · le fil est parti
+ok tactile390 · lue · Confirmer est actif (noir)
+ok tactile390 · lue · la puce « ↻ N corrigées » est là (« 3 corrigées »)
+ok tactile390 · lue · la puce est la dernière de la rangée des puces (haut 227.5 ; autres 201.5)
+ok tactile390 · lue · aucun débordement horizontal (0 px)
+ok tactile390 · lue · aucune erreur de console
+ok tactile390 · echec · le fil est parti
+ok tactile390 · echec · Confirmer est actif (noir)
+ok tactile390 · echec · aucune puce, « 2 lectures » : Somme = imprimé46,40Qté × prix7/7·Lectures2 lectures6 reliés6 proposés1 nouveau3 à contrôler2Lecture coupée
+ok tactile390 · echec · aucun débordement horizontal (0 px)
+ok tactile390 · echec · aucune erreur de console
+ok tactile390 · touchee · le fil est parti
+ok tactile390 · touchee · Confirmer est actif (noir)
+ok tactile390 · touchee · la puce « ↻ N corrigées » est là (« 3 corrigées »)
+ok tactile390 · touchee · la puce est la dernière de la rangée des puces (haut 227.5 ; autres 201.5)
+ok tactile390 · touchee · la frappe a pris pendant l'attente (champ : « 12 »)
+ok tactile390 · touchee · la quantité de Pilsner vaut 12 après le final (champ « 12 », rangée « 12 Kg »)
+ok tactile390 · touchee · la quantité tapée n’a pas la marque bleue
+ok tactile390 · touchee · le barré ne montre que le prix (avant : « × 1,45 » : 12 est la sienne, ni « 12 Kg × 1,45 » ni « 10 Kg × 1,45 ») ; le prix, lui, est corrigé
+ok tactile390 · touchee · la puce compte 3 : la rangée de Pilsner reste corrigée par son prix (1,45 → 2,90), seule sa quantité est la sienne (3 corrigées)
+ok tactile390 · touchee · le récap dit « ·Qté × prix6/7 » (coche : false) : 6/7 attendu, sans coche
+ok tactile390 · touchee · le barré de Pilsner ne montre que le prix : « × 1,45 » (attendu « × 1,45 »)
+ok tactile390 · touchee · aucun débordement horizontal (0 px)
+ok tactile390 · touchee · aucune erreur de console
+ok tactile390 · sans-38 · le fil est parti
+ok tactile390 · sans-38 · Confirmer est actif (noir)
+ok tactile390 · sans-38 · aucune puce, la rangée Lectures d’aujourd’hui
+ok tactile390 · sans-38 · aucun débordement horizontal (0 px)
+ok tactile390 · sans-38 · aucune erreur de console
+ok tactile390 · ajoutee · le fil est parti
+ok tactile390 · ajoutee · Confirmer est actif (noir)
+ok tactile390 · ajoutee · la puce « ↻ N corrigées » est là (« 4 corrigées »)
+ok tactile390 · ajoutee · la puce est la dernière de la rangée des puces (haut 229.5 ; autres 203.5)
+ok tactile390 · ajoutee · aucun débordement horizontal (0 px)
+ok tactile390 · ajoutee · aucune erreur de console
+ok tactile390 · perdue · le fil est parti
+ok tactile390 · perdue · Confirmer est actif (noir)
+ok tactile390 · perdue · la puce « ↻ N corrigées » est là (« 4 corrigées »)
+ok tactile390 · perdue · la puce est la dernière de la rangée des puces (haut 227.5 ; autres 201.5)
+ok tactile390 · perdue · le bandeau est au-dessus du pied (bas 786, pied 792, 51 px)
+ok tactile390 · perdue · 1 rangée(s) barrée(s)
+ok tactile390 · perdue · à 390 le bandeau est dans la feuille (8→382)
+ok tactile390 · perdue · aucun débordement horizontal (0 px)
+ok tactile390 · perdue · au bout du défilement (256/256), la dernière rangée (402→431) est entière au-dessus du bandeau (735), corps 40→735
+ok tactile390 · perdue · nom long : montant « 1,70 » entier (201 ≤ 201), nom coupé avec « … » (true, true)
+ok tactile390 · perdue · aucune erreur de console
+ok tactile390 · perdues-2 · le fil est parti
+ok tactile390 · perdues-2 · Confirmer est actif (noir)
+ok tactile390 · perdues-2 · la puce « ↻ N corrigées » est là (« 5 corrigées »)
+ok tactile390 · perdues-2 · la puce est la dernière de la rangée des puces (haut 227.5 ; autres 201.5)
+ok tactile390 · perdues-2 · le bandeau est au-dessus du pied (bas 786, pied 792, 84 px)
+ok tactile390 · perdues-2 · 2 rangée(s) barrée(s)
+ok tactile390 · perdues-2 · à 390 le bandeau est dans la feuille (8→382)
+ok tactile390 · perdues-2 · aucun débordement horizontal (0 px)
+ok tactile390 · perdues-2 · au bout du défilement (318/318), la dernière rangée (369→398) est entière au-dessus du bandeau (702), corps 40→702
+ok tactile390 · perdues-2 · nom long : montant « 1,70 » entier (252 ≤ 252), nom coupé avec « … » (true, true)
+ok tactile390 · perdues-2 · aucune erreur de console
+ok tactile390 · total · le fil est parti
+ok tactile390 · total · Confirmer est actif (noir)
+ok tactile390 · total · la puce « ↻ N corrigées » est là (« 5 corrigées »)
+ok tactile390 · total · la puce est la dernière de la rangée des puces (haut 227.5 ; autres 201.5)
+ok tactile390 · total · aucun débordement horizontal (0 px)
+ok tactile390 · total · aucune erreur de console
+ok tactile390 · entete · le fil est parti
+ok tactile390 · entete · Confirmer est actif (noir)
+ok tactile390 · entete · la case TVA est corrigée, sur un fond bleu (rgba(31, 100, 163, 0.15)) : « TVA3,483,38 »
+ok tactile390 · entete · l'ancienne TVA est barrée (« 3,38 », line-through)
+ok tactile390 · entete · la puce dit « 1 corrigée » (1 corrigée), la case Règlement n'est pas marquée
+ok tactile390 · entete · aucun débordement horizontal (0 px)
+ok tactile390 · entete · aucune erreur de console
+ok pc1280 · provisoire · le fil fait 22 px (maquette : 22 px)
+ok pc1280 · provisoire · Confirmer gris, aria « Vérification en cours »
+ok pc1280 · provisoire · la rangée « Lectures » de la preuve est là
+ok pc1280 · provisoire · aucun débordement horizontal (0 px)
+ok pc1280 · provisoire · aucune erreur de console
+ok pc1280 · lue · le fil est parti
+ok pc1280 · lue · Confirmer est actif (noir)
+ok pc1280 · lue · la puce « ↻ N corrigées » est là (« 3 corrigées »)
+ok pc1280 · lue · la puce est la dernière de la rangée des puces (haut 227.5 ; autres 201.5)
+ok pc1280 · lue · aucun débordement horizontal (0 px)
+ok pc1280 · lue · aucune erreur de console
+ok pc1280 · echec · le fil est parti
+ok pc1280 · echec · Confirmer est actif (noir)
+ok pc1280 · echec · aucune puce, « 2 lectures » : Somme = imprimé46,40Qté × prix7/7·Lectures2 lectures6 reliés6 proposés1 nouveau3 à contrôler2Lecture coupée
+ok pc1280 · echec · aucun débordement horizontal (0 px)
+ok pc1280 · echec · aucune erreur de console
+ok pc1280 · touchee · le fil est parti
+ok pc1280 · touchee · Confirmer est actif (noir)
+ok pc1280 · touchee · la puce « ↻ N corrigées » est là (« 3 corrigées »)
+ok pc1280 · touchee · la puce est la dernière de la rangée des puces (haut 227.5 ; autres 201.5)
+ok pc1280 · touchee · la frappe a pris pendant l'attente (champ : « 12 »)
+ok pc1280 · touchee · la quantité de Pilsner vaut 12 après le final (champ « 12 », rangée « 12 Kg »)
+ok pc1280 · touchee · la quantité tapée n’a pas la marque bleue
+ok pc1280 · touchee · le barré ne montre que le prix (avant : « × 1,45 » : 12 est la sienne, ni « 12 Kg × 1,45 » ni « 10 Kg × 1,45 ») ; le prix, lui, est corrigé
+ok pc1280 · touchee · la puce compte 3 : la rangée de Pilsner reste corrigée par son prix (1,45 → 2,90), seule sa quantité est la sienne (3 corrigées)
+ok pc1280 · touchee · le récap dit « ·Qté × prix6/7 » (coche : false) : 6/7 attendu, sans coche
+ok pc1280 · touchee · le barré de Pilsner ne montre que le prix : « × 1,45 » (attendu « × 1,45 »)
+ok pc1280 · touchee · aucun débordement horizontal (0 px)
+ok pc1280 · touchee · aucune erreur de console
+ok pc1280 · sans-38 · le fil est parti
+ok pc1280 · sans-38 · Confirmer est actif (noir)
+ok pc1280 · sans-38 · aucune puce, la rangée Lectures d’aujourd’hui
+ok pc1280 · sans-38 · aucun débordement horizontal (0 px)
+ok pc1280 · sans-38 · aucune erreur de console
+ok pc1280 · ajoutee · le fil est parti
+ok pc1280 · ajoutee · Confirmer est actif (noir)
+ok pc1280 · ajoutee · la puce « ↻ N corrigées » est là (« 4 corrigées »)
+ok pc1280 · ajoutee · la puce est la dernière de la rangée des puces (haut 229.5 ; autres 203.5)
+ok pc1280 · ajoutee · aucun débordement horizontal (0 px)
+ok pc1280 · ajoutee · aucune erreur de console
+ok pc1280 · perdue · le fil est parti
+ok pc1280 · perdue · Confirmer est actif (noir)
+ok pc1280 · perdue · la puce « ↻ N corrigées » est là (« 4 corrigées »)
+ok pc1280 · perdue · la puce est la dernière de la rangée des puces (haut 227.5 ; autres 201.5)
+ok pc1280 · perdue · le bandeau est au-dessus du pied (bas 742, pied 748, 51 px)
+ok pc1280 · perdue · 1 rangée(s) barrée(s)
+ok pc1280 · perdue · le bandeau (478→1238) est dans la colonne de la liste (478→1238)
+ok pc1280 · perdue · aucun débordement horizontal (0 px)
+ok pc1280 · perdue · au bout du défilement (0/0), la dernière rangée (384→413) est entière au-dessus du bandeau (691), corps 40→691
+ok pc1280 · perdue · nom long : montant « 1,70 » entier (1057 ≤ 1057), nom coupé avec « … » (true, true)
+ok pc1280 · perdue · aucune erreur de console
+ok pc1280 · perdues-2 · le fil est parti
+ok pc1280 · perdues-2 · Confirmer est actif (noir)
+ok pc1280 · perdues-2 · la puce « ↻ N corrigées » est là (« 5 corrigées »)
+ok pc1280 · perdues-2 · la puce est la dernière de la rangée des puces (haut 227.5 ; autres 201.5)
+ok pc1280 · perdues-2 · le bandeau est au-dessus du pied (bas 742, pied 748, 84 px)
+ok pc1280 · perdues-2 · 2 rangée(s) barrée(s)
+ok pc1280 · perdues-2 · le bandeau (478→1238) est dans la colonne de la liste (478→1238)
+ok pc1280 · perdues-2 · aucun débordement horizontal (0 px)
+ok pc1280 · perdues-2 · au bout du défilement (0/0), la dernière rangée (413→442) est entière au-dessus du bandeau (658), corps 40→658
+ok pc1280 · perdues-2 · nom long : montant « 1,70 » entier (1108 ≤ 1108), nom coupé avec « … » (true, true)
+ok pc1280 · perdues-2 · aucune erreur de console
+ok pc1280 · total · le fil est parti
+ok pc1280 · total · Confirmer est actif (noir)
+ok pc1280 · total · la puce « ↻ N corrigées » est là (« 5 corrigées »)
+ok pc1280 · total · la puce est la dernière de la rangée des puces (haut 227.5 ; autres 201.5)
+ok pc1280 · total · aucun débordement horizontal (0 px)
+ok pc1280 · total · aucune erreur de console
+ok pc1280 · entete · le fil est parti
+ok pc1280 · entete · Confirmer est actif (noir)
+ok pc1280 · entete · la case TVA est corrigée, sur un fond bleu (rgba(31, 100, 163, 0.15)) : « TVA3,483,38 »
+ok pc1280 · entete · l'ancienne TVA est barrée (« 3,38 », line-through)
+ok pc1280 · entete · la puce dit « 1 corrigée » (1 corrigée), la case Règlement n'est pas marquée
+ok pc1280 · entete · aucun débordement horizontal (0 px)
+ok pc1280 · entete · aucune erreur de console
+ok aucune requête hors localhost
+ECRAN-D OK
+
+Commande terminée, code 0.
+
+Arrêt de 1 serveur(s)…

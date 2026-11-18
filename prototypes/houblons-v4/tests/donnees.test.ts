@@ -98,7 +98,7 @@ describe('Tables d’IBU libres (tranches de 5′, ébullition 60 à 120′, whi
     // Whirlpool : relation exacte avec la minute d'ébullition et le facteur de température.
     const wp = ibuByMoment('beermaverick-nugget', 46, s1Recipe()).find((m) => m.code === 'wp')!.ibu!.value;
     expect(t.whirlpool!.ibu[WP_TEMPERATURES.indexOf(80)][WP_MINUTES.indexOf(20)]).toBeCloseTo(wp, 1);
-    expect(t.whirlpool!.ibu[WP_TEMPERATURES.indexOf(90)][WP_MINUTES.indexOf(30)]).toBeCloseTo(t.ibuParMinute5![idx(30)] * 2 ** -1, 0);
+    expect(t.whirlpool!.ibu[WP_TEMPERATURES.indexOf(90)][WP_MINUTES.indexOf(30)]).toBeCloseTo(t.ibuParMinute5![idx(30)] * Math.exp(-11858 / 363.15) / Math.exp(-11858 / 373.15), 0); // Malowicki et Shellhammer (CF-7)
     // La durée totale ne change que le premier moût : les autres tables sont identiques.
     const long = ibuTables('beermaverick-nugget', 46, { ...s1Recipe(), boilMin: 120 });
     expect(long.ibuParMinute5).toEqual(t.ibuParMinute5);
@@ -202,14 +202,14 @@ describe('Radars en intensité absolue (D24) et fiches houblons', () => {
     expect(sans.huiles.composants.farnesene).toBeNull();
     expect(sans.huiles.composants.farneseneRaison).toMatch(/ne publie pas de farnésène/);
     expect(f.substituts).toBeNull();
-    expect(f.dansRecette.map((d) => [d.scenario, d.grams])).toEqual([['S1', 46], ['S5', 41]]);
+    expect(f.dansRecette.map((d) => [d.scenario, d.grams])).toEqual([['S1', 46], ['S5', 42]]); // S5 : 41 g avant CF-7 (le whirlpool isomérise moins à 80 °C, la règle ajoute 1 g)
     expect(f.dansRecette[0].ibu).toBeCloseTo(59.7, 1);
     const b60 = f.ibuParGramme.moments.find((m) => m.code === 'b60')!;
     expect(b60.ibuPerGram!.value).toBeCloseTo(1.3, 1);
     expect(f.ibuParGramme.moments.find((m) => m.code === 'dryPost')).toMatchObject({ ibuPerGram: null });
     expect(f.gout).toEqual({ aime: false, exclu: false });
     expect(f.aromes.find((a) => a.family === 'resin')).toMatchObject({ level: 2, sources: 3, of: 10 }); // d4 (26.10) : 10 fiches lues pour Nugget (4 avant), 3 citent la résine (2 avant)
-    expect(f.stock).toMatchObject({ etat: 'épuisé', libre: { S1: -46, S5: -41 } });
+    expect(f.stock).toMatchObject({ etat: 'épuisé', libre: { S1: -46, S5: -42 } });
     expect(hopSheet('beermaverick-saaz-late', ctx).stock.etat).toBe('hors stock');
   });
 });

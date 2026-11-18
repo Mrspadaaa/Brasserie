@@ -1,0 +1,36 @@
+{
+ "reglage": "4-hydrogen@low",
+ "kind": "fournisseurs",
+ "id": "maris",
+ "utilisable": true,
+ "produits": [
+  {
+   "name": "Maris Otter, Gramm",
+   "url": "https://www.brauundrauchshop.ch/maris-otter#stock-availability-value-3459",
+   "supplier": "Brau- und Rauchshop",
+   "packageLabel": "Preis/Gramm"
+  },
+  {
+   "name": "Maris Otter, Kg",
+   "url": "https://www.brauundrauchshop.ch/maris-otter#stock-availability-value-1456",
+   "supplier": "Brau- und Rauchshop",
+   "packageLabel": "Preis/Kilogramm"
+  },
+  {
+   "name": "Maris Otter 25 Kg",
+   "url": "https://www.brauundrauchshop.ch/maris-otter#stock-availability-value-3277",
+   "supplier": "Brau- und Rauchshop",
+   "packageLabel": "25 Kg"
+  }
+ ],
+ "pertinentes": 3,
+ "exactes": 1,
+ "sourcesPrimaires": 0,
+ "faitCle": false,
+ "ms": 3599,
+ "coutMicro": 24777,
+ "web": 1,
+ "appels": 1,
+ "etat": "STOP",
+ "extrait": "Voici la fiche produit correspondant exactement à votre recherche :\n\n* **Brau- und Rauchshop** : [Maris Otter, Kg (option Maris Otter 25 Kg)](https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQGcPFsk2_GZ-eFrvOGWkmqR80Ip9DZElae-fiIVj31Zx7PA-oTZyXpL_6eZvqOTeA5j39n84HbTMSdzn21wr_h6A6V"
+}

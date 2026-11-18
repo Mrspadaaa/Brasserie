@@ -1,0 +1,19 @@
+{
+ "cas": "rel-saine-pale",
+ "usage": "relecture",
+ "half": "jugement",
+ "cellule": "3.8@low",
+ "ok": true,
+ "ms": 3822,
+ "microChf": 3625,
+ "microDecembre": 3625,
+ "entree": 1053,
+ "sortie": 176,
+ "etat": "STOP",
+ "ancrage": "sans objet",
+ "note": 1,
+ "utilisable": true,
+ "inventes": 0,
+ "detail": "0/0 défauts · 0 bloquant(s) dont 0 injustifié(s) · 0 de goût ou pire",
+ "reponse": "{\"verdict\":\"La recette est prête à brasser, les paramètres et proportions sont cohérents avec le style American Pale Ale.\",\"findings\":[{\"severity\":\"detail\",\"topic\":\"Eau\",\"observation\":\"Le ratio sulfate/chlorure après traitement ressort à environ 2.1 (160 ppm SO4 / 75 ppm Cl) pour un profil American Pale Ale ciblant 38 IBU.\",\"suggestion\":\"Le profil soutient bien l'amertume sans excès; ajuster si souhaité vers un ratio plus sec ou plus rond selon le rendu recherché.\"}],\"missing\":[],\"styleFit\":\"Conforme au style American Pale Ale : densité initiale (1.050), amertume (~38 IBU), profil malté léger (Crystal 40 à 6.4%) et aromatique axé sur le Cascade.\"}"
+}

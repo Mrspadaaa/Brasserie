@@ -10,9 +10,13 @@ import { buildBrewingScenarioRequest, simulateBrewingScenario } from '../../src/
 import { createBrewingScenarioDossier, readBrewingScenarioRecord } from '../../src/domain/brewingScenarioDossier';
 import { applyProposal } from '../../functions/src/brewerProposals';
 import { BrewerBudgetError } from '../../functions/src/brewerLimits';
+import { GeminiApiError } from '../../functions/src/geminiErrors';
 import type { BrewerContext } from '../../functions/src/companionTypes';
 import { testHopData, testHopTriplet, testHopYeast } from '../fixtures/hopPrediction';
 
+// Voie h3 (14.11) : l'analyse du compagnon hors Approfondi part sur Hydrogen (réflexion basse) ; relecture, recherche et Approfondi restent sur 3.8.
+const H = 'gemini-4-hydrogen';
+const B = 'gemini-3.8-flash';
 const context = (): BrewerContext => ({
   recipe: recipe({ efficiencyPct: 75 }),
   journal: brewState(),
@@ -145,7 +149,8 @@ describe('Outils du compagnon : mêmes modèles et données explicites', () => {
     const result = await runBrewerHarness(context(), 'Une question', [], generate, {
       mode: 'fast'
     });
-    expect(generate.mock.calls.map((c) => c[0])).toEqual(Array(6).fill('gemini-3.8-flash'));
+    // Analysis, then two reviews, then the repair (analysis again), then two reviews.
+    expect(generate.mock.calls.map((c) => c[0])).toEqual([H, B, B, H, B, B]);
     expect(result.reviewed).toBe(true);
     expect(
       generate.mock.calls[0][1].tools[0].functionDeclarations.some(
@@ -162,10 +167,10 @@ describe('Outils du compagnon : mêmes modèles et données explicites', () => {
     const result = await runBrewerHarness(context(), 'Une question', [], generate, {
       mode: 'fast'
     });
-    expect(generate.mock.calls.every((c) => c[0] === 'gemini-3.8-flash')).toBe(true);
+    expect(generate.mock.calls.map((c) => c[0])).toEqual([H, H, B]);
     expect(result.trace[0].error).toMatch(/Mode rapide/);
   });
-  it('le mode rapide confie la recherche de référence à Flash-Lite, le conseil et la relecture à 3.8', async () => {
+  it('le mode rapide confie la recherche de référence à Flash-Lite, le conseil à Hydrogen et la relecture à 3.8', async () => {
     const generate = vi
       .fn()
       .mockResolvedValueOnce(toolCall('lookup_brewing_reference', { query: 'Une fiche fabricant' }))
@@ -177,16 +182,10 @@ describe('Outils du compagnon : mêmes modèles et données explicites', () => {
       mode: 'fast'
     });
     // Bench #91: the reference lookup on 3.5 Flash-Lite `minimal` matched 3.8 at 3.5 s instead of 7.6 s (p95).
-    expect(generate.mock.calls.map((c) => c[0])).toEqual([
-      'gemini-3.8-flash',
-      'gemini-3.5-flash-lite',
-      'gemini-3.8-flash',
-      'gemini-3.8-flash',
-      'gemini-3.8-flash'
-    ]);
+    expect(generate.mock.calls.map((c) => c[0])).toEqual([H, 'gemini-3.5-flash-lite', H, B, B]);
     expect(generate.mock.calls.map((c) => c[1].generationConfig.thinkingConfig.thinkingLevel)).toEqual(['low', 'minimal', 'low', 'low', 'low']);
     expect(result.evidence[0].model).toBe('gemini-3.5-flash-lite');
-    expect(result).toMatchObject({ model: 'gemini-3.8-flash', reviewModel: 'gemini-3.8-flash', mode: 'fast' });
+    expect(result).toMatchObject({ model: H, reviewModel: B, mode: 'fast' });
   });
   it.each([
     ['sans source web ancrée', () => json({ reference: 'Fiche citée de mémoire' })],
@@ -204,7 +203,7 @@ describe('Outils du compagnon : mêmes modèles et données explicites', () => {
       .mockResolvedValueOnce(approved());
     const result = await runBrewerHarness(context(), 'Cherche une fiche', [], generate, { mode: 'fast' });
     expect(generate.mock.calls.slice(0, 3).map((c) => [c[0], c[1].generationConfig.thinkingConfig.thinkingLevel])).toEqual([
-      ['gemini-3.8-flash', 'low'], ['gemini-3.5-flash-lite', 'minimal'], ['gemini-3.8-flash', 'low']
+      [H, 'low'], ['gemini-3.5-flash-lite', 'minimal'], [B, 'low']
     ]);
     expect(generate.mock.calls[2][1].contents).toEqual(generate.mock.calls[1][1].contents);
     expect(result.evidence[0].model).toBe('gemini-3.8-flash');
@@ -218,7 +217,7 @@ describe('Outils du compagnon : mêmes modèles et données explicites', () => {
       .mockResolvedValueOnce(toolCall('lookup_brewing_reference', { query: 'Une fiche fabricant' }))
       .mockRejectedValueOnce(failure);
     await expect(runBrewerHarness(context(), 'Cherche une fiche', [], budget, { mode: 'fast' })).rejects.toBe(failure);
-    expect(budget.mock.calls.map((c) => c[0])).toEqual(['gemini-3.8-flash', 'gemini-3.5-flash-lite']);
+    expect(budget.mock.calls.map((c) => c[0])).toEqual([H, 'gemini-3.5-flash-lite']);
   });
   it('garde les recherches réussies quand un chercheur épuise sa nouvelle tentative sur 3.8', async () => {
     let grounded = 0, analysis = 0;
@@ -237,7 +236,9 @@ describe('Outils du compagnon : mêmes modèles et données explicites', () => {
     expect(grounded).toBe(4);
     expect(result.evidence[0].limits).toContain('Une recherche a échoué : couverture partielle.');
     expect(result.reviewed).toBe(true);
-    expect(generate.mock.calls.every(([model]) => model === 'gemini-3.8-flash')).toBe(true);
+    // Hydrogen only for the two analysis steps; every researcher and reviewer call stays on 3.8.
+    expect(generate.mock.calls.filter(([model]) => model === H)).toHaveLength(2);
+    expect(generate.mock.calls.filter(([model]) => model !== H).every(([model]) => model === B)).toBe(true);
   });
   it('compte les replis parmi les six recherches et termine ensuite avec les preuves disponibles', async () => {
     let grounded = 0, analysis = 0;
@@ -286,20 +287,20 @@ describe('Outils du compagnon : mêmes modèles et données explicites', () => {
     expect(new Set(result.evidence.map(entry => (entry.data as any).query)).size).toBe(2);
     expect(result.reviewed).toBe(true);
   });
-  it('approfondi reste sur 3.8 avec plus de réflexion à chaque étape, sans retirer la relecture indépendante', async () => {
+  it('approfondi : l’analyse sur Hydrogen en réflexion moyenne à chaque étape (voie h4), la relecture indépendante gardée sur 3.8', async () => {
     const generate = vi
       .fn()
       .mockResolvedValueOnce(toolCall('calculate_recipe', {}))
       .mockResolvedValueOnce(done())
       .mockResolvedValueOnce(approved());
     const result = await runBrewerHarness(context(), 'Une question', [], generate, { mode: 'deep' });
-    expect(generate.mock.calls.map((c) => c[0])).toEqual(Array(3).fill('gemini-3.8-flash'));
+    expect(generate.mock.calls.map((c) => c[0])).toEqual([H, H, B]);
     expect(
       generate.mock.calls.map((c) => c[1].generationConfig.thinkingConfig.thinkingLevel)
-    ).toEqual(['high', 'medium', 'medium']);
+    ).toEqual(['medium', 'medium', 'medium']);
     // Deep reasoning and the structured answer share the output budget.
     expect(generate.mock.calls.map((c) => c[1].generationConfig.maxOutputTokens)).toEqual(Array(3).fill(12000));
-    expect(result).toMatchObject({ model: 'gemini-3.8-flash', reviewModel: 'gemini-3.8-flash' });
+    expect(result).toMatchObject({ model: H, reviewModel: B });
     expect(
       generate.mock.calls[2][1].generationConfig.responseSchema.properties.approved
     ).toBeDefined();
@@ -314,7 +315,7 @@ describe('Outils du compagnon : mêmes modèles et données explicites', () => {
     await runBrewerHarness(context(), 'Une question', [], generate, { mode: 'deep' });
     expect(
       generate.mock.calls.map((c) => c[1].generationConfig.thinkingConfig.thinkingLevel)
-    ).toEqual(['high', 'medium', 'high', 'high']);
+    ).toEqual(['medium', 'medium', 'medium', 'high']);
   });
   it.each([undefined, true, false])('redimensionne l’eau et conserve la concentration des sels (tous à l’empâtage : %s)', (allSaltsInMash) => {
     const c = context();
@@ -445,7 +446,7 @@ describe('Outils du compagnon : mêmes modèles et données explicites', () => {
         (t: any) => t.name === 'propose_changes'
       )
     ).toBe(true);
-    expect(call.mock.calls[4][0]).toBe('gemini-3.8-flash');
+    expect(call.mock.calls[4][0]).toBe(H);
     expect(result.proposal.changes[0].value).toBe(70);
     expect(result.evidence.map((e) => e.id)).toEqual(['E2']);
     expect(diagnostic).toHaveBeenCalledTimes(2);
@@ -717,11 +718,11 @@ describe('Validation serveur et relecture indépendante', () => {
     const result = await runBrewerHarness(context(), 'Question', [], call);
     expect(result.advice.action).toBe('Mesure le volume réel.');
     expect(call).toHaveBeenCalledTimes(4);
-    expect(call.mock.calls[2][0]).toBe('gemini-3.8-flash');
-    expect(call.mock.calls[3][0]).toBe('gemini-3.8-flash');
+    expect(call.mock.calls[2][0]).toBe(H);
+    expect(call.mock.calls[3][0]).toBe(B);
     expect(result.reviewReason).toBe('repair');
   });
-  it('garde 3.8 pour l’analyse et la relecture approfondies', async () => {
+  it('approfondi : Hydrogen pour l’analyse, 3.8 pour la relecture', async () => {
     const call = vi
       .fn()
       .mockResolvedValueOnce(done())
@@ -729,12 +730,74 @@ describe('Validation serveur et relecture indépendante', () => {
     const result = await runBrewerHarness(context(), 'Question', [], call, {
       mode: 'deep'
     });
-    expect(call.mock.calls.map((c) => c[0])).toEqual([
-      'gemini-3.8-flash',
-      'gemini-3.8-flash'
-    ]);
-    expect(result).toMatchObject({ model: 'gemini-3.8-flash', reviewModel: 'gemini-3.8-flash' });
+    expect(call.mock.calls.map((c) => c[0])).toEqual([H, B]);
+    expect(call.mock.calls[0][1].generationConfig).toMatchObject({ maxOutputTokens: 12000, thinkingConfig: { thinkingLevel: 'medium' } });
+    expect(result).toMatchObject({ model: H, reviewModel: B });
     expect(result.reviewReason).toBe('requested');
+  });
+  describe('mode Approfondi sur Hydrogen (voie h4)', () => {
+    it('une panne d’Hydrogen en Approfondi reprend sur 3.8 avec l’ancienne réflexion (haute à la décision), et les étapes suivantes restent sur 3.8', async () => {
+      const call = vi.fn()
+        .mockRejectedValueOnce(new GeminiApiError(503, H, 'server'))
+        .mockResolvedValueOnce(done())
+        .mockResolvedValueOnce(approved());
+      const result = await runBrewerHarness(context(), 'Question', [], call, { mode: 'deep' });
+      expect(call.mock.calls.map((c) => c[0])).toEqual([H, B, B]);
+      expect(call.mock.calls.map((c) => c[1].generationConfig.thinkingConfig.thinkingLevel)).toEqual(['medium', 'high', 'medium']);
+      expect(result).toMatchObject({ model: B, reviewModel: B, reviewReason: 'requested' });
+    });
+    it('une réponse d’Hydrogen coupée au plafond de sortie en Approfondi reprend sur 3.8', async () => {
+      const cut = { candidates: [{ content: { role: 'model', parts: [{ text: '{"summary":"coup' }] }, finishReason: 'MAX_TOKENS' }] };
+      const call = vi.fn().mockResolvedValueOnce(cut).mockResolvedValueOnce(done()).mockResolvedValueOnce(approved());
+      const result = await runBrewerHarness(context(), 'Question', [], call, { mode: 'deep' });
+      expect(call.mock.calls.map((c) => c[0])).toEqual([H, B, B]);
+      expect(result.model).toBe(B);
+    });
+    it('hors Approfondi, rien ne change : analyse Hydrogen basse, relecture 3.8', async () => {
+      const call = vi.fn().mockResolvedValueOnce(done()).mockResolvedValueOnce(approved());
+      await runBrewerHarness(context(), 'Question', [], call, { mode: 'fast' });
+      expect(call.mock.calls.map((c) => c[0])).toEqual([H, B]);
+      expect(call.mock.calls[0][1].generationConfig.thinkingConfig.thinkingLevel).toBe('low');
+    });
+  });
+  describe('analyse du compagnon sur Hydrogen (voie h3)', () => {
+    it('l’analyse part sur Hydrogen en réflexion basse, la relecture sur 3.8, sans changer le plafond de sortie', async () => {
+      const call = vi.fn().mockResolvedValueOnce(done()).mockResolvedValueOnce(approved());
+      const result = await runBrewerHarness(context(), 'Question', [], call);
+      expect(call.mock.calls.map((c) => c[0])).toEqual([H, B]);
+      expect(call.mock.calls[0][1].generationConfig.thinkingConfig.thinkingLevel).toBe('low');
+      expect(call.mock.calls[0][1].generationConfig.maxOutputTokens).toBe(4000);
+      expect(result).toMatchObject({ model: H, reviewModel: B });
+    });
+    it('une panne d’Hydrogen reprend une fois sur 3.8, et les étapes suivantes restent sur 3.8', async () => {
+      const call = vi.fn()
+        .mockRejectedValueOnce(new GeminiApiError(503, H, 'server'))
+        .mockResolvedValueOnce(toolCall('calculate_recipe', {}))
+        .mockResolvedValueOnce(done())
+        .mockResolvedValueOnce(approved());
+      const result = await runBrewerHarness(context(), 'Question', [], call);
+      expect(call.mock.calls.map((c) => c[0])).toEqual([H, B, B, B]);
+      expect(result).toMatchObject({ model: B, reviewModel: B });
+    });
+    it('une réponse d’Hydrogen vide ou coupée au plafond de sortie reprend sur 3.8', async () => {
+      for (const unusable of [{ candidates: [{ finishReason: 'SAFETY' }] }, { candidates: [{ content: { role: 'model', parts: [{ text: '{"summary":"coup' }] }, finishReason: 'MAX_TOKENS' }] }]) {
+        const call = vi.fn().mockResolvedValueOnce(unusable).mockResolvedValueOnce(done()).mockResolvedValueOnce(approved());
+        const result = await runBrewerHarness(context(), 'Question', [], call);
+        expect(call.mock.calls.map((c) => c[0])).toEqual([H, B, B]);
+        expect(result.model).toBe(B);
+      }
+    });
+    it('Hydrogen puis 3.8 en panne : deux essais seulement, jamais un troisième modèle', async () => {
+      const call = vi.fn().mockRejectedValue(new Error('Gemini HTTP 503'));
+      await expect(runBrewerHarness(context(), 'Question', [], call)).rejects.toThrow('Gemini HTTP 503');
+      expect(call.mock.calls.map((c) => c[0])).toEqual([H, B]);
+    });
+    it('un refus du fournisseur (budget) n’est pas contourné par le repli', async () => {
+      const failure = new BrewerBudgetError('ai-monthly-limit', 'Budget mensuel IA insuffisant.');
+      const call = vi.fn().mockRejectedValue(failure);
+      await expect(runBrewerHarness(context(), 'Question', [], call)).rejects.toBe(failure);
+      expect(call.mock.calls.map((c) => c[0])).toEqual([H]);
+    });
   });
   it('conserve Flash en mode auto même si le modèle demande une bascule Pro', async () => {
     const call = vi
@@ -783,12 +846,7 @@ describe('Validation serveur et relecture indépendante', () => {
       [],
       call
     );
-    expect(call.mock.calls.map((c) => c[0])).toEqual([
-      'gemini-3.8-flash',
-      'gemini-3.8-flash',
-      'gemini-3.8-flash',
-      'gemini-3.8-flash'
-    ]);
+    expect(call.mock.calls.map((c) => c[0])).toEqual([H, H, H, B]);
     expect(JSON.stringify(call.mock.calls[2][1].contents)).toContain('heating_power');
     expect(JSON.stringify(call.mock.calls[2][1].contents)).toContain('E1');
     expect(result.trace.some((t) => t.name === 'request_deep_analysis' && t.error)).toBe(true);
@@ -816,10 +874,10 @@ describe('Validation serveur et relecture indépendante', () => {
         });
       const result = await runBrewerHarness(context(), 'Cherche une référence', [], call);
       // Only the reference lookup was measured on Flash-Lite (#91); the supplier search stays on 3.8.
-      const researcher = name === 'find_brewing_suppliers' ? 'gemini-3.8-flash' : 'gemini-3.5-flash-lite';
+      const researcher = name === 'find_brewing_suppliers' ? B : 'gemini-3.5-flash-lite';
       expect(call.mock.calls.map((c) => c[0])).toEqual(name === 'find_brewing_suppliers'
-        ? Array(7).fill('gemini-3.8-flash')
-        : ['gemini-3.8-flash', researcher, 'gemini-3.8-flash', 'gemini-3.8-flash', 'gemini-3.8-flash']);
+        ? [H, B, B, B, H, B, B]
+        : [H, researcher, H, B, B]);
       expect(groundedCalls).toBe(name === 'find_brewing_suppliers' ? 3 : 1);
       expect(call.mock.calls[1][1].tools).toEqual([{ googleSearch: {} }]);
       expect(call.mock.calls[1][1].generationConfig.thinkingConfig.thinkingLevel).toBe(name === 'find_brewing_suppliers' ? 'low' : 'minimal');
@@ -838,12 +896,12 @@ describe('Validation serveur et relecture indépendante', () => {
       expect(call.mock.calls.at(-1)![1].contents).not.toBe(synthesis.contents);
     }
   );
-  it('approfondi retente une fois sur 3.8, sans aucun autre modèle, lorsque le fournisseur échoue', async () => {
+  it('approfondi retente une fois sur 3.8 après Hydrogen, sans aucun autre modèle, lorsque le fournisseur échoue', async () => {
     const call = vi.fn().mockRejectedValue(new Error('Gemini HTTP 503'));
     await expect(
       runBrewerHarness(context(), 'Question', [], call, { mode: 'deep' })
     ).rejects.toThrow('Gemini HTTP 503');
-    expect(call.mock.calls.map((c) => c[0])).toEqual(['gemini-3.8-flash', 'gemini-3.8-flash']);
+    expect(call.mock.calls.map((c) => c[0])).toEqual([H, B]);
   });
   it('retente le chercheur web sur 3.8 seulement en cas de panne', async () => {
     const call = vi
@@ -872,7 +930,7 @@ describe('Validation serveur et relecture indépendante', () => {
       .mockResolvedValueOnce(approved());
     const result = await runBrewerHarness(context(), 'Cherche la fiche', [], call);
     // Flash-Lite fails, 3.8 answers: no third model, and the evidence names the model that answered.
-    expect(call.mock.calls.map((c) => c[0])).toEqual(['gemini-3.8-flash', 'gemini-3.5-flash-lite', ...Array(4).fill('gemini-3.8-flash')]);
+    expect(call.mock.calls.map((c) => c[0])).toEqual([H, 'gemini-3.5-flash-lite', B, H, B, B]);
     expect(result.evidence[0].model).toBe('gemini-3.8-flash');
   });
   it('renforce la relecture pour un geste urgent et transmet le contexte de la conversation au relecteur', async () => {
@@ -925,7 +983,8 @@ describe('Validation serveur et relecture indépendante', () => {
     expect(result.advice.action).toBe('Geste corrigé 3.');
     expect(result.reviewed).toBe(true);
     expect(diagnostic.mock.lastCall[0].reviews.map((review: any) => review.approved)).toEqual([false, false, true]);
-    expect(call.mock.calls.every(([model]) => model === 'gemini-3.8-flash')).toBe(true);
+    // Analyses (initial and two corrections) on Hydrogen, the six reviews on 3.8.
+    expect(call.mock.calls.every(([model, body]) => model === (body.generationConfig?.responseSchema?.properties?.approved ? B : H))).toBe(true);
     const corrections = call.mock.calls.filter(([, body]) => !body.generationConfig?.responseSchema?.properties?.approved).slice(1);
     expect(JSON.stringify(corrections[0][1].contents)).toContain('Précise le geste pratique.');
     expect(JSON.stringify(corrections[1][1].contents)).toContain('Corrige l’unité du relevé.');

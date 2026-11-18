@@ -4,6 +4,7 @@ import { ION_LABEL, ION_SYMBOL } from '../domain/water';
 import { StyleWater, positionInRange, styleIonRange } from '../domain/waterStyles';
 import { formatDecimal } from './numericInput';
 import { formatIonReading } from './waterReadings';
+import { nombreFr } from '../domain/nombreAffiche';
 
 interface IonComparisonProps {
   start: WaterIons;
@@ -51,7 +52,7 @@ const IonRow: React.FC<{
     : !targeted ? 'sans cible'
       : outside < 0 ? 'sous la cible'
       : outside > 0 ? 'au-dessus de la cible' : 'dans la cible';
-  const target = targeted ? `${range.min} à ${range.max} ppm` : 'sans cible';
+  const target = targeted ? `${range.min} à ${nombreFr(range.max, 1)} ppm` : 'sans cible';
   const compatibleStatus = `corrigée ${legacyAfter} ppm ; ${status}`;
   const currentStatus = scenarioLabel === 'Corrigée'
     ? compatibleStatus
@@ -123,7 +124,7 @@ export const IonComparison: React.FC<IonComparisonProps> = ({
               : achieved[ion] > range.max ? 'au-dessus de la cible' : 'dans la cible';
         const marker = unknown ? '?' : !targeted ? '—'
           : status === 'sous la cible' ? '↓' : status === 'au-dessus de la cible' ? '↑' : '✓';
-        const target = targeted ? `cible ${range.min} à ${range.max} mg/L` : 'sans cible';
+        const target = targeted ? `cible ${range.min} à ${nombreFr(range.max, 1)} mg/L` : 'sans cible';
         return <button key={ion} type="button" aria-pressed={selectedIon === ion}
           aria-label={`Sélectionner : ${ION_LABEL[ion]} · ${scenarioLabel} ${value} · ${status} · ${target}`}
           data-ion-selector={ion} onClick={() => onSelectIon?.(ion)}

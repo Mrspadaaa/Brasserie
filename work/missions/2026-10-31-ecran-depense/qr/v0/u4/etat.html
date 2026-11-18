@@ -1,0 +1,310 @@
+<!doctype html>
+<html lang="fr"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>u4 — Nouvelle dépense · le sceau du QR-facture sur le total (01.11)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Source+Sans+3:wght@400;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{--page:#FFFFFF;--panel:#F5F5F5;--haut:#EBEBEB;--bord:#DDDDDD;--bordm:#BFBFBF;--t2:#666666;--t1:#333333;--t0:#111111;
+--attt:#7F5B10;--attf:#FBF4E4;--ok:#2F6B45;--okf:#E7F3EA;--bleu:#2F5E9E;
+--malt:#A8781F;--mout:#E3CFA3;--houb:#5E9A52;--lev:#5C7FB8;
+--sans:"Source Sans 3",system-ui,sans-serif;--mono:"IBM Plex Mono",ui-monospace,monospace}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{background:#E9E9E9;color:var(--t1);font-family:var(--sans);font-size:14px;line-height:1.3;-webkit-font-smoothing:antialiased}
+button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
+[hidden]{display:none!important}
+svg{flex-shrink:0}
+.qru4-m{font-family:var(--mono);font-variant-numeric:tabular-nums}
+.qru4-f{height:100vh;height:100dvh;display:flex;flex-direction:column;background:var(--page)}
+.qru4-hd{flex:none;height:44px;display:flex;align-items:center;gap:4px;padding:0 6px 0 12px;border-bottom:1px solid var(--bord)}
+.qru4-hd h1{flex:1;font-size:16px;font-weight:600;color:var(--t0)}
+.qru4-ib{width:32px;height:32px;border-radius:10px;display:flex;align-items:center;justify-content:center;color:var(--t1)}
+.qru4-ib:active{background:var(--haut)}
+.qru4-corps{flex:1;min-height:0;overflow:auto;overscroll-behavior:contain}
+.qru4-g{padding:6px 10px 0;display:flex;flex-direction:column;gap:8px}
+.qru4-just{width:100%;text-align:left;display:flex;align-items:center;gap:6px;min-height:32px;font-size:14px;color:var(--t1);border-bottom:1px solid var(--bord)}
+.qru4-just span{flex:1}
+.qru4-bd{background:var(--panel);border:1px solid var(--bord);border-radius:16px;padding:6px 10px 8px;display:flex;flex-direction:column;gap:4px}
+.qru4-l1{display:flex;align-items:baseline;justify-content:space-between;gap:8px}
+.qru4-four{font-size:16px;font-weight:600;color:var(--t0);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.qru4-l2{display:flex;align-items:center;gap:8px}
+.qru4-tot{font-family:var(--mono);font-size:32px;line-height:1.05;font-weight:600;color:var(--t0);font-variant-numeric:tabular-nums}
+.qru4-tot.qru4-chg{animation:qru4-flash .6s ease-out}
+@keyframes qru4-flash{from{background:var(--okf)}to{background:transparent}}
+.qru4-chf{font-size:12px;color:var(--t2)}
+.qru4-nl{margin-left:auto;min-height:28px;display:inline-flex;align-items:center;gap:4px;padding:0 8px;border-radius:10px;border:1px solid var(--bordm);background:#fff;font-size:14px}
+.qru4-nl svg{color:var(--attt)}
+.qru4-barre{display:flex;height:10px;border-radius:10px;overflow:hidden;border:1px solid var(--bord);background:#fff}
+.qru4-barre i{height:100%;border-right:1.5px solid #fff}
+.qru4-barre i:last-child{border-right:0}
+.qru4-pv{border:1px solid var(--bord);border-radius:16px;padding:4px 10px 6px;background:#fff}
+.qru4-pv h2{font-size:14px;font-weight:600;color:var(--t0);min-height:24px;display:flex;align-items:center}
+.qru4-rg{display:grid;grid-template-columns:18px 1fr auto;align-items:center;gap:6px;min-height:28px;border-bottom:1px solid var(--bord);font-size:14px}
+.qru4-rg b{font-family:var(--mono);font-weight:500;color:var(--t0);font-variant-numeric:tabular-nums}
+.qru4-rg .qru4-ok{color:var(--ok)}
+.qru4-rg .qru4-pt{color:var(--t2);text-align:center}
+/* La rangée QR : un bouton de toute la rangée, qui déplie les quatre champs. */
+.qru4-qr{width:100%;text-align:left;border-radius:10px;margin:2px -4px;padding:2px 4px;width:calc(100% + 8px)}
+.qru4-qr .qru4-cases{display:flex;gap:4px;justify-content:flex-end}
+.qru4-case{display:inline-flex;align-items:center;gap:2px;font-size:12px;line-height:20px;padding:0 5px;border-radius:10px;border:1px solid var(--bord);color:var(--t1)}
+.qru4-case.qru4-v{border-color:#9CC3A8;background:var(--okf);color:var(--ok)}
+.qru4-case.qru4-x{border:1.5px dashed var(--attt);background:var(--attf);color:var(--attt);font-weight:600}
+.qru4-case.qru4-a{border-style:dotted;color:var(--t2)}
+.qru4-qr.qru4-att{background:var(--attf)}
+.qru4-qr .qru4-ic{color:var(--t0)}
+.qru4-qr:active{background:var(--haut)}
+.qru4-det{display:grid;grid-template-columns:auto 1fr auto;gap:2px 10px;padding:4px 0 6px 24px;font-size:14px;border-bottom:1px solid var(--bord)}
+.qru4-det span{color:var(--t2)}
+.qru4-det b{font-family:var(--mono);font-weight:500;color:var(--t0)}
+.qru4-det em{font-style:normal;font-size:12px;color:var(--ok);text-align:right}
+.qru4-det em.qru4-x{color:var(--attt);font-weight:600}
+.qru4-det em.qru4-a{color:var(--t2)}
+.qru4-sous{font-size:12px;color:var(--t2);padding:0 0 4px 24px}
+.qru4-rephoto{min-height:28px;padding:0 8px;border-radius:10px;border:1px solid var(--bordm);font-size:12px;color:var(--t0);background:#fff}
+.qru4-liens{display:flex;flex-wrap:wrap;gap:2px 10px;padding-top:4px;font-size:12px;color:var(--t1)}
+.qru4-liens span{display:inline-flex;align-items:center;gap:3px}
+.qru4-liens b{font-family:var(--mono);color:var(--t0)}
+.qru4-tu{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.qru4-tile{position:relative;border:1.5px dashed var(--attt);background:var(--attf);border-radius:16px;padding:4px 8px 6px 32px;text-align:left;min-height:46px;display:flex;flex-direction:column;justify-content:center}
+.qru4-tile.qru4-large{grid-column:1 / -1}
+.qru4-tile.qru4-fait{border:1px solid var(--bord);background:#fff}
+.qru4-k{font-size:12px;color:var(--t2)}
+.qru4-v{font-size:14px;color:var(--t0)}
+.qru4-v .qru4-m{font-weight:500}
+.qru4-sup{font-size:12px;color:var(--attt);border:1px dashed var(--attt);border-radius:10px;padding:0 4px;margin-left:2px}
+.qru4-no{position:absolute;left:7px;top:8px;width:18px;height:18px;border-radius:50%;border:1.5px dashed var(--attt);color:var(--attt);font-family:var(--mono);font-size:12px;font-weight:600;display:flex;align-items:center;justify-content:center;background:#fff}
+.qru4-fait .qru4-no{border:0;background:var(--ok);color:#fff}
+.qru4-duel{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.qru4-barr{text-decoration:line-through;color:var(--t2)}
+.qru4-prendre{min-height:28px;padding:0 10px;border-radius:10px;background:var(--t0);color:#fff;font-weight:600;font-size:14px;display:inline-flex;align-items:center;gap:4px}
+.qru4-prendre:active{transform:scale(.97)}
+.qru4-chips{display:flex;flex-wrap:wrap;gap:6px}
+.qru4-chip{min-height:28px;display:inline-flex;align-items:center;gap:4px;padding:0 8px 0 4px;border-radius:10px;border:1.5px dashed var(--attt);background:var(--attf);font-size:14px;color:var(--t0)}
+.qru4-chip .qru4-no{position:static}
+.qru4-lt{display:flex;align-items:center;gap:6px;min-height:40px;padding:0 10px;border-top:1px solid var(--bord);margin-top:4px}
+.qru4-lt div{flex:1;font-size:14px;color:var(--t1)}
+.qru4-lt small{display:block;font-size:12px;color:var(--attt)}
+.qru4-d{padding:0 10px 12px}
+.qru4-li{display:grid;grid-template-columns:24px 1fr auto;align-items:center;gap:8px;min-height:50px;border-top:1px solid var(--bord)}
+.qru4-li b{font-size:16px;font-weight:600;color:var(--t0)}
+.qru4-li small{display:block;font-size:12px;color:var(--t2)}
+.qru4-li > .qru4-m{font-size:14px;color:var(--t0);text-align:right}
+.qru4-li.qru4-mo{min-height:32px;margin-left:16px;border-left:2px dashed #C9A15A;padding-left:6px;background:var(--panel)}
+.qru4-mot{font-size:12px;border:1.5px dashed var(--attt);border-radius:10px;padding:0 6px;color:var(--attt);font-weight:600;justify-self:start}
+.qru4-past{font-size:12px;background:var(--haut);border-radius:10px;padding:0 5px;color:var(--t1);margin-left:4px;font-weight:400}
+.qru4-sq{display:block;height:14px;border-radius:6px;background:linear-gradient(90deg,#EEE,#F7F7F7,#EEE);background-size:200% 100%;animation:qru4-sk 1.2s linear infinite}
+@keyframes qru4-sk{to{background-position:-200% 0}}
+.qru4-pied{flex:none;display:flex;align-items:center;justify-content:space-between;gap:8px;padding:6px 10px;border-top:1px solid var(--bord);background:var(--page)}
+.qru4-pied span{font-size:12px;color:var(--t2)}
+.qru4-conf{min-height:36px;padding:0 14px;border-radius:10px;background:var(--t0);color:#fff;font-weight:600;display:inline-flex;align-items:center;gap:6px}
+.qru4-conf[disabled]{background:var(--bordm);color:#fff}
+/* u4 : le sceau, tampon rond posé sur le total. */
+.qru4-bd{position:relative;display:grid;grid-template-columns:1fr 104px;column-gap:2px;row-gap:6px;padding:8px 8px 8px 12px}
+.qru4-gauche{display:flex;flex-direction:column;gap:2px;min-width:0;align-items:flex-start}
+.qru4-four{font-size:16px;font-weight:600;color:var(--t0);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%}
+.qru4-sous{font-size:12px;color:var(--t2);padding:0}
+.qru4-sous .qru4-m{color:var(--t1)}
+.qru4-l2{display:flex;align-items:baseline;gap:6px}
+.qru4-gauche .qru4-nl{margin-left:0;margin-top:2px}
+.qru4-tp{grid-column:2;grid-row:1;align-self:center;justify-self:center;width:100px;height:100px;border-radius:50%;transform:rotate(-9deg);display:block;transition:transform .25s ease}
+.qru4-tp svg{display:block}
+.qru4-tp-ok{color:var(--ok)}
+.qru4-tp-demi{color:var(--ok)}
+.qru4-tp-x{color:var(--attt)}
+.qru4-tp-flou{color:var(--attt);opacity:.9}
+.qru4-tp-flou svg{filter:blur(.4px)}
+.qru4-tp-vide{position:relative;color:#666;transform:none}
+.qru4-tp-vide span{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:12px;color:#666}
+.qru4-tp.qru4-verso{transform:rotate(0deg) scale(.92)}
+.qru4-tp:active{transform:rotate(-9deg) scale(.94)}
+.qru4-ta{font-family:var(--mono);font-size:12px;font-weight:600;letter-spacing:1px;fill:currentColor}
+.qru4-tq{font-family:var(--mono);font-size:22px;font-weight:600;fill:currentColor}
+.qru4-dos{grid-column:1 / -1;display:grid;grid-template-columns:auto 1fr auto;gap:2px 10px;background:#fff;border:1px solid var(--bord);border-radius:10px;padding:4px 8px;font-size:14px}
+.qru4-dos span{color:var(--t2)}
+.qru4-dos b{font-weight:500;color:var(--t0)}
+.qru4-dos em{font-style:normal;font-size:12px;color:var(--ok);text-align:right}
+.qru4-dos em.qru4-x{color:var(--attt);font-weight:600}
+.qru4-dos em.qru4-a{color:#666}
+.qru4-bd .qru4-barre{grid-column:1 / -1}
+.qru4-tile.qru4-neutre{padding-left:8px;border-style:dashed;gap:4px;align-items:flex-start}
+.qru4-pv.qru4-ferme{display:none}
+@media (min-width:900px){.qru4-pv.qru4-ferme{display:block}}
+@media (prefers-reduced-motion:reduce){.qru4-tp{transition:none}}
+@media (prefers-reduced-motion:reduce){.qru4-tot.qru4-chg,.qru4-sq{animation:none}}
+@media (min-width:900px){
+  body{display:flex;align-items:center;justify-content:center;height:100vh}
+  .qru4-f{width:980px;height:min(760px,94vh);border-radius:24px;border:1px solid var(--bord);overflow:hidden;box-shadow:0 10px 40px rgba(0,0,0,.12)}
+  .qru4-corps{display:grid;grid-template-columns:390px 1fr;overflow:hidden}
+  .qru4-g{overflow:auto;padding-bottom:12px;border-right:1px solid var(--bord)}
+  .qru4-d{overflow:auto;padding-top:6px}
+  .qru4-lt{margin-top:0}
+}
+</style></head>
+<body>
+<div class="qru4-f" data-qr-ecran="u4">
+  <header class="qru4-hd"><h1>Nouvelle dépense</h1>
+    <button class="qru4-ib" aria-label="Justificatif"><svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M5 2.5h6.5L15 6v11.5H5z"/><path d="M11.5 2.5V6H15M7.5 10h5M7.5 13h5"/></svg></button>
+    <button class="qru4-ib" aria-label="Fermer"><svg width="20" height="20" viewBox="0 0 20 20" stroke="currentColor" stroke-width="1.5"><path d="M5 5l10 10M15 5 5 15"/></svg></button></header>
+  <div class="qru4-corps">
+    <div class="qru4-g">
+      <button class="qru4-just" type="button"><svg width="16" height="16" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.9"><path d="M5 2.5h6.5L15 6v11.5H5z"/><path d="M11.5 2.5V6H15"/></svg><span>Voir le justificatif</span><svg width="16" height="16" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.9"><path d="M5 8l5 5 5-5"/></svg></button>
+      <section class="qru4-bd" id="qru4-bd" aria-label="Bandeau"></section>
+      <section class="qru4-pv" id="qru4-pv" aria-label="Vérification">
+        <h2 id="qru4-titre">Lecture à confirmer</h2>
+        <div id="qru4-rangs"></div>
+        <div class="qru4-liens" id="qru4-liens">
+          <span><svg width="14" height="14" viewBox="0 0 20 20" fill="none" stroke="#111" stroke-width="2.1"><path d="M10 2.5 17 6v8l-7 3.5L3 14V6z"/><circle cx="15" cy="15" r="4.6" fill="#111" stroke="none"/><path d="M12.8 15.1l1.6 1.6 2.9-3" stroke="#fff"/></svg><b>13</b> reliés</span>
+          <span><svg width="14" height="14" viewBox="0 0 20 20" fill="none" stroke="#2F6B45" stroke-width="2.1"><path d="M10 2.5 17 6v8l-7 3.5L3 14V6z"/><circle cx="15" cy="15" r="4.6" fill="#2F6B45" stroke="none"/><path d="M15 12.6v4.8M12.6 15h4.8" stroke="#fff"/></svg><b>0</b> nouveaux</span>
+          <span><svg width="14" height="14" viewBox="0 0 20 20" fill="none" stroke="#7F5B10" stroke-width="2.1" stroke-dasharray="2.4 1.6"><path d="M10 2.5 17 6v8l-7 3.5L3 14V6z"/></svg><b>1</b> unité ?</span>
+          <span><svg width="14" height="14" viewBox="0 0 20 20" fill="none" stroke="#666" stroke-width="2.1"><path d="M5 3v8a3 3 0 0 0 3 3h8"/><path d="M13 11l3 3-3 3"/></svg><b>5</b> moutures</span>
+          <span><svg width="14" height="14" viewBox="0 0 20 20" fill="none" stroke="#666" stroke-width="2.1"><path d="M10 2.5 17 6v8l-7 3.5L3 14V6z"/></svg><b>4</b> sans stock</span></div>
+      </section>
+      <div class="qru4-tu" id="qru4-tu"></div>
+      <div class="qru4-chips" id="qru4-chips"></div>
+    </div>
+    <div class="qru4-d">
+      <div class="qru4-lt"><div>Lignes de la facture · <span class="qru4-m" id="qru4-nb">23</span><small id="qru4-prop">14 proposées par la lecture, à vérifier</small></div><svg width="16" height="16" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.9"><path d="M5 12l5-5 5 5"/></svg></div>
+      <div id="qru4-lignes" data-mots="lignes"></div>
+    </div>
+  </div>
+  <footer class="qru4-pied"><span id="qru4-drive">Drive prêt</span><button class="qru4-conf" id="qru4-conf" type="button"><svg width="16" height="16" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.9"><path d="M4 10.5l4 4 8-9"/></svg>Confirmer</button></footer>
+</div>
+<script>
+(function () {
+  'use strict';
+  // Les données de la fixture (la facture B&R de 23 lignes, celle des captures en ligne) ; le QR de chaque état.
+  var LU = { total: '86,50', devise: 'CHF', numero: '372765', date: '27.04.2026' };
+  var ETATS = {
+    confirme: { qr: { total: '86,50', devise: 'CHF', numero: '372765', date: '27.04.2026' } },
+    contredit: { lu: { total: '85,60' }, qr: { total: '86,50', devise: 'CHF', numero: '372765', date: '27.04.2026' } },
+    partiel: { qr: { total: '86,50', devise: 'CHF', numero: null, date: null } },
+    illisible: { illisible: true },
+    sans: { sans: true },
+    lecture: { lecture: true, qr: { total: '86,50', devise: 'CHF', numero: '372765', date: '27.04.2026' } }
+  };
+  var params = new URLSearchParams(location.search);
+  var nom = ETATS[params.get('etat')] ? params.get('etat') : 'confirme';
+  var E = ETATS[nom];
+  var lu = { total: (E.lu && E.lu.total) || LU.total, devise: LU.devise, numero: LU.numero, date: LU.date };
+  var pris = false, ouvert = nom !== 'confirme' && nom !== 'sans';
+  var $ = function (id) { return document.getElementById('qru4-' + id); };
+  var QR = '<svg class="qru4-ic" width="16" height="16" viewBox="0 0 16 16" aria-hidden="true"><rect x="1" y="1" width="14" height="14" rx="2.5" fill="none" stroke="currentColor" stroke-width="1.5"/><rect x="3.2" y="3.2" width="3" height="3" fill="currentColor"/><rect x="9.8" y="3.2" width="3" height="3" fill="currentColor"/><rect x="3.2" y="9.8" width="3" height="3" fill="currentColor"/><rect x="6.1" y="6.1" width="3.8" height="3.8" fill="currentColor"/><path d="M8 6.8v2.4M6.8 8h2.4" stroke="#fff" stroke-width="1.5"/></svg>';
+  var OK = '<svg class="qru4-ok" width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M3 8.5l3 3 7-7.5"/></svg>';
+  var LIGNES = [
+    ['Maris Otter', '6 Kg', '13,80', '+6 kg'], ['mouture', '', '0,60', 'm'], ['Gerstenflocken', '1 Kg', '2,40', '+1 kg'],
+    ['Röstgerste', '1 Kg', '1,80', '+1 kg'], ['mouture', '', '0,10', 'm'], ['Caramünch Typ 2', '1 Kg', '1,75', '+1 kg'],
+    ['mouture', '', '0,10', 'm'], ['Target', '40 g · α 11,3', '1,60', ''], ['Goldings East Kent', '20 g · α 5,5', '0,80', ''],
+    ['LALLEMAND Windsor', '2 Stk', '9,00', '= 2 sachets'], ['Safale BE-256', '1 Stk', '4,40', '= 1 sachet']
+  ];
+  var CUBE = '<svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M10 2.5 17 6v8l-7 3.5L3 14V6z"/><path d="M3 6l7 3.5L17 6M10 9.5v8"/><circle cx="15" cy="15" r="4.6" fill="currentColor" stroke="none"/><path d="M12.8 15.1l1.6 1.6 2.9-3" stroke="#fff"/></svg>';
+  var FLECHE = '<svg width="18" height="18" viewBox="0 0 20 20" fill="none" stroke="#666" stroke-width="1.5" aria-hidden="true"><path d="M5 3v8a3 3 0 0 0 3 3h8"/><path d="M13 11l3 3-3 3"/></svg>';
+
+  function barre() {
+    var b = $('barre'), coul = ['var(--malt)', 'var(--mout)', 'var(--malt)', 'var(--malt)', 'var(--mout)', 'var(--malt)', 'var(--mout)', 'var(--houb)', 'var(--houb)', 'var(--lev)', 'var(--lev)', 'var(--malt)', 'var(--malt)', 'var(--mout)', 'var(--houb)', 'var(--lev)', 'var(--t0)', 'var(--t0)', 'var(--malt)', 'var(--mout)', 'var(--houb)', 'var(--t0)', 'var(--malt)'];
+    var mt = [13.8, .6, 2.4, 1.8, .1, 1.75, .1, 1.6, .8, 9, 4.4, 7.5, 6.2, .5, 2.1, 6.8, 3, 2.5, 9.6, .4, 3.6, 2, 5.45];
+    b.innerHTML = '';
+    mt.forEach(function (m, i) { var x = document.createElement('i'); x.style.flexGrow = m; x.style.background = nom === 'lecture' ? '#E4E4E4' : coul[i]; b.appendChild(x); });
+  }
+
+  function lignes() {
+    var h = '';
+    if (nom === 'lecture') {
+      for (var i = 0; i < 6; i++) h += '<div class="qru4-li"><span class="qru4-sq" style="width:20px"></span><span><span class="qru4-sq" style="width:' + (50 + i * 7 % 30) + '%"></span></span><span class="qru4-sq" style="width:40px"></span></div>';
+      $('lignes').innerHTML = h; $('prop').textContent = 'Lecture des lignes en cours'; return;
+    }
+    LIGNES.forEach(function (l) {
+      if (l[3] === 'm') { h += '<div class="qru4-li qru4-mo">' + FLECHE + '<span class="qru4-mot">mouture</span><span class="qru4-m">' + l[2] + '</span></div>'; return; }
+      h += '<div class="qru4-li">' + CUBE + '<span><b>' + l[0] + '</b>' + (l[3] ? '<span class="qru4-past">' + l[3] + '</span>' : '') + '<small class="qru4-m">' + l[1] + '</small></span><span class="qru4-m">' + l[2] + '</span></div>';
+    });
+    $('lignes').innerHTML = h;
+  }
+
+  // Le sceau : le QR-facture devient un tampon rond posé sur le total, à l'encre de ce qu'il dit. Vert « = lecture » s'il confirme ;
+  // ambre et fendu s'il contredit ; à moitié tracé s'il ne porte qu'une partie ; brouillé « illisible » ; un cercle vide sans QR.
+  // Un toucher retourne le tampon : ses quatre champs, un par un.
+  function encre() {
+    if (E.sans) return 'vide';
+    if (E.illisible) return 'flou';
+    if (nom === 'lecture') return 'ok';
+    if (E.qr.total !== lu.total) return 'x';
+    if (E.qr.numero === null) return 'demi';
+    return 'ok';
+  }
+  function tampon() {
+    var e = encre();
+    var bas = { ok: nom === 'lecture' ? 'LU EN 0,6 S' : '= LECTURE', x: '≠ MONTANT', demi: 'MONTANT SEUL', flou: 'ILLISIBLE', vide: '' }[e];
+    if (e === 'vide') return '<div class="qru4-tp qru4-tp-vide" aria-label="Pas de QR-facture sur la pièce"><svg viewBox="0 0 92 92" width="100" height="100" aria-hidden="true"><circle cx="46" cy="46" r="41" fill="none" stroke="#8A8A8A" stroke-width="1.5" stroke-dasharray="3 4"/></svg><span>sans QR</span></div>';
+    var centre = e === 'flou'
+      ? '<text x="46" y="53" text-anchor="middle" class="qru4-tq">?</text>'
+      : '<rect x="38" y="38" width="16" height="16" rx="2" fill="currentColor"/><path d="M46 41v10M41 46h10" stroke="#fff" stroke-width="3"/>';
+    var fente = e === 'x' ? '<path d="M1 49l7-4 6 5 6-4 5 3M67 44l6 3 5-4 6 4 7-3" fill="none" stroke="#F5F5F5" stroke-width="3"/>' : '';
+    var anneau = e === 'demi' ? ' stroke-dasharray="64 6 4 6 4 6 4 6 4 6 4 6"' : e === 'flou' ? ' stroke-dasharray="5 3"' : '';
+    return '<button type="button" class="qru4-tp qru4-tp-' + e + (verso ? ' qru4-verso' : '') + '" data-booster="sceau" aria-expanded="' + verso + '" aria-label="Sceau du QR-facture : ' + bas.toLowerCase() + '">' +
+      '<svg viewBox="0 0 92 92" width="100" height="100" aria-hidden="true"><defs><path id="qru4-arc-h" d="M16 46a30 30 0 0 1 60 0"/><path id="qru4-arc-b" d="M7 46a39 39 0 0 0 78 0"/></defs>' +
+      '<circle cx="46" cy="46" r="43" fill="#fff" fill-opacity=".55" stroke="currentColor" stroke-width="2.6"' + anneau + '/><circle cx="46" cy="46" r="22" fill="none" stroke="currentColor" stroke-width="1.5"' + anneau + '/>' +
+      '<text class="qru4-ta"><textPath href="#qru4-arc-h" startOffset="50%" text-anchor="middle">QR-FACTURE</textPath></text>' +
+      '<text class="qru4-ta"><textPath href="#qru4-arc-b" startOffset="50%" text-anchor="middle">' + bas + '</textPath></text>' + centre + fente + '</svg></button>';
+  }
+  var CHAMPS = [['total', 'Montant'], ['devise', 'Devise'], ['numero', 'N° de facture'], ['date', 'Date']];
+  function dos() {
+    if (!verso || E.sans) return '';
+    return '<div class="qru4-dos" id="qru4-dos">' + CHAMPS.map(function (c) {
+      var q = E.illisible ? undefined : E.qr[c[0]];
+      var etat = q === undefined ? '<em class="qru4-x">?</em>' : q === null ? '<em class="qru4-a">pas dans le QR</em>' : (c[0] === 'total' && q !== lu.total) ? '<em class="qru4-x">lu ' + lu.total + '</em>' : '<em>' + (nom === 'lecture' ? 'du QR' : '= lu') + '</em>';
+      return '<span>' + c[1] + '</span><b class="qru4-m">' + (q ? q : '—') + '</b>' + etat;
+    }).join('') + '</div>';
+  }
+  function bandeau() {
+    var four = nom === 'lecture' ? '<span class="qru4-sq" style="width:160px;display:inline-block"></span>' : 'Brau- und Rauchshop GmbH';
+    var h = '<div class="qru4-gauche"><div class="qru4-four">' + four + '</div>';
+    h += '<div class="qru4-sous"><span class="qru4-m">' + lu.date + '</span> · n° <span class="qru4-m">' + lu.numero + '</span></div>';
+    h += '<div class="qru4-l2"><span class="qru4-tot" id="qru4-tot">' + (nom === 'lecture' ? E.qr.total : lu.total) + '</span><span class="qru4-chf">CHF</span></div>';
+    h += nom === 'lecture' ? '<div class="qru4-sous">lignes en lecture…</div>'
+      : '<button type="button" class="qru4-nl" data-booster="preuve"><svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="8" cy="8" r="6.3"/><path d="M8 4.6v4.2M8 10.8v.4"/></svg><span class="qru4-m">23</span>&nbsp;lignes</button>';
+    h += '</div>' + tampon() + dos();
+    h += '<div class="qru4-barre" id="qru4-barre" aria-label="Les 23 lignes, à la largeur de leur montant"></div>';
+    $('bd').innerHTML = h;
+  }
+
+  function rangs() {
+    var h = '', sommeOk = lu.total === '86,50';
+    h += '<div class="qru4-rg">' + (sommeOk ? OK : '<span class="qru4-pt">·</span>') + '<span>Somme des lignes = imprimé</span><b>' + (sommeOk ? '86,50' : '86,50 ≠ ' + lu.total) + '</b></div>';
+    h += '<div class="qru4-rg">' + OK + '<span>Quantité × prix, au centime</span><b>23/23</b></div>';
+    h += '<div class="qru4-rg"><span class="qru4-pt">·</span><span>Lectures : désaccord sur certains points</span><b>2</b></div>';
+    return h;
+  }
+
+  function tuiles() {
+    var h = '', n = 1, c = '';
+    if (nom === 'lecture') { $('tu').innerHTML = ''; $('chips').innerHTML = ''; return; }
+    if (nom === 'contredit') {
+      h += '<div class="qru4-tile qru4-large' + (pris ? ' qru4-fait' : '') + '"><span class="qru4-no">' + n++ + '</span><span class="qru4-k">Total · le sceau dit</span>' +
+        (pris ? '<span class="qru4-v"><span class="qru4-m">86,50</span> pris du QR · <span class="qru4-barr qru4-m">85,60</span></span>'
+              : '<span class="qru4-duel"><span class="qru4-v"><span class="qru4-m">86,50</span> · lu <span class="qru4-m">85,60</span></span><button type="button" class="qru4-prendre" data-booster="prendre-qr" data-geste="1">Prendre 86,50</button></span>') + '</div>';
+    }
+    if (E.illisible) h += '<div class="qru4-tile qru4-large qru4-neutre"><span class="qru4-k">Le QR est sur la pièce, mais pas déchiffré : rien n’est confirmé.</span><button type="button" class="qru4-rephoto" data-booster="rephoto">Photographier le QR</button></div>';
+    h += '<div class="qru4-tile"><span class="qru4-no">' + n++ + '</span><span class="qru4-k">TVA</span><span class="qru4-v qru4-m">2,80 · 4,15</span></div>';
+    h += '<div class="qru4-tile"><span class="qru4-no">' + n++ + '</span><span class="qru4-k">Règlement</span><span class="qru4-v">Payé le <span class="qru4-m">27.04</span><span class="qru4-sup">supposée</span></span></div>';
+    $('tu').innerHTML = h;
+    ['Sabro unité', 'mouture ×5 +1,50', 'Target α'].forEach(function (t) { c += '<button type="button" class="qru4-chip"><span class="qru4-no">' + n++ + '</span>' + t + '</button>'; });
+    $('chips').innerHTML = c;
+  }
+
+  var pvOuverte = false, verso = false;
+  function rendre() {
+    if (nom === 'lecture') { $('nb').textContent = '…'; $('conf').disabled = true; $('drive').textContent = 'Lecture du justificatif…'; }
+    $('pv').classList.toggle('qru4-ferme', !pvOuverte || nom === 'lecture');
+    bandeau(); barre(); lignes(); $('rangs').innerHTML = rangs(); tuiles();
+  }
+  document.addEventListener('click', function (ev) {
+    var t = ev.target.closest && ev.target.closest('[data-booster]');
+    if (!t) return;
+    var b = t.getAttribute('data-booster');
+    if (b === 'preuve') { pvOuverte = !pvOuverte; rendre(); }
+    if (b === 'sceau') { verso = !verso; rendre(); }
+    if (b === 'prendre-qr') { pris = true; lu.total = '86,50'; rendre(); var tt = $('tot'); tt.classList.remove('qru4-chg'); void tt.offsetWidth; tt.classList.add('qru4-chg'); }
+  });
+  rendre();
+})();
+</script>
+</body></html>

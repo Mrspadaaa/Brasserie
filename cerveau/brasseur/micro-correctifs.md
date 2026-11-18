@@ -2,7 +2,7 @@
 name: micro-correctifs
 description: Micro-correctifs UI demandés par l'humain — aller-retour rapide, processus allégé, montrer une capture avant de redéployer ; « flottant » = par-dessus le contenu.
 type: brasseur
-maj: 2026-10-22
+maj: 2026-11-08
 sources: mémoire locale affinee-micro-correctifs.md
 ---
 
@@ -15,5 +15,6 @@ Pour 2 ou 3 petits correctifs d'interface (ex. #114 du 17.10.2026 : levure illis
 - Viser un lot léger : V1 ciblée, plus des captures 390/1280 regardées.
 - Montrer une capture à l'humain dès qu'un point d'apparence est ambigu.
 - Grouper ses précisions avant de relancer.
+- Pas de mini maquettes pour un mot, un libellé ou un détail mineur (08.11 : « Mais refait pas des mini maquettes pour des choses aussi mineur... ») : garder l'actuel s'il n'est pas faux, sinon trancher, et le dire en une ligne. Les maquettes restent pour un vrai choix de forme ou de goût.
 
 Voir [[fermeture-et-quota]] et [[autonomie-decisions]].

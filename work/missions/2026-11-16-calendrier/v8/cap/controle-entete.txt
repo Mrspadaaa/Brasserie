@@ -1,0 +1,5 @@
+ok z1.html : courbe 87 px (min 80), bande des semaines 35 px (max 40, présente), en-tête 202 px, mois → bande sans mois au-dessus
+ok z2.html : courbe 87 px (min 80), bande des semaines 35 px (max 40, présente), en-tête 182 px, mois → bande sans mois au-dessus
+ok z3.html : courbe 87 px (min 80), bande des semaines 38 px (max 40, présente), en-tête 205 px, mois → bande 13 px (min 12)
+ok z4.html : courbe 87 px (min 80), bande des semaines 35 px (max 40, présente), en-tête 202 px, mois → bande 13 px (min 12)
+ENTETE OK

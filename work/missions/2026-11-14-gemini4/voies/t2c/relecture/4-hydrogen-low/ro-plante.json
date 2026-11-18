@@ -1,0 +1,18 @@
+{
+ "reglage": "4-hydrogen@low",
+ "element": "ro-plante",
+ "cas": "ro",
+ "type": "plante",
+ "moitie": "choix",
+ "verdict": {
+  "utilisable": true,
+  "approved": false,
+  "proposalApproved": true,
+  "issues": [
+   "Le résumé affirme à tort un pH d'empâtage exact de 5,38 : il s'agit d'une fausse précision qui contredit l'estimation de l'outil (5,56 ± 0,15 avant traitement) et ne constitue pas une mesure."
+  ]
+ },
+ "ms": 3725,
+ "coutMicro": 15565,
+ "etat": "STOP"
+}

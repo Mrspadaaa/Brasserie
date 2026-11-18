@@ -1,0 +1,119 @@
+<title>Lecture des factures, 13 pièces</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@500&family=IBM+Plex+Sans:wght@400;600&display=swap">
+<style>
+:root{--bg:#f6f4ef;--card:#fffdf8;--fg:#24211c;--mute:#6b645a;--line:#e2ddd2;--amber:#a8731c;--ok:#2f7a4a;--bad:#b23a2b;--bar:#8f8470;--best:#2f7a4a}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#1b1916;--card:#24211d;--fg:#ece7de;--mute:#a59d90;--line:#38332c;--amber:#d9a347;--ok:#6cc08a;--bad:#e07a6a;--bar:#9a8f7c;--best:#6cc08a;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#1b1916;--card:#24211d;--fg:#ece7de;--mute:#a59d90;--line:#38332c;--amber:#d9a347;--ok:#6cc08a;--bad:#e07a6a;--bar:#9a8f7c;--best:#6cc08a;color-scheme:dark}
+body{background:var(--bg);color:var(--fg);font:15px/1.45 "IBM Plex Sans",system-ui,sans-serif}
+.w{max-width:760px;margin:0 auto;padding-block:20px 40px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));display:grid;gap:18px}
+h1{font-size:22px;margin:0;text-wrap:balance}
+.sub{color:var(--mute);font-size:13px;margin:4px 0 0}
+.num{font-family:"IBM Plex Mono",ui-monospace,monospace}
+.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:10px}
+.c{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:12px;display:grid;gap:8px;min-width:0}
+.c.out{opacity:.62}
+.c h2{font-size:14px;margin:0;display:flex;gap:6px;align-items:baseline}
+.tag{font-size:12px;border-radius:99px;padding:1px 8px;border:1px solid var(--line);color:var(--mute)}
+.tag.prod{color:var(--amber);border-color:var(--amber)}
+.tag.no{color:var(--bad);border-color:var(--bad)}
+.tag.yes{color:var(--ok);border-color:var(--ok)}
+.how{font-size:12px;color:var(--mute);margin:0}
+.k{display:grid;grid-template-columns:1fr auto;gap:2px 8px;font-size:13px}
+.k dt{color:var(--mute)}.k dd{margin:0;text-align:right}
+.fv0{color:var(--ok)}.fv{color:var(--bad);font-weight:600}
+.bars{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:12px;display:grid;gap:10px}
+.bars h3{font-size:13px;margin:0;color:var(--mute);font-weight:600;letter-spacing:.02em}
+.row span{white-space:nowrap}.row{display:grid;grid-template-columns:20px 1fr 84px;gap:8px;align-items:center;font-size:13px}
+.track{height:12px;background:var(--line);border-radius:6px;overflow:hidden}
+.fill{height:100%;background:var(--bar)}
+.fill.best{background:var(--best)}
+.note{background:var(--card);border:1px solid var(--line);border-left:3px solid var(--amber);border-radius:10px;padding:12px;font-size:14px;display:grid;gap:6px}
+.note p{margin:0}
+.small{font-size:12px;color:var(--mute)}
+</style>
+<div class="w">
+<style>
+.tbl{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:12px;display:grid;gap:8px}
+.tbl h3{font-size:13px;margin:0;color:var(--mute);font-weight:600;letter-spacing:.02em}
+.scroll{overflow-x:auto}
+table{border-collapse:collapse;width:100%;font-size:13px}
+th,td{text-align:left;padding:5px 6px;border-top:1px solid var(--line);vertical-align:top}
+th{font-weight:600;color:var(--mute);border-top:0}
+td.n{font-family:"IBM Plex Mono",ui-monospace,monospace;white-space:nowrap}
+.miss{color:var(--bad)}
+.c h2 .tag{margin-left:auto}
+.row{grid-template-columns:34px 1fr 64px}
+td.n small{display:block;color:var(--mute);font-size:12px}
+</style>
+<div class="w">
+  <header>
+    <h1>Lire une facture : tes 13 pièces, 11 réglages essayés</h1>
+    <p class="sub">Banc du 01.11 après-midi · 7 pièces × 11 réglages, puis tes 5 nouvelles × les 3 meilleurs · 4,41 CHF dépensés sur les 5 accordés · rien n'est changé en production</p>
+  </header>
+
+  <section class="cards" aria-label="Les trois finalistes">
+    <article class="c">
+      <h2>A <span class="tag prod">aujourd'hui</span></h2>
+      <p class="how">2 lectures 3.8 en parallèle, une 3ᵉ si elles divergent</p>
+      <dl class="k"><dt>Pièces lues</dt><dd class="num">12/12</dd><dt>Faux verts</dt><dd class="num fv0">0</dd><dt>Champs</dt><dd class="num">125/141</dd><dt>Lignes</dt><dd class="num">202/210</dd><dt>Durée</dt><dd class="num">11 · 30 s</dd><dt>CHF/facture</dt><dd class="num">0,078</dd></dl>
+    </article>
+    <article class="c">
+      <h2>C★v <span class="tag">ma proposition du matin</span></h2>
+      <p class="how">2 lectures Flash-Lite, la 3.8 sur désaccord ; ses valeurs, le statut du vote</p>
+      <dl class="k"><dt>Pièces lues</dt><dd class="num miss">11/12</dd><dt>Faux verts</dt><dd class="num fv0">0</dd><dt>Champs</dt><dd class="num">117/129</dd><dt>Lignes</dt><dd class="num">163/173</dd><dt>Durée</dt><dd class="num">9 · 33 s</dd><dt>CHF/facture</dt><dd class="num">0,044</dd></dl>
+    </article>
+    <article class="c">
+      <h2>Av <span class="tag">la 3.8 qui zoome</span></h2>
+      <p class="how">C★v, et la 3ᵉ lecture découpe et agrandit l'image elle-même</p>
+      <dl class="k"><dt>Pièces lues</dt><dd class="num miss">11/12</dd><dt>Faux verts</dt><dd class="num fv0">0</dd><dt>Champs</dt><dd class="num">118/129</dd><dt>Lignes</dt><dd class="num">169/173</dd><dt>Durée</dt><dd class="num">24 · 45 s</dd><dt>CHF/facture</dt><dd class="num">0,097</dd></dl>
+    </article>
+  </section>
+  <p class="small">Durée médiane : tes 7 premières pièces · tes 5 nouvelles (PDF et captures multiples, plus longues). Champs et lignes justes sur ceux jugés ; une pièce non lue n'est pas jugée, d'où des totaux différents. Ton abonnement (1 ligne) n'a pas été lu : budget atteint.</p>
+
+  <section class="tbl" aria-label="Tes 5 nouvelles pièces">
+    <h3>TES 5 NOUVELLES PIÈCES (champs, puis lignes justes)</h3>
+    <div class="scroll"><table>
+      <tr><th>Pièce</th><th>A</th><th>C★v</th><th>Av</th></tr>
+      <tr><td>PDF de 37 lignes (commande 652093)</td><td class="n">11/12<small>35/37</small></td><td class="n miss">panne</td><td class="n miss">panne</td></tr>
+      <tr><td>PDF d'une facture déjà saisie en photo</td><td class="n">12/12<small>26/26</small></td><td class="n">12/12<small>26/26</small></td><td class="n">12/12<small>25/26</small></td></tr>
+      <tr><td>3 commandes en plusieurs captures</td><td class="n">30/36<small>78/78</small></td><td class="n">32/36<small>78/78</small></td><td class="n">31/36<small>78/78</small></td></tr>
+    </table></div>
+    <p class="small">Sur le long PDF, les deux lectures Flash-Lite sont coupées par leur limite de sortie et C★v rend une panne. C'est corrigé au banc : la 3.8 prend le relais quand une Flash-Lite manque. Ce n'est pas encore mesuré : budget atteint.</p>
+  </section>
+
+  <section class="tbl" aria-label="Les autres réglages">
+    <h3>LES 8 AUTRES RÉGLAGES, SUR TES 7 PREMIÈRES PIÈCES (C★v seul : 73/81 champs · 56/69 lignes)</h3>
+    <div class="scroll"><table>
+      <tr><th>Réglage</th><th>Champs</th><th>Lignes</th><th>Verdict</th></tr>
+      <tr><td>Le code corrige le sûr (devise…), sur C★v</td><td class="n">73</td><td class="n">59</td><td>gardé si bascule</td></tr>
+      <tr><td>Flash-Lite réfléchit plus (medium)</td><td class="n">71</td><td class="n">56</td><td>non : 1,8 × plus lent</td></tr>
+      <tr><td>Flash-Lite réfléchit au maximum (high)</td><td class="n miss">2 pannes</td><td class="n">—</td><td>non</td></tr>
+      <tr><td>Consigne écrite pour Flash-Lite</td><td class="n">71</td><td class="n">56</td><td>non</td></tr>
+      <tr><td>Consigne après l'image</td><td class="n">70</td><td class="n">56</td><td class="miss">non : 1 faux vert</td></tr>
+      <tr><td>Schéma de sortie plus strict</td><td class="n">71</td><td class="n">56</td><td>non</td></tr>
+      <tr><td>Images en très haute résolution</td><td class="n">74</td><td class="n">56</td><td>à revoir avec plus de photos</td></tr>
+      <tr><td>Deux zones agrandies en plus de l'image</td><td class="n">71</td><td class="n">59</td><td>non</td></tr>
+    </table></div>
+  </section>
+
+  <section class="bars" aria-label="Durée et coût">
+    <h3>DURÉE SUR TES 5 NOUVELLES PIÈCES (médiane)</h3>
+    <div class="row"><b>A</b><div class="track"><div class="fill best" style="width:66%"></div></div><span class="num">30 s</span></div>
+    <div class="row"><b>C★v</b><div class="track"><div class="fill" style="width:73%"></div></div><span class="num">33 s</span></div>
+    <div class="row"><b>Av</b><div class="track"><div class="fill" style="width:100%"></div></div><span class="num">45 s</span></div>
+    <h3>COÛT PAR FACTURE, 12 PIÈCES (CHF)</h3>
+    <div class="row"><b>A</b><div class="track"><div class="fill" style="width:80%"></div></div><span class="num">0,078</span></div>
+    <div class="row"><b>C★v</b><div class="track"><div class="fill best" style="width:45%"></div></div><span class="num">0,044</span></div>
+    <div class="row"><b>Av</b><div class="track"><div class="fill" style="width:99%"></div></div><span class="num">0,097</span></div>
+    <p class="small">Échelle : 45 s et 0,10 CHF. Tarif provisionné avec une marge : la facture Google est plus basse. Sur 100 factures, A coûte environ 3 CHF de plus que C★v.</p>
+  </section>
+
+  <section class="note" aria-label="Ce que je retiens">
+    <p><b>Aucun réglage ne bat la lecture d'aujourd'hui sur tes pièces.</b> A est la seule à lire tes 12 pièces, sans aucun faux vert. Les autres gagnent 1 à 3 champs par endroits, sur une seule lecture par pièce : c'est du bruit, pas une preuve.</p>
+    <p><b>Ma proposition du matin ne tient plus.</b> C★v échoue sur ton long PDF. Sur tes captures multiples, il gagne 2 champs sur 36 : c'est encore du bruit. Son vrai gain est le coût.</p>
+    <p><b>Défauts communs aux trois</b> : sur les captures, les frais de port sont lus comme une ligne (à trancher : ligne ou pas ?) ; le genre de pièce hésite entre facture et confirmation de commande ; 2 lignes sur 37 manquent sur le long PDF. Le plafond de 35 lignes n'y est pour rien : la 3.8 en a rendu 35 d'elle-même.</p>
+    <p><b>Je te propose de garder la lecture actuelle</b> : rien à redéployer. Quand tu auras d'autres factures (40 à 60), je rejoue C★v avec son relais sur la 3.8, et les images en très haute résolution.</p>
+    <p class="small">Les pièces doublées (la facture reçue en photo puis en PDF, la commande en PDF et en page web) seront signalées « déjà enregistrée » dans l'écran Dépense : en cours.</p>
+  </section>
+</div>

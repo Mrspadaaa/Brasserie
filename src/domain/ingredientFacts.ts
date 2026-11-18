@@ -5,6 +5,7 @@ import { alcoholPercentUnit, readYeastDocumentaryNotes, readYeastFactValue, read
   type YeastDocumentaryNote, type YeastDocumentaryNotes, type YeastTechnicalFact, type YeastTechnicalSelections } from '../../functions/src/yeastTechnicalFacts';
 import type { YeastCandidateDocumentaryFields } from '../../functions/src/yeastDocumentarySheet';
 import { readYeastDocumentaryView as readSharedYeastDocumentaryView } from '../services/recipeDraft';
+import { origineDesValeurs } from './stock/ficheValeurs';
 
 export type IngredientKind = 'levure' | 'malt' | 'houblon';
 
@@ -100,8 +101,14 @@ export interface IngredientFacts {
   /** Sheet duration in days, only from one published point; never a recipe step. */
   fermentDays?: number;
 
-  colorEbc?: number;
-  potentialPpg?: number;
+  /** D303 : la réponse d'un malt porte ces cinq nombres, `null` quand la fiche ne les publie pas. `null` se lit comme absent partout. */
+  colorEbc?: number | null;
+  potentialPpg?: number | null;
+  /** Plage de couleur publiée par le malteur (EBC) : jamais une moyenne dans `colorEbc` côté modèle. */
+  colorEbcMin?: number | null;
+  colorEbcMax?: number | null;
+  /** Extrait publié (fine grind, dry basis, %) : le client en déduit le potentiel. */
+  extractPct?: number | null;
   grainType?: string;
   diastaticPower?: number;
 
@@ -236,6 +243,52 @@ const explicitReported = <T extends string>(facts: YeastTechnicalFact[] | undefi
   return distinct.size === 1 ? values[0] : undefined;
 };
 
+/**
+ * Facteur extrait (fine grind, dry basis, %) → points de densité par livre et par gallon SUR SEC : 80 % donne 36,8 PPG sur sec
+ * (« PPG ≈ rendement × 46 »). Le malt arrive à la brasserie avec son humidité : le PPG utile est celui « tel quel »,
+ * 46,2 × extrait sur sec × (1 − humidité) (Palmer, How to Brew, ch. 18 ; contre-calcul du 08.11, CF-4).
+ */
+export const PPG_PAR_POINT_D_EXTRAIT = 0.46;
+/** Humidité supposée d'un malt quand la fiche ne la publie pas : les fiches de malteurs donnent 4 à 5 % (4,5 % max sur un malt de base). */
+export const HUMIDITE_MALT_SUPPOSEE_PCT = 4.5;
+const DIXIEME = (n: number) => Math.round((n + Number.EPSILON) * 10) / 10;
+const VIRGULE = (n: number) => String(n).replace('.', ',');
+const nombreEntre = (v: unknown, min: number, max: number): v is number => typeof v === 'number' && Number.isFinite(v) && v >= min && v <= max;
+
+export interface ValeursDeduitesMalt {
+  colorEbc?: number;
+  potentialPpg?: number;
+  /** La règle de chaque valeur déduite, avec la plage ou l'extrait d'origine ; absent quand rien n'est déduit. */
+  deduit: { colorEbc?: string; potentialPpg?: string };
+}
+
+/**
+ * Ce que le client déduit de ce qu'un malteur publie (D302), SEULEMENT quand le point publié manque (un point publié gagne toujours) :
+ * `colorEbc` = milieu de la plage de couleur (1 décimale), `potentialPpg` = extrait × 0,46 (1 décimale, de 1 à 50). Une plage incohérente
+ * (min > max, hors de 0 à 5000 EBC) ou un extrait hors de 0 à 100 % ne donne rien : l'inconnu n'est jamais un zéro ni une moyenne inventée.
+ * Fonction pure, partagée par `sanitizeFacts` (donc « Compléter avec l'IA ») et par la procédure d'enrichissement.
+ */
+export function deduireValeursMalt(
+  facts: Pick<IngredientFacts, 'colorEbc' | 'potentialPpg' | 'colorEbcMin' | 'colorEbcMax' | 'extractPct'> & { moisturePct?: number }
+): ValeursDeduitesMalt {
+  const out: ValeursDeduitesMalt = { deduit: {} };
+  const { colorEbcMin: min, colorEbcMax: max, extractPct: extrait } = facts;
+  if (!nombreEntre(facts.colorEbc, 0, 5000) && nombreEntre(min, 0, 5000) && nombreEntre(max, 0, 5000) && min <= max) {
+    out.colorEbc = DIXIEME((min + max) / 2);
+    out.deduit.colorEbc = `EBC déduit : milieu de la plage publiée ${VIRGULE(min)} à ${VIRGULE(max)} EBC`;
+  }
+  if (!nombreEntre(facts.potentialPpg, 1, 50) && nombreEntre(extrait, 0, 100)) {
+    // L'extrait publié est sur sec : le PPG « tel quel » retire l'humidité (publiée, sinon supposée).
+    const humidite = nombreEntre(facts.moisturePct, 0, 30) ? facts.moisturePct : HUMIDITE_MALT_SUPPOSEE_PCT;
+    const ppg = DIXIEME(extrait * PPG_PAR_POINT_D_EXTRAIT * (1 - humidite / 100));
+    if (ppg >= 1 && ppg <= 50) {
+      out.potentialPpg = ppg;
+      out.deduit.potentialPpg = `PPG déduit : extrait publié ${VIRGULE(extrait)} % × ${VIRGULE(PPG_PAR_POINT_D_EXTRAIT)} × (1 − ${VIRGULE(humidite)} % d’humidité)`;
+    }
+  }
+  return out;
+}
+
 /** Only usable published values may reach calculations or the ingredient catalogue. */
 export function sanitizeFacts(facts: IngredientFacts): IngredientFacts {
   const out = { ...facts };
@@ -255,12 +308,23 @@ export function sanitizeFacts(facts: IngredientFacts): IngredientFacts {
     tempMinC: [-5, 60],
     tempMaxC: [-5, 60],
     alcoholTolerancePct: [0, 40],
-    diastaticPower: [0, 1000]
+    diastaticPower: [0, 1000],
+    colorEbcMin: [0, 5000],
+    colorEbcMax: [0, 5000],
+    extractPct: [0, 100]
   };
   for (const [key, [min, max]] of Object.entries(limits)) {
     const v = out[key];
+    // `null` (un champ de malt que la fiche ne publie pas, D303) n'est pas un nombre : il tombe ici et se lit comme absent.
     if (typeof v !== 'number' || !Number.isFinite(v) || v < min || v > max) delete out[key];
   }
+  // Une plage incohérente ne donne rien. Sinon le point manquant se déduit de ce que le malteur publie, et le dit dans la note (D302).
+  if (out.colorEbcMin != null && out.colorEbcMax != null && out.colorEbcMin > out.colorEbcMax) { delete out.colorEbcMin; delete out.colorEbcMax; }
+  const deduit = deduireValeursMalt(out);
+  if (deduit.colorEbc !== undefined) out.colorEbc = deduit.colorEbc;
+  if (deduit.potentialPpg !== undefined) out.potentialPpg = deduit.potentialPpg;
+  const regles = [deduit.deduit.colorEbc, deduit.deduit.potentialPpg].filter((r): r is string => !!r);
+  if (regles.length) out.note = [typeof out.note === 'string' ? out.note.trim() : '', `${regles.join(' ; ')}.`].filter(Boolean).join(' ');
   if (out.tempMinC != null && out.tempMaxC != null && out.tempMinC > out.tempMaxC) {
     delete out.tempMinC;
     delete out.tempMaxC;
@@ -631,13 +695,17 @@ export function factsForStock(kind: IngredientKind, facts: IngredientFacts): Par
   };
 }
 
+/**
+ * Les faits d'un article de stock pour une recette. Voie f4-enrichir (P2) : une valeur remplie en ligne ou retenue d'un autre article, pas encore
+ * vue par le brasseur, sert (elle comble le trou) mais sous l'origine `ai`, jamais `personal` ; une valeur du catalogue, sous `manufacturer`.
+ */
 export function factsFromStock(item: StockItem): IngredientFacts {
   return sanitizeFacts({
     found: true,
     name: item.name,
     fermentation: item.yeastFermentationFacts,
     technicalFacts: item.yeastTechnicalFacts,
-    origin: 'personal',
+    origin: origineDesValeurs(item),
     flocculation: item.yeastFlocculation,
     alcoholTolerancePct: item.yeastAlcoholTolerancePct,
     note: item.yeastNotes,

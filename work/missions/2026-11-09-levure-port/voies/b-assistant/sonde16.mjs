@@ -1,0 +1,21 @@
+// TL-19 : « Nouvelle recette » rouvre un brouillon existant : le dit-il à l'écran ? (banc ?dev-local, brouillon local)
+import { ouvrir, etape, texte, taper, cliquer, capture, dormir } from './banc.mjs';
+const largeur = Number(process.argv[2] ?? 1280);
+const { browser, page } = await ouvrir({ largeur, hauteur: largeur < 600 ? 844 : 900 });
+const visible = (re) => page.evaluate((s) => { const r = new RegExp(s); return [...document.querySelectorAll('body *')].filter((e) => e.children.length === 0 && r.test(e.textContent || '') && !!(e.offsetWidth || e.offsetHeight) && getComputedStyle(e).clip !== 'rect(0px, 0px, 0px, 0px)' && !/sr-only/.test(e.className || '')).map((e) => e.textContent.trim().slice(0, 80)); }, re.source);
+await etape(page, 'Identité');
+await taper(page, 'Nom de la bière', 'Brouillon test TL19'); await page.keyboard.press('Tab'); await dormir(1500);
+console.log('avant fermeture, « Brouillon » visible ->', JSON.stringify(await visible(/Brouillon|brouillon/)));
+console.log('retour ->', await page.evaluate(() => { const b = [...document.querySelectorAll('button')].find((e) => /Retour|Fermer|Quitter/.test(e.getAttribute('aria-label') || '') || /^<$/.test(e.textContent.trim())); if (!b) return false; b.click(); return b.getAttribute('aria-label'); }));
+await dormir(1200);
+console.log('page ->', (await texte(page)).replace(/\n+/g, ' | ').slice(0, 220));
+await capture(page, `s16-apres-fermeture-${largeur}`);
+console.log('+ ->', await cliquer(page, 'Créer une recette') || await page.evaluate(() => { const b = [...document.querySelectorAll('button')].find((e) => /Ajouter|Nouveau|Actions/i.test(e.getAttribute('aria-label') || '')); if (!b) return false; b.click(); return b.getAttribute('aria-label'); }));
+await dormir(800);
+console.log('menu ->', (await texte(page)).split('\n').filter((l) => /recette|Créer|Nouvelle/i.test(l)).slice(0, 8).join(' | '));
+await cliquer(page, process.argv[3] === 'reprise' ? 'Recette en cours' : 'Créer une recette'); await dormir(2500);
+console.log('wizard ->', (await texte(page)).replace(/\n+/g, ' | ').slice(0, 260));
+console.log('nom repris ->', await page.evaluate(() => [...document.querySelectorAll('input')].find((i) => i.getAttribute('aria-label') === 'Nom de la bière')?.value));
+console.log('« Brouillon » visible ->', JSON.stringify(await visible(/Brouillon|brouillon/)), '| Abandonner ->', JSON.stringify(await visible(/^Abandonner$/)));
+await capture(page, `s16-rouvert-${largeur}`);
+await browser.close();

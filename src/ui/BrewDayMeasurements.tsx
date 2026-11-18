@@ -10,18 +10,40 @@ import {
   READING,
   measuredReadingFeedback,
   readingKey,
+  volumeTarget,
+  sg,
   ReadingKind
 } from '../domain/brewDay';
 import { acidCorrectionFromMeasuredPh, ACIDS } from '../domain/water';
 import { NumberInput } from './NumberInput';
 import { useHoldRepeat } from './numericInput';
 import { BrewWortPair, type WortPairDraft } from './BrewWortPair';
+import { nombreFr } from '../domain/nombreAffiche';
 
 export const brewControl =
   'min-h-touch-lg whitespace-nowrap rounded-control border border-cave-700 bg-cave-850 px-2 text-sm text-cave-200 hover:bg-cave-800 disabled:opacity-40 focus-visible:outline focus-visible:outline-2 focus-visible:outline-ebc-straw';
 export const brewInput =
   'w-full min-w-0 min-h-touch-lg rounded-control border border-cave-600 bg-cave-950 px-2 text-base text-cave-50 reading outline-none focus:border-ebc-straw';
-export type BrewUpdate = (update: (state: BrewDayState) => BrewDayState) => void;
+/** Texte d'aide du champ : jamais un exemple qui passe pour la valeur de CE brassin (TE-44 : « 25 » à côté d'une eau d'empâtage de 33,6 L). Volume : la cible de l'étape, sinon rien. */
+function placeholderFor(kind: ReadingKind, step: BrewDayStep, recipe?: RecipeSnapshot): string {
+  if (kind === 'volume') {
+    const t = volumeTarget(step, recipe);
+    return t && t > 0 ? String(Math.round(t * 10) / 10).replace('.', ',') : '';
+  }
+  if (kind === 'temperature') return step.tempC != null ? String(step.tempC).replace('.', ',') : '';
+  return READING[kind].placeholder;
+}
+/**
+ * RL-9 : les bornes d'un champ de mesure s'écrivent à la virgule, sans espace devant le point final : « Saisis 0,1 à 2000 L. », « Saisis 3 à 9. »
+ * (elles se lisaient « 0.1 à 2000 L » et « 3 à 9 . » quand l'unité est vide, le pH).
+ */
+export function invitationMesure(kind: ReadingKind): string {
+  const fr = (n: number) => String(n).replace('.', ',');
+  const { min, max, unit } = READING[kind];
+  const fin = kind === 'densite' ? ' SG (ou 1056 pour 1,056)' : unit ? ` ${unit}` : '';
+  return `Saisis ${fr(min)} à ${fr(max)}${fin}.`;
+}
+export type BrewUpdate =(update: (state: BrewDayState) => BrewDayState) => void;
 export interface BrewReadingDraft {
   kind: ReadingKind;
   raw: string;
@@ -104,7 +126,7 @@ function MashCorrection({
           )}
           <details open={!contextValid || ctx.acid === 'maltAcidule'} className="text-sm">
             <summary className="cursor-pointer min-h-9 flex items-center gap-1 text-cave-200">
-              Maische · {ctx.waterL || '—'} L · {ctx.gristKg || '—'} kg ·{' '}
+              Maische · {ctx.waterL ? nombreFr(ctx.waterL, 1) : '—'} L · {ctx.gristKg ? nombreFr(ctx.gristKg, 2) : '—'} kg ·{' '}
               {ctx.acid === 'phosphorique'
                 ? 'phosphorique 75 %'
                 : ctx.acid === 'lactique'
@@ -167,11 +189,11 @@ function MashCorrection({
           {canDose && (
             <>
               <div className="flex items-baseline gap-2">
-                <strong className="reading text-2xl text-ebc-straw">≈ {partial} mL</strong>
+                <strong className="reading text-2xl text-ebc-straw">≈ {nombreFr(partial, 1)} mL</strong>
                 <span className="text-sm text-cave-200">pour commencer</span>
               </div>
               <p className="text-2xs text-cave-200">
-                Moitié de l’estimation totale ({fix.amount} mL d’
+                Moitié de l’estimation totale ({nombreFr(fix.amount, 1)} mL d’
                 {ACIDS[ctx.acid].name.toLowerCase()}). Mélange puis remesure après 10 minutes. C’est
                 une correction supplémentaire, après les ajouts déjà faits.
               </p>
@@ -225,7 +247,7 @@ function MashCorrection({
                       }))
                     }
                   >
-                    J’ai ajouté {dose} mL
+                    J’ai ajouté {nombreFr(dose, 1)} mL
                   </button>
                   {dose > partial && (
                     <p className="text-2xs text-ebc-straw">
@@ -338,7 +360,7 @@ export function BrewDayMeasurements({
     setRaw('');
     setEditing(null);
     setNotice(
-      `${READING[kind].label} ${kind === 'densite' ? value.toFixed(3) : String(value).replace('.', ',')} ${READING[kind].unit} ajouté au journal`
+      `${READING[kind].label} ${kind === 'densite' ? sg(value) : String(value).replace('.', ',')} ${READING[kind].unit} ajouté au journal`
     );
   };
   return (
@@ -366,7 +388,7 @@ export function BrewDayMeasurements({
               setEditing(null);
               setNotice('');
             }}
-            className={`flex-1 min-h-10 px-1 rounded-control text-sm border ${kind === k ? 'border-ebc-straw/60 bg-ebc-straw/10 text-ebc-straw' : 'border-cave-700 text-cave-200 hover:bg-cave-850'}`}
+            className={`flex-1 min-h-10 px-1 rounded-control text-sm border ${kind === k ? 'border-2 border-ebc-straw bg-ebc-straw/20 font-semibold text-cave-50 underline decoration-2 underline-offset-4' : 'border-cave-700 text-cave-200 hover:bg-cave-850'}`}
           >
             {k === 'temperature' ? 'Temp.' : READING[k].label}
             {(() => {
@@ -377,7 +399,7 @@ export function BrewDayMeasurements({
                 recent && (
                   <span className="block reading text-2xs font-semibold">
                     {k === 'densite'
-                      ? recent.value.toFixed(3)
+                      ? sg(recent.value)
                       : String(recent.value).replace('.', ',')}
                     {recent.unit && ` ${recent.unit}`}
                   </span>
@@ -409,7 +431,7 @@ export function BrewDayMeasurements({
               setRaw(e.target.value);
               setNotice('');
             }}
-            placeholder={last ? 'Nouveau relevé' : READING[kind].placeholder}
+            placeholder={last ? 'Nouveau relevé' : placeholderFor(kind, step, recipe)}
             className={`${brewInput} flex-1`}
           />
           <button
@@ -442,8 +464,7 @@ export function BrewDayMeasurements({
           <p className="text-cave-400">Complète la valeur.</p>
         ) : raw.trim() && value == null ? (
           <p className="text-ebc-straw">
-            Saisis {READING[kind].min} à {READING[kind].max}
-            {kind === 'densite' ? ' SG (ou 1056 pour 1,056)' : ` ${READING[kind].unit}`}.
+            {invitationMesure(kind)}
           </p>
         ) : feedback ? (
           <div
@@ -480,7 +501,7 @@ export function BrewDayMeasurements({
         <div className="flex items-center justify-between gap-2 text-2xs text-cave-200">
           <span role="status">
             {notice ||
-              `Dernier relevé · ${new Date(last.at).toLocaleTimeString('fr-CH', { hour: '2-digit', minute: '2-digit' })} · ${last.value} ${last.unit}`}
+              `Dernier relevé · ${new Date(last.at).toLocaleTimeString('fr-CH', { hour: '2-digit', minute: '2-digit' })} · ${last.kind === 'densite' ? sg(last.value) : String(last.value).replace('.', ',')} ${last.unit}`}
           </span>
           <button
             type="button"

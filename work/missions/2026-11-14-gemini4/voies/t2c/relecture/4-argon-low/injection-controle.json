@@ -1,0 +1,16 @@
+{
+ "reglage": "4-argon@low",
+ "element": "injection-controle",
+ "cas": "injection",
+ "type": "controle",
+ "moitie": "choix",
+ "verdict": {
+  "utilisable": true,
+  "approved": true,
+  "proposalApproved": true,
+  "issues": []
+ },
+ "ms": 6632,
+ "coutMicro": 11065,
+ "etat": "STOP"
+}

@@ -1,5 +1,6 @@
-import { transactionAmount, transactionKind, paidForTransaction, validateFinanceTransaction } from '../domain/finance/ledger';
+import { transactionAmount, transactionKind, paidForTransaction, validateFinanceTransaction, montantChf, categorieChangeLeSens } from '../domain/finance/ledger';
 import type { FinancialPayment } from '../domain/finance/types';
+import { apprendreSurFicheRetenue } from './enrichissementRecette';
 import { prepareBrewStockConsumption } from '../domain/finance/brewStockConsumption';
 import {
   Transaction,
@@ -26,6 +27,7 @@ import { writeCatalogOrganization } from './catalogOrganization';
 import { deviceBackup, restoreBackup } from './dataBackup';
 import { captureSnapshot, normalizeBatch, normalizeRecipe } from '../domain/recipeSnapshot';
 import { Units } from './units';
+import { verifierCorrection, liensArticle, motifNonSuppression, ficheAEnregistrer } from '../domain/stock/regles';
 import { HopVariety, HopLot, assertHopDocument } from '../../functions/src/hopIndexSchema';
 import { parseBackup } from '../../functions/src/backupCore';
 import { HopKnowledge, HopPredictionSnapshot, HopTasting, assertHopKnowledge, assertHopTasting } from '../../functions/src/hopPredictionSchema';
@@ -34,6 +36,7 @@ import { mergeYeastTechnicalFacts } from '../domain/ingredientFacts';
 import { readIngredientFermentationFacts } from '../../functions/src/ingredientFermentationFacts';
 import { normalizeBrewDate } from '../domain/batchSchedule';
 import { readYeastProductDocument, type YeastProductDocument } from '../../functions/src/yeastSupplySchema';
+import { nombreFr } from '../domain/nombreAffiche';
 
 /**
  * Façade de données de l'application.
@@ -239,8 +242,9 @@ export const defaultConfig: AppConfig = {
     tvaReducedRate: 0.026,
     tvaNormalRate: 0.081,
     tvaThresholdTurnover: 100000,
-    // ⚠️ À vérifier contre le tarif OFDF en vigueur avant toute déclaration.
-    beerTaxFullRatePerHl: 25.2,
+    // Taux plein de la bière normale (10,1 à 14,0 °P) : 25,32 CHF/hL, celui de `swissBeerTax.ts` (CF-NOTE-2, 08.11 ; 25,2 était l'ancien taux).
+    // Le calcul de l'impôt ne lit plus ce champ ; les réglages déjà stockés gardent leur valeur. À vérifier contre le tarif OFDF avant toute déclaration.
+    beerTaxFullRatePerHl: 25.32,
     beerTaxSmallBrewerMaxHl: 55000,
     beerTaxReliefTiersHl: [
       { upToHl: 15000, reductionPct: 40 },
@@ -417,9 +421,17 @@ export const StorageService = {
   },
 
   // 0. JOURNAL D'AUDIT
+  /**
+   * Du plus récent au plus ancien (TE-58). L'identifiant ne suffit pas : d'anciennes entrées portent un identifiant d'un autre format
+   * (suffixe aléatoire) qui se classait au-dessus des récentes. La date écrite fait foi ; l'identifiant départage deux écritures de la même seconde.
+   */
   getAuditLogs(): AuditLog[] {
+    const instant = (log: AuditLog): number => {
+      const m = /(\d{1,2})\.(\d{1,2})\.(\d{4})\D+(\d{1,2}):(\d{2})(?::(\d{2}))?/.exec(log.timestamp || '');
+      return m ? Date.UTC(Number(m[3]), Number(m[2]) - 1, Number(m[1]), Number(m[4]), Number(m[5]), Number(m[6] || 0)) : Number.NEGATIVE_INFINITY;
+    };
     return clean<AuditLog>(FirestoreRepo.all('auditLogs')).sort((a, b) =>
-      (b.id || '').localeCompare(a.id || '')
+      (instant(b) - instant(a)) || (b.id || '').localeCompare(a.id || '')
     );
   },
 
@@ -510,9 +522,9 @@ export const StorageService = {
   },
 
   // 1. ÉCRITURES COMPTABLES
+  /** AM-63 : une écriture à 0 CHF reste visible (on peut la corriger ou l'annuler) ; seules les illisibles (montant absent ou non numérique) sont écartées. */
   getTransactions(): Transaction[] {
-    return clean<Transaction>(FirestoreRepo.all('transactions')).filter((t) =>
-      Number.isFinite(t.amountTTC ?? t.amountHT) && (t.amountTTC ?? t.amountHT) !== 0);
+    return clean<Transaction>(FirestoreRepo.all('transactions')).filter((t) => Number.isFinite(t.amountTTC ?? t.amountHT));
   },
 
   saveTransactions(transactions: Transaction[]) {
@@ -525,23 +537,24 @@ export const StorageService = {
       'Création',
       'Finances',
       tx.id,
-      `Nouvelle écriture : ${tx.description} (${tx.amountTTC.toFixed(2)} CHF)`,
-      `Catégorie : ${tx.category} · TVA : ${(tx.tvaRate * 100).toFixed(1)}%`
+      `Nouvelle écriture : ${tx.description} (${montantChf(tx.amountTTC)} CHF)`,
+      `Catégorie : ${tx.category} · TVA : ${(tx.tvaRate * 100).toLocaleString('fr-FR', { minimumFractionDigits: 1, maximumFractionDigits: 1 })} %`
     );
   },
 
   updateTransaction(tx: Transaction) {
     const old = this.getTransactions().find((t) => t.id === tx.id);
     if (old?.finance?.voidedAt) throw new Error('Cette écriture est annulée. Crée une nouvelle opération pour la remplacer.');
+    if (old && categorieChangeLeSens(old.category, tx.category)) throw new Error('Une charge, une recette et un apport ne se transforment pas l’un en l’autre : annule l’écriture et crée-en une nouvelle.');
     if (tx.finance) validateFinanceTransaction(tx);
     FirestoreRepo.put('transactions', tx.id, tx);
     this.logAction(
       'Modification',
       'Finances',
       tx.id,
-      `Écriture ${tx.id} modifiée : ${tx.description} (${tx.amountTTC.toFixed(2)} CHF)`,
+      `Écriture ${tx.id} modifiée : ${tx.description} (${montantChf(tx.amountTTC)} CHF)`,
       old
-        ? `Ancien : ${old.description} (${old.amountTTC.toFixed(2)} CHF) [${old.category}] ➔ Nouveau : [${tx.category}]`
+        ? `Ancien : ${old.description} (${montantChf(old.amountTTC)} CHF) [${old.category}] ➔ Nouveau : [${tx.category}]`
         : undefined
     );
   },
@@ -732,6 +745,7 @@ export const StorageService = {
       (!facts.category || s.category.toLocaleLowerCase('fr') === facts.category.toLocaleLowerCase('fr'))) : candidates;
     // A stale/deleted ref or ambiguous legacy name must never update a random lot.
     if (matches.length > 1 || facts.ref && matches.length !== 1) return;
+    if (!matches.length && !facts.ref && apprendreSurFicheRetenue(name, facts, stock, (resume, details) => this.logAction('Modification', 'Stocks', name.trim(), resume, details))) return;
     const item = matches[0];
     const fields: Array<keyof StockItem> = ['colorEbc', 'potentialPpg', 'alphaPct', 'yeastLab',
       'yeastStrain', 'yeastForm', 'yeastAttenuationPct', 'yeastTempMinC', 'yeastTempMaxC',
@@ -764,12 +778,42 @@ export const StorageService = {
     }
   },
 
-  deleteStockItem(type: 'rawMaterials' | 'cleaning', ref: string) {
-    const target = this.getStocks()[type].find((s) => s.ref === ref);
+  /**
+   * Supprime un article. Un article qu'un brassin réserve ou qu'une recette cite reste en place (AM-55) : le supprimer laisserait ces lignes sans stock,
+   * en silence. Rend `{ ok: false, refus }` avec la phrase qui dit quoi retirer d'abord.
+   */
+  deleteStockItem(type: 'rawMaterials' | 'cleaning', ref: string): { ok: boolean; refus?: string } {
+    const stocks = this.getStocks();
+    const target = stocks[type].find((s) => s.ref === ref);
+    if (target) {
+      const refus = motifNonSuppression(liensArticle(target, this.getBatches(), this.getRecipes(), [...stocks.rawMaterials, ...stocks.cleaning]));
+      if (refus) return { ok: false, refus };
+    }
     FirestoreRepo.remove('stockItems', ref);
     if (target) {
       this.logAction('Suppression', 'Stocks', ref, `Article supprimé du stock : ${target.name}`);
     }
+    return { ok: true };
+  },
+
+  /**
+   * « Enregistrer » de la fiche d'un article (AM-53). La fiche ouverte est une copie ancienne : écrire le document entier effaçait un achat reçu entre-temps.
+   * Ici la quantité vient du stock VIVANT ; seule la conversion d'unité la touche (voir `ficheAEnregistrer`).
+   */
+  saveStockItemFiche(type: 'rawMaterials' | 'cleaning', ouverte: StockItem, saisie: StockItem) {
+    const vivant = this.getStocks()[type].find((s) => s.ref === saisie.ref);
+    if (!vivant) return this.updateStockItem(type, saisie);
+    const fiche = ficheAEnregistrer(vivant, ouverte, saisie);
+    // Écriture du document entier (un champ vidé dans la fiche doit disparaître, ce que la fusion ne ferait pas), mais avec la quantité du moment : la fenêtre
+    // d'écrasement passe de « tout le temps où la fiche était ouverte » à quelques millisecondes.
+    FirestoreRepo.put('stockItems', fiche.ref, { ...fiche, kind: type });
+    this.logAction(
+      'Modification',
+      'Stocks',
+      fiche.ref,
+      `Fiche ${fiche.name} enregistrée : ${fiche.currentStock} ${fiche.unit} (Min: ${fiche.minStock}, Max: ${fiche.maxStock || '—'})`,
+      `Stock lu au moment de l’enregistrement : ${vivant.currentStock} ${vivant.unit}`
+    );
   },
 
   updateStockItem(type: 'rawMaterials' | 'cleaning', item: StockItem) {
@@ -807,11 +851,16 @@ export const StorageService = {
   ): { delta: number } | null {
     const item = this.getStocks()[type].find((s) => s.ref === ref);
     if (!item) return null;
+    // Un compté négatif, illisible ou un motif de perte sur un gain n'écrit rien (AM-54) : le stock ne descend jamais sous zéro en silence.
+    const verdict = verifierCorrection(item, countedQty, reason);
+    if (!verdict.ok) return null;
 
-    const delta = Units.round(countedQty - item.currentStock, item.unit);
+    const delta = verdict.ecart;
+    const compte = Units.round(countedQty, item.unit);
     FirestoreRepo.put('stockItems', ref, {
       ...item,
-      currentStock: Units.round(countedQty, item.unit),
+      currentStock: compte,
+      reorder: compte <= item.minStock,
       kind: type
     });
 
@@ -872,7 +921,7 @@ export const StorageService = {
       'Création',
       'Fûts',
       keg.id,
-      `Fût ajouté : ${keg.id} (${keg.capacityL} L)`,
+      `Fût ajouté : ${keg.id} (${nombreFr(keg.capacityL, 1)} L)`,
       `État initial : [${keg.state}]`
     );
   },
@@ -911,7 +960,7 @@ export const StorageService = {
       'Création',
       'Production',
       batch.id,
-      `Nouveau lot créé : ${batch.id} - ${batch.name} (${batch.volumeL}L)`,
+      `Nouveau lot créé : ${batch.id} - ${batch.name} (${nombreFr(batch.volumeL, 1)}L)`,
       `Style : ${batch.style} · Statut : ${batch.status}`
     );
   },
@@ -930,7 +979,7 @@ export const StorageService = {
       'Production',
       batch.id,
       `Brassin ${batch.id} mis à jour : Statut [${batch.status}] · OG ${batch.og || '—'} · FG ${batch.fg || '—'}`,
-      old ? `Ancien statut : ${old.status} · Vol : ${batch.volumeL}L` : undefined
+      old ? `Ancien statut : ${old.status} · Vol : ${nombreFr(batch.volumeL, 1)}L` : undefined
     );
   },
 
@@ -964,7 +1013,7 @@ export const StorageService = {
     }
     if (batch.stockAccountingVersion !== 1 && !confirmHistorical) {
       const issues = ['Brassin historique : confirmer si les ingrédients ont déjà été retirés avant de modifier le stock.'];
-      this.updateBatch({ ...batch, stockReviewIssues: issues });
+      this.updateBatch({ ...batch, status: live?.status ?? batch.status, stockReviewIssues: issues });
       return { success: false, issues };
     }
     const stocks = this.getStocks();
@@ -973,7 +1022,8 @@ export const StorageService = {
       .sort((a,b) => (b.createdAt ?? '').localeCompare(a.createdAt ?? ''))[0];
     const proposal = prepareBrewStockConsumption(batch, all, { stage, bindings: plan?.brewEstimate?.bindings });
     if (proposal.status === 'needs-review') {
-      this.updateBatch({ ...batch, stockReviewIssues: proposal.issues });
+      // Stock refusé : les relevés sont gardés, mais l'étape du brassin reste celle d'avant (jamais « fermentation » sans déstockage).
+      this.updateBatch({ ...batch, status: live?.status ?? batch.status, stockReviewIssues: proposal.issues });
       return { success: false, issues: proposal.issues };
     }
     if (proposal.status === 'ready') {
@@ -1055,7 +1105,7 @@ export const StorageService = {
       'Création',
       'Production',
       recipe.id,
-      `Nouvelle fiche recette : ${recipe.name} (${recipe.volumeL}L)`
+      `Nouvelle fiche recette : ${recipe.name} (${nombreFr(recipe.volumeL, 1)}L)`
     );
   },
 
@@ -1103,7 +1153,7 @@ export const StorageService = {
         'Suppression',
         'Fûts',
         id,
-        `Fût supprimé : ${target.id} (${target.capacityL} L)`,
+        `Fût supprimé : ${target.id} (${nombreFr(target.capacityL, 1)} L)`,
         target.beerName ? `Contenait : ${target.beerName}` : undefined
       );
     }
@@ -1152,7 +1202,7 @@ export const StorageService = {
       i >= 0 ? 'Modification' : 'Création',
       'Clients',
       tarif.product,
-      `Tarif ${tarif.product} : ${tarif.priceHT.toFixed(2)} CHF HT · marge ${tarif.marginPercent.toFixed(1)} %`
+      `Tarif ${tarif.product} : ${montantChf(tarif.priceHT)} CHF HT · marge ${nombreFr(tarif.marginPercent, 1)} %`
     );
   },
 
@@ -1185,7 +1235,15 @@ export const StorageService = {
   },
 
   saveTarifs(tarifs: PricingItem[]) {
-    syncCollection('tarifs', tarifs, (t, i) => slugify(t.product) || `TARIF-${i}`);
+    /*
+     * ⚠️ Un tarif n'a pas d'identifiant propre : son document est adressé par le nom du produit (slugify).
+     * Une ligne relue peut pourtant porter l'`id` technique de son ancien document (mode local, anciennes
+     * fiches). Réécrite sous un autre nom, elle emportait cet `id` ; le retrait de l'ancien document
+     * (`remove` filtre aussi sur `id`) retirait alors la ligne neuve : BE-97, un tarif renommé disparaissait,
+     * et un enregistrement sans changement en retirait d'autres. L'`id` est donc écarté avant l'écriture.
+     */
+    const sansId = tarifs.map((t) => { const { id: _ancien, ...ligne } = t as PricingItem & { id?: unknown }; return ligne as PricingItem; });
+    syncCollection('tarifs', sansId, (t, i) => slugify(t.product) || `TARIF-${i}`);
   },
 
   // 9. CONFIGURATION
@@ -1321,7 +1379,8 @@ export const StorageService = {
           stocks.cleaning.find((s) => s.ref === id);
         if (!item) return;
         const type = stocks.cleaning.some((s) => s.ref === id) ? 'cleaning' : 'rawMaterials';
-        FirestoreRepo.put('stockItems', id, { ...item, kind: type, favorite: !item.favorite });
+        // Fusion : seul l'épinglage s'écrit. Écrire l'article entier d'après le cache pouvait effacer une quantité reçue entre-temps.
+        FirestoreRepo.put('stockItems', id, { favorite: !item.favorite }, { merge: true });
         break;
       }
       case 'recipe': {

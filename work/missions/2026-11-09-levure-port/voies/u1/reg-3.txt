@@ -1,0 +1,19 @@
+[1m[43m DEPRECATED [49m[22m [33m"environmentMatchGlobs" is deprecated. Use `test.projects` to define different configurations instead.[39m
+
+[1m[46m RUN [49m[22m [36mv3.2.7 [39m[90mC:/Users/mrspa/.codex/worktrees/openai-clean-start/Brasserie[39m
+
+ [32m✓[39m tests/unit/hopIndexV4/etapeHoublons.test.tsx [2m([22m[2m14 tests[22m[2m)[22m[33m 816[2mms[22m[39m
+   [33m[2m✓[22m[39m étape Houblons v4 (T12)[2m > [22mrend l'écran choisi sur la recette du brouillon : bandeau, frise, carte, profil [33m 322[2mms[22m[39m
+ [32m✓[39m tests/integration/etapeLevure/etapeCoque.test.tsx [2m([22m[2m15 tests[22m[2m)[22m[33m 1240[2mms[22m[39m
+   [33m[2m✓[22m[39m Ma levure (l5b)[2m > [22mla ligne de la levure, sa dose en plage de sachets, les effets là où la source les donne [33m 430[2mms[22m[39m
+ [32m✓[39m tests/integration/yeastPitchingWizardOwnership.test.tsx [2m([22m[2m4 tests[22m[2m)[22m[33m 5222[2mms[22m[39m
+   [33m[2m✓[22m[39m Moût opérationnel et propriétaire documentaire du Wizard[2m > [22mconserve le même moût mesuré lors du choix stock, sans reprendre produit ni lot de la souche précédente [33m 1486[2mms[22m[39m
+   [33m[2m✓[22m[39m Moût opérationnel et propriétaire documentaire du Wizard[2m > [22mconserve le même moût mesuré lors du choix free, sans reprendre produit ni lot de la souche précédente [33m 895[2mms[22m[39m
+   [33m[2m✓[22m[39m Moût opérationnel et propriétaire documentaire du Wizard[2m > [22mmodifie et qualifie au clavier, rouvre puis efface le moût sans remplacer la fiche locale stock [33m 1453[2mms[22m[39m
+   [33m[2m✓[22m[39m Moût opérationnel et propriétaire documentaire du Wizard[2m > [22mmodifie et qualifie au clavier, rouvre puis efface le moût sans remplacer la fiche locale free [33m 1387[2mms[22m[39m
+
+[2m Test Files [22m [1m[32m3 passed[39m[22m[90m (3)[39m
+[2m      Tests [22m [1m[32m33 passed[39m[22m[90m (33)[39m
+[2m   Start at [22m 14:43:51
+[2m   Duration [22m 9.97s[2m (transform 3.49s, setup 290ms, collect 6.25s, tests 7.28s, environment 1.67s, prepare 168ms)[22m
+

@@ -1,0 +1,43 @@
+{
+ "lignes": 24,
+ "total": "562,10",
+ "pliables": 8,
+ "bandesPliables": 2,
+ "bandes": [
+  {
+   "nom": "Nettoyage",
+   "n": 6,
+   "montant": "86,00",
+   "qte": "1 Kg + 6 Stk",
+   "groupes": [
+    "CIP alcalin 2 · 22,40",
+    "Désinfectant 2 · 30,20",
+    "Détergent 2 · 33,40"
+   ]
+  },
+  {
+   "nom": "Consommables",
+   "n": 2,
+   "montant": "21,40",
+   "qte": "2 Stk",
+   "groupes": [
+    "Consommable 2 · 21,40"
+   ]
+  },
+  {
+   "nom": "Rénovation",
+   "n": 16,
+   "montant": "454,70",
+   "qte": "25 Stk",
+   "groupes": [
+    "Peinture et sols 5 · 191,30",
+    "Outillage 2 · 95,50",
+    "Quincaillerie 2 · 22,40",
+    "Électricité 2 · 49,70",
+    "Plomberie 2 · 58,80",
+    "Protection 2 · 21,40",
+    "Divers travaux 1 · 15,60"
+   ]
+  }
+ ]
+}

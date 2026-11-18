@@ -1,0 +1,19 @@
+{
+ "cas": "rel-ipa-levure-eau",
+ "usage": "relecture",
+ "half": "choix",
+ "cellule": "ar@low",
+ "ok": true,
+ "ms": 12738,
+ "microChf": 12773,
+ "microDecembre": 25545,
+ "entree": 1524,
+ "sortie": 717,
+ "etat": "STOP",
+ "ancrage": "sans objet",
+ "note": 1,
+ "utilisable": true,
+ "inventes": 0,
+ "detail": "2/2 défauts · 0 bloquant(s) dont 0 injustifié(s)",
+ "reponse": "{\"verdict\":\"La recette n'est pas prête à brasser en l'état : elle présente un fort sous-ensemencement, un profil d'eau inversé pour une American IPA et il manque des données essentielles sur le houblon Citra et l'eau brute.\",\"findings\":[{\"severity\":\"gout\",\"topic\":\"Levure\",\"observation\":\"La dose de SafAle US-05 sèche est de 5 g pour 20 L à une densité initiale (ogTarget) de 1.065, ce qui constitue un fort sous-ensemencement risquant d'entraîner une fermentation languissante, une atténuation incomplète (loin de la fgTarget de 1.012) et des faux-goûts.\",\"suggestion\":\"Augmenter la quantité de levure sèche SafAle US-05 (standard d'environ 11,5 g à 15 g pour 20 L à 1.065).\"},{\"severity\":\"gout\",\"topic\":\"Eau\",\"observation\":\"Le plan d'eau prévoit 0 g de gypse et 10 g de chlorure de calcium, donnant un profil après traitement de 40 ppm de sulfate contre 200 ppm de chlorure (ratio SO4/Cl de 0,2), ce qui est à contresens du houblonnage d'une American IPA (amertume visée de 60 IBU).\",\"suggestion\":\"Réduire le chlorure de calcium et privilégier le gypse (CaSO4) pour inverser le rapport sulfate/chlorure en faveur des sulfates (une fois l'analyse de l'eau du réseau connue).\"},{\"severity\":\"detail\",\"topic\":\"Houblons\",\"observation\":\"Le taux d'acides alpha du houblon Citra (100 g en whirlpool à 80 °C pendant 20 min et 80 g en dryHop) n'est pas renseigné, ce qui empêche de vérifier l'atteinte de la cible d'amertume (ibuTarget de 60) avec les seuls 25 g de Warrior à 15 % AA.\",\"suggestion\":\"Renseigner le taux d'acides alpha du lot de Citra utilisé pour recalculer les IBU totaux.\"}],\"missing\":[\"Taux d'acides alpha (alpha) du houblon Citra (whirlpool et dryHop).\",\"Analyse minérale de l'eau source (« eau du réseau ») avant traitement.\",\"Volumes d'eau d'empâtage et de rinçage (pour vérifier la répartition des sels et le pH de maische).\",\"Température de fermentation.\"],\"styleFit\":\"La base maltée (Pale Ale 5,2 kg, Crystal 20 0,3 kg), la couleur (12 EBC), la densité (1.065) et le palier d'empâtage à 66 °C correspondent bien à une American IPA, mais le rapport sulfate/chlorure de 40/200 ppm orienté très « malté/rond » façon NEIPA étouffera le tranchant houblonné attendu sur ce style, et les 5 g de US-05 compromettent la sécheresse finale visée (1.012).\"}"
+}

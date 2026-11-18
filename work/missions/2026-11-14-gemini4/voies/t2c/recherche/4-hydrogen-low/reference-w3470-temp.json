@@ -1,0 +1,17 @@
+{
+ "reglage": "4-hydrogen@low",
+ "kind": "reference",
+ "id": "w3470-temp",
+ "utilisable": true,
+ "produits": [],
+ "pertinentes": 0,
+ "exactes": 0,
+ "sourcesPrimaires": 3,
+ "faitCle": true,
+ "ms": 4128,
+ "coutMicro": 24436,
+ "web": 1,
+ "appels": 1,
+ "etat": "STOP",
+ "extrait": "Selon la fiche technique officielle du fabricant **Fermentis**, la plage de température de fermentation idéale recommandée pour la levure **SafLager™ W-34/70** (*Saccharomyces pastorianus*) est de **12 °C à 18 °C** (53,6 °F à 64,4 °F).\n\n**Précisions et limites issues des sources du fabricant :**\n* F"
+}

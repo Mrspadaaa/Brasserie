@@ -1,0 +1,1703 @@
+[1m[43m DEPRECATED [49m[22m [33m"environmentMatchGlobs" is deprecated. Use `test.projects` to define different configurations instead.[39m
+
+[1m[46m RUN [49m[22m [36mv3.2.7 [39m[90mC:/Users/mrspa/.codex/worktrees/openai-clean-start/Brasserie[39m
+
+ [32m✓[39m tests/integration/etapeLevure/etapeCoque.test.tsx [2m([22m[2m15 tests[22m[2m)[22m[33m 1371[2mms[22m[39m
+   [33m[2m✓[22m[39m Ma levure (l5b)[2m > [22mla ligne de la levure, sa dose en plage de sachets, les effets là où la source les donne [33m 438[2mms[22m[39m
+ [31m❯[39m tests/unit/hopIndexV4/etapeHoublons.test.tsx [2m([22m[2m14 tests[22m[2m | [22m[31m1 failed[39m[2m)[22m[33m 850[2mms[22m[39m
+   [33m[2m✓[22m[39m étape Houblons v4 (T12)[2m > [22mrend l'écran choisi sur la recette du brouillon : bandeau, frise, carte, profil [33m 334[2mms[22m[39m
+   [32m✓[39m étape Houblons v4 (T12)[2m > [22mun geste écrit un patch de hops par la porte du wizard (dose +, puis retirer)[32m 103[2mms[22m[39m
+   [32m✓[39m étape Houblons v4 (T12)[2m > [22mun refus de la porte (brouillon en lecture seule) est dit, la recette reste celle du brouillon[32m 112[2mms[22m[39m
+   [32m✓[39m wizard (T12) : drapeau et une seule copie[2m > [22ml'étape 3 rend l'écran v4 drapeau allumé et garde l'atelier V5.5 drapeau éteint[32m 0[2mms[22m[39m
+   [32m✓[39m wizard (T12) : drapeau et une seule copie[2m > [22ml'écran n'a plus de copie dans la maquette[32m 1[2mms[22m[39m
+   [32m✓[39m étape Houblons v4 (T12b) : l'inconnu s'écrit « ? »[2m > [22mrecette vide : ni « NaN » ni « IBU 0 » ; l'IBU est dit incalculable avec sa raison (densité)[32m 62[2mms[22m[39m
+   [32m✓[39m étape Houblons v4 (T12b) : l'inconnu s'écrit « ? »[2m > [22mun houblon sans malts : le total d'IBU reste incalculable (la carte dit « ? IBU »), jamais 0[32m 116[2mms[22m[39m
+   [32m✓[39m étape Houblons v4 (T12b) : l'inconnu s'écrit « ? »[2m > [22msans levure, la frise ne la dit pas « caractérisée »[32m 67[2mms[22m[39m
+   [32m✓[39m étape Houblons v4 (T12b) : l'inconnu s'écrit « ? »[2m > [22mla recette de la maquette se chiffre : IBU et OG 1,066[32m 46[2mms[22m[39m
+   [32m✓[39m wizard (T12b) : en-tête, rangée de fin, banc local, champ protégé[2m > [22mle même haut d'écran aux sept étapes : WizardStepName partout, plus de repère « 3/7 » propre à l'étape 3 (t12c)[32m 1[2mms[22m[39m
+   [32m✓[39m wizard (T12b) : en-tête, rangée de fin, banc local, champ protégé[2m > [22mRetour et Suivant sont la rangée de fin de PageShell, qui laisse le coin du « + » flottant[32m 1[2mms[22m[39m
+[31m   [31m×[31m wizard (T12b) : en-tête, rangée de fin, banc local, champ protégé[2m > [22mle banc `?dev-local&etape=houblons` reste derrière import.meta.env.DEV et le compte dev-local[39m[32m 4[2mms[22m[39m
+[31m     → expected 'cuEtapeLevure, recetteApercuSansLevur…' to match /if \(import\.meta\.env\.DEV\) \{\s*if…/[39m
+   [32m✓[39m wizard (T12b) : en-tête, rangée de fin, banc local, champ protégé[2m > [22mle champ « Ajouter — houblon… » est le champ protégé de l'app (Input), pas un <input> brut[32m 0[2mms[22m[39m
+   [32m✓[39m recette du banc local (T12b)[2m > [22mest celle de sa maquette : Stout export 16D, 20 L, OG 1,066, Nugget 46 g à 60′, α 13 %[32m 4[2mms[22m[39m
+ [31m❯[39m tests/integration/yeastPitchingWizardOwnership.test.tsx [2m([22m[2m4 tests[22m[2m | [22m[31m4 failed[39m[2m)[22m[33m 4992[2mms[22m[39m
+[31m   [31m×[31m Moût opérationnel et propriétaire documentaire du Wizard[2m > [22mconserve le même moût mesuré lors du choix stock, sans reprendre produit ni lot de la souche précédente[39m[33m 1610[2mms[22m[39m
+[31m     → Unable to find role="region" and name "Moût à ensemencer"
+
+Ignored nodes: comments, script, style
+[36m<body>[31m
+  [36m<div>[31m
+    [36m<div[31m
+      [33mclass[31m=[32m"page-shell fixed inset-0 z-[49] flex flex-col bg-cave-950 recipe-wizard"[31m
+      [33mdata-page-shell[31m=[32m"true"[31m
+    [36m>[31m
+      [36m<header[31m
+        [33mclass[31m=[32m"shrink-0 border-b border-cave-800 bg-cave-950/95 backdrop-blur-sm pt-safe"[31m
+      [36m>[31m
+        [36m<div[31m
+          [33mclass[31m=[32m"flex items-start"[31m
+        [36m>[31m
+          [36m<div[31m
+            [33mclass[31m=[32m"min-w-0 flex-1"[31m
+          [36m>[31m
+            [36m<div[31m
+              [33mclass[31m=[32m"sm:hidden"[31m
+            [36m>[31m
+              [36m<div[31m
+                [33mclass[31m=[32m"recipe-mobile-header px-2 bg-cave-950"[31m
+              [36m>[31m
+                [36m<div[31m
+                  [33mclass[31m=[32m"recipe-titlebar flex items-center gap-1.5"[31m
+                [36m>[31m
+                  [36m<button[31m
+                    [33maria-label[31m=[32m"Fermer"[31m
+                    [33mclass[31m=[32m"w-7 h-7 rounded-control flex items-center justify-center text-cave-400 hover:text-cave-50 active:bg-cave-850 shrink-0 transition-colors"[31m
+                    [33mtype[31m=[32m"button"[31m
+                  [36m>[31m
+                    [36m<svg[31m
+                      [33maria-hidden[31m=[32m"true"[31m
+                      [33mclass[31m=[32m"lucide lucide-chevron-left w-4 h-4"[31m
+                      [33mfill[31m=[32m"none"[31m
+                      [33mheight[31m=[32m"24"[31m
+                      [33mstroke[31m=[32m"currentColor"[31m
+                      [33mstroke-linecap[31m=[32m"round"[31m
+                      [33mstroke-linejoin[31m=[32m"round"[31m
+                      [33mstroke-width[31m=[32m"2"[31m
+                      [33mviewBox[31m=[32m"0 0 24 24"[31m
+                      [33mwidth[31m=[32m"24"[31m
+                      [33mxmlns[31m=[32m"http://www.w3.org/2000/svg"[31m
+                    [36m>[31m
+                      [36m<path[31m
+                        [33md[31m=[32m"m15 18-6-6 6-6"[31m
+                      [36m/>[31m
+                    [36m</svg>[31m
+                  [36m</button>[31m
+                  [36m<p[31m
+                    [33mclass[31m=[32m"flex min-w-0 flex-1 items-baseline gap-1.5"[31m
+                  [36m>[31m
+                    [36m<span[31m
+                      [33mclass[31m=[32m"min-w-0 truncate text-base font-semibold text-cave-50"[31m
+                    [36m>[31m
+                      [0mLevure[0m
+                    [36m</span>[31m
+                    [36m<span[31m
+                      [33mclass[31m=[32m"shrink-0 font-mono text-sm text-cave-400"[31m
+                    [36m>[31m
+                      [0m4[0m
+                      [0m/[0m
+                      [0m7[0m
+                    [36m</span>[31m
+                    [36m<span[31m
+                      [33maria-live[31m=[32m"polite"[31m
+                      [33mclass[31m=[32m"sr-only"[31m
+                    [36m>[31m
+                      [0mLevure — étape 4 sur 7[0m
+                    [36m</span>[31m
+                  [36m</p>[31m
+                  [36m<button[31m
+                    [33maria-label[31m=[32m"Coller une recette"[31m
+                    [33mclass[31m=[32m"w-7 h-7 rounded-control flex items-center justify-center text-cave-400 hover:text-ebc-straw active:bg-cave-850 shrink-0 transition-colors"[31m
+                    [33mtype[31m=[32m"button"[31m
+                  [36m>[31m
+                    [36m<svg[31m
+                      [33maria-hidden[31m=[32m"true"[31m
+                      [33mclass[31m=[32m"lucide lucide-clipboard-paste w-3.5 h-3.5"[31m
+                      [33mfill[31m=[32m"none"[31m
+                      [33mheight[31m=[32m"24"[31m
+                      [33mstroke[31m=[32m"currentColor"[31m
+                      [33mstroke-linecap[31m=[32m"round"[31m
+                      [33mstroke-linejoin[31m=[32m"round"[31m
+                      [33mstroke-width[31m=[32m"2"[31m
+                      [33mviewBox[31m=[32m"0 0 24 24"[31m
+                      [33mwidth[31m=[32m"24"[31m
+                      [33mxmlns[31m=[32m"http://www.w3.org/2000/svg"[31m
+                    [36m>[31m
+                      [36m<path[31m
+                        [33md[31m=[32m"M11 14h10"[31m
+                      [36m/>[31m
+                      [36m<path[31m
+                        [33md[31m=[32m"M16 4h2a2 2 0 0 1 2 2v1.344"[31m
+                      [36m/>[31m
+                      [36m<path[31m
+                        [33md[31m=[32m"m17 18 4-4-4-4"[31m
+                      [36m/>[31m
+                      [36m<path[31m
+                        [33md[31m=[32m"M8 4H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 1.793-1.113"[31m
+                      [36m/>[31m
+                      [36m<rect[31m
+                        [33mheight[31m=[32m"4"[31m
+                        [33mrx[31m=[32m"1"[31m
+                        [33mwidth[31m=[32m"8"[31m
+                        [33mx[31m=[32m"8"[31m
+                        [33my[31m=[32m"2"[31m
+                      [36m/>[31m
+                    [36m</svg>[31m
+                  [36m</button>[31m
+                  [36m<button[31m
+                    [33maria-label[31m=[32m"Thème sombre (cave)"[31m
+                    [33mclass[31m=[32m"w-7 h-7 rounded-control flex items-center justify-center text-cave-400 hover:text-cave-50 active:bg-cave-850 shrink-0 transition-colors "[31m
+                    [33mdata-theme-toggle[31m=[32m"clair"[31m
+                    [33mtitle[31m=[32m"Thème sombre (cave)"[31m
+                    [33mtype[31m=[32m"button"[31m
+                  [36m>[31m
+                    [36m<svg[31m
+                      [33maria-hidden[31m=[32m"true"[31m
+                      [33mclass[31m=[32m"lucide lucide-moon w-3.5 h-3.5"[31m
+                      [33mfill[31m=[32m"none"[31m
+                      [33mheight[31m=[32m"24"[31m
+                      [33mstroke[31m=[32m"currentColor"[31m
+                      [33mstroke-linecap[31m=[32m"round"[31m
+                      [33mstroke-linejoin[31m=[32m"round"[31m
+                      [33mstroke-width[31m=[32m"2"[31m
+                      [33mviewBox[31m=[32m"0 0 24 24"[31m
+                      [33mwidth[31m=[32m"24"[31m
+                      [33mxmlns[31m=[32m"http://www.w3.org/2000/svg"[31m
+                    [36m>[31m
+                      [36m<path[31m
+                        [33md[31m=[32m"M20.985 12.486a9 9 0 1 1-9.473-9.472c.405-.022.617.46.402.803a6 6 0 0 0 8.268 8.268c.344-.215.825-.004.803.401"[31m
+                      [36m/>[31m
+                    [36...
+
+Ignored nodes: comments, script, style
+[36m<body>[31m
+  [36m<div>[31m
+    [36m<div[31m
+      [33mclass[31m=[32m"page-shell fixed inset-0 z-[49] flex flex-col bg-cave-950 recipe-wizard"[31m
+      [33mdata-page-shell[31m=[32m"true"[31m
+    [36m>[31m
+      [36m<header[31m
+        [33mclass[31m=[32m"shrink-0 border-b border-cave-800 bg-cave-950/95 backdrop-blur-sm pt-safe"[31m
+      [36m>[31m
+        [36m<div[31m
+          [33mclass[31m=[32m"flex items-start"[31m
+        [36m>[31m
+          [36m<div[31m
+            [33mclass[31m=[32m"min-w-0 flex-1"[31m
+          [36m>[31m
+            [36m<div[31m
+              [33mclass[31m=[32m"sm:hidden"[31m
+            [36m>[31m
+              [36m<div[31m
+                [33mclass[31m=[32m"recipe-mobile-header px-2 bg-cave-950"[31m
+              [36m>[31m
+                [36m<div[31m
+                  [33mclass[31m=[32m"recipe-titlebar flex items-center gap-1.5"[31m
+                [36m>[31m
+                  [36m<button[31m
+                    [33maria-label[31m=[32m"Fermer"[31m
+                    [33mclass[31m=[32m"w-7 h-7 rounded-control flex items-center justify-center text-cave-400 hover:text-cave-50 active:bg-cave-850 shrink-0 transition-colors"[31m
+                    [33mtype[31m=[32m"button"[31m
+                  [36m>[31m
+                    [36m<svg[31m
+                      [33maria-hidden[31m=[32m"true"[31m
+                      [33mclass[31m=[32m"lucide lucide-chevron-left w-4 h-4"[31m
+                      [33mfill[31m=[32m"none"[31m
+                      [33mheight[31m=[32m"24"[31m
+                      [33mstroke[31m=[32m"currentColor"[31m
+                      [33mstroke-linecap[31m=[32m"round"[31m
+                      [33mstroke-linejoin[31m=[32m"round"[31m
+                      [33mstroke-width[31m=[32m"2"[31m
+                      [33mviewBox[31m=[32m"0 0 24 24"[31m
+                      [33mwidth[31m=[32m"24"[31m
+                      [33mxmlns[31m=[32m"http://www.w3.org/2000/svg"[31m
+                    [36m>[31m
+                      [36m<path[31m
+                        [33md[31m=[32m"m15 18-6-6 6-6"[31m
+                      [36m/>[31m
+                    [36m</svg>[31m
+                  [36m</button>[31m
+                  [36m<p[31m
+                    [33mclass[31m=[32m"flex min-w-0 flex-1 items-baseline gap-1.5"[31m
+                  [36m>[31m
+                    [36m<span[31m
+                      [33mclass[31m=[32m"min-w-0 truncate text-base font-semibold text-cave-50"[31m
+                    [36m>[31m
+                      [0mLevure[0m
+                    [36m</span>[31m
+                    [36m<span[31m
+                      [33mclass[31m=[32m"shrink-0 font-mono text-sm text-cave-400"[31m
+                    [36m>[31m
+                      [0m4[0m
+                      [0m/[0m
+                      [0m7[0m
+                    [36m</span>[31m
+                    [36m<span[31m
+                      [33maria-live[31m=[32m"polite"[31m
+                      [33mclass[31m=[32m"sr-only"[31m
+                    [36m>[31m
+                      [0mLevure — étape 4 sur 7[0m
+                    [36m</span>[31m
+                  [36m</p>[31m
+                  [36m<button[31m
+                    [33maria-label[31m=[32m"Coller une recette"[31m
+                    [33mclass[31m=[32m"w-7 h-7 rounded-control flex items-center justify-center text-cave-400 hover:text-ebc-straw active:bg-cave-850 shrink-0 transition-colors"[31m
+                    [33mtype[31m=[32m"button"[31m
+                  [36m>[31m
+                    [36m<svg[31m
+                      [33maria-hidden[31m=[32m"true"[31m
+                      [33mclass[31m=[32m"lucide lucide-clipboard-paste w-3.5 h-3.5"[31m
+                      [33mfill[31m=[32m"none"[31m
+                      [33mheight[31m=[32m"24"[31m
+                      [33mstroke[31m=[32m"currentColor"[31m
+                      [33mstroke-linecap[31m=[32m"round"[31m
+                      [33mstroke-linejoin[31m=[32m"round"[31m
+                      [33mstroke-width[31m=[32m"2"[31m
+                      [33mviewBox[31m=[32m"0 0 24 24"[31m
+                      [33mwidth[31m=[32m"24"[31m
+                      [33mxmlns[31m=[32m"http://www.w3.org/2000/svg"[31m
+                    [36m>[31m
+                      [36m<path[31m
+                        [33md[31m=[32m"M11 14h10"[31m
+                      [36m/>[31m
+                      [36m<path[31m
+                        [33md[31m=[32m"M16 4h2a2 2 0 0 1 2 2v1.344"[31m
+                      [36m/>[31m
+                      [36m<path[31m
+                        [33md[31m=[32m"m17 18 4-4-4-4"[31m
+                      [36m/>[31m
+                      [36m<path[31m
+                        [33md[31m=[32m"M8 4H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 1.793-1.113"[31m
+                      [36m/>[31m
+                      [36m<rect[31m
+                        [33mheight[31m=[32m"4"[31m
+                        [33mrx[31m=[32m"1"[31m
+                        [33mwidth[31m=[32m"8"[31m
+                        [33mx[31m=[32m"8"[31m
+                        [33my[31m=[32m"2"[31m
+                      [36m/>[31m
+                    [36m</svg>[31m
+                  [36m</button>[31m
+                  [36m<button[31m
+                    [33maria-label[31m=[32m"Thème sombre (cave)"[31m
+                    [33mclass[31m=[32m"w-7 h-7 rounded-control flex items-center justify-center text-cave-400 hover:text-cave-50 active:bg-cave-850 shrink-0 transition-colors "[31m
+                    [33mdata-theme-toggle[31m=[32m"clair"[31m
+                    [33mtitle[31m=[32m"Thème sombre (cave)"[31m
+                    [33mtype[31m=[32m"button"[31m
+                  [36m>[31m
+                    [36m<svg[31m
+                      [33maria-hidden[31m=[32m"true"[31m
+                      [33mclass[31m=[32m"lucide lucide-moon w-3.5 h-3.5"[31m
+                      [33mfill[31m=[32m"none"[31m
+                      [33mheight[31m=[32m"24"[31m
+                      [33mstroke[31m=[32m"currentColor"[31m
+                      [33mstroke-linecap[31m=[32m"round"[31m
+                      [33mstroke-linejoin[31m=[32m"round"[31m
+                      [33mstroke-width[31m=[32m"2"[31m
+                      [33mviewBox[31m=[32m"0 0 24 24"[31m
+                      [33mwidth[31m=[32m"24"[31m
+                      [33mxmlns[31m=[32m"http://www.w3.org/2000/svg"[31m
+                    [36m>[31m
+                      [36m<path[31m
+                        [33md[31m=[32m"M20.985 12.486a9 9 0 1 1-9.473-9.472c.405-.022.617.46.402.803a6 6 0 0 0 8.268 8.268c.344-.215.825-.004.803.401"[31m
+                      [36m/>[31m
+                    [36...[39m
+[31m   [31m×[31m Moût opérationnel et propriétaire documentaire du Wizard[2m > [22mconserve le même moût mesuré lors du choix free, sans reprendre produit ni lot de la souche précédente[39m[33m 1117[2mms[22m[39m
+[31m     → Unable to find role="region" and name "Moût à ensemencer"
+
+Ignored nodes: comments, script, style
+[36m<body>[31m
+  [36m<div>[31m
+    [36m<div[31m
+      [33mclass[31m=[32m"page-shell fixed inset-0 z-[49] flex flex-col bg-cave-950 recipe-wizard"[31m
+      [33mdata-page-shell[31m=[32m"true"[31m
+    [36m>[31m
+      [36m<header[31m
+        [33mclass[31m=[32m"shrink-0 border-b border-cave-800 bg-cave-950/95 backdrop-blur-sm pt-safe"[31m
+      [36m>[31m
+        [36m<div[31m
+          [33mclass[31m=[32m"flex items-start"[31m
+        [36m>[31m
+          [36m<div[31m
+            [33mclass[31m=[32m"min-w-0 flex-1"[31m
+          [36m>[31m
+            [36m<div[31m
+              [33mclass[31m=[32m"sm:hidden"[31m
+            [36m>[31m
+              [36m<div[31m
+                [33mclass[31m=[32m"recipe-mobile-header px-2 bg-cave-950"[31m
+              [36m>[31m
+                [36m<div[31m
+                  [33mclass[31m=[32m"recipe-titlebar flex items-center gap-1.5"[31m
+                [36m>[31m
+                  [36m<button[31m
+                    [33maria-label[31m=[32m"Fermer"[31m
+                    [33mclass[31m=[32m"w-7 h-7 rounded-control flex items-center justify-center text-cave-400 hover:text-cave-50 active:bg-cave-850 shrink-0 transition-colors"[31m
+                    [33mtype[31m=[32m"button"[31m
+                  [36m>[31m
+                    [36m<svg[31m
+                      [33maria-hidden[31m=[32m"true"[31m
+                      [33mclass[31m=[32m"lucide lucide-chevron-left w-4 h-4"[31m
+                      [33mfill[31m=[32m"none"[31m
+                      [33mheight[31m=[32m"24"[31m
+                      [33mstroke[31m=[32m"currentColor"[31m
+                      [33mstroke-linecap[31m=[32m"round"[31m
+                      [33mstroke-linejoin[31m=[32m"round"[31m
+                      [33mstroke-width[31m=[32m"2"[31m
+                      [33mviewBox[31m=[32m"0 0 24 24"[31m
+                      [33mwidth[31m=[32m"24"[31m
+                      [33mxmlns[31m=[32m"http://www.w3.org/2000/svg"[31m
+                    [36m>[31m
+                      [36m<path[31m
+                        [33md[31m=[32m"m15 18-6-6 6-6"[31m
+                      [36m/>[31m
+                    [36m</svg>[31m
+                  [36m</button>[31m
+                  [36m<p[31m
+                    [33mclass[31m=[32m"flex min-w-0 flex-1 items-baseline gap-1.5"[31m
+                  [36m>[31m
+                    [36m<span[31m
+                      [33mclass[31m=[32m"min-w-0 truncate text-base font-semibold text-cave-50"[31m
+                    [36m>[31m
+                      [0mLevure[0m
+                    [36m</span>[31m
+                    [36m<span[31m
+                      [33mclass[31m=[32m"shrink-0 font-mono text-sm text-cave-400"[31m
+                    [36m>[31m
+                      [0m4[0m
+                      [0m/[0m
+                      [0m7[0m
+                    [36m</span>[31m
+                    [36m<span[31m
+                      [33maria-live[31m=[32m"polite"[31m
+                      [33mclass[31m=[32m"sr-only"[31m
+                    [36m>[31m
+                      [0mLevure — étape 4 sur 7[0m
+                    [36m</span>[31m
+                  [36m</p>[31m
+                  [36m<button[31m
+                    [33maria-label[31m=[32m"Coller une recette"[31m
+                    [33mclass[31m=[32m"w-7 h-7 rounded-control flex items-center justify-center text-cave-400 hover:text-ebc-straw active:bg-cave-850 shrink-0 transition-colors"[31m
+                    [33mtype[31m=[32m"button"[31m
+                  [36m>[31m
+                    [36m<svg[31m
+                      [33maria-hidden[31m=[32m"true"[31m
+                      [33mclass[31m=[32m"lucide lucide-clipboard-paste w-3.5 h-3.5"[31m
+                      [33mfill[31m=[32m"none"[31m
+                      [33mheight[31m=[32m"24"[31m
+                      [33mstroke[31m=[32m"currentColor"[31m
+                      [33mstroke-linecap[31m=[32m"round"[31m
+                      [33mstroke-linejoin[31m=[32m"round"[31m
+                      [33mstroke-width[31m=[32m"2"[31m
+                      [33mviewBox[31m=[32m"0 0 24 24"[31m
+                      [33mwidth[31m=[32m"24"[31m
+                      [33mxmlns[31m=[32m"http://www.w3.org/2000/svg"[31m
+                    [36m>[31m
+                      [36m<path[31m
+                        [33md[31m=[32m"M11 14h10"[31m
+                      [36m/>[31m
+                      [36m<path[31m
+                        [33md[31m=[32m"M16 4h2a2 2 0 0 1 2 2v1.344"[31m
+                      [36m/>[31m
+                      [36m<path[31m
+                        [33md[31m=[32m"m17 18 4-4-4-4"[31m
+                      [36m/>[31m
+                      [36m<path[31m
+                        [33md[31m=[32m"M8 4H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 1.793-1.113"[31m
+                      [36m/>[31m
+                      [36m<rect[31m
+                        [33mheight[31m=[32m"4"[31m
+                        [33mrx[31m=[32m"1"[31m
+                        [33mwidth[31m=[32m"8"[31m
+                        [33mx[31m=[32m"8"[31m
+                        [33my[31m=[32m"2"[31m
+                      [36m/>[31m
+                    [36m</svg>[31m
+                  [36m</button>[31m
+                  [36m<button[31m
+                    [33maria-label[31m=[32m"Thème sombre (cave)"[31m
+                    [33mclass[31m=[32m"w-7 h-7 rounded-control flex items-center justify-center text-cave-400 hover:text-cave-50 active:bg-cave-850 shrink-0 transition-colors "[31m
+                    [33mdata-theme-toggle[31m=[32m"clair"[31m
+                    [33mtitle[31m=[32m"Thème sombre (cave)"[31m
+                    [33mtype[31m=[32m"button"[31m
+                  [36m>[31m
+                    [36m<svg[31m
+                      [33maria-hidden[31m=[32m"true"[31m
+                      [33mclass[31m=[32m"lucide lucide-moon w-3.5 h-3.5"[31m
+                      [33mfill[31m=[32m"none"[31m
+                      [33mheight[31m=[32m"24"[31m
+                      [33mstroke[31m=[32m"currentColor"[31m
+                      [33mstroke-linecap[31m=[32m"round"[31m
+                      [33mstroke-linejoin[31m=[32m"round"[31m
+                      [33mstroke-width[31m=[32m"2"[31m
+                      [33mviewBox[31m=[32m"0 0 24 24"[31m
+                      [33mwidth[31m=[32m"24"[31m
+                      [33mxmlns[31m=[32m"http://www.w3.org/2000/svg"[31m
+                    [36m>[31m
+                      [36m<path[31m
+                        [33md[31m=[32m"M20.985 12.486a9 9 0 1 1-9.473-9.472c.405-.022.617.46.402.803a6 6 0 0 0 8.268 8.268c.344-.215.825-.004.803.401"[31m
+                      [36m/>[31m
+                    [36...
+
+Ignored nodes: comments, script, style
+[36m<body>[31m
+  [36m<div>[31m
+    [36m<div[31m
+      [33mclass[31m=[32m"page-shell fixed inset-0 z-[49] flex flex-col bg-cave-950 recipe-wizard"[31m
+      [33mdata-page-shell[31m=[32m"true"[31m
+    [36m>[31m
+      [36m<header[31m
+        [33mclass[31m=[32m"shrink-0 border-b border-cave-800 bg-cave-950/95 backdrop-blur-sm pt-safe"[31m
+      [36m>[31m
+        [36m<div[31m
+          [33mclass[31m=[32m"flex items-start"[31m
+        [36m>[31m
+          [36m<div[31m
+            [33mclass[31m=[32m"min-w-0 flex-1"[31m
+          [36m>[31m
+            [36m<div[31m
+              [33mclass[31m=[32m"sm:hidden"[31m
+            [36m>[31m
+              [36m<div[31m
+                [33mclass[31m=[32m"recipe-mobile-header px-2 bg-cave-950"[31m
+              [36m>[31m
+                [36m<div[31m
+                  [33mclass[31m=[32m"recipe-titlebar flex items-center gap-1.5"[31m
+                [36m>[31m
+                  [36m<button[31m
+                    [33maria-label[31m=[32m"Fermer"[31m
+                    [33mclass[31m=[32m"w-7 h-7 rounded-control flex items-center justify-center text-cave-400 hover:text-cave-50 active:bg-cave-850 shrink-0 transition-colors"[31m
+                    [33mtype[31m=[32m"button"[31m
+                  [36m>[31m
+                    [36m<svg[31m
+                      [33maria-hidden[31m=[32m"true"[31m
+                      [33mclass[31m=[32m"lucide lucide-chevron-left w-4 h-4"[31m
+                      [33mfill[31m=[32m"none"[31m
+                      [33mheight[31m=[32m"24"[31m
+                      [33mstroke[31m=[32m"currentColor"[31m
+                      [33mstroke-linecap[31m=[32m"round"[31m
+                      [33mstroke-linejoin[31m=[32m"round"[31m
+                      [33mstroke-width[31m=[32m"2"[31m
+                      [33mviewBox[31m=[32m"0 0 24 24"[31m
+                      [33mwidth[31m=[32m"24"[31m
+                      [33mxmlns[31m=[32m"http://www.w3.org/2000/svg"[31m
+                    [36m>[31m
+                      [36m<path[31m
+                        [33md[31m=[32m"m15 18-6-6 6-6"[31m
+                      [36m/>[31m
+                    [36m</svg>[31m
+                  [36m</button>[31m
+                  [36m<p[31m
+                    [33mclass[31m=[32m"flex min-w-0 flex-1 items-baseline gap-1.5"[31m
+                  [36m>[31m
+                    [36m<span[31m
+                      [33mclass[31m=[32m"min-w-0 truncate text-base font-semibold text-cave-50"[31m
+                    [36m>[31m
+                      [0mLevure[0m
+                    [36m</span>[31m
+                    [36m<span[31m
+                      [33mclass[31m=[32m"shrink-0 font-mono text-sm text-cave-400"[31m
+                    [36m>[31m
+                      [0m4[0m
+                      [0m/[0m
+                      [0m7[0m
+                    [36m</span>[31m
+                    [36m<span[31m
+                      [33maria-live[31m=[32m"polite"[31m
+                      [33mclass[31m=[32m"sr-only"[31m
+                    [36m>[31m
+                      [0mLevure — étape 4 sur 7[0m
+                    [36m</span>[31m
+                  [36m</p>[31m
+                  [36m<button[31m
+                    [33maria-label[31m=[32m"Coller une recette"[31m
+                    [33mclass[31m=[32m"w-7 h-7 rounded-control flex items-center justify-center text-cave-400 hover:text-ebc-straw active:bg-cave-850 shrink-0 transition-colors"[31m
+                    [33mtype[31m=[32m"button"[31m
+                  [36m>[31m
+                    [36m<svg[31m
+                      [33maria-hidden[31m=[32m"true"[31m
+                      [33mclass[31m=[32m"lucide lucide-clipboard-paste w-3.5 h-3.5"[31m
+                      [33mfill[31m=[32m"none"[31m
+                      [33mheight[31m=[32m"24"[31m
+                      [33mstroke[31m=[32m"currentColor"[31m
+                      [33mstroke-linecap[31m=[32m"round"[31m
+                      [33mstroke-linejoin[31m=[32m"round"[31m
+                      [33mstroke-width[31m=[32m"2"[31m
+                      [33mviewBox[31m=[32m"0 0 24 24"[31m
+                      [33mwidth[31m=[32m"24"[31m
+                      [33mxmlns[31m=[32m"http://www.w3.org/2000/svg"[31m
+                    [36m>[31m
+                      [36m<path[31m
+                        [33md[31m=[32m"M11 14h10"[31m
+                      [36m/>[31m
+                      [36m<path[31m
+                        [33md[31m=[32m"M16 4h2a2 2 0 0 1 2 2v1.344"[31m
+                      [36m/>[31m
+                      [36m<path[31m
+                        [33md[31m=[32m"m17 18 4-4-4-4"[31m
+                      [36m/>[31m
+                      [36m<path[31m
+                        [33md[31m=[32m"M8 4H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 1.793-1.113"[31m
+                      [36m/>[31m
+                      [36m<rect[31m
+                        [33mheight[31m=[32m"4"[31m
+                        [33mrx[31m=[32m"1"[31m
+                        [33mwidth[31m=[32m"8"[31m
+                        [33mx[31m=[32m"8"[31m
+                        [33my[31m=[32m"2"[31m
+                      [36m/>[31m
+                    [36m</svg>[31m
+                  [36m</button>[31m
+                  [36m<button[31m
+                    [33maria-label[31m=[32m"Thème sombre (cave)"[31m
+                    [33mclass[31m=[32m"w-7 h-7 rounded-control flex items-center justify-center text-cave-400 hover:text-cave-50 active:bg-cave-850 shrink-0 transition-colors "[31m
+                    [33mdata-theme-toggle[31m=[32m"clair"[31m
+                    [33mtitle[31m=[32m"Thème sombre (cave)"[31m
+                    [33mtype[31m=[32m"button"[31m
+                  [36m>[31m
+                    [36m<svg[31m
+                      [33maria-hidden[31m=[32m"true"[31m
+                      [33mclass[31m=[32m"lucide lucide-moon w-3.5 h-3.5"[31m
+                      [33mfill[31m=[32m"none"[31m
+                      [33mheight[31m=[32m"24"[31m
+                      [33mstroke[31m=[32m"currentColor"[31m
+                      [33mstroke-linecap[31m=[32m"round"[31m
+                      [33mstroke-linejoin[31m=[32m"round"[31m
+                      [33mstroke-width[31m=[32m"2"[31m
+                      [33mviewBox[31m=[32m"0 0 24 24"[31m
+                      [33mwidth[31m=[32m"24"[31m
+                      [33mxmlns[31m=[32m"http://www.w3.org/2000/svg"[31m
+                    [36m>[31m
+                      [36m<path[31m
+                        [33md[31m=[32m"M20.985 12.486a9 9 0 1 1-9.473-9.472c.405-.022.617.46.402.803a6 6 0 0 0 8.268 8.268c.344-.215.825-.004.803.401"[31m
+                      [36m/>[31m
+                    [36...[39m
+[31m   [31m×[31m Moût opérationnel et propriétaire documentaire du Wizard[2m > [22mmodifie et qualifie au clavier, rouvre puis efface le moût sans remplacer la fiche locale stock[39m[33m 1117[2mms[22m[39m
+[31m     → Unable to find role="region" and name "Moût à ensemencer"
+
+Ignored nodes: comments, script, style
+[36m<body>[31m
+  [36m<div>[31m
+    [36m<div[31m
+      [33mclass[31m=[32m"page-shell fixed inset-0 z-[49] flex flex-col bg-cave-950 recipe-wizard"[31m
+      [33mdata-page-shell[31m=[32m"true"[31m
+    [36m>[31m
+      [36m<header[31m
+        [33mclass[31m=[32m"shrink-0 border-b border-cave-800 bg-cave-950/95 backdrop-blur-sm pt-safe"[31m
+      [36m>[31m
+        [36m<div[31m
+          [33mclass[31m=[32m"flex items-start"[31m
+        [36m>[31m
+          [36m<div[31m
+            [33mclass[31m=[32m"min-w-0 flex-1"[31m
+          [36m>[31m
+            [36m<div[31m
+              [33mclass[31m=[32m"sm:hidden"[31m
+            [36m>[31m
+              [36m<div[31m
+                [33mclass[31m=[32m"recipe-mobile-header px-2 bg-cave-950"[31m
+              [36m>[31m
+                [36m<div[31m
+                  [33mclass[31m=[32m"recipe-titlebar flex items-center gap-1.5"[31m
+                [36m>[31m
+                  [36m<button[31m
+                    [33maria-label[31m=[32m"Fermer"[31m
+                    [33mclass[31m=[32m"w-7 h-7 rounded-control flex items-center justify-center text-cave-400 hover:text-cave-50 active:bg-cave-850 shrink-0 transition-colors"[31m
+                    [33mtype[31m=[32m"button"[31m
+                  [36m>[31m
+                    [36m<svg[31m
+                      [33maria-hidden[31m=[32m"true"[31m
+                      [33mclass[31m=[32m"lucide lucide-chevron-left w-4 h-4"[31m
+                      [33mfill[31m=[32m"none"[31m
+                      [33mheight[31m=[32m"24"[31m
+                      [33mstroke[31m=[32m"currentColor"[31m
+                      [33mstroke-linecap[31m=[32m"round"[31m
+                      [33mstroke-linejoin[31m=[32m"round"[31m
+                      [33mstroke-width[31m=[32m"2"[31m
+                      [33mviewBox[31m=[32m"0 0 24 24"[31m
+                      [33mwidth[31m=[32m"24"[31m
+                      [33mxmlns[31m=[32m"http://www.w3.org/2000/svg"[31m
+                    [36m>[31m
+                      [36m<path[31m
+                        [33md[31m=[32m"m15 18-6-6 6-6"[31m
+                      [36m/>[31m
+                    [36m</svg>[31m
+                  [36m</button>[31m
+                  [36m<p[31m
+                    [33mclass[31m=[32m"flex min-w-0 flex-1 items-baseline gap-1.5"[31m
+                  [36m>[31m
+                    [36m<span[31m
+                      [33mclass[31m=[32m"min-w-0 truncate text-base font-semibold text-cave-50"[31m
+                    [36m>[31m
+                      [0mLevure[0m
+                    [36m</span>[31m
+                    [36m<span[31m
+                      [33mclass[31m=[32m"shrink-0 font-mono text-sm text-cave-400"[31m
+                    [36m>[31m
+                      [0m4[0m
+                      [0m/[0m
+                      [0m7[0m
+                    [36m</span>[31m
+                    [36m<span[31m
+                      [33maria-live[31m=[32m"polite"[31m
+                      [33mclass[31m=[32m"sr-only"[31m
+                    [36m>[31m
+                      [0mLevure — étape 4 sur 7[0m
+                    [36m</span>[31m
+                  [36m</p>[31m
+                  [36m<button[31m
+                    [33maria-label[31m=[32m"Coller une recette"[31m
+                    [33mclass[31m=[32m"w-7 h-7 rounded-control flex items-center justify-center text-cave-400 hover:text-ebc-straw active:bg-cave-850 shrink-0 transition-colors"[31m
+                    [33mtype[31m=[32m"button"[31m
+                  [36m>[31m
+                    [36m<svg[31m
+                      [33maria-hidden[31m=[32m"true"[31m
+                      [33mclass[31m=[32m"lucide lucide-clipboard-paste w-3.5 h-3.5"[31m
+                      [33mfill[31m=[32m"none"[31m
+                      [33mheight[31m=[32m"24"[31m
+                      [33mstroke[31m=[32m"currentColor"[31m
+                      [33mstroke-linecap[31m=[32m"round"[31m
+                      [33mstroke-linejoin[31m=[32m"round"[31m
+                      [33mstroke-width[31m=[32m"2"[31m
+                      [33mviewBox[31m=[32m"0 0 24 24"[31m
+                      [33mwidth[31m=[32m"24"[31m
+                      [33mxmlns[31m=[32m"http://www.w3.org/2000/svg"[31m
+                    [36m>[31m
+                      [36m<path[31m
+                        [33md[31m=[32m"M11 14h10"[31m
+                      [36m/>[31m
+                      [36m<path[31m
+                        [33md[31m=[32m"M16 4h2a2 2 0 0 1 2 2v1.344"[31m
+                      [36m/>[31m
+                      [36m<path[31m
+                        [33md[31m=[32m"m17 18 4-4-4-4"[31m
+                      [36m/>[31m
+                      [36m<path[31m
+                        [33md[31m=[32m"M8 4H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 1.793-1.113"[31m
+                      [36m/>[31m
+                      [36m<rect[31m
+                        [33mheight[31m=[32m"4"[31m
+                        [33mrx[31m=[32m"1"[31m
+                        [33mwidth[31m=[32m"8"[31m
+                        [33mx[31m=[32m"8"[31m
+                        [33my[31m=[32m"2"[31m
+                      [36m/>[31m
+                    [36m</svg>[31m
+                  [36m</button>[31m
+                  [36m<button[31m
+                    [33maria-label[31m=[32m"Thème sombre (cave)"[31m
+                    [33mclass[31m=[32m"w-7 h-7 rounded-control flex items-center justify-center text-cave-400 hover:text-cave-50 active:bg-cave-850 shrink-0 transition-colors "[31m
+                    [33mdata-theme-toggle[31m=[32m"clair"[31m
+                    [33mtitle[31m=[32m"Thème sombre (cave)"[31m
+                    [33mtype[31m=[32m"button"[31m
+                  [36m>[31m
+                    [36m<svg[31m
+                      [33maria-hidden[31m=[32m"true"[31m
+                      [33mclass[31m=[32m"lucide lucide-moon w-3.5 h-3.5"[31m
+                      [33mfill[31m=[32m"none"[31m
+                      [33mheight[31m=[32m"24"[31m
+                      [33mstroke[31m=[32m"currentColor"[31m
+                      [33mstroke-linecap[31m=[32m"round"[31m
+                      [33mstroke-linejoin[31m=[32m"round"[31m
+                      [33mstroke-width[31m=[32m"2"[31m
+                      [33mviewBox[31m=[32m"0 0 24 24"[31m
+                      [33mwidth[31m=[32m"24"[31m
+                      [33mxmlns[31m=[32m"http://www.w3.org/2000/svg"[31m
+                    [36m>[31m
+                      [36m<path[31m
+                        [33md[31m=[32m"M20.985 12.486a9 9 0 1 1-9.473-9.472c.405-.022.617.46.402.803a6 6 0 0 0 8.268 8.268c.344-.215.825-.004.803.401"[31m
+                      [36m/>[31m
+                    [36...
+
+Ignored nodes: comments, script, style
+[36m<body>[31m
+  [36m<div>[31m
+    [36m<div[31m
+      [33mclass[31m=[32m"page-shell fixed inset-0 z-[49] flex flex-col bg-cave-950 recipe-wizard"[31m
+      [33mdata-page-shell[31m=[32m"true"[31m
+    [36m>[31m
+      [36m<header[31m
+        [33mclass[31m=[32m"shrink-0 border-b border-cave-800 bg-cave-950/95 backdrop-blur-sm pt-safe"[31m
+      [36m>[31m
+        [36m<div[31m
+          [33mclass[31m=[32m"flex items-start"[31m
+        [36m>[31m
+          [36m<div[31m
+            [33mclass[31m=[32m"min-w-0 flex-1"[31m
+          [36m>[31m
+            [36m<div[31m
+              [33mclass[31m=[32m"sm:hidden"[31m
+            [36m>[31m
+              [36m<div[31m
+                [33mclass[31m=[32m"recipe-mobile-header px-2 bg-cave-950"[31m
+              [36m>[31m
+                [36m<div[31m
+                  [33mclass[31m=[32m"recipe-titlebar flex items-center gap-1.5"[31m
+                [36m>[31m
+                  [36m<button[31m
+                    [33maria-label[31m=[32m"Fermer"[31m
+                    [33mclass[31m=[32m"w-7 h-7 rounded-control flex items-center justify-center text-cave-400 hover:text-cave-50 active:bg-cave-850 shrink-0 transition-colors"[31m
+                    [33mtype[31m=[32m"button"[31m
+                  [36m>[31m
+                    [36m<svg[31m
+                      [33maria-hidden[31m=[32m"true"[31m
+                      [33mclass[31m=[32m"lucide lucide-chevron-left w-4 h-4"[31m
+                      [33mfill[31m=[32m"none"[31m
+                      [33mheight[31m=[32m"24"[31m
+                      [33mstroke[31m=[32m"currentColor"[31m
+                      [33mstroke-linecap[31m=[32m"round"[31m
+                      [33mstroke-linejoin[31m=[32m"round"[31m
+                      [33mstroke-width[31m=[32m"2"[31m
+                      [33mviewBox[31m=[32m"0 0 24 24"[31m
+                      [33mwidth[31m=[32m"24"[31m
+                      [33mxmlns[31m=[32m"http://www.w3.org/2000/svg"[31m
+                    [36m>[31m
+                      [36m<path[31m
+                        [33md[31m=[32m"m15 18-6-6 6-6"[31m
+                      [36m/>[31m
+                    [36m</svg>[31m
+                  [36m</button>[31m
+                  [36m<p[31m
+                    [33mclass[31m=[32m"flex min-w-0 flex-1 items-baseline gap-1.5"[31m
+                  [36m>[31m
+                    [36m<span[31m
+                      [33mclass[31m=[32m"min-w-0 truncate text-base font-semibold text-cave-50"[31m
+                    [36m>[31m
+                      [0mLevure[0m
+                    [36m</span>[31m
+                    [36m<span[31m
+                      [33mclass[31m=[32m"shrink-0 font-mono text-sm text-cave-400"[31m
+                    [36m>[31m
+                      [0m4[0m
+                      [0m/[0m
+                      [0m7[0m
+                    [36m</span>[31m
+                    [36m<span[31m
+                      [33maria-live[31m=[32m"polite"[31m
+                      [33mclass[31m=[32m"sr-only"[31m
+                    [36m>[31m
+                      [0mLevure — étape 4 sur 7[0m
+                    [36m</span>[31m
+                  [36m</p>[31m
+                  [36m<button[31m
+                    [33maria-label[31m=[32m"Coller une recette"[31m
+                    [33mclass[31m=[32m"w-7 h-7 rounded-control flex items-center justify-center text-cave-400 hover:text-ebc-straw active:bg-cave-850 shrink-0 transition-colors"[31m
+                    [33mtype[31m=[32m"button"[31m
+                  [36m>[31m
+                    [36m<svg[31m
+                      [33maria-hidden[31m=[32m"true"[31m
+                      [33mclass[31m=[32m"lucide lucide-clipboard-paste w-3.5 h-3.5"[31m
+                      [33mfill[31m=[32m"none"[31m
+                      [33mheight[31m=[32m"24"[31m
+                      [33mstroke[31m=[32m"currentColor"[31m
+                      [33mstroke-linecap[31m=[32m"round"[31m
+                      [33mstroke-linejoin[31m=[32m"round"[31m
+                      [33mstroke-width[31m=[32m"2"[31m
+                      [33mviewBox[31m=[32m"0 0 24 24"[31m
+                      [33mwidth[31m=[32m"24"[31m
+                      [33mxmlns[31m=[32m"http://www.w3.org/2000/svg"[31m
+                    [36m>[31m
+                      [36m<path[31m
+                        [33md[31m=[32m"M11 14h10"[31m
+                      [36m/>[31m
+                      [36m<path[31m
+                        [33md[31m=[32m"M16 4h2a2 2 0 0 1 2 2v1.344"[31m
+                      [36m/>[31m
+                      [36m<path[31m
+                        [33md[31m=[32m"m17 18 4-4-4-4"[31m
+                      [36m/>[31m
+                      [36m<path[31m
+                        [33md[31m=[32m"M8 4H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 1.793-1.113"[31m
+                      [36m/>[31m
+                      [36m<rect[31m
+                        [33mheight[31m=[32m"4"[31m
+                        [33mrx[31m=[32m"1"[31m
+                        [33mwidth[31m=[32m"8"[31m
+                        [33mx[31m=[32m"8"[31m
+                        [33my[31m=[32m"2"[31m
+                      [36m/>[31m
+                    [36m</svg>[31m
+                  [36m</button>[31m
+                  [36m<button[31m
+                    [33maria-label[31m=[32m"Thème sombre (cave)"[31m
+                    [33mclass[31m=[32m"w-7 h-7 rounded-control flex items-center justify-center text-cave-400 hover:text-cave-50 active:bg-cave-850 shrink-0 transition-colors "[31m
+                    [33mdata-theme-toggle[31m=[32m"clair"[31m
+                    [33mtitle[31m=[32m"Thème sombre (cave)"[31m
+                    [33mtype[31m=[32m"button"[31m
+                  [36m>[31m
+                    [36m<svg[31m
+                      [33maria-hidden[31m=[32m"true"[31m
+                      [33mclass[31m=[32m"lucide lucide-moon w-3.5 h-3.5"[31m
+                      [33mfill[31m=[32m"none"[31m
+                      [33mheight[31m=[32m"24"[31m
+                      [33mstroke[31m=[32m"currentColor"[31m
+                      [33mstroke-linecap[31m=[32m"round"[31m
+                      [33mstroke-linejoin[31m=[32m"round"[31m
+                      [33mstroke-width[31m=[32m"2"[31m
+                      [33mviewBox[31m=[32m"0 0 24 24"[31m
+                      [33mwidth[31m=[32m"24"[31m
+                      [33mxmlns[31m=[32m"http://www.w3.org/2000/svg"[31m
+                    [36m>[31m
+                      [36m<path[31m
+                        [33md[31m=[32m"M20.985 12.486a9 9 0 1 1-9.473-9.472c.405-.022.617.46.402.803a6 6 0 0 0 8.268 8.268c.344-.215.825-.004.803.401"[31m
+                      [36m/>[31m
+                    [36...[39m
+[31m   [31m×[31m Moût opérationnel et propriétaire documentaire du Wizard[2m > [22mmodifie et qualifie au clavier, rouvre puis efface le moût sans remplacer la fiche locale free[39m[33m 1147[2mms[22m[39m
+[31m     → Unable to find role="region" and name "Moût à ensemencer"
+
+Ignored nodes: comments, script, style
+[36m<body>[31m
+  [36m<div>[31m
+    [36m<div[31m
+      [33mclass[31m=[32m"page-shell fixed inset-0 z-[49] flex flex-col bg-cave-950 recipe-wizard"[31m
+      [33mdata-page-shell[31m=[32m"true"[31m
+    [36m>[31m
+      [36m<header[31m
+        [33mclass[31m=[32m"shrink-0 border-b border-cave-800 bg-cave-950/95 backdrop-blur-sm pt-safe"[31m
+      [36m>[31m
+        [36m<div[31m
+          [33mclass[31m=[32m"flex items-start"[31m
+        [36m>[31m
+          [36m<div[31m
+            [33mclass[31m=[32m"min-w-0 flex-1"[31m
+          [36m>[31m
+            [36m<div[31m
+              [33mclass[31m=[32m"sm:hidden"[31m
+            [36m>[31m
+              [36m<div[31m
+                [33mclass[31m=[32m"recipe-mobile-header px-2 bg-cave-950"[31m
+              [36m>[31m
+                [36m<div[31m
+                  [33mclass[31m=[32m"recipe-titlebar flex items-center gap-1.5"[31m
+                [36m>[31m
+                  [36m<button[31m
+                    [33maria-label[31m=[32m"Fermer"[31m
+                    [33mclass[31m=[32m"w-7 h-7 rounded-control flex items-center justify-center text-cave-400 hover:text-cave-50 active:bg-cave-850 shrink-0 transition-colors"[31m
+                    [33mtype[31m=[32m"button"[31m
+                  [36m>[31m
+                    [36m<svg[31m
+                      [33maria-hidden[31m=[32m"true"[31m
+                      [33mclass[31m=[32m"lucide lucide-chevron-left w-4 h-4"[31m
+                      [33mfill[31m=[32m"none"[31m
+                      [33mheight[31m=[32m"24"[31m
+                      [33mstroke[31m=[32m"currentColor"[31m
+                      [33mstroke-linecap[31m=[32m"round"[31m
+                      [33mstroke-linejoin[31m=[32m"round"[31m
+                      [33mstroke-width[31m=[32m"2"[31m
+                      [33mviewBox[31m=[32m"0 0 24 24"[31m
+                      [33mwidth[31m=[32m"24"[31m
+                      [33mxmlns[31m=[32m"http://www.w3.org/2000/svg"[31m
+                    [36m>[31m
+                      [36m<path[31m
+                        [33md[31m=[32m"m15 18-6-6 6-6"[31m
+                      [36m/>[31m
+                    [36m</svg>[31m
+                  [36m</button>[31m
+                  [36m<p[31m
+                    [33mclass[31m=[32m"flex min-w-0 flex-1 items-baseline gap-1.5"[31m
+                  [36m>[31m
+                    [36m<span[31m
+                      [33mclass[31m=[32m"min-w-0 truncate text-base font-semibold text-cave-50"[31m
+                    [36m>[31m
+                      [0mLevure[0m
+                    [36m</span>[31m
+                    [36m<span[31m
+                      [33mclass[31m=[32m"shrink-0 font-mono text-sm text-cave-400"[31m
+                    [36m>[31m
+                      [0m4[0m
+                      [0m/[0m
+                      [0m7[0m
+                    [36m</span>[31m
+                    [36m<span[31m
+                      [33maria-live[31m=[32m"polite"[31m
+                      [33mclass[31m=[32m"sr-only"[31m
+                    [36m>[31m
+                      [0mLevure — étape 4 sur 7[0m
+                    [36m</span>[31m
+                  [36m</p>[31m
+                  [36m<button[31m
+                    [33maria-label[31m=[32m"Coller une recette"[31m
+                    [33mclass[31m=[32m"w-7 h-7 rounded-control flex items-center justify-center text-cave-400 hover:text-ebc-straw active:bg-cave-850 shrink-0 transition-colors"[31m
+                    [33mtype[31m=[32m"button"[31m
+                  [36m>[31m
+                    [36m<svg[31m
+                      [33maria-hidden[31m=[32m"true"[31m
+                      [33mclass[31m=[32m"lucide lucide-clipboard-paste w-3.5 h-3.5"[31m
+                      [33mfill[31m=[32m"none"[31m
+                      [33mheight[31m=[32m"24"[31m
+                      [33mstroke[31m=[32m"currentColor"[31m
+                      [33mstroke-linecap[31m=[32m"round"[31m
+                      [33mstroke-linejoin[31m=[32m"round"[31m
+                      [33mstroke-width[31m=[32m"2"[31m
+                      [33mviewBox[31m=[32m"0 0 24 24"[31m
+                      [33mwidth[31m=[32m"24"[31m
+                      [33mxmlns[31m=[32m"http://www.w3.org/2000/svg"[31m
+                    [36m>[31m
+                      [36m<path[31m
+                        [33md[31m=[32m"M11 14h10"[31m
+                      [36m/>[31m
+                      [36m<path[31m
+                        [33md[31m=[32m"M16 4h2a2 2 0 0 1 2 2v1.344"[31m
+                      [36m/>[31m
+                      [36m<path[31m
+                        [33md[31m=[32m"m17 18 4-4-4-4"[31m
+                      [36m/>[31m
+                      [36m<path[31m
+                        [33md[31m=[32m"M8 4H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 1.793-1.113"[31m
+                      [36m/>[31m
+                      [36m<rect[31m
+                        [33mheight[31m=[32m"4"[31m
+                        [33mrx[31m=[32m"1"[31m
+                        [33mwidth[31m=[32m"8"[31m
+                        [33mx[31m=[32m"8"[31m
+                        [33my[31m=[32m"2"[31m
+                      [36m/>[31m
+                    [36m</svg>[31m
+                  [36m</button>[31m
+                  [36m<button[31m
+                    [33maria-label[31m=[32m"Thème sombre (cave)"[31m
+                    [33mclass[31m=[32m"w-7 h-7 rounded-control flex items-center justify-center text-cave-400 hover:text-cave-50 active:bg-cave-850 shrink-0 transition-colors "[31m
+                    [33mdata-theme-toggle[31m=[32m"clair"[31m
+                    [33mtitle[31m=[32m"Thème sombre (cave)"[31m
+                    [33mtype[31m=[32m"button"[31m
+                  [36m>[31m
+                    [36m<svg[31m
+                      [33maria-hidden[31m=[32m"true"[31m
+                      [33mclass[31m=[32m"lucide lucide-moon w-3.5 h-3.5"[31m
+                      [33mfill[31m=[32m"none"[31m
+                      [33mheight[31m=[32m"24"[31m
+                      [33mstroke[31m=[32m"currentColor"[31m
+                      [33mstroke-linecap[31m=[32m"round"[31m
+                      [33mstroke-linejoin[31m=[32m"round"[31m
+                      [33mstroke-width[31m=[32m"2"[31m
+                      [33mviewBox[31m=[32m"0 0 24 24"[31m
+                      [33mwidth[31m=[32m"24"[31m
+                      [33mxmlns[31m=[32m"http://www.w3.org/2000/svg"[31m
+                    [36m>[31m
+                      [36m<path[31m
+                        [33md[31m=[32m"M20.985 12.486a9 9 0 1 1-9.473-9.472c.405-.022.617.46.402.803a6 6 0 0 0 8.268 8.268c.344-.215.825-.004.803.401"[31m
+                      [36m/>[31m
+                    [36...
+
+Ignored nodes: comments, script, style
+[36m<body>[31m
+  [36m<div>[31m
+    [36m<div[31m
+      [33mclass[31m=[32m"page-shell fixed inset-0 z-[49] flex flex-col bg-cave-950 recipe-wizard"[31m
+      [33mdata-page-shell[31m=[32m"true"[31m
+    [36m>[31m
+      [36m<header[31m
+        [33mclass[31m=[32m"shrink-0 border-b border-cave-800 bg-cave-950/95 backdrop-blur-sm pt-safe"[31m
+      [36m>[31m
+        [36m<div[31m
+          [33mclass[31m=[32m"flex items-start"[31m
+        [36m>[31m
+          [36m<div[31m
+            [33mclass[31m=[32m"min-w-0 flex-1"[31m
+          [36m>[31m
+            [36m<div[31m
+              [33mclass[31m=[32m"sm:hidden"[31m
+            [36m>[31m
+              [36m<div[31m
+                [33mclass[31m=[32m"recipe-mobile-header px-2 bg-cave-950"[31m
+              [36m>[31m
+                [36m<div[31m
+                  [33mclass[31m=[32m"recipe-titlebar flex items-center gap-1.5"[31m
+                [36m>[31m
+                  [36m<button[31m
+                    [33maria-label[31m=[32m"Fermer"[31m
+                    [33mclass[31m=[32m"w-7 h-7 rounded-control flex items-center justify-center text-cave-400 hover:text-cave-50 active:bg-cave-850 shrink-0 transition-colors"[31m
+                    [33mtype[31m=[32m"button"[31m
+                  [36m>[31m
+                    [36m<svg[31m
+                      [33maria-hidden[31m=[32m"true"[31m
+                      [33mclass[31m=[32m"lucide lucide-chevron-left w-4 h-4"[31m
+                      [33mfill[31m=[32m"none"[31m
+                      [33mheight[31m=[32m"24"[31m
+                      [33mstroke[31m=[32m"currentColor"[31m
+                      [33mstroke-linecap[31m=[32m"round"[31m
+                      [33mstroke-linejoin[31m=[32m"round"[31m
+                      [33mstroke-width[31m=[32m"2"[31m
+                      [33mviewBox[31m=[32m"0 0 24 24"[31m
+                      [33mwidth[31m=[32m"24"[31m
+                      [33mxmlns[31m=[32m"http://www.w3.org/2000/svg"[31m
+                    [36m>[31m
+                      [36m<path[31m
+                        [33md[31m=[32m"m15 18-6-6 6-6"[31m
+                      [36m/>[31m
+                    [36m</svg>[31m
+                  [36m</button>[31m
+                  [36m<p[31m
+                    [33mclass[31m=[32m"flex min-w-0 flex-1 items-baseline gap-1.5"[31m
+                  [36m>[31m
+                    [36m<span[31m
+                      [33mclass[31m=[32m"min-w-0 truncate text-base font-semibold text-cave-50"[31m
+                    [36m>[31m
+                      [0mLevure[0m
+                    [36m</span>[31m
+                    [36m<span[31m
+                      [33mclass[31m=[32m"shrink-0 font-mono text-sm text-cave-400"[31m
+                    [36m>[31m
+                      [0m4[0m
+                      [0m/[0m
+                      [0m7[0m
+                    [36m</span>[31m
+                    [36m<span[31m
+                      [33maria-live[31m=[32m"polite"[31m
+                      [33mclass[31m=[32m"sr-only"[31m
+                    [36m>[31m
+                      [0mLevure — étape 4 sur 7[0m
+                    [36m</span>[31m
+                  [36m</p>[31m
+                  [36m<button[31m
+                    [33maria-label[31m=[32m"Coller une recette"[31m
+                    [33mclass[31m=[32m"w-7 h-7 rounded-control flex items-center justify-center text-cave-400 hover:text-ebc-straw active:bg-cave-850 shrink-0 transition-colors"[31m
+                    [33mtype[31m=[32m"button"[31m
+                  [36m>[31m
+                    [36m<svg[31m
+                      [33maria-hidden[31m=[32m"true"[31m
+                      [33mclass[31m=[32m"lucide lucide-clipboard-paste w-3.5 h-3.5"[31m
+                      [33mfill[31m=[32m"none"[31m
+                      [33mheight[31m=[32m"24"[31m
+                      [33mstroke[31m=[32m"currentColor"[31m
+                      [33mstroke-linecap[31m=[32m"round"[31m
+                      [33mstroke-linejoin[31m=[32m"round"[31m
+                      [33mstroke-width[31m=[32m"2"[31m
+                      [33mviewBox[31m=[32m"0 0 24 24"[31m
+                      [33mwidth[31m=[32m"24"[31m
+                      [33mxmlns[31m=[32m"http://www.w3.org/2000/svg"[31m
+                    [36m>[31m
+                      [36m<path[31m
+                        [33md[31m=[32m"M11 14h10"[31m
+                      [36m/>[31m
+                      [36m<path[31m
+                        [33md[31m=[32m"M16 4h2a2 2 0 0 1 2 2v1.344"[31m
+                      [36m/>[31m
+                      [36m<path[31m
+                        [33md[31m=[32m"m17 18 4-4-4-4"[31m
+                      [36m/>[31m
+                      [36m<path[31m
+                        [33md[31m=[32m"M8 4H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 1.793-1.113"[31m
+                      [36m/>[31m
+                      [36m<rect[31m
+                        [33mheight[31m=[32m"4"[31m
+                        [33mrx[31m=[32m"1"[31m
+                        [33mwidth[31m=[32m"8"[31m
+                        [33mx[31m=[32m"8"[31m
+                        [33my[31m=[32m"2"[31m
+                      [36m/>[31m
+                    [36m</svg>[31m
+                  [36m</button>[31m
+                  [36m<button[31m
+                    [33maria-label[31m=[32m"Thème sombre (cave)"[31m
+                    [33mclass[31m=[32m"w-7 h-7 rounded-control flex items-center justify-center text-cave-400 hover:text-cave-50 active:bg-cave-850 shrink-0 transition-colors "[31m
+                    [33mdata-theme-toggle[31m=[32m"clair"[31m
+                    [33mtitle[31m=[32m"Thème sombre (cave)"[31m
+                    [33mtype[31m=[32m"button"[31m
+                  [36m>[31m
+                    [36m<svg[31m
+                      [33maria-hidden[31m=[32m"true"[31m
+                      [33mclass[31m=[32m"lucide lucide-moon w-3.5 h-3.5"[31m
+                      [33mfill[31m=[32m"none"[31m
+                      [33mheight[31m=[32m"24"[31m
+                      [33mstroke[31m=[32m"currentColor"[31m
+                      [33mstroke-linecap[31m=[32m"round"[31m
+                      [33mstroke-linejoin[31m=[32m"round"[31m
+                      [33mstroke-width[31m=[32m"2"[31m
+                      [33mviewBox[31m=[32m"0 0 24 24"[31m
+                      [33mwidth[31m=[32m"24"[31m
+                      [33mxmlns[31m=[32m"http://www.w3.org/2000/svg"[31m
+                    [36m>[31m
+                      [36m<path[31m
+                        [33md[31m=[32m"M20.985 12.486a9 9 0 1 1-9.473-9.472c.405-.022.617.46.402.803a6 6 0 0 0 8.268 8.268c.344-.215.825-.004.803.401"[31m
+                      [36m/>[31m
+                    [36...[39m
+
+[31m⎯⎯⎯⎯⎯⎯⎯[39m[1m[41m Failed Tests 5 [49m[22m[31m⎯⎯⎯⎯⎯⎯⎯[39m
+
+[41m[1m FAIL [22m[49m tests/integration/yeastPitchingWizardOwnership.test.tsx[2m > [22mMoût opérationnel et propriétaire documentaire du Wizard[2m > [22mconserve le même moût mesuré lors du choix stock, sans reprendre produit ni lot de la souche précédente
+[41m[1m FAIL [22m[49m tests/integration/yeastPitchingWizardOwnership.test.tsx[2m > [22mMoût opérationnel et propriétaire documentaire du Wizard[2m > [22mconserve le même moût mesuré lors du choix free, sans reprendre produit ni lot de la souche précédente
+[31m[1mTestingLibraryElementError[22m[39m: Unable to find role="region" and name "Moût à ensemencer"
+
+Ignored nodes: comments, script, style
+[36m<body>[39m
+  [36m<div>[39m
+    [36m<div[39m
+      [33mclass[39m=[32m"page-shell fixed inset-0 z-[49] flex flex-col bg-cave-950 recipe-wizard"[39m
+      [33mdata-page-shell[39m=[32m"true"[39m
+    [36m>[39m
+      [36m<header[39m
+        [33mclass[39m=[32m"shrink-0 border-b border-cave-800 bg-cave-950/95 backdrop-blur-sm pt-safe"[39m
+      [36m>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"flex items-start"[39m
+        [36m>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"min-w-0 flex-1"[39m
+          [36m>[39m
+            [36m<div[39m
+              [33mclass[39m=[32m"sm:hidden"[39m
+            [36m>[39m
+              [36m<div[39m
+                [33mclass[39m=[32m"recipe-mobile-header px-2 bg-cave-950"[39m
+              [36m>[39m
+                [36m<div[39m
+                  [33mclass[39m=[32m"recipe-titlebar flex items-center gap-1.5"[39m
+                [36m>[39m
+                  [36m<button[39m
+                    [33maria-label[39m=[32m"Fermer"[39m
+                    [33mclass[39m=[32m"w-7 h-7 rounded-control flex items-center justify-center text-cave-400 hover:text-cave-50 active:bg-cave-850 shrink-0 transition-colors"[39m
+                    [33mtype[39m=[32m"button"[39m
+                  [36m>[39m
+                    [36m<svg[39m
+                      [33maria-hidden[39m=[32m"true"[39m
+                      [33mclass[39m=[32m"lucide lucide-chevron-left w-4 h-4"[39m
+                      [33mfill[39m=[32m"none"[39m
+                      [33mheight[39m=[32m"24"[39m
+                      [33mstroke[39m=[32m"currentColor"[39m
+                      [33mstroke-linecap[39m=[32m"round"[39m
+                      [33mstroke-linejoin[39m=[32m"round"[39m
+                      [33mstroke-width[39m=[32m"2"[39m
+                      [33mviewBox[39m=[32m"0 0 24 24"[39m
+                      [33mwidth[39m=[32m"24"[39m
+                      [33mxmlns[39m=[32m"http://www.w3.org/2000/svg"[39m
+                    [36m>[39m
+                      [36m<path[39m
+                        [33md[39m=[32m"m15 18-6-6 6-6"[39m
+                      [36m/>[39m
+                    [36m</svg>[39m
+                  [36m</button>[39m
+                  [36m<p[39m
+                    [33mclass[39m=[32m"flex min-w-0 flex-1 items-baseline gap-1.5"[39m
+                  [36m>[39m
+                    [36m<span[39m
+                      [33mclass[39m=[32m"min-w-0 truncate text-base font-semibold text-cave-50"[39m
+                    [36m>[39m
+                      [0mLevure[0m
+                    [36m</span>[39m
+                    [36m<span[39m
+                      [33mclass[39m=[32m"shrink-0 font-mono text-sm text-cave-400"[39m
+                    [36m>[39m
+                      [0m4[0m
+                      [0m/[0m
+                      [0m7[0m
+                    [36m</span>[39m
+                    [36m<span[39m
+                      [33maria-live[39m=[32m"polite"[39m
+                      [33mclass[39m=[32m"sr-only"[39m
+                    [36m>[39m
+                      [0mLevure — étape 4 sur 7[0m
+                    [36m</span>[39m
+                  [36m</p>[39m
+                  [36m<button[39m
+                    [33maria-label[39m=[32m"Coller une recette"[39m
+                    [33mclass[39m=[32m"w-7 h-7 rounded-control flex items-center justify-center text-cave-400 hover:text-ebc-straw active:bg-cave-850 shrink-0 transition-colors"[39m
+                    [33mtype[39m=[32m"button"[39m
+                  [36m>[39m
+                    [36m<svg[39m
+                      [33maria-hidden[39m=[32m"true"[39m
+                      [33mclass[39m=[32m"lucide lucide-clipboard-paste w-3.5 h-3.5"[39m
+                      [33mfill[39m=[32m"none"[39m
+                      [33mheight[39m=[32m"24"[39m
+                      [33mstroke[39m=[32m"currentColor"[39m
+                      [33mstroke-linecap[39m=[32m"round"[39m
+                      [33mstroke-linejoin[39m=[32m"round"[39m
+                      [33mstroke-width[39m=[32m"2"[39m
+                      [33mviewBox[39m=[32m"0 0 24 24"[39m
+                      [33mwidth[39m=[32m"24"[39m
+                      [33mxmlns[39m=[32m"http://www.w3.org/2000/svg"[39m
+                    [36m>[39m
+                      [36m<path[39m
+                        [33md[39m=[32m"M11 14h10"[39m
+                      [36m/>[39m
+                      [36m<path[39m
+                        [33md[39m=[32m"M16 4h2a2 2 0 0 1 2 2v1.344"[39m
+                      [36m/>[39m
+                      [36m<path[39m
+                        [33md[39m=[32m"m17 18 4-4-4-4"[39m
+                      [36m/>[39m
+                      [36m<path[39m
+                        [33md[39m=[32m"M8 4H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 1.793-1.113"[39m
+                      [36m/>[39m
+                      [36m<rect[39m
+                        [33mheight[39m=[32m"4"[39m
+                        [33mrx[39m=[32m"1"[39m
+                        [33mwidth[39m=[32m"8"[39m
+                        [33mx[39m=[32m"8"[39m
+                        [33my[39m=[32m"2"[39m
+                      [36m/>[39m
+                    [36m</svg>[39m
+                  [36m</button>[39m
+                  [36m<button[39m
+                    [33maria-label[39m=[32m"Thème sombre (cave)"[39m
+                    [33mclass[39m=[32m"w-7 h-7 rounded-control flex items-center justify-center text-cave-400 hover:text-cave-50 active:bg-cave-850 shrink-0 transition-colors "[39m
+                    [33mdata-theme-toggle[39m=[32m"clair"[39m
+                    [33mtitle[39m=[32m"Thème sombre (cave)"[39m
+                    [33mtype[39m=[32m"button"[39m
+                  [36m>[39m
+                    [36m<svg[39m
+                      [33maria-hidden[39m=[32m"true"[39m
+                      [33mclass[39m=[32m"lucide lucide-moon w-3.5 h-3.5"[39m
+                      [33mfill[39m=[32m"none"[39m
+                      [33mheight[39m=[32m"24"[39m
+                      [33mstroke[39m=[32m"currentColor"[39m
+                      [33mstroke-linecap[39m=[32m"round"[39m
+                      [33mstroke-linejoin[39m=[32m"round"[39m
+                      [33mstroke-width[39m=[32m"2"[39m
+                      [33mviewBox[39m=[32m"0 0 24 24"[39m
+                      [33mwidth[39m=[32m"24"[39m
+                      [33mxmlns[39m=[32m"http://www.w3.org/2000/svg"[39m
+                    [36m>[39m
+                      [36m<path[39m
+                        [33md[39m=[32m"M20.985 12.486a9 9 0 1 1-9.473-9.472c.405-.022.617.46.402.803a6 6 0 0 0 8.268 8.268c.344-.215.825-.004.803.401"[39m
+                      [36m/>[39m
+                    [36...
+
+Ignored nodes: comments, script, style
+[36m<body>[39m
+  [36m<div>[39m
+    [36m<div[39m
+      [33mclass[39m=[32m"page-shell fixed inset-0 z-[49] flex flex-col bg-cave-950 recipe-wizard"[39m
+      [33mdata-page-shell[39m=[32m"true"[39m
+    [36m>[39m
+      [36m<header[39m
+        [33mclass[39m=[32m"shrink-0 border-b border-cave-800 bg-cave-950/95 backdrop-blur-sm pt-safe"[39m
+      [36m>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"flex items-start"[39m
+        [36m>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"min-w-0 flex-1"[39m
+          [36m>[39m
+            [36m<div[39m
+              [33mclass[39m=[32m"sm:hidden"[39m
+            [36m>[39m
+              [36m<div[39m
+                [33mclass[39m=[32m"recipe-mobile-header px-2 bg-cave-950"[39m
+              [36m>[39m
+                [36m<div[39m
+                  [33mclass[39m=[32m"recipe-titlebar flex items-center gap-1.5"[39m
+                [36m>[39m
+                  [36m<button[39m
+                    [33maria-label[39m=[32m"Fermer"[39m
+                    [33mclass[39m=[32m"w-7 h-7 rounded-control flex items-center justify-center text-cave-400 hover:text-cave-50 active:bg-cave-850 shrink-0 transition-colors"[39m
+                    [33mtype[39m=[32m"button"[39m
+                  [36m>[39m
+                    [36m<svg[39m
+                      [33maria-hidden[39m=[32m"true"[39m
+                      [33mclass[39m=[32m"lucide lucide-chevron-left w-4 h-4"[39m
+                      [33mfill[39m=[32m"none"[39m
+                      [33mheight[39m=[32m"24"[39m
+                      [33mstroke[39m=[32m"currentColor"[39m
+                      [33mstroke-linecap[39m=[32m"round"[39m
+                      [33mstroke-linejoin[39m=[32m"round"[39m
+                      [33mstroke-width[39m=[32m"2"[39m
+                      [33mviewBox[39m=[32m"0 0 24 24"[39m
+                      [33mwidth[39m=[32m"24"[39m
+                      [33mxmlns[39m=[32m"http://www.w3.org/2000/svg"[39m
+                    [36m>[39m
+                      [36m<path[39m
+                        [33md[39m=[32m"m15 18-6-6 6-6"[39m
+                      [36m/>[39m
+                    [36m</svg>[39m
+                  [36m</button>[39m
+                  [36m<p[39m
+                    [33mclass[39m=[32m"flex min-w-0 flex-1 items-baseline gap-1.5"[39m
+                  [36m>[39m
+                    [36m<span[39m
+                      [33mclass[39m=[32m"min-w-0 truncate text-base font-semibold text-cave-50"[39m
+                    [36m>[39m
+                      [0mLevure[0m
+                    [36m</span>[39m
+                    [36m<span[39m
+                      [33mclass[39m=[32m"shrink-0 font-mono text-sm text-cave-400"[39m
+                    [36m>[39m
+                      [0m4[0m
+                      [0m/[0m
+                      [0m7[0m
+                    [36m</span>[39m
+                    [36m<span[39m
+                      [33maria-live[39m=[32m"polite"[39m
+                      [33mclass[39m=[32m"sr-only"[39m
+                    [36m>[39m
+                      [0mLevure — étape 4 sur 7[0m
+                    [36m</span>[39m
+                  [36m</p>[39m
+                  [36m<button[39m
+                    [33maria-label[39m=[32m"Coller une recette"[39m
+                    [33mclass[39m=[32m"w-7 h-7 rounded-control flex items-center justify-center text-cave-400 hover:text-ebc-straw active:bg-cave-850 shrink-0 transition-colors"[39m
+                    [33mtype[39m=[32m"button"[39m
+                  [36m>[39m
+                    [36m<svg[39m
+                      [33maria-hidden[39m=[32m"true"[39m
+                      [33mclass[39m=[32m"lucide lucide-clipboard-paste w-3.5 h-3.5"[39m
+                      [33mfill[39m=[32m"none"[39m
+                      [33mheight[39m=[32m"24"[39m
+                      [33mstroke[39m=[32m"currentColor"[39m
+                      [33mstroke-linecap[39m=[32m"round"[39m
+                      [33mstroke-linejoin[39m=[32m"round"[39m
+                      [33mstroke-width[39m=[32m"2"[39m
+                      [33mviewBox[39m=[32m"0 0 24 24"[39m
+                      [33mwidth[39m=[32m"24"[39m
+                      [33mxmlns[39m=[32m"http://www.w3.org/2000/svg"[39m
+                    [36m>[39m
+                      [36m<path[39m
+                        [33md[39m=[32m"M11 14h10"[39m
+                      [36m/>[39m
+                      [36m<path[39m
+                        [33md[39m=[32m"M16 4h2a2 2 0 0 1 2 2v1.344"[39m
+                      [36m/>[39m
+                      [36m<path[39m
+                        [33md[39m=[32m"m17 18 4-4-4-4"[39m
+                      [36m/>[39m
+                      [36m<path[39m
+                        [33md[39m=[32m"M8 4H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 1.793-1.113"[39m
+                      [36m/>[39m
+                      [36m<rect[39m
+                        [33mheight[39m=[32m"4"[39m
+                        [33mrx[39m=[32m"1"[39m
+                        [33mwidth[39m=[32m"8"[39m
+                        [33mx[39m=[32m"8"[39m
+                        [33my[39m=[32m"2"[39m
+                      [36m/>[39m
+                    [36m</svg>[39m
+                  [36m</button>[39m
+                  [36m<button[39m
+                    [33maria-label[39m=[32m"Thème sombre (cave)"[39m
+                    [33mclass[39m=[32m"w-7 h-7 rounded-control flex items-center justify-center text-cave-400 hover:text-cave-50 active:bg-cave-850 shrink-0 transition-colors "[39m
+                    [33mdata-theme-toggle[39m=[32m"clair"[39m
+                    [33mtitle[39m=[32m"Thème sombre (cave)"[39m
+                    [33mtype[39m=[32m"button"[39m
+                  [36m>[39m
+                    [36m<svg[39m
+                      [33maria-hidden[39m=[32m"true"[39m
+                      [33mclass[39m=[32m"lucide lucide-moon w-3.5 h-3.5"[39m
+                      [33mfill[39m=[32m"none"[39m
+                      [33mheight[39m=[32m"24"[39m
+                      [33mstroke[39m=[32m"currentColor"[39m
+                      [33mstroke-linecap[39m=[32m"round"[39m
+                      [33mstroke-linejoin[39m=[32m"round"[39m
+                      [33mstroke-width[39m=[32m"2"[39m
+                      [33mviewBox[39m=[32m"0 0 24 24"[39m
+                      [33mwidth[39m=[32m"24"[39m
+                      [33mxmlns[39m=[32m"http://www.w3.org/2000/svg"[39m
+                    [36m>[39m
+                      [36m<path[39m
+                        [33md[39m=[32m"M20.985 12.486a9 9 0 1 1-9.473-9.472c.405-.022.617.46.402.803a6 6 0 0 0 8.268 8.268c.344-.215.825-.004.803.401"[39m
+                      [36m/>[39m
+                    [36...
+[90m [2m❯[22m waitForWrapper ../../../../Documents/Brasserie/node_modules/@testing-library/dom/dist/wait-for.js:[2m163:27[22m[39m
+[90m [2m❯[22m ../../../../Documents/Brasserie/node_modules/@testing-library/dom/dist/query-helpers.js:[2m86:33[22m[39m
+[36m [2m❯[22m tests/integration/yeastPitchingWizardOwnership.test.tsx:[2m28:18[22m[39m
+    [90m 26| [39m    [35mconst[39m save [33m=[39m vi[33m.[39m[34mfn[39m()[33m;[39m [34mmount[39m(recipe[33m,[39m save[33m,[39m [item])[33m;[39m
+    [90m 27| [39m    fireEvent.click(screen.getAllByRole('button', { name: 'Levure' })[…
+    [90m 28| [39m    [35mawait[39m screen[33m.[39m[34mfindByRole[39m([32m'region'[39m[33m,[39m { name[33m:[39m [32m'Moût à ensemencer'[39m })[33m;[39m
+    [90m   | [39m                 [31m^[39m
+    [90m 29| [39m    const source = document.querySelector<HTMLDetailsElement>('.yc-per…
+    [90m 30| [39m    if (!source.open) fireEvent.click(source.querySelector('summary')!…
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/5]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m tests/integration/yeastPitchingWizardOwnership.test.tsx[2m > [22mMoût opérationnel et propriétaire documentaire du Wizard[2m > [22mmodifie et qualifie au clavier, rouvre puis efface le moût sans remplacer la fiche locale stock
+[41m[1m FAIL [22m[49m tests/integration/yeastPitchingWizardOwnership.test.tsx[2m > [22mMoût opérationnel et propriétaire documentaire du Wizard[2m > [22mmodifie et qualifie au clavier, rouvre puis efface le moût sans remplacer la fiche locale free
+[31m[1mTestingLibraryElementError[22m[39m: Unable to find role="region" and name "Moût à ensemencer"
+
+Ignored nodes: comments, script, style
+[36m<body>[39m
+  [36m<div>[39m
+    [36m<div[39m
+      [33mclass[39m=[32m"page-shell fixed inset-0 z-[49] flex flex-col bg-cave-950 recipe-wizard"[39m
+      [33mdata-page-shell[39m=[32m"true"[39m
+    [36m>[39m
+      [36m<header[39m
+        [33mclass[39m=[32m"shrink-0 border-b border-cave-800 bg-cave-950/95 backdrop-blur-sm pt-safe"[39m
+      [36m>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"flex items-start"[39m
+        [36m>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"min-w-0 flex-1"[39m
+          [36m>[39m
+            [36m<div[39m
+              [33mclass[39m=[32m"sm:hidden"[39m
+            [36m>[39m
+              [36m<div[39m
+                [33mclass[39m=[32m"recipe-mobile-header px-2 bg-cave-950"[39m
+              [36m>[39m
+                [36m<div[39m
+                  [33mclass[39m=[32m"recipe-titlebar flex items-center gap-1.5"[39m
+                [36m>[39m
+                  [36m<button[39m
+                    [33maria-label[39m=[32m"Fermer"[39m
+                    [33mclass[39m=[32m"w-7 h-7 rounded-control flex items-center justify-center text-cave-400 hover:text-cave-50 active:bg-cave-850 shrink-0 transition-colors"[39m
+                    [33mtype[39m=[32m"button"[39m
+                  [36m>[39m
+                    [36m<svg[39m
+                      [33maria-hidden[39m=[32m"true"[39m
+                      [33mclass[39m=[32m"lucide lucide-chevron-left w-4 h-4"[39m
+                      [33mfill[39m=[32m"none"[39m
+                      [33mheight[39m=[32m"24"[39m
+                      [33mstroke[39m=[32m"currentColor"[39m
+                      [33mstroke-linecap[39m=[32m"round"[39m
+                      [33mstroke-linejoin[39m=[32m"round"[39m
+                      [33mstroke-width[39m=[32m"2"[39m
+                      [33mviewBox[39m=[32m"0 0 24 24"[39m
+                      [33mwidth[39m=[32m"24"[39m
+                      [33mxmlns[39m=[32m"http://www.w3.org/2000/svg"[39m
+                    [36m>[39m
+                      [36m<path[39m
+                        [33md[39m=[32m"m15 18-6-6 6-6"[39m
+                      [36m/>[39m
+                    [36m</svg>[39m
+                  [36m</button>[39m
+                  [36m<p[39m
+                    [33mclass[39m=[32m"flex min-w-0 flex-1 items-baseline gap-1.5"[39m
+                  [36m>[39m
+                    [36m<span[39m
+                      [33mclass[39m=[32m"min-w-0 truncate text-base font-semibold text-cave-50"[39m
+                    [36m>[39m
+                      [0mLevure[0m
+                    [36m</span>[39m
+                    [36m<span[39m
+                      [33mclass[39m=[32m"shrink-0 font-mono text-sm text-cave-400"[39m
+                    [36m>[39m
+                      [0m4[0m
+                      [0m/[0m
+                      [0m7[0m
+                    [36m</span>[39m
+                    [36m<span[39m
+                      [33maria-live[39m=[32m"polite"[39m
+                      [33mclass[39m=[32m"sr-only"[39m
+                    [36m>[39m
+                      [0mLevure — étape 4 sur 7[0m
+                    [36m</span>[39m
+                  [36m</p>[39m
+                  [36m<button[39m
+                    [33maria-label[39m=[32m"Coller une recette"[39m
+                    [33mclass[39m=[32m"w-7 h-7 rounded-control flex items-center justify-center text-cave-400 hover:text-ebc-straw active:bg-cave-850 shrink-0 transition-colors"[39m
+                    [33mtype[39m=[32m"button"[39m
+                  [36m>[39m
+                    [36m<svg[39m
+                      [33maria-hidden[39m=[32m"true"[39m
+                      [33mclass[39m=[32m"lucide lucide-clipboard-paste w-3.5 h-3.5"[39m
+                      [33mfill[39m=[32m"none"[39m
+                      [33mheight[39m=[32m"24"[39m
+                      [33mstroke[39m=[32m"currentColor"[39m
+                      [33mstroke-linecap[39m=[32m"round"[39m
+                      [33mstroke-linejoin[39m=[32m"round"[39m
+                      [33mstroke-width[39m=[32m"2"[39m
+                      [33mviewBox[39m=[32m"0 0 24 24"[39m
+                      [33mwidth[39m=[32m"24"[39m
+                      [33mxmlns[39m=[32m"http://www.w3.org/2000/svg"[39m
+                    [36m>[39m
+                      [36m<path[39m
+                        [33md[39m=[32m"M11 14h10"[39m
+                      [36m/>[39m
+                      [36m<path[39m
+                        [33md[39m=[32m"M16 4h2a2 2 0 0 1 2 2v1.344"[39m
+                      [36m/>[39m
+                      [36m<path[39m
+                        [33md[39m=[32m"m17 18 4-4-4-4"[39m
+                      [36m/>[39m
+                      [36m<path[39m
+                        [33md[39m=[32m"M8 4H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 1.793-1.113"[39m
+                      [36m/>[39m
+                      [36m<rect[39m
+                        [33mheight[39m=[32m"4"[39m
+                        [33mrx[39m=[32m"1"[39m
+                        [33mwidth[39m=[32m"8"[39m
+                        [33mx[39m=[32m"8"[39m
+                        [33my[39m=[32m"2"[39m
+                      [36m/>[39m
+                    [36m</svg>[39m
+                  [36m</button>[39m
+                  [36m<button[39m
+                    [33maria-label[39m=[32m"Thème sombre (cave)"[39m
+                    [33mclass[39m=[32m"w-7 h-7 rounded-control flex items-center justify-center text-cave-400 hover:text-cave-50 active:bg-cave-850 shrink-0 transition-colors "[39m
+                    [33mdata-theme-toggle[39m=[32m"clair"[39m
+                    [33mtitle[39m=[32m"Thème sombre (cave)"[39m
+                    [33mtype[39m=[32m"button"[39m
+                  [36m>[39m
+                    [36m<svg[39m
+                      [33maria-hidden[39m=[32m"true"[39m
+                      [33mclass[39m=[32m"lucide lucide-moon w-3.5 h-3.5"[39m
+                      [33mfill[39m=[32m"none"[39m
+                      [33mheight[39m=[32m"24"[39m
+                      [33mstroke[39m=[32m"currentColor"[39m
+                      [33mstroke-linecap[39m=[32m"round"[39m
+                      [33mstroke-linejoin[39m=[32m"round"[39m
+                      [33mstroke-width[39m=[32m"2"[39m
+                      [33mviewBox[39m=[32m"0 0 24 24"[39m
+                      [33mwidth[39m=[32m"24"[39m
+                      [33mxmlns[39m=[32m"http://www.w3.org/2000/svg"[39m
+                    [36m>[39m
+                      [36m<path[39m
+                        [33md[39m=[32m"M20.985 12.486a9 9 0 1 1-9.473-9.472c.405-.022.617.46.402.803a6 6 0 0 0 8.268 8.268c.344-.215.825-.004.803.401"[39m
+                      [36m/>[39m
+                    [36...
+
+Ignored nodes: comments, script, style
+[36m<body>[39m
+  [36m<div>[39m
+    [36m<div[39m
+      [33mclass[39m=[32m"page-shell fixed inset-0 z-[49] flex flex-col bg-cave-950 recipe-wizard"[39m
+      [33mdata-page-shell[39m=[32m"true"[39m
+    [36m>[39m
+      [36m<header[39m
+        [33mclass[39m=[32m"shrink-0 border-b border-cave-800 bg-cave-950/95 backdrop-blur-sm pt-safe"[39m
+      [36m>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"flex items-start"[39m
+        [36m>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"min-w-0 flex-1"[39m
+          [36m>[39m
+            [36m<div[39m
+              [33mclass[39m=[32m"sm:hidden"[39m
+            [36m>[39m
+              [36m<div[39m
+                [33mclass[39m=[32m"recipe-mobile-header px-2 bg-cave-950"[39m
+              [36m>[39m
+                [36m<div[39m
+                  [33mclass[39m=[32m"recipe-titlebar flex items-center gap-1.5"[39m
+                [36m>[39m
+                  [36m<button[39m
+                    [33maria-label[39m=[32m"Fermer"[39m
+                    [33mclass[39m=[32m"w-7 h-7 rounded-control flex items-center justify-center text-cave-400 hover:text-cave-50 active:bg-cave-850 shrink-0 transition-colors"[39m
+                    [33mtype[39m=[32m"button"[39m
+                  [36m>[39m
+                    [36m<svg[39m
+                      [33maria-hidden[39m=[32m"true"[39m
+                      [33mclass[39m=[32m"lucide lucide-chevron-left w-4 h-4"[39m
+                      [33mfill[39m=[32m"none"[39m
+                      [33mheight[39m=[32m"24"[39m
+                      [33mstroke[39m=[32m"currentColor"[39m
+                      [33mstroke-linecap[39m=[32m"round"[39m
+                      [33mstroke-linejoin[39m=[32m"round"[39m
+                      [33mstroke-width[39m=[32m"2"[39m
+                      [33mviewBox[39m=[32m"0 0 24 24"[39m
+                      [33mwidth[39m=[32m"24"[39m
+                      [33mxmlns[39m=[32m"http://www.w3.org/2000/svg"[39m
+                    [36m>[39m
+                      [36m<path[39m
+                        [33md[39m=[32m"m15 18-6-6 6-6"[39m
+                      [36m/>[39m
+                    [36m</svg>[39m
+                  [36m</button>[39m
+                  [36m<p[39m
+                    [33mclass[39m=[32m"flex min-w-0 flex-1 items-baseline gap-1.5"[39m
+                  [36m>[39m
+                    [36m<span[39m
+                      [33mclass[39m=[32m"min-w-0 truncate text-base font-semibold text-cave-50"[39m
+                    [36m>[39m
+                      [0mLevure[0m
+                    [36m</span>[39m
+                    [36m<span[39m
+                      [33mclass[39m=[32m"shrink-0 font-mono text-sm text-cave-400"[39m
+                    [36m>[39m
+                      [0m4[0m
+                      [0m/[0m
+                      [0m7[0m
+                    [36m</span>[39m
+                    [36m<span[39m
+                      [33maria-live[39m=[32m"polite"[39m
+                      [33mclass[39m=[32m"sr-only"[39m
+                    [36m>[39m
+                      [0mLevure — étape 4 sur 7[0m
+                    [36m</span>[39m
+                  [36m</p>[39m
+                  [36m<button[39m
+                    [33maria-label[39m=[32m"Coller une recette"[39m
+                    [33mclass[39m=[32m"w-7 h-7 rounded-control flex items-center justify-center text-cave-400 hover:text-ebc-straw active:bg-cave-850 shrink-0 transition-colors"[39m
+                    [33mtype[39m=[32m"button"[39m
+                  [36m>[39m
+                    [36m<svg[39m
+                      [33maria-hidden[39m=[32m"true"[39m
+                      [33mclass[39m=[32m"lucide lucide-clipboard-paste w-3.5 h-3.5"[39m
+                      [33mfill[39m=[32m"none"[39m
+                      [33mheight[39m=[32m"24"[39m
+                      [33mstroke[39m=[32m"currentColor"[39m
+                      [33mstroke-linecap[39m=[32m"round"[39m
+                      [33mstroke-linejoin[39m=[32m"round"[39m
+                      [33mstroke-width[39m=[32m"2"[39m
+                      [33mviewBox[39m=[32m"0 0 24 24"[39m
+                      [33mwidth[39m=[32m"24"[39m
+                      [33mxmlns[39m=[32m"http://www.w3.org/2000/svg"[39m
+                    [36m>[39m
+                      [36m<path[39m
+                        [33md[39m=[32m"M11 14h10"[39m
+                      [36m/>[39m
+                      [36m<path[39m
+                        [33md[39m=[32m"M16 4h2a2 2 0 0 1 2 2v1.344"[39m
+                      [36m/>[39m
+                      [36m<path[39m
+                        [33md[39m=[32m"m17 18 4-4-4-4"[39m
+                      [36m/>[39m
+                      [36m<path[39m
+                        [33md[39m=[32m"M8 4H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 1.793-1.113"[39m
+                      [36m/>[39m
+                      [36m<rect[39m
+                        [33mheight[39m=[32m"4"[39m
+                        [33mrx[39m=[32m"1"[39m
+                        [33mwidth[39m=[32m"8"[39m
+                        [33mx[39m=[32m"8"[39m
+                        [33my[39m=[32m"2"[39m
+                      [36m/>[39m
+                    [36m</svg>[39m
+                  [36m</button>[39m
+                  [36m<button[39m
+                    [33maria-label[39m=[32m"Thème sombre (cave)"[39m
+                    [33mclass[39m=[32m"w-7 h-7 rounded-control flex items-center justify-center text-cave-400 hover:text-cave-50 active:bg-cave-850 shrink-0 transition-colors "[39m
+                    [33mdata-theme-toggle[39m=[32m"clair"[39m
+                    [33mtitle[39m=[32m"Thème sombre (cave)"[39m
+                    [33mtype[39m=[32m"button"[39m
+                  [36m>[39m
+                    [36m<svg[39m
+                      [33maria-hidden[39m=[32m"true"[39m
+                      [33mclass[39m=[32m"lucide lucide-moon w-3.5 h-3.5"[39m
+                      [33mfill[39m=[32m"none"[39m
+                      [33mheight[39m=[32m"24"[39m
+                      [33mstroke[39m=[32m"currentColor"[39m
+                      [33mstroke-linecap[39m=[32m"round"[39m
+                      [33mstroke-linejoin[39m=[32m"round"[39m
+                      [33mstroke-width[39m=[32m"2"[39m
+                      [33mviewBox[39m=[32m"0 0 24 24"[39m
+                      [33mwidth[39m=[32m"24"[39m
+                      [33mxmlns[39m=[32m"http://www.w3.org/2000/svg"[39m
+                    [36m>[39m
+                      [36m<path[39m
+                        [33md[39m=[32m"M20.985 12.486a9 9 0 1 1-9.473-9.472c.405-.022.617.46.402.803a6 6 0 0 0 8.268 8.268c.344-.215.825-.004.803.401"[39m
+                      [36m/>[39m
+                    [36...
+[90m [2m❯[22m waitForWrapper ../../../../Documents/Brasserie/node_modules/@testing-library/dom/dist/wait-for.js:[2m163:27[22m[39m
+[90m [2m❯[22m ../../../../Documents/Brasserie/node_modules/@testing-library/dom/dist/query-helpers.js:[2m86:33[22m[39m
+[36m [2m❯[22m tests/integration/yeastPitchingWizardOwnership.test.tsx:[2m53:31[22m[39m
+    [90m 51| [39m    const save = vi.fn(); const firstView = mount(recipe, save, mode =…
+    [90m 52| [39m    fireEvent.click(screen.getAllByRole('button', { name: 'Levure' })[…
+    [90m 53| [39m    const wort = await screen.findByRole('region', { name: 'Moût à ens…
+    [90m   | [39m                              [31m^[39m
+    [90m 54| [39m    fireEvent.click(within(wort).getByRole('button', { name: 'Corriger…
+    [90m 55| [39m    const volume = within(wort).getByRole('textbox', { name: 'Volume d…
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/5]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m tests/unit/hopIndexV4/etapeHoublons.test.tsx[2m > [22mwizard (T12b) : en-tête, rangée de fin, banc local, champ protégé[2m > [22mle banc `?dev-local&etape=houblons` reste derrière import.meta.env.DEV et le compte dev-local
+[31m[1mAssertionError[22m: expected 'cuEtapeLevure, recetteApercuSansLevur…' to match /if \(import\.meta\.env\.DEV\) \{\s*if…/[39m
+
+[32m- Expected:[39m 
+/if \(import\.meta\.env\.DEV\) \{\s*if \(!isDevLocal \|\| !isDataReady/
+
+[31m+ Received:[39m 
+"cuEtapeLevure, recetteApercuSansLevure, rechercheSimulee }) => {
+          if (q.get('recherche') === 'simulee') (window as unknown as { __lvRechercheSimulee?: unknown }).__lvRechercheSimulee = rechercheSimulee;
+          openWizard({ recipe: q.get('recette') === 'vide' ? recetteApercuSansLevure() : recetteApercuEtapeLevure(), step: 'levure' });
+        });
+        return;
+      }
+      if ("
+
+[36m [2m❯[22m tests/unit/hopIndexV4/etapeHoublons.test.tsx:[2m152:19[22m[39m
+    [90m150| [39m    [34mexpect[39m(i)[33m.[39m[34mtoBeGreaterThan[39m([34m0[39m)[33m;[39m
+    [90m151| [39m    [35mconst[39m avant [33m=[39m a[33m.[39m[34mslice[39m([33mMath[39m[33m.[39m[34mmax[39m([34m0[39m[33m,[39m i [33m-[39m [34m400[39m)[33m,[39m i)[33m;[39m
+    [90m152| [39m    expect(avant).toMatch(/if \(import\.meta\.env\.DEV\) \{\s*if \(!is…
+    [90m   | [39m                  [31m^[39m
+    [90m153| [39m  })[33m;[39m
+    [90m154| [39m  it('le champ « Ajouter — houblon… » est le champ protégé de l\'app (…
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/5]⎯[22m[39m
+
+
+[2m Test Files [22m [1m[31m2 failed[39m[22m[2m | [22m[1m[32m1 passed[39m[22m[90m (3)[39m
+[2m      Tests [22m [1m[31m5 failed[39m[22m[2m | [22m[1m[32m28 passed[39m[22m[90m (33)[39m
+[2m   Start at [22m 14:42:43
+[2m   Duration [22m 10.06s[2m (transform 3.54s, setup 304ms, collect 6.44s, tests 7.21s, environment 1.68s, prepare 161ms)[22m
+

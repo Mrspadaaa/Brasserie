@@ -1,0 +1,89 @@
+## base : en-tête 174 px (44.6 %) ; courbes 45 px ; tailles 13/16/36 px
+  aucun défaut
+## l1 : en-tête 138 px (35.4 %) ; courbes 60 px ; tailles 14/32 px ; frise identique ; + identique ; code frise identique
+  TEXTE×TEXTE +1 100 / +2 450
+  TEXTE×TEXTE −900 / mars
+  TEXTE×TEXTE hotte / mars
+  TEXTE×TEXTE −1 080 / mai
+  TEXTE×TEXTE fûts / −2 800
+  TEXTE×TEXTE fûts / juin
+  TEXTE×TEXTE −2 800 / juin
+  TEXTE×TEXTE embouteilleuse / juil.
+  TEXTE×TEXTE embouteilleuse / août
+  TEXTE×TEXTE −1 800 / sept.
+  TEXTE×TEXTE frigo / oct.
+  TEXTE×OBJET +1 100 / en-lb up
+  TEXTE×OBJET +2 450 / en-lb up c
+  TEXTE×OBJET fûts / en-dip
+  TEXTE×OBJET fûts / en-lb dn
+  TEXTE×OBJET −2 800 / en-dip
+  TEXTE×OBJET −2 800 / en-lb dn c
+  TEXTE×OBJET mars / en-lb dn r
+  TEXTE×OBJET mai / en-lb dn c
+  TEXTE×OBJET juin / en-lb dn c
+  TEXTE×OBJET juin / en-lb dn
+  TEXTE×OBJET juil. / en-lb dn
+  TEXTE×OBJET août / en-lb dn
+  TEXTE×OBJET sept. / en-lb dn
+  TEXTE×OBJET oct. / en-lb dn
+  BORD 113 12-62
+  BORD Noël 244-273
+  BORD printemps 387-450
+  BORD fête 557-581
+  BORD festival 715-758
+## l2 : en-tête 136 px (34.9 %) ; courbes 58/34 px ; tailles 14/32 px ; frise identique ; + identique ; code frise identique
+  TEXTE×TEXTE −4 385 / févr.
+  TEXTE×TEXTE −4 385 / mars
+  TEXTE×TEXTE hotte, fûts, embouteilleuse, / mars
+  TEXTE×TEXTE hotte, fûts, embouteilleuse, / avr.
+  TEXTE×TEXTE hotte, fûts, embouteilleuse, / mai
+  TEXTE×TEXTE hotte, fûts, embouteilleuse, / juin
+  TEXTE×TEXTE ± par semaine / oct.
+  TEXTE×TEXTE ± par semaine / nov.
+  TEXTE×OBJET fête / en-dip
+  TEXTE×OBJET févr. / en-lb dn
+  TEXTE×OBJET mars / en-lb dn
+  TEXTE×OBJET avr. / en-lb dn
+  TEXTE×OBJET mai / en-lb dn
+  TEXTE×OBJET juin / en-lb dn
+  OBJET×OBJET en-ib / en-ib
+  BORD 113 12-62
+## l3 : en-tête 136 px (34.9 %) ; courbes 94 px ; tailles 14/32 px ; frise identique ; + identique ; code frise identique
+  TEXTE×TEXTE 113 / à dépenser
+  TEXTE×TEXTE S24 · 113 au plus serré / hotte, fûts, embouteilleuse
+  TEXTE×TEXTE hotte, fûts, embouteilleuse / festival
+  TEXTE×TEXTE −4 780 / festival
+  TEXTE×TEXTE +2 140 / +2 450
+  TEXTE×TEXTE fête / +2 450
+  TEXTE×TEXTE fête / festival
+  TEXTE×OBJET +2 140 / en-lb up r
+  TEXTE×OBJET fête / en-lb up r
+  TEXTE×OBJET +2 450 / en-lb up
+  TEXTE×OBJET festival / en-lb dn
+  TEXTE×OBJET festival / en-lb up
+  BORD 113 16-66
+## l4 : en-tête 134 px (34.4 %) ; courbes 92 px ; tailles 14/32 px ; frise identique ; + identique ; code frise identique
+  TEXTE×TEXTE +2 140 / +1 100
+  TEXTE×TEXTE −2 800 / juin
+  TEXTE×TEXTE 113 / à dépenser
+  TEXTE×OBJET +910 / l4-p
+  TEXTE×OBJET +2 140 / l4-p
+  TEXTE×OBJET +2 140 / en-lb up m r
+  TEXTE×OBJET +1 100 / l4-p
+  TEXTE×OBJET +1 100 / en-lb up m
+  TEXTE×OBJET −1 080 / l4-p
+  TEXTE×OBJET −2 800 / en-dip
+  TEXTE×OBJET juin / en-dip
+  TEXTE×OBJET juin / l4-p
+  TEXTE×OBJET juin / en-lb dn m
+  TEXTE×OBJET 25.1 / en-fil
+  TEXTE×OBJET 1.2 / en-fil
+  OBJET×OBJET en-dt / en-fil
+  BORD 113 702-752
+## l5 : en-tête 129 px (33.1 %) ; courbes 62/24 px ; tailles 14/32 px ; frise identique ; + identique ; code frise identique
+  TEXTE×OBJET juin / en-dip
+  OBJET×OBJET en-s24 / en-ret
+  OBJET×OBJET en-ib / en-ib
+  BORD 113 12-62
+  BORD festival 723-766
+CONTROLE ECHEC (81)

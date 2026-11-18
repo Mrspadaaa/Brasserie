@@ -1,0 +1,902 @@
+{
+  "meta": {
+    "version": 1,
+    "date": "2026-11-16",
+    "note": "Fixture commune des séries « carnet de recherche et de décision ». Tous les produits, prix, valeurs, aperçus et réponses de veille sont simulés et marqués exemple. Fournisseurs fictifs.",
+    "devise": "CHF",
+    "veilleIntervalleJours": 3
+  },
+  "statuts": [
+    "idee",
+    "recherche",
+    "compare",
+    "choisi",
+    "abandonne"
+  ],
+  "carnets": [
+    {
+      "id": "c-embouteillage",
+      "titre": "Embouteillage",
+      "categorie": "embouteillage",
+      "statut": "choisi",
+      "creeLe": "2026-10-20",
+      "resume": "Iso 4 becs pré-évac. (CH) — oxygène le plus bas, SAV suisse",
+      "critere": {
+        "texte": "minimiser l'oxygène",
+        "caracteristique": "oxygene"
+      },
+      "facons": [
+        {
+          "id": "f-gravite",
+          "nom": "Gravité",
+          "etat": "ecartee",
+          "pourquoi": "trop d'oxygène capté",
+          "note": "vu chez un collègue, pas mal"
+        },
+        {
+          "id": "f-iso",
+          "nom": "Isobarique (contre-pression)",
+          "etat": "retenue",
+          "pourquoi": "oxygène le plus bas"
+        }
+      ],
+      "caracteristiques": [
+        {
+          "id": "oxygene",
+          "nom": "Oxygène capté",
+          "unite": "ppb",
+          "sens": "moins",
+          "source": "ia"
+        },
+        {
+          "id": "cadence",
+          "nom": "Cadence",
+          "unite": "bt/h",
+          "sens": "plus",
+          "source": "ia"
+        },
+        {
+          "id": "becs",
+          "nom": "Becs",
+          "unite": "",
+          "sens": "plus",
+          "source": "ia"
+        },
+        {
+          "id": "co2",
+          "nom": "CO₂ par bouteille",
+          "unite": "g",
+          "sens": "moins",
+          "source": "ia"
+        },
+        {
+          "id": "nettoyage",
+          "nom": "Nettoyage",
+          "unite": "",
+          "sens": "texte",
+          "source": "ia"
+        },
+        {
+          "id": "encombrement",
+          "nom": "Encombrement",
+          "unite": "cm",
+          "sens": "texte",
+          "source": "ia"
+        },
+        {
+          "id": "prix",
+          "nom": "Prix",
+          "unite": "CHF",
+          "sens": "moins",
+          "source": "ia"
+        },
+        {
+          "id": "formats",
+          "nom": "Formats",
+          "unite": "",
+          "sens": "texte",
+          "source": "ia",
+          "retiree": true
+        }
+      ],
+      "articles": [
+        {
+          "id": "a-e1",
+          "facon": "f-iso",
+          "nom": "Remplisseuse contre-pression manuelle 1 bec",
+          "fournisseur": "Brauladen Nord",
+          "lieu": "DE",
+          "lien": "https://exemple.invalid/e1",
+          "apercu": {
+            "ok": true,
+            "photo": "bouteille-manuelle"
+          },
+          "prix": 190,
+          "dispo": "en_stock",
+          "surveiller": false,
+          "exemple": true,
+          "valeurs": {
+            "oxygene": 220,
+            "cadence": 60,
+            "becs": 1,
+            "co2": 6,
+            "nettoyage": "à la main",
+            "encombrement": "30×20",
+            "prix": 190
+          },
+          "marque": "moins bien partout sauf prix"
+        },
+        {
+          "id": "a-e2",
+          "facon": "f-iso",
+          "nom": "Isobarique 2 becs de table",
+          "fournisseur": "Enotecnica Sud",
+          "lieu": "IT",
+          "lien": "https://exemple.invalid/e2",
+          "apercu": {
+            "ok": true,
+            "photo": "iso-2"
+          },
+          "prix": 1850,
+          "dispo": "en_stock",
+          "surveiller": false,
+          "exemple": true,
+          "valeurs": {
+            "oxygene": 120,
+            "cadence": 150,
+            "becs": 2,
+            "co2": 5,
+            "nettoyage": "démontage partiel",
+            "encombrement": "60×40",
+            "prix": 1850
+          }
+        },
+        {
+          "id": "a-e3",
+          "facon": "f-iso",
+          "nom": "Isobarique 4 becs semi-auto",
+          "fournisseur": "Enotecnica Sud",
+          "lieu": "IT",
+          "lien": "https://exemple.invalid/e3",
+          "apercu": {
+            "ok": true,
+            "photo": "iso-4"
+          },
+          "prix": 6400,
+          "dispo": "delai_6_semaines",
+          "surveiller": false,
+          "exemple": true,
+          "valeurs": {
+            "oxygene": 90,
+            "cadence": 380,
+            "becs": 4,
+            "co2": 5,
+            "nettoyage": "NEP partiel",
+            "encombrement": "90×60",
+            "prix": 6400
+          }
+        },
+        {
+          "id": "a-e4",
+          "facon": "f-iso",
+          "nom": "Isobarique 4 becs pré-évacuation",
+          "fournisseur": "Abfülltechnik West",
+          "lieu": "DE",
+          "lien": "https://exemple.invalid/e4",
+          "apercu": {
+            "ok": true,
+            "photo": "iso-4-pre"
+          },
+          "prix": 11200,
+          "dispo": "en_stock",
+          "surveiller": true,
+          "exemple": true,
+          "valeurs": {
+            "oxygene": 40,
+            "cadence": 400,
+            "becs": 4,
+            "co2": 7,
+            "nettoyage": "NEP",
+            "encombrement": "100×70",
+            "prix": 11200
+          },
+          "veille": [
+            {
+              "le": "2026-11-10",
+              "prix": 11200,
+              "dispo": "en_stock",
+              "autres": []
+            },
+            {
+              "le": "2026-11-13",
+              "prix": 11200,
+              "dispo": "en_stock",
+              "autres": [
+                {
+                  "fournisseur": "Getränketechnik Ost",
+                  "lieu": "AT",
+                  "prix": 11600,
+                  "dispo": "en_stock"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "a-e5",
+          "facon": "f-iso",
+          "nom": "Isobarique 4 becs pré-évacuation",
+          "fournisseur": "Revendeur Brassage Romandie",
+          "lieu": "CH",
+          "lien": "https://exemple.invalid/e5",
+          "apercu": {
+            "ok": true,
+            "photo": "iso-4-pre"
+          },
+          "prix": 11700,
+          "dispo": "en_stock",
+          "surveiller": true,
+          "exemple": true,
+          "valeurs": {
+            "oxygene": 40,
+            "cadence": 400,
+            "becs": 4,
+            "co2": 7,
+            "nettoyage": "NEP",
+            "encombrement": "100×70",
+            "prix": 11700
+          },
+          "veille": [
+            {
+              "le": "2026-11-10",
+              "prix": 12300,
+              "dispo": "en_stock",
+              "autres": []
+            },
+            {
+              "le": "2026-11-13",
+              "prix": 11700,
+              "dispo": "en_stock",
+              "autres": [
+                {
+                  "fournisseur": "Getränketechnik Ost",
+                  "lieu": "AT",
+                  "prix": 11600,
+                  "dispo": "en_stock"
+                }
+              ]
+            }
+          ],
+          "alerte": {
+            "le": "2026-11-13",
+            "texte": "−600 CHF ; aussi en stock chez Getränketechnik Ost (AT)",
+            "lue": true
+          }
+        },
+        {
+          "id": "a-e6",
+          "facon": "f-iso",
+          "nom": "Monobloc isobarique 6 becs",
+          "fournisseur": "Macchine Lago",
+          "lieu": "IT",
+          "lien": "https://exemple.invalid/e6",
+          "apercu": {
+            "ok": true,
+            "photo": "monobloc"
+          },
+          "prix": 21500,
+          "dispo": "sur_commande",
+          "surveiller": false,
+          "exemple": true,
+          "valeurs": {
+            "oxygene": 50,
+            "cadence": 900,
+            "becs": 6,
+            "co2": 6,
+            "nettoyage": "NEP",
+            "encombrement": "180×90",
+            "prix": 21500
+          }
+        }
+      ],
+      "notes": [
+        {
+          "le": "2026-10-20",
+          "par": "brasseur",
+          "texte": "embouteillage"
+        },
+        {
+          "le": "2026-10-21",
+          "par": "brasseur",
+          "texte": "gravité 4 becs vu chez un collègue, pas mal"
+        },
+        {
+          "le": "2026-10-22",
+          "par": "brasseur",
+          "texte": "il faut minimiser l'oxygène"
+        },
+        {
+          "le": "2026-10-29",
+          "par": "ia",
+          "texte": "Lu 2 liens : 2 articles ajoutés, cadence non trouvée pour l'un.",
+          "exemple": true
+        },
+        {
+          "le": "2026-11-13",
+          "par": "veille",
+          "texte": "Iso 4 becs pré-évac. : −600 CHF chez le revendeur suisse ; en stock chez un 3ᵉ fournisseur (AT).",
+          "exemple": true
+        }
+      ],
+      "decisions": [
+        {
+          "id": "d1",
+          "le": "2026-10-22",
+          "statut": "valide",
+          "sujet": "façon",
+          "choix": "f-iso",
+          "pourquoi": "minimiser l'oxygène",
+          "ecartes": [
+            {
+              "ref": "f-gravite",
+              "raison": "trop d'oxygène capté"
+            }
+          ]
+        },
+        {
+          "id": "d2",
+          "le": "2026-11-14",
+          "statut": "valide",
+          "sujet": "produit et fournisseur",
+          "choix": "a-e5",
+          "pourquoi": "oxygène le plus bas à 4 becs ; SAV en Suisse ; −600 CHF à la veille",
+          "ecartes": [
+            {
+              "ref": "a-e2",
+              "raison": "cadence trop basse pour 300 L"
+            },
+            {
+              "ref": "a-e6",
+              "raison": "double prix pour une cadence inutile"
+            },
+            {
+              "ref": "a-e4",
+              "raison": "même machine, SAV à l'étranger"
+            }
+          ],
+          "revoirSi": "le volume dépasse 1 000 L par mois"
+        }
+      ],
+      "aVenir": {
+        "envoye": false
+      }
+    },
+    {
+      "id": "c-frigo",
+      "titre": "Frigo de garde pour fûts",
+      "categorie": "froid",
+      "statut": "choisi",
+      "creeLe": "2026-09-30",
+      "resume": "Chambre froide en kit (CH) — assez pour 6 fûts, 2 °C stable en été",
+      "critere": {
+        "texte": "tenir 2 °C stable en été",
+        "caracteristique": "ambiante"
+      },
+      "facons": [
+        {
+          "id": "f-chambre",
+          "nom": "Chambre froide en kit",
+          "etat": "retenue",
+          "pourquoi": "stable et passe la porte en panneaux"
+        },
+        {
+          "id": "f-vitrine",
+          "nom": "Frigo vitrine pro",
+          "etat": "ecartee",
+          "pourquoi": "ne passe pas la porte de 80 cm"
+        }
+      ],
+      "caracteristiques": [
+        {
+          "id": "volume",
+          "nom": "Volume utile",
+          "unite": "L",
+          "sens": "plus",
+          "source": "ia"
+        },
+        {
+          "id": "futs",
+          "nom": "Fûts de 20 L",
+          "unite": "",
+          "sens": "plus",
+          "source": "ia"
+        },
+        {
+          "id": "ambiante",
+          "nom": "Température ambiante max",
+          "aide": "classe climatique",
+          "unite": "°C",
+          "sens": "plus",
+          "source": "ia"
+        },
+        {
+          "id": "plage",
+          "nom": "Plage de température",
+          "unite": "°C",
+          "sens": "texte",
+          "source": "ia"
+        },
+        {
+          "id": "conso",
+          "nom": "Consommation",
+          "unite": "kWh/an",
+          "sens": "moins",
+          "source": "ia"
+        },
+        {
+          "id": "bruit",
+          "nom": "Bruit",
+          "unite": "dB",
+          "sens": "moins",
+          "source": "ia"
+        },
+        {
+          "id": "porte",
+          "nom": "Passe une porte de 80 cm",
+          "unite": "",
+          "sens": "oui",
+          "source": "brasseur"
+        },
+        {
+          "id": "prix",
+          "nom": "Prix",
+          "unite": "CHF",
+          "sens": "moins",
+          "source": "ia"
+        }
+      ],
+      "articles": [
+        {
+          "id": "a-f1",
+          "facon": "f-chambre",
+          "nom": "Chambre froide en kit 2 m³",
+          "fournisseur": "Froid Léman",
+          "lieu": "CH",
+          "lien": "https://exemple.invalid/f1",
+          "apercu": {
+            "ok": true,
+            "photo": "chambre"
+          },
+          "prix": 4900,
+          "dispo": "en_stock",
+          "surveiller": false,
+          "exemple": true,
+          "valeurs": {
+            "volume": 1600,
+            "futs": 30,
+            "plage": "0 à 8",
+            "conso": 1400,
+            "bruit": 45,
+            "porte": true,
+            "prix": 4900,
+            "ambiante": 43
+          }
+        },
+        {
+          "id": "a-f2",
+          "facon": "f-vitrine",
+          "nom": "Vitrine pro 700 L",
+          "fournisseur": "Gastrokälte Süd",
+          "lieu": "DE",
+          "lien": "https://exemple.invalid/f2",
+          "apercu": {
+            "ok": true,
+            "photo": "vitrine"
+          },
+          "prix": 2300,
+          "dispo": "rupture",
+          "surveiller": true,
+          "exemple": true,
+          "valeurs": {
+            "volume": 560,
+            "futs": 8,
+            "plage": "2 à 10",
+            "conso": 900,
+            "bruit": 52,
+            "porte": false,
+            "prix": 2300,
+            "ambiante": 30
+          },
+          "veille": [
+            {
+              "le": "2026-10-08",
+              "prix": 2300,
+              "dispo": "rupture",
+              "autres": [
+                {
+                  "fournisseur": "Horeca Froid",
+                  "lieu": "FR",
+                  "prix": 2390,
+                  "dispo": "en_stock"
+                }
+              ]
+            }
+          ],
+          "alerte": {
+            "le": "2026-10-08",
+            "texte": "rupture ici ; dispo chez Horeca Froid (FR) à +90 CHF",
+            "lue": true
+          }
+        },
+        {
+          "id": "a-f3",
+          "facon": "f-vitrine",
+          "nom": "Vitrine d'occasion 600 L",
+          "fournisseur": "Annonce locale",
+          "lieu": "CH",
+          "lien": "https://exemple.invalid/f3",
+          "apercu": {
+            "ok": true,
+            "photo": "vitrine-occ"
+          },
+          "prix": 650,
+          "dispo": "en_stock",
+          "surveiller": false,
+          "exemple": true,
+          "valeurs": {
+            "volume": 480,
+            "futs": 6,
+            "plage": "?",
+            "conso": null,
+            "bruit": null,
+            "porte": false,
+            "prix": 650,
+            "ambiante": null
+          }
+        },
+        {
+          "id": "a-f4",
+          "facon": "f-chambre",
+          "nom": "Chambre froide en kit 2,5 m³",
+          "fournisseur": "Celle Frigo",
+          "lieu": "IT",
+          "lien": "https://exemple.invalid/f4",
+          "apercu": {
+            "ok": true,
+            "photo": "chambre"
+          },
+          "prix": 4300,
+          "dispo": "delai_4_semaines",
+          "surveiller": false,
+          "exemple": true,
+          "valeurs": {
+            "volume": 2000,
+            "futs": 40,
+            "plage": "0 à 10",
+            "conso": 1650,
+            "bruit": 48,
+            "porte": true,
+            "prix": 4300,
+            "ambiante": 38
+          }
+        }
+      ],
+      "notes": [
+        {
+          "le": "2026-09-30",
+          "par": "brasseur",
+          "texte": "frigo de garde pour fûts"
+        },
+        {
+          "le": "2026-10-01",
+          "par": "brasseur",
+          "texte": "la porte du local fait 80 cm"
+        },
+        {
+          "le": "2026-10-02",
+          "par": "ia",
+          "texte": "Occasion : bruit et consommation non trouvés.",
+          "exemple": true
+        }
+      ],
+      "decisions": [
+        {
+          "id": "d1",
+          "le": "2026-10-03",
+          "statut": "remplacee",
+          "remplaceePar": "d2",
+          "sujet": "façon",
+          "choix": "f-vitrine",
+          "pourquoi": "moins cher"
+        },
+        {
+          "id": "d2",
+          "le": "2026-10-10",
+          "statut": "valide",
+          "sujet": "produit et fournisseur",
+          "choix": "a-f1",
+          "pourquoi": "assez pour 6 fûts, stable à 2 °C en été ; la vitrine ne passe pas la porte",
+          "ecartes": [
+            {
+              "ref": "a-f3",
+              "raison": "pas de garantie sur le compresseur"
+            },
+            {
+              "ref": "a-f4",
+              "raison": "délai de 4 semaines, SAV en Italie"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "c-ventilation",
+      "titre": "Ventilation de la salle de brassage",
+      "categorie": "ventilation",
+      "statut": "compare",
+      "creeLe": "2026-11-02",
+      "resume": "Hotte ou extracteur — attendre l'avis du ferblantier",
+      "critere": {
+        "texte": "plus de condensation au plafond",
+        "caracteristique": "debit"
+      },
+      "facons": [
+        {
+          "id": "f-hotte",
+          "nom": "Hotte inox + extracteur",
+          "etat": "ouverte"
+        },
+        {
+          "id": "f-mural",
+          "nom": "Extracteur mural seul",
+          "etat": "ouverte"
+        }
+      ],
+      "caracteristiques": [
+        {
+          "id": "debit",
+          "nom": "Débit",
+          "unite": "m³/h",
+          "sens": "plus",
+          "source": "ia"
+        },
+        {
+          "id": "bruit",
+          "nom": "Bruit",
+          "unite": "dB",
+          "sens": "moins",
+          "source": "ia"
+        },
+        {
+          "id": "gaine",
+          "nom": "Diamètre de gaine",
+          "unite": "mm",
+          "sens": "texte",
+          "source": "ia",
+          "vide": "sans gaine"
+        },
+        {
+          "id": "humidite",
+          "nom": "Tient l'humidité",
+          "unite": "",
+          "sens": "oui",
+          "source": "ia"
+        },
+        {
+          "id": "prix",
+          "nom": "Prix",
+          "unite": "CHF",
+          "sens": "moins",
+          "source": "ia"
+        },
+        {
+          "id": "conso",
+          "nom": "Consommation",
+          "unite": "W",
+          "sens": "moins",
+          "source": "ia",
+          "retiree": true
+        }
+      ],
+      "articles": [
+        {
+          "id": "a-v1",
+          "facon": "f-hotte",
+          "nom": "Hotte inox 120 cm + moteur",
+          "fournisseur": "Inox Broye",
+          "lieu": "CH",
+          "lien": "https://exemple.invalid/v1",
+          "apercu": {
+            "ok": true,
+            "photo": "hotte"
+          },
+          "prix": 2600,
+          "dispo": "sur_commande",
+          "surveiller": false,
+          "exemple": true,
+          "valeurs": {
+            "debit": 1800,
+            "bruit": 58,
+            "gaine": "250",
+            "humidite": true,
+            "prix": 2600
+          }
+        },
+        {
+          "id": "a-v2",
+          "facon": "f-hotte",
+          "nom": "Hotte murale 100 cm",
+          "fournisseur": "Gastro Lüftung",
+          "lieu": "DE",
+          "lien": "https://exemple.invalid/v2",
+          "apercu": {
+            "ok": true,
+            "photo": "hotte"
+          },
+          "prix": 1450,
+          "dispo": "en_stock",
+          "surveiller": true,
+          "exemple": true,
+          "valeurs": {
+            "debit": 1200,
+            "bruit": 55,
+            "gaine": "200",
+            "humidite": true,
+            "prix": 1450
+          },
+          "veille": [
+            {
+              "le": "2026-11-14",
+              "prix": 1450,
+              "dispo": "en_stock",
+              "autres": []
+            }
+          ]
+        },
+        {
+          "id": "a-v3",
+          "facon": "f-mural",
+          "nom": "Extracteur mural hélicoïde",
+          "fournisseur": "Ventil Jura",
+          "lieu": "CH",
+          "lien": "https://exemple.invalid/v3",
+          "apercu": {
+            "ok": true,
+            "photo": "extracteur"
+          },
+          "prix": 420,
+          "dispo": "en_stock",
+          "surveiller": false,
+          "exemple": true,
+          "valeurs": {
+            "debit": 1500,
+            "bruit": 62,
+            "gaine": "—",
+            "humidite": true,
+            "prix": 420
+          }
+        },
+        {
+          "id": "a-v4",
+          "facon": "f-mural",
+          "nom": "Extracteur centrifuge en ligne",
+          "fournisseur": "Aéro Rhône",
+          "lieu": "FR",
+          "lien": "https://exemple.invalid/v4",
+          "apercu": {
+            "ok": true,
+            "photo": "extracteur"
+          },
+          "prix": 690,
+          "dispo": "en_stock",
+          "surveiller": false,
+          "exemple": true,
+          "valeurs": {
+            "debit": 1100,
+            "bruit": 49,
+            "gaine": "200",
+            "humidite": null,
+            "prix": 690
+          }
+        },
+        {
+          "id": "a-v5",
+          "facon": null,
+          "nom": "lien seul",
+          "fournisseur": null,
+          "lieu": null,
+          "lien": "https://exemple.invalid/v5",
+          "apercu": {
+            "ok": false,
+            "raison": "aucune métadonnée lue"
+          },
+          "prix": null,
+          "dispo": null,
+          "surveiller": false,
+          "exemple": true,
+          "valeurs": {}
+        }
+      ],
+      "notes": [
+        {
+          "le": "2026-11-02",
+          "par": "brasseur",
+          "texte": "buées au-dessus de la cuve"
+        },
+        {
+          "le": "2026-11-05",
+          "par": "ia",
+          "texte": "Un lien sans aperçu : à compléter à la main ou à me redonner.",
+          "exemple": true
+        },
+        {
+          "le": "2026-11-12",
+          "par": "brasseur",
+          "texte": "attendre l'avis du ferblantier"
+        }
+      ],
+      "decisions": []
+    },
+    {
+      "id": "c-evier",
+      "titre": "Évier inox",
+      "categorie": "evier",
+      "statut": "idee",
+      "creeLe": "2026-11-15",
+      "resume": "Idée notée",
+      "critere": null,
+      "facons": [],
+      "caracteristiques": [
+        {
+          "id": "bacs",
+          "nom": "Bacs",
+          "unite": "",
+          "sens": "plus",
+          "source": "ia",
+          "propose": true
+        },
+        {
+          "id": "matiere",
+          "nom": "Matière",
+          "unite": "",
+          "sens": "texte",
+          "source": "ia",
+          "propose": true
+        },
+        {
+          "id": "profondeur",
+          "nom": "Profondeur de bac",
+          "unite": "cm",
+          "sens": "plus",
+          "source": "ia",
+          "propose": true
+        },
+        {
+          "id": "douchette",
+          "nom": "Douchette",
+          "unite": "",
+          "sens": "oui",
+          "source": "ia",
+          "propose": true
+        },
+        {
+          "id": "prix",
+          "nom": "Prix",
+          "unite": "CHF",
+          "sens": "moins",
+          "source": "ia",
+          "propose": true
+        }
+      ],
+      "articles": [],
+      "notes": [
+        {
+          "le": "2026-11-15",
+          "par": "brasseur",
+          "texte": "évier inox 2 bacs pour laver les fûts"
+        }
+      ],
+      "decisions": []
+    }
+  ]
+}

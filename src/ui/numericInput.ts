@@ -77,12 +77,28 @@ export function useNumericDraft(
    */
   const emitted = useRef<number | undefined>(value);
 
+  /*
+   * ⚠️ Pendant la frappe, le parent qui BORNE la valeur reçue ne réécrit plus le champ (BR-80, 08.11). « 99999 » tapé dans un champ dont le
+   * parent plafonne à 1000 : la frappe « 9 » à « 9999 » passait, « 99999 » revenait « 1000 » dans le champ, et le « 9 » suivant donnait
+   * « 10009 ». La chaîne tapée reste la vérité tant que le champ a le focus ; à la sortie, le champ relit la valeur que le parent a retenue
+   * (`onFocusChange(false)`), donc ce qu'on lit est ce qui est gardé. Un champ qui n'appelle pas `onFocusChange` garde l'ancien comportement.
+   */
+  const focused = useRef(false);
+  const [leaves, setLeaves] = useState(0);
+  const onFocusChange = (isFocused: boolean) => {
+    const wasFocused = focused.current;
+    focused.current = isFocused;
+    // Une sortie sans entrée (focus jamais reçu) n'a rien retenu pendant la frappe : rien à relire.
+    if (!isFocused && wasFocused) setLeaves(n => n + 1);
+  };
+
   useEffect(() => {
+    if (focused.current) return;
     if (!Object.is(value, emitted.current)) {
       emitted.current = value;
       setDraft(formatDecimal(value, digits));
     }
-  }, [value]);
+  }, [value, leaves]);
 
   /** Reçoit le texte tapé, remonte le nombre s'il est complet. */
   const push = (next: string) => {
@@ -128,7 +144,38 @@ export function useNumericDraft(
     return next;
   };
 
-  return { draft, push, settle };
+  /** Une saisie refusée (hors bornes) : le champ reprend la valeur d'avant, et le parent aussi (rien d'autre n'a été retenu). */
+  const revert = (to: number | undefined) => {
+    setDraft(formatDecimal(to, digits));
+    if (!Object.is(emitted.current, to)) {
+      emitted.current = to;
+      onChange(to);
+    }
+  };
+
+  return { draft, push, settle, revert, onFocusChange };
+}
+
+/**
+ * La phrase d'un refus (comme VI-9, SaltDoseControl) : ce qui est refusé, pourquoi, et la valeur que le champ garde vraiment.
+ * « −5 min : une valeur négative n'existe pas ici. La valeur précédente (10 min) est conservée. »
+ */
+export function messageRefus(saisi: number, avant: number | undefined, bornes: { min?: number; max?: number; unite?: string }): string {
+  const u = bornes.unite ? ` ${bornes.unite}` : '';
+  // Les milliers se séparent d'une espace insécable (« 10 000 »), la décimale d'une virgule.
+  // Arrondi au millième : une valeur calculée (4,19672131147541 L/kg) ne se dit pas à quatorze décimales.
+  const nb = (x: number) => formatDecimal(Math.round(x * 1000) / 1000).replace(/^(-?\d+)/, (entier) => entier.replace(/\B(?=(\d{3})+(?!\d))/g, ' '));
+  const raison = bornes.min !== undefined && saisi < bornes.min
+    ? (bornes.min === 0 ? 'une valeur négative n’existe pas ici' : `en dessous de ${nb(bornes.min)}${u}`)
+    : `au-delà de ${nb(bornes.max ?? 0)}${u}`;
+  // BE-98 (rejeu 649bcc54) : une valeur précédente vide (undefined, null, NaN) ne se dit pas « La valeur précédente ( CHF) » : le champ reste vide.
+  const gardee = avant === undefined || avant === null || !Number.isFinite(avant) ? 'Le champ reste vide.' : `La valeur précédente (${nb(avant)}${u}) est conservée.`;
+  return `${nb(saisi)}${u} : ${raison}. ${gardee}`;
+}
+
+/** Pourquoi une valeur est hors bornes, sans parler de valeur gardée : « 99 999 CHF : au-delà de 10 000 CHF. » (BE-98 : le message d'enregistrement). */
+export function raisonHorsBornes(saisi: number, bornes: { min?: number; max?: number; unite?: string }): string {
+  return messageRefus(saisi, undefined, bornes).replace(/ Le champ reste vide\.$/, '');
 }
 
 /**

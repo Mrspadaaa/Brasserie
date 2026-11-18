@@ -1,0 +1,124 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>La frise de « Plusieurs » · 02.11</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<style>
+/* Écart à sa maquette retenue (choix-captures/retenue), montré (L03, L24) : le mot sous le premier segment de la frise, parcours « Plusieurs ».
+   A = son dessin tel quel, B = l'app en ligne (4725e187), C = l'un au repos, l'autre pendant la lecture. Même forme que choix-captures. Thème clair. */
+:root { color-scheme: light; --fond: #f4f6f1; --carte: #fff; --encre: #1c2019; --discret: #5a6155; --trait: #dde2d6; --houblon: #4a7426; --ref: #7f5b10; }
+* { box-sizing: border-box; }
+body { background: var(--fond); color: var(--encre); font: 16px/1.45 "Segoe UI", system-ui, sans-serif; margin: 0; padding-block: 14px 56px; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); }
+.page { max-width: 1100px; margin: 0 auto; display: grid; gap: 16px; }
+h1 { margin: 0; line-height: 1.15; font-size: 1.5rem; font-weight: 800; text-wrap: balance; }
+p { margin: 0; }
+.sur-titre { font-size: 0.875rem; letter-spacing: 0.06em; text-transform: uppercase; color: var(--discret); }
+#a-choisir { border-left: 4px solid var(--houblon); padding: 8px 12px; background: var(--carte); border-radius: 0 10px 10px 0; display: grid; gap: 4px; }
+#a-choisir p:first-child { font-weight: 700; }
+.reco { color: var(--houblon); font-weight: 700; }
+.options { display: grid; grid-template-columns: minmax(0, 1fr); gap: 22px; align-items: start; }
+@media (min-width: 760px) { .options { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 14px; } }
+.option { margin: 0; display: grid; gap: 6px; align-content: start; min-width: 0; }
+.tete { display: grid; gap: 3px; align-content: start; }
+@media (min-width: 760px) { .tete { min-height: 7.4em; } }
+.lettre { font-size: 1.25rem; font-weight: 800; display: flex; align-items: center; gap: 6px; flex-wrap: wrap; min-height: 1.7rem; }
+.badge { font-size: 0.875rem; font-weight: 700; border-radius: 999px; padding: 0 8px; }
+.b-ref { color: var(--ref); border: 1.5px solid currentColor; }
+.b-app { color: #fff; background: #1c2019; }
+.b-reco { color: #fff; background: var(--houblon); }
+.tete p { font-size: 0.875rem; line-height: 1.3; }
+.mots { font-style: italic; }
+.vues { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 6px; }
+.vue { margin: 0; display: grid; gap: 2px; min-width: 0; }
+.vue > span { font-size: 0.875rem; color: var(--discret); font-weight: 600; }
+.ecran { position: relative; display: block; aspect-ratio: 3 / 4; max-width: 100%; border: 1px solid var(--trait); border-radius: 10px; overflow: hidden; background: #fff; cursor: zoom-in; }
+.ecran img { display: block; width: 100%; height: 100%; object-fit: cover; object-position: top; }
+.egal-b { position: absolute; top: 6px; right: 6px; font-size: 0.875rem; font-weight: 800; color: #fff; background: #3a3f36; border-radius: 6px; padding: 0 6px; }
+[data-reference] .ecran { border: 2px solid var(--ref); }
+.option.reco-col .ecran { border: 2px solid var(--houblon); }
+.zoom { display: grid; gap: 4px; }
+.zoom span { font-size: 0.875rem; color: var(--discret); font-weight: 600; }
+.zoom img { display: block; width: 100%; max-width: 100%; height: auto; border: 1px solid var(--trait); border-radius: 8px; background: #fff; }
+.note { background: var(--carte); border-radius: 10px; padding: 10px 12px; display: grid; gap: 4px; font-size: 0.9375rem; }
+.note b { font-weight: 700; }
+dialog { border: 0; padding: 0; background: #0e100c; color: #eef2ea; width: min(96vw, 520px); max-height: 94vh; border-radius: 12px; }
+dialog::backdrop { background: rgb(0 0 0 / 80%); }
+dialog .haut { display: flex; justify-content: space-between; align-items: center; gap: 8px; padding: 8px 12px; }
+dialog .titre { font-size: 0.875rem; font-weight: 700; }
+dialog button { font: 700 0.875rem system-ui, sans-serif; border: 0; border-radius: 999px; padding: 8px 14px; background: #eef2ea; color: #1c2019; cursor: pointer; }
+dialog img { display: block; width: 100%; height: auto; max-height: 84vh; object-fit: contain; background: #fff; }
+</style>
+</head>
+<body>
+<div class="page">
+  <header style="display:grid;gap:8px">
+    <p class="sur-titre">L'Affinée · Dépense · plusieurs pages</p>
+    <h1>La frise de « Plusieurs » · 02.11</h1>
+    <div id="a-choisir">
+      <p>Avec « Plusieurs », quel mot sous le premier trait de la frise : « envoi ✓ », comme ton dessin, ou « 3 pages ✓ » ?</p>
+      <p><span class="reco">Proposée : B</span> — au repos, rien n’est encore envoyé ; et « envoi » t’a fait penser au Drive.</p>
+      <p>Tout le reste est ton dessin. « Un document » garde « envoi ✓ ».</p>
+    </div>
+  </header>
+
+  <section data-choix="frise-plusieurs" aria-label="Trois options" class="options">
+    <figure class="option" data-reference>
+      <div class="tete"><p class="lettre">A <span class="badge b-ref">ton dessin</span></p><p>« envoi ✓ » dès que les pages sont posées, et pendant la lecture.</p><p class="mots">« Celle là que je veux »</p></div>
+      <div class="zoom"><span>Le mot, pages posées</span><img src="img/a-repos-frise.png" width="520" height="80" alt="A, pages posées : envoi ✓"><span>Le mot, pendant la lecture</span><img src="img/a-lecture-frise.png" width="520" height="56" alt="A, pendant la lecture : envoi ✓"></div>
+      <div class="vues">
+        <div class="vue" data-vignette><span>3 pages posées</span><a class="ecran" href="img/a-repos.png" data-agrandir data-titre="A · trois pages posées, avant Lire"><img src="img/a-repos.png" width="780" height="1040" alt="A, trois pages posées : envoi ✓"></a></div>
+        <div class="vue" data-vignette><span>Pendant la lecture</span><a class="ecran" href="img/a-lecture.png" data-agrandir data-titre="A · pendant la lecture"><img src="img/a-lecture.png" width="780" height="1040" alt="A, pendant la lecture : envoi ✓"></a></div>
+      </div>
+    </figure>
+
+    <figure class="option reco-col">
+      <div class="tete"><p class="lettre">B <span class="badge b-app">en ligne</span><span class="badge b-reco">proposée</span></p><p>« 3 pages ✓ » au repos et pendant la lecture.</p><p>Le compte dit ce qui est fait : les pages sont prêtes.</p></div>
+      <div class="zoom"><span>Le mot, pages posées</span><img src="img/b-repos-frise.png" width="520" height="80" alt="B, pages posées : 3 pages ✓"><span>Le mot, pendant la lecture</span><img src="img/b-lecture-frise.png" width="520" height="68" alt="B, pendant la lecture : 3 pages ✓"></div>
+      <div class="vues">
+        <div class="vue" data-vignette><span>3 pages posées</span><a class="ecran" href="img/b-repos.png" data-agrandir data-titre="B · trois pages posées, avant Lire"><img src="img/b-repos.png" width="390" height="844" alt="B, trois pages posées : 3 pages ✓"></a></div>
+        <div class="vue" data-vignette><span>Pendant la lecture</span><a class="ecran" href="img/b-lecture.png" data-agrandir data-titre="B · pendant la lecture"><img src="img/b-lecture.png" width="390" height="844" alt="B, pendant la lecture : 3 pages ✓"></a></div>
+      </div>
+    </figure>
+
+    <figure class="option">
+      <div class="tete"><p class="lettre">C <span class="badge b-ref">mélange</span></p><p>« 3 pages ✓ » avant Lire, « envoi ✓ » une fois les pages parties.</p><p>Chaque mot est vrai quand il s’affiche ; le mot change sous tes yeux.</p></div>
+      <div class="zoom"><span>Le mot, pages posées (= B)</span><img src="img/b-repos-frise.png" width="520" height="80" alt="C, pages posées : 3 pages ✓, comme B"><span>Le mot, pendant la lecture (= A)</span><img src="img/a-lecture-frise.png" width="520" height="56" alt="C, pendant la lecture : envoi ✓, comme A"></div>
+      <div class="vues">
+        <div class="vue" data-vignette><span>3 pages posées</span><a class="ecran" href="img/b-repos.png" data-agrandir data-titre="C · trois pages posées (comme B)"><img src="img/b-repos.png" width="390" height="844" alt="C, trois pages posées : 3 pages ✓, comme B"><span class="egal-b">= B</span></a></div>
+        <div class="vue" data-vignette><span>Pendant la lecture</span><a class="ecran" href="img/a-lecture.png" data-agrandir data-titre="C · pendant la lecture (comme A)"><img src="img/a-lecture.png" width="780" height="1040" alt="C, pendant la lecture : envoi ✓, comme A"><span class="egal-b">= A</span></a></div>
+      </div>
+    </figure>
+  </section>
+
+  <section class="note" aria-label="Ta question sur le Drive">
+    <p><b>« Mais l'envoi au drive de fait en arrière plan ?? »</b></p>
+    <p>Oui. L’« envoi » de la frise, c’est l’envoi des pages à la lecture. Le Drive vient après « Confirmer », en arrière-plan : un seul PDF de toutes les pages.</p>
+    <p>Vérifié en ligne le 02.11 : trois pages, un PDF de trois pages dans ton Drive.</p>
+  </section>
+</div>
+
+<dialog id="grand" aria-label="Capture en grand">
+  <div class="haut"><p class="titre" id="grand-titre"></p><button type="button" class="fermer">Fermer</button></div>
+  <img id="grand-img" alt="">
+</dialog>
+<script>
+(function () {
+  var dlg = document.getElementById('grand'), img = document.getElementById('grand-img'), titre = document.getElementById('grand-titre');
+  document.querySelectorAll('[data-agrandir]').forEach(function (a) {
+    a.addEventListener('click', function (e) {
+      if (!dlg.showModal) return;
+      e.preventDefault();
+      img.setAttribute('src', a.getAttribute('href'));
+      img.setAttribute('alt', a.getAttribute('data-titre'));
+      titre.textContent = a.getAttribute('data-titre');
+      dlg.showModal();
+    });
+  });
+  dlg.querySelector('.fermer').addEventListener('click', function () { dlg.close(); });
+  dlg.addEventListener('click', function (e) { if (e.target === dlg) dlg.close(); });
+})();
+</script>
+</body>
+</html>

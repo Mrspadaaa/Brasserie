@@ -18,6 +18,7 @@ import type { HopDecisionMaterial, HopDecisionProgram, HopProgramAddition, HopPr
 import type { Fermentable, HopIngredient, Recipe, RecipeStep, YeastSpec } from '../../types';
 import type { BrewingReferenceIdentityV1 } from '../../domain/brewingReference';
 import type { HopV55Intent } from './contracts';
+import { nombreFr } from '../../domain/nombreAffiche';
 
 export const HOP_V55_FUTURE_RECIPE_DRAFT_FORMAT = 'hop-v55-future-recipe-draft-v1' as const;
 export const HOP_V55_FUTURE_RECIPE_MATERIALIZATION_FORMAT = 'hop-v55-future-recipe-materialization-v1' as const;
@@ -417,7 +418,7 @@ function recipeCompletion(draft: HopV55FutureRecipeDraftV1): HopV55FutureRecipeC
       const proposedMass = fields.hopMassChoices?.[row.additionId];
       missing.push({ field: `hops.${row.additionId}.grams`, message: proposedMass === undefined
         ? `Masse J5 inconnue pour ${row.material.name}; déclare une masse avant de préparer le nouveau programme.`
-        : `${proposedMass} g est une masse proposée pour ${row.material.name}; relance J5 sur ce programme avant l’export.` });
+        : `${nombreFr(proposedMass, 1)} g est une masse proposée pour ${row.material.name}; relance J5 sur ce programme avant l’export.` });
     }
   }
   const unknownAlphaAdditionIds = draft.additions.filter(row => {
@@ -890,7 +891,7 @@ function additionalMissing(draft: HopV55FutureRecipeDraftV1, recipe: Recipe): Ho
       const proposedMass = draft.declaredFields.hopMassChoices?.[row.additionId];
       missing.push({ field: `hops.${row.additionId}.grams`, message: proposedMass === undefined
         ? `Masse J5 inconnue pour ${row.material.name}; déclare une masse avant de préparer le nouveau programme.`
-        : `${proposedMass} g est une masse proposée pour ${row.material.name}; relance J5 sur ce programme avant l’export.` });
+        : `${nombreFr(proposedMass, 1)} g est une masse proposée pour ${row.material.name}; relance J5 sur ce programme avant l’export.` });
     }
     const alpha = draft.declaredFields.alphaChoices?.[row.additionId];
     if (alpha?.value === undefined || alpha.value <= 0 || !alpha.reason?.trim()) missing.push({ field: `hops.${row.additionId}.alpha`,
@@ -1030,7 +1031,7 @@ export function materializeHopV55FutureRecipe(draftValue: unknown, selections: H
     return { status: 'needsCompletion', completion, issues: [
       ...missingHopMasses.map(row => ({ field: `hops.${row.additionId}.grams`, message: merged.hopMassChoices?.[row.additionId] === undefined
         ? `Masse J5 inconnue pour ${row.material.name}; déclare une masse puis relance J5 avant l’export.`
-        : `${merged.hopMassChoices[row.additionId]} g est une masse proposée pour ${row.material.name}; relance J5 sur ce programme avant l’export.` })),
+        : `${nombreFr(merged.hopMassChoices[row.additionId], 1)} g est une masse proposée pour ${row.material.name}; relance J5 sur ce programme avant l’export.` })),
       ...missingAlpha.map(row => ({ field: `hops.${row.additionId}.alpha`, message:
         `Déclare un alpha de travail supérieur à 0 % et son motif pour ${row.material.name}. Ce choix ne crée pas une analyse du lot.` })),
     ] };

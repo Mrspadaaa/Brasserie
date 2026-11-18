@@ -64,7 +64,7 @@ describe('Comprendre et ajuster le partage d’eau sans changer de matériel en 
     fireEvent.change(screen.getByRole('slider', { name: 'Épaisseur de maische' }), { target: { value: '6' } });
     expect(mashInput()).toHaveValue('18');
     expect(spargeInput()).toHaveValue('16');
-    expect(screen.getByText(/Rinçage à chaud :/).closest('[role="status"]')).toHaveTextContent('16,5 L. 16,5 L dans le récipient principal.');
+    expect(screen.getByText(/Rinçage à chaud :/).closest('[role="status"]')).toHaveTextContent('Rinçage à chaud : 16,5 L dans le récipient principal.');
     expect(screen.queryByText(/avec la bouilloire annexe/)).not.toBeInTheDocument();
     expect(screen.queryByText('Pourquoi plus d’eau au rinçage ?')).not.toBeInTheDocument();
     expect(screen.getByText('Comprendre les volumes')).toBeInTheDocument();

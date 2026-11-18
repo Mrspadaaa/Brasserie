@@ -79,7 +79,7 @@ const FAMILLES: Array<{ motif: RegExp; teinte: string }> = [
 ];
 
 /**
- * Aplat à 40 %, texte au degré 200, bord au degré 300.
+ * Aplat à 40 %, texte au jeton du thème (test en ligne n° 20 : le degré 200 était blanc sur pastel en clair), bord au degré 300.
  *
  * ⚠️ Écrit en toutes lettres, jamais assemblé à la volée. Tailwind ne génère que
  * les classes qu'il TROUVE dans les sources : une classe construite par
@@ -88,17 +88,17 @@ const FAMILLES: Array<{ motif: RegExp; teinte: string }> = [
  * piège des 380 classes de couleur mortes corrigées ailleurs dans l'application.
  */
 const TEINTES: Record<string, string> = {
-  red: 'bg-red-400/40 text-red-200 border-red-300/40',
-  orange: 'bg-orange-400/40 text-orange-200 border-orange-300/40',
-  yellow: 'bg-yellow-400/40 text-yellow-200 border-yellow-300/40',
-  lime: 'bg-lime-400/40 text-lime-200 border-lime-300/40',
-  green: 'bg-green-400/40 text-green-200 border-green-300/40',
-  teal: 'bg-teal-400/40 text-teal-200 border-teal-300/40',
-  cyan: 'bg-cyan-400/40 text-cyan-200 border-cyan-300/40',
-  blue: 'bg-blue-400/40 text-blue-200 border-blue-300/40',
-  violet: 'bg-violet-400/40 text-violet-200 border-violet-300/40',
-  fuchsia: 'bg-fuchsia-400/40 text-fuchsia-200 border-fuchsia-300/40',
-  pink: 'bg-pink-400/40 text-pink-200 border-pink-300/40'
+  red: 'bg-red-400/40 text-cave-50 border-red-300/40',
+  orange: 'bg-orange-400/40 text-cave-50 border-orange-300/40',
+  yellow: 'bg-yellow-400/40 text-cave-50 border-yellow-300/40',
+  lime: 'bg-lime-400/40 text-cave-50 border-lime-300/40',
+  green: 'bg-green-400/40 text-cave-50 border-green-300/40',
+  teal: 'bg-teal-400/40 text-cave-50 border-teal-300/40',
+  cyan: 'bg-cyan-400/40 text-cave-50 border-cyan-300/40',
+  blue: 'bg-blue-400/40 text-cave-50 border-blue-300/40',
+  violet: 'bg-violet-400/40 text-cave-50 border-violet-300/40',
+  fuchsia: 'bg-fuchsia-400/40 text-cave-50 border-fuchsia-300/40',
+  pink: 'bg-pink-400/40 text-cave-50 border-pink-300/40'
 };
 
 /**

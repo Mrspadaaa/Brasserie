@@ -1,0 +1,291 @@
+{
+ "documentType": "invoice",
+ "documentTypeLu": "invoice",
+ "documentTypeRetenu": "invoice",
+ "proForma": false,
+ "paymentEvidence": "unpaid",
+ "fieldWarnings": [],
+ "vendor": "Cabinet vétérinaire Fictif SA",
+ "date": "25.06.2026",
+ "currency": "CHF",
+ "invoiceNumber": "11111",
+ "orderNumber": "",
+ "amountHT": null,
+ "tvaRate": null,
+ "tvaAmount": null,
+ "amountTTC": 768.55,
+ "vat": [
+  {
+   "code": "TVA",
+   "rate": 0.026,
+   "base": 19.2,
+   "amount": 0.5
+  },
+  {
+   "code": "TVA",
+   "rate": 0.081,
+   "base": 692.74,
+   "amount": 56.11
+  }
+ ],
+ "printedLineCount": 6,
+ "linesLost": 0,
+ "category": "divers",
+ "subcategory": "frais personnels",
+ "description": "Frais vétérinaires fictifs (actes et médicaments)",
+ "items": [
+  {
+   "id": "line-1",
+   "name": "acte 1",
+   "kind": "other",
+   "quantity": 1,
+   "unit": "",
+   "price": null,
+   "amountTTC": null,
+   "reference": "",
+   "variant": "",
+   "stockCategory": "",
+   "evidence": "acte 1",
+   "ambiguity": "",
+   "vatCode": "8.1",
+   "alphaPct": null,
+   "alphaPctLu": null
+  },
+  {
+   "id": "line-2",
+   "name": "acte 2",
+   "kind": "other",
+   "quantity": 1,
+   "unit": "",
+   "price": null,
+   "amountTTC": 711.7,
+   "reference": "",
+   "variant": "",
+   "stockCategory": "",
+   "evidence": "acte 2 711.70",
+   "ambiguity": "",
+   "vatCode": "8.1",
+   "alphaPct": null,
+   "alphaPctLu": null
+  },
+  {
+   "id": "line-3",
+   "name": "acte 3",
+   "kind": "other",
+   "quantity": 1,
+   "unit": "",
+   "price": null,
+   "amountTTC": 19.1,
+   "reference": "",
+   "variant": "",
+   "stockCategory": "",
+   "evidence": "acte 3 19.10",
+   "ambiguity": "",
+   "vatCode": "8.1",
+   "alphaPct": null,
+   "alphaPctLu": null
+  },
+  {
+   "id": "line-4",
+   "name": "fourniture 4",
+   "kind": "other",
+   "quantity": 1,
+   "unit": "pce",
+   "price": null,
+   "amountTTC": 18.05,
+   "reference": "",
+   "variant": "ROUGE 25cm",
+   "stockCategory": "",
+   "evidence": "fourniture 4 18.05",
+   "ambiguity": "",
+   "vatCode": "8.1",
+   "alphaPct": null,
+   "alphaPctLu": null
+  },
+  {
+   "id": "line-5",
+   "name": "médicament 5",
+   "kind": "other",
+   "quantity": 3,
+   "unit": "cp",
+   "price": 1.5,
+   "amountTTC": 4.5,
+   "reference": "",
+   "variant": "50mg",
+   "stockCategory": "",
+   "evidence": "médicament 5 à 1.50 4.50",
+   "ambiguity": "",
+   "vatCode": "2.6",
+   "alphaPct": null,
+   "alphaPctLu": null
+  },
+  {
+   "id": "line-6",
+   "name": "médicament 6",
+   "kind": "other",
+   "quantity": 8,
+   "unit": "cp",
+   "price": 1.9,
+   "amountTTC": 15.2,
+   "reference": "",
+   "variant": "250 /cp",
+   "stockCategory": "",
+   "evidence": "médicament 6 à 1.90 15.20",
+   "ambiguity": "",
+   "vatCode": "2.6",
+   "alphaPct": null,
+   "alphaPctLu": null
+  }
+ ],
+ "issues": [
+  "Document en FR. : saisir le montant réellement payé en CHF.",
+  "Total des lignes non vérifiable : 1 ligne(s) sans montant lisible (lignes 1)."
+ ],
+ "points": [
+  {
+   "code": "somme-incomplete",
+   "gravite": "inverifiable",
+   "origine": "controle",
+   "enjeu": "argent",
+   "bloque": false,
+   "champ": "amountTTC",
+   "champs": [
+    "amountTTC",
+    "items.1.amountTTC"
+   ],
+   "ligne": null,
+   "lignes": [
+    1
+   ],
+   "cle": "somme-incomplete:-:amountTTC",
+   "regle": "somme des lignes = total TTC",
+   "lu": 76855,
+   "calcule": 76855,
+   "ecart": 0,
+   "unite": "centimes",
+   "message": "Total des lignes non vérifiable : 1 ligne(s) sans montant lisible (lignes 1).",
+   "source": "contrôle",
+   "pese": true,
+   "signature": "76855|76855||"
+  },
+  {
+   "code": "lectures-divergentes",
+   "gravite": "ecart",
+   "origine": "lecture",
+   "enjeu": "info",
+   "bloque": false,
+   "champ": "currency",
+   "champs": [
+    "currency"
+   ],
+   "ligne": null,
+   "cle": "lectures-divergentes:-:currency",
+   "regle": "les lectures indépendantes lisent la même valeur",
+   "lu": null,
+   "calcule": null,
+   "ecart": null,
+   "unite": "texte",
+   "luTexte": "FR.",
+   "message": "Devise : une lecture sur trois diffère (FR. / FR. / CHF).",
+   "source": "désaccord",
+   "valeurs": [
+    {
+     "lecture": 1,
+     "valeur": "FR.",
+     "retenue": true
+    },
+    {
+     "lecture": 2,
+     "valeur": "FR.",
+     "retenue": true
+    },
+    {
+     "lecture": 3,
+     "valeur": "CHF",
+     "retenue": false
+    }
+   ],
+   "pese": false,
+   "signature": "||FR.|1:FR.,2:FR.,3:CHF"
+  },
+  {
+   "code": "lectures-divergentes",
+   "gravite": "ecart",
+   "origine": "lecture",
+   "enjeu": "info",
+   "bloque": false,
+   "champ": "vat",
+   "champs": [
+    "vat"
+   ],
+   "ligne": null,
+   "cle": "lectures-divergentes:-:vat",
+   "regle": "les lectures indépendantes lisent la même valeur",
+   "lu": null,
+   "calcule": null,
+   "ecart": null,
+   "unite": "texte",
+   "luTexte": "TVA base 19,20 TVA 0,50 ; TVA base 692,74 TVA 56,11",
+   "message": "Bloc TVA : lectures divergentes (TVA 2.6 base 19,20 TVA 0,50 ; TVA 8.1 base 692,74 TVA 56,11 / TVA base 19,20 TVA 0,50 ; TVA base 692,74 TVA 56,11 / TVA base 19,20 TVA 0,50 ; TVA base 692,74 TVA 56,11), vérifier le justificatif.",
+   "source": "désaccord",
+   "valeurs": [
+    {
+     "lecture": 1,
+     "valeur": "TVA 2.6 base 19,20 TVA 0,50 ; TVA 8.1 base 692,74 TVA 56,11",
+     "retenue": false
+    },
+    {
+     "lecture": 2,
+     "valeur": "TVA base 19,20 TVA 0,50 ; TVA base 692,74 TVA 56,11",
+     "retenue": true
+    },
+    {
+     "lecture": 3,
+     "valeur": "TVA base 19,20 TVA 0,50 ; TVA base 692,74 TVA 56,11",
+     "retenue": true
+    }
+   ],
+   "pese": false,
+   "signature": "||TVA base 19,20 TVA 0,50 ; TVA base 692,74 TVA 56,11|1:TVA 2.6 base 19,20 TVA 0,50 ; TVA 8.1 base 692,74 TVA 56,11,2:TVA base 19,20 TVA 0,50 ; TVA base 692,74 TVA 56,11,3:TVA base 19,20 TVA 0,50 ; TVA base 692,74 TVA 56,11"
+  }
+ ],
+ "controls": {
+  "lines": {
+   "checked": 2,
+   "failed": 0,
+   "skipped": 4,
+   "skippedIds": [
+    "line-1",
+    "line-2",
+    "line-3",
+    "line-4"
+   ]
+  },
+  "sum": {
+   "statut": "incomplet",
+   "base": null
+  },
+  "vat": {
+   "statut": "ok",
+   "base": "HT"
+  },
+  "totals": {
+   "statut": "non-verifiable"
+  }
+ },
+ "rejets": [],
+ "review": {
+  "status": "disputed",
+  "findings": [
+   "Document en FR. : saisir le montant réellement payé en CHF.",
+   "Total des lignes non vérifiable : 1 ligne(s) sans montant lisible (lignes 1)."
+  ],
+  "readers": 3,
+  "correctedFields": [
+   "items.3.variant",
+   "items.4.variant",
+   "items.5.variant"
+  ]
+ },
+ "remarques": []
+}

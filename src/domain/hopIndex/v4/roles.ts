@@ -12,7 +12,7 @@ export const ROLE_RULE = {
   nom: 'règle rôle-α v1 (prototype, à valider)',
   texte: [
     'Rôle du fournisseur d’abord (hopStyleUsageBootstrap) : « Amertume », « Début » ou « Milieu d’ébullition » → amérisant ; « Ajouts tardifs », « Houblonnage à cru », « Arôme », « Whirlpool », « Extinction de la chauffe » → aromatique ; les deux → double.',
-    'Sinon, par l’alpha retenu (lot, sinon milieu de la plage variétale) : α ≥ 10 % → double si une famille est « marquée » dans les fiches, sinon amérisant ; α ≤ 6 % → aromatique ; entre les deux → double.',
+    'Sinon, par l’alpha retenu (lot, sinon milieu de la plage variétale) : α ≥ 10 % → amérisant seulement si l’arôme est documenté (au moins une famille citée dans les fiches) et qu’aucune n’est « marquée » ; double si une famille est « marquée », et double aussi quand aucune fiche d’arôme n’existe (l’absence de données n’est pas une preuve de neutralité : Citra BBC, α 12,3 %, n’est pas un amérisant) ; α ≤ 6 % → aromatique ; entre les deux → double.',
     'Alpha inconnu : rôle null, avec la raison.',
   ],
 };
@@ -35,7 +35,11 @@ export function hopRole(key: string): { value: HopRoleValue | null; source: stri
   const a = h.alpha?.value;
   if (a === undefined) return { value: null, source: 'règle', raison: 'Alpha inconnu : rôle non déterminé.' };
   const desc = describeFamilies(h.varietyId);
-  return { value: roleFromAlpha(a, FAMILIES.some((f) => desc[f].level === 'marqué')), source: `règle : ${ROLE_RULE.nom}` };
+  const documente = FAMILIES.some((f) => desc[f].level !== 'non décrit');
+  return { value: roleFromAlpha(a, FAMILIES.some((f) => desc[f].level === 'marqué'), documente), source: `règle : ${ROLE_RULE.nom}` };
 }
-/** Deuxième partie de ROLE_RULE : rôle par l'alpha seul (une famille « marquée » rend double un α ≥ 10 %). */
-export const roleFromAlpha = (alpha: number, marked: boolean): HopRoleValue => (alpha >= 10 ? (marked ? 'double' : 'amérisant') : alpha <= 6 ? 'aromatique' : 'double');
+/** Deuxième partie de ROLE_RULE : rôle par l'alpha seul. Une famille « marquée » rend double un α ≥ 10 % ; sans aucun arôme documenté (`documented` faux) il reste
+ * double aussi : « aucune famille marquée » ne veut pas dire « neutre » quand aucune fiche n'a été lue (VI-4). `documented` vaut vrai par défaut : l'appelant qui
+ * ne sait pas ce qui est documenté garde la règle d'avant. */
+export const roleFromAlpha = (alpha: number, marked: boolean, documented = true): HopRoleValue =>
+  (alpha >= 10 ? (marked || !documented ? 'double' : 'amérisant') : alpha <= 6 ? 'aromatique' : 'double');

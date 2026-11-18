@@ -1,0 +1,6 @@
+r2 — attendu / lu (390 tactile clair, bundle index-Cmht_ZH1.js, 10.11) — PARTIEL, voir RESULTAT.md
+1 Départ : Entré 5 695,00 / Dépensé 0,00 / Caisse 5 663,00 / Opérations 1 / Prévisions 5 035,32 / Annuel -70,40 / Stock Tous 53, À commander 17 / clients 5 : lu identique. Brassins 4 (LOT-016 neipa réel en cours, hors voie).
+2 Recette + 3 articles ZZ : OK ; catégorie perdue à la création (PC-2 a reproduit, 3/3), unité levure perdue 1/3 ; stock Tous 56.
+3 Achat 12,50 : attendu stock +5 kg, Dépensé 12,50, Caisse 5 650,50, Prévisions 5 022,82, Annuel -82,90 : lu identique. PC-2 b : unité kg préremplie : OK.
+4 Brassage : LOT-017 jusqu'à l'ensemencement ; stock malt 5 kg (avant ensemencement) ; levure non jouée.
+5 Vente : non jouée. 6 Retrait : non lancé (voir tableau RESULTAT.md).

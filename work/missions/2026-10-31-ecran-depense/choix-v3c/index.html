@@ -1,0 +1,223 @@
+<title>Dépense plus compacte · 01.11</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<style>
+/* Sa variante p3a-3 (bandes teintées) compactée en trois degrés : côte à côte au repos, puis une rangée par degré.
+   Sa variante ouvre chaque rangée ; chaque vignette s'ouvre en grand au toucher (PUBLIER.md, D126). */
+:root {
+  --fond: #f4f6f1;
+  --carte: #ffffff;
+  --encre: #1c2019;
+  --discret: #5a6155;
+  --trait: #dde2d6;
+  --houblon: #4a7426;
+  --choisir: #2d5f8a;
+  --alerte: #9a4a1c;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --fond: #151812; --carte: #1f241b; --encre: #e9eee4; --discret: #a7ae9f; --trait: #333a2d; --houblon: #8cc062;
+    --choisir: #8ab8e0; --alerte: #e8a878; color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --fond: #151812; --carte: #1f241b; --encre: #e9eee4; --discret: #a7ae9f; --trait: #333a2d; --houblon: #8cc062;
+  --choisir: #8ab8e0; --alerte: #e8a878; color-scheme: dark;
+}
+* { box-sizing: border-box; }
+body {
+  background: var(--fond); color: var(--encre); font: 16px/1.45 "Segoe UI", system-ui, sans-serif; margin: 0;
+  padding-block: 16px 64px;
+  padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px));
+}
+.page { max-width: 1320px; margin: 0 auto; display: grid; gap: 22px; }
+h1, h2, h3 { margin: 0; line-height: 1.15; text-wrap: balance; }
+h1 { font-size: 1.7rem; font-weight: 800; }
+h2 { font-size: 1.1rem; font-weight: 800; }
+p { margin: 0; max-width: 70ch; }
+ul { margin: 0; padding-left: 20px; display: grid; gap: 6px; max-width: 70ch; }
+a { color: var(--choisir); font-weight: 700; }
+button:focus-visible { outline: 3px solid var(--houblon); outline-offset: 2px; }
+header { display: grid; gap: 10px; }
+.sur-titre { font-size: 0.875rem; letter-spacing: 0.06em; text-transform: uppercase; color: var(--discret); }
+#a-choisir { border-left: 4px solid var(--houblon); padding: 12px 14px; background: var(--carte); border-radius: 0 10px 10px 0; display: grid; gap: 6px; }
+#a-choisir p:first-child { font-size: 1.05rem; font-weight: 700; }
+.rangee { display: grid; gap: 10px; padding-top: 16px; border-top: 1px solid var(--trait); }
+.tete { display: grid; gap: 6px; align-content: start; justify-items: start; }
+.tete p { font-size: 0.875rem; color: var(--discret); }
+.tete p.phrase { font-size: 1rem; color: var(--encre); }
+.tete .id { font-size: 0.875rem; font-weight: 700; color: var(--discret); }
+.tete .etiquette { font-size: 0.875rem; color: var(--discret); text-transform: uppercase; letter-spacing: 0.04em; }
+.planche { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 14px 8px; align-items: start; min-width: 0; }
+.vue { margin: 0; display: grid; gap: 5px; align-content: start; min-width: 0; }
+.ecran { display: block; width: 100%; padding: 0; border: 1px solid var(--trait); border-radius: 10px; overflow: hidden; background: var(--carte); cursor: zoom-in; }
+.ecran img { display: block; width: 100%; height: auto; }
+.ref .ecran { border: 3px solid var(--houblon); }
+figcaption { font-size: 0.875rem; line-height: 1.35; display: grid; gap: 2px; }
+figcaption b { font-weight: 800; }
+.chiffres { font-variant-numeric: tabular-nums; color: var(--discret); }
+.pastille { display: inline-flex; align-items: center; gap: 5px; font-weight: 700; font-size: 0.875rem; }
+.pastille::before { content: ""; width: 10px; height: 10px; border-radius: 50%; background: currentColor; flex-shrink: 0; }
+.p-propose { color: var(--houblon); }
+.p-choisir { color: var(--choisir); }
+.verdicts { display: grid; gap: 10px; }
+.verdicts p { font-size: 0.95rem; }
+.verdicts b { font-weight: 800; }
+.tableau { overflow-x: auto; }
+table { border-collapse: collapse; font-size: 0.9rem; font-variant-numeric: tabular-nums; }
+th, td { padding: 6px 12px; border-bottom: 1px solid var(--trait); text-align: right; }
+th:first-child, td:first-child { text-align: left; }
+thead th { color: var(--discret); font-weight: 700; }
+@media (min-width: 760px) {
+  .rangee { grid-template-columns: 200px minmax(0, 1fr); gap: 16px; }
+  .planche { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+  .planche.cinq { grid-template-columns: repeat(5, minmax(0, 1fr)); }
+}
+@media (min-width: 1100px) {
+  .planche.sept { grid-template-columns: repeat(7, minmax(0, 1fr)); }
+}
+dialog { border: 0; padding: 0; background: #0e100c; color: #eef2ea; width: min(96vw, 1100px); max-height: 94vh; border-radius: 12px; }
+dialog::backdrop { background: rgb(0 0 0 / 80%); }
+dialog .haut { display: flex; justify-content: space-between; align-items: center; gap: 8px; padding: 10px 12px; }
+dialog .titre { font-size: 0.875rem; font-weight: 700; margin: 0; }
+dialog button { font: 700 0.875rem system-ui, sans-serif; border: 0; border-radius: 999px; padding: 8px 14px; background: #eef2ea; color: #1c2019; cursor: pointer; }
+dialog img { display: block; width: 100%; height: auto; max-height: 82vh; object-fit: contain; background: #fff; }
+</style>
+
+<div class="page">
+  <header>
+    <p class="sur-titre">L'Affinée · Nouvelle dépense · passe 3</p>
+    <h1>Dépense plus compacte · 01.11</h1>
+    <p class="sur-titre">Ta variante p3a-3, les bandes teintées. Données de l'exemple.</p>
+    <div id="a-choisir">
+      <p>Ta p3a-3 en trois degrés plus compacts. Choisis le degré.</p>
+      <p>Le critique propose p3c-2 : tes bandes, une rangée par ligne, la mouture toujours sous son malt.</p>
+      <p>Seule la liste change : au-dessus, l'écran est identique au pixel près. Ni colonnes ni en-tête de tableau ; les bandes et le liseré restent.</p>
+    </div>
+  </header>
+
+  <section class="rangee" aria-labelledby="t-cote">
+    <div class="tete">
+      <h2 id="t-cote">Côte à côte, au repos</h2>
+      <p>Ta p3a-3 à gauche, le tableau p3a-2 à droite pour la densité.</p>
+    </div>
+    <div class="planche cinq">
+      <figure class="vue ref" data-vignette><button class="ecran" type="button" data-agrandir data-src="img/p3a-3-repos.png" data-titre="p3a-3 · ta variante, au repos"><img src="img/p3a-3-repos.png" alt="p3a-3 au repos"></button><figcaption><b>Ta p3a-3</b><span class="chiffres">12 lignes · 16 défilé</span></figcaption></figure>
+      <figure class="vue" data-vignette><button class="ecran" type="button" data-agrandir data-src="img/p3c-1-repos.png" data-titre="p3c-1 · resserré, au repos"><img src="img/p3c-1-repos.png" alt="p3c-1 au repos"></button><figcaption><b>Resserré</b> p3c-1<span class="chiffres">13 lignes · 19 défilé</span></figcaption></figure>
+      <figure class="vue" data-vignette><button class="ecran" type="button" data-agrandir data-src="img/p3c-2-repos.png" data-titre="p3c-2 · une rangée, au repos"><img src="img/p3c-2-repos.png" alt="p3c-2 au repos"></button><figcaption><b>Une rangée</b> p3c-2<span class="chiffres">14 lignes · 20 défilé</span></figcaption></figure>
+      <figure class="vue" data-vignette><button class="ecran" type="button" data-agrandir data-src="img/p3c-3-repos.png" data-titre="p3c-3 · une rangée, mouture sur son malt, au repos"><img src="img/p3c-3-repos.png" alt="p3c-3 au repos"></button><figcaption><b>Mouture sur son malt</b> p3c-3<span class="chiffres">17 lignes · 23 défilé</span></figcaption></figure>
+      <figure class="vue" data-vignette><button class="ecran" type="button" data-agrandir data-src="img/p3a-2-repos.png" data-titre="p3a-2 · le tableau à prix, pour la densité"><img src="img/p3a-2-repos.png" alt="p3a-2 au repos"></button><figcaption><b>Le tableau</b> p3a-2<span class="chiffres">11 lignes · 18 défilé</span></figcaption></figure>
+    </div>
+  </section>
+
+  <section class="rangee" aria-labelledby="t-p3c-1">
+    <div class="tete">
+      <h2 id="t-p3c-1">Resserré <span class="id">p3c-1</span></h2>
+      <p class="etiquette">Le degré</p>
+      <p class="phrase">Les mêmes deux rangées, moins d'air. Une ligne : 32 px au lieu de 43.</p>
+    </div>
+    <div class="planche sept">
+      <figure class="vue ref" data-vignette><button class="ecran" type="button" data-agrandir data-src="img/p3a-3-repos.png" data-titre="p3a-3 · ta variante, au repos"><img src="img/p3a-3-repos.png" alt="p3a-3 au repos"></button><figcaption><b>Ta p3a-3</b></figcaption></figure>
+      <figure class="vue" data-vignette><button class="ecran" type="button" data-agrandir data-src="img/p3c-1-repos.png" data-titre="p3c-1 · au repos"><img src="img/p3c-1-repos.png" alt="p3c-1 au repos"></button><figcaption><b>Au repos</b></figcaption></figure>
+      <figure class="vue" data-vignette><button class="ecran" type="button" data-agrandir data-src="img/p3c-1-defile.png" data-titre="p3c-1 · défilé jusqu'aux lignes"><img src="img/p3c-1-defile.png" alt="p3c-1 défilé"></button><figcaption><b>Défilé</b></figcaption></figure>
+      <figure class="vue" data-vignette><button class="ecran" type="button" data-agrandir data-src="img/p3c-1-renvoi.png" data-titre="p3c-1 · « 2 bis » touché dans le récap"><img src="img/p3c-1-renvoi.png" alt="p3c-1 filtre"></button><figcaption><b>Un compte touché</b> « 2 bis »</figcaption></figure>
+      <figure class="vue" data-vignette><button class="ecran" type="button" data-agrandir data-src="img/p3c-1-geste-plateau.png" data-titre="p3c-1 · un toucher sur une ligne"><img src="img/p3c-1-geste-plateau.png" alt="p3c-1 ligne ouverte"></button><figcaption><b>Une ligne ouverte</b></figcaption></figure>
+      <figure class="vue" data-vignette><button class="ecran" type="button" data-agrandir data-src="img/p3c-1-tous.png" data-titre="p3c-1 · tout rattaché, prêt à confirmer"><img src="img/p3c-1-tous.png" alt="p3c-1 tout rattaché"></button><figcaption><b>Tout rattaché</b></figcaption></figure>
+      <figure class="vue" data-vignette><button class="ecran" type="button" data-agrandir data-src="img/p3c-1-1280-repos.png" data-titre="p3c-1 · à 1280 px"><img src="img/p3c-1-1280-repos.png" alt="p3c-1 à 1280 px"></button><figcaption><b>Ordinateur</b></figcaption></figure>
+    </div>
+  </section>
+
+  <section class="rangee" aria-labelledby="t-p3c-2">
+    <div class="tete">
+      <h2 id="t-p3c-2">Une rangée <span class="id">p3c-2</span></h2>
+      <span class="pastille p-propose">proposé par le critique</span>
+      <p class="etiquette">Le degré</p>
+      <p class="phrase">« 6 Kg × 2,30 » sur la rangée du nom, devant le montant. La mouture reste sous son malt. Une ligne : 29 px.</p>
+    </div>
+    <div class="planche sept">
+      <figure class="vue ref" data-vignette><button class="ecran" type="button" data-agrandir data-src="img/p3a-3-repos.png" data-titre="p3a-3 · ta variante, au repos"><img src="img/p3a-3-repos.png" alt="p3a-3 au repos"></button><figcaption><b>Ta p3a-3</b></figcaption></figure>
+      <figure class="vue" data-vignette><button class="ecran" type="button" data-agrandir data-src="img/p3c-2-repos.png" data-titre="p3c-2 · au repos"><img src="img/p3c-2-repos.png" alt="p3c-2 au repos"></button><figcaption><b>Au repos</b></figcaption></figure>
+      <figure class="vue" data-vignette><button class="ecran" type="button" data-agrandir data-src="img/p3c-2-defile.png" data-titre="p3c-2 · défilé jusqu'aux lignes"><img src="img/p3c-2-defile.png" alt="p3c-2 défilé"></button><figcaption><b>Défilé</b></figcaption></figure>
+      <figure class="vue" data-vignette><button class="ecran" type="button" data-agrandir data-src="img/p3c-2-renvoi.png" data-titre="p3c-2 · « 2 bis » touché dans le récap"><img src="img/p3c-2-renvoi.png" alt="p3c-2 filtre"></button><figcaption><b>Un compte touché</b> « 2 bis »</figcaption></figure>
+      <figure class="vue" data-vignette><button class="ecran" type="button" data-agrandir data-src="img/p3c-2-geste-plateau.png" data-titre="p3c-2 · un toucher sur une ligne"><img src="img/p3c-2-geste-plateau.png" alt="p3c-2 ligne ouverte"></button><figcaption><b>Une ligne ouverte</b></figcaption></figure>
+      <figure class="vue" data-vignette><button class="ecran" type="button" data-agrandir data-src="img/p3c-2-tous.png" data-titre="p3c-2 · tout rattaché, prêt à confirmer"><img src="img/p3c-2-tous.png" alt="p3c-2 tout rattaché"></button><figcaption><b>Tout rattaché</b></figcaption></figure>
+      <figure class="vue" data-vignette><button class="ecran" type="button" data-agrandir data-src="img/p3c-2-1280-repos.png" data-titre="p3c-2 · à 1280 px"><img src="img/p3c-2-1280-repos.png" alt="p3c-2 à 1280 px"></button><figcaption><b>Ordinateur</b></figcaption></figure>
+    </div>
+  </section>
+
+  <section class="rangee" aria-labelledby="t-p3c-3">
+    <div class="tete">
+      <h2 id="t-p3c-3">Mouture sur son malt <span class="id">p3c-3</span></h2>
+      <p class="etiquette">Le degré</p>
+      <p class="phrase">Comme p3c-2, et la mouture devient une pastille « ↳ 0,60 » sur la rangée de son malt, son montant à part.</p>
+    </div>
+    <div class="planche sept">
+      <figure class="vue ref" data-vignette><button class="ecran" type="button" data-agrandir data-src="img/p3a-3-repos.png" data-titre="p3a-3 · ta variante, au repos"><img src="img/p3a-3-repos.png" alt="p3a-3 au repos"></button><figcaption><b>Ta p3a-3</b></figcaption></figure>
+      <figure class="vue" data-vignette><button class="ecran" type="button" data-agrandir data-src="img/p3c-3-repos.png" data-titre="p3c-3 · au repos"><img src="img/p3c-3-repos.png" alt="p3c-3 au repos"></button><figcaption><b>Au repos</b></figcaption></figure>
+      <figure class="vue" data-vignette><button class="ecran" type="button" data-agrandir data-src="img/p3c-3-defile.png" data-titre="p3c-3 · défilé jusqu'aux lignes"><img src="img/p3c-3-defile.png" alt="p3c-3 défilé"></button><figcaption><b>Défilé</b></figcaption></figure>
+      <figure class="vue" data-vignette><button class="ecran" type="button" data-agrandir data-src="img/p3c-3-renvoi.png" data-titre="p3c-3 · « 2 bis » touché dans le récap"><img src="img/p3c-3-renvoi.png" alt="p3c-3 filtre"></button><figcaption><b>Un compte touché</b> « 2 bis »</figcaption></figure>
+      <figure class="vue" data-vignette><button class="ecran" type="button" data-agrandir data-src="img/p3c-3-geste-plateau.png" data-titre="p3c-3 · un toucher sur une ligne"><img src="img/p3c-3-geste-plateau.png" alt="p3c-3 ligne ouverte"></button><figcaption><b>Une ligne ouverte</b></figcaption></figure>
+      <figure class="vue" data-vignette><button class="ecran" type="button" data-agrandir data-src="img/p3c-3-tous.png" data-titre="p3c-3 · tout rattaché, prêt à confirmer"><img src="img/p3c-3-tous.png" alt="p3c-3 tout rattaché"></button><figcaption><b>Tout rattaché</b></figcaption></figure>
+      <figure class="vue" data-vignette><button class="ecran" type="button" data-agrandir data-src="img/p3c-3-1280-repos.png" data-titre="p3c-3 · à 1280 px"><img src="img/p3c-3-1280-repos.png" alt="p3c-3 à 1280 px"></button><figcaption><b>Ordinateur</b></figcaption></figure>
+    </div>
+  </section>
+
+  <section class="rangee" aria-labelledby="t-mesures">
+    <div class="tete"><h2 id="t-mesures">Mesuré</h2><p>À 390 × 844, au toucher. Lignes de facture entières à l'écran.</p></div>
+    <div class="tableau">
+      <table>
+        <thead><tr><th></th><th>Au premier écran</th><th>Défilé</th><th>Hauteur d'une ligne</th></tr></thead>
+        <tbody>
+          <tr><td>Ta p3a-3</td><td>12</td><td>16</td><td>43 px</td></tr>
+          <tr><td>p3c-1 resserré</td><td>13</td><td>19</td><td>32 px</td></tr>
+          <tr><td>p3c-2 une rangée</td><td>14</td><td>20</td><td>29 px</td></tr>
+          <tr><td>p3c-3 mouture sur son malt</td><td>17</td><td>23</td><td>29 px</td></tr>
+          <tr><td>p3a-2 le tableau</td><td>11</td><td>18</td><td>29 px</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section class="rangee" aria-labelledby="t-critique">
+    <div class="tete"><h2 id="t-critique">L'avis du critique</h2><p>Calibré sur ton portrait, toutes les captures ouvertes. Une proposition : tu vois tout.</p></div>
+    <div class="verdicts">
+      <p><b>1. p3c-2, une rangée</b> : p3a-3 reconnaissable en trois secondes, la densité de p3a-2 sans sa forme de tableau.</p>
+      <p><b>2. p3c-3, mouture sur son malt</b> : le plus dense ; il change la rangée de mouture, donc va plus loin que « presque ».</p>
+      <p><b>3. p3c-1, resserré</b> : sûr, mais la différence se voit à peine.</p>
+      <p><b>Retouché ensuite</b> : un peu d'air sous Target dans p3c-1 ; une fois tout rattaché, « ✓ 2,40/kg » sur la rangée du nom (dans p3c-3, sauf les noms longs) ; un ✓ dans la pastille de mouture rattachée de p3c-3.</p>
+      <p><b>Greffe possible</b> : « Rattacher les 5 » dans la bande Malts, comme p3c-3, pour alléger la première mouture de p3c-2.</p>
+    </div>
+  </section>
+
+  <section class="rangee" aria-labelledby="t-avant">
+    <div class="tete"><h2 id="t-avant">Avant</h2></div>
+    <ul>
+      <li>La passe 3, où tu as choisi p3a-3 : <a href="https://claude.ai/artifact/Q7zqa6xvR8EGGAz3j14yh9">ouvrir la page</a>.</li>
+      <li>Le sceau QR z2, choisi tel quel ; il viendra à côté du total : <a href="https://claude.ai/artifact/QSUXrTmuR2jXDEtAY2QjpM">ouvrir la page</a>.</li>
+    </ul>
+  </section>
+</div>
+<dialog id="grand" aria-label="Capture en grand">
+  <div class="haut">
+    <p class="titre" id="grand-titre"></p>
+    <button type="button" class="fermer">Fermer</button>
+  </div>
+  <img id="grand-img" alt="">
+</dialog>
+
+<script>
+(function () {
+  var dlg = document.getElementById('grand');
+  var img = document.getElementById('grand-img');
+  var titre = document.getElementById('grand-titre');
+  document.querySelectorAll('[data-agrandir]').forEach(function (b) {
+    b.addEventListener('click', function () {
+      img.setAttribute('src', b.getAttribute('data-src'));
+      img.setAttribute('alt', b.getAttribute('data-titre'));
+      titre.textContent = b.getAttribute('data-titre');
+      dlg.showModal();
+    });
+  });
+  dlg.querySelector('.fermer').addEventListener('click', function () { dlg.close(); });
+  dlg.addEventListener('click', function (e) { if (e.target === dlg) dlg.close(); });
+})();
+</script>

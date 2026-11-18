@@ -10,13 +10,14 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import type { Recipe } from '../../../types';
 import { toHopRecipe, versPatch, type ChangementHoublonsV4 } from '../../../domain/hopIndex/v4/recipeConversion';
-import { configurerDonnees, lireBiere, type BiereLue } from '../parcours/adaptateur';
+import { configurerDonnees, houblon, lireBiere, type BiereLue } from '../parcours/adaptateur';
 import { activerWorker } from '../parcours/clientWorker';
 import { ajouter, changerDose, changerMoment, retirer } from '../parcours/operations';
 import type { AjoutParcours, RecetteParcours } from '../parcours/types';
 import { useHopData } from '../useHopData';
 import { ouvrirCouche } from '../ouvrirCouche';
 import { ContexteFicheApp, FicheDeLApp } from '../fiche/FicheApp';
+import { AvisRetrait, type Retrait } from '../../useRetraitAnnulable';
 import { HoteEtapeProvider, type HoteEtape, type RouteEtape } from './hote';
 import { EtapeHoublonsContenu } from './index';
 import { JeuPictos } from '../Pictos';
@@ -126,7 +127,60 @@ export default function EtapeHoublons({ recipe, boilOg, draftId, onChange, onMes
     if (couche) ouvrirCouche(couche);
   }, [draftId, vider]);
 
+  // Les noms lus comme une variété voisine : le mot du brasseur, la lecture, et le geste qui la confirme ou la refuse (n° 9). Rien n'est remplacé : seul le lien de la ligne change.
+  const lectures = useMemo(() => {
+    const r: Record<string, { saisi: string; lu: string }> = {};
+    for (const a of conversion.recette.additions) {
+      const lien = conversion.ajouts[a.id];
+      if (lien?.relie === 'nom proche' && lien.index != null && !a.hopKey.includes(':')) r[a.id] = { saisi: conversion.origine.hops[lien.index].name, lu: houblon(a.hopKey).nom };
+    }
+    return r;
+  }, [conversion]);
+  const lireNom = useCallback((ajoutId: string, accepter: boolean) => {
+    const lien = conversion.ajouts[ajoutId];
+    const a = conversion.recette.additions.find((x) => x.id === ajoutId);
+    if (!lien || lien.index == null || !a) return;
+    const hops = conversion.origine.hops.map((h, i) => (i === lien.index ? { ...h, hopVarietyId: accepter ? a.hopKey : '' } : h));
+    onChange({ draftId, patch: { hops } });
+  }, [conversion, draftId, onChange]);
+
+  const [retrait, setRetrait] = useState<Retrait<AjoutParcours> | null>(null);
+  const avis = useRef<number | null>(null);
+  useEffect(() => () => { if (avis.current != null) window.clearTimeout(avis.current); }, []);
+  // TE-24, BR-2 (rejeu 649bcc54) : l'id d'un ajout est sa POSITION dans recipe.hops (a1, a2…). Après un retrait, l'ajout suivant prend l'id du
+  // retiré : retrouver la carte par son id retirait l'autre Lotus. On garde donc la ligne de la recette de l'app (avec son lot au stock, son α,
+  // son moment) et son rang, et l'annulation la rend à ce rang dans le brouillon courant.
+  const lignePerdue = useRef<{ hop: Recipe['hops'][number]; rang: number; avant: Recipe['hops'] } | null>(null);
+  const annulerRetrait = useCallback(() => {
+    if (!retrait) return;
+    const perdue = lignePerdue.current;
+    if (perdue) {
+      vider();
+      const actuelles = conversion.origine.hops;
+      // Le brouillon n'a pas encore pris le retrait : il est déjà tel qu'avant. Sinon on rend la ligne à son rang.
+      const hops = JSON.stringify(actuelles) === JSON.stringify(perdue.avant)
+        ? perdue.avant
+        : [...actuelles.slice(0, Math.min(perdue.rang, actuelles.length)), perdue.hop, ...actuelles.slice(Math.min(perdue.rang, actuelles.length))];
+      try { onChange({ draftId, patch: { hops } }); setErreur(null); } catch (e) { setErreur(e instanceof Error ? e.message : String(e)); }
+      setLocale(null);
+    } else {
+      // Ajout jamais écrit dans le brouillon : on le remet sous un id libre, à son rang.
+      geste((r) => {
+        const pris = new Set(r.additions.map((a) => a.id));
+        let n = r.additions.length + 1;
+        while (pris.has(`a${n}`)) n += 1;
+        const additions = [...r.additions];
+        additions.splice(Math.min(retrait.index, additions.length), 0, pris.has(retrait.item.id) ? { ...retrait.item, id: `a${n}` } : retrait.item);
+        return { ...r, additions };
+      });
+    }
+    lignePerdue.current = null;
+    setRetrait(null);
+    if (avis.current != null) window.clearTimeout(avis.current);
+  }, [retrait, geste, vider, conversion, onChange, draftId]);
+
   const valeur = useMemo<HoteEtape>(() => ({
+    lectures, lireNom,
     recette,
     route: { ecran: fiche ? 'fiche' : 'ma-biere' },
     aller: ouvrir,
@@ -135,7 +189,21 @@ export default function EtapeHoublons({ recipe, boilOg, draftId, onChange, onMes
     gestes: {
       ajouter: (_sur, a: AjoutParcours) => geste((r) => ajouter(r, a)),
       dose: (_sur, id, g) => geste((r) => changerDose(r, id, g)),
-      retirer: (_sur, id) => geste((r) => retirer(r, id)),
+      retirer: (_sur, id) => {
+        // TE-24, BR-2 (même mécanisme que BR-30) : le retrait se dit et se défait d'un toucher. La ligne et son rang sont gardés ; un second toucher sur la même ligne ne l'écrase pas.
+        const rang = recetteRef.current.additions.findIndex((a) => a.id === id);
+        if (rang < 0) return;
+        const ajout = recetteRef.current.additions[rang];
+        const nom = houblon(ajout.hopKey).nom;
+        const lien = conversion.ajouts[id];
+        lignePerdue.current = lien?.index != null && conversion.origine.hops[lien.index]
+          ? { hop: conversion.origine.hops[lien.index], rang: lien.index, avant: conversion.origine.hops }
+          : null;
+        geste((r) => retirer(r, id));
+        setRetrait({ item: ajout, index: rang, nom });
+        if (avis.current != null) window.clearTimeout(avis.current);
+        avis.current = window.setTimeout(() => setRetrait(null), 10_000);
+      },
       moment: (_sur, id, q) => geste((r) => changerMoment(r, id, q)),
     },
     // Le glisser : chaque cran suit le doigt en mémoire ; l'écriture part au repos (un seul patch par glisser).
@@ -148,7 +216,7 @@ export default function EtapeHoublons({ recipe, boilOg, draftId, onChange, onMes
       if (minuterie.current != null) window.clearTimeout(minuterie.current);
       minuterie.current = window.setTimeout(vider, 400);
     },
-  }), [recette, fiche, ouvrir, geste, vider, onAller]);
+  }), [recette, fiche, ouvrir, geste, vider, onAller, lectures, lireNom, conversion]);
   const brouillon = useMemo(() => ({ recette, draftId }), [recette, draftId]);
 
   return (
@@ -158,6 +226,7 @@ export default function EtapeHoublons({ recipe, boilOg, draftId, onChange, onMes
         <JeuPictos />
         {erreur && <p role="alert" className="mb-1 text-sm text-cave-200">{erreur}</p>}
         <EtapeHoublonsContenu bandeau={false} />
+        <AvisRetrait dernier={retrait} onAnnuler={annulerRetrait} />
         {fiche && <ContexteFicheApp valeur={brouillon}><FicheDeLApp houblon={fiche} onFermer={fermerFiche} /></ContexteFicheApp>}
       </div>
     </HoteEtapeProvider>

@@ -5,6 +5,7 @@ import type { YeastAlternativeContext, YeastDbCorrectionClientReceipt, YeastDbCo
   YeastDbCorrectionManualCreate, YeastDbCorrectionManualOfferObservation, YeastDbCorrectionReceipt, YeastDbCorrectionTarget } from '../../functions/src/yeastDbCorrectionTypes';
 import type { BrewerTurn } from '../../functions/src/companionTypes';
 import { readYeastProductDocument, validYeastOffer, validYeastStarterProtocol, type YeastOffer, type YeastProductDocument, type YeastStarterProtocol } from '../../functions/src/yeastSupplySchema';
+import { nombreFr } from '../domain/nombreAffiche';
 
 export type { YeastDbCorrectionChange, YeastDbCorrectionClientReceipt, YeastDbCorrectionIdentity, YeastDbCorrectionProposal, YeastDbCorrectionReceipt,
   YeastDbCorrectionScope, YeastDbCorrectionTarget, YeastAlternativeContext, YeastDbCorrectionManualCreate, YeastDbCorrectionManualOfferObservation } from '../../functions/src/yeastDbCorrectionTypes';
@@ -114,8 +115,8 @@ export const YeastDbCorrections = {
     const recipe = context.recipe;
     const conditions = [
       recipe?.name ? `recette ${recipe.name}` : '', recipe?.style ? `style ${recipe.style}` : '',
-      recipe?.volumeL != null ? `${recipe.volumeL} L` : '', recipe?.ogTarget != null ? `DI cible ${recipe.ogTarget}` : '',
-      recipe?.fermentation?.length ? `programme ${recipe.fermentation.map(step => `${step.name ?? 'phase'} ${step.tempC ?? '?'} °C/${step.days ?? '?'} j`).join(', ')}` : ''
+      recipe?.volumeL != null ? `${nombreFr(recipe.volumeL, 1)} L` : '', recipe?.ogTarget != null ? `DI cible ${recipe.ogTarget}` : '',
+      recipe?.fermentation?.length ? `programme ${recipe.fermentation.map(step => `${step.name ?? 'phase'} ${step.tempC == null ? '?' : nombreFr(step.tempC, 1)} °C/${step.days ?? '?'} j`).join(', ')}` : ''
     ].filter(Boolean).join(' ; ');
     const question = `Rechercher des alternatives fonctionnelles à la levure ${identity}. Demande du brasseur : ${request.trim()}. ${conditions ? `Contexte de recette : ${conditions}.` : 'Aucun contexte de recette supplémentaire n’est fourni.'} Distingue identité et équivalence fonctionnelle; précise conditions, sources, limites et disponibilité uniquement si les pages fournisseur exactes ont été vérifiées. N’adopte aucune alternative et ne modifie aucune recette. Si une alternative commerciale est pertinente, utilise la recherche fournisseur existante et affiche la source exacte.`;
     return BrewerChat.ask({

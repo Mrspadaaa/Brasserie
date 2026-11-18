@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Témoin positif de controle-base (calendrier) — fixture, pas une maquette</title>
+<!-- Témoin du contrôle scripts/agents/controle-base.mjs : porte chaque « gardé » du chantier calendrier et aucun
+     « refusé ». Ce n'est pas une maquette montrée au brasseur : les données sont celles de g-d1 (exemple). -->
+<style>
+  body { margin: 0; font: 15px/1.35 system-ui, sans-serif; background: #FFFFFF; color: #111111; }
+  .tete { padding: 10px 14px 4px; }
+  .cle { font-size: 26px; font-weight: 700; color: #3F6B2E; }
+  svg { display: block; width: 100%; height: 80px; }
+  .puces { display: flex; gap: 6px; padding: 4px 14px; align-items: center; }
+  .puces span { font-size: 14px; padding: 3px 9px; border-radius: 12px; border: 1px solid #C87A2C; color: #8A5212; }
+  .puces button { font-size: 14px; background: none; border: 1px solid #BFBFBF; border-radius: 12px; }
+  .sem { display: flex; justify-content: space-between; padding: 2px 14px; font-size: 14px; color: #666666; }
+  .rangee { padding: 2px 14px; }
+  .titre { font-size: 14px; font-weight: 600; color: #333333; }
+  .barre { font-size: 14px; background: #F2C14E; border-radius: 4px; padding: 2px 6px; margin: 2px 0 4px; width: 60%; }
+  .fete { background: #BCA5E8; margin-left: 30%; }
+  .act { background: #A3C97A; width: 30%; }
+  nav { position: fixed; left: 0; right: 0; bottom: 0; height: 56px; display: flex; justify-content: space-around; align-items: center; border-top: 1px solid #DDDDDD; background: #FFFFFF; font-size: 14px; }
+  .fab { position: fixed; right: 16px; bottom: 68px; width: 52px; height: 52px; border-radius: 26px; border: 0; background: #E0A02E; color: #111111; font-size: 28px; }
+</style>
+</head>
+<body>
+  <div class="tete">
+    <div class="cle">113 CHF</div>
+    <svg viewBox="0 0 390 80" aria-hidden="true"><path d="M0 40 L65 42 L130 30 L195 60 L260 20 L325 25 L390 18" fill="none" stroke="#4F7E9B" stroke-width="2"/></svg>
+  </div>
+  <div class="puces">
+    <span data-filtre="brassins">Brassins</span><span data-filtre="fetes">Fêtes</span><span data-filtre="activites">Activités</span>
+    <button aria-label="Trier les rangées">⇅</button>
+  </div>
+  <div class="sem"><span>S47</span><span>S48</span><span>S49</span><span>S50</span><span>S51</span><span>S52</span></div>
+  <div class="rangee"><div class="titre">Brassins</div><div class="barre">Blonde d’automne −148</div></div>
+  <div class="rangee"><div class="titre">Fêtes</div><div class="barre fete">Marché de Noël +1 180</div></div>
+  <div class="rangee"><div class="titre">Activités</div><div class="barre act">Ranger la réserve 3 j</div></div>
+  <button class="fab" aria-label="Ajouter">+</button>
+  <nav><span>Bord</span><span>Finances</span><span>Calendrier</span><span>Brassins</span><span>Stocks</span><span>Clients</span></nav>
+</body>
+</html>

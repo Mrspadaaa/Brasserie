@@ -22,6 +22,7 @@ import { applyHopProgramProposal, previewHopProgramChanges, programFingerprint }
 import { hopRecipeFutureProcurementCondition, validateHopRecipeDraftOptions, type HopRecipeFutureProcurementChoice } from '../../domain/hopDecision/recipeAdapter';
 import type { HopDecisionProgram, HopProgramChange } from '../../domain/hopDecision/types';
 import type { HopV55Copy } from './contracts';
+import { nombreFr } from '../../domain/nombreAffiche';
 
 export const HOP_V55_FULL_RECIPE_COPY_FORMAT = 'hop-v55-full-recipe-copy-v2' as const;
 export const HOP_V55_FULL_RECIPE_COPY_LEGACY_FORMAT = 'hop-v55-full-recipe-copy-v1' as const;
@@ -656,7 +657,7 @@ function massMismatch(program: HopDecisionProgram, selected: Map<string, number>
   if (selected.size !== additions.length) return 'Les masses explicites ne couvrent pas exactement les lignes du programme.';
   for (const addition of additions) {
     if (!selected.has(addition.id) || selected.get(addition.id) !== addition.grams) {
-      return `La masse finale de ${addition.id} diffère de la dose J1 (${addition.grams ?? 'inconnue'} g).`;
+      return `La masse finale de ${addition.id} diffère de la dose J1 (${addition.grams == null ? 'inconnue' : nombreFr(addition.grams, 1)} g).`;
     }
   }
   return undefined;

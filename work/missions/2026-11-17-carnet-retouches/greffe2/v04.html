@@ -1,0 +1,804 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=390, initial-scale=1">
+<title>Carnet · greffe 2 · G4 Le + dit quoi</title>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@500;600&family=Source+Sans+3:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+/* Greffe 2, recette G4 « Le + dit quoi » (17.11). Base ra+p5f (E12b, E01b, E14a) ; écrans de son top 3 :
+   1 v09-1 (+ I1 v10-1) · 2 v08-2 (+ I5 v06-1) · 3 v08-3 neuf, v11-3 rempli · 4 v06-4, v08-5, v07-2 · 5 base E12b ·
+   6 v01-2 + v02-2 · 7 v01-3 + E14a · 8 v03-7 + v09-3 · 9 v10-5 + v02-6. Habit : ref-app. HTML et CSS seuls. */
+:root{--bg:#FFFFFF;--s1:#F5F5F5;--s2:#EBEBEB;--line:#E0E0E0;--line2:#BFBFBF;--mut:#666666;--txt:#333333;--ink:#111111;
+  --stk:#4C6B2A;--hop:#567F45;--hopd:#3F6B2E;--stkbg:#EEF4E8;--stkbg2:#E2ECD7;--zone:#A3C97A;--fin:#1F64A3;
+  --att:#7F5B10;--attbg:#FBF1D9;--cal:#C87A2C;--prod:#9A4F1E;--straw:#F2C14E;--ambre:#8A5212}
+*{box-sizing:border-box}
+html,body{margin:0;background:var(--s2)}
+body{color:var(--ink);font-family:"Source Sans 3","Segoe UI",system-ui,sans-serif;font-size:14px;line-height:1.3}
+a{color:inherit;text-decoration:none}
+.m{font-family:"IBM Plex Mono",Consolas,ui-monospace,monospace;font-variant-numeric:tabular-nums;letter-spacing:-.01em}
+body{width:100vw;overflow-x:hidden}
+.h4-page{width:100vw;overflow-x:auto;padding:0 0 20px}
+.h4-rail{display:flex;gap:24px;align-items:flex-start;width:max-content;padding:0 12px 0 0}
+.h4-fig{margin:0;width:390px;flex:none}
+.h4-fig>figcaption{height:58px;display:flex;gap:8px;align-items:flex-start;padding:8px 2px 0;font-size:14px;color:var(--txt)}
+.h4-fig>figcaption>b{flex:none;display:grid;place-items:center;min-width:26px;height:24px;padding:0 6px;border-radius:12px;background:var(--ink);color:#fff;font-weight:700}
+.h4-fig>figcaption em{font-style:normal;color:var(--mut)}
+.h4-foot{margin:14px 12px 0;font-size:14px;color:var(--mut)}
+.h4-tel{position:relative;width:390px;height:844px;overflow:hidden;background:var(--bg);box-shadow:0 0 0 1px #D2D2D2}
+.h4-i{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;flex:none}
+.h4-i.s{width:16px;height:16px}
+
+/* en-tête de l'app */
+.h4-top{display:flex;align-items:center;gap:7px;height:50px;padding:0 10px;border-bottom:1px solid var(--line)}
+.h4-logo{display:grid;place-items:center;width:30px;height:30px;border-radius:8px;background:var(--ink)}
+.h4-logo svg{width:20px;height:20px}
+.h4-nom{font-size:16px;font-weight:600;letter-spacing:-.01em}
+.h4-mois{margin-left:auto;display:flex;height:36px;border:1px solid var(--line2);border-radius:10px;overflow:hidden}
+.h4-mois i{display:grid;place-items:center;width:32px}
+.h4-mois i .h4-i{width:18px;height:18px}
+.h4-mois b{display:grid;place-items:center;width:52px;border-left:1px solid var(--line2);border-right:1px solid var(--line2);font-size:15px;font-weight:600}
+.h4-lou{display:grid;place-items:center;width:34px;height:34px;border-radius:10px;border:1px solid var(--line2);background:var(--s1)}
+.h4-lou .h4-i{width:18px;height:18px}
+.h4-av{position:relative;display:flex}
+.h4-av span{display:grid;place-items:center;width:28px;height:28px;border-radius:50%;border:2px solid var(--bg);font-size:14px;font-weight:700}
+.h4-av span:first-child{background:var(--ink);color:#fff}
+.h4-av span+span{margin-left:-8px;background:#E3E3E3}
+.h4-av i{position:absolute;top:-1px;right:-1px;width:8px;height:8px;border-radius:50%;background:var(--ink)}
+
+/* segment Stocks, sous-segment façon Étagère / Recompter */
+.h4-seg{display:flex;margin:8px 10px 0;padding:3px;border-radius:12px;background:var(--s1);border:1px solid var(--line)}
+.h4-seg a{flex:1;text-align:center;line-height:34px;border-radius:9px;font-size:15px;color:var(--txt)}
+.h4-seg a.on{background:var(--ink);color:#fff;font-weight:600}
+.h4-sous{display:flex;margin:8px 10px 0;padding:3px;border-radius:999px;background:var(--s2)}
+.h4-sous a{flex:1;display:flex;align-items:center;justify-content:center;gap:6px;height:34px;border-radius:999px;font-size:15px;font-weight:600;color:var(--txt)}
+.h4-sous a.on{background:var(--ink);color:#fff}
+.h4-sous .n{font-family:"IBM Plex Mono",Consolas,monospace;font-weight:500;color:var(--mut)}
+.h4-sous a.on .n{color:#fff}
+
+/* liste, rangées à filet */
+.h4-c{padding:0 12px}
+.h4-gh{display:flex;align-items:center;gap:6px;margin:9px 0 5px}
+.h4-gh .t{display:inline-flex;align-items:center;gap:5px;height:24px;padding:0 10px;border-radius:999px;background:var(--stkbg2);font-size:14px;font-weight:700;color:var(--hopd)}
+.h4-gh .t .n{font-family:"IBM Plex Mono",Consolas,monospace;font-weight:500}
+.h4-gh .t.att{background:var(--attbg);color:var(--att)}
+.h4-gh .t.neu{background:#EDEDED;color:var(--txt)}
+.h4-gh .t.vei{background:#E3ECF5;color:var(--fin)}
+.h4-gh .r{margin-left:auto;font-size:14px;color:var(--mut)}
+.h4-pan{border:1px solid var(--line);border-radius:8px;background:var(--bg);overflow:hidden}
+.h4-row{display:flex;align-items:center;gap:12px;padding:8px 12px}
+.h4-row+.h4-row{border-top:1px solid var(--line)}
+.h4-vg{flex:none;display:grid;place-items:center;width:48px;height:48px;border-radius:8px;background:#F1F3EE}
+.h4-vg svg{width:42px;height:36px}
+.h4-vg.l{width:64px;height:60px}.h4-vg.l svg{width:56px;height:48px}
+.h4-tx{flex:1;min-width:0;display:flex;flex-direction:column;gap:1px}
+.h4-tx>b{font-size:16px;font-weight:600;line-height:1.22}
+.h4-tx>span{font-size:14px;color:var(--mut)}
+.h4-tx .nx{color:var(--txt)}.h4-tx .nx em{font-style:normal;font-weight:600;color:var(--hopd)}
+.h4-tx .q{font-style:italic}
+.h4-tx .ve{display:inline-flex;align-items:center;gap:4px}
+.h4-pr{flex:none;display:flex;flex-direction:column;align-items:flex-end;text-align:right}
+.h4-pr b{font-size:16px;font-weight:600}
+.h4-pr small{font-size:14px;color:var(--mut)}
+.h4-pr s{font-size:14px;color:var(--mut)}
+.h4-avl{display:flex;align-items:center;gap:6px;min-height:40px;padding:0 12px 0 72px;border-top:1px dashed var(--line2);font-size:14px;font-weight:600;color:var(--hopd)}
+.h4-avl .go{margin-left:auto;color:var(--fin)}
+.h4-pi{display:inline-flex;align-items:center;gap:4px;height:24px;padding:0 9px;border-radius:999px;font-size:14px;font-weight:600;white-space:nowrap}
+.h4-pi.att{background:var(--attbg);color:var(--att)}
+.h4-pi.ok{background:var(--stkbg2);color:var(--hopd)}
+.h4-pi.neu{background:#F0F0F0;color:var(--txt)}
+.h4-b{display:inline-flex;align-items:center;justify-content:center;gap:6px;height:36px;padding:0 12px;border-radius:8px;border:1px solid var(--line2);background:var(--bg);font-size:14px;font-weight:600;color:var(--txt);white-space:nowrap}
+.h4-b.v{border-color:var(--stk);color:var(--stk)}
+.h4-b.k{border-color:var(--ink);color:var(--ink)}
+.h4-plein{display:flex;align-items:center;justify-content:center;gap:8px;height:46px;border-radius:10px;background:var(--stk);color:#fff;font-size:16px;font-weight:600}
+
+/* fiche : retour bleu, grand titre */
+.h4-back{display:flex;align-items:center;gap:4px;height:42px;padding:0 10px 0 6px;font-size:16px;color:var(--fin)}
+.h4-back .d{margin-left:auto;display:flex;align-items:center;gap:10px}
+.h4-back .u{font-size:14px;color:var(--txt);text-decoration:underline}
+.h4-h1{margin:0 14px;font-size:28px;font-weight:700;line-height:1.1;letter-spacing:-.015em}
+.h4-h1.lg{font-size:25px}
+.h4-sub{margin:4px 14px 0;font-size:15px;color:var(--mut)}
+.h4-crit{display:flex;align-items:center;gap:6px;margin:8px 14px 0;font-size:15px;color:var(--txt)}
+.h4-crit .h4-i{color:var(--stk)}
+.h4-crit b{font-weight:600;color:var(--ink)}
+.h4-crit span{color:var(--mut)}
+.h4-sec{margin:14px 14px 0}
+.h4-sh{display:flex;align-items:center;gap:6px;margin-bottom:6px;font-size:15px;font-weight:700}
+.h4-sh .h4-i{width:18px;height:18px;color:var(--mut)}
+.h4-sh small{margin-left:auto;font-size:14px;font-weight:400;color:var(--mut)}
+.h4-box{display:flex;align-items:center;gap:10px;padding:10px 12px;border:1px solid var(--line);border-radius:8px}
+.h4-box+.h4-box{margin-top:6px}
+.h4-box .tx{flex:1;display:flex;flex-direction:column;gap:1px;font-size:14px;color:var(--mut)}
+.h4-box .tx b{font-size:16px;font-weight:600;color:var(--ink);line-height:1.22}
+.h4-box .bt{display:flex;gap:6px}
+.h4-slot{display:flex;align-items:center;gap:10px;padding:14px 12px;border:1.5px dashed #9DBB85;border-radius:8px;background:#FAFCF7;font-size:15px;color:var(--txt)}
+.h4-slot .h4-i{color:var(--stk)}
+
+/* champ du bas (C8) et + carré noir */
+.h4-dock{position:absolute;left:0;right:0;bottom:56px;z-index:6;height:72px;padding:0 76px 0 12px;display:flex;align-items:center;background:linear-gradient(rgba(255,255,255,0),#fff 30%)}
+.h4-in{flex:1;min-width:0;display:flex;align-items:center;gap:12px;height:48px;padding:0 12px 0 14px;border:1px solid var(--line2);border-radius:12px;background:var(--bg);font-size:16px;color:var(--mut)}
+.h4-in em{flex:1;min-width:0;font-style:normal;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.h4-in .h4-i{color:var(--mut)}
+.h4-in .ec{color:var(--ink)}
+.h4-caret{display:inline-block;width:2px;height:19px;margin-left:1px;vertical-align:-3px;background:var(--fin)}
+.h4-fab{position:absolute;right:12px;bottom:66px;z-index:7;display:grid;place-items:center;width:52px;height:52px;border-radius:14px;background:var(--ink);color:#fff;box-shadow:0 6px 16px -6px rgba(0,0,0,.55)}
+.h4-fab .h4-i{width:26px;height:26px;stroke-width:2.4}
+.h4-fab.x{width:auto;display:flex;align-items:center;gap:4px;padding:0 16px 0 11px;font-size:16px;font-weight:600}
+.h4-dock.w{padding-right:118px}
+
+/* barre d'onglets */
+.h4-nav{position:absolute;left:0;right:0;bottom:0;z-index:8;height:56px;display:flex;border-top:1px solid var(--line);background:#FAFAFA}
+.h4-nav a{position:relative;flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;font-size:14px;color:var(--txt);letter-spacing:-.01em}
+.h4-nav a .h4-i{width:22px;height:22px;stroke-width:1.8}
+.h4-nav .fi .h4-i{color:var(--fin)}.h4-nav .ca .h4-i{color:var(--cal)}.h4-nav .br .h4-i{color:var(--prod)}.h4-nav .st .h4-i{color:var(--stk)}
+.h4-nav a.on{background:var(--stkbg);color:var(--ink);font-weight:600}
+.h4-nav .bdg{position:absolute;top:3px;right:10px;display:grid;place-items:center;min-width:20px;height:20px;padding:0 4px;border-radius:10px;background:var(--fin);color:#fff;font:600 14px/1 "IBM Plex Mono",Consolas,monospace}
+
+/* clavier */
+.h4-kbd{position:absolute;left:0;right:0;bottom:0;z-index:9;height:222px;padding:8px 3px 0;background:#D3D6DB}
+.h4-kbd div{display:flex;gap:5px;margin-bottom:9px;padding:0 2px}
+.h4-kbd i{flex:1;display:grid;place-items:center;height:42px;border-radius:6px;background:#fff;box-shadow:0 1px 0 #8E9298;font:400 18px/1 system-ui,sans-serif;color:var(--ink);font-style:normal}
+.h4-kbd i.k{flex:1.4;background:#ABB0B8}
+.h4-kbd i.w{flex:5}
+.h4-kbd i.go{flex:1.6;background:var(--stk);color:#fff}
+.h4-kb .h4-dock{bottom:222px;background:#fff;border-top:1px solid var(--line);padding:0 10px}
+
+/* 2 : carte qui arrive, choix où la ranger (I5) */
+.h4-ghost{margin:10px 12px 0;padding:10px 12px;border:2px dashed var(--hop);border-radius:8px;background:var(--stkbg)}
+.h4-ghost .l1{display:flex;align-items:center;gap:8px}
+.h4-ghost .l1 b{flex:1;font-size:17px;font-weight:700}
+.h4-ghost .ici{display:inline-flex;align-items:center;gap:3px;font-size:14px;font-weight:600;color:var(--hopd)}
+.h4-ghost .l2{margin-top:2px;font-size:14px;color:var(--txt)}
+.h4-ghost .l2 b{color:var(--hopd)}
+.h4-ou{margin:8px 12px 0}
+.h4-ou p{margin:0 0 6px;font-size:14px;color:var(--mut)}
+.h4-ou p b{color:var(--ink);font-weight:600}
+.h4-opts{display:flex;gap:8px}
+.h4-opt{flex:1;display:flex;align-items:center;gap:8px;min-height:52px;padding:6px 10px;border:1px solid var(--line2);border-radius:8px;font-size:15px}
+.h4-opt.on{border:2px solid var(--stk);background:var(--stkbg)}
+.h4-opt b{display:block;font-weight:600}
+.h4-opt small{display:inline-flex;align-items:center;gap:3px;font-size:14px;color:var(--mut)}
+.h4-rd{flex:none;width:20px;height:20px;border-radius:50%;border:2px solid #8A8A8A}
+.h4-rd.on{border-color:var(--stk);background:var(--stk);box-shadow:inset 0 0 0 3px #fff}
+.h4-dim{margin:10px 12px 0;opacity:.62}
+.h4-dimh{margin:12px 12px 0;font-size:14px;color:var(--mut)}
+.h4-dim div{display:flex;align-items:center;height:42px;padding:0 12px;border:1px solid var(--line);border-left:3px solid var(--line2);border-radius:8px;font-size:16px;font-weight:600;color:var(--txt)}
+.h4-dim div+div{margin-top:5px}
+.h4-dim span{margin-left:auto;font-size:14px;font-weight:600;color:var(--mut)}
+.h4-cree{flex:none;display:inline-flex;align-items:center;gap:4px;height:40px;padding:0 12px;border-radius:9px;background:var(--stk);color:#fff;font-size:15px;font-weight:600}
+
+/* 3b : façons en cartes, tableau par façon (v11-3) */
+.h4-fc{display:flex;gap:8px}
+.h4-fc>div{flex:1;padding:9px 10px;border:1px solid var(--line);border-radius:8px}
+.h4-fc>div.lead{border-color:#D9B860;background:#FFF9EC}
+.h4-fc b{display:block;font-size:15px;font-weight:700}
+.h4-fc .p{font-size:14px;color:var(--txt)}
+.h4-fc .w{display:block;font-size:14px;color:var(--mut)}
+.h4-fc .lead .w{color:var(--att);font-weight:600}
+.h4-fc .bt{display:flex;gap:6px;margin-top:7px}
+.h4-fc .bt .h4-b{flex:1;height:34px;padding:0 6px}
+.h4-tab{border:1px solid var(--line);border-radius:8px;overflow:hidden}
+.h4-tab .th,.h4-tab .tr{display:flex;align-items:center;gap:6px;padding:0 10px}
+.h4-tab .th{height:36px;align-items:flex-end;padding-bottom:4px;font-size:14px;color:var(--mut);line-height:1.05}
+.h4-tab .tg{padding:4px 10px;background:var(--s1);border-top:1px solid var(--line);font-size:14px;font-weight:600;color:var(--txt)}
+.h4-tab .tr{min-height:42px;border-top:1px solid var(--line)}
+.h4-tab .nm{flex:1;min-width:0;display:flex;flex-direction:column;font-size:15px;font-weight:600;line-height:1.15}
+.h4-tab .nm small{font-size:14px;font-weight:400;color:var(--mut);display:inline-flex;align-items:center;gap:3px;white-space:nowrap}
+.h4-tab .tr .h4-vg{width:34px;height:34px;border-radius:6px}.h4-tab .tr .h4-vg svg{width:30px;height:26px}
+.h4-tab .c{flex:none;width:46px;text-align:right;font-size:14px}
+.h4-tab .c.p{width:52px}
+.h4-tab .best{color:var(--hopd);font-weight:600}
+.h4-tab .ok-l{color:var(--fin);font-weight:600;display:inline-flex;align-items:center;gap:3px;font-size:14px}
+.h4-ln{display:flex;align-items:center;gap:8px;margin:10px 14px 0;min-height:48px;padding:0 12px;border:1px solid var(--line);border-radius:8px;font-size:16px;font-weight:600}
+.h4-ln span{font-size:14px;font-weight:400;color:var(--mut)}
+.h4-ln .h4-i{margin-left:auto;color:var(--mut)}
+
+/* 4a : le + dit QUOI (v06-4) */
+.h4-scrim{position:absolute;inset:0;z-index:5;background:rgba(17,17,17,.4)}
+.h4-menu{position:absolute;left:10px;right:10px;bottom:132px;z-index:7;padding:12px 0 6px;border-radius:14px;background:var(--bg);box-shadow:0 10px 30px -10px rgba(0,0,0,.5)}
+.h4-menu .mh{padding:0 16px 8px;font-size:18px;font-weight:700}
+.h4-menu .mh small{display:block;font-size:15px;font-weight:400;color:var(--mut)}
+.h4-mr{display:flex;align-items:center;gap:12px;min-height:56px;padding:6px 16px;border-top:1px solid var(--line)}
+.h4-mr .ic{display:grid;place-items:center;width:34px;height:34px;border-radius:8px;background:var(--stkbg);color:var(--stk);flex:none}
+.h4-mr .tx{flex:1;display:flex;flex-direction:column;font-size:14px;color:var(--mut)}
+.h4-mr .tx b{font-size:17px;font-weight:600;color:var(--ink)}
+.h4-mr>.h4-i{color:var(--mut)}
+.h4-paste{display:flex;align-items:center;gap:8px;margin:0 16px 8px 62px;padding:6px 6px 6px 10px;border:1px solid var(--line);border-radius:8px;background:var(--s1);font-size:14px;color:var(--txt)}
+.h4-paste .u{flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.h4-paste .h4-b{height:32px}
+.h4-dock.lit{background:#fff}
+.h4-dock.lit .h4-in{border-color:var(--ink)}
+
+/* 4b, 4c : ce qui arrive se voit dans sa case (v08-5, v07-2) */
+.h4-arr{display:flex;gap:12px;padding:10px;border:2px dashed var(--hop);border-radius:8px;background:var(--stkbg)}
+.h4-arr .tx{flex:1;min-width:0;display:flex;flex-direction:column;gap:2px;font-size:14px;color:var(--txt)}
+.h4-arr .tx b{font-size:16px;font-weight:600;color:var(--ink);line-height:1.2}
+.h4-arr .tx .pr{font-size:16px;font-weight:600;color:var(--ink)}
+.h4-arr .ici{display:inline-flex;align-items:center;gap:3px;float:right;margin-left:6px;font-size:14px;font-weight:600;color:var(--hopd)}
+.h4-ve{display:flex;align-items:center;gap:6px;margin-top:4px;font-size:14px;color:var(--txt)}
+.h4-ve .h4-i{color:var(--stk)}
+.h4-ve .o{margin-left:auto;font-weight:600}
+.h4-sw{flex:none;position:relative;width:40px;height:24px;border-radius:12px;background:var(--stk)}
+.h4-sw::after{content:"";position:absolute;top:3px;right:3px;width:18px;height:18px;border-radius:50%;background:#fff}
+.h4-done{display:flex;align-items:center;gap:6px;margin-top:6px;font-size:14px;color:var(--txt)}
+.h4-done .h4-i{color:var(--stk)}
+.h4-done a{margin-left:auto;color:var(--fin);font-weight:600}
+.h4-mini .h4-row{padding:7px 12px}
+.h4-mini .h4-vg{width:40px;height:40px}.h4-mini .h4-vg svg{width:34px;height:30px}
+.h4-tag{display:inline-flex;align-items:center;gap:4px;font-size:14px;font-weight:600;color:var(--hopd)}
+.h4-tag a{color:var(--fin)}
+.h4-chg{display:flex;align-items:center;gap:6px;margin-top:8px;font-size:14px;color:var(--mut)}
+.h4-chg .h4-b{height:32px}
+
+/* 5, 6 : feuille d'articles (base E12b) */
+.h4-behind{opacity:1}
+.h4-sheet{position:absolute;left:0;right:0;bottom:56px;z-index:6;padding:8px 12px 0;border-radius:16px 16px 0 0;background:var(--bg);box-shadow:0 -6px 24px -8px rgba(0,0,0,.35)}
+.h4-grab{width:40px;height:5px;margin:0 auto 8px;border-radius:3px;background:#CFCFCF}
+.h4-shd{display:flex;align-items:baseline;gap:8px;margin-bottom:8px}
+.h4-shd b{font-size:20px;font-weight:700}
+.h4-shd span{font-size:14px;color:var(--mut)}
+.h4-shd .r{margin-left:auto;display:inline-flex;align-items:center;gap:4px;font-size:15px;color:var(--fin)}
+.h4-art{display:flex;gap:12px;padding:10px;border:1px solid var(--line);border-radius:8px}
+.h4-art+.h4-art{margin-top:7px}
+.h4-art .tx{flex:1;min-width:0;display:flex;flex-direction:column;gap:1px;font-size:14px;color:var(--mut)}
+.h4-art .tx>b{font-size:16px;font-weight:600;color:var(--ink);line-height:1.2}
+.h4-art .cr{color:var(--txt)}
+.h4-art .cr b{font-weight:600;color:var(--ink)}
+.h4-art .cr.top b,.h4-art .cr.top{color:var(--hopd)}
+.h4-art .px{display:flex;align-items:center;gap:8px;margin-top:2px}
+.h4-art .px .p{font-size:16px;font-weight:600;color:var(--ink)}
+.h4-art .px .vl{margin-left:auto;display:inline-flex;align-items:center;gap:3px;font-size:14px;font-weight:600;color:var(--stk)}
+.h4-rk{display:inline-grid;place-items:center;min-width:24px;height:22px;padding:0 5px;border-radius:6px;background:var(--s1);font:600 14px/1 "IBM Plex Mono",Consolas,monospace;color:var(--txt)}
+.h4-rk.top{background:var(--stk);color:#fff}
+
+.h4-open{padding:10px;border:1.5px solid var(--ink);border-radius:10px}
+.h4-ph{position:relative;display:grid;place-items:center;height:86px;border-radius:8px;background:#F1F3EE}
+.h4-ph svg{width:110px;height:80px}
+.h4-ph .rk{position:absolute;left:8px;top:8px;padding:2px 8px;border-radius:6px;background:var(--stk);color:#fff;font-size:14px;font-weight:600}
+.h4-ph .pc{position:absolute;right:8px;bottom:6px;display:inline-flex;align-items:center;gap:4px;padding:1px 8px;border-radius:6px;background:rgba(255,255,255,.92);font-size:14px;color:var(--txt)}
+.h4-open h3{margin:8px 0 0;font-size:18px;font-weight:700;line-height:1.15}
+.h4-open .fa{margin:2px 0 0;font-size:14px;color:var(--mut)}
+.h4-open .fa b{color:var(--txt);font-weight:600}
+.h4-o2{display:flex;align-items:center;gap:10px;margin-top:8px;padding:8px 10px;border-radius:8px;background:var(--stkbg)}
+.h4-o2 .v{flex:none;font-size:14px;color:var(--txt)}
+.h4-o2 .v b{display:block;font-size:22px;font-weight:600;color:var(--hopd);line-height:1.1}
+.h4-rule{flex:1;position:relative;height:40px}
+.h4-rule .ax{position:absolute;left:4px;right:4px;top:10px;height:2px;background:#C9D6BD}
+.h4-rule i{position:absolute;top:5px;width:12px;height:12px;margin-left:-6px;border-radius:50%;background:#fff;border:2px solid #9DB289}
+.h4-rule i.me{width:16px;height:16px;margin-left:-8px;top:3px;background:var(--stk);border-color:var(--stk)}
+.h4-rule span{position:absolute;bottom:0;font-size:14px;color:var(--mut)}
+.h4-vd{margin-top:8px}
+.h4-vd .hd{display:block;font-size:14px;color:var(--mut);margin-bottom:2px}
+.h4-vd .hd b{color:var(--ink);font-weight:600;margin-right:4px}
+.h4-vr{display:flex;align-items:center;gap:8px;min-height:44px;border-top:1px solid var(--line)}
+.h4-vr .tx{flex:1;min-width:0;display:flex;flex-direction:column;font-size:14px;color:var(--mut);line-height:1.2}
+.h4-vr .tx b{font-size:15px;color:var(--ink);font-weight:600}
+.h4-vr .p{font-size:15px;font-weight:600;text-align:right;line-height:1.15}
+.h4-vr .p small{display:block;font-family:"Source Sans 3","Segoe UI",sans-serif;font-size:14px;font-weight:600;color:var(--hopd)}
+.h4-vr .ou{display:inline-flex;align-items:center;gap:2px;font-size:14px;font-weight:600;color:var(--fin)}
+.h4-kv{display:grid;grid-template-columns:1fr 1fr;column-gap:12px;margin-top:6px}
+.h4-kv div{display:flex;align-items:baseline;gap:6px;min-height:28px;border-top:1px solid var(--line);font-size:14px;color:var(--mut)}
+.h4-kv div b{margin-left:auto;font-size:14px;font-weight:600;color:var(--ink)}
+.h4-kv div em{font-style:normal;font-size:14px;font-weight:600;color:var(--att)}
+.h4-kv div em.g{color:var(--hopd)}
+.h4-lu{margin:2px 0 0;font-size:14px;color:var(--mut)}
+.h4-vei{display:flex;align-items:center;gap:8px;margin-top:6px;padding:6px 8px;border-radius:8px;background:var(--s1);font-size:14px;color:var(--mut);line-height:1.2}
+.h4-vei .h4-i{color:var(--stk)}
+.h4-vei .tx{flex:1}
+.h4-vei .tx b{display:block;color:var(--ink);font-weight:600}
+.h4-vei .o{font-weight:600;color:var(--ink)}
+.h4-part{margin:5px 0 0;font-size:14px;color:var(--txt)}
+.h4-part b{font-weight:600}
+
+/* 7 : comparer (E14a + v01-3) */
+.h4-bars{margin:10px 14px 0;padding:8px 12px 4px;border:1px solid var(--line);border-radius:8px}
+.h4-bars .hd{display:flex;align-items:baseline;gap:6px;margin-bottom:2px;font-size:16px;font-weight:700}
+.h4-bars .hd span{font-size:14px;font-weight:400;color:var(--mut)}
+.h4-bars .hd em{margin-left:auto;font-style:normal;font-size:14px;font-weight:600;color:var(--hopd)}
+.h4-br{display:grid;grid-template-columns:1fr 44px;align-items:center;column-gap:8px;padding:2px 0}
+.h4-br .nm{font-size:14px;color:var(--txt);white-space:nowrap}
+.h4-br .nm b{font-family:"IBM Plex Mono",Consolas,monospace;font-weight:600;margin-right:4px}
+.h4-br .v{text-align:right;font-size:15px;font-weight:600}
+.h4-br .bar{grid-column:1/3;height:6px;border-radius:3px;background:#EDEDED;overflow:hidden}
+.h4-br .bar i{display:block;height:100%;background:#A9A9A9;border-radius:3px}
+.h4-br.top .bar i{background:var(--stk)}.h4-br.top .v{color:var(--hopd)}
+.h4-cmp{margin:10px 14px 0}
+.h4-cmp .t{display:flex;align-items:baseline;gap:6px;font-size:16px;font-weight:700;margin-bottom:2px}
+.h4-cmp .t span{font-size:14px;font-weight:400;color:var(--mut)}
+.h4-cmp table{width:100%;border-collapse:collapse;font-size:14px}
+.h4-cmp th{height:26px;font-weight:600;color:var(--ink);text-align:right;padding:0 2px 3px;vertical-align:bottom;line-height:1.1;letter-spacing:-.01em}
+.h4-cmp th svg{display:block;width:38px;height:30px;margin:0 0 1px auto}
+.h4-cmp th:first-child{text-align:left;padding-left:0}
+.h4-cmp td{height:28px;border-top:1px solid var(--line);text-align:right;padding:0 4px}
+.h4-cmp td:first-child{text-align:left;padding-left:0;color:var(--txt);white-space:nowrap}
+.h4-cmp td.b{background:var(--stkbg2);color:var(--hopd);font-weight:600}
+.h4-comp{margin:8px 14px 0;padding:8px 10px;border-radius:8px;background:var(--s1);font-size:14px;color:var(--txt)}
+.h4-comp b{font-weight:600;color:var(--ink)}
+.h4-out{margin:10px 14px 0}
+.h4-out .t{font-size:16px;font-weight:700;margin-bottom:2px}
+.h4-out div{padding:3px 0;border-top:1px solid var(--line);font-size:14px;color:var(--txt)}
+.h4-out div b{display:block;line-height:1.2;font-size:15px;font-weight:600;color:var(--mut)}
+
+/* 8 : choisi, pourquoi (v03-7 + v09-3) */
+.h4-ch{margin:10px 14px 0;padding:10px 12px;border:1px solid #BCD3A6;border-radius:10px;background:var(--stkbg)}
+.h4-ch .k{display:flex;align-items:center;gap:5px;font-size:15px;font-weight:700;color:var(--hopd)}
+.h4-ch .ob{display:flex;gap:12px;margin-top:8px}
+.h4-ch .ob .h4-vg{background:#fff}
+.h4-ch .ob .tx{flex:1;display:flex;flex-direction:column;gap:1px;font-size:14px;color:var(--mut)}
+.h4-ch .ob .tx b{font-size:17px;font-weight:700;color:var(--ink);line-height:1.2}
+.h4-ch .ob .tx .p{font-size:15px;font-weight:600;color:var(--ink)}
+.h4-ch .pq{margin:8px 0 0;font-size:15px;font-weight:700}
+.h4-ch ul{margin:2px 0 0;padding-left:20px;font-size:15px;color:var(--txt)}
+.h4-ch li{margin:1px 0}
+.h4-send{margin-top:8px;padding-top:8px;border-top:1px solid #BCD3A6}
+.h4-send p{margin:0 0 8px;font-size:14px;color:var(--txt)}
+.h4-send p b{font-weight:600;color:var(--ink)}
+.h4-inav{display:flex;align-items:center;gap:8px;margin-top:10px;min-height:48px;padding:5px 12px;border:1px solid var(--line2);border-radius:8px;background:var(--bg);font-size:15px;font-weight:600}
+.h4-inav .h4-i{color:var(--stk)}
+.h4-inav span{display:flex;flex-direction:column}.h4-inav a{font-size:14px;color:var(--fin)}
+.h4-ec{margin:10px 14px 0}
+.h4-ec .t{display:flex;align-items:baseline;gap:6px;font-size:17px;font-weight:700;color:var(--ink);margin-bottom:2px}
+.h4-ec .t span{margin-left:auto;font-size:14px;font-weight:400;color:var(--mut)}
+.h4-ec .e{display:flex;align-items:center;gap:10px;min-height:40px;padding:1px 0;border-top:1px solid var(--line);font-size:14px;color:var(--mut)}
+.h4-ec .e .h4-vg{width:36px;height:36px;border-radius:6px}.h4-ec .e .h4-vg svg{width:34px;height:30px}
+.h4-ec .e .tx{flex:1;min-width:0;display:flex;flex-direction:column;line-height:1.2}
+.h4-ec .e .tx b{font-size:15px;font-weight:600;color:var(--ink)}
+.h4-ec .e .pr{flex:none;display:flex;flex-direction:column;align-items:flex-end;line-height:1.2}
+.h4-ec .e .pr b{font-size:15px;font-weight:600;color:var(--ink)}
+.h4-ec .e .pr small{font-size:14px;color:var(--mut)}
+.h4-ch li.cp{list-style:none;margin-left:-20px;color:var(--att);font-weight:600}
+.h4-cv{display:flex;align-items:center;gap:8px;margin:6px 14px 0;font-size:14px;color:var(--mut)}
+.h4-cv a{margin-left:auto;font-size:15px;font-weight:600;color:var(--ink);text-decoration:underline}
+
+/* 9 : À venir (v10-5 + v02-6) */
+.h4-avh{display:flex;align-items:center;gap:6px;margin:14px 0 6px;font-size:16px;font-weight:700}
+.h4-avh .h4-i{color:var(--stk)}
+.h4-avh span{margin-left:auto;font-size:15px;font-weight:600}
+.h4-avc{padding:10px 12px;border:1.5px solid var(--ink);border-radius:10px}
+.h4-avc .l1{display:flex;align-items:baseline;font-size:14px;color:var(--mut)}
+.h4-avc .l1 b{font-weight:700;color:var(--hopd);margin-right:auto}
+.h4-avc .ob{display:flex;gap:12px;margin-top:6px}
+.h4-avc .ob .tx{flex:1;display:flex;flex-direction:column;gap:1px;font-size:14px;color:var(--mut)}
+.h4-avc .ob .tx b{font-size:16px;font-weight:700;color:var(--ink);line-height:1.2}
+.h4-avc .ob .tx .p{font-size:15px;font-weight:600;color:var(--ink)}
+.h4-avc .bt{display:flex;gap:8px;margin-top:10px}
+.h4-avc .bt .h4-b{flex:1;height:42px;font-size:15px}
+.h4-avr{display:flex;align-items:center;gap:12px;padding:10px 12px;border:1px solid var(--line);border-radius:8px}
+.h4-avr .d{flex:none;width:58px;font-size:14px;font-weight:600;color:var(--txt);line-height:1.15}
+.h4-avr .tx{flex:1;display:flex;flex-direction:column;font-size:14px;color:var(--mut)}
+.h4-avr .tx b{font-size:16px;font-weight:600;color:var(--ink)}
+.h4-avr .tx a{color:var(--fin);font-weight:600}
+.h4-avr .p{font-size:15px;font-weight:600}
+.h4-real{margin-top:4px;padding:10px 0;border-top:1px solid var(--line);font-size:15px;color:var(--txt)}
+</style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+ <defs>
+  <symbol id="i-left" viewBox="0 0 24 24"><path d="M15 18l-6-6 6-6"/></symbol>
+  <symbol id="i-right" viewBox="0 0 24 24"><path d="M9 18l6-6-6-6"/></symbol>
+  <symbol id="i-search" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.6-3.6"/></symbol>
+  <symbol id="i-plus" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></symbol>
+  <symbol id="i-x" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></symbol>
+  <symbol id="i-check" viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7"/></symbol>
+  <symbol id="i-cam" viewBox="0 0 24 24"><path d="M4 8h3l2-3h6l2 3h3v11H4z"/><circle cx="12" cy="13" r="3.5"/></symbol>
+  <symbol id="i-mic" viewBox="0 0 24 24"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M6 11a6 6 0 0 0 12 0M12 17v4"/></symbol>
+  <symbol id="i-link" viewBox="0 0 24 24"><path d="M10 14a4 4 0 0 0 5.7 0l3-3a4 4 0 0 0-5.7-5.7l-1 1M14 10a4 4 0 0 0-5.7 0l-3 3a4 4 0 0 0 5.7 5.7l1-1"/></symbol>
+  <symbol id="i-eye" viewBox="0 0 24 24"><path d="M2 12s3.5-6 10-6 10 6 10 6-3.5 6-10 6S2 12 2 12z"/><circle cx="12" cy="12" r="2.6"/></symbol>
+  <symbol id="i-target" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.5"/><circle cx="12" cy="12" r="4.5"/><circle cx="12" cy="12" r="1"/></symbol>
+  <symbol id="i-fork" viewBox="0 0 24 24"><circle cx="6" cy="5" r="2"/><circle cx="18" cy="5" r="2"/><circle cx="12" cy="19" r="2"/><path d="M6 7v1a3 3 0 0 0 3 3h6a3 3 0 0 0 3-3V7M12 11v6"/></symbol>
+  <symbol id="i-tag" viewBox="0 0 24 24"><path d="M3 12V4h8l10 10-8 8z"/><circle cx="7.5" cy="7.5" r="1.4"/></symbol>
+  <symbol id="i-note" viewBox="0 0 24 24"><rect x="5" y="3" width="14" height="18" rx="2"/><path d="M9 8h6M9 12h6M9 16h4"/></symbol>
+  <symbol id="i-down" viewBox="0 0 24 24"><path d="M12 5v14M6 13l6 6 6-6"/></symbol>
+  <symbol id="i-ext" viewBox="0 0 24 24"><path d="M14 5h5v5M19 5l-8 8M18 14v5H5V6h5"/></symbol>
+  <symbol id="i-spark" viewBox="0 0 24 24"><path d="M12 3v4M12 17v4M3 12h4M17 12h4M6 6l2.5 2.5M15.5 15.5L18 18M18 6l-2.5 2.5M8.5 15.5L6 18"/></symbol>
+  <symbol id="i-cal" viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/></symbol>
+  <symbol id="i-bord" viewBox="0 0 24 24"><rect x="4" y="4" width="7" height="7" rx="1.5"/><rect x="13" y="4" width="7" height="7" rx="1.5"/><rect x="4" y="13" width="7" height="7" rx="1.5"/><rect x="13" y="13" width="7" height="7" rx="1.5"/></symbol>
+  <symbol id="i-wallet" viewBox="0 0 24 24"><path d="M4 7h15a1 1 0 0 1 1 1v11H4zM4 7V5h12"/><path d="M15 13h5"/></symbol>
+  <symbol id="i-beer" viewBox="0 0 24 24"><path d="M6 7h9v14H6zM15 10h2.5a1.5 1.5 0 0 1 1.5 1.5v4a1.5 1.5 0 0 1-1.5 1.5H15M6 7c0-2.2 2-3.5 4.5-3.5S15 4.8 15 7M9 11v6M12 11v6"/></symbol>
+  <symbol id="i-boxes" viewBox="0 0 24 24"><circle cx="8" cy="15.5" r="4"/><circle cx="16" cy="15.5" r="4"/><circle cx="12" cy="8" r="4"/></symbol>
+  <symbol id="i-users" viewBox="0 0 24 24"><circle cx="9" cy="8" r="3.5"/><path d="M3 20c0-3.5 2.7-6 6-6s6 2.5 6 6M16 4.5a3.5 3.5 0 0 1 0 7M21 20c0-3-1.5-5-4-6"/></symbol>
+  <!-- objets -->
+  <symbol id="p-iso" viewBox="0 0 48 40"><rect x="6" y="3" width="36" height="12" rx="2" fill="#A7AEB2"/><rect x="29" y="5.5" width="10" height="5.5" rx="1" fill="#3F6B2E"/><circle cx="14" cy="9" r="4.3" fill="#fff" stroke="#5A5A5A" stroke-width="1.4"/><path d="M14 9l2.6-2.2" stroke="#C0392B" stroke-width="1.5" stroke-linecap="round"/><path d="M6 8H2.5v22" fill="none" stroke="#5A5A5A" stroke-width="1.5"/><path d="M12 15v5M20 15v5M28 15v5M36 15v5" stroke="#5A5A5A" stroke-width="1.6"/><g fill="#8A5212"><rect x="9.5" y="20" width="5" height="13" rx="2"/><rect x="17.5" y="20" width="5" height="13" rx="2"/><rect x="25.5" y="20" width="5" height="13" rx="2"/><rect x="33.5" y="20" width="5" height="13" rx="2"/></g><rect x="4" y="33" width="40" height="3" rx="1" fill="#5A5A5A"/></symbol>
+  <symbol id="p-mono" viewBox="0 0 48 40"><rect x="3" y="3" width="42" height="12" rx="2" fill="#A7AEB2"/><circle cx="12" cy="9" r="4" fill="none" stroke="#5A5A5A" stroke-width="1.6"/><rect x="31" y="5.5" width="10" height="5.5" rx="1" fill="#3F6B2E"/><g fill="#8A5212"><rect x="6" y="21" width="4" height="12" rx="1.6"/><rect x="12.5" y="21" width="4" height="12" rx="1.6"/><rect x="19" y="21" width="4" height="12" rx="1.6"/><rect x="25.5" y="21" width="4" height="12" rx="1.6"/><rect x="32" y="21" width="4" height="12" rx="1.6"/><rect x="38.5" y="21" width="4" height="12" rx="1.6"/></g><rect x="2" y="33" width="44" height="3" rx="1" fill="#5A5A5A"/></symbol>
+  <symbol id="p-compact" viewBox="0 0 48 40"><rect x="11" y="3" width="26" height="33" rx="2" fill="#DCE0E2" stroke="#7C8488" stroke-width="1.4"/><rect x="13.5" y="5.5" width="21" height="7" rx="1" fill="#A7AEB2"/><rect x="27" y="7" width="6" height="4" rx="1" fill="#3F6B2E"/><g fill="#8A5212"><rect x="14" y="17" width="4" height="15" rx="1.6"/><rect x="19.3" y="17" width="4" height="15" rx="1.6"/><rect x="24.6" y="17" width="4" height="15" rx="1.6"/><rect x="29.9" y="17" width="4" height="15" rx="1.6"/></g><rect x="9" y="35" width="30" height="3" rx="1" fill="#5A5A5A"/></symbol>
+  <symbol id="p-semi" viewBox="0 0 48 40"><rect x="3" y="5" width="34" height="10" rx="2" fill="#A7AEB2"/><path d="M36 11l8-8" stroke="#5A5A5A" stroke-width="2.6" stroke-linecap="round"/><circle cx="44.5" cy="3.5" r="2.8" fill="#C0392B"/><path d="M9 15v5M17 15v5M25 15v5M33 15v5" stroke="#5A5A5A" stroke-width="1.6"/><g fill="#8A5212"><rect x="6.5" y="20" width="5" height="13" rx="2"/><rect x="14.5" y="20" width="5" height="13" rx="2"/><rect x="22.5" y="20" width="5" height="13" rx="2"/><rect x="30.5" y="20" width="5" height="13" rx="2"/></g><rect x="2" y="33" width="38" height="3" rx="1" fill="#5A5A5A"/></symbol>
+  <symbol id="p-centri" viewBox="0 0 48 40"><rect x="1" y="15" width="46" height="10" fill="#DCE0E2" stroke="#7C8488" stroke-width="1.2"/><rect x="13" y="7" width="22" height="26" rx="4" fill="#C9CED1" stroke="#7C8488" stroke-width="1.6"/><circle cx="24" cy="20" r="7" fill="#fff" stroke="#7C8488" stroke-width="1.4"/><path d="M24 13v14M17 20h14M19 15l10 10M29 15L19 25" stroke="#7C8488" stroke-width="1.2"/><path d="M4 20h6M38 20h6l-2-2M44 20l-2 2" fill="none" stroke="#4F7E9B" stroke-width="1.5" stroke-linecap="round"/></symbol>
+  <symbol id="p-table" viewBox="0 0 48 40"><rect x="14" y="5" width="20" height="9" rx="2" fill="#A7AEB2"/><path d="M20 14v6M28 14v6" stroke="#5A5A5A" stroke-width="1.6"/><g fill="#8A5212"><rect x="17.5" y="20" width="5" height="12" rx="2"/><rect x="25.5" y="20" width="5" height="12" rx="2"/></g><rect x="8" y="32" width="32" height="3" rx="1" fill="#5A5A5A"/><path d="M11 35v4M37 35v4" stroke="#5A5A5A" stroke-width="2"/></symbol>
+  <symbol id="p-hotte" viewBox="0 0 48 40"><rect x="20" y="2" width="8" height="9" fill="#8F979B"/><path d="M8 22h32l-7-11H15z" fill="#B8BEC2"/><rect x="7" y="22" width="34" height="3" rx="1" fill="#7C8488"/><path d="M15 29c1.5 2-1.5 3 0 5M24 29c1.5 2-1.5 3 0 5M33 29c1.5 2-1.5 3 0 5" fill="none" stroke="#4F7E9B" stroke-width="1.6" stroke-linecap="round"/></symbol>
+  <symbol id="p-fan" viewBox="0 0 48 40"><rect x="9" y="3" width="30" height="34" rx="4" fill="#C9CED1"/><circle cx="24" cy="20" r="12" fill="#fff" stroke="#7C8488" stroke-width="1.6"/><path d="M24 20c0-5 3-8 6-7-1 4-3 6-6 7zM24 20c4 3 5 7 2 9-2-3-2-6-2-9zM24 20c-5 1-9-1-9-4 4-1 7 1 9 4z" fill="#7C8488"/><circle cx="24" cy="20" r="2" fill="#5A5A5A"/></symbol>
+  <symbol id="p-evier" viewBox="0 0 48 40"><path d="M30 6h6v6" fill="none" stroke="#7C8488" stroke-width="2" stroke-linecap="round"/><rect x="4" y="13" width="40" height="5" rx="1" fill="#B8BEC2"/><path d="M8 18h14v10H8zM26 18h14v10H26z" fill="#DCE0E2" stroke="#7C8488" stroke-width="1.4"/><path d="M8 28v9M40 28v9" stroke="#7C8488" stroke-width="2"/></symbol>
+  <symbol id="p-frigo" viewBox="0 0 48 40"><rect x="12" y="2" width="24" height="36" rx="2" fill="#C9CED1" stroke="#7C8488" stroke-width="1.4"/><path d="M12 12h24" stroke="#7C8488" stroke-width="1.4"/><rect x="31" y="15" width="2" height="9" rx="1" fill="#5A5A5A"/><circle cx="17" cy="7" r="1.5" fill="#4F7E9B"/></symbol>
+  <symbol id="p-tireuse" viewBox="0 0 48 40"><rect x="10" y="6" width="28" height="7" rx="2" fill="#A7AEB2"/><path d="M15 13v6M21 13v6M27 13v6M33 13v6" stroke="#5A5A5A" stroke-width="2" stroke-linecap="round"/><rect x="8" y="30" width="32" height="4" rx="1" fill="#5A5A5A"/><rect x="20" y="20" width="6" height="10" rx="1" fill="#E0A02E"/></symbol>
+  <symbol id="p-lien" viewBox="0 0 48 40"><rect x="6" y="5" width="36" height="30" rx="4" fill="none" stroke="#A7AEB2" stroke-width="1.6" stroke-dasharray="3 3"/><path d="M21 23a4 4 0 0 0 5.7 0l3-3a4 4 0 0 0-5.7-5.7l-1 1M27 17a4 4 0 0 0-5.7 0l-3 3a4 4 0 0 0 5.7 5.7l1-1" fill="none" stroke="#7C8488" stroke-width="1.8" stroke-linecap="round"/></symbol>
+ </defs>
+</svg>
+
+<div class="h4-page">
+<div class="h4-rail">
+
+<!-- ================= 1 · Liste des carnets — v09-1 ; en bas I1 (v10-1) ================= -->
+<figure class="h4-fig"><figcaption><b>1</b><span>Liste des carnets <em>· v09-1, son n° 1 ; en bas, « En veille » de v10-1</em></span></figcaption>
+<div class="h4-tel">
+ <header class="h4-top"><span class="h4-logo"><svg viewBox="0 0 24 24"><path d="M7 7h9l-1.2 13H8.2z" fill="#F2C14E"/><path d="M6.6 7.5c0-2.2 2.2-3.3 4.9-3.3s4.9 1.1 4.9 3.3z" fill="#FFFFFF"/></svg></span><b class="h4-nom">L'Affinée</b><span class="h4-mois"><i><svg class="h4-i"><use href="#i-left"/></svg></i><b>Nov.</b><i><svg class="h4-i"><use href="#i-right"/></svg></i></span><span class="h4-lou"><svg class="h4-i"><use href="#i-search"/></svg></span><span class="h4-av"><span>G</span><span>A</span><i></i></span></header>
+ <nav class="h4-seg"><a>Articles</a><a>Courses</a><a>Fûts</a><a class="on">Matériel</a><a>Houblons</a></nav>
+ <div class="h4-sous"><a>À venir <span class="n">2</span></a><a class="on">Carnets <span class="n">4</span></a><a>Réalisés <span class="n">0</span></a></div>
+ <div class="h4-c">
+  <div class="h4-gh"><span class="t att">À comparer <span class="n">1</span></span></div>
+  <div class="h4-pan"><div class="h4-row"><span class="h4-vg"><svg><use href="#p-hotte"/></svg></span><span class="h4-tx"><b>Ventilation de la salle de brassage</b><span class="nx"><em>Ensuite :</em> avis du ferblantier</span><span class="ve">2 façons · 5 articles · <svg class="h4-i s"><use href="#i-eye"/></svg>1 en veille</span></span><span class="h4-pr"><small>dès</small><b class="m">420</b><small>CHF</small></span></div></div>
+  <div class="h4-gh"><span class="t neu">Idée <span class="n">1</span></span><span class="r">pas encore d'article</span></div>
+  <div class="h4-pan"><div class="h4-row"><span class="h4-vg"><svg><use href="#p-evier"/></svg></span><span class="h4-tx"><b>Évier inox</b><span class="q">« 2 bacs pour laver les fûts »</span></span><span class="h4-b v"><svg class="h4-i s"><use href="#i-search"/></svg>Chercher</span></div></div>
+  <div class="h4-gh"><span class="t">Choisi <span class="n">2</span></span></div>
+  <div class="h4-pan">
+   <div class="h4-row"><span class="h4-vg"><svg><use href="#p-iso"/></svg></span><span class="h4-tx"><b>Embouteillage</b><span class="nx">oxygène le plus bas, en stock</span><span>le 17 nov. · Abfülltechnik West</span></span><span class="h4-pr"><b class="m">12 320</b><small>CHF rendu</small></span></div>
+   <div class="h4-row"><span class="h4-vg"><svg><use href="#p-frigo"/></svg></span><span class="h4-tx"><b>Frigo de garde pour fûts</b><span class="nx">tient 2 °C en été, 6 fûts</span><span>le 10 nov. · Froid Léman</span></span><span class="h4-pr"><b class="m">4 900</b><small>CHF</small></span></div>
+   <div class="h4-avl"><svg class="h4-i s"><use href="#i-cal"/></svg>Les deux sont dans À venir<span class="go">Voir ›</span></div>
+  </div>
+  <div class="h4-gh"><span class="t vei"><svg class="h4-i s"><use href="#i-eye"/></svg>En veille</span><span class="r">relue tous les 3 jours</span></div>
+  <div class="h4-pan"><div class="h4-row"><span class="h4-vg"><svg><use href="#p-hotte"/></svg></span><span class="h4-tx"><b>Hotte murale 100 cm</b><span><span class="h4-pi ok">Baisse le 13 nov.</span> Ventilation</span></span><span class="h4-pr"><b class="m">1 450</b><s class="m">1 600</s></span></div></div>
+ </div>
+ <div class="h4-dock w"><div class="h4-in"><em>Une idée, un besoin…</em><svg class="h4-i"><use href="#i-cam"/></svg><svg class="h4-i"><use href="#i-mic"/></svg></div></div>
+ <a class="h4-fab x" aria-label="Noter une nouvelle idée"><svg class="h4-i"><use href="#i-plus"/></svg>Idée</a>
+ <nav class="h4-nav"><a><svg class="h4-i"><use href="#i-bord"/></svg>Bord</a><a class="fi"><svg class="h4-i"><use href="#i-wallet"/></svg>Finances</a><a class="ca"><svg class="h4-i"><use href="#i-cal"/></svg>Calendrier</a><a class="br"><svg class="h4-i"><use href="#i-beer"/></svg>Brassins</a><a class="st on"><svg class="h4-i"><use href="#i-boxes"/></svg>Stocks<b class="bdg">4</b></a><a><svg class="h4-i"><use href="#i-users"/></svg>Clients</a></nav>
+</div></figure>
+
+<!-- ================= 2 · Ajouter une idée — v08-2 ; I5 (v06-1) sous la carte ================= -->
+<figure class="h4-fig"><figcaption><b>2</b><span>Ajouter une idée <em>· v08-2, son n° 1 ; sous la carte, où la ranger (v06-1) : le bouton suit le choix, Créer ou Ajouter</em></span></figcaption>
+<div class="h4-tel h4-kb">
+ <header class="h4-top"><span class="h4-logo"><svg viewBox="0 0 24 24"><path d="M7 7h9l-1.2 13H8.2z" fill="#F2C14E"/><path d="M6.6 7.5c0-2.2 2.2-3.3 4.9-3.3s4.9 1.1 4.9 3.3z" fill="#FFFFFF"/></svg></span><b class="h4-nom">L'Affinée</b><span class="h4-mois"><i><svg class="h4-i"><use href="#i-left"/></svg></i><b>Nov.</b><i><svg class="h4-i"><use href="#i-right"/></svg></i></span><span class="h4-lou"><svg class="h4-i"><use href="#i-search"/></svg></span><span class="h4-av"><span>G</span><span>A</span><i></i></span></header>
+ <nav class="h4-seg"><a>Articles</a><a>Courses</a><a>Fûts</a><a class="on">Matériel</a><a>Houblons</a></nav>
+ <div class="h4-sous"><a>À venir <span class="n">2</span></a><a class="on">Carnets <span class="n">4</span></a><a>Réalisés <span class="n">0</span></a></div>
+ <div class="h4-ghost">
+  <div class="l1"><b>Tireuse 4 becs<span class="h4-caret"></span></b><span class="ici"><svg class="h4-i s"><use href="#i-down"/></svg>arrive ici</span></div>
+  <div class="l2">Nouveau carnet · <b>Idée</b></div>
+ </div>
+ <div class="h4-ou">
+  <p><b>« tireuse 4 becs »</b> : où la ranger ?</p>
+  <div class="h4-opts">
+   <div class="h4-opt on"><span class="h4-rd on"></span><span><b>Nouveau carnet</b></span></div>
+   <div class="h4-opt"><span class="h4-rd"></span><span><b>Dans Frigo de garde</b><small><svg class="h4-i s"><use href="#i-spark"/></svg>IA : proche</small></span></div>
+  </div>
+ </div>
+ <p class="h4-dimh">Vos carnets · 4</p>
+ <div class="h4-dim">
+  <div>Frigo de garde<span>Choisi</span></div>
+  <div>Évier inox<span>Idée</span></div>
+  <div>Ventilation<span>À comparer</span></div>
+  <div>Embouteillage<span>Choisi</span></div>
+ </div>
+ <div class="h4-dock"><div class="h4-in"><em class="ec">tireuse 4 becs<span class="h4-caret"></span></em><svg class="h4-i"><use href="#i-cam"/></svg><svg class="h4-i"><use href="#i-mic"/></svg></div><span class="h4-cree" style="margin-left:8px"><svg class="h4-i s"><use href="#i-plus"/></svg>Créer</span></div>
+ <div class="h4-kbd" aria-hidden="true">
+  <div><i>a</i><i>z</i><i>e</i><i>r</i><i>t</i><i>y</i><i>u</i><i>i</i><i>o</i><i>p</i></div>
+  <div><i>q</i><i>s</i><i>d</i><i>f</i><i>g</i><i>h</i><i>j</i><i>k</i><i>l</i><i>m</i></div>
+  <div><i class="k">⇧</i><i>w</i><i>x</i><i>c</i><i>v</i><i>b</i><i>n</i><i>’</i><i class="k">⌫</i></div>
+  <div><i class="k">123</i><i>,</i><i class="w">espace</i><i>.</i><i class="go">↵</i></div>
+ </div>
+</div></figure>
+
+<!-- ================= 3a · Un carnet ouvert, neuf — v08-3 ================= -->
+<figure class="h4-fig"><figcaption><b>3a</b><span>Un carnet ouvert, tout neuf <em>· v08-3 : l'IA propose, vous validez ; pas de tuiles à zéro</em></span></figcaption>
+<div class="h4-tel">
+ <header class="h4-top"><span class="h4-logo"><svg viewBox="0 0 24 24"><path d="M7 7h9l-1.2 13H8.2z" fill="#F2C14E"/><path d="M6.6 7.5c0-2.2 2.2-3.3 4.9-3.3s4.9 1.1 4.9 3.3z" fill="#FFFFFF"/></svg></span><b class="h4-nom">L'Affinée</b><span class="h4-mois"><i><svg class="h4-i"><use href="#i-left"/></svg></i><b>Nov.</b><i><svg class="h4-i"><use href="#i-right"/></svg></i></span><span class="h4-lou"><svg class="h4-i"><use href="#i-search"/></svg></span><span class="h4-av"><span>G</span><span>A</span><i></i></span></header>
+ <div class="h4-back"><svg class="h4-i"><use href="#i-left"/></svg>Carnets<span class="d"><span class="h4-pi neu">Idée · à l'instant</span><span class="u">Annuler</span></span></div>
+ <h1 class="h4-h1">Tireuse 4 becs</h1>
+ <div class="h4-sec">
+  <div class="h4-sh"><svg class="h4-i"><use href="#i-target"/></svg>Ce qui compte<small>proposé par l'IA</small></div>
+  <div class="h4-box"><span class="tx"><b>Servir 4 fûts de 20 L au frais, sans mousse</b>pas encore validé</span><span class="bt"><span class="h4-b v">Valider</span><span class="h4-b">Changer</span></span></div>
+ </div>
+ <div class="h4-sec">
+  <div class="h4-sh"><svg class="h4-i"><use href="#i-fork"/></svg>Façons de faire<small>2 proposées</small></div>
+  <div class="h4-box"><span class="tx"><b>Tireuse de comptoir, refroidisseur sec</b><span>mobile · ≈ <span class="m">1 200</span> CHF</span></span><span class="bt"><span class="h4-b v">Retenir</span><span class="h4-b">Écarter</span></span></div>
+  <div class="h4-box"><span class="tx"><b>Colonne murale, fûts en chambre froide</b>fixe · utilise le frigo de garde</span><span class="bt"><span class="h4-b v">Retenir</span><span class="h4-b">Écarter</span></span></div>
+ </div>
+ <div class="h4-sec">
+  <div class="h4-sh"><svg class="h4-i"><use href="#i-tag"/></svg>Articles</div>
+  <div class="h4-slot"><svg class="h4-i"><use href="#i-down"/></svg>Un lien ou une photo : l'article arrive ici, avec son prix.</div>
+ </div>
+ <div class="h4-sec">
+  <div class="h4-sh"><svg class="h4-i"><use href="#i-note"/></svg>Notes</div>
+  <div class="h4-box"><span class="tx"><b style="font-weight:400">« tireuse 4 becs »</b>votre phrase de départ</span></div>
+ </div>
+ <div class="h4-dock"><div class="h4-in"><em>Ajouter à Tireuse 4 becs…</em><svg class="h4-i"><use href="#i-cam"/></svg><svg class="h4-i"><use href="#i-mic"/></svg></div></div>
+ <a class="h4-fab" aria-label="Ajouter"><svg class="h4-i"><use href="#i-plus"/></svg></a>
+ <nav class="h4-nav"><a><svg class="h4-i"><use href="#i-bord"/></svg>Bord</a><a class="fi"><svg class="h4-i"><use href="#i-wallet"/></svg>Finances</a><a class="ca"><svg class="h4-i"><use href="#i-cal"/></svg>Calendrier</a><a class="br"><svg class="h4-i"><use href="#i-beer"/></svg>Brassins</a><a class="st on"><svg class="h4-i"><use href="#i-boxes"/></svg>Stocks<b class="bdg">4</b></a><a><svg class="h4-i"><use href="#i-users"/></svg>Clients</a></nav>
+</div></figure>
+
+<!-- ================= 3b · Un carnet ouvert, rempli — v11-3 ================= -->
+<figure class="h4-fig"><figcaption><b>3b</b><span>Un carnet ouvert, rempli <em>· v11-3, son n° 2 : façons en cartes, articles en tableau par façon</em></span></figcaption>
+<div class="h4-tel">
+ <header class="h4-top"><span class="h4-logo"><svg viewBox="0 0 24 24"><path d="M7 7h9l-1.2 13H8.2z" fill="#F2C14E"/><path d="M6.6 7.5c0-2.2 2.2-3.3 4.9-3.3s4.9 1.1 4.9 3.3z" fill="#FFFFFF"/></svg></span><b class="h4-nom">L'Affinée</b><span class="h4-mois"><i><svg class="h4-i"><use href="#i-left"/></svg></i><b>Nov.</b><i><svg class="h4-i"><use href="#i-right"/></svg></i></span><span class="h4-lou"><svg class="h4-i"><use href="#i-search"/></svg></span><span class="h4-av"><span>G</span><span>A</span><i></i></span></header>
+ <div class="h4-back"><svg class="h4-i"><use href="#i-left"/></svg>Carnets<span class="d"><span class="h4-pi att">à trancher</span></span></div>
+ <h1 class="h4-h1 lg">Ventilation de la salle de brassage</h1>
+ <div class="h4-crit"><svg class="h4-i s"><use href="#i-target"/></svg><span>Critère, proposé par l'IA :</span><b>capter la buée à la source</b></div>
+ <div class="h4-sec" style="margin-top:10px">
+  <div class="h4-sh">Hotte ou extracteur ?</div>
+  <div class="h4-fc">
+   <div class="lead"><b>Hotte + extracteur</b><span class="p"><span class="m">1 450</span> à <span class="m">2 600</span> CHF</span><span class="w">capte au-dessus de la cuve</span><span class="bt"><span class="h4-b v">Retenir</span><span class="h4-b">Écarter</span></span></div>
+   <div><b>Extracteur mural</b><span class="p"><span class="m">420</span> à <span class="m">690</span> CHF</span><span class="w">aspire la pièce entière</span><span class="bt"><span class="h4-b v">Retenir</span><span class="h4-b">Écarter</span></span></div>
+  </div>
+ </div>
+ <div class="h4-sec" style="margin-top:10px">
+  <div class="h4-sh">Articles<small>4 lus, 1 lien sans aperçu</small></div>
+  <div class="h4-tab">
+   <div class="th"><span style="flex:1"></span><span class="c">débit<br>m³/h</span><span class="c">bruit<br>dB</span><span class="c p">prix<br>CHF</span></div>
+   <div class="tg">Hotte + extracteur</div>
+   <div class="tr"><span class="h4-vg"><svg><use href="#p-hotte"/></svg></span><span class="nm">Hotte murale 100 cm<small><svg class="h4-i s"><use href="#i-eye"/></svg>Gastro Lüftung · DE</small></span><span class="c m">1 200</span><span class="c m">55</span><span class="c p m">1 450</span></div>
+   <div class="tr"><span class="h4-vg"><svg><use href="#p-hotte"/></svg></span><span class="nm">Hotte inox 120 cm<small>4 sem. · Inox Broye · CH</small></span><span class="c m best">1 800</span><span class="c m">58</span><span class="c p m">2 600</span></div>
+   <div class="tg">Extracteur mural</div>
+   <div class="tr"><span class="h4-vg"><svg><use href="#p-fan"/></svg></span><span class="nm">Hélicoïde mural<small>Ventil Jura · CH</small></span><span class="c m">1 500</span><span class="c m">62</span><span class="c p m best">420</span></div>
+   <div class="tr"><span class="h4-vg"><svg><use href="#p-centri"/></svg></span><span class="nm">Centrifuge en ligne<small>Aéro Rhône · FR</small></span><span class="c m">1 100</span><span class="c m best">49</span><span class="c p m">690</span></div>
+   <div class="tr"><span class="h4-vg"><svg><use href="#p-lien"/></svg></span><span class="nm" style="font-weight:400">ventil-express.ch/caisson<small>page sans aperçu</small></span><span class="ok-l">Ouvrir<svg class="h4-i s"><use href="#i-ext"/></svg></span></div>
+  </div>
+ </div>
+ <a class="h4-ln">Comparer côte à côte<span>4 articles, 3 mesures</span><svg class="h4-i"><use href="#i-right"/></svg></a>
+ <div class="h4-dock"><div class="h4-in"><em>Ajouter à Ventilation…</em><svg class="h4-i"><use href="#i-cam"/></svg><svg class="h4-i"><use href="#i-mic"/></svg></div></div>
+ <a class="h4-fab" aria-label="Ajouter"><svg class="h4-i"><use href="#i-plus"/></svg></a>
+ <nav class="h4-nav"><a><svg class="h4-i"><use href="#i-bord"/></svg>Bord</a><a class="fi"><svg class="h4-i"><use href="#i-wallet"/></svg>Finances</a><a class="ca"><svg class="h4-i"><use href="#i-cal"/></svg>Calendrier</a><a class="br"><svg class="h4-i"><use href="#i-beer"/></svg>Brassins</a><a class="st on"><svg class="h4-i"><use href="#i-boxes"/></svg>Stocks<b class="bdg">4</b></a><a><svg class="h4-i"><use href="#i-users"/></svg>Clients</a></nav>
+</div></figure>
+
+<!-- ================= 4a · Ajouter à une idée : le + dit QUOI — v06-4 ================= -->
+<figure class="h4-fig"><figcaption><b>4a</b><span>Ajouter à une idée : le + dit quoi <em>· v06-4 ; le champ dit comment (photo, voix)</em></span></figcaption>
+<div class="h4-tel">
+ <header class="h4-top"><span class="h4-logo"><svg viewBox="0 0 24 24"><path d="M7 7h9l-1.2 13H8.2z" fill="#F2C14E"/><path d="M6.6 7.5c0-2.2 2.2-3.3 4.9-3.3s4.9 1.1 4.9 3.3z" fill="#FFFFFF"/></svg></span><b class="h4-nom">L'Affinée</b><span class="h4-mois"><i><svg class="h4-i"><use href="#i-left"/></svg></i><b>Nov.</b><i><svg class="h4-i"><use href="#i-right"/></svg></i></span><span class="h4-lou"><svg class="h4-i"><use href="#i-search"/></svg></span><span class="h4-av"><span>G</span><span>A</span><i></i></span></header>
+ <div class="h4-back"><svg class="h4-i"><use href="#i-left"/></svg>Carnets<span class="d"><span class="h4-pi att">à trancher</span></span></div>
+ <h1 class="h4-h1 lg">Ventilation de la salle de brassage</h1>
+ <div class="h4-crit"><svg class="h4-i s"><use href="#i-target"/></svg><span>Critère, proposé par l'IA :</span><b>capter la buée à la source</b></div>
+ <div class="h4-sec" style="margin-top:10px">
+  <div class="h4-sh">Hotte ou extracteur ?</div>
+  <div class="h4-fc">
+   <div class="lead"><b>Hotte + extracteur</b><span class="p"><span class="m">1 450</span> à <span class="m">2 600</span> CHF</span><span class="w">capte au-dessus de la cuve</span></div>
+   <div><b>Extracteur mural</b><span class="p"><span class="m">420</span> à <span class="m">690</span> CHF</span><span class="w">aspire la pièce entière</span></div>
+  </div>
+ </div>
+ <div class="h4-scrim"></div>
+ <div class="h4-menu">
+  <div class="mh">Ajouter à Ventilation<small>qu'est-ce que c'est ?</small></div>
+  <div class="h4-mr"><span class="ic"><svg class="h4-i"><use href="#i-tag"/></svg></span><span class="tx"><b>Article</b>un objet à acheter : un lien ou un nom</span><svg class="h4-i"><use href="#i-right"/></svg></div>
+  <div class="h4-paste"><svg class="h4-i s"><use href="#i-link"/></svg><span class="u">Lien copié : <span class="m">ventil-shop.ch/hotte-150</span></span><span class="h4-b v">Coller</span></div>
+  <div class="h4-mr"><span class="ic"><svg class="h4-i"><use href="#i-fork"/></svg></span><span class="tx"><b>Façon</b>une manière de faire : hotte, gaine, fenêtre…</span><svg class="h4-i"><use href="#i-right"/></svg></div>
+  <div class="h4-mr"><span class="ic"><svg class="h4-i"><use href="#i-target"/></svg></span><span class="tx"><b>Critère</b>ce qui départage : débit, bruit, prix…</span><svg class="h4-i"><use href="#i-right"/></svg></div>
+  <div class="h4-mr"><span class="ic"><svg class="h4-i"><use href="#i-note"/></svg></span><span class="tx"><b>Note</b>un rappel : « le ferblantier passe jeudi »</span><svg class="h4-i"><use href="#i-right"/></svg></div>
+ </div>
+ <div class="h4-dock lit" style="z-index:7"><div class="h4-in"><em>Ou écrivez, photo, voix…</em><svg class="h4-i"><use href="#i-cam"/></svg><svg class="h4-i"><use href="#i-mic"/></svg></div></div>
+ <a class="h4-fab" aria-label="Fermer le menu Ajouter"><svg class="h4-i"><use href="#i-x"/></svg></a>
+ <nav class="h4-nav"><a><svg class="h4-i"><use href="#i-bord"/></svg>Bord</a><a class="fi"><svg class="h4-i"><use href="#i-wallet"/></svg>Finances</a><a class="ca"><svg class="h4-i"><use href="#i-cal"/></svg>Calendrier</a><a class="br"><svg class="h4-i"><use href="#i-beer"/></svg>Brassins</a><a class="st on"><svg class="h4-i"><use href="#i-boxes"/></svg>Stocks<b class="bdg">4</b></a><a><svg class="h4-i"><use href="#i-users"/></svg>Clients</a></nav>
+</div></figure>
+
+<!-- ================= 4b · Après « Coller » : l'article arrive dans sa case — v08-5 ================= -->
+<figure class="h4-fig"><figcaption><b>4b</b><span>Après « Coller » : l'article dans sa case <em>· aperçu « arrive ici » de v08-5</em></span></figcaption>
+<div class="h4-tel">
+ <header class="h4-top"><span class="h4-logo"><svg viewBox="0 0 24 24"><path d="M7 7h9l-1.2 13H8.2z" fill="#F2C14E"/><path d="M6.6 7.5c0-2.2 2.2-3.3 4.9-3.3s4.9 1.1 4.9 3.3z" fill="#FFFFFF"/></svg></span><b class="h4-nom">L'Affinée</b><span class="h4-mois"><i><svg class="h4-i"><use href="#i-left"/></svg></i><b>Nov.</b><i><svg class="h4-i"><use href="#i-right"/></svg></i></span><span class="h4-lou"><svg class="h4-i"><use href="#i-search"/></svg></span><span class="h4-av"><span>G</span><span>A</span><i></i></span></header>
+ <div class="h4-back"><svg class="h4-i"><use href="#i-left"/></svg>Carnets<span class="d"><span class="h4-pi att">à trancher</span></span></div>
+ <h1 class="h4-h1 lg">Ventilation de la salle de brassage</h1>
+ <div class="h4-crit"><svg class="h4-i s"><use href="#i-target"/></svg><span>Critère, proposé par l'IA :</span><b>capter la buée à la source</b></div>
+ <div class="h4-sec">
+  <div class="h4-sh"><svg class="h4-i"><use href="#i-tag"/></svg>Articles · Hotte + extracteur<small>rang au débit</small></div>
+  <div class="h4-arr">
+   <span class="h4-vg l" style="background:#fff"><svg><use href="#p-hotte"/></svg></span>
+   <span class="tx">
+    <span><span class="ici"><svg class="h4-i s"><use href="#i-down"/></svg>arrive ici</span><b>Hotte inox 150 cm + extracteur</b></span>
+    <span><span class="pr m">5 100</span> CHF · Inox Ventil (CH) · en stock</span>
+    <span><span class="h4-rk top">1</span> débit <span class="m">2 400</span> m³/h · <span class="m">60</span> dB · lu sur la page</span>
+    <span class="h4-ve"><svg class="h4-i s"><use href="#i-eye"/></svg>Veille tous les 3 jours<span class="o">oui</span><span class="h4-sw"></span></span>
+   </span>
+  </div>
+  <div class="h4-done"><svg class="h4-i s"><use href="#i-check"/></svg>Rangé dans la façon Hotte + extracteur<a>Changer</a></div>
+ </div>
+ <div class="h4-sec">
+  <div class="h4-pan h4-mini">
+   <div class="h4-row"><span class="h4-vg"><svg><use href="#p-hotte"/></svg></span><span class="h4-tx"><b>Hotte murale 100 cm</b><span><span class="h4-rk">3</span> débit <span class="m">1 200</span> m³/h · <span class="m">55</span> dB</span></span><span class="h4-pr"><b class="m">1 450</b><small>CHF</small></span></div>
+   <div class="h4-row"><span class="h4-vg"><svg><use href="#p-hotte"/></svg></span><span class="h4-tx"><b>Hotte inox 120 cm</b><span><span class="h4-rk">2</span> débit <span class="m">1 800</span> m³/h · <span class="m">58</span> dB</span></span><span class="h4-pr"><b class="m">2 600</b><small>CHF</small></span></div>
+  </div>
+ </div>
+ <a class="h4-ln">Extracteur mural<span>2 articles · dès <span class="m">420</span> CHF</span><svg class="h4-i"><use href="#i-right"/></svg></a>
+ <div class="h4-dock"><div class="h4-in"><em>Ajouter à Ventilation…</em><svg class="h4-i"><use href="#i-cam"/></svg><svg class="h4-i"><use href="#i-mic"/></svg></div></div>
+ <a class="h4-fab" aria-label="Ajouter"><svg class="h4-i"><use href="#i-plus"/></svg></a>
+ <nav class="h4-nav"><a><svg class="h4-i"><use href="#i-bord"/></svg>Bord</a><a class="fi"><svg class="h4-i"><use href="#i-wallet"/></svg>Finances</a><a class="ca"><svg class="h4-i"><use href="#i-cal"/></svg>Calendrier</a><a class="br"><svg class="h4-i"><use href="#i-beer"/></svg>Brassins</a><a class="st on"><svg class="h4-i"><use href="#i-boxes"/></svg>Stocks<b class="bdg">4</b></a><a><svg class="h4-i"><use href="#i-users"/></svg>Clients</a></nav>
+</div></figure>
+
+<!-- ================= 4c · Une phrase devenue critère — v07-2 ================= -->
+<figure class="h4-fig"><figcaption><b>4c</b><span>Une phrase devenue critère <em>· v07-2 : « tirée de votre phrase · Changer »</em></span></figcaption>
+<div class="h4-tel">
+ <header class="h4-top"><span class="h4-logo"><svg viewBox="0 0 24 24"><path d="M7 7h9l-1.2 13H8.2z" fill="#F2C14E"/><path d="M6.6 7.5c0-2.2 2.2-3.3 4.9-3.3s4.9 1.1 4.9 3.3z" fill="#FFFFFF"/></svg></span><b class="h4-nom">L'Affinée</b><span class="h4-mois"><i><svg class="h4-i"><use href="#i-left"/></svg></i><b>Nov.</b><i><svg class="h4-i"><use href="#i-right"/></svg></i></span><span class="h4-lou"><svg class="h4-i"><use href="#i-search"/></svg></span><span class="h4-av"><span>G</span><span>A</span><i></i></span></header>
+ <div class="h4-back"><svg class="h4-i"><use href="#i-left"/></svg>Carnets<span class="d"><span class="h4-pi neu">Idée · 15 nov.</span></span></div>
+ <h1 class="h4-h1">Évier inox</h1>
+ <p class="h4-sub">« 2 bacs pour laver les fûts »</p>
+ <div class="h4-sec">
+  <div class="h4-sh"><svg class="h4-i"><use href="#i-target"/></svg>Ce qui compte</div>
+  <div class="h4-arr" style="flex-direction:column;gap:4px">
+   <span class="h4-tag"><svg class="h4-i s"><use href="#i-spark"/></svg>tirée de votre phrase · <a>Changer</a></span>
+   <b style="font-size:17px">Un fût de 30 L couché entre dans le bac</b>
+   <span style="font-size:14px;color:var(--txt)">Comparé sur : profondeur de bac, <span class="m">40</span> cm au moins</span>
+   <span style="font-size:14px;color:var(--mut)">Votre phrase : « bacs assez profonds pour laver un fût de 30 L couché »</span>
+  </div>
+  <div class="h4-chg">Ce n'était pas un critère ?<span class="h4-b">Note</span><span class="h4-b">Façon</span></div>
+ </div>
+ <div class="h4-sec">
+  <div class="h4-sh"><svg class="h4-i"><use href="#i-fork"/></svg>Façons de faire<small>2 proposées</small></div>
+  <div class="h4-box"><span class="tx"><b>Plan à 2 bacs, encastré</b>proposée par l'IA</span><span class="bt"><span class="h4-b v">Retenir</span><span class="h4-b">Écarter</span></span></div>
+  <div class="h4-box"><span class="tx"><b>Sur pieds, avec égouttoir</b>proposée par l'IA</span><span class="bt"><span class="h4-b v">Retenir</span><span class="h4-b">Écarter</span></span></div>
+ </div>
+ <div class="h4-sec">
+  <div class="h4-sh"><svg class="h4-i"><use href="#i-tag"/></svg>Articles</div>
+  <div class="h4-slot"><svg class="h4-i"><use href="#i-down"/></svg>Un lien ou une photo : l'article arrive ici, avec son prix.</div>
+ </div>
+ <div class="h4-dock"><div class="h4-in"><em>Ajouter à Évier inox…</em><svg class="h4-i"><use href="#i-cam"/></svg><svg class="h4-i"><use href="#i-mic"/></svg></div></div>
+ <a class="h4-fab" aria-label="Ajouter"><svg class="h4-i"><use href="#i-plus"/></svg></a>
+ <nav class="h4-nav"><a><svg class="h4-i"><use href="#i-bord"/></svg>Bord</a><a class="fi"><svg class="h4-i"><use href="#i-wallet"/></svg>Finances</a><a class="ca"><svg class="h4-i"><use href="#i-cal"/></svg>Calendrier</a><a class="br"><svg class="h4-i"><use href="#i-beer"/></svg>Brassins</a><a class="st on"><svg class="h4-i"><use href="#i-boxes"/></svg>Stocks<b class="bdg">4</b></a><a><svg class="h4-i"><use href="#i-users"/></svg>Clients</a></nav>
+</div></figure>
+
+<!-- ================= 5 · Cartes d'article — base E12b, rendue parlante ================= -->
+<figure class="h4-fig"><figcaption><b>5</b><span>Cartes d'article <em>· base E12b, son n° 1 : valeur du critère et rang, une carte par machine</em></span></figcaption>
+<div class="h4-tel">
+ <header class="h4-top"><span class="h4-logo"><svg viewBox="0 0 24 24"><path d="M7 7h9l-1.2 13H8.2z" fill="#F2C14E"/><path d="M6.6 7.5c0-2.2 2.2-3.3 4.9-3.3s4.9 1.1 4.9 3.3z" fill="#FFFFFF"/></svg></span><b class="h4-nom">L'Affinée</b><span class="h4-mois"><i><svg class="h4-i"><use href="#i-left"/></svg></i><b>Nov.</b><i><svg class="h4-i"><use href="#i-right"/></svg></i></span><span class="h4-lou"><svg class="h4-i"><use href="#i-search"/></svg></span><span class="h4-av"><span>G</span><span>A</span><i></i></span></header>
+ <div class="h4-back"><svg class="h4-i"><use href="#i-left"/></svg>Carnets<span class="d"><span class="h4-pi att">à comparer</span></span></div>
+ <h1 class="h4-h1">Embouteillage</h1>
+ <div class="h4-scrim" style="z-index:5"></div>
+ <div class="h4-sheet" style="top:118px">
+  <div class="h4-grab"></div>
+  <div class="h4-shd"><b>Articles · 5</b><span>classés par moins d'O₂</span><span class="r">Fermer<svg class="h4-i s"><use href="#i-x"/></svg></span></div>
+  <div class="h4-art"><span class="h4-vg l"><svg><use href="#p-iso"/></svg></span><span class="tx"><b>Isobarique 4 becs pré-évacuation</b><span>2 vendeurs · DE et CH, même machine</span><span class="cr top"><span class="h4-rk top">1</span> <b class="m">40</b> ppb d'O₂ · le plus bas</span><span class="px"><span><span class="p m">≈ 12 300</span> CHF rendu · en stock</span><span class="vl"><svg class="h4-i s"><use href="#i-eye"/></svg>veille</span></span></span></div>
+  <div class="h4-art"><span class="h4-vg l"><svg><use href="#p-mono"/></svg></span><span class="tx"><b>Monobloc isobarique 6 becs</b><span>Imbottigliatrici Nord · IT</span><span class="cr"><span class="h4-rk">2</span> <b class="m">50</b> ppb d'O₂</span><span class="px"><span><span class="p m">24 800</span> CHF · délai 6 sem.</span></span></span></div>
+  <div class="h4-art"><span class="h4-vg l"><svg><use href="#p-compact"/></svg></span><span class="tx"><b>Isobarique 4 becs compact</b><span>Brew Equip Lyon · FR</span><span class="cr"><span class="h4-rk">3</span> <b class="m">70</b> ppb d'O₂</span><span class="px"><span><span class="p m">9 600</span> CHF · délai 4 sem.</span></span></span></div>
+  <div class="h4-art"><span class="h4-vg l"><svg><use href="#p-semi"/></svg></span><span class="tx"><b>Isobarique 4 becs semi-auto</b><span>Brassage Romandie · CH</span><span class="cr"><span class="h4-rk">4</span> <b class="m">90</b> ppb d'O₂</span><span class="px"><span><span class="p m">8 900</span> CHF · en stock</span><span class="vl"><svg class="h4-i s"><use href="#i-eye"/></svg>veille</span></span></span></div>
+  <div class="h4-art"><span class="h4-vg l"><svg><use href="#p-table"/></svg></span><span class="tx"><b>Isobarique 2 becs de table</b><span>Brasserie-Shop Valais · CH</span><span class="cr"><span class="h4-rk">5</span> <b class="m">120</b> ppb d'O₂</span><span class="px"><span><span class="p m">3 900</span> CHF · en stock</span></span></span></div>
+ </div>
+ <a class="h4-fab" aria-label="Ajouter"><svg class="h4-i"><use href="#i-plus"/></svg></a>
+ <nav class="h4-nav"><a><svg class="h4-i"><use href="#i-bord"/></svg>Bord</a><a class="fi"><svg class="h4-i"><use href="#i-wallet"/></svg>Finances</a><a class="ca"><svg class="h4-i"><use href="#i-cal"/></svg>Calendrier</a><a class="br"><svg class="h4-i"><use href="#i-beer"/></svg>Brassins</a><a class="st on"><svg class="h4-i"><use href="#i-boxes"/></svg>Stocks<b class="bdg">4</b></a><a><svg class="h4-i"><use href="#i-users"/></svg>Clients</a></nav>
+</div></figure>
+
+<!-- ================= 6 · Un article ouvert — v01-2 ; de v02-2 : Ouvrir ↗ par vendeur, veille datée ================= -->
+<figure class="h4-fig"><figcaption><b>6</b><span>Un article ouvert <em>· v01-2, son n° 2 ; de v02-2 : « Ouvrir ↗ » par vendeur, prochain passage de la veille</em></span></figcaption>
+<div class="h4-tel">
+ <header class="h4-top"><span class="h4-logo"><svg viewBox="0 0 24 24"><path d="M7 7h9l-1.2 13H8.2z" fill="#F2C14E"/><path d="M6.6 7.5c0-2.2 2.2-3.3 4.9-3.3s4.9 1.1 4.9 3.3z" fill="#FFFFFF"/></svg></span><b class="h4-nom">L'Affinée</b><span class="h4-mois"><i><svg class="h4-i"><use href="#i-left"/></svg></i><b>Nov.</b><i><svg class="h4-i"><use href="#i-right"/></svg></i></span><span class="h4-lou"><svg class="h4-i"><use href="#i-search"/></svg></span><span class="h4-av"><span>G</span><span>A</span><i></i></span></header>
+ <div class="h4-scrim" style="z-index:5"></div>
+ <div class="h4-sheet" style="top:56px">
+  <div class="h4-grab"></div>
+  <div class="h4-shd"><b>Articles · 5</b><span>Embouteillage</span><span class="r">Fermer<svg class="h4-i s"><use href="#i-x"/></svg></span></div>
+  <div class="h4-open">
+   <div class="h4-ph"><svg><use href="#p-iso"/></svg><span class="rk">1re sur 5</span></div>
+   <h3>Isobarique 4 becs pré-évacuation</h3>
+   <p class="fa"><b>façon isobarique</b> : remplir sous pression de CO₂ · lien collé le 10 nov.</p>
+   <div class="h4-o2"><span class="v">O₂ pris au remplissage<b class="m">40 ppb</b></span><span class="h4-rule"><span class="ax"></span><i class="me" style="left:4%"></i><i style="left:16%"></i><i style="left:41%"></i><i style="left:66%"></i><i style="left:96%"></i><span style="left:0">le plus bas</span><span style="right:0" class="m">120</span></span></div>
+   <div class="h4-vd">
+    <div class="hd"><b>2 vendeurs</b>même machine, même prix une fois rendue en Suisse</div>
+    <div class="h4-vr"><span class="h4-rd on"></span><span class="tx"><b>Abfülltechnik West · DE</b>en stock · SAV en Allemagne</span><span class="p m">11 400<small>≈ 12 320 rendue</small></span><span class="ou">Ouvrir<svg class="h4-i s"><use href="#i-ext"/></svg></span></div>
+    <div class="h4-vr"><span class="h4-rd"></span><span class="tx"><b>Brassage Romandie · CH</b>délai 4 sem. · SAV en Suisse</span><span class="p m">12 300</span><span class="ou">Ouvrir<svg class="h4-i s"><use href="#i-ext"/></svg></span></div>
+   </div>
+   <div class="hd" style="display:flex;margin-top:8px;font-size:14px;color:var(--mut)"><b style="color:var(--ink);font-weight:600;margin-right:4px">Autres mesures</b>rang sur 5, fiche du vendeur du 12 nov.</div>
+   <div class="h4-kv" style="margin-top:2px">
+    <div>Cadence<b class="m">400 bt/h</b><em class="g">2e</em></div>
+    <div>CO₂ / bt<b class="m">7 g</b><em class="g">2e</em></div>
+    <div>Au sol<b class="m">0,7 m²</b><em>4e</em></div>
+    <div>Nettoyage<b>NEP</b></div>
+   </div>
+   <div class="h4-vei"><svg class="h4-i"><use href="#i-eye"/></svg><span class="tx"><b>Veille tous les 3 jours</b>prix et stock · prochain passage le 19 nov.</span><span class="o">oui</span><span class="h4-sw"></span></div>
+   <div class="h4-plein" style="margin-top:8px"><svg class="h4-i"><use href="#i-check"/></svg>Choisir · Abfülltechnik West</div>
+   <p class="h4-part" style="margin-right:62px">Part dans À venir : <b>11 400 CHF + TVA d'import et port, ≈ 12 320 CHF</b>, avec le pourquoi.</p>
+  </div>
+ </div>
+ <a class="h4-fab" aria-label="Ajouter"><svg class="h4-i"><use href="#i-plus"/></svg></a>
+ <nav class="h4-nav"><a><svg class="h4-i"><use href="#i-bord"/></svg>Bord</a><a class="fi"><svg class="h4-i"><use href="#i-wallet"/></svg>Finances</a><a class="ca"><svg class="h4-i"><use href="#i-cal"/></svg>Calendrier</a><a class="br"><svg class="h4-i"><use href="#i-beer"/></svg>Brassins</a><a class="st on"><svg class="h4-i"><use href="#i-boxes"/></svg>Stocks<b class="bdg">4</b></a><a><svg class="h4-i"><use href="#i-users"/></svg>Clients</a></nav>
+</div></figure>
+
+<!-- ================= 7 · Comparer — v01-3 ; de base E14a : barres du seul critère ================= -->
+<figure class="h4-fig"><figcaption><b>7</b><span>Comparer sur le critère <em>· v01-3, son n° 2 ; au-dessus, les barres de E14a, « Classé par Oxygène capté »</em></span></figcaption>
+<div class="h4-tel">
+ <header class="h4-top"><span class="h4-logo"><svg viewBox="0 0 24 24"><path d="M7 7h9l-1.2 13H8.2z" fill="#F2C14E"/><path d="M6.6 7.5c0-2.2 2.2-3.3 4.9-3.3s4.9 1.1 4.9 3.3z" fill="#FFFFFF"/></svg></span><b class="h4-nom">L'Affinée</b><span class="h4-mois"><i><svg class="h4-i"><use href="#i-left"/></svg></i><b>Nov.</b><i><svg class="h4-i"><use href="#i-right"/></svg></i></span><span class="h4-lou"><svg class="h4-i"><use href="#i-search"/></svg></span><span class="h4-av"><span>G</span><span>A</span><i></i></span></header>
+ <div class="h4-back"><svg class="h4-i"><use href="#i-left"/></svg>Embouteillage</div>
+ <h1 class="h4-h1">Comparer</h1>
+ <p class="h4-sub">5 machines · Classé par <b style="color:var(--ink)">Oxygène capté</b></p>
+ <div class="h4-bars">
+  <div class="hd">Oxygène capté<span>ppb · moins = mieux</span><em>critère</em></div>
+  <div class="h4-br top"><span class="nm"><b>1</b>4 becs pré-évacuation</span><span class="v m">40</span><span class="bar"><i style="width:100%"></i></span></div>
+  <div class="h4-br"><span class="nm"><b>2</b>Monobloc 6 becs</span><span class="v m">50</span><span class="bar"><i style="width:80%"></i></span></div>
+  <div class="h4-br"><span class="nm"><b>3</b>4 becs compact</span><span class="v m">70</span><span class="bar"><i style="width:57%"></i></span></div>
+  <div class="h4-br"><span class="nm"><b>4</b>4 becs semi-auto</span><span class="v m">90</span><span class="bar"><i style="width:44%"></i></span></div>
+  <div class="h4-br"><span class="nm"><b>5</b>2 becs de table</span><span class="v m">120</span><span class="bar"><i style="width:33%"></i></span></div>
+ </div>
+ <div class="h4-cmp">
+  <div class="t">Côte à côte<span>le meilleur en vert</span></div>
+  <table>
+   <tr><th></th><th><svg><use href="#p-iso"/></svg>Pré-évac.</th><th><svg><use href="#p-mono"/></svg>Monobloc</th><th><svg><use href="#p-compact"/></svg>Compact</th><th><svg><use href="#p-semi"/></svg>Semi-auto</th><th><svg><use href="#p-table"/></svg>Table</th></tr>
+   <tr><td>O₂ ppb</td><td class="m b">40</td><td class="m">50</td><td class="m">70</td><td class="m">90</td><td class="m">120</td></tr>
+   <tr><td>Prix CHF</td><td class="m">11 400</td><td class="m">24 800</td><td class="m">9 600</td><td class="m">8 900</td><td class="m b">3 900</td></tr>
+   <tr><td>bt/h</td><td class="m">400</td><td class="m b">900</td><td class="m">400</td><td class="m">250</td><td class="m">120</td></tr>
+   <tr><td>CO₂ g/bt</td><td class="m">7</td><td class="m b">6</td><td class="m">8</td><td class="m">9</td><td class="m">10</td></tr>
+  </table>
+ </div>
+ <div class="h4-comp"><b>Compromis : la 3e</b>, <span class="m">70</span> ppb pour <span class="m">9 600</span> CHF, soit <span class="m">1 800</span> CHF de moins que la 1re pour <span class="m">30</span> ppb de plus.</div>
+ <div class="h4-out">
+  <div class="t">Écartés · 2</div>
+  <div><b>Façon gravité</b>la mousse monte, O₂ autour de <span class="m">400</span> ppb</div>
+  <div><b>Tireuse 3 becs à tube long</b>pas de pré-évacuation de l'air</div>
+ </div>
+ <div class="h4-dock"><div class="h4-in"><em>Ajouter à Embouteillage…</em><svg class="h4-i"><use href="#i-cam"/></svg><svg class="h4-i"><use href="#i-mic"/></svg></div></div>
+ <a class="h4-fab" aria-label="Ajouter"><svg class="h4-i"><use href="#i-plus"/></svg></a>
+ <nav class="h4-nav"><a><svg class="h4-i"><use href="#i-bord"/></svg>Bord</a><a class="fi"><svg class="h4-i"><use href="#i-wallet"/></svg>Finances</a><a class="ca"><svg class="h4-i"><use href="#i-cal"/></svg>Calendrier</a><a class="br"><svg class="h4-i"><use href="#i-beer"/></svg>Brassins</a><a class="st on"><svg class="h4-i"><use href="#i-boxes"/></svg>Stocks<b class="bdg">4</b></a><a><svg class="h4-i"><use href="#i-users"/></svg>Clients</a></nav>
+</div></figure>
+
+<!-- ================= 8a · Choisi, avant l'envoi — v03-7 en cadre ; de v09-3 : Part dans À venir + Envoyer ================= -->
+<figure class="h4-fig"><figcaption><b>8a</b><span>Choisi, pourquoi : avant l'envoi <em>· v03-7 en cadre ; de v09-3, « Part dans À venir » et Envoyer</em></span></figcaption>
+<div class="h4-tel">
+ <header class="h4-top"><span class="h4-logo"><svg viewBox="0 0 24 24"><path d="M7 7h9l-1.2 13H8.2z" fill="#F2C14E"/><path d="M6.6 7.5c0-2.2 2.2-3.3 4.9-3.3s4.9 1.1 4.9 3.3z" fill="#FFFFFF"/></svg></span><b class="h4-nom">L'Affinée</b><span class="h4-mois"><i><svg class="h4-i"><use href="#i-left"/></svg></i><b>Nov.</b><i><svg class="h4-i"><use href="#i-right"/></svg></i></span><span class="h4-lou"><svg class="h4-i"><use href="#i-search"/></svg></span><span class="h4-av"><span>G</span><span>A</span><i></i></span></header>
+ <div class="h4-back"><svg class="h4-i"><use href="#i-left"/></svg>Carnets<span class="d"><span class="h4-pi ok">choisi</span></span></div>
+ <h1 class="h4-h1">Embouteillage</h1>
+ <div class="h4-ch">
+  <div class="k"><svg class="h4-i s"><use href="#i-check"/></svg>Choisi le 17 nov.</div>
+  <div class="ob"><span class="h4-vg l"><svg><use href="#p-iso"/></svg></span><span class="tx"><b>Isobarique 4 becs pré-évacuation</b>Abfülltechnik West · DE<span><span class="p m">11 400</span> CHF · en stock</span><span>≈ <span class="m">12 320</span> CHF rendue, TVA d'import et port</span></span></div>
+  <p class="pq">Pourquoi</p>
+  <ul><li>le moins d'O₂ des 5 : <span class="m">40</span> ppb</li><li>en stock, sans délai ; rendue, le prix suisse</li><li class="cp">Contrepartie : SAV en Allemagne</li></ul>
+  <div class="h4-send">
+   <p>Part dans À venir : <b>la machine, ≈ 12 320 CHF rendue, chez Abfülltechnik West</b>, avec le pourquoi.</p>
+   <div class="h4-plein"><svg class="h4-i"><use href="#i-cal"/></svg>Envoyer dans À venir</div>
+  </div>
+ </div>
+ <div class="h4-ec">
+  <div class="t">Écartés, et pourquoi<span>rang en O₂</span></div>
+  <div class="e"><span class="h4-vg"><svg><use href="#p-mono"/></svg></span><span class="tx"><b>Monobloc 6 becs</b>2 fois le prix, délai 6 sem.</span><span class="pr"><b class="m">24 800</b><small>2e · 50 ppb</small></span></div>
+  <div class="e"><span class="h4-vg"><svg><use href="#p-compact"/></svg></span><span class="tx"><b>4 becs compact</b>presque 2 fois plus d'O₂</span><span class="pr"><b class="m">9 600</b><small>3e · 70 ppb</small></span></div>
+  <div class="e"><span class="h4-vg"><svg><use href="#p-semi"/></svg></span><span class="tx"><b>4 becs semi-auto</b>levier à la main, plus d'O₂</span><span class="pr"><b class="m">8 900</b><small>4e · 90 ppb</small></span></div>
+  <div class="e"><span class="h4-vg"><svg><use href="#p-table"/></svg></span><span class="tx"><b>2 becs de table</b>trop lent, sans NEP</span><span class="pr"><b class="m">3 900</b><small>5e · 120 ppb</small></span></div>
+  <div class="e"><span class="h4-vg"><svg><use href="#p-iso"/></svg></span><span class="tx"><b>Brassage Romandie (CH)</b>même machine, délai 4 sem.</span><span class="pr"><b class="m">12 300</b><small>autre vendeur</small></span></div>
+ </div>
+ <div class="h4-dock"><div class="h4-in"><em>Ajouter à Embouteillage…</em><svg class="h4-i"><use href="#i-cam"/></svg><svg class="h4-i"><use href="#i-mic"/></svg></div></div>
+ <a class="h4-fab" aria-label="Ajouter"><svg class="h4-i"><use href="#i-plus"/></svg></a>
+ <nav class="h4-nav"><a><svg class="h4-i"><use href="#i-bord"/></svg>Bord</a><a class="fi"><svg class="h4-i"><use href="#i-wallet"/></svg>Finances</a><a class="ca"><svg class="h4-i"><use href="#i-cal"/></svg>Calendrier</a><a class="br"><svg class="h4-i"><use href="#i-beer"/></svg>Brassins</a><a class="st on"><svg class="h4-i"><use href="#i-boxes"/></svg>Stocks<b class="bdg">4</b></a><a><svg class="h4-i"><use href="#i-users"/></svg>Clients</a></nav>
+</div></figure>
+
+<!-- ================= 8b · Choisi, envoyé — v03-7 ================= -->
+<figure class="h4-fig"><figcaption><b>8b</b><span>Choisi, pourquoi : envoyé <em>· v03-7, son Top2 : « Dans À venir depuis le 17 nov. », écartés à raison, Changer d'avis</em></span></figcaption>
+<div class="h4-tel">
+ <header class="h4-top"><span class="h4-logo"><svg viewBox="0 0 24 24"><path d="M7 7h9l-1.2 13H8.2z" fill="#F2C14E"/><path d="M6.6 7.5c0-2.2 2.2-3.3 4.9-3.3s4.9 1.1 4.9 3.3z" fill="#FFFFFF"/></svg></span><b class="h4-nom">L'Affinée</b><span class="h4-mois"><i><svg class="h4-i"><use href="#i-left"/></svg></i><b>Nov.</b><i><svg class="h4-i"><use href="#i-right"/></svg></i></span><span class="h4-lou"><svg class="h4-i"><use href="#i-search"/></svg></span><span class="h4-av"><span>G</span><span>A</span><i></i></span></header>
+ <div class="h4-back"><svg class="h4-i"><use href="#i-left"/></svg>Carnets<span class="d"><span class="h4-pi ok">choisi</span></span></div>
+ <h1 class="h4-h1">Embouteillage</h1>
+ <div class="h4-ch">
+  <div class="k"><svg class="h4-i s"><use href="#i-check"/></svg>Choisi le 17 nov.</div>
+  <div class="ob"><span class="h4-vg l"><svg><use href="#p-iso"/></svg></span><span class="tx"><b>Isobarique 4 becs pré-évacuation</b>Abfülltechnik West · DE<span><span class="p m">11 400</span> CHF · en stock</span><span>≈ <span class="m">12 320</span> CHF rendue, TVA d'import et port</span></span></div>
+  <p class="pq">Pourquoi</p>
+  <ul><li>le moins d'O₂ des 5 : <span class="m">40</span> ppb</li><li>en stock, sans délai ; rendue, le prix suisse</li><li class="cp">Contrepartie : SAV en Allemagne</li></ul>
+  <div class="h4-inav"><svg class="h4-i"><use href="#i-cal"/></svg><span>Dans À venir depuis le 17 nov.<a>Voir dans À venir ›</a></span></div>
+ </div>
+ <div class="h4-ec">
+  <div class="t">Écartés, et pourquoi<span>rang en O₂</span></div>
+  <div class="e"><span class="h4-vg"><svg><use href="#p-mono"/></svg></span><span class="tx"><b>Monobloc 6 becs</b>2 fois le prix, délai 6 sem.</span><span class="pr"><b class="m">24 800</b><small>2e · 50 ppb</small></span></div>
+  <div class="e"><span class="h4-vg"><svg><use href="#p-compact"/></svg></span><span class="tx"><b>4 becs compact</b>presque 2 fois plus d'O₂</span><span class="pr"><b class="m">9 600</b><small>3e · 70 ppb</small></span></div>
+  <div class="e"><span class="h4-vg"><svg><use href="#p-semi"/></svg></span><span class="tx"><b>4 becs semi-auto</b>levier à la main, plus d'O₂</span><span class="pr"><b class="m">8 900</b><small>4e · 90 ppb</small></span></div>
+  <div class="e"><span class="h4-vg"><svg><use href="#p-table"/></svg></span><span class="tx"><b>2 becs de table</b>trop lent, sans NEP</span><span class="pr"><b class="m">3 900</b><small>5e · 120 ppb</small></span></div>
+  <div class="e"><span class="h4-vg"><svg><use href="#p-iso"/></svg></span><span class="tx"><b>Brassage Romandie (CH)</b>même machine, délai 4 sem.</span><span class="pr"><b class="m">12 300</b><small>autre vendeur</small></span></div>
+ </div>
+ <div class="h4-cv">Façons : isobarique gardée · gravité écartée<a>Changer d'avis</a></div>
+ <div class="h4-dock"><div class="h4-in"><em>Ajouter à Embouteillage…</em><svg class="h4-i"><use href="#i-cam"/></svg><svg class="h4-i"><use href="#i-mic"/></svg></div></div>
+ <a class="h4-fab" aria-label="Ajouter"><svg class="h4-i"><use href="#i-plus"/></svg></a>
+ <nav class="h4-nav"><a><svg class="h4-i"><use href="#i-bord"/></svg>Bord</a><a class="fi"><svg class="h4-i"><use href="#i-wallet"/></svg>Finances</a><a class="ca"><svg class="h4-i"><use href="#i-cal"/></svg>Calendrier</a><a class="br"><svg class="h4-i"><use href="#i-beer"/></svg>Brassins</a><a class="st on"><svg class="h4-i"><use href="#i-boxes"/></svg>Stocks<b class="bdg">4</b></a><a><svg class="h4-i"><use href="#i-users"/></svg>Clients</a></nav>
+</div></figure>
+
+<!-- ================= 9 · À venir et Réalisés — v10-5 ; de v02-6 : Fixer la date · Ouvrir le carnet ================= -->
+<figure class="h4-fig"><figcaption><b>9</b><span>À venir et Réalisés <em>· v10-5, son n° 2 ; de v02-6, « Fixer la date · Ouvrir le carnet »</em></span></figcaption>
+<div class="h4-tel">
+ <header class="h4-top"><span class="h4-logo"><svg viewBox="0 0 24 24"><path d="M7 7h9l-1.2 13H8.2z" fill="#F2C14E"/><path d="M6.6 7.5c0-2.2 2.2-3.3 4.9-3.3s4.9 1.1 4.9 3.3z" fill="#FFFFFF"/></svg></span><b class="h4-nom">L'Affinée</b><span class="h4-mois"><i><svg class="h4-i"><use href="#i-left"/></svg></i><b>Nov.</b><i><svg class="h4-i"><use href="#i-right"/></svg></i></span><span class="h4-lou"><svg class="h4-i"><use href="#i-search"/></svg></span><span class="h4-av"><span>G</span><span>A</span><i></i></span></header>
+ <nav class="h4-seg"><a>Articles</a><a>Courses</a><a>Fûts</a><a class="on">Matériel</a><a>Houblons</a></nav>
+ <div class="h4-sous"><a class="on">À venir <span class="n">2</span></a><a>Carnets <span class="n">5</span></a><a>Réalisés <span class="n">0</span></a></div>
+ <div class="h4-c">
+  <div class="h4-avh"><svg class="h4-i"><use href="#i-cal"/></svg>À commander<span class="m">≈ 12 320 CHF</span></div>
+  <div class="h4-avc">
+   <div class="l1"><b>Ajouté le 17 nov.</b>du carnet Embouteillage</div>
+   <div class="ob"><span class="h4-vg l"><svg><use href="#p-iso"/></svg></span><span class="tx"><b>Isobarique 4 becs pré-évacuation</b><span><span class="p m">11 400</span> CHF · Abfülltechnik West (DE)</span>+ TVA d'import et port ≈ <span class="m">12 320</span> CHF · en stock</span></div>
+   <div class="bt"><span class="h4-b k">Fixer la date</span><span class="h4-b k">Ouvrir le carnet</span></div>
+  </div>
+  <div class="h4-avh"><svg class="h4-i"><use href="#i-cal"/></svg>Livraison prévue<span class="m">4 900 CHF</span></div>
+  <div class="h4-avr"><span class="d m">mar.<br>24 nov.</span><span class="tx"><b>Chambre froide en kit 2 m³</b>Froid Léman (CH) · carnet Frigo de garde<a>Voir au calendrier ›</a></span><span class="p m">4 900</span></div>
+  <div class="h4-avh" style="margin-top:18px">Réalisés<span class="m" style="color:var(--mut)">0</span></div>
+  <div class="h4-real">Rien d'acheté encore. La facture enregistrée dans Finances fait passer l'achat ici.</div>
+ </div>
+ <div class="h4-dock w"><div class="h4-in"><em>Une idée, un besoin…</em><svg class="h4-i"><use href="#i-cam"/></svg><svg class="h4-i"><use href="#i-mic"/></svg></div></div>
+ <a class="h4-fab x" aria-label="Noter une nouvelle idée"><svg class="h4-i"><use href="#i-plus"/></svg>Idée</a>
+ <nav class="h4-nav"><a><svg class="h4-i"><use href="#i-bord"/></svg>Bord</a><a class="fi"><svg class="h4-i"><use href="#i-wallet"/></svg>Finances</a><a class="ca"><svg class="h4-i"><use href="#i-cal"/></svg>Calendrier</a><a class="br"><svg class="h4-i"><use href="#i-beer"/></svg>Brassins</a><a class="st on"><svg class="h4-i"><use href="#i-boxes"/></svg>Stocks<b class="bdg">4</b></a><a><svg class="h4-i"><use href="#i-users"/></svg>Clients</a></nav>
+</div></figure>
+
+</div>
+<p class="h4-foot">Carnet · greffe 2 · recette G4 « Le + dit quoi » · 17 nov. — fournisseurs, prix, dates et photos : exemple.</p>
+</div>
+</body>
+</html>

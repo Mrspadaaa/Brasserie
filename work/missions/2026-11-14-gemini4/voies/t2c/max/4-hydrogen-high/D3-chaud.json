@@ -1,0 +1,45 @@
+{
+ "reglage": "4-hydrogen@high",
+ "cas": "D3-chaud",
+ "tache": "diagnoseBatch",
+ "moitie": "choix",
+ "note": {
+  "qualite": 0.8,
+  "utilisable": true,
+  "passes": [
+   "atténuation apparente 51 % (±2)",
+   "cause : température trop élevée",
+   "esters, alcools supérieurs, solvant",
+   "action : refroidir"
+  ],
+  "manques": [
+   "gravité surveiller ou agir"
+  ]
+ },
+ "ms": 10986,
+ "coutMicro": 19103,
+ "etat": "STOP",
+ "valeur": {
+  "verdict": "Fermentation tumultueuse en surchauffe à 28 °C (atténuation apparente actuelle de 50,8 % à J+2) provoquant une production excessive d'esters (banane) et d'alcools supérieurs (solvant) typique d'une SafAle US-05 menée très au-dessus de sa plage idéale (18-22 °C).",
+  "severity": "urgent",
+  "causes": [
+   {
+    "cause": "Température de fermentation beaucoup trop élevée : ensemencement à 24 °C suivi d'une dérive exothermique à 27 °C (J+1) puis 28 °C (J+2), très au-delà de la plage optimale de la US-05 (18-22 °C), générant des alcools fusels (solvant) et de l'acétate d'isoamyle (banane).",
+    "probability": 0.95,
+    "action": "Refroidir immédiatement le fermenteur vers 19-20 °C (bain d'eau fraîche, groupe froid ou chambre thermorégulée) sans descendre sous 18 °C pour éviter un arrêt de fermentation, et contrôler la température toutes les 4 heures pendant 24 h."
+   },
+   {
+    "cause": "Léger sous-ensemencement : 1 sachet de 11,5 g pour 24 L à 1,065 DI (soit 48 g/hL, sous les 50-80 g/hL recommandés pour une bière à 1,065) augmentant le stress cellulaire et la synthèse d'esters en début de phase exponentielle.",
+    "probability": 0.6,
+    "action": "Suivre la densité à J+5 et J+7 pour confirmer la poursuite vers la DF cible de 1,012 malgré le choc thermique, et prévoir 2 sachets de US-05 (23 g) sur les prochains brassins de 24 L à 1,065 DI."
+   },
+   {
+    "cause": "Contamination microbienne (levure sauvage ou bactérie) accentuant l'emballement fermentaire et les arômes de solvant dès J+2.",
+    "probability": 0.1,
+    "action": "Effectuer un test organoleptique (acidité, phénols) lors de la prise de densité à J+7 et vérifier que la densité se stabilise autour de 1,012 sans chuter anormalement sous 1,008."
+   }
+  ],
+  "apparentAttenuationPct": 50.8,
+  "immediateAction": "Refroidir sans délai le moût de 28 °C à 19-20 °C pour stopper la production d'alcools de solvant, et installer un tuyau de purge (blow-off) si la mousse déborde du barboteur."
+ }
+}

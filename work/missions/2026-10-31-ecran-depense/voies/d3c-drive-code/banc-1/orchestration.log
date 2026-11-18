@@ -1,0 +1,6 @@
+[2026-11-01T08:48:22.854Z] dossier temporaire : C:\Users\mrspa\AppData\Local\Temp\affinee-jus0-emu-5iLiCT
+[2026-11-01T08:48:22.857Z] règles générées depuis le gabarit (sha a66184ee3434) → C:\Users\mrspa\AppData\Local\Temp\affinee-jus0-emu-5iLiCT\firestore.rules
+[2026-11-01T08:48:25.759Z] tsc functions → C:\Users\mrspa\AppData\Local\Temp\affinee-jus0-emu-5iLiCT\functions\lib : exit 0
+
+[2026-11-01T08:48:25.992Z] emulators:exec --project demo-jus --config C:\Users\mrspa\AppData\Local\Temp\affinee-jus0-emu-5iLiCT\firebase.json
+[2026-11-01T08:48:26.000Z] firebase emulators:exec pid 23804

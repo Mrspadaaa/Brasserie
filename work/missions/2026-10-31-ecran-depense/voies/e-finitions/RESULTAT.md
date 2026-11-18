@@ -1,0 +1,50 @@
+OK — Les 10 finitions de la lecture lente : récap sur sa frappe, cases TVA/Règlement marquées, relance hors ligne, bandeau borné, saisie par cellule
+
+Voie e-finitions, 02.11, agent auteur (Sonnet). Aucun commit, aucun déploiement, aucun appel Gemini (flux simulés, pièces fictives Brauhaus Ouest), aucune donnée réelle.
+
+## Fichiers écrits (tous dans « Possède »)
+- `src/ui/finance/ExpenseSheet.tsx` : `ctl` (récap) lit le recalcul sur le brouillon ; `finDePartie(message?)` ; `attendreRetour`, `horsLigne`, `lireEnFlux` (relance unique) branchés sur `attach` et `ajouterPage`/`scanPages` ; `focus` retiré de `surFinal` ; cases TVA et Règlement (`tvaCorrigee`, `payeCorrige`, `data-dp-corrige`, `data-dp-avant`) ; phrase n3-ht dans `remarques` et dans l'indice du total (`ScanHintTotal` prend une liste).
+- `src/ui/depense/finale.ts` : `touchee` sans focus (`Registres.focus` devenu optionnel et ignoré) ; `libelleAvant` (la quantité à lui n'est jamais barrée) ; `CASES_ENTETE` : seuls fournisseur, date, total, TVA, règlement entrent dans `nCorrigees` ; une correction d'en-tête se dit sur la valeur que la case montre (1er champ du groupe).
+- `src/ui/depense/Pied.tsx` : `BandeauPerdues` : cadre grille à `lg` (colonne de la liste, 420 / 760 comme la mise en page), nom `truncate` à part, montant `shrink-0`. La logique ne bouge pas.
+- `src/ui/depense/apercuDev.ts` : variante `entete` (`lenteur-entete`, SIMULÉ : TVA 3,38 lue par les deux lecteurs, 3,48 par la 3.8, aucune ligne ne change).
+- `tests/unit/depense/lecture-d/finitions.test.tsx` (neuf, 16 témoins), `finale.test.ts` (2 attentes changées, voir plus bas).
+- `voies/e-ecran/capturer-lenteur.mjs` : état `entete`, mesures `touchee` (6/7 sans coche, barré « × 1,45 »), bandeau dans la colonne de la liste à 1280, bout du défilement, nom long, TVA bleue et barrée.
+- Sorties dans `voies/e-finitions/` : `rouge.txt`, `sortie-vitest.txt`, `sortie-tsc.txt`, `sortie-build.txt`, `head.txt` + `head/` (le script sur HEAD), `captures.txt` + `captures/`.
+
+## Critère 1 — témoins rouges sur HEAD, verts après
+- `rouge.txt` : `finitions.test.tsx` sur HEAD (seul `apercuDev` portait la variante `entete`) : **14 échecs sur 16**. Les 2 qui passent sont voulus : (e) « en ligne, un échec ne relance rien » et (h') « la quantité changée : seule la quantité est gardée » (garde-fou, déjà vrai).
+- Vert après : `finitions.test.tsx` 16/16 ; `tests/unit/depense/lecture-d` 5 fichiers, 102 verts.
+- (a) 12 dans la quantité de Pilsner : « Qté × prix 6/7 », sans coche (avant : « 7/7 » coché) ; (a') même geste sans lenteur : 7/7 coché → 6/7 sans coche ; (b) 3.8 qui corrige la TVA seule : case TVA `data-dp-corrige`, « 3,38 » barré, puce « 1 corrigée », Règlement intact ; (b') le règlement corrigé : sa case en bleu, « Payé » barré, compté ; (c) n° de facture corrigé : appliqué (`F-4411`), aucune puce, aucune case marquée ; (d) « × 1,45 » seul (e2e et pur) ; (e) coupure puis retour : fil et roue tenus, 1 appel pendant la coupure, 2 après le retour, final appliqué (« 3 corrigées »), pas de 3e appel ; relance en échec : « 2 lectures », « Lecture coupée », aucune puce, 2 appels ; en ligne, aucun second appel ; (f) le message est dans `role="alert"` à côté de « Lecture coupée » ; (g) l'indice du total contient les deux phrases, la plus grave d'abord, et la preuve les montre toutes deux (la phrase HT seule aussi) ; (h) focus posé sans changer la valeur : quantité 5, nom « Pilsner Malz » corrigés ; quantité changée : 12 gardée, prix et nom corrigés ; pur : `registres.focus` ne fige plus rien.
+
+## Critère 2 — copie isolée (`copie.mjs`)
+- `vitest run tests/unit/depense tests/unit/designTokens.test.ts` : **145 fichiers, 2274 verts, 3 sautés** (`sortie-vitest.txt`).
+- `tsc --noEmit -p tsconfig.json` : code 0 (`sortie-tsc.txt`). `npm run build` : `✓ built in 13.49s`, code 0 (`sortie-build.txt`).
+- **Deux attentes existantes changées, par le contrat de la voie** (rien d'autre) : `finale.test.ts` « quantité tapée (12) et prix corrigé » attendait « 12 Kg × 1,45 » (mineur 2 : désormais « × 1,45 ») ; « une ligne dont le focus est dans une cellule… est traitée comme touchée » (item 9 : désormais, le focus seul ne fige rien : quantité 5, prix 2,90, 1 corrigée). Aucune assertion « 7/7 » existante n'a dépendu d'une frappe.
+
+## Critère 3 — captures (`captures.txt`)
+- **`ECRAN-D OK`**, 151 mesures vertes (11 états × 390 tactile et 1280 ; sombre pour `lue`), dont `lenteur-entete` neuf.
+- Le même script sur HEAD (copie isolée, `ExpenseSheet`, `finale`, `Pied` remis à `git show HEAD`, `apercuDev` neuf pour la fixture) : `head.txt`, **16 échecs** : `touchee` « Qté × prix7/7 », coche vraie, barré « 12 Kg × 1,45 » (×2 largeurs) ; bandeau à 1280 « 8→1272 » hors de la colonne « 478→1238 » ; nom long : montant à 688 px pour un bandeau qui finit à 201 (390) ; `entete` : fond absent, aucun barré.
+- Après : `touchee` « Qté × prix 6/7 », coche fausse ; bandeau 1280 « 478→1238 » = colonne de la liste exactement ; nom long : « Avoine maltée spéciale biolo… » coupé avec « … », « 1,70 » entier (201 ≤ 201 à 390) ; `entete` : TVA sur fond bleu `rgba(31,100,163,.15)`, « 3,38 » `line-through`, « 1 corrigée », Règlement non marqué.
+- **Mesure du mineur 3 : elle passe aussi sur HEAD.** À 390, au bout du défilement (318/318), « Sucre candi » est entière (369→398) au-dessus du bandeau (702). Le bandeau est dans le flux, hors de la zone qui défile : le corps rétrécit, aucun retrait bas n'est nécessaire, **aucun n'a été ajouté**. La rangée vue « coupée » (capture `tactile390-perdues-2-clair.png`) est celle d'un défilement à zéro : elle est entière dès qu'on descend. La mesure reste dans le script comme garde-fou.
+- Captures ouvertes en image (L12) : `tactile390-touchee-clair` (12 Kg non bleu, 2,90 bleu, « × 1,45 » barré, « Qté × prix 6/7 » sans coche, « 3 corrigées »), `tactile390-entete-clair` et `pc1280-entete-clair` (3,48 bleu, 3,38 barré, « 1 corrigée »), `tactile390-perdues-2-clair`, `tactile390-perdues-2-nom-long-clair`, `tactile390-perdues-2-bout-clair`, `pc1280-perdues-2-clair` (bandeau « pas retrouvée · 1/2 » aligné sur la colonne de droite, mêmes rangées qu'à 390). Prises, mesurées, non ouvertes : les autres états (`lue`, `echec`, `total`…, inchangés ; `ECRAN-D OK` les couvre).
+- Le nom long est un remplacement de texte dans le DOM pour la mesure (aucune pièce à nom long dans les fixtures) : dit comme tel.
+
+## Critère 4
+`git status --short` : mes fichiers = `Pied.tsx`, `apercuDev.ts`, `finale.ts`, `ExpenseSheet.tsx`, `finale.test.ts`, `finitions.test.tsx` (neuf), `capturer-lenteur.mjs` et `voies/e-finitions/**`. Le reste (hooks, manifeste, `hopSources`, `fermentescibles`, `essai-voies`, dossiers de sortie d'autres voies) n'est pas de moi.
+
+## Essais
+Un essai par critère. Une correction de mon test (`rangeePreuve` : la ligne commence par « · » quand elle n'est pas cochée) et une de mon script (regex et gabarits mal échappés à l'écriture, vus par `node --check`) ; aucune de l'app.
+
+## Doutes et limites
+- **Hors ligne** : seul l'événement `online` relance (et seulement si `navigator.onLine` est faux au moment de l'échec). Une coupure que le navigateur ne voit pas (réseau mort, `onLine` vrai) donne la fin de partie immédiate, comme avant. Aucune minuterie de secours : tant que le réseau ne revient pas, le fil et la roue restent, « Fermer » reste actif (un écran qui se ferme coupe l'attente). Jouée en jsdom (`finitions.test.tsx`), pas en Chrome : le banc b-lenteur (`lenteur-hors-ligne`) doit la rejouer.
+- Le banc b-lenteur attend encore l'ancien comportement dans trois `CONSTAT` : `lenteur-hors-ligne` (défaut 1, `relancee: false`), `lenteur-sans-resultat` (défaut 2, le message) et `ht-confirmer` (défaut 3, la phrase HT) ; `lenteur-touchee` `rangeeCorrigee: false` devient vrai. Ces constats changent : c'est voulu, à relire au rejeu.
+- Majeur 1, relance du pilote (1/2) : la régression en devise étrangère est corrigée. `ctl` ne prend le recalcul que si `result.currency==='CHF'` ; sinon il garde `result.controls` comme avant (le recalcul seulement après un Garder, comme avant). Témoin rouge d'abord (`rouge-eur.txt` : lecture EUR à 7 lignes justes → « 0/7 » sans coche), vert après : « Qté × prix 7/7 » avec coche. Rejoué dans la copie : vitest 145 fichiers, 2275 verts, 3 sautés ; tsc 0 ; build `✓ built in 13.24s`. Limite : une quantité tapée sur une pièce en EUR ne change pas le « n/n » (aucun montant de ligne en CHF à recontrôler).
+- Compte « n/n » : `checked − failed` (le serveur compte une ligne en échec dans `checked`) ; aucun test d'avant n'avait `failed > 0`.
+- Une correction d'en-tête qui change seulement l'autre champ d'un groupe (taux de TVA sans montant, base du total) est appliquée sans marque ni compte (voulu : la case ne montre que le montant).
+- La phrase HT est dite en clair dans la preuve (liste « remarques ») et dans l'indice du total (lecteurs d'écran) ; l'indice du total reste `sr-only` comme avant. Un emplacement plus visible (sous le total) serait un choix de dessin, non fait.
+- `Registres.focus` est gardé optionnel et ignoré, pour ne pas casser les appelants et les tests d'avant ; à retirer quand plus rien ne le passe.
+- Les captures n'ont tourné qu'en clair (sombre pour `lue` seulement) : la case TVA bleue en sombre n'est pas vue, elle suit les jetons de la case du total.
+- Étapes non faites : rejeu du banc Chrome b-lenteur (c'est le pilote, après moi), jeu en ligne réel.
+
+CONNAISSANCE : `aiClient.runFlux` rend `{ok:false, error}` sur flux coupé, fermé sans résultat ou délai ; `scanDocument` / `scanPages` le rendent tel quel. C'est donc `surFinal` (valeur rendue) qui doit dire le message, pas seulement le `catch` de `attach` (qui ne voit que les exceptions).
+LEÇON PROPOSÉE : un point de verdict « à mesurer au banc » ne devient pas une voie de correction avant d'avoir été mesuré sur HEAD : ici le mineur 3 (dernière rangée sous le bandeau) était déjà tenu (bandeau dans le flux), la capture ne montrait qu'un défilement à zéro. Un critère « échoue sur HEAD » doit être éprouvé sur HEAD avant d'être écrit dans la voie (L13).

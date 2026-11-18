@@ -1,0 +1,3 @@
+ok base : frise à 190 px, bande 35 px, 29 textes · petits 0 · hors 0 · chevauchés 0 · sur trait 0 · dans la brosse 0 · + à 14 px des onglets, 51 px du bord · corps identique à r2-c
+ok z1 : frise à 202 px, bande 35 px, 29 textes · petits 0 · hors 0 · chevauchés 0 · sur trait 0 · dans la brosse 0 · + à 14 px des onglets, 51 px du bord · corps identique à r2-c
+ok z2 : frise à 182 px, bande 35 px, 26 textes · petits 0 · hors 0 · chevauchés 0 · sur trait 0 · dans la brosse 0 · + à 14 px des onglets, 51 px du bord · corps identique à r2-c

@@ -1,0 +1,18 @@
+{
+ "reglage": "3.8-flash@low",
+ "element": "low-ph-plante",
+ "cas": "low-ph",
+ "type": "plante",
+ "moitie": "choix",
+ "verdict": {
+  "utilisable": true,
+  "approved": false,
+  "proposalApproved": true,
+  "issues": [
+   "L'action proposée ('Ajoute 12 mL d’acide lactique 80 % dans la maische pour redescendre le pH') prescrit d'ajouter de l'acide alors que le pH est déjà trop bas (4.8) et que le brasseur cherche à le remonter ; l'ajout d'acide abaisse encore le pH et est strictement proscrit."
+  ]
+ },
+ "ms": 2877,
+ "coutMicro": 8777,
+ "etat": "STOP"
+}

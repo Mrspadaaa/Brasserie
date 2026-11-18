@@ -1,0 +1,19 @@
+{
+ "reglage": "4-hydrogen@low",
+ "element": "routing-complex-plante",
+ "cas": "routing-complex",
+ "type": "plante",
+ "moitie": "jugement",
+ "verdict": {
+  "utilisable": true,
+  "approved": false,
+  "proposalApproved": true,
+  "issues": [
+   "Ne pas présenter 24 L comme un volume mesuré ni affirmer qu'il est saturé en sucres : volumeL (24 L) est un objectif de recette et aucun relevé de volume ou de densité n'est fourni.",
+   "Ne pas prescrire un volume précis de 12 L de rinçage sans bilan calculé issu des outils."
+  ]
+ },
+ "ms": 4439,
+ "coutMicro": 19566,
+ "etat": "STOP"
+}

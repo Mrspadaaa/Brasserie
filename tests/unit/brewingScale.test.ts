@@ -109,13 +109,13 @@ describe('Mise à l’échelle', () => {
   it('compte l’évaporation, l’absorption, le volume mort et ce que boit le houblon', () => {
     const r = BrewingMath.scaleRecipe(recipe(), 30, bh(), bh());
     // 30 L visés + 3 évaporés + 2 de volume mort + 0.2 bus par les 30 g de
-    // houblon d'ébullition + 1.2 de contraction = 36.4 L.
+    // houblon d'ébullition, ramenés à froid : (30 + 2 + 0.2) / 0.96 / 0.9 × 0.96 = 35.8 L (CF-9).
     // ⚠️ Les 100 g de houblonnage à cru n'en sont PAS : ils se perdent au
     // fermenteur, pas dans la cuve dont on calcule l'eau ici.
-    expect(r.preBoilVolumeL).toBe(36.4);
+    expect(r.preBoilVolumeL).toBe(35.8);
     expect(r.grainAbsorptionL).toBe(5.8);
-    // Premier jus = 18 − 5.8 = 12.2 ; il reste 36.4 − 12.2 à rincer.
-    expect(r.spargeWaterL).toBe(24.2);
+    // Premier jus = 18 − 5.8 = 12.2 ; il reste 35.8 − 12.2 à rincer.
+    expect(r.spargeWaterL).toBe(23.6);
   });
 
   it('donne un identifiant distinct pour ne pas écraser l’original', () => {
@@ -146,8 +146,8 @@ describe('Refermentation et carbonatation', () => {
   });
 
   it('déduit le CO₂ déjà dissous du sucre de refermentation', () => {
-    // 2.4 vol visés, 20 L, fin de fermentation à 20 °C ➔ (2.4 − 0.86) × 4 × 20.
-    expect(BrewingMath.calculatePrimingSugarG(2.4, 20, 20)).toBe(123);
+    // 2.4 vol visés, 20 L, fin de fermentation à 20 °C ➔ (2.4 − 0.86) × 4,4 × 20 : dextrose monohydrate (CF-NOTE-1).
+    expect(BrewingMath.calculatePrimingSugarG(2.4, 20, 20)).toBe(136);
   });
 
   it('demande moins de saccharose que de dextrose, à carbonatation égale', () => {

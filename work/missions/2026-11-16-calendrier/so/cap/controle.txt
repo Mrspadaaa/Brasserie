@@ -1,0 +1,5 @@
+ok s1 : frise à 162 px, bande 35 px, 19 textes · petits 0 · hors 0 · chevauchés 0 · sur trait 0 · dans la brosse 0 · + à 14 px des onglets, 51 px du bord · corps identique à r2-c
+KO s2 : frise à 154 px, bande 35 px, 19 textes · petits 0 · hors 2 · chevauchés 0 · sur trait 0 · dans la brosse 0 · + à 14 px des onglets, 51 px du bord · corps identique à r2-c
+  hors: ["Festival · S33","Frigo · S35"]
+ok s3 : frise à 174 px, bande 35 px, 17 textes · petits 0 · hors 0 · chevauchés 0 · sur trait 0 · dans la brosse 0 · + à 14 px des onglets, 51 px du bord · corps identique à r2-c
+ok s4 : frise à 174 px, bande 35 px, 20 textes · petits 0 · hors 0 · chevauchés 0 · sur trait 0 · dans la brosse 0 · + à 14 px des onglets, 51 px du bord · corps identique à r2-c

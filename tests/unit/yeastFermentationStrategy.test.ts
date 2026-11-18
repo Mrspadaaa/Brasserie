@@ -1,4 +1,5 @@
 import { describe, expect, it } from 'vitest';
+import { alcoholByVolume } from '../../src/domain/alcohol';
 import { proposeYeastFermentationStrategy } from '../../src/domain/yeastFermentationStrategy';
 import { applyYeastRecipeDesign, createYeastRecipeDraft, evaluateYeastRecipeDesign, readYeastRecipeDesign, yeastRecipeDesignChanged, yeastRecipeProgramme, type YeastRecipeDraft } from '../../src/domain/yeastRecipeDesign';
 import { YEAST_RECIPE_GOAL_LABELS, YEAST_STYLE_FAMILIES } from '../../src/data/yeastRecipeProfiles';
@@ -180,7 +181,7 @@ describe('Stratégies de fermentation reliées aux données et au programme', ()
         const d = draft(r, { goal }), s = proposeYeastFermentationStrategy(r, d, refs), p = evaluateYeastRecipeDesign(r, { ...d, ...s.patch }, refs);
         expect(s.patch.programme).toBeUndefined(); expect(s.patch.temperatureC).toBeUndefined();
         expect(s.effects.length).toBeLessThanOrEqual(3);
-        expect(p.fg.range!.min).toBeCloseTo(1.011, 12); expect(p.abv.range!.min).toBeCloseTo(5.11875, 12);
+        expect(p.fg.range!.min).toBeCloseTo(1.011, 12); expect(p.abv.range!.min).toBeCloseTo(alcoholByVolume(1.05, 1.011), 12);
         expect(s.effects.map(e => e.expected).join(' ')).not.toContain('Caractère fruité documenté');
       }
     }

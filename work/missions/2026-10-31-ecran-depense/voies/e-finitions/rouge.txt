@@ -1,0 +1,598 @@
+copie : C:/Users/mrspa/AppData/Local/Temp/qr-app-copie
+[1m[43m DEPRECATED [49m[22m [33m"environmentMatchGlobs" is deprecated. Use `test.projects` to define different configurations instead.[39m
+
+[1m[46m RUN [49m[22m [36mv3.2.7 [39m[90mC:/Users/mrspa/AppData/Local/Temp/qr-app-copie[39m
+
+[90mstdout[2m | tests/unit/depense/lecture-d/finitions.test.tsx[2m > [22m[2m(a) majeur 1 : « Qté × prix n/n » lit sa frappe, pas le serveur[2m > [22m[2m(a’) le même geste sur une lecture ordinaire, sans lenteur : « 7/7 » coché avant, « 6/7 » sans coche après
+[22m[39mWarning: Please use the `legacy` build in Node.js environments.
+
+ [31m❯[39m tests/unit/depense/lecture-d/finitions.test.tsx [2m([22m[2m16 tests[22m[2m | [22m[31m14 failed[39m[2m)[22m[33m 3154[2mms[22m[39m
+[31m   [31m×[31m (a) majeur 1 : « Qté × prix n/n » lit sa frappe, pas le serveur[2m > [22m(a) il tape 12 dans la quantité de Pilsner pendant l’attente : après le final, « Qté × prix 6/7 », sans coche[39m[33m 336[2mms[22m[39m
+[31m     → expected 'Qté × prix7/7' to match /Qté × prix\s*6\/7/7[39m
+[31m   [31m×[31m (a) majeur 1 : « Qté × prix n/n » lit sa frappe, pas le serveur[2m > [22m(a’) le même geste sur une lecture ordinaire, sans lenteur : « 7/7 » coché avant, « 6/7 » sans coche après[39m[33m 1261[2mms[22m[39m
+[31m     → expected 'Qté × prix7/7' to match /Qté × prix\s*6\/7/7
+
+Ignored nodes: comments, script, style
+[36m<html>[31m
+  [36m<head />[31m
+  [36m<body[31m
+    [33mstyle[31m=[32m"overflow: hidden;"[31m
+  [36m>[31m
+    [36m<div>[31m
+      [36m<div[31m
+        [33mclass[31m=[32m"fixed inset-0 z-50 flex justify-center bg-cave-950/80 backdrop-blur-sm
+                  animate-in fade-in
+                  items-stretch"[31m
+      [36m>[31m
+        [36m<div[31m
+          [33maria-labelledby[31m=[32m"_r_4_"[31m
+          [33maria-modal[31m=[32m"true"[31m
+          [33mclass[31m=[32m"w-full max-w-none h-full rounded-none border-0 flex flex-col overflow-hidden
+                    bg-cave-900 border-cave-800 shadow-2xl
+                    "[31m
+          [33mrole[31m=[32m"dialog"[31m
+          [33mtabindex[31m=[32m"-1"[31m
+        [36m>[31m
+          [36m<header[31m
+            [33mclass[31m=[32m"flex h-10 shrink-0 items-center gap-1 border-b border-cave-800 bg-cave-950 pl-1 pr-1"[31m
+          [36m>[31m
+            [36m<button[31m
+              [33maria-label[31m=[32m"Fermer"[31m
+              [33mclass[31m=[32m"flex size-8 items-center justify-center rounded-control text-cave-200 disabled:opacity-40"[31m
+              [33mtype[31m=[32m"button"[31m
+            [36m>[31m
+              [36m<svg[31m
+                [33maria-hidden[31m=[32m"true"[31m
+                [33mclass[31m=[32m"lucide lucide-x"[31m
+                [33mfill[31m=[32m"none"[31m
+                [33mheight[31m=[32m"20"[31m
+                [33mstroke[31m=[32m"currentColor"[31m
+                [33mstroke-linecap[31m=[32m"round"[31m
+                [33mstroke-linejoin[31m=[32m"round"[31m
+                [33mstroke-width[31m=[32m"2"[31m
+                [33mviewBox[31m=[32m"0 0 24 24"[31m
+                [33mwidth[31m=[32m"20"[31m
+                [33mxmlns[31m=[32m"http://www.w3.org/2000/svg"[31m
+              [36m>[31m
+                [36m<path[31m
+                  [33md[31m=[32m"M18 6 6 18"[31m
+                [36m/>[31m
+                [36m<path[31m
+                  [33md[31m=[32m"m6 6 12 12"[31m
+                [36m/>[31m
+              [36m</svg>[31m
+            [36m</button>[31m
+            [36m<h2[31m
+              [33mclass[31m=[32m"min-w-0 flex-1 truncate text-base font-semibold text-cave-50"[31m
+              [33mid[31m=[32m"_r_4_"[31m
+            [36m>[31m
+              [0mNouvelle dépense[0m
+            [36m</h2>[31m
+            [36m<button[31m
+              [33maria-expanded[31m=[32m"false"[31m
+              [33maria-label[31m=[32m"Justificatif : voir l’original, changer"[31m
+              [33mclass[31m=[32m"flex size-8 items-center justify-center rounded-control text-cave-200"[31m
+              [33mtype[31m=[32m"button"[31m
+            [36m>[31m
+              [36m<svg[31m
+                [33maria-hidden[31m=[32m"true"[31m
+                [33mclass[31m=[32m"lucide lucide-file-text"[31m
+                [33mfill[31m=[32m"none"[31m
+                [33mheight[31m=[32m"20"[31m
+                [33mstroke[31m=[32m"currentColor"[31m
+                [33mstroke-linecap[31m=[32m"round"[31m
+                [33mstroke-linejoin[31m=[32m"round"[31m
+                [33mstroke-width[31m=[32m"2"[31m
+                [33mviewBox[31m=[32m"0 0 24 24"[31m
+                [33mwidth[31m=[32m"20"[31m
+                [33mxmlns[31m=[32m"http://www.w3.org/2000/svg"[31m
+              [36m>[31m
+                [36m<path[31m
+                  [33md[31m=[32m"M6 22a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h8a2.4 2.4 0 0 1 1.704.706l3.588 3.588A2.4 2.4 0 0 1 20 8v12a2 2 0 0 1-2 2z"[31m
+                [36m/>[31m
+                [36m<path[31m
+                  [33md[31m=[32m"M14 2v5a1 1 0 0 0 1 1h5"[31m
+                [36m/>[31m
+                [36m<path[31m
+                  [33md[31m=[32m"M10 9H8"[31m
+                [36m/>[31m
+                [36m<path[31m
+                  [33md[31m=[32m"M16 13H8"[31m
+                [36m/>[31m
+                [36m<path[31m
+                  [33md[31m=[32m"M16 17H8"[31m
+                [36m/>[31m
+              [36m</svg>[31m
+            [36m</button>[31m
+          [36m</header>[31m
+          [36m<div[31m
+            [33mclass[31m=[32m"dp-p3c-corps flex-1 min-h-0 overflow-y-auto overscroll-contain scroll-pt-10 lg:scroll-pt-0 [&_input:not([type=checkbox])]:min-h-8 [&_input]:py-0.5 [&_select]:min-h-8 [&_select]:py-0.5 [&_[role=textbox]]:min-h-8 [&_[role=textbox]]:py-0.5 [&_label]:text-xs [&_summary]:text-[13px]"[31m
+          [36m>[31m
+            [36m<div[31m
+              [33mclass[31m=[32m""[31m
+            [36m>[31m
+              [36m<div[31m
+                [33mclass[31m=[32m"hidden space-y-1.5 rounded-panel border border-cave-800 bg-cave-900/60 p-2"[31m
+                [33mdata-dp[31m=[32m"justificatif"[31m
+              [36m>[31m
+                [36m<div[31m
+                  [33mclass[31m=[32m"flex flex-wrap items-center gap-1.5"[31m
+                [36m>[31m
+                  [36m<a[31m
+                    [33mclass[31m=[32m"inline-flex min-h-7 items-center rounded-control border border-cave-600 px-2.5 text-sm text-ebc-straw"[31m
+                    [33mdownload[31m=[32m"facture.pdf"[31m
+                    [33mhref[31m=[32m"data:application/pdf;base64,JVBERi0xLjQK"[31m
+                  [36m>[31m
+                    [0mOuvrir le PDF original[0m
+                  [36m</a>[31m
+                  [36m<button[31m
+                    [33maria-label[31m=[32m"Changer"[31m
+                    [33mclass[31m=[32m"ml-auto inline-flex min-h-7 items-center gap-1 rounded-control border border-cave-600 px-2.5 text-sm text-cave-50 disabled:opacity-40"[31m
+                    [33mtitle[31m=[32m"Changer le fichier"[31m
+                    [33mtype[31m=[32m"button"[31m
+                  [36m>[31m
+                    [36m<svg[31m
+                      [33maria-hidden[31m=[32m"true"[31m
+                      [33mclass[31m=[32m"lucide lucide-file-text"[31m
+                      [33mfill[31m=[32m"none"[31m
+                      [33mheight[31m=[32m"14"[31m
+                      [33mstroke[31m=[32m"currentColor"[31m
+                      [33mstroke-linecap[31m=[32m"round"[31m
+                      [33mstroke-linejoin[31m=[32m"round"[31m
+                      [33mstroke-width[31m=[32m"2"[31m
+                      [33mviewBox[31m=[32m"0 0 24 24"[31m
+                      [33mwidth[31m=[32m"14"[31m
+                      [33mxmlns[31m=[32m"http://www.w3.org/2000/svg"[31m
+                    [36m>[31m
+                      [36m<path[31m
+                        [33md[31m=[32m"M6 22a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h8a2.4 2.4 0 0 1 1.704.706l3.588 3.588A2.4 2.4 0 0 1 20 8v12a2 2 0 0 1-2 2z"[31m
+                      [36m/>[31m
+                      [36...[39m
+[31m   [31m×[31m (b), (c) majeur 2 : une cellule d’en-tête corrigée porte sa marque, ou n’est pas comptée[2m > [22m(b) une 3.8 qui corrige la TVA seule : la case TVA en bleu, l’ancienne valeur barrée, puce « 1 corrigée »[39m[32m 212[2mms[22m[39m
+[31m     → expected null to be '1' // Object.is equality[39m
+[31m   [31m×[31m (b), (c) majeur 2 : une cellule d’en-tête corrigée porte sa marque, ou n’est pas comptée[2m > [22m(b’) le règlement corrigé par la 3.8 : sa case en bleu, l’ancien état barré, compté[39m[32m 200[2mms[22m[39m
+[31m     → expected null to be '1' // Object.is equality[39m
+[31m   [31m×[31m (b), (c) majeur 2 : une cellule d’en-tête corrigée porte sa marque, ou n’est pas comptée[2m > [22m(c) un champ sans case (n° de facture) corrigé : appliqué, mais pas compté, aucune puce[39m[32m 125[2mms[22m[39m
+[31m     → expected <button type="button" …(3)>…(2)</button> to be null[39m
+[31m   [31m×[31m (d) mineur 2 : le barré ne montre que ce qui a changé[2m > [22m(d) quantité tapée par lui, seul le prix corrigé : « × 1,45 », jamais « 12 Kg × 1,45 »[39m[32m 104[2mms[22m[39m
+[31m     → expected '12 Kg × 1,45' to be '× 1,45' // Object.is equality[39m
+[31m   [31m×[31m (d) mineur 2 : le barré ne montre que ce qui a changé[2m > [22m(d’) pur : quantité à lui + prix corrigé → « × 1,45 » ; quantité inchangée → « 10 Kg × 1,45 » ; quantité corrigée → l’ancienne[39m[32m 0[2mms[22m[39m
+[31m     → expected '12 Kg × 1,45' to be '× 1,45' // Object.is equality[39m
+[31m   [31m×[31m (e) hors ligne pendant la 3.8 : relancer une fois au retour du réseau[2m > [22mle fil et la roue restent pendant la coupure ; au retour, UN seul second appel, et le final s’applique[39m[32m 71[2mms[22m[39m
+[31m     → expected null not to be null[39m
+[31m   [31m×[31m (e) hors ligne pendant la 3.8 : relancer une fois au retour du réseau[2m > [22mla relance échoue : la forme de la 3.8 coupée (« 2 lectures », « Lecture coupée »), et pas de troisième appel[39m[32m 82[2mms[22m[39m
+[31m     → expected "spy" to be called 2 times, but got 1 times[39m
+   [32m✓[39m (e) hors ligne pendant la 3.8 : relancer une fois au retour du réseau[2m > [22men ligne, un échec de la 3.8 ne relance rien : la fin de partie est immédiate[32m 73[2mms[22m[39m
+[31m   [31m×[31m (f) le message du serveur après un provisoire sans final[2m > [22m(f) flux fermé sans résultat : la fin de partie dit le message, à côté de « Lecture coupée »[39m[32m 68[2mms[22m[39m
+[31m     → the given combination of arguments (undefined and string) is invalid for this assertion. You can use an array, a map, an object, a set, a string, or a weakset instead of a string[39m
+[31m   [31m×[31m (g) pièce HT : les deux phrases restent visibles, la plus grave d’abord[2m > [22m(g) « Les totaux HT + TVA ne correspondent pas… » puis « Lignes imprimées hors taxe, passées au TTC. »[39m[32m 58[2mms[22m[39m
+[31m     → expected 'À confirmer · Les totaux HT + TVA ne …' to contain 'Lignes imprimées hors taxe, passées a…'[39m
+[31m   [31m×[31m (g) pièce HT : les deux phrases restent visibles, la plus grave d’abord[2m > [22m(g’) seule, la phrase HT reste visible[39m[32m 142[2mms[22m[39m
+[31m     → expected 'Somme = imprimé46,40Qté × prix7/7Lect…' to contain 'Lignes imprimées hors taxe, passées a…'[39m
+[31m   [31m×[31m (h) sa saisie, cellule par cellule[2m > [22m(h) le focus posé dans une rangée sans changer la valeur : la 3.8 corrige toute la rangée (nom et quantité)[39m[32m 221[2mms[22m[39m
+[31m     → expected '10' to match /^5/[39m
+   [32m✓[39m (h) sa saisie, cellule par cellule[2m > [22m(h’) la quantité changée : seule la quantité est gardée, le nom et le prix sont corrigés[32m 196[2mms[22m[39m
+[31m   [31m×[31m (h) sa saisie, cellule par cellule[2m > [22m(h’’) pur : `registres.focus` ne rend plus une rangée « touchée »[39m[32m 4[2mms[22m[39m
+[31m     → expected { id: 'line-1', …(12) } to match object { quantity: 5, unitPrice: 2.9 }
+(11 matching properties omitted from actual)[39m
+
+[31m⎯⎯⎯⎯⎯⎯[39m[1m[41m Failed Tests 14 [49m[22m[31m⎯⎯⎯⎯⎯⎯⎯[39m
+
+[41m[1m FAIL [22m[49m tests/unit/depense/lecture-d/finitions.test.tsx[2m > [22m(a) majeur 1 : « Qté × prix n/n » lit sa frappe, pas le serveur[2m > [22m(a) il tape 12 dans la quantité de Pilsner pendant l’attente : après le final, « Qté × prix 6/7 », sans coche
+[31m[1mAssertionError[22m: expected 'Qté × prix7/7' to match /Qté × prix\s*6\/7/7[39m
+
+[32m- Expected:[39m 
+/Qté × prix\s*6\/7/
+
+[31m+ Received:[39m 
+"Qté × prix7/7"
+
+[36m [2m❯[22m tests/unit/depense/lecture-d/finitions.test.tsx:[2m78:32[22m[39m
+    [90m 76| [39m    [35mawait[39m [34mwaitFor[39m(() [33m=>[39m [34mexpect[39m([34mfil[39m(view))[33m.[39m[34mtoBeNull[39m())[33m;[39m
+    [90m 77| [39m    [35mconst[39m rangee [33m=[39m [34mrangeePreuve[39m(view[33m,[39m [32m'Qté × prix'[39m)[33m;[39m
+    [90m 78| [39m    [34mexpect[39m(rangee[33m.[39mtextContent)[33m.[39m[34mtoMatch[39m([36m/Qté × prix\s*6\/7/[39m)[33m;[39m
+    [90m   | [39m                               [31m^[39m
+    [90m 79| [39m    expect(rangee.querySelector('svg')).toBeNull(); // pas de coche : …
+    [90m 80| [39m  })[33m;[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/14]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m tests/unit/depense/lecture-d/finitions.test.tsx[2m > [22m(a) majeur 1 : « Qté × prix n/n » lit sa frappe, pas le serveur[2m > [22m(a’) le même geste sur une lecture ordinaire, sans lenteur : « 7/7 » coché avant, « 6/7 » sans coche après
+[31m[1mAssertionError[22m[39m: expected 'Qté × prix7/7' to match /Qté × prix\s*6\/7/7
+
+Ignored nodes: comments, script, style
+[36m<html>[39m
+  [36m<head />[39m
+  [36m<body[39m
+    [33mstyle[39m=[32m"overflow: hidden;"[39m
+  [36m>[39m
+    [36m<div>[39m
+      [36m<div[39m
+        [33mclass[39m=[32m"fixed inset-0 z-50 flex justify-center bg-cave-950/80 backdrop-blur-sm
+                  animate-in fade-in
+                  items-stretch"[39m
+      [36m>[39m
+        [36m<div[39m
+          [33maria-labelledby[39m=[32m"_r_4_"[39m
+          [33maria-modal[39m=[32m"true"[39m
+          [33mclass[39m=[32m"w-full max-w-none h-full rounded-none border-0 flex flex-col overflow-hidden
+                    bg-cave-900 border-cave-800 shadow-2xl
+                    "[39m
+          [33mrole[39m=[32m"dialog"[39m
+          [33mtabindex[39m=[32m"-1"[39m
+        [36m>[39m
+          [36m<header[39m
+            [33mclass[39m=[32m"flex h-10 shrink-0 items-center gap-1 border-b border-cave-800 bg-cave-950 pl-1 pr-1"[39m
+          [36m>[39m
+            [36m<button[39m
+              [33maria-label[39m=[32m"Fermer"[39m
+              [33mclass[39m=[32m"flex size-8 items-center justify-center rounded-control text-cave-200 disabled:opacity-40"[39m
+              [33mtype[39m=[32m"button"[39m
+            [36m>[39m
+              [36m<svg[39m
+                [33maria-hidden[39m=[32m"true"[39m
+                [33mclass[39m=[32m"lucide lucide-x"[39m
+                [33mfill[39m=[32m"none"[39m
+                [33mheight[39m=[32m"20"[39m
+                [33mstroke[39m=[32m"currentColor"[39m
+                [33mstroke-linecap[39m=[32m"round"[39m
+                [33mstroke-linejoin[39m=[32m"round"[39m
+                [33mstroke-width[39m=[32m"2"[39m
+                [33mviewBox[39m=[32m"0 0 24 24"[39m
+                [33mwidth[39m=[32m"20"[39m
+                [33mxmlns[39m=[32m"http://www.w3.org/2000/svg"[39m
+              [36m>[39m
+                [36m<path[39m
+                  [33md[39m=[32m"M18 6 6 18"[39m
+                [36m/>[39m
+                [36m<path[39m
+                  [33md[39m=[32m"m6 6 12 12"[39m
+                [36m/>[39m
+              [36m</svg>[39m
+            [36m</button>[39m
+            [36m<h2[39m
+              [33mclass[39m=[32m"min-w-0 flex-1 truncate text-base font-semibold text-cave-50"[39m
+              [33mid[39m=[32m"_r_4_"[39m
+            [36m>[39m
+              [0mNouvelle dépense[0m
+            [36m</h2>[39m
+            [36m<button[39m
+              [33maria-expanded[39m=[32m"false"[39m
+              [33maria-label[39m=[32m"Justificatif : voir l’original, changer"[39m
+              [33mclass[39m=[32m"flex size-8 items-center justify-center rounded-control text-cave-200"[39m
+              [33mtype[39m=[32m"button"[39m
+            [36m>[39m
+              [36m<svg[39m
+                [33maria-hidden[39m=[32m"true"[39m
+                [33mclass[39m=[32m"lucide lucide-file-text"[39m
+                [33mfill[39m=[32m"none"[39m
+                [33mheight[39m=[32m"20"[39m
+                [33mstroke[39m=[32m"currentColor"[39m
+                [33mstroke-linecap[39m=[32m"round"[39m
+                [33mstroke-linejoin[39m=[32m"round"[39m
+                [33mstroke-width[39m=[32m"2"[39m
+                [33mviewBox[39m=[32m"0 0 24 24"[39m
+                [33mwidth[39m=[32m"20"[39m
+                [33mxmlns[39m=[32m"http://www.w3.org/2000/svg"[39m
+              [36m>[39m
+                [36m<path[39m
+                  [33md[39m=[32m"M6 22a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h8a2.4 2.4 0 0 1 1.704.706l3.588 3.588A2.4 2.4 0 0 1 20 8v12a2 2 0 0 1-2 2z"[39m
+                [36m/>[39m
+                [36m<path[39m
+                  [33md[39m=[32m"M14 2v5a1 1 0 0 0 1 1h5"[39m
+                [36m/>[39m
+                [36m<path[39m
+                  [33md[39m=[32m"M10 9H8"[39m
+                [36m/>[39m
+                [36m<path[39m
+                  [33md[39m=[32m"M16 13H8"[39m
+                [36m/>[39m
+                [36m<path[39m
+                  [33md[39m=[32m"M16 17H8"[39m
+                [36m/>[39m
+              [36m</svg>[39m
+            [36m</button>[39m
+          [36m</header>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"dp-p3c-corps flex-1 min-h-0 overflow-y-auto overscroll-contain scroll-pt-10 lg:scroll-pt-0 [&_input:not([type=checkbox])]:min-h-8 [&_input]:py-0.5 [&_select]:min-h-8 [&_select]:py-0.5 [&_[role=textbox]]:min-h-8 [&_[role=textbox]]:py-0.5 [&_label]:text-xs [&_summary]:text-[13px]"[39m
+          [36m>[39m
+            [36m<div[39m
+              [33mclass[39m=[32m""[39m
+            [36m>[39m
+              [36m<div[39m
+                [33mclass[39m=[32m"hidden space-y-1.5 rounded-panel border border-cave-800 bg-cave-900/60 p-2"[39m
+                [33mdata-dp[39m=[32m"justificatif"[39m
+              [36m>[39m
+                [36m<div[39m
+                  [33mclass[39m=[32m"flex flex-wrap items-center gap-1.5"[39m
+                [36m>[39m
+                  [36m<a[39m
+                    [33mclass[39m=[32m"inline-flex min-h-7 items-center rounded-control border border-cave-600 px-2.5 text-sm text-ebc-straw"[39m
+                    [33mdownload[39m=[32m"facture.pdf"[39m
+                    [33mhref[39m=[32m"data:application/pdf;base64,JVBERi0xLjQK"[39m
+                  [36m>[39m
+                    [0mOuvrir le PDF original[0m
+                  [36m</a>[39m
+                  [36m<button[39m
+                    [33maria-label[39m=[32m"Changer"[39m
+                    [33mclass[39m=[32m"ml-auto inline-flex min-h-7 items-center gap-1 rounded-control border border-cave-600 px-2.5 text-sm text-cave-50 disabled:opacity-40"[39m
+                    [33mtitle[39m=[32m"Changer le fichier"[39m
+                    [33mtype[39m=[32m"button"[39m
+                  [36m>[39m
+                    [36m<svg[39m
+                      [33maria-hidden[39m=[32m"true"[39m
+                      [33mclass[39m=[32m"lucide lucide-file-text"[39m
+                      [33mfill[39m=[32m"none"[39m
+                      [33mheight[39m=[32m"14"[39m
+                      [33mstroke[39m=[32m"currentColor"[39m
+                      [33mstroke-linecap[39m=[32m"round"[39m
+                      [33mstroke-linejoin[39m=[32m"round"[39m
+                      [33mstroke-width[39m=[32m"2"[39m
+                      [33mviewBox[39m=[32m"0 0 24 24"[39m
+                      [33mwidth[39m=[32m"14"[39m
+                      [33mxmlns[39m=[32m"http://www.w3.org/2000/svg"[39m
+                    [36m>[39m
+                      [36m<path[39m
+                        [33md[39m=[32m"M6 22a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h8a2.4 2.4 0 0 1 1.704.706l3.588 3.588A2.4 2.4 0 0 1 20 8v12a2 2 0 0 1-2 2z"[39m
+                      [36m/>[39m
+                      [36...
+
+[32m- Expected:[39m 
+/Qté × prix\s*6\/7/
+
+[31m+ Received:[39m 
+"Qté × prix7/7"
+
+[36m [2m❯[22m tests/unit/depense/lecture-d/finitions.test.tsx:[2m88:78[22m[39m
+    [90m 86| [39m    expect(rangeePreuve(view, 'Qté × prix').querySelector('svg')).not.…
+    [90m 87| [39m    [34mtaper[39m([32m'Quantité ligne 1'[39m[33m,[39m [32m'12'[39m)[33m;[39m
+    [90m 88| [39m    await waitFor(() => expect(rangeePreuve(view, 'Qté × prix').textCo…
+    [90m   | [39m                                                                             [31m^[39m
+    [90m 89| [39m    expect(rangeePreuve(view, 'Qté × prix').querySelector('svg')).toBe…
+    [90m 90| [39m  })[33m;[39m
+[90m [2m❯[22m runWithExpensiveErrorDiagnosticsDisabled node_modules/@testing-library/dom/dist/config.js:[2m47:12[22m[39m
+[90m [2m❯[22m checkCallback node_modules/@testing-library/dom/dist/wait-for.js:[2m124:77[22m[39m
+[90m [2m❯[22m Timeout.checkRealTimersCallback node_modules/@testing-library/dom/dist/wait-for.js:[2m118:16[22m[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/14]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m tests/unit/depense/lecture-d/finitions.test.tsx[2m > [22m(b), (c) majeur 2 : une cellule d’en-tête corrigée porte sa marque, ou n’est pas comptée[2m > [22m(b) une 3.8 qui corrige la TVA seule : la case TVA en bleu, l’ancienne valeur barrée, puce « 1 corrigée »
+[31m[1mAssertionError[22m: expected null to be '1' // Object.is equality[39m
+
+[32m- Expected:[39m 
+"1"
+
+[31m+ Received:[39m 
+null
+
+[36m [2m❯[22m tests/unit/depense/lecture-d/finitions.test.tsx:[2m101:51[22m[39m
+    [90m 99| [39m    [35mawait[39m [34mwaitFor[39m(() [33m=>[39m [34mexpect[39m([34mfil[39m(view))[33m.[39m[34mtoBeNull[39m())[33m;[39m
+    [90m100| [39m    const tuile = view.container.querySelector<HTMLElement>('[data-dp=…
+    [90m101| [39m    [34mexpect[39m(tuile[33m.[39m[34mgetAttribute[39m([32m'data-dp-corrige'[39m))[33m.[39m[34mtoBe[39m([32m'1'[39m)[33m;[39m
+    [90m   | [39m                                                  [31m^[39m
+    [90m102| [39m    expect(tuile.querySelector('[data-dp-avant]')?.textContent).toBe('…
+    [90m103| [39m    expect(tuile.querySelector('s')?.textContent).toBe('3,38'); // bar…
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/14]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m tests/unit/depense/lecture-d/finitions.test.tsx[2m > [22m(b), (c) majeur 2 : une cellule d’en-tête corrigée porte sa marque, ou n’est pas comptée[2m > [22m(b’) le règlement corrigé par la 3.8 : sa case en bleu, l’ancien état barré, compté
+[31m[1mAssertionError[22m: expected null to be '1' // Object.is equality[39m
+
+[32m- Expected:[39m 
+"1"
+
+[31m+ Received:[39m 
+null
+
+[36m [2m❯[22m tests/unit/depense/lecture-d/finitions.test.tsx:[2m113:51[22m[39m
+    [90m111| [39m    [35mawait[39m [34mwaitFor[39m(() [33m=>[39m [34mexpect[39m([34mfil[39m(view))[33m.[39m[34mtoBeNull[39m())[33m;[39m
+    [90m112| [39m    const tuile = view.container.querySelector<HTMLElement>('[data-dp=…
+    [90m113| [39m    [34mexpect[39m(tuile[33m.[39m[34mgetAttribute[39m([32m'data-dp-corrige'[39m))[33m.[39m[34mtoBe[39m([32m'1'[39m)[33m;[39m
+    [90m   | [39m                                                  [31m^[39m
+    [90m114| [39m    expect(tuile.querySelector('[data-dp-avant]')?.textContent).toMatc…
+    [90m115| [39m    expect(view.container.querySelector('[data-dp="tuile-tva"]')!.getA…
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/14]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m tests/unit/depense/lecture-d/finitions.test.tsx[2m > [22m(b), (c) majeur 2 : une cellule d’en-tête corrigée porte sa marque, ou n’est pas comptée[2m > [22m(c) un champ sans case (n° de facture) corrigé : appliqué, mais pas compté, aucune puce
+[31m[1mAssertionError[22m: expected <button type="button" …(3)>…(2)</button> to be null[39m
+
+[32m- Expected:[39m 
+null
+
+[31m+ Received:[39m 
+<button
+  aria-pressed="false"
+  class="inline-flex min-h-6 items-center gap-0.5 rounded-control px-1 text-xs text-cave-200 border-[1.5px] border-solid border-area-finances bg-area-finances/10 text-area-finances"
+  data-va="corrigees"
+  type="button"
+>
+  <svg
+    aria-hidden="true"
+    class="lucide lucide-refresh-cw mr-0.5 shrink-0"
+    fill="none"
+    height="14"
+    stroke="currentColor"
+    stroke-linecap="round"
+    stroke-linejoin="round"
+    stroke-width="2.2"
+    viewBox="0 0 24 24"
+    width="14"
+    xmlns="http://www.w3.org/2000/svg"
+  >
+    <path
+      d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8"
+    />
+    <path
+      d="M21 3v5h-5"
+    />
+    <path
+      d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16"
+    />
+    <path
+      d="M8 16H3v5"
+    />
+  </svg>
+  <b
+    class="font-mono font-semibold text-cave-50"
+  >
+    2
+  </b>
+   
+  corrigées
+</button>
+
+[36m [2m❯[22m tests/unit/depense/lecture-d/finitions.test.tsx:[2m123:67[22m[39m
+    [90m121| [39m    [35mawait[39m [34mwaitFor[39m(() [33m=>[39m [34mexpect[39m([34mfil[39m(view))[33m.[39m[34mtoBeNull[39m())[33m;[39m
+    [90m122| [39m    expect((view.container.querySelector('#purchase-invoice-number') a…
+    [90m123| [39m    expect(view.container.querySelector('[data-va="corrigees"]')).toBe…
+    [90m   | [39m                                                                  [31m^[39m
+    [90m124| [39m    expect(view.container.querySelector('[data-dp="tuile-tva"]')!.getA…
+    [90m125| [39m  })[33m;[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[5/14]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m tests/unit/depense/lecture-d/finitions.test.tsx[2m > [22m(d) mineur 2 : le barré ne montre que ce qui a changé[2m > [22m(d) quantité tapée par lui, seul le prix corrigé : « × 1,45 », jamais « 12 Kg × 1,45 »
+[31m[1mAssertionError[22m: expected '12 Kg × 1,45' to be '× 1,45' // Object.is equality[39m
+
+Expected: [32m"× 1,45"[39m
+Received: [31m"[7m12 Kg [27m× 1,45"[39m
+
+[36m [2m❯[22m tests/unit/depense/lecture-d/finitions.test.tsx:[2m135:81[22m[39m
+    [90m133| [39m    [35mawait[39m [34marrive[39m()[33m;[39m
+    [90m134| [39m    [35mawait[39m [34mwaitFor[39m(() [33m=>[39m [34mexpect[39m([34mfil[39m(view))[33m.[39m[34mtoBeNull[39m())[33m;[39m
+    [90m135| [39m    expect(ligne(view, 'line-1').querySelector('[data-dp-avant]')?.tex…
+    [90m   | [39m                                                                                [31m^[39m
+    [90m136| [39m  })[33m;[39m
+    [90m137| [39m  it('(d’) pur : quantité à lui + prix corrigé → « × 1,45 » ; quantité…
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[6/14]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m tests/unit/depense/lecture-d/finitions.test.tsx[2m > [22m(d) mineur 2 : le barré ne montre que ce qui a changé[2m > [22m(d’) pur : quantité à lui + prix corrigé → « × 1,45 » ; quantité inchangée → « 10 Kg × 1,45 » ; quantité corrigée → l’ancienne
+[31m[1mAssertionError[22m: expected '12 Kg × 1,45' to be '× 1,45' // Object.is equality[39m
+
+Expected: [32m"× 1,45"[39m
+Received: [31m"[7m12 Kg [27m× 1,45"[39m
+
+[36m [2m❯[22m tests/unit/depense/lecture-d/finitions.test.tsx:[2m139:88[22m[39m
+    [90m137| [39m  it('(d’) pur : quantité à lui + prix corrigé → « × 1,45 » ; quantité…
+    [90m138| [39m    [35mconst[39m base [33m=[39m { quantity[33m:[39m [34m10[39m[33m,[39m unit[33m:[39m [32m'Kg'[39m[33m,[39m unitPrice[33m:[39m [34m1.45[39m }[33m;[39m
+    [90m139| [39m    expect(libelleAvant(base, [{ champ: 'unitPrice' }], { quantity: 12…
+    [90m   | [39m                                                                                       [31m^[39m
+    [90m140| [39m    expect(libelleAvant(base, [{ champ: 'unitPrice' }], { quantity: 10…
+    [90m141| [39m    expect(libelleAvant(base, [{ champ: 'unitPrice' }, { champ: 'quant…
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[7/14]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m tests/unit/depense/lecture-d/finitions.test.tsx[2m > [22m(e) hors ligne pendant la 3.8 : relancer une fois au retour du réseau[2m > [22mle fil et la roue restent pendant la coupure ; au retour, UN seul second appel, et le final s’applique
+[31m[1mAssertionError[22m: expected null not to be null[39m
+[36m [2m❯[22m tests/unit/depense/lecture-d/finitions.test.tsx:[2m154:27[22m[39m
+    [90m152| [39m    reseau[33m.[39m[34mmockReturnValue[39m([35mfalse[39m)[33m;[39m [35mawait[39m [34mevenement[39m([32m'offline'[39m)[33m;[39m
+    [90m153| [39m    [35mawait[39m [34marrive[39m()[33m;[39m
+    [90m154| [39m    expect(fil(view)).not.toBeNull(); expect(principal(view)).toBeDisa…
+    [90m   | [39m                          [31m^[39m
+    [90m155| [39m    expect(view.container.querySelector('[data-va="corrigees"]')).toBe…
+    [90m156| [39m    reseau[33m.[39m[34mmockReturnValue[39m([35mtrue[39m)[33m;[39m [35mawait[39m [34mevenement[39m([32m'online'[39m)[33m;[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[8/14]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m tests/unit/depense/lecture-d/finitions.test.tsx[2m > [22m(e) hors ligne pendant la 3.8 : relancer une fois au retour du réseau[2m > [22mla relance échoue : la forme de la 3.8 coupée (« 2 lectures », « Lecture coupée »), et pas de troisième appel
+[31m[1mAssertionError[22m: expected "spy" to be called 2 times, but got 1 times[39m
+[36m [2m❯[22m tests/unit/depense/lecture-d/finitions.test.tsx:[2m171:27[22m[39m
+    [90m169| [39m    reseau[33m.[39m[34mmockReturnValue[39m([35mtrue[39m)[33m;[39m [35mawait[39m [34mevenement[39m([32m'online'[39m)[33m;[39m
+    [90m170| [39m    [35mawait[39m [34mwaitFor[39m(() [33m=>[39m [34mexpect[39m([34mfil[39m(view))[33m.[39m[34mtoBeNull[39m())[33m;[39m
+    [90m171| [39m    [34mexpect[39m(state[33m.[39mscanned)[33m.[39m[34mtoHaveBeenCalledTimes[39m([34m2[39m)[33m;[39m
+    [90m   | [39m                          [31m^[39m
+    [90m172| [39m    [34mexpect[39m([34mprincipal[39m(view))[33m.[39m[34mtoBeEnabled[39m()[33m;[39m
+    [90m173| [39m    expect(view.container.querySelector('[data-dp="preuve"]')!.textCon…
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[9/14]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m tests/unit/depense/lecture-d/finitions.test.tsx[2m > [22m(f) le message du serveur après un provisoire sans final[2m > [22m(f) flux fermé sans résultat : la fin de partie dit le message, à côté de « Lecture coupée »
+[31m[1mAssertionError[22m: the given combination of arguments (undefined and string) is invalid for this assertion. You can use an array, a map, an object, a set, a string, or a weakset instead of a string[39m
+[36m [2m❯[22m tests/unit/depense/lecture-d/finitions.test.tsx:[2m192:73[22m[39m
+    [90m190| [39m    [35mawait[39m [34mattendre[39m()[33m;[39m [35mawait[39m [34marrive[39m()[33m;[39m
+    [90m191| [39m    [35mawait[39m [34mwaitFor[39m(() [33m=>[39m [34mexpect[39m([34mfil[39m(view))[33m.[39m[34mtoBeNull[39m())[33m;[39m
+    [90m192| [39m    expect(view.container.querySelector('[role="alert"]')?.textContent…
+    [90m   | [39m                                                                        [31m^[39m
+    [90m193| [39m    [34mexpect[39m(view[33m.[39mcontainer[33m.[39mtextContent)[33m.[39m[34mtoMatch[39m([36m/Lecture coupée/[39m)[33m;[39m
+    [90m194| [39m    [34mexpect[39m([34mprincipal[39m(view))[33m.[39m[34mtoBeEnabled[39m()[33m;[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[10/14]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m tests/unit/depense/lecture-d/finitions.test.tsx[2m > [22m(g) pièce HT : les deux phrases restent visibles, la plus grave d’abord[2m > [22m(g) « Les totaux HT + TVA ne correspondent pas… » puis « Lignes imprimées hors taxe, passées au TTC. »
+[31m[1mAssertionError[22m: expected 'À confirmer · Les totaux HT + TVA ne …' to contain 'Lignes imprimées hors taxe, passées a…'[39m
+
+Expected: [32m"[7mLignes imprimées hors taxe, passées au TTC[27m."[39m
+Received: [31m"[7mÀ confirmer · Les totaux HT + TVA ne correspondent pas au TTC du document[27m."[39m
+
+[36m [2m❯[22m tests/unit/depense/lecture-d/finitions.test.tsx:[2m204:53[22m[39m
+    [90m202| [39m    [35mawait[39m [34marrive[39m()[33m;[39m [35mawait[39m [34mattendre[39m()[33m;[39m
+    [90m203| [39m    const indice = view.container.querySelector('#scan-hint-amountTTC'…
+    [90m204| [39m    [34mexpect[39m(indice)[33m.[39m[34mtoContain[39m(grave)[33m;[39m [34mexpect[39m(indice)[33m.[39m[34mtoContain[39m(ht)[33m;[39m
+    [90m   | [39m                                                    [31m^[39m
+    [90m205| [39m    [34mexpect[39m(indice[33m.[39m[34mindexOf[39m(grave))[33m.[39m[34mtoBeLessThan[39m(indice[33m.[39m[34mindexOf[39m(ht))[33m;[39m
+    [90m206| [39m    const preuve = view.container.querySelector('[data-dp="preuve"]')!…
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[11/14]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m tests/unit/depense/lecture-d/finitions.test.tsx[2m > [22m(g) pièce HT : les deux phrases restent visibles, la plus grave d’abord[2m > [22m(g’) seule, la phrase HT reste visible
+[31m[1mAssertionError[22m: expected 'Somme = imprimé46,40Qté × prix7/7Lect…' to contain 'Lignes imprimées hors taxe, passées a…'[39m
+
+Expected: [32m"[7mLignes[27m imprimé[7mes hors taxe, passées au TTC.[27m"[39m
+Received: [31m"[7mSomme =[27m imprimé[7m46,40Qté × prix7/7Lectures2/27 nouveaux2 à contrôler[27m"[39m
+
+[36m [2m❯[22m tests/unit/depense/lecture-d/finitions.test.tsx:[2m213:77[22m[39m
+    [90m211| [39m    const { view, arrive } = await lire('sans-38', { sans: true, patch…
+    [90m212| [39m    [35mawait[39m [34marrive[39m()[33m;[39m [35mawait[39m [34mattendre[39m()[33m;[39m
+    [90m213| [39m    expect(view.container.querySelector('[data-dp="preuve"]')!.textCon…
+    [90m   | [39m                                                                            [31m^[39m
+    [90m214| [39m  })[33m;[39m
+    [90m215| [39m})[33m;[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[12/14]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m tests/unit/depense/lecture-d/finitions.test.tsx[2m > [22m(h) sa saisie, cellule par cellule[2m > [22m(h) le focus posé dans une rangée sans changer la valeur : la 3.8 corrige toute la rangée (nom et quantité)
+[31m[1mAssertionError[22m: expected '10' to match /^5/[39m
+
+[32m- Expected:[39m 
+/^5/
+
+[31m+ Received:[39m 
+"10"
+
+[36m [2m❯[22m tests/unit/depense/lecture-d/finitions.test.tsx:[2m227:92[22m[39m
+    [90m225| [39m    [35mawait[39m [34mwaitFor[39m(() [33m=>[39m [34mexpect[39m([34mfil[39m(view))[33m.[39m[34mtoBeNull[39m())[33m;[39m
+    [90m226| [39m    [35mconst[39m r [33m=[39m [34mligne[39m(view[33m,[39m [32m'line-1'[39m)[33m;[39m
+    [90m227| [39m    expect((r.querySelector('[aria-label="Quantité ligne 1"]') as HTML…
+    [90m   | [39m                                                                                           [31m^[39m
+    [90m228| [39m    expect(r.querySelector('[data-dp-qte]')?.getAttribute('data-dp-cor…
+    [90m229| [39m    expect(r.querySelector('[data-dp-nom]')?.textContent).toMatch(/Pil…
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[13/14]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m tests/unit/depense/lecture-d/finitions.test.tsx[2m > [22m(h) sa saisie, cellule par cellule[2m > [22m(h’’) pur : `registres.focus` ne rend plus une rangée « touchée »
+[31m[1mAssertionError[22m: expected { id: 'line-1', …(12) } to match object { quantity: 5, unitPrice: 2.9 }
+(11 matching properties omitted from actual)[39m
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[2m  {[22m
+[32m-   "quantity": 5,[39m
+[32m-   "unitPrice": 2.9,[39m
+[31m+   "quantity": 10,[39m
+[31m+   "unitPrice": 1.45,[39m
+[2m  }[22m
+
+[36m [2m❯[22m tests/unit/depense/lecture-d/finitions.test.tsx:[2m251:56[22m[39m
+
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[14/14]⎯[22m[39m
+
+
+[2m Test Files [22m [1m[31m1 failed[39m[22m[90m (1)[39m
+[2m      Tests [22m [1m[31m14 failed[39m[22m[2m | [22m[1m[32m2 passed[39m[22m[90m (16)[39m
+[2m   Start at [22m 16:11:14
+[2m   Duration [22m 5.71s[2m (transform 646ms, setup 204ms, collect 1.06s, tests 3.15s, environment 1.07s, prepare 81ms)[22m
+

@@ -1,0 +1,18 @@
+[1m[43m DEPRECATED [49m[22m [33m"environmentMatchGlobs" is deprecated. Use `test.projects` to define different configurations instead.[39m
+
+[1m[46m RUN [49m[22m [36mv3.2.7 [39m[90mC:/Users/mrspa/.codex/worktrees/openai-clean-start/Brasserie[39m
+
+ [32m✓[39m tests/unit/depense/g7/regles-g7.test.ts [2m([22m[2m7 tests[22m[2m)[22m[32m 9[2mms[22m[39m
+ [32m✓[39m tests/unit/depense/g7/ecran-g7.test.tsx [2m([22m[2m7 tests[22m[2m)[22m[33m 709[2mms[22m[39m
+ [32m✓[39m tests/unit/depense/g2a/tout-valider.test.tsx [2m([22m[2m11 tests[22m[2m)[22m[33m 1802[2mms[22m[39m
+   [33m[2m✓[22m[39m D329 : les valeurs corrigées passent par le bandeau[2m > [22m« Garder » : la correction n’est plus marquée (D354 : ni bleu, ni ancienne valeur, un de moins à la puce) et le bandeau passe à la suivante (2/3) ; « Annuler » rend la valeur du provisoire et ôte le bleu et un de la puce [33m 320[2mms[22m[39m
+ [32m✓[39m tests/unit/depense/lecture-d/ecran.test.tsx [2m([22m[2m16 tests[22m[2m)[22m[33m 2651[2mms[22m[39m
+   [33m[2m✓[22m[39m E5, E6 : après le provisoire, l’écran arrive et « Confirmer » attend[2m > [22mles lignes sont là, le fil et « Lectures ●●◌ » aussi ; « Confirmer » est désactivé avec la roue (aria « Vérification en cours ») ; « Fermer » reste actif [33m 323[2mms[22m[39m
+   [33m[2m✓[22m[39m son choix 2 D : une ligne que la 3.8 ne lit plus[2m > [22mbarrée, hors des sommes, au bandeau ; « Confirmer » sans trancher : elle part (elle n’est pas enregistrée) [33m 325[2mms[22m[39m
+   [33m[2m✓[22m[39m son choix 2 D : une ligne que la 3.8 ne lit plus[2m > [22m« Garder » la remet en rangée ordinaire à sa place, dans les sommes ; « Retirer » la fait partir [33m 310[2mms[22m[39m
+
+[2m Test Files [22m [1m[32m4 passed[39m[22m[90m (4)[39m
+[2m      Tests [22m [1m[32m41 passed[39m[22m[90m (41)[39m
+[2m   Start at [22m 20:23:46
+[2m   Duration [22m 4.46s[2m (transform 1.46s, setup 412ms, collect 4.02s, tests 5.17s, environment 1.79s, prepare 222ms)[22m
+

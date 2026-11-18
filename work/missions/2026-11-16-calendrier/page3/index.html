@@ -1,0 +1,220 @@
+<!doctype html><html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="color-scheme" content="light">
+<title>Calendrier en un geste · fb, fc, fa · 16.11</title>
+<style>
+:root{--f:#faf7f2;--c:#fff;--t:#22201c;--d:#6b645a;--a:#b8641c;--ab:#9a4f12;--on:#fff;--sur:#fff;--l:#e4ddd2;--rep:#fbf3e8;--ref:#e9e4dc;--barre:#fffdf9;--ok:#1d6b34;--ko:#a32020}
+*{box-sizing:border-box}html{overflow-x:hidden}
+body{margin:0;background:var(--f);color:var(--t);font:16px/1.45 system-ui,-apple-system,"Segoe UI",sans-serif;padding-bottom:calc(200px + env(safe-area-inset-bottom))}
+main{max-width:1180px;margin:0 auto;padding:16px max(16px,env(safe-area-inset-right)) 16px max(16px,env(safe-area-inset-left))}
+a{color:var(--ab)}
+h1{font-size:24px;margin:4px 0 12px}h2{font-size:20px;margin:28px 0 8px;padding-top:12px;border-top:2px solid var(--l)}h3{font-size:18px;margin:0 0 2px}
+#a-choisir{background:var(--c);border:2px solid var(--a);border-radius:12px;padding:12px 14px}
+#a-choisir blockquote{margin:0 0 8px;padding:0 0 0 10px;border-left:3px solid var(--a);font-style:italic}
+.ex{font-size:15px;color:var(--d);margin:6px 0 0}
+.g{background:var(--c);border:1px solid var(--l);border-radius:12px;padding:12px;margin:12px 0;min-width:0}
+.g>p{margin:4px 0 10px}
+.rang{display:grid;grid-auto-flow:column;grid-auto-columns:300px;gap:10px;overflow-x:auto;overscroll-behavior-x:contain;scroll-snap-type:x proximity;padding-bottom:8px;align-items:start}
+@media (min-width:900px){.rang{grid-auto-flow:row;grid-template-columns:repeat(3,minmax(0,1fr));overflow:visible}}
+.v{margin:0;display:flex;flex-direction:column;gap:8px;border-radius:12px;padding:8px;border:2px solid var(--l);background:var(--c);scroll-snap-align:start;min-width:0}
+.v.choisie{border-color:var(--a);background:var(--rep)}
+.v.ref{background:var(--ref);border-color:var(--ref)}
+.id{color:var(--d);font-size:14px;font-weight:400}
+.note{display:inline-block;font-size:14px;font-weight:700;border-radius:99px;padding:1px 10px;background:#dcefd9;color:#1d4d26;align-self:flex-start}
+.note.moy{background:#f4e6c8;color:#6a4300}.note.bas{background:#f6d9d6;color:#7a1d16}
+.duo{display:grid;grid-template-columns:1fr 1fr;gap:6px}.duo.un{grid-template-columns:1fr}
+.zoom{display:block;width:100%;padding:0;border:1px solid var(--l);border-radius:8px;overflow:hidden;background:#111;cursor:zoom-in}
+.zoom img{display:block;width:100%;height:auto}
+.leg{font-size:14px;color:var(--d);margin:2px 0 0}
+.ch{font:600 15px system-ui,sans-serif;min-height:44px;padding:8px 12px;border-radius:10px;border:1.5px solid var(--a);background:var(--sur);color:var(--t);cursor:pointer;width:100%;margin-top:auto}
+.ch[aria-pressed="true"]{background:var(--ab);border-color:var(--ab);color:var(--on)}
+.ch[aria-pressed="true"]::before{content:"✓ "}
+.ch:focus-visible,.zoom:focus-visible,#copier:focus-visible,#mot:focus-visible{outline:3px solid var(--a);outline-offset:2px}
+.glisse{font-size:14px;color:var(--d);margin:0 0 6px}
+@media (min-width:900px){.glisse{display:none}}
+.reflig{display:grid;grid-template-columns:140px minmax(0,1fr);gap:12px;align-items:start}
+@media (min-width:900px){.reflig{grid-template-columns:170px minmax(0,1fr)}}
+.phr{margin:0;font-size:15px}
+.rep{margin:0;font-size:15px;font-weight:600;background:var(--rep);border-radius:8px;padding:6px 8px}
+.res{margin:0;font-size:14px;color:var(--d)}
+.notes,.taches{border-collapse:collapse;font-size:14px;width:100%;font-variant-numeric:tabular-nums}
+.notes caption,.taches caption{text-align:left;color:var(--d);margin-bottom:2px}
+.notes th,.notes td{padding:3px 2px;border-bottom:1px solid var(--l);text-align:center}.notes thead th{font-weight:600;color:var(--d)}
+.taches th,.taches td{padding:4px 3px;border-bottom:1px solid var(--l);vertical-align:top}
+.taches thead th{font-weight:600;color:var(--d);text-align:right}.taches thead th:first-child{text-align:left}
+.taches th[scope=row]{text-align:left;font-weight:600}.taches th[scope=row] span{display:block;font-weight:400;color:var(--d)}
+.taches td{text-align:right;white-space:nowrap}
+.taches tfoot td,.taches tfoot th{font-weight:700;border-bottom:0}
+.ok{color:var(--ok);font-weight:700}.ko{color:var(--ko);font-weight:700}
+tr.echec th[scope=row]{color:var(--ko)}
+.quatre{display:grid;grid-template-columns:1fr 1fr;gap:6px}.quatre figure{margin:0;display:flex;flex-direction:column;gap:2px;min-width:0}.quatre figcaption{font-size:14px;color:var(--d);line-height:1.25}
+.liens li{margin:4px 0}
+#barre{position:fixed;left:0;right:0;bottom:0;z-index:5;background:var(--barre);border-top:2px solid var(--a);box-shadow:0 -4px 16px #0002;padding:10px max(12px,env(safe-area-inset-right)) calc(10px + env(safe-area-inset-bottom)) max(12px,env(safe-area-inset-left))}
+#barre .in{max-width:1180px;margin:0 auto;display:grid;grid-template-columns:1fr auto;gap:8px;align-items:center}
+#reponse{grid-column:1/-1;font:600 15px ui-monospace,Consolas,monospace;min-height:22px;max-height:4.4em;overflow-y:auto;overflow-wrap:anywhere;user-select:all;-webkit-user-select:all}
+#reponse.vide{font:15px system-ui,sans-serif;color:var(--d);user-select:none;-webkit-user-select:none}
+#mot{font:16px system-ui,sans-serif;min-height:44px;padding:8px 10px;border-radius:10px;border:1px solid var(--l);background:var(--sur);color:var(--t);width:100%;min-width:0}
+#copier{font:700 16px system-ui,sans-serif;min-height:44px;padding:8px 18px;border-radius:10px;border:0;background:var(--ab);color:var(--on);cursor:pointer}
+#etat{grid-column:1/-1;font-size:14px;color:var(--d);margin:0}#etat:empty{display:none}
+@media (min-width:900px){#barre .in{grid-template-columns:1fr 280px auto}#reponse{grid-column:auto}}
+dialog{padding:0;border:0;max-width:100vw;max-height:100vh;width:100vw;height:100vh;background:#000d}
+dialog::backdrop{background:#000a}
+dialog .z{width:100%;height:100%;overflow:auto;display:flex;align-items:flex-start;justify-content:center}
+dialog img{display:block;width:min(100%,560px);height:auto}
+dialog button{position:fixed;top:10px;right:10px;font:600 16px system-ui;padding:10px 14px;border-radius:10px;border:0;background:#fff;color:#111}
+</style></head><body><main>
+<h1>Calendrier en un geste · 16.11</h1>
+<div id="a-choisir">
+<blockquote>« Est-ce que le calendrier a vraiment été focus sur la fluidité, facilité de lecture, facilité d’utilisation ? Est-ce que en une action, je peux, ajouter, modifier ECT.. ? »</blockquote>
+<p style="margin:0"><b>Un choix :</b> le prototype à garder pour la suite, <a href="#s-protos">fb, fc ou fa</a>. Chacun a joué les 8 mêmes tâches, touchers et temps mesurés.</p>
+<p class="ex">Touche « Choisir » ; un second toucher retire. Touche une capture pour l’agrandir. En bas, « Copier », puis colle ici (un mot si tu en mêles deux).</p></div>
+
+<h2 id="s-ref">Ta base : f1</h2>
+<section class="g reflig">
+<figure data-vignette class="v ref"><div class="duo un"><button type="button" class="zoom" data-agrandir="img/f1-vue.webp" aria-label="Voir en grand : f1, caisse et semaines"><img src="img/f1-vue.webp" width="780" height="1688" alt="f1, caisse et semaines"></button></div>
+<figcaption class="leg"><b>f1</b> · caisse et semaines <span class="id">référence</span></figcaption></figure>
+<div><p>La courbe de caisse et les barres de chaque envie : tu l’as notée 8/10. Les trois prototypes partent de là, et de g8 et c2h8.</p>
+<p class="ex">La page d’avant : <a href="https://claude.ai/artifact/KAZV8p46ETVRuTiuYGzjQK">calendrier, passe 8</a>.</p>
+<p class="ex">Pas de lien pour jouer : les prototypes sont des fichiers sur le poste, pas encore publiés. Les captures viennent des gestes rejoués au doigt simulé.</p>
+<p class="ex">fb lit encore l’ancien calcul (259 à te permettre) ; fa et fc, le calcul du 16.11 au matin (709), avec le malt compté net. Même année, mêmes envies.</p></div>
+</section>
+
+<h2 id="s-protos">1 · Trois prototypes, les mêmes 8 tâches</h2>
+<section class="g">
+<p>Chaque carte : sa réponse à ta question, les notes du juge, le tableau des tâches, puis le repos et trois gestes.</p>
+<p class="glisse">Glisse de côté pour voir les trois.</p>
+<div class="rang">
+
+<figure data-vignette class="v"><h3>Poser d’un toucher, régler en glissant <span class="id">fb</span></h3>
+<p class="phr">La courbe de f1 en tête, puis une rangée par type avec un + par semaine : un toucher et une puce posent la chose ; on glisse sur un prix ou des jours pour les changer.</p>
+<p class="rep">Ajouter : 2 touchers, sans clavier. Modifier : 1 geste (jours : 2).</p>
+<span class="note">8,0 / 10 · le juge</span>
+<table class="notes"><caption>Notes du juge, sur 10 (f1 = 8 pour toi)</caption>
+<thead><tr><th scope="col">toi</th><th scope="col">UX/UI</th><th scope="col">parc.</th><th scope="col">nav.</th><th scope="col">fluid.</th></tr></thead>
+<tbody><tr><td>8,5</td><td>7,5</td><td>8,5</td><td>7,5</td><td>8</td></tr></tbody></table>
+<table class="taches"><caption>Touchers et durée du geste rejoué</caption>
+<thead><tr><th scope="col">tâche</th><th scope="col">touch.</th><th scope="col">s</th><th scope="col"><span class="id">ok</span></th></tr></thead>
+<tbody>
+<tr><th scope="row">T1 voir ce que je peux me permettre<span>aucun geste, 259 au repos</span></th><td>0</td><td>0</td><td class="ok">✓</td></tr>
+<tr><th scope="row">T2 ajouter un achat, S48 → S51<span>appui long et glisser, puis une puce</span></th><td>2</td><td>1,3</td><td class="ok">✓</td></tr>
+<tr><th scope="row">T3 ajouter une activité sans budget<span>toucher le +, puis une puce</span></th><td>2</td><td>0,6</td><td class="ok">✓</td></tr>
+<tr><th scope="row">T4 changer la durée<span>tirer le bord : 3 → 6 sem.</span></th><td>1</td><td>0,5</td><td class="ok">✓</td></tr>
+<tr><th scope="row">T5 changer le budget<span>glisser sur le prix : 1 180 → 1 400</span></th><td>1</td><td>0,5</td><td class="ok">✓</td></tr>
+<tr><th scope="row">T5b changer les jours actifs<span>toucher « j », puis la case du jour</span></th><td>2</td><td>0,5</td><td class="ok">✓</td></tr>
+<tr><th scope="row">T6 déplacer<span>glisser la barre de 2 semaines</span></th><td>1</td><td>0,5</td><td class="ok">✓</td></tr>
+<tr><th scope="row">T7 supprimer<span>appui long, glisser sur la corbeille</span></th><td>1</td><td>1,3</td><td class="ok">✓</td></tr>
+<tr><th scope="row">T8 filtrer par type<span>1 toucher par type montré</span></th><td>2</td><td>0,4</td><td class="ok">✓</td></tr>
+</tbody>
+<tfoot><tr><th scope="row">9 sur 9</th><td>12</td><td>5,5</td><td class="ok">✓</td></tr></tfoot></table>
+<p class="res">Réserve du juge : pendant le geste, le grand chiffre sort de l’écran ; tu ne vois pas que le malt te fait passer sous 0 en juin.</p>
+<div class="quatre">
+<figure><button type="button" class="zoom" data-agrandir="img/fb-repos.webp" aria-label="Voir en grand : fb au repos"><img src="img/fb-repos.webp" width="780" height="1688" alt="fb au repos"></button><figcaption>repos</figcaption></figure>
+<figure><button type="button" class="zoom" data-agrandir="img/fb-ajouter.webp" aria-label="Voir en grand : fb, malt posé d’une puce"><img src="img/fb-ajouter.webp" width="780" height="1688" alt="fb, malt posé d’une puce"></button><figcaption>T2 : malt posé, Annuler</figcaption></figure>
+<figure><button type="button" class="zoom" data-agrandir="img/fb-budget.webp" aria-label="Voir en grand : fb, Marché de Noël à 1 400"><img src="img/fb-budget.webp" width="780" height="1688" alt="fb, Marché de Noël à 1 400"></button><figcaption>T5 : Noël glissé à +1 400</figcaption></figure>
+<figure><button type="button" class="zoom" data-agrandir="img/fb-supprimer.webp" aria-label="Voir en grand : fb, malt retiré"><img src="img/fb-supprimer.webp" width="780" height="1688" alt="fb, malt retiré"></button><figcaption>T7 : malt retiré, Annuler</figcaption></figure>
+</div>
+<button type="button" class="ch" data-groupe="proto" data-jeton="fb" aria-pressed="false">Choisir</button></figure>
+
+<figure data-vignette class="v"><h3>L’année en blocs, une piste par type <span class="id">fc</span></h3>
+<p class="phr">Toute l’année défile en blocs de 13 semaines, une piste par type avec son picto : on glisse sur la piste pour poser, sur le montant pour le changer, on balaye pour supprimer.</p>
+<p class="rep">Ajouter : 2 gestes, sans clavier. Modifier : 1 geste, partout.</p>
+<span class="note moy">7,8 / 10 · le juge</span>
+<table class="notes"><caption>Notes du juge, sur 10 (f1 = 8 pour toi)</caption>
+<thead><tr><th scope="col">toi</th><th scope="col">UX/UI</th><th scope="col">parc.</th><th scope="col">nav.</th><th scope="col">fluid.</th></tr></thead>
+<tbody><tr><td>8</td><td>7,5</td><td>8,5</td><td>7,5</td><td>7,5</td></tr></tbody></table>
+<table class="taches"><caption>Touchers et durée du geste rejoué</caption>
+<thead><tr><th scope="col">tâche</th><th scope="col">touch.</th><th scope="col">s</th><th scope="col"><span class="id">ok</span></th></tr></thead>
+<tbody>
+<tr><th scope="row">T1 voir ce que je peux me permettre<span>aucun geste, 709 au repos ; autre semaine : 1</span></th><td>0</td><td>0</td><td class="ok">✓</td></tr>
+<tr><th scope="row">T2 ajouter un achat, S49 → S5<span>glisser la plage, puis une puce ; nom tapé : 18</span></th><td>2</td><td>1,3</td><td class="ok">✓</td></tr>
+<tr><th scope="row">T3 ajouter une activité sans budget<span>défiler, glisser, puis une puce</span></th><td>3</td><td>1,3</td><td class="ok">✓</td></tr>
+<tr><th scope="row">T4 changer la durée<span>tirer la fin : S52 → S1</span></th><td>1</td><td>0,9</td><td class="ok">✓</td></tr>
+<tr><th scope="row">T5 changer le budget<span>glisser le montant : −540 → −620 ; tapé : 5</span></th><td>1</td><td>0,8</td><td class="ok">✓</td></tr>
+<tr><th scope="row">T5b changer les jours actifs<span>glisser « 3 j » : 3 → 4 j</span></th><td>1</td><td>0,9</td><td class="ok">✓</td></tr>
+<tr><th scope="row">T6 déplacer<span>tenir, puis glisser de 3 semaines</span></th><td>1</td><td>1,3</td><td class="ok">✓</td></tr>
+<tr><th scope="row">T7 supprimer<span>balayer la barre vers la gauche</span></th><td>1</td><td>0,8</td><td class="ok">✓</td></tr>
+<tr><th scope="row">T8 filtrer par type<span>toucher Achat</span></th><td>1</td><td>0,5</td><td class="ok">✓</td></tr>
+</tbody>
+<tfoot><tr><th scope="row">9 sur 9</th><td>11</td><td>7,8</td><td class="ok">✓</td></tr></tfoot></table>
+<p class="res">Réserve du juge : balayer à gauche supprime, donc un faux geste en défilant peut retirer une chose (Annuler la rend) ; des valeurs coupées à 390.</p>
+<div class="quatre">
+<figure><button type="button" class="zoom" data-agrandir="img/fc-repos.webp" aria-label="Voir en grand : fc au repos"><img src="img/fc-repos.webp" width="780" height="1688" alt="fc au repos"></button><figcaption>repos</figcaption></figure>
+<figure><button type="button" class="zoom" data-agrandir="img/fc-ajouter.webp" aria-label="Voir en grand : fc, houblons posés, 709 devient 229"><img src="img/fc-ajouter.webp" width="780" height="1688" alt="fc, houblons posés, 709 devient 229"></button><figcaption>T2 : houblons posés, 709 → 229</figcaption></figure>
+<figure><button type="button" class="zoom" data-agrandir="img/fc-budget.webp" aria-label="Voir en grand : fc, malt glissé à −620"><img src="img/fc-budget.webp" width="780" height="1688" alt="fc, malt glissé à −620"></button><figcaption>T5 : malt à −620, 709 → 629</figcaption></figure>
+<figure><button type="button" class="zoom" data-agrandir="img/fc-supprimer.webp" aria-label="Voir en grand : fc, Inventaire supprimé"><img src="img/fc-supprimer.webp" width="780" height="1688" alt="fc, Inventaire supprimé"></button><figcaption>T7 : Inventaire balayé, Annuler</figcaption></figure>
+</div>
+<button type="button" class="ch" data-groupe="proto" data-jeton="fc" aria-pressed="false">Choisir</button></figure>
+
+<figure data-vignette class="v"><h3>g8 rendu jouable <span class="id">fa</span></h3>
+<p class="phr">Le tableau de g8 tel quel, avec ses verres : on tire les barres pour la durée et les semaines, on touche un montant pour le taper ; poser une chose passe encore par le clavier.</p>
+<p class="rep">Ajouter : 19 à 21 touchers, clavier compris. Modifier : 1 à 5. Deux gestes ratent.</p>
+<span class="note bas">6,5 / 10 · le juge</span>
+<table class="notes"><caption>Notes du juge, sur 10 (f1 = 8 pour toi)</caption>
+<thead><tr><th scope="col">toi</th><th scope="col">UX/UI</th><th scope="col">parc.</th><th scope="col">nav.</th><th scope="col">fluid.</th></tr></thead>
+<tbody><tr><td>7</td><td>6,5</td><td>7</td><td>7</td><td>5</td></tr></tbody></table>
+<table class="taches"><caption>Touchers et durée du geste rejoué</caption>
+<thead><tr><th scope="col">tâche</th><th scope="col">touch.</th><th scope="col">s</th><th scope="col"><span class="id">ok</span></th></tr></thead>
+<tbody>
+<tr><th scope="row">T1 voir ce que je peux me permettre<span>aucun geste, 709 au repos</span></th><td>0</td><td>0,1</td><td class="ok">✓</td></tr>
+<tr><th scope="row">T2 ajouter un achat, S48 → S51<span>glisser, puis nom et budget tapés (17 frappes)</span></th><td>19</td><td>1,5</td><td class="ok">✓</td></tr>
+<tr><th scope="row">T3 ajouter une activité sans budget<span>glisser, + jour, nom tapé (18 frappes)</span></th><td>21</td><td>1,7</td><td class="ok">✓</td></tr>
+<tr><th scope="row">T4 changer la durée<span>tirer le bord : S52 → S51</span></th><td>1</td><td>0,5</td><td class="ok">✓</td></tr>
+<tr><th scope="row">T5 changer le budget<span>toucher le montant, taper 720</span></th><td>5</td><td>0,4</td><td class="ok">✓</td></tr>
+<tr><th scope="row">T5b changer les jours actifs<span>toucher, +, toucher ailleurs</span></th><td>3</td><td>0,5</td><td class="ok">✓</td></tr>
+<tr><th scope="row">T6 déplacer<span>glisser la barre : S50 → S52</span></th><td>1</td><td>0,5</td><td class="ok">✓</td></tr>
+<tr class="echec"><th scope="row">T7 supprimer<span>appui long, glisser vers le bas : la page défile, rien n’est retiré ; par la fiche : 2 touchers ✓</span></th><td>1</td><td>1,1</td><td class="ko">✗</td></tr>
+<tr class="echec"><th scope="row">T8 filtrer par type<span>appui long sur Brassins : tout s’éteint, tableau vide ; couper un type : 1 toucher ✓</span></th><td>1</td><td>0,8</td><td class="ko">✗</td></tr>
+</tbody>
+<tfoot><tr><th scope="row">7 sur 9</th><td>50</td><td>5,3</td><td class="ko">2 ✗</td></tr></tfoot></table>
+<p class="res">Le total compte les 7 réussies. Verdict du juge : rejeté, deux gestes sur huit trahissent le doigt (à revoir sur un vrai téléphone).</p>
+<div class="quatre">
+<figure><button type="button" class="zoom" data-agrandir="img/fa-repos.webp" aria-label="Voir en grand : fa au repos"><img src="img/fa-repos.webp" width="780" height="1688" alt="fa au repos"></button><figcaption>repos</figcaption></figure>
+<figure><button type="button" class="zoom" data-agrandir="img/fa-ajouter.webp" aria-label="Voir en grand : fa, moulin à malt posé, 709 devient 259"><img src="img/fa-ajouter.webp" width="780" height="1688" alt="fa, moulin à malt posé, 709 devient 259"></button><figcaption>T2 : moulin posé, 709 → 259</figcaption></figure>
+<figure><button type="button" class="zoom" data-agrandir="img/fa-budget.webp" aria-label="Voir en grand : fa, malt tapé à −720"><img src="img/fa-budget.webp" width="780" height="1688" alt="fa, malt tapé à −720"></button><figcaption>T5 : malt à −720, 709 → 529</figcaption></figure>
+<figure><button type="button" class="zoom" data-agrandir="img/fa-filtre.webp" aria-label="Voir en grand : fa, filtre raté, tableau vide"><img src="img/fa-filtre.webp" width="780" height="1688" alt="fa, filtre raté, tableau vide"></button><figcaption>T8 ✗ : tous les types éteints</figcaption></figure>
+</div>
+<button type="button" class="ch" data-groupe="proto" data-jeton="fa" aria-pressed="false">Choisir</button></figure>
+
+</div></section>
+
+<h2 id="s-mesure">Comment c’est mesuré</h2>
+<section class="g">
+<ul class="liens">
+<li>Un toucher : un appui, un glisser ou une frappe au clavier. Les frappes sont dans le compte.</li>
+<li>Les secondes sont la durée du geste rejoué par le banc, doigt simulé à 390 px : elles comparent les trois, ce n’est pas ton temps.</li>
+<li>Les notes viennent d’un juge neuf (Opus), qui a ouvert les captures ; il ne te remplace pas.</li>
+</ul>
+</section>
+</main>
+
+<div id="barre" role="region" aria-label="Ta réponse"><div class="in">
+<div id="reponse" class="vide" aria-live="polite">Rien de choisi pour l’instant.</div>
+<input id="mot" type="text" autocomplete="off" placeholder="Un mot en plus (facultatif)" aria-label="Un mot en plus, facultatif">
+<button type="button" id="copier">Copier</button>
+<p id="etat" role="status"></p>
+</div></div>
+<dialog id="grand"><div class="z"><img alt=""></div><button type="button">Fermer</button></dialog>
+<script>
+(function(){
+var d=document.getElementById('grand'),im=d.querySelector('img');
+document.addEventListener('click',function(e){var b=e.target.closest('[data-agrandir]');if(!b)return;im.src=b.getAttribute('data-agrandir');im.alt=b.getAttribute('aria-label')||'';d.showModal();});
+d.querySelector('button').addEventListener('click',function(){d.close();});
+d.addEventListener('click',function(e){if(e.target===d||e.target.classList.contains('z'))d.close();});
+var boutons=[].slice.call(document.querySelectorAll('.ch[data-groupe]')),ordre=[],choix={};
+boutons.forEach(function(b){var g=b.getAttribute('data-groupe');if(ordre.indexOf(g)<0)ordre.push(g);});
+var rep=document.getElementById('reponse'),mot=document.getElementById('mot'),etat=document.getElementById('etat');
+function texte(){var t=['Calendrier gestes'];var n=0;ordre.forEach(function(g){if(choix[g]){t.push(choix[g]);n++;}});var m=mot.value.trim();if(m){t.push(m);n++;}return n?t.join(' · '):'';}
+function rendre(){
+  boutons.forEach(function(b){var on=choix[b.getAttribute('data-groupe')]===b.getAttribute('data-jeton');b.setAttribute('aria-pressed',on?'true':'false');b.textContent=on?'Choisi':'Choisir';var f=b.closest('figure');if(f)f.classList.toggle('choisie',on);});
+  var t=texte();rep.textContent=t||'Rien de choisi pour l’instant.';rep.classList.toggle('vide',!t);etat.textContent='';
+}
+document.addEventListener('click',function(e){var b=e.target.closest('.ch[data-groupe]');if(!b)return;var g=b.getAttribute('data-groupe'),j=b.getAttribute('data-jeton');if(choix[g]===j)delete choix[g];else choix[g]=j;rendre();});
+mot.addEventListener('input',rendre);
+function repli(){var r=document.createRange();r.selectNodeContents(rep);var s=getSelection();s.removeAllRanges();s.addRange(r);var ok=false;try{ok=document.execCommand('copy');}catch(x){}etat.textContent=ok?'Copié. Colle-le dans ta réponse.':'Texte sélectionné : copie-le à la main.';}
+document.getElementById('copier').addEventListener('click',function(){
+  var t=texte();if(!t){etat.textContent='Choisis d’abord une proposition.';return;}
+  if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(t).then(function(){etat.textContent='Copié. Colle-le dans ta réponse.';},function(){repli();});}
+  else repli();
+});
+rendre();
+})();
+</script></body></html>

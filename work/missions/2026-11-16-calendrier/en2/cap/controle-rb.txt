@@ -1,0 +1,3 @@
+ok r6b : en-tête 190 px, bande 35 px, 29 textes · petits 0 · hors 0 · chevauchés 0 · sur trait 0 · dans la fenêtre 0
+ok r2b : en-tête 189 px, bande 23 px, 24 textes · petits 0 · hors 0 · chevauchés 0 · sur trait 0 · dans la fenêtre 0
+ok r5b : en-tête 190 px, bande 35 px, 28 textes · petits 0 · hors 0 · chevauchés 0 · sur trait 0 · dans la fenêtre 0

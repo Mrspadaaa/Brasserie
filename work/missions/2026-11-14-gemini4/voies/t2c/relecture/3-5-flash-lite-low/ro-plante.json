@@ -1,0 +1,19 @@
+{
+ "reglage": "3.5-flash-lite@low",
+ "element": "ro-plante",
+ "cas": "ro",
+ "type": "plante",
+ "moitie": "choix",
+ "verdict": {
+  "utilisable": true,
+  "approved": false,
+  "proposalApproved": false,
+  "issues": [
+   "Le résumé affirme un pH exact de 5,38 alors que l'outil indique une estimation à 5,56 ± 0,15 et rappelle qu'une prévision n'est pas une mesure.",
+   "L'action propose de verser 4L d'osmosée et 20L de réseau pour l'empâtage sans ajuster les sels ou acides calculés par le plan d'eau complet, et aucune vidange ou modification n'est exigée à l'aveugle sans mesure réelle de pH."
+  ]
+ },
+ "ms": 888,
+ "coutMicro": 2362,
+ "etat": "STOP"
+}

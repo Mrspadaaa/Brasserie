@@ -1,4 +1,4 @@
-import { batchDisplayDate, hasBrewStarted, plannedBrewDate } from '../../domain/batchSchedule';
+import { batchDisplayDate, hasBrewStarted, plannedBrewDate, plannedDateIsPast } from '../../domain/batchSchedule';
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import {
   AlertTriangle, Beer, Boxes, Calendar, Check, ChevronDown, ChevronRight,
@@ -13,8 +13,9 @@ import { FinanceService } from '../../services/financeService';
 import { formatCHF, summarizeLedger } from '../../domain/finance/ledger';
 import { isCurrent } from '../../domain/catalogOrganization';
 import { statusOfBatch } from '../../domain/batchStatus';
+import { articlesACommander } from '../../domain/stockLevel';
 import { fermentationReadings } from '../../domain/fermentationReadings';
-import { daysSincePitch } from '../../domain/productionInsights';
+import { joursDepuisBrassage } from '../../domain/productionInsights';
 
 interface DashboardTabProps {
   transactions: Transaction[];
@@ -54,7 +55,7 @@ function StockThreshold({ item }: { item: StockItem }) {
 function BatchRow({ batch, onOpen }: { batch: Batch; onOpen: (id: string) => void }) {
   const status = statusOfBatch(batch);
   const reading = fermentationReadings(batch);
-  const days = daysSincePitch(batch);
+  const days = joursDepuisBrassage(batch);
   const planned = batch.status === 'planifie';
   return <button type="button" onClick={() => onOpen(batch.id)} className={rowAction}>
     <span className="min-w-0 flex-1">
@@ -71,7 +72,7 @@ function BatchRow({ batch, onOpen }: { batch: Batch; onOpen: (id: string) => voi
           : <>
             <span className="text-cave-400">{days === undefined ? 'Date à préciser' : days < 0 ? 'Date future à vérifier' : `J+${days}`}</span>
             <span className="font-mono text-2xs text-cave-200">
-              {reading.latest === undefined ? 'SG non relevée' : `SG ${gravity.format(reading.latest)}`}
+              {reading.latest === undefined ? 'Densité non relevée' : `Densité ${gravity.format(reading.latest)}`}
             </span>
           </>}
       </span>
@@ -140,11 +141,11 @@ export const DashboardTab: React.FC<DashboardTabProps> = ({
   const brewingBatches = useMemo(() => batches.filter(batch =>
     isCurrent(batch) && batch.status === 'planifie' && hasBrewStarted(batch)
   ), [batches]);
-  const itemsToOrder = useMemo(() => [...stocks.rawMaterials, ...stocks.cleaning]
-    .filter(item => item.currentStock <= item.minStock)
-    .sort((a, b) => Number(b.currentStock <= 0) - Number(a.currentStock <= 0))
-    .map(item => ({ ...item, missing: Math.max(0, item.minStock - item.currentStock) })), [stocks]);
-  const ruptures = itemsToOrder.filter(item => item.currentStock <= 0).length;
+  // Le même comptage que Stocks et que le badge de la barre du bas (test en ligne n° 49) : `articlesACommander`.
+  const aCommander = useMemo(() => articlesACommander([...stocks.rawMaterials, ...stocks.cleaning], batches)
+    .sort((a, b) => Number(b.rupture) - Number(a.rupture)), [stocks, batches]);
+  const itemsToOrder = useMemo(() => aCommander.map(({ item, missing }) => ({ ...item, missing })), [aCommander]);
+  const ruptures = aCommander.filter(a => a.rupture).length;
   const events = useMemo(() => creativeItems.filter(item => item.type === 'event')
     .sort((a, b) => Number(a.status === 'done') - Number(b.status === 'done') ||
       dateOrder(a.date) - dateOrder(b.date)), [creativeItems]);
@@ -225,7 +226,7 @@ export const DashboardTab: React.FC<DashboardTabProps> = ({
               <span className="min-w-0 flex-1">
                 <span className="font-semibold text-area-production">À brasser · {plannedBatches.length}</span>
                 <span className="ml-2 text-cave-200">{plannedBatches[0].name}</span>
-                <span className="block text-xs text-cave-400">{plannedBrewDate(plannedBatches[0]) ? `Prévu le ${displayDate(plannedBrewDate(plannedBatches[0]))}` : 'Date à définir'}</span>
+                <span className="block text-xs text-cave-400">{plannedBrewDate(plannedBatches[0]) ? `Prévu le ${displayDate(plannedBrewDate(plannedBatches[0]))}${plannedDateIsPast(plannedBatches[0]) ? ' · date dépassée' : ''}` : 'Date à définir'}</span>
               </span>
               <ChevronDown size={14} className="shrink-0 text-area-production group-open/planned:rotate-180" aria-hidden="true" />
             </summary>

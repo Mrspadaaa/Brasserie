@@ -240,7 +240,7 @@ describe('BrewWizard — étape Houblons V5.5 native', () => {
     expect(screen.queryByText(/Recherche avancée · arômes, essais et analyses/)).toBeNull();
     expect(screen.queryByRole('button', { name: /^Simuler l’ajout/ })).toBeNull();
     expect(document.querySelector('iframe')).toBeNull();
-    expect(screen.getByText(/Corriger les lignes de houblon · 0/)).toBeInTheDocument();
+    expect(screen.getByText(/Mes ajouts de houblons · 0/)).toBeInTheDocument();
 
     // The real service is opened for the explicit owner and resolves the live draft, never the saved recipe of the same ID.
     expect(runtimeState.options.at(-1)?.ownerKey).toBe(OWNER);
@@ -310,7 +310,7 @@ describe('BrewWizard — étape Houblons V5.5 native', () => {
     const persistedApplication = readHopV55RecipeApplication(persistedAfterRetry.draft.recipe.hopV55Applications![0]);
     if (persistedApplication.status !== 'current') throw new Error('Une trace d’application unique et relisible est attendue après le retry.');
     expect(persistedApplication.record.id).toBe(stableApplicationId);
-    await waitFor(() => expect(screen.getByText(/Corriger les lignes de houblon · 1/)).toBeInTheDocument());
+    await waitFor(() => expect(screen.getByText(/Mes ajouts de houblons · 1/)).toBeInTheDocument());
     const workspaces = createHopV55WorkspaceRepository({ ownerKey: OWNER, database: runtimeState.workspaceDatabase as never });
     const [workspace] = await workspaces.list(OWNER);
     expect(workspace.sourceRecipeId).toBe(seed.id);
@@ -323,7 +323,7 @@ describe('BrewWizard — étape Houblons V5.5 native', () => {
     const reopened = await screen.findByTestId('recipe-hop-v55', {}, { timeout: 5000 });
     expect(screen.getByText('Brouillon repris sur cet appareil.')).toBeInTheDocument();
     expect(await within(reopened).findByText(/Dernière application · /)).toBeInTheDocument();
-    expect(screen.getByText(/Corriger les lignes de houblon · 1/)).toBeInTheDocument();
+    expect(screen.getByText(/Mes ajouts de houblons · 1/)).toBeInTheDocument();
     const afterReload = readRecipeDraftState(DRAFT_KEY);
     if (afterReload.status !== 'available') throw new Error('Le brouillon avec la trace doit être relu après démontage/remontage.');
     expect(afterReload.draft.recipe.hopV55Applications).toHaveLength(1);
@@ -406,7 +406,7 @@ describe('BrewWizard — étape Houblons V5.5 native', () => {
     expect(await screen.findByText(/Le profil propriétaire de ce brouillon n’est pas fourni explicitement/)).toBeInTheDocument();
     expect(screen.queryByTestId('hop-v55')).toBeNull();
     expect(runtimeState.options).toHaveLength(0);
-    expect(screen.getByText(/Corriger les lignes de houblon · 0/)).toBeInTheDocument();
+    expect(screen.getByText(/Mes ajouts de houblons · 0/)).toBeInTheDocument();
   });
 
   it('#28 : en création, monte l’atelier sur le brouillon inédit et incomplet, propriétaire explicite, rien d’enregistré', async () => {
@@ -417,7 +417,8 @@ describe('BrewWizard — étape Houblons V5.5 native', () => {
       config={{ ...defaultConfig, brewhouses: [brewhouse], activeBrewhouseId: brewhouse.id }}
       stockItems={[]} knownStyles={['Pale Ale']} onClose={vi.fn()} onSave={save}
       onCreateStockItem={vi.fn()} onLearnIngredient={vi.fn()} onSaveWaterSource={vi.fn()} />);
-    expect(screen.getAllByText('Nouvelle recette').length).toBeGreaterThan(0);
+    // Le titre dit l'étape et sa place, comme sa maquette (B1 n° 10) : plus « Nouvelle recette ».
+    expect(screen.getAllByText('Identité 1/7').length).toBeGreaterThan(0);
     fireEvent.change(document.getElementById('wz-title') as HTMLInputElement, { target: { value: 'Brouillon inédit V5.5' } });
     allerEtape(/^Houblons$/);
 

@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest';
 import { projectYeastRecipe, resolveYeastDossier, yeastRecipeComputedOg, yeastRecipeBoilOg } from '../../src/domain/yeastProjection';
 import { applyYeastRecipeDesign, createYeastRecipeDraft, evaluateYeastRecipeDesign, readYeastRecipeDesign, yeastRecipeDesignChanged, proposeYeastGoalSettings } from '../../src/domain/yeastRecipeDesign';
 import { yeastReferences } from '../../src/domain/yeastReferences';
+import { alcoholByVolume } from '../../src/domain/alcohol';
 import { brewingStyles } from '../../src/domain/brewingStyles';
 import type { Recipe, Fermentable } from '../../src/types';
 import type { YeastTechnicalFact } from '../../functions/src/yeastTechnicalFacts';
@@ -111,7 +112,7 @@ describe('Prévision unique du moût, indépendante du catalogue', () => {
     expect(computedOg).toBeCloseTo(1 + (points(kg, 37, true) + points(1, 46)) / 1000, 14);
     const projected = projectYeastRecipe(recipe, { og: computedOg });
     expect(projected.fg.range!.min).toBeCloseTo(1 + points(kg, 37, true) * .22 / 1000, 13);
-    expect(projected.abv.range!.min).toBeCloseTo((points(kg, 37, true) * .78 + points(1, 46)) / 1000 * 131.25, 12);
+    expect(projected.abv.range!.min).toBeCloseTo(alcoholByVolume(computedOg, 1 + points(kg, 37, true) * .22 / 1000), 12);
     expect(yeastRecipeBoilOg(recipe, projected).og).toBeCloseTo(1 + points(kg, 37, true) / 1000, 13);
     const rounded = BrewingMath.calculateOg(recipe.fermentables, 20, 75)!;
     expect(rounded).not.toBe(computedOg);
@@ -142,7 +143,7 @@ describe('Prévision unique du moût, indépendante du catalogue', () => {
   it.each(['Saccharomyces cerevisiae (sans Lactobacillus)', 'Saccharomyces cerevisiae without Oenococcus', 'Lactobacillus-free Saccharomyces cerevisiae', 'Saccharomyces cerevisiae, without Lachancea thermotolerans'])('ne lit pas une négation comme une culture ajoutée : %s', species => {
     const facts: YeastTechnicalFact[] = [{ key: 'species', reported: species, origin: 'personal' }], recipe = base({ style: 'Specialty Beer', ogTarget: 1.04, yeast: { name: 'Culture locale', attenuationPct: 80, attenuationBasis: 'recipe', technicalFacts: facts } });
     expect(yeastCultureComposition(facts)).toMatchObject({ culture: 'yeast', acidifying: false });
-    expect(projectYeastRecipe(recipe, { process: 'preacidified' }).abv.range!.min).toBeCloseTo(4.2, 12);
+    expect(projectYeastRecipe(recipe, { process: 'preacidified' }).abv.range!.min).toBeCloseTo(alcoholByVolume(1.04, 1.008), 12);
   });
   it('Sourvisiae et Philly restent acidifiantes pour tous les produits documentés et dossiers gelés', () => {
     const references = refs.filter(r => /sourvisiae|philly sour/i.test(r.name));
@@ -159,7 +160,7 @@ describe('Prévision unique du moût, indépendante du catalogue', () => {
       if (facts.length) expect(projectYeastRecipe({ ...recipe, yeast: { ...recipe.yeast, hopIndexId: undefined } }, { process: 'preacidified' }).abv.range, reference.id).toBeNull();
     }
     const personal = base({ style: 'Specialty Beer', ogTarget: 1.05, yeast: { name: 'Ma culture sour maison', attenuationPct: 80, attenuationBasis: 'recipe' } });
-    expect(projectYeastRecipe(personal, { process: 'preacidified' }).abv.range!.min).toBeCloseTo(5.25, 12);
+    expect(projectYeastRecipe(personal, { process: 'preacidified' }).abv.range!.min).toBeCloseTo(alcoholByVolume(1.05, 1.01), 12);
   });
   it('l’acidification déclarée a un sens positif, pas une négation ou un score tiré du nom', () => {
     const recipe = base({ style: 'Specialty Beer', ogTarget: 1.05 });
@@ -184,7 +185,7 @@ describe('Prévision unique du moût, indépendante du catalogue', () => {
     const r = base({ ogTarget: 1.085644713, fermentables: [malt(5), { name: 'Saccharose', kind: 'sucre', use: 'fermentation', weightKg: 1, potentialPpg: 46, fermentabilityPct: 100 }, { name: 'Lactose', kind: 'lactose', use: 'ebullition', weightKg: .5, potentialPpg: 35, fermentabilityPct: 0 }], yeast: { name: 'Rare', attenuationPct: 75, attenuationBasis: 'measured' } });
     const p = projectYeastRecipe(r);
     expect(p.fg.range!.min).toBeCloseTo(1.02141117825, 12);
-    expect(p.abv.range!.min).toBeCloseTo((1.085644713 - 1.02141117825) * 131.25, 12);
+    expect(p.abv.range!.min).toBeCloseTo(alcoholByVolume(1.085644713, 1.02141117825), 12);
     expect((p.og! - p.fg.range!.min) / (p.og! - 1) * 100).toBeCloseTo(75, 12);
     expect(p.fg.reasons.join(' ')).toContain('sans seconde correction');
     expect(p.warnings.join(' ')).toContain('densité apparente dépend aussi de l’alcool');
@@ -275,7 +276,7 @@ describe('Prévision unique du moût, indépendante du catalogue', () => {
       const before = structuredClone(r), p = projectYeastRecipe(r);
       expect(p.dossier.alcoholTolerance).toMatchObject({ range: { min: 12.5, max: 12.5 }, qualifier: 'atLeast' });
       expect(p.dossier.facts[0]).toEqual(fact);
-      expect(p.abv.range!.min).toBeCloseTo(16.8, 12);
+      expect(p.abv.range!.min).toBeCloseTo(alcoholByVolume(1.16, 1.032), 12);
       expect(p.warnings.join(' ')).toContain('au moins');
       expect(p.warnings.join(' ')).toContain('la limite supérieure reste inconnue');
       expect(p.warnings.join(' ')).not.toContain('non renseignée');
@@ -290,7 +291,7 @@ describe('Prévision unique du moût, indépendante du catalogue', () => {
     const before = structuredClone(r), p = projectYeastRecipe(r);
     expect(p.og).toBeCloseTo(1 + (points(9, 37, true) + points(1, 41)) / 1000, 12);
     expect(p.fg.range!.min).toBeCloseTo(1 + (points(1, 41) + points(9, 37, true) * .22) / 1000, 12);
-    expect(p.abv.range!.min).toBeCloseTo(points(9, 37, true) * .78 / 1000 * 131.25, 12);
+    expect(p.abv.range!.min).toBeCloseTo(alcoholByVolume(p.og!, p.fg.range!.min), 12);
     expect(p.extract!.unfermentablePoints).toBeCloseTo(points(1, 41), 12);
     expect(r).toEqual(before);
   });
@@ -300,7 +301,7 @@ describe('Prévision unique du moût, indépendante du catalogue', () => {
       fermentables: [malt(10), { name: 'Saccharose', kind: 'sucre', use: 'fermentation', dayOffset: 3, weightKg: 1, potentialPpg: 46, fermentabilityPct: 100 }] });
     const p = projectYeastRecipe(r, { reference });
     expect(p.fg.range!.min).toBeCloseTo(1 + points(10, 37, true) * .2 / 1000, 12);
-    expect(p.abv.range!.max).toBeCloseTo((points(10, 37, true) * .8 + points(1, 46)) / 1000 * 131.25, 12);
+    expect(p.abv.range!.max).toBeCloseTo(alcoholByVolume(p.og!, p.fg.range!.min), 12);
     expect(p.abv.range!.max).toBeGreaterThan(11);
     expect(p.warnings.join(' ')).toContain('tolérance');
     expect(p.extract!.lateAdditionPoints).toBeCloseTo(points(1, 46), 12);
@@ -310,7 +311,7 @@ describe('Prévision unique du moût, indépendante du catalogue', () => {
     const r = base({ ogTarget: 1.06 }), unknown = projectYeastRecipe(r), liquid = projectYeastRecipe({ ...r, yeast: { ...r.yeast, form: 'liquide' } });
     expect(unknown.fg.range).toEqual(liquid.fg.range);
     expect(unknown.fg.range!.min).toBeCloseTo(1.0132, 12);
-    expect(unknown.abv.range!.min).toBeCloseTo(6.1425, 12);
+    expect(unknown.abv.range!.min).toBeCloseTo(alcoholByVolume(1.06, 1.0132), 12);
     expect(unknown.attenuation?.basis).toBe('recipe');
     expect(unknown.fg.sources).toEqual([]);
   });
@@ -363,7 +364,7 @@ describe('Procédé choisi, hypothèses conservées et application explicite', (
     expect(projectYeastRecipe(r).abv.range).toBeNull(); expect(preview.abv.range).toBeNull();
     expect(preview.warnings.join(' ')).toContain('Procédé acidulé à préciser');
     const preacidified = projectYeastRecipe(r, { process: 'preacidified' });
-    expect(preacidified.abv.range!.min).toBeCloseTo(5.25, 12);
+    expect(preacidified.abv.range!.min).toBeCloseTo(alcoholByVolume(1.05, 1.01), 12);
     // An explicit ordinary style also wins over a misleading personal display label.
     const ordinary = brewingStyles().find(s => s.id === 'american-ipa')!;
     expect(ordinary).toBeDefined();

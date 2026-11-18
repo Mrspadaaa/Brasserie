@@ -162,7 +162,9 @@ lot. Le critique Fable, lui, passe après chaque voie d'interface. Ce n'est pas 
 ## Les voies (skill `voies`)
 1. **Planifier une fois** : `work/missions/<date>-<sujet>/MISSION.md`, une voie par livrable qui se
    vérifie seul, des périmètres d'écriture disjoints, chaque décision routée.
-   `systeme.mjs mission` → MISSION OK.
+   Une mission qui écrit du code commence par « ## État de l'art » : le problème d'école, la méthode
+   standard et les bibliothèques examinées, la décision (L29 : la découpe des photos réécrite à la main
+   au lieu d'OpenCV). `systeme.mjs mission` → MISSION OK.
 2. **Contrats** : `voies/<id>/VOIE.md` (objectif, entrées vérifiées, « Possède », exigences
    transversales recopiées) et `voies/<id>/GATES.md` (critères au format unlazy : CHECK, EXPECT).
    La voie ne modifie jamais ses critères.
@@ -226,6 +228,18 @@ Méthode : `.claude/skills/voies/references/entonnoir.md`. Contrôle : `systeme.
 
 Un contrôle né d'une plainte entre dans les GATES des voies suivantes. C'est ce qui empêche le défaut
 de revenir.
+
+## Méthode maquettes (16.11)
+
+- Mini maquettes : thème clair de l'app seul, sans capture cave (« Pas besoin des mini maquettes en cave », 16.11). Les deux thèmes restent exigés pour l'app réelle et le jouable.
+
+« Met en place des choses pour plus perdre autant de temps ni pour plus perdre mes retours... » (16.11). Une seule méthode, nommée, sans changement en cours de route :
+1. Ses paroles : le hook `paroles.mjs` (UserPromptSubmit) journalise chaque message mot pour mot dans `~/.claude/paroles/AAAA-MM-JJ.md` ; `systeme.mjs paroles` liste ceux absents de SPEC-BRASSEUR, à verser au tour même.
+2. Ses choix : `work/refonte-frontend/v4/choix/maquettes.json`, par chantier, la base choisie, les gardés, les refusés et les idées, chacun avec sa parole, sa date et sa signature.
+3. Toute version part de la base du registre, jamais de la dernière itération. Un nouveau choix du brasseur entre au registre avant toute version.
+4. Workflow `.claude/workflows/maquettes.js` : base lue, N mini maquettes statiques par des concepteurs Opus (sans limite de temps), `controle-base.mjs <chantier> <f> --dures --statique`, critique calibré (PORTRAIT.md) sur toutes, une correction, page de choix écrite à la main.
+5. Une version KO au contrôle n'est jamais montrée comme candidate. Le critique n'est jamais sauté.
+6. Pas de jouable, de scénario ni d'audit avant son choix (L30) : ils viennent après, sur la version choisie, dans une autre étape.
 
 ## Commandes
 

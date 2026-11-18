@@ -2,6 +2,8 @@ import React, { useId } from 'react';
 import { Batch, StockItem } from '../types';
 import { Units } from '../services/units';
 import { computeStockLevel, pendingStockSummary, type RecipeStockComparison } from '../domain/stockLevel';
+import { libelleDurabilite, quantiteLue } from '../domain/stock/regles';
+import { todayISO } from '../domain/finance/ledger';
 import { FavoriteToggle } from './EntityList';
 import { LevelGauge, stockLevelLabel } from './LevelGauge';
 
@@ -18,7 +20,7 @@ interface StockRowProps {
 }
 
 const quantity = (value: number | null, unit: string | null) =>
-  value === null || !unit ? 'Inconnu' : Units.format(value, unit);
+  value === null || !unit ? 'Inconnu' : quantiteLue(value, unit);
 
 function ComparisonBar({ comparison }: { comparison: RecipeStockComparison }) {
   const { physical, reserved, available, quantity: needed, shortage, unit } = comparison;
@@ -58,6 +60,7 @@ function RecipeComparison({ comparison }: { comparison: RecipeStockComparison })
 /** Nom et quantité, puis niveau : même lecture compacte au téléphone et au bureau. */
 export const StockRow: React.FC<StockRowProps> = ({ item, batches, stockItems, onOpen, onToggleFavorite, comparison }) => {
   const descriptionId = useId();
+  const durabilite = libelleDurabilite(item.yeastLot?.expiresOn, todayISO());
   const level = computeStockLevel(item, batches, stockItems);
   const pending = pendingStockSummary(item, batches);
   const pendingDescription = pending.known
@@ -80,6 +83,7 @@ export const StockRow: React.FC<StockRowProps> = ({ item, batches, stockItems, o
         {comparison
           ? <div className="px-2 pb-1.5"><RecipeComparison comparison={comparison} /></div>
           : pendingDescription && <p className={`mt-0.5 px-2 pb-1.5 text-xs ${pending.known ? 'text-water' : 'text-attention'}`}>{pendingDescription}</p>}
+        {durabilite && <p data-stock-durabilite className={`px-2 pb-1.5 text-xs ${durabilite.perime ? 'text-alert-strong' : 'text-attention'}`}>{durabilite.texte}</p>}
       </div>
       <span id={descriptionId} className="sr-only">{Units.format(item.currentStock, item.unit)} · {comparisonDescription || stockLevelLabel(level)}{!comparison && pendingDescription ? ` · ${pendingDescription}` : ''}</span>
       <div className="pt-1 pr-1"><FavoriteToggle active={!!item.favorite} onToggle={() => onToggleFavorite(item)} label={item.name} /></div>

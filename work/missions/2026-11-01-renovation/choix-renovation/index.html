@@ -1,0 +1,224 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Rénovation · panel v0 · 01.11</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<style>
+/* L'outil de la rénovation : le panel v0, douze idées classées par le critique, une rangée par état.
+   Chaque vignette s'ouvre en grand au toucher (PUBLIER.md, D126). Modèle : choix-tva. */
+:root {
+  --fond: #f4f6f1;
+  --carte: #ffffff;
+  --encre: #1c2019;
+  --discret: #5a6155;
+  --trait: #dde2d6;
+  --houblon: #4a7426;
+  --choisir: #2d5f8a;
+  --alerte: #9a4a1c;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --fond: #151812; --carte: #1f241b; --encre: #e9eee4; --discret: #a7ae9f; --trait: #333a2d; --houblon: #8cc062;
+    --choisir: #8ab8e0; --alerte: #e8a878; color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --fond: #151812; --carte: #1f241b; --encre: #e9eee4; --discret: #a7ae9f; --trait: #333a2d; --houblon: #8cc062;
+  --choisir: #8ab8e0; --alerte: #e8a878; color-scheme: dark;
+}
+* { box-sizing: border-box; }
+body {
+  background: var(--fond); color: var(--encre); font: 16px/1.45 "Segoe UI", system-ui, sans-serif; margin: 0;
+  padding-block: 16px 64px;
+  padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px));
+}
+.page { max-width: 1320px; margin: 0 auto; display: grid; gap: 22px; }
+h1, h2 { margin: 0; line-height: 1.15; text-wrap: balance; }
+h1 { font-size: 1.7rem; font-weight: 800; }
+h2 { font-size: 1.1rem; font-weight: 800; }
+p { margin: 0; max-width: 70ch; }
+button:focus-visible { outline: 3px solid var(--houblon); outline-offset: 2px; }
+header { display: grid; gap: 10px; }
+.sur-titre { font-size: 0.875rem; letter-spacing: 0.06em; text-transform: uppercase; color: var(--discret); }
+#a-choisir { border-left: 4px solid var(--houblon); padding: 12px 14px; background: var(--carte); border-radius: 0 10px 10px 0; display: grid; gap: 6px; }
+#a-choisir p:first-child { font-size: 1.05rem; font-weight: 700; }
+.fictif { font-size: 0.875rem; color: var(--discret); }
+.rangee { display: grid; gap: 10px; padding-top: 16px; border-top: 1px solid var(--trait); }
+.tete { display: grid; gap: 6px; align-content: start; justify-items: start; }
+.tete p { font-size: 0.875rem; color: var(--discret); }
+.id { font-size: 0.875rem; font-weight: 700; color: var(--discret); }
+.planche { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 14px 8px; align-items: start; min-width: 0; }
+.vue { margin: 0; display: grid; gap: 5px; align-content: start; min-width: 0; }
+.ecran { display: block; width: 100%; padding: 0; border: 1px solid var(--trait); border-radius: 10px; overflow: hidden; background: var(--carte); cursor: zoom-in; }
+.ecran img { display: block; width: 100%; height: auto; }
+figcaption { font-size: 0.875rem; line-height: 1.35; display: grid; gap: 2px; }
+figcaption b { font-weight: 800; }
+.legende { color: var(--discret); }
+.pastille { display: inline-flex; align-items: center; gap: 5px; font-weight: 700; font-size: 0.875rem; }
+.pastille::before { content: ""; width: 10px; height: 10px; border-radius: 50%; background: currentColor; flex-shrink: 0; }
+.p-propose { color: var(--houblon); }
+.p-choisir { color: var(--choisir); }
+.p-reserve { color: var(--alerte); }
+@media (min-width: 760px) {
+  .rangee { grid-template-columns: 200px minmax(0, 1fr); gap: 16px; }
+  .planche { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+}
+@media (min-width: 1100px) {
+  .planche { grid-template-columns: repeat(6, minmax(0, 1fr)); }
+}
+dialog { border: 0; padding: 0; background: #0e100c; color: #eef2ea; width: min(96vw, 1100px); max-height: 94vh; border-radius: 12px; }
+dialog::backdrop { background: rgb(0 0 0 / 80%); }
+dialog .haut { display: flex; justify-content: space-between; align-items: center; gap: 8px; padding: 10px 12px; }
+dialog .titre { font-size: 0.875rem; font-weight: 700; margin: 0; }
+dialog button { font: 700 0.875rem system-ui, sans-serif; border: 0; border-radius: 999px; padding: 8px 14px; background: #eef2ea; color: #1c2019; cursor: pointer; }
+dialog img { display: block; width: 100%; height: auto; max-height: 82vh; object-fit: contain; background: #fff; }
+</style>
+</head>
+<body>
+
+<div class="page">
+  <header>
+    <p class="sur-titre">L'Affinée · Rénovation</p>
+    <h1>Rénovation · panel v0 · 01.11</h1>
+    <div id="a-choisir">
+      <p>« Qu'est-ce qui me manque, et qu'est-ce que je fais ensuite ? » Douze idées sur tes cinq chantiers, rangées par le critique.</p>
+      <p>Dis laquelle te parle, ou quels morceaux prendre. z2, z1, u4, u2 et u3 partent en passe 2.</p>
+      <p class="fictif">Montants, artisans, heures et plans sont inventés. Le plan de z2 pourra devenir le tien.</p>
+    </div>
+  </header>
+
+  <section class="rangee" aria-labelledby="t-jour1">
+    <div class="tete">
+      <h2 id="t-jour1">Le premier jour</h2>
+      <p>Tes cinq titres, rien d'autre. État <span class="id">jour1</span> · 390 px</p>
+    </div>
+    <div class="planche">
+      <figure class="vue" data-vignette><button class="ecran" type="button" data-agrandir data-src="img/z2-jour1.png" data-titre="z2 · Le premier jour · Le plan de la brasserie"><img src="img/z2-jour1.png" alt="z2, le premier jour"></button><figcaption><span class="pastille p-propose">en passe 2</span><span><b>Le plan de la brasserie</b> <span class="id">z2</span></span><span class="legende">Épingle = place dans la suite, couleur = état.</span></figcaption></figure>
+      <figure class="vue" data-vignette><button class="ecran" type="button" data-agrandir data-src="img/z1-jour1.png" data-titre="z1 · Le premier jour · Liste du Bord à pastilles"><img src="img/z1-jour1.png" alt="z1, le premier jour"></button><figcaption><span class="pastille p-propose">en passe 2</span><span><b>Liste du Bord à pastilles</b> <span class="id">z1</span></span><span class="legende">Récap qui filtre, pastille d'état, reste à payer.</span></figcaption></figure>
+      <figure class="vue" data-vignette><button class="ecran" type="button" data-agrandir data-src="img/r3-jour1.png" data-titre="r3 · Le premier jour · Plan technique et étapes"><img src="img/r3-jour1.png" alt="r3, le premier jour"></button><figcaption><span class="pastille p-choisir">à choisir</span><span><b>Plan technique et étapes</b> <span class="id">r3</span></span><span class="legende">Repère numéroté, « bloqué par », étapes cochables.</span></figcaption></figure>
+      <figure class="vue" data-vignette><button class="ecran" type="button" data-agrandir data-src="img/u4-jour1.png" data-titre="u4 · Le premier jour · La cuve de l'enveloppe"><img src="img/u4-jour1.png" alt="u4, le premier jour"></button><figcaption><span class="pastille p-propose">en passe 2</span><span><b>La cuve de l'enveloppe</b> <span class="id">u4</span></span><span class="legende">Vide, avec une phrase : refait en passe 2 avec tes titres.</span></figcaption></figure>
+      <figure class="vue" data-vignette><button class="ecran" type="button" data-agrandir data-src="img/u2-jour1.png" data-titre="u2 · Le premier jour · Grille des trous"><img src="img/u2-jour1.png" alt="u2, le premier jour"></button><figcaption><span class="pastille p-propose">en passe 2</span><span><b>Grille des trous</b> <span class="id">u2</span></span><span class="legende">Vide, avec une phrase : refait en passe 2 avec tes titres.</span></figcaption></figure>
+      <figure class="vue" data-vignette><button class="ecran" type="button" data-agrandir data-src="img/r1-jour1.png" data-titre="r1 · Le premier jour · Carte Rénovation au Bord"><img src="img/r1-jour1.png" alt="r1, le premier jour"></button><figcaption><span class="pastille p-choisir">à choisir</span><span><b>Carte Rénovation au Bord</b> <span class="id">r1</span></span><span class="legende">La langue de l'app, « Ensuite » en gras.</span></figcaption></figure>
+      <figure class="vue" data-vignette><button class="ecran" type="button" data-agrandir data-src="img/z3-jour1.png" data-titre="z3 · Le premier jour · Local et travaux"><img src="img/z3-jour1.png" alt="z3, le premier jour"></button><figcaption><span class="pastille p-choisir">à choisir</span><span><b>Local et travaux</b> <span class="id">z3</span></span><span class="legende">Une file dans Prévisions, nature devinée.</span></figcaption></figure>
+      <figure class="vue" data-vignette><button class="ecran" type="button" data-agrandir data-src="img/z4-jour1.png" data-titre="z4 · Le premier jour · La pile"><img src="img/z4-jour1.png" alt="z4, le premier jour"></button><figcaption><span class="pastille p-choisir">à choisir</span><span><b>La pile</b> <span class="id">z4</span></span><span class="legende">Une seule carte : ce que tu fais ensuite.</span></figcaption></figure>
+      <figure class="vue" data-vignette><button class="ecran" type="button" data-agrandir data-src="img/u3-jour1.png" data-titre="u3 · Le premier jour · Frise des mois"><img src="img/u3-jour1.png" alt="u3, le premier jour"></button><figcaption><span class="pastille p-propose">en passe 2</span><span><b>Frise des mois</b> <span class="id">u3</span></span><span class="legende">Vide, avec une phrase : refait en passe 2 avec tes titres.</span></figcaption></figure>
+      <figure class="vue" data-vignette><button class="ecran" type="button" data-agrandir data-src="img/r2-jour1.png" data-titre="r2 · Le premier jour · Projets élargis"><img src="img/r2-jour1.png" alt="r2, le premier jour"></button><figcaption><span class="pastille p-choisir">à choisir</span><span><b>Projets élargis</b> <span class="id">r2</span></span><span class="legende">Bientôt, Ensuite, Plus tard, face à la caisse.</span></figcaption></figure>
+      <figure class="vue" data-vignette><button class="ecran" type="button" data-agrandir data-src="img/u1-jour1.png" data-titre="u1 · Le premier jour · Carte et trous"><img src="img/u1-jour1.png" alt="u1, le premier jour"></button><figcaption><span class="pastille p-choisir">à choisir</span><span><b>Carte et trous</b> <span class="id">u1</span></span><span class="legende">Vide, avec une phrase ; série u à refaire.</span></figcaption></figure>
+      <figure class="vue" data-vignette><button class="ecran" type="button" data-agrandir data-src="img/r4-jour1.png" data-titre="r4 · Le premier jour · Blocs des heures"><img src="img/r4-jour1.png" alt="r4, le premier jour"></button><figcaption><span class="pastille p-choisir">à choisir</span><span><b>Blocs des heures</b> <span class="id">r4</span></span><span class="legende">La hauteur dit les heures ; la fin, si connue.</span></figcaption></figure>
+    </div>
+  </section>
+
+  <section class="rangee" aria-labelledby="t-encours">
+    <div class="tete">
+      <h2 id="t-encours">Un mois plus tard</h2>
+      <p>Hotte payée, évier sur devis, sols en cours. État <span class="id">encours</span> · 390 px</p>
+    </div>
+    <div class="planche">
+      <figure class="vue" data-vignette><button class="ecran" type="button" data-agrandir data-src="img/z2-encours.png" data-titre="z2 · Un mois plus tard · Le plan de la brasserie"><img src="img/z2-encours.png" alt="z2, un mois plus tard"></button><figcaption><span class="pastille p-propose">en passe 2</span><span><b>Le plan de la brasserie</b> <span class="id">z2</span></span><span class="legende">Épingle = place dans la suite, couleur = état.</span></figcaption></figure>
+      <figure class="vue" data-vignette><button class="ecran" type="button" data-agrandir data-src="img/z1-encours.png" data-titre="z1 · Un mois plus tard · Liste du Bord à pastilles"><img src="img/z1-encours.png" alt="z1, un mois plus tard"></button><figcaption><span class="pastille p-propose">en passe 2</span><span><b>Liste du Bord à pastilles</b> <span class="id">z1</span></span><span class="legende">Récap qui filtre, pastille d'état, reste à payer.</span></figcaption></figure>
+      <figure class="vue" data-vignette><button class="ecran" type="button" data-agrandir data-src="img/r3-encours.png" data-titre="r3 · Un mois plus tard · Plan technique et étapes"><img src="img/r3-encours.png" alt="r3, un mois plus tard"></button><figcaption><span class="pastille p-choisir">à choisir</span><span><b>Plan technique et étapes</b> <span class="id">r3</span></span><span class="legende">Repère numéroté, « bloqué par », étapes cochables.</span></figcaption></figure>
+      <figure class="vue" data-vignette><button class="ecran" type="button" data-agrandir data-src="img/u4-encours.png" data-titre="u4 · Un mois plus tard · La cuve de l'enveloppe"><img src="img/u4-encours.png" alt="u4, un mois plus tard"></button><figcaption><span class="pastille p-propose">en passe 2</span><span><b>La cuve de l'enveloppe</b> <span class="id">u4</span></span><span class="legende">Les prix empilés sous l'enveloppe : ça passe ou pas.</span></figcaption></figure>
+      <figure class="vue" data-vignette><button class="ecran" type="button" data-agrandir data-src="img/u2-encours.png" data-titre="u2 · Un mois plus tard · Grille des trous"><img src="img/u2-encours.png" alt="u2, un mois plus tard"></button><figcaption><span class="pastille p-propose">en passe 2</span><span><b>Grille des trous</b> <span class="id">u2</span></span><span class="legende">Chaque inconnu est une case à remplir.</span></figcaption></figure>
+      <figure class="vue" data-vignette><button class="ecran" type="button" data-agrandir data-src="img/r1-encours.png" data-titre="r1 · Un mois plus tard · Carte Rénovation au Bord"><img src="img/r1-encours.png" alt="r1, un mois plus tard"></button><figcaption><span class="pastille p-choisir">à choisir</span><span><b>Carte Rénovation au Bord</b> <span class="id">r1</span></span><span class="legende">La langue de l'app, « Ensuite » en gras.</span></figcaption></figure>
+      <figure class="vue" data-vignette><button class="ecran" type="button" data-agrandir data-src="img/z3-encours.png" data-titre="z3 · Un mois plus tard · Local et travaux"><img src="img/z3-encours.png" alt="z3, un mois plus tard"></button><figcaption><span class="pastille p-choisir">à choisir</span><span><b>Local et travaux</b> <span class="id">z3</span></span><span class="legende">Une file dans Prévisions, nature devinée.</span></figcaption></figure>
+      <figure class="vue" data-vignette><button class="ecran" type="button" data-agrandir data-src="img/z4-encours.png" data-titre="z4 · Un mois plus tard · La pile"><img src="img/z4-encours.png" alt="z4, un mois plus tard"></button><figcaption><span class="pastille p-choisir">à choisir</span><span><b>La pile</b> <span class="id">z4</span></span><span class="legende">Une seule carte : ce que tu fais ensuite.</span></figcaption></figure>
+      <figure class="vue" data-vignette><button class="ecran" type="button" data-agrandir data-src="img/u3-encours.png" data-titre="u3 · Un mois plus tard · Frise des mois"><img src="img/u3-encours.png" alt="u3, un mois plus tard"></button><figcaption><span class="pastille p-propose">en passe 2</span><span><b>Frise des mois</b> <span class="id">u3</span></span><span class="legende">Les mois, et un bac « sans mois ».</span></figcaption></figure>
+      <figure class="vue" data-vignette><button class="ecran" type="button" data-agrandir data-src="img/r2-encours.png" data-titre="r2 · Un mois plus tard · Projets élargis"><img src="img/r2-encours.png" alt="r2, un mois plus tard"></button><figcaption><span class="pastille p-choisir">à choisir</span><span><b>Projets élargis</b> <span class="id">r2</span></span><span class="legende">Bientôt, Ensuite, Plus tard, face à la caisse.</span></figcaption></figure>
+      <figure class="vue" data-vignette><button class="ecran" type="button" data-agrandir data-src="img/u1-encours.png" data-titre="u1 · Un mois plus tard · Carte et trous"><img src="img/u1-encours.png" alt="u1, un mois plus tard"></button><figcaption><span class="pastille p-choisir">à choisir</span><span><b>Carte et trous</b> <span class="id">u1</span></span><span class="legende">« prix ? », « date ? » en chips jaunes.</span></figcaption></figure>
+      <figure class="vue" data-vignette><button class="ecran" type="button" data-agrandir data-src="img/r4-encours.png" data-titre="r4 · Un mois plus tard · Blocs des heures"><img src="img/r4-encours.png" alt="r4, un mois plus tard"></button><figcaption><span class="pastille p-choisir">à choisir</span><span><b>Blocs des heures</b> <span class="id">r4</span></span><span class="legende">La hauteur dit les heures ; la fin, si connue.</span></figcaption></figure>
+    </div>
+  </section>
+
+  <section class="rangee" aria-labelledby="t-ouvert">
+    <div class="tete">
+      <h2 id="t-ouvert">Un manque ouvert</h2>
+      <p>Prix, heures, blocage, « Noter l'achat ». État <span class="id">ouvert</span> · 390 px</p>
+    </div>
+    <div class="planche">
+      <figure class="vue" data-vignette><button class="ecran" type="button" data-agrandir data-src="img/z2-ouvert.png" data-titre="z2 · Un manque ouvert · Le plan de la brasserie"><img src="img/z2-ouvert.png" alt="z2, un manque ouvert"></button><figcaption><span class="pastille p-propose">en passe 2</span><span><b>Le plan de la brasserie</b> <span class="id">z2</span></span><span class="legende">Épingle = place dans la suite, couleur = état.</span></figcaption></figure>
+      <figure class="vue" data-vignette><button class="ecran" type="button" data-agrandir data-src="img/z1-ouvert.png" data-titre="z1 · Un manque ouvert · Liste du Bord à pastilles"><img src="img/z1-ouvert.png" alt="z1, un manque ouvert"></button><figcaption><span class="pastille p-propose">en passe 2</span><span><b>Liste du Bord à pastilles</b> <span class="id">z1</span></span><span class="legende">Récap qui filtre, pastille d'état, reste à payer.</span></figcaption></figure>
+      <figure class="vue" data-vignette><button class="ecran" type="button" data-agrandir data-src="img/r3-ouvert.png" data-titre="r3 · Un manque ouvert · Plan technique et étapes"><img src="img/r3-ouvert.png" alt="r3, un manque ouvert"></button><figcaption><span class="pastille p-choisir">à choisir</span><span><b>Plan technique et étapes</b> <span class="id">r3</span></span><span class="legende">Repère numéroté, « bloqué par », étapes cochables.</span></figcaption></figure>
+      <figure class="vue" data-vignette><button class="ecran" type="button" data-agrandir data-src="img/u4-ouvert.png" data-titre="u4 · Un manque ouvert · La cuve de l'enveloppe"><img src="img/u4-ouvert.png" alt="u4, un manque ouvert"></button><figcaption><span class="pastille p-propose">en passe 2</span><span><b>La cuve de l'enveloppe</b> <span class="id">u4</span></span><span class="legende">Les prix empilés sous l'enveloppe : ça passe ou pas.</span></figcaption></figure>
+      <figure class="vue" data-vignette><button class="ecran" type="button" data-agrandir data-src="img/u2-ouvert.png" data-titre="u2 · Un manque ouvert · Grille des trous"><img src="img/u2-ouvert.png" alt="u2, un manque ouvert"></button><figcaption><span class="pastille p-propose">en passe 2</span><span><b>Grille des trous</b> <span class="id">u2</span></span><span class="legende">Chaque inconnu est une case à remplir.</span></figcaption></figure>
+      <figure class="vue" data-vignette><button class="ecran" type="button" data-agrandir data-src="img/r1-ouvert.png" data-titre="r1 · Un manque ouvert · Carte Rénovation au Bord"><img src="img/r1-ouvert.png" alt="r1, un manque ouvert"></button><figcaption><span class="pastille p-choisir">à choisir</span><span><b>Carte Rénovation au Bord</b> <span class="id">r1</span></span><span class="legende">La langue de l'app, « Ensuite » en gras.</span></figcaption></figure>
+      <figure class="vue" data-vignette><button class="ecran" type="button" data-agrandir data-src="img/z3-ouvert.png" data-titre="z3 · Un manque ouvert · Local et travaux"><img src="img/z3-ouvert.png" alt="z3, un manque ouvert"></button><figcaption><span class="pastille p-choisir">à choisir</span><span><b>Local et travaux</b> <span class="id">z3</span></span><span class="legende">Une file dans Prévisions, nature devinée.</span></figcaption></figure>
+      <figure class="vue" data-vignette><button class="ecran" type="button" data-agrandir data-src="img/z4-ouvert.png" data-titre="z4 · Un manque ouvert · La pile"><img src="img/z4-ouvert.png" alt="z4, un manque ouvert"></button><figcaption><span class="pastille p-choisir">à choisir</span><span><b>La pile</b> <span class="id">z4</span></span><span class="legende">Une seule carte : ce que tu fais ensuite.</span></figcaption></figure>
+      <figure class="vue" data-vignette><button class="ecran" type="button" data-agrandir data-src="img/u3-ouvert.png" data-titre="u3 · Un manque ouvert · Frise des mois"><img src="img/u3-ouvert.png" alt="u3, un manque ouvert"></button><figcaption><span class="pastille p-propose">en passe 2</span><span><b>Frise des mois</b> <span class="id">u3</span></span><span class="legende">Les mois, et un bac « sans mois ».</span></figcaption></figure>
+      <figure class="vue" data-vignette><button class="ecran" type="button" data-agrandir data-src="img/r2-ouvert.png" data-titre="r2 · Un manque ouvert · Projets élargis"><img src="img/r2-ouvert.png" alt="r2, un manque ouvert"></button><figcaption><span class="pastille p-choisir">à choisir</span><span><b>Projets élargis</b> <span class="id">r2</span></span><span class="legende">Bientôt, Ensuite, Plus tard, face à la caisse.</span></figcaption></figure>
+      <figure class="vue" data-vignette><button class="ecran" type="button" data-agrandir data-src="img/u1-ouvert.png" data-titre="u1 · Un manque ouvert · Carte et trous"><img src="img/u1-ouvert.png" alt="u1, un manque ouvert"></button><figcaption><span class="pastille p-choisir">à choisir</span><span><b>Carte et trous</b> <span class="id">u1</span></span><span class="legende">« prix ? », « date ? » en chips jaunes.</span></figcaption></figure>
+      <figure class="vue" data-vignette><button class="ecran" type="button" data-agrandir data-src="img/r4-ouvert.png" data-titre="r4 · Un manque ouvert · Blocs des heures"><img src="img/r4-ouvert.png" alt="r4, un manque ouvert"></button><figcaption><span class="pastille p-choisir">à choisir</span><span><b>Blocs des heures</b> <span class="id">r4</span></span><span class="legende">La hauteur dit les heures ; la fin, si connue.</span></figcaption></figure>
+    </div>
+  </section>
+
+  <section class="rangee" aria-labelledby="t-caisse">
+    <div class="tete">
+      <h2 id="t-caisse">L'argent</h2>
+      <p>L'enveloppe ou la caisse, une fois connue. État <span class="id">caisse</span> · 390 px</p>
+    </div>
+    <div class="planche">
+      <figure class="vue" data-vignette><button class="ecran" type="button" data-agrandir data-src="img/z2-caisse.png" data-titre="z2 · L'argent · Le plan de la brasserie"><img src="img/z2-caisse.png" alt="z2, l'argent"></button><figcaption><span class="pastille p-propose">en passe 2</span><span><b>Le plan de la brasserie</b> <span class="id">z2</span></span><span class="legende">Épingle = place dans la suite, couleur = état.</span></figcaption></figure>
+      <figure class="vue" data-vignette><button class="ecran" type="button" data-agrandir data-src="img/z1-caisse.png" data-titre="z1 · L'argent · Liste du Bord à pastilles"><img src="img/z1-caisse.png" alt="z1, l'argent"></button><figcaption><span class="pastille p-propose">en passe 2</span><span><b>Liste du Bord à pastilles</b> <span class="id">z1</span></span><span class="legende">Récap qui filtre, pastille d'état, reste à payer.</span></figcaption></figure>
+      <figure class="vue" data-vignette><button class="ecran" type="button" data-agrandir data-src="img/r3-caisse.png" data-titre="r3 · L'argent · Plan technique et étapes"><img src="img/r3-caisse.png" alt="r3, l'argent"></button><figcaption><span class="pastille p-choisir">à choisir</span><span><b>Plan technique et étapes</b> <span class="id">r3</span></span><span class="legende">Repère numéroté, « bloqué par », étapes cochables.</span></figcaption></figure>
+      <figure class="vue" data-vignette><button class="ecran" type="button" data-agrandir data-src="img/u4-caisse.png" data-titre="u4 · L'argent · La cuve de l'enveloppe"><img src="img/u4-caisse.png" alt="u4, l'argent"></button><figcaption><span class="pastille p-propose">en passe 2</span><span><b>La cuve de l'enveloppe</b> <span class="id">u4</span></span><span class="legende">Les prix empilés sous l'enveloppe : ça passe ou pas.</span></figcaption></figure>
+      <figure class="vue" data-vignette><button class="ecran" type="button" data-agrandir data-src="img/u2-caisse.png" data-titre="u2 · L'argent · Grille des trous"><img src="img/u2-caisse.png" alt="u2, l'argent"></button><figcaption><span class="pastille p-propose">en passe 2</span><span><b>Grille des trous</b> <span class="id">u2</span></span><span class="legende">Chaque inconnu est une case à remplir.</span></figcaption></figure>
+      <figure class="vue" data-vignette><button class="ecran" type="button" data-agrandir data-src="img/r1-caisse.png" data-titre="r1 · L'argent · Carte Rénovation au Bord"><img src="img/r1-caisse.png" alt="r1, l'argent"></button><figcaption><span class="pastille p-choisir">à choisir</span><span><b>Carte Rénovation au Bord</b> <span class="id">r1</span></span><span class="legende">La langue de l'app, « Ensuite » en gras.</span></figcaption></figure>
+      <figure class="vue" data-vignette><button class="ecran" type="button" data-agrandir data-src="img/z3-caisse.png" data-titre="z3 · L'argent · Local et travaux"><img src="img/z3-caisse.png" alt="z3, l'argent"></button><figcaption><span class="pastille p-choisir">à choisir</span><span><b>Local et travaux</b> <span class="id">z3</span></span><span class="legende">Une file dans Prévisions, nature devinée.</span></figcaption></figure>
+      <figure class="vue" data-vignette><button class="ecran" type="button" data-agrandir data-src="img/z4-caisse.png" data-titre="z4 · L'argent · La pile"><img src="img/z4-caisse.png" alt="z4, l'argent"></button><figcaption><span class="pastille p-choisir">à choisir</span><span><b>La pile</b> <span class="id">z4</span></span><span class="legende">Une seule carte : ce que tu fais ensuite.</span></figcaption></figure>
+      <figure class="vue" data-vignette><button class="ecran" type="button" data-agrandir data-src="img/u3-caisse.png" data-titre="u3 · L'argent · Frise des mois"><img src="img/u3-caisse.png" alt="u3, l'argent"></button><figcaption><span class="pastille p-propose">en passe 2</span><span><b>Frise des mois</b> <span class="id">u3</span></span><span class="legende">Les mois, et un bac « sans mois ».</span></figcaption></figure>
+      <figure class="vue" data-vignette><button class="ecran" type="button" data-agrandir data-src="img/r2-caisse.png" data-titre="r2 · L'argent · Projets élargis"><img src="img/r2-caisse.png" alt="r2, l'argent"></button><figcaption><span class="pastille p-choisir">à choisir</span><span><b>Projets élargis</b> <span class="id">r2</span></span><span class="legende">Bientôt, Ensuite, Plus tard, face à la caisse.</span></figcaption></figure>
+      <figure class="vue" data-vignette><button class="ecran" type="button" data-agrandir data-src="img/u1-caisse.png" data-titre="u1 · L'argent · Carte et trous"><img src="img/u1-caisse.png" alt="u1, l'argent"></button><figcaption><span class="pastille p-choisir">à choisir</span><span><b>Carte et trous</b> <span class="id">u1</span></span><span class="legende">« prix ? », « date ? » en chips jaunes.</span></figcaption></figure>
+      <figure class="vue" data-vignette><button class="ecran" type="button" data-agrandir data-src="img/r4-caisse.png" data-titre="r4 · L'argent · Blocs des heures"><img src="img/r4-caisse.png" alt="r4, l'argent"></button><figcaption><span class="pastille p-choisir">à choisir</span><span><b>Blocs des heures</b> <span class="id">r4</span></span><span class="legende">La hauteur dit les heures ; la fin, si connue.</span></figcaption></figure>
+    </div>
+  </section>
+
+  <section class="rangee" aria-labelledby="t-ordi">
+    <div class="tete">
+      <h2 id="t-ordi">À l'ordinateur</h2>
+      <p>Un mois plus tard. État <span class="id">encours</span> · 1280 px</p>
+    </div>
+    <div class="planche">
+      <figure class="vue" data-vignette><button class="ecran" type="button" data-agrandir data-src="img/z2-1280.png" data-titre="z2 · À l'ordinateur · Le plan de la brasserie"><img src="img/z2-1280.png" alt="z2, à 1280 px"></button><figcaption><span class="pastille p-propose">en passe 2</span><span><b>Le plan de la brasserie</b> <span class="id">z2</span></span><span class="legende">Épingle = place dans la suite, couleur = état.</span></figcaption></figure>
+      <figure class="vue" data-vignette><button class="ecran" type="button" data-agrandir data-src="img/z1-1280.png" data-titre="z1 · À l'ordinateur · Liste du Bord à pastilles"><img src="img/z1-1280.png" alt="z1, à 1280 px"></button><figcaption><span class="pastille p-propose">en passe 2</span><span><b>Liste du Bord à pastilles</b> <span class="id">z1</span></span><span class="legende">Récap qui filtre, pastille d'état, reste à payer.</span></figcaption></figure>
+      <figure class="vue" data-vignette><button class="ecran" type="button" data-agrandir data-src="img/r3-1280.png" data-titre="r3 · À l'ordinateur · Plan technique et étapes"><img src="img/r3-1280.png" alt="r3, à 1280 px"></button><figcaption><span class="pastille p-choisir">à choisir</span><span><b>Plan technique et étapes</b> <span class="id">r3</span></span><span class="legende">Repère numéroté, « bloqué par », étapes cochables.</span></figcaption></figure>
+      <figure class="vue" data-vignette><button class="ecran" type="button" data-agrandir data-src="img/u4-1280.png" data-titre="u4 · À l'ordinateur · La cuve de l'enveloppe"><img src="img/u4-1280.png" alt="u4, à 1280 px"></button><figcaption><span class="pastille p-propose">en passe 2</span><span><b>La cuve de l'enveloppe</b> <span class="id">u4</span></span><span class="legende">Les prix empilés sous l'enveloppe : ça passe ou pas.</span></figcaption></figure>
+      <figure class="vue" data-vignette><button class="ecran" type="button" data-agrandir data-src="img/u2-1280.png" data-titre="u2 · À l'ordinateur · Grille des trous"><img src="img/u2-1280.png" alt="u2, à 1280 px"></button><figcaption><span class="pastille p-propose">en passe 2</span><span><b>Grille des trous</b> <span class="id">u2</span></span><span class="legende">Chaque inconnu est une case à remplir.</span></figcaption></figure>
+      <figure class="vue" data-vignette><button class="ecran" type="button" data-agrandir data-src="img/r1-1280.png" data-titre="r1 · À l'ordinateur · Carte Rénovation au Bord"><img src="img/r1-1280.png" alt="r1, à 1280 px"></button><figcaption><span class="pastille p-choisir">à choisir</span><span><b>Carte Rénovation au Bord</b> <span class="id">r1</span></span><span class="legende">La langue de l'app, « Ensuite » en gras.</span></figcaption></figure>
+      <figure class="vue" data-vignette><button class="ecran" type="button" data-agrandir data-src="img/z3-1280.png" data-titre="z3 · À l'ordinateur · Local et travaux"><img src="img/z3-1280.png" alt="z3, à 1280 px"></button><figcaption><span class="pastille p-choisir">à choisir</span><span><b>Local et travaux</b> <span class="id">z3</span></span><span class="legende">Une file dans Prévisions, nature devinée.</span></figcaption></figure>
+      <figure class="vue" data-vignette><button class="ecran" type="button" data-agrandir data-src="img/z4-1280.png" data-titre="z4 · À l'ordinateur · La pile"><img src="img/z4-1280.png" alt="z4, à 1280 px"></button><figcaption><span class="pastille p-choisir">à choisir</span><span><b>La pile</b> <span class="id">z4</span></span><span class="legende">Une seule carte : ce que tu fais ensuite.</span></figcaption></figure>
+      <figure class="vue" data-vignette><button class="ecran" type="button" data-agrandir data-src="img/u3-1280.png" data-titre="u3 · À l'ordinateur · Frise des mois"><img src="img/u3-1280.png" alt="u3, à 1280 px"></button><figcaption><span class="pastille p-propose">en passe 2</span><span><b>Frise des mois</b> <span class="id">u3</span></span><span class="legende">Les mois, et un bac « sans mois ».</span></figcaption></figure>
+      <figure class="vue" data-vignette><button class="ecran" type="button" data-agrandir data-src="img/r2-1280.png" data-titre="r2 · À l'ordinateur · Projets élargis"><img src="img/r2-1280.png" alt="r2, à 1280 px"></button><figcaption><span class="pastille p-choisir">à choisir</span><span><b>Projets élargis</b> <span class="id">r2</span></span><span class="legende">Bientôt, Ensuite, Plus tard, face à la caisse.</span></figcaption></figure>
+      <figure class="vue" data-vignette><button class="ecran" type="button" data-agrandir data-src="img/u1-1280.png" data-titre="u1 · À l'ordinateur · Carte et trous"><img src="img/u1-1280.png" alt="u1, à 1280 px"></button><figcaption><span class="pastille p-choisir">à choisir</span><span><b>Carte et trous</b> <span class="id">u1</span></span><span class="legende">« prix ? », « date ? » en chips jaunes.</span></figcaption></figure>
+      <figure class="vue" data-vignette><button class="ecran" type="button" data-agrandir data-src="img/r4-1280.png" data-titre="r4 · À l'ordinateur · Blocs des heures"><img src="img/r4-1280.png" alt="r4, à 1280 px"></button><figcaption><span class="pastille p-choisir">à choisir</span><span><b>Blocs des heures</b> <span class="id">r4</span></span><span class="legende">La hauteur dit les heures ; la fin, si connue.</span></figcaption></figure>
+    </div>
+  </section>
+</div>
+
+<dialog id="grand" aria-label="Capture en grand">
+  <div class="haut">
+    <p class="titre" id="grand-titre"></p>
+    <button type="button" class="fermer">Fermer</button>
+  </div>
+  <img id="grand-img" alt="">
+</dialog>
+
+<script>
+(function () {
+  var dlg = document.getElementById('grand');
+  var img = document.getElementById('grand-img');
+  var titre = document.getElementById('grand-titre');
+  document.querySelectorAll('[data-agrandir]').forEach(function (b) {
+    b.addEventListener('click', function () {
+      img.setAttribute('src', b.getAttribute('data-src'));
+      img.setAttribute('alt', b.getAttribute('data-titre'));
+      titre.textContent = b.getAttribute('data-titre');
+      dlg.showModal();
+    });
+  });
+  dlg.querySelector('.fermer').addEventListener('click', function () { dlg.close(); });
+  dlg.addEventListener('click', function (e) { if (e.target === dlg) dlg.close(); });
+})();
+</script>
+</body>
+</html>

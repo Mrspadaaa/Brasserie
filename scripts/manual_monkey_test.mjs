@@ -202,7 +202,7 @@ async function run() {
   await sleep(400);
 
   // Switch sub-tabs (Courses, Fûts, Matériel)
-  const subTabs = ['Courses', 'Fûts', 'Matériel', 'Stock'];
+  const subTabs = ['Courses', 'Fûts', 'Matériel', 'Articles'];
   for (const st of subTabs) {
     await page.evaluate((tabName) => {
       const btns = Array.from(document.querySelectorAll('button'));

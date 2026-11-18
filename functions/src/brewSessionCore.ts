@@ -1,3 +1,5 @@
+import { formatAmount } from './brewAmount.js';
+
 /** Shared pure rules: no browser clock, SDK or network dependency. */
 export interface SessionStep {
   id: string;
@@ -104,7 +106,7 @@ export function sessionEvents(state: SessionState, recipe: SessionRecipe) {
         id: `add-${items.map((i) => i.id).join('-')}`,
         at,
         title: 'Ajout en cuve',
-        body: items.map((i) => `${i.amount} ${i.unit} ${i.name}`).join(' · ')
+        body: items.map((i) => `${formatAmount(i.amount, i.unit)} ${i.name}`).join(' · ')
       });
     events.push({
       id: 'boil-end',

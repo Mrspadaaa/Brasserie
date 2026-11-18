@@ -24,6 +24,7 @@ import {
 import { ComposesAbsents } from './composes';
 import { MOMENTS } from './recipe';
 import type { Tasting } from './tasting';
+import { nombreFr } from '../../../domain/nombreAffiche';
 
 // ---------- Types publics ----------
 export type MomentSimule = 'b60' | 'b10' | 'wp' | 'dryActive' | 'dryPost';
@@ -470,11 +471,11 @@ function drapeauxSimules(bases: Base[], av: ProfilFamilles, ap: ProfilFamilles, 
     if (!bio.actif) continue;
     if (bio.conv.centre > 0 && b.conc.geraniol) out.push({ id: 'biotransformation-geraniol', ajout: b.id, titre: 'Simulé : géraniol → citronellol, vers les agrumes', statut: `convention : ${Math.round(bio.conv.centre * 100)} % au centre`, familles: ['citrus', 'floral'], pourquoi: bio.texteConv, sources: bio.sources });
     else if (b.conc.geraniol) out.push({ id: 'biotransformation-geraniol', ajout: b.id, titre: 'Géraniol → citronellol : possible, non documenté pour cette levure', statut: 'centre 0, haut 87 % [convention]', familles: ['citrus', 'floral'], pourquoi: bio.texteConv, sources: bio.sources });
-    if (b.precurseurs) out.push({ id: 'biotransformation-thiols', ajout: b.id, titre: bio.rend.centre > 0 ? 'Simulé : thiols libérés des précurseurs (3MH)' : 'Thiols libérés : β-lyase non publiée pour cette levure', statut: bio.rend.centre > 0 ? `convention : ${bio.rend.centre} % au centre` : 'centre 0, haut 0,35 % [convention]', familles: ['citrus', 'tropical'],
+    if (b.precurseurs) out.push({ id: 'biotransformation-thiols', ajout: b.id, titre: bio.rend.centre > 0 ? 'Simulé : thiols libérés des précurseurs (3MH)' : 'Thiols libérés : β-lyase non publiée pour cette levure', statut: bio.rend.centre > 0 ? `convention : ${nombreFr(bio.rend.centre, 1)} % au centre` : 'centre 0, haut 0,35 % [convention]', familles: ['citrus', 'tropical'],
       pourquoi: `${bio.texteRend} Précurseurs : ${b.precurseurs.chiffre ?? ''}.`, sources: [...bio.sources, ...(b.precurseurs.sources ?? [])] });
   }
   for (const b of bases.filter((x) => x.sansDonnees)) out.push({ id: 'sans-composes', ajout: b.id, titre: `${b.nom} : forme des fiches seules`, statut: 'confiance faible', pourquoi: C.sansComposes.texte, sources: C.sansComposes.sources });
-  if (bases.filter((b) => estSec(b.a.moment)).length > 1) out.push({ id: 'saturation-partagee', titre: 'Saturation partagée : la dose totale compte', statut: `dose à cru ${arrondi(doseACru)} g/L`,
+  if (bases.filter((b) => estSec(b.a.moment)).length > 1) out.push({ id: 'saturation-partagee', titre: 'Saturation partagée : la dose totale compte', statut: `dose à cru ${nombreFr(arrondi(doseACru), 3)} g/L`,
     pourquoi: `Les activités des ajouts s’additionnent avant la courbe de saturation (H22) : ensemble, ils donnent moins que la somme de chacun seul. ${DONNEES_POUVOIR.ajoutsSuccessifs.saturationSecondAjout.texte}`, sources: [...C.courbes.agrumes.sources, ...DONNEES_POUVOIR.ajoutsSuccessifs.saturationSecondAjout.sources] });
   return out;
 }

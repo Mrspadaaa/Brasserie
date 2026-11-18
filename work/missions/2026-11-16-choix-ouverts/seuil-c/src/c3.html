@@ -1,0 +1,43 @@
+@@TITRE
+c3 · Un brassin par colonne
+@@CSS
+.c3-head{display:flex;align-items:center;gap:12px;padding:12px 12px 0}
+.c3-big{font-size:56px;line-height:1;font-weight:800;color:var(--fin);letter-spacing:-1.5px;font-variant-numeric:tabular-nums}
+.c3-t{flex:1;min-width:0;font-size:15px;color:var(--mut);line-height:1.3}
+.c3-chip{display:inline-flex;align-items:center;gap:6px;margin-top:2px;padding:2px 10px 2px 6px;border-radius:999px;background:var(--finbg);color:var(--ink);font-size:17px;font-weight:700;white-space:nowrap}
+.c3-chip .ico{color:var(--prod);width:20px;height:20px}
+.c3-tl{display:grid;grid-template-columns:repeat(6,1fr);gap:4px;margin:14px 12px 0}
+.c3-col{display:flex;flex-direction:column;align-items:center;gap:4px;padding:6px 2px 8px;border-radius:12px;border:1.5px solid transparent;min-height:184px}
+.c3-col.on{background:var(--finbg)}.c3-col.sel{border-color:var(--fin)}
+.c3-col.seu.on{background:var(--attbg)}.c3-col.seu.sel{border-color:var(--att)}
+.c3-col .c3-w{font-size:14px;font-weight:700;color:var(--mut)}
+.c3-col .c3-bar{flex:1;width:100%;display:flex;flex-direction:column;justify-content:flex-end;align-items:center;gap:2px}
+.c3-col .c3-bar span{font-size:15px;font-weight:800;color:var(--t,var(--c))}
+.c3-col .c3-bar i{width:30px;border-radius:5px 5px 0 0;background:var(--c)}
+.c3-col .ico{width:24px;height:24px;color:var(--c2)}
+.c3-col .c3-n{font-size:14px;line-height:1.15;text-align:center;color:var(--ink);font-weight:600;min-height:32px}
+.c3-sec{display:flex;align-items:center;gap:8px;padding:16px 12px 6px;font-size:17px;font-weight:700}
+.c3-sec .ico{color:var(--prod)}.c3-sec small{margin-left:auto}
+.c3-g{margin:0 12px 10px}#c3-l{padding-top:14px}
+.c3-gh{display:flex;align-items:baseline;gap:8px;padding:0 4px 4px;font-size:15px;color:var(--mut)}.c3-gh b{color:var(--ink);font-size:16px}
+@@CORPS
+<div class="c3-head"><span class="c3-big" id="c3-big">5</span><div class="c3-t">à commander jusqu’à<br><span class="c3-chip" id="c3-chip"></span></div><span class="k-ex">exemple</span></div>
+<div class="c3-tl" id="c3-tl" data-booster="brassin-horizon"></div>
+<div id="c3-l"></div>
+@@APRES
+@@JS
+<script>(()=>{const S=STK,{$,$$}=S;let H=49;
+const VERRE='<svg class="ico" viewBox="0 0 24 24"><path d="M6 8h10v11a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2z"/><path d="M16 11h2a2 2 0 0 1 2 2v2a2 2 0 0 1-2 2h-2"/><path d="M6 8a3 3 0 0 1 3-4 3 3 0 0 1 5 1 2.5 2.5 0 0 1 2 3"/></svg>';
+const OUTIL='<svg class="ico" viewBox="0 0 24 24"><path d="M8 3h8l-1 5H9z"/><path d="M9 8v12a1 1 0 0 0 1 1h4a1 1 0 0 0 1-1V8"/></svg>';
+const SEUIL='<svg class="ico" viewBox="0 0 24 24"><path d="M4 18h16"/><path d="M7 14l4-4 3 3 5-6"/></svg>';
+const COL=[[48,'Lavage',OUTIL],[49,'Porter',VERRE],[50,'Blonde bouteilles',VERRE],[51,'Pils de Noël',VERRE],[52,'Fûts du Marché',OUTIL],[99,'Sans brassin',SEUIL]];
+const NOM={48:'le lavage',49:'le Porter',50:'la Blonde',51:'la Pils de Noël',52:'le Marché',99:'tout le seuil'};
+function rendre(){const X=S.dans(H),m=13;
+$('#c3-big').textContent=X.length;
+$('#c3-chip').innerHTML=(H===99?SEUIL:VERRE)+(H===99?'tout le seuil':COL.find(c=>c[0]===H)[1]+' · S'+H);
+$('#c3-tl').innerHTML=COL.map(([w,n,ic])=>{const k=S.par(w).length,on=w<=H,c=on?(w===99?'var(--att)':'var(--fin)'):'var(--line2)';
+return '<button class="c3-col'+(on?' on':'')+(w===H?' sel':'')+(w===99?' seu':'')+'" data-h="'+w+'" style="--c:'+c+(on?'':';--t:var(--mut)')+';--c2:'+(on?(w===99?'var(--att)':'var(--prod)'):'var(--mut)')+'"><span class="c3-w">'+(w===99?'seuil':'S'+w)+'</span><span class="c3-bar"><span>'+k+'</span><i style="height:'+Math.max(6,k/m*78)+'px"></i></span>'+ic+'<span class="c3-n">'+n+'</span></button>'}).join('');
+for(const b of $$('#c3-tl button'))b.onclick=()=>{H=+b.dataset.h;rendre()};
+$('#c3-l').innerHTML=COL.filter(c=>c[0]<=H).map(([w,n])=>{const L=S.par(w);return '<div class="c3-g"><div class="c3-gh"><b>'+(w===99?'Au seuil':n)+'</b>'+(w===99?'aucun brassin prévu':'S'+w)+' · '+L.length+'</div><div class="k-rows" style="margin:0">'+L.map(a=>S.row(a,w===99?'var(--att)':'var(--fin)')).join('')+'</div></div>'}).join('');
+S.cta(X.length,H===99?'Commander tout':'Commander jusqu’à '+(H===49?'Porter':H===51?'Pils':'S'+H));S.pastille(X.length)}
+rendre();if(S.etat==='geste'){H=51;rendre()}})()</script>

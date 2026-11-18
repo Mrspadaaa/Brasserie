@@ -1,0 +1,75 @@
+{
+ "reglage": "4-argon@high",
+ "cas": "A-anomalies-1",
+ "tache": "detectAnomalies",
+ "moitie": "choix",
+ "note": {
+  "qualite": 1,
+  "utilisable": true,
+  "passes": [],
+  "manques": [],
+  "detail": {
+   "rappel": 1,
+   "precision": 1,
+   "types": 1,
+   "fauxPositifs": 0,
+   "anomalies": 5,
+   "manques": [],
+   "qualite": 1
+  }
+ },
+ "ms": 44799,
+ "coutMicro": 58668,
+ "etat": "STOP",
+ "valeur": {
+  "anomalies": [
+   {
+    "transactionIds": [
+     "T05",
+     "T06"
+    ],
+    "type": "doublon",
+    "severity": "attention",
+    "explanation": "Les écritures T05 (2026-08-02) et T06 (2026-08-03) présentent le même fournisseur (Brau- und Rauchshop), le même libellé (« Levure SafAle US-05 x10 ») et le même montant TTC de 184.50 CHF à un jour d'intervalle.",
+    "suggestion": "Vérifier les pièces justificatives et le relevé bancaire pour contrôler s'il s'agit d'une double saisie (ex. facture puis paiement de la même commande de levure) ou de deux achats distincts ; le cas échéant, rapprocher les deux lignes dans la fiche concernée pour éviter de compter deux fois 184.50 CHF en charges de matières premières."
+   },
+   {
+    "transactionIds": [
+     "T09"
+    ],
+    "type": "montant",
+    "severity": "grave",
+    "explanation": "L'écriture T09 (SIG Fribourg, « Électricité septembre », saisie au 2026-08-22) affiche un montant TTC de 1 150.00 CHF, soit plus de dix fois le montant mensuel habituel de la catégorie Énergie (96.20 CHF sur T02, 104.10 CHF sur T07 et 99.80 CHF sur T16).",
+    "suggestion": "Contrôler la facture originale de SIG Fribourg pour vérifier s'il s'agit d'une erreur de décimale à la saisie (valeur actuelle : 1 150.00 CHF ; changement proposé si faute de frappe : 115.00 CHF, ce qui réduirait les charges d'énergie de 1 035.00 CHF) ou d'un décompte annuel de régularisation réel."
+   },
+   {
+    "transactionIds": [
+     "T11"
+    ],
+    "type": "tva",
+    "severity": "attention",
+    "explanation": "L'écriture T11 (Eckenstein, « Sac de malt Munich 25 kg », 81.60 CHF) indique un taux de TVA de 19 % (tvaRate : 0.19), qui ne correspond à aucun taux suisse en vigueur alors que le malt de brasserie relève en Suisse du taux réduit de 2.6 % (0.026), comme sur T01 et T18.",
+    "suggestion": "Ouvrir le justificatif T11 pour vérifier le taux et la devise réellement inscrits sur la facture : s'il s'agit d'une facture suisse avec erreur de saisie, corriger tvaRate de 0.19 à 0.026 dans la fiche T11 ; s'il s'agit d'une facture étrangère soumise à la TVA allemande de 19 %, conserver la TVA source telle qu'écrite sur le justificatif et vérifier la devise facturée (sans incidence sur une récupération de TVA puisque la brasserie n'est pas assujettie)."
+   },
+   {
+    "transactionIds": [
+     "T13"
+    ],
+    "type": "justificatif",
+    "severity": "grave",
+    "explanation": "L'écriture T13 du 2026-09-21 (Frigo Service SA, « Cuve inox 300 L », catégorie Équipement) porte sur un montant important de 2 480.00 CHF TTC sans pièce justificative associée (justificatif : false).",
+    "suggestion": "Rechercher et joindre la facture originale de Frigo Service SA à la fiche T13 afin de documenter la dépense de 2 480.00 CHF et permettre de justifier ce matériel de brassage (charge ou immobilisation amortissable) lors du contrôle annuel."
+   },
+   {
+    "transactionIds": [
+     "T15"
+    ],
+    "type": "date",
+    "severity": "attention",
+    "explanation": "L'écriture T15 (SIOS, « Fûts 20 L x4 », 340.00 CHF TTC) est datée du 2027-03-14, soit quatre mois dans le futur par rapport à la date du jour (2026-11-14), alors qu'elle s'insère entre des écritures de septembre et octobre 2026.",
+    "suggestion": "Vérifier la date figurant sur la facture SIOS et proposer la correction de la date dans la fiche T15 (valeur actuelle : 2027-03-14 ; remplacer par la date réelle de 2026 inscrite sur la pièce, par exemple en septembre ou octobre 2026) afin de rattacher ces 340.00 CHF au bon exercice comptable."
+   }
+  ],
+  "checkedCount": 18
+ }
+}

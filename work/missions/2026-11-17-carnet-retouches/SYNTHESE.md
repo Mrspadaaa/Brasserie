@@ -1,0 +1,69 @@
+# Carnet ra+p5f — synthèse des trois critiques (17.11)
+
+Ses mots : « Carnet ra+p5f · ça va  J'aime bien mais pas mal de retouche  La carte de l'article est peu parlant, quand on clic dessus aussi.  L'ajout d'une nouvelle idée est encore assez fouillis et difficile à comprendre et l'ajout à l'idée aussi.  Et c'est encore assez moyen dans le thème de l'app.  Fait passer un critique, brasseur, UX UI expert, feedback qui critique tout les écrans et on crée des mini maquettes (pas thème cave encore) pour résoudre tout ça. On est sur du 7/10 on vise le 9 ! »
+
+Sources : `critique/brasseur.md` (Br), `critique/ux-ui.md` (UX), `critique/premier-usage.md` (PU). Captures : scratchpad des critiques et `critique/cap/`.
+Axes : A = carte d'article et article ouvert (CARNET-CARTE-MUETTE) ; B = ajouter une idée et ajouter à une idée (CARNET-AJOUT-FOUILLIS) ; C = habit de l'app (CARNET-THEME) ; X = autres (corrigés dans toutes les versions).
+
+## Notes des trois regards
+
+| Regard | Note | Problèmes |
+|---|---|---|
+| Brasseur | 7/10 | 45 |
+| UX/UI expert | 6,5/10 | 58 |
+| Premier usage | 5/10 | 13 |
+
+Après fusion des doublons : 33 problèmes (5 bloquants, 20 majeurs, 8 mineurs). Cible : 9/10.
+
+## Liste unique, du plus grave au moins grave
+
+### Bloquants
+
+1. **[X] À venir / Réalisés inertes.** « À venir » ne donne qu'un toast « À venir (kyh1) : inchangé » (code interne) ; « Réalisés » ne réagit pas. Après « Envoyer dans À venir », aucune preuve ; « Dans À venir depuis le 16 nov. » est inerte. — Br, UX, PU. Preuve : g03, g04, H03, L04, s5-09, s5-11, s6-00.
+2. **[B] Un dépôt ne laisse aucun retour.** Photo depuis le +, micro, « Coller un lien » : le menu se ferme, l'écran ne change pas ; le dépôt n'apparaît qu'en rouvrant le clavier, et la photo est déjà remplacée par la voix dans l'écho. — UX. Preuve : H06, H07, H08, H11, H12.
+3. **[B] Le + et ses portes doublées.** Le + ouvre 9 boutons (Partout ×4, Dans « … » ×4, Écrire une note) qui doublent le champ du bas : écrire 3 fois, photo et voix 2 fois ; « Nouvelle idée » ne fait que donner le focus au champ ; 4 à 5 portes pour un même geste (champ, 📷 🎤, puce « Coller le lien copié », menu du +), couleurs et icônes différentes ; « + Façon » et « Critère » absents. — Br, UX, PU. Preuve : g02, g07, g13, H05, E01b, s1-00.
+4. **[A] Article ouvert plus pauvre que sa carte.** Picto gris (jusqu'à 150 px) au lieu d'une photo ; URL coupée en gris, non cliquable, pas de « Ouvrir la page ↗ » ; Surveiller en 3 à 4 lignes en tête, puis Vérifier, puis la réponse IA, et seulement au 4e bloc les caractéristiques ; « Caractéristiques lues » parfois suivi de rien ; 8 valeurs grises uniformes, pas en mono ; la valeur du critère n'est ni en tête ni classée (40 ppb = meilleur, 220 ppb = pire) ; rien ne dit pourquoi l'article est là ; pas de fermeture visible. — Br, UX, PU. Preuve : E15, g09, L14, s3-00, s3-01.
+5. **[X] Contenu simulé faux au métier.** Photo ajoutée à « Évier inox » lue « plaque signalétique 230 V · 1,1 kW · 1 200 m³/h » (extracteur) ; même genre de valeurs pour une tireuse ; note vocale de l'évier qui parle de « mise en service » (embouteillage) ; « inox 18/10 » et « inox 304 » présentés comme différents (même alliage). — Br, PU. Preuve : h01-photo, h02-voix, s2-03, E21e.
+
+### Majeurs
+
+6. **[A] Carte d'article muette.** Même picto gris pour tous (jamais la photo) ; « 8 valeurs », « 7 valeurs · 1 ? », « 1 valeur · 4 ? » ; œil et interrupteur sans mot (deux cibles, une action) ; « 4 semaines » sans dire délai, pastille beige de la teinte du bandeau « Pas encore choisi » ; valeur du critère absente ; façon dite pour certains, pas d'autres ; choisi marqué d'une bordure verte seule ; puce « exemple » sur chaque carte ; ne dit pas pourquoi l'article est là. — Br, UX, PU. Preuve : E07a, E12, E12b, g08, H17, s2-02, s4-03.
+7. **[A] Liste des articles indistincte.** Six cartes de 120 à 140 px qui se ressemblent (5 par écran) ; prix au même poids que « en stock » ; on ne sait lequel est bon sans Comparer ; même machine chez deux vendeurs (CH 12 300, DE 11 400) en deux cartes sans dire « 900 CHF d'écart » ; disponibilité en trois vocabulaires (« en stock », « sur commande » sans délai, « 4 semaines »). — Br, UX. Preuve : E12b, g08, E15.
+8. **[A] Comparer ne compare pas d'emblée.** Vide tant que « Tout garder » n'est pas touché ; 8 puces à croix, Tout garder, Ajouter, Proposer (redite de l'IA), Classé par, puis 300 px blancs ; un tableau par caractéristique, 8 à défiler, jamais les articles côte à côte ; toast « IA (exemple) : 6 valeurs trouvées, 1 reste « ? » (non publiée) » qui couvre la liste ; oui/non en barres pleines ou vides ; cadre bleu « classé par », cadre brun « critère » ; « ✎ à vous ✕ » muet ; lignes qui ne diffèrent que par le pays, fournisseur absent ; aucun chevron ; « ✕ écarté » ; le + rond chevauche « Classé par » ; Comparer mis en avant en bleu avec 0 article. — Br, UX, PU. Preuve : E13a, E13b, E14a, E14b, E19e, E20e, E21e, s4-01, s5-07.
+9. **[A] Choisir : feuille confuse.** « ✕ Annuler le choix » en bleu, premier élément ; case ronde « le moins cher » inexpliquée ; trois à cinq façons de dire pourquoi (raisons cochées, champ + Ajouter, « À revoir si… », Terminé), Ajouter requis ou non ? ; écartés marqués d'un × (lu « supprimer ») ; titre coupé « pré- / évacuation » ; garde-fou rouge « Corrigez le pourquoi » au ton de tribunal, même ✕ que les écartés ; « Envoyer dans À venir » en lien bleu fin derrière la feuille ; choisir possible sans critère ni façon. — Br, UX, PU. Preuve : E16a, E16c, E19g, E19g1, E21g, E21g1, H16, s4-04.
+10. **[A] Le choix fait ne montre pas l'objet.** Bandeau « Choisi » : objet et vendeur, sans prix ni photo ; Retrouver pourquoi : picto gris au lieu de la photo, pas de prix payé en tête. — Br, UX. Preuve : E16d, 79d8407c, E17b, E17c.
+11. **[B] Ajouter à une idée : champ fourre-tout.** On tape, l'IA dit après « rangé : façon Gravité » ou « critère » (violet, 13 px, non corrigeable) ; le brasseur ne choisit pas la cible et ne voit pas où ça va ; notes « gravité » / « isobarique » non rangées en façons, sans retour ; « valeurs proposées » invisibles, Articles reste à 1. — Br, UX, PU. Preuve : E02, E03, E04a, E06, s2-03, s4-00.
+12. **[B] Ajouter une idée (liste) : on ne sait pas qu'on crée un carnet.** Champ et + rond concurrents ; rien ne dit avant le geste qu'Entrée crée un carnet ; en saisie, la liste disparaît (270 px blancs) et l'écho montre « Dernière idée notée · Évier inox », sans rapport ; autofocus au chargement (clavier ouvert, liste masquée) ; liste vide « Aucun carnet encore. » sans dire ce qu'est un carnet ; « Rien encore : un besoin, un objet, une idée. » flottante. — Br, UX, PU. Preuve : E00, E01a, H01, H02, s1-00, jouer2.log.
+13. **[B] Façons : deux modèles d'ajout.** Feuille avec « + Ajouter une façon » (atteinte seulement par la tuile) ET texte « Écrivez … dans le fil : l'IA la range ici », exemples (chambre froide, gravité) hors sujet pour un évier ; « ouverte / retenue / écartée » mal compris ; pas de Retenir / Écarter visibles sur la fiche ; « Ensuite : trancher entre X et Y » sans bouton. — Br, UX, PU. Preuve : h03-facons, H14, s3-03, s3-05, s5-04, E01b.
+14. **[B] Voix et photo sans états.** Un toucher du micro donne aussitôt un texte « transcrit » de 0:12, sans onde, durée, Arrêter ni relecture ; photo sans caméra ni galerie ni aperçu de sa photo, valeurs lues non soumises à validation ; « Coller le lien copié » proposé même sans lien copié. — UX, PU. Preuve : H07, H08, s2-03.
+15. **[B] Fiche neuve et fiche en saisie vides.** 100 à 150 px blancs entre bandeau et dernier dépôt collé au clavier ; façons et articles invisibles pendant l'ajout ; titre redit ; bulle IA « Catégorie : à préciser … 8 caractéristiques à comparer » avant tout article ; fiche vide (Évier) = quatre tuiles de zéros, la seule aide (IA : chercher les façons) sous le pli. — Br, UX, PU. Preuve : E01b, E02, E05a, E06, E19a, E20a, E21a, g12, s1-02.
+16. **[B] Deux « Ensuite » contradictoires.** Une note rangée « prochaine étape » s'imprime dans le bandeau sous un autre « Ensuite » ; bandeau « Ensuite : trancher… » puis la même question posée par l'IA juste dessous ; une même phrase rangée deux fois ; les « Ensuite » changent de forme (conseil ou statut). — Br, UX, PU. Preuve : E04b, E06, E12, E20b, s2-04.
+17. **[C] En-tête étranger à l'app.** Fil d'Ariane « Stocks › Matériel », H1 « Carnets » de 28 à 34 px, onglets soulignés vert, au lieu de la barre « L'Affinée » (logo, mois, loupe, avatars), du segment Stocks gris à onglet actif noir, et des segments comme Étagère / Recompter ; deux grammaires d'onglets dans la même zone. — Br, UX, PU. Preuve : be88f003 face à p1-stocks-repos-clair-390, cap/a.png.
+18. **[C] Couleurs sans sens.** 7 à 8 teintes : liserés brun / vert / violet, lien démo violet, « Envoyer dans À venir » bleu, critère brun-orange, IA lavande ou violette (le violet = Événements dans l'app), bandeau beige-brun, tuile bleue, progression brun → bleu → violet → vert ; fond gris-vert qui s'arrête à mi-écran ; aucune n'est la couleur de zone Stocks. — Br, UX, PU. Preuve : 79d8407c, E04a, E05b, E14a, E20h, mesure couleursTexte.
+19. **[C] Formes et tailles hors système.** Cartes à rayon 16, liseré gauche épais, titre 19 px (l'app : rangées rayon 8, bordure 1 px, noms 15–16, pastille) ; 6 à 7 tailles de texte par écran (DESIGN.md : 3) ; 4 à 11 rayons (DESIGN.md : 3) ; mesures (ppb, bt/h, m²) pas en IBM Plex Mono, seuls les prix le sont ; carnet 15 à 20 % plus gros que l'app (titre de fiche ~30 px, corps 17–18). — UX. Preuve : mesures puppeteer, be88f003, 79d8407c.
+20. **[C] Barre du bas étrangère.** Champ permanent pleine largeur et + rond collé : ~80 px fixes ; l'app a un + carré arrondi flottant, sans champ permanent ; le + reste sur Comparer, sans rôle clair. — Br, UX. Preuve : be88f003, p1-stocks, E13a–E14b.
+21. **[C] Liste des carnets bavarde.** 90 à 140 mots au premier écran (CARNET-LIS : 40) ; choix, vendeur et pourquoi mêlés en 3 à 4 lignes de prose grasse ; compteurs gris 12 px ; cartes de 150 à 190 px, 2,5 à 3 par écran, la 4e sous le pli. — Br, UX, PU. Preuve : be88f003, E17a, E20h, cap/a.png, mesure B3.
+22. **[C] Fiche en cockpit de compteurs.** Tuiles « Articles 0 », « Comparer 8 proposées par l'IA › » (avec 0 article, bleue, a l'air sélectionnée), « Décisions 1 et leur pourquoi › », « Comparer 7 · 6 proposées · 1 gardée » : il faut toucher pour voir l'essentiel ; 4 blocs de formes différentes plus bandeau, critère et fil, tous aussi lourds ; ordre Frigo : « Envoyer dans À venir » et critère avant les façons, articles sous le pli. — Br, UX, PU. Preuve : E05b, E19c, E20c, g05, g12, 79d8407c, s2-00, s5-00.
+23. **[C] Fiche choisie et fiche au long redondantes.** Décision dite 2 à 3 fois, tuiles qui restent sous la décision, dernière tuile coupée par le champ ; frise datée qui reprend chaque article en carte complète (6 articles dits deux fois, ~3,5 écrans, noms coupés). — UX, PU. Preuve : E16d, H04, H04b, H13b, s6-04.
+24. **[X] Lexique non défini, critère à l'envers.** idée / recherche / compare / choisi, ouverte / retenue / écartée, exemple, ?, à vous, sur commande, caractéristiques, catégorie « divers », « critère qui oriente », « Relié à », « métadonnée », « Redonner à l'IA » ; cinq types de puces proches sur un écran ; « Critère qui oriente : plus de condensation au plafond » se lit à l'envers (le but : moins de condensation, capter la buée à la source). — Br, UX, PU. Preuve : E04a, E20b, E20c, E20g, s3-05, s4-01.
+25. **[X] Bruit de prototype dans les vraies fiches.** Pastille violette « exemple » sur chaque réponse IA, vendeur, prix ; lien violet souligné « Démo : repartir d'un carnet vide » en tête de liste (cible 191 × 20 px) ; puces « Démo · à jouer » pointillées dans le fil. — Br, UX, PU. Preuve : E01b, E07a, E12b, E15, be88f003, g01, g06, g12, H13.
+
+### Mineurs
+
+26. **[C] Avancement en trois signaux muets.** « ●●●● choisi » / « ●●○○ recherche » + mot coloré + liseré pour un seul état, étapes jamais nommées. — Br, UX, PU. Preuve : be88f003, E02–E20, s2-04.
+27. **[C] Compteurs de liste muets.** « 👁 2 » (2 articles surveillés, dit seulement dans la fiche en 13 px), « 2 façons · 6 articles · 2 décisions », « −600 CHF » vert sans légende. — Br, UX, PU. Preuve : be88f003, g05, cap/a.png.
+28. **[C] Vignettes et vide de liste.** Mini-vignettes de 14 à 20 px toutes semblables (ni l'objet ni le choix) ; « rien de rangé encore » constate sans proposer de geste. — Br, UX, PU. Preuve : be88f003, E16d.
+29. **[B] Lien sans aperçu.** Trois messages pour un échec (« aucune métadonnée lue », Compléter et Redonner à l'IA, encadré IA), avec jargon. — Br, UX. Preuve : E20d.
+30. **[B] Pourquoi d'une façon.** ~120 px vides au-dessus de la question ; icône tampon illisible. — UX. Preuve : E05a.
+31. **[A] Retrouver pourquoi encombré.** Trois entrées pour une question (puces, champ, +) ; réponse IA de 9 lignes à 19 px, plus grosse que le titre, en encadré lavande ; carte à liseré vert, 4e style de carte. — Br, UX. Preuve : E17b, E18, E19h, E21h.
+32. **[X] Envoyer dans À venir muet.** On ne sait pas ce qui part (prix, date, vendeur) ; lien bleu, une teinte de plus ; pas de « Voir dans À venir › ». — Br, UX. Preuve : E16d, E16e.
+33. **[X] Écartés redits.** « Frigo vitrine pro 700 L — façon écartée : frigo vitrine pro » au lieu de la raison (« ne passe pas la porte de 80 cm »). — Br. Preuve : E19g, E21g, E21h.
+
+## Répartition
+
+- **A — carte d'article et article ouvert (CARNET-CARTE-MUETTE)** : 4, 6, 7, 8, 9, 10, 31.
+- **B — ajouter une idée et ajouter à une idée (CARNET-AJOUT-FOUILLIS)** : 2, 3, 11, 12, 13, 14, 15, 16, 29, 30.
+- **C — habit de l'app (CARNET-THEME)** : 17, 18, 19, 20, 21, 22, 23, 26, 27, 28.
+- **Autres (toutes les versions)** : 1, 5, 24, 25, 32, 33.
+
+Versions 1 à 4 = axe A ; 5 à 8 = axe B ; 9 à 12 = axe C. Clair seul ; pas de thème cave.

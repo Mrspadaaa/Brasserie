@@ -1,0 +1,286 @@
+<!doctype html>
+<html lang="fr"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>c6a — Chercher une levure · c5a + 18 filtres en tiroir à sections repliables (passe 4, 09.11)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Source+Sans+3:wght@400;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{--page:#FFFFFF;--panel:#F5F5F5;--bord:#DDDDDD;--bordm:#BFBFBF;--t2:#666666;--t1:#333333;--t0:#111111;
+--teal:#1F9E89;--tealt:#0E6B5C;--att:#9C7020;--attt:#7F5B10;--froid:#3A7BD5;--chaud:#D9532B;--ghost:#CFE0F6;--ghostb:#3A7BD5;
+--neutre:#7E8DA3;--fruit:#E07B2E;--epice:#9A4A26;--est:#D9731A;--phe:#9A4A2A;--thi:#1F9E6B;--ter:#6E9A00;
+--sans:"Source Sans 3",system-ui,sans-serif;--mono:"IBM Plex Mono",ui-monospace,monospace}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:#E9E9E9;font-family:var(--sans);font-size:14px;line-height:1.3;color:var(--t1);-webkit-font-smoothing:antialiased}
+.c6a-planche{display:flex;flex-wrap:wrap;gap:24px;padding:16px;align-items:flex-start}
+.c6a-fig{display:flex;flex-direction:column;gap:6px}
+.c6a-cap{font-size:13px;font-weight:600;color:var(--t1);max-width:390px}
+.c6a-f{width:390px;height:844px;position:relative;overflow:hidden;background:var(--page);display:flex;flex-direction:column}
+@media (max-width:500px){body{background:var(--page)}.c6a-planche{display:block;padding:0}.c6a-fig{gap:0}.c6a-cap{order:2;padding:6px 10px 14px;background:#E9E9E9}}
+.c6a-m{font-family:var(--mono);font-variant-numeric:tabular-nums;letter-spacing:-.01em}
+svg.c6a-i{width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;flex-shrink:0}
+svg.c6a-s{width:13px;height:13px}
+/* baseline : en-tête, fil, bandeau, pied (c5a) */
+.c6a-hd{padding:0 8px;border-bottom:1px solid var(--bord)}
+.c6a-tb{display:flex;align-items:center;gap:6px;height:36px}
+.c6a-ic{width:28px;height:28px;display:flex;align-items:center;justify-content:center;color:var(--t2)}
+.c6a-tt{flex:1;display:flex;align-items:baseline;gap:6px}
+.c6a-tt b{font-size:16px;font-weight:600;color:var(--t0)}
+.c6a-tt span{font-family:var(--mono);font-size:14px;color:var(--t2)}
+.c6a-rail{display:flex;gap:4px;padding-bottom:4px}
+.c6a-rail span{flex-shrink:0;padding:0 3px;display:flex;flex-direction:column;gap:4px;font-size:12px;color:var(--t2);white-space:nowrap}
+.c6a-rail i{display:block;height:6px;border-radius:10px;background:var(--bord)}
+.c6a-rail .c6a-fait i{background:#6E6E6E}
+.c6a-rail .c6a-ici{color:var(--t0);font-weight:600}.c6a-rail .c6a-ici i{background:var(--t0)}
+.c6a-bd{margin:8px 10px 0;display:flex;align-items:baseline;justify-content:space-between;padding:6px 10px;background:var(--panel);border:1px solid var(--bord);border-radius:16px;font-size:14px}
+.c6a-bd>span{display:flex;align-items:baseline;gap:4px;color:var(--t2)}
+.c6a-bd b{font-family:var(--mono);font-variant-numeric:tabular-nums;font-weight:600;color:var(--t0)}
+.c6a-pst{position:relative;align-self:center;width:44px;height:8px;border-radius:10px;background:var(--bord)}
+.c6a-pst u{position:absolute;top:0;bottom:0;left:40%;width:30%;border-radius:10px;background:#9E9E9E}
+.c6a-pst em{position:absolute;top:-4px;bottom:-4px;left:45%;width:2px;background:var(--t0)}
+.c6a-sw{width:10px;height:10px;border-radius:50%;background:#E0A02E;border:1px solid var(--bordm);align-self:center}
+.c6a-pied{margin-top:auto;display:flex;justify-content:space-between;padding:8px 66px 12px 10px}
+.c6a-ret{height:28px;padding:0 12px;border-radius:10px;border:1px solid var(--bord);color:var(--t2);display:flex;align-items:center}
+.c6a-suiv{height:28px;padding:0 10px;border-radius:10px;background:var(--t0);color:#fff;font-weight:600;display:flex;align-items:center}
+.c6a-fab{position:absolute;right:10px;bottom:10px;width:48px;height:48px;border-radius:50%;background:var(--t0);color:#fff;display:flex;align-items:center;justify-content:center;box-shadow:0 8px 24px -12px rgba(0,0,0,.5)}
+.c6a-fab svg{width:24px;height:24px}
+/* contenu (c5a) */
+.c6a-c{padding:8px 10px 0;display:flex;flex-direction:column;gap:8px;min-height:0}
+.c6a-c>*{flex-shrink:0}
+.c6a-champ{display:flex;align-items:center;gap:6px;height:36px;padding:0 6px 0 10px;border:1.5px solid var(--t0);border-radius:10px;font-size:16px;color:var(--t0)}
+.c6a-champ .c6a-q{flex:1}
+.c6a-champ .c6a-ph{flex:1;color:#767676}
+.c6a-champ .c6a-car{display:inline-block;width:1.5px;height:18px;background:var(--t0);vertical-align:-3px;margin-left:1px}
+.c6a-us{border:1px solid var(--bordm);border-radius:16px;padding:8px 10px;display:flex;flex-direction:column;gap:6px;background:linear-gradient(180deg,#F3F7FD,#fff 60%)}
+.c6a-us h2{font-size:18px;font-weight:600;color:var(--t0);line-height:1.15}
+.c6a-ligne{display:flex;align-items:center;gap:8px;flex-wrap:wrap;font-size:13px;color:var(--t2)}
+.c6a-dispo{display:inline-flex;align-items:center;gap:4px;font-size:12px;white-space:nowrap}
+.c6a-ch{color:var(--tealt);font-weight:600}
+.c6a-eu{color:#3F4A5A}
+.c6a-rare{color:#6A5A8C}
+.c6a-pas{display:flex;flex-wrap:wrap;gap:4px}
+.c6a-p{display:inline-flex;align-items:center;gap:4px;height:22px;padding:0 7px;border-radius:10px;font-size:13px;color:var(--t0);white-space:nowrap;background:var(--fond,#F0F0F0)}
+.c6a-p i{width:8px;height:8px;border-radius:50%;background:var(--coul,#999)}
+.c6a-p.c6a-nd{background:none;border:1px dashed var(--bordm);color:var(--t2)}
+.c6a-p.c6a-nd i{background:none;border:1px dashed var(--t2)}
+.c6a-neu{--coul:var(--neutre);--fond:#ECEFF4}.c6a-fru{--coul:var(--fruit);--fond:#FCEBDD}.c6a-epi{--coul:var(--epice);--fond:#F3E4DC}
+.c6a-hop{--coul:#3E8E3E;--fond:#E4F2E1}.c6a-ok{--coul:var(--teal);--fond:#DDF0EB}
+.c6a-plus{font-family:var(--mono);font-weight:600;margin-right:-1px}
+.c6a-mes{display:grid;grid-template-columns:1fr 1fr;gap:4px 10px}
+.c6a-me{display:flex;flex-direction:column;gap:2px}
+.c6a-me span{font-size:12px;color:var(--t2);display:flex;justify-content:space-between}
+.c6a-me b{font-family:var(--mono);font-size:13px;color:var(--t0);font-weight:600}
+.c6a-chercher{display:inline-flex;align-items:center;gap:4px;height:22px;padding:0 7px;border-radius:10px;border:1px dashed var(--att);color:var(--attt);font-size:13px;background:#FFF8EA;white-space:nowrap}
+/* pistes : la US en colonne bleue, la conduite en trait rouge (repère, jamais filtre) */
+.c6a-tr{position:relative;height:12px;border-radius:10px;background:#F0F0F0}
+.c6a-tr .c6a-g{position:absolute;top:-3px;bottom:-3px;background:var(--ghost);border-left:1.5px dashed var(--ghostb);border-right:1.5px dashed var(--ghostb)}
+.c6a-tr .c6a-b{position:absolute;top:2px;bottom:2px;border-radius:10px;background:var(--t1);opacity:.85}
+.c6a-tr.c6a-t .c6a-b{background:linear-gradient(90deg,#3A7BD5,#D9532B)}
+.c6a-tr.c6a-a .c6a-b{background:var(--teal)}
+.c6a-tr .c6a-cd{position:absolute;top:-4px;bottom:-4px;left:45%;width:2px;background:var(--chaud);border-radius:2px}
+.c6a-tab{display:flex;flex-direction:column}
+.c6a-th{display:grid;grid-template-columns:1fr 84px 84px;gap:6px 10px;align-items:end;padding:0 0 4px;border-bottom:1px solid var(--bord)}
+.c6a-th h3{font-size:13px;font-weight:600;color:var(--t0);display:flex;align-items:center;gap:4px;white-space:nowrap}
+.c6a-ax{display:flex;justify-content:space-between;font-family:var(--mono);font-size:12px;color:var(--t2)}
+.c6a-ax b{font-weight:600;color:var(--t1)}
+.c6a-ax .c6a-r19{color:var(--chaud);font-weight:600}
+.c6a-row{display:grid;grid-template-columns:1fr 84px 84px;gap:2px 10px;align-items:center;padding:4px 0;border-bottom:1px solid #EDEDED}
+.c6a-row>.c6a-tr.c6a-t{grid-column:2;grid-row:1 / 3}
+.c6a-row>.c6a-tr.c6a-a{grid-column:3;grid-row:1 / 3}
+.c6a-row .c6a-nm{grid-column:1;grid-row:1;display:flex;align-items:center;gap:6px;font-size:14px;font-weight:600;color:var(--t0);white-space:nowrap;min-width:0}
+.c6a-row .c6a-nm small{font-weight:400;font-size:12px;color:var(--t2)}
+.c6a-row .c6a-pas{grid-column:1 / 2;grid-row:2}
+.c6a-row.c6a-tete{background:#F6F9FE;border-radius:10px;padding:5px 4px;margin:0 -4px;box-shadow:inset 3px 0 0 var(--ghostb)}
+.c6a-row.c6a-pale .c6a-nm,.c6a-row.c6a-pale .c6a-tr{opacity:.6}
+.c6a-sous{display:flex;align-items:center;justify-content:space-between;padding:6px 0;font-size:13px;color:var(--t2);border-bottom:1px solid #EDEDED}
+.c6a-sous b{color:var(--t0);font-weight:600}
+/* rangée des filtres (c5a) */
+.c6a-rang{display:flex;gap:6px;overflow:hidden;margin:0 -10px;padding:0 10px}
+.c6a-res{display:flex;align-items:center;gap:6px;height:34px;padding:0 8px 0 3px;border-radius:10px;background:var(--panel);font-size:13px;color:var(--t1);white-space:nowrap;overflow:hidden}
+.c6a-res .c6a-fi{height:28px}
+.c6a-res b{font-weight:600;color:var(--t0)}
+.c6a-res .c6a-rp{color:#9A3412}
+.c6a-res .c6a-sep{color:var(--bordm)}
+.c6a-res .c6a-n{margin-left:auto;font-family:var(--mono);font-size:12px;color:var(--t2)}
+.c6a-row.c6a-une{padding:3px 0}
+.c6a-row.c6a-une>.c6a-tr{grid-row:1;opacity:.6}
+.c6a-pal{opacity:.6;display:inline-flex;align-items:center;gap:6px}
+.c6a-epu{color:var(--attt)}
+.c6a-row.c6a-une .c6a-nm .c6a-chercher{margin-left:2px}
+.c6a-bas{display:flex;align-items:center;gap:6px;font-size:12px;color:var(--t2)}
+.c6a-tog{width:32px;height:20px;border-radius:10px;background:var(--bordm);position:relative;margin-left:auto}
+.c6a-tog::after{content:"";position:absolute;left:3px;top:3px;width:14px;height:14px;border-radius:50%;background:#fff}
+.c6a-fi{display:inline-flex;align-items:center;gap:4px;height:28px;padding:0 8px;border-radius:10px;border:1px solid var(--bordm);font-size:13px;color:var(--t0);white-space:nowrap;flex-shrink:0;background:#fff}
+.c6a-fi svg{width:12px;height:12px;color:var(--t2)}
+.c6a-fi.c6a-on{background:var(--t0);color:#fff;border-color:var(--t0)}.c6a-fi.c6a-on svg{color:#fff}
+.c6a-fi.c6a-def{background:var(--panel);border-color:var(--bord)}
+.c6a-fi.c6a-repere{border-style:dashed;border-color:var(--chaud);color:#9A3412}
+.c6a-fi b{font-family:var(--mono);font-weight:600}
+/* passe 4 : le tiroir à sections repliables */
+.c6a-ti{background:var(--panel);border-radius:16px;padding:4px 10px 8px;display:flex;flex-direction:column;border-top:2px solid var(--t0)}
+.c6a-tih{display:flex;align-items:baseline;justify-content:space-between;padding:4px 0 2px}
+.c6a-tih b{font-size:14px;color:var(--t0)}
+.c6a-tih span{font-size:12px;color:var(--t2)}
+.c6a-sec{display:grid;grid-template-columns:96px 1fr auto 14px;align-items:center;gap:6px;min-height:30px;border-top:1px solid #E4E4E4;font-size:13px}
+.c6a-sec:first-child{border-top:0}
+.c6a-sec>b{font-weight:600;color:var(--t0);white-space:nowrap}
+.c6a-sec>span{color:var(--t2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.c6a-sec>span.c6a-val{color:var(--t0)}
+.c6a-sec>span.c6a-vrep{color:#9A3412}
+.c6a-sec>svg{width:14px;height:14px;color:var(--t2)}
+.c6a-sec.c6a-ouv>svg{transform:rotate(180deg);color:var(--t0)}
+.c6a-nd{display:inline-flex;align-items:center;gap:3px;height:20px;padding:0 6px;border-radius:9px;border:1px dashed var(--att);color:var(--attt);background:#FFF8EA;font-family:var(--mono);font-size:12px;white-space:nowrap}
+.c6a-nd svg.c6a-i{width:11px;height:11px}
+.c6a-corps{padding:0 0 6px;display:flex;flex-direction:column;gap:5px}
+.c6a-chs{display:flex;flex-wrap:wrap;gap:4px}
+.c6a-cp{display:inline-flex;align-items:center;gap:4px;height:23px;padding:0 6px;border-radius:10px;background:#fff;border:1px solid var(--bord);font-size:13px;color:var(--t0);white-space:nowrap}
+.c6a-cp small{font-family:var(--mono);font-size:12px;color:var(--t2)}
+.c6a-cp.c6a-on{border:1.5px solid var(--t0);font-weight:600}
+.c6a-cp.c6a-on small{color:var(--t0)}
+.c6a-cp.c6a-moins{color:var(--t2)}
+/* histogramme de tolérance, avec la bière de la recette en repère */
+.c6a-hist{position:relative;display:grid;grid-template-columns:repeat(4,1fr);gap:4px;align-items:end;height:32px;padding:0 0 0}
+.c6a-hist span{position:relative;background:#CFCFCF;border-radius:6px 6px 2px 2px;display:flex;justify-content:center}
+.c6a-hist span small{position:absolute;top:-15px;font-family:var(--mono);font-size:12px;color:var(--t1)}
+.c6a-hax{display:grid;grid-template-columns:repeat(4,1fr);gap:4px;font-family:var(--mono);font-size:12px;color:var(--t2);text-align:center}
+.c6a-repl{position:absolute;top:-4px;bottom:-2px;left:3%;width:2px;background:var(--chaud)}
+.c6a-repl i{position:absolute;left:5px;top:-1px;font-style:normal;font-family:var(--mono);font-size:12px;color:#9A3412;white-space:nowrap;background:var(--panel);padding:0 2px}
+.c6a-seg{display:grid;grid-template-columns:repeat(5,auto);border:1px solid var(--bordm);border-radius:10px;overflow:hidden;height:28px;background:#fff}
+.c6a-seg span{display:flex;align-items:center;justify-content:center;padding:0 6px;font-size:13px;border-left:1px solid var(--bord);white-space:nowrap}
+.c6a-seg span:first-child{border-left:0}.c6a-seg .c6a-on{background:var(--t0);color:#fff;font-weight:600}
+.c6a-voir{display:flex;align-items:center;gap:8px;padding-top:6px}
+.c6a-prim{margin-left:auto;height:32px;padding:0 14px;border-radius:10px;background:var(--t0);color:#fff;font-weight:600;display:flex;align-items:center;gap:6px}
+.c6a-plusf{display:flex;align-items:center;gap:6px;min-height:29px;border-top:1px solid #E4E4E4;font-size:13px;font-weight:600;color:var(--t0)}
+.c6a-plusf small{font-family:var(--mono);font-size:12px;font-weight:400;color:var(--t2)}
+/* compte posé */
+.c6a-cpt{display:flex;align-items:center;gap:8px;font-size:13px;color:var(--t2)}
+.c6a-cpt>b{font-family:var(--mono);font-size:22px;color:var(--t0)}
+.c6a-rep{display:flex;height:22px;border-radius:10px;overflow:hidden;gap:2px;flex:1}
+.c6a-rep span{display:flex;align-items:center;justify-content:center;font-family:var(--mono);font-size:12px;font-weight:600;color:#fff;min-width:24px}
+.c6a-r1{background:none;border:1.5px dashed var(--teal);color:var(--tealt)!important;border-radius:10px}.c6a-r2{background:#4A5A72}.c6a-r3{background:#8A7BB0}
+.c6a-verif{display:flex;align-items:center;gap:6px;padding:6px 8px;border:1px dashed var(--att);border-radius:12px;background:#FFF8EA;font-size:13px;color:var(--attt)}
+.c6a-verif b{font-family:var(--mono);color:#5E4508}
+.c6a-verif span:last-child{margin-left:auto}
+</style></head>
+<body data-concept="c6a">
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+ <symbol id="c6a-back" viewBox="0 0 24 24"><path d="m15 18-6-6 6-6"/></symbol>
+ <symbol id="c6a-imp" viewBox="0 0 24 24"><path d="M14 3v4a1 1 0 0 0 1 1h4"/><path d="M17 21H7a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h7l5 5v11a2 2 0 0 1-2 2z"/><path d="M12 11v6m-3-3 3 3 3-3"/></symbol>
+ <symbol id="c6a-lune" viewBox="0 0 24 24"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9z"/></symbol>
+ <symbol id="c6a-loupe" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m20 20-4-4"/></symbol>
+ <symbol id="c6a-x" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6 6 18"/></symbol>
+ <symbol id="c6a-plus" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></symbol>
+ <symbol id="c6a-sac" viewBox="0 0 24 24"><path d="M5 8h14l-1.2 12H6.2z"/><path d="M9 8V6.5a3 3 0 0 1 6 0V8"/></symbol>
+ <symbol id="c6a-usine" viewBox="0 0 24 24"><path d="M3 20h18"/><path d="M4 20v-9l5 3v-3l5 3V5h4v15"/></symbol>
+ <symbol id="c6a-globe" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9" stroke-dasharray="3 2.4"/><path d="M3 12h18"/><path d="M12 3c3 3.2 3 14.8 0 18"/></symbol>
+ <symbol id="c6a-chv" viewBox="0 0 24 24"><path d="m6 9 6 6 6-6"/></symbol>
+ <symbol id="c6a-tri" viewBox="0 0 24 24"><path d="M7 4v16m0 0-3-3m3 3 3-3M17 20V4m0 0-3 3m3-3 3 3"/></symbol>
+</svg>
+
+<main class="c6a-planche">
+
+<!-- ===================== CADRE 1 : « 1056 » tapé ; US-05 en tête ===================== -->
+<figure class="c6a-fig">
+<figcaption class="c6a-cap">1 · « 1056 » tapé : c5a telle quelle ; la ligne de résumé de c6b (bière, repères rouges, tri) ; US-05 en tête</figcaption>
+<div class="c6a-f" data-cadre="1056-repos">
+ <header class="c6a-hd"><div class="c6a-tb"><span class="c6a-ic"><svg class="c6a-i"><use href="#c6a-back"/></svg></span><p class="c6a-tt"><b>Levure</b><span>4/7</span></p><span class="c6a-ic"><svg class="c6a-i"><use href="#c6a-imp"/></svg></span><span class="c6a-ic"><svg class="c6a-i"><use href="#c6a-lune"/></svg></span></div>
+ <nav class="c6a-rail"><span class="c6a-fait">Identité<i></i></span><span class="c6a-fait">Malts/sucres<i></i></span><span class="c6a-fait">Houblons<i></i></span><span class="c6a-ici">Levure<i></i></span><span>Paliers<i></i></span><span>Eau<i></i></span><span>Récap.<i></i></span></nav></header>
+ <div class="c6a-bd" data-commun="bandeau"><span>Grain <b>8,0 kg</b></span><span>OG <b>1,066</b></span><span>IBU <b>45</b><i class="c6a-pst"><u></u><em></em></i></span><span>EBC <i class="c6a-sw"></i><b>12</b></span></div>
+ <div class="c6a-c">
+  <div class="c6a-champ"><svg class="c6a-i"><use href="#c6a-loupe"/></svg><span class="c6a-q">1056<i class="c6a-car"></i></span><svg class="c6a-i" style="color:var(--t2)"><use href="#c6a-x"/></svg></div>
+  <div class="c6a-res" data-booster="resume-une-ligne"><span class="c6a-fi">Filtres<svg class="c6a-i"><use href="#c6a-chv"/></svg></span><b>bière</b><span class="c6a-sep">·</span><span class="c6a-rp" data-booster="repere-recette">repères 19 °C · 7 %</span><span class="c6a-sep">·</span><span>proche de 1056</span><span class="c6a-n">1 339</span></div>
+  <section class="c6a-us" data-booster="effets-us">
+   <h2>Wyeast 1056 American Ale</h2>
+   <div class="c6a-ligne"><span>liquide</span><span class="c6a-dispo c6a-rare"><svg class="c6a-i c6a-s"><use href="#c6a-globe"/></svg>rare en Europe</span><span class="c6a-dispo"><svg class="c6a-i c6a-s"><use href="#c6a-sac"/></svg>NL · <span class="c6a-m">27.09</span> · stock ?</span></div>
+   <div class="c6a-pas"><span class="c6a-p c6a-neu"><i></i>très propre</span><span class="c6a-p c6a-fru"><i></i>fruité faible</span><span class="c6a-p c6a-fru"><i></i>esters légers</span><span class="c6a-p c6a-nd"><i></i>épicé ?</span></div>
+   <div class="c6a-mes">
+    <div class="c6a-me"><span>°C <b>16–22</b></span><div class="c6a-tr c6a-t"><i class="c6a-g" style="left:30%;width:30%"></i><i class="c6a-cd"></i></div></div>
+    <div class="c6a-me"><span>atténuation <b>73–77 %</b></span><div class="c6a-tr c6a-a"><i class="c6a-g" style="left:32%;width:16%"></i></div></div>
+   </div>
+  </section>
+  <section class="c6a-tab" data-booster="pont">
+   <div class="c6a-th"><h3><svg class="c6a-i" style="color:var(--tealt)"><use href="#c6a-sac"/></svg>Vendue CH · FR · DE</h3><div class="c6a-ax"><span>10</span><b class="c6a-r19">19</b><span>30</span></div><div class="c6a-ax"><span>65</span><b>%</b><span>90</span></div></div>
+   <div class="c6a-row c6a-tete"><span class="c6a-nm">SafAle US-05 <span class="c6a-dispo c6a-ch">CH DE</span></span><div class="c6a-tr c6a-t"><i class="c6a-g" style="left:30%;width:30%"></i><i class="c6a-b" style="left:40%;width:40%"></i><i class="c6a-cd"></i></div><div class="c6a-tr c6a-a"><i class="c6a-g" style="left:32%;width:16%"></i><i class="c6a-b" style="left:52%;width:16%"></i></div><div class="c6a-pas"><span class="c6a-p c6a-neu"><i></i><b class="c6a-plus">=</b>esters faibles</span><span class="c6a-chercher"><svg class="c6a-i c6a-s"><use href="#c6a-loupe"/></svg>houblon ?</span></div></div>
+   <div class="c6a-row"><span class="c6a-nm">Verdant IPA <span class="c6a-dispo c6a-ch">CH</span></span><div class="c6a-tr c6a-t"><i class="c6a-g" style="left:30%;width:30%"></i><i class="c6a-b" style="left:40%;width:35%"></i><i class="c6a-cd"></i></div><div class="c6a-tr c6a-a"><i class="c6a-g" style="left:32%;width:16%"></i><i class="c6a-b" style="left:40%;width:28%"></i></div><div class="c6a-pas"><span class="c6a-p c6a-fru"><i></i><b class="c6a-plus">+</b>abricot</span><span class="c6a-p c6a-hop"><i></i>thiols forts</span></div></div>
+   <div class="c6a-row"><span class="c6a-nm">Pomona <span class="c6a-dispo c6a-ch">FR</span></span><div class="c6a-tr c6a-t"><i class="c6a-g" style="left:30%;width:30%"></i><i class="c6a-b" style="left:40%;width:20%"></i><i class="c6a-cd"></i></div><div class="c6a-tr c6a-a"><i class="c6a-g" style="left:32%;width:16%"></i><i class="c6a-b" style="left:40%;width:36%"></i></div><div class="c6a-pas"><span class="c6a-p c6a-fru"><i></i><b class="c6a-plus">+</b>pêche</span><span class="c6a-p c6a-hop"><i></i>terpènes forts</span></div></div>
+   <div class="c6a-row"><span class="c6a-nm">NovaLager <span class="c6a-dispo c6a-ch">CH</span></span><div class="c6a-tr c6a-t"><i class="c6a-g" style="left:30%;width:30%"></i><i class="c6a-b" style="left:0;width:50%"></i><i class="c6a-cd"></i></div><div class="c6a-tr c6a-a"><i class="c6a-g" style="left:32%;width:16%"></i><i class="c6a-b" style="left:52%;width:24%"></i></div><div class="c6a-pas"><span class="c6a-p c6a-epi"><i></i>épicé : non</span><span class="c6a-p c6a-neu"><i></i>lager</span></div></div>
+   <div class="c6a-sous"><span>Wyeast 1084 · 1007</span><span>›</span></div>
+   <div class="c6a-th" style="margin-top:6px"><h3 class="c6a-eu"><svg class="c6a-i"><use href="#c6a-usine"/></svg>Fabricant européen</h3></div>
+   <div class="c6a-row"><span class="c6a-nm">Nottingham <small>Lallemand</small></span><div class="c6a-tr c6a-t"><i class="c6a-g" style="left:30%;width:30%"></i><i class="c6a-b" style="left:0;width:75%"></i><i class="c6a-cd"></i></div><div class="c6a-tr c6a-a"><i class="c6a-g" style="left:32%;width:16%"></i><i class="c6a-b" style="left:52%;width:24%"></i></div><div class="c6a-pas"><span class="c6a-p c6a-neu"><i></i>neutre à peu fruité</span></div></div>
+   <div class="c6a-row"><span class="c6a-nm">BRY-97 <small>Lallemand</small></span><div class="c6a-tr c6a-t"><i class="c6a-g" style="left:30%;width:30%"></i><i class="c6a-b" style="left:25%;width:35%"></i><i class="c6a-cd"></i></div><div class="c6a-tr c6a-a"><i class="c6a-g" style="left:32%;width:16%"></i><i class="c6a-b" style="left:52%;width:24%"></i></div><div class="c6a-pas"><span class="c6a-p c6a-nd"><i></i>arômes ?</span></div></div>
+  </section>
+ </div>
+ <nav class="c6a-pied" data-commun="pied"><span class="c6a-ret">Retour</span><span class="c6a-suiv">Suivant — Paliers</span></nav>
+ <span class="c6a-fab" data-commun="lanceur"><svg class="c6a-i"><use href="#c6a-plus"/></svg></span>
+</div>
+</figure>
+
+<!-- ===================== CADRE 2 : le tiroir à sections repliables ===================== -->
+<figure class="c6a-fig">
+<figcaption class="c6a-cap">2 · Tiroir : 11 sections en lignes de 30 px (valeur, ⌕ non documentées), Tolérance ouverte (repère, bascule éteinte) ; « Plus de filtres » et « Trier » au bas</figcaption>
+<div class="c6a-f" data-cadre="tiroir">
+ <header class="c6a-hd"><div class="c6a-tb"><span class="c6a-ic"><svg class="c6a-i"><use href="#c6a-back"/></svg></span><p class="c6a-tt"><b>Levure</b><span>4/7</span></p><span class="c6a-ic"><svg class="c6a-i"><use href="#c6a-imp"/></svg></span><span class="c6a-ic"><svg class="c6a-i"><use href="#c6a-lune"/></svg></span></div>
+ <nav class="c6a-rail"><span class="c6a-fait">Identité<i></i></span><span class="c6a-fait">Malts/sucres<i></i></span><span class="c6a-fait">Houblons<i></i></span><span class="c6a-ici">Levure<i></i></span><span>Paliers<i></i></span><span>Eau<i></i></span><span>Récap.<i></i></span></nav></header>
+ <div class="c6a-bd" data-commun="bandeau"><span>Grain <b>8,0 kg</b></span><span>OG <b>1,066</b></span><span>IBU <b>45</b><i class="c6a-pst"><u></u><em></em></i></span><span>EBC <i class="c6a-sw"></i><b>12</b></span></div>
+ <div class="c6a-c">
+  <div class="c6a-champ"><svg class="c6a-i"><use href="#c6a-loupe"/></svg><span class="c6a-ph">Nom, fabricant ou code</span><span class="c6a-m" style="font-size:12px;color:var(--t2)">1 733</span></div>
+  <section class="c6a-ti" data-booster="tiroir-sections">
+   <div class="c6a-sec" data-filtre="boisson"><b>Boisson</b><span class="c6a-val">bière</span><span class="c6a-m" style="font-size:12px;color:var(--t2)">vin 330 · autres 64</span><svg class="c6a-i"><use href="#c6a-chv"/></svg></div>
+   <div class="c6a-sec" data-filtre="famille" data-booster="famille"><b>Famille</b><span>ale US 403 · blé 198 · lager 179 · Brett 132…</span><span class="c6a-m" style="font-size:12px;color:var(--t2)">estimé</span><svg class="c6a-i"><use href="#c6a-chv"/></svg></div>
+   <div class="c6a-sec" data-filtre="style"><b>Style</b><span>233 documentées</span><span class="c6a-nd"><svg class="c6a-i"><use href="#c6a-loupe"/></svg>1 106</span><svg class="c6a-i"><use href="#c6a-chv"/></svg></div>
+   <div class="c6a-sec" data-filtre="temperature"><b>°C</b><span class="c6a-vrep">repère 19 · ta conduite</span><span class="c6a-nd"><svg class="c6a-i"><use href="#c6a-loupe"/></svg>620</span><svg class="c6a-i"><use href="#c6a-chv"/></svg></div>
+   <div class="c6a-sec" data-filtre="attenuation"><b>Atténuation</b><span>toutes</span><span class="c6a-nd"><svg class="c6a-i"><use href="#c6a-loupe"/></svg>449</span><svg class="c6a-i"><use href="#c6a-chv"/></svg></div>
+   <div class="c6a-sec c6a-ouv" data-filtre="tolerance"><b>Tolérance alcool</b><span class="c6a-vrep">repère ≈ 7 % · ta bière</span><span class="c6a-nd"><svg class="c6a-i"><use href="#c6a-loupe"/></svg>669</span><svg class="c6a-i"><use href="#c6a-chv"/></svg></div>
+   <div class="c6a-corps" data-booster="tolerance-histogramme" style="padding-top:16px">
+    <div class="c6a-hist"><span style="height:6%"><small>4</small></span><span style="height:22%"><small>57</small></span><span style="height:76%"><small>263</small></span><span style="height:100%"><small>346</small></span><i class="c6a-repl"><i>≈ 7</i></i></div>
+    <div class="c6a-hax"><span>&lt; 8 %</span><span>8–10</span><span>10–12</span><span>≥ 12</span></div>
+    <div class="c6a-bas"><span>US-05 · fiche <b class="c6a-m" style="color:var(--t0)">9–11 %</b></span><span class="c6a-tog"></span><span>ne garder que ≥ 7 %</span></div>
+   </div>
+   <div class="c6a-sec" data-filtre="effets"><b>Effets</b><span>esters · phénols · thiols · terpènes</span><span></span><svg class="c6a-i"><use href="#c6a-chv"/></svg></div>
+   <div class="c6a-sec" data-filtre="floculation"><b>Floculation</b><span>toutes</span><span class="c6a-nd"><svg class="c6a-i"><use href="#c6a-loupe"/></svg>443</span><svg class="c6a-i"><use href="#c6a-chv"/></svg></div>
+   <div class="c6a-sec" data-filtre="forme"><b>Forme</b><span>sèche 106 · liquide 76</span><span class="c6a-nd"><svg class="c6a-i"><use href="#c6a-loupe"/></svg>1 157</span><svg class="c6a-i"><use href="#c6a-chv"/></svg></div>
+   <div class="c6a-sec" data-filtre="disponibilite"><b>Disponibilité</b><span>CH·FR·DE 6 · Europe 412</span><span></span><svg class="c6a-i"><use href="#c6a-chv"/></svg></div>
+   <div class="c6a-sec" data-filtre="en-stock"><b>En stock</b><span>j'en ai</span><span class="c6a-m" style="font-size:12px">1</span><svg class="c6a-i"><use href="#c6a-chv"/></svg></div>
+   <div class="c6a-plusf" data-booster="plus-de-filtres">Plus de filtres <small>7</small></div>
+   <div class="c6a-chs" style="padding-bottom:6px"><span class="c6a-cp" data-filtre="sans-sta1">Sans STA1 <small>437</small></span><span class="c6a-cp" data-filtre="labo">Labo <small>20</small></span><span class="c6a-cp" data-filtre="vitesse">Vitesse <small>154</small></span><span class="c6a-cp c6a-moins" data-filtre="rondeur">Rondeur <small>4</small></span><span class="c6a-cp c6a-moins" data-filtre="soufre">Soufre <small>2</small></span><span class="c6a-cp c6a-moins" data-filtre="nutriments">Nutriments <small>2</small></span><span class="c6a-cp" data-filtre="sans-alcool">Sans alcool <small>17</small></span></div>
+   <div class="c6a-plusf" data-booster="trier"><svg class="c6a-i c6a-s"><use href="#c6a-tri"/></svg>Trier<div class="c6a-seg" style="margin-left:auto;font-weight:400"><span class="c6a-on">proche</span><span>prix</span><span>atténuation</span><span>°C</span><span>tolérance</span></div></div>
+   <div class="c6a-voir"><span style="font-size:13px;color:var(--t2)">Effacer</span><span class="c6a-prim">Voir <span class="c6a-m">1 339</span></span></div>
+  </section>
+ </div>
+ <nav class="c6a-pied" data-commun="pied"><span class="c6a-ret">Retour</span><span class="c6a-suiv">Suivant — Paliers</span></nav>
+ <span class="c6a-fab" data-commun="lanceur"><svg class="c6a-i"><use href="#c6a-plus"/></svg></span>
+</div>
+</figure>
+
+<!-- ===================== CADRE 3 : trois filtres posés ===================== -->
+<figure class="c6a-fig">
+<figcaption class="c6a-cap">3 · ale US · couvre 18–20 °C · sans STA1 : 120 déclarées, aucune vendue ici ; les 5 vendues ici, une ligne pâle chacune « ⌕ STA1 ? »</figcaption>
+<div class="c6a-f" data-cadre="trois-filtres">
+ <header class="c6a-hd"><div class="c6a-tb"><span class="c6a-ic"><svg class="c6a-i"><use href="#c6a-back"/></svg></span><p class="c6a-tt"><b>Levure</b><span>4/7</span></p><span class="c6a-ic"><svg class="c6a-i"><use href="#c6a-imp"/></svg></span><span class="c6a-ic"><svg class="c6a-i"><use href="#c6a-lune"/></svg></span></div>
+ <nav class="c6a-rail"><span class="c6a-fait">Identité<i></i></span><span class="c6a-fait">Malts/sucres<i></i></span><span class="c6a-fait">Houblons<i></i></span><span class="c6a-ici">Levure<i></i></span><span>Paliers<i></i></span><span>Eau<i></i></span><span>Récap.<i></i></span></nav></header>
+ <div class="c6a-bd" data-commun="bandeau"><span>Grain <b>8,0 kg</b></span><span>OG <b>1,066</b></span><span>IBU <b>45</b><i class="c6a-pst"><u></u><em></em></i></span><span>EBC <i class="c6a-sw"></i><b>12</b></span></div>
+ <div class="c6a-c">
+  <div class="c6a-champ"><svg class="c6a-i"><use href="#c6a-loupe"/></svg><span class="c6a-ph">Nom, fabricant ou code</span></div>
+  <div class="c6a-rang"><span class="c6a-fi">Filtres <b>3</b><svg class="c6a-i"><use href="#c6a-chv"/></svg></span><span class="c6a-fi c6a-on">ale US<svg class="c6a-i"><use href="#c6a-x"/></svg></span><span class="c6a-fi c6a-on"><b>18–20 °C</b><svg class="c6a-i"><use href="#c6a-x"/></svg></span><span class="c6a-fi c6a-on">sans STA1<svg class="c6a-i"><use href="#c6a-x"/></svg></span></div>
+  <div class="c6a-cpt" data-booster="compte-rayons"><b>120</b><div class="c6a-rep"><span class="c6a-r1" style="flex:0 0 28px">0</span><span class="c6a-r2" style="flex:0 0 28px">1</span><span class="c6a-r3" style="flex:1">119</span></div></div>
+  <div class="c6a-verif" data-booster="chercher-ia"><svg class="c6a-i c6a-s"><use href="#c6a-loupe"/></svg><span>STA1 non documentée <b>143</b> · dont <b>5</b> vendues ici</span><span>chercher</span></div>
+  <section class="c6a-tab">
+   <div class="c6a-th"><h3><svg class="c6a-i" style="color:var(--tealt)"><use href="#c6a-sac"/></svg>Vendue CH · FR · DE · à vérifier</h3><div class="c6a-ax"><span>10</span><b class="c6a-r19">19</b><span>30</span></div><div class="c6a-ax"><span>65</span><b>%</b><span>90</span></div></div>
+   <div class="c6a-row c6a-une"><span class="c6a-nm"><span class="c6a-pal">US-05 <span class="c6a-dispo c6a-ch">CH DE</span></span><span class="c6a-chercher"><svg class="c6a-i c6a-s"><use href="#c6a-loupe"/></svg>STA1 ?</span></span><div class="c6a-tr c6a-t"><i class="c6a-g" style="left:40%;width:10%"></i><i class="c6a-b" style="left:40%;width:40%"></i></div><div class="c6a-tr c6a-a"><i class="c6a-b" style="left:52%;width:16%"></i></div></div>
+   <div class="c6a-row c6a-une"><span class="c6a-nm"><span class="c6a-pal">Verdant IPA <span class="c6a-dispo c6a-ch">CH</span></span><span class="c6a-chercher"><svg class="c6a-i c6a-s"><use href="#c6a-loupe"/></svg>STA1 ?</span></span><div class="c6a-tr c6a-t"><i class="c6a-g" style="left:40%;width:10%"></i><i class="c6a-b" style="left:40%;width:35%"></i></div><div class="c6a-tr c6a-a"><i class="c6a-b" style="left:40%;width:28%"></i></div></div>
+   <div class="c6a-row c6a-une"><span class="c6a-nm"><span class="c6a-pal">Pomona <span class="c6a-dispo c6a-ch">FR</span></span><span class="c6a-chercher"><svg class="c6a-i c6a-s"><use href="#c6a-loupe"/></svg>STA1 ?</span></span><div class="c6a-tr c6a-t"><i class="c6a-g" style="left:40%;width:10%"></i><i class="c6a-b" style="left:40%;width:20%"></i></div><div class="c6a-tr c6a-a"><i class="c6a-b" style="left:40%;width:36%"></i></div></div>
+   <div class="c6a-row c6a-une"><span class="c6a-nm"><span class="c6a-pal">1084 <span class="c6a-dispo c6a-ch">CH</span></span><span class="c6a-chercher"><svg class="c6a-i c6a-s"><use href="#c6a-loupe"/></svg>STA1 ?</span></span><div class="c6a-tr c6a-t"><i class="c6a-g" style="left:40%;width:10%"></i><i class="c6a-b" style="left:35%;width:25%"></i></div><div class="c6a-tr c6a-a"><i class="c6a-b" style="left:24%;width:16%"></i></div></div>
+   <div class="c6a-row c6a-une"><span class="c6a-nm"><span class="c6a-pal">1007 <span class="c6a-dispo c6a-epu">épuisée</span></span><span class="c6a-chercher"><svg class="c6a-i c6a-s"><use href="#c6a-loupe"/></svg>STA1 ?</span></span><div class="c6a-tr c6a-t"><i class="c6a-g" style="left:40%;width:10%"></i><i class="c6a-b" style="left:15%;width:35%"></i></div><div class="c6a-tr c6a-a"><i class="c6a-b" style="left:32%;width:16%"></i></div></div>
+   <div class="c6a-th" style="margin-top:6px"><h3 class="c6a-eu"><svg class="c6a-i"><use href="#c6a-usine"/></svg>Fabricant européen · <span class="c6a-m">1</span></h3></div>
+   <div class="c6a-row"><span class="c6a-nm">BRY-97 <small>Lallemand</small></span><div class="c6a-tr c6a-t"><i class="c6a-g" style="left:40%;width:10%"></i><i class="c6a-b" style="left:25%;width:35%"></i></div><div class="c6a-tr c6a-a"><i class="c6a-b" style="left:52%;width:24%"></i></div><div class="c6a-pas"><span class="c6a-p c6a-ok"><i></i>STA1 − · fiche</span><span class="c6a-p c6a-nd"><i></i>arômes ?</span></div></div>
+   <div class="c6a-th" style="margin-top:6px"><h3 class="c6a-rare"><svg class="c6a-i"><use href="#c6a-globe"/></svg>Rare en Europe · <span class="c6a-m">119</span></h3></div>
+   <div class="c6a-row"><span class="c6a-nm">WLP001 <small>White Labs</small></span><div class="c6a-tr c6a-t"><i class="c6a-g" style="left:40%;width:10%"></i><i class="c6a-b" style="left:40%;width:25%"></i></div><div class="c6a-tr c6a-a"><i class="c6a-b" style="left:32%;width:48%"></i></div><div class="c6a-pas"><span class="c6a-p c6a-ok"><i></i>STA1 − · fiche</span></div></div>
+   <div class="c6a-sous"><span>+ <b class="c6a-m">118</b> rares · 51 européennes à vérifier</span><span>›</span></div>
+  </section>
+ </div>
+ <nav class="c6a-pied" data-commun="pied"><span class="c6a-ret">Retour</span><span class="c6a-suiv">Suivant — Paliers</span></nav>
+ <span class="c6a-fab" data-commun="lanceur"><svg class="c6a-i"><use href="#c6a-plus"/></svg></span>
+</div>
+</figure>
+
+</main>
+</body></html>

@@ -1,0 +1,214 @@
+<!doctype html>
+<html lang="fr" data-theme="clair"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>z4 — Nouvelle dépense · la Section paiement du QR comme règlement (v0 chaude, 01.11)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Source+Sans+3:wght@400;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{--page:#FFFFFF;--panel:#F5F5F5;--haut:#EBEBEB;--bord:#DDDDDD;--bordm:#BFBFBF;--trait:#9E9E9E;--t2:#666666;--t1:#333333;--t0:#111111;
+--att:#9C7020;--attt:#7F5B10;--attf:#FBF6EA;--hop:#567F45;--hopt:#3F6B2E;--hopf:#E3EDDC;--fin:#1F64A3;--finf:#E4EDF7;--malt:#C9933A;--stk:#4C6B2A;--alert:#A8291F;
+--sans:"Source Sans 3",system-ui,sans-serif;--mono:"IBM Plex Mono",ui-monospace,monospace}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{background:var(--page);color:var(--t1);font-family:var(--sans);font-size:14px;line-height:1.3;-webkit-font-smoothing:antialiased}
+button{font:inherit;color:inherit;background:none;border:0;cursor:pointer;border-radius:10px}
+button:active{transform:scale(.97)}
+svg{display:block}
+[hidden]{display:none!important}
+.qrz4-m{font-family:var(--mono);font-variant-numeric:tabular-nums}
+.qrz4-sheet{max-width:480px;margin:0 auto;min-height:100vh;position:relative;overflow-x:hidden}
+.qrz4-hd{position:sticky;top:0;z-index:5;background:var(--page);display:flex;align-items:center;gap:6px;height:40px;padding:0 6px 0 12px;border-bottom:1px solid var(--bord)}
+.qrz4-hd h1{flex:1;font-size:18px;font-weight:600;color:var(--t0)}
+.qrz4-ib{width:28px;height:28px;display:flex;align-items:center;justify-content:center;color:var(--t1)}
+.qrz4-c{padding:8px 10px 60px;display:flex;flex-direction:column;gap:8px}
+.qrz4-just{display:flex;align-items:center;gap:8px;min-height:28px;color:var(--t2);font-size:14px}
+.qrz4-just span{flex:1}
+/* Le bandeau de la base, tel quel. */
+.qrz4-band{background:var(--panel);border:1px solid var(--bord);border-radius:16px;padding:6px 10px;display:flex;flex-direction:column;gap:4px}
+.qrz4-l1{display:flex;align-items:baseline;gap:6px;min-width:0}
+.qrz4-vend{font-size:16px;font-weight:600;color:var(--t0);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.qrz4-date{margin-left:auto;font-family:var(--mono);font-size:14px;color:var(--t1);white-space:nowrap}
+.qrz4-l2{display:flex;align-items:center;gap:6px}
+.qrz4-tot{font-family:var(--mono);font-variant-numeric:tabular-nums;font-size:28px;font-weight:600;color:var(--t0);line-height:32px}
+.qrz4-tot small{font-size:12px;font-weight:400;color:var(--t2);margin-left:3px;font-family:var(--sans)}
+.qrz4-nl{margin-left:auto;height:28px;padding:0 8px;border:1px solid var(--bordm);background:#fff;display:inline-flex;align-items:center;gap:4px;font-size:14px;color:var(--t1);white-space:nowrap}
+.qrz4-nl b{font-family:var(--mono);font-weight:500}
+.qrz4-barre{display:flex;height:10px;border-radius:9px;overflow:hidden;border:1px solid var(--bord)}
+.qrz4-barre i{display:block;height:100%;border-right:1px solid #fff}
+.qrz4-barre i:last-child{border-right:0}
+.qrz4-chips{display:flex;flex-wrap:wrap;gap:6px}
+.qrz4-chip{height:28px;padding:0 8px;border:1px dashed var(--att);background:var(--attf);display:inline-flex;align-items:center;gap:5px;font-size:14px;color:var(--t0);white-space:nowrap}
+.qrz4-chip i{width:18px;height:18px;border-radius:50%;border:1px dashed var(--att);color:var(--attt);font-style:normal;font-family:var(--mono);font-size:12px;display:flex;align-items:center;justify-content:center}
+.qrz4-chip em{font-style:normal;font-family:var(--mono);font-size:12px;color:var(--t1)}
+.qrz4-chip small{font-size:12px;color:var(--attt);border:1px dashed var(--att);border-radius:9px;padding:0 5px;line-height:15px}
+.qrz4-chip.qrz4-fait{border-style:solid;border-color:var(--bord);background:#fff;color:var(--t2);text-decoration:line-through}
+.qrz4-chip.qrz4-fait i{background:var(--hopt);border:0;color:#fff}
+/* Le règlement : la carte de la base, et dedans, la Section paiement du QR-facture, comme sur le bulletin. */
+.qrz4-reg{border:1px solid var(--bord);border-radius:16px;padding:6px 10px;display:flex;flex-direction:column;gap:6px}
+.qrz4-rl{display:flex;align-items:center;gap:6px;font-size:14px;color:var(--t2);white-space:nowrap}
+.qrz4-rl b{font-family:var(--mono);font-weight:500;color:var(--t0)}
+.qrz4-sup{font-size:12px;color:var(--attt);border:1px dashed var(--att);border-radius:9px;padding:0 5px;line-height:15px}
+.qrz4-seg{display:inline-flex;border:1px solid var(--bordm);border-radius:10px;overflow:hidden;height:28px;margin-left:auto}
+.qrz4-seg button{padding:0 7px;font-size:14px;color:var(--t1);border-radius:0;white-space:nowrap}
+.qrz4-seg button[aria-pressed="true"]{background:var(--t0);color:#fff;font-weight:600}
+.qrz4-sp{border:1px solid var(--t0);border-radius:10px;padding:6px 8px;display:grid;grid-template-columns:56px 1fr;column-gap:10px;row-gap:4px;background:#fff;position:relative}
+.qrz4-sp>h2{grid-column:1/3;font-size:12px;font-weight:700;color:var(--t0);text-transform:uppercase;letter-spacing:.04em;display:flex;align-items:center;gap:6px}
+.qrz4-sp>h2 em{font-style:normal;font-weight:400;text-transform:none;letter-spacing:0;color:var(--t2);margin-left:auto}
+.qrz4-qr{grid-row:2/5;width:56px;height:56px}
+.qrz4-sp[data-q="off"] .qrz4-qr{opacity:.3}
+.qrz4-sp[data-q="off"]{border-color:var(--bordm)}
+.qrz4-sp[data-q="wait"] .qrz4-qr{animation:qrz4-pulse 1s ease-in-out infinite}
+@keyframes qrz4-pulse{50%{opacity:.3}}
+.qrz4-f{display:grid;grid-template-columns:1fr auto;align-items:center;column-gap:6px;min-height:22px}
+.qrz4-f span{font-size:12px;font-weight:600;color:var(--t1);grid-column:1/3}
+.qrz4-f b{font-family:var(--mono);font-variant-numeric:tabular-nums;font-weight:500;color:var(--t0);font-size:14px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.qrz4-f b.qrz4-vide{font-family:var(--sans);font-weight:400;color:var(--t2)}
+.qrz4-cp{height:24px;padding:0 8px;border:1px solid var(--bordm);background:#fff;font-size:12px;color:var(--t1)}
+.qrz4-bas{grid-column:1/3;display:flex;flex-wrap:wrap;align-items:center;gap:4px 10px;padding-top:4px;border-top:1px solid var(--bord);font-size:12px;color:var(--t1)}
+.qrz4-bas span{display:inline-flex;align-items:center;gap:4px;white-space:nowrap}
+.qrz4-bas b{font-family:var(--mono);font-variant-numeric:tabular-nums;font-weight:600;color:var(--t0);font-size:14px}
+.qrz4-ok{color:var(--hopt)}.qrz4-ko{color:var(--attt)}
+.qrz4-deux{grid-column:1/3;display:flex;align-items:center;gap:6px;font-size:12px;color:var(--t2)}
+.qrz4-deux button{height:28px;padding:0 8px;border:1.5px solid var(--bordm);background:#fff;font-size:14px;color:var(--t1);white-space:nowrap}
+.qrz4-deux button b{font-family:var(--mono);font-variant-numeric:tabular-nums;font-weight:600;color:var(--t0)}
+.qrz4-deux button[data-src="qr"]{border-color:var(--attt);background:var(--attf)}
+.qrz4-deux button[aria-pressed="true"]{background:var(--t0);border-color:var(--t0);color:#ddd}.qrz4-deux button[aria-pressed="true"] b{color:#fff}
+.qrz4-sk{height:12px;border-radius:6px;background:var(--haut);animation:qrz4-pulse 1s ease-in-out infinite;display:block}
+/* Les lignes de la base. */
+.qrz4-lt{display:flex;align-items:baseline;gap:8px;padding:2px 0 0;border-top:1px solid var(--bord);font-size:14px;color:var(--t2)}
+.qrz4-lt b{color:var(--t1);font-weight:600}
+.qrz4-li{display:grid;grid-template-columns:22px 1fr auto;align-items:center;column-gap:8px;min-height:40px;padding:2px 4px;border-bottom:1px solid var(--bord)}
+.qrz4-li .qrz4-n{font-size:16px;color:var(--t0);display:flex;flex-direction:column}
+.qrz4-li .qrz4-n small{font-family:var(--mono);font-size:12px;color:var(--t2)}
+.qrz4-li .qrz4-a{font-family:var(--mono);font-variant-numeric:tabular-nums;font-size:14px;font-weight:500;color:var(--t0)}
+.qrz4-cube{width:20px;height:20px;color:var(--t1);position:relative}
+.qrz4-cube i{position:absolute;right:-3px;bottom:-3px;width:9px;height:9px;border-radius:50%;background:var(--t0)}
+.qrz4-cube.qrz4-neuf i{background:var(--stk)}
+.qrz4-pied{position:fixed;left:0;right:0;bottom:0;z-index:6;display:flex;align-items:center;gap:8px;padding:8px 10px;background:rgba(255,255,255,.96);border-top:1px solid var(--bord);font-size:14px;color:var(--t2)}
+.qrz4-go{margin-left:auto;height:32px;padding:0 12px;background:var(--t0);color:#fff;font-size:14px;font-weight:600;display:inline-flex;align-items:center;gap:6px}
+@media (min-width:900px){
+  body{background:#E9E9E9}
+  .qrz4-sheet{max-width:1200px;margin:16px auto;background:#fff;border-radius:16px;box-shadow:0 12px 40px -20px rgba(0,0,0,.4);min-height:0;overflow:hidden}
+  .qrz4-c{display:grid;grid-template-columns:400px 1fr;grid-template-rows:auto auto auto auto 1fr;column-gap:16px;padding:10px 16px 56px}
+  .qrz4-c>*{grid-column:1}
+  .qrz4-c>.qrz4-lignes{grid-column:2;grid-row:1/7;align-self:start}
+  .qrz4-pied{position:sticky}
+}
+</style></head>
+<body><div class="qrz4-sheet" id="qrz4-root" data-etat="confirme">
+<header class="qrz4-hd"><h1>Nouvelle dépense</h1>
+  <span class="qrz4-ib" aria-hidden="true"><svg width="18" height="18" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.65"><path d="M5 2.5h7l3 3v12H5z"/><path d="M12 2.5v3h3M7.5 9h5M7.5 12h5"/></svg></span>
+  <button class="qrz4-ib" aria-label="Fermer"><svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M3 3l10 10M13 3L3 13"/></svg></button>
+</header>
+<main class="qrz4-c">
+  <div class="qrz4-just"><svg width="16" height="16" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.9"><path d="M5 2.5h7l3 3v12H5z"/><path d="M12 2.5v3h3"/></svg><span>Voir le justificatif</span><svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M3 5l4 4 4-4"/></svg></div>
+
+  <section class="qrz4-band" data-dp="bandeau">
+    <div class="qrz4-l1"><span class="qrz4-vend">Malterie Fictive SA</span><span class="qrz4-date">12.10.2026</span></div>
+    <div class="qrz4-l2"><span class="qrz4-tot"><span id="qrz4-total">110,40</span><small>CHF</small></span><button class="qrz4-nl" aria-label="Détails de la lecture"><svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="var(--hopt)" stroke-width="1.7"><path d="M2 7l3.5 3.5L12 3"/></svg><b id="qrz4-nbl">7</b>&nbsp;lignes</button></div>
+    <div class="qrz4-barre" aria-label="Les 7 lignes, à la largeur de leur montant" data-booster="barre-lignes"><i style="flex-grow:52.5;background:var(--malt)"></i><i style="flex-grow:18;background:var(--malt)"></i><i style="flex-grow:6.4;background:var(--malt)"></i><i style="flex-grow:9.8;background:var(--hop)"></i><i style="flex-grow:9.2;background:var(--fin)"></i><i style="flex-grow:3.75;background:var(--bordm)"></i><i style="flex-grow:10.75;background:var(--bordm)"></i></div>
+  </section>
+
+  <div class="qrz4-chips" data-dp="chips">
+    <button class="qrz4-chip" data-chip="qr" data-booster="chip-qr" hidden><i>1</i>Montant <em>QR 110,40</em></button>
+    <button class="qrz4-chip" data-chip="paye"><i data-n="1">1</i>Payé <em>12.10</em><small>supposée</small></button>
+    <button class="qrz4-chip"><i data-n="2">2</i>mouture <em>×1 +3,75</em></button>
+  </div>
+
+  <!-- Le règlement : avec un QR-facture, la pièce est à payer ; sa Section paiement est là, prête. -->
+  <section class="qrz4-reg" data-dp="reglement">
+    <div class="qrz4-rl" id="qrz4-rl"><span id="qrz4-rlt">À payer</span><span class="qrz4-sup" id="qrz4-rls">30 jours · QR</span><div class="qrz4-seg" data-booster="bascule-reglement"><button aria-pressed="false" data-seg="paye">Déjà payé</button><button aria-pressed="true" data-seg="apayer">À payer</button></div></div>
+    <div class="qrz4-sp" id="qrz4-sp" data-q="ok" data-booster="section-paiement">
+      <h2>Section paiement<em id="qrz4-src">QR-facture</em></h2>
+      <svg class="qrz4-qr" viewBox="0 0 26 26" aria-hidden="true">
+        <g fill="var(--t0)"><rect x="1" y="1" width="7" height="7" rx="1"/><rect x="18" y="1" width="7" height="7" rx="1"/><rect x="1" y="18" width="7" height="7" rx="1"/>
+        <rect x="10" y="1" width="2" height="2"/><rect x="14" y="2" width="2" height="2"/><rect x="11" y="5" width="2" height="2"/><rect x="1" y="10" width="2" height="2"/><rect x="5" y="11" width="2" height="2"/><rect x="2" y="14" width="2" height="2"/><rect x="6" y="15" width="2" height="2"/>
+        <rect x="19" y="10" width="2" height="2"/><rect x="23" y="11" width="2" height="2"/><rect x="20" y="14" width="2" height="2"/><rect x="24" y="15" width="2" height="2"/><rect x="10" y="19" width="2" height="2"/><rect x="14" y="20" width="2" height="2"/><rect x="11" y="23" width="2" height="2"/><rect x="15" y="24" width="2" height="2"/><rect x="19" y="19" width="2" height="2"/><rect x="23" y="20" width="2" height="2"/><rect x="21" y="23" width="2" height="2"/></g>
+        <g fill="#fff"><rect x="3" y="3" width="3" height="3"/><rect x="20" y="3" width="3" height="3"/><rect x="3" y="20" width="3" height="3"/></g>
+        <rect x="9.5" y="9.5" width="7" height="7" fill="var(--t0)"/><path d="M13 11v4M11 13h4" stroke="#fff" stroke-width="1.5"/>
+      </svg>
+      <div class="qrz4-f" id="qrz4-f1"><span>Compte / Payable à</span><b id="qrz4-iban">CH93 0076 2011 6238 5295 7</b><button class="qrz4-cp" data-booster="copier">Copier</button></div>
+      <div class="qrz4-f" id="qrz4-f2"><span>Référence</span><b id="qrz4-ref">21 00000 00003 13947 14300 09017</b><button class="qrz4-cp" data-booster="copier">Copier</button></div>
+      <div class="qrz4-f" id="qrz4-f3"><span>Payable à</span><b id="qrz4-cre" style="font-family:var(--sans);font-weight:600">Malterie Fictive SA</b></div>
+      <div class="qrz4-deux" id="qrz4-deux" data-booster="deux-valeurs" hidden><span>Montant</span><button data-src="lu" aria-pressed="false">lu <b>110,04</b></button><button data-src="qr" data-geste="prendre-qr" aria-pressed="false">QR <b>110,40</b></button></div>
+      <div class="qrz4-bas" id="qrz4-bas"></div>
+    </div>
+  </section>
+
+  <section class="qrz4-lignes" data-mots="lignes">
+    <div class="qrz4-lt"><b>Lignes de la facture</b> · 7</div>
+    <div class="qrz4-li"><span class="qrz4-cube"><svg viewBox="0 0 20 20" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M10 2.5 17 6v8l-7 3.5L3 14V6z"/><path d="M3 6l7 3.5L17 6M10 9.5v8"/></svg><i></i></span><span class="qrz4-n">Maris Otter<small>25 kg</small></span><span class="qrz4-a">52,50</span></div>
+    <div class="qrz4-li"><span class="qrz4-cube"><svg viewBox="0 0 20 20" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M10 2.5 17 6v8l-7 3.5L3 14V6z"/><path d="M3 6l7 3.5L17 6M10 9.5v8"/></svg><i></i></span><span class="qrz4-n">Pilsner Malz<small>10 kg</small></span><span class="qrz4-a">18,00</span></div>
+    <div class="qrz4-li"><span class="qrz4-cube qrz4-neuf"><svg viewBox="0 0 20 20" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M10 2.5 17 6v8l-7 3.5L3 14V6z"/><path d="M3 6l7 3.5L17 6M10 9.5v8"/></svg><i></i></span><span class="qrz4-n">Carafa II<small>2 kg</small></span><span class="qrz4-a">6,40</span></div>
+    <div class="qrz4-li"><span class="qrz4-cube"><svg viewBox="0 0 20 20" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M10 2.5 17 6v8l-7 3.5L3 14V6z"/><path d="M3 6l7 3.5L17 6M10 9.5v8"/></svg><i></i></span><span class="qrz4-n">Citra 12,5 %<small>100 g</small></span><span class="qrz4-a">9,80</span></div>
+    <div class="qrz4-li"><span class="qrz4-cube"><svg viewBox="0 0 20 20" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M10 2.5 17 6v8l-7 3.5L3 14V6z"/><path d="M3 6l7 3.5L17 6M10 9.5v8"/></svg><i></i></span><span class="qrz4-n">Safale US-05<small>2 sachets</small></span><span class="qrz4-a">9,20</span></div>
+    <div class="qrz4-li"><span class="qrz4-cube" style="color:var(--t2)"><svg viewBox="0 0 20 20" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M5 3v8a3 3 0 0 0 3 3h8"/><path d="M13 11l3 3-3 3"/></svg></span><span class="qrz4-n">Mouture<small>25 kg</small></span><span class="qrz4-a">3,75</span></div>
+    <div class="qrz4-li"><span class="qrz4-cube" style="color:var(--t2)"><svg viewBox="0 0 20 20" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M3 6h10l4 4v5H3z"/><path d="M13 6v4h4M6 15v1.5M14 15v1.5"/></svg></span><span class="qrz4-n">Port<small>1 ×</small></span><span class="qrz4-a">10,75</span></div>
+    <div class="qrz4-lt" style="border-top:0"><span>Détail</span><b class="qrz4-m" style="margin-left:auto">110,40 / 110,40</b></div>
+  </section>
+</main>
+<footer class="qrz4-pied"><span>Drive prêt</span><button class="qrz4-go" data-booster="action-unique"><svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M2 7l3.5 3.5L12 3"/></svg>Confirmer</button></footer>
+</div>
+<script>
+(function(){
+  var root=document.getElementById('qrz4-root');
+  var etat=new URLSearchParams(location.search).get('etat')||'confirme';
+  if(['confirme','contredit','partiel','illisible','sans','lecture'].indexOf(etat)<0)etat='confirme';
+  root.setAttribute('data-etat',etat);
+  var sp=document.getElementById('qrz4-sp'),bas=document.getElementById('qrz4-bas'),total=document.getElementById('qrz4-total'),deux=document.getElementById('qrz4-deux');
+  function el(tag,cls,txt){var e=document.createElement(tag);if(cls)e.className=cls;if(txt!=null)e.textContent=txt;return e;}
+  function coche(ok){var s=document.createElementNS('http://www.w3.org/2000/svg','svg');s.setAttribute('viewBox','0 0 14 14');s.setAttribute('width','14');s.setAttribute('height','14');s.setAttribute('fill','none');s.setAttribute('stroke','currentColor');s.setAttribute('stroke-width','1.7');var p=document.createElementNS('http://www.w3.org/2000/svg','path');p.setAttribute('d',ok?'M2 7l3.5 3.5L12 3':'M3 5h8M3 9h8M9 3l-4 8');s.appendChild(p);s.setAttribute('class',ok?'qrz4-ok':'qrz4-ko');return s;}
+  // La ligne du bas de la Section paiement : montant, devise, facture, date, avec leur verdict face à la lecture.
+  function basLigne(items){bas.textContent='';items.forEach(function(it){var s=el('span');if(it[0]!==null)s.appendChild(coche(it[0]));s.appendChild(el(it[2]?'em':'span',null,it[1]));if(it[3]){s.appendChild(el('b',null,it[3]));}bas.appendChild(s);});}
+  var BAS={
+    confirme:[[true,'Montant',0,'110,40 CHF'],[true,'Facture',0,'F-1001'],[true,'Date',0,'12.10.2026']],
+    contredit:[[true,'Facture',0,'F-1001'],[true,'Date',0,'12.10.2026']],
+    partiel:[[null,'Montant non imprimé · lu',0,'110,40'],[true,'Devise',0,'CHF']],
+    illisible:[],
+    sans:[],
+    lecture:[[true,'Montant',0,'110,40 CHF'],[true,'Facture',0,'F-1001'],[null,'lignes en lecture…',0,'']]
+  };
+  function vide(id,txt){var b=document.getElementById(id);b.textContent=txt;b.className='qrz4-vide';var c=b.parentNode.querySelector('.qrz4-cp');if(c)c.hidden=true;}
+  if(etat==='sans'){
+    sp.hidden=true;document.getElementById('qrz4-rlt').textContent='Payé le';var s=document.getElementById('qrz4-rls');s.textContent='supposée';
+    var b=el('b',null,'12.10.2026');document.getElementById('qrz4-rl').insertBefore(b,s);
+    root.querySelector('[data-seg="paye"]').setAttribute('aria-pressed','true');root.querySelector('[data-seg="apayer"]').setAttribute('aria-pressed','false');
+  } else {
+    basLigne(BAS[etat]);
+    if(etat==='contredit'){
+      total.textContent='110,04';sp.setAttribute('data-q','diff');deux.hidden=false;
+      var chipQr=root.querySelector('[data-chip="qr"]');chipQr.hidden=false;
+      Array.prototype.forEach.call(root.querySelectorAll('[data-n]'),function(i){i.textContent=String(Number(i.getAttribute('data-n'))+1);});
+      Array.prototype.forEach.call(deux.querySelectorAll('button'),function(b){b.addEventListener('click',function(){
+        var src=b.getAttribute('data-src');
+        Array.prototype.forEach.call(deux.querySelectorAll('button'),function(o){o.setAttribute('aria-pressed',String(o===b));});
+        total.textContent=src==='qr'?'110,40':'110,04';chipQr.classList.add('qrz4-fait');
+        basLigne([[src==='qr',src==='qr'?'Montant pris':'Montant lu gardé',0,src==='qr'?'110,40 CHF':'110,04 CHF'],[true,'Facture',0,'F-1001'],[true,'Date',0,'12.10.2026']]);
+      });});
+      chipQr.addEventListener('click',function(){deux.scrollIntoView({block:'center'});});
+    }
+    if(etat==='partiel'){document.getElementById('qrz4-src').textContent='QR-facture · bulletin ouvert';}
+    if(etat==='illisible'){
+      sp.setAttribute('data-q','off');document.getElementById('qrz4-src').textContent='QR vu, illisible';
+      vide('qrz4-iban','à saisir, le QR est barré');vide('qrz4-ref','—');vide('qrz4-cre','lu : Malterie Fictive SA');
+      document.getElementById('qrz4-rls').textContent='lu : date supposée';
+    }
+    if(etat==='lecture'){
+      sp.setAttribute('data-q','wait');document.getElementById('qrz4-src').textContent='QR lu en 0,5 s';
+      document.getElementById('qrz4-nbl').textContent='…';root.querySelector('.qrz4-barre').style.visibility='hidden';root.querySelector('.qrz4-chips').hidden=true;
+      Array.prototype.forEach.call(root.querySelectorAll('.qrz4-li'),function(li){var n=li.querySelector('.qrz4-n'),a=li.querySelector('.qrz4-a');n.innerHTML='';a.innerHTML='';var s1=el('span','qrz4-sk');s1.style.width='60%';var s2=el('span','qrz4-sk');s2.style.width='40px';n.appendChild(s1);a.appendChild(s2);});
+      root.querySelector('.qrz4-lt').appendChild(document.createTextNode(' · lecture…'));
+    }
+    // Les chips de la base : sans « Payé supposée » quand le QR dit « à payer » ; illisible : le règlement reste celui de la lecture.
+    if(etat==='illisible'){
+      document.getElementById('qrz4-rlt').textContent='Payé le';var s2=document.getElementById('qrz4-rls');s2.textContent='supposée';
+      document.getElementById('qrz4-rl').insertBefore(el('b',null,'12.10.2026'),s2);
+      root.querySelector('[data-seg="paye"]').setAttribute('aria-pressed','true');root.querySelector('[data-seg="apayer"]').setAttribute('aria-pressed','false');
+    } else root.querySelector('[data-chip="paye"]').hidden=true;
+    var n=0;Array.prototype.forEach.call(root.querySelectorAll('.qrz4-chip'),function(c){if(!c.hidden){n++;c.querySelector('i').textContent=String(n);}});
+  }
+  Array.prototype.forEach.call(root.querySelectorAll('.qrz4-cp'),function(c){c.addEventListener('click',function(){c.textContent='Copié';setTimeout(function(){c.textContent='Copier';},1200);});});
+  Array.prototype.forEach.call(root.querySelectorAll('.qrz4-seg button'),function(b){b.addEventListener('click',function(){Array.prototype.forEach.call(b.parentNode.children,function(o){o.setAttribute('aria-pressed',String(o===b));});
+    if(etat!=='sans'){sp.hidden=b.getAttribute('data-seg')==='paye';document.getElementById('qrz4-rlt').textContent=b.getAttribute('data-seg')==='paye'?'Payé le ?':'À payer';}});});
+})();
+</script>
+</body></html>

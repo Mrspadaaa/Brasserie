@@ -1,0 +1,18 @@
+⎯⎯⎯⎯⎯⎯ Failed Tests 15 ⎯⎯⎯⎯⎯⎯⎯
+ Test Files  1 failed (1)
+      Tests  15 failed | 1 passed (16)
+ FAIL  tests/unit/depense/lecture-d/ecran.test.tsx > E5, E6 : après le provisoire, l’écran arrive et « Confirmer » attend > les lignes sont là, le fil et « Lectur
+ FAIL  tests/unit/depense/lecture-d/ecran.test.tsx > E5, E6 : après le provisoire, l’écran arrive et « Confirmer » attend > les champs restent modifiables pendant l
+ FAIL  tests/unit/depense/lecture-d/ecran.test.tsx > E7 : le final arrive : bouton noir, puce « N corrigées », valeurs bleues, ancienne valeur barrée > le fil part, �
+ FAIL  tests/unit/depense/lecture-d/ecran.test.tsx > E7 : le final arrive : bouton noir, puce « N corrigées », valeurs bleues, ancienne valeur barrée > E8 : une ligne
+ FAIL  tests/unit/depense/lecture-d/ecran.test.tsx > E7 : le final arrive : bouton noir, puce « N corrigées », valeurs bleues, ancienne valeur barrée > une cellule qu
+ FAIL  tests/unit/depense/lecture-d/ecran.test.tsx > E9 et son choix 1 B : une ligne que la 3.8 ajoute > une rangée de plus (id `line-${n+1}`), toute sur le bleu avec �
+ FAIL  tests/unit/depense/lecture-d/ecran.test.tsx > son choix 2 D : une ligne que la 3.8 ne lit plus > barrée, hors des sommes, au bandeau ; « Confirmer » sans tranch
+ FAIL  tests/unit/depense/lecture-d/ecran.test.tsx > son choix 2 D : une ligne que la 3.8 ne lit plus > « Garder » la remet en rangée ordinaire à sa place, dans les s
+ FAIL  tests/unit/depense/lecture-d/ecran.test.tsx > « Tout valider » (sa maquette B, D316) à deux lignes > le bandeau défile (« 1/2 » puis « 2/2 »), « Tout vali
+ FAIL  tests/unit/depense/lecture-d/ecran.test.tsx > « Tout valider » (sa maquette B, D316) à deux lignes > « Tout valider » : toutes les lignes pas retrouvées part
+ FAIL  tests/unit/depense/lecture-d/ecran.test.tsx > le total corrigé (défaut A, D315) > le champ d’en-tête que la 3.8 corrige est sur le bleu, l’ancien total barr
+ FAIL  tests/unit/depense/lecture-d/ecran.test.tsx > E12, E13 : sans 3.8 et 3.8 en échec > E12 : le final arrive avec les valeurs du provisoire et le point « lecture co
+ FAIL  tests/unit/depense/lecture-d/ecran.test.tsx > E14 et la 3.8 qui n’arrive jamais (défaut A, D315) : la fin de partie > le final rend `ok:false` après le morceau
+ FAIL  tests/unit/depense/lecture-d/ecran.test.tsx > E14 et la 3.8 qui n’arrive jamais (défaut A, D315) : la fin de partie > une erreur levée après le morceau ne lai
+ FAIL  tests/unit/depense/lecture-d/ecran.test.tsx > E11 (M6) : la traduction du provisoire qui arrive après la fusion est jetée ; un nom changé est retraduit > le nom

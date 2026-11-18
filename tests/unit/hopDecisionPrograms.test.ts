@@ -218,7 +218,7 @@ describe('Programmes de houblon versionnés', () => {
       addition: addition({ id: `spectrum-${index}`, materialId: candidate.id, grams: 12, use: 'fermentation', contactHours: 48, temperatureC: 20 }) }));
     const proposal = previewHopProgramChanges(base, changes, [s1, s2]);
     expect(proposal.applicability).toBe('unavailable');
-    expect(proposal.conditions.join(' ')).toMatch(/1\.2 g\/L.*maximum documenté/i);
+    expect(proposal.conditions.join(' ')).toMatch(/1,2 g\/L.*maximum documenté/i);
     expect(() => applyHopProgramProposal(base, proposal, [s1, s2], { allowFutureProcurement: true })).toThrow(/plafond fabricant dépassé/i);
 
     const postFermentation = program({ stage: 'fermenting', volumeL: 20, additions: [addition({ id: 'dry-product', materialId: 's1', grams: 30,

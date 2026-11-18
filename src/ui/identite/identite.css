@@ -148,6 +148,7 @@
 .idn-bulle b { font-family: theme('fontFamily.mono'); }
 .idn-bpiste { position: absolute; left: 0; right: 0; top: 6px; height: 28px; border-radius: 10px; background: rgb(var(--cave-950)); border: 1px solid rgb(var(--cave-700)); overflow: hidden; }
 .idn-bpiste i { position: absolute; left: 0; top: 0; bottom: 0; background: linear-gradient(180deg, #5c5c5c, #111); }
+.idn-refus { font-size: 12px; font-weight: 600; color: rgb(var(--alert-texte)); margin-top: 2px; text-align: right; }
 .idn-note { font-size: 12px; color: rgb(var(--cave-texte-400)); margin-top: 2px; }
 
 /* NOLO et tuiles */

@@ -1,0 +1,586 @@
+[
+ {
+  "id": "bord",
+  "tete": [
+   "Nouvelle écriture facture ou à la main",
+   "Courses"
+  ],
+  "partout": [
+   {
+    "t": "Facture",
+    "nom": "Entrer une facture, photo ou PDF"
+   },
+   {
+    "t": "Vente",
+    "nom": "Encaisser une vente"
+   },
+   {
+    "t": "Recette",
+    "nom": "Créer une recette"
+   },
+   {
+    "t": "Brassin",
+    "nom": "Lancer un brassin, sera LOT-001"
+   },
+   {
+    "t": "Compagnon hors connexion",
+    "nom": "Compagnon brasseur, hors connexion · Tableau de bord"
+   }
+  ],
+  "geo": {
+   "haut": 408,
+   "bas": 728,
+   "droite": 378,
+   "larg": 300,
+   "plusHaut": 736,
+   "plusDroite": 378,
+   "fenetre": [
+    390,
+    844
+   ]
+  }
+ },
+ {
+  "id": "finances",
+  "tete": [
+   "Nouvelle écriture facture ou à la main",
+   "Entrer une facture photo ou PDF",
+   "Encaisser une vente"
+  ],
+  "partout": [
+   {
+    "t": "Recette",
+    "nom": "Créer une recette"
+   },
+   {
+    "t": "Brassin",
+    "nom": "Lancer un brassin, sera LOT-001"
+   },
+   {
+    "t": "Compagnon hors connexion",
+    "nom": "Compagnon brasseur, hors connexion · Finances"
+   }
+  ],
+  "geo": {
+   "haut": 404,
+   "bas": 728,
+   "droite": 378,
+   "larg": 300,
+   "plusHaut": 736,
+   "plusDroite": 378,
+   "fenetre": [
+    390,
+    844
+   ]
+  }
+ },
+ {
+  "id": "brassins",
+  "tete": [
+   "Nouveau brassin sera LOT-001",
+   "Courses"
+  ],
+  "partout": [
+   {
+    "t": "Écriture",
+    "nom": "Nouvelle écriture, à la main"
+   },
+   {
+    "t": "Facture",
+    "nom": "Entrer une facture, photo ou PDF"
+   },
+   {
+    "t": "Vente",
+    "nom": "Encaisser une vente"
+   },
+   {
+    "t": "Recette",
+    "nom": "Créer une recette"
+   },
+   {
+    "t": "Compagnon hors connexion",
+    "nom": "Compagnon brasseur, hors connexion · Brassins"
+   }
+  ],
+  "geo": {
+   "haut": 408,
+   "bas": 728,
+   "droite": 378,
+   "larg": 300,
+   "plusHaut": 736,
+   "plusDroite": 378,
+   "fenetre": [
+    390,
+    844
+   ]
+  }
+ },
+ {
+  "id": "recettes",
+  "tete": [
+   "Nouvelle recette",
+   "Lancer un brassin sera LOT-001"
+  ],
+  "partout": [
+   {
+    "t": "Écriture",
+    "nom": "Nouvelle écriture, à la main"
+   },
+   {
+    "t": "Facture",
+    "nom": "Entrer une facture, photo ou PDF"
+   },
+   {
+    "t": "Vente",
+    "nom": "Encaisser une vente"
+   },
+   {
+    "t": "Compagnon hors connexion",
+    "nom": "Compagnon brasseur, hors connexion · Recettes"
+   }
+  ],
+  "geo": {
+   "haut": 458,
+   "bas": 728,
+   "droite": 378,
+   "larg": 300,
+   "plusHaut": 736,
+   "plusDroite": 378,
+   "fenetre": [
+    390,
+    844
+   ]
+  }
+ },
+ {
+  "id": "atelier",
+  "tete": [
+   "Nouvelle idée",
+   "Lancer un brassin sera LOT-001"
+  ],
+  "partout": [
+   {
+    "t": "Écriture",
+    "nom": "Nouvelle écriture, à la main"
+   },
+   {
+    "t": "Facture",
+    "nom": "Entrer une facture, photo ou PDF"
+   },
+   {
+    "t": "Vente",
+    "nom": "Encaisser une vente"
+   },
+   {
+    "t": "Recette",
+    "nom": "Créer une recette"
+   },
+   {
+    "t": "Compagnon hors connexion",
+    "nom": "Compagnon brasseur, hors connexion · Atelier R&D"
+   }
+  ],
+  "geo": {
+   "haut": 408,
+   "bas": 728,
+   "droite": 378,
+   "larg": 300,
+   "plusHaut": 736,
+   "plusDroite": 378,
+   "fenetre": [
+    390,
+    844
+   ]
+  }
+ },
+ {
+  "id": "volumes",
+  "tete": [
+   "Lancer un brassin sera LOT-001",
+   "Courses"
+  ],
+  "partout": [
+   {
+    "t": "Écriture",
+    "nom": "Nouvelle écriture, à la main"
+   },
+   {
+    "t": "Facture",
+    "nom": "Entrer une facture, photo ou PDF"
+   },
+   {
+    "t": "Vente",
+    "nom": "Encaisser une vente"
+   },
+   {
+    "t": "Recette",
+    "nom": "Créer une recette"
+   },
+   {
+    "t": "Compagnon hors connexion",
+    "nom": "Compagnon brasseur, hors connexion · Mise à l’échelle"
+   }
+  ],
+  "geo": {
+   "haut": 416,
+   "bas": 728,
+   "droite": 378,
+   "larg": 300,
+   "plusHaut": 736,
+   "plusDroite": 378,
+   "fenetre": [
+    390,
+    844
+   ]
+  }
+ },
+ {
+  "id": "stock",
+  "tete": [
+   "Nouvel article",
+   "Courses"
+  ],
+  "partout": [
+   {
+    "t": "Écriture",
+    "nom": "Nouvelle écriture, à la main"
+   },
+   {
+    "t": "Facture",
+    "nom": "Entrer une facture, photo ou PDF"
+   },
+   {
+    "t": "Vente",
+    "nom": "Encaisser une vente"
+   },
+   {
+    "t": "Recette",
+    "nom": "Créer une recette"
+   },
+   {
+    "t": "Brassin",
+    "nom": "Lancer un brassin, sera LOT-001"
+   },
+   {
+    "t": "Compagnon hors connexion",
+    "nom": "Compagnon brasseur, hors connexion · Stocks"
+   }
+  ],
+  "geo": {
+   "haut": 408,
+   "bas": 728,
+   "droite": 378,
+   "larg": 300,
+   "plusHaut": 736,
+   "plusDroite": 378,
+   "fenetre": [
+    390,
+    844
+   ]
+  }
+ },
+ {
+  "id": "courses",
+  "tete": [
+   "Copier la liste",
+   "Nouvel article"
+  ],
+  "partout": [
+   {
+    "t": "Écriture",
+    "nom": "Nouvelle écriture, à la main"
+   },
+   {
+    "t": "Facture",
+    "nom": "Entrer une facture, photo ou PDF"
+   },
+   {
+    "t": "Vente",
+    "nom": "Encaisser une vente"
+   },
+   {
+    "t": "Recette",
+    "nom": "Créer une recette"
+   },
+   {
+    "t": "Brassin",
+    "nom": "Lancer un brassin, sera LOT-001"
+   },
+   {
+    "t": "Compagnon hors connexion",
+    "nom": "Compagnon brasseur, hors connexion · Liste de courses"
+   }
+  ],
+  "geo": {
+   "haut": 408,
+   "bas": 728,
+   "droite": 378,
+   "larg": 300,
+   "plusHaut": 736,
+   "plusDroite": 378,
+   "fenetre": [
+    390,
+    844
+   ]
+  }
+ },
+ {
+  "id": "futs",
+  "tete": [
+   "Nouveau fût sera F-001",
+   "Encaisser une vente"
+  ],
+  "partout": [
+   {
+    "t": "Écriture",
+    "nom": "Nouvelle écriture, à la main"
+   },
+   {
+    "t": "Facture",
+    "nom": "Entrer une facture, photo ou PDF"
+   },
+   {
+    "t": "Recette",
+    "nom": "Créer une recette"
+   },
+   {
+    "t": "Brassin",
+    "nom": "Lancer un brassin, sera LOT-001"
+   },
+   {
+    "t": "Compagnon hors connexion",
+    "nom": "Compagnon brasseur, hors connexion · Fûts"
+   }
+  ],
+  "geo": {
+   "haut": 408,
+   "bas": 728,
+   "droite": 378,
+   "larg": 300,
+   "plusHaut": 736,
+   "plusDroite": 378,
+   "fenetre": [
+    390,
+    844
+   ]
+  }
+ },
+ {
+  "id": "materiel",
+  "tete": [
+   "Nouveau matériel"
+  ],
+  "partout": [
+   {
+    "t": "Écriture",
+    "nom": "Nouvelle écriture, à la main"
+   },
+   {
+    "t": "Facture",
+    "nom": "Entrer une facture, photo ou PDF"
+   },
+   {
+    "t": "Vente",
+    "nom": "Encaisser une vente"
+   },
+   {
+    "t": "Recette",
+    "nom": "Créer une recette"
+   },
+   {
+    "t": "Brassin",
+    "nom": "Lancer un brassin, sera LOT-001"
+   },
+   {
+    "t": "Compagnon hors connexion",
+    "nom": "Compagnon brasseur, hors connexion · Matériel"
+   }
+  ],
+  "geo": {
+   "haut": 462,
+   "bas": 728,
+   "droite": 378,
+   "larg": 300,
+   "plusHaut": 736,
+   "plusDroite": 378,
+   "fenetre": [
+    390,
+    844
+   ]
+  }
+ },
+ {
+  "id": "houblons",
+  "tete": [
+   "Nouvelle variété",
+   "Courses"
+  ],
+  "partout": [
+   {
+    "t": "Écriture",
+    "nom": "Nouvelle écriture, à la main"
+   },
+   {
+    "t": "Facture",
+    "nom": "Entrer une facture, photo ou PDF"
+   },
+   {
+    "t": "Vente",
+    "nom": "Encaisser une vente"
+   },
+   {
+    "t": "Recette",
+    "nom": "Créer une recette"
+   },
+   {
+    "t": "Brassin",
+    "nom": "Lancer un brassin, sera LOT-001"
+   },
+   {
+    "t": "Compagnon hors connexion",
+    "nom": "Compagnon brasseur, hors connexion · Index houblon"
+   }
+  ],
+  "geo": {
+   "haut": 408,
+   "bas": 728,
+   "droite": 378,
+   "larg": 300,
+   "plusHaut": 736,
+   "plusDroite": 378,
+   "fenetre": [
+    390,
+    844
+   ]
+  }
+ },
+ {
+  "id": "clients",
+  "tete": [
+   "Nouveau client",
+   "Encaisser une vente",
+   "Nouveau tarif"
+  ],
+  "partout": [
+   {
+    "t": "Écriture",
+    "nom": "Nouvelle écriture, à la main"
+   },
+   {
+    "t": "Facture",
+    "nom": "Entrer une facture, photo ou PDF"
+   },
+   {
+    "t": "Recette",
+    "nom": "Créer une recette"
+   },
+   {
+    "t": "Brassin",
+    "nom": "Lancer un brassin, sera LOT-001"
+   },
+   {
+    "t": "Compagnon hors connexion",
+    "nom": "Compagnon brasseur, hors connexion · Clients"
+   }
+  ],
+  "geo": {
+   "haut": 354,
+   "bas": 728,
+   "droite": 378,
+   "larg": 300,
+   "plusHaut": 736,
+   "plusDroite": 378,
+   "fenetre": [
+    390,
+    844
+   ]
+  }
+ },
+ {
+  "id": "impot",
+  "tete": [],
+  "partout": [
+   {
+    "t": "Écriture",
+    "nom": "Nouvelle écriture, à la main"
+   },
+   {
+    "t": "Facture",
+    "nom": "Entrer une facture, photo ou PDF"
+   },
+   {
+    "t": "Vente",
+    "nom": "Encaisser une vente"
+   },
+   {
+    "t": "Recette",
+    "nom": "Créer une recette"
+   },
+   {
+    "t": "Brassin",
+    "nom": "Lancer un brassin, sera LOT-001"
+   },
+   {
+    "t": "Compagnon hors connexion",
+    "nom": "Compagnon brasseur, hors connexion · Déclaration de bière"
+   }
+  ],
+  "geo": {
+   "haut": 524,
+   "bas": 728,
+   "droite": 378,
+   "larg": 300,
+   "plusHaut": 736,
+   "plusDroite": 378,
+   "fenetre": [
+    390,
+    844
+   ]
+  }
+ },
+ {
+  "id": "tarifs",
+  "tete": [
+   "Nouveau tarif",
+   "Nouveau client"
+  ],
+  "partout": [
+   {
+    "t": "Écriture",
+    "nom": "Nouvelle écriture, à la main"
+   },
+   {
+    "t": "Facture",
+    "nom": "Entrer une facture, photo ou PDF"
+   },
+   {
+    "t": "Vente",
+    "nom": "Encaisser une vente"
+   },
+   {
+    "t": "Recette",
+    "nom": "Créer une recette"
+   },
+   {
+    "t": "Brassin",
+    "nom": "Lancer un brassin, sera LOT-001"
+   },
+   {
+    "t": "Compagnon hors connexion",
+    "nom": "Compagnon brasseur, hors connexion · Tarifs"
+   }
+  ],
+  "geo": {
+   "haut": 408,
+   "bas": 728,
+   "droite": 378,
+   "larg": 300,
+   "plusHaut": 736,
+   "plusDroite": 378,
+   "fenetre": [
+    390,
+    844
+   ]
+  }
+ }
+]

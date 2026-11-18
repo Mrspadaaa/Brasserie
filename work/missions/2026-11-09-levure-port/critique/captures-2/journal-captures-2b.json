@@ -1,0 +1,73 @@
+{
+  "base": "http://127.0.0.1:5660",
+  "erreurs": [
+    "console: Failed to load resource: net::ERR_FAILED",
+    "console: Failed to load resource: net::ERR_FAILED"
+  ],
+  "bloques": [
+    "http://127.0.0.1:5001 (refusé après 4 s)",
+    "http://127.0.0.1:5001 (refusé après 4 s)"
+  ],
+  "captures": [
+    "l6-loupe-390-clair",
+    "l6b-loupe-issue-390-clair",
+    "m2-trois-colonnes-390-clair",
+    "m2-croix-390-clair",
+    "m2c-bas-390-clair",
+    "m3-loupe-390-clair",
+    "m3b-loupe-issue-390-clair"
+  ],
+  "notes": {
+    "l6-390-clair": {
+      "ok": true,
+      "enVol": "recherche…",
+      "issue": [
+        "Service IA momentanément indisponible.OK"
+      ],
+      "vue": "ma-levure",
+      "replisOuverts": 0
+    },
+    "m2-390-clair": {
+      "ok": true,
+      "lignes": [
+        "US-05réf.FermentisCH DEVerdant IPALallemandCH1056WyeastEurope",
+        "Estersbanane · fruitesters faiblesFermentis · fichetropical · abricotLallemand Brewing · TDSneutreWyeast · fiche",
+        "Phénolsclou · épicénon déclarésphénols faiblesLallemand Brewing · TDSnon déclarés",
+        "Houblonthiols · terpènesnon documentéβ-lyase · thiolsLallemand Brewing · tableauterpènes moyensLallemand Brewing · tableaunon documenté",
+        "Sucres rest.0–25 g/L · fab.11 g/Lchercherchercher",
+        "Fiche",
+        "Atténuation70–90 %78–82 %75–82 %73–77 %",
+        "Température5–30 °C18–26 °C18–25 °C16–22 °C",
+        "Floculationcherchermoyennefaible à moyen",
+        "Ma bière 30 L · 1,066",
+        "FG · alcool1,012–1,0156,8–7,2 %1,012–1,0176,6–7,2 %1,015–1,0186,4–6,8 %",
+        "Dose2–3 sachets2–3 sachetsà renseigner",
+        ""
+      ],
+      "basBoutons": [
+        {
+          "l": "Remplacer 1056 American Ale",
+          "bas": 772,
+          "piedHaut": 784,
+          "cache": false
+        },
+        {
+          "l": "Retirer 1056 American Ale",
+          "bas": 772,
+          "piedHaut": 784,
+          "cache": false
+        }
+      ],
+      "colonnes": [
+        "US-05réf.FermentisCH DE",
+        "1056WyeastEurope"
+      ]
+    },
+    "m3-390-clair": {
+      "ok": true,
+      "enVol": "Phénolsclou · épicé recherche… 1/20phénols faiblesLallemand Brewing · TDS",
+      "issue": "Phénolsclou · épicé Service IA momentanément indisponible.OKphénols faiblesLallemand Brewing · TDS",
+      "vue": "comparer"
+    }
+  }
+}

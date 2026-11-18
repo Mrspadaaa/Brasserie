@@ -1,0 +1,614 @@
+[
+  {
+    "etat": "e01",
+    "format": "390",
+    "theme": "clair",
+    "capture": true,
+    "cible": true,
+    "note": "",
+    "erreur": ""
+  },
+  {
+    "etat": "e02",
+    "format": "390",
+    "theme": "clair",
+    "capture": true,
+    "cible": true,
+    "note": "Repli : le banc preview ne monte pas Finances ; même question tapée dans l’accueil recette.",
+    "erreur": ""
+  },
+  {
+    "etat": "e03",
+    "format": "390",
+    "theme": "clair",
+    "capture": true,
+    "cible": true,
+    "note": "",
+    "erreur": ""
+  },
+  {
+    "etat": "e04",
+    "format": "390",
+    "theme": "clair",
+    "capture": true,
+    "cible": true,
+    "note": "",
+    "erreur": ""
+  },
+  {
+    "etat": "e05",
+    "format": "390",
+    "theme": "clair",
+    "capture": true,
+    "cible": true,
+    "note": "",
+    "erreur": ""
+  },
+  {
+    "etat": "e06",
+    "format": "390",
+    "theme": "clair",
+    "capture": true,
+    "cible": true,
+    "note": "",
+    "erreur": ""
+  },
+  {
+    "etat": "e07",
+    "format": "390",
+    "theme": "clair",
+    "capture": true,
+    "cible": true,
+    "note": "",
+    "erreur": ""
+  },
+  {
+    "etat": "e08",
+    "format": "390",
+    "theme": "clair",
+    "capture": true,
+    "cible": true,
+    "note": "",
+    "erreur": ""
+  },
+  {
+    "etat": "e09",
+    "format": "390",
+    "theme": "clair",
+    "capture": true,
+    "cible": true,
+    "note": "",
+    "erreur": ""
+  },
+  {
+    "etat": "e10",
+    "format": "390",
+    "theme": "clair",
+    "capture": true,
+    "cible": true,
+    "note": "",
+    "erreur": ""
+  },
+  {
+    "etat": "e11",
+    "format": "390",
+    "theme": "clair",
+    "capture": true,
+    "cible": true,
+    "note": "",
+    "erreur": ""
+  },
+  {
+    "etat": "e12",
+    "format": "390",
+    "theme": "clair",
+    "capture": true,
+    "cible": true,
+    "note": "",
+    "erreur": ""
+  },
+  {
+    "etat": "e13",
+    "format": "390",
+    "theme": "clair",
+    "capture": true,
+    "cible": true,
+    "note": "",
+    "erreur": ""
+  },
+  {
+    "etat": "e14",
+    "format": "390",
+    "theme": "clair",
+    "capture": true,
+    "cible": true,
+    "note": "",
+    "erreur": ""
+  },
+  {
+    "etat": "e15",
+    "format": "390",
+    "theme": "clair",
+    "capture": true,
+    "cible": true,
+    "note": "Envoi à confirmer affiché hors ligne.",
+    "erreur": ""
+  },
+  {
+    "etat": "e16",
+    "format": "390",
+    "theme": "clair",
+    "capture": true,
+    "cible": true,
+    "note": "",
+    "erreur": ""
+  },
+  {
+    "etat": "e17",
+    "format": "390",
+    "theme": "clair",
+    "capture": true,
+    "cible": true,
+    "note": "",
+    "erreur": ""
+  },
+  {
+    "etat": "e01",
+    "format": "390",
+    "theme": "cave",
+    "capture": true,
+    "cible": true,
+    "note": "",
+    "erreur": ""
+  },
+  {
+    "etat": "e02",
+    "format": "390",
+    "theme": "cave",
+    "capture": true,
+    "cible": true,
+    "note": "Repli : le banc preview ne monte pas Finances ; même question tapée dans l’accueil recette.",
+    "erreur": ""
+  },
+  {
+    "etat": "e03",
+    "format": "390",
+    "theme": "cave",
+    "capture": true,
+    "cible": true,
+    "note": "",
+    "erreur": ""
+  },
+  {
+    "etat": "e04",
+    "format": "390",
+    "theme": "cave",
+    "capture": true,
+    "cible": true,
+    "note": "",
+    "erreur": ""
+  },
+  {
+    "etat": "e05",
+    "format": "390",
+    "theme": "cave",
+    "capture": true,
+    "cible": true,
+    "note": "",
+    "erreur": ""
+  },
+  {
+    "etat": "e06",
+    "format": "390",
+    "theme": "cave",
+    "capture": true,
+    "cible": true,
+    "note": "",
+    "erreur": ""
+  },
+  {
+    "etat": "e07",
+    "format": "390",
+    "theme": "cave",
+    "capture": true,
+    "cible": true,
+    "note": "",
+    "erreur": ""
+  },
+  {
+    "etat": "e08",
+    "format": "390",
+    "theme": "cave",
+    "capture": true,
+    "cible": true,
+    "note": "",
+    "erreur": ""
+  },
+  {
+    "etat": "e09",
+    "format": "390",
+    "theme": "cave",
+    "capture": true,
+    "cible": true,
+    "note": "",
+    "erreur": ""
+  },
+  {
+    "etat": "e10",
+    "format": "390",
+    "theme": "cave",
+    "capture": true,
+    "cible": true,
+    "note": "",
+    "erreur": ""
+  },
+  {
+    "etat": "e11",
+    "format": "390",
+    "theme": "cave",
+    "capture": true,
+    "cible": true,
+    "note": "",
+    "erreur": ""
+  },
+  {
+    "etat": "e12",
+    "format": "390",
+    "theme": "cave",
+    "capture": true,
+    "cible": true,
+    "note": "",
+    "erreur": ""
+  },
+  {
+    "etat": "e13",
+    "format": "390",
+    "theme": "cave",
+    "capture": true,
+    "cible": true,
+    "note": "",
+    "erreur": ""
+  },
+  {
+    "etat": "e14",
+    "format": "390",
+    "theme": "cave",
+    "capture": true,
+    "cible": true,
+    "note": "",
+    "erreur": ""
+  },
+  {
+    "etat": "e15",
+    "format": "390",
+    "theme": "cave",
+    "capture": true,
+    "cible": true,
+    "note": "Envoi à confirmer affiché hors ligne.",
+    "erreur": ""
+  },
+  {
+    "etat": "e16",
+    "format": "390",
+    "theme": "cave",
+    "capture": true,
+    "cible": true,
+    "note": "",
+    "erreur": ""
+  },
+  {
+    "etat": "e17",
+    "format": "390",
+    "theme": "cave",
+    "capture": true,
+    "cible": true,
+    "note": "",
+    "erreur": ""
+  },
+  {
+    "etat": "e01",
+    "format": "1280",
+    "theme": "clair",
+    "capture": true,
+    "cible": true,
+    "note": "",
+    "erreur": ""
+  },
+  {
+    "etat": "e02",
+    "format": "1280",
+    "theme": "clair",
+    "capture": true,
+    "cible": true,
+    "note": "Repli : le banc preview ne monte pas Finances ; même question tapée dans l’accueil recette.",
+    "erreur": ""
+  },
+  {
+    "etat": "e03",
+    "format": "1280",
+    "theme": "clair",
+    "capture": true,
+    "cible": true,
+    "note": "",
+    "erreur": ""
+  },
+  {
+    "etat": "e04",
+    "format": "1280",
+    "theme": "clair",
+    "capture": true,
+    "cible": true,
+    "note": "",
+    "erreur": ""
+  },
+  {
+    "etat": "e05",
+    "format": "1280",
+    "theme": "clair",
+    "capture": true,
+    "cible": true,
+    "note": "",
+    "erreur": ""
+  },
+  {
+    "etat": "e06",
+    "format": "1280",
+    "theme": "clair",
+    "capture": true,
+    "cible": true,
+    "note": "",
+    "erreur": ""
+  },
+  {
+    "etat": "e07",
+    "format": "1280",
+    "theme": "clair",
+    "capture": true,
+    "cible": true,
+    "note": "",
+    "erreur": ""
+  },
+  {
+    "etat": "e08",
+    "format": "1280",
+    "theme": "clair",
+    "capture": true,
+    "cible": true,
+    "note": "",
+    "erreur": ""
+  },
+  {
+    "etat": "e09",
+    "format": "1280",
+    "theme": "clair",
+    "capture": true,
+    "cible": true,
+    "note": "",
+    "erreur": ""
+  },
+  {
+    "etat": "e10",
+    "format": "1280",
+    "theme": "clair",
+    "capture": true,
+    "cible": true,
+    "note": "",
+    "erreur": ""
+  },
+  {
+    "etat": "e11",
+    "format": "1280",
+    "theme": "clair",
+    "capture": true,
+    "cible": true,
+    "note": "",
+    "erreur": ""
+  },
+  {
+    "etat": "e12",
+    "format": "1280",
+    "theme": "clair",
+    "capture": true,
+    "cible": true,
+    "note": "",
+    "erreur": ""
+  },
+  {
+    "etat": "e13",
+    "format": "1280",
+    "theme": "clair",
+    "capture": true,
+    "cible": true,
+    "note": "",
+    "erreur": ""
+  },
+  {
+    "etat": "e14",
+    "format": "1280",
+    "theme": "clair",
+    "capture": true,
+    "cible": true,
+    "note": "",
+    "erreur": ""
+  },
+  {
+    "etat": "e15",
+    "format": "1280",
+    "theme": "clair",
+    "capture": true,
+    "cible": true,
+    "note": "Envoi à confirmer affiché hors ligne.",
+    "erreur": ""
+  },
+  {
+    "etat": "e16",
+    "format": "1280",
+    "theme": "clair",
+    "capture": true,
+    "cible": true,
+    "note": "",
+    "erreur": ""
+  },
+  {
+    "etat": "e17",
+    "format": "1280",
+    "theme": "clair",
+    "capture": true,
+    "cible": true,
+    "note": "",
+    "erreur": ""
+  },
+  {
+    "etat": "e01",
+    "format": "1280",
+    "theme": "cave",
+    "capture": true,
+    "cible": true,
+    "note": "",
+    "erreur": ""
+  },
+  {
+    "etat": "e02",
+    "format": "1280",
+    "theme": "cave",
+    "capture": true,
+    "cible": true,
+    "note": "Repli : le banc preview ne monte pas Finances ; même question tapée dans l’accueil recette.",
+    "erreur": ""
+  },
+  {
+    "etat": "e03",
+    "format": "1280",
+    "theme": "cave",
+    "capture": true,
+    "cible": true,
+    "note": "",
+    "erreur": ""
+  },
+  {
+    "etat": "e04",
+    "format": "1280",
+    "theme": "cave",
+    "capture": true,
+    "cible": true,
+    "note": "",
+    "erreur": ""
+  },
+  {
+    "etat": "e05",
+    "format": "1280",
+    "theme": "cave",
+    "capture": true,
+    "cible": true,
+    "note": "",
+    "erreur": ""
+  },
+  {
+    "etat": "e06",
+    "format": "1280",
+    "theme": "cave",
+    "capture": true,
+    "cible": true,
+    "note": "",
+    "erreur": ""
+  },
+  {
+    "etat": "e07",
+    "format": "1280",
+    "theme": "cave",
+    "capture": true,
+    "cible": true,
+    "note": "",
+    "erreur": ""
+  },
+  {
+    "etat": "e08",
+    "format": "1280",
+    "theme": "cave",
+    "capture": true,
+    "cible": true,
+    "note": "",
+    "erreur": ""
+  },
+  {
+    "etat": "e09",
+    "format": "1280",
+    "theme": "cave",
+    "capture": true,
+    "cible": true,
+    "note": "",
+    "erreur": ""
+  },
+  {
+    "etat": "e10",
+    "format": "1280",
+    "theme": "cave",
+    "capture": true,
+    "cible": true,
+    "note": "",
+    "erreur": ""
+  },
+  {
+    "etat": "e11",
+    "format": "1280",
+    "theme": "cave",
+    "capture": true,
+    "cible": true,
+    "note": "",
+    "erreur": ""
+  },
+  {
+    "etat": "e12",
+    "format": "1280",
+    "theme": "cave",
+    "capture": true,
+    "cible": true,
+    "note": "",
+    "erreur": ""
+  },
+  {
+    "etat": "e13",
+    "format": "1280",
+    "theme": "cave",
+    "capture": true,
+    "cible": true,
+    "note": "",
+    "erreur": ""
+  },
+  {
+    "etat": "e14",
+    "format": "1280",
+    "theme": "cave",
+    "capture": true,
+    "cible": true,
+    "note": "",
+    "erreur": ""
+  },
+  {
+    "etat": "e15",
+    "format": "1280",
+    "theme": "cave",
+    "capture": true,
+    "cible": true,
+    "note": "Envoi à confirmer affiché hors ligne.",
+    "erreur": ""
+  },
+  {
+    "etat": "e16",
+    "format": "1280",
+    "theme": "cave",
+    "capture": true,
+    "cible": true,
+    "note": "",
+    "erreur": ""
+  },
+  {
+    "etat": "e17",
+    "format": "1280",
+    "theme": "cave",
+    "capture": true,
+    "cible": true,
+    "note": "",
+    "erreur": ""
+  }
+]

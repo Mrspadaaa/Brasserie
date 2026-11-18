@@ -114,7 +114,7 @@ const productFacts = (product: YeastProduct) => {
   const known = [
     product.dose ? `dose fabricant ${rangeText(product.dose.range, 0)} g/hL${product.dose.qualifier && !['range', 'point'].includes(product.dose.qualifier) ? ` (${QUALIFIER[product.dose.qualifier]})` : ''}` : '',
     product.cellsPerPack ? `${product.cellsPerPack.kind === 'viable' ? 'cellules viables' : 'cellules totales, non viables garanties'} ${rangeText(product.cellsPerPack.range, 0)} Md/pack` : '',
-    product.directPitch ? `direct ≤ ${fr(product.directPitch.maxVolumeL)} L, SG < ${sgText(product.directPitch.maxSg)}` : '',
+    product.directPitch ? `direct ≤ ${fr(product.directPitch.maxVolumeL)} L, densité < ${sgText(product.directPitch.maxSg)}` : '',
     product.starter ? 'méthode de starter documentée' : '',
   ].filter(Boolean);
   const missing = [product.form === 'sèche' && !product.dose ? 'dose' : '', product.form !== 'sèche' && !product.cellsPerPack ? 'cellules/pack' : '',
@@ -342,20 +342,20 @@ function WortSection({ recipe, onChange, readOnly }: SectionProps) {
     commit({ ...wort, volumeL: value, volumeBasis: value === undefined ? undefined : volumeBasis === 'measured' ? 'measured' : 'hypothesis' });
   };
   const setSg = (value?: number) => {
-    if (value !== undefined && !(value >= 1 && value <= 1.25)) { setMessage(`Densité ${fr(value, 4)} refusée : saisis une SG entre 1,000 et 1,250 (par exemple 1,048).`); return; }
+    if (value !== undefined && !(value >= 1 && value <= 1.25)) { setMessage(`Densité ${fr(value, 4)} refusée : saisis une densité entre 1,000 et 1,250 (par exemple 1,048).`); return; }
     setMessage('');
     commit({ ...wort, sg: value, sgBasis: value === undefined ? undefined : sgBasis === 'measured' ? 'measured' : 'hypothesis' });
   };
   // « Estimé » is reached only through the estimate itself, never by relabelling a typed value.
   const basisOptions = (current?: WortBasis) => [{ value: 'measured' as WortBasis, label: 'Mesuré', disabled: false },
     { value: 'hypothesis' as WortBasis, label: 'Hypothèse', disabled: false }, { value: 'recipe-estimate' as WortBasis, label: 'Estimé', disabled: current !== 'recipe-estimate' }];
-  const basisTag = (basis?: WortBasis) => <span className="yp-basis" data-basis={basis ?? 'unknown'}>{basis ? BASIS[basis] : 'inconnu'}</span>;
+  const basisTag = (basis?: WortBasis) => <span className="yp-basis" data-basis={basis ?? 'unknown'}>{basis ? BASIS[basis] : 'à estimer'}</span>;
   return <section className="yp-section yp-wort" aria-labelledby={`${id}-title`} data-wort-basis={wort?.basis ?? 'none'} data-stale={stale || undefined}>
     <div className="yp-head"><h4 id={`${id}-title`}>Moût à ensemencer</h4>
       {!readOnly && (wort || open) && <button type="button" className="yeast-link" aria-expanded={open} aria-controls={`${id}-editor`} onClick={() => setOpen(value => !value)}>{open ? 'Fermer' : 'Corriger'}</button>}</div>
     <p className="yp-reading">
       <span><span className="yp-num">{wort?.volumeL !== undefined ? `${fr(wort.volumeL)} L` : 'Volume ?'}</span> {basisTag(volumeBasis)}</span>
-      <span><span className="yp-num">{wort?.sg !== undefined ? `SG ${sgText(wort.sg)}` : 'SG ?'}</span> {basisTag(sgBasis)}</span>
+      <span><span className="yp-num">{wort?.sg !== undefined ? `Densité ${sgText(wort.sg)}` : 'Densité ?'}</span> {basisTag(sgBasis)}</span>
       {showStarter && <span className="yeast-small">starter : {STARTER[wort?.starterContribution ?? 'unknown']}</span>}
     </p>
     {!wort && <p className="yeast-small">Volume et densité au moment d’ensemencer : ni la densité initiale finale ni le volume de recette ne les remplacent.</p>}
@@ -375,7 +375,7 @@ function WortSection({ recipe, onChange, readOnly }: SectionProps) {
       </div>
       <div className="yp-field-row">
         <label htmlFor={`${id}-sg`}>Densité</label>
-        <span className="yp-input-unit"><NumberInput id={`${id}-sg`} aria-label="Densité du moût à ensemencer en SG" value={wort?.sg} emptyValue={undefined} onValue={setSg} placeholder="1,0??" /><span>SG</span></span>
+        <span className="yp-input-unit"><NumberInput id={`${id}-sg`} aria-label="Densité du moût à ensemencer" value={wort?.sg} emptyValue={undefined} onValue={setSg} placeholder="1,0??" /></span>
         {wort?.sg !== undefined && sgBasis ? <SegmentedControl label="Nature de la densité" value={sgBasis} options={basisOptions(sgBasis)}
           onChange={basis => { if (basis !== 'recipe-estimate') commit({ ...wort, sgBasis: basis }); }} />
           : <span className="yeast-small">Nature à préciser après saisie</span>}
@@ -412,7 +412,7 @@ function AdviceSection({ recipe, onChange, readOnly, advice, legacyDoseG }: Sect
   const knownTemp = typeof pitchTemp === 'number' && Number.isFinite(pitchTemp);
   const directNotes = direct ? [
     wort?.volumeL !== undefined && wort.volumeL > direct.maxVolumeL ? `${fr(wort.volumeL)} L > ${fr(direct.maxVolumeL)} L` : '',
-    wort?.sg !== undefined && wort.sg >= direct.maxSg ? `SG ${sgText(wort.sg)} ≥ ${sgText(direct.maxSg)}` : '',
+    wort?.sg !== undefined && wort.sg >= direct.maxSg ? `densité ${sgText(wort.sg)} ≥ ${sgText(direct.maxSg)}` : '',
     knownTemp && (pitchTemp! < direct.minTemperatureC || pitchTemp! > direct.maxTemperatureC)
       ? `ensemencement ${fr(pitchTemp!)} °C hors ${fr(direct.minTemperatureC)}–${fr(direct.maxTemperatureC)} °C` : '',
   ].filter(Boolean) : [];
@@ -431,7 +431,7 @@ function AdviceSection({ recipe, onChange, readOnly, advice, legacyDoseG }: Sect
       <span>borne publiée · aucun nombre de {packWord(product, 2)} ni milieu</span></p>}
     {advice.method === 'viable-cells' && advice.range && plan?.rate && wort?.volumeL !== undefined && wort.sg !== undefined && <p className="yp-figure" data-advice-cells>
       <span className="yp-num yp-big">{fr(advice.range.min, 0)} Md</span>
-      <span>cellules viables pour {fr(wort.volumeL)} L à SG {sgText(wort.sg)} · taux {fr(plan.rate.value, 2)} M/mL/°P</span></p>}
+      <span>cellules viables pour {fr(wort.volumeL)} L à la densité {sgText(wort.sg)} · taux {fr(plan.rate.value, 2)} M/mL/°P</span></p>}
     {advice.packs && product && <p className="yp-figure" data-advice-packs>
       <span className="yp-num yp-big">{rangeText(advice.packs, 0)} {packWord(product, advice.packs.max)}</span>
       <span>{product.format ? `de ${product.format.label.toLocaleLowerCase('fr')}` : ''}</span></p>}
@@ -449,7 +449,7 @@ function AdviceSection({ recipe, onChange, readOnly, advice, legacyDoseG }: Sect
     {!product && legacyDoseG && <p className="yp-legacy" data-legacy-dose>Repère de fiche catalogue au volume de recette ({fr(recipe.volumeL)} L) : <span className="yp-num">{rangeText(legacyDoseG, 1)} g</span>.
       Sans produit exact ni moût à ensemencer qualifiés, ce n’est ni un nombre de sachets ni un conseil pour ce moût.</p>}
     {direct && <p className="yp-line" data-direct-pitch data-direct-state={directNotes.length ? 'outside' : directUnknown.length ? 'unknown' : 'inside'}>
-      Ensemencement direct publié : ≤ {fr(direct.maxVolumeL)} L, SG &lt; {sgText(direct.maxSg)}, {fr(direct.minTemperatureC)}–{fr(direct.maxTemperatureC)} °C.
+      Ensemencement direct publié : ≤ {fr(direct.maxVolumeL)} L, densité &lt; {sgText(direct.maxSg)}, {fr(direct.minTemperatureC)}–{fr(direct.maxTemperatureC)} °C.
       {directNotes.length ? <span className="yp-warn"> Ce moût : {directNotes.join(', ')} · davantage de levure ou une préparation selon la notice.</span> : null}
       {directUnknown.length ? <span className={directNotes.length ? 'yeast-small block' : 'yp-warn'}> Applicabilité non établie : {directUnknown.join(', ')} à renseigner.</span> : null}
       {!directNotes.length && !directUnknown.length ? ' Volume, densité et température de ce moût sont dans ces conditions publiées, sans autre garantie.' : null}</p>}
@@ -737,7 +737,7 @@ function PreparationSection({ recipe, onChange, readOnly, starterBase }: Section
       {!readOnly && <> <button type="button" className="yeast-link" aria-expanded={noticeOpen} onClick={() => setNoticeOpen(open => !open)}>Compléter la notice</button></>}</p>
       {noticeEntry}</> : <>
       <div className="yp-protocol">
-        <p className="yp-line"><strong>{protocol.label}</strong> · milieu extrait de malt, SG cible <span className="yp-num">{sgText(protocol.targetSg)}</span></p>
+        <p className="yp-line"><strong>{protocol.label}</strong> · milieu extrait de malt, densité cible <span className="yp-num">{sgText(protocol.targetSg)}</span></p>
         <p className="yp-line" data-lead-meaning={cultureOnly ? 'culture' : 'total'}>{cultureOnly
           ? <>Culture publiée : <span className="yp-num">{rangeText(protocol.leadHours, 0)} h</span> avant l’ensemencement. Activation, ébullition, refroidissement et contrôles s’y ajoutent ; leur durée totale n’est pas publiée, la marge reste à choisir.</>
           : <>Délai total publié : <span className="yp-num">{rangeText(protocol.leadHours, 0)} h</span> avant l’ensemencement.</>}</p>
@@ -842,7 +842,7 @@ export function YeastPitchingPanel({ recipe, onChange, part = 'all', quantityEdi
 
 const wortText = (wort?: YeastPitchingWort) => !wort ? 'non renseigné' : [
   wort.volumeL !== undefined ? `${fr(wort.volumeL)} L ${BASIS[volumeBasisOf(wort)!]}` : 'volume inconnu',
-  wort.sg !== undefined ? `SG ${sgText(wort.sg)} ${BASIS[sgBasisOf(wort)!]}` : 'SG inconnue',
+  wort.sg !== undefined ? `Densité ${sgText(wort.sg)} ${BASIS[sgBasisOf(wort)!]}` : 'Densité inconnue',
   wort.starterContribution ? `starter ${STARTER[wort.starterContribution]}` : '',
   wort.additionTiming && Object.keys(wort.additionTiming).length ? `${Object.keys(wort.additionTiming).length} ajout${Object.keys(wort.additionTiming).length > 1 ? 's' : ''} qualifié${Object.keys(wort.additionTiming).length > 1 ? 's' : ''}` : '',
 ].filter(Boolean).join(' · ');

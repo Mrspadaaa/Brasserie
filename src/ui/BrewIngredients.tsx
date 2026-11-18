@@ -1,6 +1,6 @@
 import { Input } from './Input';
 import { brewNow } from '../services/brewClock';
-import React, { useState } from 'react';
+import React, { useRef, useState } from 'react';
 import {
   ArrowLeftRight,
   Check,
@@ -28,8 +28,12 @@ import { useHoldRepeat } from './numericInput';
 import { BrewChoice } from './BrewChoice';
 import { BrewTag } from './BrewTag';
 import { actualWater } from '../domain/brewAssist';
+import { amountDecimals, roundAmount } from '../../functions/src/brewAmount';
+import { actualQuantityMax, actualQuantityProblem, actualQuantityRounded } from '../domain/brewQuantityBounds';
+import { nombreFr } from '../domain/nombreAffiche';
 
-const f = (n: number) => new Intl.NumberFormat('fr-CH', { maximumFractionDigits: 3 }).format(n);
+/** Une quantité à la résolution de l'instrument (`brewAmount`) : 16,5 L et non 16,494 L (BR-54, BE-35, 08.11). Par défaut des litres. */
+const f = (n: number, unit = 'L') => new Intl.NumberFormat('fr-CH', { maximumFractionDigits: amountDecimals(unit, n) }).format(roundAmount(n, unit));
 
 function localAdditionTime(at?: number) {
   if (at == null || !Number.isFinite(at)) return '';
@@ -60,10 +64,12 @@ function AdditionTime({ name, doneAt, onConfirm }: {
         onChange={(event) => setRaw(event.currentTarget.value)}
       />
     </label>
-    <button type="button" className={brewControl} disabled={!valid || raw === localAdditionTime(doneAt)}
+    {/* VI-8 (rejeu b47cd90b n° 8) : éteint, le bouton était un gris sur gris sans raison lisible ; il dit ce qui manque, et allumé il se lit comme une action. */}
+    <button type="button" className={`${brewControl} brew-consign`} disabled={!valid || raw === localAdditionTime(doneAt)}
       onClick={() => { if (valid && at <= brewNow()) onConfirm(at); }}>
       Consigner à cette heure
     </button>
+    {!raw && <p className="brew-consign-hint">Choisis d’abord la date et l’heure réelles.</p>}
     {!!raw && !valid && <p role="alert" className="basis-full text-xs text-alert-strong">Choisis une date et une heure valides, au plus tard maintenant.</p>}
   </div>;
 }
@@ -116,8 +122,27 @@ function IngredientRow({
   const press = useHoldRepeat(
     controlAmount,
     (amount: number) => patch({ amount }),
-    (v, d) => Math.max(0, Math.min(100000, Math.round((v + d) * 100) / 100))
+    (v, d) => Math.max(0, Math.min(actualQuantityMax(item.planned, item.unit), Math.round((v + d) * 100) / 100))
   );
+  // BR-50, BR-53 (08.11) : une quantité hors bornes (négative, ou 99 999 g) ne s'enregistre pas ET le dit ; avant, « -1 » restait tapé sans un mot.
+  const [quantityProblem, setQuantityProblem] = useState<string | null>(null);
+  // VI-9 (rejeu b47cd90b n° 9) : chaque chiffre tapé s'enregistre au vol (« 9 », « 99 »…). Quand la frappe finit hors bornes (« 99999 »), le message
+  // annonce « la valeur précédente est conservée » : il faut donc revenir à celle d'avant la frappe, pas à l'avant-dernier chiffre. On la note à la
+  // première frappe d'une séance de saisie (jusqu'à la sortie du champ) ; `avant` vaut undefined quand rien n'était consigné pour cet ingrédient.
+  const seance = useRef<{ avant: NonNullable<BrewDayState['additions']>[string] | undefined; valeur: number | undefined } | null>(null);
+  const retablirAvantFrappe = () => {
+    const base = seance.current;
+    if (!base) return;
+    onInteract();
+    update((s) => {
+      const courant = s.additions?.[item.id];
+      if (!courant) return s;
+      const additions = { ...s.additions };
+      if (base.avant) additions[item.id] = { ...courant, amount: base.avant.amount };
+      else delete additions[item.id];
+      return { ...s, additions };
+    });
+  };
   const fermentable =
     item.fermentableIndex != null
       ? effectiveFermentables(recipe, state)[item.fermentableIndex]
@@ -148,16 +173,16 @@ function IngredientRow({
         <div className="brew-ingredient-name">
           <strong>{named}</strong>
           {item.id === 'yeast' && (pitchActualUnknown
-            ? <span>{state.pitchQuantityConfirmation === 'unmeasured' ? 'Réel non mesuré' : state.pitchQuantityConfirmation === 'starter-transferred' ? 'Starter transféré · volume non relevé' : 'Réel non renseigné'} · prévu {item.planned > 0 ? `${f(item.planned)} ${item.unit}` : 'absent'}</span>
+            ? <span>{state.pitchQuantityConfirmation === 'unmeasured' ? 'Réel non mesuré' : state.pitchQuantityConfirmation === 'starter-transferred' ? 'Starter transféré · volume non relevé' : 'Réel non renseigné'} · prévu {item.planned > 0 ? `${f(item.planned, item.unit)} ${item.unit}` : 'absent'}</span>
             : pitchPlannedUnknown
               ? <span>Quantité prévue absente ou nulle · saisis le réel dans le guide Levure</span>
               : null)}
           {changed && (
             <span>
-              Prévu {f(item.planned)} {item.unit}
+              Prévu {f(item.planned, item.unit)} {item.unit}
               <em>
                 Écart {amount > item.planned ? '+' : ''}
-                {f(amount - item.planned)} {item.unit}
+                {f(amount - item.planned, item.unit)} {item.unit}
               </em>
             </span>
           )}
@@ -212,7 +237,7 @@ function IngredientRow({
           disabled={pitchActualUnknown}
           onClick={() => setEditingDose((value) => !value)}
         >
-          <strong id={`brew-dose-value-${item.id}`}>{pitchActualUnknown ? 'Non renseignée' : pitchPlannedUnknown ? 'À préciser' : f(amount ?? 0)}</strong>{' '}
+          <strong id={`brew-dose-value-${item.id}`} data-sans-valeur={pitchActualUnknown || pitchPlannedUnknown ? '' : undefined}>{pitchActualUnknown ? 'Non renseignée' : pitchPlannedUnknown ? 'À préciser' : f(amount ?? 0, item.unit)}</strong>{' '}
           <span id={`brew-dose-unit-${item.id}`}>{pitchActualUnknown || pitchPlannedUnknown && !item.unit ? '' : item.unit}{item.kind === 'water' ? ' à froid' : ''}</span>
         </button>
         <label className="brew-add-check" title="Cocher après l’ajout réel">
@@ -246,14 +271,20 @@ function IngredientRow({
                 −
               </button>
             )}
-            <div className="brew-dose-value">
+            <div className="brew-dose-value" onBlur={() => { seance.current = null; }}>
               <NumberInput
                 value={amount}
-                min={0}
-                max={100000}
                 emptyValue={undefined}
-                onValue={(n) => {
-                  if (Number.isFinite(n) && n >= 0 && n <= 100000) patch({ amount: n });
+                aria-invalid={quantityProblem ? true : undefined}
+                onValue={(saisi) => {
+                  if (saisi === undefined) { setQuantityProblem(null); return; }
+                  // RL-10 : la dose s'arrondit à la précision de l'unité avant tout contrôle (le champ la montre ainsi à la sortie).
+                  const n = actualQuantityRounded(saisi, item.unit);
+                  if (!seance.current) seance.current = { avant: actual, valeur: amount };
+                  const problem = actualQuantityProblem(n, item.planned, item.unit, seance.current.valeur);
+                  setQuantityProblem(problem);
+                  if (problem) retablirAvantFrappe();
+                  else patch({ amount: n });
                 }}
                 aria-label={`Quantité réelle de ${named}${item.side ? ' au ' + item.side : ''}`}
               />
@@ -265,6 +296,7 @@ function IngredientRow({
               </button>
             )}
           </div>
+          {quantityProblem && <p role="alert" className="text-xs text-alert-strong">{quantityProblem}</p>}
           {item.id === 'yeast' && !item.unit && <label className="block space-y-1 text-xs text-cave-400">Unité réelle
             <select aria-label="Unité de la quantité réelle de levure" value={actual?.unit ?? ''} onChange={event => patch({ unit: event.target.value })} className="min-h-touch rounded-control border border-cave-700 bg-cave-900 px-2 text-sm text-cave-50">
               <option value="">À choisir</option>{['g', 'kg', 'mL', 'L', 'sachet', 'flacon', 'paquet'].map(unit => <option key={unit} value={unit}>{unit}</option>)}
@@ -285,7 +317,7 @@ function IngredientRow({
       )}
       {shortage && (
         <p className="brew-stock-hint">
-          Stock indiqué : {f(availableQty!)} {item.unit}
+          Stock indiqué : {f(availableQty!, item.unit)} {item.unit}
         </p>
       )}
       {fermentable?.kind === 'grain' && (
@@ -309,10 +341,10 @@ function IngredientRow({
                     setAlternatives(false);
                   }}
                 >
-                  {c.item.name} · {f(c.kg)} kg
+                  {c.item.name} · {f(c.kg, 'kg')} kg
                   <span className="block text-2xs text-cave-400">
                     {c.exact ? 'Potentiel d’extrait compensé' : 'Poids égal, potentiel à vérifier'}{' '}
-                    · {c.item.colorEbc} EBC · {f(c.availableKg)} kg disponibles
+                    · {nombreFr(c.item.colorEbc, 1)} EBC · {f(c.availableKg, 'kg')} kg disponibles
                   </span>
                 </button>
               ))}
@@ -438,6 +470,14 @@ export function BrewIngredients({
   const shown = items.filter(
     (i) => forStep(i) && (i.planned > 0 || state.additions?.[i.id] || extra.includes(i.id) || i.id === 'yeast' && (overview || area === 'finish' && stepId === 'ensemencement'))
   );
+  const extraSaltOptions = items
+    .filter((i) => (i.kind === 'salt' || i.kind === 'acid') && !shown.some((s) => s.id === i.id))
+    .map((i) => ({
+      value: i.id,
+      label: i.name,
+      group: i.side === 'mash' ? 'Eau d’empâtage' : 'Eau de rinçage',
+      detail: i.side === 'mash' ? 'À l’empâtage' : 'Au rinçage'
+    }));
   const inlineImpact = shown.some(
     (i) => i.id === activeItem && ['salt', 'acid', 'water'].includes(i.kind)
   );
@@ -559,7 +599,7 @@ export function BrewIngredients({
                 <h3>{group.label}</h3>
                 {key === 'sparge' && (
                   <span className="brew-water-temperature">
-                    Consigne {recipe.mash?.spargeTempC ?? 76} °C
+                    Consigne {String(recipe.mash?.spargeTempC ?? 76).replace('.', ',')} °C
                   </span>
                 )}
                 {group.label === 'Premier moût' && <span>{group.hint}</span>}
@@ -596,7 +636,7 @@ export function BrewIngredients({
           </div>
         );
       })}
-      {area === 'preparation' && stepId !== 'concassage' && !overview && (
+      {area === 'preparation' && stepId !== 'concassage' && !overview && (extraSaltOptions.length ? (
         <div className="brew-extra-addition">
           <BrewChoice
             label="Autre sel ou acide à consigner"
@@ -605,19 +645,13 @@ export function BrewIngredients({
             value=""
             searchable
             onChange={(value) => setExtra((v) => [...v, value])}
-            options={items
-              .filter(
-                (i) => (i.kind === 'salt' || i.kind === 'acid') && !shown.some((s) => s.id === i.id)
-              )
-              .map((i) => ({
-                value: i.id,
-                label: i.name,
-                group: i.side === 'mash' ? 'Eau d’empâtage' : 'Eau de rinçage',
-                detail: i.side === 'mash' ? 'À l’empâtage' : 'Au rinçage'
-              }))}
+            options={extraSaltOptions}
           />
         </div>
-      )}
+      ) : (
+        // BR-52, BE-33 (08.11) : sans sel ni acide au plan, le sélecteur s'ouvrait sur « Aucun ingrédient correspondant » : une impasse. On le dit au lieu de l'offrir.
+        <p className="text-sm text-cave-400">Aucun autre sel ni acide à ajouter : le plan d’eau de cette recette n’en prévoit pas.</p>
+      ))}
       {!shown.length && (
         <p className="text-sm text-cave-400 pb-2">Pas d’ingrédient prévu à cette phase.</p>
       )}
@@ -697,7 +731,7 @@ export function BrewMinerals({ recipe, state }: { recipe: RecipeSnapshot; state:
         )}
         {added && extraRO > 0 && result.knownBase && (
           <p className="text-2xs text-cave-200 mt-1">
-            Dilution théorique : au moins +{extraRO} L d’osmosée pour retrouver les repères
+            Dilution théorique : au moins +{nombreFr(extraRO, 1)} L d’osmosée pour retrouver les repères
             indiqués. Cela dilue aussi le moût : vérifie capacité, densité et saveur avant d’agir.
           </p>
         )}

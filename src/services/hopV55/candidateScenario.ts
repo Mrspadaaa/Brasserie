@@ -22,6 +22,7 @@ import {
   type HopV55FullRecipeCopyPlan,
   type HopV55FullRecipeCopyOriginAnnex,
 } from './fullRecipeCopy';
+import { nombreFr } from '../../domain/nombreAffiche';
 
 export interface HopV55FullRecipeCopyRecomputeIdentity {
   scenarioId: string;
@@ -343,7 +344,7 @@ export function prepareHopV55FullRecipeCopyRecompute(input: {
     if (stageError) return { status: 'blocked', reason: stageError };
     if (input.plan.yeast && input.plan.yeast.pitchTemperatureC === undefined
       && input.candidate.yeast.pitchTempC === undefined && previousResultBranch.input.pitchTempC !== undefined) {
-      return { status: 'blocked', reason: `La cible d’ensemencement du scénario (${previousResultBranch.input.pitchTempC} °C) n’a pas été choisie pour cette culture. Coche la reprise de cette cible, puis prévisualise à nouveau; elle ne sera pas transférée automatiquement.` };
+      return { status: 'blocked', reason: `La cible d’ensemencement du scénario (${nombreFr(previousResultBranch.input.pitchTempC, 1)} °C) n’a pas été choisie pour cette culture. Coche la reprise de cette cible, puis prévisualise à nouveau; elle ne sera pas transférée automatiquement.` };
     }
     if (!input.identity.scenarioId.trim() || !Number.isSafeInteger(input.identity.revision) || input.identity.revision < 0) {
       return { status: 'blocked', reason: 'La nouvelle identité de scénario est invalide.' };

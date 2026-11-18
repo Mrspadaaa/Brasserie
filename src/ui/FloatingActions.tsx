@@ -174,6 +174,8 @@ export const FloatingActions: React.FC<FloatingActionsProps> = ({
       run: () => window.dispatchEvent(new Event('brewer-inbox-open'))
     }] : [])
   ]);
+  /* BX-4 (09.11) : l'action de l'écran ne se répète pas plus bas (« Nouvelle recette » et « Créer une recette », « Nouvelle écriture » et « Entrer une facture »). */
+  const doublon = action ? ({ newTransaction: 'invoice', newRecipe: 'recipe', newBatch: 'brew' } as Record<string, string>)[action.intent] : undefined;
   groups.push([
     { key: 'invoice', label: 'Entrer une facture', hint: 'Document, puis vérification', Icon: FileText, tone: 'text-area-finances', run: onInvoice },
     { key: 'sale', label: 'Encaisser une vente', Icon: TrendingUp, tone: 'text-area-finances', run: onSale }
@@ -182,6 +184,8 @@ export const FloatingActions: React.FC<FloatingActionsProps> = ({
     { key: 'recipe', label: 'Créer une recette', Icon: Wheat, tone: 'text-area-production', run: onRecipe },
     { key: 'brew', label: 'Lancer un brassin', hint: 'À partir d’une recette existante', Icon: Beer, tone: 'text-area-production', run: onBrew }
   ]);
+
+  const groupes = groups.map(g => g.filter(item => item.key !== doublon)).filter(g => g.length);
 
   React.useEffect(() => {
     if (!open) return;
@@ -220,7 +224,8 @@ export const FloatingActions: React.FC<FloatingActionsProps> = ({
   const fallbackBottom = anchor === 'page'
     ? 'calc(var(--page-footer-height, 0px) + 1rem)'
     : 'calc(var(--main-navigation-height, 2.5rem) + .5rem)';
-  const iconSize = geometry ? Math.min(32, Math.round(Math.min(geometry.width, geometry.height) * 0.55)) : 24;
+  /* BX-4 (09.11, « Différents ») : flottant, il garde la forme de sa case (64 × 40, icône 22) au lieu d'un rond de 48. */
+  const iconSize = geometry ? Math.min(32, Math.round(Math.min(geometry.width, geometry.height) * 0.55)) : 22;
   /* Flottant juste au-dessus d'un pied qui porte déjà l'action principale de la page : pas de second aplat paille. */
   const quiet = !geometry && anchor === 'page' && pageFooter;
 
@@ -255,7 +260,7 @@ export const FloatingActions: React.FC<FloatingActionsProps> = ({
         >
           {/* Les lignes portent `tabIndex={-1}` : le clavier parcourt le menu aux
               flèches, et la tabulation le referme pour rendre la main au bouton. */}
-          {groups.map((group, index) => (
+          {groupes.map((group, index) => (
             <div key={group[0].key} className={index ? 'border-t border-cave-800' : undefined}>
               {group.map(({ key, label, hint, Icon, tone, count, busy, strong, run }) => (
                 <button key={key} type="button" role="menuitem" tabIndex={-1} className={ROW} onClick={choose(run)}>

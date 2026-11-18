@@ -1,0 +1,92 @@
+OK    MAQUETTE D (mesurée dans ce Chrome) : ligne de sous-famille 28 px, nom 14px, quantité 12px, montant 14px, écarts de colonnes 0.0 / 0.0 px
+OK    tactile390 · FAMILLES : les onze bandes, dans l’ordre (11)
+OK    tactile390 · FAMILLES : aucune ligne de sous-famille (aucune bande n’a deux sous-familles) : 0
+OK    tactile390 · FAMILLES : toutes les rangées sont visibles, comme avant (0 cachées)
+OK    tactile390 · FAMILLES aucun débordement horizontal (0 px)
+OK    tactile390 · FAMILLES aucune erreur de console
+OK    tactile390 · RENOVATION : l’en-tête de bande est celui d’aujourd’hui (16 lignes, 29 Stk, 423,30)
+OK    tactile390 · RENOVATION au repos : 4 lignes de sous-famille, toutes repliées (Peinture et sols=false, Outillage=false, Quincaillerie=false, Électricité=false)
+OK    tactile390 · RENOVATION au repos : seules les trois rangées de sous-groupes d’une ligne se voient, sans chevron ni ligne (Mitigeur lavabo chromé | Gants nitrile M | Étagère murale bois 80 cm)
+OK    tactile390 · RENOVATION Peinture et sols : bouton de 28 px de haut (maquette 28 px ; une rangée 0 px)
+OK    tactile390 · RENOVATION Peinture et sols : texte 14px / quantité 12px gras 600 / montant 14px (maquette 14px / 12px / 14px)
+OK    tactile390 · RENOVATION Peinture et sols : colonnes alignées sur l’en-tête de bande (quantité 0.0 px, montant 0.0 px)
+OK    tactile390 · RENOVATION Peinture et sols : la ligne tient dans l’écran (390 / 390)
+OK    tactile390 · RENOVATION Outillage : bouton de 28 px de haut (maquette 28 px ; une rangée 0 px)
+OK    tactile390 · RENOVATION Outillage : texte 14px / quantité 12px gras 600 / montant 14px (maquette 14px / 12px / 14px)
+OK    tactile390 · RENOVATION Outillage : colonnes alignées sur l’en-tête de bande (quantité 0.0 px, montant 0.0 px)
+OK    tactile390 · RENOVATION Outillage : la ligne tient dans l’écran (390 / 390)
+OK    tactile390 · RENOVATION Quincaillerie : bouton de 28 px de haut (maquette 28 px ; une rangée 0 px)
+OK    tactile390 · RENOVATION Quincaillerie : texte 14px / quantité 12px gras 600 / montant 14px (maquette 14px / 12px / 14px)
+OK    tactile390 · RENOVATION Quincaillerie : colonnes alignées sur l’en-tête de bande (quantité 0.0 px, montant 0.0 px)
+OK    tactile390 · RENOVATION Quincaillerie : la ligne tient dans l’écran (390 / 390)
+OK    tactile390 · RENOVATION Électricité : bouton de 28 px de haut (maquette 28 px ; une rangée 0 px)
+OK    tactile390 · RENOVATION Électricité : texte 14px / quantité 12px gras 600 / montant 14px (maquette 14px / 12px / 14px)
+OK    tactile390 · RENOVATION Électricité : colonnes alignées sur l’en-tête de bande (quantité 0.0 px, montant 0.0 px)
+OK    tactile390 · RENOVATION Électricité : la ligne tient dans l’écran (390 / 390)
+OK    tactile390 · RENOVATION aucun débordement horizontal (0 px)
+OK    tactile390 · RENOVATION : un toucher ouvre « Peinture et sols » seul (Peinture et sols=true, Outillage=false, Quincaillerie=false, Électricité=false)
+OK    tactile390 · RENOVATION ouvert : ses cinq rangées apparaissent (8 visibles)
+OK    tactile390 · RENOVATION : l’ordre des sous-groupes est celui de la Rénovation (Peinture et sols > Outillage > Quincaillerie > Électricité > line-12 > line-13 > line-17)
+OK    tactile390 · RENOVATION : toucher une rangée du groupe ouvert ouvre son plateau (la rangée est celle d’aujourd’hui)
+OK    tactile390 · RENOVATION clavier : bouton focalisable, aria-expanded false → Entrée true → Espace false, aria-controls vers son corps
+OK    tactile390 · RENOVATION focus visible : contour 2px solid rgb(17, 17, 17)
+OK    tactile390 · RENOVATION : un second toucher referme le groupe (retour au repos)
+OK    tactile390 · RENOVATION : le libellé et le montant de la ligne 5 ont été modifiés au geste du brasseur
+OK    tactile390 · RENOVATION : la ligne renommée est passée dans le groupe « Électricité »
+OK    tactile390 · RENOVATION ligne à vérifier : son groupe s’est ouvert d’office, les autres restent repliés (Peinture et sols=false, Outillage=false, Quincaillerie=false, Électricité=true)
+OK    tactile390 · RENOVATION ligne à vérifier : sa rangée est visible, son montant rouge (inconnu) ; le groupe dit « 39,60 + ? » (jamais 0 : inconnu marqué « + ? »)
+OK    tactile390 · RENOVATION : le sous-total du groupe marque le montant inconnu (« 39,60 + ? »)
+ECHEC tactile390 · M1 colonne des quantités, en-tête de bande (« 410,50 + ? ») : écart 23.0 px à la colonne des rangées
+OK    tactile390 · M1 colonne des quantités, ligne « Peinture et sols » (« 141,90 ») : écart 0.0 px à la colonne des rangées
+OK    tactile390 · M1 colonne des quantités, ligne « Outillage » (« 114,70 ») : écart 0.0 px à la colonne des rangées
+OK    tactile390 · M1 colonne des quantités, ligne « Quincaillerie » (« 22,90 ») : écart 0.0 px à la colonne des rangées
+ECHEC tactile390 · M1 colonne des quantités, ligne « Électricité » (« 39,60 + ? ») : écart 15.3 px à la colonne des rangées
+OK    tactile390 · RENOVATION : le brasseur referme le groupe à vérifier (son choix prime)
+OK    tactile390 · RENOVATION aucune erreur de console
+OK    tactile390 · RENOVATION : la vue « Papier » ne change pas (aucune ligne de sous-famille)
+OK    pc1280 · FAMILLES : les onze bandes, dans l’ordre (11)
+OK    pc1280 · FAMILLES : aucune ligne de sous-famille (aucune bande n’a deux sous-familles) : 0
+OK    pc1280 · FAMILLES : toutes les rangées sont visibles, comme avant (0 cachées)
+OK    pc1280 · FAMILLES aucun débordement horizontal (0 px)
+OK    pc1280 · FAMILLES aucune erreur de console
+OK    pc1280 · RENOVATION : l’en-tête de bande est celui d’aujourd’hui (16 lignes, 29 Stk, 423,30)
+OK    pc1280 · RENOVATION au repos : 4 lignes de sous-famille, toutes repliées (Peinture et sols=false, Outillage=false, Quincaillerie=false, Électricité=false)
+OK    pc1280 · RENOVATION au repos : seules les trois rangées de sous-groupes d’une ligne se voient, sans chevron ni ligne (Mitigeur lavabo chromé | Gants nitrile M | Étagère murale bois 80 cm)
+OK    pc1280 · RENOVATION Peinture et sols : bouton de 28 px de haut (maquette 28 px ; une rangée 0 px)
+OK    pc1280 · RENOVATION Peinture et sols : texte 14px / quantité 12px gras 600 / montant 14px (maquette 14px / 12px / 14px)
+OK    pc1280 · RENOVATION Peinture et sols : colonnes alignées sur l’en-tête de bande (quantité 0.0 px, montant 0.0 px)
+OK    pc1280 · RENOVATION Peinture et sols : la ligne tient dans l’écran (760 / 1280)
+OK    pc1280 · RENOVATION Outillage : bouton de 28 px de haut (maquette 28 px ; une rangée 0 px)
+OK    pc1280 · RENOVATION Outillage : texte 14px / quantité 12px gras 600 / montant 14px (maquette 14px / 12px / 14px)
+OK    pc1280 · RENOVATION Outillage : colonnes alignées sur l’en-tête de bande (quantité 0.0 px, montant 0.0 px)
+OK    pc1280 · RENOVATION Outillage : la ligne tient dans l’écran (760 / 1280)
+OK    pc1280 · RENOVATION Quincaillerie : bouton de 28 px de haut (maquette 28 px ; une rangée 0 px)
+OK    pc1280 · RENOVATION Quincaillerie : texte 14px / quantité 12px gras 600 / montant 14px (maquette 14px / 12px / 14px)
+OK    pc1280 · RENOVATION Quincaillerie : colonnes alignées sur l’en-tête de bande (quantité 0.0 px, montant 0.0 px)
+OK    pc1280 · RENOVATION Quincaillerie : la ligne tient dans l’écran (760 / 1280)
+OK    pc1280 · RENOVATION Électricité : bouton de 28 px de haut (maquette 28 px ; une rangée 0 px)
+OK    pc1280 · RENOVATION Électricité : texte 14px / quantité 12px gras 600 / montant 14px (maquette 14px / 12px / 14px)
+OK    pc1280 · RENOVATION Électricité : colonnes alignées sur l’en-tête de bande (quantité 0.0 px, montant 0.0 px)
+OK    pc1280 · RENOVATION Électricité : la ligne tient dans l’écran (760 / 1280)
+OK    pc1280 · RENOVATION aucun débordement horizontal (0 px)
+OK    pc1280 · RENOVATION : un toucher ouvre « Peinture et sols » seul (Peinture et sols=true, Outillage=false, Quincaillerie=false, Électricité=false)
+OK    pc1280 · RENOVATION ouvert : ses cinq rangées apparaissent (8 visibles)
+OK    pc1280 · RENOVATION : l’ordre des sous-groupes est celui de la Rénovation (Peinture et sols > Outillage > Quincaillerie > Électricité > line-12 > line-13 > line-17)
+OK    pc1280 · RENOVATION : toucher une rangée du groupe ouvert ouvre son plateau (la rangée est celle d’aujourd’hui)
+OK    pc1280 · RENOVATION clavier : bouton focalisable, aria-expanded false → Entrée true → Espace false, aria-controls vers son corps
+OK    pc1280 · RENOVATION focus visible : contour 2px solid rgb(17, 17, 17)
+OK    pc1280 · RENOVATION : un second toucher referme le groupe (retour au repos)
+OK    pc1280 · RENOVATION : le libellé et le montant de la ligne 5 ont été modifiés au geste du brasseur
+OK    pc1280 · RENOVATION : la ligne renommée est passée dans le groupe « Électricité »
+OK    pc1280 · RENOVATION ligne à vérifier : son groupe s’est ouvert d’office, les autres restent repliés (Peinture et sols=false, Outillage=false, Quincaillerie=false, Électricité=true)
+OK    pc1280 · RENOVATION ligne à vérifier : sa rangée est visible, son montant rouge (inconnu) ; le groupe dit « 39,60 + ? » (jamais 0 : inconnu marqué « + ? »)
+OK    pc1280 · RENOVATION : le sous-total du groupe marque le montant inconnu (« 39,60 + ? »)
+ECHEC pc1280 · M1 colonne des quantités, en-tête de bande (« 410,50 + ? ») : écart 23.0 px à la colonne des rangées
+OK    pc1280 · M1 colonne des quantités, ligne « Peinture et sols » (« 141,90 ») : écart 0.0 px à la colonne des rangées
+OK    pc1280 · M1 colonne des quantités, ligne « Outillage » (« 114,70 ») : écart 0.0 px à la colonne des rangées
+OK    pc1280 · M1 colonne des quantités, ligne « Quincaillerie » (« 22,90 ») : écart 0.0 px à la colonne des rangées
+ECHEC pc1280 · M1 colonne des quantités, ligne « Électricité » (« 39,60 + ? ») : écart 15.3 px à la colonne des rangées
+OK    pc1280 · RENOVATION : le brasseur referme le groupe à vérifier (son choix prime)
+OK    pc1280 · RENOVATION aucune erreur de console
+OK    pc1280 · RENOVATION : la vue « Papier » ne change pas (aucune ligne de sous-famille)
+OK    aucune requête hors localhost

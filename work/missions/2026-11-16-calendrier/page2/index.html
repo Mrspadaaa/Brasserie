@@ -1,0 +1,212 @@
+<!doctype html><html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="color-scheme" content="light">
+<title>Calendrier global · passe 8 · 16.11</title>
+<style>
+:root{--f:#faf7f2;--c:#fff;--t:#22201c;--d:#6b645a;--a:#b8641c;--ab:#9a4f12;--on:#fff;--sur:#fff;--l:#e4ddd2;--rep:#fbf3e8;--ref:#e9e4dc;--barre:#fffdf9}
+*{box-sizing:border-box}html{overflow-x:hidden}
+body{margin:0;background:var(--f);color:var(--t);font:16px/1.45 system-ui,-apple-system,"Segoe UI",sans-serif;padding-bottom:calc(200px + env(safe-area-inset-bottom))}
+main{max-width:1180px;margin:0 auto;padding:16px max(16px,env(safe-area-inset-right)) 16px max(16px,env(safe-area-inset-left))}
+a{color:var(--ab)}
+h1{font-size:24px;margin:4px 0 12px}h2{font-size:20px;margin:28px 0 8px;padding-top:12px;border-top:2px solid var(--l)}h3{font-size:18px;margin:0 0 2px}
+#a-choisir{background:var(--c);border:2px solid var(--a);border-radius:12px;padding:12px 14px}
+#a-choisir ol{margin:6px 0 4px;padding-left:22px}#a-choisir li{margin:4px 0}
+.ex{font-size:15px;color:var(--d);margin:6px 0 0}
+.g{background:var(--c);border:1px solid var(--l);border-radius:12px;padding:12px;margin:12px 0;min-width:0}
+.g>p{margin:4px 0 10px}
+.rang{display:grid;grid-auto-flow:column;grid-auto-columns:300px;gap:10px;overflow-x:auto;overscroll-behavior-x:contain;scroll-snap-type:x proximity;padding-bottom:8px}
+@media (min-width:900px){.rang{grid-auto-flow:row;grid-template-columns:repeat(3,minmax(0,1fr));overflow:visible}}
+.v{margin:0;display:flex;flex-direction:column;gap:6px;border-radius:12px;padding:8px;border:2px solid var(--l);background:var(--c);scroll-snap-align:start;min-width:0}
+.v.choisie{border-color:var(--a);background:var(--rep)}
+.v.ref{background:var(--ref);border-color:var(--ref)}
+.id{color:var(--d);font-size:14px;font-weight:400}
+.mots{font-style:italic;font-size:15px;margin:0;color:var(--t)}
+.note{display:inline-block;font-size:14px;font-weight:700;border-radius:99px;padding:1px 10px;background:#dcefd9;color:#1d4d26;align-self:flex-start}
+.note.moy{background:#f4e6c8;color:#6a4300}
+.duo{display:grid;grid-template-columns:1fr 1fr;gap:6px}
+.duo.un{grid-template-columns:1fr}
+.zoom{display:block;width:100%;padding:0;border:1px solid var(--l);border-radius:8px;overflow:hidden;background:#111;cursor:zoom-in}
+.zoom img{display:block;width:100%;height:auto}
+.leg{font-size:14px;color:var(--d);margin:2px 0 0}
+.ch{font:600 15px system-ui,sans-serif;min-height:44px;padding:8px 12px;border-radius:10px;border:1.5px solid var(--a);background:var(--sur);color:var(--t);cursor:pointer;width:100%;margin-top:auto}
+.ch[aria-pressed="true"]{background:var(--ab);border-color:var(--ab);color:var(--on)}
+.ch[aria-pressed="true"]::before{content:"✓ "}
+.ch:focus-visible,.zoom:focus-visible,#copier:focus-visible,#mot:focus-visible{outline:3px solid var(--a);outline-offset:2px}
+.glisse{font-size:14px;color:var(--d);margin:0 0 6px}
+@media (min-width:900px){.glisse{display:none}}
+.reflig{display:grid;grid-template-columns:140px minmax(0,1fr);gap:12px;align-items:start}
+@media (min-width:900px){.reflig{grid-template-columns:220px minmax(0,1fr)}}
+.liens li{margin:4px 0}
+#barre{position:fixed;left:0;right:0;bottom:0;z-index:5;background:var(--barre);border-top:2px solid var(--a);box-shadow:0 -4px 16px #0002;padding:10px max(12px,env(safe-area-inset-right)) calc(10px + env(safe-area-inset-bottom)) max(12px,env(safe-area-inset-left))}
+#barre .in{max-width:1180px;margin:0 auto;display:grid;grid-template-columns:1fr auto;gap:8px;align-items:center}
+#reponse{grid-column:1/-1;font:600 15px ui-monospace,Consolas,monospace;min-height:22px;max-height:4.4em;overflow-y:auto;overflow-wrap:anywhere;user-select:all;-webkit-user-select:all}
+#reponse.vide{font:15px system-ui,sans-serif;color:var(--d);user-select:none;-webkit-user-select:none}
+#mot{font:16px system-ui,sans-serif;min-height:44px;padding:8px 10px;border-radius:10px;border:1px solid var(--l);background:var(--sur);color:var(--t);width:100%;min-width:0}
+#copier{font:700 16px system-ui,sans-serif;min-height:44px;padding:8px 18px;border-radius:10px;border:0;background:var(--ab);color:var(--on);cursor:pointer}
+#etat{grid-column:1/-1;font-size:14px;color:var(--d);margin:0}#etat:empty{display:none}
+@media (min-width:900px){#barre .in{grid-template-columns:1fr 280px auto}#reponse{grid-column:auto}}
+dialog{padding:0;border:0;max-width:100vw;max-height:100vh;width:100vw;height:100vh;background:#000d}
+dialog::backdrop{background:#000a}
+dialog .z{width:100%;height:100%;overflow:auto;display:flex;align-items:flex-start;justify-content:center}
+dialog img{display:block;width:min(100%,560px);height:auto}
+dialog button{position:fixed;top:10px;right:10px;font:600 16px system-ui;padding:10px 14px;border-radius:10px;border:0;background:#fff;color:#111}
+.rang.deux{grid-auto-columns:330px}@media (min-width:900px){.rang.deux{grid-template-columns:repeat(2,minmax(0,1fr))}}
+.phr{margin:0;font-size:15px}
+.notes{border-collapse:collapse;font-size:14px;width:100%;font-variant-numeric:tabular-nums}.notes caption{text-align:left;color:var(--d);margin-bottom:2px}.notes th,.notes td{padding:3px 4px;border-bottom:1px solid var(--l);text-align:center}.notes th[scope=row]{text-align:left;font-weight:400;color:var(--d);white-space:nowrap}.notes thead th{font-weight:600;color:var(--d)}
+.quad{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px}.quad figure{margin:0;display:flex;flex-direction:column;gap:2px;min-width:0}.quad figcaption{font-size:14px;color:var(--d);line-height:1.25}.quad .large{grid-column:1/-1}.rang.haut{align-items:start}
+</style></head><body><main>
+<h1>Calendrier global · passe 8 · 16.11</h1>
+<div id="a-choisir"><b>Trois choix.</b>
+<ol><li><a href="#s-cand">Le calendrier</a> : g8 ou c2h8 (un mot en bas si tu en mêles deux).</li>
+<li><a href="#s-ordre">L'ordre des rangées</a> de g8 : Libre en tête partout, ou en bas comme le portrait de p7.</li>
+<li><a href="#s-onglet">La place de l'onglet</a> dans la barre : 3e, 4e ou dernier.</li></ol>
+<p class="ex">Touche « Choisir » ; un second toucher retire. Touche une capture pour l'agrandir. La barre du bas assemble ta réponse : « Copier », puis colle-la ici.</p></div>
+
+<h2 id="s-ref">Ta base : f1</h2>
+<section class="g reflig">
+<figure data-vignette class="v ref"><div class="duo un"><button type="button" class="zoom" data-agrandir="img/f1-vue.webp" aria-label="Voir en grand : f1, caisse et semaines"><img src="img/f1-vue.webp" width="780" height="1688" alt="f1, caisse et semaines"></button></div>
+<figcaption class="leg"><b>f1</b> · caisse et semaines <span class="id">référence</span></figcaption></figure>
+<div><p>La courbe de caisse, le mis de côté hachuré et les barres de chaque envie. Tu l'as notée 8/10.</p>
+<p class="ex">Les deux reprennent sa courbe, et un seul calcul : caisse 4 180 · exemple au 16.11, ventes +120 / sem. · exemple. Plus bas partout : 259 · S24 (14 juin) ; sans l'Embouteilleuse, 3 059.</p>
+<p class="ex">Les six de départ : <a href="https://claude.ai/artifact/KkTtnqzuRef5pXotpfPjE4">le panel p2</a>.</p></div>
+</section>
+
+<h2 id="s-cand">1 · Le calendrier, deux propositions</h2>
+<section class="g">
+<p>Chaque carte : au repos, le geste (glisser le frigo), le + ouvert, puis le téléphone tourné. Les notes : quatre regards (toi, lisibilité, touchers, navigation), un juge neuf à chaque passe.</p>
+<p class="glisse">Glisse de côté pour voir les deux.</p>
+<div class="rang deux">
+
+<figure data-vignette class="v"><h3>Ta semaine, puis le tableau de l'année <span class="id">g8</span></h3>
+<p class="phr">En tête, « 259 à te permettre » et « 1 j libre » ; dessous, tes semaines en rangées (Libre, Cuve, Comptoir, Achats, Toi, Papiers), qui restent en haut quand tu défiles.</p>
+<span class="note">p7 · 8,5 / 10</span>
+<table class="notes"><caption>Notes par regard</caption>
+<thead><tr><th scope="col">passe</th><th scope="col">toi</th><th scope="col">lis.</th><th scope="col">touch.</th><th scope="col">nav.</th><th scope="col">moy.</th></tr></thead>
+<tbody>
+<tr><th scope="row">p2 · c3e2</th><td>8</td><td>7</td><td>8</td><td>6</td><td>7,25</td></tr>
+<tr><th scope="row">p3</th><td>9</td><td>8</td><td>9</td><td>9</td><td>8,75</td></tr>
+<tr><th scope="row">p4</th><td>9</td><td>8</td><td>8</td><td>7</td><td>8,0</td></tr>
+<tr><th scope="row">p5</th><td>9</td><td>8</td><td>8</td><td>7</td><td>8,0</td></tr>
+<tr><th scope="row">p6</th><td>9</td><td>8</td><td>8</td><td>9</td><td>8,5</td></tr>
+<tr><th scope="row">p7</th><td>9</td><td>8</td><td>9</td><td>8</td><td><b>8,5</b></td></tr>
+</tbody></table>
+<p class="leg">p2 : sa souche, le tableau à aimants (g naît en p3 par greffe). p8 : 13 retouches de p7, pas encore notée.</p>
+<div class="quad">
+<figure><button type="button" class="zoom" data-agrandir="img/g8-repos.webp" aria-label="Voir en grand : g8 au repos"><img src="img/g8-repos.webp" width="780" height="1688" alt="g8 au repos"></button><figcaption>repos</figcaption></figure>
+<figure><button type="button" class="zoom" data-agrandir="img/g8-geste.webp" aria-label="Voir en grand : g8, glisser le frigo en S27"><img src="img/g8-geste.webp" width="780" height="1688" alt="g8, glisser le frigo en S27"></button><figcaption>geste : frigo en S27 ✓</figcaption></figure>
+<figure><button type="button" class="zoom" data-agrandir="img/g8-plus.webp" aria-label="Voir en grand : g8, le + ouvert"><img src="img/g8-plus.webp" width="780" height="1688" alt="g8, le + ouvert"></button><figcaption>+ ouvert</figcaption></figure>
+<figure class="large"><button type="button" class="zoom" data-agrandir="img/g8-paysage.webp" aria-label="Voir en grand : g8 en paysage"><img src="img/g8-paysage.webp" width="1688" height="780" alt="g8 en paysage"></button><figcaption>paysage : 18 semaines</figcaption></figure>
+</div>
+<button type="button" class="ch" data-groupe="calendrier" data-jeton="g8" aria-pressed="false">Choisir</button></figure>
+
+<figure data-vignette class="v"><h3>À te permettre, puis la liste des semaines <span class="id">c2h8</span></h3>
+<p class="phr">En tête, « 259 » puis « 1 928 dès S26 · 4 505 dès S33 » ; la courbe de f1 avec sa poignée, et dessous chaque semaine avec ses jours et le libre en fin.</p>
+<span class="note moy">p7 · 7,75 / 10</span>
+<table class="notes"><caption>Notes par regard</caption>
+<thead><tr><th scope="col">passe</th><th scope="col">toi</th><th scope="col">lis.</th><th scope="col">touch.</th><th scope="col">nav.</th><th scope="col">moy.</th></tr></thead>
+<tbody>
+<tr><th scope="row">p2</th><td>8</td><td>7</td><td>7</td><td>8</td><td>7,5</td></tr>
+<tr><th scope="row">p3</th><td>8</td><td>8</td><td>9</td><td>8</td><td>8,25</td></tr>
+<tr><th scope="row">p4</th><td>8</td><td>6</td><td>8</td><td>7</td><td>7,25</td></tr>
+<tr><th scope="row">p5</th><td>8</td><td>7</td><td>8</td><td>8</td><td>7,75</td></tr>
+<tr><th scope="row">p6</th><td>9</td><td>7</td><td>8</td><td>8</td><td>8,0</td></tr>
+<tr><th scope="row">p7</th><td>9</td><td>7</td><td>8</td><td>7</td><td><b>7,75</b></td></tr>
+</tbody></table>
+<p class="leg">p2 : le pinceau et la vue (c2h2). p8 : 13 retouches de p7, pas encore notée.</p>
+<div class="quad">
+<figure><button type="button" class="zoom" data-agrandir="img/c2h8-repos.webp" aria-label="Voir en grand : c2h8 au repos"><img src="img/c2h8-repos.webp" width="780" height="1688" alt="c2h8 au repos"></button><figcaption>repos</figcaption></figure>
+<figure><button type="button" class="zoom" data-agrandir="img/c2h8-geste.webp" aria-label="Voir en grand : c2h8, glisser le frigo en S30"><img src="img/c2h8-geste.webp" width="780" height="1688" alt="c2h8, glisser le frigo en S30"></button><figcaption>geste : frigo en S30 ✓</figcaption></figure>
+<figure><button type="button" class="zoom" data-agrandir="img/c2h8-plus.webp" aria-label="Voir en grand : c2h8, le + ouvert"><img src="img/c2h8-plus.webp" width="780" height="1688" alt="c2h8, le + ouvert"></button><figcaption>+ ouvert</figcaption></figure>
+<figure class="large"><button type="button" class="zoom" data-agrandir="img/c2h8-paysage.webp" aria-label="Voir en grand : c2h8 en paysage"><img src="img/c2h8-paysage.webp" width="1688" height="780" alt="c2h8 en paysage"></button><figcaption>paysage : la courbe à gauche, le détail à droite</figcaption></figure>
+</div>
+<button type="button" class="ch" data-groupe="calendrier" data-jeton="c2h8" aria-pressed="false">Choisir</button></figure>
+
+</div></section>
+
+<h2 id="s-ordre">2 · L'ordre des rangées de g8</h2>
+<section class="g">
+<p>Seulement si tu prends g8. Le même ordre au téléphone droit, tourné et à l'ordinateur : où va la rangée Libre ?</p>
+<p class="glisse">Glisse de côté pour voir les deux.</p>
+<div class="rang deux haut">
+<figure data-vignette class="v"><h3>Libre en tête, partout <span class="id">p8</span></h3>
+<div class="duo un"><button type="button" class="zoom" data-agrandir="img/g8-repos.webp" aria-label="Voir en grand : Libre en tête, au téléphone droit"><img src="img/g8-repos.webp" width="780" height="1688" alt="Libre en tête, au téléphone droit"></button><button type="button" class="zoom" data-agrandir="img/g8-paysage.webp" aria-label="Voir en grand : Libre en tête, en paysage"><img src="img/g8-paysage.webp" width="1688" height="780" alt="Libre en tête, en paysage"></button></div>
+<figcaption class="leg">Libre, Cuve, Comptoir, Achats, Toi, Papiers. Les verres sont visibles sans défiler, aussi à 1280.</figcaption>
+<button type="button" class="ch" data-groupe="ordre" data-jeton="libre en tête" aria-pressed="false">Choisir</button></figure>
+<figure data-vignette class="v"><h3>Libre en bas, l'ordre du portrait <span class="id">p7</span></h3>
+<div class="duo un"><button type="button" class="zoom" data-agrandir="img/g7-repos.webp" aria-label="Voir en grand : Libre en bas, portrait de p7"><img src="img/g7-repos.webp" width="780" height="1688" alt="Libre en bas, portrait de p7"></button></div>
+<figcaption class="leg">Cuve, Comptoir, Achats, Toi, Papiers, Libre, comme ce portrait de p7 ; tourné, le même ordre (pas encore dessiné).</figcaption>
+<button type="button" class="ch" data-groupe="ordre" data-jeton="libre en bas" aria-pressed="false">Choisir</button></figure>
+</div></section>
+
+<h2 id="s-onglet">3 · La place de l'onglet Calendrier</h2>
+<section class="g">
+<p>La même barre, sur le vrai écran, avec le + flottant. Seule la place de Calendrier change.</p>
+<p class="glisse">Glisse de côté pour voir les trois.</p>
+<div class="rang">
+<figure data-vignette class="v"><h3>3e, après Finances</h3>
+<div class="duo un"><button type="button" class="zoom" data-agrandir="img/barre-3e.webp" aria-label="Voir en grand : Calendrier en 3e"><img src="img/barre-3e.webp" width="780" height="400" alt="Calendrier en 3e"></button></div>
+<figcaption class="leg">Bord, Finances, Calendrier, Brassins, Stocks, Clients</figcaption>
+<button type="button" class="ch" data-groupe="onglet" data-jeton="onglet 3e" aria-pressed="false">Choisir</button></figure>
+<figure data-vignette class="v"><h3>4e, après Brassins</h3>
+<div class="duo un"><button type="button" class="zoom" data-agrandir="img/barre-4e.webp" aria-label="Voir en grand : Calendrier en 4e"><img src="img/barre-4e.webp" width="780" height="400" alt="Calendrier en 4e"></button></div>
+<figcaption class="leg">Bord, Finances, Brassins, Calendrier, Stocks, Clients</figcaption>
+<button type="button" class="ch" data-groupe="onglet" data-jeton="onglet 4e" aria-pressed="false">Choisir</button></figure>
+<figure data-vignette class="v"><h3>Dernier, après Clients</h3>
+<div class="duo un"><button type="button" class="zoom" data-agrandir="img/barre-dernier.webp" aria-label="Voir en grand : Calendrier en dernier"><img src="img/barre-dernier.webp" width="780" height="400" alt="Calendrier en dernier"></button></div>
+<figcaption class="leg">Bord, Finances, Brassins, Stocks, Clients, Calendrier</figcaption>
+<button type="button" class="ch" data-groupe="onglet" data-jeton="onglet dernier" aria-pressed="false">Choisir</button></figure>
+</div></section>
+
+<h2 id="s-liens">Ce que le calendrier relie</h2>
+<section class="g">
+<ul class="liens">
+<li>Tout ce qui a une date, en une seule vue : brassins et leurs phases, fûts, factures, prévisions, entretien, tâches, manques de stock.</li>
+<li>Rien n'est recopié : le calendrier lit les données là où elles vivent, hors ligne aussi (une année en 1 ms).</li>
+<li>Déplacer, allonger, clore ou créer depuis le calendrier passe par l'écran qui possède la donnée, avec « Annuler ».</li>
+<li>Avant d'écrire, il montre les suites : cuve prise, malt qui manque, argent qui change de mois.</li>
+<li>Manque encore : fenêtre et jours actifs, dates réelles des étapes, retour de fût, échéances fiscales.</li>
+</ul>
+<p class="ex">Le détail, sources et architecture : <a href="../LIENS.md">LIENS.md</a>.</p>
+</section>
+
+<h2 id="s-defauts">Défauts connus restants</h2>
+<section class="g">
+<ul class="liens">
+<li>g8 : au repos, la pastille « + S47 » couvre encore le −400 de S1 (Papiers) ; en paysage, elle mord la fin de Frigo et de Hotte.</li>
+<li>c2h8 : le + couvre le libre de S51 (390 et 1280) et la fin de « IPA à cru −232 » en paysage ; au geste, le trait de la semaine tenue barre « S30 ».</li>
+<li>g8 à 390 : « Cuve 1 fermenteur » tient sur trois lignes, et au geste le nom Comptoir est à moitié caché sous l'en-tête qui reste en haut.</li>
+</ul>
+</section>
+</main>
+
+<div id="barre" role="region" aria-label="Ta réponse"><div class="in">
+<div id="reponse" class="vide" aria-live="polite">Rien de choisi pour l’instant.</div>
+<input id="mot" type="text" autocomplete="off" placeholder="Un mot en plus (facultatif)" aria-label="Un mot en plus, facultatif">
+<button type="button" id="copier">Copier</button>
+<p id="etat" role="status"></p>
+</div></div>
+<dialog id="grand"><div class="z"><img alt=""></div><button type="button">Fermer</button></dialog>
+<script>
+(function(){
+var d=document.getElementById('grand'),im=d.querySelector('img');
+document.addEventListener('click',function(e){var b=e.target.closest('[data-agrandir]');if(!b)return;im.src=b.getAttribute('data-agrandir');im.alt=b.getAttribute('aria-label')||'';d.showModal();});
+d.querySelector('button').addEventListener('click',function(){d.close();});
+d.addEventListener('click',function(e){if(e.target===d||e.target.classList.contains('z'))d.close();});
+var boutons=[].slice.call(document.querySelectorAll('.ch[data-groupe]')),ordre=[],choix={};
+boutons.forEach(function(b){var g=b.getAttribute('data-groupe');if(ordre.indexOf(g)<0)ordre.push(g);});
+var rep=document.getElementById('reponse'),mot=document.getElementById('mot'),etat=document.getElementById('etat');
+function texte(){var t=['Calendrier p8'];var n=0;ordre.forEach(function(g){if(choix[g]){t.push(choix[g]);n++;}});var m=mot.value.trim();if(m){t.push(m);n++;}return n?t.join(' · '):'';}
+function rendre(){
+  boutons.forEach(function(b){var on=choix[b.getAttribute('data-groupe')]===b.getAttribute('data-jeton');b.setAttribute('aria-pressed',on?'true':'false');b.textContent=on?'Choisi':'Choisir';var f=b.closest('figure');if(f)f.classList.toggle('choisie',on);});
+  var t=texte();rep.textContent=t||'Rien de choisi pour l’instant.';rep.classList.toggle('vide',!t);etat.textContent='';
+}
+document.addEventListener('click',function(e){var b=e.target.closest('.ch[data-groupe]');if(!b)return;var g=b.getAttribute('data-groupe'),j=b.getAttribute('data-jeton');if(choix[g]===j)delete choix[g];else choix[g]=j;rendre();});
+mot.addEventListener('input',rendre);
+function repli(){var r=document.createRange();r.selectNodeContents(rep);var s=getSelection();s.removeAllRanges();s.addRange(r);var ok=false;try{ok=document.execCommand('copy');}catch(x){}etat.textContent=ok?'Copié. Colle-le dans ta réponse.':'Texte sélectionné : copie-le à la main.';}
+document.getElementById('copier').addEventListener('click',function(){
+  var t=texte();if(!t){etat.textContent='Choisis d’abord une proposition.';return;}
+  if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(t).then(function(){etat.textContent='Copié. Colle-le dans ta réponse.';},function(){repli();});}
+  else repli();
+});
+rendre();
+})();
+</script></body></html>

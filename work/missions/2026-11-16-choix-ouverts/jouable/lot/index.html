@@ -1,0 +1,196 @@
+<!doctype html><html lang="fr"><head><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600;700&family=Source+Sans+3:wght@400;500;600;700;800&display=swap" rel="stylesheet"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><title>Lot · v1 Branches</title><style>
+:root{--bg:#fff;--s1:#f5f5f5;--s2:#ebebeb;--line:#ddd;--line2:#bfbfbf;--mut:#5c5c5c;--ink:#111;--act:#111;--onact:#fff;--prod:#9a4f1e;--prodbg:#f6ece4;--fin:#1f64a3;--finbg:#e8f0f8;--stk:#4c6b2a;--botOn:#efe8e1;--ok:#2f7d6b;--okbg:#e3f1ec;--bad:#b3261e;--badbg:#fbeae8;--sheet:#fff;--dim:rgba(0,0,0,.28);--halo:#fff}
+html[data-theme=cave]{--bg:#12100e;--s1:#1a1613;--s2:#221d19;--line:#2c2521;--line2:#3d342e;--mut:#a8998d;--ink:#f5f0ea;--act:#f2c14e;--onact:#12100e;--prod:#e7a070;--prodbg:#2a1d14;--fin:#86b9e6;--finbg:#172634;--stk:#a3c97a;--botOn:#2c2521;--ok:#6fc3ad;--okbg:#14302a;--bad:#f08a80;--badbg:#3a1a17;--sheet:#1a1613;--dim:rgba(0,0,0,.55);--halo:#12100e}
+*{box-sizing:border-box}[hidden]{display:none!important}
+html,body{margin:0;background:var(--bg);color:var(--ink);font-family:"Source Sans 3","Segoe UI",system-ui,sans-serif;font-size:16px;-webkit-tap-highlight-color:transparent;overflow-x:clip}
+body{min-height:100vh;padding-bottom:162px}button{font:inherit;color:inherit;background:none;border:0;padding:0;cursor:pointer}
+.ico{width:22px;height:22px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;flex:none}
+.num{font-family:"IBM Plex Mono",ui-monospace,Consolas,monospace;font-variant-numeric:tabular-nums}
+.ex{display:inline-block;border:1.5px solid var(--fin);color:var(--fin);border-radius:999px;font-size:14px;line-height:20px;padding:0 8px;font-weight:600}
+.lots{display:flex;gap:8px;padding:8px 12px 0;align-items:center}
+.lots>span{color:var(--mut);font-size:14px}
+.lots button{height:40px;padding:0 12px;border-radius:999px;border:1.5px solid var(--line2);font-size:15px;white-space:nowrap}
+.lots button[aria-pressed=true]{background:var(--act);color:var(--onact);border-color:var(--act);font-weight:700}
+.bot{position:fixed;left:0;right:0;bottom:0;height:62px;display:flex;background:var(--s1);border-top:1px solid var(--line);z-index:30}
+.bot a{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;font-size:14px;color:inherit;text-decoration:none;min-width:0;letter-spacing:-.2px}
+.bot a.on{background:var(--botOn);font-weight:700;box-shadow:inset 0 3px 0 var(--prod)}
+.fab{position:fixed;right:14px;bottom:76px;z-index:33;width:60px;height:60px;border-radius:30px;background:var(--act);color:var(--onact);display:grid;place-items:center;box-shadow:0 6px 18px rgba(0,0,0,.35),0 0 0 3px var(--bg)}
+.fab .ico{width:28px;height:28px;stroke-width:2.4;transition:transform .15s}.fab[aria-expanded=true] .ico{transform:rotate(45deg)}
+.voile{position:fixed;inset:0;background:color-mix(in srgb,var(--bg) 70%,transparent);backdrop-filter:blur(5px);-webkit-backdrop-filter:blur(5px);z-index:31}
+.dial{position:fixed;right:14px;left:14px;bottom:148px;z-index:32;display:flex;flex-direction:column;gap:8px;align-items:stretch}
+.dial h4{align-self:flex-end;margin:6px 0 0;font-size:16px;background:var(--bg);border:1px solid var(--line);border-radius:999px;padding:6px 14px}
+.dial button{display:flex;align-items:center;justify-content:space-between;gap:10px;min-height:58px;padding:8px 10px 8px 18px;border-radius:29px;background:var(--s1);border:1px solid var(--line);font-size:18px;text-align:left;box-shadow:0 2px 8px rgba(0,0,0,.08)}
+.dial button small{display:block;font-size:15px;color:var(--mut)}
+.dial button .ico{width:40px;height:40px;padding:9px;border-radius:20px;background:var(--bg)}
+.dial button.fort{background:var(--act);color:var(--onact);border-color:var(--act)}.dial button.fort small{color:inherit;opacity:.8}.dial button.fort .ico{background:rgba(255,255,255,.15)}
+.dial button.rouge{background:var(--badbg);border-color:var(--bad)}.dial button.rouge .ico{color:var(--bad)}
+.sheet{position:fixed;left:0;right:0;bottom:0;z-index:40;background:var(--sheet);border-radius:18px 18px 0 0;box-shadow:0 -8px 30px rgba(0,0,0,.25);padding:10px 14px 20px}
+.sheet::before{content:"";display:block;width:44px;height:5px;border-radius:3px;background:var(--line2);margin:0 auto 10px}
+.tel{display:flex;align-items:center;justify-content:center;gap:10px;height:54px;border-radius:14px;background:var(--ok);color:#fff;font-size:18px;font-weight:700;width:100%}
+html[data-theme=cave] .tel{color:#0e1f1a}
+.toast{position:fixed;left:14px;right:90px;bottom:80px;z-index:35;background:var(--act);color:var(--onact);border-radius:14px;padding:12px 14px;font-size:16px;display:flex;justify-content:space-between;align-items:center;gap:8px}
+.toast button{font-weight:700;text-decoration:underline;min-height:36px}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+.v1h{padding:4px 12px 0;display:flex;align-items:center;gap:8px}
+.v1h a{display:flex;align-items:center;gap:2px;color:var(--mut);font-size:16px;text-decoration:none;min-height:44px}
+.v1t{padding:2px 12px 0}.v1t h1{margin:0;font-size:28px;line-height:1.1}
+.v1t p{margin:4px 0 0;font-size:16px;color:var(--mut)}.v1t p b{color:var(--ink)}
+.v1sec{margin:16px 12px 0;display:flex;align-items:baseline;justify-content:space-between}
+.v1sec h2{margin:0;font-size:20px}
+.v1lead{margin:6px 12px 10px;font-size:18px;line-height:1.3}.v1lead b{color:var(--prod)}
+.v1arbre{position:relative;margin:0 12px 0 12px;padding-left:30px}
+.v1arbre::before{content:"";position:absolute;left:11px;top:22px;bottom:30px;width:3px;border-radius:2px;background:var(--prod)}
+.v1rac{position:relative;display:flex;align-items:center;gap:10px;height:46px;margin-left:-30px;font-size:17px;font-weight:700}
+.v1rac i{width:26px;height:26px;border-radius:13px;background:var(--prod);color:#fff;display:grid;place-items:center;font-style:normal;font-size:14px;font-weight:700;flex:none}
+html[data-theme=cave] .v1rac i{color:#12100e}
+.v1br{position:relative;border-bottom:1px solid var(--line)}
+.v1br::before{content:"";position:absolute;left:-19px;top:30px;width:16px;height:3px;background:var(--prod);border-radius:2px}
+.v1br.gris::before{background:var(--line2)}
+.v1row{display:flex;align-items:center;gap:10px;width:100%;min-height:62px;padding:8px 0;text-align:left}
+.v1row .nm{flex:1;min-width:0}.v1row .nm b{display:block;font-size:18px}.v1row .nm>span{display:block;font-size:15px;color:var(--mut)}
+.v1futs{display:flex;gap:3px}
+.v1f{width:28px;height:30px;display:grid;place-items:center;border-radius:6px;border:2px solid var(--prod);color:var(--prod)}
+.v1f.plein{background:var(--prod);color:var(--bg)}.v1f .ico{width:18px;height:18px}
+.v1row>.ico{color:var(--mut);transition:transform .15s}.v1br.ouv .v1row>.ico{transform:rotate(90deg)}
+.v1det{padding:0 0 12px}.v1det ul{list-style:none;margin:10px 0 0;padding:0}
+.v1det li{display:flex;justify-content:space-between;gap:8px;font-size:16px;padding:6px 0;border-top:1px dashed var(--line)}
+.v1det li b{font-weight:700}.v1det li span{color:var(--mut)}.v1det li.dehors span{color:var(--prod);font-weight:700}
+.v1qui{font-size:15px;color:var(--mut);margin:0 0 8px}
+.v1anon .nm span{color:var(--mut)}.v1anon .pill{font-size:14px;border:1.5px dashed var(--mut);border-radius:999px;padding:2px 8px;color:var(--mut);white-space:nowrap}
+.v1cave{color:var(--mut)}.v1cave b{color:var(--mut)!important}
+.v1vide{margin:4px 0 0;padding:14px;border:2px dashed var(--line2);border-radius:14px;font-size:17px;line-height:1.35;color:var(--mut)}
+.v1vide b{color:var(--ink)}
+.sheet{max-height:86vh;overflow:auto}
+.jxs-h{margin:0 0 4px;font-size:22px;font-weight:800}.jxs-p{margin:0 0 10px;color:var(--mut);font-size:16px;line-height:1.3}
+.jxs-b{display:flex;align-items:center;justify-content:space-between;gap:10px;width:100%;min-height:60px;padding:8px 4px;border-top:1px solid var(--line);font-size:17px;text-align:left}
+.jxs-b span{flex:1;min-width:0}.jxs-b small{display:block;font-size:15px;color:var(--mut)}
+.jxs-b em{flex:none;font-style:normal;font-size:14px;font-weight:700;color:var(--ok);border:1.5px solid var(--ok);border-radius:999px;padding:2px 8px;white-space:nowrap}
+.jxs-f{display:block;margin-top:12px;width:100%;min-height:50px;border-radius:14px;background:var(--s2);font-weight:700;font-size:17px;text-align:center}
+.jxbra{display:none}body.jx-liste .jxbra{display:block}
+body.jx-liste .lots,body.jx-liste .v1h,body.jx-liste .v1t,body.jx-liste #recu,body.jx-liste .v1lead,body.jx-liste .v1leg,body.jx-liste .v1arbre{display:none!important}
+.jxbra h1{margin:0;padding:10px 12px 6px;font-size:30px;font-weight:800}
+.jxbra button{display:flex;align-items:center;gap:10px;width:calc(100% - 24px);margin:0 12px;min-height:66px;padding:8px 0;border-top:1px solid var(--line);text-align:left}
+.jxbra button span{flex:1;min-width:0}.jxbra b{display:block;font-size:18px}.jxbra small{display:block;font-size:15px;color:var(--mut)}
+.v1leg{display:flex;gap:16px;margin:0 12px 12px;font-size:15px;color:var(--mut);align-items:center}
+.v1leg span{display:flex;align-items:center;gap:6px}.v1leg .v1f{width:22px;height:24px}.v1leg .v1f .ico{width:14px;height:14px}
+</style><style>
+.jx-bar{display:flex;align-items:center;gap:6px;min-height:46px;padding:0 8px 0 2px;background:var(--s1);border-bottom:1px solid var(--line);font-size:15px;font-family:"Source Sans 3","Segoe UI",system-ui,sans-serif}
+.jx-bar a{display:inline-flex;align-items:center;min-height:44px;padding:0 10px;color:var(--fin);font-weight:700;text-decoration:none;font-size:16px}
+.jx-nom{flex:1;min-width:0;color:var(--mut)}
+.jx-th{min-height:36px;padding:0 12px;border-radius:999px;border:1.5px solid var(--line2);font-size:14px;font-weight:600;color:var(--ink);background:none}
+.jx-toast{position:fixed;left:12px;right:84px;bottom:var(--jx-tb,76px);z-index:60;display:flex;align-items:center;gap:8px;min-height:52px;padding:6px 6px 6px 14px;border-radius:14px;background:var(--ink);color:var(--bg);font-size:16px;line-height:1.25;box-shadow:0 6px 18px rgba(0,0,0,.3);font-family:"Source Sans 3","Segoe UI",system-ui,sans-serif}
+.jx-toast[hidden]{display:none!important}
+.jx-toast button{margin-left:auto;flex:none;min-height:44px;padding:0 12px;border-radius:10px;font:inherit;font-weight:700;color:var(--bg);background:none;border:0;text-decoration:underline;text-underline-offset:3px}
+.jx-pas{position:absolute;top:2px;left:calc(50% + 4px);min-width:28px;height:26px;padding:0 6px;border-radius:13px;font-size:15px;line-height:22px;font-weight:800;text-align:center;color:#fff;background:var(--fin);border:2px solid var(--bg);font-variant-numeric:tabular-nums;font-style:normal}
+html[data-theme=cave] .jx-pas{color:#12100e}
+</style><style>:root{--jx-tb:76px}.jx-dock{position:fixed;left:0;right:0;bottom:62px;height:82px;background:var(--bg);z-index:29;pointer-events:none}.jx-dock::before{content:'';position:absolute;left:0;right:0;top:-28px;height:28px;background:linear-gradient(to bottom,color-mix(in srgb,var(--bg) 0%,transparent),var(--bg))}.bot a{position:relative}.jxbra-h{display:flex;align-items:center;justify-content:space-between;gap:10px;padding-right:12px}.jxbra button .jxbra-c{flex:none;font-size:28px;line-height:1;color:var(--mut);padding:0 4px}.v1cave,.v1anon{cursor:pointer}.jx-liv{flex:none;margin-left:auto;font-weight:700;color:var(--ink)}</style></head><body><div class="jx-bar"><a class="jx-ret" href="../index.html">← les choix</a><span class="jx-nom">Lot · v1</span><button class="jx-th" type="button">Cave</button></div>
+<script>(function(){var d=document.documentElement,q=new URLSearchParams(location.search);
+function maj(){var c=d.getAttribute('data-theme')==='cave';document.querySelector('.jx-ret').href='../index.html'+(c?'?theme=cave':'');document.querySelector('.jx-th').textContent=c?'Clair':'Cave'}
+document.querySelector('.jx-th').addEventListener('click',function(){if(d.getAttribute('data-theme')==='cave')d.removeAttribute('data-theme');else d.setAttribute('data-theme','cave');try{var u=new URL(location.href);if(d.getAttribute('data-theme'))u.searchParams.set('theme','cave');else u.searchParams.delete('theme');history.replaceState(null,'',u)}catch(e){}maj()});
+if(q.get('theme')==='cave')d.setAttribute('data-theme','cave');maj();
+window.jxDit=function(m,annuler){var t=document.getElementById('jx-toast');if(!t){t=document.createElement('div');t.id='jx-toast';t.className='jx-toast';t.setAttribute('role','status');document.body.appendChild(t)}t.innerHTML='';var s=document.createElement('span');s.textContent=m;t.appendChild(s);if(annuler){var b=document.createElement('button');b.type='button';b.textContent='Annuler';b.addEventListener('click',function(e){e.stopPropagation();t.hidden=true;annuler()});t.appendChild(b)}t.hidden=false;clearTimeout(window.jxT);window.jxT=setTimeout(function(){t.hidden=true},annuler?5000:3000)};
+window.jxEfface=function(){['jx-toast','toast','s-toast'].forEach(function(i){var t=document.getElementById(i);if(t)t.hidden=true})};
+window.jxGlisse=function(el,fermer){var y0=null,dy=0;el.style.overscrollBehavior='contain';
+el.addEventListener('touchstart',function(e){if(el.scrollTop>0){y0=null;return}y0=e.touches[0].clientY;dy=0;el.style.transition='none'},{passive:true});
+el.addEventListener('touchmove',function(e){if(y0==null)return;dy=Math.max(0,e.touches[0].clientY-y0);el.style.transform=dy?'translateY('+dy+'px)':''},{passive:true});
+el.addEventListener('touchend',function(){if(y0==null)return;el.style.transition='';el.style.transform='';if(dy>70)fermer();y0=null;dy=0})};
+})();</script><div class="jx-dock" aria-hidden="true"></div><svg width="0" height="0" style="position:absolute"><defs>
+<symbol id="i-bord" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></symbol>
+<symbol id="i-wallet" viewBox="0 0 24 24"><path d="M19 7V5a1 1 0 0 0-1-1H5a2 2 0 0 0 0 4h15a1 1 0 0 1 1 1v4h-3a2 2 0 0 0 0 4h3a1 1 0 0 0 1-1v-2"/><path d="M3 6v12a2 2 0 0 0 2 2h15a1 1 0 0 0 1-1v-3"/></symbol>
+<symbol id="i-cal" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18M8 14h.01M12 14h.01M16 14h.01M8 18h.01M12 18h.01"/></symbol>
+<symbol id="i-beer" viewBox="0 0 24 24"><path d="M17 11h1a3 3 0 0 1 0 6h-1"/><path d="M9 12v6M13 12v6"/><path d="M14 7.5c-1 0-1.44.5-3 .5s-2-.5-3-.5-1.72.5-2.5.5a2.5 2.5 0 0 1 0-5c.78 0 1.57.5 2.5.5S9.44 2 11 2s2 1.5 3 1.5 1.72-.5 2.5-.5a2.5 2.5 0 0 1 0 5c-.78 0-1.5-.5-2.5-.5Z"/><path d="M5 8v12a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2V8"/></symbol>
+<symbol id="i-boxes" viewBox="0 0 24 24"><path d="M2.97 12.92A2 2 0 0 0 2 14.63v3.24a2 2 0 0 0 .97 1.71l3 1.8a2 2 0 0 0 2.06 0L12 19v-5.5l-5-3-4.03 2.42Z"/><path d="m7 16.5-4.74-2.85M7 16.5l5-3M7 16.5v5.17M12 13.5V19l3.97 2.38a2 2 0 0 0 2.06 0l3-1.8a2 2 0 0 0 .97-1.71v-3.24a2 2 0 0 0-.97-1.71L17 10.5l-5 3Z"/><path d="m17 16.5-5-3M17 16.5l4.74-2.85M17 16.5v5.17M7.97 4.42A2 2 0 0 0 7 6.13v4.37l5 3 5-3V6.13a2 2 0 0 0-.97-1.71l-3-1.8a2 2 0 0 0-2.06 0l-3 1.8Z"/><path d="M12 8 7.26 5.15M12 8l4.74-2.85M12 13.5V8"/></symbol>
+<symbol id="i-users" viewBox="0 0 24 24"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></symbol>
+<symbol id="i-plus" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></symbol>
+<symbol id="i-x" viewBox="0 0 24 24"><path d="M18 6 6 18M6 6l12 12"/></symbol>
+<symbol id="i-tel" viewBox="0 0 24 24"><path d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3.1 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2.1 4.2 2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.1.9.4 1.8.7 2.7a2 2 0 0 1-.5 2.1L8 9.8a16 16 0 0 0 6 6l1.3-1.3a2 2 0 0 1 2.1-.4c.9.3 1.8.6 2.7.7a2 2 0 0 1 1.7 2Z"/></symbol>
+<symbol id="i-check" viewBox="0 0 24 24"><path d="M20 6 9 17l-5-5"/></symbol>
+<symbol id="i-alert" viewBox="0 0 24 24"><path d="m21.7 18-8-14a2 2 0 0 0-3.5 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.7-3Z"/><path d="M12 9v4M12 17h.01"/></symbol>
+<symbol id="i-fut" viewBox="0 0 24 24"><path d="M6 3h12M6 21h12"/><path d="M6 3c-1.3 3-1.3 15 0 18M18 3c1.3 3 1.3 15 0 18"/><path d="M5.2 8h13.6M5.2 16h13.6"/></symbol>
+<symbol id="i-btl" viewBox="0 0 24 24"><path d="M10 2h4v4l1.5 3V21a1 1 0 0 1-1 1h-5a1 1 0 0 1-1-1V9L10 6Z"/><path d="M8.5 13h7"/></symbol>
+<symbol id="i-chev" viewBox="0 0 24 24"><path d="m9 18 6-6-6-6"/></symbol>
+<symbol id="i-back" viewBox="0 0 24 24"><path d="m15 18-6-6 6-6"/></symbol>
+<symbol id="i-msg" viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2Z"/></symbol>
+<symbol id="i-densite" viewBox="0 0 24 24"><path d="M9 2v6l-5 9a3 3 0 0 0 2.6 4.5h10.8A3 3 0 0 0 20 17l-5-9V2M8 2h8M7 15h10"/></symbol>
+<symbol id="i-pen" viewBox="0 0 24 24"><path d="M12 20h9M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z"/></symbol>
+<symbol id="i-doc" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8Z"/><path d="M14 2v6h6M16 13H8M16 17H8"/></symbol>
+</defs></svg>
+<div class="lots"><button data-lot="41" aria-pressed="true">Blonde · lot 28</button><button data-lot="42" aria-pressed="false">IPA Nelson · lot 31</button><span class="ex" style="margin-left:auto">exemple</span></div>
+<div class="jxbra" id="jxBra"></div>
+<div class="v1h"><a href="#" data-jxret><svg class="ico"><use href="#i-back"/></svg>Brassins</a></div>
+<div class="v1t"><h1 data-titre></h1><p data-sous></p></div>
+<div class="v1sec" id="recu"><h2>Qui a reçu ce lot</h2></div>
+<p class="v1lead" data-lead></p>
+<div class="v1leg" data-leg><span><i class="v1f plein"><svg class="ico"><use href="#i-fut"/></svg></i>chez le client</span><span><i class="v1f"><svg class="ico"><use href="#i-fut"/></svg></i>rentré</span></div>
+<div class="v1arbre" data-arbre></div>
+<nav class="bot" aria-label="Barre du bas"><a href="#"><svg class="ico"><use href="#i-bord"/></svg>Bord</a><a href="#"><svg class="ico" style="color:var(--fin)"><use href="#i-wallet"/></svg>Finances</a><a href="#"><svg class="ico" style="color:var(--prod)"><use href="#i-cal"/></svg>Calendrier</a><a href="#" class="on" aria-current="page"><svg class="ico" style="color:var(--prod)"><use href="#i-beer"/></svg>Brassins</a><a href="#"><svg class="ico" style="color:var(--stk)"><use href="#i-boxes"/></svg><b class="jx-pas num" aria-label="5 à commander avant S49">5</b>Stocks</a><a href="#"><svg class="ico"><use href="#i-users"/></svg>Clients</a></nav>
+<div class="voile" data-voile hidden></div><div class="voile" data-jxv hidden></div><div class="sheet" data-jxs role="dialog" hidden></div>
+<div class="dial" data-dial hidden>
+<h4>Partout</h4>
+<button data-dial-action="ecriture">Nouvelle écriture<svg class="ico"><use href="#i-pen"/></svg></button>
+<button data-dial-action="facture">Facture<svg class="ico"><use href="#i-doc"/></svg></button>
+<h4>Sur ce brassin</h4>
+<button data-dial-action="rentrer"><span>Rentrer un fût<small>vide, retour en cave</small></span><svg class="ico"><use href="#i-fut"/></svg></button>
+<button data-dial-action="livrer" class="fort"><span>Livrer un fût<small>client proposé d'office</small></span><svg class="ico"><use href="#i-fut"/></svg></button>
+</div>
+<button class="fab" data-fab aria-expanded="false" aria-label="Ajouter"><svg class="ico"><use href="#i-plus"/></svg></button>
+<script>(function(){var LOTS={
+41:{biere:"Blonde d'automne",lot:28,brasse:"12 oct.",cond:"2 nov.",futs:6,btl:48,abv:"4,8 %",
+ clients:[
+  {id:"pont",nom:"Café du Pont",qui:"Mme Rochat",tel:"079 412 33 05",futs:[{f:"F-22",liv:11,ret:null,etat:"entamé"},{f:"F-23",liv:4,ret:13,etat:"rentré"}]},
+  {id:"jules",nom:"La Cave à Jules",qui:"Jules Perret",tel:"078 655 20 14",futs:[{f:"F-24",liv:6,ret:null,etat:"chez lui"}]},
+  {id:"tilleul",nom:"Bar Le Tilleul",qui:"Nadia Berset",tel:"076 301 88 42",futs:[{f:"F-25",liv:14,ret:null,etat:"plein"}]},
+  {id:"corcelles",nom:"Fête de Corcelles",qui:"P. Jaquet, société de jeunesse",tel:"079 880 61 27",futs:[{f:"F-26",liv:8,ret:10,etat:"rentré"}]}
+ ],
+ marche:{jour:9,nom:"Marché du samedi",btl:30},
+ cave:{futs:["F-27"],btl:18}},
+42:{biere:"IPA Nelson",lot:31,brasse:"12 nov.",cond:null,futs:0,btl:0,abv:"6,2 %",clients:[],marche:null,cave:null}};
+var AUJ=16;function chez(c){return c.futs.filter(function(x){return x.ret==null})}
+function $(s,r){return (r||document).querySelector(s)}function $$(s,r){return Array.prototype.slice.call((r||document).querySelectorAll(s))}
+var Q=new URLSearchParams(location.search);if(Q.get('theme')==='cave')document.documentElement.dataset.theme='cave';
+(function(){var fab=$('[data-fab]'),d=$('[data-dial]'),v=$('[data-voile]');
+function set(o){var jt=document.getElementById('jx-toast');if(o&&jt)jt.hidden=true;fab.setAttribute('aria-expanded',o);d.hidden=!o;v.hidden=!o}
+fab.addEventListener('click',function(){set(fab.getAttribute('aria-expanded')!=='true')});v.addEventListener('click',function(){set(false)});
+$$('[data-dial-action]').forEach(function(b){b.addEventListener('click',function(){set(false);var a=b.dataset.dialAction;if(a==='lot'&&window.surLot)window.surLot();else if(window.jxAction)window.jxAction(a)})});
+window.ouvrirDial=function(){set(true)}})();
+var cur=Q.get('etat')==='vide'?42:41,ouvert=Q.get('etat')==='geste'?'pont':null;
+function fut(x){return '<i class="v1f'+(x.ret==null?' plein':'')+'" title="'+x.f+'"><svg class="ico"><use href="#i-fut"/></svg></i>'}
+function rend(){var L=LOTS[cur];$$('[data-lot]').forEach(function(b){b.setAttribute('aria-pressed',+b.dataset.lot===cur)});
+$('[data-titre]').textContent=L.biere;
+$('[data-sous]').innerHTML='lot <b class="num">'+L.lot+'</b> · brassé '+L.brasse+(L.cond?' · <b class="num">'+L.futs+'</b> fûts, <b class="num">'+L.btl+'</b> btl':' · <b>en cuve</b>');
+var A=$('[data-arbre]');
+if(!L.clients.length){$('[data-lead]').innerHTML='<b>Personne</b> pour l\u2019instant';
+A.innerHTML='<div class="v1rac"><i class="num">'+L.lot+'</i>En cuve · rien n\u2019est sorti</div><div class="v1vide" data-vide><b>Aucun fût livré.</b> Chaque fût que tu livres viendra s\u2019accrocher ici tout seul, avec son client. Rien à saisir.</div>';$('[data-leg]').hidden=true;return}
+$('[data-leg]').hidden=false;
+var dehors=0,cl=L.clients.slice().sort(function(a,b){return chez(b).length-chez(a).length});cl.forEach(function(c){dehors+=chez(c).length});
+$('[data-lead]').innerHTML='<b class="num">'+L.clients.length+'</b> clients l\u2019ont reçu · <b class="num">'+dehors+'</b> fûts encore chez eux';
+var h='<div class="v1rac"><i class="num">'+L.lot+'</i>Lot '+L.lot+' · conditionné '+L.cond+'</div>';
+cl.forEach(function(c){var o=ouvert===c.id,n=chez(c).length,der=c.futs.reduce(function(m,x){return Math.max(m,x.liv)},0);
+h+='<div class="v1br'+(o?' ouv':'')+(n?'':' gris')+'" data-client="'+c.id+'"><button class="v1row" data-booster="branche" aria-expanded="'+o+'"><span class="nm"><b>'+c.nom+'</b><span>'+(n?n+' fût'+(n>1?'s':'')+' chez lui':'tout est rentré')+' · livré le '+der+' nov.</span></span><span class="v1futs">'+c.futs.map(fut).join('')+'</span><svg class="ico"><use href="#i-chev"/></svg></button>';
+if(o){h+='<div class="v1det"><p class="v1qui">'+c.qui+'</p><button class="tel" data-tel><svg class="ico"><use href="#i-tel"/></svg>Appeler <span class="num">'+c.tel+'</span></button><ul>'+c.futs.map(function(x){return '<li class="'+(x.ret==null?'dehors':'')+'"><b class="num">'+x.f+'</b><span>livré le '+x.liv+' nov. · '+(x.ret==null?x.etat+', chez lui':'rentré le '+x.ret+' nov.')+'</span></li>'}).join('')+'</ul></div>'}
+h+='</div>'});
+if(L.marche)h+='<div class="v1br gris v1anon"><div class="v1row"><span class="nm"><b>'+L.marche.nom+'</b><span>le '+L.marche.jour+' nov. · <span class="num">'+L.marche.btl+'</span> btl vendues</span></span><span class="pill">sans nom</span></div></div>';
+if(L.cave)h+='<div class="v1br gris v1cave"><div class="v1row"><span class="nm"><b>Encore en cave</b><span><span class="num">'+L.cave.futs.join(', ')+'</span> · <span class="num">'+L.cave.btl+'</span> btl</span></span><span class="pill jx-liv">Livrer ›</span></div></div>';
+A.innerHTML=h;
+$$('[data-client] .v1row').forEach(function(b){b.addEventListener('click',function(){var id=b.parentNode.dataset.client;ouvert=ouvert===id?null:id;rend()})})}
+$$('[data-lot]').forEach(function(b){b.addEventListener('click',function(){cur=+b.dataset.lot;ouvert=null;rend()})});
+window.surLot=function(){$('#recu').scrollIntoView({behavior:'smooth'})};
+var SH=$('[data-jxs]'),SV=$('[data-jxv]');function fermer(){SH.hidden=true;SV.hidden=true}SV.addEventListener('click',fermer);jxGlisse(SH,fermer);
+function feuille(h){var jt=document.getElementById('jx-toast');if(jt)jt.hidden=true;SH.innerHTML=h+'<button class="jxs-f" data-jxf>Fermer</button>';SH.hidden=false;SV.hidden=false;SH.scrollTop=0;$('[data-jxf]',SH).onclick=fermer}
+function livrer(){var L=LOTS[cur];if(!L.cave||!L.cave.futs.length){feuille('<h3 class="jxs-h">Rien à livrer</h3><p class="jxs-p">'+(L.cond?'Plus aucun fût du lot '+L.lot+' en cave.':'Le lot '+L.lot+' est encore en cuve.')+'</p>');return}
+ var f=L.cave.futs[0],pro=L.clients.filter(function(c){return c.futs.some(function(x){return x.etat==='entamé'})})[0]||L.clients[0],cl=[pro].concat(L.clients.filter(function(c){return c!==pro}));
+ feuille('<h3 class="jxs-h">Livrer '+f+'</h3><p class="jxs-p">'+L.biere+' · lot '+L.lot+' · à qui ?</p>'+cl.map(function(c){return '<button class="jxs-b" data-liv="'+c.id+'"><span>'+c.nom+'<small>'+(chez(c).length?chez(c).length+' fût'+(chez(c).length>1?'s':'')+' chez lui':'tout est rentré')+'</small></span>'+(c===pro?'<em>proposé</em>':'')+'</button>'}).join(''));
+ $$('[data-liv]',SH).forEach(function(b){b.onclick=function(){var c=L.clients.filter(function(x){return x.id===b.dataset.liv})[0],x={f:f,liv:AUJ,ret:null,etat:'plein'};c.futs.push(x);L.cave.futs.splice(L.cave.futs.indexOf(f),1);fermer();ouvert=c.id;rend();jxDit(f+' livré à '+c.nom+' · exemple',function(){c.futs.splice(c.futs.indexOf(x),1);L.cave.futs.unshift(f);rend()})}})}
+function rentrer(){var L=LOTS[cur],dh=[];L.clients.forEach(function(c){chez(c).forEach(function(x){dh.push([c,x])})});
+ if(!dh.length){feuille('<h3 class="jxs-h">Rien à rentrer</h3><p class="jxs-p">'+(L.clients.length?'Tous les fûts du lot '+L.lot+' sont rentrés.':'Aucun fût du lot '+L.lot+' n’est sorti.')+'</p>');return}
+ feuille('<h3 class="jxs-h">Rentrer un fût</h3><p class="jxs-p">'+L.biere+' · lot '+L.lot+' · lequel revient ?</p>'+dh.map(function(p,i){return '<button class="jxs-b" data-ren="'+i+'"><span><b class="num">'+p[1].f+'</b> · '+p[0].nom+'<small>livré le '+p[1].liv+' nov. · '+p[1].etat+'</small></span></button>'}).join(''));
+ $$('[data-ren]',SH).forEach(function(b){b.onclick=function(){var p=dh[+b.dataset.ren],x=p[1],av=x.etat;x.ret=AUJ;x.etat='rentré';fermer();ouvert=p[0].id;rend();jxDit(x.f+' rentré de chez '+p[0].nom+' · exemple',function(){x.ret=null;x.etat=av;rend()})}})}
+document.addEventListener('click',function(e){if(e.target.closest('.v1cave')){livrer();return}var m=e.target.closest('.v1anon');if(m){var L=LOTS[cur];jxDit('exemple : '+L.marche.btl+' btl vendues au '+L.marche.nom+', sans nom de client')}});
+window.jxAction=function(a){if(a==='livrer')livrer();else if(a==='rentrer')rentrer();else jxDit('exemple : ouvrirait « '+(a==='ecriture'?'Nouvelle écriture':'Facture')+' »')};
+document.addEventListener('click',function(e){var t=e.target.closest('[data-tel]');if(!t)return;var c=LOTS[cur].clients.filter(function(x){return x.id===t.closest('[data-client]').dataset.client})[0];jxDit('exemple : appellerait '+c.qui+' au '+c.tel.replace(/ /g,' '))});
+function liste(){document.body.classList.add('jx-liste');scrollTo(0,0);jxEfface();$('#jxBra').innerHTML='<div class="jxbra-h"><h1>Brassins</h1><span class="ex">exemple</span></div>'+[41,42].map(function(k){var L=LOTS[k];return '<button data-jxlot="'+k+'"><span><b>'+L.biere+'</b><small>lot '+L.lot+' · brassé '+L.brasse+(L.cond?' · conditionné '+L.cond:' · en cuve')+'</small></span><span class="jxbra-c" aria-hidden="true">›</span></button>'}).join('');
+ $$('[data-jxlot]').forEach(function(b){b.onclick=function(){jxEfface();cur=+b.dataset.jxlot;ouvert=null;document.body.classList.remove('jx-liste');rend();scrollTo(0,0)}})}
+$('[data-jxret]').addEventListener('click',function(e){e.preventDefault();liste()});
+$$('.bot a').forEach(function(a){a.addEventListener('click',function(e){e.preventDefault();if(a.classList.contains('on')){if(document.body.classList.contains('jx-liste'))return;liste();return}jxEfface();jxDit('exemple : l’onglet '+a.textContent.trim()+' s’ouvrirait ici')})});
+rend();if(Q.get('etat')==='plus')ouvrirDial();if(Q.get('etat')==='livrer')livrer();if(Q.get('etat')==='rentrer')rentrer();if(Q.get('etat')==='liste')liste();
+})();</script></body></html>

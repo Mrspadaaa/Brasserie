@@ -1,0 +1,229 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>u2 — La grille des trous (01.11)</title>
+<style>
+:root{--acc:#C8382F;--page:#fff;--pan:#F5F5F5;--sur:#EBEBEB;--bord:#DDDDDD;--bordm:#BFBFBF;--t2:#666;--t1:#333;--t0:#111;
+--fin:#1F64A3;--fin-f:#E3EAF1;--prod:#9A4F1E;--stk:#4C6B2A;--att:#7F5B10;--att-f:#FBF3E1;--att-b:#C79A3A;--ok:#3F6B2E;--ok-f:#E6EFE1;--alert:#A8291F;--alert-f:#F8E4E2}
+*{box-sizing:border-box}
+body{margin:0;background:var(--page);color:var(--t1);font:14px/1.35 "Source Sans 3","Segoe UI",system-ui,sans-serif}
+.renou2-mono{font-family:"IBM Plex Mono",Consolas,monospace;font-variant-numeric:tabular-nums}
+.renou2-app{max-width:820px;margin:0 auto;padding-bottom:70px}
+.renou2-tete{display:flex;align-items:center;gap:8px;height:44px;padding:0 10px;border-bottom:1px solid var(--bord)}
+.renou2-logo{width:30px;height:30px;border-radius:10px;background:#111;display:grid;place-items:center}
+.renou2-nom{font-weight:600;font-size:17px;color:var(--t0);flex:1}
+.renou2-ico{width:30px;height:30px;border-radius:10px;border:1px solid var(--bord);display:grid;place-items:center;background:var(--pan)}
+svg.renou2-s{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;flex:none}
+.renou2-onglets{display:flex;border-bottom:1px solid var(--bord);margin:0 10px}
+.renou2-onglets span{flex:1;text-align:center;padding:8px 0 6px;font-size:14px;color:var(--t1)}
+.renou2-onglets span.renou2-on{color:var(--fin);font-weight:600;box-shadow:inset 0 -3px 0 var(--fin)}
+.renou2-seg{display:flex;gap:6px;padding:8px 10px 4px;align-items:center}
+.renou2-seg button{height:30px;padding:0 12px;border-radius:10px;border:1px solid transparent;background:none;font:14px inherit;font-family:inherit;color:var(--t1)}
+.renou2-seg button[aria-pressed=true]{background:var(--fin-f);border-color:#A9C0D6;color:var(--fin);font-weight:600}
+.renou2-tuiles{display:grid;grid-template-columns:1.1fr 1.3fr 1fr;gap:6px;padding:4px 10px 8px}
+.renou2-tuile{border-radius:10px;padding:6px 8px;background:var(--pan)}
+.renou2-tuile b{display:block;font-size:22px;line-height:1.1;color:var(--t0)}
+.renou2-tuile span{font-size:12px;color:var(--t2)}
+.renou2-tuile.renou2-t-trou{background:var(--att-f);box-shadow:inset 0 0 0 1px var(--att-b)}
+.renou2-tuile.renou2-t-trou b{color:var(--att)}
+.renou2-tuile.renou2-t-rouge{background:var(--alert-f);box-shadow:inset 0 0 0 1px #E3A29C}
+.renou2-tuile.renou2-t-rouge b{color:var(--alert)}
+.renou2-tuile.renou2-t-ok{background:var(--ok-f)}
+.renou2-tuile.renou2-t-ok b{color:var(--ok)}
+.renou2-prochain{display:flex;align-items:center;gap:8px;margin:0 10px 8px;padding:7px 8px 7px 10px;border-radius:10px;background:#111;color:#fff;font-size:14px}
+.renou2-prochain em{font-style:normal;color:#F2C14E;font-weight:600;font-size:12px;display:block}
+.renou2-prochain button{margin-left:auto;height:30px;padding:0 12px;border-radius:999px;border:0;background:#fff;color:#111;font:600 13px/1 inherit;font-family:inherit;flex:none}
+.renou2-grille{margin:0 10px;border:1px solid var(--bord);border-radius:16px;overflow:hidden}
+.renou2-rang{display:grid;grid-template-columns:minmax(0,1fr) 74px 58px 74px;align-items:center;gap:4px;padding:4px 6px 4px 0;border-bottom:1px solid var(--bord);min-height:46px}
+.renou2-rang:last-child{border-bottom:0}
+.renou2-rang.renou2-entete{min-height:28px;background:var(--pan);font-size:12px;font-weight:600;color:var(--t2);text-transform:uppercase;letter-spacing:.04em}
+.renou2-rang.renou2-entete span{text-align:center}
+.renou2-rang.renou2-entete span:first-child{text-align:left;padding-left:12px}
+.renou2-nomp{display:flex;align-items:stretch;gap:8px;min-width:0;align-self:stretch}
+.renou2-bord{width:5px;border-radius:0 4px 4px 0;flex:none}
+.renou2-nomp div{min-width:0;padding:2px 0;display:flex;flex-direction:column;justify-content:center}
+.renou2-nomp strong{font-size:15px;font-weight:600;color:var(--t0);line-height:1.15}
+.renou2-nomp small{font-size:12px;color:var(--t2)}
+.renou2-c{height:34px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:13px;color:var(--t0);background:var(--pan);text-align:center;line-height:1.1;padding:0 2px;border:0;font-family:inherit;width:100%}
+.renou2-c.renou2-mono{font-size:13px}
+.renou2-c.renou2-trou{background:var(--att-f);border:1.5px dashed var(--att-b);color:var(--att);font-weight:600}
+.renou2-c.renou2-cible{box-shadow:0 0 0 2px #fff,0 0 0 4px #111}
+.renou2-c.renou2-rouge{background:var(--alert-f);color:var(--alert);font-weight:600}
+.renou2-c.renou2-ok{background:var(--ok-f);color:var(--ok)}
+.renou2-c.renou2-attente{border:1.5px dotted var(--fin);background:var(--fin-f)}
+.renou2-groupe{padding:5px 12px 3px;font-size:12px;font-weight:600;color:var(--t2);background:var(--page);border-bottom:1px solid var(--bord);display:flex;gap:6px;align-items:center}
+.renou2-pastille{width:8px;height:8px;border-radius:50%;display:inline-block}
+.renou2-edit{padding:8px 10px 10px 13px;background:var(--pan);border-bottom:1px solid var(--bord)}
+.renou2-edit label{display:block;font-size:12px;color:var(--t2);margin:2px 0 4px}
+.renou2-mois{display:flex;gap:4px;flex-wrap:wrap}
+.renou2-mois button,.renou2-btn{height:28px;padding:0 10px;border-radius:999px;border:1px solid var(--bordm);background:var(--page);font:13px/1 inherit;font-family:inherit;color:var(--t1)}
+.renou2-mois button[aria-pressed=true]{background:#111;color:#fff;border-color:#111;font-weight:600}
+.renou2-champ{height:34px;border-radius:10px;border:1px solid var(--bordm);padding:0 10px;font:16px inherit;font-family:inherit;width:100%;color:var(--t0);background:var(--page)}
+.renou2-champ.renou2-focus{border:2px solid var(--fin)}
+.renou2-ligne2{display:flex;gap:6px;align-items:center;margin-top:6px}
+.renou2-bas{display:flex;justify-content:space-between;align-items:center;padding:8px 12px;font-size:13px;color:var(--t2)}
+.renou2-bas b{color:var(--t0)}
+.renou2-bandeau{margin:0 10px 8px;padding:6px 10px;border-radius:10px;background:var(--sur);display:flex;gap:6px;align-items:center;font-size:13px}
+.renou2-caisse{margin:0 10px 8px}
+.renou2-caisse .renou2-bar{display:flex;height:18px;border-radius:999px;overflow:hidden;background:var(--sur)}
+.renou2-caisse .renou2-bar i{display:block;height:100%;border-right:2px solid #fff}
+.renou2-caisse .renou2-leg{display:flex;justify-content:space-between;font-size:12px;color:var(--t2);margin-top:3px}
+.renou2-caisse .renou2-leg b{color:var(--t0)}
+.renou2-nav{position:fixed;left:0;right:0;bottom:0;height:56px;background:var(--pan);border-top:1px solid var(--bord);display:flex;z-index:4}
+.renou2-nav a{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;font-size:12px;color:var(--t1);text-decoration:none}
+.renou2-nav a.renou2-act{background:var(--fin-f);color:var(--fin);font-weight:600;box-shadow:inset 0 3px 0 var(--fin)}
+.renou2-plus{flex:none !important;width:64px;margin:6px 6px 6px 0;border-radius:999px;background:#111;color:#fff !important}
+@media (min-width:900px){.renou2-rang{grid-template-columns:minmax(0,1fr) 130px 120px 150px}.renou2-tuile b{font-size:24px}}
+</style>
+</head>
+<body>
+<div class="renou2-app">
+  <header class="renou2-tete">
+    <span class="renou2-logo"><svg viewBox="0 0 24 24" width="18" height="18"><path d="M6 6h9v12a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2z" fill="#F2C14E"/><path d="M15 9h2a2 2 0 0 1 2 2v2a2 2 0 0 1-2 2h-2" fill="none" stroke="#F2C14E" stroke-width="2"/><path d="M6 6h9v3H6z" fill="#fff"/></svg></span>
+    <span class="renou2-nom">L'Affinée</span>
+    <span class="renou2-ico" aria-label="Thème"><svg class="renou2-s" viewBox="0 0 24 24"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg></span>
+    <span class="renou2-ico" aria-label="Chercher"><svg class="renou2-s" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg></span>
+  </header>
+  <div class="renou2-onglets"><span>Synthèse</span><span>Opérations</span><span class="renou2-on">Prévisions</span><span>Annuel</span></div>
+  <div class="renou2-seg"><button aria-pressed="false">Échéances</button><button aria-pressed="true">Projets de matériel</button></div>
+  <main id="renou2-zone"></main>
+  <nav class="renou2-nav" aria-label="Navigation principale">
+    <a href="#"><svg class="renou2-s" viewBox="0 0 24 24"><rect x="4" y="4" width="6" height="6" rx="1"/><rect x="14" y="4" width="6" height="6" rx="1"/><rect x="4" y="14" width="6" height="6" rx="1"/><rect x="14" y="14" width="6" height="6" rx="1"/></svg>Bord</a>
+    <a href="#" class="renou2-act"><svg class="renou2-s" viewBox="0 0 24 24"><rect x="3" y="6" width="18" height="13" rx="2"/><path d="M3 10h18M16 14h2"/></svg>Finances</a>
+    <a href="#" style="color:var(--prod)"><svg class="renou2-s" viewBox="0 0 24 24"><path d="M6 7h10v12a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2zM16 10h2a2 2 0 0 1 2 2v3a2 2 0 0 1-2 2h-2M9 11v6M12 11v6"/></svg><span style="color:var(--t1)">Brassins</span></a>
+    <a href="#" style="color:var(--stk)"><svg class="renou2-s" viewBox="0 0 24 24"><path d="M12 3l4 2.5v4.5l-4 2.5-4-2.5V5.5zM8 12.5l4 2.5v4.5l-4 2.5-4-2.5V15zM16 12.5l4 2.5v4.5l-4 2.5-4-2.5V15z"/></svg><span style="color:var(--t1)">Stocks</span></a>
+    <a href="#"><svg class="renou2-s" viewBox="0 0 24 24"><circle cx="9" cy="8" r="3.5"/><path d="M3 20c0-3.3 2.7-6 6-6s6 2.7 6 6M16 4.5a3.5 3.5 0 0 1 0 7M21 20c0-2.6-1.6-4.8-4-5.6"/></svg>Clients</a>
+    <a href="#" class="renou2-plus" aria-label="Ajouter"><svg class="renou2-s" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg></a>
+  </nav>
+</div>
+<script>
+(function () {
+  var etat = new URLSearchParams(location.search).get('etat') || 'encours';
+  var zone = document.getElementById('renou2-zone');
+  function el(tag, cls, html) { var e = document.createElement(tag); if (cls) e.className = cls; if (html != null) e.innerHTML = html; return e; }
+  function n(v) { return String(v).replace(/\B(?=(\d{3})+(?!\d))/g, ' '); }
+  var NUAGE = '<svg class="renou2-s" viewBox="0 0 24 24"><path d="M3 3l18 18M8 8a5 5 0 0 0-1 0 4 4 0 0 0 0 8h9M20 15.5A3.5 3.5 0 0 0 17 10h-1a6 6 0 0 0-5.5-4"/></svg>';
+  var HORIZON = { 'Bientôt': '#1F64A3', 'Ensuite': '#6A8FB8', 'Plus tard': '#BFBFBF' };
+  // Données fictives. Une case vaut null quand l'app ne la connaît pas : c'est un trou.
+  // prix : budget total TTC saisi ; mois : paiement prévu ; qui : artisan ou toi, avec les heures notées.
+  var P = [
+    { t: 'Hotte', h: 'Bientôt', e: 'Devis en cours', prix: '3 610', mois: 'déc.', qui: 'Sophie 6 h' },
+    { t: '2ᵉ évier', h: 'Bientôt', e: 'À étudier', prix: '380 + ?', partiel: true, mois: null, qui: 'Marc' },
+    { t: 'Armoire extérieure', h: 'Ensuite', e: 'Idée', prix: null, mois: null, qui: null },
+    { t: 'Sols, seconde passe', h: 'Ensuite', e: 'Prêt à acheter', prix: '460', mois: 'janv.', qui: 'toi 8 h' },
+    { t: 'Site web vitrine', h: 'Plus tard', e: 'Idée', prix: null, mois: null, qui: 'toi 10 h' }
+  ];
+  var FINI = [['Hotte', '3 980', 'déc.', 'Sophie 6 h'], ['2ᵉ évier', '610', 'déc.', 'Marc 3 h'], ['Armoire extérieure', '1 240', 'févr.', 'Luca 5 h'], ['Sols, seconde passe', '470', 'janv.', 'toi 8 h'], ['Site web vitrine', '290', 'mars', 'toi 10 h']];
+
+  function tuiles(a, b, c) {
+    var t = el('div', 'renou2-tuiles');
+    [a, b, c].forEach(function (x) { t.appendChild(el('div', 'renou2-tuile ' + (x[2] || ''), '<b class="renou2-mono">' + x[0] + '</b><span>' + x[1] + '</span>')); });
+    return t;
+  }
+  function cellule(v, opts) {
+    opts = opts || {};
+    var b = el('button', 'renou2-c');
+    if (v == null) { b.className += ' renou2-trou'; b.textContent = '+'; b.setAttribute('aria-label', 'À remplir'); }
+    else { b.textContent = v; if (/\d/.test(v) && !/h$/.test(v)) b.className += ' renou2-mono'; }
+    if (opts.partiel) b.className += ' renou2-trou';
+    if (opts.cible) b.className += ' renou2-cible';
+    if (opts.rouge) b.className += ' renou2-rouge';
+    if (opts.ok) b.className += ' renou2-ok';
+    if (opts.attente) b.className += ' renou2-attente';
+    b.setAttribute('data-mots', 'lignes');
+    return b;
+  }
+  function rang(p, opts) {
+    opts = opts || {};
+    var r = el('div', 'renou2-rang');
+    var nom = el('div', 'renou2-nomp', '<span class="renou2-bord" style="background:' + (opts.couleur || HORIZON[p.h]) + '"></span><div><strong data-mots="lignes">' + p.t + '</strong><small data-mots="lignes">' + (opts.sous || p.e) + '</small></div>');
+    r.appendChild(nom);
+    r.appendChild(cellule(opts.prix !== undefined ? opts.prix : p.prix, { partiel: p.partiel && !opts.prix, rouge: opts.rouge, ok: opts.ok, attente: opts.attente === 'prix' }));
+    r.appendChild(cellule(opts.mois || p.mois, { cible: opts.cible === 'mois', ok: opts.ok }));
+    r.appendChild(cellule(p.qui, { ok: opts.ok }));
+    if (opts.rouge) r.style.background = '#FDF4F3';
+    return r;
+  }
+  function entete(c) { return el('div', 'renou2-rang renou2-entete', '<span>' + (c || 'Projet') + '</span><span>Prix CHF</span><span>Mois</span><span>Qui</span>'); }
+
+  if (etat === 'horsligne') zone.appendChild(el('div', 'renou2-bandeau', NUAGE + 'Hors ligne. Les cases pointillées partiront au retour du réseau.'));
+
+  if (etat === 'jour1') {
+    zone.appendChild(tuiles(['0', 'projet', ''], ['—', 'chiffré', ''], ['0', 'trou', 'renou2-t-trou']));
+    var g0 = el('div', 'renou2-grille');
+    g0.appendChild(entete());
+    var r0 = el('div', 'renou2-rang');
+    r0.innerHTML = '<div style="padding-left:8px"><input class="renou2-champ renou2-focus" placeholder="Ce qui te manque…" aria-label="Ce qui te manque"></div>';
+    ['+', '+', '+'].forEach(function () { var c = cellule(null); c.style.opacity = '.45'; r0.appendChild(c); });
+    g0.appendChild(r0);
+    zone.appendChild(g0);
+    zone.appendChild(el('div', 'renou2-bas', '<span>Une ligne par chantier. Chaque trou se remplit quand tu sais.</span>'));
+    return;
+  }
+  if (etat === 'fini') {
+    zone.appendChild(tuiles(['5/5', 'réalisés', 'renou2-t-ok'], ['6 590', 'CHF facturés', ''], ['0', 'trou', '']));
+    var gf = el('div', 'renou2-grille');
+    gf.appendChild(entete('Réalisé'));
+    FINI.forEach(function (f) { gf.appendChild(rang({ t: f[0], h: 'Bientôt', prix: f[1], mois: f[2], qui: f[3] }, { ok: true, couleur: '#3F6B2E', sous: 'Réalisé' })); });
+    zone.appendChild(gf);
+    zone.appendChild(el('div', 'renou2-bas', '<span>Prévu au départ (3 chiffrés)</span><b class="renou2-mono">4 450 CHF</b>'));
+    return;
+  }
+
+  var trous = etat === 'ajout' ? 10 : 7;
+  if (etat === 'depasse') zone.appendChild(tuiles(['1', 'dépassement', 'renou2-t-rouge'], ['+370', 'CHF sur la hotte', ''], ['7', 'trous', 'renou2-t-trou']));
+  else zone.appendChild(tuiles([String(P.length + (etat === 'ajout' || etat === 'horsligne' ? 1 : 0)), 'projets', ''], ['4 450', 'CHF chiffrés', ''], [String(trous), 'trous', 'renou2-t-trou']));
+
+  if (etat === 'caisse') {
+    var k = el('div', 'renou2-caisse');
+    // Trésorerie renseignée dans Finances (fictive). Les barres : budgets chiffrés, dans l'ordre des mois.
+    k.innerHTML = '<div class="renou2-leg"><span>Au compte <b class="renou2-mono">6 200 CHF</b></span><span>Reste <b class="renou2-mono">1 750 CHF</b></span></div>' +
+      '<div class="renou2-bar" role="img" aria-label="Hotte 3 610, sols 460, évier 380 sur 6 200 CHF"><i style="width:58.2%;background:#1F64A3"></i><i style="width:7.4%;background:#1F64A3"></i><i style="width:6.1%;background:#6A8FB8"></i></div>' +
+      '<div class="renou2-leg" data-mots="lignes"><span>déc. hotte</span><span>janv. sols</span><span>évier, sans mois</span><span>armoire et site : sans prix</span></div>';
+    zone.appendChild(k);
+  }
+  var pro = el('div', 'renou2-prochain');
+  pro.innerHTML = etat === 'depasse' ? '<div><em>À VÉRIFIER</em>Facture de pose de la hotte</div><button>Ouvrir</button>'
+    : '<div><em>PROCHAIN TROU</em>Le mois de l\'évier</div><button>Remplir</button>';
+  zone.appendChild(pro);
+
+  var g = el('div', 'renou2-grille');
+  g.appendChild(entete());
+  var dernier = '';
+  P.forEach(function (p) {
+    if (p.h !== dernier) { dernier = p.h; g.appendChild(el('div', 'renou2-groupe', '<span class="renou2-pastille" style="background:' + HORIZON[p.h] + '"></span>' + p.h)); }
+    var o = {};
+    if (p.t === '2ᵉ évier' && etat !== 'depasse') o.cible = 'mois';
+    if (p.t === '2ᵉ évier' && etat === 'ouvert') o.mois = 'déc.';
+    if (p.t === 'Hotte' && etat === 'depasse') { o.prix = '3 980'; o.rouge = true; o.sous = 'Facturé, prévu 3 610'; }
+    if (p.t === 'Sols, seconde passe' && etat === 'horsligne') o.attente = 'prix';
+    g.appendChild(rang(p, o));
+    if (p.t === '2ᵉ évier' && etat === 'ouvert') {
+      var ed = el('div', 'renou2-edit');
+      ed.innerHTML = '<label>Paiement prévu en</label><div class="renou2-mois"><button aria-pressed="false">nov.</button><button aria-pressed="true">déc.</button><button aria-pressed="false">janv.</button><button aria-pressed="false">févr.</button><button aria-pressed="false">mars</button><button aria-pressed="false">plus tard</button></div>' +
+        '<label style="margin-top:8px">Raccordement par Marc (CHF)</label><div class="renou2-ligne2"><input class="renou2-champ renou2-focus" inputmode="decimal" aria-label="Raccordement en CHF" placeholder="à chiffrer"><button class="renou2-btn" style="white-space:nowrap">Devis à Marc</button></div>';
+      g.appendChild(ed);
+    }
+  });
+  if (etat === 'ajout' || etat === 'horsligne') {
+    var r = el('div', 'renou2-rang');
+    if (etat === 'ajout') {
+      r.innerHTML = '<div style="padding-left:8px"><input class="renou2-champ renou2-focus" value="Lampes de la salle" aria-label="Ce qui te manque"></div>';
+      [null, null, null].forEach(function () { r.appendChild(cellule(null)); });
+    } else {
+      r = rang({ t: 'Lampes de la salle', h: 'Plus tard', e: 'Idée', prix: null, mois: null, qui: null }, { sous: 'à envoyer', couleur: '#1F64A3' });
+    }
+    g.appendChild(r);
+  } else {
+    var add = el('div', 'renou2-rang');
+    add.innerHTML = '<div style="padding-left:8px"><input class="renou2-champ" placeholder="Ce qui te manque…" aria-label="Ce qui te manque"></div><span></span><span></span><span></span>';
+    g.appendChild(add);
+  }
+  zone.appendChild(g);
+  zone.appendChild(el('div', 'renou2-bas', '<span>Budgets saisis, TTC</span><b class="renou2-mono">4 450 CHF</b>'));
+})();
+</script>
+</body>
+</html>

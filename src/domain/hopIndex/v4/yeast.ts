@@ -8,6 +8,7 @@ import { FAMILIES, type FamilyId } from './families';
 import { borneHoublons, Lru } from './lru';
 import { MOMENTS, predictTriplet, tripletOf, yeastInfo, type Addition, type Recipe, type YeastInfo } from './recipe';
 import type { FamilyEffect } from './voies';
+import { nombreFr } from '../../../domain/nombreAffiche';
 
 // L'effet d'un houblon à un moment (#178) : la prédiction V5.5 d'un triplet (houblon, lot, levure, moment, dose en g/L,
 // température, contact), calculée une fois par moteur (le contexte de ses données, data.ts : local), jamais globale.
@@ -90,7 +91,7 @@ export function yeastSignals(a: Addition, recipe: Recipe): { additionId: string;
   signaux.push({ id: 'geraniol-citronellol', titre: 'Géraniol → citronellol : le floral peut glisser vers les agrumes',
     statut: active && lin ? 'possible' : 'non évaluable',
     pourquoi: !active ? 'Ajout après fermentation : la levure active n’est plus là pour transformer les terpènes.'
-      : lin ? `Linalol documenté (${lin.range[0]}–${lin.range[1]} % de l’huile, Hopsteiner) ; géraniol non renseigné dans le dépôt. Sens possible, ampleur non quantifiée.`
+      : lin ? `Linalol documenté (${lin.range[0]}–${nombreFr(lin.range[1], 1)} % de l’huile, Hopsteiner) ; géraniol non renseigné dans le dépôt. Sens possible, ampleur non quantifiée.`
       : 'Aucune fiche ni huile du dépôt ne cite géraniol ou linalol pour ce houblon : signal non évaluable, ce qui ne veut pas dire absent.',
     quantifie: false,
     sources: [{ title: 'Takoi et al., The contribution of geraniol metabolism to the citrus flavour of beer, J. Inst. Brew., 2010 (relayé)', url: 'https://asbcnet.org/publications/journal/vol/abstracts/ASBCJ-2014-0116-01.htm' },

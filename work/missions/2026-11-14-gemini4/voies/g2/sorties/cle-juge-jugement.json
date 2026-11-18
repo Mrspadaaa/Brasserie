@@ -1,0 +1,74 @@
+{
+ "S1c234b": {
+  "cas": "routing-complex",
+  "cellule": "prod"
+ },
+ "S2db5d2": {
+  "cas": "color",
+  "cellule": "prod"
+ },
+ "S3bd59f": {
+  "cas": "metallic",
+  "cellule": "analysis=4-hydrogen@low"
+ },
+ "S467b61": {
+  "cas": "hops",
+  "cellule": "prod"
+ },
+ "S5df166": {
+  "cas": "ph-meter",
+  "cellule": "analysis=4-carbon@low"
+ },
+ "S83ddcf": {
+  "cas": "hops",
+  "cellule": "analysis=4-hydrogen@low"
+ },
+ "S94acab": {
+  "cas": "routing-complex",
+  "cellule": "analysis=4-hydrogen@low"
+ },
+ "S95bbc3": {
+  "cas": "routing-complex",
+  "cellule": "analysis=4-carbon@low"
+ },
+ "S974ef8": {
+  "cas": "ph-meter",
+  "cellule": "prod"
+ },
+ "Sacd32f": {
+  "cas": "ph-meter",
+  "cellule": "analysis=4-hydrogen@low"
+ },
+ "Sb0f49f": {
+  "cas": "metallic",
+  "cellule": "prod"
+ },
+ "Sc0dd72": {
+  "cas": "power",
+  "cellule": "analysis=4-carbon@low"
+ },
+ "Scd7fde": {
+  "cas": "power",
+  "cellule": "prod"
+ },
+ "Sd13c88": {
+  "cas": "hops",
+  "cellule": "analysis=4-carbon@low"
+ },
+ "Se18ee4": {
+  "cas": "metallic",
+  "cellule": "analysis=4-carbon@low"
+ },
+ "See0052": {
+  "cas": "power",
+  "cellule": "analysis=4-hydrogen@low"
+ },
+ "Sf5c60d": {
+  "cas": "color",
+  "cellule": "analysis=4-carbon@low"
+ },
+ "Sf61499": {
+  "cas": "color",
+  "cellule": "analysis=4-hydrogen@low"
+ }
+}

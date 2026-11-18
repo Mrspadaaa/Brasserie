@@ -1,0 +1,5 @@
+[
+  ["site-plus-tot", "encours", "[data-monte=\"4\"]"],
+  ["recap-payer", "encours", "[data-vue=\"payer\"]"],
+  ["rythme-a-regler", "fini", "[data-rythme]"]
+]

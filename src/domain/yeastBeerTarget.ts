@@ -104,18 +104,18 @@ export function prepareYeastBeerVariation(recipe: TrialRecipe, draft: YeastRecip
   const variation = { ...seed }, reasons: string[] = [], target = readYeastBeerTarget(draft.beerTarget);
   let preview = previewYeastBeerTarget(recipe, draft, refs, variation);
   if (preview.errors.length) return { variation, preview, reasons: [...preview.errors] };
-  if (target?.abv && preview.targetStatus.abv !== 'inside') {
+  // L'alcool (méthode ASBC, CF-6) n'est pas strictement proportionnel aux points de densité : un facteur de masse est corrigé jusqu'à
+  // quatre fois, et s'arrête dès que la cible est atteinte (un modèle proportionnel l'atteint au premier passage).
+  for (let pass = 0; pass < 4 && target?.abv && preview.targetStatus.abv !== 'inside'; pass++) {
     const range = preview.variant.projection.abv.range;
-    if (!range) reasons.push('Alcool non déterminable : préciser les données et l’hypothèse avant de rapprocher cette cible.');
-    else if (range.min <= 0 || target.abv.max <= 0) reasons.push('Un facteur de masse ne détermine pas cette cible d’alcool ; aucune atténuation ni voie NOLO n’est inventée.');
-    else {
-      const lower = target.abv.min / range.min, upper = target.abv.max / range.max;
-      if (lower > upper) reasons.push('La plage d’alcool calculée est trop large pour cette cible ; choisir une hypothèse explicite pour réduire l’incertitude.');
-      else {
-        const factor = Math.max(lower, Math.min(1, upper));
-        if (factor > 0) variation.fermentableScale *= factor;
-      }
-    }
+    if (!range) { reasons.push('Alcool non déterminable : préciser les données et l’hypothèse avant de rapprocher cette cible.'); break; }
+    if (range.min <= 0 || target.abv.max <= 0) { reasons.push('Un facteur de masse ne détermine pas cette cible d’alcool ; aucune atténuation ni voie NOLO n’est inventée.'); break; }
+    const lower = target.abv.min / range.min, upper = target.abv.max / range.max;
+    if (lower > upper) { reasons.push('La plage d’alcool calculée est trop large pour cette cible ; choisir une hypothèse explicite pour réduire l’incertitude.'); break; }
+    const factor = Math.max(lower, Math.min(1, upper));
+    if (!(factor > 0)) break;
+    variation.fermentableScale *= factor;
+    preview = previewYeastBeerTarget(recipe, draft, refs, variation);
   }
   preview = previewYeastBeerTarget(recipe, draft, refs, variation);
   if (!preview.errors.length && target?.ibu && preview.targetStatus.ibu !== 'inside') {

@@ -1,0 +1,266 @@
+{
+ "log": [
+  [
+   "p-f4b porter",
+   "Porter d’hiver−176Brassagelun. 14 déc.En cuve15 déc. → 11 janv.Prête18 janv.Munich 4 kg, Fuggles 200 g : manquent au stock, à acheter avant le 7 déc.Ouvrir le brassinCommander"
+  ],
+  [
+   "p-f5a appui",
+   {
+    "m": "ÉpinglerÉtoileFêtes seulesDupliquer en S51+1 180 · 2 jLier à un brassin, un clientRetirerS50 : 5 120 → 3 940",
+    "apres": "113CHF à dépenser ·S24"
+   }
+  ],
+  [
+   "p-f1a",
+   "S51 : 5 064 → 4 524Annuler"
+  ],
+  [
+   "p-blonde",
+   {
+    "al": "3 fûts promis le 15 déc. · prête le 28 déc.La Cigogne · la Blonde brassée dès le 23 nov.Caisse : S47 4 032 → 4 180, la suite inchangéeLivrer le 29 déc.Annuler",
+    "toast": "La Cigogne : 29 déc. · S53, hors vueAnnuler"
+   }
+  ],
+  [
+   "p-fab-brassin",
+   {
+    "t": "Prête le 4 janv. · S50 : 5 120 → 4 700Annuler",
+    "det": "Blonde d’automne−420Brassagelun. 7 déc.En cuve8 déc. → 28 déc.Prête4 janv.Stock : à vérifier en ouvrant le brassinOuvrirModifierRetirer"
+   }
+  ],
+  [
+   "p-plus-brassage",
+   {
+    "sheet": "Ajouterdans BrassinsBrassinVenteFêteAchatTravauxActivitéPapierBlonde d’automnePorter d’hiverIPA houblon à cruIPA de printempsBière d’étéBlanche d’étéRecetteCHFEn cuve21 j28 j35 j42 jprête le 14 déc.S4716 nov.S4823 nov.S4",
+    "toast": "Prête le 14 déc. · S47 : 4 180 → 3 880Annuler",
+    "pill": "−1 044"
+   }
+  ],
+  [
+   "p-plus-vente",
+   {
+    "sheet": "Ajouterdans VentesBrassinVenteFêteAchatTravauxActivitéPapierCafé du Pont 1 fût · 10 déc.+130Blonde d’automnePorter d’hiverIPA houblon à cruIPA de printempsBière d’étéBlanche d’étéNomCHFEn cuve21 j28 j35 j42 jprête le 4 j",
+    "toast": "S50 : 4 400 → 4 530Annuler",
+    "pill": "+1 030"
+   }
+  ],
+  [
+   "p-plus-evenement",
+   {
+    "sheet": "Ajouterdans FêtesBrassinVenteFêteAchatTravauxActivitéPapierBlonde d’automnePorter d’hiverIPA houblon à cruIPA de printempsBière d’étéBlanche d’étéNomCHFEn cuve21 j28 j35 j42 jprête le 14 déc.S4716 nov.S4823 nov.S4930 nov",
+    "toast": "S47 : 3 880 → 3 980Annuler"
+   }
+  ],
+  [
+   "p-plus-achat",
+   {
+    "sheet": "Ajouterdans AchatsBrassinVenteFêteAchatTravauxActivitéPapierBlonde d’automnePorter d’hiverIPA houblon à cruIPA de printempsBière d’étéBlanche d’étéNomCHFEn cuve21 j28 j35 j42 jprête le 14 déc.S4716 nov.S4823 nov.S4930 no",
+    "toast": "S47 : 3 980 → 3 880Annuler"
+   }
+  ],
+  [
+   "p-plus-renovation",
+   {
+    "sheet": "Ajouterdans TravauxBrassinVenteFêteAchatTravauxActivitéPapierBlonde d’automnePorter d’hiverIPA houblon à cruIPA de printempsBière d’étéBlanche d’étéNomCHFEn cuve21 j28 j35 j42 jprête le 14 déc.S4716 nov.S4823 nov.S4930 n",
+    "toast": "S47 : 3 880 → 3 730Annuler"
+   }
+  ],
+  [
+   "p-plus-activite",
+   {
+    "sheet": "Ajouterdans ActivitésBrassinVenteFêteAchatTravauxActivitéPapierBlonde d’automnePorter d’hiverIPA houblon à cruIPA de printempsBière d’étéBlanche d’étéNomCHFEn cuve21 j28 j35 j42 jprête le 14 déc.S4716 nov.S4823 nov.S4930",
+    "toast": "Nettoyer les fûts en S47Annuler"
+   }
+  ],
+  [
+   "p-plus-charge",
+   {
+    "sheet": "Ajouterdans PapiersBrassinVenteFêteAchatTravauxActivitéPapierBlonde d’automnePorter d’hiverIPA houblon à cruIPA de printempsBière d’étéBlanche d’étéNomCHFEn cuve21 j28 j35 j42 jprête le 14 déc.S4716 nov.S4823 nov.S4930 n",
+    "toast": "S47 : 3 730 → 3 630Annuler",
+    "pill": "−906"
+   }
+  ],
+  [
+   "p-deuxieme-vente",
+   "S49 : 3 582 → 3 782Annuler"
+  ],
+  [
+   "p-modifier-achat",
+   "S47 → S51 · S47 : 3 630 → 3 730Annuler"
+  ],
+  [
+   "p-retirer-activite",
+   "Retiré : Nettoyer les fûtsAnnuler"
+  ],
+  [
+   "p-c2b",
+   ""
+  ],
+  [
+   "p-c3a",
+   "S24 · 14 → 20 juinlibre −527Sols : colle et joints−320Ventes de la semaine+128la semaine−192"
+  ],
+  [
+   "l-fab-brassin",
+   "Prête le 18 janv. · S52 : 5 550 → 5 170Annuler"
+  ],
+  [
+   "l-plus-achat",
+   "S47 : 4 032 → 3 972Annuler"
+  ],
+  [
+   "l-blonde",
+   "3 fûts promis le 15 déc. · prête le 21 déc.La Cigogne · la Blonde tirée à 35 jLivrer le 22 déc.Annuler"
+  ],
+  [
+   "l-c1d",
+   "An"
+  ]
+ ],
+ "p0": {
+  "tete": "113CHF à dépenser ·S24",
+  "nouv": [],
+  "pills": {
+   "brassage": "−324",
+   "vente": "+900",
+   "charge": "−806"
+  },
+  "blonde": "J0 / 28",
+  "pins": [
+   "+260",
+   "",
+   "3"
+  ],
+  "toast": null,
+  "per": "6 sem.",
+  "scrollY": 0
+ },
+ "pAvantRotation": {
+  "tete": "−527CHF ·S24",
+  "nouv": [
+   "Blonde d’automne −420",
+   "Saison de printemps −300",
+   "Apéro des voisins +100",
+   "+130",
+   "+200",
+   "Houblon Citra 1 kg −100",
+   "Peinture de la cave −150",
+   "Nettoyer les fûts 1 j",
+   "Facture Brouwland −100"
+  ],
+  "pills": {
+   "brassage": "−1 044",
+   "vente": "+1 230",
+   "charge": "−906"
+  },
+  "blonde": "J0 / 35 · prête 28 déc.",
+  "pins": [
+   "+260",
+   "+130",
+   "+200"
+  ],
+  "toast": null,
+  "per": "6 sem.",
+  "scrollY": 0
+ },
+ "lAvantRotation": {
+  "tete": "113CHF à dépenser ·S24",
+  "nouv": [],
+  "pills": {
+   "brassage": "−556",
+   "vente": "+900",
+   "charge": "−1 986"
+  },
+  "blonde": "J0 / 28",
+  "pins": [
+   "+260",
+   "",
+   "3"
+  ],
+  "toast": null,
+  "per": "3 mois",
+  "scrollY": 0
+ },
+ "rotation1": {
+  "vue": "paysage",
+  "l": {
+   "tete": "113CHF à dépenser ·S24",
+   "nouv": [],
+   "pills": {
+    "brassage": "−556",
+    "vente": "+900",
+    "charge": "−1 986"
+   },
+   "blonde": "J0 / 28",
+   "pins": [
+    "+260",
+    "",
+    "3"
+   ],
+   "toast": null,
+   "per": "3 mois",
+   "scrollY": 0
+  }
+ },
+ "lAvantRetour": {
+  "tete": "−327CHF ·S24",
+  "nouv": [
+   "Blonde d’automne −380",
+   "Malt pils 25 kg −60"
+  ],
+  "pills": {
+   "brassage": "−936",
+   "vente": "+900",
+   "charge": "−1 986"
+  },
+  "blonde": "J0 / 35 · prête 21 déc.",
+  "pins": [],
+  "toast": null,
+  "per": "An",
+  "scrollY": 0
+ },
+ "pApresRetour": {
+  "tete": "−527CHF ·S24",
+  "nouv": [
+   "Blonde d’automne −420",
+   "Saison de printemps −300",
+   "Apéro des voisins +100",
+   "+130",
+   "+200",
+   "Houblon Citra 1 kg −100",
+   "Peinture de la cave −150",
+   "Nettoyer les fûts 1 j",
+   "Facture Brouwland −100"
+  ],
+  "pills": {
+   "brassage": "−1 044",
+   "vente": "+1 230",
+   "charge": "−906"
+  },
+  "blonde": "J0 / 35 · prête 28 déc.",
+  "pins": [
+   "+260",
+   "+130",
+   "+200"
+  ],
+  "toast": null,
+  "per": "6 sem.",
+  "scrollY": 0
+ },
+ "dims": [
+  [
+   "v-portrait",
+   "",
+   800,
+   1280
+  ],
+  [
+   "v-paysage",
+   "on",
+   1280,
+   800
+  ]
+ ],
+ "errs": []
+}

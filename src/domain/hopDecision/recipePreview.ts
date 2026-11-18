@@ -7,6 +7,7 @@ import { buildHopRecipeDraft, hopRecipeFutureProcurementCondition, validateHopRe
   type HopRecipeBinding, type HopRecipeDraftOptions, type HopRecipeDraftResult, type HopRecipeFutureProcurementChoice, type HopRecipeLike } from './recipeAdapter';
 import type { HopMeasurement, HopRange, HopSource } from '../../../functions/src/hopIndexSchema';
 import type { HopAlphaModelParameter, HopDecisionMaterial, HopProgramAddition, HopProgramApplication, HopProgramProposal } from './types';
+import { nombreFr } from '../../domain/nombreAffiche';
 
 export interface HopRecipeAlphaChoice {
   value: number;
@@ -155,7 +156,7 @@ function selectModelChanges<T extends HopRecipeLike>(current: T,
       analyticalBasis, origin: 'workingHypothesis',
       source: { title: 'Choix alpha avant aperçu final de recette', author: 'Choix de formulation', year: null,
         kind: 'judgment', reference: `recipe-preview:${current.id}:${id}`,
-        locator: bounds ? `Nominal de travail dans le domaine alpha rapporté ${bounds.min}–${bounds.max} % ; aucune nouvelle analyse physique.`
+        locator: bounds ? `Nominal de travail dans le domaine alpha rapporté ${bounds.min}–${nombreFr(bounds.max, 1)} % ; aucune nouvelle analyse physique.`
           : 'Hypothèse de travail explicite sans borne analytique disponible ; aucune teneur de lot attestée.' },
       ...(reading.selectedParameter?.observationRef ? { observationRef: reading.selectedParameter.observationRef }
         : reading.observations.length === 1 && bounds ? { observationRef: hopAlphaObservationReference(reading.observations[0]) } : {}),

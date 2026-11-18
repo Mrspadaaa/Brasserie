@@ -1,0 +1,132 @@
+{
+ "p-repos": "ok",
+ "p-repos.err": [],
+ "p-f1a": {
+  "pendant": {
+   "ici": "S51 · 14 déc. · lâcher ici",
+   "leg": "avantsi tu lâches en S51 : 5 064 → 4 524",
+   "tete": "113CHF à dépenser ·S24",
+   "cible": 2
+  },
+  "tete": "113CHF à dépenser ·S24",
+  "toast": "S51 : 5 064 → 4 524Annuler",
+  "left": 256
+ },
+ "p-f1a.err": [],
+ "p-f2a": {
+  "em": "J0 / 35 · prête 21 déc.",
+  "al": "3 fûts promis à La Cigogne le 15 déc. Mise en fût de la Blonde le 21 déc.Livrer le 22 déc.Annuler",
+  "tag": "15 déc.",
+  "alH": {
+   "h": 121,
+   "tops": [
+    535,
+    535
+   ]
+  }
+ },
+ "p-f2a.err": [],
+ "p-f4b": "Porter d’hiver−176Brassagelun. 14 déc.En cuve15 déc. → 11 janv.Prête18 janv.Munich 4 kg, Fuggles 200 g : manquent au stock, à acheter avant le 7 déc.Ouvrir le brassinCommander",
+ "p-f4b.err": [],
+ "p-f5a": {
+  "menu": "ÉpinglerÉtoileFêtes seulesDupliquer en S51+1 180 · 2 jLier à un brassin, un clientRetirerS50 : 5 120 → 3 940",
+  "toast": "S50 : 5 120 → 3 940Annuler",
+  "tete": "−1 067CHF ·S24"
+ },
+ "p-f5a.err": [],
+ "p-f6b": {
+  "em": "J0 / 28",
+  "apres2": "La Cigogne : 22 déc.Annuler",
+  "pend": {
+   "ici": "S48 · 23 nov. · lâcher ici",
+   "leg": "avantsi tu lâches en S48 : S47 4 032 → 4 180",
+   "tete": "113CHF à dépenser ·S24",
+   "cible": 2
+  },
+  "fant": 1
+ },
+ "p-f6b.err": [],
+ "p-c1d": {
+  "per": "An",
+  "mois": "NDJFMAMJ113JASO"
+ },
+ "p-c1d.err": [],
+ "p-c2b": {
+  "tete": "3 801S12−487",
+  "bulle": ""
+ },
+ "p-c2b.err": [],
+ "p-c3a": "S24 · 14 → 20 juinlibre 113Sols : colle et joints−320Ventes de la semaine+128la semaine−192",
+ "p-c3a.err": [],
+ "p-f3": {
+  "ouv": true,
+  "plus": 0
+ },
+ "p-f3.err": [],
+ "l-repos": "ok",
+ "l-repos.err": [],
+ "l-f1a": {
+  "pendant": {
+   "ici": "S51 · 14 déc. · lâcher ici",
+   "leg": "avantsi tu lâches en S51 : 5 064 → 4 524",
+   "tete": "113CHF à dépenser ·S24",
+   "cible": 2
+  },
+  "tete": "113CHF à dépenser ·S24",
+  "toast": "S51 : 5 064 → 4 524Annuler",
+  "left": 264.296875
+ },
+ "l-f1a.err": [],
+ "l-f2a": {
+  "em": "J0 / 35 · prête 21 déc.",
+  "al": "3 fûts promis à La Cigogne le 15 déc. Mise en fût de la Blonde le 21 déc.Livrer le 22 déc.Annuler",
+  "tag": "15 déc.",
+  "alH": {
+   "h": 100,
+   "tops": [
+    243,
+    243
+   ]
+  }
+ },
+ "l-f2a.err": [],
+ "l-f4b": "Porter d’hiver−176Brassagelun. 14 déc.En cuve15 déc. → 11 janv.Prête18 janv.Munich 4 kg, Fuggles 200 g : manquent au stock, à acheter avant le 7 déc.Ouvrir le brassinCommander",
+ "l-f4b.err": [],
+ "l-f5a": {
+  "menu": "ÉpinglerÉtoileFêtes seulesDupliquer en S51+1 180 · 2 jLier à un brassin, un clientRetirerS50 : 5 120 → 3 940",
+  "toast": "S50 : 5 120 → 3 940Annuler",
+  "tete": "−1 067CHF ·S24"
+ },
+ "l-f5a.err": [],
+ "l-f6b": {
+  "em": "J0 / 28",
+  "apres2": "La Cigogne : 22 déc.Annuler",
+  "pend": {
+   "ici": "S48 · 23 nov. · lâcher ici",
+   "leg": "avantsi tu lâches en S48 : S47 4 032 → 4 180",
+   "tete": "113CHF à dépenser ·S24",
+   "cible": 2
+  },
+  "fant": 1
+ },
+ "l-f6b.err": [],
+ "l-c1d": {
+  "per": "An",
+  "mois": "NDJFMAMJ113JASO"
+ },
+ "l-c1d.err": [],
+ "l-c2b": {
+  "tete": "3 801CHF ·S12 · 22 mars−487",
+  "bulle": ""
+ },
+ "l-c2b.err": [],
+ "l-c3a": "S24 · 14 → 20 juinlibre 113Sols : colle et joints−320Ventes de la semaine+128la semaine−192",
+ "l-c3a.err": [],
+ "l-f3": {
+  "ouv": true,
+  "plus": 0
+ },
+ "l-f3.err": [],
+ "p-cave-f4b": "ok",
+ "p-cave-f4b.err": []
+}

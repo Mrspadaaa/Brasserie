@@ -5,6 +5,7 @@ import { acidNeeded, ionsAfterAcid, calculateSpargeTreatment, retainAcidDose, wa
 import { RaBand, raAcidTarget } from './mashPh';
 import { positiveSaltDoses, splitDoses } from './plan';
 import { bicarbonatePreference } from './bicarbonatePreference';
+import { nombreFr } from '../../domain/nombreAffiche';
 
 export interface TreatmentInput {
   diRatioPct: number;
@@ -157,7 +158,7 @@ export function calculateWaterTreatment(source: WaterSource, input: TreatmentInp
       : reason === 'mash-alkalinity' ? 'La plage d’alcalinité de l’empâtage limite la correction.'
       : 'Les sels autorisés et les autres minéraux limitent la correction.';
     hco3Target = { requested: explicitHco3, achieved: treatedTotal.hco3, delta, reached,
-      ...(!reached ? { reason, message: `HCO₃ après acide : ${treatedTotal.hco3} mg/L pour une cible de ${explicitHco3}. ${detail}` } : {}) };
+      ...(!reached ? { reason, message: `HCO₃ après acide : ${nombreFr(treatedTotal.hco3, 1)} mg/L pour une cible de ${explicitHco3}. ${detail}` } : {}) };
   }
   const raBefore = residualAlkalinity(raw.mash);
   // The graph cannot show negative bicarbonate. For the mash buffer model,

@@ -34,6 +34,7 @@ import { demandeIA, useClassementIA } from './ia';
 import SYMBOLES from '../../../data/hopV4/pictos-familles.svg?raw';
 import '../dryhopper/pied-annuler.css';
 import './substituer.css';
+import { nombreFr } from '../../../domain/nombreAffiche';
 
 /** Les petites variantes de u4 enrichi (« quelques petites variante, amélioration », 24.10, soir), une par point,
  * ouvertes par `?u4e=u4e1`… et figées en pages statiques dans fils24-u4-enrichi ; sans paramètre, u4 enrichi. */
@@ -109,7 +110,7 @@ function PictosCites({ h, max = 5 }: { h: HoublonLu; max?: number }) {
  * l'article nommé au-dessus. Plus de trois plages : la rangée grandit de 4 px par trait, rien n'est caché. */
 const HAUT_RANGEE = 34, DEPART_TRAITS = 26, PAS_TRAIT = 4;
 function Rangee({ dom, nom, couleur, traits, lot, mesure }: { dom: Intervalle; nom: string; couleur: string; traits: TraitSource[]; lot?: { v: number; origine: 'lot' | 'article' } | null; mesure: string }) {
-  const x = (v: number) => `${Math.max(0, Math.min(100, ((v - dom[0]) / (dom[1] - dom[0])) * 100)).toFixed(1)}%`;
+  const x = (v: number) => `${nombreFr(Math.max(0, Math.min(100, ((v - dom[0]) / (dom[1] - dom[0])) * 100)), 1)}%`;
   if (!traits.length) {
     return (
       <div className="pq-substituer-mr" data-plage-inconnue={mesure} data-houblon={nom}>

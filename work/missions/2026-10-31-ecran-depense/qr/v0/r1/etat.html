@@ -1,0 +1,248 @@
+<!doctype html>
+<html lang="fr"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>r1 — QR-facture : la 4e rangée de la preuve (froide, 01.11)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Source+Sans+3:wght@400;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{--qrr1-fond:#F3F3F3;--qrr1-carte:#FAFAFA;--qrr1-blanc:#FFFFFF;--qrr1-bord:#DCDCDC;--qrr1-bordm:#BDBDBD;--qrr1-t2:#5E5E5E;--qrr1-t1:#2E2E2E;--qrr1-t0:#111111;
+--qrr1-att:#7A560C;--qrr1-attf:#FBF3E2;--qrr1-ok:#2F6B45;--qrr1-okf:#E8F3EB;--qrr1-sans:"Source Sans 3",system-ui,sans-serif;--qrr1-mono:"IBM Plex Mono",ui-monospace,monospace}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{background:#D9D9D9;color:var(--qrr1-t1);font-family:var(--qrr1-sans);font-size:14px;line-height:1.3;-webkit-font-smoothing:antialiased}
+button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
+::selection{background:#E9D8B0}
+:focus-visible{outline:2px solid var(--qrr1-t0);outline-offset:2px}
+.qrr1-m{font-family:var(--qrr1-mono);font-variant-numeric:tabular-nums}
+.qrr1-sheet{max-width:960px;margin:0 auto;min-height:100vh;background:var(--qrr1-fond);border-radius:24px 24px 0 0;display:flex;flex-direction:column}
+.qrr1-hd{position:sticky;top:0;z-index:5;background:var(--qrr1-fond);display:flex;align-items:center;gap:4px;height:48px;padding:0 8px 0 12px;border-bottom:1px solid var(--qrr1-bord);border-radius:24px 24px 0 0}
+.qrr1-hd h1{flex:1;font-size:20px;font-weight:600;color:var(--qrr1-t0)}
+.qrr1-ib{width:32px;height:32px;border-radius:10px;display:flex;align-items:center;justify-content:center;color:var(--qrr1-t1)}
+.qrr1-corps{flex:1;padding:6px 12px 72px;display:flex;flex-direction:column;gap:8px}
+.qrr1-colA,.qrr1-colB{display:flex;flex-direction:column;gap:8px;min-width:0}
+.qrr1-just{display:flex;align-items:center;gap:8px;min-height:28px;font-size:14px;color:var(--qrr1-t1)}
+.qrr1-just span{flex:1}
+/* Le bandeau : repris de l'app (fournisseur, date, total, chip « n lignes », barre des lignes). */
+.qrr1-bd{background:var(--qrr1-carte);border:1px solid var(--qrr1-bord);border-radius:16px;padding:6px 10px 8px;display:flex;flex-direction:column;gap:4px}
+.qrr1-bd1{display:flex;align-items:baseline;justify-content:space-between;gap:8px}
+.qrr1-four{font-size:16px;font-weight:600;color:var(--qrr1-t0)}
+.qrr1-bd2{display:flex;align-items:center;gap:8px}
+.qrr1-tot{font-family:var(--qrr1-mono);font-variant-numeric:tabular-nums;font-size:32px;font-weight:600;line-height:1.1;color:var(--qrr1-t0)}
+.qrr1-tot.qrr1-doute{color:var(--qrr1-att);text-decoration:underline dashed 1.5px;text-underline-offset:6px}
+.qrr1-dev{font-size:12px;color:var(--qrr1-t2)}
+.qrr1-chip{margin-left:auto;min-height:28px;display:inline-flex;align-items:center;gap:4px;padding:0 8px;border-radius:10px;border:1px solid var(--qrr1-bordm);background:var(--qrr1-blanc);font-size:14px}
+.qrr1-barre{display:flex;height:10px;border-radius:9px;overflow:hidden;border:1px solid var(--qrr1-bord)}
+.qrr1-barre i{height:100%;border-right:1.5px solid var(--qrr1-blanc)}
+.qrr1-barre i:last-child{border-right:0}
+.qrr1-l-relie{background:#9C7A2E}.qrr1-l-neuf{background:#4F74B0}.qrr1-l-aucun{background:#2B2B2B}
+/* La preuve : les rangées chiffrées de l'app ; le QR y entre comme une rangée de plus, même grammaire. */
+.qrr1-preuve{background:var(--qrr1-blanc);border:1px solid var(--qrr1-bord);border-radius:16px;padding:4px 10px 6px;display:flex;flex-direction:column}
+.qrr1-pt{font-size:14px;font-weight:600;color:var(--qrr1-t0);padding:4px 0 2px}
+.qrr1-rr{display:grid;grid-template-columns:18px 1fr auto;align-items:center;gap:6px;min-height:28px;border-bottom:1px solid var(--qrr1-bord);font-size:14px;text-align:left;width:100%}
+.qrr1-rr b{font-family:var(--qrr1-mono);font-variant-numeric:tabular-nums;font-weight:500;color:var(--qrr1-t0)}
+.qrr1-rr .qrr1-ic-ok{color:var(--qrr1-ok)}
+.qrr1-rr.qrr1-att span,.qrr1-rr.qrr1-att b{color:var(--qrr1-att)}
+
+.qrr1-rr.qrr1-qr b{display:inline-flex;align-items:center;gap:4px}
+.qrr1-rr.qrr1-muet span{color:var(--qrr1-t2)}
+.qrr1-qrd{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:4px;padding:4px 0 6px 24px;border-bottom:1px solid var(--qrr1-bord)}
+.qrr1-qrd span{display:flex;flex-direction:column;gap:1px;font-size:12px;color:var(--qrr1-t2);border-radius:10px;padding:3px 5px;background:var(--qrr1-okf)}
+.qrr1-qrd span b{font-family:var(--qrr1-mono);font-variant-numeric:tabular-nums;font-size:12px;font-weight:600;color:var(--qrr1-ok)}
+.qrr1-neutre span{background:var(--qrr1-fond)!important}.qrr1-neutre span b{color:var(--qrr1-t0)!important}
+.qrr1-qrd span.qrr1-vide{background:var(--qrr1-fond)}
+.qrr1-qrd span.qrr1-vide b{color:var(--qrr1-t2);font-weight:500}
+.qrr1-qrd span.qrr1-diff{background:var(--qrr1-attf);outline:1.5px dashed var(--qrr1-att)}
+.qrr1-qrd span.qrr1-diff b{color:var(--qrr1-att)}
+.qrr1-cnt{display:flex;flex-wrap:wrap;gap:4px 10px;padding:6px 0 2px;font-size:12px;color:var(--qrr1-t1)}
+.qrr1-cnt span{display:inline-flex;align-items:center;gap:3px}
+.qrr1-cnt b{font-family:var(--qrr1-mono);font-weight:600}
+/* Les tuiles d'argent et les chips numérotées : celles de l'app. */
+.qrr1-tu{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.qrr1-tile{position:relative;border:1px solid var(--qrr1-bord);border-radius:16px;padding:6px 10px;display:flex;flex-direction:column;gap:2px;min-height:52px;background:var(--qrr1-carte);text-align:left}
+.qrr1-tile small{font-size:12px;color:var(--qrr1-t2)}
+.qrr1-tile span{font-size:14px;color:var(--qrr1-t0)}
+.qrr1-pts{display:flex;flex-wrap:wrap;gap:6px}
+.qrr1-pc{position:relative;min-height:28px;display:inline-flex;align-items:center;gap:4px;padding:0 8px 0 28px;border-radius:10px;border:1.5px dashed var(--qrr1-att);background:var(--qrr1-attf);color:var(--qrr1-t0);font-size:14px}
+.qrr1-no{position:absolute;left:5px;top:4px;width:18px;height:18px;border-radius:50%;border:1.5px dashed var(--qrr1-att);color:var(--qrr1-att);font-family:var(--qrr1-mono);font-size:12px;font-weight:600;display:flex;align-items:center;justify-content:center;background:var(--qrr1-blanc)}
+.qrr1-pc.qrr1-fait{border:1px solid var(--qrr1-bord);background:var(--qrr1-blanc);color:var(--qrr1-t2);text-decoration:line-through}
+.qrr1-pc.qrr1-fait .qrr1-no{border:1.5px solid var(--qrr1-ok);background:var(--qrr1-ok);color:#fff}
+.qrr1-pan{border:2px solid var(--qrr1-t0);border-radius:16px;padding:8px;display:flex;flex-direction:column;gap:8px;background:var(--qrr1-blanc)}
+.qrr1-duo{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.qrr1-duo div{border:1px solid var(--qrr1-bord);border-radius:10px;padding:5px 8px;display:flex;flex-direction:column;gap:2px}
+.qrr1-duo small{font-size:12px;color:var(--qrr1-t2);display:inline-flex;align-items:center;gap:4px}
+.qrr1-duo b{font-family:var(--qrr1-mono);font-variant-numeric:tabular-nums;font-size:24px;font-weight:600;line-height:1.1;color:var(--qrr1-t0)}
+.qrr1-duo .qrr1-lu b{color:var(--qrr1-att)}
+.qrr1-duo .qrr1-q{border-color:var(--qrr1-ok);background:var(--qrr1-okf)}
+.qrr1-temoin{font-size:12px;color:var(--qrr1-t1)}
+.qrr1-temoin b{font-family:var(--qrr1-mono);font-weight:600}
+.qrr1-ch{display:flex;gap:6px;flex-wrap:wrap}
+.qrr1-ch button{min-height:28px;padding:0 10px;border-radius:10px;border:1px solid var(--qrr1-bordm);font-size:14px;background:var(--qrr1-blanc)}
+.qrr1-ch button.qrr1-plein{background:var(--qrr1-t0);border-color:var(--qrr1-t0);color:#fff;font-weight:600}
+/* Les lignes : celles de l'app (picto de lien, nom, pastille, quantité, montant). */
+.qrr1-lt{display:flex;align-items:center;justify-content:space-between;min-height:28px;border-top:1px solid var(--qrr1-bord);padding-top:4px}
+.qrr1-lt span{font-size:14px;color:var(--qrr1-t1)}
+.qrr1-li{display:grid;grid-template-columns:24px 1fr auto;align-items:center;gap:10px;padding:6px 4px;border-bottom:1px solid var(--qrr1-bord);min-height:52px}
+.qrr1-li b{font-size:16px;font-weight:600;color:var(--qrr1-t0)}
+.qrr1-li .qrr1-pas{font-size:12px;border-radius:10px;padding:0 6px;background:#E4E4E4;color:var(--qrr1-t1);margin-left:6px}
+.qrr1-li .qrr1-pas.qrr1-neuf{background:#E3EAF6;color:#2C4F86}
+.qrr1-li .qrr1-q2{display:block;font-family:var(--qrr1-mono);font-size:12px;color:var(--qrr1-t1)}
+.qrr1-li .qrr1-mt{font-family:var(--qrr1-mono);font-variant-numeric:tabular-nums;font-size:14px;color:var(--qrr1-t0);text-align:right}
+/* Lecture en cours : celle de l'app (titre, fichier, tuiles verrouillées, squelette). */
+.qrr1-lec{display:flex;flex-direction:column;gap:8px;border-top:1px solid var(--qrr1-bord);padding-top:8px}
+.qrr1-lec1{display:flex;align-items:center;gap:8px}
+.qrr1-lec1 p{font-size:14px;font-weight:600;color:var(--qrr1-t0)}
+.qrr1-lec1 small{display:block;font-family:var(--qrr1-mono);font-size:12px;color:var(--qrr1-t2)}
+.qrr1-tourne{width:18px;height:18px;border-radius:50%;border:2px solid #E4CF9C;border-top-color:#9C7A2E;animation:qrr1-t 0.9s linear infinite}
+@keyframes qrr1-t{to{transform:rotate(360deg)}}
+@media (prefers-reduced-motion:reduce){.qrr1-tourne{animation:none}}
+.qrr1-sq{display:grid;grid-template-columns:24px 1fr 40px;gap:8px;align-items:center}
+.qrr1-sq i{display:block;height:12px;border-radius:9px;background:#E2E2E2}
+.qrr1-sq i:first-child{height:20px;border-radius:6px}
+.qrr1-ft{position:sticky;bottom:0;z-index:5;display:flex;align-items:center;gap:8px;padding:8px 12px;background:var(--qrr1-fond);border-top:1px solid var(--qrr1-bord)}
+.qrr1-ft span{flex:1;font-size:12px;color:var(--qrr1-t1)}
+.qrr1-go{min-height:32px;padding:0 12px;border-radius:10px;background:var(--qrr1-t0);color:#fff;font-weight:600;display:inline-flex;align-items:center;gap:6px}
+@media (min-width:900px){
+ html,body{padding-top:24px}
+ .qrr1-sheet{min-height:calc(100vh - 24px);border-radius:24px}
+ .qrr1-corps{display:grid;grid-template-columns:440px minmax(0,1fr);gap:16px;align-items:start}
+}
+</style></head>
+<body>
+<div class="qrr1-sheet" id="qrr1-racine"></div>
+<script>
+(function () {
+  'use strict';
+  var ETATS = ['confirme', 'contredit', 'partiel', 'illisible', 'sans', 'lecture'];
+  var q = new URLSearchParams(location.search).get('etat');
+  var etat = ETATS.indexOf(q) >= 0 ? q : 'confirme';
+  var ui = { qrOuvert: etat === 'partiel', preuve: true, pan: etat === 'contredit', garde: null };
+  var LIGNES = [
+    ['Pilsner Malz', '10 kg', '+10 kg', 32.0, 'relie'], ['Pale Ale Malz', '5 kg', '+5 kg', 17.5, 'relie'],
+    ['Münchner Malz', '3 kg', '+3 kg', 11.4, 'relie'], ['Carapils', '1 kg', '+1 kg', 4.2, 'relie'],
+    ['Carafa Spezial 2', '1 kg', 'nouveau', 5.6, 'neuf'], ['Citra', '100 g · α 12,5', '+100 g', 14.8, 'relie'],
+    ['Saaz', '100 g · α 3,4', '+100 g', 9.6, 'relie'], ['SafAle US-05', '2 Stk', '+2 sachets', 9.8, 'relie'],
+    ['Whirlfloc', '1 Stk', '', 5.5, 'aucun']
+  ];
+  function chf(n) { return n.toFixed(2).split('.').join(','); }
+  function cube(lien) {
+    var c = '<path d="M10 2.5 17 6v8l-7 3.5L3 14V6z"/><path d="M3 6l7 3.5L17 6M10 9.5v8"/>';
+    var coul = lien === 'neuf' ? '#3F67A8' : lien === 'aucun' ? '#8A8A8A' : '#111';
+    var badge = lien === 'relie' ? '<circle cx="15" cy="15" r="4.6" fill="currentColor" stroke="none"/><path d="M12.8 15.1l1.6 1.6 2.9-3" stroke="#fff"/>'
+      : lien === 'neuf' ? '<circle cx="15" cy="15" r="4.6" fill="currentColor" stroke="none"/><path d="M15 12.6v4.8M12.6 15h4.8" stroke="#fff"/>' : '';
+    var mot = lien === 'relie' ? 'relié' : lien === 'neuf' ? 'nouvel article' : 'aucun mouvement de stock';
+    return '<svg role="img" aria-label="' + mot + '" width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" style="color:' + coul + '">' + c + badge + '</svg>';
+  }
+  /* Le picto QR-facture : trois repères d'angle et la croix suisse au centre, comme sur le bulletin. Couleur : ok, attention, muet ; barré si illisible. */
+  function qr(size, ton, barre) {
+    var col = ton === 'ok' ? 'var(--qrr1-ok)' : ton === 'att' ? 'var(--qrr1-att)' : 'var(--qrr1-t2)';
+    var rep = function (x, y) { return '<rect x="' + (x + 0.6) + '" y="' + (y + 0.6) + '" width="4.3" height="4.3" rx="0.6" fill="none" stroke="currentColor" stroke-width="1.5"/><rect x="' + (x + 2) + '" y="' + (y + 2) + '" width="1.5" height="1.5" fill="currentColor"/>'; };
+    return '<svg role="img" aria-label="QR-facture' + (barre ? ' illisible' : '') + '" width="' + size + '" height="' + size + '" viewBox="0 0 16 16" style="color:' + col + ';flex:none">' +
+      rep(0.5, 0.5) + rep(10, 0.5) + rep(0.5, 10) +
+      '<rect x="6" y="6" width="4" height="4" fill="currentColor"/><path d="M7.6 6.7h.8v2.6h-.8zM6.7 7.6h2.6v.8H6.7z" fill="#fff"/>' +
+      '<rect x="11" y="11" width="1.6" height="1.6" fill="currentColor"/><rect x="13.6" y="13.4" width="1.6" height="1.6" fill="currentColor"/><rect x="11" y="13.8" width="1.6" height="1.6" fill="currentColor"/><rect x="13.6" y="10.6" width="1.6" height="1.6" fill="currentColor"/>' +
+      (barre ? '<path d="M1.5 14.5 14.5 1.5" stroke="currentColor" stroke-width="1.5"/>' : '') + '</svg>';
+  }
+  var COCHE = '<svg class="qrr1-ic-ok" width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M2.5 7.4 5.6 10.4 11.5 3.8"/></svg>';
+  var ALERTE = '<svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="var(--qrr1-att)" stroke-width="1.5" aria-hidden="true"><circle cx="7" cy="7" r="5.7"/><path d="M7 4v3.6M7 9.6v.4"/></svg>';
+  var CHEV = function (ouvert) { return '<svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true" style="transform:rotate(' + (ouvert ? 180 : 0) + 'deg)"><path d="M3 5.2 7 9.2 11 5.2"/></svg>'; };
+
+  function totalAffiche() {
+    if (etat !== 'contredit') return 110.4;
+    return ui.garde === 'qr' ? 110.4 : 110.04;
+  }
+  function bandeau() {
+    var doute = etat === 'contredit' && !ui.garde;
+    var tot = totalAffiche();
+    var barre = LIGNES.map(function (l) { return '<i class="qrr1-l-' + l[4] + '" style="flex-grow:' + l[3] + '"></i>'; }).join('');
+    return '<section class="qrr1-bd" aria-label="Récapitulatif">' +
+      '<div class="qrr1-bd1"><span class="qrr1-four">Malterie Fictive SA</span><span class="qrr1-m" style="font-size:14px">12.10.2026</span></div>' +
+      '<div class="qrr1-bd2"><span class="qrr1-tot' + (doute ? ' qrr1-doute' : '') + '">' + chf(tot) + '</span><span class="qrr1-dev">CHF</span>' +
+      '<button type="button" class="qrr1-chip" data-booster="preuve" id="qrr1-chip" aria-expanded="' + ui.preuve + '" aria-label="Détails de la lecture">' + (doute ? ALERTE : COCHE) + '<span class="qrr1-m">9</span>&nbsp;lignes</button></div>' +
+      '<div class="qrr1-barre" aria-label="Les 9 lignes, à la largeur de leur montant">' + barre + '</div></section>';
+  }
+  function rangeeQr() {
+    if (etat === 'sans') return '';
+    if (etat === 'illisible') return '<div class="qrr1-rr qrr1-muet">' + qr(16, 'mute', true) + '<span>QR-facture illisible</span><b style="font-family:var(--qrr1-sans);font-weight:400;color:var(--qrr1-t2)">lecture seule</b></div>';
+    var att = etat === 'contredit' && ui.garde !== 'qr';
+    var cpt = etat === 'partiel' ? '2/2' : att ? '3/4' : '4/4';
+    var mot = etat === 'partiel' ? 'QR-facture = lu · sans montant' : att ? 'QR-facture : montant ≠ lu' : ui.garde === 'qr' ? 'QR-facture · montant pris' : 'QR-facture = lu';
+    var row = '<button type="button" class="qrr1-rr qrr1-qr' + (att ? ' qrr1-att' : '') + '" data-booster="qr-detail" id="qrr1-qrrow" aria-expanded="' + ui.qrOuvert + '">' +
+      qr(16, att ? 'att' : 'ok') + '<span>' + mot + '</span><b>' + cpt + CHEV(ui.qrOuvert) + '</b></button>';
+    if (!ui.qrOuvert) return row;
+    var cases;
+    if (etat === 'partiel') {
+      cases = [['Montant', '—', 'vide'], ['Devise', 'CHF', ''], ['Créancier', 'Malterie', ''], ['N°', '—', 'vide']];
+    } else {
+      cases = [['Montant', '110,40', att ? 'diff' : ''], ['Devise', 'CHF', ''], ['N°', 'F-1001', ''], ['Date', '12.10', '']];
+    }
+    return row + '<div class="qrr1-qrd" aria-label="Ce que porte le QR">' + cases.map(function (c) {
+      return '<span class="' + (c[2] ? 'qrr1-' + c[2] : '') + '">' + c[0] + '<b>' + c[1] + '</b></span>';
+    }).join('') + '</div>';
+  }
+  function preuve() {
+    if (!ui.preuve) return '';
+    var diff = etat === 'contredit' && ui.garde !== 'qr';
+    var titre = diff ? 'Lecture à confirmer' : 'Lecture vérifiée';
+    var somme = diff
+      ? '<div class="qrr1-rr qrr1-att">' + ALERTE + '<span>Somme des lignes ≠ imprimé</span><b>110,40</b></div>'
+      : '<div class="qrr1-rr">' + COCHE + '<span>Somme des lignes = imprimé</span><b>110,40</b></div>';
+    return '<section class="qrr1-preuve" aria-label="Vérification"><p class="qrr1-pt">' + titre + '</p>' + somme +
+      '<div class="qrr1-rr">' + COCHE + '<span>Quantité × prix, au centime</span><b>9/9</b></div>' +
+      rangeeQr() +
+      '<div class="qrr1-cnt"><span>' + cube('relie') + '<b>7</b> reliés</span><span>' + cube('neuf') + '<b>1</b> nouveau</span><span>' + cube('aucun') + '<b>1</b> sans stock</span></div></section>';
+  }
+  function points() {
+    if (etat !== 'contredit') return '';
+    var fait = !!ui.garde;
+    var chip = '<div class="qrr1-pts"><button type="button" class="qrr1-pc' + (fait ? ' qrr1-fait' : '') + '" data-booster="point-total" id="qrr1-p1" aria-expanded="' + ui.pan + '"><span class="qrr1-no">' + (fait ? '✓' : '1') + '</span>Total ' + qr(14, fait ? 'mute' : 'att') + '</button></div>';
+    if (!ui.pan || fait) return chip;
+    return chip + '<div class="qrr1-pan" id="qrr1-pan"><div class="qrr1-duo">' +
+      '<div class="qrr1-lu"><small>lu</small><b>110,04</b></div>' +
+      '<div class="qrr1-q"><small>' + qr(14, 'ok') + 'QR-facture</small><b>110,40</b></div></div>' +
+      '<p class="qrr1-temoin">Somme des lignes : <b>110,40</b></p>' +
+      '<div class="qrr1-ch"><button type="button" class="qrr1-plein" data-booster="garder" data-garde="qr">Garder 110,40</button><button type="button" data-garde="lu">Garder 110,04</button></div></div>';
+  }
+  function tuiles() {
+    return '<div class="qrr1-tu"><div class="qrr1-tile"><small>TVA · 2,6 %</small><span class="qrr1-m">2,80</span></div><div class="qrr1-tile"><small>Règlement</small><span>À payer</span></div></div>';
+  }
+  function lignes() {
+    return '<div class="qrr1-lt"><span>Lignes de la facture · <span class="qrr1-m">9</span></span>' + CHEV(true) + '</div>' +
+      LIGNES.map(function (l) {
+        var pas = l[2] ? '<span class="qrr1-pas' + (l[4] === 'neuf' ? ' qrr1-neuf' : '') + '">' + l[2] + '</span>' : '';
+        return '<div class="qrr1-li">' + cube(l[4]) + '<span><b>' + l[0] + '</b>' + pas + '<span class="qrr1-q2">' + l[1] + '</span></span><span class="qrr1-mt">' + chf(l[3]) + '</span></div>';
+      }).join('');
+  }
+  function lecture() {
+    var sq = [0, 1, 2, 3, 4, 5, 6].map(function () { return '<div class="qrr1-sq" aria-hidden="true"><i></i><span style="display:flex;flex-direction:column;gap:4px"><i style="width:60%"></i><i style="width:35%;height:10px"></i></span><i></i></div>'; }).join('');
+    return '<div class="qrr1-lec"><div class="qrr1-lec1"><span class="qrr1-tourne" aria-hidden="true"></span><div><p role="status">Lecture et vérification…</p><small>F-1001.pdf · 0,2 Mo</small></div></div>' +
+      '<section class="qrr1-preuve" aria-label="QR lu"><div class="qrr1-rr">' + qr(16, 'ok') + '<span>QR-facture lu · <span class="qrr1-m">0,4</span> s</span><b style="font-family:var(--qrr1-sans);font-weight:400;color:var(--qrr1-t2)">à comparer</b></div>' +
+      '<div class="qrr1-qrd qrr1-neutre" style="border-bottom:0;padding-left:0"><span>Montant<b>110,40</b></span><span>Devise<b>CHF</b></span><span>N°<b>F-1001</b></span><span>Date<b>12.10</b></span></div></section>' +
+      '<div class="qrr1-tu" style="opacity:.8"><div class="qrr1-tile"><small>Règlement</small><span>verrouillé</span></div><div class="qrr1-tile"><small>Pour quoi ?</small><span>verrouillé</span></div></div>' + sq + '</div>';
+  }
+  function rendre() {
+    var r = document.getElementById('qrr1-racine');
+    var hd = '<header class="qrr1-hd"><h1>Nouvelle dépense</h1><button type="button" class="qrr1-ib" aria-label="Justificatif"><svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M4 1.8h6.5L14 5.3v10.9H4z"/><path d="M10.3 1.8v3.7H14M6.5 9h5M6.5 12h5"/></svg></button><button type="button" class="qrr1-ib" aria-label="Fermer"><svg width="16" height="16" viewBox="0 0 16 16" stroke="currentColor" stroke-width="1.5"><path d="M3 3l10 10M13 3 3 13"/></svg></button></header>';
+    var corps;
+    if (etat === 'lecture') {
+      corps = '<div class="qrr1-corps"><div class="qrr1-colA">' + lecture() + '</div></div>';
+    } else {
+      corps = '<div class="qrr1-corps"><div class="qrr1-colA"><div class="qrr1-just"><svg width="16" height="16" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M4 1.8h6.5L14 5.3v10.9H4z"/><path d="M10.3 1.8v3.7H14"/></svg><span>Voir le justificatif</span>' + CHEV(false) + '</div>' +
+        bandeau() + preuve() + points() + tuiles() + '</div><div class="qrr1-colB" data-mots="lignes">' + lignes() + '</div></div>';
+    }
+    var ft = '<footer class="qrr1-ft"><span>' + (etat === 'lecture' ? 'Lecture en cours' : 'Drive prêt') + '</span><button type="button" class="qrr1-go"><svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M2.5 7.4 5.6 10.4 11.5 3.8"/></svg>Confirmer</button></footer>';
+    r.innerHTML = hd + corps + ft;
+  }
+  document.addEventListener('click', function (e) {
+    var t = e.target.closest('button');
+    if (!t) return;
+    if (t.id === 'qrr1-chip') ui.preuve = !ui.preuve;
+    else if (t.id === 'qrr1-qrrow') ui.qrOuvert = !ui.qrOuvert;
+    else if (t.id === 'qrr1-p1') ui.pan = !ui.pan;
+    else if (t.getAttribute('data-garde')) { ui.garde = t.getAttribute('data-garde'); ui.pan = false; }
+    else return;
+    rendre();
+  });
+  window.qrr1Etat = function () { return { etat: etat, ui: ui }; };
+  rendre();
+})();
+</script>
+</body></html>

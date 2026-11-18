@@ -1,0 +1,344 @@
+<!doctype html>
+<html lang="fr">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="claude:viewport-fit-sides" content="cover">
+<title>Carnet · greffe 4 · créer, ajouter, modifier, supprimer · 17.11</title>
+<style>
+:root{--bg:#f6f4ef;--carte:#fff;--fg:#1f1b16;--doux:#675e54;--ligne:#e2dbd0;--accent:#4f6f2f;--base:#efe9df;--alerte:#a8291f;color-scheme:light}
+@media (prefers-color-scheme:dark){:root{--bg:#16130f;--carte:#221e18;--fg:#f1ece4;--doux:#b3a898;--ligne:#3a332a;--accent:#9cc06b;--base:#2b261f;--alerte:#e0776b;color-scheme:dark}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--fg);font:15px/1.45 system-ui,-apple-system,"Segoe UI",sans-serif}
+.page{padding-block:18px 96px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+h1{font-size:22px;margin:0 0 6px;text-wrap:balance}
+.doux{color:var(--doux)}
+#a-choisir{background:var(--carte);border:1px solid var(--ligne);border-radius:12px;padding:12px 14px;margin:10px 0 14px;max-width:900px}
+#a-choisir p{margin:0 0 6px}
+#a-choisir p:last-child{margin:0}
+.vers{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:8px;margin:0 0 8px;max-width:1240px}
+.v{background:var(--carte);border:1px solid var(--ligne);border-radius:10px;padding:8px 10px;font-size:14px;margin:0}
+.v.base{background:var(--base)}
+.v b{font-size:15px}
+.v .n{display:block;color:var(--doux);font-size:14px}
+section.rang{margin-top:26px}
+section.rang h2{font-size:17px;margin:0 0 2px}
+section.rang .sous{margin:0 0 8px;font-size:14px;color:var(--doux)}
+.podium{font-size:15px;font-weight:600;color:var(--accent);margin-left:6px}
+.bande{display:flex;gap:10px;overflow-x:auto;padding-bottom:10px;scroll-snap-type:x proximity}
+figure{margin:0;flex:0 0 auto;width:200px;background:var(--carte);border:1px solid var(--ligne);border-radius:10px;overflow:hidden;scroll-snap-align:start;display:flex;flex-direction:column}
+figure.base{background:var(--base)}
+figure.debut{margin-left:8px}
+figure button.zoom{all:unset;cursor:zoom-in;display:block}
+figure img{display:block;width:200px;height:433px;object-fit:cover;object-position:top;border-bottom:1px solid var(--ligne)}
+.tiret{width:200px;height:433px;display:flex;align-items:center;justify-content:center;font-size:44px;color:var(--doux);border-bottom:1px solid var(--ligne)}
+figcaption{padding:6px 8px;display:flex;flex-direction:column;gap:6px;font-size:14px;flex:1}
+figcaption .t{font-weight:700;font-size:16px}
+figcaption .t em{font-style:normal;font-weight:600;font-size:14px;color:var(--doux);margin-left:4px}
+figcaption .l{color:var(--doux);font-size:14px;line-height:1.3}
+.rgs{display:flex;gap:4px;margin-top:auto}
+.rg{flex:1;min-width:0;height:40px;border:1.5px solid var(--ligne);border-radius:20px;background:var(--carte);color:var(--doux);font:inherit;font-weight:700;font-size:15px;cursor:pointer;padding:0}
+.rg[aria-pressed="true"]{color:#1f1b16;border-color:transparent}
+.rg[data-n="1"][aria-pressed="true"]{background:#e2b23a}
+.rg[data-n="2"][aria-pressed="true"]{background:#c4c8cc}
+.rg[data-n="3"][aria-pressed="true"]{background:#d49a6a}
+.rg[data-n="4"][aria-pressed="true"]{background:#b9c7d8}
+.rg[data-n="5"][aria-pressed="true"]{background:#d9d2c2}
+figcaption input{width:100%;height:36px;border:1.5px solid var(--ligne);border-radius:8px;padding:0 8px;font:inherit;font-size:14px;background:var(--carte);color:var(--fg)}
+figure[data-rang="1"]{outline:3px solid #e2b23a;outline-offset:-1px}
+figure[data-rang="2"]{outline:3px solid #a9adb2;outline-offset:-1px}
+figure[data-rang="3"]{outline:3px solid #c98b58;outline-offset:-1px}
+figure[data-rang="4"]{outline:3px solid #8fa4bd;outline-offset:-1px}
+figure[data-rang="5"]{outline:3px solid #b8ad96;outline-offset:-1px}
+.pied{position:fixed;left:0;right:0;bottom:0;background:var(--carte);border-top:1px solid var(--ligne);padding-block:10px calc(10px + env(safe-area-inset-bottom,0px));padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));display:flex;gap:10px;align-items:center;z-index:5}
+.pied button{height:44px;padding:0 16px;border-radius:10px;border:0;background:var(--accent);color:var(--carte);font:inherit;font-weight:700;cursor:pointer}
+.pied span{color:var(--doux);font-size:14px}
+#sortie{width:100%;min-height:150px;margin-top:14px;font:14px/1.4 ui-monospace,monospace;background:var(--carte);color:var(--fg);border:1px solid var(--ligne);border-radius:8px;padding:8px}
+#loupe{position:fixed;inset:0;background:rgba(0,0,0,.85);display:flex;align-items:flex-start;justify-content:center;z-index:9;padding:16px;overflow:auto}
+#loupe img{max-width:100%;width:420px;border-radius:8px}
+[hidden]{display:none!important}
+@media (max-width:520px){figure{width:168px}figure img,.tiret{width:168px;height:364px}}
+</style>
+<body>
+<div class="page">
+<h1>Carnet · greffe 4 · créer, ajouter, modifier, supprimer · 17.11</h1>
+<div id="a-choisir">
+<p><b>À choisir :</b> <span class="doux">ton classement par écran, seulement sur ce que tu as demandé de revoir : créer une idée, ajouter une note (texte, lien, photo), modifier une note ou le titre, supprimer une note, supprimer une idée.</span></p>
+<p class="doux">Onze rangées dans l’ordre des gestes : la base ra+p5f d’abord (fond beige), puis v01 à v06, avant · pendant · après. Glisse de côté, touche une image pour l’agrandir.</p>
+<p class="doux">Sous chaque vignette : 1 à 5 (plusieurs peuvent avoir le même rang ; retouche pour l’enlever), une note si tu veux, puis Copier en bas. Le reste du carnet est figé sur tes rangs.</p>
+</div>
+
+<div class="vers">
+<p class="v base"><b>base</b> ra+p5f, ton choix du 16.11 <span class="n">7/10 · ne dessine ni modifier ni supprimer : case « — »</span></p>
+<p class="v"><b>v01</b> « arrive ici » partout <span class="n">critique : 7/10</span><span class="doux">Un seul cadre pointillé pour créer, ajouter et modifier ; un crayon sur chaque note.</span></p>
+<p class="v"><b>v02</b> Puces « Va dans » au champ <span class="n">critique : 7/10</span><span class="doux">La destination se choisit au doigt sous le champ ; le ⋯ pour modifier et supprimer.</span></p>
+<p class="v"><b>v03</b> Feuille « quoi ? », menu de ligne <span class="n">critique : 7/10</span><span class="doux">La feuille h06 pour ajouter ; un menu de ligne pour retoucher ; la photo passe par un viseur.</span></p>
+<p class="v"><b>v04</b> Le champ du bas fait tout <span class="n">critique : 7/10</span><span class="doux">Le carnet reste visible ; sous le texte tapé, « rangé : … » dit où il va.</span></p>
+<p class="v"><b>v05</b> Gestes sur la ligne <span class="n">critique : 7/10</span><span class="doux">Toucher une ligne montre Modifier et Supprimer ; bandeau « … · Annuler » après chaque geste.</span></p>
+<p class="v"><b>v06</b> Mode « Retoucher » <span class="n">critique : 6/10</span><span class="doux">Toucher une note ou le titre l’encadre ; Supprimer est dans le cadre.</span></p>
+</div>
+
+<section class="rang" id="creer-avant" data-choix="Créer une idée · avant">
+<h2>1 · Créer une idée · avant <span class="podium"></span></h2>
+<p class="sous">La liste (figée : i06-1 et g05-1) et le premier usage (i06-2).</p>
+<div class="bande">
+<figure class="base" data-reference data-vignette data-cle="base-E17a-liste"><button type="button" class="zoom" aria-label="Agrandir base, liste"><img src="img/base-E17a-liste.webp" width="780" height="1688" alt="base : liste des carnets"></button><figcaption><span class="t">base <em>liste</em></span><span class="l">sa liste du 16.11</span></figcaption></figure>
+<figure class="base" data-reference data-vignette data-cle="base-E00-vide"><button type="button" class="zoom" aria-label="Agrandir base, liste vide"><img src="img/base-E00-vide.webp" width="780" height="1688" alt="base : liste vide"></button><figcaption><span class="t">base <em>vide</em></span><span class="l">« Rien encore : un besoin, un objet, une idée »</span></figcaption></figure>
+<figure class="debut" data-variante data-vignette data-cle="v01-1"><button type="button" class="zoom" aria-label="Agrandir v01-1"><img src="img/v01-1.webp" width="780" height="1688" alt="v01 : liste"></button><figcaption><span class="t">v01 <em>avant</em></span><span class="l">i06-1 telle quelle, « Chercher » sur l’idée</span></figcaption></figure>
+<figure data-variante data-vignette data-cle="v01-2"><button type="button" class="zoom" aria-label="Agrandir v01-2"><img src="img/v01-2.webp" width="780" height="1688" alt="v01 : liste vide"></button><figcaption><span class="t">v01 <em>vide</em></span><span class="l">premier usage, i06-2</span></figcaption></figure>
+<figure data-variante data-vignette data-cle="v02-1"><button type="button" class="zoom" aria-label="Agrandir v02-1"><img src="img/v02-1.webp" width="780" height="1688" alt="v02 : liste"></button><figcaption><span class="t">v02 <em>avant</em></span><span class="l">i06-1 telle quelle</span></figcaption></figure>
+<figure data-variante data-vignette data-cle="v03-1"><button type="button" class="zoom" aria-label="Agrandir v03-1"><img src="img/v03-1.webp" width="780" height="1688" alt="v03 : liste"></button><figcaption><span class="t">v03 <em>avant</em></span><span class="l">i06-1 telle quelle</span></figcaption></figure>
+<figure data-variante data-vignette data-cle="v04-1"><button type="button" class="zoom" aria-label="Agrandir v04-1"><img src="img/v04-1.webp" width="780" height="1688" alt="v04 : liste"></button><figcaption><span class="t">v04 <em>avant</em></span><span class="l">g05-1 telle quelle</span></figcaption></figure>
+<figure data-variante data-vignette data-cle="v04-2"><button type="button" class="zoom" aria-label="Agrandir v04-2"><img src="img/v04-2.webp" width="780" height="1688" alt="v04 : liste vide"></button><figcaption><span class="t">v04 <em>vide</em></span><span class="l">premier usage, i06-2</span></figcaption></figure>
+<figure data-variante data-vignette data-cle="v05-1"><button type="button" class="zoom" aria-label="Agrandir v05-1"><img src="img/v05-1.webp" width="780" height="1688" alt="v05 : liste"></button><figcaption><span class="t">v05 <em>avant</em></span><span class="l">i06-1 figée</span></figcaption></figure>
+<figure data-variante data-vignette data-cle="v06-1"><button type="button" class="zoom" aria-label="Agrandir v06-1"><img src="img/v06-1.webp" width="780" height="1688" alt="v06 : liste"></button><figcaption><span class="t">v06 <em>avant</em></span><span class="l">g05-1, « Coller un lien » sur l’idée</span></figcaption></figure>
+</div></section>
+
+<section class="rang" id="creer-pendant" data-choix="Créer une idée · pendant">
+<h2>2 · Créer une idée · pendant <span class="podium"></span></h2>
+<p class="sous">Ton n° 1 était h05-2, puis h01-2 et g02-2.</p>
+<div class="bande">
+<figure class="base" data-reference data-vignette data-cle="base-E01a"><button type="button" class="zoom" aria-label="Agrandir base, idée tapée"><img src="img/base-E01a-idee-tapee.webp" width="780" height="1688" alt="base : idée tapée"></button><figcaption><span class="t">base <em>pendant</em></span><span class="l">le champ seul, rien ne dit où ça va</span></figcaption></figure>
+<figure class="debut" data-variante data-vignette data-cle="v01-3"><button type="button" class="zoom" aria-label="Agrandir v01-3"><img src="img/v01-3.webp" width="780" height="1688" alt="v01 : créer pendant"></button><figcaption><span class="t">v01 <em>pendant</em></span><span class="l">h05-2 : « arrive ici », carnet proche, + Créer</span></figcaption></figure>
+<figure data-variante data-vignette data-cle="v02-2"><button type="button" class="zoom" aria-label="Agrandir v02-2"><img src="img/v02-2.webp" width="780" height="1688" alt="v02 : créer pendant"></button><figcaption><span class="t">v02 <em>pendant</em></span><span class="l">h05-2 + puces « Va dans Nouveau carnet / Ventilation »</span></figcaption></figure>
+<figure data-variante data-vignette data-cle="v03-2"><button type="button" class="zoom" aria-label="Agrandir v03-2"><img src="img/v03-2.webp" width="780" height="1688" alt="v03 : créer pendant"></button><figcaption><span class="t">v03 <em>pendant</em></span><span class="l">h05-2 tel quel</span></figcaption></figure>
+<figure data-variante data-vignette data-cle="v04-3"><button type="button" class="zoom" aria-label="Agrandir v04-3"><img src="img/v04-3.webp" width="780" height="1688" alt="v04 : créer pendant"></button><figcaption><span class="t">v04 <em>pendant</em></span><span class="l">« aucun parmi vos 3 », ta phrase sous le titre</span></figcaption></figure>
+<figure data-variante data-vignette data-cle="v05-2"><button type="button" class="zoom" aria-label="Agrandir v05-2"><img src="img/v05-2.webp" width="780" height="1688" alt="v05 : créer pendant"></button><figcaption><span class="t">v05 <em>pendant</em></span><span class="l">h05-2 sous À venir · Carnets · Réalisés</span></figcaption></figure>
+<figure data-variante data-vignette data-cle="v06-2"><button type="button" class="zoom" aria-label="Agrandir v06-2"><img src="img/v06-2.webp" width="780" height="1688" alt="v06 : créer pendant"></button><figcaption><span class="t">v06 <em>pendant</em></span><span class="l">h05-2 tel quel</span></figcaption></figure>
+</div></section>
+
+<section class="rang" id="creer-apres" data-choix="Créer une idée · après">
+<h2>3 · Créer une idée · après : le carnet neuf <span class="podium"></span></h2>
+<p class="sous">Annuler la création ; chaque rubrique vide dit quoi faire.</p>
+<div class="bande">
+<figure class="base" data-reference data-vignette data-cle="base-E01b"><button type="button" class="zoom" aria-label="Agrandir base, carnet créé"><img src="img/base-E01b-carnet-cree.webp" width="780" height="1688" alt="base : carnet créé"></button><figcaption><span class="t">base <em>après</em></span><span class="l">« Idée · 16 nov. », bulle IA, dernier dépôt</span></figcaption></figure>
+<figure class="debut" data-variante data-vignette data-cle="v01-4"><button type="button" class="zoom" aria-label="Agrandir v01-4"><img src="img/v01-4.webp" width="780" height="1688" alt="v01 : créer après"></button><figcaption><span class="t">v01 <em>après</em></span><span class="l">« créée à l’instant · Annuler », lien copié à coller</span></figcaption></figure>
+<figure data-variante data-vignette data-cle="v02-3"><button type="button" class="zoom" aria-label="Agrandir v02-3"><img src="img/v02-3.webp" width="780" height="1688" alt="v02 : créer après"></button><figcaption><span class="t">v02 <em>après</em></span><span class="l">bandeau « Carnet créé, à l’instant · Annuler »</span></figcaption></figure>
+<figure data-variante data-vignette data-cle="v03-3"><button type="button" class="zoom" aria-label="Agrandir v03-3"><img src="img/v03-3.webp" width="780" height="1688" alt="v03 : créer après"></button><figcaption><span class="t">v03 <em>après</em></span><span class="l">« Idée · à l’instant · Annuler » en haut</span></figcaption></figure>
+<figure data-variante data-vignette data-cle="v04-4"><button type="button" class="zoom" aria-label="Agrandir v04-4"><img src="img/v04-4.webp" width="780" height="1688" alt="v04 : créer après"></button><figcaption><span class="t">v04 <em>après</em></span><span class="l">bandeau vert Annuler, ta phrase sous le titre</span></figcaption></figure>
+<figure data-variante data-vignette data-cle="v04-5"><button type="button" class="zoom" aria-label="Agrandir v04-5"><img src="img/v04-5.webp" width="780" height="1688" alt="v04 : retour à la liste"></button><figcaption><span class="t">v04 <em>‹ Carnets</em></span><span class="l">la liste : le carnet neuf en Idée</span></figcaption></figure>
+<figure data-variante data-vignette data-cle="v05-3"><button type="button" class="zoom" aria-label="Agrandir v05-3"><img src="img/v05-3.webp" width="780" height="1688" alt="v05 : créer après"></button><figcaption><span class="t">v05 <em>après</em></span><span class="l">filet ambre, « en tête des Carnets · Annuler »</span></figcaption></figure>
+<figure data-variante data-vignette data-cle="v06-3"><button type="button" class="zoom" aria-label="Agrandir v06-3"><img src="img/v06-3.webp" width="780" height="1688" alt="v06 : créer après"></button><figcaption><span class="t">v06 <em>après</em></span><span class="l">Annuler en haut, quatre rubriques vides</span></figcaption></figure>
+</div></section>
+
+<section class="rang" id="ajouter-quoi" data-choix="Ajouter à une idée · avant : quoi ?">
+<h2>4 · Ajouter à une idée · avant : quoi ? <span class="podium"></span></h2>
+<p class="sous">Le + touché. Tes Top 2 : h06-4a ; Top 4 : h04-4a.</p>
+<div class="bande">
+<figure class="base" data-reference data-vignette data-cle="base-E20g"><button type="button" class="zoom" aria-label="Agrandir base, carnet ouvert"><img src="img/base-E20g-carnet.webp" width="780" height="1688" alt="base : carnet ouvert"></button><figcaption><span class="t">base <em>avant</em></span><span class="l">le + noir, rien ne dit quoi</span></figcaption></figure>
+<figure class="debut" data-variante data-vignette data-cle="v01-5"><button type="button" class="zoom" aria-label="Agrandir v01-5"><img src="img/v01-5.webp" width="780" height="1688" alt="v01 : quoi ?"></button><figcaption><span class="t">v01 <em>avant</em></span><span class="l">feuille quoi ? : 4 types, lien copié sous Article</span></figcaption></figure>
+<figure data-variante data-vignette data-cle="v02-4"><button type="button" class="zoom" aria-label="Agrandir v02-4"><img src="img/v02-4.webp" width="780" height="1688" alt="v02 : quoi ?"></button><figcaption><span class="t">v02 <em>avant</em></span><span class="l">4 tuiles i06-4, l’exemple du type choisi</span></figcaption></figure>
+<figure data-variante data-vignette data-cle="v03-4"><button type="button" class="zoom" aria-label="Agrandir v03-4"><img src="img/v03-4.webp" width="780" height="1688" alt="v03 : quoi ?"></button><figcaption><span class="t">v03 <em>avant</em></span><span class="l">feuille h06 sur le carnet assombri</span></figcaption></figure>
+<figure data-variante data-vignette data-cle="v04-6"><button type="button" class="zoom" aria-label="Agrandir v04-6"><img src="img/v04-6.webp" width="780" height="1688" alt="v04 : carnet au repos"></button><figcaption><span class="t">v04 <em>repos</em></span><span class="l">le carnet, avant de toucher le +</span></figcaption></figure>
+<figure data-variante data-vignette data-cle="v04-7"><button type="button" class="zoom" aria-label="Agrandir v04-7"><img src="img/v04-7.webp" width="780" height="1688" alt="v04 : quoi ?"></button><figcaption><span class="t">v04 <em>avant</em></span><span class="l">h06-4a, « Lien copié · Coller » en tête</span></figcaption></figure>
+<figure data-variante data-vignette data-cle="v05-4"><button type="button" class="zoom" aria-label="Agrandir v05-4"><img src="img/v05-4.webp" width="780" height="1688" alt="v05 : quoi ?"></button><figcaption><span class="t">v05 <em>avant</em></span><span class="l">feuille quoi ?, la note visible au-dessus</span></figcaption></figure>
+<figure data-variante data-vignette data-cle="v06-4"><button type="button" class="zoom" aria-label="Agrandir v06-4"><img src="img/v06-4.webp" width="780" height="1688" alt="v06 : quoi ?"></button><figcaption><span class="t">v06 <em>avant</em></span><span class="l">h06-4a, Coller sous Article</span></figcaption></figure>
+</div></section>
+
+<section class="rang" id="ajouter-texte" data-choix="Ajouter un texte">
+<h2>5 · Ajouter un texte · pendant et après <span class="podium"></span></h2>
+<p class="sous">Ton Top 2 : h02-4a (« va atterrir ici, tiré de votre phrase »).</p>
+<div class="bande">
+<figure class="base" data-reference data-vignette data-cle="base-E06"><button type="button" class="zoom" aria-label="Agrandir base, note"><img src="img/base-E06-note.webp" width="780" height="1688" alt="base : note déposée"></button><figcaption><span class="t">base <em>après</em></span><span class="l">dernier dépôt, « rangé : prochaine étape »</span></figcaption></figure>
+<figure class="debut" data-variante data-vignette data-cle="v01-6"><button type="button" class="zoom" aria-label="Agrandir v01-6"><img src="img/v01-6.webp" width="780" height="1688" alt="v01 : texte pendant"></button><figcaption><span class="t">v01 <em>pendant</em></span><span class="l">« va atterrir ici, dans Critère », puces sous le champ</span></figcaption></figure>
+<figure data-variante data-vignette data-cle="v02-5"><button type="button" class="zoom" aria-label="Agrandir v02-5"><img src="img/v02-5.webp" width="780" height="1688" alt="v02 : texte pendant"></button><figcaption><span class="t">v02 <em>pendant</em></span><span class="l">h02-4a, « Entrée = ranger la note »</span></figcaption></figure>
+<figure data-variante data-vignette data-cle="v03-9"><button type="button" class="zoom" aria-label="Agrandir v03-9"><img src="img/v03-9.webp" width="780" height="1688" alt="v03 : note pendant"></button><figcaption><span class="t">v03 <em>pendant</em></span><span class="l">une note : va atterrir ici, puce Note</span></figcaption></figure>
+<figure data-variante data-vignette data-cle="v03-10"><button type="button" class="zoom" aria-label="Agrandir v03-10"><img src="img/v03-10.webp" width="780" height="1688" alt="v03 : note après"></button><figcaption><span class="t">v03 <em>après</em></span><span class="l">« à l’instant · Annuler » sur la ligne</span></figcaption></figure>
+<figure data-variante data-vignette data-cle="v04-11"><button type="button" class="zoom" aria-label="Agrandir v04-11"><img src="img/v04-11.webp" width="780" height="1688" alt="v04 : texte pendant"></button><figcaption><span class="t">v04 <em>pendant</em></span><span class="l">h02-4a, puce Ce qui compte</span></figcaption></figure>
+<figure data-variante data-vignette data-cle="v04-12"><button type="button" class="zoom" aria-label="Agrandir v04-12"><img src="img/v04-12.webp" width="780" height="1688" alt="v04 : texte après"></button><figcaption><span class="t">v04 <em>après</em></span><span class="l">« Rangé dans Ce qui compte · Annuler »</span></figcaption></figure>
+<figure data-variante data-vignette data-cle="v05-5"><button type="button" class="zoom" aria-label="Agrandir v05-5"><img src="img/v05-5.webp" width="780" height="1688" alt="v05 : texte pendant"></button><figcaption><span class="t">v05 <em>pendant</em></span><span class="l">h02-4a tel quel</span></figcaption></figure>
+<figure data-variante data-vignette data-cle="v05-6"><button type="button" class="zoom" aria-label="Agrandir v05-6"><img src="img/v05-6.webp" width="780" height="1688" alt="v05 : texte après"></button><figcaption><span class="t">v05 <em>après</em></span><span class="l">bandeau « Rangé · Annuler » sur la ligne</span></figcaption></figure>
+<figure data-variante data-vignette data-cle="v06-5"><button type="button" class="zoom" aria-label="Agrandir v06-5"><img src="img/v06-5.webp" width="780" height="1688" alt="v06 : texte pendant"></button><figcaption><span class="t">v06 <em>pendant</em></span><span class="l">h02-4a, puce Critère</span></figcaption></figure>
+</div></section>
+
+<section class="rang" id="ajouter-lien" data-choix="Ajouter un lien">
+<h2>6 · Ajouter un lien · pendant et après <span class="podium"></span></h2>
+<p class="sous">Ton Top 2 : h05-4b (l’objet, son prix, la veille tous les 3 jours).</p>
+<div class="bande">
+<figure class="base" data-reference data-vignette data-cle="base-E07a"><button type="button" class="zoom" aria-label="Agrandir base, coller le lien"><img src="img/base-E07a-puce-coller.webp" width="780" height="1688" alt="base : coller le lien copié"></button><figcaption><span class="t">base <em>pendant</em></span><span class="l">« Coller le lien copié »</span></figcaption></figure>
+<figure class="base" data-reference data-vignette data-cle="base-E12"><button type="button" class="zoom" aria-label="Agrandir base, lien déposé"><img src="img/base-E12-lien6.webp" width="780" height="1688" alt="base : lien déposé"></button><figcaption><span class="t">base <em>après</em></span><span class="l">dernier dépôt : l’article</span></figcaption></figure>
+<figure class="debut" data-variante data-vignette data-cle="v01-8"><button type="button" class="zoom" aria-label="Agrandir v01-8"><img src="img/v01-8.webp" width="780" height="1688" alt="v01 : lien pendant"></button><figcaption><span class="t">v01 <em>pendant</em></span><span class="l">h05-4b au-dessus de Vos carnets</span></figcaption></figure>
+<figure data-variante data-vignette data-cle="v01-9"><button type="button" class="zoom" aria-label="Agrandir v01-9"><img src="img/v01-9.webp" width="780" height="1688" alt="v01 : lien après"></button><figcaption><span class="t">v01 <em>après</em></span><span class="l">« Article rangé ici, à l’instant · Annuler »</span></figcaption></figure>
+<figure data-variante data-vignette data-cle="v02-6"><button type="button" class="zoom" aria-label="Agrandir v02-6"><img src="img/v02-6.webp" width="780" height="1688" alt="v02 : lien pendant"></button><figcaption><span class="t">v02 <em>pendant</em></span><span class="l">h05-4b dans le carnet, sous Articles</span></figcaption></figure>
+<figure data-variante data-vignette data-cle="v03-5"><button type="button" class="zoom" aria-label="Agrandir v03-5"><img src="img/v03-5.webp" width="780" height="1688" alt="v03 : lien pendant"></button><figcaption><span class="t">v03 <em>pendant</em></span><span class="l">h05-4b tel quel</span></figcaption></figure>
+<figure data-variante data-vignette data-cle="v03-6"><button type="button" class="zoom" aria-label="Agrandir v03-6"><img src="img/v03-6.webp" width="780" height="1688" alt="v03 : lien après"></button><figcaption><span class="t">v03 <em>après</em></span><span class="l">l’article dans Articles, « Annuler »</span></figcaption></figure>
+<figure data-variante data-vignette data-cle="v04-8"><button type="button" class="zoom" aria-label="Agrandir v04-8"><img src="img/v04-8.webp" width="780" height="1688" alt="v04 : lien pendant"></button><figcaption><span class="t">v04 <em>pendant</em></span><span class="l">h05-4b dans Articles, « rangé : Articles » au champ</span></figcaption></figure>
+<figure data-variante data-vignette data-cle="v05-7"><button type="button" class="zoom" aria-label="Agrandir v05-7"><img src="img/v05-7.webp" width="780" height="1688" alt="v05 : lien pendant"></button><figcaption><span class="t">v05 <em>pendant</em></span><span class="l">h05-4b tel quel</span></figcaption></figure>
+<figure data-variante data-vignette data-cle="v06-6"><button type="button" class="zoom" aria-label="Agrandir v06-6"><img src="img/v06-6.webp" width="780" height="1688" alt="v06 : lien pendant"></button><figcaption><span class="t">v06 <em>pendant</em></span><span class="l">h05-4b tel quel</span></figcaption></figure>
+</div></section>
+
+<section class="rang" id="ajouter-photo" data-choix="Ajouter une photo">
+<h2>7 · Ajouter une photo · pendant et après <span class="podium"></span></h2>
+<p class="sous">Ton n° 2 : h03-4b (« Photo rangée ici · Annuler », l’IA lit les cotes).</p>
+<div class="bande">
+<figure class="base" data-reference><div class="tiret" aria-hidden="true">—</div><figcaption><span class="t">base</span><span class="l">pas cet écran</span></figcaption></figure>
+<figure class="debut" data-variante data-vignette data-cle="v01-7"><button type="button" class="zoom" aria-label="Agrandir v01-7"><img src="img/v01-7.webp" width="780" height="1688" alt="v01 : photo après"></button><figcaption><span class="t">v01 <em>après</em></span><span class="l">h03-4b sous Notes</span></figcaption></figure>
+<figure data-variante data-vignette data-cle="v02-7"><button type="button" class="zoom" aria-label="Agrandir v02-7"><img src="img/v02-7.webp" width="780" height="1688" alt="v02 : photo après"></button><figcaption><span class="t">v02 <em>après</em></span><span class="l">h03-4b en tête du carnet</span></figcaption></figure>
+<figure data-variante data-vignette data-cle="v02-8"><button type="button" class="zoom" aria-label="Agrandir v02-8"><img src="img/v02-8.webp" width="780" height="1688" alt="v02 : tout rangé"></button><figcaption><span class="t">v02 <em>tout rangé</em></span><span class="l">le carnet rempli, l’habit h05-3</span></figcaption></figure>
+<figure data-variante data-vignette data-cle="v03-7"><button type="button" class="zoom" aria-label="Agrandir v03-7"><img src="img/v03-7.webp" width="780" height="1688" alt="v03 : viseur"></button><figcaption><span class="t">v03 <em>pendant</em></span><span class="l">viseur « Cadrez l’évier entier »</span></figcaption></figure>
+<figure data-variante data-vignette data-cle="v03-8"><button type="button" class="zoom" aria-label="Agrandir v03-8"><img src="img/v03-8.webp" width="780" height="1688" alt="v03 : photo après"></button><figcaption><span class="t">v03 <em>après</em></span><span class="l">h03-4b dans Notes</span></figcaption></figure>
+<figure data-variante data-vignette data-cle="v04-9"><button type="button" class="zoom" aria-label="Agrandir v04-9"><img src="img/v04-9.webp" width="780" height="1688" alt="v04 : photo pendant"></button><figcaption><span class="t">v04 <em>pendant</em></span><span class="l">« Photo · arrive ici » dans Notes</span></figcaption></figure>
+<figure data-variante data-vignette data-cle="v04-10"><button type="button" class="zoom" aria-label="Agrandir v04-10"><img src="img/v04-10.webp" width="780" height="1688" alt="v04 : photo après"></button><figcaption><span class="t">v04 <em>après</em></span><span class="l">h03-4b en tête</span></figcaption></figure>
+<figure data-variante data-vignette data-cle="v05-8"><button type="button" class="zoom" aria-label="Agrandir v05-8"><img src="img/v05-8.webp" width="780" height="1688" alt="v05 : photo après"></button><figcaption><span class="t">v05 <em>après</em></span><span class="l">h03-4b en tête</span></figcaption></figure>
+<figure data-variante data-vignette data-cle="v06-7"><button type="button" class="zoom" aria-label="Agrandir v06-7"><img src="img/v06-7.webp" width="780" height="1688" alt="v06 : photo après"></button><figcaption><span class="t">v06 <em>après</em></span><span class="l">h03-4b en tête</span></figcaption></figure>
+<figure data-variante data-vignette data-cle="v06-8"><button type="button" class="zoom" aria-label="Agrandir v06-8"><img src="img/v06-8.webp" width="780" height="1688" alt="v06 : photo rangée"></button><figcaption><span class="t">v06 <em>tout rangé</em></span><span class="l">la photo devient une ligne du carnet</span></figcaption></figure>
+</div></section>
+
+<section class="rang" id="modifier-note" data-choix="Modifier une note">
+<h2>8 · Modifier une note · avant, pendant, après <span class="podium"></span></h2>
+<p class="sous">Aucune source ne le dessinait : greffé sur le cadre « arrive ici » et le bandeau Annuler.</p>
+<div class="bande">
+<figure class="base" data-reference><div class="tiret" aria-hidden="true">—</div><figcaption><span class="t">base</span><span class="l">pas cet écran</span></figcaption></figure>
+<figure class="debut" data-variante data-vignette data-cle="v01-10"><button type="button" class="zoom" aria-label="Agrandir v01-10"><img src="img/v01-10.webp" width="780" height="1688" alt="v01 : modifier avant"></button><figcaption><span class="t">v01 <em>avant</em></span><span class="l">un crayon sur chaque note</span></figcaption></figure>
+<figure data-variante data-vignette data-cle="v01-11"><button type="button" class="zoom" aria-label="Agrandir v01-11"><img src="img/v01-11.webp" width="780" height="1688" alt="v01 : modifier pendant"></button><figcaption><span class="t">v01 <em>pendant</em></span><span class="l">« Se modifie ici », ✕ Supprimer, Enregistrer</span></figcaption></figure>
+<figure data-variante data-vignette data-cle="v01-12"><button type="button" class="zoom" aria-label="Agrandir v01-12"><img src="img/v01-12.webp" width="780" height="1688" alt="v01 : modifier après"></button><figcaption><span class="t">v01 <em>après</em></span><span class="l">« Note modifiée, à l’instant · Annuler »</span></figcaption></figure>
+<figure data-variante data-vignette data-cle="v02-9"><button type="button" class="zoom" aria-label="Agrandir v02-9"><img src="img/v02-9.webp" width="780" height="1688" alt="v02 : modifier avant"></button><figcaption><span class="t">v02 <em>avant</em></span><span class="l">⋯ de la note : Modifier, Supprimer</span></figcaption></figure>
+<figure data-variante data-vignette data-cle="v02-10"><button type="button" class="zoom" aria-label="Agrandir v02-10"><img src="img/v02-10.webp" width="780" height="1688" alt="v02 : modifier pendant"></button><figcaption><span class="t">v02 <em>pendant</em></span><span class="l">« se modifie ici », puces Va dans</span></figcaption></figure>
+<figure data-variante data-vignette data-cle="v02-11"><button type="button" class="zoom" aria-label="Agrandir v02-11"><img src="img/v02-11.webp" width="780" height="1688" alt="v02 : modifier après"></button><figcaption><span class="t">v02 <em>après</em></span><span class="l">« Modifiée, à l’instant · Annuler »</span></figcaption></figure>
+<figure data-variante data-vignette data-cle="v03-11"><button type="button" class="zoom" aria-label="Agrandir v03-11"><img src="img/v03-11.webp" width="780" height="1688" alt="v03 : modifier avant"></button><figcaption><span class="t">v03 <em>avant</em></span><span class="l">menu de ligne : Modifier, Changer, Supprimer</span></figcaption></figure>
+<figure data-variante data-vignette data-cle="v03-12"><button type="button" class="zoom" aria-label="Agrandir v03-12"><img src="img/v03-12.webp" width="780" height="1688" alt="v03 : modifier pendant"></button><figcaption><span class="t">v03 <em>pendant</em></span><span class="l">« Cette note se modifie en bas »</span></figcaption></figure>
+<figure data-variante data-vignette data-cle="v03-13"><button type="button" class="zoom" aria-label="Agrandir v03-13"><img src="img/v03-13.webp" width="780" height="1688" alt="v03 : modifier après"></button><figcaption><span class="t">v03 <em>après</em></span><span class="l">« modifiée à l’instant · Annuler »</span></figcaption></figure>
+<figure data-variante data-vignette data-cle="v04-13"><button type="button" class="zoom" aria-label="Agrandir v04-13"><img src="img/v04-13.webp" width="780" height="1688" alt="v04 : modifier pendant"></button><figcaption><span class="t">v04 <em>pendant</em></span><span class="l">« se modifie ici », Supprimer, « rangé : … »</span></figcaption></figure>
+<figure data-variante data-vignette data-cle="v04-14"><button type="button" class="zoom" aria-label="Agrandir v04-14"><img src="img/v04-14.webp" width="780" height="1688" alt="v04 : modifier après"></button><figcaption><span class="t">v04 <em>après</em></span><span class="l">« Modifié, à l’instant · Annuler »</span></figcaption></figure>
+<figure data-variante data-vignette data-cle="v05-9"><button type="button" class="zoom" aria-label="Agrandir v05-9"><img src="img/v05-9.webp" width="780" height="1688" alt="v05 : modifier avant"></button><figcaption><span class="t">v05 <em>avant</em></span><span class="l">ligne touchée : Modifier, Supprimer</span></figcaption></figure>
+<figure data-variante data-vignette data-cle="v05-10"><button type="button" class="zoom" aria-label="Agrandir v05-10"><img src="img/v05-10.webp" width="780" height="1688" alt="v05 : modifier pendant"></button><figcaption><span class="t">v05 <em>pendant</em></span><span class="l">cadre pointillé, l’ancien texte barré</span></figcaption></figure>
+<figure data-variante data-vignette data-cle="v05-11"><button type="button" class="zoom" aria-label="Agrandir v05-11"><img src="img/v05-11.webp" width="780" height="1688" alt="v05 : modifier après"></button><figcaption><span class="t">v05 <em>après</em></span><span class="l">« Modifié, à l’instant · Annuler »</span></figcaption></figure>
+<figure data-variante data-vignette data-cle="v06-9"><button type="button" class="zoom" aria-label="Agrandir v06-9"><img src="img/v06-9.webp" width="780" height="1688" alt="v06 : modifier avant"></button><figcaption><span class="t">v06 <em>avant</em></span><span class="l">un crayon sur la note (Ventilation)</span></figcaption></figure>
+<figure data-variante data-vignette data-cle="v06-10"><button type="button" class="zoom" aria-label="Agrandir v06-10"><img src="img/v06-10.webp" width="780" height="1688" alt="v06 : modifier pendant"></button><figcaption><span class="t">v06 <em>pendant</em></span><span class="l">« Note · se modifie en bas », ✕ Supprimer</span></figcaption></figure>
+<figure data-variante data-vignette data-cle="v06-11"><button type="button" class="zoom" aria-label="Agrandir v06-11"><img src="img/v06-11.webp" width="780" height="1688" alt="v06 : modifier après"></button><figcaption><span class="t">v06 <em>après</em></span><span class="l">« modifiée à l’instant · Annuler »</span></figcaption></figure>
+</div></section>
+
+<section class="rang" id="modifier-titre" data-choix="Modifier le titre de l’idée">
+<h2>9 · Modifier le titre de l’idée · avant, pendant, après <span class="podium"></span></h2>
+<p class="sous">Même geste que la note, ou par le ⋯ du carnet.</p>
+<div class="bande">
+<figure class="base" data-reference><div class="tiret" aria-hidden="true">—</div><figcaption><span class="t">base</span><span class="l">pas cet écran</span></figcaption></figure>
+<figure class="debut" data-variante data-vignette data-cle="v01-13"><button type="button" class="zoom" aria-label="Agrandir v01-13"><img src="img/v01-13.webp" width="780" height="1688" alt="v01 : renommer pendant"></button><figcaption><span class="t">v01 <em>pendant</em></span><span class="l">« Se renomme ici », Renommer, Annuler</span></figcaption></figure>
+<figure data-variante data-vignette data-cle="v01-14"><button type="button" class="zoom" aria-label="Agrandir v01-14"><img src="img/v01-14.webp" width="780" height="1688" alt="v01 : renommer après"></button><figcaption><span class="t">v01 <em>après</em></span><span class="l">« Renommé · avant : Évier inox · Annuler »</span></figcaption></figure>
+<figure data-variante data-vignette data-cle="v02-14"><button type="button" class="zoom" aria-label="Agrandir v02-14"><img src="img/v02-14.webp" width="780" height="1688" alt="v02 : renommer avant"></button><figcaption><span class="t">v02 <em>avant</em></span><span class="l">⋯ du titre : Renommer, Supprimer le carnet</span></figcaption></figure>
+<figure data-variante data-vignette data-cle="v02-15"><button type="button" class="zoom" aria-label="Agrandir v02-15"><img src="img/v02-15.webp" width="780" height="1688" alt="v02 : renommer pendant"></button><figcaption><span class="t">v02 <em>pendant</em></span><span class="l">le titre en cadre, Renommer</span></figcaption></figure>
+<figure data-variante data-vignette data-cle="v02-16"><button type="button" class="zoom" aria-label="Agrandir v02-16"><img src="img/v02-16.webp" width="780" height="1688" alt="v02 : renommer après"></button><figcaption><span class="t">v02 <em>après</em></span><span class="l">« Renommé, à l’instant · Annuler »</span></figcaption></figure>
+<figure data-variante data-vignette data-cle="v03-16"><button type="button" class="zoom" aria-label="Agrandir v03-16"><img src="img/v03-16.webp" width="780" height="1688" alt="v03 : renommer avant"></button><figcaption><span class="t">v03 <em>avant</em></span><span class="l">le menu du carnet en feuille</span></figcaption></figure>
+<figure data-variante data-vignette data-cle="v03-17"><button type="button" class="zoom" aria-label="Agrandir v03-17"><img src="img/v03-17.webp" width="780" height="1688" alt="v03 : renommer pendant"></button><figcaption><span class="t">v03 <em>pendant</em></span><span class="l">« Le titre se modifie en bas »</span></figcaption></figure>
+<figure data-variante data-vignette data-cle="v03-18"><button type="button" class="zoom" aria-label="Agrandir v03-18"><img src="img/v03-18.webp" width="780" height="1688" alt="v03 : renommer après"></button><figcaption><span class="t">v03 <em>après</em></span><span class="l">« Renommé à l’instant · Annuler » en haut</span></figcaption></figure>
+<figure data-variante data-vignette data-cle="v04-16"><button type="button" class="zoom" aria-label="Agrandir v04-16"><img src="img/v04-16.webp" width="780" height="1688" alt="v04 : renommer pendant"></button><figcaption><span class="t">v04 <em>pendant</em></span><span class="l">« Nom du carnet · se renomme ici »</span></figcaption></figure>
+<figure data-variante data-vignette data-cle="v04-17"><button type="button" class="zoom" aria-label="Agrandir v04-17"><img src="img/v04-17.webp" width="780" height="1688" alt="v04 : renommer après"></button><figcaption><span class="t">v04 <em>après</em></span><span class="l">« Renommé, à l’instant · Annuler »</span></figcaption></figure>
+<figure data-variante data-vignette data-cle="v05-12"><button type="button" class="zoom" aria-label="Agrandir v05-12"><img src="img/v05-12.webp" width="780" height="1688" alt="v05 : renommer pendant"></button><figcaption><span class="t">v05 <em>pendant</em></span><span class="l">cadre, l’ancien titre barré</span></figcaption></figure>
+<figure data-variante data-vignette data-cle="v05-13"><button type="button" class="zoom" aria-label="Agrandir v05-13"><img src="img/v05-13.webp" width="780" height="1688" alt="v05 : renommer après"></button><figcaption><span class="t">v05 <em>après</em></span><span class="l">« Renommé · avant : … · Annuler »</span></figcaption></figure>
+<figure data-variante data-vignette data-cle="v06-12"><button type="button" class="zoom" aria-label="Agrandir v06-12"><img src="img/v06-12.webp" width="780" height="1688" alt="v06 : renommer pendant"></button><figcaption><span class="t">v06 <em>pendant</em></span><span class="l">le titre en cadre, ✕ Supprimer le carnet</span></figcaption></figure>
+<figure data-variante data-vignette data-cle="v06-13"><button type="button" class="zoom" aria-label="Agrandir v06-13"><img src="img/v06-13.webp" width="780" height="1688" alt="v06 : renommer après"></button><figcaption><span class="t">v06 <em>après</em></span><span class="l">« renommé à l’instant · avant : … · Annuler »</span></figcaption></figure>
+</div></section>
+
+<section class="rang" id="supprimer-note" data-choix="Supprimer une note">
+<h2>10 · Supprimer une note, avec Annuler <span class="podium"></span></h2>
+<p class="sous">Annuler reste dans la page, à la place de la note ; pas de toast.</p>
+<div class="bande">
+<figure class="base" data-reference><div class="tiret" aria-hidden="true">—</div><figcaption><span class="t">base</span><span class="l">pas cet écran</span></figcaption></figure>
+<figure class="debut" data-variante data-vignette data-cle="v01-11"><button type="button" class="zoom" aria-label="Agrandir v01-11"><img src="img/v01-11.webp" width="780" height="1688" alt="v01 : supprimer pendant"></button><figcaption><span class="t">v01 <em>pendant</em></span><span class="l">le ✕ Supprimer du cadre (même écran qu’en 8)</span></figcaption></figure>
+<figure data-variante data-vignette data-cle="v01-15"><button type="button" class="zoom" aria-label="Agrandir v01-15"><img src="img/v01-15.webp" width="780" height="1688" alt="v01 : supprimer après"></button><figcaption><span class="t">v01 <em>après</em></span><span class="l">« Note supprimée · Annuler » à sa place</span></figcaption></figure>
+<figure data-variante data-vignette data-cle="v02-12"><button type="button" class="zoom" aria-label="Agrandir v02-12"><img src="img/v02-12.webp" width="780" height="1688" alt="v02 : supprimer avant"></button><figcaption><span class="t">v02 <em>avant</em></span><span class="l">⋯ : Supprimer en rouge</span></figcaption></figure>
+<figure data-variante data-vignette data-cle="v02-13"><button type="button" class="zoom" aria-label="Agrandir v02-13"><img src="img/v02-13.webp" width="780" height="1688" alt="v02 : supprimer après"></button><figcaption><span class="t">v02 <em>après</em></span><span class="l">la note barrée, « supprimée · Annuler »</span></figcaption></figure>
+<figure data-variante data-vignette data-cle="v03-14"><button type="button" class="zoom" aria-label="Agrandir v03-14"><img src="img/v03-14.webp" width="780" height="1688" alt="v03 : supprimer pendant"></button><figcaption><span class="t">v03 <em>pendant</em></span><span class="l">menu de ligne, Supprimer en rouge</span></figcaption></figure>
+<figure data-variante data-vignette data-cle="v03-15"><button type="button" class="zoom" aria-label="Agrandir v03-15"><img src="img/v03-15.webp" width="780" height="1688" alt="v03 : supprimer après"></button><figcaption><span class="t">v03 <em>après</em></span><span class="l">« Note supprimée · Annuler » à sa place</span></figcaption></figure>
+<figure data-variante data-vignette data-cle="v04-15"><button type="button" class="zoom" aria-label="Agrandir v04-15"><img src="img/v04-15.webp" width="780" height="1688" alt="v04 : supprimer après"></button><figcaption><span class="t">v04 <em>après</em></span><span class="l">« … supprimé · Annuler » (depuis le cadre de 8)</span></figcaption></figure>
+<figure data-variante data-vignette data-cle="v05-14"><button type="button" class="zoom" aria-label="Agrandir v05-14"><img src="img/v05-14.webp" width="780" height="1688" alt="v05 : supprimer avant"></button><figcaption><span class="t">v05 <em>avant</em></span><span class="l">ligne touchée : Modifier, Supprimer</span></figcaption></figure>
+<figure data-variante data-vignette data-cle="v05-15"><button type="button" class="zoom" aria-label="Agrandir v05-15"><img src="img/v05-15.webp" width="780" height="1688" alt="v05 : supprimer après"></button><figcaption><span class="t">v05 <em>après</em></span><span class="l">« Note supprimée · Annuler » à sa place</span></figcaption></figure>
+<figure data-variante data-vignette data-cle="v06-14"><button type="button" class="zoom" aria-label="Agrandir v06-14"><img src="img/v06-14.webp" width="780" height="1688" alt="v06 : supprimer pendant"></button><figcaption><span class="t">v06 <em>pendant</em></span><span class="l">le cadre de la note, ✕ Supprimer</span></figcaption></figure>
+<figure data-variante data-vignette data-cle="v06-15"><button type="button" class="zoom" aria-label="Agrandir v06-15"><img src="img/v06-15.webp" width="780" height="1688" alt="v06 : supprimer après"></button><figcaption><span class="t">v06 <em>après</em></span><span class="l">« Note supprimée · Annuler » à sa place</span></figcaption></figure>
+</div></section>
+
+<section class="rang" id="supprimer-idee" data-choix="Supprimer une idée">
+<h2>11 · Supprimer une idée (le carnet entier) <span class="podium"></span></h2>
+<p class="sous">Confirmation dans la page, jamais de boîte du navigateur ; puis Annuler dans la liste.</p>
+<div class="bande">
+<figure class="base" data-reference><div class="tiret" aria-hidden="true">—</div><figcaption><span class="t">base</span><span class="l">pas cet écran</span></figcaption></figure>
+<figure class="debut" data-variante data-vignette data-cle="v01-16"><button type="button" class="zoom" aria-label="Agrandir v01-16"><img src="img/v01-16.webp" width="780" height="1688" alt="v01 : supprimer le carnet avant"></button><figcaption><span class="t">v01 <em>avant</em></span><span class="l">⋯ : Renommer, Supprimer le carnet…</span></figcaption></figure>
+<figure data-variante data-vignette data-cle="v01-17"><button type="button" class="zoom" aria-label="Agrandir v01-17"><img src="img/v01-17.webp" width="780" height="1688" alt="v01 : supprimer le carnet pendant"></button><figcaption><span class="t">v01 <em>pendant</em></span><span class="l">cadre rouge : ce qui part, Supprimer / Garder</span></figcaption></figure>
+<figure data-variante data-vignette data-cle="v01-18"><button type="button" class="zoom" aria-label="Agrandir v01-18"><img src="img/v01-18.webp" width="780" height="1688" alt="v01 : supprimer le carnet après"></button><figcaption><span class="t">v01 <em>après</em></span><span class="l">liste : « supprimé, avec ses 2 notes · Annuler »</span></figcaption></figure>
+<figure data-variante data-vignette data-cle="v02-17"><button type="button" class="zoom" aria-label="Agrandir v02-17"><img src="img/v02-17.webp" width="780" height="1688" alt="v02 : supprimer le carnet avant"></button><figcaption><span class="t">v02 <em>avant</em></span><span class="l">⋯ du titre</span></figcaption></figure>
+<figure data-variante data-vignette data-cle="v02-18"><button type="button" class="zoom" aria-label="Agrandir v02-18"><img src="img/v02-18.webp" width="780" height="1688" alt="v02 : supprimer le carnet pendant"></button><figcaption><span class="t">v02 <em>pendant</em></span><span class="l">« Supprimer le carnet ? », ce qui part, Garder</span></figcaption></figure>
+<figure data-variante data-vignette data-cle="v02-19"><button type="button" class="zoom" aria-label="Agrandir v02-19"><img src="img/v02-19.webp" width="780" height="1688" alt="v02 : supprimer le carnet après"></button><figcaption><span class="t">v02 <em>après</em></span><span class="l">liste : « supprimé · Annuler »</span></figcaption></figure>
+<figure data-variante data-vignette data-cle="v03-19"><button type="button" class="zoom" aria-label="Agrandir v03-19"><img src="img/v03-19.webp" width="780" height="1688" alt="v03 : supprimer le carnet pendant"></button><figcaption><span class="t">v03 <em>pendant</em></span><span class="l">feuille : 1 note, 1 article, la veille s’arrête</span></figcaption></figure>
+<figure data-variante data-vignette data-cle="v03-20"><button type="button" class="zoom" aria-label="Agrandir v03-20"><img src="img/v03-20.webp" width="780" height="1688" alt="v03 : supprimer le carnet après"></button><figcaption><span class="t">v03 <em>après</em></span><span class="l">liste : « supprimé · Annuler »</span></figcaption></figure>
+<figure data-variante data-vignette data-cle="v04-18"><button type="button" class="zoom" aria-label="Agrandir v04-18"><img src="img/v04-18.webp" width="780" height="1688" alt="v04 : supprimer le carnet avant"></button><figcaption><span class="t">v04 <em>avant</em></span><span class="l">⋯ : Renommer, Supprimer le carnet</span></figcaption></figure>
+<figure data-variante data-vignette data-cle="v04-19"><button type="button" class="zoom" aria-label="Agrandir v04-19"><img src="img/v04-19.webp" width="780" height="1688" alt="v04 : supprimer le carnet pendant"></button><figcaption><span class="t">v04 <em>pendant</em></span><span class="l">carte en tête : Garder / Supprimer</span></figcaption></figure>
+<figure data-variante data-vignette data-cle="v04-20"><button type="button" class="zoom" aria-label="Agrandir v04-20"><img src="img/v04-20.webp" width="780" height="1688" alt="v04 : supprimer le carnet après"></button><figcaption><span class="t">v04 <em>après</em></span><span class="l">g05-1 : « supprimé · Annuler »</span></figcaption></figure>
+<figure data-variante data-vignette data-cle="v05-16"><button type="button" class="zoom" aria-label="Agrandir v05-16"><img src="img/v05-16.webp" width="780" height="1688" alt="v05 : supprimer le carnet avant"></button><figcaption><span class="t">v05 <em>avant</em></span><span class="l">⋯ : Renommer, Supprimer le carnet</span></figcaption></figure>
+<figure data-variante data-vignette data-cle="v05-17"><button type="button" class="zoom" aria-label="Agrandir v05-17"><img src="img/v05-17.webp" width="780" height="1688" alt="v05 : supprimer le carnet pendant"></button><figcaption><span class="t">v05 <em>pendant</em></span><span class="l">question dans la page, filet rouge</span></figcaption></figure>
+<figure data-variante data-vignette data-cle="v05-18"><button type="button" class="zoom" aria-label="Agrandir v05-18"><img src="img/v05-18.webp" width="780" height="1688" alt="v05 : supprimer le carnet après"></button><figcaption><span class="t">v05 <em>après</em></span><span class="l">« Annuler tant que vous restez sur la liste »</span></figcaption></figure>
+<figure data-variante data-vignette data-cle="v06-16"><button type="button" class="zoom" aria-label="Agrandir v06-16"><img src="img/v06-16.webp" width="780" height="1688" alt="v06 : supprimer le carnet avant"></button><figcaption><span class="t">v06 <em>avant</em></span><span class="l">le titre en cadre : ✕ Supprimer le carnet</span></figcaption></figure>
+<figure data-variante data-vignette data-cle="v06-17"><button type="button" class="zoom" aria-label="Agrandir v06-17"><img src="img/v06-17.webp" width="780" height="1688" alt="v06 : supprimer le carnet pendant"></button><figcaption><span class="t">v06 <em>pendant</em></span><span class="l">carte : ce qui part, Supprimer / Garder</span></figcaption></figure>
+<figure data-variante data-vignette data-cle="v06-18"><button type="button" class="zoom" aria-label="Agrandir v06-18"><img src="img/v06-18.webp" width="780" height="1688" alt="v06 : supprimer le carnet après"></button><figcaption><span class="t">v06 <em>après</em></span><span class="l">liste : ligne fantôme · Annuler</span></figcaption></figure>
+</div></section>
+
+<textarea id="sortie" hidden aria-label="Classement à copier"></textarea>
+<p class="doux">Fournisseurs, prix, photos et dates : exemple. Clair, 390 px. Page de choix, rien n’est publié.</p>
+</div>
+
+<div class="pied"><button type="button" id="copier">Copier</button><span id="compte">0 rang donné</span></div>
+<div id="loupe" hidden><img alt="capture agrandie"></div>
+
+<script>
+(function () {
+  // Classement par écran : 1 à 5 sous chaque vignette, plusieurs vignettes au même rang (17.11).
+  // Retoucher le rang d'une vignette le lui enlève. Une même capture dans deux rangées se classe à part.
+  var K = 'carnet-greffe4-1711', etat = {}, RANGS = [1, 2, 3, 4, 5];
+  try { etat = JSON.parse(localStorage.getItem(K) || '{}'); } catch (e) {}
+  etat.r = etat.r || {}; etat.note = etat.note || {};
+  var sections = [].slice.call(document.querySelectorAll('section.rang'));
+  function sauver() { try { localStorage.setItem(K, JSON.stringify(etat)); } catch (e) {} }
+  function figs(sec) { return [].slice.call(sec.querySelectorAll('figure[data-cle]')); }
+  function podium(sec) {
+    var par = {}, out = [];
+    figs(sec).forEach(function (f) { var k = f.getAttribute('data-cle'), n = etat.r[sec.id + '|' + k]; if (n) (par[n] = par[n] || []).push(k); });
+    RANGS.forEach(function (n) { if (par[n]) out.push(n + ' ' + par[n].join(', ')); });
+    return out;
+  }
+  function rendre() {
+    var total = 0;
+    sections.forEach(function (sec) {
+      figs(sec).forEach(function (f) {
+        var mon = etat.r[sec.id + '|' + f.getAttribute('data-cle')] || 0; if (mon) total++;
+        f.setAttribute('data-rang', mon || '');
+        [].forEach.call(f.querySelectorAll('.rg'), function (b) { b.setAttribute('aria-pressed', +b.getAttribute('data-n') === mon ? 'true' : 'false'); });
+      });
+      var p = podium(sec);
+      sec.querySelector('.podium').textContent = p.length ? '· ' + p.join(' · ') : '· pas encore classé';
+    });
+    document.getElementById('compte').textContent = total + (total > 1 ? ' rangs donnés' : ' rang donné');
+  }
+  sections.forEach(function (sec) {
+    figs(sec).forEach(function (f) {
+      var k = f.getAttribute('data-cle'), nk = sec.id + '|' + k, cap = f.querySelector('figcaption');
+      var rgs = document.createElement('span'); rgs.className = 'rgs';
+      RANGS.forEach(function (n) {
+        var b = document.createElement('button'); b.type = 'button'; b.className = 'rg';
+        b.setAttribute('data-n', n); b.setAttribute('aria-label', 'Rang ' + n + ' pour ' + k); b.textContent = n;
+        b.addEventListener('click', function () { if (etat.r[nk] === n) delete etat.r[nk]; else etat.r[nk] = n; sauver(); rendre(); });
+        rgs.appendChild(b);
+      });
+      var i = document.createElement('input'); i.type = 'text'; i.placeholder = 'note'; i.setAttribute('aria-label', 'Note sur ' + k);
+      if (etat.note[nk]) i.value = etat.note[nk];
+      i.addEventListener('input', function () { etat.note[nk] = i.value; sauver(); });
+      cap.appendChild(rgs); cap.appendChild(i);
+      f.querySelector('.zoom').addEventListener('click', function () { var l = document.getElementById('loupe'); l.querySelector('img').src = f.querySelector('img').src; l.hidden = false; l.scrollTop = 0; });
+    });
+  });
+  document.getElementById('loupe').addEventListener('click', function () { this.hidden = true; });
+  document.getElementById('copier').addEventListener('click', function () {
+    var lignes = [];
+    sections.forEach(function (sec) {
+      var p = podium(sec);
+      var notes = figs(sec).map(function (f) { return f.getAttribute('data-cle'); })
+        .filter(function (k) { return etat.note[sec.id + '|' + k]; })
+        .map(function (k) { return k + ' : ' + etat.note[sec.id + '|' + k]; });
+      if (p.length || notes.length) lignes.push(sec.getAttribute('data-choix') + ' : ' + (p.join(' · ') || '—') + (notes.length ? ' · notes : ' + notes.join(' ; ') : ''));
+    });
+    var t = 'Carnet greffe 4, classement par écran\n' + (lignes.join('\n') || 'rien de classé');
+    var o = document.getElementById('sortie'); o.value = t; o.hidden = false; o.select();
+    try { navigator.clipboard.writeText(t).catch(function () {}); } catch (e) {}
+  });
+  rendre();
+})();
+</script>
+</body>
+</html>

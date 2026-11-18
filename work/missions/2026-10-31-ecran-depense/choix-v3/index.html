@@ -1,0 +1,256 @@
+<title>Nouvelle dépense · passe 3 · 01.11</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<style>
+/* La passe 3 de « Nouvelle dépense » : six écrans pleine page sur la facture 372765 (p3a-1 à 3, p3b-1 à 3), une rangée par variante.
+   Sa capture entourée ouvre chaque rangée ; chaque vignette s'ouvre en grand au toucher (PUBLIER.md, D126). */
+:root {
+  --fond: #f4f6f1;
+  --carte: #ffffff;
+  --encre: #1c2019;
+  --discret: #5a6155;
+  --trait: #dde2d6;
+  --houblon: #4a7426;
+  --choisir: #2d5f8a;
+  --alerte: #9a4a1c;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --fond: #151812; --carte: #1f241b; --encre: #e9eee4; --discret: #a7ae9f; --trait: #333a2d; --houblon: #8cc062;
+    --choisir: #8ab8e0; --alerte: #e8a878; color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --fond: #151812; --carte: #1f241b; --encre: #e9eee4; --discret: #a7ae9f; --trait: #333a2d; --houblon: #8cc062;
+  --choisir: #8ab8e0; --alerte: #e8a878; color-scheme: dark;
+}
+* { box-sizing: border-box; }
+body {
+  background: var(--fond); color: var(--encre); font: 16px/1.45 "Segoe UI", system-ui, sans-serif; margin: 0;
+  padding-block: 16px 64px;
+  padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px));
+}
+.page { max-width: 1320px; margin: 0 auto; display: grid; gap: 22px; }
+h1, h2, h3 { margin: 0; line-height: 1.15; text-wrap: balance; }
+h1 { font-size: 1.7rem; font-weight: 800; }
+h2 { font-size: 1.1rem; font-weight: 800; }
+p { margin: 0; max-width: 70ch; }
+ul { margin: 0; padding-left: 20px; display: grid; gap: 6px; max-width: 70ch; }
+a { color: var(--choisir); font-weight: 700; }
+button:focus-visible { outline: 3px solid var(--houblon); outline-offset: 2px; }
+header { display: grid; gap: 10px; }
+.sur-titre { font-size: 0.875rem; letter-spacing: 0.06em; text-transform: uppercase; color: var(--discret); }
+#a-choisir { border-left: 4px solid var(--houblon); padding: 12px 14px; background: var(--carte); border-radius: 0 10px 10px 0; display: grid; gap: 6px; }
+#a-choisir p:first-child { font-size: 1.05rem; font-weight: 700; }
+.rangee { display: grid; gap: 10px; padding-top: 16px; border-top: 1px solid var(--trait); }
+.tete { display: grid; gap: 6px; align-content: start; justify-items: start; }
+.tete p { font-size: 0.875rem; color: var(--discret); }
+.tete p.phrase { font-size: 1rem; color: var(--encre); }
+.tete .id { font-size: 0.875rem; font-weight: 700; color: var(--discret); }
+.tete .etiquette { font-size: 0.875rem; color: var(--discret); text-transform: uppercase; letter-spacing: 0.04em; }
+.planche { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 14px 8px; align-items: start; min-width: 0; }
+.vue { margin: 0; display: grid; gap: 5px; align-content: start; min-width: 0; }
+.ecran { display: block; width: 100%; padding: 0; border: 1px solid var(--trait); border-radius: 10px; overflow: hidden; background: var(--carte); cursor: zoom-in; }
+.ecran img { display: block; width: 100%; height: auto; }
+.ref .ecran { border: 3px solid var(--houblon); }
+figcaption { font-size: 0.875rem; line-height: 1.35; display: grid; gap: 2px; }
+figcaption b { font-weight: 800; }
+.pastille { display: inline-flex; align-items: center; gap: 5px; font-weight: 700; font-size: 0.875rem; }
+.pastille::before { content: ""; width: 10px; height: 10px; border-radius: 50%; background: currentColor; flex-shrink: 0; }
+.p-ref, .p-propose { color: var(--houblon); }
+.p-choisir { color: var(--choisir); }
+.p-reserve { color: var(--alerte); }
+.verdicts { display: grid; gap: 10px; }
+.verdicts p { font-size: 0.95rem; }
+.verdicts b { font-weight: 800; }
+@media (min-width: 760px) {
+  .rangee { grid-template-columns: 200px minmax(0, 1fr); gap: 16px; }
+  .planche { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+}
+@media (min-width: 1100px) {
+  .planche.sept { grid-template-columns: repeat(7, minmax(0, 1fr)); }
+}
+dialog { border: 0; padding: 0; background: #0e100c; color: #eef2ea; width: min(96vw, 1100px); max-height: 94vh; border-radius: 12px; }
+dialog::backdrop { background: rgb(0 0 0 / 80%); }
+dialog .haut { display: flex; justify-content: space-between; align-items: center; gap: 8px; padding: 10px 12px; }
+dialog .titre { font-size: 0.875rem; font-weight: 700; margin: 0; }
+dialog button { font: 700 0.875rem system-ui, sans-serif; border: 0; border-radius: 999px; padding: 8px 14px; background: #eef2ea; color: #1c2019; cursor: pointer; }
+dialog img { display: block; width: 100%; height: auto; max-height: 82vh; object-fit: contain; background: #fff; }
+</style>
+
+<div class="page">
+  <header>
+    <p class="sur-titre">L'Affinée · Nouvelle dépense · passe 3</p>
+    <h1>Nouvelle dépense · passe 3 · 01.11</h1>
+    <p class="sur-titre">Données : ta facture 372765. Le stock est d'essai, simulé.</p>
+    <div id="a-choisir">
+      <p>Six écrans en pleine page, triés par catégorie avec le sous-total de chaque catégorie. Choisis celui que le pilote porte dans l'app.</p>
+      <p>Le critique propose p3b-1, le registre à bandes. Le Drive se fait en arrière-plan dans les six ; seul l'échec se voit.</p>
+    </div>
+  </header>
+
+  <section class="rangee" aria-labelledby="t-p3b-1">
+    <div class="tete">
+      <h2 id="t-p3b-1">Le registre à bandes <span class="id">p3b-1</span></h2>
+      <span class="pastille p-propose">proposé par le critique</span>
+      <p class="etiquette">L'idée</p>
+      <p class="phrase">Ta preuve entourée, mot pour mot, puis un registre aligné : unité sur chaque ligne, 20 lignes en défilant.</p>
+      <p>Corrigé : « mouture » écrit sur chaque mouture, Règlement gris pendant la lecture.</p>
+    </div>
+    <div class="planche sept">
+      <figure class="vue ref" data-vignette><button class="ecran" type="button" data-agrandir data-src="img/sa-capture-recap.jpg" data-titre="Ta capture entourée, le récap (01.11)"><img src="img/sa-capture-recap.jpg" alt="Ta capture entourée"></button><figcaption><b>Ta capture</b>, entourée</figcaption></figure>
+      <figure class="vue" data-vignette><button class="ecran" type="button" data-agrandir data-src="img/p3b-1-repos.png" data-titre="p3b-1 · repos à 390 px"><img src="img/p3b-1-repos.png" alt="p3b-1, repos à 390 px"></button><figcaption><b>Repos · 390 px</b></figcaption></figure>
+      <figure class="vue" data-vignette><button class="ecran" type="button" data-agrandir data-src="img/p3b-1-defile.png" data-titre="p3b-1 · en défilant"><img src="img/p3b-1-defile.png" alt="p3b-1, en défilant"></button><figcaption><b>En défilant</b></figcaption></figure>
+      <figure class="vue" data-vignette><button class="ecran" type="button" data-agrandir data-src="img/p3b-1-renvoi.png" data-titre="p3b-1 · un toucher sur « 2 bis » : les lignes visées"><img src="img/p3b-1-renvoi.png" alt="p3b-1, renvoi"></button><figcaption><b>Un toucher</b> sur « 2 bis »</figcaption></figure>
+      <figure class="vue" data-vignette><button class="ecran" type="button" data-agrandir data-src="img/p3b-1-lecture.png" data-titre="p3b-1 · pendant la lecture"><img src="img/p3b-1-lecture.png" alt="p3b-1, lecture"></button><figcaption><b>Pendant la lecture</b></figcaption></figure>
+      <figure class="vue" data-vignette><button class="ecran" type="button" data-agrandir data-src="img/p3b-1-echec.png" data-titre="p3b-1 · le Drive a échoué"><img src="img/p3b-1-echec.png" alt="p3b-1, échec du Drive"></button><figcaption><b>Drive en échec</b></figcaption></figure>
+      <figure class="vue" data-vignette><button class="ecran" type="button" data-agrandir data-src="img/p3b-1-1280-repos.png" data-titre="p3b-1 · repos à 1280 px"><img src="img/p3b-1-1280-repos.png" alt="p3b-1, repos à 1280 px"></button><figcaption><b>Repos · 1280 px</b></figcaption></figure>
+    </div>
+  </section>
+
+  <section class="rangee" aria-labelledby="t-p3a-1">
+    <div class="tete">
+      <h2 id="t-p3a-1">Le registre collant <span class="id">p3a-1</span></h2>
+      <span class="pastille p-choisir">à choisir</span>
+      <p class="etiquette">L'idée</p>
+      <p class="phrase">L'écran de l'app étiré à toute la page ; la bande de chaque catégorie reste collée en haut en défilant.</p>
+      <p>Corrigé : unité sur chaque ligne ; le compte d'abord, puis son numéro (« 2 bis ④ ⑥ »).</p>
+    </div>
+    <div class="planche sept">
+      <figure class="vue ref" data-vignette><button class="ecran" type="button" data-agrandir data-src="img/sa-capture-recap.jpg" data-titre="Ta capture entourée, le récap (01.11)"><img src="img/sa-capture-recap.jpg" alt="Ta capture entourée"></button><figcaption><b>Ta capture</b>, entourée</figcaption></figure>
+      <figure class="vue" data-vignette><button class="ecran" type="button" data-agrandir data-src="img/p3a-1-repos.png" data-titre="p3a-1 · repos à 390 px"><img src="img/p3a-1-repos.png" alt="p3a-1, repos à 390 px"></button><figcaption><b>Repos · 390 px</b></figcaption></figure>
+      <figure class="vue" data-vignette><button class="ecran" type="button" data-agrandir data-src="img/p3a-1-defile.png" data-titre="p3a-1 · en défilant"><img src="img/p3a-1-defile.png" alt="p3a-1, en défilant"></button><figcaption><b>En défilant</b></figcaption></figure>
+      <figure class="vue" data-vignette><button class="ecran" type="button" data-agrandir data-src="img/p3a-1-renvoi.png" data-titre="p3a-1 · un toucher sur « 2 bis » : les lignes visées"><img src="img/p3a-1-renvoi.png" alt="p3a-1, renvoi"></button><figcaption><b>Un toucher</b> sur « 2 bis »</figcaption></figure>
+      <figure class="vue" data-vignette><button class="ecran" type="button" data-agrandir data-src="img/p3a-1-lecture.png" data-titre="p3a-1 · pendant la lecture"><img src="img/p3a-1-lecture.png" alt="p3a-1, lecture"></button><figcaption><b>Pendant la lecture</b></figcaption></figure>
+      <figure class="vue" data-vignette><button class="ecran" type="button" data-agrandir data-src="img/p3a-1-echec.png" data-titre="p3a-1 · le Drive a échoué"><img src="img/p3a-1-echec.png" alt="p3a-1, échec du Drive"></button><figcaption><b>Drive en échec</b></figcaption></figure>
+      <figure class="vue" data-vignette><button class="ecran" type="button" data-agrandir data-src="img/p3a-1-1280-repos.png" data-titre="p3a-1 · repos à 1280 px"><img src="img/p3a-1-1280-repos.png" alt="p3a-1, repos à 1280 px"></button><figcaption><b>Repos · 1280 px</b></figcaption></figure>
+    </div>
+  </section>
+
+  <section class="rangee" aria-labelledby="t-p3b-3">
+    <div class="tete">
+      <h2 id="t-p3b-3">L'index <span class="id">p3b-3</span></h2>
+      <span class="pastille p-choisir">à choisir</span>
+      <p class="etiquette">L'idée</p>
+      <p class="phrase">Le plus de lignes par écran : une rangée par ligne, et un rail des 23 lignes à droite pour sauter.</p>
+      <p>Corrigé : « mouture 0,60 » nommée sur la rangée de son malt ; le rail porte « 23 lignes ».</p>
+    </div>
+    <div class="planche sept">
+      <figure class="vue ref" data-vignette><button class="ecran" type="button" data-agrandir data-src="img/sa-capture-recap.jpg" data-titre="Ta capture entourée, le récap (01.11)"><img src="img/sa-capture-recap.jpg" alt="Ta capture entourée"></button><figcaption><b>Ta capture</b>, entourée</figcaption></figure>
+      <figure class="vue" data-vignette><button class="ecran" type="button" data-agrandir data-src="img/p3b-3-repos.png" data-titre="p3b-3 · repos à 390 px"><img src="img/p3b-3-repos.png" alt="p3b-3, repos à 390 px"></button><figcaption><b>Repos · 390 px</b></figcaption></figure>
+      <figure class="vue" data-vignette><button class="ecran" type="button" data-agrandir data-src="img/p3b-3-defile.png" data-titre="p3b-3 · en défilant"><img src="img/p3b-3-defile.png" alt="p3b-3, en défilant"></button><figcaption><b>En défilant</b></figcaption></figure>
+      <figure class="vue" data-vignette><button class="ecran" type="button" data-agrandir data-src="img/p3b-3-renvoi.png" data-titre="p3b-3 · un toucher sur « 2 bis » : les lignes visées"><img src="img/p3b-3-renvoi.png" alt="p3b-3, renvoi"></button><figcaption><b>Un toucher</b> sur « 2 bis »</figcaption></figure>
+      <figure class="vue" data-vignette><button class="ecran" type="button" data-agrandir data-src="img/p3b-3-lecture.png" data-titre="p3b-3 · pendant la lecture"><img src="img/p3b-3-lecture.png" alt="p3b-3, lecture"></button><figcaption><b>Pendant la lecture</b></figcaption></figure>
+      <figure class="vue" data-vignette><button class="ecran" type="button" data-agrandir data-src="img/p3b-3-echec.png" data-titre="p3b-3 · le Drive a échoué"><img src="img/p3b-3-echec.png" alt="p3b-3, échec du Drive"></button><figcaption><b>Drive en échec</b></figcaption></figure>
+      <figure class="vue" data-vignette><button class="ecran" type="button" data-agrandir data-src="img/p3b-3-1280-repos.png" data-titre="p3b-3 · repos à 1280 px"><img src="img/p3b-3-1280-repos.png" alt="p3b-3, repos à 1280 px"></button><figcaption><b>Repos · 1280 px</b></figcaption></figure>
+    </div>
+  </section>
+
+  <section class="rangee" aria-labelledby="t-p3a-3">
+    <div class="tete">
+      <h2 id="t-p3a-3">Les bandes teintées <span class="id">p3a-3</span></h2>
+      <span class="pastille p-choisir">à choisir</span>
+      <p class="etiquette">L'idée</p>
+      <p class="phrase">Ton ticket « 6 Kg × 2,30 » sous le nom, teinté par catégorie ; un toucher filtre et le sous-total suit.</p>
+      <p>Corrigé : le filtre dit « 2 bis · 21 masquées » ; unité sur chaque ligne.</p>
+    </div>
+    <div class="planche sept">
+      <figure class="vue ref" data-vignette><button class="ecran" type="button" data-agrandir data-src="img/sa-capture-recap.jpg" data-titre="Ta capture entourée, le récap (01.11)"><img src="img/sa-capture-recap.jpg" alt="Ta capture entourée"></button><figcaption><b>Ta capture</b>, entourée</figcaption></figure>
+      <figure class="vue" data-vignette><button class="ecran" type="button" data-agrandir data-src="img/p3a-3-repos.png" data-titre="p3a-3 · repos à 390 px"><img src="img/p3a-3-repos.png" alt="p3a-3, repos à 390 px"></button><figcaption><b>Repos · 390 px</b></figcaption></figure>
+      <figure class="vue" data-vignette><button class="ecran" type="button" data-agrandir data-src="img/p3a-3-defile.png" data-titre="p3a-3 · en défilant"><img src="img/p3a-3-defile.png" alt="p3a-3, en défilant"></button><figcaption><b>En défilant</b></figcaption></figure>
+      <figure class="vue" data-vignette><button class="ecran" type="button" data-agrandir data-src="img/p3a-3-renvoi.png" data-titre="p3a-3 · un toucher sur « 2 bis » : le filtre"><img src="img/p3a-3-renvoi.png" alt="p3a-3, renvoi"></button><figcaption><b>Un toucher</b> sur « 2 bis »</figcaption></figure>
+      <figure class="vue" data-vignette><button class="ecran" type="button" data-agrandir data-src="img/p3a-3-lecture.png" data-titre="p3a-3 · pendant la lecture"><img src="img/p3a-3-lecture.png" alt="p3a-3, lecture"></button><figcaption><b>Pendant la lecture</b></figcaption></figure>
+      <figure class="vue" data-vignette><button class="ecran" type="button" data-agrandir data-src="img/p3a-3-echec.png" data-titre="p3a-3 · le Drive a échoué"><img src="img/p3a-3-echec.png" alt="p3a-3, échec du Drive"></button><figcaption><b>Drive en échec</b></figcaption></figure>
+      <figure class="vue" data-vignette><button class="ecran" type="button" data-agrandir data-src="img/p3a-3-1280-repos.png" data-titre="p3a-3 · repos à 1280 px"><img src="img/p3a-3-1280-repos.png" alt="p3a-3, repos à 1280 px"></button><figcaption><b>Repos · 1280 px</b></figcaption></figure>
+    </div>
+  </section>
+
+  <section class="rangee" aria-labelledby="t-p3a-2">
+    <div class="tete">
+      <h2 id="t-p3a-2">Le tableau à prix <span class="id">p3a-2</span></h2>
+      <span class="pastille p-choisir">à choisir</span>
+      <p class="etiquette">L'idée</p>
+      <p class="phrase">Un tableau qté · prix · CHF pour vérifier chaque ligne ; les moutures groupées dans « Services ».</p>
+      <p>Corrigé : « Services (5) » sans kg ; chaque mouture nomme son malt.</p>
+    </div>
+    <div class="planche sept">
+      <figure class="vue ref" data-vignette><button class="ecran" type="button" data-agrandir data-src="img/sa-capture-recap.jpg" data-titre="Ta capture entourée, le récap (01.11)"><img src="img/sa-capture-recap.jpg" alt="Ta capture entourée"></button><figcaption><b>Ta capture</b>, entourée</figcaption></figure>
+      <figure class="vue" data-vignette><button class="ecran" type="button" data-agrandir data-src="img/p3a-2-repos.png" data-titre="p3a-2 · repos à 390 px"><img src="img/p3a-2-repos.png" alt="p3a-2, repos à 390 px"></button><figcaption><b>Repos · 390 px</b></figcaption></figure>
+      <figure class="vue" data-vignette><button class="ecran" type="button" data-agrandir data-src="img/p3a-2-defile.png" data-titre="p3a-2 · en défilant"><img src="img/p3a-2-defile.png" alt="p3a-2, en défilant"></button><figcaption><b>En défilant</b></figcaption></figure>
+      <figure class="vue" data-vignette><button class="ecran" type="button" data-agrandir data-src="img/p3a-2-renvoi.png" data-titre="p3a-2 · un toucher sur « 2 bis » : les lignes visées"><img src="img/p3a-2-renvoi.png" alt="p3a-2, renvoi"></button><figcaption><b>Un toucher</b> sur « 2 bis »</figcaption></figure>
+      <figure class="vue" data-vignette><button class="ecran" type="button" data-agrandir data-src="img/p3a-2-lecture.png" data-titre="p3a-2 · pendant la lecture"><img src="img/p3a-2-lecture.png" alt="p3a-2, lecture"></button><figcaption><b>Pendant la lecture</b></figcaption></figure>
+      <figure class="vue" data-vignette><button class="ecran" type="button" data-agrandir data-src="img/p3a-2-echec.png" data-titre="p3a-2 · le Drive a échoué"><img src="img/p3a-2-echec.png" alt="p3a-2, échec du Drive"></button><figcaption><b>Drive en échec</b></figcaption></figure>
+      <figure class="vue" data-vignette><button class="ecran" type="button" data-agrandir data-src="img/p3a-2-1280-repos.png" data-titre="p3a-2 · repos à 1280 px"><img src="img/p3a-2-1280-repos.png" alt="p3a-2, repos à 1280 px"></button><figcaption><b>Repos · 1280 px</b></figcaption></figure>
+    </div>
+  </section>
+
+  <section class="rangee" aria-labelledby="t-p3b-2">
+    <div class="tete">
+      <h2 id="t-p3b-2">Les tiroirs à tuiles <span class="id">p3b-2</span></h2>
+      <span class="pastille p-reserve">avec réserve</span>
+      <p class="etiquette">L'idée</p>
+      <p class="phrase">Une catégorie par tiroir, deux tuiles par rangée ; la meilleure vue à 1280, la moins dense au téléphone.</p>
+      <p>Corrigé : tuile à quatre colonnes ; Règlement gris pendant la lecture.</p>
+    </div>
+    <div class="planche sept">
+      <figure class="vue ref" data-vignette><button class="ecran" type="button" data-agrandir data-src="img/sa-capture-recap.jpg" data-titre="Ta capture entourée, le récap (01.11)"><img src="img/sa-capture-recap.jpg" alt="Ta capture entourée"></button><figcaption><b>Ta capture</b>, entourée</figcaption></figure>
+      <figure class="vue" data-vignette><button class="ecran" type="button" data-agrandir data-src="img/p3b-2-repos.png" data-titre="p3b-2 · repos à 390 px"><img src="img/p3b-2-repos.png" alt="p3b-2, repos à 390 px"></button><figcaption><b>Repos · 390 px</b></figcaption></figure>
+      <figure class="vue" data-vignette><button class="ecran" type="button" data-agrandir data-src="img/p3b-2-defile.png" data-titre="p3b-2 · en défilant"><img src="img/p3b-2-defile.png" alt="p3b-2, en défilant"></button><figcaption><b>En défilant</b></figcaption></figure>
+      <figure class="vue" data-vignette><button class="ecran" type="button" data-agrandir data-src="img/p3b-2-renvoi.png" data-titre="p3b-2 · un toucher sur « 2 bis » : les autres tiroirs se plient"><img src="img/p3b-2-renvoi.png" alt="p3b-2, renvoi"></button><figcaption><b>Un toucher</b> sur « 2 bis »</figcaption></figure>
+      <figure class="vue" data-vignette><button class="ecran" type="button" data-agrandir data-src="img/p3b-2-lecture.png" data-titre="p3b-2 · pendant la lecture"><img src="img/p3b-2-lecture.png" alt="p3b-2, lecture"></button><figcaption><b>Pendant la lecture</b></figcaption></figure>
+      <figure class="vue" data-vignette><button class="ecran" type="button" data-agrandir data-src="img/p3b-2-echec.png" data-titre="p3b-2 · le Drive a échoué"><img src="img/p3b-2-echec.png" alt="p3b-2, échec du Drive"></button><figcaption><b>Drive en échec</b></figcaption></figure>
+      <figure class="vue" data-vignette><button class="ecran" type="button" data-agrandir data-src="img/p3b-2-1280-repos.png" data-titre="p3b-2 · repos à 1280 px"><img src="img/p3b-2-1280-repos.png" alt="p3b-2, repos à 1280 px"></button><figcaption><b>Repos · 1280 px</b></figcaption></figure>
+    </div>
+  </section>
+
+  <section class="rangee" aria-labelledby="t-critique">
+    <div class="tete"><h2 id="t-critique">Le classement du critique</h2><p>Calibré sur ton portrait v2, toutes les captures ouvertes. Une proposition : tu vois les six.</p></div>
+    <div class="verdicts">
+      <p><b>1. p3b-1</b> : ta capture entourée, puis un registre aligné. La plus sûre.</p>
+      <p><b>2. p3a-1</b> : l'app à pleine page, bandes collantes, aucun défaut majeur.</p>
+      <p><b>3. p3b-3</b> : le plus de lignes par écran ; le rail reste à prouver.</p>
+      <p><b>4. p3a-3</b> : le ticket que tu connais, teinté ; un peu moins dense.</p>
+      <p><b>5. p3a-2</b> : le meilleur pour vérifier les prix, mais les moutures loin de leur malt.</p>
+      <p><b>6. p3b-2</b> : la plus belle à 1280, mais au téléphone on lit en zigzag.</p>
+    </div>
+  </section>
+
+  <section class="rangee" aria-labelledby="t-greffes">
+    <div class="tete"><h2 id="t-greffes">Greffes possibles</h2><p>Ce qui peut passer d'une variante à celle que tu choisis.</p></div>
+    <ul>
+      <li>De p3a-2 : la colonne du prix imprimé, alignée sur la virgule, entre quantité et CHF.</li>
+      <li>De p3a-3 : le sous-total qui suit le filtre (« Houblons 2/7 · 70 g · 2,95 »).</li>
+      <li>De p3b-3 : le pas « 1/2 › » pour passer à la ligne suivante d'un même point.</li>
+      <li>De p3b-2 : « Laisser en service » à côté de « Rattacher les 5 ».</li>
+    </ul>
+  </section>
+
+  <section class="rangee" aria-labelledby="t-avant">
+    <div class="tete"><h2 id="t-avant">Avant</h2></div>
+    <p>La passe 2 (r2b, que tu as reprise ici) : <a href="https://claude.ai/artifact/PyodUeikFKc9SwD7M9k4wu">ouvrir la page de la passe 2</a>.</p>
+  </section>
+</div>
+<dialog id="grand" aria-label="Capture en grand">
+  <div class="haut">
+    <p class="titre" id="grand-titre"></p>
+    <button type="button" class="fermer">Fermer</button>
+  </div>
+  <img id="grand-img" alt="">
+</dialog>
+
+<script>
+(function () {
+  var dlg = document.getElementById('grand');
+  var img = document.getElementById('grand-img');
+  var titre = document.getElementById('grand-titre');
+  document.querySelectorAll('[data-agrandir]').forEach(function (b) {
+    b.addEventListener('click', function () {
+      img.setAttribute('src', b.getAttribute('data-src'));
+      img.setAttribute('alt', b.getAttribute('data-titre'));
+      titre.textContent = b.getAttribute('data-titre');
+      dlg.showModal();
+    });
+  });
+  dlg.querySelector('.fermer').addEventListener('click', function () { dlg.close(); });
+  dlg.addEventListener('click', function (e) { if (e.target === dlg) dlg.close(); });
+})();
+</script>

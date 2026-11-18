@@ -1,0 +1,18 @@
+{
+ "reglage": "3.5-flash-lite@low",
+ "element": "routing-complex-plante",
+ "cas": "routing-complex",
+ "type": "plante",
+ "moitie": "jugement",
+ "verdict": {
+  "utilisable": true,
+  "approved": true,
+  "proposalApproved": false,
+  "issues": [
+   "Le texte de proposition affirme à tort que 'tes 24 L mesurés sont saturés en sucres', ce qui contredit les règles (volume cible et non mesuré)."
+  ]
+ },
+ "ms": 788,
+ "coutMicro": 3172,
+ "etat": "STOP"
+}

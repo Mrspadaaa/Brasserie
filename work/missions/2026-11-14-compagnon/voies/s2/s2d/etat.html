@@ -1,0 +1,187 @@
+<!doctype html><html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>s2d — la conversation sur la frise du brassin (chaude)</title><style>
+:root{--pg:#FFFFFF;--pn:#F5F5F5;--su:#EBEBEB;--bd:#DDDDDD;--bdm:#BFBFBF;--tf:#9E9E9E;--t2:#666666;--t1:#333333;--t0:#111111;
+--act:#111111;--acttx:#FFFFFF;--hop:#567F45;--hoptx:#3F6B2E;--hopbg:#EEF4EA;--att:#9C7020;--atttx:#7F5B10;--attbg:#FBF3E2;
+--al:#C8382F;--altx:#A8291F;--albg:#FBEAE8;--eau:#4F7E9B;--eautx:#2F5F7D;--eaubg:#EAF1F6;--fin:#1F64A3;
+--sh-sheet:0 -12px 40px -16px rgba(0,0,0,.28);--sh-lift:0 8px 24px -12px rgba(0,0,0,.3);--scrim:rgba(17,17,17,.30);
+--planche:#7A7A7A;--planche-tx:#FFFFFF;
+--sans:"Source Sans 3","Source Sans Pro",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+--mono:"IBM Plex Mono",ui-monospace,"Cascadia Mono",Consolas,monospace}
+[data-theme=cave]{--pg:#12100E;--pn:#1A1613;--su:#221D19;--bd:#2C2521;--bdm:#3D342E;--tf:#574A42;--t2:#9A8A7E;--t1:#D8CEC5;--t0:#F5F0EA;
+--act:#F2C14E;--acttx:#12100E;--hop:#6E9B5B;--hoptx:#7FAE6B;--hopbg:#1C2618;--att:#E3B55D;--atttx:#E3B55D;--attbg:#2A2113;
+--al:#D6453D;--altx:#DC5F58;--albg:#2C1614;--eau:#5E8CA8;--eautx:#6F9CB8;--eaubg:#17222A;--fin:#86B9E6;
+--sh-sheet:0 -12px 40px -16px rgba(0,0,0,.8);--sh-lift:0 8px 24px -12px rgba(0,0,0,.8);--scrim:rgba(0,0,0,.45);
+--planche:#0A0908;--planche-tx:#D8CEC5}
+*{box-sizing:border-box}
+html,body{margin:0}
+body{background:var(--planche);font-family:var(--sans);color:var(--t1);-webkit-font-smoothing:antialiased;padding:20px 20px 28px}
+::selection{background:var(--hop);color:#fff}
+.s2d-pl-titre{color:var(--planche-tx);font-size:18px;font-weight:700;margin:0 0 4px}
+.s2d-pl-sous{color:var(--planche-tx);opacity:.85;font-size:14px;margin:0 0 16px}
+.s2d-pl{display:flex;gap:24px;align-items:flex-start}
+.s2d-pl-col{width:390px;flex:none}
+.s2d-pl-lib{color:var(--planche-tx);font-size:14px;font-weight:600;margin:0 0 6px}
+.s2d-pl-lib span{font-weight:400;opacity:.85}
+.s2d-tel{width:390px;height:760px;position:relative;overflow:hidden;border-radius:14px;background:var(--pg);box-shadow:0 10px 30px -14px rgba(0,0,0,.6)}
+.s2d-fond{position:absolute;inset:0;filter:blur(1.6px);opacity:.75;padding:10px 12px;color:var(--t1)}
+.s2d-fond-b{display:flex;align-items:center;gap:8px;height:36px;font-weight:700;font-size:16px;color:var(--t0)}
+.s2d-fond-t{display:flex;gap:6px;margin:4px 0 12px}
+.s2d-fond-t i{flex:1;height:26px;border-radius:6px;background:var(--pn);border:1px solid var(--bd)}
+.s2d-fond-t i:nth-child(2){background:var(--hopbg);border-color:var(--hop)}
+.s2d-fond-big{font:600 28px var(--mono);color:var(--t0)}
+.s2d-fond-r{height:30px;border-bottom:1px solid var(--bd)}
+.s2d-scrim{position:absolute;inset:0;background:var(--scrim)}
+.s2d-feuille{position:absolute;left:0;right:0;bottom:0;top:44px;background:var(--pg);border-radius:14px 14px 0 0;box-shadow:var(--sh-sheet);display:flex;flex-direction:column;overflow:hidden}
+.s2d-poignee{width:36px;height:4px;border-radius:2px;background:var(--bdm);margin:6px auto 0;flex:none}
+.s2d-ic{flex:none;display:block}
+.s2d-mono{font-family:var(--mono);font-variant-numeric:tabular-nums;font-feature-settings:"tnum"}
+.s2d-vh{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
+button{font:inherit;color:inherit;background:none;border:0;padding:0;cursor:pointer}
+.s2d-pl-titre{display:flex;align-items:center;gap:8px}
+.s2d-pl-logo{width:20px;height:20px;flex:none}
+@media (max-width:500px){body{padding:0 0 16px}.s2d-pl{flex-direction:column;gap:16px}.s2d-pl-titre,.s2d-pl-sous,.s2d-pl-lib{padding:0 8px}.s2d-pl-titre{padding-top:8px}.s2d-tel{border-radius:0}}
+
+.s2d-tete{display:flex;align-items:center;gap:8px;height:36px;padding:0 6px 0 12px;flex:none}
+.s2d-tete b{font-size:16px;color:var(--t0)}
+.s2d-tete span{flex:1;font-size:12px;color:var(--t2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.s2d-bi{width:32px;height:32px;display:grid;place-items:center;border-radius:6px;color:var(--t1)}
+.s2d-frise{flex:none;position:relative;height:128px;margin:0 16px 0 14px;border-bottom:1px solid var(--bd)}
+.s2d-passe{position:absolute;left:0;top:8px;bottom:22px;background:var(--pn);border-radius:4px}
+.s2d-axe{position:absolute;left:0;right:0;bottom:22px;height:1px;background:var(--bdm)}
+.s2d-j{position:absolute;bottom:4px;transform:translateX(-50%);font:12px var(--mono);color:var(--t2)}
+.s2d-j.s2d-fort{color:var(--t0);font-weight:600}
+.s2d-dh{position:absolute;bottom:22px;width:14px;transform:translateX(-50%);border-radius:3px 3px 0 0;background:var(--hop)}
+.s2d-dh.s2d-fantome{background:none;border:1.5px dashed var(--hop);border-bottom:0}
+.s2d-dh.s2d-gris{background:var(--bdm)}
+.s2d-dh-l{position:absolute;transform:translateX(-50%);font:600 12px var(--mono);color:var(--t0);white-space:nowrap}
+.s2d-dh-n{position:absolute;transform:translateX(-50%);font-size:12px;color:var(--t2);white-space:nowrap}
+.s2d-contact{position:absolute;bottom:25px;height:4px;border-radius:2px;background:var(--hop);opacity:.4}
+.s2d-contact.s2d-plus{opacity:1;background:none;border-top:2px dashed var(--att);height:0}
+.s2d-auj{position:absolute;top:2px;bottom:18px;width:2px;background:var(--t0);transform:translateX(-1px)}
+.s2d-auj-l{position:absolute;top:0;transform:translateX(6px);font-size:12px;font-weight:700;color:var(--t0);white-space:nowrap}
+.s2d-pin{position:absolute;transform:translate(-50%,0);width:24px;height:24px;border-radius:12px;display:grid;place-items:center;background:var(--act);color:var(--acttx)}
+.s2d-pin.s2d-file{background:var(--pg);color:var(--t1);border:1.5px dashed var(--bdm)}
+.s2d-pin.s2d-ctrl{background:var(--eau);color:#fff}
+.s2d-pin.s2d-hors{background:var(--pg);color:var(--t0);border:1.5px solid var(--t0)}
+.s2d-fen{position:absolute;bottom:40px;height:22px;border:1.5px solid var(--hop);border-bottom:0;border-radius:6px 6px 0 0}
+.s2d-fen-l{position:absolute;bottom:44px;transform:translateX(-50%);font-size:12px;font-weight:600;color:var(--hoptx);white-space:nowrap}
+.s2d-fil{flex:1;min-height:0;overflow:hidden;padding:10px 12px;display:flex;flex-direction:column;gap:10px}
+.s2d-pied{flex:none;padding:8px 10px 10px;border-top:1px solid var(--bd);display:flex;gap:6px;align-items:center}
+.s2d-champ{flex:1;min-height:40px;display:flex;align-items:center;gap:6px;border:1px solid var(--bdm);border-radius:8px;background:var(--pn);padding:0 4px 0 10px}
+.s2d-champ span{flex:1;font-size:16px;color:var(--t2)}
+.s2d-mode{height:28px;padding:0 8px;border-radius:6px;border:1px solid var(--bd);background:var(--pg);font-size:12px;color:var(--t1);display:inline-flex;align-items:center;gap:3px;white-space:nowrap}
+.s2d-env{width:40px;height:40px;border-radius:8px;background:var(--su);color:var(--t2);display:grid;place-items:center}
+.s2d-grand{font-size:18px;font-weight:700;color:var(--t0);line-height:1.25;margin:0}
+.s2d-grand .s2d-mono{font-size:17px}
+.s2d-sous{font-size:14px;color:var(--t2);margin:-6px 0 0}
+.s2d-ancres{display:flex;flex-direction:column}
+.s2d-ancre{display:grid;grid-template-columns:42px 1fr 16px;gap:8px;align-items:center;min-height:38px;border-bottom:1px solid var(--bd);font-size:14px;color:var(--t0);text-align:left}
+.s2d-tag{font:600 12px var(--mono);color:var(--t1);background:var(--pn);border-radius:4px;padding:2px 0;text-align:center}
+.s2d-tag.s2d-now{background:var(--act);color:var(--acttx)}
+.s2d-ancre .s2d-ic{color:var(--t2)}
+.s2d-q{font-size:14px;color:var(--t1);background:var(--su);border-radius:8px;padding:6px 10px}
+.s2d-prog{display:flex;align-items:center;gap:8px;font-size:13px;color:var(--t1)}
+.s2d-prog .s2d-mono{font-size:16px;font-weight:600;color:var(--t0)}
+.s2d-prog span.s2d-f{flex:1}
+.s2d-barre{height:4px;border-radius:2px;background:var(--su);position:relative}
+.s2d-barre i{position:absolute;left:0;top:0;bottom:0;border-radius:2px;background:var(--hop)}
+.s2d-pts{display:flex;justify-content:space-between;font-size:12px;color:var(--t2)}
+.s2d-pts .s2d-ok{color:var(--hoptx)}
+.s2d-pts .s2d-c{color:var(--t0);font-weight:600}
+.s2d-ligne{display:flex;align-items:center;gap:8px;font-size:14px;color:var(--t1);min-height:32px}
+.s2d-ligne span{flex:1}
+.s2d-ligne small{display:block;font-size:12px;color:var(--t2)}
+.s2d-int{width:36px;height:22px;border-radius:11px;background:var(--hop);position:relative;flex:none}
+.s2d-int::after{content:"";position:absolute;top:3px;left:17px;width:16px;height:16px;border-radius:8px;background:var(--pg)}
+.s2d-niv{display:inline-flex;align-items:center;gap:4px;height:22px;padding:0 8px;border-radius:11px;background:var(--attbg);color:var(--atttx);font-weight:700;font-size:12px;align-self:flex-start}
+.s2d-mod{display:grid;grid-template-columns:24px 42px 1fr auto;gap:8px;align-items:center;min-height:34px;border-bottom:1px solid var(--bd);font-size:14px;color:var(--t0)}
+.s2d-mod .s2d-mono{font-size:13px}
+.s2d-mod s{color:var(--t2)}
+.s2d-mod small{display:block;font-size:12px;color:var(--t2)}
+.s2d-cb{width:20px;height:20px;border-radius:4px;background:var(--act);color:var(--acttx);display:grid;place-items:center}
+.s2d-act{display:flex;justify-content:flex-end;gap:6px}
+.s2d-bt2{height:32px;padding:0 10px;border:1px solid var(--bdm);border-radius:6px;font-size:13px;color:var(--t1);display:inline-flex;align-items:center;gap:5px;white-space:nowrap}
+.s2d-prim{height:32px;padding:0 12px;border-radius:6px;background:var(--act);color:var(--acttx);font-weight:600;font-size:13px;display:inline-flex;align-items:center;gap:6px;white-space:nowrap}
+.s2d-pli{display:flex;align-items:center;gap:6px;min-height:28px;font-size:14px;color:var(--t1);text-align:left}
+.s2d-pli span{flex:1}
+.s2d-sw .s2d-int,.s2d-ligne .s2d-int{flex:none;width:36px}
+</style></head><body>
+<h1 class="s2d-pl-titre"><img class="s2d-pl-logo" src="data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20stroke%3D%22%236E9B5B%22%20stroke-width%3D%222%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cpath%20d%3D%22M9.937%2015.5A2%202%200%200%200%208.5%2014.063l-6.135-1.582a.5.5%200%200%201%200-.962L8.5%209.936A2%202%200%200%200%209.937%208.5l1.582-6.135a.5.5%200%200%201%20.963%200L14.063%208.5A2%202%200%200%200%2015.5%209.937l6.135%201.581a.5.5%200%200%201%200%20.964L15.5%2014.063a2%202%200%200%200-1.437%201.437l-1.582%206.135a.5.5%200%200%201-.963%200z%22%2F%3E%3C%2Fsvg%3E" alt="" width="20" height="20">s2d — la conversation sur la frise du brassin (chaude)</h1><p class="s2d-pl-sous">Série s2 « le geste et le temps » · questions, doses et contrôles prennent leur jour ; la marge avant le prochain geste dit si l'attente compte</p><div class="s2d-pl"><div class="s2d-pl-col"><p class="s2d-pl-lib">Accueil <span>· la frise J+0 à J+12, questions ancrées</span></p>
+<div class="s2d-tel" data-cadre="accueil"><div class="s2d-fond" aria-hidden="true"><div class="s2d-fond-b">Brassin 31 · New England IPA</div>
+<div class="s2d-fond-t"><i></i><i></i><i></i></div><div class="s2d-fond-big">19 °C</div>
+<div class="s2d-fond-r"></div><div class="s2d-fond-r"></div><div class="s2d-fond-r"></div><div class="s2d-fond-r"></div></div><div class="s2d-scrim"></div><section class="s2d-feuille" aria-label="Compagnon brasseur"><div class="s2d-poignee"></div><header class="s2d-tete"><b>Compagnon</b><span>Brassin 31 · New England IPA</span><button class="s2d-bi" aria-label="Mes conversations"><svg class="s2d-ic " width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7.9 20A9 9 0 1 0 4 16.1L2 22Z"/></svg></button><button class="s2d-bi" aria-label="Plus : limites, repartir à zéro"><svg class="s2d-ic " width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/><circle cx="5" cy="12" r="1"/></svg></button></header><div class="s2d-frise" data-booster="frise-brassin" aria-label="Frise du brassin 31, J+0 à J+12">
+<span class="s2d-passe" style="width:33.33%"></span><span class="s2d-axe"></span><span class="s2d-j" style="left:0.00%">J+0</span><span class="s2d-j" style="left:16.67%">J+2</span><span class="s2d-j s2d-fort" style="left:33.33%">J+4</span><span class="s2d-j" style="left:50.00%">J+6</span><span class="s2d-j" style="left:75.00%">J+9</span><span class="s2d-j" style="left:100.00%">J+12</span>
+<span class="s2d-dh s2d-gris" style="left:16.67%;height:54px"></span><span class="s2d-dh-l" style="left:16.67%;bottom:78px">85</span><span class="s2d-contact" style="left:16.67%;width:16.67%"></span>
+<span class="s2d-dh " style="left:50.00%;height:27px"></span><span class="s2d-dh-l" style="left:50.00%;bottom:51px">43</span><span class="s2d-contact" style="left:50.00%;width:16.67%"></span>
+<span class="s2d-dh " style="left:75.00%;height:27px"></span><span class="s2d-dh-l" style="left:75.00%;bottom:51px">43</span><span class="s2d-contact" style="left:75.00%;width:16.67%"></span>
+<span class="s2d-auj" style="left:33.33%"></span><span class="s2d-auj-l" style="left:33.33%">auj. · 19 °C</span><span class="s2d-dh-n" style="left:16.67%;bottom:2px;display:none"></span></div>
+<div class="s2d-fil">
+<p class="s2d-grand">Prochain geste dans <span class="s2d-mono">2 j</span> : Galaxy <span class="s2d-mono">43 g</span>.</p>
+<p class="s2d-sous">Dry hop <span class="s2d-mono">171 g</span> en trois apports · <span class="s2d-mono">9,0 g/L</span></p>
+<div class="s2d-ancres" data-booster="questions-ancrees">
+<button class="s2d-ancre"><span class="s2d-tag s2d-now">J+4</span><span>La pression monte : je purge ?</span><svg class="s2d-ic " width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 7h10v10"/><path d="M7 17 17 7"/></svg></button>
+<button class="s2d-ancre"><span class="s2d-tag">J+4</span><span>DF 1,012 : la levure a fini ?</span><svg class="s2d-ic " width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 7h10v10"/><path d="M7 17 17 7"/></svg></button>
+<button class="s2d-ancre"><span class="s2d-tag">J+6</span><span>Galaxy : je garde 43 g ?</span><svg class="s2d-ic " width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 7h10v10"/><path d="M7 17 17 7"/></svg></button>
+<button class="s2d-ancre"><span class="s2d-tag">J+9</span><span>Mosaic : quelle dose pour finir ?</span><svg class="s2d-ic " width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 7h10v10"/><path d="M7 17 17 7"/></svg></button>
+<button class="s2d-ancre"><span class="s2d-tag">J+12</span><span>Combien de jours de garde ?</span><svg class="s2d-ic " width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 7h10v10"/><path d="M7 17 17 7"/></svg></button>
+</div>
+<div class="s2d-ligne"><svg class="s2d-ic " width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10.268 21a2 2 0 0 0 3.464 0"/><path d="M3.262 15.326A1 1 0 0 0 4 17h16a1 1 0 0 0 .74-1.673C19.41 13.956 18 12.499 18 8A6 6 0 0 0 6 8c0 4.499-1.411 5.956-2.738 7.326"/></svg><span>Me notifier à la réponse<small>tu peux fermer pendant que je cherche</small></span><span class="s2d-int" role="switch" aria-checked="true"></span></div>
+</div><footer class="s2d-pied"><div class="s2d-champ"><span>Ce que tu observes à J+4…</span><button class="s2d-mode">Auto<svg class="s2d-ic " width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></button></div><button class="s2d-env" disabled aria-label="Envoyer"><svg class="s2d-ic " width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14.536 21.686a.5.5 0 0 0 .937-.024l6.5-19a.496.496 0 0 0-.635-.635l-19 6.5a.5.5 0 0 0-.024.937l7.93 3.18a2 2 0 0 1 1.112 1.11z"/><path d="m21.854 2.147-10.94 10.939"/></svg></button></footer></section></div></div>
+<div class="s2d-pl-col"><p class="s2d-pl-lib">Attente <span>· 2:29, 2 j de marge avant Galaxy</span></p>
+<div class="s2d-tel" data-cadre="attente"><div class="s2d-fond" aria-hidden="true"><div class="s2d-fond-b">Brassin 31 · New England IPA</div>
+<div class="s2d-fond-t"><i></i><i></i><i></i></div><div class="s2d-fond-big">19 °C</div>
+<div class="s2d-fond-r"></div><div class="s2d-fond-r"></div><div class="s2d-fond-r"></div><div class="s2d-fond-r"></div></div><div class="s2d-scrim"></div><section class="s2d-feuille" aria-label="Compagnon brasseur"><div class="s2d-poignee"></div><header class="s2d-tete"><b>Compagnon</b><span>Brassin 31 · New England IPA</span><button class="s2d-bi" aria-label="Mes conversations"><svg class="s2d-ic " width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7.9 20A9 9 0 1 0 4 16.1L2 22Z"/></svg></button><button class="s2d-bi" aria-label="Plus : limites, repartir à zéro"><svg class="s2d-ic " width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/><circle cx="5" cy="12" r="1"/></svg></button></header><div class="s2d-frise" data-booster="frise-brassin" aria-label="Frise du brassin 31, J+0 à J+12">
+<span class="s2d-passe" style="width:33.33%"></span><span class="s2d-axe"></span><span class="s2d-j" style="left:0.00%">J+0</span><span class="s2d-j" style="left:16.67%">J+2</span><span class="s2d-j s2d-fort" style="left:33.33%">J+4</span><span class="s2d-j" style="left:50.00%">J+6</span><span class="s2d-j" style="left:75.00%">J+9</span><span class="s2d-j" style="left:100.00%">J+12</span>
+<span class="s2d-dh s2d-gris" style="left:16.67%;height:54px"></span><span class="s2d-dh-l" style="left:16.67%;bottom:78px">85</span><span class="s2d-contact" style="left:16.67%;width:16.67%"></span>
+<span class="s2d-dh " style="left:50.00%;height:27px"></span><span class="s2d-dh-l" style="left:50.00%;bottom:51px">43</span><span class="s2d-contact" style="left:50.00%;width:16.67%"></span>
+<span class="s2d-dh " style="left:75.00%;height:27px"></span><span class="s2d-dh-l" style="left:75.00%;bottom:51px">43</span><span class="s2d-contact" style="left:75.00%;width:16.67%"></span>
+<span class="s2d-auj" style="left:33.33%"></span><span class="s2d-auj-l" style="left:33.33%">auj. · 19 °C</span><span class="s2d-fen" style="left:33.33%;width:16.67%"></span><span class="s2d-fen-l" style="left:41.67%">2 j de marge</span>
+<span class="s2d-pin" style="left:33.33%;bottom:86px"><svg class="s2d-ic " width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M22 17a2 2 0 0 1-2 2H6.828a2 2 0 0 0-1.414.586l-2.202 2.202A.71.71 0 0 1 2 21.286V5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2z"/></svg></span><span class="s2d-pin s2d-file" style="left:100.00%;bottom:30px"><svg class="s2d-ic " width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg></span></div>
+<div class="s2d-fil">
+<p class="s2d-grand">Rien à faire avant J+6 : la réponse a le temps.</p>
+<div class="s2d-q">La fermentation est à 19 °C depuis 36 h et la pression monte doucement : que faire ?</div>
+<div class="s2d-prog"><svg class="s2d-ic " width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 22h14"/><path d="M5 2h14"/><path d="M17 22v-4.172a2 2 0 0 0-.586-1.414L12 12l-4.414 4.414A2 2 0 0 0 7 17.828V22"/><path d="M7 2v4.172a2 2 0 0 0 .586 1.414L12 12l4.414-4.414A2 2 0 0 0 17 6.172V2"/></svg><span class="s2d-mono">2:29</span><span class="s2d-f">Approfondi · <span class="s2d-mono">1 à 3 min</span>, au plus <span class="s2d-mono">3:40</span></span></div>
+<div class="s2d-barre" data-booster="jauge-duree"><i style="width:68%"></i></div>
+<div class="s2d-pts"><span class="s2d-ok">brassin lu</span><span class="s2d-ok">calculé</span><span class="s2d-c">sources · 2</span><span>rédiger</span><span>relire ×2</span></div>
+<div class="s2d-ligne"><svg class="s2d-ic " width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg><span>Et combien de jours de garde à 18 °C ?<small>en file · posée sur J+12</small></span><button class="s2d-bi" aria-label="Retirer"><svg class="s2d-ic " width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg></button></div>
+<div class="s2d-ligne"><svg class="s2d-ic " width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10.268 21a2 2 0 0 0 3.464 0"/><path d="M3.262 15.326A1 1 0 0 0 4 17h16a1 1 0 0 0 .74-1.673C19.41 13.956 18 12.499 18 8A6 6 0 0 0 6 8c0 4.499-1.411 5.956-2.738 7.326"/></svg><span>Tu peux continuer ailleurs<small>notifié à la réponse, elle reste dans ce fil</small></span><span class="s2d-int" role="switch" aria-checked="true"></span></div>
+</div><footer class="s2d-pied"><div class="s2d-champ"><span>Ajoute une question…</span><button class="s2d-mode">Approfondi<svg class="s2d-ic " width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></button></div><button class="s2d-env" disabled aria-label="Envoyer"><svg class="s2d-ic " width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14.536 21.686a.5.5 0 0 0 .937-.024l6.5-19a.496.496 0 0 0-.635-.635l-19 6.5a.5.5 0 0 0-.024.937l7.93 3.18a2 2 0 0 1 1.112 1.11z"/><path d="m21.854 2.147-10.94 10.939"/></svg></button></footer></section></div></div>
+<div class="s2d-pl-col"><p class="s2d-pl-lib">Réponse <span>· la proposition dessinée sur la frise</span></p>
+<div class="s2d-tel" data-cadre="reponse"><div class="s2d-fond" aria-hidden="true"><div class="s2d-fond-b">Brassin 31 · New England IPA</div>
+<div class="s2d-fond-t"><i></i><i></i><i></i></div><div class="s2d-fond-big">19 °C</div>
+<div class="s2d-fond-r"></div><div class="s2d-fond-r"></div><div class="s2d-fond-r"></div><div class="s2d-fond-r"></div></div><div class="s2d-scrim"></div><section class="s2d-feuille" aria-label="Compagnon brasseur"><div class="s2d-poignee"></div><header class="s2d-tete"><b>Compagnon</b><span>Brassin 31 · relu deux fois · 2:41</span><button class="s2d-bi" aria-label="Mes conversations"><svg class="s2d-ic " width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7.9 20A9 9 0 1 0 4 16.1L2 22Z"/></svg></button><button class="s2d-bi" aria-label="Plus : limites, repartir à zéro"><svg class="s2d-ic " width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/><circle cx="5" cy="12" r="1"/></svg></button></header><div class="s2d-frise" data-booster="frise-brassin" aria-label="Frise du brassin 31, J+0 à J+12">
+<span class="s2d-passe" style="width:33.33%"></span><span class="s2d-axe"></span><span class="s2d-j" style="left:0.00%">J+0</span><span class="s2d-j" style="left:16.67%">J+2</span><span class="s2d-j s2d-fort" style="left:33.33%">J+4</span><span class="s2d-j" style="left:50.00%">J+6</span><span class="s2d-j" style="left:75.00%">J+9</span><span class="s2d-j" style="left:100.00%">J+12</span>
+<span class="s2d-dh s2d-fantome" style="left:16.67%;height:54px"></span><span class="s2d-dh s2d-gris" style="left:16.67%;height:44px"></span><span class="s2d-dh-l" style="left:16.67%;bottom:68px">70</span><span class="s2d-contact" style="left:16.67%;width:16.67%"></span>
+<span class="s2d-dh " style="left:50.00%;height:27px"></span><span class="s2d-dh-l" style="left:50.00%;bottom:51px">43</span><span class="s2d-contact" style="left:50.00%;width:16.67%"></span>
+<span class="s2d-dh s2d-fantome" style="left:75.00%;height:27px"></span><span class="s2d-dh" style="left:75.00%;height:13px;background:var(--att)"></span><span class="s2d-dh-l" style="left:75.00%;bottom:51px">43→21</span><span class="s2d-contact" style="left:75.00%;width:16.67%"></span><span class="s2d-contact s2d-plus" style="left:91.67%;width:8.33%"></span>
+<span class="s2d-auj" style="left:33.33%"></span><span class="s2d-auj-l" style="left:33.33%">auj. · 19 °C</span><span class="s2d-pin s2d-ctrl" style="left:75.00%;bottom:84px"><svg class="s2d-ic " width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 22V4a1 1 0 0 1 .4-.8A6 6 0 0 1 8 2c3 0 5 2 7.333 2q2 0 3.067-.8A1 1 0 0 1 20 4v10a1 1 0 0 1-.4.8A6 6 0 0 1 16 16c-3 0-5-2-8-2a6 6 0 0 0-4 1.528"/></svg></span></div>
+<div class="s2d-fil">
+<span class="s2d-niv"><svg class="s2d-ic " width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3"/><path d="M12 9v4"/><path d="M12 17h.01"/></svg>Attention</span>
+<p class="s2d-grand">Dry hop chargé : réduis le dernier apport.</p>
+<p class="s2d-sous" style="margin:-4px 0 0;color:var(--t0);font-size:16px;font-weight:600">Passe Mosaic J+9 de <span class="s2d-mono">43 g</span> à <span class="s2d-mono">21 g</span>.</p>
+<div data-booster="proposition-frise">
+<div class="s2d-mod"><span class="s2d-cb" role="checkbox" aria-checked="true"><svg class="s2d-ic " width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg></span><span class="s2d-tag">J+9</span><span>Mosaic</span><span class="s2d-mono"><s>43</s> → 21 g</span></div>
+<div class="s2d-mod"><span class="s2d-cb" role="checkbox" aria-checked="true"><svg class="s2d-ic " width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg></span><span class="s2d-tag">J+9</span><span>Contact du dry hop</span><span class="s2d-mono"><s>2</s> → 3 j</span></div>
+<div class="s2d-mod"><span class="s2d-cb" role="checkbox" aria-checked="true"><svg class="s2d-ic " width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg></span><span class="s2d-tag">J+2</span><span>Citra<small>pour la recette : déjà ajouté ici</small></span><span class="s2d-mono"><s>85</s> → 70 g</span></div>
+</div>
+<div class="s2d-act"><button class="s2d-bt2">Écarter</button><button class="s2d-prim"><svg class="s2d-ic " width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg>Valider 3 modifications</button></div>
+<div class="s2d-ligne"><svg class="s2d-ic " width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 22V4a1 1 0 0 1 .4-.8A6 6 0 0 1 8 2c3 0 5 2 7.333 2q2 0 3.067-.8A1 1 0 0 1 20 4v10a1 1 0 0 1-.4.8A6 6 0 0 1 16 16c-3 0-5-2-8-2a6 6 0 0 0-4 1.528"/></svg><span>J+9 · goût et odeur à la purge<small>note si l'herbacé apparaît</small></span><button class="s2d-bt2">Au journal</button></div>
+<button class="s2d-pli"><span>Pourquoi · <span class="s2d-mono">9,0 → 7,1 g/L</span>, calculs et sources</span><svg class="s2d-ic " width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></button>
+</div><footer class="s2d-pied"><div class="s2d-champ"><span>Ce que tu observes à J+4…</span><button class="s2d-mode">Auto<svg class="s2d-ic " width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></button></div><button class="s2d-env" disabled aria-label="Envoyer"><svg class="s2d-ic " width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14.536 21.686a.5.5 0 0 0 .937-.024l6.5-19a.496.496 0 0 0-.635-.635l-19 6.5a.5.5 0 0 0-.024.937l7.93 3.18a2 2 0 0 1 1.112 1.11z"/><path d="m21.854 2.147-10.94 10.939"/></svg></button></footer></section></div></div>
+<div class="s2d-pl-col"><p class="s2d-pl-lib">Erreur <span>· hors ligne, envoi à confirmer</span></p>
+<div class="s2d-tel" data-cadre="erreur"><div class="s2d-fond" aria-hidden="true"><div class="s2d-fond-b">Brassin 31 · New England IPA</div>
+<div class="s2d-fond-t"><i></i><i></i><i></i></div><div class="s2d-fond-big">19 °C</div>
+<div class="s2d-fond-r"></div><div class="s2d-fond-r"></div><div class="s2d-fond-r"></div><div class="s2d-fond-r"></div></div><div class="s2d-scrim"></div><section class="s2d-feuille" aria-label="Compagnon brasseur"><div class="s2d-poignee"></div><header class="s2d-tete"><b>Compagnon</b><span>Brassin 31 · hors ligne</span><button class="s2d-bi" aria-label="Mes conversations"><svg class="s2d-ic " width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7.9 20A9 9 0 1 0 4 16.1L2 22Z"/></svg></button><button class="s2d-bi" aria-label="Plus : limites, repartir à zéro"><svg class="s2d-ic " width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/><circle cx="5" cy="12" r="1"/></svg></button></header><div class="s2d-frise" data-booster="frise-brassin" aria-label="Frise du brassin 31, J+0 à J+12">
+<span class="s2d-passe" style="width:33.33%"></span><span class="s2d-axe"></span><span class="s2d-j" style="left:0.00%">J+0</span><span class="s2d-j" style="left:16.67%">J+2</span><span class="s2d-j s2d-fort" style="left:33.33%">J+4</span><span class="s2d-j" style="left:50.00%">J+6</span><span class="s2d-j" style="left:75.00%">J+9</span><span class="s2d-j" style="left:100.00%">J+12</span>
+<span class="s2d-dh s2d-gris" style="left:16.67%;height:54px"></span><span class="s2d-dh-l" style="left:16.67%;bottom:78px">85</span><span class="s2d-contact" style="left:16.67%;width:16.67%"></span>
+<span class="s2d-dh " style="left:50.00%;height:27px"></span><span class="s2d-dh-l" style="left:50.00%;bottom:51px">43</span><span class="s2d-contact" style="left:50.00%;width:16.67%"></span>
+<span class="s2d-dh " style="left:75.00%;height:27px"></span><span class="s2d-dh-l" style="left:75.00%;bottom:51px">43</span><span class="s2d-contact" style="left:75.00%;width:16.67%"></span>
+<span class="s2d-auj" style="left:33.33%"></span><span class="s2d-auj-l" style="left:33.33%">auj. · 19 °C</span><span class="s2d-fen" style="left:33.33%;width:16.67%"></span><span class="s2d-fen-l" style="left:41.67%">2 j de marge</span><span class="s2d-pin s2d-hors" style="left:33.33%;bottom:86px"><svg class="s2d-ic " width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 20h.01"/><path d="M8.5 16.429a5 5 0 0 1 7 0"/><path d="M5 12.859a10 10 0 0 1 5.17-2.69"/><path d="M19 12.859a10 10 0 0 0-2.007-1.523"/><path d="M2 8.82a15 15 0 0 1 4.177-2.643"/><path d="M22 8.82a15 15 0 0 0-11.288-3.764"/><path d="m2 2 20 20"/></svg></span></div>
+<div class="s2d-fil">
+<p class="s2d-grand">Pas de réseau. Rien d'urgent avant J+6 : ta question peut attendre.</p>
+<div class="s2d-q">Et combien de jours de garde à 18 °C ?</div>
+<div class="s2d-ligne"><svg class="s2d-ic " width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect width="14" height="20" x="5" y="2" rx="2" ry="2"/><path d="M12 18h.01"/></svg><span>Gardée sur ce téléphone · 22:51<small>rien n'est parti, rien n'est compté</small></span></div>
+<div class="s2d-act" style="justify-content:flex-start" data-booster="envoi-a-confirmer"><button class="s2d-prim"><svg class="s2d-ic " width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14.536 21.686a.5.5 0 0 0 .937-.024l6.5-19a.496.496 0 0 0-.635-.635l-19 6.5a.5.5 0 0 0-.024.937l7.93 3.18a2 2 0 0 1 1.112 1.11z"/><path d="m21.854 2.147-10.94 10.939"/></svg>Envoyer au retour du réseau</button><button class="s2d-bt2"><svg class="s2d-ic " width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 20h9"/><path d="M16.376 3.622a1 1 0 0 1 3.002 3.002L7.368 18.635a2 2 0 0 1-.855.506l-2.872.838a.5.5 0 0 1-.62-.62l.838-2.872a2 2 0 0 1 .506-.854z"/></svg>Reformuler</button></div>
+<div class="s2d-ligne"><svg class="s2d-ic " width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10.268 21a2 2 0 0 0 3.464 0"/><path d="M3.262 15.326A1 1 0 0 0 4 17h16a1 1 0 0 0 .74-1.673C19.41 13.956 18 12.499 18 8A6 6 0 0 0 6 8c0 4.499-1.411 5.956-2.738 7.326"/></svg><span>Me notifier quand elle part<small>puis à la réponse</small></span><span class="s2d-int" role="switch" aria-checked="true"></span></div>
+<div class="s2d-ligne"><svg class="s2d-ic " width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 22V4a1 1 0 0 1 .4-.8A6 6 0 0 1 8 2c3 0 5 2 7.333 2q2 0 3.067-.8A1 1 0 0 1 20 4v10a1 1 0 0 1-.4.8A6 6 0 0 1 16 16c-3 0-5-2-8-2a6 6 0 0 0-4 1.528"/></svg><span>Toujours prévu : J+9, goût et odeur à la purge<small>dans le journal, lisible hors ligne</small></span></div>
+</div><footer class="s2d-pied"><div class="s2d-champ"><span>Ajoute une question…</span><button class="s2d-mode">Auto<svg class="s2d-ic " width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></button></div><button class="s2d-env" disabled aria-label="Envoyer"><svg class="s2d-ic " width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14.536 21.686a.5.5 0 0 0 .937-.024l6.5-19a.496.496 0 0 0-.635-.635l-19 6.5a.5.5 0 0 0-.024.937l7.93 3.18a2 2 0 0 1 1.112 1.11z"/><path d="m21.854 2.147-10.94 10.939"/></svg></button></footer></section></div></div></div></body></html>

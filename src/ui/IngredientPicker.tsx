@@ -1,6 +1,7 @@
 import React, { useMemo } from 'react';
 import { StockItem } from '../types';
 import { Units } from '../services/units';
+import { nombreFr, refAffichable } from '../domain/stock/regles';
 import { Combobox, ComboOption } from './Combobox';
 
 /**
@@ -57,12 +58,12 @@ export const IngredientPicker: React.FC<IngredientPickerProps> = ({
         value: i.ref,
         label: i.name,
         detail: [
-          (nameCounts.get(i.name.trim().toLocaleLowerCase('fr')) ?? 0) > 1 ? `Réf. ${i.ref}` : null,
+          (nameCounts.get(i.name.trim().toLocaleLowerCase('fr')) ?? 0) > 1 && refAffichable(i.ref) ? `Réf. ${i.ref}` : null,
           i.currentStock > 0
             ? `${Units.format(i.currentStock, i.unit)} en stock`
             : 'stock épuisé',
-          i.alphaPct ? `${i.alphaPct} % AA` : null,
-          i.colorEbc != null ? `${i.colorEbc} EBC` : null,
+          i.alphaPct ? `${nombreFr(i.alphaPct, 2)} % α` : null,
+          i.colorEbc != null ? `${nombreFr(i.colorEbc, 1)} EBC` : null,
           i.supplier
         ]
           .filter(Boolean)

@@ -1,0 +1,217 @@
+{
+ "journal": {
+  "390-clair-semis": 3,
+  "390-clair-bord": {
+   "t": "Compagnon hors connexion · mode local Base initialisée avec 11 enregistrements. 🍺 L'Affinée Nov. A G À la brasserie Brassins 2 en cuve Tous ZZ TEST — NEIPA B-9",
+   "pastille": {
+    "visible": true,
+    "libelle": "Période : Novembre 2026. Choisir la plage",
+    "w": 142
+   },
+   "liste": null,
+   "lots": []
+  },
+  "390-clair-brassins-texte": "Compagnon hors connexion · mode local 🍺 L'Affinée Nov. A G Brassins 2 Recettes 0 Atelier Volumes 2 en cuve 3 brassins Tous 2 En cuve 2 À brasser 0 Conditionnés 0 ★ 0 Terminés 0 Mesures manquantes 0 Notes à compléter 0 À suivre d’abord À suivre d’abord Date ↓ Date ↑ Nom A–Z Volume ↓ Alcool ↓ IBU cible ↓ Couleur EBC ↓ Avancement Nov. + en cours Fermentation B-901 24 L ZZ TEST — NEIPA NEIPA 1,062 J+4 Voir les mesures Garde froide B-902 24 L ZZ TEST — Pils Pilsner 1,048 J+16 Voir les mesures Bord Finances Brassins Stocks Clients",
+  "390-clair-brassins-periode": {
+   "pastille": {
+    "visible": true,
+    "libelle": "Période : Novembre 2026. Choisir la plage",
+    "w": 142
+   },
+   "liste": "Période : Nov. + en cours",
+   "lots": []
+  },
+  "390-clair-brassins-plus-visibles": [
+   "Actions rapides@322,736|56x56"
+  ],
+  "390-clair-brassins-plus-ouvert": {
+   "ok": true,
+   "entrees": [
+    "Nouveau brassin sera LOT-001",
+    "Saisir une densité B-901 · J+4",
+    "Créer une recette",
+    "Écriture",
+    "Facture",
+    "Vente",
+    "Compagnon hors connexion"
+   ]
+  },
+  "390-clair-segment-periode-present": true,
+  "390-clair-feuille-cette-annee": {
+   "ok": true,
+   "an": true,
+   "pastille": {
+    "visible": true,
+    "libelle": "Période : Exercice 2026. Choisir la plage",
+    "w": 142
+   },
+   "liste": "Période : 2026 + en cours",
+   "lots": [],
+   "t": "Compagnon hors connexion · mode local 🍺 L'Affinée 2026 A G Brassins 3 Recettes 0 Atelier Volumes 2 en cuve 3 brassins Tous 3 En cuve 2 À brasser 0 Conditionnés 0 ★ 0 Terminés 1 Mesures manquantes 0 Notes à compléter 1 À suivre d’abord À suivre d’abord Date ↓ "
+  },
+  "390-clair-brassins-apres-feuille": {
+   "pastille": {
+    "visible": true,
+    "libelle": "Période : Exercice 2026. Choisir la plage",
+    "w": 142
+   },
+   "liste": "Période : 2026 + en cours",
+   "lots": []
+  },
+  "390-clair-plus-ouvert": {
+   "ok": true,
+   "t": "Compagnon hors connexion · mode local 🍺 L'Affinée Nov. A G Plus Ma Brasserie Je saisis G Gaëtan 0 écriture A Aricia 0 écriture Thème Clair Cave Période Novembre 2026 Ce mois Mois dernier Exercice 2026 Tout 30 jours · 0 opération 1er 30 auj. 16 du 1er au 30 no"
+  },
+  "390-clair-plus-periode": {
+   "r": true,
+   "pastille": {
+    "visible": true,
+    "libelle": "Période : Octobre 2026. Choisir la plage",
+    "w": 142
+   },
+   "liste": null,
+   "lots": []
+  },
+  "390-clair-brassins-apres-plus": {
+   "pastille": {
+    "visible": true,
+    "libelle": "Période : Octobre 2026. Choisir la plage",
+    "w": 142
+   },
+   "liste": "Période : Oct. + en cours",
+   "lots": []
+  },
+  "390-clair-finances-apres-plus": {
+   "pastille": {
+    "visible": true,
+    "libelle": "Période : Octobre 2026. Choisir la plage",
+    "w": 142
+   },
+   "liste": null,
+   "lots": []
+  },
+  "390-clair-finances-plus": [
+   "Actions rapides@322,736|56x56"
+  ],
+  "390-clair-recherche-ici": "Compagnon hors connexion · mode local 🍺 L'Affinée Nov. A G Brassins 2 Recettes 0 Atelier Volumes 2 en cuve 3 brassins Tous 2 En cuve 2 À brasser 0 Conditionnés 0 ★ 0 Terminés 0 Mesures manquantes 0 Notes à compléter 0 À suivre d’abord À suivre d’abord Date ↓ Date ↑ Nom A–Z Volume ↓ Alcool ↓ IBU cible ↓ Couleur EBC ↓ Avancement Nov. + en cours Fermentation B-901 24 L ZZ TEST — NEIPA NEIPA 1,062 J+4 Voir les mesures Garde froide B-902 24 L ZZ TEST — Pils Pilsner 1,048 J+16 Voir les mesures Bord Finances Brassins Sto",
+  "390-clair-recherche-neipa": "Compagnon hors connexion · mode local 🍺 L'Affinée Nov. A G Brassins 2 Recettes 0 Atelier Volumes 2 en cuve 3 brassins Tous 2 En cuve 2 À brasser 0 Conditionnés 0 ★ 0 Terminés 0 Mesures manquantes 0 Notes à compléter 0 À suivre d’abord À suivre d’abord Date ↓ Date ↑ Nom A–Z Volume ↓ Alcool ↓ IBU cible ↓ Couleur EBC ↓ Avancement Nov. + en cours Fermentation B-901 24 L ZZ TEST — NEIPA NEIPA 1,062 J+4 Voir les mesures G",
+  "390-clair-recettes-plus-ouvert": {
+   "ok": true,
+   "entrees": [
+    "Nouvelle recette",
+    "Lancer un brassin sera LOT-001",
+    "Écriture",
+    "Facture",
+    "Vente",
+    "Compagnon hors connexion"
+   ]
+  },
+  "1280-clair-semis": 3,
+  "1280-clair-bord": {
+   "t": "Compagnon hors connexion · mode local Base initialisée avec 11 enregistrements. 🍺 L'Affinée Nov. A G À la brasserie Brassins 2 en cuve Tous ZZ TEST — NEIPA B-9",
+   "pastille": {
+    "visible": true,
+    "libelle": "Période : Novembre 2026. Choisir la plage",
+    "w": 142
+   },
+   "liste": null,
+   "lots": []
+  },
+  "1280-clair-brassins-texte": "Compagnon hors connexion · mode local 🍺 L'Affinée Nov. A G Brassins 2 Recettes 0 Atelier Volumes 2 en cuve 3 brassins Tous 2 En cuve 2 À brasser 0 Conditionnés 0 ★ 0 Terminés 0 Mesures manquantes 0 Notes à compléter 0 À suivre d’abord À suivre d’abord Date ↓ Date ↑ Nom A–Z Volume ↓ Alcool ↓ IBU cible ↓ Couleur EBC ↓ Avancement Nov. + en cours Fermentation B-901 24 L ZZ TEST — NEIPA NEIPA 1,062 J+4 Voir les mesures Garde froide B-902 24 L ZZ TEST — Pils Pilsner 1,048 J+16 Voir les mesures Bord Finances Brassins Stocks Clients Compagnon hors connexion",
+  "1280-clair-brassins-periode": {
+   "pastille": {
+    "visible": true,
+    "libelle": "Période : Novembre 2026. Choisir la plage",
+    "w": 142
+   },
+   "liste": "Période : Nov. + en cours",
+   "lots": []
+  },
+  "1280-clair-brassins-plus-visibles": [
+   "Actions rapides@1200,720|56x56"
+  ],
+  "1280-clair-brassins-plus-ouvert": {
+   "ok": true,
+   "entrees": [
+    "Nouveau brassin sera LOT-001 N",
+    "Saisir une densité B-901 · J+4 D",
+    "Créer une recette R",
+    "Nouvelle écriture E",
+    "Entrer une facture F",
+    "Encaisser une vente V",
+    "Compagnon hors connexion C"
+   ]
+  },
+  "1280-clair-segment-periode-present": true,
+  "1280-clair-feuille-cette-annee": {
+   "ok": true,
+   "an": true,
+   "pastille": {
+    "visible": true,
+    "libelle": "Période : Exercice 2026. Choisir la plage",
+    "w": 142
+   },
+   "liste": "Période : 2026 + en cours",
+   "lots": [],
+   "t": "Compagnon hors connexion · mode local 🍺 L'Affinée 2026 A G Brassins 3 Recettes 0 Atelier Volumes 2 en cuve 3 brassins Tous 3 En cuve 2 À brasser 0 Conditionnés 0 ★ 0 Terminés 1 Mesures manquantes 0 Notes à compléter 1 À suivre d’abord À suivre d’abord Date ↓ "
+  },
+  "1280-clair-brassins-apres-feuille": {
+   "pastille": {
+    "visible": true,
+    "libelle": "Période : Exercice 2026. Choisir la plage",
+    "w": 142
+   },
+   "liste": "Période : 2026 + en cours",
+   "lots": []
+  },
+  "1280-clair-plus-ouvert": {
+   "ok": true,
+   "t": "Compagnon hors connexion · mode local 🍺 L'Affinée Nov. A G Plus Ma Brasserie Je saisis G Gaëtan 0 écriture A Aricia 0 écriture Thème Clair Cave Période Novembre 2026 Ce mois Mois dernier Exercice 2026 Tout 30 jours · 0 opération 1er 30 auj. 16 du 1er au 30 no"
+  },
+  "1280-clair-plus-periode": {
+   "r": true,
+   "pastille": {
+    "visible": true,
+    "libelle": "Période : Octobre 2026. Choisir la plage",
+    "w": 142
+   },
+   "liste": null,
+   "lots": []
+  },
+  "1280-clair-brassins-apres-plus": {
+   "pastille": {
+    "visible": true,
+    "libelle": "Période : Octobre 2026. Choisir la plage",
+    "w": 142
+   },
+   "liste": "Période : Oct. + en cours",
+   "lots": []
+  },
+  "1280-clair-finances-apres-plus": {
+   "pastille": {
+    "visible": true,
+    "libelle": "Période : Octobre 2026. Choisir la plage",
+    "w": 142
+   },
+   "liste": null,
+   "lots": []
+  },
+  "1280-clair-finances-plus": [
+   "Actions rapides@1200,720|56x56"
+  ],
+  "1280-clair-recherche-ici": "Compagnon hors connexion · mode local 🍺 L'Affinée Nov. A G Brassins 2 Recettes 0 Atelier Volumes 2 en cuve 3 brassins Tous 2 En cuve 2 À brasser 0 Conditionnés 0 ★ 0 Terminés 0 Mesures manquantes 0 Notes à compléter 0 À suivre d’abord À suivre d’abord Date ↓ Date ↑ Nom A–Z Volume ↓ Alcool ↓ IBU cible ↓ Couleur EBC ↓ Avancement Nov. + en cours Fermentation B-901 24 L ZZ TEST — NEIPA NEIPA 1,062 J+4 Voir les mesures Garde froide B-902 24 L ZZ TEST — Pils Pilsner 1,048 J+16 Voir les mesures Bord Finances Brassins Sto",
+  "1280-clair-recherche-neipa": "Compagnon hors connexion · mode local 🍺 L'Affinée Nov. A G Brassins 2 Recettes 0 Atelier Volumes 2 en cuve 3 brassins Tous 2 En cuve 2 À brasser 0 Conditionnés 0 ★ 0 Terminés 0 Mesures manquantes 0 Notes à compléter 0 À suivre d’abord À suivre d’abord Date ↓ Date ↑ Nom A–Z Volume ↓ Alcool ↓ IBU cible ↓ Couleur EBC ↓ Avancement Nov. + en cours Fermentation B-901 24 L ZZ TEST — NEIPA NEIPA 1,062 J+4 Voir les mesures G",
+  "1280-clair-recettes-plus-ouvert": {
+   "ok": true,
+   "entrees": [
+    "Nouvelle recette N",
+    "Lancer un brassin sera LOT-001 B",
+    "Nouvelle écriture E",
+    "Entrer une facture F",
+    "Encaisser une vente V",
+    "Compagnon hors connexion C"
+   ]
+  }
+ },
+ "erreurs": []
+}

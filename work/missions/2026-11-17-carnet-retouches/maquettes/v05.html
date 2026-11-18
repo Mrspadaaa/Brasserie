@@ -1,0 +1,468 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,viewport-fit=cover">
+<title>Carnet v05 · axe B · le + demande d'abord où (17.11, passe de correction)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@500;600&family=Source+Sans+3:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+/* v05 · axe B (CARNET-AJOUT-FOUILLIS). Base : ra-p5f/proto.html (règle n° 1), thème clair de l'app.
+   Parti pris inchangé : le + est la seule porte d'ajout, et il demande d'abord OÙ. Un toucher sur le + ouvre la feuille,
+   curseur dans le seul champ, clavier levé (C7, C8). Sur la liste : « Nouveau carnet ». Dans un carnet : « Ajouter ici »,
+   puis « Ranger dans Façon · Article · Critère · Note », cible proposée par l'IA, changeable avant d'écrire.
+   Passe de correction : habit de l'app (barre L'Affinée 36 px, segments de Stocks, trois tailles 14 · 16 · 18, rayons 8 et 12,
+   une seule couleur de zone, le vert Stocks ; le rouge seulement pour l'enregistrement), + carré arrondi, avancement nommé. */
+:root{--bg:#fff;--s1:#f5f5f5;--s2:#ebebeb;--line:#ddd;--line2:#bfbfbf;--mut:#5f5f5f;--ink:#111;--act:#111;--onact:#fff;--stk:#4c6b2a;--area:#A3C97A;--straw:#F2C14E;--bad:#a8291f;
+  --badbg:color-mix(in srgb,var(--bad) 9%,var(--bg));--stkbg:color-mix(in srgb,var(--stk) 12%,var(--bg));--zone:color-mix(in srgb,var(--area) 16%,var(--bg));--botOn:color-mix(in srgb,var(--stk) 12%,var(--s1))}
+*{box-sizing:border-box}
+html,body{margin:0;background:#ebebeb;color:var(--ink);font-family:"Source Sans 3","Segoe UI",system-ui,sans-serif;font-size:14px;line-height:1.35}
+.v5-mono{font-family:"IBM Plex Mono",ui-monospace,monospace;font-variant-numeric:tabular-nums;font-size:14px;font-weight:500}
+.v5-ico{width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;flex:none}
+/* planche : six écrans de 390 × 844 côte à côte, légende dessous */
+.v5-pl{display:flex;gap:24px;align-items:flex-start;width:max-content;padding:0 24px 40px 0}
+.v5-col{width:390px;flex:none}
+.v5-tel{position:relative;width:390px;height:844px;overflow:hidden;background:var(--bg)}
+.v5-leg{margin:12px 12px 0;font-size:14px;line-height:1.4;color:var(--mut)}
+.v5-leg b{color:var(--ink)}
+/* coque de l'app : barre L'Affinée, segments de Stocks, onglets du bas */
+.v5-app{display:flex;align-items:center;gap:6px;height:36px;padding:0 8px;background:var(--bg);border-bottom:1px solid var(--line)}
+.v5-app .lg{width:28px;height:28px;border-radius:8px;background:var(--straw);display:grid;place-items:center;font-size:14px}
+.v5-app b{font-size:14px;font-weight:600}
+.v5-ex{margin-left:auto;border:1px solid var(--line2);color:var(--mut);border-radius:999px;font-size:14px;line-height:20px;padding:0 7px}
+.v5-app .mn{display:grid;place-items:center;width:28px;height:28px;color:var(--mut)}
+.v5-sg{display:flex;gap:2px;margin:6px 8px 0;padding:2px;border-radius:8px;background:var(--s1);border:1px solid var(--line)}
+.v5-sg span{flex:1;display:flex;align-items:center;justify-content:center;gap:4px;min-height:28px;border-radius:6px;font-size:14px;color:var(--mut);white-space:nowrap}
+.v5-sg span.on{background:var(--bg);color:var(--stk);font-weight:600;box-shadow:0 1px 2px rgba(0,0,0,.12)}
+.v5-sg2{background:transparent;border:0;padding:0;margin-top:6px}
+.v5-sg2 span{border:1px solid var(--line);border-radius:8px}
+.v5-sg2 span.on{border-color:var(--stk);background:var(--stkbg);box-shadow:none}
+.v5-sg2 .n{font-family:"IBM Plex Mono",monospace;font-size:14px}
+.v5-bot{position:absolute;left:0;right:0;bottom:0;height:56px;display:flex;background:var(--s1);border-top:1px solid var(--line);z-index:30}
+.v5-bot a{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;font-size:14px;letter-spacing:-.01em;position:relative;min-width:0;color:inherit;text-decoration:none}
+.v5-bot a.on{background:var(--botOn);font-weight:600;box-shadow:inset 0 3px 0 var(--stk);color:var(--stk)}
+.v5-bot .bdg{position:absolute;top:2px;left:calc(50% + 4px);background:var(--stk);color:var(--onact);font-size:14px;font-weight:600;border-radius:999px;padding:0 5px;line-height:18px}
+/* le + de l'app : carré arrondi, à droite, 8 px au-dessus des onglets ; étiquette légère */
+.v5-fab{position:absolute;right:12px;bottom:64px;z-index:33;display:inline-flex;align-items:center;justify-content:center;width:52px;height:52px;border-radius:12px;background:var(--act);color:var(--onact);box-shadow:0 4px 12px rgba(0,0,0,.28)}
+.v5-fab .v5-ico{width:24px;height:24px;stroke-width:2.4}
+.v5-fabl{position:absolute;right:72px;bottom:76px;z-index:33;background:var(--bg);color:var(--ink);border:1px solid var(--line);font-size:14px;font-weight:600;border-radius:8px;padding:0 8px;line-height:26px;box-shadow:0 2px 6px rgba(0,0,0,.1)}
+/* liste des carnets : une ligne de nom, une ligne de contenu */
+.v5-wrap{padding:8px}
+.v5-card{display:block;border:1px solid var(--line);border-radius:12px;background:var(--bg);padding:8px 10px;margin:0 0 6px}
+.v5-c1{display:flex;align-items:center;gap:8px}
+.v5-c1 b{flex:1;font-size:16px;font-weight:700;line-height:1.25}
+.v5-c2{display:flex;align-items:center;gap:6px;margin-top:3px;font-size:14px;color:var(--mut)}
+.v5-c2 .r{margin-left:auto;display:inline-flex;align-items:center;gap:4px;color:var(--stk);font-weight:600}
+.v5-c2 .ch{color:var(--ink);font-weight:600}
+/* avancement : un seul signal, le nom de l'étape ; la force de la teinte dit où on en est */
+.v5-et{flex:none;font-size:14px;font-weight:600;line-height:22px;padding:0 8px;border-radius:999px;white-space:nowrap}
+.v5-et.idee{border:1px solid var(--line2);color:var(--mut)}
+.v5-et.comp{background:var(--stkbg);color:var(--stk)}
+.v5-et.chx{background:var(--stk);color:#fff}
+/* feuille d'ajout */
+.v5-voile{position:absolute;inset:0;background:rgba(17,17,17,.38);z-index:33}
+.v5-comp{position:absolute;left:0;right:0;z-index:34;background:var(--bg);border-top:1px solid var(--line);border-radius:12px 12px 0 0;box-shadow:0 -8px 24px rgba(0,0,0,.14);padding:6px 10px 8px}
+.v5-gr{width:36px;height:4px;border-radius:2px;background:var(--line2);margin:0 auto 6px}
+.v5-ch{display:flex;align-items:center;gap:8px;margin-bottom:6px;min-height:28px}
+.v5-ch b{font-size:16px;font-weight:700}
+.v5-close{margin-left:auto;display:inline-flex;align-items:center;justify-content:center;width:32px;height:32px;color:var(--mut)}
+.v5-dlab{font-size:14px;font-weight:600;color:var(--mut);margin:0 2px 4px}
+.v5-dest{display:grid;grid-template-columns:repeat(4,1fr);gap:2px;background:var(--s1);border:1px solid var(--line);border-radius:8px;padding:2px;margin-bottom:6px}
+.v5-dest span{position:relative;display:flex;align-items:center;justify-content:center;gap:4px;min-height:32px;border-radius:6px;font-size:14px;font-weight:600;color:var(--mut)}
+.v5-dest span.on{background:var(--bg);color:var(--stk);box-shadow:inset 0 0 0 1.5px var(--stk)}
+.v5-dest .ia{position:absolute;top:-6px;right:-2px;width:16px;height:16px;border-radius:999px;background:var(--stk);color:#fff;display:grid;place-items:center}
+.v5-dest .ia .v5-ico{width:10px;height:10px;stroke-width:2.6}
+.v5-in{display:flex;align-items:center;gap:8px;min-height:44px;border:1.5px solid var(--stk);border-radius:8px;background:var(--bg);padding:4px 10px;font-size:16px}
+.v5-in .v5-ico{color:var(--mut)}
+.v5-in .u{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.v5-car{display:inline-block;width:2px;height:19px;background:var(--ink);vertical-align:-4px;margin-left:1px}
+.v5-sim{display:flex;align-items:center;gap:8px;margin-top:6px;padding:6px 8px;border-radius:8px;background:var(--s1);border:1px solid var(--line);font-size:14px;line-height:1.3}
+.v5-sim>.v5-ico{color:var(--stk)}
+.v5-sim .b2{margin-left:auto;flex:none;min-height:32px;padding:0 10px;border-radius:8px;border:1.5px solid var(--stk);color:var(--stk);font-weight:600;display:inline-flex;align-items:center;gap:4px}
+.v5-row{display:flex;align-items:center;gap:6px;margin-top:6px}
+.v5-tool{display:inline-flex;align-items:center;justify-content:center;gap:4px;min-height:36px;padding:0 9px;border-radius:8px;border:1px solid var(--line);font-size:14px;font-weight:600;color:var(--ink)}
+.v5-tool.rec{border-color:var(--bad);color:var(--bad);background:var(--badbg)}
+.v5-send{margin-left:auto;display:inline-flex;align-items:center;gap:6px;min-height:36px;padding:0 12px;border-radius:8px;background:var(--act);color:var(--onact);font-weight:700;font-size:14px}
+/* voix : on voit qu'on enregistre */
+.v5-voix{display:flex;align-items:center;gap:8px;min-height:44px;border:1.5px solid var(--bad);border-radius:8px;background:var(--badbg);padding:4px 4px 4px 10px}
+.v5-voix .pt{width:10px;height:10px;border-radius:50%;background:var(--bad);flex:none;box-shadow:0 0 0 4px color-mix(in srgb,var(--bad) 20%,transparent)}
+.v5-voix .t{color:var(--bad)}
+.v5-voix svg.onde{flex:1;height:26px;min-width:0}
+.v5-stop{flex:none;display:inline-flex;align-items:center;gap:6px;min-height:34px;padding:0 10px;border-radius:8px;background:var(--bad);color:#fff;font-weight:700;font-size:14px}
+.v5-stop i{width:10px;height:10px;border-radius:2px;background:#fff}
+.v5-tr{font-size:16px;line-height:1.35;margin:6px 2px 0}
+.v5-tr em{color:var(--mut);font-style:normal}
+/* aperçu d'un lien collé */
+.v5-pv{display:flex;gap:8px;margin-top:6px;padding:6px;border-radius:8px;border:1px solid var(--line);background:var(--bg)}
+.v5-pv svg.ph{width:56px;height:56px;border-radius:6px;flex:none}
+.v5-pv .nm{font-size:16px;font-weight:700;line-height:1.2}
+.v5-pv .d{font-size:14px;color:var(--mut);margin-top:2px}
+.v5-pv .d b{color:var(--ink);font-weight:600}
+.v5-tg{display:flex;align-items:center;gap:8px;margin-top:6px;font-size:14px}
+.v5-tg .sw{width:36px;height:22px;border-radius:999px;background:var(--stk);position:relative;flex:none}
+.v5-tg .sw:after{content:"";position:absolute;right:2px;top:2px;width:18px;height:18px;border-radius:50%;background:#fff}
+.v5-tg .v5-ico{color:var(--stk)}
+/* clavier simulé (base) */
+.v5-kbd{position:absolute;left:0;right:0;bottom:0;height:300px;z-index:40;background:#cfd3d9;padding:8px 4px}
+.v5-kbd .rg{display:flex;gap:5px;justify-content:center;margin:0 0 9px}
+.v5-kbd .rg i{flex:1;max-width:34px;height:44px;border-radius:6px;background:#fff;box-shadow:0 1px 0 #8e9298;font-style:normal;display:grid;place-items:center;font-size:16px;color:#333}
+.v5-kbd .rg i.w{max-width:none;flex:5;font-size:14px}
+.v5-kbd .lb{text-align:center;font-size:14px;color:#444}
+/* fiche d'un carnet : en-tête teinté de la zone Stocks */
+.v5-fh{background:var(--zone);padding:2px 10px 8px;border-bottom:1px solid var(--line)}
+.v5-fr{display:flex;align-items:center;gap:6px;min-height:32px}
+.v5-back{display:inline-flex;align-items:center;gap:2px;font-weight:600;font-size:14px;color:var(--stk)}
+.v5-fh h1{font-size:18px;font-weight:700;margin:0;line-height:1.2}
+.v5-frise{display:grid;grid-template-columns:repeat(4,1fr);gap:3px;margin-top:6px}
+.v5-frise span{font-size:14px;color:var(--mut);padding-top:4px;border-top:3px solid var(--line);white-space:nowrap}
+.v5-frise span.f{border-color:var(--stk);color:var(--stk)}
+.v5-frise span.on{border-color:var(--stk);color:var(--stk);font-weight:700}
+.v5-ens{display:flex;align-items:center;gap:6px;margin-top:6px;font-size:14px}
+.v5-ens .v5-ico{color:var(--stk)}
+.v5-ens b{font-weight:700}
+.v5-body{padding:8px 10px}
+.v5-new{border:1px solid var(--stk);background:var(--zone);border-radius:12px;padding:6px 8px;display:flex;gap:8px}
+.v5-new svg.ph{width:56px;height:56px;border-radius:6px;flex:none}
+.v5-new .k{font-size:14px;color:var(--stk);font-weight:600}
+.v5-new .v{font-size:14px;line-height:1.3;margin-top:1px}
+.v5-new .v b{font-weight:600}
+.v5-new .bt{display:flex;gap:6px;margin-top:5px}
+.v5-mini{display:inline-flex;align-items:center;gap:4px;min-height:28px;padding:0 8px;border-radius:8px;border:1px solid var(--line2);background:var(--bg);font-size:14px;font-weight:600;white-space:nowrap}
+.v5-mini.ok{border-color:var(--stk);color:var(--stk)}
+.v5-mini.p{background:var(--act);border-color:var(--act);color:#fff}
+.v5-mini .v5-ico{width:14px;height:14px}
+/* tuiles de la base (Façons, Articles, Comparer, Décisions), en grille compacte */
+.v5-tiles{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-top:8px}
+.v5-tl{border:1px solid var(--line);border-radius:12px;padding:6px 8px;min-height:52px}
+.v5-tl .t{display:flex;align-items:center;gap:5px;font-weight:700;font-size:14px}
+.v5-tl .t .v5-ico{color:var(--stk)}
+.v5-tl .t .n{margin-left:auto}
+.v5-tl .s{font-size:14px;color:var(--mut);margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+/* blocs de la fiche */
+.v5-blk{border:1px solid var(--line);border-radius:12px;padding:2px 10px;margin-top:8px}
+.v5-bt{display:flex;align-items:center;gap:6px;font-size:14px;font-weight:700;min-height:32px}
+.v5-bt .v5-ico{color:var(--stk)}
+.v5-bt .n{margin-left:auto;font-weight:400;color:var(--mut)}
+.v5-fl{display:flex;align-items:center;gap:6px;min-height:44px;border-top:1px solid var(--line);padding:4px 0}
+.v5-fl .nm{flex:1;min-width:0;font-size:16px;font-weight:600;line-height:1.2}
+.v5-fl .nm small{display:block;font-size:14px;font-weight:400;color:var(--mut)}
+.v5-fl.out .nm{color:var(--mut);font-weight:400}
+.v5-fl.out .nm small{color:var(--ink)}
+.v5-vide{display:flex;align-items:center;gap:8px;min-height:44px;border-top:1px solid var(--line);font-size:14px;color:var(--mut)}
+.v5-vide b{color:var(--ink);font-weight:700;min-width:64px}
+.v5-why{border-top:1px solid var(--line);padding:6px 0 8px}
+.v5-why .q{font-size:14px;font-weight:700;display:flex;align-items:center;gap:6px}
+.v5-why .q .v5-ico{color:var(--stk)}
+.v5-chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:6px}
+.v5-chips span{display:inline-flex;align-items:center;gap:4px;min-height:30px;padding:0 10px;border-radius:999px;border:1px solid var(--line2);font-size:14px}
+.v5-chips span.on{border-color:var(--stk);background:var(--stkbg);color:var(--stk);font-weight:600}
+.v5-ar{display:flex;align-items:center;gap:8px;min-height:52px;border-top:1px solid var(--line);padding:4px 0}
+.v5-ar svg.ph{width:40px;height:40px;border-radius:6px;flex:none}
+.v5-ar .x{flex:1;min-width:0}
+.v5-ar .nm{font-size:14px;font-weight:700;line-height:1.25;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.v5-ar .d{font-size:14px;color:var(--mut);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.v5-ar .nl{width:40px;height:40px;border-radius:6px;flex:none;border:1px dashed var(--line2);display:grid;place-items:center;color:var(--mut)}
+.v5-ar .hi{color:var(--stk);font-weight:600}
+</style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+<symbol id="i-bord" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></symbol>
+<symbol id="i-wallet" viewBox="0 0 24 24"><path d="M19 7V4a1 1 0 0 0-1-1H5a2 2 0 0 0 0 4h15a1 1 0 0 1 1 1v4h-3a2 2 0 0 0 0 4h3a1 1 0 0 0 1-1v-2"/><path d="M3 5v14a2 2 0 0 0 2 2h15a1 1 0 0 0 1-1v-4"/></symbol>
+<symbol id="i-cal" viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/></symbol>
+<symbol id="i-beer" viewBox="0 0 24 24"><path d="M17 11h1a3 3 0 0 1 0 6h-1"/><path d="M9 12v6M13 12v6"/><path d="M5 8v12a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2V8"/><path d="M5 8a2.5 2.5 0 0 1 1-4.5c.8-1.5 3-2 4-1 1-1 3.5-1 4.5.5A2.5 2.5 0 0 1 17 8z"/></symbol>
+<symbol id="i-boxes" viewBox="0 0 24 24"><path d="M7 13 3 15v4l4 2 4-2v-4zM17 13l-4 2v4l4 2 4-2v-4zM12 3 8 5v4l4 2 4-2V5z"/></symbol>
+<symbol id="i-users" viewBox="0 0 24 24"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.9M16 3.1a4 4 0 0 1 0 7.8"/></symbol>
+<symbol id="i-menu" viewBox="0 0 24 24"><path d="M4 6h16M4 12h16M4 18h16"/></symbol>
+<symbol id="i-plus" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></symbol>
+<symbol id="i-x" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6 6 18"/></symbol>
+<symbol id="i-check" viewBox="0 0 24 24"><path d="M20 6 9 17l-5-5"/></symbol>
+<symbol id="i-left" viewBox="0 0 24 24"><path d="m15 18-6-6 6-6"/></symbol>
+<symbol id="i-right" viewBox="0 0 24 24"><path d="m9 18 6-6-6-6"/></symbol>
+<symbol id="i-send" viewBox="0 0 24 24"><path d="M12 19V5M5 12l7-7 7 7"/></symbol>
+<symbol id="i-cam" viewBox="0 0 24 24"><path d="M4 8h3l2-3h6l2 3h3v11H4z"/><circle cx="12" cy="13" r="3.5"/></symbol>
+<symbol id="i-mic" viewBox="0 0 24 24"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3"/></symbol>
+<symbol id="i-link" viewBox="0 0 24 24"><path d="M10 14a4 4 0 0 0 5.7 0l3-3a4 4 0 0 0-5.7-5.7l-1 1"/><path d="M14 10a4 4 0 0 0-5.7 0l-3 3a4 4 0 0 0 5.7 5.7l1-1"/></symbol>
+<symbol id="i-tag" viewBox="0 0 24 24"><path d="M20.6 13.4 13.4 20.6a2 2 0 0 1-2.8 0L3 13V3h10l7.6 7.6a2 2 0 0 1 0 2.8z"/><circle cx="7.5" cy="7.5" r="1.6"/></symbol>
+<symbol id="i-bars" viewBox="0 0 24 24"><path d="M4 6h10M4 12h16M4 18h7"/></symbol>
+<symbol id="i-dec" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="m8 12 3 3 5-6"/></symbol>
+<symbol id="i-eye" viewBox="0 0 24 24"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></symbol>
+<symbol id="i-target" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="1.5"/></symbol>
+<symbol id="i-spark" viewBox="0 0 24 24"><path d="M12 3v4M12 17v4M3 12h4M17 12h4M6 6l2.5 2.5M15.5 15.5 18 18M6 18l2.5-2.5M15.5 8.5 18 6"/></symbol>
+<symbol id="i-fork" viewBox="0 0 24 24"><circle cx="6" cy="5" r="2"/><circle cx="18" cy="5" r="2"/><circle cx="12" cy="20" r="2"/><path d="M6 7v2a3 3 0 0 0 3 3h6a3 3 0 0 0 3-3V7M12 12v6"/></symbol>
+<symbol id="i-pen" viewBox="0 0 24 24"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z"/></symbol>
+<symbol id="i-note" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6M8 13h8M8 17h5"/></symbol>
+<symbol id="i-next" viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></symbol>
+<!-- vignettes d'exemple -->
+<symbol id="ph-hotte" viewBox="0 0 56 56"><rect width="56" height="56" fill="#e4e7ea"/><path d="M14 30h28l-6-12H20z" fill="#aeb5bd"/><rect x="25" y="6" width="6" height="12" fill="#9aa2ab"/><rect x="12" y="30" width="32" height="4" fill="#7d8690"/><rect x="10" y="44" width="36" height="6" fill="#c9ced3"/></symbol>
+<symbol id="ph-plaque" viewBox="0 0 56 56"><rect width="56" height="56" fill="#d9dde2"/><rect x="6" y="10" width="44" height="36" rx="3" fill="#b8bec6"/><rect x="10" y="14" width="36" height="28" rx="2" fill="#eef0f2"/><rect x="14" y="19" width="20" height="3" fill="#59616b"/><rect x="14" y="26" width="26" height="3" fill="#59616b"/><rect x="14" y="33" width="15" height="3" fill="#59616b"/></symbol>
+<symbol id="ph-ext" viewBox="0 0 56 56"><rect width="56" height="56" fill="#e4e7ea"/><rect x="12" y="12" width="32" height="32" rx="3" fill="#aeb5bd"/><circle cx="28" cy="28" r="11" fill="#eef0f2"/><path d="M28 18v20M18 28h20M21 21l14 14M35 21 21 35" stroke="#7d8690" stroke-width="2"/></symbol>
+</svg>
+
+<div class="v5-pl">
+
+<!-- ===== 1 · Au repos : la liste, une seule porte (le +) ===== -->
+<div class="v5-col">
+<section class="v5-tel" aria-label="Carnets au repos">
+  <div class="v5-app"><span class="lg">🍺</span><b>L'Affinée</b><span class="v5-ex">exemple</span><span class="mn"><svg class="v5-ico"><use href="#i-menu"/></svg></span></div>
+  <div class="v5-sg"><span>Articles</span><span>Courses</span><span>Fûts</span><span class="on">Matériel</span><span>Houblons</span></div>
+  <div class="v5-sg v5-sg2"><span>À venir <i class="n">2</i></span><span class="on">Carnets</span><span>Réalisés <i class="n">5</i></span></div>
+  <div class="v5-wrap">
+    <div class="v5-card">
+      <div class="v5-c1"><b>Ventilation de la salle de brassage</b><span class="v5-et comp">Comparaison</span></div>
+      <div class="v5-c2">2 façons · 4 articles<span class="r"><svg class="v5-ico"><use href="#i-eye"/></svg>1 prix suivi</span></div>
+    </div>
+    <div class="v5-card">
+      <div class="v5-c1"><b>Évier inox</b><span class="v5-et idee">Idée</span></div>
+      <div class="v5-c2">1 note</div>
+    </div>
+    <div class="v5-card">
+      <div class="v5-c1"><b>Embouteillage</b><span class="v5-et chx">Choisi</span></div>
+      <div class="v5-c2"><span class="ch">Isobarique 4 becs</span>· 12 300 CHF</div>
+    </div>
+    <div class="v5-card">
+      <div class="v5-c1"><b>Frigo de garde pour fûts</b><span class="v5-et chx">Choisi</span></div>
+      <div class="v5-c2"><span class="ch">Chambre froide 2 m³</span></div>
+    </div>
+  </div>
+  <span class="v5-fabl">Nouveau carnet</span>
+  <a class="v5-fab" href="#p2" aria-label="Nouveau carnet"><svg class="v5-ico"><use href="#i-plus"/></svg></a>
+  <nav class="v5-bot" aria-label="Navigation">
+    <a href="#"><svg class="v5-ico"><use href="#i-bord"/></svg>Bord</a>
+    <a href="#"><svg class="v5-ico"><use href="#i-wallet"/></svg>Finances</a>
+    <a href="#"><svg class="v5-ico"><use href="#i-cal"/></svg>Calendrier</a>
+    <a href="#"><svg class="v5-ico"><use href="#i-beer"/></svg>Brassins</a>
+    <a href="#" class="on" aria-current="page"><svg class="v5-ico"><use href="#i-boxes"/></svg>Stocks<span class="bdg">24</span></a>
+    <a href="#"><svg class="v5-ico"><use href="#i-users"/></svg>Clients</a>
+  </nav>
+</section>
+<p class="v5-leg"><b>1 · Au repos.</b> Une ligne par carnet, l'étape nommée en un mot. Le + est la seule porte ; son étiquette dit ce qu'il fait ici.</p>
+</div>
+
+<!-- ===== 2 · Un toucher sur le + : la feuille glisse sur la liste, clavier levé, curseur dans le champ ===== -->
+<div class="v5-col" id="p2">
+<section class="v5-tel" aria-label="Nouveau carnet">
+  <div class="v5-app"><span class="lg">🍺</span><b>L'Affinée</b><span class="v5-ex">exemple</span><span class="mn"><svg class="v5-ico"><use href="#i-menu"/></svg></span></div>
+  <div class="v5-sg"><span>Articles</span><span>Courses</span><span>Fûts</span><span class="on">Matériel</span><span>Houblons</span></div>
+  <div class="v5-sg v5-sg2"><span>À venir <i class="n">2</i></span><span class="on">Carnets</span><span>Réalisés <i class="n">5</i></span></div>
+  <div class="v5-wrap">
+    <div class="v5-card">
+      <div class="v5-c1"><b>Ventilation de la salle de brassage</b><span class="v5-et comp">Comparaison</span></div>
+      <div class="v5-c2">2 façons · 4 articles<span class="r"><svg class="v5-ico"><use href="#i-eye"/></svg>1 prix suivi</span></div>
+    </div>
+    <div class="v5-card">
+      <div class="v5-c1"><b>Évier inox</b><span class="v5-et idee">Idée</span></div>
+      <div class="v5-c2">1 note</div>
+    </div>
+    <div class="v5-card">
+      <div class="v5-c1"><b>Embouteillage</b><span class="v5-et chx">Choisi</span></div>
+      <div class="v5-c2"><span class="ch">Isobarique 4 becs</span>· 12 300 CHF</div>
+    </div>
+    <div class="v5-card">
+      <div class="v5-c1"><b>Frigo de garde pour fûts</b><span class="v5-et chx">Choisi</span></div>
+      <div class="v5-c2"><span class="ch">Chambre froide 2 m³</span></div>
+    </div>
+  </div>
+  <div class="v5-voile"></div>
+  <div class="v5-comp" style="bottom:300px">
+    <div class="v5-gr"></div>
+    <div class="v5-ch"><svg class="v5-ico" style="color:var(--stk)"><use href="#i-plus"/></svg><b>Nouveau carnet</b><span class="v5-close" aria-label="Fermer"><svg class="v5-ico"><use href="#i-x"/></svg></span></div>
+    <div class="v5-in"><svg class="v5-ico"><use href="#i-pen"/></svg><span class="u">hotte pour les buées de la cuve<span class="v5-car"></span></span></div>
+    <div class="v5-sim"><svg class="v5-ico"><use href="#i-spark"/></svg><span>Déjà un carnet : <b>Ventilation</b></span><span class="b2"><svg class="v5-ico"><use href="#i-fork"/></svg>Y ajouter en façon</span></div>
+    <div class="v5-row">
+      <span class="v5-tool"><svg class="v5-ico"><use href="#i-cam"/></svg>Photo</span>
+      <span class="v5-tool"><svg class="v5-ico"><use href="#i-mic"/></svg>Voix</span>
+      <span class="v5-tool"><svg class="v5-ico"><use href="#i-link"/></svg>Lien</span>
+      <span class="v5-send"><svg class="v5-ico"><use href="#i-check"/></svg>Créer le carnet</span>
+    </div>
+  </div>
+  <div class="v5-kbd" aria-hidden="true"><div class="rg"><i>a</i><i>z</i><i>e</i><i>r</i><i>t</i><i>y</i><i>u</i><i>i</i><i>o</i><i>p</i></div><div class="rg"><i>q</i><i>s</i><i>d</i><i>f</i><i>g</i><i>h</i><i>j</i><i>k</i><i>l</i><i>m</i></div><div class="rg"><i>⇧</i><i>w</i><i>x</i><i>c</i><i>v</i><i>b</i><i>n</i><i>’</i><i>⌫</i></div><div class="rg"><i>123</i><i>,</i><i class="w">espace</i><i>.</i><i>↵</i></div><div class="lb">Entrée = Créer le carnet</div></div>
+</section>
+<p class="v5-leg"><b>2 · Un toucher sur le +.</b> Clavier levé, curseur dans le seul champ, posé juste au-dessus du clavier (C8). La liste reste telle quelle sous la feuille. Si l'IA connaît déjà le sujet, elle propose où l'ajouter, et en quoi.</p>
+</div>
+
+<!-- ===== 3 · Le carnet neuf, juste après « Créer » : rien de vide, rien de prématuré ===== -->
+<div class="v5-col" id="p3">
+<section class="v5-tel" aria-label="Carnet neuf">
+  <div class="v5-app"><span class="lg">🍺</span><b>L'Affinée</b><span class="v5-ex">exemple</span><span class="mn"><svg class="v5-ico"><use href="#i-menu"/></svg></span></div>
+  <div class="v5-fh">
+    <div class="v5-fr"><span class="v5-back"><svg class="v5-ico"><use href="#i-left"/></svg>Carnets</span></div>
+    <h1>Évier inox</h1>
+    <div class="v5-frise"><span class="on">Idée</span><span>Façons</span><span>Comparaison</span><span>Choix</span></div>
+  </div>
+  <div class="v5-body">
+    <div class="v5-new" style="background:var(--bg);border-color:var(--line)">
+      <svg class="v5-ico" style="width:16px;height:16px;color:var(--stk);margin-top:2px"><use href="#i-note"/></svg>
+      <div><div class="k" style="color:var(--mut);font-weight:400">Votre note · ce matin</div><div class="v" style="font-size:16px">évier inox 2 bacs pour laver les fûts</div></div>
+    </div>
+    <div class="v5-blk">
+      <div class="v5-vide"><svg class="v5-ico" style="color:var(--stk)"><use href="#i-fork"/></svg><b>Façons</b>une manière de faire, par note</div>
+      <div class="v5-vide"><svg class="v5-ico" style="color:var(--stk)"><use href="#i-tag"/></svg><b>Articles</b>un lien ou une photo d'évier</div>
+      <div class="v5-vide"><svg class="v5-ico" style="color:var(--stk)"><use href="#i-target"/></svg><b>Critère</b>ce qui compte le plus</div>
+    </div>
+    <div class="v5-ens" style="margin-top:10px"><svg class="v5-ico"><use href="#i-next"/></svg><b>Ensuite :</b>noter deux façons de faire</div>
+  </div>
+  <span class="v5-fabl">Ajouter ici</span>
+  <a class="v5-fab" href="#p4" aria-label="Ajouter ici"><svg class="v5-ico"><use href="#i-plus"/></svg></a>
+  <nav class="v5-bot" aria-label="Navigation">
+    <a href="#"><svg class="v5-ico"><use href="#i-bord"/></svg>Bord</a>
+    <a href="#"><svg class="v5-ico"><use href="#i-wallet"/></svg>Finances</a>
+    <a href="#"><svg class="v5-ico"><use href="#i-cal"/></svg>Calendrier</a>
+    <a href="#"><svg class="v5-ico"><use href="#i-beer"/></svg>Brassins</a>
+    <a href="#" class="on" aria-current="page"><svg class="v5-ico"><use href="#i-boxes"/></svg>Stocks<span class="bdg">24</span></a>
+    <a href="#"><svg class="v5-ico"><use href="#i-users"/></svg>Clients</a>
+  </nav>
+</section>
+<p class="v5-leg"><b>3 · Le carnet neuf.</b> Sa note en tête, puis ce qui viendra s'y ranger, une ligne chacun. Pas de tuiles à zéro, pas de bulle IA : elle parle quand il y a de quoi. Le + dit « Ajouter ici ».</p>
+</div>
+
+<!-- ===== 4 · + dans un carnet : d'abord où, puis quoi ; la fiche reste lisible au-dessus ===== -->
+<div class="v5-col" id="p4">
+<section class="v5-tel" aria-label="Ajouter dans Ventilation">
+  <div class="v5-app"><span class="lg">🍺</span><b>L'Affinée</b><span class="v5-ex">exemple</span><span class="mn"><svg class="v5-ico"><use href="#i-menu"/></svg></span></div>
+  <div class="v5-fh">
+    <div class="v5-fr"><span class="v5-back"><svg class="v5-ico"><use href="#i-left"/></svg>Carnets</span></div>
+    <h1>Ventilation de la salle de brassage</h1>
+    <div class="v5-frise"><span class="f">Idée</span><span class="f">Façons</span><span class="on">Comparaison</span><span>Choix</span></div>
+    <div class="v5-ens"><svg class="v5-ico"><use href="#i-target"/></svg>Critère : <b>capter la buée à la source</b></div>
+  </div>
+  <div class="v5-body">
+    <div class="v5-new">
+      <svg class="ph"><use href="#ph-plaque"/></svg>
+      <div>
+        <div class="k">Photo rangée dans Notes · à l'instant</div>
+        <div class="v">Plaque de l'extracteur actuel : <b>900 m³/h</b> · <b style="white-space:nowrap">gaine Ø 200 mm</b></div>
+        <div class="bt"><span class="v5-mini ok"><svg class="v5-ico"><use href="#i-check"/></svg>Valider</span><span class="v5-mini">Corriger</span><span class="v5-mini">Déplacer</span></div>
+      </div>
+    </div>
+    <div class="v5-tiles">
+      <div class="v5-tl"><div class="t"><svg class="v5-ico"><use href="#i-fork"/></svg>Façons<span class="n v5-mono">2</span></div><div class="s">à trancher</div></div>
+      <div class="v5-tl"><div class="t"><svg class="v5-ico"><use href="#i-tag"/></svg>Articles<span class="n v5-mono">4</span></div><div class="s">dès 1 480 CHF</div></div>
+      <div class="v5-tl"><div class="t"><svg class="v5-ico"><use href="#i-bars"/></svg>Comparer<span class="n v5-mono">5</span></div><div class="s">débit, bruit, prix…</div></div>
+      <div class="v5-tl"><div class="t"><svg class="v5-ico"><use href="#i-dec"/></svg>Décisions<span class="n v5-mono">0</span></div><div class="s">rien de tranché</div></div>
+    </div>
+  </div>
+  <div class="v5-comp" style="bottom:56px">
+    <div class="v5-gr"></div>
+    <div class="v5-dlab">Ranger dans</div>
+    <div class="v5-dest">
+      <span class="on"><svg class="v5-ico"><use href="#i-fork"/></svg>Façon<i class="ia" title="proposé par l'IA"><svg class="v5-ico"><use href="#i-spark"/></svg></i></span>
+      <span><svg class="v5-ico"><use href="#i-tag"/></svg>Article</span>
+      <span><svg class="v5-ico"><use href="#i-target"/></svg>Critère</span>
+      <span><svg class="v5-ico"><use href="#i-note"/></svg>Note</span>
+    </div>
+    <div class="v5-voix"><span class="pt"></span><span class="t v5-mono">0:07</span>
+      <svg class="onde" viewBox="0 0 120 30" preserveAspectRatio="none" aria-hidden="true"><g fill="#a8291f"><rect x="0" y="12" width="3" height="6" rx="1.5"/><rect x="6" y="8" width="3" height="14" rx="1.5"/><rect x="12" y="4" width="3" height="22" rx="1.5"/><rect x="18" y="10" width="3" height="10" rx="1.5"/><rect x="24" y="2" width="3" height="26" rx="1.5"/><rect x="30" y="7" width="3" height="16" rx="1.5"/><rect x="36" y="11" width="3" height="8" rx="1.5"/><rect x="42" y="5" width="3" height="20" rx="1.5"/><rect x="48" y="9" width="3" height="12" rx="1.5"/><rect x="54" y="3" width="3" height="24" rx="1.5"/><rect x="60" y="8" width="3" height="14" rx="1.5"/><rect x="66" y="12" width="3" height="6" rx="1.5"/><rect x="72" y="6" width="3" height="18" rx="1.5"/><rect x="78" y="10" width="3" height="10" rx="1.5"/></g><g fill="#bfbfbf"><rect x="84" y="13" width="3" height="4" rx="1.5"/><rect x="90" y="13" width="3" height="4" rx="1.5"/><rect x="96" y="13" width="3" height="4" rx="1.5"/><rect x="102" y="13" width="3" height="4" rx="1.5"/><rect x="108" y="13" width="3" height="4" rx="1.5"/><rect x="114" y="13" width="3" height="4" rx="1.5"/></g></svg>
+      <span class="v5-stop"><i></i>Arrêter</span></div>
+    <div class="v5-tr"><em>«</em> hotte murale, gaine Ø 200 vers l'extérieur <em>»</em></div>
+    <div class="v5-row">
+      <span class="v5-tool"><svg class="v5-ico"><use href="#i-cam"/></svg>Photo</span>
+      <span class="v5-tool rec"><svg class="v5-ico"><use href="#i-mic"/></svg>Voix</span>
+      <span class="v5-tool"><svg class="v5-ico"><use href="#i-link"/></svg>Lien</span>
+      <span class="v5-send"><svg class="v5-ico"><use href="#i-send"/></svg>Dans Façons</span>
+    </div>
+  </div>
+  <nav class="v5-bot" aria-label="Navigation">
+    <a href="#"><svg class="v5-ico"><use href="#i-bord"/></svg>Bord</a>
+    <a href="#"><svg class="v5-ico"><use href="#i-wallet"/></svg>Finances</a>
+    <a href="#"><svg class="v5-ico"><use href="#i-cal"/></svg>Calendrier</a>
+    <a href="#"><svg class="v5-ico"><use href="#i-beer"/></svg>Brassins</a>
+    <a href="#" class="on" aria-current="page"><svg class="v5-ico"><use href="#i-boxes"/></svg>Stocks<span class="bdg">24</span></a>
+    <a href="#"><svg class="v5-ico"><use href="#i-users"/></svg>Clients</a>
+  </nav>
+</section>
+<p class="v5-leg"><b>4 · « Ajouter ici », puis la voix.</b> D'abord où : Façon, Article (étiquette), Critère ou Note ; la pastille ✦ marque la cible que propose l'IA, un toucher la change. Le bouton redit la cible. Les quatre tuiles de la base restent visibles au-dessus ; le dépôt précédent s'allume avec ses valeurs à valider.</p>
+</div>
+
+<!-- ===== 5 · Un lien collé : l'objet avant de ranger ; un échec en un seul message ===== -->
+<div class="v5-col" id="p5">
+<section class="v5-tel" aria-label="Lien collé">
+  <div class="v5-app"><span class="lg">🍺</span><b>L'Affinée</b><span class="v5-ex">exemple</span><span class="mn"><svg class="v5-ico"><use href="#i-menu"/></svg></span></div>
+  <div class="v5-fh">
+    <div class="v5-fr"><span class="v5-back"><svg class="v5-ico"><use href="#i-left"/></svg>Ventilation de la salle de brassage</span></div>
+    <h1>Articles · 4</h1>
+  </div>
+  <div class="v5-body" style="padding-top:2px">
+    <div class="v5-ar" style="border-top:0"><span class="nl"><svg class="v5-ico"><use href="#i-link"/></svg></span><div class="x"><div class="nm">inoxpro.ch/hottes/murale-120</div><div class="d">Page sans aperçu · <span class="hi">ajouter une photo</span></div></div></div>
+    <div class="v5-ar"><svg class="ph"><use href="#ph-ext"/></svg><div class="x"><div class="nm">Extracteur mural 1 200 m³/h</div><div class="d">890 CHF · Ventil-Shop (CH) · en stock</div></div><svg class="v5-ico" style="color:var(--stk)"><use href="#i-eye"/></svg></div>
+    <div class="v5-ar"><svg class="ph"><use href="#ph-hotte"/></svg><div class="x"><div class="nm">Hotte inox 150 cm + extracteur</div><div class="d">2 650 CHF · Gastro-Inox (CH) · délai 4 sem.</div></div></div>
+  </div>
+  <div class="v5-comp" style="bottom:56px">
+    <div class="v5-gr"></div>
+    <div class="v5-dlab">Ranger dans</div>
+    <div class="v5-dest">
+      <span><svg class="v5-ico"><use href="#i-fork"/></svg>Façon</span>
+      <span class="on"><svg class="v5-ico"><use href="#i-tag"/></svg>Article<i class="ia" title="proposé par l'IA"><svg class="v5-ico"><use href="#i-spark"/></svg></i></span>
+      <span><svg class="v5-ico"><use href="#i-target"/></svg>Critère</span>
+      <span><svg class="v5-ico"><use href="#i-note"/></svg>Note</span>
+    </div>
+    <div class="v5-in"><svg class="v5-ico"><use href="#i-link"/></svg><span class="u">gastro-inox.ch/hotte-murale-120-inox</span></div>
+    <div class="v5-pv">
+      <svg class="ph"><use href="#ph-hotte"/></svg>
+      <div style="min-width:0">
+        <div class="nm">Hotte murale inox 120 cm</div>
+        <div class="d"><b>1 480 CHF</b> · Gastro-Inox (CH) · délai 2 sem.</div>
+        <div class="d">sortie Ø 200 mm · 1 400 m³/h</div>
+      </div>
+    </div>
+    <div class="v5-tg"><span class="sw"></span><svg class="v5-ico"><use href="#i-eye"/></svg>Veiller le prix, tous les 3 jours</div>
+    <div class="v5-row">
+      <span class="v5-tool"><svg class="v5-ico"><use href="#i-cam"/></svg>Photo</span>
+      <span class="v5-tool"><svg class="v5-ico"><use href="#i-mic"/></svg>Voix</span>
+      <span class="v5-send"><svg class="v5-ico"><use href="#i-send"/></svg>Dans Articles</span>
+    </div>
+  </div>
+  <nav class="v5-bot" aria-label="Navigation">
+    <a href="#"><svg class="v5-ico"><use href="#i-bord"/></svg>Bord</a>
+    <a href="#"><svg class="v5-ico"><use href="#i-wallet"/></svg>Finances</a>
+    <a href="#"><svg class="v5-ico"><use href="#i-cal"/></svg>Calendrier</a>
+    <a href="#"><svg class="v5-ico"><use href="#i-beer"/></svg>Brassins</a>
+    <a href="#" class="on" aria-current="page"><svg class="v5-ico"><use href="#i-boxes"/></svg>Stocks<span class="bdg">24</span></a>
+    <a href="#"><svg class="v5-ico"><use href="#i-users"/></svg>Clients</a>
+  </nav>
+</section>
+<p class="v5-leg"><b>5 · Un lien collé.</b> L'objet apparaît avant de ranger : photo, prix, vendeur, délai ; la veille se règle sur place (C3). Un lien sans aperçu reste dans la liste, en un seul message, avec le geste qui le complète.</p>
+</div>
+
+<!-- ===== 6 · Écarter une façon : le pourquoi proposé, en un toucher ; les écartées restent visibles ===== -->
+<div class="v5-col" id="p6">
+<section class="v5-tel" aria-label="Pourquoi d'une façon">
+  <div class="v5-app"><span class="lg">🍺</span><b>L'Affinée</b><span class="v5-ex">exemple</span><span class="mn"><svg class="v5-ico"><use href="#i-menu"/></svg></span></div>
+  <div class="v5-fh">
+    <div class="v5-fr"><span class="v5-back"><svg class="v5-ico"><use href="#i-left"/></svg>Ventilation de la salle de brassage</span></div>
+    <h1>Façons · 3</h1>
+    <div class="v5-ens"><svg class="v5-ico"><use href="#i-target"/></svg>Critère : <b>capter la buée à la source</b></div>
+  </div>
+  <div class="v5-body">
+    <div class="v5-blk">
+      <div class="v5-fl" style="border-top:0"><span class="nm">Hotte inox + extracteur<small>2 articles · dès 1 480 CHF</small></span><span class="v5-mini ok"><svg class="v5-ico"><use href="#i-check"/></svg>Retenir</span><span class="v5-mini">Écarter</span></div>
+      <div class="v5-fl"><span class="nm">Extracteur mural seul<small>1 article · 890 CHF</small></span><span class="v5-mini p">Écarter</span></div>
+      <div class="v5-why">
+        <div class="q"><svg class="v5-ico"><use href="#i-spark"/></svg>Pourquoi l'écarter ?</div>
+        <div class="v5-chips"><span class="on"><svg class="v5-ico"><use href="#i-check"/></svg>loin de la cuve, la buée s'étale</span><span>trop bruyant</span><span>débit trop faible</span><span><svg class="v5-ico"><use href="#i-pen"/></svg>autre</span></div>
+        <div class="v5-row"><span class="v5-mini">Pas maintenant</span><span class="v5-mini p" style="margin-left:auto"><svg class="v5-ico"><use href="#i-check"/></svg>Écarter avec cette raison</span></div>
+      </div>
+    </div>
+    <div class="v5-blk">
+      <div class="v5-bt">Écartées<span class="n">1</span></div>
+      <div class="v5-fl out"><span class="nm">Hotte à recyclage<small>ne sort pas la vapeur, la buée reste</small></span><span class="v5-mini">Reprendre</span></div>
+    </div>
+  </div>
+  <span class="v5-fabl">Ajouter ici</span>
+  <a class="v5-fab" href="#p4" aria-label="Ajouter ici"><svg class="v5-ico"><use href="#i-plus"/></svg></a>
+  <nav class="v5-bot" aria-label="Navigation">
+    <a href="#"><svg class="v5-ico"><use href="#i-bord"/></svg>Bord</a>
+    <a href="#"><svg class="v5-ico"><use href="#i-wallet"/></svg>Finances</a>
+    <a href="#"><svg class="v5-ico"><use href="#i-cal"/></svg>Calendrier</a>
+    <a href="#"><svg class="v5-ico"><use href="#i-beer"/></svg>Brassins</a>
+    <a href="#" class="on" aria-current="page"><svg class="v5-ico"><use href="#i-boxes"/></svg>Stocks<span class="bdg">24</span></a>
+    <a href="#"><svg class="v5-ico"><use href="#i-users"/></svg>Clients</a>
+  </nav>
+</section>
+<p class="v5-leg"><b>6 · Le pourquoi d'une façon.</b> Retenir et Écarter visibles sur chaque façon. Écarter ouvre trois raisons proposées d'après le critère ; « autre » ouvre le seul champ. Les écartées restent visibles, avec leur raison (C7).</p>
+</div>
+
+</div>
+</body>
+</html>

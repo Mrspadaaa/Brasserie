@@ -35,6 +35,7 @@ export interface TuilesMaterielProps {
 /** Les deux tuiles du bas (r4-a) : « Espace libre » et « Matériel », qui se déplient sur place. */
 export function TuilesMateriel(p: TuilesMaterielProps) {
   const [ouvertEspace, setOuvertEspace] = useState(false);
+  const [refusCapacite, setRefusCapacite] = useState<string | null>(null);
   const idEspace = useId();
   const idMateriel = useId();  const sansProfil = !Number.isFinite(p.capaciteL) || !Number.isFinite(p.profilL);
   const ecart = !sansProfil && p.capaciteL !== p.profilL;
@@ -74,6 +75,8 @@ export function TuilesMateriel(p: TuilesMaterielProps) {
                   className="idn-fin"
                   data-role="fin"
                   libelle="Capacité du fermenteur pour ce brassin, en litres"
+                  unite="L"
+                  onRefus={setRefusCapacite}
                   valeur={p.capaciteL!}
                   onValeur={(v) => { if (Number.isFinite(v)) p.onCapacite(v); }}
                   pas={1}
@@ -84,6 +87,7 @@ export function TuilesMateriel(p: TuilesMaterielProps) {
                 L
               </label>
             )}
+            {refusCapacite && <p className="idn-refus" role="alert" data-role="refus">{refusCapacite}</p>}
             <button type="button" className="idn-raz" data-role="raz" hidden={!ecart} onClick={p.onRaz}>↺ profil</button>
             {p.contenuMateriel}
           </div>

@@ -1,0 +1,124 @@
+[1m[43m DEPRECATED [49m[22m [33m"environmentMatchGlobs" is deprecated. Use `test.projects` to define different configurations instead.[39m
+
+[1m[46m RUN [49m[22m [36mv3.2.7 [39m[90mC:/Users/mrspa/.codex/worktrees/openai-clean-start/Brasserie[39m
+
+[33m[39m[31mx[39m[33m[39m[31mx[39m[33m[39m[32m·[39m[33m[39m[31mx[39m[33m[39m[31mx[39m[33m[39m[31mx[39m[33m[39m[31mx[39m[33m[39m[32m·[39m[33m[39m[31mx[39m[33m[39m[31mx[39m
+
+[31m⎯⎯⎯⎯⎯⎯⎯[39m[1m[41m Failed Tests 8 [49m[22m[31m⎯⎯⎯⎯⎯⎯⎯[39m
+
+[41m[1m FAIL [22m[49m tests/integration/etapeLevure/vues-corrections.test.tsx[2m > [22mC1 : le repère de l’alcool vient de la recette[2m > [22msans cible saisie, l’alcool visé est celui que la recette annonce (OG et atténuation de la levure), pas rien
+[31m[1mTypeError[22m: (0 , abvViseDe) is not a function[39m
+[36m [2m❯[22m tests/integration/etapeLevure/vues-corrections.test.tsx:[2m29:17[22m[39m
+    [90m 27| [39m  it('sans cible saisie, l’alcool visé est celui que la recette annonc…
+    [90m 28| [39m    [35mconst[39m recette [33m=[39m [34mrecetteApercuEtapeLevure[39m()[33m;[39m
+    [90m 29| [39m    const abv = abvViseDe({ ...recette, abvTarget: null }, yeastRefere…
+    [90m   | [39m                [31m^[39m
+    [90m 30| [39m    [34mexpect[39m(abv)[33m.[39m[34mtoBeGreaterThan[39m([34m6.5[39m)[33m;[39m
+    [90m 31| [39m    [34mexpect[39m(abv)[33m.[39m[34mtoBeLessThan[39m([34m7.6[39m)[33m;[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/8]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m tests/integration/etapeLevure/vues-corrections.test.tsx[2m > [22mC1 : le repère de l’alcool vient de la recette[2m > [22mune cible saisie prime
+[31m[1mTypeError[22m: (0 , abvViseDe) is not a function[39m
+[36m [2m❯[22m tests/integration/etapeLevure/vues-corrections.test.tsx:[2m34:12[22m[39m
+    [90m 32| [39m  })[33m;[39m
+    [90m 33| [39m  [34mit[39m([32m'une cible saisie prime'[39m[33m,[39m () [33m=>[39m {
+    [90m 34| [39m    expect(abvViseDe({ ...recetteApercuEtapeLevure(), abvTarget: 5.2 }…
+    [90m   | [39m           [31m^[39m
+    [90m 35| [39m  })[33m;[39m
+    [90m 36| [39m  it('avec le repère : le résumé, le ○ de l’index, le trait de l’histo…
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/8]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m tests/integration/etapeLevure/vues-corrections.test.tsx[2m > [22mM1 : la levure tapée en tête de « Ajouter à Comparer »[2m > [22mtaper « Verdant » rend Verdant, tapée par l’API, première
+[31m[1mTypeError[22m: Cannot read properties of undefined (reading 'textContent')[39m
+[36m [2m❯[22m tests/integration/etapeLevure/vues-corrections.test.tsx:[2m56:23[22m[39m
+    [90m 54| [39m    await u.type(within(f).getByLabelText('Nom, fabricant ou code'), '…
+    [90m 55| [39m    const boutons = within(f).getAllByRole('button').filter((b) => b.c…
+    [90m 56| [39m    [34mexpect[39m(boutons[[34m0[39m][33m.[39mtextContent)[33m.[39m[34mtoMatch[39m([36m/Verdant/[39m)[33m;[39m
+    [90m   | [39m                      [31m^[39m
+    [90m 57| [39m  })[33m;[39m
+    [90m 58| [39m})[33m;[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/8]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m tests/integration/etapeLevure/vues-corrections.test.tsx[2m > [22mS1 à S6 : Suggérer[2m > [22mS1 : au repos, la liste s’ouvre sur « US-05 · ta levure · la référence », ⊕ grisé, puis les autres
+[31m[1mAssertionError[22m: expected 'CHVerdant IPALallemand°C%esters élevé…' to match /US-05/[39m
+
+[32m- Expected:[39m 
+/US-05/
+
+[31m+ Received:[39m 
+"CHVerdant IPALallemand°C%esters élevésthiols élevésclarté moyens"
+
+[36m [2m❯[22m tests/integration/etapeLevure/vues-corrections.test.tsx:[2m64:34[22m[39m
+    [90m 62| [39m    [34mrender[39m([33m<[39m[33mHote[39m [33mvue[39m[33m=[39m[32m"suggerer"[39m [33m/[39m[33m>[39m)[33m;[39m
+    [90m 63| [39m    const premiere = document.querySelector('.lvv-srow') as HTMLElemen…
+    [90m 64| [39m    [34mexpect[39m(premiere[33m.[39mtextContent)[33m.[39m[34mtoMatch[39m([36m/US-05/[39m)[33m;[39m
+    [90m   | [39m                                 [31m^[39m
+    [90m 65| [39m    [34mexpect[39m(premiere[33m.[39mtextContent)[33m.[39m[34mtoMatch[39m([36m/ta levure/[39m)[33m;[39m
+    [90m 66| [39m    [34mexpect[39m(premiere[33m.[39mtextContent)[33m.[39m[34mtoMatch[39m([36m/la référence/[39m)[33m;[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/8]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m tests/integration/etapeLevure/vues-corrections.test.tsx[2m > [22mS1 à S6 : Suggérer[2m > [22mS4 : référence muette sur l’axe : les vendues ici documentées restent, la référence montre ses « ⌕ ? »
+[31m[1mAssertionError[22m: expected null not to be null[39m
+[36m [2m❯[22m tests/integration/etapeLevure/vues-corrections.test.tsx:[2m77:22[22m[39m
+    [90m 75| [39m    expect(document.querySelector('[data-levure="verdant"]')).not.toBe…
+    [90m 76| [39m    const base = document.querySelector('[data-levure="us05"]') as HTM…
+    [90m 77| [39m    [34mexpect[39m(base)[33m.[39mnot[33m.[39m[34mtoBeNull[39m()[33m;[39m
+    [90m   | [39m                     [31m^[39m
+    [90m 78| [39m    [34mexpect[39m(base[33m.[39mtextContent)[33m.[39m[34mtoMatch[39m([36m/ta levure/[39m)[33m;[39m
+    [90m 79| [39m    expect(within(base).getByRole('button', { name: /thiols \? : cherc…
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[5/8]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m tests/integration/etapeLevure/vues-corrections.test.tsx[2m > [22mS1 à S6 : Suggérer[2m > [22mS3 : une levure dont la plage ne couvre pas la conduite le dit en rouge (« 19 hors plage »)
+[31m[1mTypeError[22m: .toMatch() expects to receive a string, but got undefined[39m
+[36m [2m❯[22m tests/integration/etapeLevure/vues-corrections.test.tsx:[2m87:59[22m[39m
+    [90m 85| [39m    const ligne = document.querySelector('[data-levure="nova"]') as HT…
+    [90m 86| [39m    [34mexpect[39m(ligne)[33m.[39mnot[33m.[39m[34mtoBeNull[39m()[33m;[39m
+    [90m 87| [39m    expect(ligne.querySelector('.lvv-hors')?.textContent).toMatch(/19 …
+    [90m   | [39m                                                          [31m^[39m
+    [90m 88| [39m  })[33m;[39m
+    [90m 89| [39m  it('S5 : le levier sans preuve chiffrée ne double pas l’en-tête', as…
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[6/8]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m tests/integration/etapeLevure/vues-corrections.test.tsx[2m > [22mS1 à S6 : Suggérer[2m > [22mS6 : l’en-tête dit le volume : « 30 L · 19 °C »
+[31m[1mAssertionError[22m: expected '19 °C' to match /30 L.*19 °C/[39m
+
+[32m- Expected:[39m 
+/30 L.*19 °C/
+
+[31m+ Received:[39m 
+"19 °C"
+
+[36m [2m❯[22m tests/integration/etapeLevure/vues-corrections.test.tsx:[2m98:70[22m[39m
+    [90m 96| [39m  [34mit[39m([32m'S6 : l’en-tête dit le volume : « 30 L · 19 °C »'[39m[33m,[39m () [33m=>[39m {
+    [90m 97| [39m    [34mrender[39m([33m<[39m[33mHote[39m [33mvue[39m[33m=[39m[32m"suggerer"[39m [33mrep[39m[33m=[39m[33m{[39m{ [33m...[39mreperes[33m,[39m volumeL[33m:[39m [34m30[39m }[33m}[39m [33m/[39m[33m>[39m)[33m;[39m
+    [90m 98| [39m    expect(document.querySelector('.lvv-dep .lvv-ctx')?.textContent).t…
+    [90m   | [39m                                                                     [31m^[39m
+    [90m 99| [39m  })[33m;[39m
+    [90m100| [39m})[33m;[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[7/8]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m tests/integration/etapeLevure/vues-corrections.test.tsx[2m > [22mC5 : l’index n’a pas de ligne muette[2m > [22mchaque filtre sans compte porte « — » ou « estimé »
+[31m[1mAssertionError[22m: temperature: expected null not to be null[39m
+[36m [2m❯[22m tests/integration/etapeLevure/vues-corrections.test.tsx:[2m110:59[22m[39m
+    [90m108| [39m    [35mfor[39m ([35mconst[39m b [35mof[39m f[33m.[39mquerySelectorAll[33m<[39m[33mHTMLElement[39m[33m>[39m([32m'[data-filtre]'[39m)) {
+    [90m109| [39m      [35mif[39m (b[33m.[39mdataset[33m.[39mfiltre [33m===[39m [32m'boisson'[39m) [35mcontinue[39m[33m;[39m
+    [90m110| [39m      [34mexpect[39m(b[33m.[39m[34mquerySelector[39m([32m'em'[39m)[33m,[39m b[33m.[39mdataset[33m.[39mfiltre)[33m.[39mnot[33m.[39m[34mtoBeNull[39m()[33m;[39m
+    [90m   | [39m                                                          [31m^[39m
+    [90m111| [39m    }
+    [90m112| [39m  })[33m;[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[8/8]⎯[22m[39m
+
+
+[2m Test Files [22m [1m[31m1 failed[39m[22m[90m (1)[39m
+[2m      Tests [22m [1m[31m8 failed[39m[22m[2m | [22m[1m[32m2 passed[39m[22m[90m (10)[39m
+[2m   Start at [22m 13:58:05
+[2m   Duration [22m 3.31s[2m (transform 955ms, setup 100ms, collect 1.64s, tests 732ms, environment 610ms, prepare 59ms)[22m
+

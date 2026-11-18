@@ -4,6 +4,7 @@ import { parseReading } from '../domain/brewDay';
 import { brewNow } from '../services/brewClock';
 import { Input } from './Input';
 import type { BrewReadingDraft, BrewUpdate } from './BrewDayMeasurements';
+import { nombreFr } from '../domain/nombreAffiche';
 
 export interface WortPairDraft {
   volume: string;
@@ -90,7 +91,7 @@ export function BrewWortPair({ step, state, update, drafts, requestedStage }: {
     {latest && !draft.editing && <button type="button" className="min-h-touch text-xs text-cave-200 underline" onClick={() => {
       const density = state.readings?.find(r => r.pairId === latest.pairId && r.kind === 'densite');
       patch({ volume: String(latest.value), gravity: density ? String(density.value) : '', basis: latest.volumeBasis ?? (latest.roomTemp ? 'cold' : ''), corrected: !!density?.roomTemp, editing: latest.pairId });
-    }}>Corriger le dernier couple · {latest.value} L</button>}
+    }}>Corriger le dernier couple · {nombreFr(latest.value, 1)} L</button>}
     {draft.stage === 'preboil' && <details className="text-xs text-cave-200">
       <summary className="min-h-touch cursor-pointer">Préciser les pertes de filtration</summary>
       <label className="block">Moût libre resté après filtration (L à froid)

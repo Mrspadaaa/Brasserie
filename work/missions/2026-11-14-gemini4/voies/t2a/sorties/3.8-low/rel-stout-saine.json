@@ -1,0 +1,19 @@
+{
+ "cas": "rel-stout-saine",
+ "usage": "relecture",
+ "half": "choix",
+ "cellule": "3.8@low",
+ "ok": true,
+ "ms": 4462,
+ "microChf": 5179,
+ "microDecembre": 5179,
+ "entree": 1032,
+ "sortie": 346,
+ "etat": "STOP",
+ "ancrage": "sans objet",
+ "note": 1,
+ "utilisable": true,
+ "inventes": 0,
+ "detail": "0/0 défauts · 0 bloquant(s) dont 0 injustifié(s) · 1 de goût ou pire",
+ "reponse": "{\n  \"verdict\": \"La recette est prête à brasser avec un réglage de palier recommandé.\",\n  \"findings\": [\n    {\n      \"severity\": \"gout\",\n      \"topic\": \"Paliers\",\n      \"observation\": \"Le palier de saccharification à 67°C favorisera la production de dextrines et risque de laisser une densité finale supérieure à la cible de 1.010, ce qui nuira au caractère sec attendu pour une Irish Dry Stout.\",\n      \"suggestion\": \"Abaisser la température du palier de saccharification à 64°C ou 65°C pendant 60 minutes pour assurer une bonne atténuation.\"\n    },\n    {\n      \"severity\": \"detail\",\n      \"topic\": \"Eau\",\n      \"observation\": \"Le profil d'eau après traitement présente 150 ppm de bicarbonates avec 0.3 kg d'orge torréfiée (environ 7% de la mouture), ce qui peut maintenir un pH d'empâtage légèrement élevé pour une bière noire.\",\n      \"suggestion\": \"Vérifier le pH de la maische après 15 minutes sur échantillon refroidi et ajuster à l'acide lactique si le pH dépasse 5.4.\"\n    }\n  ],\n  \"missing\": [],\n  \"styleFit\": \"Recette conforme au style Irish Dry Stout en termes de densité, amertume, couleur et sélection d'ingrédients, sous réserve d'adapter le palier de brassage pour garantir la sécheresse en bouche.\"\n}"
+}

@@ -19,7 +19,7 @@ mission `2026-10-31-ecran-depense`).
 | Voie | Objectif | Niveau | Agent | Modèle | Plafond | Possède | Dépend de | Contrôles | Décideur | Étape |
 |---|---|---|---|---|---|---|---|---|---|---|
 | o1 | les contrôles `comprendre`, `revue` et `ecarts` dans systeme.mjs, avec leurs témoins | jugement | auteur | sonnet | 70 | scripts/agents/systeme.mjs, work/missions/2026-10-31-relire-sans-memoire/voies/o1/** | — | temoins, témoins bons et négatifs, essai réel sur les docs des finances | pilote | — |
-| e1 | premier rapport d'écart (sens) entre les docs des finances et le code, pour la mission dépense | jugement | relecteur | sonnet | 40 | work/missions/2026-10-31-ecran-depense/ecarts/**, work/missions/2026-10-31-relire-sans-memoire/voies/e1/RESULTAT.md | — | rapport au format § 3, classes, doc:ligne et code:ligne | pilote | — |
+| e1 | premier rapport d'écart (sens) entre les docs des finances et le code, pour la mission dépense | jugement | relecteur | sonnet | 30 | work/missions/2026-10-31-ecran-depense/ecarts/**, work/missions/2026-10-31-relire-sans-memoire/voies/e1/RESULTAT.md | — | rapport au format § 3, classes, doc:ligne et code:ligne | pilote | — |
 
 ## Boucle de retour
 Un critère en échec : l'auteur corrige dans sa voie (3 essais). Un rejeu en échec : relance par un agent neuf avec le défaut précis.

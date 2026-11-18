@@ -34,6 +34,8 @@ const profil = (args.find((a) => a.startsWith('--profil=')) || '--profil=houblon
 if (!['houblons', 'sans-houblons'].includes(profil)) { console.log('Profil inconnu : ' + profil + ' (houblons ou sans-houblons)'); process.exit(2); }
 // Le profil se transmet à mots (texte visible seulement), contraste (fond réellement peint) et standard.
 const passe = profil === 'houblons' ? [] : ['--profil=' + profil];
+// --sans-lignes (D238) se transmet à mots seul : les lignes de facture (data-mots="lignes") ne comptent pas.
+const sansLignes = args.includes('--sans-lignes') ? ['--sans-lignes'] : [];
 const SANS_HOUBLONS = {
   'au-style': 'compare à la plage d\'un style les arômes d\'un houblon : aucun houblon sur cet écran',
   fiche: 'l\'appui long sur un houblon ouvre sa fiche : aucun nom de houblon sur cet écran',
@@ -42,7 +44,7 @@ const SANS_HOUBLONS = {
 };
 if (!dir || !ids.length) { console.log('Usage : node controle-commun.mjs <dossier> <id> [id…] [--page=…] [--sans=…] [--profil=sans-houblons]'); process.exit(2); }
 const CONTROLES = [
-  ['mots', 'mots-premier-ecran.mjs', [dir, ...ids, '--max=70', '--modere', '--page=' + pg, ...passe], /MOTS OK/],
+  ['mots', 'mots-premier-ecran.mjs', [dir, ...ids, '--max=70', '--modere', '--page=' + pg, ...passe, ...sansLignes], /MOTS OK/],
   ['couleurs', 'controle-couleurs.mjs', [dir, ...ids, '--page=' + pg], /COULEURS OK/],
   ['au-style', 'controle-au-style.mjs', [dir, ...ids, '--pages=' + pg], /AU-STYLE OK/],
   ['survol', 'controle-sens-survol.mjs', [dir, ...ids, '--pages=' + pg], /SURVOL OK/],
