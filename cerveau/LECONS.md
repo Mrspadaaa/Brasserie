@@ -57,6 +57,13 @@ Erreurs de méthode déjà commises, cause, remède. Chargé par CLAUDE.md : rel
 - Rôles : pilote, auteur, conseil
 - Contrôle : `systeme.mjs mission` refuse une mission de code sans « ## État de l'art » (problème type, examiné, décision)
 
+### L30 — Une boucle de correction a un périmètre figé et une sortie datée
+- Erreur : 17 et 18.11, port du calendrier : 12 tours, « 0 bloquant » jamais atteint (1, 2, 2, 1 bloquants), environ 1,5 M de jetons par tour ; rien en ligne. « ça fait longtemps que ça bug fix... Il y a pas un problème à ce niveau ? »
+- Cause : chaque critique rejuge tout l'écran sur des captures neuves et trouve de nouveaux défauts ; lots parallèles qui se cassent entre eux ; preuves manquantes du harnais comptées en bloquants.
+- Faire : figer la liste au premier tour ; les tours suivants ne jugent que cette liste et les régressions ; un défaut neuf va au registre, pas à la boucle. Trois tours au plus, puis mise en ligne si aucun bloquant ne touche données ou geste principal ; le reste se corrige en ligne, depuis le registre.
+- Rôles : pilote, critique
+- Contrôle : aucun ; à mécaniser dans les scripts de boucle
+
 ## Prouver
 
 ### L11 — Fini veut dire utilisable, pas un reçu
