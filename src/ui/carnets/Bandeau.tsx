@@ -8,7 +8,7 @@
  * G37 « Carnet supprimé · <titre> · Annuler » ; G26 conséquence pour comparer, au picto local, si `aides.consequence`.
  * Le temps d'affichage (5 s au moins) est tenu par le conteneur ; ce composant ne disparaît pas seul.
  */
-import React from 'react';
+import React, { useEffect, useRef } from 'react';
 import { Check, Undo2 } from 'lucide-react';
 import { PictoLocal, Provenance } from './EtatIA';
 
@@ -59,6 +59,23 @@ export function texteBandeau(b: BandeauV): string {
   }
 }
 
+/**
+ * d1280-18 (R27, G21) : à son arrivée, le retour « … · Annuler » vient dans la zone visible, au-dessus du champ (`scroll-margin`,
+ * carnets.css, lit `--cn-champ-h` et `--cn-clavier`). Une fois par apparition : le conteneur le monte avec la clé du retour, et la
+ * réponse de l'IA qui ne fait que compléter le même retour ne le fait plus bouger (P8 : rien ne bouge sous le doigt).
+ */
+function useAmeneEnVue<T extends HTMLElement>(): React.RefObject<T | null> {
+  const ref = useRef<T>(null);
+  useEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+    if (typeof requestAnimationFrame !== 'function') { el.scrollIntoView?.({ block: 'nearest' }); return; }
+    const id = requestAnimationFrame(() => el.scrollIntoView?.({ block: 'nearest' }));
+    return () => cancelAnimationFrame(id);
+  }, []);
+  return ref;
+}
+
 export function Bandeau({ bandeau, onAnnuler, consequence, aideConsequence, enLigne }: {
   bandeau: BandeauV;
   onAnnuler: () => void;
@@ -71,8 +88,9 @@ export function Bandeau({ bandeau, onAnnuler, consequence, aideConsequence, enLi
   const b = bandeau;
   const avecCoche = b.sorte !== 'note-supprimee' && b.sorte !== 'carnet-supprime' && b.sorte !== 'deuxieme';
   const texte = texteBandeau(b).replace(/^✓ /, '');
+  const ref = useAmeneEnVue<HTMLDivElement>();
   return (
-    <div className={`cn-bandeau${enLigne ? ' cn-bandeau-ligne' : ''}`} role="status" data-sorte={b.sorte}>
+    <div ref={ref} className={`cn-bandeau${enLigne ? ' cn-bandeau-ligne' : ''}`} role="status" data-sorte={b.sorte}>
       <div className="cn-bandeau-tete">
         {avecCoche && <Check size={18} aria-hidden className="cn-ok" />}
         <span className="cn-sp">

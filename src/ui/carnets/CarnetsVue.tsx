@@ -31,7 +31,7 @@ import { CadreArrivee, type CadreV } from './CadreArrivee';
 import { Bandeau, type BandeauV, type TitreDe } from './Bandeau';
 import { NoteEnVrac, type LigneVracV } from './NoteEnVrac';
 import { FicheArticle } from './FicheArticle';
-import { Comparer } from './Comparer';
+import { Comparer, nonLusDe } from './Comparer';
 import { Choisir } from './Choisir';
 import { SupprimerCarnet } from './SupprimerCarnet';
 import { FeuilleNote } from './FeuilleNote';
@@ -73,7 +73,15 @@ type Vue =
   | { sorte: 'renommer'; id: string }
   | { sorte: 'supprimer'; id: string };
 
-interface Retour { bandeau: BandeauV; inverse: EcritureCarnet[]; messageId?: string; carnetId?: string; consequence?: string }
+/**
+ * Un retour « après » affiché. `id` : sa clé stable (P8, tour 3) ; le bandeau est monté sous cette clé, jamais sous l'index ni le
+ * texte. La réponse de l'IA qui complète un retour déjà affiché garde son `id` et son bandeau : seul `inverse` (ce qu'Annuler défait)
+ * change, donc le bouton sous le doigt reste le même.
+ */
+interface Retour { id: number; bandeau: BandeauV; inverse: EcritureCarnet[]; messageId?: string; carnetId?: string; consequence?: string }
+type RetourNeuf = Omit<Retour, 'id'>;
+/** La photo jointe au champ (P7, tour 3) : `jeton` écarte une lecture finie après un ✕. */
+interface Jointe { jeton: number; jpeg?: string }
 
 /**
  * Ce que le cadre « pendant » a annoncé, depuis la liste, et que l'envoi tient (vision 2, m390-1, m390-2, d1280-1) :
@@ -173,7 +181,16 @@ export function CarnetsVue(p: CarnetsVueProps) {
   const ouvert = idOuvert ? tous.find(c => c.id === idOuvert) ?? null : null;
   const [texte, setTexte] = useState('');
   const [etatR, setEtatR] = useState<EtatRangement<LigneLocale>>({ etape: 'repos' });
-  const [retour, setRetour] = useState<Retour | null>(null);
+  const [retour, setRetourEtat] = useState<Retour | null>(null);
+  /** Le retour tel qu'il est maintenant, lu par Annuler et par la fin de l'IA (une fermeture plus ancienne ne le perd pas). */
+  const retourRef = useRef<Retour | null>(null);
+  const prochainRetour = useRef(0);
+  const poserRetourEtat = useCallback((r: Retour | null) => { retourRef.current = r; setRetourEtat(r); }, []);
+  const setRetour = useCallback((r: RetourNeuf | null) => {
+    poserRetourEtat(r ? { ...r, id: (prochainRetour.current += 1) } : null);
+  }, [poserRetourEtat]);
+  const [jointe, setJointe] = useState<Jointe | null>(null);
+  const jetonJointe = useRef(0);
   const [enTete, setEnTete] = useState<string | undefined>();
   const [vientDEtreCree, setVientDEtreCree] = useState<string | null>(null);
   const [supprime, setSupprime] = useState<{ titre: string; statut: CarnetDoc['status']; inverse: EcritureCarnet[] } | null>(null);
@@ -189,7 +206,7 @@ export function CarnetsVue(p: CarnetsVueProps) {
   const [presse, setPresse] = useState<string | undefined>();
   const champRef = useRef<HTMLTextAreaElement>(null);
   /** P1, P2 : le retour de l'écriture locale, tenu en réserve tant que l'IA peut la remplacer ; montré seulement si elle échoue ou est coupée. */
-  const attente = useRef<{ messageId: string; retour: Retour; montre?: boolean } | null>(null);
+  const attente = useRef<{ messageId: string; retour: RetourNeuf; montre?: boolean } | null>(null);
   /** L'annonce tenue par chaque envoi en cours (créer, note en vrac), lue par `ecrireIA`. */
   const annonces = useRef(new Map<string, Annonce>());
   /** L'envoi en cours : ✕ le coupe même si la vue a changé entre-temps (le carnet neuf ouvert recrée le déroulé). */
@@ -219,7 +236,7 @@ export function CarnetsVue(p: CarnetsVueProps) {
    * locale que l'IA a remplacée. Carnet créé (R11, g5:v04-4), rangé ici (R14, g5:v03-8), rangé dans un autre carnet avec le message cité et
    * l'article (G21, g5:v06-14, état 20), ou n lignes dans m carnets (R19, g5:v01-16). `inverse` : tout ce qu'Annuler défait.
    */
-  const retourDe = useCallback((messageId: string, txt: string, depuisM: string | null, inverse: EcritureCarnet[], lignesIA?: readonly LigneCarnet[]): Retour | null => {
+  const retourDe = useCallback((messageId: string, txt: string, depuisM: string | null, inverse: EcritureCarnet[], lignesIA?: readonly LigneCarnet[]): RetourNeuf | null => {
     const etat = magasin.lire();
     const effets = lireMessages(etat).find(m => m.id === messageId)?.carnetMessage.effets ?? [];
     const rr = retourDuRangement(effets, { depuis: depuisM, plusieursLignes: plusieursLignes(txt) });
@@ -366,7 +383,14 @@ export function CarnetsVue(p: CarnetsVueProps) {
       const final = retourDe(messageId, txt, depuis, [...fait.inverse, ...(local?.inverse ?? [])], lignes);
       /* le retour tenu en réserve paraît aussi quand l'IA réussit sans rien d'autre à dire (d1280-1) */
       if (!final) { if (local && !enAttente?.montre) setRetour(local); return; }
-      setRetour(final);
+      /* P8 (tour 3) : le retour de ce message est déjà affiché (créer, note en vrac) : il n'est pas remplacé ; même clé, même bandeau,
+         seul ce qu'Annuler défait s'étend à l'écriture de l'IA. Un toucher sur Annuler pendant que l'IA finit agit donc toujours. */
+      const affiche = retourRef.current;
+      if (affiche && affiche.messageId === messageId) {
+        /* même sorte : le texte suit la réponse (d'où vient le titre), sous la même clé ; la ligne « Annuler » ne bouge pas */
+        poserRetourEtat({ ...affiche, inverse: final.inverse, ...(final.bandeau.sorte === affiche.bandeau.sorte ? { bandeau: final.bandeau } : {}) });
+      }
+      else setRetour(final);
       if (final.bandeau.sorte === 'cree' && final.carnetId) {
         setEnTete(final.carnetId); setVientDEtreCree(final.carnetId);
         if (!depuis && !enAttente?.montre) setVue({ sorte: 'carnet', id: final.carnetId });
@@ -377,11 +401,15 @@ export function CarnetsVue(p: CarnetsVueProps) {
         setEnTete(undefined); setVientDEtreCree(null); setVue({ sorte: 'liste' });
       }
     }
-  }), [mode, depuis, enLigne, magasin, appliquer, maintenant, p.appels, retourDe]);
+  }), [mode, depuis, enLigne, magasin, appliquer, maintenant, p.appels, retourDe, setRetour, poserRetourEtat]);
 
   const lignesApercu = useMemo(() => (texte.trim() ? analyserTexte(texte) : []), [texte]);
   const envoyer = async () => {
     const txt = texte.trim();
+    /* P7 : la photo jointe et prête part avec l'envoi (seule, ou avant le texte) ; en lecture, elle attend */
+    const ph = jointe?.jpeg && !edition ? jointe.jpeg : null;
+    if (!txt && !ph) return;
+    if (ph) { setJointe(null); rangerPhoto(ph); }
     if (!txt) return;
     if (edition && ouvert) {
       const r = appliquer(modifierNote(magasin.lire(), { carnetId: ouvert.id, noteId: edition, texte: txt, le: maintenant().toISOString() }));
@@ -394,9 +422,20 @@ export function CarnetsVue(p: CarnetsVueProps) {
     try { await rangement.envoyer(txt); } catch { setTexte(txt); }
   };
   const couperEnvoi = () => (envoiActif.current?.envoi ?? rangement).annuler();
+  /**
+   * P7 (tour 3) : la photo choisie se joint au champ (« photo jointe · lecture… »), avant l'envoi, retirable d'un ✕. Rien n'est
+   * rangé avant l'envoi ; une lecture finie après le ✕ est ignorée (jeton).
+   */
   const photo = async (fichier: File) => {
+    const jeton = (jetonJointe.current += 1);
+    setJointe({ jeton });
     const jpeg = await reduirePhoto(fichier);
-    if (!jpeg) { p.onMessage?.('Photo illisible : rien n’a été rangé.'); return; }
+    if (jetonJointe.current !== jeton) return;
+    if (!jpeg) { setJointe(null); p.onMessage?.('Photo illisible : rien n’a été rangé.'); return; }
+    setJointe({ jeton, jpeg });
+  };
+  const retirerJointe = () => { jetonJointe.current += 1; setJointe(null); };
+  const rangerPhoto = (jpeg: string) => {
     const etat = magasin.lire();
     const message = { id: nouvelIdCarnet('MSG'), texte: 'photo', le: maintenant().toISOString(), depuis: depuis ?? 'liste', rangement: 'brut' as const };
     const dest: Destination = depuis ? { carnetId: depuis } : { carnetNeuf: { id: nouvelIdCarnet('CARNET'), titre: 'Photo' } };
@@ -424,6 +463,10 @@ export function CarnetsVue(p: CarnetsVueProps) {
       return <EtatIA etat="en-cours" quoi={etatR.texte} onAnnuler={couperEnvoi} />;
     }
     if (etatR.etape === 'echec' || etatR.etape === 'hors-ligne') return <EtatIA etat={etatR.etape} quoi={etatR.avis} />;
+    /* P10 : le retour de ce message était déjà affiché pendant l'IA (créer, note en vrac) : l'état en cours devient « ✓ Rangé » à la
+       même place, tant que ce retour reste ; ailleurs, le bandeau qui paraît à la fin dit déjà que c'est fini. */
+    if (etatR.etape === 'range' && etatR.rangement !== 'locale' && retour?.messageId === etatR.messageId && !texte.trim()
+      && (retour.bandeau.sorte === 'cree' || retour.bandeau.sorte === 'vrac')) return <EtatIA etat="range" />;
     if (edition && ouvert) {
       const fermer = () => { setEdition(null); setTexte(''); };
       return <CadreArrivee cadre={{ sorte: 'modifier', onSupprimer: () => { const r = appliquer(supprimerNote(magasin.lire(), { carnetId: ouvert.id, noteId: edition })); if (r) setNoteSupprimee({ id: edition, inverse: r.inverse }); fermer(); } }} onAnnuler={fermer} aides={aides} />;
@@ -465,7 +508,7 @@ export function CarnetsVue(p: CarnetsVueProps) {
     const effets = (msg?.carnetMessage.effets ?? []).filter(e => e.carnetId === ouvert.id && e.cible !== 'carnet' && e.cible !== 'photo');
     if (effets.length !== 1) return null;
     const e = effets[0];
-    const base = { cible: e.cible as RangeeV['cible'], id: e.id, phrase: msg!.carnetMessage.texte, onAnnuler: () => { annuler(retour.inverse); setRetour(null); } };
+    const base = { cible: e.cible as RangeeV['cible'], id: e.id, phrase: msg!.carnetMessage.texte, onAnnuler: () => annulerRetour(retour) };
     if (e.cible !== 'article') return ['critere', 'facon', 'note'].includes(e.cible) && ouvert.carnet[e.cible === 'critere' ? 'criteres' : e.cible === 'facon' ? 'facons' : 'notes'].some(x => x.id === e.id) ? base : null;
     const a = ouvert.carnet.articles.find(x => x.id === e.id);
     if (!a || a.lecture !== 'lue' || !a.url) return null;
@@ -475,7 +518,9 @@ export function CarnetsVue(p: CarnetsVueProps) {
     return { ...base, luSurPage, ...(verdict ? { verdict } : {}) };
   })();
   /** Annuler un retour : l'IA encore en route pour ce message est coupée d'abord (rien n'est réécrit après), puis tout est défait. */
-  const annulerRetour = (rt: Retour) => {
+  function annulerRetour(vu: Retour) {
+    /* P8 : le retour tel qu'il est maintenant (l'IA a pu l'étendre pendant le toucher), sous la même clé */
+    const rt = retourRef.current && retourRef.current.id === vu.id ? retourRef.current : vu;
     if (rt.messageId && attente.current?.messageId === rt.messageId) {
       attente.current = null;
       annonces.current.delete(rt.messageId);
@@ -513,8 +558,8 @@ export function CarnetsVue(p: CarnetsVueProps) {
   };
   const bandeauNode = retour && !rangee && (!retour.carnetId || retour.carnetId === idOuvert || vue.sorte === 'liste')
     ? retour.bandeau.sorte === 'vrac' && retour.messageId && vue.sorte === 'liste'
-      ? vracApres(retour)
-      : <Bandeau bandeau={retour.bandeau} onAnnuler={() => annulerRetour(retour)} aideConsequence={aides.consequence} />
+      ? <React.Fragment key={retour.id}>{vracApres(retour)}</React.Fragment>
+      : <Bandeau key={retour.id} bandeau={retour.bandeau} onAnnuler={() => annulerRetour(retour)} aideConsequence={aides.consequence} />
     : null;
 
   const champ = (
@@ -523,6 +568,8 @@ export function CarnetsVue(p: CarnetsVueProps) {
       onEnvoyer={() => void envoyer()}
       {...(ouvert && vue.sorte === 'carnet' ? { titreCarnet: titreSansBanc(ouvert.title), libelleEnvoi: edition ? 'Enregistrer' : 'Ajouter' } : {})}
       onPhoto={f => void photo(f)}
+      jointe={jointe ? { lecture: !jointe.jpeg, ...(jointe.jpeg ? { apercu: jointe.jpeg } : {}) } : null}
+      onRetirerJointe={retirerJointe}
       suggestion={vue.sorte === 'carnet' ? suggestion : null}
       vaDans={auto ? { options: [...PUCES_VA_DANS], choisi: rubriqueChoisie!, onChoisir: id => setCorrige(id as RubriqueVaDans) } : null}
       coller={presse} onColler={() => { if (presse) { setTexte(presse); rangement.taper(presse); setPresse(undefined); } }}
@@ -552,6 +599,7 @@ export function CarnetsVue(p: CarnetsVueProps) {
   } else if (vue.sorte === 'comparer') {
     ecran = <Comparer titre={titreSansBanc(ouvert.title)} statut={ouvert.status} critere={ouvert.carnet.criteres[0]} tableau={tableauV}
       onRetour={() => setVue({ sorte: 'carnet', id: ouvert.id })} onOuvrirArticle={articleId => setVue({ sorte: 'article', id: ouvert.id, articleId })}
+      nonLus={nonLusDe(ouvert.carnet.articles as never)}
       onChoisir={() => setVue({ sorte: 'choisir', id: ouvert.id })} />;
   } else if (vue.sorte === 'choisir') {
     const choix = ouvert.carnet.choix;

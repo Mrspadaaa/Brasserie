@@ -8,6 +8,7 @@ vi.mock('firebase/functions', () => ({ httpsCallable: () => passerelle.call }));
 vi.mock('../../src/services/firebase', () => ({ functions: {} }));
 import { AiClient } from '../../src/services/aiClient';
 import { lirePage, lireLien, robotsPermet, urlLisible, LIEN_TAILLE_MAX } from '../../functions/src/lireLien';
+import { DELAI_LECTURE_BANC, LIEN_ILLISIBLE_BANC, lireLienSimule, nomDeLienTest, pageSimulee } from '../../src/domain/carnets/iaSimulee';
 
 const espion = vi.spyOn(AiClient, 'run');
 afterAll(() => { expect(espion).toHaveBeenCalledTimes(0); expect(passerelle.call).toHaveBeenCalledTimes(0); });
@@ -140,5 +141,35 @@ describe('lireLien (B4) : réseau simulé, jamais réel', () => {
     });
     expect((await lireLien(page, { fetchPage })).statut).toBe('robots');
     expect(demandes).toEqual([robots, page, 'https://autre-exemple.ch/robots.txt']);
+  });
+});
+
+describe('P2 (vision 3, m390-18) : au banc, un lien « ZZ TEST » est lu (page simulée, exemple) ; une adresse inconnue reste illisible', () => {
+  it('famille connue : la page du banc ; variante par la fin de l’adresse ; sinon le nom écrit dans l’adresse, sans prix inventé', () => {
+    expect(pageSimulee('https://exemple.test/zz-test-hotte-3')).toMatchObject({ statut: 'lue', nom: 'Hotte inox 140 cm + extracteur', domaine: 'exemple.test' });
+    expect(pageSimulee('https://exemple.test/zz-test-pompe-magnetique')).toMatchObject({ statut: 'lue', nom: 'Pompe magnétique 12 V' });
+    expect(pageSimulee('https://exemple.test/ZZ-TEST-pompe')).toMatchObject({ statut: 'lue', nom: 'Pompe de transfert inox' });
+    expect(pageSimulee('https://exemple.test/zz-test-evier-a').nom).toBe('Évier inox Riviera 2 bacs');
+    expect(pageSimulee('https://exemple.test/zz-test-evier-b').nom).toBe('Évier inox sur pieds 1 bac');
+    const ventilo = pageSimulee('https://exemple.test/ZZ-TEST-ventilo', 7);
+    expect(ventilo).toEqual({ url: 'https://exemple.test/ZZ-TEST-ventilo', domaine: 'exemple.test', statut: 'lue', nom: 'ZZ TEST — Ventilo', luLe: 7 });
+    expect(pageSimulee('https://exemple.test/zz-test-frigo-300l')).not.toHaveProperty('prix');
+  });
+  it('honnête : « illisible » dans l’adresse, ou une adresse sans marque ZZ TEST, reste illisible (R17, D-27, état 21)', () => {
+    expect(pageSimulee('https://exemple.test/zz-test-illisible').statut).toBe('illisible');
+    expect(pageSimulee(LIEN_ILLISIBLE_BANC).statut).toBe('illisible');
+    expect(pageSimulee('https://exemple.test/ventilation').statut).toBe('illisible');
+    expect(pageSimulee('https://inconnu.invalid/x').statut).toBe('illisible');
+    expect(nomDeLienTest('https://exemple.test/a/ZZ-TEST-frigo-300l?x=1')).toBe('frigo-300l');
+    expect(nomDeLienTest('https://exemple.test/frigo')).toBeNull();
+  });
+  it('délai du banc : 1,5 s au plus, aucun réseau', async () => {
+    expect(DELAI_LECTURE_BANC).toBeLessThanOrEqual(1500);
+    vi.useFakeTimers();
+    try {
+      const p = lireLienSimule('https://exemple.test/zz-test-hotte-3');
+      await vi.advanceTimersByTimeAsync(1500);
+      expect((await p).statut).toBe('lue');
+    } finally { vi.useRealTimers(); }
   });
 });

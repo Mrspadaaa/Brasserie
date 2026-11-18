@@ -11,6 +11,7 @@
  */
 import type { CreativeItem } from '../../types';
 import { lundiDe } from '../calendrier';
+import { prixTousDe, urlsDe } from './analyseLocale';
 
 export const VERSION_CARNET = 1 as const;
 
@@ -326,15 +327,93 @@ export function domaineDuLienSeul(texte: string): string | null {
 /** Vrai si la phrase n'est qu'un lien : elle ne peut pas servir de titre (« votre phrase en titre » ne se dit pas). */
 export const estLienSeul = (phrase: string): boolean => domaineDuLienSeul(phrase) !== null;
 
+/* Mots qui annoncent un prix (« à 45.50 CHF », « prix 4 900 CHF ») et qui le suivent (« 85 CHF pièce ») : retirés avec lui du titre. */
+const AVANT_PRIX = /(?:^|\s)(?:au prix de|à partir de|prix|à|a|pour|de|dès|env\.?|environ|vers|pr\.?)\s*$/i;
+const APRES_PRIX = /^\s*(?:la pièce|pièces?|pce|pc|\/\s*pièce|l['’]unité|chacune?|HT|TTC)(?=$|[\s.,;:!?)])/i;
+const PREFIXE_TEST = /^ZZ TEST\s*[—–-]\s*/i;
+const MARQUE_TEST_SEULE = /^ZZ TEST(?:\s*[—–-]\s*)?/i;
+const DEVISE_COLLEE = /^(?:CHF|SFr\.?|Fr\.|EUR)\s?/i;
+const DEVISE_SUIVANTE = /^\s?(?:CHF|SFr\.?|Fr\.|francs?|€|EUR|euros?)(?!\p{L})/iu;
+
+export interface PrixLu { centimes: number; devise: 'CHF' | 'EUR'; debut: number; fin: number }
+
 /**
- * Le titre tiré d'une phrase : sa première ligne non vide, rognée à 120 caractères. Une ligne qui n'est qu'un lien ne devient jamais
- * le titre : son domaine la remplace (P3, g5:v03-10), jusqu'à ce que la page lue donne un nom.
+ * Les prix d'un texte (`prixTousDe`, § État de l'art), corrigés d'un cas : « moteur 189,90 CHF » se lit « eur 189,90 », en euros, la
+ * devise collée à la fin d'un mot. Le mot reste un mot : le prix est le nombre suivi de sa vraie devise (« 189,90 CHF ») ; sans devise
+ * après (« moteur 190 »), ce n'est pas un prix.
+ */
+export function prixLus(texte: string): PrixLu[] {
+  const sortie: PrixLu[] = [];
+  for (const p of prixTousDe(texte)) {
+    let { debut, fin, devise } = p;
+    const collee = debut > 0 && /\p{L}/u.test(texte[debut - 1]) ? DEVISE_COLLEE.exec(texte.slice(debut)) : null;
+    if (collee) {
+      const suite = DEVISE_SUIVANTE.exec(texte.slice(fin));
+      if (!suite) continue;
+      debut += collee[0].length;
+      fin += suite[0].length;
+      devise = /€|eur/i.test(suite[0]) ? 'EUR' : 'CHF';
+    }
+    sortie.push({ centimes: p.centimes, devise, debut, fin });
+  }
+  return sortie;
+}
+
+/**
+ * Une ligne sans ses liens ni ses prix (P1, vision 3 ; R11 g5:v04-4 « votre phrase en titre ») : ils vont à l'article (lien en clair
+ * dans le message, R16, R25), pas dans le titre. Liens et prix lus par `analyseLocale` (motifs + `new URL`, `parseDecimal` : § État de
+ * l'art), via `prixLus` ; un mot qui annonce le prix (« à », « prix ») ou le suit (« pièce ») part avec lui ; parenthèses vides et
+ * séparateurs en bout de ligne retirés.
+ */
+export function sansLiensNiPrix(ligne: string): string {
+  const plages: { debut: number; fin: number }[] = urlsDe(ligne).map(u => ({ debut: u.debut, fin: u.fin }));
+  for (const p of prixLus(ligne)) {
+    let { debut, fin } = p;
+    const avant = AVANT_PRIX.exec(ligne.slice(0, debut));
+    if (avant) debut = avant.index + (/^\s/.test(avant[0]) ? 1 : 0);
+    const apres = APRES_PRIX.exec(ligne.slice(fin));
+    if (apres) fin += apres[0].length;
+    plages.push({ debut, fin });
+  }
+  plages.sort((a, b) => a.debut - b.debut);
+  let sortie = '', curseur = 0;
+  for (const p of plages) {
+    if (p.debut < curseur) { curseur = Math.max(curseur, p.fin); continue; }
+    sortie += `${ligne.slice(curseur, p.debut)} `;
+    curseur = p.fin;
+  }
+  sortie += ligne.slice(curseur);
+  if (!plages.length) return ligne.trim();
+  return sortie
+    /* « sur brauladen.de/… » : la préposition qui menait au lien retiré ne reste pas seule en bout de ligne */
+    .replace(/\s(?:sur|chez|via|voir|ici)\s*$/i, () => ' ')
+    .replace(/\(\s*\)|\[\s*\]/g, () => ' ')
+    .replace(/\s+/g, () => ' ')
+    .replace(/\s+([,;.)])/g, (_m, signe: string) => signe)
+    .replace(/([,;])(?:\s*[,;])+/g, (_m, signe: string) => signe)
+    .replace(/^[\s,;:·\-–—]+/, () => '')
+    .replace(/[\s,;:.·\-–—]+$/, () => '')
+    .trim();
+}
+
+/**
+ * Le titre tiré d'une phrase : sa première ligne non vide, sans liens ni prix (`sansLiensNiPrix`), rognée à 120 caractères. Une ligne
+ * qui n'est qu'un lien ne devient jamais le titre : son domaine la remplace (P3, g5:v03-10), jusqu'à ce que la page lue donne un nom.
+ * Une ligne sans un mot une fois liens et prix retirés : le domaine de son lien (préfixe « ZZ TEST — » gardé), sinon la ligne telle quelle.
+ * `carnet.phrase` garde, elle, la phrase entière (R25).
  */
 export function titreDePhrase(phrase: string): string {
   const ligne = phrase.split(/\r?\n/).map(l => l.trim()).find(l => l !== '') ?? '';
   const domaine = domaineDuLienSeul(ligne);
   if (domaine) return domaine;
-  return ligne.length > 120 ? `${ligne.slice(0, 119).trimEnd()}…` : ligne;
+  const propre = sansLiensNiPrix(ligne);
+  let titre = propre;
+  if (!/\p{L}/u.test(propre.replace(MARQUE_TEST_SEULE, ''))) {
+    const lien = urlsDe(ligne)[0];
+    const prefixe = PREFIXE_TEST.exec(ligne)?.[0] ?? '';
+    titre = lien ? `${prefixe}${lien.domaine}` : ligne;
+  }
+  return titre.length > 120 ? `${titre.slice(0, 119).trimEnd()}…` : titre;
 }
 
 /**

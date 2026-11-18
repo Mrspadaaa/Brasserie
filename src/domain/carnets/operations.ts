@@ -155,7 +155,8 @@ function rangerDans(b: Brouillon, message: MessageARanger, lignes: readonly Lign
     if (l.carnetNeuf) {
       c = b.carnet(l.carnetNeuf.id);
       if (!c) {
-        const titre = l.carnetNeuf.titre.trim() || titreDePhrase(message.texte);
+        /* P1 (vision 3) : le titre garde la phrase, sans ses liens ni ses prix (ils vont à l'article) ; `carnet.phrase` reste entière. */
+        const titre = titreDePhrase(l.carnetNeuf.titre) || titreDePhrase(message.texte);
         if (!titre) return 'Un carnet neuf demande un titre.';
         c = { id: l.carnetNeuf.id, type: 'carnet', title: titre, status: 'idea', carnet: donneesVides(message.texte, message.le) };
         effets.push({ carnetId: c.id, cible: 'carnet', id: c.id });

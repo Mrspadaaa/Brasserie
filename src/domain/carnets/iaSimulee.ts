@@ -10,6 +10,7 @@
 import type { ContexteRangerCarnet, PageLue } from '../../../functions/src/carnetIA';
 import { liensDuTexte, sansAccents } from './ia';
 import { fixtureCarnets } from './fixture';
+import { prixLus } from './modele';
 
 type Brut = Record<string, unknown>;
 export interface ReponseSimulee { lignes: Brut[]; exemple: true }
@@ -48,7 +49,7 @@ export const LIEN_ILLISIBLE_BANC = 'https://exemple.invalid/v5';
  * vendeurs, prix, valeurs. Aucune page ne pose de veille (R31 : éteinte à la naissance, il l'allume dans la fiche).
  * - `hotte-140` : la carte complète de g5:v06-10, dans Ventilation (« tient 80 °C : oui », débit) ;
  * - `pompe-inox`, `pompe-magnetique` : g5:v06-10 et g5:v06-11 (le 2e lien fait naître le tableau), collés depuis la liste ;
- * - `evier-riviera` : G19, dans Évier (« fond de bac 38 cm ») ;
+ * - `evier-riviera` : G19, dans Évier (« fond de bac 38 cm ») ; `evier-sur-pieds` : le 2e évier d'un lien « ZZ TEST » (`…-evier-b`) ;
  * - `plaque-froid/echangeur-30` : la puce « Coller : … » (R15).
  */
 export const PAGES_BANC: Readonly<Record<string, Omit<PageLue, 'url' | 'luLe' | 'domaine'>>> = {
@@ -67,6 +68,10 @@ export const PAGES_BANC: Readonly<Record<string, Omit<PageLue, 'url' | 'luLe' | 
   'exemple.invalid/evier-riviera': {
     statut: 'lue', nom: 'Évier inox Riviera 2 bacs', prix: 1450, devise: 'CHF', dispo: 'rupture', vendeur: 'Évier Exemple',
     valeurs: [{ nom: 'fond de bac', valeur: '38', unite: 'cm' }, { nom: 'bacs', valeur: '2' }]
+  },
+  'exemple.invalid/evier-sur-pieds': {
+    statut: 'lue', nom: 'Évier inox sur pieds 1 bac', prix: 890, devise: 'CHF', dispo: 'en-stock', vendeur: 'Gastro Exemple',
+    valeurs: [{ nom: 'fond de bac', valeur: '32', unite: 'cm' }, { nom: 'bacs', valeur: '1' }]
   },
   'exemple.invalid/plaque-froid/echangeur-30': { statut: 'lue', nom: 'Échangeur à plaques 30 plaques', prix: 320, devise: 'CHF', vendeur: 'Froid Exemple' }
 };
@@ -102,8 +107,45 @@ function pagesDeLaFixture(): Record<string, Omit<PageLue, 'url' | 'luLe' | 'doma
 let pagesFixture: Record<string, Omit<PageLue, 'url' | 'luLe' | 'domaine'>> | null = null;
 
 /**
+ * Les liens « ZZ TEST » (P2, vision 3) : un lien de test porte la marque des données de test (L05) dans son adresse
+ * (`https://exemple.test/zz-test-hotte-3`). Au banc, il rend une page simulée « exemple » : la page du banc de sa famille
+ * (`hotte`, `pompe`, `evier`, `echangeur`), la variante choisie par la fin de l'adresse (`-a`, `-b`, `-2`…, ou le nom complet de la
+ * clé : `pompe-magnetique`) ; sans famille, une page qui ne porte que le nom écrit dans l'adresse (« ZZ TEST — Frigo 300l »), ni prix ni
+ * valeur inventés. Une adresse qui dit `illisible` reste illisible (état 21). Toute autre adresse inconnue : illisible (rien d'inventé).
+ */
+const MARQUE_TEST = /zz[-_ ]?test[-_ ]*/i;
+const FAMILLES_BANC: readonly { motif: RegExp; cles: readonly string[] }[] = [
+  { motif: /hotte/, cles: ['exemple.invalid/hotte-140'] },
+  { motif: /pompe/, cles: ['exemple.invalid/pompe-inox', 'exemple.invalid/pompe-magnetique'] },
+  { motif: /evier/, cles: ['exemple.invalid/evier-riviera', 'exemple.invalid/evier-sur-pieds'] },
+  { motif: /echangeur|plaque/, cles: ['exemple.invalid/plaque-froid/echangeur-30'] }
+];
+
+/** Le nom écrit dans une adresse de test, sans sa marque (« zz-test-frigo-300l » → « frigo-300l ») ; `null` si l'adresse n'est pas de test. */
+export function nomDeLienTest(url: string): string | null {
+  let chemin = '';
+  try { chemin = decodeURIComponent(new URL(url).pathname); } catch { return null; }
+  if (!MARQUE_TEST.test(chemin)) return null;
+  const segment = chemin.split('/').filter(Boolean).find(s => MARQUE_TEST.test(s)) ?? '';
+  return sansAccents(segment.replace(MARQUE_TEST, '')).replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
+}
+
+function pageDeLienTest(nom: string): Omit<PageLue, 'url' | 'luLe' | 'domaine'> {
+  if (!nom || /illisible/.test(nom)) return { statut: 'illisible' };
+  const famille = FAMILLES_BANC.find(f => f.motif.test(nom));
+  if (famille) {
+    const exacte = famille.cles.find(c => nom.includes(c.split('/').pop()!));
+    const fin = nom.split('-').pop() ?? '';
+    const rang = /^[a-z]$/.test(fin) ? fin.charCodeAt(0) - 97 : /^\d+$/.test(fin) ? Math.max(0, Number(fin) - 1) : 0;
+    return PAGES_BANC[exacte ?? famille.cles[rang % famille.cles.length]];
+  }
+  const mots = nom.split('-').filter(Boolean).join(' ');
+  return { statut: 'lue', nom: `ZZ TEST — ${mots.charAt(0).toUpperCase()}${mots.slice(1)}` };
+}
+
+/**
  * La page d'un lien au banc : une adresse de `PAGES_BANC` ou de la fixture → lue (exemple) ; un domaine de `PAGES_SIMULEES` → lue ;
- * tout le reste → `illisible`, jamais inventée.
+ * un lien « ZZ TEST » (`nomDeLienTest`) → sa page simulée ; tout le reste → `illisible`, jamais inventée.
  */
 export function pageSimulee(url: string, luLe = 0): PageLue {
   let domaine = '';
@@ -113,7 +155,9 @@ export function pageSimulee(url: string, luLe = 0): PageLue {
   const parUrl = cle ? PAGES_BANC[cle] ?? pagesFixture[cle] : undefined;
   if (parUrl) return { ...parUrl, url, domaine, luLe };
   const p = PAGES_SIMULEES[domaine];
-  return p ? { ...p, url, luLe } : { url, domaine, statut: 'illisible', luLe };
+  if (p) return { ...p, url, luLe };
+  const test = nomDeLienTest(url);
+  return test !== null ? { ...pageDeLienTest(test), url, domaine, luLe } : { url, domaine, statut: 'illisible', luLe };
 }
 
 /** Durée de lecture d'une page au banc : assez pour voir le squelette « ✻ lecture de la page… » (g5:v03-10). */
@@ -322,13 +366,16 @@ function reponseBrute(ctx: ContexteRangerCarnet, texte: string): ReponseSimulee 
   const lienSeul = !!premiere && texte.trim().replace(/[.,;:!?)\]]+$/, '') === liens[0];
   const neuf = lienSeul ? premiere!.nom ?? premiere!.domaine : categorie?.neuf;
 
-  // Liens : un article par lien, avec ce que la page (simulée) a lu ; le prix de la page, jamais un autre.
+  // Liens : un article par lien, avec ce que la page (simulée) a lu ; le prix de la page, sinon (un seul lien, un seul prix écrit) celui
+  // que le message donne à côté du lien (P1, vision 3 : « … 189,90 CHF » va à l'article, pas au titre). Jamais un prix inventé.
+  const prixEcrits = prixLus(texte);
   for (const url of liens) {
     const page = (ctx.pages ?? []).find((p) => p.url === url) ?? pageSimulee(url);
+    const ecrit = page.prix === undefined && liens.length === 1 && prixEcrits.length === 1 ? prixEcrits[0] : null;
     lignes.push({
       sorte: 'article', texte: page.nom ?? `Lien ${page.domaine}`, url,
       ...(page.nom ? { titre: page.nom } : {}),
-      ...(page.prix !== undefined ? { prix: page.prix, devise: page.devise } : {}),
+      ...(page.prix !== undefined ? { prix: page.prix, devise: page.devise } : ecrit ? { prix: ecrit.centimes / 100, devise: ecrit.devise } : {}),
       ...(page.vendeur ? { vendeur: page.vendeur } : {}),
       ...rangement(ctx, cible, neuf ?? page.nom ?? page.domaine, mot, true)
     });

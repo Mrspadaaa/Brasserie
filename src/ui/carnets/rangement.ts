@@ -221,12 +221,14 @@ export function creerRangement<L>(deps: DependancesRangement<L>): Rangement<L> {
 
     poser({ etape: 'en-cours', messageId, texte });
     try {
-      const pages: PageLue[] = [];
-      for (const url of liensDuTexte(texte).slice(0, 3)) {
-        poser({ etape: 'en-cours', messageId, texte, lecture: { url } });
-        const page = await course(appels.lire(url, ctrl.signal));
-        pages.push(page);
-        poser({ etape: 'en-cours', messageId, texte, lecture: { url, statut: page.statut } });
+      /* Les pages (3 au plus) sont lues ensemble, pas l'une après l'autre (d1280-18) : la lecture dure celle de la plus lente. Le cadre
+         montre le premier lien. */
+      const urls = liensDuTexte(texte).slice(0, 3);
+      let pages: PageLue[] = [];
+      if (urls.length) {
+        poser({ etape: 'en-cours', messageId, texte, lecture: { url: urls[0] } });
+        pages = await course(Promise.all(urls.map(url => appels.lire(url, ctrl.signal))));
+        poser({ etape: 'en-cours', messageId, texte, lecture: { url: urls[0], statut: pages[0].statut } });
       }
       const contexte = contexteModele(texte, deps.maintenant?.() ?? new Date(), deps.depuis, carnets, pages);
       const r = await course(appels.ranger(contexte, ctrl.signal));

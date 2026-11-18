@@ -9,7 +9,7 @@
  * - Puces « Va dans » (R13) : correction seulement, préchoisies ; rangées derrière le champ.
  */
 import React, { useEffect, useId, useLayoutEffect, useRef, useState } from 'react';
-import { ArrowUp, Camera, Mic } from 'lucide-react';
+import { ArrowUp, Camera, Mic, X } from 'lucide-react';
 import { useDictee } from '../atelier/dictee';
 import { useKeyboardInset } from '../useViewport';
 import { PictoLocal } from './EtatIA';
@@ -36,6 +36,12 @@ export interface ChampCarnetProps {
   /** Grisé pendant la confirmation de suppression d'une idée (G34). */
   desactive?: boolean;
   inputRef?: React.Ref<HTMLTextAreaElement>;
+  /**
+   * P7 (tour 3) : la photo choisie, jointe au champ avant l'envoi. `lecture` : le fichier se lit et se réduit (« photo jointe ·
+   * lecture… ») ; puis `apercu` (la vignette). Retirable d'un ✕ ; l'envoi la range avec le texte, s'il y en a.
+   */
+  jointe?: { apercu?: string; lecture: boolean } | null;
+  onRetirerJointe?: () => void;
 }
 
 /** « plaque-froid.ch/echan… » : le lien en clair, raccourci pour tenir sur la puce. */
@@ -103,9 +109,14 @@ export function ChampCarnet(p: ChampCarnetProps) {
   const id = useId();
   const dictee = useDictee(t => p.onChange(p.valeur ? `${p.valeur} ${t}` : t));
   const dansCarnet = !!p.titreCarnet;
-  const placeholder = dansCarnet ? `Ajouter à ${p.titreCarnet}…` : 'Une idée, un besoin…';
+  const ecoute = dictee.disponible && dictee.ecoute;
+  const placeholder = ecoute ? 'J’écoute…' : dansCarnet ? `Ajouter à ${p.titreCarnet}…` : 'Une idée, un besoin…';
+  const libelle = dansCarnet ? `Ajouter à ${p.titreCarnet}…` : 'Une idée, un besoin…';
   const envoi = p.libelleEnvoi ?? (dansCarnet ? 'Ajouter' : null);
   const plein = p.valeur.trim().length > 0;
+  /* une photo prête s'envoie seule ; pendant sa lecture, l'envoi attend */
+  const jointe = p.jointe ?? null;
+  const pret = (plein || (!!jointe && !jointe.lecture)) && !jointe?.lecture;
   const montrerBulle = !!p.suggestion && focus && !plein;
   useChampPublie(zone, inset, montrerBulle);
 
@@ -129,7 +140,8 @@ export function ChampCarnet(p: ChampCarnetProps) {
       )}
       {p.vaDans && plein && (
         <div className="cn-vadans" role="group" aria-label="Va dans">
-          <span className="cn-mut">Va dans</span>
+          {/* P6 : un libellé insécable ; ce sont les puces qui passent à la ligne */}
+          <span className="cn-mut cn-vadans-libelle">Va{' '}dans</span>
           {p.vaDans.options.map(o => (
             <button key={o.id} type="button" className="cn-puce" aria-pressed={o.id === p.vaDans!.choisi} onClick={() => p.vaDans!.onChoisir(o.id)}>
               {o.libelle}
@@ -138,10 +150,17 @@ export function ChampCarnet(p: ChampCarnetProps) {
         </div>
       )}
       <form
-        className={`cn-champ${focus ? ' cn-champ-focus' : ''}${plein ? ' cn-champ-plein' : ''}`}
-        onSubmit={e => { e.preventDefault(); if (plein && !p.desactive) p.onEnvoyer(); }}
+        className={`cn-champ${focus ? ' cn-champ-focus' : ''}${plein ? ' cn-champ-plein' : ''}${jointe ? ' cn-champ-joint' : ''}${ecoute ? ' cn-champ-ecoute' : ''}`}
+        onSubmit={e => { e.preventDefault(); if (pret && !p.desactive) p.onEnvoyer(); }}
       >
-        <label htmlFor={id} className="cn-cache">{placeholder}</label>
+        {jointe && (
+          <div className="cn-jointe" role="status">
+            {jointe.apercu ? <img src={jointe.apercu} alt="" /> : <span className="cn-jointe-vide" aria-hidden />}
+            <span className="cn-sp">photo jointe{jointe.lecture ? <span className="cn-mut"> · lecture…</span> : null}</span>
+            <button type="button" className="cn-x" aria-label="Retirer la photo" onMouseDown={e => e.preventDefault()} onClick={p.onRetirerJointe}><X size={18} aria-hidden /></button>
+          </div>
+        )}
+        <label htmlFor={id} className="cn-cache">{libelle}</label>
         <textarea
           id={id}
           ref={p.inputRef}
@@ -155,13 +174,13 @@ export function ChampCarnet(p: ChampCarnetProps) {
           onKeyDown={e => {
             if (e.key === 'Enter' && !e.shiftKey && !e.nativeEvent.isComposing) {
               e.preventDefault();
-              if (plein && !p.desactive) p.onEnvoyer();
+              if (pret && !p.desactive) p.onEnvoyer();
             }
           }}
           enterKeyHint="send"
           autoCapitalize="sentences"
         />
-        {p.onPhoto && !plein && (
+        {p.onPhoto && !plein && !jointe && !ecoute && (
           <>
             <button type="button" className="cn-ico" aria-label="Photo" disabled={p.desactive} onClick={() => fichier.current?.click()}>
               <Camera size={20} aria-hidden />
@@ -176,14 +195,17 @@ export function ChampCarnet(p: ChampCarnetProps) {
             />
           </>
         )}
-        {dictee.disponible && !plein && (
-          <button type="button" className="cn-ico" aria-label={dictee.ecoute ? 'Arrêter la dictée' : 'Dicter'} aria-pressed={dictee.ecoute} disabled={p.desactive} onClick={dictee.basculer}>
+        {/* R37 (CR-VOIX) : un petit micro, rien de plus. P7 : pendant la dictée, il reste là (même si le texte arrive) et se voit :
+            couleur de zone et « Arrêter la dictée » écrit ; ni onde ni écran voix (D-83). */}
+        {dictee.disponible && (!plein || ecoute) && !jointe && (
+          <button type="button" className={`cn-ico${ecoute ? ' cn-ecoute' : ''}`} aria-label={ecoute ? 'Arrêter la dictée' : 'Dicter'} aria-pressed={ecoute} disabled={p.desactive} onClick={dictee.basculer}>
             <Mic size={20} aria-hidden />
+            {ecoute && <span className="cn-ecoute-mot" aria-hidden>Arrêter la dictée</span>}
           </button>
         )}
-        {plein && (envoi
-          ? <button type="submit" className="cn-envoi-mot" disabled={p.desactive}>{envoi}</button>
-          : <button type="submit" className="cn-envoi" aria-label="Envoyer" disabled={p.desactive}><ArrowUp size={22} aria-hidden /></button>)}
+        {(plein || jointe) && !ecoute && (envoi
+          ? <button type="submit" className="cn-envoi-mot" disabled={p.desactive || !pret}>{envoi}</button>
+          : <button type="submit" className="cn-envoi" aria-label="Envoyer" disabled={p.desactive || !pret}><ArrowUp size={22} aria-hidden /></button>)}
       </form>
     </div>
   );

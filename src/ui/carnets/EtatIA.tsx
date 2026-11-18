@@ -7,8 +7,8 @@
  * Règles tenues ici : une valeur inconnue est absente, jamais 0 ; le simulé dit « exemple » ; le calcul local porte
  * son picto, jamais le ✻ de l'IA (Q19).
  */
-import React from 'react';
-import { Calculator, Link2, Sparkles, WifiOff, X } from 'lucide-react';
+import React, { useEffect, useRef } from 'react';
+import { Calculator, Check, Link2, WifiOff, X } from 'lucide-react';
 import './carnets.css';
 
 export type Origine = 'vous' | 'ia' | 'page' | 'locale' | 'exemple';
@@ -90,19 +90,46 @@ export function PictoLocal() { return <Provenance origine="locale" />; }
 
 export type EtatRangement = 'apercu' | 'en-cours' | 'range' | 'echec' | 'hors-ligne' | 'eteint';
 
-/** L'état de l'IA pendant un envoi : en cours (avec ✕), échec ou hors ligne (rien n'est perdu), IA éteinte (rangé sur place). */
+/**
+ * L'état de l'IA pendant un envoi (P10, 40b du tour 3). En cours : « ✻ L'IA range… », sa phrase citée (le fil), un signe d'activité
+ * discret (trois points, immobiles sous `prefers-reduced-motion`) et un ✕ « Arrêter l'IA ». Fini : « ✓ Rangé », vert, sans ✻ ni
+ * activité : les deux ne se confondent pas (Q19 : ✻ seulement pour l'IA). Échec ou hors ligne : rien n'est perdu. IA éteinte : rangé
+ * sur place.
+ */
 export function EtatIA({ etat, quoi, onAnnuler }: { etat: EtatRangement; quoi?: string; onAnnuler?: () => void }) {
+  /* L'état paraît en haut du carnet, le champ est en bas : à son arrivée (en cours, échec, hors ligne), il vient dans la zone visible
+     (`scroll-margin`, carnets.css). « ✓ Rangé » ne fait rien défiler : le bandeau voisin peut être sous le doigt (P8). */
+  const ref = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    const el = ref.current;
+    if (!el || etat === 'range') return;
+    if (typeof requestAnimationFrame !== 'function') { el.scrollIntoView?.({ block: 'nearest' }); return; }
+    const id = requestAnimationFrame(() => el.scrollIntoView?.({ block: 'nearest' }));
+    return () => cancelAnimationFrame(id);
+  }, [etat]);
   if (etat === 'en-cours') {
     return (
-      <div className="cn-etat cn-etat-cours" role="status">
-        <Sparkles size={16} aria-hidden className="cn-tourne" />
-        <span className="cn-sp">{quoi ?? "L'IA met en forme…"}</span>
-        {onAnnuler && <button type="button" className="cn-x" aria-label="Arrêter" onClick={onAnnuler}><X size={18} aria-hidden /></button>}
+      <div ref={ref} className="cn-etat cn-etat-cours" role="status" aria-busy="true" data-etat="en-cours">
+        <Provenance origine="ia" titre="IA" />
+        <span className="cn-sp cn-etat-texte">
+          <b>L'IA range…</b>
+          {quoi && <span className="cn-etat-quoi"> « {quoi} »</span>}
+        </span>
+        <span className="cn-actif" aria-hidden><i /><i /><i /></span>
+        {onAnnuler && <button type="button" className="cn-x" aria-label="Arrêter l'IA" title="Arrêter l'IA" onClick={onAnnuler}><X size={18} aria-hidden /></button>}
       </div>
     );
   }
-  if (etat === 'echec') return <div className="cn-etat" role="status"><Calculator size={16} aria-hidden /><span>L'IA n'a pas répondu : rangé sur place, rien n'est perdu.</span></div>;
-  if (etat === 'hors-ligne') return <div className="cn-etat" role="status"><WifiOff size={16} aria-hidden /><span>Hors ligne : rangé sur place, rien n'est perdu.</span></div>;
-  if (etat === 'eteint') return <div className="cn-etat" role="status"><Calculator size={16} aria-hidden /><span>Rangé sur place, sans l'IA.</span></div>;
+  if (etat === 'range') {
+    return (
+      <div className="cn-etat cn-etat-fini" role="status" data-etat="range">
+        <Check size={18} aria-hidden className="cn-ok" />
+        <span><span className="cn-cache">✓ </span>Rangé</span>
+      </div>
+    );
+  }
+  if (etat === 'echec') return <div ref={ref} className="cn-etat" role="status" data-etat="echec"><Calculator size={16} aria-hidden /><span>L'IA n'a pas répondu : rangé sur place, rien n'est perdu.</span></div>;
+  if (etat === 'hors-ligne') return <div ref={ref} className="cn-etat" role="status" data-etat="hors-ligne"><WifiOff size={16} aria-hidden /><span>Hors ligne : rangé sur place, rien n'est perdu.</span></div>;
+  if (etat === 'eteint') return <div className="cn-etat" role="status" data-etat="eteint"><Calculator size={16} aria-hidden /><span>Rangé sur place, sans l'IA.</span></div>;
   return null;
 }

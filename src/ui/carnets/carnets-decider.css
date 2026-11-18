@@ -1,0 +1,38 @@
+/*
+ * Décider : Comparer (R06), Choisir (R07), Supprimer une idée (R23). Correction 3 du port du carnet (17.11).
+ * Importé par Comparer.tsx, Choisir.tsx et SupprimerCarnet.tsx, après carnets.css (lot L3, non modifié ici) ; préfixe `cn-`,
+ * variables de thème de l'app (--c-*, posées par carnets.css sur .cn-page et .cn-supprimer).
+ */
+
+/* P4 · 390 : la suite à droite se voit. Ombre de bord (et non plus un fondu vers le fond, invisible sur une colonne blanche),
+   dans les deux thèmes : l'encre de l'app à faible opacité ; « → n de plus » dessous, à droite, discret. */
+.cn-comparer .cn-tableau-cadre[data-suite]::after {
+  width: 22px;
+  background: linear-gradient(to left, color-mix(in srgb, var(--c-ink) 22%, transparent), color-mix(in srgb, var(--c-ink) 0%, transparent));
+}
+.cn-suite-indice { margin: 4px 2px 0; text-align: right; font-size: 13px; color: var(--c-mut); }
+
+/* La colonne des noms reste collée et se détache du défilé par un trait plus net. */
+.cn-comparer .cn-tableau-comparer thead th:first-child,
+.cn-comparer .cn-tableau-comparer tbody th { box-shadow: 1px 0 0 var(--c-line2); }
+
+/* P5 · constat 5 : un lien dont la page n'est pas lue, « Lien sans aperçu · <domaine> · page non lue » (R04). */
+.cn-sans-apercu { font-size: 13px; overflow-wrap: anywhere; }
+.cn-tableau-comparer th[data-apercu] .cn-col-tete > span:not(.cn-mut) { color: var(--c-ink2); font-style: italic; }
+.cn-choisir .cn-article[data-apercu] b,
+.cn-offre[data-apercu] b { color: var(--c-ink2); font-style: italic; font-weight: 600; }
+.cn-choisir .cn-action:disabled { background: var(--c-s2) !important; color: var(--c-mut) !important; cursor: default; }
+
+/* La ligne « Écarté » (D-52), sous le tableau comme p2:h04-7 : « Écartés · n », puis le nom et sa raison, une ligne chacun. */
+.cn-ecartes { width: 100%; margin-top: 12px; border-collapse: collapse; border-top: 1px solid var(--c-line); font-size: 15px; }
+.cn-ecartes caption { caption-side: top; text-align: left; padding: 8px 0 4px; font-weight: 700; color: var(--c-ink2); }
+.cn-ecartes tr { display: block; padding: 8px 0; border-top: 1px solid var(--c-line); }
+.cn-ecartes th, .cn-ecartes td { display: block; padding: 0; text-align: left; background: none; }
+.cn-ecartes th { font-weight: 600; color: var(--c-mut); }
+.cn-ecartes td.cn-ecarte-raison { color: var(--c-ink2); white-space: normal; max-width: none; min-width: 0; }
+
+/* (3) Supprimer (R23, g4:v02-18) : à 0 lien, contour rouge net de 2 px, texte rouge sur le fond de page (≥ 4,5:1 dans les deux
+   thèmes, voir le test) ; avec au moins un lien, grisé, et lisible comme tel. */
+.cn-supprimer .cn-supprimer-bouton { border-width: 2px !important; border-style: solid !important; }
+.cn-supprimer .cn-supprimer-bouton:not(:disabled) { border-color: var(--c-rouge) !important; color: var(--c-rouge) !important; background: var(--c-bg) !important; }
+.cn-supprimer .cn-supprimer-bouton:disabled { border-color: var(--c-line2) !important; color: var(--c-mut) !important; background: transparent !important; }

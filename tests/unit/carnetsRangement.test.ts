@@ -7,6 +7,11 @@ import { AiClient } from '../../src/services/aiClient';
 import { AVIS, appelsSimules, creerRangement, planVrac, retourDuRangement, versLignesAnnoncees, type AppelsIA, type DependancesRangement, type EtatRangement } from '../../src/ui/carnets/rangement';
 import type { CarnetPourIA, LigneCarnet, PageLue } from '../../src/domain/carnets/ia';
 import type { ContexteRangerCarnet } from '../../functions/src/carnetIA';
+import { DELAI_LECTURE_BANC, lireLienSimule } from '../../src/domain/carnets/iaSimulee';
+import { fixtureCarnets, ID_EVIER, ID_VENTILATION } from '../../src/domain/carnets/fixture';
+import { lireCarnets } from '../../src/domain/carnets/modele';
+import { rattacher } from '../../src/domain/carnets/rattacher';
+import { analyserTexte } from '../../src/domain/carnets/analyseLocale';
 
 const espion = vi.spyOn(AiClient, 'run');
 afterAll(() => { expect(espion).toHaveBeenCalledTimes(0); expect(passerelle.call).toHaveBeenCalledTimes(0); });
@@ -142,6 +147,33 @@ describe('rangement : déroulé d\'un envoi (B5)', () => {
     expect(ecrits.ia[0].lignes[0]).toMatchObject({ prixCentimes: 69000, prixSource: 'page', page });
   });
 
+  it('d1280-18 : les pages sont lues ensemble ; au banc (1,5 s par page), 3 liens « ZZ TEST » sont lus en 1,5 s, et rangés', async () => {
+    vi.useFakeTimers();
+    try {
+      const etats: EtatRangement<Locale>[] = [];
+      const appels: AppelsIA = { ranger: appelsSimules('normal', 0).ranger, lire: vi.fn((url: string, signal: AbortSignal) => lireLienSimule(url, { signal })) };
+      const { r, ecrits } = banc({ appels, surEtat: (e) => { etats.push(e); } });
+      const urls = ['https://exemple.test/zz-test-hotte-3', 'https://exemple.test/zz-test-pompe-magnetique', 'https://exemple.test/zz-test-frigo-300l'];
+      const envoi = r.envoyer(urls.join(' '));
+      await vi.advanceTimersByTimeAsync(DELAI_LECTURE_BANC);
+      expect(appels.lire).toHaveBeenCalledTimes(3);
+      const lu = etats.filter((e) => e.etape === 'en-cours').map((e) => (e as { lecture?: { statut?: string } }).lecture).at(-1);
+      expect(lu).toEqual({ url: urls[0], statut: 'lue' });
+      await vi.advanceTimersByTimeAsync(10);
+      expect(await envoi).toMatchObject({ etape: 'range', rangement: 'simulee' });
+      expect(ecrits.ia).toHaveLength(1);
+    } finally { vi.useRealTimers(); }
+  });
+
+  it('P1 : l’URL et le prix d’une phrase vont à l’article (page « ZZ TEST » lue, prix écrit, CHF), jamais au titre', async () => {
+    const appels: AppelsIA = { ranger: appelsSimules('normal', 0).ranger, lire: (url, signal) => lireLienSimule(url, { delaiMs: 0, signal }) };
+    const { r, ecrits } = banc({ appels, depuis: null });
+    await r.envoyer('https://exemple.test/ZZ-TEST-ventilo ZZ TEST — ventilateur 189,90 CHF');
+    const article = ecrits.ia[0].lignes.find((l) => l.sorte === 'article')!;
+    expect(article).toMatchObject({ url: 'https://exemple.test/ZZ-TEST-ventilo', prixCentimes: 18990, devise: 'CHF', prixSource: 'texte', origine: 'exemple' });
+    expect(article.page).toMatchObject({ statut: 'lue', nom: 'ZZ TEST — Ventilo' });
+  });
+
   it('banc complet avec la simulation par défaut : « exemple », sans passerelle', async () => {
     const { r, ecrits } = banc({ appels: appelsSimules('normal', 1) });
     await r.envoyer('2 bacs pour laver les fûts');
@@ -208,6 +240,17 @@ describe('corr2-L1 : la découpe annoncée est celle appliquée (planVrac, versL
     expect(plan.carnets).toBe(3);
     expect(planVrac([{ texte: '2 bacs' }, { texte: 'bacs encore' }], proche)).toMatchObject({ carnets: 1, titreNeuf: null });
     expect(planVrac([{ texte: 'a b c' }, { texte: 'd e f' }], proche).carnets).toBe(1);
+  });
+
+  it('P3 (vision 3, m390 22-23) : sur la fixture, la note de m390 touche 2 carnets (Évier + UN neuf), celle du rejeu 2 (Évier, Ventilation)', () => {
+    const cs = lireCarnets(fixtureCarnets());
+    const plan = (note: string) => planVrac(analyserTexte(note), t => rattacher(t, cs));
+    const m390 = plan('ZZ TEST — 2 bacs pour laver les fûts ; ZZ TEST — ajouter le sel ; ZZ TEST — prochain brassage jeudi');
+    expect(m390.lignes.map(l => l.carnetId ?? `neuf:${l.titre}`)).toEqual([ID_EVIER, 'neuf:ZZ TEST — ajouter le sel', 'neuf:ZZ TEST — ajouter le sel']);
+    expect(m390.carnets).toBe(2);
+    const rejeu = plan('ZZ TEST — évier : 2 bacs inox de 40 cm\nventilation : hotte 120 cm au-dessus de la cuve\névier : robinet à pédale');
+    expect(rejeu.lignes.map(l => l.carnetId)).toEqual([ID_EVIER, ID_VENTILATION, ID_EVIER]);
+    expect(rejeu.carnets).toBe(2);
   });
 
   it('même nombre de lignes : une à une ; sinon la ligne annoncée qui partage le plus de mots, sinon la même place relative', () => {

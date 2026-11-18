@@ -10,6 +10,7 @@
 import React from 'react';
 import { Archive, Trash2 } from 'lucide-react';
 import { PictoLocal, type ContenuCarnetV } from './EtatIA';
+import './carnets-decider.css';
 
 export interface LienRetientV { sorte: 'plan-a-venir' | 'plan-realise'; planId: string; libelle: string; reglage: 'detacher' | 'archiver' }
 
@@ -79,7 +80,8 @@ export function SupprimerCarnet(p: SupprimerCarnetProps) {
       {n === 0 && <p className="cn-mut"><PictoLocal /> ni dans À venir, ni en commande</p>}
       <div className="cn-rang-boutons">
         {!realise && (
-          <button type="button" className="cn-supprimer-bouton cn-sp" disabled={n > 0} onClick={p.onSupprimer}><Trash2 size={18} aria-hidden /> Supprimer</button>
+          <button type="button" className="cn-supprimer-bouton cn-sp" disabled={n > 0} data-allume={n === 0 ? true : undefined}
+            title={n > 0 ? `Réglez d'abord ${n > 1 ? `les ${n} liens` : 'le lien'}` : undefined} onClick={p.onSupprimer}><Trash2 size={18} aria-hidden /> Supprimer</button>
         )}
         <button type="button" className="cn-action cn-sp" onClick={p.onGarder}>Garder</button>
       </div>

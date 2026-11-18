@@ -267,12 +267,32 @@
 .cn-envoi-mot { min-height: 44px; padding: 0 16px; border-radius: 12px; background: var(--c-zone) !important; color: rgb(var(--cave-950)) !important; font-weight: 700; flex: none; }
 .cn-bulle { display: flex; gap: 8px; align-items: flex-start; padding: 10px 12px; border-radius: 14px; border: 1px solid var(--c-zone) !important; background: var(--c-zonebg) !important; color: var(--c-ink2); min-height: 44px; }
 .cn-coller { align-self: flex-start; color: var(--c-ink2); }
-.cn-vadans { display: flex; align-items: center; gap: 8px; overflow-x: auto; }
+/* P6 (tour 3) : « Va dans » ne se coupe jamais ; les puces passent à la ligne s'il le faut (390 et 1280). */
+.cn-vadans { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+.cn-vadans-libelle { flex: none; white-space: nowrap; }
 .cn-etat { display: flex; align-items: center; gap: 8px; min-height: 44px; padding: 0 12px; border-radius: 12px; background: var(--c-s1); color: var(--c-ink2); }
-.cn-etat-cours { color: var(--c-ia); background: var(--c-iabg); }
-.cn-tourne { animation: cn-tourne 1.4s linear infinite; }
-@keyframes cn-tourne { to { transform: rotate(360deg); } }
-@media (prefers-reduced-motion: reduce) { .cn-tourne { animation: none; } }
+/* P10, 40b : en cours = violet de l'IA, ✻, « L'IA range… », sa phrase sur une ligne, trois points qui respirent, ✕ « Arrêter l'IA » ;
+   fini = vert de zone, ✓, sans ✻ ni mouvement. Sous `prefers-reduced-motion`, les points restent immobiles. */
+.cn-etat-cours { color: var(--c-ia); background: var(--c-iabg); border: 1px dashed var(--c-ia); }
+.cn-etat-texte { min-width: 0; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
+.cn-etat-quoi { font-weight: 400; opacity: .85; }
+.cn-actif { display: inline-flex; gap: 4px; flex: none; }
+.cn-actif i { width: 6px; height: 6px; border-radius: 50%; background: currentColor; opacity: .3; animation: cn-respire 1.2s ease-in-out infinite; }
+.cn-actif i:nth-child(2) { animation-delay: .2s; } .cn-actif i:nth-child(3) { animation-delay: .4s; }
+@keyframes cn-respire { 0%, 80%, 100% { opacity: .3; } 40% { opacity: 1; } }
+@media (prefers-reduced-motion: reduce) { .cn-actif i { animation: none; opacity: .7; } }
+.cn-etat-fini { color: var(--c-zonet); background: var(--c-zonebg); font-weight: 600; }
+
+/* P7 : la photo jointe dans le champ, avant l'envoi ; la dictée en cours se voit (couleur de zone et « Arrêter la dictée »). */
+.cn-champ-joint { flex-wrap: wrap; }
+.cn-jointe { flex: 1 0 100%; display: flex; align-items: center; gap: 10px; padding-top: 4px; color: var(--c-ink2); font-weight: 600; }
+.cn-jointe img, .cn-jointe-vide { width: 40px; height: 40px; border-radius: 8px; object-fit: cover; background: var(--c-s2); flex: none; }
+.cn-jointe .cn-x { margin: 0; }
+.cn-champ-ecoute { border-color: var(--c-zone); background: var(--c-zonebg); }
+.cn-ico.cn-ecoute { width: auto; display: inline-flex; gap: 6px; padding: 0 12px 0 10px; border-radius: 999px; background: var(--c-zone) !important; color: rgb(var(--cave-950)) !important; }
+.cn-ecoute-mot { font-size: 14px; font-weight: 700; white-space: nowrap; }
+/* d1280-18 : amené en vue à son arrivée, ni sous la barre du haut ni sous le champ et le clavier. */
+.cn-bandeau, .cn-etat { scroll-margin-top: var(--cn-haut, 88px); scroll-margin-bottom: calc(var(--cn-champ-h, 0px) + var(--cn-clavier, 0px) + 12px); }
 
 /* P11 : plusieurs critères, « Ce qui compte » une fois en tête, puis une ligne courte par critère, alignée sous le texte. */
 .cn-criteres { display: flex; flex-direction: column; gap: 6px; padding-left: 26px; }

@@ -10,6 +10,8 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { CalendarCheck, Check, ChevronLeft, ChevronRight, ExternalLink, X } from 'lucide-react';
 import { dateCourte, montant, Provenance, rangTexte, type ArticleV, type ChoixV, type CritereV, type FaconV } from './EtatIA';
+import { sansApercu } from './Comparer';
+import './carnets-decider.css';
 
 export interface ValeurPlaceeV { nom: string; texte: string; rang?: number; exAequo?: boolean }
 
@@ -77,10 +79,10 @@ function ChoisiVue(p: Extract<ChoisirProps, { etape: 'choisi' }>) {
         <h3 className="cn-sous">Pourquoi ce choix</h3>
         {p.choix.pourquoi.trim() && <p>{p.choix.pourquoi}</p>}
         <ul className="cn-raisons">
-          {p.critere && <li><Check size={18} aria-hidden className="cn-ok" /><span><b>Critère</b> : {p.critere.texte}{p.critere.origine === 'ia' ? ", proposé par l'IA" : ''}</span></li>}
-          {p.facon && <li><Check size={18} aria-hidden className="cn-ok" /><span><b>Façon {p.facon.nom.toLowerCase()}</b>{p.facon.raison ? ` : ${p.facon.raison}` : ''}</span></li>}
-          {a.vendeur && <li><Check size={18} aria-hidden className="cn-ok" /><span><b>{a.vendeur}</b>{a.dispo ? ` : ${a.dispo}` : ''}</span></li>}
-          {p.ecartes.map(e => <li key={e.nom}><X size={18} aria-hidden /><span><b>{e.nom}</b> : {e.raison}</span></li>)}
+          {p.critere && <li><Check size={18} role="img" aria-label="retenu" className="cn-ok" /><span><b>Critère</b> : {p.critere.texte}{p.critere.origine === 'ia' ? ", proposé par l'IA" : ''}</span></li>}
+          {p.facon && <li><Check size={18} role="img" aria-label="retenu" className="cn-ok" /><span><b>Façon {p.facon.nom.toLowerCase()}</b>{p.facon.raison ? ` : ${p.facon.raison}` : ''}</span></li>}
+          {a.vendeur && <li><Check size={18} role="img" aria-label="retenu" className="cn-ok" /><span><b>{a.vendeur}</b>{a.dispo ? ` : ${a.dispo}` : ''}</span></li>}
+          {p.ecartes.map(e => <li key={e.nom}><X size={18} role="img" aria-label="écarté" /><span><b>{e.nom}</b> : {e.raison}</span></li>)}
         </ul>
         {p.choix.aRevoirSi && <p className="cn-mut">À revoir si : {p.choix.aRevoirSi}</p>}
         {p.remplaces && p.remplaces.length > 0 && (
@@ -107,6 +109,8 @@ function ChoisirArticle(p: Extract<ChoisirProps, { etape: 'choisir' }>) {
   const prix = montant(a.prixCentimes);
   const [pourquoi, setPourquoi] = useState(p.pourquoiPropose ?? '');
   const [raison, setRaison] = useState<string | null>(null);
+  /* Une page non lue ne se choisit pas : rien n'en est connu (ni nom, ni prix, ni valeurs) ; l'inconnu n'est jamais 0. */
+  const sa = sansApercu(a);
   return (
     <article className="cn-page cn-choisir">
       <div className="cn-tete">
@@ -115,11 +119,13 @@ function ChoisirArticle(p: Extract<ChoisirProps, { etape: 'choisir' }>) {
         <span className="cn-pastille cn-statut-research">À comparer</span>
       </div>
       <section className="cn-choisir-cadre" aria-label="Choisir">
-        <div className="cn-offre">
+        <div className="cn-offre" data-apercu={sa ? 'aucun' : undefined}>
           <span className="cn-radio" aria-hidden />
           {prix && <span className="cn-mono cn-prix-grand">{prix}</span>}
-          <div className="cn-sp"><b>{[a.vendeur, a.pays].filter(Boolean).join(' · ') || a.nom}</b>{a.dispo && <span className="cn-mut">{a.dispo}</span>}</div>
-          {a.url && <a className="cn-lien" href={a.url} target="_blank" rel="noreferrer noopener">Ouvrir <ExternalLink size={16} aria-hidden /></a>}
+          {sa
+            ? <div className="cn-sp"><b>{sa.titre}</b><span className="cn-mut">{sa.sous}</span></div>
+            : <div className="cn-sp"><b>{[a.vendeur, a.pays].filter(Boolean).join(' · ') || a.nom}</b>{a.dispo && <span className="cn-mut">{a.dispo}</span>}</div>}
+          {a.url && <a className="cn-lien" href={a.url} target="_blank" rel="noreferrer noopener" aria-label={`Ouvrir la page${a.vendeur ? ` de ${a.vendeur}` : ''}, nouvel onglet`}>Ouvrir <ExternalLink size={16} aria-hidden /></a>}
         </div>
         {p.valeurs.length > 0 && (
           <table className="cn-place">
@@ -136,7 +142,7 @@ function ChoisirArticle(p: Extract<ChoisirProps, { etape: 'choisir' }>) {
           <textarea rows={2} value={pourquoi} onChange={e => setPourquoi(e.target.value)} placeholder="une phrase suffit" />
         </label>
         <div className="cn-rang-boutons">
-          <button type="button" className="cn-action cn-sp" onClick={() => p.onChoisir(pourquoi.trim())}>Choisir{a.vendeur ? ` chez ${a.vendeur}` : ''}</button>
+          <button type="button" className="cn-action cn-sp" disabled={!!sa} aria-describedby={sa ? `cn-non-lue-${a.id}` : undefined} onClick={() => { if (!sa) p.onChoisir(pourquoi.trim()); }}>Choisir{a.vendeur && !sa ? ` chez ${a.vendeur}` : ''}</button>
           <button type="button" className="cn-second" onClick={() => setRaison(raison === null ? '' : null)}>Écarter</button>
         </div>
         {raison !== null && (
@@ -145,16 +151,23 @@ function ChoisirArticle(p: Extract<ChoisirProps, { etape: 'choisir' }>) {
             <button type="submit" className="cn-second" disabled={!raison.trim()}>Écarter</button>
           </form>
         )}
-        <p className="cn-mut">Part dans À venir : {[prix ? `${prix} ${a.devise ?? 'CHF'}` : null, a.dispo, a.vendeur].filter(Boolean).join(', ')}, avec le pourquoi.</p>
+        {sa
+          ? <p id={`cn-non-lue-${a.id}`} className="cn-mut">Page non lue : ni nom, ni prix connus. Elle se choisit une fois lue.</p>
+          : <p className="cn-mut">Part dans À venir : {[prix ? `${prix} ${a.devise ?? 'CHF'}` : null, a.dispo, a.vendeur].filter(Boolean).join(', ')}, avec le pourquoi.</p>}
       </section>
-      {p.autres.map(o => (
-        <div key={o.article.id} className="cn-carte cn-article">
-          <span className="cn-rang">{o.rang}</span>
-          {o.article.photo ? <img className="cn-vignette" src={o.article.photo} alt="" /> : null}
-          <div className="cn-article-tx"><b>{o.article.nom}</b><span className="cn-mut">{[o.article.vendeur, o.article.pays].filter(Boolean).join(' · ')}</span></div>
-          <div className="cn-droite">{montant(o.article.prixCentimes) && <span className="cn-mono cn-prix">{montant(o.article.prixCentimes)}</span>}{o.mesure && <span className="cn-mut">{o.mesure}</span>}</div>
-        </div>
-      ))}
+      {p.autres.map(o => {
+        const so = sansApercu(o.article);
+        return (
+          <div key={o.article.id} className="cn-carte cn-article" data-apercu={so ? 'aucun' : undefined}>
+            <span className="cn-rang">{o.rang}</span>
+            {o.article.photo ? <img className="cn-vignette" src={o.article.photo} alt="" /> : null}
+            {so
+              ? <div className="cn-article-tx"><b>{so.titre}</b><span className="cn-mut">{so.sous}</span></div>
+              : <div className="cn-article-tx"><b>{o.article.nom}</b><span className="cn-mut">{[o.article.vendeur, o.article.pays].filter(Boolean).join(' · ')}</span></div>}
+            <div className="cn-droite">{montant(o.article.prixCentimes) && <span className="cn-mono cn-prix">{montant(o.article.prixCentimes)}</span>}{o.mesure && <span className="cn-mut">{o.mesure}</span>}</div>
+          </div>
+        );
+      })}
     </article>
   );
 }

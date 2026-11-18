@@ -1,6 +1,7 @@
 /**
- * Carnet d'idées : la fixture du banc et des tests. Quatre carnets « ZZ TEST — … » qui reprennent les écrans figés (p2:g05-1, i06-1,
- * h05-3, h03-5, h01-6, g01-8, g05-11) : Ventilation (À comparer), Évier (Idée), Embouteillage et Frigo (Choisi, Frigo dans À venir).
+ * Carnet d'idées : la fixture du banc et des tests. Cinq carnets « ZZ TEST — … » qui reprennent les écrans figés (p2:g05-1, i06-1,
+ * h05-3, h03-5, h01-6, g01-8, g05-11) : Ventilation (À comparer), Évier (Idée), Embouteillage et Frigo (Choisi, Frigo dans À venir),
+ * Densimètre (Choisi, choix revu : état 29, R34). Titres stables pour le rejeu : `TITRES_BANC`.
  * Tout est **exemple** : noms, vendeurs, prix et valeurs portent `origine: 'exemple'` ; les liens visent `exemple.invalid` (aucun site réel).
  * Les veilles sont allumées par lui (R31) : `{ active, depuis }`, jamais de `releveLe` (aucune relève simulée montrée).
  */
@@ -36,8 +37,21 @@ export const ID_VENTILATION = 'ZZ-CARNET-VENTILATION';
 export const ID_EVIER = 'ZZ-CARNET-EVIER';
 export const ID_EMBOUTEILLAGE = 'ZZ-CARNET-EMBOUTEILLAGE';
 export const ID_FRIGO = 'ZZ-CARNET-FRIGO';
+export const ID_DENSIMETRE = 'ZZ-CARNET-DENSIMETRE';
 export const ID_PLAN_FRIGO = 'ZZ-PLAN-FRIGO';
 export const ID_PLAN_EMBOUTEILLAGE = 'ZZ-PLAN-EMBOUTEILLAGE';
+
+/**
+ * Les titres stables que le rejeu du banc cherche (m390-29, d1280-29, états 29, 30, 38, 49, 50), un par état difficile à atteindre :
+ * - `choixRevu` : un choix revu, « Choix d'avant » lisible (état 29) ;
+ * - `lienAVenir` : le Frigo, dans À venir (« 1 lien le retient », états 30, 38, 49) ;
+ * - `planRealise` : l'Embouteillage, dont le plan est réalisé avec `&realise=1` (« Archiver » seul, état 50 ; `fixturePlanRealise`).
+ */
+export const TITRES_BANC = {
+  choixRevu: `${PREFIXE_BANC}Densimètre de paillasse`,
+  lienAVenir: `${PREFIXE_BANC}Frigo de garde pour fûts`,
+  planRealise: `${PREFIXE_BANC}Embouteillage`
+} as const;
 
 function ventilation(): CarnetDoc {
   return carnet(ID_VENTILATION, 'Ventilation de la salle de brassage', 'research', {
@@ -141,6 +155,36 @@ function frigo(): CarnetDoc {
   });
 }
 
+/**
+ * État 29 (R34, D-20, p2:g05-9 ; m390-29, d1280-29) : un choix revu, l'ancien choix lisible (« Choix d'avant », ADR). Choisi, pas encore
+ * dans À venir (le Frigo, lui, y est déjà) : on l'ouvre, « Voir le choix », et l'ancien choix se lit avec sa date et sa raison.
+ */
+function densimetre(): CarnetDoc {
+  return carnet(ID_DENSIMETRE, 'Densimètre de paillasse', 'validated', {
+    creeLe: '2026-10-05T08:00:00.000Z', phrase: 'mesurer la densité finale au millième près',
+    criteres: [
+      { id: 'ZZ-D-K1', texte: 'précision au millième', caracteristique: { nom: 'précision', unite: 'g/cm³', sens: 'moins' }, origine: 'vous', messageId: 'ZZ-MSG-D1' },
+      { id: 'ZZ-D-K2', texte: 'ne dérive pas pendant la mesure', caracteristique: { nom: 'stable sur une heure', sens: 'oui-non' }, origine: 'vous', messageId: 'ZZ-MSG-D2' }
+    ],
+    facons: [
+      { id: 'ZZ-D-F1', nom: 'Densimètre numérique', etat: 'retenue', origine: 'exemple' },
+      { id: 'ZZ-D-F2', nom: 'Aréomètre en verre', etat: 'ecartee', raison: 'lecture à l’œil, corrigée en température à la main', origine: 'exemple' }
+    ],
+    articles: [
+      article({ id: 'ZZ-D-A1', url: lien('d1'), nom: 'Densimètre numérique portable', prixCentimes: 39000, vendeur: 'Labo Exemple', pays: 'CH', faconId: 'ZZ-D-F1', valeurs: { 'précision': ex(0.001, 'g/cm³'), 'stable sur une heure': ex(false) } }),
+      article({ id: 'ZZ-D-A2', url: lien('d2'), nom: 'Densimètre de paillasse à oscillation', prixCentimes: 210000, vendeur: 'Mesure Exemple', pays: 'DE', faconId: 'ZZ-D-F1', valeurs: { 'précision': ex(0.0001, 'g/cm³'), 'stable sur une heure': ex(true) } }),
+      article({ id: 'ZZ-D-A3', url: lien('d3'), nom: 'Aréomètre en verre 1,000–1,100', prixCentimes: 2500, vendeur: 'Verre Exemple', pays: 'CH', faconId: 'ZZ-D-F2', valeurs: { 'précision': ex(0.001, 'g/cm³') } })
+    ].map(a => ({ ...a, origine: 'exemple' as const })),
+    notes: [{ id: 'ZZ-D-N1', texte: 'le portable dérive de 2 millièmes au bout d’une heure', genre: 'note', messageId: 'ZZ-MSG-D2' }],
+    photos: [],
+    choix: {
+      articleId: 'ZZ-D-A2', faconId: 'ZZ-D-F1', pourquoi: 'stable sur une heure, au dix-millième', le: '2026-11-10T10:00:00.000Z', aRevoirSi: 'un portable aussi stable sort',
+      ecartes: [{ articleId: 'ZZ-D-A3', raison: 'lecture à l’œil' }],
+      remplaces: [{ articleId: 'ZZ-D-A1', faconId: 'ZZ-D-F1', pourquoi: 'le moins cher des numériques', le: '2026-10-12T10:00:00.000Z', ecartes: [{ articleId: 'ZZ-D-A3', raison: 'lecture à l’œil' }], remplaces: [] }]
+    }
+  });
+}
+
 function messages(): MessageDoc[] {
   return [
     message('ZZ-MSG-B1', 'embouteillage', '2026-10-20T08:00:00.000Z', 'liste', [{ carnetId: ID_EMBOUTEILLAGE, cible: 'carnet', id: ID_EMBOUTEILLAGE }]),
@@ -152,7 +196,9 @@ function messages(): MessageDoc[] {
     message('ZZ-MSG-V2', 'attendre l’avis du ferblantier', '2026-11-12T08:00:00.000Z', ID_VENTILATION, [{ carnetId: ID_VENTILATION, cible: 'note', id: 'ZZ-V-N1' }]),
     message('ZZ-MSG-V3', PHRASE_TITRE_PROPOSE, '2026-11-14T08:00:00.000Z', ID_VENTILATION, [{ carnetId: ID_VENTILATION, cible: 'note', id: 'ZZ-V-N2' }],
       { carnetId: ID_VENTILATION, titre: TITRE_PROPOSE_VENTILATION }),
-    message('ZZ-MSG-E1', '2 bacs pour laver les fûts', '2026-11-15T17:00:00.000Z', 'liste', [{ carnetId: ID_EVIER, cible: 'carnet', id: ID_EVIER }, { carnetId: ID_EVIER, cible: 'critere', id: 'ZZ-E-K1' }, { carnetId: ID_EVIER, cible: 'critere', id: 'ZZ-E-K2' }])
+    message('ZZ-MSG-E1', '2 bacs pour laver les fûts', '2026-11-15T17:00:00.000Z', 'liste', [{ carnetId: ID_EVIER, cible: 'carnet', id: ID_EVIER }, { carnetId: ID_EVIER, cible: 'critere', id: 'ZZ-E-K1' }, { carnetId: ID_EVIER, cible: 'critere', id: 'ZZ-E-K2' }]),
+    message('ZZ-MSG-D1', 'mesurer la densité finale au millième près', '2026-10-05T08:00:00.000Z', 'liste', [{ carnetId: ID_DENSIMETRE, cible: 'carnet', id: ID_DENSIMETRE }, { carnetId: ID_DENSIMETRE, cible: 'critere', id: 'ZZ-D-K1' }]),
+    message('ZZ-MSG-D2', 'le portable dérive de 2 millièmes au bout d’une heure', '2026-11-09T08:00:00.000Z', ID_DENSIMETRE, [{ carnetId: ID_DENSIMETRE, cible: 'note', id: 'ZZ-D-N1' }, { carnetId: ID_DENSIMETRE, cible: 'critere', id: 'ZZ-D-K2' }])
   ];
 }
 
@@ -214,7 +260,7 @@ export function fixtureCarnets(o: OptionsFixture = {}): CreativeItem[] {
     v.carnet.articles = v.carnet.articles.filter(a => garde.has(a.id));
     v.carnet.facons = v.carnet.facons.filter(f => f.etat !== 'ecartee');
   }
-  return JSON.parse(JSON.stringify([v, evier(), embouteillage(), frigo(), ...messages()])) as CreativeItem[];
+  return JSON.parse(JSON.stringify([v, evier(), embouteillage(), frigo(), densimetre(), ...messages()])) as CreativeItem[];
 }
 
 const planDe = (id: string, titre: string, carnetId: string, cents: number, vendor: string, createdAt: string): FinancialPlan => ({

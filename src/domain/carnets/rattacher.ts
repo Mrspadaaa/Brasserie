@@ -4,7 +4,8 @@
  * État de l'art (MISSION) : recherche floue sur des textes normalisés (NFD, sans accents), fuse.js (déjà présent) ; seuil réglé sur une
  * moitié des phrases et jugé sur l'autre (L20, critère A5). Purement lexical : aucun mot du métier ni gabarit (C2).
  * Score d'un carnet = somme, sur les jetons du texte, du meilleur mot du carnet qui lui ressemble (1 si même racine, sinon 1 − score
- * fuse.js, pour un jeton d'au moins 5 lettres), pondéré par la place du mot (titre 3, critère et façon 2, reste 1), divisée par √(nombre
+ * fuse.js, pour un jeton d'au moins 5 lettres), pondéré par la place du mot (`POIDS` : nom de l'idée 3, phrase, critère et façon 2,
+ * reste du titre 1,5, articles et notes 1), divisée par √(nombre
  * de jetons) pour ne pas favoriser les longs textes.
  */
 import Fuse from 'fuse.js';
@@ -13,6 +14,20 @@ import { nomArticle, type CarnetDoc } from './modele';
 
 /** Seuil réglé sur la première moitié des phrases de `carnetsRattacher.test.ts` (A5), jugé sur la seconde. */
 export const SEUIL_RATTACHER = 1.25;
+
+/**
+ * Poids des champs (pondération par champ, comme BM25F). Le premier mot du titre est le nom de l'idée (« Évier » dans « Évier inox »,
+ * « Ventilation » dans « Ventilation de la salle de brassage ») ; les autres mots du titre la qualifient et pèsent moins (P9, vision 3 :
+ * « tabouret inox » ne rejoint pas « Évier inox », « prochain brassage jeudi » ne rejoint pas Ventilation). Un mot qualifiant seul ne
+ * passe le seuil que dans un texte d'un seul mot.
+ */
+export const POIDS = { nom: 3, titre: 1.5, phrase: 2, critere: 2, facon: 2, faconQualifiant: 1, article: 1, note: 1 } as const;
+
+/** Le nom (premier mot) et les qualifiants d'un intitulé : « Hotte inox + extracteur » → hotte ; inox, extracteur. */
+const nomEtQualifiants = (texte: string): [string | undefined, string] => {
+  const [nom, ...reste] = jetons(texte);
+  return [nom, reste.join(' ')];
+};
 
 interface MotIndexe { mot: string; carnetId: string; poids: number }
 
@@ -23,14 +38,16 @@ const titreSansBanc = (t: string) => t.replace(/^ZZ TEST\s*[—–-]\s*/i, '');
 /** Les mots d'un carnet, avec le poids de leur place. */
 function motsDe(c: CarnetDoc): MotIndexe[] {
   const d = c.carnet;
+  const [nom, qualifiants] = nomEtQualifiants(titreSansBanc(c.title));
   const sources: [string, number][] = [
-    [titreSansBanc(c.title), 3], [d.phrase, 2],
-    ...d.criteres.map((k): [string, number] => [`${k.texte} ${k.caracteristique?.nom ?? ''}`, 2]),
-    ...d.facons.map((f): [string, number] => [f.nom, 2]),
-    ...d.articles.map((a): [string, number] => [`${a.nom ?? ''} ${a.vendeur ?? ''}`.trim() || nomArticle(a), 1]),
-    ...d.notes.map((n): [string, number] => [n.texte, 1])
+    [qualifiants, POIDS.titre], [d.phrase, POIDS.phrase],
+    ...d.criteres.map((k): [string, number] => [`${k.texte} ${k.caracteristique?.nom ?? ''}`, POIDS.critere]),
+    /* une façon, comme le titre : son nom pèse, ses qualifiants (« inox » de « Hotte inox ») moins */
+    ...d.facons.flatMap((f): [string, number][] => { const [n, q] = nomEtQualifiants(f.nom); return [[n ?? '', POIDS.facon], [q, POIDS.faconQualifiant]]; }),
+    ...d.articles.map((a): [string, number] => [`${a.nom ?? ''} ${a.vendeur ?? ''}`.trim() || nomArticle(a), POIDS.article]),
+    ...d.notes.map((n): [string, number] => [n.texte, POIDS.note])
   ];
-  const meilleur = new Map<string, number>();
+  const meilleur = new Map<string, number>(nom ? [[nom, POIDS.nom]] : []);
   for (const [texte, poids] of sources) for (const mot of jetons(texte)) meilleur.set(mot, Math.max(meilleur.get(mot) ?? 0, poids));
   return [...meilleur].map(([mot, poids]) => ({ mot, carnetId: c.id, poids }));
 }
