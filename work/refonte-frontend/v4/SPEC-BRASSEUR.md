@@ -2171,3 +2171,9 @@ Choix : un jalon lié à une barre d'une autre rangée y est relié par un fil d
 > Pareil
 
 Ajout au choix : au toucher d'une barre, ses jalons liés s'allument et les autres pâlissent (en plus du fil discret).
+
+### Hauteur des barres de brassin (18.11)
+
+> Pas besoin d'avoir autant de place, la stout maison est au bon format, juste un mini espace entre les évènements(brassin)
+
+Captures : work/missions/2026-11-18-choix-calendrier/brasseur/barres-hautes-18-11.jpg (croix sur l'espace vide des barres hautes), work/missions/2026-11-18-choix-calendrier/brasseur/stout-bon-format-18-11.jpg (le bon format). Lecture : toutes les barres de brassin prennent le format de « Stout maison » (nom, montant et « J0 / 28 · prête … » sur une ligne, puis le pied d'étapes), avec un mini espace entre deux brassins.
