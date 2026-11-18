@@ -7,6 +7,11 @@ import { sansPointDouble, textePromesse } from '../../src/components/tabs/Calend
 import { dateDeSemaine } from '../../src/domain/calendrier';
 import type { Promesse } from '../../src/domain/calendrierGestes';
 import { Message, separerEffet } from '../../src/ui/calendrier/frise/Message';
+import { readFileSync } from 'node:fs';
+import { resolve } from 'node:path';
+
+/* le vrai CSS du message (sous vitest, `?raw` d'un .css rend une chaîne vide) */
+const cssMessage = readFileSync(resolve(__dirname, '../../src/ui/calendrier/message.css'), 'utf8');
 
 /*
  * CRITIQUE-3 n° 7, 20, 37 (E32, E33, D-200, CAL-GESTE-BRUIT) : un seul canal de message pour tout l'onglet. L'en-tête y passe par `onMessage` :
@@ -433,5 +438,128 @@ describe('CRITIQUE-5 n° 13 : aucun message sur un nom de rangée ou de chose', 
       expect(surUnNom()).toHaveLength(0);
       expect(m.dataset.place).toBe('bande');
     });
+  });
+});
+
+describe('CRITIQUE-11 : le message ne déplace rien ; au grand écran et pour Lier, il va au pied de l’en-tête', () => {
+  type R = { top: number; left: number; width: number; height: number };
+  const taille = (w: number, h: number) => {
+    Object.defineProperty(window, 'innerWidth', { configurable: true, writable: true, value: w });
+    Object.defineProperty(window, 'innerHeight', { configurable: true, writable: true, value: h });
+  };
+  const [W0, H0] = [window.innerWidth, window.innerHeight];
+  const MM0 = window.matchMedia;
+  let espion: ReturnType<typeof vi.spyOn> | null = null;
+  let feuille: HTMLStyleElement | null = null;
+  afterEach(() => {
+    espion?.mockRestore(); espion = null; feuille?.remove(); feuille = null;
+    taille(W0, H0); window.matchMedia = MM0; document.body.innerHTML = '';
+  });
+  const grandEcranSimule = () => {
+    window.matchMedia = ((q: string) => ({
+      matches: /min-width:\s*1024px/.test(q), media: q, onchange: null,
+      addListener: () => undefined, removeListener: () => undefined, addEventListener: () => undefined, removeEventListener: () => undefined, dispatchEvent: () => false
+    })) as typeof window.matchMedia;
+  };
+  const appuiLong = (el: Element) => {
+    vi.useFakeTimers({ toFake: ['setTimeout', 'clearTimeout'] });
+    fireEvent.pointerDown(el, { clientX: 100, clientY: 10, pointerId: 1, button: 0 });
+    act(() => { vi.advanceTimersByTime(500); });
+    vi.useRealTimers();
+    fireEvent.pointerUp(el, { clientX: 100, clientY: 10, pointerId: 1, button: 0 });
+  };
+
+  it('n° 2 b (E33 « ne déplace rien sous le doigt », D-200, E43) : à 390, l’alerte f6-b entre au pied de l’en-tête sans pousser les rangées', () => {
+    taille(390, 844);
+    /* le vrai CSS du message : la mise en page simulée lit `position` comme le navigateur (dans le flux, ou en surimpression) */
+    feuille = document.createElement('style'); feuille.textContent = cssMessage; document.head.appendChild(feuille);
+    const zone = document.createElement('div'); zone.setAttribute('data-entete-zone', '');
+    const frise = document.createElement('div'); frise.setAttribute('data-frise', '');
+    const brassins = document.createElement('section'); brassins.setAttribute('data-rangee', 'brassins');
+    const titre = document.createElement('h3'); titre.className = 'cal-nom'; titre.textContent = 'Brassins';
+    brassins.appendChild(titre); frise.appendChild(brassins);
+    /* des étiquettes de 30 en 30 px jusqu'aux onglets : aucune bande libre, le message va au pied de l'en-tête */
+    for (let k = 0; k < 22; k++) { const t = document.createElement('span'); t.className = 'cal-lbl-t'; t.textContent = 'Chose'; t.dataset.k = String(k); frise.appendChild(t); }
+    document.body.append(zone, frise);
+    const H_ENTETE = 180, H_MSG = 85;
+    /* l'en-tête grandit de ce qui est dans son flux ; les rangées commencent sous lui */
+    const dansLeFlux = () => [...zone.querySelectorAll<HTMLElement>('[data-message]')].filter(m => {
+      for (let e: HTMLElement | null = m; e && e !== zone; e = e.parentElement) { const p = getComputedStyle(e).position; if (p === 'absolute' || p === 'fixed') return false; }
+      return true;
+    }).length * H_MSG;
+    const bas = () => H_ENTETE + dansLeFlux();
+    espion = vi.spyOn(HTMLElement.prototype, 'getBoundingClientRect').mockImplementation(function (this: HTMLElement) {
+      let r: R = { top: 0, left: 0, width: 0, height: 0 };
+      if (this === zone) r = { top: 0, left: 0, width: 390, height: bas() };
+      else if (this.hasAttribute('data-message')) r = this.closest('[data-entete-zone]') ? { top: H_ENTETE + 4, left: 8, width: 374, height: H_MSG } : { top: 680, left: 8, width: 374, height: H_MSG };
+      else if (this === brassins) r = { top: bas() + 4, left: 0, width: 390, height: 120 };
+      else if (this === titre) r = { top: bas() + 4, left: 24, width: 110, height: 24 };
+      else if (this.classList.contains('cal-lbl-t')) r = { top: bas() + 34 + Number(this.dataset.k) * 30, left: 20, width: 300, height: 26 };
+      return { ...r, bottom: r.top + r.height, right: r.left + r.width, x: r.left, y: r.top, toJSON: () => ({}) } as DOMRect;
+    });
+    const avant = brassins.getBoundingClientRect().top;
+    render(<Message message={{ id: 1, role: 'alert', texte: '3 fûts promis à La Cigogne le 23 déc. · prête le 28 déc.', livrer: { texte: 'Livrer le 29 déc.', agir: () => undefined }, annuler: () => undefined }} onFermer={() => undefined} />);
+    const m = screen.getByRole('alert');
+    expect(m).toHaveAttribute('data-place', 'sous-entete');
+    expect(zone.contains(m)).toBe(true);
+    /* rien ne bouge à l'écran : le haut de Brassins à 2 px près ; l'en-tête garde ses 180 px, sans réserve vide au repos */
+    expect(Math.abs(brassins.getBoundingClientRect().top - avant)).toBeLessThanOrEqual(2);
+    expect(zone.getBoundingClientRect().height).toBeLessThanOrEqual(180);
+  });
+
+  it('n° 3 (E33, E35, D-200) : à 1280, le message de f1-a (Hotte) et celui de Retirer (Marché de Noël) vont au pied de l’en-tête, jamais en bas sous le +', async () => {
+    grandEcranSimule();
+    monter();
+    glisser(barre(/^Hotte/), colonne());
+    const f1a = await screen.findByRole('status');
+    expect(f1a.textContent).toMatch(/Annuler$/);
+    expect(f1a).toHaveAttribute('data-place', 'sous-entete');
+    expect(f1a.closest('[data-entete-zone]')).not.toBeNull();
+    appuiLong(barre(/^Marché de Noël/));
+    fireEvent.click(within(await screen.findByRole('menu')).getByRole('menuitem', { name: /^Retirer/ }));
+    await waitFor(() => expect(messages().some(x => /^Retirée de S52/.test(x.textContent ?? ''))).toBe(true));
+    const ret = messages().find(x => /^Retirée de S52/.test(x.textContent ?? ''))!;
+    expect(ret.textContent).toMatch(/^Retirée de S52 · Sans date › · Annuler$/);
+    expect(ret).toHaveAttribute('data-place', 'sous-entete');
+    expect(ret.closest('[data-entete-zone]')).not.toBeNull();
+  });
+
+  it('n° 8 (E31, E37, D-113, D-126) : après Lier, « Liée à Blonde d’automne · Annuler » ET le détail de la Hotte avec sa pastille ; Annuler retire le lien', async () => {
+    const appels: Array<{ op: string; collection: string; id: string; patch?: Record<string, unknown> }> = [];
+    render(<BancCalendrier aujourdhui={JOUR} sansChrome onAppel={a => appels.push(a as (typeof appels)[number])} />);
+    const lies = () => screen.queryAllByRole('button', { name: /^lié à Blonde d’automne/ }).length;
+    const avant = lies();
+    appuiLong(barre(/^Hotte/));
+    fireEvent.click(within(await screen.findByRole('menu')).getByRole('menuitem', { name: /Lier à un brassin, un client/ }));
+    fireEvent.click(within(screen.getByRole('menu')).getByRole('menuitem', { name: /Blonde d’automne/ }));
+    await waitFor(() => expect(appels).toContainEqual(expect.objectContaining({ op: 'patch', collection: 'financialPlans', id: 'P-HOTTE', patch: { batchId: 'LOT-BLONDE' } })));
+    const det = await screen.findByRole('region', { name: /^Détail : Hotte/ });
+    await waitFor(() => expect(det.querySelector('[data-apercu-lien]')?.textContent).toMatch(/lié à Blonde d’automne/));
+    const m = screen.getByRole('status');
+    expect(m.textContent).toMatch(/^Liée à Blonde d’automne · Annuler$/);
+    expect(within(m).getByRole('button', { name: /Annuler/ })).toBeInTheDocument();
+    /* marqué comme le message d'un geste qui ouvre son détail ; posé au pied de l'en-tête, jamais en bas sous le détail ni sous le + */
+    expect(m).toHaveAttribute('data-ouvre-son-detail');
+    expect(m).toHaveAttribute('data-place', 'sous-entete');
+    expect(m.closest('[data-entete-zone]')).not.toBeNull();
+    /* le défilement qui dégage le détail du + ne le chasse pas */
+    Object.defineProperty(window, 'scrollY', { value: 120, configurable: true, writable: true });
+    fireEvent.scroll(window);
+    expect(screen.getByRole('status')).toBe(m);
+    expect(lies()).toBe(avant + 1);
+    await new Promise(r => setTimeout(r, 450));
+    fireEvent.click(within(m).getByRole('button', { name: /Annuler/ }));
+    await waitFor(() => expect(appels.some(a => a.op === 'patch' && a.id === 'P-HOTTE' && 'batchId' in (a.patch ?? {}) && a.patch!.batchId === undefined)).toBe(true));
+    await waitFor(() => expect(lies()).toBe(avant));
+  });
+
+  it('non-régression (E33) : un autre message part à l’ouverture d’un détail', async () => {
+    monter();
+    glisser(barre(/^Hotte/), colonne());
+    const f1a = await screen.findByRole('status');
+    expect(f1a).not.toHaveAttribute('data-ouvre-son-detail');
+    toucher(barre(/^Blonde d’automne/));
+    await screen.findByRole('region', { name: /^Détail : Blonde d’automne/ });
+    expect(messages()).toHaveLength(0);
   });
 });

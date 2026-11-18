@@ -3,6 +3,7 @@ import { ChevronRight, Eye, EyeOff, Plus, ShoppingCart } from 'lucide-react';
 import { ajouterJours, ecartJours, estMarque, etiquetteS, francsSignes, jourLisible, nomRangee, type ChoseCalendrier, type JalonBrassin, type Rangee as IdRangee } from '../../../domain/calendrier';
 import { Barre, dureeDansBarre, formesDuree, largeurDuree, montantBarre, type BarreProps, type CoteEtiquette } from './Barre';
 import { CLASSE_TEINTE, Marque, couperNom, dureeVue, largeurPastilleLie, largeurTexte, lieMontre, type ModeDeuxLignes } from './Marque';
+import { appuiCommenceSur } from './usePointeur';
 
 /**
  * Une rangée de la frise (E20 à E23) : son titre à gauche, juste au-dessus de ses barres, le carré de couleur qui porte le + blanc (E21),
@@ -464,10 +465,70 @@ function largeurTitre(nom: string, texteAPart: string): number {
 }
 const largeurRenvoi = (texte: string): number => Math.ceil(largeurTexte(texte, 700)) + 36;
 
-/* CRITIQUE-4 n° 13 a (E33, D-200) : la bulle « S51 · 14 déc. · lâcher ici » ne se pose jamais sur un nom. Au-dessus de la colonne visée (le
-   pouce couvre le dessous), sinon dessous (sa maquette, as/cap/p-f1a-pendant), décalée de côté si un nom, un titre ou une pastille est là ;
-   toujours dans la frise. Mesurée après le rendu, dans le repère de sa piste. */
-const OBSTACLES_BULLE = '.cal-lbl-t, .cal-lbl-m, .cal-lbl-j, .cal-lie, .cal-nom, .cal-pastille-p, .cal-conf, .cal-renvoi, .cal-cachees, .cal-vide, .cal-plus, .cal-oeil, .cal-duree';
+/*
+ * La bulle « S51 · 14 déc. · lâcher ici » (E28, D-46, D-189 ; E33 « jamais sur un nom »).
+ * CRITIQUE-4 n° 13 a : elle ne se pose pas sur un nom. CRITIQUE-11 n° 6 : à 390 en 6 mois, toutes les places près du doigt touchaient un nom,
+ * et la bulle restait à sa première place, au-dessus de la barre, sur le titre « Brassins » et sa pastille (m390-clair-09).
+ * Règle, comme sa maquette (as/cap/p-f1a-pendant, `poser` de as-gestes.js : chaque place notée par la surface de texte couverte) :
+ *  - un titre de rangée (`.cal-rh`, son +, son œil, sa pastille r2-c) est un mur : aucune place qui le croise n'est retenue ;
+ *  - les autres noms, montants et barres sont notés par la surface couverte (une barre pèse moins qu'un texte) ;
+ *  - les places, dans la piste de la barre glissée : au-dessus du doigt (le pouce couvre le dessous), sinon sous la barre ; plus loin, en
+ *    hauteur comme de côté, chaque pixel d'écart se paie ; sans place dans la piste, sur la barre tenue elle-même, jamais sur un titre.
+ * Mesurée après le rendu, dans le repère de l'écran ; la place retenue est écrite dans le repère de la piste.
+ */
+export interface Boite { left: number; top: number; right: number; bottom: number }
+export interface Obstacle extends Boite { poids: number }
+export interface PlaceBulle { left: number; top: number }
+
+const croise = (a: Boite, b: Boite, marge = 2) => a.left < b.right + marge && a.right > b.left - marge && a.top < b.bottom + marge && a.bottom > b.top - marge;
+const surface = (a: Boite, b: Boite) => Math.max(0, Math.min(a.right, b.right) - Math.max(a.left, b.left)) * Math.max(0, Math.min(a.bottom, b.bottom) - Math.max(a.top, b.top));
+
+/**
+ * La place de la bulle (fonction pure). `piste` : la boîte de la piste à l'écran ; `x` le centre de la colonne visée, `haut` et `bas` la barre
+ * tenue, `largeur` la largeur de la piste : tout dans le repère de la piste. `murs` : les titres de rangée ; `obstacles` : le reste, pondéré.
+ */
+export function placerBulle(o: { w: number; h: number; x: number; haut: number; bas: number; largeur: number; piste: { left: number; top: number; height?: number }; murs: readonly Boite[]; obstacles: readonly Obstacle[] }): PlaceBulle {
+  const { w, h, x, haut, bas, largeur, piste, murs, obstacles } = o;
+  const gaucheMax = Math.max(2, largeur - w - 2);
+  const dessus = haut - h - 4, dessous = bas + 4;
+  /* Les hauteurs : au-dessus du doigt (prix 0), sous la barre (prix 6), puis toute la hauteur de la piste par pas de 4 px, chaque pixel
+     d'écart à ces deux places payé 0,5. Une place hors de la piste mesurée n'est pas retenue ; sans mesure (jsdom), les deux places seules. */
+  const hauteur = piste.height ?? 0;
+  const tops = new Map<number, number>();
+  const ajouter = (t: number) => {
+    if (hauteur > 0 && (t < 0 || t + h > hauteur)) return;
+    const prix = Math.min(Math.abs(t - dessus) * 0.5, 6 + Math.abs(t - dessous) * 0.5);
+    tops.set(Math.round(t), Math.min(tops.get(Math.round(t)) ?? Infinity, prix));
+  };
+  ajouter(dessus);
+  ajouter(dessous);
+  if (hauteur > 0) for (let t = 0; t + h <= hauteur; t += 4) ajouter(t);
+  /* sans place dans la piste : sur la barre tenue (le doigt la couvre déjà), jamais sur un titre */
+  if (!tops.size) tops.set(Math.round(haut + (bas - haut - h) / 2), 600);
+  /* Les places de côté : toute la largeur de la piste, par pas de 8 px, chaque pixel d'écart à la colonne visée payé 0,5. */
+  const gauches = new Set<number>([Math.max(2, Math.min(gaucheMax, x - w / 2))]);
+  for (let g = 2; g <= gaucheMax; g += 8) gauches.add(g);
+  gauches.add(gaucheMax);
+  let meilleure: (PlaceBulle & { note: number; mur: number }) | null = null;
+  for (const [top, prix] of tops) {
+    for (const left of gauches) {
+      const boite: Boite = { left: piste.left + left, top: piste.top + top, right: piste.left + left + w, bottom: piste.top + top + h };
+      const mur = murs.reduce((s, m) => s + (croise(boite, m) ? 1 + surface(boite, m) : 0), 0);
+      if (meilleure && mur > meilleure.mur) continue;
+      const note = prix + Math.abs(left + w / 2 - x) * 0.5 + obstacles.reduce((s, ob) => s + surface(boite, ob) * ob.poids, 0);
+      if (!meilleure || mur < meilleure.mur || note < meilleure.note) meilleure = { left, top, note, mur };
+    }
+  }
+  return { left: Math.round(meilleure!.left), top: Math.round(meilleure!.top) };
+}
+
+const MURS_BULLE = '.cal-rh, .cal-pastille, .cal-plus, .cal-oeil, .cal-cachees';
+/* un nom pèse plus qu'un montant, un montant plus qu'une durée ; une barre moins qu'un texte */
+const TEXTES_BULLE: ReadonlyArray<[string, number]> = [
+  ['.cal-lbl-t, .cal-lie, .cal-renvoi', 3],
+  ['.cal-lbl-m', 2],
+  ['.cal-lbl-j, .cal-conf, .cal-vide, .cal-duree, .cal-duree-in', 1]
+];
 function BulleIci({ texte, x, haut, bas, largeur, choseId }: { texte: string; x: number; haut: number; bas: number; largeur: number; choseId: string }) {
   const el = React.useRef<HTMLSpanElement | null>(null);
   React.useLayoutEffect(() => {
@@ -475,26 +536,25 @@ function BulleIci({ texte, x, haut, bas, largeur, choseId }: { texte: string; x:
     const piste = b?.parentElement;
     if (!b || !piste) return;
     const w = b.offsetWidth || Math.ceil(largeurTexte(texte, 400)) + 18, h = b.offsetHeight || 24;
-    const borne = (cx: number) => Math.max(w / 2 + 2, Math.min(largeur - w / 2 - 2, cx));
-    const poser = (cx: number, top: number) => { b.style.left = `${Math.round(borne(cx) - w / 2)}px`; b.style.top = `${Math.round(top)}px`; };
-    const dessus = haut - h - 4, dessous = bas + 4;
-    poser(x, dessus);
-    if (!b.offsetWidth) return;
-    const p = piste.getBoundingClientRect();
     const frise = piste.closest('[data-frise]') ?? document;
     const tenue = frise.querySelector<HTMLElement>(`[data-chose="${choseId.replace(/"/g, '')}"]`);
-    const obstacles = [...frise.querySelectorAll<HTMLElement>(OBSTACLES_BULLE), ...(tenue ? [tenue] : [])]
-      .filter(o => !b.contains(o))
-      .map(o => o.getBoundingClientRect())
+    const boites = (sel: string) => [...frise.querySelectorAll<HTMLElement>(sel)]
+      .filter(e => !b.contains(e))
+      .map(e => e.getBoundingClientRect())
       .filter(r => r.width > 0 && r.height > 0);
-    const libre = (cx: number, top: number) => {
-      const g = p.left + borne(cx) - w / 2, t = p.top + top;
-      return !obstacles.some(r => g < r.right + 2 && g + w > r.left - 2 && t < r.bottom + 2 && t + h > r.top - 2);
-    };
-    for (let i = 0; i <= 16; i++) {
-      const dx = (i % 2 ? 1 : -1) * Math.ceil(i / 2) * 24;
-      for (const top of [dessus, dessous]) if (libre(x + dx, top)) { poser(x + dx, top); return; }
-    }
+    const p = piste.getBoundingClientRect();
+    const obstacles: Obstacle[] = [
+      ...TEXTES_BULLE.flatMap(([sel, poids]) => boites(sel).map(r => ({ left: r.left, top: r.top, right: r.right, bottom: r.bottom, poids }))),
+      ...[...frise.querySelectorAll<HTMLElement>('.cal-barre, .cal-marque')].filter(e => e !== tenue).map(e => e.getBoundingClientRect())
+        .filter(r => r.width > 0 && r.height > 0).map(r => ({ left: r.left, top: r.top, right: r.right, bottom: r.bottom, poids: 0.4 })),
+      /* la barre tenue est sous le pouce : une bulle posée dessus ne se lit pas */
+      ...(tenue ? [tenue.getBoundingClientRect()].filter(r => r.width > 0).map(r => ({ left: r.left, top: r.top, right: r.right, bottom: r.bottom, poids: 3 })) : [])
+    ];
+    /* seuls comptent les obstacles à la hauteur de la piste (et de la barre tenue, si la piste est trop basse) */
+    const bande = (r: Boite) => !(p.height > 0) || (r.bottom > p.top + Math.min(0, haut - h - 4) && r.top < p.top + Math.max(p.height, bas + h + 4));
+    const place = placerBulle({ w, h, x, haut, bas, largeur, piste: { left: p.left, top: p.top, height: p.height }, murs: boites(MURS_BULLE), obstacles: obstacles.filter(bande) });
+    b.style.left = `${place.left}px`;
+    b.style.top = `${place.top}px`;
   }, [texte, x, haut, bas, largeur, choseId]);
   return <span ref={el} className="cal-ici" data-ici>{texte}</span>;
 }
@@ -525,6 +585,13 @@ export const Rangee: React.FC<RangeeProps> = props => {
   const fantome = drag ? items.find(i => i.chose.id === drag.id) : undefined;
   const auJour = colonnes.length > 0 && ecartJours(colonnes[0].debut, colonnes[0].fin) >= 14;
   const parts = partMax > 0 ? Math.max(8, Math.round((p.part / partMax) * 100)) : 0;
+  /* CRITIQUE-11 n° 2 a (E22) : l'œil, et « n choses cachées », n'agissent que sur un toucher voulu : un clic de pointeur (`detail > 0`) dont
+     l'appui n'a pas commencé sur le bouton (le clic que Chrome émet au lâcher d'un glissé de 14 px, sur des rangées poussées) ne fait rien.
+     Le clavier (`detail` 0) agit toujours. */
+  const basculerVoulu = (e: React.MouseEvent<HTMLButtonElement>) => {
+    if (e.detail > 0 && !appuiCommenceSur(e.currentTarget)) return;
+    props.onBasculerMasque(id);
+  };
 
   return (
     <section
@@ -540,12 +607,12 @@ export const Rangee: React.FC<RangeeProps> = props => {
         <h3 className="cal-nom">{nom}</h3>
         {/* gi2 : l'œil est collé au titre, puis la pastille r2-c (remplie en proportion, avec son montant) et ce qu'elle compte */}
         {cause !== 'filtre' && (
-          <button type="button" className="cal-oeil" aria-pressed={masquee} aria-label={masquee ? `Afficher ${nom}` : `Masquer ${nom}`} onClick={() => props.onBasculerMasque(id)}>
+          <button type="button" className="cal-oeil" aria-pressed={masquee} aria-label={masquee ? `Afficher ${nom}` : `Masquer ${nom}`} onClick={basculerVoulu}>
             {masquee ? <EyeOff size={16} aria-hidden="true" /> : <Eye size={16} aria-hidden="true" />}
           </button>
         )}
         {masquee && cause === 'oeil' ? (
-          <button type="button" className="cal-cachees" aria-label={`Afficher ${nom}${cachees ? ` : ${texteCachees}` : ''}`} onClick={() => props.onBasculerMasque(id)}>
+          <button type="button" className="cal-cachees" aria-label={`Afficher ${nom}${cachees ? ` : ${texteCachees}` : ''}`} onClick={basculerVoulu}>
             {texteCachees || 'masquée'}
           </button>
         ) : masquee ? (

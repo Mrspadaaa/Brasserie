@@ -105,7 +105,7 @@
 .ent-mois-t { stroke: var(--ent-line2); stroke-width: 1; pointer-events: none; }
 /* Le fond de l'étiquette du creux dans la grande courbe : aucun tracé ne la barre (CRITIQUE-4 n° 27). */
 .ent-gc-fond { fill: rgb(var(--cave-950)); opacity: 0.92; pointer-events: none; }
-.ent-curseur line { stroke: rgb(var(--cave-50)); stroke-width: 1.5; }
+.ent-curseur line, .ent-curseur path { fill: none; stroke: rgb(var(--cave-50)); stroke-width: 1.5; }
 .ent-cur-anneau { fill: none; stroke: rgb(var(--cave-50)); stroke-width: 1.5; stroke-dasharray: 3 3; }
 .ent-cur-pt { fill: rgb(var(--cave-50)); stroke: rgb(var(--cave-950)); stroke-width: 2; }
 .ent-cur-s { font-size: 14px; font-weight: 700; fill: rgb(var(--cave-50)); }
@@ -140,6 +140,8 @@
 .ent-avant { fill: none; stroke: var(--ent-ink); stroke-width: 2; stroke-dasharray: 5 4; opacity: 0.8; }
 .ent-apres { fill: none; stroke: var(--ent-fin); stroke-width: 3.5; }
 .ent-axe { font-size: 14px; fill: var(--ent-mut); pointer-events: none; }
+/* CRITIQUE-11 n° 6 : le chiffre d'axe de la courbe zoomée sur un fond du thème, posé hors du tracé (placerAxe) : aucune ligne ne le barre. */
+.ent-axe-fond { fill: rgb(var(--cave-950)); opacity: 0.85; pointer-events: none; }
 .ent-zleg { font-size: 14px; font-weight: 600; fill: var(--ent-ink); }
 
 /* ---- la bande des semaines : au repos la semaine seule, 40 px au plus ---- */

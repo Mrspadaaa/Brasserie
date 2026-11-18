@@ -26,6 +26,9 @@
 //   NOMS-390      au moins 6 mouvements nommés avec leur montant sur la courbe à 390 (n° 8, z2s en nomme 8)
 //   MONTANT       la Blonde et le Marché de Noël ont un montant (n° 9)
 //   PLUS-PAYSAGE  toutes les lignes du + volant ouvert sont dans 844 × 390 (n° 4)
+// Ajouts de la correction 11 (CRITIQUE-11, lot corr11-D) :
+//   BANDE-LISTE        Liste en An à 390 : aucun libellé de la bande n'en chevauche un autre (ou la Liste masque la bande) (n° 1)
+//   CLIC-APRES-GLISSE  6 mois à 390 : le bord de la Blonde tiré de 14 px au doigt ; la rangée Brassins reste visible (n° 2)
 // Ajouts de la correction 4 (CRITIQUE-4, lot q4-app) :
 //   MESSAGE-NOM    la bulle « lâcher ici », le message de f1-a et celui de la vente acceptée : sur aucun nom, jamais tronqués (n° 13 a, b)
 //   NOMS-COUPES    aucun nom de chose coupé quand la place libre à sa droite suffit (n° 24), à 390, en paysage, à 1280
@@ -78,7 +81,12 @@ export const RE = {
   /** n° 15 : une pastille « lié à » sans nom lisible : « lié … », « lié à … », « lié à » seul. */
   lieSansNom: /^lié( à)?\s*…?$/,
   fermer: /^Fermer/,
-  cafeDuPont: /^Café du Pont/
+  cafeDuPont: /^Café du Pont/,
+  /** CRITIQUE-11 n° 1 et 2 : les lignes du menu de période. */
+  periodeAn: /^An\b/,
+  periodeListe: /^Liste\b/,
+  /** « 4 choses cachées » : une rangée masquée. */
+  cachee: /\d+ choses? cachées?/
 };
 
 const CAS_REGEX = [
@@ -108,7 +116,10 @@ const CAS_REGEX = [
   ['financesLien', ['dans Finances ›', 'Finances ›'], ['Finances', 'Finances › Solde']],
   ['lieSansNom', ['lié …', 'lié à …', 'lié à', 'lié'], ['lié à La Cigogne', 'La Cigogne', 'lié à Épicerie du Bourg']],
   ['fermer', ['Fermer', 'Fermer la feuille'], ['Refermer', 'Ne pas fermer']],
-  ['cafeDuPont', ['Café du Pont, 1 fût', 'Café du Pont'], ['Le Café du Pont']]
+  ['cafeDuPont', ['Café du Pont, 1 fût', 'Café du Pont'], ['Le Café du Pont']],
+  ['periodeAn', ['An', 'An · 52 semaines'], ['Annuler', 'Ans', '6 mois']],
+  ['periodeListe', ['Liste', 'Liste · par mois'], ['La Liste', 'Lister']],
+  ['cachee', ['6 choses cachées', '1 chose cachée'], ['cachée', 'choses cachées']]
 ];
 
 if (process.argv.includes('--test-regex')) {
@@ -861,6 +872,59 @@ try {
     await q.close();
     note('BANC-FEUILLE', bf.every(([, ok]) => ok), bf.map(([o, , d]) => `${o} : ${d}`).join(' ; '));
   } else await p.close();
+
+  /* ---- CRITIQUE-11 n° 1 (E04, E13, E40) : BANDE-LISTE, la Liste en An à 390 ; aucun libellé de la bande n'en chevauche un autre (ou pas de bande) ---- */
+  const choisirPeriode = async (q, re) => {
+    await q.click('[data-ent-periode]'); await attendre(300);
+    const ok = await q.evaluate(src => { const d = document.querySelector('[role="dialog"][aria-label="Période et vue"]'); const b = d && [...d.querySelectorAll('button')].find(x => new RegExp(src).test((x.textContent || '').trim())); if (b) b.click(); return !!b; }, re.source);
+    await attendre(300); await q.keyboard.press('Escape').catch(() => {}); await attendre(300);
+    return ok;
+  };
+  {
+    const q = await page(390, 844);
+    const an = await choisirPeriode(q, RE.periodeAn), liste = await choisirPeriode(q, RE.periodeListe);
+    await q.evaluate(() => window.scrollTo(0, 0)); await attendre(300);
+    const r = await q.evaluate(() => {
+      const vis = e => { const b = e.getBoundingClientRect(); return b.width > 0 && b.height > 0 && getComputedStyle(e).visibility !== 'hidden'; };
+      if (!document.querySelector('[data-vue-liste]')) return { ok: false, dit: 'la Liste ne s’ouvre pas' };
+      const zones = [...document.querySelectorAll('[data-bande-semaines], [aria-label^="L’année en"], [aria-label^="Semaines"]')].filter(vis);
+      if (!zones.length) return { ok: true, dit: 'la Liste masque la bande' };
+      const els = [...new Set(zones.flatMap(z => [...z.querySelectorAll('*')]))].filter(e => e.children.length === 0 && (e.textContent || '').trim() && vis(e));
+      const boite = e => { if (e instanceof SVGElement) return e.getBoundingClientRect(); const g = document.createRange(); g.selectNodeContents(e); return g.getBoundingClientRect(); };
+      const b = els.map(e => { const q = boite(e); return { t: (e.textContent || '').trim(), g: q.left, d: q.right, h: q.top, b: q.bottom }; }).filter(o => o.d > o.g);
+      const chev = [];
+      for (let i = 0; i < b.length; i++) for (let j = i + 1; j < b.length; j++) { const a = b[i], c = b[j]; if (a.g < c.d - 0.5 && c.g < a.d - 0.5 && a.h < c.b - 0.5 && c.h < a.b - 0.5) chev.push(`${a.t}/${c.t}`); }
+      return { ok: b.length > 0 && chev.length === 0, dit: `${b.length} libellé(s) « ${b.map(o => o.t).join(' ').slice(0, 80)} » ; ${chev.length ? `${chev.length} chevauchement(s) : ${chev.slice(0, 5).join(', ')}` : 'aucun chevauchement'}` };
+    });
+    note('BANDE-LISTE', an && liste && r.ok, `menu An ${an ? 'choisi' : 'ABSENT'}, Liste ${liste ? 'choisie' : 'ABSENTE'} ; ${r.dit}`);
+    await q.close();
+  }
+
+  /* ---- CRITIQUE-11 n° 2 (E29, E22, E33) : CLIC-APRES-GLISSE, en 6 mois à 390 ; le bord de la Blonde tiré de 14 px au doigt ; au lâcher, la rangée
+     Brassins reste visible (le clic qui suit un petit glissé ne touche pas l'œil) ---- */
+  {
+    const q = await page(390, 844);
+    const six = await choisirPeriode(q, RE.sixMois);
+    const bord = await q.evaluate(() => {
+      const b = [...document.querySelectorAll('[data-barre]')].find(x => (x.getAttribute('data-titre') || x.getAttribute('aria-label') || '').startsWith('Blonde'));
+      const e = b && b.querySelector('[data-bord]'); if (!e) return null;
+      e.scrollIntoView({ block: 'center' });
+      const r = e.getBoundingClientRect(); return { x: r.left + r.width / 2, y: r.top + r.height / 2, avant: Math.round(b.getBoundingClientRect().width) };
+    });
+    if (!bord) note('CLIC-APRES-GLISSE', false, `bord de la Blonde introuvable (6 mois ${six ? 'choisi' : 'ABSENT'})`);
+    else {
+      await attendre(300);
+      await glisserTactileXY(q, bord.x, bord.y, 14);
+      await attendre(600);
+      const r = await q.evaluate(src => {
+        const s = document.querySelector('section[data-rangee="brassins"]'); const t = (s?.textContent || '').replace(/\s+/g, ' ');
+        const b = [...document.querySelectorAll('section[data-rangee="brassins"] [data-barre]')].find(x => (x.getAttribute('data-titre') || x.getAttribute('aria-label') || '').startsWith('Blonde'));
+        return { cachee: new RegExp(src).test(t), blonde: b ? Math.round(b.getBoundingClientRect().width) : 0, rangee: !!s };
+      }, RE.cachee.source);
+      note('CLIC-APRES-GLISSE', six && r.rangee && !r.cachee && r.blonde > 0, `6 mois ${six ? 'choisi' : 'ABSENT'} ; bord tiré de 14 px ; rangée Brassins ${r.rangee ? (r.cachee ? 'MASQUÉE (« choses cachées »)' : 'visible') : 'absente'} ; Blonde ${bord.avant} → ${r.blonde} px`);
+    }
+    await q.close();
+  }
 } catch (e) {
   note('EXECUTION', false, String(e && e.message ? e.message : e));
 } finally {

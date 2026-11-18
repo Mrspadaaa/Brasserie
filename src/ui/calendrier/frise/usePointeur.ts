@@ -63,10 +63,54 @@ interface Etat {
 
 const bornes = (k: number, b?: [number, number]) => (b ? Math.max(b[0], Math.min(b[1], k)) : k);
 
+/*
+ * CRITIQUE-11 n° 2 a (E29 « tirer le bord l'allonge et rien d'autre », E22 « l'œil ne masque que sur un toucher voulu »). En 6 mois à 390, une
+ * colonne fait 14 px : un f2-a ou un f1-a d'une colonne reste sous la tolérance d'un toucher, et Chrome émet un `click` au lâcher. Si un
+ * message a poussé les rangées entre-temps, ce clic tombe ailleurs (l'œil de Brassins) : hors de la barre, donc une garde posée sur elle ne
+ * le voit pas. La garde vit au niveau du document, en phase de capture :
+ *  - à la fin de tout glissé de la frise (barre, bord, jalon, marque) et d'un appui long, `poserGardeClic` note l'heure ;
+ *  - le `click` d'un pointeur (`detail > 0` ; un clic au clavier vaut 0 et passe toujours) qui suit est arrêté, pendant 300 ms ou jusqu'au
+ *    prochain `pointerdown` (un nouveau toucher, voulu, n'est jamais avalé) ;
+ *  - `appuiCommenceSur(el)` dit si le dernier `pointerdown` a commencé sur `el` (la garde propre de l'œil, Rangee).
+ * Une seule paire d'écouteurs pour toute la page, posée au premier geste de la frise.
+ */
+export const GARDE_CLIC_MS = 300;
+let gardeDepuis = 0;
+let dernierAppui: EventTarget | null = null;
+let gardeInstallee = false;
+
+function installerGarde(): void {
+  if (gardeInstallee || typeof document === 'undefined') return;
+  gardeInstallee = true;
+  document.addEventListener('pointerdown', e => { gardeDepuis = 0; dernierAppui = e.target; }, true);
+  document.addEventListener('click', e => {
+    if (!gardeDepuis) return;
+    const recent = Date.now() - gardeDepuis < GARDE_CLIC_MS;
+    if (recent && e.detail > 0) { gardeDepuis = 0; e.preventDefault(); e.stopPropagation(); }
+    else if (!recent) gardeDepuis = 0;
+  }, true);
+}
+
+/** La fin d'un glissé : le clic de pointeur qui suit, dans 300 ms et avant un nouvel appui, n'agit nulle part. */
+export function poserGardeClic(): void {
+  installerGarde();
+  gardeDepuis = Date.now();
+}
+
+/**
+ * Le dernier appui du doigt a-t-il commencé sur `el` ? Vrai si aucun appui n'a encore été vu (clavier, première visite) : l'inconnu ne
+ * bloque pas un geste voulu.
+ */
+export function appuiCommenceSur(el: Element | null): boolean {
+  if (!gardeInstallee || !dernierAppui) return true;
+  return !!el && dernierAppui instanceof Node && el.contains(dernierAppui);
+}
+
 export function usePointeur(options: OptionsPointeur) {
   const opts = useRef(options);
   opts.current = options;
   const etat = useRef<Etat | null>(null);
+  useEffect(() => { installerGarde(); }, []);
 
   const stopMinuterie = () => {
     const e = etat.current;
@@ -134,7 +178,7 @@ export function usePointeur(options: OptionsPointeur) {
     stopMinuterie();
     etat.current = null;
     const o = opts.current;
-    if (s.mode === 'long' || s.mode === 'glisse' || s.mode === 'bord') avalerClic.current = Date.now();
+    if (s.mode === 'long' || s.mode === 'glisse' || s.mode === 'bord') { avalerClic.current = Date.now(); poserGardeClic(); }
     if (s.mode === 'glisse') o.onLacheGlisse?.(s.k, annule);
     else if (s.mode === 'bord') o.onLacheBord?.(s.k, annule);
     else if (s.mode === 'appui' && !annule && Date.now() - s.t0 < APPUI_LONG_MS) o.onToucher?.();

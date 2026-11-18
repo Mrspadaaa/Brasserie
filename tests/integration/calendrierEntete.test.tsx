@@ -1672,3 +1672,125 @@ describe('CRITIQUE-10 (lot corr10-B) : c2-b au doigt à 390 ne touche jamais ±,
     expect(racine.getAttribute('data-doigt')).toBeNull();
   });
 });
+
+describe('CRITIQUE-11 (lot corr11-C) : la Liste porte l’en-tête de la frise ; ni chiffre d’axe ni nom barré', () => {
+  const zoneBande = (c: HTMLElement) => c.querySelector('.ent-bz') as HTMLElement;
+  const cadreDe = (c: HTMLElement) => (c.querySelector('.ent-cadre') as HTMLElement).getAttribute('aria-label');
+  const fen = (semaines: number): FenetreSemaines => ({ du: LUNDI0, semaines });
+  const menu = () => within(screen.getByRole('dialog', { name: 'Période et vue' }));
+  const vu = (vue: VueCalendrier, semaines: number, e = espions()) => render(<Banc {...e} vueInitiale={vue} periodeInitiale={periodeDeFenetre(fen(semaines))} />);
+
+  it('n° 1 (E13, E40) : Liste en An = la bande de l’An (12 mois, creux cerclé), aucun « S\\d+ » dans la bande, cadre « nov. – nov. 2027 »', () => {
+    const an = vu('annee', 52);
+    const bandeAn = zoneBande(an.container).textContent;
+    const cadreAn = cadreDe(an.container);
+    an.unmount();
+    const e = espions();
+    const li = vu('liste', 52, e);
+    expect(li.container.querySelector('[data-bande-annee]')).not.toBeNull();
+    expect(li.container.querySelector('[data-bande-semaines]')).toBeNull();
+    expect(zoneBande(li.container).textContent).toBe(bandeAn);
+    expect(zoneBande(li.container).textContent).not.toMatch(/S\d+/);
+    expect(cadreAn).toBe('Fenêtre : nov. – nov. 2027');
+    expect(cadreDe(li.container)).toBe(cadreAn);
+    expect(li.container.querySelector('.ent-an-creux')).not.toBeNull();
+    // Le menu le dit : « An » actif ; « Calendrier » ramène à la frise de l'An, jamais à 52 colonnes de semaines.
+    fireEvent.click(li.container.querySelector('[data-ent-periode]') as HTMLElement);
+    expect(menu().getByRole('button', { name: 'An' }).getAttribute('aria-pressed')).toBe('true');
+    fireEvent.click(menu().getByRole('button', { name: 'Calendrier' }));
+    expect(e.onVue).toHaveBeenLastCalledWith('annee');
+  });
+
+  it('n° 1 : en Liste, choisir une durée garde la Liste ; la poignée de l’An ramène à la fenêtre d’avant, toujours en Liste', () => {
+    const e = espions();
+    const li = vu('liste', 52, e);
+    fireEvent.click(li.container.querySelector('[data-ent-periode]') as HTMLElement);
+    fireEvent.click(menu().getByRole('button', { name: '6 mois' }));
+    expect(e.onVue).not.toHaveBeenCalled();
+    expect(e.onFenetre).toHaveBeenLastCalledWith({ du: LUNDI0, semaines: 26 });
+    expect(li.container.querySelector('[data-bande-semaines]')).not.toBeNull();
+    fireEvent.click(li.container.querySelector('[data-ent-periode]') as HTMLElement);
+    fireEvent.click(menu().getByRole('button', { name: 'An' }));
+    expect(e.onVue).not.toHaveBeenCalled();
+    expect(li.container.querySelector('[data-bande-annee]')).not.toBeNull();
+    const [, fin] = screen.getAllByRole('button', { name: /Revenir à la fenêtre d’avant/ });
+    fireEvent.pointerDown(fin, { pointerId: 1, clientX: 390, button: 0 });
+    fireEvent.pointerUp(window, { pointerId: 1, clientX: 390 });
+    expect(e.onVue).not.toHaveBeenCalled();
+    expect(e.onFenetre).toHaveBeenLastCalledWith({ du: LUNDI0, semaines: 26 });
+  });
+
+  it.each([13, 26])('n° 1 : Liste en %i semaines = la bande et le cadre de la frise', semaines => {
+    const fr = vu('semaines', semaines);
+    const bandeFr = zoneBande(fr.container).textContent;
+    const cadreFr = cadreDe(fr.container);
+    fr.unmount();
+    const li = vu('liste', semaines);
+    expect(zoneBande(li.container).textContent).toBe(bandeFr);
+    expect(cadreDe(li.container)).toBe(cadreFr);
+    expect(cadreFr).toMatch(/^Fenêtre : S47 – S\d+/);
+  });
+
+  /** Les traits d'un chemin `M x y H x V y` (escalier, curseur), en boîtes de `demi` px de part et d'autre. */
+  const traits = (d: string, demi: number) => {
+    const out: { l: number; r: number; t: number; b: number }[] = [];
+    let x = 0, y = 0;
+    for (const m of d.matchAll(/([MHVL])\s*(-?[\d.]+)(?:[\s,]+(-?[\d.]+))?/g)) {
+      const a = Number(m[2]);
+      if (m[1] === 'M') { x = a; y = Number(m[3]); continue; }
+      if (m[1] === 'H') { out.push({ l: Math.min(x, a), r: Math.max(x, a), t: y - demi, b: y + demi }); x = a; }
+      if (m[1] === 'V') { out.push({ l: x - demi, r: x + demi, t: Math.min(y, a), b: Math.max(y, a) }); y = a; }
+    }
+    return out;
+  };
+  const coupe = (a: { l: number; r: number; t: number; b: number }, b: { l: number; r: number; t: number; b: number }) => a.l < b.r && b.l < a.r && a.t < b.b && b.t < a.b;
+
+  it('n° 6 (E02, f1-a) : aucune ligne de la courbe zoomée ne traverse un chiffre d’axe ; chacun a son fond', async () => {
+    const { CourbeZoom } = await import('../../src/ui/calendrier/entete/Courbe');
+    // Comme m390-clair-09 : l'avant et l'après partent juste au-dessus d'une graduation (2 000), à gauche, là où l'axe écrit son chiffre.
+    const avant = [205000, 205000, 160000, 165000, 150000, 240000, 240000, 236000, 230000, 230000, 225000, 210000, 205000, 200000, 198000, 195000, 190000, 185000, 180000, 170000, 160000, 150000, 140000, 130000, 120000, 110000];
+    const apres = avant.map((v, i) => (i >= 3 && i < 9 ? v - 30000 : v));
+    const { container } = render(<CourbeZoom avant={avant} apres={apres} largeur={390} hauteur={100} />);
+    const lignes = ['.ent-avant', '.ent-apres'].flatMap(s => traits(container.querySelector(s)!.getAttribute('d')!, 1.75));
+    const textes = Array.from(container.querySelectorAll('text.ent-axe'));
+    expect(textes.length).toBeGreaterThan(0);
+    for (const t of textes) {
+      const x = Number(t.getAttribute('x')), y = Number(t.getAttribute('y'));
+      const boite = { l: x, r: x + largeurTexte(t.textContent ?? ''), t: y - 11, b: y + 3 };
+      const barre = lignes.find(l => coupe(boite, l));
+      expect(barre, `« ${t.textContent} » (${x}, ${y}) barré par ${JSON.stringify(barre)}`).toBeUndefined();
+      expect(t.previousElementSibling?.classList.contains('ent-axe-fond'), `« ${t.textContent} » sans fond`).toBe(true);
+    }
+  });
+
+  it('doute c2-b (E11) : le curseur est peint avant les noms, et son trait ne traverse aucun nom', () => {
+    let croisements = 0;
+    for (let i = 0; i < courbe.semaines.length; i++) {
+      const { container, unmount } = render(<Courbe courbe={courbe.semaines} largeur={390} hauteur={110} curseur={i} />);
+      const svg = container.querySelector('svg.ent-svg') as SVGSVGElement;
+      const enfants = Array.from(svg.children);
+      const iCurseur = enfants.findIndex(n => n.hasAttribute('data-curseur'));
+      const iNom = enfants.findIndex(n => !!n.querySelector('[data-nom-courbe]') || n.getAttribute('data-mise-de-cote') === 'etiquette');
+      expect(iCurseur).toBeGreaterThan(-1);
+      if (iNom > -1) expect(iCurseur).toBeLessThan(iNom);
+      const g = svg.querySelector('[data-curseur]')!;
+      const ligne = g.querySelector('line');
+      const d = ligne ? `M${ligne.getAttribute('x1')} ${ligne.getAttribute('y1')}V${ligne.getAttribute('y2')}` : g.querySelector('path')!.getAttribute('d')!;
+      const trait = traits(d, 0.75);
+      const xC = trait[0]?.l ?? 0;
+      for (const t of Array.from(svg.querySelectorAll('text.ent-nom'))) {
+        const x = Number(t.getAttribute('x')), y = Number(t.getAttribute('y'));
+        const w = largeurTexte(t.textContent ?? '');
+        const ancre = t.getAttribute('text-anchor') ?? 'start';
+        const l = ancre === 'end' ? x - w : ancre === 'middle' ? x - w / 2 : x;
+        // Le cœur du texte (4 px de marge de chaque côté : l'estimation de largeur est approchée) ; de haut des capitales à la ligne de base.
+        const boite = { l: l + 4, r: l + w - 4, t: y - 10, b: y };
+        if (xC < boite.l || xC > boite.r) continue;
+        croisements++;
+        expect(trait.some(s => coupe(s, boite)), `S${courbe.semaines[i].numero} : le curseur barre « ${t.textContent} »`).toBe(false);
+      }
+      unmount();
+    }
+    expect(croisements).toBeGreaterThan(0);
+  });
+});

@@ -446,10 +446,11 @@ export function Courbe({ courbe, largeur, hauteur, curseur = null, reference, ge
         {marques.map(m => (
           <line key={`m${m.i}`} className={(m.d as number) < 0 ? 'ent-mk ent-mk-neg' : 'ent-mk ent-mk-pos'} x1={g.x(m.i)} x2={g.x(m.i)} y1={g.y(libres[m.i - 1])} y2={g.y(libres[m.i])} />
         ))}
-        {/* Le curseur est tracé avant les noms : leur halo le coupe, il passe dessous (c2-b). */}
+        {/* Le curseur est tracé avant les noms, et son trait s'interrompt au passage de chacun (c2-b, E11 « le curseur passe sous les noms »,
+            CRITIQUE-11 doute c2-b) : le halo seul laissait le trait se voir entre les lettres (« Sols : colle et | joints »). */}
         {curseur !== null && curseur >= 0 && curseur < n && (
           <g className="ent-curseur" data-curseur aria-hidden="true">
-            <line x1={g.x(curseur) + g.unit / 2} x2={g.x(curseur) + g.unit / 2} y1={g.haut} y2={y0} />
+            <path data-curseur-trait d={traitCurseur(g.x(curseur) + g.unit / 2, g.haut, y0, noms.filter(e => !cache(e)).map(e => e.boite))} />
             <circle cx={g.x(curseur) + g.unit / 2} cy={g.y(libres[curseur])} r={12} className="ent-cur-anneau" />
             <circle cx={g.x(curseur) + g.unit / 2} cy={g.y(libres[curseur])} r={5.5} className="ent-cur-pt" />
           </g>
@@ -493,6 +494,23 @@ export function Courbe({ courbe, largeur, hauteur, curseur = null, reference, ge
 
 /* ---------- la courbe zoomée pendant un geste de la frise (f1-a) ---------- */
 
+/**
+ * Le trait vertical du curseur (c2-b), de `haut` à `bas` à l'abscisse `x`, interrompu à chaque nom qu'il traverse (sa boîte, 2 px de marge),
+ * comme le jouable (`as-gestes.js`, « le trait s'interrompt au passage d'un nom ») : un chemin de segments `M x y V y`.
+ */
+export function traitCurseur(x: number, haut: number, bas: number, boites: readonly Boite[]): string {
+  const trous = boites.filter(b => x >= b.l - 3 && x <= b.r + 3).map(b => [b.t - 2, b.b + 2] as const).sort((a, b) => a[0] - b[0]);
+  let d = '', y = Math.min(haut, bas);
+  const fin = Math.max(haut, bas);
+  for (const [t, b] of trous) {
+    if (t > y) d += `M${x.toFixed(1)} ${y.toFixed(1)}V${Math.min(t, fin).toFixed(1)}`;
+    y = Math.max(y, b);
+    if (y >= fin) break;
+  }
+  if (y < fin) d += `M${x.toFixed(1)} ${y.toFixed(1)}V${fin.toFixed(1)}`;
+  return d;
+}
+
 export interface CourbeZoomProps {
   /** Les colonnes visibles : l'avant (pointillé), l'après (plein), en centimes. */
   avant: readonly number[];
@@ -524,8 +542,70 @@ export function CourbeZoom({ avant, apres, largeur, hauteur }: CourbeZoomProps) 
       <path className="ent-aire" d={`${escalier(apres.slice(0, n), g)}V${hauteur}H0Z`} />
       <path className="ent-avant" d={escalier(avant.slice(0, n), g)} />
       <path className="ent-apres" d={escalier(apres.slice(0, n), g)} />
-      {graduations.filter(v => g.y(v) - 3 >= 15).map(v => <text key={`t${v}`} className="ent-axe" x={3} y={g.y(v) - 3}>{chf(v)}</text>)}
-      <text className="ent-zleg" x={largeur - 4} y={14} textAnchor="end"><tspan className="ent-leg-av">- - avant</tspan>  <tspan className="ent-leg-ap">— après</tspan></text>
+      {placerAxe(graduations, [avant.slice(0, n), apres.slice(0, n)], g, boiteLegende(largeur)).map(a => (
+        <g key={`t${a.v}`} className="ent-axe-g" data-axe={a.v}>
+          <rect className="ent-axe-fond" x={a.boite.l} y={a.boite.t} width={a.boite.r - a.boite.l} height={a.boite.b - a.boite.t} rx={3} />
+          <text className="ent-axe" x={a.x} y={a.y}>{chf(a.v)}</text>
+        </g>
+      ))}
+      <text className="ent-zleg" x={largeur - 4} y={14} textAnchor="end"><tspan className="ent-leg-av">{LEGENDE_AVANT}</tspan>  <tspan className="ent-leg-ap">{LEGENDE_APRES}</tspan></text>
     </svg>
   );
+}
+
+const LEGENDE_AVANT = '- - avant';
+const LEGENDE_APRES = '— après';
+/** La boîte de la légende « - - avant — après », en haut à droite de la courbe zoomée. */
+const boiteLegende = (largeur: number): Boite => ({ l: largeur - 4 - largeurTexte(`${LEGENDE_AVANT}  ${LEGENDE_APRES}`, true), r: largeur, t: 0, b: 18 });
+
+/** Une étiquette d'axe posée : sa valeur, l'ancre du texte, la boîte de son fond. */
+export interface EtiquetteAxe { v: number; x: number; y: number; boite: Boite }
+
+/**
+ * Les traits d'un escalier (`escalier`), en px de la courbe : un palier horizontal par colonne, une marche verticale entre deux colonnes. Le trait
+ * de l'après fait 3,5 px : chaque trait est une boîte élargie de `demi` px de part et d'autre.
+ */
+function traitsEscalier(valeurs: readonly number[], g: Geo, demi: number): Boite[] {
+  const traits: Boite[] = [];
+  valeurs.forEach((v, k) => {
+    const y = g.y(v);
+    traits.push({ l: g.x(k), r: g.x(k + 1), t: y - demi, b: y + demi });
+    if (k > 0) {
+      const y0 = g.y(valeurs[k - 1]);
+      traits.push({ l: g.x(k) - demi, r: g.x(k) + demi, t: Math.min(y0, y), b: Math.max(y0, y) });
+    }
+  });
+  return traits;
+}
+
+/**
+ * CRITIQUE-11 n° 6 (E02, E33 au sens large, D-189) : les étiquettes d'axe de la courbe zoomée (f1-a) ne sont jamais barrées par le tracé. Chaque
+ * valeur se pose d'abord à gauche, au-dessus de sa graduation (comme le jouable, p-f1a-pendant) ; si l'avant ou l'après y passe, sous sa
+ * graduation ; puis plus à droite, colonne par colonne, au-dessus puis dessous. Jamais sur la légende, jamais sur une autre étiquette, jamais
+ * hors du dessin. Sans place libre, la graduation reste sans chiffre : un chiffre barré ne se lit pas. Le fond (`ent-axe-fond`) est celui du thème.
+ */
+export function placerAxe(graduations: readonly number[], series: readonly (readonly number[])[], g: Geo, legende: Boite | null = null): EtiquetteAxe[] {
+  const traits = series.flatMap(s => traitsEscalier(s, g, 2.5));
+  const n = Math.max(1, Math.round(g.largeur / g.unit));
+  const posees: EtiquetteAxe[] = [];
+  for (const v of graduations) {
+    const yv = g.y(v);
+    const w = largeurTexte(chf(v)) + 2;
+    // Le texte de 14 px : 11 px au-dessus de sa ligne de base, 3 dessous ; le fond déborde de 2 px à gauche et à droite.
+    const boiteDe = (x: number, y: number): Boite => ({ l: x - 2, r: x + w, t: y - 12, b: y + 4 });
+    const xs = [4, ...Array.from({ length: n - 1 }, (_, i) => g.x(i + 1) + 4)];
+    const essais = [
+      { x: 4, y: yv - 5 }, { x: 4, y: yv + 15 },
+      ...xs.slice(1).map(x => ({ x, y: yv - 5 })), ...xs.slice(1).map(x => ({ x, y: yv + 15 }))
+    ];
+    const libre = essais.find(({ x, y }) => {
+      const b = boiteDe(x, y);
+      if (b.l < 0 || b.r > g.largeur || b.t < 0 || b.b > g.hauteur) return false;
+      if (legende && croise(b, legende, 0)) return false;
+      if (posees.some(p => croise(b, p.boite, 0))) return false;
+      return !traits.some(t => croise(b, t, 0));
+    });
+    if (libre) posees.push({ v, x: libre.x, y: libre.y, boite: boiteDe(libre.x, libre.y) });
+  }
+  return posees;
 }

@@ -54,6 +54,17 @@ function marqueProposee(c: ChoseCalendrier): string | null {
   return c.proposition || c.probable ? 'proposé' : null;
 }
 
+/**
+ * CRITIQUE-11 n° 7 (E40, D-204) : à 390, « prête 7 » restait en fin de ligne et « déc. » passait seul à la suivante. Chaque morceau entre deux
+ * « · » (une date, une plage « 30 nov. – 6 déc. », « J9 / 28 », « prête 7 déc. », « S46 ») est un seul nœud insécable (`cal-nowrap`,
+ * `data-date`) ; seuls les « · » qui les séparent passent à la ligne.
+ */
+function insecables(texte: string): React.ReactNode {
+  return texte.split(' · ').map((m, i) => (
+    <React.Fragment key={i}>{i > 0 ? ' · ' : ''}<span className="cal-nowrap" data-date>{m}</span></React.Fragment>
+  ));
+}
+
 /** La ligne grise sous le nom : la rangée, puis une seule date. */
 function sousTitre(c: ChoseCalendrier): React.ReactNode {
   const jour = dateDe(c);
@@ -61,13 +72,13 @@ function sousTitre(c: ChoseCalendrier): React.ReactNode {
     /* « pas brassée · prévue le 10 nov. · S46 » : la date une fois (n° 22). CRITIQUE-10 n° 3 (E08, D-19, E40) : le jour prévu réel
        (`brassagePrevu`), celui du détail (« Brassage 10 nov. · pas brassée »), jamais `debut`, ramené à aujourd'hui (« prévue le 18 nov. ») */
     const prevu = brassagePrevuDe(c);
-    return <>{nomRangee(c.rangee)} · <span className="cal-li-retard">pas brassée</span>{prevu ? ` · prévue le ${etiquetteListe(prevu)}` : ''}</>;
+    return <>{nomRangee(c.rangee)} · <span className="cal-li-retard cal-nowrap">pas brassée</span>{prevu ? <> · {insecables(`prévue le ${etiquetteListe(prevu)}`)}</> : ''}</>;
   }
   const duree = dureeVue(c);
   return (
     <>
-      {nomRangee(c.rangee)}{jour ? ` · ${etiquetteListe(jour)}` : ''}{duree ? ` · ${duree}` : ''}
-      {enRetard(c) && <> · <span className="cal-li-retard">en retard</span></>}
+      {nomRangee(c.rangee)}{jour ? <> · {insecables(etiquetteListe(jour))}</> : ''}{duree ? <> · {insecables(duree)}</> : ''}
+      {enRetard(c) && <> · <span className="cal-li-retard cal-nowrap">en retard</span></>}
     </>
   );
 }

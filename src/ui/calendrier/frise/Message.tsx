@@ -15,7 +15,14 @@ import '../message.css';
  * CRITIQUE-5 n° 5 (E31, E33, D-114) : le lien n'est jamais coupé. Il passe avec les boutons (« Finances › », forme courte, puis « Annuler ») ;
  * le texte et son effet (« Annulé · S49 : 1 088 → 1 988 ») tiennent la première ligne, les boutons la seconde quand la place manque.
  * N° 13 (E33, D-200) : jamais sur un nom de rangée ni de chose. Il cherche une bande libre (au-dessus des onglets, puis plus haut jusque sous
- * l'en-tête) ; faute de place, il déplace la vue : il entre au pied de l'en-tête collé, dans son flux, et la frise descend de sa hauteur.
+ * l'en-tête) ; faute de place, il va au pied de l'en-tête collé.
+ *
+ * CRITIQUE-11 n° 2 b (E33 « ne déplace rien sous le doigt », D-200) : au pied de l'en-tête, il entrait dans son flux et poussait les rangées
+ * d'environ 85 px au lâcher (le clic qui suit tombait sur l'œil de Brassins). Il s'y pose désormais en surimpression : une bande de la couleur
+ * de l'en-tête, accrochée sous lui (`position: absolute; top: 100%`). L'en-tête garde sa hauteur (E43), rien ne bouge à l'écran ; ce qui passe
+ * sous la bande est caché comme sous l'en-tête collé, jamais un texte posé sur un autre.
+ * N° 3 (E33, E35) : au grand écran (1024 px et plus), il va toujours dans cette zone : en bas, il couvrait Papiers et le + couvrait Annuler.
+ * N° 8 (E31, E37, D-126) : le message d'un geste qui ouvre lui-même son détail (Lier) va aussi dans cette zone, et reste avec le détail.
  */
 
 export interface MessageCal {
@@ -33,6 +40,12 @@ export interface MessageCal {
   detail?: string;
   /** Un message de l'en-tête : son retrait (`onMessage(null)`) ne chasse que lui. */
   origine?: 'entete';
+  /**
+   * CRITIQUE-11 n° 8 (D-126) : le geste ouvre lui-même son détail (Lier : « Liée à X · Annuler » et le détail de la chose liée, ensemble).
+   * Ce message se pose dans la zone de l'en-tête et résiste à l'ouverture de ce détail, au défilement qui le dégage du + et au départ
+   * « aucun pas ne suffit ». Les autres messages partent toujours à l'ouverture d'un détail (E33).
+   */
+  ouvreSonDetail?: boolean;
 }
 
 export interface MessageProps { message: MessageCal | null; onFermer: () => void; dureeMs?: number }
@@ -52,6 +65,9 @@ export function separerEffet(texte: string): { nom: string; effet: string | null
 
 /** N° 5 : la forme courte d'un lien du message (« dans Finances › » devient « Finances › ») : elle tient avec « Annuler » à 390. */
 export const lienCourt = (texte: string): string => texte.replace(/^dans\s+/i, '');
+
+/** CRITIQUE-11 n° 3 : le grand écran (rail à gauche, 1024 px et plus), lu comme le CSS le lit. */
+export const grandEcran = (): boolean => typeof window !== 'undefined' && typeof window.matchMedia === 'function' && window.matchMedia('(min-width: 1024px)').matches;
 
 /** La boîte du texte d'un titre (le h3 peut être plus large que son mot). */
 const texteDe = (t: Element): DOMRect => {
@@ -77,25 +93,30 @@ function prochaineImage(f: () => void): () => void {
 type Boite = { top: number; bottom: number; left: number; right: number };
 const decaler = (r: Boite, dx: number, dy: number): Boite => ({ top: r.top + dy, bottom: r.bottom + dy, left: r.left + dx, right: r.right + dx });
 
+/** Les boîtes des noms visibles hors du message (et, en paysage, des barres) : ce qu'il ne couvre jamais. */
+function nomsVisibles(el: HTMLElement): Boite[] {
+  const vh = window.innerHeight;
+  const paysage = !!document.querySelector('[data-frise] .cal-rangee-l');
+  const visible = (t: DOMRect) => t.width > 0 && t.height > 0 && t.bottom > 0 && t.top < vh;
+  return [
+    ...[...document.querySelectorAll(NOMS_MESSAGE)].filter(t => !el.contains(t)).map(texteDe),
+    ...(paysage ? [...document.querySelectorAll(OBJETS_PAYSAGE)].filter(t => !el.contains(t)).map(t => t.getBoundingClientRect()) : [])
+  ].filter(visible);
+}
+const toucheUn = (boites: readonly Boite[], b: Boite) => boites.some(t => t.top < b.bottom + 2 && t.bottom > b.top - 2 && t.left < b.right + 2 && t.right > b.left - 2);
+
 export const Message: React.FC<MessageProps> = ({ message, onFermer, dureeMs = DUREE_MESSAGE_MS }) => {
   const [detailOuvert, setDetailOuvert] = React.useState(false);
-  /* n° 13 : l'en-tête collé où le message est entré faute de bande libre ; `null` : il flotte à sa place */
+  /* n° 13 : l'en-tête collé sous lequel le message est posé ; `null` : il flotte à sa place */
   const [entete, setEntete] = React.useState<Element | null>(null);
   const idPose = React.useRef<number | undefined>(undefined);
   if (idPose.current !== message?.id) { idPose.current = message?.id; if (entete) setEntete(null); }
-  /* l'ancrage du défilement de la page, coupé le temps que le message vit dans l'en-tête, puis rendu tel quel */
-  const ancrage = React.useRef<{ el: HTMLElement; avant: string } | null>(null);
-  React.useEffect(() => {
-    if (entete) return undefined;
-    const a = ancrage.current;
-    if (a) { a.el.style.overflowAnchor = a.avant; ancrage.current = null; }
-    return undefined;
-  }, [entete]);
-  React.useEffect(() => () => { const a = ancrage.current; if (a) a.el.style.overflowAnchor = a.avant; }, []);
   const racine = React.useRef<HTMLDivElement>(null);
   const fermer = React.useRef(onFermer);
   fermer.current = onFermer;
   const id = message?.id;
+  /* CRITIQUE-11 n° 8 : un geste qui ouvre son détail pose son message dans la zone de l'en-tête, d'emblée */
+  const saZone = !!message?.ouvreSonDetail;
   /* CRITIQUE-4 n° 20 : une alerte qui attend une décision (« Livrer le 5 janv. ») ne part pas seule au bout de 7 s ; elle part au défilement,
      à un toucher ailleurs, à l'ouverture d'un détail (E33) ou par ses boutons. Le bandeau Annuler, lui, part seul. */
   const attend = !!message?.livrer;
@@ -107,28 +128,29 @@ export const Message: React.FC<MessageProps> = ({ message, onFermer, dureeMs = D
   }, [id, dureeMs, attend]);
 
   /* Jamais sur un nom (n° 13). Ordre : sa place (bande basse) ; à droite de la colonne des titres (paysage, 1280) ; la première bande libre en
-     remontant jusque sous l'en-tête, avec des décalages de côté ; faute de place, il entre au pied de l'en-tête collé et la frise descend
-     d'autant. Recalculé à la rotation, au redimensionnement et après le rendu d'une écriture. */
+     remontant jusque sous l'en-tête, avec des décalages de côté ; faute de place, au pied de l'en-tête collé, en surimpression (CRITIQUE-11
+     n° 2 b). Au grand écran et pour un geste qui ouvre son détail, directement au pied de l'en-tête (n° 3, n° 8). Recalculé à la rotation, au
+     redimensionnement et après le rendu d'une écriture. */
   React.useLayoutEffect(() => {
     const el = racine.current;
     if (!el || id === undefined || entete) return undefined;
+    const zoneEntete = () => document.querySelector('[data-entete-zone]');
+    if (saZone || grandEcran()) {
+      const zone = zoneEntete();
+      if (zone) { el.dataset.place = 'sous-entete'; setEntete(zone); return undefined; }
+    }
     const placer = () => {
       if (!el.isConnected) return;
       el.style.transform = ''; el.style.left = ''; delete el.dataset.place;
       let r: Boite = el.getBoundingClientRect();
       if (r.bottom - r.top === 0) return;
-      const vh = window.innerHeight;
       /* CRITIQUE-9 n° 7 (E33, D-200) : en paysage, une rangée fait 20 px et la barre porte son nom et « J0 / 28 · prête … » : le message ne se
          pose sur aucune barre (as-gestes.js : `.bar` est un obstacle), il va entre la bande et les rangées, comme en portrait */
       const paysage = !!document.querySelector('[data-frise] .cal-rangee-l');
-      const visible = (t: DOMRect) => t.width > 0 && t.height > 0 && t.bottom > 0 && t.top < vh;
-      const boites = [
-        ...[...document.querySelectorAll(NOMS_MESSAGE)].filter(t => !el.contains(t)).map(texteDe),
-        ...(paysage ? [...document.querySelectorAll(OBJETS_PAYSAGE)].filter(t => !el.contains(t)).map(t => t.getBoundingClientRect()) : [])
-      ].filter(visible);
-      const touche = (b: Boite) => boites.some(t => t.top < b.bottom + 2 && t.bottom > b.top - 2 && t.left < b.right + 2 && t.right > b.left - 2);
+      const boites = nomsVisibles(el);
+      const touche = (b: Boite) => toucheUn(boites, b);
       if (!touche(r)) { el.dataset.place = 'bas'; return; }
-      /* 1280 : à droite de la colonne des titres, s'il y a la place et qu'aucun nom n'y est ; jamais en paysage, où cette place est sur les barres */
+      /* à droite de la colonne des titres, s'il y a la place et qu'aucun nom n'y est ; jamais en paysage, où cette place est sur les barres */
       const titres = [...document.querySelectorAll(TITRES)].filter(t => !el.contains(t)).map(texteDe).filter(t => t.width > 0 && t.height > 0);
       const croisent = paysage ? [] : titres.filter(t => t.top < r.bottom && t.bottom > r.top && t.left < r.right && t.right > r.left);
       if (croisent.length) {
@@ -141,9 +163,9 @@ export const Message: React.FC<MessageProps> = ({ message, onFermer, dureeMs = D
           r = el.getBoundingClientRect();
         }
       }
-      const entete = document.querySelector('[data-entete-zone]')?.getBoundingClientRect();
-      const plafond = Math.max(8, entete && entete.height > 0 ? entete.bottom + 4 : 8);
-      /* au 1280 et en paysage, la place libre peut être à côté : chaque hauteur essaie aussi des décalages de côté, dans l'écran */
+      const haut = zoneEntete()?.getBoundingClientRect();
+      const plafond = Math.max(8, haut && haut.height > 0 ? haut.bottom + 4 : 8);
+      /* la place libre peut être à côté : chaque hauteur essaie aussi des décalages de côté, dans l'écran */
       const dxMin = Math.min(0, 8 - r.left), dxMax = Math.max(0, window.innerWidth - 8 - r.right);
       const decalages = [0];
       for (let d = 24; d <= Math.max(-dxMin, dxMax); d += 24) { if (d <= dxMax) decalages.push(d); if (-d >= dxMin) decalages.push(-d); }
@@ -151,15 +173,9 @@ export const Message: React.FC<MessageProps> = ({ message, onFermer, dureeMs = D
         const dx = decalages.find(x => !touche(decaler(r, x, -dy)));
         if (dx !== undefined) { el.style.transform = `translate(${dx}px, -${dy}px)`; el.dataset.place = 'bande'; return; }
       }
-      /* faute de place : la vue se déplace. Le message entre au pied de l'en-tête collé (dans son flux) : l'en-tête grandit de sa hauteur et
-         la frise passe dessous, décalée d'autant ; aucun nom n'est couvert, la position du défilement ne change pas (le départ à 24 px tient) */
-      const zone = document.querySelector('[data-entete-zone]');
-      if (zone) {
-        /* sans ancrage du défilement : le navigateur ne compense pas la croissance de l'en-tête en défilant (ce défilement chasserait le message) */
-        const page = document.scrollingElement as HTMLElement | null;
-        if (page && !ancrage.current) { ancrage.current = { el: page, avant: page.style.overflowAnchor }; page.style.overflowAnchor = 'none'; }
-        el.dataset.place = 'sous-entete'; setEntete(zone); return;
-      }
+      /* faute de place : au pied de l'en-tête collé, en surimpression (CRITIQUE-11 n° 2 b) ; l'en-tête ne grandit pas, les rangées restent */
+      const zone = zoneEntete();
+      if (zone) { el.dataset.place = 'sous-entete'; setEntete(zone); return; }
       el.dataset.place = 'sur-nom';
     };
     /* à la rotation, et après une écriture (la frise se remet en page après le message : Livrer, Annuler), on replace après son rendu */
@@ -177,16 +193,16 @@ export const Message: React.FC<MessageProps> = ({ message, onFermer, dureeMs = D
       window.removeEventListener('resize', surTaille); window.removeEventListener('scroll', surDefilement, { capture: true });
       minuteries.forEach(clearTimeout); image?.();
     };
-  }, [id, entete]);
+  }, [id, entete, saZone]);
 
-  /* CRITIQUE-10, doute m38 (E33 : « jamais sur un nom ») : entré au pied de l'en-tête collé, le message grandit l'en-tête ; si la page est
-     défilée, un nom de la frise peut se trouver à moitié sous lui (« Tourne le téléphone » posé sur « Saison de ferme »). La page se décale du
-     plus petit pas qui dégage ce nom (le montrer entier, ou le passer entier sous l'en-tête), toujours moins de 24 px ; sans un tel pas, le
-     message part. Ensuite, au défilement, un nom qui passe sous lui le fait partir aussitôt (avant ses 24 px). */
+  /* CRITIQUE-10, doute m38 (E33 : « jamais sur un nom ») : posé au pied de l'en-tête collé, si la page est défilée, un nom de la frise peut se
+     trouver à moitié sous lui (« Tourne le téléphone » posé sur « Saison de ferme »). La page se décale du plus petit pas qui dégage ce nom (le
+     montrer entier, ou le passer entier sous la bande), toujours moins de 24 px ; sans un tel pas, le message part. Ensuite, au défilement, un
+     nom qui passe sous lui le fait partir aussitôt (avant ses 24 px). */
   React.useLayoutEffect(() => {
     const el = racine.current;
-    /* seulement l'invite de l'en-tête (« Tourne le téléphone ») : « Liée à X · Annuler » et les autres bandeaux de geste ne partent pas ainsi */
-    if (!el || id === undefined || !entete || message?.origine !== 'entete') return undefined;
+    /* seulement l'invite de l'en-tête (« Tourne le téléphone ») : « Liée à X · Annuler » (n° 8) et les autres bandeaux de geste ne partent pas ainsi */
+    if (!el || id === undefined || !entete || message?.origine !== 'entete' || saZone) return undefined;
     const coupes = (): { monte: number; descend: number } | null => {
       if (!el.isConnected) return null;
       const r = el.getBoundingClientRect();
@@ -200,7 +216,7 @@ export const Message: React.FC<MessageProps> = ({ message, onFermer, dureeMs = D
     if (c) {
       const page = document.scrollingElement ?? document.documentElement;
       const reste = page ? page.scrollHeight - window.innerHeight - window.scrollY : 0;
-      /* le défilement vers le haut ramène le nom entier sous le message ; vers le bas, il passe entier sous l'en-tête */
+      /* le défilement vers le haut ramène le nom entier sous le message ; vers le bas, il passe entier sous la bande */
       const pas = [window.scrollY >= c.monte ? -c.monte : null, reste >= c.descend ? c.descend : null]
         .filter((x): x is number => x !== null && Math.abs(x) < 24)
         .sort((a, b) => Math.abs(a) - Math.abs(b))[0];
@@ -211,7 +227,7 @@ export const Message: React.FC<MessageProps> = ({ message, onFermer, dureeMs = D
     const surDefilement = () => { if (image === null) image = prochaineImage(() => { image = null; if (coupes()) fermer.current(); }); };
     window.addEventListener('scroll', surDefilement, { passive: true, capture: true });
     return () => { window.removeEventListener('scroll', surDefilement, { capture: true }); image?.(); };
-  }, [id, entete]);
+  }, [id, entete, saZone]);
 
   if (!message) return null;
   const { role, texte, lien, annuler, livrer, detail } = message;
@@ -228,6 +244,7 @@ export const Message: React.FC<MessageProps> = ({ message, onFermer, dureeMs = D
     <div
       ref={racine} role={role} className={`cal-msg${role === 'alert' ? ' cal-msg-alerte' : ''}${entete ? ' cal-msg-entete' : ''}`} data-message
       data-msg-origine={message.origine ?? 'calendrier'} data-place={entete ? 'sous-entete' : undefined}
+      {...(message.ouvreSonDetail ? { 'data-ouvre-son-detail': '' } : {})}
     >
       <div className={`cal-msg-l${effet ? ' cal-msg-l-effet' : ''}`}>
         {detail ? (
@@ -257,6 +274,7 @@ export const Message: React.FC<MessageProps> = ({ message, onFermer, dureeMs = D
       )}
     </div>
   );
-  /* au pied de l'en-tête collé (n° 13) : dans son flux, la frise passe dessous */
-  return entete && entete.isConnected ? createPortal(boite, entete) : boite;
+  /* au pied de l'en-tête collé (n° 13, CRITIQUE-11 n° 2 b) : une bande de sa couleur, accrochée sous lui, en surimpression ; l'en-tête garde
+     sa hauteur. La bande prend le doigt (rien de caché dessous ne se touche) ; la toucher hors des boutons chasse le message. */
+  return entete && entete.isConnected ? createPortal(<div className="cal-msg-bande" data-msg-bande>{boite}</div>, entete) : boite;
 };

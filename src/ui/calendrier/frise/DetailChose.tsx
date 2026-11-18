@@ -115,7 +115,10 @@ export function degagerDuVolant(det: HTMLElement): number {
   const besoin = Math.ceil(r.bottom - (volant.top - 8));
   if (besoin <= 0) return 0;
   const entete = document.querySelector('[data-entete-zone]')?.getBoundingClientRect();
-  const plafond = entete && entete.height > 0 ? entete.bottom + 8 : 8;
+  /* CRITIQUE-11 n° 8 : « Liée à X · Annuler » reste avec le détail, dans sa bande au pied de l'en-tête ; le détail ne monte pas dessous */
+  const bande = document.querySelector('[data-entete-zone] [data-msg-bande]')?.getBoundingClientRect();
+  const bas = Math.max(entete && entete.height > 0 ? entete.bottom : 0, bande && bande.height > 0 ? bande.bottom : 0);
+  const plafond = bas > 0 ? bas + 8 : 8;
   const delta = Math.min(besoin, Math.max(0, Math.floor(r.top - plafond)));
   if (delta > 0) window.scrollBy({ top: delta, left: 0, behavior: 'auto' });
   return delta;

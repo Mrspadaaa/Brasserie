@@ -1045,3 +1045,26 @@ describe('CRITIQUE-9 (lot corr9-C-frise) : « prête le … » jamais perdue, ic
     }
   });
 });
+
+/* CRITIQUE-11 n° 7 (E40, D-204) : à 390, « prête 7 » puis « déc. » seul à la ligne (IPA, m390-clair-34) */
+describe('CRITIQUE-11 n° 7 : dans la Liste, aucune date ni plage ne se coupe à la ligne', () => {
+  it('chaque date d’une ligne est un nœud insécable ; « prête 7 déc. » de l’IPA en est un seul ; liste.css rend `cal-nowrap` insécable', async () => {
+    monter();
+    fireEvent.click(document.querySelector('[data-ent-periode]')!);
+    fireEvent.click(dialogue('Période et vue').getByRole('button', { name: /^Liste/ }));
+    const liste = await screen.findByText((_, el) => el?.hasAttribute('data-vue-liste') ?? false);
+    const sous = [...liste.querySelectorAll('[data-liste-chose] small')];
+    expect(sous.length).toBeGreaterThan(5);
+    for (const s of sous) {
+      /* hors des nœuds insécables, seuls le nom de la rangée et les « · » : aucun chiffre (donc aucune date, plage, semaine ni durée) */
+      const libres = [...s.childNodes].filter(n => n.nodeType === Node.TEXT_NODE).map(n => n.textContent ?? '').join('');
+      expect(libres, s.textContent ?? '').not.toMatch(/\d/);
+      for (const d of s.querySelectorAll('[data-date]')) expect(d.classList.contains('cal-nowrap')).toBe(true);
+    }
+    const ipa = liste.querySelector('[data-liste-chose*="IPA"] small')!;
+    const morceaux = [...ipa.querySelectorAll('[data-date]')].map(d => d.textContent);
+    expect(morceaux.some(m => /^prête \d+ déc\.$/.test(m ?? ''))).toBe(true);
+    const css = (await import('node:fs')).readFileSync(`${process.cwd()}/src/ui/calendrier/frise/liste.css`, 'utf8');
+    expect(css).toMatch(/\.cal-nowrap\s*\{\s*white-space:\s*nowrap;?\s*\}/);
+  });
+});

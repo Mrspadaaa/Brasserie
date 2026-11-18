@@ -2,6 +2,11 @@ import React from 'react';
 import { Copy, ExternalLink, Filter, Link2, Pin, Star, Trash2 } from 'lucide-react';
 import type { ChoseCalendrier } from '../../../domain/calendrier';
 import './feuille.css';
+/* `.cal-ml-mots` (CRITIQUE-11 n° 4) vit dans message.css, au lot du domaine des messages ; frise.css est au lot de la frise */
+import '../message.css';
+
+/** CRITIQUE-11 n° 4 : un effet en mots (« recette estimée 1 180 · hors prévision ») passe sous son action, entier ; un effet chiffré reste à côté. */
+const enMots = (effet: string | undefined): boolean => !!effet && !effet.includes('→') && effet.length > 14;
 
 /**
  * f5-a (E31) : l'appui long sur une barre ouvre un menu sous elle. Épingler (la chose reste visible si sa rangée est masquée), Étoile (sur la
@@ -223,7 +228,7 @@ export const MenuAppuiLong: React.FC<MenuAppuiLongProps> = props => {
   const droite = (
     <>
       {dupliquer && (
-        <button type="button" role="menuitem" {...agir(props.onDupliquer)} className="cal-ml">
+        <button type="button" role="menuitem" {...agir(props.onDupliquer)} className={`cal-ml${enMots(dupliquer.effet) ? ' cal-ml-mots' : ''}`}>
           <Copy size={20} aria-hidden="true" /><span>Dupliquer en {dupliquer.libelle}</span>{dupliquer.effet && <><span className="sr-only"> · </span><em data-effet-dupliquer>{dupliquer.effet}</em></>}
         </button>
       )}
@@ -231,8 +236,8 @@ export const MenuAppuiLong: React.FC<MenuAppuiLongProps> = props => {
         <Link2 size={20} aria-hidden="true" /><span>Lier à un brassin, un client</span>
       </button>
       {retirable ? (
-        <button type="button" role="menuitem" {...agir(props.onRetirer)} className="cal-ml cal-ml-ret">
-          <Trash2 size={20} aria-hidden="true" /><span>Retirer</span>{retirable.effet && <em>{retirable.effet}</em>}
+        <button type="button" role="menuitem" {...agir(props.onRetirer)} className={`cal-ml cal-ml-ret${enMots(retirable.effet) ? ' cal-ml-mots' : ''}`}>
+          <Trash2 size={20} aria-hidden="true" /><span>Retirer</span>{retirable.effet && <><span className="sr-only"> · </span><em data-effet-retirer>{retirable.effet}</em></>}
         </button>
       ) : (
         <>

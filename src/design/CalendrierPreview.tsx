@@ -380,6 +380,11 @@ export const BancCalendrier: React.FC<BancProps> = ({ aujourdhui: jour, etat, so
 export const CalendrierPreview: React.FC = () => {
   const aujourdhui = todayISO();
   const [etat] = useState(() => avecTendance(etatBanc(aujourdhui), aujourdhui));
+  /* CRITIQUE-11 (état 35, D-81) : la trace des écritures du banc, lue par le harnais de vision (`window.__bancAppels`) ; en mémoire, rien ne part */
+  const onAppel = useCallback((a: Appel) => {
+    const w = window as unknown as { __bancAppels?: Appel[] };
+    (w.__bancAppels ??= []).push(a);
+  }, []);
   /* les six mois de charges payées (6 × 650) s'ajoutent au solde de départ : la caisse d'aujourd'hui reste celle de la fixture (4 032) */
-  return <BancCalendrier aujourdhui={aujourdhui} etat={etat} solde={403200 + 6 * 65000} />;
+  return <BancCalendrier aujourdhui={aujourdhui} etat={etat} solde={403200 + 6 * 65000} onAppel={onAppel} />;
 };

@@ -602,3 +602,69 @@ describe('CRITIQUE-10 n° 5 : sur le banc servi, « Dupliquer en S48 » de la Bl
     expect(d.message.texte).toBe(`Dupliquée en S48 · courses ${d.effet!.texte}`);
   });
 });
+
+describe('CRITIQUE-11 n° 5 (E32, D-193) : Livrer dit la semaine de la date livrée quand elle n’est pas celle de l’effet', () => {
+  const vente = (date: string) => plan({ id: 'PV', title: '3 fûts La Cigogne', direction: 'in', batchId: 'LOT-5', date, amountCents: 90000 });
+  const courbeVente = (date: string) => courbeCaisse({
+    depart: 175400, lundi0: AUJOURDHUI,
+    mouvements: [{ id: `PV:${date}`, jour: date, centimes: 90000, nom: '3 fûts La Cigogne', choseId: 'argent-PV' }]
+  })!;
+  const promesse = (jourPromis: string, livrerLe: string) => ({ planId: 'PV', titre: '3 fûts La Cigogne', jourPromis, preteLe: livrerLe, livrerLe, texte: '' });
+
+  it('promise le 23 déc. (S52), livrée le 29 déc. (S53) : « 29 déc. (S53) · S52 : a → b », jamais « 29 déc. · S52 »', () => {
+    const l = bien(livrer(promesse('2026-12-23', '2026-12-29'), ctx({ plans: [vente('2026-12-23')], courbe: courbeVente('2026-12-23') })));
+    expect(l.effet).toMatchObject({ numero: 52 });
+    expect(l.message.texte).toBe(`3 fûts La Cigogne : 29 déc. (S53) · ${l.effet!.texte}`);
+    expect(l.message.lecture).toMatch(/^3 fûts La Cigogne : 29 déc\. \(S53\) · S52 : [\d\s]+ → [\d\s]+ · Annuler$/u);
+  });
+
+  it('livrée plus tôt, dans la semaine de l’effet (S53) : la semaine n’est dite qu’une fois (A6)', () => {
+    const l = bien(livrer(promesse('2027-01-05', '2026-12-29'), ctx({ plans: [vente('2027-01-05')], courbe: courbeVente('2027-01-05') })));
+    expect(l.effet).toMatchObject({ numero: 53 });
+    expect(l.message.texte).toBe(`3 fûts La Cigogne : 29 déc. · ${l.effet!.texte}`);
+    expect(l.message.texte.match(/S53/g)).toHaveLength(1);
+  });
+});
+
+describe('CRITIQUE-11 n° 4 (E31, D-48, D-192) : Dupliquer et Retirer une fête ou une activité disent leur effet, sans flèche ni 0 inventés', () => {
+  /* la courbe de la prévision : `buildForecast` ne lit pas le carnet ; une fête n'y a aucun mouvement */
+  const courbe = () => courbeCaisse({ depart: 506400, lundi0: AUJOURDHUI, mouvements: [] })!;
+  const noel = (p: Partial<CreativeItem> = {}): CreativeItem => ({ id: 'CR-NOEL', type: 'event', title: 'Marché de Noël', status: 'todo', date: '2026-12-21', ...p });
+
+  it('une fête de 1 180 CHF estimés, hors prévision : « recette estimée 1 180 · hors prévision » pour Dupliquer et pour Retirer', () => {
+    const chose = choseCreative(noel({ estimatedRevenue: 1180 }))!;
+    expect(chose.centimes).toBe(118000);
+    const d = bien(dupliquer(chose, '2026-12-28', ctx({ courbe: courbe() })));
+    const r = bien(retirer(chose, ctx({ courbe: courbe() })));
+    for (const x of [d, r]) {
+      expect(x.effet).toBeNull();
+      expect(x.effetMots).toMatch(/^recette estimée 1\s180 · hors prévision$/u);
+      expect(x.effetMots).not.toMatch(/→|\b0\b/);
+    }
+    /* sans courbe (solde de départ inconnu), « hors prévision » n'a pas de sens : le montant seul */
+    expect(bien(retirer(chose, ctx())).effetMots).toMatch(/^recette estimée 1\s180$/u);
+  });
+
+  it('une fête sans montant : « sans montant », jamais « 0 »', () => {
+    const chose = choseCreative(noel())!;
+    expect(chose.centimes).toBeUndefined();
+    expect(bien(dupliquer(chose, '2026-12-28', ctx({ courbe: courbe() }))).effetMots).toBe('sans montant');
+    expect(bien(retirer(chose, ctx({ courbe: courbe() }))).effetMots).toBe('sans montant');
+  });
+
+  it('une activité : sans montant, « sans montant » ; avec un coût estimé, « coût estimé 300 · hors prévision »', () => {
+    const activite = choseCreative({ id: 'CR-RANGER', type: 'event', title: 'Ranger la réserve', status: 'todo', date: '2026-11-23', activite: true } as CreativeItem)!;
+    expect(activite.rangee).toBe('activites');
+    expect(bien(retirer(activite, ctx({ courbe: courbe() }))).effetMots).toBe('sans montant');
+    expect(bien(dupliquer(activite, '2026-11-30', ctx({ courbe: courbe() }))).effetMots).toBe('sans montant');
+    const payante = choseCreative({ id: 'CR-NETT', type: 'event', title: 'Nettoyage', status: 'todo', date: '2026-11-23', activite: true, estimatedCost: 300 } as CreativeItem)!;
+    expect(bien(retirer(payante, ctx({ courbe: courbe() }))).effetMots).toBe('coût estimé 300 · hors prévision');
+  });
+
+  it('une chose que la courbe compte garde son effet chiffré (« S51 : a → b »), sans mots', () => {
+    const { courbe: c, chose, p } = courbeMalt();
+    const r = bien(retirer(chose, ctx({ plans: [p], courbe: c })));
+    expect(r.effet?.texte).toMatch(/^S52 : /);
+    expect(r.effetMots).toBeUndefined();
+  });
+});

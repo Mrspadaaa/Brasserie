@@ -4,7 +4,7 @@ import { isoDate } from './finance/ledger';
 import { plannedBrewDate, rescheduleBatchPatch } from './batchSchedule';
 import { datesSortiesBrassin } from './finance/brewForecast';
 import {
-  ajouterJours, dimancheDe, dureeBrassin, dureePasBrassee, ecartJours, etiquetteS, finDeBrassin, idChoseArgent, jalonsBrassin, jourLisible, lundiDe, preteAuPlusTot,
+  ajouterJours, dimancheDe, dureeBrassin, dureePasBrassee, ecartJours, etiquetteS, finDeBrassin, francs, idChoseArgent, jalonsBrassin, jourLisible, lundiDe, preteAuPlusTot,
   type ChoseCalendrier, type CibleOuverture, type JalonId
 } from './calendrier';
 import {
@@ -327,10 +327,31 @@ export function livrer(promesse: Promesse, ctx: ContexteGestes): Resolution {
   const jours = ecartJours(date, promesse.livrerLe);
   const avant = ctx.courbe, apres = avant ? courbeDecalee(avant, idChoseArgent({ id: `${plan.id}:${date}`, source: plan.recurrence ? 'recurring' : 'plan', planId: plan.id }), jours) : null;
   const effet = effetCaisse(avant, apres);
+  /*
+   * CRITIQUE-11 n° 5 (E32, D-193) : « 29 déc. · S52 : 1 754 → 854 » laissait croire que le 29 déc. tombe en S52 ; S52 est la semaine que la
+   * vente quitte. Quand la semaine de la date livrée n'est pas celle de l'effet, la date porte la sienne : « 29 déc. (S53) · S52 : … ». Même
+   * semaine : elle n'est dite qu'une fois (A6).
+   */
+  const jour = jourLisible(promesse.livrerLe);
+  const dite = effet && lundiDe(promesse.livrerLe) !== effet.lundi ? `${jour} (${etiquetteS(promesse.livrerLe)})` : jour;
   return {
     ok: true, ecritures: [{ op: 'patch', collection: 'financialPlans', id: plan.id, patch: { date: promesse.livrerLe, ...(plan.fenetre ? { fenetre: fenetreDecalee(plan.fenetre, jours) } : {}) } }],
-    effet, promesse: null, courbeApres: apres, message: annuler(`${plan.title} : ${jourLisible(promesse.livrerLe)}${effet ? ` · ${effet.texte}` : ''}`)
+    effet, promesse: null, courbeApres: apres, message: annuler(`${plan.title} : ${dite}${effet ? ` · ${effet.texte}` : ''}`)
   };
+}
+
+/**
+ * CRITIQUE-11 n° 4 (E31 « Dupliquer en S51 avec son effet… Retirer avec son effet », D-48, D-192). Quand la courbe ne bouge pas, l'effet se dit
+ * en mots, sans flèche ni 0 inventés. Une fête ou une activité du carnet n'entre pas dans la prévision de Finances (`buildForecast` ne lit que
+ * les plans, les pièces et les brassins) : son montant estimé est dit tel quel, « recette estimée 1 180 · hors prévision » ; sans montant,
+ * « sans montant ». Une chose que la courbe compte (un mouvement ou une mise de côté à elle) et dont l'effet arrondi est nul : rien n'est dit.
+ */
+function effetEnMots(chose: ChoseCalendrier, ctx: ContexteGestes): string | undefined {
+  if (chose.centimes === undefined || chose.centimes === 0) return 'sans montant';
+  const comptee = !!ctx.courbe && (ctx.courbe.mouvements.some(m => m.choseId === chose.id) || ctx.courbe.mises.some(m => m.id === chose.id));
+  if (comptee) return undefined;
+  const montant = `${chose.centimes > 0 ? 'recette estimée' : 'coût estimé'} ${francs(Math.abs(chose.centimes))}`;
+  return ctx.courbe ? `${montant} · hors prévision` : montant;
 }
 
 /** f5-a : dupliquer en `versLundi`, avec son effet. Un brassin dupliqué est un brassin planifié ; il ne décompte rien avant son brassage (P8). */
@@ -375,10 +396,12 @@ export function dupliquer(chose: ChoseCalendrier, versLundi: string, ctx: Contex
   const mise = (chose.miseDeCote && chose.centimes && chose.fenetre) ? [{ id: `${chose.id}~copie`, titre: chose.titre, du: decale(chose.fenetre.du, delta), au: decale(chose.fenetre.au, delta), centimes: Math.abs(chose.centimes) }] : [];
   const apres = ctx.courbe ? courbeAvec(ctx.courbe, decaleMouvements, mise) : null;
   const effet = effetCaisse(ctx.courbe, apres);
+  /* CRITIQUE-11 n° 4 : sans effet sur la courbe, l'effet en mots (« recette estimée 1 180 · hors prévision », « sans montant ») */
+  const effetMots = effet ? undefined : effetEnMots(chose, ctx);
   const message = annuler(effet ? `Dupliquée · ${effet.texte}` : `Dupliquée en ${etiquetteS(cible)}`);
   if (source.genre === 'creative') {
     const document = { id: nouvelId(ctx, 'CR'), type: source.type, title: chose.titre, status: 'todo', date: decale(chose.debut, delta), ...(chose.rangee === 'activites' && source.type === 'event' ? { activite: true } : {}), ...(chose.fenetre ? { fenetre: fenetreDecalee(chose.fenetre, delta) } : {}), ...(chose.liens ? { liens: chose.liens } : {}) };
-    return { ok: true, ecritures: [{ op: 'creer', collection: 'creativeItems', document }], effet, promesse: null, courbeApres: apres, message };
+    return { ok: true, ecritures: [{ op: 'creer', collection: 'creativeItems', document }], effet, ...(effetMots ? { effetMots } : {}), promesse: null, courbeApres: apres, message };
   }
   const plan = planDe(chose, ctx);
   if (!plan || plan.source !== 'manual') return refus('Cette prévision se copie dans Finances.', { ecran: 'finances' });
@@ -388,7 +411,7 @@ export function dupliquer(chose: ChoseCalendrier, versLundi: string, ctx: Contex
     ...(plan.fenetre ? { fenetre: fenetreDecalee(plan.fenetre, delta) } : {})
   } as unknown as { id: string } & Record<string, unknown>;
   delete document.updatedAt;
-  return { ok: true, ecritures: [{ op: 'creer', collection: 'financialPlans', document }], effet, promesse: null, courbeApres: apres, message };
+  return { ok: true, ecritures: [{ op: 'creer', collection: 'financialPlans', document }], effet, ...(effetMots ? { effetMots } : {}), promesse: null, courbeApres: apres, message };
 }
 
 /**
@@ -397,18 +420,22 @@ export function dupliquer(chose: ChoseCalendrier, versLundi: string, ctx: Contex
  */
 export function retirer(chose: ChoseCalendrier, ctx: ContexteGestes): Resolution {
   const source = chose.source;
+  /* CRITIQUE-11 n° 4 (E31, D-192) : comme Dupliquer, Retirer dit son effet ; sans effet sur la courbe, en mots (`effetEnMots`) */
   if (source.genre === 'creative') {
     const apres = ctx.courbe ? courbeSans(ctx.courbe, chose.id) : null;
+    const effet = effetCaisse(ctx.courbe, apres);
+    const effetMots = effet ? undefined : effetEnMots(chose, ctx);
     return {
-      ok: true, ecritures: [{ op: 'patch', collection: 'creativeItems', id: source.id, patch: { date: '' } }], effet: effetCaisse(ctx.courbe, apres), promesse: null, courbeApres: apres,
+      ok: true, ecritures: [{ op: 'patch', collection: 'creativeItems', id: source.id, patch: { date: '' } }], effet, ...(effetMots ? { effetMots } : {}), promesse: null, courbeApres: apres,
       message: annuler(`Retirée de ${etiquetteS(chose.debut)}`, { texte: 'Sans date ›', ancre: 'sans-date' })
     };
   }
   if (source.genre === 'plan' && source.origine === 'manual') {
     const apres = ctx.courbe ? courbeSans(ctx.courbe, chose.id) : null;
     const effet = effetCaisse(ctx.courbe, apres);
+    const effetMots = effet ? undefined : effetEnMots(chose, ctx);
     return {
-      ok: true, ecritures: [{ op: 'patch', collection: 'financialPlans', id: source.id, patch: { status: 'cancelled' } }], effet, promesse: null, courbeApres: apres,
+      ok: true, ecritures: [{ op: 'patch', collection: 'financialPlans', id: source.id, patch: { status: 'cancelled' } }], effet, ...(effetMots ? { effetMots } : {}), promesse: null, courbeApres: apres,
       message: annuler(`Annulé${effet ? ` · ${effet.texte}` : ''}`, { texte: 'dans Finances ›', ancre: 'finances', cible: { ecran: 'finances' } })
     };
   }

@@ -503,3 +503,42 @@ describe('CRITIQUE-10 n° 1 (E28, D-46, D-189) : la Saison pas brassée va où o
     expect(screen.getByRole('button', { name: /^Saison de ferme/ }).textContent).toMatch(/prête 21 déc\./);
   });
 });
+
+describe('CRITIQUE-11 n° 4 (E31, D-48, D-192) : le menu d’une fête dit l’effet de Dupliquer et de Retirer', () => {
+  it('appui long sur le Marché de Noël (1 180 CHF estimés, hors prévision) : « Dupliquer en S53 · … » et « Retirer · … », jamais nus ni « 0 »', () => {
+    monterBanc();
+    appuiLongSur(screen.getByRole('button', { name: /^Marché de Noël/ }));
+    const menu = within(screen.getByRole('menu'));
+    const dup = menu.getByRole('menuitem', { name: /^Dupliquer en S53/ });
+    const ret = menu.getByRole('menuitem', { name: /^Retirer/ });
+    expect(dup.textContent).toMatch(/^Dupliquer en S53 · \S.+$/u);
+    expect(ret.textContent).toMatch(/^Retirer · \S.+$/u);
+    for (const item of [dup, ret]) {
+      /* la courbe de Finances ne compte pas le carnet : la vérité en mots, jamais une flèche ni un 0 inventés */
+      expect(item.textContent).toMatch(/recette estimée 1\s180 · hors prévision$/u);
+      expect(item.textContent).not.toMatch(/\b0\b|→/u);
+    }
+  });
+});
+
+describe('CRITIQUE-11 décision (d) : « Voir S20 › » reste ; message de deux lignes au plus, Annuler retire la chose posée', () => {
+  it('Travaux S20 → S40 : le message garde une ligne de texte et ses boutons (Voir, Annuler) ; Annuler retire la chose créée', async () => {
+    const appels = monterBanc();
+    fireEvent.click(document.querySelector('button[data-plus="travaux"]')!);
+    const d = within(screen.getByRole('dialog', { name: 'Travaux' }));
+    fireEvent.click(d.getByRole('button', { name: 'Sols : colle et joints' }));
+    const semaines = within(d.getByRole('group', { name: 'Semaine' }));
+    fireEvent.click(semaines.getByRole('button', { name: /^S20/ }));
+    fireEvent.click(semaines.getByRole('button', { name: /^S40/ }));
+    fireEvent.click(d.getByRole('button', { name: /^Ajouter/ }));
+    await waitFor(() => expect(appels.filter(a => a.op === 'creer')).toHaveLength(1));
+    const m = await screen.findByRole('status');
+    /* deux lignes au plus : une ligne de texte (bornée à deux lignes par le CSS), puis les boutons */
+    expect(m.querySelectorAll('.cal-msg-ligne')).toHaveLength(1);
+    expect(m.querySelector('[data-msg-boutons]')!.textContent).toMatch(/^ · Voir S20 › · Annuler$/u);
+    const cree = appels.find(a => a.op === 'creer')!;
+    await new Promise(r => setTimeout(r, 450));
+    fireEvent.click(within(m).getByRole('button', { name: /Annuler/ }));
+    await waitFor(() => expect(appels.some(a => a.op === 'supprimer' && a.id === cree.id)).toBe(true));
+  });
+});

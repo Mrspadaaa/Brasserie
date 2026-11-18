@@ -1,5 +1,11 @@
 // HARNAIS OFFICIEL, LE SEUL AUTORISÉ : jamais un harnais du scratchpad (CRITIQUE-10 : les visions 11 ont joué des copies jetables,
 // d'où c2-b jamais glissé, f2-a pris par le corps de la barre, le jalon de fin jamais tiré, Livrer jamais touché).
+// Vision 13 (CRITIQUE-11, lot corr11-D) : chaque état part d'un contexte neuf, avec une garde d'entrée « 0 choses cachées » (la rangée masquée
+// d'un état ne contamine plus les suivants) ; ET-PER (33) joué à 390, en paysage et à 1280, deux thèmes : 3 mois, 6 mois puis l'An au calendrier,
+// Finances lu après chaque changement (Finances à l'écran exigé), puis Du et Au changés dans Finances et la frise qui suit ; c3-a (21) par un
+// appui long de 800 ms sur la courbe ; jalons (34, 35 avec l'écriture `finPrevue` lue dans la trace du banc, 36 avec un seul role=status) ;
+// Ajouter compté (+1) ; un nom récent choisi avant Ajouter (Travaux) ; états neufs, un par n° de CRITIQUE-11 : 31a, 09c, 08c, 08m, 12m, 11f,
+// 15 (« (S53) »), 07b, 07m, 31d, 49m, 30d, et 20/20b partis de `.ent-cb` à 50 % / 50 %.
 // Vision 12 (CRITIQUE-10, lot D) : états neufs, chacun avec un attendu qui ÉCHOUE s'il n'a pas été joué (L13) : 08s1 et 08s4 (f1-a de la Saison
 // pas brassée d'une puis de quatre colonnes, la barre en S+1 puis S+4, jamais « S46 → ») ; 31s (Liste : « prévue le 10 nov. · S46 ») ; 39v
 // (« Voir S20 › » touché : la frise règle 6 mois, barre S20 → S40, 5 points touchables) ; 49d (Hotte liée, détail, plage sur une ligne) ;
@@ -293,12 +299,16 @@ const ETATS = [
   /* CRITIQUE-10 (preuve f2-a) : le BORD (`[data-bord]`), jamais le corps ni l'aria de la barre ; la barre s'allonge de 7 j, elle ne se déplace pas */
   { n: '09', nom: 'f2a-apres', geste: 'tirer le bord ([data-bord]) de la Blonde d’une colonne', mesure: p => choseLue(p, 'Blonde d’automne'),
     jouer: async p => {
+      /* vision 13 (d1280-09) : en 6 sem., la Blonde finit au bord droit de la fenêtre ; son allongement ne se voit pas. La fenêtre passe alors à
+         3 mois (dit dans le rapport), pour que la largeur puisse grandir d'une colonne */
+      const coupee = await p.evaluate(() => { const b = [...document.querySelectorAll('[data-barre]')].find(x => (x.getAttribute('data-titre') || x.getAttribute('aria-label') || '').startsWith('Blonde')); const f = document.querySelector('[data-frise]'); if (!b || !f) return false; const lane = b.closest('[data-lane]') || f; return Math.abs(b.getBoundingClientRect().right - lane.getBoundingClientRect().right) < 4 || b.getBoundingClientRect().right > lane.getBoundingClientRect().right - 2 * parseFloat(f.getAttribute('data-largeur-colonne') || '0'); });
+      if (coupee && !(p.cfg.tactile && p.cfg.w > p.cfg.h)) { await menuPeriode(p, /^3 mois/); await p.keyboard.press('Escape').catch(() => {}); await attendre(400); p.noteEtat = 'Blonde au bord de la fenêtre en 6 sem. : période 3 mois d’abord'; }
       p.blondeAvant = await choseLue(p, 'Blonde d’automne');
       p.boiteAvant = await boiteChose(p, 'Blonde d’automne');
       await glisserChose(p, 'Blonde d’automne', 1, { sous: '[data-bord]' });
       p.blondeApres = await choseLue(p, 'Blonde d’automne');
       p.boiteApres = await boiteChose(p, 'Blonde d’automne');
-      p.noteEtat = `avant « ${p.blondeAvant.slice(0, 90)} » ; après « ${p.blondeApres.slice(0, 90)} »`;
+      p.noteEtat = `${p.noteEtat ? `${p.noteEtat} ; ` : ''}avant « ${p.blondeAvant.slice(0, 90)} » ; après « ${p.blondeApres.slice(0, 90)} »`;
     },
     attendu: [/J\d+ \/ \d+/, /prête/, /promis|Annuler/, fn(async p => {
       const duree = t => Number((/J\d+ \/ (\d+)/.exec(t || '') || [])[1]);
@@ -307,7 +317,8 @@ const ETATS = [
       const A = p.boiteAvant, B = p.boiteApres;
       const memeDebut = !!A && !!B && Math.abs(A.g - B.g) < 3;
       const plusLongue = !!A && !!B && B.w - A.w > lc * 0.6;
-      return { ok: memeDebut && ((Number.isFinite(a) && b === a + 7) || plusLongue), dit: `J0 / ${a} → J0 / ${b} ; début ${A ? Math.round(A.g) : '?'} → ${B ? Math.round(B.g) : '?'} px ; largeur ${A ? Math.round(A.w) : '?'} → ${B ? Math.round(B.w) : '?'} px (colonne ${Math.round(lc)})` };
+      /* CRITIQUE-11 (p844-10, d1280-08 et 09 identiques au repos) : les trois ensemble, plus d'une alternative qui passe sans geste */
+      return { ok: memeDebut && plusLongue && Number.isFinite(a) && b === a + 7, dit: `J0 / ${a} → J0 / ${b} ; début ${A ? Math.round(A.g) : '?'} → ${B ? Math.round(B.g) : '?'} px ; largeur ${A ? Math.round(A.w) : '?'} → ${B ? Math.round(B.w) : '?'} px (colonne ${Math.round(lc)})` };
     }, 'la Blonde s’allonge de 7 j par son bord, son début ne bouge pas')], interdit: [/J0\s*\/\s*0(?!\d)/] },
   { n: '10', nom: 'f4b-brassin', geste: 'toucher la Blonde', jouer: async p => { await toucher(p, { titre: 'Blonde d’automne' }); },
     attendu: [/Ouvrir le brassin/, /Commander/, /Budget ›/, /Dry hop/i, /Garde/] },
@@ -343,6 +354,7 @@ const ETATS = [
       const r = await toucher(p, { texte: /^Livrer le/ });
       p.livrer = r.t;
       await attendre(400);
+      p.messageLivrer = await messageLu(p);
       await p.screenshot({ path: join(DOSSIER, `${p.cfgNom}-${p.theme}-15a-livrer-touche.png`) });
       /* livrée après S52, la vente sort de la fenêtre de 6 sem. : la période passe à 3 mois pour la lire */
       if (!(await existe(p, { titre: '3 fûts La Cigogne' }))) { await menuPeriode(p, /^3 mois/); await p.keyboard.press('Escape').catch(() => {}); await attendre(400); }
@@ -354,7 +366,9 @@ const ETATS = [
       const voulu = jourDe(p.livrer);
       const dates = [...(p.venteApres || '').matchAll(/\d{1,2} (?:janv\.|févr\.|mars|avr\.|mai|juin|juil\.|août|sept\.|oct\.|nov\.|déc\.)/gu)].map(m => jourDe(m[0]));
       return { ok: voulu !== null && dates.includes(voulu), dit: `Livrer « ${p.livrer || '?'} » ; vente après « ${(p.venteApres || '').slice(0, 90)} »` };
-    }, 'la vente La Cigogne porte la date de Livrer')] },
+    }, 'la vente La Cigogne porte la date de Livrer'),
+    /* CRITIQUE-11 n° 5 : « 3 fûts La Cigogne : 29 déc. (S53) · S52 : 1 754 → 854 » : la semaine de la date suit la date, entre parenthèses */
+    fn(async p => ({ ok: RE_DATE_SEMAINE.test(p.messageLivrer || ''), dit: `message de Livrer « ${(p.messageLivrer || 'absent').slice(0, 90)} »` }), 'le message de Livrer dit la semaine de la date : « 29 déc. (S53) »')] },
 
   { n: '16', nom: 'c1d-pendant', geste: 'tirer la poignée de fin jusqu’au bout, doigt tenu', jouer: async p => { await tirerPoignee(p, 1.0, true); }, attendu: [/S\d+ ?[–-] ?S\d+|l’année|An/] , fin: lacher },
   { n: '17', nom: 'an', geste: 'tirer la poignée de fin jusqu’au bout, lâcher', cave: true, jouer: async p => { await tirerPoignee(p, 1.0, false); }, attendu: [/janv/, /juin/, /oct/] },
@@ -364,21 +378,22 @@ const ETATS = [
     attendu: [fn(async p => p.evaluate(() => Number(document.querySelector('[data-frise]')?.getAttribute('data-nb-colonnes')) <= 7), 'la vue 6 semaines revient')] },
   /* CRITIQUE-9 n° 9 (E11, D-195) : un vrai glissé (doigt posé, déplacé, tenu), parti HORS du cadre de la fenêtre et de ses poignées (vision 10 :
      le doigt avait pris le cadre, « S48 – S21 2027 ») ; la tête « CHF · S · date » pendant, le détail de la semaine après le lâcher (20b) */
-  { n: '20', nom: 'c2b-lecture', geste: 'glisser le doigt le long de la courbe, hors du cadre, doigt tenu', mesure: lireTexte,
+  { n: '20', nom: 'c2b-lecture', cave: true, geste: 'glisser le doigt le long de la courbe, hors du cadre, doigt tenu', mesure: lireTexte,
     jouer: async p => {
       await trouver(p, { aria: /^Libre et caisse/ });
-      const d = await departCourbe(p);
+      const d = await departCB(p);
       p.noteEtat = d.dit;
       if (!d.ok) throw new Absent(d.dit);
       p.cadreAvant = await cadreLu(p);
       p.pmAvant = await plusMinusLu(p);
       await glisserXY(p, d.x, d.y, d.dx, 0, { tenu: true });
     },
-    attendu: [fn(plusMinusInchange, '± inchangé (le glissé n’a pas touché ±)'), /\d\s*CHF\s*·\s*S\d+\s*·\s*\d{1,2}\s\p{L}+/u, fn(async p => { const c = await cadreLu(p); return { ok: c === p.cadreAvant, dit: `cadre « ${p.cadreAvant} » → « ${c} »` }; }, 'le cadre de la fenêtre n’a pas bougé')], fin: lacher },
-  { n: '20b', nom: 'c2b-detail', geste: 'glisser le doigt le long de la courbe, hors du cadre, puis lâcher : le détail de la semaine lue', mesure: lireTexte,
+    attendu: [fn(plusMinusInchange, '± inchangé (le glissé n’a pas touché ±)'), /\d\s*CHF\s*·\s*S\d+\s*·\s*\d{1,2}\s\p{L}+/u, fn(async p => { const c = await cadreLu(p); return { ok: c === p.cadreAvant, dit: `cadre « ${p.cadreAvant} » → « ${c} »` }; }, 'le cadre de la fenêtre n’a pas bougé'),
+      fn(curseurSousNoms, 'le curseur passe sous les noms de la courbe (E11, doute c2-b de CRITIQUE-11)')], fin: lacher },
+  { n: '20b', nom: 'c2b-detail', cave: true, geste: 'glisser le doigt le long de la courbe, hors du cadre, puis lâcher : le détail de la semaine lue', mesure: lireTexte,
     jouer: async p => {
       await trouver(p, { aria: /^Libre et caisse/ });
-      const d = await departCourbe(p);
+      const d = await departCB(p);
       p.noteEtat = d.dit;
       if (!d.ok) throw new Absent(d.dit);
       p.cadreAvant = await cadreLu(p);
@@ -389,7 +404,34 @@ const ETATS = [
       p.noteEtat += ` ; tête pendant « ${p.tete} »`;
     },
     attendu: [fn(plusMinusInchange, '± inchangé (le glissé n’a pas touché ±)'), /S\d+, \d{1,2}\s?[–-]\s?\d{1,2} \p{L}+/u, fn(async p => { const c = await cadreLu(p); return { ok: c === p.cadreAvant && !!p.tete, dit: `tête « ${p.tete} » ; cadre « ${p.cadreAvant} » → « ${c} »` }; }, 'la tête lue pendant, le cadre immobile')] },
-  { n: '21', nom: 'c3a-graph', geste: 'appui long sur la courbe', jouer: async p => { await appuiLong(p, { aria: /^Libre et caisse/ }, 800); }, attendu: [/La courbe en grand|Revenir à la frise/] },
+  /* CRITIQUE-11 (c3-a jamais atteint : le mode graph n'est pas une entrée de menu, E12) : un appui long de 800 ms sur la courbe, hors du cadre ;
+     puis le doigt glisse sur la grande courbe, tenu : la lecture suit le doigt. Chaque attendu lit la grande courbe : sans elle, tout échoue. */
+  { n: '21', nom: 'c3a-graph', geste: 'appui long de 800 ms sur la courbe (hors du cadre), puis glisser sur la grande courbe, doigt tenu', mesure: p => p.evaluate(() => document.querySelector('[data-vue="graph"]') ? 'graph' : 'frise'),
+    jouer: async p => {
+      await trouver(p, { aria: /^Libre et caisse/ });
+      const d = await departCourbe(p);
+      if (!d.ok) throw new Absent(d.dit);
+      await appuyerXY(p, d.x, d.y, 800);
+      await attendre(500);
+      if (!(await p.evaluate(() => !!document.querySelector('[data-vue="graph"]')))) throw new Absent(`la grande courbe ne s’ouvre pas après 800 ms (${d.dit})`);
+      p.lectures = await lectureGrande(p);
+      p.noteEtat = `${d.dit} ; ${p.lectures.dit}`;
+    },
+    attendu: [/La courbe en grand|Revenir à la frise/, fn(grandeSegments, 'segments colorés (au moins deux couleurs de rangée)'), fn(grandeCreux, 'le creux marqué (point et étiquette)'),
+      fn(grandeBande, 'la frise en fine bande sous la courbe'), fn(async p => ({ ok: !!p.lectures && p.lectures.ok, dit: p.lectures ? p.lectures.dit : 'non lu' }), 'la lecture suit le doigt (deux semaines lues, détail ouvert)'),
+      fn(grandeCote, 'en paysage, la courbe et le détail côte à côte')], fin: lacher },
+  { n: '21x', nom: 'c3a-fermer', geste: 'appui long de 800 ms sur la courbe, puis × (Revenir à la frise)', mesure: p => p.evaluate(() => (document.querySelector('[data-vue="graph"]') ? 'graph' : 'frise') + (document.querySelector('[data-frise]') ? '+frise' : '')),
+    jouer: async p => {
+      await trouver(p, { aria: /^Libre et caisse/ });
+      const d = await departCourbe(p);
+      if (!d.ok) throw new Absent(d.dit);
+      await appuyerXY(p, d.x, d.y, 800); await attendre(500);
+      p.grandeVue = await p.evaluate(() => !!document.querySelector('[data-vue="graph"]'));
+      if (!p.grandeVue) throw new Absent('la grande courbe ne s’ouvre pas');
+      await p.screenshot({ path: join(DOSSIER, `${p.cfgNom}-${p.theme}-21o-c3a-ouverte.png`) });
+      await toucher(p, { role: 'button', aria: /^Revenir à la frise/ });
+    },
+    attendu: [fn(async p => p.evaluate(() => ({ ok: !document.querySelector('[data-vue="graph"]') && !!document.querySelector('[data-frise]'), dit: `grande courbe ${document.querySelector('[data-vue="graph"]') ? 'encore ouverte' : 'fermée'}, frise ${document.querySelector('[data-frise]') ? 'revenue' : 'absente'}` })), '× ferme la grande courbe, la frise revient')] },
 
   { n: '22', nom: 'plus-volant', geste: 'toucher le bouton flottant (button[aria-label^="Actions rapides"])', cave: true, jouer: async p => { const r = await toucher(p, FAB); p.noteEtat = `bouton flottant touché en (${Math.round(r.x)}, ${Math.round(r.y)})`; },
     attendu: [/Sur\s+le calendrier/, /Partout/, /Poser un brassin/, /Noter une idée/,
@@ -407,14 +449,25 @@ const ETATS = [
     jouer: async p => { await toucher(p, FAB); await toucher(p, dansFeuille(ligne)); },
     attendu: [new RegExp(titre), /Ajouter/, fn(async p => p.evaluate(i => document.querySelector('[data-feuille-rangee]')?.getAttribute('data-feuille-rangee') === i, id), `feuille réglée sur ${titre}`)] })),
   { n: '64', nom: 'pose-vente', geste: '+ de Ventes, puce du client La Cigogne (pas une vente probable), Ajouter', mesure: p => p.evaluate(() => { const s = document.querySelector('section[data-rangee="ventes"]'); return `${s ? s.querySelectorAll('[data-chose]').length : 0} choses · ${(s?.textContent || '').replace(/\s+/g, ' ').slice(0, 300)}`; }), chiffre: true,
-    jouer: async p => { await ajouterDans(p, 'Ventes'); await toucher(p, dansFeuille(/^La Cigogne/)); await toucher(p, boutonFeuille(/^Ajouter/)); },
-    attendu: [/Annuler/], interdit: [/Choisis un nom/] },
-  { n: '24', nom: 'pose-brassin', geste: '+ de Brassins, recette Porter d’hiver, Ajouter', mesure: p => nbChoses(p, 'brassins'), chiffre: true, jouer: async p => { await ajouterDans(p, 'Brassins'); await toucher(p, dansFeuille(/^Porter d’hiver$/)); await toucher(p, boutonFeuille(/^Ajouter/)); },
-    attendu: [/prête le/, /Annuler/] },
-  { n: '25', nom: 'pose-vente-probable', geste: 'toucher la vente probable Café du Pont', jouer: async p => { await toucher(p, { titre: 'Café du Pont' }); },
-    attendu: [/Café du Pont/, fn(async p => p.evaluate(() => ![...document.querySelectorAll('[data-probable]')].some(e => /^Café du Pont/.test(e.getAttribute('aria-label') || e.getAttribute('data-titre') || ''))), 'la vente n’est plus en pointillé')] },
-  { n: '26', nom: 'pose-activite', geste: '+ d’Activités, nom récent, 3 j, Ajouter', mesure: p => nbChoses(p, 'activites'), chiffre: true, jouer: async p => { await ajouterDans(p, 'Activités'); await toucher(p, dansFeuille(/^Inventaire du stock$|^Ranger la réserve$/)); await toucher(p, dansFeuille(/^3 j$/)); await toucher(p, boutonFeuille(/^Ajouter/)); },
-    attendu: [/Annuler/] },
+    jouer: async p => { p.nAvant = await nbToutes(p, 'ventes'); await ajouterDans(p, 'Ventes'); await toucher(p, dansFeuille(/^La Cigogne/)); p.ajoute = await toucherAjouter(p); p.nApres = await nbToutes(p, 'ventes'); },
+    attendu: [/Annuler/, fn(plusUne('Ventes'), 'Ajouter touché : Ventes compte une chose de plus')], interdit: [/Choisis un nom/] },
+  { n: '24', nom: 'pose-brassin', geste: '+ de Brassins, recette Porter d’hiver, Ajouter', mesure: p => nbChoses(p, 'brassins'), chiffre: true,
+    jouer: async p => { p.nAvant = await nbToutes(p, 'brassins'); await ajouterDans(p, 'Brassins'); await toucher(p, dansFeuille(/^Porter d’hiver/)); p.ajoute = await toucherAjouter(p); p.nApres = await nbToutes(p, 'brassins'); },
+    attendu: [/prête le/, /Annuler/, fn(plusUne('Brassins'), 'Ajouter touché : Brassins compte une chose de plus')], interdit: [/Choisis un nom/] },
+  /* CRITIQUE-11 (m390-24 à 26 : Ajouter jamais touché) : la vente probable touchée ; si une feuille s'ouvre, son Ajouter est touché ; Ventes compte
+     une vente pleine de plus (une probable en pointillé ne compte pas) */
+  { n: '25', nom: 'pose-vente-probable', geste: 'toucher la vente probable Café du Pont (puis Ajouter si la feuille s’ouvre)',
+    jouer: async p => {
+      p.nAvant = await nbPleines(p, 'ventes');
+      await toucher(p, { titre: 'Café du Pont' }); await attendre(300);
+      if (await existe(p, boutonFeuille(/^Ajouter/))) p.ajoute = await toucherAjouter(p);
+      p.nApres = await nbPleines(p, 'ventes');
+    },
+    attendu: [/Café du Pont/, fn(async p => p.evaluate(() => ![...document.querySelectorAll('[data-probable]')].some(e => /^Café du Pont/.test(e.getAttribute('aria-label') || e.getAttribute('data-titre') || ''))), 'la vente n’est plus en pointillé'),
+      fn(plusUne('Ventes (pleines)'), 'Ventes compte une vente pleine de plus')] },
+  { n: '26', nom: 'pose-activite', geste: '+ d’Activités, nom récent, 3 j, Ajouter', mesure: p => nbChoses(p, 'activites'), chiffre: true,
+    jouer: async p => { p.nAvant = await nbToutes(p, 'activites'); await ajouterDans(p, 'Activités'); await toucher(p, { dans: { role: 'dialog|menu', dernier: true }, role: 'button', texte: /^Inventaire du stock|^Ranger la réserve/ }); await toucher(p, dansFeuille(/^3 j$/)); p.ajoute = await toucherAjouter(p); p.nApres = await nbToutes(p, 'activites'); },
+    attendu: [/Annuler/, fn(plusUne('Activités'), 'Ajouter touché : Activités compte une chose de plus')], interdit: [/Choisis un nom/] },
   { n: '27', nom: 'deux-ventes', geste: 'aller aux Ventes', jouer: async p => { await trouver(p, { titre: 'Café du Pont' }); },
     attendu: [/Café du Pont/, /Épicerie du Bourg/, fn(async p => p.evaluate(() => {
       const r = t => [...document.querySelectorAll('[data-chose]')].find(e => (e.getAttribute('data-titre') || e.getAttribute('aria-label') || '').startsWith(t))?.getBoundingClientRect();
@@ -434,7 +487,22 @@ const ETATS = [
   { n: '32', nom: 'masquee-epinglee', geste: 'épingler la Hotte, puis masquer Achats', jouer: async p => { await appuiLong(p, { titre: 'Hotte' }); await toucher(p, { dans: { role: 'menu' }, texte: /^Épingler/ }); await toucher(p, { aria: /^Masquer Achats/ }); },
     attendu: [/cachée/, fn(async p => existe(p, { titre: 'Hotte' }), 'la Hotte épinglée reste visible')] },
 
-  { n: '34', nom: 'brassin-planifie-glisse', geste: 'glisser le Porter d’hiver d’une colonne', jouer: async p => { await glisserChose(p, 'Porter d’hiver', 1); }, attendu: [/Annuler/, /S\d+/] },
+  /* CRITIQUE-11 (décision c, D-81, E25) : le brassin planifié glissé d'une colonne ; ses jalons suivent (chacun décalé d'une colonne, à 30 % près) */
+  { n: '34', nom: 'brassin-planifie-glisse', geste: 'glisser le Porter d’hiver d’une colonne ; ses jalons lus avant et après', mesure: p => choseLue(p, 'Porter d’hiver'),
+    jouer: async p => {
+      await trouver(p, { titre: 'Porter d’hiver' });
+      p.lc = await largeurColonne(p);
+      p.jalonsAvant = await jalonsDe(p, 'Porter d’hiver');
+      await glisserChose(p, 'Porter d’hiver', 1);
+      p.jalonsApres = await jalonsDe(p, 'Porter d’hiver');
+    },
+    attendu: [/Annuler/, fn(async p => {
+      const a = p.jalonsAvant || {}, b = p.jalonsApres || {};
+      const ids = Object.keys(a);
+      const ecarts = ids.map(k => (b[k] === undefined ? NaN : b[k] - a[k]));
+      const ok = ids.length > 0 && ecarts.every(e => Number.isFinite(e) && Math.abs(e - p.lc) < p.lc * 0.3);
+      return { ok, dit: `${ids.length} jalon(s) : ${ids.map((k, i) => `${k} ${Number.isFinite(ecarts[i]) ? `${ecarts[i] > 0 ? '+' : ''}${Math.round(ecarts[i])} px` : 'disparu'}`).join(', ') || 'aucun'} (colonne ${Math.round(p.lc || 0)} px)` };
+    }, 'les jalons du Porter suivent la barre (une colonne)')] },
   /* CRITIQUE-9 (harnais, D-81, D-103) : chaque jalon visé par son `data-jalon` ; ni menu f5-a, ni la Saison déplacée ; la fin glissée se
      vérifie par « prête le » changé et Annuler, le refus par son message, qui ne couvre aucun nom (n° 7) */
   { n: '35', nom: 'jalon-fin', geste: 'tirer le jalon de fin (conditionnement) du Porter d’une colonne', mesure: p => choseLue(p, 'Porter d’hiver'),
@@ -442,13 +510,17 @@ const ETATS = [
       p.saisonAvant = await choseLue(p, 'Saison de ferme');
       p.porterAvant = await choseLue(p, 'Porter d’hiver');
       if (!(await existe(p, { titre: 'Porter d’hiver', sous: '[data-jalon="conditionnement"]' }))) throw new Absent('jalon [data-jalon="conditionnement"] du Porter introuvable');
+      await p.evaluate(() => { window.__bancAppels = []; });
       await glisserChose(p, 'Porter d’hiver', 1, { sous: '[data-jalon="conditionnement"]' });
+      p.appels = await p.evaluate(() => JSON.stringify((window.__bancAppels || []).map(a => ({ op: a.op, id: a.id, patch: a.patch }))));
       p.message = await p.evaluate(() => (document.querySelector('[data-message]')?.textContent || '').replace(/\s+/g, ' ').trim());
       p.noteEtat = `Porter avant « ${p.porterAvant.slice(0, 80)} » ; message « ${p.message.slice(0, 90)} »`;
     },
     attendu: [/Annuler/, fn(async p => ({ ok: !!jourDe(p.message) && /prête (le )?\d/.test(p.message) && jourDe(p.message) !== jourDe(/prête (?:le )?([^·]+)/.exec(p.porterAvant || '')?.[1]), dit: `avant « ${(/prête[^·]*/.exec(p.porterAvant || '') || ['?'])[0]} » ; message « ${p.message.slice(0, 70)} »` }), '« prête le » a changé (message de la fin glissée)'),
       fn(async p => p.evaluate(() => !document.querySelector('[role="menu"]')), 'aucun menu f5-a ouvert'),
-      fn(async p => { const s = await choseLue(p, 'Saison de ferme'); return { ok: s.split(' · ')[0] === p.saisonAvant.split(' · ')[0], dit: `Saison « ${s.slice(0, 50)} »` }; }, 'la Saison n’a pas bougé')] },
+      fn(async p => { const s = await choseLue(p, 'Saison de ferme'); return { ok: s.split(' · ')[0] === p.saisonAvant.split(' · ')[0], dit: `Saison « ${s.slice(0, 50)} »` }; }, 'la Saison n’a pas bougé'),
+      /* CRITIQUE-11 (décision c) : l'écriture elle-même, lue dans la trace du banc (`window.__bancAppels`, CalendrierPreview) */
+      fn(async p => { let l = []; try { l = JSON.parse(p.appels || '[]'); } catch { l = []; } const f = l.find(a => a.op === 'patch' && a.id === 'LOT-PORTER' && a.patch && typeof a.patch.finPrevue === 'string' && a.patch.finPrevue); return { ok: !!f, dit: f ? `écrit : LOT-PORTER finPrevue = ${f.patch.finPrevue}` : `trace : ${(p.appels || 'vide').slice(0, 120)}` }; }, 'une écriture `finPrevue` sur le Porter')] },
   { n: '36', nom: 'jalon-refuse', geste: 'tirer le jalon dry hop de la Blonde (intermédiaire)', jouer: async p => {
       const avant = await choseLue(p, 'Blonde d’automne');
       p.saisonAvant = await choseLue(p, 'Saison de ferme');
@@ -459,11 +531,13 @@ const ETATS = [
       if (avant.split(' · ')[0] !== apres.split(' · ')[0]) throw new Absent('le jalon intermédiaire a déplacé la Blonde');
     }, attendu: [/suit la recette du brassin/, /Ouvrir le brassin/, fn(async p => p.evaluate(() => !document.querySelector('[role="menu"]')), 'aucun menu f5-a ouvert'),
       fn(async p => { const s = await choseLue(p, 'Saison de ferme'); return { ok: s.split(' · ')[0] === p.saisonAvant.split(' · ')[0], dit: `Saison « ${s.slice(0, 50)} »` }; }, 'la Saison n’a pas bougé'),
-      fn(messageSansNom, 'le refus ne couvre aucun nom (CRITIQUE-9 n° 7)')] },
+      fn(messageSansNom, 'le refus ne couvre aucun nom (CRITIQUE-9 n° 7)'),
+      /* CRITIQUE-11 (décision c, E33) : un seul message à l'écran, et c'est le refus */
+      fn(async p => p.evaluate(() => { const l = [...document.querySelectorAll('[role="status"]')].filter(e => e.getBoundingClientRect().height > 0 && /\S/.test(e.textContent || '')); return { ok: l.length === 1 && /suit la recette du brassin/.test(l[0].textContent || ''), dit: `${l.length} role=status : ${l.map(e => `« ${(e.textContent || '').replace(/\s+/g, ' ').trim().slice(0, 70)} »`).join(' | ')}` }; }), 'un seul role=status, le refus')] },
   { n: '37', nom: 'mise-de-cote', geste: 'aucun (la courbe au repos)', repos: true, jouer: async () => {}, attendu: [/mis de côté/] },
   { n: '38', nom: 'travaux-fenetre', geste: '+ de Travaux, nom récent, S20 puis S40, 5 j', jouer: async p => { await fenetreTravaux(p); }, attendu: [/S20 → S40 · 21 sem\./] },
   { n: '39', nom: 'travaux-posee', geste: 'fenêtre S20 → S40, 5 j, Ajouter, puis l’An ; la barre posée (S20), pas celle de S8', mesure: barreTravauxPosee,
-    jouer: async p => { await fenetreTravaux(p); await toucher(p, boutonFeuille(/^Ajouter/)); await attendre(500); await p.keyboard.press('Escape').catch(() => {}); await menuPeriode(p, /^An\b/); await p.keyboard.press('Escape').catch(() => {}); await attendre(300); },
+    jouer: async p => { await fenetreTravaux(p); await toucherAjouter(p); await attendre(500); await p.keyboard.press('Escape').catch(() => {}); await menuPeriode(p, /^An\b/); await p.keyboard.press('Escape').catch(() => {}); await attendre(300); },
     attendu: [fn(barreTravauxVue, 'la barre posée S20 → S40 est dans la frise de l’An, avec ses 5 points'), fn(pointsTouchables, 'chaque point touchable : elementFromPoint en son centre = le point')] },
   { n: '40', nom: 'sans-date-poche', geste: 'période, puis « Sans date · n »', jouer: async p => { await menuPeriode(p, /^Sans date · \d/); }, attendu: [/Appeler l’assurance/] },
   { n: '41', nom: 'poser', geste: 'poche, Appeler l’assurance, Poser', jouer: async p => { await menuPeriode(p, /^Sans date · \d/); await toucher(p, { texte: /Appeler l’assurance/ }); await toucher(p, { texte: /^Poser$/ }); }, attendu: [/Ajouter|Activités/] },
@@ -500,10 +574,10 @@ const ETATS = [
       fn(async p => { const r = await ordreRangees(p); return { ok: r === p.ordreTrie, dit: `après tri « ${p.ordreTrie} », après rechargement « ${r} »` }; }, 'l’ordre trié revient au rechargement')] },
   /* CRITIQUE-6 (D-8, D-9, E45) : la barre Travaux S20 → S40 posée, vue dans la frise en 6 sem. et en 6 mois (la fenêtre déplacée jusqu'à S18) */
   { n: '39b', nom: 'travaux-posee-6sem', sansObjet: cfg => (cfg.w > cfg.h && cfg.tactile ? 'en paysage la fenêtre est de 13 semaines, sans 6 sem. ni 6 mois (E10)' : null), geste: 'fenêtre S20 → S40, 5 j, Ajouter ; poignée de début glissée jusqu’à S18 (6 sem.)', mesure: barreTravauxPosee,
-    jouer: async p => { await fenetreTravaux(p); await toucher(p, boutonFeuille(/^Ajouter/)); await attendre(500); await p.keyboard.press('Escape').catch(() => {}); await deplacerFenetreJusqua(p, 18); },
+    jouer: async p => { await fenetreTravaux(p); await toucherAjouter(p); await attendre(500); await p.keyboard.press('Escape').catch(() => {}); await deplacerFenetreJusqua(p, 18); },
     attendu: [fn(barreTravauxVue, 'la barre Travaux de S20 est dans la frise, avec ses points')] },
   { n: '39c', nom: 'travaux-posee-6mois', sansObjet: cfg => (cfg.w > cfg.h && cfg.tactile ? 'en paysage la fenêtre est de 13 semaines, sans 6 sem. ni 6 mois (E10)' : null), geste: 'fenêtre S20 → S40, 5 j, Ajouter ; période 6 mois ; poignée de début glissée jusqu’à S18 (fenêtre S18 – S43, qui contient S20 – S40)', mesure: barreTravauxPosee,
-    jouer: async p => { await fenetreTravaux(p); await toucher(p, boutonFeuille(/^Ajouter/)); await attendre(500); await p.keyboard.press('Escape').catch(() => {}); await menuPeriode(p, /^6 mois/); await p.keyboard.press('Escape').catch(() => {}); await attendre(300); await deplacerFenetreJusqua(p, 18); },
+    jouer: async p => { await fenetreTravaux(p); await toucherAjouter(p); await attendre(500); await p.keyboard.press('Escape').catch(() => {}); await menuPeriode(p, /^6 mois/); await p.keyboard.press('Escape').catch(() => {}); await attendre(300); await deplacerFenetreJusqua(p, 18); },
     attendu: [fn(barreTravauxVue, 'la barre Travaux S20 → S40 est dans la frise, avec ses points'), fn(travauxS20aS40, 'la barre va de S20 à S40'), fn(pointsTouchables, 'chaque point touchable : elementFromPoint en son centre = le point')] },
   { n: '61', nom: 'tri-recharge', geste: 'période, « Trier les rangées » (Urgent) ; puis recharger la page', mesure: ordreRangees,
     jouer: async p => {
@@ -702,15 +776,24 @@ const ETATS = [
      sur la chose entière (6 mois, S19 à S44) ; la barre va de S20 à S40 avec 5 points, chacun touchable en son centre */
   { n: '39v', nom: 'travaux-voir-s20', geste: 'fenêtre S20 → S40, 5 j, Ajouter ; lire le message ; toucher « Voir S20 › »', mesure: barreTravauxPosee,
     jouer: async p => {
-      await fenetreTravaux(p); await toucher(p, boutonFeuille(/^Ajouter/)); await attendre(500);
+      await fenetreTravaux(p); await toucherAjouter(p); await attendre(500);
       p.message = await messageLu(p); p.lignesMessage = await lignesDe(p, '[data-message]');
       await p.screenshot({ path: join(DOSSIER, `${p.cfgNom}-${p.theme}-39m-message-voir.png`) });
       await toucher(p, { dans: { role: 'status|alert' }, role: 'button', texte: /^Voir S20/ });
       await attendre(600);
+      /* vision 13 (paysage-39v) : ce que « Voir S20 › » montre, AVANT que le harnais ne défile : la barre à l'écran, sous l'en-tête collé */
+      p.vueApresVoir = await p.evaluate(() => {
+        const e = [...document.querySelectorAll('section[data-rangee="travaux"] [data-barre], section[data-rangee="travaux"] [data-chose]')].find(x => /\bS20\b/.test(`${x.getAttribute('aria-label') || ''} ${x.getAttribute('data-titre') || ''}`));
+        if (!e) return { ok: false, dit: 'barre S20 absente' };
+        const r = e.getBoundingClientRect(); const h = document.querySelector('[data-entete-zone]')?.getBoundingClientRect().bottom ?? 0;
+        return { ok: r.top >= h - 1 && r.bottom <= innerHeight, dit: `barre ${Math.round(r.top)}–${Math.round(r.bottom)} px, bas de l’en-tête ${Math.round(h)} px, écran ${innerHeight} px` };
+      });
+      await p.screenshot({ path: join(DOSSIER, `${p.cfgNom}-${p.theme}-39w-apres-voir.png`) });
       p.noteEtat = `message « ${p.message.slice(0, 90)} » sur ${p.lignesMessage} ligne(s) (capture 39m-message-voir) ; ${await cadreLu(p)}`;
     },
     attendu: [fn(async p => ({ ok: /Voir S20 ›/.test(p.message || '') && /Annuler/.test(p.message || '') && p.lignesMessage >= 1 && p.lignesMessage <= 2, dit: `« ${(p.message || '').slice(0, 80)} », ${p.lignesMessage} ligne(s)` }), 'le message porte « Voir S20 › » et Annuler, sur deux lignes au plus'),
-      fn(async p => p.evaluate(() => { const n = document.querySelector('[data-frise]')?.getAttribute('data-nb-colonnes'); return { ok: n === '26', dit: `${n} colonnes` }; }), 'la période passe à 6 mois (26 colonnes)'),
+      fn(async p => ({ ok: !!p.vueApresVoir && p.vueApresVoir.ok, dit: p.vueApresVoir ? p.vueApresVoir.dit : 'non lu' }), '« Voir S20 › » amène la barre à l’écran, sous l’en-tête (capture 39w, avant tout défilement du harnais)'),
+      fn(async p => p.evaluate(() => { const n = document.querySelector('[data-frise]')?.getAttribute('data-nb-colonnes'); const pay = innerWidth > innerHeight && matchMedia('(pointer: coarse)').matches; return { ok: n === '26' || (pay && n === '13'), dit: `${n} colonnes${pay ? ' (paysage : 13 semaines, E10)' : ''}` }; }), 'la période passe à 6 mois (26 colonnes ; 13 en paysage)'),
       fn(travauxS20aS40, 'la barre va de S20 à S40'), fn(barreTravauxVue, 'ses 5 points visibles'), fn(pointsTouchables, 'chaque point touchable : elementFromPoint en son centre = le point')] },
   /* n° 7 et n° 4 (D-113, D-126, E37) : la Hotte liée à la Blonde ; son détail dit « lié à Blonde d’automne » et sa plage tient sur une ligne */
   { n: '49d', nom: 'lier-detail-plage', geste: 'appui long sur la Hotte, Lier, Blonde d’automne ; ouvrir le détail de la Hotte ; lire « lié à » et la plage', mesure: lireTexte,
@@ -729,7 +812,93 @@ const ETATS = [
     },
     attendu: [fn(async p => ({ ok: /lié à Blonde d’automne/.test(p.detail || ''), dit: `détail « ${(p.detail || 'fermé').slice(0, 80)} »` }), 'le détail de la Hotte dit « lié à Blonde d’automne »'),
       fn(async p => ({ ok: /^\d{1,2} \p{L}+\.? – \d{1,2} \p{L}+\.?$/u.test(p.plage || '') && p.lignesPlage === 1, dit: `plage « ${p.plage || 'absente'} », ${p.lignesPlage} ligne(s)` }), 'la plage « 30 nov. – 6 déc. » sur une ligne')],
-    interdit: [/lié à Blonde d’automne · Blonde d’automne/] }
+    interdit: [/lié à Blonde d’automne · Blonde d’automne/] },
+
+  /* ---------- CRITIQUE-11 : un état par n°, chaque attendu échoue si l'état n'a pas été joué (L13) ---------- */
+  /* n° 1 (E04, E13, E40 ; D-184, D-194, D-204) : Liste en An ; aucun libellé de la bande n'en chevauche un autre ; le cadre dit « nov. – nov. 2027 » */
+  { n: '31a', nom: 'liste-an-bande', cave: true, geste: 'période An (menu), puis Liste ; lire la bande et le cadre',
+    mesure: p => p.evaluate(() => `${document.querySelector('[data-vue-liste]') ? 'liste' : 'frise'} · ${document.querySelector('.ent-cadre[role="group"]')?.getAttribute('aria-label') || ''}`),
+    jouer: async p => {
+      await menuPeriode(p, /^An\b/); await p.keyboard.press('Escape').catch(() => {}); await attendre(400);
+      await menuPeriode(p, /^Liste/); await p.keyboard.press('Escape').catch(() => {}); await attendre(400);
+      await p.evaluate(() => window.scrollTo(0, 0)); await attendre(300);
+      if (!(await p.evaluate(() => !!document.querySelector('[data-vue-liste]')))) throw new Absent('la Liste ne s’ouvre pas');
+    },
+    attendu: [fn(bandeListeLisible, 'aucun libellé de la bande n’en chevauche un autre (ou la Liste masque la bande)'), fn(cadreEnMois, 'le cadre suit la période : « mois – mois année »')] },
+  /* n° 2 (E29, E22, E33) : en 6 mois, une colonne ne fait qu'environ 14 px à 390 ; au lâcher, la rangée Brassins reste visible (aucun clic sur l'œil) */
+  ...[['09c', 'f2a-6mois-1col', 'période 6 mois ; tirer le bord ([data-bord]) de la Blonde d’une colonne, lâcher', true],
+    ['08c', 'f1a-6mois-1col', 'période 6 mois ; glisser la Blonde d’une colonne, lâcher', false]].map(([n, nom, geste, bord]) => ({
+    n, nom, geste, sansObjet: cfg => (cfg.tactile && cfg.w > cfg.h ? 'en paysage la fenêtre est de 13 semaines, sans 6 mois (E10)' : null), mesure: p => choseLue(p, 'Blonde d’automne'),
+    jouer: async p => {
+      await menuPeriode(p, /^6 mois/); await p.keyboard.press('Escape').catch(() => {}); await attendre(400);
+      await trouver(p, { titre: 'Blonde d’automne' });
+      p.lc = await largeurColonne(p);
+      p.boiteAvant = await boiteChose(p, 'Blonde d’automne'); p.blondeAvant = await choseLue(p, 'Blonde d’automne');
+      await glisserChose(p, 'Blonde d’automne', 1, bord ? { sous: '[data-bord]' } : {});
+      await attendre(600);
+      p.boiteApres = await boiteChose(p, 'Blonde d’automne'); p.blondeApres = await choseLue(p, 'Blonde d’automne');
+      p.noteEtat = `colonne ${p.lc.toFixed(1)} px ; avant « ${p.blondeAvant.slice(0, 70)} » ; après « ${p.blondeApres.slice(0, 70)} »`;
+    },
+    attendu: [fn(brassinsVisibles, 'la rangée Brassins reste visible, sans « choses cachées »'), bord
+      ? fn(async p => { const d = t => Number((/J\d+ \/ (\d+)/.exec(t || '') || [])[1]); const a = d(p.blondeAvant), b = d(p.blondeApres); const A = p.boiteAvant, B = p.boiteApres; return { ok: Number.isFinite(a) && b === a + 7 && !!A && !!B && Math.abs(A.g - B.g) < 3 && B.w > A.w, dit: `J0 / ${a} → J0 / ${b} ; début ${A ? Math.round(A.g) : '?'} → ${B ? Math.round(B.g) : '?'} ; largeur ${A ? Math.round(A.w) : '?'} → ${B ? Math.round(B.w) : '?'}` }; }, 'la Blonde allongée de 7 j (« J0 / 35 »), début immobile')
+      : fn(async p => { const A = p.boiteAvant, B = p.boiteApres; const dx = A && B ? B.g - A.g : NaN; return { ok: Number.isFinite(dx) && Math.abs(dx - p.lc) < p.lc * 0.45, dit: `barre déplacée de ${Number.isFinite(dx) ? Math.round(dx) : '?'} px (colonne ${Math.round(p.lc || 0)} px)` }; }, 'la barre de la Blonde déplacée d’une colonne')] })),
+  /* n° 3 (E33, E35, D-200) : le message de f1-a et celui de Retirer ne couvrent aucun nom ; Annuler est touchable (rien, ni le +, posé dessus) */
+  { n: '08m', nom: 'f1a-message-place', geste: 'glisser la Hotte de 2 colonnes, lâcher ; lire la place du message et de son Annuler', mesure: p => choseLue(p, 'Hotte'),
+    jouer: async p => { await glisserChose(p, 'Hotte', 2); await attendre(300); p.message = await messageLu(p); p.noteEtat = `message « ${p.message.slice(0, 80)} »`; },
+    attendu: [/Annuler/, fn(messageSansNom, 'le message ne couvre aucun nom'), fn(annulerTouchable, 'Annuler touchable : elementFromPoint en son centre = Annuler')] },
+  { n: '12m', nom: 'retirer-message-place', geste: 'appui long sur le Marché de Noël, Retirer ; lire la place du message et de son Annuler', mesure: p => fetesLues(p),
+    jouer: async p => { await appuiLong(p, { titre: 'Marché de Noël' }); await toucher(p, { dans: { role: 'menu' }, texte: /^Retirer/ }); await attendre(300); p.message = await messageLu(p); p.noteEtat = `message « ${p.message.slice(0, 80)} »`; },
+    attendu: [/Retirée? de S\d+/, fn(messageSansNom, 'le message ne couvre aucun nom'), fn(annulerTouchable, 'Annuler touchable : elementFromPoint en son centre = Annuler')] },
+  /* n° 4 (E31, D-192) : le menu d'une fête dit l'effet de Dupliquer et de Retirer */
+  { n: '11f', nom: 'f5a-menu-fete', cave: true, geste: 'appui long sur le Marché de Noël ; lire Dupliquer et Retirer avec leur effet',
+    jouer: async p => { await appuiLong(p, { titre: 'Marché de Noël' }); await attendre(200); p.items = await itemsMenu(p); p.noteEtat = p.items.map(i => `« ${i.texte} »`).join(' ; ').slice(0, 300); },
+    attendu: [fn(async p => effetDit(p, /^Dupliquer en S\d+/), '« Dupliquer en S… » avec son effet'), fn(async p => effetDit(p, /^Retirer/), '« Retirer » avec son effet')] },
+  /* n° 6 (E33) : pendant f1-a (la Saison, sur la rangée Brassins, comme m390-09), la bulle ne croise ni un titre de rangée ni une pastille, et le tracé
+     de la courbe ne barre aucune étiquette d'axe ; en 6 sem. puis en 6 mois */
+  ...[['07b', 'f1a-bulle-6sem', null], ['07m', 'f1a-bulle-6mois', /^6 mois/]].map(([n, nom, periode]) => ({
+    n, nom, geste: `${periode ? 'période 6 mois ; ' : ''}glisser la Saison de ferme de 2 colonnes, doigt tenu ; la bulle et les étiquettes d’axe de la courbe`,
+    sansObjet: cfg => (periode && cfg.tactile && cfg.w > cfg.h ? 'en paysage, pas de 6 mois (E10)' : null),
+    mesure: p => p.evaluate(() => (document.querySelector('[data-ici]')?.textContent || '').trim() || 'pas de bulle'),
+    jouer: async p => {
+      if (periode) { await menuPeriode(p, periode); await p.keyboard.press('Escape').catch(() => {}); await attendre(400); }
+      await glisserChose(p, 'Saison de ferme', 2, { tenu: true }); await attendre(250);
+    },
+    attendu: [/lâcher ici/, fn(bulleLibre, 'la bulle ne croise ni un titre de rangée (.cal-rh) ni une pastille'), fn(axesNonBarres, 'aucune étiquette d’axe de la courbe barrée par le tracé')], fin: lacher })),
+  /* n° 7 : dans la Liste, chaque date tient sur une ligne (« prête 7 / déc. » refusé) */
+  { n: '31d', nom: 'liste-dates-une-ligne', cave: true, geste: 'période, puis Liste ; chaque date lue sur une seule ligne', mesure: p => p.evaluate(() => (document.querySelector('[data-vue-liste]') ? 'liste' : 'frise')),
+    jouer: async p => { await menuPeriode(p, /^Liste/); await p.keyboard.press('Escape').catch(() => {}); await attendre(400); },
+    attendu: [fn(datesUneLigne, 'chaque date de la Liste sur une seule ligne (getClientRects : une ligne)')] },
+  /* n° 8 (E31, E37, D-113, D-126) : après Lier, « Liée à Blonde d’automne » et Annuler visibles en même temps que le détail ouvert de la Hotte */
+  { n: '49m', nom: 'lier-message-detail', cave: true, geste: 'appui long sur la Hotte, Lier, Blonde d’automne ; le détail de la Hotte ouvert ; message et Annuler lus en même temps', mesure: p => choseLue(p, 'Hotte'),
+    jouer: async p => {
+      await appuiLong(p, { titre: 'Hotte' }); await toucher(p, { dans: { role: 'menu' }, texte: /^Lier/ }); await toucher(p, { dans: { role: 'menu' }, texte: /^Blonde d’automne$/ });
+      await attendre(500);
+      p.messageLier = await messageLu(p);
+      const ouvert = () => p.evaluate(() => [...document.querySelectorAll('[role="region"][aria-label^="Détail"]')].some(d => /Hotte/.test(`${d.getAttribute('aria-label')} ${d.textContent}`)));
+      if (!(await ouvert())) await toucher(p, { titre: 'Hotte' });
+      await attendre(500);
+      p.noteEtat = `message après Lier « ${p.messageLier.slice(0, 70)} » ; après le détail « ${(await messageLu(p)).slice(0, 70)} »`;
+    },
+    attendu: [fn(async p => p.evaluate(() => {
+      const vis = e => { if (!e) return false; const r = e.getBoundingClientRect(); return r.width > 0 && r.height > 0 && r.bottom > 0 && r.top < innerHeight; };
+      const m = document.querySelector('[data-message]'); const t = (m?.textContent || '').replace(/\s+/g, ' ').trim();
+      const an = m && [...m.querySelectorAll('button')].find(b => /Annuler$/.test((b.textContent || '').trim()));
+      const d = [...document.querySelectorAll('[role="region"][aria-label^="Détail"]')].find(x => /Hotte/.test(`${x.getAttribute('aria-label')} ${x.textContent}`));
+      return { ok: /Liée? à Blonde d’automne/.test(t) && vis(m) && vis(an) && vis(d), dit: `message « ${t.slice(0, 60) || 'absent'} » ${vis(m) ? 'visible' : 'invisible'}, Annuler ${vis(an) ? 'visible' : 'absent'}, détail de la Hotte ${vis(d) ? 'ouvert à l’écran' : 'absent'}` };
+    }), '« Liée à Blonde d’automne · Annuler » et le détail de la Hotte, à l’écran ensemble')] },
+  /* reste corr10 (m38) : plein écran à 390, puis 30 px de défilement : l'invite « Tourne le téléphone » est partie, ou ne couvre aucun nom */
+  { n: '30d', nom: 'plein-ecran-invite-defile', geste: 'toucher ⛶, lire l’invite, puis défiler de 30 px', sansObjet: cfg => (cfg.tactile && cfg.h > cfg.w ? null : 'l’invite de rotation ne concerne que le téléphone en portrait'),
+    mesure: p => p.evaluate(() => `${Math.round(scrollY)}`),
+    jouer: async p => {
+      await toucher(p, { aria: /^Plein écran/ }); await attendre(500);
+      p.inviteAvant = /Tourne le téléphone/.test(await lireTexte(p));
+      await p.screenshot({ path: join(DOSSIER, `${p.cfgNom}-${p.theme}-30a-invite-avant-defilement.png`) });
+      await p.evaluate(() => window.scrollBy(0, 30)); await attendre(600);
+      p.messageApres = await messageLu(p);
+      p.noteEtat = `invite avant le défilement : ${p.inviteAvant ? 'vue' : 'ABSENTE'} (capture 30a) ; message après « ${p.messageApres.slice(0, 60)} »`;
+    },
+    attendu: [fn(async p => ({ ok: !!p.inviteAvant, dit: p.inviteAvant ? 'invite vue' : 'invite jamais vue' }), 'l’invite « Tourne le téléphone » est montrée par ⛶'),
+      fn(async p => (/Tourne le téléphone/.test(p.messageApres || '') ? messageSansNom(p) : { ok: true, dit: 'invite partie au défilement' }), 'après 30 px, l’invite est partie ou ne couvre aucun nom')] }
 ];
 /* ---------- CRITIQUE-10 : dates du banc (posé par rapport au jour) et lectures ---------- */
 /** Le lundi de la semaine en cours (UTC), comme le banc (`lundiDe(aujourdhui)`). */
@@ -750,6 +919,178 @@ function semaineDe(p, titre) {
 }
 /** Le texte du message (E33). */
 function messageLu(p) { return p.evaluate(() => (document.querySelector('[data-message]')?.textContent || '').replace(/\s+/g, ' ').trim()); }
+/* ---------- CRITIQUE-11 : lectures des états neufs ---------- */
+/** « 29 déc. (S53) » : une date suivie de sa semaine entre parenthèses (n° 5). */
+const RE_DATE_SEMAINE = /\d{1,2} (?:janv\.|févr\.|mars|avr\.|mai|juin|juil\.|août|sept\.|oct\.|nov\.|déc\.) \(S\d{1,2}\)/u;
+/** Une date de la Liste, « 7 déc. » (l'espace peut être insécable). */
+const RE_DATE_LISTE = /\d{1,2}\s(?:janv\.|févr\.|mars|avr\.|mai|juin|juil\.|août|sept\.|oct\.|nov\.|déc\.)/gu;
+/** Le cadre d'une période en mois : « nov. – nov. 2027 » ou « nov. 2026 – nov. 2027 » ; jamais des semaines (n° 1). */
+const RE_CADRE_MOIS = /\p{L}{3,}\.?(?: \d{4})? – \p{L}{3,}\.? \d{4}/u;
+/** Les rangées qui disent « n choses cachées » (garde d'entrée : 0 attendu, CRITIQUE-11 contamination). */
+function chosesCachees(p) {
+  return p.evaluate(() => [...document.querySelectorAll('section[data-rangee]')].filter(s => /cachée/.test(s.textContent || '')).map(s => s.getAttribute('data-rangee')));
+}
+/** Départ de c2-b (corr10-B) : `.ent-cb` à 50 % / 50 % ; glissé de 80 px vers la droite (moins s'il sort), hors du cadre et de ses poignées. */
+function departCB(p) {
+  return p.evaluate(() => {
+    const cb = [...document.querySelectorAll('.ent-cb')].find(e => e.getBoundingClientRect().width > 100);
+    if (!cb) return { ok: false, dit: '.ent-cb introuvable' };
+    const C = cb.getBoundingClientRect();
+    const x = C.left + C.width / 2, y = C.top + C.height / 2;
+    const sous = document.elementFromPoint(x, y);
+    const pris = sous && sous.closest('.ent-cadre, [data-poignee], [data-cadre-tirage], button');
+    const dx = Math.min(80, C.right - 8 - x);
+    return { ok: !pris && dx > 20, x, y, dx, dit: `départ .ent-cb 50 % / 50 % (${Math.round(x)}, ${Math.round(y)}), glissé ${Math.round(dx)} px ; sous le doigt : <${sous?.tagName.toLowerCase()}${sous?.getAttribute?.('class') ? `.${String(sous.getAttribute('class')).split(' ')[0]}` : ''}>${pris ? ' PRIS PAR UN CADRE OU UN BOUTON' : ''}` };
+  });
+}
+/** Le curseur de lecture (E11) passe SOUS les noms de la courbe : chaque nom que sa ligne croise est peint après lui (au-dessus). */
+function curseurSousNoms(p) {
+  return p.evaluate(() => {
+    const c = document.querySelector('[data-curseur]');
+    if (!c) return { ok: false, dit: 'curseur absent (aucune lecture en cours)' };
+    const ligne = c.querySelector('line') || c; const L = ligne.getBoundingClientRect();
+    const svg = c.closest('svg');
+    const noms = [...svg.querySelectorAll('text')].filter(t => !c.contains(t) && /\p{L}/u.test(t.textContent || '')).filter(t => { const r = t.getBoundingClientRect(); return r.width > 0 && r.left < L.right && r.right > L.left && r.top < L.bottom && r.bottom > L.top; });
+    const dessous = noms.filter(t => !(c.compareDocumentPosition(t) & Node.DOCUMENT_POSITION_FOLLOWING));
+    return { ok: dessous.length === 0, dit: `${noms.length} nom(s) croisé(s) par le curseur${noms.length ? ` : ${noms.map(t => `« ${(t.textContent || '').slice(0, 24)} »`).join(', ')}` : ''}${dessous.length ? ` ; peints SOUS le curseur : ${dessous.map(t => `« ${(t.textContent || '').slice(0, 24)} »`).join(', ')}` : ''}` };
+  });
+}
+/** Sur la grande courbe, le doigt glisse de 30 % à 70 % de sa largeur, tenu : deux semaines lues (« S… » du curseur), détail ouvert. */
+async function lectureGrande(p) {
+  const z = await p.evaluate(() => { const w = document.querySelector('[data-vue="graph"] .ent-gc-w'); if (!w) return null; const r = w.getBoundingClientRect(); return { x: r.left + r.width * 0.3, y: r.top + r.height * 0.45, w: r.width }; });
+  if (!z) return { ok: false, dit: 'zone de la grande courbe introuvable' };
+  const lire = () => p.evaluate(() => ({ s: (document.querySelector('[data-vue="graph"] .ent-cur-s')?.textContent || '').trim(), d: (document.querySelector('[data-vue="graph"] .ent-gc-d')?.textContent || '').replace(/\s+/g, ' ').trim() }));
+  await glisserXY(p, z.x, z.y, z.w * 0.1, 0, { tenu: true });
+  const a = await lire();
+  for (let i = 1; i <= 8; i++) { const x = z.x + z.w * 0.1 + (z.w * 0.3 * i) / 8; if (p.cfg.tactile) await touche(p, 'touchMove', x, z.y); else await p.mouse.move(x, z.y); await attendre(25); }
+  p.doigt = { x: z.x + z.w * 0.4, y: z.y };
+  await attendre(250);
+  const b = await lire();
+  return { ok: !!a.s && !!b.s && a.s !== b.s && !!b.d, dit: `lecture sous le doigt « ${a.s || '—'} » puis « ${b.s || '—'} » ; détail « ${b.d.slice(0, 60) || 'absent'} »` };
+}
+function grandeSegments(p) {
+  return p.evaluate(() => { const l = [...document.querySelectorAll('[data-vue="graph"] path.ent-sgm')]; const c = new Set(l.map(e => [...e.classList].find(k => k.startsWith('ent-c-'))).filter(Boolean)); return { ok: l.length > 4 && c.size >= 2, dit: `${l.length} segments, ${c.size} couleur(s) : ${[...c].join(' ')}` }; });
+}
+function grandeCreux(p) {
+  return p.evaluate(() => { const g = document.querySelector('[data-vue="graph"] .ent-gc-creux'); const t = (g?.querySelector('[data-creux-etiquette]')?.textContent || '').trim(); return { ok: !!g && !!g.querySelector('.ent-creux-pt') && !!t, dit: g ? `creux « ${t} »` : 'creux non marqué' }; });
+}
+function grandeBande(p) {
+  return p.evaluate(() => {
+    const l = [...document.querySelectorAll('[data-vue="graph"] rect.ent-bd-fin')].map(e => e.getBoundingClientRect()).filter(r => r.width > 0);
+    const w = document.querySelector('[data-vue="graph"] .ent-gs')?.getBoundingClientRect();
+    const h = l.length ? Math.max(...l.map(r => r.height)) : 0; const bas = l.length && w ? Math.min(...l.map(r => r.top)) > w.top + w.height * 0.6 : false;
+    return { ok: l.length >= 10 && h <= 14 && bas, dit: `${l.length} case(s) de frise, ${Math.round(h)} px de haut, ${bas ? 'sous la courbe' : 'PAS sous la courbe'}` };
+  });
+}
+function grandeCote(p) {
+  return p.evaluate(() => {
+    const paysage = innerWidth > innerHeight && matchMedia('(pointer: coarse)').matches;
+    if (!paysage) return { ok: true, dit: 'sans objet hors paysage' };
+    const w = document.querySelector('[data-vue="graph"] .ent-gc-w')?.getBoundingClientRect(), c = document.querySelector('[data-vue="graph"] .ent-gc-cote')?.getBoundingClientRect();
+    if (!w || !c) return { ok: false, dit: `courbe ${w ? 'lue' : 'absente'}, colonne du détail ${c ? 'lue' : 'absente'}` };
+    return { ok: w.right <= c.left + 1 && w.top < c.bottom && c.top < w.bottom && c.width > 60, dit: `courbe ${Math.round(w.left)}–${Math.round(w.right)} px, détail ${Math.round(c.left)}–${Math.round(c.right)} px` };
+  });
+}
+/** La bande de la Liste en An : ses libellés (semaines ou mois) ne se chevauchent pas deux à deux ; une Liste sans bande passe aussi (correction admise). */
+function bandeListeLisible(p) {
+  return p.evaluate(() => {
+    const vis = e => { const r = e.getBoundingClientRect(); return r.width > 0 && r.height > 0 && getComputedStyle(e).visibility !== 'hidden'; };
+    const zones = [...document.querySelectorAll('[data-bande-semaines], [aria-label^="L’année en"], [aria-label^="Semaines"]')].filter(vis);
+    if (!zones.length) return { ok: true, dit: 'la Liste masque la bande' };
+    const els = [...new Set(zones.flatMap(z => [...z.querySelectorAll('*')]))].filter(e => e.children.length === 0 && (e.textContent || '').trim() && vis(e));
+    const boite = e => { if (e instanceof SVGElement) return e.getBoundingClientRect(); const r = document.createRange(); r.selectNodeContents(e); return r.getBoundingClientRect(); };
+    const b = els.map(e => { const q = boite(e); return { t: (e.textContent || '').trim(), g: q.left, d: q.right, h: q.top, b: q.bottom }; }).filter(o => o.d > o.g);
+    const chev = [];
+    for (let i = 0; i < b.length; i++) for (let j = i + 1; j < b.length; j++) { const a = b[i], c = b[j]; if (a.g < c.d - 0.5 && c.g < a.d - 0.5 && a.h < c.b - 0.5 && c.h < a.b - 0.5) chev.push(`${a.t}/${c.t}`); }
+    return { ok: chev.length === 0, dit: `${b.length} libellé(s) : « ${b.map(o => o.t).join(' ').slice(0, 100)} » ; ${chev.length ? `${chev.length} chevauchement(s) : ${chev.slice(0, 6).join(', ')}` : 'aucun chevauchement'}` };
+  });
+}
+async function cadreEnMois(p) {
+  const t = await p.evaluate(() => { const c = document.querySelector('.ent-cadre[role="group"]'); return c ? (c.getAttribute('aria-label') || '').replace(/^Fenêtre : /, '') : `bouton « ${(document.querySelector('[data-ent-periode]')?.textContent || '').trim()} »`; });
+  return { ok: RE_CADRE_MOIS.test(t) && !/S\d+/.test(t), dit: `cadre « ${t} »` };
+}
+/** La rangée Brassins à l'écran, sans « choses cachées », la Blonde visible, `calendrier_masquees` sans « brassins ». */
+function brassinsVisibles(p) {
+  return p.evaluate(() => {
+    const s = document.querySelector('section[data-rangee="brassins"]'); const t = (s?.textContent || '').replace(/\s+/g, ' ');
+    let m = []; try { m = JSON.parse(localStorage.getItem('laffinee_ui_state') || '{}').calendrier_masquees || []; } catch { m = []; }
+    const b = [...document.querySelectorAll('section[data-rangee="brassins"] [data-barre], section[data-rangee="brassins"] [data-chose]')].find(e => (e.getAttribute('data-titre') || e.getAttribute('aria-label') || '').startsWith('Blonde'));
+    return { ok: !!s && !/cachée/.test(t) && !m.includes('brassins') && !!b && b.getBoundingClientRect().width > 0, dit: `Brassins ${s ? (/cachée/.test(t) ? `« ${(/\d+ choses? cachées?/.exec(t) || ['cachée'])[0]} »` : 'visible') : 'absente'} ; masquées ${JSON.stringify(m)} ; Blonde ${b ? 'visible' : 'absente'}` };
+  });
+}
+/** Annuler du message : rien n'est posé dessus en son centre (le + volant compris). */
+function annulerTouchable(p) {
+  return p.evaluate(() => {
+    const m = document.querySelector('[data-message]'); const a = m && [...m.querySelectorAll('button')].find(b => /Annuler$/.test((b.textContent || '').trim()));
+    if (!a) return { ok: false, dit: 'Annuler absent du message' };
+    const r = a.getBoundingClientRect(); const e = document.elementFromPoint(r.left + r.width / 2, r.top + r.height / 2);
+    return { ok: !!e && (e === a || a.contains(e)), dit: `au centre d’Annuler (${Math.round(r.left + r.width / 2)}, ${Math.round(r.top + r.height / 2)}) : <${e?.tagName.toLowerCase()}> « ${(e?.closest('button')?.getAttribute('aria-label') || e?.textContent || '').replace(/\s+/g, ' ').trim().slice(0, 30)} » ; message ${m.dataset.place || 'à sa place'}` };
+  });
+}
+/** Les lignes du menu ouvert : l'action et ce qui suit (l'effet). */
+function itemsMenu(p) {
+  return p.evaluate(() => {
+    const m = document.querySelector('[role="menu"]'); if (!m) return [];
+    return [...m.querySelectorAll('[role^="menuitem"], button')].filter(b => b.getBoundingClientRect().height > 0).map(b => {
+      const effet = [...b.querySelectorAll('em, small, [data-effet], [data-effet-dupliquer]')].map(x => (x.textContent || '').trim()).filter(Boolean).join(' ');
+      return { texte: (b.innerText || b.textContent || '').replace(/\s*\n\s*/g, ' · ').replace(/\s+/g, ' ').trim(), effet };
+    });
+  });
+}
+async function effetDit(p, re) {
+  const i = (p.items || []).find(x => re.test(x.texte));
+  if (!i) return { ok: false, dit: `ligne ${re.source} absente du menu` };
+  const apres = /·\s*(\S.*)$/.exec(i.texte)?.[1] || '';
+  return { ok: !!i.effet || !!apres, dit: `« ${i.texte} »${i.effet ? ` (effet « ${i.effet} »)` : ''}` };
+}
+/** La bulle « lâcher ici » ne croise aucun texte de titre de rangée (`.cal-rh`) ni aucune pastille (n° 6). */
+function bulleLibre(p) {
+  return p.evaluate(() => {
+    const b = document.querySelector('[data-ici]'); if (!b) return { ok: false, dit: 'aucune bulle' };
+    const B = b.getBoundingClientRect();
+    const boite = e => { const r = document.createRange(); r.selectNodeContents(e); return r.getBoundingClientRect(); };
+    const obst = [...[...document.querySelectorAll('.cal-rh *')].filter(e => e.children.length === 0 && /\S/.test(e.textContent || '')).map(e => ({ n: (e.textContent || '').trim().slice(0, 20), r: boite(e) })),
+      ...[...document.querySelectorAll('.cal-pastille, [data-pastille]')].map(e => ({ n: `pastille ${e.getAttribute('data-pastille') || ''}`, r: e.getBoundingClientRect() }))]
+      .filter(o => o.r.width > 0 &&o.r.left < B.right && o.r.right > B.left && o.r.top < B.bottom && o.r.bottom > B.top);
+    return { ok: obst.length === 0, dit: `bulle « ${(b.textContent || '').trim().slice(0, 40)} » (${Math.round(B.left)}, ${Math.round(B.top)}) ; ${obst.length ? `croise : ${obst.map(o => o.n).join(' | ')}` : 'ne croise rien'}` };
+  });
+}
+/** Aucune étiquette d'axe de la courbe (texte purement numérique) n'est traversée par le tracé : `isPointInStroke` sur 5 × 3 points de sa boîte. */
+function axesNonBarres(p) {
+  return p.evaluate(() => {
+    const zone = [...document.querySelectorAll('[aria-label^="Libre et caisse"]')].find(e => e.getBoundingClientRect().width > 100);
+    const svg = zone && (zone.tagName.toLowerCase() === 'svg' ? zone : zone.querySelector('svg'));
+    if (!svg) return { ok: false, dit: 'courbe introuvable' };
+    const textes = [...svg.querySelectorAll('text')].filter(t => /^[−-]?\d[\d\s’']*$/.test((t.textContent || '').trim()) && t.getBoundingClientRect().width > 0);
+    const traces = [...svg.querySelectorAll('path')].filter(e => !e.closest('[data-curseur]') && getComputedStyle(e).stroke !== 'none' && (parseFloat(getComputedStyle(e).strokeWidth) || 0) > 0);
+    const barres = textes.filter(t => {
+      const r = t.getBoundingClientRect();
+      for (let i = 0; i <= 4; i++) for (let j = 0; j <= 2; j++) {
+        const x = r.left + 1 + ((r.width - 2) * i) / 4, y = r.top + 1 + ((r.height - 2) * j) / 2;
+        for (const e of traces) { const m = e.getScreenCTM(); if (!m) continue; const q = new DOMPoint(x, y).matrixTransform(m.inverse()); if (e.isPointInStroke(q)) return true; }
+      }
+      return false;
+    });
+    return { ok: textes.length > 0 && barres.length === 0, dit: `${textes.length} étiquette(s) d’axe : ${textes.map(t => (t.textContent || '').trim()).join(', ')} ; ${barres.length ? `barrée(s) : ${barres.map(t => (t.textContent || '').trim()).join(', ')}` : 'aucune barrée'}` };
+  });
+}
+/** Chaque date de la Liste tient sur une ligne : les boîtes de la plage de la date (Range) sont sur une seule hauteur. */
+function datesUneLigne(p) {
+  return p.evaluate(src => {
+    const l = document.querySelector('[data-vue-liste]'); if (!l) return { ok: false, dit: 'Liste absente' };
+    const re = new RegExp(src, 'gu'); const w = document.createTreeWalker(l, NodeFilter.SHOW_TEXT); const coupees = []; let n = 0;
+    for (let t = w.nextNode(); t; t = w.nextNode()) {
+      const s = t.textContent || '';
+      for (const m of s.matchAll(re)) {
+        const r = document.createRange(); r.setStart(t, m.index); r.setEnd(t, m.index + m[0].length);
+        const rs = [...r.getClientRects()].filter(q => q.width > 0); if (!rs.length) continue; n++;
+        const hauts = new Set(rs.map(q => Math.round(q.top / 4)));
+        if (hauts.size > 1) coupees.push(`${m[0]} (« ${s.trim().slice(0, 30)} »)`);
+      }
+    }
+    return { ok: n > 0 && coupees.length === 0, dit: `${n} date(s) lue(s) ; ${coupees.length ? `coupée(s) : ${coupees.slice(0, 5).join(' ; ')}` : 'aucune coupée'}` };
+  }, RE_DATE_LISTE.source);
+}
 /** Le nombre de lignes de texte d'un élément : les boîtes de ses nœuds texte, groupées par hauteur (10 px). */
 function lignesDe(p, sel) {
   return p.evaluate(s => {
@@ -789,7 +1130,8 @@ function pointsTouchables(p) {
   return p.evaluate(() => {
     const e = [...document.querySelectorAll('section[data-rangee="travaux"] [data-barre], section[data-rangee="travaux"] [data-chose]')].find(x => /\bS20\b/.test(`${x.getAttribute('aria-label') || ''} ${x.getAttribute('data-titre') || ''}`));
     if (!e) return { ok: false, dit: 'barre posée (S20) absente' };
-    const r = e.getBoundingClientRect(); if (r.top < 80 || r.bottom > innerHeight - 100) window.scrollBy(0, r.top - innerHeight / 2);
+    const hautZ = document.querySelector('[data-entete-zone]')?.getBoundingClientRect().bottom ?? 80;
+    const r = e.getBoundingClientRect(); if (r.top < hautZ || r.bottom > innerHeight - 100) window.scrollBy(0, r.top - (hautZ + (innerHeight - hautZ) / 2));
     const pts = [...e.querySelectorAll('[data-point]')];
     /* les points, le nom et la durée ont `pointer-events: none` (le doigt prend la barre) : elementFromPoint les traverse. Pour lire ce qui est
        PEINT au-dessus, la frise est rendue touchable le temps de la mesure (une feuille de style posée puis retirée ; rien de l'app ne change) */
@@ -908,11 +1250,45 @@ async function tirerPoignee(p, part, tenu) {
   const bord = await p.evaluate(() => { const s = [...document.querySelectorAll('svg')].map(x => x.getBoundingClientRect()).filter(b => b.width > 150).sort((a, b) => b.width - a.width)[0]; return s ? s.right : innerWidth; });
   await glisserXY(p, r.x, r.y, Math.max(10, (bord - r.x) * part + (part >= 1 ? 6 : 0)), 0, { tenu });
 }
+/* CRITIQUE-11 (m390-32 : « Choisis un nom. ») : la puce d'un nom récent (« Sols : colle et joints », suivie de son montant) est touchée dans le
+   groupe « Noms récents » ; le champ du nom doit être rempli, sinon l'état est ABSENT avant même Ajouter */
 async function fenetreTravaux(p) {
   await ajouterDans(p, 'Travaux');
-  await toucher(p, dansFeuille(/^Sols : colle et joints$|^Rénovation/));
+  await toucher(p, { dans: { role: 'dialog|menu', dernier: true }, role: 'button', texte: /^Sols : colle et joints|^Rénovation/ });
+  await attendre(200);
+  p.nomChoisi = await nomDeLaFeuille(p);
+  if (!p.nomChoisi) throw new Absent('aucun nom dans la feuille Travaux après le toucher de la puce « Sols : colle et joints »');
   await toucher(p, dansFeuille(/^S20$/)); await toucher(p, dansFeuille(/^S40$/)); await toucher(p, dansFeuille(/^5 j$/));
 }
+/** Le nom écrit dans la feuille ouverte : le premier champ texte (ni montant ni date) ; « » s'il est vide. */
+function nomDeLaFeuille(p) {
+  return p.evaluate(() => {
+    const d = [...document.querySelectorAll('[role="dialog"], dialog')].filter(x => x.getBoundingClientRect().height > 0).pop();
+    const c = d && [...d.querySelectorAll('input, textarea')].find(i => (i.type === 'text' || i.type === '' || i.tagName === 'TEXTAREA') && !/decimal|numeric/.test(i.inputMode || ''));
+    return c ? (c.value || '').trim() : '';
+  });
+}
+/** Ajouter de la feuille touché ; refusé (« Choisis un nom. ») ou feuille restée ouverte sans message : ABSENT. Rend le texte du bouton. */
+async function toucherAjouter(p) {
+  const r = await toucher(p, boutonFeuille(/^Ajouter/));
+  await attendre(400);
+  const t = await lireTexte(p);
+  if (/Choisis un nom/.test(t)) throw new Absent(`Ajouter (« ${r.t} ») refusé : « Choisis un nom. »`);
+  return r.t;
+}
+/** Les choses d'une rangée (barres, choses, marques), sans compter deux fois une chose imbriquée. */
+const nbToutes = (p, r) => p.evaluate(x => { const s = document.querySelector(`section[data-rangee="${x}"]`); if (!s) return -1; const l = [...s.querySelectorAll('[data-chose], [data-barre], [data-marque]')]; return l.filter(e => !l.some(o => o !== e && o.contains(e))).length; }, r);
+/** Les choses pleines d'une rangée : ni vente probable ni proposition en pointillé. */
+const nbPleines = (p, r) => p.evaluate(x => { const s = document.querySelector(`section[data-rangee="${x}"]`); if (!s) return -1; const l = [...s.querySelectorAll('[data-chose], [data-barre], [data-marque]')].filter(e => !e.closest('[data-probable], [data-proposition]')); return l.filter(e => !l.some(o => o !== e && o.contains(e))).length; }, r);
+function plusUne(nom) { return async p => ({ ok: Number.isFinite(p.nAvant) && p.nAvant >= 0 && p.nApres === p.nAvant + 1, dit: `${nom} : ${p.nAvant ?? '?'} → ${p.nApres ?? '?'}${p.ajoute ? ` (bouton « ${p.ajoute} »)` : ''}` }); }
+/** Les jalons d'une barre : leur centre x, par `data-jalon`. */
+const jalonsDe = (p, titre) => p.evaluate(t => {
+  const b = [...document.querySelectorAll('[data-barre], [data-chose]')].find(x => (x.getAttribute('data-titre') || x.getAttribute('aria-label') || '').startsWith(t));
+  if (!b) return {};
+  const o = {};
+  for (const j of b.querySelectorAll('[data-jalon]')) { const r = j.getBoundingClientRect(); if (r.width > 0) o[j.getAttribute('data-jalon')] = r.left + r.width / 2; }
+  return o;
+}, titre);
 async function toucherSiPresent(p, spec) { if (await existe(p, spec)) await toucher(p, spec); }
 /** L'étoile sur la courbe (E31, D-37) : un élément de l'en-tête (zone collée, hors de la frise) qui nomme le Marché de Noël en étoile, ou porte ★. */
 async function etoileSurCourbe(p) {
@@ -971,7 +1347,9 @@ async function barreTravauxVue(p) {
       .find(x => /\bS20\b/.test(`${x.getAttribute('aria-label') || ''} ${x.getAttribute('data-titre') || ''}`));
     if (!e) return { ok: false, dit: 'barre posée (S20) absente de la frise visible' };
     const r = e.getBoundingClientRect();
-    if (r.top < 0 || r.bottom > innerHeight) { window.scrollBy(0, r.top - innerHeight / 2); }
+    /* vision 13 : sous l'en-tête collé (paysage), la barre n'est pas vue ; on la ramène au milieu de ce qui reste sous l'en-tête */
+    const hautZ = document.querySelector('[data-entete-zone]')?.getBoundingClientRect().bottom ?? 0;
+    if (r.top < hautZ || r.bottom > innerHeight) { window.scrollBy(0, r.top - (hautZ + (innerHeight - hautZ) / 2)); }
     const b = e.getBoundingClientRect();
     const pts = [...e.querySelectorAll('[data-point]')];
     const points = pts.length;
@@ -1024,8 +1402,17 @@ async function jouerEtat(cfgNom, theme, etat) {
   try {
     p = await ouvrir(cfg, theme, BANC);
     p.cfgNom = cfgNom;
+    /* CRITIQUE-11 (contamination, E39) : un contexte neuf par état ; garde d'entrée « 0 choses cachées » ; sinon stockage local et IndexedDB vidés,
+       page relue ; toujours caché : l'état est ABSENT (jamais une capture prise sur une rangée masquée par un autre état) */
+    let cachees = await chosesCachees(p);
+    if (cachees.length) {
+      await p.evaluate(async () => { localStorage.clear(); sessionStorage.clear(); for (const d of ((await indexedDB.databases?.()) || [])) if (d.name) indexedDB.deleteDatabase(d.name); });
+      await charger(p, null); cachees = await chosesCachees(p);
+    }
+    const contamine = cachees.length ? `contamination : ${cachees.join(', ')} « cachée » à l’entrée, même après stockage vidé` : null;
     let statut = 'OK', dit = '';
     try {
+      if (contamine) throw new Absent(contamine);
       /* CRITIQUE-5 n° 20 : le geste doit changer ce qu'il vise ; sa mesure propre (`mesure`), sinon la signature de l'écran */
       const mesurer = etat.mesure || signature;
       const avant = etat.repos ? null : await mesurer(p);
@@ -1139,51 +1526,141 @@ async function devLocal(cfgNom, theme) {
   } finally { if (p) await p.ctx.close().catch(() => {}); }
 }
 
-/** ET-PER (n° 24, D-12 à D-14) : deux opérations « ZZ TEST » saisies par l'interface, 3 mois au calendrier, puis Finances filtre sur la plage. */
+/**
+ * ET-PER (décision b de CRITIQUE-11 ; D-12 à D-14, D-78 ; E07 ; P5), à 390, en paysage et à 1280, clair et cave. Dans `/?dev-local` (requêtes
+ * Firestore coupées, contexte jeté), trois écritures « ZZ TEST » locales : dans la plage (aujourd'hui), dans 5 mois (+150 j : hors des 3 mois,
+ * dans 6 mois et l'An) et hors plage (+400 j). Bord puis Calendrier ; puis trois vrais changements de période au calendrier : menu 3 mois, menu
+ * 6 mois, l'An par la poignée tirée au bout. Après chacun, Finances par la barre d'onglets (le rail à 1280), Opérations : la plage écrite
+ * (« 16 nov. → 14 févr. »), Du et Au égaux à la fenêtre du calendrier, les écritures filtrées. Chaque attendu exige Finances à l'écran (`.finance`
+ * présent, `[data-frise]` absent) : il ne peut pas passer sur le calendrier (p844-36 et d1280-34 de la vision 12 le montraient). Puis le sens
+ * inverse : Au réglé dans Opérations à Du + 27 j, retour au Calendrier : 4 colonnes, première semaine = celle de Du.
+ */
 async function etPer(cfgNom, theme) {
   const cfg = CONFIGS[cfgNom];
-  const base33 = `${cfgNom}-${theme}-33-finances-plage`;
   let p; const pas = [];
+  const iso = d => d.toISOString().slice(0, 10);
+  const lisibleIso = j => { const d = new Date(`${j}T00:00:00Z`); return `${d.getUTCDate()} ${MOIS_COURTS[d.getUTCMonth()]}`; };
+  const auj = new Date();
+  const ECRITURES = [['ZZ TEST — dans la plage', iso(auj)], ['ZZ TEST — dans 5 mois', iso(new Date(auj.getTime() + 150 * 864e5))], ['ZZ TEST — hors plage', iso(new Date(auj.getTime() + 400 * 864e5))]];
+  /* la fenêtre du calendrier : première semaine de la bande (sinon la semaine en cours, l'An part d'elle), nombre de colonnes de la frise */
+  const fenetreCalendrier = () => p.evaluate(() => {
+    /* la première case de la bande, par son nom accessible (en 6 mois, son texte peut être masqué une semaine sur deux) */
+    const s = [...document.querySelectorAll('[data-bande-semaines] button, [data-bande-semaines] [role="button"]')].map(b => (/S\d+/.exec(`${b.getAttribute('aria-label') || ''} ${b.textContent || ''}`) || [])[0]).find(Boolean) || null;
+    const vueC = document.querySelector('[data-calendrier]')?.getAttribute('data-vue') || '';
+    const cadre = document.querySelector('.ent-cadre[role="group"]')?.getAttribute('aria-label') || '';
+    /* l'An (E13) : la frise compte ses colonnes en mois ; la fenêtre est de 52 semaines depuis la semaine en cours */
+    const an = vueC === 'annee' || /^Fenêtre : \p{L}{3,}\.?( \d{4})? – \p{L}{3,}\.? \d{4}$/u.test(cadre);
+    const n = an ? 52 : Number(document.querySelector('[data-frise]')?.getAttribute('data-nb-colonnes'));
+    return { s: an ? null : s, n, an, cadre };
+  });
+  const attenduePlage = f => {
+    const num = f.s ? Number(f.s.slice(1)) : Number(S(0).slice(1));
+    const du = lundiSemaine(num);
+    if (!du || !Number.isFinite(f.n) || f.n <= 0) return null;
+    const au = iso(new Date(Date.parse(`${du}T00:00:00Z`) + (7 * f.n - 1) * 864e5));
+    /* l'An : la fin doit tomber dans le mois écrit au bout du cadre (« … – nov. 2027 ») */
+    if (f.an) { const m = /– (\p{L}{3,}\.?) (\d{4})$/u.exec(f.cadre); const d = new Date(`${au}T00:00:00Z`); if (!m || MOIS_COURTS[d.getUTCMonth()].replace('.', '') !== m[1].replace('.', '') || String(d.getUTCFullYear()) !== m[2]) return null; }
+    return { du, au };
+  };
+  const financesALEcran = q => q.evaluate(() => ({ ok: !!document.querySelector('.finance') && !document.querySelector('[data-frise]'), dit: `.finance ${document.querySelector('.finance') ? 'présent' : 'ABSENT'}, frise du calendrier ${document.querySelector('[data-frise]') ? 'PRÉSENTE' : 'absente'}` }));
+  const lireFinances = () => p.evaluate(() => {
+    const v = s => document.querySelector(s)?.value || '';
+    const titre = document.querySelector('.ops-plage-titre');
+    return { du: v('input[aria-label="Du"]'), au: v('input[aria-label="Au"]'), titre: (titre?.textContent || '').replace(/\s+/g, ' ').trim(), titreAria: titre?.getAttribute('aria-label') || '' };
+  });
+  const versFinances = async () => {
+    await ongletApp(p, 'Finances');
+    for (let i = 0; i < 40 && !(await p.evaluate(() => !!document.querySelector('.finance'))); i++) await attendre(500);
+    if (await existe(p, { role: 'tab', texte: /^Opérations$/ })) await toucher(p, { role: 'tab', texte: /^Opérations$/ });
+    await attendre(700); await p.evaluate(() => window.scrollTo(0, 0)); await attendre(300);
+  };
+  const versCalendrier = async () => { await ongletApp(p, 'Calendrier'); await p.waitForSelector('[data-frise]', { timeout: 20000 }); await attendre(500); };
+  /* une étape : le changement au calendrier, la fenêtre lue, Finances, puis les attendus (Finances à l'écran d'abord) */
+  const etapePeriode = async (n, nom, geste, changer, voulues) => {
+    let f = null, attendue = null;
+    await etape(p, `${cfgNom}-${theme}-${n}-${nom}`, geste, async () => {
+      await versCalendrier();
+      const avant = await fenetreCalendrier();
+      const so = await changer();
+      if (so) throw new Absent(so);
+      await p.keyboard.press('Escape').catch(() => {}); await attendre(400);
+      f = await fenetreCalendrier();
+      if (f.n === avant.n && f.s === avant.s && f.cadre === avant.cadre) throw new Absent(`la période du calendrier n’a pas changé (${f.n} colonnes, ${f.cadre})`);
+      attendue = attenduePlage(f);
+      pas.push(`${nom} : ${f.n} colonnes depuis ${f.s || S(0)}`);
+      await versFinances();
+    }, [fn(financesALEcran, 'Finances à l’écran (pas le calendrier)'),
+      fn(async () => { const l = await lireFinances(); return { ok: !!attendue && l.du === attendue.du && l.au === attendue.au, dit: `calendrier ${f ? `${f.n} colonnes, ${f.cadre}` : '?'} → attendu ${attendue ? `${attendue.du} → ${attendue.au}` : '?'} ; Du « ${l.du} », Au « ${l.au} »` }; }, 'Du et Au égaux à la fenêtre du calendrier'),
+      fn(async () => { const l = await lireFinances(); const ok = !!attendue && l.titre.includes('→') && l.titre.includes(lisibleIso(attendue.du)) && l.titre.includes(lisibleIso(attendue.au)); return { ok, dit: `en-tête « ${l.titre || 'absent'} » (attendu « ${attendue ? `${lisibleIso(attendue.du)} → ${lisibleIso(attendue.au)}` : '?'} »)` }; }, 'la plage écrite dans l’en-tête de Finances'),
+      /* une opération de la plage est une ligne de la liste ; une opération à régler hors de la plage n'est qu'un rappel gris « hors plage »
+         (`.ops-hors-nom`, ni comptée ni additionnée, TransactionJournal s2ap2) : elle compte comme absente de la plage */
+      fn(async () => {
+        const l = await p.evaluate(libs => {
+          const vis = e => { const r = e.getBoundingClientRect(); return r.width > 0 && r.height > 0; };
+          const feuilles = [...document.querySelectorAll('.finance *')].filter(e => e.children.length === 0 && vis(e));
+          const nb = (/(\d+)\s*opérations?/.exec((document.querySelector('.ops-bande')?.textContent || '').replace(/\s+/g, ' ')) || [])[1] ?? '?';
+          return { nb, vus: libs.map(x => { const els = feuilles.filter(e => (e.textContent || '').includes(x)); return [x, els.some(e => !e.closest('.ops-hors-nom')) ? 'listée' : els.length ? 'rappel hors plage' : 'absente']; }) };
+        }, ECRITURES.map(([x]) => x));
+        const ok = l.vus.every(([x, v]) => (v === 'listée') === voulues.includes(x)) && String(l.nb) === String(voulues.length);
+        return { ok, dit: `${l.nb} opération(s) dans la plage ; ${l.vus.map(([x, v]) => `« ${x.replace('ZZ TEST — ', '')} » ${v}`).join(', ')}` };
+      }, `Opérations filtrées : ${voulues.map(l => `« ${l.replace('ZZ TEST — ', '')} »`).join(' et ')} seulement (${voulues.length} opération(s))`)],
+    undefined, n);
+  };
   try {
     p = await ouvrir(cfg, theme, APP, { coupeFirestore: true });
-    const auj = new Date();
-    const iso = d => d.toISOString().slice(0, 10);
-    const dans = iso(auj), hors = iso(new Date(auj.getTime() + 200 * 86400000));
-    for (const [libelle, jour] of [['ZZ TEST — dans la plage', dans], ['ZZ TEST — hors plage', hors]]) {
-      await toucher(p, FAB);
-      await toucher(p, dansFeuille(/^Écriture/));
-      const rempli = await p.evaluate((lib, j) => {
-        const d = [...document.querySelectorAll('[role="dialog"], dialog')].filter(x => x.getBoundingClientRect().height > 0).pop();
-        if (!d) return 'aucune feuille';
-        const pose = (el, v) => { const s = Object.getOwnPropertyDescriptor(Object.getPrototypeOf(el), 'value').set; s.call(el, v); el.dispatchEvent(new Event('input', { bubbles: true })); el.dispatchEvent(new Event('change', { bubbles: true })); };
-        const champs = [...d.querySelectorAll('input, textarea')].filter(i => i.getBoundingClientRect().height > 0);
-        const texte = champs.find(i => (i.type === 'text' || i.tagName === 'TEXTAREA') && !/decimal|numeric/.test(i.inputMode) && !/date|jj/i.test(`${i.placeholder} ${i.name} ${i.getAttribute('aria-label') || ''}`));
-        const montant = champs.find(i => /decimal|numeric/.test(i.inputMode));
-        const date = champs.find(i => i.type === 'date') || champs.find(i => /date|jj/i.test(`${i.placeholder} ${i.name} ${i.getAttribute('aria-label') || ''}`));
-        if (!texte || !montant || !date) return `champs introuvables (texte ${!!texte}, montant ${!!montant}, date ${!!date})`;
-        pose(texte, lib); pose(montant, '12');
-        pose(date, date.type === 'date' ? j : `${j.slice(8, 10)}.${j.slice(5, 7)}.${j.slice(0, 4)}`);
-        return 'ok';
-      }, libelle, jour);
-      if (rempli !== 'ok') throw new Absent(`écriture « ${libelle} » : ${rempli}`);
-      await toucher(p, dansFeuille(/^(Enregistrer|Ajouter|Valider)/));
-      pas.push(`« ${libelle} » saisie le ${jour}`);
-    }
-    await ongletApp(p, 'Calendrier');
-    await menuPeriode(p, /^3 mois/); pas.push('3 mois au calendrier');
-    await p.keyboard.press('Escape'); await attendre(300);
-    await ongletApp(p, 'Finances'); pas.push('Finances ouvert');
-    const t = await lireTexte(p);
-    const plage = /\d{1,2} \p{L}+\.? → \d{1,2} \p{L}+/u.test(t), dansVu = /ZZ TEST — dans la plage/.test(t), horsVu = /ZZ TEST — hors plage/.test(t);
-    const ok = plage && dansVu && !horsVu;
-    const f = `${base33}${ok ? '' : '-ECHEC'}.png`;
-    await p.screenshot({ path: join(DOSSIER, f) });
-    rapport.push({ cfgNom, theme, n: '33', nom: 'finances-plage', geste: `/?dev-local : ${pas.join(', ')}`, statut: ok ? 'OK' : 'ABSENT',
-      dit: `plage affichée ${plage}, « dans la plage » listée ${dansVu}, « hors plage » listée ${horsVu} ; requêtes Firestore coupées : ${p.coupees}`, capture: f });
+    p.cfgNom = cfgNom;
+    const demarrage = await demarrageApp(p, `${cfgNom}-${theme}-33`);
+    /* Finances chauffé d'abord (Vite découvre ses dépendances et peut recharger), puis les données ZZ TEST locales : un solde de départ simulé
+       (sans lui, pas de courbe, donc ni cadre ni poignée de fin pour l'An) et les trois écritures, comme la facture du parcours app */
+    const chaud = await chaufferFinances(p);
+    const pose = await p.evaluate(async l => {
+      const { StorageService } = await import('/src/services/storage.ts');
+      const { FinanceService } = await import('/src/services/financeService.ts');
+      FinanceService.saveProfile({ ...FinanceService.getProfile(), historyCompleteFrom: '2026-01-01', openingCash: { date: '2026-01-01', amountCents: 400000, confirmed: true } });
+      for (const [desc, jour, id] of l) StorageService.addTransaction({ id, date: jour, description: desc, category: 'brassage', subcategory: 'malt', amountHT: 12, amountTTC: 12, tvaAmount: 0, tvaRate: 0, finance: { version: 1, kind: 'expense', amountCents: 1200, lines: [], paymentStatus: 'unpaid', dueDate: jour, vendor: 'ZZ TEST — fournisseur' } });
+      return StorageService.getTransactions().filter(t => /^ZZ-TEST-ETPER/.test(t.id)).length;
+    }, ECRITURES.map(([d, j], i) => [d, j, `ZZ-TEST-ETPER-${i}`]));
+    if (pose !== ECRITURES.length) throw new Absent(`${pose} écriture(s) ZZ TEST relue(s) sur ${ECRITURES.length}`);
+    pas.push(`${demarrage} ; ${chaud} ; solde de départ simulé 4 000 CHF au 1er janv. 2026 et écritures ${ECRITURES.map(([l, j]) => `« ${l} » le ${j}`).join(', ')} (stockage local du contexte jeté)`);
+    await ongletApp(p, 'Bord'); await versCalendrier(); pas.push('Bord puis Calendrier');
+    const D = ECRITURES.map(([l]) => l);
+    const paysage = cfg.tactile && cfg.w > cfg.h;
+    const parMenu = re => async () => {
+      await toucher(p, { data: 'data-ent-periode' });
+      if (!(await existe(p, { dans: { role: 'dialog', aria: /Période/ }, texte: re }))) { await p.keyboard.press('Escape').catch(() => {}); return paysage ? `le menu n’offre pas « ${re.source.replace('^', '')} » en paysage (13 semaines, E10)` : `« ${re.source} » absent du menu`; }
+      await toucher(p, { dans: { role: 'dialog', aria: /Période/ }, texte: re });
+      return null;
+    };
+    await etapePeriode('33a', 'finances-3mois', 'menu 3 mois au calendrier, puis Finances › Opérations', parMenu(/^3 mois/), [D[0]]);
+    await etapePeriode('33b', 'finances-6mois', 'menu 6 mois au calendrier, puis Finances › Opérations', parMenu(/^6 mois/), [D[0], D[1]]);
+    await etapePeriode('33c', 'finances-an', 'poignée de fin tirée au bout (l’An), puis Finances › Opérations', async () => { await tirerPoignee(p, 1.0, false); return null; }, [D[0], D[1]]);
+    /* le sens inverse : Du et Au changés dans Finances (Au = Du + 27 j, par le champ « Au » d'Opérations), retour au calendrier */
+    let voulu = null;
+    await etape(p, `${cfgNom}-${theme}-33d-calendrier-depuis-finances`, 'Finances › Opérations : Au = Du + 27 j ; puis Calendrier', async () => {
+      if (!(await p.evaluate(() => !!document.querySelector('.finance')))) await versFinances();
+      voulu = await p.evaluate(() => {
+        const d = document.querySelector('input[aria-label="Du"]'), a = document.querySelector('input[aria-label="Au"]');
+        if (!d || !a || !d.value) return null;
+        const v = new Date(Date.parse(`${d.value}T00:00:00Z`) + 27 * 864e5).toISOString().slice(0, 10);
+        const s = Object.getOwnPropertyDescriptor(HTMLInputElement.prototype, 'value').set; s.call(a, v);
+        a.dispatchEvent(new Event('input', { bubbles: true })); a.dispatchEvent(new Event('change', { bubbles: true }));
+        return { du: d.value, au: v, champsVisibles: d.getBoundingClientRect().width > 0 };
+      });
+      if (!voulu) throw new Absent('champs Du et Au introuvables (ou vides) dans Opérations');
+      await attendre(700);
+      voulu.lu = await lireFinances();
+      await p.screenshot({ path: join(DOSSIER, `${cfgNom}-${theme}-33e-finances-au-change.png`) });
+      await versCalendrier(); await p.evaluate(() => window.scrollTo(0, 0)); await attendre(300);
+      pas.push(`Au réglé à ${voulu.au} (champs ${voulu.champsVisibles ? 'visibles' : 'masqués à cette largeur : réglés par leur écouteur'})`);
+    }, [fn(async q => q.evaluate(() => ({ ok: !!document.querySelector('[data-frise]') && !document.querySelector('.finance'), dit: 'calendrier à l’écran' })), 'le calendrier à l’écran'),
+      fn(async () => { const f = await fenetreCalendrier(); const a = attenduePlage(f); return { ok: !!voulu && f.n === 4 && !!a && a.du === voulu.du, dit: `Finances ${voulu ? `${voulu.du} → ${voulu.au} (en-tête « ${voulu.lu?.titre || '?'} »)` : '?'} ; frise ${f.n} colonnes depuis ${f.s || '?'} (${a ? a.du : '?'}) ; cadre « ${f.cadre} »` }; }, 'la frise suit : 4 colonnes, première semaine = celle de Du'),
+      fn(async () => { const f = await fenetreCalendrier(); return { ok: /S\d+ – S\d+/.test(f.cadre) || /Fenêtre/.test(f.cadre), dit: `cadre « ${f.cadre || 'absent'} »` }; }, 'le cadre de la fenêtre suit')],
+    undefined, '33d');
+    rapport.push({ cfgNom, theme, n: '33', nom: 'finances-plage-parcours', geste: `/?dev-local : ${pas.join(' ; ')}`, statut: 'OK', dit: `parcours ET-PER joué jusqu’au bout ; les verdicts sont aux lignes 33a à 33d ; requêtes Firestore coupées : ${p.coupees}`, capture: '—' });
   } catch (e) {
     let f = '—';
-    if (p) { f = `${base33}-ECHEC.png`; await p.screenshot({ path: join(DOSSIER, f) }).catch(() => {}); }
-    rapport.push({ cfgNom, theme, n: '33', nom: 'finances-plage', geste: `/?dev-local : ${pas.join(', ') || 'rien'}`, statut: 'ABSENT', dit: e instanceof Absent ? e.message : String(e.message || e).slice(0, 160), capture: f });
+    if (p) { f = `${cfgNom}-${theme}-33-finances-plage-ECHEC.png`; await p.screenshot({ path: join(DOSSIER, f) }).catch(() => {}); }
+    rapport.push({ cfgNom, theme, n: '33', nom: 'finances-plage', geste: `/?dev-local : ${pas.join(' ; ') || 'rien'}`, statut: 'ABSENT', dit: e instanceof Absent ? e.message : String(e.message || e).slice(0, 160), capture: f });
   } finally { if (p) await p.ctx.close().catch(() => {}); }
 }
 
@@ -1224,7 +1701,8 @@ function lundiSemaine(n) {
 }
 
 /** Une capture nommée de ce qu'elle montre ; `-ECHEC` si le texte attendu n'est pas dans le DOM. */
-async function capturer(p, nom, attendu, geste, extra = '') {
+const cfgDe = p => (p.cfg.w === 1280 ? 'd1280' : p.cfg.w > p.cfg.h ? 'paysage' : 'm390');
+async function capturer(p, nom, attendu, geste, extra = '', n = 'app') {
   const texte = await lireTexte(p);
   const manques = [];
   const lus = [];
@@ -1238,16 +1716,16 @@ async function capturer(p, nom, attendu, geste, extra = '') {
   const f = `${nom}${manques.length ? '-ECHEC' : ''}.png`;
   await p.screenshot({ path: join(DOSSIER, f) });
   const dit = `${manques.length ? `attendu non trouvé : ${manques.join(', ')}` : `attendu trouvé : ${attendu.map(a => (a instanceof RegExp ? `« ${a.source} »` : a.dit)).join(', ')}`}${extra ? ` ; ${extra}` : ''} ; requêtes Firestore coupées : ${p.coupees ?? 0}${p.erreurs && p.erreurs.length ? ` ; ${p.erreurs.length} erreur(s) de page : ${p.erreurs[0]}` : ''}`;
-  rapport.push({ cfgNom: p.cfg.w === 1280 ? 'd1280' : p.cfg.w > p.cfg.h ? 'paysage' : 'm390', theme: p.theme, n: 'app', nom, geste, statut, dit, capture: f });
+  rapport.push({ cfgNom: cfgDe(p), theme: p.theme, n, nom, geste, statut, dit,capture: f });
   console.log(`${statut === 'OK' ? 'ok' : statut} ${nom} : ${dit.slice(0, 160)}`);
   return statut === 'OK';
 }
-async function etape(p, nom, geste, faire, attendu, extra) {
-  try { await faire(); return await capturer(p, nom, attendu, geste, typeof extra === 'function' ? extra() : extra); }
+async function etape(p, nom, geste, faire, attendu, extra, n = 'app') {
+  try { await faire(); return await capturer(p, nom, attendu, geste, typeof extra === 'function' ? extra() : extra, n); }
   catch (e) {
     const f = `${nom}-ECHEC.png`;
     await p.screenshot({ path: join(DOSSIER, f) }).catch(() => {});
-    rapport.push({ cfgNom: p.cfg.w === 1280 ? 'd1280' : 'm390', theme: p.theme, n: 'app', nom, geste, statut: 'ABSENT', dit: e instanceof Absent ? e.message : String(e.message || e).slice(0, 160), capture: f });
+    rapport.push({ cfgNom: cfgDe(p), theme: p.theme, n, nom, geste, statut: 'ABSENT', dit: e instanceof Absent ? e.message : String(e.message || e).slice(0, 160), capture: f });
     console.log(`ABSENT ${nom} : ${String(e.message || e).slice(0, 140)}`);
     return false;
   }
@@ -1429,8 +1907,9 @@ try {
         if (theme !== 'clair' && !etat.cave) continue;
         await jouerEtat(cfgNom, theme, etat);
       }
-      if (theme === 'clair' && !args.includes('--sans-dev-local')) {
-        if (garde('56')) await devLocal(cfgNom, theme);
+      if (!args.includes('--sans-dev-local')) {
+        if (theme === 'clair' && garde('56')) await devLocal(cfgNom, theme);
+        /* CRITIQUE-11 (décision b) : ET-PER dans chaque configuration et chaque thème */
         if (garde('33')) await etPer(cfgNom, theme);
       }
     }
@@ -1438,7 +1917,8 @@ try {
   /* CRITIQUE-4 (lot q4-app) : --etats app (l'app réelle, 390), plage (Finances ↔ calendrier, 1280), banc-budget (n° 13 c) ; deux thèmes */
   for (const theme of choixThemes) {
     if (garde('app') && !args.includes('--sans-dev-local')) await parcoursApp(theme);
-    if (garde('plage') && !args.includes('--sans-dev-local')) await plageApp(theme);
+    /* « plage » (ancien parcours du 1280) : le parcours ET-PER lui-même, à 1280, s'il n'a pas déjà été joué par l'état 33 */
+    if (garde('plage') && !args.includes('--sans-dev-local') && !(garde('33') && choixConfigs.includes('d1280'))) await etPer('d1280', theme);
     if (garde('banc-budget')) await bancBudget(theme);
   }
   if (!args.includes('--sans-chrono') && choixConfigs.includes('m390') && (!choixEtats || choixEtats.has('chrono'))) await chronometrer();
@@ -1452,7 +1932,7 @@ const ordre = e => `${e.cfgNom}|${e.theme}|${e.n}`;
 rapport.sort((a, b) => ordre(a).localeCompare(ordre(b), 'fr', { numeric: true }));
 const absents = rapport.filter(r => r.statut !== 'OK' && r.statut !== 'SANS OBJET');
 const lignes = [
-  '# Vision 7 : le calendrier porté, état par état, chaque geste mesuré (vision-7/vision-calendrier.mjs)',
+  '# Vision du calendrier porté, état par état, chaque geste mesuré (harnais officiel scripts/agents/vision-calendrier.mjs)',
   '',
   `Joué le ${new Date().toISOString().slice(0, 16).replace('T', ' ')} sur ${BASE}. Banc : ${BANC} (« banc — données simulées »). App : ${APP} (requêtes Firestore coupées avant de partir).`,
   'Gestes : contact tactile CDP à 390 × 844 et 844 × 390, souris à 1280 × 800. Éléments trouvés par texte, rôle, aria-label ou data-titre.',

@@ -5,7 +5,8 @@ import { BancCalendrier, etatBanc, type EtatBanc } from '../../src/design/Calend
 import { StorageService } from '../../src/services/storage';
 import type { Batch } from '../../src/types';
 import { HAUTEUR_REPLI_PAYSAGE_PX, HAUTEUR_REPLI_PX, MenuAppuiLong } from '../../src/ui/calendrier/frise/MenuAppuiLong';
-import { ajouterJours, jourLisible, preteAuPlusTot, type ChoseCalendrier } from '../../src/domain/calendrier';
+import { ajouterJours, jourLisible, lundiDe, preteAuPlusTot, type ChoseCalendrier } from '../../src/domain/calendrier';
+import { GARDE_CLIC_MS } from '../../src/ui/calendrier/frise/usePointeur';
 
 const JOUR = '2026-11-16';
 type Appel = { op: string; collection: string; id: string; patch?: Record<string, unknown> };
@@ -877,4 +878,132 @@ describe('CRITIQUE-10 n° 5 (E31) : « Dupliquer en S… » montre son effet, qu
     expect(seul.querySelector('[data-effet-dupliquer]')).toBeNull();
     expect(seul.textContent).toBe('Dupliquer en S50');
   });
+});
+
+/* CRITIQUE-11 (lot corr11-B) : n° 2 a (le clic du lâcher d'un geste d'une colonne en 6 mois), n° 6 (la bulle « lâcher ici ») */
+const plage6 = (semaines: number) => ({ genre: 'dates' as const, du: lundiDe(JOUR), au: ajouterJours(lundiDe(JOUR), semaines * 7 - 1) });
+/* le `click` que Chrome émet au lâcher d'un toucher sous sa tolérance : un clic de pointeur, `detail` 1 */
+const clicChrome = (el: Element) => fireEvent.click(el, { detail: 1 });
+const oeilBrassins = () => screen.getByRole('button', { name: 'Masquer Brassins' });
+const rangeeBrassins = () => document.querySelector<HTMLElement>('section[data-rangee="brassins"]')!;
+const brassinsVisible = () => {
+  expect(rangeeBrassins().classList.contains('cal-masquee')).toBe(false);
+  expect(rangeeBrassins().textContent).not.toMatch(/cachée/);
+  expect(rangeeBrassins().querySelectorAll('[data-barre]').length).toBeGreaterThan(0);
+};
+
+describe('CRITIQUE-11 n° 2 a (E29, E22) : en 6 mois, le clic du lâcher d’un geste d’une colonne ne masque pas Brassins', () => {
+  const sixMois = () => monter({ callbacks: { periode: plage6(26) } });
+
+  it('f2-a : le bord de la Blonde tiré de 14 px, puis le clic du lâcher sur l’œil de Brassins : la rangée reste, la Blonde dit « J0 / 35 »', async () => {
+    const { appels } = sixMois();
+    expect(colonne()).toBeLessThan(15);
+    const b = barre(/^Blonde d’automne/);
+    const bord = b.querySelector('[data-bord]')!;
+    expect(bord).not.toBeNull();
+    fireEvent.pointerDown(bord, { clientX: 100, clientY: 10, pointerId: 1, button: 0 });
+    fireEvent.pointerMove(b, { clientX: 114, clientY: 10, pointerId: 1 });
+    fireEvent.pointerUp(b, { clientX: 114, clientY: 10, pointerId: 1 });
+    clicChrome(oeilBrassins());
+    await waitFor(() => expect(appels.some(a => a.collection === 'batches' && a.id === 'LOT-BLONDE' && typeof a.patch?.finPrevue === 'string')).toBe(true));
+    brassinsVisible();
+    await waitFor(() => expect(barre(/^Blonde d’automne/).getAttribute('aria-label')).toMatch(/J0 \/ 35/));
+  });
+
+  it('f1-a : la Blonde glissée d’une colonne (14 px), puis le clic du lâcher sur l’œil de Brassins : la rangée reste, la Blonde a bougé', async () => {
+    const { appels } = sixMois();
+    const b = barre(/^Blonde d’automne/);
+    down(b, 100);
+    move(b, 114);
+    up(b, 114);
+    clicChrome(oeilBrassins());
+    await waitFor(() => expect(appels.some(a => a.collection === 'batches' && a.id === 'LOT-BLONDE' && a.op === 'patch')).toBe(true));
+    brassinsVisible();
+  });
+
+  it('garde de l’œil : après 300 ms, un clic dont l’appui a commencé sur la barre ne masque toujours rien', async () => {
+    sixMois();
+    const b = barre(/^Blonde d’automne/);
+    down(b, 100);
+    move(b, 114);
+    up(b, 114);
+    await act(async () => { await new Promise(r => setTimeout(r, GARDE_CLIC_MS + 60)); });
+    clicChrome(oeilBrassins());
+    brassinsVisible();
+  });
+
+  it('contre-test : un toucher voulu sur l’œil, au-delà de 300 ms après un glisser, masque toujours la rangée ; le clavier aussi', async () => {
+    sixMois();
+    const b = barre(/^Blonde d’automne/);
+    down(b, 100);
+    move(b, 114);
+    up(b, 114);
+    await act(async () => { await new Promise(r => setTimeout(r, GARDE_CLIC_MS + 60)); });
+    const oeil = oeilBrassins();
+    fireEvent.pointerDown(oeil, { clientX: 112, clientY: 10, pointerId: 2, button: 0 });
+    fireEvent.pointerUp(oeil, { clientX: 112, clientY: 10, pointerId: 2 });
+    clicChrome(oeil);
+    await waitFor(() => expect(rangeeBrassins().textContent).toMatch(/\d+ choses? cachées?/));
+    /* le clavier (`detail` 0) réaffiche, sans appui du doigt */
+    fireEvent.click(screen.getByRole('button', { name: 'Afficher Brassins' }));
+    await waitFor(() => expect(rangeeBrassins().textContent).not.toMatch(/cachée/));
+  });
+});
+
+describe('CRITIQUE-11 n° 6 (E28, E33) : la bulle « lâcher ici » ne croise jamais un titre de rangée ni une pastille', () => {
+  /* Une mise en page simulée (jsdom ne mesure rien) : chaque rangée occupe 220 px ; son titre `.cal-rh` (avec son +, son œil et sa pastille
+     r2-c) ses 30 premiers ; la piste dessous ; dans la piste, chaque élément posé à `left`/`top` (style) est à sa place. */
+  const H_RANGEE = 220, H_TITRE = 30, LARGEUR = 360;
+  const boite = (left: number, top: number, width: number, height: number) =>
+    ({ left, top, width, height, right: left + width, bottom: top + height, x: left, y: top, toJSON: () => ({}) }) as DOMRect;
+  const vide = boite(0, 0, 0, 0);
+  const mise = function (this: Element): DOMRect {
+    if (this.matches('[data-frise]')) return boite(0, 0, LARGEUR, 7 * H_RANGEE);
+    const section = this.closest('section[data-rangee]');
+    if (!section) return vide;
+    const y0 = [...document.querySelectorAll('section[data-rangee]')].indexOf(section) * H_RANGEE;
+    if (this.matches('.cal-rh')) return boite(0, y0, LARGEUR, H_TITRE);
+    if (this.matches('.cal-plus')) return boite(0, y0 + 3, 24, 24);
+    if (this.matches('.cal-nom')) return boite(30, y0 + 4, 70, 22);
+    if (this.matches('.cal-oeil')) return boite(104, y0 + 3, 24, 24);
+    if (this.matches('.cal-pastille')) return boite(132, y0 + 2, 200, 26);
+    const lane = this.closest<HTMLElement>('.cal-lane');
+    if (!lane) return vide;
+    if (this === lane) return boite(0, y0 + H_TITRE, LARGEUR, parseFloat(lane.style.height) || 0);
+    const s = (this as HTMLElement).style;
+    const l = parseFloat(s?.left ?? ''), t = parseFloat(s?.top ?? '');
+    if (!Number.isFinite(l) || !Number.isFinite(t) || this.matches('[data-ici]')) return vide;
+    return boite(l, y0 + H_TITRE + t, parseFloat(s.width) || 60, parseFloat(s.height) || 24);
+  };
+
+  for (const [vue, semaines] of [['6 sem.', 6], ['6 mois', 26]] as const) {
+    it(`${vue} : la Saison de ferme (première ligne de Brassins) glissée de 2 colonnes, doigt tenu : la bulle n’est ni sur « Brassins » ni sur sa pastille`, () => {
+      const espion = vi.spyOn(Element.prototype, 'getBoundingClientRect').mockImplementation(mise);
+      try {
+        monter({ callbacks: { periode: plage6(semaines) } });
+        const saison = barre(/^Saison de ferme/) as HTMLElement;
+        expect(parseFloat(saison.style.top)).toBeLessThan(10);
+        const lc = colonne();
+        down(saison, 100);
+        move(saison, 100 + lc);
+        move(saison, 100 + 2 * lc);
+        const bulle = document.querySelector<HTMLElement>('[data-ici]');
+        expect(bulle?.textContent).toMatch(/^S\d+ · .+ · lâcher ici$/);
+        const lane = bulle!.parentElement!.getBoundingClientRect();
+        /* la bulle n'est pas mesurée par jsdom : sa taille de repli (largeur du texte + 18, 24 px de haut) */
+        const g = lane.left + parseFloat(bulle!.style.left), t = lane.top + parseFloat(bulle!.style.top);
+        const w = bulle!.textContent!.length * 8 + 18, h = 24;
+        for (const m of document.querySelectorAll('.cal-rh, .cal-pastille')) {
+          const r = m.getBoundingClientRect();
+          const croise = g < r.right && g + w > r.left && t < r.bottom && t + h > r.top;
+          expect(croise, `bulle (${g}, ${t}) sur ${m.className} (${r.left}, ${r.top})`).toBe(false);
+        }
+        /* dans la piste de la barre glissée */
+        expect(t).toBeGreaterThanOrEqual(lane.top);
+        up(saison, 100 + 2 * lc);
+      } finally {
+        espion.mockRestore();
+      }
+    });
+  }
 });

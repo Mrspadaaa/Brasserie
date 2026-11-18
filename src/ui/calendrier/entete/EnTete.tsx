@@ -117,7 +117,7 @@ export function EnTeteCalendrier(props: EnTeteCalendrierProps) {
   const { modele, fenetre, onFenetre, periode, onPeriode, vue, onVue, mouvements, onMouvements, orientation, apercu, onLectureSemaine, onIdeeSemaine, largeurColonne, onOuvrirFinances, onOuvrirRetard, onTrier, onFiltrer, onMessage, etoiles } = props;
   const paysage = orientation === 'paysage';
   const graph = vue === 'graph';
-  const annee = vue === 'annee';
+  const liste = vue === 'liste';
   const base = modele.courbe;
   const apercuC: CourbeCaisse | null = apercu ? ('semaines' in apercu ? apercu : apercu.courbe) : null;
   const courbeC = apercuC ?? base;
@@ -126,6 +126,11 @@ export function EnTeteCalendrier(props: EnTeteCalendrierProps) {
   // Les semaines, la fenêtre dans leur suite.
   const semainesTot = useMemo(() => (base ? base.semaines.map(s => ({ debut: s.lundi, numero: s.numero })) : modele.semaines.map(s => ({ debut: s.debut, numero: s.numero }))), [base, modele.semaines]);
   const total = semainesTot.length;
+  // CRITIQUE-11 n° 1 (E13, E40, D-184, D-194, D-204) : la Liste porte l'en-tête de la frise pour la même période. Quand sa fenêtre couvre toutes
+  // les semaines (l'An, laissé tel quel en passant en Liste), c'est l'An : la bande en 12 mois, le cadre « nov. – nov. 2027 » ; jamais 52
+  // numéros écrits les uns sur les autres. En 6 sem., 3 mois et 6 mois, la Liste garde la bande des semaines de la frise.
+  const anneeListe = liste && total > 0 && fenetre.semaines >= Math.min(SEMAINES_ANNEE, total);
+  const annee = vue === 'annee' || anneeListe;
   const premier = Math.max(0, semainesTot.findIndex(s => s.debut >= fenetre.du));
   const nombre = annee ? Math.max(1, total) : clamp(fenetre.semaines, 1, Math.max(1, total - premier));
   const index = annee ? 0 : premier;
@@ -348,13 +353,14 @@ export function EnTeteCalendrier(props: EnTeteCalendrierProps) {
     if (!total) return;
     fenAvantAnnee.current = fenetre;
     taire('annee');
-    onVue('annee');
+    // En Liste, la période change et la Liste reste : l'An s'y lit par sa fenêtre (anneeListe).
+    if (!liste) onVue('annee');
     ecrire({ du: semainesTot[0].debut, semaines: Math.min(SEMAINES_ANNEE, total) });
   };
   const quitterAnnee = () => {
     const f = fenAvantAnnee.current ?? { du: semainesTot[0]?.debut ?? fenetre.du, semaines: 6 };
     fenAvantAnnee.current = null;
-    onVue('semaines');
+    if (!liste) onVue('semaines');
     ecrire(f);
   };
   const choisirDuree = (n: number) => {
@@ -364,7 +370,7 @@ export function EnTeteCalendrier(props: EnTeteCalendrierProps) {
     const i = total >= n ? Math.min(i0, total - n) : i0;
     fenAvantAnnee.current = null;
     ecrire({ du: semainesTot[i]?.debut ?? depart.du, semaines: n });
-    if (annee || graph) onVue('semaines');
+    if ((annee || graph) && !liste) onVue('semaines');
   };
 
   // ---- Ce qui se lit ----
@@ -558,8 +564,8 @@ export function EnTeteCalendrier(props: EnTeteCalendrierProps) {
 
       {creuxOuvert && courbe && creux && <DetailCreux courbe={courbe} index={creux.index} hypotheses={modele.hypotheses} nomsMisDeCote={nomsMisDeCote} dates={paysage} onOuvrirFinances={onOuvrirFinances} onFermer={() => setCreuxOuvert(false)} />}
       {menuOuvert && (
-        <MenuPeriode ancre={boutonPeriode.current} paysage={paysage} plage={libelle !== libelleDuree(nombre, annee) ? `${libelle} · ${etiquetteCadre(semainesTot.map(s => s.numero), index, nombre, annee, etiquetteAnnee, lundis)} · ${plage}` : plage} semaines={nombre} annee={annee} liste={vue === 'liste'} sansDate={sansDate}
-          onChoisir={choisirDuree} onListe={() => onVue('liste')} onCalendrier={() => onVue('semaines')} onSansDate={() => onVue('liste', 'sans-date')}
+        <MenuPeriode ancre={boutonPeriode.current} paysage={paysage} plage={libelle !== libelleDuree(nombre, annee) ? `${libelle} · ${etiquetteCadre(semainesTot.map(s => s.numero), index, nombre, annee, etiquetteAnnee, lundis)} · ${plage}` : plage} semaines={nombre} annee={annee} liste={liste} sansDate={sansDate}
+          onChoisir={choisirDuree} onListe={() => onVue('liste')} onCalendrier={() => onVue(anneeListe ? 'annee' : 'semaines')} onSansDate={() => onVue('liste', 'sans-date')}
           onTrier={onTrier} onFiltrer={onFiltrer} onFermer={() => setMenuOuvert(false)} />
       )}
       {retardsOuverts && <Retards retards={retards} onOuvrir={onOuvrirRetard} onFermer={() => setRetardsOuverts(false)} />}

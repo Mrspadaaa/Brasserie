@@ -67,9 +67,21 @@
 .cal-tri-seg button[aria-pressed='true'] { background: rgb(var(--cave-50)); color: rgb(var(--cave-950)); }
 .cal-tri-seg small { align-self: center; padding: 0 6px 0 4px; font-size: 14px; color: rgb(var(--cave-200)); }
 
-/* CRITIQUE-5 n° 13 (E33, D-200) : faute de bande libre de noms, le message entre au pied de l'en-tête collé, dans son flux. L'en-tête grandit
-   de sa hauteur et la frise passe dessous : aucun nom n'est couvert. */
-.cal-msg[data-message].cal-msg-entete {
-  position: relative; z-index: auto; left: auto; right: auto; bottom: auto; width: auto; max-width: none; transform: none;
-  margin: 4px 8px 6px;
+/* CRITIQUE-5 n° 13 (E33, D-200) : faute de bande libre de noms, le message va au pied de l'en-tête collé.
+   CRITIQUE-11 n° 2 b (E33 « ne déplace rien sous le doigt ») : il y entrait dans son flux, l'en-tête grandissait et poussait les rangées de
+   85 px au lâcher. Il s'y pose désormais dans une bande de la couleur de l'en-tête, accrochée sous lui en surimpression : l'en-tête garde sa
+   hauteur (E43 : 180 px au plus), rien ne bouge à l'écran ; ce qui passe sous la bande est caché comme sous l'en-tête, jamais un texte sur un
+   autre. N° 3 et n° 8 : au grand écran et pour Lier, il va toujours là. */
+.cal-msg-bande {
+  position: absolute; top: 100%; left: 0; right: 0;
+  padding: 4px 8px 6px; background: rgb(var(--cave-950)); border-bottom: 1px solid rgb(var(--cave-700));
 }
+.cal-msg[data-message].cal-msg-entete {
+  position: relative; z-index: auto; left: auto; right: auto; bottom: auto; width: auto; max-width: 560px; transform: none;
+  margin: 0;
+}
+
+/* CRITIQUE-11 n° 4 (E31, D-192) : dans le menu d'appui long, un effet en mots (« recette estimée 1 180 · hors prévision ») passe entier sous
+   son action ; l'action et son effet tiennent deux lignes au plus. (Le menu vit dans frise.css, au lot de la frise : seule cette règle est ici.) */
+.cal-ml.cal-ml-mots { flex-wrap: wrap; row-gap: 0; padding-top: 4px; padding-bottom: 4px; }
+.cal-ml.cal-ml-mots > em { flex-basis: 100%; padding-left: 30px; line-height: 18px; font-size: 14px; }

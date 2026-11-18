@@ -332,7 +332,7 @@ export function CalendrierTab(props: CalendrierTabProps) {
   function setDetailFerme() { setSelectionId(null); setMenu(null); }
 
   /* ---------- écrire : la source, puis le message avec son inverse ---------- */
-  const ecrire = useCallback(async (res: Resolution, depuisMenu = false): Promise<boolean> => {
+  const ecrire = useCallback(async (res: Resolution, depuisMenu = false, ouvreSonDetail = false): Promise<boolean> => {
     if (res.ok === false) { montrer({ role: 'status', texte: res.raison, ...(res.message.lien ? { lien: lienDe(res.message.lien) } : {}) }); return false; }
     let faite: EcritureFaite;
     try { faite = await appliquer(res.ecritures as Ecriture[], port); } catch (e) { montrer({ role: 'status', texte: e instanceof Error ? e.message : 'Écriture impossible. Rien n’a changé.' }); return false; }
@@ -348,7 +348,7 @@ export function CalendrierTab(props: CalendrierTabProps) {
         livrer: { texte: `Livrer le ${jourLisible(p.livrerLe)}`, agir: () => { void ecrire(livrer(p, ctxRef.current)); } },
         ...(res.effet ? { detail: `Caisse : ${res.effet.texte}` } : {})
       });
-    } else montrer({ role: 'status', texte: res.message.texte, annuler, ...(res.message.lien ? { lien: lienDe(res.message.lien) } : {}) });
+    } else montrer({ role: 'status', texte: res.message.texte, annuler, ...(res.message.lien ? { lien: lienDe(res.message.lien) } : {}), ...(ouvreSonDetail ? { ouvreSonDetail: true } : {}) });
     return true;
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [port, montrer, lienDe]);
@@ -722,7 +722,12 @@ export function CalendrierTab(props: CalendrierTabProps) {
               const effet = dup.effetMots ?? dup.effet?.texte;
               return { libelle: etiquetteS(prochain), ...(effet ? { effet } : {}) };
             })()}
-            retirer={ret.ok === false ? { raison: ret.raison } : { ...(ret.effet ? { effet: ret.effet.texte } : {}) }}
+            retirer={ret.ok === false ? { raison: ret.raison } : (() => {
+              /* CRITIQUE-11 n° 4 (E31, D-192) : l'effet chiffré, sinon l'effet en mots du domaine (« recette estimée 1 180 · hors prévision »,
+                 « sans montant ») : jamais « Retirer » seul */
+              const effet = ret.effet?.texte ?? ret.effetMots;
+              return effet ? { effet } : {};
+            })()}
             liens={{
               brassins: don.batches.filter(b => !b.archivedAt).map(b => ({ id: b.id, nom: b.name || b.id })),
               clients: don.clients.filter(cl => !cl.archivedAt).map(cl => ({ id: cl.id, nom: cl.name }))
@@ -746,7 +751,9 @@ export function CalendrierTab(props: CalendrierTabProps) {
               /* CRITIQUE-4 n° 6 (D-126) : le lien est écrit dans la source ; la pastille « lié à X » vient avec le modèle, l'aperçu s'ouvre
                  aussitôt (le détail de la chose), et le message dit « Liée à X · Annuler » */
               setMenu(null);
-              void ecrire(lier(c, liens, ctxGestes, nom), true).then(ok => { if (ok) { ouvertureParGeste.current = Date.now() + 800; setSelectionId(c.id); } });
+              /* CRITIQUE-11 n° 8 (D-126 : le message ET le détail) : le message est marqué `ouvreSonDetail` ; il se pose dans la zone de
+                 l'en-tête et résiste à l'ouverture de ce détail et au défilement qui dégage ce détail du + */
+              void ecrire(lier(c, liens, ctxGestes, nom), true, true).then(ok => { if (ok) { ouvertureParGeste.current = Date.now() + 1200; setSelectionId(c.id); } });
             }}
             onRetirer={() => { setMenu(null); void ecrire(ret, true); }}
             onFermer={() => setMenu(null)}
