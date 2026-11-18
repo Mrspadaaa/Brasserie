@@ -2108,3 +2108,9 @@ Capture : work/missions/2026-11-17-port-calendrier/en-ligne-1/brasseur/periode-1
 > Les petits points là donne pas d'info
 
 Capture : work/missions/2026-11-17-port-calendrier/en-ligne-1/brasseur/points-18-11.jpg (points d'étapes sur la barre du brassin « Ttt », J0 / 15). Lecture étroite : les points d'étape de la barre ne disent pas quelle étape ni quand.
+
+> Petits points : chaque point de la barre d'un brassin dira son étape et sa date. -> plutot utiliser des mini icone. et une couleur pour le type de procédé.
+
+> Aussi on travail beaucoup en semaine, dans la todo ajoute aussi la possibilité de travaillé en jours pour avoir plus de précision sur l'axe du temps, semaine, mois, jour. semaine par default
+
+Lecture : les points d'étape deviennent des mini icônes (une par étape), colorées selon le type de procédé ; la date reste au toucher. L'axe du temps en jours va à la todo (ticket) : unité au choix jour, semaine, mois ; semaine par défaut.
