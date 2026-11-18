@@ -58,16 +58,39 @@ function basEntete(): number {
   const r = document.querySelector('[data-entete-zone]')?.getBoundingClientRect();
   return r && r.height > 0 && r.bottom > 0 ? r.bottom : 0;
 }
-/** Le conteneur qui fait défiler la frise : le premier parent qui défile, sinon la page. `null` si rien ne peut défiler. */
+/**
+ * Le conteneur qui fait défiler la frise : le premier parent qui défile, sinon la page. `null` si rien ne peut défiler.
+ * CRITIQUE-6 n° 5 : `body` et `html` sont laissés à la page (`scrollingElement`) : `body { overflow-x: hidden }` rend son `overflowY` « auto »
+ * sans qu'il défile (son débordement passe à la fenêtre) ; le menu y écrivait `scrollTop` sans effet et finissait au-dessus de la barre.
+ */
 function conteneurDefilant(el: HTMLElement | null): Element | null {
   if (typeof document === 'undefined' || !el) return null;
-  for (let p = el.parentElement; p; p = p.parentElement) {
+  for (let p = el.parentElement; p && p !== document.body && p !== document.documentElement; p = p.parentElement) {
     const o = getComputedStyle(p).overflowY;
     if ((o === 'auto' || o === 'scroll') && p.scrollHeight > p.clientHeight + 1) return p;
   }
   const page = document.scrollingElement;
   return page && page.scrollHeight > page.clientHeight + 1 ? page : null;
 }
+
+/** Un rectangle simple (haut, bas, gauche, droite). */
+export interface Rect { top: number; bottom: number; left: number; right: number }
+/**
+ * La chose tenue, telle que le brasseur la voit (CRITIQUE-6 n° 5) : sa barre ou sa marque, et son nom posé à côté (« Hotte −900 », l'étiquette
+ * sœur `.cal-lbl`). Le menu ne couvre ni l'une ni l'autre.
+ */
+export function rectTenue(ancre: HTMLElement): Rect {
+  const r = ancre.getBoundingClientRect();
+  const u: Rect = { top: r.top, bottom: r.bottom, left: r.left, right: r.right };
+  const lbl = ancre.nextElementSibling;
+  if (lbl instanceof HTMLElement && lbl.classList.contains('cal-lbl')) {
+    const l = lbl.getBoundingClientRect();
+    if (l.width > 0 && l.height > 0) { u.top = Math.min(u.top, l.top); u.bottom = Math.max(u.bottom, l.bottom); u.left = Math.min(u.left, l.left); u.right = Math.max(u.right, l.right); }
+  }
+  return u;
+}
+/** Deux rectangles se recouvrent-ils ? (bords qui se touchent : non) */
+export const serecouvrent = (a: Rect, b: Rect): boolean => a.left < b.right && a.right > b.left && a.top < b.bottom && a.bottom > b.top;
 
 /** Le téléphone tourné (844 × 390) : plus large que haut, et bas (comme la règle `orientation: landscape and max-height: 520px` de la feuille). */
 const enPaysage = (): boolean => typeof window !== 'undefined' && window.innerWidth > window.innerHeight && window.innerHeight <= 520;
@@ -116,7 +139,7 @@ export const MenuAppuiLong: React.FC<MenuAppuiLongProps> = props => {
   const paysage = enPaysage();
   const vw = typeof window !== 'undefined' ? window.innerWidth : 390;
   const largeur = paysage ? Math.min(600, vw - 32) : vw > 700 ? 440 : Math.min(300, vw - 96);
-  const [pos, setPos] = React.useState<{ top: number; left: number; cote: 'bas' | 'haut' | 'cote'; maxHeight?: number; largeur?: number } | null>(null);
+  const [pos, setPos] = React.useState<{ top: number; left: number; cote: 'bas' | 'haut' | 'cote'; maxHeight?: number; largeur?: number; une?: boolean } | null>(null);
   /* sous la barre ; si la place manque au-dessus des onglets, au-dessus de la barre ; sinon borné à l'écran, au plus près de la barre.
      Jamais une hauteur fixe (n° 4). Le menu passe au-dessus du + volant (z-index de FloatingActions : 51 ; le menu : 60, frise.css). */
   /* CRITIQUE-4 n° 12 (E31, D-192) : sous la barre tenue ; sans la place, au-dessus d'elle ; jamais sur l'en-tête collé (courbe, bande) ni sur
@@ -128,40 +151,50 @@ export const MenuAppuiLong: React.FC<MenuAppuiLongProps> = props => {
     const mh = racine.current?.offsetHeight || (paysage && !lier ? HAUTEUR_REPLI_PAYSAGE_PX : HAUTEUR_REPLI_PX);
     const haut = Math.max(8, basEntete() + 6);
     const centre = (r: DOMRect) => Math.max(8, Math.min(vw - largeur - 8, r.left + r.width / 2 - largeur / 2));
-    let rect = ancre?.getBoundingClientRect();
-    if (!rect) { setPos({ top: Math.max(haut, bas - mh), left: Math.max(8, (vw - largeur) / 2), cote: 'haut', maxHeight: bas - haut }); return; }
-    /* CRITIQUE-5 n° 12 (E31, D-192) : le menu ne recouvre jamais le rectangle de la chose tenue (Hotte reste visible). Ordre : sous elle ; la
-       page défile pour la poser juste sous l'en-tête, le menu dessous (sa maquette, p-f5a-apres et l-f5a-apres) ; au-dessus d'elle ; à côté
-       d'elle ; en dernier recours, dans la plus grande bande libre au-dessus ou au-dessous, plus bas de hauteur (le menu défile en lui-même).
+    if (!ancre) { setPos({ top: Math.max(haut, bas - mh), left: Math.max(8, (vw - largeur) / 2), cote: 'haut', maxHeight: bas - haut }); return; }
+    /* CRITIQUE-5 n° 12 et CRITIQUE-6 n° 5 (E31 « un menu sous elle », D-192) : le menu ne recouvre jamais la chose tenue, sa barre ET son nom
+       (« Hotte −900 », `rectTenue`). Ordre : sous elle ; la page défile pour la poser juste sous l'en-tête, le menu dessous (sa maquette,
+       p-f5a-apres et l-f5a-apres) ; en paysage, à côté d'elle (ses voisines du dessus et du dessous restent visibles), puis au-dessus ; en
+       portrait, au-dessus, puis à côté ; en dernier recours, dans la plus grande bande libre au-dessus ou au-dessous (le menu défile en lui-même).
        À côté, à droite d'abord (la colonne des noms de rangée est à gauche). */
-    const dessous = (r: DOMRect) => (r.bottom + 6 >= haut && r.bottom + 6 + mh <= bas ? { top: r.bottom + 6, left: centre(r), cote: 'bas' as const } : null);
-    const dessus = (r: DOMRect) => (r.top - 6 - mh >= haut ? { top: r.top - 6 - mh, left: centre(r), cote: 'haut' as const } : null);
-    const aCote = (r: DOMRect) => {
-      /* plus étroit s'il le faut (400 px au moins : deux colonnes, l'effet passe sous son action) */
-      const top = Math.max(haut, Math.min(bas - mh, r.top + r.height / 2 - mh / 2));
-      const libreD = vw - r.right - 16, libreG = r.left - 16;
-      const min = Math.min(largeur, 400);
-      if (libreD >= min) { const w = Math.min(largeur, libreD); return { top, left: r.right + 8, cote: 'cote' as const, largeur: w, maxHeight: bas - top }; }
-      if (libreG >= min) { const w = Math.min(largeur, libreG); return { top, left: r.left - 8 - w, cote: 'cote' as const, largeur: w, maxHeight: bas - top }; }
+    let barre = ancre.getBoundingClientRect();
+    let t = rectTenue(ancre);
+    const dessous = () => (t.bottom + 6 >= haut && t.bottom + 6 + mh <= bas ? { top: t.bottom + 6, left: centre(barre), cote: 'bas' as const } : null);
+    const dessus = () => (t.top - 6 - mh >= haut ? { top: t.top - 6 - mh, left: centre(barre), cote: 'haut' as const } : null);
+    const aCote = () => {
+      /* en paysage, deux colonnes (400 px au moins, l'effet passe sous son action) : les six actions sans défiler (D-192) ; sinon une colonne
+         de 220 px au moins, qui défile en elle-même ; en portrait, la mise en page du menu, 220 px au moins */
+      const formats = paysage && !lier ? [{ min: 400, w: 440, une: false }, { min: 220, w: 280, une: true }] : [{ min: 220, w: Math.min(largeur, 300), une: false }];
+      const libreD = vw - t.right - 16, libreG = t.left - 16;
+      for (const f of formats) {
+        const hauteur = f.une ? Math.min(bas - haut, 6 * 46 + 16) : mh;
+        const top = Math.max(haut, Math.min(bas - hauteur, (t.top + t.bottom) / 2 - hauteur / 2));
+        const base = { top, cote: 'cote' as const, maxHeight: bas - top, une: f.une };
+        if (libreD >= f.min) return { ...base, left: t.right + 8, largeur: Math.min(f.w, libreD) };
+        if (libreG >= f.min) { const w = Math.min(f.w, libreG); return { ...base, left: t.left - 8 - w, largeur: w }; }
+      }
       return null;
     };
     const defiler = () => {
-      /* la barre juste sous l'en-tête : le menu se pose dessous */
+      /* la chose tenue juste sous l'en-tête : le menu se pose dessous ; sans place même ainsi, la page revient où elle était */
       const conteneur = conteneurDefilant(ancre);
-      const delta = Math.round(rect!.top - haut);
+      const delta = Math.round(t.top - haut);
       if (!conteneur || delta === 0) return null;
-      conteneur.scrollTop += delta;
-      rect = ancre!.getBoundingClientRect();
-      return dessous(rect);
+      const avant = conteneur.scrollTop;
+      conteneur.scrollTop = avant + delta;
+      barre = ancre.getBoundingClientRect(); t = rectTenue(ancre);
+      const ici = dessous();
+      if (ici) return ici;
+      conteneur.scrollTop = avant;
+      barre = ancre.getBoundingClientRect(); t = rectTenue(ancre);
+      return null;
     };
-    /* sa maquette d'abord (sous la barre, la page défilée au besoin), puis au-dessus ; à côté quand ni l'un ni l'autre ne tient (le paysage) */
-    const place = dessous(rect) ?? defiler() ?? dessus(rect) ?? aCote(rect);
+    const place = dessous() ?? defiler() ?? (paysage ? aCote() ?? dessus() : dessus() ?? aCote());
     if (place) { setPos(place); return; }
     /* la plus grande bande libre, au-dessus ou au-dessous de la chose tenue, jamais sur elle */
-    const r = rect;
-    const placeBas = bas - (r.bottom + 6), placeHaut = r.top - 6 - haut;
-    if (placeBas >= placeHaut) setPos({ top: Math.max(haut, r.bottom + 6), left: centre(r), cote: 'bas', maxHeight: Math.max(0, placeBas) });
-    else setPos({ top: Math.max(haut, r.top - 6 - Math.min(mh, placeHaut)), left: centre(r), cote: 'haut', maxHeight: Math.max(0, placeHaut) });
+    const placeBas = bas - (t.bottom + 6), placeHaut = t.top - 6 - haut;
+    if (placeBas >= placeHaut) setPos({ top: Math.max(haut, t.bottom + 6), left: centre(barre), cote: 'bas', maxHeight: Math.max(0, placeBas) });
+    else setPos({ top: Math.max(haut, t.top - 6 - Math.min(mh, placeHaut)), left: centre(barre), cote: 'haut', maxHeight: Math.max(0, placeHaut) });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [ancre, lier, largeur, vw, paysage]);
   const retirable = 'raison' in retirer ? null : retirer;
@@ -217,11 +250,14 @@ export const MenuAppuiLong: React.FC<MenuAppuiLongProps> = props => {
   return (
     <div
       ref={racine} role="menu" aria-label={`${chose.titre} : gestes`} className={`cal-menu cal-menu-${pos?.cote ?? 'bas'}${paysage ? ' cal-menu-l' : ''}${pos?.largeur && pos.largeur < largeur ? ' cal-menu-etroit' : ''}`} data-menu
-      data-cote={pos?.cote ?? 'bas'} data-colonnes={paysage && !lier ? '2' : '1'}
+      data-cote={pos?.cote ?? 'bas'} data-colonnes={paysage && !lier && !pos?.une ? '2' : '1'}
       style={{ top: pos?.top ?? 0, left: pos?.left ?? 0, width: pos?.largeur ?? largeur, ...(pos?.maxHeight ? { maxHeight: pos.maxHeight } : {}), visibility: pos ? undefined : 'hidden' }}
     >
       {!lier ? (
-        paysage ? (
+        paysage && pos?.une ? (
+          /* à côté de la chose tenue, sans la place de deux colonnes : une colonne qui défile en elle-même (CRITIQUE-6 n° 5) */
+          <div className="cal-m2c">{epingler}{etoile}{seules}{droite}</div>
+        ) : paysage ? (
           <div className="cal-m2">
             <div className="cal-m2c">{epingler}{etoile}{seules}</div>
             <div className="cal-m2c">{droite}</div>

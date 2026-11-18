@@ -13,6 +13,7 @@ import { CLASSE_CAISSE, GrandeCourbe, placeEtiquetteCreux, geoGrande } from '../
 import { LectureDetail } from '../../src/ui/calendrier/entete/LectureCourbe';
 import { anneeEnMois } from '../../src/domain/calendrier';
 import { largeurTexte } from '../../src/ui/calendrier/entete/Courbe';
+import { Courbe, causesDuCreux, semaineCourte, RECUL_MAX } from '../../src/ui/calendrier/entete/Courbe';
 
 /** La largeur de la fenêtre (jsdom : 1024) : l'invitation à tourner est pour le téléphone tenu droit (< 700 px). */
 function largeurFenetre(px: number) { Object.defineProperty(window, 'innerWidth', { value: px, configurable: true, writable: true }); }
@@ -160,9 +161,9 @@ describe('E01 : le chiffre clé et le creux', () => {
     render(<Banc {...espions()} onOuvrirFinances={onOuvrirFinances} />);
     const creux = creuxDepuis(courbe)!;
     // Le creux tombe en 2027, vu de S47 2026 : sa semaine porte son année (CRITIQUE-5 n° 2).
-    const cle = screen.getByRole('button', { name: new RegExp(`CHF à dépenser sans passer sous 0 \\(S${creux.numero} 2027\\)`) });
+    const cle = screen.getByRole('button', { name: new RegExp(`CHF à dépenser sans passer sous 0 \\(S${creux.numero} ’27\\)`) });
     fireEvent.click(cle);
-    const carte = screen.getByLabelText(`Le creux de S${creux.numero} 2027 : ses causes`);
+    const carte = screen.getByLabelText(`Le creux de S${creux.numero} ’27 : ses causes`);
     expect(within(carte).getByText('Embouteilleuse')).toBeInTheDocument();
     expect(carte.textContent).toContain('Mis de côté');
     expect(carte.textContent).toContain('Solde de départ 4 180 CHF · source : Finances');
@@ -345,7 +346,7 @@ describe('E11, E12 : lire la courbe au doigt, et la courbe en grand', () => {
     expect(grande.querySelector('.ent-sgm.ent-c-travaux')).not.toBeNull();
     // La légende, une fois : la caisse (CRITIQUE-5 n° 16), puis les quatre rangées présentes, chacune un seul mot.
     const legende = container.querySelector('.ent-leg')!;
-    expect(Array.from(legende.querySelectorAll('li')).map(li => li.textContent).sort()).toEqual(['Achats', 'Fêtes', 'Travaux', 'Ventes', 'caisse']);
+    expect(Array.from(legende.querySelectorAll('li')).map(li => li.textContent).sort()).toEqual(['Achats', 'Fêtes', 'Travaux', 'Ventes', 'caisse', 'sans mouvement']);
     expect(container.querySelector('[data-bande-semaines]')).toBeNull();
     fireEvent.click(screen.getByRole('button', { name: 'Revenir à la frise' }));
     expect(e.onVue).toHaveBeenLastCalledWith('semaines');
@@ -503,7 +504,7 @@ describe('CRITIQUE-2 n° 7, 8, 10 : la tête lisible, les noms comme z2s', () =>
     const creux = creuxDepuis(courbe)!;
     const cle = container.querySelector('[data-ent-cle]') as HTMLElement;
     expect(cle.children).toHaveLength(3);
-    expect(cle.textContent).toBe(`${francs(creux.centimes)}CHF à dépenser ·S${creux.numero} 2027`);
+    expect(cle.textContent).toBe(`${francs(creux.centimes)}CHF à dépenser· S${creux.numero} ’27`);
     expect(cle.querySelector('.ent-k-s')).toBeNull();
     const fs = await import('node:fs');
     const chemin = await import('node:path');
@@ -543,7 +544,7 @@ describe('CRITIQUE-2 n° 21, 22, 34 : le creux, la date d’une semaine, l’id�
   it('un clic sur le chiffre clé fait voir « Le creux de S\\d+ : ses causes » et « Solde et réglages › »', () => {
     render(<Banc {...espions()} />);
     fireEvent.click(screen.getByRole('button', { name: /CHF à dépenser sans passer sous 0/ }));
-    expect(screen.getByText(/^Le creux de S\d+( \d{4})? : ses causes$/)).toBeVisible();
+    expect(screen.getByText(/^Le creux de S\d+( ’\d{2})? : ses causes$/)).toBeVisible();
     expect(screen.getByText('Solde et réglages ›')).toBeVisible();
   });
 
@@ -593,7 +594,7 @@ describe('CRITIQUE-2 n° 26 : la rotation garde l’état de l’en-tête', () =
     expect(container.querySelector('.ent--paysage')).not.toBeNull();
     expect(container.querySelector('[data-calendrier-entete]')).toBe(racine);
     expect(screen.getByRole('button', { name: '±' })).toHaveAttribute('aria-pressed', 'true');
-    expect(screen.getByText(/^Le creux de S\d+( \d{4})? : ses causes$/)).toBeInTheDocument();
+    expect(screen.getByText(/^Le creux de S\d+( ’\d{2})? : ses causes$/)).toBeInTheDocument();
     // En paysage, 13 semaines dans la bande, ± toujours ouvert : les montants y sont.
     expect(bande(container).textContent).toMatch(/[+−]\d/);
     act(() => { mq.matches = false; ecouteurs.forEach(f => f()); });
@@ -968,8 +969,8 @@ describe('CRITIQUE-4 (lot q1-entete) : le doigt à 390, le paysage, le menu, le 
     ];
     render(<Banc {...espions()} modele={modele({ hypotheses } as Partial<ModeleEnTete>)} />);
     fireEvent.click(screen.getByRole('button', { name: /à dépenser sans passer sous 0/ }));
-    const carte = screen.getByRole('region', { name: /Le creux de S\d+( \d{4})? : ses causes/ });
-    expect(carte.textContent).toMatch(/S\d+( \d{4})? → S\d+( \d{4})? · −?[\d\s]+ à dépenser/);
+    const carte = screen.getByRole('region', { name: /Le creux de S\d+( ’\d{2})? : ses causes/ });
+    expect(carte.textContent).toMatch(/S\d+( ’\d{2})? → S\d+( ’\d{2})? · −?[\d\s]+ à dépenser/);
     expect(carte.textContent).toContain('Embouteilleuse');
     expect(carte.textContent).toContain('Mis de côté pour Frigo');
     expect(carte.textContent).toContain('Tendance de Finances : +120 CHF/mois · source : Finances › Prévision');
@@ -1011,7 +1012,7 @@ describe('CRITIQUE-4 (lot q1-entete) : le doigt à 390, le paysage, le menu, le 
     }
     const { container } = render(<Banc {...espions()} vueInitiale="graph" />);
     expect(container.querySelector('[data-creux-fond]')).not.toBeNull();
-    expect(container.querySelector('[data-creux-etiquette]')!.textContent).toMatch(/^creux S\d+ · /);
+    expect(container.querySelector('[data-creux-etiquette]')!.textContent).toMatch(/^creux S\d+( ’\d{2})? · /);
   });
 });
 
@@ -1028,9 +1029,9 @@ describe('CRITIQUE-5 (lot 1) : le creux et son année, l’An, la lecture, la gr
     expect(creux.lundi).toBe('2027-11-01');
     const { container, unmount } = render(<Banc {...espions()} modele={modeleS44()} />);
     const cle = container.querySelector('[data-ent-cle]') as HTMLElement;
-    expect(cle.textContent).toBe(`${francs(creux.centimes)}CHF à dépenser ·S44 2027`);
+    expect(cle.textContent).toBe(`${francs(creux.centimes)}CHF à dépenser· S44 ’27`);
     fireEvent.click(cle);
-    expect(screen.getByText('Le creux de S44 2027 : ses causes')).toBeInTheDocument();
+    expect(screen.getByText('Le creux de S44 ’27 : ses causes')).toBeInTheDocument();
     unmount();
     const { container: c2 } = render(<Banc {...espions()} modele={modeleS44()} vueInitiale="annee" />);
     const an = c2.querySelector('[data-bande-annee]') as HTMLElement;
@@ -1080,7 +1081,7 @@ describe('CRITIQUE-5 (lot 1) : le creux et son année, l’An, la lecture, la gr
     expect(segments[3].getAttribute('class')).not.toMatch(classesRangee);
     expect(segments[5].getAttribute('class')).toMatch(/ent-c-papier/);
     expect(segments[6].getAttribute('class')).toMatch(/ent-c-achat/);
-    expect(Array.from(container.querySelectorAll('.ent-leg li')).map(li => li.textContent)).toEqual(['caisse', 'Achats', 'Papiers']);
+    expect(Array.from(container.querySelectorAll('.ent-leg li')).map(li => li.textContent)).toEqual(['caisse', 'Achats', 'Papiers', 'rien de nommé (tendance)']);
     expect(container.textContent).not.toContain('caisse en gris');
     // Le jeton du trait de la caisse n'est celui d'aucune rangée, ni le gris de Papiers.
     const fs = await import('node:fs');
@@ -1128,12 +1129,12 @@ describe('CRITIQUE-5 (lot 1) : le creux et son année, l’An, la lecture, la gr
     fireEvent.click(container.querySelector('[data-ent-cle]') as HTMLElement);
     const ensuite = container.querySelector('[data-ensuite]') as HTMLElement;
     expect(ensuite).not.toBeNull();
-    expect(ensuite.textContent).toMatch(/^ensuite[−\d ]+ dès S\d+( \d{4})?/);
+    expect(ensuite.textContent).toMatch(/^ensuite[−\d ]+ dès S\d+( ’\d{2})?/);
     expect(ensuite.textContent).not.toMatch(/ · \d+ \p{L}/u);
     unmount();
     const { container: c2 } = render(<Banc {...espions()} orientation="paysage" />);
     fireEvent.click(c2.querySelector('[data-ent-cle]') as HTMLElement);
-    expect(c2.querySelector('[data-ensuite]')!.textContent).toMatch(/dès S\d+( \d{4})? · \d+ \p{L}/u);
+    expect(c2.querySelector('[data-ensuite]')!.textContent).toMatch(/dès S\d+( ’\d{2})? · \d+ \p{L}/u);
   });
 });
 
@@ -1170,4 +1171,152 @@ describe('CRITIQUE-5 n° 20 : la lecture au doigt et l’appui long marchent à 
       expect(container.querySelector('.ent-gc-d')!.textContent).toMatch(/^S\d+, /);
     });
   }
+});
+
+describe('CRITIQUE-6 (lot B-entete) : le chiffre clé entier, le creux et ses causes, l’étoile, c3-a, la période', () => {
+  /* Une courbe qui ne fait que descendre sur 52 semaines (tendance −250 chaque semaine) : de gros achats au début de l'horizon, un loyer tous
+     les quatre semaines, et le creux à la dernière semaine (S45 2027, lundi 8 nov. 2027, vu du 16 nov. 2026). */
+  const descente = courbeCaisse({ depart: 900000, lundi0: LUNDI0, mouvements: [
+    { id: 'd1', jour: jour(1), centimes: -180000, nom: 'Frigo' },
+    { id: 'd2', jour: jour(2), centimes: -90000, nom: 'Hotte' },
+    { id: 'd3', jour: jour(3), centimes: -54000, nom: 'Commande groupée de malt' },
+    ...Array.from({ length: 13 }, (_, k) => ({ id: `loyer${k}`, jour: jour(k * 4 + 3), centimes: -40000, nom: 'Loyer du local' })),
+    { id: 'd49', jour: jour(49), centimes: -42000, nom: 'Brouwland · malt' },
+    { id: 'd51', jour: jour(51), centimes: -26000, nom: 'Hopfen · Hallertau' },
+    ...Array.from({ length: 52 }, (_, k) => ({ id: `t${k}`, jour: jour(k), centimes: -25000, nom: 'Tendance', tendance: true }))
+  ] })!;
+
+  it('n° 1 : « à dépenser » entier dans le bouton, sans rognure ; creux en 2027 vu en 2026 → « S.. ’27 » ; dans l’année, la semaine seule', async () => {
+    const { container, unmount } = render(<Banc {...espions()} modele={modele({ courbe: descente, creux: creuxDepuis(descente) })} />);
+    const cle = container.querySelector('[data-ent-cle]') as HTMLElement;
+    expect(cle.textContent).toContain('CHF à dépenser');
+    expect(cle.textContent).toMatch(/à dépenser· S45 ’27$/);
+    expect(cle.textContent).not.toMatch(/2027|…/);
+    unmount();
+    // Un creux dans l'année en cours : « S50 », sans année.
+    const court = courbeCaisse({ depart: 300000, lundi0: LUNDI0, mouvements: [{ id: 'x', jour: jour(3), centimes: -250000, nom: 'Cuve' }, { id: 'y', jour: jour(8), centimes: 400000, nom: 'Vente' }] })!;
+    const { container: c2 } = render(<Banc {...espions()} modele={modele({ courbe: court, creux: creuxDepuis(court) })} />);
+    expect((c2.querySelector('[data-ent-cle]') as HTMLElement).textContent).toMatch(/à dépenser· S50$/);
+    expect(semaineCourte('2027-11-01', LUNDI0)).toBe('S44 ’27');
+    expect(semaineCourte('2026-12-07', LUNDI0)).toBe('S50');
+    // Aucune ellipse sur le libellé : il ne se rogne jamais (D-114, E33).
+    const fs = await import('node:fs');
+    const chemin = await import('node:path');
+    const css = fs.readFileSync(chemin.resolve(process.cwd(), 'src/ui/calendrier/entete/entete.css'), 'utf8');
+    const regle = css.match(/\.ent-k \.ent-k-u \{([^}]*)\}/)![1];
+    expect(regle).not.toMatch(/ellipsis|overflow: hidden/);
+    expect(regle).toContain('flex: none');
+  });
+
+  it('n° 1 et 14 : quand la ligne ne tient pas (390, paysage), la semaine passe sous « CHF à dépenser » (data-empile), sans rien rogner', () => {
+    vi.spyOn(HTMLElement.prototype, 'offsetWidth', 'get').mockImplementation(function (this: HTMLElement) {
+      return this.tagName === 'B' ? 70 : this.classList.contains('ent-k-u') ? 104 : this.tagName === 'EM' ? 56 : 0;
+    });
+    const large = vi.spyOn(HTMLElement.prototype, 'clientWidth', 'get').mockImplementation(function (this: HTMLElement) { return this.hasAttribute('data-ent-cle') ? 190 : 0; });
+    const { container, unmount } = render(<Banc {...espions()} modele={modele({ courbe: descente, creux: creuxDepuis(descente) })} />);
+    const cle = container.querySelector('[data-ent-cle]') as HTMLElement;
+    expect(cle.hasAttribute('data-empile')).toBe(true);
+    expect(cle.textContent).toContain('CHF à dépenser');
+    unmount();
+    // Assez de place (z2s : « 113 CHF à dépenser · S24 ») : une ligne.
+    large.mockImplementation(function (this: HTMLElement) { return this.hasAttribute('data-ent-cle') ? 260 : 0; });
+    const { container: c2 } = render(<Banc {...espions()} modele={modele({ courbe: descente, creux: creuxDepuis(descente) })} orientation="paysage" />);
+    expect((c2.querySelector('[data-ent-cle]') as HTMLElement).hasAttribute('data-empile')).toBe(false);
+  });
+
+  it('n° 8 : courbe qui descend sur 52 semaines, creux à la dernière : les causes sont de la semaine du creux ou des précédentes immédiates, triées ; « ensuite » dit la fin de l’horizon', () => {
+    const creux = creuxDepuis(descente)!;
+    expect(creux.index).toBe(51);
+    const { causes } = causesDuCreux(descente.semaines, creux.index);
+    expect(causes.length).toBeGreaterThan(0);
+    expect(causes.every(c => c.index <= 51 && c.index > 51 - RECUL_MAX)).toBe(true);
+    expect(causes.map(c => c.index)).toEqual([...causes.map(c => c.index)].sort((a, b) => a - b));
+    expect(causes.some(c => c.index === 51)).toBe(true);
+    expect(causes.map(c => c.nom)).not.toContain('Frigo');
+    const { container } = render(<Banc {...espions()} modele={modele({ courbe: descente, creux, choses: [] as unknown as ModeleEnTete['choses'] })} />);
+    fireEvent.click(container.querySelector('[data-ent-cle]') as HTMLElement);
+    const carte = screen.getByRole('region', { name: 'Le creux de S45 ’27 : ses causes' });
+    const lignes = Array.from(carte.querySelectorAll('[data-cause-index]')).map(l => Number((l as HTMLElement).dataset.causeIndex));
+    expect(lignes.length).toBeGreaterThan(0);
+    expect(lignes).toEqual([...lignes].sort((a, b) => a - b));
+    expect(lignes.every(i => i > 51 - RECUL_MAX)).toBe(true);
+    expect(carte.textContent).toContain('S45 ’27Hopfen · Hallertau');
+    expect(carte.textContent).not.toContain('Frigo');
+    const ensuite = carte.querySelector('[data-ensuite]') as HTMLElement;
+    expect(ensuite).not.toBeNull();
+    // Le dimanche de la 52e semaine : 14 nov. 2027 ; aucun palier inventé.
+    expect(ensuite.textContent).toBe('ensuite · fin de l’horizon, le 14 nov. 2027');
+    expect(ensuite.textContent).not.toMatch(/dès S/);
+  });
+
+  it('n° 9 : une chose étoilée en S52 a sa ★ sur la courbe, à l’abscisse de S52, posée au-dessus du cadre de la fenêtre', async () => {
+    // Fenêtre S47 – S52 sur 52 semaines, à 120 px : le nom ne tient nulle part, la ★ seule se pose sur sa marche.
+    const sem = courbe.semaines;
+    const { container } = render(<Courbe courbe={sem} largeur={120} hauteur={110} cadre={{ index: 0, nombre: 6, etiquette: 'S47 – S52' }} etoiles={[{ nom: 'Marché de Noël', i: 5 }]}>
+      <div className="ent-cadre" />
+    </Courbe>);
+    const marque = container.querySelector('[data-etoile-marque]') as SVGTextElement;
+    expect(marque).not.toBeNull();
+    expect(marque.textContent).toContain('★');
+    expect(marque.getAttribute('data-semaine')).toBe('52');
+    expect(Number(marque.getAttribute('x'))).toBeCloseTo((120 / 52) * 5.5, 1);
+    // Au-dessus du cadre : un calque posé après le dessin, avec un z-index, dans la courbe.
+    const calque = marque.closest('svg') as SVGSVGElement;
+    expect(calque.hasAttribute('data-etoiles-dessus')).toBe(true);
+    expect(calque.parentElement!.classList.contains('ent-cb')).toBe(true);
+    const fs = await import('node:fs');
+    const chemin = await import('node:path');
+    const css = fs.readFileSync(chemin.resolve(process.cwd(), 'src/ui/calendrier/entete/entete.css'), 'utf8');
+    expect(css.match(/\.ent-etoiles-dessus \{([^}]*)\}/)![1]).toMatch(/z-index: [1-9]/);
+    expect(css.match(/\.ent-cadre \{([^}]*)\}/)![1]).not.toMatch(/z-index/);
+    // Dans l'en-tête, à 390 : la chose étoilée en S52 se voit (★ seule ou son nom étoilé, à sa semaine).
+    const choses = [...(modele().choses ?? []), { id: 'c-noel', rangee: 'fetes', titre: 'Marché de Noël', mouvements: ['n52'] }] as unknown as ModeleEnTete['choses'];
+    const avecNoel = courbeCaisse({ depart: 418000, lundi0: LUNDI0, mouvements: [...mouvements, { id: 'n52', jour: jour(5), centimes: 118000, nom: 'Marché de Noël' }], mises })!;
+    const { container: c2 } = render(<Banc {...espions()} modele={modele({ courbe: avecNoel, creux: creuxDepuis(avecNoel), choses })} etoiles={['c-noel']} />);
+    const cb = c2.querySelector('.ent-cb') as HTMLElement;
+    const seule = cb.querySelector('[data-etoile-marque]');
+    const nommee = cb.querySelector('[data-etoile="oui"]');
+    expect(seule ? seule.getAttribute('data-semaine') : nommee!.getAttribute('data-nom-index')).toBe(seule ? '52' : '5');
+  });
+
+  const courbeTendance6 = courbeCaisse({ depart: 418000, lundi0: LUNDI0, mouvements: [
+    { id: 't3', jour: jour(3), centimes: -25000, nom: 'Tendance', tendance: true },
+    { id: 'loyer', jour: jour(5), centimes: -40000, nom: 'Loyer', choseId: 'c-loyer' },
+    { id: 'malt', jour: jour(6), centimes: -54000, nom: 'Malt', choseId: 'c-malt' }
+  ] })!;
+  const rangeeDe6 = (m: { choseId?: string }) => (m.choseId === 'c-loyer' ? 'papiers' : m.choseId === 'c-malt' ? 'achats' : undefined);
+
+  for (const paysage of [false, true]) {
+    it(`n° 12 : c3-a ${paysage ? 'en paysage' : 'en portrait'} : chaque couleur du tracé a sa ligne de légende, le neutre compris`, () => {
+      const { container } = render(<GrandeCourbe courbe={courbeTendance6} rangeeDe={rangeeDe6} largeur={paysage ? 622 : 390} hauteur={paysage ? 240 : 400} paysage={paysage} lecture={null} onFermer={() => undefined} />);
+      const classes = new Set(Array.from(container.querySelectorAll('.ent-sgm')).map(s => /ent-c-([a-z]+)/.exec(s.getAttribute('class')!)![1]));
+      expect(classes.size).toBeGreaterThan(1);
+      for (const c of classes) expect(container.querySelector(`[data-legende="${c}"]`)).not.toBeNull();
+      expect(container.querySelector('[data-legende="autre"]')!.textContent).toBe('rien de nommé (tendance)');
+      if (paysage) expect(container.querySelector('.ent-gc-cote .ent-leg')).not.toBeNull();
+    });
+  }
+
+  it('n° 18 : c3-a dit « creux S44 ’27 · … », la même forme que l’en-tête', () => {
+    const s44 = courbeCaisse({ depart: 418000, lundi0: LUNDI0, mouvements: [
+      { id: 'cuve', jour: jour(50), centimes: -1000000, nom: 'Cuve' },
+      { id: 'vente', jour: jour(51), centimes: 900000, nom: 'Vente de fûts' }
+    ] })!;
+    const { container } = render(<GrandeCourbe courbe={s44} largeur={390} hauteur={400} paysage={false} lecture={null} onFermer={() => undefined} />);
+    expect(container.querySelector('[data-creux-etiquette]')!.textContent).toBe(`creux S44 ’27 · ${francs(creuxDepuis(s44)!.centimes)}`);
+  });
+
+  it('n° 11 (demande du lot D) : à 390, la période reçue au montage (novembre) règle la bande, et le menu dit la même période que la barre', () => {
+    largeurFenetre(390);
+    const e = espions();
+    const { container } = render(<Banc {...e} periodeInitiale={{ genre: 'mois', annee: 2026, mois: 11 }} largeurColonne={61} />);
+    expect(bande(container).textContent).toBe('S47S48S49');
+    const bouton = container.querySelector('[data-ent-periode]') as HTMLElement;
+    expect(bouton.textContent).toBe('Nov.');
+    // Aucune fenêtre locale de 6 semaines n'a été écrite en période par-dessus.
+    expect(e.onPeriode).not.toHaveBeenCalled();
+    fireEvent.click(bouton);
+    const plage = document.querySelector('.ent-menu-plage') as HTMLElement;
+    expect(plage.textContent).toMatch(/^Nov\. · 16 nov\. → 6 déc\.$/);
+  });
 });

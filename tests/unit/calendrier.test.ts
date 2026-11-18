@@ -6,7 +6,7 @@ import {
   RANGEES, anneeEnMois, choseArgent, choseBrassin, choseCreative, choseSansDate, choseVenteProbable, dateDeSemaine, dimancheDe, duneSemaine, echelleSemaines, ecartSemaines, estMarque, evenementsAgenda,
   evenementsArgent, evenementsBrassins, fenetreSemaines, finDeBrassin, francs, iconesIdees, indexMois, indexSemaine, jalonsBrassin, livraisonsAttendues, lundiDe, numeroSemaine, positionChose,
   retardsDe, semainesDe, totalVoie, budgetBrassin, francsSignes, idChoseArgent, preparerChoses, texteDuree, etiquetteListe, dureeBrassin, type Rangee,
-  semaineAvecAn, choseCoutAVenir, COUT_A_VENIR
+  semaineAvecAn, choseCoutAVenir, COUT_A_VENIR, preteAuPlusTot, CATEGORIE_MATIERES, estFactureDeMatieres, fournisseurDePiece, fusionnerFacturesLivraisons, contientNom
 } from '../../src/domain/calendrier';
 import { deplacer } from '../../src/domain/calendrierGestes';
 import { REGLAGES_VIDES } from '../../src/domain/fournisseurs';
@@ -551,5 +551,93 @@ describe('CRITIQUE-5 n° 2, 19 : la semaine avec son année, le coût à venir',
     const v = choseCoutAVenir({ ...c, centimes: 0 });
     expect(v).toMatchObject({ coutAVenir: true, partiel: true, etiquette: `Blonde · ${COUT_A_VENIR}` });
     expect('centimes' in v).toBe(false);
+  });
+});
+
+describe('CRITIQUE-6 (18.11) : prête au plus tôt, factures de matières dans Achats, ventes sans pastille redondante', () => {
+  const recette35 = { fermentation: [{ kind: 'primaire', name: 'Primaire', tempC: 19, days: 21 }, { kind: 'garde', name: 'Garde', tempC: 4, days: 14 }] } as unknown as Batch['recipeSnapshot'];
+  const saison = lot({ id: 'LOT-S', name: 'Saison de ferme', status: 'planifie', brewDate: '', plannedBrewDate: '10.11.2026', recipeSnapshot: recette35 });
+
+  it('n° 2 : prévue le 10 nov., le 17 nov., cycle 35 j : le détail dit « pas brassée » et « prête le 22 déc. », jamais « 15 déc. »', () => {
+    expect(preteAuPlusTot(saison, '2026-11-17')).toBe('2026-12-22');
+    const c = choseBrassin(saison, '2026-11-17')!;
+    expect(c.pretePrevue).toBe('2026-12-22');
+    expect(c.detail).toContain('pas brassée');
+    expect(c.detail).toContain('prête le 22 déc.');
+    expect(`${c.detail} ${c.duree}`).not.toContain('15 déc.');
+    /* sa barre et sa date partent de la même semaine : la barre finit aujourd'hui (S47), la date en compte le cycle */
+    expect(c.fin).toBe('2026-11-17');
+    /* prévue dans le futur : prévue + cycle (24 nov. + 35 j = 29 déc.) */
+    const futur = lot({ ...saison, plannedBrewDate: '24.11.2026' });
+    expect(preteAuPlusTot(futur, '2026-11-17')).toBe('2026-12-29');
+    expect(choseBrassin(futur, '2026-11-17')!.preteLe).toBe('2026-12-29');
+    /* brassée (en cuve) : sa vraie fin, jamais décalée */
+    expect(preteAuPlusTot(lot({ ...saison, status: 'fermentation', brewDate: '10.11.2026', actualBrewDate: '10.11.2026' }), '2026-11-17')).toBe('2026-12-15');
+    /* sans cycle connu : rien (jamais une fin inventée) */
+    expect(preteAuPlusTot(lot({ ...saison, recipeSnapshot: undefined }), '2026-11-17')).toBeNull();
+  });
+
+  it('n° 3 (lecture) : un plan manuel de matières (`brassage`) tombe dans Achats, `chargesFixes` dans Papiers, `divers` dans Achats', () => {
+    expect(CATEGORIE_MATIERES).toBe('brassage');
+    const ligne = (category: string): ForecastItem => ({ id: `P-${category}:2026-12-03`, date: '2026-12-03', label: 'ZZ TEST — houblon Citra', amountCents: 24000, direction: 'out', source: 'plan', category, planId: `P-${category}` });
+    const p = (category: string) => ({ id: `P-${category}`, title: 'ZZ TEST — houblon Citra', date: '2026-12-03', amountCents: 24000, direction: 'out', category, source: 'manual', status: 'active', createdAt: 'x' }) as FinancialPlan;
+    expect(choseArgent(ligne('brassage'), [p('brassage')])!.rangee).toBe('achats');
+    expect(choseArgent(ligne('chargesFixes'), [p('chargesFixes')])!.rangee).toBe('papiers');
+    expect(choseArgent(ligne('divers'), [p('divers')])!.rangee).toBe('achats');
+  });
+
+  it('n° 7 : une facture de matières (lignes, entrée en stock, fournisseur du stock, catégorie) va dans Achats ; une autre reste dans Papiers', () => {
+    const tx = (p: Record<string, unknown>) => ({ id: 'F', description: 'Brouwland · malt', category: 'chargesFixes', ...p });
+    expect(estFactureDeMatieres(tx({ finance: { kind: 'expense', lines: [{ kind: 'ingredient' }] } }))).toBe(true);
+    expect(estFactureDeMatieres(tx({ category: 'brassage', finance: { kind: 'expense', lines: [] } }))).toBe(true);
+    expect(estFactureDeMatieres(tx({ stockImpact: [{ itemType: 'rawMaterials' }] }))).toBe(true);
+    expect(estFactureDeMatieres(tx({ description: 'Hopfen · facture 12' }), [{ category: 'Houblon', supplier: 'Hopfen' }])).toBe(true);
+    expect(estFactureDeMatieres(tx({ description: 'Assurance RC', finance: { kind: 'expense', lines: [{ kind: 'service' }] } }), [{ category: 'Houblon', supplier: 'Hopfen' }])).toBe(false);
+    expect(estFactureDeMatieres(tx({ category: 'brassage', finance: { kind: 'expense', lines: [{ kind: 'service' }] } }))).toBe(false);
+    expect(estFactureDeMatieres(tx({ category: 'brassage', finance: { kind: 'income', lines: [] } }))).toBe(false);
+    expect(fournisseurDePiece({ description: 'Brouwland · malt' })).toBe('brouwland');
+    expect(fournisseurDePiece({ description: 'x', finance: { vendor: ' Weyermann ' } })).toBe('weyermann');
+    const facture = (id: string, label: string, category: string): ForecastItem => ({ id: `invoice:${id}`, date: '2026-12-02', label, amountCents: 42000, direction: 'out', source: 'invoice', category });
+    expect(choseArgent(facture('F-B', 'Brouwland · malt', 'brassage'), [], undefined, new Set(['F-B']))!.rangee).toBe('achats');
+    expect(choseArgent(facture('F-A', 'Assurance RC', 'chargesFixes'), [], undefined, new Set(['F-B']))!.rangee).toBe('papiers');
+    /* sans liste : la catégorie de la ligne */
+    expect(choseArgent(facture('F-B', 'Brouwland · malt', 'brassage'))!.rangee).toBe('achats');
+    expect(choseArgent(facture('F-C', 'Commune · taxe', 'chargesFixes'))!.rangee).toBe('papiers');
+  });
+
+  it('n° 7 : la facture et la livraison du même fournisseur, la même semaine, sont une seule chose dans Achats, avec −420 et la pièce', () => {
+    const fac = choseArgent({ id: 'invoice:F-B', date: '2026-12-02', label: 'Brouwland · malt', amountCents: 42000, direction: 'out', source: 'invoice', category: 'brassage' }, [], undefined, new Set(['F-B']))!;
+    const reglages = { ...REGLAGES_VIDES, commandes: { brouwland: [{ le: '2026-10-01', recue: '2026-10-08' }, { le: '2026-11-23' }] } };
+    const [liv] = livraisonsAttendues(reglages);
+    expect(liv).toMatchObject({ titre: 'Livraison Brouwland', debut: '2026-11-30' });
+    const r = fusionnerFacturesLivraisons([fac, liv], new Map([['F-B', 'brouwland']]));
+    expect(r).toHaveLength(1);
+    expect(r[0]).toMatchObject({ rangee: 'achats', titre: 'Livraison Brouwland · malt', centimes: -42000, source: { genre: 'facture', id: 'F-B' }, ouvre: { ecran: 'piece', id: 'F-B' }, mouvements: ['invoice:F-B'] });
+    expect(r[0].titre).toContain('Brouwland');
+    /* une autre semaine : la facture reste seule dans Achats, la livraison reste */
+    const loin = { ...fac, debut: '2026-12-16', fin: '2026-12-16' };
+    expect(fusionnerFacturesLivraisons([loin, liv], new Map([['F-B', 'brouwland']])).map(c => c.titre)).toEqual(['Brouwland · malt', 'Livraison Brouwland']);
+  });
+
+  it('n° 15 : le client déjà dans le titre n’a pas de pastille qui le répète ; un lien vers un brassin reste', () => {
+    const vente = (id: string, title: string, p: Partial<FinancialPlan>) => choseArgent(
+      { id: `${id}:2026-12-21`, date: '2026-12-21', label: title, amountCents: 90000, direction: 'in', source: 'plan', category: 'recettes', planId: id },
+      [{ id, title, date: '2026-12-21', amountCents: 90000, direction: 'in', category: 'recettes', source: 'manual', status: 'active', createdAt: 'x', ...p } as FinancialPlan]
+    )!;
+    const brassin = choseBrassin(lot({ id: 'LOT-BLONDE', name: 'Blonde d’automne', status: 'planifie', brewDate: '', plannedBrewDate: '23.11.2026', recipeSnapshot: recette35 }), AUJOURDHUI)!;
+    const noms = { clients: new Map([['CL-CIG', 'La Cigogne'], ['CL-EPI', 'Épicerie du Bourg'], ['CL-PONT', 'Café du Pont']]) };
+    const prets = preparerChoses([brassin, vente('P-CIG', '3 fûts La Cigogne', { clientId: 'CL-CIG' }), vente('P-LIE', '3 fûts La Cigogne', { clientId: 'CL-CIG', batchId: 'LOT-BLONDE' }),
+      vente('P-EPI', 'Épicerie du Bourg, 2 cartons', { clientId: 'CL-EPI' }), vente('P-AUT', 'Marché', { clientId: 'CL-PONT' })], noms);
+    const de = (id: string) => prets.find(c => c.id === `argent-${id}`)!;
+    expect(de('P-CIG').lie).toBeUndefined();
+    expect(de('P-EPI').lie).toBeUndefined();
+    for (const c of prets) if (c.lie) expect(contientNom(c.titre, c.lie.texte.replace(/^lié à /, ''))).toBe(false);
+    expect(de('P-LIE').lie).toMatchObject({ texte: 'lié à Blonde d’automne' });
+    expect(de('P-LIE').lie!.client).toBeUndefined();
+    expect(de('P-LIE').lie!.apercu).toContain('La Cigogne · client');
+    /* le client absent du titre garde sa pastille */
+    expect(de('P-AUT').lie).toMatchObject({ texte: 'lié à Café du Pont', client: 'Café du Pont' });
+    /* la quantité vient de la source (le titre de la vente) : rien n'est ajouté */
+    expect(de('P-CIG').titre).toBe('3 fûts La Cigogne');
   });
 });

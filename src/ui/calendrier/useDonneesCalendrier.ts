@@ -16,7 +16,8 @@ import { planBrewBatchId } from '../../domain/finance/brewForecast';
 import { brewBudgetDemands } from '../../domain/finance/brewBudget';
 import { hasBrewStarted } from '../../domain/batchSchedule';
 import {
-  NB_SEMAINES_COURBE, ajouterJours, anneeEnMois, budgetBrassin, choseArgent, choseBrassin, choseCoutAVenir, choseCreative, choseSansDate, choseVenteProbable, francs, francsSignes, iconesIdees, jourLisible,
+  NB_SEMAINES_COURBE, ajouterJours, anneeEnMois, budgetBrassin, choseArgent, choseBrassin, choseCoutAVenir, choseCreative, choseSansDate, choseVenteProbable, estFactureDeMatieres,
+  fournisseurDePiece, francs, francsSignes, fusionnerFacturesLivraisons, iconesIdees, jourLisible,
   livraisonsAttendues, lundiDe, numeroSemaine, positionChose, retardsDe, semainesDe,
   type ChoseCalendrier, type EstimationBudget, type HypotheseCaisse, type IconeSemaine, type ModeleCalendrier
 } from '../../domain/calendrier';
@@ -166,11 +167,15 @@ export function construireModele(e: EntreesModele): ModeleCalendrier {
   });
   /* CRITIQUE-5 n° 4 : la vraie échéance de chaque facture, pour qu'une facture échue garde sa date (la prévision la compte à aujourd'hui) */
   const echeances = new Map(e.transactions.flatMap(t => (t.finance?.dueDate ? [[t.id, t.finance.dueDate] as [string, string]] : [])));
-  const argent = prevision.items.flatMap(i => { const c = choseArgent(i, e.plans, echeances);return c ? [marques.has(c.id) ? { ...c, proposition: 'echeance' as const } : c] : []; });
+  /* CRITIQUE-6 n° 7 : les factures de matières (lignes, entrée en stock, fournisseur des matières du stock, catégorie) vont dans Achats */
+  const matieres = new Set(e.transactions.filter(t => estFactureDeMatieres(t, e.stockItems)).map(t => t.id));
+  const fournisseurs = new Map(e.transactions.map(t => [t.id, fournisseurDePiece(t)] as [string, string]));
+  const argent = prevision.items.flatMap(i => { const c = choseArgent(i, e.plans, echeances, matieres); return c ? [marques.has(c.id) ? { ...c, proposition: 'echeance' as const } : c] : []; });
   const creatives = e.items.flatMap(i => { const c = choseCreative(i); return c ? [c] : []; });
   const probables = e.plans.flatMap(p => { const c = choseVenteProbable(p); return c ? [c] : []; });
   const propositionsBrassin = brassinsHabituels(e.batches, aujourdhui);
-  const posees = [...brassins, ...creatives, ...argent, ...probables, ...livraisonsAttendues(e.reglages), ...propositionsBrassin].filter(dansLaFenetre(semaines));
+  /* la facture d'un fournisseur et sa livraison de la même semaine : une seule chose dans Achats (CRITIQUE-6 n° 7) */
+  const posees = fusionnerFacturesLivraisons([...brassins, ...creatives, ...argent, ...probables, ...livraisonsAttendues(e.reglages), ...propositionsBrassin], fournisseurs).filter(dansLaFenetre(semaines));
   /* n° 9 : chaque brassin porte son budget (courses et frais de la prévision ; à défaut, l'estimation enregistrée de BrewBudgetSheet) */
   const estimations = estimationsBudget(e.plans);
   const batchDe = new Map(e.batches.map(b => [b.id, b] as const));

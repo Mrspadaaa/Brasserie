@@ -407,10 +407,12 @@ describe('CRITIQUE-3 (lot t3-c-frise) : le menu de l’appui long', () => {
     const top = parseFloat(m.style.top);
     expect(top).toBeGreaterThanOrEqual(8);
     expect(top + HAUTEUR_REPLI_PAYSAGE_PX).toBeLessThanOrEqual(390 - 64);
-    /* au-dessus de la barre (dessous, il passerait sous les onglets), jamais à un top fixe */
-    expect(m).toHaveAttribute('data-cote', 'haut');
-    expect(top + HAUTEUR_REPLI_PAYSAGE_PX).toBeLessThanOrEqual(250);
-    expect(m.style.maxHeight).toBe('');
+    /* CRITIQUE-6 n° 5 : dessous, il passerait sous les onglets ; à côté de la barre (à gauche : 584 px libres), avant « au-dessus » en
+       paysage ; jamais sur elle */
+    expect(m).toHaveAttribute('data-cote', 'cote');
+    const left = parseFloat(m.style.left), width = parseFloat(m.style.width);
+    expect(left + width).toBeLessThanOrEqual(600 - 6);
+    expect(left).toBeGreaterThanOrEqual(8);
   });
 
   it('c5 (n° 13) : « Lier » ouvre la liste des brassins et des clients ; « La Cigogne » appelle onLier({ clientId })', () => {
@@ -449,6 +451,108 @@ describe('CRITIQUE-3 (lot t3-c-frise) : le menu de l’appui long', () => {
       delete (document as unknown as Record<string, unknown>).scrollingElement;
       entete.remove();
     }
+  });
+
+  /* CRITIQUE-6 n° 5 (E31 « un menu sous elle », D-192) : le rectangle du menu n'intersecte jamais celui de la chose tenue, sa barre et son nom */
+  const rectMenu = (m: HTMLElement) => {
+    const top = parseFloat(m.style.top), left = parseFloat(m.style.left), width = parseFloat(m.style.width);
+    const repli = m.getAttribute('data-colonnes') === '2' ? HAUTEUR_REPLI_PAYSAGE_PX : HAUTEUR_REPLI_PX;
+    const hauteur = Math.min(repli, m.style.maxHeight ? parseFloat(m.style.maxHeight) : repli);
+    return { top, left, right: left + width, bottom: top + hauteur };
+  };
+  const recouvre = (a: { top: number; bottom: number; left: number; right: number }, b: { top: number; bottom: number; left: number; right: number }) =>
+    a.left < b.right && a.right > b.left && a.top < b.bottom && a.bottom > b.top;
+  /** Une barre et son nom posé à droite (« Hotte −900 »), comme Barre.tsx les rend : la barre, puis l'étiquette sœur `.cal-lbl`. */
+  const barreEtNom = (b: { top: number; left: number; width: number; height: number }, nomLargeur: number, defile: () => number = () => 0) => {
+    const parent = document.createElement('div');
+    document.body.appendChild(parent);
+    const barre = document.createElement('div');
+    const nom = document.createElement('span');
+    nom.className = 'cal-lbl';
+    parent.append(barre, nom);
+    const rect = (top: number, left: number, width: number, height: number) => ({ top, bottom: top + height, left, right: left + width, width, height, x: left, y: top, toJSON: () => ({}) }) as DOMRect;
+    vi.spyOn(barre, 'getBoundingClientRect').mockImplementation(() => rect(b.top - defile(), b.left, b.width, b.height));
+    vi.spyOn(nom, 'getBoundingClientRect').mockImplementation(() => rect(b.top - defile(), b.left + b.width + 6, nomLargeur, b.height));
+    const tenue = () => ({ top: b.top - defile(), bottom: b.top - defile() + b.height, left: b.left, right: b.left + b.width + 6 + nomLargeur });
+    return { barre, tenue, retirer: () => parent.remove() };
+  };
+
+  it('CRITIQUE-6 n° 5 : paysage 844 × 390, Hotte au milieu de la frise, la page au bout : le menu à côté, ni sur la barre ni sur « Hotte −900 »', () => {
+    taille(844, 390);
+    const entete = document.createElement('div');
+    entete.setAttribute('data-entete-zone', '');
+    document.body.appendChild(entete);
+    vi.spyOn(entete, 'getBoundingClientRect').mockReturnValue({ top: 0, bottom: 119, left: 12, right: 832, width: 820, height: 119, x: 12, y: 0, toJSON: () => ({}) } as DOMRect);
+    /* la mesure du banc (vision-7, paysage-11) : Hotte 140–199 × 186–204, son nom à droite ; la page ne défile plus */
+    const { barre, tenue, retirer } = barreEtNom({ top: 186, left: 140, width: 59, height: 18 }, 80);
+    try {
+      menu(espions(), barre);
+      const m = screen.getByRole('menu');
+      expect(m).toHaveAttribute('data-cote', 'cote');
+      const r = rectMenu(m);
+      expect(recouvre(r, tenue())).toBe(false);
+      expect(r.top).toBeGreaterThanOrEqual(125);
+      expect(r.bottom).toBeLessThanOrEqual(390 - 64);
+      /* deux colonnes : les six actions sans défiler (D-192) */
+      expect(m).toHaveAttribute('data-colonnes', '2');
+      expect(m.querySelectorAll('[role^="menuitem"]')).toHaveLength(6);
+    } finally { retirer(); entete.remove(); }
+  });
+
+  it('CRITIQUE-6 n° 5 : paysage, sans la place de deux colonnes à côté : une colonne qui défile en elle-même, toujours hors de la chose tenue', () => {
+    taille(844, 390);
+    const { barre, tenue, retirer } = barreEtNom({ top: 200, left: 300, width: 120, height: 18 }, 140);
+    try {
+      menu(espions(), barre);
+      const m = screen.getByRole('menu');
+      expect(m).toHaveAttribute('data-cote', 'cote');
+      expect(m).toHaveAttribute('data-colonnes', '1');
+      expect(m.style.maxHeight).not.toBe('');
+      expect(recouvre(rectMenu(m), tenue())).toBe(false);
+    } finally { retirer(); }
+  });
+
+  it('CRITIQUE-6 n° 5 : 390 × 844, Hotte en bas, `body { overflow-x: hidden }` : la page défile (pas le body), le menu sous la chose tenue', () => {
+    taille(390, 844);
+    const entete = document.createElement('div');
+    entete.setAttribute('data-entete-zone', '');
+    document.body.appendChild(entete);
+    vi.spyOn(entete, 'getBoundingClientRect').mockReturnValue({ top: 36, bottom: 215, left: 12, right: 378, width: 366, height: 179, x: 12, y: 36, toJSON: () => ({}) } as DOMRect);
+    let defile = 0;
+    const page = { scrollHeight: 1273, clientHeight: 844, get scrollTop() { return defile; }, set scrollTop(v: number) { defile = Math.max(0, Math.min(429, v)); } };
+    Object.defineProperty(document, 'scrollingElement', { configurable: true, get: () => page });
+    /* le body se dit « auto » et plus haut que l'écran, mais ne défile pas (son débordement passe à la fenêtre) */
+    const corps = document.body;
+    const avant = corps.style.overflowY;
+    corps.style.overflowY = 'auto';
+    Object.defineProperty(corps, 'scrollHeight', { configurable: true, get: () => 1273 });
+    Object.defineProperty(corps, 'clientHeight', { configurable: true, get: () => 844 });
+    const { barre, tenue, retirer } = barreEtNom({ top: 719, left: 136, width: 57, height: 26 }, 70, () => defile);
+    try {
+      menu(espions(), barre);
+      const m = screen.getByRole('menu');
+      expect(defile).toBeGreaterThan(0);
+      expect(m).toHaveAttribute('data-cote', 'bas');
+      const r = rectMenu(m);
+      expect(recouvre(r, tenue())).toBe(false);
+      expect(tenue().top).toBeGreaterThanOrEqual(215);
+      expect(r.bottom).toBeLessThanOrEqual(844 - 64);
+    } finally {
+      retirer(); entete.remove();
+      corps.style.overflowY = avant;
+      delete (corps as unknown as Record<string, unknown>).scrollHeight;
+      delete (corps as unknown as Record<string, unknown>).clientHeight;
+      delete (document as unknown as Record<string, unknown>).scrollingElement;
+    }
+  });
+
+  it('CRITIQUE-6 n° 5 : 390 × 844 sans défilement possible : au-dessus ou au-dessous, jamais sur la barre ni sur son nom', () => {
+    taille(390, 844);
+    const { barre, tenue, retirer } = barreEtNom({ top: 700, left: 136, width: 57, height: 26 }, 70);
+    try {
+      menu(espions(), barre);
+      expect(recouvre(rectMenu(screen.getByRole('menu')), tenue())).toBe(false);
+    } finally { retirer(); }
   });
 });
 

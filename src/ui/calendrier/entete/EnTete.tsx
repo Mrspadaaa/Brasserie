@@ -1,12 +1,12 @@
 import React, { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import { ChevronDown, Clock, Maximize2, Minimize2 } from 'lucide-react';
 import type { Periode } from '../../../components/periode/periode';
-import { dateDeSemaine, lundiDe, semaineAvecAn, type ModeleCalendrier, type Retard } from '../../../domain/calendrier';
+import { dateDeSemaine, lundiDe, type ModeleCalendrier, type Retard } from '../../../domain/calendrier';
 import { creuxDepuis, miseDeCoteVisible, type CourbeCaisse, type MouvementNomme } from '../../../domain/calendrierCaisse';
 import type { Orientation } from '../useOrientation';
 import { entrerPleinEcran, estPleinEcran, sortirPleinEcran } from '../pleinEcran';
 import { usePointeurCourbe } from '../usePointeurCourbe';
-import { Courbe, CourbeZoom, HAUTEUR_MOIS, MOIS_MIN, ajouterJours, chf, jourCourt, moisDeSemaine, type Boite, type EtoileCourbe } from './Courbe';
+import { Courbe, CourbeZoom, HAUTEUR_MOIS, MOIS_MIN, ajouterJours, chf, jourCourt, moisDeSemaine, semaineCourte, type Boite, type EtoileCourbe } from './Courbe';
 import { Cadre, etiquetteCadre, fenetreDePeriode, libelleDuree, libellePeriode, periodeDeFenetre, SEMAINES_ANNEE, type FenetreSemaines, type PriseCadre } from './Fenetre';
 import { BandeSemaines } from './BandeSemaines';
 import { BandeAnnee } from './BandeAnnee';
@@ -429,12 +429,33 @@ export function EnTeteCalendrier(props: EnTeteCalendrierProps) {
   const [tirage, setTirage] = useState<Boite | null>(null);
 
   // Le chiffre clé sur UNE ligne, comme z2s (« 113 CHF à dépenser · S24 ») ; la phrase entière est dans son nom accessible (E01, D-181).
-  // CRITIQUE-5 n° 2 : la semaine du creux porte son année quand elle n'est pas celle d'aujourd'hui (« S44 2027 », jamais une S44 lue au passé).
-  const semaineCreux = creux ? semaineAvecAn(creux.lundi, semainesTot[0]?.debut ?? creux.lundi) : '';
+  // CRITIQUE-5 n° 2 : la semaine du creux porte son année quand elle n'est pas celle d'aujourd'hui ; CRITIQUE-6 n° 1, en forme courte
+  // (« S44 ’27 »). Rien ne se rogne jamais (D-114, E33) : quand la ligne ne tient pas (« −6 397 », un creux l'an prochain, l'An en paysage),
+  // la semaine passe sous « CHF à dépenser », à droite du chiffre, sur la même hauteur de rangée (E43 : l'en-tête ne grandit pas).
+  const semaineCreux = creux ? semaineCourte(creux.lundi, semainesTot[0]?.debut ?? creux.lundi) : '';
+  const refCle = useRef<HTMLButtonElement>(null);
+  const [empile, setEmpile] = useState(false);
+  useLayoutEffect(() => {
+    const el = refCle.current;
+    if (!el) return undefined;
+    const juger = () => {
+      const [b, u, em] = Array.from(el.children) as HTMLElement[];
+      if (!b || !u || !em || !el.clientWidth) return;
+      // La largeur d'une ligne : les trois morceaux à leur taille naturelle (nowrap) et leurs deux écarts ; la même dans les deux formes.
+      const ligne = b.offsetWidth + u.offsetWidth + em.offsetWidth + 8;
+      setEmpile(ligne > el.clientWidth);
+    };
+    juger();
+    if (typeof ResizeObserver === 'undefined') return undefined;
+    const ro = new ResizeObserver(juger);
+    ro.observe(el);
+    return () => ro.disconnect();
+    // Le bouton est remonté quand la lecture au doigt se ferme : il se rejuge alors (lecture dans les dépendances).
+  }, [semaineCreux, creux?.centimes, orientation, vue, courbe, lecture === null]);
   const cle = courbe && creux ? (
-    <button type="button" className="ent-k" data-ent-cle aria-expanded={creuxOuvert}
+    <button ref={refCle} type="button" className="ent-k" data-ent-cle data-empile={empile ? '' : undefined} aria-expanded={creuxOuvert}
       aria-label={`${chf(creux.centimes)} CHF à dépenser sans passer sous 0 (${semaineCreux}) : voir ses causes`} onClick={() => setCreuxOuvert(o => !o)}>
-      <b className={creux.centimes < 0 ? 'ent-neg' : undefined}>{chf(creux.centimes)}</b><span className="ent-k-u">CHF à dépenser ·</span><em>{semaineCreux}</em>
+      <b className={creux.centimes < 0 ? 'ent-neg' : undefined}>{chf(creux.centimes)}</b><span className="ent-k-u">CHF à dépenser</span><em><span className="ent-k-sep">· </span>{semaineCreux}</em>
     </button>
   ) : <span className="ent-k ent-k-vide" />;
 
@@ -505,7 +526,7 @@ export function EnTeteCalendrier(props: EnTeteCalendrierProps) {
 
       {creuxOuvert && courbe && creux && <DetailCreux courbe={courbe} index={creux.index} hypotheses={modele.hypotheses} nomsMisDeCote={nomsMisDeCote} dates={paysage} onOuvrirFinances={onOuvrirFinances} onFermer={() => setCreuxOuvert(false)} />}
       {menuOuvert && (
-        <MenuPeriode ancre={boutonPeriode.current} paysage={paysage} plage={plage} semaines={nombre} annee={annee} liste={vue === 'liste'} sansDate={sansDate}
+        <MenuPeriode ancre={boutonPeriode.current} paysage={paysage} plage={libelle !== libelleDuree(nombre, annee) ? `${libelle} · ${plage}` : plage} semaines={nombre} annee={annee} liste={vue === 'liste'} sansDate={sansDate}
           onChoisir={choisirDuree} onListe={() => onVue('liste')} onCalendrier={() => onVue('semaines')} onSansDate={() => onVue('liste', 'sans-date')}
           onTrier={onTrier} onFiltrer={onFiltrer} onFermer={() => setMenuOuvert(false)} />
       )}

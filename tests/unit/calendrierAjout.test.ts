@@ -244,6 +244,23 @@ describe('CRITIQUE-4 n° 2 (E23, E24) : un brassin posé par la feuille porte le
     expect(poser(e, 'R-BLONDE', 'LOT-NEUF').plans).toEqual(e.plans);
   });
 
+  it('CRITIQUE-6, doute −165 / −141 : le Porter posé (état 24) baisse le chiffre clé de son budget (courses, frais) PLUS son impôt sur la bière, rangé dans Papiers', () => {
+    const e = etatBanc(JOUR);
+    const avant = modeleDe(e);
+    const apres = modeleDe(poser(e, 'R-PORTER', 'LOT-NEUF'));
+    const neuf = brassinDe(apres, 'LOT-NEUF')!;
+    const lignes = apres.choses.filter(c => c.source.genre === 'prevision-brassin' && (c.source.id === 'LOT-NEUF' || (c.ouvre.ecran === 'brassin' && c.ouvre.id === 'LOT-NEUF')));
+    const impot = lignes.filter(c => c.posteBrassin === 'impot').reduce((s, c) => s + (c.centimes ?? 0), 0);
+    const toutes = lignes.reduce((s, c) => s + (c.centimes ?? 0), 0);
+    expect(impot).toBeLessThan(0);
+    expect(lignes.filter(c => c.posteBrassin === 'impot').every(c => c.rangee === 'papiers')).toBe(true);
+    /* la barre dit le budget (sans l'impôt) ; la courbe baisse de toutes ses sorties : l'écart est exactement l'impôt */
+    expect(neuf.centimes).toBe(toutes - impot);
+    expect(apres.creux!.centimes - avant.creux!.centimes).toBe(toutes);
+    expect(toutes - neuf.centimes!).toBe(impot);
+    console.info(`doute-165 : budget ${neuf.centimes} ; impôt ${impot} ; total ${toutes} ; creux ${avant.creux!.centimes} → ${apres.creux!.centimes}`);
+  });
+
   it('une recette sans aucun budget : « coût à venir » en mots, pas de clé centimes (jamais 0), la caisse ne bouge pas', () => {
     const e0 = etatBanc(JOUR);
     const e = { ...e0, recettes: [...e0.recettes, { id: 'R-NEUVE', name: 'Bière neuve', style: 'Pale', volumeL: 100, ingredients: [] } as never] };

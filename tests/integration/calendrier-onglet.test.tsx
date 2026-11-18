@@ -77,7 +77,10 @@ describe('E07, ET-PER : la période de l’onglet est la période de l’app', (
     const onPeriode = vi.fn();
     const lundi = lundiDe('2026-11-16');
     render(<CalendrierTab {...props()} aujourdhui="2026-11-16" periode={{ genre: 'mois', annee: 2026, mois: 11 }} onPeriode={onPeriode} />);
-    expect(document.querySelector('[data-frise]')!.getAttribute('data-nb-colonnes')).toBe('6');
+    /* CRITIQUE-6 n° 11 (ET-PER) : le mois de l'app règle la fenêtre (16, 23 et 30 nov.) et le bouton dit « Nov. », comme la barre ; lire n'écrit rien */
+    expect(document.querySelector('[data-frise]')!.getAttribute('data-nb-colonnes')).toBe('3');
+    expect(document.querySelector('[data-ent-periode]')!.textContent).toMatch(/Nov\./);
+    expect(onPeriode).not.toHaveBeenCalled();
     fireEvent.click(document.querySelector('[data-ent-periode]')!);
     fireEvent.click(within(screen.getByRole('dialog', { name: 'Période et vue' })).getByRole('button', { name: /^3 mois/ }));
     expect(onPeriode).toHaveBeenCalledWith({ genre: 'dates', du: lundi, au: ajouterJours(lundi, 13 * 7 - 1) });
@@ -280,8 +283,7 @@ describe('C19 (D-71) : le bloc calendrier de l’App ouvre le budget du brassin'
     expect(vu.planSheet[vu.planSheet.length - 1]).toMatchObject({ date: lundiS50, categorie: 'brassage' });
   }, 40000);
 
-  /* La sélection visible exige que PlanSheetC lise `categorie` : fichier hors de la voie (RESULTAT.md, DÉCISION 1). */
-  it.todo('CRITIQUE-5 n° 3 : PlanSheet ouverte depuis Achats montre « Brassage » dans la pastille Catégorie (attend la DÉCISION 1 : PlanSheetC lit `categorie`)');
+  /* CRITIQUE-6 n° 3 : PlanSheetC lit désormais `categorie` ; la pastille « Brassage » et l'enregistrement sont prouvés dans calendrierPlus.test.tsx (C17). */
 
   /*
    * CRITIQUE-5 n° 17 (D-191, E25) : « Commander » d'un brassin à qui il manque du malt ouvre des Courses qui le listent, jamais « Rien à
@@ -315,6 +317,11 @@ describe('C19 (D-71) : le bloc calendrier de l’App ouvre le budget du brassin'
     const { App } = await import('../../src/App');
     render(<App />);
     fireEvent.click(await screen.findByRole('button', { name: 'Calendrier' }));
+    /* CRITIQUE-6 n° 11 : l'App démarre sur le mois en cours, que le calendrier suit désormais ; le brassin en S+3 peut tomber le mois
+       suivant. Le brasseur règle « 6 sem. », comme au banc : la barre de l'app reçoit la même plage. */
+    await waitFor(() => expect(document.querySelector('[data-ent-periode]')).not.toBeNull(), { timeout: 10000 });
+    fireEvent.click(document.querySelector('[data-ent-periode]')!);
+    fireEvent.click(within(screen.getByRole('dialog', { name: 'Période et vue' })).getByRole('button', { name: /^6 sem/ }));
     const barre = await screen.findByRole('button', { name: /^ZZ TEST — Porter lointain/ }, { timeout: 10000 });
     fireEvent.pointerDown(barre, { clientX: 10, clientY: 10, pointerId: 1, button: 0 });
     fireEvent.pointerUp(barre, { clientX: 10, clientY: 10, pointerId: 1, button: 0 });

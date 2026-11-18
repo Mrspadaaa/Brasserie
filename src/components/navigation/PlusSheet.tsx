@@ -141,10 +141,13 @@ function ActionDeLaPage({ a, onPage }: { a: PlusPageAction; onPage: NonNullable<
 function CaseDeLaPage({ a, onPage }: { a: PlusPageAction; onPage: NonNullable<Props['onPage']> }) {
   const Icone = a.icone ?? ICONES_PAGE[a.genre];
   const style = a.couleur ? ({ ['--tc' as string]: a.couleur } as React.CSSProperties) : undefined;
+  const precision = a.precisionEnCase && a.hint ? a.hint : null;
   return (
-    <button type="button" role="menuitem" tabIndex={-1} data-page-action={a.id} onClick={onPage(a.lancer)} style={style} aria-label={a.label}
-      className={`plus-pp plus-pp--ps !h-10 ${TON.production}`}>
-      <span className="plus-pp-t">{libelleCourt(a)}</span>
+    <button type="button" role="menuitem" tabIndex={-1} data-page-action={a.id} onClick={onPage(a.lancer)} style={style} aria-label={precision ? `${a.label} ${precision}` : a.label}
+      className={`plus-pp plus-pp--ps ${precision ? '!h-auto min-h-10 py-1' : '!h-10'} ${TON.production}`}>
+      {precision
+        ? <span className="flex min-w-0 flex-col items-start leading-tight"><span className="plus-pp-t">{libelleCourt(a)}</span><small className="!overflow-visible !whitespace-normal" data-plus-precision>{precision}</small></span>
+        : <span className="plus-pp-t">{libelleCourt(a)}</span>}
       <Pastille Icone={Icone} />
     </button>
   );

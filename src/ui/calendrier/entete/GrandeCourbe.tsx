@@ -1,7 +1,7 @@
 import React from 'react';
 import { X } from 'lucide-react';
 import type { CourbeCaisse, MouvementNomme } from '../../../domain/calendrierCaisse';
-import { chf, classeRangee, creuxDe, escalier, largeurTexte, MOIS_MIN, moisDeSemaine, type Boite, type Geo, type SoldeSemaine } from './Courbe';
+import { chf, classeRangee, creuxDe, escalier, largeurTexte, MOIS_MIN, moisDeSemaine, semaineCourte, type Boite, type Geo, type SoldeSemaine } from './Courbe';
 import { LectureDetail } from './LectureCourbe';
 
 /**
@@ -117,6 +117,11 @@ export function GrandeCourbe({ courbe: courbeC, rangeeDe, largeur, hauteur, pays
   const creux = creuxDe(courbe);
   const rangees = courbe.map(s => rangeeDeSemaine(s, rangeeDe));
   const presentes = Object.keys(NOMS_RANGEES).filter(r => rangees.includes(r));
+  // CRITIQUE-6 n° 12 : le neutre (semaine sans mouvement nommé) est nommé lui aussi ; « tendance seule » quand chacune de ces semaines ne
+  // bouge que par la tendance de Finances, sinon « sans mouvement ».
+  const neutres = courbe.filter((_, i) => rangees[i] === 'autre');
+  const avecTendance = neutres.filter(s => s.tendance !== 0).length;
+  const nomNeutre = !avecTendance ? 'sans mouvement' : avecTendance === neutres.length ? 'tendance seule' : 'rien de nommé (tendance)';
   const ticks = graduations(g);
   const y0 = g.y(0);
   const cx = lecture !== null && lecture >= 0 && lecture < n ? g.x(lecture) + g.unit / 2 : null;
@@ -130,8 +135,17 @@ export function GrandeCourbe({ courbe: courbeC, rangeeDe, largeur, hauteur, pays
     if (i > 0 && x > fin + 4 && x + w <= largSvg) { labelsMois.push({ x, t: MOIS_MIN[m] }); fin = x + w; }
   });
   const yCreux = creux ? g.y(creux.centimes) : 0;
-  const texteCreux = creux ? `creux S${creux.numero} · ` : '';
+  // CRITIQUE-6 n° 18 : la semaine du creux dite comme l'en-tête (« creux S44 ’27 · −6 397 »).
+  const texteCreux = creux ? `creux ${semaineCourte(creux.lundi, courbe[0]?.lundi ?? creux.lundi)} · ` : '';
   const etCreux = creux ? placeEtiquetteCreux(courbe, g, largSvg, creux.index, creux.centimes, largeurTexte(texteCreux) + largeurTexte(chf(creux.centimes), true)) : null;
+  // La légende, une fois (E12, analyse g4b) : la caisse, les seules couleurs de rangée présentes sur le tracé, puis le neutre s'il y est.
+  const legende = (
+    <ul className="ent-leg" aria-label="Légende : la caisse, et les couleurs du tracé">
+      <li className="ent-leg-caisse" data-legende="caisse"><i aria-hidden="true" />caisse</li>
+      {presentes.map(r => <li key={r} className={`ent-r-${r}`} data-legende={r}><i aria-hidden="true" />{NOMS_RANGEES[r]}</li>)}
+      {neutres.length > 0 && <li className="ent-r-autre ent-leg-autre" data-legende="autre"><i aria-hidden="true" />{nomNeutre}</li>}
+    </ul>
+  );
   return (
     <section className={paysage ? 'ent-gc ent-gc--cote' : 'ent-gc'} aria-label="La courbe en grand" data-vue="graph">
       <div className="ent-gc-h">
@@ -172,13 +186,15 @@ export function GrandeCourbe({ courbe: courbeC, rangeeDe, largeur, hauteur, pays
             )}
           </svg>
         </div>
-        {lecture !== null && courbe[lecture] && <div className="ent-gc-d"><LectureDetail courbe={courbeC} index={lecture} rangeeDe={rangeeDe} libre /></div>}
+        {paysage ? (
+          // En paysage, la légende vit dans la colonne du détail, à côté de la courbe : elle reste à l'écran (CRITIQUE-6 n° 12, paysage-21).
+          <div className="ent-gc-cote">
+            {lecture !== null && courbe[lecture] && <div className="ent-gc-d"><LectureDetail courbe={courbeC} index={lecture} rangeeDe={rangeeDe} libre /></div>}
+            {legende}
+          </div>
+        ) : lecture !== null && courbe[lecture] && <div className="ent-gc-d"><LectureDetail courbe={courbeC} index={lecture} rangeeDe={rangeeDe} libre /></div>}
       </div>
-      {/* La légende, une fois : la caisse, puis les seules couleurs de rangée présentes sur le tracé (E12, analyse g4b) */}
-      <ul className="ent-leg" aria-label="Légende : la caisse, et les couleurs des rangées">
-        <li className="ent-leg-caisse" data-legende="caisse"><i aria-hidden="true" />caisse</li>
-        {presentes.map(r => <li key={r} className={`ent-r-${r}`} data-legende={r}><i aria-hidden="true" />{NOMS_RANGEES[r]}</li>)}
-      </ul>
+      {!paysage && legende}
     </section>
   );
 }

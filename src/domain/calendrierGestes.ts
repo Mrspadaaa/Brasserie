@@ -3,7 +3,7 @@ import type { FinancialPlan } from './finance/types';
 import { isoDate } from './finance/ledger';
 import { plannedBrewDate, rescheduleBatchPatch } from './batchSchedule';
 import {
-  ajouterJours, dimancheDe, dureeBrassin, dureePasBrassee, ecartJours, etiquetteS, finDeBrassin, idChoseArgent, jalonsBrassin, jourLisible, lundiDe,
+  ajouterJours, dimancheDe, dureeBrassin, dureePasBrassee, ecartJours, etiquetteS, finDeBrassin, idChoseArgent, jalonsBrassin, jourLisible, lundiDe, preteAuPlusTot,
   type ChoseCalendrier, type CibleOuverture, type JalonId
 } from './calendrier';
 import {
@@ -133,8 +133,9 @@ export function deplacer(chose: ChoseCalendrier, semaines: number, ctx: Contexte
     try { patch = { ...rescheduleBatchPatch(batch, nouveau) }; } catch { return refus('Brassin en cuve : le jour de brassage ne bouge pas.', chose.ouvre); }
     const finEcrite = isoDate(batch.finPrevue || undefined);
     if (finEcrite) patch.finPrevue = decale(finEcrite, jours);
-    const apres = finDeBrassin({ ...batch, ...patch } as Batch);
-    const promesse = promesseTouchee(ctx.plans, batch.id, apres?.jour);
+    /* CRITIQUE-6 n° 2 : replanifié encore dans le passé sans brassage, il reste prêt au plus tôt aujourd'hui + cycle */
+    const apres = preteAuPlusTot({ ...batch, ...patch } as Batch, ctx.aujourdhui);
+    const promesse = promesseTouchee(ctx.plans, batch.id, apres);
     return {
       ok: true, ecritures: [{ op: 'patch', collection: 'batches', id: batch.id, patch }], effet: null, promesse, courbeApres: ctx.courbe,
       message: annuler(`${chose.titre} : ${etiquetteS(prevu)} → ${etiquetteS(nouveau)}`)
@@ -164,14 +165,20 @@ function allongerBrassin(chose: ChoseCalendrier, jours: number, ctx: ContexteGes
    * prévu + cycle de la recette, `pretePrevue`) + l'allongement ; la durée dit « pas brassée · prête le … ».
    */
   const pasBrassee = !!chose.pasBrassee;
-  const finActuelle = pasBrassee ? (chose.pretePrevue ?? finDeBrassin(batch)?.jour ?? chose.fin) : (chose.preteLe ?? chose.fin);
-  const nouvelle = decale(finActuelle, jours);
-  if (nouvelle <= debut) return refus('Un brassin dure au moins un jour : tire moins loin.');
-  const promesse = promesseTouchee(ctx.plans, batch.id, nouvelle);
-  const duree = pasBrassee ? dureePasBrassee(nouvelle) : dureeBrassin(debut, nouvelle, ctx.aujourdhui) ?? `prête ${jourLisible(nouvelle)}`;
+  /*
+   * CRITIQUE-6 n° 2 : pas brassé, jour prévu passé. `finPrevue` reste « jour prévu + cycle » (comme pour tout brassin planifié : glisser la barre
+   * la décale avec lui) ; ce qu'on DIT est « prête le » au plus tôt, max(jour prévu, aujourd'hui) + cycle (`preteAuPlusTot`), la même date que la
+   * barre, qui part de la semaine courante.
+   */
+  const ecrite = pasBrassee ? finDeBrassin(batch)?.jour ?? chose.fin : (chose.preteLe ?? chose.fin);
+  const nouvelle = decale(ecrite, jours);
+  const dite = pasBrassee ? preteAuPlusTot({ ...batch, finPrevue: nouvelle } as Batch, ctx.aujourdhui) ?? nouvelle : nouvelle;
+  if (nouvelle <= debut || (pasBrassee && dite <= ctx.aujourdhui)) return refus('Un brassin dure au moins un jour : tire moins loin.');
+  const promesse = promesseTouchee(ctx.plans, batch.id, dite);
+  const duree = pasBrassee ? dureePasBrassee(dite) : dureeBrassin(debut, nouvelle, ctx.aujourdhui) ?? `prête ${jourLisible(nouvelle)}`;
   return {
     ok: true, ecritures: [{ op: 'patch', collection: 'batches', id: batch.id, patch: { finPrevue: nouvelle } }], effet: null, promesse, courbeApres: ctx.courbe,
-    message: annuler(parJalon ? `${chose.titre} : prête le ${jourLisible(nouvelle)}` : `${chose.titre} : ${duree}`)
+    message: annuler(parJalon ? `${chose.titre} : ${pasBrassee ? 'pas brassée · ' : ''}prête le ${jourLisible(dite)}` : `${chose.titre} : ${duree}`)
   };
 }
 
@@ -185,7 +192,7 @@ export function choseAllongee(chose: ChoseCalendrier, jours: number, aujourdhui:
   if (chose.source.genre !== 'batch' || chose.conditionne || !chose.debut) return chose;
   if (chose.pasBrassee) {
     const prete = decale(chose.pretePrevue ?? chose.fin, jours);
-    if (prete <= chose.debut) return chose;
+    if (prete <= (aujourdhui > chose.debut ? aujourdhui : chose.debut)) return chose;
     const fin = decale(chose.fin, jours);
     return { ...chose, fin: fin > aujourdhui ? fin : aujourdhui, pretePrevue: prete, duree: dureePasBrassee(prete) };
   }

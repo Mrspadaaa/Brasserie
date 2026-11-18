@@ -27,6 +27,8 @@ export interface BarreProps {
   placeEtiquette: number;
   /** Le nom passe sur deux lignes à côté de la barre (3 mois, quand la rangée le permet : n° 31). */
   deuxLignes?: ModeDeuxLignes;
+  /** La pastille « lié à » n'a pas la place à côté du nom : elle n'est pas posée (le badge lien de la barre reste). */
+  sansLie?: boolean;
   /** La durée à côté du nom d'un brassin, entière (« J0 / 28 · prête 21 déc. ») ou courte (« J0 / 28 »), posée par `disposer` ; absente : dans la barre. */
   dureeACote?: string | null;
   largeurColonne: number;
@@ -201,7 +203,7 @@ export const Barre: React.FC<BarreProps> = props => {
       {/* CRITIQUE-5 n° 26 : sur deux lignes, le nom et son montant restent ensemble ; la pastille « lié à » passe dessous */}
       {/* f2-a : la durée tirée, posée à droite de la barre, prend la place de l'étiquette le temps du geste (jamais l'une sur l'autre) */}
       <span className={`cal-lbl cal-lbl-${cote}${props.deuxLignes ? ' cal-lbl-2n' : ''}${etiquetteDuree && (dureeHors ? cote !== 'dedans' : cote === 'dedans') ? ' cal-lbl-cede' : ''} ${CLASSE_TEINTE[chose.rangee]}`} style={lblPlace}>
-        <ContenuEtiquette chose={chose} nom={nom} montant={montant} duree={props.deuxLignes === 'duree' ? duree : props.dureeACote} deux={props.deuxLignes} lieCourt={props.lieCourt} />
+        <ContenuEtiquette chose={chose} nom={nom} montant={montant} duree={props.deuxLignes === 'duree' ? duree : props.dureeACote} deux={props.deuxLignes} lieCourt={props.lieCourt} sansLie={props.sansLie} />
       </span>
     </>
   );

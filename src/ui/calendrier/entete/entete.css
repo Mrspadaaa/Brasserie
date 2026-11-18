@@ -39,9 +39,15 @@
 .ent-k { display: flex; flex-wrap: nowrap; align-items: baseline; column-gap: 3px; flex: 1 1 auto; min-width: 0; height: 28px; line-height: 28px; text-align: left; white-space: nowrap; color: var(--ent-mut); }
 .ent-k-vide { height: 28px; }
 .ent-k b { flex: none; font-size: 21px; font-weight: 800; color: var(--ent-fin-t); letter-spacing: -0.5px; }
-/* Faute de place, c'est la phrase qui se rogne (« CHF à dé… »), jamais le chiffre ni la semaine du creux. */
-.ent-k .ent-k-u { flex: 0 1 auto; min-width: 0; overflow: hidden; text-overflow: ellipsis; font-size: 14px; font-weight: 500; color: var(--ent-mut); }
+/* CRITIQUE-6 n° 1 : rien ne se rogne (D-114, E33), ni « CHF à dépenser » ni la semaine. Quand la ligne ne tient pas, `data-empile` (mesuré dans
+   EnTete) pose la semaine sous « CHF à dépenser », à droite du chiffre : deux lignes de 14 px dans la hauteur de la rangée (E43). */
+.ent-k .ent-k-u { flex: none; font-size: 14px; font-weight: 500; color: var(--ent-mut); }
 .ent-k em { flex: none; font-style: normal; font-size: 14px; font-weight: 700; color: var(--ent-fin-t); }
+.ent-k[data-empile] { display: grid; grid-template-columns: auto auto; grid-template-rows: 14px 14px; column-gap: 4px; align-content: center; justify-content: start; height: 28px; line-height: 14px; }
+.ent-k[data-empile] b { grid-row: 1 / 3; align-self: center; line-height: 28px; }
+.ent-k[data-empile] .ent-k-u { grid-column: 2; grid-row: 1; line-height: 14px; }
+.ent-k[data-empile] em { grid-column: 2; grid-row: 2; line-height: 14px; }
+.ent-k[data-empile] .ent-k-sep { display: none; }
 .ent b.ent-neg, .ent .ent-k b.ent-neg { color: var(--ent-bad); }
 .ent-t-b { flex: none; margin-left: auto; display: flex; align-items: center; gap: 3px; }
 .ent-mb, .ent-per, .ent-ret-b, .ent-pl { position: relative; height: 28px; display: inline-flex; align-items: center; justify-content: center; font-size: 14px; font-weight: 700; border-radius: 14px; white-space: nowrap; color: var(--ent-ink); }
@@ -115,6 +121,9 @@
 .ent-nom-cache { visibility: hidden; }
 /* L'étoile d'une chose (E31) : collée à son nom, dans la couleur du texte de l'app. */
 .ent-nom .ent-etoile { font-weight: 700; fill: rgb(var(--cave-50)); }
+/* CRITIQUE-6 n° 9 : la ★ seule d'une chose dont le nom n'a pas de place, posée au-dessus du cadre de la fenêtre (z-order), sur sa marche. */
+.ent-etoiles-dessus { position: absolute; left: 0; top: 0; z-index: 1; pointer-events: none; }
+.ent-etoile-mq { font-size: 18px; font-weight: 700; fill: rgb(var(--cave-50)); paint-order: stroke; stroke: rgb(var(--cave-950)); stroke-width: 4px; stroke-linejoin: round; }
 
 /* La courbe zoomée pendant un geste de la frise : l'avant en pointillé, l'après en plein, l'écart en rouge ou en vert. */
 .ent-zoom-c { position: absolute; left: 0; top: 0; width: 100%; z-index: 2; background: rgb(var(--cave-950)); }
@@ -152,10 +161,14 @@
 .ent-pop, .ent-menu { position: absolute; z-index: 45; box-sizing: border-box; background: rgb(var(--cave-850)); color: var(--ent-ink); border: 1.5px solid var(--ent-line2); border-radius: 12px; box-shadow: var(--ombre-lift); padding: 8px 10px; font-size: 14px; line-height: 20px; }
 .ent-pop { left: 8px; right: 8px; top: 34px; }
 .ent--paysage .ent-pop { right: auto; width: min(380px, calc(100% - 16px)); }
+/* En paysage, le détail du creux défile dans la hauteur de l'écran : « Solde et réglages › » reste atteignable au-dessus des onglets. */
+.ent--paysage .ent-pop.ent-creux { max-height: calc(100dvh - 120px); overflow-y: auto; overscroll-behavior: contain; }
 .ent-pop-t { margin: 0 0 2px; color: var(--ent-mut); }
 .ent-pop-t b { color: var(--ent-fin-t); }
 .ent-pop-v { margin: 0; color: var(--ent-mut); }
 .ent-pop-l { display: grid; grid-template-columns: 36px minmax(0, 1fr) auto; gap: 6px; white-space: nowrap; }
+/* Une semaine d'une autre année (« S44 ’27 ») : la colonne s'élargit pour toutes les lignes du détail. */
+.ent-creux--an .ent-pop-l { grid-template-columns: 60px minmax(0, 1fr) auto; }
 .ent-pop-l .ent-w { color: var(--ent-mut); }
 .ent-pop-l .ent-nm { overflow: hidden; text-overflow: ellipsis; }
 .ent-hach-ico { display: inline-block; width: 12px; height: 12px; vertical-align: -1px; border: 1.5px solid var(--ent-fin); background: repeating-linear-gradient(45deg, var(--ent-fin) 0 2px, transparent 2px 5px); }
@@ -183,6 +196,9 @@
 .ent-ens { display: flex; flex-wrap: wrap; align-items: baseline; gap: 2px 10px; margin: 4px 0 0; color: var(--ent-mut); }
 .ent-ens i { font-style: normal; white-space: nowrap; color: var(--ent-ink); }
 .ent-ens b { color: var(--ent-fin-t); }
+/* Sans palier : « ensuite · fin de l'horizon, le 14 nov. 2027 » se lit d'une traite, à la suite du mot. */
+.ent-ens[data-ensuite-fin] { display: block; }
+.ent-ens[data-ensuite-fin] i { white-space: normal; }
 .ent-det { display: flex; flex-direction: column; gap: 2px; font-size: 14px; line-height: 20px; color: var(--ent-ink); }
 .ent-det-t { display: flex; justify-content: space-between; gap: 8px; }
 .ent-det-t span { color: var(--ent-mut); }
@@ -208,6 +224,10 @@
 .ent-gc-d { padding: 4px 12px 4px 0; }
 .ent-gc:not(.ent-gc--cote) .ent-gc-d { padding: 4px 12px; }
 .ent-sgm { fill: none; stroke: var(--c, rgb(var(--cave-600))); stroke-width: 3; }
+/* CRITIQUE-6 n° 12 : une semaine sans mouvement nommé reste neutre, en trait fin (jamais un deuxième gris épais à côté de Papiers), et la
+   légende la nomme. */
+.ent-sgm.ent-c-autre { stroke-width: 1.5; }
+.ent-leg .ent-leg-autre i { width: 16px; height: 0; border-radius: 0; background: none; border-top: 1.5px solid var(--c); }
 .ent-creux-m { fill: var(--ent-ink); font-weight: 800; }
 .ent-bd-fin { fill: var(--c, rgb(var(--cave-600))); opacity: 0.85; }
 .ent-leg { display: flex; flex-wrap: wrap; gap: 2px 12px; margin: 0; padding: 4px 12px 6px; list-style: none; }
@@ -231,6 +251,12 @@
 .ent--paysage { display: grid; grid-template-columns: 214px minmax(0, 1fr); grid-template-areas: 't c' 'b b'; align-items: start; }
 .ent--paysage .ent-t { grid-area: t; flex-direction: column; align-items: flex-start; justify-content: flex-start; gap: 4px; padding: 2px 8px 0 12px; }
 .ent--paysage .ent-t-b { margin-left: 0; }
+/* CRITIQUE-6 n° 14 : le chiffre clé reste dans sa colonne (214 px) ; s'il ne tient pas en ligne, la semaine passe dessous (data-empile),
+   jamais sur la courbe, ni sous le bord du cadre, ni sous l'axe de la courbe zoomée. */
+.ent--paysage .ent-k { align-self: stretch; max-width: 100%; }
+/* c3-a en paysage : la légende dans la colonne du détail, à côté de la courbe (paysage-21 n'en avait pas). */
+.ent-gc-cote { display: flex; flex-direction: column; min-width: 0; }
+.ent-gc-cote .ent-leg { padding: 6px 12px 4px 0; }
 .ent--paysage .ent-cbz { grid-area: c; min-width: 0; }
 /* Les mois sont EN HAUT de la courbe (w3s) : la bande vient juste dessous, 4 px ; ses cases font 24 px (la date au toucher s'étend par ::after).
    Le tracé garde 70 px, l'en-tête 120 px au plus (E02, E10, CRITIQUE-4 n° 11). */

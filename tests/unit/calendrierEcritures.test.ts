@@ -333,4 +333,60 @@ describe('Banc (?preview=calendrier) : la fixture et son port disent la même ch
     await faite.annuler();
     expect(etat.plans.find(p => p.id === 'P-CAFE')!.status).toBe('draft');
   });
+
+  it('CRITIQUE-6 n° 7 et D-76 : Brouwland et Hopfen dans Achats, aucune chose Papiers ne les porte ; la TVA T4 dans Papiers avec son titre', () => {
+    const prets = preparerChoses(modeleBanc(etatBanc(AUJOURDHUI)).choses);
+    const achats = prets.filter(c => c.rangee === 'achats').map(c => c.titre);
+    expect(achats).toEqual(expect.arrayContaining(['Brouwland · malt', 'Hopfen · Hallertau Blanc']));
+    expect(prets.filter(c => c.rangee === 'papiers' && /Brouwland|Hopfen/.test(c.titre))).toEqual([]);
+    /* le harnais touche la facture par son titre, « Payé » d'un toucher : la pièce reste sa source */
+    expect(prets.find(c => c.titre.startsWith('Brouwland'))).toMatchObject({ source: { genre: 'facture', id: 'F-BROUWLAND' }, ouvre: { ecran: 'piece', id: 'F-BROUWLAND' }, centimes: -42000 });
+    /* la facture d'entrée reste une vente */
+    expect(prets.find(c => c.titre === 'Facture Café du Lac')!.rangee).toBe('ventes');
+    /* D-76 : la TVA T4 (plan fiscal) tombe dans Papiers, avec son titre */
+    expect(prets.find(c => c.titre === 'TVA T4')).toMatchObject({ rangee: 'papiers', source: { genre: 'plan', origine: 'tax' }, centimes: -30000 });
+    /* le loyer (récurrent) reste dans Papiers */
+    expect(prets.filter(c => c.titre === 'Loyer du local').every(c => c.rangee === 'papiers')).toBe(true);
+  });
+
+  it('CRITIQUE-6 n° 7 : la facture Brouwland due la semaine de sa livraison est posée SUR la « Livraison Brouwland » : une chose, −420, la pièce', () => {
+    const e = etatBanc(AUJOURDHUI);
+    /* la livraison attendue tombe le 21 nov. (commande du 14 nov. + 7 j appris) : la facture due le 20 nov. est de la même semaine */
+    const memeSemaine = { ...e, transactions: e.transactions.map(t => (t.id === 'F-BROUWLAND' ? { ...t, finance: { ...t.finance!, dueDate: '2026-11-20' } } : t)) };
+    const prets = preparerChoses(modeleBanc(memeSemaine).choses);
+    const brouwland = prets.filter(c => /Brouwland/.test(c.titre));
+    expect(brouwland).toHaveLength(1);
+    expect(brouwland[0]).toMatchObject({ rangee: 'achats', titre: 'Livraison Brouwland · malt', centimes: -42000, debut: '2026-11-20', source: { genre: 'facture', id: 'F-BROUWLAND' } });
+    expect(brouwland[0].detail).toMatch(/délai appris 7 j/);
+    /* la courbe porte la facture une fois, sous ce nom */
+    const m = modeleBanc(memeSemaine);
+    expect(m.courbe!.mouvements.filter(x => x.id === 'invoice:F-BROUWLAND').map(x => x.nom)).toEqual(['Livraison Brouwland · malt']);
+  });
+
+  it('CRITIQUE-6 n° 15 : la Cigogne liée à la Blonde dit « lié à Blonde d’automne » ; l’Épicerie, déjà nommée, n’a pas de pastille', () => {
+    const prets = preparerChoses(modeleBanc(etatBanc(AUJOURDHUI)).choses, { clients: new Map(etatBanc(AUJOURDHUI).clients.map(c => [c.id, c.name])) });
+    expect(prets.find(c => c.id === 'argent-P-CIGOGNE')!.lie).toMatchObject({ texte: 'lié à Blonde d’automne' });
+    expect(prets.find(c => c.id === 'argent-P-CIGOGNE')!.lie!.client).toBeUndefined();
+    expect(prets.find(c => c.id === 'argent-P-EPICERIE')!.lie).toBeUndefined();
+  });
+
+  it('CRITIQUE-6 n° 15 : poser une vente à La Cigogne reprend « 3 fûts » de sa vente habituelle : « 3 fûts La Cigogne +900 », sans pastille qui répète le nom', async () => {
+    let etat = etatBanc(AUJOURDHUI);
+    const port = creerPortMemoire(() => etat, s => { etat = s; });
+    const ctx = { aujourdhui: AUJOURDHUI, recettes: etat.recettes, clients: etat.clients.map(c => ({ id: c.id, name: c.name })), plans: etat.plans, choses: modeleBanc(etat).choses, nouvelId: (x: string) => `${x}-NEW` };
+    const puce = puces('ventes', ctx).find(p => p.genre === 'client' && p.clientId === 'CL-CIGOGNE')!;
+    expect(puce).toMatchObject({ libelle: 'La Cigogne', quoi: '3 fûts', titreHabituel: '3 fûts La Cigogne', centimes: 90000 });
+    const conv = versEnregistrement(toucherSemaine(appliquerPuce(brouillonVide('ventes', '2026-12-07'), puce), '2026-12-07'), ctx);
+    if (!('enregistrement' in conv)) throw new Error(conv.raison);
+    await appliquer([ecritureDeAjout(conv.enregistrement)], port);
+    const posee = preparerChoses(modeleBanc(etat).choses, { clients: new Map(etat.clients.map(c => [c.id, c.name])) }).find(c => c.id === 'argent-PLAN-NEW')!;
+    expect(posee).toMatchObject({ titre: '3 fûts La Cigogne', centimes: 90000, rangee: 'ventes' });
+    expect(posee.lie).toBeUndefined();
+    /* un client sans vente habituelle chiffrée : son nom seul, aucune quantité inventée */
+    const avecNeuf = { ...ctx, clients: [...ctx.clients, { id: 'CL-NEUF', name: 'Bar Neuf' }] };
+    expect(puces('ventes', avecNeuf).find(p => p.genre === 'client' && p.clientId === 'CL-PONT')).toMatchObject({ quoi: '1 fût' });
+    const neuf = puces('ventes', avecNeuf).find(p => p.genre === 'client' && p.clientId === 'CL-NEUF')!;
+    expect(neuf).not.toHaveProperty('quoi');
+    expect(neuf).not.toHaveProperty('centimes');
+  });
 });

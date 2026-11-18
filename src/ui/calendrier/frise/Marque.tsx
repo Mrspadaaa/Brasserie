@@ -30,6 +30,38 @@ export function nomLie(lie: NonNullable<ChoseCalendrier['lie']>): string {
   const t = lie.texte.trim();
   return t.toLocaleLowerCase('fr').startsWith('lié à ') ? t.slice(6) : t;
 }
+/** Un texte comparable : sans accents, apostrophes unifiées, minuscules, espaces simples. */
+const aplatir = (t: string): string => t.normalize('NFD').replace(/[̀-ͯ]/g, '').replace(/[’']/g, "'").toLocaleLowerCase('fr').replace(/\s+/g, ' ').trim();
+
+/**
+ * CRITIQUE-6 n° 15 : la pastille « lié à » qui ne dit rien de plus que le nom (« La Cigogne +900 » et sa pastille « La Cigogne ») n'est pas
+ * montrée. Le domaine cesse de la produire (lot A) ; ce garde-fou reste côté vue. Lier vers un brassin (« Hotte », lié à « Blonde d'automne »)
+ * garde sa pastille. `undefined` : rien à montrer.
+ */
+export function lieMontre(c: Pick<ChoseCalendrier, 'lie' | 'titre' | 'etiquette'>, nom: string = c.etiquette ?? c.titre): ChoseCalendrier['lie'] {
+  if (!c.lie) return undefined;
+  const lie = aplatir(nomLie(c.lie));
+  return lie && aplatir(nom).includes(lie) ? undefined : c.lie;
+}
+
+/**
+ * CRITIQUE-6 n° 6 : un nom trop long pour la place d'un côté passe sur deux lignes, coupé entre deux mots, le montant au bout de la deuxième
+ * (« Commande groupée » puis « de malt −540 »). La coupe la plus équilibrée : la plus petite largeur de la plus longue ligne. `null` : un seul mot.
+ */
+export function couperNom(nom: string, montant: string | null, mesure: (t: string, poids: number) => number = largeurTexte): { l1: string; l2: string; largeur: number } | null {
+  /* « Brouwland · malt » se coupe après le point médian, jamais devant : « Brouwland · » puis « malt » */
+  const mots = nom.trim().split(/\s+/).reduce<string[]>((l, m) => (l.length && /^[·:,;]/.test(m) ? [...l.slice(0, -1), `${l[l.length - 1]} ${m}`] : [...l, m]), []);
+  if (mots.length < 2) return null;
+  const lm = montant ? mesure(montant, 700) + 6 : 0;
+  let mieux: { l1: string; l2: string; largeur: number } | null = null;
+  for (let i = 1; i < mots.length; i++) {
+    const l1 = mots.slice(0, i).join(' '), l2 = mots.slice(i).join(' ');
+    const largeur = Math.ceil(Math.max(mesure(l1, 600), mesure(l2, 600) + lm));
+    if (!mieux || largeur < mieux.largeur) mieux = { l1, l2, largeur };
+  }
+  return mieux;
+}
+
 /** La largeur de la pastille « lié à » : l'icône, le texte (court ou entier), son bord et son jeu. */
 export function largeurPastilleLie(lie: NonNullable<ChoseCalendrier['lie']>, court: boolean): number {
   return Math.ceil(14 + 4 + largeurTexte(court ? nomLie(lie) : lie.texte, 600) + 14);
@@ -119,13 +151,17 @@ export function dureeVue(c: ChoseCalendrier): string | null {
  * Deux lignes à côté d'un objet, pour une chose liée (CRITIQUE-5 n° 26) : `nom`, le nom et son montant insécables, puis la pastille « lié à »
  * seule ; `nomSeul` (quand nom et montant ensemble seraient coupés, au téléphone), le nom entier, puis le montant et la pastille.
  */
-export type ModeDeuxLignes = false | 'nom' | 'nomSeul' | 'duree';
+export type ModeDeuxLignes = false | 'nom' | 'nomSeul' | 'duree' | 'coupe';
 
 /** Le contenu d'une étiquette posée à côté (barre ou marque) : nom, montant, durée d'un brassin, pastille « lié à », sur une ligne ou deux. */
-export function ContenuEtiquette({ chose, nom, montant, duree, deux, lieCourt }: { chose: ChoseCalendrier; nom: string; montant: string | null; duree?: string | null; deux?: ModeDeuxLignes; lieCourt?: boolean }) {
+export function ContenuEtiquette({ chose, nom, montant, duree, deux, lieCourt, sansLie }: { chose: ChoseCalendrier; nom: string; montant: string | null; duree?: string | null; deux?: ModeDeuxLignes; lieCourt?: boolean; sansLie?: boolean }) {
   const m = montant ? <b aria-hidden="true" className={`cal-lbl-m${chose.centimes !== undefined && chose.centimes < 0 ? ' cal-neg' : ''}`}>{montant}</b> : null;
-  const lie = chose.lie ? <PastilleLie lie={chose.lie} court={lieCourt} /> : null;
+  const lieVu = sansLie ? undefined : lieMontre(chose, nom);
+  const lie = lieVu ? <PastilleLie lie={lieVu} court={lieCourt} /> : null;
   const t = <span className="cal-lbl-t" aria-hidden="true">{nom}</span>;
+  /* CRITIQUE-6 n° 6 : le nom entier sur deux lignes, coupé entre deux mots, le montant au bout de la deuxième */
+  const coupe = deux === 'coupe' ? couperNom(nom, montant) : null;
+  if (coupe) return <><span className="cal-lbl-l1"><span className="cal-lbl-t cal-lbl-ent" aria-hidden="true">{coupe.l1}</span></span><span className="cal-lbl-l2"><span className="cal-lbl-t cal-lbl-ent" aria-hidden="true">{coupe.l2}</span>{m}{lie}</span></>;
   if (deux === 'nom') return <><span className="cal-lbl-l1">{t}{m}</span>{lie && <span className="cal-lbl-l2">{lie}</span>}</>;
   if (deux === 'nomSeul') return <>{t}<span className="cal-lbl-l2">{m}{lie}</span></>;
   /* un brassin (as/cap/p-repos : « Blonde d'automne −148 » puis « J0 / 28 ») : le nom et son montant, puis sa durée entière dessous */
@@ -134,7 +170,7 @@ export function ContenuEtiquette({ chose, nom, montant, duree, deux, lieCourt }:
 }
 
 /** Le nom et le montant à côté d'une marque ; `texte` remplace le nom court (le caddie d'un brassin en 6 semaines). */
-export interface LibelleMarque { cote: 'droite' | 'gauche'; place: number; texte?: string; deux?: ModeDeuxLignes }
+export interface LibelleMarque { cote: 'droite' | 'gauche'; place: number; texte?: string; deux?: ModeDeuxLignes; sansLie?: boolean }
 
 export interface MarqueProps {
   chose: ChoseCalendrier;
@@ -221,7 +257,7 @@ export const Marque: React.FC<MarqueProps> = props => {
       </button>
       {libelle && lbl && (
         <span className={`cal-lbl cal-lbl-${libelle.cote}${libelle.deux ? ' cal-lbl-2n' : ''} ${CLASSE_TEINTE[chose.rangee]}`} style={lbl}>
-          <ContenuEtiquette chose={chose} nom={libelle.texte ?? chose.etiquette ?? chose.titre} montant={montant} deux={libelle.deux} lieCourt={props.lieCourt} />
+          <ContenuEtiquette chose={chose} nom={libelle.texte ?? chose.etiquette ?? chose.titre} montant={montant} deux={libelle.deux} lieCourt={props.lieCourt} sansLie={libelle.sansLie} />
         </span>
       )}
     </>

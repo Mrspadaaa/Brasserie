@@ -19,6 +19,7 @@ import { PlanSheet } from '../../src/ui/finance/FinanceForms';
 import { StorageService } from '../../src/services/storage';
 import { usePlusPageActions } from '../../src/ui/plusPage';
 import type { FinancialProfile } from '../../src/domain/finance/types';
+import type { FinanceCategory } from '../../src/types';
 import { construireModele } from '../../src/ui/calendrier/useDonneesCalendrier';
 import { REGLAGES_VIDES } from '../../src/domain/fournisseurs';
 
@@ -188,7 +189,47 @@ describe('C17 (D-68) : « Plus de détails › » ouvre Prévoir une dépense, d
     fireEvent.click(within(d.getByRole('group', { name: 'Semaine' })).getByRole('button', { name: /^S50/ }));
     fireEvent.click(d.getByRole('button', { name: 'Plus de détails ›' }));
     expect(onPoserDepense).toHaveBeenCalledTimes(1);
-    expect(onPoserDepense).toHaveBeenCalledWith('2026-12-07', 'achats');
+    expect(onPoserDepense).toHaveBeenCalledWith('2026-12-07', 'achats', 'brassage');
+  });
+
+  it('CRITIQUE-6 n° 3 (D-68, E34, E38) : Achats S50 › Plus de détails › Enregistrer : le service des plans reçoit « brassage » et le lundi de S50, jamais « Charges fixes »', async () => {
+    /* le fil exact du bloc calendrier d'App.tsx : `onPoserDepense={(lundi, _rangee, categorie) => setPrevoirDepense({ date: lundi, categorie })}` */
+    function Harnais() {
+      const [p, setP] = React.useState<{ date: string; categorie?: FinanceCategory } | null>(null);
+      return <><BancCalendrier aujourdhui={JOUR} sansChrome callbacks={{ onPoserDepense: (date, _r, categorie) => setP({ date, ...(categorie ? { categorie } : {}) }) }} />
+        {p && <PlanSheet date={p.date} {...(p.categorie ? { categorie: p.categorie } : {})} onClose={() => setP(null)} />}</>;
+    }
+    render(<Harnais />);
+    fireEvent.click(document.querySelector('button[data-plus="achats"]')!);
+    const d = dialogue('Achats');
+    fireEvent.click(within(d.getByRole('group', { name: 'Semaine' })).getByRole('button', { name: /^S50/ }));
+    fireEvent.click(d.getByRole('button', { name: 'Plus de détails ›' }));
+    const plan = within(screen.getByRole('dialog', { name: 'Prévoir une dépense' }));
+    /* la pastille de catégorie le dit avant l'enregistrement : « Brassage » */
+    expect((plan.getByLabelText('Catégorie') as HTMLSelectElement).value).toBe('brassage');
+    fireEvent.change(plan.getByPlaceholderText(/Loyer, commande de malt/), { target: { value: 'ZZ TEST — houblon Citra' } });
+    const montant = plan.getByLabelText('Montant (CHF)');
+    fireEvent.change(montant, { target: { value: '240' } });
+    fireEvent.blur(montant);
+    fireEvent.click(plan.getByRole('button', { name: 'Enregistrer' }));
+    await waitFor(() => expect(etat.savePlan).toHaveBeenCalledTimes(1));
+    const ecrit = etat.savePlan.mock.calls[0][0] as { category: string; date: string; amountCents: number; source: string };
+    expect(ecrit).toMatchObject({ category: 'brassage', date: '2026-12-07', amountCents: 24000, source: 'manual' });
+    /* relu par le calendrier : il tombe dans Achats */
+    const m = construireModele({
+      aujourdhui: JOUR, transactions: [], payments: [], plans: [ecrit] as never, profile: profilConnu, assets: [], batches: [],
+      stockItems: [], items: [], recettes: [], reglages: REGLAGES_VIDES, lignesCourses: []
+    });
+    expect(m.choses.find(c => c.titre === 'ZZ TEST — houblon Citra')?.rangee).toBe('achats');
+  });
+
+  it('CRITIQUE-6 n° 3 : ouverte depuis Finances (sans date ni catégorie), la prévision neuve reste « Charges fixes », datée du jour (C17 tenu)', () => {
+    vi.useFakeTimers({ toFake: ['Date'] });
+    vi.setSystemTime(new Date('2026-11-15T10:00:00Z'));
+    render(<PlanSheet onClose={() => undefined} />);
+    const plan = within(screen.getByRole('dialog', { name: 'Prévoir une dépense' }));
+    expect((plan.getByLabelText('Catégorie') as HTMLSelectElement).value).toBe('chargesFixes');
+    expect(plan.getByLabelText('Date de paiement prévue')).toHaveValue('2026-11-15');
   });
 
   it('CRITIQUE-5 n° 3 : une prévision manuelle « Brassage » tombe dans Achats, jamais dans Papiers ; « Charges fixes » tombe dans Papiers (le défaut d’avant)', () => {
@@ -251,6 +292,20 @@ describe('CRITIQUE-2 n° 4 et 12 (D-206, E35) : le + volant en paysage, deux blo
     expect(screen.getByRole('dialog', { name: 'Travaux' })).toBeInTheDocument();
   });
 
+  it('CRITIQUE-6 n° 19 (E36) : en paysage, la case « Idée » garde « en S47, dans le carnet » sous son nom court, comme en portrait ; les autres cases n’ont que leur nom', () => {
+    couche(true);
+    render(<BancCalendrier aujourdhui={JOUR} />);
+    fireEvent.click(screen.getByRole('button', { name: /Actions rapides/ }));
+    const ecran = screen.getByRole('menu').querySelector('[data-bloc="ecran"]') as HTMLElement;
+    const idee = ecran.querySelector('[data-page-action="idee"]') as HTMLElement;
+    expect(idee.textContent).toMatch(/^Idée/);
+    expect(idee.querySelector('[data-plus-precision]')!.textContent).toMatch(/^en S47, dans le carnet$/);
+    expect(idee.getAttribute('aria-label')).toBe('Noter une idée en S47, dans le carnet');
+    for (const id of ['fete', 'vente', 'achat', 'travaux', 'activite', 'papier']) {
+      expect(ecran.querySelector(`[data-page-action="${id}"] [data-plus-precision]`)).toBeNull();
+    }
+  });
+
   it('portrait : la pile d’origine, sans deux blocs', () => {
     couche(false);
     render(<BancCalendrier aujourdhui={JOUR} />);
@@ -271,7 +326,7 @@ describe('CRITIQUE-2 n° 4 et 12 (D-206, E35) : le + volant en paysage, deux blo
 
 describe('CRITIQUE-2 n° 40 (E34, D-68, C17) : les feuilles Ventes, Achats, Travaux, Activités et Papiers, sans clavier, en 2 touchers', () => {
   const CAS: Array<{ rangee: string; titre: string; puce: string; attendu: Record<string, unknown> }> = [
-    { rangee: 'ventes', titre: 'Ventes', puce: 'La Cigogne', attendu: { collection: 'financialPlans', patch: { title: 'La Cigogne', amountCents: 90000, direction: 'in', clientId: 'CL-CIGOGNE' } } },
+    { rangee: 'ventes', titre: 'Ventes', puce: 'La Cigogne', attendu: { collection: 'financialPlans', patch: { title: expect.stringMatching(/La Cigogne$/), amountCents: 90000, direction: 'in', clientId: 'CL-CIGOGNE' } } },
     { rangee: 'achats', titre: 'Achats', puce: 'Hotte', attendu: { collection: 'financialPlans', patch: { title: 'Hotte', amountCents: 90000, direction: 'out' } } },
     { rangee: 'travaux', titre: 'Travaux', puce: 'Sols : colle et joints', attendu: { collection: 'financialPlans', patch: { title: 'Sols : colle et joints', amountCents: 32000, category: 'renovation' } } },
     { rangee: 'activites', titre: 'Activités', puce: 'Inventaire du stock', attendu: { collection: 'creativeItems', patch: { title: 'Inventaire du stock', activite: true } } },

@@ -1,7 +1,7 @@
 import React from 'react';
 import { Beer, Check, ChevronRight, FlaskConical, Leaf, Link2, Package, Receipt, ShoppingCart, Snowflake, Wheat, X } from 'lucide-react';
 import { dateDeSemaine, etiquetteS, francsSignes, jourLisible, lundiDe, type ChoseCalendrier, type JalonBrassin, type JalonId } from '../../../domain/calendrier';
-import { CLASSE_TEINTE, champ, dureeVue } from './Marque';
+import { CLASSE_TEINTE, champ, dureeVue, lieMontre, nomLie } from './Marque';
 
 /**
  * f4-b (E30) : toucher une chose ouvre son détail sous sa barre. Un brassin : ses étapes datées avec leurs icônes (brassage, fermentation,
@@ -104,6 +104,13 @@ export const DetailChose: React.FC<DetailChoseProps> = props => {
   /* CRITIQUE-5 n° 31 : la date se lit une fois. Hors d'un brassin, « Date 10 déc. » est déjà dans la grille : le morceau « le 10 déc. » du
      détail part (le reste du détail, une note ou « montant non renseigné », reste). */
   const detailSansDate = brassin ? chose.detail : sansLaDate(chose.detail, chose.debut);
+  const apercuLien = ((): { texte: string | null; apercu: string } | null => {
+    if (!chose.lie) return null;
+    if (lieMontre(chose)) return { texte: chose.lie.texte, apercu: chose.lie.apercu };
+    const nom = nomLie(chose.lie).toLocaleLowerCase('fr');
+    const reste = chose.lie.apercu.split(' ; ').map(x => x.trim()).filter(x => x && !x.toLocaleLowerCase('fr').startsWith(nom));
+    return reste.length ? { texte: null, apercu: reste.join(' ; ') } : null;
+  })();
 
   return (
     <div role="region" aria-label={`Détail : ${chose.titre}`} className={`cal-det ${CLASSE_TEINTE[chose.rangee]}`} data-detail={chose.id}>
@@ -146,7 +153,9 @@ export const DetailChose: React.FC<DetailChoseProps> = props => {
       {frais && <p className="cal-det-p" data-frais><Receipt size={16} aria-hidden="true" /><span>Frais : {frais}</span></p>}
       {promesse && <p className="cal-det-p">{promesse}</p>}
       {/* l'aperçu sur place d'une chose liée (D-113, D-126) : « La Cigogne · client ; Blonde d'automne · brassage 23 nov. · prête 21 déc. » */}
-      {chose.lie && <p className="cal-det-p" data-apercu-lien><Link2 size={16} aria-hidden="true" /><span><b>{chose.lie.texte}</b> · {chose.lie.apercu}</span></p>}
+      {/* CRITIQUE-6 n° 15 : un lien qui répète le titre (« Épicerie du Bourg, 2 cartons » lié à « Épicerie du Bourg ») ne garde que ce qu'il
+          ajoute (le brassin promis) ; s'il n'ajoute rien, la ligne part */}
+      {apercuLien && <p className="cal-det-p" data-apercu-lien><Link2 size={16} aria-hidden="true" /><span>{apercuLien.texte && <><b>{apercuLien.texte}</b> · </>}{apercuLien.apercu}</span></p>}
 
       <div className="cal-det-bt">
         {props.onAccepter && <button type="button" className="cal-b cal-b-pri" onClick={props.onAccepter}>{proposition ? 'Accepter' : 'Vente confirmée'}</button>}

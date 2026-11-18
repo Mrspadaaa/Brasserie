@@ -505,6 +505,13 @@ function texteLigneBrassin(l: ChoseCalendrier): string {
   return `${quoi} le ${jourLisible(l.debut)} · ${l.centimes !== undefined ? francsSignes(l.centimes) : 'montant non renseigné'}`;
 }
 
+/** Un nom (client, fournisseur) déjà écrit dans un titre, sans tenir compte de la casse ni des espaces : « 3 fûts La Cigogne » contient « La Cigogne ». */
+export function contientNom(titre: string, nom: string): boolean {
+  const n = (s: string) => s.normalize('NFC').toLocaleLowerCase('fr').replace(/\s+/g, ' ').trim();
+  const t = n(titre), m = n(nom);
+  return !!m && t.includes(m);
+}
+
 /**
  * Prépare les choses pour la frise (pure) :
  * - un brassin porte son budget (somme de ses lignes `brew`) ;
@@ -602,13 +609,15 @@ export function preparerChoses(
       const client = c.liens.clientId ? noms.clients?.get(c.liens.clientId) : undefined;
       const brassin = c.liens.batchId ? brassins.get(c.liens.batchId) : undefined;
       const nomBrassin = c.liens.batchId ? (noms.brassins?.get(c.liens.batchId) ?? brassin?.titre) : undefined;
-      const cible = client ?? nomBrassin;
+      /* CRITIQUE-6 n° 15 : le client déjà dit dans le titre (« 3 fûts La Cigogne ») n'a pas de pastille qui le répète ; un lien vers un brassin reste */
+      const clientDit = !!client && contientNom(c.titre, client);
+      const cible = (clientDit ? undefined : client) ?? nomBrassin;
       if (cible) {
         const apercus = [
           ...(client ? [`${client} · client`] : []),
           ...(nomBrassin ? [`${nomBrassin}${brassin?.debut ? ` · brassage ${jourLisible(brassin.debut)}` : ''}${brassin?.preteLe ? ` · prête ${jourLisible(brassin.preteLe)}` : ''}`] : [])
         ];
-        suivante = { ...suivante, lie: { texte: `lié à ${cible}`, apercu: apercus.join(' ; '), ...(client ? { client } : {}) } };
+        suivante = { ...suivante, lie: { texte: `lié à ${cible}`, apercu: apercus.join(' ; '), ...(client && !clientDit ? { client } : {}) } };
       }
     }
     return suivante;
@@ -628,6 +637,20 @@ export function finDeBrassin(batch: Batch): { jour: string; origine: 'finPrevue'
   if (fin && fin >= j0) return { jour: fin, origine: 'finPrevue' };
   const jours = joursPrevus(batch);
   return jours ? { jour: ajouterJours(j0, jours), origine: 'recette' } : null;
+}
+
+/**
+ * CRITIQUE-6 n° 2 (D-161, E25, E29) : le jour où un brassin serait prêt. Brassé ou prévu dans le futur : sa fin (`finDeBrassin`). Planifié dont le
+ * jour est passé sans brassage : il sera brassé au plus tôt aujourd'hui, donc prêt à max(jour prévu, aujourd'hui) + la durée du cycle (fin prévue
+ * moins jour prévu ; `finPrevue` écrite garde ainsi son allongement). La barre part de la semaine courante : la date dit la même chose qu'elle.
+ * `null` quand rien ne dit la durée du cycle (jamais une fin inventée). Pure : `aujourdhui` est un paramètre.
+ */
+export function preteAuPlusTot(batch: Batch, aujourdhui: string): string | null {
+  const fin = finDeBrassin(batch);
+  if (!fin) return null;
+  const j0 = jourZero(batch);
+  if (!j0 || hasBrewStarted(batch) || j0 >= aujourdhui) return fin.jour;
+  return ajouterJours(aujourdhui, ecartJours(j0, fin.jour));
 }
 
 const ARTICLE: Record<string, string> = { Fermentation: 'La fermentation', 'Dry hop': 'Le dry hop', Garde: 'La garde' };
@@ -703,11 +726,13 @@ export function choseBrassin(batch: Batch, aujourdhui: string, options: { comman
       const recette = jours ? ajouterJours(j0, jours) : null;
       const ecrite = fin?.origine === 'finPrevue' ? fin.jour : null;
       const allonge = ecrite ? Math.max(0, recette ? ecartJours(recette, ecrite) : ecartJours(aujourdhui, ecrite)) : 0;
+      /* CRITIQUE-6 n° 2 : « prête le » se compte depuis aujourd'hui (brassée au plus tôt aujourd'hui), jamais depuis le jour prévu passé */
+      const prete = preteAuPlusTot(batch, aujourdhui);
       return {
         /* sa durée dit « pas brassée · prévue le … » : le titre n'a pas à le répéter (heurt t3-a / t3-c) */
-        ...base, debut: j0, fin: ajouterJours(aujourdhui, allonge), pasBrassee: true, ...(fin ? { pretePrevue: fin.jour } : {}),
-        duree: ecrite ? dureePasBrassee(ecrite) : `pas brassée · prévue le ${jourLisible(j0)}`,
-        detail: `pas brassée · brassage prévu le ${jourLisible(j0)}`, jalons: brassage, deplacable: true
+        ...base, debut: j0, fin: ajouterJours(aujourdhui, allonge), pasBrassee: true, ...(prete ? { pretePrevue: prete } : {}),
+        duree: ecrite && prete ? dureePasBrassee(prete) : `pas brassée · prévue le ${jourLisible(j0)}`,
+        detail: `pas brassée · brassage prévu le ${jourLisible(j0)}${prete ? ` · prête le ${jourLisible(prete)} au plus tôt` : ''}`, jalons: brassage, deplacable: true
       };
     }
     const duree = fin ? dureeBrassin(j0, fin.jour, aujourdhui, false) : null;
@@ -782,13 +807,72 @@ export function iconesIdees(items: readonly CreativeItem[]): IconeSemaine[] {
 }
 
 const CATEGORIES_TRAVAUX = ['materiel', 'renovation'];
+
+/**
+ * La catégorie de Finances des matières de brassage : `brassage` (`FinanceCategory`, catégories de charge de `src/domain/finance/ledger.ts` l. 32 ; `periodeSynthese.ts` l. 62 y range les
+ * lignes `ingredient` et `packaging`). C'est celle que lit la rangée Achats pour une facture sans lignes (CRITIQUE-6 n° 3 et 7).
+ */
+export const CATEGORIE_MATIERES = 'brassage';
+/** Les catégories de stock des matières (`StockItem.category`, `src/types/index.ts` : « 'Malt', 'Houblon', 'Levure', 'Sucre' … »). */
+const STOCK_MATIERES = ['malt', 'houblon', 'levure', 'sucre', 'extrait'];
+const cleNom = (s: string | undefined) => (s ?? '').normalize('NFC').trim().toLocaleLowerCase('fr');
+
+/** Le fournisseur d'une pièce : `finance.vendor`, sinon le début de sa description (« Brouwland · malt » → « brouwland »). */
+export function fournisseurDePiece(tx: { description?: string; finance?: { vendor?: string } }): string {
+  return cleNom(tx.finance?.vendor || (tx.description ?? '').split(' · ')[0]);
+}
+
+/**
+ * CRITIQUE-6 n° 7 (E20, E38) : une facture fournisseur est une facture de matières quand ses lignes le disent (`FinanceLine.kind` `ingredient`, ou
+ * `FinanceLine.category` `brassage` : `src/domain/finance/types.ts`), quand elle a fait entrer des matières en stock (`stockImpact` `rawMaterials`,
+ * `src/types/index.ts`), quand son fournisseur livre des matières au stock (`StockItem.supplier` d'un article Malt, Houblon, Levure, Sucre), ou, sans
+ * ligne typée, quand sa catégorie de Finances est `brassage`. Une facture d'entrée n'en est jamais une.
+ */
+export function estFactureDeMatieres(
+  tx: { category?: string; description?: string; stockImpact?: ReadonlyArray<{ itemType?: string }>; finance?: { kind?: string; vendor?: string; lines?: ReadonlyArray<{ kind?: string; category?: string }> } },
+  stock: ReadonlyArray<{ category?: string; supplier?: string }> = []
+): boolean {
+  if (tx.finance?.kind === 'income') return false;
+  const lignes = (tx.finance?.lines ?? []).filter(l => l.kind && l.kind !== 'discount' && l.kind !== 'shipping');
+  if (lignes.some(l => l.kind === 'ingredient' || l.category === CATEGORIE_MATIERES)) return true;
+  if ((tx.stockImpact ?? []).some(s => s.itemType === 'rawMaterials')) return true;
+  const fournisseur = fournisseurDePiece(tx);
+  if (fournisseur && stock.some(s => cleNom(s.supplier) === fournisseur && STOCK_MATIERES.includes(cleNom(s.category)))) return true;
+  return !lignes.length && tx.category === CATEGORIE_MATIERES;
+}
+
+/**
+ * CRITIQUE-6 n° 7 : la facture d'un fournisseur et la « Livraison <fournisseur> » de la même semaine sont UNE chose, dans Achats : le nom de la
+ * livraison, le montant et la pièce de la facture (« Payé » d'un toucher), ses mouvements de caisse. Sans livraison cette semaine, la facture reste
+ * seule dans Achats. `fournisseurs` : id de la pièce → clé du fournisseur (`fournisseurDePiece`). Pure.
+ */
+export function fusionnerFacturesLivraisons(choses: readonly ChoseCalendrier[], fournisseurs: ReadonlyMap<string, string>): ChoseCalendrier[] {
+  const prises = new Set<string>();
+  const fusion = new Map<string, ChoseCalendrier>();
+  for (const f of choses) {
+    if (f.source.genre !== 'facture' || f.rangee !== 'achats' || !f.debut) continue;
+    const cle = fournisseurs.get(f.source.id);
+    if (!cle) continue;
+    const semaine = lundiDe(f.debut);
+    const liv = choses.find(l => l.source.genre === 'livraison' && !prises.has(l.id) && l.source.id.startsWith(`${cle}-`) && l.debut && lundiDe(l.debut) === semaine);
+    if (!liv) continue;
+    prises.add(liv.id);
+    const quoi = f.titre.split(' · ').slice(1).join(' · ');
+    fusion.set(f.id, { ...f, titre: quoi ? `${liv.titre} · ${quoi}` : liv.titre, detail: `${liv.detail ?? `livraison le ${jourLisible(liv.debut)}`} · facture ${f.detail ?? ''}`.trim() });
+  }
+  return choses.flatMap(c => (prises.has(c.id) ? [] : [fusion.get(c.id) ?? c]));
+}
 const raisonFinances = (quoi: string, ou: string) => `${quoi} se règle dans ${ou}.`;
 
 /**
  * Les lignes datées de la prévision de Finances (hors tendance) : Ventes (entrées), Achats (plan, brassin), Travaux (matériel, rénovation,
  * projets de matériel), Papiers (factures à payer, récurrentes, TVA et clôture). Une ligne à 0 CHF n'a pas de `centimes`.
  */
-export function choseArgent(item: ForecastItem, plans: readonly FinancialPlan[] = [], echeances?: ReadonlyMap<string, string>): ChoseCalendrier | null {
+export function choseArgent(
+  item: ForecastItem, plans: readonly FinancialPlan[] = [], echeances?: ReadonlyMap<string, string>,
+  /** CRITIQUE-6 n° 7 : les pièces (id de transaction) qui sont des factures de matières (`estFactureDeMatieres`) ; absent : la catégorie de la ligne. */
+  matieres?: ReadonlySet<string>
+): ChoseCalendrier | null {
   if (item.source === 'trend') return null;
   const jour = isoDate(item.date);
   if (!jour) return null;
@@ -802,7 +886,9 @@ export function choseArgent(item: ForecastItem, plans: readonly FinancialPlan[] 
     /* CRITIQUE-5 n° 4 : la prévision compte une facture échue à aujourd'hui ; la chose garde sa vraie échéance (`echeances` : id de la pièce → ISO) */
     const due = isoDate(echeances?.get(tx));
     if (due && due < jour) retard = { echeance: due, enRetard: true };
-    rangee = entree ? 'ventes' : 'papiers'; source = { genre: 'facture', id: tx }; ouvre = { ecran: 'piece', id: tx };
+    /* CRITIQUE-6 n° 7 (E20, E38) : une facture de matières (malt, houblon, levure) est un achat, pas un papier ; les autres restent dans Papiers */
+    const deMatieres = matieres ? matieres.has(tx) : item.category === CATEGORIE_MATIERES;
+    rangee = entree ? 'ventes' : deMatieres ? 'achats' : 'papiers'; source = { genre: 'facture', id: tx }; ouvre = { ecran: 'piece', id: tx };
     deplacable = { raison: raisonFinances('Une facture', 'la facture (Finances › Opérations)') };
   } else if (item.source === 'brew') {
     /* CRITIQUE-3 n° 2 : l'impôt sur la bière n'est ni une course ni un frais du brassin, il va dans Papiers (§ Données) */

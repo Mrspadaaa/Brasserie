@@ -1,5 +1,5 @@
 import React, { useEffect, useId, useState } from 'react';
-import { ajouterJours, francs, francsSignes, jourLisible } from '../../../domain/calendrier';
+import { ajouterJours, francs, francsSignes, jourLisible, semaineAvecAn } from '../../../domain/calendrier';
 import type { SoldeSemaine } from '../../../domain/calendrierCaisse';
 
 /**
@@ -43,21 +43,40 @@ export function creuxDe(courbe: readonly SoldeSemaine[]): { index: number; numer
   return { index: m, numero: courbe[m].numero, lundi: courbe[m].lundi, centimes: courbe[m].libre };
 }
 
-export interface CauseCreux { index: number; numero: number; nom: string; centimes: number }
 /**
- * Les causes du creux (q5) : les sorties nommées entre le dernier sommet qui précède le creux et le creux. Le sommet est le plus haut de la
- * courbe libre avant le creux ; la descente commence à la semaine d'après.
+ * La semaine dite comme l'en-tête la dit (CRITIQUE-6 n° 1 et 18) : « S44 » dans l'année de `reference` (la première semaine de la courbe :
+ * aujourd'hui), « S44 ’27 » sinon. L'année est celle du jeudi de la semaine (ISO), comme `semaineAvecAn` du domaine, en forme courte.
+ */
+export function semaineCourte(lundi: string, reference: string): string {
+  return semaineAvecAn(lundi, reference).replace(/ \d{2}(\d{2})$/, (_tout: string, an: string) => ` ’${an}`);
+}
+
+export interface CauseCreux { index: number; numero: number; lundi: string; nom: string; centimes: number }
+/** Au plus 6 lignes de causes, comme z2s ; on ne remonte pas plus d'un trimestre avant le creux (13 semaines). */
+export const CAUSES_MAX = 6;
+export const RECUL_MAX = 13;
+/**
+ * Les causes du creux (E01, q5, CRITIQUE-6 n° 8) : les sorties de la semaine du creux, puis celles des semaines qui y mènent, en remontant
+ * semaine par semaine depuis le creux ; jamais plus loin que le dernier sommet de la courbe libre avant lui, ni plus d'un trimestre. Rendues
+ * dans l'ordre chronologique (semaine, puis la plus lourde d'abord). Les gros mouvements du début de l'horizon n'y entrent que s'ils sont
+ * eux-mêmes juste avant le creux : sur une courbe qui ne fait que descendre, le « sommet » est la semaine 0, d'où le défaut corrigé.
  */
 export function causesDuCreux(courbe: readonly SoldeSemaine[], creux: number): { debut: number; causes: CauseCreux[] } {
   let sommet = -1;
   for (let i = 0; i < creux; i++) if (sommet < 0 || courbe[i].libre >= courbe[sommet].libre) sommet = i;
+  const borne = Math.max(0, sommet + 1, creux - RECUL_MAX + 1);
   const causes: CauseCreux[] = [];
-  for (let i = sommet + 1; i <= creux; i++) {
-    for (const m of courbe[i]?.mouvements ?? []) if (m.centimes < 0) causes.push({ index: i, numero: courbe[i].numero, nom: m.nom, centimes: m.centimes });
+  for (let i = creux; i >= borne; i--) {
+    const s = courbe[i];
+    if (!s) continue;
+    const sorties = s.mouvements.filter(m => m.centimes < 0).sort((a, b) => a.centimes - b.centimes);
+    // La semaine du creux passe toujours (ses plus lourdes si elle en a plus de 6) ; une semaine d'avant entre entière ou pas du tout.
+    if (i === creux) { causes.push(...sorties.slice(0, CAUSES_MAX).map(m => ({ index: i, numero: s.numero, lundi: s.lundi, nom: m.nom, centimes: m.centimes }))); continue; }
+    if (causes.length + sorties.length > CAUSES_MAX) break;
+    causes.push(...sorties.map(m => ({ index: i, numero: s.numero, lundi: s.lundi, nom: m.nom, centimes: m.centimes })));
   }
-  // Les plus lourdes d'abord si elles sont trop nombreuses, puis dans l'ordre des semaines.
-  const retenues = causes.length > 6 ? [...causes].sort((a, b) => a.centimes - b.centimes).slice(0, 6).sort((a, b) => a.index - b.index) : causes;
-  return { debut: causes.length ? retenues[0].index : creux, causes: retenues };
+  causes.sort((a, b) => a.index - b.index || a.centimes - b.centimes);
+  return { debut: causes.length ? causes[0].index : creux, causes };
 }
 
 /** Rangée (id libre de A) vers un nom de classe : sans accent, en minuscules ; inconnue → `autre`. */
@@ -407,6 +426,9 @@ export function Courbe({ courbe, largeur, hauteur, curseur = null, reference, ge
   const y0 = g.y(0);
   const marques = courbe.map((s, i) => ({ i, d: variation(courbe, i), nomme: s.mouvements.length > 0 })).filter(m => m.nomme && m.d !== null && m.d !== 0 && m.i > 0);
   const cache = (e: Etiquette) => !!masque && boitesSeCroisent(e.boite, masque);
+  // La ★ d'une chose étoilée dont le nom n'a pas trouvé de place : au milieu de sa semaine, juste au-dessus de sa marche (dans le dessin).
+  const marquesEtoiles = (etoiles ?? []).filter(e => courbe[e.i] && !noms.some(x => x.etoile && x.i === e.i))
+    .map(e => ({ ...e, x: g.x(e.i) + g.unit / 2, y: Math.max(g.haut + 14, Math.min(g.bas - 2, g.y(courbe[e.i].libre) - 5)) }));
   return (
     <div ref={reference} className="ent-cb" style={{ height: hauteur }} {...gestes}>
       <svg className="ent-svg" width={largeur} height={hauteur} viewBox={`0 0 ${largeur} ${hauteur}`} role="img"
@@ -455,6 +477,15 @@ export function Courbe({ courbe, largeur, hauteur, curseur = null, reference, ge
         {moisEnHaut && mois.map(m => <line key={`t${m.x}`} className="ent-mois-t" x1={m.x - 3} x2={m.x - 3} y1={1} y2={16} />)}
         {mois.map(m => <text key={m.x} className="ent-mois" x={m.x} y={yMois}>{m.texte}</text>)}
       </svg>
+      {/* CRITIQUE-6 n° 9 (E31, D-37) : chaque chose étoilée porte sa ★ sur la courbe, à sa semaine, sur sa marche, même quand son nom n'a pas de
+          place ; posée AU-DESSUS du cadre de la fenêtre (z-order), jamais cachée par lui. Son nom placé la porte déjà (« ★ Festival +2 450 »). */}
+      {marquesEtoiles.length > 0 && (
+        <svg className="ent-svg ent-etoiles-dessus" data-etoiles-dessus width={largeur} height={hauteur} viewBox={`0 0 ${largeur} ${hauteur}`} aria-hidden="true">
+          {marquesEtoiles.map(m => (
+            <text key={`e${m.i}-${m.nom}`} className="ent-etoile-mq" data-etoile-marque data-semaine={courbe[m.i].numero} x={m.x} y={m.y} textAnchor="middle">★<title>{`★ ${m.nom}, S${courbe[m.i].numero}`}</title></text>
+          ))}
+        </svg>
+      )}
       {children}
     </div>
   );

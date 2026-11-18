@@ -1,7 +1,7 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Sheet } from '../../ui/Sheet';
 import { Input } from '../../ui/Input';
-import type { Batch, StockItem, Transaction } from '../../types';
+import type { Batch, FinanceCategory, StockItem, Transaction } from '../../types';
 import type { Periode } from '../periode/periode';
 import { StorageService } from '../../services/storage';
 import { usePlusPage } from '../../ui/plusPage';
@@ -9,7 +9,7 @@ import { useDonneesCalendrier, type DonneesCalendrier } from '../../ui/calendrie
 import { appliquer, portParDefaut, type EcritureFaite, type PortEcritures } from '../../ui/calendrier/ecritures';
 import { useOrientation } from '../../ui/calendrier/useOrientation';
 import { EnTeteCalendrier, type VueCalendrier } from '../../ui/calendrier/entete/EnTete';
-import { periodeDeFenetre, type FenetreSemaines } from '../../ui/calendrier/entete/Fenetre';
+import { fenetreDePeriode, periodeDeFenetre, SEMAINES_ANNEE, type FenetreSemaines } from '../../ui/calendrier/entete/Fenetre';
 import { Frise, ordreComplet } from '../../ui/calendrier/frise/Frise';
 import { Message, type MessageCal } from '../../ui/calendrier/frise/Message';
 import { MenuAppuiLong } from '../../ui/calendrier/frise/MenuAppuiLong';
@@ -61,7 +61,7 @@ interface CalendrierTabProps {
    * Reçoit le lundi et la rangée : « Plus de détails › » d'un achat, d'un travail ou d'un papier ouvre Prévoir une dépense (PlanSheet, `date`),
    * avec la catégorie de sa rangée (CRITIQUE-5 n° 3, D-68 : un achat ne s'ouvre plus en « Charges fixes », qui le rangeait dans Papiers).
    */
-  onPoserDepense: (lundi: string, rangee: IdRangee) => void;
+  onPoserDepense: (lundi: string, rangee: IdRangee, categorie?: FinanceCategory) => void;
   /** LA période de l'app (E07, ET-PER) : le calendrier l'écrit, Finances la lit. */
   periode?: Periode;
   onPeriode?: (periode: Periode) => void;
@@ -95,6 +95,12 @@ function useEtatGarde<T>(cle: string, defaut: T): [T, (valeur: T) => void] {
 const LIBELLE_LIEN: Partial<Record<CibleOuverture['ecran'], string>> = { finances: 'Finances ›', plan: 'Finances ›', brassin: 'Ouvrir le brassin ›', piece: 'Ouvrir la pièce ›', courses: 'Les courses ›', solde: 'Finances ›' };
 
 /** « déc.. » et « nov. . » deviennent « déc. » et « nov. » : une abréviation qui finit une phrase ne double pas son point (CRITIQUE-3 n° 37). */
+/**
+ * CRITIQUE-6 n° 3 (D-68, E34, E38) : la catégorie d'une prévision ouverte par « Plus de détails › » depuis une rangée. Un achat de matières
+ * est « Brassage » (le domaine le range dans Achats), jamais « Charges fixes » (rangé dans Papiers). Clés de `CATEGORY_LABELS`.
+ */
+export const CATEGORIE_DE_RANGEE: Partial<Record<IdRangee, FinanceCategory>> = { achats: 'brassage', travaux: 'renovation', papiers: 'chargesFixes' };
+
 export function sansPointDouble(texte: string): string {
   return texte.replace(/\.(?:\s*\.)+/g, () => '.');
 }
@@ -177,8 +183,11 @@ export function CalendrierTab(props: CalendrierTabProps) {
   const clePeriode = JSON.stringify(props.periode ?? null);
   useEffect(() => { setPeriodeLocale(props.periode); // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [clePeriode]);
-  /* la période de l'app n'est lue que si c'est une plage (« du … au ») : un mois ou une année de Finances ne règle pas la fenêtre à la place du brasseur */
-  const periodeEnTete: Periode = periodeLocale && periodeLocale.genre === 'dates' ? periodeLocale : periodeDeFenetre(fenetre);
+  /* CRITIQUE-6 n° 11 (E07 ET-PER, D-12, D-13) : la période de l'app EST celle du calendrier, dans les deux sens. Une plage, un mois, un
+     trimestre ou une année réglés dans la barre de l'app ou dans Finances règlent la fenêtre (l'en-tête la suit : « Nov. » dans la barre,
+     « Nov. » au calendrier, les semaines de novembre dans l'horizon). Seuls « Tout » (sans bornes) et une période tout entière passée ne
+     se lisent pas en semaines : la fenêtre reste la sienne. */
+  const periodeEnTete: Periode = periodeLocale && fenetreDePeriode(periodeLocale, premierLundi, modele.semaines.length || SEMAINES_ANNEE) ? periodeLocale : periodeDeFenetre(fenetre);
   const onPeriode = useCallback((p: Periode) => { setPeriodeLocale(p); props.onPeriode?.(p); // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [props.onPeriode]);
   const [mouvements, setMouvements] = useState(false);
@@ -400,7 +409,7 @@ export function CalendrierTab(props: CalendrierTabProps) {
       ligne('travaux', 'Prévoir des travaux', 'travaux'),
       ligne('activite', 'Noter une activité', 'activites'),
       ligne('papier', 'Prévoir un papier', 'papiers'),
-      { id: 'idee', label: 'Noter une idée', genre: 'ajouter', hint: `en ${etiquetteS(lundiPose)}, dans le carnet`, lancer: () => ouvrirIdee(lundiPose) }
+      { id: 'idee', label: 'Noter une idée', genre: 'ajouter', hint: `en ${etiquetteS(lundiPose)}, dans le carnet`, precisionEnCase: true, lancer: () => ouvrirIdee(lundiPose) }
     ]
   });
 
@@ -445,7 +454,7 @@ export function CalendrierTab(props: CalendrierTabProps) {
     setFeuille(null);
     if (b.rangee === 'brassins') onPoserBrassin();
     else if (b.rangee === 'fetes') onPoserFete(lundi);
-    else onPoserDepense(lundi, b.rangee);
+    else onPoserDepense(lundi, b.rangee, CATEGORIE_DE_RANGEE[b.rangee]);
   }, [premierLundi, onPoserBrassin, onPoserFete, onPoserDepense]);
 
   const idee_ecrire = useCallback(async (titre: string, lundi: string): Promise<string | null> => {

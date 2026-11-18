@@ -1,5 +1,5 @@
 import React from 'react';
-import { afterEach, beforeEach, describe, expect, it } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { cleanup, fireEvent, render, screen, waitFor, within } from '@testing-library/react';
 import { BancCalendrier } from '../../src/design/CalendrierPreview';
 import { StorageService } from '../../src/services/storage';
@@ -116,5 +116,21 @@ describe('n° 19 (E34, D-22) : poser une vente et une activité au banc', () => 
     /* posée en S50 (7 déc.), visible dans sa rangée, et comptée en jours : « avant + 3 j » */
     expect(within(activites).getAllByRole('button', { name: /, 7 déc\., S50$/ }).length).toBeGreaterThan(0);
     await waitFor(() => expect(joursRangee()).toBe(avant + 3));
+  });
+});
+
+describe('CRITIQUE-6 n° 3, part frise (D-68, E34) : « Plus de détails › » garde la rangée d’où il part', () => {
+  it('depuis Achats, Travaux et Papiers, la feuille de l’app reçoit sa rangée (achats, travaux, papiers), jamais « papiers » par défaut', () => {
+    for (const [rangee, titre] of [['achats', 'Achats'], ['travaux', 'Travaux'], ['papiers', 'Papiers']] as const) {
+      const onPoserDepense = vi.fn();
+      render(<BancCalendrier aujourdhui={JOUR} sansChrome callbacks={{ periode: plage(52), onPoserDepense }} />);
+      plusDe(rangee);
+      fireEvent.click(dialogue(titre).getByRole('button', { name: /^Plus de détails/ }));
+      expect(onPoserDepense, rangee).toHaveBeenCalledTimes(1);
+      const [lundi, recue] = onPoserDepense.mock.calls[0];
+      expect(recue, rangee).toBe(rangee);
+      expect(lundi).toMatch(/^\d{4}-\d{2}-\d{2}$/);
+      cleanup();
+    }
   });
 });

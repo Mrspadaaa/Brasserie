@@ -260,4 +260,35 @@ describe('CRITIQUE-5 : le modèle (n° 4, 19, 24, 25, 30)', () => {
   });
 });
 
-const ajouterJoursIso = (iso: string, n: number) => new Date(Date.parse(`${iso}T00:00:00Z`) + n * 86400000).toISOString().slice(0, 10);
+describe('CRITIQUE-6, doute : la tendance de Finances et le loyer ne sont pas comptés deux fois', () => {
+  /* historique complet depuis juin : chaque mois, le loyer payé (400) et l'assurance payée (100), charges fixes ; le loyer est aussi un récurrent */
+  const paye = (id: string, jour: string, cents: number, description: string): FinanceTransaction => ({
+    id, date: jour, description, category: 'chargesFixes', subcategory: 'x', amountHT: cents / 100, amountTTC: cents / 100, tvaAmount: 0, tvaRate: 0,
+    finance: { version: 1, kind: 'expense', amountCents: cents, lines: [], paymentStatus: 'paid', dueDate: jour, paidAt: jour }
+  }) as unknown as FinanceTransaction;
+  const historique = ['06', '07', '08', '09', '10'].flatMap(m => [paye(`L-${m}`, `2026-${m}-03`, 40000, 'Loyer du local'), paye(`A-${m}`, `2026-${m}-10`, 10000, 'Assurance')]);
+  /* le récurrent commence ce mois-ci (20 nov.) : chaque mois de l'horizon a son loyer (s'il commençait en décembre, novembre garderait son enveloppe de 500) */
+  const loyer = plan({ id: 'P-LOYER', title: 'Loyer du local', date: '2026-11-20', amountCents: 40000, category: 'chargesFixes', source: 'recurring', recurrence: { frequency: 'monthly' } });
+  const e = entrees(500000, { transactions: historique, plans: [loyer], batches: [] });
+
+  it('la tendance ne garde que le reste des charges fixes (500 − 400 = 100/mois) ; un mois futur sort 500, pas 900 ; A2 rejoué', () => {
+    const prevision = buildForecast({ transactions: e.transactions as Transaction[] as FinanceTransaction[], payments: e.payments, plans: e.plans, profile: e.profile, assets: e.assets, asOf: e.aujourdhui, months: 13, batches: e.batches, stockItems: e.stockItems, includeEquipmentProjects: true });
+    const janvier = prevision.items.filter(i => i.date.startsWith('2027-01'));
+    const tendance = janvier.filter(i => i.source === 'trend').reduce((s, i) => s + i.amountCents, 0);
+    const loyers = janvier.filter(i => i.source === 'recurring').reduce((s, i) => s + i.amountCents, 0);
+    expect(loyers).toBe(40000);
+    /* buildForecast retire de la médiane historique ce que le plan récurrent couvre déjà (forecast.ts l. 187-196) */
+    expect(tendance).toBe(10000);
+    const modele = construireModele(e);
+    /* la courbe prend les mêmes lignes que Finances, une fois chacune : la sortie de janvier est 500, comme l'historique */
+    const sortieJanvier = modele.courbe!.mouvements.filter(m => m.jour.startsWith('2027-01')).reduce((s, m) => s + m.centimes, 0);
+    expect(sortieJanvier).toBe(-50000);
+    expect(modele.courbe!.mouvements.filter(m => m.jour.startsWith('2027-01') && /Loyer/.test(m.nom))).toHaveLength(1);
+    /* A2 rejoué sur cette fixture : en fin de chaque mois, la courbe égale le solde de Finances */
+    for (const mois of prevision.months.slice(0, 6)) expect(soldeFinDeMois(modele.courbe!, mois.month)).toBe(mois.balanceCents);
+    /* l'hypothèse dit la tendance nette : −100 CHF/mois */
+    expect(modele.hypotheses.find(h => h.id === 'tendance')?.texte).toBe('Tendance de Finances : −100 CHF/mois');
+  });
+});
+
+const ajouterJoursIso =(iso: string, n: number) => new Date(Date.parse(`${iso}T00:00:00Z`) + n * 86400000).toISOString().slice(0, 10);

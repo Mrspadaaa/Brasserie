@@ -127,10 +127,22 @@ export function puces(rangee: Rangee, ctx: ContexteAjout): Puce[] {
       const t = titre.trim().toLocaleLowerCase('fr'), n = nom.trim().toLocaleLowerCase('fr');
       return !!n && t.startsWith(n) && (t.length === n.length || /^[\s,·:–-]/.test(t.slice(n.length)));
     };
+    /* CRITIQUE-6 n° 15 : le nom peut aussi finir le titre, « 3 fûts La Cigogne » (la quantité devant) */
+    const finNom = (titre: string, nom: string) => {
+      const t = titre.trim().toLocaleLowerCase('fr'), n = nom.trim().toLocaleLowerCase('fr');
+      return !!n && t.length > n.length && t.endsWith(n) && /[\s,·:–-]$/.test(t.slice(0, t.length - n.length));
+    };
+    const porteNom = (titre: string, nom: string) => debutNom(titre, nom) || finNom(titre, nom);
     const habituelle = (c: { id: string; name: string }) => ctx.plans
-      .filter(p => p.direction === 'in' && p.status !== 'cancelled' && p.amountCents > 0 && (p.clientId === c.id || (!p.clientId && debutNom(p.title, c.name))))
+      .filter(p => p.direction === 'in' && p.status !== 'cancelled' && p.amountCents > 0 && (p.clientId === c.id || (!p.clientId && porteNom(p.title, c.name))))
       .sort((a, b) => b.date.localeCompare(a.date))[0];
-    const quoiDe = (titre: string, nom: string) => (debutNom(titre, nom) ? titre.trim().slice(nom.trim().length).replace(/^[\s,·:–-]+/, '').trim() : '');
+    /* ce qu'il achète d'habitude, lu dans le titre de sa vente (seule source de la quantité : `FinancialPlan` n'a ni lignes ni quantité) ; sinon rien */
+    const quoiDe = (titre: string, nom: string) => {
+      const t = titre.trim();
+      if (debutNom(t, nom)) return t.slice(nom.trim().length).replace(/^[\s,·:–-]+/, '').trim();
+      if (finNom(t, nom)) return t.slice(0, t.length - nom.trim().length).replace(/[\s,·:–-]+$/, '').trim();
+      return '';
+    };
     return [
       ...probables.map<Puce>(p => ({ genre: 'vente-probable', id: `probable-${p.id}`, libelle: p.title, planId: p.id, ...(p.amountCents > 0 ? { centimes: p.amountCents } : {}), ...(p.clientId ? { clientId: p.clientId } : {}) })),
       ...clients.map<Puce>(c => {
@@ -279,7 +291,8 @@ export type Enregistrement =
 
 export type Conversion = { ok: true; enregistrement: Enregistrement; resume: string } | { ok: false; raison: string; confirmer?: Confirmation };
 
-const CATEGORIE: Partial<Record<Rangee, FinanceCategory>> = { ventes: 'recettes', achats: 'divers', travaux: 'renovation', papiers: 'chargesFixes' };
+/* CRITIQUE-6 n° 3 : un achat posé est un achat de matières, `brassage` (la clé que la rangée Achats lit et que le lot D préremplit), jamais « divers » */
+const CATEGORIE: Partial<Record<Rangee, FinanceCategory>> = { ventes: 'recettes', achats: 'brassage', travaux: 'renovation', papiers: 'chargesFixes' };
 
 /**
  * Le brouillon devient l'enregistrement de sa source (E34, E45) :

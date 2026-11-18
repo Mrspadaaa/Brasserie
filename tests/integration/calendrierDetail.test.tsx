@@ -121,3 +121,23 @@ describe('CRITIQUE-5 n° 31 : la fiche de vente dit sa date une fois', () => {
     expect(sansLaDate('le 10 déc.', '2026-12-10')).toBeUndefined();
   });
 });
+
+describe('CRITIQUE-6, doutes : la fiche d’une vente rouverte', () => {
+  const vente = (extra: Partial<ChoseCalendrier> = {}): ChoseCalendrier => ({
+    id: 'plan-EPI', rangee: 'ventes', titre: 'Épicerie du Bourg, 2 cartons', debut: '2026-12-10', fin: '2026-12-10', centimes: 18000, detail: 'le 10 déc.',
+    source: { genre: 'plan', id: 'P-EPI', origine: 'manual', statut: 'active' }, ouvre: { ecran: 'finances' }, deplacable: true, ...extra
+  } as ChoseCalendrier);
+
+  it('la date se lit une fois ; le lien qui répète le titre ne fait pas une ligne de plus ; un lien vers un brassin garde ce qu’il ajoute', () => {
+    render(<DetailChose chose={vente({ lie: { texte: 'lié à Épicerie du Bourg', apercu: 'Épicerie du Bourg · client', client: 'Épicerie du Bourg' } })} onFermer={() => {}} onOuvrir={() => {}} />);
+    const det = screen.getByRole('region', { name: 'Détail : Épicerie du Bourg, 2 cartons' });
+    expect((det.textContent ?? '').match(/10 déc\./g)).toHaveLength(1);
+    expect(det.querySelector('[data-apercu-lien]')).toBeNull();
+    expect((det.textContent ?? '').match(/Épicerie du Bourg/g)).toHaveLength(1);
+    cleanup();
+    render(<DetailChose chose={vente({ titre: '3 fûts La Cigogne', lie: { texte: 'lié à Blonde d’automne', apercu: 'La Cigogne · client ; Blonde d’automne · prête 21 déc.' } })} onFermer={() => {}} onOuvrir={() => {}} />);
+    const lien = screen.getByRole('region', { name: 'Détail : 3 fûts La Cigogne' }).querySelector('[data-apercu-lien]');
+    expect(lien?.textContent).toContain('lié à Blonde d’automne');
+    expect(lien?.textContent).toContain('prête 21 déc.');
+  });
+});

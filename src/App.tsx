@@ -1293,11 +1293,9 @@ export const App: React.FC = () => {
               setLabSectionRequest({ section: 'event', at: Date.now(), date: lundi });
               navigateToCreativeLab();
             }}
-            onPoserDepense={(lundi, rangee) => {
-              /* CRITIQUE-5 n° 3 (D-68, E34) : la catégorie de la rangée d'où l'on part ; un achat de matières est « Brassage » (rangé dans
-                 Achats), jamais « Charges fixes » (rangé dans Papiers). Les clés sont celles de PlanSheetC (CATEGORY_LABELS). */
-              const CATEGORIE: Partial<Record<typeof rangee, FinanceCategory>> = { achats: 'brassage', travaux: 'renovation', papiers: 'chargesFixes' };
-              const categorie = CATEGORIE[rangee];
+            onPoserDepense={(lundi, _rangee, categorie) => {
+              /* CRITIQUE-6 n° 3 (D-68, E34) : la catégorie vient de la rangée d'où l'on part (`CATEGORIE_DE_RANGEE` du calendrier) ; un achat
+                 de matières est « Brassage » (rangé dans Achats), jamais « Charges fixes » (Papiers). PlanSheet la pose dans la prévision neuve. */
               setPrevoirDepense({ date: lundi, ...(categorie ? { categorie } : {}) });
             }}
             periode={globalTimeFilter}
