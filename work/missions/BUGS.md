@@ -148,6 +148,15 @@ Lire :
 | work/missions/2026-11-17-port-calendrier/vision-11/lot-d/essai6/RAPPORT.md | PC | 0 | 0 | 876210d9b2b0 |
 | work/missions/2026-11-17-port-calendrier/vision-11/lot-d/essai7/RAPPORT.md | PC | 0 | 0 | 83c994e6c8f7 |
 | work/missions/2026-11-17-port-calendrier/vision-12/RAPPORT-m390.md | PC | 0 | 0 | beaea4607820 |
+| work/missions/2026-11-17-port-calendrier/vision-13/essai1/RAPPORT.md | PC | 0 | 0 | en cours |
+| work/missions/2026-11-17-port-calendrier/vision-13/essai2/RAPPORT.md | PC | 0 | 0 | en cours |
+| work/missions/2026-11-17-port-calendrier/vision-13/essai3/RAPPORT.md | PC | 0 | 0 | en cours |
+| work/missions/2026-11-17-port-calendrier/vision-13/essai4/RAPPORT.md | PC | 0 | 0 | en cours |
+| work/missions/2026-11-17-port-calendrier/vision-13/essai5/RAPPORT.md | PC | 0 | 0 | en cours |
+| work/missions/2026-11-17-port-calendrier/vision-13/essai6/RAPPORT.md | PC | 0 | 0 | en cours |
+| work/missions/2026-11-17-port-calendrier/vision-13/essai7/RAPPORT.md | PC | 0 | 0 | en cours |
+| work/missions/2026-11-17-port-calendrier/vision-13/RAPPORT-m390.md | PC | 0 | 0 | en cours |
+| work/missions/2026-11-17-port-calendrier/vision-13/RAPPORT-paysage-d1280.md | PC | 0 | 0 | en cours |
 | work/missions/2026-11-17-port-calendrier/vision-12/RAPPORT-paysage-d1280.md | PC | 0 | 0 | 0cbb2bdb0600 |
 | work/missions/2026-11-17-port-calendrier/vision-12/lot-d/essai1/RAPPORT.md | PC | 0 | 0 | d6142bae5e0a |
 | work/missions/2026-11-17-port-calendrier/vision-12/lot-d/essai2/RAPPORT.md | PC | 0 | 0 | 15f82c416d19 |
