@@ -1,6 +1,6 @@
 import type { AnnualReport, DepreciationCategory, DepreciationRow, FinanceTransaction, FinancialAsset, FinancialClosing, FinancialPayment, FinancialProfile } from './types';
 import { compte } from '../../services/plural';
-import { estCreanceTropPaye, isoDate, isActiveTransaction, paymentState, refundLinkIssue, summarizeLedger, transactionAmount, transactionDirection, transactionKind, transactionVendor, validPayment } from './ledger';
+import { estCreanceTropPaye, isoDate, justificatifManquant, isActiveTransaction, paymentState, refundLinkIssue, summarizeLedger, transactionAmount, transactionDirection, transactionKind, transactionVendor, validPayment } from './ledger';
 import { buildFribourgTaxReport } from './fribourgTax';
 
 export const DEPRECIATION_SOURCE = 'https://www.estv.admin.ch/dam/fr/sd-web/Qyxr5xBfdWDp/dbst-mb-a-1995-geschbetriebe-fr.pdf';
@@ -142,9 +142,9 @@ export function buildAnnualReport(input: { year: number; transactions: FinanceTr
         unclassifiedCapital = true;
       }
     }
-    if (!tx.proofUrl && !tx.finance?.proofDocumentId && ['income', 'expense', 'refund'].includes(kind)) missing.push(`Justificatif manquant : ${tx.id} — ${tx.description}.`);
+    if (justificatifManquant(tx) && ['income', 'expense', 'refund'].includes(kind)) missing.push(`Justificatif manquant : ${tx.id} — ${tx.description}.`);
     report.documents.push({ id: tx.id, date: isoDate(tx.date)!, description: tx.description, amountCents: amount, category: tx.category, hasProof: !!tx.proofUrl || !!tx.finance?.proofDocumentId, vendor: transactionVendor(tx),
-      required: ['income', 'expense', 'refund'].includes(kind), proofDocumentId: tx.finance?.proofDocumentId, proofFileName: tx.proofFileName,
+      required: ['income', 'expense', 'refund'].includes(kind) && !tx.finance?.proofNotNeeded, proofNotNeeded: tx.finance?.proofNotNeeded || undefined, proofDocumentId: tx.finance?.proofDocumentId, proofFileName: tx.proofFileName,
       proofSource: tx.finance?.proofDocumentId ? 'document' : tx.proofUrl?.startsWith('data:') ? 'legacy-inline' : tx.proofUrl ? 'external' : undefined,
       proofUrl: tx.proofUrl && /^https?:\/\//i.test(tx.proofUrl) ? tx.proofUrl : undefined });
   }

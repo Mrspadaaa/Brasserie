@@ -41,6 +41,10 @@
 .fiche-pj > span { flex:1; min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
 .fiche-pj em { font-style:normal; color:var(--fiche-t2); }
 .fiche-pj-sans { border-style:dashed; color:var(--fiche-t2); padding-right:10px; }
+/* « c’est normal » (18.11) : la coche d’une pièce qui n’aura jamais de justificatif ; toute la hauteur de la case est cible. */
+.fiche-pj-sans:has(.fiche-pj-normal) { padding-right:4px; }
+.fiche-pj-normal { display:inline-flex; align-items:center; gap:8px; min-height:44px; padding:0 8px; font-size:13px; color:var(--fiche-t2); white-space:nowrap; cursor:pointer; }
+.fiche-pj-normal input { width:20px; height:20px; margin:0; accent-color:rgb(var(--ebc-straw)); }
 .fiche-pj .fiche-voir { position:relative; min-height:32px; padding:0 12px; margin:0; border-radius:10px; border:1px solid rgb(var(--cave-600)); background:rgb(var(--cave-900)); color:var(--fiche-t1); font-size:12px; font-weight:400; gap:4px; }
 .fiche-pj .fiche-voir::after { content:''; position:absolute; inset:-6px -2px; }
 
