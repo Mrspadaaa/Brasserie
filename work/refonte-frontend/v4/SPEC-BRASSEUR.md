@@ -2122,3 +2122,15 @@ Lecture : les points d'étape deviennent des mini icônes (une par étape), colo
 > Mais icône plus petit et  oui si on clic on a l'info mais elle doit pas être visible de base
 
 Lecture : jeu C de la page « Calendrier · couleurs des étapes » (https://claude.ai/artifact/V5AKptUVAJf1qBAaM5q5c5) : quatre lieux (salle chaude orange, cuve bleue fermentation puis garde plus foncée, houblon vert, colis noir), la phase colore le pied de la barre ; icônes plus petites que la maquette ; la bulle « Dry hop · lun. 30 nov. » seulement au toucher, jamais au repos.
+
+### Axe du temps : choix (18.11)
+
+> Échelle au menu
+>
+> Déplier une semaine.
+>
+> Pincer pour zoomer
+>
+> Les 3
+
+Lecture : page « Calendrier · l'axe en jours, semaines, mois » (https://claude.ai/artifact/5wGhkaaV6SEJ4sBoWXpk4R) : les trois ensemble — D (ligne Échelle Jour · Semaine · Mois dans le menu de la période), C (toucher une semaine de la bande la déplie en 7 jours sur place), B (écarter deux doigts sur la frise : jours ; pincer : mois). Semaine par défaut.
