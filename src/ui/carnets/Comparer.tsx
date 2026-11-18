@@ -59,12 +59,34 @@ export interface ComparerProps {
   onChoisir?: () => void;
 }
 
+/**
+ * « Il y a une suite à droite » : vrai tant que la zone défile encore vers la droite (fondu, 390). Mesuré au rendu, au défilement et
+ * au redimensionnement ; sans ResizeObserver (jsdom), seulement au défilement.
+ */
+function useSuiteADroite(): [React.RefObject<HTMLDivElement | null>, boolean] {
+  const ref = React.useRef<HTMLDivElement>(null);
+  const [suite, setSuite] = React.useState(false);
+  React.useEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+    const mesurer = () => setSuite(el.scrollLeft + el.clientWidth < el.scrollWidth - 1);
+    mesurer();
+    el.addEventListener('scroll', mesurer, { passive: true });
+    const ro = typeof ResizeObserver !== 'undefined' ? new ResizeObserver(mesurer) : null;
+    ro?.observe(el);
+    if (el.firstElementChild) ro?.observe(el.firstElementChild);
+    return () => { el.removeEventListener('scroll', mesurer); ro?.disconnect(); };
+  }, []);
+  return [ref, suite];
+}
+
 export function Comparer(p: ComparerProps) {
   const t = p.tableau;
   const actifs = t ? t.lignes.filter(l => !l.ecarte) : [];
   const ecartes = t ? t.lignes.filter(l => l.ecarte) : [];
   const ordre = [...actifs, ...ecartes];
   const cols = t ? colonnesVue(t) : [];
+  const [zone, suite] = useSuiteADroite();
   return (
     <article className="cn-page cn-comparer">
       <div className="cn-tete">
@@ -85,8 +107,10 @@ export function Comparer(p: ComparerProps) {
             <span className="cn-sp" />
             {t.rangePar && <span className="cn-mut">rangé par : {t.rangePar}</span>}
           </div>
-          <div className="cn-tableau-zone">
-            <table className="cn-tableau">
+          {/* À 1280, tout tient (noms et raisons repliés) ; à 390, la colonne des noms reste fixe et un fondu dit la suite à droite. */}
+          <div className="cn-tableau-cadre" data-suite={suite || undefined}>
+          <div className="cn-tableau-zone" ref={zone}>
+            <table className="cn-tableau cn-tableau-comparer">
               <thead>
                 <tr>
                   <th scope="col"><span className="cn-cache">Caractéristique</span></th>
@@ -122,11 +146,12 @@ export function Comparer(p: ComparerProps) {
                 {ecartes.length > 0 && (
                   <tr>
                     <th scope="row">Écarté</th>
-                    {ordre.map(l => <td key={l.articleId} className="cn-ecarte">{l.ecarte ? l.ecarte.raison : ''}</td>)}
+                    {ordre.map(l => <td key={l.articleId} className="cn-ecarte cn-ecarte-raison">{l.ecarte ? l.ecarte.raison : ''}</td>)}
                   </tr>
                 )}
               </tbody>
             </table>
+          </div>
           </div>
           {p.compromis && <p className="cn-encart"><Scale size={18} aria-hidden /> <span><Provenance origine="ia" /> {p.compromis}</span></p>}
           {p.exemple && <p className="cn-mut">Valeurs annoncées par les vendeurs · <Provenance origine="exemple" /></p>}

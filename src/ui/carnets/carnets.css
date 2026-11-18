@@ -289,7 +289,34 @@
 .cn-photo { display: flex; flex-direction: column; gap: 4px; width: 112px; }
 .cn-photo img { width: 112px; height: 84px; object-fit: cover; border-radius: 10px; background: var(--c-s2); }
 
+/* Corr. 2 (L2) — Comparer : tout le tableau tient dans sa colonne à 1280 (noms, pastilles et raisons d'écart se replient) ; à 390,
+   la colonne des noms reste fixe et un fondu à droite dit qu'il y a une suite. Les écartés restent à la fin (D-52). */
+.cn-tableau-cadre { position: relative; }
+.cn-tableau-cadre[data-suite]::after { content: ''; position: absolute; top: 1px; right: 1px; bottom: 1px; width: 40px; border-radius: 0 15px 15px 0; background: linear-gradient(to right, rgb(var(--cave-950) / 0), var(--c-bg)); pointer-events: none; }
+.cn-tableau-comparer thead th:first-child, .cn-tableau-comparer tbody th { position: sticky; left: 0; z-index: 1; background: var(--c-bg); box-shadow: 1px 0 0 var(--c-line); }
+.cn-tableau-comparer th, .cn-tableau-comparer td { padding: 8px 6px; }
+.cn-tableau-comparer .cn-col-tete { min-width: 64px; max-width: 150px; overflow-wrap: break-word; }
+.cn-tableau-comparer .cn-col-tete .cn-pastille { white-space: normal; min-height: 24px; padding: 2px 8px; }
+.cn-tableau-comparer thead th.cn-ecarte .cn-col-tete, .cn-ecarte-raison { min-width: 100px; max-width: 160px; }
+.cn-ecarte-raison { white-space: normal !important; text-align: left !important; }
+
+/* Corr. 2 (L2) — le cadre « ↓ va atterrir ici » et l'état « choisi » se rendent visibles sans passer sous la barre du haut, ni sous
+   le champ et le clavier (`--cn-champ-h`, `--cn-clavier` publiés par ChampCarnet). */
+.cn-cadre-bloc { display: flex; flex-direction: column; gap: 12px; scroll-margin-top: var(--cn-haut, 88px); scroll-margin-bottom: calc(var(--cn-champ-h, 0px) + var(--cn-clavier, 0px) + 12px); }
+.cn-choisi { scroll-margin-top: var(--cn-haut, 88px); }
+
+/* Corr. 2 (L2) — liste à 390 (p2:g05-1) : le titre tient sur 2 lignes au plus, la phrase citée aussi ; « Coller un lien » garde sa place
+   à droite, resserré. */
+.cn-carnet-titre, .cn-deux-lignes { display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; overflow: hidden; overflow-wrap: anywhere; }
+.cn-coller-lien { padding: 0 10px; gap: 4px; }
+.cn-carnet-coller .cn-carnet-corps { padding-right: 0; }
+/* « Côte à côte 5 » sur une ligne, « rangé par … » se replie à droite (p2:g01-8). */
+.cn-comparer .cn-entete-groupe .cn-groupe { flex: none; white-space: nowrap; }
+.cn-comparer .cn-entete-groupe .cn-mut { text-align: right; }
+
 @media (min-width: 900px) {
   .cn-page { max-width: 760px; margin: 0 auto; }
+  /* Comparer est un tableau : sur grand écran il prend la place qu'il faut pour que tout tienne, écartés compris (d1280-2). */
+  .cn-page.cn-comparer { max-width: 920px; }
   .cn-champ-zone { max-width: 760px; margin: 0 auto; }
 }

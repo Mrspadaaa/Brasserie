@@ -12,6 +12,8 @@
 import React from 'react';
 import { ArrowDown, CalendarCheck, ChevronRight, Eye, Link2, Package } from 'lucide-react';
 import { Bandeau } from './Bandeau';
+import { normaliser } from '../../domain/carnets/analyseLocale';
+import { titreDePhrase } from '../../domain/carnets/modele';
 import { dateCourte, GENRE_LIBELLE, montant, pluriel, Provenance, STATUT_LIBELLE, type CarnetV, type GenreNote, type StatutCarnet } from './EtatIA';
 
 export interface EclaireV { carnetId: string; quoi: string; tireDe: string; onDeplacer: () => void; onAnnuler: () => void }
@@ -37,6 +39,17 @@ export interface ListeCarnetsProps {
 
 const EXEMPLES = ['Frigo de garde', 'Ventilation de la salle', 'Évier pour les fûts'];
 const ORDRE: StatutCarnet[] = ['research', 'idea', 'validated'];
+
+/**
+ * Le titre est-il sa phrase (comparaison normalisée, préfixe du banc et rognage de `titreDePhrase` compris) ? Alors la phrase ne se
+ * cite pas une seconde fois sous le titre : « votre phrase en titre », une fois (g5:v04-4).
+ */
+export function phraseEnTitre(titre: string, phrase: string | undefined): boolean {
+  if (!phrase?.trim()) return false;
+  const t = normaliser(titre.replace(/^ZZ TEST — /, ''));
+  const p = phrase.replace(/^ZZ TEST — /, '');
+  return t !== '' && (normaliser(p) === t || normaliser(titreDePhrase(p)) === t || normaliser(titreDePhrase(phrase)) === normaliser(titre));
+}
 
 function vignette(c: CarnetV): string | undefined {
   return c.carnet.articles.find(a => a.photo)?.photo ?? c.carnet.photos[0]?.jpeg;
@@ -69,7 +82,7 @@ function CarteCarnet({ c, ajouts, onOuvrir, onCollerLien, onVoirAVenir }: { c: C
   const sortieLe = dateCourte(k.sortie?.le);
   return (
     <div className="cn-carnet-bloc">
-      <div className="cn-carnet">
+      <div className={`cn-carnet${vide && onCollerLien ? ' cn-carnet-coller' : ''}`}>
         <button type="button" className="cn-carnet-corps" onClick={() => onOuvrir(c.id)}>
           <Vignette c={c} />
           <span className="cn-carnet-tx">
@@ -80,7 +93,8 @@ function CarteCarnet({ c, ajouts, onOuvrir, onCollerLien, onVoirAVenir }: { c: C
                 <span className="cn-mut">{[dateCourte(k.choix?.le) ? `le ${dateCourte(k.choix?.le)}` : null, choisi.vendeur].filter(Boolean).join(' · ')}</span>
               </>
             ) : vide ? (
-              <span className="cn-cite">« {k.phrase} »</span>
+              /* L4-5 : le titre est sa phrase → rien dessous (le carnet ouvert le dit, une fois) ; sinon la phrase citée, 2 lignes au plus */
+              phraseEnTitre(c.title, k.phrase) ? null : <span className="cn-cite cn-deux-lignes">« {k.phrase} »</span>
             ) : (
               <>
                 {ensuite && <span><b className="cn-vert">Ensuite :</b> {ensuite}</span>}

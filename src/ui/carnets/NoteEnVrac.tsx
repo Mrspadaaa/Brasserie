@@ -24,6 +24,8 @@ export interface NoteEnVracProps {
   onChangerGenre?: (ligneId: string) => void;
   onChangerCarnet?: (ligneId: string) => void;
   onAnnuler: () => void;
+  /** Le nombre de carnets distincts, quand l'appelant le tient du plan (pendant) ou des effets (après) ; sinon compté sur les lignes. */
+  nbCarnets?: number;
 }
 
 const ORDRE: GenreNote[] = ['a-acheter', 'a-faire', 'question', 'conseil', 'note'];
@@ -36,6 +38,22 @@ const PICTO: Record<GenreNote, React.ReactNode> = {
 export function trierLignes(lignes: LigneVracV[]): LigneVracV[] {
   return lignes.map((l, i) => ({ l, i })).sort((x, y) => ORDRE.indexOf(x.l.genre) - ORDRE.indexOf(y.l.genre) || x.i - y.i).map(x => x.l);
 }
+
+/** Même texte, à la casse, aux accents et au préfixe du banc près (« ZZ TEST — », retiré à l'affichage des titres). */
+const sansBanc = (t: string) => t.replace(/^ZZ TEST\s*[—–-]\s*/i, '').trim();
+const pareil = (x: string, y: string) => sansBanc(x).localeCompare(sansBanc(y), 'fr', { sensitivity: 'base' }) === 0;
+
+/**
+ * Le carnet d'une ligne, dit une seule fois (vision 2, m390-2 : « la ligne 2 répète son titre »). Carnet neuf titré par la ligne même :
+ * « Nouveau carnet » ; carnet neuf titré par une autre ligne : « Nouveau carnet « <titre> » » ; carnet connu : son titre.
+ */
+export function libelleCarnet(l: Pick<LigneVracV, 'texte' | 'carnetTitre' | 'neuf'>): string {
+  if (!l.neuf) return l.carnetTitre;
+  return pareil(l.carnetTitre, l.texte) ? 'Nouveau carnet' : `Nouveau carnet « ${l.carnetTitre} »`;
+}
+
+/** Le nombre de carnets distincts : un carnet connu par son id, LE carnet neuf de la note une seule fois. */
+export const carnetsDistincts = (lignes: readonly LigneVracV[]): number => new Set(lignes.map(l => l.carnetId ?? (l.neuf ? '\u0000neuf' : l.carnetTitre))).size;
 
 /** « 1 chose à faire et 1 note, pas d'achat » (G23) : ce qu'il y a, et l'absence d'achat dite. */
 export function resumeVrac(lignes: LigneVracV[]): string {
@@ -52,7 +70,7 @@ export function resumeVrac(lignes: LigneVracV[]): string {
 
 export function NoteEnVrac(p: NoteEnVracProps) {
   const lignes = trierLignes(p.lignes);
-  const carnets = new Set(lignes.map(l => l.carnetId ?? `neuf:${l.carnetTitre}`)).size;
+  const carnets = p.nbCarnets ?? carnetsDistincts(lignes);
   const tete = p.etat === 'apres'
     ? <Bandeau bandeau={{ sorte: 'vrac', lignes: lignes.length, carnets }} onAnnuler={p.onAnnuler} />
     : (
@@ -73,8 +91,8 @@ export function NoteEnVrac(p: NoteEnVracProps) {
             <div className="cn-sp">
               <p>{l.texte}</p>
               {p.etat === 'apres' && p.onChangerCarnet
-                ? <button type="button" className="cn-puce" onClick={() => p.onChangerCarnet!(l.id)}>{l.carnetTitre} ▾</button>
-                : !p.rattacheA && <p className="cn-mut">{l.neuf ? `${l.carnetTitre} · aucun carnet proche` : `→ ${l.carnetTitre}`}</p>}
+                ? <button type="button" className="cn-puce" onClick={() => p.onChangerCarnet!(l.id)}>{libelleCarnet(l)} ▾</button>
+                : !p.rattacheA && <p className="cn-mut">→ {libelleCarnet(l)}{l.neuf && p.etat === 'pendant' ? ' · aucun carnet proche' : ''}</p>}
             </div>
           </li>
         ))}

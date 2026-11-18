@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { analyserTexte, nombresEcrits } from '../../src/domain/carnets/analyseLocale';
-import { consequenceApercu, critereQuiTranche, difference, rangePar, statutApres, tableau, texteTranche } from '../../src/domain/carnets/comparer';
+import { consequenceApercu, critereQuiTranche, difference, domaineEtChemin, nomsDistincts, rangePar, statutApres, tableau, texteTranche } from '../../src/domain/carnets/comparer';
 import { fixtureCarnets, ID_EMBOUTEILLAGE, ID_EVIER, ID_VENTILATION, PHRASES_ESSAI } from '../../src/domain/carnets/fixture';
 import { lireCarnet, type Article, type CarnetDoc, type DonneesCarnet } from '../../src/domain/carnets/modele';
 
@@ -110,7 +110,9 @@ describe('G8 et G9, calcul local (A13, R44, R45)', () => {
     const c = avec(B, { facons: [], choix: undefined, criteres: [B.carnet.criteres[0], { id: 'K2', texte: 'nettoyage facile', caracteristique: { nom: 'nettoyage', sens: 'oui-non' }, origine: 'vous' }] });
     const t = critereQuiTranche(c)!;
     expect(t.critere.id).toBe('K2');
-    expect(t.entre).toEqual(['Isobarique 4 becs pré-évacuation', 'Isobarique 4 becs pré-évacuation']);
+    /* corr. 2 (L4-4) : deux articles au même nom se distinguent par leur vendeur, jamais « X et X » */
+    expect(t.entre[0]).not.toBe(t.entre[1]);
+    expect([...t.entre].sort()).toEqual(['Isobarique 4 becs pré-évacuation · Abfülltechnik West', 'Isobarique 4 becs pré-évacuation · Brassage Romandie']);
   });
   it('consequenceApercu sur Évier : « fond de bac 38 cm minimum »', () => {
     expect(consequenceApercu(carnet(ID_EVIER), analyserTexte('fond de bac 38 cm minimum'))).toBe('les articles seront rangés sur le fond de bac, 38 cm au moins');
@@ -134,5 +136,46 @@ describe('G8 et G9, calcul local (A13, R44, R45)', () => {
       for (const n of t.replace(/°C|m³\/h|m³/g, '').match(/\d+(?:[.,]\d+)?/g) ?? []) expect(ecrits).toContain(Number(n.replace(',', '.')));
     }
     expect(rendus).toBeGreaterThan(3);
+  });
+});
+
+describe('G8 (R44), corr. 2 L4-4 : deux candidats ne se nomment jamais pareil', () => {
+  const sansNom = (id: string, url: string, o: Partial<Article> = {}): Article => ({ id, url, domaine: 'exemple.test', valeurs: {}, lecture: 'illisible', ...o });
+  const V = carnet(ID_VENTILATION);
+  const sansFacons = (articles: Article[]) => avec(V, { facons: [], articles, choix: undefined });
+
+  it('deux articles au même domaine, sans nom lu : le domaine et un bout du chemin, dans la bulle', () => {
+    const t = critereQuiTranche(sansFacons([sansNom('X1', 'https://exemple.test/hottes/hotte-inox-120'), sansNom('X2', 'https://www.exemple.test/extracteur-mural.html')]))!;
+    expect(t).not.toBeNull();
+    expect(t.entre).toEqual(['exemple.test/hotte-inox-120', 'exemple.test/extracteur-mural']);
+    expect(texteTranche(t)).not.toContain('exemple.test et exemple.test');
+  });
+  it('ordre : nom lu, puis vendeur, puis domaine et chemin, puis prix ; sinon la place', () => {
+    /* noms différents : gardés tels quels */
+    expect(nomsDistincts([art('Hotte', {}), art('Extracteur', {})])).toEqual(['Hotte', 'Extracteur']);
+    /* même nom, vendeurs différents : le vendeur précise le nom */
+    expect(nomsDistincts([art('A', {}, { nom: 'Hotte', vendeur: 'Inox Broye' }), art('B', {}, { nom: 'hotte', vendeur: 'Froid Léman' })]))
+      .toEqual(['Hotte · Inox Broye', 'hotte · Froid Léman']);
+    /* sans nom, vendeurs différents : le vendeur remplace le domaine nu */
+    expect(nomsDistincts([sansNom('A', 'https://exemple.test/a', { vendeur: 'Inox Broye' }), sansNom('B', 'https://exemple.test/b', { vendeur: 'Froid Léman' })]))
+      .toEqual(['Inox Broye', 'Froid Léman']);
+    /* même nom, même vendeur, chemins différents */
+    expect(nomsDistincts([art('A', {}, { nom: 'Hotte', vendeur: 'V', url: 'https://v.ch/p/1' }), art('B', {}, { nom: 'Hotte', vendeur: 'V', url: 'https://v.ch/p/2' })]))
+      .toEqual(['Hotte · v.ch/1', 'Hotte · v.ch/2']);
+    /* même nom, même vendeur, même page, prix différents : le prix, jamais 0 */
+    expect(nomsDistincts([art('A', {}, { nom: 'Hotte', prixCentimes: 145000 }), art('B', {}, { nom: 'Hotte', prixCentimes: 260000 })]))
+      .toEqual(['Hotte · 1 450 CHF', 'Hotte · 2 600 CHF']);
+    /* rien ne les sépare (prix inconnu de l'un) : leur place */
+    expect(nomsDistincts([art('A', {}, { nom: 'Hotte', prixCentimes: 145000 }), art('B', {}, { nom: 'Hotte' })])).toEqual(['Hotte · 1er', 'Hotte · 2e']);
+  });
+  it('domaineEtChemin : www retiré, extension retirée, chemin long rogné ; sans lien, rien', () => {
+    expect(domaineEtChemin({ url: 'https://www.pompe-inox.ch/fr/produits/pompe-de-transfert-inox-40-litres-minute.html' })).toBe('pompe-inox.ch/pompe-de-transfert-inox…');
+    expect(domaineEtChemin({ url: 'https://exemple.test/' })).toBe('exemple.test');
+    expect(domaineEtChemin({ domaine: 'exemple.test' })).toBeUndefined();
+  });
+  it('deux façons homonymes : « 1re », « 2e »', () => {
+    const t = critereQuiTranche(avec(V, { facons: [{ ...V.carnet.facons[0], nom: 'Hotte' }, { ...V.carnet.facons[1], nom: 'hotte' }] }))!;
+    expect(t.entre[0]).not.toBe(t.entre[1]);
+    expect(t.entre).toEqual(['Hotte · 1re', 'hotte · 2e']);
   });
 });

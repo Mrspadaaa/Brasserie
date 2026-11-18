@@ -42,13 +42,17 @@ import { DELAI_LECTURE_BANC, lireLienSimule } from '../domain/carnets/iaSimulee'
 import { aidesCarnet, comportementSimule, type AidesCarnet, type ComportementSimule, type ModeCarnetIA } from '../config/carnetIA';
 import { appelsSimules, type AppelsIA } from '../ui/carnets/rangement';
 import { CarnetsVue, type FinancesCarnet } from '../ui/carnets/CarnetsVue';
-import { UpgradeWorkspace } from '../ui/finance/UpgradeWorkspace';
+import { BARRE_MATERIEL, BARRE_SUR_DEFILEMENT, UpgradeWorkspace } from '../ui/finance/UpgradeWorkspace';
 import { FirestoreRepo } from '../services/firestoreRepo';
 import { FinanceService } from '../services/financeService';
 import { StorageService } from '../services/storage';
 import { useStorageValue } from '../hooks/useLiveData';
 import { isUpgradePlan } from '../domain/finance/upgrades';
 import { estRealise } from '../domain/finance/upgradeRing';
+import { ACTION_CARNETS, plusMenuFor, type PlusCle } from '../domain/plusEcran';
+import { fabActionFor } from '../domain/fabActions';
+import { BottomNav } from '../components/BottomNav';
+import { FloatingActions } from '../ui/FloatingActions';
 
 const param = (nom: string) => new URLSearchParams(typeof location === 'undefined' ? '' : location.search).get(nom);
 const SANS_FINANCES: FinancesCarnet = { plans: [], transactions: [], payments: [] };
@@ -178,6 +182,8 @@ export interface BancCarnetsProps {
   finances?: FinancesCarnet;
   ecrirePlan?: (plan: FinancialPlan) => void;
   ouvrir?: { id: string; at: number } | null;
+  /** « Nouvelle idée » du + volant (R28) : un horodatage neuf met le focus dans le champ du bas, comme dans l'app (StocksTab). */
+  focusChamp?: number | null;
   onVoirAVenir?: () => void;
   onPlan?: (plan: FinancialPlan) => void;
 }
@@ -194,7 +200,7 @@ export function BancCarnets(p: BancCarnetsProps) {
     <div data-banc-carnets className="flex h-full min-h-0 flex-col">
       <CarnetsVue className="min-h-0 flex-1" magasin={magasin} finances={finances} mode={mode}
         appels={p.appels ?? appelsSimules(comportementSimule())} aides={p.aides ?? aidesCarnet(mode, {}, param('aides'))} horsLigne={p.horsLigne}
-        ouvrir={p.ouvrir} onVoirAVenir={p.onVoirAVenir}
+        ouvrir={p.ouvrir} focusChamp={p.focusChamp} onVoirAVenir={p.onVoirAVenir}
         ecrirePlan={plan => {
           p.onPlan?.(plan);
           if (p.ecrirePlan) p.ecrirePlan(plan);
@@ -232,22 +238,34 @@ export function CarnetsPreview() {
   useEffect(() => (cache ? magasin.ecouter(() => refleterCarnets(magasin)) : undefined), [cache, magasin]);
 
   const n = (s: SegmentBanc) => (s === 'avenir' ? comptes.avenir : s === 'realises' ? comptes.realises : comptes.carnets);
+  /* Le + volant de l'app (R28, p2:g05-1 ; d1280-5, m390-4b) : le composant même, avec le menu que l'app lui donne sur cet écran. Sur Carnets,
+     « Nouvelle idée » met le focus dans le champ du bas (StocksTab, `focusChamp`) ; ailleurs, le banc dit ce que l'app ouvrirait. */
+  const [focusChamp, setFocusChamp] = useState<number | null>(null);
+  const [renvoi, setRenvoi] = useState<string | null>(null);
+  const surCarnets = segment === 'carnets';
+  const menuPlus = useMemo(() => plusMenuFor('stocks', (surCarnets ? 'carnets' : 'materiel') as Parameters<typeof plusMenuFor>[1]), [surCarnets]);
+  const actionPlus = surCarnets ? ACTION_CARNETS : fabActionFor('stocks', 'materiel');
+  const lancerPlus = (cle: PlusCle | 'ecran') => {
+    if (cle === 'ecran' && surCarnets) { setRenvoi(null); setFocusChamp(Date.now()); return; }
+    const ligne = cle === 'ecran' ? menuPlus.action : [...menuPlus.autres, ...menuPlus.partout].find(e => e.cle === cle);
+    setRenvoi(`banc — l’app ouvrirait : ${ligne?.label ?? cle}`);
+  };
   return (
-    <div className="flex h-[100dvh] flex-col bg-cave-950 text-cave-50">
+    <div className="flex h-[100dvh] flex-col bg-cave-950 pb-[var(--main-navigation-height,2.5rem)] text-cave-50">
       <p className="shrink-0 bg-cave-900 px-3 py-1 text-sm text-cave-200">Banc — données simulées · Stocks › Matériel</p>
+      {renvoi && <p role="status" data-banc-renvoi className="shrink-0 px-3 py-1 text-sm text-cave-200">{renvoi}</p>}
       {taches && <BandeauTaches zone={zone} />}
-      <div ref={zone} className="flex min-h-0 flex-1 flex-col">
-        {/* Le segment de Stocks › Matériel (R08, p2:h05-9), même habit que StocksTab. */}
-        <div className="shrink-0 px-3 pt-2">
-          <nav aria-label="Vue du matériel" className="shrink-0 flex gap-1 p-1 rounded-control bg-cave-900 border border-cave-800 overflow-x-auto">
-            {(['avenir', 'carnets', 'realises'] as const).map(seg => (
-              <button key={seg} type="button" onClick={() => setSegment(seg)} aria-current={segment === seg ? 'page' : undefined}
-                className={`flex-1 min-w-fit px-2 min-h-touch rounded-control flex items-center justify-center gap-1.5 text-sm font-medium transition-colors ${segment === seg ? 'bg-ebc-straw text-cave-950' : 'text-cave-400 hover:text-cave-50'}`}>
-                <span>{LIBELLES[seg]}</span>{cache && <span className="font-mono">{n(seg)}</span>}
-              </button>
-            ))}
-          </nav>
-        </div>
+      {/* Le même conteneur que le <main> de l'app sur Stocks (App.tsx) : marges, largeur, place du rail au 1280. */}
+      <div ref={zone} className="mx-auto flex min-h-0 w-full max-w-4xl flex-1 flex-col gap-1 px-2 pt-1 xs:px-3 min-[900px]:max-w-[1264px] min-[1024px]:pl-[calc(var(--rail-width,88px)+0.75rem)]">
+        {/* Le segment de Stocks › Matériel (R08, p2:h05-9), même habit et même barre que StocksTab (BARRE_MATERIEL). */}
+        <nav aria-label="Vue du matériel" className={`${BARRE_MATERIEL} ${BARRE_SUR_DEFILEMENT}`}>
+          {(['avenir', 'carnets', 'realises'] as const).map(seg => (
+            <button key={seg} type="button" onClick={() => setSegment(seg)} aria-current={segment === seg ? 'page' : undefined}
+              className={`flex-1 min-w-fit px-2 min-h-touch rounded-control flex items-center justify-center gap-1.5 text-sm font-medium transition-colors ${segment === seg ? 'bg-ebc-straw text-cave-950' : 'text-cave-400 hover:text-cave-50'}`}>
+              <span>{LIBELLES[seg]}</span>{cache && <span className="font-mono">{n(seg)}</span>}
+            </button>
+          ))}
+        </nav>
         {segment !== 'carnets' && (
           <div className="min-h-0 flex-1 overflow-y-auto">
             {cache
@@ -260,9 +278,14 @@ export function CarnetsPreview() {
         <div className={segment === 'carnets' ? 'flex min-h-0 flex-1 flex-col' : 'hidden'}>
           <BancCarnets magasin={magasin} {...(cache ? { finances: financesCache, ecrirePlan } : { realise: prm.realise, articles: prm.articles })}
             vide={prm.vide} horsLigne={prm.horsLigne} mode={prm.mode} appels={appels}
-            ouvrir={ouvrir} onVoirAVenir={() => setSegment('avenir')} />
+            ouvrir={ouvrir} focusChamp={focusChamp} onVoirAVenir={() => setSegment('avenir')} />
         </div>
       </div>
+      <div className="app-bottom-dock">
+        <BottomNav activeTab="stocks" onChangeTab={tab => setRenvoi(`banc — l’app ouvrirait l’onglet ${tab}`)} criticalStockCount={0} horsConnexion={prm.horsLigne} />
+      </div>
+      <FloatingActions action={actionPlus} onAction={() => lancerPlus('ecran')} companionLabel={surCarnets ? 'Carnets' : 'Matériel'}
+        menu={menuPlus} onPlus={lancerPlus} horsConnexion={prm.horsLigne} anchor="nav" />
     </div>
   );
 }

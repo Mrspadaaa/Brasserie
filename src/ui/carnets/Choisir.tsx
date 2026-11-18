@@ -7,7 +7,7 @@
  *   écartés (✕) ; un choix revu reste lisible (« Choix d'avant », ADR) ; « Envoyer dans À venir » seulement sur l'idée choisie et
  *   pas encore envoyée, sinon « Dans À venir depuis le … · Voir » (R32). Aucune caisse ni trésorerie ici.
  */
-import React, { useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { CalendarCheck, Check, ChevronLeft, ChevronRight, ExternalLink, X } from 'lucide-react';
 import { dateCourte, montant, Provenance, rangTexte, type ArticleV, type ChoixV, type CritereV, type FaconV } from './EtatIA';
 
@@ -44,11 +44,21 @@ export type ChoisirProps = {
 
 export function Choisir(p: ChoisirProps) {
   if (p.etape === 'choisir') return <ChoisirArticle {...p} />;
+  return <ChoisiVue {...p} />;
+}
+
+/**
+ * L'état « choisi » (g05-11). Il remplace l'écran Choisir sur place, au bas duquel on vient de toucher « Choisir » : à son arrivée, la
+ * vue défile pour mettre « Choisi le … » et « Pourquoi ce choix » en haut de l'écran (sinon on reste face au bas de la page).
+ */
+function ChoisiVue(p: Extract<ChoisirProps, { etape: 'choisi' }>) {
   const a = p.article;
   const le = dateCourte(p.choix.le);
   const sortieLe = dateCourte(p.sortie?.le);
+  const haut = useRef<HTMLElement>(null);
+  useEffect(() => { haut.current?.scrollIntoView?.({ block: 'start' }); }, []);
   return (
-    <article className="cn-page cn-choisi">
+    <article ref={haut} className="cn-page cn-choisi">
       <div className="cn-tete">
         <button type="button" className="cn-retour" onClick={p.onRetour}><ChevronLeft size={20} aria-hidden /> Carnets</button>
         <span className="cn-sp" />
@@ -65,7 +75,7 @@ export function Choisir(p: ChoisirProps) {
       </div>
       <section className="cn-pourquoi" aria-label="Pourquoi ce choix">
         <h3 className="cn-sous">Pourquoi ce choix</h3>
-        <p>{p.choix.pourquoi}</p>
+        {p.choix.pourquoi.trim() && <p>{p.choix.pourquoi}</p>}
         <ul className="cn-raisons">
           {p.critere && <li><Check size={18} aria-hidden className="cn-ok" /><span><b>Critère</b> : {p.critere.texte}{p.critere.origine === 'ia' ? ", proposé par l'IA" : ''}</span></li>}
           {p.facon && <li><Check size={18} aria-hidden className="cn-ok" /><span><b>Façon {p.facon.nom.toLowerCase()}</b>{p.facon.raison ? ` : ${p.facon.raison}` : ''}</span></li>}

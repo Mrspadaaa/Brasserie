@@ -262,3 +262,43 @@ describe('IA simulée (B6, B7) : marquée « exemple »', () => {
     expect(pageSimulee('https://inconnu-exemple.ch/x', 1)).toEqual({ url: 'https://inconnu-exemple.ch/x', domaine: 'inconnu-exemple.ch', statut: 'illisible', luLe: 1 });
   });
 });
+
+describe('corr2-L1 : l’IA simulée garde « ZZ TEST — », découpe une note ligne par ligne, dit sa raison', () => {
+  const simuler = (texte: string, depuis: string | null = null, carnets: CarnetPourIA[] = CARNETS) =>
+    reponseSimulee(contexteModele(texte, new Date(2026, 10, 17), depuis, carnets))!.lignes as Array<Record<string, unknown>>;
+
+  it('L4-7 : tout titre proposé (carnet neuf, titre d’idée, titre proposé G29) garde le préfixe de la phrase', () => {
+    const l = simuler('ZZ TEST — chambre froide pour garder 6 fûts', null, [EVIER]);
+    const titres = l.flatMap((x) => [x.carnetNeuf, x.sorte === 'idee' ? x.titre : undefined]).filter((t): t is string => typeof t === 'string');
+    expect(titres.length).toBeGreaterThan(0);
+    expect(titres.every((t) => t.startsWith('ZZ TEST — '))).toBe(true);
+    expect(titres).toContain('ZZ TEST — Frigo pour les fûts');
+    // G29 sur l'évier : le titre proposé garde le préfixe (une seule fois)
+    const g29 = simuler('ZZ TEST — 2 bacs pour laver les fûts', 'c-evier').find((x) => x.titrePropose);
+    expect(g29?.titrePropose).toBe('ZZ TEST — Évier inox 2 bacs');
+    // « Ce qui compte, tiré de votre phrase » : ce que la phrase dit (la condensation), pas « garder au froid » qu'elle ne dit pas
+    const k = simuler('ZZ TEST — rangement du frigo, plus de condensation au plafond', null, []).filter((x) => x.sorte === 'critere').map((x) => x.texte);
+    expect(k).toEqual(['Plus de condensation au plafond']);
+    // sans préfixe, rien n'est ajouté
+    expect(simuler('chambre froide pour garder 6 fûts', null, [EVIER]).find((x) => x.sorte === 'idee')?.titre).toBe('Frigo pour les fûts');
+  });
+
+  it('m390-2 : une note de 3 lignes depuis la liste n’est pas prise par G29 ; chaque ligne a sa cible, les lignes sans carnet partagent UN carnet neuf', () => {
+    const l = simuler('ZZ TEST — 2 bacs pour laver les fûts ; ZZ TEST — ajouter le sel ; ZZ TEST — prochain brassage jeudi');
+    expect(l).toHaveLength(3);
+    expect(l.every((x) => x.sorte === 'note')).toBe(true);
+    expect(l[0].carnetId).toBe('c-evier');
+    expect(l[0].raisonCarnet).toBe('votre message parle de « bacs » : comme Évier inox');
+    expect(l[1].carnetNeuf).toBe('ZZ TEST — ajouter le sel');
+    expect(l[2].carnetNeuf).toBe('ZZ TEST — ajouter le sel');
+    // dans un carnet ouvert, toutes les lignes y vont (« ↓ va atterrir ici »)
+    expect(simuler('hotte trop large ; acheter du sel', 'c-evier').every((x) => x.carnetId === 'c-evier')).toBe(true);
+  });
+
+  it('G21 : un lien collé depuis la liste, rangé dans un carnet connu, dit pourquoi ; un lien seul sans carnet ouvre un carnet au nom lu', () => {
+    const hotte = simuler('https://exemple.invalid/hotte-140');
+    expect(hotte[0]).toMatchObject({ sorte: 'article', carnetId: 'c-ventil', raisonCarnet: 'la page parle de « hotte » : comme Ventilation de la salle' });
+    const pompe = simuler('https://exemple.invalid/pompe-inox', null, [EVIER]);
+    expect(pompe.every((x) => x.carnetNeuf === 'Pompe de transfert inox')).toBe(true);
+  });
+});

@@ -295,6 +295,30 @@ export function CalendrierTab(props: CalendrierTabProps) {
   }, [fenetre.du, premierLundi]);
   const ouvrirIdee = useCallback((lundi?: string) => { setMessage(null); setMenu(null); setIdee(lundi ?? premierLundi); }, [premierLundi]);
 
+  /**
+   * R48 (L4-2) : un toucher sur l'icône d'idée d'une semaine (± affiché) ouvre son carnet (`CibleOuverture` `carnets`, Stocks › Matériel ›
+   * Carnets, ce carnet ouvert). L'icône vit dans le bouton de la semaine (BandeSemaines), dont le toucher donne la date : ce toucher-là est
+   * pris avant lui, à la capture, et l'infobulle ne s'ouvre pas. Cible de 44 px : le carré de 44 px centré sur l'ampoule de 14 px, ou
+   * l'ampoule elle-même. Le reste de la semaine garde son toucher (date) et son appui long (Noter une idée, L1 b) : rien d'autre ne change.
+   * Plusieurs idées la même semaine : la première (ordre de `iconesIdees`).
+   */
+  const toucherIconeIdee = useCallback((e: React.MouseEvent<HTMLElement>) => {
+    const cible = e.target as Element | null;
+    const semaine = cible?.closest?.('[data-bande-semaines] [data-semaine]');
+    const ampoule = semaine?.querySelector('.ent-ic svg.lucide-lightbulb');
+    if (!semaine || !ampoule) return;
+    const r = ampoule.getBoundingClientRect();
+    const cx = r.left + r.width / 2, cy = r.top + r.height / 2;
+    const dedans = ampoule.contains(cible) || (Math.abs(e.clientX - cx) <= 22 && Math.abs(e.clientY - cy) <= 22);
+    if (!dedans) return;
+    const etiquette = semaine.getAttribute('aria-label') ?? '';
+    const icone = modele.icones.find(i => i.genre === 'idee' && i.ouvre && etiquette.startsWith(dateDeSemaine(i.lundi)));
+    if (!icone?.ouvre) return;
+    e.preventDefault(); e.stopPropagation();
+    setMessage(null); setMenu(null);
+    ouvrir(icone.ouvre);
+  }, [modele.icones, ouvrir]);
+
   /* passe 10 : une ligne par rangée, de la couleur et du picto de la rangée ; Poser un brassin en plein, avec sa semaine et « prête le … » (le + lui-même ne porte aucun « S47 », D-206) */
   const COULEUR_RANGEE: Record<IdRangee, string> = {
     brassins: 'rgb(var(--area-production))', fetes: 'rgb(var(--area-agenda))', ventes: 'rgb(var(--hop))', achats: 'rgb(var(--area-finances))',
@@ -436,7 +460,7 @@ export function CalendrierTab(props: CalendrierTabProps) {
     <div className={`cal-tab space-y-2 pt-1 pb-[calc(var(--main-navigation-height,2.5rem)+6.5rem)] text-sm${paysage ? ' cal-tab-paysage' : ''}`} data-calendrier data-vue={vue} data-orientation={orientation}>
       <h1 className="sr-only">Calendrier</h1>
 
-      <div className="cal-entete-zone sticky top-0 z-30 bg-cave-950" data-entete-zone>
+      <div className="cal-entete-zone sticky top-0 z-30 bg-cave-950" data-entete-zone onClickCapture={toucherIconeIdee}>
         <EnTeteCalendrier
           modele={modele}
           fenetre={fenetre}

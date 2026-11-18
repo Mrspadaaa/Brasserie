@@ -165,12 +165,15 @@ export function tableau(c: CarnetDoc | Donnees): Tableau | null {
   const colonnes = colonnesDe(d);
   const ecartes = d.articles.filter(a => raisonEcarte(d, a) !== null);
   const enLice = trier(d.articles.filter(a => raisonEcarte(d, a) === null), colonnes);
+  /* L4-4 : deux colonnes, deux lignes ou deux candidats de la bulle G8 ne se nomment jamais pareil */
+  const ordre = [...enLice, ...ecartes];
+  const noms = new Map(nomsDistincts(ordre).map((n, i) => [ordre[i].id, n]));
   const ligne = (a: Article, rang: number | null): LigneTableau => {
     const cellules: Record<string, Valeur | undefined> = {};
     for (const k of colonnes) { const v = valeurDe(a, k); if (v) cellules[k.nom] = v; }
     const raison = raisonEcarte(d, a);
     return {
-      articleId: a.id, nom: nomArticle(a), rang, cellules,
+      articleId: a.id, nom: noms.get(a.id) ?? nomArticle(a), rang, cellules,
       ...(a.prixCentimes !== undefined ? { prixCentimes: a.prixCentimes } : {}), ...(a.devise ? { devise: a.devise } : {}),
       moinsBienPartout: rang !== null && moinsBienPartout(a, enLice, colonnes),
       ...(raison !== null ? { ecarte: { raison } } : {})
@@ -242,17 +245,86 @@ export function difference(avant: CarnetDoc | Donnees, apres: CarnetDoc | Donnee
 export interface Tranche { critere: Critere; entre: [string, string] }
 
 /**
+ * « exemple.test/hotte-inox-120 » : le domaine et le dernier bout du chemin (le plus parlant : la fiche du produit), extension retirée,
+ * rogné à 24 caractères ; `undefined` sans lien lisible (parseur WHATWG `URL`, comme `liensDuTexte`).
+ */
+export function domaineEtChemin(a: Pick<Article, 'url' | 'domaine'>): string | undefined {
+  if (!a.url) return undefined;
+  try {
+    const u = new URL(a.url);
+    const hote = u.hostname.replace(/^www\./i, '');
+    const bout = u.pathname.split('/').filter(Boolean).pop();
+    if (!bout) return hote;
+    const court = decodeURIComponent(bout).replace(/\.(html?|php|aspx?)$/i, '');
+    return `${hote}/${court.length > 24 ? `${court.slice(0, 23)}…` : court}`;
+  } catch {
+    return undefined;
+  }
+}
+
+/** « 1 450 CHF » : le prix lu, pour départager deux homonymes ; `undefined` s'il est inconnu (jamais 0). */
+function prixCourt(a: Pick<Article, 'prixCentimes' | 'devise'>): string | undefined {
+  if (a.prixCentimes === undefined || !Number.isFinite(a.prixCentimes)) return undefined;
+  const francs = a.prixCentimes / 100;
+  const texte = Number.isInteger(francs) ? String(francs) : francs.toFixed(2);
+  const [entier, decimales] = texte.split('.');
+  const groupe = entier.replace(/\B(?=(\d{3})+(?!\d))/g, ' ');
+  return `${decimales ? `${groupe}.${decimales}` : groupe} ${a.devise ?? 'CHF'}`;
+}
+
+/**
+ * Les noms affichés de candidats (G8, R44), jamais deux pareils. Chaque article garde son nom lu (sinon son domaine) ; quand deux se
+ * ressemblent, on cherche ce qui les sépare, dans l'ordre : nom lu, puis vendeur, puis domaine avec un bout du chemin, puis prix. Le
+ * premier signe qui les distingue tous est ajouté (« Hotte · Inox Broye ») ou remplace le domaine nu (« exemple.test/hotte-120 »).
+ * Rien ne les sépare : leur place (« 1er », « 2e »). Rien n'est inventé : chaque mot vient de l'article.
+ */
+export function nomsDistincts(articles: readonly Article[]): string[] {
+  const base = articles.map(a => nomArticle(a));
+  const sortie = [...base];
+  const signes: ((a: Article) => string | undefined)[] = [a => a.nom, a => a.vendeur, domaineEtChemin, prixCourt];
+  const traites = new Set<number>();
+  base.forEach((nom, i) => {
+    if (traites.has(i)) return;
+    const groupe = base.map((n, j) => (normaliser(n) === normaliser(nom) ? j : -1)).filter(j => j >= 0);
+    groupe.forEach(j => traites.add(j));
+    if (groupe.length < 2) return;
+    for (const signe of signes) {
+      const valeurs = groupe.map(j => signe(articles[j]));
+      if (valeurs.some(v => !v)) continue;
+      if (new Set(valeurs.map(v => normaliser(v!))).size !== groupe.length) continue;
+      groupe.forEach((j, k) => {
+        const v = valeurs[k]!;
+        const a = articles[j];
+        /* un nom lu se garde et se précise ; un domaine nu cède la place au signe (vendeur, chemin) */
+        sortie[j] = a.nom && normaliser(v) !== normaliser(a.nom) ? `${a.nom} · ${v}` : signe === prixCourt ? `${base[j]} · ${v}` : v;
+      });
+      return;
+    }
+    groupe.forEach((j, k) => { sortie[j] = `${base[j]} · ${ordinal(k + 1)}`; });
+  });
+  return sortie;
+}
+
+/**
  * Le premier critère dont la caractéristique manque, ou est inconnue pour les deux premiers du tableau, et les deux candidats qu'il peut
  * départager : les deux premières façons non écartées, sinon les deux premiers articles non écartés. `null` s'il y a moins de deux candidats.
+ * Les deux candidats ne se nomment jamais pareil (`nomsDistincts` ; deux façons homonymes : « 1re », « 2e »).
  */
 export function critereQuiTranche(c: CarnetDoc | Donnees): Tranche | null {
   const d = donnees(c);
   const facons = d.facons.filter(f => f.etat !== 'ecartee');
   const t = tableau(d);
   const premiers = t ? t.lignes.filter(l => l.rang !== null).slice(0, 2) : [];
-  const entre: string[] = facons.length >= 2 ? facons.slice(0, 2).map(f => f.nom) : premiers.map(l => l.nom);
-  if (entre.length < 2) return null;
   const articles = premiers.map(l => d.articles.find(a => a.id === l.articleId)!);
+  let entre: string[];
+  if (facons.length >= 2) {
+    entre = facons.slice(0, 2).map(f => f.nom);
+    if (normaliser(entre[0]) === normaliser(entre[1])) entre = [`${entre[0]} · 1re`, `${entre[1]} · 2e`];
+  } else {
+    /* les noms du tableau, déjà distincts (`nomsDistincts` dans `tableau`) : la bulle nomme comme les colonnes */
+    entre = premiers.map(l => l.nom);
+  }
+  if (entre.length < 2) return null;
   const critere = d.criteres.find(k => !k.caracteristique || (articles.length === 2 && articles.every(a => !valeurDe(a, k.caracteristique!))));
   return critere ? { critere, entre: [entre[0], entre[1]] } : null;
 }

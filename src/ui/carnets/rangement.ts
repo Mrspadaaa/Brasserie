@@ -17,6 +17,8 @@ import type { ComportementSimule, ModeCarnetIA } from '../../config/carnetIA';
 import { contexteModele, liensDuTexte, lireReponse, type CarnetPourIA, type LigneCarnet, type PageLue } from '../../domain/carnets/ia';
 import { pageSimulee, reponseSimulee } from '../../domain/carnets/iaSimulee';
 import type { ContexteRangerCarnet } from '../../../functions/src/carnetIA';
+import { titreDePhrase } from '../../domain/carnets/modele';
+import { jetons } from '../../domain/carnets/analyseLocale';
 
 export type EtatRangement<L = unknown> =
   | { etape: 'repos' }
@@ -100,6 +102,51 @@ export function retourDuRangement(
   if (options.depuis === id) return { sorte: 'range', carnetId: id };
   if (effets.some(e => e.cible === 'carnet' && e.carnetId === id)) return { sorte: 'cree', carnetId: id };
   return { sorte: 'ailleurs', carnetId: id };
+}
+
+/**
+ * Note en vrac écrite depuis la liste (R18, R19 ; g5:v01-15, g5:v02-19, g5:v01-16) : la découpe ANNONCÉE pendant la frappe, que l'envoi
+ * applique telle quelle (« ce que le cadre pendant annonce est ce qui arrive après »). Une ligne qui a un carnet proche y va ; les lignes
+ * sans carnet proche vont ensemble dans UN carnet neuf (G23, g5:v02-19 : « Prochain brassin · aucun carnet proche »), titré par la
+ * première d'entre elles. `carnets` : le nombre de carnets distincts touchés, carnet neuf compris — le même pendant et après.
+ */
+export interface PlanVrac<T> {
+  lignes: Array<{ ligne: T; carnetId?: string; titre: string; neuf: boolean }>;
+  titreNeuf: string | null;
+  carnets: number;
+}
+
+export function planVrac<T extends { texte: string }>(
+  lignes: readonly T[],
+  proche: (texte: string) => { carnetId: string; titre: string } | null
+): PlanVrac<T> {
+  let titreNeuf: string | null = null;
+  const sortie = lignes.map(ligne => {
+    const p = proche(ligne.texte);
+    if (p) return { ligne, carnetId: p.carnetId, titre: p.titre, neuf: false };
+    titreNeuf ??= titreDePhrase(ligne.texte);
+    return { ligne, titre: titreNeuf, neuf: true };
+  });
+  const ids = new Set(sortie.map(l => l.carnetId ?? '\u0000neuf'));
+  return { lignes: sortie, titreNeuf, carnets: ids.size };
+}
+
+/**
+ * Pour chaque ligne rendue par l'IA, l'indice de la ligne annoncée dont elle prend la destination. Même nombre de lignes : une à une,
+ * dans l'ordre. Sinon : la ligne annoncée qui partage le plus de mots (jetons de l'analyse locale) ; sans mot commun, la ligne à la même
+ * place relative. L'IA met en forme et trie ; elle ne range jamais ailleurs que là où le cadre l'a annoncé.
+ */
+export function versLignesAnnoncees(textesIA: readonly string[], annoncees: readonly string[]): number[] {
+  const n = annoncees.length;
+  if (!n) return textesIA.map(() => -1);
+  if (textesIA.length === n) return textesIA.map((_, i) => i);
+  const jeux = annoncees.map(t => new Set(jetons(t)));
+  return textesIA.map((t, i) => {
+    const js = new Set(jetons(t));
+    let best = -1, score = 0;
+    jeux.forEach((j, k) => { const s = [...js].filter(m => j.has(m)).length; if (s > score) { score = s; best = k; } });
+    return best >= 0 ? best : Math.min(n - 1, Math.floor((i * n) / Math.max(1, textesIA.length)));
+  });
 }
 
 export interface DependancesRangement<L> {

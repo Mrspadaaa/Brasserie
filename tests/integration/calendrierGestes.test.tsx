@@ -5,6 +5,8 @@ import { BancCalendrier, etatBanc, type EtatBanc } from '../../src/design/Calend
 import { StorageService } from '../../src/services/storage';
 import type { Batch } from '../../src/types';
 import { HAUTEUR_REPLI_PX } from '../../src/ui/calendrier/frise/MenuAppuiLong';
+import { carnetDepuisPhrase } from '../../src/domain/carnets/modele';
+import { dateDeSemaine } from '../../src/domain/calendrier';
 
 const JOUR = '2026-11-16';
 type Appel = { op: string; collection: string; id: string; patch?: Record<string, unknown> };
@@ -324,5 +326,57 @@ describe('C19 (D-71) : « Budget › » d’un brassin', () => {
     fireEvent.click(d.getByRole('button', { name: 'Budget ›' }));
     expect(onOuvrirBudget).toHaveBeenCalledTimes(1);
     expect(onOuvrirBudget).toHaveBeenCalledWith('LOT-BLONDE');
+  });
+});
+
+describe('R48 (corr. 2, L3) : l’icône d’idée d’une semaine ouvre son carnet ; la feuille dit la semaine avec un seul point', () => {
+  const ID = 'CARNET-ZZ-S47';
+  const avecIdee = () => {
+    const base = etatBanc(JOUR);
+    const idee = carnetDepuisPhrase('ZZ TEST — idée du calendrier S47', { id: ID, le: '2026-11-16T08:00:00.000Z', date: JOUR });
+    return { ...base, items: [...base.items, idee as unknown as EtatBanc['items'][number]] };
+  };
+  const semaine = (n: number) => document.querySelector(`[data-bande-semaines] [data-semaine="${n}"]`) as HTMLElement;
+  const infobulleS47 = () => screen.queryByText(dateDeSemaine(JOUR));
+
+  it('± puis un toucher sur l’ampoule de S47 : onOpenCarnet(id) une fois, et l’infobulle de semaine ne s’ouvre pas (L4-2)', () => {
+    const onOpenCarnet = vi.fn();
+    const onOpenAgenda = vi.fn();
+    monter({ etat: avecIdee(), callbacks: { onOpenCarnet, onOpenAgenda } });
+    fireEvent.click(screen.getByRole('button', { name: '±' }));
+    const ampoule = semaine(47).querySelector('.ent-ic svg.lucide-lightbulb');
+    expect(ampoule).not.toBeNull();
+    fireEvent.click(ampoule!);
+    expect(onOpenCarnet).toHaveBeenCalledTimes(1);
+    expect(onOpenCarnet).toHaveBeenCalledWith(ID);
+    expect(onOpenAgenda).not.toHaveBeenCalled();
+    expect(infobulleS47()).toBeNull();
+  });
+
+  it('le toucher ailleurs que sur l’ampoule (le nom S47, loin de sa cible de 44 px) garde la date ; aucune ouverture', () => {
+    const onOpenCarnet = vi.fn();
+    monter({ etat: avecIdee(), callbacks: { onOpenCarnet } });
+    fireEvent.click(screen.getByRole('button', { name: '±' }));
+    fireEvent.click(semaine(47).querySelector('.ent-sem')!, { clientX: 200, clientY: 200 });
+    expect(onOpenCarnet).not.toHaveBeenCalled();
+    expect(infobulleS47()).not.toBeNull();
+  });
+
+  it('une semaine sans idée garde son toucher (date), même sous l’ampoule d’une autre', () => {
+    const onOpenCarnet = vi.fn();
+    monter({ etat: avecIdee(), callbacks: { onOpenCarnet } });
+    fireEvent.click(screen.getByRole('button', { name: '±' }));
+    fireEvent.click(semaine(48));
+    expect(onOpenCarnet).not.toHaveBeenCalled();
+    expect(screen.queryByText(dateDeSemaine('2026-11-23'))).not.toBeNull();
+  });
+
+  it('57c : appui long sur S48, la feuille dit « S48, 23 – 29 nov. Elle arrive dans le carnet. », un seul point (L4-3)', () => {
+    monter({ etat: avecIdee() });
+    appuiLong(semaine(48));
+    const phrase = screen.getByText(/Elle arrive dans le carnet\./);
+    expect(phrase.textContent).toBe('S48, 23 – 29 nov. Elle arrive dans le carnet.');
+    expect(phrase.textContent).not.toMatch(/\.\./);
+    expect(phrase.textContent).toMatch(/nov\. Elle/);
   });
 });

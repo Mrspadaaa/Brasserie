@@ -407,7 +407,7 @@ export function UpgradeWorkspace({ onOpenProject, createRequest, onCreateRequest
       </div>}
     </article>;
   };
-  return <div className="finance upgrade-workspace">
+  const page = <div className="finance upgrade-workspace">
     {!mobile && compact && <>
     <p className="finance-muted">Priorise tes équipements et choisis les achats à inclure dans tes prévisions.</p>
     <div className="upgrade-toolbar"><button className="finance-action" onClick={() => open(null)}><Plus size={18}/>Ajouter un projet</button></div>
@@ -442,7 +442,27 @@ export function UpgradeWorkspace({ onOpenProject, createRequest, onCreateRequest
     {editing !== undefined && <UpgradeSheet plan={editing ?? undefined} onClose={() => setEditing(undefined)}/>}
     {purchase && <ExpenseSheet initialIntent="equipment" initialPlanId={purchase.id} onSaved={() => {}} onClose={() => setPurchase(undefined)}/>}
   </div>;
+  /* Stocks › Matériel (R08) : À venir et Réalisés dans la colonne des cartes de Carnets, pour que rien ne saute d'un segment à l'autre. */
+  return vue ? <div data-colonne-materiel className={COLONNE_MATERIEL}>{page}</div> : page;
 }
+
+/**
+ * La colonne de Stocks › Matériel (d1280-4) : le conteneur même de `.cn-page` (`carnets.css`) — 8 px en haut, 12 px de côté, 16 px en bas,
+ * et dès 900 px une colonne de 760 px centrée. À venir s'aligne ainsi à gauche sur les cartes de Carnets, et « + Besoin » reste dans la
+ * marge au lieu de toucher le bord. Seul le conteneur change : l'intérieur de kh1r (crayon, D-3) reste tel quel.
+ */
+export const COLONNE_MATERIEL = 'px-3 pt-2 pb-4 min-[900px]:mx-auto min-[900px]:max-w-[760px]';
+
+/**
+ * La barre de segments de Stocks › Matériel (StocksTab et le banc `?preview=carnets`), rangée ici avec la colonne parce que les deux la
+ * montent avec cet écran (m390-6) : fond opaque (cave-900, deux thèmes), au-dessus de ce qui défile (z-10), et l'ombre `shadow-lift`
+ * (DESIGN.md « Elevation » : ce qui flotte au-dessus du contenu ; celle de la barre fixe de ProductionCatalog). Ce qui défile dessous s'y
+ * efface au lieu d'être coupé net. `BARRE_SUR_DEFILEMENT` reprend les 4 px d'écart de la pile (`gap-1`) : la liste qui défile commence
+ * au bord bas de la barre, sous son ombre, au lieu d'être coupée dans l'écart (le repos garde son air : 8 px en haut de `.cn-page` et
+ * de la colonne d'À venir).
+ */
+export const BARRE_MATERIEL = 'relative z-10 shrink-0 flex gap-1 p-1 rounded-control bg-cave-900 border border-cave-800 overflow-x-auto shadow-lift';
+export const BARRE_SUR_DEFILEMENT = '-mb-1';
 
 export function UpgradeAnalytics({ plans, transactions, payments, onOpen, onBrowse }: { plans: FinancialPlan[]; transactions: FinanceTransaction[]; payments: FinancialPayment[]; onOpen: (plan: FinancialPlan) => void; onBrowse: () => void }) {
   const projects = plans.filter(isUpgradePlan);

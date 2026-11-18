@@ -212,14 +212,16 @@ describe('P1, P2, P3 (vision 1) : le bandeau suit le rangement final ; un lien s
     expect(e.magasin.lire().some(i => i.type === 'carnet-message' && i.title === url)).toBe(false);
   });
 
-  it('une phrase que l’IA range dans le Frigo existant : « Rangé dans Frigo… », pas de carte « créée » en tête (P2)', async () => {
+  it('une phrase depuis la liste que l’IA rangerait dans le Frigo existant : le cadre annonçait un carnet neuf, c’est un carnet neuf (corr2, m390-1 ; remplace P2)', async () => {
     const e = ecran(fixtureCarnets());
     const avant = e.carnets().length;
+    const frigo = JSON.stringify(e.carnets().find(c => c.id === ID_FRIGO));
     await e.taperEtEnvoyer('chambre froide pour garder 6 fûts');
     await e.attendre(40);
-    expect(e.carnets().length).toBe(avant);
-    expect(e.bandeau()?.textContent).toMatch(/Rangé dans Frigo/);
-    expect(e.vue.container.textContent).not.toMatch(/Carnet créé/);
+    expect(e.carnets().length).toBe(avant + 1);
+    expect(JSON.stringify(e.carnets().find(c => c.id === ID_FRIGO))).toBe(frigo);
+    expect(e.bandeau()?.getAttribute('data-sorte')).toBe('cree');
+    expect(e.vue.container.textContent).not.toMatch(/Rangé dans Frigo/);
   });
 
   it('une idée neuve depuis la liste : « ✓ Carnet créé », sa phrase citée « votre phrase en titre », le carnet ouvert (R11, g5:v04-4)', async () => {
@@ -244,6 +246,119 @@ describe('P1, P2, P3 (vision 1) : le bandeau suit le rangement final ; un lien s
     expect(b.getAttribute('data-sorte')).toBe('cree');
     expect(b.textContent).toMatch(/le site en titre/);
     expect(b.textContent).not.toMatch(/votre phrase en titre/);
+  });
+});
+
+describe('corr2-L1 (vision 2 : d1280-1, m390-1, m390-2, L4-7, d1280-3) : ce que le cadre « pendant » annonce est ce qui arrive après', () => {
+  const autres = (e: ReturnType<typeof ecran>, ids: string[]) => JSON.stringify(e.carnets().filter(c => ids.includes(c.id)));
+  const IDS = () => fixtureCarnets().filter(d => d.type === 'carnet').map(d => d.id);
+
+  it('liste + phrase sans carnet proche + IA simulée OK : « ✓ Carnet créé », sa phrase en titre (préfixe gardé), un seul carnet neuf, aucun autre modifié', async () => {
+    const e = ecran(fixtureCarnets());
+    const avant = autres(e, IDS()), n = e.carnets().length;
+    const phrase = 'ZZ TEST — doseur de sucre pour la refermentation';
+    fireEvent.change(e.vue.container.querySelector('.cn-champ textarea')!, { target: { value: phrase } });
+    expect(e.vue.container.textContent).toMatch(/Nouveau carnet/);
+    expect(e.vue.container.textContent).not.toMatch(/Déjà un carnet proche/);
+    await act(async () => { fireEvent.submit(e.vue.container.querySelector('.cn-champ form, form')!); });
+    await e.attendre(40);
+    expect(e.carnets()).toHaveLength(n + 1);
+    expect(autres(e, IDS())).toBe(avant);
+    const neuf = e.carnets().find(c => !IDS().includes(c.id))!;
+    expect(neuf.title).toBe(phrase);
+    const b = e.bandeau()!;
+    expect(b.getAttribute('data-sorte')).toBe('cree');
+    expect(b.textContent).toMatch(/Carnet créé, en tête des Carnets/);
+    expect(b.textContent).toContain(`« ${phrase} » · votre phrase en titre`);
+    expect(within(b as HTMLElement).getByRole('button', { name: /Annuler/ })).toBeTruthy();
+    expect(e.vue.container.querySelector('[data-vue="carnet"]')).not.toBeNull();
+  });
+
+  it('IA lente (ia=lent) et bulle « Déjà un carnet proche » non touchée : « Carnet créé » tout de suite et après l’IA ; un seul carnet neuf ; Annuler rend la liste d’avant', async () => {
+    const e = ecran(fixtureCarnets(), appelsSimules('lent', 150));
+    const avant = autres(e, IDS()), n = e.carnets().length;
+    const phrase = 'ZZ TEST — rangement du frigo, plus de condensation au plafond';
+    fireEvent.change(e.vue.container.querySelector('.cn-champ textarea')!, { target: { value: phrase } });
+    expect(e.vue.container.textContent).toMatch(/Nouveau carnet/);
+    await act(async () => { fireEvent.submit(e.vue.container.querySelector('form')!); });
+    // pendant que l'IA tourne : le retour est déjà là, le carnet ouvert
+    expect(e.bandeau()?.getAttribute('data-sorte')).toBe('cree');
+    expect(e.vue.container.querySelector('[data-vue="carnet"]')).not.toBeNull();
+    await e.attendre(400);
+    expect(e.bandeau()?.getAttribute('data-sorte')).toBe('cree');
+    expect(e.bandeau()?.textContent).toContain(`« ${phrase} » · votre phrase en titre`);
+    expect(e.vue.container.textContent).not.toMatch(/Rangé dans/);
+    expect(e.carnets()).toHaveLength(n + 1);
+    expect(autres(e, IDS())).toBe(avant);
+    const neuf = e.carnets().find(c => !IDS().includes(c.id))!;
+    expect(neuf.title).toBe(phrase);
+    // Annuler : la liste d'avant
+    await act(async () => { fireEvent.click(within(e.bandeau() as HTMLElement).getByRole('button', { name: /Annuler/ })); });
+    expect(e.carnets()).toHaveLength(n);
+    expect(autres(e, IDS())).toBe(avant);
+    expect(e.vue.container.querySelector('[data-vue="liste"]')).not.toBeNull();
+    expect(e.magasin.lire().some(i => i.type === 'carnet-message' && i.title === phrase)).toBe(false);
+  });
+
+  it('Annuler pendant que l’IA tourne : l’IA est coupée, rien n’est réécrit après', async () => {
+    const e = ecran(fixtureCarnets(), appelsSimules('lent', 150));
+    const n = e.carnets().length;
+    fireEvent.change(e.vue.container.querySelector('.cn-champ textarea')!, { target: { value: 'ZZ TEST — doseur de sucre' } });
+    await act(async () => { fireEvent.submit(e.vue.container.querySelector('form')!); });
+    await act(async () => { fireEvent.click(within(e.bandeau() as HTMLElement).getByRole('button', { name: /Annuler/ })); });
+    await e.attendre(400);
+    expect(e.carnets()).toHaveLength(n);
+    expect(e.bandeau()).toBeNull();
+  });
+
+  it('note en vrac de 3 lignes : les effets sont dans les cibles annoncées ; compteur pendant = compteur après ; une ligne ne dit jamais son titre deux fois ; Annuler défait tout', async () => {
+    const e = ecran(fixtureCarnets());
+    const avant = autres(e, IDS()), n = e.carnets().length;
+    const note = 'ZZ TEST — 2 bacs pour laver les fûts ; ZZ TEST — ajouter le sel ; ZZ TEST — prochain brassage jeudi';
+    fireEvent.change(e.vue.container.querySelector('.cn-champ textarea')!, { target: { value: note } });
+    const lire = () => [...e.vue.container.querySelectorAll('.cn-vrac-ligne')].map(li => ({
+      texte: li.querySelector('.cn-sp > p')!.textContent!, cible: li.querySelector('.cn-sp > p.cn-mut')!.textContent!.replace(' · aucun carnet proche', '')
+    }));
+    const tete = e.vue.container.querySelector('.cn-vrac .cn-cadre-tete')!.textContent!;
+    const mPendant = Number(/(\d+) carnets?/.exec(tete)![1]);
+    expect(tete).toMatch(/3 lignes/);
+    const pendant = lire();
+    expect(pendant).toHaveLength(3);
+    for (const l of pendant) expect(l.cible.replace(/^→ /, '')).not.toBe(l.texte.replace(/^ZZ TEST — /, ''));
+    await act(async () => { fireEvent.submit(e.vue.container.querySelector('form')!); });
+    await e.attendre(40);
+    const b = e.bandeau()!;
+    expect(b.getAttribute('data-sorte')).toBe('vrac');
+    expect(b.textContent).toContain(`3 lignes rangées dans ${mPendant} carnet${mPendant > 1 ? 's' : ''}`);
+    expect(e.vue.container.querySelector('.cn-vrac-apres details.cn-origine')?.textContent).toContain(note);
+    const apres = lire();
+    expect(apres.map(l => l.cible).sort()).toEqual(pendant.map(l => l.cible).sort());
+    // dans le magasin : chaque ligne là où le cadre l'a dite
+    const msg = e.magasin.lire().find(i => i.type === 'carnet-message' && i.title === note) as unknown as { carnetMessage: { effets: { carnetId: string; cible: string }[] } };
+    const cibles = new Set(msg.carnetMessage.effets.filter(x => x.cible !== 'carnet').map(x => x.carnetId));
+    expect(cibles.size).toBe(mPendant);
+    const evier = e.carnets().find(c => c.id === 'ZZ-CARNET-EVIER')!;
+    if (pendant.some(l => /Évier/.test(l.cible))) expect(evier.carnet.notes.some(x => /2 bacs pour laver/.test(x.texte))).toBe(true);
+    expect(e.carnets()).toHaveLength(n + (pendant.some(l => /Nouveau carnet/.test(l.cible)) ? 1 : 0));
+    await act(async () => { fireEvent.click(within(b as HTMLElement).getByRole('button', { name: /Annuler/ })); });
+    expect(e.carnets()).toHaveLength(n);
+    expect(autres(e, IDS())).toBe(avant);
+  });
+
+  it('d1280-3 : un lien seul collé depuis la liste qui ouvre un carnet prend le nom lu sur la page ; page illisible : son domaine', async () => {
+    const e = ecran([], appelsSimules('normal', 60));
+    await e.taperEtEnvoyer('https://exemple.invalid/plaque-froid/echangeur-30');
+    /* pendant : le domaine en titre, le lien en clair dans le cadre (g5:v03-10) */
+    expect(e.vue.container.querySelector('.cn-titre')?.textContent).toBe('exemple.invalid');
+    expect(e.vue.container.textContent).toContain('exemple.invalid/plaque-froid/echangeur');
+    await e.attendre(400);
+    expect(e.carnets().map(c => c.title)).toEqual(['Échangeur à plaques 30 plaques']);
+    expect(e.bandeau()?.textContent).toMatch(/le nom lu sur la page en titre/);
+    cleanup();
+    const f = ecran([]);
+    await f.taperEtEnvoyer('https://inconnu.invalid/x');
+    await f.attendre(40);
+    expect(f.carnets().map(c => c.title)).toEqual(['inconnu.invalid']);
   });
 });
 

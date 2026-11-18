@@ -6,7 +6,7 @@ import React from 'react';
 import { act, cleanup, fireEvent, render, screen, within } from '@testing-library/react';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { AIDES_ETEINTES, montant, valeurTexte, dateCourte, type AidesV, type ArticleV, type CarnetV, type ContenuCarnetV } from '../../src/ui/carnets/EtatIA';
-import { ListeCarnets } from '../../src/ui/carnets/ListeCarnets';
+import { ListeCarnets, phraseEnTitre } from '../../src/ui/carnets/ListeCarnets';
 import { CarnetOuvert, type LienV } from '../../src/ui/carnets/CarnetOuvert';
 import { CarteArticle } from '../../src/ui/carnets/CarteArticle';
 import { FicheArticle } from '../../src/ui/carnets/FicheArticle';
@@ -380,7 +380,8 @@ describe('Gestes : créer, ajouter, lien, note en vrac (R09 à R19)', () => {
     expect(r.container.textContent).toContain('→ Évier inox');
     r.unmount();
     const r2 = render(<NoteEnVrac etat="pendant" lignes={[{ id: 'x', texte: 'Prochain brassin : IPA', genre: 'note', carnetTitre: 'Prochain brassin', neuf: true }]} texteOrigine="x" origine="ia" onAnnuler={rien} />);
-    expect(r2.container.textContent).toContain('Prochain brassin · aucun carnet proche');
+    /* corr. 2, lot voisin (NoteEnVrac, m390-2 « la ligne 2 répète son titre ») : le carnet neuf se dit « Nouveau carnet « … » » */
+    expect(r2.container.textContent).toContain('Nouveau carnet « Prochain brassin » · aucun carnet proche');
     r2.unmount();
     const onGenre = vi.fn();
     const r3 = render(<NoteEnVrac etat="apres" lignes={lignes} texteOrigine="ferblantier jeudi / hotte trop large ? / gaine 150" origine="ia" onChangerGenre={onGenre} onChangerCarnet={rien} onAnnuler={rien} />);
@@ -711,5 +712,94 @@ describe('Correction 1, lot L2 : le champ dans le vrai conteneur (fixture, magas
     await act(async () => { await new Promise(r => setTimeout(r, 20)); });
     expect(champ().value).toBe('');
     expect(screen.queryByRole('button', { name: 'Ajouter' })).toBeNull();
+  });
+});
+
+describe('Corr. 2 (L2) : phrase en titre, Comparer, Choisi, cadre visible', () => {
+  const longue = 'Hotte au-dessus de la cuve pour sortir la buée avant le prochain brassin de novembre';
+  const compte = (t: string, s: string) => t.split(s).length - 1;
+
+  it('L4-5 liste : titre = phrase (normalisé, préfixe du banc) → la phrase jamais répétée sous le titre (2 lignes au plus)', () => {
+    const idee: CarnetV = { id: 'zz-cal', title: `ZZ TEST — ${longue}`, status: 'idea', carnet: contenu({ phrase: `ZZ TEST — ${longue.toLowerCase()}` }) };
+    const { container } = render(<ListeCarnets carnets={[idee, evier]} onOuvrir={rien} onCollerLien={rien} />);
+    const t = container.textContent ?? '';
+    expect(compte(t.toLowerCase(), longue.toLowerCase())).toBe(1);
+    /* sur la liste, rien sous le titre : le carnet ouvert dit « votre phrase en titre », une fois */
+    expect(compte(t, 'votre phrase en titre')).toBe(0);
+    expect(container.querySelectorAll('.cn-coller-lien').length).toBe(2);
+    /* une phrase différente du titre reste citée (Évier inox, p2:g05-1) */
+    expect(t).toContain('« 2 bacs pour laver les fûts »');
+    expect(phraseEnTitre('Évier inox', '2 bacs pour laver les fûts')).toBe(false);
+    expect(phraseEnTitre(`${longue.slice(0, 40)}…`, longue + ' '.repeat(2) + 'x'.repeat(100))).toBe(false);
+  });
+  it('L4-5 carnet : titre = phrase → « votre phrase en titre » une fois ; tout juste créé, seul le bandeau le dit', () => {
+    const idee: CarnetV = { id: 'zz-cal', title: longue, status: 'idea', carnet: contenu({ phrase: longue }) };
+    const r = render(<CarnetOuvert carnet={idee} aides={TOUTES} liens={[]} tableau={null} onRetour={rien} onRenommer={rien} onSupprimer={rien} onNote={rien} onOuvrirArticle={rien} onComparer={rien} />);
+    const t = r.container.textContent ?? '';
+    expect(compte(t, longue)).toBe(1);
+    expect(compte(t, 'votre phrase en titre')).toBe(1);
+    r.unmount();
+    const neuf: CarnetV = { id: 'zz-emb2', title: 'Embouteillage', status: 'idea', carnet: contenu({ phrase: 'embouteillage' }) };
+    const r2 = render(<CarnetOuvert carnet={neuf} aides={TOUTES} liens={[]} tableau={null} vientDEtreCree onRetour={rien} onRenommer={rien} onSupprimer={rien} onNote={rien} onOuvrirArticle={rien} onComparer={rien}
+      bandeau={<Bandeau bandeau={{ sorte: 'cree', phrase: 'embouteillage' }} onAnnuler={rien} />} />);
+    expect(compte(r2.container.textContent ?? '', 'votre phrase en titre')).toBe(1);
+  });
+  it('Comparer : écartés à la fin avec leur raison (repliable), colonne des noms fixe, cadre du fondu', () => {
+    const { container } = render(<Comparer titre="Ventilation" statut="research" critere={ventilation.carnet.criteres[0]} tableau={tableau} onRetour={rien} onChoisir={rien} />);
+    const cadre = container.querySelector('.cn-tableau-cadre')!;
+    expect(cadre.querySelector('.cn-tableau-zone table.cn-tableau-comparer')).toBeTruthy();
+    const tetes = [...container.querySelectorAll('thead th')].map(th => th.textContent ?? '');
+    expect(tetes[tetes.length - 1]).toMatch(/^écarté/);
+    const raisons = [...container.querySelectorAll('td.cn-ecarte-raison')].map(td => td.textContent);
+    expect(raisons[raisons.length - 1]).toBe('ne capte pas la buée');
+    /* jsdom ne mesure pas : aucune suite à droite annoncée à tort */
+    expect(cadre.hasAttribute('data-suite')).toBe(false);
+  });
+  it('Choisi : à son arrivée, la vue défile pour mettre « Choisi le … » et « Pourquoi ce choix » en haut', () => {
+    const vu = vi.fn();
+    const avant = Element.prototype.scrollIntoView;
+    Element.prototype.scrollIntoView = vu;
+    try {
+      const embouteillage = TOUS.find(c => c.carnet.choix)!;
+      const a = embouteillage.carnet.articles.find(x => x.id === embouteillage.carnet.choix!.articleId)!;
+      const { container } = render(<Choisir etape="choisi" titre="Embouteillage" onRetour={rien} choix={embouteillage.carnet.choix!} article={a} ecartes={[]} />);
+      expect(vu).toHaveBeenCalledWith({ block: 'start' });
+      expect(vu.mock.contexts[0]).toBe(container.querySelector('.cn-choisi'));
+      expect(container.textContent).toMatch(/Choisi le/);
+      expect(container.textContent).toContain('Pourquoi ce choix');
+    } finally {
+      Element.prototype.scrollIntoView = avant;
+    }
+  });
+  it('CadreArrivee : le cadre « ↓ va atterrir ici » et la conséquence G9 se rendent visibles (nearest), une fois par apparition', async () => {
+    const vu = vi.fn();
+    const avant = Element.prototype.scrollIntoView;
+    Element.prototype.scrollIntoView = vu;
+    try {
+      const cadre = { sorte: 'texte' as const, rubrique: 'Ce qui compte' as const, texte: 'fond de bac 38 cm minimum', origine: 'locale' as const };
+      const r = render(<CadreArrivee cadre={cadre} onAnnuler={rien} />);
+      await act(async () => { await new Promise(res => setTimeout(res, 40)); });
+      expect(vu).toHaveBeenCalledWith({ block: 'nearest' });
+      const bloc = r.container.querySelector('.cn-cadre-bloc');
+      expect(vu.mock.contexts.at(-1)).toBe(bloc);
+      const n = vu.mock.calls.length;
+      r.rerender(<CadreArrivee cadre={{ ...cadre, texte: 'fond de bac 38 cm minimum, inox' }} onAnnuler={rien} />);
+      await act(async () => { await new Promise(res => setTimeout(res, 40)); });
+      expect(vu.mock.calls.length).toBe(n);
+      r.rerender(<CadreArrivee cadre={cadre} consequence="les articles seront rangés sur le fond de bac, 38 cm au moins" onAnnuler={rien} />);
+      await act(async () => { await new Promise(res => setTimeout(res, 40)); });
+      expect(vu.mock.calls.length).toBe(n + 1);
+      expect(bloc!.textContent).toContain('38 cm au moins');
+    } finally {
+      Element.prototype.scrollIntoView = avant;
+    }
+  });
+  it('ChampCarnet : publie sa hauteur et le clavier sur la vue (R27), sans rien laisser au démontage', () => {
+    const r = render(<div data-carnets><ChampCarnet valeur="" onChange={rien} onEnvoyer={rien} titreCarnet="Ventilation" /></div>);
+    const racine = r.container.querySelector<HTMLElement>('[data-carnets]')!;
+    expect(racine.style.getPropertyValue('--cn-champ-h')).toMatch(/^\d+px$/);
+    expect(racine.style.getPropertyValue('--cn-clavier')).toBe('0px');
+    r.unmount();
+    expect(racine.style.getPropertyValue('--cn-champ-h')).toBe('');
   });
 });

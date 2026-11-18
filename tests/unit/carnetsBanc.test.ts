@@ -1,8 +1,12 @@
 /**
- * Banc du carnet (CRITIQUE-1, lot L3) : la fixture, la lecture simulée d'un lien et les paramètres d'entrée du banc.
- * Tout est simulé et marqué « exemple » ; aucun réseau.
+ * @vitest-environment jsdom
+ * Banc du carnet (CRITIQUE-1, lot L3) : la fixture, la lecture simulée d'un lien et les paramètres d'entrée du banc ; et (corr. 2, L3)
+ * le + volant de l'app monté au banc. Tout est simulé et marqué « exemple » ; aucun réseau.
  */
 import { afterEach, describe, expect, it, vi } from 'vitest';
+import { createElement } from 'react';
+import { cleanup, fireEvent, render, screen, waitFor, within } from '@testing-library/react';
+import { CarnetsPreview } from '../../src/design/CarnetsPreview';
 import {
   ARTICLES_REDUITS, fixtureCarnets, fixturePlanRealise, fixturePlans, ID_EMBOUTEILLAGE, ID_FRIGO, ID_VENTILATION, PHRASE_DOUBLON,
   PHRASE_TITRE_PROPOSE, PREFIXE_BANC, TITRE_PROPOSE_VENTILATION
@@ -210,5 +214,29 @@ describe('P7, P17 — plans et paramètres du banc', () => {
       }
     }
     for (const cle of Object.keys(PAGES_BANC)) expect(cle.startsWith('exemple.invalid/')).toBe(true);
+  });
+});
+
+describe('d1280-5, m390-4b — le + volant de l’app est au banc (R28, p2:g05-1)', () => {
+  afterEach(() => { cleanup(); history.replaceState(null, '', '/'); });
+
+  it('le banc monte le + de l’app (FloatingActions, ancré à la barre d’onglets) et la barre d’onglets', async () => {
+    history.replaceState(null, '', '/?preview=carnets');
+    render(createElement(CarnetsPreview));
+    const plus = await screen.findByRole('button', { name: 'Actions rapides' });
+    expect(plus.closest('.floating-actions')?.getAttribute('data-floating-actions-anchor')).toBe('nav');
+    expect(document.querySelector('.app-bottom-dock nav')).not.toBeNull();
+  });
+
+  it('sur Carnets, son menu dit « Sur Carnets · Nouvelle idée », qui met le focus dans le champ du bas', async () => {
+    history.replaceState(null, '', '/?preview=carnets');
+    render(createElement(CarnetsPreview));
+    fireEvent.click(await screen.findByRole('button', { name: 'Actions rapides' }));
+    const menu = screen.getByRole('menu', { name: 'Actions rapides' });
+    expect(menu.textContent).toMatch(/Sur\s*Carnets/);
+    const champ = screen.getByPlaceholderText('Une idée, un besoin…');
+    expect(document.activeElement).not.toBe(champ);
+    fireEvent.click(within(menu).getByRole('menuitem', { name: /Nouvelle idée/ }));
+    await waitFor(() => expect(document.activeElement).toBe(champ));
   });
 });

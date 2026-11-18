@@ -24,7 +24,7 @@ import type { FinanceTransaction } from '../../domain/finance/types';
 import { FinanceService } from '../../services/financeService';
 import { isUpgradePlan } from '../../domain/finance/upgrades';
 import { estRealise } from '../../domain/finance/upgradeRing';
-import { UpgradeWorkspace } from '../../ui/finance/UpgradeWorkspace';
+import { BARRE_MATERIEL, BARRE_SUR_DEFILEMENT, UpgradeWorkspace } from '../../ui/finance/UpgradeWorkspace';
 import { Sheet } from '../../ui/Sheet';
 import { Button } from '../ui/Button';
 import { FormNav, Field, TextInput, inputClass } from '../../ui/FormNav';
@@ -719,7 +719,8 @@ export const StocksTab: React.FC<StocksTabProps> = ({
         addOpen={addingKegs} onAddClose={() => setAddingKegs(false)} onMessage={onSuccessMessage} />}
 
       {subTab === 'materiel' && (
-        <nav aria-label="Vue du matériel" className="shrink-0 flex gap-1 p-1 rounded-control bg-cave-900 border border-cave-800 overflow-x-auto">
+        /* m390-6 : barre opaque, avec l'ombre `shadow-lift` (voir BARRE_MATERIEL). */
+        <nav aria-label="Vue du matériel" className={segMateriel === 'parc' ? BARRE_MATERIEL : `${BARRE_MATERIEL} ${BARRE_SUR_DEFILEMENT}`}>
           {SEGMENTS_MATERIEL.map((seg) => {
             const libelle = seg === 'parc' ? 'Parc' : seg === 'avenir' ? 'À venir' : seg === 'carnets' ? 'Carnets' : 'Réalisés';
             const n = seg === 'avenir' ? segments.avenir : seg === 'carnets' ? segments.carnets : seg === 'realises' ? segments.realises : undefined;

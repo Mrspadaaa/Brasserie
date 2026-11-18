@@ -10,7 +10,7 @@
  * - `modifier` (R20, g4:v01-11) : « ✎ Se modifie ici · ✕ Supprimer » (G31) ; G27 « Même visite : … · Regrouper » (si
  *   `aides.regrouper`).
  */
-import React from 'react';
+import React, { useEffect, useRef } from 'react';
 import { ArrowDown, GitFork, Pencil, Trash2, X } from 'lucide-react';
 import { lienCourt } from './ChampCarnet';
 import { Provenance, type AidesV, type Origine } from './EtatIA';
@@ -42,7 +42,31 @@ function Croix({ onAnnuler }: { onAnnuler: () => void }) {
   return <button type="button" className="cn-x" aria-label="Annuler" onClick={onAnnuler}><X size={18} aria-hidden /></button>;
 }
 
-export function CadreArrivee({ cadre: c, onAnnuler, consequence, aides, doublon, regrouper }: CadreArriveeProps) {
+/**
+ * Le cadre se rend visible à son arrivée (et quand la conséquence G9 paraît) : `scrollIntoView` 'nearest', comme SupprimerCarnet. Il ne
+ * passe ni sous la barre du haut ni sous le champ et le clavier : `scroll-margin` (carnets.css) lit `--cn-champ-h` et `--cn-clavier`, que
+ * ChampCarnet publie. Une seule fois par apparition : la frappe suivante ne fait plus défiler.
+ */
+function useVisibleALArrivee<T extends HTMLElement>(cle: string): React.RefObject<T | null> {
+  const ref = useRef<T>(null);
+  useEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+    /* après la peinture : le champ a déjà sa hauteur, ses puces « Va dans » comprises */
+    if (typeof requestAnimationFrame !== 'function') { el.scrollIntoView?.({ block: 'nearest' }); return; }
+    const id = requestAnimationFrame(() => el.scrollIntoView?.({ block: 'nearest' }));
+    return () => cancelAnimationFrame(id);
+  }, [cle]);
+  return ref;
+}
+
+export function CadreArrivee(p: CadreArriveeProps) {
+  const cle = `${p.cadre.sorte}${p.cadre.sorte === 'lien' ? `:${p.cadre.phase}` : ''}${p.consequence ? ':g9' : ''}`;
+  const ref = useVisibleALArrivee<HTMLDivElement>(cle);
+  return <div ref={ref} className="cn-cadre-bloc"><CadreContenu {...p} /></div>;
+}
+
+function CadreContenu({ cadre: c, onAnnuler, consequence, aides, doublon, regrouper }: CadreArriveeProps) {
   if (c.sorte === 'creer') {
     return (
       <section className="cn-cadre" aria-label="Arrive ici">

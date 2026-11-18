@@ -146,16 +146,40 @@ const proche = (a: string, b: string) => {
 const par = (ctx: ContexteRangerCarnet, motif: RegExp): Carnet | undefined =>
   ctx.carnets.find((c) => c.id === ctx.depuis && motif.test(sansAccents(c.titre))) ?? ctx.carnets.find((c) => motif.test(sansAccents(c.titre)));
 const ouvert = (ctx: ContexteRangerCarnet) => ctx.carnets.find((c) => c.id === ctx.depuis);
-const rangement = (ctx: ContexteRangerCarnet, c: Carnet | undefined, neuf: string): Brut =>
-  c ? { carnetId: c.id } : { carnetNeuf: neuf, raisonCarnet: `aucun de vos ${ctx.carnets.length} carnets n'en parle` };
+
+/** Le préfixe des données de test (L05) : « ZZ TEST — ». Une phrase qui le porte le garde dans tout titre proposé (vision 2, L4-7). */
+const PREFIXE_BANC = /^ZZ TEST\s*[—–-]\s*/i;
+const sansBanc = (t: string) => t.replace(PREFIXE_BANC, '');
+const avecPrefixe = (prefixe: string, titre: unknown): unknown =>
+  typeof titre === 'string' && prefixe && !PREFIXE_BANC.test(titre) ? `${prefixe}${titre}` : titre;
+
+/**
+ * Où va une ligne : un carnet connu, ou un carnet neuf. Depuis la liste, un carnet connu porte sa raison (G21, g5:v06-14 : « la page parle
+ * d'extraction de buée : comme Ventilation ») ; `mot` est le mot du message qui l'a désigné, jamais un mot inventé.
+ */
+const rangement = (ctx: ContexteRangerCarnet, c: Carnet | undefined, neuf: string, mot?: string, lien?: boolean): Brut =>
+  c
+    ? { carnetId: c.id, ...(!ctx.depuis && mot ? { raisonCarnet: `${lien ? 'la page' : 'votre message'} parle de « ${mot} » : comme ${sansBanc(c.titre)}` } : {}) }
+    : { carnetNeuf: neuf, raisonCarnet: `aucun de vos ${ctx.carnets.length} carnets n'en parle` };
 const reponse = (lignes: Brut[]): ReponseSimulee => ({ lignes, exemple: true });
+
+/** Le mot du message qui a désigné la catégorie, tel qu'il l'a écrit (accents gardés quand la forme NFC le permet). */
+function motDe(texte: string, motif: RegExp): string | undefined {
+  const t = sansAccents(texte);
+  const m = motif.exec(t);
+  if (!m) return undefined;
+  return t.length === texte.length ? texte.slice(m.index, m.index + m[0].length).toLowerCase() : m[0];
+}
+
+/** Les lignes d'un message : retours à la ligne, « ; », puces. */
+const morceauxDe = (texte: string): string[] => texte.split(/\n|;|•/).map((l) => l.replace(/^[-*\s]+/, '').trim()).filter(Boolean).slice(0, 12);
 
 /** Les catégories du banc : chacune a ses caractéristiques (R30 : générique côté app, la variété vient de la réponse). */
 const CATEGORIES: Array<{ motif: RegExp; carnet: RegExp; neuf: string; criteres: Array<{ quand: RegExp; texte: string; caracteristique: Brut }> }> = [
   {
     motif: /frigo|chambre froide|refroidi|garder au froid/, carnet: /frigo|froid/, neuf: 'Frigo pour les fûts',
     criteres: [
-      { quand: /°c|degre|froid|frigo/, texte: 'Garder les fûts au froid', caracteristique: { nom: 'température mini', unite: '°C', sens: 'moins' } },
+      { quand: /°c|degre|froid/, texte: 'Garder les fûts au froid', caracteristique: { nom: 'température mini', unite: '°C', sens: 'moins' } },
       { quand: /fut|litre|\bl\b|volume/, texte: 'Assez de place pour les fûts', caracteristique: { nom: 'volume utile', unite: 'L', sens: 'plus' } }
     ]
   },
@@ -265,38 +289,81 @@ const genreDe = (ligne: string): string => {
 export function reponseSimulee(ctx: ContexteRangerCarnet): ReponseSimulee | null {
   const texte = ctx.texte ?? '';
   if (!texte.trim()) return null;
+  const r = reponseBrute(ctx, texte);
+  // L4-7 (vision 2) : les titres proposés (carnet neuf, titre d'idée, titre proposé G29) gardent le préfixe « ZZ TEST — » de la phrase.
+  const prefixe = PREFIXE_BANC.test(texte.trim()) ? 'ZZ TEST — ' : '';
+  if (!r || !prefixe) return r;
+  return reponse(r.lignes.map((l) => ({
+    ...l,
+    ...(l.carnetNeuf !== undefined ? { carnetNeuf: avecPrefixe(prefixe, l.carnetNeuf) } : {}),
+    ...(l.sorte === 'idee' && l.titre !== undefined ? { titre: avecPrefixe(prefixe, l.titre) } : {}),
+    ...(l.titrePropose !== undefined ? { titrePropose: avecPrefixe(prefixe, l.titrePropose) } : {})
+  })));
+}
+
+function reponseBrute(ctx: ContexteRangerCarnet, texte: string): ReponseSimulee | null {
   const t = sansAccents(texte);
   const ref = notesRef(t, ctx);
   if (ref) return ref;
+  const morceaux = morceauxDe(texte);
+  const liens = liensDuTexte(texte).slice(0, 3);
+  // Une note de plusieurs lignes n'est jamais prise par une aide d'une seule phrase (m390-2 : G29 rangeait les 3 lignes dans Évier).
+  if (morceaux.length > 1 && !liens.length) return decoupe(ctx, morceaux);
   const aide = aides(texte, t, ctx);
   if (aide) return aide;
 
   const lignes: Brut[] = [];
   const categorie = CATEGORIES.find((c) => c.motif.test(t));
+  const mot = categorie ? motDe(texte, categorie.motif) : undefined;
   // Une catégorie reconnue (frigo, ventilation, évier) va dans son carnet, ou dans une idée neuve : jamais dans un autre carnet resté ouvert.
   const cible = categorie ? par(ctx, categorie.carnet) : ouvert(ctx);
+  // Un lien seul qui n'a pas de carnet ouvre un carnet au nom lu sur sa page, sinon à son domaine (R16, R17 ; g5:v06-10).
+  const premiere = liens.length ? (ctx.pages ?? []).find((p) => p.url === liens[0]) ?? pageSimulee(liens[0]) : null;
+  const lienSeul = !!premiere && texte.trim().replace(/[.,;:!?)\]]+$/, '') === liens[0];
+  const neuf = lienSeul ? premiere!.nom ?? premiere!.domaine : categorie?.neuf;
 
   // Liens : un article par lien, avec ce que la page (simulée) a lu ; le prix de la page, jamais un autre.
-  for (const url of liensDuTexte(texte).slice(0, 3)) {
+  for (const url of liens) {
     const page = (ctx.pages ?? []).find((p) => p.url === url) ?? pageSimulee(url);
     lignes.push({
       sorte: 'article', texte: page.nom ?? `Lien ${page.domaine}`, url,
       ...(page.nom ? { titre: page.nom } : {}),
       ...(page.prix !== undefined ? { prix: page.prix, devise: page.devise } : {}),
       ...(page.vendeur ? { vendeur: page.vendeur } : {}),
-      ...rangement(ctx, cible, categorie?.neuf ?? page.nom ?? page.domaine)
+      ...rangement(ctx, cible, neuf ?? page.nom ?? page.domaine, mot, true)
     });
   }
   if (categorie) {
-    const ou = rangement(ctx, cible, categorie.neuf);
-    if (!cible) lignes.push({ sorte: 'idee', texte: texte.trim().split('\n')[0].slice(0, 120), titre: categorie.neuf, ...ou });
-    for (const k of categorie.criteres) if (k.quand.test(t)) lignes.push({ sorte: 'critere', texte: k.texte, caracteristique: k.caracteristique, ...ou });
+    const ou = rangement(ctx, cible, neuf ?? categorie.neuf, mot, !!liens.length);
+    if (!cible) lignes.push({ sorte: 'idee', texte: texte.trim().split('\n')[0].slice(0, 120), titre: neuf ?? categorie.neuf, ...ou });
+    /* « Ce qui compte, tiré de votre phrase » : seulement ce que la phrase dit, toutes catégories nommées comprises (« rangement du
+       frigo, plus de condensation au plafond » → la condensation, pas « garder au froid ») */
+    for (const cat of CATEGORIES.filter((c) => c.motif.test(t))) {
+      for (const k of cat.criteres) if (k.quand.test(t)) lignes.push({ sorte: 'critere', texte: k.texte, caracteristique: k.caracteristique, ...ou });
+    }
     if (lignes.length) return reponse(lignes.slice(0, 12));
   }
   if (lignes.length) return reponse(lignes);
+  return decoupe(ctx, morceaux);
+}
 
-  // Découpe générique : chaque ligne du message devient une note typée, dans le carnet ouvert ou une idée neuve.
-  const morceaux = texte.split(/\n|;|•/).map((l) => l.replace(/^[-*\s]+/, '').trim()).filter(Boolean).slice(0, 12);
-  const ou = rangement(ctx, ouvert(ctx), morceaux[0].slice(0, 60));
-  return reponse(morceaux.map((m) => ({ sorte: 'note', genre: genreDe(m), texte: m, ...ou })));
+/**
+ * Découpe générique : chaque ligne du message devient une note typée. Dans un carnet ouvert, toutes y vont (« ↓ va atterrir ici »).
+ * Depuis la liste, chaque ligne va dans le carnet que sa catégorie nomme ; les autres, ensemble, dans UN carnet neuf titré par la
+ * première d'entre elles (G23, g5:v02-19).
+ */
+function decoupe(ctx: ContexteRangerCarnet, morceaux: string[]): ReponseSimulee {
+  const ici = ouvert(ctx);
+  if (ici || morceaux.length <= 1) {
+    const ou = rangement(ctx, ici, morceaux[0].slice(0, 60));
+    return reponse(morceaux.map((m) => ({ sorte: 'note', genre: genreDe(m), texte: m, ...ou })));
+  }
+  let neuf: string | null = null;
+  return reponse(morceaux.map((m) => {
+    const tm = sansAccents(m);
+    const categorie = CATEGORIES.find((c) => c.motif.test(tm));
+    const c = categorie ? par(ctx, categorie.carnet) : undefined;
+    if (!c) neuf ??= m.slice(0, 60);
+    return { sorte: 'note', genre: genreDe(m), texte: m, ...rangement(ctx, c, neuf ?? m.slice(0, 60), categorie ? motDe(m, categorie.motif) : undefined) };
+  }));
 }

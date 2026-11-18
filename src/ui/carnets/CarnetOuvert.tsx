@@ -18,6 +18,7 @@ import { libelleEcarte } from '../../domain/carnets/comparer';
 import { uniquesParTexte } from '../../domain/carnets/doublons';
 import { dateCourte, GENRE_LIBELLE, montant, Provenance, STATUT_LIBELLE, type AidesV, type CarnetV, type CritereV, type NoteV } from './EtatIA';
 import { LigneRangee } from './LigneRangee';
+import { phraseEnTitre } from './ListeCarnets';
 import { Photos } from './Photos';
 
 /** Lien « lié à » (R47), calculé par `liensDe` (lot A) : jamais de montant. */
@@ -141,7 +142,11 @@ export function CarnetOuvert(p: CarnetOuvertProps) {
         <h2 className="cn-titre">{c.title}</h2>
         <button type="button" className="cn-ico" aria-label="Renommer" onClick={p.onRenommer}><Pencil size={20} aria-hidden /></button>
       </div>
-      {k.phrase && k.phrase.trim() !== c.title.trim() && <p className="cn-cite">« {k.phrase} »</p>}
+      {/* L4-5 : titre = phrase (normalisé) → « votre phrase en titre », une fois, jamais la phrase répétée ; tout juste créé, le
+          bandeau « Carnet créé » le dit déjà (g5:v04-4). Sinon la phrase citée (R25). */}
+      {k.phrase && (phraseEnTitre(c.title, k.phrase)
+        ? !p.vientDEtreCree && <p className="cn-cite">votre phrase en titre</p>
+        : <p className="cn-cite">« {k.phrase} »</p>)}
 
       {p.liens.length > 0 && (
         <div className="cn-liens">

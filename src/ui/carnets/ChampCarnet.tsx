@@ -8,7 +8,7 @@
  * - Bulle G8 au focus (R44) : calcul local, picto local, jamais le ✻ ; un toucher remplit « <critère> : ».
  * - Puces « Va dans » (R13) : correction seulement, préchoisies ; rangées derrière le champ.
  */
-import React, { useId, useRef, useState } from 'react';
+import React, { useEffect, useId, useLayoutEffect, useRef, useState } from 'react';
 import { ArrowUp, Camera, Mic } from 'lucide-react';
 import { useDictee } from '../atelier/dictee';
 import { useKeyboardInset } from '../useViewport';
@@ -44,10 +44,62 @@ export function lienCourt(url: string, max = 22): string {
   return sans.length > max ? `${sans.slice(0, max)}…` : sans;
 }
 
+/** Le conteneur qui défile sous le champ : la zone voisine qui défile (vue à hauteur bornée), sinon un ancêtre, sinon la page. */
+function defileurDe(zone: HTMLElement): Element | null {
+  const defile = (e: Element) => {
+    const o = getComputedStyle(e).overflowY;
+    return (o === 'auto' || o === 'scroll') && e.scrollHeight > e.clientHeight + 1;
+  };
+  for (let e = zone.previousElementSibling; e; e = e.previousElementSibling) if (defile(e)) return e;
+  for (let e = zone.parentElement; e; e = e.parentElement) if (defile(e)) return e;
+  return document.scrollingElement;
+}
+
+/**
+ * R27 et G8 : le champ publie sa hauteur (`--cn-champ-h`) et le retrait du clavier (`--cn-clavier`) sur la vue des carnets
+ * (`[data-carnets]`, sinon son parent). La page s'en sert pour réserver le bas (dernière note au-dessus du champ, clavier ouvert) et
+ * pour les `scroll-margin` du cadre. Quand la bulle G8 paraît, la page défile de sa hauteur : elle lui fait place au lieu d'être
+ * recouverte.
+ */
+function useChampPublie(zone: React.RefObject<HTMLDivElement | null>, inset: number, bulle: boolean) {
+  const hauteur = useRef(0);
+  useEffect(() => {
+    const el = zone.current;
+    if (!el) return;
+    const racine = (el.closest('[data-carnets]') as HTMLElement | null) ?? el.parentElement;
+    if (!racine) return;
+    const publier = () => {
+      hauteur.current = el.offsetHeight;
+      racine.style.setProperty('--cn-champ-h', `${el.offsetHeight}px`);
+    };
+    publier();
+    const ro = typeof ResizeObserver !== 'undefined' ? new ResizeObserver(publier) : null;
+    ro?.observe(el);
+    return () => { ro?.disconnect(); racine.style.removeProperty('--cn-champ-h'); };
+  }, [zone]);
+  useEffect(() => {
+    const el = zone.current;
+    const racine = (el?.closest('[data-carnets]') as HTMLElement | null) ?? el?.parentElement;
+    if (!racine) return;
+    racine.style.setProperty('--cn-clavier', `${inset}px`);
+    return () => { racine.style.removeProperty('--cn-clavier'); };
+  }, [zone, inset]);
+  useLayoutEffect(() => {
+    if (!bulle) return;
+    const el = zone.current;
+    const b = el?.querySelector<HTMLElement>('.cn-bulle');
+    if (!el || !b) return;
+    const d = defileurDe(el);
+    /* la bulle et son écart (gap de la zone) ; rien à faire en haut d'une page qui ne défile pas */
+    d?.scrollBy?.({ top: b.offsetHeight + 8 });
+  }, [zone, bulle]);
+}
+
 export function ChampCarnet(p: ChampCarnetProps) {
   const inset = useKeyboardInset();
   const [focus, setFocus] = useState(false);
   const fichier = useRef<HTMLInputElement>(null);
+  const zone = useRef<HTMLDivElement>(null);
   const id = useId();
   const dictee = useDictee(t => p.onChange(p.valeur ? `${p.valeur} ${t}` : t));
   const dansCarnet = !!p.titreCarnet;
@@ -55,9 +107,10 @@ export function ChampCarnet(p: ChampCarnetProps) {
   const envoi = p.libelleEnvoi ?? (dansCarnet ? 'Ajouter' : null);
   const plein = p.valeur.trim().length > 0;
   const montrerBulle = !!p.suggestion && focus && !plein;
+  useChampPublie(zone, inset, montrerBulle);
 
   return (
-    <div className="cn-champ-zone" style={{ bottom: inset, marginBottom: inset }} aria-disabled={p.desactive || undefined} data-clavier={inset || undefined}>
+    <div ref={zone} className="cn-champ-zone" style={{ bottom: inset, marginBottom: inset }} aria-disabled={p.desactive || undefined} data-clavier={inset || undefined}>
       {montrerBulle && p.suggestion && (
         <button
           type="button"
