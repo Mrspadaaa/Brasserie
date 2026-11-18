@@ -2146,3 +2146,11 @@ Capture : work/missions/2026-11-18-choix-calendrier/brasseur/jalons-18-11.jpg. L
 > Mais par exemple un achat d'outil ou une vente 1:1 pas
 
 Lecture corrigée : une prévision (plan sur une période) reste une barre de la frise ; un événement ponctuel — achat d'un outil, vente unique (1:1, comme « Épicerie du Bourg, 2 cartons ») — est un jalon d'un jour (icône à sa date).
+
+> Oui par exemple il y a la foire du valais, c'est une barre, mais si par exemple hors foire mais dans la même période j'ai un acheteur Dédé pour son bar qui m'achète un fût, c'est un jalon.
+>
+> Pareil par exemple pour la foire j'ai prévu le stand et tout. Mais du. Coup j'ai besoin d'une tireuse, c'est un achat non prévu, c'est un jalon...
+>
+> Pariel pour les autres type de tâche c'est compris ?
+
+Règle (ses exemples l'illustrent, L01) : dans toutes les rangées, ce qui dure (foire, prévision, brassin, travaux sur plusieurs jours) est une barre ; ce qui arrive un jour (vente à un client, achat ponctuel ou non prévu, papier dû un jour, activité d'un jour) est un jalon (icône à sa date), même pendant une barre de la même période.
