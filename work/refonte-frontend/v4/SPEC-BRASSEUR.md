@@ -2140,3 +2140,9 @@ Lecture : page « Calendrier · l'axe en jours, semaines, mois » (https://claud
 > Parcontre certains événements ne sont pas de frize mais juste des jalon ou autre, une vente ou un Achat ( achat pas forcément prévu) est sur un seul moment, un seul jour. Pas sûr une période comme épicerie du bourg, c'est un jalon (icône) pas une période sur la frize
 
 Capture : work/missions/2026-11-18-choix-calendrier/brasseur/jalons-18-11.jpg. Lecture étroite : une vente ou un achat (prévu ou non) est un jalon d'un seul jour (icône posée à sa date), jamais une barre qui couvre une période ; les brassins restent des barres.
+
+> Non la prévision de met sur la frize,
+>
+> Mais par exemple un achat d'outil ou une vente 1:1 pas
+
+Lecture corrigée : une prévision (plan sur une période) reste une barre de la frise ; un événement ponctuel — achat d'un outil, vente unique (1:1, comme « Épicerie du Bourg, 2 cartons ») — est un jalon d'un jour (icône à sa date).
