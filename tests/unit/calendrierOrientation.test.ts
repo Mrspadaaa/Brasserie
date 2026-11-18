@@ -84,7 +84,7 @@ describe('entrerPleinEcran (E09, D-2, D-205)', () => {
     await expect(entrerPleinEcran()).resolves.toBe('invite');
   });
 
-  it('CRITIQUE-4 n° 19 : le verrou résolu mais la page restée en portrait (émulateur) : « invite » au bout de 600 ms, pas avant', async () => {
+  it('CRITIQUE-4 n° 19 : le verrou résolu mais la page restée en portrait (émulateur) : « invite » au bout du délai, pas avant', async () => {
     vi.useFakeTimers();
     fauxMatchMedia(false);
     Object.defineProperty(document.documentElement, 'requestFullscreen', { value: vi.fn().mockResolvedValue(undefined), configurable: true });
@@ -110,6 +110,74 @@ describe('entrerPleinEcran (E09, D-2, D-205)', () => {
     // L'écouteur est rendu une fois la réponse donnée.
     expect(faux.ecouteurs.size).toBe(0);
     vi.useRealTimers();
+  });
+
+  describe('CRITIQUE-7, doute E09 (D-2, D-205) : le verrou échoue en silence, l’invitation vient quand même', () => {
+    it('le délai est d’une seconde, et « paysage » veut dire la mise en page paysage du calendrier (fenêtre basse)', () => {
+      expect(DELAI_ROTATION_MS).toBe(1000);
+      expect(REQUETE_COUCHE).toBe(REQUETE_PAYSAGE);
+    });
+
+    it('lock absent (screen.orientation sans lock) : « invite »', async () => {
+      fauxMatchMedia(false);
+      Object.defineProperty(document.documentElement, 'requestFullscreen', { value: vi.fn().mockResolvedValue(undefined), configurable: true });
+      Object.defineProperty(screen, 'orientation', { value: { type: 'portrait-primary' }, configurable: true });
+      await expect(entrerPleinEcran()).resolves.toBe('invite');
+    });
+
+    it('lock qui ne se règle jamais, écran resté droit : « invite » au bout d’1 s, pas avant', async () => {
+      vi.useFakeTimers();
+      fauxMatchMedia(false);
+      Object.defineProperty(document.documentElement, 'requestFullscreen', { value: vi.fn().mockResolvedValue(undefined), configurable: true });
+      const lock = vi.fn(() => new Promise<void>(() => undefined));
+      Object.defineProperty(screen, 'orientation', { value: { lock }, configurable: true });
+      let resultat: string | null = null;
+      void entrerPleinEcran().then(r => { resultat = r; });
+      await vi.advanceTimersByTimeAsync(999);
+      expect(lock).toHaveBeenCalledWith('landscape');
+      expect(resultat).toBeNull();
+      await vi.advanceTimersByTimeAsync(1);
+      expect(resultat).toBe('invite');
+      vi.useRealTimers();
+    });
+
+    it('lock qui ne se règle jamais mais l’écran tourne : « verrouille »', async () => {
+      vi.useFakeTimers();
+      const faux = fauxMatchMedia(false);
+      Object.defineProperty(screen, 'orientation', { value: { lock: vi.fn(() => { setTimeout(() => faux.tourner(true), 200); return new Promise<void>(() => undefined); }) }, configurable: true });
+      let resultat: string | null = null;
+      void entrerPleinEcran().then(r => { resultat = r; });
+      await vi.advanceTimersByTimeAsync(200);
+      expect(resultat).toBe('verrouille');
+      vi.useRealTimers();
+    });
+
+    it('lock rejeté : « invite » tout de suite, sans attendre la seconde', async () => {
+      vi.useFakeTimers();
+      fauxMatchMedia(false);
+      Object.defineProperty(document.documentElement, 'requestFullscreen', { value: vi.fn().mockResolvedValue(undefined), configurable: true });
+      Object.defineProperty(screen, 'orientation', { value: { lock: vi.fn().mockRejectedValue(new DOMException('no', 'NotSupportedError')) }, configurable: true });
+      let resultat: string | null = null;
+      void entrerPleinEcran().then(r => { resultat = r; });
+      await vi.advanceTimersByTimeAsync(0);
+      expect(resultat).toBe('invite');
+      vi.useRealTimers();
+    });
+
+    it('requestFullscreen qui ne répond jamais : le verrou est tenté au bout d’1 s, puis l’invitation', async () => {
+      vi.useFakeTimers();
+      fauxMatchMedia(false);
+      Object.defineProperty(document.documentElement, 'requestFullscreen', { value: vi.fn(() => new Promise<void>(() => undefined)), configurable: true });
+      const lock = vi.fn().mockResolvedValue(undefined);
+      Object.defineProperty(screen, 'orientation', { value: { lock }, configurable: true });
+      let resultat: string | null = null;
+      void entrerPleinEcran().then(r => { resultat = r; });
+      await vi.advanceTimersByTimeAsync(1000);
+      expect(lock).toHaveBeenCalledTimes(1);
+      await vi.advanceTimersByTimeAsync(1000);
+      expect(resultat).toBe('invite');
+      vi.useRealTimers();
+    });
   });
 
   it('attendrePaysage : sans matchMedia, « non » (l’invitation reste le repli)', async () => {

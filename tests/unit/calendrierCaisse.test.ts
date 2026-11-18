@@ -8,6 +8,7 @@ import {
   courbeCaisse, courbeDecalee, creuxDepuis, effetCaisse, lectureSemaine, minimumSuffixe, mouvementsDeSemaine, miseDeCoteA, miseDeCoteVisible, paliersApres, soldeAuJour, soldeFinDeMois, type MiseDeCote
 } from '../../src/domain/calendrierCaisse';
 import { construireModele, type EntreesModele } from '../../src/ui/calendrier/useDonneesCalendrier';
+import { avecTendance, etatBanc } from '../../src/design/CalendrierPreview';
 
 const profile = (opening: number | null): FinancialProfile => ({
   id: 'current', canton: 'FR', legalForm: 'sole-proprietor', accounting: 'simplified', vatRegistered: false, historyCompleteFrom: '2026-06-01',
@@ -288,6 +289,30 @@ describe('CRITIQUE-6, doute : la tendance de Finances et le loyer ne sont pas co
     for (const mois of prevision.months.slice(0, 6)) expect(soldeFinDeMois(modele.courbe!, mois.month)).toBe(mois.balanceCents);
     /* l'hypothèse dit la tendance nette : −100 CHF/mois */
     expect(modele.hypotheses.find(h => h.id === 'tendance')?.texte).toBe('Tendance de Finances : −100 CHF/mois');
+  });
+
+  it('CRITIQUE-7, doute : sur le banc servi (charges du local 650/mois payées, « Loyer du local −400 » récurrent), chaque mois sort 650, jamais 1 050', () => {
+    const J = '2026-11-18';
+    const b = avecTendance(etatBanc(J), J);
+    const banc: EntreesModele = {
+      aujourdhui: J, transactions: b.transactions, payments: b.paiements ?? [], plans: b.plans, profile: { ...profile(403200 + 6 * 65000), historyCompleteFrom: '2026-01-01' },
+      assets: [], batches: b.batches, stockItems: [] as StockItem[], items: b.items, recettes: b.recettes, reglages: b.reglages ?? REGLAGES_VIDES, lignesCourses: b.lignesCourses ?? []
+    };
+    const prevision = buildForecast({ transactions: banc.transactions as unknown as FinanceTransaction[], payments: banc.payments, plans: banc.plans, profile: banc.profile, assets: [], asOf: J, months: 13, batches: banc.batches, stockItems: [], includeEquipmentProjects: true });
+    const modele = construireModele(banc);
+    /* l'hypothèse dit la tendance nette : 650 − 400 = 250 */
+    expect(modele.hypotheses.find(h => h.id === 'tendance')?.texte).toBe('Tendance de Finances : −250 CHF/mois');
+    for (const mois of ['2026-12', '2027-01', '2027-02', '2027-06', '2027-10']) {
+      const lignes = prevision.items.filter(i => i.date.startsWith(mois));
+      const loyer = lignes.filter(i => i.planId === 'P-LOYER').reduce((s, i) => s + i.amountCents, 0);
+      const tendance = lignes.filter(i => i.source === 'trend').reduce((s, i) => s + i.amountCents, 0);
+      /* un loyer et une tendance nette par mois : leur somme est la charge payée chaque mois (650), pas 650 + 400 */
+      expect([mois, loyer, tendance, loyer + tendance]).toEqual([mois, 40000, 25000, 65000]);
+      /* la courbe porte le loyer une fois par mois */
+      expect(modele.courbe!.mouvements.filter(m => m.jour.startsWith(mois) && /Loyer/.test(m.nom))).toHaveLength(1);
+    }
+    /* la courbe et Finances tombent juste en fin de mois (A2) : aucun double compte dans le creux */
+    for (const mois of prevision.months.slice(0, 12)) expect(soldeFinDeMois(modele.courbe!, mois.month)).toBe(mois.balanceCents);
   });
 });
 

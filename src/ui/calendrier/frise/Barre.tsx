@@ -133,6 +133,9 @@ export const Barre: React.FC<BarreProps> = props => {
   /* f2-a (E29, CRITIQUE-5 n° 1) : pendant le geste, « J0 / 35 · prête 21 déc. » ou « pas brassée · prête le 24 nov. » se lit en entier : dans la
      barre s'il y tient, sinon juste à sa droite */
   const dureeHors = !!etiquetteDuree && Math.ceil(largeurTexte(etiquetteDuree, 600)) + 16 > w;
+  /* CRITIQUE-7 n° 2 (E29) : la durée écrite à côté du nom suit le doigt, elle aussi : jamais l'ancienne « prête le … » à côté de la nouvelle */
+  const dureeRepos = props.deuxLignes === 'duree' ? duree : props.dureeACote;
+  const dureeEtiquette = dureeRepos && etiquetteDuree ? etiquetteDuree : dureeRepos;
   const n = chose.joursActifs && chose.joursActifs > 0 ? chose.joursActifs : 0;
   const style: React.CSSProperties = { left: gauche, top: haut, width: w, height: hauteur, transform: decalage ? `translateX(${decalage}px)` : undefined };
   const lblStyle: React.CSSProperties = cote === 'gauche'
@@ -203,7 +206,7 @@ export const Barre: React.FC<BarreProps> = props => {
       {/* CRITIQUE-5 n° 26 : sur deux lignes, le nom et son montant restent ensemble ; la pastille « lié à » passe dessous */}
       {/* f2-a : la durée tirée, posée à droite de la barre, prend la place de l'étiquette le temps du geste (jamais l'une sur l'autre) */}
       <span className={`cal-lbl cal-lbl-${cote}${props.deuxLignes ? ' cal-lbl-2n' : ''}${etiquetteDuree && (dureeHors ? cote !== 'dedans' : cote === 'dedans') ? ' cal-lbl-cede' : ''} ${CLASSE_TEINTE[chose.rangee]}`} style={lblPlace}>
-        <ContenuEtiquette chose={chose} nom={nom} montant={montant} duree={props.deuxLignes === 'duree' ? duree : props.dureeACote} deux={props.deuxLignes} lieCourt={props.lieCourt} sansLie={props.sansLie} />
+        <ContenuEtiquette chose={chose} nom={nom} montant={montant} duree={dureeEtiquette} deux={props.deuxLignes} lieCourt={props.lieCourt} sansLie={props.sansLie} />
       </span>
     </>
   );

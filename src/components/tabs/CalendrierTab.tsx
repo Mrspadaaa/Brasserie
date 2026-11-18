@@ -24,7 +24,7 @@ import {
 } from '../../domain/calendrier';
 import { courbeDecalee, courbeAvec, effetCaisse } from '../../domain/calendrierCaisse';
 import {
-  brouillonDepuisChose, brouillonDepuisProposition, brouillonVide, versEnregistrement, versModification, enregistrementIdee,
+  brouillonDepuisChose, brouillonDepuisProposition, brouillonVide, versEnregistrement, versModification, enregistrementIdee, jourPose,
   type BrouillonAjout, type ContexteAjout
 } from '../../domain/calendrierAjout';
 import {
@@ -103,6 +103,20 @@ export const CATEGORIE_DE_RANGEE: Partial<Record<IdRangee, FinanceCategory>> = {
 
 export function sansPointDouble(texte: string): string {
   return texte.replace(/\.(?:\s*\.)+/g, () => '.');
+}
+
+/**
+ * CRITIQUE-7 (A6) : le résumé d'une pose (« 3 fûts La Cigogne · S47 ») suivi de l'effet sur la caisse (« S47 : 3 268 → 4 168 ») disait deux fois
+ * la semaine. Quand l'effet commence par une semaine que le résumé porte déjà en segment « · Snn », ce segment part ; le reste du résumé
+ * (« vente confirmée ») est gardé. Assemblé par segments, sans remplacement de chaîne (L26).
+ */
+export function resumeSansSemaine(resume: string, effet: string): string {
+  const semaine = /^S\d{1,2}\b/.exec(effet)?.[0];
+  if (!semaine) return resume;
+  const segments = resume.split(' · ');
+  /* « S2 ’27 » (une semaine de l'an prochain) est la même semaine que l'effet « S2 : … » */
+  const i = segments.findIndex((s, k) => k > 0 && (s === semaine || s.startsWith(`${semaine} `)));
+  return i < 0 ? resume : segments.filter((_, k) => k !== i).join(' · ');
 }
 
 /** Une semaine dite en phrase : « S52, 21 – 27 déc. » suivi d'une phrase, sans « déc.. ». */
@@ -241,17 +255,23 @@ export function CalendrierTab(props: CalendrierTabProps) {
   useEffect(() => {
     if (idMessage === undefined || typeof window === 'undefined') return undefined;
     /* les positions de départ : la page, et chaque conteneur défilant de l'onglet (la frise) */
-    const depart = new Map<EventTarget, { x: number; y: number }>([[document, { x: window.scrollX, y: window.scrollY }]]);
+    const defilant = (t: EventTarget): Element => (t instanceof Element ? t : document.scrollingElement ?? document.documentElement);
+    const depart = new Map<EventTarget, { x: number; y: number; h: number }>([[document, { x: window.scrollX, y: window.scrollY, h: defilant(document).scrollHeight }]]);
     racine.current?.querySelectorAll<HTMLElement>('*').forEach(el => {
-      if (el.scrollHeight > el.clientHeight + 1 || el.scrollWidth > el.clientWidth + 1) depart.set(el, { x: el.scrollLeft, y: el.scrollTop });
+      if (el.scrollHeight > el.clientHeight + 1 || el.scrollWidth > el.clientWidth + 1) depart.set(el, { x: el.scrollLeft, y: el.scrollTop, h: el.scrollHeight });
     });
     const position = (t: EventTarget) => (t instanceof Element ? { x: t.scrollLeft, y: t.scrollTop } : { x: window.scrollX, y: window.scrollY });
     const surDefilement = (e: Event) => {
       /* la page défile (cible : document ou window) ou un conteneur de l'onglet */
       const t: EventTarget = e.target instanceof Element ? e.target : document;
       const d = depart.get(t);
-      if (!d) { if (t instanceof Element && racine.current?.contains(t)) depart.set(t, position(t)); return; }
+      if (!d) { if (t instanceof Element && racine.current?.contains(t)) depart.set(t, { ...position(t), h: t.scrollHeight }); return; }
       const p = position(t);
+      /* CRITIQUE-7, banc 1280 : une rangée qui rétrécit après un geste (une file de moins) raccourcit la page ; au bout du défilement, le navigateur
+         ramène la page de lui-même (−30 px) et chassait « Annuler ». Un défilement qui ne fait que suivre le nouveau bas n'est pas celui du brasseur :
+         on repart de là. */
+      const el = defilant(t), h = el.scrollHeight;
+      if (h < d.h - 1 && Math.abs(p.y - Math.max(0, h - el.clientHeight)) <= 1) { depart.set(t, { ...p, h }); return; }
       if (Math.abs(p.y - d.y) >= 24 || Math.abs(p.x - d.x) >= 24) setMessage(null);
     };
     const surToucher = (e: PointerEvent) => {
@@ -396,13 +416,15 @@ export function CalendrierTab(props: CalendrierTabProps) {
   const ligne = (id: string, label: string, r: IdRangee, extra: { hint?: string; plein?: boolean } = {}) => ({
     id, label, genre: 'ajouter' as const, couleur: COULEUR_RANGEE[r], icone: ICONE_RANGEE[r], lancer: () => ouvrirFeuille(r), ...extra
   });
-  /* passe 10 (p-clair-ouvert) : « S47 · prête le 14 déc. », la semaine où la feuille s'ouvre et 28 j en cuve (demande de L3, CRITIQUE-2 n° 12) */
+  /* passe 10 (p-clair-ouvert) : « S47 · prête le … », la semaine où la feuille s'ouvre et 28 j en cuve (demande de L3, CRITIQUE-2 n° 12).
+     CRITIQUE-7 n° 4 : « prête le » se compte depuis le jour où le brassin sera posé (`jourPose` : aujourd'hui dans la semaine en cours, jamais un
+     lundi passé), comme la feuille et l'écriture : le 18 nov., « S47 · prête le 16 déc. », plus « 14 déc. ». */
   const lundiPose = fenetre.du < premierLundi ? premierLundi : fenetre.du;
   usePlusPage({
     titre: 'le calendrier',
     surOnglets: true,
     actions: [
-      ligne('brassin', 'Poser un brassin', 'brassins', { plein: true, hint: `${etiquetteS(lundiPose)} · prête le ${jourLisible(ajouterJours(lundiPose, 28))}` }),
+      ligne('brassin', 'Poser un brassin', 'brassins', { plein: true, hint: `${etiquetteS(lundiPose)} · prête le ${jourLisible(ajouterJours(jourPose(lundiPose, aujourdhui), 28))}` }),
       ligne('fete', 'Poser une fête', 'fetes'),
       ligne('vente', 'Poser une vente', 'ventes'),
       ligne('achat', 'Prévoir un achat', 'achats'),
@@ -433,9 +455,11 @@ export function CalendrierTab(props: CalendrierTabProps) {
       const signe = p.direction === 'in' ? 1 : -1;
       effet = effetCaisse(modele.courbe, courbeAvec(modele.courbe, [{ id: p.id, jour: p.date, centimes: signe * p.amountCents, nom: p.title, choseId: `argent-${p.id}` }]));
     }
+    /* CRITIQUE-7 (A6) : « 3 fûts La Cigogne · S47 · S47 : 3 268 → 4 168 » disait deux fois la semaine. Avec un effet, la semaine du résumé
+       part (l'effet la dit déjà) : « 3 fûts La Cigogne · S47 : 3 268 → 4 168 » ; « vente confirmée » reste. */
     const ok = await ecrire({
       ok: true, ecritures: [ecriture], effet, promesse: null, courbeApres: null,
-      message: { texte: effet ? `${conv.resume} · ${effet.texte}` : conv.resume, action: 'Annuler', lecture: '' }
+      message: { texte: effet ? `${resumeSansSemaine(conv.resume, effet.texte)} · ${effet.texte}` : conv.resume, action: 'Annuler', lecture: '' }
     });
     if (ok) {
       setFeuille(null);

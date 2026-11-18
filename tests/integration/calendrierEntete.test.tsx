@@ -10,7 +10,8 @@ import { HAUTEUR_MOIS, boiteEtiquette, boitesSeCroisent, creuxDe, geometrie, max
 import { useOrientation } from '../../src/ui/calendrier/useOrientation';
 import { DELAI_CLIC_AVALE } from '../../src/ui/calendrier/usePointeurCourbe';
 import { CLASSE_CAISSE, GrandeCourbe, placeEtiquetteCreux, geoGrande } from '../../src/ui/calendrier/entete/GrandeCourbe';
-import { LectureDetail } from '../../src/ui/calendrier/entete/LectureCourbe';
+import { LectureDetail, formeTete } from '../../src/ui/calendrier/entete/LectureCourbe';
+import { BandeSemaines, pasEtiquettes } from '../../src/ui/calendrier/entete/BandeSemaines';
 import { anneeEnMois } from '../../src/domain/calendrier';
 import { largeurTexte } from '../../src/ui/calendrier/entete/Courbe';
 import { Courbe, causesDuCreux, semaineCourte, RECUL_MAX } from '../../src/ui/calendrier/entete/Courbe';
@@ -308,10 +309,10 @@ describe('E11, E12 : lire la courbe au doigt, et la courbe en grand', () => {
     fireEvent.pointerDown(svg, { pointerId: 1, clientX: 100, clientY: 20, button: 0 });
     fireEvent.pointerMove(window, { pointerId: 1, clientX: 160, clientY: 22 });
     // 160 px sur 390 : la 22e semaine (index 21), le lundi 12 avril 2027, S15.
-    // À 390, la tête montre « montant S15 variation » (sa maquette p-c2b) ; « CHF » et la date restent pour le lecteur d'écran.
+    // CRITIQUE-7 n° 5 : la forme la plus longue qui tient (as/cal.html) ; jsdom ne mesure rien : la longue, « CHF » et la date comprises.
     expect(container.querySelector('.ent-lit')!.textContent).toContain('S15 · 12 avr.');
-    expect(container.querySelector('.ent-lit .ent-lit-d')).toBeNull();
-    expect(container.querySelector('.ent-lit .sr-only')).not.toBeNull();
+    expect(container.querySelector('.ent-lit')!.textContent).toContain('CHF ·');
+    expect(container.querySelector('.ent-lit')!.getAttribute('data-forme')).toBe('longue');
     expect(screen.queryByRole('button', { name: /à dépenser/ })).toBeNull();
     expect(onLectureSemaine).toHaveBeenLastCalledWith(ajouterJours(LUNDI0, 21 * 7));
     fireEvent.pointerUp(window, { pointerId: 1, clientX: 160 });
@@ -386,25 +387,25 @@ describe('E09, E10 : plein écran et paysage', () => {
     Object.defineProperty(document.documentElement, 'requestFullscreen', { value: vi.fn().mockResolvedValue(undefined), configurable: true });
     Object.defineProperty(window.screen, 'orientation', { value: { lock: vi.fn().mockResolvedValue(undefined) }, configurable: true });
     const avant = window.matchMedia;
-    // L'écran est couché (orientation: landscape), la fenêtre reste haute : l'en-tête garde sa mise en page, le verrou a pris.
-    window.matchMedia = ((q: string) => ({ matches: q === '(orientation: landscape)', media: q, addEventListener: () => undefined, removeEventListener: () => undefined, addListener: () => undefined, removeListener: () => undefined })) as unknown as typeof window.matchMedia;
+    // L'écran a tourné : la page est couchée et basse (la requête du paysage du calendrier), le verrou a pris.
+    window.matchMedia = ((q: string) => ({ matches: q.includes('orientation: landscape'), media: q, addEventListener: () => undefined, removeEventListener: () => undefined, addListener: () => undefined, removeListener: () => undefined })) as unknown as typeof window.matchMedia;
     largeurFenetre(390);
     render(<Banc {...espions()} />);
-    await act(async () => { fireEvent.click(screen.getByRole('button', { name: 'Plein écran' })); });
+    await act(async () => { fireEvent.click(screen.getByRole('button', { name: 'Plein écran' })); await new Promise(r => setTimeout(r, 20)); });
     expect(screen.queryByText(/Tourne le téléphone/)).toBeNull();
     window.matchMedia = avant;
     delete (document.documentElement as unknown as Record<string, unknown>).requestFullscreen;
     delete (window.screen as unknown as Record<string, unknown>).orientation;
   });
 
-  it('CRITIQUE-4 n° 19 : le verrou « pris » sans que l’écran tourne en 600 ms (émulateur) : « Tourne le téléphone », par onMessage', async () => {
+  it('CRITIQUE-4 n° 19, CRITIQUE-7 (doute E09) : le verrou « pris » sans que l’écran tourne en 1 s (émulateur) : « Tourne le téléphone », par onMessage', async () => {
     vi.useFakeTimers();
     const onMessage = vi.fn();
     Object.defineProperty(document.documentElement, 'requestFullscreen', { value: vi.fn().mockResolvedValue(undefined), configurable: true });
     Object.defineProperty(window.screen, 'orientation', { value: { lock: vi.fn().mockResolvedValue(undefined) }, configurable: true });
     largeurFenetre(390);
     render(<Banc {...espions()} onMessage={onMessage} />);
-    await act(async () => { fireEvent.click(screen.getByRole('button', { name: 'Plein écran' })); await vi.advanceTimersByTimeAsync(599); });
+    await act(async () => { fireEvent.click(screen.getByRole('button', { name: 'Plein écran' })); await vi.advanceTimersByTimeAsync(999); });
     expect(onMessage).not.toHaveBeenCalled();
     await act(async () => { await vi.advanceTimersByTimeAsync(2); });
     expect(onMessage).toHaveBeenCalledWith({ genre: 'invite', texte: 'Tourne le téléphone : 13 semaines' });
@@ -418,12 +419,12 @@ describe('E09, E10 : plein écran et paysage', () => {
     largeurFenetre(390);
     const { unmount } = render(<Banc {...espions()} onMessage={onMessage} />);
     await act(async () => { fireEvent.click(screen.getByRole('button', { name: 'Plein écran' })); });
-    expect(onMessage).toHaveBeenCalledWith({ genre: 'invite', texte: 'Tourne le téléphone : 13 semaines' });
+    await vi.waitFor(() => expect(onMessage).toHaveBeenCalledWith({ genre: 'invite', texte: 'Tourne le téléphone : 13 semaines' }));
     unmount();
     onMessage.mockClear();
     largeurFenetre(1280);
     render(<Banc {...espions()} onMessage={onMessage} />);
-    await act(async () => { fireEvent.click(screen.getByRole('button', { name: 'Plein écran' })); });
+    await act(async () => { fireEvent.click(screen.getByRole('button', { name: 'Plein écran' })); await new Promise(r => setTimeout(r, 20)); });
     expect(onMessage).not.toHaveBeenCalled();
     delete (document.documentElement as unknown as Record<string, unknown>).requestFullscreen;
   });
@@ -1107,10 +1108,10 @@ describe('CRITIQUE-5 (lot 1) : le creux et son année, l’An, la lecture, la gr
     fireEvent.click(screen.getByRole('button', { name: '3 mois' }));
     expect(e.onPeriode).toHaveBeenLastCalledWith(expect.objectContaining({ genre: 'dates' }));
     unmount();
-    // Novembre 2026, vu du 16 nov. : la courbe commence en S47 ; la fenêtre en prend les semaines qui restent (S47 – S49).
+    // Novembre 2026, vu du 16 nov. : la courbe commence en S47 ; décision pilote (c) : 4 semaines au moins, dès aujourd'hui (S47 – S50).
     const e2 = espions();
     render(<Banc {...e2} periodeInitiale={{ genre: 'mois', annee: 2026, mois: 11 }} />);
-    expect(e2.onFenetre).toHaveBeenLastCalledWith({ du: LUNDI0, semaines: 3 });
+    expect(e2.onFenetre).toHaveBeenLastCalledWith({ du: LUNDI0, semaines: 4 });
     expect((document.querySelector('[data-ent-periode]') as HTMLElement).textContent).toBe('Nov.');
   });
 
@@ -1310,13 +1311,89 @@ describe('CRITIQUE-6 (lot B-entete) : le chiffre clé entier, le creux et ses ca
     largeurFenetre(390);
     const e = espions();
     const { container } = render(<Banc {...e} periodeInitiale={{ genre: 'mois', annee: 2026, mois: 11 }} largeurColonne={61} />);
-    expect(bande(container).textContent).toBe('S47S48S49');
+    // Décision pilote (c), CRITIQUE-7 : le mois se lit dès aujourd'hui sur 4 semaines au moins (S47 – S50), jamais 3 ni 1.
+    expect(bande(container).textContent).toBe('S47S48S49S50');
     const bouton = container.querySelector('[data-ent-periode]') as HTMLElement;
     expect(bouton.textContent).toBe('Nov.');
     // Aucune fenêtre locale de 6 semaines n'a été écrite en période par-dessus.
     expect(e.onPeriode).not.toHaveBeenCalled();
     fireEvent.click(bouton);
+    // La plage dit les vraies semaines : « Nov. » ne veut pas dire du 1er au 30.
     const plage = document.querySelector('.ent-menu-plage') as HTMLElement;
-    expect(plage.textContent).toMatch(/^Nov\. · 16 nov\. → 6 déc\.$/);
+    expect(plage.textContent).toMatch(/^Nov\. · S47 – S50 · 16 nov\. → 13 déc\.$/);
+  });
+
+  describe('CRITIQUE-7 n° 1 (E04, E07, E43) : la bande se lit à toute largeur de colonne', () => {
+    const S53 = 23; // « S53 » à 14 px, 600, Source Sans 3 (repli hors navigateur de largeurEtiquetteMax)
+    it('le pas des étiquettes se choisit à la largeur de colonne : 390 en 6 sem., 3 mois, 6 mois ; 1280 en 6 mois', () => {
+      // Largeurs de colonne de la frise mesurées au banc (390 : 374 px utiles ; 1280 : vue centrée de 1180 px).
+      expect(pasEtiquettes(374 / 6, S53)).toBe(1);
+      expect(pasEtiquettes(374 / 13, S53)).toBe(1);
+      expect(pasEtiquettes(374 / 26, S53)).toBe(2);
+      expect(pasEtiquettes(1180 / 26, S53)).toBe(1);
+      expect(pasEtiquettes(11, S53)).toBe(4);
+      expect(pasEtiquettes(6, S53)).toBe('mois');
+      expect(pasEtiquettes(0, S53)).toBe(1);
+      // La règle elle-même : « S53 » et 4 px d'écart dans 1, 2 ou 4 colonnes.
+      expect(pasEtiquettes(S53 + 4, S53)).toBe(1);
+      expect(pasEtiquettes(S53 + 3.9, S53)).toBe(2);
+      expect(pasEtiquettes((S53 + 4) / 4 - 0.01, S53)).toBe('mois');
+    });
+
+    const vingtSix = semainesDe(LUNDI0, 26).map(s => ({ debut: s.debut, numero: s.numero }));
+    const rendreBande = (largeurColonne: number) => render(
+      <div style={{ width: largeurColonne * 26 }}>
+        <BandeSemaines semaines={vingtSix} courbe={null} decalage={0} mouvements={false} idees={new Set()} retards={new Set()} onDate={vi.fn()} largeurColonne={largeurColonne} />
+      </div>
+    );
+
+    it('6 mois, colonne de 11 px : au plus 13 étiquettes, sur les semaines rondes, aucune trop près d’une autre ; chaque colonne garde son nom', () => {
+      const { container } = rendreBande(11);
+      const visibles = Array.from(container.querySelectorAll('.ent-sem'));
+      expect(visibles.length).toBeGreaterThan(0);
+      expect(visibles.length).toBeLessThanOrEqual(13);
+      for (const v of visibles) expect(Number(v.textContent!.slice(1)) % 4).toBe(0);
+      const cols = Array.from(container.querySelectorAll('[data-bande-semaines] > button'));
+      expect(cols).toHaveLength(26);
+      const idx = visibles.map(v => cols.indexOf(v.closest('button')!));
+      for (let k = 1; k < idx.length; k++) expect((idx[k] - idx[k - 1]) * 11).toBeGreaterThanOrEqual(S53 + 4);
+      // Toutes touchables, chacune avec sa date (« S50, 7 – 13 déc. »).
+      expect(screen.getByRole('button', { name: 'S50, 7 – 13 déc.' })).toBeInTheDocument();
+      cols.forEach(c => expect(c.getAttribute('aria-label')).toMatch(/^S\d+, \d/));
+    });
+
+    it('colonne de 14 px (6 mois à 390) : une semaine sur deux, les paires ; la fin d’année (S52, S53, S1, S2) ne colle pas', () => {
+      const { container } = rendreBande(14.4);
+      const textes = Array.from(container.querySelectorAll('.ent-sem')).map(v => v.textContent);
+      expect(textes.length).toBeLessThanOrEqual(13);
+      expect(textes.slice(0, 5)).toEqual(['S48', 'S50', 'S52', 'S2', 'S4']);
+      expect(container.querySelector('[data-bande-semaines]')!.getAttribute('data-pas')).toBe('2');
+    });
+
+    it('colonne trop étroite pour une semaine sur quatre : les mois, comme l’An (N D J F…)', () => {
+      const { container } = rendreBande(6);
+      const textes = Array.from(container.querySelectorAll('.ent-sem')).map(v => v.textContent).join(' ');
+      expect(textes).toMatch(/^(N )?D J F M A/);
+    });
+
+    it('6 semaines et 3 mois gardent une étiquette par semaine (rendu d’avant)', () => {
+      const six = render(<BandeSemaines semaines={vingtSix.slice(0, 6)} courbe={null} decalage={0} mouvements={false} idees={new Set()} retards={new Set()} onDate={vi.fn()} largeurColonne={62} />);
+      expect(bande(six.container).textContent).toBe('S47S48S49S50S51S52');
+      six.unmount();
+      const trois = render(<BandeSemaines semaines={vingtSix.slice(0, 13)} courbe={null} decalage={0} mouvements={false} idees={new Set()} retards={new Set()} onDate={vi.fn()} largeurColonne={28.7} />);
+      expect(trois.container.querySelectorAll('.ent-sem')).toHaveLength(13);
+    });
+  });
+
+  describe('CRITIQUE-7 n° 5 (E11) : la tête de c2-b prend la forme la plus longue qui tient', () => {
+    it('formeTete : la longue quand la place mesurée suffit ; sinon sans CHF, puis sans date ; place inconnue : la longue', () => {
+      const largeurs = [214, 176, 128];
+      expect(formeTete(largeurs, 250)).toBe(0);
+      expect(formeTete(largeurs, 214)).toBe(0);
+      expect(formeTete(largeurs, 200)).toBe(1);
+      expect(formeTete(largeurs, 150)).toBe(2);
+      expect(formeTete(largeurs, 90)).toBe(2);
+      expect(formeTete(largeurs, null)).toBe(0);
+    });
   });
 });

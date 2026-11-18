@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useLayoutEffect, useRef, useState } from 'react';
 import { lectureSemaine, type CourbeCaisse, type MouvementNomme } from '../../../domain/calendrierCaisse';
 import { chf, classeRangee, jourCourt, sg } from './Courbe';
 
@@ -12,16 +12,56 @@ const classeMv = (v: number) => (v < 0 ? 'ent-m' : 'ent-p');
 
 export interface LectureProps { courbe: CourbeCaisse; index: number }
 
+/**
+ * Les trois formes de la tête, de la plus longue à la plus courte, comme sa maquette (as/cal.html, `lecture`) : « −1 537 CHF · S19 · 4 mai −120 »,
+ * puis sans « CHF », puis sans la date. Ce qui est retiré reste pour le lecteur d'écran.
+ */
+export const FORMES_TETE = ['longue', 'sans-chf', 'courte'] as const;
+export type FormeTete = 0 | 1 | 2;
+
+/**
+ * « La forme la plus longue qui tient » (as/cal.html l. 1311, CRITIQUE-7 n° 5, E11) : la première forme dont la largeur mesurée tient dans la
+ * place laissée par les boutons de tête (4 px d'écart compris par l'appelant). Aucune ne tient : la plus courte. Place inconnue (rien mesuré) :
+ * la plus longue, comme sa maquette quand elle ne trouve pas les boutons.
+ */
+export function formeTete(largeurs: readonly number[], place: number | null): FormeTete {
+  if (place === null || !Number.isFinite(place)) return 0;
+  const i = largeurs.findIndex(w => w <= place);
+  return (i < 0 ? Math.max(0, largeurs.length - 1) : i) as FormeTete;
+}
+
 /** La tête, à la place du chiffre clé : libre de la semaine lue, sa date, sa variation. */
-export function LectureTete({ courbe, index, compacte = false }: LectureProps & { compacte?: boolean }) {
+export function LectureTete({ courbe, index, boutons }: LectureProps & { boutons?: React.RefObject<HTMLElement | null> }) {
   const l = lectureSemaine(courbe, index);
+  const ref = useRef<HTMLSpanElement>(null);
+  const [forme, setForme] = useState<FormeTete>(0);
+  // Mesurée avant d'être peinte, à chaque semaine lue : chaque forme est posée dans le DOM, sa fin mesurée contre le bord gauche des boutons
+  // de tête (ils restent, E11), puis le DOM est rendu à React et la forme retenue devient l'état.
+  useLayoutEffect(() => {
+    const el = ref.current, bt = boutons?.current;
+    if (!el || !bt) { setForme(0); return; }
+    const rb = bt.getBoundingClientRect(), re = el.getBoundingClientRect();
+    // Les boutons à côté, sur la même ligne (pas dessous, comme en paysage) : sinon, toute la place.
+    const memeLigne = rb.width > 0 && rb.top < re.bottom && rb.bottom > re.top;
+    const place = rb.width > 0 && re.width > 0 ? (memeLigne ? rb.left - 4 : re.right) - re.left : null;
+    const u = el.querySelector<HTMLElement>('[data-lit="u"]'), d = el.querySelector<HTMLElement>('[data-lit="d"]');
+    if (place === null || !u || !d) { setForme(0); return; }
+    // La fin de la forme : le bord droit du dernier morceau visible (un morceau `sr-only` n'occupe pas la ligne).
+    const fin = () => Math.max(...Array.from(el.children).filter(c => !c.classList.contains('sr-only')).map(c => c.getBoundingClientRect().right));
+    const avant = [u.className, d.className];
+    const largeurs = ([0, 1, 2] as const).map(f => {
+      u.className = f >= 1 ? 'sr-only' : 'ent-lit-u';
+      d.className = f >= 2 ? 'sr-only' : 'ent-lit-d';
+      return fin() - re.left;
+    });
+    [u.className, d.className] = avant;
+    setForme(formeTete(largeurs, place));
+  }, [index, l?.libre, l?.variation, boutons]);
   if (!l) return null;
   return (
-    <span className="ent-lit" aria-live="polite">
+    <span ref={ref} className="ent-lit" aria-live="polite" data-forme={FORMES_TETE[forme]}>
       <b className={l.libre < 0 ? 'ent-neg' : undefined}>{chf(l.libre)}</b>
-      {/* Au téléphone, comme sa maquette (as p-c2b-pendant : « 3 801 S12 −487 ») : le montant, la semaine, sa variation ; « CHF » et la date
-          restent pour le lecteur d'écran, et la date se lit dans le détail sous la bande (« S12, 22 – 28 mars »). Plus large : tout (E11). */}
-      <span className={compacte ? 'sr-only' : 'ent-lit-u'}> CHF ·</span> <em>{`S${l.numero}`}</em><span className={compacte ? 'sr-only' : 'ent-lit-d'}>{` · ${jourCourt(l.lundi)}`}</span>
+      <span data-lit="u" className={forme >= 1 ? 'sr-only' : 'ent-lit-u'}> CHF ·</span> <em>{`S${l.numero}`}</em><span data-lit="d" className={forme >= 2 ? 'sr-only' : 'ent-lit-d'}>{` · ${jourCourt(l.lundi)}`}</span>
       {l.variation !== 0 && <>{' '}<i className={classeMv(l.variation)}>{sg(l.variation)}</i></>}
     </span>
   );

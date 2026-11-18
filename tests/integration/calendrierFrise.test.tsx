@@ -778,3 +778,116 @@ describe('CRITIQUE-6 (lot C-frise) : noms entiers, caddie après un déplacement
     expect(document.querySelector('[data-chose="plan-hotte"]')!.getAttribute('aria-label')).toMatch(/lié à Blonde d’automne/);
   });
 });
+
+describe('CRITIQUE-7 (lot corr7-C-frise) : lien sans nom répété, points de la barre posée, rien sous le + volant', () => {
+  const rien = () => undefined;
+  const gestes = { onToucher: rien, onAppuiLong: rien, onGlisse: rien, onLacheGlisse: rien, onBord: rien, onLacheBord: rien, onRefus: rien };
+  /** Les morceaux « a · b · c » d'un texte, sans « lié à » ni accents : deux morceaux voisins égaux, c'est un nom répété. */
+  const repete = (t: string) => {
+    const m = t.replace(/^lié à /i, '').split(/ · | ; /).map(x => x.normalize('NFD').replace(/[̀-ͯ]/g, '').replace(/[’']/g, "'").toLowerCase().trim());
+    return m.some((x, i) => i > 0 && x === m[i - 1]);
+  };
+  const hotte = (lie: ChoseCalendrier['lie']): ChoseCalendrier => ({
+    id: 'plan-hotte', rangee: 'achats', titre: 'Hotte', debut: '2026-11-30', fin: '2026-11-30', centimes: -90000, lie,
+    source: { genre: 'plan', id: 'P-HOTTE', origine: 'manual', statut: 'active' }, ouvre: { ecran: 'finances' }, deplacable: true
+  } as ChoseCalendrier);
+
+  it('n° 6 (D-113, D-126) : le détail de la Hotte liée dit « lié à Blonde d’automne · brassage 23 nov. · prête 21 déc. », sans le nom deux fois', () => {
+    const lie = { texte: 'lié à Blonde d’automne', apercu: 'Blonde d’automne · brassage 23 nov. · prête 21 déc.' };
+    render(<DetailChose chose={hotte(lie)} onFermer={rien} onOuvrir={rien} />);
+    const t = document.querySelector('[data-apercu-lien]')!.textContent ?? '';
+    expect(t).toBe('lié à Blonde d’automne · brassage 23 nov. · prête 21 déc.');
+    expect(repete(t)).toBe(false);
+    expect(t.match(/Blonde d’automne/g)).toHaveLength(1);
+    /* le témoin (la version rejetée) répétait le nom : le contrôle le voit */
+    expect(repete(`${lie.texte} · ${lie.apercu}`)).toBe(true);
+  });
+
+  it('n° 6 : avec deux liens (client et brassin), chaque morceau garde son nom', () => {
+    const lie = { texte: 'lié à Blonde d’automne', apercu: 'La Cigogne · client ; Blonde d’automne · prête 21 déc.' };
+    render(<DetailChose chose={hotte(lie)} onFermer={rien} onOuvrir={rien} />);
+    const t = document.querySelector('[data-apercu-lien]')!.textContent ?? '';
+    expect(t).toContain('La Cigogne · client');
+    expect(t).toContain('Blonde d’automne · prête 21 déc.');
+  });
+
+  it('n° 6 : l’aperçu de la pastille, une note à part sous son bouton, ne répète aucun nom à la suite', () => {
+    const lie = { texte: 'lié à Blonde d’automne', apercu: 'Blonde d’automne · brassage 23 nov. · prête 21 déc.' };
+    render(<div style={{ position: 'relative' }}><Barre chose={hotte(lie)} gauche={100} largeur={56} haut={0} hauteur={26} cote="droite" placeEtiquette={240} largeurColonne={56} bornes={[0, 1]} {...gestes} /></div>);
+    fireEvent.click(screen.getByRole('button', { name: 'lié à Blonde d’automne : aperçu' }));
+    expect(repete(screen.getByRole('note').textContent ?? '')).toBe(false);
+  });
+
+  /* E24, E45, D-8, D-9 : la barre Travaux posée de S20 à S40 2027 avec 5 jours actifs */
+  const sols = {
+    id: 'plan-sols', rangee: 'travaux', titre: 'Rénovation des sols', debut: '2027-05-17', fin: '2027-10-03', centimes: -60000, joursActifs: 5,
+    fenetre: { du: '2027-05-17', au: '2027-10-03', joursActifs: 5 },
+    source: { genre: 'plan', id: 'P-SOLS', origine: 'manual', statut: 'active' }, ouvre: { ecran: 'finances' }, deplacable: true
+  } as ChoseCalendrier;
+  const friseDe = (colonnes: Colonne[]) => render(
+    <Frise choses={[sols]} colonnes={colonnes} paysage={false} ordre={[]} masquees={[]} filtre={null} epingles={[]} etoiles={[]} drag={null} largeurRepli={360} onAjouter={rien} onBasculerMasque={rien} barre={gestes} />
+  );
+  const verifierSols = (vue: string) => {
+    const b = document.querySelector<HTMLElement>('[data-chose="plan-sols"]')!;
+    expect(b, vue).not.toBeNull();
+    expect(b.hasAttribute('data-barre'), `${vue} : une barre, pas une marque`).toBe(true);
+    expect(b.hasAttribute('data-marque'), vue).toBe(false);
+    expect(parseFloat(b.style.width), vue).toBeGreaterThanOrEqual(24);
+    const points = [...b.querySelectorAll<HTMLElement>('[data-point]')];
+    expect(points, vue).toHaveLength(5);
+    /* à égale distance dans la fenêtre (E45) : 10 %, 30 %, 50 %, 70 %, 90 % */
+    expect(points.map(p => Math.round(parseFloat(p.style.left)))).toEqual([10, 30, 50, 70, 90]);
+  };
+
+  it('n° 3 (E24, E45) : en An, la barre S20 → S40 garde ses 5 points et ses 24 px au moins', () => {
+    const mois = anneeEnMois(JOUR).map(m => ({ debut: m.debut, fin: m.fin, etiquette: m.court }));
+    expect(mois.some(m => m.debut <= '2027-05-17' && m.fin >= '2027-05-17')).toBe(true);
+    friseDe(mois);
+    verifierSols('An');
+  });
+
+  it('n° 3 : en 6 mois, la fenêtre glissée sur S20 à S40 2027 : la même barre, ses 5 points', () => {
+    const six = Array.from({ length: 26 }, (_, i) => ({ debut: ajouterJours('2027-05-17', i * 7), fin: ajouterJours('2027-05-17', i * 7 + 6), etiquette: etiquetteS(ajouterJours('2027-05-17', i * 7)) }));
+    friseDe(six);
+    verifierSols('6 mois');
+  });
+
+  it('n° 7 : la rangée qui passe sous le + après défilement ou rotation : aucun nom ne se pose sous le +', async () => {
+    const cols: Colonne[] = Array.from({ length: 6 }, (_, i) => ({ debut: ajouterJours(L, i * 7), fin: ajouterJours(L, i * 7 + 6), etiquette: etiquetteS(ajouterJours(L, i * 7)) }));
+    const malt = { id: 'plan-brouwland', rangee: 'achats', titre: 'Brouwland · malt', debut: ajouterJours(L, 14), fin: ajouterJours(L, 14), centimes: -42000, source: { genre: 'plan', id: 'P-BW', origine: 'manual', statut: 'active' }, ouvre: { ecran: 'finances' }, deplacable: true } as ChoseCalendrier;
+    /* le + volant de l'app, fixe : 56 px, à 16 px du bord droit d'un écran de 390 */
+    const fab = document.createElement('button');
+    fab.setAttribute('aria-label', 'Actions rapides');
+    document.body.appendChild(fab);
+    const FAB = { left: 318, right: 374, top: 720, bottom: 776 };
+    let achatsSousFab = false;
+    const rect = (r: { left: number; right: number; top: number; bottom: number }) => ({ ...r, width: r.right - r.left, height: r.bottom - r.top, x: r.left, y: r.top, toJSON: () => ({}) }) as DOMRect;
+    const espion = vi.spyOn(HTMLElement.prototype, 'getBoundingClientRect').mockImplementation(function (this: HTMLElement) {
+      if (this === fab) return rect(FAB);
+      if (this.hasAttribute('data-frise')) return rect({ left: 12, right: 372, top: 300, bottom: 1400 });
+      const r = this.getAttribute('data-rangee');
+      if (this.tagName === 'SECTION' && r) return rect(r === 'achats' && achatsSousFab ? { left: 12, right: 372, top: 690, bottom: 790 } : { left: 12, right: 372, top: 100, bottom: 160 });
+      return rect({ left: 0, right: 0, top: 0, bottom: 0 });
+    });
+    try {
+      render(<Frise choses={[malt]} colonnes={cols} paysage={false} ordre={[]} masquees={[]} filtre={null} epingles={[]} etoiles={[]} drag={null} largeurRepli={360} reserveDroite={76} onAjouter={rien} onBasculerMasque={rien} barre={gestes} />);
+      const lbl = () => document.querySelector<HTMLElement>('[data-rangee="achats"] .cal-lbl')!;
+      const droite = (el: HTMLElement) => parseFloat(el.style.left) + parseFloat(el.style.maxWidth);
+      /* au repos, la rangée Achats est loin du + : le nom se pose à droite de sa barre (S49), jusque dans la zone du + */
+      expect(lbl().className).toMatch(/cal-lbl-droite/);
+      expect(droite(lbl())).toBeGreaterThan(360 - 76);
+      /* la page défile (ou tourne et revient en portrait) : Achats passe sous le +, sans nouveau rendu de la frise */
+      achatsSousFab = true;
+      await act(async () => { window.dispatchEvent(new Event('scroll')); await new Promise(r => setTimeout(r, 200)); });
+      const bord = 360 - 76;
+      const l = lbl();
+      if (/cal-lbl-droite/.test(l.className)) expect(droite(l)).toBeLessThanOrEqual(bord + 1);
+      else expect(l.className).toMatch(/cal-lbl-gauche/);
+      expect(l.textContent).toMatch(/Brouwland/);
+      expect(l.textContent).toMatch(/−420/);
+    } finally {
+      espion.mockRestore();
+      fab.remove();
+    }
+  });
+});

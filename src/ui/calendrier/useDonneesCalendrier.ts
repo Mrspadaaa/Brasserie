@@ -174,8 +174,9 @@ export function construireModele(e: EntreesModele): ModeleCalendrier {
   const creatives = e.items.flatMap(i => { const c = choseCreative(i); return c ? [c] : []; });
   const probables = e.plans.flatMap(p => { const c = choseVenteProbable(p); return c ? [c] : []; });
   const propositionsBrassin = brassinsHabituels(e.batches, aujourdhui);
-  /* la facture d'un fournisseur et sa livraison de la même semaine : une seule chose dans Achats (CRITIQUE-6 n° 7) */
-  const posees = fusionnerFacturesLivraisons([...brassins, ...creatives, ...argent, ...probables, ...livraisonsAttendues(e.reglages), ...propositionsBrassin], fournisseurs).filter(dansLaFenetre(semaines));
+  /* CRITIQUE-7 n° 8 : la facture d'un fournisseur se pose sur la livraison qu'elle règle (émise ou due dans le délai appris) : une chose dans Achats */
+  const emises = new Map(e.transactions.flatMap(t => (t.date ? [[t.id, t.date] as [string, string]] : [])));
+  const posees = fusionnerFacturesLivraisons([...brassins, ...creatives, ...argent, ...probables, ...livraisonsAttendues(e.reglages), ...propositionsBrassin], fournisseurs, emises).filter(dansLaFenetre(semaines));
   /* n° 9 : chaque brassin porte son budget (courses et frais de la prévision ; à défaut, l'estimation enregistrée de BrewBudgetSheet) */
   const estimations = estimationsBudget(e.plans);
   const batchDe = new Map(e.batches.map(b => [b.id, b] as const));

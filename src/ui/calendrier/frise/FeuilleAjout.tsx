@@ -3,7 +3,7 @@ import { Sheet } from '../../Sheet';
 import { Input } from '../../Input';
 import { ChampMontant } from '../../finance/ChampMontant';
 import {
-  appliquerPuce, aUneFenetre, aUnMontant, brouillonVide, choisirJours, libelleMontant, peutMettreDeCote, preteLe, puceJours, puces, resumeFenetre, toucherSemaine,
+  appliquerPuce, aUneFenetre, aUnMontant, brouillonVide, choisirJours, jourPose, libelleMontant, peutMettreDeCote, preteLe, puceJours, puces, resumeFenetre, toucherSemaine,
   type BrouillonAjout, type Confirmation, type ContexteAjout, type Puce
 } from '../../../domain/calendrierAjout';
 import { RANGEES, etiquetteS, francs, jourLisible, nomRangee, type Rangee, type SemaineCalendrier } from '../../../domain/calendrier';
@@ -81,7 +81,10 @@ export const FeuilleAjout: React.FC<FeuilleAjoutProps> = ({ mode, initial, conte
   const argent = aUnMontant(b.rangee);
   const brassin = b.rangee === 'brassins';
   const resume = resumeFenetre(b);
-  const prete = preteLe(b);
+  /* CRITIQUE-7 n° 4 : « prête le » se compte depuis le jour de pose (brassé au plus tôt aujourd'hui, jamais un lundi passé) ; la date dite
+     est celle que « Ajouter » écrit (`jourPose`), sauf une fenêtre, qui part du lundi */
+  const prete = preteLe(b, contexte.aujourdhui);
+  const jourDit = b.debut ? (fenetre && (b.fin || b.joursActifs) ? b.debut : jourPose(b.debut, contexte.aujourdhui)) : null;
 
   /* E34, CRITIQUE-3 n° 28 : 13 semaines à l'écran, à 390 aussi (cases de 24 px au moins, la ligne entière se touche), et la rangée défile
      sur les 52 semaines de la courbe. La largeur se mesure ; sans mesure (jsdom), celle de la fenêtre moins les marges de la feuille. */
@@ -224,7 +227,7 @@ export const FeuilleAjout: React.FC<FeuilleAjoutProps> = ({ mode, initial, conte
         <div>
           <div className="mb-1 flex items-baseline gap-2">
             <span className="text-sm text-cave-200">{fenetre ? 'Semaines' : 'Semaine'}</span>
-            {b.debut &&<span className="text-sm text-cave-50">{etiquetteS(b.debut)}, {jourLisible(b.debut)}</span>}
+            {b.debut &&<span className="text-sm text-cave-50">{etiquetteS(b.debut)}, {jourLisible(jourDit ?? b.debut)}</span>}
           </div>
           <div
             ref={rangeeSemaines} role="group" aria-label="Semaine" data-vaul-no-drag data-visibles={semainesVisibles}

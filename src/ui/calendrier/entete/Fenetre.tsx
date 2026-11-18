@@ -37,8 +37,15 @@ export function fenetreDePeriode(periode: Periode | undefined, premierLundi: str
   if (fin < debut) return null;
   const decalage = semainesEntre(premierLundi, debut);
   if (decalage >= total) return null;
-  return { du: debut, semaines: clamp(semainesEntre(debut, fin) + 1, 1, total - decalage) };
+  // Décision pilote (c), CRITIQUE-7 : un mois se lit dès aujourd'hui et montre au moins 4 semaines ; s'il finit avant, la fenêtre déborde sur
+  // le suivant (le 30 nov. : S49 à S52, jamais une semaine seule). La période reste « mois » : seule sa lecture en semaines s'allonge.
+  const semaines = semainesEntre(debut, fin) + 1;
+  const min = periode.genre === 'mois' ? MOIS_MIN_SEMAINES : 1;
+  return { du: debut, semaines: clamp(Math.max(semaines, min), 1, total - decalage) };
 }
+
+/** Un mois lu au calendrier montre au moins ces semaines (décision pilote (c), 18.11). */
+export const MOIS_MIN_SEMAINES = 4;
 
 /** Le texte du bouton de période : « 6 sem. », « 3 mois », « 6 mois », « An », ou le nombre de semaines tel quel. */
 export function libelleDuree(semaines: number, annee: boolean): string {

@@ -1,7 +1,7 @@
 import React from 'react';
 import { Beer, Check, ChevronRight, FlaskConical, Leaf, Link2, Package, Receipt, ShoppingCart, Snowflake, Wheat, X } from 'lucide-react';
 import { dateDeSemaine, etiquetteS, francsSignes, jourLisible, lundiDe, type ChoseCalendrier, type JalonBrassin, type JalonId } from '../../../domain/calendrier';
-import { CLASSE_TEINTE, champ, dureeVue, lieMontre, nomLie } from './Marque';
+import { CLASSE_TEINTE, apercuSansNom, champ, dureeVue, lieMontre, nomLie } from './Marque';
 
 /**
  * f4-b (E30) : toucher une chose ouvre son détail sous sa barre. Un brassin : ses étapes datées avec leurs icônes (brassage, fermentation,
@@ -67,7 +67,9 @@ function etapes(chose: ChoseCalendrier): Array<{ id: string; libelle: string; jo
   });
   if (!lignes.some(l => l.id === 'brassage') && chose.debut) lignes.unshift({ id: 'brassage', libelle: 'Brassage', jour: chose.debut, icone: <Wheat size={16} aria-hidden="true" /> });
   if (!lignes.some(l => l.id === 'conditionnement')) {
-    const prete = chose.finInconnue ? '' : chose.preteLe ?? '';
+    /* CRITIQUE-7 n° 2 : une bière pas brassée a sa date « prête » (au plus tôt, `pretePrevue`) : la grille la dit, comme sa durée, jamais
+       « à préciser » à côté de « prête le 16 déc. » */
+    const prete = chose.finInconnue ? '' : chose.preteLe ?? chose.pretePrevue ?? '';
     lignes.push({ id: 'prete', libelle: 'Prête', jour: prete, icone: <Check size={16} aria-hidden="true" /> });
   }
   return lignes;
@@ -106,7 +108,8 @@ export const DetailChose: React.FC<DetailChoseProps> = props => {
   const detailSansDate = brassin ? chose.detail : sansLaDate(chose.detail, chose.debut);
   const apercuLien = ((): { texte: string | null; apercu: string } | null => {
     if (!chose.lie) return null;
-    if (lieMontre(chose)) return { texte: chose.lie.texte, apercu: chose.lie.apercu };
+    /* CRITIQUE-7 n° 6 : « lié à Blonde d’automne · brassage 23 nov. · prête 21 déc. », jamais « … · Blonde d’automne · brassage … » */
+    if (lieMontre(chose)) return { texte: chose.lie.texte, apercu: apercuSansNom(chose.lie) };
     const nom = nomLie(chose.lie).toLocaleLowerCase('fr');
     const reste = chose.lie.apercu.split(' ; ').map(x => x.trim()).filter(x => x && !x.toLocaleLowerCase('fr').startsWith(nom));
     return reste.length ? { texte: null, apercu: reste.join(' ; ') } : null;

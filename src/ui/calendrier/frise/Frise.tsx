@@ -110,23 +110,53 @@ export const Frise: React.FC<FriseProps> = props => {
   /* D-135 (CRITIQUE-2 n° 13) : au repos, les rangées qui passent à la hauteur du + volant gardent leurs noms hors de sa zone ; mesuré après
      le rendu, une rangée ajoutée n'est jamais retirée tant que la mise en page ne change pas (pas d'oscillation) */
   const cleMise = `${paysage}|${colonnes.map(c => c.debut).join(',')}|${choses.length}|${masquees.join(',')}|${filtre ?? ''}`;
-  const [sousFab, setSousFab] = React.useState<{ cle: string; ids: IdRangee[] }>({ cle: '', ids: [] });
+  const [sousFab, setSousFab] = React.useState<{ cle: string; ids: IdRangee[]; reserve: number }>({ cle: '', ids: [], reserve: 0 });
   const idsSousFab = sousFab.cle === cleMise ? sousFab.ids : [];
-  React.useLayoutEffect(() => {
+  /*
+   * CRITIQUE-7 n° 7 : « Brouwland · malt −42 », son 0 sous le + après la rotation revenue en portrait. Le + est fixe : la rangée qui passe sous
+   * lui change quand la page défile ou tourne, sans nouveau rendu de la frise. La mesure se refait donc aussi au repos du défilement, au
+   * changement de taille et d'orientation. La zone gardée est celle du + mesuré (du bord gauche du + moins 8 px au bord droit de la frise),
+   * jamais moins que `reserveDroite`. Une rangée gardée le reste tant que la mise en page ne change pas : un nom ne saute pas d'un côté à
+   * l'autre en défilant (pas d'oscillation).
+   */
+  const sousFabRef = React.useRef({ cle: cleMise, ids: idsSousFab, reserve: sousFab.reserve });
+  sousFabRef.current = { cle: cleMise, ids: idsSousFab, reserve: sousFab.cle === cleMise ? sousFab.reserve : 0 };
+  const mesurerSousFab = React.useCallback(() => {
     const el = zone.current;
     if (!el || !reserveDroite || typeof document === 'undefined') return;
-    const fab = [...document.querySelectorAll<HTMLElement>('.floating-actions button')].find(b => /Actions rapides/.test(b.getAttribute('aria-label') ?? ''));
+    const fab = [...document.querySelectorAll<HTMLElement>('button[aria-label]')].find(b => /^Actions rapides/.test(b.getAttribute('aria-label') ?? ''));
     const f = fab?.getBoundingClientRect();
     if (!f || !f.height) return;
+    const { cle, ids, reserve } = sousFabRef.current;
+    const z = el.getBoundingClientRect();
+    const zoneFab = z.width > 0 ? Math.ceil(z.right - (f.left - 8)) : 0;
     const ajout: IdRangee[] = [];
     el.querySelectorAll<HTMLElement>('section[data-rangee]').forEach(s => {
       const r = s.getBoundingClientRect();
-      const haut = r.top + window.scrollY, bas = r.bottom + window.scrollY;
       const id = s.getAttribute('data-rangee') as IdRangee;
-      if (bas > f.top - 4 && haut < f.bottom + 4 && !idsSousFab.includes(id)) ajout.push(id);
+      /* le + et la rangée sont mesurés dans le même repère (l'écran) : la rangée passe-t-elle à sa hauteur, maintenant ? */
+      if (r.bottom > f.top - 4 && r.top < f.bottom + 4 && !ids.includes(id)) ajout.push(id);
     });
-    if (ajout.length) setSousFab({ cle: cleMise, ids: [...idsSousFab, ...ajout] });
-  });
+    const nouvelle = Math.max(reserve, zoneFab > 0 && zoneFab < (z.width || Infinity) ? zoneFab : 0);
+    if (ajout.length || nouvelle > reserve) setSousFab({ cle, ids: [...ids, ...ajout], reserve: nouvelle });
+  }, [reserveDroite]);
+  React.useLayoutEffect(() => { mesurerSousFab(); });
+  React.useEffect(() => {
+    if (!reserveDroite || typeof window === 'undefined') return undefined;
+    let t: ReturnType<typeof setTimeout> | null = null;
+    /* au repos du défilement (120 ms sans bouger), et après une rotation, le temps que la page se repose */
+    const plusTard = () => { if (t) clearTimeout(t); t = setTimeout(() => { t = null; mesurerSousFab(); }, 120); };
+    window.addEventListener('scroll', plusTard, { passive: true, capture: true });
+    window.addEventListener('resize', plusTard);
+    window.addEventListener('orientationchange', plusTard);
+    return () => {
+      if (t) clearTimeout(t);
+      window.removeEventListener('scroll', plusTard, { capture: true });
+      window.removeEventListener('resize', plusTard);
+      window.removeEventListener('orientationchange', plusTard);
+    };
+  }, [reserveDroite, mesurerSousFab]);
+  const reserveSousFab = Math.max(reserveDroite, sousFab.cle === cleMise ? sousFab.reserve : 0);
 
   const largeur = mesuree || largeurRepli;
   const n = Math.max(1, colonnes.length);
@@ -180,7 +210,7 @@ export const Frise: React.FC<FriseProps> = props => {
             largeur={largeur}
             mesures={mesures}
             paysage={paysage}
-            reserveDroite={paysage || idsSousFab.includes(r) ? reserveDroite : 0}
+            reserveDroite={paysage ? reserveDroite : idsSousFab.includes(r) ? reserveSousFab : 0}
             vueLarge={vueLarge}
             masquee={masquee}
             cause={masqueeParOeil ? 'oeil' : filtreeParFiltre ? 'filtre' : null}

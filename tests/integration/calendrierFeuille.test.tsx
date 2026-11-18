@@ -134,3 +134,21 @@ describe('CRITIQUE-6 n° 3, part frise (D-68, E34) : « Plus de détails › » 
     }
   });
 });
+
+describe('CRITIQUE-7 n° 4 (E34, D-22) : la feuille Brassins compte « prête le » depuis le jour de pose, jamais depuis un lundi passé', () => {
+  it('le mercredi 18 nov., S47 : « S47, 18 nov. » et « prête le 16 déc. » (28 j) ; S48 garde son lundi', () => {
+    const appels: Appel[] = [];
+    render(<BancCalendrier aujourdhui="2026-11-18" sansChrome onAppel={a => appels.push(a as Appel)} callbacks={{ periode: plage(52) }} />);
+    plusDe('brassins');
+    const d = dialogue('Brassins');
+    semaine(d, /^S47, /);
+    expect(d.getByText('S47, 18 nov.')).toBeInTheDocument();
+    expect(d.queryByText(/S47, 16 nov\./)).toBeNull();
+    const prete = document.querySelector('[data-prete]');
+    expect(prete?.textContent).toBe('prête le 16 déc.');
+    /* une semaine à venir garde son lundi : S48, 23 nov., prête le 21 déc. */
+    semaine(d, /^S48, /);
+    expect(d.getByText('S48, 23 nov.')).toBeInTheDocument();
+    expect(document.querySelector('[data-prete]')?.textContent).toBe('prête le 21 déc.');
+  });
+});

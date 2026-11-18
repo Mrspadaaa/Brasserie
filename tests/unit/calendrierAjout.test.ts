@@ -282,3 +282,32 @@ describe('CRITIQUE-4 n° 2 (E23, E24) : un brassin posé par la feuille porte le
     expect(ipa?.centimes).toBe(-4500);
   });
 });
+
+describe('CRITIQUE-7 n° 4 et décision (a) : un brassin posé cette semaine est prêt depuis aujourd’hui ; un achat posé est de matières', () => {
+  const JOUR = '2026-11-18';
+  const c = ctx({ aujourdhui: JOUR, maintenant: '2026-11-18T10:00:00.000Z' });
+
+  it('n° 4 : posé en S47 le 18 nov. avec 28 j : « prête le 16 déc. » (feuille et résumé), jamais « 14 déc. » ; plannedBrewDate et finPrevue le disent', () => {
+    let b = brouillonVide('brassins', '2026-11-16');
+    b = appliquerPuce(b, puces('brassins', c).find(x => x.genre === 'recette')!);
+    b = appliquerPuce(b, puces('brassins', c).find(x => x.libelle === '28 j')!);
+    /* la feuille, en direct (le lot C passe `aujourdhui`) */
+    expect(preteLe(b, JOUR)).toBe('prête le 16 déc.');
+    expect(preteLe(b, JOUR)).not.toContain('14 déc.');
+    /* le résumé de pose (message après « Ajouter ») */
+    const r = versEnregistrement({ ...b, debutChoisi: true }, c);
+    if (!('enregistrement' in r)) throw new Error(r.raison);
+    expect(r.resume).toBe('IPA maison · S47 · prête le 16 déc.');
+    expect(r.enregistrement.document).toMatchObject({ plannedBrewDate: JOUR, finPrevue: '2026-12-16' });
+    /* une semaine future : depuis son lundi (S48 : 23 nov. + 28 j = 21 déc.) */
+    const futur = { ...b, debut: '2026-11-23' };
+    expect(preteLe(futur, JOUR)).toBe('prête le 21 déc.');
+    const rf = versEnregistrement({ ...futur, debutChoisi: true }, c);
+    expect('resume' in rf && rf.resume).toBe('IPA maison · S48 · prête le 21 déc.');
+  });
+
+  it('décision (a) : un achat posé par la feuille est un FinancialPlan manuel de catégorie `brassage` (la rangée Achats le relit)', () => {
+    const b: BrouillonAjout = { ...brouillonVide('achats', '2026-11-30'), titre: 'ZZ TEST — houblon Citra', signe: '-', centimes: 24000, debutChoisi: true };
+    expect(plan(reussi(b, c))).toMatchObject({ category: 'brassage', source: 'manual', direction: 'out', amountCents: 24000, date: '2026-11-30' });
+  });
+});

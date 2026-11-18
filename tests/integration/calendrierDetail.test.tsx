@@ -141,3 +141,18 @@ describe('CRITIQUE-6, doutes : la fiche d’une vente rouverte', () => {
     expect(lien?.textContent).toContain('prête 21 déc.');
   });
 });
+
+describe('CRITIQUE-7 n° 2 : le détail d’une bière pas brassée dit sa date « prête » dans la grille', () => {
+  it('« Prête 16 déc. », jamais « à préciser » à côté de « prête le 16 déc. »', () => {
+    const saison = {
+      id: 'brassin-LOT-SAISON', rangee: 'brassins', titre: 'Saison de ferme', debut: '2026-11-18', fin: '2026-12-16', pasBrassee: true, pretePrevue: '2026-12-16',
+      duree: 'pas brassée · prête le 16 déc.', detail: 'pas brassée · brassage prévu le 10 nov. · prête le 16 déc. au plus tôt',
+      jalons: [{ id: 'brassage', libelle: 'Brassage', ecart: 0, jour: '2026-11-10', glissable: true }],
+      source: { genre: 'batch', id: 'LOT-SAISON', statut: 'planifie' }, ouvre: { ecran: 'brassin', id: 'LOT-SAISON' }, deplacable: true
+    } as unknown as ChoseCalendrier;
+    render(<DetailChose chose={saison} onFermer={() => {}} onOuvrir={() => {}} />);
+    const grille = document.querySelector('[data-etapes]')!;
+    expect(grille.textContent).toMatch(/Prête16 déc\./);
+    expect(grille.textContent).not.toMatch(/à préciser/);
+  });
+});

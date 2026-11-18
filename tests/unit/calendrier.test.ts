@@ -8,6 +8,7 @@ import {
   retardsDe, semainesDe, totalVoie, budgetBrassin, francsSignes, idChoseArgent, preparerChoses, texteDuree, etiquetteListe, dureeBrassin, type Rangee,
   semaineAvecAn, choseCoutAVenir, COUT_A_VENIR, preteAuPlusTot, CATEGORIE_MATIERES, estFactureDeMatieres, fournisseurDePiece, fusionnerFacturesLivraisons, contientNom
 } from '../../src/domain/calendrier';
+import type { ChoseCalendrier } from '../../src/domain/calendrier';
 import { deplacer } from '../../src/domain/calendrierGestes';
 import { REGLAGES_VIDES } from '../../src/domain/fournisseurs';
 
@@ -431,17 +432,23 @@ describe('CRITIQUE-3 (17.11) : J réel, pas brassée, courses / frais / impôt, 
     expect(texteDuree(choseBrassin(lot({ status: 'garde', brewDate: '09.11.2026', actualBrewDate: '09.11.2026', recipeSnapshot: recette }), '2026-12-20')!)).toBe('J28 / 28 · prête 7 déc.');
   });
 
-  it('t2 : planifiée le 10 nov., pas brassée, le 16 nov. : « pas brassée », ni « prête », ni « J0 » ; un planifié futur garde « J0 / n »', () => {
+  it('t2 : planifiée le 10 nov., pas brassée, le 16 nov. : « pas brassée », jamais « J0 » ; un planifié futur garde « J0 / n »', () => {
     const c = choseBrassin(lot({ id: 'LOT-S', name: 'Saison de ferme', status: 'planifie', brewDate: '', plannedBrewDate: '10.11.2026', recipeSnapshot: recette }), '2026-11-16')!;
     expect(c.pasBrassee).toBe(true);
     const t = texteDuree(c)!;
     expect(t).toContain('pas brassée');
-    expect(t).toBe('pas brassée · prévue le 10 nov.');
-    expect(t).not.toMatch(/prête|J0/);
+    /* CRITIQUE-7 n° 2 : la barre court jusqu'à « prête » (16 nov. + 28 j), la durée le dit ; jamais de « J » (rien n'est en cuve) */
+    expect(t).toBe('pas brassée · prête le 14 déc.');
+    expect(t).not.toMatch(/J\d/);
     expect(c.preteLe).toBeUndefined();
-    /* visible cette semaine (de son jour prévu à aujourd'hui), avec son seul jalon de brassage */
-    expect(c).toMatchObject({ debut: '2026-11-10', fin: '2026-11-16', deplacable: true });
+    /* de max(jour prévu, aujourd'hui) à « prête », avec son seul jalon de brassage ; le jour prévu reste dit (Liste, détail) */
+    expect(c).toMatchObject({ debut: '2026-11-16', fin: '2026-12-14', brassagePrevu: '2026-11-10', deplacable: true });
+    expect(c.detail).toContain('brassage prévu le 10 nov.');
     expect(c.jalons?.map(j => j.id)).toEqual(['brassage']);
+    /* sans cycle connu : aujourd'hui seul, « prévue le 10 nov. », aucune fin inventée */
+    const sansCycle = choseBrassin(lot({ id: 'LOT-S', name: 'Saison de ferme', status: 'planifie', brewDate: '', plannedBrewDate: '10.11.2026' }), '2026-11-16')!;
+    expect(sansCycle).toMatchObject({ debut: '2026-11-16', fin: '2026-11-16', duree: 'pas brassée · prévue le 10 nov.' });
+    expect(sansCycle.pretePrevue).toBeUndefined();
     const futur = choseBrassin(lot({ id: 'LOT-F', status: 'planifie', brewDate: '', plannedBrewDate: '23.11.2026', recipeSnapshot: recette }), '2026-11-16')!;
     expect(texteDuree(futur)).toBe('J0 / 28 · prête 21 déc.');
     expect(futur.pasBrassee).toBeUndefined();
@@ -565,8 +572,8 @@ describe('CRITIQUE-6 (18.11) : prête au plus tôt, factures de matières dans A
     expect(c.detail).toContain('pas brassée');
     expect(c.detail).toContain('prête le 22 déc.');
     expect(`${c.detail} ${c.duree}`).not.toContain('15 déc.');
-    /* sa barre et sa date partent de la même semaine : la barre finit aujourd'hui (S47), la date en compte le cycle */
-    expect(c.fin).toBe('2026-11-17');
+    /* CRITIQUE-7 n° 2 : sa barre court d'aujourd'hui (S47) à « prête » : elle dit le temps en cuve */
+    expect(c).toMatchObject({ debut: '2026-11-17', fin: '2026-12-22' });
     /* prévue dans le futur : prévue + cycle (24 nov. + 35 j = 29 déc.) */
     const futur = lot({ ...saison, plannedBrewDate: '24.11.2026' });
     expect(preteAuPlusTot(futur, '2026-11-17')).toBe('2026-12-29');
@@ -612,11 +619,36 @@ describe('CRITIQUE-6 (18.11) : prête au plus tôt, factures de matières dans A
     expect(liv).toMatchObject({ titre: 'Livraison Brouwland', debut: '2026-11-30' });
     const r = fusionnerFacturesLivraisons([fac, liv], new Map([['F-B', 'brouwland']]));
     expect(r).toHaveLength(1);
-    expect(r[0]).toMatchObject({ rangee: 'achats', titre: 'Livraison Brouwland · malt', centimes: -42000, source: { genre: 'facture', id: 'F-B' }, ouvre: { ecran: 'piece', id: 'F-B' }, mouvements: ['invoice:F-B'] });
-    expect(r[0].titre).toContain('Brouwland');
-    /* une autre semaine : la facture reste seule dans Achats, la livraison reste */
+    /* CRITIQUE-7 n° 8 : le fournisseur, le montant de la facture, la date de la livraison */
+    expect(r[0]).toMatchObject({ rangee: 'achats', titre: 'Brouwland · malt', centimes: -42000, debut: '2026-11-30', fin: '2026-11-30', source: { genre: 'facture', id: 'F-B' }, ouvre: { ecran: 'piece', id: 'F-B' }, mouvements: ['invoice:F-B'] });
+    expect(r[0].detail).toBe('livraison le 30 nov. · commandée le 23 nov. · délai appris 7 j (1 commande) · facture due le 2 déc.');
+    /* hors du délai appris (échéance le 16 déc., plage 16 nov. → 7 déc.), sans date d'émission : la facture reste seule, la livraison reste sans montant */
     const loin = { ...fac, debut: '2026-12-16', fin: '2026-12-16' };
-    expect(fusionnerFacturesLivraisons([loin, liv], new Map([['F-B', 'brouwland']])).map(c => c.titre)).toEqual(['Brouwland · malt', 'Livraison Brouwland']);
+    const seules = fusionnerFacturesLivraisons([loin, liv], new Map([['F-B', 'brouwland']]));
+    expect(seules.map(c => c.titre)).toEqual(['Brouwland · malt', 'Livraison Brouwland']);
+    expect('centimes' in seules[1]).toBe(false);
+  });
+
+  it('CRITIQUE-7 n° 8 (E38, D-118) : la facture se pose sur la livraison qu’elle règle, même une autre semaine ; la plus proche ; une livraison, une facture', () => {
+    const facture = (id: string, date: string, cents = 42000): ChoseCalendrier => choseArgent({ id: `invoice:${id}`, date, label: 'Brouwland · malt', amountCents: cents, direction: 'out', source: 'invoice', category: 'brassage' }, [], undefined, new Set([id]))!;
+    /* délai appris 7 j ; commandes du 14 nov. (→ 21 nov., S47) et du 21 déc. (→ 28 déc., S53) */
+    const reglages = { ...REGLAGES_VIDES, commandes: { brouwland: [{ le: '2026-10-01', recue: '2026-10-08' }, { le: '2026-11-14' }, { le: '2026-12-21' }] } };
+    const livs = livraisonsAttendues(reglages);
+    expect(livs.map(l => l.debut)).toEqual(['2026-11-21', '2026-12-28']);
+    const four = new Map([['F-B', 'brouwland'], ['F-C', 'brouwland']]);
+    /* la facture du banc : émise le 7 nov., due le 2 déc. (S49) ; la livraison le 21 nov. (S47) : deux semaines d'écart, une seule chose */
+    const banc = fusionnerFacturesLivraisons([facture('F-B', '2026-12-02'), ...livs], four, new Map([['F-B', '2026-11-07']]));
+    const brouwland = banc.filter(c => /Brouwland/.test(c.titre));
+    expect(brouwland.map(c => [c.titre, c.debut, c.centimes ?? null])).toEqual([['Brouwland · malt', '2026-11-21', -42000], ['Livraison Brouwland', '2026-12-28', null]]);
+    /* deux factures : chacune sur la livraison la plus proche, jamais deux sur la même */
+    const deux = fusionnerFacturesLivraisons([facture('F-B', '2026-12-02'), facture('F-C', '2027-01-04', 30000), ...livs], four, new Map([['F-B', '2026-11-07'], ['F-C', '2026-12-21']]));
+    expect(deux.map(c => [c.source.id, c.debut, c.centimes ?? null])).toEqual([['F-B', '2026-11-21', -42000], ['F-C', '2026-12-28', -30000]]);
+    /* un autre fournisseur ne prend jamais la livraison de Brouwland */
+    const autre = fusionnerFacturesLivraisons([facture('F-H', '2026-11-20'), ...livs], new Map([['F-H', 'hopfen']]));
+    expect(autre).toHaveLength(3);
+    /* une facture émise bien avant la commande (une commande d'avant) ne règle pas celle-ci */
+    const ancienne = fusionnerFacturesLivraisons([facture('F-B', '2026-12-20'), livs[0]], four, new Map([['F-B', '2026-10-02']]));
+    expect(ancienne.map(c => c.titre)).toEqual(['Brouwland · malt', 'Livraison Brouwland']);
   });
 
   it('n° 15 : le client déjà dans le titre n’a pas de pastille qui le répète ; un lien vers un brassin reste', () => {

@@ -77,8 +77,9 @@ describe('E07, ET-PER : la période de l’onglet est la période de l’app', (
     const onPeriode = vi.fn();
     const lundi = lundiDe('2026-11-16');
     render(<CalendrierTab {...props()} aujourdhui="2026-11-16" periode={{ genre: 'mois', annee: 2026, mois: 11 }} onPeriode={onPeriode} />);
-    /* CRITIQUE-6 n° 11 (ET-PER) : le mois de l'app règle la fenêtre (16, 23 et 30 nov.) et le bouton dit « Nov. », comme la barre ; lire n'écrit rien */
-    expect(document.querySelector('[data-frise]')!.getAttribute('data-nb-colonnes')).toBe('3');
+    /* CRITIQUE-6 n° 11 (ET-PER) : le mois de l'app règle la fenêtre et le bouton dit « Nov. », comme la barre ; lire n'écrit rien.
+       Décision (c) du pilote, 18.11 (lot B) : un mois suivi montre au moins 4 semaines dès aujourd'hui : S47 à S50 (16 nov. → 13 déc.), plus 3. */
+    expect(document.querySelector('[data-frise]')!.getAttribute('data-nb-colonnes')).toBe('4');
     expect(document.querySelector('[data-ent-periode]')!.textContent).toMatch(/Nov\./);
     expect(onPeriode).not.toHaveBeenCalled();
     fireEvent.click(document.querySelector('[data-ent-periode]')!);

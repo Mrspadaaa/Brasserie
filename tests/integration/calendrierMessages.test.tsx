@@ -69,6 +69,29 @@ describe('d1 : un seul canal de message (n° 7)', () => {
     await waitFor(() => expect(messages()).toHaveLength(0));
   });
 
+  it('CRITIQUE-7 : la page qui raccourcit après le geste (une rangée de moins) et que le navigateur ramène au nouveau bas ne chasse pas « Annuler » ; un vrai défilement, si', async () => {
+    /* au bout du défilement (1 051 − 800 = 251), la rangée Achats perd 30 px : la page fait 1 021 et le navigateur la remet à 221 de lui-même */
+    const page = { scrollHeight: 1051, clientHeight: 800 };
+    Object.defineProperty(document, 'scrollingElement', { configurable: true, get: () => page });
+    Object.defineProperty(window, 'scrollY', { value: 251, configurable: true, writable: true });
+    try {
+      monter();
+      glisser(barre(/^Hotte/), colonne());
+      await screen.findByRole('status');
+      page.scrollHeight = 1021;
+      Object.defineProperty(window, 'scrollY', { value: 221, configurable: true, writable: true });
+      fireEvent.scroll(window);
+      await act(async () => { await new Promise(r => setTimeout(r, 50)); });
+      expect(messages()).toHaveLength(1);
+      /* le brasseur défile ensuite de 30 px : le message part */
+      Object.defineProperty(window, 'scrollY', { value: 191, configurable: true, writable: true });
+      fireEvent.scroll(window);
+      await waitFor(() => expect(messages()).toHaveLength(0));
+    } finally {
+      delete (document as unknown as Record<string, unknown>).scrollingElement;
+    }
+  });
+
   it('un défilement de la frise (son conteneur) de 30 px le chasse aussi', async () => {
     monter();
     glisser(barre(/^Hotte/), colonne());

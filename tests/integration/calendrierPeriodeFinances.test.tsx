@@ -16,7 +16,8 @@ import { etiquetteCourte, type Periode } from '../../src/components/periode/peri
 import { CalendrierTab } from '../../src/components/tabs/CalendrierTab';
 import { FinancesTab } from '../../src/components/tabs/FinancesTab';
 import { StorageService, defaultConfig } from '../../src/services/storage';
-import { ajouterJours, lundiDe } from '../../src/domain/calendrier';
+import { ajouterJours, lundiDe, semainesDe } from '../../src/domain/calendrier';
+import { fenetreDePeriode } from '../../src/ui/calendrier/entete/Fenetre';
 import { todayISO } from '../../src/domain/finance/ledger';
 import { titreJours } from '../../src/ui/finance/operations/plage';
 
@@ -56,6 +57,29 @@ afterEach(() => { cleanup(); vi.restoreAllMocks(); });
 
 const finances = () => within(document.querySelector('[data-onglet="finances"]') as HTMLElement);
 const calendrier = () => document.querySelector('[data-onglet="calendrier"]') as HTMLElement;
+
+describe('Décision pilote (c), CRITIQUE-7 : la période « mois » se lit dès aujourd’hui sur 4 semaines au moins', () => {
+  const NOV: Periode = { genre: 'mois', annee: 2026, mois: 11 };
+  const semaines = (f: { du: string; semaines: number } | null) => f && semainesDe(f.du, f.semaines).map(s => `S${s.numero}`);
+  it('aujourd’hui 18 nov. 2026 : novembre → S47 à S50 (16 nov. – 13 déc.), le mois finit avant, la fenêtre déborde sur décembre', () => {
+    const f = fenetreDePeriode(NOV, lundiDe('2026-11-18'), 52);
+    expect(f).toEqual({ du: '2026-11-16', semaines: 4 });
+    expect(semaines(f)).toEqual(['S47', 'S48', 'S49', 'S50']);
+    expect(ajouterJours(f!.du, f!.semaines * 7 - 1)).toBe('2026-12-13');
+  });
+  it('aujourd’hui 2 nov. 2026 : novembre → S45 à S49 (le mois en a déjà 5)', () => {
+    expect(semaines(fenetreDePeriode(NOV, lundiDe('2026-11-02'), 52))).toEqual(['S45', 'S46', 'S47', 'S48', 'S49']);
+  });
+  it('aujourd’hui 30 nov. 2026 : jamais une semaine seule, 4 semaines dès S49', () => {
+    const f = fenetreDePeriode(NOV, lundiDe('2026-11-30'), 52);
+    expect(f).toEqual({ du: '2026-11-30', semaines: 4 });
+    expect(semaines(f)).toEqual(['S49', 'S50', 'S51', 'S52']);
+  });
+  it('une plage « du … au » courte n’est pas allongée (seul le mois l’est), et l’horizon borne toujours', () => {
+    expect(fenetreDePeriode({ genre: 'dates', du: '2026-11-16', au: '2026-11-22' }, '2026-11-16', 52)).toEqual({ du: '2026-11-16', semaines: 1 });
+    expect(fenetreDePeriode(NOV, '2026-11-30', 2)).toEqual({ du: '2026-11-30', semaines: 2 });
+  });
+});
 
 describe('ET-PER : calendrier → Finances', () => {
   it('« 6 sem. » au calendrier : Finances affiche la plage et ne liste que l’opération de cette plage', async () => {
@@ -104,7 +128,8 @@ describe('CRITIQUE-6 n° 11 (E07 ET-PER, D-12, D-13) : à 390, la barre de l’a
   const MOIS: Periode = { genre: 'mois', annee: Number(JOUR.slice(0, 4)), mois: Number(JOUR.slice(5, 7)) };
   /* la fin du mois en cours, et son lundi : les semaines du mois dans l'horizon (de ce lundi au lundi de la dernière semaine du mois) */
   const finMois = (() => { const d = new Date(Date.UTC(MOIS.genre === 'mois' ? MOIS.annee : 0, MOIS.genre === 'mois' ? MOIS.mois : 0, 0)); return d.toISOString().slice(0, 10); })();
-  const semainesDuMois = Math.round((Date.parse(lundiDe(finMois)) - Date.parse(LUNDI)) / (7 * 86_400_000)) + 1;
+  /* décision pilote (c), CRITIQUE-7 : 4 semaines au moins dès aujourd'hui ; si le mois finit avant, la fenêtre déborde sur le suivant */
+  const semainesDuMois = Math.max(4, Math.round((Date.parse(lundiDe(finMois)) - Date.parse(LUNDI)) / (7 * 86_400_000)) + 1);
 
   it('l’app sur le mois en cours : le calendrier montre les semaines de ce mois et son bouton dit le même libellé que la barre', async () => {
     const journal = vi.fn();

@@ -398,6 +398,13 @@ export interface ChoseCalendrier {
    * n° 1). C'est la base de « pas brassée · prête le … » quand on tire son bord ; absent quand la recette ne donne aucun jour.
    */
   pretePrevue?: string;
+  /**
+   * Brassin pas brassé (`pasBrassee`) : son jour de brassage prévu, passé, ISO (CRITIQUE-7 n° 2). Sa barre part d'aujourd'hui (`debut`) : c'est
+   * ce champ, et non `debut`, qui dit « prévue le 10 nov. » (Liste, retards).
+   */
+  brassagePrevu?: string;
+  /** Livraison attendue : le jour de la commande et le délai appris (CRITIQUE-7 n° 8 : la facture qui la règle se pose dessus). */
+  livraison?: { commandeeLe: string; delaiJours: number };
   /** Facture en retard (CRITIQUE-5 n° 4) : sa vraie échéance, ISO. `debut` reste le jour où la prévision la compte (aujourd'hui). */
   echeance?: string;
   /** Facture dont l'échéance est passée sans paiement (CRITIQUE-5 n° 4, E40) : la Liste la met en tête de « En cours » avec « en retard ». */
@@ -722,16 +729,17 @@ export function choseBrassin(batch: Batch, aujourdhui: string, options: { comman
      */
     if (j0 < aujourdhui) {
       const brassage = jalonsBrassin(batch).filter(j => j.id === 'brassage');
-      const jours = joursPrevus(batch);
-      const recette = jours ? ajouterJours(j0, jours) : null;
-      const ecrite = fin?.origine === 'finPrevue' ? fin.jour : null;
-      const allonge = ecrite ? Math.max(0, recette ? ecartJours(recette, ecrite) : ecartJours(aujourdhui, ecrite)) : 0;
       /* CRITIQUE-6 n° 2 : « prête le » se compte depuis aujourd'hui (brassée au plus tôt aujourd'hui), jamais depuis le jour prévu passé */
       const prete = preteAuPlusTot(batch, aujourdhui);
+      /*
+       * CRITIQUE-7 n° 2 (D-47, D-190, E29) : la barre court de max(jour prévu, aujourd'hui) = aujourd'hui jusqu'à « prête » : le temps qu'elle
+       * passera en cuve, comme un brassin planifié (J0 → prête). Tirer son bord déplace donc la date dite. Sans cycle connu : aujourd'hui seul,
+       * « prévue le … », et le bord refuse avec sa raison (`allongerBrassin`).
+       */
       return {
-        /* sa durée dit « pas brassée · prévue le … » : le titre n'a pas à le répéter (heurt t3-a / t3-c) */
-        ...base, debut: j0, fin: ajouterJours(aujourdhui, allonge), pasBrassee: true, ...(prete ? { pretePrevue: prete } : {}),
-        duree: ecrite && prete ? dureePasBrassee(prete) : `pas brassée · prévue le ${jourLisible(j0)}`,
+        /* sa durée dit « pas brassée · prête le … » : le titre n'a pas à le répéter (heurt t3-a / t3-c) */
+        ...base, debut: aujourdhui, fin: prete ?? aujourdhui, pasBrassee: true, brassagePrevu: j0, ...(prete ? { pretePrevue: prete } : {}),
+        duree: prete ? dureePasBrassee(prete) : `pas brassée · prévue le ${jourLisible(j0)}`,
         detail: `pas brassée · brassage prévu le ${jourLisible(j0)}${prete ? ` · prête le ${jourLisible(prete)} au plus tôt` : ''}`, jalons: brassage, deplacable: true
       };
     }
@@ -841,24 +849,51 @@ export function estFactureDeMatieres(
   return !lignes.length && tx.category === CATEGORIE_MATIERES;
 }
 
+/** L'écart en jours entre un jour et une plage [du, au] : 0 dedans, sinon la distance au bord le plus proche. */
+const ecartAPlage = (jour: string, du: string, au: string): number => (jour < du ? ecartJours(jour, du) : jour > au ? ecartJours(au, jour) : 0);
+
 /**
- * CRITIQUE-6 n° 7 : la facture d'un fournisseur et la « Livraison <fournisseur> » de la même semaine sont UNE chose, dans Achats : le nom de la
- * livraison, le montant et la pièce de la facture (« Payé » d'un toucher), ses mouvements de caisse. Sans livraison cette semaine, la facture reste
- * seule dans Achats. `fournisseurs` : id de la pièce → clé du fournisseur (`fournisseurDePiece`). Pure.
+ * CRITIQUE-7 n° 8 (E38, D-118) : la facture de matières d'un fournisseur se pose sur la livraison attendue qu'elle règle, même si elles ne tombent
+ * pas la même semaine. UNE chose dans Achats : « Livraison Brouwland · malt », le montant et la pièce de la facture (« Payé » d'un toucher), ses
+ * mouvements de caisse (l'argent sort toujours à l'échéance), à la date de la livraison ; le détail dit l'échéance.
+ *
+ * Rapprochement (dans le délai appris) : une livraison attendue du même fournisseur dont la plage [commande − délai appris, livraison + délai appris]
+ * contient le jour d'émission de la pièce (`emises`) ou son échéance ; parmi elles, la plus proche (écart à la plage, puis écart entre l'échéance
+ * et la livraison). Une livraison ne porte qu'une facture. Sans livraison correspondante, la facture reste seule dans Achats ; une livraison sans
+ * facture reste sans montant (jamais 0). `fournisseurs` : id de la pièce → clé du fournisseur (`fournisseurDePiece`). Pure.
  */
-export function fusionnerFacturesLivraisons(choses: readonly ChoseCalendrier[], fournisseurs: ReadonlyMap<string, string>): ChoseCalendrier[] {
+export function fusionnerFacturesLivraisons(
+  choses: readonly ChoseCalendrier[], fournisseurs: ReadonlyMap<string, string>,
+  /** id de la pièce → jour où elle a été émise (`Transaction.date`, ISO) ; absent : l'échéance seule. */
+  emises?: ReadonlyMap<string, string>
+): ChoseCalendrier[] {
   const prises = new Set<string>();
   const fusion = new Map<string, ChoseCalendrier>();
-  for (const f of choses) {
-    if (f.source.genre !== 'facture' || f.rangee !== 'achats' || !f.debut) continue;
+  const factures = choses.filter(f => f.source.genre === 'facture' && f.rangee === 'achats' && f.debut)
+    .sort((a, b) => (a.echeance ?? a.debut).localeCompare(b.echeance ?? b.debut) || a.id.localeCompare(b.id));
+  for (const f of factures) {
     const cle = fournisseurs.get(f.source.id);
     if (!cle) continue;
-    const semaine = lundiDe(f.debut);
-    const liv = choses.find(l => l.source.genre === 'livraison' && !prises.has(l.id) && l.source.id.startsWith(`${cle}-`) && l.debut && lundiDe(l.debut) === semaine);
-    if (!liv) continue;
+    const echeance = f.echeance ?? f.debut;
+    const emise = isoDate(emises?.get(f.source.id));
+    const reperes = emise ? [emise, echeance] : [echeance];
+    let meilleure: { liv: ChoseCalendrier; distance: number } | null = null;
+    for (const l of choses) {
+      if (l.source.genre !== 'livraison' || prises.has(l.id) || !l.source.id.startsWith(`${cle}-`) || !l.debut || !l.livraison) continue;
+      const du = ajouterJours(l.livraison.commandeeLe, -l.livraison.delaiJours), au = ajouterJours(l.debut, l.livraison.delaiJours);
+      if (!reperes.some(r => ecartAPlage(r, du, au) === 0)) continue;
+      const distance = Math.abs(ecartJours(l.debut, echeance));
+      if (!meilleure || distance < meilleure.distance || (distance === meilleure.distance && l.debut < meilleure.liv.debut)) meilleure = { liv: l, distance };
+    }
+    if (!meilleure) continue;
+    const liv = meilleure.liv;
     prises.add(liv.id);
-    const quoi = f.titre.split(' · ').slice(1).join(' · ');
-    fusion.set(f.id, { ...f, titre: quoi ? `${liv.titre} · ${quoi}` : liv.titre, detail: `${liv.detail ?? `livraison le ${jourLisible(liv.debut)}`} · facture ${f.detail ?? ''}`.trim() });
+    /* le titre de la pièce (« Brouwland · malt ») : le fournisseur d'abord, court à 390 (CRITIQUE-7 n° 7) ; la livraison est dite dans le détail */
+    const facture = f.enRetard ? `facture : ${f.detail ?? ''}` : `facture due le ${jourLisible(echeance)}${f.centimes === undefined ? ' · montant non renseigné' : ''}`;
+    fusion.set(f.id, {
+      ...f, debut: liv.debut, fin: liv.fin, livraison: liv.livraison,
+      detail: `livraison le ${jourLisible(liv.debut)}${liv.detail ? ` · ${liv.detail}` : ''} · ${facture}`
+    });
   }
   return choses.flatMap(c => (prises.has(c.id) ? [] : [fusion.get(c.id) ?? c]));
 }
@@ -954,6 +989,7 @@ export function livraisonsAttendues(reglages: ReglagesFournisseurs): ChoseCalend
       const jour = ajouterJours(le, delai.jours);
       sortie.push({
         id: `livraison-${cle}-${i}`, rangee: 'achats', titre: `Livraison ${nom}`, debut: jour, fin: jour, detail: `commandée le ${jourLisible(le)} · délai appris ${delai.jours} j (${delai.sur} commande${delai.sur > 1 ? 's' : ''})`,
+        livraison: { commandeeLe: le, delaiJours: delai.jours },
         source: { genre: 'livraison', id: `${cle}-${i}` }, ouvre: { ecran: 'fournisseur', id: cle }, deplacable: { raison: 'La livraison suit la commande : à régler dans Courses.' }
       });
     });

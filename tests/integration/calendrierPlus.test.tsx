@@ -15,6 +15,7 @@ vi.mock('../../src/services/financeService', () => {
   return { FinanceService };
 });
 import { BancCalendrier } from '../../src/design/CalendrierPreview';
+import { resumeSansSemaine } from '../../src/components/tabs/CalendrierTab';
 import { PlanSheet } from '../../src/ui/finance/FinanceForms';
 import { StorageService } from '../../src/services/storage';
 import { usePlusPageActions } from '../../src/ui/plusPage';
@@ -114,6 +115,34 @@ describe('C7 (CAL-CLAV) : une fête, une vente probable et un brassin s’ajoute
     fireEvent.click(d.getByRole('button', { name: /^Ajouter/ }));
     await waitFor(() => expect(appels.filter(a => a.op === 'creer')).toHaveLength(1));
     expect(appels[0]).toMatchObject({ collection: 'batches', patch: { recipeRef: 'R-PORTER', status: 'planifie', plannedBrewDate: '2026-11-16' } });
+  });
+
+  it('CRITIQUE-7 (A6) : le message d’une pose dit la semaine une seule fois (« Café du Pont, 1 fût · S47 : a → b », jamais « S47 · S47 : »)', async () => {
+    const { appels } = monter();
+    const messages: string[] = [];
+    for (const [rangee, puce] of [['ventes', /Café du Pont, 1 fût/], ['ventes', /^La Cigogne/], ['fetes', /^Fête de village$/]] as const) {
+      ouvrir(rangee);
+      const d = dialogue(rangee === 'ventes' ? 'Ventes' : 'Fêtes');
+      fireEvent.click(d.getAllByRole('button', { name: puce })[0]);
+      const n = appels.filter(a => a.op === 'creer').length;
+      fireEvent.click(d.getByRole('button', { name: /^Ajouter/ }));
+      await waitFor(() => expect(appels.filter(a => a.op === 'creer').length).toBe(n + 1));
+      const statut = await screen.findByText(/Annuler/, { selector: '[role="status"] *, [role="status"]' }).catch(() => null);
+      messages.push((statut?.closest('[role="status"]') ?? document.querySelector('[role="status"]'))?.textContent ?? '');
+    }
+    /* au moins une pose avec effet sur la caisse (la vente probable) : sinon le test ne prouverait rien */
+    expect(messages.some(m => /S\d+ : [−\d\s’']+ → [−\d\s’']+/.test(m))).toBe(true);
+    for (const m of messages) {
+      const semaines = m.match(/\bS\d{1,2}\b/g) ?? [];
+      expect(new Set(semaines).size, `message « ${m} »`).toBe(semaines.length);
+    }
+  });
+
+  it('resumeSansSemaine : la semaine du résumé part quand l’effet la dit ; le reste (« vente confirmée ») reste', () => {
+    expect(resumeSansSemaine('3 fûts La Cigogne · S47', 'S47 : 3 268 → 4 168')).toBe('3 fûts La Cigogne');
+    expect(resumeSansSemaine('Café du Pont · S2 ’27 · vente confirmée', 'S2 : 100 → 230')).toBe('Café du Pont · vente confirmée');
+    expect(resumeSansSemaine('Hotte · S49', 'S50 : 1 → 2')).toBe('Hotte · S49');
+    expect(resumeSansSemaine('S47 · S47', 'S47 : 1 → 2')).toBe('S47');
   });
 
   it('une somme au-delà de 10 fois la plus grosse de la rangée demande confirmation', async () => {
@@ -313,6 +342,14 @@ describe('CRITIQUE-2 n° 4 et 12 (D-206, E35) : le + volant en paysage, deux blo
     const menu = screen.getByRole('menu');
     expect(menu).not.toHaveAttribute('data-plus-disposition');
     expect(menu.querySelector('[data-bloc]')).toBeNull();
+  });
+
+  it('CRITIQUE-7 n° 4 : le 18 nov., « Poser un brassin S47 · prête le 16 déc. » (brassé au plus tôt aujourd’hui + 28 j), plus le 14 déc. compté depuis le lundi', () => {
+    render(<BancCalendrier aujourdhui="2026-11-18" />);
+    fireEvent.click(screen.getByRole('button', { name: /Actions rapides/ }));
+    const precision = screen.getByRole('menu').querySelector('[data-page-action="brassin"] [data-plus-precision]') as HTMLElement;
+    expect(precision.textContent).toMatch(/^S47 · prête le 16 déc\.?$/);
+    expect(precision.textContent).not.toMatch(/14 déc/);
   });
 
   it('« Poser un brassin » : sa précision est sous le libellé, entière, avec la date de « prête le »', () => {

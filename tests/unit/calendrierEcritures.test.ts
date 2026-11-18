@@ -294,7 +294,9 @@ describe('Banc (?preview=calendrier) : la fixture et son port disent la même ch
     const prets = preparerChoses(mod.choses);
     const de = (id: string) => prets.find(c => c.id === id)!;
     expect(texteDuree(de('brassin-LOT-IPA'))).toBe('J7 / 28 · prête 7 déc.');
-    expect(texteDuree(de('brassin-LOT-SAISON'))).toBe('pas brassée · prévue le 10 nov.');
+    /* CRITIQUE-7 n° 2 : brassée au plus tôt aujourd'hui (16 nov.), cycle de la recette du banc 28 j : sa barre court jusqu'au 14 déc. */
+    expect(texteDuree(de('brassin-LOT-SAISON'))).toBe('pas brassée · prête le 14 déc.');
+    expect(de('brassin-LOT-SAISON')).toMatchObject({ debut: AUJOURDHUI, fin: '2026-12-14', brassagePrevu: '2026-11-10' });
     const stout = de('brassin-LOT-STOUT-4');
     expect(stout).toMatchObject({ debut: '2026-11-25', preteLe: '2026-12-23' });
     expect(texteDuree(stout)).toBe('J0 / 28 · prête 23 déc.');
@@ -349,18 +351,34 @@ describe('Banc (?preview=calendrier) : la fixture et son port disent la même ch
     expect(prets.filter(c => c.titre === 'Loyer du local').every(c => c.rangee === 'papiers')).toBe(true);
   });
 
-  it('CRITIQUE-6 n° 7 : la facture Brouwland due la semaine de sa livraison est posée SUR la « Livraison Brouwland » : une chose, −420, la pièce', () => {
+  it('CRITIQUE-6 n° 7 : la facture Brouwland due la semaine de sa livraison est posée SUR la livraison : une chose, −420, la pièce', () => {
     const e = etatBanc(AUJOURDHUI);
     /* la livraison attendue tombe le 21 nov. (commande du 14 nov. + 7 j appris) : la facture due le 20 nov. est de la même semaine */
     const memeSemaine = { ...e, transactions: e.transactions.map(t => (t.id === 'F-BROUWLAND' ? { ...t, finance: { ...t.finance!, dueDate: '2026-11-20' } } : t)) };
     const prets = preparerChoses(modeleBanc(memeSemaine).choses);
     const brouwland = prets.filter(c => /Brouwland/.test(c.titre));
     expect(brouwland).toHaveLength(1);
-    expect(brouwland[0]).toMatchObject({ rangee: 'achats', titre: 'Livraison Brouwland · malt', centimes: -42000, debut: '2026-11-20', source: { genre: 'facture', id: 'F-BROUWLAND' } });
+    /* CRITIQUE-7 n° 8 : à la date de la livraison, sous le nom du fournisseur */
+    expect(brouwland[0]).toMatchObject({ rangee: 'achats', titre: 'Brouwland · malt', centimes: -42000, debut: '2026-11-21', source: { genre: 'facture', id: 'F-BROUWLAND' } });
     expect(brouwland[0].detail).toMatch(/délai appris 7 j/);
     /* la courbe porte la facture une fois, sous ce nom */
     const m = modeleBanc(memeSemaine);
-    expect(m.courbe!.mouvements.filter(x => x.id === 'invoice:F-BROUWLAND').map(x => x.nom)).toEqual(['Livraison Brouwland · malt']);
+    expect(m.courbe!.mouvements.filter(x => x.id === 'invoice:F-BROUWLAND').map(x => x.nom)).toEqual(['Brouwland · malt']);
+  });
+
+  it('CRITIQUE-7 n° 8 (E38, D-118) : la fixture du banc telle quelle (livraison S47, facture due S49) : UNE chose Brouwland dans Achats, −420, à la livraison', () => {
+    const m = modeleBanc(etatBanc(AUJOURDHUI));
+    const prets = preparerChoses(m.choses);
+    const brouwland = prets.filter(c => /Brouwland/.test(c.titre));
+    expect(brouwland).toHaveLength(1);
+    expect(brouwland[0]).toMatchObject({ rangee: 'achats', titre: 'Brouwland · malt', centimes: -42000, debut: '2026-11-21', fin: '2026-11-21', source: { genre: 'facture', id: 'F-BROUWLAND' }, ouvre: { ecran: 'piece', id: 'F-BROUWLAND' } });
+    expect(brouwland[0].detail).toBe('livraison le 21 nov. · commandée le 14 nov. · délai appris 7 j (1 commande) · facture due le 2 déc.');
+    /* plus aucune « Livraison Brouwland » sans montant à côté */
+    expect(prets.some(c => c.source.genre === 'livraison')).toBe(false);
+    /* l'argent sort toujours à l'échéance (2 déc., S49), une fois */
+    const mvt = m.courbe!.mouvements.filter(x => x.id === 'invoice:F-BROUWLAND');
+    expect(mvt).toHaveLength(1);
+    expect(mvt[0]).toMatchObject({ nom: 'Brouwland · malt' });
   });
 
   it('CRITIQUE-6 n° 15 : la Cigogne liée à la Blonde dit « lié à Blonde d’automne » ; l’Épicerie, déjà nommée, n’a pas de pastille', () => {

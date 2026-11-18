@@ -5,7 +5,7 @@ import { BancCalendrier, etatBanc, type EtatBanc } from '../../src/design/Calend
 import { StorageService } from '../../src/services/storage';
 import type { Batch } from '../../src/types';
 import { HAUTEUR_REPLI_PAYSAGE_PX, HAUTEUR_REPLI_PX, MenuAppuiLong } from '../../src/ui/calendrier/frise/MenuAppuiLong';
-import type { ChoseCalendrier } from '../../src/domain/calendrier';
+import { ajouterJours, jourLisible, preteAuPlusTot, type ChoseCalendrier } from '../../src/domain/calendrier';
 
 const JOUR = '2026-11-16';
 type Appel = { op: string; collection: string; id: string; patch?: Record<string, unknown> };
@@ -755,5 +755,63 @@ describe('CRITIQUE-5 n° 12 : le menu ne recouvre jamais la chose tenue', () => 
     expect(m).toHaveAttribute('data-cote', 'cote');
     expect(croise(rectMenu(), a.getBoundingClientRect())).toBe(false);
     expect(rectMenu().left).toBeGreaterThanOrEqual(a.getBoundingClientRect().right);
+  });
+});
+
+describe('CRITIQUE-7 n° 2 (E29, D-47, D-190) : tirer le bord de la Saison pas brassée fait suivre « prête le … »', () => {
+  /*
+   * Banc du 18 nov. : la Saison était prévue le 10 nov., pas brassée. Brassée au plus tôt aujourd'hui, elle est prête à aujourd'hui + son cycle
+   * (`preteAuPlusTot` ; recette du banc 14 + 14 j : le 16 déc.). Tirer son bord d'une colonne (7 j) la rend prête une semaine plus tard (23 déc.).
+   * La date attendue se calcule sur la fixture : le brief disait « 30 déc. » en lisant « 23 déc. » au repos (CRITIQUE-7 n° 2) ; au repos, le banc
+   * disait « prévue le 10 nov. », et c'est le 16 déc. → 23 déc. que le geste avait fait.
+   */
+  const AUJ = '2026-11-18';
+  const batchSaison = etatBanc(AUJ).batches.find(b => b.id === 'LOT-SAISON')!;
+  const repos = preteAuPlusTot(batchSaison, AUJ)!;
+  const apres = ajouterJours(repos, 7);
+  const dit = (iso: string) => new RegExp(`pas brassée · prête le ${jourLisible(iso).replace('.', '\\.')}`);
+  const saison = () => screen.getByRole('button', { name: /^Saison de ferme/ });
+  /* le texte que l'œil lit : la barre, son étiquette à côté et la durée tirée (qui peut se poser à droite de la barre) */
+  const lu = () => {
+    const b = saison();
+    const lbl = b.nextElementSibling as HTMLElement | null;
+    return `${b.textContent ?? ''} ${lbl?.textContent ?? ''}`;
+  };
+
+  it('fixture : prête le 16 déc. au repos, le 23 déc. après une semaine tirée', () => {
+    expect(repos).toBe('2026-12-16');
+    expect(apres).toBe('2026-12-23');
+  });
+
+  it('au repos (lot A) : « pas brassée · prête le 16 déc. », la barre court d’aujourd’hui à « prête » (4 semaines en cuve)', () => {
+    render(<BancCalendrier aujourdhui={AUJ} sansChrome />);
+    expect(saison().getAttribute('aria-label')).toMatch(dit(repos));
+    expect(saison().getAttribute('aria-label')).not.toMatch(/J\d+ \//);
+    /* 28 j en cuve, du 18 nov. au 16 déc. : S47 à S51 en 6 semaines, jamais la seule semaine du jour prévu */
+    expect(parseFloat(saison().style.width)).toBeGreaterThanOrEqual(4 * colonne() - 4);
+  });
+
+  it('+1 colonne : « prête » suit le doigt pendant le geste et reste après le lâcher (barre, nom accessible, message)', async () => {
+    const appels: Appel[] = [];
+    render(<BancCalendrier aujourdhui={AUJ} sansChrome onAppel={a => appels.push(a as Appel)} />);
+    expect(saison().getAttribute('aria-label')).toMatch(/pas brassée/);
+    const largeurAvant = parseFloat(saison().style.width);
+    const lc = colonne();
+    const grip = saison().querySelector('[data-bord]')!;
+    expect(grip).not.toBeNull();
+    fireEvent.pointerDown(grip, { clientX: 100, clientY: 10, pointerId: 1, button: 0 });
+    fireEvent.pointerMove(saison(), { clientX: 100 + lc, clientY: 10, pointerId: 1 });
+    /* pendant : la date suit le doigt (une semaine plus tard), et l'étiquette ne garde pas l'ancienne */
+    expect(lu()).toMatch(dit(apres));
+    expect(lu()).not.toMatch(dit(repos));
+    expect(lu()).not.toMatch(/prévue le 10 nov/);
+    expect(parseFloat(saison().style.width)).toBeGreaterThan(largeurAvant);
+    fireEvent.pointerUp(saison(), { clientX: 100 + lc, clientY: 10, pointerId: 1 });
+    await waitFor(() => expect(appels.some(a => a.collection === 'batches' && a.id === 'LOT-SAISON' && typeof a.patch?.finPrevue === 'string')).toBe(true));
+    /* après : la barre, son nom accessible et le message disent la même date */
+    await waitFor(() => expect(saison().getAttribute('aria-label')).toMatch(dit(apres)));
+    expect(lu()).not.toMatch(dit(repos));
+    expect(messages().map(m => m.textContent).join(' ')).toMatch(new RegExp(`prête le ${jourLisible(apres).replace('.', '\\.')}`));
+    expect(parseFloat(saison().style.width)).toBeGreaterThan(largeurAvant);
   });
 });

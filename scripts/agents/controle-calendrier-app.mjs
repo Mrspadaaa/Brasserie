@@ -21,6 +21,7 @@
 //   GLISSE        f1-a par un vrai toucher CDP à 390 et par la souris à 1280 : la barre de la Hotte change de semaine et « Annuler » apparaît (n° 1)
 //   MENU-BORNE    le menu f5-a, Retirer compris, est dans l'écran, au-dessus des onglets et du + (n° 3)
 //   FAB-RECOUVRE  aucune étiquette de barre ne croise le rectangle du + au repos, à 390 et en paysage (n° 13)
+//   RESERVE       revenu en portrait après la rotation et défilé au bout, la dernière rangée finit 12 px au moins au-dessus du + (CRITIQUE-7 n° 7)
 //   TETE-LISIBLE  la boîte du chiffre clé ne croise aucun texte de la courbe (n° 7)
 //   NOMS-390      au moins 6 mouvements nommés avec leur montant sur la courbe à 390 (n° 8, z2s en nomme 8)
 //   MONTANT       la Blonde et le Marché de Noël ont un montant (n° 9)
@@ -452,7 +453,7 @@ try {
     await p.evaluate(() => { window.__jeton = 'portrait-1'; });
     await p.evaluate(() => document.querySelector('button[data-plus="fetes"]').scrollIntoView({ block: 'center' }));
     await p.click('button[data-plus="fetes"]'); await attendre(500);
-    await p.evaluate(src => { /* la feuille d'ajout ouverte (la dernière), pas un autre dialogue du document (CRITIQUE-5 n° 19) */ const d = [...document.querySelectorAll('[role="dialog"]')].filter(x => x.getBoundingClientRect().height > 0 && /Ajouter/.test(x.textContent || '')).pop(); if (!d) return; [...d.querySelectorAll('button')].find(b => new RegExp(src).test((b.textContent || '').trim()))?.click(); }, RE.marcheNoelExact.source);
+    await p.evaluate(src => { /* la feuille d'ajout ouverte (la dernière), pas un autre dialogue du document (CRITIQUE-5 n° 19) */ const d = [...document.querySelectorAll('[role="dialog"]')].filter(x => x.getBoundingClientRect().height > 0 && /Ajouter/.test(x.textContent || '')).pop(); if (!d) return; [...d.querySelectorAll('button')].find(b => new RegExp(src).test((b.getAttribute('aria-label') || b.textContent || '').trim()))?.click(); }, RE.marcheNoelExact.source);
     await attendre(200);
     await p.evaluate(src => { /* la feuille d'ajout ouverte (la dernière), pas un autre dialogue du document (CRITIQUE-5 n° 19) */ const d = [...document.querySelectorAll('[role="dialog"]')].filter(x => x.getBoundingClientRect().height > 0 && /Ajouter/.test(x.textContent || '')).pop(); if (!d) return; [...d.querySelectorAll('button')].find(b => new RegExp(src).test((b.textContent || '').trim()))?.click(); }, RE.ajouter.source);
     await attendre(700);
@@ -474,6 +475,24 @@ try {
     }
     const garde = avant >= 2 && vues.every(v => v.n === avant && v.jeton === 'portrait-1') && vues[0].o === 'paysage' && vues[1].o === 'portrait';
     note('ROTATION', garde, `la chose ajoutée : ${avant} avant, ${vues.map(v => `${v.n} en ${v.o}`).join(', ')} ; page non rechargée ${vues.every(v => v.jeton === 'portrait-1')}`);
+    /* RESERVE (CRITIQUE-7 n° 7) : revenu en portrait après la rotation, défilé jusqu'en bas, la dernière rangée finit au moins 12 px au-dessus
+       du + volant : rien ne reste sous le bouton une fois la page au bout (une feuille restée ouverte cache le + : on la ferme d'abord) */
+    for (let k = 0; k < 2; k++) { await p.keyboard.press('Escape').catch(() => {}); await attendre(300); }
+    const reserve = await p.evaluate(async () => {
+      const cal = document.querySelector('[data-calendrier]');
+      const f = document.querySelector('button[aria-label^="Actions rapides"]');
+      if (!cal || !f) return null;
+      let s = cal.parentElement;
+      while (s && s !== document.body && !(s.scrollHeight > s.clientHeight + 1 && /auto|scroll/.test(getComputedStyle(s).overflowY))) s = s.parentElement;
+      if (s && s !== document.body) s.scrollTop = s.scrollHeight; else window.scrollTo(0, document.documentElement.scrollHeight);
+      await new Promise(r => setTimeout(r, 300));
+      const secs = [...cal.querySelectorAll('section[data-rangee]')];
+      const der = secs[secs.length - 1];
+      if (!der) return null;
+      const r = f.getBoundingClientRect();
+      return { ecart: Math.round(r.top - der.getBoundingClientRect().bottom), haut: Math.round(r.height), pb: getComputedStyle(cal).paddingBottom, rangee: der.getAttribute('data-rangee') };
+    });
+    note('RESERVE', !!reserve && reserve.ecart >= 12, reserve ? `au bout du défilement, la rangée ${reserve.rangee} finit ${reserve.ecart} px au-dessus du + (${reserve.haut} px de haut) ; réserve basse ${reserve.pb}` : 'calendrier ou + introuvable');
     await p.close();
 
     /* Paysage 844 × 390, chargé tel quel : J0, FAB-RECOUVRE, PLUS-PAYSAGE */

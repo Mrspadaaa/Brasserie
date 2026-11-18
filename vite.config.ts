@@ -70,6 +70,12 @@ export default defineConfig(({ command }) => ({
     // (src/config/rangerNoteIA.ts). VITE_RANGER_NOTE_IA=eteint au build l'éteint exprès ; le contrôle des drapeaux refuse un build sans valeur.
     'import.meta.env.VITE_RANGER_NOTE_IA': JSON.stringify(process.env.VITE_RANGER_NOTE_IA || 'production'),
   } } : {}),
+  // CRITIQUE-6 n° 13, décision (d) du 18.11 : sous `npm run dev`, Vite découvrait ces dépendances au premier chargement de l'app (son analyse
+  // de départ échoue sur `prototypes/houblons-v4`), les réoptimisait et rechargeait la page pendant `import('./App')` : « Impossible de charger
+  // la brasserie ». Les nommer ici les fait optimiser dès le démarrage. Sans effet sur `vite build` (optimizeDeps ne sert qu'au serveur de dev).
+  optimizeDeps: {
+    include: ['cmdk', 'dexie', 'jspdf', 'swissqrbill/svg', 'swissqrbill/utils']
+  },
   server: {
     // 3000 par défaut ; `PORT` permet de lancer un second serveur en parallèle
     // quand le premier occupe déjà le port.

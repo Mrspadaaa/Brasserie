@@ -137,6 +137,8 @@ export function EnTeteCalendrier(props: EnTeteCalendrierProps) {
   const cadreCourbe = useRef<HTMLDivElement | null>(null);
   const cadreGrande = useRef<HTMLDivElement | null>(null);
   const boutonPeriode = useRef<HTMLButtonElement>(null);
+  /** Les boutons de tête : la lecture au doigt prend la place qu'ils laissent (CRITIQUE-7 n° 5). */
+  const boutonsTete = useRef<HTMLSpanElement>(null);
   const mesure = useMesure(zone);
   const repliTotal = largeurColonne > 0 ? largeurColonne * Math.max(1, nombre) : 390;
   const repli = paysage && !graph ? Math.max(200, repliTotal - COLONNE_T - 8) : repliTotal;
@@ -238,10 +240,12 @@ export function EnTeteCalendrier(props: EnTeteCalendrierProps) {
   }, []);
   const basculerPlein = async () => {
     if (plein) { await sortirPleinEcran(); setPlein(false); return; }
+    // L'invitation est pour le téléphone tenu droit (CRITIQUE-4 n° 19) ; un écran large n'a rien à tourner. La largeur se lit AVANT le plein
+    // écran : une fois en plein écran, la fenêtre peut avoir changé de taille sans que le téléphone ait tourné (CRITIQUE-7, doute E09).
+    const telephoneDroit = !paysage && window.innerWidth < LARGE_PX;
     const r = await entrerPleinEcran(document.documentElement);
     setPlein(estPleinEcran());
-    // L'invitation est pour le téléphone tenu droit (CRITIQUE-4 n° 19) ; un écran large n'a rien à tourner.
-    if (r === 'invite' && !paysage && window.innerWidth < LARGE_PX) dire({ genre: 'invite', texte: INVITATION });
+    if (r === 'invite' && telephoneDroit) dire({ genre: 'invite', texte: INVITATION });
   };
 
   // ---- Le doigt sur la courbe : lire (c2-b), appui long (c3-a) ----
@@ -462,8 +466,8 @@ export function EnTeteCalendrier(props: EnTeteCalendrierProps) {
   return (
     <div ref={racine} className={`ent ent--${orientation}`} data-vue={vue} data-calendrier-entete aria-label="En-tête du calendrier" role="group">
       <div className="ent-t">
-        {lecture !== null && !graph && courbeC ? <LectureTete courbe={courbeC} index={lecture} compacte={!paysage && largeur < 600} /> : cle}
-        <span className="ent-t-b">
+        {lecture !== null && !graph && courbeC ? <LectureTete courbe={courbeC} index={lecture} boutons={paysage ? undefined : boutonsTete} /> : cle}
+        <span ref={boutonsTete} className="ent-t-b">
           <button type="button" className="ent-mb" aria-pressed={mouvements} title="Afficher les + et − et les icônes de chaque semaine" onClick={() => onMouvements(!mouvements)}>±</button>
           <button ref={boutonPeriode} type="button" className="ent-per" data-ent-periode aria-haspopup="dialog" aria-expanded={menuOuvert} title="Période, liste, tri et filtre" onClick={() => setMenuOuvert(o => !o)}>
             {libelle}<ChevronDown size={14} strokeWidth={2.4} aria-hidden="true" />
@@ -509,7 +513,8 @@ export function EnTeteCalendrier(props: EnTeteCalendrierProps) {
       {!graph && (
         <div className="ent-bz">
           {annee && courbe ? <BandeAnnee courbe={courbe} mois={modele.mois} creux={creux} /> : (
-            <BandeSemaines semaines={visibles} courbe={courbe} decalage={index} mouvements={mouvements} idees={idees} retards={semainesRetard} onDate={touche} onIdeeSemaine={onIdeeSemaine} />
+            <BandeSemaines semaines={visibles} courbe={courbe} decalage={index} mouvements={mouvements} idees={idees} retards={semainesRetard} onDate={touche} onIdeeSemaine={onIdeeSemaine}
+              largeurColonne={largeurColonne > 0 ? largeurColonne : largeur / Math.max(1, nombre)} />
           )}
           {/* La date d'une semaine (i3) : au-dessus de la bande, dans l'en-tête ; jamais sur un nom de la frise (CRITIQUE-3 n° 7). */}
           <div className="ent-live ent-live-date" aria-live="polite">
@@ -526,7 +531,7 @@ export function EnTeteCalendrier(props: EnTeteCalendrierProps) {
 
       {creuxOuvert && courbe && creux && <DetailCreux courbe={courbe} index={creux.index} hypotheses={modele.hypotheses} nomsMisDeCote={nomsMisDeCote} dates={paysage} onOuvrirFinances={onOuvrirFinances} onFermer={() => setCreuxOuvert(false)} />}
       {menuOuvert && (
-        <MenuPeriode ancre={boutonPeriode.current} paysage={paysage} plage={libelle !== libelleDuree(nombre, annee) ? `${libelle} · ${plage}` : plage} semaines={nombre} annee={annee} liste={vue === 'liste'} sansDate={sansDate}
+        <MenuPeriode ancre={boutonPeriode.current} paysage={paysage} plage={libelle !== libelleDuree(nombre, annee) ? `${libelle} · ${etiquetteCadre(semainesTot.map(s => s.numero), index, nombre, annee, etiquetteAnnee, lundis)} · ${plage}` : plage} semaines={nombre} annee={annee} liste={vue === 'liste'} sansDate={sansDate}
           onChoisir={choisirDuree} onListe={() => onVue('liste')} onCalendrier={() => onVue('semaines')} onSansDate={() => onVue('liste', 'sans-date')}
           onTrier={onTrier} onFiltrer={onFiltrer} onFermer={() => setMenuOuvert(false)} />
       )}

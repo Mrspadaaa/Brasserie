@@ -170,10 +170,19 @@ function allongerBrassin(chose: ChoseCalendrier, jours: number, ctx: ContexteGes
    * la décale avec lui) ; ce qu'on DIT est « prête le » au plus tôt, max(jour prévu, aujourd'hui) + cycle (`preteAuPlusTot`), la même date que la
    * barre, qui part de la semaine courante.
    */
-  const ecrite = pasBrassee ? finDeBrassin(batch)?.jour ?? chose.fin : (chose.preteLe ?? chose.fin);
+  /*
+   * CRITIQUE-7 n° 2 : sa barre court d'aujourd'hui à « prête ». Sans cycle connu (ni recette datée ni `finPrevue`), rien ne dit sa durée en
+   * cuve : le bord refuse avec sa raison (comme le dry hop), jamais un geste sans effet ni une fin inventée.
+   */
+  const finCycle = pasBrassee ? finDeBrassin(batch)?.jour : null;
+  if (pasBrassee && (!finCycle || !chose.pretePrevue)) {
+    return refus('Sa recette ne dit pas combien de jours il reste en cuve : sa fin se règle dans la fiche du brassin.', chose.ouvre, { texte: 'Ouvrir le brassin ›', ancre: 'brassin', cible: chose.ouvre });
+  }
+  const prevu = pasBrassee ? isoDate(plannedBrewDate(batch)) ?? debut : debut;
+  const ecrite = pasBrassee ? (finCycle as string) : (chose.preteLe ?? chose.fin);
   const nouvelle = decale(ecrite, jours);
   const dite = pasBrassee ? preteAuPlusTot({ ...batch, finPrevue: nouvelle } as Batch, ctx.aujourdhui) ?? nouvelle : nouvelle;
-  if (nouvelle <= debut || (pasBrassee && dite <= ctx.aujourdhui)) return refus('Un brassin dure au moins un jour : tire moins loin.');
+  if (nouvelle <= prevu || (pasBrassee && dite <= ctx.aujourdhui)) return refus('Un brassin dure au moins un jour : tire moins loin.');
   const promesse = promesseTouchee(ctx.plans, batch.id, dite);
   const duree = pasBrassee ? dureePasBrassee(dite) : dureeBrassin(debut, nouvelle, ctx.aujourdhui) ?? `prête ${jourLisible(nouvelle)}`;
   return {
@@ -191,10 +200,11 @@ function allongerBrassin(chose: ChoseCalendrier, jours: number, ctx: ContexteGes
 export function choseAllongee(chose: ChoseCalendrier, jours: number, aujourdhui: string): ChoseCalendrier {
   if (chose.source.genre !== 'batch' || chose.conditionne || !chose.debut) return chose;
   if (chose.pasBrassee) {
-    const prete = decale(chose.pretePrevue ?? chose.fin, jours);
+    /* CRITIQUE-7 n° 2 : la barre court d'aujourd'hui à « prête » ; tirer de n jours repousse les deux d'autant. Sans cycle connu : rien ne bouge (le geste refuse) */
+    if (!chose.pretePrevue) return chose;
+    const prete = decale(chose.pretePrevue, jours);
     if (prete <= (aujourdhui > chose.debut ? aujourdhui : chose.debut)) return chose;
-    const fin = decale(chose.fin, jours);
-    return { ...chose, fin: fin > aujourdhui ? fin : aujourdhui, pretePrevue: prete, duree: dureePasBrassee(prete) };
+    return { ...chose, fin: prete, pretePrevue: prete, duree: dureePasBrassee(prete) };
   }
   const nouvelle = decale(chose.preteLe ?? chose.fin, jours);
   if (nouvelle <= chose.debut) return chose;

@@ -45,6 +45,19 @@ export function lieMontre(c: Pick<ChoseCalendrier, 'lie' | 'titre' | 'etiquette'
 }
 
 /**
+ * CRITIQUE-7 n° 6 (D-113, D-126) : l'aperçu d'un lien écrit juste après son nom (« lié à Blonde d'automne · … » du détail) ne le répète
+ * pas : « brassage 23 nov. · prête 21 déc. ». L'aperçu de la pastille, lui, est une note à part sous le bouton : il ne suit aucun nom sur sa
+ * ligne et garde le sien (c5). Avec deux liens (« La Cigogne · client ; Blonde d'automne · prête 21 déc. »), chaque
+ * morceau garde son nom, sans quoi on ne sait plus lequel est lequel. Sans rien d'autre que le nom : l'aperçu entier.
+ */
+export function apercuSansNom(lie: NonNullable<ChoseCalendrier['lie']>): string {
+  const morceaux = lie.apercu.split(' ; ').map(x => x.trim()).filter(Boolean);
+  if (morceaux.length !== 1) return lie.apercu;
+  const [tete, ...reste] = morceaux[0].split(' · ');
+  return reste.length && aplatir(tete) === aplatir(nomLie(lie)) ? reste.join(' · ') : lie.apercu;
+}
+
+/**
  * CRITIQUE-6 n° 6 : un nom trop long pour la place d'un côté passe sur deux lignes, coupé entre deux mots, le montant au bout de la deuxième
  * (« Commande groupée » puis « de malt −540 »). La coupe la plus équilibrée : la plus petite largeur de la plus longue ligne. `null` : un seul mot.
  */
