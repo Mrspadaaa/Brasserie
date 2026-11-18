@@ -1902,3 +1902,5 @@ au-delà même du modéré (98) ; r9 vise 70 à 80.
 - D385 (le brasseur, 18.11) : axe du calendrier en jours, semaines ou mois par trois gestes ensemble — Échelle au menu (D), Déplier une semaine (C), Pincer pour zoomer (B) ; semaine par défaut (ticket #202).
 - D386 (le brasseur, 18.11) : au calendrier, ce qui dure est une barre, ce qui arrive un jour est un jalon dans sa propre rangée (ligne à part s'il n'est lié à rien) ; un jalon lié à une barre d'une autre rangée y est relié par un fil discret ; au toucher de la barre, ses jalons liés s'allument et les autres pâlissent. Voir SPEC-BRASSEUR et CAL-JALON-UN-JOUR.
 - D387 (le brasseur, 18.11) : un interrupteur aligne la courbe sur la frise (même axe de temps) ou la laisse sur l'année avec le cadre de la période ; sans maquette.
+- D388 (le brasseur, 18.11) : glisser une chose qui change la courbe la zoome sur les semaines touchées (avant en pointillé, « si tu lâches en Sxx : … → … », écart), comme le jouable paysage ; sans maquette.
+- D389 (le brasseur, 18.11) : un bouton cache la courbe ; la frise prend toute la place, seule la bande de l'axe reste ; sans maquette.

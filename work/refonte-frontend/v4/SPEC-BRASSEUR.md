@@ -2200,3 +2200,13 @@ Capture : work/missions/2026-11-18-choix-calendrier/brasseur/ (courbe déc.→oc
 > Pas de mini maquettes
 
 Choix : un interrupteur aligne ou non la courbe sur la frise (même axe de temps quand il est allumé) ; éteint, la courbe garde l'année avec le cadre de la période. Sans maquette.
+
+### Glisser qui zoome la courbe ; cacher la courbe (18.11)
+
+> Ah oui sur une des maquettes jouable, déplace un évènement qui a un lien avec le graph des prix zoom sur le graph ça c'est top.
+>
+> Je veux aussi un bouton qui peut cacher le graph et laisser le Max de place au calendrier avec quand même sa légende de l'axe mais rien de plus.
+>
+> Pas de mini maquettes
+
+Capture : work/missions/2026-11-18-choix-calendrier/brasseur/zoom-glisser-18-11.jpg (jouable paysage : pendant le glisser, la courbe zoome sur les semaines touchées, « avant » en pointillé, « si tu lâches en S51 : S50 5 120 → 4 480 », écart −640). Lecture : (1) retenu à porter : glisser une chose qui change la courbe la zoome sur les semaines concernées, avant/après et écart ; (2) un bouton cache la courbe, la frise prend toute la place, seule la bande de l'axe (semaines/jours) reste.
