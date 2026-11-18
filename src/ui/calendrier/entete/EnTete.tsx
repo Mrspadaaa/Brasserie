@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
-import { ChartLine, ChevronDown, Clock, EyeOff, Maximize2, Minimize2 } from 'lucide-react';
+import { ChartLine, ChevronDown, Clock, EyeOff, Link2, Maximize2, Minimize2 } from 'lucide-react';
 import { alignerSemaines, colonnesDeSemaines, semaineSous } from './alignement';
 import type { Periode } from '../../../components/periode/periode';
 import { dateDeSemaine, etiquetteS, lundiDe, type ModeleCalendrier, type Retard } from '../../../domain/calendrier';
@@ -102,7 +102,7 @@ const COLONNE_T = 214;
  * Portrait : 110 px, les mois dessous (z2s). Paysage : 90 px, les mois EN HAUT, dans la courbe, comme w3s (l-repos) ; le tracé garde 70 px
  * (E02, CRITIQUE-4 n° 11) et l'en-tête tient dans 120 px (E10) : la place est prise sur la bande et l'écart, pas sur la courbe.
  */
-const HAUTEUR_COURBE = { portrait: 110, paysage: 90 };
+const HAUTEUR_COURBE = { portrait: 110, paysage: 90, /* lot C n° 7 : alignée en paysage, la rangée du chiffre passe au-dessus (28 px) */ paysageAlignee: 64 };
 /** Hauteur de la grande courbe au téléphone (p-c3a-pendant : environ 250 px, le détail dessous). */
 const HAUTEUR_GRANDE_TEL = 250;
 /** Ce qui, sous la grande courbe, doit rester visible : son titre (44), le détail de la semaine (3 lignes), la légende, une marge. */
@@ -171,26 +171,31 @@ export function EnTeteCalendrier(props: EnTeteCalendrierProps) {
   /** Les boutons de tête : la lecture au doigt prend la place qu'ils laissent (CRITIQUE-7 n° 5). */
   const boutonsTete = useRef<HTMLSpanElement>(null);
   const mesure = useMesure(zone);
-  const repliTotal = largeurColonne > 0 ? largeurColonne * Math.max(1, nombre) : 390;
-  const repli = paysage && !graph ? Math.max(200, repliTotal - COLONNE_T - 8) : repliTotal;
-  const largeur = mesure || repli;
-  const hauteur = paysage ? HAUTEUR_COURBE.paysage : HAUTEUR_COURBE.portrait;
-
-  // ---- D387, D388 : la courbe posée sur les colonnes de la frise (interrupteur allumé, ou pendant un glisser, comme le jouable) ----
+  // ---- D387, D388 : la courbe posée sur les colonnes de la frise (bouton allumé, ou pendant un glisser, comme le jouable) ----
+  // Lot C (18.11) : le bouton à bascule (Link2) a la taille des autres boutons-icônes, dans la rangée du chiffre, partout. Allumé en paysage, la
+  // rangée du chiffre passe au-dessus et la courbe prend toute la largeur de l'en-tête (n° 7, comme le jouable).
   const alignee = !!props.aligne && !!props.onAligne && !graph && !liste && !cachee && !!base;
-  // Lot C (18.11, capture b-clair-2) : au téléphone (portrait < 700 px, paysage), la rangée du chiffre est pleine ; l'interrupteur y couvrait
-  // « CHF à dépenser ». Il vit alors dans le menu de la période (une ligne à interrupteur), jamais sur un texte ; sur un grand écran, en tête des boutons.
-  const alignerAuMenu = paysage || (typeof window !== 'undefined' && window.innerWidth < LARGE_PX);
+  const paysageAligne = paysage && alignee;
+  const boutonAligne = !!props.onAligne && !!base && !graph && !liste && !cachee;
+  const repliTotal = largeurColonne > 0 ? largeurColonne * Math.max(1, nombre) : 390;
+  const repli = paysage && !graph && !paysageAligne ? Math.max(200, repliTotal - COLONNE_T - 8) : repliTotal;
+  const largeur = mesure || repli;
+  const hauteur = paysageAligne ? HAUTEUR_COURBE.paysageAlignee : paysage ? HAUTEUR_COURBE.paysage : HAUTEUR_COURBE.portrait;
   const zoomee = !!apercuC && !graph && !cachee && !!base;
-  const [frise, setFrise] = useState<{ decalage: number; largeur: number } | null>(null);
+  /** La frise mesurée : son bord gauche moins celui de la courbe (`decalage`) et moins celui de l'en-tête (`decEnt`) ; la boîte de l'en-tête. */
+  const [frise, setFrise] = useState<{ decalage: number; largeur: number; decEnt: number; largEnt: number; hautEnt: number } | null>(null);
   useLayoutEffect(() => {
     if (!alignee && !zoomee) return undefined;
     const lireFrise = () => (racine.current?.closest('[data-calendrier]') ?? document).querySelector<HTMLElement>('[data-frise]');
+    const r1 = (v: number) => Math.round(v * 10) / 10;
     const mesurer = () => {
-      const rz = zone.current?.getBoundingClientRect(), rf = lireFrise()?.getBoundingClientRect();
+      const rz = zone.current?.getBoundingClientRect(), rf = lireFrise()?.getBoundingClientRect(), re = racine.current?.getBoundingClientRect();
       // Le bord gauche de la frise moins celui de la courbe : 0 en portrait, négatif en paysage (la colonne du chiffre est à gauche de la courbe).
-      const suivant = rz && rf && rf.width > 0 ? { decalage: Math.round((rf.left - rz.left) * 10) / 10, largeur: Math.round(rf.width * 10) / 10 } : null;
-      setFrise(p => ((p && suivant && p.decalage === suivant.decalage && p.largeur === suivant.largeur) || (!p && !suivant) ? p : suivant));
+      const suivant = rz && rf && rf.width > 0
+        ? { decalage: r1(rf.left - rz.left), largeur: r1(rf.width), decEnt: r1(rf.left - (re?.left ?? rz.left)), largEnt: r1(re?.width ?? rz.width), hautEnt: Math.round(re?.height ?? 0) }
+        : null;
+      const egal = (p: NonNullable<typeof suivant>, q: NonNullable<typeof suivant>) => p.decalage === q.decalage && p.largeur === q.largeur && p.decEnt === q.decEnt && p.largEnt === q.largEnt && p.hautEnt === q.hautEnt;
+      setFrise(p => ((p && suivant && egal(p, suivant)) || (!p && !suivant) ? p : suivant));
     };
     mesurer();
     window.addEventListener('resize', mesurer);
@@ -208,6 +213,13 @@ export function EnTeteCalendrier(props: EnTeteCalendrierProps) {
     return alignerSemaines(base.semaines.map(s => s.lundi), cols, lf / Math.max(1, cols.length), frise?.decalage ?? 0, largeur);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [alignee, zoomee, base, props.colonnes, index, nombre, lundiDebut, frise, largeur]);
+  // Lot C n° 7 (jouable paysage, `as-gestes.js` zoomOn : `.as-zoom` fixe, toute la largeur, la hauteur de l'en-tête) : en paysage, la courbe
+  // zoomée du glisser se pose par-dessus tout l'en-tête, colonne du chiffre comprise ; ses semaines sur les colonnes de la frise.
+  const alignementTout = useMemo(() => {
+    if (!paysage || !zoomee || !base || !frise || !(frise.largEnt > 0) || !(frise.hautEnt > 0)) return null;
+    const cols = props.colonnes?.length ? props.colonnes : colonnesDeSemaines(base.semaines.slice(index, index + nombre).map(s => s.lundi));
+    return alignerSemaines(base.semaines.map(s => s.lundi), cols, frise.largeur / Math.max(1, cols.length), frise.decEnt, frise.largEnt);
+  }, [paysage, zoomee, base, props.colonnes, index, nombre, frise]);
   // La grande courbe : en paysage, la hauteur de l'écran moins l'en-tête ; au téléphone en portrait, celle de sa maquette ; plus large, toute la
   // hauteur de la zone de la frise jusqu'au bas de l'écran (ou au haut de la barre d'onglets), moins son titre, le détail et la légende.
   const [hautDispo, setHautDispo] = useState(0);
@@ -573,34 +585,42 @@ export function EnTeteCalendrier(props: EnTeteCalendrierProps) {
     };
   })() : null;
   // D388, la ligne du jouable : « si tu lâches en S51 : S50 5 120 → 4 480 » (la semaine d'arrivée, la première qui change, avant → après).
-  const lacherZoom = vueAl?.ap && base && apercuC ? (() => {
+  // `d` : l'index de la première semaine montrée (celui de l'alignement de la courbe, ou de l'en-tête entier en paysage).
+  const lacherDe = (d: number) => {
+    if (!base || !apercuC) return undefined;
     const av = base.semaines, ap = apercuC.semaines;
     let ich = -1;
     for (let i = 0; i < Math.min(av.length, ap.length); i++) if (av[i].libre !== ap[i].libre) { ich = i; break; }
     const il = lache ? av.findIndex(s => s.lundi === lundiDe(lache)) : -1;
     return {
-      colonne: il >= 0 ? il - vueAl.d : null, numero: il >= 0 ? av[il].numero : null,
-      change: ich >= 0 ? { colonne: ich - vueAl.d, numero: av[ich].numero, avant: av[ich].libre, apres: ap[ich].libre } : null
+      colonne: il >= 0 ? il - d : null, numero: il >= 0 ? av[il].numero : null,
+      change: ich >= 0 ? { colonne: ich - d, numero: av[ich].numero, avant: av[ich].libre, apres: ap[ich].libre } : null
     };
-  })() : undefined;
+  };
+  const lacherZoom = vueAl?.ap ? lacherDe(vueAl.d) : undefined;
+  const zoomTout = alignementTout && base && apercuC && frise ? (() => {
+    const d = alignementTout.debut, m = alignementTout.abscisses.length - 1;
+    return { d, avant: base.semaines.slice(d, d + m).map(s => s.libre), apres: apercuC.semaines.slice(d, d + m).map(s => s.libre), lacher: lacherDe(d) };
+  })() : null;
 
   return (
-    <div ref={racine} className={`ent ent--${orientation}`} data-vue={vue} data-doigt={doigt ? 'oui' : undefined} data-calendrier-entete aria-label="En-tête du calendrier" role="group">
+    <div ref={racine} className={`ent ent--${orientation}`} data-vue={vue} data-doigt={doigt ? 'oui' : undefined} data-aligne={paysageAligne ? 'oui' : undefined}
+      data-bouton-al={boutonAligne ? '' : undefined} data-calendrier-entete aria-label="En-tête du calendrier" role="group">
       <div className="ent-t" onPointerDownCapture={versCourbe}>
         {lecture !== null && !graph && courbeC ? <LectureTete courbe={courbeC} index={lecture} boutons={paysage ? undefined : boutonsTete} /> : cle}
         <span ref={boutonsTete} className="ent-t-b">
-          {props.onAligne && base && !graph && !liste && !cachee && !alignerAuMenu && (
-            <button type="button" role="switch" className="ent-al" data-ent-aligne aria-checked={!!props.aligne} aria-label="Aligner la courbe sur la frise"
-              title={props.aligne ? 'La courbe suit la frise ; éteint, elle montre l’année' : 'Aligner la courbe sur la frise'} onClick={() => props.onAligne?.(!props.aligne)}>
-              <span className="ent-al-piste" aria-hidden="true"><span className="ent-al-pt" /></span>
-            </button>
-          )}
           <button type="button" className="ent-mb" aria-pressed={mouvements} title="Afficher les + et − et les icônes de chaque semaine" onClick={() => onMouvements(!mouvements)}>±</button>
           <button ref={boutonPeriode} type="button" className="ent-per" data-ent-periode aria-haspopup="dialog" aria-expanded={menuOuvert} title="Période, liste, tri et filtre" onClick={() => setMenuOuvert(o => !o)}>
             {props.echelle === 'jour' && !annee ? `${libelle} · j` : libelle}<ChevronDown size={14} strokeWidth={2.4} aria-hidden="true" />
           </button>
           {retards.length > 0 && (
             <button type="button" className="ent-ret-b" aria-label={titreRetards(retards.length)} onClick={() => setRetardsOuverts(true)}><Clock size={16} strokeWidth={2.4} aria-hidden="true" />{retards.length}</button>
+          )}
+          {boutonAligne && (
+            <button type="button" className="ent-al" data-ent-aligne aria-pressed={!!props.aligne} aria-label="Aligner la courbe sur la frise"
+              title={props.aligne ? 'La courbe suit la frise ; éteint, elle montre l’année' : 'Aligner la courbe sur la frise'} onClick={() => props.onAligne?.(!props.aligne)}>
+              <Link2 size={17} strokeWidth={2.4} aria-hidden="true" />
+            </button>
           )}
           {props.onCourbeCachee && base && !graph && (
             <button type="button" className="ent-cc" data-ent-cacher aria-pressed={cachee} aria-label={cachee ? 'Montrer la courbe' : 'Cacher la courbe'}
@@ -621,7 +641,7 @@ export function EnTeteCalendrier(props: EnTeteCalendrierProps) {
           <Courbe courbe={vueAl.sem} abscisses={alignement.abscisses} creuxIndex={vueAl.creuxIndex} largeur={largeur} hauteur={hauteur}
             curseur={lecture !== null && !apercuC ? lecture - vueAl.d : null} reference={refCourbe} gestes={apercuC ? undefined : gestesCourbe}
             mise={vueAl.mise} mois moisEnHaut={paysage} etoiles={vueAl.etoiles}>
-            {vueAl.ap && (
+            {vueAl.ap && !zoomTout && (
               <div className="ent-zoom-c" data-zoom-aligne style={{ height: hauteur }}>
                 <CourbeZoom avant={vueAl.sem.map(s => s.libre)} apres={vueAl.ap.map(s => s.libre)} abscisses={alignement.abscisses} largeur={largeur} hauteur={hauteur} lacher={lacherZoom} />
               </div>
@@ -681,11 +701,15 @@ export function EnTeteCalendrier(props: EnTeteCalendrierProps) {
       {menuOuvert && (
         <MenuPeriode ancre={boutonPeriode.current} paysage={paysage} plage={libelle !== libelleDuree(nombre, annee) ? `${libelle} · ${etiquetteCadre(semainesTot.map(s => s.numero), index, nombre, annee, etiquetteAnnee, lundis)} · ${plage}` : plage} semaines={nombre} annee={annee} liste={liste} sansDate={sansDate}
           {...(props.onEchelle && props.echelle ? { echelle: props.echelle, onEchelle: props.onEchelle } : {})}
-          {...(alignerAuMenu && props.onAligne && base && !graph && !liste && !cachee ? { aligne: !!props.aligne, onAligne: props.onAligne } : {})}
           onChoisir={choisirDuree} onListe={() => onVue('liste')} onCalendrier={() => onVue(anneeListe ? 'annee' : 'semaines')} onSansDate={() => onVue('liste', 'sans-date')}
           onTrier={onTrier} onFiltrer={onFiltrer} onFermer={() => setMenuOuvert(false)} />
       )}
       {retardsOuverts && <Retards retards={retards} onOuvrir={onOuvrirRetard} onFermer={() => setRetardsOuverts(false)} />}
+      {zoomTout && alignementTout && frise && (
+        <div className="ent-zoom-tout" data-zoom-aligne data-zoom-tout style={{ height: frise.hautEnt }}>
+          <CourbeZoom avant={zoomTout.avant} apres={zoomTout.apres} abscisses={alignementTout.abscisses} largeur={frise.largEnt} hauteur={frise.hautEnt} lacher={zoomTout.lacher} />
+        </div>
+      )}
     </div>
   );
 }

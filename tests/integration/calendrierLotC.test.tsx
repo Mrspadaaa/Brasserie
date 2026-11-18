@@ -41,26 +41,33 @@ const lireCss = (p: string) => readFileSync(resolve(process.cwd(), p), 'utf8');
 const regle = (css: string, sel: string) => [...css.matchAll(/^([^{}\n]+)\{([^}]*)\}/gm)].filter(m => m[1].split(',').map(s => s.trim()).includes(sel)).map(m => m[2]).join(';');
 const fiche = (nom: RegExp) => screen.getByRole('region', { name: nom });
 
-describe('2. D387 : l’interrupteur ne couvre aucun texte', () => {
-  it('au téléphone en portrait (390) : pas dans la rangée du chiffre ; dans le menu de la période, et il aligne la courbe', () => {
-    Object.defineProperty(window, 'innerWidth', { configurable: true, value: 390 });
-    monter();
-    const ligne = document.querySelector('.ent-t')!;
-    expect(ligne.querySelector('[data-ent-aligne]')).toBeNull();
-    fireEvent.click(document.querySelector('[data-ent-periode]')!);
-    const menu = document.querySelector<HTMLElement>('[data-menu-periode]')!;
-    const inter = within(menu).getByRole('switch', { name: 'Courbe alignée sur la frise' });
-    expect(inter).toHaveAttribute('aria-checked', 'false');
-    fireEvent.click(inter);
-    expect(document.querySelector('.ent-cbz .ent-cb')).toHaveAttribute('data-courbe-alignee');
-  });
+describe('2. D387 : un bouton à bascule dans la rangée du chiffre, jamais au menu', () => {
+  // Décision du pilote (18.11) sur « un bouton qui match les deux ou pas genre un toggle switch » : ni ligne de menu ni deux lignes ; un
+  // bouton-icône à bascule (aria-pressed) de la taille des autres. Le non-chevauchement des boîtes se mesure dans Chrome (390, 844, 1280).
+  for (const largeur of [390, 1280]) {
+    it(`à ${largeur} px : présent dans la rangée du chiffre, aria-pressed bascule, la courbe s’aligne ; aucune ligne au menu`, () => {
+      Object.defineProperty(window, 'innerWidth', { configurable: true, value: largeur });
+      StorageService.setUiState('calendrier_courbe_alignee', false);
+      monter();
+      const b = within(document.querySelector<HTMLElement>('.ent-t')!).getByRole('button', { name: 'Aligner la courbe sur la frise' });
+      expect(b).not.toHaveAttribute('role', 'switch');
+      expect(b).toHaveAttribute('aria-pressed', 'false');
+      expect(document.querySelector('.ent-cbz .ent-cb')).not.toHaveAttribute('data-courbe-alignee');
+      fireEvent.click(b);
+      expect(within(document.querySelector<HTMLElement>('.ent-t')!).getByRole('button', { name: 'Aligner la courbe sur la frise' })).toHaveAttribute('aria-pressed', 'true');
+      expect(document.querySelector('.ent-cbz .ent-cb')).toHaveAttribute('data-courbe-alignee');
+      fireEvent.click(document.querySelector('[data-ent-periode]')!);
+      expect(document.querySelector('[data-menu-periode] [data-ent-aligne]')).toBeNull();
+      expect(document.querySelector('[data-menu-periode] [role="switch"]')).toBeNull();
+    });
+  }
 
-  it('sur un grand écran (1280) : l’interrupteur reste en tête des boutons, absent du menu', () => {
-    Object.defineProperty(window, 'innerWidth', { configurable: true, value: 1280 });
-    monter();
-    expect(document.querySelector('.ent-t [data-ent-aligne]')).not.toBeNull();
-    fireEvent.click(document.querySelector('[data-ent-periode]')!);
-    expect(document.querySelector('[data-menu-periode] [data-ent-aligne]')).toBeNull();
+  it('au téléphone, la rangée se resserre sans toucher aux textes ; en paysage, le bouton se pose au bout de la ligne du chiffre', () => {
+    const css = lireCss('src/ui/calendrier/entete/entete.css');
+    expect(regle(css, '.ent-al[aria-pressed=\'true\']')).toMatch(/background:/);
+    expect(css).toMatch(/@media \(max-width: 699px\)/);
+    expect(regle(css, '.ent--paysage[data-bouton-al]:not([data-aligne]) .ent-al')).toMatch(/position:\s*absolute/);
+    expect(regle(css, '.ent--paysage[data-bouton-al]:not([data-aligne]) .ent-t > :first-child')).toMatch(/max-width:\s*calc\(100% - 30px\)/);
   });
 });
 

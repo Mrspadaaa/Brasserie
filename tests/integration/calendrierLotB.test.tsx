@@ -61,15 +61,15 @@ describe('1. D387 : la courbe alignée sur la frise, ou l’année', () => {
   it('l’interrupteur est dans l’en-tête ; éteint, l’année et le cadre ; allumé, les seules semaines de la frise, sans cadre ; le chiffre ne change pas', () => {
     const onAligne = vi.fn();
     const { container, rerender } = render(<Banc aligne={false} onAligne={onAligne} />);
-    const inter = screen.getByRole('switch', { name: 'Aligner la courbe sur la frise' });
-    expect(inter.getAttribute('aria-checked')).toBe('false');
+    const inter = screen.getByRole('button', { name: 'Aligner la courbe sur la frise' });
+    expect(inter.getAttribute('aria-pressed')).toBe('false');
     expect(semainesCourbe(container)).toHaveLength(52);
     expect(container.querySelector('.ent-cadre')).not.toBeNull();
     const chiffre = cle();
     fireEvent.click(inter);
     expect(onAligne).toHaveBeenCalledWith(true);
     rerender(<Banc aligne onAligne={onAligne} />);
-    expect(screen.getByRole('switch').getAttribute('aria-checked')).toBe('true');
+    expect(screen.getByRole('button', { name: 'Aligner la courbe sur la frise' }).getAttribute('aria-pressed')).toBe('true');
     expect(semainesCourbe(container)).toEqual(['47', '48', '49', '50', '51', '52']);
     expect(container.querySelector('.ent-cb')?.hasAttribute('data-courbe-alignee')).toBe(true);
     expect(container.querySelector('.ent-cadre')).toBeNull();
@@ -111,11 +111,11 @@ describe('1. D387 : la courbe alignée sur la frise, ou l’année', () => {
 
   it('le choix se garde sur l’appareil (préférence locale)', () => {
     render(<BancCalendrier aujourdhui="2026-11-16" sansChrome />);
-    fireEvent.click(screen.getByRole('switch', { name: 'Aligner la courbe sur la frise' }));
+    fireEvent.click(screen.getByRole('button', { name: 'Aligner la courbe sur la frise' }));
     expect(StorageService.getUiState('calendrier_courbe_alignee', false)).toBe(true);
     cleanup();
     render(<BancCalendrier aujourdhui="2026-11-16" sansChrome />);
-    expect(screen.getByRole('switch', { name: 'Aligner la courbe sur la frise' }).getAttribute('aria-checked')).toBe('true');
+    expect(screen.getByRole('button', { name: 'Aligner la courbe sur la frise' }).getAttribute('aria-pressed')).toBe('true');
   });
 });
 
@@ -137,6 +137,44 @@ describe('2. D388 : pendant le glisser, la courbe zoomée comme le jouable', () 
     rerender(<Banc />);
     expect(container.querySelector('[data-zoom-ligne]')).toBeNull();
     expect(screen.queryByRole('img', { name: /La courbe zoomée/ })).toBeNull();
+  });
+});
+
+describe('Lot C n° 7 : en paysage, alignée et zoomée sur toute la largeur de l’en-tête (jouable)', () => {
+  const boites = () => vi.spyOn(Element.prototype, 'getBoundingClientRect').mockImplementation(function (this: Element) {
+    const r = (left: number, top: number, w: number, h: number) => ({ left, top, right: left + w, bottom: top + h, width: w, height: h, x: left, y: top, toJSON: () => ({}) }) as DOMRect;
+    if (this.hasAttribute('data-frise')) return r(12, 165, 820, 500);
+    if (this.hasAttribute('data-calendrier-entete')) return r(12, 36, 820, 120);
+    if (this.classList.contains('ent-cbz')) return r(226, 36, 606, 90);
+    return r(0, 0, 0, 0);
+  });
+  const avecFrise = () => { const f = document.createElement('div'); f.setAttribute('data-frise', ''); document.body.appendChild(f); return () => f.remove(); };
+
+  it('alignée : l’en-tête passe en une colonne (rangée du chiffre au-dessus), la courbe 64 px ; éteinte, la colonne du chiffre revient', () => {
+    const { container, rerender } = render(<Banc orientation="paysage" aligne onAligne={() => undefined} />);
+    const ent = container.querySelector('[data-calendrier-entete]')!;
+    expect(ent).toHaveAttribute('data-aligne', 'oui');
+    expect(ent).toHaveAttribute('data-bouton-al');
+    expect(container.querySelector('.ent-cbz svg.ent-svg')?.getAttribute('height')).toBe('64');
+    rerender(<Banc orientation="paysage" aligne={false} onAligne={() => undefined} />);
+    expect(ent).not.toHaveAttribute('data-aligne');
+    expect(container.querySelector('.ent-cbz svg.ent-svg')?.getAttribute('height')).toBe('90');
+  });
+
+  it('pendant le glisser, la courbe zoomée couvre tout l’en-tête : sa largeur, sa hauteur, ses semaines sur les colonnes de la frise', () => {
+    boites();
+    const retirer = avecFrise();
+    const apres = courbeDecalee(courbe, 'c-noel', 7);
+    const { container } = render(<Banc orientation="paysage" largeurColonne={820 / 13} apercu={{ courbe: apres, lache: ajouterJours(LUNDI0, 35) }} />);
+    const tout = container.querySelector<HTMLElement>('[data-zoom-tout]')!;
+    expect(tout).not.toBeNull();
+    expect(tout.style.height).toBe('120px');
+    const svg = tout.querySelector('svg.ent-zoom')!;
+    expect(svg.getAttribute('width')).toBe('820');
+    // Une seule courbe zoomée : pas de seconde dans la colonne de la courbe.
+    expect(container.querySelectorAll('[data-zoom-ligne]')).toHaveLength(1);
+    expect(tout.querySelector('[data-zoom-ligne]')?.textContent).toMatch(/si tu lâches en S52/);
+    retirer();
   });
 });
 

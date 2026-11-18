@@ -155,23 +155,28 @@
 .ent-zl i { display: inline-block; width: 20px; height: 0; vertical-align: middle; margin-right: 6px; }
 .ent-zl .ent-zav { border-top: 2px dashed var(--ent-ink); }
 .ent-zl .ent-zap { border-top: 3.5px solid var(--ent-fin); }
-/* D387 : l'interrupteur « courbe alignée sur la frise » ; D389 : le bouton qui cache la courbe. Doigt de 44 px par le ::after, comme les autres. */
-.ent-al, .ent-cc { position: relative; height: 28px; display: inline-flex; align-items: center; justify-content: center; color: var(--ent-ink); background: transparent; }
+/* D387, lot C : le bouton à bascule (chaîne) qui aligne la courbe sur la frise, de la taille des boutons-icônes ; allumé, fond plein comme ± ;
+   D389 : le bouton qui cache la courbe. Doigt de 44 px par le ::after, comme les autres. */
+.ent-al, .ent-cc { position: relative; flex: none; width: 26px; height: 28px; display: inline-flex; align-items: center; justify-content: center; color: var(--ent-ink); background: transparent; border-radius: 8px; }
 .ent-al::after, .ent-cc::after { content: ''; position: absolute; inset: -6px -2px; }
 .ent--portrait .ent-al::after, .ent--portrait .ent-cc::after { inset: -16px -2px 0; }
-.ent-al { width: 34px; }
-.ent-al-piste { position: relative; width: 32px; height: 18px; border-radius: 9px; border: 1.5px solid var(--ent-line2); background: rgb(var(--cave-900)); transition: background-color 0.15s; }
-.ent-al-pt { position: absolute; top: 2px; left: 2px; width: 11px; height: 11px; border-radius: 50%; background: rgb(var(--cave-400)); transition: transform 0.15s; }
-.ent-al[aria-checked='true'] .ent-al-piste { background: var(--ent-fin); border-color: var(--ent-fin); }
-.ent-al[aria-checked='true'] .ent-al-pt { transform: translateX(14px); background: rgb(var(--cave-50)); }
-/* Lot C : au téléphone, l'interrupteur est une ligne du menu de la période (jamais sur « CHF à dépenser ») */
-.ent-menu-al { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
-.ent-menu-al .ent-al-piste { flex: none; }
-.ent-menu-al[aria-checked='true'] .ent-al-piste { background: var(--ent-fin); border-color: var(--ent-fin); }
-.ent-menu-al[aria-checked='true'] .ent-al-pt { transform: translateX(14px); background: rgb(var(--cave-50)); }
-.ent-cc { width: 26px; }
+.ent-al[aria-pressed='true'] { background: rgb(var(--cave-50)); color: rgb(var(--cave-950)); }
 .ent-cc[aria-pressed='true'] { color: var(--ent-fin-t); }
 .ent[data-doigt='oui'] .ent-al:focus-visible, .ent[data-doigt='oui'] .ent-cc:focus-visible { outline: none; }
+/* Lot C : au téléphone tenu droit, la rangée du chiffre garde ses textes entiers et prend le bouton de plus : écarts de 2 px, boutons-icônes de
+   24 px, marges intérieures resserrées. Aucune taille de texte ne change. */
+@media (max-width: 699px) {
+  /* le pire cas du banc : « −6 417 », deux retards et « 2 sem. · j » (vue Jour) tiennent sur la ligne, sans chevauchement */
+  .ent--portrait .ent-t { gap: 2px; padding: 0 0 0 4px; }
+  .ent--portrait .ent-t-b { gap: 2px; }
+  .ent--portrait .ent-per { gap: 2px; padding: 0 3px 0 5px; }
+  .ent--portrait .ent-ret-b { gap: 0; padding: 0 1px; }
+  .ent--portrait .ent-ret-b svg { width: 14px; height: 14px; }
+  .ent--portrait .ent-mb { min-width: 22px; padding: 0 3px; }
+  .ent--portrait .ent-al, .ent--portrait .ent-cc, .ent--portrait .ent-pl { width: 24px; }
+}
+/* La courbe zoomée du glisser en paysage (lot C n° 7, jouable `.as-zoom`) : par-dessus tout l'en-tête, le temps du geste. */
+.ent-zoom-tout { position: absolute; left: 0; right: 0; top: 0; z-index: 44; display: flex; flex-direction: column; overflow: hidden; background: rgb(var(--cave-950)); border-bottom: 1px solid var(--ent-line2); pointer-events: none; }
 
 /* ---- la bande des semaines : au repos la semaine seule, 40 px au plus ---- */
 .ent-bz { position: relative; margin-top: 12px; }
@@ -337,6 +342,15 @@
 .ent--paysage .ent-cadre, .ent--paysage .ent-poi { top: 18px; bottom: 2px; }
 .ent--paysage .ent-lit { white-space: normal; height: auto; line-height: 20px; }
 .ent--paysage .ent-lit b { font-size: 20px; }
+/* Lot C : dans la colonne du chiffre (214 px), la rangée des boutons est pleine ; le bouton à bascule se pose au bout de la ligne du chiffre,
+   qui lui laisse sa place (le chiffre s'empile plus tôt, jamais dessous). */
+.ent--paysage:not([data-aligne]) .ent-t { position: relative; }
+.ent--paysage[data-bouton-al]:not([data-aligne]) .ent-al { position: absolute; top: 2px; right: 8px; }
+.ent--paysage[data-bouton-al]:not([data-aligne]) .ent-t > :first-child { max-width: calc(100% - 30px); }
+/* Lot C n° 7 : alignée, la courbe prend toute la largeur de l'en-tête (comme le jouable) ; la rangée du chiffre passe au-dessus, sur une ligne. */
+.ent--paysage[data-aligne] { grid-template-columns: minmax(0, 1fr); grid-template-areas: 't' 'c' 'b'; }
+.ent--paysage[data-aligne] .ent-t { flex-direction: row; align-items: center; gap: 3px; padding: 0 4px 0 12px; }
+.ent--paysage[data-aligne] .ent-t-b { margin-left: auto; }
 .ent--paysage[data-vue='graph'] { grid-template-columns: minmax(0, 1fr); grid-template-areas: 't' 'c'; }
 .ent--paysage[data-vue='graph'] .ent-t { flex-direction: row; align-items: center; }
 .ent--paysage[data-vue='graph'] .ent-t-b { margin-left: auto; }
