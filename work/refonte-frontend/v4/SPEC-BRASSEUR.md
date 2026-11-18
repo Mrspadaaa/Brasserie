@@ -2183,3 +2183,7 @@ Captures : work/missions/2026-11-18-choix-calendrier/brasseur/barres-hautes-18-1
 > effacer les messages de test orphelins dans la base ; oui
 >
 > Et bien tester sur la vrai app surtout !!
+
+> La ligne doit pas être dessus l'info
+
+Capture : work/missions/2026-11-18-choix-calendrier/brasseur/fil-sur-info-18-11.jpg (le fil de la foire traverse la fiche ouverte et les noms des jalons). Lecture : le fil passe toujours sous les textes, les fiches et les icônes ; il ne couvre aucune information.
