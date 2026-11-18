@@ -16,6 +16,7 @@ const DRAPEAUX = [
   { nom: 'VITE_ENRICHISSEMENT_IA', attendu: ['"production"', '"eteinte"'], dit: 'enrichissement des fiches (production ou éteint exprès)' },
   // ks4 passe 3 (15.11) : la note du Carnet rangée par l'IA (src/config/rangerNoteIA.ts) ; `eteint` est un choix exprès.
   { nom: 'VITE_RANGER_NOTE_IA', attendu: ['"production"', '"eteint"'], dit: 'note du Carnet rangée par l\'IA (production ou éteint exprès)' },
+  { nom: 'VITE_CARNET_IA', attendu: ['"production"', '"eteint"'], dit: 'carnet rangé par l\x27IA (production ou éteint exprès ; 18.11 : figé éteint en ligne faute de drapeau)' },
 ];
 let ok = true;
 for (const d of DRAPEAUX) {
