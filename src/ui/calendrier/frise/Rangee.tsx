@@ -237,7 +237,13 @@ export function disposer(choses: readonly ChoseCalendrier[], colonnes: readonly 
       o0 = gauche; o1 = centre + 14;
     }
     const objet: Candidat = { cote: 'dedans', place: 0, x0: o0, x1: o1 };
-    const dedans = (ok: boolean): Candidat[] => (!marque && ok ? [{ cote: 'dedans', place: w - 16, x0: o0, x1: o1 }] : []);
+    /* CRITIQUE-10 n° 2 (E24, D-9, option a) : les jours actifs (« 5 j ») sont des points sur leur propre ligne de la piste, sous le nom : posé
+       dans la barre, le nom prend la ligne du haut et la barre devient haute (la ligne au-dessous lui est réservée, comme la phrase d'un
+       brassin) ; le nom ne couvre jamais un point. Hors de la barre, il est à côté, du côté libre (E24), et les points gardent toute la barre. */
+    const points = !marque && !brassin && (c.joursActifs ?? 0) > 0;
+    const dedans = (ok: boolean): Candidat[] => (!marque && ok
+      ? [{ cote: 'dedans', place: w - 16, x0: o0, x1: o1, ...(points && !paysage ? { bas: { ou: 'barre' as const, x0: o0, x1: o1 } } : {}) }]
+      : []);
     let choix: { ligne: number; c: Candidat };
     if (marque && !avecLibelle) choix = poser([[objet]], objet);
     else {
@@ -273,7 +279,8 @@ export function disposer(choses: readonly ChoseCalendrier[], colonnes: readonly 
       const coupe = cp && cp.largeur + 8 < labNom ? aCote(o0, o1, cp.largeur + 8, 'coupe') : [];
       /* la coupe ne passe jamais devant une ligne entière : tant qu'un côté a la place du nom sur une ligne, une ligne neuve la porte */
       /* sans aucune place pour la phrase entière : l'ordre d'avant, la durée courte dans la barre d'abord */
-      const premierCourt = c.proposition ? [...entiers, ...dedansDuree] : [...dedansDuree, ...entiers];
+      /* en paysage (une ligne de 20 px), une barre à points garde son nom à côté d'abord : la barre n'a pas de seconde ligne pour les points */
+      const premierCourt = c.proposition || (points && paysage) ? [...entiers, ...dedansDuree] : [...dedansDuree, ...entiers];
       const uneLigne = premierCourt.length + deuxDuree.length + courts.length + noms.length + dedansEntier.length + deux.length > 0;
       /* CRITIQUE-6, doute Lier (m390-49a) : la pastille « Blonde d’automne » n'a la place d'aucun côté de « Hotte −900 » : elle débordait de
          l'écran. Le nom et le montant restent entiers ; le lien se lit au badge de la barre, au message « Liée à … » et au détail */

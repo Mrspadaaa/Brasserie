@@ -67,6 +67,13 @@ export const NOMS_MESSAGE = `${TITRES}, [data-frise] .cal-lbl-t, [data-frise] .c
 /* en paysage, les barres et les marques elles-mêmes (leur nom et leur durée vivent dedans) */
 const OBJETS_PAYSAGE = '[data-frise] [data-chose], [data-frise] .cal-lbl';
 
+/** Une fois par image (défilement) ; sans `requestAnimationFrame`, au tour suivant. */
+function prochaineImage(f: () => void): () => void {
+  if (typeof window.requestAnimationFrame === 'function') { const n = window.requestAnimationFrame(f); return () => window.cancelAnimationFrame?.(n); }
+  const t = setTimeout(f, 16);
+  return () => clearTimeout(t);
+}
+
 type Boite = { top: number; bottom: number; left: number; right: number };
 const decaler = (r: Boite, dx: number, dy: number): Boite => ({ top: r.top + dy, bottom: r.bottom + dy, left: r.left + dx, right: r.right + dx });
 
@@ -161,7 +168,49 @@ export const Message: React.FC<MessageProps> = ({ message, onFermer, dureeMs = D
     minuteries.push(setTimeout(placer, 150), setTimeout(placer, 500));
     const surTaille = () => { placer(); minuteries.push(setTimeout(placer, 150)); };
     window.addEventListener('resize', surTaille);
-    return () => { window.removeEventListener('resize', surTaille); minuteries.forEach(clearTimeout); };
+    /* CRITIQUE-10, doute m38 (E33) : avant ses 24 px de départ, un défilement fait passer des noms sous le message ; il se replace à chaque
+       défilement (une fois par image), jamais posé sur un nom qui arrive */
+    let image: (() => void) | null = null;
+    const surDefilement = () => { if (image === null) image = prochaineImage(() => { image = null; placer(); }); };
+    window.addEventListener('scroll', surDefilement, { passive: true, capture: true });
+    return () => {
+      window.removeEventListener('resize', surTaille); window.removeEventListener('scroll', surDefilement, { capture: true });
+      minuteries.forEach(clearTimeout); image?.();
+    };
+  }, [id, entete]);
+
+  /* CRITIQUE-10, doute m38 (E33 : « jamais sur un nom ») : entré au pied de l'en-tête collé, le message grandit l'en-tête ; si la page est
+     défilée, un nom de la frise peut se trouver à moitié sous lui (« Tourne le téléphone » posé sur « Saison de ferme »). La page se décale du
+     plus petit pas qui dégage ce nom (le montrer entier, ou le passer entier sous l'en-tête), toujours moins de 24 px ; sans un tel pas, le
+     message part. Ensuite, au défilement, un nom qui passe sous lui le fait partir aussitôt (avant ses 24 px). */
+  React.useLayoutEffect(() => {
+    const el = racine.current;
+    /* seulement l'invite de l'en-tête (« Tourne le téléphone ») : « Liée à X · Annuler » et les autres bandeaux de geste ne partent pas ainsi */
+    if (!el || id === undefined || !entete || message?.origine !== 'entete') return undefined;
+    const coupes = (): { monte: number; descend: number } | null => {
+      if (!el.isConnected) return null;
+      const r = el.getBoundingClientRect();
+      if (r.height === 0) return null;
+      const noms = [...document.querySelectorAll(NOMS_MESSAGE)].filter(t => !el.contains(t)).map(texteDe)
+        .filter(t => t.width > 0 && t.height > 0 && t.left < r.right && t.right > r.left && t.top < r.bottom && t.bottom > r.bottom);
+      if (!noms.length) return null;
+      return { monte: Math.ceil(Math.max(...noms.map(t => r.bottom + 2 - t.top))), descend: Math.ceil(Math.max(...noms.map(t => t.bottom - r.bottom + 2))) };
+    };
+    const c = coupes();
+    if (c) {
+      const page = document.scrollingElement ?? document.documentElement;
+      const reste = page ? page.scrollHeight - window.innerHeight - window.scrollY : 0;
+      /* le défilement vers le haut ramène le nom entier sous le message ; vers le bas, il passe entier sous l'en-tête */
+      const pas = [window.scrollY >= c.monte ? -c.monte : null, reste >= c.descend ? c.descend : null]
+        .filter((x): x is number => x !== null && Math.abs(x) < 24)
+        .sort((a, b) => Math.abs(a) - Math.abs(b))[0];
+      if (pas !== undefined && typeof window.scrollBy === 'function') window.scrollBy({ top: pas, left: 0, behavior: 'auto' });
+      else fermer.current();
+    }
+    let image: (() => void) | null = null;
+    const surDefilement = () => { if (image === null) image = prochaineImage(() => { image = null; if (coupes()) fermer.current(); }); };
+    window.addEventListener('scroll', surDefilement, { passive: true, capture: true });
+    return () => { window.removeEventListener('scroll', surDefilement, { capture: true }); image?.(); };
   }, [id, entete]);
 
   if (!message) return null;

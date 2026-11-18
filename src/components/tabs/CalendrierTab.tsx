@@ -135,6 +135,18 @@ export function textePromesse(p: Promesse, clients: ReadonlyArray<{ id: string; 
   return sansPointDouble(`${quoi} promis à ${client} le ${jourLisible(p.jourPromis)} · prête le ${jourLisible(p.preteLe)}`);
 }
 
+/** Les durées du menu période (E07), en semaines : « Voir S20 › » prend la plus petite qui contient la chose posée (CRITIQUE-10 n° 2). */
+const DUREES_MENU: readonly number[] = [6, 13, 26, SEMAINES_ANNEE];
+
+/** L'étendue d'une chose posée par la feuille, du lundi de son début au dimanche de sa fin ; un brassin court jusqu'à « prête ». */
+export function etendueDuBrouillon(b: BrouillonAjout): { du: string; au: string } | null {
+  if (!b.debut) return null;
+  const du = lundiDe(b.debut);
+  const finBrassin = b.rangee === 'brassins' && b.tempsEnCuve ? ajouterJours(du, b.tempsEnCuve) : null;
+  const fin = finBrassin ?? (b.fin && b.fin > du ? b.fin : du);
+  return { du, au: ajouterJours(lundiDe(fin), 6) };
+}
+
 type CritereTri = 'urgent' | 'date' | 'montant';
 const CRITERES_TRI: readonly CritereTri[] = ['urgent', 'date', 'montant'];
 const NOM_CRITERE: Record<CritereTri, string> = { urgent: 'Urgent', date: 'Date', montant: 'Montant' };
@@ -250,6 +262,9 @@ export function CalendrierTab(props: CalendrierTabProps) {
      changement de vue. L'en-tête passe par le même canal (`onMessage`) : jamais deux messages à la fois. */
   const montrer = useCallback((m: Omit<MessageCal, 'id'>) => { compteur.current += 1; setMessage({ ...m, texte: sansPointDouble(m.texte), id: compteur.current }); }, []);
   const fermerMessage = useCallback(() => setMessage(null), []);
+  /* CRITIQUE-10 (constat D n° 1, E33, D-126) : le geste Lier ouvre lui-même le détail ; le défilement qui le dégage du + (lot C) n'est pas
+     celui du brasseur et ne chasse pas « Liée à X · Annuler ». Jusqu'à cette heure, un défilement est absorbé (la position repart de là). */
+  const ouvertureParGeste = useRef(0);
   const racine = useRef<HTMLDivElement>(null);
   const idMessage = message?.id;
   useEffect(() => {
@@ -267,6 +282,7 @@ export function CalendrierTab(props: CalendrierTabProps) {
       const d = depart.get(t);
       if (!d) { if (t instanceof Element && racine.current?.contains(t)) depart.set(t, { ...position(t), h: t.scrollHeight }); return; }
       const p = position(t);
+      if (Date.now() < ouvertureParGeste.current) { depart.set(t, { ...p, h: defilant(t).scrollHeight }); return; }
       /* CRITIQUE-7, banc 1280 : une rangée qui rétrécit après un geste (une file de moins) raccourcit la page ; au bout du défilement, le navigateur
          ramène la page de lui-même (−30 px) et chassait « Annuler ». Un défilement qui ne fait que suivre le nouveau bas n'est pas celui du brasseur :
          on repart de là. */
@@ -395,6 +411,27 @@ export function CalendrierTab(props: CalendrierTabProps) {
     setSelectionId(chose.id);
   }, [premierLundi, onPeriode]);
   const surRefus = useCallback((chose: ChoseCalendrier, raison: string, jalon?: unknown) => { refuser(raison, chose, !!jalon); }, [refuser]);
+  /* CRITIQUE-10 n° 2 (E34, E45, D-200, « J'ajoute et je vois rien ») : une chose posée hors de la fenêtre se montre par « Voir S20 › ». Le
+     toucher règle LA période de l'app (même chemin que le menu période, ET-PER) sur la plus petite durée du menu (6 sem., 3 mois, 6 mois, An)
+     qui contient la chose entière, une semaine avant son début. Nouveau, à valider. */
+  const voirEtendue = useCallback((du: string, au: string) => {
+    const total = modele.semaines.length || SEMAINES_ANNEE;
+    const lundis = modele.semaines.map(s => s.debut);
+    const voulu = lundiDe(ajouterJours(du, -7));
+    const depart = voulu < premierLundi ? premierLundi : voulu;
+    const besoin = Math.round((Date.parse(`${lundiDe(au)}T00:00:00Z`) - Date.parse(`${depart}T00:00:00Z`)) / (7 * 86400000)) + 1;
+    const n = DUREES_MENU.find(d => d >= besoin) ?? SEMAINES_ANNEE;
+    setMessage(null); setMenu(null); setSelectionId(null); setAncreListe(undefined);
+    if (n >= SEMAINES_ANNEE || n >= total) {
+      const fen: FenetreSemaines = { du: lundis[0] ?? premierLundi, semaines: Math.min(SEMAINES_ANNEE, total) };
+      setVueEtat('annee'); setFenetre(fen); onPeriode(periodeDeFenetre(fen));
+      return;
+    }
+    const i0 = Math.max(0, lundis.findIndex(l => l >= depart));
+    const i = Math.min(i0, Math.max(0, total - n));
+    const fen: FenetreSemaines = { du: lundis[i] ?? depart, semaines: n };
+    setVueEtat('semaines'); setFenetre(fen); onPeriode(periodeDeFenetre(fen));
+  }, [modele.semaines, premierLundi, onPeriode]);
 
   /* ---------- masquer, épingler, étoiler, filtrer, trier (E22, E31, E39) ---------- */
   const basculerMasque = useCallback((r: IdRangee) => setMasquees(masquees.includes(r) ? masquees.filter(x => x !== r) : [...masquees, r]), [masquees, setMasquees]);
@@ -469,9 +506,17 @@ export function CalendrierTab(props: CalendrierTabProps) {
       if (etaitMasquee) setMasquees(masquees.filter(r => r !== b.rangee));
       if (etaitFiltree) setFiltre(null);
       if (etaitMasquee || etaitFiltree) setMessage(m => (m ? { ...m, texte: sansPointDouble(`${m.texte} · rangée ${nomRangee(b.rangee)} réaffichée`) } : m));
+      /* CRITIQUE-10 n° 2 : posée hors de la fenêtre affichée (S20 → S40 quand on regarde S47 à S52), la chose ne se voit pas. Le message
+         porte « Voir S20 › », de la forme de « Sans date › » : son toucher règle la période sur la chose entière. */
+      const etendue = etendueDuBrouillon(b);
+      const premiere = colonnes[0]?.debut, derniere = colonnes[colonnes.length - 1]?.fin;
+      if (etendue && premiere && derniere && (etendue.au < premiere || etendue.du > derniere)) {
+        const lien = { texte: `Voir ${etiquetteS(etendue.du)} ›`, agir: () => voirEtendue(etendue.du, etendue.au) };
+        setMessage(m => (m && !m.lien ? { ...m, lien } : m));
+      }
     }
     return ok ? { ok: true } : { ok: false, raison: 'Écriture impossible. Rien n’a changé.' };
-  }, [feuille, ctxAjout, modele.courbe, ecrire, masquees, setMasquees, filtre]);
+  }, [feuille, ctxAjout, modele.courbe, ecrire, masquees, setMasquees, filtre, colonnes, voirEtendue]);
 
   const plusDeDetails = useCallback((b: BrouillonAjout) => {
     const lundi = b.debut ?? premierLundi;
@@ -671,7 +716,12 @@ export function CalendrierTab(props: CalendrierTabProps) {
             epinglee={epingles.includes(c.id)}
             etoilee={etoiles.includes(c.id)}
             autresRangees={ordre.filter(r => r !== c.rangee).length}
-            dupliquer={dup.ok === false ? null : { libelle: etiquetteS(prochain), ...(dup.effet ? { effet: dup.effet.texte } : {}) }}
+            dupliquer={dup.ok === false ? null : (() => {
+              /* CRITIQUE-10 n° 5 (E31) : l'effet en mots du domaine d'abord (lot A : « courses S47 : 3 268 → 3 179 » quand la semaine
+                 touchée n'est pas celle de la copie, « coût à venir » sans budget), jamais rien ; sinon l'effet chiffré */
+              const effet = dup.effetMots ?? dup.effet?.texte;
+              return { libelle: etiquetteS(prochain), ...(effet ? { effet } : {}) };
+            })()}
             retirer={ret.ok === false ? { raison: ret.raison } : { ...(ret.effet ? { effet: ret.effet.texte } : {}) }}
             liens={{
               brassins: don.batches.filter(b => !b.archivedAt).map(b => ({ id: b.id, nom: b.name || b.id })),
@@ -696,7 +746,7 @@ export function CalendrierTab(props: CalendrierTabProps) {
               /* CRITIQUE-4 n° 6 (D-126) : le lien est écrit dans la source ; la pastille « lié à X » vient avec le modèle, l'aperçu s'ouvre
                  aussitôt (le détail de la chose), et le message dit « Liée à X · Annuler » */
               setMenu(null);
-              void ecrire(lier(c, liens, ctxGestes, nom), true).then(ok => { if (ok) setSelectionId(c.id); });
+              void ecrire(lier(c, liens, ctxGestes, nom), true).then(ok => { if (ok) { ouvertureParGeste.current = Date.now() + 800; setSelectionId(c.id); } });
             }}
             onRetirer={() => { setMenu(null); void ecrire(ret, true); }}
             onFermer={() => setMenu(null)}

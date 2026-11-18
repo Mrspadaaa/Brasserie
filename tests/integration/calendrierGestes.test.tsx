@@ -842,3 +842,39 @@ describe('CRITIQUE-7 n° 2 (E29, D-47, D-190) : tirer le bord de la Saison pas b
     expect(parseFloat(saison().style.width)).toBeGreaterThan(largeurAvant);
   });
 });
+
+describe('CRITIQUE-10 n° 5 (E31) : « Dupliquer en S… » montre son effet, quel qu’il soit', () => {
+  const BRASSIN: ChoseCalendrier = {
+    id: 'brassin-LOT-STOUT', rangee: 'brassins', titre: 'Stout maison', debut: '2026-11-23', fin: '2026-12-21', centimes: -14200,
+    source: { genre: 'batch', id: 'LOT-STOUT' }, ouvre: { ecran: 'brassin', id: 'LOT-STOUT' }, deplacable: true
+  } as ChoseCalendrier;
+  const ouvrirMenu = (dupliquer: { libelle: string; effet?: string }) => {
+    const a = document.createElement('div'); document.body.appendChild(a);
+    return render(
+      <MenuAppuiLong
+        chose={BRASSIN} nomRangee="Brassins seules" ancre={a} epinglee={false} etoilee={false} autresRangees={6} dupliquer={dupliquer} retirer={{ effet: 'S48 : 1 133 → 1 275' }}
+        liens={{ brassins: [], clients: [] }}
+        onEpingler={vi.fn()} onEtoile={vi.fn()} onSeules={vi.fn()} onDupliquer={vi.fn()} onLier={vi.fn()} onRetirer={vi.fn()} onFermer={vi.fn()}
+      />
+    );
+  };
+
+  it('un brassin sans budget : « Dupliquer en S48 » puis « coût à venir », lus, comme l’effet de Retirer', () => {
+    ouvrirMenu({ libelle: 'S48', effet: 'coût à venir' });
+    const item = screen.getByRole('menuitem', { name: /^Dupliquer en S48/ });
+    expect(item.textContent).toMatch(/^Dupliquer en S48 · coût à venir$/);
+    expect(item.querySelector('[data-effet-dupliquer]')?.textContent).toBe('coût à venir');
+    /* même forme que Retirer : l'effet dans un <em> à part, sous son action dans un menu étroit (deux lignes au plus) */
+    expect(screen.getByRole('menuitem', { name: /^Retirer/ }).querySelector('em')?.tagName).toBe('EM');
+  });
+
+  it('un effet chiffré se lit de même ; sans effet, l’action seule (jamais un effet inventé)', () => {
+    const { unmount } = ouvrirMenu({ libelle: 'S50', effet: 'S50 : 1 244 → 344' });
+    expect(screen.getByRole('menuitem', { name: /^Dupliquer en S50/ }).querySelector('[data-effet-dupliquer]')?.textContent).toBe('S50 : 1 244 → 344');
+    unmount();
+    ouvrirMenu({ libelle: 'S50' });
+    const seul = screen.getByRole('menuitem', { name: /^Dupliquer en S50/ });
+    expect(seul.querySelector('[data-effet-dupliquer]')).toBeNull();
+    expect(seul.textContent).toBe('Dupliquer en S50');
+  });
+});

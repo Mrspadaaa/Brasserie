@@ -8,6 +8,14 @@ import { courbeCaisse, type CourbeCaisse } from '../../src/domain/calendrierCais
 import { accepterVente, allonger, choseAllongee, deplacer, /* CRITIQUE-6 n° 2 */ dupliquer, dureeAllongee, ecartsDeJalons, fait, lier, livrer, mettreDeCote, noterIdee, peutDeplacer, promesseTouchee, resoudre, retirer, type ContexteGestes, type Resolution } from '../../src/domain/calendrierGestes';
 import { texteDuree } from '../../src/domain/calendrier';
 import { appliquer } from '../../src/ui/calendrier/ecritures';
+import { alignerCourbe } from '../../src/domain/calendrierGestes';
+import { isoDate } from '../../src/domain/finance/ledger';
+import type { FinancialProfile } from '../../src/domain/finance/types';
+import { REGLAGES_VIDES } from '../../src/domain/fournisseurs';
+import type { StockItem } from '../../src/types';
+import { construireModele, type EntreesModele } from '../../src/ui/calendrier/useDonneesCalendrier';
+import { avecTendance, etatBanc } from '../../src/design/CalendrierPreview';
+import { preparerChoses } from '../../src/domain/calendrier';
 
 const AUJOURDHUI = '2026-11-16';
 const etapes = (primaire: number, garde: number) => [{ kind: 'primaire', name: 'Primaire', tempC: 19, days: primaire }, { kind: 'garde', name: 'Garde', tempC: 4, days: garde }];
@@ -337,9 +345,12 @@ describe('CRITIQUE-6 n° 2 (D-161, E25, E29) : une Saison pas brassée est prêt
     const r = bien(allonger(chose, 7, ctx({ aujourdhui: JOUR, batches: [saison], plans: [cigogne('2026-12-24')] })));
     expect(r.promesse).toMatchObject({ planId: 'P-CIG', preteLe: '2026-12-29', livrerLe: '2026-12-30' });
     expect(r.promesse!.texte).toContain('prête le 29 déc.');
-    /* promise le 20 déc. : replanifiée une semaine plus tôt (3 nov., toujours passé), elle reste prête le 22 déc. au plus tôt : promesse touchée */
-    const d = bien(deplacer(chose, -1, ctx({ aujourdhui: JOUR, batches: [saison], plans: [cigogne('2026-12-20')] })));
-    expect(d.promesse).toMatchObject({ preteLe: '2026-12-22' });
+    /* CRITIQUE-10 n° 1 : une semaine plus tôt que la colonne affichée (S47), c'est le passé : refus, aucune écriture */
+    const d = deplacer(chose, -1, ctx({ aujourdhui: JOUR, batches: [saison], plans: [cigogne('2026-12-20')] }));
+    expect(d).toMatchObject({ ok: false, raison: 'Le passé ne se replanifie pas : choisis S47 ou plus tard.' });
+    /* promise le 20 déc. : glissée d'une colonne (lundi de S48, 23 nov.), prête le 28 déc. : promesse touchée */
+    const p = bien(deplacer(chose, 1, ctx({ aujourdhui: JOUR, batches: [saison], plans: [cigogne('2026-12-20')] })));
+    expect(p.promesse).toMatchObject({ preteLe: '2026-12-28' });
   });
 
   it('un brassin prévu dans le futur garde « prévue + cycle » : 24 nov. + 35 j = 29 déc.', () => {
@@ -421,7 +432,7 @@ describe('CRITIQUE-9 n° 6 et n° 8 : glisser et dupliquer un brassin disent leu
   })!;
   const effetSeul = /^S\d+ : −?[\d’\s]+ → −?[\d’\s]+$/;
 
-  it('n° 6 : glisser un brassin budgété de S46 à S50 dit « S47 : 4 972 → 5 064 », sans « → S » ; chaque sortie suit sa propre date', () => {
+  it('n° 6 : glisser un brassin budgété, affiché en S47, de 4 colonnes dit « S47 : 4 972 → 5 064 », sans « → S » ; chaque sortie suit sa propre date', () => {
     const chose = choseBrassin(saison, AUJOURDHUI)!;
     const courbe = sorties(chose, [['achats', '2026-11-16', -9200], ['emballage', '2026-12-07', -4500]]);
     const r = bien(deplacer(chose, 4, ctx({ batches: [saison], courbe })));
@@ -429,16 +440,19 @@ describe('CRITIQUE-9 n° 6 et n° 8 : glisser et dupliquer un brassin disent leu
     expect(r.message.texte).not.toMatch(/→ S/);
     expect(r.message.texte).toBe('S47 : 4 972 → 5 064');
     expect(r.effet).toMatchObject({ numero: 47, avant: 497200, apres: 506400 });
-    /* brassé le 8 déc. : courses le 1er déc. (J − 7), emballage le 29 déc. (prête le 5 janv. − 7 j), pas un bloc décalé de 28 j depuis le 16 nov. */
-    expect(r.courbeApres!.mouvements.filter(m => m.choseId === chose.id).map(m => [m.id, m.jour])).toEqual([['brew:LOT-S:achats', '2026-12-01'], ['brew:LOT-S:emballage', '2026-12-29']]);
-    expect(r.ecritures).toEqual([{ op: 'patch', collection: 'batches', id: 'LOT-S', patch: rescheduleBatchPatch(saison, '2026-12-08') }]);
+    /*
+     * CRITIQUE-10 n° 1 : la barre est affichée en S47 (aujourd'hui) ; 4 colonnes plus loin, c'est le lundi de S51, 14 déc. (jamais 10 nov. + 28 j =
+     * 8 déc., S50). Courses le 7 déc. (J − 7), emballage le 4 janv. (prête le 11 janv. − 7 j), pas un bloc décalé de 28 j depuis le 16 nov.
+     */
+    expect(r.courbeApres!.mouvements.filter(m => m.choseId === chose.id).map(m => [m.id, m.jour])).toEqual([['brew:LOT-S:achats', '2026-12-07'], ['brew:LOT-S:emballage', '2027-01-04']]);
+    expect(r.ecritures).toEqual([{ op: 'patch', collection: 'batches', id: 'LOT-S', patch: rescheduleBatchPatch(saison, '2026-12-14') }]);
   });
 
-  it('n° 6 : un brassin sans budget (le libre ne bouge pas) garde le nom et le trajet', () => {
+  it('n° 6 : un brassin sans budget (le libre ne bouge pas) garde le nom et le trajet, depuis la semaine affichée (S47), jamais S46', () => {
     const chose = choseBrassin(saison, AUJOURDHUI)!;
     const r = bien(deplacer(chose, 4, ctx({ batches: [saison], courbe: courbeCaisse({ depart: 506400, lundi0: AUJOURDHUI, mouvements: [] })! })));
     expect(r.effet).toBeNull();
-    expect(r.message.texte).toBe('Saison de ferme : S46 → S50');
+    expect(r.message.texte).toBe('Saison de ferme : S47 → S51');
   });
 
   it('n° 8 : dupliquer un brassin budgété en S53 entre son budget dans la courbe : « Dupliquée · S52 : a → b », effet rempli pour le menu', () => {
@@ -448,12 +462,34 @@ describe('CRITIQUE-9 n° 6 et n° 8 : glisser et dupliquer un brassin disent leu
     const d = bien(dupliquer(chose, '2026-12-28', ctx({ batches: [b], courbe })));
     expect(d.effet?.texte).toMatch(/^S\d+ : /);
     expect(d.effet).toMatchObject({ numero: 52 });
-    expect(d.effetMots).toBe(d.effet!.texte);
-    expect(d.message.texte).toBe(`Dupliquée · ${d.effet!.texte}`);
+    /* CRITIQUE-10 n° 5 : S52 n'est pas la semaine de la copie (S53) : l'effet nomme sa cause */
+    expect(d.effetMots).toBe(`courses ${d.effet!.texte}`);
+    expect(d.message.texte).toBe(`Dupliquée en S53 · courses ${d.effet!.texte}`);
     /* la copie : courses le 21 déc. (J − 7), frais le 28 déc. ; l'original ne bouge pas */
     expect(d.courbeApres!.mouvements.filter(m => m.choseId === `${chose.id}~copie`).map(m => [m.jour, m.centimes])).toEqual([['2026-12-21', -9200], ['2026-12-28', -4500]]);
     expect(d.courbeApres!.mouvements.filter(m => m.choseId === chose.id)).toEqual(courbe.mouvements);
     expect(d.ecritures[0]).toMatchObject({ op: 'creer', collection: 'batches', document: { plannedBrewDate: '2026-12-28', status: 'planifie' } });
+  });
+
+  it('CRITIQUE-10 n° 5 : l’effet tombe sur une autre semaine que la copie (les courses à J − 7) : il nomme sa cause, « courses S52 : a → b »', () => {
+    const b = blonde();
+    const chose = choseBrassin(b, AUJOURDHUI)!;
+    const courbe = sorties(chose, [['achats', '2026-12-01', -9200], ['frais', '2026-12-08', -4500]]);
+    const d = bien(dupliquer(chose, '2026-12-28', ctx({ batches: [b], courbe })));
+    expect(d.effet).toMatchObject({ numero: 52 });
+    expect(d.effetMots).toBe(`courses ${d.effet!.texte}`);
+    expect(d.effetMots).toMatch(/^courses S52 : [\d’\s]+ → [\d’\s]+$/);
+    expect(d.message.texte).toBe(`Dupliquée en S53 · ${d.effetMots}`);
+  });
+
+  it('CRITIQUE-10 n° 5 : l’effet tombe dans la semaine de la copie (frais au jour du brassage) : l’effet seul, la semaine dite une fois', () => {
+    const b = blonde();
+    const chose = choseBrassin(b, AUJOURDHUI)!;
+    const courbe = sorties(chose, [['frais', '2026-12-08', -4500]]);
+    const d = bien(dupliquer(chose, '2026-12-28', ctx({ batches: [b], courbe })));
+    expect(d.effet).toMatchObject({ numero: 53 });
+    expect(d.effetMots).toBe(d.effet!.texte);
+    expect(d.message.texte).toBe(`Dupliquée · ${d.effet!.texte}`);
   });
 
   it('n° 8 : un brassin sans budget dit « coût à venir », jamais un 0 ni une flèche inventée', () => {
@@ -464,5 +500,105 @@ describe('CRITIQUE-9 n° 6 et n° 8 : glisser et dupliquer un brassin disent leu
     expect(d.effetMots).toBe('coût à venir');
     expect(d.message.texte).toBe('Dupliquée en S53 · coût à venir');
     expect(d.message.texte).not.toMatch(/→|(^|\s)0(\s|$)/);
+  });
+});
+
+describe('CRITIQUE-10 n° 1 (E28, D-46, D-189) : un brassin pas brassé, jour prévu passé, va où on le lâche', () => {
+  const JOUR = '2026-11-18';
+  /* prévue le 10 nov. (S46, passé, pas brassée), cycle de 28 j : affichée d'aujourd'hui (S47) à « prête » */
+  const saison = { id: 'LOT-S', name: 'Saison de ferme', style: 'Saison', volumeL: 50, brewDate: '', plannedBrewDate: '10.11.2026', status: 'planifie', recipeSnapshot: { fermentation: etapes(14, 14) } } as unknown as Batch;
+  const port = (docs: Map<string, Record<string, unknown>>) => ({
+    lire: (_c: string, id: string) => docs.get(id),
+    patcher: (_c: string, id: string, patch: Record<string, unknown>) => {
+      const d = { ...docs.get(id)! };
+      for (const [k, v] of Object.entries(patch)) { if (v === undefined) delete d[k]; else d[k] = v; }
+      docs.set(id, d);
+    },
+    creer: () => undefined, supprimer: () => undefined
+  });
+  const ecrite = (r: Resolution) => {
+    if (!r.ok) throw new Error(`refus : ${r.raison}`);
+    const e = r.ecritures[0];
+    return e.op === 'patch' ? isoDate(String(e.patch.plannedBrewDate)) : null;
+  };
+
+  it('+1 colonne : écrit le lundi de S48 (23 nov.), la date de la bulle ; prête le 21 déc. ; le trajet part de S47, jamais de S46 ; Annuler rend le Batch identique', async () => {
+    const chose = choseBrassin(saison, JOUR)!;
+    expect(chose).toMatchObject({ pasBrassee: true, debut: JOUR });
+    const r = bien(deplacer(chose, 1, ctx({ aujourdhui: JOUR, batches: [saison] })));
+    expect(ecrite(r)).toBe('2026-11-23');
+    expect(r.ecritures).toEqual([{ op: 'patch', collection: 'batches', id: 'LOT-S', patch: rescheduleBatchPatch(saison, '2026-11-23') }]);
+    expect(r.message.texte).toBe('Saison de ferme : S47 → S48');
+    expect(r.message.lecture).not.toContain('S46');
+    const docs = new Map<string, Record<string, unknown>>([['LOT-S', structuredClone(saison) as unknown as Record<string, unknown>]]);
+    const fait = await appliquer(r.ecritures, port(docs));
+    const relue = choseBrassin(docs.get('LOT-S') as unknown as Batch, JOUR)!;
+    /* relue : planifiée en S48, plus « pas brassée », prête le 21 déc. (23 nov. + 28 j) */
+    expect(relue.pasBrassee).toBeUndefined();
+    expect(relue).toMatchObject({ debut: '2026-11-23', preteLe: '2026-12-21' });
+    expect(relue.duree).toContain('prête 21 déc.');
+    await fait.annuler();
+    expect(docs.get('LOT-S')).toEqual(saison);
+  });
+
+  it('+4 colonnes : lundi de S51 (14 déc.) ; le jalon de brassage glissé dit la même date', () => {
+    const chose = choseBrassin(saison, JOUR)!;
+    expect(ecrite(deplacer(chose, 4, ctx({ aujourdhui: JOUR, batches: [saison] })))).toBe('2026-12-14');
+    expect(ecrite(deplacer(chose, 4, ctx({ aujourdhui: JOUR, batches: [saison] }), 'brassage'))).toBe('2026-12-14');
+  });
+
+  it('−1 colonne : le passé, refus avec sa raison, aucune écriture', () => {
+    const chose = choseBrassin(saison, JOUR)!;
+    const r = deplacer(chose, -1, ctx({ aujourdhui: JOUR, batches: [saison] }));
+    expect(r).toMatchObject({ ok: false, raison: 'Le passé ne se replanifie pas : choisis S47 ou plus tard.' });
+    expect('ecritures' in r).toBe(false);
+  });
+
+  it('finPrevue écrite (bord tiré) : elle suit le vrai décalage du jour de brassage (10 nov. → 23 nov., +13 j), la longueur reste', () => {
+    const tiree = { ...saison, finPrevue: '2026-12-15' } as Batch;
+    const r = bien(deplacer(choseBrassin(tiree, JOUR)!, 1, ctx({ aujourdhui: JOUR, batches: [tiree] })));
+    expect(r.ecritures).toEqual([{ op: 'patch', collection: 'batches', id: 'LOT-S', patch: { ...rescheduleBatchPatch(tiree, '2026-11-23'), finPrevue: '2026-12-28' } }]);
+  });
+
+  it('un brassin planifié dans le futur garde « prévu + n semaines » et son jour : mercredi 2 déc. +1 → mercredi 9 déc. ; −3 (S46) : refus', () => {
+    const futur = { ...saison, plannedBrewDate: '02.12.2026' } as Batch;
+    const chose = choseBrassin(futur, JOUR)!;
+    expect(chose.pasBrassee).toBeUndefined();
+    const r = bien(deplacer(chose, 1, ctx({ aujourdhui: JOUR, batches: [futur] })));
+    expect(ecrite(r)).toBe('2026-12-09');
+    expect(r.message.texte).toBe('Saison de ferme : S49 → S50');
+    expect(ecrite(deplacer(chose, -2, ctx({ aujourdhui: JOUR, batches: [futur] })))).toBe('2026-11-18');
+    expect(deplacer(chose, -3, ctx({ aujourdhui: JOUR, batches: [futur] }))).toMatchObject({ ok: false, raison: 'Le passé ne se replanifie pas : choisis S47 ou plus tard.' });
+  });
+
+  it('Dupliquer la Saison pas brassée en S48 : la copie au lundi de S48 (23 nov.), planifiée', () => {
+    const chose = choseBrassin(saison, JOUR)!;
+    const d = bien(dupliquer(chose, '2026-11-23', ctx({ aujourdhui: JOUR, batches: [saison] })));
+    expect(d.ecritures[0]).toMatchObject({ op: 'creer', collection: 'batches', document: { plannedBrewDate: '2026-11-23', status: 'planifie' } });
+    expect(d.message.texte).toBe('Dupliquée en S48');
+  });
+});
+
+describe('CRITIQUE-10 n° 5 : sur le banc servi, « Dupliquer en S48 » de la Blonde nomme la cause de l’effet en S47', () => {
+  const J = '2026-11-18';
+  const profil: FinancialProfile = { id: 'current', canton: 'FR', legalForm: 'sole-proprietor', accounting: 'simplified', vatRegistered: false, historyCompleteFrom: '2026-01-01', openingCash: { date: '2026-01-01', amountCents: 403200 + 6 * 65000, confirmed: true } };
+
+  it('la copie est brassée le 23 nov. (S48), ses courses à J − 7 tombent le 16 nov., passé, donc aujourd’hui (S47) : « courses S47 : a → b »', () => {
+    const b = avecTendance(etatBanc(J), J);
+    const banc: EntreesModele = {
+      aujourdhui: J, transactions: b.transactions, payments: b.paiements ?? [], plans: b.plans, profile: profil,
+      assets: [], batches: b.batches, stockItems: [] as StockItem[], items: b.items, recettes: b.recettes, reglages: b.reglages ?? REGLAGES_VIDES, lignesCourses: b.lignesCourses ?? []
+    };
+    const modele = construireModele(banc);
+    /* le chemin de l'onglet (CalendrierTab) : les choses prêtes (budget rattaché au brassin), puis la courbe rattachée à elles */
+    const prets = preparerChoses(modele.choses, { brassins: new Map(b.batches.map(x => [x.id, x.name || x.id])) });
+    const courbe = alignerCourbe(modele.courbe, prets);
+    const chose = prets.find(c => c.source.genre === 'batch' && c.source.id === 'LOT-BLONDE')!;
+    const d = bien(dupliquer(chose, '2026-11-23', ctx({ aujourdhui: J, batches: b.batches, plans: b.plans, courbe })));
+    const copies = d.courbeApres!.mouvements.filter(m => m.choseId === `${chose.id}~copie`).map(m => [m.id.replace(/~copie$/, ''), m.jour, m.centimes]);
+    expect(copies.find(([id]) => String(id).endsWith(':achats'))?.[1]).toBe(J);
+    expect(d.effet).toMatchObject({ numero: 47 });
+    expect(d.effetMots).toBe(`courses ${d.effet!.texte}`);
+    expect(d.message.texte).toBe(`Dupliquée en S48 · courses ${d.effet!.texte}`);
   });
 });

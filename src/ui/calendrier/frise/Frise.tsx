@@ -186,6 +186,10 @@ export const Frise: React.FC<FriseProps> = props => {
       data-nb-colonnes={n}
       data-largeur-colonne={largeurColonne.toFixed(2)}
       data-largeur={largeur}
+      /* CRITIQUE-10, doute m22 : le cadre de focus (pastille « lié à », barres, marques) est pour le clavier seul ; après un toucher, aucun cadre
+         (comme la bande des semaines, `data-doigt`). La touche suivante du clavier le rend. */
+      onPointerDownCapture={e => e.currentTarget.setAttribute('data-doigt', '')}
+      onKeyDownCapture={e => e.currentTarget.removeAttribute('data-doigt')}
     >
       {traits.length > 0 && (
         <svg className="cal-traits" aria-hidden="true" data-traits>

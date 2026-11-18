@@ -408,3 +408,98 @@ describe('d3 (CRITIQUE-3 n° 5, D-199, E27) : l’appui long sur une marque ouvr
     expect(choisie?.className ?? '').toMatch(/cal-sel/);
   });
 });
+
+/* ---------- CRITIQUE-10 (tour 10, lot D) : n° 2 atteignable, n° 5 effet de Dupliquer, n° 1 par l'onglet (banc, port en mémoire) ---------- */
+const appuiLongSur = (el: Element) => {
+  vi.useFakeTimers({ toFake: ['setTimeout', 'clearTimeout'] });
+  fireEvent.pointerDown(el, { clientX: 100, clientY: 10, pointerId: 1, button: 0 });
+  act(() => { vi.advanceTimersByTime(500); });
+  vi.useRealTimers();
+  fireEvent.pointerUp(el, { clientX: 100, clientY: 10, pointerId: 1, button: 0 });
+};
+
+describe('CRITIQUE-10 n° 2 (E34, E45, D-200) : posée hors de la fenêtre, « Voir S20 › » la montre', () => {
+  it('Travaux, puce, S20, S40, 5 j, Ajouter : le message porte « Voir S20 › » ; son toucher règle 6 mois sur S20 → S40, la barre et ses 5 points', async () => {
+    const onPeriode = vi.fn();
+    const appels = monterBanc({ callbacks: { onPeriode } });
+    expect(document.querySelector('[data-frise]')!.getAttribute('data-nb-colonnes')).toBe('6');
+    fireEvent.click(document.querySelector('button[data-plus="travaux"]')!);
+    const d = within(screen.getByRole('dialog', { name: 'Travaux' }));
+    fireEvent.click(d.getByRole('button', { name: 'Sols : colle et joints' }));
+    const semaines = within(d.getByRole('group', { name: 'Semaine' }));
+    fireEvent.click(semaines.getByRole('button', { name: /^S20/ }));
+    fireEvent.click(semaines.getByRole('button', { name: /^S40/ }));
+    fireEvent.click(d.getByRole('button', { name: '5 j' }));
+    fireEvent.click(d.getByRole('button', { name: /^Ajouter/ }));
+    await waitFor(() => expect(appels.filter(a => a.op === 'creer')).toHaveLength(1));
+    expect(appels[0]).toMatchObject({ collection: 'financialPlans', patch: { fenetre: { du: '2027-05-17', au: '2027-10-10', joursActifs: 5 } } });
+    /* posée hors de S47 – S52 : rien ne se voit, d'où le lien */
+    expect(screen.queryByRole('button', { name: /^Sols : colle et joints/ })).toBeNull();
+    const m = await screen.findByRole('status');
+    const lien = within(m).getByRole('button', { name: 'Voir S20 ›' });
+    expect(within(m).getByRole('button', { name: /Annuler/ })).toBeInTheDocument();
+    onPeriode.mockClear();
+    fireEvent.click(lien);
+    /* même chemin que le menu période : la période de l'app reçoit 6 mois, une semaine avant S20 (S19 ’27, 10 mai) */
+    expect(onPeriode).toHaveBeenCalledWith({ genre: 'dates', du: '2027-05-10', au: ajouterJours('2027-05-10', 26 * 7 - 1) });
+    expect(document.querySelector('[data-frise]')!.getAttribute('data-nb-colonnes')).toBe('26');
+    expect(document.querySelector('[data-calendrier]')!.getAttribute('data-vue')).toBe('semaines');
+    expect(screen.queryByRole('status')).toBeNull();
+    const barre = await screen.findByRole('button', { name: /^Sols : colle et joints/ });
+    expect(barre.getAttribute('data-rangee')).toBe('travaux');
+    expect(barre.getAttribute('data-semaine')).toBe('S20');
+    expect(barre.querySelectorAll('[data-point]')).toHaveLength(5);
+    /* la fenêtre affichée contient la chose entière : S19 à S44, donc S40 */
+    const p = onPeriode.mock.calls[0][0] as { du: string; au: string };
+    expect(p.du <= '2027-05-17' && p.au >= '2027-10-10').toBe(true);
+  });
+
+  it('posée dans la fenêtre (S48) : pas de lien « Voir »', async () => {
+    const appels = monterBanc();
+    fireEvent.click(document.querySelector('button[data-plus="travaux"]')!);
+    const d = within(screen.getByRole('dialog', { name: 'Travaux' }));
+    fireEvent.click(d.getByRole('button', { name: 'Sols : colle et joints' }));
+    fireEvent.click(within(d.getByRole('group', { name: 'Semaine' })).getByRole('button', { name: /^S48/ }));
+    fireEvent.click(d.getByRole('button', { name: /^Ajouter/ }));
+    await waitFor(() => expect(appels.filter(a => a.op === 'creer')).toHaveLength(1));
+    const m = await screen.findByRole('status');
+    expect(within(m).queryByRole('button', { name: /^Voir/ })).toBeNull();
+  });
+});
+
+describe('CRITIQUE-10 n° 5 (E31) : « Dupliquer » d’un brassin dit son effet dans le menu', () => {
+  it('appui long sur la Blonde : « Dupliquer en S49 » suivi d’un effet chiffré ou de « coût à venir », jamais nu', () => {
+    monterBanc();
+    const blonde = screen.getByRole('button', { name: /^Blonde d’automne/ });
+    expect(blonde.getAttribute('data-semaine')).toBe('S48');
+    appuiLongSur(blonde);
+    const item = screen.getByRole('menuitem', { name: /^Dupliquer en S49/ });
+    /* lot A : la cause en mots quand la semaine touchée n'est pas celle de la copie (« courses S47 : … ») */
+    expect(item.textContent).toMatch(/^Dupliquer en S49 · (?:(?:[\p{L} ]+ )?S\d+(?: ’\d\d)? : −?[\d   ]+ → −?[\d   ]+|coût à venir)$/u);
+  });
+});
+
+describe('CRITIQUE-10 n° 1 (E28, D-46, D-189) : la Saison pas brassée va où on la lâche', () => {
+  it('prévue le 10 nov., aujourd’hui le 18 : glisser d’une colonne, la bulle dit « S48 · 23 nov. » et l’écriture porte le 23 nov.', async () => {
+    const appels = monterBanc({ aujourdhui: '2026-11-18' });
+    const saison = screen.getByRole('button', { name: /^Saison de ferme/ });
+    expect(saison.getAttribute('data-semaine')).toBe('S47');
+    const largeur = Number(document.querySelector('[data-frise]')!.getAttribute('data-largeur-colonne'));
+    fireEvent.pointerDown(saison, { clientX: 100, clientY: 10, pointerId: 1, button: 0 });
+    fireEvent.pointerMove(saison, { clientX: 100 + largeur, clientY: 10, pointerId: 1 });
+    const bulle = document.querySelector('[data-ici]');
+    expect(bulle?.textContent).toMatch(/^S48 · 23 nov\./);
+    fireEvent.pointerUp(saison, { clientX: 100 + largeur, clientY: 10, pointerId: 1 });
+    await waitFor(() => expect(appels.filter(a => a.op === 'patch' && a.collection === 'batches')).toHaveLength(1));
+    const ecrit = appels.find(a => a.op === 'patch' && a.collection === 'batches')!;
+    /* l'app écrit `plannedBrewDate` à la suisse (« 23.11.2026 ») ; lu en ISO pour comparer */
+    const ecrite = String(ecrit.patch!.plannedBrewDate);
+    const iso = /^\d{2}\.\d{2}\.\d{4}$/.test(ecrite) ? `${ecrite.slice(6, 10)}-${ecrite.slice(3, 5)}-${ecrite.slice(0, 2)}` : ecrite;
+    expect(iso).toBe('2026-11-23');
+    /* la bulle et l'écriture disent la même date */
+    expect(bulle?.textContent).toContain(`${Number(iso.slice(8, 10))} nov.`);
+    const apres = await screen.findByRole('button', { name: /^Saison de ferme/ });
+    await waitFor(() => expect(apres.getAttribute('data-semaine')).toBe('S48'));
+    expect(screen.getByRole('button', { name: /^Saison de ferme/ }).textContent).toMatch(/prête 21 déc\./);
+  });
+});

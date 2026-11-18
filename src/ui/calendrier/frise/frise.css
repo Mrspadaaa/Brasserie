@@ -169,6 +169,9 @@ button.cal-lie::before { content: ''; position: absolute; inset: -6px -2px; }
 .cal-m3b[aria-checked='true'] { border-color: rgb(var(--cave-50)); box-shadow: inset 0 0 0 1px rgb(var(--cave-50)); }
 .cal-ml { display: flex; align-items: center; gap: 10px; width: 100%; min-height: 46px; padding: 0 6px; border: 0; border-top: 1px solid rgb(var(--cave-700)); background: none; color: inherit; font: inherit; text-align: left; }
 .cal-ml > span { flex: 1; }
+/* CRITIQUE-10 n° 5 (E31) : l'effet de Dupliquer et de Retirer (« S50 : 1 244 → 344 », « coût à venir ») est entier, sur une ligne : l'action
+   et son effet tiennent deux lignes au plus (menu étroit : l'effet passe sous l'action) */
+.cal-ml > em { flex: none; white-space: nowrap; }
 .cal-ml > em { font-style: normal; font-weight: 700; font-variant-numeric: tabular-nums; white-space: nowrap; font-size: 14px; }
 .cal-ml-ret, .cal-ml-ret > em { color: rgb(var(--alert-strong)); }
 .cal-mn { margin: 4px 6px 6px; color: rgb(var(--cave-200)); font-size: 14px; }
@@ -185,7 +188,11 @@ button.cal-lie::before { content: ''; position: absolute; inset: -6px -2px; }
 .cal-det-et { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; margin-bottom: 10px; padding-bottom: 10px; border-bottom: 1px solid rgb(var(--cave-700)); }
 .cal-det-et span { display: flex; align-items: center; gap: 4px; color: rgb(var(--cave-200)); }
 .cal-det-et b { display: block; font-variant-numeric: tabular-nums; }
+/* CRITIQUE-10 n° 4 : la plage d'une semaine est insécable ; sa colonne (1fr, au moins sa largeur) la porte entière */
+.cal-det-et .cal-nowrap { white-space: nowrap; }
 .cal-det-p { display: flex; align-items: flex-start; gap: 8px; margin: 0 0 10px; }
+/* CRITIQUE-10 n° 7 : la pastille « lié à … » du détail, la même que sur la frise, sur la ligne de son aperçu */
+.cal-det-lie .cal-lie { min-height: 20px; white-space: nowrap; }
 .cal-det-bt { display: flex; flex-wrap: wrap; gap: 8px; }
 .cal-b { display: inline-flex; align-items: center; gap: 6px; min-height: 40px; padding: 0 14px; border-radius: 20px; border: 1.5px solid rgb(var(--cave-600)); background: transparent; color: inherit; font: inherit; font-weight: 700; }
 .cal-b-pri { background: rgb(var(--cave-50)); color: rgb(var(--cave-950)); border-color: rgb(var(--cave-50)); }
@@ -210,6 +217,8 @@ button.cal-lie::before { content: ''; position: absolute; inset: -6px -2px; }
 /* CRITIQUE-9 n° 3 (E25, E29, as/cap/p-repos) : la barre haute d'un brassin, le nom en haut, « J0 / 28 · prête 21 déc. » en bas à droite, sur
    la piste des phases ; sinon la phrase sur la ligne sous la barre. Jamais « J0 / 28 » seul quand la phrase a une place. */
 .cal-barre-2l .cal-duree, .cal-barre-2l .cal-duree.cal-duree-in { top: auto; bottom: 6px; }
+/* CRITIQUE-10 n° 2 (E24, D-9, option a) : les jours actifs sur leur propre ligne, sous le nom ; le nom (ligne du haut) ne couvre aucun point */
+.cal-pts.cal-pts-bas { top: auto; bottom: 8px; }
 .cal-lbl-sous { align-items: center; }
 .cal-lbl-sous .cal-lbl-j { margin-left: 0; }
 /* CRITIQUE-9 n° 10 (D-113, D-126) : l'icône lien d'une chose sans place pour sa pastille se touche ; posée au coin de la barre, hors d'elle */
@@ -218,3 +227,5 @@ button.cal-lie::before { content: ''; position: absolute; inset: -6px -2px; }
 .cal-lie.cal-lie-icone { width: 20px; height: 20px; padding: 0; border-color: transparent; background: transparent; }
 .cal-lie.cal-lie-icone::before { inset: -8px -2px -2px -8px; }
 .cal-lie.cal-lie-icone:focus-visible { outline: 2px solid var(--c); outline-offset: 1px; }
+/* CRITIQUE-10, doute m22 : après un toucher dans la frise, aucun cadre de focus (pastille, barre, marque, détail) ; au clavier, il revient */
+.cal-frise[data-doigt] :focus-visible, .cal-frise[data-doigt] .cal-lie.cal-lie-icone:focus-visible { outline: none; }

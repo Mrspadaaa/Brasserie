@@ -36,6 +36,11 @@ const echeanceDe = (c: ChoseCalendrier): string | null => {
   return typeof e === 'string' && /^\d{4}-\d{2}-\d{2}/.test(e) ? e.slice(0, 10) : null;
 };
 const pasBrassee = (c: ChoseCalendrier): boolean => c.rangee === 'brassins' && champ(c, 'pasBrassee') === true;
+/** Le jour où le brassage était prévu (lot A, `brassagePrevu`) ; sans lui, rien n'est dit (jamais aujourd'hui sous le mot « prévue »). */
+const brassagePrevuDe = (c: ChoseCalendrier): string | null => {
+  const j = champ(c, 'brassagePrevu');
+  return typeof j === 'string' && /^\d{4}-\d{2}-\d{2}/.test(j) ? j.slice(0, 10) : null;
+};
 /** En tête de « En cours » : ce qui attend un geste (une pièce due, une bière pas brassée). */
 const enAttente = (c: ChoseCalendrier): boolean => enRetard(c) || pasBrassee(c);
 /** La date que la liste montre : l'échéance d'une chose en retard, sinon son début. */
@@ -53,8 +58,10 @@ function marqueProposee(c: ChoseCalendrier): string | null {
 function sousTitre(c: ChoseCalendrier): React.ReactNode {
   const jour = dateDe(c);
   if (pasBrassee(c)) {
-    /* « pas brassée · prévue le 10 nov. · S46 » : la date une fois (n° 22) */
-    return <>{nomRangee(c.rangee)} · <span className="cal-li-retard">pas brassée</span>{jour ? ` · prévue le ${etiquetteListe(jour)}` : ''}</>;
+    /* « pas brassée · prévue le 10 nov. · S46 » : la date une fois (n° 22). CRITIQUE-10 n° 3 (E08, D-19, E40) : le jour prévu réel
+       (`brassagePrevu`), celui du détail (« Brassage 10 nov. · pas brassée »), jamais `debut`, ramené à aujourd'hui (« prévue le 18 nov. ») */
+    const prevu = brassagePrevuDe(c);
+    return <>{nomRangee(c.rangee)} · <span className="cal-li-retard">pas brassée</span>{prevu ? ` · prévue le ${etiquetteListe(prevu)}` : ''}</>;
   }
   const duree = dureeVue(c);
   return (

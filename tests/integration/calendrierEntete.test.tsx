@@ -1542,3 +1542,133 @@ describe('CRITIQUE-9 (lot corr9-B) : le creux ancré sur son point, le glissé �
     expect(screen.getByLabelText('Fenêtre : S47 – S50')).toBeInTheDocument();
   });
 });
+
+describe('CRITIQUE-10 (lot corr10-B) : c2-b au doigt à 390 ne touche jamais ±, le focus au clavier seul', () => {
+  /* La semaine d'index 22 (S17 ’27) a quatre mouvements : le détail dit le plus gros, « +3 autres » et « la semaine ». */
+  const courbeChargee = courbeCaisse({ depart: 418000, lundi0: LUNDI0, mises, mouvements: [
+    ...mouvements,
+    { id: 'n1', jour: jour(22), centimes: -60000, nom: 'Houblons' },
+    { id: 'n2', jour: jour(22), centimes: -12000, nom: 'Étiquettes' },
+    { id: 'n3', jour: jour(22), centimes: -8000, nom: 'Capsules' },
+    { id: 'n4', jour: jour(22), centimes: 30000, nom: 'Ventes du marché' }
+  ] })!;
+  const modeleCharge = (): ModeleEnTete => ({ ...modele(), courbe: courbeChargee, creux: creuxDepuis(courbeChargee) });
+  const plusMoins = () => screen.getByTitle('Afficher les + et − et les icônes de chaque semaine');
+
+  it('n° 6 (E11, D-195) : un glissé tactile de 80 px parti de la courbe hors du cadre lit la semaine ; ± ne change pas ; au lâcher, 3 lignes', () => {
+    const e = espions();
+    const onMouvements = vi.fn();
+    const { container } = render(<Banc {...e} modele={modeleCharge()} onMouvements={onMouvements} onLectureSemaine={vi.fn()} />);
+    const cb = container.querySelector('.ent-cb') as HTMLElement;
+    expect(plusMoins().getAttribute('aria-pressed')).toBe('false');
+    // 390 en 6 sem. : prises 0 à 10 et 35 à 79 px. Départ à 88 px (22,6 % de la courbe), hors du cadre ; 80 px à droite : 168 px, l'index 22.
+    fireEvent.pointerDown(cb, { pointerId: 21, pointerType: 'touch', clientX: 88, clientY: 30, button: 0 });
+    for (let x = 96; x <= 168; x += 8) fireEvent.pointerMove(window, { pointerId: 21, pointerType: 'touch', clientX: x, clientY: 31 });
+    // Doigt tenu : la tête de sa maquette (« 3 801 CHF · S12 · 22 mars −487 »), les boutons de tête restent, ± fermé.
+    const tete = container.querySelector('.ent-t')!;
+    expect(tete.textContent).toMatch(/CHF · S\d+ · \d+ \S+/);
+    expect(tete.querySelector('.ent-lit em')!.textContent).toBe(`S${courbeChargee.semaines[22].numero}`);
+    for (const s of ['.ent-mb', '.ent-per', '.ent-pl']) expect(tete.querySelector(s)).not.toBeNull();
+    expect(plusMoins().getAttribute('aria-pressed')).toBe('false');
+    // Au lâcher, le clic fabriqué tombe sur la courbe ; le détail de 3 lignes reste sous la bande.
+    fireEvent.pointerUp(window, { pointerId: 21, pointerType: 'touch', clientX: 168 });
+    fireEvent.click(cb, { detail: 1 });
+    const lu = container.querySelector('.ent-lu')!.textContent!;
+    expect(lu).toContain('Houblons');
+    expect(lu).toContain('+3 autres');
+    expect(lu).toContain('la semaine');
+    expect(plusMoins().getAttribute('aria-pressed')).toBe('false');
+    expect(onMouvements).not.toHaveBeenCalled();
+    expect(e.onFenetre).not.toHaveBeenCalled();
+  });
+
+  it('n° 6 : un toucher bref sur le haut de la courbe dont Chrome rabat le clic sur ± ne bascule pas ± ; un vrai toucher sur ± le bascule', () => {
+    const { container } = render(<Banc {...espions()} />);
+    const cb = container.querySelector('.ent-cb') as HTMLElement;
+    // Mesuré à 390 (mesures.txt, avant) : un doigt de 16 px posé 6 à 10 px sous ± le basculait ; pointerdown sur la courbe, clic sur ±.
+    fireEvent.pointerDown(cb, { pointerId: 22, pointerType: 'touch', clientX: 229, clientY: 8, button: 0 });
+    fireEvent.pointerUp(window, { pointerId: 22, pointerType: 'touch', clientX: 229 });
+    fireEvent.click(plusMoins(), { detail: 1 });
+    expect(plusMoins().getAttribute('aria-pressed')).toBe('false');
+    // De même pour la période (son menu ne s'ouvre pas).
+    fireEvent.pointerDown(cb, { pointerId: 23, pointerType: 'touch', clientX: 278, clientY: 8, button: 0 });
+    fireEvent.pointerUp(window, { pointerId: 23, pointerType: 'touch', clientX: 278 });
+    const per = container.querySelector('[data-ent-periode]') as HTMLElement;
+    fireEvent.click(per, { detail: 1 });
+    expect(per.getAttribute('aria-expanded')).toBe('false');
+    // Un vrai toucher sur ± juste après : son pointerdown met fin à l'attente, son clic passe.
+    fireEvent.pointerDown(plusMoins(), { pointerId: 24, pointerType: 'touch', button: 0 });
+    fireEvent.click(plusMoins());
+    expect(plusMoins().getAttribute('aria-pressed')).toBe('true');
+  });
+
+  it('n° 6 : un doigt posé dans la courbe que Chrome rabat sur ⛶ (pointerdown sur le bouton, coordonnées brutes dans la courbe) reste un geste de la courbe', () => {
+    largeurFenetre(390);
+    const { container } = render(<Banc {...espions()} />);
+    const cb = container.querySelector('.ent-cb') as HTMLElement;
+    // Les boîtes de Chrome à 390 (mesures.txt) : la courbe 12–378 × 64–174 ; ⛶ 350–374 × 36–64.
+    const rect = { left: 12, top: 64, right: 378, bottom: 174, width: 366, height: 110, x: 12, y: 64 };
+    vi.spyOn(cb, 'getBoundingClientRect').mockReturnValue({ ...rect, toJSON: () => rect } as DOMRect);
+    const pl = screen.getByRole('button', { name: 'Plein écran' });
+    // Toucher bref à (362, 66) : mesuré dans Chrome, pointerdown, mousedown et click vont à ⛶. Rien ne se passe : ni plein écran, ni invitation.
+    const pd = fireEvent.pointerDown(pl, { pointerId: 31, pointerType: 'touch', clientX: 362, clientY: 66, button: 0 });
+    expect(pd, 'le pointerdown est empêché (ni focus ni souris sur ⛶)').toBe(false);
+    fireEvent.pointerUp(window, { pointerId: 31, pointerType: 'touch', clientX: 362 });
+    fireEvent.click(pl, { detail: 1 });
+    expect(container.querySelector('[data-info="invite"]')).toBeNull();
+    expect(screen.getByRole('button', { name: 'Plein écran' })).toBeInTheDocument();
+    // Glissé parti au même endroit : la tête lit la semaine, ± reste fermé.
+    fireEvent.pointerDown(pl, { pointerId: 32, pointerType: 'touch', clientX: 362, clientY: 66, button: 0 });
+    for (let x = 354; x >= 282; x -= 8) fireEvent.pointerMove(window, { pointerId: 32, pointerType: 'touch', clientX: x, clientY: 67 });
+    expect(container.querySelector('.ent-t')!.textContent).toMatch(/CHF · S\d+ · \d+ \S+/);
+    fireEvent.pointerUp(window, { pointerId: 32, pointerType: 'touch', clientX: 282 });
+    fireEvent.click(pl, { detail: 1 });
+    expect(plusMoins().getAttribute('aria-pressed')).toBe('false');
+    expect(container.querySelector('[data-info="invite"]')).toBeNull();
+    // Un vrai toucher sur ⛶ (au-dessus de la courbe) n'est pas détourné.
+    const vrai = fireEvent.pointerDown(pl, { pointerId: 33, pointerType: 'touch', clientX: 362, clientY: 50, button: 0 });
+    expect(vrai).toBe(true);
+  });
+
+  it('n° 6 : la courbe répond elle-même au toucher (écouteur click sur son nœud), pour que l’ajustement tactile ne cherche pas ± à côté', () => {
+    const espion = vi.spyOn(HTMLElement.prototype, 'addEventListener');
+    const { container } = render(<Banc {...espions()} />);
+    const cb = container.querySelector('.ent-cb');
+    expect(espion.mock.contexts.some((ctx, i) => ctx === cb && espion.mock.calls[i][0] === 'click')).toBe(true);
+  });
+
+  it('n° 6 : en portrait, la zone de toucher de ± (et des boutons de tête) a 44 px de haut et s’arrête au haut de la courbe : le point de départ du glissé n’y est jamais', async () => {
+    const fs = await import('node:fs');
+    const css = fs.readFileSync('src/ui/calendrier/entete/entete.css', 'utf8').replace(/\/\*[\s\S]*?\*\//g, '');
+    // La règle `::after` de ± qui vaut en portrait : la dernière dont un sélecteur finit par `.ent-mb::after` hors paysage.
+    const regles = Array.from(css.matchAll(/([^{}]+)\{([^{}]*)\}/g)).filter(([, sel]) => sel.split(',').some(s => /\.ent-mb::after\s*$/.test(s.trim()) && !s.includes('ent--paysage')));
+    expect(regles.length).toBeGreaterThan(0);
+    const inset = regles.at(-1)![2].match(/inset:\s*([^;]+);/)![1].trim().split(/\s+/).map(v => parseFloat(v));
+    const [haut, droite, bas, gauche] = inset.length === 1 ? [inset[0], inset[0], inset[0], inset[0]] : inset.length === 2 ? [inset[0], inset[1], inset[0], inset[1]] : inset.length === 3 ? [inset[0], inset[1], inset[2], inset[1]] : inset;
+    // Les boîtes mesurées à 390 × 844 dans Chrome (mesures.txt) : ± 215–243 × 36–64, la courbe 12–378 × 64–174 (la tête la touche).
+    const pm = { l: 215, t: 36, r: 243, b: 64 }, courbe390 = { l: 12, t: 64, w: 366, h: 110 };
+    const zone = { l: pm.l + gauche, t: pm.t + haut, r: pm.r - droite, b: pm.b - bas };
+    const dans = (x: number, y: number) => x >= zone.l && x < zone.r && y >= zone.t && y < zone.b;
+    expect(zone.b - zone.t, 'hauteur de la zone de ±').toBeGreaterThanOrEqual(44);
+    expect(zone.b, 'bas de la zone de ± contre le haut de la courbe').toBeLessThanOrEqual(courbe390.t);
+    // Le point de départ donné au lot D (50 % de la courbe, 25 % de sa hauteur) et chaque point de la courbe sous ± : hors de la zone.
+    expect(dans(courbe390.l + courbe390.w * 0.5, courbe390.t + courbe390.h * 0.25)).toBe(false);
+    for (let x = zone.l; x <= zone.r; x += 2) for (let y = courbe390.t; y < courbe390.t + courbe390.h; y += 2) expect(dans(x, y), `(${x}, ${y})`).toBe(false);
+  });
+
+  it('doute m27 : après un toucher sur ±, l’en-tête se dit au doigt et l’anneau de focus des boutons de tête est retiré ; une touche du clavier le rend', async () => {
+    const { container } = render(<Banc {...espions()} />);
+    const racine = container.querySelector('[data-calendrier-entete]') as HTMLElement;
+    fireEvent.pointerDown(plusMoins(), { pointerId: 25, pointerType: 'touch', button: 0 });
+    fireEvent.click(plusMoins());
+    plusMoins().focus();
+    expect(racine.getAttribute('data-doigt')).toBe('oui');
+    const fs = await import('node:fs');
+    const css = fs.readFileSync('src/ui/calendrier/entete/entete.css', 'utf8');
+    expect(css).toMatch(/\.ent\[data-doigt\] \.ent-t button:focus-visible \{ outline: none; \}/);
+    // Jamais `:focus` seul sur les boutons de tête : le cadre reste au clavier (`:focus-visible`).
+    expect(css).not.toMatch(/\.ent-(mb|per|pl|ret-b|k)[^,{]*:focus(?!-visible)/);
+    fireEvent.keyDown(document, { key: 'Tab' });
+    expect(racine.getAttribute('data-doigt')).toBeNull();
+  });
+});

@@ -169,6 +169,17 @@ export function EnTeteCalendrier(props: EnTeteCalendrierProps) {
   const [lecture, setLecture] = useState<number | null>(null);
   const [info, setInfo] = useState<Info | null>(null);
   const [plein, setPlein] = useState(() => estPleinEcran());
+  // Doute m27 (CRITIQUE-10) : le cadre de focus des boutons de tête est pour le clavier seul. La dernière modalité de la page se lit sur
+  // `document`, en capture : un doigt (ou la souris) pose `data-doigt`, une touche du clavier l'enlève ; avec lui, l'anneau `:focus-visible`
+  // des boutons de tête est retiré (entete.css), même quand Chrome juge « clavier » un focus rendu par programme.
+  const [doigt, setDoigt] = useState(false);
+  useEffect(() => {
+    const pose = () => setDoigt(true);
+    const leve = () => setDoigt(false);
+    document.addEventListener('pointerdown', pose, true);
+    document.addEventListener('keydown', leve, true);
+    return () => { document.removeEventListener('pointerdown', pose, true); document.removeEventListener('keydown', leve, true); };
+  }, []);
   const minuterie = useRef<ReturnType<typeof setTimeout> | null>(null);
   const vueAvant = useRef<VueCalendrier>('semaines');
   const fenAvantAnnee = useRef<FenetreSemaines | null>(null);
@@ -292,6 +303,22 @@ export function EnTeteCalendrier(props: EnTeteCalendrierProps) {
       }
       gestes.onPointerDown(e);
     }
+  };
+
+  // CRITIQUE-10 n° 6 (E11, D-195) : un doigt posé DANS la courbe, que Chrome rabat sur un bouton de tête voisin (ajustement tactile : à 390,
+  // ⛶ prend un doigt de 16 px posé 2 à 4 px sous lui), reste un geste de la courbe. Le pointerdown garde ses coordonnées brutes : s'il tombe
+  // dans la boîte de la courbe, il part vers elle (lecture au glissé, prises comprises) ; le bouton ne prend ni le focus ni le clic (avalé).
+  const versCourbe = (e: React.PointerEvent<HTMLDivElement>) => {
+    const el = cadreCourbe.current;
+    if (graph || apercuC || !courbe || !el || e.button > 0) return;
+    const r = el.getBoundingClientRect();
+    if (!r.width || e.clientX < r.left || e.clientX > r.right || e.clientY < r.top || e.clientY > r.bottom) return;
+    e.preventDefault();
+    e.stopPropagation();
+    gestesCourbe.onPointerDown({
+      button: e.button, pointerId: e.pointerId, pointerType: e.pointerType, clientX: e.clientX, clientY: e.clientY, currentTarget: el, target: el,
+      preventDefault: () => e.preventDefault(), stopPropagation: () => undefined
+    } as unknown as React.PointerEvent<HTMLDivElement>);
   };
 
   const fermerLecture = () => { setLecture(null); if (vue === 'graph') onVue(vueAvant.current === 'graph' ? 'semaines' : vueAvant.current); };
@@ -464,8 +491,8 @@ export function EnTeteCalendrier(props: EnTeteCalendrierProps) {
   ) : <span className="ent-k ent-k-vide" />;
 
   return (
-    <div ref={racine} className={`ent ent--${orientation}`} data-vue={vue} data-calendrier-entete aria-label="En-tête du calendrier" role="group">
-      <div className="ent-t">
+    <div ref={racine} className={`ent ent--${orientation}`} data-vue={vue} data-doigt={doigt ? 'oui' : undefined} data-calendrier-entete aria-label="En-tête du calendrier" role="group">
+      <div className="ent-t" onPointerDownCapture={versCourbe}>
         {lecture !== null && !graph && courbeC ? <LectureTete courbe={courbeC} index={lecture} boutons={paysage ? undefined : boutonsTete} /> : cle}
         <span ref={boutonsTete} className="ent-t-b">
           <button type="button" className="ent-mb" aria-pressed={mouvements} title="Afficher les + et − et les icônes de chaque semaine" onClick={() => onMouvements(!mouvements)}>±</button>

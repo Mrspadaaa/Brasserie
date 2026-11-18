@@ -225,7 +225,8 @@ export const Barre: React.FC<BarreProps> = props => {
           />
         ))}
         {n > 0 && (
-          <span className="cal-pts" aria-hidden="true">
+          /* CRITIQUE-10 n° 2 (E24, D-9) : un conteneur à part du libellé ; dans la barre haute, il prend la ligne sous le nom */
+          <span className={`cal-pts${bas?.ou === 'barre' ? ' cal-pts-bas' : ''}`} data-points={n} aria-hidden="true">
             {Array.from({ length: n }, (_, i) => <i key={i} data-point style={{ left: `${((i + 0.5) / n) * 100}%` }} />)}
           </span>
         )}

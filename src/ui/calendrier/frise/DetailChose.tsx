@@ -57,6 +57,16 @@ export function sansLaDate(detail: string | undefined, debut: string | undefined
   return reste || undefined;
 }
 
+/**
+ * CRITIQUE-10 n° 4 : « S49, 30 nov. – 6 déc. » ne se coupe jamais au milieu de la plage (« 30 nov. – 6 » puis « déc. ») : la plage est
+ * insécable ; faute de place, « S49, » reste seul sur sa ligne et la plage entière passe dessous (la colonne de la grille prend sa largeur).
+ */
+function texteSemaine(semaine: string): React.ReactNode {
+  const i = semaine.indexOf(', ');
+  if (i < 0) return <span className="cal-nowrap" data-plage>{semaine}</span>;
+  return <>{semaine.slice(0, i + 1)} <span className="cal-nowrap" data-plage>{semaine.slice(i + 2)}</span></>;
+}
+
 /** Les étapes datées d'un brassin, une par jalon de la recette figée ; sans jalon : brassage et prête (ou « durée inconnue »). */
 function etapes(chose: ChoseCalendrier): Array<{ id: string; libelle: string; jour: string; icone: React.ReactNode }> {
   const jalons = (chose.jalons ?? []).filter((j): j is JalonBrassin & { id: Exclude<JalonId, 'commander'> } => j.id !== 'commander' && j.id in ETAPE)
@@ -91,8 +101,36 @@ function texteFrais(c: ChoseCalendrier): string | null {
   return null;
 }
 
+/**
+ * CRITIQUE-10, doute m14 : ouvert près du bas, le détail passait sous le + volant (« à acheter avant le … » couvert). À l'ouverture, la page
+ * défile juste assez pour que sa dernière ligne passe au-dessus du + (sa hauteur mesurée, lecture seule, + 8 px), sans que son haut passe
+ * sous l'en-tête collé. Rien ne bouge si le + n'est pas là ou si le détail est déjà dégagé. Renvoie le défilement fait (px), pour les tests.
+ */
+export function degagerDuVolant(det: HTMLElement): number {
+  if (typeof window === 'undefined' || typeof document === 'undefined' || typeof window.scrollBy !== 'function') return 0;
+  const volant = document.querySelector('.floating-actions')?.getBoundingClientRect();
+  if (!volant || volant.height === 0 || volant.top >= window.innerHeight) return 0;
+  const r = det.getBoundingClientRect();
+  if (r.height === 0) return 0;
+  const besoin = Math.ceil(r.bottom - (volant.top - 8));
+  if (besoin <= 0) return 0;
+  const entete = document.querySelector('[data-entete-zone]')?.getBoundingClientRect();
+  const plafond = entete && entete.height > 0 ? entete.bottom + 8 : 8;
+  const delta = Math.min(besoin, Math.max(0, Math.floor(r.top - plafond)));
+  if (delta > 0) window.scrollBy({ top: delta, left: 0, behavior: 'auto' });
+  return delta;
+}
+
 export const DetailChose: React.FC<DetailChoseProps> = props => {
   const { chose, libreSemaine, promesse } = props;
+  const racine = React.useRef<HTMLDivElement | null>(null);
+  /* à l'ouverture (et quand une autre chose s'y ouvre), après la mise en page de la frise */
+  React.useEffect(() => {
+    const el = racine.current;
+    if (!el || typeof window === 'undefined') return undefined;
+    const raf = typeof window.requestAnimationFrame === 'function' ? window.requestAnimationFrame(() => degagerDuVolant(el)) : null;
+    return () => { if (raf !== null) window.cancelAnimationFrame?.(raf); };
+  }, [chose.id]);
   const brassin = chose.source.genre === 'batch';
   const commander = chose.jalons?.find(j => j.id === 'commander');
   const montant = chose.centimes !== undefined ? francsSignes(chose.centimes) : null;
@@ -116,7 +154,7 @@ export const DetailChose: React.FC<DetailChoseProps> = props => {
   })();
 
   return (
-    <div role="region" aria-label={`Détail : ${chose.titre}`} className={`cal-det ${CLASSE_TEINTE[chose.rangee]}`} data-detail={chose.id}>
+    <div ref={racine} role="region" aria-label={`Détail : ${chose.titre}`} className={`cal-det ${CLASSE_TEINTE[chose.rangee]}`} data-detail={chose.id}>
       <h4 className="cal-det-h">{chose.titre}{montant && <span className={chose.centimes !== undefined && chose.centimes < 0 ? 'cal-neg' : 'cal-pos'}>{chose.reste ? 'reste ' : ''}{montant}{chose.partiel ? ' +' : ''}</span>}{chose.coutAVenir && <span>coût à venir</span>}</h4>
       <button type="button" className="cal-det-x" aria-label="Fermer" onClick={props.onFermer}><X size={22} aria-hidden="true" /></button>
 
@@ -134,7 +172,7 @@ export const DetailChose: React.FC<DetailChoseProps> = props => {
         </>
       ) : (
         <div className="cal-det-et">
-          {semaine && <div><span>Semaine</span><b>{semaine}</b></div>}
+          {semaine && <div><span>Semaine</span><b>{texteSemaine(semaine)}</b></div>}
           {chose.debut && <div><span>Date</span><b>{date(chose.debut)}{chose.fin && chose.fin !== chose.debut ? ` → ${date(chose.fin)}` : ''}</b></div>}
           {chose.fenetre && <div><span>Fenêtre</span><b>{etiquetteS(chose.fenetre.du)} → {etiquetteS(chose.fenetre.au)}</b></div>}
           {chose.joursActifs ? <div><span>Jours actifs</span><b>{chose.joursActifs} j</b></div> : null}
@@ -158,7 +196,16 @@ export const DetailChose: React.FC<DetailChoseProps> = props => {
       {/* l'aperçu sur place d'une chose liée (D-113, D-126) : « La Cigogne · client ; Blonde d'automne · brassage 23 nov. · prête 21 déc. » */}
       {/* CRITIQUE-6 n° 15 : un lien qui répète le titre (« Épicerie du Bourg, 2 cartons » lié à « Épicerie du Bourg ») ne garde que ce qu'il
           ajoute (le brassin promis) ; s'il n'ajoute rien, la ligne part */}
-      {apercuLien && <p className="cal-det-p" data-apercu-lien><Link2 size={16} aria-hidden="true" /><span>{apercuLien.texte && <><b>{apercuLien.texte}</b> · </>}{apercuLien.apercu}</span></p>}
+      {/* CRITIQUE-10 n° 7 (E37, D-113, D-126) : un plan lié (la Hotte, liée à Blonde d'automne) porte dans son détail la pastille « lié à … »,
+          la même que sur la frise, et son aperçu à côté, sur place ; le détail est déjà l'aperçu ouvert, la pastille ne se re-touche pas */}
+      {apercuLien && (
+        <p className="cal-det-p cal-det-lie" data-apercu-lien>
+          {apercuLien.texte
+            ? <><span className="cal-lie" data-lie data-lie-detail><Link2 size={14} aria-hidden="true" /><span>{apercuLien.texte}</span></span><span className="sr-only"> · </span></>
+            : <Link2 size={16} aria-hidden="true" />}
+          <span>{apercuLien.apercu}</span>
+        </p>
+      )}
 
       <div className="cal-det-bt">
         {props.onAccepter && <button type="button" className="cal-b cal-b-pri" onClick={props.onAccepter}>{proposition ? 'Accepter' : 'Vente confirmée'}</button>}

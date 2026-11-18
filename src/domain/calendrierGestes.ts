@@ -132,6 +132,16 @@ export function mouvementsBrassinApres(mouvements: readonly MouvementCaisse[], a
   });
 }
 
+/** Les sorties d'un brassin en mots de brasseur (CRITIQUE-10 n° 5) : « courses », « frais de brassage », « emballage », « impôt ». */
+const MOTS_POSTE: Record<PosteSortie, string> = { achats: 'courses', frais: 'frais de brassage', emballage: 'emballage', impot: 'impôt' };
+/** Ce qui, parmi les sorties d'un brassin, tombe dans la semaine du lundi `lundi` : « courses », « courses et frais de brassage » ; `null` si rien de connu. */
+function causeDansSemaine(mouvements: readonly MouvementCaisse[], lundi: string): string | null {
+  const dimanche = ajouterJours(lundi, 6);
+  const postes = [...new Set(mouvements.filter(m => m.jour >= lundi && m.jour <= dimanche).map(m => posteDe(m.id)))];
+  if (!postes.length || postes.includes(null)) return null;
+  return postes.map(p => MOTS_POSTE[p as PosteSortie]).join(' et ');
+}
+
 /** La courbe après qu'un brassin a changé de dates : les mouvements de sa chose suivent (`mouvementsBrassinApres`). */
 function courbeBrassin(courbe: CourbeCaisse | null, choseId: string, avant: Batch, apres: Batch, aujourdhui: string, repli: number): CourbeCaisse | null {
   if (!courbe) return null;
@@ -163,11 +173,21 @@ export function deplacer(chose: ChoseCalendrier, semaines: number, ctx: Contexte
     if (chose.deplacable !== true) return refus(chose.deplacable.raison, chose.ouvre);
     const prevu = isoDate(plannedBrewDate(batch));
     if (!prevu) return refus('Ce brassin n’a pas de date prévue : choisis-la dans sa fiche (Brassins).', chose.ouvre);
-    const nouveau = decale(prevu, jours);
+    /*
+     * CRITIQUE-10 n° 1 (E28, D-46, D-189) : un brassin pas brassé dont le jour prévu est passé est affiché depuis aujourd'hui (CRITIQUE-7 n° 2).
+     * Le doigt compte les colonnes depuis CETTE colonne : la date écrite est le lundi de la colonne affichée + n semaines, celle que la bulle
+     * annonce (« S48 · 23 nov. · lâcher ici »), jamais le jour prévu passé + n (qui retombait dans le passé et ramenait la barre à aujourd'hui).
+     * Planifié dans le futur : jour prévu + n semaines, son jour de la semaine gardé. Une cible avant la semaine courante est refusée.
+     */
+    const depart = chose.pasBrassee ? lundiDe(chose.debut) : prevu;
+    const nouveau = decale(depart, jours);
+    if (lundiDe(nouveau) < lundiDe(ctx.aujourdhui)) return refus(`Le passé ne se replanifie pas : choisis ${etiquetteS(ctx.aujourdhui)} ou plus tard.`);
+    /* le vrai décalage du jour de brassage : `finPrevue` écrite et les sorties sans poste le suivent, la longueur reste */
+    const ecart = ecartJours(prevu, nouveau);
     let patch: Record<string, unknown>;
     try { patch = { ...rescheduleBatchPatch(batch, nouveau) }; } catch { return refus('Brassin en cuve : le jour de brassage ne bouge pas.', chose.ouvre); }
     const finEcrite = isoDate(batch.finPrevue || undefined);
-    if (finEcrite) patch.finPrevue = decale(finEcrite, jours);
+    if (finEcrite) patch.finPrevue = decale(finEcrite, ecart);
     /* CRITIQUE-6 n° 2 : replanifié encore dans le passé sans brassage, il reste prêt au plus tôt aujourd'hui + cycle */
     const deplace = { ...batch, ...patch } as Batch;
     const apres = preteAuPlusTot(deplace, ctx.aujourdhui);
@@ -176,11 +196,12 @@ export function deplacer(chose: ChoseCalendrier, semaines: number, ctx: Contexte
      * CRITIQUE-9 n° 6 (E28, D-46, A6) : comme f1-a choisi (as-gestes.js l. 254) et comme les autres choses, le message dit l'effet sur la caisse,
      * « S50 : 5 064 → 4 524 », dès que le libre bouge ; le nom et le trajet seulement si rien ne change (brassin sans budget, ou effet nul).
      */
-    const courbeApres = courbeBrassin(ctx.courbe, chose.id, batch, deplace, ctx.aujourdhui, jours);
+    const courbeApres = courbeBrassin(ctx.courbe, chose.id, batch, deplace, ctx.aujourdhui, ecart);
     const effet = effetCaisse(ctx.courbe, courbeApres);
+    /* le trajet part de la semaine AFFICHÉE (S47 → S48), jamais du jour prévu passé (S46) */
     return {
       ok: true, ecritures: [{ op: 'patch', collection: 'batches', id: batch.id, patch }], effet, promesse, courbeApres,
-      message: annuler(effet ? effet.texte : `${chose.titre} : ${etiquetteS(prevu)} → ${etiquetteS(nouveau)}`)
+      message: annuler(effet ? effet.texte : `${chose.titre} : ${etiquetteS(depart)} → ${etiquetteS(nouveau)}`)
     };
   }
   if (chose.deplacable !== true) return refus(chose.deplacable.raison, chose.ouvre);
@@ -333,13 +354,20 @@ export function dupliquer(chose: ChoseCalendrier, versLundi: string, ctx: Contex
     const copie = document as unknown as Batch;
     const pasCommence = datesSortiesBrassin(batch, ctx.aujourdhui)?.commence === false;
     const siens = pasCommence ? (ctx.courbe?.mouvements.filter(m => m.choseId === chose.id) ?? []) : [];
-    const copies = siens.length ? mouvementsBrassinApres(siens, batch, copie, ctx.aujourdhui, delta).map(m => ({ ...m, id: `${m.id}~copie`, choseId: `${chose.id}~copie` })) : [];
+    const auxDates = siens.length ? mouvementsBrassinApres(siens, batch, copie, ctx.aujourdhui, delta) : [];
+    const copies = auxDates.map(m => ({ ...m, id: `${m.id}~copie`, choseId: `${chose.id}~copie` }));
     const courbeApres = ctx.courbe && copies.length ? courbeAvec(ctx.courbe, copies) : ctx.courbe;
     const effet = effetCaisse(ctx.courbe, courbeApres);
-    const effetMots = effet ? effet.texte : ctx.courbe ? 'coût à venir' : undefined;
+    /*
+     * CRITIQUE-10 n° 5 (E31, A6) : « Dupliquer en S48 · S47 : 3 268 → 3 200 » se lisait comme une erreur de semaine. Quand la première semaine
+     * qui change n'est pas celle de la copie (les courses à J − 7, ramenées à aujourd'hui si elles tombent dans le passé), l'effet nomme sa
+     * cause : « courses S47 : 3 268 → 3 200 ». Dans la semaine de la copie, l'effet seul (la semaine n'est dite qu'une fois).
+     */
+    const cause = effet && effet.lundi !== cible ? causeDansSemaine(auxDates, effet.lundi) : null;
+    const effetMots = effet ? (cause ? `${cause} ${effet.texte}` : effet.texte) : ctx.courbe ? 'coût à venir' : undefined;
     return {
       ok: true, ecritures: [{ op: 'creer', collection: 'batches', document, ...(batch.recipeRef ? { recetteId: batch.recipeRef } : {}) }], effet, ...(effetMots ? { effetMots } : {}), promesse: null, courbeApres,
-      message: annuler(effet ? `Dupliquée · ${effet.texte}` : `Dupliquée en ${etiquetteS(cible)}${effetMots ? ` · ${effetMots}` : ''}`)
+      message: annuler(effet && !cause ? `Dupliquée · ${effet.texte}` : `Dupliquée en ${etiquetteS(cible)}${effetMots ? ` · ${effetMots}` : ''}`)
     };
   }
   if (chose.deplacable !== true && source.genre !== 'creative') return refus(`Une copie se crée dans sa source. ${chose.deplacable.raison}`.trim(), chose.ouvre);

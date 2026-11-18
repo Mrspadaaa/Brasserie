@@ -356,4 +356,82 @@ describe('CRITIQUE-5 n° 13 : aucun message sur un nom de rangée ou de chose', 
     expect(screen.getByRole('status').textContent).toMatch(/^S51 : 5 064 → 4 524/);
     expect(document.querySelectorAll('[data-message]')).toHaveLength(1);
   });
+
+  describe('CRITIQUE-10, doute m38 (E33) : « Tourne le téléphone » ne reste jamais sur un nom après défilement', () => {
+    const Y0 = window.scrollY;
+    let scrollBy: ReturnType<typeof vi.fn>;
+    beforeEach(() => {
+      scrollBy = vi.fn();
+      Object.defineProperty(window, 'scrollBy', { configurable: true, writable: true, value: scrollBy });
+      Object.defineProperty(window, 'scrollY', { configurable: true, writable: true, value: 200 });
+      Object.defineProperty(document.documentElement, 'scrollHeight', { configurable: true, value: 3000 });
+    });
+    afterEach(() => { Object.defineProperty(window, 'scrollY', { configurable: true, writable: true, value: Y0 }); });
+    const image = () => act(() => new Promise<void>(r => setTimeout(r, 40)));
+    /* des noms partout entre l'en-tête et les onglets, un toutes les 30 px depuis `depuis` : aucune bande libre */
+    const plein = (depuis: number, extra: R[] = []) => {
+      const etiquettes: R[] = [...extra];
+      for (let top = depuis; top < 844; top += 30) etiquettes.push({ top, left: 20, width: 300, height: 26 });
+      return etiquettes;
+    };
+    const tourne = (onFermer: () => void) => render(<Message message={{ id: 1, role: 'status', texte: 'Tourne le téléphone : 13 semaines', origine: 'entete' }} onFermer={onFermer} />);
+
+    it('entré sous l’en-tête collé, page défilée, un nom à moitié sous lui : la page se décale du plus petit pas (< 24 px) qui le dégage', () => {
+      taille(390, 844);
+      /* le message (700 → 740) coupe l'étiquette 736 → 762 : 6 px vers le haut la montrent entière */
+      ecran({ entete: 430, noms: [{ top: 436, left: 24, width: 110, height: 24 }], etiquettes: plein(436), message: { top: 700, left: 8, width: 298, height: 40 } });
+      const onFermer = vi.fn();
+      tourne(onFermer);
+      expect(document.querySelector('[data-message]')).toHaveAttribute('data-place', 'sous-entete');
+      expect(scrollBy).toHaveBeenCalledWith({ top: -6, left: 0, behavior: 'auto' });
+      expect(Math.abs((scrollBy.mock.calls[0][0] as { top: number }).top)).toBeLessThan(24);
+      expect(onFermer).not.toHaveBeenCalled();
+    });
+
+    it('sans un pas de moins de 24 px qui dégage le nom, le message part (jamais posé dessus)', () => {
+      taille(390, 844);
+      ecran({ entete: 430, noms: [{ top: 436, left: 24, width: 110, height: 24 }], etiquettes: plein(440, [{ top: 690, left: 20, width: 300, height: 80 }]), message: { top: 700, left: 8, width: 298, height: 40 } });
+      const onFermer = vi.fn();
+      tourne(onFermer);
+      expect(scrollBy).not.toHaveBeenCalled();
+      expect(onFermer).toHaveBeenCalledTimes(1);
+    });
+
+    it('constat D n° 1 : « Liée à X · Annuler » (un bandeau de geste, pas l’invite de l’en-tête) ne part pas et la page ne bouge pas', () => {
+      taille(390, 844);
+      ecran({ entete: 430, noms: [{ top: 436, left: 24, width: 110, height: 24 }], etiquettes: plein(440, [{ top: 690, left: 20, width: 300, height: 80 }]), message: { top: 700, left: 8, width: 298, height: 40 } });
+      const onFermer = vi.fn();
+      render(<Message message={{ id: 1, role: 'status', texte: 'Liée à Blonde d’automne', annuler: () => undefined }} onFermer={onFermer} />);
+      expect(scrollBy).not.toHaveBeenCalled();
+      expect(onFermer).not.toHaveBeenCalled();
+    });
+
+    it('au pied de l’en-tête, un défilement qui fait passer un nom sous lui le fait partir aussitôt (avant ses 24 px)', async () => {
+      taille(390, 844);
+      /* étiquettes 710 → 736 et 740 → 766 : aucune coupée par le message (700 → 740) */
+      ecran({ entete: 430, noms: [{ top: 436, left: 24, width: 110, height: 24 }], etiquettes: plein(440), message: { top: 700, left: 8, width: 298, height: 40 }, defile: 500 });
+      const onFermer = vi.fn();
+      tourne(onFermer);
+      expect(onFermer).not.toHaveBeenCalled();
+      const frise = document.querySelector<HTMLElement>('[data-frise]')!;
+      frise.scrollTop = 10;
+      fireEvent.scroll(frise);
+      await image();
+      expect(onFermer).toHaveBeenCalledTimes(1);
+    });
+
+    it('flottant, un défilement de moins de 24 px amène un nom sous lui : il se replace dans une bande libre', async () => {
+      taille(390, 844);
+      ecran({ entete: 430, noms: [{ top: 436, left: 24, width: 110, height: 24 }], etiquettes: [{ top: 760, left: 20, width: 300, height: 26 }], message: { top: 700, left: 8, width: 298, height: 40 }, defile: 500 });
+      bandeau();
+      const m = document.querySelector<HTMLElement>('[data-message]')!;
+      expect(m.dataset.place).toBe('bas');
+      const frise = document.querySelector<HTMLElement>('[data-frise]')!;
+      frise.scrollTop = 30;
+      fireEvent.scroll(frise);
+      await image();
+      expect(surUnNom()).toHaveLength(0);
+      expect(m.dataset.place).toBe('bande');
+    });
+  });
 });

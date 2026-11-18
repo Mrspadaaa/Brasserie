@@ -222,7 +222,11 @@ export function construireModele(e: EntreesModele): ModeleCalendrier {
   }
   if (tendance.size) {
     const parMois = Math.round([...tendance.values()].reduce((s, n) => s + n, 0) / tendance.size);
-    if (parMois !== 0) hypotheses.push({ id: 'tendance', texte: `Tendance de Finances : ${francsSignes(parMois)} CHF/mois`, source: 'Finances › Prévision (moyenne des mois passés)', ouvre: { ecran: 'finances' } });
+    /*
+     * CRITIQUE-10, doute m04 : la tendance est la médiane des charges payées MOINS les charges déjà prévues (le loyer récurrent, compté à part dans
+     * la courbe) : « moyenne des mois passés » se lisait comme un double compte (−400 de loyer et −250 de moyenne, alors que 650 sont payés).
+     */
+    if (parMois !== 0) hypotheses.push({ id: 'tendance', texte: `Tendance de Finances : ${francsSignes(parMois)} CHF/mois`, source: 'Finances › Prévision (médiane des charges payées, moins les charges déjà prévues)', ouvre: { ecran: 'finances' } });
   }
 
   const icones: IconeSemaine[] = [

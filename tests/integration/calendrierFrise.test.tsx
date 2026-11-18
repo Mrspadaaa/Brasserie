@@ -853,6 +853,61 @@ describe('CRITIQUE-7 (lot corr7-C-frise) : lien sans nom répété, points de la
     verifierSols('6 mois');
   });
 
+  /* CRITIQUE-10 n° 2 (E24, D-9, option a) : les 5 points ne sont couverts ni par le nom ni par le montant */
+  const pointsLibres = (vue: string) => {
+    const b = document.querySelector<HTMLElement>('[data-chose="plan-sols"]')!;
+    const pts = b.querySelector<HTMLElement>('[data-points]')!;
+    expect(pts, vue).not.toBeNull();
+    expect(pts.getAttribute('data-points'), vue).toBe('5');
+    const points = [...pts.querySelectorAll<HTMLElement>('[data-point]')];
+    expect(points.map(p => Math.round(parseFloat(p.style.left) * 10) / 10), vue).toEqual([0, 1, 2, 3, 4].map(i => Math.round(((i + 0.5) / 5) * 1000) / 10));
+    const lbl = document.querySelector<HTMLElement>('.cal-lbl.cal-t-travaux')!;
+    expect(lbl.textContent, vue).toMatch(/Rénovation\s*des sols/);
+    /* un conteneur distinct du libellé, jamais l'un dans l'autre */
+    expect(lbl.contains(pts) || pts.contains(lbl), vue).toBe(false);
+    if (lbl.classList.contains('cal-lbl-dedans')) {
+      /* le nom dans la barre : la barre est haute, le nom sur sa ligne du haut, les points sur la ligne du dessous (bas : 8 px, 7 px de haut) */
+      expect(b, vue).toHaveClass('cal-barre-2l');
+      expect(pts, vue).toHaveClass('cal-pts-bas');
+      const basNom = parseFloat(lbl.style.top) + parseFloat(lbl.style.height);
+      const hautPoints = parseFloat(b.style.top) + parseFloat(b.style.height) - 8 - 7;
+      expect(basNom, vue).toBeLessThanOrEqual(hautPoints);
+    } else {
+      /* à côté, du côté libre (E24) : hors de la barre */
+      expect(lbl.classList.contains('cal-lbl-droite') || lbl.classList.contains('cal-lbl-gauche'), vue).toBe(true);
+    }
+  };
+
+  it('CRITIQUE-10 n° 2 : à 390 en 6 mois et dans l’An, les 5 points sont sur leur ligne, sous le nom, dans [data-points]', () => {
+    const six = Array.from({ length: 26 }, (_, i) => ({ debut: ajouterJours('2027-05-17', i * 7), fin: ajouterJours('2027-05-17', i * 7 + 6), etiquette: etiquetteS(ajouterJours('2027-05-17', i * 7)) }));
+    const { unmount } = friseDe(six);
+    pointsLibres('6 mois');
+    expect(document.querySelector('.cal-lbl.cal-t-travaux')).toHaveClass('cal-lbl-dedans');
+    unmount();
+    friseDe(anneeEnMois(JOUR).map(m => ({ debut: m.debut, fin: m.fin, etiquette: m.court })));
+    pointsLibres('An');
+  });
+
+  it('CRITIQUE-10 n° 2 : une barre sans jours actifs reste d’une ligne (rien ne change pour elle)', () => {
+    render(
+      <Frise choses={[{ ...sols, id: 'plan-sans', joursActifs: undefined, fenetre: { du: '2027-05-17', au: '2027-10-03' } } as ChoseCalendrier]} colonnes={anneeEnMois(JOUR).map(m => ({ debut: m.debut, fin: m.fin, etiquette: m.court }))} paysage={false} ordre={[]} masquees={[]} filtre={null} epingles={[]} etoiles={[]} drag={null} largeurRepli={360} onAjouter={rien} onBasculerMasque={rien} barre={gestes} />
+    );
+    const b = document.querySelector<HTMLElement>('[data-chose="plan-sans"]')!;
+    expect(b).not.toHaveClass('cal-barre-2l');
+    expect(b.querySelector('[data-points]')).toBeNull();
+  });
+
+  it('CRITIQUE-10, doute m22 : après un toucher dans la frise, aucun cadre de focus (data-doigt) ; une touche du clavier le rend', () => {
+    friseDe(anneeEnMois(JOUR).map(m => ({ debut: m.debut, fin: m.fin, etiquette: m.court })));
+    const frise = document.querySelector<HTMLElement>('[data-frise]')!;
+    const b = document.querySelector<HTMLElement>('[data-chose="plan-sols"]')!;
+    fireEvent.pointerDown(b, { clientX: 10, clientY: 10, pointerId: 1, button: 0 });
+    fireEvent.pointerUp(b, { clientX: 10, clientY: 10, pointerId: 1 });
+    expect(frise).toHaveAttribute('data-doigt');
+    fireEvent.keyDown(b, { key: 'Tab' });
+    expect(frise).not.toHaveAttribute('data-doigt');
+  });
+
   it('n° 7 : la rangée qui passe sous le + après défilement ou rotation : aucun nom ne se pose sous le +', async () => {
     const cols: Colonne[] = Array.from({ length: 6 }, (_, i) => ({ debut: ajouterJours(L, i * 7), fin: ajouterJours(L, i * 7 + 6), etiquette: etiquetteS(ajouterJours(L, i * 7)) }));
     const malt = { id: 'plan-brouwland', rangee: 'achats', titre: 'Brouwland · malt', debut: ajouterJours(L, 14), fin: ajouterJours(L, 14), centimes: -42000, source: { genre: 'plan', id: 'P-BW', origine: 'manual', statut: 'active' }, ouvre: { ecran: 'finances' }, deplacable: true } as ChoseCalendrier;

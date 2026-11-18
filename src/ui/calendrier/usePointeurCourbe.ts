@@ -41,10 +41,17 @@ export const DELAI_CLIC_AVALE = 400;
 /**
  * Avale le prochain `click` (et le prochain `contextmenu`) de la page, une fois, pendant `ms`. Un nouveau doigt posé met fin à l'attente : le
  * clic fabriqué arrive toujours avant lui, et un vrai toucher qui suit n'est jamais perdu.
+ *
+ * `garder` : le clic qui tombe DANS ce nœud passe (le × de la grande courbe, le clic de la souris sur la courbe elle-même) ; seul celui que
+ * l'ajustement tactile a rabattu HORS de lui (sur ±, la période, ⛶) est avalé (CRITIQUE-10 n° 6). Un clic du clavier (`detail` 0) passe.
  */
-export function avalerClicSuivant(ms = DELAI_CLIC_AVALE): () => void {
+export function avalerClicSuivant(ms = DELAI_CLIC_AVALE, garder: Node | null = null): () => void {
   if (typeof window === 'undefined') return () => undefined;
-  const stop = (e: Event) => { e.preventDefault(); e.stopPropagation(); fin(); };
+  const stop = (e: Event) => {
+    // Avec `garder`, un clic sans pointeur (clavier, `el.click()` : `detail` 0) n'est jamais celui du toucher : il passe aussi.
+    if (garder && ((e.target instanceof Node && garder.contains(e.target)) || (e as MouseEvent).detail === 0)) { fin(); return; }
+    e.preventDefault(); e.stopPropagation(); fin();
+  };
   const fin = () => {
     clearTimeout(t);
     window.removeEventListener('click', stop, true);
@@ -57,6 +64,9 @@ export function avalerClicSuivant(ms = DELAI_CLIC_AVALE): () => void {
   const t = setTimeout(fin, ms);
   return fin;
 }
+
+/** Rien : sa seule présence fait de la courbe une cible du toucher pour l'ajustement tactile (voir `attacher`). */
+const repondAuToucher = (): void => undefined;
 
 export function usePointeurCourbe(options: OptionsPointeurCourbe) {
   const opts = useRef(options);
@@ -75,12 +85,13 @@ export function usePointeurCourbe(options: OptionsPointeurCourbe) {
 
   const props = useMemo(() => ({
     onContextMenu: (e: { preventDefault: () => void }) => e.preventDefault(),
-    onPointerDown: (e: { button: number; pointerId: number; clientX: number; clientY: number }) => {
+    onPointerDown: (e: { button: number; pointerId: number; clientX: number; clientY: number; currentTarget?: EventTarget | null }) => {
       const o0 = opts.current;
       if (e.button > 0 || o0.actif === false) return;
       // Un nouveau geste part d'un nœud monté : les nœuds retirés (une courbe remplacée) rendent leur écouteur.
       noeuds.current.forEach(el => { if (!el.isConnected) { el.removeEventListener('touchmove', bloque); noeuds.current.delete(el); } });
       const id = e.pointerId, x0 = e.clientX, y0 = e.clientY;
+      const origine = typeof Node !== 'undefined' && e.currentTarget instanceof Node ? e.currentTarget : null;
       let etat: ModeGeste = 'appui';
       const poser = (m: ModeGeste) => { etat = m; etatRef.current = m; setMode(m); };
       poser('appui');
@@ -107,6 +118,9 @@ export function usePointeurCourbe(options: OptionsPointeurCourbe) {
         nettoie();
         // Après un appui long ou une lecture, le clic fabriqué au doigt levé n'ouvre rien (le menu de la période, n° 3).
         if (etat === 'long' || etat === 'lit') { finAvale.current?.(); finAvale.current = avalerClicSuivant(); }
+        // Un toucher bref sur la courbe ne bascule jamais ± ni n'ouvre la période (CRITIQUE-10 n° 6, E11) : le clic que Chrome rabat sur le
+        // bouton de tête voisin (ajustement tactile, jusqu'à 10 px sous les boutons à 390) est avalé ; celui qui reste dans la courbe passe.
+        else if (etat === 'appui') { finAvale.current?.(); finAvale.current = avalerClicSuivant(DELAI_CLIC_AVALE, origine); }
         // La lecture reste affichée après le doigt levé (comme le jouable) : seul un toucher ailleurs ou × la ferme.
         poser('repos');
       };
@@ -120,11 +134,14 @@ export function usePointeurCourbe(options: OptionsPointeurCourbe) {
     if (!el || noeuds.current.has(el)) return;
     noeuds.current.add(el);
     el.addEventListener('touchmove', bloque, { passive: false });
+    // La courbe répond elle-même au toucher (un écouteur `click` posé sur son nœud) : l'ajustement tactile de Chrome ne cherche une cible
+    // voisine que si le nœud touché n'en est pas une ; il garde donc le toucher sur la courbe au lieu de le rabattre sur ± (CRITIQUE-10 n° 6).
+    el.addEventListener('click', repondAuToucher);
   }, [bloque]);
   useEffect(() => {
     const ens = noeuds.current;
     // Démontée, la courbe n'avale plus rien.
-    return () => { ens.forEach(el => el.removeEventListener('touchmove', bloque)); ens.clear(); finAvale.current?.(); finAvale.current = null; };
+    return () => { ens.forEach(el => { el.removeEventListener('touchmove', bloque); el.removeEventListener('click', repondAuToucher); }); ens.clear(); finAvale.current?.(); finAvale.current = null; };
   }, [bloque]);
 
   return { mode, props, attacher };

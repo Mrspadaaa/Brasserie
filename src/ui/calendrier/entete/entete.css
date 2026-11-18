@@ -53,6 +53,11 @@
 .ent-mb, .ent-per, .ent-ret-b, .ent-pl { position: relative; height: 28px; display: inline-flex; align-items: center; justify-content: center; font-size: 14px; font-weight: 700; border-radius: 14px; white-space: nowrap; color: var(--ent-ink); }
 .ent-mb::after, .ent-per::after, .ent-ret-b::after, .ent-pl::after, .ent-k::after { content: ''; position: absolute; inset: -6px -2px; }
 .ent-k { position: relative; }
+/* CRITIQUE-10 n° 6 (E11, D-195) : en portrait, la courbe commence juste sous les boutons ; leur zone de toucher (44 px de haut) monte au-dessus
+   d'eux et s'arrête au haut de la courbe, jamais dessous : un doigt qui lit la courbe ne touche jamais ± (calendrierEntete.test). */
+.ent--portrait .ent-mb::after, .ent--portrait .ent-per::after, .ent--portrait .ent-ret-b::after, .ent--portrait .ent-pl::after, .ent--portrait .ent-k::after { inset: -16px -2px 0; }
+/* Doute m27 : après un toucher, aucun cadre de focus sur les boutons de tête ; au clavier, l'anneau `:focus-visible` revient (EnTete, data-doigt). */
+.ent[data-doigt] .ent-t button:focus-visible { outline: none; }
 .ent-mb { min-width: 28px; padding: 0 5px; font-size: 16px; border: 1.5px solid var(--ent-line2); border-radius: 8px; background: rgb(var(--cave-900)); }
 .ent-mb[aria-pressed='true'] { background: rgb(var(--cave-50)); color: rgb(var(--cave-950)); border-color: rgb(var(--cave-50)); }
 .ent-per { gap: 0; padding: 0 2px 0 7px; background: rgb(var(--cave-50)); color: rgb(var(--cave-950)); }
