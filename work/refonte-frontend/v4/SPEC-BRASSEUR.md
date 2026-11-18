@@ -2187,3 +2187,11 @@ Captures : work/missions/2026-11-18-choix-calendrier/brasseur/barres-hautes-18-1
 > La ligne doit pas être dessus l'info
 
 Capture : work/missions/2026-11-18-choix-calendrier/brasseur/fil-sur-info-18-11.jpg (le fil de la foire traverse la fiche ouverte et les noms des jalons). Lecture : le fil passe toujours sous les textes, les fiches et les icônes ; il ne couvre aucune information.
+
+### Courbe et frise : deux axes de temps (18.11)
+
+> Parcontre jsp plus que que l'on a décidé mais en soit, le graph prix et autre a un axe de temps différentes que celui du planning. Quand est-ce que les deux on le même timing ?
+
+> C'est pas très logique...
+
+Capture : work/missions/2026-11-18-choix-calendrier/brasseur/ (courbe déc.→oct., frise S47–S52). Lecture : la courbe et la frise doivent partager le même axe de temps ; reste à montrer comment (mini maquettes), le chiffre « à dépenser » gardant son sens.
