@@ -212,6 +212,8 @@ export function etatBanc(aujourdhui: string): EtatBanc {
     { id: 'CR-FETE', type: 'event', title: 'Fête de village', status: 'todo', date: s(28), estimatedRevenue: 600 },
     { id: 'CR-RANGER', type: 'event', title: 'Ranger la réserve', status: 'todo', date: s(7), activite: true, fenetre: { du: s(7), au: ajouterJours(s(8), 6), joursActifs: 3 } },
     { id: 'CR-INV', type: 'event', title: 'Inventaire du stock', status: 'todo', date: s(2), activite: true },
+    /* D386 : une fête qui dure (vendredi à dimanche de S+2) est une barre ; la tireuse louée pour elle (Achats) y est liée par un fil */
+    { id: 'CR-FOIRE', type: 'event', title: 'Foire du Valais', status: 'todo', date: s(2, 4), estimatedRevenue: 2400, fenetre: { du: s(2, 4), au: s(2, 6) } },
     { id: 'CR-IDEE', type: 'recipe-idea', title: 'IPA brume', status: 'idea', date: s50 },
     /* n° 35 : une tâche sans date (la poche « Sans date ») */
     { id: 'CR-SANS', type: 'event', title: 'Appeler l’assurance', status: 'todo', activite: true }
@@ -222,6 +224,9 @@ export function etatBanc(aujourdhui: string): EtatBanc {
     plan({ id: 'P-FRIGO', title: 'Frigo', date: frigoFin, amountCents: 180000, category: 'materiel', fenetre: { du: s6, au: frigoFin, miseDeCote: true } }),
     plan({ id: 'P-SOLS', title: 'Sols : colle et joints', date: s(14), amountCents: 32000, category: 'renovation', fenetre: { du: s(14), au: ajouterJours(s(16), 6), joursActifs: 5 } }),
     plan({ id: 'P-MALT', title: 'Commande groupée de malt', date: s(4), amountCents: 54000 }),
+    /* D386 : deux choses d'un jour pendant la foire : la tireuse, liée à elle (fil, allumée au toucher de la foire) ; Dédé, sans lien (pâli) */
+    plan({ id: 'P-TIREUSE', title: 'Tireuse', date: s(2, 4), amountCents: 15000, evenementId: 'CR-FOIRE' } as Partial<FinancialPlan> as never),
+    plan({ id: 'P-DEDE', title: 'Dédé, 1 fût', date: s(2, 5), amountCents: 13000, direction: 'in', category: 'recettes' }),
     /* n° 9 : chaque brassin non conditionné a son estimation de BrewBudgetSheet : la prévision en tire ses courses, ses frais et son impôt */
     ...[blonde, porter, ipa, saison, stout].map(b => planBudget(b, ajouterJours(L, -10))),
     /* n° 38 : une échéance récurrente non payée */

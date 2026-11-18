@@ -530,13 +530,13 @@ export function fait(chose: ChoseCalendrier): Resolution {
  * « Lier à un brassin, un client » (E31, E37, D-126) : le lien s'écrit dans la source (`liens` d'une chose du carnet ; `batchId` ou `clientId`
  * d'un plan manuel), avec son inverse (Annuler). Le message nomme ce qui est lié : « Liée à La Cigogne » (CRITIQUE-4 n° 6).
  */
-export function lier(chose: ChoseCalendrier, liens: { batchId?: string; clientId?: string }, ctx: ContexteGestes, nom?: string): Resolution {
+export function lier(chose: ChoseCalendrier, liens: { batchId?: string; clientId?: string; evenementId?: string }, ctx: ContexteGestes, nom?: string): Resolution {
   const source = chose.source;
   const texte = nom?.trim() ? `Liée à ${nom.trim()}` : 'Liée';
   if (source.genre === 'creative') return { ok: true, ecritures: [{ op: 'patch', collection: 'creativeItems', id: source.id, patch: { liens: { ...chose.liens, ...liens } } }], effet: null, promesse: null, courbeApres: ctx.courbe, message: annuler(texte) };
   const plan = planDe(chose, ctx);
   if (!plan || plan.source !== 'manual') return refus('Un lien se pose sur une prévision manuelle ou une chose du carnet.', chose.ouvre);
-  return { ok: true, ecritures: [{ op: 'patch', collection: 'financialPlans', id: plan.id, patch: { ...(liens.batchId ? { batchId: liens.batchId } : {}), ...(liens.clientId ? { clientId: liens.clientId } : {}) } }], effet: null, promesse: null, courbeApres: ctx.courbe, message: annuler(texte) };
+  return { ok: true, ecritures: [{ op: 'patch', collection: 'financialPlans', id: plan.id, patch: { ...(liens.batchId ? { batchId: liens.batchId } : {}), ...(liens.clientId ? { clientId: liens.clientId } : {}), ...(liens.evenementId ? { evenementId: liens.evenementId } : {}) } }], effet: null, promesse: null, courbeApres: ctx.courbe, message: annuler(texte) };
 }
 
 /** L1 a et b (E36) : une idée datée envoyée au carnet. Elle n'a ni rangée, ni case, ni bouton : elle se montre en icône dans la bande. */
@@ -557,7 +557,7 @@ export type Intention =
   | { genre: 'mettre-de-cote'; chose: ChoseCalendrier; actif: boolean }
   | { genre: 'accepter'; chose: ChoseCalendrier }
   | { genre: 'fait'; chose: ChoseCalendrier }
-  | { genre: 'lier'; chose: ChoseCalendrier; liens: { batchId?: string; clientId?: string } }
+  | { genre: 'lier'; chose: ChoseCalendrier; liens: { batchId?: string; clientId?: string; evenementId?: string } }
   | { genre: 'noter-idee'; titre: string; lundi: string };
 
 /** Une intention devient ses écritures, son message et son effet sur la caisse, ou un refus avec sa raison. Rien n'est écrit ici. */

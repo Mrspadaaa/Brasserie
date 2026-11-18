@@ -214,6 +214,12 @@ export interface MarqueProps {
   onGlisse?: (chose: ChoseCalendrier, k: number) => void;
   onLacheGlisse?: (chose: ChoseCalendrier, k: number, annule: boolean) => void;
   onRefus?: (chose: ChoseCalendrier, raison: string) => void;
+  /** D386 : un jalon d'un jour (icône à sa date, nom à côté). */
+  jalon?: boolean;
+  /** D386 : l'id de la barre liée (fil discret) ; absent : aucun fil. */
+  lieA?: string;
+  /** D386 : au toucher d'une barre, ses jalons liés s'allument, les autres pâlissent. */
+  ton?: 'allume' | 'pale';
 }
 
 const montantDe = (c: ChoseCalendrier): string | null => (c.centimes === undefined ? null : `${francsSignes(c.centimes)}${c.partiel ? ' +' : ''}`);
@@ -257,13 +263,16 @@ export const Marque: React.FC<MarqueProps> = props => {
         data-titre={chose.titre}
         {...(chose.debut ? { 'data-semaine': etiquetteS(chose.debut) } : {})}
         {...(chose.brassinLie ? { 'data-brassin-lie': chose.brassinLie } : {})}
+        {...(props.jalon ? { 'data-ponctuel': chose.debut } : {})}
+        {...(props.lieA ? { 'data-lie-a': props.lieA } : {})}
+        {...(props.ton ? { 'data-ton': props.ton } : {})}
         {...(chose.proposition ? { 'data-proposition': chose.proposition } : {})}
         {...(proposee ? { 'data-probable': '' } : {})}
-        aria-label={`${nomAccessible(chose)}${montant ? `, ${montant}` : ''}`}
+        aria-label={`${nomAccessible(chose)}${montant ? `, ${montant}` : ''}${props.jalon && chose.lie ? `, ${chose.lie.texte}` : ''}`}
         aria-pressed={selectionnee || undefined}
         aria-haspopup={commeBarre ? 'menu' : undefined}
         aria-expanded={menuOuvert || undefined}
-        className={`cal-marque ${CLASSE_TEINTE[chose.rangee]}${proposee ? ' cal-pointille' : ''}${epinglee ? ' cal-epi' : ''}${selectionnee ? ' cal-sel' : ''}${decalage ? ' cal-glisse' : ''}`}
+        className={`cal-marque ${CLASSE_TEINTE[chose.rangee]}${proposee ? ' cal-pointille' : ''}${epinglee ? ' cal-epi' : ''}${selectionnee ? ' cal-sel' : ''}${decalage ? ' cal-glisse' : ''}${props.jalon ? ' cal-ponctuel' : ''}${props.ton ? ` cal-ponctuel-${props.ton}` : ''}`}
         style={style}
         {...gestes}
         onKeyDown={e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); if (cible.current) props.onToucher(chose, cible.current); } }}
@@ -272,7 +281,7 @@ export const Marque: React.FC<MarqueProps> = props => {
         {etoilee && <span className="cal-etoile" aria-hidden="true">★</span>}
       </button>
       {libelle && lbl && (
-        <span className={`cal-lbl cal-lbl-${libelle.cote}${libelle.deux ? ' cal-lbl-2n' : ''} ${CLASSE_TEINTE[chose.rangee]}`} style={lbl}>
+        <span className={`cal-lbl cal-lbl-${libelle.cote}${libelle.deux ? ' cal-lbl-2n' : ''} ${CLASSE_TEINTE[chose.rangee]}${props.ton ? ` cal-ponctuel-${props.ton}` : ''}`} style={lbl}>
           <ContenuEtiquette chose={chose} nom={libelle.texte ?? chose.etiquette ?? chose.titre} montant={montant} deux={libelle.deux} lieCourt={props.lieCourt} sansLie={libelle.sansLie} />
         </span>
       )}

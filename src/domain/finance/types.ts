@@ -113,6 +113,8 @@ export interface FinancialPlan {
   fenetre?: FenetreCalendrier;
   /** Calendrier : le client d'une vente probable. Optionnel. */
   clientId?: string;
+  /** Calendrier (D386) : la fête ou l'activité (`CreativeItem.id`) à laquelle ce plan est lié (« Lier »), ex. la tireuse pour la foire. Optionnel. */
+  evenementId?: string;
   notes?: string;
   /** A saved estimate is documentary; it never books an expense or changes stock. */
   brewEstimate?: unknown;

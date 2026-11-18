@@ -217,7 +217,7 @@ button.cal-lie::before { content: ''; position: absolute; inset: -6px -2px; }
 .cal-mn { margin: 4px 6px 6px; color: rgb(var(--cave-200)); font-size: 14px; }
 
 /* le détail sous la barre (f4-b) */
-.cal-det { position: relative; margin: 6px 0 10px; padding: 12px; border: 1.5px solid color-mix(in srgb, var(--c) 65%, transparent); border-radius: 12px; background: rgb(var(--cave-900)); color: rgb(var(--cave-50)); font-size: 14px; line-height: 20px; }
+.cal-det { position: relative; z-index: 3; margin: 6px 0 10px; padding: 12px; border: 1.5px solid color-mix(in srgb, var(--c) 65%, transparent); border-radius: 12px; background: rgb(var(--cave-900)); color: rgb(var(--cave-50)); font-size: 14px; line-height: 20px; }
 .cal-det-h { margin: 0 48px 10px 0; font-size: 18px; line-height: 24px; font-weight: 700; }
 .cal-det-h > span { margin-left: 8px; font-size: 16px; font-variant-numeric: tabular-nums; }
 .cal-det-d { display: flex; align-items: center; gap: 6px; margin: -4px 0 8px; font-weight: 600; color: rgb(var(--cave-200)); }
@@ -271,3 +271,10 @@ button.cal-lie::before { content: ''; position: absolute; inset: -6px -2px; }
 .cal-lie.cal-lie-icone:focus-visible { outline: 2px solid var(--c); outline-offset: 1px; }
 /* CRITIQUE-10, doute m22 : après un toucher dans la frise, aucun cadre de focus (pastille, barre, marque, détail) ; au clavier, il revient */
 .cal-frise[data-doigt] :focus-visible, .cal-frise[data-doigt] .cal-lie.cal-lie-icone:focus-visible { outline: none; }
+
+/* D386 : le fil discret d'un jalon à sa barre liée (autre rangée) ; au toucher de la barre, ses jalons liés s'allument, les autres pâlissent */
+.cal-traits path.cal-fil { stroke: rgb(var(--cave-300)); stroke-width: 1; stroke-dasharray: none; opacity: 0.45; }
+.cal-traits path.cal-fil-allume { stroke: rgb(var(--area-agenda)); stroke-width: 1.25; stroke-dasharray: 3 3; opacity: 0.8; }
+.cal-traits path.cal-fil-pale { opacity: 0.15; }
+.cal-marque.cal-ponctuel-allume { box-shadow: 0 0 0 2px rgb(var(--cave-50)); }
+.cal-marque.cal-ponctuel-pale, .cal-lbl.cal-ponctuel-pale { opacity: 0.35; }

@@ -20,7 +20,7 @@ import { CLASSE_TEINTE } from '../../ui/calendrier/frise/Marque';
 import { positionDans, type Colonne, type DragEtat } from '../../ui/calendrier/frise/Rangee';
 import { aDesJours, cibleDuGlisse, colonnesDeLAxe, echelleApres, echelleEffective, peutDeplier, PERIODE_DE_L_ECHELLE, type Echelle, type SensPincement } from '../../ui/calendrier/echelle';
 import {
-  RANGEES, ajouterJours, dateDeSemaine, etiquetteS, jourLisible, lundiDe, nomRangee, nomSeules, preparerChoses,
+  RANGEES, ajouterJours, dateDeSemaine, estPonctuel, etiquetteS, jourLisible, lundiDe, nomRangee, nomSeules, preparerChoses,
   type CibleOuverture, type ChoseCalendrier, type ModeleCalendrier, type Rangee as IdRangee
 } from '../../domain/calendrier';
 import { courbeDecalee, courbeAvec, effetCaisse } from '../../domain/calendrierCaisse';
@@ -397,6 +397,14 @@ export function CalendrierTab(props: CalendrierTabProps) {
       setMessage(null); setMenu(null); setSelectionId(null);
       return;
     }
+    /* D386 : en Semaine, un jalon d'un jour se glisse au jour (le pas de sa marque est 1/7 de colonne : `k` compte des jours) */
+    if (estPonctuel(chose)) {
+      const jour = ajouterJours(chose.debut, k);
+      setIci(k === 0 ? null : `${etiquetteS(jour)} · ${jourLisible(jour)} · lâcher ici`);
+      setApercu(k !== 0 && modele.courbe ? courbeDecalee(modele.courbe, chose.id, k) : null);
+      setMessage(null); setMenu(null); setSelectionId(null);
+      return;
+    }
     const cible = lundiDe(ajouterJours(chose.debut, k * 7));
     setIci(k === 0 ? null : `${etiquetteS(cible)} · ${jourLisible(cible)} · lâcher ici`);
     setApercu(k !== 0 && modele.courbe ? courbeDecalee(modele.courbe, chose.id, k * 7) : null);
@@ -412,6 +420,7 @@ export function CalendrierTab(props: CalendrierTabProps) {
       if (r && r.jours !== 0) void ecrire(deplacerJours(chose, r.jours, ctxRef.current), false, chose.id);
       return;
     }
+    if (estPonctuel(chose)) { void ecrire(deplacerJours(chose, k, ctxRef.current), false, chose.id); return; }
     void ecrire(deplacer(chose, k, ctxRef.current), false, chose.id);
   }, [ecrire, finGeste]);
   const surBord = useCallback((chose: ChoseCalendrier, jours: number) => {
@@ -853,7 +862,9 @@ export function CalendrierTab(props: CalendrierTabProps) {
             })()}
             liens={{
               brassins: don.batches.filter(b => !b.archivedAt).map(b => ({ id: b.id, nom: b.name || b.id })),
-              clients: don.clients.filter(cl => !cl.archivedAt).map(cl => ({ id: cl.id, nom: cl.name }))
+              clients: don.clients.filter(cl => !cl.archivedAt).map(cl => ({ id: cl.id, nom: cl.name })),
+              /* D386 : les fêtes et activités qui durent (une barre sur la frise), pour lier un jalon d'un jour (la tireuse) à la foire */
+              evenements: modele.choses.filter(x => x.source.genre === 'creative' && !x.sansDate && !estPonctuel(x) && x.id !== c.id).map(x => ({ id: (x.source as { id: string }).id, nom: x.titre }))
             }}
             onEpingler={() => {
               const avant = epingles, on = !avant.includes(c.id);

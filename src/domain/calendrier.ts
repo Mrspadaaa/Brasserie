@@ -359,7 +359,7 @@ export interface ChoseCalendrier {
   mouvements?: string[];
   fenetre?: FenetreCalendrier;
   miseDeCote?: boolean;
-  liens?: { batchId?: string; clientId?: string };
+  liens?: { batchId?: string; clientId?: string; evenementId?: string };
   /** Brassin habituel proposé : la recette. */
   recipeRef?: string;
   /** Brassin : « prête le » (fin du cycle) et sa provenance. */
@@ -422,6 +422,34 @@ export interface ChoseCalendrier {
   horsCourbe?: true;
   /** CRITIQUE-12, doute Papiers en An : une série mensuelle posée en une barre (`seriesEnBarres`, Rangee.tsx) ; son montant se dit « / mois ». */
   parMois?: true;
+}
+
+/**
+ * D386 (18.11, CAL-JALON-UN-JOUR) : ce qui arrive un jour est un jalon (icône à sa date, nom à côté, sur sa ligne de sa rangée) ; ce qui dure
+ * est une barre. La source ne porte ni type ni durée : la durée est l'écart `debut → fin` (une chose datée sans fenêtre a `fin = debut`).
+ * Restent des barres : un brassin et ce que la rangée Brassins marque déjà (courses, conditionné, D-107), une prévision récurrente (Loyer) ou
+ * une série posée en barre (`parMois`), un brassin habituel proposé, une chose dont la fin n'est pas connue.
+ */
+export function estPonctuel(c: Pick<ChoseCalendrier, 'debut' | 'fin' | 'rangee' | 'source' | 'proposition' | 'parMois' | 'sansDate' | 'finInconnue'>): boolean {
+  if (c.sansDate || !c.debut || (c.fin && c.fin !== c.debut)) return false;
+  if (c.rangee === 'brassins' || c.proposition === 'brassin-habituel' || c.parMois || c.finInconnue) return false;
+  return !(c.source.genre === 'plan' && c.source.origine === 'recurring');
+}
+
+/**
+ * D386 : la barre à laquelle un jalon est lié (« Lier ») : une fête ou une activité (`evenementId`), sinon un brassin (`batchId`). L'id est
+ * celui de la chose posée sur la frise (`creatif-…`, `brassin-…`) ; le fil ne se dessine que si cette chose est une barre visible.
+ */
+export function barreLiee(c: Pick<ChoseCalendrier, 'liens'>): string | undefined {
+  if (c.liens?.evenementId) return `creatif-${c.liens.evenementId}`;
+  if (c.liens?.batchId) return `brassin-${c.liens.batchId}`;
+  return undefined;
+}
+
+/** Les liens d'un plan (brassin, client, fête) tels que la chose les porte ; `undefined` sans lien. */
+function liensDuPlan(plan: Pick<FinancialPlan, 'batchId' | 'clientId' | 'evenementId'> | undefined): ChoseCalendrier['liens'] {
+  if (!plan || !(plan.batchId || plan.clientId || plan.evenementId)) return undefined;
+  return { ...(plan.batchId ? { batchId: plan.batchId } : {}), ...(plan.clientId ? { clientId: plan.clientId } : {}), ...(plan.evenementId ? { evenementId: plan.evenementId } : {}) };
 }
 
 /** CRITIQUE-12 n° 2 : l'effet en mots d'une chose chiffrée que la courbe ne compte pas (menu f5-a, E31). */
@@ -994,7 +1022,7 @@ export function choseArgent(
     id: idChoseArgent(item), rangee, titre, debut: f?.du ?? jour, fin: f?.au ?? jour, ...montant,
     ...(poste ? { posteBrassin: poste } : {}), ...(articles.length ? { articles } : {}),
     ...(f?.joursActifs ? { joursActifs: f.joursActifs } : {}), ...(f?.miseDeCote ? { miseDeCote: true } : {}), ...(f ? { fenetre: plan?.fenetre } : {}),
-    ...(plan?.batchId || plan?.clientId ? { liens: { ...(plan.batchId ? { batchId: plan.batchId } : {}), ...(plan.clientId ? { clientId: plan.clientId } : {}) } } : {}),
+    ...(liensDuPlan(plan) ? { liens: liensDuPlan(plan) } : {}),
     ...(retard ?? {}),
     detail: `${retard ? `échéance le ${jourLisible(retard.echeance)} · en retard` : `le ${jourLisible(jour)}`}${!item.amountCents ? ' · montant non renseigné' : ''}${notesDit || (item.partial?.length ? ' · montant partiel' : '')}`,
     source, ouvre, deplacable, mouvements: [item.id]
@@ -1010,7 +1038,7 @@ export function choseVenteProbable(plan: FinancialPlan): ChoseCalendrier | null 
   return {
     id: `plan-${plan.id}`, rangee: 'ventes', titre: plan.title, debut: jour, fin: f?.au ?? jour, probable: true, proposition: 'vente',
     ...(plan.amountCents > 0 ? { centimes: plan.amountCents } : {}),
-    ...(plan.batchId || plan.clientId ? { liens: { ...(plan.batchId ? { batchId: plan.batchId } : {}), ...(plan.clientId ? { clientId: plan.clientId } : {}) } } : {}),
+    ...(liensDuPlan(plan) ? { liens: liensDuPlan(plan) } : {}),
     detail: `probable le ${jourLisible(jour)}`, source: { genre: 'plan', id: plan.id, origine: plan.source, statut: plan.status }, ouvre: { ecran: 'plan', id: plan.id }, deplacable: true
   };
 }

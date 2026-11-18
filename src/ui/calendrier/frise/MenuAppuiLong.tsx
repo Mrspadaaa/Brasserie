@@ -38,6 +38,8 @@ export const HAUTEUR_REPLI_PAYSAGE_PX = 3 * 48 + 2 * 4 + 18;
 export interface LiensPossibles {
   brassins: ReadonlyArray<{ id: string; nom: string }>;
   clients: ReadonlyArray<{ id: string; nom: string }>;
+  /** D386 : les fêtes et activités qui durent (des barres) : la tireuse se lie à la foire. Absent : aucune. */
+  evenements?: ReadonlyArray<{ id: string; nom: string }>;
 }
 
 export interface MenuAppuiLongProps {
@@ -58,7 +60,7 @@ export interface MenuAppuiLongProps {
   onEtoile: () => void;
   onSeules: () => void;
   onDupliquer: () => void;
-  onLier: (liens: { batchId?: string; clientId?: string }, nom: string) => void;
+  onLier: (liens: { batchId?: string; clientId?: string; evenementId?: string }, nom: string) => void;
   onRetirer: () => void;
   /** Quand Retirer est refusé (un brassin, une charge fixe) : un bouton ouvre la source, où la chose se règle. */
   onOuvrirSource?: () => void;
@@ -217,6 +219,8 @@ export const MenuAppuiLong: React.FC<MenuAppuiLongProps> = props => {
   const brassinsLiables = liens.brassins
     .filter(b => b.id !== (chose.source.genre === 'batch' ? chose.source.id : ''))
     .filter((b, i, l) => l.map(x => x.nom).lastIndexOf(b.nom) === i);
+  /* D386 : une fête ne se lie pas à elle-même */
+  const evenementsLiables = (liens.evenements ?? []).filter(e => e.id !== (chose.source.genre === 'creative' ? chose.source.id : ''));
 
   const epingler = (
     <button type="button" role="menuitemcheckbox" aria-checked={epinglee} {...agir(props.onEpingler)} className={paysage ? 'cal-ml' : 'cal-m3b'}>
@@ -242,7 +246,7 @@ export const MenuAppuiLong: React.FC<MenuAppuiLongProps> = props => {
         </button>
       )}
       <button type="button" role="menuitem" {...agir(() => setLier(true))} className="cal-ml">
-        <Link2 size={20} aria-hidden="true" /><span>Lier à un brassin, un client</span>
+        <Link2 size={20} aria-hidden="true" /><span>Lier à un brassin, un client, une fête</span>
       </button>
       {retirable ? (
         <button type="button" role="menuitem" {...agir(props.onRetirer)} className={`cal-ml cal-ml-ret${enMots(retirable.effet) ? ' cal-ml-mots' : ''}`}>
@@ -307,7 +311,17 @@ export const MenuAppuiLong: React.FC<MenuAppuiLongProps> = props => {
               ))}
             </div>
           )}
-          {!brassinsLiables.length && !liens.clients.length && <p className="cal-mn">Aucun brassin ni client à lier pour l’instant.</p>}
+          {evenementsLiables.length > 0 && (
+            <div role="group" aria-label="Fêtes et activités" className="cal-lier-g" data-lier="evenements">
+              <span className="cal-lier-t">Fêtes et activités</span>
+              {evenementsLiables.map(ev => (
+                <button key={ev.id} type="button" role="menuitem" {...agir(() => props.onLier({ evenementId: ev.id }, ev.nom))} className="cal-lier-p" data-lier-id={ev.id}>
+                  <Link2 size={16} aria-hidden="true" /><span>{ev.nom}</span>
+                </button>
+              ))}
+            </div>
+          )}
+          {!brassinsLiables.length && !liens.clients.length && !evenementsLiables.length && <p className="cal-mn">Aucun brassin ni client à lier pour l’instant.</p>}
         </>
       )}
     </div>

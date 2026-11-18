@@ -7,7 +7,7 @@ import { ajouterJours, anneeEnMois, etiquetteS, lundiDe, preparerChoses, type Ch
 import { REGLAGES_VIDES } from '../../src/domain/fournisseurs';
 import { construireModele } from '../../src/ui/calendrier/useDonneesCalendrier';
 import { MESURES_PORTRAIT, Rangee, clientDe, disposer, largeurEtiquette, pastille, seriesEnBarres, texteCaddie, texteRenvoi, type Colonne } from '../../src/ui/calendrier/frise/Rangee';
-import { Barre, dureeDansBarre, formesDuree, montantBarre } from '../../src/ui/calendrier/frise/Barre';
+import { Barre, dureeDansBarre, formesDuree, largeurDuree, montantBarre } from '../../src/ui/calendrier/frise/Barre';
 import { MenuAppuiLong } from '../../src/ui/calendrier/frise/MenuAppuiLong';
 import { couperNom, dureeVue, largeurTexte, lieMontre, nomAccessible } from '../../src/ui/calendrier/frise/Marque';
 import { Frise } from '../../src/ui/calendrier/frise/Frise';
@@ -121,12 +121,16 @@ describe('C8 : une barre de moins de 24 px devient une marque (3 mois, 6 mois, A
     for (const b of document.querySelectorAll<HTMLElement>('[data-barre]')) expect(parseFloat(b.style.width)).toBeGreaterThanOrEqual(24);
   });
 
-  it('un appui long sur la marque ouvre 6 semaines centrées sur sa semaine, où la chose est une barre', () => {
+  it('un appui long sur la marque ouvre 6 semaines centrées sur sa semaine, où la chose d’un jour est un jalon à son jour (D386)', () => {
     monter({ callbacks: { periode: plage(13) } });
     const marque = [...document.querySelectorAll('[data-marque]')].find(m => /^Hotte/.test(m.getAttribute('aria-label') ?? ''))!;
     appuiLong(marque);
     expect(document.querySelector('[data-frise]')!.getAttribute('data-nb-colonnes')).toBe('6');
-    expect(screen.getByRole('button', { name: /^Hotte/ })).toHaveAttribute('data-barre');
+    /* la Hotte arrive un jour (30 nov.) : en 6 semaines, un jalon nommé à sa date, qui se tient et se glisse (menu), pas une barre */
+    const hotte = screen.getByRole('button', { name: /^Hotte/ });
+    expect(hotte).not.toHaveAttribute('data-barre');
+    expect(hotte).toHaveAttribute('data-ponctuel', '2026-11-30');
+    expect(hotte).toHaveAttribute('aria-haspopup', 'menu');
   });
 });
 
@@ -587,14 +591,20 @@ describe('CRITIQUE-5 (lot2-frise-rangees) : noms entiers, durée, pastille, éch
   });
 
   it('n° 23 : une seule forme de durée, « J0 / 28 » avec ses espaces, pour deux brassins de longueurs différentes ; « · prête … » cède d’abord', () => {
-    expect(formesDuree('J0 / 28 · prête 21 déc.')).toEqual(['J0 / 28 · prête 21 déc.', 'J0 / 28']);
-    expect(formesDuree('J8 / 28 · prête 7 déc.')).toEqual(['J8 / 28 · prête 7 déc.', 'J8 / 28']);
-    expect(formesDuree('pas brassée · prête le 24 nov.')).toEqual(['pas brassée · prête le 24 nov.', 'pas brassée']);
+    /* CAL-BARRE-HAUTE et CRITIQUE-9 n° 3 : sur la ligne unique de la barre, la date prête cède en dernier ; « J0 / 28 » seul est la forme ultime */
+    expect(formesDuree('J0 / 28 · prête 21 déc.')).toEqual(['J0 / 28 · prête 21 déc.', 'prête 21 déc.', 'J0 / 28']);
+    expect(formesDuree('J8 / 28 · prête 7 déc.')).toEqual(['J8 / 28 · prête 7 déc.', 'prête 7 déc.', 'J8 / 28']);
+    expect(formesDuree('pas brassée · prête le 24 nov.')).toEqual(['pas brassée · prête le 24 nov.', 'pas brassée · prête 24 nov.', 'prête 24 nov.', 'pas brassée']);
+    expect(formesDuree('prête 7 déc.')).toEqual(['prête 7 déc.']);
     monter();
     const durees = [...document.querySelectorAll('[data-duree], .cal-lbl-j')].map(e => e.textContent ?? '').filter(t => /^J\d/.test(t));
     const brassins = new Set([...document.querySelectorAll('[data-duree], .cal-lbl-j')].filter(e => /^J\d/.test(e.textContent ?? '')).map(e => e.closest('[data-chose]')?.getAttribute('data-chose') ?? e.parentElement?.previousElementSibling?.getAttribute('data-chose') ?? '?'));
-    expect(durees.length).toBeGreaterThanOrEqual(2);
-    expect(brassins.size).toBeGreaterThanOrEqual(2);
+    /* CAL-BARRE-HAUTE : une barre courte garde « prête … » plutôt que « J0 / 28 » ; chaque « J… » montré garde ses espaces */
+    expect(durees.length).toBeGreaterThanOrEqual(1);
+    expect(brassins.size).toBeGreaterThanOrEqual(1);
+    const toutes = [...document.querySelectorAll('[data-duree], .cal-lbl-j')].map(e => e.textContent ?? '');
+    expect(toutes.filter(t => /prête \d+ \p{L}+/u.test(t)).length).toBeGreaterThanOrEqual(1);
+    for (const t of toutes) expect(t).not.toMatch(/…/);
     for (const t of durees) {
       expect(t).toMatch(/^J\d+ \/ \d+/);
       expect(t).not.toMatch(/J\d+\/\d+/);
@@ -762,8 +772,11 @@ describe('CRITIQUE-6 (lot C-frise) : noms entiers, caddie après un déplacement
   });
 
   it('doute Lier (m390-49a) : la pastille « Blonde d’automne » sans place d’aucun côté de la Hotte n’est pas posée ; « Hotte −900 » reste entier, dans la frise', () => {
-    const hotte = { id: 'plan-hotte', rangee: 'achats', titre: 'Hotte', debut: ajouterJours(L, 14), fin: ajouterJours(L, 14), centimes: -90000, liens: { batchId: 'LOT-BLONDE' }, lie: { texte: 'lié à Blonde d’automne', apercu: 'Blonde d’automne · prête 21 déc.' }, source: { genre: 'plan', id: 'P-H', origine: 'manual', statut: 'active' }, ouvre: { ecran: 'finances' }, deplacable: true } as ChoseCalendrier;
+    /* D386 : posée sur deux jours de la même semaine, la Hotte reste une barre (même largeur qu'avant : une colonne) ; d'un seul jour, c'est un jalon */
+    const hotte = { id: 'plan-hotte', rangee: 'achats', titre: 'Hotte', debut: ajouterJours(L, 14), fin: ajouterJours(L, 15), centimes: -90000, liens: { batchId: 'LOT-BLONDE' }, lie: { texte: 'lié à Blonde d’automne', apercu: 'Blonde d’automne · prête 21 déc.' }, source: { genre: 'plan', id: 'P-H', origine: 'manual', statut: 'active' }, ouvre: { ecran: 'finances' }, deplacable: true } as ChoseCalendrier;
     const d = disposer([hotte], COLS, LC, LARGEUR, { reserveDroite: RESERVE, lieCourt: true }).items[0];
+    expect(d.marque).toBe(false);
+    expect(disposer([{ ...hotte, fin: hotte.debut }], COLS, LC, LARGEUR, { reserveDroite: RESERVE, lieCourt: true }).items[0]).toMatchObject({ marque: true, jalon: true });
     expect(d.sansLie).toBe(true);
     const nomMontant = largeurTexte('Hotte', 600) + largeurTexte(montantBarre(hotte)!, 700) + 6;
     expect(d.place).toBeGreaterThanOrEqual(nomMontant);
@@ -958,39 +971,61 @@ describe('CRITIQUE-9 (lot corr9-C-frise) : « prête le … » jamais perdue, ic
     const brassins = choses.filter(c => c.rangee === 'brassins' && !c.brassinLie && !c.conditionne && PRETE.test(dureeVue(c) ?? ''));
     /* les cinq de la critique sont dans la fixture : Saison, Blonde, Stout, Porter, Ambrée */
     for (const n of [/^Saison/, /^Blonde/, /^Stout/, /^Porter/, /^Ambrée/]) expect(brassins.some(c => n.test(c.titre)), String(n)).toBe(true);
-    /* témoin : sur la ligne du nom, la barre de la Blonde (presque pleine largeur à 390) ne porte que « J0 / 28 » (le HEAD s'arrêtait là) */
+    /* témoin : sur la ligne du nom, la barre de la Blonde (presque pleine largeur à 390) n'a pas la place de la phrase entière ; CAL-BARRE-HAUTE
+       (une seule ligne) : elle garde la date prête (« prête 21 déc. »), « J0 / 28 » cède */
     const blonde = brassins.find(c => /^Blonde/.test(c.titre))!;
-    expect(dureeDansBarre(blonde, 301, true)).not.toMatch(PRETE);
+    expect(dureeDansBarre(blonde, 301, true)).not.toBe(dureeVue(blonde));
+    expect(dureeDansBarre(blonde, 301, true)).toMatch(PRETE);
     render(<Frise choses={choses} colonnes={semainesDe(6)} paysage={false} ordre={[]} masquees={[]} filtre={null} epingles={[]} etoiles={[]} drag={null} largeurRepli={366} reserveDroite={76} onAjouter={rien} onBasculerMasque={rien} barre={gestes} />);
     const rangeeB = document.querySelector('section[data-rangee="brassins"]')!;
-    let vus = 0;
+    let vus = 0, avecPrete = 0;
     for (const c of brassins) {
-      const barre = rangeeB.querySelector(`[data-chose="${c.id}"]`);
+      const barre = rangeeB.querySelector<HTMLElement>(`[data-chose="${c.id}"]`);
       if (!barre) continue;
       vus++;
       const lu = [barre.textContent, barre.nextElementSibling?.textContent, rangeeB.querySelector(`[data-phrase-sous="${c.id}"]`)?.textContent].join(' | ');
-      expect(lu, c.titre).toMatch(PRETE);
+      /* CAL-BARRE-HAUTE : une seule ligne. La date prête se lit dès que « prête … » tient à côté du nom dans la barre ; sinon (la barre est
+         trop courte pour le nom et la date, ici l'IPA entamée avant la vue), elle reste au nom accessible et au détail, jamais à moitié */
+      const formePrete = formesDuree(dureeVue(c)!).find(f => /^prête /.test(f))!;
+      const nomEntier = largeurTexte(c.titre, 600) + (montantBarre(c) ? largeurTexte(montantBarre(c)!, 700) + 6 : 0) + 12;
+      if (parseFloat(barre.style.width) - 16 - nomEntier >= largeurDuree(formePrete)) expect(lu, c.titre).toMatch(PRETE);
+      expect(barre.getAttribute('aria-label'), c.titre).toMatch(PRETE);
+      if (PRETE.test(lu)) avecPrete++;
       /* jamais coupée */
       expect(lu, c.titre).not.toMatch(/…/);
     }
     expect(vus).toBeGreaterThanOrEqual(5);
-    /* la Blonde et la Saison : la barre haute de as/cap/p-repos (le nom en haut, la phrase en bas), ou la phrase sous la barre */
-    for (const n of ['Blonde', 'Saison']) {
+    expect(avecPrete, 'la Blonde, la Saison, la Stout, la Porter, l’Ambrée').toBeGreaterThanOrEqual(4);
+    /* CAL-BARRE-HAUTE (18.11) : la Blonde et la Saison au format de Stout maison : ni barre haute (nom en haut, phrase en bas), ni phrase sous la barre */
+    for (const n of ['Blonde', 'Saison', 'Stout']) {
       const id = brassins.find(c => c.titre.startsWith(n))!.id;
       const b = rangeeB.querySelector<HTMLElement>(`[data-chose="${id}"]`)!;
-      expect(b.classList.contains('cal-barre-2l') || !!rangeeB.querySelector(`[data-phrase-sous="${id}"]`), n).toBe(true);
+      expect(b.classList.contains('cal-barre-2l'), n).toBe(false);
+      expect(rangeeB.querySelector(`[data-phrase-sous="${id}"]`), n).toBeNull();
+      expect(parseFloat(b.style.height), n).toBe(MESURES_PORTRAIT.barre);
     }
   });
 
-  it('n° 3 : la phrase posée en bas prend la ligne au-dessous ; aucune autre chose ne s’y pose', () => {
+  it('CAL-BARRE-HAUTE (18.11) : à 390, chaque barre de brassin a la hauteur de Stout maison (une ligne puis le pied), 2 à 4 px entre deux brassins', () => {
     const choses = chosesDuBanc().filter(c => c.rangee === 'brassins');
     const { items } = disposer(choses, semainesDe(6), 61, 366, { reserveDroite: 76, lieCourt: true });
-    const hautes = items.filter(d => d.phraseBas);
-    expect(hautes.length).toBeGreaterThan(0);
-    for (const h of hautes) {
-      const [x0, x1] = h.phraseBas!.ou === 'barre' ? [h.gauche, h.gauche + h.largeur] : [h.phraseBas!.x0, h.phraseBas!.x1];
-      for (const d of items) if (d !== h && d.ligne === h.ligne + 1) expect(d.gauche + d.largeur <= x0 || d.gauche >= x1, `${h.chose.titre} / ${d.chose.titre}`).toBe(true);
-      if (h.phraseBas!.ou === 'dessous') { expect(h.phraseBas!.x0).toBeGreaterThanOrEqual(0); expect(h.phraseBas!.x1).toBeLessThanOrEqual(366 - 76 + 1); }
+    const barres = items.filter(d => !d.marque && d.chose.source.genre === 'batch');
+    expect(barres.length).toBeGreaterThanOrEqual(4);
+    /* aucune phrase ne prend une deuxième ligne, dans la barre ou dessous */
+    for (const d of barres) expect(d.phraseBas, d.chose.titre).toBeUndefined();
+    /* rendu : chaque barre fait la hauteur de celle de Stout maison ; d'une ligne à la suivante, l'écart entre deux barres est de 2 à 4 px */
+    render(<Rangee id="brassins" choses={choses} colonnes={semainesDe(6)} largeurColonne={61} largeur={366} mesures={MESURES_PORTRAIT} reserveDroite={76} masquee={false} cause={null} epingles={[]} etoiles={[]} partMax={1} drag={null} onAjouter={rien} onBasculerMasque={rien} barre={gestes} lieCourt />);
+    const vues = [...document.querySelectorAll<HTMLElement>('[data-barre]')].filter(b => b.getAttribute('data-chose')?.startsWith('brassin-'));
+    const stout = vues.find(b => /^Stout maison/.test(b.getAttribute('aria-label') ?? ''))!;
+    expect(stout).toBeTruthy();
+    for (const b of vues) expect(b.style.height, b.getAttribute('aria-label') ?? '').toBe(stout.style.height);
+    const hauts = [...new Set(vues.map(b => parseFloat(b.style.top)))].sort((a, b) => a - b);
+    expect(hauts.length).toBeGreaterThanOrEqual(3);
+    for (let i = 1; i < hauts.length; i++) {
+      const ecart = hauts[i] - hauts[i - 1] - parseFloat(stout.style.height);
+      if (hauts[i] - hauts[i - 1] > MESURES_PORTRAIT.ligne) continue; /* une ligne de jalons ou de nom posée entre deux : pas deux brassins voisins */
+      expect(ecart).toBeGreaterThanOrEqual(2);
+      expect(ecart).toBeLessThanOrEqual(4);
     }
   });
 

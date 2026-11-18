@@ -989,7 +989,7 @@ export interface CreativeItem {
   /** Calendrier (17.11) : une chose qui s'étale du lundi `du` au dimanche `au`, avec ses jours actifs et, si elle a un montant, sa mise de côté. Optionnel, sans migration. */
   fenetre?: FenetreCalendrier;
   /** Calendrier : ce à quoi la chose est liée (un brassin, un client), par identifiant. */
-  liens?: { batchId?: string; clientId?: string };
+  liens?: { batchId?: string; clientId?: string; evenementId?: string };
   /** Calendrier : une activité (comptée en jours, sans CHF obligatoire), rangée Activités plutôt que Fêtes. */
   activite?: boolean;
   /** Carnet d'idées : le contenu d'une idée (`type: 'carnet'`), lu par `lireCarnet` (src/domain/carnets/modele.ts). Optionnel. */

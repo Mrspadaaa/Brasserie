@@ -1,5 +1,5 @@
 import React from 'react';
-import { RANGEES, ecartJours, type ChoseCalendrier, type Rangee as IdRangee } from '../../../domain/calendrier';
+import { RANGEES, barreLiee, ecartJours, estPonctuel, type ChoseCalendrier, type Rangee as IdRangee } from '../../../domain/calendrier';
 import { MESURES_PAYSAGE, MESURES_PORTRAIT, Rangee, pastille, positionDans, texteRenvoi, type Colonne, type DragEtat, type Renvoi, type RangeeProps } from './Rangee';
 import { GrilleJours } from './GrilleJours';
 import { usePincement } from './usePincement';
@@ -76,7 +76,36 @@ export interface FriseProps extends Pick<RangeeProps, 'drag' | 'ici' | 'etiquett
   aujourdhui?: string;
 }
 
-interface Trait { id: string; d: string }
+interface Trait { id: string; d: string; fil?: 'repos' | 'allume' | 'pale' }
+
+/** Une boîte à l'écran, dans le repère de la frise. */
+export interface BoiteFil { left: number; top: number; right: number; bottom: number }
+
+/**
+ * D386 : le fil discret d'un jalon à sa barre liée (une autre rangée) : il part du bord du jalon tourné vers la barre, monte (ou descend)
+ * jusqu'au bord de la barre, à l'aplomb du jalon s'il tombe sous elle, sinon par un coude à 8 px de la barre. `null` : les deux se touchent.
+ */
+export function cheminFil(jalon: BoiteFil, barre: BoiteFil): string | null {
+  const cx = (jalon.left + jalon.right) / 2;
+  const x = Math.max(barre.left + 6, Math.min(barre.right - 6, cx));
+  const f = (n: number) => n.toFixed(1);
+  if (jalon.top > barre.bottom) {
+    const y0 = jalon.top, y1 = barre.bottom;
+    return x === cx ? `M${f(cx)} ${f(y0)}V${f(y1)}` : `M${f(cx)} ${f(y0)}V${f(y1 + 8)}H${f(x)}V${f(y1)}`;
+  }
+  if (jalon.bottom < barre.top) {
+    const y0 = jalon.bottom, y1 = barre.top;
+    return x === cx ? `M${f(cx)} ${f(y0)}V${f(y1)}` : `M${f(cx)} ${f(y0)}V${f(y1 - 8)}H${f(x)}V${f(y1)}`;
+  }
+  return null;
+}
+
+/** D386 : la barre touchée et ses jalons liés (ils s'allument, les autres pâlissent) ; `null` si ce n'est pas une barre ou qu'aucun jalon n'y est lié. */
+export function jalonsAllumes(choses: readonly ChoseCalendrier[], selection: ChoseCalendrier | undefined): Set<string> | null {
+  if (!selection || estPonctuel(selection)) return null;
+  const ids = choses.filter(c => estPonctuel(c) && barreLiee(c) === selection.id).map(c => c.id);
+  return ids.length ? new Set(ids) : null;
+}
 
 export const Frise: React.FC<FriseProps> = props => {
   const { choses, colonnes, paysage, ordre, masquees, filtre, epingles, etoiles, selectionId, menuId, detail, largeurRepli = 360, reserveDroite = 0, onMesure } = props;
@@ -114,7 +143,19 @@ export const Frise: React.FC<FriseProps> = props => {
       const d = x === cx ? `M${cx.toFixed(1)} ${cy.toFixed(1)}V${bas.toFixed(1)}` : `M${cx.toFixed(1)} ${cy.toFixed(1)}V${(bas + 8).toFixed(1)}H${x.toFixed(1)}V${bas.toFixed(1)}`;
       suivants.push({ id: `${caddie.getAttribute('data-chose')}`, d });
     });
-    const cle = (t: Trait[]) => t.map(x => `${x.id}:${x.d}`).join('|');
+    /* D386 : le fil discret d'un jalon à sa barre liée ; allumé quand la barre est touchée, pâle pour les autres jalons */
+    el.querySelectorAll<HTMLElement>('[data-lie-a]').forEach(jalon => {
+      const cible = jalon.getAttribute('data-lie-a');
+      const barre = [...el.querySelectorAll<HTMLElement>('[data-chose]')].find(x => x.getAttribute('data-chose') === cible && !x.hasAttribute('data-marque'));
+      if (!barre) return;
+      const j = jalon.getBoundingClientRect(), b = barre.getBoundingClientRect();
+      if (!j.width || !b.width) return;
+      const rel = (r: DOMRect): BoiteFil => ({ left: r.left - z.left, right: r.right - z.left, top: r.top - z.top, bottom: r.bottom - z.top });
+      const d = cheminFil(rel(j), rel(b));
+      const ton = jalon.getAttribute('data-ton');
+      if (d) suivants.push({ id: `fil-${jalon.getAttribute('data-chose')}`, d, fil: ton === 'allume' ? 'allume' : ton === 'pale' ? 'pale' : 'repos' });
+    });
+    const cle = (t: Trait[]) => t.map(x => `${x.id}:${x.d}:${x.fil ?? ''}`).join('|');
     if (cle(suivants) !== cle(traits)) setTraits(suivants);
   });
 
@@ -192,6 +233,7 @@ export const Frise: React.FC<FriseProps> = props => {
   const renvois = renvoisHorsVue(choses, colonnes);
 
   const selection = selectionId ? choses.find(c => c.id === selectionId) : undefined;
+  const eclairage = jalonsAllumes(choses, selection);
   /* le mot « auj. » au pied de la dernière piste qui montre quelque chose (une seule fois, comme la maquette) */
   const derniereAvecPiste = avecJours ? [...rangees].reverse().find(r => {
     if (filtre && filtre !== r && !parRangee(r).some(c => epingles.includes(c.id))) return false;
@@ -215,7 +257,9 @@ export const Frise: React.FC<FriseProps> = props => {
     >
       {traits.length > 0 && (
         <svg className="cal-traits" aria-hidden="true" data-traits>
-          {traits.map(t => <path key={t.id} d={t.d} data-trait={t.id} />)}
+          {traits.map(t => (t.fil
+            ? <path key={t.id} d={t.d} className={`cal-fil cal-fil-${t.fil}`} data-fil={t.id.slice(4)} />
+            : <path key={t.id} d={t.d} data-trait={t.id} />))}
         </svg>
       )}
       {rangees.map(r => {
@@ -256,6 +300,7 @@ export const Frise: React.FC<FriseProps> = props => {
             onSixSemaines={props.onSixSemaines}
             detail={selection && selection.rangee === r && detail ? detail(selection) : undefined}
             alerte={props.alerte && props.alerte.rangee === r && !masquee ? props.alerte.noeud : undefined}
+            eclairage={eclairage}
             grille={avecJours ? <GrilleJours colonnes={colonnes} largeurColonne={largeurColonne} aujourdhui={props.aujourdhui} mot={r === derniereAvecPiste} /> : undefined}
           />
         );

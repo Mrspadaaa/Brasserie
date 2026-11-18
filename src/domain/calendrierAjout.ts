@@ -37,7 +37,7 @@ export interface BrouillonAjout {
   /** Brassin : 21, 28, 35 ou 42 jours en cuve ; la fin prévue en découle. */
   tempsEnCuve?: number;
   clientId?: string;
-  liens?: { batchId?: string; clientId?: string };
+  liens?: { batchId?: string; clientId?: string; evenementId?: string };
   confirmeGrosseSomme?: boolean;
   /** La vente probable choisie par sa puce : « Ajouter » l'ACCEPTE (même id, brouillon → confirmée), il n'en crée pas une autre (CRITIQUE-3 n° 8). */
   planProbableId?: string;

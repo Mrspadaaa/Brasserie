@@ -110,7 +110,13 @@ const montantDe = montantBarre;
  */
 export function formesDuree(d: string): string[] {
   const morceaux = d.split(' · ');
-  return morceaux.length > 1 ? [d, morceaux[0]] : [d];
+  if (morceaux.length < 2) return [d];
+  /* CAL-BARRE-HAUTE (une ligne de texte par barre de brassin) et CRITIQUE-9 n° 3 (E25, E29 : « prête … » jamais perdue) : entre la phrase
+     entière et sa tête (« J0 / 28 », « pas brassée »), la date prête garde sa place : « pas brassée · prête 24 nov. », puis « prête 21 déc. » */
+  const fin = morceaux.slice(1).join(' · ');
+  const prete = fin.startsWith('prête le ') ? `prête ${fin.slice('prête le '.length)}` : fin;
+  const formes = [d, `${morceaux[0]} · ${prete}`, prete, morceaux[0]];
+  return formes.filter((f, i) => formes.indexOf(f) === i);
 }
 
 /**

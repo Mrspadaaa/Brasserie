@@ -174,7 +174,10 @@ describe('C16 (D-67, D-93, E46) : Retirer, la poche « Sans date », Poser, Fait
     fireEvent.click(within(feuille).getByRole('button', { name: 'Enregistrer' }));
     await waitFor(() => expect(appels.some(a => a.id === 'CR-NOEL' && typeof a.patch?.date === 'string' && a.patch.date !== '')).toBe(true));
     await waitFor(() => expect(document.querySelector('[data-calendrier]')!.getAttribute('data-vue')).toBe('semaines'));
-    expect(await screen.findByRole('button', { name: /^Marché de Noël/ })).toHaveAttribute('data-barre');
+    /* D386 : une fête d'un jour, sans fenêtre, revient en jalon à sa date (une fête qui dure, en barre) */
+    const posee = await screen.findByRole('button', { name: /^Marché de Noël/ });
+    expect(posee).toHaveAttribute('data-ponctuel');
+    expect(posee.getAttribute('data-ponctuel')).toBe(appels.find(a => a.id === 'CR-NOEL' && typeof a.patch?.date === 'string' && a.patch.date !== '')!.patch!.date);
   });
 
   it('une tâche sans date « Fait » d’un toucher quitte la poche', async () => {
@@ -206,7 +209,8 @@ describe('C16 (D-67, D-93, E46) : Retirer, la poche « Sans date », Poser, Fait
     fireEvent.click(within(m).getByRole('button', { name: /Annuler/ }));
     await waitFor(() => expect(messages()).toHaveLength(0));
     const revenue = await screen.findByRole('button', { name: /^Marché de Noël/ });
-    expect(revenue).toHaveAttribute('data-barre');
+    /* D386 : le Marché de Noël (un jour, sans fenêtre) revient en jalon à son jour, pas en barre */
+    expect(revenue).toHaveAttribute('data-ponctuel', avant!.date);
     expect(revenue.getAttribute('data-rangee')).toBe('fetes');
     expect(revenue.getAttribute('data-semaine')).toBe('S52');
     const inverses = appels.filter(a => a.id === 'CR-NOEL');
@@ -307,7 +311,9 @@ describe('CRITIQUE-2 (corr. 2, L2) : glisser au vrai toucher, menu borné, effet
     expect(await screen.findByRole('alert')).toHaveTextContent(/promis (à .+ )?le .+ · prête le/);
     /* CRITIQUE-4 n° 21 (E29) : après f2-a, la barre dit aussi « prête » (forme courte permise « J0/35 · prête … ») */
     /* CRITIQUE-5 n° 23 (lot 2) : faute de place (jsdom ne mesure rien), « · prête … » cède sur la barre ; le nom accessible le garde entier */
-    await waitFor(() => expect(barre(/^Blonde d’automne/).textContent).toMatch(/J0 \/ 35/));
+    /* CAL-BARRE-HAUTE : sur la ligne unique de la barre, la date prête cède en dernier : la nouvelle (« prête 28 déc. ») ou « J0 / 35 » */
+    await waitFor(() => expect(barre(/^Blonde d’automne/).textContent).toMatch(/J0 \/ 35|prête 28 déc\./));
+    expect(barre(/^Blonde d’automne/).textContent).not.toMatch(/21 déc\./);
     expect(barre(/^Blonde d’automne/).getAttribute('aria-label')).toMatch(/J0 \/ 35 · prête \d/);
   });
 

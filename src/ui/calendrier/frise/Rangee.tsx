@@ -1,6 +1,6 @@
 import React from 'react';
 import { ChevronRight, Eye, EyeOff, Plus, ShoppingCart } from 'lucide-react';
-import { ajouterJours, ecartJours, estMarque, etiquetteS, francsSignes, jourLisible, nomRangee, type ChoseCalendrier, type JalonBrassin, type Rangee as IdRangee } from '../../../domain/calendrier';
+import { ajouterJours, barreLiee, ecartJours, estMarque, estPonctuel, etiquetteS, francsSignes, jourLisible, nomRangee, type ChoseCalendrier, type JalonBrassin, type Rangee as IdRangee } from '../../../domain/calendrier';
 import { Barre, dureeDansBarre, formesDuree, largeurDuree, montantBarre, type BarreProps, type CoteEtiquette } from './Barre';
 import { CLASSE_TEINTE, Marque, couperNom, dureeVue, largeurPastilleLie, largeurTexte, lieMontre, type ModeDeuxLignes } from './Marque';
 import { appuiCommenceSur } from './usePointeur';
@@ -69,6 +69,8 @@ export interface Disposition {
    * l'écart, en px, entre la fin de l'étiquette et sa chose (absent : collée, à 6 px).
    */
   retrait?: number;
+  /** D386 : un jalon d'un jour (`estPonctuel`) : icône au centre de son jour, sur une ligne sans barre de sa rangée, glissé au jour. */
+  jalon?: boolean;
 }
 
 /** Le caddie d'un brassin (son jalon « commander »), posé sans chevauchement, avec son nom en 6 semaines (n° 19, n° 22). */
@@ -195,7 +197,11 @@ export function disposer(choses: readonly ChoseCalendrier[], colonnes: readonly 
   const lieCourt = !!options.lieCourt;
   const bord = largeur - reserve;
   const places = choses.flatMap(c => { const p = positionDans(colonnes, c); return p ? [{ c, p }] : []; })
-    .sort((x, y) => x.p.a - y.p.a || (y.p.b - y.p.a) - (x.p.b - x.p.a) || x.c.id.localeCompare(y.c.id));
+    .map(o => ({ ...o, j: estPonctuel(o.c) }))
+    /* D386 : les barres d'abord, puis les jalons, sur leurs lignes à eux (jamais sur une ligne qui porte une barre) */
+    .sort((x, y) => Number(x.j) - Number(y.j) || x.p.a - y.p.a || (y.p.b - y.p.a) - (x.p.b - x.p.a) || x.c.id.localeCompare(y.c.id));
+  const lignesJalon = new Set<number>(), lignesAutres = new Set<number>();
+  let jalonCourant: boolean | null = null;
   const lignes: Array<Array<[number, number]>> = [];
   if (options.zoneTitre && options.zoneTitre > 0) lignes.push([[-1000, options.zoneTitre]]);
   const items: Disposition[] = [];
@@ -211,7 +217,8 @@ export function disposer(choses: readonly ChoseCalendrier[], colonnes: readonly 
   };
   const libre = (ligne: number, x0: number, x1: number) => !lignes[ligne]?.some(([a, b]) => x0 < b + 6 && x1 > a - 6);
   /* une phrase posée en bas prend aussi la ligne au-dessous : elle doit y être libre (une ligne pas encore ouverte l'est) */
-  const libreCandidat = (l: number, c: Candidat) => libre(l, c.x0, c.x1) && (!c.bas || libre(l + 1, c.bas.x0, c.bas.x1));
+  const genreOk = (l: number) => jalonCourant === null || (jalonCourant ? !lignesAutres.has(l) : !lignesJalon.has(l));
+  const libreCandidat = (l: number, c: Candidat) => genreOk(l) && libre(l, c.x0, c.x1) && (!c.bas || libre(l + 1, c.bas.x0, c.bas.x1));
   /** Le premier (ligne, candidat) libre, palier par palier, en commençant à la ligne `depuis` ; sinon une ligne neuve. */
   const poser = (paliers: Candidat[][], neuve: Candidat, depuis = 0): { ligne: number; c: Candidat } => {
     const ordre = [...Array(lignes.length).keys()].map(i => (i + depuis) % Math.max(1, lignes.length));
@@ -245,7 +252,8 @@ export function disposer(choses: readonly ChoseCalendrier[], colonnes: readonly 
       : { cote: 'gauche', place: Math.min(Math.max(min, Math.min(l, libreG)), durG), x0: finG - Math.min(Math.max(min, Math.min(l, libreG)), durG), x1: o1, ...(retrait > 0 ? { retrait } : {}) };
   };
 
-  for (const { c, p } of places) {
+  for (const { c, p, j: jalon } of places) {
+    jalonCourant = jalon;
     let gauche = p.a * largeurColonne + 2;
     let w = Math.max(0, (p.b - p.a + 1) * largeurColonne - 4);
     if (auJour) {
@@ -256,7 +264,7 @@ export function disposer(choses: readonly ChoseCalendrier[], colonnes: readonly 
     const tropPetite = estMarque(w);
     const pastilleVente = c.rangee === 'ventes' && p.a === p.b && !c.proposition;
     /* n° 19 : en 6 semaines, un brassin n'est jamais une icône ; ses courses et un brassin conditionné le sont */
-    const marque = (tropPetite && (vueLarge || !brassin)) || pastilleVente || (deriveSansMontant(c) && !brassin) || !!c.conditionne || !!c.brassinLie;
+    const marque = jalon || (tropPetite && (vueLarge || !brassin)) || (pastilleVente && !c.fin) || (deriveSansMontant(c) && !brassin) || !!c.conditionne || !!c.brassinLie;
     /* test en ligne 1, n° 1 (18.11, « C'est quoi ces deux paniers ? ») : toute marque porte son nom à côté, dans chaque vue, comme au banc
        (« Emballage · Jhhh », « Impôt sur la bière · 4 brassins ») ; jamais une icône dont le nom n'existe que pour le lecteur d'écran */
     const avecLibelle = marque;
@@ -275,7 +283,8 @@ export function disposer(choses: readonly ChoseCalendrier[], colonnes: readonly 
     const deuxSeul = lie && !paysage ? largeurDeuxLignes(c, lieCourt, 'nomSeul') : 0;
     let o0 = gauche, o1 = gauche + w;
     if (marque) {
-      const centre = auJour ? gauche + w / 2 : (p.a + 0.5) * largeurColonne;
+      /* D386 : un jalon se pose au centre de SON jour, pas au milieu de sa semaine */
+      const centre = auJour ? gauche + w / 2 : jalon ? (xDuJour(c.debut) + xDuJour(ajouterJours(c.debut, 1))) / 2 : (p.a + 0.5) * largeurColonne;
       gauche = centre - 14;
       o0 = gauche; o1 = centre + 14;
     }
@@ -304,15 +313,10 @@ export function disposer(choses: readonly ChoseCalendrier[], colonnes: readonly 
       /* une proposition garde son nom à côté (pointillé lisible) ; un brassin garde le sien dedans, avec sa durée (as/p-repos) */
       const premier = c.proposition ? [...entiers, ...pleinDedans] : [...pleinDedans, ...entiers];
       const nomsPlein = phrase && dureeDansBarre(c, w, false) === phrase ? aCote(o0, o1, labNom) : [];
-      const nomDedans = !marque && w - 16 >= labNom;
-      const haute: Candidat[] = phrase && !paysage && nomDedans && w - 16 >= largeurDuree(phrase)
-        ? [{ cote: 'dedans', place: w - 16, x0: o0, x1: o1, bas: { ou: 'barre', x0: o0, x1: o1 } }] : [];
-      const sous: Candidat[] = [];
-      if (phrase && !paysage && nomDedans && !haute.length) {
-        const lp = largeurDuree(phrase);
-        const x0 = o0 + lp <= bord ? o0 : Math.min(o1, bord) - lp;
-        if (x0 >= 0) sous.push({ cote: 'dedans', place: w - 16, x0: o0, x1: o1, bas: { ou: 'dessous', x0, x1: x0 + lp } });
-      }
+      /* CAL-BARRE-HAUTE (18.11, « Pas besoin d'avoir autant de place, la stout maison est au bon format, juste un mini espace entre les
+         évènements(brassin) ») : un brassin n'a plus de barre haute (nom en haut, phrase en bas, vide entre) ni de phrase sur la ligne sous sa
+         barre. Toute barre de brassin est au format de Stout maison : une ligne de texte (nom, montant, phrase) puis le pied d'étapes ; quand la
+         phrase entière n'y tient pas, la barre porte sa forme courte (« J0 / 28 · 21 déc. », puis « J0 / 28 »), la phrase entière au détail. */
       /* CRITIQUE-5 n° 1 et 23 : un brassin dont la durée entière ne tient pas sur une ligne la garde sur deux, hors paysage (as/cap/p-repos :
          « Blonde d'automne −148 », puis « J0 / 28 ») : « Saison de ferme −137 », puis « pas brassée · prête le 15 déc. » */
       const deuxDuree = !paysage && formes.length && !lie ? aCote(o0, o1, Math.ceil(Math.max(labNom - 6, largeurTexte(formes[0], 500))) + 8, 'duree') : [];
@@ -329,24 +333,26 @@ export function disposer(choses: readonly ChoseCalendrier[], colonnes: readonly 
          l'écran. Le nom et le montant restent entiers ; le lien se lit au badge de la barre, au message « Liée à … » et au détail */
       const labSansLie = lie ? Math.ceil(largeurTexte(texteVu(c), 600) + (montantBarre(c) ? largeurTexte(montantBarre(c) as string, 700) + 6 : 0)) + 6 : 0;
       const sansPastille = lie && !uneLigne ? aCote(o0, o1, labSansLie).map(k => ({ ...k, sansLie: true })) : [];
-      const pleins = [premier, deuxDuree, nomsPlein, haute, sous];
+      const pleins = [premier, deuxDuree, nomsPlein];
       const aPlein = !!phrase && pleins.some(x => x.length > 0);
       const paliers = aPlein ? pleins : uneLigne ? [premierCourt, deuxDuree, courts, noms, dedansEntier, deux] : sansPastille.length ? [sansPastille] : [coupe];
       /* aucune ligne ouverte n'a la place : une ligne libre au-dessous, où le nom tient entier ; sinon (la piste est trop étroite) au plus large */
       const neuve = aPlein
-        ? (premier[0] ?? deuxDuree[0] ?? nomsPlein[0] ?? haute[0] ?? sous[0]) as Candidat
+        ? (premier[0] ?? deuxDuree[0] ?? nomsPlein[0]) as Candidat
         : premierCourt[0] ?? deuxDuree[0] ?? courts[0] ?? noms[0] ?? dedansEntier[0] ?? deux[0] ?? sansPastille[0] ?? coupe[0] ?? auPlusLarge(o0, o1, labNom, min);
       choix = poser(paliers, neuve);
     }
     const { ligne, c: k } = choix;
     const emprise: [number, number] = [k.x0, k.x1];
     (lignes[ligne] ||= []).push(emprise);
+    (jalon ? lignesJalon : lignesAutres).add(ligne);
     if (k.bas) (lignes[ligne + 1] ||= []).push([k.bas.x0, k.bas.x1]);
     emprises.set(c.id, { emprise, o0, o1, lab, labCourt, labNom, w, marque, dureeMin, formes });
     const leCote = marque && !avecLibelle ? 'dedans' : k.cote;
     const phraseBas = k.bas ? (k.bas.ou === 'barre' ? { ou: 'barre' as const } : { ou: 'dessous' as const, x0: k.bas.x0, x1: k.bas.x1 }) : undefined;
-    items.push({ chose: c, a: p.a, b: p.b, gauche, largeur: marque ? 28 : w, ligne, marque, petite: marque && vueLarge, avecLibelle, duree: null, cote: leCote, place: k.place, deuxLignes: k.deux ?? false, ...(k.sansLie ? { sansLie: true } : {}), ...(phraseBas ? { phraseBas } : {}), ...(k.cote === 'gauche' && k.retrait ? { retrait: k.retrait } : {}) });
+    items.push({ chose: c, a: p.a, b: p.b, gauche, largeur: marque ? 28 : w, ligne, marque, petite: marque && vueLarge, avecLibelle, duree: null, cote: leCote, place: k.place, deuxLignes: k.deux ?? false, ...(k.sansLie ? { sansLie: true } : {}), ...(phraseBas ? { phraseBas } : {}), ...(k.cote === 'gauche' && k.retrait ? { retrait: k.retrait } : {}), ...(jalon ? { jalon: true } : {}) });
   }
+  jalonCourant = null;
 
   /* chaque étiquette posée à côté s'allonge dans la place libre de sa ligne (jusqu'à l'objet suivant, jamais sous le + volant), d'abord celles
      de droite, puis celles de gauche : un nom raccourci y retrouve des lettres, un nom entier y gagne sa durée */
@@ -519,6 +525,8 @@ export interface RangeeProps {
   alerte?: React.ReactNode;
   /** D385 : la grille des jours (vue Jour, semaine dépliée), posée sous les choses de la piste ; absente : les traits de semaine, comme avant. */
   grille?: React.ReactNode;
+  /** D386 : une barre touchée qui a des jalons liés : leurs ids (ils s'allument, les autres jalons pâlissent) ; absent : rien. */
+  eclairage?: ReadonlySet<string> | null;
 }
 
 /** Paysage : la largeur estimée du titre (carré +, nom, œil, pastille), posé sur la première ligne. */
@@ -712,13 +720,18 @@ export const Rangee: React.FC<RangeeProps> = props => {
             const surDrag = drag && drag.id === c.id;
             if (d.marque) {
               const commeBarre = !d.petite;
+              /* D386 : en Semaine, un jalon se glisse au jour (pas de 1/7 de colonne, bornes en jours) ; sur un axe en jours, comme une barre */
+              const auJourJalon = !!d.jalon && !auJour && !aDesJours(colonnes);
+              const pas = auJourJalon ? largeurColonne / 7 : largeurColonne;
+              const ton = d.jalon && props.eclairage ? (props.eclairage.has(c.id) ? 'allume' as const : 'pale' as const) : undefined;
               return (
                 <Marque
-                  key={c.id} chose={c} centre={d.gauche + 14} haut={top} hauteur={Math.min(28, mesures.barre + 2)} largeurColonne={auJour ? 0 : largeurColonne}
+                  key={c.id} chose={c} centre={d.gauche + 14} haut={top} hauteur={Math.min(28, mesures.barre + 2)} largeurColonne={auJour ? 0 : pas}
+                  {...(d.jalon ? { jalon: true, lieA: barreLiee(c), ton } : {})}
                   epinglee={epingles.includes(c.id)} etoilee={etoiles.includes(c.id)} selectionnee={selectionId === c.id} menuOuvert={menuId === c.id} lieCourt={lieCourt}
                   libelle={d.avecLibelle ? { cote: d.cote === 'gauche' ? 'gauche' : 'droite', place: d.place, deux: d.deuxLignes, ...(c.brassinLie ? { texte: c.titre } : {}), ...(d.sansLie ? { sansLie: true } : {}), ...(d.retrait ? { retrait: d.retrait } : {}) } : undefined}
-                  decalage={surDrag && drag.mode === 'glisse' ? drag.k * largeurColonne : 0}
-                  bornes={commeBarre ? [-d.a, colonnes.length - 1 - d.a] : undefined}
+                  decalage={surDrag && drag.mode === 'glisse' ? drag.k * pas : 0}
+                  bornes={commeBarre ? (auJourJalon ? [-ecartJours(colonnes[0].debut, c.debut), ecartJours(c.debut, colonnes[colonnes.length - 1].fin)] : [-d.a, colonnes.length - 1 - d.a]) : undefined}
                   onToucher={props.barre.onToucher} onSixSemaines={props.onSixSemaines}
                   {...(commeBarre ? { onAppuiLong: props.barre.onAppuiLong, onGlisse: props.barre.onGlisse, onLacheGlisse: props.barre.onLacheGlisse, onRefus: (ch: ChoseCalendrier, raison: string) => props.barre.onRefus(ch, raison) } : {})}
                 />
