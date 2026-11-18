@@ -2134,3 +2134,9 @@ Lecture : jeu C de la page « Calendrier · couleurs des étapes » (https://cla
 > Les 3
 
 Lecture : page « Calendrier · l'axe en jours, semaines, mois » (https://claude.ai/artifact/5wGhkaaV6SEJ4sBoWXpk4R) : les trois ensemble — D (ligne Échelle Jour · Semaine · Mois dans le menu de la période), C (toucher une semaine de la bande la déplie en 7 jours sur place), B (écarter deux doigts sur la frise : jours ; pincer : mois). Semaine par défaut.
+
+### Ventes et achats : des jalons, pas des périodes (18.11)
+
+> Parcontre certains événements ne sont pas de frize mais juste des jalon ou autre, une vente ou un Achat ( achat pas forcément prévu) est sur un seul moment, un seul jour. Pas sûr une période comme épicerie du bourg, c'est un jalon (icône) pas une période sur la frize
+
+Capture : work/missions/2026-11-18-choix-calendrier/brasseur/jalons-18-11.jpg. Lecture étroite : une vente ou un achat (prévu ou non) est un jalon d'un seul jour (icône posée à sa date), jamais une barre qui couvre une période ; les brassins restent des barres.
