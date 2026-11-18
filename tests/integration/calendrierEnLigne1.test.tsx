@@ -146,7 +146,8 @@ describe('CAL-POINTS-MUETS (« Les petits points là donne pas d’info ») : ch
     const pictos = points.map(p => p.querySelector('svg')?.getAttribute('class') ?? '');
     expect(pictos.map(c => c.match(/lucide-([a-z-]+)/g)?.find(n => n !== 'lucide-icon') ?? '')).toEqual(['lucide-wheat', 'lucide-flask-conical', 'lucide-leaf', 'lucide-snowflake', 'lucide-package']);
     const couleurs = points.map(p => (p as HTMLElement).style.getPropertyValue('--e'));
-    expect(couleurs).toEqual(['rgb(var(--attention))', 'rgb(var(--area-agenda))', 'rgb(var(--hop))', 'rgb(var(--water))', 'rgb(var(--area-production))']);
+    /* D384 (jeu C « Par cuve, phases visibles ») : les jetons des étapes, clair et cave */
+    expect(couleurs).toEqual(['rgb(var(--etape-brassage))', 'rgb(var(--etape-fermentation))', 'rgb(var(--etape-dry-hop))', 'rgb(var(--etape-garde))', 'rgb(var(--etape-conditionnement))']);
     expect(new Set(couleurs).size).toBe(5);
     toucher(document.querySelector('[data-jalon="dry-hop"]')!);
     expect(screen.getByRole('status').querySelector('svg')?.getAttribute('class')).toMatch(/lucide-leaf/);
@@ -159,7 +160,54 @@ describe('CAL-POINTS-MUETS (« Les petits points là donne pas d’info ») : ch
     expect(onToucher).toHaveBeenCalledTimes(1);
   });
 
-  it('les icônes ne masquent pas la barre : à moins de 18 px l’une de l’autre, la plus utile reste ; une barre de 30 px (An) ne garde que sa fin', () => {
+  it('D384 : au repos, aucune bulle de date ; le pied de la barre est coloré par phase, chaque phase de la couleur de son étape', () => {
+    render(<Barre chose={ttt} gauche={0} largeur={300} haut={0} hauteur={26} cote="dedans" placeEtiquette={0} largeurColonne={65} bornes={[0, 3]} {...gestes} />);
+    /* « oui si on clic on a l'info mais elle doit pas être visible de base » */
+    expect(document.querySelector('[data-point-bulle]')).toBeNull();
+    expect(screen.queryByRole('status')).toBeNull();
+    expect(document.querySelector('.cal-jalon-vu')).toBeNull();
+    const phases = [...document.querySelectorAll<HTMLElement>('.cal-piste [data-phase]')];
+    expect(phases.map(p => p.getAttribute('data-phase'))).toEqual(['brassage', 'fermentation', 'dry-hop', 'garde', 'conditionnement']);
+    expect(phases.map(p => p.style.getPropertyValue('--p'))).toEqual(['brassage', 'fermentation', 'dry-hop', 'garde', 'conditionnement'].map(id => `rgb(var(--etape-${id}))`));
+    /* d'un bord à l'autre, sans espace : la première part du bord gauche, chaque phase finit où la suivante commence, la dernière au bord droit */
+    const v = (p: HTMLElement, k: string) => p.style.getPropertyValue(k);
+    expect(v(phases[0], '--a')).toBe('0px');
+    for (let i = 0; i < phases.length - 1; i++) expect(v(phases[i], '--b')).toBe(v(phases[i + 1], '--a'));
+    expect(v(phases[phases.length - 1], '--b')).toBe('100%');
+    expect(v(phases[2], '--a')).toMatch(/^\(var\(--cal-bg\) \+ \(100% - var\(--cal-bg\) - var\(--cal-bd\)\) \* 0\.3571\)$/);
+    /* chaque picto prend l'encre de son étape (blanc en clair ; sombre en cave, sauf la garde) */
+    expect([...document.querySelectorAll<HTMLElement>('[data-jalon]')].map(p => p.style.getPropertyValue('--ei'))).toEqual(
+      ['brassage', 'fermentation', 'dry-hop', 'garde', 'conditionnement'].map(id => `rgb(var(--etape-${id}-encre))`));
+  });
+
+  it('D384 : un brassin pas brassé (brassage seul) n’a de pied coloré que le jour du brassage ; le reste, inconnu, reste nu', () => {
+    const seul = { ...ttt, id: 'brassin-PB', pasBrassee: true, jalons: [ttt.jalons![0]] } as unknown as ChoseCalendrier;
+    render(<Barre chose={seul} gauche={0} largeur={300} haut={0} hauteur={26} cote="dedans" placeEtiquette={0} largeurColonne={65} bornes={[0, 3]} {...gestes} />);
+    const phases = [...document.querySelectorAll<HTMLElement>('.cal-piste [data-phase]')];
+    expect(phases).toHaveLength(1);
+    expect(phases[0].getAttribute('data-phase')).toBe('brassage');
+    /* 1 jour sur 14 : la phase finit à 1/14 de la largeur, jamais au bord droit */
+    expect(phases[0].style.getPropertyValue('--b')).toMatch(/\* 0\.0714\)$/);
+  });
+
+  it('D384 : chaque jeton d’étape existe dans les deux thèmes, aucune couleur en dur dans la frise', async () => {
+    const fs = await import('node:fs');
+    const chemin = await import('node:path');
+    const themes = fs.readFileSync(chemin.resolve(process.cwd(), 'src/theme/themes.css'), 'utf8');
+    const bloc = (sel: string) => themes.slice(themes.indexOf(`${sel} {`), themes.indexOf('}', themes.indexOf(`${sel} {`)));
+    for (const sel of ["[data-theme='clair']", "[data-theme='cave']"]) {
+      for (const id of ['brassage', 'fermentation', 'dry-hop', 'garde', 'conditionnement']) {
+        expect(bloc(sel)).toMatch(new RegExp(`--etape-${id}: \\d+ \\d+ \\d+;`));
+        expect(bloc(sel)).toMatch(new RegExp(`--etape-${id}-encre: \\d+ \\d+ \\d+;`));
+      }
+    }
+    for (const f of ['frise.css', 'Barre.tsx', 'etapes.ts']) {
+      const src = fs.readFileSync(chemin.resolve(process.cwd(), 'src/ui/calendrier/frise', f), 'utf8');
+      expect(src).not.toMatch(/#[0-9a-fA-F]{6}\b/);
+    }
+  });
+
+  it('les icônes ne masquent pas la barre : à moins de 16 px l’une de l’autre, la plus utile reste ; une barre de 30 px (An) ne garde que sa fin', () => {
     /* 120 px pour 14 j : brassage 0 px et fermentation 8,6 px se touchent : la fermentation reste ; dry hop 43, garde 86, fin 120 */
     render(<Barre chose={ttt} gauche={0} largeur={120} haut={0} hauteur={26} cote="dedans" placeEtiquette={0} largeurColonne={65} bornes={[0, 3]} {...gestes} />);
     expect([...document.querySelectorAll('[data-jalon]')].map(p => p.getAttribute('data-jalon'))).toEqual(['fermentation', 'dry-hop', 'garde', 'conditionnement']);

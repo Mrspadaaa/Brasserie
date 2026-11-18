@@ -67,6 +67,18 @@
   --water: 79 126 155;
   --water-texte: 47 95 125;
 
+  /* Étapes d'un brassin au calendrier (D384, jeu C « Par cuve, phases visibles ») : la couleur du procédé et l'encre du picto posé dessus. */
+  --etape-brassage: 217 72 15; /* #D9480F */
+  --etape-fermentation: 59 130 196; /* #3B82C4 */
+  --etape-dry-hop: 47 138 58; /* #2F8A3A */
+  --etape-garde: 30 78 140; /* #1E4E8C */
+  --etape-conditionnement: 38 38 38; /* #262626 */
+  --etape-brassage-encre: 255 255 255;
+  --etape-fermentation-encre: 255 255 255;
+  --etape-dry-hop-encre: 255 255 255;
+  --etape-garde-encre: 255 255 255;
+  --etape-conditionnement-encre: 255 255 255;
+
   /* Marque : la valeur de sa maquette (theme-maquettes.css), 2,25:1 ; employée par la maquette seule, pas par l'app. */
   --marque: 158 158 158;
   --repere: 17 17 17;
@@ -129,6 +141,18 @@
   --hop-texte: 110 155 91;
   --water: 91 138 166;
   --water-texte: 94 140 168; /* #5B8AA6 : 4,48:1 sur cave-850 */
+
+  /* Étapes d'un brassin au calendrier (D384, jeu C) : plus claires sur le fond sombre ; picto sombre, sauf sur la garde (bleu foncé). */
+  --etape-brassage: 255 138 76; /* #FF8A4C */
+  --etape-fermentation: 121 180 234; /* #79B4EA */
+  --etape-dry-hop: 116 198 122; /* #74C67A */
+  --etape-garde: 76 134 208; /* #4C86D0 */
+  --etape-conditionnement: 237 230 221; /* #EDE6DD */
+  --etape-brassage-encre: 18 16 14;
+  --etape-fermentation-encre: 18 16 14;
+  --etape-dry-hop-encre: 18 16 14;
+  --etape-garde-encre: 255 255 255;
+  --etape-conditionnement-encre: 18 16 14;
 
   --marque: 154 138 126;
   --repere: 242 193 78;

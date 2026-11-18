@@ -3,7 +3,7 @@ import { Link2, Pin, Star } from 'lucide-react';
 import { ecartJours, etiquetteS, francsSignes, jourLisible, type ChoseCalendrier, type JalonBrassin } from '../../../domain/calendrier';
 import { CLASSE_TEINTE, ContenuEtiquette, PastilleLie, dureeVue, largeurTexte, nomAccessible, type ModeDeuxLignes } from './Marque';
 import { usePointeur } from './usePointeur';
-import { ETAPE_BRASSIN, estEtape, type EtapeBrassin } from './etapes';
+import { ETAPE_BRASSIN, couleurEtape, encreEtape, estEtape, type EtapeBrassin } from './etapes';
 
 /**
  * Une barre de la frise (E24 à E32). Elle porte ses gestes : toucher (le détail), appui long (le menu), glisser (déplacer en direct, f1-a),
@@ -15,8 +15,8 @@ import { ETAPE_BRASSIN, estEtape, type EtapeBrassin } from './etapes';
  * 21 déc. » n'est jamais coupé (entier, ou sa forme courte « J7 / 35 »). N° 13 : la pastille « lié à … » se touche (aperçu sur place).
  */
 
-/** Écart minimal entre deux icônes d'étape (16 px de disque + 2 px d'air), et largeur sous laquelle seule la fin (la poignée) reste. */
-const ESPACE_ICONE = 18;
+/** Écart minimal entre deux icônes d'étape (14 px de disque, D384 « icône plus petit », + 2 px d'air), et largeur sous laquelle seule la fin (la poignée) reste. */
+const ESPACE_ICONE = 16;
 const BARRE_ETROITE = 40;
 /** Qui garde sa place quand deux icônes se touchent : la fin (elle se tire), le dry hop, la garde, la fermentation, puis le brassage (le début de la barre le dit déjà). */
 const PRIORITE_ETAPE: Record<EtapeBrassin, number> = { conditionnement: 0, 'dry-hop': 1, garde: 2, fermentation: 3, brassage: 4 };
@@ -138,10 +138,23 @@ function phases(jalons: readonly JalonBrassin[] | undefined, total: number, o = 
   const sur = jalons.filter(j => j.ecart >= 0 && j.id !== 'commander').sort((a, b) => a.ecart - b.ecart);
   const vu = f - o;
   return sur.flatMap((j, i) => {
-    const debut = Math.max(o, j.ecart), fin = Math.min(f, i + 1 < sur.length ? sur[i + 1].ecart : total);
+    /* D384 : le brassage est un jour. Un brassin pas brassé n'a que lui (ses autres phases ne sont pas datées) : son pied n'est coloré que ce
+       jour-là, jamais trois semaines de « brassage » ; le reste du pied reste nu (l'inconnu ne prend aucune couleur) */
+    const suivant = i + 1 < sur.length ? sur[i + 1].ecart : total;
+    const debut = Math.max(o, j.ecart), fin = Math.min(f, j.id === 'brassage' ? Math.min(suivant, j.ecart + 1) : suivant);
     if (fin < debut) return [];
     return [{ id: j.id, de: Math.min(100, ((debut - o) / vu) * 100), largeur: Math.max(0, ((fin - debut) / vu) * 100) }];
   });
+}
+
+/**
+ * Une position de la piste des phases (en % de la largeur intérieure de la barre) dans le repère de la piste, qui couvre aussi les bords
+ * (`--cal-bg` à gauche, `--cal-bd` à droite) : 0 et 100 vont jusqu'au bord extérieur, le reste suit les icônes.
+ */
+export function posPiste(p: number): string {
+  if (p <= 0) return '0px';
+  if (p >= 100) return '100%';
+  return `(var(--cal-bg) + (100% - var(--cal-bg) - var(--cal-bd)) * ${Number((p / 100).toFixed(4))})`;
 }
 
 export const Barre: React.FC<BarreProps> = props => {
@@ -276,8 +289,14 @@ export const Barre: React.FC<BarreProps> = props => {
         onKeyDown={e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); if (el.current) props.onToucher(chose, el.current); } }}
       >
         {brassin && segments.length > 0 && (
+          /* D384 (jeu C, `.phases`) : le pied de la barre, coloré par phase, d'un bord à l'autre, sans jour ni espace entre deux phases. La
+             piste couvre les bords de la barre ; une phase se place sur la largeur intérieure (celle des icônes), la première et la dernière
+             s'étendent sous le bord (`--cal-bg`, `--cal-bd`, frise.css). */
           <span className="cal-piste" aria-hidden="true">
-            {segments.map(s => <i key={s.id} className={`cal-ph cal-ph-${s.id}`} style={{ left: `${s.de}%`, width: `calc(${s.largeur}% - 2px)` }} />)}
+            {segments.map(s => {
+              const a = posPiste(s.de), b = posPiste(s.de + s.largeur);
+              return <i key={s.id} className="cal-ph" data-phase={s.id} style={{ ['--a' as string]: a, ['--b' as string]: b, ...(estEtape(s.id) ? { ['--p' as string]: couleurEtape(s.id) } : {}) }} />;
+            })}
           </span>
         )}
         {etapesVues.map(j => {
@@ -294,7 +313,7 @@ export const Barre: React.FC<BarreProps> = props => {
               data-point-texte={`${j.libelle} · ${jourLisible(j.jour)}`}
               className={`cal-jalon${pointVu === j.id ? ' cal-jalon-vu' : ''}`}
               /* CRITIQUE-5 n° 29 : l'icône reste dans sa barre (borné par frise.css), jamais une demi-icône hors de la grille */
-              style={{ ['--x' as string]: `${total > 0 ? jalonVu(j.ecart) : 0}%`, ['--e' as string]: `rgb(var(--${etape.couleur}))` }}
+              style={{ ['--x' as string]: `${total > 0 ? jalonVu(j.ecart) : 0}%`, ['--e' as string]: couleurEtape(j.id as EtapeBrassin), ['--ei' as string]: encreEtape(j.id as EtapeBrassin) }}
             >
               <etape.Icone aria-hidden="true" strokeWidth={2.5} />
             </i>
@@ -308,7 +327,7 @@ export const Barre: React.FC<BarreProps> = props => {
           /* sous la barre, jamais dessus : « Fermentation · 23 nov. », avec le picto de l'étape */
           return (
             <span ref={bullePoint} role="status" className="cal-point-bulle" data-point-bulle={j.id}
-              style={{ ['--x' as string]: `${total > 0 ? x : 0}%`, ['--e' as string]: `rgb(var(--${etape.couleur}))` }}>
+              style={{ ['--x' as string]: `${total > 0 ? x : 0}%`, ['--e' as string]: couleurEtape(j.id) }}>
               <etape.Icone aria-hidden="true" size={14} strokeWidth={2.5} />{j.libelle} · {jourLisible(j.jour)}
             </span>
           );

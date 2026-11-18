@@ -107,28 +107,31 @@ button.cal-lie::before { content: ''; position: absolute; inset: -6px -2px; }
 
 /* CRITIQUE-4 n° 17 (E25, D-103) : la piste des phases et ses jalons sont posés sur le bord bas de la barre. La zone de prise d'un jalon fait
    24 px de large au plus, centrée sur son icône, et n'atteint jamais le milieu de la barre : saisie par son milieu, la barre se déplace. */
-.cal-piste { position: absolute; left: 0; right: 0; bottom: -3px; height: 5px; }
-.cal-paysage .cal-piste { bottom: -2px; height: 4px; }
-.cal-ph { position: absolute; top: 0; height: 5px; border-radius: 3px; background: var(--c); }
-.cal-ph-fermentation { opacity: 0.6; }
-.cal-ph-garde { opacity: 0.4; }
-.cal-ph-dry-hop { opacity: 0.8; }
+/* D384 (18.11, jeu C « Par cuve, phases visibles », `.phases` de choix-calendrier/couleurs) : le pied de la barre est coloré par phase, d'un bord
+   extérieur à l'autre, chaque phase dans la couleur de son étape (jetons `--etape-…`, Barre.tsx) ; une chose proposée l'a pâli (0,55). */
+.cal-barre { --cal-bg: 5px; --cal-bd: 1.5px; }
+.cal-piste { position: absolute; left: calc(-1 * var(--cal-bg)); right: calc(-1 * var(--cal-bd)); bottom: -1.5px; height: 5px; border-radius: 0 0 6px 6px; overflow: hidden; pointer-events: none; }
+.cal-paysage .cal-piste { height: 4px; }
+.cal-ph { position: absolute; top: 0; bottom: 0; left: calc(var(--a)); width: calc(var(--b) - var(--a)); background: var(--p, var(--c)); }
+.cal-pointille .cal-ph { opacity: 0.55; }
 /* CRITIQUE-5 n° 29 : le centre de l'icône est borné à sa barre (`--x` posé par Barre.tsx) : aucune demi-icône hors de la grille, ni à droite ni à gauche.
    CAL-POINTS-MUETS (18.11, « plutot utiliser des mini icone. et une couleur pour le type de procédé ») : chaque étape est un mini picto dans un
    disque de la couleur de son procédé (`--e`, posé par Barre.tsx depuis etapes.ts), cerné du fond pour se détacher de la barre. Les zones de
    prise gardent leur place d'avant (24 px de large, 44 px pour la fin, dans la ligne de 30 px). */
-.cal-jalon { position: absolute; left: clamp(8px, var(--x, 0%), calc(100% - 8px)); bottom: -7px; z-index: 2; box-sizing: border-box; display: grid; place-items: center; width: 16px; height: 16px; margin-left: -8px; border-radius: 50%; border: 1.5px solid rgb(var(--cave-950)); background: var(--e, var(--c)); color: rgb(var(--cave-950)); font-style: normal; }
-.cal-jalon > svg { width: 10px; height: 10px; pointer-events: none; }
-.cal-jalon::before { content: ''; position: absolute; inset: 0 -4px -4px; }
-.cal-paysage .cal-jalon { left: clamp(7px, var(--x, 0%), calc(100% - 7px)); bottom: -6px; width: 14px; height: 14px; margin-left: -7px; border-width: 1px; }
-.cal-paysage .cal-jalon > svg { width: 9px; height: 9px; }
-.cal-paysage .cal-jalon::before { inset: 0 -5px -2px; }
+/* D384 (« icône plus petit ») : 14 px (13 en paysage) au lieu des 17 de la maquette, picto de 8 px ; le disque est centré sur le pied coloré.
+   L'encre du picto (`--ei`) est le jeton de son étape (blanc en clair ; sombre en cave, blanc sur la garde). */
+.cal-jalon { position: absolute; left: clamp(7px, var(--x, 0%), calc(100% - 7px)); bottom: -6px; z-index: 2; box-sizing: border-box; display: grid; place-items: center; width: 14px; height: 14px; margin-left: -7px; border-radius: 50%; border: 1.5px solid rgb(var(--cave-950)); background: var(--e, var(--c)); color: var(--ei, rgb(var(--cave-950))); font-style: normal; }
+.cal-jalon > svg { width: 8px; height: 8px; pointer-events: none; }
+.cal-jalon::before { content: ''; position: absolute; inset: -2px -5px -4px; }
+.cal-paysage .cal-jalon { left: clamp(6.5px, var(--x, 0%), calc(100% - 6.5px)); bottom: -5.5px; width: 13px; height: 13px; margin-left: -6.5px; border-width: 1px; }
+.cal-paysage .cal-jalon > svg { width: 8px; height: 8px; }
+.cal-paysage .cal-jalon::before { inset: 0 -5.5px -2px; }
 /* CRITIQUE-5 n° 11 (D-103, E25) : le jalon de fin se saisit au doigt : une zone de prise de 44 px de large, invisible, posée au-dessus de la poignée
    du bord (même geste : écrire `finPrevue`). En hauteur, elle reste dans la ligne de sa barre (30 px de pas) : jamais sur le jalon de la barre du
    dessus ni de celle du dessous. Le milieu de la barre reste à la barre (glisser). */
 .cal-jalon[data-glissable='fin'] { z-index: 4; }
-.cal-jalon[data-glissable='fin']::before { inset: -13px -14px -3px; }
-.cal-paysage .cal-jalon[data-glissable='fin']::before { inset: -5px -15px -2px; }
+.cal-jalon[data-glissable='fin']::before { inset: -13px -15px -3px; }
+.cal-paysage .cal-jalon[data-glissable='fin']::before { inset: -5px -15.5px -2px; }
 /* CAL-POINTS-MUETS (18.11) : l'icône touchée est cerclée de sa couleur, et sa bulle « Fermentation · 23 nov. » se pose sous la barre, jamais dessus */
 .cal-jalon.cal-jalon-vu { z-index: 5; box-shadow: 0 0 0 2px var(--e, var(--c)); transform: scale(1.15); }
 .cal-point-bulle { position: absolute; left: clamp(5px, var(--x, 0%), calc(100% - 5px)); top: calc(100% + 10px); z-index: 9; transform: translateX(-50%); display: flex; align-items: center; gap: 6px; width: max-content; max-width: 260px; padding: 4px 10px; border-radius: 10px; border: 1.5px solid var(--e, var(--c)); background: rgb(var(--cave-900)); color: rgb(var(--cave-50)); font-size: 14px; line-height: 18px; font-weight: 600; white-space: nowrap; pointer-events: none; box-shadow: 0 6px 16px rgb(var(--cave-950) / 0.3); }
