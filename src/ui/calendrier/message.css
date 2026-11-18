@@ -1,10 +1,13 @@
-/* Le message du calendrier (E33, D-200) : un seul canal, une bande basse au-dessus des onglets, à gauche du + volant.
+/* Le message du calendrier (E33, D-200) : un seul canal. Sa place (CRITIQUE-12 n° 1, règle n° 1 : celle de sa maquette, `as-gestes.js`
+   `toast`) est posée par `Message.tsx` (`left`, `top`) : près de la chose touchée là où il ne cache aucun texte, sinon en bas, au-dessus des
+   onglets, à gauche du + volant. Par-dessus la frise (fixe), sans réserver de hauteur : rien ne bouge quand il vient ni quand il part.
+   Ci-dessous, la place sans script (bande basse à gauche du +), que le script remplace.
    Sélecteurs `[data-message]` : ils passent devant les règles `.cal-msg` de frise.css, sans les toucher. */
 .cal-msg[data-message] {
   position: fixed; z-index: 45; left: 8px; right: 84px;
   bottom: calc(var(--main-navigation-height, 2.5rem) + 10px + env(safe-area-inset-bottom, 0px));
   max-width: 560px; display: flex; align-items: center; gap: 8px; padding: 6px 6px 6px 12px; border-radius: 14px;
-  font-size: 14px; line-height: 18px;
+  font-size: 14px; line-height: 18px; box-sizing: border-box;
   /* le texte laisse passer le doigt ; seuls ses liens et boutons se touchent */
   pointer-events: none;
 }
@@ -28,8 +31,8 @@
 .cal-msg[data-message] .cal-msg-b { min-height: 44px; }
 .cal-msg[data-message] .cal-msg-lien { display: inline-flex; align-items: center; min-height: 44px; margin: 0; padding: 0 6px; white-space: nowrap; }
 
-/* f6-b : l'alerte d'une promesse, sur toute la largeur au-dessus du + volant ; le texte entier sur la première ligne, Livrer et Annuler sur la
-   seconde (passe 8, 03-p-f6b-alerte). */
+/* f6-b : l'alerte d'une promesse ; le texte entier sur la première ligne, Livrer et Annuler sur la seconde (passe 8, 03-p-f6b-alerte). Au
+   téléphone en hauteur, elle prend la largeur (le script pose `width`) : sous la vente promise, ou en bas au-dessus du + volant. */
 .cal-msg-alerte[data-message] {
   right: 8px; flex-direction: column; align-items: stretch; gap: 6px; padding: 8px 10px 8px 12px;
   bottom: calc(var(--main-navigation-height, 2.5rem) + 84px + env(safe-area-inset-bottom, 0px));
@@ -39,19 +42,10 @@
 /* l'alerte est en colonne : son texte garde sa hauteur (une base de 12rem serait une hauteur) */
 .cal-msg-alerte[data-message] .cal-msg-l { flex: none; }
 
-/* CRITIQUE-4 n° 20 : le téléphone tourné (390 px de haut) : l'alerte reste en bas, à gauche du + volant, son texte et ses boutons sur une ligne */
-@media (orientation: landscape) and (max-height: 520px) {
-  .cal-msg-alerte[data-message] {
-    right: 84px; flex-direction: row; flex-wrap: nowrap; align-items: center; gap: 10px; max-width: 760px;
-    bottom: calc(var(--main-navigation-height, 2.5rem) + 10px + env(safe-area-inset-bottom, 0px));
-  }
+/* CRITIQUE-4 n° 20 : le téléphone tourné (390 px de haut) et le grand écran : l'alerte à gauche du + volant, son texte et ses boutons sur une ligne */
+@media (orientation: landscape) and (max-height: 520px), (min-width: 1024px) {
+  .cal-msg-alerte[data-message] { flex-direction: row; flex-wrap: nowrap; align-items: center; gap: 10px; }
   .cal-msg-alerte[data-message] .cal-msg-l { flex: 1 1 auto; min-width: 0; }
-}
-
-/* paysage et grand écran : à côté du rail, jamais dessus */
-@media (min-width: 1024px) {
-  .cal-msg[data-message] { left: calc(var(--rail-width, 88px) + 16px); }
-  .cal-msg-alerte[data-message] { right: auto; width: min(560px, calc(100vw - var(--rail-width, 88px) - 120px)); bottom: calc(var(--main-navigation-height, 0px) + 16px); }
 }
 
 /* « Trier les rangées » (k15 du jouable) : le critère choisi, un court instant, à droite sous l'en-tête */
@@ -67,21 +61,7 @@
 .cal-tri-seg button[aria-pressed='true'] { background: rgb(var(--cave-50)); color: rgb(var(--cave-950)); }
 .cal-tri-seg small { align-self: center; padding: 0 6px 0 4px; font-size: 14px; color: rgb(var(--cave-200)); }
 
-/* CRITIQUE-5 n° 13 (E33, D-200) : faute de bande libre de noms, le message va au pied de l'en-tête collé.
-   CRITIQUE-11 n° 2 b (E33 « ne déplace rien sous le doigt ») : il y entrait dans son flux, l'en-tête grandissait et poussait les rangées de
-   85 px au lâcher. Il s'y pose désormais dans une bande de la couleur de l'en-tête, accrochée sous lui en surimpression : l'en-tête garde sa
-   hauteur (E43 : 180 px au plus), rien ne bouge à l'écran ; ce qui passe sous la bande est caché comme sous l'en-tête, jamais un texte sur un
-   autre. N° 3 et n° 8 : au grand écran et pour Lier, il va toujours là. */
-.cal-msg-bande {
-  position: absolute; top: 100%; left: 0; right: 0;
-  padding: 4px 8px 6px; background: rgb(var(--cave-950)); border-bottom: 1px solid rgb(var(--cave-700));
-}
-.cal-msg[data-message].cal-msg-entete {
-  position: relative; z-index: auto; left: auto; right: auto; bottom: auto; width: auto; max-width: 560px; transform: none;
-  margin: 0;
-}
-
-/* CRITIQUE-11 n° 4 (E31, D-192) : dans le menu d'appui long, un effet en mots (« recette estimée 1 180 · hors prévision ») passe entier sous
-   son action ; l'action et son effet tiennent deux lignes au plus. (Le menu vit dans frise.css, au lot de la frise : seule cette règle est ici.) */
+/* CRITIQUE-11 n° 4 (E31, D-192) : dans le menu d'appui long, un effet en mots passe entier sous son action ; l'action et son effet tiennent deux
+   lignes au plus. (Le menu vit dans frise.css, au lot de la frise : seule cette règle est ici.) */
 .cal-ml.cal-ml-mots { flex-wrap: wrap; row-gap: 0; padding-top: 4px; padding-bottom: 4px; }
 .cal-ml.cal-ml-mots > em { flex-basis: 100%; padding-left: 30px; line-height: 18px; font-size: 14px; }

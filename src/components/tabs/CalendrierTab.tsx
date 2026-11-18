@@ -16,7 +16,7 @@ import { MenuAppuiLong } from '../../ui/calendrier/frise/MenuAppuiLong';
 import { DetailChose } from '../../ui/calendrier/frise/DetailChose';
 import { FeuilleAjout, type ResultatAjout } from '../../ui/calendrier/frise/FeuilleAjout';
 import { VueListe } from '../../ui/calendrier/frise/VueListe';
-import { CLASSE_TEINTE, ICONE_RANGEE } from '../../ui/calendrier/frise/Marque';
+import { CLASSE_TEINTE } from '../../ui/calendrier/frise/Marque';
 import { positionDans, type Colonne, type DragEtat } from '../../ui/calendrier/frise/Rangee';
 import {
   RANGEES, ajouterJours, dateDeSemaine, etiquetteS, jourLisible, lundiDe, nomRangee, nomSeules, preparerChoses,
@@ -325,15 +325,16 @@ export function CalendrierTab(props: CalendrierTabProps) {
     const cible: CibleOuverture = jalon ? { ecran: 'brassin', id: chose.source.genre === 'batch' ? chose.source.id : undefined } : chose.ouvre;
     const texte = LIBELLE_LIEN[cible.ecran];
     setDetailFerme();
-    montrer({ role: 'status', texte: raison, ...(texte ? { lien: { texte, agir: () => ouvrir(cible) } } : {}) });
+    montrer({ role: 'status', texte: raison, ancre: chose.id, ...(texte ? { lien: { texte, agir: () => ouvrir(cible) } } : {}) });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [montrer, ouvrir]);
 
   function setDetailFerme() { setSelectionId(null); setMenu(null); }
 
   /* ---------- écrire : la source, puis le message avec son inverse ---------- */
-  const ecrire = useCallback(async (res: Resolution, depuisMenu = false, ouvreSonDetail = false): Promise<boolean> => {
-    if (res.ok === false) { montrer({ role: 'status', texte: res.raison, ...(res.message.lien ? { lien: lienDe(res.message.lien) } : {}) }); return false; }
+  /* CRITIQUE-12 n° 1 : `ancre` (id de la chose touchée, `data-chose`) : le message se pose près d'elle s'il n'y cache aucun texte, sinon en bas */
+  const ecrire = useCallback(async (res: Resolution, depuisMenu = false, ancre?: string, ouvreSonDetail = false): Promise<boolean> => {
+    if (res.ok === false) { montrer({ role: 'status', texte: res.raison, ...(ancre ? { ancre } : {}), ...(res.message.lien ? { lien: lienDe(res.message.lien) } : {}) }); return false; }
     let faite: EcritureFaite;
     try { faite = await appliquer(res.ecritures as Ecriture[], port); } catch (e) { montrer({ role: 'status', texte: e instanceof Error ? e.message : 'Écriture impossible. Rien n’a changé.' }); return false; }
     setDetailFerme();
@@ -344,11 +345,12 @@ export function CalendrierTab(props: CalendrierTabProps) {
     if (res.promesse) {
       const p = res.promesse;
       montrer({
-        role: 'alert', texte: textePromesse(p, ctxClients.current), annuler,
-        livrer: { texte: `Livrer le ${jourLisible(p.livrerLe)}`, agir: () => { void ecrire(livrer(p, ctxRef.current)); } },
+        /* l'alerte f6-b se pose sous la vente promise si elle n'y cache aucun nom, sinon en bas (CRITIQUE-12 n° 1) */
+        role: 'alert', texte: textePromesse(p, ctxClients.current), annuler, ancre: `argent-${p.planId}`,
+        livrer: { texte: `Livrer le ${jourLisible(p.livrerLe)}`, agir: () => { void ecrire(livrer(p, ctxRef.current), false, `argent-${p.planId}`); } },
         ...(res.effet ? { detail: `Caisse : ${res.effet.texte}` } : {})
       });
-    } else montrer({ role: 'status', texte: res.message.texte, annuler, ...(res.message.lien ? { lien: lienDe(res.message.lien) } : {}), ...(ouvreSonDetail ? { ouvreSonDetail: true } : {}) });
+    } else montrer({ role: 'status', texte: res.message.texte, annuler, ...(ancre ? { ancre } : {}), ...(res.message.lien ? { lien: lienDe(res.message.lien) } : {}), ...(ouvreSonDetail ? { ouvreSonDetail: true } : {}) });
     return true;
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [port, montrer, lienDe]);
@@ -366,7 +368,7 @@ export function CalendrierTab(props: CalendrierTabProps) {
   const surLacheGlisse = useCallback((chose: ChoseCalendrier, k: number, annule: boolean) => {
     finGeste();
     if (annule || k === 0) return;
-    void ecrire(deplacer(chose, k, ctxRef.current));
+    void ecrire(deplacer(chose, k, ctxRef.current), false, chose.id);
   }, [ecrire, finGeste]);
   const surBord = useCallback((chose: ChoseCalendrier, jours: number) => {
     setDrag({ id: chose.id, mode: 'bord', k: 0, jours });
@@ -376,7 +378,7 @@ export function CalendrierTab(props: CalendrierTabProps) {
   const surLacheBord = useCallback((chose: ChoseCalendrier, jours: number, annule: boolean) => {
     finGeste();
     if (annule || jours === 0) return;
-    void ecrire(allonger(chose, jours, ctxRef.current));
+    void ecrire(allonger(chose, jours, ctxRef.current), false, chose.id);
   }, [ecrire, finGeste]);
   const surToucher = useCallback((chose: ChoseCalendrier, _cible: HTMLElement) => {
     setMenu(null);
@@ -387,7 +389,7 @@ export function CalendrierTab(props: CalendrierTabProps) {
       if (b) { setMessage(null); setFeuille({ mode: 'ajouter', initial: b, sansPlusDeDetails: true, cle: ++compteur.current }); }
       return;
     }
-    if (chose.proposition === 'vente' && chose.source.genre === 'plan') { setSelectionId(null); void ecrire(accepterVente(chose, ctxRef.current)); return; }
+    if (chose.proposition === 'vente' && chose.source.genre === 'plan') { setSelectionId(null); void ecrire(accepterVente(chose, ctxRef.current), false, chose.id); return; }
     /* E37, CRITIQUE-2 n° 39 : toucher ouvre la source. Une facture : sa pièce, où « Payé » se joue ; la TVA et la clôture : leur écran */
     if (chose.source.genre === 'facture' && onOpenPiece) { setSelectionId(null); onOpenPiece(chose.source.id); return; }
     if (chose.source.genre === 'plan' && chose.source.origine === 'tax') { setSelectionId(null); onOpenFinances(); return; }
@@ -451,7 +453,7 @@ export function CalendrierTab(props: CalendrierTabProps) {
     travaux: 'rgb(var(--attention))', activites: 'rgb(var(--water))', papiers: 'rgb(var(--cave-400))'
   };
   const ligne = (id: string, label: string, r: IdRangee, extra: { hint?: string; plein?: boolean } = {}) => ({
-    id, label, genre: 'ajouter' as const, couleur: COULEUR_RANGEE[r], icone: ICONE_RANGEE[r], lancer: () => ouvrirFeuille(r), ...extra
+    id, label, genre: 'ajouter' as const, couleur: COULEUR_RANGEE[r], icone: ICONE_PLUS[r], lancer: () => ouvrirFeuille(r), ...extra
   });
   /* passe 10 (p-clair-ouvert) : « S47 · prête le … », la semaine où la feuille s'ouvre et 28 j en cuve (demande de L3, CRITIQUE-2 n° 12).
      CRITIQUE-7 n° 4 : « prête le » se compte depuis le jour où le brassin sera posé (`jourPose` : aujourd'hui dans la semaine en cours, jamais un
@@ -697,7 +699,7 @@ export function CalendrierTab(props: CalendrierTabProps) {
         />
       )}
 
-      <Message message={message} onFermer={fermerMessage} />
+      <Message message={message} onFermer={fermerMessage} detailOuvert={selectionId} />
 
       {menu && chosesMenu && (() => {
         const c = chosesMenu;
@@ -723,7 +725,7 @@ export function CalendrierTab(props: CalendrierTabProps) {
               return { libelle: etiquetteS(prochain), ...(effet ? { effet } : {}) };
             })()}
             retirer={ret.ok === false ? { raison: ret.raison } : (() => {
-              /* CRITIQUE-11 n° 4 (E31, D-192) : l'effet chiffré, sinon l'effet en mots du domaine (« recette estimée 1 180 · hors prévision »,
+              /* CRITIQUE-11 n° 4 (E31, D-192) : l'effet chiffré, sinon l'effet en mots du domaine (« recette estimée 1 180 · ne change pas la courbe (pas dans Finances) »,
                  « sans montant ») : jamais « Retirer » seul */
               const effet = ret.effet?.texte ?? ret.effetMots;
               return effet ? { effet } : {};
@@ -735,27 +737,27 @@ export function CalendrierTab(props: CalendrierTabProps) {
             onEpingler={() => {
               const avant = epingles, on = !avant.includes(c.id);
               setEpingles(basculer(avant, c.id)); setMenu(null);
-              montrer({ role: 'status', texte: on ? `${c.titre} épinglée : reste visible si tu masques ${nomRangee(c.rangee)}` : 'Épingle retirée', annuler: () => { setEpingles(avant); setMessage(null); } });
+              montrer({ role: 'status', texte: on ? `${c.titre} épinglée : reste visible si tu masques ${nomRangee(c.rangee)}` : 'Épingle retirée', ancre: c.id, annuler: () => { setEpingles(avant); setMessage(null); } });
             }}
             onEtoile={() => {
               const avant = etoiles, on = !avant.includes(c.id);
               setEtoiles(basculer(avant, c.id)); setMenu(null);
-              montrer({ role: 'status', texte: on ? `Étoile : ${c.titre} marquée sur la courbe` : 'Étoile retirée', annuler: () => { setEtoiles(avant); setMessage(null); } });
+              montrer({ role: 'status', texte: on ? `Étoile : ${c.titre} marquée sur la courbe` : 'Étoile retirée', ancre: c.id, annuler: () => { setEtoiles(avant); setMessage(null); } });
             }}
             onSeules={() => {
               setFiltre(c.rangee); setMenu(null);
-              montrer({ role: 'status', texte: nomSeules(c.rangee), annuler: () => { setFiltre(null); setMessage(null); } });
+              montrer({ role: 'status', texte: nomSeules(c.rangee), ancre: c.id, annuler: () => { setFiltre(null); setMessage(null); } });
             }}
-            onDupliquer={() => { setMenu(null); void ecrire(dup, true); }}
+            onDupliquer={() => { setMenu(null); void ecrire(dup, true, c.id); }}
             onLier={(liens, nom) => {
               /* CRITIQUE-4 n° 6 (D-126) : le lien est écrit dans la source ; la pastille « lié à X » vient avec le modèle, l'aperçu s'ouvre
                  aussitôt (le détail de la chose), et le message dit « Liée à X · Annuler » */
               setMenu(null);
-              /* CRITIQUE-11 n° 8 (D-126 : le message ET le détail) : le message est marqué `ouvreSonDetail` ; il se pose dans la zone de
-                 l'en-tête et résiste à l'ouverture de ce détail et au défilement qui dégage ce détail du + */
-              void ecrire(lier(c, liens, ctxGestes, nom), true, true).then(ok => { if (ok) { ouvertureParGeste.current = Date.now() + 1200; setSelectionId(c.id); } });
+              /* CRITIQUE-11 n° 8 (D-126 : le message ET le détail) : le message est marqué `ouvreSonDetail` ; il résiste à l'ouverture de ce
+                 détail et au défilement qui dégage ce détail du +. CRITIQUE-12 n° 1 : il se pose près de la Hotte ou en bas, hors du détail */
+              void ecrire(lier(c, liens, ctxGestes, nom), true, c.id, true).then(ok => { if (ok) { ouvertureParGeste.current = Date.now() + 1200; setSelectionId(c.id); } });
             }}
-            onRetirer={() => { setMenu(null); void ecrire(ret, true); }}
+            onRetirer={() => { setMenu(null); void ecrire(ret, true, c.id); }}
             onFermer={() => setMenu(null)}
           />
         );
@@ -790,6 +792,30 @@ export function CalendrierTab(props: CalendrierTabProps) {
     </div>
   );
 }
+
+/*
+ * Doute de CRITIQUE-12 (E35, D-15 à D-18) : les pictos du + volant sont ceux de sa maquette (`as/cap/passe10/p-clair-ouvert.png`), recopiés
+ * des symboles du jouable (`as/cal.html`, `PA_CAL` de `as-gestes.js` : i-beer, i-fete, i-vente, i-k17cart, i-outil, i-jour, i-doc). Le port
+ * y mettait ceux de la frise (fête : cotillon, travaux : marteau, activité : liste cochée) : la fête est un agenda, les travaux une clé, une
+ * activité un jour. Ordre et libellés inchangés.
+ */
+type PictoProps = { size?: number };
+const picto = (nom: string, corps: React.ReactNode): React.FC<PictoProps> => {
+  const P: React.FC<PictoProps> = ({ size = 24 }) => (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" data-picto={nom}>{corps}</svg>
+  );
+  P.displayName = `Picto(${nom})`;
+  return P;
+};
+export const ICONE_PLUS: Record<IdRangee, React.FC<PictoProps>> = {
+  brassins: picto('i-beer', <><path d="M17 11h1a3 3 0 0 1 0 6h-1" /><path d="M9 12v6M13 12v6" /><path d="M14 7.5c-1 0-1.4.5-3 .5s-2-.5-3-.5-1.7.5-2.5.5a2.5 2.5 0 0 1 0-5c.8 0 1.6.5 2.5.5S9.4 2 11 2s2 1.5 3 1.5 1.7-.5 2.5-.5a2.5 2.5 0 0 1 0 5c-.8 0-1.5-.5-2.5-.5Z" /><path d="M5 8v12a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2V8" /></>),
+  fetes: picto('i-fete', <><path d="M8 2v4M16 2v4" /><rect x="3" y="4" width="18" height="18" rx="2" /><path d="M3 10h18M8 14h8M8 18h5" /></>),
+  ventes: picto('i-vente', <><path d="m22 7-8.5 8.5-5-5L2 17" /><path d="M16 7h6v6" /></>),
+  achats: picto('i-k17cart', <><circle cx="9" cy="20" r="1.5" /><circle cx="18" cy="20" r="1.5" /><path d="M2 3h3l2.6 12.2a1.5 1.5 0 0 0 1.5 1.2h8.4a1.5 1.5 0 0 0 1.5-1.1L21 8H6" /></>),
+  travaux: picto('i-outil', <path d="M14.7 6.3a4 4 0 0 0-5.4 5.4L3 18l3 3 6.3-6.3a4 4 0 0 0 5.4-5.4l-2.6 2.6-2.4-.6-.6-2.4Z" />),
+  activites: picto('i-jour', <><circle cx="12" cy="12" r="4" /><path d="M12 2v3M12 19v3M2 12h3M19 12h3" /></>),
+  papiers: picto('i-doc', <><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" /><path d="M14 2v6h6" /><path d="M8 13h8M8 17h5" /></>)
+};
 
 /** « Noter une idée » (E36, L1 a et b) : une idée datée, envoyée au carnet par le service existant. Elle n'a ni rangée ni case. */
 function FeuilleIdee({ lundi, semaines, onNoter, onFermer }: { lundi: string; semaines: ReadonlyArray<{ debut: string; numero: number }>; onNoter: (titre: string, lundi: string) => Promise<string | null>; onFermer: () => void }) {

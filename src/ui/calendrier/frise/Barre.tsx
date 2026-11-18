@@ -25,6 +25,13 @@ export interface BarreProps {
   cote: CoteEtiquette;
   /** Place de l'étiquette côté libre, en px. */
   placeEtiquette: number;
+  /** CRITIQUE-12 n° 4 : à gauche, l'étiquette finit avant la zone du + volant, à `retrait` px de plus de sa barre (absent : collée). */
+  retrait?: number;
+  /**
+   * CRITIQUE-12, doute Porter glissé : la barre est coupée au bord de la fenêtre. `du` : le premier jour montré (coupée à gauche) ; `au` : le
+   * dernier (coupée à droite). Ses jalons et ses phases se placent sur les jours montrés ; un jalon hors de la fenêtre est rogné, jamais décalé.
+   */
+  coupe?: { du?: string; au?: string };
   /** Le nom passe sur deux lignes à côté de la barre (3 mois, quand la rangée le permet : n° 31). */
   deuxLignes?: ModeDeuxLignes;
   /** La pastille « lié à » n'a pas la place à côté du nom : elle n'est pas posée (le badge lien de la barre reste). */
@@ -66,7 +73,8 @@ export { PastilleLie };
 export const montantBarre = (chose: ChoseCalendrier): string | null => {
   if (chose.rangee === 'activites') return chose.joursActifs ? `${chose.joursActifs} j${chose.centimes ? ` ${francsSignes(chose.centimes)}` : ''}` : chose.centimes ? francsSignes(chose.centimes) : null;
   if (chose.centimes === undefined) return null;
-  return `${francsSignes(chose.centimes)}${chose.partiel ? ' +' : ''}`;
+  /* CRITIQUE-12, doute Papiers en An : une série mensuelle posée en une barre dit son montant par mois (as/cap/p-c1d : « −400 / mois ») */
+  return `${francsSignes(chose.centimes)}${chose.partiel ? ' +' : ''}${chose.parMois ? ' / mois' : ''}`;
 };
 const montantDe = montantBarre;
 
@@ -97,13 +105,19 @@ export const largeurDuree = (t: string): number => Math.ceil(largeurTexte(t, 600
 /** CRITIQUE-9 doute f2-a : la zone de prise du bord d'une barre, de part et d'autre du bord, pour un doigt (une rangée de 18 px en paysage). */
 export const ZONE_BORD_PX = 12;
 
-/** Les segments de phases d'un brassin : brassage, fermentation, garde, conditionnement, lus dans les jalons de la recette figée (E25). */
-function phases(jalons: readonly JalonBrassin[] | undefined, total: number) {
-  if (!jalons?.length || total <= 0) return [];
+/**
+ * Les segments de phases d'un brassin : brassage, fermentation, garde, conditionnement, lus dans les jalons de la recette figée (E25).
+ * CRITIQUE-12, doute Porter glissé : la barre montre les jours `[o, f]` de la chose (coupée au bord de la fenêtre) ; une phase est rognée au
+ * bord, jamais tassée dans la part visible.
+ */
+function phases(jalons: readonly JalonBrassin[] | undefined, total: number, o = 0, f = total) {
+  if (!jalons?.length || total <= 0 || f <= o) return [];
   const sur = jalons.filter(j => j.ecart >= 0 && j.id !== 'commander').sort((a, b) => a.ecart - b.ecart);
-  return sur.map((j, i) => {
-    const debut = j.ecart, fin = i + 1 < sur.length ? sur[i + 1].ecart : total;
-    return { id: j.id, de: Math.min(100, (debut / total) * 100), largeur: Math.max(0, ((Math.min(fin, total) - debut) / total) * 100) };
+  const vu = f - o;
+  return sur.flatMap((j, i) => {
+    const debut = Math.max(o, j.ecart), fin = Math.min(f, i + 1 < sur.length ? sur[i + 1].ecart : total);
+    if (fin < debut) return [];
+    return [{ id: j.id, de: Math.min(100, ((debut - o) / vu) * 100), largeur: Math.max(0, ((fin - debut) / vu) * 100) }];
   });
 }
 
@@ -141,7 +155,11 @@ export const Barre: React.FC<BarreProps> = props => {
     onLacheBord: (k, annule) => props.onLacheBord(chose, k, annule)
   });
 
-  const segments = phases(chose.jalons, total);
+  /* les jours montrés, depuis le début de la chose : `[o, f]` (toute la chose quand elle n'est pas coupée : rien ne change) */
+  const o = props.coupe?.du ? Math.min(total, Math.max(0, ecartJours(chose.debut, props.coupe.du))) : 0;
+  const f = props.coupe?.au ? Math.max(o, Math.min(total, ecartJours(chose.debut, props.coupe.au))) : total;
+  const segments = phases(chose.jalons, total, o, f);
+  const jalonVu = (ecart: number): number | null => (ecart < o || ecart > f ? null : f > o ? Math.min(100, ((ecart - o) / (f - o)) * 100) : 0);
   const montant = montantDe(chose);
   const w = Math.max(10, largeur + allongement);
   const duree = dureeVue(chose);
@@ -168,7 +186,7 @@ export const Barre: React.FC<BarreProps> = props => {
   const n = chose.joursActifs && chose.joursActifs > 0 ? chose.joursActifs : 0;
   const style: React.CSSProperties = { left: gauche, top: haut, width: w, height: hauteur, transform: decalage ? `translateX(${decalage}px)` : undefined };
   const lblStyle: React.CSSProperties = cote === 'gauche'
-    ? { right: `calc(100% - ${gauche + decalage}px + 6px)` }
+    ? { right: `calc(100% - ${gauche + decalage - (props.retrait ?? 0)}px + 6px)` }
     : cote === 'droite'
       ? { left: gauche + w + decalage + 6 }
       : { left: gauche + decalage + 6 };
@@ -212,7 +230,7 @@ export const Barre: React.FC<BarreProps> = props => {
             {segments.map(s => <i key={s.id} className={`cal-ph cal-ph-${s.id}`} style={{ left: `${s.de}%`, width: `calc(${s.largeur}% - 2px)` }} />)}
           </span>
         )}
-        {brassin && chose.jalons?.filter(j => j.ecart >= 0 && j.id !== 'commander').map(j => (
+        {brassin && chose.jalons?.filter(j => j.ecart >= 0 && j.id !== 'commander' && jalonVu(j.ecart) !== null).map(j => (
           <i
             key={j.id}
             data-jalon={j.id}
@@ -221,7 +239,7 @@ export const Barre: React.FC<BarreProps> = props => {
             title={j.glissable === false && j.raison ? `${j.libelle} · ${j.raison}` : j.libelle}
             className="cal-jalon"
             /* CRITIQUE-5 n° 29 : le rond reste dans sa barre (borné par frise.css), jamais un demi-point hors de la grille */
-            style={{ ['--x' as string]: `${total > 0 ? Math.min(100, (j.ecart / total) * 100) : 0}%` }}
+            style={{ ['--x' as string]: `${total > 0 ? jalonVu(j.ecart) : 0}%` }}
           />
         ))}
         {n > 0 && (

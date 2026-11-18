@@ -11,7 +11,7 @@
 //   BANDE         au repos, la bande ne contient que « S\d+ » (la semaine seule : ni solde, ni mouvement, ni icône)
 //   PLUS          les carrés + des sept rangées forment une colonne (x à 2 px près) et sont des boutons
 //   PLUS-AGIT     chaque carré ouvre la feuille d'ajout déjà réglée sur sa rangée
-//   BRUIT         après f1-a puis f6-b : un seul role="status" ou "alert", deux lignes au plus
+//   BRUIT         après f1-a puis f6-b : un seul role="status" ou "alert", deux lignes au plus ; message à sa place (pres|bas), 0 intersection (CRITIQUE-12 n° 1)
 //   FAB           le + volant dans le tiers droit, de 4 à 24 px au-dessus des onglets
 //   ROTATION      390 × 844 → 844 × 390 → 390 × 844 : une chose ajoutée reste, sans recharger
 //   PAYS          en paysage : 13 semaines, en-tête de 120 px au plus, rangée médiane de 48 px au plus
@@ -181,6 +181,36 @@ async function glisser(p, sel, nomRe, colonnes) {
   for (let i = 1; i <= 6; i++) { await p.mouse.move(c.x + (colonnes * c.lc * i) / 6, c.y); await attendre(15); }
   await p.mouse.up(); await attendre(350);
   return true;
+}
+
+/*
+ * CRITIQUE-12 n° 1 (même mesure que l'état M1 à M7 de vision-calendrier.mjs) : la boîte de `[data-message]`, son `data-place` (∈ {pres, bas} :
+ * « près de la chose là où il ne cache aucun texte, sinon en bas au-dessus des onglets ; … à gauche du + volant », as/JOURNAL.md l. 224), ses
+ * intersections avec chaque nom de NOMS_MESSAGE (lu dans Message.tsx servi par Vite, sinon la copie) et avec le + ; jamais au-dessus du titre
+ * de la première rangée visible.
+ */
+const NOMS_MESSAGE_REPLI = '[data-nom-rangee], [data-rangee] .cal-nom, [data-frise] .cal-lbl-t, [data-frise] .cal-lbl-m, [data-frise] .cal-lbl-j, [data-frise] .cal-duree, [data-frise] .cal-lie, [data-frise] .cal-pastille-p, [data-frise] .cal-renvoi';
+async function placeMessage(p) {
+  const sel = await p.evaluate(async repli => {
+    try { const m = await import('/src/ui/calendrier/frise/Message.tsx'); return typeof m.NOMS_MESSAGE === 'string' && m.NOMS_MESSAGE ? m.NOMS_MESSAGE : repli; } catch { return repli; }
+  }, NOMS_MESSAGE_REPLI);
+  return p.evaluate(s => {
+    const m = [...document.querySelectorAll('[data-message]')].find(e => e.getBoundingClientRect().height > 0);
+    if (!m) return { ok: false, dit: 'aucun message' };
+    const M = m.getBoundingClientRect(); const place = m.dataset.place || '(aucune)';
+    const boite = e => { const r = document.createRange(); r.selectNodeContents(e); const q = r.getBoundingClientRect(); return q.width > 0 ? q : e.getBoundingClientRect(); };
+    const coupe = q => q.width > 0 && q.height > 0 && q.left < M.right - 1 && q.right > M.left + 1 && q.top < M.bottom - 1 && q.bottom > M.top + 1;
+    const croise = [...document.querySelectorAll(s)].filter(e => !m.contains(e) && !e.contains(m)).filter(e => coupe(boite(e))).map(e => (e.textContent || '').replace(/\s+/g, ' ').trim().slice(0, 24));
+    const fab = document.querySelector('button[aria-label^="Actions rapides"]');
+    if (fab && coupe(fab.getBoundingClientRect())) croise.push('le +');
+    const z = document.querySelector('[data-entete-zone]'); const bas = z ? z.getBoundingClientRect().bottom : 0;
+    const titres = [...document.querySelectorAll('[data-nom-rangee], [data-rangee] .cal-nom')].map(boite).filter(q => q.width > 0 && q.top >= bas - 1 && q.bottom <= innerHeight);
+    const premier = titres.length ? Math.min(...titres.map(q => q.top)) : null;
+    const auDessus = premier !== null && M.top < premier - 1;
+    const placeOk = place === 'pres' || place === 'bas';
+    const ok = croise.length === 0 && placeOk && !auDessus;
+    return { ok, dit: `MESSAGE ${ok ? 'OK' : 'ECHEC'} (place « ${place} »${placeOk ? '' : ' hors de {pres, bas}'}${auDessus ? `, au-dessus de la première rangée (${Math.round(M.top)} < ${Math.round(premier)} px)` : ''}, ${croise.length} intersection(s)${croise.length ? ` : ${[...new Set(croise)].slice(0, 5).join(' | ')}` : ''})` };
+  }, sel);
 }
 
 /* ---- gestes tactiles réels (CDP Input.dispatchTouchEvent) ---- */
@@ -364,17 +394,22 @@ try {
     note('PLUS-AGIT', ouverts === 7 && plus.length === 7, `${ouverts}/${plus.length} carrés ouvrent la feuille sur leur rangée${faux.length ? ` (${faux.join(', ')})` : ''}`);
     await p.close();
 
-    /* BRUIT : f1-a (un achat glissé) puis f6-b (un brassin lié à une vente promise) */
+    /* BRUIT : f1-a (un achat glissé) puis f6-b (un brassin lié à une vente promise). CRITIQUE-12 n° 1 (bloquant) : après chacun, le message à
+       sa place (`data-place` ∈ {pres, bas}), 0 intersection avec NOMS_MESSAGE (Message.tsx) ni le +, jamais au-dessus de la première rangée */
     p = await page(390, 844);
     const f1 = await glisser(p, '[data-barre]', RE.hotte.source, 1);
+    await attendre(700);
+    const placeF1 = await placeMessage(p);
     const f6 = await glisser(p, '[data-barre]', RE.blonde.source, 1);
+    await attendre(700);
+    const placeF6 = await placeMessage(p);
     const msg = await p.evaluate(() => {
       const m = [...document.querySelectorAll('[role="status"], [role="alert"]')].filter(e => { const r = e.getBoundingClientRect(); return r.width > 0 && r.height > 0; });
       const ligne = document.querySelector('.cal-msg-ligne');
       const lh = ligne ? parseFloat(getComputedStyle(ligne).lineHeight) || 18 : 18;
       return { n: m.length, roles: m.map(e => e.getAttribute('role')), lignes: ligne ? Math.round(ligne.getBoundingClientRect().height / lh) : 0 };
     });
-    note('BRUIT', f1 && f6 && msg.n === 1 && msg.lignes <= 2, `${msg.n} message(s) [${msg.roles.join(',')}], ${msg.lignes} ligne(s)${f1 && f6 ? '' : ' (geste non joué : barre introuvable)'}`);
+    note('BRUIT', f1 && f6 && msg.n === 1 && msg.lignes <= 2 && placeF1.ok && placeF6.ok, `${msg.n} message(s) [${msg.roles.join(',')}], ${msg.lignes} ligne(s)${f1 && f6 ? '' : ' (geste non joué : barre introuvable)'} ; f1-a ${placeF1.dit} ; f6-b ${placeF6.dit}`);
     await p.close();
 
     /* GLISSE (390, toucher réel) : la Hotte glissée de 2 colonnes change de semaine, « Annuler » apparaît */

@@ -14,7 +14,7 @@ import { MenuPeriode, hautDesOnglets } from './MenuPeriode';
 import { DetailCreux } from './DetailCreux';
 import { Retards, titreRetards } from './Retards';
 import { LectureDetail, LectureTete } from './LectureCourbe';
-import { GrandeCourbe, geoGrande, largeurGrande } from './GrandeCourbe';
+import { GrandeCourbe, PLACE_DETAIL, TITRE_GRANDE, geoGrande, hautDuPlus, hautLegende, largeurGrande } from './GrandeCourbe';
 import './entete.css';
 
 /**
@@ -83,7 +83,8 @@ const HAUTEUR_COURBE = { portrait: 110, paysage: 90 };
 /** Hauteur de la grande courbe au téléphone (p-c3a-pendant : environ 250 px, le détail dessous). */
 const HAUTEUR_GRANDE_TEL = 250;
 /** Ce qui, sous la grande courbe, doit rester visible : son titre (44), le détail de la semaine (3 lignes), la légende, une marge. */
-const RESERVE_GRANDE = 44 + 70 + 34 + 16;
+// CRITIQUE-12 n° 5 : la réserve n'est plus une somme fixe (la légende de deux lignes et un détail de 4 lignes la dépassaient : la légende passait
+// sous le + volant, et sous les onglets en S17). Le haut de la légende se règle sur le + lu à l'écran (`hautLegende`), le détail a une place fixe.
 /** Au-delà de cette largeur (tablette, ordinateur), rien à tourner : aucune invitation « Tourne le téléphone » (CRITIQUE-4 n° 19). */
 const LARGE_PX = 700;
 /** « 16 nov. » ; avec l'année quand la plage change d'année (« 16 nov. 2026 → 14 nov. 2027 », CRITIQUE-4 n° 26). */
@@ -157,7 +158,7 @@ export function EnTeteCalendrier(props: EnTeteCalendrierProps) {
     if (!graph || paysage || typeof window === 'undefined') { setHautDispo(0); return undefined; }
     const mesurer = () => {
       const haut = zone.current?.getBoundingClientRect().top ?? 0;
-      setHautDispo(Math.round(hautDesOnglets() - haut - RESERVE_GRANDE));
+      setHautDispo(Math.round(hautLegende(hautDesOnglets(), hautDuPlus()) - haut - TITRE_GRANDE - PLACE_DETAIL));
     };
     mesurer();
     window.addEventListener('resize', mesurer);

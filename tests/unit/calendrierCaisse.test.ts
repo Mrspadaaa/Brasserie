@@ -370,4 +370,30 @@ describe('CRITIQUE-6, doute : la tendance de Finances et le loyer ne sont pas co
   });
 });
 
+describe('CRITIQUE-12, doute : tendance et loyers comptés deux fois ? Une fête hors courbe ? (A2 sur le banc servi, 13 mois)', () => {
+  it('fin de chaque mois = buildForecast(...).months[i].balanceCents, loyer récurrent et tendance compris ; le Marché de Noël (1 180 estimés) n’y entre pas', () => {
+    const J = '2026-11-18';
+    const b = avecTendance(etatBanc(J), J);
+    const banc: EntreesModele = {
+      aujourdhui: J, transactions: b.transactions, payments: b.paiements ?? [], plans: b.plans, profile: { ...profile(403200 + 6 * 65000), historyCompleteFrom: '2026-01-01' },
+      assets: [], batches: b.batches, stockItems: [] as StockItem[], items: b.items, recettes: b.recettes, reglages: b.reglages ?? REGLAGES_VIDES, lignesCourses: b.lignesCourses ?? []
+    };
+    const prevision = buildForecast({ transactions: banc.transactions as unknown as FinanceTransaction[], payments: banc.payments, plans: banc.plans, profile: banc.profile, assets: [], asOf: J, months: 13, batches: banc.batches, stockItems: [], includeEquipmentProjects: true });
+    const modele = construireModele(banc);
+    expect(prevision.items.some(i => i.source === 'trend')).toBe(true);
+    expect(prevision.items.some(i => i.source === 'recurring')).toBe(true);
+    /* chaque mois entier de l'horizon de la courbe (52 semaines) */
+    const finCourbe = modele.courbe!.semaines[modele.courbe!.semaines.length - 1].lundi;
+    const mois = prevision.months.filter(m => `${m.month}-31` <= ajouterJoursIso(finCourbe, 6) || m.month < finCourbe.slice(0, 7));
+    expect(mois.length).toBeGreaterThanOrEqual(11);
+    for (const m of mois) expect([m.month, soldeFinDeMois(modele.courbe!, m.month)]).toEqual([m.month, m.balanceCents]);
+    /* chaque ligne de Finances une fois dans la courbe, ni plus ni moins */
+    expect(modele.courbe!.mouvements.length).toBe(prevision.items.length);
+    expect(new Set(modele.courbe!.mouvements.map(x => x.id)).size).toBe(prevision.items.length);
+    const marche = modele.choses.find(c => c.titre === 'Marché de Noël');
+    expect(marche?.horsCourbe).toBe(true);
+    expect(modele.courbe!.mouvements.some(x => x.choseId === marche!.id || /Marché de Noël/.test(x.nom))).toBe(false);
+  });
+});
+
 const ajouterJoursIso =(iso: string, n: number) => new Date(Date.parse(`${iso}T00:00:00Z`) + n * 86400000).toISOString().slice(0, 10);

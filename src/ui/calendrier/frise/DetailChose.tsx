@@ -67,6 +67,24 @@ function texteSemaine(semaine: string): React.ReactNode {
   return <>{semaine.slice(0, i + 1)} <span className="cal-nowrap" data-plage>{semaine.slice(i + 2)}</span></>;
 }
 
+/**
+ * CRITIQUE-12 n° 3 (critique 10 n° 4, critique 11 n° 7) : à 390, « brassage 23 nov. · prête 21 » puis « déc. ». Chaque date du détail (avec le mot
+ * qui la précède : « prête 21 déc. », « le 20 nov. ») est un bloc insécable ; la ligne se coupe entre les morceaux « · ».
+ */
+const DATE_LISIBLE = /(?:[\p{L}’']+ )?\d{1,2} (?:janv\.|févr\.|mars|avr\.|mai|juin|juil\.|août|sept\.|oct\.|nov\.|déc\.)/gu;
+export function datesInsecables(texte: string): React.ReactNode {
+  const morceaux: React.ReactNode[] = [];
+  let i = 0;
+  for (const m of texte.matchAll(DATE_LISIBLE)) {
+    const debut = m.index ?? 0;
+    if (debut > i) morceaux.push(texte.slice(i, debut));
+    morceaux.push(<span key={debut} className="cal-nowrap" data-date>{m[0]}</span>);
+    i = debut + m[0].length;
+  }
+  if (i < texte.length) morceaux.push(texte.slice(i));
+  return morceaux.length === 1 && typeof morceaux[0] === 'string' ? morceaux[0] : <>{morceaux}</>;
+}
+
 /** Les étapes datées d'un brassin, une par jalon de la recette figée ; sans jalon : brassage et prête (ou « durée inconnue »). */
 function etapes(chose: ChoseCalendrier): Array<{ id: string; libelle: string; jour: string; icone: React.ReactNode }> {
   const jalons = (chose.jalons ?? []).filter((j): j is JalonBrassin & { id: Exclude<JalonId, 'commander'> } => j.id !== 'commander' && j.id in ETAPE)
@@ -168,7 +186,7 @@ export const DetailChose: React.FC<DetailChoseProps> = props => {
             {etapes(chose).map(e => (
               <div key={e.id} data-etape={e.id}>
                 <span>{e.icone}{e.libelle}</span>
-                <b>{e.jour ? date(e.jour) : 'à préciser'}{e.id === 'brassage' && pasBrassee ? ' · pas brassée' : ''}</b>
+                <b>{e.jour ? <time className="cal-nowrap" dateTime={e.jour}>{date(e.jour)}</time> : 'à préciser'}{e.id === 'brassage' && pasBrassee ? ' · pas brassée' : ''}</b>
               </div>
             ))}
           </div>
@@ -176,7 +194,7 @@ export const DetailChose: React.FC<DetailChoseProps> = props => {
       ) : (
         <div className="cal-det-et">
           {semaine && <div><span>Semaine</span><b>{texteSemaine(semaine)}</b></div>}
-          {chose.debut && <div><span>Date</span><b>{date(chose.debut)}{chose.fin && chose.fin !== chose.debut ? ` → ${date(chose.fin)}` : ''}</b></div>}
+          {chose.debut && <div><span>Date</span><b><time className="cal-nowrap" dateTime={chose.debut}>{date(chose.debut)}</time>{chose.fin && chose.fin !== chose.debut ? <> → <time className="cal-nowrap" dateTime={chose.fin}>{date(chose.fin)}</time></> : ''}</b></div>}
           {chose.fenetre && <div><span>Fenêtre</span><b>{etiquetteS(chose.fenetre.du)} → {etiquetteS(chose.fenetre.au)}</b></div>}
           {chose.joursActifs ? <div><span>Jours actifs</span><b>{chose.joursActifs} j</b></div> : null}
           {libreSemaine !== undefined && libreSemaine !== null && <div><span>Libre de la semaine</span><b>{francsSignes(libreSemaine).replace(/^\+/, '')}</b></div>}
@@ -184,17 +202,17 @@ export const DetailChose: React.FC<DetailChoseProps> = props => {
         </div>
       )}
 
-      {detailSansDate && <p className="cal-det-p">{detailSansDate}</p>}
+      {detailSansDate && <p className="cal-det-p">{datesInsecables(detailSansDate)}</p>}
       {brassin && commander && (
         <p className="cal-det-p" data-manque>
           <ShoppingCart size={16} aria-hidden="true" />
-          <span>Il manque {articles ? <b>{articles}</b> : 'des courses'} : à acheter avant le <b>{date(commander.jour)}</b></span>
+          <span>Il manque {articles ? <b>{articles}</b> : 'des courses'} : à acheter avant le <b className="cal-nowrap">{date(commander.jour)}</b></span>
         </p>
       )}
-      {brassin && chose.courses && <p className="cal-det-p" data-courses><ShoppingCart size={16} aria-hidden="true" /><span>Courses : {chose.courses}</span></p>}
+      {brassin && chose.courses && <p className="cal-det-p" data-courses><ShoppingCart size={16} aria-hidden="true" /><span>Courses : {datesInsecables(chose.courses)}</span></p>}
       {brassin && chose.budgetRepris && <p className="cal-det-p" data-budget-repris><Receipt size={16} aria-hidden="true" /><span>{chose.budgetRepris} : à confirmer par Budget ›</span></p>}
       {brassin && chose.coutAVenir && <p className="cal-det-p" data-cout-a-venir><Receipt size={16} aria-hidden="true" /><span>Coût à venir : aucun budget pour cette recette. Budget › le calcule.</span></p>}
-      {frais && <p className="cal-det-p" data-frais><Receipt size={16} aria-hidden="true" /><span>Frais : {frais}</span></p>}
+      {frais && <p className="cal-det-p" data-frais><Receipt size={16} aria-hidden="true" /><span>Frais : {datesInsecables(frais)}</span></p>}
       {promesse && <p className="cal-det-p">{promesse}</p>}
       {/* l'aperçu sur place d'une chose liée (D-113, D-126) : « La Cigogne · client ; Blonde d'automne · brassage 23 nov. · prête 21 déc. » */}
       {/* CRITIQUE-6 n° 15 : un lien qui répète le titre (« Épicerie du Bourg, 2 cartons » lié à « Épicerie du Bourg ») ne garde que ce qu'il
@@ -206,7 +224,7 @@ export const DetailChose: React.FC<DetailChoseProps> = props => {
           {apercuLien.texte
             ? <><span className="cal-lie" data-lie data-lie-detail><Link2 size={14} aria-hidden="true" /><span>{apercuLien.texte}</span></span><span className="sr-only"> · </span></>
             : <Link2 size={16} aria-hidden="true" />}
-          <span>{apercuLien.apercu}</span>
+          <span>{datesInsecables(apercuLien.apercu)}</span>
         </p>
       )}
 

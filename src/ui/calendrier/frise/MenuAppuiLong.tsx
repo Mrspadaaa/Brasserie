@@ -5,8 +5,17 @@ import './feuille.css';
 /* `.cal-ml-mots` (CRITIQUE-11 n° 4) vit dans message.css, au lot du domaine des messages ; frise.css est au lot de la frise */
 import '../message.css';
 
-/** CRITIQUE-11 n° 4 : un effet en mots (« recette estimée 1 180 · hors prévision ») passe sous son action, entier ; un effet chiffré reste à côté. */
+/** CRITIQUE-11 n° 4 : un effet en mots (« recette estimée 1 180 · ne change pas la courbe (pas dans Finances) ») passe sous son action, entier ; un effet chiffré reste à côté. */
 const enMots = (effet: string | undefined): boolean => !!effet && !effet.includes('→') && effet.length > 14;
+/**
+ * CRITIQUE-12 n° 2 (E31, D-192) : l'effet en mots tient deux lignes au plus sous son action, à 390. Le montant (« recette estimée 1 180 ») est un
+ * bloc insécable et en gras ; l'explication (« ne change pas la courbe (pas dans Finances) ») suit, et passe à la ligne entre ses mots.
+ */
+function effetVu(effet: string): React.ReactNode {
+  const i = effet.indexOf(' · ');
+  if (!enMots(effet) || i < 0) return effet;
+  return <><b className="cal-ml-m">{effet.slice(0, i)}</b> · <span className="cal-ml-x">{effet.slice(i + 3)}</span></>;
+}
 
 /**
  * f5-a (E31) : l'appui long sur une barre ouvre un menu sous elle. Épingler (la chose reste visible si sa rangée est masquée), Étoile (sur la
@@ -229,7 +238,7 @@ export const MenuAppuiLong: React.FC<MenuAppuiLongProps> = props => {
     <>
       {dupliquer && (
         <button type="button" role="menuitem" {...agir(props.onDupliquer)} className={`cal-ml${enMots(dupliquer.effet) ? ' cal-ml-mots' : ''}`}>
-          <Copy size={20} aria-hidden="true" /><span>Dupliquer en {dupliquer.libelle}</span>{dupliquer.effet && <><span className="sr-only"> · </span><em data-effet-dupliquer>{dupliquer.effet}</em></>}
+          <Copy size={20} aria-hidden="true" /><span>Dupliquer en {dupliquer.libelle}</span>{dupliquer.effet && <><span className="sr-only"> · </span><em data-effet-dupliquer>{effetVu(dupliquer.effet)}</em></>}
         </button>
       )}
       <button type="button" role="menuitem" {...agir(() => setLier(true))} className="cal-ml">
@@ -237,7 +246,7 @@ export const MenuAppuiLong: React.FC<MenuAppuiLongProps> = props => {
       </button>
       {retirable ? (
         <button type="button" role="menuitem" {...agir(props.onRetirer)} className={`cal-ml cal-ml-ret${enMots(retirable.effet) ? ' cal-ml-mots' : ''}`}>
-          <Trash2 size={20} aria-hidden="true" /><span>Retirer</span>{retirable.effet && <><span className="sr-only"> · </span><em data-effet-retirer>{retirable.effet}</em></>}
+          <Trash2 size={20} aria-hidden="true" /><span>Retirer</span>{retirable.effet && <><span className="sr-only"> · </span><em data-effet-retirer>{effetVu(retirable.effet)}</em></>}
         </button>
       ) : (
         <>

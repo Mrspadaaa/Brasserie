@@ -57,6 +57,10 @@ button.cal-lie::before { content: ''; position: absolute; inset: -6px -2px; }
 .cal-pastille-fond { position: absolute; left: 0; top: 0; bottom: 0; background: color-mix(in srgb, var(--c) 55%, transparent); }
 .cal-pastille-t { position: relative; font-size: 14px; font-weight: 700; color: rgb(var(--cave-50)); font-variant-numeric: tabular-nums; white-space: nowrap; }
 .cal-conf { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 14px; color: rgb(var(--cave-200)); }
+/* CRITIQUE-12 n° 2 (E23) : une estimation hors courbe (une fête du carnet) : la même pastille r2-c, en pointillé comme ce qui n'est pas ferme (E26) */
+.cal-pastille-estime { background: transparent; box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--c) 70%, transparent); }
+.cal-pastille-estime::after { content: ''; position: absolute; inset: 0; border: 1px dashed rgb(var(--cave-200)); border-radius: inherit; pointer-events: none; }
+.cal-pastille-estime .cal-pastille-fond { background: color-mix(in srgb, var(--c) 25%, transparent); }
 
 .cal-lane { position: relative; background-image: repeating-linear-gradient(90deg, transparent 0, transparent calc(var(--cw) - 1px), rgb(var(--cave-800)) calc(var(--cw) - 1px), rgb(var(--cave-800)) var(--cw)); }
 
@@ -173,6 +177,10 @@ button.cal-lie::before { content: ''; position: absolute; inset: -6px -2px; }
    et son effet tiennent deux lignes au plus (menu étroit : l'effet passe sous l'action) */
 .cal-ml > em { flex: none; white-space: nowrap; }
 .cal-ml > em { font-style: normal; font-weight: 700; font-variant-numeric: tabular-nums; white-space: nowrap; font-size: 14px; }
+/* CRITIQUE-12 n° 2 (E31, D-192) : l'effet en mots, sous son action, tient deux lignes au plus à 390 : le montant d'un bloc, en gras, puis
+   l'explication (« ne change pas la courbe (pas dans Finances) »), qui passe à la ligne entre ses mots */
+.cal-ml.cal-ml-mots > em { white-space: normal; font-weight: 500; }
+.cal-ml.cal-ml-mots > em > .cal-ml-m { font-weight: 700; white-space: nowrap; }
 .cal-ml-ret, .cal-ml-ret > em { color: rgb(var(--alert-strong)); }
 .cal-mn { margin: 4px 6px 6px; color: rgb(var(--cave-200)); font-size: 14px; }
 
@@ -190,6 +198,8 @@ button.cal-lie::before { content: ''; position: absolute; inset: -6px -2px; }
 .cal-det-et b { display: block; font-variant-numeric: tabular-nums; }
 /* CRITIQUE-10 n° 4 : la plage d'une semaine est insécable ; sa colonne (1fr, au moins sa largeur) la porte entière */
 .cal-det-et .cal-nowrap { white-space: nowrap; }
+/* CRITIQUE-12 n° 3 : chaque date du détail (« prête 21 déc. ») est d'un bloc ; la ligne se coupe entre les morceaux « · » */
+.cal-det .cal-nowrap { white-space: nowrap; }
 .cal-det-p { display: flex; align-items: flex-start; gap: 8px; margin: 0 0 10px; }
 /* CRITIQUE-10 n° 7 : la pastille « lié à … » du détail, la même que sur la frise, sur la ligne de son aperçu */
 .cal-det-lie .cal-lie { min-height: 20px; white-space: nowrap; }

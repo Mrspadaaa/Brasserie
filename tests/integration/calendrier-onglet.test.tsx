@@ -505,7 +505,7 @@ describe('CRITIQUE-10 n° 1 (E28, D-46, D-189) : la Saison pas brassée va où o
 });
 
 describe('CRITIQUE-11 n° 4 (E31, D-48, D-192) : le menu d’une fête dit l’effet de Dupliquer et de Retirer', () => {
-  it('appui long sur le Marché de Noël (1 180 CHF estimés, hors prévision) : « Dupliquer en S53 · … » et « Retirer · … », jamais nus ni « 0 »', () => {
+  it('appui long sur le Marché de Noël (1 180 CHF estimés, ne changent pas la courbe) : « Dupliquer en S53 · … » et « Retirer · … », jamais nus ni « 0 »', () => {
     monterBanc();
     appuiLongSur(screen.getByRole('button', { name: /^Marché de Noël/ }));
     const menu = within(screen.getByRole('menu'));
@@ -515,7 +515,7 @@ describe('CRITIQUE-11 n° 4 (E31, D-48, D-192) : le menu d’une fête dit l’e
     expect(ret.textContent).toMatch(/^Retirer · \S.+$/u);
     for (const item of [dup, ret]) {
       /* la courbe de Finances ne compte pas le carnet : la vérité en mots, jamais une flèche ni un 0 inventés */
-      expect(item.textContent).toMatch(/recette estimée 1\s180 · hors prévision$/u);
+      expect(item.textContent).toMatch(/recette estimée 1\s180 · ne change pas la courbe \(pas dans Finances\)$/u);
       expect(item.textContent).not.toMatch(/\b0\b|→/u);
     }
   });

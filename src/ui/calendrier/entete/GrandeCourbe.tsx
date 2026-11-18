@@ -103,6 +103,33 @@ export function placeEtiquetteCreux(courbe: readonly SoldeSemaine[], g: Geo & { 
   return { ...p, y: p.y + decale, boite: { ...p.boite, t: p.boite.t + decale, b: p.boite.b + decale } };
 }
 
+/** En portrait, sous le dessin : le titre (44 px) et la place fixe du détail de la semaine (4 lignes : la date, puis trois mouvements, ou deux
+ * et « la semaine ») ; la place ne change pas avec la semaine lue, la légende ne bouge donc pas sous le doigt (CRITIQUE-12 n° 5). */
+export const TITRE_GRANDE = 44;
+export const PLACE_DETAIL = 94;
+/** Une ligne de la légende : 4 px de marge haute, 20 px de texte, 2 px d'écart. */
+export const LIGNE_LEGENDE = 26;
+
+/**
+ * Le haut de la légende en portrait (CRITIQUE-12 n° 5, E12, E35) : le + volant reste à sa place (D-17) ; la première ligne de la légende finit
+ * au-dessus de lui, la dernière seule est à sa hauteur, et la réserve `ent-leg--plus` (la largeur du +) la garde à sa gauche. Sans + visible,
+ * deux lignes tiennent au-dessus des onglets.
+ */
+export function hautLegende(ongletsHaut: number, plusHaut: number | null): number {
+  const sansPlus = ongletsHaut - 2 * LIGNE_LEGENDE - 4;
+  return plusHaut === null ? sansPlus : Math.min(sansPlus, plusHaut - LIGNE_LEGENDE);
+}
+
+/** Le haut du + volant fermé, lu à l'écran (`.floating-actions > button`) ; null s'il n'est pas affiché. */
+export function hautDuPlus(): number | null {
+  if (typeof document === 'undefined') return null;
+  for (const b of Array.from(document.querySelectorAll<HTMLElement>('.floating-actions > button'))) {
+    const r = b.getBoundingClientRect();
+    if (r.width > 0 && r.height > 0) return r.top;
+  }
+  return null;
+}
+
 /** Largeur du dessin : toute la largeur, ou 62 % en paysage (le détail est à côté). */
 export const largeurGrande = (largeur: number, paysage: boolean): number => (paysage ? Math.round(largeur * 0.62) : largeur);
 
@@ -158,8 +185,9 @@ export function GrandeCourbe({ courbe: courbeC, rangeeDe, largeur, hauteur, pays
   const texteCreux = creux ? `creux ${semaineCourte(creux.lundi, courbe[0]?.lundi ?? creux.lundi)} · ` : '';
   const etCreux = creux ? placeEtiquetteCreux(courbe, g, largSvg, creux.index, creux.centimes, largeurTexte(texteCreux) + largeurTexte(chf(creux.centimes), true)) : null;
   // La légende, une fois (E12, analyse g4b) : la caisse, les seules couleurs de rangée présentes sur le tracé, puis le neutre s'il y est.
+  // CRITIQUE-12 n° 5 : en portrait, sa dernière ligne finit à gauche du + volant (réserve `ent-leg--plus`), les termes restent entiers.
   const legende = (
-    <ul className="ent-leg" aria-label="Légende : la caisse, et les couleurs du tracé">
+    <ul className={paysage ? 'ent-leg' : 'ent-leg ent-leg--plus'} data-reserve-plus={paysage ? undefined : 'oui'} aria-label="Légende : la caisse, et les couleurs du tracé">
       <li className="ent-leg-caisse" data-legende="caisse"><i aria-hidden="true" />caisse</li>
       {presentes.map(r => <li key={r} className={`ent-r-${r}`} data-legende={r}><i aria-hidden="true" />{NOMS_RANGEES[r]}</li>)}
       {neutres.length > 0 && <li className="ent-r-autre ent-leg-autre" data-legende="autre"><i aria-hidden="true" />{nomNeutre}</li>}
@@ -211,7 +239,12 @@ export function GrandeCourbe({ courbe: courbeC, rangeeDe, largeur, hauteur, pays
             {lecture !== null && courbe[lecture] && <div className="ent-gc-d"><LectureDetail courbe={courbeC} index={lecture} rangeeDe={rangeeDe} libre /></div>}
             {legende}
           </div>
-        ) : lecture !== null && courbe[lecture] && <div className="ent-gc-d"><LectureDetail courbe={courbeC} index={lecture} rangeeDe={rangeeDe} libre /></div>}
+        ) : (
+          // En portrait, la place du détail est fixe : la légende dessous ne bouge pas avec la semaine lue (CRITIQUE-12 n° 5).
+          <div className="ent-gc-dp" data-detail-place>
+            {lecture !== null && courbe[lecture] && <div className="ent-gc-d"><LectureDetail courbe={courbeC} index={lecture} rangeeDe={rangeeDe} libre /></div>}
+          </div>
+        )}
       </div>
       {!paysage && legende}
     </section>

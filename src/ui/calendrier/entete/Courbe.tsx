@@ -451,7 +451,13 @@ export function Courbe({ courbe, largeur, hauteur, curseur = null, reference, ge
         {curseur !== null && curseur >= 0 && curseur < n && (
           <g className="ent-curseur" data-curseur aria-hidden="true">
             <path data-curseur-trait d={traitCurseur(g.x(curseur) + g.unit / 2, g.haut, y0, noms.filter(e => !cache(e)).map(e => e.boite))} />
-            <circle cx={g.x(curseur) + g.unit / 2} cy={g.y(libres[curseur])} r={12} className="ent-cur-anneau" />
+            {/* CRITIQUE-12, doute c2-b : l'anneau pointillé passe lui aussi sous les noms, à 2 px de leur boîte (à 844, il touchait « −24 ») ; le
+                point de lecture reste entier. */}
+            <mask id={`cm${uid}`} maskUnits="userSpaceOnUse" x={0} y={0} width={largeur} height={hauteur}>
+              <rect x={0} y={0} width={largeur} height={hauteur} fill="white" />
+              {noms.filter(e => !cache(e)).map(e => <rect key={`${e.i}-${e.nom}`} data-curseur-trou x={e.boite.l - 2} y={e.boite.t - 2} width={e.boite.r - e.boite.l + 4} height={e.boite.b - e.boite.t + 4} fill="black" />)}
+            </mask>
+            <circle cx={g.x(curseur) + g.unit / 2} cy={g.y(libres[curseur])} r={12} className="ent-cur-anneau" data-curseur-anneau mask={`url(#cm${uid})`} />
             <circle cx={g.x(curseur) + g.unit / 2} cy={g.y(libres[curseur])} r={5.5} className="ent-cur-pt" />
           </g>
         )}

@@ -631,18 +631,18 @@ describe('CRITIQUE-11 n° 4 (E31, D-48, D-192) : Dupliquer et Retirer une fête 
   const courbe = () => courbeCaisse({ depart: 506400, lundi0: AUJOURDHUI, mouvements: [] })!;
   const noel = (p: Partial<CreativeItem> = {}): CreativeItem => ({ id: 'CR-NOEL', type: 'event', title: 'Marché de Noël', status: 'todo', date: '2026-12-21', ...p });
 
-  it('une fête de 1 180 CHF estimés, hors prévision : « recette estimée 1 180 · hors prévision » pour Dupliquer et pour Retirer', () => {
+  it('CRITIQUE-12 n° 2 : le Marché de Noël (1 180 estimés, hors de Finances) : « recette estimée 1 180 · ne change pas la courbe (pas dans Finances) », jamais l’ancien « hors … prévision »', () => {
     const chose = choseCreative(noel({ estimatedRevenue: 1180 }))!;
     expect(chose.centimes).toBe(118000);
     const d = bien(dupliquer(chose, '2026-12-28', ctx({ courbe: courbe() })));
     const r = bien(retirer(chose, ctx({ courbe: courbe() })));
     for (const x of [d, r]) {
       expect(x.effet).toBeNull();
-      expect(x.effetMots).toMatch(/^recette estimée 1\s180 · hors prévision$/u);
-      expect(x.effetMots).not.toMatch(/→|\b0\b/);
+      expect(x.effetMots).toBe('recette estimée 1 180 · ne change pas la courbe (pas dans Finances)');
+      expect(x.effetMots).not.toMatch(/hors\sprévision|→|\b0\b/);
     }
-    /* sans courbe (solde de départ inconnu), « hors prévision » n'a pas de sens : le montant seul */
-    expect(bien(retirer(chose, ctx())).effetMots).toMatch(/^recette estimée 1\s180$/u);
+    /* sans courbe (solde de départ inconnu) : pas de courbe à ne pas changer ; le montant, et qu'il n'est pas dans Finances */
+    expect(bien(retirer(chose, ctx())).effetMots).toBe('recette estimée 1 180 · pas dans Finances');
   });
 
   it('une fête sans montant : « sans montant », jamais « 0 »', () => {
@@ -652,13 +652,13 @@ describe('CRITIQUE-11 n° 4 (E31, D-48, D-192) : Dupliquer et Retirer une fête 
     expect(bien(retirer(chose, ctx({ courbe: courbe() }))).effetMots).toBe('sans montant');
   });
 
-  it('une activité : sans montant, « sans montant » ; avec un coût estimé, « coût estimé 300 · hors prévision »', () => {
+  it('une activité : sans montant, « sans montant » ; avec un coût estimé, « coût estimé 300 · ne change pas la courbe (pas dans Finances) »', () => {
     const activite = choseCreative({ id: 'CR-RANGER', type: 'event', title: 'Ranger la réserve', status: 'todo', date: '2026-11-23', activite: true } as CreativeItem)!;
     expect(activite.rangee).toBe('activites');
     expect(bien(retirer(activite, ctx({ courbe: courbe() }))).effetMots).toBe('sans montant');
     expect(bien(dupliquer(activite, '2026-11-30', ctx({ courbe: courbe() }))).effetMots).toBe('sans montant');
     const payante = choseCreative({ id: 'CR-NETT', type: 'event', title: 'Nettoyage', status: 'todo', date: '2026-11-23', activite: true, estimatedCost: 300 } as CreativeItem)!;
-    expect(bien(retirer(payante, ctx({ courbe: courbe() }))).effetMots).toBe('coût estimé 300 · hors prévision');
+    expect(bien(retirer(payante, ctx({ courbe: courbe() }))).effetMots).toBe('coût estimé 300 · ne change pas la courbe (pas dans Finances)');
   });
 
   it('une chose que la courbe compte garde son effet chiffré (« S51 : a → b »), sans mots', () => {

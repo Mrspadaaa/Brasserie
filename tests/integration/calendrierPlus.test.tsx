@@ -397,3 +397,33 @@ describe('CRITIQUE-2 n° 40 (E34, D-68, C17) : les feuilles Ventes, Achats, Trav
     expect(within(screen.getByRole('dialog', { name: 'Prévoir une dépense' })).getByLabelText('Date de paiement prévue')).toHaveValue('2026-11-30');
   });
 });
+
+/*
+ * Doute de CRITIQUE-12 (E35, D-15 à D-18) : les pictos du + volant « Sur le calendrier » sont ceux de sa maquette
+ * (`as/cap/passe10/p-clair-ouvert.png` ; symboles de `as/cal.html`, `PA_CAL` de `as-gestes.js`). Ordre et libellés inchangés.
+ */
+describe('Doute CRITIQUE-12 : chaque ligne du + volant porte le picto de sa maquette', () => {
+  const PICTO: Array<[string, string]> = [
+    ['Poser un brassin', 'i-beer'], ['Poser une fête', 'i-fete'], ['Poser une vente', 'i-vente'], ['Prévoir un achat', 'i-k17cart'],
+    ['Prévoir des travaux', 'i-outil'], ['Noter une activité', 'i-jour'], ['Prévoir un papier', 'i-doc']
+  ];
+  function LecteurPictos() {
+    const decl = usePlusPageActions();
+    return <ul data-pictos>{decl?.actions.map(a => { const I = a.icone; return <li key={a.id} data-label={a.label}>{I ? <I size={20} /> : null}</li>; })}</ul>;
+  }
+  it('les sept lignes de rangée, dans l’ordre de la frise, avec i-beer, i-fete, i-vente, i-k17cart, i-outil, i-jour, i-doc', () => {
+    render(<><BancCalendrier aujourdhui={JOUR} /><LecteurPictos /></>);
+    const lignes = [...document.querySelectorAll('[data-pictos] li')].slice(0, 7);
+    expect(lignes.map(l => [l.getAttribute('data-label'), l.querySelector('svg')?.getAttribute('data-picto')])).toEqual(PICTO);
+  });
+  it('dans la pile ouverte par le + de l’app, chaque ligne montre son picto (fête : l’agenda, travaux : la clé, activité : le jour)', () => {
+    render(<BancCalendrier aujourdhui={JOUR} />);
+    fireEvent.click(screen.getByRole('button', { name: /Actions rapides/ }));
+    const menu = screen.getByRole('menu');
+    for (const [ligne, picto] of PICTO) {
+      const item = [...menu.querySelectorAll('[role="menuitem"]')].find(i => (i.textContent ?? '').includes(ligne));
+      expect(item, ligne).toBeTruthy();
+      expect(item!.querySelector(`svg[data-picto="${picto}"]`), ligne).not.toBeNull();
+    }
+  });
+});

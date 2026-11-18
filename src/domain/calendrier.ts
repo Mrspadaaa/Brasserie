@@ -415,6 +415,25 @@ export interface ChoseCalendrier {
   posteBrassin?: PosteBrassin;
   /** Ligne « courses » d'un brassin : les ingrédients à acheter, lus dans la prévision (`lines`), jamais inventés. */
   articles?: string[];
+  /**
+   * CRITIQUE-12 n° 2 (E23, E31, A2) : une fête ou une activité du carnet chiffrée, que `buildForecast` ne lit pas : son montant est une
+   * estimation hors de la courbe et de Finances. La pastille de sa rangée la dit « estimé », jamais « confirmé », hors du solde.
+   */
+  horsCourbe?: true;
+  /** CRITIQUE-12, doute Papiers en An : une série mensuelle posée en une barre (`seriesEnBarres`, Rangee.tsx) ; son montant se dit « / mois ». */
+  parMois?: true;
+}
+
+/** CRITIQUE-12 n° 2 : l'effet en mots d'une chose chiffrée que la courbe ne compte pas (menu f5-a, E31). */
+export const EFFET_HORS_COURBE = 'ne change pas la courbe (pas dans Finances)';
+
+/**
+ * CRITIQUE-12 n° 2 : la règle de `effetEnMots` (calendrierGestes), posée sur le modèle. Une chose du carnet (fête, activité) au montant connu
+ * et non nul, sans mouvement ni mise de côté à elle dans la courbe (`comptees` : les `choseId` des mouvements et les ids des mises de côté),
+ * est hors courbe. Un plan, une pièce, un brassin passent par la prévision : jamais hors courbe. Indépendant du solde de départ (connu ou non).
+ */
+export function choseHorsCourbe(c: Pick<ChoseCalendrier, 'id' | 'centimes' | 'source'>, comptees: ReadonlySet<string>): boolean {
+  return c.source.genre === 'creative' && c.centimes !== undefined && c.centimes !== 0 && !comptees.has(c.id);
 }
 
 /**

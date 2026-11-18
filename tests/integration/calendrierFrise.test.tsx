@@ -3,10 +3,10 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { act, cleanup, fireEvent, render, screen, waitFor, within } from '@testing-library/react';
 import { BancCalendrier, etatBanc, type EtatBanc } from '../../src/design/CalendrierPreview';
 import { StorageService } from '../../src/services/storage';
-import { ajouterJours, anneeEnMois, etiquetteS, lundiDe, type ChoseCalendrier, type JalonBrassin } from '../../src/domain/calendrier';
+import { ajouterJours, anneeEnMois, etiquetteS, lundiDe, preparerChoses, type ChoseCalendrier, type JalonBrassin } from '../../src/domain/calendrier';
 import { REGLAGES_VIDES } from '../../src/domain/fournisseurs';
 import { construireModele } from '../../src/ui/calendrier/useDonneesCalendrier';
-import { MESURES_PORTRAIT, Rangee, clientDe, disposer, largeurEtiquette, pastille, texteCaddie, texteRenvoi, type Colonne } from '../../src/ui/calendrier/frise/Rangee';
+import { MESURES_PORTRAIT, Rangee, clientDe, disposer, largeurEtiquette, pastille, seriesEnBarres, texteCaddie, texteRenvoi, type Colonne } from '../../src/ui/calendrier/frise/Rangee';
 import { Barre, dureeDansBarre, formesDuree, montantBarre } from '../../src/ui/calendrier/frise/Barre';
 import { MenuAppuiLong } from '../../src/ui/calendrier/frise/MenuAppuiLong';
 import { couperNom, dureeVue, largeurTexte, lieMontre, nomAccessible } from '../../src/ui/calendrier/frise/Marque';
@@ -1066,5 +1066,150 @@ describe('CRITIQUE-11 n° 7 : dans la Liste, aucune date ni plage ne se coupe à
     expect(morceaux.some(m => /^prête \d+ déc\.$/.test(m ?? ''))).toBe(true);
     const css = (await import('node:fs')).readFileSync(`${process.cwd()}/src/ui/calendrier/frise/liste.css`, 'utf8');
     expect(css).toMatch(/\.cal-nowrap\s*\{\s*white-space:\s*nowrap;?\s*\}/);
+  });
+});
+
+describe('CRITIQUE-12 (lot corr12-B-frise-domaine) : une fête hors courbe n’est jamais « confirmé », l’étiquette cède la place au + volant', () => {
+  const rien = () => undefined;
+  const gestes = { onToucher: rien, onAppuiLong: rien, onGlisse: rien, onLacheGlisse: rien, onBord: rien, onLacheBord: rien, onRefus: rien };
+  const COLS = semainesDe(6);
+  const noel = { id: 'CR-NOEL', rangee: 'fetes', titre: 'Marché de Noël', debut: ajouterJours(L, 35), fin: ajouterJours(L, 35), centimes: 118000, horsCourbe: true, source: { genre: 'creative', id: 'CR-NOEL', type: 'event' }, ouvre: { ecran: 'agenda', id: 'CR-NOEL' }, deplacable: true } as ChoseCalendrier;
+  const vente = (id: string, titre: string, centimes: number, semaine: number, horsCourbe = false) => ({
+    id, rangee: 'ventes', titre, debut: ajouterJours(L, semaine * 7 + 2), fin: ajouterJours(L, semaine * 7 + 2), centimes, ...(horsCourbe ? { horsCourbe: true } : {}),
+    source: { genre: 'plan', id, origine: 'manual', statut: 'active' }, ouvre: { ecran: 'plan', id }, deplacable: true
+  }) as ChoseCalendrier;
+
+  it('n° 2 (E23, D-165) : la seule fête hors courbe dit « +1 180 estimé » et « hors courbe », jamais « confirmé »', () => {
+    const p = pastille('fetes', [noel], COLS);
+    expect(p.texte).toBe('+1 180 estimé');
+    expect(p.lecture).not.toMatch(/confirmé/);
+    expect(p.lecture).toMatch(/, recette estimée \+1 180, hors courbe \(pas dans Finances\)$/);
+    expect(p.solde).toBeNull();
+    render(<Rangee id="fetes" choses={[noel]} colonnes={COLS} largeurColonne={65} largeur={390} mesures={MESURES_PORTRAIT} masquee={false} cause={null} epingles={[]} etoiles={[]} partMax={118000} drag={null} onAjouter={rien} onBasculerMasque={rien} barre={gestes} />);
+    const tete = document.querySelector('[data-pastille="fetes"]')!;
+    expect(tete.textContent).toMatch(/\+1 180 estimé/);
+    expect(tete.textContent).not.toMatch(/confirmé/);
+  });
+
+  it('n° 2 : une rangée mixte garde « confirmé » pour sa part comptée, la part hors courbe n’entre pas dans le solde', () => {
+    const comptee = vente('P-V1', '3 fûts La Cigogne', 90000, 2);
+    const estimee = vente('P-V2', 'Stand du marché', 20000, 3, true);
+    const p = pastille('ventes', [comptee, estimee], COLS);
+    expect(p.solde).toBe(90000);
+    expect(p.texte).toBe('+900');
+    expect(p.lecture).toMatch(/^Ventes, confirmé de S\d+ à S\d+ : 2 choses, solde \+900, recette estimée \+200, hors courbe \(pas dans Finances\)$/);
+    render(<Rangee id="ventes" choses={[comptee, estimee]} colonnes={COLS} largeurColonne={65} largeur={390} mesures={MESURES_PORTRAIT} masquee={false} cause={null} epingles={[]} etoiles={[]} partMax={90000} drag={null} onAjouter={rien} onBasculerMasque={rien} barre={gestes} />);
+    const tete = document.querySelector('[data-pastille="ventes"]')!;
+    expect(tete.textContent).toMatch(/confirmé S\d+–S\d+/);
+    expect(tete.textContent).toMatch(/\+200 estimé/);
+  });
+
+  it('n° 2 (A2) : dans le modèle du banc, le Marché de Noël est marqué hors courbe, et rien de ce que la courbe compte ne l’est', () => {
+    const choses = chosesDuBanc();
+    const marche = choses.find(c => c.titre === 'Marché de Noël');
+    expect(marche?.centimes).toBeGreaterThan(0);
+    expect(marche?.horsCourbe).toBe(true);
+    /* un plan, une facture, un brassin : jamais hors courbe */
+    expect(choses.filter(c => c.horsCourbe && c.source.genre !== 'creative')).toEqual([]);
+  });
+
+  it('n° 4 (E35, D-135) : « Noël privés +640 » dans la dernière colonne à 390, sous le + : l’étiquette à gauche de sa pastille, aucun pixel dans la zone du +', () => {
+    const prives = vente('P-NOEL-PRIVES', 'Noël privés', 64000, 5);
+    const RESERVE = 76, LARGEUR = 390, LC = LARGEUR / 6;
+    const d = disposer([prives], COLS, LC, LARGEUR, { reserveDroite: RESERVE }).items[0];
+    expect(d.marque).toBe(true);
+    expect(d.avecLibelle).toBe(true);
+    expect(d.cote).toBe('gauche');
+    /* la pastille elle-même peut passer sous le + ; son étiquette finit avant la zone du + (largeur du + + 8 px) */
+    const finEtiquette = d.gauche - 6 - (d.retrait ?? 0);
+    expect(finEtiquette).toBeLessThanOrEqual(LARGEUR - RESERVE);
+    expect(finEtiquette - d.place).toBeGreaterThanOrEqual(0);
+    /* au rendu, l'étiquette est posée à cette place */
+    render(<div style={{ position: 'relative', width: LARGEUR }}><Rangee id="ventes" choses={[prives]} colonnes={COLS} largeurColonne={LC} largeur={LARGEUR} mesures={MESURES_PORTRAIT} reserveDroite={RESERVE} masquee={false} cause={null} epingles={[]} etoiles={[]} partMax={64000} drag={null} onAjouter={rien} onBasculerMasque={rien} barre={gestes} /></div>);
+    const lbl = document.querySelector<HTMLElement>('.cal-lbl-gauche')!;
+    expect(lbl.textContent).toMatch(/Noël privés\s*\+640/);
+    /* jsdom réduit « calc(100% - 320px + 6px) » : le bord droit de l'étiquette est à `finEtiquette` */
+    expect(lbl.style.right).toBe(`calc(100% - ${finEtiquette}px)`);
+  });
+
+  /* l'An de la frise : les mois de la courbe, à 390 */
+  const MOIS: Colonne[] = anneeEnMois(JOUR).map(m => ({ debut: m.debut, fin: m.fin, etiquette: m.court }));
+  const xDuJour = (iso: string, lc: number) => {
+    const i = MOIS.findIndex(c => iso >= c.debut && iso <= c.fin);
+    const c = MOIS[i];
+    return (i + (Date.parse(`${iso}T00:00:00Z`) - Date.parse(`${c.debut}T00:00:00Z`)) / 86400000 / ((Date.parse(`${c.fin}T00:00:00Z`) - Date.parse(`${c.debut}T00:00:00Z`)) / 86400000 + 1)) * lc;
+  };
+
+  it('doute Travaux S20 → S40 en An : la barre finit dans la colonne d’octobre, au dimanche de S40 (pas vers S37)', () => {
+    const e = etatBanc(JOUR);
+    const profile = { id: 'current', canton: 'FR', legalForm: 'sole-proprietor', accounting: 'simplified', vatRegistered: false, historyCompleteFrom: '2026-01-01', openingCash: { date: '2026-01-01', amountCents: 403200, confirmed: true } };
+    /* ce que la feuille écrit pour « S20 → S40 · 5 j » : le lundi de S20, le dimanche de S40 (E45) */
+    const travaux = { id: 'P-TRAV', title: 'Rénovation des sols', date: '2027-05-17', amountCents: 60000, direction: 'out', category: 'renovation', source: 'manual', status: 'active', createdAt: '2026-11-16T08:00:00.000Z', fenetre: { du: '2027-05-17', au: '2027-10-10', joursActifs: 5 } };
+    const choses = construireModele({
+      aujourdhui: JOUR, transactions: e.transactions, payments: e.paiements ?? [], plans: [...e.plans, travaux], profile: profile as never, assets: [], batches: e.batches, stockItems: [],
+      items: e.items, recettes: e.recettes, reglages: e.reglages ?? REGLAGES_VIDES, lignesCourses: e.lignesCourses ?? []
+    } as never).choses;
+    const c = choses.find(x => x.titre === 'Rénovation des sols')!;
+    expect([etiquetteS(c.debut), etiquetteS(c.fin)]).toEqual(['S20', 'S40']);
+    const LC = 390 / MOIS.length;
+    const d = disposer([c], MOIS, LC, 390, { vueLarge: true, reserveDroite: 76 }).items[0];
+    expect(d.marque).toBe(false);
+    const fin = d.gauche + d.largeur;
+    /* le bord droit tombe au lendemain du dimanche de S40 (11 oct.), à 2 px près ; S37 finirait au 19 sept. */
+    expect(Math.abs(fin - xDuJour('2027-10-11', LC))).toBeLessThanOrEqual(2);
+    expect(fin).toBeGreaterThan(xDuJour('2027-09-20', LC) + 10);
+    expect(MOIS[Math.floor((fin - 1) / LC)].etiquette).toMatch(/^oct/);
+  });
+
+  it('doute Papiers en An : les douze « Loyer du local −400 » sont une barre « / mois » sur une ligne ; la rangée ne dépasse pas la médiane des autres', () => {
+    /* comme l'onglet : le modèle, puis `preparerChoses` (les impôts d'un même jour en une marque, « Impôt sur la bière · 4 brassins ») */
+    const choses = preparerChoses(chosesDuBanc());
+    const LC = 390 / MOIS.length;
+    const lignesDe = (r: string) => {
+      const dedans = choses.filter(c => c.rangee === r);
+      return disposer(seriesEnBarres(dedans), MOIS, LC, 390, { vueLarge: true, lieCourt: true }).lignes;
+    };
+    const loyers = choses.filter(c => c.rangee === 'papiers' && /Loyer du local/.test(c.titre));
+    expect(loyers.length).toBeGreaterThanOrEqual(10);
+    const vus = seriesEnBarres(choses.filter(c => c.rangee === 'papiers'));
+    const serie = vus.filter(c => /Loyer du local/.test(c.titre));
+    expect(serie).toHaveLength(1);
+    expect(serie[0].parMois).toBe(true);
+    expect(montantBarre(serie[0])).toBe('−400 / mois');
+    expect(serie[0].fin >= loyers[loyers.length - 1].debut).toBe(true);
+    /* la pastille compte toujours chaque loyer (seule la mise en page de l'An regroupe) */
+    expect(pastille('papiers', choses.filter(c => c.rangee === 'papiers'), MOIS).solde).toBe(choses.filter(c => c.rangee === 'papiers' && !c.proposition && !c.probable).reduce((s, c) => s + (c.centimes ?? 0), 0));
+    const autres = ['brassins', 'fetes', 'ventes', 'achats', 'travaux', 'activites'].map(lignesDe).sort((a, b) => a - b);
+    const mediane = autres[Math.floor(autres.length / 2)];
+    expect(lignesDe('papiers')).toBeLessThanOrEqual(mediane);
+    /* hors de l'An (semaines), rien n'est regroupé : deux loyers en 6 semaines restent deux choses */
+    expect(seriesEnBarres(loyers.slice(0, 2))).toHaveLength(2);
+  });
+
+  it('doute Porter glissé : un jalon hors de la fenêtre est rogné au bord, jamais tassé dans la part visible', () => {
+    /* un brassin de 35 jours posé dans les deux dernières semaines : la garde (J21) et le conditionnement (J35) sont après la fenêtre */
+    const debut = ajouterJours(L, 28);
+    const jalons: JalonBrassin[] = [
+      { id: 'brassage', libelle: 'Brassage', jour: debut, ecart: 0, glissable: true },
+      { id: 'garde', libelle: 'Garde', jour: ajouterJours(debut, 21), ecart: 21, glissable: false, raison: 'suit la recette' },
+      { id: 'conditionnement', libelle: 'Conditionnement', jour: ajouterJours(debut, 35), ecart: 35, glissable: 'fin' }
+    ] as JalonBrassin[];
+    const porter = { id: 'brassin-LOT-P', rangee: 'brassins', titre: 'Porter d’hiver', debut, fin: ajouterJours(debut, 35), jalons, source: { genre: 'batch', id: 'LOT-P', statut: 'planifie' }, ouvre: { ecran: 'brassin', id: 'LOT-P' }, deplacable: true } as ChoseCalendrier;
+    render(<Rangee id="brassins" choses={[porter]} colonnes={COLS} largeurColonne={65} largeur={390} mesures={MESURES_PORTRAIT} masquee={false} cause={null} epingles={[]} etoiles={[]} partMax={1} drag={null} onAjouter={rien} onBasculerMasque={rien} barre={gestes} />);
+    const ronds = [...document.querySelectorAll<HTMLElement>('[data-jalon]')];
+    /* la fenêtre montre J0 à J13 : seul le brassage est dessiné, à gauche ; la garde et le conditionnement sont rognés (absents) */
+    expect(ronds.map(r => r.getAttribute('data-jalon'))).toEqual(['brassage']);
+    expect(ronds[0].style.getPropertyValue('--x')).toBe('0%');
+  });
+
+  it('n° 4 : sans zone réservée (paysage sans + sur la frise), l’étiquette reste collée à sa pastille, du côté libre habituel', () => {
+    const prives = vente('P-NOEL-PRIVES', 'Noël privés', 64000, 5);
+    const d = disposer([prives], COLS, 65, 390, {}).items[0];
+    expect(d.cote).toBe('gauche');
+    expect(d.retrait ?? 0).toBe(0);
+    /* une vente au milieu : à droite, comme toujours */
+    const milieu = disposer([vente('P-M', 'Noël privés', 64000, 2)], COLS, 65, 390, { reserveDroite: 76 }).items[0];
+    expect(milieu.cote).toBe('droite');
+    expect(milieu.retrait ?? 0).toBe(0);
   });
 });

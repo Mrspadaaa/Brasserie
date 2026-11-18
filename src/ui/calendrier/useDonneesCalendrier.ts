@@ -16,7 +16,7 @@ import { planBrewBatchId } from '../../domain/finance/brewForecast';
 import { brewBudgetDemands } from '../../domain/finance/brewBudget';
 import { hasBrewStarted } from '../../domain/batchSchedule';
 import {
-  NB_SEMAINES_COURBE, ajouterJours, anneeEnMois, budgetBrassin, choseArgent, choseBrassin, choseCoutAVenir, choseCreative, choseSansDate, choseVenteProbable, estFactureDeMatieres,
+  NB_SEMAINES_COURBE, ajouterJours, anneeEnMois, budgetBrassin, choseArgent, choseHorsCourbe, choseBrassin, choseCoutAVenir, choseCreative, choseSansDate, choseVenteProbable, estFactureDeMatieres,
   fournisseurDePiece, francs, francsSignes, fusionnerFacturesLivraisons, iconesIdees, jourLisible,
   livraisonsAttendues, lundiDe, numeroSemaine, positionChose, retardsDe, semainesDe,
   type ChoseCalendrier, type EstimationBudget, type HypotheseCaisse, type IconeSemaine, type ModeleCalendrier
@@ -180,7 +180,7 @@ export function construireModele(e: EntreesModele): ModeleCalendrier {
   /* n° 9 : chaque brassin porte son budget (courses et frais de la prévision ; à défaut, l'estimation enregistrée de BrewBudgetSheet) */
   const estimations = estimationsBudget(e.plans);
   const batchDe = new Map(e.batches.map(b => [b.id, b] as const));
-  const choses = posees.map((c): ChoseCalendrier => {
+  const chosesBudget = posees.map((c): ChoseCalendrier => {
     if (c.source.genre !== 'batch' || c.conditionne || c.proposition) return c;
     const batch = batchDe.get(c.source.id);
     const commence = !!batch && !pasCommence(batch);
@@ -198,12 +198,18 @@ export function construireModele(e: EntreesModele): ModeleCalendrier {
     };
   });
 
-  const titreDe = new Map(choses.map(c => [c.id, c.titre]));
+  const titreDe = new Map(chosesBudget.map(c => [c.id, c.titre]));
   const mouvements: MouvementCaisse[] = prevision.items.map(i => ({
     id: i.id, jour: i.date, centimes: i.direction === 'in' ? i.amountCents : -i.amountCents, nom: titreDe.get(`argent-${i.id}`) ?? i.label,
     choseId: `argent-${i.id}`, ...(i.source === 'trend' ? { tendance: true } : {})
   }));
-  const courbe = courbeCaisse({ depart: prevision.openingCashCents, lundi0, mouvements, mises: misesDe(choses) });
+  const mises = misesDe(chosesBudget);
+  const courbe = courbeCaisse({ depart: prevision.openingCashCents, lundi0, mouvements, mises });
+  /* CRITIQUE-12 n° 2 (E23, A2) : la règle de l'effet en mots (`effetEnMots`) posée sur la chose : une fête ou une activité chiffrée que la
+     courbe ne compte pas est « hors courbe » ; sa rangée la dit « estimé », jamais « confirmé ». Les mouvements, pas la courbe : le marquage
+     ne dépend pas du solde de départ. Elle n'entre pas dans la courbe (vérité croisée A2 : la courbe = `buildForecast`). */
+  const comptees = new Set<string>([...mouvements.map(m => m.choseId).filter((x): x is string => !!x), ...mises.map(m => m.id)]);
+  const choses = chosesBudget.map(c => (choseHorsCourbe(c, comptees) ? { ...c, horsCourbe: true as const } : c));
 
   const synthese = periodeSynthese({ transactions: e.transactions, payments: e.payments, mois: null, aujourdhui, assets: e.assets });
   const sansDensite = e.batches.filter(b => b.status === 'fermentation' && !b.archivedAt && fermentationReadings(b).latest === undefined);

@@ -4,7 +4,7 @@ import { isoDate } from './finance/ledger';
 import { plannedBrewDate, rescheduleBatchPatch } from './batchSchedule';
 import { datesSortiesBrassin } from './finance/brewForecast';
 import {
-  ajouterJours, dimancheDe, dureeBrassin, dureePasBrassee, ecartJours, etiquetteS, finDeBrassin, francs, idChoseArgent, jalonsBrassin, jourLisible, lundiDe, preteAuPlusTot,
+  EFFET_HORS_COURBE, ajouterJours, dimancheDe, dureeBrassin, dureePasBrassee, ecartJours, etiquetteS, finDeBrassin, francs, idChoseArgent, jalonsBrassin, jourLisible, lundiDe, preteAuPlusTot,
   type ChoseCalendrier, type CibleOuverture, type JalonId
 } from './calendrier';
 import {
@@ -343,15 +343,19 @@ export function livrer(promesse: Promesse, ctx: ContexteGestes): Resolution {
 /**
  * CRITIQUE-11 n° 4 (E31 « Dupliquer en S51 avec son effet… Retirer avec son effet », D-48, D-192). Quand la courbe ne bouge pas, l'effet se dit
  * en mots, sans flèche ni 0 inventés. Une fête ou une activité du carnet n'entre pas dans la prévision de Finances (`buildForecast` ne lit que
- * les plans, les pièces et les brassins) : son montant estimé est dit tel quel, « recette estimée 1 180 · hors prévision » ; sans montant,
- * « sans montant ». Une chose que la courbe compte (un mouvement ou une mise de côté à elle) et dont l'effet arrondi est nul : rien n'est dit.
+ * les plans, les pièces et les brassins) : son montant estimé est dit tel quel ; sans montant, « sans montant ». Une chose que la courbe compte
+ * (un mouvement ou une mise de côté à elle) et dont l'effet arrondi est nul : rien n'est dit.
+ * CRITIQUE-12 n° 2 (E31, D-192, E23) : l’ancien « hors … prévision » se lisait mal à côté de la pastille « +1 180 confirmé » (« Il compte ou pas, mon
+ * marché ? »). L'effet est dit en clair : « recette estimée 1 180 · ne change pas la courbe (pas dans Finances) » ; sans courbe (solde de
+ * départ inconnu), « recette estimée 1 180 · pas dans Finances ». La même règle marque la chose `horsCourbe` (`choseHorsCourbe`), que la
+ * pastille de sa rangée dit « estimé », jamais « confirmé ».
  */
 function effetEnMots(chose: ChoseCalendrier, ctx: ContexteGestes): string | undefined {
   if (chose.centimes === undefined || chose.centimes === 0) return 'sans montant';
   const comptee = !!ctx.courbe && (ctx.courbe.mouvements.some(m => m.choseId === chose.id) || ctx.courbe.mises.some(m => m.id === chose.id));
   if (comptee) return undefined;
   const montant = `${chose.centimes > 0 ? 'recette estimée' : 'coût estimé'} ${francs(Math.abs(chose.centimes))}`;
-  return ctx.courbe ? `${montant} · hors prévision` : montant;
+  return `${montant} · ${ctx.courbe ? EFFET_HORS_COURBE : 'pas dans Finances'}`;
 }
 
 /** f5-a : dupliquer en `versLundi`, avec son effet. Un brassin dupliqué est un brassin planifié ; il ne décompte rien avant son brassage (P8). */
@@ -396,7 +400,7 @@ export function dupliquer(chose: ChoseCalendrier, versLundi: string, ctx: Contex
   const mise = (chose.miseDeCote && chose.centimes && chose.fenetre) ? [{ id: `${chose.id}~copie`, titre: chose.titre, du: decale(chose.fenetre.du, delta), au: decale(chose.fenetre.au, delta), centimes: Math.abs(chose.centimes) }] : [];
   const apres = ctx.courbe ? courbeAvec(ctx.courbe, decaleMouvements, mise) : null;
   const effet = effetCaisse(ctx.courbe, apres);
-  /* CRITIQUE-11 n° 4 : sans effet sur la courbe, l'effet en mots (« recette estimée 1 180 · hors prévision », « sans montant ») */
+  /* CRITIQUE-11 n° 4, CRITIQUE-12 n° 2 : sans effet sur la courbe, l'effet en mots (« recette estimée 1 180 · ne change pas la courbe (pas dans Finances) », « sans montant ») */
   const effetMots = effet ? undefined : effetEnMots(chose, ctx);
   const message = annuler(effet ? `Dupliquée · ${effet.texte}` : `Dupliquée en ${etiquetteS(cible)}`);
   if (source.genre === 'creative') {

@@ -6,7 +6,7 @@ import { StorageService } from '../../src/services/storage';
 import { sansPointDouble, textePromesse } from '../../src/components/tabs/CalendrierTab';
 import { dateDeSemaine } from '../../src/domain/calendrier';
 import type { Promesse } from '../../src/domain/calendrierGestes';
-import { Message, separerEffet } from '../../src/ui/calendrier/frise/Message';
+import { Message, NOMS_MESSAGE, separerEffet, type MessageCal } from '../../src/ui/calendrier/frise/Message';
 import { readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 
@@ -234,214 +234,11 @@ describe('CRITIQUE-5 n° 5 : le message de Retirer d’un plan manuel garde son 
   });
 });
 
-describe('CRITIQUE-5 n° 13 : aucun message sur un nom de rangée ou de chose', () => {
-  type R = { top: number; left: number; width: number; height: number };
-  const taille = (w: number, h: number) => {
-    Object.defineProperty(window, 'innerWidth', { configurable: true, writable: true, value: w });
-    Object.defineProperty(window, 'innerHeight', { configurable: true, writable: true, value: h });
-  };
-  const [W0, H0] = [window.innerWidth, window.innerHeight];
-  let espion: ReturnType<typeof vi.spyOn> | null = null;
-  afterEach(() => { espion?.mockRestore(); espion = null; taille(W0, H0); document.body.innerHTML = ''; });
+/* CRITIQUE-5 n° 13, CRITIQUE-9 n° 7, CRITIQUE-10 (doute m38) : la remontée en bande jusque sous l'en-tête et la place « au pied de l'en-tête »
+   sont retirées par CRITIQUE-12 n° 1 (règle n° 1 : la place de sa maquette). Leur exigence (jamais sur un nom, ni sur une barre en paysage) est
+   rejouée par le bloc « CRITIQUE-12 n° 1 » plus bas, à 390, 844 et 1280. */
 
-  /**
-   * Un faux écran : l'en-tête collé, une frise (qui défile ou non) avec ses noms de rangée et ses étiquettes, et la place du message (sa bande
-   * basse, le CSS ne s'appliquant pas sous jsdom). Les rectangles se lisent dans `data-r` ; ceux de la frise suivent son défilement ; celui du
-   * message suit son `transform` et son `left`.
-   */
-  const ecran = (o: { entete: number; noms: R[]; etiquettes: R[]; message: R; defile?: number }) => {
-    const e = document.createElement('div'); e.setAttribute('data-entete-zone', ''); e.dataset.r = JSON.stringify({ top: 0, left: 0, width: window.innerWidth, height: o.entete });
-    const frise = document.createElement('div'); frise.setAttribute('data-frise', '');
-    let haut = 0;
-    if (o.defile) {
-      frise.style.overflowY = 'auto';
-      Object.defineProperty(frise, 'scrollHeight', { configurable: true, value: 3000 });
-      Object.defineProperty(frise, 'clientHeight', { configurable: true, value: 3000 - o.defile });
-      Object.defineProperty(frise, 'scrollTop', { configurable: true, get: () => haut, set: (v: number) => { haut = v; } });
-    }
-    for (const r of o.noms) {
-      const s = document.createElement('section'); s.setAttribute('data-rangee', '');
-      const h = document.createElement('h3'); h.className = 'cal-nom'; h.textContent = 'Rangée'; h.dataset.r = JSON.stringify(r); h.dataset.defile = '';
-      s.appendChild(h); frise.appendChild(s);
-    }
-    for (const r of o.etiquettes) {
-      const t = document.createElement('span'); t.className = 'cal-lbl-t'; t.textContent = 'Chose'; t.dataset.r = JSON.stringify(r); t.dataset.defile = '';
-      frise.appendChild(t);
-    }
-    document.body.append(e, frise);
-    espion = vi.spyOn(HTMLElement.prototype, 'getBoundingClientRect').mockImplementation(function (this: HTMLElement) {
-      let r: R = { top: 0, left: 0, width: 0, height: 0 };
-      if (this.hasAttribute('data-message')) {
-        r = { ...o.message };
-        const t = /translate(?:Y)?\((-?[\d.]+)px(?:, (-?[\d.]+)px)?\)/.exec(this.style.transform);
-        if (t) { if (/translateY/.test(this.style.transform)) r.top += Number(t[1]); else { r.left += Number(t[1]); r.top += Number(t[2] ?? 0); } }
-        if (this.style.left) { const g = parseFloat(this.style.left); r.width -= g - r.left; r.left = g; }
-      } else if (this.dataset.r) {
-        r = JSON.parse(this.dataset.r) as R;
-        if (this.dataset.defile !== undefined) r = { ...r, top: r.top - haut };
-      }
-      return { ...r, bottom: r.top + r.height, right: r.left + r.width, x: r.left, y: r.top, toJSON: () => ({}) } as DOMRect;
-    });
-    return { frise, defile: () => haut };
-  };
-  const rect = (el: Element) => el.getBoundingClientRect();
-  const croise = (a: DOMRect, b: DOMRect) => a.left < b.right && a.right > b.left && a.top < b.bottom && a.bottom > b.top;
-  const surUnNom = () => {
-    const m = document.querySelector('[data-message]')!;
-    return [...document.querySelectorAll('[data-nom-rangee], [data-rangee] .cal-nom, [data-frise] .cal-lbl-t')].filter(n => croise(rect(m), rect(n)));
-  };
-  const bandeau = (texte = 'Hotte : S50 · S50 : 5 120 → 4 220') => render(<Message message={{ id: 1, role: 'status', texte, annuler: () => undefined }} onFermer={() => undefined} />);
-
-  it('390 × 844 : le bandeau couvrait « Inventaire du stock » ; il monte dans la première bande libre, sous l’en-tête au plus haut', () => {
-    taille(390, 844);
-    ecran({
-      entete: 430,
-      noms: [{ top: 440, left: 24, width: 110, height: 24 }, { top: 640, left: 24, width: 110, height: 24 }],
-      etiquettes: [{ top: 700, left: 140, width: 180, height: 40 }, { top: 520, left: 140, width: 180, height: 20 }],
-      message: { top: 700, left: 8, width: 298, height: 48 }
-    });
-    bandeau();
-    expect(surUnNom()).toHaveLength(0);
-    expect(rect(document.querySelector('[data-message]')!).top).toBeGreaterThanOrEqual(430);
-  });
-
-  it('844 × 390 (paysage) : l’alerte f6-b, posée sur Fêtes et Ventes, se place dans une bande libre', () => {
-    taille(844, 390);
-    ecran({
-      entete: 120,
-      noms: [{ top: 130, left: 12, width: 70, height: 20 }, { top: 230, left: 12, width: 70, height: 20 }, { top: 280, left: 12, width: 70, height: 20 }],
-      etiquettes: [{ top: 236, left: 300, width: 200, height: 20 }, { top: 160, left: 200, width: 200, height: 20 }],
-      message: { top: 280, left: 8, width: 760, height: 48 }
-    });
-    render(<Message message={{ id: 1, role: 'alert', texte: '3 fûts promis à La Cigogne le 15 déc. · prête le 4 janv.', livrer: { texte: 'Livrer le 5 janv.', agir: () => undefined }, annuler: () => undefined }} onFermer={() => undefined} />);
-    expect(surUnNom()).toHaveLength(0);
-  });
-
-  it('CRITIQUE-9 n° 7 (E33, D-200) : en paysage, le refus d’un jalon ne couvre ni une barre ni « J0 / 28 · prête … » ; un seul role=status, deux lignes au plus', () => {
-    taille(844, 390);
-    /* l'écran de paysage-49 : titres à gauche, des barres dès x = 120 sur toutes les rangées, leur durée dedans */
-    const noms: R[] = [], etiquettes: R[] = [];
-    for (let top = 124; top < 390; top += 22) noms.push({ top, left: 8, width: 90, height: 18 });
-    const { frise } = ecran({ entete: 120, noms, etiquettes, message: { top: 300, left: 8, width: 760, height: 44 } });
-    frise.querySelector('section')!.classList.add('cal-rangee-l');
-    const barres: R[] = [];
-    for (let top = 124; top < 390; top += 22) barres.push({ top, left: 120, width: 300, height: 18 }, { top, left: 470, width: 220, height: 18 });
-    for (const [i, r] of barres.entries()) {
-      const b = document.createElement('div'); b.setAttribute('data-chose', `b${i}`); b.dataset.r = JSON.stringify(r);
-      const d = document.createElement('em'); d.className = 'cal-duree'; d.textContent = 'J0 / 28 · prête 21 déc.'; d.dataset.r = JSON.stringify({ ...r, left: r.left + r.width - 170, width: 160 });
-      b.appendChild(d); frise.appendChild(b);
-    }
-    render(<Message message={{ id: 1, role: 'status', texte: 'La fermentation suit la recette du brassin', lien: { texte: 'Ouvrir le brassin ›', agir: () => undefined } }} onFermer={() => undefined} />);
-    const m = document.querySelector<HTMLElement>('[data-message]')!;
-    const place = m.dataset.place;
-    /* jamais « à droite de la colonne des titres » (le HEAD l'y posait, sur les barres) : une bande libre, sinon au pied de l'en-tête collé,
-       dans son flux (la frise descend de sa hauteur : rien n'est couvert par construction ; le faux écran ne déplace pas les rectangles) */
-    expect(place).not.toBe('cote');
-    if (place === 'sous-entete') expect(m.closest('[data-entete-zone]')).not.toBeNull();
-    else expect([...document.querySelectorAll('[data-frise] [data-chose], [data-frise] .cal-duree, [data-rangee] .cal-nom')].filter(n => croise(rect(m), rect(n)))).toHaveLength(0);
-    /* ici, aucune bande libre entre la bande et les rangées : il entre sous l'en-tête */
-    expect(place).toBe('sous-entete');
-    expect(document.querySelectorAll('[role="status"]')).toHaveLength(1);
-    expect(m.querySelector('[data-msg-texte]')!.textContent).toBe('La fermentation suit la recette du brassin');
-  });
-
-  it('390 × 844, aucune bande libre (« Tourne le téléphone » sur les Papiers) : il entre au pied de l’en-tête collé, dans son flux, la frise passe dessous', () => {
-    taille(390, 844);
-    /* des noms partout entre l'en-tête et les onglets */
-    const noms: R[] = [{ top: 436, left: 24, width: 110, height: 24 }], etiquettes: R[] = [];
-    for (let top = 436; top < 844; top += 30) etiquettes.push({ top, left: 20, width: 300, height: 26 });
-    ecran({ entete: 430, noms, etiquettes, message: { top: 700, left: 8, width: 298, height: 40 } });
-    const { rerender } = render(<Message message={{ id: 1, role: 'status', texte: 'Tourne le téléphone : 13 semaines', origine: 'entete' }} onFermer={() => undefined} />);
-    const m = document.querySelector('[data-message]')!;
-    expect(m.closest('[data-entete-zone]')).not.toBeNull();
-    expect(m).toHaveAttribute('data-place', 'sous-entete');
-    expect(m).toHaveClass('cal-msg-entete');
-    /* le message suivant reprend sa place flottante, puis cherche à nouveau */
-    rerender(<Message message={{ id: 2, role: 'status', texte: 'S51 : 5 064 → 4 524', annuler: () => undefined }} onFermer={() => undefined} />);
-    expect(screen.getByRole('status').textContent).toMatch(/^S51 : 5 064 → 4 524/);
-    expect(document.querySelectorAll('[data-message]')).toHaveLength(1);
-  });
-
-  describe('CRITIQUE-10, doute m38 (E33) : « Tourne le téléphone » ne reste jamais sur un nom après défilement', () => {
-    const Y0 = window.scrollY;
-    let scrollBy: ReturnType<typeof vi.fn>;
-    beforeEach(() => {
-      scrollBy = vi.fn();
-      Object.defineProperty(window, 'scrollBy', { configurable: true, writable: true, value: scrollBy });
-      Object.defineProperty(window, 'scrollY', { configurable: true, writable: true, value: 200 });
-      Object.defineProperty(document.documentElement, 'scrollHeight', { configurable: true, value: 3000 });
-    });
-    afterEach(() => { Object.defineProperty(window, 'scrollY', { configurable: true, writable: true, value: Y0 }); });
-    const image = () => act(() => new Promise<void>(r => setTimeout(r, 40)));
-    /* des noms partout entre l'en-tête et les onglets, un toutes les 30 px depuis `depuis` : aucune bande libre */
-    const plein = (depuis: number, extra: R[] = []) => {
-      const etiquettes: R[] = [...extra];
-      for (let top = depuis; top < 844; top += 30) etiquettes.push({ top, left: 20, width: 300, height: 26 });
-      return etiquettes;
-    };
-    const tourne = (onFermer: () => void) => render(<Message message={{ id: 1, role: 'status', texte: 'Tourne le téléphone : 13 semaines', origine: 'entete' }} onFermer={onFermer} />);
-
-    it('entré sous l’en-tête collé, page défilée, un nom à moitié sous lui : la page se décale du plus petit pas (< 24 px) qui le dégage', () => {
-      taille(390, 844);
-      /* le message (700 → 740) coupe l'étiquette 736 → 762 : 6 px vers le haut la montrent entière */
-      ecran({ entete: 430, noms: [{ top: 436, left: 24, width: 110, height: 24 }], etiquettes: plein(436), message: { top: 700, left: 8, width: 298, height: 40 } });
-      const onFermer = vi.fn();
-      tourne(onFermer);
-      expect(document.querySelector('[data-message]')).toHaveAttribute('data-place', 'sous-entete');
-      expect(scrollBy).toHaveBeenCalledWith({ top: -6, left: 0, behavior: 'auto' });
-      expect(Math.abs((scrollBy.mock.calls[0][0] as { top: number }).top)).toBeLessThan(24);
-      expect(onFermer).not.toHaveBeenCalled();
-    });
-
-    it('sans un pas de moins de 24 px qui dégage le nom, le message part (jamais posé dessus)', () => {
-      taille(390, 844);
-      ecran({ entete: 430, noms: [{ top: 436, left: 24, width: 110, height: 24 }], etiquettes: plein(440, [{ top: 690, left: 20, width: 300, height: 80 }]), message: { top: 700, left: 8, width: 298, height: 40 } });
-      const onFermer = vi.fn();
-      tourne(onFermer);
-      expect(scrollBy).not.toHaveBeenCalled();
-      expect(onFermer).toHaveBeenCalledTimes(1);
-    });
-
-    it('constat D n° 1 : « Liée à X · Annuler » (un bandeau de geste, pas l’invite de l’en-tête) ne part pas et la page ne bouge pas', () => {
-      taille(390, 844);
-      ecran({ entete: 430, noms: [{ top: 436, left: 24, width: 110, height: 24 }], etiquettes: plein(440, [{ top: 690, left: 20, width: 300, height: 80 }]), message: { top: 700, left: 8, width: 298, height: 40 } });
-      const onFermer = vi.fn();
-      render(<Message message={{ id: 1, role: 'status', texte: 'Liée à Blonde d’automne', annuler: () => undefined }} onFermer={onFermer} />);
-      expect(scrollBy).not.toHaveBeenCalled();
-      expect(onFermer).not.toHaveBeenCalled();
-    });
-
-    it('au pied de l’en-tête, un défilement qui fait passer un nom sous lui le fait partir aussitôt (avant ses 24 px)', async () => {
-      taille(390, 844);
-      /* étiquettes 710 → 736 et 740 → 766 : aucune coupée par le message (700 → 740) */
-      ecran({ entete: 430, noms: [{ top: 436, left: 24, width: 110, height: 24 }], etiquettes: plein(440), message: { top: 700, left: 8, width: 298, height: 40 }, defile: 500 });
-      const onFermer = vi.fn();
-      tourne(onFermer);
-      expect(onFermer).not.toHaveBeenCalled();
-      const frise = document.querySelector<HTMLElement>('[data-frise]')!;
-      frise.scrollTop = 10;
-      fireEvent.scroll(frise);
-      await image();
-      expect(onFermer).toHaveBeenCalledTimes(1);
-    });
-
-    it('flottant, un défilement de moins de 24 px amène un nom sous lui : il se replace dans une bande libre', async () => {
-      taille(390, 844);
-      ecran({ entete: 430, noms: [{ top: 436, left: 24, width: 110, height: 24 }], etiquettes: [{ top: 760, left: 20, width: 300, height: 26 }], message: { top: 700, left: 8, width: 298, height: 40 }, defile: 500 });
-      bandeau();
-      const m = document.querySelector<HTMLElement>('[data-message]')!;
-      expect(m.dataset.place).toBe('bas');
-      const frise = document.querySelector<HTMLElement>('[data-frise]')!;
-      frise.scrollTop = 30;
-      fireEvent.scroll(frise);
-      await image();
-      expect(surUnNom()).toHaveLength(0);
-      expect(m.dataset.place).toBe('bande');
-    });
-  });
-});
-
-describe('CRITIQUE-11 : le message ne déplace rien ; au grand écran et pour Lier, il va au pied de l’en-tête', () => {
+describe('CRITIQUE-11 et 12 : le message ne déplace rien ; au grand écran et pour Lier, il se pose près de la chose ou en bas, jamais sous l’en-tête', () => {
   type R = { top: number; left: number; width: number; height: number };
   const taille = (w: number, h: number) => {
     Object.defineProperty(window, 'innerWidth', { configurable: true, writable: true, value: w });
@@ -469,7 +266,7 @@ describe('CRITIQUE-11 : le message ne déplace rien ; au grand écran et pour Li
     fireEvent.pointerUp(el, { clientX: 100, clientY: 10, pointerId: 1, button: 0 });
   };
 
-  it('n° 2 b (E33 « ne déplace rien sous le doigt », D-200, E43) : à 390, l’alerte f6-b entre au pied de l’en-tête sans pousser les rangées', () => {
+  it('n° 2 b (E33 « ne déplace rien sous le doigt », D-200, E43) : à 390, l’alerte f6-b se pose sans pousser les rangées, hors de l’en-tête', () => {
     taille(390, 844);
     /* le vrai CSS du message : la mise en page simulée lit `position` comme le navigateur (dans le flux, ou en surimpression) */
     feuille = document.createElement('style'); feuille.textContent = cssMessage; document.head.appendChild(feuille);
@@ -500,28 +297,31 @@ describe('CRITIQUE-11 : le message ne déplace rien ; au grand écran et pour Li
     const avant = brassins.getBoundingClientRect().top;
     render(<Message message={{ id: 1, role: 'alert', texte: '3 fûts promis à La Cigogne le 23 déc. · prête le 28 déc.', livrer: { texte: 'Livrer le 29 déc.', agir: () => undefined }, annuler: () => undefined }} onFermer={() => undefined} />);
     const m = screen.getByRole('alert');
-    expect(m).toHaveAttribute('data-place', 'sous-entete');
-    expect(zone.contains(m)).toBe(true);
+    expect(['pres', 'bas']).toContain(m.dataset.place);
+    expect(zone.contains(m)).toBe(false);
+    expect(document.querySelector('[data-msg-bande]')).toBeNull();
     /* rien ne bouge à l'écran : le haut de Brassins à 2 px près ; l'en-tête garde ses 180 px, sans réserve vide au repos */
     expect(Math.abs(brassins.getBoundingClientRect().top - avant)).toBeLessThanOrEqual(2);
     expect(zone.getBoundingClientRect().height).toBeLessThanOrEqual(180);
   });
 
-  it('n° 3 (E33, E35, D-200) : à 1280, le message de f1-a (Hotte) et celui de Retirer (Marché de Noël) vont au pied de l’en-tête, jamais en bas sous le +', async () => {
+  it('n° 3 (E33, E35, D-200) : à 1280, le message de f1-a (Hotte) et celui de Retirer (Marché de Noël) portent leur chose (ancre), hors de l’en-tête', async () => {
     grandEcranSimule();
     monter();
     glisser(barre(/^Hotte/), colonne());
     const f1a = await screen.findByRole('status');
     expect(f1a.textContent).toMatch(/Annuler$/);
-    expect(f1a).toHaveAttribute('data-place', 'sous-entete');
-    expect(f1a.closest('[data-entete-zone]')).not.toBeNull();
+    /* CRITIQUE-12 n° 1 : CalendrierTab passe la chose touchée ; la place se calcule près d'elle (géométrie : bloc CRITIQUE-12) */
+    expect(f1a.closest('[data-message]')).toHaveAttribute('data-ancre', barre(/^Hotte/).closest('[data-chose]')!.getAttribute('data-chose'));
+    expect(f1a.closest('[data-entete-zone]')).toBeNull();
+    expect(document.querySelector('[data-msg-bande]')).toBeNull();
     appuiLong(barre(/^Marché de Noël/));
     fireEvent.click(within(await screen.findByRole('menu')).getByRole('menuitem', { name: /^Retirer/ }));
     await waitFor(() => expect(messages().some(x => /^Retirée de S52/.test(x.textContent ?? ''))).toBe(true));
     const ret = messages().find(x => /^Retirée de S52/.test(x.textContent ?? ''))!;
+    expect(ret.closest('[data-message]')!.getAttribute('data-ancre')).toBeTruthy();
     expect(ret.textContent).toMatch(/^Retirée de S52 · Sans date › · Annuler$/);
-    expect(ret).toHaveAttribute('data-place', 'sous-entete');
-    expect(ret.closest('[data-entete-zone]')).not.toBeNull();
+    expect(ret.closest('[data-entete-zone]')).toBeNull();
   });
 
   it('n° 8 (E31, E37, D-113, D-126) : après Lier, « Liée à Blonde d’automne · Annuler » ET le détail de la Hotte avec sa pastille ; Annuler retire le lien', async () => {
@@ -538,10 +338,11 @@ describe('CRITIQUE-11 : le message ne déplace rien ; au grand écran et pour Li
     const m = screen.getByRole('status');
     expect(m.textContent).toMatch(/^Liée à Blonde d’automne · Annuler$/);
     expect(within(m).getByRole('button', { name: /Annuler/ })).toBeInTheDocument();
-    /* marqué comme le message d'un geste qui ouvre son détail ; posé au pied de l'en-tête, jamais en bas sous le détail ni sous le + */
+    /* marqué comme le message d'un geste qui ouvre son détail ; ancré sur la Hotte, hors de l'en-tête (CRITIQUE-12 n° 1 ; le détail est un
+       obstacle : bloc CRITIQUE-12, « Lier ») */
     expect(m).toHaveAttribute('data-ouvre-son-detail');
-    expect(m).toHaveAttribute('data-place', 'sous-entete');
-    expect(m.closest('[data-entete-zone]')).not.toBeNull();
+    expect(m).toHaveAttribute('data-ancre', det.getAttribute('data-detail'));
+    expect(m.closest('[data-entete-zone]')).toBeNull();
     /* le défilement qui dégage le détail du + ne le chasse pas */
     Object.defineProperty(window, 'scrollY', { value: 120, configurable: true, writable: true });
     fireEvent.scroll(window);
@@ -561,5 +362,182 @@ describe('CRITIQUE-11 : le message ne déplace rien ; au grand écran et pour Li
     toucher(barre(/^Blonde d’automne/));
     await screen.findByRole('region', { name: /^Détail : Blonde d’automne/ });
     expect(messages()).toHaveLength(0);
+  });
+});
+
+/*
+ * CRITIQUE-12 n° 1 (règle n° 1, E33, E32, D-20, D-200, D-126) : le message d'un geste se posait en haut, sur le titre Brassins et les premières
+ * barres (390, 844, 1280). Sa maquette (`as/src/as-gestes.js`, `toast`, et `as/cap/p-f1a-apres.png`) : près de la chose touchée là où il ne
+ * cache aucun texte, sinon en bas, au-dessus des onglets, à gauche du + volant ; jamais sous l'en-tête.
+ * Écran simulé : en-tête collé, titres de rangée, barres avec leur nom et leur montant, le + volant, les onglets (barre basse, ou rail à 1280).
+ */
+describe('CRITIQUE-12 n° 1 : le message se pose près de la chose ou en bas à gauche du +, jamais sur un titre, un nom ni le +', () => {
+  type R = { top: number; left: number; width: number; height: number };
+  type Chose = { id: string; rangee: number; bar: R; nom: R; montant?: R };
+  /* `detail` : la place du détail de la Hotte ouvert après Lier (sous elle au téléphone, à côté en paysage) ; `alerte` : la hauteur de l'alerte f6-b
+     (texte puis boutons en hauteur ; une ligne en paysage et au grand écran) */
+  type Ecran = { w: number; h: number; entete: number; titres: R[]; choses: Chose[]; fab: R; nav: R; detail: R; alerte: number };
+  const taille = (w: number, h: number) => {
+    Object.defineProperty(window, 'innerWidth', { configurable: true, writable: true, value: w });
+    Object.defineProperty(window, 'innerHeight', { configurable: true, writable: true, value: h });
+    window.matchMedia = ((q: string) => {
+      const min = /min-width:\s*(\d+)px/.exec(q), maxH = /max-height:\s*(\d+)px/.exec(q);
+      const matches = (!min || w >= Number(min[1])) && (!maxH || h <= Number(maxH[1])) && (!/landscape/.test(q) || w > h) && (!/portrait/.test(q) || h >= w);
+      return { matches, media: q, onchange: null, addListener: () => undefined, removeListener: () => undefined, addEventListener: () => undefined, removeEventListener: () => undefined, dispatchEvent: () => false };
+    }) as typeof window.matchMedia;
+  };
+  const [W0, H0] = [window.innerWidth, window.innerHeight];
+  const MM0 = window.matchMedia;
+  let espion: ReturnType<typeof vi.spyOn> | null = null;
+  afterEach(() => { espion?.mockRestore(); espion = null; taille(W0, H0); window.matchMedia = MM0; document.body.innerHTML = ''; });
+
+  /* 390 × 844 : la frise de 6 semaines, comme `p-f1a-apres` (la frise finit au-dessus du + : la place du bas est libre) */
+  const T = (top: number, left = 40, width = 76): R => ({ top, left, width, height: 22 });
+  const PORTRAIT: Ecran = {
+    w: 390, h: 844, entete: 180,
+    titres: [T(186), T(402), T(470), T(560)],
+    choses: [
+      { id: 'blonde', rangee: 0, bar: { top: 212, left: 12, width: 120, height: 40 }, nom: { top: 214, left: 140, width: 150, height: 18 }, montant: { top: 214, left: 294, width: 44, height: 18 } },
+      { id: 'ipa', rangee: 0, bar: { top: 258, left: 12, width: 60, height: 40 }, nom: { top: 260, left: 80, width: 140, height: 18 }, montant: { top: 260, left: 224, width: 34, height: 18 } },
+      { id: 'saison', rangee: 0, bar: { top: 304, left: 140, width: 120, height: 40 }, nom: { top: 306, left: 266, width: 104, height: 18 }, montant: { top: 326, left: 266, width: 40, height: 18 } },
+      { id: 'porter', rangee: 0, bar: { top: 350, left: 200, width: 170, height: 40 }, nom: { top: 352, left: 60, width: 130, height: 18 }, montant: { top: 372, left: 60, width: 40, height: 18 } },
+      { id: 'marche', rangee: 1, bar: { top: 428, left: 200, width: 60, height: 30 }, nom: { top: 432, left: 60, width: 130, height: 18 } },
+      { id: 'cigogne', rangee: 2, bar: { top: 496, left: 280, width: 32, height: 32 }, nom: { top: 502, left: 110, width: 160, height: 18 }, montant: { top: 532, left: 278, width: 36, height: 16 } },
+      { id: 'hotte', rangee: 3, bar: { top: 586, left: 230, width: 80, height: 30 }, nom: { top: 590, left: 60, width: 160, height: 18 } }
+    ],
+    fab: { top: 716, left: 318, width: 56, height: 56 },
+    nav: { top: 788, left: 0, width: 390, height: 56 },
+    detail: { top: 620, left: 30, width: 330, height: 90 }, alerte: 96
+  };
+  /* 844 × 390 : la colonne des titres à gauche, des rangées de 22 px, les barres dès x = 120 */
+  const PAYSAGE: Ecran = {
+    w: 844, h: 390, entete: 120,
+    titres: [124, 168, 190, 234].map(top => ({ top, left: 8, width: 90, height: 18 })),
+    choses: [
+      { id: 'blonde', rangee: 0, bar: { top: 124, left: 120, width: 220, height: 20 }, nom: { top: 125, left: 124, width: 150, height: 18 } },
+      { id: 'saison', rangee: 0, bar: { top: 146, left: 360, width: 220, height: 20 }, nom: { top: 147, left: 364, width: 160, height: 18 } },
+      { id: 'porter', rangee: 0, bar: { top: 146, left: 600, width: 200, height: 20 }, nom: { top: 147, left: 604, width: 150, height: 18 } },
+      { id: 'marche', rangee: 1, bar: { top: 168, left: 500, width: 60, height: 20 }, nom: { top: 169, left: 330, width: 160, height: 18 } },
+      { id: 'cigogne', rangee: 2, bar: { top: 190, left: 640, width: 20, height: 20 }, nom: { top: 191, left: 470, width: 160, height: 18 } },
+      { id: 'hotte', rangee: 3, bar: { top: 234, left: 300, width: 120, height: 20 }, nom: { top: 235, left: 130, width: 160, height: 18 } }
+    ],
+    fab: { top: 286, left: 772, width: 56, height: 56 },
+    nav: { top: 350, left: 0, width: 844, height: 40 },
+    detail: { top: 236, left: 440, width: 320, height: 100 }, alerte: 52
+  };
+  /* 1280 × 800 : le rail à gauche (les onglets), la frise à sa droite */
+  const LARGE: Ecran = {
+    w: 1280, h: 800, entete: 180,
+    titres: [T(186, 110), T(402, 110), T(470, 110), T(560, 110)],
+    choses: [
+      { id: 'blonde', rangee: 0, bar: { top: 212, left: 110, width: 300, height: 40 }, nom: { top: 214, left: 420, width: 150, height: 18 } },
+      { id: 'saison', rangee: 0, bar: { top: 304, left: 400, width: 300, height: 40 }, nom: { top: 306, left: 710, width: 160, height: 18 } },
+      { id: 'porter', rangee: 0, bar: { top: 350, left: 600, width: 400, height: 40 }, nom: { top: 352, left: 440, width: 150, height: 18 } },
+      { id: 'marche', rangee: 1, bar: { top: 428, left: 800, width: 120, height: 30 }, nom: { top: 432, left: 630, width: 160, height: 18 } },
+      { id: 'cigogne', rangee: 2, bar: { top: 496, left: 900, width: 32, height: 32 }, nom: { top: 502, left: 730, width: 160, height: 18 } },
+      { id: 'hotte', rangee: 3, bar: { top: 586, left: 600, width: 160, height: 30 }, nom: { top: 590, left: 430, width: 160, height: 18 } }
+    ],
+    fab: { top: 720, left: 1196, width: 56, height: 56 },
+    nav: { top: 0, left: 0, width: 88, height: 800 },
+    detail: { top: 620, left: 430, width: 360, height: 90 }, alerte: 52
+  };
+
+  /** Monte l'écran simulé. Le message a une taille propre (`w`, `h`), bornée par son `max-width` ; il est posé à son `left`/`top`, sinon à la
+   *  place du CSS (bande basse) ; au pied de l'en-tête s'il y est accroché (la place que le n° 1 retire). */
+  const monterEcran = (e: Ecran, msg: { w: number; h: number }, detail?: R) => {
+    taille(e.w, e.h);
+    const r = (el: HTMLElement, x: R) => { el.dataset.r = JSON.stringify(x); return el; };
+    const zone = r(document.createElement('div'), { top: 0, left: 0, width: e.w, height: e.entete }); zone.setAttribute('data-entete-zone', '');
+    const frise = document.createElement('div'); frise.setAttribute('data-frise', '');
+    const rangees = e.titres.map((t, i) => {
+      const s = document.createElement('section'); s.setAttribute('data-rangee', `r${i}`);
+      s.dataset.r = JSON.stringify({ top: t.top, left: 0, width: e.w, height: (e.titres[i + 1]?.top ?? t.top + 60) - t.top });
+      const h = r(document.createElement('h3'), t); h.className = 'cal-nom'; h.textContent = ['Brassins', 'Fêtes', 'Ventes', 'Achats'][i] ?? 'Rangée';
+      s.appendChild(h); frise.appendChild(s); return s;
+    });
+    for (const c of e.choses) {
+      const b = r(document.createElement('div'), c.bar); b.setAttribute('data-chose', c.id);
+      const n = r(document.createElement('span'), c.nom); n.className = 'cal-lbl-t'; n.textContent = c.id; b.appendChild(n);
+      if (c.montant) { const m = r(document.createElement('span'), c.montant); m.className = 'cal-lbl-m'; m.textContent = '−100'; b.appendChild(m); }
+      rangees[c.rangee].appendChild(b);
+    }
+    const fa = document.createElement('div'); fa.className = 'floating-actions';
+    const fab = r(document.createElement('button'), e.fab); fab.textContent = '+'; fa.appendChild(fab);
+    const nav = r(document.createElement('nav'), e.nav); nav.className = 'nav-principale';
+    document.body.append(zone, frise, fa, nav);
+    if (detail) { const d = r(document.createElement('div'), detail); d.setAttribute('data-detail', 'hotte'); d.setAttribute('role', 'region'); frise.appendChild(d); }
+    const navBasse = e.nav.width > e.nav.height;
+    espion = vi.spyOn(HTMLElement.prototype, 'getBoundingClientRect').mockImplementation(function (this: HTMLElement) {
+      let x: R = { top: 0, left: 0, width: 0, height: 0 };
+      if (this.hasAttribute('data-message')) {
+        const maxW = parseFloat(this.style.maxWidth) || Infinity;
+        const w = this.style.width.endsWith('px') ? parseFloat(this.style.width) : Math.min(msg.w, maxW);
+        if (this.closest('[data-entete-zone]')) x = { top: e.entete + 4, left: 8, width: Math.min(msg.w, e.w - 16), height: msg.h };
+        else {
+          x = { left: this.style.left ? parseFloat(this.style.left) : 8, top: this.style.top ? parseFloat(this.style.top) : (navBasse ? e.nav.top : e.h) - 10 - msg.h, width: w, height: msg.h };
+          const t = /translate\((-?[\d.]+)px, (-?[\d.]+)px\)/.exec(this.style.transform);
+          if (t) { x.left += Number(t[1]); x.top += Number(t[2]); }
+        }
+      } else if (this.dataset.r) x = JSON.parse(this.dataset.r) as R;
+      return { ...x, bottom: x.top + x.height, right: x.left + x.width, x: x.left, y: x.top, toJSON: () => ({}) } as DOMRect;
+    });
+  };
+  const croise = (a: DOMRect, b: DOMRect, marge = 2) => a.left < b.right + marge && a.right > b.left - marge && a.top < b.bottom + marge && a.bottom > b.top - marge;
+
+  const SEPT: Array<{ nom: string; msg: MessageCal & { ancre?: string }; taille: { w: number; h: number }; detail?: boolean }> = [
+    { nom: 'f1-a glissé (Saison)', msg: { id: 1, role: 'status', texte: 'S47 : 3 268 → 3 292', annuler: () => undefined, ancre: 'saison' }, taille: { w: 280, h: 46 } },
+    { nom: 'f2-a allongé (Saison)', msg: { id: 2, role: 'status', texte: 'Saison de ferme : J0 / 35 · prête 4 janv.', annuler: () => undefined, ancre: 'saison' }, taille: { w: 300, h: 46 } },
+    { nom: 'alerte f6-b (Blonde, vente La Cigogne)', msg: { id: 3, role: 'alert', texte: '3 fûts promis à La Cigogne le 15 déc. · prête le 4 janv.', livrer: { texte: 'Livrer le 5 janv.', agir: () => undefined }, annuler: () => undefined, ancre: 'cigogne' }, taille: { w: 560, h: 96 } },
+    { nom: 'Livrer', msg: { id: 4, role: 'status', texte: '3 fûts La Cigogne : 5 janv. · S2 : 4 168 → 4 168', annuler: () => undefined, ancre: 'cigogne' }, taille: { w: 330, h: 46 } },
+    { nom: 'Lier (avec le détail ouvert)', msg: { id: 5, role: 'status', texte: 'Liée à Blonde d’automne', annuler: () => undefined, ancre: 'hotte', ouvreSonDetail: true }, taille: { w: 260, h: 46 }, detail: true },
+    { nom: 'Retirer (la chose n’est plus dans la frise)', msg: { id: 6, role: 'status', texte: 'Retirée de S52', lien: { texte: 'Sans date ›', agir: () => undefined }, annuler: () => undefined, ancre: 'noel' }, taille: { w: 290, h: 46 } },
+    { nom: 'refus de jalon (Porter)', msg: { id: 7, role: 'status', texte: 'La fermentation suit la recette du brassin', lien: { texte: 'Ouvrir le brassin ›', agir: () => undefined }, ancre: 'porter' }, taille: { w: 400, h: 46 } }
+  ];
+  const TAILLES: Array<[string, Ecran]> = [['390 × 844', PORTRAIT], ['844 × 390', PAYSAGE], ['1280 × 800', LARGE]];
+
+  for (const [t, e] of TAILLES) {
+    for (const s of SEPT) {
+      it(`${t} · ${s.nom} : près de la chose ou en bas, aucun titre ni nom couvert, ni le +, jamais sous l’en-tête`, () => {
+        /* Lier : le détail de la chose liée est ouvert sous elle (D-126 : le message ET le détail) */
+        monterEcran(e, s.msg.role === 'alert' ? { ...s.taille, h: e.alerte } : s.taille, s.detail ? e.detail : undefined);
+        render(<Message message={s.msg} onFermer={() => undefined} detailOuvert={s.detail ? 'hotte' : null} />);
+        const m = document.querySelector<HTMLElement>('[data-message]')!;
+        expect(document.querySelector('[data-msg-bande]')).toBeNull();
+        expect(m.closest('[data-entete-zone]')).toBeNull();
+        expect(['pres', 'bas']).toContain(m.dataset.place);
+        const b = m.getBoundingClientRect();
+        const couverts = [...document.querySelectorAll(NOMS_MESSAGE)].filter(n => croise(b, n.getBoundingClientRect())).map(n => n.textContent);
+        expect(couverts).toEqual([]);
+        expect(croise(b, document.querySelector('.floating-actions button')!.getBoundingClientRect(), 0)).toBe(false);
+        if (s.detail) expect(croise(b, document.querySelector('[data-detail]')!.getBoundingClientRect(), 0)).toBe(false);
+        /* jamais plus haut que la première rangée, jamais sur les onglets (barre basse) ni sur le rail */
+        expect(b.top).toBeGreaterThanOrEqual(e.entete);
+        if (e.nav.width > e.nav.height) expect(b.bottom).toBeLessThanOrEqual(e.nav.top);
+        else expect(b.left).toBeGreaterThanOrEqual(e.nav.left + e.nav.width);
+        expect(b.right).toBeLessThanOrEqual(e.w);
+      });
+    }
+  }
+
+  it('390 × 844 : l’alerte f6-b se pose sous la vente promise quand elle n’y cache aucun nom (Ventes en dernière rangée)', () => {
+    const e: Ecran = { ...PORTRAIT, titres: PORTRAIT.titres.slice(0, 3), choses: PORTRAIT.choses.filter(c => c.id !== 'hotte' && c.id !== 'cigogne').concat({ id: 'cigogne', rangee: 2, bar: { top: 496, left: 280, width: 32, height: 32 }, nom: { top: 502, left: 110, width: 160, height: 18 } }) };
+    monterEcran(e, { w: 374, h: 96 });
+    render(<Message message={SEPT[2].msg} onFermer={() => undefined} />);
+    const m = document.querySelector<HTMLElement>('[data-message]')!;
+    expect(m.dataset.place).toBe('pres');
+    expect(m.getBoundingClientRect().top).toBeGreaterThanOrEqual(528);
+    expect(m.getBoundingClientRect().top).toBeLessThan(560);
+  });
+
+  it('390 × 844 : f1-a de la Saison sans place libre près d’elle : en bas, à gauche du + (left 8, largeur bornée par le +), au-dessus des onglets', () => {
+    monterEcran(PORTRAIT, { w: 500, h: 46 });
+    render(<Message message={SEPT[0].msg} onFermer={() => undefined} />);
+    const m = document.querySelector<HTMLElement>('[data-message]')!;
+    const b = m.getBoundingClientRect();
+    expect(m.dataset.place).toBe('bas');
+    expect(b.left).toBe(8);
+    expect(b.right).toBeLessThanOrEqual(PORTRAIT.fab.left - 8);
+    expect(b.bottom).toBeLessThanOrEqual(PORTRAIT.nav.top - 8 + 1);
+    expect(b.bottom).toBeGreaterThan(PORTRAIT.nav.top - 20);
   });
 });

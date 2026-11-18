@@ -208,6 +208,22 @@ describe('CRITIQUE-10 n° 3, 4, 7 : une date, une plage entière, un lien lisibl
     expect((apercu.textContent ?? '').split('Blonde d’automne')).toHaveLength(2);
   });
 
+  it('CRITIQUE-12 n° 3 (critique 10 n° 4, critique 11 n° 7) : chaque date de l’aperçu lié est d’un bloc (« prête 21 déc. » jamais « prête 21 » puis « déc. »)', async () => {
+    const blonde = { id: 'brassin-LOT-BLONDE', rangee: 'brassins', titre: 'Blonde d’automne', debut: '2026-11-23', fin: '2026-12-21', preteLe: '2026-12-21', source: { genre: 'batch', id: 'LOT-BLONDE' }, ouvre: { ecran: 'brassin', id: 'LOT-BLONDE' }, deplacable: true } as ChoseCalendrier;
+    const hotteLiee = { id: 'P-HOTTE', rangee: 'achats', titre: 'Hotte', debut: '2026-11-30', fin: '2026-11-30', centimes: -90000, liens: { batchId: 'LOT-BLONDE' }, source: { genre: 'plan', id: 'P-HOTTE', origine: 'manual', statut: 'active' }, ouvre: { ecran: 'plan', id: 'P-HOTTE' }, deplacable: true } as ChoseCalendrier;
+    const hotte = preparerChoses([blonde, hotteLiee], { brassins: new Map([['LOT-BLONDE', 'Blonde d’automne']]) }).find(c => c.id === 'P-HOTTE')!;
+    render(<DetailChose chose={hotte} onFermer={() => {}} onOuvrir={() => {}} />);
+    const apercu = screen.getByRole('region', { name: 'Détail : Hotte' }).querySelector('[data-apercu-lien]')!;
+    const dates = (apercu.textContent ?? '').match(/\d{1,2} [^\s·;]+/g) ?? [];
+    expect(dates).toEqual(['23 nov.', '21 déc.']);
+    const blocs = [...apercu.querySelectorAll('.cal-nowrap')].map(b => b.textContent);
+    for (const d of dates) expect(blocs.some(b => b?.includes(d))).toBe(true);
+    expect(blocs).toContain('prête 21 déc.');
+    /* et la règle existe pour le détail (frise.css) */
+    const css = (await import('node:fs')).readFileSync(`${process.cwd()}/src/ui/calendrier/frise/frise.css`, 'utf8');
+    expect(css).toMatch(/\.cal-det \.cal-nowrap\s*\{\s*white-space:\s*nowrap;?\s*\}/);
+  });
+
   it('doute m14 : ouvert près du bas, le détail défile pour que sa dernière ligne passe au-dessus du + volant (+ 8 px), jamais sous l’en-tête', () => {
     const boite = (top: number, height: number, left = 0, width = 390) => ({ top, bottom: top + height, left, right: left + width, width, height, x: left, y: top, toJSON: () => ({}) }) as DOMRect;
     const volant = document.createElement('div'); volant.className = 'floating-actions'; document.body.appendChild(volant);

@@ -1007,3 +1007,48 @@ describe('CRITIQUE-11 n° 6 (E28, E33) : la bulle « lâcher ici » ne croise ja
     });
   }
 });
+
+/*
+ * Doute de CRITIQUE-12 (p10, p12) : « Brassins · Ajouter en S52 » surgissait en paysage après l'Annuler de f1-a. Le doigt touche « Annuler »
+ * posé au-dessus d'une case libre de la frise : pointerdown, pointerup, puis le click que Chrome émet (pointerType touch). Aucune feuille
+ * d'ajout ne s'ouvre ; seul l'inverse du geste est écrit.
+ */
+describe('Doute CRITIQUE-12 : en paysage, Annuler de f1-a au doigt n’ouvre aucune feuille d’ajout', () => {
+  const MM0 = window.matchMedia;
+  const [W0, H0] = [window.innerWidth, window.innerHeight];
+  const taille = (w: number, h: number) => {
+    Object.defineProperty(window, 'innerWidth', { configurable: true, writable: true, value: w });
+    Object.defineProperty(window, 'innerHeight', { configurable: true, writable: true, value: h });
+  };
+  afterEach(() => { window.matchMedia = MM0; taille(W0, H0); });
+
+  it('844 × 390 : Saison glissée d’une colonne, « Annuler » touché (pointerdown, pointerup, click) : l’inverse est écrit, aucune feuille', async () => {
+    taille(844, 390);
+    window.matchMedia = ((q: string) => ({
+      matches: /landscape/.test(q) || /max-height:\s*(\d+)px/.test(q) && 390 <= Number(/max-height:\s*(\d+)px/.exec(q)![1]) || /min-width:\s*(\d+)px/.test(q) && 844 >= Number(/min-width:\s*(\d+)px/.exec(q)![1]),
+      media: q, onchange: null, addListener: () => undefined, removeListener: () => undefined, addEventListener: () => undefined, removeEventListener: () => undefined, dispatchEvent: () => false
+    })) as typeof window.matchMedia;
+    const { appels } = monter();
+    glisser(barre(/^Saison de ferme/), colonne());
+    const m = await waitFor(() => { const x = messages().find(e => e.closest('[data-message]')); expect(x).toBeTruthy(); return x!; });
+    expect(m.closest('[data-message]')!.getAttribute('data-ancre')).toBe(barre(/^Saison de ferme/).closest('[data-chose]')!.getAttribute('data-chose'));
+    const ecrits = appels.length;
+    /* au-delà de la garde de 400 ms d'une action du menu (f1-a n'en a pas, mais le doigt ne vise jamais si vite) */
+    await new Promise(r => setTimeout(r, 450));
+    const annuler = within(m.closest('[data-message]') as HTMLElement).getByRole('button', { name: /Annuler/ });
+    fireEvent.pointerDown(annuler, { clientX: 120, clientY: 330, pointerId: 7, pointerType: 'touch', button: 0 });
+    fireEvent.pointerUp(annuler, { clientX: 120, clientY: 330, pointerId: 7, pointerType: 'touch', button: 0 });
+    fireEvent.click(annuler, { clientX: 120, clientY: 330, detail: 1 });
+    await waitFor(() => expect(appels.length).toBeGreaterThan(ecrits));
+    await waitFor(() => expect(messages().filter(e => e.closest('[data-message]'))).toHaveLength(0));
+    /* aucune feuille d'ajout (« Brassins · Ajouter en S… ») ni aucun dialogue */
+    expect(screen.queryByRole('dialog')).toBeNull();
+    expect(document.body.textContent).not.toMatch(/Ajouter en S\d+/);
+    /* un toucher qui suit, sur la frise vide où était le message, n'ouvre rien non plus */
+    const frise = document.querySelector('[data-frise]')!;
+    fireEvent.pointerDown(frise, { clientX: 120, clientY: 330, pointerId: 8, pointerType: 'touch', button: 0 });
+    fireEvent.pointerUp(frise, { clientX: 120, clientY: 330, pointerId: 8, pointerType: 'touch', button: 0 });
+    fireEvent.click(frise, { clientX: 120, clientY: 330, detail: 1 });
+    expect(screen.queryByRole('dialog')).toBeNull();
+  });
+});

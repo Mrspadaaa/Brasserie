@@ -185,7 +185,8 @@ export function ContenuEtiquette({ chose, nom, montant, duree, deux, lieCourt, s
 }
 
 /** Le nom et le montant à côté d'une marque ; `texte` remplace le nom court (le caddie d'un brassin en 6 semaines). */
-export interface LibelleMarque { cote: 'droite' | 'gauche'; place: number; texte?: string; deux?: ModeDeuxLignes; sansLie?: boolean }
+/** `retrait` (CRITIQUE-12 n° 4) : à gauche, l'étiquette finit avant la zone du + volant, à `retrait` px de plus que d'habitude de sa marque. */
+export interface LibelleMarque { cote: 'droite' | 'gauche'; place: number; texte?: string; deux?: ModeDeuxLignes; sansLie?: boolean; retrait?: number }
 
 export interface MarqueProps {
   chose: ChoseCalendrier;
@@ -241,7 +242,7 @@ export const Marque: React.FC<MarqueProps> = props => {
   const lbl: React.CSSProperties | undefined = libelle
     ? {
       ...(libelle.deux ? { top: haut - 2, height: Math.max(hauteur + 4, 30) } : { top: haut, height: hauteur }), maxWidth: Math.max(40, libelle.place),
-      ...(libelle.cote === 'droite' ? { left: centre + 14 + decalage + 6 } : { right: `calc(100% - ${centre - 14 + decalage}px + 6px)` })
+      ...(libelle.cote === 'droite' ? { left: centre + 14 + decalage + 6 } : { right: `calc(100% - ${centre - 14 + decalage - (libelle.retrait ?? 0)}px + 6px)` })
     }
     : undefined;
   return (

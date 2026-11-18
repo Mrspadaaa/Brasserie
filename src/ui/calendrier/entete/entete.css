@@ -243,7 +243,14 @@
 .ent-creux-m { fill: var(--ent-ink); font-weight: 800; }
 .ent-bd-fin { fill: var(--c, rgb(var(--cave-600))); opacity: 0.85; }
 .ent-leg { display: flex; flex-wrap: wrap; gap: 2px 12px; margin: 0; padding: 4px 12px 6px; list-style: none; }
-.ent-leg li { display: inline-flex; align-items: center; gap: 5px; font-weight: 600; color: var(--ent-ink); }
+.ent-leg li { display: inline-flex; align-items: center; gap: 5px; font-weight: 600; color: var(--ent-ink); white-space: nowrap; }
+/* CRITIQUE-12 n° 5 (E12, E35) : en portrait, le + volant reste à sa place (D-17) et la légende ne passe jamais dessous. Sa première ligne finit
+   au-dessus du + (hautLegende) et va jusqu'au bord du + ; la dernière, à sa hauteur, finit par une réserve de la largeur du + : 4 px de la
+   réserve et l'écart de 8 px font les 12 px laissés à sa gauche. Un terme ne se coupe jamais (nowrap) : la légende passe à la ligne entre eux. */
+.ent-leg--plus { column-gap: 8px; padding-right: 0; }
+.ent-leg--plus::after { content: ''; flex: 0 0 calc(var(--plus-cote, 56px) + 4px); }
+/* La place du détail de la semaine, fixe en portrait (PLACE_DETAIL) : la légende ne bouge pas sous le doigt ni ne passe sous les onglets. */
+.ent-gc-dp { min-height: 94px; }
 .ent-leg i { width: 12px; height: 12px; border-radius: 3px; background: var(--c); }
 /* La caisse de la grande courbe (CRITIQUE-5 n° 16) : `--repere`, en pointillé ; aucune rangée ne l'a, ce n'est pas le gris de Papiers. */
 .ent-gs .ent-gc-caisse { stroke: rgb(var(--repere)); stroke-width: 1.5; stroke-dasharray: 5 4; }

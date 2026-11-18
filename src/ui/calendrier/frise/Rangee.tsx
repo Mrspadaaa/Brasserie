@@ -63,11 +63,16 @@ export interface Disposition {
    * deux lignes et la porte en bas (as/cap/p-repos) ; `dessous` : elle va sur la ligne sous la barre, de `x0` à `x1`.
    */
   phraseBas?: { ou: 'barre' } | { ou: 'dessous'; x0: number; x1: number };
+  /**
+   * CRITIQUE-12 n° 4 (E35, D-135, E33) : une étiquette posée à gauche d'une chose qui est sous le + volant finit avant sa zone (`reserveDroite`) :
+   * l'écart, en px, entre la fin de l'étiquette et sa chose (absent : collée, à 6 px).
+   */
+  retrait?: number;
 }
 
 /** Le caddie d'un brassin (son jalon « commander »), posé sans chevauchement, avec son nom en 6 semaines (n° 19, n° 22). */
 /** `lignes` (CRITIQUE-6 n° 17) : le nom du brassin puis ce qui manque, sur deux lignes, quand une seule ligne n'a pas la place. */
-export interface PlaceCaddie { chose: ChoseCalendrier; jour: string; centre: number; ligne: number; texte: string | null; cote: 'gauche' | 'droite'; place: number; lignes?: [string, string] }
+export interface PlaceCaddie { chose: ChoseCalendrier; jour: string; centre: number; ligne: number; texte: string | null; cote: 'gauche' | 'droite'; place: number; lignes?: [string, string]; retrait?: number }
 
 const CADDIE_PX = 22;
 const texteVu = (c: ChoseCalendrier): string => (c.brassinLie ? c.titre : c.etiquette ?? c.titre);
@@ -123,6 +128,33 @@ export function texteCaddie(c: ChoseCalendrier, j: JalonBrassin, court = false):
   return `${court ? nomCourtBrassin(c.titre) : c.titre} · ${quoi}`;
 }
 
+/**
+ * CRITIQUE-12, doute Papiers en An (E13, E27, D-198 ; sa maquette as/cap/p-c1d-apres-bas : « Loyer du local … −400 / mois », une barre) : en
+ * An, douze « Loyer du local −400 » posés en marques prenaient douze lignes en escalier (220 px). Une série mensuelle d'un même plan récurrent
+ * (3 occurrences au moins, même montant, de 28 à 31 jours d'écart) devient une barre, de la première à la dernière, au montant « / mois ». Elle
+ * porte l'id de sa première occurrence (le toucher ouvre le plan, comme chacune). La pastille de la rangée compte toujours chaque occurrence.
+ */
+export function seriesEnBarres(choses: readonly ChoseCalendrier[]): ChoseCalendrier[] {
+  const groupes = new Map<string, ChoseCalendrier[]>();
+  for (const c of choses) {
+    if (c.source.genre !== 'plan' || c.source.origine !== 'recurring' || c.centimes === undefined || !c.debut) continue;
+    /* une série ne mêle pas une échéance proposée (pointillé, E47) et une échéance acceptée : chacune garde sa forme */
+    const k = `${c.source.id}|${c.centimes}|${c.proposition ?? ''}|${c.probable ? 'probable' : ''}`;
+    groupes.set(k, [...(groupes.get(k) ?? []), c]);
+  }
+  const premiers = new Map<string, ChoseCalendrier>();
+  const suivants = new Set<string>();
+  for (const g of groupes.values()) {
+    const tri = [...g].sort((x, y) => x.debut.localeCompare(y.debut));
+    const mensuelle = tri.length >= 3 && tri.every((c, i) => i === 0 || (ecartJours(tri[i - 1].debut, c.debut) >= 28 && ecartJours(tri[i - 1].debut, c.debut) <= 31));
+    if (!mensuelle) continue;
+    const dernier = tri[tri.length - 1];
+    premiers.set(tri[0].id, { ...tri[0], fin: dernier.fin || dernier.debut, parMois: true });
+    for (const c of tri.slice(1)) suivants.add(c.id);
+  }
+  return choses.flatMap(c => (suivants.has(c.id) ? [] : [premiers.get(c.id) ?? c]));
+}
+
 export interface OptionsDisposer {
   /** Largeur, à droite, où aucun nom ne se pose (le + volant, D-135). */
   reserveDroite?: number;
@@ -146,7 +178,7 @@ export interface OptionsDisposer {
 export type DeuxLignes = ModeDeuxLignes;
 
 /** `bas` (CRITIQUE-9 n° 3) : la phrase d'un brassin prend aussi la ligne au-dessous, sur `[x0, x1]` (la barre haute) ou sur `bas` (sous la barre). */
-interface Candidat { cote: CoteEtiquette; place: number; x0: number; x1: number; deux?: DeuxLignes; sansLie?: boolean; bas?: { ou: 'barre' | 'dessous'; x0: number; x1: number } }
+interface Candidat { cote: CoteEtiquette; place: number; x0: number; x1: number; deux?: DeuxLignes; sansLie?: boolean; bas?: { ou: 'barre' | 'dessous'; x0: number; x1: number }; retrait?: number }
 
 /**
  * Pose les choses d'une rangée sans qu'une barre ni un nom en touche un autre. Pure : `largeur` et `largeurColonne` viennent de la mesure.
@@ -188,20 +220,27 @@ export function disposer(choses: readonly ChoseCalendrier[], colonnes: readonly 
    * Les places d'un texte de largeur `l` à côté d'un objet [o0, o1], du côté libre : à droite, puis à gauche ; jamais sous le + volant
    * (`bord`), jamais hors de la frise. `deux` : sur deux lignes « nom ».
    */
+  /*
+   * CRITIQUE-12 n° 4 (E35, D-135, E33) : le + reste à sa place, c'est l'étiquette qui cède. Une chose posée sous le + (au-delà de `bord`) peut y
+   * rester ; son étiquette, posée à gauche, finit avant la zone du + (largeur du + et 8 px) : `finG`, et l'écart `retrait` jusqu'à sa chose.
+   */
+  const finGauche = (o0: number) => Math.min(o0 - 6, bord);
   const aCote = (o0: number, o1: number, l: number, deux: DeuxLignes = false): Candidat[] => {
-    const libreG = o0 - 8, libreD = bord - o1 - 8;
+    const finG = finGauche(o0), retrait = o0 - 6 - finG;
+    const libreG = finG - 2, libreD = bord - o1 - 8;
     return [
       ...(l > 0 && libreD >= l ? [{ cote: 'droite' as const, place: l, x0: o0, x1: o1 + 6 + l, deux }] : []),
-      ...(l > 0 && libreG >= l ? [{ cote: 'gauche' as const, place: l, x0: o0 - 6 - l, x1: o1, deux }] : [])
+      ...(l > 0 && libreG >= l ? [{ cote: 'gauche' as const, place: l, x0: finG - l, x1: o1, deux, ...(retrait > 0 ? { retrait } : {}) }] : [])
     ];
   };
   /** Le dernier recours, quand la piste d'un côté est plus étroite que le nom : le côté le plus large, raccourci (jamais sous `min`). */
   const auPlusLarge = (o0: number, o1: number, l: number, min: number): Candidat => {
-    const libreG = o0 - 8, libreD = bord - o1 - 8;
-    const durD = Math.max(0, largeur - o1 - 8), durG = Math.max(0, o0 - 4);
+    const finG = finGauche(o0), retrait = o0 - 6 - finG;
+    const libreG = finG - 2, libreD = bord - o1 - 8;
+    const durD = Math.max(0, largeur - o1 - 8), durG = Math.max(0, finG + 2);
     return libreD >= libreG
       ? { cote: 'droite', place: Math.min(Math.max(min, Math.min(l, libreD)), durD), x0: o0, x1: o1 + 6 + Math.min(Math.max(min, Math.min(l, libreD)), durD) }
-      : { cote: 'gauche', place: Math.min(Math.max(min, Math.min(l, libreG)), durG), x0: o0 - 6 - Math.min(Math.max(min, Math.min(l, libreG)), durG), x1: o1 };
+      : { cote: 'gauche', place: Math.min(Math.max(min, Math.min(l, libreG)), durG), x0: finG - Math.min(Math.max(min, Math.min(l, libreG)), durG), x1: o1, ...(retrait > 0 ? { retrait } : {}) };
   };
 
   for (const { c, p } of places) {
@@ -303,7 +342,7 @@ export function disposer(choses: readonly ChoseCalendrier[], colonnes: readonly 
     emprises.set(c.id, { emprise, o0, o1, lab, labCourt, labNom, w, marque, dureeMin, formes });
     const leCote = marque && !avecLibelle ? 'dedans' : k.cote;
     const phraseBas = k.bas ? (k.bas.ou === 'barre' ? { ou: 'barre' as const } : { ou: 'dessous' as const, x0: k.bas.x0, x1: k.bas.x1 }) : undefined;
-    items.push({ chose: c, a: p.a, b: p.b, gauche, largeur: marque ? 28 : w, ligne, marque, petite: marque && vueLarge, avecLibelle, duree: null, cote: leCote, place: k.place, deuxLignes: k.deux ?? false, ...(k.sansLie ? { sansLie: true } : {}), ...(phraseBas ? { phraseBas } : {}) });
+    items.push({ chose: c, a: p.a, b: p.b, gauche, largeur: marque ? 28 : w, ligne, marque, petite: marque && vueLarge, avecLibelle, duree: null, cote: leCote, place: k.place, deuxLignes: k.deux ?? false, ...(k.sansLie ? { sansLie: true } : {}), ...(phraseBas ? { phraseBas } : {}), ...(k.cote === 'gauche' && k.retrait ? { retrait: k.retrait } : {}) });
   }
 
   /* chaque étiquette posée à côté s'allonge dans la place libre de sa ligne (jusqu'à l'objet suivant, jamais sous le + volant), d'abord celles
@@ -318,9 +357,11 @@ export function disposer(choses: readonly ChoseCalendrier[], colonnes: readonly 
         d.place = Math.max(d.place, Math.min(e.o1 + 6 + e.lab, suivant) - e.o1 - 6);
         e.emprise[1] = e.o1 + 6 + d.place;
       } else {
-        const precedent = Math.max(0, ...autres.filter(([, b]) => b <= e.o0).map(([, b]) => b + 6));
-        d.place = Math.max(d.place, e.o0 - 6 - Math.max(e.o0 - 6 - e.lab, precedent));
-        e.emprise[0] = e.o0 - 6 - d.place;
+        /* la fin de l'étiquette : collée à sa chose, ou avant la zone du + (`retrait`, CRITIQUE-12 n° 4) */
+        const fin = e.o0 - 6 - (d.retrait ?? 0);
+        const precedent = Math.max(0, ...autres.filter(([, b]) => b <= fin).map(([, b]) => b + 6));
+        d.place = Math.max(d.place, fin - Math.max(fin - e.lab, precedent));
+        e.emprise[0] = fin - d.place;
       }
     }
   }
@@ -366,7 +407,7 @@ export function disposer(choses: readonly ChoseCalendrier[], colonnes: readonly 
       if (pose.c.deux === 'coupe') deuxCaddie = [d.chose.titre, quoi];
     }
     (lignes[pose.ligne] ||= []).push([pose.c.x0, pose.c.x1]);
-    caddies.push({ chose: d.chose, jour: j.jour, centre, ligne: pose.ligne, texte: texteVuCaddie, cote: pose.c.cote === 'gauche' ? 'gauche' : 'droite', place: pose.c.place, ...(deuxCaddie ? { lignes: deuxCaddie } : {}) });
+    caddies.push({ chose: d.chose, jour: j.jour, centre, ligne: pose.ligne, texte: texteVuCaddie, cote: pose.c.cote === 'gauche' ? 'gauche' : 'droite', place: pose.c.place, ...(deuxCaddie ? { lignes: deuxCaddie } : {}), ...(pose.c.cote === 'gauche' && pose.c.retrait ? { retrait: pose.c.retrait } : {}) });
   }
 
   /* n° 21 : le renvoi « Livraison La Cigogne · S2 › » en bout de rangée, dans la piste, sur la première ligne où il ne touche rien */
@@ -382,37 +423,50 @@ export function disposer(choses: readonly ChoseCalendrier[], colonnes: readonly 
   return { items, lignes: occupees, caddies, renvois };
 }
 
-export interface Pastille { texte: string; lecture: string; part: number; solde: number | null; debut: string; fin: string }
+/**
+ * `estime` (CRITIQUE-12 n° 2) : la somme des choses hors courbe (`horsCourbe`, une fête du carnet), jamais dans `solde` ; `confirme` : la
+ * pastille garde « confirmé S47–S52 » (faux quand le seul argent de la rangée est estimé hors courbe).
+ */
+export interface Pastille { texte: string; lecture: string; part: number; solde: number | null; estime: number | null; confirme: boolean; debut: string; fin: string }
 /** E23 : « Ventes, confirmé de S47 à S52 : 2 choses, solde +900 ». Ce qui n'est pas chiffré est dit en mots, jamais compté 0. */
 export function pastille(rangee: IdRangee, choses: readonly ChoseCalendrier[], colonnes: readonly Colonne[]): Pastille {
   /* le caddie d'un brassin répète une part de son budget : la pastille ne le recompte pas */
   const dedans = choses.filter(c => !c.brassinLie && positionDans(colonnes, c));
   const fermes = dedans.filter(c => !c.probable && !c.proposition);
   const probables = dedans.length - fermes.length;
-  const chiffrees = fermes.filter(c => c.centimes !== undefined);
+  /* CRITIQUE-12 n° 2 (E23, D-165, A2) : une fête hors courbe (« Marché de Noël +1 180 ») n'est ni comptée au solde confirmé, ni dite
+     « confirmé » : « +1 180 estimé », « recette estimée +1 180, hors courbe (pas dans Finances) » */
+  const estimees = fermes.filter(c => c.horsCourbe && c.centimes !== undefined);
+  const comptees = fermes.filter(c => !(c.horsCourbe && c.centimes !== undefined));
+  const chiffrees = comptees.filter(c => c.centimes !== undefined);
   /* CRITIQUE-5 n° 19 (E23) : un brassin posé sans budget (`coutAVenir`) ou au montant incomplet (`partiel`) a un coût à venir, dit en mots */
-  const aVenir = fermes.filter(c => c.coutAVenir || c.partiel);
-  const sansMontant = fermes.filter(c => c.centimes === undefined && !c.coutAVenir && !c.partiel).length;
+  const aVenir = comptees.filter(c => c.coutAVenir || c.partiel);
+  const sansMontant = comptees.filter(c => c.centimes === undefined && !c.coutAVenir && !c.partiel).length;
   const solde = chiffrees.length ? chiffrees.reduce((s, c) => s + (c.centimes as number), 0) : null;
+  const estime = estimees.length ? estimees.reduce((s, c) => s + (c.centimes as number), 0) : null;
+  /* seule l'estimation porte l'argent de la rangée : le mot « confirmé » part ; une rangée sans argent (Activités en jours) le garde */
+  const confirme = !(solde === null && estime !== null && !aVenir.length);
   const premier = colonnes[0]?.etiquette ?? '', dernier = colonnes[colonnes.length - 1]?.etiquette ?? '';
   const n = fermes.length;
   const nChoses = (k: number) => `${k} chose${k > 1 ? 's' : ''}`;
-  const morceaux = [`${nomRangee(rangee)}, confirmé de ${premier} à ${dernier} : ${nChoses(n)}`];
+  const morceaux = [`${nomRangee(rangee)}, ${confirme ? 'confirmé ' : ''}de ${premier} à ${dernier} : ${nChoses(n)}`];
   const jours = fermes.reduce((s, c) => s + (c.joursActifs ?? 0), 0);
   if (rangee === 'activites') {
     if (jours) morceaux.push(`${jours} j`);
   } else if (solde !== null) morceaux.push(`solde ${francsSignes(solde)}`);
-  else if (n && !aVenir.length) morceaux.push('solde non renseigné');
+  else if (comptees.length && !aVenir.length) morceaux.push('solde non renseigné');
   if (aVenir.length) morceaux.push('coût à venir');
   if (sansMontant && solde !== null) morceaux.push(`${sansMontant} sans montant`);
+  if (estime !== null) morceaux.push(`${estime < 0 ? 'coût' : 'recette'} estimée ${francsSignes(estime)}, hors courbe (pas dans Finances)`);
   if (probables) morceaux.push(`${probables} probable${probables > 1 ? 's' : ''}`);
   /* le nombre dit ce qu'on voit : toutes les choses de la fenêtre, probables comprises (une étiquette « 4 » devant 5 barres se contredit) ;
      jamais un chiffre seul (« 1 ») : « 1 chose », ou « coût à venir » quand c'est le coût qui manque */
   const nbVu = dedans.length;
   const enMots = aVenir.length ? 'coût à venir' : nbVu ? nChoses(nbVu) : '';
   const texte = rangee === 'activites' ? (jours ? `${jours} j` : nbVu ? nChoses(nbVu) : '')
-    : solde !== null ? `${francsSignes(solde)}${aVenir.length ? ' + coût à venir' : ''}` : enMots;
-  return { texte, lecture: morceaux.join(', '), part: solde === null ? 0 : Math.abs(solde), solde, debut: premier, fin: dernier };
+    : solde !== null ? `${francsSignes(solde)}${aVenir.length ? ' + coût à venir' : ''}`
+      : estime !== null && !aVenir.length ? `${francsSignes(estime)} estimé` : enMots;
+  return { texte, lecture: morceaux.join(', '), part: Math.abs(solde ?? (aVenir.length ? 0 : estime ?? 0)), solde, estime, confirme, debut: premier, fin: dernier };
 }
 
 export interface DragEtat { id: string; mode: 'glisse' | 'bord'; k: number; jours: number }
@@ -573,13 +627,15 @@ export const Rangee: React.FC<RangeeProps> = props => {
   const cleRenvois = largeursRenvois.join(',');
   /* n° 15 : au téléphone et dès 3 mois, la pastille « lié à » dit l'icône lien et le nom court ; au 1280, le texte entier */
   const lieCourt = largeur < 700 || vueLarge;
+  const auJourVue = colonnes.length > 0 && ecartJours(colonnes[0].debut, colonnes[0].fin) >= 14;
   const { items, lignes, caddies, renvois: posRenvois } = React.useMemo(
-    () => disposer(montrees, colonnes, largeurColonne, largeur, {
+    /* en An, une série mensuelle se pose en une barre (doute Papiers en An, CRITIQUE-12) */
+    () => disposer(auJourVue ? seriesEnBarres(montrees) : montrees, colonnes, largeurColonne, largeur, {
       /* CRITIQUE-5 n° 14 : partout (téléphone, paysage, 1280), un nom reste entier tant que la place existe, quitte à ouvrir une ligne */
       reserveDroite, zoneTitre, vueLarge, renvois: largeursRenvois, paysage, lieCourt
     }),
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [montrees, colonnes, largeurColonne, largeur, reserveDroite, zoneTitre, paysage, vueLarge, cleRenvois, lieCourt]
+    [montrees, colonnes, largeurColonne, largeur, reserveDroite, zoneTitre, paysage, vueLarge, cleRenvois, lieCourt, auJourVue]
   );
   const hauteurLane = lignes === 0 ? 0 : lignes * mesures.ligne + 2;
   const fantome = drag ? items.find(i => i.chose.id === drag.id) : undefined;
@@ -621,11 +677,13 @@ export const Rangee: React.FC<RangeeProps> = props => {
           <span className="cal-vide">vide</span>
         ) : (
           <span className="cal-pastille" role="img" aria-label={p.lecture} data-pastille={id}>
-            <span className="cal-pastille-p">
+            <span className={`cal-pastille-p${p.confirme ? '' : ' cal-pastille-estime'}`}>
               <i className="cal-pastille-fond" style={{ width: `${parts}%` }} />
               <span className="cal-pastille-t">{p.texte}</span>
             </span>
-            <span className="cal-conf">confirmé {p.debut}–{p.fin}</span>
+            {/* CRITIQUE-12 n° 2 : une estimation hors courbe n'est jamais « confirmé » : seule, elle se dit « hors courbe » ; à côté d'un solde
+                compté, « confirmé S47–S52 · +200 estimé » */}
+            <span className="cal-conf">{p.confirme ? `confirmé ${p.debut}–${p.fin}${p.estime !== null ? ` · ${francsSignes(p.estime)} estimé` : ''}` : 'hors courbe'}</span>
           </span>
         )}
       </header>
@@ -644,7 +702,7 @@ export const Rangee: React.FC<RangeeProps> = props => {
                 <Marque
                   key={c.id} chose={c} centre={d.gauche + 14} haut={top} hauteur={Math.min(28, mesures.barre + 2)} largeurColonne={auJour ? 0 : largeurColonne}
                   epinglee={epingles.includes(c.id)} etoilee={etoiles.includes(c.id)} selectionnee={selectionId === c.id} menuOuvert={menuId === c.id} lieCourt={lieCourt}
-                  libelle={d.avecLibelle ? { cote: d.cote === 'gauche' ? 'gauche' : 'droite', place: d.place, deux: d.deuxLignes, ...(c.brassinLie ? { texte: c.titre } : {}), ...(d.sansLie ? { sansLie: true } : {}) } : undefined}
+                  libelle={d.avecLibelle ? { cote: d.cote === 'gauche' ? 'gauche' : 'droite', place: d.place, deux: d.deuxLignes, ...(c.brassinLie ? { texte: c.titre } : {}), ...(d.sansLie ? { sansLie: true } : {}), ...(d.retrait ? { retrait: d.retrait } : {}) } : undefined}
                   decalage={surDrag && drag.mode === 'glisse' ? drag.k * largeurColonne : 0}
                   bornes={commeBarre ? [-d.a, colonnes.length - 1 - d.a] : undefined}
                   onToucher={props.barre.onToucher} onSixSemaines={props.onSixSemaines}
@@ -652,10 +710,14 @@ export const Rangee: React.FC<RangeeProps> = props => {
                 />
               );
             }
+            /* doute Porter glissé (CRITIQUE-12) : une barre coupée au bord de la fenêtre y rogne ses jalons, jamais ne les tasse */
+            const pos = positionDans(colonnes, c);
+            const coupe = pos && (pos.coupeAGauche || pos.coupeADroite)
+              ? { ...(pos.coupeAGauche ? { du: colonnes[0].debut } : {}), ...(pos.coupeADroite ? { au: colonnes[colonnes.length - 1].fin } : {}) } : undefined;
             return (
               <Barre
-                key={c.id} chose={c} gauche={d.gauche} largeur={d.largeur} haut={top} hauteur={d.phraseBas?.ou === 'barre' ? mesures.barre + mesures.ligne : mesures.barre} cote={d.cote}
-                phraseBas={d.phraseBas ? (d.phraseBas.ou === 'barre' ? { ou: 'barre' } : { ou: 'dessous', x: d.phraseBas.x0, dy: mesures.ligne }) : null} placeEtiquette={d.place} dureeACote={d.duree} deuxLignes={d.deuxLignes} sansLie={d.sansLie}
+                key={c.id} chose={c} gauche={d.gauche} largeur={d.largeur} coupe={coupe} haut={top} hauteur={d.phraseBas?.ou === 'barre' ? mesures.barre + mesures.ligne : mesures.barre} cote={d.cote}
+                phraseBas={d.phraseBas ? (d.phraseBas.ou === 'barre' ? { ou: 'barre' } : { ou: 'dessous', x: d.phraseBas.x0, dy: mesures.ligne }) : null} placeEtiquette={d.place} retrait={d.retrait} dureeACote={d.duree} deuxLignes={d.deuxLignes} sansLie={d.sansLie}
                 largeurColonne={auJour ? 0 : largeurColonne} bornes={[-d.a, colonnes.length - 1 - d.a]}
                 epinglee={epingles.includes(c.id)} etoilee={etoiles.includes(c.id)} selectionnee={selectionId === c.id} menuOuvert={menuId === c.id} lieCourt={lieCourt}
                 decalage={surDrag && drag.mode === 'glisse' ? drag.k * largeurColonne : 0}
@@ -676,7 +738,7 @@ export const Rangee: React.FC<RangeeProps> = props => {
                 {k.texte && (
                   <span
                     className={`cal-lbl cal-lbl-${k.cote} cal-lbl-caddie${k.lignes ? ' cal-lbl-2n' : ''}`} aria-hidden="true"
-                    style={{ ...(k.lignes ? { top: k.ligne * mesures.ligne, height: mesures.barre + 4 } : { top: k.ligne * mesures.ligne + 2, height: mesures.barre }), maxWidth: Math.max(40, k.place), ...(k.cote === 'droite' ? { left: k.centre + CADDIE_PX / 2 + 6 } : { right: `calc(100% - ${k.centre - CADDIE_PX / 2}px + 6px)` }) }}
+                    style={{ ...(k.lignes ? { top: k.ligne * mesures.ligne, height: mesures.barre + 4 } : { top: k.ligne * mesures.ligne + 2, height: mesures.barre }), maxWidth: Math.max(40, k.place), ...(k.cote === 'droite' ? { left: k.centre + CADDIE_PX / 2 + 6 } : { right: `calc(100% - ${k.centre - CADDIE_PX / 2 - (k.retrait ?? 0)}px + 6px)` }) }}
                   >
                     {k.lignes
                       ? <><span className="cal-lbl-l1"><span className="cal-lbl-t cal-lbl-ent">{k.lignes[0]}</span></span><span className="cal-lbl-l2"><span className="cal-lbl-t cal-lbl-ent">{k.lignes[1]}</span></span></>

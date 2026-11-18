@@ -9,7 +9,7 @@ import { courbeCaisse, courbeDecalee, creuxDepuis, type MouvementCaisse } from '
 import { HAUTEUR_MOIS, boiteEtiquette, boitesSeCroisent, creuxDe, geometrie, maxNoms, obstaclesCourbe, placerNoms } from '../../src/ui/calendrier/entete/Courbe';
 import { useOrientation } from '../../src/ui/calendrier/useOrientation';
 import { DELAI_CLIC_AVALE } from '../../src/ui/calendrier/usePointeurCourbe';
-import { CLASSE_CAISSE, GrandeCourbe, placeEtiquetteCreux, geoGrande } from '../../src/ui/calendrier/entete/GrandeCourbe';
+import { CLASSE_CAISSE, GrandeCourbe, LIGNE_LEGENDE, PLACE_DETAIL, TITRE_GRANDE, hautLegende, placeEtiquetteCreux, geoGrande } from '../../src/ui/calendrier/entete/GrandeCourbe';
 import { LectureDetail, formeTete } from '../../src/ui/calendrier/entete/LectureCourbe';
 import { BandeSemaines, pasEtiquettes } from '../../src/ui/calendrier/entete/BandeSemaines';
 import { anneeEnMois } from '../../src/domain/calendrier';
@@ -983,11 +983,12 @@ describe('CRITIQUE-4 (lot q1-entete) : le doigt à 390, le paysage, le menu, le 
     const { container, unmount } = render(<Banc {...espions()} vueInitiale="graph" />);
     const grand = Number(container.querySelector('.ent-gs')!.getAttribute('height'));
     expect(grand).toBeGreaterThan(250);
-    expect(grand).toBe(window.innerHeight - (44 + 70 + 34 + 16));
+    // CRITIQUE-12 n° 5 : sans + affiché (jsdom), le haut de la légende laisse deux lignes au-dessus des onglets ; puis le titre et la place fixe du détail
+    expect(grand).toBe(hautLegende(window.innerHeight, null) - TITRE_GRANDE - PLACE_DETAIL);
     unmount();
     largeurFenetre(390);
     const { container: c2 } = render(<Banc {...espions()} vueInitiale="graph" />);
-    expect(Number(c2.querySelector('.ent-gs')!.getAttribute('height'))).toBe(window.innerHeight - (44 + 70 + 34 + 16));
+    expect(Number(c2.querySelector('.ent-gs')!.getAttribute('height'))).toBe(hautLegende(window.innerHeight, null) - TITRE_GRANDE - PLACE_DETAIL);
     // Un écran bas : jamais sous les 250 px de sa maquette.
     Object.defineProperty(window, 'innerHeight', { value: 300, configurable: true, writable: true });
     const { container: c3 } = render(<Banc {...espions()} vueInitiale="graph" />);
@@ -1792,5 +1793,73 @@ describe('CRITIQUE-11 (lot corr11-C) : la Liste porte l’en-tête de la frise ;
       unmount();
     }
     expect(croisements).toBeGreaterThan(0);
+  });
+});
+
+describe('CRITIQUE-12 n° 5 (lot corr12-C) : en mode graph, la légende ne passe jamais sous le + volant (E12, E35)', () => {
+  // Une semaine à tendance seule (le neutre « rien de nommé (tendance) ») et deux mouvements nommés de deux rangées.
+  const courbeLeg = courbeCaisse({ depart: 418000, lundi0: LUNDI0, mouvements: [
+    { id: 't3', jour: jour(3), centimes: -25000, nom: 'Tendance', tendance: true },
+    { id: 'loyer', jour: jour(5), centimes: -40000, nom: 'Loyer', choseId: 'c-loyer' },
+    { id: 'malt', jour: jour(6), centimes: -54000, nom: 'Malt', choseId: 'c-malt' }
+  ] })!;
+  const rangeeLeg = (m: { choseId?: string }) => (m.choseId === 'c-loyer' ? 'papiers' : m.choseId === 'c-malt' ? 'achats' : undefined);
+
+  it('en portrait : « rien de nommé (tendance) » entier, et la légende porte la réserve du + (sa ligne basse finit à sa gauche)', () => {
+    const { container } = render(<GrandeCourbe courbe={courbeLeg} rangeeDe={rangeeLeg} largeur={390} hauteur={400} paysage={false} lecture={null} onFermer={() => undefined} />);
+    const leg = container.querySelector('[data-vue="graph"] .ent-leg')!;
+    expect(leg.querySelector('[data-legende="autre"]')!.textContent).toBe('rien de nommé (tendance)');
+    expect(leg.classList.contains('ent-leg--plus')).toBe(true);
+    expect(leg.getAttribute('data-reserve-plus')).toBe('oui');
+  });
+
+  it('en paysage : la légende vit dans la colonne du détail, sans la réserve du portrait', () => {
+    const { container } = render(<GrandeCourbe courbe={courbeLeg} rangeeDe={rangeeLeg} largeur={622} hauteur={240} paysage lecture={null} onFermer={() => undefined} />);
+    const leg = container.querySelector('.ent-gc-cote .ent-leg')!;
+    expect(leg.querySelector('[data-legende="autre"]')!.textContent).toBe('rien de nommé (tendance)');
+    expect(leg.classList.contains('ent-leg--plus')).toBe(false);
+  });
+
+  it('la réserve vaut la largeur du + (`--plus-cote`), posée en fin de légende : la dernière ligne s’arrête 12 px à gauche du +', async () => {
+    const fs = await import('node:fs');
+    const css = fs.readFileSync('src/ui/calendrier/entete/entete.css', 'utf8');
+    // la légende va jusqu'au bord droit du + (padding-right 0) ; réserve = + + 4 px, écart 8 px : 12 px libres à gauche du +
+    expect(css).toMatch(/\.ent-leg--plus \{[^}]*column-gap: 8px;[^}]*padding-right: 0/);
+    expect(css).toMatch(/\.ent-leg--plus::after \{[^}]*content: '';[^}]*flex: 0 0 calc\(var\(--plus-cote, 56px\) \+ 4px\)/);
+    expect(css).toMatch(/\.ent-gc-dp \{[^}]*min-height: 94px/);
+    // aucun terme coupé : chaque terme reste sur une ligne, la légende passe à la ligne entre les termes
+    expect(css).toMatch(/\.ent-leg li \{[^}]*white-space: nowrap/);
+  });
+
+  it('la place du détail ne bouge pas avec la semaine lue : la légende reste à la même hauteur (S17 la poussait sous les onglets)', () => {
+    const { container, rerender } = render(<GrandeCourbe courbe={courbeLeg} rangeeDe={rangeeLeg} largeur={390} hauteur={400} paysage={false} lecture={null} onFermer={() => undefined} />);
+    expect(container.querySelector('[data-detail-place]')).not.toBeNull();
+    rerender(<GrandeCourbe courbe={courbeLeg} rangeeDe={rangeeLeg} largeur={390} hauteur={400} paysage={false} lecture={5} onFermer={() => undefined} />);
+    expect(container.querySelector('[data-detail-place] .ent-gc-d')!.textContent).toMatch(/^S\d+, /);
+  });
+
+  it('le haut de la légende : sa première ligne finit au-dessus du +, la dernière seule est à sa hauteur ; sans +, deux lignes au-dessus des onglets', () => {
+    // 390 × 844 : onglets à 804, + de 736 à 792 (mesurés au banc)
+    expect(hautLegende(804, 736)).toBe(736 - LIGNE_LEGENDE);
+    expect(hautLegende(804, 736) + LIGNE_LEGENDE).toBeLessThanOrEqual(736);
+    expect(hautLegende(804, null) + 2 * LIGNE_LEGENDE).toBeLessThanOrEqual(804);
+    // un + plus bas que les onglets (caché, hors de l'écran) ne compte pas plus que les onglets
+    expect(hautLegende(804, 900)).toBe(hautLegende(804, null));
+  });
+
+  it('doute c2-b (E11) : l’anneau du curseur passe sous chaque nom placé (masque à 2 px de sa boîte), le point de lecture reste entier', () => {
+    const courbeC2b = courbeCaisse({ depart: 418000, lundi0: LUNDI0, mouvements })!;
+    for (const i of [4, 12, 21, 34]) {
+      const { container, unmount } = render(<Courbe courbe={courbeC2b.semaines} largeur={390} hauteur={110} curseur={i} />);
+      const g = container.querySelector('[data-curseur]')!;
+      const anneau = g.querySelector('[data-curseur-anneau]')!;
+      const id = /url\(#(.+)\)/.exec(anneau.getAttribute('mask') ?? '')?.[1];
+      expect(id, `S${i} : l'anneau sans masque`).toBeTruthy();
+      const masque = g.querySelector(`mask[id="${id}"]`)!;
+      const visibles = Array.from(container.querySelectorAll('.ent-nom-g:not(.ent-nom-cache) [data-nom-courbe]'));
+      expect(masque.querySelectorAll('[data-curseur-trou]').length).toBeGreaterThanOrEqual(visibles.length);
+      expect(g.querySelector('.ent-cur-pt')!.hasAttribute('mask')).toBe(false);
+      unmount();
+    }
   });
 });
