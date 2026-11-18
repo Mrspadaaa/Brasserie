@@ -36,6 +36,8 @@
 }
 .cal-lier-p > span { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .cal-lier-p:active { background: rgb(var(--cave-700)); }
+/* lot A (18.11, n° 2) : les mêmes puces, dépliées sous les boutons de la fiche par « Lier » */
+.cal-det-lier { margin-top: 8px; border-top: 1px solid rgb(var(--cave-700)); padding-top: 6px; }
 
 /* La vue Liste ouverte sur la poche « Sans date » : la poche s'arrête sous l'en-tête collé, pas dessous. */
 .cal-liste [data-poche] { scroll-margin-top: 200px; }

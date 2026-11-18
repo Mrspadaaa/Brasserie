@@ -319,7 +319,9 @@ export function disposer(choses: readonly ChoseCalendrier[], colonnes: readonly 
          phrase entière n'y tient pas, la barre porte sa forme courte (« J0 / 28 · 21 déc. », puis « J0 / 28 »), la phrase entière au détail. */
       /* CRITIQUE-5 n° 1 et 23 : un brassin dont la durée entière ne tient pas sur une ligne la garde sur deux, hors paysage (as/cap/p-repos :
          « Blonde d'automne −148 », puis « J0 / 28 ») : « Saison de ferme −137 », puis « pas brassée · prête le 15 déc. » */
-      const deuxDuree = !paysage && formes.length && !lie ? aCote(o0, o1, Math.ceil(Math.max(labNom - 6, largeurTexte(formes[0], 500))) + 8, 'duree') : [];
+      /* Lot A du test en ligne (18.11, n° 5) : plus de durée sur une 2e ligne non plus (« Ttt −148 », puis « pas brassée · prête le 3 déc. ») ;
+         CAL-BARRE-HAUTE : une ligne de texte, la forme courte qui tient, la phrase entière au détail */
+      const deuxDuree: Candidat[] = [];
       /* CRITIQUE-6 n° 6 : « Commande groupée » puis « de malt −540 » quand le nom et son montant n'ont la place d'aucun côté sur une ligne
          (hors paysage : une ligne de 20 px ne porte pas deux lignes de texte) ; le nom n'est raccourci que si même ainsi la place manque */
       const cp = !paysage && !lie && !formes.length ? couperNom(texteVu(c), montantBarre(c)) : null;

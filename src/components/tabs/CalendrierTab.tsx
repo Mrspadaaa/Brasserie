@@ -11,8 +11,9 @@ import { useOrientation } from '../../ui/calendrier/useOrientation';
 import { EnTeteCalendrier, type VueCalendrier } from '../../ui/calendrier/entete/EnTete';
 import { fenetreDePeriode, periodeDeFenetre, SEMAINES_ANNEE, type FenetreSemaines } from '../../ui/calendrier/entete/Fenetre';
 import { Frise, ordreComplet } from '../../ui/calendrier/frise/Frise';
+import type { SaisieRapide } from '../../ui/finance/prevision/PlanSheetC';
 import { Message, type MessageCal } from '../../ui/calendrier/frise/Message';
-import { MenuAppuiLong } from '../../ui/calendrier/frise/MenuAppuiLong';
+import { MenuAppuiLong, type LiensPossibles } from '../../ui/calendrier/frise/MenuAppuiLong';
 import { DetailChose } from '../../ui/calendrier/frise/DetailChose';
 import { FeuilleAjout, type ResultatAjout } from '../../ui/calendrier/frise/FeuilleAjout';
 import { VueListe } from '../../ui/calendrier/frise/VueListe';
@@ -56,15 +57,15 @@ interface CalendrierTabProps {
    * fenêtre qui contient sa semaine de brassage (CRITIQUE-5 n° 17, D-191).
    */
   onOpenCourses: (batchId?: string) => void;
-  /** « Plus de détails › » d'un brassin : la quick action de l'app. */
-  onPoserBrassin: () => void;
-  /** Reçoit le lundi (aaaa-mm-jj) : « Plus de détails › » d'une fête. */
-  onPoserFete: (lundi: string) => void;
+  /** « Plus de détails › » d'un brassin : la quick action de l'app, sur la recette déjà choisie dans la feuille rapide s'il y en a une. */
+  onPoserBrassin: (recetteId?: string) => void;
+  /** Reçoit le lundi (aaaa-mm-jj) : « Plus de détails › » d'une fête ; `saisie` : le nom et le montant déjà tapés (lot A, n° 3). */
+  onPoserFete: (lundi: string, saisie?: SaisieRapide) => void;
   /**
    * Reçoit le lundi et la rangée : « Plus de détails › » d'un achat, d'un travail ou d'un papier ouvre Prévoir une dépense (PlanSheet, `date`),
    * avec la catégorie de sa rangée (CRITIQUE-5 n° 3, D-68 : un achat ne s'ouvre plus en « Charges fixes », qui le rangeait dans Papiers).
    */
-  onPoserDepense: (lundi: string, rangee: IdRangee, categorie?: FinanceCategory) => void;
+  onPoserDepense: (lundi: string, rangee: IdRangee, categorie?: FinanceCategory, saisie?: SaisieRapide) => void;
   /** LA période de l'app (E07, ET-PER) : le calendrier l'écrit, Finances la lit. */
   periode?: Periode;
   onPeriode?: (periode: Periode) => void;
@@ -629,8 +630,14 @@ export function CalendrierTab(props: CalendrierTabProps) {
   const plusDeDetails = useCallback((b: BrouillonAjout) => {
     const lundi = b.debut ?? premierLundi;
     setFeuille(null);
-    if (b.rangee === 'brassins') onPoserBrassin();
-    else if (b.rangee === 'fetes') onPoserFete(lundi);
+    /* lot A du test en ligne (18.11, n° 3) : ce qui est déjà tapé passe à la feuille complète, jamais perdu. Brassin : la recette choisie ;
+       fête : le nom et le montant ; achat, travail, papier : le nom et le montant dans « Prévoir une dépense ». Rien de tapé : l'appel d'avant. */
+    const titre = b.titre.trim();
+    const saisie: SaisieRapide = { ...(titre ? { titre } : {}), ...(b.centimes ? { centimes: b.centimes, direction: b.signe === '+' ? 'in' as const : 'out' as const } : {}) };
+    const tape = !!(saisie.titre || saisie.centimes);
+    if (b.rangee === 'brassins') { if (b.recetteId) onPoserBrassin(b.recetteId); else onPoserBrassin(); }
+    else if (b.rangee === 'fetes') { if (tape) onPoserFete(lundi, saisie); else onPoserFete(lundi); }
+    else if (tape) onPoserDepense(lundi, b.rangee, CATEGORIE_DE_RANGEE[b.rangee], saisie);
     else onPoserDepense(lundi, b.rangee, CATEGORIE_DE_RANGEE[b.rangee]);
   }, [premierLundi, onPoserBrassin, onPoserFete, onPoserDepense]);
 
@@ -643,6 +650,16 @@ export function CalendrierTab(props: CalendrierTabProps) {
   }, [ecrire]);
 
   /* ---------- le détail d'une chose (f4-b) ---------- */
+  /** À quoi une chose peut se lier (appui long et fiche) : brassins, clients, et D386 les fêtes et activités qui durent (une barre sur la
+      frise), pour lier un jalon d'un jour (la tireuse) à la foire. */
+  const liensDe = (c: ChoseCalendrier): LiensPossibles => ({
+    brassins: don.batches.filter(b => !b.archivedAt).map(b => ({ id: b.id, nom: b.name || b.id })),
+    clients: don.clients.filter(cl => !cl.archivedAt).map(cl => ({ id: cl.id, nom: cl.name })),
+    evenements: modele.choses.filter(x => x.source.genre === 'creative' && !x.sansDate && !estPonctuel(x) && x.id !== c.id).map(x => ({ id: (x.source as { id: string }).id, nom: x.titre }))
+  });
+  /** Les fêtes et activités qui durent, pour le groupe « Fêtes et activités » de Modifier (D386). */
+  const evenementsLiables = useMemo(() => modele.choses.filter(x => x.source.genre === 'creative' && !x.sansDate && !estPonctuel(x)).map(x => ({ id: (x.source as { id: string }).id, nom: x.titre })), [modele.choses]);
+
   const detail = (chose: ChoseCalendrier) => {
     const semaineIdx = chose.debut ? modele.courbe?.semaines.findIndex(s => s.lundi === lundiDe(chose.debut)) ?? -1 : -1;
     const libre = semaineIdx >= 0 ? modele.courbe?.semaines[semaineIdx]?.libre : undefined;
@@ -667,6 +684,14 @@ export function CalendrierTab(props: CalendrierTabProps) {
         {...(sansDate ? { onPoser: () => { setSelectionId(null); setFeuille({ mode: 'modifier', initial: { ...brouillonDepuisChose(chose), debut: premierLundi, debutChoisi: true }, chose, cle: ++compteur.current }); } } : {})}
         {...(chose.probable && chose.source.genre === 'plan' && !chose.proposition ? { onAccepter: () => { void ecrire(accepterVente(chose, ctxRef.current)); } } : {})}
         {...(editable ? { onMettreDeCote: (actif: boolean) => { void ecrire(mettreDeCote(chose, actif, ctxRef.current)); } } : {})}
+        {...(!chose.proposition && !sansDate ? {
+          /* lot A du test en ligne (18.11, n° 2, D386) : « Lier » dans la fiche, les mêmes puces que l'appui long ; la fiche reste ouverte et
+             montre aussitôt « lié à … » */
+          liens: liensDe(chose),
+          onLier: (l: { batchId?: string; clientId?: string; evenementId?: string }, nom: string) => {
+            void ecrire(lier(chose, l, ctxGestes, nom), true, chose.id, true).then(ok => { if (ok) { ouvertureParGeste.current = Date.now() + 1200; setSelectionId(chose.id); } });
+          }
+        } : {})}
       />
     );
   };
@@ -860,12 +885,7 @@ export function CalendrierTab(props: CalendrierTabProps) {
               const effet = ret.effet?.texte ?? ret.effetMots;
               return effet ? { effet } : {};
             })()}
-            liens={{
-              brassins: don.batches.filter(b => !b.archivedAt).map(b => ({ id: b.id, nom: b.name || b.id })),
-              clients: don.clients.filter(cl => !cl.archivedAt).map(cl => ({ id: cl.id, nom: cl.name })),
-              /* D386 : les fêtes et activités qui durent (une barre sur la frise), pour lier un jalon d'un jour (la tireuse) à la foire */
-              evenements: modele.choses.filter(x => x.source.genre === 'creative' && !x.sansDate && !estPonctuel(x) && x.id !== c.id).map(x => ({ id: (x.source as { id: string }).id, nom: x.titre }))
-            }}
+            liens={liensDe(c)}
             onEpingler={() => {
               const avant = epingles, on = !avant.includes(c.id);
               setEpingles(basculer(avant, c.id)); setMenu(null);
@@ -903,6 +923,7 @@ export function CalendrierTab(props: CalendrierTabProps) {
           contexte={ctxAjout}
           semaines={modele.semaines}
           sansPlusDeDetails={feuille.sansPlusDeDetails || feuille.mode === 'modifier'}
+          evenements={evenementsLiables.filter(e => !(feuille.chose?.source.genre === 'creative' && feuille.chose.source.id === e.id))}
           onPlusDeDetails={plusDeDetails}
           onAjouter={ajouterDepuisFeuille}
           onFermer={() => setFeuille(null)}

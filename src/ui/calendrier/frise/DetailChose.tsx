@@ -3,6 +3,7 @@ import { Beer, Check, ChevronRight, Link2, Receipt, ShoppingCart, Wheat, X } fro
 import { ETAPE_BRASSIN } from './etapes';
 import { dateDeSemaine, etiquetteS, francsSignes, jourLisible, lundiDe, type ChoseCalendrier, type JalonBrassin, type JalonId } from '../../../domain/calendrier';
 import { CLASSE_TEINTE, apercuSansNom, champ, dureeVue, lieMontre, nomLie } from './Marque';
+import type { LiensPossibles } from './MenuAppuiLong';
 
 /**
  * f4-b (E30) : toucher une chose ouvre son détail sous sa barre. Un brassin : ses étapes datées avec leurs icônes (brassage, fermentation,
@@ -31,6 +32,9 @@ export interface DetailChoseProps {
   /** Une vente prévue : « Facturer › » (E37, D-99). */
   onFacturer?: () => void;
   onMettreDeCote?: (actif: boolean) => void;
+  /** Lot A du test en ligne (18.11, n° 2, D386) : à quoi la chose peut se lier, les mêmes puces que l'appui long. Avec `onLier`. */
+  liens?: LiensPossibles;
+  onLier?: (liens: { batchId?: string; clientId?: string; evenementId?: string }, nom: string) => void;
 }
 
 const LIBELLE_OUVRIR: Record<ChoseCalendrier['ouvre']['ecran'], string> = {
@@ -149,6 +153,22 @@ export const DetailChose: React.FC<DetailChoseProps> = props => {
     return () => { if (raf !== null) window.cancelAnimationFrame?.(raf); };
   }, [chose.id]);
   const brassin = chose.source.genre === 'batch';
+  const [lierOuvert, setLierOuvert] = React.useState(false);
+  React.useEffect(() => setLierOuvert(false), [chose.id]);
+  const lierPossible = !!(props.onLier && props.liens);
+  /* les mêmes groupes que l'appui long : un brassin ne se lie pas à lui-même (deux du même nom : un bouton), une fête non plus */
+  const groupesLier = ((): Array<{ cle: 'brassins' | 'clients' | 'evenements'; titre: string; puces: ReadonlyArray<{ id: string; nom: string }> }> => {
+    const l = props.liens;
+    if (!l) return [];
+    const soi = chose.source.genre === 'batch' || chose.source.genre === 'creative' ? (chose.source as { id: string }).id : '';
+    const brassins = l.brassins.filter(b => b.id !== soi).filter((b, i, t) => t.map(x => x.nom).lastIndexOf(b.nom) === i);
+    const evenements = (l.evenements ?? []).filter(e => e.id !== soi);
+    return [
+      { cle: 'brassins' as const, titre: 'Brassins', puces: brassins },
+      { cle: 'clients' as const, titre: 'Clients', puces: l.clients },
+      { cle: 'evenements' as const, titre: 'Fêtes et activités', puces: evenements }
+    ].filter(g => g.puces.length > 0);
+  })();
   const commander = chose.jalons?.find(j => j.id === 'commander');
   const montant = chose.centimes !== undefined ? francsSignes(chose.centimes) : null;
   const semaine = chose.debut ? dateDeSemaine(lundiDe(chose.debut)) : null;
@@ -237,8 +257,27 @@ export const DetailChose: React.FC<DetailChoseProps> = props => {
           <button type="button" className="cal-b" aria-pressed={!!chose.miseDeCote} onClick={() => props.onMettreDeCote?.(!chose.miseDeCote)}>Mettre de côté</button>
         )}
         {props.onModifier && <button type="button" className="cal-b" onClick={props.onModifier}>Modifier</button>}
+        {lierPossible && <button type="button" className="cal-b" aria-expanded={lierOuvert} onClick={() => setLierOuvert(o => !o)}><Link2 size={16} aria-hidden="true" />Lier</button>}
         {props.onRetirer && <button type="button" className="cal-b cal-b-ret" onClick={props.onRetirer}>Retirer</button>}
       </div>
+      {/* lot A du test en ligne (18.11, n° 2, D386) : « Lier » déplie les puces de l'appui long, groupées ; un toucher pose le lien, la fiche
+          reste ouverte et montre « lié à … » */}
+      {lierPossible && lierOuvert && props.liens && (
+        <div className="cal-det-lier" data-det-lier>
+          {groupesLier.map(g => (
+            <div key={g.cle} role="group" aria-label={g.titre} className="cal-lier-g" data-lier={g.cle}>
+              <span className="cal-lier-t">{g.titre}</span>
+              {g.puces.map(p => (
+                <button key={p.id} type="button" className="cal-lier-p" data-lier-id={p.id}
+                  onClick={() => { setLierOuvert(false); props.onLier?.(g.cle === 'brassins' ? { batchId: p.id } : g.cle === 'clients' ? { clientId: p.id } : { evenementId: p.id }, p.nom); }}>
+                  <Link2 size={16} aria-hidden="true" /><span>{p.nom}</span>
+                </button>
+              ))}
+            </div>
+          ))}
+          {!groupesLier.length && <p className="cal-det-p">Aucun brassin, client ni fête à lier pour l’instant.</p>}
+        </div>
+      )}
     </div>
   );
 };

@@ -277,7 +277,9 @@ button.cal-lie::before { content: ''; position: absolute; inset: -6px -2px; }
 .cal-frise[data-doigt] :focus-visible, .cal-frise[data-doigt] .cal-lie.cal-lie-icone:focus-visible { outline: none; }
 
 /* D386 : le fil discret d'un jalon à sa barre liée (autre rangée) ; au toucher de la barre, ses jalons liés s'allument, les autres pâlissent */
-.cal-traits path.cal-fil { stroke: rgb(var(--cave-300)); stroke-width: 1; stroke-dasharray: none; opacity: 0.45; }
+/* lot A (18.11, n° 5) : `--cave-300` n'existe dans aucun thème (themes.css : 50, 200, 400, 600…) ; la couleur faite de ce jeton était invalide, le
+   trait héritait `stroke: none` et le fil au repos comme le fil pâle ne se peignaient pas. Le gris le plus proche : `--cave-400`. */
+.cal-traits path.cal-fil { stroke: rgb(var(--cave-400)); stroke-width: 1; stroke-dasharray: none; opacity: 0.45; }
 .cal-traits path.cal-fil-allume { stroke: rgb(var(--area-agenda)); stroke-width: 1.25; stroke-dasharray: 3 3; opacity: 0.8; }
 .cal-traits path.cal-fil-pale { opacity: 0.15; }
 .cal-marque.cal-ponctuel-allume { box-shadow: 0 0 0 2px rgb(var(--cave-50)); }

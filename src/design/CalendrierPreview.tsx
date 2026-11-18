@@ -340,6 +340,9 @@ export const BancCalendrier: React.FC<BancProps> = ({ aujourdhui: jour, etat, so
   const rien = () => undefined;
   const [renvoi, setRenvoi] = useState<{ texte: string; quitte: boolean } | null>(null);
   const vers = (texte: string, quitte = true) => () => setRenvoi({ texte, quitte });
+  /* lot A (18.11, n° 3) : ce que « Plus de détails › » emporte, dit au banc (« · ZZ TEST — Tireuse · −150 CHF ») */
+  const saisieLisible = (s?: { titre?: string; centimes?: number; direction?: 'in' | 'out' }) =>
+    `${s?.titre ? ` · ${s.titre}` : ''}${s?.centimes ? ` · ${s.direction === 'in' ? '+' : '−'}${(s.centimes / 100).toLocaleString('fr-CH')} CHF` : ''}`;
   const nomBrassin = (id: string) => e.batches.find(b => b.id === id)?.name ?? id;
   const lundiLisible = (iso: string) => new Intl.DateTimeFormat('fr-CH', { day: 'numeric', month: 'short', timeZone: 'UTC' }).format(new Date(`${iso}T00:00:00Z`));
   return (
@@ -360,8 +363,8 @@ export const BancCalendrier: React.FC<BancProps> = ({ aujourdhui: jour, etat, so
             transactions={e.transactions} batches={e.batches} stockItems={[]}
             onOpenBatch={id => setRenvoi({ texte: `la fiche du brassin ${nomBrassin(id)}`, quitte: true })} onOpenFinances={vers('Finances')} onOpenAgenda={vers('l’Agenda')}
             onOpenCourses={vers('les Courses')} onPoserBrassin={vers('la quick action Brassin', false)}
-            onPoserFete={lundi => setRenvoi({ texte: `Poser une fête, semaine du ${lundiLisible(lundi)}`, quitte: true })}
-            onPoserDepense={lundi => setRenvoi({ texte: `Prévoir une dépense, datée du ${lundiLisible(lundi)}`, quitte: false })}
+            onPoserFete={(lundi, s) => setRenvoi({ texte: `Poser une fête, semaine du ${lundiLisible(lundi)}${saisieLisible(s)}`, quitte: true })}
+            onPoserDepense={(lundi, _r, _c, s) => setRenvoi({ texte: `Prévoir une dépense, datée du ${lundiLisible(lundi)}${saisieLisible(s)}`, quitte: false })}
             onOuvrirBudget={id => setRenvoi({ texte: `le budget du brassin ${nomBrassin(id)}`, quitte: false })}
             onOpenPiece={id => setRenvoi({ texte: `la pièce ${id} (Payé)`, quitte: true })}
             donnees={donnees} port={port} aujourdhui={aujourdhui}

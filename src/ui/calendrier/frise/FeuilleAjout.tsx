@@ -3,7 +3,7 @@ import { Sheet } from '../../Sheet';
 import { Input } from '../../Input';
 import { ChampMontant } from '../../finance/ChampMontant';
 import {
-  appliquerPuce, aUneFenetre, aUnMontant, brouillonVide, choisirJours, jourPose, libelleMontant, peutMettreDeCote, preteLe, puceJours, puces, resumeFenetre, toucherSemaine,
+  appliquerPuce, aDesJoursActifs, aUneFenetre, aUnMontant, brouillonVide, choisirJours, jourPose, libelleMontant, peutMettreDeCote, preteLe, puceJours, puces, resumeFenetre, toucherSemaine,
   type BrouillonAjout, type Confirmation, type ContexteAjout, type Puce
 } from '../../../domain/calendrierAjout';
 import { RANGEES, etiquetteS, francs, jourLisible, nomRangee, type Rangee, type SemaineCalendrier } from '../../../domain/calendrier';
@@ -35,9 +35,19 @@ export interface FeuilleAjoutProps {
   onPlusDeDetails?: (b: BrouillonAjout) => void;
   onAjouter: (b: BrouillonAjout) => Promise<ResultatAjout> | ResultatAjout;
   onFermer: () => void;
+  /** Modifier (lot A du test en ligne, 18.11, n° 2, D386) : les fêtes et activités qui durent, auxquelles lier la chose ; vide ou absent : pas de groupe. */
+  evenements?: ReadonlyArray<{ id: string; nom: string }>;
 }
 
 const RANGEES_AVEC_DETAILS: readonly Rangee[] = ['brassins', 'fetes', 'achats', 'travaux', 'papiers'];
+
+/** Le brouillon lié à cette fête (ou à aucune) ; les autres liens (brassin, client) restent ; plus aucun lien : `liens` part. */
+function avecEvenement(b: BrouillonAjout, evenementId: string | undefined): BrouillonAjout {
+  const { evenementId: _ancien, ...autres } = b.liens ?? {};
+  const liens = { ...autres, ...(evenementId ? { evenementId } : {}) };
+  const { liens: _l, ...reste } = b;
+  return Object.keys(liens).length ? { ...reste, liens } : reste;
+}
 /** L'écart entre deux cases de semaine, en px. */
 const ECART_SEMAINES = 4;
 
@@ -67,7 +77,7 @@ function PuceNom({ p, choisie, onChoisir }: { p: Puce; choisie: boolean; onChois
   );
 }
 
-export const FeuilleAjout: React.FC<FeuilleAjoutProps> = ({ mode, initial, contexte, semaines, sansPlusDeDetails, onPlusDeDetails, onAjouter, onFermer }) => {
+export const FeuilleAjout: React.FC<FeuilleAjoutProps> = ({ mode, initial, contexte, semaines, sansPlusDeDetails, onPlusDeDetails, onAjouter, onFermer, evenements }) => {
   /* un brassin se pose avec son temps en cuve déjà choisi (28 j) : « prête le … » se lit d'emblée (D-22, D-39) */
   const avecDefauts = (x: BrouillonAjout): BrouillonAjout => (mode === 'ajouter' && x.rangee === 'brassins' && !x.tempsEnCuve ? { ...x, tempsEnCuve: 28 } : x);
   const [b, setB] = useState<BrouillonAjout>(() => avecDefauts(initial));
@@ -84,7 +94,7 @@ export const FeuilleAjout: React.FC<FeuilleAjoutProps> = ({ mode, initial, conte
   /* CRITIQUE-7 n° 4 : « prête le » se compte depuis le jour de pose (brassé au plus tôt aujourd'hui, jamais un lundi passé) ; la date dite
      est celle que « Ajouter » écrit (`jourPose`), sauf une fenêtre, qui part du lundi */
   const prete = preteLe(b, contexte.aujourdhui);
-  const jourDit = b.debut ? (fenetre && (b.fin || b.joursActifs) ? b.debut : jourPose(b.debut, contexte.aujourdhui)) : null;
+  const jourDit = b.debut ? (fenetre && (b.fin || (aDesJoursActifs(b.rangee) && b.joursActifs)) ? b.debut : jourPose(b.debut, contexte.aujourdhui)) : null;
 
   /* E34, CRITIQUE-3 n° 28 : 13 semaines à l'écran, à 390 aussi (cases de 24 px au moins, la ligne entière se touche), et la rangée défile
      sur les 52 semaines de la courbe. La largeur se mesure ; sans mesure (jsdom), celle de la fenêtre moins les marges de la feuille. */
@@ -253,7 +263,7 @@ export const FeuilleAjout: React.FC<FeuilleAjoutProps> = ({ mode, initial, conte
           </div>
         </div>
 
-        {fenetre && (
+        {aDesJoursActifs(b.rangee) && (
           <div role="group" aria-label="Jours actifs" className="flex flex-wrap items-center gap-1.5">
             <span className="text-sm text-cave-200">Jours actifs</span>
             {puceJours(b).map(p => (
@@ -268,6 +278,21 @@ export const FeuilleAjout: React.FC<FeuilleAjoutProps> = ({ mode, initial, conte
             type="button" aria-pressed={!!b.miseDeCote} onClick={() => regler({ ...b, miseDeCote: !b.miseDeCote })}
             className="min-h-10 w-full rounded-control border border-cave-700 px-3 text-left text-sm font-semibold text-cave-50 aria-pressed:border-cave-50 aria-pressed:bg-cave-850"
           >Mettre de côté <small className="font-normal text-cave-200">· au fil des semaines, rendu au paiement</small></button>
+        )}
+
+        {/* lot A du test en ligne (18.11, n° 2, D386) : en Modifier, la fête ou l'activité à laquelle la chose est liée ; une puce choisie se
+            retouche pour défaire le lien. Écrit à « Enregistrer » (`evenementId`). */}
+        {mode === 'modifier' && !brassin && evenements && evenements.length > 0 && (
+          <div role="group" aria-label="Fêtes et activités" data-feuille-evenements className="flex flex-wrap items-center gap-1.5">
+            <span className="text-sm text-cave-200">Liée à</span>
+            {evenements.map(e => {
+              const choisi = b.liens?.evenementId === e.id;
+              return (
+                <button key={e.id} type="button" aria-pressed={choisi} onClick={() => regler(avecEvenement(b, choisi ? undefined : e.id))}
+                  className="min-h-9 rounded-full border border-cave-700 px-3 text-sm text-cave-50 aria-pressed:border-cave-50 aria-pressed:bg-cave-850">{e.nom}</button>
+              );
+            })}
+          </div>
         )}
 
         {/* le nom au clavier est le cas rare : il vient en dernier, après les puces, le signe, les semaines (CAL-CLAV, D-22, D-39) */}

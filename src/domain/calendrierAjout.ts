@@ -80,6 +80,11 @@ const RANGEES_ARGENT: readonly Rangee[] = ['fetes', 'ventes', 'achats', 'travaux
 const RANGEES_FENETRE: readonly Rangee[] = ['fetes', 'achats', 'travaux', 'activites'];
 
 export const aUneFenetre = (rangee: Rangee): boolean => RANGEES_FENETRE.includes(rangee);
+/**
+ * CAL-JALON-UN-JOUR (18.11, « une vente ou un Achat … est sur un seul moment, un seul jour ») : un achat se pose sur un jour, comme une vente.
+ * Il n'a pas de jours actifs ; il garde une fenêtre seulement sur plusieurs semaines (mettre de côté), où il reste une barre.
+ */
+export const aDesJoursActifs = (rangee: Rangee): boolean => aUneFenetre(rangee) && rangee !== 'achats';
 export const aUnMontant = (rangee: Rangee): boolean => RANGEES_ARGENT.includes(rangee);
 
 /** Un brouillon vide sur une rangée ; `lundi` préréglé = la semaine choisie à l'ouverture. */
@@ -254,10 +259,12 @@ export function preteLe(b: BrouillonAjout, aujourdhui?: string): string | null {
 /** La fenêtre écrite : du lundi du début au dimanche de la fin ; jours actifs seulement si une puce est touchée. Sans fin ni jours actifs : aucune fenêtre. */
 export function fenetreDuBrouillon(b: BrouillonAjout): FenetreCalendrier | null {
   if (!b.debut || !aUneFenetre(b.rangee)) return null;
-  if (!b.fin && !b.joursActifs) return null;
+  /* un achat : ses jours actifs ne comptent pas (CAL-JALON-UN-JOUR) ; sans fin, il s'écrit à une date, comme la vente, et se pose en jalon */
+  const jours = aDesJoursActifs(b.rangee) ? b.joursActifs : undefined;
+  if (!b.fin && !jours) return null;
   return {
     du: lundiDe(b.debut), au: dimancheDe(b.fin ?? b.debut),
-    ...(b.joursActifs ? { joursActifs: b.joursActifs } : {}), ...(b.miseDeCote && b.centimes ? { miseDeCote: true } : {})
+    ...(jours ? { joursActifs: jours } : {}), ...(b.miseDeCote && b.centimes ? { miseDeCote: true } : {})
   };
 }
 
@@ -340,14 +347,14 @@ export function versEnregistrement(b: BrouillonAjout, ctx: ContexteAjout): Conve
   if (probable) {
     const document: FinancialPlan = {
       ...probable, title: b.titre.trim() || probable.title, date, amountCents: Math.round(b.centimes), direction: 'in', status: 'active',
-      ...(b.clientId ? { clientId: b.clientId } : {}), ...(b.liens?.batchId ? { batchId: b.liens.batchId } : {})
+      ...(b.clientId ? { clientId: b.clientId } : {}), ...(b.liens?.batchId ? { batchId: b.liens.batchId } : {}), ...(b.liens?.evenementId ? { evenementId: b.liens.evenementId } : {})
     };
     return { ok: true, enregistrement: { cible: 'plan', collection: 'financialPlans', document, remplace: true }, resume: `${document.title} · ${etiquetteS(document.date)} · vente confirmée` };
   }
   const document: FinancialPlan = {
     id: idPar(ctx, 'PLAN'), title: b.titre.trim(), date, amountCents: Math.round(b.centimes), direction: b.signe === '+' ? 'in' : 'out',
     category: CATEGORIE[b.rangee] ?? 'divers', source: 'manual', status: 'active', createdAt: ctx.maintenant ?? `${ctx.aujourdhui}T12:00:00.000Z`,
-    ...(fenetre ? { fenetre } : {}), ...(b.clientId ? { clientId: b.clientId } : {}), ...(b.liens?.batchId ? { batchId: b.liens.batchId } : {})
+    ...(fenetre ? { fenetre } : {}), ...(b.clientId ? { clientId: b.clientId } : {}), ...(b.liens?.batchId ? { batchId: b.liens.batchId } : {}), ...(b.liens?.evenementId ? { evenementId: b.liens.evenementId } : {})
   };
   return { ok: true, enregistrement: { cible: 'plan', collection: 'financialPlans', document }, resume: `${document.title} · ${etiquetteS(document.date)}` };
 }
@@ -379,9 +386,13 @@ export function versModification(b: BrouillonAjout, chose: ChoseCalendrier): { o
   if ('raison' in v) return v;
   const fenetre = fenetreDuBrouillon(b);
   const debut = b.debut as string;
+  /* lot A du test en ligne (18.11, n° 2, D386) : le lien à une fête, changé dans Modifier, s'écrit ; défait, il part (undefined). Inchangé :
+     rien n'est écrit. Un plan le porte en `evenementId`, une chose du carnet dans `liens`. */
+  const evenementChange = (b.liens?.evenementId ?? undefined) !== (chose.liens?.evenementId ?? undefined);
   if (chose.source.genre === 'creative') {
+    const liens = b.liens && Object.keys(b.liens).length ? b.liens : undefined;
     return { ok: true, ecritures: [{ op: 'patch', collection: 'creativeItems', id: chose.source.id, patch: {
-      title: b.titre.trim(), date: fenetre?.du ?? lundiDe(debut), fenetre: fenetre ?? undefined,
+      title: b.titre.trim(), date: fenetre?.du ?? lundiDe(debut), fenetre: fenetre ?? undefined, ...(evenementChange ? { liens } : {}),
       ...(chose.rangee === 'fetes'
         ? (b.signe === '+' ? { estimatedRevenue: b.centimes ? b.centimes / 100 : undefined, estimatedCost: undefined } : { estimatedCost: b.centimes ? b.centimes / 100 : undefined, estimatedRevenue: undefined })
         : { estimatedCost: b.centimes ? b.centimes / 100 : undefined })
@@ -390,7 +401,8 @@ export function versModification(b: BrouillonAjout, chose: ChoseCalendrier): { o
   if (chose.source.genre === 'plan' && chose.source.origine === 'manual') {
     if (!b.centimes || b.centimes <= 0) return { ok: false, raison: 'Indique un montant : un montant inconnu n’est pas 0.' };
     return { ok: true, ecritures: [{ op: 'patch', collection: 'financialPlans', id: chose.source.id, patch: {
-      title: b.titre.trim(), date: fenetre?.miseDeCote ? fenetre.au : fenetre?.du ?? lundiDe(debut), amountCents: Math.round(b.centimes), direction: b.signe === '+' ? 'in' : 'out', fenetre: fenetre ?? undefined
+      title: b.titre.trim(), date: fenetre?.miseDeCote ? fenetre.au : fenetre?.du ?? lundiDe(debut), amountCents: Math.round(b.centimes), direction: b.signe === '+' ? 'in' : 'out', fenetre: fenetre ?? undefined,
+      ...(evenementChange ? { evenementId: b.liens?.evenementId } : {})
     } }] };
   }
   return { ok: false, raison: 'Cette chose se modifie dans sa source : ouvre-la depuis son détail.' };

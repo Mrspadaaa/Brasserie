@@ -55,6 +55,8 @@ export interface CreativeLabSectionRequest {
   at: number;
   /** Rubrique « À faire » seulement : ouvre la pose d'une tâche, la perle sur ce jour (aaaa-mm-jj), par exemple la semaine touchée au Calendrier. */
   date?: string;
+  /** Rubrique « À faire », depuis « Plus de détails › » d'une fête au Calendrier : le nom et le montant déjà tapés (centimes, absolu, et son sens). */
+  saisie?: { titre?: string; centimes?: number; direction?: 'in' | 'out' };
 }
 
 interface CreativeLabTabProps {
@@ -93,6 +95,8 @@ export const CreativeLabTab: React.FC<CreativeLabTabProps> = ({
   const handledSectionRequest = React.useRef<CreativeLabSectionRequest | null>(null);
   const [assistantOpen,setAssistantOpen] = useState(false);
   const [dateDepart, setDateDepart] = useState<string | undefined>(undefined);
+  /** Le nom et le montant tapés au Calendrier (lot A, n° 3) : le nom remplit « Quoi », le montant part avec la tâche posée ; oubliés à la fermeture. */
+  const [saisieDepart, setSaisieDepart] = useState<CreativeLabSectionRequest['saisie']>(undefined);
 
   const items = useStorageValue(StorageService.getCreativeItems);
   /** Carnet (ks4) : Tarifs pour le prix deviné, bières connues (recettes et tarifs) pour la case Bière. */
@@ -106,8 +110,8 @@ export const CreativeLabTab: React.FC<CreativeLabTabProps> = ({
     if (handled?.section === openSectionRequest.section && handled.at === openSectionRequest.at) return;
     handledSectionRequest.current = openSectionRequest;
     setActiveSection(openSectionRequest.section);
-    if (openSectionRequest.section === 'event' && openSectionRequest.date) { setDateDepart(openSectionRequest.date); setIsAdding(true); }
-    else setDateDepart(undefined);
+    if (openSectionRequest.section === 'event' && openSectionRequest.date) { setDateDepart(openSectionRequest.date); setSaisieDepart(openSectionRequest.saisie); setIsAdding(true); }
+    else { setDateDepart(undefined); setSaisieDepart(undefined); }
     onOpenSectionRequestHandled?.();
   }, [openSectionRequest, onOpenSectionRequestHandled]);
 
@@ -165,9 +169,17 @@ export const CreativeLabTab: React.FC<CreativeLabTabProps> = ({
   };
   /** À faire (kd4) : une tâche posée sur le fil ; date `JJ.MM.AAAA`, ou aucune (« sans date »). */
   const createTask = (titre: string, date: string) => {
-    StorageService.addCreativeItem({ id: `CR-${Date.now()}`, type: 'event', title: titre, status: 'todo', date: date || undefined });
+    /* le montant tapé au Calendrier : recette d'une fête (+) ou coût (−), comme l'écrit la feuille rapide (versEnregistrement) */
+    const c = saisieDepart?.centimes;
+    const montant = c && c > 0 ? (saisieDepart?.direction === 'in' ? { estimatedRevenue: c / 100 } : { estimatedCost: c / 100 }) : {};
+    StorageService.addCreativeItem({ id: `CR-${Date.now()}`, type: 'event', title: titre, status: 'todo', date: date || undefined, ...montant });
+    setSaisieDepart(undefined);
     setIsAdding(false);
   };
+  React.useEffect(() => { if (!isAdding) setSaisieDepart(undefined); }, [isAdding]);
+  const montantDepart = saisieDepart?.centimes && saisieDepart.centimes > 0
+    ? `${saisieDepart.direction === 'in' ? '+' : '−'}${(saisieDepart.centimes / 100).toLocaleString('fr-CH', { maximumFractionDigits: 2 })} CHF`
+    : undefined;
 
   const handleToggleStatus = (item: CreativeItem) => {
     let nextStatus: CreativeItem['status'] = 'idea';
@@ -274,7 +286,7 @@ export const CreativeLabTab: React.FC<CreativeLabTabProps> = ({
       {activeSection==='pricing-test'&&<TarifsFrise onNoter={()=>{setIsAdding(true);setSignalNoter(Date.now());}} apres={<IdeesPrix idees={currentItems} ajout={isAdding} onAjout={setIsAdding} onCreer={(i)=>StorageService.addCreativeItem(i)} onMaj={(i)=>StorageService.updateCreativeItem(i)} onSupprimer={(i)=>handleDelete(i.id)} signal={signalNoter} apres={assistantBouton}/>}/>}
 
       {onglet === 'carnet' && <NoteCarnet items={items} filtre={filtre} onFiltre={(f) => { setFiltre(f); setIsAdding(false); }} mode={modeRangerNote()} tarifs={tarifs} bieres={bieres}
-        vues={{ bieres: vueBieres, contacts: <ContactsView items={currentItems} adding={isAdding} onAdding={setIsAdding} onCreate={createContact} onConvert={handleConvertToClient} onUpdate={updateContact} onRemove={(item) => handleDelete(item.id)} />, afaire: <TodoTimeline items={currentItems} adding={isAdding} onAdding={setIsAdding} onCreate={createTask} onToggle={handleToggleStatus} onEdit={setEditing} dateDepart={dateDepart} /> }}
+        vues={{ bieres: vueBieres, contacts: <ContactsView items={currentItems} adding={isAdding} onAdding={setIsAdding} onCreate={createContact} onConvert={handleConvertToClient} onUpdate={updateContact} onRemove={(item) => handleDelete(item.id)} />, afaire: <TodoTimeline items={currentItems} adding={isAdding} onAdding={setIsAdding} onCreate={createTask} onToggle={handleToggleStatus} onEdit={setEditing} dateDepart={dateDepart} {...(saisieDepart?.titre ? { titreDepart: saisieDepart.titre } : {})} {...(montantDepart ? { montantDepart } : {})} /> }}
         assistant={assistantBouton} onAjouter={(i) => StorageService.addCreativeItem(i)} onMaj={(i) => StorageService.updateCreativeItem(i)} onRetirer={handleDelete}
         onEdit={setEditing} onConvert={handleConvertToClient} onTarifs={() => { setOnglet('tarifs'); setIsAdding(false); }} focusDemande={focusCarnet} />}
 

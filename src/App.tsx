@@ -293,7 +293,7 @@ export const App: React.FC = () => {
   }, [ouvrirCarnet]);
   const [labSectionRequest, setLabSectionRequest] = useState<CreativeLabSectionRequest | null>(null);
   /** Calendrier, « Prévoir une dépense » : la feuille de prévision (écriture prévue, non payée), datée de la semaine touchée. */
-  const [prevoirDepense, setPrevoirDepense] = useState<{ date: string; categorie?: FinanceCategory } | null>(null);
+  const [prevoirDepense, setPrevoirDepense] = useState<{ date: string; categorie?: FinanceCategory; saisie?: { titre?: string; centimes?: number; direction?: 'in' | 'out' } } | null>(null);
   /** Calendrier, « Budget › » d'un brassin (D-71) : la feuille de budget existante, sur le brassin de cet id. */
   const [budgetBrassinId, setBudgetBrassinId] = useState<string | null>(null);
   useEffect(() => {
@@ -1311,15 +1311,15 @@ export const App: React.FC = () => {
               }
               runPlus('courses');
             }}
-            onPoserBrassin={() => setQuickAction('brew-batch', actionLauncherRef.current)}
-            onPoserFete={(lundi) => {
-              setLabSectionRequest({ section: 'event', at: Date.now(), date: lundi });
+            onPoserBrassin={(recetteId) => { setBrewRecipeId(recetteId); setQuickAction('brew-batch', actionLauncherRef.current); }}
+            onPoserFete={(lundi, saisie) => {
+              setLabSectionRequest({ section: 'event', at: Date.now(), date: lundi, ...(saisie ? { saisie } : {}) });
               navigateToCreativeLab();
             }}
-            onPoserDepense={(lundi, _rangee, categorie) => {
+            onPoserDepense={(lundi, _rangee, categorie, saisie) => {
               /* CRITIQUE-6 n° 3 (D-68, E34) : la catégorie vient de la rangée d'où l'on part (`CATEGORIE_DE_RANGEE` du calendrier) ; un achat
                  de matières est « Brassage » (rangé dans Achats), jamais « Charges fixes » (Papiers). PlanSheet la pose dans la prévision neuve. */
-              setPrevoirDepense({ date: lundi, ...(categorie ? { categorie } : {}) });
+              setPrevoirDepense({ date: lundi, ...(categorie ? { categorie } : {}), ...(saisie ? { saisie } : {}) });
             }}
             periode={globalTimeFilter}
             onPeriode={(p) => setGlobalTimeFilter(p)}
@@ -1438,7 +1438,7 @@ export const App: React.FC = () => {
       />}
 
       {/* Quick Action Modal (Scanner IA, Matching Stock interactif, Brassin, Vente) */}
-      {prevoirDepense && <React.Suspense fallback={null}><PlanSheet date={prevoirDepense.date} {...(prevoirDepense.categorie ? { categorie: prevoirDepense.categorie } : {})} onClose={() => setPrevoirDepense(null)} /></React.Suspense>}
+      {prevoirDepense && <React.Suspense fallback={null}><PlanSheet date={prevoirDepense.date} {...(prevoirDepense.categorie ? { categorie: prevoirDepense.categorie } : {})} {...(prevoirDepense.saisie ? { saisie: prevoirDepense.saisie } : {})} onClose={() => setPrevoirDepense(null)} /></React.Suspense>}
       {budgetBrassinId && batches.some(b => b.id === budgetBrassinId) && <React.Suspense fallback={null}><BrewBudgetDialog batch={batches.find(b => b.id === budgetBrassinId)} onClose={() => setBudgetBrassinId(null)} /></React.Suspense>}
       <ModalOpenerContext.Provider value={quickActionOpener.current}><DeferredSurface active={quickAction !== null} fallback={<Sheet open={quickAction !== null} title="Chargement…" onClose={() => setQuickAction(null)}><p role="status">Ouverture…</p></Sheet>}><QuickActionModal
         isOpen={quickAction !== null}

@@ -21,11 +21,15 @@ interface Props {
   onEdit: (item: CreativeItem) => void;
   /** Le jour où poser la perle neuve (aaaa-mm-jj), par exemple le lundi de la semaine touchée au Calendrier ; absent : dans 14 jours. */
   dateDepart?: string;
+  /** Le nom déjà tapé au Calendrier (« Plus de détails › » d'une fête) : « Quoi » s'ouvre rempli. */
+  titreDepart?: string;
+  /** Le montant déjà tapé au Calendrier, lisible (« +2 400 CHF ») : rappelé sous « Quoi », il part avec la tâche. */
+  montantDepart?: string;
 }
 
 const JOURS_PAR_DEFAUT = 14;
 
-export const TodoTimeline: React.FC<Props> = ({ items, adding, onAdding, onCreate, onToggle, onEdit, dateDepart }) => {
+export const TodoTimeline: React.FC<Props> = ({ items, adding, onAdding, onCreate, onToggle, onEdit, dateDepart, titreDepart, montantDepart }) => {
   const aujourdhui = useMemo(() => new Date(), []);
   const taches = useMemo(() => items.map((i) => ({ id: i.id, title: i.title, date: i.date, status: i.status })), [items]);
   const [jours, setJours] = useState(JOURS_PAR_DEFAUT);
@@ -41,6 +45,7 @@ export const TodoTimeline: React.FC<Props> = ({ items, adding, onAdding, onCreat
   const demo = items.some((i) => estDemo(i.id));
 
   useEffect(() => { if (!recent) return; const t = setTimeout(() => setRecent(null), 9000); return () => clearTimeout(t); }, [recent]);
+  useEffect(() => { if (adding && titreDepart) setTitre(titreDepart); }, [adding, titreDepart]);
   useEffect(() => { if (adding) { setJours((dateDepart ? joursJusquAu(aujourdhui, dateDepart) : null) ?? JOURS_PAR_DEFAUT); setTimeout(() => fantomeRef.current?.scrollIntoView({ block: 'center', behavior: 'auto' }), 60); } }, [adding]);
 
   const cocher = (id: string) => {
@@ -169,6 +174,7 @@ export const TodoTimeline: React.FC<Props> = ({ items, adding, onAdding, onCreat
           <div className="tl-sh"><h2>Nouvelle tâche</h2><button type="button" className="tl-x" aria-label="Fermer" onClick={fermer}><X size={18} aria-hidden="true" /></button></div>
           <label className="tl-lbl" htmlFor="tl-quoi">Quoi</label>
           <input id="tl-quoi" className="tl-in" type="text" autoFocus autoComplete="off" value={titre} onChange={(e) => setTitre(e.target.value)} placeholder="Commander les capsules…" />
+          {montantDepart && <p className="tl-lbl" data-montant-repris>Montant repris du calendrier : {montantDepart}</p>}
           <div className="tl-row">
             <button type="button" className="tl-sec" disabled={!titre.trim()} onClick={() => poser(false)}>Sans date</button>
             <button type="submit" className="tl-cta" disabled={!titre.trim()}><Plus size={18} aria-hidden="true" />Poser au {jourMois(dateChoisie)}</button>
