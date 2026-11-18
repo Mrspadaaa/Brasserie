@@ -33,6 +33,11 @@
 .cal-lie-z { position: relative; flex: none; display: inline-flex; pointer-events: auto; }
 button.cal-lie { white-space: nowrap; }
 button.cal-lie > svg { flex: none; }
+/* en ligne 1, n° 1 (« C’est quoi ces deux paniers ? ») : à court de place, la pastille du lien cède avant le nom (vu au banc en 3 mois :
+   « 3 fûts La Cigogne » rendu à 0 px derrière « Blonde d’automne ») ; elle garde son icône, son nom finit en points de suite */
+.cal-lbl .cal-lie-z { flex: 0 1000 auto; min-width: 28px; }
+.cal-lbl .cal-lie-z > button.cal-lie { flex: 0 1 auto; min-width: 0; }
+.cal-lbl button.cal-lie > span { min-width: 0; overflow: hidden; text-overflow: ellipsis; }
 button.cal-lie::before { content: ''; position: absolute; inset: -6px -2px; }
 .cal-lbl:has(.cal-lie-ap) { overflow: visible; z-index: 8; }
 .cal-lie-ap { position: absolute; left: 0; top: calc(100% + 4px); z-index: 8; width: max-content; max-width: 280px; padding: 6px 10px; border-radius: 10px; border: 1px solid var(--c); background: rgb(var(--cave-900)); color: rgb(var(--cave-50)); font-size: 14px; line-height: 18px; font-weight: 500; white-space: normal; box-shadow: 0 6px 16px rgb(var(--cave-950) / 0.3); }
@@ -108,18 +113,28 @@ button.cal-lie::before { content: ''; position: absolute; inset: -6px -2px; }
 .cal-ph-fermentation { opacity: 0.6; }
 .cal-ph-garde { opacity: 0.4; }
 .cal-ph-dry-hop { opacity: 0.8; }
-/* CRITIQUE-5 n° 29 : le centre du rond est borné à sa barre (`--x` posé par Barre.tsx) : aucun demi-point hors de la grille, ni à droite ni à gauche */
-.cal-jalon { position: absolute; left: clamp(5px, var(--x, 0%), calc(100% - 5px)); bottom: -6px; z-index: 2; width: 10px; height: 10px; margin-left: -5px; border-radius: 50%; border: 2px solid var(--c); background: rgb(var(--cave-950)); }
-.cal-jalon::before { content: ''; position: absolute; inset: -5px -7px; }
-.cal-paysage .cal-jalon { left: clamp(4px, var(--x, 0%), calc(100% - 4px)); bottom: -5px; width: 8px; height: 8px; margin-left: -4px; border-width: 1.5px; }
-.cal-paysage .cal-jalon::before { inset: -3px -8px; }
+/* CRITIQUE-5 n° 29 : le centre de l'icône est borné à sa barre (`--x` posé par Barre.tsx) : aucune demi-icône hors de la grille, ni à droite ni à gauche.
+   CAL-POINTS-MUETS (18.11, « plutot utiliser des mini icone. et une couleur pour le type de procédé ») : chaque étape est un mini picto dans un
+   disque de la couleur de son procédé (`--e`, posé par Barre.tsx depuis etapes.ts), cerné du fond pour se détacher de la barre. Les zones de
+   prise gardent leur place d'avant (24 px de large, 44 px pour la fin, dans la ligne de 30 px). */
+.cal-jalon { position: absolute; left: clamp(8px, var(--x, 0%), calc(100% - 8px)); bottom: -7px; z-index: 2; box-sizing: border-box; display: grid; place-items: center; width: 16px; height: 16px; margin-left: -8px; border-radius: 50%; border: 1.5px solid rgb(var(--cave-950)); background: var(--e, var(--c)); color: rgb(var(--cave-950)); font-style: normal; }
+.cal-jalon > svg { width: 10px; height: 10px; pointer-events: none; }
+.cal-jalon::before { content: ''; position: absolute; inset: 0 -4px -4px; }
+.cal-paysage .cal-jalon { left: clamp(7px, var(--x, 0%), calc(100% - 7px)); bottom: -6px; width: 14px; height: 14px; margin-left: -7px; border-width: 1px; }
+.cal-paysage .cal-jalon > svg { width: 9px; height: 9px; }
+.cal-paysage .cal-jalon::before { inset: 0 -5px -2px; }
 /* CRITIQUE-5 n° 11 (D-103, E25) : le jalon de fin se saisit au doigt : une zone de prise de 44 px de large, invisible, posée au-dessus de la poignée
    du bord (même geste : écrire `finPrevue`). En hauteur, elle reste dans la ligne de sa barre (30 px de pas) : jamais sur le jalon de la barre du
    dessus ni de celle du dessous. Le milieu de la barre reste à la barre (glisser). */
 .cal-jalon[data-glissable='fin'] { z-index: 4; }
-.cal-jalon[data-glissable='fin']::before { inset: -18px -17px -4px; }
-.cal-paysage .cal-jalon[data-glissable='fin']::before { inset: -10px -18px -3px; }
-.cal-jalon[data-glissable='false'] { opacity: 0.8; }
+.cal-jalon[data-glissable='fin']::before { inset: -13px -14px -3px; }
+.cal-paysage .cal-jalon[data-glissable='fin']::before { inset: -5px -15px -2px; }
+/* CAL-POINTS-MUETS (18.11) : l'icône touchée est cerclée de sa couleur, et sa bulle « Fermentation · 23 nov. » se pose sous la barre, jamais dessus */
+.cal-jalon.cal-jalon-vu { z-index: 5; box-shadow: 0 0 0 2px var(--e, var(--c)); transform: scale(1.15); }
+.cal-point-bulle { position: absolute; left: clamp(5px, var(--x, 0%), calc(100% - 5px)); top: calc(100% + 10px); z-index: 9; transform: translateX(-50%); display: flex; align-items: center; gap: 6px; width: max-content; max-width: 260px; padding: 4px 10px; border-radius: 10px; border: 1.5px solid var(--e, var(--c)); background: rgb(var(--cave-900)); color: rgb(var(--cave-50)); font-size: 14px; line-height: 18px; font-weight: 600; white-space: nowrap; pointer-events: none; box-shadow: 0 6px 16px rgb(var(--cave-950) / 0.3); }
+.cal-point-bulle > svg { flex: none; color: var(--e, var(--c)); }
+/* la bulle passe au-dessus de la barre et du nom de la ligne du dessous (vu au banc à 390 : « Stout maison » la coupait) */
+.cal-barre:has(.cal-point-bulle) { z-index: 10; }
 .cal-pts { position: absolute; left: 6px; right: 6px; top: 3px; height: 7px; pointer-events: none; }
 .cal-pts > i { position: absolute; width: 7px; height: 7px; margin-left: -3.5px; border-radius: 50%; background: rgb(var(--cave-50)); box-shadow: 0 0 0 1.5px rgb(var(--cave-900)); }
 .cal-duree { position: absolute; left: 8px; right: 8px; top: 1px; font-style: normal; font-size: 14px; line-height: 18px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; pointer-events: none; color: rgb(var(--cave-50)); }

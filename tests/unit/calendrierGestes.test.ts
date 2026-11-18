@@ -98,13 +98,15 @@ describe('A5 : déplacer garde la longueur, les sources non déplaçables disent
 });
 
 describe('A6 : l’effet sur la caisse dit la première semaine qui change, une seule fois', () => {
-  it('« S51 : 5 064 → 4 524 » et jamais la semaine redite', () => {
+  /* En ligne 1, n° 4 (18.11) : le bandeau d'un glissé dit l'effet sur le chiffre clé (sa valeur, sa semaine), plus « S51 : 5 064 → 4 524 » qui
+     faisait croire à un gain ; l'effet de la semaine (`effet.texte`) reste celui de A6 */
+  it('« S51 : 5 064 → 4 524 » pour l’effet ; au glissé, le chiffre clé et son creux ; jamais une semaine redite', () => {
     const { courbe, chose, p } = courbeMalt();
     const r = bien(deplacer(chose, -1, ctx({ plans: [p], courbe })));
     expect(r.effet).toMatchObject({ numero: 51, avant: 506400, apres: 452400, texte: 'S51 : 5 064 → 4 524' });
-    expect(r.message.texte).toBe('S51 : 5 064 → 4 524');
-    expect(r.message.lecture).toBe('S51 : 5 064 → 4 524 · Annuler');
-    expect(r.message.lecture.match(/S\d+/g)).toHaveLength(1);
+    expect(r.message.texte).toBe('À dépenser 4 524 : creux S52 → S51');
+    expect(r.message.lecture).toBe('À dépenser 4 524 : creux S52 → S51 · Annuler');
+    expect(r.message.lecture.match(/S\d+/g)).toEqual(['S52', 'S51']);
     expect(r.courbeApres!.semaines[4].libre).toBe(452400);
   });
   it('dupliquer et retirer disent aussi leur effet, sans redire la semaine', () => {
@@ -432,13 +434,15 @@ describe('CRITIQUE-9 n° 6 et n° 8 : glisser et dupliquer un brassin disent leu
   })!;
   const effetSeul = /^S\d+ : −?[\d’\s]+ → −?[\d’\s]+$/;
 
-  it('n° 6 : glisser un brassin budgété, affiché en S47, de 4 colonnes dit « S47 : 4 972 → 5 064 », sans « → S » ; chaque sortie suit sa propre date', () => {
+  /* En ligne 1, n° 4 (18.11) : le bandeau dit l'effet sur le chiffre clé (4 927, creux de S50 en S1), plus « S47 : 4 972 → 5 064 » ; il ne
+     redit toujours pas le trajet du brassin (« Saison de ferme : S47 → S51 ») ; l'effet de la semaine reste celui de A6 */
+  it('n° 6 : glisser un brassin budgété, affiché en S47, de 4 colonnes dit son effet sur le chiffre clé, sans le trajet du brassin ; chaque sortie suit sa propre date', () => {
     const chose = choseBrassin(saison, AUJOURDHUI)!;
     const courbe = sorties(chose, [['achats', '2026-11-16', -9200], ['emballage', '2026-12-07', -4500]]);
     const r = bien(deplacer(chose, 4, ctx({ batches: [saison], courbe })));
-    expect(r.message.texte).toMatch(effetSeul);
-    expect(r.message.texte).not.toMatch(/→ S/);
-    expect(r.message.texte).toBe('S47 : 4 972 → 5 064');
+    expect(r.effet?.texte).toMatch(effetSeul);
+    expect(r.message.texte).not.toMatch(/Saison de ferme|S47 → S51/);
+    expect(r.message.texte).toBe('À dépenser 4 927 : creux S50 → S1');
     expect(r.effet).toMatchObject({ numero: 47, avant: 497200, apres: 506400 });
     /*
      * CRITIQUE-10 n° 1 : la barre est affichée en S47 (aujourd'hui) ; 4 colonnes plus loin, c'est le lundi de S51, 14 déc. (jamais 10 nov. + 28 j =

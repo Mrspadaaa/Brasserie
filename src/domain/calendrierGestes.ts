@@ -8,7 +8,7 @@ import {
   type ChoseCalendrier, type CibleOuverture, type JalonId
 } from './calendrier';
 import {
-  courbeAvec, courbeAvecMise, courbeDecalee, courbeSans, effetCaisse,
+  courbeAvec, courbeAvecMise, courbeDecalee, courbeSans, creuxDepuis, effetCaisse,
   type CourbeCaisse, type EffetCaisse, type MiseDeCote, type MouvementCaisse
 } from './calendrierCaisse';
 import { enregistrementIdee } from './calendrierAjout';
@@ -82,6 +82,25 @@ const annuler = (texte: string, lien?: Message['lien']): Message => ({ texte, ac
 const refus = (raison: string, ouvrir?: CibleOuverture, lien?: Message['lien']): Resolution => ({ ok: false, raison, ...(ouvrir ? { ouvrir } : {}), message: { texte: raison, ...(lien ? { lien } : {}), lecture: `${raison}${lien ? ` · ${lien.texte}` : ''}` } });
 const nouvelId = (ctx: ContexteGestes, p: string) => (ctx.nouvelId ?? ((x: string) => `${x}-${globalThis.crypto.randomUUID()}`))(p);
 const SEMAINE = 7;
+
+/**
+ * Test en ligne 1, n° 4 (18.11) : glisser l'achat « ZZ TEST » de S48 en S50 disait « S48 : −672 → −660 », un gain de 12 en apparence, alors
+ * que le chiffre clé restait −672 et que son creux passait en S50. Le message d'un glissé dit l'effet sur le chiffre clé (« à dépenser sans
+ * passer sous 0 », `creuxDepuis` sur toute la courbe, comme l'en-tête) : sa valeur et sa semaine, avant → après, chaque morceau inchangé dit
+ * une seule fois (« À dépenser −672 : creux S48 → S50 »). `null` : courbe inconnue, ou rien ne bouge dans la caisse (le message garde alors le
+ * nom et le trajet).
+ */
+export function texteEffetCreux(avant: CourbeCaisse | null, apres: CourbeCaisse | null, effet: EffetCaisse | null): string | null {
+  if (!avant || !apres || !effet) return null;
+  const a = creuxDepuis(avant, 0), b = creuxDepuis(apres, 0);
+  if (!a || !b) return null;
+  const va = francs(a.centimes), vb = francs(b.centimes), sa = `S${a.numero}`, sb = `S${b.numero}`;
+  /* le chiffre clé ne bouge pas : la semaine qui change (la forme de f1-a, as-gestes.js), et le chiffre clé dit inchangé */
+  if (va === vb && sa === sb) return `${effet.texte} · à dépenser inchangé`;
+  if (va === vb) return `À dépenser ${va} : creux ${sa} → ${sb}`;
+  if (sa === sb) return `À dépenser : ${va} → ${vb} · ${sa}`;
+  return `À dépenser : ${va} · ${sa} → ${vb} · ${sb}`;
+}
 
 /** E28 : peut-on déplacer cette chose ? Sinon, la raison nomme l'écran où la régler. */
 export function peutDeplacer(chose: ChoseCalendrier): { ok: true } | { ok: false; raison: string; ouvrir: CibleOuverture } {
@@ -201,13 +220,13 @@ export function deplacer(chose: ChoseCalendrier, semaines: number, ctx: Contexte
     /* le trajet part de la semaine AFFICHÉE (S47 → S48), jamais du jour prévu passé (S46) */
     return {
       ok: true, ecritures: [{ op: 'patch', collection: 'batches', id: batch.id, patch }], effet, promesse, courbeApres,
-      message: annuler(effet ? effet.texte : `${chose.titre} : ${etiquetteS(depart)} → ${etiquetteS(nouveau)}`)
+      message: annuler(texteEffetCreux(ctx.courbe, courbeApres, effet) ?? `${chose.titre} : ${etiquetteS(depart)} → ${etiquetteS(nouveau)}`)
     };
   }
   if (chose.deplacable !== true) return refus(chose.deplacable.raison, chose.ouvre);
   const avant = ctx.courbe, apres = avant ? courbeDecalee(avant, chose.id, jours) : null;
   const effet = effetCaisse(avant, apres);
-  const message = annuler(effet ? effet.texte : `${chose.titre} : ${etiquetteS(chose.debut)} → ${etiquetteS(decale(chose.debut, jours))}`);
+  const message = annuler(texteEffetCreux(avant, apres, effet) ?? `${chose.titre} : ${etiquetteS(chose.debut)} → ${etiquetteS(decale(chose.debut, jours))}`);
   if (source.genre === 'creative') {
     const item = { date: decale(chose.debut, jours) };
     return { ok: true, ecritures: [{ op: 'patch', collection: 'creativeItems', id: source.id, patch: { ...item, ...(chose.fenetre ? { fenetre: fenetreDecalee(chose.fenetre, jours) } : {}) } }], effet, promesse: null, courbeApres: apres, message };

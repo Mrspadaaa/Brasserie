@@ -241,15 +241,26 @@ describe('E06, E13 : la fenêtre et l’année', () => {
     expect(e.onVue).toHaveBeenCalledWith('annee');
   });
 
-  it('B5 : lâchée avant, la fenêtre revient et le message dit de tirer jusqu’au bout', () => {
+  it('CAL-PERIODE-LIBRE (18.11, « Je peux pas choisir une période donnée ») : lâchée avant 80 %, la fin posée au doigt devient la période ; plus courte aussi', () => {
     const e = espions();
     render(<Banc {...e} />);
+    /* 390 px pour 52 semaines : 7,5 px la semaine ; la fin (S52, x 45) posée à x 150 : 20 semaines, S47 – S13 2027 (2026 a 53 semaines ISO) */
     fireEvent.pointerDown(poignee(), { pointerId: 1, clientX: 45, button: 0 });
     fireEvent.pointerMove(window, { pointerId: 1, clientX: 150 });
     fireEvent.pointerUp(window, { pointerId: 1, clientX: 150 });
     expect(e.onVue).not.toHaveBeenCalled();
-    expect(screen.getByText('Tire jusqu’au bout : l’année')).toBeInTheDocument();
-    expect(screen.getByLabelText('Fenêtre : S47 – S52')).toBeInTheDocument();
+    expect(e.onFenetre).toHaveBeenLastCalledWith({ du: LUNDI0, semaines: 20 });
+    expect(e.onPeriode).toHaveBeenLastCalledWith({ genre: 'dates', du: LUNDI0, au: ajouterJours(LUNDI0, 20 * 7 - 1) });
+    /* l'étiquette de la fenêtre dit la même période que la frise (ses colonnes : `onFenetre`) */
+    expect(document.querySelector('.ent-cadre')?.getAttribute('aria-label')).toBe('Fenêtre : S47 – S13 2027');
+    expect(screen.queryByText('Tire jusqu’au bout : l’année')).toBeNull();
+    /* plus courte : la fin ramenée à 3 semaines. Sans mesure (jsdom), la courbe vaut 65 px × 20 colonnes = 1 300 px, 25 px la semaine :
+       la fin (500 px) ramenée de 425 px tombe sur 75 px, 3 semaines */
+    fireEvent.pointerDown(poignee(), { pointerId: 2, clientX: 500, button: 0 });
+    fireEvent.pointerMove(window, { pointerId: 2, clientX: 75 });
+    fireEvent.pointerUp(window, { pointerId: 2, clientX: 75 });
+    expect(e.onFenetre).toHaveBeenLastCalledWith({ du: LUNDI0, semaines: 3 });
+    expect(screen.getByLabelText('Fenêtre : S47 – S49')).toBeInTheDocument();
   });
 
   it('E13 : dans l’année, la bande passe en 12 mois, le mois du creux est cerclé avec son montant, et la poignée ramène à la fenêtre d’avant', () => {
@@ -740,15 +751,15 @@ describe('CRITIQUE-3 n° 11 et 33 : une seule échelle de mois dans l’An, des 
 });
 
 describe('CRITIQUE-3 n° 7 : les messages de l’en-tête passent par le canal unique, la date part au toucher suivant', () => {
-  it('b4 : « Tire jusqu’au bout » par onMessage, seulement au lâcher avant 80 % ; jamais pendant le tirage ; jamais à 90 % ; retiré à l’arrivée dans l’An', () => {
+  it('b4 : « Tire jusqu’au bout » par onMessage, seulement au toucher sans glisser (CAL-PERIODE-LIBRE : lâchée avant 80 %, la fin est posée) ; jamais pendant le tirage ; jamais à 90 % ; retiré à l’arrivée dans l’An', () => {
     const e = espions();
     const onMessage = vi.fn();
     render(<Banc {...e} onMessage={onMessage} />);
     const fin = () => screen.getByRole('button', { name: /Poignée de fin/ });
     fireEvent.pointerDown(fin(), { pointerId: 1, clientX: 45, button: 0 });
-    fireEvent.pointerMove(window, { pointerId: 1, clientX: 195 });
+    fireEvent.pointerMove(window, { pointerId: 1, clientX: 46 });
     expect(onMessage).not.toHaveBeenCalled();
-    fireEvent.pointerUp(window, { pointerId: 1, clientX: 195 });
+    fireEvent.pointerUp(window, { pointerId: 1, clientX: 46 });
     expect(onMessage).toHaveBeenCalledTimes(1);
     expect(onMessage).toHaveBeenCalledWith({ genre: 'annee', texte: 'Tire jusqu’au bout : l’année' });
     // Le canal l'affiche : l'en-tête ne le rend pas lui-même (un seul message à la fois).

@@ -335,7 +335,49 @@ const ETATS = [
     attendu: [/S\d+, \d{1,2} ?[–-] ?\d{1,2} \p{L}+/u] },
 
   { n: '07', nom: 'f1a-pendant', geste: 'glisser la Hotte de 2 colonnes, doigt tenu', jouer: async p => { await glisserChose(p, 'Hotte', 2, { tenu: true }); }, attendu: [/lâcher ici/], fin: lacher },
-  { n: '08', nom: 'f1a-apres', geste: 'glisser la Hotte de 2 colonnes, lâcher', jouer: async p => { await glisserChose(p, 'Hotte', 2); }, attendu: [/S\d+ : [−\d\s’']+ → [−\d\s’']+/, /Annuler/] },
+  /* en ligne 1, n° 4 (18.11) : le bandeau du glissé dit l'effet sur le chiffre clé (« À dépenser −672 : creux S48 → S50 », ou « S50 : a → b ·
+     à dépenser inchangé »), plus « S48 : −672 → −660 » seul, qui faisait croire à un gain */
+  { n: '08', nom: 'f1a-apres', geste: 'glisser la Hotte de 2 colonnes, lâcher', jouer: async p => { await glisserChose(p, 'Hotte', 2); }, attendu: [/À dépenser [−\d\s’']+ : creux S\d+ → S\d+|À dépenser : [−\d\s’']+ → [−\d\s’']+ · S\d+|À dépenser : [−\d\s’']+ · S\d+ → [−\d\s’']+ · S\d+|S\d+ : [−\d\s’']+ → [−\d\s’']+ · à dépenser inchangé|à dépenser inchangé[\s·]*S\d+ : [−\d\s’']+ → [−\d\s’']+/, /Annuler/] },
+  /* ---------- en ligne 1 (18.11), correctifs du test en ligne et plaintes du brasseur au téléphone ---------- */
+  /* n° 1 (« C’est quoi ces deux paniers ? ») : en 3 mois et dans l'An, chaque picto de la frise porte son nom à côté */
+  ...[['L1a', 'marques-3mois', /^3 mois/], ['L1b', 'marques-an', /^An\b/]].map(([n, nom, choix]) => ({
+    n, nom, geste: `menu période : ${choix.source.replace(/[\^\\b]/g, '')}`, cave: n === 'L1a', jouer: async p => { await menuPeriode(p, choix); },
+    attendu: [fn(async p => p.evaluate(() => {
+      const vis = e => { const r = e.getBoundingClientRect(); return r.width > 0 && r.height > 0 && r.right > 0 && r.left < innerWidth; };
+      const marques = [...document.querySelectorAll('[data-frise] [data-marque], [data-frise] [data-caddie]')].filter(vis);
+      const noms = [...document.querySelectorAll('[data-frise] .cal-lbl')].filter(vis).filter(e => (e.textContent || '').trim().length > 1);
+      /* un nom rendu à 0 px (une pastille de lien qui prend toute la place) n'est pas un nom : chaque nom d'étiquette fait 24 px au moins */
+      const ecrases = noms.flatMap(e => [...e.querySelectorAll('.cal-lbl-t')]).filter(t => t.getBoundingClientRect().width < 24);
+      return marques.length > 0 && noms.length >= marques.length && ecrases.length === 0;
+    }), 'chaque picto visible a un nom visible à côté, aucun nom écrasé')]
+  })),
+  /* CAL-POINTS-MUETS (« Les petits points là donne pas d’info » ; « plutot utiliser des mini icone. et une couleur pour le type de procédé ») */
+  { n: 'L7', nom: 'point-etape', geste: 'toucher l’icône dry hop de la Blonde', cave: true,
+    jouer: async p => { await toucher(p, { titre: 'Blonde d’automne', sous: '[data-jalon="dry-hop"]' }); },
+    attendu: [fn(async p => p.evaluate(() => {
+      const s = [...document.querySelectorAll('[data-point-bulle]')].find(e => e.getBoundingClientRect().width > 0);
+      return !!s && /^Dry hop · \d{1,2} \S+/.test((s.textContent || '').trim()) && !!s.querySelector('svg');
+    }), 'la bulle « Dry hop · date » avec son picto'), fn(async p => p.evaluate(() => {
+      const pts = [...document.querySelectorAll('[data-frise] [data-jalon]:not([data-jalon="commander"])')].filter(e => e.getBoundingClientRect().width > 0);
+      return pts.length > 0 && pts.every(e => !!e.querySelector('svg') && /rgb\(var\(--/.test(e.style.getPropertyValue('--e')));
+    }), 'chaque point d’étape est un picto coloré')] },
+  /* CAL-PERIODE-LIBRE (« Je peux pas choisir une période donnée ») : la fin de la fenêtre posée au doigt devient la période ; l'étiquette dit la
+     même fin que la bande des semaines (les colonnes de la frise) */
+  { n: 'L6', nom: 'periode-libre', geste: 'tirer la poignée de fin de la fenêtre de 4 semaines vers la droite', cave: true,
+    mesure: p => p.evaluate(() => document.querySelector('.ent-cadre')?.getAttribute('aria-label') || ''),
+    jouer: async p => {
+      /* la fenêtre de 6 semaines au repos : 4 semaines de plus, le doigt posé sur sa poignée de fin (bord droit du cadre) */
+      const c = await p.evaluate(() => { const r = document.querySelector('.ent-cadre')?.getBoundingClientRect(); return r ? { x: r.right - 2, y: r.top + r.height / 2, w: r.width } : null; });
+      if (!c) throw new Absent('fenêtre .ent-cadre introuvable');
+      await glisserXY(p, c.x, c.y, (c.w / 6) * 4);
+    },
+    attendu: [fn(async p => p.evaluate(() => {
+      const lbl = document.querySelector('.ent-cadre')?.getAttribute('aria-label') || '';
+      const fin = lbl.match(/– S(\d+)/)?.[1];
+      const bande = document.querySelector('[aria-label^="Semaines"]') || document.querySelector('[data-bande-semaines]');
+      const nums = bande ? (bande.textContent || '').match(/S\d+/g) || [] : [];
+      return !!fin && nums.length > 6 && nums[nums.length - 1] === `S${fin}` && !/Tire jusqu’au bout/.test(document.body.innerText);
+    }), 'la fenêtre prend la fin posée : la bande des semaines finit à la même semaine que l’étiquette')] },
   /* CRITIQUE-10 (preuve f2-a) : le BORD (`[data-bord]`), jamais le corps ni l'aria de la barre ; la barre s'allonge de 7 j, elle ne se déplace pas */
   { n: '09', nom: 'f2a-apres', geste: 'tirer le bord ([data-bord]) de la Blonde d’une colonne', mesure: p => choseLue(p, 'Blonde d’automne'),
     jouer: async p => {

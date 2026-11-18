@@ -1,8 +1,9 @@
 import React from 'react';
 import { Link2, Pin, Star } from 'lucide-react';
-import { ecartJours, etiquetteS, francsSignes, type ChoseCalendrier, type JalonBrassin } from '../../../domain/calendrier';
+import { ecartJours, etiquetteS, francsSignes, jourLisible, type ChoseCalendrier, type JalonBrassin } from '../../../domain/calendrier';
 import { CLASSE_TEINTE, ContenuEtiquette, PastilleLie, dureeVue, largeurTexte, nomAccessible, type ModeDeuxLignes } from './Marque';
 import { usePointeur } from './usePointeur';
+import { ETAPE_BRASSIN, estEtape, type EtapeBrassin } from './etapes';
 
 /**
  * Une barre de la frise (E24 à E32). Elle porte ses gestes : toucher (le détail), appui long (le menu), glisser (déplacer en direct, f1-a),
@@ -13,6 +14,28 @@ import { usePointeur } from './usePointeur';
  * CRITIQUE-3 n° 27 : le nom posé dans la barre a un fond, les ronds des jalons passent dessous, jamais dessus. N° 30 : « J7 / 35 · prête
  * 21 déc. » n'est jamais coupé (entier, ou sa forme courte « J7 / 35 »). N° 13 : la pastille « lié à … » se touche (aperçu sur place).
  */
+
+/** Écart minimal entre deux icônes d'étape (16 px de disque + 2 px d'air), et largeur sous laquelle seule la fin (la poignée) reste. */
+const ESPACE_ICONE = 18;
+const BARRE_ETROITE = 40;
+/** Qui garde sa place quand deux icônes se touchent : la fin (elle se tire), le dry hop, la garde, la fermentation, puis le brassage (le début de la barre le dit déjà). */
+const PRIORITE_ETAPE: Record<EtapeBrassin, number> = { conditionnement: 0, 'dry-hop': 1, garde: 2, fermentation: 3, brassage: 4 };
+
+/**
+ * CAL-POINTS-MUETS (18.11, « sans masquer la barre ») : les icônes d'étape qui tiennent sur la barre, dans l'ordre des jours. Deux icônes à
+ * moins de 18 px : la plus utile reste ; une barre de moins de 40 px (3 mois, An) ne garde que sa fin. Le détail (toucher) les liste toutes.
+ */
+export function iconesQuiTiennent(jalons: readonly JalonBrassin[], pourcent: (ecart: number) => number | null, largeur: number): JalonBrassin[] {
+  const tous = jalons.filter(j => j.ecart >= 0 && estEtape(j.id) && pourcent(j.ecart) !== null);
+  const px = (j: JalonBrassin) => ((pourcent(j.ecart) ?? 0) / 100) * largeur;
+  const ordre = [...tous].sort((a, b) => PRIORITE_ETAPE[a.id as EtapeBrassin] - PRIORITE_ETAPE[b.id as EtapeBrassin]);
+  const pris: JalonBrassin[] = [];
+  for (const j of ordre) {
+    if (largeur < BARRE_ETROITE && j.glissable !== 'fin') continue;
+    if (pris.every(k => Math.abs(px(k) - px(j)) >= ESPACE_ICONE)) pris.push(j);
+  }
+  return tous.filter(j => pris.includes(j));
+}
 
 export type CoteEtiquette = 'dedans' | 'gauche' | 'droite';
 
@@ -129,6 +152,25 @@ export const Barre: React.FC<BarreProps> = props => {
   const nbJours = Math.max(1, ecartJours(chose.debut, chose.fin) + 1);
   const total = chose.jalons?.length ? Math.max(...chose.jalons.map(j => j.ecart), nbJours - 1) : 0;
   const peutBord = chose.deplacable === true && (chose.source.genre === 'batch' || chose.source.genre === 'creative' || (chose.source.genre === 'plan' && chose.source.origine === 'manual')) && !proposee;
+  /* le point d'étape touché (CAL-POINTS-MUETS) : sa bulle reste jusqu'au toucher suivant ailleurs */
+  const [pointVu, setPointVu] = React.useState<string | null>(null);
+  const bullePoint = React.useRef<HTMLSpanElement | null>(null);
+  React.useEffect(() => {
+    if (!pointVu) return;
+    const ailleurs = (e: PointerEvent) => { if (!(e.target instanceof Element && el.current?.contains(e.target) && e.target.closest('[data-jalon]'))) setPointVu(null); };
+    document.addEventListener('pointerdown', ailleurs, true);
+    return () => document.removeEventListener('pointerdown', ailleurs, true);
+  }, [pointVu]);
+  React.useLayoutEffect(() => {
+    const b = bullePoint.current;
+    if (!b || typeof window === 'undefined') return;
+    b.style.marginLeft = '';
+    const r = b.getBoundingClientRect();
+    if (!r.width) return;
+    const deborde = r.right - (window.innerWidth - 8);
+    if (deborde > 0) b.style.marginLeft = `-${Math.ceil(deborde)}px`;
+    else if (r.left < 8) b.style.marginLeft = `${Math.ceil(8 - r.left)}px`;
+  }, [pointVu]);
 
   const gestes = usePointeur({
     largeurColonne,
@@ -146,7 +188,14 @@ export const Barre: React.FC<BarreProps> = props => {
       const id = cible?.closest?.('[data-jalon]')?.getAttribute('data-jalon');
       props.onRefus(chose, raison, id ? chose.jalons?.find(j => j.id === id) : undefined);
     },
-    onToucher: () => el.current && props.onToucher(chose, el.current),
+    /* CAL-POINTS-MUETS (« Les petits points là donne pas d'info ») : un point d'étape touché dit son étape et sa date ; le reste de la barre
+       ouvre le détail */
+    onToucher: cible => {
+      const id = brassin ? cible?.closest?.('[data-jalon]')?.getAttribute('data-jalon') : null;
+      if (id && chose.jalons?.some(j => j.id === id)) { setPointVu(v => (v === id ? null : id)); return; }
+      setPointVu(null);
+      if (el.current) props.onToucher(chose, el.current);
+    },
     onAppuiLong: () => el.current && props.onAppuiLong(chose, el.current),
     onGlisse: k => props.onGlisse(chose, k),
     onLacheGlisse: (k, annule) => props.onLacheGlisse(chose, k, annule),
@@ -162,6 +211,7 @@ export const Barre: React.FC<BarreProps> = props => {
   const jalonVu = (ecart: number): number | null => (ecart < o || ecart > f ? null : f > o ? Math.min(100, ((ecart - o) / (f - o)) * 100) : 0);
   const montant = montantDe(chose);
   const w = Math.max(10, largeur + allongement);
+  const etapesVues = brassin ? iconesQuiTiennent(chose.jalons ?? [], jalonVu, w) : [];
   const duree = dureeVue(chose);
   const nom = chose.etiquette ?? chose.titre;
   /* CRITIQUE-9 n° 3 : la phrase entière en bas de la barre haute (as/cap/p-repos), ou sur la ligne sous elle ; le nom reste seul en haut */
@@ -230,18 +280,39 @@ export const Barre: React.FC<BarreProps> = props => {
             {segments.map(s => <i key={s.id} className={`cal-ph cal-ph-${s.id}`} style={{ left: `${s.de}%`, width: `calc(${s.largeur}% - 2px)` }} />)}
           </span>
         )}
-        {brassin && chose.jalons?.filter(j => j.ecart >= 0 && j.id !== 'commander' && jalonVu(j.ecart) !== null).map(j => (
-          <i
-            key={j.id}
-            data-jalon={j.id}
-            {...(j.glissable === 'fin' ? { 'data-bord': '' } : {})}
-            data-glissable={String(j.glissable)}
-            title={j.glissable === false && j.raison ? `${j.libelle} · ${j.raison}` : j.libelle}
-            className="cal-jalon"
-            /* CRITIQUE-5 n° 29 : le rond reste dans sa barre (borné par frise.css), jamais un demi-point hors de la grille */
-            style={{ ['--x' as string]: `${total > 0 ? jalonVu(j.ecart) : 0}%` }}
-          />
-        ))}
+        {etapesVues.map(j => {
+          /* CAL-POINTS-MUETS (18.11, « plutot utiliser des mini icone. et une couleur pour le type de procédé ») : chaque point est le picto de
+             son étape, dans la couleur de son procédé ; sa date au toucher */
+          const etape = ETAPE_BRASSIN[j.id as EtapeBrassin];
+          return (
+            <i
+              key={j.id}
+              data-jalon={j.id}
+              {...(j.glissable === 'fin' ? { 'data-bord': '' } : {})}
+              data-glissable={String(j.glissable)}
+              title={`${j.libelle} · ${jourLisible(j.jour)}${j.glissable === false && j.raison ? ` · ${j.raison}` : ''}`}
+              data-point-texte={`${j.libelle} · ${jourLisible(j.jour)}`}
+              className={`cal-jalon${pointVu === j.id ? ' cal-jalon-vu' : ''}`}
+              /* CRITIQUE-5 n° 29 : l'icône reste dans sa barre (borné par frise.css), jamais une demi-icône hors de la grille */
+              style={{ ['--x' as string]: `${total > 0 ? jalonVu(j.ecart) : 0}%`, ['--e' as string]: `rgb(var(--${etape.couleur}))` }}
+            >
+              <etape.Icone aria-hidden="true" strokeWidth={2.5} />
+            </i>
+          );
+        })}
+        {brassin && pointVu && (() => {
+          const j = chose.jalons?.find(x => x.id === pointVu);
+          const x = j ? jalonVu(j.ecart) : null;
+          if (!j || x === null || !estEtape(j.id)) return null;
+          const etape = ETAPE_BRASSIN[j.id];
+          /* sous la barre, jamais dessus : « Fermentation · 23 nov. », avec le picto de l'étape */
+          return (
+            <span ref={bullePoint} role="status" className="cal-point-bulle" data-point-bulle={j.id}
+              style={{ ['--x' as string]: `${total > 0 ? x : 0}%`, ['--e' as string]: `rgb(var(--${etape.couleur}))` }}>
+              <etape.Icone aria-hidden="true" size={14} strokeWidth={2.5} />{j.libelle} · {jourLisible(j.jour)}
+            </span>
+          );
+        })()}
         {n > 0 && (
           /* CRITIQUE-10 n° 2 (E24, D-9) : un conteneur à part du libellé ; dans la barre haute, il prend la ligne sous le nom */
           <span className={`cal-pts${bas?.ou === 'barre' ? ' cal-pts-bas' : ''}`} data-points={n} aria-hidden="true">

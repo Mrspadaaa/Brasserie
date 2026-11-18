@@ -171,9 +171,10 @@ export function Cadre({ numeros, lundis, index, nombre, largeur, annee, onChange
       if (Math.abs(dx) > 4) bouge = true;
       if (annee) return;
       if (genre === 'fin') {
-        const w = clamp(w0 + dx, w0, largeur - gauche);
+        /* CAL-PERIODE-LIBRE (18.11) : la fin se pose au doigt, plus courte ou plus longue, une semaine au moins */
+        const w = clamp(w0 + dx, unit, largeur - gauche);
         droite = gauche + w;
-        setDrag({ index, nombre: Math.max(nombre, Math.round(w / unit)), bord: droite });
+        setDrag({ index, nombre: clamp(Math.round(w / unit), 1, total - index), bord: droite });
       } else {
         dernier = clamp(index + Math.round(dx / unit), 0, Math.max(0, total - nombre));
         setDrag({ index: dernier, nombre, bord: dernier * unit });
@@ -187,7 +188,12 @@ export function Cadre({ numeros, lundis, index, nombre, largeur, annee, onChange
       setDrag(null);
       if (annee) { if (!bouge) onRevient?.(); return; }
       if (genre === 'fin') {
-        if (bouge && droite >= SEUIL_ANNEE * largeur) onAnnee(); else onTropCourt?.();
+        /* CAL-PERIODE-LIBRE (« Je peux pas choisir une période donnée ») : lâchée au-delà de 80 %, l'année (c1-d) ; sinon la fenêtre prend la
+           fin posée, et la frise, Finances et l'étiquette disent la même période. Un toucher sans glisser garde l'invite d'avant. */
+        const n = clamp(Math.round((droite - gauche) / unit), 1, total - index);
+        if (bouge && droite >= SEUIL_ANNEE * largeur) onAnnee();
+        else if (bouge && n !== nombre) onChange({ index, nombre: n });
+        else if (!bouge) onTropCourt?.();
       } else if (bouge && dernier !== index) onChange({ index: dernier, nombre });
     };
     window.addEventListener('pointermove', suit);

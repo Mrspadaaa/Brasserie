@@ -106,7 +106,7 @@ const largeurDeuxLignes = (c: ChoseCalendrier, lieCourt: boolean, mode: 'nom' | 
   return Math.ceil(mode === 'nom' ? Math.max(ln + lm, ll) : Math.max(ln, lm + ll)) + 8;
 };
 
-/** Une sortie dérivée d'un brassin dont le montant n'est pas renseigné : une icône, son nom vient au toucher (CAL-INFO-TROP). */
+/** Une sortie dérivée d'un brassin dont le montant n'est pas renseigné : une icône, avec son nom à côté (test en ligne 1, n° 1). */
 const deriveSansMontant = (c: ChoseCalendrier): boolean => c.source.genre === 'prevision-brassin' && c.centimes === undefined;
 /** Un brassin de la rangée Brassins (ni ses courses, ni un brassin conditionné, qui est un fait marqué à sa date). */
 const estBrassin = (c: ChoseCalendrier): boolean => c.rangee === 'brassins' && !c.brassinLie && !c.conditionne;
@@ -255,8 +255,9 @@ export function disposer(choses: readonly ChoseCalendrier[], colonnes: readonly 
     const pastilleVente = c.rangee === 'ventes' && p.a === p.b && !c.proposition;
     /* n° 19 : en 6 semaines, un brassin n'est jamais une icône ; ses courses et un brassin conditionné le sont */
     const marque = (tropPetite && (vueLarge || !brassin)) || pastilleVente || (deriveSansMontant(c) && !brassin) || !!c.conditionne || !!c.brassinLie;
-    /* le caddie d'un brassin : son nom vient au toucher en 3 mois, 6 mois et An ; en 6 semaines il le porte */
-    const avecLibelle = marque && !(deriveSansMontant(c) && !brassin) && !(c.brassinLie && vueLarge);
+    /* test en ligne 1, n° 1 (18.11, « C'est quoi ces deux paniers ? ») : toute marque porte son nom à côté, dans chaque vue, comme au banc
+       (« Emballage · Jhhh », « Impôt sur la bière · 4 brassins ») ; jamais une icône dont le nom n'existe que pour le lecteur d'écran */
+    const avecLibelle = marque;
     /* la durée d'un brassin : entière, puis courte (« J0 / 28 », « pas brassée ») ; le nom ne cède jamais pour elle */
     const duree = marque ? null : dureeVue(c);
     const formes = duree ? formesDuree(duree) : [];
@@ -383,7 +384,8 @@ export function disposer(choses: readonly ChoseCalendrier[], colonnes: readonly 
     if (col < 0) continue;
     const centre = auJour ? xDuJour(j.jour) : col * largeurColonne + largeurColonne / 2;
     const o0 = centre - CADDIE_PX / 2, o1 = centre + CADDIE_PX / 2;
-    const texte = vueLarge ? null : texteCaddie(d.chose, j);
+    /* test en ligne 1, n° 1 : le caddie nomme son brassin dans chaque vue, 3 mois, 6 mois et An compris */
+    const texte = texteCaddie(d.chose, j);
     const seul: Candidat = { cote: 'dedans', place: 0, x0: o0, x1: o1 };
     let pose: { ligne: number; c: Candidat };
     let texteVuCaddie: string | null = null;

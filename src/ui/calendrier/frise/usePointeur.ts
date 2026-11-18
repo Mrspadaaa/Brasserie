@@ -24,7 +24,8 @@ export interface OptionsPointeur {
   borne?: () => [number, number];
   /** Une chose qui ne se déplace pas : le glisser est refusé avec sa raison (la barre ne bouge pas). */
   refuseGlisse?: (cible: Element | null) => string | null;
-  onToucher?: () => void;
+  /** CAL-POINTS-MUETS : `cible`, l'élément sous le doigt (un point d'étape d'un brassin se lit au toucher). */
+  onToucher?: (cible: Element | null) => void;
   onAppuiLong?: () => void;
   onDebutGlisse?: () => void;
   onGlisse?: (k: number, dx: number) => void;
@@ -181,7 +182,7 @@ export function usePointeur(options: OptionsPointeur) {
     if (s.mode === 'long' || s.mode === 'glisse' || s.mode === 'bord') { avalerClic.current = Date.now(); poserGardeClic(); }
     if (s.mode === 'glisse') o.onLacheGlisse?.(s.k, annule);
     else if (s.mode === 'bord') o.onLacheBord?.(s.k, annule);
-    else if (s.mode === 'appui' && !annule && Date.now() - s.t0 < APPUI_LONG_MS) o.onToucher?.();
+    else if (s.mode === 'appui' && !annule && Date.now() - s.t0 < APPUI_LONG_MS) o.onToucher?.(s.cible);
   }, []);
 
   const onPointerUp = useCallback((e: React.PointerEvent<HTMLElement>) => fin(e, false), [fin]);

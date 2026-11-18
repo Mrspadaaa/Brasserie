@@ -1,5 +1,6 @@
 import React from 'react';
-import { Beer, Check, ChevronRight, FlaskConical, Leaf, Link2, Package, Receipt, ShoppingCart, Snowflake, Wheat, X } from 'lucide-react';
+import { Beer, Check, ChevronRight, Link2, Receipt, ShoppingCart, Wheat, X } from 'lucide-react';
+import { ETAPE_BRASSIN } from './etapes';
 import { dateDeSemaine, etiquetteS, francsSignes, jourLisible, lundiDe, type ChoseCalendrier, type JalonBrassin, type JalonId } from '../../../domain/calendrier';
 import { CLASSE_TEINTE, apercuSansNom, champ, dureeVue, lieMontre, nomLie } from './Marque';
 
@@ -38,13 +39,8 @@ const LIBELLE_OUVRIR: Record<ChoseCalendrier['ouvre']['ecran'], string> = {
 };
 
 /** Le nom d'une étape du brassin, celui que le brasseur emploie (E25). */
-const ETAPE: Record<Exclude<JalonId, 'commander'>, { libelle: string; Icone: typeof Wheat }> = {
-  brassage: { libelle: 'Brassage', Icone: Wheat },
-  fermentation: { libelle: 'Fermentation', Icone: FlaskConical },
-  'dry-hop': { libelle: 'Dry hop', Icone: Leaf },
-  garde: { libelle: 'Garde', Icone: Snowflake },
-  conditionnement: { libelle: 'Conditionnement', Icone: Package }
-};
+/* le même picto que le point de l'étape sur la barre (CAL-POINTS-MUETS) */
+const ETAPE = ETAPE_BRASSIN;
 
 /** Une date sans point final doublé : « 22 nov. » se suit d'un deux-points, d'une virgule ou de rien, jamais de « . ». */
 const date = (iso: string): string => jourLisible(iso);

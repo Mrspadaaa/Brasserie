@@ -312,6 +312,9 @@ export function CalendrierTab(props: CalendrierTabProps) {
     else if ((cible.ecran === 'piece') && cible.id && onOpenPiece) onOpenPiece(cible.id);
     else if (cible.ecran === 'agenda' || cible.ecran === 'atelier') onOpenAgenda();
     else if (cible.ecran === 'courses' || cible.ecran === 'fournisseur') onOpenCourses();
+    /* test en ligne 1, n° 2 (« Je demande mon achat, il me montre rien ») : un plan (achat prévu, vente prévue, charge) vit dans
+       Finances › Prévisions ; l'app ouvre ce sous-onglet (`affinee:ouvrir-finances`, CP-13). Personne ne répond (banc) : Finances seul. */
+    else if (cible.ecran === 'plan' && !window.dispatchEvent(new CustomEvent('affinee:ouvrir-finances', { cancelable: true, detail: { onglet: 'previsions' } }))) return;
     else onOpenFinances();
   }, [onOpenBatch, onOpenPiece, onOpenAgenda, onOpenCourses, onOpenFinances]);
 
