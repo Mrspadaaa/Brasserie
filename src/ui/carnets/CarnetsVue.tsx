@@ -28,7 +28,7 @@ import { ListeCarnets } from './ListeCarnets';
 import { CarnetOuvert, type LienV, type RangeeV } from './CarnetOuvert';
 import { ChampCarnet } from './ChampCarnet';
 import { CadreArrivee, type CadreV } from './CadreArrivee';
-import { Bandeau, type BandeauV, type TitreDe } from './Bandeau';
+import { Bandeau, origineDuTitre, type BandeauV, type TitreDe } from './Bandeau';
 import { NoteEnVrac, type LigneVracV } from './NoteEnVrac';
 import { FicheArticle } from './FicheArticle';
 import { Comparer, nonLusDe } from './Comparer';
@@ -444,7 +444,7 @@ export function CarnetsVue(p: CarnetsVueProps) {
    * locale que l'IA a remplacée. Carnet créé (R11, g5:v04-4), rangé ici (R14, g5:v03-8), rangé dans un autre carnet avec le message cité et
    * l'article (G21, g5:v06-14, état 20), ou n lignes dans m carnets (R19, g5:v01-16). `inverse` : tout ce qu'Annuler défait.
    */
-  const retourDe = useCallback((messageId: string, txt: string, depuisM: string | null, inverse: EcritureCarnet[], lignesIA?: readonly LigneCarnet[]): RetourNeuf | null => {
+  const retourDe = useCallback((messageId: string, txt: string, depuisM: string | null, inverse: EcritureCarnet[], lignesIA?: readonly LigneCarnet[], titresIA?: readonly (string | undefined)[]): RetourNeuf | null => {
     const etat = magasin.lire();
     const effets = lireMessages(etat).find(m => m.id === messageId)?.carnetMessage.effets ?? [];
     const rr = retourDuRangement(effets, { depuis: depuisM, plusieursLignes: plusieursLignes(txt) });
@@ -466,9 +466,8 @@ export function CarnetsVue(p: CarnetsVueProps) {
     if (rr.sorte === 'cree') {
       const titre = c?.title ?? '';
       const nomLu = c?.carnet.articles.some(a => a.nom && a.nom === titre);
-      /* « Embouteillage » pour « embouteillage » reste sa phrase en titre (g5:v04-4) : casse, accents et espaces ne comptent pas */
-      const pareil = (x: string, y: string) => x.trim().localeCompare(y.trim(), 'fr', { sensitivity: 'base' }) === 0;
-      const titreDe: TitreDe = pareil(titre, titreDePhrase(txt)) ? (estLienSeul(txt) ? 'site' : 'phrase') : nomLu ? 'page' : 'ia';
+      /* « Embouteillage » pour « embouteillage » reste sa phrase en titre (g5:v04-4). `ia` seulement si l'IA a fourni ce titre ; sinon la règle locale */
+      const titreDe: TitreDe = origineDuTitre({ titre, titreDePhrase: titreDePhrase(txt), lienSeul: estLienSeul(txt), nomLu: !!nomLu, titresIA });
       return { bandeau: { sorte: 'cree', phrase: txt, titreDe }, inverse, messageId, carnetId: rr.carnetId, detail };
     }
     const effet = effets.find(e => e.cible === 'article' && e.carnetId === rr.carnetId);
@@ -666,7 +665,9 @@ export function CarnetsVue(p: CarnetsVueProps) {
         }
       }
       /* Annuler défait le rangement réel : l'écriture de l'IA, puis l'écriture locale qu'elle a remplacée. */
-      const final = retourDe(messageId, txt, depuis, [...fait.inverse, ...(local?.inverse ?? [])], lignes);
+      /* Seule la branche où l'IA choisit le carnet neuf lui doit son titre ; ailleurs (créer, annoncé) le titre reste celui de la règle locale. */
+      const titresIA = an ? undefined : lignes.flatMap(l => [l.carnetNeuf, l.titre]);
+      const final = retourDe(messageId, txt, depuis, [...fait.inverse, ...(local?.inverse ?? [])], lignes, titresIA);
       /* le retour tenu en réserve paraît aussi quand l'IA réussit sans rien d'autre à dire (d1280-1) */
       if (!final) { if (local && !enAttente?.montre) setRetour(local); return; }
       /* P8 (tour 3) : le retour de ce message est déjà affiché (créer, note en vrac) : il n'est pas remplacé ; même clé, même bandeau,

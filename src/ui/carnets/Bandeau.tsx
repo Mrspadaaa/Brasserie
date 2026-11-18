@@ -17,14 +17,29 @@ const ORIGINE_TITRE: Record<TitreDe, string> = {
   phrase: 'votre phrase en titre',
   page: 'le nom lu sur la page en titre',
   site: 'le site en titre',
+  regle: 'titre tiré de votre phrase',
   ia: 'titre mis en forme par l’IA'
 };
 
 /**
  * D'où vient le titre d'un carnet créé : `phrase` (« votre phrase en titre », R11) ; `page` (le nom lu sur la page d'un lien collé) ;
- * `site` (un lien seul, page non lue : son domaine, P3) ; `ia` (l'IA a mis la phrase en forme). Seul `phrase` dit « votre phrase en titre ».
+ * `site` (un lien seul, page non lue : son domaine, P3) ; `regle` (la règle locale a tiré le titre de sa phrase, sans l'IA) ; `ia` (l'IA a
+ * vraiment fourni le titre). Seul `phrase` dit « votre phrase en titre » ; seul `ia` prête le titre à l'IA.
  */
-export type TitreDe = 'phrase' | 'page' | 'site' | 'ia';
+export type TitreDe = 'phrase' | 'page' | 'site' | 'regle' | 'ia';
+
+/** Comparaison de titres : casse, accents et espaces ne comptent pas (« Embouteillage » pour « embouteillage »). */
+const memeTitre = (x: string, y: string) => x.trim().localeCompare(y.trim(), 'fr', { sensitivity: 'base' }) === 0;
+
+/**
+ * L'origine du titre d'un carnet créé. `ia` seulement si l'IA a fourni ce titre (`titresIA` : ceux de ses lignes, jamais ceux de la règle
+ * locale) ; un titre autre que sa phrase, sans page lue ni IA, vient de la règle locale (`regle`), jamais prêté à l'IA.
+ */
+export function origineDuTitre(a: { titre: string; titreDePhrase: string; lienSeul: boolean; nomLu: boolean; titresIA?: readonly (string | undefined)[] }): TitreDe {
+  if (memeTitre(a.titre, a.titreDePhrase)) return a.lienSeul ? 'site' : 'phrase';
+  if (a.nomLu) return 'page';
+  return a.titresIA?.some(t => !!t && memeTitre(t, a.titre)) ? 'ia' : 'regle';
+}
 
 /** L'article rangé ailleurs, montré dans le retour (g5:v06-14) : ce qui est connu seulement, rien d'inventé. */
 export interface ArticleRangeV { nom: string; detail?: string; prix?: string; exemple?: boolean }
