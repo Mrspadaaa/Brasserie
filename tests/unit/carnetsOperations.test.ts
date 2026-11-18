@@ -38,8 +38,10 @@ describe('P11 : un critère au même texte normalisé ne fait qu’une ligne', (
     const k = carnet(apres, ID_VENTILATION).carnet.criteres;
     expect(k.filter(x => /condensation/i.test(x.texte))).toEqual([{ id: 'ZZ-V-K1', texte: CRITERE_CONDENSATION, origine: 'vous', messageId: 'ZZ-MSG-V1' }]);
     expect(k.length).toBe(3);
-    /* le message est gardé (R25), sans effet qui pointerait vers l'ancien critère : l'annuler ne le retire pas */
-    expect(lireMessage(apres.find(i => i.id === 'M-P11'))!.carnetMessage.effets.filter(e => e.cible === 'critere')).toEqual([]);
+    /* le message est gardé (R25). Reprise chir8 (c) : son effet est un renvoi `fusion` vers l'ancien critère, qui garde son texte, son
+       origine et sa source (la note en vrac compte la ligne rangée) ; l'annuler ne le retire pas (inverse de `allerRetour`). */
+    expect(lireMessage(apres.find(i => i.id === 'M-P11'))!.carnetMessage.effets.filter(e => e.cible === 'critere'))
+      .toEqual([{ carnetId: ID_VENTILATION, cible: 'critere', id: 'ZZ-V-K1', fusion: { texte: CRITERE_CONDENSATION, origine: 'vous', messageId: 'ZZ-MSG-V1' } }]);
   });
   it('deux fois le même critère dans un message : une ligne ; la raison manquante complète l’ancien', () => {
     const etat = fixtureCarnets();

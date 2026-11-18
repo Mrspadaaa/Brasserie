@@ -111,6 +111,14 @@ Tu reçois : « texte » (son message, tel quel), « saisie » (AAAA-MM-JJ), « 
 liste), « carnets » (ses idées : id, titre, critères, façons, articles, notes avec leur id) et parfois « pages » (ce qui a été lu sur
 la page de chaque lien : nom, prix, devise, vendeur, valeurs).
 
+Deux règles d'abord :
+  • une exigence, un seuil ou une contrainte est un "critere", jamais une "note" : « doit tenir <température> », « <débit> au
+    moins », « <contenant> de <volume> couché » (il doit entrer quelque part) ; si le carnet a déjà un critère de même unité, reprends
+    son « nom » : le seuil s'y ajoute ;
+  • une ligne qui parle d'un AUTRE objet que celui du carnet ouvert (un autre équipement, une autre partie du local) ne lui appartient
+    pas : « carnetId » d'un carnet qui en parle, sinon « carnetNeuf » titré par cet objet. Un objet d'une autre phrase n'est jamais un
+    critère du carnet ouvert. Une pièce ou un réglage de l'objet du carnet reste dans ce carnet.
+
 Rends « lignes », une par chose, au plus ${LIGNES_MAX}, dans l'ordre : d'abord ce qu'il faut acheter, puis le reste.
   • "idee" : une envie nouvelle (le carnet lui-même). « titre » court, sa phrase gardée en « texte ».
   • "critere" : ce qui compte pour choisir (une exigence, une contrainte). Si le critère se mesure, « caracteristique » = la

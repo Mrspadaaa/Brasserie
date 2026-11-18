@@ -18,7 +18,7 @@ import {
   type Destination, type EcritureCarnet, type Journal, type LigneARanger, type Resultat
 } from '../../domain/carnets/operations';
 import { consequenceApercu, critereQuiTranche, passe, placesDe, tableau as tableauDe } from '../../domain/carnets/comparer';
-import { analyserLigne, analyserTexte, decouper, PUCES_VA_DANS, vaDansDe, type LigneLocale, type RubriqueVaDans } from '../../domain/carnets/analyseLocale';
+import { analyserLigne, analyserTexte, decouper, genreLocal, jetons, normaliser, objetDe, PUCES_VA_DANS, vaDansDe, type LigneLocale, type RubriqueVaDans } from '../../domain/carnets/analyseLocale';
 import { aucunCarnetNEnParle, carnetProche, rattacher } from '../../domain/carnets/rattacher';
 import { doublonsDe, notesEnDouble } from '../../domain/carnets/doublons';
 import type { CarnetPourIA, LigneCarnet } from '../../domain/carnets/ia';
@@ -128,7 +128,7 @@ interface Jointe { jeton: number; jpeg?: string }
 type Annonce =
   | { sorte: 'cree'; carnetId: string; titre: string; phrase: string }
   /* Critique 5, n° 7 : `vues` et `carnets`, la découpe telle que le pendant « ✻ L'IA découpe votre note » la montre */
-  | { sorte: 'vrac'; lignes: { texte: string; dest: Destination }[]; vues: LigneVracV[]; carnets: number }
+  | { sorte: 'vrac'; lignes: { texte: string; dest: Destination; sorte?: LigneLocale['sorte'] }[]; vues: LigneVracV[]; carnets: number }
   /* Critique 5, n° 3 et 6 : écrit dans un carnet ouvert, tout va dans le carnet annoncé (l'ouvert, ou celui que le cadre a nommé) */
   /* Critique 7, n° 3 : `rubrique` : la puce « Va dans » cochée d'avance à l'envoi (Ce qui compte, Note, Façon) ; l'IA met en forme, la
      rubrique annoncée tient */
@@ -145,9 +145,54 @@ export function destinationDans(texte: string, ouvert: CarnetDoc, carnets: reado
   const ici = { carnetId: ouvert.id, titre: ouvert.title };
   const t = texte.trim();
   if (!t || plusieursLignes(t) || analyserTexte(t).some(l => l.url)) return ici;
+  const autres = carnets.filter(c => c.id !== ouvert.id && !c.carnet.archive);
+  /* critique 8, n° 1 : une phrase qui nomme un autre objet ne devient jamais un critère d'ici : un carnet proche, sinon un neuf */
+  const objet = autreObjet(t, ouvert);
+  if (objet) {
+    const proche = rattacher(objet, autres) ?? rattacher(t, autres);
+    return proche ? { carnetId: proche.carnetId, titre: proche.titre } : { carnetId: CARNET_NEUF, titre: `${prefixeDe(t)}${objet}` };
+  }
   if (rattacher(t, [ouvert])) return ici;
-  const autre = rattacher(t, carnets.filter(c => c.id !== ouvert.id && !c.carnet.archive));
+  const autre = rattacher(t, autres);
   return autre ? { carnetId: autre.carnetId, titre: autre.titre } : ici;
+}
+
+/** Critique 8, n° 1 : la destination « nouveau carnet » d'une phrase tapée dans un carnet ouvert (titré par son objet). */
+export const CARNET_NEUF = 'NOUVEAU-CARNET';
+/* Les mots de tête qui ne nomment pas un objet : une exigence (« doit tenir 80 °C »), un seuil, un nombre */
+/**
+ * Les objets qui vivent à part dans une brasserie : un équipement entier ou une partie du local, chacun l'objet possible d'un carnet. Le mot
+ * de tête d'une phrase doit en être pour qu'elle quitte le carnet ouvert ; une pièce ou un réglage de l'appareil n'en est pas (racines de
+ * `jetons`, singulier et pluriel confondus).
+ */
+const OBJETS_A_PART = new Set(jetons([
+  'évier lavabo plonge tuyau tuyaux flexible gaine sol mur plafond porte fenêtre local cave étagère rayonnage établi table chariot',
+  'transpalette pompe frigo réfrigérateur congélateur chambre hotte extracteur ventilation moulin fermenteur cuve fût fûts keg tank',
+  'densimètre réfractomètre balance embouteilleuse tireuse capsuleuse échangeur refroidisseur serpentin chaudière brûleur plaque',
+  'osmoseur adoucisseur laveuse nettoyeur karcher lampe éclairage prise tableau onduleur'
+].join(' ')));
+const TETE_SANS_OBJET =/^(?:doit|doivent|tient|tenir|tiennent|faut|faudrait|il|on|au|aux|minimum|maximum|mini|maxi|min|max|moins|plus|pas|entre|supporte|resiste|assez|trop|tres|bien|mieux|avec|sans|pour|si|et|ou)(?:\s|$)|^\d/;
+/**
+ * L'objet que nomme une phrase quand il n'est pas celui du carnet ouvert (« tuyau silicone 8 mm, 5 m » dans la Ventilation → « Tuyau
+ * silicone » ; « évier 2 bacs » dans le Frigo → « Évier »). `null` : la phrase est une exigence sans objet (« doit tenir 80 °C »,
+ * « 1 200 m³/h au moins »), un geste, une question, ou son objet partage un mot avec le carnet (titre, phrase, critères, façons, articles,
+ * notes : « hotte murale » dans un carnet de hottes, « fût de 30 L couché » dans l'évier pour les fûts).
+ */
+export function autreObjet(texte: string, ouvert: CarnetDoc): string | null {
+  const t = texte.replace(/^\s*ZZ TEST\s*[—–-]\s*/i, '').trim();
+  const g = genreLocal(t);
+  if (g === 'a-faire' || g === 'question' || g === 'conseil') return null;
+  const objet = objetDe(t);
+  const tete = normaliser(objet).replace(/^(?:l |le |la |les |un |une |des |du )/, '');
+  if (!tete || TETE_SANS_OBJET.test(tete)) return null;
+  const mots = jetons(objet);
+  /* reprise chir8 : seul un objet qui vit à part (un équipement, une pièce du local) quitte le carnet ouvert. Une pièce de l'appareil
+     (« compresseur silencieux », « filtre à air G4 » dans le frigo) ou une façon (« système isobarique » dans l'embouteillage) y reste. */
+  if (!mots.length || !OBJETS_A_PART.has(mots[0])) return null;
+  const d = ouvert.carnet;
+  const vocab = new Set(jetons([ouvert.title, d.phrase, ...d.criteres.map(k => `${k.texte} ${k.caracteristique?.nom ?? ''}`), ...d.facons.map(f => f.nom),
+    ...d.articles.map(a => a.nom ?? ''), ...d.notes.map(n => n.texte)].join(' ')));
+  return mots.some(m => vocab.has(m)) ? null : objet;
 }
 
 const lireFinances = (): FinancesCarnet => ({
@@ -169,7 +214,9 @@ const plusieursLignes = (t: string) => decouper(t).length > 1;
 const prefixeDe = (t: string) => (/^\s*ZZ TEST\s*[—–-]\s*/i.test(t) ? 'ZZ TEST — ' : '');
 /** La découpe d'une note en vrac telle que NoteEnVrac la montre (pendant la frappe, puis pendant que l'IA découpe) : même plan. */
 function vuesVrac(plan: PlanVrac<LigneLocale>): LigneVracV[] {
-  return plan.lignes.map((x, i) => ({ id: String(i), texte: x.ligne.texte, genre: x.ligne.genre,
+  /* critique 8, n° 3 : une exigence (« tient 80 °C », « 1 200 m³/h au moins ») s'annonce critère pendant, comme elle se range après */
+  return plan.lignes.map((x, i) => ({ id: String(i), texte: x.ligne.texte,
+    genre: (x.ligne.sorte === 'critere' ? 'critere' : x.ligne.genre) as LigneVracV['genre'],
     ...(x.carnetId ? { carnetId: x.carnetId, carnetTitre: x.titre } : { carnetTitre: x.titre, neuf: true }) }));
 }
 
@@ -235,6 +282,15 @@ export function depuisLocale(l: LigneLocale, dest: Destination): LigneARanger {
  * Critique 7, n° 3 (R13, R14 ; D-134, D-135) : ce que le cadre a annoncé est ce qui se fait. Une ligne de l'IA (note, critère, façon) d'un
  * message d'une ligne passe dans la rubrique annoncée ; son texte mis en forme et sa caractéristique sont gardés. Un article reste un article.
  */
+/**
+ * Critique 8, n° 3 (R13, R18, D-139) : en note en vrac, le type annoncé pendant s'applique. Une ligne annoncée critère (« doit tenir 80 °C »,
+ * « 1 200 m³/h au moins ») que l'IA rend en note reste un critère ; une note garde le genre annoncé.
+ */
+export function typerVrac(l: LigneCarnet, sorteAnnoncee: LigneLocale['sorte'] | undefined, genreAnnonce?: string): LigneCarnet {
+  if (l.sorte === 'note' && (sorteAnnoncee === 'critere' || genreAnnonce === 'critere')) return versRubrique(l, 'critere', l.texte);
+  return l.sorte === 'note' && genreAnnonce && genreAnnonce !== 'critere' && genreAnnonce !== 'facon' ? { ...l, genre: genreAnnonce as LigneCarnet['genre'] } : l;
+}
+
 export function versRubrique(l: LigneCarnet, rubrique: RubriqueVaDans, phrase: string): LigneCarnet {
   /* une proposition de l'IA (« ✻ Comparer sur le débit · Ajouter ») n'est pas sa phrase : elle reste proposée */
   if (l.propose || l.sorte === rubrique || !['note', 'critere', 'facon'].includes(l.sorte)) return l;
@@ -340,6 +396,8 @@ export function CarnetsVue(p: CarnetsVueProps) {
   const [corrigeCarnet, setCorrigeCarnet] = useState<string | null>(null);
   /** Le carnet annoncé de l'envoi en cours, lu par `ecrireLocal` (même calcul que le cadre). */
   const destEnvoi = useRef<string | null>(null);
+  /** Critique 8, n° 1 : le titre du carnet neuf annoncé pour une phrase qui parle d'un autre objet. */
+  const titreNeufEnvoi = useRef<string | null>(null);
   /** Critique 5, n° 24 : les carnets dont le dernier envoi n'a pas eu l'IA (échec, hors ligne, éteinte) : passés à CarnetOuvert. */
   const [iaManquee, setIaManquee] = useState<Readonly<Record<string, AvisIA['sorte']>>>({});
   /** Critique 6, n° 24 : les messages rangés hors ligne, tels quels ; au retour du réseau, « Ranger maintenant » les passe à l'IA. */
@@ -468,8 +526,9 @@ export function CarnetsVue(p: CarnetsVueProps) {
       let neuf: string | null = null;
       const force = aForcer.current; aForcer.current = null;
       /* n° 3 : le carnet annoncé par le cadre (l'ouvert, ou celui qu'il a nommé, corrigé ou non d'un toucher) */
-      const ici = depuis ? destEnvoi.current ?? depuis : null;
-      destEnvoi.current = null;
+      const titreNeuf = destEnvoi.current === CARNET_NEUF ? titreNeufEnvoi.current : null;
+      const ici = depuis && !titreNeuf ? destEnvoi.current ?? depuis : null;
+      destEnvoi.current = null; titreNeufEnvoi.current = null;
       const rubrique = ici && !force ? vaDansDe(txt) : null;
       let annonce: Annonce | null = ici ? { sorte: 'ici', carnetId: ici, ...(rubrique ? { rubrique } : {}) } : null;
       if (ici && force && lignes.length === 1 && lignes[0].sorte !== 'article') {
@@ -482,7 +541,7 @@ export function CarnetsVue(p: CarnetsVueProps) {
       } else if (ici) r = ranger(etat, { message, lignes: lignes.map(l => depuisLocale(l, { carnetId: ici })) });
       if (ici) { /* rangé ci-dessus */ } else if (lignes.length <= 1) {
         neuf = nouvelIdCarnet('CARNET');
-        const titre = titreDePhrase(txt);
+        const titre = titreNeuf ?? titreDePhrase(txt);
         /* n° 2 : la phrase entière n'est pas un critère d'elle-même (« Ce qui compte : Moulin à malt… ») ; elle est déjà le titre */
         r = creerCarnet(etat, { id: neuf, message, lignes: lignes.filter(l => l.sorte !== 'note' && !(l.sorte !== 'article' && memeTexte(l.texte, txt))).map(l => depuisLocale(l, { carnetNeuf: { id: neuf!, titre } })) });
         if (!estLienSeul(txt)) annonce = { sorte: 'cree', carnetId: neuf, titre, phrase: txt };
@@ -495,7 +554,7 @@ export function CarnetsVue(p: CarnetsVueProps) {
           phrase: lignes.filter((_, i) => plan.lignes[i].neufIndex === k).map(l => l.phrase.replace(/^\s*ZZ TEST\s*[—–-]\s*/i, '')).join('\n') }));
         const dests: Destination[] = plan.lignes.map(x => (x.carnetId ? { carnetId: x.carnetId } : { carnetNeuf: neufsVrac[x.neufIndex ?? 0] }));
         r = ranger(etat, { message, lignes: lignes.map((l, i) => depuisLocale(l, dests[i])) });
-        annonce = { sorte: 'vrac', lignes: lignes.map((l, i) => ({ texte: l.texte, dest: dests[i] })), vues: vuesVrac(plan), carnets: plan.carnets };
+        annonce = { sorte: 'vrac', lignes: lignes.map((l, i) => ({ texte: l.texte, dest: dests[i], sorte: l.sorte })), vues: vuesVrac(plan), carnets: plan.carnets };
       }
       const fait = appliquer(r!);
       if (!fait) throw new Error((r! as { raison?: string }).raison ?? 'refus');
@@ -548,7 +607,7 @@ export function CarnetsVue(p: CarnetsVueProps) {
         /* critique 6, n° 2 (D-124) : le type annoncé pendant est celui qui s'applique ; l'IA met en forme le texte, pas le type */
         aRanger = utiles.map((l, i) => {
           const g = an.vues[idx[i]]?.genre;
-          const typee = l.sorte === 'note' && g && g !== 'critere' && g !== 'facon' ? { ...l, genre: g } : l;
+          const typee = typerVrac(l, an.lignes[idx[i]]?.sorte, g);
           return depuisIA(typee as LigneCarnet, an.lignes[idx[i]]?.dest ?? an.lignes[0].dest);
         });
         const neufsIds = new Set(an.lignes.flatMap(x => (x.dest.carnetNeuf ? [x.dest.carnetNeuf.id] : [])));
@@ -646,7 +705,9 @@ export function CarnetsVue(p: CarnetsVueProps) {
     gardeAPartRef.current = aPart && !!depuis; setAPart(false);
     aForcer.current = depuis && !edition ? corrige : null; setCorrige(null); setPresse(undefined);
     /* n° 3 : le carnet que le cadre a annoncé, par le même calcul, ou celui qu'il a choisi d'un toucher */
-    destEnvoi.current = ouvert && depuis ? corrigeCarnet ?? destinationDans(txt, ouvert, carnets).carnetId : null;
+    const dEnvoi = ouvert && depuis ? destinationDans(txt, ouvert, carnets) : null;
+    destEnvoi.current = dEnvoi ? corrigeCarnet ?? dEnvoi.carnetId : null;
+    titreNeufEnvoi.current = destEnvoi.current === CARNET_NEUF && dEnvoi ? dEnvoi.titre : null;
     setCorrigeCarnet(null);
     setTexte('');
     envoiActif.current = { envoi: rangement, depuis };
@@ -765,7 +826,7 @@ export function CarnetsVue(p: CarnetsVueProps) {
   /* n° 3 : le carnet visé pendant la frappe (même calcul qu'à l'envoi), corrigeable d'un toucher */
   const destCalculee = ouvert && vue.sorte === 'carnet' && !edition && texte.trim() ? destinationDans(texte, ouvert, carnets) : null;
   const destChoisie = destCalculee ? corrigeCarnet ?? destCalculee.carnetId : null;
-  const titreDe = (id: string) => tous.find(c => c.id === id)?.title ?? '';
+  const titreDe = (id: string) => (id === CARNET_NEUF ? `Nouveau carnet ${destCalculee?.titre ?? ''}` : tous.find(c => c.id === id)?.title ?? '');
   const vers = ouvert && destChoisie && destChoisie !== ouvert.id ? titreDe(destChoisie) : undefined;
   const vaDansCarnet = ouvert && destCalculee && (destCalculee.carnetId !== ouvert.id || (corrigeCarnet && corrigeCarnet !== ouvert.id))
     ? { options: [...new Set([destCalculee.carnetId, corrigeCarnet, ouvert.id].filter((x): x is string => !!x))].map(id => ({ id, libelle: id === ouvert.id ? 'Ici' : titreDe(id) })),

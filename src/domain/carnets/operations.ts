@@ -117,12 +117,15 @@ function ajouterLigne(c: CarnetDoc, l: LigneARanger, messageId: string): EffetMe
          malt : 2 cylindres, 150 kg/h ») ; aucun effet, le message garde la phrase (R25). */
       if (estTitreOuPhrase(c, l.texte)) return null;
       /* P11 : un critère au même texte normalisé n'ajoute pas de ligne. Le critère déjà là reste la source (son id, son `messageId`) ;
-         il reçoit seulement ce qui lui manque (raison, caractéristique). Aucun effet : annuler ce message ne retire pas l'ancien. */
+         il reçoit seulement ce qui lui manque (raison, caractéristique). Son effet est un renvoi (`fusion`) : annuler ce message ne
+         retire pas l'ancien. */
       const deja = d.criteres.find(x => memeTexte(x.texte, l.texte));
       if (deja) {
         if (!deja.raison && l.raison) deja.raison = l.raison;
         if (!deja.caracteristique && l.caracteristique) deja.caracteristique = copie(l.caracteristique);
-        return null;
+        /* reprise chir8 (c) : la ligne est rangée, là où elle était déjà ; l'effet la montre (« 3 lignes rangées », pas 2) sans la
+           posséder : `fusion` garde son texte, son origine et son message, que `remplacerRangement` lui rend tels quels. */
+        return { carnetId: c.id, cible: 'critere', id: deja.id, fusion: sansIndefinis({ texte: deja.texte, origine: deja.origine, messageId: deja.messageId }) };
       }
       /* P7 : un critère qui précise une caractéristique déjà là (même nom et unité, ou même unité lue dans la phrase) se fond dans le critère
          existant, s'il n'est pas de ses mots à lui (`origine: 'vous'` reste intact). L'effet garde le critère d'avant. */
@@ -132,7 +135,7 @@ function ajouterLigne(c: CarnetDoc, l: LigneARanger, messageId: string): EffetMe
         if (critereARemplacer([cible], l)) {
           d.criteres.splice(d.criteres.indexOf(cible), 1);
           d.criteres.unshift(cible);
-          if (l.caracteristique) cible.caracteristique = copie(l.caracteristique);
+          if (l.caracteristique) cible.caracteristique = axeLu(d.articles, cible.caracteristique, l.caracteristique);
         }
         const fusion = sansIndefinis({ texte: cible.texte, origine: cible.origine, messageId: cible.messageId });
         cible.texte = l.texte; cible.origine = l.origine; cible.messageId = messageId;
@@ -166,6 +169,19 @@ function ajouterLigne(c: CarnetDoc, l: LigneARanger, messageId: string): EffetMe
       d.photos.push(p); return { carnetId: c.id, cible: 'photo', id: p.id };
     }
   }
+}
+
+/**
+ * Critique 8, n° 2 : un seuil tapé sur le même axe (même unité) qu'un critère déjà là garde le nom sous lequel les articles portent leurs
+ * valeurs. « hotte murale à 1 200 m³/h au moins » sur un carnet dont les articles disent « débit » (m³/h) reste sur « débit » : les
+ * valeurs lues ne s'effacent pas et le rang se calcule sur elles. Le sens (plus, moins) vient du seuil tapé. Aucun article ne porte l'un
+ * ou l'autre nom : la caractéristique tapée.
+ */
+function axeLu(articles: readonly Article[], avant: Caracteristique | undefined, tapee: Caracteristique): Caracteristique {
+  const porte = (nom: string) => articles.some(a => Object.keys(a.valeurs).some(k => nomNormal(k) === nomNormal(nom)));
+  if (!avant || nomNormal(avant.nom) === nomNormal(tapee.nom) || porte(tapee.nom) || !porte(avant.nom)) return copie(tapee);
+  if (avant.unite && tapee.unite && avant.unite !== tapee.unite) return copie(tapee);
+  return sansIndefinis({ nom: avant.nom, unite: avant.unite ?? tapee.unite, sens: tapee.sens });
 }
 
 /** Les unités écrites dans un texte (« 1 200 m³/h » → m³/h), liste fermée de `analyseLocale`. */
@@ -646,6 +662,28 @@ export const verificationSuppression = (liens: readonly LienQuiRetient[]): strin
   (liens.length === 0 ? 'ni dans À venir, ni en commande' : `${texteLiens(liens.length)} : ${liens.map(l => l.libelle).join(', ')}`);
 
 interface Finances { plans: readonly FinancialPlan[]; transactions?: readonly FinanceTransaction[]; payments?: readonly FinancialPayment[] }
+
+/**
+ * Critique 8, n° 4 (R23, D-47b) : le lien d'un plan d'À venir à son carnet d'origine. `lie` : le carnet est là et sa sortie pointe ce plan ;
+ * `detache` : le carnet est là mais « Garder le plan sans ce carnet » a coupé le lien (la carte dit « du carnet <titre> · détaché ») ;
+ * `supprime` : le carnet n'existe plus. `null` : le plan ne vient d'aucun carnet. Carnet présent mais non lu : `lie` (rien d'inventé).
+ */
+export function lienDuPlan(plan: Pick<FinancialPlan, 'id' | 'upgrade'>, presents: ReadonlySet<string>, docs: readonly CarnetDoc[]): 'lie' | 'detache' | 'supprime' | null {
+  const id = plan.upgrade?.sourceCarnetId;
+  if (!id) return null;
+  if (!presents.has(id)) return 'supprime';
+  const doc = docs.find(c => c.id === id);
+  return !doc || doc.carnet.sortie?.planId === plan.id ? 'lie' : 'detache';
+}
+
+/**
+ * Critique 8, n° 4 : les carnets choisis qui attendent « Envoyer dans À venir ». Un carnet dont un plan d'À venir vient déjà (lié ou détaché)
+ * n'y est pas : il est dans À venir, sa carte le dit.
+ */
+export function choisisEnAttente(carnets: readonly CarnetDoc[], plans: readonly Pick<FinancialPlan, 'upgrade'>[]): CarnetDoc[] {
+  const envoyes = new Set(plans.flatMap(p => (p.upgrade?.sourceCarnetId ? [p.upgrade.sourceCarnetId] : [])));
+  return carnets.filter(c => c.carnet.choix && !c.carnet.sortie && !c.carnet.archive && !envoyes.has(c.id));
+}
 
 /** Garder le plan sans ce carnet : le carnet oublie sa sortie ; le plan n'est pas écrit. Refusé sur un plan réalisé (« plan réalisé : archiver »). */
 export function detacherPlan(etat: Etat, args: { carnetId: string } & Finances): Resultat {

@@ -359,7 +359,9 @@ describe('corr2-L1 (vision 2 : d1280-1, m390-1, m390-2, L4-7, d1280-3) : ce que 
     const cibles = new Set(msg.carnetMessage.effets.filter(x => x.cible !== 'carnet').map(x => x.carnetId));
     expect(cibles.size).toBe(mPendant);
     const evier = e.carnets().find(c => c.id === 'ZZ-CARNET-EVIER')!;
-    if (pendant.some(l => /Évier/.test(l.cible))) expect(evier.carnet.notes.some(x => /2 bacs pour laver/.test(x.texte))).toBe(true);
+    /* critique 8, n° 3 (décision du pilote a) : « 2 bacs » est une exigence, annoncée critère pendant ; rangée en note ou en critère selon
+       ce que le cadre a annoncé, jamais perdue */
+    if (pendant.some(l => /Évier/.test(l.cible))) expect([...evier.carnet.notes.map(x => x.texte), ...evier.carnet.criteres.map(x => x.texte)].some(x => /2 bacs/.test(x))).toBe(true);
     /* critique 6, n° 1 : un carnet neuf par objet ; on compte les carnets neufs annoncés */
     expect(e.carnets()).toHaveLength(n + new Set(pendant.filter(l => /Nouveau carnet/.test(l.cible)).map(l => l.cible)).size);
     await act(async () => { fireEvent.click(within(b as HTMLElement).getByRole('button', { name: /Annuler/ })); });

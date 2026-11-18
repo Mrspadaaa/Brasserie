@@ -73,9 +73,12 @@ export const carnetsDistincts = (lignes: readonly LigneVracV[]): number => new S
 
 /** « 1 chose à faire et 1 note, pas d'achat » (G23) : ce qu'il y a, et l'absence d'achat dite. */
 export function resumeVrac(lignes: LigneVracV[]): string {
-  const n = (g: GenreNote) => lignes.filter(l => l.genre === g).length;
+  const n = (g: TypeLigneVrac) => lignes.filter(l => l.genre === g).length;
   const parts: string[] = [];
   if (n('a-acheter')) parts.push(`${n('a-acheter')} à acheter`);
+  /* critique 8, n° 3 : une exigence annoncée critère se compte comme telle, jamais dans les notes */
+  if (n('critere')) parts.push(`${n('critere')} critère${n('critere') > 1 ? 's' : ''}`);
+  if (n('facon')) parts.push(`${n('facon')} façon${n('facon') > 1 ? 's' : ''}`);
   if (n('a-faire')) parts.push(`${n('a-faire')} chose${n('a-faire') > 1 ? 's' : ''} à faire`);
   if (n('question')) parts.push(`${n('question')} question${n('question') > 1 ? 's' : ''}`);
   if (n('conseil')) parts.push(`${n('conseil')} conseil${n('conseil') > 1 ? 's' : ''}`);
