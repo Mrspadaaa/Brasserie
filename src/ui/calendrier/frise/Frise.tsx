@@ -82,6 +82,27 @@ interface Trait { id: string; d: string; fil?: 'repos' | 'allume' | 'pale' }
 export interface BoiteFil { left: number; top: number; right: number; bottom: number }
 
 /**
+ * CAL-FIL-SOUS-INFO (18.11, « La ligne doit pas être dessus l'info ») : ce que le fil et le trait d'un caddie ne traversent jamais. Le calque
+ * des traits est déjà sous toute la frise (frise.css, z-index −1 dans une frise isolée) ; un texte laisse pourtant voir le fil entre ses
+ * lettres, et un nom pâli (0,35) le laisse voir à travers lui. Chaque boîte listée ici devient un trou du masque des traits, comme le halo
+ * d'une étiquette sur une carte : le fil s'interrompt sous l'info et reprend entre les éléments. Un texte reçoit 2 px de marge sur les côtés, 1 px en haut et en bas (ses lettres débordent sa ligne de 14 px).
+ */
+export const INFO_SOUS_FIL = [
+  '.cal-lbl-t', '.cal-lbl-m', '.cal-lbl-j', '.cal-lie', '.cal-nom', '.cal-conf', '.cal-vide', '.cal-cachees', '.cal-cachees-f',
+  '.cal-pastille-p', '.cal-oeil', '.cal-plus', '.cal-duree', '.cal-renvoi', '.cal-caddie', '.cal-commander', '.cal-badges', '.cal-etoile',
+  '.cal-grille b', '.cal-point-bulle', '.cal-lie-ap', '.cal-ici', '.cal-msg', '.cal-filtre',
+  /* les choses elles-mêmes (une barre est translucide) et la fiche ouverte : sans marge, le fil touche le bord de sa barre et de son jalon */
+  '.cal-barre', '.cal-marque', '.cal-det', '.cal-fantome'
+] as const;
+const SANS_MARGE = new Set(['.cal-barre', '.cal-marque', '.cal-det', '.cal-fantome']);
+
+/** Le trou d'une boîte dans le masque (repère de la frise), marge comprise ; `null` pour une boîte vide. */
+export function trouMasque(r: BoiteFil, marge: number, margeHaut = 0): BoiteFil | null {
+  if (r.right - r.left <= 0 || r.bottom - r.top <= 0) return null;
+  return { left: r.left - marge, top: r.top - margeHaut, right: r.right + marge, bottom: r.bottom + margeHaut };
+}
+
+/**
  * D386 : le fil discret d'un jalon à sa barre liée (une autre rangée) : il part du bord du jalon tourné vers la barre, monte (ou descend)
  * jusqu'au bord de la barre, à l'aplomb du jalon s'il tombe sous elle, sinon par un coude à 8 px de la barre. `null` : les deux se touchent.
  */
@@ -112,6 +133,8 @@ export const Frise: React.FC<FriseProps> = props => {
   const zone = React.useRef<HTMLDivElement | null>(null);
   const [mesuree, setMesuree] = React.useState(0);
   const [traits, setTraits] = React.useState<Trait[]>([]);
+  const [trous, setTrous] = React.useState<BoiteFil[]>([]);
+  const idMasque = `cal-masque-fil-${React.useId().replace(/[^A-Za-z0-9_-]/g, '')}`;
 
   React.useLayoutEffect(() => {
     const el = zone.current;
@@ -125,7 +148,8 @@ export const Frise: React.FC<FriseProps> = props => {
   }, []);
 
   /* le trait d'un caddie à son brassin : mesuré après le rendu (les deux vivent dans deux rangées), redessiné seulement s'il change */
-  React.useLayoutEffect(() => {
+  const clesTraits = React.useRef({ traits: '', trous: '' });
+  const mesurerTraits = React.useCallback(() => {
     const el = zone.current;
     if (!el) return;
     const z = el.getBoundingClientRect();
@@ -155,9 +179,78 @@ export const Frise: React.FC<FriseProps> = props => {
       const ton = jalon.getAttribute('data-ton');
       if (d) suivants.push({ id: `fil-${jalon.getAttribute('data-chose')}`, d, fil: ton === 'allume' ? 'allume' : ton === 'pale' ? 'pale' : 'repos' });
     });
+    /* CAL-FIL-SOUS-INFO : les trous du masque, mesurés seulement s'il y a un trait à dessiner */
+    const trousSuivants: BoiteFil[] = [];
+    if (suivants.length) {
+      for (const sel of INFO_SOUS_FIL) {
+        const marge = SANS_MARGE.has(sel) ? 0 : 2;
+        el.querySelectorAll<HTMLElement>(sel).forEach(x => {
+          const r = x.getBoundingClientRect();
+          const t = trouMasque({ left: r.left - z.left, right: r.right - z.left, top: r.top - z.top, bottom: r.bottom - z.top }, marge, marge ? 1 : 0);
+          /* une boîte qui couvre toute la frise (jsdom, ou un élément sans place) ne fait pas de trou : elle effacerait tout le fil */
+          if (t && !(r.width >= z.width && r.height >= z.height)) trousSuivants.push(t);
+        });
+      }
+      /* un nom est un seul bloc : son texte, son montant, sa durée, sa pastille « lié à » et l'icône posée contre lui. Sans cela, le fil
+         passait entre « 2 cartons » et « +180 » (vu au banc à 390) : dans l'info, pas entre deux infos */
+      el.querySelectorAll<HTMLElement>('.cal-lbl').forEach(lbl => {
+        if (lbl.classList.contains('cal-lbl-cede')) return;
+        const boites = [...lbl.querySelectorAll<HTMLElement>('.cal-lbl-t, .cal-lbl-m, .cal-lbl-j, .cal-lie')].map(x => x.getBoundingClientRect())
+          .filter(r => r.width > 0 && r.height > 0 && !(r.width >= z.width && r.height >= z.height));
+        if (!boites.length) return;
+        const bloc = { left: Math.min(...boites.map(r => r.left)), right: Math.max(...boites.map(r => r.right)), top: Math.min(...boites.map(r => r.top)), bottom: Math.max(...boites.map(r => r.bottom)) };
+        const icone = [...(lbl.parentElement?.children ?? [])].find(x => x.classList.contains('cal-marque'))?.getBoundingClientRect();
+        if (icone && icone.width && icone.width < z.width && icone.top < bloc.bottom && icone.bottom > bloc.top && Math.max(icone.left - bloc.right, bloc.left - icone.right) <= 10) {
+          bloc.left = Math.min(bloc.left, icone.left); bloc.right = Math.max(bloc.right, icone.right);
+        }
+        const t = trouMasque({ left: bloc.left - z.left, right: bloc.right - z.left, top: bloc.top - z.top, bottom: bloc.bottom - z.top }, 2, 1);
+        if (t) trousSuivants.push(t);
+      });
+    }
     const cle = (t: Trait[]) => t.map(x => `${x.id}:${x.d}:${x.fil ?? ''}`).join('|');
-    if (cle(suivants) !== cle(traits)) setTraits(suivants);
-  });
+    const cleTrous = (t: BoiteFil[]) => t.map(b => `${b.left.toFixed(1)},${b.top.toFixed(1)},${b.right.toFixed(1)},${b.bottom.toFixed(1)}`).join('|');
+    const k = { traits: cle(suivants), trous: cleTrous(trousSuivants) };
+    if (k.traits !== clesTraits.current.traits) setTraits(suivants);
+    if (k.trous !== clesTraits.current.trous) setTrous(trousSuivants);
+    clesTraits.current = k;
+  }, []);
+  React.useLayoutEffect(() => { mesurerTraits(); });
+  /* CAL-FIL-SOUS-INFO : une rangée repose ses noms dans son propre rendu (`disposer`), sans rendre la frise ; le masque suit donc aussi chaque
+     changement de place ou de classe dans la frise (hors du calque des traits), au plus une fois par image */
+  React.useEffect(() => {
+    const el = zone.current;
+    if (!el || typeof MutationObserver === 'undefined') return undefined;
+    let image = 0;
+    let repos: ReturnType<typeof setTimeout> | null = null;
+    /* à l'image suivante, puis une fois la page reposée (250 ms sans nouvel événement) : un nom reposé après coup est rattrapé */
+    const plusTard = () => {
+      if (!image) image = requestAnimationFrame(() => { image = 0; mesurerTraits(); });
+      if (repos) clearTimeout(repos);
+      repos = setTimeout(() => { repos = null; mesurerTraits(); }, 250);
+    };
+    window.addEventListener('focusin', plusTard);
+    window.addEventListener('pointerup', plusTard, { capture: true });
+    const mo = new MutationObserver(liste => {
+      if (!liste.every(m => (m.target as Element).closest?.('svg.cal-traits'))) plusTard();
+    });
+    mo.observe(el, { subtree: true, childList: true, characterData: true, attributes: true, attributeFilter: ['style', 'class'] });
+    /* une police arrivée après coup élargit les noms sans rien changer au DOM ; au banc, un nom repose aussi sa place juste après un
+       défilement (fiche ouverte puis amenée à l'écran) sans mutation dans la frise : on remesure au défilement et au changement de taille */
+    const polices = typeof document !== 'undefined' ? document.fonts : undefined;
+    polices?.addEventListener?.('loadingdone', plusTard);
+    window.addEventListener('scroll', plusTard, { passive: true, capture: true });
+    window.addEventListener('resize', plusTard);
+    return () => {
+      mo.disconnect();
+      polices?.removeEventListener?.('loadingdone', plusTard);
+      window.removeEventListener('scroll', plusTard, { capture: true });
+      window.removeEventListener('resize', plusTard);
+      window.removeEventListener('focusin', plusTard);
+      window.removeEventListener('pointerup', plusTard, { capture: true });
+      if (image) cancelAnimationFrame(image);
+      if (repos) clearTimeout(repos);
+    };
+  }, [mesurerTraits]);
 
   /* D-135 (CRITIQUE-2 n° 13) : au repos, les rangées qui passent à la hauteur du + volant gardent leurs noms hors de sa zone ; mesuré après
      le rendu, une rangée ajoutée n'est jamais retirée tant que la mise en page ne change pas (pas d'oscillation) */
@@ -257,9 +350,18 @@ export const Frise: React.FC<FriseProps> = props => {
     >
       {traits.length > 0 && (
         <svg className="cal-traits" aria-hidden="true" data-traits>
-          {traits.map(t => (t.fil
-            ? <path key={t.id} d={t.d} className={`cal-fil cal-fil-${t.fil}`} data-fil={t.id.slice(4)} />
-            : <path key={t.id} d={t.d} data-trait={t.id} />))}
+          {/* CAL-FIL-SOUS-INFO : blanc, le trait se voit ; noir (une info), il passe dessous et ne se voit pas */}
+          <mask id={idMasque} maskUnits="userSpaceOnUse" x="0" y="0" width="100%" height="100%" data-masque-fil>
+            <rect x="0" y="0" width="100%" height="100%" fill="#fff" />
+            {trous.map((b, i) => (
+              <rect key={i} x={b.left.toFixed(1)} y={b.top.toFixed(1)} width={(b.right - b.left).toFixed(1)} height={(b.bottom - b.top).toFixed(1)} fill="#000" data-trou />
+            ))}
+          </mask>
+          <g mask={`url(#${idMasque})`}>
+            {traits.map(t => (t.fil
+              ? <path key={t.id} d={t.d} className={`cal-fil cal-fil-${t.fil}`} data-fil={t.id.slice(4)} />
+              : <path key={t.id} d={t.d} data-trait={t.id} />))}
+          </g>
         </svg>
       )}
       {rangees.map(r => {

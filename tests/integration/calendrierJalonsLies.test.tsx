@@ -3,6 +3,8 @@
  * 1 fût » (Ventes, un jour) sans lien. Toucher la foire allume la tireuse (et son fil), pâlit Dédé ; Lier vers une fête écrit `evenementId`.
  */
 import React from 'react';
+import { readFileSync } from 'node:fs';
+import { resolve } from 'node:path';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { act, cleanup, fireEvent, render, screen, waitFor, within } from '@testing-library/react';
 import { BancCalendrier } from '../../src/design/CalendrierPreview';
@@ -86,6 +88,49 @@ describe('D386 au banc : la foire, sa tireuse, Dédé', () => {
     expect(fil()!.getAttribute('d')).toBe('M174.0 220.0V86.0');
     toucher(bouton(/^Foire du Valais/));
     await waitFor(() => expect(fil()!.getAttribute('class')).toBe('cal-fil cal-fil-allume'));
+  });
+
+  it('CAL-FIL-SOUS-INFO : le calque du fil est peint sous les noms, les icônes, les barres et la fiche ; le masque l’interrompt sous chaque info', async () => {
+    /* l'ordre des couches : la frise est isolée, le calque des traits y est le premier et le plus bas (z-index −1), toute info au-dessus */
+    const css = readFileSync(resolve(process.cwd(), 'src/ui/calendrier/frise/frise.css'), 'utf8');
+    const regle = (sel: string) => [...css.matchAll(/^([^{}\n]+)\{([^}]*)\}/gm)].filter(m => m[1].split(',').map(s => s.trim()).includes(sel)).map(m => m[2]).join(';');
+    const zIndex = (sel: string) => { const m = regle(sel).match(/z-index:\s*(-?\d+)/g); return m ? Number(m[m.length - 1].replace(/z-index:\s*/, '')) : null; };
+    expect(regle('.cal-frise')).toMatch(/isolation:\s*isolate/);
+    expect(zIndex('.cal-traits')).toBe(-1);
+    for (const sel of ['.cal-lbl', '.cal-det', '.cal-barre', '.cal-marque', '.cal-renvoi', '.cal-caddie']) expect(zIndex(sel), sel).toBeGreaterThan(-1);
+
+    /* jsdom ne pose rien : la foire en haut, la fiche sous elle, le nom de Dédé et la tireuse plus bas ; le fil (x = 174) les traverse */
+    vi.spyOn(Element.prototype, 'getBoundingClientRect').mockImplementation(function (this: Element) {
+      const id = this.getAttribute('data-chose');
+      const r = (left: number, top: number, w: number, h: number) => ({ left, top, right: left + w, bottom: top + h, width: w, height: h, x: left, y: top, toJSON: () => ({}) }) as DOMRect;
+      if (id === 'creatif-CR-FOIRE' && !this.hasAttribute('data-marque')) return r(150, 60, 50, 26);
+      if (this.getAttribute('data-titre') === 'Tireuse') return r(160, 220, 28, 28);
+      if (this.classList.contains('cal-det')) return r(0, 100, 390, 40);
+      if (this.classList.contains('cal-lbl-t') && (this.textContent ?? '').startsWith('Dédé')) return r(150, 160, 70, 18);
+      if (this.classList.contains('cal-marque') && (this.getAttribute('aria-label') ?? '').startsWith('Dédé')) return r(226, 156, 28, 28);
+      return r(0, 0, 390, 800);
+    });
+    monter();
+    toucher(bouton(/^Foire du Valais/));
+    await waitFor(() => expect(document.querySelector('.cal-det')).not.toBeNull());
+    const frise = document.querySelector('[data-frise]')!;
+    const calque = frise.querySelector('svg[data-traits]')!;
+    expect(frise.firstElementChild).toBe(calque);
+    const fil = calque.querySelector('path[data-fil]')!;
+    expect(fil.getAttribute('d')).toBe('M174.0 220.0V86.0');
+    const groupe = fil.parentElement!;
+    const id = /^url\(#(.+)\)$/.exec(groupe.getAttribute('mask') ?? '')?.[1];
+    expect(id).toBeTruthy();
+    const masque = calque.querySelector(`mask[id="${id}"]`)!;
+    expect(masque).not.toBeNull();
+    const trous = [...masque.querySelectorAll('rect[data-trou]')].map(t => ['x', 'y', 'width', 'height'].map(a => t.getAttribute(a)).join(' '));
+    /* la fiche, sans marge ; le nom de Dédé, 2 px sur les côtés et 1 px en haut et en bas ; la foire et la tireuse, au bord exact (le fil les touche) */
+    expect(trous).toContain('0.0 100.0 390.0 40.0');
+    expect(trous).toContain('148.0 159.0 74.0 20.0');
+    expect(trous).toContain('150.0 60.0 50.0 26.0');
+    expect(trous).toContain('160.0 220.0 28.0 28.0');
+    /* le nom de Dédé et son icône, à 6 px de lui, font un seul bloc : le fil ne passe pas entre eux */
+    expect(trous).toContain('148.0 159.0 108.0 20.0');
   });
 
   it('Lier Dédé à la foire : le groupe « Fêtes et activités » ne propose que ce qui dure ; la source reçoit { evenementId } et Dédé se relie', async () => {
