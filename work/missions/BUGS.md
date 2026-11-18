@@ -180,7 +180,7 @@ Lire :
 | work/missions/2026-11-17-port-calendrier/vision-9/lot-d/essai3/RAPPORT.md | PC | 0 | 0 | 7f3e3c3a823e |
 | work/missions/2026-11-17-port-calendrier/vision-9/lot-d/essai4/RAPPORT.md | PC | 0 | 0 | 87a17cf85f60 |
 | work/missions/2026-11-17-port-calendrier/vision-9/lot-d/essai5/RAPPORT.md | PC | 0 | 0 | 811cb50cdd4b |
-| work/missions/2026-11-18-choix-calendrier/en-ligne-axe/RAPPORT.md | PC | 0 | 0 | en cours |
+| work/missions/2026-11-18-choix-calendrier/en-ligne-axe/RAPPORT.md | PC | 6 | 0 | 3b55f2a885c7 |
 | work/missions/2026-11-17-port-carnet/vision-4/RAPPORT-d1280.md | PCN | 0 | 0 | b9b896566b01 |
 | work/missions/2026-11-17-port-carnet/vision-4/RAPPORT-m390.md | PCN | 0 | 0 | 9f4b1417fdd7 |
 | work/missions/2026-11-17-port-carnet/vision-5/RAPPORT-d1280.md | PCN | 0 | 0 | 35b17d70cc0e |
@@ -1547,3 +1547,22 @@ Test 2 : 11 corrigés au commit bf91d78e1 ; n° 9 et n° 11 restent ouverts (PCN
 | PCN-184 | en-ligne-3 n° 2 | Carnet (en ligne, test 3) | En ligne : envois 4 et 5 : pendant l'attente « Carnet créé, en tête des Carnets », saut à la liste ; l'IA range dans Pompe, le carnet provisoire disparaît, l'écran reste sur la liste et rien ne dit où c'est allé (le code prévoit de revenir au carnet : ne se fait pas). | G | ouvert | | |
 | PCN-185 | en-ligne-3 n° 3 | Carnet (en ligne, test 3) | En ligne : photo de l'article galaxus cassée (icône d'image brisée) dans la carte et le tableau. | m | ouvert | | |
 | PCN-186 | en-ligne-3 n° 4 | Carnet (en ligne, test 3) | En ligne : chaque carnet issu de la note en vrac montre en « votre phrase » toute la note (3 lignes, pompe comprise) ; au Fermenteur, la note « Vérifier s'il existe avec double paroi » sert aussi de sous-titre. | m | ouvert | | |
+| PC-120 | en-ligne-axe n° 1 | Calendrier (en ligne) | En ligne : un achat d'un jour ajouté par le « + » de la rangée Achats devient une barre de toute la semaine (30 nov. → 6 déc.) ; la même vente d'un jour devient un jalon (`cal-ponctuel`). | B | ouvert | | ZZ TEST — Tireuse (−150) ; mots du brasseur 18.11 : « une vente ou un Achat … est sur un seul moment, un seul jour » |
+| PC-121 | en-ligne-axe n° 2 | Calendrier et fiches (en ligne) | En ligne : rien ne permet de lier un achat ou une vente à une fête : ni dans la fiche, ni dans « Modifier » ; le fil discret et « liés allumés, autres pâlis » ne se jouent pas sur la vraie app. | B | ouvert | | fiche de l'achat et du jalon ZZ TEST ; geste 8 du rapport |
+| PC-122 | en-ligne-axe n° 3 | Achats, feuille rapide (en ligne) | En ligne : « Plus de détails › » efface le nom et le montant tapés dans la feuille rapide ; « Prévoir une dépense » s'ouvre avec Libellé et CHF vides. | non graduée | ouvert | | rapport, problème 3 et geste 10 |
+| PC-123 | en-ligne-axe n° 4 | Calendrier, vue Jour (en ligne) | En ligne : la dernière barre « Ttt » a son nom au-dessus et sa durée « J0 / 15 · prête 8 déc. » à gauche, sous le nom, collée au bord : nom et durée séparés. | non graduée | ouvert | | rapport, problème 4 |
+| PC-124 | en-ligne-axe n° 5 | Calendrier, rangée Brassins (en ligne) | En ligne : « pas brassée · prête le 3 déc. » passe sur une 2e ligne sous le nom et le montant (Ttt, Fruty, Hefe en 6 sem.), au lieu de tenir sur une ligne au format de la Stout. | non graduée | ouvert | | rapport, problème 5 ; ferme PC-cadre du format Stout |
+| PC-125 | en-ligne-axe n° 6 | Calendrier, période (en ligne) | En ligne : le bouton de période « 2 sem. · j » est rogné de 2 px (79 > 77 px). | non graduée | ouvert | | rapport, problème 6 |
+
+## Test en ligne de l'axe et des jalons, 18.11 (critique Opus, tag en-ligne/2026-11-18-jalons, source `work/missions/2026-11-18-choix-calendrier/en-ligne-axe/RAPPORT.md`, 6 constats)
+
+Versé avec gravités du rapport : 1 et 2 BLOQUANT (B) ; 3 à 6 non graduées au rapport. Bundle `index-K5xNLfEe.js`, ZZ TEST retirés (oui). Mini icônes, pied par phase, échelle et semaine dépliée : OK au repos (rien à verser). Doutes non comptés, non versés : « + » flottant sur « Clients » (effet possible de l'émulation 390) ; fête « 3 j actifs » occupant toute la semaine (durée lue de la semaine, non des jours).
+
+| id | source | écran | constat | gravité | état | commit | note |
+|---|---|---|---|---|---|---|---|
+| PC-120 | en-ligne-axe n° 1 | Calendrier (en ligne) | En ligne : un achat d'un jour ajouté par le « + » de la rangée Achats devient une barre de toute la semaine (30 nov. → 6 déc.) ; la même vente d'un jour devient un jalon (`cal-ponctuel`). | B | ouvert | | ZZ TEST — Tireuse (−150) ; mots du brasseur 18.11 : « une vente ou un Achat … est sur un seul moment, un seul jour » |
+| PC-121 | en-ligne-axe n° 2 | Calendrier et fiches (en ligne) | En ligne : rien ne permet de lier un achat ou une vente à une fête : ni dans la fiche, ni dans « Modifier » ; le fil discret et « liés allumés, autres pâlis » ne se jouent pas sur la vraie app. | B | ouvert | | fiche de l'achat et du jalon ZZ TEST ; geste 8 du rapport |
+| PC-122 | en-ligne-axe n° 3 | Achats, feuille rapide (en ligne) | En ligne : « Plus de détails › » efface le nom et le montant tapés dans la feuille rapide ; « Prévoir une dépense » s'ouvre avec Libellé et CHF vides. | non graduée | ouvert | | rapport, problème 3 et geste 10 |
+| PC-123 | en-ligne-axe n° 4 | Calendrier, vue Jour (en ligne) | En ligne : la dernière barre « Ttt » a son nom au-dessus et sa durée « J0 / 15 · prête 8 déc. » à gauche, sous le nom, collée au bord : nom et durée séparés. | non graduée | ouvert | | rapport, problème 4 |
+| PC-124 | en-ligne-axe n° 5 | Calendrier, rangée Brassins (en ligne) | En ligne : « pas brassée · prête le 3 déc. » passe sur une 2e ligne sous le nom et le montant (Ttt, Fruty, Hefe en 6 sem.), au lieu de tenir sur une ligne au format de la Stout. | non graduée | ouvert | | rapport, problème 5 |
+| PC-125 | en-ligne-axe n° 6 | Calendrier, période (en ligne) | En ligne : le bouton de période « 2 sem. · j » est rogné de 2 px (79 > 77 px). | non graduée | ouvert | | rapport, problème 6 |
