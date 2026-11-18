@@ -2104,3 +2104,7 @@ Lecture : les tests en ligne du carnet peuvent appeler la vraie IA (Gemini factu
 > Je peux pas choisir une période donnée
 
 Capture : work/missions/2026-11-17-port-calendrier/en-ligne-1/brasseur/periode-18-11.jpg (6 sem. ; fenêtre de la courbe « S47 – S13 2027 » sur un axe déc.→oct., frise S47–S52 ; courbe plate). Lecture étroite : au téléphone, il ne peut pas poser la période voulue (début et fin) ; la fenêtre affichée ne correspond pas au choix « 6 sem. ».
+
+> Les petits points là donne pas d'info
+
+Capture : work/missions/2026-11-17-port-calendrier/en-ligne-1/brasseur/points-18-11.jpg (points d'étapes sur la barre du brassin « Ttt », J0 / 15). Lecture étroite : les points d'étape de la barre ne disent pas quelle étape ni quand.
