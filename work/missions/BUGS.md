@@ -192,6 +192,7 @@ Lire :
 | work/missions/2026-11-17-port-carnet/CRITIQUE-7.md | PCN | 32 | 0 | 4284e42b1f97 |
 | work/missions/2026-11-17-port-carnet/CRITIQUE-8.md | PCN | 30 | 0 | 8c33f0fe687a |
 | work/missions/2026-11-17-port-carnet/en-ligne-1/RAPPORT.md | PCN | 12 | 0 | 71e29ebbbc36 |
+| work/missions/2026-11-17-port-carnet/en-ligne-2/RAPPORT.md | PCN | 0 | 0 | en cours |
 
 Port du carnet (préfixe `PCN`, work/missions/2026-11-17-port-carnet/vision-1…) : rapports versés le 18.11 avec 0 constat, le workflow tourne encore ; critique du carnet à venir.
 
