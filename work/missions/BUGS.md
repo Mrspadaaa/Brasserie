@@ -191,6 +191,7 @@ Lire :
 | work/missions/2026-11-17-port-carnet/vision-8/RAPPORT-m390.md | PCN | 0 | 0 | d27ab01d77fc |
 | work/missions/2026-11-17-port-carnet/CRITIQUE-7.md | PCN | 32 | 0 | 4284e42b1f97 |
 | work/missions/2026-11-17-port-carnet/CRITIQUE-8.md | PCN | 30 | 0 | 8c33f0fe687a |
+| work/missions/2026-11-17-port-carnet/en-ligne-1/RAPPORT.md | PCN | 12 | 0 | 71e29ebbbc36 |
 
 Port du carnet (préfixe `PCN`, work/missions/2026-11-17-port-carnet/vision-1…) : rapports versés le 18.11 avec 0 constat, le workflow tourne encore ; critique du carnet à venir.
 
@@ -1491,3 +1492,22 @@ Source : CRITIQUE-4.md (46 problèmes, HEAD e0073224e), CRITIQUE-5.md (43 probl�
 | PCN-153 | CRITIQUE-8 n° 28 | Carnet (port, banc local) | Cadre « Arrive ici » avec 90 px vides (1280 : 16). | m | ouvert | | même que PCN-123 |
 | PCN-154 | CRITIQUE-8 n° 29 | Carnet (port, banc local) | Menu ··· dans le flux (1280 : 32) : pousse le titre de 130 px au lieu de flotter. | m | ouvert | | |
 | PCN-155 | CRITIQUE-8 n° 30 | Carnet (port, banc local) | Pastille « À comparer » sans lien lu (1280 : 16, 21). | m | ouvert | | |
+
+## Test en ligne du carnet n° 1, 18.11 (critique Opus, `work/missions/2026-11-17-port-carnet/en-ligne-1/RAPPORT.md`)
+
+Version testée : tag `en-ligne/2026-11-18-carnet` (dfdcd6977), bureau, Chrome, thème clair, 0 carnet réel avant le test, 4 carnets `ZZ TEST` retirés par l'app. Aucun envoi IA (7 envois, rangés sans IA, cause : drapeau `VITE_CARNET_IA` absent du build). Doutes non versés (retour « ✓ 3 lignes rangées » non vu ; erreur console Firestore d'horloge, hors carnet ; espace en tête d'une confirmation). Rejeu à faire avec IA réelle sur `en-ligne/2026-11-18-carnet-2`.
+
+| id | source | écran | constat | gravité | état | commit | note |
+|---|---|---|---|---|---|---|---|
+| PCN-156 | en-ligne-1 n° 1 | Carnet (en ligne, test 1) | En ligne : IA du carnet éteinte dans le paquet (chunk `eteint`, `VITE_CARNET_IA` absent) ; aucun envoi ne passe par l'IA, chaque envoi tombe en rangement local. | B | corrigé | 5f4f4cd2b | drapeau contrôlé au build, branche `claude/port-carnet-1711`, tag `en-ligne/2026-11-18-carnet-2` ; à rejouer avec IA réelle |
+| PCN-157 | en-ligne-1 n° 2 | Carnet (en ligne, test 1) | En ligne : « doit tenir 80 °C » envoyé dans Pompe ouvert n'apparaît ni dans Pompe ni dans Prochain brassin (MSG-4aacdf3d en base, invisible). | B | ouvert | | |
+| PCN-158 | en-ligne-1 n° 3 | Carnet (en ligne, test 1) | En ligne : « le fermenteur doit avoir une vanne en bas » crée un carnet « Prochain brassin » neuf ; deux objets donnent trois carnets. | B | ouvert | | |
+| PCN-159 | en-ligne-1 n° 4 | Carnet (en ligne, test 1) | En ligne : titre coupé sur un article, « Pompe de transfert magnétique pour le » (« moût chaud » perdu), repris dans la liste, Comparer et la confirmation de suppression. | G | ouvert | | |
+| PCN-160 | en-ligne-1 n° 5 | Carnet (en ligne, test 1) | En ligne : une phrase entière devient critère (« Fermenteur conique inox 60 L, voir s'il existe avec double paroi ») ; la phrase de la pompe, de même forme, devient note : classement incohérent. | G | ouvert | | |
+| PCN-161 | en-ligne-1 n° 6 | Carnet (en ligne, test 1) | En ligne : une phrase sur un autre objet (réfractomètre) dans Fermenteur ouvert devient note « à faire » sans autre place proposée ; le menu de la note n'offre pas Déplacer. | G | ouvert | | |
+| PCN-162 | en-ligne-1 n° 7 | Carnet (en ligne, test 1) | En ligne : Choisir reste désactivé (« Page non lue : ni nom, ni prix connus ») alors que « 189 CHF » s'affiche ; articles bloqués en « lecture… » (IA éteinte) ; « Envoyer dans À venir » et « Garder le plan sans ce carnet » hors d'atteinte. | B | ouvert | | |
+| PCN-163 | en-ligne-1 n° 8 | Carnet (en ligne, test 1) | En ligne : l'état de lecture ment (« Sans lecture ici : le lien est gardé tel quel, page non lue ») ; après envoi, « lecture… » pour toujours, article nommé seulement par son domaine. | G | ouvert | | |
+| PCN-164 | en-ligne-1 n° 9 | Carnet (en ligne, test 1) | En ligne : Comparer dit « Valeurs annoncées par les vendeurs » alors que les prix viennent de la phrase du brasseur et qu'aucune page n'a été lue. | D | ouvert | | |
+| PCN-165 | en-ligne-1 n° 10 | Carnet (en ligne, test 1) | En ligne : confirmation de suppression fausse, « Il est vide. » pour Hotte (critère 1 200 m³/h) et Prochain brassin (critère de la vanne) ; le brasseur supprime en croyant le carnet vide. | B | ouvert | | |
+| PCN-166 | en-ligne-1 n° 11 | Carnet (en ligne, test 1) | En ligne : la liste promet « on garde sa photo, son prix, et on le surveille » sans photo, lecture ni veille. | D | ouvert | | |
+| PCN-167 | en-ligne-1 n° 12 | Carnet (en ligne, test 1) | En ligne : 7 messages `carnet-message` restent dans `creativeItems` après suppression des carnets (voulu par `operations.ts` L33) ; aucun écran ne les montre, rien ne permet de les retirer. | G | ouvert | | retrait en base hors app : accord du brasseur requis ; ids dans RAPPORT.md |
