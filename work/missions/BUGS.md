@@ -148,16 +148,19 @@ Lire :
 | work/missions/2026-11-17-port-calendrier/vision-11/lot-d/essai6/RAPPORT.md | PC | 0 | 0 | 876210d9b2b0 |
 | work/missions/2026-11-17-port-calendrier/vision-11/lot-d/essai7/RAPPORT.md | PC | 0 | 0 | 83c994e6c8f7 |
 | work/missions/2026-11-17-port-calendrier/vision-12/RAPPORT-m390.md | PC | 0 | 0 | beaea4607820 |
-| work/missions/2026-11-17-port-calendrier/vision-13/essai1/RAPPORT.md | PC | 0 | 0 | en cours |
-| work/missions/2026-11-17-port-calendrier/vision-13/essai2/RAPPORT.md | PC | 0 | 0 | en cours |
-| work/missions/2026-11-17-port-calendrier/vision-13/essai3/RAPPORT.md | PC | 0 | 0 | en cours |
-| work/missions/2026-11-17-port-calendrier/vision-13/essai4/RAPPORT.md | PC | 0 | 0 | en cours |
-| work/missions/2026-11-17-port-calendrier/vision-13/essai5/RAPPORT.md | PC | 0 | 0 | en cours |
-| work/missions/2026-11-17-port-calendrier/vision-13/essai6/RAPPORT.md | PC | 0 | 0 | en cours |
-| work/missions/2026-11-17-port-calendrier/vision-13/essai7/RAPPORT.md | PC | 0 | 0 | en cours |
-| work/missions/2026-11-17-port-calendrier/vision-13/RAPPORT-paysage-d1280.md | PC | 0 | 0 | en cours |
-| work/missions/2026-11-17-port-calendrier/vision-13/RAPPORT-m390.md | PC | 0 | 0 | en cours |
-| work/missions/2026-11-17-port-calendrier/vision-13/RAPPORT.md | PC | 0 | 0 | en cours |
+| work/missions/2026-11-17-port-calendrier/vision-13/essai1/RAPPORT.md | PC | 0 | 0 | 237fc824484e |
+| work/missions/2026-11-17-port-calendrier/vision-13/essai2/RAPPORT.md | PC | 0 | 0 | 600aed10ee79 |
+| work/missions/2026-11-17-port-calendrier/vision-13/essai3/RAPPORT.md | PC | 0 | 0 | 40dca7adcbbe |
+| work/missions/2026-11-17-port-calendrier/vision-13/essai4/RAPPORT.md | PC | 0 | 0 | 41bc56e25b2d |
+| work/missions/2026-11-17-port-calendrier/vision-13/essai5/RAPPORT.md | PC | 0 | 0 | b39849e80191 |
+| work/missions/2026-11-17-port-calendrier/vision-13/essai6/RAPPORT.md | PC | 0 | 0 | 64b7ae2b9e3b |
+| work/missions/2026-11-17-port-calendrier/vision-13/essai7/RAPPORT.md | PC | 0 | 0 | ef890c7b6fce |
+| work/missions/2026-11-17-port-calendrier/vision-13/RAPPORT-paysage-d1280.md | PC | 0 | 0 | 50a7821873e3 |
+| work/missions/2026-11-17-port-calendrier/vision-13/RAPPORT-m390.md | PC | 0 | 0 | b14c47878a3a |
+| work/missions/2026-11-17-port-calendrier/vision-13/RAPPORT.md | PC | 0 | 0 | fecd6595650a |
+| work/missions/2026-11-17-port-calendrier/vision-14/RAPPORT-m390.md | PC | 0 | 0 | 0b87cc792889 |
+| work/missions/2026-11-17-port-calendrier/vision-14/RAPPORT-paysage-d1280.md | PC | 0 | 0 | b7010fb2d461 |
+| work/missions/2026-11-17-port-calendrier/vision-14/RAPPORT.md | PC | 0 | 0 | 6b133460c64c |
 | work/missions/2026-11-17-port-calendrier/vision-12/RAPPORT-paysage-d1280.md | PC | 0 | 0 | 0cbb2bdb0600 |
 | work/missions/2026-11-17-port-calendrier/vision-12/lot-d/essai1/RAPPORT.md | PC | 0 | 0 | d6142bae5e0a |
 | work/missions/2026-11-17-port-calendrier/vision-12/lot-d/essai2/RAPPORT.md | PC | 0 | 0 | 15f82c416d19 |
@@ -181,6 +184,7 @@ Lire :
 | work/missions/2026-11-17-port-carnet/vision-5/RAPPORT-m390.md | PCN | 0 | 0 | c77b7c446fdb |
 | work/missions/2026-11-17-port-carnet/vision-6/RAPPORT-d1280.md | PCN | 0 | 0 | 36018f135665 |
 | work/missions/2026-11-17-port-carnet/vision-6/RAPPORT-m390.md | PCN | 0 | 0 | 8d0ba3f76152 |
+| work/missions/2026-11-17-port-carnet/vision-7/RAPPORT-m390.md | PCN | 0 | 0 | en cours |
 
 Port du carnet (préfixe `PCN`, work/missions/2026-11-17-port-carnet/vision-1…) : rapports versés le 18.11 avec 0 constat, le workflow tourne encore ; critique du carnet à venir.
 
@@ -1013,7 +1017,7 @@ Rapport annoncé mais sans fichier au 08.11 : `%TEMP%/affinee-metier-vision/RAPP
 
 ## Port du calendrier dans l'app, local 17.11 (branche claude/port-calendrier-1711, e4bdc173, non déployé)
 
-Source : vision-2 jugée par work/missions/2026-11-17-port-calendrier/CRITIQUE-2.md (42 problèmes) ; les 48 de CRITIQUE-1 (vision-1) y sont repris ou corrigés (e4bdc173). Correction tour 2 en cours (workflow port-calendrier-2). Critiques 3 et 4 versées le 17.11 ; critiques 5, 6 et 7 versées le 18.11 (PC-51 à PC-79, PC-NOTE-1 à 3 ; les problèmes déjà présents ont leur état et leur note mis à jour). Tour 7 : PC-67, PC-75 à PC-77 et PC-79 corrigés (local, ae98e579b) ; PC-36, PC-72 et PC-78 restent ouverts. Critique 9 versée le 18.11 (commit jugé ae98e579b, PC-80 à PC-86, PC-NOTE-4 ; CRITIQUE-8 n'existe pas, la critique 9 reprend la critique 7). Lignes « ouvert — correction tour 9 en cours » (les 10 problèmes de la critique 9) : PC-36, PC-72, PC-78 et PC-80 à PC-86.
+Source : vision-2 jugée par work/missions/2026-11-17-port-calendrier/CRITIQUE-2.md (42 problèmes) ; les 48 de CRITIQUE-1 (vision-1) y sont repris ou corrigés (e4bdc173). Correction tour 2 en cours (workflow port-calendrier-2). Critiques 3 et 4 versées le 17.11 ; critiques 5, 6 et 7 versées le 18.11 (PC-51 à PC-79, PC-NOTE-1 à 3 ; les problèmes déjà présents ont leur état et leur note mis à jour). Tour 7 : PC-67, PC-75 à PC-77 et PC-79 corrigés (local, ae98e579b) ; PC-36, PC-72 et PC-78 restent ouverts. Critique 9 versée le 18.11 (commit jugé ae98e579b, PC-80 à PC-86, PC-NOTE-4 ; CRITIQUE-8 n'existe pas, la critique 9 reprend la critique 7). Critiques 12 et 13 versées le 18.11 (PC-102 à PC-112) : un problème de 12 que 13 déclare corrigé est noté corrigé (cdfd28eb7) ; les doutes non comptés des critiques 12 et 13 ne sont pas versés ici. Lignes « ouvert — correction tour 9 en cours » (les 10 problèmes de la critique 9) : PC-36, PC-72, PC-78 et PC-80 à PC-86.
 
 | id | source | écran | constat | gravité | état | commit | note |
 |---|---|---|---|---|---|---|---|
@@ -1118,6 +1122,17 @@ Source : vision-2 jugée par work/missions/2026-11-17-port-calendrier/CRITIQUE-2
 | PC-99 | CRITIQUE-11 n° 6 | Calendrier (port, banc local) | Pendant f1-a à 390, la bulle « S49 · 30 nov. · lâcher ici » couvre le titre Brassins et sa pastille ; la ligne de la courbe barre l'étiquette « 2 500 ». | m | ouvert | | m390-clair-09 ; E33 ; correction : bulle au-dessus du doigt, dans la piste de la barre ; étiquettes d'axe décalées |
 | PC-100 | CRITIQUE-11 n° 7 | Calendrier (port, banc local) | Dates coupées à la ligne à 390 : « prête 7 » / « déc. » dans la Liste (IPA, m34). | m | ouvert | | correction white-space nowrap sur chaque date et plage ; la plage du détail de la Hotte : PC-90 |
 | PC-101 | CRITIQUE-11 n° 8 | Calendrier (port, banc local) | Lier ne montre ni son message ni son Annuler (« Liée à Blonde d'automne · Annuler » attendu, vide dans le lot-d essai3, 49) ; la Hotte liée n'est vue nulle part. | m | ouvert | | indice du lot-d, non preuve sur 8c41b6650 ; E31, E37 ; D-113, D-126 ; correction : message et Annuler après Lier, puis capture du détail de la Hotte liée ; voir PC-93 |
+| PC-102 | CRITIQUE-12 n° 1 | Calendrier (port, banc local) | Le message d'un geste se pose en haut, sur le titre Brassins et les premières barres (390, 844, 1280) : f1-a, glissé du Porter, refus de jalon, alerte, Livrer, Lier ; contre sa maquette (règle n° 1, E33). | B | en cours | cdfd28eb7 | corrigé en partie (critique 13) : plus de message en haut ; f1-a, Retirer, « Voir S20 › » sans rien dessous ; reste PC-107 (alerte sur la vente promise) et PC-109 (bandeaux sur des noms) ; à rejouer : 7 messages à 390, 844 et 1280, deux thèmes |
+| PC-103 | CRITIQUE-12 n° 2 | Calendrier (port, banc local) | Menu d'une fête : « hors prévision » se lit mal (m11f, Marché de Noël) ; le brasseur ne sait pas si la recette compte, et la pastille dit « confirmé ». | m | corrigé (local, non déployé) | cdfd28eb7 | critique 13 : « ne change pas la courbe (pas dans Finances) », pastille « +1 180 estimé · hors courbe » (m11f) ; règles E31, D-192 |
+| PC-104 | CRITIQUE-12 n° 3 | Calendrier (port, banc local) | Date coupée à la ligne à 390 dans le détail de la Hotte liée (m49m : « prête 21 » puis « déc. »). | m | corrigé (local, non déployé) | cdfd28eb7 | critique 13 : « brassage 23 nov. · » puis « prête 21 déc. » d'un bloc (M5) |
+| PC-105 | CRITIQUE-12 n° 4 | Calendrier (port, banc local) | Au repos à 390, le + volant touche « +640 » de Noël privés et couvre sa pastille (m27, m21x, c01). | m | en cours | cdfd28eb7 | critique 13 : « +640 » dégagé (m01, c01) ; la pastille ↗ passe encore sous le + : PC-111 |
+| PC-106 | CRITIQUE-12 n° 5 | Calendrier (port, banc local) | En mode graph à 390 (c3-a), le + couvre la fin de la légende : « rien de nommé (tend… » (m21). | m | corrigé (local, non déployé) | cdfd28eb7 | critique 13 : légende sur deux lignes, « rien de nommé (tendance) » entier, rien sous le + (m21) |
+| PC-107 | CRITIQUE-13 n° 1 | Calendrier (port, banc local) | L'alerte de promesse (f6-b, et f2-a sur une promesse) cache la vente promise à 390, clair et cave : « 3 fûts La Cigogne +900 », sa pastille, Café du Pont, titre Achats (M3) ; M2 idem. Écart à sa maquette (p-f6b-apres : alerte sous la vente, rien caché). | B | ouvert | | harnais M2 et M3 « MESSAGE ECHEC, croise 9 noms » ; règles E32, E33, D-193, D-200 ; correction : bloc dans le flux sous la vente promise, frise qui défile ; test : aucune intersection avec [data-titre], vente visible au-dessus ; à 844 et 1280 aussi |
+| PC-108 | CRITIQUE-13 n° 2 | Calendrier (port, banc local) | ET-PER sans preuve pour la huitième vision : Finances ne lit pas la période réglée au calendrier (D-14, D-78) ; le banc ne route pas vers Finances (d50) et /?dev-local a été exclu à tort. | B | ouvert | | seule preuve obligatoire (MISSION § Vérification 6) ; prouvé en v7 seulement, CalendrierTab.tsx a changé depuis ; correction : DEMANDE EXECUTANT point 1 (/?dev-local à 1280, captures d1280-clair-ETPER-1 à -4) |
+| PC-109 | CRITIQUE-13 n° 3 | Calendrier (port, banc local) | Bandeaux posés en bas ou au milieu tombent encore sur des noms (390, 1280) : Livrer sur Achats (M4), Lier sur Travaux (M5), refus de jalon sur Noël privés (m36), Porter glissé sur Achats (m34), refus à 1280 sur « hors courbe » (d55). | G | ouvert | | bons : f1-a (m08), Retirer (M6), « Voir S20 › » (m39m), f1-a à 844 et 1280 ; harnais : 4 messages sur 14 à leur place ; correction : marge basse de la frise égale à la hauteur du bandeau, défilement si un nom tombe dessous ; à 1280, première bande vide, jamais une ligne de titre |
+| PC-110 | CRITIQUE-13 n° 4 | Calendrier (port, banc local) | Loyers récurrents en escalier, une ligne par mois : six « Loyer du local −400 » en 6 mois (m39c), rangée Papiers de 150 px ; douze en An. Écart à sa maquette. | G | ouvert | | son jouable : une barre « Loyer du local (400 par mois) −400 / mois » (p-f1a-apres), autres papiers en icônes ; règles n° 1, E43, E47 c ; correction : une récurrence = une barre, « −400 / mois », pointillée tant qu'une occurrence n'est pas payée ; doute de la critique 12 monté en problème |
+| PC-111 | CRITIQUE-13 n° 5 | Calendrier (port, banc local) | Au repos à 390, le + volant couvre la pastille ↗ de « Noël privés » (m01, c01) ; le « +640 » est dégagé. | m | ouvert | | suite de PC-105 ; règles E35, E33 ; correction : marge droite de la frise égale à la largeur du + sur les lignes couvertes, ou pastille à gauche du montant |
+| PC-112 | CRITIQUE-13 n° 6 | Calendrier (port, banc local) | Liste : la Saison de ferme « pas brassée · prévue le 10 nov. » est rangée sous « En cours · 3 » (m31a) ; une bière pas brassée n'est pas en cours. | m | ouvert | | règles E40, E08 ; correction : section « En retard » (ou « en retard » sur la ligne), « En cours » réservé aux brassins en cuve |
 | PC-NOTE-1 | CRITIQUE-6 doute | Calendrier (port, banc local) | doute : la tendance de Finances (−250/mois, « moyenne des mois passés ») contient peut-être déjà les loyers payés, et la courbe retire en plus chaque « Loyer du local −400 » : si oui, le creux (−6 397) est trop creux | — | ouvert — doute, à vérifier dans calendrierCaisse |  | CRITIQUE-7 : toujours en doute (détail du creux, lot-b 03) ; valeur peut-être fausse ; CRITIQUE-9 : toujours en doute, le détail du creux montre « Loyer du local −400 » en S34, S38 et S43 et « tendance de Finances −250 » (m390-04), non levé dans calendrierCaisse |
 | PC-NOTE-2 | CRITIQUE-5 doute | Calendrier (port, banc local) | doute : les Fêtes sont violettes avec des confettis et les ventes portent un rond ↗, alors que sa maquette (p-repos, passe10/p-clair-ouvert) les montre roses avec un calendrier, et bouteille ou fût avec le montant dessous | — | ouvert — doute, à vérifier dans les jetons |  | règle n° 1 : sa maquette est la base ; E42 donne priorité aux couleurs de zone de l'app ; CRITIQUE-6 : doute repris |
 | PC-NOTE-3 | CRITIQUE-6 doute | Calendrier (port, banc local) | doute : le creux est la dernière semaine de l'horizon, la courbe ne remonte jamais ; un « −6 397 à dépenser » qui ne dépend que de la longueur de l'horizon est-il ce qu'il veut lire ? | — | ouvert — doute, question au brasseur |  | CRITIQUE-7 : dit honnêtement « ensuite · plus de palier jusqu'à la fin de l'horizon, le 14 nov. 2027 » (lot-b 03) |
