@@ -66,12 +66,27 @@ describe('D386 au banc : la foire, sa tireuse, Dédé', () => {
     expect(bouton(/^Hotte/)).toHaveAttribute('data-ton', 'pale');
     const lblDede = bouton(/^Dédé, 1 fût/).parentElement!.querySelector('.cal-lbl');
     expect(lblDede?.className).toMatch(/cal-ponctuel-pale/);
-    /* un jalon touché n'éclaire rien : la tireuse et Dédé reviennent au repos */
+    /* D390 : toucher le jalon lié l'allume aussi (son fil se dessine), les autres jalons pâlissent */
     toucher(bouton(/^Tireuse/));
+    await waitFor(() => expect(bouton(/^Dédé, 1 fût/)).toHaveAttribute('data-ton', 'pale'));
+    expect(bouton(/^Tireuse/)).toHaveAttribute('data-ton', 'allume');
+    /* un jalon sans lien touché n'éclaire rien : tout revient au repos */
+    toucher(bouton(/^Dédé, 1 fût/));
     await waitFor(() => expect(document.querySelectorAll('[data-ton]')).toHaveLength(0));
   });
 
-  it('le fil part de la tireuse vers la foire ; repos, puis allumé quand la foire est touchée', async () => {
+  it('D390 : au repos, aucun fil ; le jalon lié porte un point de la couleur de sa barre (Fêtes), Dédé aucun', () => {
+    monter();
+    const point = bouton(/^Tireuse/).querySelector('[data-point-lie]');
+    expect(point).not.toBeNull();
+    expect(point!.getAttribute('data-point-lie')).toBe('fetes');
+    expect(point!.className).toMatch(/cal-t-fetes/);
+    expect(bouton(/^Dédé, 1 fût/).querySelector('[data-point-lie]')).toBeNull();
+    const css = readFileSync(resolve(process.cwd(), 'src/ui/calendrier/frise/frise.css'), 'utf8');
+    expect(css).toMatch(/\.cal-point-lie \{[^}]*background: var\(--c\)/);
+  });
+
+  it('D390 : le fil part de la tireuse vers la foire, seulement au toucher de la foire ou de la tireuse ; jamais au repos', async () => {
     /* jsdom ne pose rien : la foire en haut (Fêtes), la tireuse plus bas (Achats), sous elle */
     vi.spyOn(Element.prototype, 'getBoundingClientRect').mockImplementation(function (this: Element) {
       const id = this.getAttribute('data-chose');
@@ -82,12 +97,21 @@ describe('D386 au banc : la foire, sa tireuse, Dédé', () => {
     });
     monter();
     const fil = () => document.querySelector('path[data-fil]');
+    /* au repos : aucun fil (il traversait Dédé et semblait le relier, test en ligne du lot A) */
+    await new Promise(r => setTimeout(r, 30));
+    expect(fil()).toBeNull();
+    toucher(bouton(/^Foire du Valais/));
     await waitFor(() => expect(fil()).not.toBeNull());
     expect(fil()!.getAttribute('data-fil')).toBe(bouton(/^Tireuse/).getAttribute('data-chose'));
-    expect(fil()!.getAttribute('class')).toBe('cal-fil cal-fil-repos');
+    expect(fil()!.getAttribute('class')).toBe('cal-fil cal-fil-allume');
     expect(fil()!.getAttribute('d')).toBe('M174.0 220.0V86.0');
+    /* refermer : plus de fil */
     toucher(bouton(/^Foire du Valais/));
-    await waitFor(() => expect(fil()!.getAttribute('class')).toBe('cal-fil cal-fil-allume'));
+    await waitFor(() => expect(fil()).toBeNull());
+    /* toucher la tireuse : son fil se dessine aussi */
+    toucher(bouton(/^Tireuse/));
+    await waitFor(() => expect(fil()?.getAttribute('class')).toBe('cal-fil cal-fil-allume'));
+    expect(document.querySelectorAll('path[data-fil]')).toHaveLength(1);
   });
 
   it('CAL-FIL-SOUS-INFO : le calque du fil est peint sous les noms, les icônes, les barres et la fiche ; le masque l’interrompt sous chaque info', async () => {

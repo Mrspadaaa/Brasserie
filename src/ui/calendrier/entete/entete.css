@@ -60,7 +60,8 @@
 .ent[data-doigt] .ent-t button:focus-visible { outline: none; }
 .ent-mb { min-width: 28px; padding: 0 5px; font-size: 16px; border: 1.5px solid var(--ent-line2); border-radius: 8px; background: rgb(var(--cave-900)); }
 .ent-mb[aria-pressed='true'] { background: rgb(var(--cave-50)); color: rgb(var(--cave-950)); border-color: rgb(var(--cave-50)); }
-.ent-per { gap: 0; padding: 0 2px 0 7px; background: rgb(var(--cave-50)); color: rgb(var(--cave-950)); }
+/* Lot C (test en ligne, n° 3) : « 2 sem. · j » débordait de 2 px, le « j » touchait le chevron ; le bouton ne rétrécit plus, et respire */
+.ent-per { flex: none; gap: 2px; padding: 0 6px 0 8px; background: rgb(var(--cave-50)); color: rgb(var(--cave-950)); }
 .ent-ret-b { gap: 2px; min-width: 28px; padding: 0 4px; border: 1.5px solid rgb(var(--alert)); color: var(--ent-bad); background: rgb(var(--alert) / 0.1); }
 .ent-pl { width: 24px; background: transparent; }
 .ent-lit { display: inline-flex; flex: 1 1 auto; align-items: baseline; gap: 4px; min-width: 0; height: 28px; line-height: 28px; white-space: nowrap; overflow: hidden; color: var(--ent-mut); }
@@ -163,6 +164,11 @@
 .ent-al-pt { position: absolute; top: 2px; left: 2px; width: 11px; height: 11px; border-radius: 50%; background: rgb(var(--cave-400)); transition: transform 0.15s; }
 .ent-al[aria-checked='true'] .ent-al-piste { background: var(--ent-fin); border-color: var(--ent-fin); }
 .ent-al[aria-checked='true'] .ent-al-pt { transform: translateX(14px); background: rgb(var(--cave-50)); }
+/* Lot C : au téléphone, l'interrupteur est une ligne du menu de la période (jamais sur « CHF à dépenser ») */
+.ent-menu-al { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+.ent-menu-al .ent-al-piste { flex: none; }
+.ent-menu-al[aria-checked='true'] .ent-al-piste { background: var(--ent-fin); border-color: var(--ent-fin); }
+.ent-menu-al[aria-checked='true'] .ent-al-pt { transform: translateX(14px); background: rgb(var(--cave-50)); }
 .ent-cc { width: 26px; }
 .ent-cc[aria-pressed='true'] { color: var(--ent-fin-t); }
 .ent[data-doigt='oui'] .ent-al:focus-visible, .ent[data-doigt='oui'] .ent-cc:focus-visible { outline: none; }

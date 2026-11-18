@@ -220,6 +220,8 @@ export interface MarqueProps {
   lieA?: string;
   /** D386 : au toucher d'une barre, ses jalons liés s'allument, les autres pâlissent. */
   ton?: 'allume' | 'pale';
+  /** D390 : la rangée de la barre liée ; présent : un petit point de sa couleur sur le jalon (au repos, le lien se lit sans fil). */
+  pointLie?: Rangee;
 }
 
 const montantDe = (c: ChoseCalendrier): string | null => (c.centimes === undefined ? null : `${francsSignes(c.centimes)}${c.partiel ? ' +' : ''}`);
@@ -279,6 +281,7 @@ export const Marque: React.FC<MarqueProps> = props => {
       >
         <Icone size={16} aria-hidden="true" />
         {etoilee && <span className="cal-etoile" aria-hidden="true">★</span>}
+        {props.pointLie && <i className={`cal-point-lie ${CLASSE_TEINTE[props.pointLie]}`} data-point-lie={props.pointLie} aria-hidden="true" />}
       </button>
       {libelle && lbl && (
         <span className={`cal-lbl cal-lbl-${libelle.cote}${libelle.deux ? ' cal-lbl-2n' : ''} ${CLASSE_TEINTE[chose.rangee]}${props.ton ? ` cal-ponctuel-${props.ton}` : ''}`} style={lbl}>

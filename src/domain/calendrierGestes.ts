@@ -539,6 +539,20 @@ export function lier(chose: ChoseCalendrier, liens: { batchId?: string; clientId
   return { ok: true, ecritures: [{ op: 'patch', collection: 'financialPlans', id: plan.id, patch: { ...(liens.batchId ? { batchId: liens.batchId } : {}), ...(liens.clientId ? { clientId: liens.clientId } : {}), ...(liens.evenementId ? { evenementId: liens.evenementId } : {}) } }], effet: null, promesse: null, courbeApres: ctx.courbe, message: annuler(texte) };
 }
 
+/**
+ * Lot C (test en ligne, n° 5) : délier une chose de tout ce à quoi elle est liée (brassin, client, fête). Le même chemin qu'Annuler de `lier` :
+ * un champ `undefined` s'efface de la source. Refusé hors d'une prévision manuelle ou d'une chose du carnet, comme `lier`.
+ */
+export function delier(chose: ChoseCalendrier, ctx: ContexteGestes, nom?: string): Resolution {
+  const source = chose.source;
+  const texte = nom?.trim() ? `Déliée de ${nom.trim()}` : 'Déliée';
+  if (source.genre === 'creative') return { ok: true, ecritures: [{ op: 'patch', collection: 'creativeItems', id: source.id, patch: { liens: undefined } }], effet: null, promesse: null, courbeApres: ctx.courbe, message: annuler(texte) };
+  const plan = planDe(chose, ctx);
+  if (!plan || plan.source !== 'manual') return refus('Un lien se retire d’une prévision manuelle ou d’une chose du carnet.', chose.ouvre);
+  const cles = (['batchId', 'clientId', 'evenementId'] as const).filter(k => plan[k]);
+  return { ok: true, ecritures: [{ op: 'patch', collection: 'financialPlans', id: plan.id, patch: Object.fromEntries(cles.map(k => [k, undefined])) }], effet: null, promesse: null, courbeApres: ctx.courbe, message: annuler(texte) };
+}
+
 /** L1 a et b (E36) : une idée datée envoyée au carnet. Elle n'a ni rangée, ni case, ni bouton : elle se montre en icône dans la bande. */
 export function noterIdee(titre: string, lundi: string, ctx: Pick<ContexteGestes, 'nouvelId'>): Resolution {
   const r = enregistrementIdee(titre, lundi, ctx);

@@ -100,9 +100,14 @@ describe('jalonsAllumes : au toucher d’une barre, ses jalons liés', () => {
   it('la foire touchée allume la tireuse seule ; Dédé n’y est pas', () => {
     expect([...jalonsAllumes(toutes, foire)!]).toEqual(['tireuse']);
   });
-  it('rien touché, un jalon touché, ou une barre sans jalon lié : aucun éclairage', () => {
+  it('rien touché, un jalon sans lien touché, ou une barre sans jalon lié : aucun éclairage', () => {
     expect(jalonsAllumes(toutes, undefined)).toBeNull();
-    expect(jalonsAllumes(toutes, tireuse)).toBeNull();
+    expect(jalonsAllumes(toutes, dede)).toBeNull();
     expect(jalonsAllumes([foire, dede], foire)).toBeNull();
+  });
+
+  it('D390 : un jalon lié touché s’allume seul (son fil se dessine) ; sans sa barre à l’écran, rien', () => {
+    expect(jalonsAllumes(toutes, tireuse)).toEqual(new Set(['tireuse']));
+    expect(jalonsAllumes([tireuse, dede], tireuse)).toBeNull();
   });
 });

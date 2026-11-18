@@ -178,6 +178,9 @@ export function EnTeteCalendrier(props: EnTeteCalendrierProps) {
 
   // ---- D387, D388 : la courbe posée sur les colonnes de la frise (interrupteur allumé, ou pendant un glisser, comme le jouable) ----
   const alignee = !!props.aligne && !!props.onAligne && !graph && !liste && !cachee && !!base;
+  // Lot C (18.11, capture b-clair-2) : au téléphone (portrait < 700 px, paysage), la rangée du chiffre est pleine ; l'interrupteur y couvrait
+  // « CHF à dépenser ». Il vit alors dans le menu de la période (une ligne à interrupteur), jamais sur un texte ; sur un grand écran, en tête des boutons.
+  const alignerAuMenu = paysage || (typeof window !== 'undefined' && window.innerWidth < LARGE_PX);
   const zoomee = !!apercuC && !graph && !cachee && !!base;
   const [frise, setFrise] = useState<{ decalage: number; largeur: number } | null>(null);
   useLayoutEffect(() => {
@@ -586,7 +589,7 @@ export function EnTeteCalendrier(props: EnTeteCalendrierProps) {
       <div className="ent-t" onPointerDownCapture={versCourbe}>
         {lecture !== null && !graph && courbeC ? <LectureTete courbe={courbeC} index={lecture} boutons={paysage ? undefined : boutonsTete} /> : cle}
         <span ref={boutonsTete} className="ent-t-b">
-          {props.onAligne && base && !graph && !liste && !cachee && (
+          {props.onAligne && base && !graph && !liste && !cachee && !alignerAuMenu && (
             <button type="button" role="switch" className="ent-al" data-ent-aligne aria-checked={!!props.aligne} aria-label="Aligner la courbe sur la frise"
               title={props.aligne ? 'La courbe suit la frise ; éteint, elle montre l’année' : 'Aligner la courbe sur la frise'} onClick={() => props.onAligne?.(!props.aligne)}>
               <span className="ent-al-piste" aria-hidden="true"><span className="ent-al-pt" /></span>
@@ -678,6 +681,7 @@ export function EnTeteCalendrier(props: EnTeteCalendrierProps) {
       {menuOuvert && (
         <MenuPeriode ancre={boutonPeriode.current} paysage={paysage} plage={libelle !== libelleDuree(nombre, annee) ? `${libelle} · ${etiquetteCadre(semainesTot.map(s => s.numero), index, nombre, annee, etiquetteAnnee, lundis)} · ${plage}` : plage} semaines={nombre} annee={annee} liste={liste} sansDate={sansDate}
           {...(props.onEchelle && props.echelle ? { echelle: props.echelle, onEchelle: props.onEchelle } : {})}
+          {...(alignerAuMenu && props.onAligne && base && !graph && !liste && !cachee ? { aligne: !!props.aligne, onAligne: props.onAligne } : {})}
           onChoisir={choisirDuree} onListe={() => onVue('liste')} onCalendrier={() => onVue(anneeListe ? 'annee' : 'semaines')} onSansDate={() => onVue('liste', 'sans-date')}
           onTrier={onTrier} onFiltrer={onFiltrer} onFermer={() => setMenuOuvert(false)} />
       )}

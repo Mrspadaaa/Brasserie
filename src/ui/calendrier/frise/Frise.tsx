@@ -76,10 +76,10 @@ export interface FriseProps extends Pick<RangeeProps, 'drag' | 'ici' | 'etiquett
   aujourdhui?: string;
 }
 
-interface Trait { id: string; d: string; fil?: 'repos' | 'allume' | 'pale' }
+interface Trait { id: string; d: string; fil?: 'repos' | 'allume' | 'pale'; auj?: boolean }
 
-/** Une boîte à l'écran, dans le repère de la frise. */
-export interface BoiteFil { left: number; top: number; right: number; bottom: number }
+/** Une boîte à l'écran, dans le repère de la frise ; `texte` : un trou d'un texte (la ligne d'aujourd'hui ne s'interrompt que sous eux). */
+export interface BoiteFil { left: number; top: number; right: number; bottom: number; texte?: boolean }
 
 /**
  * CAL-FIL-SOUS-INFO (18.11, « La ligne doit pas être dessus l'info ») : ce que le fil et le trait d'un caddie ne traversent jamais. Le calque
@@ -121,9 +121,16 @@ export function cheminFil(jalon: BoiteFil, barre: BoiteFil): string | null {
   return null;
 }
 
-/** D386 : la barre touchée et ses jalons liés (ils s'allument, les autres pâlissent) ; `null` si ce n'est pas une barre ou qu'aucun jalon n'y est lié. */
+/**
+ * D386 et D390 : la barre touchée allume ses jalons liés ; un jalon lié touché s'allume lui-même ; les autres jalons pâlissent. `null` : rien
+ * n'est allumé (pas de sélection, une barre sans jalon lié, un jalon sans barre à l'écran) ; aucun fil ne se dessine alors.
+ */
 export function jalonsAllumes(choses: readonly ChoseCalendrier[], selection: ChoseCalendrier | undefined): Set<string> | null {
-  if (!selection || estPonctuel(selection)) return null;
+  if (!selection) return null;
+  if (estPonctuel(selection)) {
+    const cible = barreLiee(selection);
+    return cible && choses.some(c => c.id === cible && !estPonctuel(c)) ? new Set([selection.id]) : null;
+  }
   const ids = choses.filter(c => estPonctuel(c) && barreLiee(c) === selection.id).map(c => c.id);
   return ids.length ? new Set(ids) : null;
 }
@@ -167,8 +174,9 @@ export const Frise: React.FC<FriseProps> = props => {
       const d = x === cx ? `M${cx.toFixed(1)} ${cy.toFixed(1)}V${bas.toFixed(1)}` : `M${cx.toFixed(1)} ${cy.toFixed(1)}V${(bas + 8).toFixed(1)}H${x.toFixed(1)}V${bas.toFixed(1)}`;
       suivants.push({ id: `${caddie.getAttribute('data-chose')}`, d });
     });
-    /* D386 : le fil discret d'un jalon à sa barre liée ; allumé quand la barre est touchée, pâle pour les autres jalons */
-    el.querySelectorAll<HTMLElement>('[data-lie-a]').forEach(jalon => {
+    /* D386, D390 : le fil d'un jalon à sa barre liée ne se dessine qu'allumé (barre ou jalon touché) ; au repos, le jalon porte un point
+       de la couleur de sa barre (Marque). Au repos, un fil traversait une vente non liée et semblait la relier (test en ligne du lot A). */
+    el.querySelectorAll<HTMLElement>('[data-lie-a][data-ton="allume"]').forEach(jalon => {
       const cible = jalon.getAttribute('data-lie-a');
       const barre = [...el.querySelectorAll<HTMLElement>('[data-chose]')].find(x => x.getAttribute('data-chose') === cible && !x.hasAttribute('data-marque'));
       if (!barre) return;
@@ -176,8 +184,15 @@ export const Frise: React.FC<FriseProps> = props => {
       if (!j.width || !b.width) return;
       const rel = (r: DOMRect): BoiteFil => ({ left: r.left - z.left, right: r.right - z.left, top: r.top - z.top, bottom: r.bottom - z.top });
       const d = cheminFil(rel(j), rel(b));
-      const ton = jalon.getAttribute('data-ton');
-      if (d) suivants.push({ id: `fil-${jalon.getAttribute('data-chose')}`, d, fil: ton === 'allume' ? 'allume' : ton === 'pale' ? 'pale' : 'repos' });
+      if (d) suivants.push({ id: `fil-${jalon.getAttribute('data-chose')}`, d, fil: 'allume' });
+    });
+    /* Lot C (test en ligne, n° 2) : la ligne d'aujourd'hui (vue Jour, semaine dépliée) coupait le « J » de « J0 / 15 ». Elle se trace ici, sous
+       un masque troué par les textes seuls, comme le fil : elle passe sous chaque nom et reprend entre eux. Sa place vient de la grille (`data-auj`). */
+    el.querySelectorAll<HTMLElement>('[data-auj]').forEach((a, i) => {
+      const r = a.getBoundingClientRect();
+      if (!r.height || r.height >= z.height && r.width >= z.width) return;
+      const x = r.left + r.width / 2 - z.left;
+      suivants.push({ id: `auj-${i}`, d: `M${x.toFixed(1)} ${(r.top - z.top).toFixed(1)}V${(r.bottom - z.top).toFixed(1)}`, auj: true });
     });
     /* CAL-FIL-SOUS-INFO : les trous du masque, mesurés seulement s'il y a un trait à dessiner */
     const trousSuivants: BoiteFil[] = [];
@@ -188,7 +203,7 @@ export const Frise: React.FC<FriseProps> = props => {
           const r = x.getBoundingClientRect();
           const t = trouMasque({ left: r.left - z.left, right: r.right - z.left, top: r.top - z.top, bottom: r.bottom - z.top }, marge, marge ? 1 : 0);
           /* une boîte qui couvre toute la frise (jsdom, ou un élément sans place) ne fait pas de trou : elle effacerait tout le fil */
-          if (t && !(r.width >= z.width && r.height >= z.height)) trousSuivants.push(t);
+          if (t && !(r.width >= z.width && r.height >= z.height)) trousSuivants.push(marge && sel !== '.cal-grille b' ? { ...t, texte: true } : t);
         });
       }
       /* un nom est un seul bloc : son texte, son montant, sa durée, sa pastille « lié à » et l'icône posée contre lui. Sans cela, le fil
@@ -204,11 +219,11 @@ export const Frise: React.FC<FriseProps> = props => {
           bloc.left = Math.min(bloc.left, icone.left); bloc.right = Math.max(bloc.right, icone.right);
         }
         const t = trouMasque({ left: bloc.left - z.left, right: bloc.right - z.left, top: bloc.top - z.top, bottom: bloc.bottom - z.top }, 2, 1);
-        if (t) trousSuivants.push(t);
+        if (t) trousSuivants.push({ ...t, texte: true });
       });
     }
     const cle = (t: Trait[]) => t.map(x => `${x.id}:${x.d}:${x.fil ?? ''}`).join('|');
-    const cleTrous = (t: BoiteFil[]) => t.map(b => `${b.left.toFixed(1)},${b.top.toFixed(1)},${b.right.toFixed(1)},${b.bottom.toFixed(1)}`).join('|');
+    const cleTrous = (t: BoiteFil[]) => t.map(b => `${b.left.toFixed(1)},${b.top.toFixed(1)},${b.right.toFixed(1)},${b.bottom.toFixed(1)}${b.texte ? 't' : ''}`).join('|');
     const k = { traits: cle(suivants), trous: cleTrous(trousSuivants) };
     if (k.traits !== clesTraits.current.traits) setTraits(suivants);
     if (k.trous !== clesTraits.current.trous) setTrous(trousSuivants);
@@ -327,6 +342,8 @@ export const Frise: React.FC<FriseProps> = props => {
 
   const selection = selectionId ? choses.find(c => c.id === selectionId) : undefined;
   const eclairage = jalonsAllumes(choses, selection);
+  /* D390 : la rangée de chaque barre, pour le point du jalon qui lui est lié (couleur de sa barre) */
+  const rangeeDeBarre = React.useMemo(() => new Map(choses.filter(c => !estPonctuel(c)).map(c => [c.id, c.rangee] as const)), [choses]);
   /* le mot « auj. » au pied de la dernière piste qui montre quelque chose (une seule fois, comme la maquette) */
   const derniereAvecPiste = avecJours ? [...rangees].reverse().find(r => {
     if (filtre && filtre !== r && !parRangee(r).some(c => epingles.includes(c.id))) return false;
@@ -357,8 +374,18 @@ export const Frise: React.FC<FriseProps> = props => {
               <rect key={i} x={b.left.toFixed(1)} y={b.top.toFixed(1)} width={(b.right - b.left).toFixed(1)} height={(b.bottom - b.top).toFixed(1)} fill="#000" data-trou />
             ))}
           </mask>
+          <mask id={`${idMasque}-t`} maskUnits="userSpaceOnUse" x="0" y="0" width="100%" height="100%" data-masque-auj>
+            <rect x="0" y="0" width="100%" height="100%" fill="#fff" />
+            {trous.filter(b => b.texte).map((b, i) => (
+              <rect key={i} x={b.left.toFixed(1)} y={b.top.toFixed(1)} width={(b.right - b.left).toFixed(1)} height={(b.bottom - b.top).toFixed(1)} fill="#000" data-trou />
+            ))}
+          </mask>
+          {/* la ligne d'aujourd'hui : sous les textes seulement (elle reste visible à travers une barre translucide, comme avant) */}
+          <g mask={`url(#${idMasque}-t)`}>
+            {traits.filter(t => t.auj).map(t => <path key={t.id} d={t.d} className="cal-auj-trait" data-auj-trait />)}
+          </g>
           <g mask={`url(#${idMasque})`}>
-            {traits.map(t => (t.fil
+            {traits.filter(t => !t.auj).map(t => (t.fil
               ? <path key={t.id} d={t.d} className={`cal-fil cal-fil-${t.fil}`} data-fil={t.id.slice(4)} />
               : <path key={t.id} d={t.d} data-trait={t.id} />))}
           </g>
@@ -403,6 +430,7 @@ export const Frise: React.FC<FriseProps> = props => {
             detail={selection && selection.rangee === r && detail ? detail(selection) : undefined}
             alerte={props.alerte && props.alerte.rangee === r && !masquee ? props.alerte.noeud : undefined}
             eclairage={eclairage}
+            rangeeDeBarre={rangeeDeBarre}
             grille={avecJours ? <GrilleJours colonnes={colonnes} largeurColonne={largeurColonne} aujourdhui={props.aujourdhui} mot={r === derniereAvecPiste} /> : undefined}
           />
         );

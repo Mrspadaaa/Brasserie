@@ -1,5 +1,5 @@
 import React from 'react';
-import { Beer, Check, ChevronRight, Link2, Receipt, ShoppingCart, Wheat, X } from 'lucide-react';
+import { Beer, Check, ChevronRight, Link2, Receipt, ShoppingCart, Unlink, Wheat, X } from 'lucide-react';
 import { ETAPE_BRASSIN } from './etapes';
 import { dateDeSemaine, etiquetteS, francsSignes, jourLisible, lundiDe, type ChoseCalendrier, type JalonBrassin, type JalonId } from '../../../domain/calendrier';
 import { CLASSE_TEINTE, apercuSansNom, champ, dureeVue, lieMontre, nomLie } from './Marque';
@@ -35,6 +35,8 @@ export interface DetailChoseProps {
   /** Lot A du test en ligne (18.11, n° 2, D386) : à quoi la chose peut se lier, les mêmes puces que l'appui long. Avec `onLier`. */
   liens?: LiensPossibles;
   onLier?: (liens: { batchId?: string; clientId?: string; evenementId?: string }, nom: string) => void;
+  /** Lot C : retirer les liens de la chose (brassin, client, fête) ; `nom` : à quoi elle était liée, pour le message. */
+  onDelier?: (nom: string) => void;
 }
 
 const LIBELLE_OUVRIR: Record<ChoseCalendrier['ouvre']['ecran'], string> = {
@@ -163,13 +165,19 @@ export const DetailChose: React.FC<DetailChoseProps> = props => {
     const soi = chose.source.genre === 'batch' || chose.source.genre === 'creative' ? (chose.source as { id: string }).id : '';
     const brassins = l.brassins.filter(b => b.id !== soi).filter((b, i, t) => t.map(x => x.nom).lastIndexOf(b.nom) === i);
     const evenements = (l.evenements ?? []).filter(e => e.id !== soi);
-    return [
-      { cle: 'brassins' as const, titre: 'Brassins', puces: brassins },
-      /* décision du pilote (18.11, doute du lot A) : Brassins, puis Fêtes et activités, puis Clients */
-      { cle: 'evenements' as const, titre: 'Fêtes et activités', puces: evenements },
-      { cle: 'clients' as const, titre: 'Clients', puces: l.clients }
-    ].filter(g => g.puces.length > 0);
+    const gB = { cle: 'brassins' as const, titre: 'Brassins', puces: brassins };
+    const gF = { cle: 'evenements' as const, titre: 'Fêtes et activités', puces: evenements };
+    const gC = { cle: 'clients' as const, titre: 'Clients', puces: l.clients };
+    /* lot C (test en ligne, n° 4) : un achat ou une vente se lie d'abord à une fête (on achète, on vend pour elle) ; un achat de matériel ne se
+       lie pas à un client. Ailleurs (pilote, 18.11) : Brassins, puis Fêtes et activités, puis Clients */
+    const ordre = chose.rangee === 'achats' ? [gF, gB] : chose.rangee === 'ventes' ? [gF, gB, gC] : [gB, gF, gC];
+    return ordre.filter(g => g.puces.length > 0);
   })();
+  /* lot C (test en ligne, n° 5) : la fiche dit à quoi la chose est liée ; une fête n'a pas d'aperçu (`chose.lie` dit brassin et client) */
+  const nomFeteLiee = chose.liens?.evenementId
+    ? (props.liens?.evenements?.find(e => e.id === chose.liens?.evenementId)?.nom ?? 'une fête')
+    : null;
+  const lieeA = [nomFeteLiee, chose.lie ? nomLie(chose.lie) : null].filter((x): x is string => !!x);
   const commander = chose.jalons?.find(j => j.id === 'commander');
   const montant = chose.centimes !== undefined ? francsSignes(chose.centimes) : null;
   const semaine = chose.debut ? dateDeSemaine(lundiDe(chose.debut)) : null;
@@ -244,6 +252,11 @@ export const DetailChose: React.FC<DetailChoseProps> = props => {
           <span>{datesInsecables(apercuLien.apercu)}</span>
         </p>
       )}
+      {nomFeteLiee && (
+        <p className="cal-det-p cal-det-lie" data-lien-fete>
+          <span className="cal-lie" data-lie data-lie-detail><Link2 size={14} aria-hidden="true" /><span>lié à {nomFeteLiee}</span></span>
+        </p>
+      )}
 
       <div className="cal-det-bt">
         {props.onAccepter && <button type="button" className="cal-b cal-b-pri" onClick={props.onAccepter}>{proposition ? 'Accepter' : 'Vente confirmée'}</button>}
@@ -259,6 +272,9 @@ export const DetailChose: React.FC<DetailChoseProps> = props => {
         )}
         {props.onModifier && <button type="button" className="cal-b" onClick={props.onModifier}>Modifier</button>}
         {lierPossible && <button type="button" className="cal-b" aria-expanded={lierOuvert} onClick={() => setLierOuvert(o => !o)}><Link2 size={16} aria-hidden="true" />Lier</button>}
+        {props.onDelier && chose.liens && lieeA.length > 0 && (
+          <button type="button" className="cal-b" aria-label={`Délier de ${lieeA.join(' et ')}`} data-delier onClick={() => props.onDelier?.(lieeA.join(' et '))}><Unlink size={16} aria-hidden="true" />Délier</button>
+        )}
         {props.onRetirer && <button type="button" className="cal-b cal-b-ret" onClick={props.onRetirer}>Retirer</button>}
       </div>
       {/* lot A du test en ligne (18.11, n° 2, D386) : « Lier » déplie les puces de l'appui long, groupées ; un toucher pose le lien, la fiche

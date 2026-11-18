@@ -130,7 +130,10 @@ button.cal-lie::before { content: ''; position: absolute; inset: -6px -2px; }
 .cal-g-s1 { border-left: 1px solid rgb(var(--cave-800)); }
 .cal-g-jour { border-left: 1px dotted rgb(var(--cave-800)); }
 .cal-g-deplie { border-left: 1.5px solid rgb(var(--cave-50) / 0.25); border-right: 1.5px solid rgb(var(--cave-50) / 0.25); }
-.cal-g-auj { width: 0; border-left: 2px solid rgb(var(--alert)); }
+/* Lot C : la grille ne peint plus la ligne d'aujourd'hui ; elle garde sa place (2 px) et son mot « auj. ». La ligne se trace dans le calque des
+   traits, sous les textes (Frise, `data-auj-trait`) : elle ne coupe plus le « J » de « J0 / 15 ». */
+.cal-g-auj { width: 2px; }
+.cal-traits path.cal-auj-trait { stroke: rgb(var(--alert)); stroke-width: 2; stroke-dasharray: none; opacity: 1; }
 .cal-g-auj b { position: absolute; bottom: 2px; left: 3px; font-size: 11px; font-weight: 700; line-height: 1; color: rgb(var(--alert-texte)); }
 /* CRITIQUE-5 n° 29 : le centre de l'icône est borné à sa barre (`--x` posé par Barre.tsx) : aucune demi-icône hors de la grille, ni à droite ni à gauche.
    CAL-POINTS-MUETS (18.11, « plutot utiliser des mini icone. et une couleur pour le type de procédé ») : chaque étape est un mini picto dans un
@@ -284,3 +287,5 @@ button.cal-lie::before { content: ''; position: absolute; inset: -6px -2px; }
 .cal-traits path.cal-fil-pale { opacity: 0.15; }
 .cal-marque.cal-ponctuel-allume { box-shadow: 0 0 0 2px rgb(var(--cave-50)); }
 .cal-marque.cal-ponctuel-pale, .cal-lbl.cal-ponctuel-pale { opacity: 0.35; }
+/* D390 : au repos, le jalon lié porte un point de la couleur de sa barre (le fil ne vient qu'au toucher) */
+.cal-point-lie { position: absolute; right: -3px; bottom: -3px; width: 10px; height: 10px; border-radius: 50%; background: var(--c); box-shadow: 0 0 0 1.5px rgb(var(--cave-900)); pointer-events: none; }

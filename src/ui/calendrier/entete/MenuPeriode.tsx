@@ -43,6 +43,9 @@ export interface MenuPeriodeProps {
   /** D385 (variante D) : la ligne « Échelle » (Jour · Semaine · Mois) au-dessus des durées, et « 2 sem. » qui ouvre la vue Jour. */
   echelle?: Echelle;
   onEchelle?: (echelle: Echelle) => void;
+  /** D387, lot C : au téléphone, l'interrupteur « Courbe alignée sur la frise » vit ici (la rangée du chiffre est pleine). Absent : pas de ligne. */
+  aligne?: boolean;
+  onAligne?: (aligne: boolean) => void;
 }
 
 const MARGE = 8;
@@ -60,7 +63,7 @@ export function hautDesOnglets(): number {
 
 type Place = { top: number; left?: number; right?: number; maxHeight: number };
 
-export function MenuPeriode({ plage, semaines, annee, liste, sansDate, onChoisir, onListe, onCalendrier, onSansDate, onTrier, onFiltrer, onFermer, ancre, paysage = false, echelle, onEchelle }: MenuPeriodeProps) {
+export function MenuPeriode({ plage, semaines, annee, liste, sansDate, onChoisir, onListe, onCalendrier, onSansDate, onTrier, onFiltrer, onFermer, ancre, paysage = false, echelle, onEchelle, aligne, onAligne }: MenuPeriodeProps) {
   const ref = useRef<HTMLDivElement>(null);
   const [place, setPlace] = useState<Place | null>(null);
 
@@ -124,6 +127,13 @@ export function MenuPeriode({ plage, semaines, annee, liste, sansDate, onChoisir
           <button key={d.semaines} type="button" aria-pressed={actif(d.semaines)} onClick={() => { onChoisir(d.semaines); onFermer(); }}>{d.nom}</button>
         ))}
       </div>
+      {onAligne && (
+        /* l'interrupteur reste ouvert au toucher : on voit la courbe changer derrière le menu */
+        <button type="button" role="switch" className="ent-menu-l ent-menu-al" data-ent-aligne aria-checked={!!aligne} onClick={() => onAligne(!aligne)}>
+          <span>Courbe alignée sur la frise</span>
+          <span className="ent-al-piste" aria-hidden="true"><span className="ent-al-pt" /></span>
+        </button>
+      )}
       {liste ? ligne('Calendrier', onCalendrier) : ligne('Liste', onListe)}
       {sansDate > 0 && ligne(`Sans date · ${sansDate}`, onSansDate)}
       {ligne('Trier les rangées', onTrier, { 'data-k15-tri': 'genre' })}

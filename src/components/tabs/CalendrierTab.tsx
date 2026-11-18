@@ -30,7 +30,7 @@ import {
   type BrouillonAjout, type ContexteAjout
 } from '../../domain/calendrierAjout';
 import {
-  accepterVente, alignerCourbe, allonger, deplacer, deplacerJours, dupliquer, dureeAllongee, fait, lier, livrer, mettreDeCote, retirer, noterIdee,
+  accepterVente, alignerCourbe, allonger, deplacer, deplacerJours, dupliquer, dureeAllongee, fait, lier, delier, livrer, mettreDeCote, retirer, noterIdee,
   type ContexteGestes, type Ecriture, type Message as MessageGeste, type Promesse, type Resolution
 } from '../../domain/calendrierGestes';
 
@@ -693,6 +693,10 @@ export function CalendrierTab(props: CalendrierTabProps) {
           liens: liensDe(chose),
           onLier: (l: { batchId?: string; clientId?: string; evenementId?: string }, nom: string) => {
             void ecrire(lier(chose, l, ctxGestes, nom), true, chose.id, true).then(ok => { if (ok) { ouvertureParGeste.current = Date.now() + 1200; setSelectionId(chose.id); } });
+          },
+          /* lot C (test en ligne, n° 5) : délier depuis la fiche, avec Annuler ; la fiche reste ouverte */
+          onDelier: (nom: string) => {
+            void ecrire(delier(chose, ctxGestes, nom), true, chose.id, true).then(ok => { if (ok) { ouvertureParGeste.current = Date.now() + 1200; setSelectionId(chose.id); } });
           }
         } : {})}
       />

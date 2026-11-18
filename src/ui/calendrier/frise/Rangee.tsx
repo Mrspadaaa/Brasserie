@@ -529,6 +529,8 @@ export interface RangeeProps {
   grille?: React.ReactNode;
   /** D386 : une barre touchée qui a des jalons liés : leurs ids (ils s'allument, les autres jalons pâlissent) ; absent : rien. */
   eclairage?: ReadonlySet<string> | null;
+  /** D390 : la rangée de chaque barre (id → rangée), pour le point d'un jalon lié ; absent : aucun point. */
+  rangeeDeBarre?: ReadonlyMap<string, IdRangee>;
 }
 
 /** Paysage : la largeur estimée du titre (carré +, nom, œil, pastille), posé sur la première ligne. */
@@ -726,10 +728,12 @@ export const Rangee: React.FC<RangeeProps> = props => {
               const auJourJalon = !!d.jalon && !auJour && !aDesJours(colonnes);
               const pas = auJourJalon ? largeurColonne / 7 : largeurColonne;
               const ton = d.jalon && props.eclairage ? (props.eclairage.has(c.id) ? 'allume' as const : 'pale' as const) : undefined;
+              const lieA = d.jalon ? barreLiee(c) : undefined;
+              const pointLie = lieA ? props.rangeeDeBarre?.get(lieA) : undefined;
               return (
                 <Marque
                   key={c.id} chose={c} centre={d.gauche + 14} haut={top} hauteur={Math.min(28, mesures.barre + 2)} largeurColonne={auJour ? 0 : pas}
-                  {...(d.jalon ? { jalon: true, lieA: barreLiee(c), ton } : {})}
+                  {...(d.jalon ? { jalon: true, lieA, ton, ...(pointLie ? { pointLie } : {}) } : {})}
                   epinglee={epingles.includes(c.id)} etoilee={etoiles.includes(c.id)} selectionnee={selectionId === c.id} menuOuvert={menuId === c.id} lieCourt={lieCourt}
                   libelle={d.avecLibelle ? { cote: d.cote === 'gauche' ? 'gauche' : 'droite', place: d.place, deux: d.deuxLignes, ...(c.brassinLie ? { texte: c.titre } : {}), ...(d.sansLie ? { sansLie: true } : {}), ...(d.retrait ? { retrait: d.retrait } : {}) } : undefined}
                   decalage={surDrag && drag.mode === 'glisse' ? drag.k * pas : 0}
