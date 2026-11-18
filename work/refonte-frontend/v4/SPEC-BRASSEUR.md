@@ -2092,3 +2092,9 @@ Lecture : le port (calendrier, puis carnet) part en ligne dès 0 bloquant, puis 
 > Pourquoi que le front ? Non tout ??
 
 Lecture : le port (calendrier, carnet) part en ligne en entier : front, fonctions touchées par le port (dont l'IA du carnet) et règles Firestore si le port en a besoin. Restent exclues dispatchBrewerHopAdviceV1 et notifyBrewerHopAdviceAnswerV1 (interdit antérieur, non levé).
+
+### Budget IA des tests en ligne du carnet (18.11)
+
+> 5chf de crédit IA pour les tests en ligne du carnet
+
+Lecture : les tests en ligne du carnet peuvent appeler la vraie IA (Gemini facturé), 5 CHF au plus en tout, appels journalisés (nombre, modèle, coût estimé) ; toujours sur des données « ZZ TEST — … », retirées ensuite. Jamais dans npm test.
