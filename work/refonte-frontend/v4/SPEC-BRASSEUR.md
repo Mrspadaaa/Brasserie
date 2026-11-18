@@ -2166,3 +2166,8 @@ Lecture : un jalon reste dans sa rangée (Achats, Ventes) ; « lié à une barre
 > un fil discret entre le jalon et la barre de la foire ; oui ça suffit pas besoin de mini maquettes
 
 Choix : un jalon lié à une barre d'une autre rangée y est relié par un fil discret (jalon → barre) ; sans maquette.
+
+> en touchant la foire, ses jalons liés s'allument et les autres pâlissent.
+> Pareil
+
+Ajout au choix : au toucher d'une barre, ses jalons liés s'allument et les autres pâlissent (en plus du fil discret).
