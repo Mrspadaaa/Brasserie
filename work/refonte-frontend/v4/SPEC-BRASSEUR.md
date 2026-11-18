@@ -2114,3 +2114,11 @@ Capture : work/missions/2026-11-17-port-calendrier/en-ligne-1/brasseur/points-18
 > Aussi on travail beaucoup en semaine, dans la todo ajoute aussi la possibilité de travaillé en jours pour avoir plus de précision sur l'axe du temps, semaine, mois, jour. semaine par default
 
 Lecture : les points d'étape deviennent des mini icônes (une par étape), colorées selon le type de procédé ; la date reste au toucher. L'axe du temps en jours va à la todo (ticket) : unité au choix jour, semaine, mois ; semaine par défaut.
+
+### Couleurs des étapes : choix (18.11)
+
+> c Par cuve, phases visibles
+>
+> Mais icône plus petit et  oui si on clic on a l'info mais elle doit pas être visible de base
+
+Lecture : jeu C de la page « Calendrier · couleurs des étapes » (https://claude.ai/artifact/V5AKptUVAJf1qBAaM5q5c5) : quatre lieux (salle chaude orange, cuve bleue fermentation puis garde plus foncée, houblon vert, colis noir), la phase colore le pied de la barre ; icônes plus petites que la maquette ; la bulle « Dry hop · lun. 30 nov. » seulement au toucher, jamais au repos.
