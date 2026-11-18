@@ -192,7 +192,7 @@ Lire :
 | work/missions/2026-11-17-port-carnet/CRITIQUE-7.md | PCN | 32 | 0 | 4284e42b1f97 |
 | work/missions/2026-11-17-port-carnet/CRITIQUE-8.md | PCN | 30 | 0 | 8c33f0fe687a |
 | work/missions/2026-11-17-port-carnet/en-ligne-1/RAPPORT.md | PCN | 12 | 0 | 71e29ebbbc36 |
-| work/missions/2026-11-17-port-carnet/en-ligne-2/RAPPORT.md | PCN | 0 | 0 | en cours |
+| work/missions/2026-11-17-port-carnet/en-ligne-2/RAPPORT.md | PCN | 13 | 0 | f23f3585695e |
 
 Port du carnet (préfixe `PCN`, work/missions/2026-11-17-port-carnet/vision-1…) : rapports versés le 18.11 avec 0 constat, le workflow tourne encore ; critique du carnet à venir.
 
@@ -1512,3 +1512,23 @@ Version testée : tag `en-ligne/2026-11-18-carnet` (dfdcd6977), bureau, Chrome, 
 | PCN-165 | en-ligne-1 n° 10 | Carnet (en ligne, test 1) | En ligne : confirmation de suppression fausse, « Il est vide. » pour Hotte (critère 1 200 m³/h) et Prochain brassin (critère de la vanne) ; le brasseur supprime en croyant le carnet vide. | B | ouvert | | |
 | PCN-166 | en-ligne-1 n° 11 | Carnet (en ligne, test 1) | En ligne : la liste promet « on garde sa photo, son prix, et on le surveille » sans photo, lecture ni veille. | D | ouvert | | |
 | PCN-167 | en-ligne-1 n° 12 | Carnet (en ligne, test 1) | En ligne : 7 messages `carnet-message` restent dans `creativeItems` après suppression des carnets (voulu par `operations.ts` L33) ; aucun écran ne les montre, rien ne permet de les retirer. | G | ouvert | | retrait en base hors app : accord du brasseur requis ; ids dans RAPPORT.md |
+
+## Test en ligne 2 du carnet, 18.11 (vraie IA, source `work/missions/2026-11-17-port-carnet/en-ligne-2/RAPPORT.md`, 13 constats)
+
+Note : 19 messages carnet-message du test restent en base (orphelins après suppression des carnets) ; identifiants dans en-ligne-2/RAPPORT.md ; suppression en attente d'accord.
+
+| id | source | écran | constat | gravité | état | commit | note |
+|---|---|---|---|---|---|---|---|
+| PCN-168 | en-ligne-2 n° 1 | Carnet (en ligne, test 2) | En ligne : la bonne réponse de l'IA (2 carnets, vanne au fermenteur) est écrasée par la découpe locale (`ecrireIA`, branche `vrac`, CarnetsVue.tsx ~L601) ; la vanne reste dans « Prochain brassin ». | B | ouvert | | |
+| PCN-169 | en-ligne-2 n° 2 | Carnet (en ligne, test 2) | En ligne : la ligne pompe d'une note en vrac disparaît : carnet Pompe annoncé puis supprimé, l'IA l'ayant typé « idee » (filtré par `utiles`). | B | ouvert | | |
+| PCN-170 | en-ligne-2 n° 3 | Carnet (en ligne, test 2) | En ligne : « doit tenir 80 °C » écrit dans Pompe : aperçu « va dans doit tenir 80 °C », retour « ✓ Rangé ici », Pompe reste vide ; marche seulement en touchant « Ici ». | B | ouvert | | |
+| PCN-171 | en-ligne-2 n° 4 | Carnet (en ligne, test 2) | En ligne : phrase sans objet depuis la liste : carnet titré par le critère alors que l'IA rangeait dans Pompe. | B | ouvert | | |
+| PCN-172 | en-ligne-2 n° 5 | Carnet (en ligne, test 2) | En ligne : « tuyau silicone 8 mm, 5 m » dans Pompe : carnet neuf « Tuyau silicone » vide ; la note (5 m, à acheter) perdue. | B | ouvert | | |
+| PCN-173 | en-ligne-2 n° 6 | Carnet (en ligne, test 2) | En ligne : prix CHF perdus sur 3 liens sur 3 (489, 320, 289) ; le test 1 les gardait (régression). | B | ouvert | | |
+| PCN-174 | en-ligne-2 n° 7 | Carnet (en ligne, test 2) | En ligne : après le 2e lien, le 1er article perd son nom (« Lien sans aperçu · à relire ») ; les deux ne s'ouvrent plus ; Choisir hors d'atteinte. | B | ouvert | | |
+| PCN-175 | en-ligne-2 n° 8 | Carnet (en ligne, test 2) | En ligne : Comparer avec 2 articles : « Le tableau naît au 2e article lu » ; aucun tableau ; galaxus « lecture… » sans fin. | B | ouvert | | |
+| PCN-176 | en-ligne-2 n° 9 | Carnet (en ligne, test 2) | En ligne : champ vendeur rempli de raisonnement et de balises cassées du modèle (300 car.), stocké, non affiché. | G | ouvert | | |
+| PCN-177 | en-ligne-2 n° 10 | Carnet (en ligne, test 2) | En ligne : note « double paroi » devenue « Critère : Vérifier s'il existe avec double paroi » (type local imposé à une tâche). | G | ouvert | | |
+| PCN-178 | en-ligne-2 n° 11 | Carnet (en ligne, test 2) | En ligne : le réfractomètre reste dans le Fermenteur, menu sans « Déplacer ». | G | ouvert | | |
+| PCN-179 | en-ligne-2 n° 12 | Carnet (en ligne, test 2) | En ligne : dans la liste, le premier toucher sur un carnet ne l'ouvre pas quand le champ a le focus : le cadre « Créer » se replie, la liste saute de ~120 px ; vu 3 fois (geste sans effet). | G | ouvert | | |
+| PCN-180 | en-ligne-2 n° 13 | Carnet (en ligne, test 2) | En ligne : titres neufs sans « ZZ TEST — » quand la phrase n'en a pas (attendu) ; la liste reste sur la liste après création (doute). | D | ouvert | | |
