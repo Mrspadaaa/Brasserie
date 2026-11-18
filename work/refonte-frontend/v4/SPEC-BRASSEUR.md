@@ -2098,3 +2098,9 @@ Lecture : le port (calendrier, carnet) part en ligne en entier : front, fonction
 > 5chf de crédit IA pour les tests en ligne du carnet
 
 Lecture : les tests en ligne du carnet peuvent appeler la vraie IA (Gemini facturé), 5 CHF au plus en tout, appels journalisés (nombre, modèle, coût estimé) ; toujours sur des données « ZZ TEST — … », retirées ensuite. Jamais dans npm test.
+
+### Calendrier en ligne : choisir une période (18.11, 9:25, téléphone)
+
+> Je peux pas choisir une période donnée
+
+Capture : work/missions/2026-11-17-port-calendrier/en-ligne-1/brasseur/periode-18-11.jpg (6 sem. ; fenêtre de la courbe « S47 – S13 2027 » sur un axe déc.→oct., frise S47–S52 ; courbe plate). Lecture étroite : au téléphone, il ne peut pas poser la période voulue (début et fin) ; la fenêtre affichée ne correspond pas au choix « 6 sem. ».
