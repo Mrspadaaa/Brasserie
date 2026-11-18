@@ -724,9 +724,9 @@ export const Rangee: React.FC<RangeeProps> = props => {
             const surDrag = drag && drag.id === c.id;
             if (d.marque) {
               const commeBarre = !d.petite;
-              /* D386 : en Semaine, un jalon se glisse au jour (pas de 1/7 de colonne, bornes en jours) ; sur un axe en jours, comme une barre */
-              const auJourJalon = !!d.jalon && !auJour && !aDesJours(colonnes);
-              const pas = auJourJalon ? largeurColonne / 7 : largeurColonne;
+              /* paquet D n° 2 (D385) : un jalon se glisse comme une barre, à la semaine en vue Semaine (son jour de la semaine se garde : le
+                 4 déc. glissé d'une colonne donne le 11), au jour sur un axe en jours. Le pas d'1/7 de colonne donnait +10 j pour 1,4 colonne. */
+              const pas = largeurColonne;
               const ton = d.jalon && props.eclairage ? (props.eclairage.has(c.id) ? 'allume' as const : 'pale' as const) : undefined;
               const lieA = d.jalon ? barreLiee(c) : undefined;
               const pointLie = lieA ? props.rangeeDeBarre?.get(lieA) : undefined;
@@ -737,7 +737,7 @@ export const Rangee: React.FC<RangeeProps> = props => {
                   epinglee={epingles.includes(c.id)} etoilee={etoiles.includes(c.id)} selectionnee={selectionId === c.id} menuOuvert={menuId === c.id} lieCourt={lieCourt}
                   libelle={d.avecLibelle ? { cote: d.cote === 'gauche' ? 'gauche' : 'droite', place: d.place, deux: d.deuxLignes, ...(c.brassinLie ? { texte: c.titre } : {}), ...(d.sansLie ? { sansLie: true } : {}), ...(d.retrait ? { retrait: d.retrait } : {}) } : undefined}
                   decalage={surDrag && drag.mode === 'glisse' ? drag.k * pas : 0}
-                  bornes={commeBarre ? (auJourJalon ? [-ecartJours(colonnes[0].debut, c.debut), ecartJours(c.debut, colonnes[colonnes.length - 1].fin)] : [-d.a, colonnes.length - 1 - d.a]) : undefined}
+                  bornes={commeBarre ? [-d.a, colonnes.length - 1 - d.a] : undefined}
                   onToucher={props.barre.onToucher} onSixSemaines={props.onSixSemaines}
                   {...(commeBarre ? { onAppuiLong: props.barre.onAppuiLong, onGlisse: props.barre.onGlisse, onLacheGlisse: props.barre.onLacheGlisse, onRefus: (ch: ChoseCalendrier, raison: string) => props.barre.onRefus(ch, raison) } : {})}
                 />

@@ -188,7 +188,10 @@ describe('CRITIQUE-10 n° 3, 4, 7 : une date, une plage entière, un lien lisibl
     const plage = document.querySelector<HTMLElement>('[data-plage]')!;
     expect(plage.textContent).toBe('30 nov. – 6 déc.');
     expect(plage).toHaveClass('cal-nowrap');
-    expect(plage.parentElement!.textContent).toBe('S49, 30 nov. – 6 déc.');
+    /* paquet D n° 7 : plus de « S49, » seul en fin de ligne : la semaine, puis la plage sur sa ligne, sans virgule */
+    expect(plage.parentElement!.textContent).toBe('S4930 nov. – 6 déc.');
+    expect(plage).toHaveClass('block');
+    expect(plage.previousElementSibling?.textContent).toBe('S49');
   });
 
   it('n° 7 (E37, D-113, D-126) : le détail de la Hotte liée à Blonde d’automne porte la pastille « lié à Blonde d’automne » et son aperçu', () => {

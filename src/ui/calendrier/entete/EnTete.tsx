@@ -102,7 +102,7 @@ const COLONNE_T = 214;
  * Portrait : 110 px, les mois dessous (z2s). Paysage : 90 px, les mois EN HAUT, dans la courbe, comme w3s (l-repos) ; le tracé garde 70 px
  * (E02, CRITIQUE-4 n° 11) et l'en-tête tient dans 120 px (E10) : la place est prise sur la bande et l'écart, pas sur la courbe.
  */
-const HAUTEUR_COURBE = { portrait: 110, paysage: 90, /* lot C n° 7 : alignée en paysage, la rangée du chiffre passe au-dessus (28 px) */ paysageAlignee: 64 };
+const HAUTEUR_COURBE = { portrait: 110, paysage: 90, /* lot C n° 7 : alignée en paysage, la rangée du chiffre passe au-dessus (28 px) ; paquet D n° 6 : 90 px, environ 70 px de tracé comme le jouable */ paysageAlignee: 90 };
 /** Hauteur de la grande courbe au téléphone (p-c3a-pendant : environ 250 px, le détail dessous). */
 const HAUTEUR_GRANDE_TEL = 250;
 /** Ce qui, sous la grande courbe, doit rester visible : son titre (44), le détail de la semaine (3 lignes), la légende, une marge. */
@@ -549,6 +549,7 @@ export function EnTeteCalendrier(props: EnTeteCalendrierProps) {
   const semaineCreux = creux ? semaineCourte(creux.lundi, semainesTot[0]?.debut ?? creux.lundi) : '';
   const refCle = useRef<HTMLButtonElement>(null);
   const [empile, setEmpile] = useState(false);
+  const [serre, setSerre] = useState(false);
   useLayoutEffect(() => {
     const el = refCle.current;
     if (!el) return undefined;
@@ -556,8 +557,13 @@ export function EnTeteCalendrier(props: EnTeteCalendrierProps) {
       const [b, u, em] = Array.from(el.children) as HTMLElement[];
       if (!b || !u || !em || !el.clientWidth) return;
       // La largeur d'une ligne : les trois morceaux à leur taille naturelle (nowrap) et leurs deux écarts ; la même dans les deux formes.
-      const ligne = b.offsetWidth + u.offsetWidth + em.offsetWidth + 8;
+      const bN = el.hasAttribute('data-serre') ? b.offsetWidth * 21 / 17 : b.offsetWidth;
+      const ligne = bN + u.offsetWidth + em.offsetWidth + 8;
       setEmpile(ligne > el.clientWidth);
+      /* paquet D n° 5 : empilé, « CHF à dépenser » finissait à 0,4 px du ± (vue Jour, 390) ; un montant plus long l'aurait chevauché. Repli :
+         le montant passe de 21 à 17 px (`data-serre` ; la légende garde 14 px, plancher de B9), pour garder 4 px au moins. Mesuré à la taille normale (sans
+         osciller) : le montant serré se rapporte à sa taille de 21 px. */
+      setSerre(ligne > el.clientWidth && bN + Math.max(u.offsetWidth, em.offsetWidth) + 4 + 4 > el.clientWidth);
     };
     juger();
     if (typeof ResizeObserver === 'undefined') return undefined;
@@ -567,7 +573,7 @@ export function EnTeteCalendrier(props: EnTeteCalendrierProps) {
     // Le bouton est remonté quand la lecture au doigt se ferme : il se rejuge alors (lecture dans les dépendances).
   }, [semaineCreux, creux?.centimes, orientation, vue, courbe, lecture === null]);
   const cle = courbe && creux ? (
-    <button ref={refCle} type="button" className="ent-k" data-ent-cle data-empile={empile ? '' : undefined} aria-expanded={creuxOuvert}
+    <button ref={refCle} type="button" className="ent-k" data-ent-cle data-empile={empile ? '' : undefined} data-serre={empile && serre ? '' : undefined} aria-expanded={creuxOuvert}
       aria-label={`${chf(creux.centimes)} CHF à dépenser sans passer sous 0 (${semaineCreux}) : voir ses causes`} onClick={() => setCreuxOuvert(o => !o)}>
       <b className={creux.centimes < 0 ? 'ent-neg' : undefined}>{chf(creux.centimes)}</b><span className="ent-k-u">CHF à dépenser</span><em><span className="ent-k-sep">· </span>{semaineCreux}</em>
     </button>

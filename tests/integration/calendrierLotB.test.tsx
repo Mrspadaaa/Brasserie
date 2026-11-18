@@ -150,12 +150,12 @@ describe('Lot C n° 7 : en paysage, alignée et zoomée sur toute la largeur de 
   });
   const avecFrise = () => { const f = document.createElement('div'); f.setAttribute('data-frise', ''); document.body.appendChild(f); return () => f.remove(); };
 
-  it('alignée : l’en-tête passe en une colonne (rangée du chiffre au-dessus), la courbe 64 px ; éteinte, la colonne du chiffre revient', () => {
+  it('alignée : l’en-tête passe en une colonne (rangée du chiffre au-dessus), la courbe 90 px (paquet D n° 6) ; éteinte, la colonne du chiffre revient', () => {
     const { container, rerender } = render(<Banc orientation="paysage" aligne onAligne={() => undefined} />);
     const ent = container.querySelector('[data-calendrier-entete]')!;
     expect(ent).toHaveAttribute('data-aligne', 'oui');
     expect(ent).toHaveAttribute('data-bouton-al');
-    expect(container.querySelector('.ent-cbz svg.ent-svg')?.getAttribute('height')).toBe('64');
+    expect(container.querySelector('.ent-cbz svg.ent-svg')?.getAttribute('height')).toBe('90');
     rerender(<Banc orientation="paysage" aligne={false} onAligne={() => undefined} />);
     expect(ent).not.toHaveAttribute('data-aligne');
     expect(container.querySelector('.ent-cbz svg.ent-svg')?.getAttribute('height')).toBe('90');

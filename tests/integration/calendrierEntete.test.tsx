@@ -1,4 +1,6 @@
 import React, { useState } from 'react';
+import { readFileSync } from 'node:fs';
+import { resolve } from 'node:path';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { act, cleanup, fireEvent, render, screen, within } from '@testing-library/react';
 import { EnTeteCalendrier, type EnTeteCalendrierProps, type ModeleEnTete, type VueCalendrier } from '../../src/ui/calendrier/entete/EnTete';
@@ -1258,6 +1260,32 @@ describe('CRITIQUE-6 (lot B-entete) : le chiffre clé entier, le creux et ses ca
     large.mockImplementation(function (this: HTMLElement) { return this.hasAttribute('data-ent-cle') ? 260 : 0; });
     const { container: c2 } = render(<Banc {...espions()} modele={modele({ courbe: descente, creux: creuxDepuis(descente) })} orientation="paysage" />);
     expect((c2.querySelector('[data-ent-cle]') as HTMLElement).hasAttribute('data-empile')).toBe(false);
+  });
+
+  it('paquet D n° 5 : empilé sans 4 px de marge au ± (montant long, vue Jour à 390), le chiffre se resserre (data-serre) ; avec la marge, non', () => {
+    vi.spyOn(HTMLElement.prototype, 'offsetWidth', 'get').mockImplementation(function (this: HTMLElement) {
+      return this.tagName === 'B' ? 70 : this.classList.contains('ent-k-u') ? 104 : this.tagName === 'EM' ? 56 : 0;
+    });
+    const large = vi.spyOn(HTMLElement.prototype, 'clientWidth', 'get').mockImplementation(function (this: HTMLElement) { return this.hasAttribute('data-ent-cle') ? 178 : 0; });
+    const { container, unmount } = render(<Banc {...espions()} modele={modele({ courbe: descente, creux: creuxDepuis(descente) })} />);
+    const cle = container.querySelector('[data-ent-cle]') as HTMLElement;
+    expect(cle.hasAttribute('data-empile')).toBe(true);
+    expect(cle.hasAttribute('data-serre')).toBe(true);
+    unmount();
+    large.mockImplementation(function (this: HTMLElement) { return this.hasAttribute('data-ent-cle') ? 190 : 0; });
+    const { container: c2 } = render(<Banc {...espions()} modele={modele({ courbe: descente, creux: creuxDepuis(descente) })} />);
+    expect((c2.querySelector('[data-ent-cle]') as HTMLElement).hasAttribute('data-serre')).toBe(false);
+    const css = readFileSync(resolve(process.cwd(), 'src/ui/calendrier/entete/entete.css'), 'utf8');
+    expect(css).toMatch(/\.ent-k\[data-serre\] b \{ font-size: 17px;/);
+  });
+
+  it('paquet D n° 4 : « 2 sem. · j » a la même marge interne des deux côtés, et sa zone de toucher ne déborde pas sur les côtés', () => {
+    const css = readFileSync(resolve(process.cwd(), 'src/ui/calendrier/entete/entete.css'), 'utf8');
+    for (const m of css.matchAll(/\.ent-per \{[^}]*padding: ([^;]+);/g)) {
+      const v = m[1].trim().split(/\s+/);
+      expect(v.length === 2 || v[1] === v[3], m[0]).toBe(true);
+    }
+    expect(css).toMatch(/\.ent \.ent-t \.ent-per::after \{ left: 0; right: 0; \}/);
   });
 
   it('n° 8 : courbe qui descend sur 52 semaines, creux à la dernière : les causes sont de la semaine du creux ou des précédentes immédiates, triées ; « ensuite » dit la fin de l’horizon', () => {

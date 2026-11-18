@@ -66,7 +66,8 @@ export function sansLaDate(detail: string | undefined, debut: string | undefined
 function texteSemaine(semaine: string): React.ReactNode {
   const i = semaine.indexOf(', ');
   if (i < 0) return <span className="cal-nowrap" data-plage>{semaine}</span>;
-  return <>{semaine.slice(0, i + 1)} <span className="cal-nowrap" data-plage>{semaine.slice(i + 2)}</span></>;
+  /* paquet D n° 7 : « S50, » restait seul en fin de ligne avant « 7 – 13 déc. ». La semaine, puis sa plage sur sa propre ligne, sans virgule */
+  return <><span className="cal-nowrap">{semaine.slice(0, i)}</span><span className="cal-nowrap block" data-plage>{semaine.slice(i + 2)}</span></>;
 }
 
 /**

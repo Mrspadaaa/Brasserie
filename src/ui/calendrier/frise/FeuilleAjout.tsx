@@ -110,8 +110,11 @@ export const FeuilleAjout: React.FC<FeuilleAjoutProps> = ({ mode, initial, conte
     return () => ro.disconnect();
   }, []);
   const largeurVue = largeurSemaines || (typeof window !== 'undefined' ? Math.max(0, Math.min(window.innerWidth, 620) - 24) : 366);
-  const caseSemaine = Math.max(24, Math.floor((largeurVue - 12 * ECART_SEMAINES) / 13));
-  const semainesVisibles = Math.min(semaines.length, Math.floor((largeurVue + ECART_SEMAINES) / (caseSemaine + ECART_SEMAINES)));
+  /* paquet D n° 3 (WCAG 2.5.8, DESIGN.md) : la cible est toute la colonne (case dessinée + écart), sans zone morte entre deux semaines ;
+     à 390, 27 px au lieu de 24 px dessinés entre 4 px morts (deux touchers sur S49 avaient pris S48). Le dessin garde 24 px au moins. */
+  const pasSemaine = Math.max(26, Math.floor(largeurVue / 13));
+  const caseSemaine = Math.max(24, pasSemaine - ECART_SEMAINES);
+  const semainesVisibles = Math.min(semaines.length, Math.floor(largeurVue / pasSemaine));
   const casesEtroites = caseSemaine < 44;
 
   /* la semaine choisie (préréglée, proposée : S26) est dans l'écran à l'ouverture, centrée dans la rangée qui défile (comme le jouable) */
@@ -241,7 +244,7 @@ export const FeuilleAjout: React.FC<FeuilleAjoutProps> = ({ mode, initial, conte
           </div>
           <div
             ref={rangeeSemaines} role="group" aria-label="Semaine" data-vaul-no-drag data-visibles={semainesVisibles}
-            className={`cal-f-semaines relative flex overflow-x-auto pb-1${casesEtroites ? ' cal-f-etroit' : ''}`} style={{ touchAction: 'pan-x', gap: ECART_SEMAINES }}
+            className={`cal-f-semaines relative flex overflow-x-auto pb-1${casesEtroites ? ' cal-f-etroit' : ''}`} style={{ touchAction: 'pan-x', gap: 0 }}
           >
             {semaines.map(s => {
               const dans = !!b.debut && s.debut >= b.debut && (b.fin ? s.debut <= b.fin : s.debut === b.debut);
@@ -251,12 +254,14 @@ export const FeuilleAjout: React.FC<FeuilleAjoutProps> = ({ mode, initial, conte
                   key={s.debut} type="button" data-semaine={s.debut} aria-pressed={s.debut === b.debut || s.debut === b.fin} data-dans={dans ? '' : undefined}
                   aria-label={`S${s.numero}, ${jour}`}
                   onClick={() => regler(toucherSemaine(b, s.debut))}
-                  style={{ width: caseSemaine, minWidth: caseSemaine }}
-                  className="cal-f-sem flex min-h-11 shrink-0 flex-col items-center justify-center rounded-control border border-cave-700 text-cave-50 aria-pressed:border-cave-50 data-[dans]:bg-cave-850"
+                  style={{ width: pasSemaine, minWidth: pasSemaine, padding: `0 ${(pasSemaine - caseSemaine) / 2}px` }}
+                  className="cal-f-sem flex min-h-11 shrink-0 items-stretch text-cave-50"
                 >
-                  <b className="cal-f-sem-n">S{s.numero}</b>
-                  {/* étroite (390) : le jour du mois seul ; le mois se lit au-dessus (« S50, 7 déc. ») */}
-                  <small className="cal-f-sem-j">{casesEtroites ? Number(s.debut.slice(8)) : jour}</small>
+                  <span className="cal-f-sem-c flex w-full flex-col items-center justify-center rounded-control border border-cave-700">
+                    <b className="cal-f-sem-n">S{s.numero}</b>
+                    {/* étroite (390) : le jour du mois seul ; le mois se lit au-dessus (« S50, 7 déc. ») */}
+                    <small className="cal-f-sem-j">{casesEtroites ? Number(s.debut.slice(8)) : jour}</small>
+                  </span>
                 </button>
               );
             })}

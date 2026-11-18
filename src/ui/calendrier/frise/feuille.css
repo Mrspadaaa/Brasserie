@@ -10,9 +10,16 @@
    la case prend toute la hauteur de la ligne au doigt */
 .cal-f-semaines { scroll-snap-type: x proximity; scrollbar-width: thin; }
 .cal-f-sem { box-sizing: border-box; padding: 0; scroll-snap-align: start; }
+/* paquet D n° 3 : la case dessinée est dans le bouton, qui couvre aussi l'écart (cible = toute la colonne) */
+.cal-f-sem-c { box-sizing: border-box; min-width: 0; }
+.cal-f-sem[aria-pressed='true'] > .cal-f-sem-c { border-color: rgb(var(--cave-50)); }
+.cal-f-sem[data-dans] > .cal-f-sem-c { background: rgb(var(--cave-850)); }
+.cal-f-sem:focus-visible { outline: none; }
+.cal-f-sem:focus-visible > .cal-f-sem-c { outline: 2px solid rgb(var(--cave-50)); outline-offset: 1px; }
 .cal-f-sem-n { font-size: 14px; line-height: 18px; font-weight: 700; }
 .cal-f-sem-j { font-size: 12px; line-height: 14px; color: rgb(var(--cave-200)); white-space: nowrap; }
-.cal-f-etroit .cal-f-sem { min-height: 48px; border-radius: 8px; }
+.cal-f-etroit .cal-f-sem { min-height: 48px; }
+.cal-f-etroit .cal-f-sem-c { border-radius: 8px; }
 .cal-f-etroit .cal-f-sem-n { font-size: 12px; letter-spacing: -0.02em; }
 @media (min-width: 1024px) {
   /* au 1280 le champ CHF reste court : un repli, pas une ligne de 1 200 px */

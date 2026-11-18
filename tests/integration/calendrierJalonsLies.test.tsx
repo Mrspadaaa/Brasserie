@@ -10,6 +10,7 @@ import { act, cleanup, fireEvent, render, screen, waitFor, within } from '@testi
 import { BancCalendrier } from '../../src/design/CalendrierPreview';
 import { StorageService } from '../../src/services/storage';
 import { ajouterJours, lundiDe } from '../../src/domain/calendrier';
+import { obstaclesTraverses } from '../../src/ui/calendrier/frise/routageFil';
 
 const JOUR = '2026-11-16';
 const L = lundiDe(JOUR);
@@ -141,7 +142,19 @@ describe('D386 au banc : la foire, sa tireuse, Dédé', () => {
     const calque = frise.querySelector('svg[data-traits]')!;
     expect(frise.firstElementChild).toBe(calque);
     const fil = calque.querySelector('path[data-fil]')!;
-    expect(fil.getAttribute('d')).toBe('M174.0 220.0V86.0');
+    /* paquet D n° 1 : le fil ne passe plus tout droit sous Dédé (« M174.0 220.0V86.0 ») ; il prend une voie libre à côté de son nom et de
+       son icône, et ne traverse que la fiche, qui couvre toute la largeur (le masque l'y coupe) */
+    const d = fil.getAttribute('d') ?? '';
+    expect(d).not.toBe('M174.0 220.0V86.0');
+    expect(d).toMatch(/^M174\.0 220\.0V/);
+    expect(d).toMatch(/V86\.0$/);
+    const pts: Array<[number, number]> = []; let px = 0, py = 0;
+    for (const m of d.matchAll(/([MHV])(-?[\d.]+)(?: (-?[\d.]+))?/g)) {
+      if (m[1] === 'M') { px = Number(m[2]); py = Number(m[3]); } else if (m[1] === 'H') px = Number(m[2]); else py = Number(m[2]);
+      pts.push([px, py]);
+    }
+    const nomDede = { left: 150, top: 160, right: 220, bottom: 178 }, iconeDede = { left: 226, top: 156, right: 254, bottom: 184 };
+    expect(obstaclesTraverses(pts, [nomDede, iconeDede])).toBe(0);
     const groupe = fil.parentElement!;
     const id = /^url\(#(.+)\)$/.exec(groupe.getAttribute('mask') ?? '')?.[1];
     expect(id).toBeTruthy();
@@ -155,6 +168,23 @@ describe('D386 au banc : la foire, sa tireuse, Dédé', () => {
     expect(trous).toContain('160.0 220.0 28.0 28.0');
     /* le nom de Dédé et son icône, à 6 px de lui, font un seul bloc : le fil ne passe pas entre eux */
     expect(trous).toContain('148.0 159.0 108.0 20.0');
+  });
+
+  it('paquet D n° 2 : en vue Semaine, la tireuse glissée d’une colonne et demie (1,4) va une semaine plus loin, même jour de la semaine (+7 j, pas +10)', async () => {
+    const { appels } = monter();
+    const tireuse = bouton(/^Tireuse/);
+    const avant = tireuse.getAttribute('data-ponctuel')!;
+    const lc = Number(document.querySelector('[data-frise]')!.getAttribute('data-largeur-colonne'));
+    expect(document.querySelector('[data-frise]')!.getAttribute('data-echelle')).toBe('semaine');
+    expect(lc).toBeGreaterThan(0);
+    const pas = (x: number) => fireEvent.pointerMove(tireuse, { clientX: x, clientY: 10, pointerId: 1 });
+    fireEvent.pointerDown(tireuse, { clientX: 100, clientY: 10, pointerId: 1, button: 0 });
+    for (let i = 1; i <= 14; i++) pas(100 + (lc * 1.4 * i) / 14);
+    fireEvent.pointerUp(tireuse, { clientX: 100 + lc * 1.4, clientY: 10, pointerId: 1 });
+    await waitFor(() => expect(appels.filter(a => a.collection === 'financialPlans' && a.patch && 'date' in a.patch)).toHaveLength(1));
+    const patch = appels.find(a => a.collection === 'financialPlans' && a.patch && 'date' in a.patch)!;
+    expect(patch.id).toBe('P-TIREUSE');
+    expect(String(patch.patch!.date).slice(0, 10)).toBe(ajouterJours(avant, 7));
   });
 
   it('Lier Dédé à la foire : le groupe « Fêtes et activités » ne propose que ce qui dure ; la source reçoit { evenementId } et Dédé se relie', async () => {

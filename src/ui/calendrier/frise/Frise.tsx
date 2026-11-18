@@ -3,6 +3,7 @@ import { RANGEES, barreLiee, ecartJours, estPonctuel, type ChoseCalendrier, type
 import { MESURES_PAYSAGE, MESURES_PORTRAIT, Rangee, pastille, positionDans, texteRenvoi, type Colonne, type DragEtat, type Renvoi, type RangeeProps } from './Rangee';
 import { GrilleJours } from './GrilleJours';
 import { usePincement } from './usePincement';
+import { cheminDePoints, routerFil } from './routageFil';
 import { aDesJours, type SensPincement } from '../echelle';
 import './frise.css';
 
@@ -156,6 +157,7 @@ export const Frise: React.FC<FriseProps> = props => {
 
   /* le trait d'un caddie à son brassin : mesuré après le rendu (les deux vivent dans deux rangées), redessiné seulement s'il change */
   const clesTraits = React.useRef({ traits: '', trous: '' });
+  const routes = React.useRef(new Map<string, { k: string; d: string | null }>());
   const mesurerTraits = React.useCallback(() => {
     const el = zone.current;
     if (!el) return;
@@ -176,6 +178,7 @@ export const Frise: React.FC<FriseProps> = props => {
     });
     /* D386, D390 : le fil d'un jalon à sa barre liée ne se dessine qu'allumé (barre ou jalon touché) ; au repos, le jalon porte un point
        de la couleur de sa barre (Marque). Au repos, un fil traversait une vente non liée et semblait la relier (test en ligne du lot A). */
+    const demandes: Array<{ id: string; j: BoiteFil; b: BoiteFil }> = [];
     el.querySelectorAll<HTMLElement>('[data-lie-a][data-ton="allume"]').forEach(jalon => {
       const cible = jalon.getAttribute('data-lie-a');
       const barre = [...el.querySelectorAll<HTMLElement>('[data-chose]')].find(x => x.getAttribute('data-chose') === cible && !x.hasAttribute('data-marque'));
@@ -183,8 +186,7 @@ export const Frise: React.FC<FriseProps> = props => {
       const j = jalon.getBoundingClientRect(), b = barre.getBoundingClientRect();
       if (!j.width || !b.width) return;
       const rel = (r: DOMRect): BoiteFil => ({ left: r.left - z.left, right: r.right - z.left, top: r.top - z.top, bottom: r.bottom - z.top });
-      const d = cheminFil(rel(j), rel(b));
-      if (d) suivants.push({ id: `fil-${jalon.getAttribute('data-chose')}`, d, fil: 'allume' });
+      demandes.push({ id: `fil-${jalon.getAttribute('data-chose')}`, j: rel(j), b: rel(b) });
     });
     /* Lot C (test en ligne, n° 2) : la ligne d'aujourd'hui (vue Jour, semaine dépliée) coupait le « J » de « J0 / 15 ». Elle se trace ici, sous
        un masque troué par les textes seuls, comme le fil : elle passe sous chaque nom et reprend entre eux. Sa place vient de la grille (`data-auj`). */
@@ -196,7 +198,7 @@ export const Frise: React.FC<FriseProps> = props => {
     });
     /* CAL-FIL-SOUS-INFO : les trous du masque, mesurés seulement s'il y a un trait à dessiner */
     const trousSuivants: BoiteFil[] = [];
-    if (suivants.length) {
+    if (suivants.length || demandes.length) {
       for (const sel of INFO_SOUS_FIL) {
         const marge = SANS_MARGE.has(sel) ? 0 : 2;
         el.querySelectorAll<HTMLElement>(sel).forEach(x => {
@@ -224,7 +226,20 @@ export const Frise: React.FC<FriseProps> = props => {
     }
     const cle = (t: Trait[]) => t.map(x => `${x.id}:${x.d}:${x.fil ?? ''}`).join('|');
     const cleTrous = (t: BoiteFil[]) => t.map(b => `${b.left.toFixed(1)},${b.top.toFixed(1)},${b.right.toFixed(1)},${b.bottom.toFixed(1)}${b.texte ? 't' : ''}`).join('|');
-    const k = { traits: cle(suivants), trous: cleTrous(trousSuivants) };
+    const trousCle = cleTrous(trousSuivants);
+    /* paquet D n° 1 : le fil se trace dans une voie libre, à côté des infos (routageFil) ; calculé seulement quand la frise ou le fil changent */
+    for (const q of demandes) {
+      const r = (b: BoiteFil) => `${b.left.toFixed(1)},${b.top.toFixed(1)},${b.right.toFixed(1)},${b.bottom.toFixed(1)}`;
+      const k = `${r(q.j)}>${r(q.b)}|${Math.round(z.width)}|${trousCle}`;
+      let d = routes.current.get(q.id);
+      if (!d || d.k !== k) {
+        const pts = routerFil(q.j, q.b, trousSuivants, z.width);
+        d = { k, d: pts ? cheminDePoints(pts) : cheminFil(q.j, q.b) };
+        routes.current.set(q.id, d);
+      }
+      if (d.d) suivants.push({ id: q.id, d: d.d, fil: 'allume' });
+    }
+    const k = { traits: cle(suivants), trous: trousCle };
     if (k.traits !== clesTraits.current.traits) setTraits(suivants);
     if (k.trous !== clesTraits.current.trous) setTrous(trousSuivants);
     clesTraits.current = k;

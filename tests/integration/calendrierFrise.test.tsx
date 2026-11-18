@@ -411,9 +411,12 @@ describe('CRITIQUE-3 (lot t3-c-frise) : marque, détail, pastille « lié à »,
       expect(groupe).toHaveAttribute('data-visibles', '13');
       const cases = [...groupe.querySelectorAll<HTMLElement>('button[data-semaine]')];
       expect(cases.length).toBeGreaterThanOrEqual(52);
+      /* paquet D n° 3 : la cible est toute la colonne (case + écart), sans zone morte : plus de 24 px dessinés entre 4 px morts */
       const w = parseFloat(cases[0].style.width);
-      expect(w).toBeGreaterThanOrEqual(24);
-      expect(13 * w + 12 * 4).toBeLessThanOrEqual(390 - 24);
+      expect(w).toBeGreaterThanOrEqual(27);
+      expect(13 * w).toBeLessThanOrEqual(390 - 24);
+      expect(groupe.style.gap).toBe('0px');
+      expect(cases[0].querySelector('.cal-f-sem-c')).not.toBeNull();
       expect(within(groupe).getByRole('button', { name: /^S20,/ })).toBeInTheDocument();
       expect(within(groupe).getByRole('button', { name: /^S40,/ })).toBeInTheDocument();
     } finally {

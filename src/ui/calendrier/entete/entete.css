@@ -61,7 +61,7 @@
 .ent-mb { min-width: 28px; padding: 0 5px; font-size: 16px; border: 1.5px solid var(--ent-line2); border-radius: 8px; background: rgb(var(--cave-900)); }
 .ent-mb[aria-pressed='true'] { background: rgb(var(--cave-50)); color: rgb(var(--cave-950)); border-color: rgb(var(--cave-50)); }
 /* Lot C (test en ligne, n° 3) : « 2 sem. · j » débordait de 2 px, le « j » touchait le chevron ; le bouton ne rétrécit plus, et respire */
-.ent-per { flex: none; gap: 2px; padding: 0 6px 0 8px; background: rgb(var(--cave-50)); color: rgb(var(--cave-950)); }
+.ent-per { flex: none; gap: 3px; padding: 0 7px 0 7px; background: rgb(var(--cave-50)); color: rgb(var(--cave-950)); }
 .ent-ret-b { gap: 2px; min-width: 28px; padding: 0 4px; border: 1.5px solid rgb(var(--alert)); color: var(--ent-bad); background: rgb(var(--alert) / 0.1); }
 .ent-pl { width: 24px; background: transparent; }
 .ent-lit { display: inline-flex; flex: 1 1 auto; align-items: baseline; gap: 4px; min-width: 0; height: 28px; line-height: 28px; white-space: nowrap; overflow: hidden; color: var(--ent-mut); }
@@ -169,7 +169,7 @@
   /* le pire cas du banc : « −6 417 », deux retards et « 2 sem. · j » (vue Jour) tiennent sur la ligne, sans chevauchement */
   .ent--portrait .ent-t { gap: 2px; padding: 0 0 0 4px; }
   .ent--portrait .ent-t-b { gap: 2px; }
-  .ent--portrait .ent-per { gap: 2px; padding: 0 3px 0 5px; }
+  .ent--portrait .ent-per { gap: 3px; padding: 0 5px 0 5px; }
   .ent--portrait .ent-ret-b { gap: 0; padding: 0 1px; }
   .ent--portrait .ent-ret-b svg { width: 14px; height: 14px; }
   .ent--portrait .ent-mb { min-width: 22px; padding: 0 3px; }
@@ -354,3 +354,9 @@
 .ent--paysage[data-vue='graph'] { grid-template-columns: minmax(0, 1fr); grid-template-areas: 't' 'c'; }
 .ent--paysage[data-vue='graph'] .ent-t { flex-direction: row; align-items: center; }
 .ent--paysage[data-vue='graph'] .ent-t-b { margin-left: auto; }
+
+/* Paquet D n° 4 : « 2 sem. · j » a la même marge des deux côtés (5 px à 390, 7 px ailleurs), 3 px entre le texte et le chevron ; sa zone de
+   toucher ne déborde pas sur les côtés (le ± et les retards sont à 2 px), elle descend seulement (scrollWidth = largeur). */
+.ent .ent-t .ent-per::after { left: 0; right: 0; }
+/* Paquet D n° 5 : le repli du chiffre empilé qui ne tient pas (montant long, vue Jour à 390)  : le montant à 17 px (la légende garde 14 px), rien ne se rogne. */
+.ent-k[data-serre] b { font-size: 17px; letter-spacing: -0.4px; }

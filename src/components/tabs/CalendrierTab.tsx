@@ -401,11 +401,11 @@ export function CalendrierTab(props: CalendrierTabProps) {
       setMessage(null); setMenu(null); setSelectionId(null);
       return;
     }
-    /* D386 : en Semaine, un jalon d'un jour se glisse au jour (le pas de sa marque est 1/7 de colonne : `k` compte des jours) */
+    /* paquet D n° 2 (D385) : en Semaine, un jalon d'un jour se glisse à la semaine (`k` compte des colonnes) et garde son jour de la semaine */
     if (estPonctuel(chose)) {
-      const jour = ajouterJours(chose.debut, k);
+      const jour = ajouterJours(chose.debut, k * 7);
       setIci(k === 0 ? null : `${etiquetteS(jour)} · ${jourLisible(jour)} · lâcher ici`);
-      setApercu(k !== 0 && modele.courbe ? { courbe: courbeDecalee(modele.courbe, chose.id, k), lache: jour } : null);
+      setApercu(k !== 0 && modele.courbe ? { courbe: courbeDecalee(modele.courbe, chose.id, k * 7), lache: jour } : null);
       setMessage(null); setMenu(null); setSelectionId(null);
       return;
     }
@@ -424,7 +424,7 @@ export function CalendrierTab(props: CalendrierTabProps) {
       if (r && r.jours !== 0) void ecrire(deplacerJours(chose, r.jours, ctxRef.current), false, chose.id);
       return;
     }
-    if (estPonctuel(chose)) { void ecrire(deplacerJours(chose, k, ctxRef.current), false, chose.id); return; }
+    if (estPonctuel(chose)) { void ecrire(deplacerJours(chose, k * 7, ctxRef.current), false, chose.id); return; }
     void ecrire(deplacer(chose, k, ctxRef.current), false, chose.id);
   }, [ecrire, finGeste]);
   const surBord = useCallback((chose: ChoseCalendrier, jours: number) => {
