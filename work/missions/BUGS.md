@@ -156,6 +156,8 @@ Lire :
 | work/missions/2026-11-17-port-calendrier/vision-13/essai6/RAPPORT.md | PC | 0 | 0 | en cours |
 | work/missions/2026-11-17-port-calendrier/vision-13/essai7/RAPPORT.md | PC | 0 | 0 | en cours |
 | work/missions/2026-11-17-port-calendrier/vision-13/RAPPORT-paysage-d1280.md | PC | 0 | 0 | en cours |
+| work/missions/2026-11-17-port-calendrier/vision-13/RAPPORT-m390.md | PC | 0 | 0 | en cours |
+| work/missions/2026-11-17-port-calendrier/vision-13/RAPPORT.md | PC | 0 | 0 | en cours |
 | work/missions/2026-11-17-port-calendrier/vision-12/RAPPORT-paysage-d1280.md | PC | 0 | 0 | 0cbb2bdb0600 |
 | work/missions/2026-11-17-port-calendrier/vision-12/lot-d/essai1/RAPPORT.md | PC | 0 | 0 | d6142bae5e0a |
 | work/missions/2026-11-17-port-calendrier/vision-12/lot-d/essai2/RAPPORT.md | PC | 0 | 0 | 15f82c416d19 |
