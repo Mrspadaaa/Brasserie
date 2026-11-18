@@ -9,4 +9,10 @@ if (!avecCle.length) {
   console.error(`CONFIG FIREBASE ABSENTE — aucune clé web dans ${dir} : copier .env avant le build, ne pas déployer.`);
   process.exit(1);
 }
+const projets = [...new Set(fichiers.flatMap((f) => [...readFileSync(join(dir, f), 'utf8').matchAll(/(?:projectId|VITE_FIREBASE_PROJECT_ID):"([a-z0-9-]+)"/g)].map((m) => m[1])))];
+const autres = projets.filter((p) => p !== 'brasserie-l-affinee');
+if (!projets.includes('brasserie-l-affinee') || autres.length) {
+  console.error(`CONFIG FIREBASE FAUSSE — projet(s) ${projets.join(', ') || 'aucun'} dans ${dir} : seul brasserie-l-affinee se déploie (18.11 : un .env de banc a cassé la connexion en ligne).`);
+  process.exit(1);
+}
 console.log(`CONFIG FIREBASE OK — clé web présente (${avecCle[0]}).`);
