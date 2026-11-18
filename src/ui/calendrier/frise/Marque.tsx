@@ -86,7 +86,7 @@ export function largeurPastilleLie(lie: NonNullable<ChoseCalendrier['lie']>, cou
  * CRITIQUE-4 n° 15 : l'icône lien et le nom, jamais « lié … » ; au téléphone et dès 3 mois, le nom court (« ↔ La Cigogne »), au 1280 le texte
  * entier. Elle ne rétrécit pas (le nom de la chose cède d'abord) ; son aperçu reste dans l'écran.
  */
-export function PastilleLie({ lie, court = false }: { lie: NonNullable<ChoseCalendrier['lie']>; court?: boolean }) {
+export function PastilleLie({ lie, court = false, icone }: { lie: NonNullable<ChoseCalendrier['lie']>; court?: boolean; icone?: string }) {
   const [ouvert, setOuvert] = React.useState(false);
   const ap = React.useRef<HTMLSpanElement | null>(null);
   React.useLayoutEffect(() => {
@@ -101,10 +101,12 @@ export function PastilleLie({ lie, court = false }: { lie: NonNullable<ChoseCale
   return (
     <span className="cal-lie-z">
       <button
-        type="button" className="cal-lie" data-lie data-lie-court={court ? '' : undefined} aria-expanded={ouvert} aria-label={`${lie.texte} : aperçu`}
+        type="button" className={`cal-lie${icone ? ' cal-lie-icone' : ''}`} data-lie data-lie-court={court || icone ? '' : undefined} aria-expanded={ouvert}
+        /* CRITIQUE-9 n° 10 : l'icône seule (sans place pour le nom) se nomme avec sa chose : « Hotte, liée à Blonde d'automne : aperçu » */
+        aria-label={icone ? `${icone}, liée à ${nomLie(lie)} : aperçu` : `${lie.texte} : aperçu`}
         onPointerDown={e => e.stopPropagation()}
         onClick={e => { e.stopPropagation(); setOuvert(o => !o); }}
-      ><Link2 size={14} aria-hidden="true" /><span>{court ? nomLie(lie) : lie.texte}</span></button>
+      >{!icone && <><Link2 size={14} aria-hidden="true" /><span>{court ? nomLie(lie) : lie.texte}</span></>}</button>
       {ouvert && <span ref={ap} role="note" className="cal-lie-ap" data-apercu-lien>{lie.apercu}</span>}
     </span>
   );

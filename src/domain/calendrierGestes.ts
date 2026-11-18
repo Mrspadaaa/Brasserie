@@ -2,6 +2,7 @@ import type { Batch } from '../types';
 import type { FinancialPlan } from './finance/types';
 import { isoDate } from './finance/ledger';
 import { plannedBrewDate, rescheduleBatchPatch } from './batchSchedule';
+import { datesSortiesBrassin } from './finance/brewForecast';
 import {
   ajouterJours, dimancheDe, dureeBrassin, dureePasBrassee, ecartJours, etiquetteS, finDeBrassin, idChoseArgent, jalonsBrassin, jourLisible, lundiDe, preteAuPlusTot,
   type ChoseCalendrier, type CibleOuverture, type JalonId
@@ -60,7 +61,11 @@ export interface Promesse {
 }
 
 export type Resolution =
-  | { ok: true; ecritures: Ecriture[]; message: Message; effet: EffetCaisse | null; promesse: Promesse | null; courbeApres: CourbeCaisse | null }
+  | {
+    ok: true; ecritures: Ecriture[]; message: Message; effet: EffetCaisse | null; promesse: Promesse | null; courbeApres: CourbeCaisse | null;
+    /** L'effet dit en mots quand il n'a pas de chiffre (« coût à venir », Dupliquer un brassin sans budget) : pour le libellé du menu (E31). */
+    effetMots?: string;
+  }
   | { ok: false; raison: string; ouvrir?: CibleOuverture; message: Message };
 
 export interface ContexteGestes {
@@ -105,6 +110,36 @@ const batchDe = (chose: ChoseCalendrier, ctx: ContexteGestes) => (chose.source.g
 const planDe = (chose: ChoseCalendrier, ctx: ContexteGestes) => (chose.source.genre === 'plan' ? ctx.plans.find(p => p.id === (chose.source as { id: string }).id) : undefined);
 
 const decale = (iso: string, jours: number) => ajouterJours(iso, jours);
+
+type PosteSortie = 'achats' | 'frais' | 'emballage' | 'impot';
+const POSTES: readonly PosteSortie[] = ['achats', 'frais', 'emballage', 'impot'];
+/** Le poste d'une sortie de brassin, lu dans l'id stable de la prévision (`brew:<lot>:achats|frais|emballage|impot`, `brewForecast.ts`). */
+const posteDe = (id: string): PosteSortie | null => { const s = id.slice(id.lastIndexOf(':') + 1) as PosteSortie; return id.startsWith('brew:') && POSTES.includes(s) ? s : null; };
+
+/**
+ * CRITIQUE-9 n° 6 et n° 8 (E28, E31, A2) : les mouvements d'un brassin tels qu'ils seront si le brassin `avant` devient `apres` (glissé,
+ * allongé, dupliqué). Chaque sortie suit SA date, par la règle de la prévision (`datesSortiesBrassin` : courses à J − 7, frais à J, emballage au
+ * conditionnement − 7, impôt au trimestre ; rien avant aujourd'hui) : un brassin en retard, ramené à aujourd'hui, ne glisse pas d'un bloc. Une
+ * ligne dont le poste est inconnu bouge de `repli` jours. Pure ; les montants ne changent pas.
+ */
+export function mouvementsBrassinApres(mouvements: readonly MouvementCaisse[], avant: Batch, apres: Batch, aujourdhui: string, repli: number): MouvementCaisse[] {
+  const da = datesSortiesBrassin(avant, aujourdhui), db = datesSortiesBrassin(apres, aujourdhui);
+  return mouvements.map(m => {
+    const poste = posteDe(m.id);
+    const jours = poste && da && db ? ecartJours(da[poste], db[poste]) : repli;
+    const jour = decale(m.jour, jours);
+    return { ...m, jour: jour < aujourdhui ? aujourdhui : jour };
+  });
+}
+
+/** La courbe après qu'un brassin a changé de dates : les mouvements de sa chose suivent (`mouvementsBrassinApres`). */
+function courbeBrassin(courbe: CourbeCaisse | null, choseId: string, avant: Batch, apres: Batch, aujourdhui: string, repli: number): CourbeCaisse | null {
+  if (!courbe) return null;
+  const siens = courbe.mouvements.filter(m => m.choseId === choseId);
+  if (!siens.length) return courbe;
+  /* un brassin n'a pas de mise de côté : retirer ses mouvements puis les remettre à leurs nouvelles dates ne touche rien d'autre */
+  return courbeAvec(courbeSans(courbe, choseId), mouvementsBrassinApres(siens, avant, apres, aujourdhui, repli));
+}
 const fenetreDecalee = (f: { du: string; au: string; joursActifs?: number; miseDeCote?: boolean } | undefined, jours: number) => (f ? { ...f, du: decale(f.du, jours), au: decale(f.au, jours) } : undefined);
 
 /**
@@ -134,11 +169,18 @@ export function deplacer(chose: ChoseCalendrier, semaines: number, ctx: Contexte
     const finEcrite = isoDate(batch.finPrevue || undefined);
     if (finEcrite) patch.finPrevue = decale(finEcrite, jours);
     /* CRITIQUE-6 n° 2 : replanifié encore dans le passé sans brassage, il reste prêt au plus tôt aujourd'hui + cycle */
-    const apres = preteAuPlusTot({ ...batch, ...patch } as Batch, ctx.aujourdhui);
+    const deplace = { ...batch, ...patch } as Batch;
+    const apres = preteAuPlusTot(deplace, ctx.aujourdhui);
     const promesse = promesseTouchee(ctx.plans, batch.id, apres);
+    /*
+     * CRITIQUE-9 n° 6 (E28, D-46, A6) : comme f1-a choisi (as-gestes.js l. 254) et comme les autres choses, le message dit l'effet sur la caisse,
+     * « S50 : 5 064 → 4 524 », dès que le libre bouge ; le nom et le trajet seulement si rien ne change (brassin sans budget, ou effet nul).
+     */
+    const courbeApres = courbeBrassin(ctx.courbe, chose.id, batch, deplace, ctx.aujourdhui, jours);
+    const effet = effetCaisse(ctx.courbe, courbeApres);
     return {
-      ok: true, ecritures: [{ op: 'patch', collection: 'batches', id: batch.id, patch }], effet: null, promesse, courbeApres: ctx.courbe,
-      message: annuler(`${chose.titre} : ${etiquetteS(prevu)} → ${etiquetteS(nouveau)}`)
+      ok: true, ecritures: [{ op: 'patch', collection: 'batches', id: batch.id, patch }], effet, promesse, courbeApres,
+      message: annuler(effet ? effet.texte : `${chose.titre} : ${etiquetteS(prevu)} → ${etiquetteS(nouveau)}`)
     };
   }
   if (chose.deplacable !== true) return refus(chose.deplacable.raison, chose.ouvre);
@@ -185,8 +227,10 @@ function allongerBrassin(chose: ChoseCalendrier, jours: number, ctx: ContexteGes
   if (nouvelle <= prevu || (pasBrassee && dite <= ctx.aujourdhui)) return refus('Un brassin dure au moins un jour : tire moins loin.');
   const promesse = promesseTouchee(ctx.plans, batch.id, dite);
   const duree = pasBrassee ? dureePasBrassee(dite) : dureeBrassin(debut, nouvelle, ctx.aujourdhui) ?? `prête ${jourLisible(nouvelle)}`;
+  /* CRITIQUE-9 n° 4 : l'emballage et l'impôt suivent « prête » ; leur effet est rendu (courbe, détail), le message garde « prête le … » (f2-a) */
+  const courbeApres = courbeBrassin(ctx.courbe, chose.id, batch, { ...batch, finPrevue: nouvelle } as Batch, ctx.aujourdhui, jours);
   return {
-    ok: true, ecritures: [{ op: 'patch', collection: 'batches', id: batch.id, patch: { finPrevue: nouvelle } }], effet: null, promesse, courbeApres: ctx.courbe,
+    ok: true, ecritures: [{ op: 'patch', collection: 'batches', id: batch.id, patch: { finPrevue: nouvelle } }], effet: effetCaisse(ctx.courbe, courbeApres), promesse, courbeApres,
     message: annuler(parJalon ? `${chose.titre} : ${pasBrassee ? 'pas brassée · ' : ''}prête le ${jourLisible(dite)}` : `${chose.titre} : ${duree}`)
   };
 }
@@ -237,11 +281,21 @@ export function allonger(chose: ChoseCalendrier, jours: number, ctx: ContexteGes
   if (au < dimancheDe(chose.debut)) return refus('Une chose dure au moins une semaine : tire moins loin.');
   if (au === dimancheDe(base) && chose.fenetre) return refus('Rien ne change : tire jusqu’à une autre semaine.');
   const fenetre = { du: chose.fenetre?.du ?? lundiDe(chose.debut), au, ...(chose.joursActifs ? { joursActifs: chose.joursActifs } : {}), ...(chose.miseDeCote ? { miseDeCote: true } : {}) };
-  const message = annuler(`${chose.titre} : ${etiquetteS(chose.debut)} → ${etiquetteS(au)}`);
-  if (source.genre === 'creative') return { ok: true, ecritures: [{ op: 'patch', collection: 'creativeItems', id: source.id, patch: { fenetre } }], effet: null, promesse: null, courbeApres: ctx.courbe, message };
+  /*
+   * CRITIQUE-9 n° 6 (A6, « même règle pour tout geste ») : mise de côté, la réserve s'étale sur la nouvelle fenêtre et un plan manuel se paie à sa
+   * nouvelle fin ; le libre bouge, le message dit l'effet. Sans mise de côté, rien ne change dans la caisse : le nom et le trajet.
+   */
+  let courbeApres = ctx.courbe;
+  if (courbeApres && fenetre.miseDeCote && chose.centimes) {
+    if (source.genre === 'plan') courbeApres = courbeDecalee(courbeApres, chose.id, ecartJours(chose.fenetre?.au ?? chose.fin, au));
+    courbeApres = courbeAvecMise(courbeApres, miseDe(chose, fenetre), chose.id);
+  }
+  const effet = effetCaisse(ctx.courbe, courbeApres);
+  const message = annuler(effet ? effet.texte : `${chose.titre} : ${etiquetteS(chose.debut)} → ${etiquetteS(au)}`);
+  if (source.genre === 'creative') return { ok: true, ecritures: [{ op: 'patch', collection: 'creativeItems', id: source.id, patch: { fenetre } }], effet, promesse: null, courbeApres, message };
   const plan = planDe(chose, ctx);
   if (!plan) return refus('Cette prévision n’existe plus.', { ecran: 'finances' });
-  return { ok: true, ecritures: [{ op: 'patch', collection: 'financialPlans', id: plan.id, patch: { fenetre, ...(fenetre.miseDeCote ? { date: au } : {}) } }], effet: null, promesse: null, courbeApres: ctx.courbe, message };
+  return { ok: true, ecritures: [{ op: 'patch', collection: 'financialPlans', id: plan.id, patch: { fenetre, ...(fenetre.miseDeCote ? { date: au } : {}) } }], effet, promesse: null, courbeApres, message };
 }
 
 /** « Livrer le 5 janv. » (E32) : la vente promise prend la nouvelle date. */
@@ -270,7 +324,23 @@ export function dupliquer(chose: ChoseCalendrier, versLundi: string, ctx: Contex
       id: (ctx.idBrassin ?? (() => nouvelId(ctx, 'LOT')))(), brewDate: '', plannedBrewDate: cible, name: batch.name, style: batch.style, volumeL: batch.volumeL, status: 'planifie', stockAccountingVersion: 1,
       ...(batch.recipeRef ? { recipeRef: batch.recipeRef } : {}), ...(batch.recipeSnapshot ? { recipeSnapshot: batch.recipeSnapshot } : {}), gravityLog: []
     };
-    return { ok: true, ecritures: [{ op: 'creer', collection: 'batches', document, ...(batch.recipeRef ? { recetteId: batch.recipeRef } : {}) }], effet: null, promesse: null, courbeApres: ctx.courbe, message: annuler(`Dupliquée en ${etiquetteS(cible)}`) };
+    /*
+     * CRITIQUE-9 n° 8 (E31 « Dupliquer en S51 avec son effet », D-48, D-192) : le budget du brassin d'origine entre dans la courbe aux dates de la
+     * copie (courses à J − 7, frais à J, emballage et impôt après « prête », règle de `datesSortiesBrassin`). Seul un brassin pas commencé porte
+     * tout son budget dans la prévision ; commencé, ses courses sont déjà payées : le coût de la copie n'est pas connu ici. Budget inconnu :
+     * « coût à venir », en mots, jamais 0 ni une flèche inventée (la prévision le chiffrera une fois la copie posée).
+     */
+    const copie = document as unknown as Batch;
+    const pasCommence = datesSortiesBrassin(batch, ctx.aujourdhui)?.commence === false;
+    const siens = pasCommence ? (ctx.courbe?.mouvements.filter(m => m.choseId === chose.id) ?? []) : [];
+    const copies = siens.length ? mouvementsBrassinApres(siens, batch, copie, ctx.aujourdhui, delta).map(m => ({ ...m, id: `${m.id}~copie`, choseId: `${chose.id}~copie` })) : [];
+    const courbeApres = ctx.courbe && copies.length ? courbeAvec(ctx.courbe, copies) : ctx.courbe;
+    const effet = effetCaisse(ctx.courbe, courbeApres);
+    const effetMots = effet ? effet.texte : ctx.courbe ? 'coût à venir' : undefined;
+    return {
+      ok: true, ecritures: [{ op: 'creer', collection: 'batches', document, ...(batch.recipeRef ? { recetteId: batch.recipeRef } : {}) }], effet, ...(effetMots ? { effetMots } : {}), promesse: null, courbeApres,
+      message: annuler(effet ? `Dupliquée · ${effet.texte}` : `Dupliquée en ${etiquetteS(cible)}${effetMots ? ` · ${effetMots}` : ''}`)
+    };
   }
   if (chose.deplacable !== true && source.genre !== 'creative') return refus(`Une copie se crée dans sa source. ${chose.deplacable.raison}`.trim(), chose.ouvre);
   const decaleMouvements: MouvementCaisse[] = ctx.courbe ? ctx.courbe.mouvements.filter(m => m.choseId === chose.id).map(m => ({ ...m, id: `${m.id}~copie`, choseId: `${chose.id}~copie`, jour: decale(m.jour, delta) })) : [];

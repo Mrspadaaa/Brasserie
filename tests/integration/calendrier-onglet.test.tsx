@@ -176,6 +176,33 @@ describe('C16 (n° 35, E40, E46) : la vue Liste et la poche « Sans date »', ()
     await waitFor(() => expect(appels.filter(a => a.op === 'patch' && a.collection === 'creativeItems' && a.patch?.date)).toHaveLength(1));
   });
 
+  it('CRITIQUE-9 n° 1 (E31, A5) : par le port de l’app (portParDefaut, StorageService simulé), Retirer puis Annuler rend la fête à sa semaine, objet identique', async () => {
+    const noel = { id: 'ZZ-NOEL', type: 'event', title: 'Marché de Noël', status: 'todo', date: '2026-12-21', estimatedRevenue: 1180 } as unknown as Parameters<typeof StorageService.addCreativeItem>[0];
+    /* le cache local de FirestoreRepo (mode ?dev-local) : aucune écriture ne part, le port de l'app écrit comme dans l'app */
+    window.history.replaceState(null, '', '/?dev-local');
+    act(() => { StorageService.addCreativeItem(noel); });
+    const avant = structuredClone(StorageService.getCreativeItems().find(i => i.id === 'ZZ-NOEL'));
+    expect(avant?.date).toBe('2026-12-21');
+    try {
+      render(<CalendrierTab {...props()} aujourdhui={JOUR} />);
+      const b = await screen.findByRole('button', { name: /^Marché de Noël/ });
+      expect(b.getAttribute('data-semaine')).toBe('S52');
+      toucher(b);
+      fireEvent.click(await screen.findByRole('button', { name: /^Retirer/ }));
+      const m = await screen.findByRole('status');
+      expect(m.textContent).toMatch(/Retirée de S52 · Sans date ›/);
+      await waitFor(() => expect(StorageService.getCreativeItems().find(i => i.id === 'ZZ-NOEL')?.date).toBe(''));
+      await waitFor(() => expect(screen.queryByRole('button', { name: /^Marché de Noël/ })).toBeNull());
+      fireEvent.click(within(m).getByRole('button', { name: /Annuler/ }));
+      const revenue = await screen.findByRole('button', { name: /^Marché de Noël/ });
+      expect(revenue.getAttribute('data-rangee')).toBe('fetes');
+      expect(revenue.getAttribute('data-semaine')).toBe('S52');
+      expect(StorageService.getCreativeItems().find(i => i.id === 'ZZ-NOEL')).toEqual(avant);
+      fireEvent.click(document.querySelector('[data-ent-periode]')!);
+      expect(screen.getByRole('dialog', { name: 'Période et vue' }).textContent).not.toMatch(/Sans date/);
+    } finally { StorageService.deleteCreativeItem('ZZ-NOEL'); }
+  });
+
   it('poche vide : la Liste n’a aucune section « Sans date »', () => {
     render(<CalendrierTab {...props()} aujourdhui={JOUR} />);
     fireEvent.click(document.querySelector('[data-ent-periode]')!);

@@ -206,3 +206,15 @@ button.cal-lie::before { content: ''; position: absolute; inset: -6px -2px; }
 .cal-li-t small { display: block; font-size: 14px; color: rgb(var(--cave-200)); }
 .cal-li-m { flex: none; font-size: 16px; font-weight: 600; font-variant-numeric: tabular-nums; }
 .cal-li-vide { padding: 16px 4px; text-align: center; color: rgb(var(--cave-200)); }
+
+/* CRITIQUE-9 n° 3 (E25, E29, as/cap/p-repos) : la barre haute d'un brassin, le nom en haut, « J0 / 28 · prête 21 déc. » en bas à droite, sur
+   la piste des phases ; sinon la phrase sur la ligne sous la barre. Jamais « J0 / 28 » seul quand la phrase a une place. */
+.cal-barre-2l .cal-duree, .cal-barre-2l .cal-duree.cal-duree-in { top: auto; bottom: 6px; }
+.cal-lbl-sous { align-items: center; }
+.cal-lbl-sous .cal-lbl-j { margin-left: 0; }
+/* CRITIQUE-9 n° 10 (D-113, D-126) : l'icône lien d'une chose sans place pour sa pastille se touche ; posée au coin de la barre, hors d'elle */
+.cal-lie-coin { position: absolute; z-index: 4; display: inline-flex; pointer-events: auto; }
+/* le bouton se pose sur l'icône du badge (dessinée par la barre) : transparent, sa zone de prise s'étend vers le haut et la gauche, pas sur le bord */
+.cal-lie.cal-lie-icone { width: 20px; height: 20px; padding: 0; border-color: transparent; background: transparent; }
+.cal-lie.cal-lie-icone::before { inset: -8px -2px -2px -8px; }
+.cal-lie.cal-lie-icone:focus-visible { outline: 2px solid var(--c); outline-offset: 1px; }

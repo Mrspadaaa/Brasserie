@@ -314,6 +314,33 @@ describe('CRITIQUE-6, doute : la tendance de Finances et le loyer ne sont pas co
     /* la courbe et Finances tombent juste en fin de mois (A2) : aucun double compte dans le creux */
     for (const mois of prevision.months.slice(0, 12)) expect(soldeFinDeMois(modele.courbe!, mois.month)).toBe(mois.balanceCents);
   });
+
+  /* CRITIQUE-9, doute : le récurrent porte un fournisseur, ses paiements passés aussi ; buildForecast les retire de l'historique de la tendance */
+  const payeChez = (id: string, jour: string, cents: number, description: string, vendor: string): FinanceTransaction => {
+    const t = paye(id, jour, cents, description);
+    return { ...t, finance: { ...t.finance!, vendor } } as FinanceTransaction;
+  };
+  const histoChez = (vendorLoyer: string) => ['06', '07', '08', '09', '10'].flatMap(m => [payeChez(`L-${m}`, `2026-${m}-03`, 40000, 'Loyer du local', vendorLoyer), payeChez(`A-${m}`, `2026-${m}-10`, 10000, 'Assurance', 'Assureur')]);
+  const loyerChez = plan({ id: 'P-LOYER', title: 'Loyer du local', date: '2026-11-20', amountCents: 40000, category: 'chargesFixes', source: 'recurring', recurrence: { frequency: 'monthly' }, vendor: 'Régie du Bourg' });
+  const sorties = (e2: EntreesModele) => {
+    const prevision = buildForecast({ transactions: e2.transactions as Transaction[] as FinanceTransaction[], payments: e2.payments, plans: e2.plans, profile: e2.profile, assets: e2.assets, asOf: e2.aujourdhui, months: 13, batches: e2.batches, stockItems: e2.stockItems, includeEquipmentProjects: true });
+    const modele = construireModele(e2);
+    const parMois = ['2026-12', '2027-01', '2027-03'].map(mois => {
+      const lignes = prevision.items.filter(i => i.date.startsWith(mois));
+      return [mois, lignes.filter(i => i.planId === 'P-LOYER').reduce((s, i) => s + i.amountCents, 0), lignes.filter(i => i.source === 'trend').reduce((s, i) => s + i.amountCents, 0), modele.courbe!.mouvements.filter(m => m.jour.startsWith(mois) && /Loyer/.test(m.nom)).length];
+    });
+    for (const mois of prevision.months.slice(0, 12)) expect(soldeFinDeMois(modele.courbe!, mois.month)).toBe(mois.balanceCents);
+    return parMois;
+  };
+  it('CRITIQUE-9, doute : récurrent et paiements chez le même fournisseur : un loyer (400) et la tendance du reste (100) par mois ; A2 tenu', () => {
+    const e2 = entrees(500000, { transactions: histoChez('Régie du Bourg') as unknown as Transaction[], plans: [loyerChez], batches: [] });
+    expect(sorties(e2)).toEqual([['2026-12', 40000, 10000, 1], ['2027-01', 40000, 10000, 1], ['2027-03', 40000, 10000, 1]]);
+  });
+  it('CRITIQUE-9, doute (constat buildForecast, non corrigé ici) : fournisseur sur le récurrent mais pas sur les paiements passés : la tendance garde le loyer', () => {
+    const e2 = entrees(500000, { transactions: historique as unknown as Transaction[], plans: [loyerChez], batches: [] });
+    /* la courbe suit Finances au centime (A2) : le double compte, s'il y en a, vient de la prévision, pas du calendrier */
+    expect(sorties(e2)).toEqual([['2026-12', 40000, 50000, 1], ['2027-01', 40000, 50000, 1], ['2027-03', 40000, 50000, 1]]);
+  });
 });
 
 const ajouterJoursIso =(iso: string, n: number) => new Date(Date.parse(`${iso}T00:00:00Z`) + n * 86400000).toISOString().slice(0, 10);

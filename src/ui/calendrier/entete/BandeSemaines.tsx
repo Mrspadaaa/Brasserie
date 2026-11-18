@@ -1,4 +1,4 @@
-import React, { useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { Clock, Lightbulb } from 'lucide-react';
 import { dateDeSemaine } from '../../../domain/calendrier';
 import { sg, variation, type SoldeSemaine } from './Courbe';
@@ -94,8 +94,19 @@ export function BandeSemaines({ semaines, courbe, decalage, mouvements, idees, r
   const wEtiquette = largeurEtiquetteMax();
   const pas = pasEtiquettes(largeurColonne, wEtiquette);
   const etiquettes = pas === 1 ? null : etiquettesBande(semaines, pas, largeurColonne, wEtiquette);
+  // CRITIQUE-9 (doute « cadre noir sur S48 », m390-11) : l'anneau de focus d'une colonne n'est que pour le clavier. Après un toucher ou un clic
+  // (où qu'il soit sur la page), une colonne qui reçoit le focus (rendu par une feuille qui se ferme, focus programmé) ne le montre pas, même si
+  // le navigateur la dit `:focus-visible` ; une touche du clavier le rend (entete.css, `.ent-bd[data-doigt]`).
+  const [doigt, setDoigt] = useState(false);
+  useEffect(() => {
+    const parDoigt = () => setDoigt(true);
+    const parClavier = (e: KeyboardEvent) => { if (!e.metaKey && !e.ctrlKey && !e.altKey) setDoigt(false); };
+    document.addEventListener('pointerdown', parDoigt, true);
+    document.addEventListener('keydown', parClavier, true);
+    return () => { document.removeEventListener('pointerdown', parDoigt, true); document.removeEventListener('keydown', parClavier, true); };
+  }, []);
   return (
-    <div className="ent-bd" data-bande-semaines data-pas={pas} role="group" aria-label="Semaines ; ± affiche les mouvements et les icônes" style={{ ['--n' as string]: semaines.length }}>
+    <div className="ent-bd" data-bande-semaines data-pas={pas} data-doigt={doigt ? 'oui' : undefined} role="group" aria-label="Semaines ; ± affiche les mouvements et les icônes" style={{ ['--n' as string]: semaines.length }}>
       {semaines.map((s, k) => {
         const v = courbe ? variation(courbe, decalage + k) : null;
         const idee = idees.has(s.debut), retard = retards.has(s.debut);

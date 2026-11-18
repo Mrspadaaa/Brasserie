@@ -312,6 +312,34 @@ describe('CRITIQUE-5 n° 13 : aucun message sur un nom de rangée ou de chose', 
     expect(surUnNom()).toHaveLength(0);
   });
 
+  it('CRITIQUE-9 n° 7 (E33, D-200) : en paysage, le refus d’un jalon ne couvre ni une barre ni « J0 / 28 · prête … » ; un seul role=status, deux lignes au plus', () => {
+    taille(844, 390);
+    /* l'écran de paysage-49 : titres à gauche, des barres dès x = 120 sur toutes les rangées, leur durée dedans */
+    const noms: R[] = [], etiquettes: R[] = [];
+    for (let top = 124; top < 390; top += 22) noms.push({ top, left: 8, width: 90, height: 18 });
+    const { frise } = ecran({ entete: 120, noms, etiquettes, message: { top: 300, left: 8, width: 760, height: 44 } });
+    frise.querySelector('section')!.classList.add('cal-rangee-l');
+    const barres: R[] = [];
+    for (let top = 124; top < 390; top += 22) barres.push({ top, left: 120, width: 300, height: 18 }, { top, left: 470, width: 220, height: 18 });
+    for (const [i, r] of barres.entries()) {
+      const b = document.createElement('div'); b.setAttribute('data-chose', `b${i}`); b.dataset.r = JSON.stringify(r);
+      const d = document.createElement('em'); d.className = 'cal-duree'; d.textContent = 'J0 / 28 · prête 21 déc.'; d.dataset.r = JSON.stringify({ ...r, left: r.left + r.width - 170, width: 160 });
+      b.appendChild(d); frise.appendChild(b);
+    }
+    render(<Message message={{ id: 1, role: 'status', texte: 'La fermentation suit la recette du brassin', lien: { texte: 'Ouvrir le brassin ›', agir: () => undefined } }} onFermer={() => undefined} />);
+    const m = document.querySelector<HTMLElement>('[data-message]')!;
+    const place = m.dataset.place;
+    /* jamais « à droite de la colonne des titres » (le HEAD l'y posait, sur les barres) : une bande libre, sinon au pied de l'en-tête collé,
+       dans son flux (la frise descend de sa hauteur : rien n'est couvert par construction ; le faux écran ne déplace pas les rectangles) */
+    expect(place).not.toBe('cote');
+    if (place === 'sous-entete') expect(m.closest('[data-entete-zone]')).not.toBeNull();
+    else expect([...document.querySelectorAll('[data-frise] [data-chose], [data-frise] .cal-duree, [data-rangee] .cal-nom')].filter(n => croise(rect(m), rect(n)))).toHaveLength(0);
+    /* ici, aucune bande libre entre la bande et les rangées : il entre sous l'en-tête */
+    expect(place).toBe('sous-entete');
+    expect(document.querySelectorAll('[role="status"]')).toHaveLength(1);
+    expect(m.querySelector('[data-msg-texte]')!.textContent).toBe('La fermentation suit la recette du brassin');
+  });
+
   it('390 × 844, aucune bande libre (« Tourne le téléphone » sur les Papiers) : il entre au pied de l’en-tête collé, dans son flux, la frise passe dessous', () => {
     taille(390, 844);
     /* des noms partout entre l'en-tête et les onglets */

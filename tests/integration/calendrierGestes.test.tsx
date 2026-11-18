@@ -187,6 +187,33 @@ describe('C16 (D-67, D-93, E46) : Retirer, la poche « Sans date », Poser, Fait
     await waitFor(() => expect(document.querySelector('[data-poche]')).toBeNull());
   });
 
+  it('CRITIQUE-9 n° 1 (E31, E46, D-48, D-114, D-192) : Retirer le Marché de Noël puis Annuler le remet dans Fêtes en S52 ; la poche reste vide', async () => {
+    const base = etatBanc(JOUR);
+    const etat = { ...base, items: base.items.filter(i => i.id !== 'CR-SANS') };
+    const avant = structuredClone(etat.items.find(i => i.id === 'CR-NOEL'));
+    const { appels } = monter({ etat });
+    const semaine = barre(/^Marché de Noël/).getAttribute('data-semaine');
+    expect(semaine).toBe('S52');
+    appuiLong(barre(/^Marché de Noël/));
+    fireEvent.click(await screen.findByRole('menuitem', { name: /Retirer/ }));
+    const m = await screen.findByRole('status');
+    expect(m.textContent).toMatch(/Retirée de S52 · Sans date ›/);
+    await waitFor(() => expect(screen.queryByRole('button', { name: /^Marché de Noël/ })).toBeNull());
+    /* Annuler n'écoute qu'après 400 ms (le doigt du menu) */
+    await new Promise(r => setTimeout(r, 450));
+    fireEvent.click(within(m).getByRole('button', { name: /Annuler/ }));
+    await waitFor(() => expect(messages()).toHaveLength(0));
+    const revenue = await screen.findByRole('button', { name: /^Marché de Noël/ });
+    expect(revenue).toHaveAttribute('data-barre');
+    expect(revenue.getAttribute('data-rangee')).toBe('fetes');
+    expect(revenue.getAttribute('data-semaine')).toBe('S52');
+    const inverses = appels.filter(a => a.id === 'CR-NOEL');
+    expect(inverses).toHaveLength(2);
+    expect(inverses[1].patch).toEqual({ date: avant!.date });
+    fireEvent.click(document.querySelector('[data-ent-periode]')!);
+    expect(document.body.textContent).not.toMatch(/Sans date/);
+  });
+
   it('poche vide : aucun texte « Sans date » dans l’onglet', () => {
     monter({ etat: { ...etatBanc(JOUR), items: etatBanc(JOUR).items.filter(i => i.id !== 'CR-SANS') } });
     fireEvent.click(document.querySelector('[data-ent-periode]')!);

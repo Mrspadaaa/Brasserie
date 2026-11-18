@@ -412,3 +412,57 @@ describe('CRITIQUE-7 n° 2 (D-47, D-190, E29) : la Saison pas brassée court jus
     expect(refus.ouvrir).toEqual({ ecran: 'brassin', id: 'LOT-S' });
   });
 });
+
+describe('CRITIQUE-9 n° 6 et n° 8 : glisser et dupliquer un brassin disent leur effet sur la caisse (E28, E31, A6)', () => {
+  /* Saison planifiée le 10 nov. (S46, passée : ses sorties sont ramenées au 16 nov.), 28 j en cuve ; budget −137 : courses −92, emballage −45 */
+  const saison = { id: 'LOT-S', name: 'Saison de ferme', style: 'Saison', volumeL: 50, brewDate: '', plannedBrewDate: '10.11.2026', status: 'planifie', recipeSnapshot: { fermentation: etapes(14, 14) } } as unknown as Batch;
+  const sorties = (chose: ChoseCalendrier, lignes: Array<[string, string, number]>) => courbeCaisse({
+    depart: 506400, lundi0: AUJOURDHUI, mouvements: lignes.map(([poste, jour, centimes]) => ({ id: `brew:${chose.source.genre === 'batch' ? chose.source.id : ''}:${poste}`, jour, centimes, nom: chose.titre, choseId: chose.id }))
+  })!;
+  const effetSeul = /^S\d+ : −?[\d’\s]+ → −?[\d’\s]+$/;
+
+  it('n° 6 : glisser un brassin budgété de S46 à S50 dit « S47 : 4 972 → 5 064 », sans « → S » ; chaque sortie suit sa propre date', () => {
+    const chose = choseBrassin(saison, AUJOURDHUI)!;
+    const courbe = sorties(chose, [['achats', '2026-11-16', -9200], ['emballage', '2026-12-07', -4500]]);
+    const r = bien(deplacer(chose, 4, ctx({ batches: [saison], courbe })));
+    expect(r.message.texte).toMatch(effetSeul);
+    expect(r.message.texte).not.toMatch(/→ S/);
+    expect(r.message.texte).toBe('S47 : 4 972 → 5 064');
+    expect(r.effet).toMatchObject({ numero: 47, avant: 497200, apres: 506400 });
+    /* brassé le 8 déc. : courses le 1er déc. (J − 7), emballage le 29 déc. (prête le 5 janv. − 7 j), pas un bloc décalé de 28 j depuis le 16 nov. */
+    expect(r.courbeApres!.mouvements.filter(m => m.choseId === chose.id).map(m => [m.id, m.jour])).toEqual([['brew:LOT-S:achats', '2026-12-01'], ['brew:LOT-S:emballage', '2026-12-29']]);
+    expect(r.ecritures).toEqual([{ op: 'patch', collection: 'batches', id: 'LOT-S', patch: rescheduleBatchPatch(saison, '2026-12-08') }]);
+  });
+
+  it('n° 6 : un brassin sans budget (le libre ne bouge pas) garde le nom et le trajet', () => {
+    const chose = choseBrassin(saison, AUJOURDHUI)!;
+    const r = bien(deplacer(chose, 4, ctx({ batches: [saison], courbe: courbeCaisse({ depart: 506400, lundi0: AUJOURDHUI, mouvements: [] })! })));
+    expect(r.effet).toBeNull();
+    expect(r.message.texte).toBe('Saison de ferme : S46 → S50');
+  });
+
+  it('n° 8 : dupliquer un brassin budgété en S53 entre son budget dans la courbe : « Dupliquée · S52 : a → b », effet rempli pour le menu', () => {
+    const b = blonde();
+    const chose = choseBrassin(b, AUJOURDHUI)!;
+    const courbe = sorties(chose, [['achats', '2026-12-01', -9200], ['frais', '2026-12-08', -4500]]);
+    const d = bien(dupliquer(chose, '2026-12-28', ctx({ batches: [b], courbe })));
+    expect(d.effet?.texte).toMatch(/^S\d+ : /);
+    expect(d.effet).toMatchObject({ numero: 52 });
+    expect(d.effetMots).toBe(d.effet!.texte);
+    expect(d.message.texte).toBe(`Dupliquée · ${d.effet!.texte}`);
+    /* la copie : courses le 21 déc. (J − 7), frais le 28 déc. ; l'original ne bouge pas */
+    expect(d.courbeApres!.mouvements.filter(m => m.choseId === `${chose.id}~copie`).map(m => [m.jour, m.centimes])).toEqual([['2026-12-21', -9200], ['2026-12-28', -4500]]);
+    expect(d.courbeApres!.mouvements.filter(m => m.choseId === chose.id)).toEqual(courbe.mouvements);
+    expect(d.ecritures[0]).toMatchObject({ op: 'creer', collection: 'batches', document: { plannedBrewDate: '2026-12-28', status: 'planifie' } });
+  });
+
+  it('n° 8 : un brassin sans budget dit « coût à venir », jamais un 0 ni une flèche inventée', () => {
+    const b = blonde();
+    const chose = choseBrassin(b, AUJOURDHUI)!;
+    const d = bien(dupliquer(chose, '2026-12-28', ctx({ batches: [b], courbe: courbeCaisse({ depart: 506400, lundi0: AUJOURDHUI, mouvements: [] })! })));
+    expect(d.effet).toBeNull();
+    expect(d.effetMots).toBe('coût à venir');
+    expect(d.message.texte).toBe('Dupliquée en S53 · coût à venir');
+    expect(d.message.texte).not.toMatch(/→|(^|\s)0(\s|$)/);
+  });
+});

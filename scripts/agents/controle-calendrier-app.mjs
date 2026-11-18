@@ -392,7 +392,9 @@ try {
       const nv = document.querySelector('nav[aria-label="Navigation principale"]');
       const N = nv ? nv.getBoundingClientRect().top : innerHeight;
       const r = b.getBoundingClientRect();
-      if (pl === 'repos') { if (r.top < 0 || r.bottom > N) b.scrollIntoView({ block: 'nearest' }); }
+      /* vision 11 : `scrollIntoView({ block: 'nearest' })` laissait la barre sous les onglets collés (818–844 px, onglets à 804) : l'appui long
+         tombait sur la barre d'onglets. La barre est ramenée au milieu de la place au-dessus des onglets. */
+      if (pl === 'repos') { if (r.top < 0 || r.bottom > N) window.scrollBy(0, r.top + r.height / 2 - N / 2); }
       else window.scrollBy(0, r.bottom - (N - 80));
       return true;
     }, 'Hotte', place);

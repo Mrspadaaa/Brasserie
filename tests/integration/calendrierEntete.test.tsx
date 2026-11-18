@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { act, cleanup, fireEvent, render, screen, within } from '@testing-library/react';
 import { EnTeteCalendrier, type EnTeteCalendrierProps, type ModeleEnTete, type VueCalendrier } from '../../src/ui/calendrier/entete/EnTete';
-import { periodeDeFenetre, zonesPoignees, type FenetreSemaines } from '../../src/ui/calendrier/entete/Fenetre';
+import { fenetreDePeriode, periodeDeFenetre, zonesPoignees, type FenetreSemaines } from '../../src/ui/calendrier/entete/Fenetre';
 import type { Periode } from '../../src/components/periode/periode';
 import { ajouterJours, francs, semainesDe, type Retard } from '../../src/domain/calendrier';
 import { courbeCaisse, courbeDecalee, creuxDepuis, type MouvementCaisse } from '../../src/domain/calendrierCaisse';
@@ -995,12 +995,19 @@ describe('CRITIQUE-4 (lot q1-entete) : le doigt à 390, le paysage, le menu, le 
     Object.defineProperty(window, 'innerHeight', { value: 768, configurable: true, writable: true });
   });
 
-  it('n° 27 : l’étiquette « creux S.. · … » est posée hors du tracé (ni le libre ni la caisse ne la traversent), sur un fond', () => {
+  it('n° 27 : l’étiquette « creux S.. · … » n’est jamais barrée : hors du tracé quand une place contre le point le permet, sinon sur son fond, au-dessus du tracé', async () => {
+    // CRITIQUE-9 n° 5 : l'étiquette reste contre le point du creux (48 px au plus de sa ligne, à 14 px de côté). Quand le creux est un V (la
+    // courbe du banc : le libre et la caisse l'encadrent à moins de 25 px), aucune place contre le point n'est libre : elle se pose sur son fond,
+    // tracé APRÈS la courbe, opaque à 92 %, et le tracé passe dessous (vérifié plus bas). Quand une place contre le point est libre (un creux en
+    // palier : le libre tombe en S5 ’27 puis reste plat), c'est elle qui est prise : ni le libre ni la caisse ne traversent l'étiquette.
+    const palier = courbeCaisse({ depart: 300000, lundi0: LUNDI0, mouvements: [{ id: 'p', jour: jour(10), centimes: -400000, nom: 'Cuve' }] })!;
     for (const [l, h] of [[1100, 560], [390, 250]]) {
-      const g = geoGrande(courbe.semaines, l, h);
-      const c = creuxDe(courbe.semaines)!;
+      const g = geoGrande(palier.semaines, l, h);
+      const c = creuxDe(palier.semaines)!;
       const w = largeurTexte(`creux S${c.numero} · `) + largeurTexte(francs(c.centimes), true);
-      const p = placeEtiquetteCreux(courbe.semaines, g, l, c.index, c.centimes, w);
+      const p = placeEtiquetteCreux(palier.semaines, g, l, c.index, c.centimes, w);
+      expect(Math.abs(p.y - g.y(c.centimes))).toBeLessThanOrEqual(48);
+      const courbe = palier;
       const traverse = (vals: number[]) => vals.some((v, j) => {
         const x0 = g.x(j), x1 = g.x(j + 1), y = g.y(v);
         if (x1 >= p.boite.l && x0 <= p.boite.r && y >= p.boite.t && y <= p.boite.b) return true;
@@ -1014,6 +1021,15 @@ describe('CRITIQUE-4 (lot q1-entete) : le doigt à 390, le paysage, le menu, le 
     const { container } = render(<Banc {...espions()} vueInitiale="graph" />);
     expect(container.querySelector('[data-creux-fond]')).not.toBeNull();
     expect(container.querySelector('[data-creux-etiquette]')!.textContent).toMatch(/^creux S\d+( ’\d{2})? · /);
+    // Le fond est tracé après le libre (segments) et la caisse : la courbe passe dessous, jamais à travers le texte. Il est presque opaque.
+    const svg = container.querySelector('.ent-gs')!;
+    const tous = Array.from(svg.querySelectorAll('*'));
+    const iFond = tous.indexOf(container.querySelector('[data-creux-fond]')!);
+    const iDernierTrace = Math.max(...Array.from(svg.querySelectorAll('.ent-sgm, [data-caisse]')).map(n => tous.indexOf(n)));
+    expect(iFond).toBeGreaterThan(iDernierTrace);
+    const fs = await import('node:fs');
+    const op = /\.ent-gc-fond \{[^}]*opacity: ([\d.]+)/.exec(fs.readFileSync('src/ui/calendrier/entete/entete.css', 'utf8'));
+    expect(Number(op?.[1])).toBeGreaterThanOrEqual(0.9);
   });
 });
 
@@ -1395,5 +1411,134 @@ describe('CRITIQUE-6 (lot B-entete) : le chiffre clé entier, le creux et ses ca
       expect(formeTete(largeurs, 90)).toBe(2);
       expect(formeTete(largeurs, null)).toBe(0);
     });
+  });
+});
+
+describe('CRITIQUE-9 (lot corr9-B) : le creux ancré sur son point, le glissé à 390, le focus au clavier seul, le mois de 4 semaines', () => {
+  /* Le libre descend chaque semaine jusqu'au creux de S44 ’27 (index 50, lundi 1er nov. 2027), puis remonte : la forme de paysage-cave-21. */
+  const courbeDescente = courbeCaisse({ depart: 300000, lundi0: LUNDI0, mouvements: [
+    ...Array.from({ length: 51 }, (_, j) => ({ id: `d${j}`, jour: jour(j), centimes: -18000, nom: `Sortie ${j}` })),
+    { id: 'r51', jour: jour(51), centimes: 50000, nom: 'Vente' }
+  ] })!;
+  const S20 = 26; // lundi 17 mai 2027
+
+  it('n° 5 (E12) : en paysage, curseur en S20, l’étiquette du creux S44 ’27 est contre le point du creux, jamais près du curseur', () => {
+    const c = creuxDe(courbeDescente.semaines)!;
+    expect([c.index, c.numero]).toEqual([50, 44]);
+    expect(courbeDescente.semaines[S20].numero).toBe(20);
+    // Les géométries : paysage 844 × 390 (courbe à 62 % de 796 px, 240 px de haut), portrait 390, ordinateur 1280.
+    for (const [largeur, hauteur, paysage] of [[796, 240, true], [390, 250, false], [1232, 560, false]] as const) {
+      const { container, unmount } = render(<GrandeCourbe courbe={courbeDescente} largeur={largeur} hauteur={hauteur} paysage={paysage} lecture={S20} onFermer={vi.fn()} />);
+      const fond = container.querySelector('[data-creux-fond]')!;
+      const l = Number(fond.getAttribute('x')), w = Number(fond.getAttribute('width')), t = Number(fond.getAttribute('y')), h = Number(fond.getAttribute('height'));
+      const pt = container.querySelector('.ent-creux-pt')!, cur = container.querySelector('.ent-cur-pt')!;
+      const xC = Number(pt.getAttribute('cx')), yC = Number(pt.getAttribute('cy'));
+      const xS = Number(cur.getAttribute('cx')), yS = Number(cur.getAttribute('cy'));
+      const texte = w - 6;
+      const msg = `${largeur}×${hauteur} : boîte ${l.toFixed(0)}–${(l + w).toFixed(0)} × ${t.toFixed(0)}–${(t + h).toFixed(0)}, creux (${xC.toFixed(0)}, ${yC.toFixed(0)}), curseur (${xS.toFixed(0)}, ${yS.toFixed(0)})`;
+      // À côté du point, en x : la boîte le touche à 1 largeur de texte au plus ; en y : à 48 px au plus de sa ligne.
+      const dx = Math.max(0, l - xC, xC - (l + w)), dy = Math.max(0, t - yC, yC - (t + h));
+      expect(dx, msg).toBeLessThan(texte);
+      expect(dy, msg).toBeLessThanOrEqual(48);
+      // Le fond s'arrête à 4 px du cercle du point (r 6,5), jamais dessus.
+      expect(dx, msg).toBeLessThanOrEqual(11);
+      expect(dx, msg).toBeGreaterThanOrEqual(10);
+      // Loin du curseur : en paysage et à 1280, le milieu de la boîte à plus de 100 px du x du curseur (à 390, S20 et S44 ne sont qu'à 154 px
+      // l'une de l'autre, pour une étiquette de 160 px) ; partout, la boîte à plus de 60 px du point du curseur.
+      if (paysage || largeur > 1000) expect(Math.abs(l + w / 2 - xS), msg).toBeGreaterThan(100);
+      expect(Math.hypot(Math.max(0, l - xS, xS - (l + w)), Math.max(0, t - yS, yS - (t + h))), msg).toBeGreaterThan(60);
+      unmount();
+    }
+  });
+
+  it('n° 5 : la règle de placement elle-même — à droite du point s’il tient, sinon à gauche, jamais à plus de 48 px de sa ligne', () => {
+    for (const [l, h, paysage] of [[796, 240, true], [390, 250, false], [1232, 560, false]] as const) {
+      const larg = paysage ? Math.round(l * 0.62) : l;
+      const g = geoGrande(courbe.semaines, larg, h);
+      for (const index of [0, 10, 26, 40, 51]) {
+        const v = courbe.semaines[index].libre;
+        const p = placeEtiquetteCreux(courbe.semaines, g, larg, index, v, 140);
+        const cx = g.x(index) + g.unit / 2;
+        if (p.ancre === 'start') expect(p.boite.l).toBeCloseTo(cx + 11, 0); else expect(p.boite.r).toBeCloseTo(cx - 11, 0);
+        // Elle tient à droite : elle y est.
+        if (cx + 14 + 140 + 3 <= larg - 6) expect(p.ancre).toBe('start');
+        expect(Math.abs(p.y - g.y(v))).toBeLessThanOrEqual(48);
+      }
+    }
+  });
+
+  it('n° 9 (E11, D-195) : à 390 en 6 sem., un glissé parti sur la courbe hors du cadre lit la semaine ; la fenêtre ne bouge pas', () => {
+    const e = espions();
+    const onLectureSemaine = vi.fn();
+    const { container } = render(<Banc {...e} onLectureSemaine={onLectureSemaine} />);
+    // Les zones mesurées à 390 (52 semaines de 7,5 px ; la fenêtre S47 – S52 de 0 à 45 px) : début 0 à 10 px, fin 35 à 79 px.
+    const z = zonesPoignees(0, 45, 390);
+    expect([Math.max(0, z.debut.l), z.debut.l + z.debut.w, z.fin.l, z.fin.l + z.fin.w]).toEqual([0, 10, 35, 79]);
+    const cb = container.querySelector('.ent-cb') as HTMLElement;
+    // Départ à 30 % de la courbe (117 px), hors du cadre et de ses prises.
+    fireEvent.pointerDown(cb, { pointerId: 7, clientX: 117, clientY: 50, button: 0 });
+    fireEvent.pointerMove(window, { pointerId: 7, clientX: 124, clientY: 51 });
+    // 130 px : la semaine des six fûts inox (index 17), qui a un mouvement : le détail dit « la semaine ».
+    fireEvent.pointerMove(window, { pointerId: 7, clientX: 130, clientY: 52 });
+    expect(container.querySelector('.ent-t')!.textContent).toMatch(/CHF · S\d+ · \d+ \p{L}+/u);
+    fireEvent.pointerUp(window, { pointerId: 7, clientX: 130 });
+    expect(onLectureSemaine).toHaveBeenCalled();
+    expect(onLectureSemaine.mock.calls.at(-1)![0]).toMatch(/^\d{4}-\d{2}-\d{2}$/);
+    expect(e.onFenetre).not.toHaveBeenCalled();
+    expect(screen.getByLabelText('Fenêtre : S47 – S52')).toBeInTheDocument();
+    expect(container.querySelector('.ent-t')!.textContent).toMatch(/CHF · S\d+ · \d+ \p{L}+/u);
+    expect(container.querySelector('.ent-lu')!.textContent).toContain('la semaine');
+    expect(container.querySelector('[data-cadre-tirage]')).toBeNull();
+  });
+
+  it('n° 9 : un départ dans le corps du cadre, entre les poignées, lit aussi ; un départ sur la poignée de début tire la fenêtre', () => {
+    const e = espions();
+    const { container } = render(<Banc {...e} onLectureSemaine={vi.fn()} />);
+    const cb = container.querySelector('.ent-cb') as HTMLElement;
+    fireEvent.pointerDown(cb, { pointerId: 8, clientX: 22, clientY: 50, button: 0 });
+    fireEvent.pointerMove(window, { pointerId: 8, clientX: 120, clientY: 50 });
+    fireEvent.pointerUp(window, { pointerId: 8, clientX: 120 });
+    expect(container.querySelector('.ent-t')!.textContent).toMatch(/CHF · S\d+ · \d+ \p{L}+/u);
+    expect(e.onFenetre).not.toHaveBeenCalled();
+    // La poignée de début (0 à 10 px) : la fenêtre glisse de 8 semaines.
+    fireEvent.pointerDown(cb, { pointerId: 9, clientX: 5, clientY: 50, button: 0 });
+    fireEvent.pointerMove(window, { pointerId: 9, clientX: 65, clientY: 50 });
+    fireEvent.pointerUp(window, { pointerId: 9, clientX: 65 });
+    expect(e.onFenetre).toHaveBeenCalled();
+    expect(e.onFenetre.mock.calls.at(-1)![0].du).not.toBe(LUNDI0);
+  });
+
+  it('doute « cadre noir sur S48 » : après un toucher, la bande se dit au doigt et son anneau de focus est retiré ; une touche du clavier le rend', async () => {
+    const { container } = render(<Banc {...espions()} />);
+    const col = bande(container).querySelector('[data-semaine="48"]') as HTMLButtonElement;
+    fireEvent.pointerDown(col, { pointerId: 3, button: 0 });
+    fireEvent.pointerUp(col, { pointerId: 3 });
+    fireEvent.click(col);
+    col.focus();
+    expect(bande(container).getAttribute('data-doigt')).toBe('oui');
+    expect(col.className).not.toMatch(/focus/);
+    expect(col.getAttribute('style') ?? '').not.toMatch(/outline/);
+    const fs = await import('node:fs');
+    const css = fs.readFileSync('src/ui/calendrier/entete/entete.css', 'utf8');
+    expect(css).toMatch(/\.ent-bd\[data-doigt\] \.ent-bd-c:focus-visible \{ outline: none; \}/);
+    fireEvent.keyDown(document, { key: 'Tab' });
+    expect(bande(container).getAttribute('data-doigt')).toBeNull();
+  });
+
+  it('décision (c) : un mois montre au moins 4 semaines ; le 18 nov. 2026, S47 à S50 ; le 2 nov., tout novembre ; jamais une semaine seule', () => {
+    const nov: Periode = { genre: 'mois', annee: 2026, mois: 11 };
+    const f18 = fenetreDePeriode(nov, '2026-11-16', 52)!;
+    expect(f18).toEqual({ du: '2026-11-16', semaines: 4 });
+    expect(semainesDe(f18.du, f18.semaines).map(s => s.numero)).toEqual([47, 48, 49, 50]);
+    expect(ajouterJours(f18.du, f18.semaines * 7 - 1) > '2026-11-30').toBe(true);
+    const f2 = fenetreDePeriode(nov, '2026-11-02', 52)!;
+    expect(f2).toEqual({ du: '2026-11-02', semaines: 5 });
+    expect(semainesDe(f2.du, f2.semaines).map(s => s.numero)).toEqual([45, 46, 47, 48, 49]);
+    expect(fenetreDePeriode(nov, '2026-11-30', 52)!.semaines).toBe(4);
+    // Le 18 nov., par l'en-tête : la fenêtre écrite va de S47 à S50.
+    const e = espions();
+    render(<Banc {...e} periodeInitiale={nov} />);
+    expect(e.onFenetre).toHaveBeenCalledWith({ du: '2026-11-16', semaines: 4 });
+    expect(screen.getByLabelText('Fenêtre : S47 – S50')).toBeInTheDocument();
   });
 });

@@ -63,7 +63,9 @@ const texteDe = (t: Element): DOMRect => {
 };
 /* les noms que le message ne couvre jamais (E33) : titres de rangée, noms et montants des choses, pastilles, renvois */
 const TITRES = '[data-nom-rangee], [data-rangee] .cal-nom';
-export const NOMS_MESSAGE = `${TITRES}, [data-frise] .cal-lbl-t, [data-frise] .cal-lbl-m, [data-frise] .cal-lie, [data-frise] .cal-pastille-p, [data-frise] .cal-renvoi`;
+export const NOMS_MESSAGE = `${TITRES}, [data-frise] .cal-lbl-t, [data-frise] .cal-lbl-m, [data-frise] .cal-lbl-j, [data-frise] .cal-duree, [data-frise] .cal-lie, [data-frise] .cal-pastille-p, [data-frise] .cal-renvoi`;
+/* en paysage, les barres et les marques elles-mêmes (leur nom et leur durée vivent dedans) */
+const OBJETS_PAYSAGE = '[data-frise] [data-chose], [data-frise] .cal-lbl';
 
 type Boite = { top: number; bottom: number; left: number; right: number };
 const decaler = (r: Boite, dx: number, dy: number): Boite => ({ top: r.top + dy, bottom: r.bottom + dy, left: r.left + dx, right: r.right + dx });
@@ -109,13 +111,19 @@ export const Message: React.FC<MessageProps> = ({ message, onFermer, dureeMs = D
       let r: Boite = el.getBoundingClientRect();
       if (r.bottom - r.top === 0) return;
       const vh = window.innerHeight;
-      const boites = [...document.querySelectorAll(NOMS_MESSAGE)].filter(t => !el.contains(t)).map(texteDe)
-        .filter(t => t.width > 0 && t.height > 0 && t.bottom > 0 && t.top < vh);
+      /* CRITIQUE-9 n° 7 (E33, D-200) : en paysage, une rangée fait 20 px et la barre porte son nom et « J0 / 28 · prête … » : le message ne se
+         pose sur aucune barre (as-gestes.js : `.bar` est un obstacle), il va entre la bande et les rangées, comme en portrait */
+      const paysage = !!document.querySelector('[data-frise] .cal-rangee-l');
+      const visible = (t: DOMRect) => t.width > 0 && t.height > 0 && t.bottom > 0 && t.top < vh;
+      const boites = [
+        ...[...document.querySelectorAll(NOMS_MESSAGE)].filter(t => !el.contains(t)).map(texteDe),
+        ...(paysage ? [...document.querySelectorAll(OBJETS_PAYSAGE)].filter(t => !el.contains(t)).map(t => t.getBoundingClientRect()) : [])
+      ].filter(visible);
       const touche = (b: Boite) => boites.some(t => t.top < b.bottom + 2 && t.bottom > b.top - 2 && t.left < b.right + 2 && t.right > b.left - 2);
       if (!touche(r)) { el.dataset.place = 'bas'; return; }
-      /* paysage, 1280 : à droite de la colonne des titres, s'il y a la place et qu'aucun nom n'y est */
+      /* 1280 : à droite de la colonne des titres, s'il y a la place et qu'aucun nom n'y est ; jamais en paysage, où cette place est sur les barres */
       const titres = [...document.querySelectorAll(TITRES)].filter(t => !el.contains(t)).map(texteDe).filter(t => t.width > 0 && t.height > 0);
-      const croisent = titres.filter(t => t.top < r.bottom && t.bottom > r.top && t.left < r.right && t.right > r.left);
+      const croisent = paysage ? [] : titres.filter(t => t.top < r.bottom && t.bottom > r.top && t.left < r.right && t.right > r.left);
       if (croisent.length) {
         const gauche = Math.max(...croisent.map(t => t.right)) + 8;
         if (r.right - gauche >= 220) {

@@ -45,6 +45,12 @@ export interface BarreProps {
   etiquetteDuree?: string;
   /** La pastille « lié à » en nom court (téléphone, 3 mois et plus : CRITIQUE-4 n° 15). */
   lieCourt?: boolean;
+  /**
+   * CRITIQUE-9 n° 3 (E25, E29) : « J0 / 28 · prête 21 déc. » n'a la place ni à côté, ni sur la ligne du nom. `barre` : la barre prend deux
+   * lignes, le nom en haut, la phrase entière en bas à droite, sur la piste des phases (as/cap/p-repos) ; `dessous` : la phrase entière sur la
+   * ligne sous la barre, de `x` à `x + largeur` (dans le repère de la rangée), quand la barre est trop étroite pour elle.
+   */
+  phraseBas?: { ou: 'barre' } | { ou: 'dessous'; x: number; dy: number } | null;
   onToucher: (chose: ChoseCalendrier, cible: HTMLElement) => void;
   onAppuiLong: (chose: ChoseCalendrier, cible: HTMLElement) => void;
   onGlisse: (chose: ChoseCalendrier, k: number) => void;
@@ -74,6 +80,23 @@ export function formesDuree(d: string): string[] {
   return morceaux.length > 1 ? [d, morceaux[0]] : [d];
 }
 
+/**
+ * La forme de durée que la barre porte dedans, la première qui tient (entière, puis courte) ; `nomDedans` : le nom et son montant sont sur la
+ * même ligne, à gauche. `null` : aucune. Une seule mesure pour `disposer` (Rangee) et la barre, sans quoi l'une promet ce que l'autre coupe.
+ */
+export function dureeDansBarre(chose: ChoseCalendrier, w: number, nomDedans: boolean): string | null {
+  const duree = dureeVue(chose);
+  if (!duree) return null;
+  const montant = montantBarre(chose);
+  const nomEntier = nomDedans ? largeurTexte(chose.etiquette ?? chose.titre, 600) + (montant ? largeurTexte(montant, 700) + 6 : 0) + 12 : 0;
+  return formesDuree(duree).find(t => w - 16 - nomEntier >= largeurDuree(t)) ?? null;
+}
+/** La largeur d'une durée posée dans la barre ou sous elle (son jeu compris). */
+export const largeurDuree = (t: string): number => Math.ceil(largeurTexte(t, 600)) + 8;
+
+/** CRITIQUE-9 doute f2-a : la zone de prise du bord d'une barre, de part et d'autre du bord, pour un doigt (une rangée de 18 px en paysage). */
+export const ZONE_BORD_PX = 12;
+
 /** Les segments de phases d'un brassin : brassage, fermentation, garde, conditionnement, lus dans les jalons de la recette figée (E25). */
 function phases(jalons: readonly JalonBrassin[] | undefined, total: number) {
   if (!jalons?.length || total <= 0) return [];
@@ -91,10 +114,13 @@ export const Barre: React.FC<BarreProps> = props => {
   const brassin = chose.source.genre === 'batch';
   const nbJours = Math.max(1, ecartJours(chose.debut, chose.fin) + 1);
   const total = chose.jalons?.length ? Math.max(...chose.jalons.map(j => j.ecart), nbJours - 1) : 0;
+  const peutBord = chose.deplacable === true && (chose.source.genre === 'batch' || chose.source.genre === 'creative' || (chose.source.genre === 'plan' && chose.source.origine === 'manual')) && !proposee;
 
   const gestes = usePointeur({
     largeurColonne,
     borne: () => bornes,
+    /* doute f2-a (E29, D-47) : un doigt posé à 12 px du bord, dedans ou dehors, tire le bord, même sur une rangée de 18 px */
+    zoneBord: peutBord ? ZONE_BORD_PX : 0,
     refuseGlisse: cible => {
       const id = cible?.closest?.('[data-jalon]')?.getAttribute('data-jalon');
       const jalon = id ? chose.jalons?.find(j => j.id === id) : undefined;
@@ -115,20 +141,21 @@ export const Barre: React.FC<BarreProps> = props => {
     onLacheBord: (k, annule) => props.onLacheBord(chose, k, annule)
   });
 
-  const peutBord = chose.deplacable === true && (chose.source.genre === 'batch' || chose.source.genre === 'creative' || (chose.source.genre === 'plan' && chose.source.origine === 'manual')) && !proposee;
   const segments = phases(chose.jalons, total);
   const montant = montantDe(chose);
   const w = Math.max(10, largeur + allongement);
   const duree = dureeVue(chose);
+  const nom = chose.etiquette ?? chose.titre;
+  /* CRITIQUE-9 n° 3 : la phrase entière en bas de la barre haute (as/cap/p-repos), ou sur la ligne sous elle ; le nom reste seul en haut */
+  const bas = props.phraseBas ?? null;
+  const formeEntiere = duree ? formesDuree(duree)[0] : null;
   /* dans la barre : la durée à droite du nom entier, jamais coupée (n° 30) : « J0 / 42 · prête 4 janv. », sinon « J0 / 42 » (n° 23) ; sinon
      rien : le nom ne cède jamais pour elle (CRITIQUE-5 n° 14), elle reste au toucher et au lecteur d'écran */
-  const nom = chose.etiquette ?? chose.titre;
-  const largeurMontant = montant ? largeurTexte(montant, 700) + 6 : 0;
-  const nomEntier = cote === 'dedans' ? largeurTexte(nom, 600) + largeurMontant + 12 : 0;
   const dureeDedans = ((): { texte: string; largeur: number } | null => {
-    if (!duree || props.dureeACote || props.deuxLignes === 'duree') return null;
-    const formes = formesDuree(duree).map(t => ({ texte: t, largeur: Math.ceil(largeurTexte(t, 600)) + 8 }));
-    return formes.find(f => w - 16 - nomEntier >= f.largeur) ?? null;
+    if (!duree || props.dureeACote || props.deuxLignes === 'duree' || bas?.ou === 'dessous') return null;
+    if (bas?.ou === 'barre' && formeEntiere) return { texte: formeEntiere, largeur: largeurDuree(formeEntiere) };
+    const t = dureeDansBarre(chose, w, cote === 'dedans');
+    return t ? { texte: t, largeur: largeurDuree(t) } : null;
   })();
   /* f2-a (E29, CRITIQUE-5 n° 1) : pendant le geste, « J0 / 35 · prête 21 déc. » ou « pas brassée · prête le 24 nov. » se lit en entier : dans la
      barre s'il y tient, sinon juste à sa droite */
@@ -136,6 +163,8 @@ export const Barre: React.FC<BarreProps> = props => {
   /* CRITIQUE-7 n° 2 (E29) : la durée écrite à côté du nom suit le doigt, elle aussi : jamais l'ancienne « prête le … » à côté de la nouvelle */
   const dureeRepos = props.deuxLignes === 'duree' ? duree : props.dureeACote;
   const dureeEtiquette = dureeRepos && etiquetteDuree ? etiquetteDuree : dureeRepos;
+  /* la phrase posée sous la barre suit le doigt de même ; pendant le geste, elle seule dit la nouvelle date (aucune bulle en double) */
+  const phraseDessous = bas?.ou === 'dessous' ? (etiquetteDuree ?? formeEntiere) : null;
   const n = chose.joursActifs && chose.joursActifs > 0 ? chose.joursActifs : 0;
   const style: React.CSSProperties = { left: gauche, top: haut, width: w, height: hauteur, transform: decalage ? `translateX(${decalage}px)` : undefined };
   const lblStyle: React.CSSProperties = cote === 'gauche'
@@ -143,9 +172,18 @@ export const Barre: React.FC<BarreProps> = props => {
     : cote === 'droite'
       ? { left: gauche + w + decalage + 6 }
       : { left: gauche + decalage + 6 };
-  /* deux lignes (n° 31) : 2 × 14 px, la boîte prend la hauteur de la ligne, jamais une lettre rognée */
-  const lblHaut = props.deuxLignes ? { top: haut - 2, height: hauteur + 4 } : { top: haut, height: hauteur };
-  const lblPlace = { ...lblStyle, ...lblHaut, maxWidth: cote === 'dedans' ? Math.max(0, w - 12 - (dureeDedans ? dureeDedans.largeur + 4 : 0)) : Math.max(40, placeEtiquette) };
+  /* deux lignes (n° 31) : 2 × 14 px, la boîte prend la hauteur de la ligne, jamais une lettre rognée ; la barre haute garde son nom sur sa
+     première ligne (la hauteur d'une barre simple) */
+  const hautNom = bas?.ou === 'barre' ? Math.max(18, hauteur - Math.round(hauteur / 2) - 2) : hauteur;
+  const lblHaut = props.deuxLignes ? { top: haut - 2, height: hauteur + 4 } : { top: haut, height: hautNom };
+  const dureeMemeLigne = dureeDedans && bas?.ou !== 'barre' ? dureeDedans.largeur + 4 : 0;
+  const lblPlace = { ...lblStyle, ...lblHaut, maxWidth: cote === 'dedans' ? Math.max(0, w - 12 - dureeMemeLigne) : Math.max(40, placeEtiquette) };
+  /* pendant f2-a, la durée tirée remplace le nom d'une barre simple ; la barre haute et la phrase du dessous gardent le nom (elles ont leur ligne) */
+  const cede = !!etiquetteDuree && !bas && (dureeHors ? cote !== 'dedans' : cote === 'dedans');
+  /* CRITIQUE-9 n° 10 (D-113, D-126) : la pastille « lié à » n'a pas la place à côté du nom : l'icône lien du badge de la barre se touche et
+     ouvre l'aperçu. Le bouton, nommé « Hotte, liée à Blonde d'automne : aperçu », est posé sur l'icône, hors de la barre (jamais un bouton dans
+     un bouton) ; l'icône reste dessinée par le badge (une seule à l'image) */
+  const lienIcone = props.sansLie && chose.lie ? chose.lie : null;
 
   return (
     <>
@@ -164,7 +202,7 @@ export const Barre: React.FC<BarreProps> = props => {
         aria-label={`${nomAccessible(chose)}${montant ? `, ${montant}` : ''}${duree ? `, ${duree}` : ''}${chose.lie ? `, ${chose.lie.texte}` : ''}${chose.courses ? `, courses : ${chose.courses}` : ''}`}
         aria-haspopup="menu"
         aria-expanded={menuOuvert || undefined}
-        className={`cal-barre ${CLASSE_TEINTE[chose.rangee]}${proposee ? ' cal-pointille' : ''}${epinglee ? ' cal-epi' : ''}${selectionnee ? ' cal-sel' : ''}${decalage || allongement ? ' cal-glisse' : ''}${chose.deplacable === true ? '' : ' cal-fixe'}${chose.finInconnue ? ' cal-coupee' : ''}`}
+        className={`cal-barre ${CLASSE_TEINTE[chose.rangee]}${bas?.ou === 'barre' ? ' cal-barre-2l' : ''}${proposee ? ' cal-pointille' : ''}${epinglee ? ' cal-epi' : ''}${selectionnee ? ' cal-sel' : ''}${decalage || allongement ? ' cal-glisse' : ''}${chose.deplacable === true ? '' : ' cal-fixe'}${chose.finInconnue ? ' cal-coupee' : ''}`}
         style={style}
         {...gestes}
         onKeyDown={e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); if (el.current) props.onToucher(chose, el.current); } }}
@@ -191,23 +229,34 @@ export const Barre: React.FC<BarreProps> = props => {
             {Array.from({ length: n }, (_, i) => <i key={i} data-point style={{ left: `${((i + 0.5) / n) * 100}%` }} />)}
           </span>
         )}
-        {etiquetteDuree && <em className={`cal-duree${dureeHors ? ' cal-duree-hors' : ''}`} data-duree>{etiquetteDuree}</em>}
+        {etiquetteDuree && bas?.ou !== 'dessous' && <em className={`cal-duree${dureeHors && !bas ? ' cal-duree-hors' : ''}${bas ? ' cal-duree-in' : ''}`} data-duree>{etiquetteDuree}</em>}
         {/* au repos, « J7 / 28 · prête 14 déc. » vit dans la barre du brassin (as/p-repos), quand il n'est pas déjà à côté du nom */}
         {!etiquetteDuree && dureeDedans && <em className="cal-duree cal-duree-in" data-duree>{dureeDedans.texte}</em>}
         {peutBord && <span data-bord data-grip className="cal-grip" aria-hidden="true" />}
-        {(epinglee || etoilee || chose.liens) && (
+        {(epinglee || etoilee || chose.liens || lienIcone) && (
           <span className="cal-badges" aria-hidden="true">
             {epinglee && <Pin size={12} />}
             {etoilee && <Star size={12} />}
-            {chose.liens && <Link2 size={12} />}
+            {(chose.liens || lienIcone) && <Link2 size={12} />}
           </span>
         )}
       </div>
       {/* CRITIQUE-5 n° 26 : sur deux lignes, le nom et son montant restent ensemble ; la pastille « lié à » passe dessous */}
       {/* f2-a : la durée tirée, posée à droite de la barre, prend la place de l'étiquette le temps du geste (jamais l'une sur l'autre) */}
-      <span className={`cal-lbl cal-lbl-${cote}${props.deuxLignes ? ' cal-lbl-2n' : ''}${etiquetteDuree && (dureeHors ? cote !== 'dedans' : cote === 'dedans') ? ' cal-lbl-cede' : ''} ${CLASSE_TEINTE[chose.rangee]}`} style={lblPlace}>
+      <span className={`cal-lbl cal-lbl-${cote}${props.deuxLignes ? ' cal-lbl-2n' : ''}${cede ? ' cal-lbl-cede' : ''} ${CLASSE_TEINTE[chose.rangee]}`} style={lblPlace}>
         <ContenuEtiquette chose={chose} nom={nom} montant={montant} duree={dureeEtiquette} deux={props.deuxLignes} lieCourt={props.lieCourt} sansLie={props.sansLie} />
       </span>
+      {bas?.ou === 'dessous' && phraseDessous && (
+        <span
+          className={`cal-lbl cal-lbl-sous ${CLASSE_TEINTE[chose.rangee]}`} data-phrase-sous={chose.id} aria-hidden="true"
+          style={{ left: bas.x + decalage, top: haut + bas.dy, height: hauteur }}
+        ><small className="cal-lbl-j">{phraseDessous}</small></span>
+      )}
+      {lienIcone && (
+        <span className={`cal-lie-coin ${CLASSE_TEINTE[chose.rangee]}`} style={{ left: gauche + w + decalage - 16, top: haut - 10 }}>
+          <PastilleLie lie={lienIcone} icone={nom} />
+        </span>
+      )}
     </>
   );
 };

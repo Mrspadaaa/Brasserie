@@ -7,8 +7,9 @@ import { ajouterJours, anneeEnMois, etiquetteS, lundiDe, type ChoseCalendrier, t
 import { REGLAGES_VIDES } from '../../src/domain/fournisseurs';
 import { construireModele } from '../../src/ui/calendrier/useDonneesCalendrier';
 import { MESURES_PORTRAIT, Rangee, clientDe, disposer, largeurEtiquette, pastille, texteCaddie, texteRenvoi, type Colonne } from '../../src/ui/calendrier/frise/Rangee';
-import { Barre, formesDuree, montantBarre } from '../../src/ui/calendrier/frise/Barre';
-import { couperNom, largeurTexte, lieMontre, nomAccessible } from '../../src/ui/calendrier/frise/Marque';
+import { Barre, dureeDansBarre, formesDuree, montantBarre } from '../../src/ui/calendrier/frise/Barre';
+import { MenuAppuiLong } from '../../src/ui/calendrier/frise/MenuAppuiLong';
+import { couperNom, dureeVue, largeurTexte, lieMontre, nomAccessible } from '../../src/ui/calendrier/frise/Marque';
 import { Frise } from '../../src/ui/calendrier/frise/Frise';
 import { DetailChose } from '../../src/ui/calendrier/frise/DetailChose';
 import { VueListe } from '../../src/ui/calendrier/frise/VueListe';
@@ -888,6 +889,104 @@ describe('CRITIQUE-7 (lot corr7-C-frise) : lien sans nom répété, points de la
     } finally {
       espion.mockRestore();
       fab.remove();
+    }
+  });
+});
+
+describe('CRITIQUE-9 (lot corr9-C-frise) : « prête le … » jamais perdue, icône lien touchable, Dupliquer avec effet, bord à 18 px', () => {
+  const rien = () => undefined;
+  const gestes = { onToucher: rien, onAppuiLong: rien, onGlisse: rien, onLacheGlisse: rien, onBord: rien, onLacheBord: rien, onRefus: rien };
+  const PRETE = /prête (le )?\d+ \p{L}+/u;
+
+  it('n° 3 (E25, E29) : à 390 en 6 sem., chaque brassin qui a une date « prête » la montre entière dans sa rangée', () => {
+    const choses = chosesDuBanc();
+    const brassins = choses.filter(c => c.rangee === 'brassins' && !c.brassinLie && !c.conditionne && PRETE.test(dureeVue(c) ?? ''));
+    /* les cinq de la critique sont dans la fixture : Saison, Blonde, Stout, Porter, Ambrée */
+    for (const n of [/^Saison/, /^Blonde/, /^Stout/, /^Porter/, /^Ambrée/]) expect(brassins.some(c => n.test(c.titre)), String(n)).toBe(true);
+    /* témoin : sur la ligne du nom, la barre de la Blonde (presque pleine largeur à 390) ne porte que « J0 / 28 » (le HEAD s'arrêtait là) */
+    const blonde = brassins.find(c => /^Blonde/.test(c.titre))!;
+    expect(dureeDansBarre(blonde, 301, true)).not.toMatch(PRETE);
+    render(<Frise choses={choses} colonnes={semainesDe(6)} paysage={false} ordre={[]} masquees={[]} filtre={null} epingles={[]} etoiles={[]} drag={null} largeurRepli={366} reserveDroite={76} onAjouter={rien} onBasculerMasque={rien} barre={gestes} />);
+    const rangeeB = document.querySelector('section[data-rangee="brassins"]')!;
+    let vus = 0;
+    for (const c of brassins) {
+      const barre = rangeeB.querySelector(`[data-chose="${c.id}"]`);
+      if (!barre) continue;
+      vus++;
+      const lu = [barre.textContent, barre.nextElementSibling?.textContent, rangeeB.querySelector(`[data-phrase-sous="${c.id}"]`)?.textContent].join(' | ');
+      expect(lu, c.titre).toMatch(PRETE);
+      /* jamais coupée */
+      expect(lu, c.titre).not.toMatch(/…/);
+    }
+    expect(vus).toBeGreaterThanOrEqual(5);
+    /* la Blonde et la Saison : la barre haute de as/cap/p-repos (le nom en haut, la phrase en bas), ou la phrase sous la barre */
+    for (const n of ['Blonde', 'Saison']) {
+      const id = brassins.find(c => c.titre.startsWith(n))!.id;
+      const b = rangeeB.querySelector<HTMLElement>(`[data-chose="${id}"]`)!;
+      expect(b.classList.contains('cal-barre-2l') || !!rangeeB.querySelector(`[data-phrase-sous="${id}"]`), n).toBe(true);
+    }
+  });
+
+  it('n° 3 : la phrase posée en bas prend la ligne au-dessous ; aucune autre chose ne s’y pose', () => {
+    const choses = chosesDuBanc().filter(c => c.rangee === 'brassins');
+    const { items } = disposer(choses, semainesDe(6), 61, 366, { reserveDroite: 76, lieCourt: true });
+    const hautes = items.filter(d => d.phraseBas);
+    expect(hautes.length).toBeGreaterThan(0);
+    for (const h of hautes) {
+      const [x0, x1] = h.phraseBas!.ou === 'barre' ? [h.gauche, h.gauche + h.largeur] : [h.phraseBas!.x0, h.phraseBas!.x1];
+      for (const d of items) if (d !== h && d.ligne === h.ligne + 1) expect(d.gauche + d.largeur <= x0 || d.gauche >= x1, `${h.chose.titre} / ${d.chose.titre}`).toBe(true);
+      if (h.phraseBas!.ou === 'dessous') { expect(h.phraseBas!.x0).toBeGreaterThanOrEqual(0); expect(h.phraseBas!.x1).toBeLessThanOrEqual(366 - 76 + 1); }
+    }
+  });
+
+  it('n° 3 : en paysage (une ligne de 20 px), aucune barre haute ni phrase dessous', () => {
+    const { items } = disposer(chosesDuBanc().filter(c => c.rangee === 'brassins'), semainesDe(13), 740 / 13, 740, { reserveDroite: 76, paysage: true, vueLarge: true, lieCourt: true });
+    expect(items.length).toBeGreaterThan(0);
+    expect(items.some(d => d.phraseBas)).toBe(false);
+  });
+
+  it('n° 10 (D-113, D-126) : sans place pour sa pastille, l’icône lien de la Hotte est un bouton [data-lie] « Hotte, liée à Blonde d’automne : aperçu » ; l’aperçu ne répète pas le nom', () => {
+    const lie = { texte: 'lié à Blonde d’automne', apercu: 'Blonde d’automne · brassage 23 nov. · prête 21 déc.' };
+    const hotte = { id: 'plan-hotte', rangee: 'achats', titre: 'Hotte', debut: '2026-11-30', fin: '2026-11-30', centimes: -90000, lie, liens: { batchId: 'LOT-BLONDE' }, source: { genre: 'plan', id: 'P-HOTTE', origine: 'manual', statut: 'active' }, ouvre: { ecran: 'finances' }, deplacable: true } as unknown as ChoseCalendrier;
+    render(<div style={{ position: 'relative' }}><Barre chose={hotte} gauche={240} largeur={56} haut={0} hauteur={26} cote="gauche" placeEtiquette={90} sansLie lieCourt largeurColonne={61} bornes={[0, 0]} {...gestes} /></div>);
+    const b = screen.getByRole('button', { name: 'Hotte, liée à Blonde d’automne : aperçu' });
+    expect(b).toHaveAttribute('data-lie');
+    /* hors de la barre (jamais un bouton dans un bouton), posé sur l'icône du badge : une seule icône lien à l'image */
+    expect(b.closest('[data-chose]')).toBeNull();
+    expect(document.querySelectorAll('[data-chose] .cal-badges svg')).toHaveLength(1);
+    expect(b.querySelector('svg')).toBeNull();
+    fireEvent.click(b);
+    const ap = document.querySelector('[data-apercu-lien]')!.textContent ?? '';
+    expect(ap).toBe('Blonde d’automne · brassage 23 nov. · prête 21 déc.');
+    expect(ap.split(' · ').filter(x => x === 'Blonde d’automne')).toHaveLength(1);
+  });
+
+  it('n° 8 (E31) : « Dupliquer en S48 » d’un brassin dit son effet quand il est fourni, sur sa ligne', () => {
+    const blonde = chosesDuBanc().find(c => c.rangee === 'brassins' && /^Blonde/.test(c.titre))!;
+    const ancre = document.createElement('div');
+    document.body.appendChild(ancre);
+    render(<MenuAppuiLong chose={blonde} nomRangee="Brassins seuls" ancre={ancre} epinglee={false} etoilee={false} autresRangees={6} dupliquer={{ libelle: 'S48', effet: 'S48 : 1 154 → 1 017' }} retirer={{ raison: 'Un brassin se règle dans sa fiche' }} liens={{ brassins: [], clients: [] }}
+      onEpingler={rien} onEtoile={rien} onSeules={rien} onDupliquer={rien} onLier={rien} onRetirer={rien} onFermer={rien} />);
+    const item = screen.getByRole('menuitem', { name: /^Dupliquer en S48/ });
+    expect(item.textContent).toBe('Dupliquer en S48 · S48 : 1 154 → 1 017');
+    expect(item.querySelector('[data-effet-dupliquer]')!.textContent).toBe('S48 : 1 154 → 1 017');
+    ancre.remove();
+  });
+
+  it('doute f2-a (E29, D-47) : en paysage (barre de 18 px), un doigt à 8 px du bord, dedans ou dehors, tire le bord ; au milieu, il déplace', () => {
+    const saison = chosesDuBanc().find(c => c.rangee === 'brassins' && /^Saison/.test(c.titre))!;
+    for (const [x, attendu] of [[292, 'bord'], [308, 'bord'], [200, 'glisse']] as const) {
+      const onBord = vi.fn(), onGlisse = vi.fn();
+      const { unmount } = render(<div style={{ position: 'relative' }}><Barre chose={{ ...saison, deplacable: true }} gauche={100} largeur={200} haut={0} hauteur={18} cote="dedans" placeEtiquette={0} largeurColonne={57} bornes={[-5, 5]} {...gestes} onBord={onBord} onGlisse={onGlisse} /></div>);
+      const b = document.querySelector<HTMLElement>('[data-chose]')!;
+      const espion = vi.spyOn(b, 'getBoundingClientRect').mockReturnValue({ left: 100, right: 300, top: 0, bottom: 18, width: 200, height: 18, x: 100, y: 0, toJSON: () => ({}) } as DOMRect);
+      fireEvent.pointerDown(b, { clientX: x, clientY: 9, pointerId: 1, button: 0 });
+      fireEvent.pointerMove(b, { clientX: x + 57, clientY: 9, pointerId: 1 });
+      fireEvent.pointerUp(b, { clientX: x + 57, clientY: 9, pointerId: 1 });
+      if (attendu === 'bord') { expect(onBord, `x = ${x}`).toHaveBeenCalledWith(expect.anything(), 7); expect(onGlisse).not.toHaveBeenCalled(); }
+      else { expect(onGlisse, `x = ${x}`).toHaveBeenCalled(); expect(onBord).not.toHaveBeenCalled(); }
+      espion.mockRestore();
+      unmount();
     }
   });
 });

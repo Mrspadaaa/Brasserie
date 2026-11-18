@@ -224,7 +224,7 @@ export const MenuAppuiLong: React.FC<MenuAppuiLongProps> = props => {
     <>
       {dupliquer && (
         <button type="button" role="menuitem" {...agir(props.onDupliquer)} className="cal-ml">
-          <Copy size={20} aria-hidden="true" /><span>Dupliquer en {dupliquer.libelle}</span>{dupliquer.effet && <em>{dupliquer.effet}</em>}
+          <Copy size={20} aria-hidden="true" /><span>Dupliquer en {dupliquer.libelle}</span>{dupliquer.effet && <><span className="sr-only"> · </span><em data-effet-dupliquer>{dupliquer.effet}</em></>}
         </button>
       )}
       <button type="button" role="menuitem" {...agir(() => setLier(true))} className="cal-ml">

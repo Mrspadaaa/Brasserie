@@ -1,7 +1,7 @@
 import React from 'react';
 import { ChevronRight, Eye, EyeOff, Plus, ShoppingCart } from 'lucide-react';
 import { ajouterJours, ecartJours, estMarque, etiquetteS, francsSignes, jourLisible, nomRangee, type ChoseCalendrier, type JalonBrassin, type Rangee as IdRangee } from '../../../domain/calendrier';
-import { Barre, formesDuree, montantBarre, type BarreProps, type CoteEtiquette } from './Barre';
+import { Barre, dureeDansBarre, formesDuree, largeurDuree, montantBarre, type BarreProps, type CoteEtiquette } from './Barre';
 import { CLASSE_TEINTE, Marque, couperNom, dureeVue, largeurPastilleLie, largeurTexte, lieMontre, type ModeDeuxLignes } from './Marque';
 
 /**
@@ -57,6 +57,11 @@ export interface Disposition {
   deuxLignes: DeuxLignes;
   /** CRITIQUE-6 (doute Lier) : la pastille « lié à » n'a la place d'aucun côté ; le nom et le montant restent entiers, le lien vit dans le badge. */
   sansLie?: boolean;
+  /**
+   * CRITIQUE-9 n° 3 (E25, E29) : la phrase « J0 / 28 · prête 21 déc. » n'a la place ni à côté ni sur la ligne du nom. `barre` : la barre prend
+   * deux lignes et la porte en bas (as/cap/p-repos) ; `dessous` : elle va sur la ligne sous la barre, de `x0` à `x1`.
+   */
+  phraseBas?: { ou: 'barre' } | { ou: 'dessous'; x0: number; x1: number };
 }
 
 /** Le caddie d'un brassin (son jalon « commander »), posé sans chevauchement, avec son nom en 6 semaines (n° 19, n° 22). */
@@ -139,7 +144,8 @@ export interface OptionsDisposer {
  */
 export type DeuxLignes = ModeDeuxLignes;
 
-interface Candidat { cote: CoteEtiquette; place: number; x0: number; x1: number; deux?: DeuxLignes; sansLie?: boolean }
+/** `bas` (CRITIQUE-9 n° 3) : la phrase d'un brassin prend aussi la ligne au-dessous, sur `[x0, x1]` (la barre haute) ou sur `bas` (sous la barre). */
+interface Candidat { cote: CoteEtiquette; place: number; x0: number; x1: number; deux?: DeuxLignes; sansLie?: boolean; bas?: { ou: 'barre' | 'dessous'; x0: number; x1: number } }
 
 /**
  * Pose les choses d'une rangée sans qu'une barre ni un nom en touche un autre. Pure : `largeur` et `largeurColonne` viennent de la mesure.
@@ -169,10 +175,12 @@ export function disposer(choses: readonly ChoseCalendrier[], colonnes: readonly 
     return (i + ecartJours(c.debut, iso) / (ecartJours(c.debut, c.fin) + 1)) * largeurColonne;
   };
   const libre = (ligne: number, x0: number, x1: number) => !lignes[ligne]?.some(([a, b]) => x0 < b + 6 && x1 > a - 6);
+  /* une phrase posée en bas prend aussi la ligne au-dessous : elle doit y être libre (une ligne pas encore ouverte l'est) */
+  const libreCandidat = (l: number, c: Candidat) => libre(l, c.x0, c.x1) && (!c.bas || libre(l + 1, c.bas.x0, c.bas.x1));
   /** Le premier (ligne, candidat) libre, palier par palier, en commençant à la ligne `depuis` ; sinon une ligne neuve. */
   const poser = (paliers: Candidat[][], neuve: Candidat, depuis = 0): { ligne: number; c: Candidat } => {
     const ordre = [...Array(lignes.length).keys()].map(i => (i + depuis) % Math.max(1, lignes.length));
-    for (const palier of paliers) for (const l of ordre) for (const c of palier) if (libre(l, c.x0, c.x1)) return { ligne: l, c };
+    for (const palier of paliers) for (const l of ordre) for (const c of palier) if (libreCandidat(l, c)) return { ligne: l, c };
     return { ligne: lignes.length, c: neuve };
   };
   /**
@@ -239,8 +247,23 @@ export function disposer(choses: readonly ChoseCalendrier[], colonnes: readonly 
       /* n° 26 : nom et montant ensemble d'abord ; le nom seul en tête (montant dessous) seulement si ensemble ils seraient coupés */
       const deux = deuxNom > 0 && deuxNom < labNom ? aCote(o0, o1, deuxNom, 'nom') : [];
       if (!deux.length && deuxSeul > 0 && deuxSeul < labNom) deux.push(...aCote(o0, o1, deuxSeul, 'nomSeul'));
+      /* CRITIQUE-9 n° 3 (E25, E29) : la phrase entière d'un brassin, « J0 / 28 · prête 21 déc. ». Elle a une place si la barre la porte à côté
+         du nom, ou à côté de la barre, ou sur deux lignes à côté, ou seule dans la barre (le nom à côté) ; hors paysage, la barre haute la porte
+         en bas (as/cap/p-repos), sinon la ligne sous la barre. Tant qu'une de ces places existe, « J0 / 28 » seul n'est jamais choisi. */
+      const phrase = !marque && formes.length > 1 ? formes[0] : null;
+      const pleinDedans = phrase ? dedans(dureeDansBarre(c, w, true) === phrase) : dedansDuree;
       /* une proposition garde son nom à côté (pointillé lisible) ; un brassin garde le sien dedans, avec sa durée (as/p-repos) */
-      const premier = c.proposition ? [...entiers, ...dedansDuree] : [...dedansDuree, ...entiers];
+      const premier = c.proposition ? [...entiers, ...pleinDedans] : [...pleinDedans, ...entiers];
+      const nomsPlein = phrase && dureeDansBarre(c, w, false) === phrase ? aCote(o0, o1, labNom) : [];
+      const nomDedans = !marque && w - 16 >= labNom;
+      const haute: Candidat[] = phrase && !paysage && nomDedans && w - 16 >= largeurDuree(phrase)
+        ? [{ cote: 'dedans', place: w - 16, x0: o0, x1: o1, bas: { ou: 'barre', x0: o0, x1: o1 } }] : [];
+      const sous: Candidat[] = [];
+      if (phrase && !paysage && nomDedans && !haute.length) {
+        const lp = largeurDuree(phrase);
+        const x0 = o0 + lp <= bord ? o0 : Math.min(o1, bord) - lp;
+        if (x0 >= 0) sous.push({ cote: 'dedans', place: w - 16, x0: o0, x1: o1, bas: { ou: 'dessous', x0, x1: x0 + lp } });
+      }
       /* CRITIQUE-5 n° 1 et 23 : un brassin dont la durée entière ne tient pas sur une ligne la garde sur deux, hors paysage (as/cap/p-repos :
          « Blonde d'automne −148 », puis « J0 / 28 ») : « Saison de ferme −137 », puis « pas brassée · prête le 15 déc. » */
       const deuxDuree = !paysage && formes.length && !lie ? aCote(o0, o1, Math.ceil(Math.max(labNom - 6, largeurTexte(formes[0], 500))) + 8, 'duree') : [];
@@ -249,22 +272,30 @@ export function disposer(choses: readonly ChoseCalendrier[], colonnes: readonly 
       const cp = !paysage && !lie && !formes.length ? couperNom(texteVu(c), montantBarre(c)) : null;
       const coupe = cp && cp.largeur + 8 < labNom ? aCote(o0, o1, cp.largeur + 8, 'coupe') : [];
       /* la coupe ne passe jamais devant une ligne entière : tant qu'un côté a la place du nom sur une ligne, une ligne neuve la porte */
-      const uneLigne = premier.length + deuxDuree.length + courts.length + noms.length + dedansEntier.length + deux.length > 0;
+      /* sans aucune place pour la phrase entière : l'ordre d'avant, la durée courte dans la barre d'abord */
+      const premierCourt = c.proposition ? [...entiers, ...dedansDuree] : [...dedansDuree, ...entiers];
+      const uneLigne = premierCourt.length + deuxDuree.length + courts.length + noms.length + dedansEntier.length + deux.length > 0;
       /* CRITIQUE-6, doute Lier (m390-49a) : la pastille « Blonde d’automne » n'a la place d'aucun côté de « Hotte −900 » : elle débordait de
          l'écran. Le nom et le montant restent entiers ; le lien se lit au badge de la barre, au message « Liée à … » et au détail */
       const labSansLie = lie ? Math.ceil(largeurTexte(texteVu(c), 600) + (montantBarre(c) ? largeurTexte(montantBarre(c) as string, 700) + 6 : 0)) + 6 : 0;
       const sansPastille = lie && !uneLigne ? aCote(o0, o1, labSansLie).map(k => ({ ...k, sansLie: true })) : [];
-      const paliers = uneLigne ? [premier, deuxDuree, courts, noms, dedansEntier, deux] : sansPastille.length ? [sansPastille] : [coupe];
+      const pleins = [premier, deuxDuree, nomsPlein, haute, sous];
+      const aPlein = !!phrase && pleins.some(x => x.length > 0);
+      const paliers = aPlein ? pleins : uneLigne ? [premierCourt, deuxDuree, courts, noms, dedansEntier, deux] : sansPastille.length ? [sansPastille] : [coupe];
       /* aucune ligne ouverte n'a la place : une ligne libre au-dessous, où le nom tient entier ; sinon (la piste est trop étroite) au plus large */
-      const neuve = premier[0] ?? deuxDuree[0] ?? courts[0] ?? noms[0] ?? dedansEntier[0] ?? deux[0] ?? sansPastille[0] ?? coupe[0] ?? auPlusLarge(o0, o1, labNom, min);
+      const neuve = aPlein
+        ? (premier[0] ?? deuxDuree[0] ?? nomsPlein[0] ?? haute[0] ?? sous[0]) as Candidat
+        : premierCourt[0] ?? deuxDuree[0] ?? courts[0] ?? noms[0] ?? dedansEntier[0] ?? deux[0] ?? sansPastille[0] ?? coupe[0] ?? auPlusLarge(o0, o1, labNom, min);
       choix = poser(paliers, neuve);
     }
     const { ligne, c: k } = choix;
     const emprise: [number, number] = [k.x0, k.x1];
     (lignes[ligne] ||= []).push(emprise);
+    if (k.bas) (lignes[ligne + 1] ||= []).push([k.bas.x0, k.bas.x1]);
     emprises.set(c.id, { emprise, o0, o1, lab, labCourt, labNom, w, marque, dureeMin, formes });
     const leCote = marque && !avecLibelle ? 'dedans' : k.cote;
-    items.push({ chose: c, a: p.a, b: p.b, gauche, largeur: marque ? 28 : w, ligne, marque, petite: marque && vueLarge, avecLibelle, duree: null, cote: leCote, place: k.place, deuxLignes: k.deux ?? false, ...(k.sansLie ? { sansLie: true } : {}) });
+    const phraseBas = k.bas ? (k.bas.ou === 'barre' ? { ou: 'barre' as const } : { ou: 'dessous' as const, x0: k.bas.x0, x1: k.bas.x1 }) : undefined;
+    items.push({ chose: c, a: p.a, b: p.b, gauche, largeur: marque ? 28 : w, ligne, marque, petite: marque && vueLarge, avecLibelle, duree: null, cote: leCote, place: k.place, deuxLignes: k.deux ?? false, ...(k.sansLie ? { sansLie: true } : {}), ...(phraseBas ? { phraseBas } : {}) });
   }
 
   /* chaque étiquette posée à côté s'allonge dans la place libre de sa ligne (jusqu'à l'objet suivant, jamais sous le + volant), d'abord celles
@@ -289,7 +320,9 @@ export function disposer(choses: readonly ChoseCalendrier[], colonnes: readonly 
   for (const d of items) {
     const e = emprises.get(d.chose.id);
     if (!e || e.marque || !e.formes.length || d.cote === 'dedans' || d.deuxLignes) continue;
-    d.duree = d.place >= e.lab - 4 ? e.formes[0] : e.formes.length > 1 && d.place >= e.labCourt - 4 ? e.formes[e.formes.length - 1] : null;
+    /* CRITIQUE-9 n° 3 : la forme courte à côté seulement si la barre ne porte pas la phrase entière (elle y reste alors, dedans) */
+    const barrePleine = e.formes.length > 1 && dureeDansBarre(d.chose, e.w, false) === e.formes[0];
+    d.duree = d.place >= e.lab - 4 ? e.formes[0] : e.formes.length > 1 && !barrePleine && d.place >= e.labCourt - 4 ? e.formes[e.formes.length - 1] : null;
   }
 
   /* n° 22 : le caddie d'un brassin (jalon « commander ») se pose comme une chose, d'abord sur la ligne de son brassin */
@@ -547,7 +580,8 @@ export const Rangee: React.FC<RangeeProps> = props => {
             }
             return (
               <Barre
-                key={c.id} chose={c} gauche={d.gauche} largeur={d.largeur} haut={top} hauteur={mesures.barre} cote={d.cote} placeEtiquette={d.place} dureeACote={d.duree} deuxLignes={d.deuxLignes} sansLie={d.sansLie}
+                key={c.id} chose={c} gauche={d.gauche} largeur={d.largeur} haut={top} hauteur={d.phraseBas?.ou === 'barre' ? mesures.barre + mesures.ligne : mesures.barre} cote={d.cote}
+                phraseBas={d.phraseBas ? (d.phraseBas.ou === 'barre' ? { ou: 'barre' } : { ou: 'dessous', x: d.phraseBas.x0, dy: mesures.ligne }) : null} placeEtiquette={d.place} dureeACote={d.duree} deuxLignes={d.deuxLignes} sansLie={d.sansLie}
                 largeurColonne={auJour ? 0 : largeurColonne} bornes={[-d.a, colonnes.length - 1 - d.a]}
                 epinglee={epingles.includes(c.id)} etoilee={etoiles.includes(c.id)} selectionnee={selectionId === c.id} menuOuvert={menuId === c.id} lieCourt={lieCourt}
                 decalage={surDrag && drag.mode === 'glisse' ? drag.k * largeurColonne : 0}

@@ -295,10 +295,22 @@ const ETATS = [
       const q = r.getBoundingClientRect(); const e = document.elementFromPoint(q.left + q.width / 2, q.top + q.height / 2);
       return q.top >= 0 && q.bottom <= innerHeight && !!e && (r === e || r.contains(e));
     }), 'Retirer dans l’écran et touchable')] },
-  { n: '12', nom: 'f5a-retirer', geste: 'appui long sur le Marché de Noël, puis Retirer', jouer: async p => { await appuiLong(p, { titre: 'Marché de Noël' }); await toucher(p, { dans: { role: 'menu' }, texte: /^Retirer/ }); },
-    attendu: [/Retirée? de S\d+/, /Sans date ›/, /Annuler/] },
-  { n: '13', nom: 'f5a-annuler', geste: 'Retirer le Marché de Noël, puis Annuler', jouer: async p => { await appuiLong(p, { titre: 'Marché de Noël' }); await toucher(p, { dans: { role: 'menu' }, texte: /^Retirer/ }); await toucher(p, { texte: /^Annuler$/ }); },
-    attendu: [fn(async p => existe(p, { titre: 'Marché de Noël' }), 'le Marché de Noël revient sur la frise')] },
+  /* CRITIQUE-9 n° 1 (E31, E46, D-48, D-114, D-192) : avant Retirer (13a), après Retirer (12), après Annuler (13), la page rechargée avant chaque
+     état ; le Marché de Noël revient dans Fêtes, en S52, sans rechargement entre Retirer et Annuler */
+  { n: '13a', nom: 'f5a-avant-retirer', geste: 'aller au Marché de Noël (aucun geste)', cave: true, repos: true, mesure: p => fetesLues(p), jouer: async p => { await trouver(p, { titre: 'Marché de Noël' }); await attendre(300); },
+    attendu: [fn(noelEnS52, 'le Marché de Noël est dans Fêtes, en S52')] },
+  { n: '12', nom: 'f5a-retirer', geste: 'appui long sur le Marché de Noël, puis Retirer', cave: true, mesure: p => fetesLues(p), jouer: async p => { await appuiLong(p, { titre: 'Marché de Noël' }); await toucher(p, { dans: { role: 'menu' }, texte: /^Retirer/ }); },
+    attendu: [/Retirée? de S\d+/, /Sans date ›/, /Annuler/, fn(async p => { const t = await fetesLues(p); return { ok: !/Marché de Noël/.test(t), dit: `Fêtes : « ${t.slice(0, 60)} »` }; }, 'le Marché de Noël a quitté la rangée Fêtes')] },
+  { n: '13', nom: 'f5a-annuler', geste: 'Retirer le Marché de Noël, puis Annuler (sans rechargement)', cave: true, /* l'effet voulu est le retour au repos : le changement est prouvé par 12 et par « il avait bien quitté Fêtes » */ repos: true, mesure: p => fetesLues(p),
+    jouer: async p => {
+      await appuiLong(p, { titre: 'Marché de Noël' }); await toucher(p, { dans: { role: 'menu' }, texte: /^Retirer/ });
+      p.fetesRetiree = await fetesLues(p);
+      await toucher(p, { dans: { role: 'status|alert' }, role: 'button', texte: /Annuler$/ });
+      await attendre(400);
+      p.noteEtat = `Fêtes après Retirer « ${p.fetesRetiree.slice(0, 50)} » ; après Annuler « ${(await fetesLues(p)).slice(0, 60)} »`;
+    },
+    attendu: [fn(noelEnS52, 'le Marché de Noël revient dans Fêtes, en S52'), fn(async p => ({ ok: !/Marché de Noël/.test(p.fetesRetiree || 'Marché de Noël'), dit: `entre les deux : « ${(p.fetesRetiree || '').slice(0, 40)} »` }), 'il avait bien quitté Fêtes'),
+      fn(async p => p.evaluate(() => !document.querySelector('[data-message]')), 'le message est parti')] },
   { n: '14', nom: 'f6b-alerte', geste: 'glisser la Blonde de 2 colonnes (promesse La Cigogne)', jouer: async p => { await glisserChose(p, 'Blonde d’automne', 2); }, attendu: [/promis/, /Livrer le/] },
   { n: '15', nom: 'f6b-livrer', geste: 'glisser la Blonde, puis Livrer le …', mesure: p => choseLue(p, '3 fûts La Cigogne'), jouer: async p => { await glisserChose(p, 'Blonde d’automne', 2); await toucher(p, { texte: /^Livrer le/ }); }, attendu: [/La Cigogne/] },
 
@@ -308,9 +320,31 @@ const ETATS = [
     attendu: [fn(async p => p.evaluate(() => document.querySelectorAll('[data-marque]').length > 0), 'au moins une marque (chose de moins de 24 px)')] },
   { n: '19', nom: 'marque-appui-long', geste: '3 mois, puis appui long sur une marque', jouer: async p => { await menuPeriode(p, /^3 mois/); await appuiLong(p, { data: 'data-marque' }); },
     attendu: [fn(async p => p.evaluate(() => Number(document.querySelector('[data-frise]')?.getAttribute('data-nb-colonnes')) <= 7), 'la vue 6 semaines revient')] },
-  { n: '20', nom: 'c2b-lecture', geste: 'glisser le doigt le long de la courbe, doigt tenu', mesure: lireTexte, jouer: async p => { const r = await trouver(p, { aria: /^Libre et caisse/ }); await glisserXY(p, r.g + 30, r.y, r.w * 0.4, 0, { tenu: true }); },
-    /* CRITIQUE-7 n° 5 (E11) : la tête de c2-b porte « CHF » et la date, à 390 comme à 1280 (« −707 CHF · S16 · 19 avr. ») */
-    attendu: [/\d\s*CHF\s*·\s*S\d+\s*·\s*\d{1,2}\s\p{L}+/u], fin: lacher },
+  /* CRITIQUE-9 n° 9 (E11, D-195) : un vrai glissé (doigt posé, déplacé, tenu), parti HORS du cadre de la fenêtre et de ses poignées (vision 10 :
+     le doigt avait pris le cadre, « S48 – S21 2027 ») ; la tête « CHF · S · date » pendant, le détail de la semaine après le lâcher (20b) */
+  { n: '20', nom: 'c2b-lecture', geste: 'glisser le doigt le long de la courbe, hors du cadre, doigt tenu', mesure: lireTexte,
+    jouer: async p => {
+      await trouver(p, { aria: /^Libre et caisse/ });
+      const d = await departCourbe(p);
+      p.noteEtat = d.dit;
+      if (!d.ok) throw new Absent(d.dit);
+      p.cadreAvant = await cadreLu(p);
+      await glisserXY(p, d.x, d.y, d.dx, 0, { tenu: true });
+    },
+    attendu: [/\d\s*CHF\s*·\s*S\d+\s*·\s*\d{1,2}\s\p{L}+/u, fn(async p => { const c = await cadreLu(p); return { ok: c === p.cadreAvant, dit: `cadre « ${p.cadreAvant} » → « ${c} »` }; }, 'le cadre de la fenêtre n’a pas bougé')], fin: lacher },
+  { n: '20b', nom: 'c2b-detail', geste: 'glisser le doigt le long de la courbe, hors du cadre, puis lâcher : le détail de la semaine lue', mesure: lireTexte,
+    jouer: async p => {
+      await trouver(p, { aria: /^Libre et caisse/ });
+      const d = await departCourbe(p);
+      p.noteEtat = d.dit;
+      if (!d.ok) throw new Absent(d.dit);
+      p.cadreAvant = await cadreLu(p);
+      await glisserXY(p, d.x, d.y, d.dx, 0, { tenu: true });
+      p.tete = await p.evaluate(() => document.body.innerText.match(/[−-]?[\d ’']+\s*CHF\s*·\s*S\d+\s*·\s*\d{1,2}\s\S+/u)?.[0] ?? '');
+      await lacher(p);
+      p.noteEtat += ` ; tête pendant « ${p.tete} »`;
+    },
+    attendu: [/S\d+, \d{1,2}\s?[–-]\s?\d{1,2} \p{L}+/u, fn(async p => { const c = await cadreLu(p); return { ok: c === p.cadreAvant && !!p.tete, dit: `tête « ${p.tete} » ; cadre « ${p.cadreAvant} » → « ${c} »` }; }, 'la tête lue pendant, le cadre immobile')] },
   { n: '21', nom: 'c3a-graph', geste: 'appui long sur la courbe', jouer: async p => { await appuiLong(p, { aria: /^Libre et caisse/ }, 800); }, attendu: [/La courbe en grand|Revenir à la frise/] },
 
   { n: '22', nom: 'plus-volant', geste: 'toucher le bouton flottant (button[aria-label^="Actions rapides"])', cave: true, jouer: async p => { const r = await toucher(p, FAB); p.noteEtat = `bouton flottant touché en (${Math.round(r.x)}, ${Math.round(r.y)})`; },
@@ -357,14 +391,31 @@ const ETATS = [
     attendu: [/cachée/, fn(async p => existe(p, { titre: 'Hotte' }), 'la Hotte épinglée reste visible')] },
 
   { n: '34', nom: 'brassin-planifie-glisse', geste: 'glisser le Porter d’hiver d’une colonne', jouer: async p => { await glisserChose(p, 'Porter d’hiver', 1); }, attendu: [/Annuler/, /S\d+/] },
-  { n: '35', nom: 'jalon-fin', geste: 'tirer le jalon de fin du Porter d’une colonne', mesure: p => choseLue(p, 'Porter d’hiver'), jouer: async p => { await glisserChose(p, 'Porter d’hiver', 1, { sous: '[data-jalon="conditionnement"], [data-bord]' }); }, attendu: [/prête/, /Annuler/] },
-  { n: '36', nom: 'jalon-refuse', geste: 'tirer le jalon dry hop de la Blonde', jouer: async p => {
+  /* CRITIQUE-9 (harnais, D-81, D-103) : chaque jalon visé par son `data-jalon` ; ni menu f5-a, ni la Saison déplacée ; la fin glissée se
+     vérifie par « prête le » changé et Annuler, le refus par son message, qui ne couvre aucun nom (n° 7) */
+  { n: '35', nom: 'jalon-fin', geste: 'tirer le jalon de fin (conditionnement) du Porter d’une colonne', mesure: p => choseLue(p, 'Porter d’hiver'),
+    jouer: async p => {
+      p.saisonAvant = await choseLue(p, 'Saison de ferme');
+      p.porterAvant = await choseLue(p, 'Porter d’hiver');
+      if (!(await existe(p, { titre: 'Porter d’hiver', sous: '[data-jalon="conditionnement"]' }))) throw new Absent('jalon [data-jalon="conditionnement"] du Porter introuvable');
+      await glisserChose(p, 'Porter d’hiver', 1, { sous: '[data-jalon="conditionnement"]' });
+      p.message = await p.evaluate(() => (document.querySelector('[data-message]')?.textContent || '').replace(/\s+/g, ' ').trim());
+      p.noteEtat = `Porter avant « ${p.porterAvant.slice(0, 80)} » ; message « ${p.message.slice(0, 90)} »`;
+    },
+    attendu: [/Annuler/, fn(async p => ({ ok: !!jourDe(p.message) && /prête (le )?\d/.test(p.message) && jourDe(p.message) !== jourDe(/prête (?:le )?([^·]+)/.exec(p.porterAvant || '')?.[1]), dit: `avant « ${(/prête[^·]*/.exec(p.porterAvant || '') || ['?'])[0]} » ; message « ${p.message.slice(0, 70)} »` }), '« prête le » a changé (message de la fin glissée)'),
+      fn(async p => p.evaluate(() => !document.querySelector('[role="menu"]')), 'aucun menu f5-a ouvert'),
+      fn(async p => { const s = await choseLue(p, 'Saison de ferme'); return { ok: s.split(' · ')[0] === p.saisonAvant.split(' · ')[0], dit: `Saison « ${s.slice(0, 50)} »` }; }, 'la Saison n’a pas bougé')] },
+  { n: '36', nom: 'jalon-refuse', geste: 'tirer le jalon dry hop de la Blonde (intermédiaire)', jouer: async p => {
       const avant = await choseLue(p, 'Blonde d’automne');
+      p.saisonAvant = await choseLue(p, 'Saison de ferme');
+      if (!(await existe(p, { titre: 'Blonde d’automne', sous: '[data-jalon="dry-hop"]' }))) throw new Absent('jalon [data-jalon="dry-hop"] de la Blonde introuvable');
       await glisserChose(p, 'Blonde d’automne', 1, { sous: '[data-jalon="dry-hop"]' });
       const apres = await choseLue(p, 'Blonde d’automne');
       p.noteEtat = `la Blonde ${avant.split(' · ')[0] === apres.split(' · ')[0] ? 'n’a pas bougé (refus)' : 'A BOUGÉ'}`;
       if (avant.split(' · ')[0] !== apres.split(' · ')[0]) throw new Absent('le jalon intermédiaire a déplacé la Blonde');
-    }, attendu: [/suit la recette du brassin/, /Ouvrir le brassin/] },
+    }, attendu: [/suit la recette du brassin/, /Ouvrir le brassin/, fn(async p => p.evaluate(() => !document.querySelector('[role="menu"]')), 'aucun menu f5-a ouvert'),
+      fn(async p => { const s = await choseLue(p, 'Saison de ferme'); return { ok: s.split(' · ')[0] === p.saisonAvant.split(' · ')[0], dit: `Saison « ${s.slice(0, 50)} »` }; }, 'la Saison n’a pas bougé'),
+      fn(messageSansNom, 'le refus ne couvre aucun nom (CRITIQUE-9 n° 7)')] },
   { n: '37', nom: 'mise-de-cote', geste: 'aucun (la courbe au repos)', repos: true, jouer: async () => {}, attendu: [/mis de côté/] },
   { n: '38', nom: 'travaux-fenetre', geste: '+ de Travaux, nom récent, S20 puis S40, 5 j', jouer: async p => { await fenetreTravaux(p); }, attendu: [/S20 → S40 · 21 sem\./] },
   { n: '39', nom: 'travaux-posee', geste: 'fenêtre S20 → S40, 5 j, Ajouter, puis l’An ; la barre posée (S20), pas celle de S8', mesure: barreTravauxPosee,
@@ -545,8 +596,97 @@ const ETATS = [
     attendu: [fn(async p => p.evaluate(() => {
       const l = [...document.querySelectorAll('section[data-rangee="achats"] [data-chose], section[data-rangee="achats"] [data-marque]')].map(e => `${e.getAttribute('aria-label') || e.getAttribute('data-titre') || ''}`).filter(t => /Brouwland/.test(t));
       return { ok: l.length === 1 && /[−-]\s?420\b/.test(l[0]), dit: `${l.length} chose(s) Brouwland : ${l.map(t => `« ${t.slice(0, 70)} »`).join(' ; ')}` };
-    }), 'une seule chose Brouwland dans Achats, avec −420')] }
+    }), 'une seule chose Brouwland dans Achats, avec −420')] },
+
+  /* ---------- CRITIQUE-9 : les problèmes 3, 4, 6, 8 et le retenu D-69, chacun mesuré ---------- */
+  /* n° 3 (E25, E29) : au repos, la Saison et la Blonde disent « prête le … » sur leur ligne, comme le Porter */
+  { n: '01p', nom: 'repos-prete', geste: 'aucun (repos) ; lire la ligne de la Saison et de la Blonde', cave: true, repos: true, jouer: async p => { await trouver(p, { titre: 'Saison de ferme' }); await attendre(200); },
+    attendu: [fn(p => preteSur(p, 'Saison de ferme'), '« prête le … » sur la ligne de la Saison'), fn(p => preteSur(p, 'Blonde d’automne'), '« prête le … » sur la ligne de la Blonde')] },
+  /* n° 4 (E38, L14) : dans le détail de la Saison, l'emballage est daté sur le brassin (« prête » − 7 j), jamais sur l'ancienne date prévue */
+  { n: '10s', nom: 'f4b-saison-emballage', geste: 'toucher la Saison de ferme ; lire « prête le » et « emballage le »', mesure: lireTexte,
+    jouer: async p => {
+      await toucher(p, { titre: 'Saison de ferme' }); await attendre(300);
+      p.detail = await p.evaluate(() => (document.querySelector('[role="region"][aria-label^="Détail"]')?.textContent || document.body.innerText).replace(/\s+/g, ' '));
+      p.noteEtat = `détail « ${p.detail.slice(0, 200)} »`;
+    },
+    attendu: [fn(async p => {
+      const prete = jourDe(/prête (?:le )?(\d{1,2} \S+)/u.exec(p.detail || '')?.[1]), emb = jourDe(/emballage (?:le )?(\d{1,2} \S+)/u.exec(p.detail || '')?.[1]);
+      return { ok: prete !== null && emb !== null && prete - emb === 7, dit: `prête ${prete !== null ? new Date(prete * 864e5).toISOString().slice(0, 10) : '?'} ; emballage ${emb !== null ? new Date(emb * 864e5).toISOString().slice(0, 10) : '?'} ; écart ${prete !== null && emb !== null ? prete - emb : '?'} j` };
+    }, 'emballage = prête − 7 j')] },
+  /* n° 6 (E28, D-46) : f1-a sur un brassin qui change le libre : le message dit l'effet « S50 : a → b », pas seulement le trajet */
+  /* la Saison pas brassée (prévue S46) est montrée en S47 : une colonne ne la fait pas bouger à l'écran ; trois colonnes, comme la vision 10 (S46 → S50) */
+  { n: '08s', nom: 'f1a-saison-effet', geste: 'glisser la Saison de ferme de trois colonnes, lâcher', mesure: p => choseLue(p, 'Saison de ferme'),
+    jouer: async p => { await glisserChose(p, 'Saison de ferme', 3); p.message = await p.evaluate(() => (document.querySelector('[data-message]')?.textContent || '').replace(/\s+/g, ' ').trim()); p.noteEtat = `message « ${p.message.slice(0, 90)} »`; },
+    attendu: [/Annuler/, fn(async p => ({ ok: /S\d+ : [−\d\s’']+ → [−\d\s’']+/.test(p.message || ''), dit: `« ${(p.message || '').slice(0, 70)} »` }), 'le message dit l’effet « S… : a → b »')] },
+  /* n° 8 (E31) : « Dupliquer en S… » sur un brassin dit son effet, comme sur la Hotte */
+  { n: '11d', nom: 'f5a-menu-brassin', geste: 'appui long sur la Saison de ferme ; lire « Dupliquer en S… »', cave: true,
+    jouer: async p => { await appuiLong(p, { titre: 'Saison de ferme' }); p.dup = await p.evaluate(() => { const m = document.querySelector('[role="menu"]'); const d = m && [...m.querySelectorAll('[role^="menuitem"], button')].find(b => /^Dupliquer en/.test((b.textContent || '').trim())); return d ? (d.textContent || '').replace(/\s+/g, ' ').trim() : ''; }); p.noteEtat = `« ${p.dup} »`; },
+    attendu: [fn(async p => ({ ok: /^Dupliquer en S\d+.*S\d+ : [−\d\s’']+ → [−\d\s’']+/.test(p.dup || '') || /^Dupliquer en S\d+.*[−+]\s?\d/.test(p.dup || ''), dit: `« ${p.dup || 'absent'} »` }), '« Dupliquer en S… » avec son effet')] },
+  /* D-69 (retenu vu en texte seul) : un projet de matériel (Frigo) est dans Travaux, et s'ouvre */
+  { n: '69', nom: 'travaux-projet-materiel', geste: 'période An ; toucher Frigo (Travaux)', mesure: lireTexte, jouer: async p => { await menuPeriode(p, /^An\b/); await p.keyboard.press('Escape').catch(() => {}); await attendre(400); await toucher(p, { titre: 'Frigo' }); await attendre(300); },
+    attendu: [fn(async p => p.evaluate(() => [...document.querySelectorAll('section[data-rangee="travaux"] [data-chose], section[data-rangee="travaux"] [data-barre]')].some(e => /^Frigo/.test(e.getAttribute('aria-label') || e.getAttribute('data-titre') || ''))), 'Frigo dans la rangée Travaux'), /Frigo/] }
 ];
+/** L'étiquette du cadre de la fenêtre (« Fenêtre : S47 – S52 »). */
+const cadreLu = p => p.evaluate(() => document.querySelector('.ent-cadre[role="group"]')?.getAttribute('aria-label') ?? 'cadre absent');
+/**
+ * Le départ de c2-b (CRITIQUE-9 n° 9) : sur la courbe, dans le plus grand intervalle libre du cadre de la fenêtre et de ses poignées (12 px de
+ * marge), à mi-hauteur ; le glissé reste dans cet intervalle. Vérifié par elementFromPoint : le doigt ne tombe ni sur le cadre ni sur une poignée.
+ */
+const departCourbe = p => p.evaluate(() => {
+  const c = [...document.querySelectorAll('[aria-label^="Libre et caisse"]')].find(e => e.getBoundingClientRect().width > 100);
+  if (!c) return { ok: false, dit: 'courbe introuvable' };
+  const C = c.getBoundingClientRect();
+  const obstacles = [...document.querySelectorAll('.ent-cadre, [data-poignee], [data-cadre-tirage], [data-cadre-etiquette]')].map(e => e.getBoundingClientRect()).filter(r => r.width > 0 && r.bottom > C.top && r.top < C.bottom).map(r => [r.left - 12, r.right + 12]).sort((a, b) => a[0] - b[0]);
+  const libres = []; let x = C.left + 8;
+  for (const [g, d] of obstacles) { if (g > x) libres.push([x, g]); x = Math.max(x, d); }
+  if (C.right - 8 > x) libres.push([x, C.right - 8]);
+  const [g, d] = libres.sort((a, b) => (b[1] - b[0]) - (a[1] - a[0]))[0] || [0, 0];
+  if (d - g < 40) return { ok: false, dit: `aucun intervalle libre de 40 px sur la courbe (obstacles ${obstacles.map(o => o.map(Math.round).join('–')).join(', ')})` };
+  const y = C.top + C.height * 0.55, x0 = g + 10;
+  const sous = document.elementFromPoint(x0, y);
+  const pris = sous && sous.closest('.ent-cadre, [data-poignee], [data-cadre-tirage]');
+  return { ok: !pris, x: x0, y, dx: (d - g - 20) * 0.7, dit: `départ (${Math.round(x0)}, ${Math.round(y)}), glissé ${Math.round((d - g - 20) * 0.7)} px dans l’intervalle libre ${Math.round(g)}–${Math.round(d)} ; sous le doigt : <${sous?.tagName.toLowerCase()}>${pris ? ' DANS LE CADRE' : ''}` };
+});
+/** Le texte de la rangée Fêtes (CRITIQUE-9 n° 1). */
+const fetesLues = p => p.evaluate(() => (document.querySelector('section[data-rangee="fetes"]')?.textContent || 'rangée Fêtes absente').replace(/\s+/g, ' ').trim());
+/** Le Marché de Noël posé dans Fêtes, en S52 (sa barre porte `data-rangee` et `data-semaine`). */
+function noelEnS52(p) {
+  return p.evaluate(() => {
+    const b = [...document.querySelectorAll('[data-barre], [data-marque]')].find(e => /^Marché de Noël/.test(e.getAttribute('aria-label') || e.getAttribute('data-titre') || ''));
+    if (!b) return { ok: false, dit: 'Marché de Noël absent de la frise' };
+    return { ok: b.getAttribute('data-rangee') === 'fetes' && b.getAttribute('data-semaine') === 'S52', dit: `Marché de Noël : rangée ${b.getAttribute('data-rangee')}, ${b.getAttribute('data-semaine')}` };
+  });
+}
+/** Les étiquettes « prête le … » posées sur la ligne d'un brassin (dans sa barre ou à côté), à l'écran (CRITIQUE-9 n° 3, E25, E29). */
+const preteSur = (p, titre) => p.evaluate(t => {
+  const b = [...document.querySelectorAll('section[data-rangee="brassins"] [data-barre], section[data-rangee="brassins"] [data-chose]')].find(e => (e.getAttribute('aria-label') || e.getAttribute('data-titre') || '').startsWith(t));
+  if (!b) return { ok: false, dit: `${t} absente` };
+  const B = b.getBoundingClientRect(), cy = B.top + B.height / 2;
+  const vis = [...document.querySelectorAll('section[data-rangee="brassins"] *')].filter(e => e.children.length === 0 && /prête/.test(e.textContent || '')).filter(e => {
+    const r = document.createRange(); r.selectNodeContents(e); const q = r.getBoundingClientRect();
+    return q.width > 0 && Math.abs(q.top + q.height / 2 - cy) < Math.max(14, B.height / 2 + 4) && q.left >= 0 && q.right <= innerWidth + 1;
+  }).map(e => (e.textContent || '').trim());
+  return { ok: vis.some(x => /prête (le )?\d{1,2} \p{L}+/u.test(x)), dit: `${t} : ${vis.length ? vis.map(x => `« ${x.slice(0, 40)} »`).join(' ') : 'aucun « prête » sur sa ligne'}` };
+}, titre);
+/** Le message (status/alert) ne couvre aucun nom de chose ni de rangée (CRITIQUE-9 n° 7, E33, D-200). */
+function messageSansNom(p) { return p.evaluate(() => {
+  const m = document.querySelector('[data-message]');
+  if (!m) return { ok: false, dit: 'aucun message' };
+  const M = m.getBoundingClientRect();
+  const couverts = [...document.querySelectorAll('[data-calendrier] [data-barre] *, [data-calendrier] [data-chose] *, [data-nom-rangee], [data-rangee] .cal-nom')].filter(e => !m.contains(e) && e.children.length === 0 && /\S/.test(e.textContent || '')).filter(e => {
+    const r = document.createRange(); r.selectNodeContents(e); const q = r.getBoundingClientRect();
+    return q.width > 0 && q.left < M.right - 1 && q.right > M.left + 1 && q.top < M.bottom - 1 && q.bottom > M.top + 1;
+  }).map(e => (e.textContent || '').trim().slice(0, 24));
+  return { ok: couverts.length === 0, dit: couverts.length ? `le message (${m.dataset.place || '?'}) couvre : ${[...new Set(couverts)].slice(0, 5).join(' | ')}` : `rien de couvert (place ${m.dataset.place || '?'})` };
+}); }
+const MOIS_NUM = { 'janv.': 0, 'févr.': 1, mars: 2, 'avr.': 3, mai: 4, juin: 5, 'juil.': 6, 'août': 7, 'sept.': 8, 'oct.': 9, 'nov.': 10, 'déc.': 11 };
+/** « 16 déc. » → jour de l'année suivant aujourd'hui (le banc est daté du jour) ; null si illisible. */
+function jourDe(t) {
+  const m = /(\d{1,2}) (janv\.|févr\.|mars|avr\.|mai|juin|juil\.|août|sept\.|oct\.|nov\.|déc\.)/u.exec(t || '');
+  if (!m) return null;
+  const j = new Date(); const an = MOIS_NUM[m[2]] < j.getMonth() - 1 ? j.getFullYear() + 1 : j.getFullYear();
+  return Date.UTC(an, MOIS_NUM[m[2]], Number(m[1])) / 86400000;
+}
 /** La bande des semaines : les étiquettes visibles (texte « Snn »), leurs boîtes. */
 function bandeLue(p) {
   return p.evaluate(() => [...document.querySelectorAll('[aria-label^="Semaines"] *')].filter(e => e.children.length === 0 && /^S\d+|^[A-ZÉ]$/.test((e.textContent || '').trim()) && e.getBoundingClientRect().width > 0).map(e => (e.textContent || '').trim()).join(' '));
@@ -646,9 +786,20 @@ async function barreTravauxVue(p) {
     const r = e.getBoundingClientRect();
     if (r.top < 0 || r.bottom > innerHeight) { window.scrollBy(0, r.top - innerHeight / 2); }
     const b = e.getBoundingClientRect();
-    const points = e.querySelectorAll('[data-point]').length;
+    const pts = [...e.querySelectorAll('[data-point]')];
+    const points = pts.length;
+    /* CRITIQUE-9 n° 2 (vision 11) : un point compte s'il se VOIT : rien ne le couvre en son centre (le nom de la barre, son fond) */
+    /* elementFromPoint saute ce qui a `pointer-events: none` (le nom de la barre) : on compare aussi aux boîtes des textes de la barre */
+    /* le nom peut être posé hors de l'élément de la barre (un frère, `pointer-events: none`) : tous les textes de la rangée */
+    const noms = [...(e.closest('section[data-rangee]') || e).querySelectorAll('*')].filter(x => !x.closest('[data-point]') && x.children.length === 0 && /\S/.test(x.textContent || '')).map(x => { const r = document.createRange(); r.selectNodeContents(x); const q = x.getBoundingClientRect(); const t = r.getBoundingClientRect(); return { g: Math.min(q.left, t.left), d: Math.max(q.right, t.right), h: Math.min(q.top, t.top), b: Math.max(q.bottom, t.bottom) }; });
+    const vus = pts.filter(x => {
+      const q = x.getBoundingClientRect(); if (q.width <= 0) return false;
+      const cx = q.left + q.width / 2, cy = q.top + q.height / 2;
+      if (noms.some(n => cx >= n.g && cx <= n.d && cy >= n.h && cy <= n.b)) return false;
+      const s = document.elementFromPoint(cx, cy); return !!s && (s === x || x.contains(s) || s.contains(x) || e.contains(s));
+    }).length;
     const dans = b.width > 0 && b.left >= -1 && b.right <= innerWidth + 1;
-    return { ok: dans && points === 5, dit: `« ${(e.getAttribute('aria-label') || '').slice(0, 90)} », ${Math.round(b.left)} → ${Math.round(b.right)} px, ${points} point(s) (5 attendus)` };
+    return { ok: dans && points === 5 && vus === 5, dit: `« ${(e.getAttribute('aria-label') || '').slice(0, 90)} », ${Math.round(b.left)} → ${Math.round(b.right)} px, ${points} point(s) dont ${vus} visible(s) (5 attendus) ; points x ${pts.map(x => { const q = x.getBoundingClientRect(); return `${Math.round(q.left + q.width / 2)},${Math.round(q.top + q.height / 2)}`; }).join(' ')} ; textes ${noms.map(n => `${Math.round(n.g)}–${Math.round(n.d)}/${Math.round(n.h)}–${Math.round(n.b)}`).join(' ')} ; <${e.tagName.toLowerCase()} ${e.hasAttribute('data-barre') ? 'data-barre' : 'data-chose'}>` };
   });
 }
 /** L'idée datée (E36) : le champ « L’idée, en quelques mots » touché (le clavier s'ouvre : une idée s'écrit), le texte, puis le bouton de la feuille. */
@@ -992,6 +1143,24 @@ async function parcoursApp(theme) {
       p.noteEtat = `Courses montées en ${Date.now() - t0} ms`;
     }, [/Courses/, fn(async q => q.evaluate(() => !document.querySelector('[data-frise]')), 'le calendrier a laissé place aux Courses'),
       fn(async q => q.evaluate(() => !/Rien à commander/.test(document.body.innerText)), 'pas « Rien à commander »'), /Malt pilsner/]);
+    /*
+     * CRITIQUE-9 (D-75, D-77, D-108, E37) : « Payé » d'un toucher par la VRAIE pièce de l'app. Le banc ne la monte pas : ses feuilles écrivent par
+     * StorageService / FirestoreRepo, qui hors /?dev-local partent vers Firestore (données réelles) ; elle se prouve donc ici, sur une facture de
+     * malt « ZZ TEST » locale (cache dev-local, requêtes Firestore coupées), touchée dans la rangée Achats.
+     */
+    await ongletApp(p, 'Calendrier'); await p.waitForSelector('[data-frise]', { timeout: 20000 });
+    await etape(p, `devlocal-piece-facture-payee-${theme}`, 'facture de malt « ZZ TEST — malt Brouwland » (cache local), toucher sa chose dans Achats', async () => {
+      await p.evaluate(async echeance => {
+        const { StorageService } = await import('/src/services/storage.ts');
+        StorageService.addTransaction({ id: 'ZZ-TEST-FACTURE-MALT', date: new Date().toISOString().slice(0, 10), description: 'ZZ TEST — malt Brouwland', category: 'brassage', subcategory: 'malt', amountHT: 420, amountTTC: 420, tvaAmount: 0, tvaRate: 0, finance: { version: 1, kind: 'expense', amountCents: 42000, lines: [], paymentStatus: 'unpaid', dueDate: echeance, vendor: 'ZZ TEST — Brouwland' } });
+      }, new Date(Date.now() + 9 * 864e5).toISOString().slice(0, 10));
+      await attendre(900);
+      await toucher(p, { titre: 'ZZ TEST — malt Brouwland' });
+      await attendre(400);
+      if (await existe(p, { role: 'button', texte: /^(Payé|Ouvrir la pièce|Pièce)/ })) await toucher(p, { role: 'button', texte: /^(Payé|Ouvrir la pièce|Pièce)/ });
+      await p.waitForFunction(() => !document.querySelector('[data-frise]'), { timeout: 15000 }).catch(() => {});
+      await attendre(1200);
+    }, [fn(async q => q.evaluate(() => !document.querySelector('[data-frise]') && !!document.querySelector('.finance')), 'Finances a remplacé le calendrier'), /ZZ TEST — malt Brouwland/, /Noter un paiement/, /À payer/, fn(async q => q.evaluate(() => !/l’app ouvrirait/.test(document.body.innerText)), 'aucune fiche de remplacement du banc')]);
   } catch (e) {
     rapport.push({ cfgNom: 'm390', theme, n: 'app', nom: 'devlocal', geste: '/?dev-local', statut: 'ABSENT', dit: e instanceof Absent ? e.message : String(e.message || e).slice(0, 160), capture: '—' });
     console.log(`ABSENT devlocal : ${String(e.message || e).slice(0, 160)}`);

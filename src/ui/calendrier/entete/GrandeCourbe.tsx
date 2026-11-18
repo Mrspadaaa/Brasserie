@@ -57,31 +57,50 @@ function toucheSerie(valeurs: readonly number[], g: Geo, b: Boite): boolean {
   return false;
 }
 
+/** L'écart, en px, entre le centre du point du creux et le texte de son étiquette : le fond (3 px) laisse 4 px libres autour du point (r 6,5). */
+const ECART_CREUX = 14;
 /**
- * La place de l'étiquette « creux S43 · −3 147 » (CRITIQUE-4 n° 27) : à côté du point, au-dessus, au-dessous ou plus haut, à droite ou à gauche ;
- * la première place qui reste dans le dessin et que ni le libre ni la caisse ne traversent. Faute de mieux, la première place : son fond la garde
- * lisible.
+ * Les hauteurs essayées (px, ligne de base du texte sous le point), de la plus proche à la plus lointaine : d'abord la ligne du point (texte
+ * centré sur lui, +4), puis de 2 en 2 px vers le haut et le bas ; jamais plus de 48 px au-dessus ni 40 px au-dessous.
+ */
+const HAUTEURS_CREUX = Array.from({ length: 27 }, (_, k) => 4 - 2 * k).concat(Array.from({ length: 18 }, (_, k) => 6 + 2 * k))
+  .sort((a, b) => Math.abs(a - 4) - Math.abs(b - 4) || a - b);
+
+/**
+ * La place de l'étiquette « creux S43 · −3 147 » (E12, CRITIQUE-4 n° 27, CRITIQUE-9 n° 5) : ANCRÉE SUR LE POINT DU CREUX, dans toutes les
+ * géométries (portrait, paysage, 1280), jamais sur le curseur ni au centre.
+ * - D'abord à droite du point, à `ECART_CREUX` px ; si elle n'y tient pas dans le dessin, à gauche du point ; jamais ailleurs sur le côté.
+ * - En hauteur, de la plus proche du point à la plus lointaine (48 px au plus) : la première place qui reste dans le dessin et que ni le libre ni
+ *   la caisse ne traversent ; faute de mieux, la première qui tient dans le dessin, son fond la garde lisible (le tracé passe dessous).
+ * Avant (critique 9, paysage-cave-21), des places à 40 et 80 px du point et jusqu'à 110 px plus haut l'emportaient sur la proximité : en
+ * paysage, le libellé finissait au milieu du dessin, contre le curseur de S20.
  */
 export function placeEtiquetteCreux(courbe: readonly SoldeSemaine[], g: Geo & { xl: number }, largSvg: number, index: number, centimes: number, w: number): { x: number; y: number; ancre: 'start' | 'end'; boite: Boite } {
   const cx = g.x(index) + g.unit / 2, cy = g.y(centimes);
-  const gauche = cx > largSvg / 2;
   const libres = courbe.map(s => s.libre), caisses = courbe.map(s => s.caisse);
-  // Les places essayées, de la plus proche du point à la plus lointaine : au-dessus, au-dessous, puis plus haut et plus loin sur le côté.
-  const essais: { dx: number; dy: number; ancre: 'start' | 'end'; cout: number }[] = [];
-  const cotes = (gauche ? ['end', 'start'] : ['start', 'end']) as ('start' | 'end')[];
-  for (const dy of [-12, 22, -26, 36, -40, -54, -68, -82, -96, -110, 50]) {
-    for (const dx of [10, 40, 80]) cotes.forEach((ancre, k) => essais.push({ dx, dy, ancre, cout: Math.abs(dy) + dx * 0.6 + k * 4 }));
-  }
-  essais.sort((a, b) => a.cout - b.cout);
-  const places = essais.map(({ dx, dy, ancre }) => {
-    const x = cx + (ancre === 'end' ? -dx : dx), y = cy + dy;
+  const dedansX = (b: Boite) => b.l >= g.xl && b.r <= largSvg - MARGE_D;
+  const dedansY = (b: Boite) => b.t >= 0 && b.b <= g.bas;
+  const place = (ancre: 'start' | 'end', dy: number) => {
+    const x = cx + (ancre === 'end' ? -ECART_CREUX : ECART_CREUX), y = cy + dy;
     const l = ancre === 'end' ? x - w : x;
     return { x, y, ancre, boite: { l: l - 3, r: l + w + 3, t: y - 13, b: y + 4 } };
-  });
-  const dedans = (b: Boite) => b.l >= g.xl && b.r <= largSvg - MARGE_D && b.t >= 0 && b.b <= g.bas;
-  return places.find(p => dedans(p.boite) && !toucheSerie(libres, g, p.boite) && !toucheSerie(caisses, g, p.boite))
-    ?? places.find(p => dedans(p.boite))
-    ?? places[0];
+  };
+  // Les côtés où elle tient dans le dessin : à droite d'abord, puis à gauche ; si aucun (dessin plus étroit que le texte), celui qui déborde le
+  // moins.
+  const droite = place('start', 0), gauche = place('end', 0);
+  const cotes = (['start', 'end'] as const).filter(a => dedansX((a === 'start' ? droite : gauche).boite));
+  if (!cotes.length) cotes.push((droite.boite.r - (largSvg - MARGE_D)) <= (g.xl - gauche.boite.l) ? 'start' : 'end');
+  // Contre le point, de la plus proche à la plus lointaine ; à égale distance, la droite. La gauche ne passe devant qu'avec 6 px de moins.
+  const places = cotes.flatMap(a => HAUTEURS_CREUX.map(dy => ({ ...place(a, dy), cout: Math.abs(dy - 4) + (a === 'end' ? 6 : 0) })))
+    .sort((p, q) => p.cout - q.cout).map(({ cout: _cout, ...p }) => p);
+  // Hors du tracé si une place contre le point le permet ; sinon la plus proche, à droite si elle y tient, sur son fond (le tracé passe dessous).
+  const trouvee = places.find(p => dedansY(p.boite) && !toucheSerie(libres, g, p.boite) && !toucheSerie(caisses, g, p.boite))
+    ?? places.find(p => dedansY(p.boite));
+  if (trouvee) return trouvee;
+  // Un dessin trop bas pour toutes ces hauteurs : la ligne du point, ramenée dans le dessin.
+  const p = places[0];
+  const decale = Math.max(0, -p.boite.t) - Math.max(0, p.boite.b - g.bas);
+  return { ...p, y: p.y + decale, boite: { ...p.boite, t: p.boite.t + decale, b: p.boite.b + decale } };
 }
 
 /** Largeur du dessin : toute la largeur, ou 62 % en paysage (le détail est à côté). */

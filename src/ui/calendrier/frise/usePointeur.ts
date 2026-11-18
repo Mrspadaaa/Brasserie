@@ -35,6 +35,19 @@ export interface OptionsPointeur {
   onLacheBord?: (k: number, annule: boolean) => void;
   /** Le glisser est refusé : la raison, une fois. */
   onRefus?: (raison: string, cible: Element | null) => void;
+  /**
+   * CRITIQUE-9 doute f2-a : la zone de prise du bord droit, en px de part et d'autre du bord (0 : pas de bord). Un doigt posé à 10 px du bord
+   * d'une rangée de 18 px (paysage) tire le bord, au lieu de déplacer la barre ; jamais plus d'un tiers de la barre, dont le corps se glisse.
+   */
+  zoneBord?: number;
+}
+
+/** Le doigt est-il sur la zone du bord droit de `el` ? Lu sur la boîte de la barre (une boîte vide, jsdom : non). */
+export function surLeBord(el: Element, x: number, zone: number): boolean {
+  if (!zone) return false;
+  const r = el.getBoundingClientRect();
+  if (!(r.width > 0)) return false;
+  return x >= r.right - Math.min(zone, r.width / 3) && x <= r.right + zone;
 }
 
 interface Etat {
@@ -68,7 +81,7 @@ export function usePointeur(options: OptionsPointeur) {
   const onPointerDown = useCallback((e: React.PointerEvent<HTMLElement>) => {
     if (e.button > 0) return;
     stopMinuterie();
-    const bord = (e.target as HTMLElement | null)?.closest?.('[data-bord]');
+    const bord = (e.target as HTMLElement | null)?.closest?.('[data-bord]') || surLeBord(e.currentTarget, e.clientX, opts.current.zoneBord ?? 0);
     const s: Etat = { id: e.pointerId, cible: e.target instanceof Element ? e.target : null, x0: e.clientX, y0: e.clientY, t0: Date.now(), mode: bord ? 'bord' : 'appui', k: 0, minuterie: null };
     etat.current = s;
     if (bord) {
