@@ -265,6 +265,8 @@ export function CalendrierTab(props: CalendrierTabProps) {
   /* CRITIQUE-10 (constat D n° 1, E33, D-126) : le geste Lier ouvre lui-même le détail ; le défilement qui le dégage du + (lot C) n'est pas
      celui du brasseur et ne chasse pas « Liée à X · Annuler ». Jusqu'à cette heure, un défilement est absorbé (la position repart de là). */
   const ouvertureParGeste = useRef(0);
+  /* CRITIQUE-13 n° 1 : la frise défile pour montrer l'alerte f6-b entière ; ce défilement-là ne la chasse pas */
+  const absorberDefilement = useCallback(() => { ouvertureParGeste.current = Date.now() + 600; }, []);
   const racine = useRef<HTMLDivElement>(null);
   const idMessage = message?.id;
   useEffect(() => {
@@ -606,6 +608,18 @@ export function CalendrierTab(props: CalendrierTabProps) {
   };
   const liste = vue === 'liste';
   const graph = vue === 'graph';
+  /* CRITIQUE-13 n° 1 (règle n° 1, `as/cap/p-f6b-apres`) : l'alerte f6-b (et f2-a) se pose dans la rangée de la vente promise, sous elle, dans le
+     flux ; elle pousse la suite et ne cache rien. Vente hors de la vue, rangée masquée ou vue Liste : le message reste à sa place commune. */
+  const rangeeAlerte: IdRangee | null = (() => {
+    if (!message || message.role !== 'alert' || !message.ancre || liste || graph) return null;
+    const a = message.ancre;
+    const c = choses.find(x => x.id === a) ?? choses.find(x => x.id.startsWith(a));
+    if (!c || !positionDans(colonnes, c) || masquees.includes(c.rangee) || (filtre && filtre !== c.rangee)) return null;
+    return c.rangee;
+  })();
+  const noeudMessage = (
+    <Message message={message} onFermer={fermerMessage} detailOuvert={selectionId} dansLaFrise={rangeeAlerte !== null} onDefileSeul={absorberDefilement} />
+  );
 
   return (
     <div ref={racine} className={`cal-tab space-y-2 pt-1 pb-[calc(var(--main-navigation-height,2.5rem)+6.5rem)] text-sm${paysage ? ' cal-tab-paysage' : ''}`} data-calendrier data-vue={vue} data-orientation={orientation}>
@@ -689,6 +703,7 @@ export function CalendrierTab(props: CalendrierTabProps) {
           ici={ici}
           etiquetteDuree={duree}
           detail={detail}
+          alerte={rangeeAlerte ? { rangee: rangeeAlerte, noeud: noeudMessage } : null}
           onMesure={setMesure}
           reserveDroite={reserveDroite}
           onRenvoi={surRenvoi}
@@ -699,7 +714,7 @@ export function CalendrierTab(props: CalendrierTabProps) {
         />
       )}
 
-      <Message message={message} onFermer={fermerMessage} detailOuvert={selectionId} />
+      {rangeeAlerte === null && noeudMessage}
 
       {menu && chosesMenu && (() => {
         const c = chosesMenu;

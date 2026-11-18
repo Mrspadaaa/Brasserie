@@ -48,6 +48,13 @@ export interface MessageProps {
   dureeMs?: number;
   /** L'id du détail ouvert : le message se replace quand il s'ouvre (le détail est un obstacle, D-126). */
   detailOuvert?: string | null;
+  /**
+   * CRITIQUE-13 n° 1 (règle n° 1, `as/cap/p-f6b-apres`, `as-gestes.js` `alerte`) : l'alerte f6-b est posée dans la frise, sous la vente promise,
+   * dans le flux : elle pousse la suite et ne cache rien. La frise défile alors pour la montrer entière, sans perdre la vente de vue.
+   */
+  dansLaFrise?: boolean;
+  /** Appelé juste avant ce défilement : il n'est pas celui du brasseur et ne chasse pas l'alerte. */
+  onDefileSeul?: () => void;
 }
 
 export const DUREE_MESSAGE_MS = 7000;
@@ -197,11 +204,47 @@ export function placerMessage(el: HTMLElement, ancre: string | undefined): 'pres
   return libre ? 'pres' : 'bas';
 }
 
-export const Message: React.FC<MessageProps> = ({ message, onFermer, dureeMs = DUREE_MESSAGE_MS, detailOuvert = null }) => {
+/** Le premier ancêtre qui défile en hauteur ; sinon la page (le `overflow` de body passe à la fenêtre : body n'est jamais le défilant). */
+function defilant(el: Element): Element | null {
+  for (let p = el.parentElement; p && p !== document.body && p !== document.documentElement; p = p.parentElement) {
+    const o = getComputedStyle(p).overflowY;
+    if ((o === 'auto' || o === 'scroll') && p.scrollHeight > p.clientHeight + 1) return p;
+  }
+  return null;
+}
+
+/**
+ * CRITIQUE-13 n° 1 : l'alerte posée dans la frise se montre entière, au-dessus des onglets et du + volant ; le défilement s'arrête avant que la
+ * vente promise passe sous l'en-tête (le jouable : `scrollBy` de l'alerte, borné par la barre bougée). Rend vrai s'il a défilé.
+ */
+export function montrerEntiere(el: HTMLElement, ancre: string | undefined, avant?: () => void): boolean {
+  const r = el.getBoundingClientRect();
+  if (r.height === 0) return false;
+  let bas = window.innerHeight - 8;
+  const nav = document.querySelector('nav.nav-principale')?.getBoundingClientRect();
+  if (nav && vu(nav) && nav.width >= nav.height) bas = nav.top - 8;
+  const fab = document.querySelector('.floating-actions button, button[aria-label^="Actions rapides"]')?.getBoundingClientRect();
+  if (fab && vu(fab) && fab.left < r.right && fab.right > r.left) bas = Math.min(bas, fab.top - 8);
+  const besoin = r.bottom - bas;
+  if (besoin <= 0) return false;
+  const entete = document.querySelector('[data-entete-zone]')?.getBoundingClientRect();
+  const haut = entete && entete.height > 0 ? entete.bottom + 6 : 8;
+  const a = chose(ancre)?.getBoundingClientRect();
+  const dy = Math.round(Math.max(0, Math.min(besoin, (a && a.height > 0 ? a.top : r.top) - haut)));
+  if (dy < 1) return false;
+  avant?.();
+  const d = defilant(el);
+  if (d) d.scrollBy({ top: dy }); else window.scrollBy({ top: dy });
+  return true;
+}
+
+export const Message: React.FC<MessageProps> = ({ message, onFermer, dureeMs = DUREE_MESSAGE_MS, detailOuvert = null, dansLaFrise = false, onDefileSeul }) => {
   const [detailOuvertLigne, setDetailOuvertLigne] = React.useState(false);
   const racine = React.useRef<HTMLDivElement>(null);
   const fermer = React.useRef(onFermer);
   fermer.current = onFermer;
+  const defileSeul = React.useRef(onDefileSeul);
+  defileSeul.current = onDefileSeul;
   const id = message?.id;
   const ancre = message?.ancre;
   /* CRITIQUE-4 n° 20 : une alerte qui attend une décision (« Livrer le 5 janv. ») ne part pas seule au bout de 7 s ; elle part au défilement,
@@ -220,6 +263,14 @@ export const Message: React.FC<MessageProps> = ({ message, onFermer, dureeMs = D
   React.useLayoutEffect(() => {
     const el = racine.current;
     if (!el || id === undefined) return undefined;
+    if (dansLaFrise) {
+      /* dans le flux de la frise : aucune place à calculer ; la frise défile pour la montrer entière, puis encore une fois après la remise en
+         page qui suit l'écriture (le jouable attend 30 ms) */
+      const avant = () => defileSeul.current?.();
+      montrerEntiere(el, ancre, avant);
+      const t = [150, 500, 900].map(ms => setTimeout(() => { if (el.isConnected) montrerEntiere(el, ancre, avant); }, ms));
+      return () => t.forEach(clearTimeout);
+    }
     const placer = () => {
       if (!el.isConnected) return;
       const place = placerMessage(el, ancre);
@@ -237,7 +288,7 @@ export const Message: React.FC<MessageProps> = ({ message, onFermer, dureeMs = D
       window.removeEventListener('resize', surTaille); window.removeEventListener('scroll', surDefilement, { capture: true });
       minuteries.forEach(clearTimeout); image?.();
     };
-  }, [id, ancre, detailOuvert]);
+  }, [id, ancre, detailOuvert, dansLaFrise]);
 
   if (!message) return null;
   const { role, texte, lien, annuler, livrer, detail } = message;
@@ -254,6 +305,7 @@ export const Message: React.FC<MessageProps> = ({ message, onFermer, dureeMs = D
     <div
       ref={racine} role={role} className={`cal-msg${role === 'alert' ? ' cal-msg-alerte' : ''}`} data-message
       data-msg-origine={message.origine ?? 'calendrier'}
+      {...(dansLaFrise ? { 'data-flux': '' } : {})}
       {...(message.ancre ? { 'data-ancre': message.ancre } : {})}
       {...(message.ouvreSonDetail ? { 'data-ouvre-son-detail': '' } : {})}
     >

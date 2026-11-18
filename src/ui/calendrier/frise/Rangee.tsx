@@ -511,6 +511,8 @@ export interface RangeeProps {
   onSixSemaines?: (chose: ChoseCalendrier) => void;
   /** Le détail de la chose choisie de cette rangée, posé sous ses barres (f4-b). */
   detail?: React.ReactNode;
+  /** CRITIQUE-13 n° 1 (règle n° 1, `as/cap/p-f6b-apres`) : l'alerte f6-b, dans le flux sous la vente promise ; elle pousse la suite. */
+  alerte?: React.ReactNode;
 }
 
 /** Paysage : la largeur estimée du titre (carré +, nom, œil, pastille), posé sur la première ligne. */
@@ -769,6 +771,7 @@ export const Rangee: React.FC<RangeeProps> = props => {
           )}
         </div>
       )}
+      {props.alerte}
       {props.detail}
     </section>
   );

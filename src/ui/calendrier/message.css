@@ -42,6 +42,12 @@
 /* l'alerte est en colonne : son texte garde sa hauteur (une base de 12rem serait une hauteur) */
 .cal-msg-alerte[data-message] .cal-msg-l { flex: none; }
 
+/* CRITIQUE-13 n° 1 (règle n° 1, `as/cap/p-f6b-apres`) : l'alerte f6-b posée dans la frise, sous la vente promise, dans le flux. Elle prend la
+   largeur de la frise et pousse la rangée suivante : rien n'est caché, ni la vente dont elle parle, ni le titre Achats. */
+.cal-msg[data-message][data-flux] {
+  position: relative; z-index: 2; inset: auto; width: auto; max-width: none; margin: 8px 8px 10px; box-shadow: none;
+}
+
 /* CRITIQUE-4 n° 20 : le téléphone tourné (390 px de haut) et le grand écran : l'alerte à gauche du + volant, son texte et ses boutons sur une ligne */
 @media (orientation: landscape) and (max-height: 520px), (min-width: 1024px) {
   .cal-msg-alerte[data-message] { flex-direction: row; flex-wrap: nowrap; align-items: center; gap: 10px; }

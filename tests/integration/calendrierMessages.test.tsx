@@ -143,6 +143,29 @@ describe('d4 : l’alerte f6-b entière (n° 20, E32)', () => {
     expect(boutons[1]).toMatch(/Annuler/);
   });
 
+  it('CRITIQUE-13 n° 1 (règle n° 1, as/cap/p-f6b-apres) : l’alerte est dans la rangée Ventes, sous la vente promise, dans le flux ; elle pousse Achats', async () => {
+    monter();
+    glisser(barre(/^Blonde d’automne, 23 nov/), colonne());
+    const alerte = (await screen.findByRole('alert')).closest<HTMLElement>('[data-message]')!;
+    expect(messages()).toHaveLength(1);
+    expect(alerte.hasAttribute('data-flux')).toBe(true);
+    const rangee = alerte.closest('[data-frise] [data-rangee]');
+    expect(rangee?.getAttribute('data-rangee')).toBe('ventes');
+    const ancre = alerte.dataset.ancre!;
+    const vente = rangee!.querySelector(`[data-chose="${ancre}"]`) ?? rangee!.querySelector(`[data-chose^="${ancre}"]`);
+    expect(vente).not.toBeNull();
+    /* la vente promise d'abord, puis l'alerte, puis la rangée suivante : l'alerte ne couvre rien, elle pousse la suite */
+    expect(vente!.compareDocumentPosition(alerte) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
+    const achats = document.querySelector('[data-frise] [data-rangee="achats"]');
+    expect(achats).not.toBeNull();
+    expect(alerte.compareDocumentPosition(achats!) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
+    /* le vrai CSS : dans le flux, jamais en surimpression */
+    expect(cssMessage).toMatch(/\.cal-msg\[data-message\]\[data-flux\]\s*\{[^}]*position:\s*relative/);
+    /* Annuler la retire, et le canal reste unique */
+    fireEvent.click(within(alerte).getByRole('button', { name: /Annuler/ }));
+    await waitFor(() => expect(document.querySelector('[data-frise] [data-message][data-flux]')).toBeNull());
+  });
+
   it('client inconnu : la phrase du domaine, rien d’inventé ; client dans le titre ou non', () => {
     const p: Promesse = { planId: 'P', titre: '3 fûts La Cigogne', jourPromis: '2026-12-15', preteLe: '2027-01-04', livrerLe: '2027-01-05', texte: '3 fûts La Cigogne promis le 15 déc. · prête le 4 janv.', clientId: 'C' };
     expect(textePromesse(p, [{ id: 'C', name: 'La Cigogne' }])).toBe('3 fûts promis à La Cigogne le 15 déc. · prête le 4 janv.');
