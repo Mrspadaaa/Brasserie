@@ -144,8 +144,8 @@ export function retourVide(keg: KegItem, date: string): KegItem {
 }
 
 /** Remettre à laver (Gestion du fût) : un fût propre, neuf ou sali, repasse à laver ; rien d'autre ne change. */
-export function remettreALaver(keg: KegItem, date: string): KegItem {
-  return { ...sansCles(keg, ...CONTENU, ...CLIENT), state: 'lavage', historique: avecEtape(keg.historique, { date, quoi: 'a-laver' }) };
+export function remettreALaver(keg: KegItem, date: string, detail?: string): KegItem {
+  return { ...sansCles(keg, ...CONTENU, ...CLIENT), state: 'lavage', historique: avecEtape(keg.historique, { date, quoi: 'a-laver', ...(detail ? { detail } : {}) }) };
 }
 
 /** La dernière étape qui a mis le fût à laver : retour vide, ou remis à laver depuis la fiche. */
@@ -272,10 +272,12 @@ export function resumeParc(kegs: Array<Pick<KegItem, 'state' | 'capacityL'>>): R
   };
 }
 
-export function phrasesResume(r: ResumeParc): { gauche: string; droite: string } {
+export function phrasesResume(r: ResumeParc, litresArchivesPleins = 0): { gauche: string; droite: string } {
+  // Un fût archivé plein garde sa bière en cave : elle compte dans les litres pleins, et le dit.
+  const pleins = r.litresPleins + litresArchivesPleins;
   return {
     gauche: `${r.futs} ${r.futs > 1 ? 'fûts' : 'fût'} · ${nombreFr(r.litres, 1)} L`,
-    droite: `${nombreFr(r.litresPleins, 1)} L pleins en cave · ${r.dehors === 0 ? 'aucun dehors' : `${r.dehors} dehors`}`
+    droite: `${nombreFr(pleins, 1)} L pleins en cave${litresArchivesPleins > 0 ? ` (dont ${nombreFr(litresArchivesPleins, 1)} L en fût archivé)` : ''} · ${r.dehors === 0 ? 'aucun dehors' : `${r.dehors} dehors`}`
   };
 }
 

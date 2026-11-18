@@ -4,7 +4,7 @@ import type { TabType } from '../../src/components/BottomNav';
 import type { AnySubTab } from '../../src/domain/fabActions';
 
 const ECRANS: Array<[EcranId, TabType, AnySubTab]> = [
-  ['bord', 'dashboard', null], ['finances', 'finances', null],
+  ['bord', 'dashboard', null], ['finances', 'finances', null], ['calendrier', 'calendrier', null],
   ['brassins', 'production', 'batches'], ['recettes', 'production', 'recipes'], ['atelier', 'production', 'lab'], ['volumes', 'production', 'scaler'],
   ['stock', 'stocks', 'stock'], ['courses', 'stocks', 'courses'], ['futs', 'stocks', 'futs'], ['materiel', 'stocks', 'materiel'], ['houblons', 'stocks', 'hops'],
   ['clients', 'clients', 'crm'], ['impot', 'clients', 'ofdf'], ['tarifs', 'clients', 'tarifs']
@@ -23,16 +23,16 @@ describe('Menu du + selon l’écran (b1s-a « Deux étages »)', () => {
     for (const [id, tab, sub] of ECRANS) expect(ecranId(tab, sub)).toBe(id);
   });
 
-  it('l’action de l’écran est la bonne sur les 14 écrans (BX-4 : aucune sur Volumes ni Impôt bière)', () => {
+  it('l’action de l’écran est la bonne sur les 15 écrans (BX-4 : aucune sur Volumes ni Impôt bière)', () => {
     const attendu: Record<EcranId, string | null> = {
-      bord: 'Nouvelle écriture', finances: 'Nouvelle écriture', brassins: 'Nouveau brassin', recettes: 'Nouvelle recette', atelier: 'Nouvelle idée',
+      bord: 'Nouvelle écriture', finances: 'Nouvelle écriture', calendrier: null, brassins: 'Nouveau brassin', recettes: 'Nouvelle recette', atelier: 'Nouvelle idée',
       volumes: null, stock: 'Nouvel article', courses: 'Copier la liste', futs: 'Nouveau fût', materiel: 'Nouveau matériel',
       houblons: 'Nouvelle variété', clients: 'Nouveau client', impot: null, tarifs: 'Nouveau tarif'
     };
     for (const [id, tab, sub] of ECRANS) expect(plusMenuFor(tab, sub, contexte).action?.label ?? null, id).toBe(attendu[id]);
   });
 
-  it('le commun est toujours là : les cinq gestes de « Partout », dans le même ordre, sur les 14 écrans', () => {
+  it('le commun est toujours là : les cinq gestes de « Partout », dans le même ordre, sur les 15 écrans', () => {
     for (const [id, tab, sub] of ECRANS) {
       const m = plusMenuFor(tab, sub, contexte);
       expect(m.partout.map((e) => e.cle), id).toEqual(COMMUNS);

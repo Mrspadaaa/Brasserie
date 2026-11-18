@@ -74,10 +74,10 @@ describe('FloatingActions · contrat DOM et clavier', () => {
   it('route chaque choix du menu vers son callback ou événement précis', () => {
     const callbacks = renderActions(null);
     const destinations = [
-      { label: /Entrer une facture/, run: callbacks.invoice },
-      { label: /Encaisser une vente/, run: callbacks.sale },
-      { label: /Créer une recette/, run: callbacks.recipe },
-      { label: /Lancer un brassin/, run: callbacks.brew }
+      { label: /^Facture/, run: callbacks.invoice },
+      { label: /^Vente/, run: callbacks.sale },
+      { label: /^Recette/, run: callbacks.recipe },
+      { label: /^Brassin/, run: callbacks.brew }
     ];
 
     for (const destination of destinations) {

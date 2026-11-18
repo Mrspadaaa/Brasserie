@@ -93,7 +93,7 @@ export function gestesIci(menu: PlusMenu): LigneIci[] {
 export type DestinationId = EcranId | 'assistant' | 'journal' | 'reglages';
 
 export const LIBELLE_DESTINATION: Record<DestinationId, string> = {
-  bord: 'Bord', finances: 'Finances', brassins: 'Brassins', recettes: 'Recettes', atelier: 'Atelier R&D', volumes: 'Volumes',
+  bord: 'Bord', finances: 'Finances', calendrier: 'Calendrier', brassins: 'Brassins', recettes: 'Recettes', atelier: 'Atelier R&D', volumes: 'Volumes',
   stock: 'Stock', courses: 'Courses', futs: 'Fûts', materiel: 'Matériel', houblons: 'Houblons',
   clients: 'Clients', impot: 'Impôt bière', tarifs: 'Prix', assistant: 'Assistant', journal: 'Journal', reglages: 'Réglages'
 };

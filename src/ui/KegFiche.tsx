@@ -28,7 +28,7 @@ interface KegFicheProps {
 
 /** Les clients de l'onglet Clients, favoris en tête (puis ordre alphabétique). */
 export function optionsClients(clients: Client[]) {
-  return [...clients]
+  return clients.filter((c) => !c.archivedAt)
     .sort((a, b) => Number(Boolean(b.favorite)) - Number(Boolean(a.favorite)) || a.name.localeCompare(b.name, 'fr'))
     .map((c) => ({ value: c.id, label: c.name, detail: c.type, favorite: Boolean(c.favorite) }));
 }
@@ -126,7 +126,7 @@ export const KegFiche: React.FC<KegFicheProps> = ({ keg, batches, clients, today
 
         {keg.notes && <p className="equipment-note"><span>Note · </span>{keg.notes}</p>}
       </FormNav>
-      <details className="equipment-disclosure equipment-management">
+      <details className="equipment-disclosure equipment-management" open>
         <summary>Gestion du fût</summary>
         {keg.state === 'propre' && <Button intent="secondary" size="sm" onClick={() => done(remettreALaver(keg, today))}>Remettre à laver</Button>}
         <Button intent="danger" size="sm" className="equipment-danger" onClick={onRemove} icon={<Trash2 size={14}/>}>Retirer du parc</Button>

@@ -48,12 +48,18 @@ export interface EntityListProps<T> {
   groupesPlies?: ReadonlySet<string>;
   /** Bandeau libre au-dessus de la liste (totaux, actions). */
   header?: React.ReactNode;
+  /** Sous la dernière ligne, dans le défilement (« Archivés · n ») : à la suite de la liste, jamais au bas d'un grand vide. */
+  footer?: React.ReactNode;
   toolbarAction?: React.ReactNode;
   /** Un conteneur extérieur qui défile : la liste s'y appuie au lieu d'avoir sa propre zone défilante (l'Étagère du Stock : outils, mur et liste défilent ensemble). */
   scrollParent?: HTMLElement | null;
   /** Hauteur de la zone défilante. Par défaut, tout l'espace disponible. */
   className?: string;
 }
+
+/** Le pied de la liste virtualisée : un composant stable (un nouveau à chaque rendu remonterait son contenu et perdrait son état ouvert). */
+const PiedListe = ({ context }: { context?: { pied?: React.ReactNode } }) => <>{context?.pied}</>;
+const COMPOSANTS_LISTE = { Footer: PiedListe };
 
 export function EntityList<T>({
   items,
@@ -70,6 +76,7 @@ export function EntityList<T>({
   searchPlaceholder = 'Rechercher…',
   emptyState,
   header,
+  footer,
   toolbarAction,
   scrollParent,
   className = ''
@@ -196,6 +203,7 @@ export function EntityList<T>({
       {header && <div className="shrink-0 pb-1">{header}</div>}
 
       {isEmpty && emptyState}
+      {(isEmpty || noResults) && footer}
 
       {noResults && (
         <div className="py-12 text-center space-y-2">
@@ -211,6 +219,8 @@ export function EntityList<T>({
           ref={defilement as never}
           className={scrollParent ? undefined : "flex-1 min-h-0"}
           customScrollParent={scrollParent ?? undefined}
+          components={COMPOSANTS_LISTE as never}
+          context={{ pied: footer } as never}
           groupCounts={grouped.counts}
           groupContent={(index) => renderGroupHeader ? renderGroupHeader(grouped.names[index], grouped.reels[index]) : (
             <div
@@ -238,6 +248,8 @@ export function EntityList<T>({
           ref={defilement as never}
           className={scrollParent ? undefined : "flex-1 min-h-0"}
           customScrollParent={scrollParent ?? undefined}
+          components={COMPOSANTS_LISTE as never}
+          context={{ pied: footer } as never}
           data={filtered}
           itemContent={(index, item) => (
             <div key={keyOf(item)} className="py-0.5">

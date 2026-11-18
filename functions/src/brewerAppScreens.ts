@@ -2,6 +2,7 @@
 export const BREWER_APP_SCREENS: Record<string, string> = {
   dashboard: 'Tableau de bord',
   finances: 'Finances',
+  calendrier: 'Calendrier',
   'production-batches': 'Brassins',
   'production-recipes': 'Recettes',
   'production-lab': 'Atelier R&D',

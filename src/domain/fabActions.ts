@@ -50,6 +50,7 @@ export const OUTILS_HOUBLONS_EVENT = 'brassins-outils-houblons-open';
 export type SubTabOf = {
   dashboard: null;
   finances: null;
+  calendrier: null;
   production: 'batches' | 'recipes' | 'lab' | 'scaler';
   stocks: 'stock' | 'courses' | 'futs' | 'materiel' | 'hops';
   clients: 'crm' | 'ofdf' | 'tarifs';
@@ -76,6 +77,9 @@ const ACTIONS: {
   // écriture comptable ; vente, facture, recette et brassin restent dessous.
   dashboard: NEW_TRANSACTION,
   finances: NEW_TRANSACTION,
+  // Calendrier (onglet/v1, 16.11) : ce qui se pose dans le temps est d'abord un brassin ; écriture, facture et vente restent sous « Partout ».
+  // Les trois gestes (brassin, fête, dépense) viennent de l'écran lui-même (`usePlusPage`), avec la semaine touchée : pas d'action pleine ici.
+  calendrier: A('quickAction', 'Saisie rapide'),
 
   production: {
     batches: B('newBatch', 'Nouveau brassin', 'Brassin', 'Sur Brassins'),

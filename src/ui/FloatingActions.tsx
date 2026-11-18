@@ -259,7 +259,7 @@ export const FloatingActions: React.FC<FloatingActionsProps> = ({
           {/* Les lignes portent `tabIndex={-1}` : le clavier parcourt le menu aux flèches, et la tabulation le referme
               pour rendre la main au bouton. */}
           <PlusSheet menu={menu} forme={anchor === 'nav' ? forme : 'feuille'} compagnon={compagnon}
-            onChoisir={choisir} page={anchor === 'page' ? pagePlus : null} onPage={choose} onCompagnon={ouvrirCompagnon} onConversations={ouvrirConversations} />
+            onChoisir={choisir} page={anchor === 'page' || pagePlus?.surOnglets ? pagePlus : null} onPage={choose} onCompagnon={ouvrirCompagnon} onConversations={ouvrirConversations} />
         </div>
       )}
 

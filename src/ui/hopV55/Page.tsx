@@ -5,7 +5,7 @@ import { mapBrewerHopAdviceLaunchSourceToScopeV1 } from '../../../functions/src/
 import { mapBrewerHopAdviceWizardSourceToScopeV1 } from '../../../functions/src/brewerHopAdviceWizardSourceV1';
 import type { HopV55AssistedCompanionSession, HopV55AssistedCompanionTurn,
   HopV55SemanticCompanionSessionAnyV1 } from './assistedAdviceUiContracts';
-import type { BrewerCatalogueLookupRecord } from '../../../functions/src/brewerCatalogueStore';
+import type { BrewerCatalogueLookupRecord } from '../../../functions/src/brewerCatalogueTypes';
 import type { HopAxis } from '../../../functions/src/hopPredictionSchema';
 import type { Recipe } from '../../types';
 import { hopV55DoseReading, hopV55ExactReading } from './readings';

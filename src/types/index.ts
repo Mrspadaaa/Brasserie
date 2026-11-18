@@ -161,6 +161,8 @@ export interface KegItem {
   clientName?: string;
   /** Lien vers l'onglet Clients (`Client.id`). `clientName` reste le libellé lu par la liste et les anciens lecteurs. */
   clientId?: string;
+  /** Rangé dans « Archivés » (suppression refusée ou évitée, 16.11) : sort de la liste et des gestes, ses liens et son historique restent. Absent ou null = en service. */
+  archivedAt?: string | null;
   /** Jour de la livraison en cours, `JJ.MM.AAAA`. Absent chez un fût livré avant l'historique : on ne devine pas. */
   deliveryDate?: string;
   /** Étapes du fût, de la plus ancienne à la plus récente, plafonnées à 30 (domain/stock/futs). Absent sur un ancien fût. */
@@ -789,6 +791,8 @@ export interface Client {
   notes?: string;
   /** Épinglé par Gaëtan : remonte en tête des listes, des autocomplétions et de la recherche. */
   favorite?: boolean;
+  /** Rangé dans « Archivés » (une vente le retient, 16.11) : sort du carnet et de la caisse, ses ventes et son nom restent. Absent ou null = en service. */
+  archivedAt?: string | null;
 }
 
 /**

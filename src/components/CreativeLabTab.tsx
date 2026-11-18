@@ -51,6 +51,8 @@ const SECTION_DU_FILTRE: Record<FiltreCarnet, CreativeItem['type'] | null> = { t
 export interface CreativeLabSectionRequest {
   section: CreativeItem['type'];
   at: number;
+  /** Rubrique « À faire » seulement : ouvre la pose d'une tâche, la perle sur ce jour (aaaa-mm-jj), par exemple la semaine touchée au Calendrier. */
+  date?: string;
 }
 
 interface CreativeLabTabProps {
@@ -88,6 +90,7 @@ export const CreativeLabTab: React.FC<CreativeLabTabProps> = ({
   const setActiveSection = (s: CreativeItem['type']) => { const [o, f] = VERS_ONGLET[s]; setOnglet(o); setFiltre(f); };
   const handledSectionRequest = React.useRef<CreativeLabSectionRequest | null>(null);
   const [assistantOpen,setAssistantOpen] = useState(false);
+  const [dateDepart, setDateDepart] = useState<string | undefined>(undefined);
 
   const items = useStorageValue(StorageService.getCreativeItems);
   /** Carnet (ks4) : Tarifs pour le prix deviné, bières connues (recettes et tarifs) pour la case Bière. */
@@ -101,6 +104,8 @@ export const CreativeLabTab: React.FC<CreativeLabTabProps> = ({
     if (handled?.section === openSectionRequest.section && handled.at === openSectionRequest.at) return;
     handledSectionRequest.current = openSectionRequest;
     setActiveSection(openSectionRequest.section);
+    if (openSectionRequest.section === 'event' && openSectionRequest.date) { setDateDepart(openSectionRequest.date); setIsAdding(true); }
+    else setDateDepart(undefined);
     onOpenSectionRequestHandled?.();
   }, [openSectionRequest, onOpenSectionRequestHandled]);
 
@@ -267,7 +272,7 @@ export const CreativeLabTab: React.FC<CreativeLabTabProps> = ({
       {activeSection==='pricing-test'&&<TarifsFrise onNoter={()=>{setIsAdding(true);setSignalNoter(Date.now());}} apres={<IdeesPrix idees={currentItems} ajout={isAdding} onAjout={setIsAdding} onCreer={(i)=>StorageService.addCreativeItem(i)} onMaj={(i)=>StorageService.updateCreativeItem(i)} onSupprimer={(i)=>handleDelete(i.id)} signal={signalNoter} apres={assistantBouton}/>}/>}
 
       {onglet === 'carnet' && <NoteCarnet items={items} filtre={filtre} onFiltre={(f) => { setFiltre(f); setIsAdding(false); }} mode={modeRangerNote()} tarifs={tarifs} bieres={bieres}
-        vues={{ bieres: vueBieres, contacts: <ContactsView items={currentItems} adding={isAdding} onAdding={setIsAdding} onCreate={createContact} onConvert={handleConvertToClient} onUpdate={updateContact} onRemove={(item) => handleDelete(item.id)} />, afaire: <TodoTimeline items={currentItems} adding={isAdding} onAdding={setIsAdding} onCreate={createTask} onToggle={handleToggleStatus} onEdit={setEditing} /> }}
+        vues={{ bieres: vueBieres, contacts: <ContactsView items={currentItems} adding={isAdding} onAdding={setIsAdding} onCreate={createContact} onConvert={handleConvertToClient} onUpdate={updateContact} onRemove={(item) => handleDelete(item.id)} />, afaire: <TodoTimeline items={currentItems} adding={isAdding} onAdding={setIsAdding} onCreate={createTask} onToggle={handleToggleStatus} onEdit={setEditing} dateDepart={dateDepart} /> }}
         assistant={assistantBouton} onAjouter={(i) => StorageService.addCreativeItem(i)} onMaj={(i) => StorageService.updateCreativeItem(i)} onRetirer={handleDelete}
         onEdit={setEditing} onConvert={handleConvertToClient} onTarifs={() => { setOnglet('tarifs'); setIsAdding(false); }} focusDemande={focusCarnet} />}
 

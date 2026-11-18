@@ -113,3 +113,20 @@ describe('m3pr-c : l’effet affiché est celui du domaine', () => {
     await vi.waitFor(() => expect(etat.savePlan).toHaveBeenCalledWith(expect.objectContaining({ costAllocation: 'fixed' })));
   });
 });
+
+describe('Calendrier › « Prévoir une dépense en S50 » : une écriture prévue, datée de la semaine touchée', () => {
+  it('la feuille s’ouvre sur le lundi 7 déc. 2026 (S50), à payer ; enregistrée, la prévision est active et datée du lundi, jamais d’aujourd’hui', async () => {
+    render(<PlanSheet onClose={() => {}} date="2026-12-07" />);
+    const d = feuille();
+    expect(d.getByLabelText('Date de paiement prévue')).toHaveValue('2026-12-07');
+    expect(d.getByLabelText('Mouvement')).toHaveValue('out');
+    saisir(d, 'Commande de malt', '300');
+    fireEvent.click(d.getByRole('button', { name: 'Enregistrer' }));
+    await vi.waitFor(() => expect(etat.savePlan).toHaveBeenCalledWith(expect.objectContaining({ date: '2026-12-07', status: 'active', direction: 'out', amountCents: 30_000 })));
+    expect(etat.savePlan.mock.calls[0][0].date).not.toBe(AUJ);
+  });
+  it('une date illisible retombe sur aujourd’hui, sans rien inventer', () => {
+    render(<PlanSheet onClose={() => {}} date="n’importe quoi" />);
+    expect(feuille().getByLabelText('Date de paiement prévue')).toHaveValue(AUJ);
+  });
+});

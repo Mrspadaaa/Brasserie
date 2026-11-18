@@ -7,6 +7,8 @@ import { canMoveTo, fermentationBlockedReason, needsConfirmation, statusOptions,
 import { ABV_MAX, abvFromGravities, gravityKeepable, gravityMessage, gravityProblem, type GravityProblem } from '../domain/gravityBounds';
 import { StorageService } from '../services/storage';
 import { Sheet, ConfirmSheet } from './Sheet';
+import { SuppressionLiee } from './suppression/SuppressionLiee';
+import { choseBrassin } from './suppression/choses';
 import { InventoryCorrectionSheet } from './InventoryCorrectionSheet';
 import { NumberInput } from './NumberInput';
 import { Button } from '../components/ui/Button';
@@ -35,6 +37,7 @@ import { needsPackagingVolume } from '../domain/batchPackaging';
 import { BatchPackagingForm } from './production/BatchPackagingForm';
 import { nombreFr } from '../domain/nombreAffiche';
 import { PlannedDate, PiedPlanifie, planDeStarter } from './production/fiche/PlannedDate';
+import { QuiARecuLot, type GesteFutLot } from './lot/QuiARecuLot';
 import { HeroEtat, CarteDensite, CurseurFg, TuilesFg, Contenants, LignesCuve, EtapesPills, VerdictPuces, LigneRepliee } from './production/fiche/PostFiche';
 import { StageLadder, type Conditionnement } from './production/fiche/StageLadder';
 import { Cible, Mono, Panneau, Pastille } from './production/fiche/ui';
@@ -142,6 +145,7 @@ export const BatchDetailSheet: React.FC<BatchDetailSheetProps> = ({
   const [mesure, setMesure] = useState<EtatMesure | null>(null);
   useEffect(() => { setMesure(null); }, [batch?.id]);
   const [kegList, setKegList] = useState<import('../types').KegItem[]>([]);
+  const [gesteFut, setGesteFut] = useState<{ quoi: GesteFutLot; n: number } | null>(null);
   const releveRef = React.useRef<HTMLDivElement>(null);
   useEffect(() => { if (!fgUndo) return; const t = window.setTimeout(() => setFgUndo(null), 8000); return () => window.clearTimeout(t); }, [fgUndo]);
   // p5 : à l'ouverture, le focus auto de la feuille tombe sur le × et l'entoure d'un anneau. On le pose sur la feuille elle-même ; le clavier reprend ensuite normalement.
@@ -434,7 +438,9 @@ export const BatchDetailSheet: React.FC<BatchDetailSheetProps> = ({
                   setDraft(saved);
                 }} />}
           {!planned && !post && !ficheM && <YeastPreparationPanel batch={draft} onSave={save} />}
-          {plusOpen && (planned || post) && <Panneau label="Plus d’actions" className="flex flex-wrap items-center gap-2 p-2"><span className="text-xs text-cave-400">Plus</span>{draft.status === 'termine' && <Cible onClick={() => changeStatus('conditionne')}>Revenir à « Conditionné »</Cible>}<Cible ton="danger" onClick={() => setConfirmDelete(true)}>Supprimer ce brassin</Cible></Panneau>}
+          {plusOpen && (planned || post) && <Panneau label="Plus d’actions" className="flex flex-wrap items-center gap-2 p-2"><span className="text-xs text-cave-400">Plus</span>{(draft.status === 'conditionne' || draft.status === 'termine') && <>
+            <Cible onClick={() => { setSection('measurements'); setPlusOpen(false); setGesteFut(g => ({ quoi: 'rentrer', n: (g?.n ?? 0) + 1 })); }}>Rentrer un fût</Cible>
+            <Cible ton="prim" onClick={() => { setSection('measurements'); setPlusOpen(false); setGesteFut(g => ({ quoi: 'livrer', n: (g?.n ?? 0) + 1 })); }}>Livrer un fût</Cible></>}{draft.status === 'termine' && <Cible onClick={() => changeStatus('conditionne')}>Revenir à « Conditionné »</Cible>}<Cible ton="danger" onClick={() => setConfirmDelete(true)}>Supprimer ce brassin</Cible></Panneau>}
           {noloRecipeForBatch(draft)&&(plusOpen || (!planned && !post))&&<details><summary className="min-h-touch cursor-pointer text-water">Pilote NOLO · mesures et conditionnement</summary><NoloPanel measurementOnly recipe={noloRecipeForBatch(draft)!} onChange={r=>setDraft({...draft,nolo:r.nolo})}/><Button onClick={async()=>{try{save({nolo:draft.nolo??draft.recipeSnapshot?.nolo});await StorageService.confirmPendingWrites();setNoloNotice('Mesures NOLO enregistrées sur ce brassin.');}catch(e){setNoloNotice('Enregistrement non confirmé : '+(e instanceof Error?e.message:'réessayer'));}}}>Enregistrer le suivi NOLO du brassin</Button>{noloNotice&&<p role="status" className="text-sm text-water">{noloNotice}</p>}</details>}
           <nav
             className={`grid grid-cols-3 border-b border-cave-700 ${ficheM ? 'hidden' : ''}`}
@@ -550,6 +556,8 @@ export const BatchDetailSheet: React.FC<BatchDetailSheetProps> = ({
           )}
           {section === 'measurements' && post && (
             <>
+              {/* Lot/v1 : pour un retrait ou une plainte, on cherche vite qui l'a reçu : l'arbre ouvre la fiche d'un lot conditionné ou terminé, avant le reste. */}
+              {(draft.status === 'conditionne' || draft.status === 'termine') && <QuiARecuLot batch={draft} geste={gesteFut} />}
               {draft.status === 'garde' && (parseDecimal(draft.fg || '') === null
                 ? <CurseurFg batch={draft} valeur={fgMilli ?? fgDepart} onValeur={setFgMilli} onConfirmer={() => confirmFg(fgMilli ?? fgDepart)} erreur={fgError} />
                 : <TuilesFg batch={draft} onConditionner={openLadder} />)}
@@ -557,6 +565,8 @@ export const BatchDetailSheet: React.FC<BatchDetailSheetProps> = ({
               <CarteDensite batch={draft} />
               {draft.status === 'garde' && <LignesCuve batch={draft} onReleve={ouvrirReleve} onVolume={() => setPackaging({ target: null })} />}
               {draft.status === 'conditionne' && <Panneau className="p-2.5"><div className="flex items-center justify-between"><span className="text-sm font-semibold text-cave-50">Étape</span><Cible onClick={openLadder} aria-label="Ouvrir l’échelle des étapes">Étape <ChevronRight size={14} aria-hidden="true" /></Cible></div><EtapesPills courante={MARCHES.indexOf('conditionne')} /></Panneau>}
+              {/* Maquette lot/v1 (16.11) : le lot se ramifie vers chaque client ; les gestes du menu « Plus » (Rentrer, Livrer) s'y jouent. */}
+              {draft.status === 'garde' && <QuiARecuLot batch={draft} geste={gesteFut} />}
             </>
           )}
           {((section === 'measurements' && !planned && !ficheM) || mesuresDansDossier) && (
@@ -745,21 +755,14 @@ export const BatchDetailSheet: React.FC<BatchDetailSheetProps> = ({
       {ladder && <StageLadder batch={draft} now={nowMs} kegs={kegList} onClose={() => setLadder(false)}
         onAvancer={s => { setLadder(false); changeStatus(s); }} onConditionner={conditionner}
         onRetour={s => { setLadder(false); applyStatus(s); }} onAbandonner={() => { setLadder(false); applyStatus('annule'); }} />}
-      <ConfirmSheet
-        open={confirmDelete}
+      {/* Maquette suppression/v2 : ses fûts, ses bouteilles et ses écritures un par un ; sans lien (brassin planifié), suppression directe avec « Annuler ». */}
+      <SuppressionLiee
+        chose={confirmDelete ? (() => {
+          const base = choseBrassin(batch);
+          // Supprimé ou archivé, le brassin n'a plus de dossier à ouvrir : la fiche se ferme.
+          return { ...base, supprimer: () => { base.supprimer(); onClose(); }, archiver: () => { base.archiver(); onClose(); } };
+        })() : null}
         onClose={() => setConfirmDelete(false)}
-        onConfirm={() => {
-          StorageService.deleteBatch(batch.id);
-          onClose();
-        }}
-        title="Supprimer ce brassin ?"
-        what={`${batch.id} — ${batch.name}`}
-        consequence={
-          batch.status === 'planifie'
-            ? 'Rien n’a encore été déstocké : la suppression est sans conséquence sur le stock.'
-            : 'Les ingrédients déjà consommés restent déstockés. Les éventuels retours d’ingrédients se consignent par une correction d’inventaire.'
-        }
-        confirmLabel="Supprimer le brassin"
       />
       <ConfirmSheet open={pendingStatus !== null} onClose={() => setPendingStatus(null)}
         title={pendingStatus === 'annule' ? 'Abandonner ce brassin ?' : `Revenir à « ${pendingStatus ? BATCH_STATUS[pendingStatus].label : ''} » ?`}

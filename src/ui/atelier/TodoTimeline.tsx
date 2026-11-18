@@ -2,7 +2,7 @@ import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { Check, ChevronDown, ChevronRight, ChevronUp, GripVertical, LayoutGrid, Plus, X } from 'lucide-react';
 import type { CreativeItem } from '../../types';
 import {
-  ajouterJours, construireFil, enSuisse, joursDepuisY, jourComplet, jourMois, MARGE_HAUT, positionY, relatif
+  ajouterJours, construireFil, joursJusquAu, enSuisse, joursDepuisY, jourComplet, jourMois, MARGE_HAUT, positionY, relatif
 } from '../../domain/todoTimeline';
 import { estDemo } from './demo';
 import './atelier.css';
@@ -19,11 +19,13 @@ interface Props {
   onCreate: (titre: string, date: string) => void;
   onToggle: (item: CreativeItem) => void;
   onEdit: (item: CreativeItem) => void;
+  /** Le jour où poser la perle neuve (aaaa-mm-jj), par exemple le lundi de la semaine touchée au Calendrier ; absent : dans 14 jours. */
+  dateDepart?: string;
 }
 
 const JOURS_PAR_DEFAUT = 14;
 
-export const TodoTimeline: React.FC<Props> = ({ items, adding, onAdding, onCreate, onToggle, onEdit }) => {
+export const TodoTimeline: React.FC<Props> = ({ items, adding, onAdding, onCreate, onToggle, onEdit, dateDepart }) => {
   const aujourdhui = useMemo(() => new Date(), []);
   const taches = useMemo(() => items.map((i) => ({ id: i.id, title: i.title, date: i.date, status: i.status })), [items]);
   const [jours, setJours] = useState(JOURS_PAR_DEFAUT);
@@ -39,7 +41,7 @@ export const TodoTimeline: React.FC<Props> = ({ items, adding, onAdding, onCreat
   const demo = items.some((i) => estDemo(i.id));
 
   useEffect(() => { if (!recent) return; const t = setTimeout(() => setRecent(null), 9000); return () => clearTimeout(t); }, [recent]);
-  useEffect(() => { if (adding) { setJours(JOURS_PAR_DEFAUT); setTimeout(() => fantomeRef.current?.scrollIntoView({ block: 'center', behavior: 'auto' }), 60); } }, [adding]);
+  useEffect(() => { if (adding) { setJours((dateDepart ? joursJusquAu(aujourdhui, dateDepart) : null) ?? JOURS_PAR_DEFAUT); setTimeout(() => fantomeRef.current?.scrollIntoView({ block: 'center', behavior: 'auto' }), 60); } }, [adding]);
 
   const cocher = (id: string) => {
     const item = parId(id);

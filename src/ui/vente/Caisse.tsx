@@ -131,7 +131,7 @@ export function CaisseContenu({ clientIdInitial, onClose, onSaved, onBusy, ferme
   useEffect(() => { if (!selection.length && vendables.length) setSelection([vendables[0].id]); }, [vendables, selection.length]);
   const actifId = selection[0];
   const actif = vendables.find(b => b.id === actifId);
-  const clientsTries = useMemo(() => [...clients].sort((a, b) => Number(Boolean(b.favorite)) - Number(Boolean(a.favorite)) || a.name.localeCompare(b.name, 'fr')), [clients]);
+  const clientsTries = useMemo(() => clients.filter(c => !c.archivedAt || c.id === clientId).sort((a, b) => Number(Boolean(b.favorite)) - Number(Boolean(a.favorite)) || a.name.localeCompare(b.name, 'fr')), [clients, clientId]);
   const client = clients.find(c => c.id === clientId) ?? null;
 
   /* Le numéro est figé à l'ouverture (et suit l'année choisie) : celui de l'annexe est celui du PDF (REVUE-B 12). */

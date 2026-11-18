@@ -1,0 +1,86 @@
+/* Supprimer une chose liée (maquette suppression/v2) : classes préfixées su- (L26), jetons de l'app (deux thèmes), rien sous 14 px. */
+.su{--su-bg:rgb(var(--cave-950));--su-s1:rgb(var(--cave-900));--su-s2:rgb(var(--cave-850));--su-line:rgb(var(--cave-800));--su-line2:rgb(var(--cave-700));
+  --su-mut:rgb(var(--cave-texte-400));--su-ink:rgb(var(--cave-texte-50));--su-act:rgb(var(--ebc-straw));--su-onact:rgb(var(--sur-paille,var(--cave-950)));
+  --su-att:rgb(var(--attention-texte));--su-ok:rgb(var(--hop-texte));--su-bad:rgb(var(--alert-texte));--su-badfond:rgb(var(--alert));
+  color:var(--su-ink);font-family:"Source Sans 3","Segoe UI",system-ui,sans-serif;font-size:16px;line-height:1.3}
+.su *{box-sizing:border-box}
+.su :where(button){font:inherit;color:inherit;background:none;border:0;padding:0;cursor:pointer;text-align:inherit}
+.su svg{flex:none}
+.su-tuile{width:44px;height:44px;border-radius:13px;display:grid;place-items:center;flex:none;--c:var(--su-mut);color:var(--c);background:color-mix(in srgb,var(--c) 14%,var(--su-bg))}
+.su-tuile[data-teinte=stocks]{--c:rgb(var(--area-stocks-texte))}
+.su-tuile[data-teinte=production]{--c:rgb(var(--area-production-texte))}
+.su-tuile[data-teinte=finances]{--c:rgb(var(--area-finances-texte))}
+.su-tuile[data-teinte=agenda]{--c:rgb(var(--area-agenda-texte))}
+.su-tuile[data-teinte=ok]{--c:var(--su-ok)}
+.su-tete{display:flex;align-items:center;gap:10px;padding:4px 2px 0}
+.su-tx{flex:1;min-width:0}
+.su-tete .su-tx b{display:block;font-size:19px;overflow-wrap:anywhere}
+.su-tete .su-tx span{font-size:15px;color:var(--su-mut)}
+.su-x{width:48px;height:48px;border-radius:13px;display:grid!important;place-items:center;border:1.5px solid var(--su-line2)!important;flex:none}
+.su-cpt{display:flex;align-items:center;gap:12px;margin:14px 2px 6px}
+.su-n{font-family:"IBM Plex Mono",ui-monospace,Consolas,monospace;font-variant-numeric:tabular-nums;font-size:54px;line-height:1;font-weight:700;color:var(--su-att);letter-spacing:-2px;min-width:44px;text-align:center}
+.su-zero .su-n{color:var(--su-ok)}
+.su-cpt-t{font-size:19px;font-weight:700;line-height:1.2}
+.su-cpt-t small{display:block;font-size:15px;font-weight:500;color:var(--su-mut)}
+.su-barre{display:flex;gap:5px;margin:6px 2px 14px}
+.su-barre i{flex:1;height:8px;border-radius:4px;background:var(--su-att)}
+.su-barre i.su-ok{background:var(--su-ok)}
+.su-barre i.su-pm{background:repeating-linear-gradient(45deg,var(--su-mut) 0 3px,transparent 3px 6px);border:1.5px solid var(--su-mut)}
+.su-liens{list-style:none;margin:0;padding:0 0 0 22px;position:relative}
+.su-liens::before{content:'';position:absolute;left:8px;top:-6px;bottom:30px;width:2.5px;background:var(--su-line2);border-radius:2px}
+.su-lien{position:relative;display:flex;align-items:center;gap:10px;min-height:68px;padding:6px 0;border-bottom:1px solid var(--su-line)}
+.su-lien::before{content:'';position:absolute;left:-14px;top:50%;width:14px;height:2.5px;background:var(--su-line2)}
+.su-lien .su-tx b{display:block;font-size:17px;line-height:1.2;overflow-wrap:anywhere}
+.su-lien .su-tx span{display:block;font-size:15px;color:var(--su-mut);line-height:1.25}
+.su-regle .su-tx b{text-decoration:line-through;text-decoration-thickness:2px;color:var(--su-mut)}
+.su-regle .su-tx span{color:var(--su-ok);font-weight:600}
+.su-regle::before{background:var(--su-ok)}
+.su-fix{height:46px;padding:0 13px!important;border-radius:999px;border:1.5px solid var(--su-ok)!important;color:var(--su-ok);font-weight:700;font-size:16px;display:inline-flex!important;align-items:center;gap:5px;flex:none;transition:transform .12s}
+.su-fix:active{transform:scale(.95)}
+.su-und{height:46px;padding:0 12px!important;border-radius:999px;font-size:15px;color:var(--su-mut);display:inline-flex!important;align-items:center;gap:5px;flex:none}
+.su-cad{display:inline-flex;align-items:center;gap:5px;font-size:15px;color:var(--su-mut);flex:none;max-width:118px;line-height:1.2;text-align:right}
+.su-cad svg{width:19px;height:19px}
+.su-note{display:flex;gap:9px;align-items:flex-start;margin:14px 0 4px;padding:12px;border-radius:14px;background:var(--su-s2);font-size:16px;line-height:1.35}
+.su-note svg{color:var(--su-att);margin-top:1px}
+.su-avert{margin-top:10px}
+.su-pied{padding:8px 4px calc(10px + env(safe-area-inset-bottom,0px))}
+.su-btn{display:flex!important;align-items:center;justify-content:center;gap:9px;width:100%;min-height:56px;border-radius:16px;font-size:18px;font-weight:700;transition:transform .12s,background .15s;text-align:center!important}
+.su-btn+.su-btn{margin-top:8px}
+.su-btn:active{transform:scale(.97)}
+.su-pri{background:var(--su-act)!important;color:var(--su-onact)!important}
+.su-sec{background:var(--su-s2)!important}
+.su-mal{background:var(--su-badfond)!important;color:rgb(var(--cave-950))!important}
+.su-btn:disabled{background:var(--su-s1)!important;color:var(--su-mut)!important;border:1.5px dashed var(--su-line2)!important;cursor:default;transform:none}
+.su-haut{display:flex;align-items:center;justify-content:space-between}
+.su-ret{display:inline-flex!important;align-items:center;gap:2px;min-height:44px;padding:0 10px 0 0!important;color:rgb(var(--area-finances-texte));font-weight:700;font-size:17px}
+.su-h2{margin:4px 0 2px;font-size:24px;font-weight:800}
+.su-s{margin:0 0 12px;color:var(--su-mut);font-size:15px}
+.su-carte{border:1.5px solid var(--su-line);border-radius:14px;overflow:hidden;margin-bottom:14px}
+.su-carte div{display:flex;justify-content:space-between;gap:10px;padding:11px 12px;border-top:1px solid var(--su-line);font-size:16px}
+.su-carte div:first-child{border-top:0}
+.su-carte span{color:var(--su-mut)}.su-carte b{text-align:right}
+.su-q{margin:0 0 8px;font-size:17px;font-weight:700}
+.su-motifs{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:16px}
+.su-motifs button{min-height:46px;padding:0 16px!important;border-radius:999px;border:1.5px solid var(--su-line2)!important;font-size:16px}
+.su-motifs button[aria-pressed=true]{background:var(--su-act)!important;color:var(--su-onact)!important;border-color:var(--su-act)!important;font-weight:700}
+/* Le bandeau : au-dessus du bouton rond « + » et de la barre du bas, sur toute la largeur (la critique : il passait sous le +). */
+.su-bandeau{position:fixed;left:12px;right:12px;bottom:calc(var(--main-navigation-height,2.5rem) + 5rem + env(safe-area-inset-bottom,0px));z-index:70;display:flex;align-items:center;gap:10px;min-height:56px;padding:4px 6px 4px 16px;border-radius:16px;background:var(--su-ink);color:var(--su-bg);font-size:16px;box-shadow:0 8px 24px rgba(0,0,0,.3)}
+.su-bandeau span{flex:1;min-width:0}
+.su-bandeau button{margin-left:auto;height:46px;padding:0 14px!important;border-radius:12px;font-weight:800;font-size:16px;display:inline-flex!important;align-items:center;gap:6px;background:color-mix(in srgb,var(--su-bg) 16%,transparent)!important}
+@media (min-width:1024px){.su-bandeau{left:calc(var(--rail-width,88px) + .5rem);right:auto;bottom:1rem;width:420px}}
+@media (prefers-reduced-motion:reduce){.su *{transition:none!important}}
+/* Archivés · n : la rangée repliable des listes hôtes (Fûts, Clients). */
+.su-arch{margin:10px 0 0}
+.su-arch-h{display:flex!important;align-items:center;gap:8px;width:100%;min-height:50px;font-size:16px;font-weight:700;color:var(--su-mut)}
+.su-arch-h svg:last-child{margin-left:auto;transition:transform .2s}
+.su-arch-h[aria-expanded=true] svg:last-child{transform:rotate(180deg)}
+.su-arch-l{display:grid;gap:0}
+.su-arch-r{display:flex;align-items:center;gap:11px;min-height:64px;padding:6px 0;border-bottom:1px solid var(--su-line)}
+.su-arch-r .su-tuile{filter:grayscale(1);opacity:.7}
+.su-arch-r .su-tx b{display:block;font-size:17px;color:var(--su-mut);overflow-wrap:anywhere}
+.su-arch-r .su-tx span{display:block;font-size:15px;color:var(--su-mut)}
+.su-ress{height:44px;padding:0 15px!important;border:1.5px solid var(--su-line2)!important;border-radius:999px;font-size:15px;font-weight:600;flex:none}
+
+/* Le bandeau a le même contraste aux deux thèmes (la critique : pâle et fin en cave) : fond sombre, texte clair et gras, fin liseré pour se détacher d'une page sombre. */
+.su-bandeau{background:#1a1613;color:#f5f0ea;font-weight:700;border:1.5px solid rgba(245,240,234,.35)}
+.su-bandeau button{background:rgba(245,240,234,.16)!important;color:#f5f0ea!important}

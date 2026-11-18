@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import {
-  ajouterJours, construireFil, ecartJours, enSuisse, HAUT_CARTE, joursDepuisY, lireDate, MARGE_HAUT, positionY, relatif, type TacheEntree
+  ajouterJours, construireFil, ecartJours, enSuisse, HAUT_CARTE, joursDepuisY, joursJusquAu, lireDate, MARGE_HAUT, positionY, relatif, type TacheEntree
 } from '../../src/domain/todoTimeline';
 
 // Samedi 14 novembre 2026 (fixture fixe : la fonction ne lit jamais l'horloge).
@@ -146,5 +146,15 @@ describe('todoTimeline : étiquettes qui ne se chevauchent pas', () => {
     const fil = construireFil([tache('a', '21.11.2026'), tache('b', '13.12.2026')], AUJ);
     const ys = gauche(fil);
     expect(ecartsMin(ys)).toBeGreaterThanOrEqual(ECART_GAUCHE);
+  });
+});
+
+describe('joursJusquAu : la perle de « Poser une fête » sur la semaine touchée', () => {
+  it('compte les jours calendaires jusqu’au lundi, 0 pour aujourd’hui ou le passé, null si illisible', () => {
+    const base = new Date(2026, 10, 17, 15, 0);
+    expect(joursJusquAu(base, '2026-12-07')).toBe(20);
+    expect(joursJusquAu(base, '2026-11-17')).toBe(0);
+    expect(joursJusquAu(base, '2026-11-01')).toBe(0);
+    expect(joursJusquAu(base, 'bientôt')).toBeNull();
   });
 });

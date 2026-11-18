@@ -1,0 +1,57 @@
+/* « Qui a reçu ce lot » : maquette lot/v1 « Les branches » (choisie le 16.11), reprise avec les jetons de l'app. Rien sous 14 px. */
+.qar { display: grid; gap: .5rem; }
+.qar-tete { display: flex; align-items: baseline; justify-content: space-between; gap: .5rem; margin: 0; }
+.qar-tete h3 { margin: 0; font-size: 1.25rem; line-height: 1.5rem; font-weight: 700; color: rgb(var(--cave-texte-50)); }
+.qar-lead { margin: 0; font-size: 1.125rem; line-height: 1.5rem; color: rgb(var(--cave-texte-50)); }
+.qar-lead b { color: rgb(var(--ebc-copper-texte)); font-weight: 700; }
+.qar-leg { display: flex; flex-wrap: wrap; align-items: center; gap: .25rem 1rem; margin: 0; font-size: .9375rem; color: rgb(var(--cave-texte-400)); }
+.qar-leg span { display: inline-flex; align-items: center; gap: .375rem; }
+.qar-msg { display: flex; align-items: center; justify-content: space-between; gap: .5rem; min-height: 3rem; padding: .25rem .25rem .25rem .875rem; border-radius: .75rem; background: rgb(var(--cave-texte-50)); color: rgb(var(--cave-950)); font-size: 1rem; line-height: 1.25rem; }
+.qar-msg button { flex: none; min-height: 2.75rem; padding: 0 .75rem; font-weight: 700; text-decoration: underline; text-underline-offset: 3px; color: inherit; }
+
+.qar-fut { display: inline-grid; place-items: center; flex: none; width: 1.75rem; height: 1.875rem; border: 2px solid #a0522d; border-radius: .375rem; color: rgb(var(--ebc-copper-texte)); }
+.qar-fut[data-plein="true"] { background: #a0522d; color: #fff; }
+.qar-fut svg { width: 1.125rem; height: 1.125rem; }
+.qar-leg .qar-fut { width: 1.375rem; height: 1.5rem; }
+.qar-leg .qar-fut svg { width: .875rem; height: .875rem; }
+
+.qar-arbre { position: relative; padding-left: 1.875rem; }
+.qar-arbre::before { content: ""; position: absolute; left: .6875rem; top: 1.375rem; bottom: 1.5rem; width: 3px; border-radius: 2px; background: #a0522d; }
+.qar-racine { position: relative; display: flex; align-items: center; gap: .625rem; min-height: 2.875rem; margin-left: -1.875rem; font-size: 1.0625rem; font-weight: 700; color: rgb(var(--cave-texte-50)); }
+.qar-racine i { display: grid; place-items: center; flex: none; min-width: 1.625rem; height: 1.625rem; padding: 0 .25rem; border-radius: .8125rem; background: #a0522d; color: #fff; font-style: normal; font-size: .875rem; font-weight: 700; }
+.qar-br { position: relative; border-bottom: 1px solid rgb(var(--cave-800)); }
+.qar-br::before { content: ""; position: absolute; left: -1.1875rem; top: 1.875rem; width: 1rem; height: 3px; border-radius: 2px; background: #a0522d; }
+.qar-br[data-rentre="true"]::before { background: rgb(var(--cave-600)); }
+.qar-ligne { display: flex; align-items: center; gap: .625rem; width: 100%; min-height: 3.875rem; padding: .5rem 0; text-align: left; color: rgb(var(--cave-texte-50)); }
+.qar-nom { flex: 1; min-width: 0; }
+.qar-nom b { display: block; font-size: 1.125rem; line-height: 1.375rem; overflow-wrap: anywhere; }
+.qar-nom > span { display: block; font-size: .9375rem; line-height: 1.25rem; color: rgb(var(--cave-texte-400)); }
+.qar-futs { display: flex; flex: none; gap: 3px; }
+.qar-chev { flex: none; color: rgb(var(--cave-texte-400)); transition: transform .15s; }
+.qar-br[data-ouvert="true"] .qar-chev { transform: rotate(90deg); }
+.qar-det { padding: 0 0 .75rem; }
+.qar-qui { margin: 0 0 .5rem; font-size: .9375rem; color: rgb(var(--cave-texte-400)); }
+.qar-tel { display: flex; align-items: center; justify-content: center; gap: .625rem; width: 100%; min-height: 3.375rem; border-radius: .875rem; background: rgb(var(--hop)); color: rgb(var(--cave-950)); font-size: 1.125rem; font-weight: 700; text-decoration: none; }
+.qar-tel svg { width: 1.375rem; height: 1.375rem; }
+.qar-pasdetel { margin: 0; font-size: .9375rem; color: rgb(var(--cave-texte-400)); }
+.qar-det ul { margin: .625rem 0 0; padding: 0; list-style: none; }
+.qar-det li { display: flex; justify-content: space-between; gap: .5rem; padding: .375rem 0; border-top: 1px dashed rgb(var(--cave-800)); font-size: 1rem; }
+.qar-det li span { color: rgb(var(--cave-texte-400)); text-align: right; }
+.qar-det li[data-dehors="true"] span { color: rgb(var(--ebc-copper-texte)); font-weight: 700; }
+.qar-gris .qar-nom b { color: rgb(var(--cave-texte-400)); }
+.qar-pilule { flex: none; white-space: nowrap; border-radius: 999px; padding: .125rem .5rem; font-size: .875rem; line-height: 1.25rem; border: 1.5px dashed rgb(var(--cave-400)); color: rgb(var(--cave-texte-400)); }
+.qar-livrer { color: rgb(var(--cave-texte-50)); font-weight: 700; border: 1.5px solid rgb(var(--cave-texte-400)); }
+.qar-vide { margin: .25rem 0 0; padding: .875rem; border: 2px dashed rgb(var(--cave-700)); border-radius: .875rem; font-size: 1.0625rem; line-height: 1.375rem; color: rgb(var(--cave-texte-400)); }
+.qar-vide b { color: rgb(var(--cave-texte-50)); }
+.qar-ligne:focus-visible, .qar-tel:focus-visible { outline: 2px solid rgb(var(--ebc-straw)); outline-offset: 2px; }
+
+/* Feuilles « Livrer un fût » et « Rentrer un fût » */
+.qar-choix { display: grid; }
+.qar-choix > button { display: flex; align-items: center; justify-content: space-between; gap: .625rem; min-height: 3.75rem; padding: .5rem .25rem; border-top: 1px solid rgb(var(--cave-800)); font-size: 1.0625rem; text-align: left; color: rgb(var(--cave-texte-50)); }
+.qar-choix > button span { flex: 1; min-width: 0; }
+.qar-choix > button small { display: block; font-size: .9375rem; color: rgb(var(--cave-texte-400)); }
+.qar-choix > button em { flex: none; font-style: normal; font-size: .875rem; font-weight: 700; color: rgb(var(--hop-texte)); border: 1.5px solid rgb(var(--hop)); border-radius: 999px; padding: .125rem .5rem; white-space: nowrap; }
+.qar-aide { margin: 0 0 .5rem; font-size: 1rem; line-height: 1.25rem; color: rgb(var(--cave-texte-400)); }
+.qar-chips { display: flex; flex-wrap: wrap; gap: .375rem; margin: 0 0 .5rem; }
+.qar-chips button { min-height: 2.75rem; padding: 0 .875rem; border: 1.5px solid rgb(var(--cave-600)); border-radius: 999px; font-size: 1rem; color: rgb(var(--cave-texte-200)); }
+.qar-chips button[aria-pressed="true"] { background: rgb(var(--cave-texte-50)); color: rgb(var(--cave-950)); border-color: rgb(var(--cave-texte-50)); font-weight: 700; }

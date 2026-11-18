@@ -36,6 +36,8 @@ export interface PlusPageDeclaration {
   /** Contre le + d'abord : la première est la plus proche du pouce. */
   actions: PlusPageAction[];
   etapes?: PlusPageEtapes;
+  /** Une page posée sur un onglet (la barre reste là, Fournisseurs) : ses actions montent aussi du + des onglets, à la place de celles de l'onglet. */
+  surOnglets?: boolean;
 }
 
 interface Entree { decl: PlusPageDeclaration }
@@ -65,7 +67,8 @@ export function usePlusPage(declaration: PlusPageDeclaration | null): void {
   const signature = declaration ? JSON.stringify([
     declaration.titre,
     declaration.actions.map(a => [a.id, a.label, a.hint, a.genre]),
-    declaration.etapes ? [declaration.etapes.courant, declaration.etapes.options] : null
+    declaration.etapes ? [declaration.etapes.courant, declaration.etapes.options] : null,
+    declaration.surOnglets ?? false
   ]) : '';
   useEffect(() => {
     const d = derniere.current;
@@ -73,6 +76,7 @@ export function usePlusPage(declaration: PlusPageDeclaration | null): void {
     const entree: Entree = {
       decl: {
         titre: d.titre,
+        ...(d.surOnglets ? { surOnglets: true } : {}),
         actions: d.actions.map(a => ({ ...a, lancer: () => derniere.current?.actions.find(x => x.id === a.id)?.lancer() })),
         ...(d.etapes ? { etapes: { ...d.etapes, aller: (id: string) => derniere.current?.etapes?.aller(id) } } : {})
       }

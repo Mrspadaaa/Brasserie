@@ -1,14 +1,15 @@
 // Port 1:1 des maquettes choisies le 15.11 : F2 « La carte d'identité », R1 « Le lot d'abord » (remplir et ajouter). Banc : parc de la planche, au 15.11.2026.
 import React from 'react';
-import { cleanup, fireEvent, render, screen, within } from '@testing-library/react';
+import { act, cleanup, fireEvent, render, screen, within } from '@testing-library/react';
 import { VirtuosoMockContext } from 'react-virtuoso';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { KegBoard } from '../../src/ui/KegBoard';
 import { optionsClients } from '../../src/ui/KegFiche';
+import { effacerBandeau } from '../../src/ui/suppression/bandeau';
 import type { Batch, Client, KegItem } from '../../src/types';
 
-vi.mock('../../src/services/storage', () => ({ StorageService: { updateKeg: vi.fn(), addKeg: vi.fn(), deleteKeg: vi.fn() } }));
-afterEach(() => cleanup());
+vi.mock('../../src/services/storage', () => ({ StorageService: { updateKeg: vi.fn(), addKeg: vi.fn(), deleteKeg: vi.fn(), setArchivedEntity: vi.fn() } }));
+afterEach(() => { act(() => effacerBandeau()); cleanup(); });
 
 const H = (date: string, quoi: NonNullable<KegItem['historique']>[number]['quoi'], detail?: string) => (detail ? { date, quoi, detail } : { date, quoi });
 const f001: KegItem = { id: 'F-001', capacityL: 30, state: 'plein', batchRef: 'LOT-002', beerName: 'NEIPA Test', style: 'NEIPA', fillDate: '02.11.2026',
@@ -141,14 +142,53 @@ describe('Gestion du fût', () => {
     fireEvent.click(screen.getByRole('button', { name: 'Remplir depuis un lot' }));
     expect(screen.getByRole('dialog', { name: 'Remplir depuis un lot' }).className).toMatch(/lg:max-w-xl/);
   });
-  it('Retirer du parc : la confirmation dit que l’historique reste au journal', async () => {
-    const onRemoveKeg = vi.fn();
-    monter([f001], { onRemoveKeg }); await ouvrir('F-001');
+  it('Retirer du parc, fût plein : un lien le retient ; « Vidé » demande où est partie la bière, puis Supprimer s’allume', async () => {
+    const onRemoveKeg = vi.fn(), onSaveKeg = vi.fn();
+    monter([f001], { onRemoveKeg, onSaveKeg }); await ouvrir('F-001');
     fireEvent.click(screen.getByText('Gestion du fût'));
     fireEvent.click(screen.getByRole('button', { name: 'Retirer du parc' }));
-    expect(screen.getByText(/Son historique reste au journal\./)).toBeVisible();
-    fireEvent.click(screen.getByRole('button', { name: 'Retirer le fût' }));
+    const feuille = screen.getByRole('dialog', { name: 'Supprimer F-001' });
+    expect(feuille).toHaveTextContent(/1s*lien le retient/);
+    expect(feuille).toHaveTextContent('LOT-002 · NEIPA Test');
+    const supprimer = screen.getByRole('button', { name: /Supprimer · encore 1 lien/ });
+    expect(supprimer).toBeDisabled();
+    fireEvent.click(screen.getByRole('button', { name: 'Vidé' }));
+    expect(onSaveKeg).not.toHaveBeenCalled();
+    const sortie = screen.getByRole('dialog', { name: 'Sortie du fût F-001' });
+    expect(within(sortie).getByRole('button', { name: 'Enregistrer la sortie' })).toBeDisabled();
+    fireEvent.click(within(sortie).getByRole('button', { name: 'Vendus' }));
+    fireEvent.click(within(sortie).getByRole('button', { name: 'Enregistrer la sortie' }));
+    expect(onSaveKeg).toHaveBeenCalledWith(expect.objectContaining({ id: 'F-001', state: 'lavage', historique: expect.arrayContaining([H('15.11.2026', 'a-laver', 'vidé · vendus')]) }));
+    expect(screen.getByRole('dialog', { name: 'Supprimer F-001' })).toHaveTextContent(/plus rien ne le retient/);
+    expect(onRemoveKeg).not.toHaveBeenCalled();
+    fireEvent.click(screen.getByRole('button', { name: 'Supprimer F-001' }));
     expect(onRemoveKeg).toHaveBeenCalledWith('F-001');
+    expect(screen.getByTestId('bandeau-suppression')).toHaveTextContent('F-001 supprimé');
+    act(() => effacerBandeau());
+  });
+  it('Retirer du parc, fût vide : aucun lien, suppression directe avec « Annuler »', async () => {
+    const onRemoveKeg = vi.fn(), onAddKegs = vi.fn();
+    monter([f005], { onRemoveKeg, onAddKegs }); await ouvrir('F-005');
+    fireEvent.click(screen.getByText('Gestion du fût'));
+    fireEvent.click(screen.getByRole('button', { name: 'Retirer du parc' }));
+    expect(onRemoveKeg).toHaveBeenCalledWith('F-005');
+    const bandeau = screen.getByTestId('bandeau-suppression');
+    fireEvent.click(within(bandeau).getByRole('button', { name: /Annuler/ }));
+    expect(onAddKegs).toHaveBeenCalledWith([expect.objectContaining({ id: 'F-005', state: 'propre' })]);
+  });
+  it('un fût livré : le client puis le lot ; « Rentré » règle le client, le fût revient plein en cave', async () => {
+    const onSaveKeg = vi.fn();
+    monter([f006], { onSaveKeg }); await ouvrir('F-006');
+    fireEvent.click(screen.getByText('Gestion du fût'));
+    fireEvent.click(screen.getByRole('button', { name: 'Retirer du parc' }));
+    expect(screen.getByRole('dialog', { name: 'Supprimer F-006' })).toHaveTextContent(/2s*liens le retiennent/);
+    fireEvent.click(screen.getByRole('button', { name: 'Rentré' }));
+    expect(onSaveKeg).toHaveBeenCalledWith(expect.objectContaining({ id: 'F-006', state: 'plein', batchRef: 'LOT-002' }));
+    expect(screen.getByRole('dialog', { name: 'Supprimer F-006' })).toHaveTextContent(/1s*lien le retient/);
+    const feuille = screen.getByRole('dialog', { name: 'Supprimer F-006' });
+    fireEvent.click(within(feuille).getByRole('button', { name: /Annuler/ }));
+    expect(onSaveKeg).toHaveBeenLastCalledWith(expect.objectContaining({ id: 'F-006', state: 'livre', clientName: 'Café du Marché' }));
+    expect(feuille).toHaveTextContent(/2s*liens le retiennent/);
   });
 });
 

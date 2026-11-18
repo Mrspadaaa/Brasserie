@@ -2,7 +2,10 @@ import React, { useEffect, useId, useMemo, useRef, useState } from 'react';
 import { Beer, ChevronRight, CircleHelp, Droplets, Sparkles, Truck, Trash2 } from 'lucide-react';
 import { KegItem, KegState, Batch, Client } from '../types';
 import { StorageService } from '../services/storage';
-import { Sheet, ConfirmSheet } from './Sheet';
+import { Sheet } from './Sheet';
+import { SuppressionLiee } from './suppression/SuppressionLiee';
+import { ArchivesRepliables } from './suppression/ArchivesRepliables';
+import { choseFut } from './suppression/choses';
 import { useLiveSelection } from '../hooks/useLiveData';
 import { Button } from '../components/ui/Button';
 import { EntityList } from './EntityList';
@@ -60,8 +63,13 @@ interface KegBoardProps {
  * le bouton rond « + » ouvre « Ajouter des fûts ». Le contenu reste attaché pendant la livraison ; seul le retour vide le détache.
  */
 export const KegBoard: React.FC<KegBoardProps> = ({
-  kegs, batches, clients = [], className = '', today, addOpen = false, onAddClose, onSaveKeg, onAddKegs, onRemoveKeg, onMessage
+  kegs: tousLesFuts, batches, clients = [], className = '', today, addOpen = false, onAddClose, onSaveKeg, onAddKegs, onRemoveKeg, onMessage
 }) => {
+  /** Un fût archivé sort de la liste, des totaux et du remplissage ; il reste sous « Archivés ». */
+  const kegs = useMemo(() => tousLesFuts.filter(k => !k.archivedAt), [tousLesFuts]);
+  const archives = useMemo(() => tousLesFuts.filter(k => k.archivedAt), [tousLesFuts]);
+  /** Le banc de développement écrit en mémoire : la feuille de suppression lit et écrit comme lui. */
+  const banc = Boolean(onSaveKeg || onRemoveKeg);
   const jour = today ?? swissToday();
   const save = onSaveKeg ?? ((keg: KegItem) => StorageService.updateKeg(keg));
   const addMany = onAddKegs ?? ((list: KegItem[]) => list.forEach((keg) => StorageService.addKeg(keg)));
@@ -79,7 +87,9 @@ export const KegBoard: React.FC<KegBoardProps> = ({
   const [repairAttempted, setRepairAttempted] = useState(false);
   const repairInput = useRef<HTMLSelectElement>(null);
   const counts = useMemo(() => comptesParEtat(kegs), [kegs]);
-  const resume = useMemo(() => phrasesResume(resumeParc(kegs)), [kegs]);
+  /* Un fût archivé plein garde sa bière en cave : ses litres restent dans « pleins en cave », dits à part (jamais « 0 L » à tort). */
+  const litresArchivesPleins = useMemo(() => archives.filter(k => k.state === 'plein').reduce((s, k) => s + (Number.isFinite(k.capacityL) ? k.capacityL : 0), 0), [archives]);
+  const resume = useMemo(() => phrasesResume(resumeParc(kegs), litresArchivesPleins), [kegs, litresArchivesPleins]);
   const range = useMemo(
     () => rangerParSections(filtre.length ? kegs.filter(k => filtre.includes(etatFut(k))) : kegs, jour),
     [kegs, filtre, jour]
@@ -140,6 +150,15 @@ export const KegBoard: React.FC<KegBoardProps> = ({
             )}
           </h3>
         )}
+        footer={
+          <ArchivesRepliables sorte="fut" className="mt-2 mb-24"
+            rangees={archives.map(k => ({ id: k.id, nom: `${k.id} · ${nombreFr(k.capacityL, 1)} L`, sous: k.state === 'plein' && k.batchRef ? `archivé · plein de ${k.batchRef}` : 'archivé · liens gardés' }))}
+            onRessortir={(id) => {
+              if (!banc) { StorageService.setArchivedEntity('fut', id, false); return; }
+              const k = tousLesFuts.find(x => x.id === id);
+              if (k) save({ ...k, archivedAt: null });
+            }}/>
+        }
         header={kegs.length > 0 && (
           <div className="keg-tete">
             <div className="keg-jauge-ligne">
@@ -218,6 +237,8 @@ export const KegBoard: React.FC<KegBoardProps> = ({
         }}
       />
 
+
+
       {selected && !selectedUnknown && !fill && (
         <KegFiche
           key={selected.id} keg={selected} batches={batches} clients={clients} today={jour}
@@ -253,22 +274,20 @@ export const KegBoard: React.FC<KegBoardProps> = ({
             </dl>
             {selected.notes && <p className="equipment-note"><span>Note · </span>{selected.notes}</p>}
           </FormNav>
-          <details className="equipment-disclosure equipment-management">
+          <details className="equipment-disclosure equipment-management" open>
             <summary>Gestion du fût</summary>
             <Button intent="danger" size="sm" className="equipment-danger" onClick={() => setConfirmDelete(true)} icon={<Trash2 size={14}/>}>Retirer du parc</Button>
           </details>
         </Sheet>
       )}
 
-      {selected && (
-        <ConfirmSheet
-          open={confirmDelete} onClose={() => setConfirmDelete(false)} title="Retirer ce fût ?"
-          what={`Fût ${selected.id} — ${nombreFr(selected.capacityL, 1)} L`}
-          consequence={`${selected.state === 'plein' || selected.state === 'livre' || selectedUnknown && (selected.beerName || selected.batchRef)
-            ? `Ce fût contient ${selected.beerName || 'une bière non renseignée'}. Le retirer ne restitue pas son contenu au stock.`
-            : 'Le fût disparaît du parc.'} Son historique reste au journal.`}
-          confirmLabel="Retirer le fût" onConfirm={() => { remove(selected.id); close(); }}/>
-      )}
+      {/* Maquette suppression/v2 : les liens du fût un par un ; sans lien, suppression directe avec « Annuler » 6 s. */}
+      <SuppressionLiee
+        chose={confirmDelete && selected ? choseFut(selected, banc ? {
+          apres: () => setSelected(null), kegs: tousLesFuts, jour, ecrireFut: save, supprimer: () => remove(selected.id), retablir: (k: KegItem) => addMany([k]),
+          archiver: (a: boolean) => save({ ...(tousLesFuts.find(k => k.id === selected.id) ?? selected), archivedAt: a ? new Date().toISOString() : null })
+        } : { apres: () => setSelected(null) }) : null}
+        onClose={() => setConfirmDelete(false)}/>
 
       {fill && (
         <KegFillSheet

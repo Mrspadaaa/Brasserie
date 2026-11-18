@@ -27,7 +27,7 @@ import { FinancialLedgerLoading } from './ui/FinancialLedgerLoading';
 import { archiveIndex, isTransactionArchived } from './domain/finance/archive';
 import { isoDate } from './domain/finance/ledger';
 import { fabActionFor, FabIntent, AnySubTab } from './domain/fabActions';
-import { plusMenuFor, type PlusCle } from './domain/plusEcran';
+import { plusMenuFor, plusMenuPage, type PlusCle } from './domain/plusEcran';
 import { joursDepuisBrassage } from './domain/productionInsights';
 import { apercuArticle, formaterAlpha } from './components/recherche/apercu';
 import { dateCourte, resumeLigneEcriture, type DestinationId } from './components/recherche/modele';
@@ -38,6 +38,8 @@ import { recipeInstallationAdoptionIssue, recipeInstallationIssues } from './dom
 import { isCurrent } from './domain/catalogOrganization';
 import { nextUniqueRef } from './services/refs';
 import { articlesACommander } from './domain/stockLevel';
+import { compteDeReglage, vueHorizon } from './domain/stock/horizon';
+import { useHorizonStock, aujourdhuiLocal } from './ui/stock/useHorizonStock';
 import { formatLitres } from './domain/recipeMetrics';
 
 import { Units } from './services/units';
@@ -89,6 +91,9 @@ const CloudConfigModal = lazy(() => import('./components/CloudConfigModal').then
 const RecipePage = lazy(() => loadRecipePage().then(module => ({ default: module.RecipePage })));
 const BrewDayPage = lazy(() => import('./pages/BrewDayPage').then(module => ({ default: module.BrewDayPage })));
 const DashboardTab = lazy(() => import('./components/tabs/DashboardTab').then(module => ({ default: module.DashboardTab })));
+const PageFournisseurs = lazy(() => import('./ui/fournisseurs/PageFournisseurs').then(module => ({ default: module.PageFournisseurs })));
+const PlanSheet = lazy(() => import('./ui/finance/FinanceForms').then(module => ({ default: module.PlanSheet })));
+const CalendrierTab = lazy(() => import('./components/tabs/CalendrierTab').then(module => ({ default: module.CalendrierTab })));
 const FinancesTab = lazy(() => import('./components/tabs/FinancesTab').then(module => ({ default: module.FinancesTab })));
 const ProductionTab = lazy(() => import('./components/tabs/ProductionTab').then(module => ({ default: module.ProductionTab })));
 const StocksTab = lazy(() => import('./components/tabs/StocksTab').then(module => ({ default: module.StocksTab })));
@@ -191,9 +196,12 @@ export const App: React.FC = () => {
   /** La page « Plus » (m3) : posée à la place de l'écran, qui reste monté dessous ; le geste retour la ferme. */
   const [plusOuvert, setPlusOuvert] = useState(false);
   const plusPousse = useRef(false);
+  /** La liste des fournisseurs et leur fiche (maquette fournisseur/v1) : posée à la place de l'écran, ouverte depuis Plus. */
+  const [fournisseursOuvert, setFournisseursOuvert] = useState(false);
   /** Changer de signataire redessine l'en-tête et la page Plus (le nom se lit dans le stockage). */
   const [signataireNonce, setSignataireNonce] = useState(0);  const fermerPlus = React.useCallback(() => {
     setPlusOuvert(false);
+    setFournisseursOuvert(false);
     if (plusPousse.current) { plusPousse.current = false; window.history.back(); }
   }, []);
   const ouvrirPlus = React.useCallback(() => {
@@ -205,8 +213,9 @@ export const App: React.FC = () => {
   }, [fermerPlus]);
   // Changer d'écran (barre, retour, lien) referme Plus.
   useEffect(() => { if (plusPousse.current) fermerPlus(); }, [activeTab]); // eslint-disable-line react-hooks/exhaustive-deps
+  useEffect(() => { setFournisseursOuvert(false); }, [activeTab]);
   useEffect(() => {
-    const retour = () => { if (plusPousse.current) { plusPousse.current = false; setPlusOuvert(false); } };
+    const retour = () => { if (plusPousse.current) { plusPousse.current = false; setPlusOuvert(false); setFournisseursOuvert(false); } };
     window.addEventListener('popstate', retour);
     return () => window.removeEventListener('popstate', retour);
   }, []);
@@ -262,6 +271,8 @@ export const App: React.FC = () => {
   /** Renvoi depuis une écriture financière vers l'article qu'elle a acheté. */
   const [stockOpenRequest, setStockOpenRequest] = useState<{ ref: string; at: number } | null>(null);
   const [labSectionRequest, setLabSectionRequest] = useState<CreativeLabSectionRequest | null>(null);
+  /** Calendrier, « Prévoir une dépense » : la feuille de prévision (écriture prévue, non payée), datée de la semaine touchée. */
+  const [prevoirDepense, setPrevoirDepense] = useState<{ date: string } | null>(null);
   useEffect(() => {
     if (activeTab !== 'finances') setFinanceOpenRequest(null);
   }, [activeTab]);
@@ -545,7 +556,12 @@ export const App: React.FC = () => {
   // Critical stock count
   // LE comptage du « manque » : la même fonction que Stocks et le Bord (test en ligne n° 49 : 26 au badge, 12 à Stocks).
   // R1 (k2) : le manque compte aussi les recettes écrites, jamais brassées ; `recipes` est le carnet entier.
-  const criticalStockCount = useMemo(() => articlesACommander([...stocks.rawMaterials, ...stocks.cleaning], batches, recipes).length, [stocks, batches, recipes]);
+  // Pastille C (16.11) : le même horizon « S49 · 6 sem. · Tout » règle le chiffre clé du Stocks et cette pastille (domain/stock/horizon.ts).
+  const [horizonStock] = useHorizonStock();
+  const criticalStockCount = useMemo(() => {
+    const vue = vueHorizon(articlesACommander([...stocks.rawMaterials, ...stocks.cleaning], batches, recipes), batches, aujourdhuiLocal());
+    return compteDeReglage(vue, horizonStock);
+  }, [stocks, batches, recipes, horizonStock]);
 
   // Pending To-Do count from Creative Lab
   const pendingTodosCount = creativeItems.filter(
@@ -876,6 +892,7 @@ export const App: React.FC = () => {
     switch (id) {
       case 'bord': setActiveTab('dashboard'); break;
       case 'finances': setActiveTab('finances'); break;
+      case 'calendrier': setActiveTab('calendrier'); break;
       case 'brassins': production('batches'); break;
       case 'recettes': production('recipes'); break;
       case 'atelier': production('lab'); break;
@@ -1177,12 +1194,23 @@ export const App: React.FC = () => {
             onAtelier={() => { fermerPlus(); navigateToCreativeLab(); }}
             onConversations={() => window.dispatchEvent(new Event('brewer-inbox-open'))}
             onJournal={() => setIsAuditLogsOpen(true)}
+            onFournisseurs={() => { setPlusOuvert(false); setFournisseursOuvert(true); }}
             onCloud={() => setIsCloudConfigOpen(true)}
             onReglages={() => setIsSettingsOpen(true)}
             onLogout={handleLogout}
           />
         )}
-        <div style={{ display: plusOuvert ? 'none' : 'contents' }}>
+        {fournisseursOuvert && !plusOuvert && (
+          <LazySurface resetKey="fournisseurs">
+            <PageFournisseurs
+              transactions={transactions}
+              stocks={stocks}
+              onBack={() => { setFournisseursOuvert(false); setPlusOuvert(true); }}
+              onScanner={() => setQuickAction('scan', actionLauncherRef.current)}
+            />
+          </LazySurface>
+        )}
+        <div style={{ display: plusOuvert || fournisseursOuvert ? 'none' : 'contents' }}>
         <LazySurface resetKey={activeTab}>
         {activeTab === 'dashboard' && (
           <DashboardTab
@@ -1226,6 +1254,31 @@ export const App: React.FC = () => {
               if (recipe) openRecipe(recipe);
             }}
             onOpenSale={() => setQuickAction('quick-sale', actionLauncherRef.current)}
+          />
+        )}
+
+        {activeTab === 'calendrier' && (
+          <CalendrierTab
+            transactions={transactions}
+            batches={batches}
+            stockItems={[...stocks.rawMaterials, ...stocks.cleaning]}
+            onOpenBatch={(batchId) => {
+              setProductionSubTab('batches');
+              setBatchOpenRequest({ id: batchId, at: Date.now() });
+              setActiveTab('production');
+            }}
+            onOpenFinances={() => setActiveTab('finances')}
+            onOpenCourses={() => runPlus('courses')}
+            onPoserBrassin={() => setQuickAction('brew-batch', actionLauncherRef.current)}
+            onPoserFete={(lundi) => {
+              setLabSectionRequest({ section: 'event', at: Date.now(), date: lundi });
+              navigateToCreativeLab();
+            }}
+            onPoserDepense={(lundi) => setPrevoirDepense({ date: lundi })}
+            onOpenAgenda={() => {
+              setLabSectionRequest({ section: 'event', at: Date.now() });
+              navigateToCreativeLab();
+            }}
           />
         )}
 
@@ -1296,9 +1349,11 @@ export const App: React.FC = () => {
           sur les onglets, le bouton ne flotte pas au-dessus du contenu défilant. */}
       <div className="app-bottom-dock">
         <BottomNav
-          activeTab={activeTab}
+          // Fournisseurs s'ouvre depuis Plus, sous Finances (maquette fournisseur/v1) : c'est l'onglet marqué, pas celui d'où l'on venait.
+          activeTab={fournisseursOuvert ? 'finances' : activeTab}
           onChangeTab={(tab) => {
             // Le sous-onglet de chaque onglet est gardé (BX-4) : rien à vider.
+            setFournisseursOuvert(false);
             setActiveTab(tab);
           }}
           criticalStockCount={criticalStockCount}
@@ -1316,9 +1371,9 @@ export const App: React.FC = () => {
         launcherRef={actionLauncherRef}
         // `quickAction` ne crée rien de propre à l'écran : il rouvrirait le
         // sommaire des saisies que le menu liste déjà en clair.
-        action={view.view === 'tabs' && fabAction.intent !== 'quickAction' ? fabAction : null}
+        action={view.view === 'tabs' && !fournisseursOuvert && fabAction.intent !== 'quickAction' ? fabAction : null}
         onAction={runFabAction}
-        menu={view.view === 'tabs' ? plusMenu : undefined}
+        menu={view.view === 'tabs' ? (fournisseursOuvert ? plusMenuPage({}, null) : plusMenu) : undefined}
         onPlus={runPlus}
         horsConnexion={horsConnexion}
         companionLabel={companionLabel}
@@ -1330,6 +1385,7 @@ export const App: React.FC = () => {
       />}
 
       {/* Quick Action Modal (Scanner IA, Matching Stock interactif, Brassin, Vente) */}
+      {prevoirDepense && <React.Suspense fallback={null}><PlanSheet date={prevoirDepense.date} onClose={() => setPrevoirDepense(null)} /></React.Suspense>}
       <ModalOpenerContext.Provider value={quickActionOpener.current}><DeferredSurface active={quickAction !== null} fallback={<Sheet open={quickAction !== null} title="Chargement…" onClose={() => setQuickAction(null)}><p role="status">Ouverture…</p></Sheet>}><QuickActionModal
         isOpen={quickAction !== null}
         initialScreen={quickAction ?? 'menu'}
@@ -1379,7 +1435,7 @@ export const App: React.FC = () => {
         open={isPaletteOpen}
         onOpenChange={setIsPaletteOpen}
         groups={commandGroups}
-        menu={view.view === 'tabs' ? plusMenu : undefined}
+        menu={view.view === 'tabs' ? (fournisseursOuvert ? plusMenuPage({}, null) : plusMenu) : undefined}
         onGeste={runPlus}
         onCompagnon={() => window.dispatchEvent(new Event('brewer-companion-open'))}
         onAllerA={allerA}

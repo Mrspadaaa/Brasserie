@@ -362,3 +362,6 @@ body[data-has-fiche-page] .app-bottom-dock > nav.nav-principale {
     mask-composite: intersect;
   }
 }
+
+/* Pastille C (16.11) : la pastille de Stocks est bleue comme le chiffre clé qu'elle répète ; le texte prend la couleur de la page (blanc en clair, encre en cave). */
+.pastille-stocks { background: rgb(var(--area-finances)); color: rgb(var(--cave-950)); }

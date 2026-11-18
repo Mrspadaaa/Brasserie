@@ -76,6 +76,15 @@ export interface Fil {
   resserre: boolean;
 }
 
+/** Nombre de jours de `base` (jour local) à `iso` (aaaa-mm-jj) ; jamais négatif ; `null` si la date est illisible (aucune date inventée). */
+export function joursJusquAu(base: Date, iso: string): number | null {
+  const m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(iso);
+  if (!m) return null;
+  const cible = Date.UTC(Number(m[1]), Number(m[2]) - 1, Number(m[3]));
+  if (Number.isNaN(cible)) return null;
+  return Math.max(0, Math.round((cible - Date.UTC(base.getFullYear(), base.getMonth(), base.getDate())) / 86400000));
+}
+
 /** Position (px depuis le jour 0, sans marge) d'un jour d'avenir. */
 export function positionY(jours: number): number {
   const j = Math.max(0, jours);

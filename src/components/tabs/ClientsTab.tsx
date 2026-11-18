@@ -15,6 +15,7 @@ import { StorageService } from '../../services/storage';
 import { ClientStatsService } from '../../services/clientStats';
 import { lireTelephone } from '../../services/clientPhone';
 import { EditClientModal } from '../EditClientModal';
+import { ArchivesRepliables } from '../../ui/suppression/ArchivesRepliables';
 import { PrixEcran } from '../../ui/prix/PrixEcran';
 import { nextClientId } from '../../services/refs';
 import { useLiveSelection, useStorageValue } from '../../hooks/useLiveData';
@@ -43,7 +44,7 @@ interface ClientsTabProps {
 }
 
 export const ClientsTab: React.FC<ClientsTabProps> = ({
-  clients,
+  clients: tousLesClients,
   batches,
   tarifs,
   config,
@@ -51,6 +52,9 @@ export const ClientsTab: React.FC<ClientsTabProps> = ({
   createRequest,
   onSuccessMessage
 }) => {
+  /** Un client archivé (une vente le retient, maquette suppression/v2) sort du carnet ; il reste sous « Archivés », ses ventes à son nom. */
+  const clients = useMemo(() => tousLesClients.filter(c => !c.archivedAt), [tousLesClients]);
+  const clientsArchives = useMemo(() => tousLesClients.filter(c => c.archivedAt), [tousLesClients]);
   const [clientQuery, setClientQuery] = useState('');
   const [clientType, setClientType] = useState<'all' | Client['type']>('all');
   const [clientStatus, setClientStatus] = useState<'all' | ClientStatus>('all');
@@ -94,8 +98,8 @@ export const ClientsTab: React.FC<ClientsTabProps> = ({
   // Chiffres clients calculés depuis les ventes réelles (jamais stockés).
   const transactions = useStorageValue(StorageService.getTransactions);
   const clientStats = useMemo(
-    () => ClientStatsService.forAll(clients, transactions),
-    [clients, transactions]
+    () => ClientStatsService.forAll(tousLesClients, transactions),
+    [tousLesClients, transactions]
   );
 
   const visibleClients = useMemo(() => {
@@ -214,6 +218,9 @@ export const ClientsTab: React.FC<ClientsTabProps> = ({
               </details>;
             })}
           </div>}
+          <ArchivesRepliables sorte="client"
+            rangees={clientsArchives.map(c => ({ id: c.id, nom: c.name, sous: 'archivé · ventes gardées' }))}
+            onRessortir={(id) => StorageService.setArchivedEntity('client', id, false)} />
         </section>
       )}
 

@@ -43,6 +43,22 @@ interface Props {
   onPlanifier: (jour: string) => void;
 }
 
+/** Abréviations usuelles des mois (jeu en ligne 16.11 : « Nove. – déce. » tronqué). Les mois courts gardent leur mot entier. */
+const ABREGE: Record<string, string> = { janvier: 'janv.', février: 'févr.', mars: 'mars', avril: 'avr.', mai: 'mai', juin: 'juin', juillet: 'juil.', août: 'août', septembre: 'sept.', octobre: 'oct.', novembre: 'nov.', décembre: 'déc.' };
+const majuscule = (s: string) => s.replace(/^./, c => c.toUpperCase());
+
+/** « Novembre » pour un mois ; « Nov. – déc. » quand la fenêtre de trois semaines en touche deux. */
+export function titreDesMois(mois: string[]): string {
+  if (mois.length < 2) return majuscule(mois[0] ?? '');
+  const court = (m: string) => ABREGE[m.toLowerCase()] ?? m;
+  return `${majuscule(court(mois[0]))} – ${court(mois[1])}`;
+}
+
+/** « 1 jour depuis aujourd'hui » (jeu en ligne 16.11 : « 1 jours »). */
+export function joursDepuis(n: number): string {
+  return n === 0 ? "aujourd'hui" : `${n} jour${Math.abs(n) > 1 ? 's' : ''} depuis aujourd'hui`;
+}
+
 export function FeuilleBrasser({ recipe, batches, stock, capaciteL, volumeL: volumeAdapte, avertissement, erreur, enCours = false, jourFige, maintenant, onAnnuler, onPlanifier }: Props) {
   const aujourdhui = debutDeJour(maintenant ?? Date.now());
   const volumeL = volumeAdapte ?? recipe.volumeL;
@@ -69,7 +85,7 @@ export function FeuilleBrasser({ recipe, batches, stock, capaciteL, volumeL: vol
   const debut = plusJours(lundiDe(aujourdhui), decalage * 7);
   const jours = Array.from({ length: NB_JOURS }, (_, i) => plusJours(debut, i));
   const mois = [...new Set([jours[0], jours[NB_JOURS - 1]].map(nomMois))];
-  const titreMois = (mois.length > 1 ? `${mois[0].slice(0, 4)}. – ${mois[1].slice(0, 4)}.` : mois[0]).replace(/^./, c => c.toUpperCase());
+  const titreMois = titreDesMois(mois);
 
   /** « dry hop NEIPA » : le mot, puis le brassin concerné quand un rendez-vous de la fenêtre le nomme (la maquette : « Pils en bouteille »). */
   const nomsLegende = (g: GenreEvenement) => {
@@ -155,7 +171,7 @@ export function FeuilleBrasser({ recipe, batches, stock, capaciteL, volumeL: vol
           {enCours ? 'Enregistrement…' : figeLe !== undefined ? "Confirmer l'enregistrement" : raison.conflit ? 'Planifier quand même' : `Planifier ${jourBouton(choisi)}`}
         </button>
       </div>
-      <p className="sr-only">{ecartJours(aujourdhui, choisi)} jours depuis aujourd'hui</p>
+      <p className="sr-only">{joursDepuis(ecartJours(aujourdhui, choisi))}</p>
     </div>
   );
 }

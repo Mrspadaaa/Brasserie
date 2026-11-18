@@ -1168,6 +1168,26 @@ export const StorageService = {
     );
   },
 
+  /**
+   * Range un fût ou un client dans « Archivés » (ou le ressort) : `archivedAt` seul change, rien n'est supprimé (maquette suppression/v2, 16.11).
+   * Un brassin passe par `setCatalogArchived`, une idée par son propre rangement.
+   */
+  setArchivedEntity(kind: 'fut' | 'client', id: string, archived: boolean): boolean {
+    const quand = archived ? new Date().toISOString() : null;
+    if (kind === 'fut') {
+      const k = this.getStocks().kegs.find((x) => x.id === id);
+      if (!k) return false;
+      FirestoreRepo.put('kegs', id, { ...k, archivedAt: quand });
+      this.logAction('Modification', 'Fûts', id, `Fût ${id} ${archived ? 'rangé dans les archivés' : 'remis en service'}`);
+      return true;
+    }
+    const c = this.getClients().find((x) => x.id === id);
+    if (!c) return false;
+    FirestoreRepo.put('clients', id, { ...c, archivedAt: quand });
+    this.logAction('Modification', 'Clients', id, `Client ${c.name} ${archived ? 'rangé dans les archivés' : 'remis en service'}`);
+    return true;
+  },
+
   deleteClient(id: string) {
     const target = this.getClients().find((c) => c.id === id);
     FirestoreRepo.remove('clients', id);

@@ -11,7 +11,8 @@ import { StorageService } from '../../services/storage';
 import { useStorageValue } from '../../hooks/useLiveData';
 import { DateUtils } from '../../services/dateUtils';
 import { FinanceService } from '../../services/financeService';
-import { formatCHF, summarizeLedger } from '../../domain/finance/ledger';
+import { formatCHF, summarizeLedger, todayISO } from '../../domain/finance/ledger';
+import { duneSemaine, evenementsAgenda, evenementsBrassins, semainesDe } from '../../domain/calendrier';
 import { isCurrent } from '../../domain/catalogOrganization';
 import { statusOfBatch } from '../../domain/batchStatus';
 import { articlesACommander } from '../../domain/stockLevel';
@@ -25,7 +26,7 @@ interface DashboardTabProps {
   planning: GanttTask[];
   config: AppConfig;
   globalTimeFilter: PeriodeEntree;
-  onNavigateTab: (tab: 'finances' | 'production' | 'stocks' | 'clients') => void;
+  onNavigateTab: (tab: 'finances' | 'calendrier' | 'production' | 'stocks' | 'clients') => void;
   onOpenBatch: (batchId: string) => void;
   onNavigateToCreativeLab: () => void;
 }
@@ -153,6 +154,11 @@ export const DashboardTab: React.FC<DashboardTabProps> = ({
     .sort((a, b) => Number(a.status === 'done') - Number(b.status === 'done') ||
       dateOrder(a.date) - dateOrder(b.date)), [creativeItems]);
   const pendingEvents = events.filter(item => item.status !== 'done');
+  /* « Cette semaine au calendrier » (onglet/v1) : ce que le calendrier pose cette semaine, lu des mêmes brassins et événements que lui (les échéances de Finances ne s'y comptent pas : sans ligne, le Bord n'affirme pas « rien »). */
+  const cetteSemaine = useMemo(() => {
+    const aujourdhui = todayISO(), semaines = semainesDe(aujourdhui);
+    return duneSemaine([...evenementsBrassins(batches, semaines, aujourdhui, batch => joursDepuisBrassage(batch)), ...evenementsAgenda(creativeItems, semaines)], 0);
+  }, [batches, creativeItems]);
 
   const periodTxs = useMemo(() => transactions.filter(tx =>
     dansPeriode(tx.date, globalTimeFilter)), [transactions, globalTimeFilter]);
@@ -323,6 +329,16 @@ export const DashboardTab: React.FC<DashboardTabProps> = ({
             <span className="text-xs text-cave-200">{pendingEvents.length} à faire</span>
             <button type="button" onClick={onNavigateToCreativeLab} className={`${smallAction} text-area-agenda`}>Gérer<ChevronRight size={12} aria-hidden="true" /></button>
           </div>
+          {/* Onglet/v1 : « Bord ne bouge pas » — le calendrier se lit d'une ligne dans la carte Agenda, sans carte de plus ni rien déplacé. */}
+          <button type="button" onClick={() => onNavigateTab('calendrier')} aria-label="Cette semaine au calendrier" aria-describedby="bord-cal-resume" className="flex min-h-[52px] w-full items-center gap-2 border-b border-cave-800 px-2 py-1 text-left hover:bg-cave-850">
+            <span className="min-w-0 flex-1">
+              <span className="block text-sm font-semibold text-cave-50">Cette semaine au calendrier</span>
+              <span id="bord-cal-resume" className="block truncate text-xs text-cave-200">{cetteSemaine.length
+                ? `${cetteSemaine.length} cette semaine : ${cetteSemaine.slice(0, 2).map(e => e.titre).join(', ')}${cetteSemaine.length > 2 ? '…' : ''}`
+                : 'rien de posé · voir les six semaines'}</span>
+            </span>
+            <ChevronRight size={16} className="shrink-0 text-cave-400" aria-hidden="true" />
+          </button>
           {events.length === 0 && <p className="px-2 py-2 text-2xs text-cave-400">Aucune tâche prévue.</p>}
           <div className="divide-y divide-cave-800">
             {events.slice(0, 3).map(item => <label key={item.id} className="flex min-h-8 cursor-pointer items-center gap-2 px-2 py-1">

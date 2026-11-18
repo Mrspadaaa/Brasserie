@@ -1,6 +1,6 @@
 import type { BrewerContext } from '../../../functions/src/companionTypes';
 import type { BrewerCatalogueKind, BrewerCatalogueCommand } from '../../../functions/src/brewerCatalogueSchema';
-import type { BrewerCatalogueLookupRecord, BrewerCatalogueWriteResult } from '../../../functions/src/brewerCatalogueStore';
+import type { BrewerCatalogueLookupRecord, BrewerCatalogueWriteResult } from '../../../functions/src/brewerCatalogueTypes';
 import type { Recipe } from '../../types';
 import type { BrewingScenarioLocalRepository } from '../brewingScenarioLocalRepository';
 import type { BrewingScenarioRequest } from '../../domain/brewingScenario';
