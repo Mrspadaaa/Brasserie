@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { bornes, etiquetteCourte, type Periode } from '../../../components/periode/periode';
 import { lundiDe } from '../../../domain/calendrier';
-import { ajouterJours, largeurTexte, lignesEtiquette, type Boite } from './Courbe';
+import { ajouterJours, largeurTexte, placeEtiquette, type Boite } from './Courbe';
 
 /**
  * La fenêtre (E06, c1-d) : le cadre posé sur la courbe, ses deux poignées, l'étiquette « S47 – S52 » qui suit le doigt ; et le lien avec la
@@ -145,8 +145,11 @@ export function Cadre({ numeros, lundis, index, nombre, largeur, annee, onChange
   const [drag, setDrag] = useState<{ index: number; nombre: number; bord: number } | null>(null);
   const cur = drag ?? (annee ? { index: 0, nombre: total } : { index, nombre });
   const etiquette = etiquetteCadre(numeros, cur.index, cur.nombre, annee && !drag, etiquetteAnnee, lundis);
-  const lignes = lignesEtiquette(etiquette, cur.nombre * unit);
   const gauche = cur.index * unit, droite = (cur.index + cur.nombre) * unit;
+  // Plus large que le cadre (fenêtre de 2 semaines), l'étiquette passe à côté du cadre, sur une ligne, jamais hors de l'écran (placeEtiquette).
+  const place = placeEtiquette(etiquette, gauche, cur.nombre * unit, largeur);
+  const lignes = place.lignes;
+  const styleL = place.dehors ? { left: place.l - gauche, transform: 'none', alignItems: 'flex-start' } : undefined;
   const zones = zonesPoignees(gauche, droite, largeur);
   // Pendant le tirage, l'étiquette quitte le bas du cadre (où elle couvrait « 1 740 mis de côté », n° 24) : elle suit le doigt, en haut.
   const tirage = drag ? boiteTirage(etiquette, drag.bord, largeur) : null;
@@ -218,7 +221,7 @@ export function Cadre({ numeros, lundis, index, nombre, largeur, annee, onChange
     <>
       <div className="ent-cadre" role="group" aria-label={`Fenêtre : ${etiquette}`} data-annee={annee ? 'oui' : undefined} data-glisse={drag ? 'oui' : undefined}
         style={{ left: gauche, width: cur.nombre * unit }}>
-        {!tirage && <span className="ent-cadre-l" data-cadre-etiquette>{lignes.map(l => <span key={l}>{l}</span>)}</span>}
+        {!tirage && <span className="ent-cadre-l" data-cadre-etiquette style={styleL}>{lignes.map(l => <span key={l}>{l}</span>)}</span>}
       </div>
       {tirage && <span className="ent-cadre-tir" data-cadre-etiquette data-cadre-tirage style={{ left: tirage.l, width: tirage.r - tirage.l }}>{etiquette}</span>}
       <button type="button" className="ent-poi ent-poi-debut" data-poignee="debut" style={{ left: zones.debut.l, width: zones.debut.w }}

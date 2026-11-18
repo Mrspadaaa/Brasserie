@@ -18,6 +18,7 @@ import { FeuilleAjout, type ResultatAjout } from '../../ui/calendrier/frise/Feui
 import { VueListe } from '../../ui/calendrier/frise/VueListe';
 import { CLASSE_TEINTE } from '../../ui/calendrier/frise/Marque';
 import { positionDans, type Colonne, type DragEtat } from '../../ui/calendrier/frise/Rangee';
+import { aDesJours, cibleDuGlisse, colonnesDeLAxe, echelleApres, echelleEffective, peutDeplier, PERIODE_DE_L_ECHELLE, type Echelle, type SensPincement } from '../../ui/calendrier/echelle';
 import {
   RANGEES, ajouterJours, dateDeSemaine, etiquetteS, jourLisible, lundiDe, nomRangee, nomSeules, preparerChoses,
   type CibleOuverture, type ChoseCalendrier, type ModeleCalendrier, type Rangee as IdRangee
@@ -28,7 +29,7 @@ import {
   type BrouillonAjout, type ContexteAjout
 } from '../../domain/calendrierAjout';
 import {
-  accepterVente, alignerCourbe, allonger, deplacer, dupliquer, dureeAllongee, fait, lier, livrer, mettreDeCote, retirer, noterIdee,
+  accepterVente, alignerCourbe, allonger, deplacer, deplacerJours, dupliquer, dureeAllongee, fait, lier, livrer, mettreDeCote, retirer, noterIdee,
   type ContexteGestes, type Ecriture, type Message as MessageGeste, type Promesse, type Resolution
 } from '../../domain/calendrierGestes';
 
@@ -237,6 +238,9 @@ export function CalendrierTab(props: CalendrierTabProps) {
   const [apercuLundi, setApercu] = useState<ReturnType<typeof courbeDecalee> | null>(null);
   const [duree, setDuree] = useState<{ id: string; texte: string } | null>(null);
   const [mesure, setMesure] = useState({ largeur: 0, largeurColonne: 0 });
+  /* D385 : l'échelle de l'axe (Jour, Semaine, Mois), Semaine à chaque ouverture (« semaine par default », #202) ; la semaine dépliée (C) */
+  const [echelleVoulue, setEchelleVoulue] = useState<Echelle>('semaine');
+  const [deplie, setDeplie] = useState<string | null>(null);
   const compteur = useRef(0);
 
   const rangeesVisibles = useMemo(() => (section ? RANGEES_SECTION[section] : null), [section]);
@@ -252,11 +256,21 @@ export function CalendrierTab(props: CalendrierTabProps) {
 
   /* ---------- les colonnes de la frise : des semaines, ou les douze mois de l'année ---------- */
   const annee = vue === 'annee';
+  /* D385 (D, C, B ensemble) : l'échelle voulue, si la période la permet (Jour jusqu'à 3 semaines, Mois dès 3 mois) ; une semaine se déplie en
+     Semaine, si ses jours gardent 16 px au moins et si elle est dans la fenêtre */
+  const echelle = echelleEffective(echelleVoulue, fenetre.semaines, annee);
+  const deplieVu = !annee && echelle === 'semaine' && deplie && peutDeplier(mesure.largeur || 360, fenetre.semaines) && deplie >= fenetre.du && deplie < ajouterJours(fenetre.du, fenetre.semaines * 7) ? deplie : null;
   const colonnes: Colonne[] = useMemo(() => {
     if (annee) return modele.mois.map(m => ({ debut: m.debut, fin: m.fin, etiquette: m.court }));
-    const i = Math.max(0, modele.semaines.findIndex(s => s.debut >= fenetre.du));
-    return modele.semaines.slice(i, i + Math.max(1, fenetre.semaines)).map(s => ({ debut: s.debut, fin: ajouterJours(s.debut, 6), etiquette: `S${s.numero}` }));
-  }, [annee, modele.mois, modele.semaines, fenetre]);
+    return colonnesDeLAxe({ echelle, semaines: modele.semaines, mois: modele.mois, du: fenetre.du, nombre: fenetre.semaines, deplie: deplieVu });
+  }, [annee, echelle, deplieVu, modele.mois, modele.semaines, fenetre]);
+  const colonnesRef = useRef(colonnes);
+  colonnesRef.current = colonnes;
+  const echelleRef = useRef(echelle);
+  echelleRef.current = echelle;
+  /* une période réglée ailleurs (menu, Finances, cadre de la courbe) que l'échelle voulue ne permet pas la ramène à celle montrée ; jamais en
+     paysage (13 semaines le temps de la rotation : l'échelle revient au retour) */
+  useEffect(() => { if (!paysage && !annee && echelleVoulue !== echelle) setEchelleVoulue(echelle); }, [paysage, annee, echelleVoulue, echelle]);
 
   /* ---------- le message : UN canal pour tout l'onglet (E33, D-200, CRITIQUE-3 n° 7) ----------
      Un message chasse le précédent. Il part au premier défilement de 24 px (la page ou un conteneur de l'onglet, la frise comprise), à tout
@@ -364,8 +378,25 @@ export function CalendrierTab(props: CalendrierTabProps) {
   }, [port, montrer, lienDe]);
 
   /* ---------- les gestes de la frise ---------- */
+  /* D385 : sur un axe qui porte des jours (vue Jour, semaine dépliée), le glisser vise un jour ; en Semaine, il reste à la semaine (domaine inchangé) */
+  const cibleJour = (chose: ChoseCalendrier, k: number) => {
+    const cols = colonnesRef.current;
+    if (!aDesJours(cols)) return null;
+    const pos = positionDans(cols, chose);
+    if (!pos) return null;
+    const ancre = chose.debut > cols[0].debut ? chose.debut : cols[0].debut;
+    return cibleDuGlisse(cols, pos.a, k, ancre);
+  };
   const surGlisse = useCallback((chose: ChoseCalendrier, k: number) => {
     setDrag({ id: chose.id, mode: 'glisse', k, jours: 0 });
+    const auJour = aDesJours(colonnesRef.current);
+    const r = auJour ? cibleJour(chose, k) : null;
+    if (auJour) {
+      setIci(k === 0 || !r || r.jours === 0 ? null : `${jourLisible(r.cible)} · lâcher ici`);
+      setApercu(k !== 0 && r && r.jours !== 0 && modele.courbe ? courbeDecalee(modele.courbe, chose.id, r.jours) : null);
+      setMessage(null); setMenu(null); setSelectionId(null);
+      return;
+    }
     const cible = lundiDe(ajouterJours(chose.debut, k * 7));
     setIci(k === 0 ? null : `${etiquetteS(cible)} · ${jourLisible(cible)} · lâcher ici`);
     setApercu(k !== 0 && modele.courbe ? courbeDecalee(modele.courbe, chose.id, k * 7) : null);
@@ -376,6 +407,11 @@ export function CalendrierTab(props: CalendrierTabProps) {
   const surLacheGlisse = useCallback((chose: ChoseCalendrier, k: number, annule: boolean) => {
     finGeste();
     if (annule || k === 0) return;
+    if (aDesJours(colonnesRef.current)) {
+      const r = cibleJour(chose, k);
+      if (r && r.jours !== 0) void ecrire(deplacerJours(chose, r.jours, ctxRef.current), false, chose.id);
+      return;
+    }
     void ecrire(deplacer(chose, k, ctxRef.current), false, chose.id);
   }, [ecrire, finGeste]);
   const surBord = useCallback((chose: ChoseCalendrier, jours: number) => {
@@ -421,6 +457,35 @@ export function CalendrierTab(props: CalendrierTabProps) {
     setSelectionId(chose.id);
   }, [premierLundi, onPeriode]);
   const surRefus = useCallback((chose: ChoseCalendrier, raison: string, jalon?: unknown) => { refuser(raison, chose, !!jalon); }, [refuser]);
+  /*
+   * D385 : changer d'échelle règle la période de l'app (comme le menu) : Jour = 2 semaines, Semaine = 6, Mois = 6 mois (maquette D, ses crans).
+   * `focus` (le jour sous les doigts du pincer) reste en vue : Jour part de sa semaine ; Semaine, venue des mois, le pose en troisième semaine.
+   */
+  const changerEchelle = useCallback((e: Echelle, focus?: string) => {
+    const lundis = modele.semaines.map(s => s.debut);
+    const total = lundis.length || SEMAINES_ANNEE;
+    const n = Math.min(PERIODE_DE_L_ECHELLE[e], total);
+    const voulu = e === 'jour' ? lundiDe(focus ?? fenetre.du) : e === 'semaine' && focus && echelleRef.current === 'mois' ? lundiDe(ajouterJours(focus, -14)) : fenetre.du;
+    const depart = voulu < premierLundi ? premierLundi : voulu;
+    const i0 = Math.max(0, lundis.findIndex(l => l >= depart));
+    const i = Math.min(i0, Math.max(0, total - n));
+    const fen: FenetreSemaines = { du: lundis[i] ?? depart, semaines: n };
+    setMessage(null); setMenu(null); setAncreListe(undefined);
+    setEchelleVoulue(e); setDeplie(null);
+    setVueEtat('semaines'); setFenetre(fen); onPeriode(periodeDeFenetre(fen));
+  }, [modele.semaines, fenetre.du, premierLundi, onPeriode]);
+  /* D385 (variante B) : écarter les doigts ouvre l'échelle plus fine, les pincer la plus large ; un cran par geste, autour du jour visé */
+  const surPincer = useCallback((sens: SensPincement, x: number) => {
+    const suivante = echelleApres(echelleRef.current, sens);
+    if (!suivante) return;
+    const cols = colonnesRef.current;
+    const r = racine.current?.querySelector('[data-frise]')?.getBoundingClientRect();
+    const i = r && r.width > 0 && cols.length ? Math.max(0, Math.min(cols.length - 1, Math.floor((x - r.left) / (r.width / cols.length)))) : 0;
+    changerEchelle(suivante, cols[i]?.debut);
+  }, [changerEchelle]);
+  /* D385 (variante C) : toucher une semaine de la bande la déplie en sept jours ; la toucher dépliée la replie */
+  const surDeplier = useCallback((lundi: string | null) => { setMessage(null); setMenu(null); setDeplie(d => (lundi === null || d === lundi ? null : lundi)); }, []);
+  const deplier = !annee && echelle === 'semaine' && peutDeplier(mesure.largeur || 360, fenetre.semaines);
   /* CRITIQUE-10 n° 2 (E34, E45, D-200, « J'ajoute et je vois rien ») : une chose posée hors de la fenêtre se montre par « Voir S20 › ». Le
      toucher règle LA période de l'app (même chemin que le menu période, ET-PER) sur la plus petite durée du menu (6 sem., 3 mois, 6 mois, An)
      qui contient la chose entière, une semaine avant son début. Nouveau, à valider. */
@@ -626,6 +691,8 @@ export function CalendrierTab(props: CalendrierTabProps) {
   const rangeesSousFiltre = filtre ? ordre.filter(r => r !== filtre).length : 0;
 
   const largeurColonne = mesure.largeurColonne;
+  /* D385 : la courbe et la bande des semaines restent en semaines ; quand l'axe porte des jours ou des mois, leur pas est la largeur / semaines */
+  const largeurSemaine = !annee && (echelle !== 'semaine' || deplieVu) && mesure.largeur > 0 ? mesure.largeur / Math.max(1, fenetre.semaines) : largeurColonne;
   /* au téléphone, aucun nom ni montant ne passe sous le + volant : sa zone, à droite, est réservée (D-135, passe10/p-clair-ferme) */
   const reserveDroite = paysage || (mesure.largeur > 0 && mesure.largeur < 700) ? 76 : 0;
   /* E32 : « Livraison La Cigogne · S1 › » mène à la vente hors de la vue */
@@ -668,7 +735,13 @@ export function CalendrierTab(props: CalendrierTabProps) {
           onMouvements={setMouvements}
           orientation={orientation}
           apercu={apercuLundi ?? undefined}
-          largeurColonne={largeurColonne}
+          largeurColonne={largeurSemaine}
+          echelle={echelle}
+          onEchelle={changerEchelle}
+          colonnes={colonnes}
+          deplie={deplieVu}
+          aujourdhui={aujourdhui}
+          {...(deplier ? { onDeplier: surDeplier } : {})}
           onOuvrirFinances={onOpenFinances}
           onOuvrirRetard={r => ouvrir(r.ouvre)}
           onIdeeSemaine={ouvrirIdee}
@@ -740,6 +813,9 @@ export function CalendrierTab(props: CalendrierTabProps) {
           onAjouter={ouvrirFeuille}
           onBasculerMasque={basculerMasque}
           onSixSemaines={surSixSemaines}
+          onPincer={surPincer}
+          echelle={deplieVu ? 'semaine-depliee' : echelle}
+          aujourdhui={aujourdhui}
           barre={{ onToucher: surToucher, onAppuiLong: surAppuiLong, onGlisse: surGlisse, onLacheGlisse: surLacheGlisse, onBord: surBord, onLacheBord: surLacheBord, onRefus: surRefus }}
         />
       )}

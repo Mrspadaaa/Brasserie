@@ -1,6 +1,9 @@
 import React from 'react';
 import { RANGEES, ecartJours, type ChoseCalendrier, type Rangee as IdRangee } from '../../../domain/calendrier';
 import { MESURES_PAYSAGE, MESURES_PORTRAIT, Rangee, pastille, positionDans, texteRenvoi, type Colonne, type DragEtat, type Renvoi, type RangeeProps } from './Rangee';
+import { GrilleJours } from './GrilleJours';
+import { usePincement } from './usePincement';
+import { aDesJours, type SensPincement } from '../echelle';
 import './frise.css';
 
 /**
@@ -65,6 +68,12 @@ export interface FriseProps extends Pick<RangeeProps, 'drag' | 'ici' | 'etiquett
   vueLarge?: boolean;
   /** La largeur mesurée et celle d'une colonne : partagées avec la courbe. */
   onMesure?: (m: { largeur: number; largeurColonne: number }) => void;
+  /** D385 (variante B) : deux doigts écartés ou pincés sur la frise ; `xClient` : le milieu des deux doigts. */
+  onPincer?: (sens: SensPincement, xClient: number) => void;
+  /** L'échelle montrée (`data-echelle`), pour les contrôles. */
+  echelle?: string;
+  /** Aujourd'hui (ISO) : son trait sur la grille des jours. */
+  aujourdhui?: string;
 }
 
 interface Trait { id: string; d: string }
@@ -165,7 +174,11 @@ export const Frise: React.FC<FriseProps> = props => {
   const enMois = colonnes.length > 0 && ecartJours(colonnes[0].debut, colonnes[0].fin) >= 14;
   /* CRITIQUE-4 n° 4 (D-199, E27) : le paysage montre 13 semaines, c'est déjà une vue large. Plus de 6 semaines, au téléphone comme tourné :
      une marque prend l'appui long et ouvre les 6 semaines centrées sur elle, jamais le menu f5-a (qui reste aux barres et aux 6 semaines). */
-  const vueLarge = props.vueLarge ?? (enMois || colonnes.length > 6);
+  /* D385 : en vue Jour (14 colonnes d'un jour), la vue est étroite : on compte les jours couverts, pas les colonnes */
+  const joursCouverts = colonnes.length ? ecartJours(colonnes[0].debut, colonnes[colonnes.length - 1].fin) + 1 : 0;
+  const vueLarge = props.vueLarge ?? (enMois || joursCouverts > 6.5 * 7);
+  usePincement(zone, props.onPincer);
+  const avecJours = aDesJours(colonnes);
   const largeurColonne = largeur / n;
   const mesures = paysage ? MESURES_PAYSAGE : MESURES_PORTRAIT;
   const onMesureRef = React.useRef(onMesure);
@@ -179,6 +192,12 @@ export const Frise: React.FC<FriseProps> = props => {
   const renvois = renvoisHorsVue(choses, colonnes);
 
   const selection = selectionId ? choses.find(c => c.id === selectionId) : undefined;
+  /* le mot « auj. » au pied de la dernière piste qui montre quelque chose (une seule fois, comme la maquette) */
+  const derniereAvecPiste = avecJours ? [...rangees].reverse().find(r => {
+    if (filtre && filtre !== r && !parRangee(r).some(c => epingles.includes(c.id))) return false;
+    const vues = parRangee(r).filter(c => positionDans(colonnes, c));
+    return (masquees.includes(r) || (!!filtre && filtre !== r) ? vues.filter(c => epingles.includes(c.id)) : vues).length > 0;
+  }) : undefined;
 
   return (
     <div
@@ -186,6 +205,7 @@ export const Frise: React.FC<FriseProps> = props => {
       className={`cal-frise${paysage ? ' cal-paysage' : ''}`}
       data-frise
       data-nb-colonnes={n}
+      data-echelle={props.echelle}
       data-largeur-colonne={largeurColonne.toFixed(2)}
       data-largeur={largeur}
       /* CRITIQUE-10, doute m22 : le cadre de focus (pastille « lié à », barres, marques) est pour le clavier seul ; après un toucher, aucun cadre
@@ -236,6 +256,7 @@ export const Frise: React.FC<FriseProps> = props => {
             onSixSemaines={props.onSixSemaines}
             detail={selection && selection.rangee === r && detail ? detail(selection) : undefined}
             alerte={props.alerte && props.alerte.rangee === r && !masquee ? props.alerte.noeud : undefined}
+            grille={avecJours ? <GrilleJours colonnes={colonnes} largeurColonne={largeurColonne} aujourdhui={props.aujourdhui} mot={r === derniereAvecPiste} /> : undefined}
           />
         );
       })}

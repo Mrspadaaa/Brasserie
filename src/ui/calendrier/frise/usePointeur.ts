@@ -20,6 +20,8 @@ export type ModeGeste = 'repos' | 'appui' | 'glisse' | 'bord' | 'long';
 export interface OptionsPointeur {
   /** Largeur d'une colonne (une semaine) en px ; 0 ou inconnue : aucun glisser n'est lu (jamais un pas inventé). */
   largeurColonne: number;
+  /** D385 : la largeur d'un jour, pour tirer le bord (une colonne d'un jour : la colonne). Absente : 1/7 de colonne (une semaine). */
+  largeurJour?: number;
   /** Plage de pas permise pour le glisser (par exemple `[-ia, nc - 1 - ia]`). */
   borne?: () => [number, number];
   /** Une chose qui ne se déplace pas : le glisser est refusé avec sa raison (la barre ne bouge pas). */
@@ -107,10 +109,22 @@ export function appuiCommenceSur(el: Element | null): boolean {
   return !!el && dernierAppui instanceof Node && el.contains(dernierAppui);
 }
 
+/*
+ * D385 (pincer, variante B) : au deuxième doigt posé sur la frise, le geste en cours d'une barre (appui, appui long à venir, glisser, bord)
+ * est annulé : la barre revient, rien n'est écrit. Chaque geste en cours s'inscrit ici et se retire à sa fin.
+ */
+const gestesEnCours = new Set<() => void>();
+export function annulerGestesFrise(): void {
+  [...gestesEnCours].forEach(annuler => annuler());
+  gestesEnCours.clear();
+}
+
 export function usePointeur(options: OptionsPointeur) {
   const opts = useRef(options);
   opts.current = options;
   const etat = useRef<Etat | null>(null);
+  /** Le geste en cours inscrit pour l'annulation au pincement (D385) ; retiré à sa fin. */
+  const inscrit = useRef<(() => void) | null>(null);
   useEffect(() => { installerGarde(); }, []);
 
   const stopMinuterie = () => {
@@ -129,6 +143,16 @@ export function usePointeur(options: OptionsPointeur) {
     const bord = (e.target as HTMLElement | null)?.closest?.('[data-bord]') || surLeBord(e.currentTarget, e.clientX, opts.current.zoneBord ?? 0);
     const s: Etat = { id: e.pointerId, cible: e.target instanceof Element ? e.target : null, x0: e.clientX, y0: e.clientY, t0: Date.now(), mode: bord ? 'bord' : 'appui', k: 0, minuterie: null };
     etat.current = s;
+    const annuler = () => {
+      if (etat.current !== s) return;
+      if (s.minuterie) { clearTimeout(s.minuterie); s.minuterie = null; }
+      etat.current = null;
+      if (s.mode === 'glisse') opts.current.onLacheGlisse?.(s.k, true);
+      else if (s.mode === 'bord') opts.current.onLacheBord?.(s.k, true);
+    };
+    if (inscrit.current) gestesEnCours.delete(inscrit.current);
+    inscrit.current = annuler;
+    gestesEnCours.add(annuler);
     if (bord) {
       e.stopPropagation();
       capturer(e.currentTarget, e.pointerId);
@@ -165,7 +189,7 @@ export function usePointeur(options: OptionsPointeur) {
       o.onGlisse?.(s.k, dx);
     } else if (s.mode === 'bord' && o.largeurColonne > 0) {
       /* le bord se tire au jour : une semaine = 7 jours, le pas du bord est 1/7 de colonne (E29) */
-      s.k = Math.round(dx / (o.largeurColonne / 7));
+      s.k = Math.round(dx / (o.largeurJour && o.largeurJour > 0 ? o.largeurJour : o.largeurColonne / 7));
       o.onBord?.(s.k, dx);
     }
   }, []);
@@ -178,6 +202,7 @@ export function usePointeur(options: OptionsPointeur) {
     if (!s || e.pointerId !== s.id) return;
     stopMinuterie();
     etat.current = null;
+    if (inscrit.current) { gestesEnCours.delete(inscrit.current); inscrit.current = null; }
     const o = opts.current;
     if (s.mode === 'long' || s.mode === 'glisse' || s.mode === 'bord') { avalerClic.current = Date.now(); poserGardeClic(); }
     if (s.mode === 'glisse') o.onLacheGlisse?.(s.k, annule);

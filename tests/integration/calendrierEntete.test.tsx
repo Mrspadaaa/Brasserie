@@ -643,9 +643,16 @@ describe('B9 : les règles de l’interface', () => {
     const css = sources[0];
     expect(css).not.toMatch(/#[0-9a-fA-F]{3,8}\b/);
     expect(css).not.toMatch(/rgba?\(\s*\d/);
-    const tailles = [...css.matchAll(/font-size:\s*(\d+(?:\.\d+)?)px/g)].map(m => Number(m[1]));
+    /* D385 : la bande en jours et la ligne Échelle reprennent leur maquette choisie (règle n° 1 ; DESIGN.md, décision du 12.09 : le plancher
+       de 14 px n'est plus général) : lettre du jour 10,5 px, numéro et titres 13 px, semaines voisines 12 px. Le reste de l'en-tête garde 14 px. */
+    const regles = css.split('\n');
+    const d385 = (l: string) => /^\.ent-(bj|ech)/.test(l.trim());
+    const tailles = regles.filter(l => !d385(l)).flatMap(l => [...l.matchAll(/font-size:\s*(\d+(?:\.\d+)?)px/g)].map(m => Number(m[1])));
     expect(tailles.length).toBeGreaterThan(10);
     expect(Math.min(...tailles)).toBeGreaterThanOrEqual(14);
+    const taillesD385 = regles.filter(d385).flatMap(l => [...l.matchAll(/font-size:\s*(\d+(?:\.\d+)?)px/g)].map(m => Number(m[1])));
+    expect(taillesD385.length).toBeGreaterThan(4);
+    expect(Math.min(...taillesD385)).toBeGreaterThanOrEqual(10.5);
     for (const s of sources.slice(1)) expect(s).not.toContain('type="number"');
   });
 });

@@ -178,7 +178,20 @@ const fenetreDecalee = (f: { du: string; au: string; joursActifs?: number; miseD
  */
 export function deplacer(chose: ChoseCalendrier, semaines: number, ctx: ContexteGestes, jalon?: JalonId): Resolution {
   if (!Number.isInteger(semaines) || semaines === 0) return refus('Rien ne bouge : choisis une autre semaine.');
-  const jours = semaines * SEMAINE;
+  return deplacerDe(chose, semaines * SEMAINE, ctx, jalon, false);
+}
+
+/**
+ * D385 : le glisser au jour (vue Jour, semaine dépliée). Même écriture que `deplacer`, l'écart compté en jours ; un brassin pas brassé part de
+ * son jour affiché (aujourd'hui), pas de son lundi, et une cible avant aujourd'hui est refusée. Le message dit les jours (« 18 nov. → 20 nov. »).
+ */
+export function deplacerJours(chose: ChoseCalendrier, jours: number, ctx: ContexteGestes, jalon?: JalonId): Resolution {
+  if (!Number.isInteger(jours) || jours === 0) return refus('Rien ne bouge : choisis un autre jour.');
+  return deplacerDe(chose, jours, ctx, jalon, true);
+}
+
+function deplacerDe(chose: ChoseCalendrier, jours: number, ctx: ContexteGestes, jalon: JalonId | undefined, auJour: boolean): Resolution {
+  const reperes = auJour ? jourLisible : etiquetteS;
   const source = chose.source;
   if (jalon) {
     const j = chose.jalons?.find(x => x.id === jalon);
@@ -198,9 +211,9 @@ export function deplacer(chose: ChoseCalendrier, semaines: number, ctx: Contexte
      * annonce (« S48 · 23 nov. · lâcher ici »), jamais le jour prévu passé + n (qui retombait dans le passé et ramenait la barre à aujourd'hui).
      * Planifié dans le futur : jour prévu + n semaines, son jour de la semaine gardé. Une cible avant la semaine courante est refusée.
      */
-    const depart = chose.pasBrassee ? lundiDe(chose.debut) : prevu;
+    const depart = chose.pasBrassee ? (auJour ? chose.debut : lundiDe(chose.debut)) : prevu;
     const nouveau = decale(depart, jours);
-    if (lundiDe(nouveau) < lundiDe(ctx.aujourdhui)) return refus(`Le passé ne se replanifie pas : choisis ${etiquetteS(ctx.aujourdhui)} ou plus tard.`);
+    if (auJour ? nouveau < ctx.aujourdhui : lundiDe(nouveau) < lundiDe(ctx.aujourdhui)) return refus(`Le passé ne se replanifie pas : choisis ${auJour ? `le ${jourLisible(ctx.aujourdhui)}` : etiquetteS(ctx.aujourdhui)} ou plus tard.`);
     /* le vrai décalage du jour de brassage : `finPrevue` écrite et les sorties sans poste le suivent, la longueur reste */
     const ecart = ecartJours(prevu, nouveau);
     let patch: Record<string, unknown>;
@@ -220,13 +233,13 @@ export function deplacer(chose: ChoseCalendrier, semaines: number, ctx: Contexte
     /* le trajet part de la semaine AFFICHÉE (S47 → S48), jamais du jour prévu passé (S46) */
     return {
       ok: true, ecritures: [{ op: 'patch', collection: 'batches', id: batch.id, patch }], effet, promesse, courbeApres,
-      message: annuler(texteEffetCreux(ctx.courbe, courbeApres, effet) ?? `${chose.titre} : ${etiquetteS(depart)} → ${etiquetteS(nouveau)}`)
+      message: annuler(texteEffetCreux(ctx.courbe, courbeApres, effet) ?? `${chose.titre} : ${reperes(depart)} → ${reperes(nouveau)}`)
     };
   }
   if (chose.deplacable !== true) return refus(chose.deplacable.raison, chose.ouvre);
   const avant = ctx.courbe, apres = avant ? courbeDecalee(avant, chose.id, jours) : null;
   const effet = effetCaisse(avant, apres);
-  const message = annuler(texteEffetCreux(avant, apres, effet) ?? `${chose.titre} : ${etiquetteS(chose.debut)} → ${etiquetteS(decale(chose.debut, jours))}`);
+  const message = annuler(texteEffetCreux(avant, apres, effet) ?? `${chose.titre} : ${reperes(chose.debut)} → ${reperes(decale(chose.debut, jours))}`);
   if (source.genre === 'creative') {
     const item = { date: decale(chose.debut, jours) };
     return { ok: true, ecritures: [{ op: 'patch', collection: 'creativeItems', id: source.id, patch: { ...item, ...(chose.fenetre ? { fenetre: fenetreDecalee(chose.fenetre, jours) } : {}) } }], effet, promesse: null, courbeApres: apres, message };

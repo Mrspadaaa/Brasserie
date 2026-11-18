@@ -3,7 +3,7 @@ import type { Batch, CreativeItem } from '../../src/types';
 import type { ForecastItem } from '../../src/domain/finance/forecast';
 import type { FinancialPlan } from '../../src/domain/finance/types';
 import {
-  RANGEES, anneeEnMois, choseArgent, choseBrassin, choseCreative, choseSansDate, choseVenteProbable, dateDeSemaine, dimancheDe, duneSemaine, echelleSemaines, ecartSemaines, estMarque, evenementsAgenda,
+  RANGEES, ajouterJours, anneeEnMois, choseArgent, choseBrassin, choseCreative, choseSansDate, choseVenteProbable, dateDeSemaine, dimancheDe, duneSemaine, echelleSemaines, ecartSemaines, estMarque, evenementsAgenda,
   evenementsArgent, evenementsBrassins, fenetreSemaines, finDeBrassin, francs, iconesIdees, indexMois, indexSemaine, jalonsBrassin, livraisonsAttendues, lundiDe, numeroSemaine, positionChose,
   retardsDe, semainesDe, totalVoie, budgetBrassin, francsSignes, idChoseArgent, preparerChoses, texteDuree, etiquetteListe, dureeBrassin, type Rangee,
   semaineAvecAn, choseCoutAVenir, COUT_A_VENIR, preteAuPlusTot, CATEGORIE_MATIERES, estFactureDeMatieres, fournisseurDePiece, fusionnerFacturesLivraisons, contientNom
@@ -464,7 +464,12 @@ describe('CRITIQUE-3 (17.11) : J réel, pas brassée, courses / frais / impôt, 
     /* de max(jour prévu, aujourd'hui) à « prête », avec son seul jalon de brassage ; le jour prévu reste dit (Liste, détail) */
     expect(c).toMatchObject({ debut: '2026-11-16', fin: '2026-12-14', brassagePrevu: '2026-11-10', deplacable: true });
     expect(c.detail).toContain('brassage prévu le 10 nov.');
-    expect(c.jalons?.map(j => j.id)).toEqual(['brassage']);
+    /* D385 (C, pied par phases) : ses étapes suivent la recette depuis aujourd'hui, jusqu'au conditionnement à « prête » ; jamais hors de la barre */
+    const ids = c.jalons?.map(j => j.id) ?? [];
+    expect(ids[0]).toBe('brassage');
+    expect(ids).toContain('fermentation');
+    expect(c.jalons?.[c.jalons.length - 1]).toMatchObject({ id: 'conditionnement', jour: '2026-12-14', ecart: 28, glissable: 'fin' });
+    expect(c.jalons?.filter(j => j.id !== 'brassage').every(j => j.jour >= c.debut && j.jour <= c.fin && j.jour === ajouterJours(c.debut, j.ecart))).toBe(true);
     /* sans cycle connu : aujourd'hui seul, « prévue le 10 nov. », aucune fin inventée */
     const sansCycle = choseBrassin(lot({ id: 'LOT-S', name: 'Saison de ferme', status: 'planifie', brewDate: '', plannedBrewDate: '10.11.2026' }), '2026-11-16')!;
     expect(sansCycle).toMatchObject({ debut: '2026-11-16', fin: '2026-11-16', duree: 'pas brassée · prévue le 10 nov.' });

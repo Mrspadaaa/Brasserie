@@ -1078,22 +1078,23 @@ describe('R48 (corr. 2, L3) : l’icône d’idée d’une semaine ouvre son car
     expect(infobulleS47()).toBeNull();
   });
 
-  it('le toucher ailleurs que sur l’ampoule (le nom S47, loin de sa cible de 44 px) garde la date ; aucune ouverture', () => {
+  /* D385 (variante C, décision du pilote a) : toucher une semaine la déplie ; sa date est dans son en-tête dépliée (« S47 16–22 nov. ») */
+  it('le toucher ailleurs que sur l’ampoule (le nom S47, loin de sa cible de 44 px) déplie la semaine, qui dit sa date ; aucune ouverture', () => {
     const onOpenCarnet = vi.fn();
     monter({ etat: avecIdee(), callbacks: { onOpenCarnet } });
     fireEvent.click(screen.getByRole('button', { name: '±' }));
     fireEvent.click(semaine(47).querySelector('.ent-sem')!, { clientX: 200, clientY: 200 });
     expect(onOpenCarnet).not.toHaveBeenCalled();
-    expect(infobulleS47()).not.toBeNull();
+    expect(document.querySelector('[data-replier="2026-11-16"]')?.textContent).toBe('S47 16–22 nov. · toucher pour replier');
   });
 
-  it('une semaine sans idée garde son toucher (date), même sous l’ampoule d’une autre', () => {
+  it('une semaine sans idée garde son toucher (déplier, qui dit sa date), même sous l’ampoule d’une autre', () => {
     const onOpenCarnet = vi.fn();
     monter({ etat: avecIdee(), callbacks: { onOpenCarnet } });
     fireEvent.click(screen.getByRole('button', { name: '±' }));
     fireEvent.click(semaine(48));
     expect(onOpenCarnet).not.toHaveBeenCalled();
-    expect(screen.queryByText(dateDeSemaine('2026-11-23'))).not.toBeNull();
+    expect(document.querySelector('[data-replier="2026-11-23"]')?.textContent).toBe('S48 23–29 nov. · toucher pour replier');
   });
 
   it('57c : appui long sur S48, la feuille dit « S48, 23 – 29 nov. Elle arrive dans le carnet. », un seul point (L4-3)', () => {

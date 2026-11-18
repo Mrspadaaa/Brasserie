@@ -1,7 +1,7 @@
 import React, { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import { ChevronDown, Clock, Maximize2, Minimize2 } from 'lucide-react';
 import type { Periode } from '../../../components/periode/periode';
-import { dateDeSemaine, lundiDe, type ModeleCalendrier, type Retard } from '../../../domain/calendrier';
+import { dateDeSemaine, etiquetteS, lundiDe, type ModeleCalendrier, type Retard } from '../../../domain/calendrier';
 import { creuxDepuis, miseDeCoteVisible, type CourbeCaisse, type MouvementNomme } from '../../../domain/calendrierCaisse';
 import type { Orientation } from '../useOrientation';
 import { entrerPleinEcran, estPleinEcran, sortirPleinEcran } from '../pleinEcran';
@@ -9,6 +9,9 @@ import { usePointeurCourbe } from '../usePointeurCourbe';
 import { Courbe, CourbeZoom, HAUTEUR_MOIS, MOIS_MIN, ajouterJours, chf, jourCourt, moisDeSemaine, semaineCourte, type Boite, type EtoileCourbe } from './Courbe';
 import { Cadre, etiquetteCadre, fenetreDePeriode, libelleDuree, libellePeriode, periodeDeFenetre, SEMAINES_ANNEE, type FenetreSemaines, type PriseCadre } from './Fenetre';
 import { BandeSemaines } from './BandeSemaines';
+import { BandeColonnes, jourEntier } from './BandeColonnes';
+import type { Echelle } from '../echelle';
+import type { Colonne } from '../frise/Rangee';
 import { BandeAnnee } from './BandeAnnee';
 import { MenuPeriode, hautDesOnglets } from './MenuPeriode';
 import { DetailCreux } from './DetailCreux';
@@ -68,6 +71,15 @@ export interface EnTeteCalendrierProps {
   onMessage?: (m: MessageEnTete | null) => void;
   /** Les ids des choses étoilées (E31, `calendrier_etoiles`) : chacune se voit sur sa marche de la courbe, « ★ Hotte −900 ». */
   etoiles?: readonly string[];
+  /** D385 : l'échelle de l'axe (Jour, Semaine, Mois) et son réglage au menu de la période (variante D). */
+  echelle?: Echelle;
+  onEchelle?: (echelle: Echelle) => void;
+  /** D385 : les colonnes de la frise, pour la bande en jours ou en mois (variantes B et C). */
+  colonnes?: readonly Colonne[];
+  /** D385 (C) : le lundi de la semaine dépliée ; `onDeplier` présent : toucher une semaine la déplie (au lieu de la bulle de date). */
+  deplie?: string | null;
+  onDeplier?: (lundi: string | null) => void;
+  aujourdhui?: string;
 }
 
 export interface MessageEnTete { genre: 'annee' | 'invite'; texte: string }
@@ -414,7 +426,8 @@ export function EnTeteCalendrier(props: EnTeteCalendrierProps) {
     window.addEventListener('scroll', defile, { passive: true, capture: true });
     return () => { document.removeEventListener('pointerdown', touche0, true); window.removeEventListener('scroll', defile, true); };
   }, [dateOuverte]);
-  const touche = (lundi: string, colonne: number) => {
+  /* D385 : un jour touché (vue Jour, semaine dépliée) donne la sienne, « lun. 16 nov. · S47 » ; `colonnes` : le nombre de colonnes de sa bande */
+  const touche = (lundi: string, colonne: number, texte = dateDeSemaine(lundi), colonnes = visibles.length) => {
     const c = chassee.current;
     chassee.current = null;
     if (c && c.lundi === lundi && Date.now() - c.t < 1500) return;
@@ -424,7 +437,7 @@ export function EnTeteCalendrier(props: EnTeteCalendrierProps) {
       setInfo(null);
       return;
     }
-    montrer({ genre: 'date', texte: dateDeSemaine(lundi), colonne, colonnes: Math.max(1, visibles.length), cle: lundi }, 3000);
+    montrer({ genre: 'date', texte, colonne, colonnes: Math.max(1, colonnes), cle: lundi }, 3000);
   };
 
   // La mise de côté nommée sur la courbe (E03) : celle du creux, sinon la plus haute (calendrierCaisse, A10).
@@ -504,7 +517,7 @@ export function EnTeteCalendrier(props: EnTeteCalendrierProps) {
         <span ref={boutonsTete} className="ent-t-b">
           <button type="button" className="ent-mb" aria-pressed={mouvements} title="Afficher les + et − et les icônes de chaque semaine" onClick={() => onMouvements(!mouvements)}>±</button>
           <button ref={boutonPeriode} type="button" className="ent-per" data-ent-periode aria-haspopup="dialog" aria-expanded={menuOuvert} title="Période, liste, tri et filtre" onClick={() => setMenuOuvert(o => !o)}>
-            {libelle}<ChevronDown size={14} strokeWidth={2.4} aria-hidden="true" />
+            {props.echelle === 'jour' && !annee ? `${libelle} · j` : libelle}<ChevronDown size={14} strokeWidth={2.4} aria-hidden="true" />
           </button>
           {retards.length > 0 && (
             <button type="button" className="ent-ret-b" aria-label={titreRetards(retards.length)} onClick={() => setRetardsOuverts(true)}><Clock size={16} strokeWidth={2.4} aria-hidden="true" />{retards.length}</button>
@@ -546,8 +559,13 @@ export function EnTeteCalendrier(props: EnTeteCalendrierProps) {
 
       {!graph && (
         <div className="ent-bz">
-          {annee && courbe ? <BandeAnnee courbe={courbe} mois={modele.mois} creux={creux} /> : (
+          {annee && courbe ? <BandeAnnee courbe={courbe} mois={modele.mois} creux={creux} /> : vue === 'semaines' && props.colonnes && props.echelle && (props.echelle !== 'semaine' || props.deplie) ? (
+            <BandeColonnes colonnes={props.colonnes} echelle={props.echelle} aujourdhui={props.aujourdhui} deplie={props.deplie ?? null} onDeplier={props.onDeplier} onIdeeSemaine={onIdeeSemaine}
+              onJour={(jour, colonne, n) => touche(jour, colonne, `${jourEntier(jour)} · ${etiquetteS(jour)}`, n)}
+              onSemaine={(lundi, colonne, n) => touche(lundi, colonne, dateDeSemaine(lundi), n)} />
+          ) : (
             <BandeSemaines semaines={visibles} courbe={courbe} decalage={index} mouvements={mouvements} idees={idees} retards={semainesRetard} onDate={touche} onIdeeSemaine={onIdeeSemaine}
+              {...(props.onDeplier && vue === 'semaines' ? { onDeplier: props.onDeplier } : {})}
               largeurColonne={largeurColonne > 0 ? largeurColonne : largeur / Math.max(1, nombre)} />
           )}
           {/* La date d'une semaine (i3) : au-dessus de la bande, dans l'en-tête ; jamais sur un nom de la frise (CRITIQUE-3 n° 7). */}
@@ -566,6 +584,7 @@ export function EnTeteCalendrier(props: EnTeteCalendrierProps) {
       {creuxOuvert && courbe && creux && <DetailCreux courbe={courbe} index={creux.index} hypotheses={modele.hypotheses} nomsMisDeCote={nomsMisDeCote} dates={paysage} onOuvrirFinances={onOuvrirFinances} onFermer={() => setCreuxOuvert(false)} />}
       {menuOuvert && (
         <MenuPeriode ancre={boutonPeriode.current} paysage={paysage} plage={libelle !== libelleDuree(nombre, annee) ? `${libelle} · ${etiquetteCadre(semainesTot.map(s => s.numero), index, nombre, annee, etiquetteAnnee, lundis)} · ${plage}` : plage} semaines={nombre} annee={annee} liste={liste} sansDate={sansDate}
+          {...(props.onEchelle && props.echelle ? { echelle: props.echelle, onEchelle: props.onEchelle } : {})}
           onChoisir={choisirDuree} onListe={() => onVue('liste')} onCalendrier={() => onVue(anneeListe ? 'annee' : 'semaines')} onSansDate={() => onVue('liste', 'sans-date')}
           onTrier={onTrier} onFiltrer={onFiltrer} onFermer={() => setMenuOuvert(false)} />
       )}

@@ -1,5 +1,6 @@
 import React, { useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
+import { ECHELLES, type Echelle } from '../echelle';
 
 /**
  * Le menu de la période (E07, E40, E46) : un bouton (« 6 sem. ») l'ouvre. On y règle la période (6 sem., 3 mois, 6 mois, An), on passe à la vue
@@ -39,6 +40,9 @@ export interface MenuPeriodeProps {
   /** Le bouton de la période : le menu se pose sous lui. */
   ancre?: HTMLElement | null;
   paysage?: boolean;
+  /** D385 (variante D) : la ligne « Échelle » (Jour · Semaine · Mois) au-dessus des durées, et « 2 sem. » qui ouvre la vue Jour. */
+  echelle?: Echelle;
+  onEchelle?: (echelle: Echelle) => void;
 }
 
 const MARGE = 8;
@@ -56,7 +60,7 @@ export function hautDesOnglets(): number {
 
 type Place = { top: number; left?: number; right?: number; maxHeight: number };
 
-export function MenuPeriode({ plage, semaines, annee, liste, sansDate, onChoisir, onListe, onCalendrier, onSansDate, onTrier, onFiltrer, onFermer, ancre, paysage = false }: MenuPeriodeProps) {
+export function MenuPeriode({ plage, semaines, annee, liste, sansDate, onChoisir, onListe, onCalendrier, onSansDate, onTrier, onFiltrer, onFermer, ancre, paysage = false, echelle, onEchelle }: MenuPeriodeProps) {
   const ref = useRef<HTMLDivElement>(null);
   const [place, setPlace] = useState<Place | null>(null);
 
@@ -104,7 +108,18 @@ export function MenuPeriode({ plage, semaines, annee, liste, sansDate, onChoisir
   const menu = (
     <div ref={ref} className={`ent-port ent-menu${ancre ? ' ent-menu--fixe' : ''}${paysage ? ' ent-menu--paysage' : ''}`} role="dialog" aria-label="Période et vue" data-menu-periode style={style}>
       <p className="ent-menu-plage">{plage}</p>
-      <div className="ent-seg" role="group" aria-label="Période">
+      {onEchelle && (
+        <div className="ent-ech" data-menu-echelle>
+          <p className="ent-ech-t" id="ent-ech-t">Échelle</p>
+          <div className="ent-ech-seg" role="group" aria-labelledby="ent-ech-t">
+            {ECHELLES.map(e => (
+              <button key={e.id} type="button" data-echelle={e.id} aria-pressed={!annee && echelle === e.id} onClick={() => { onEchelle(e.id); onFermer(); }}>{e.nom}</button>
+            ))}
+          </div>
+        </div>
+      )}
+      <div className={`ent-seg${onEchelle ? ' ent-seg--5' : ''}`} role="group" aria-label="Période">
+        {onEchelle && <button type="button" aria-pressed={!annee && semaines === 2} onClick={() => { onEchelle('jour'); onFermer(); }}>2 sem.</button>}
         {DUREES.map(d => (
           <button key={d.semaines} type="button" aria-pressed={actif(d.semaines)} onClick={() => { onChoisir(d.semaines); onFermer(); }}>{d.nom}</button>
         ))}

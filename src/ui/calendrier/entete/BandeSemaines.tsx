@@ -25,6 +25,8 @@ export interface BandeSemainesProps {
   onIdeeSemaine?: (lundi: string) => void;
   /** La largeur mesurée d'une colonne (celle de la frise) : elle choisit le pas des étiquettes (CRITIQUE-7 n° 1). 0 : inconnue. */
   largeurColonne?: number;
+  /** D385 (variante C) : présent, toucher une semaine la déplie en sept jours (sa date est alors dans son en-tête dépliée), au lieu de la bulle. */
+  onDeplier?: (lundi: string) => void;
 }
 
 const DELAI = 500;
@@ -88,7 +90,7 @@ export function etiquettesBande(semaines: readonly SemaineBande[], pas: PasEtiqu
   return res;
 }
 
-export function BandeSemaines({ semaines, courbe, decalage, mouvements, idees, retards, onDate, onIdeeSemaine, largeurColonne = 0 }: BandeSemainesProps) {
+export function BandeSemaines({ semaines, courbe, decalage, mouvements, idees, retards, onDate, onIdeeSemaine, largeurColonne = 0, onDeplier }: BandeSemainesProps) {
   const appui = useRef<{ id: number; x: number; y: number; timer: ReturnType<typeof setTimeout>; long: boolean } | null>(null);
   const annule = () => { if (appui.current) { clearTimeout(appui.current.timer); appui.current = null; } };
   const wEtiquette = largeurEtiquetteMax();
@@ -126,7 +128,8 @@ export function BandeSemaines({ semaines, courbe, decalage, mouvements, idees, r
             onClick={() => {
               // L'appui long a déjà ouvert l'idée : le toucher qui suit ne donne pas la date.
               if (appui.current?.long) { appui.current = null; return; }
-              onDate(s.debut, k);
+              if (onDeplier) onDeplier(s.debut);
+              else onDate(s.debut, k);
             }}>
             {/* Pas de 2, 4 ou mois : seules les étiquettes posées se lisent ; chaque colonne reste touchable et garde son nom (« S50, 7 – 13 déc. »). */}
             {etiquettes === null ? <span className="ent-sem">{`S${s.numero}`}</span>

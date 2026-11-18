@@ -62,6 +62,8 @@ export interface BarreProps {
   /** La durée à côté du nom d'un brassin, entière (« J0 / 28 · prête 21 déc. ») ou courte (« J0 / 28 »), posée par `disposer` ; absente : dans la barre. */
   dureeACote?: string | null;
   largeurColonne: number;
+  /** D385 : la largeur d'un jour pour tirer le bord (une colonne d'un jour, ou 1/7 de semaine) ; absente : 1/7 de colonne. */
+  largeurJour?: number;
   /** Pas permis pour le glisser : `[min, max]` en semaines. */
   bornes: [number, number];
   epinglee?: boolean;
@@ -187,6 +189,7 @@ export const Barre: React.FC<BarreProps> = props => {
 
   const gestes = usePointeur({
     largeurColonne,
+    ...(props.largeurJour ? { largeurJour: props.largeurJour } : {}),
     borne: () => bornes,
     /* doute f2-a (E29, D-47) : un doigt posé à 12 px du bord, dedans ou dehors, tire le bord, même sur une rangée de 18 px */
     zoneBord: peutBord ? ZONE_BORD_PX : 0,
@@ -283,7 +286,7 @@ export const Barre: React.FC<BarreProps> = props => {
         aria-label={`${nomAccessible(chose)}${montant ? `, ${montant}` : ''}${duree ? `, ${duree}` : ''}${chose.lie ? `, ${chose.lie.texte}` : ''}${chose.courses ? `, courses : ${chose.courses}` : ''}`}
         aria-haspopup="menu"
         aria-expanded={menuOuvert || undefined}
-        className={`cal-barre ${CLASSE_TEINTE[chose.rangee]}${bas?.ou === 'barre' ? ' cal-barre-2l' : ''}${proposee ? ' cal-pointille' : ''}${epinglee ? ' cal-epi' : ''}${selectionnee ? ' cal-sel' : ''}${decalage || allongement ? ' cal-glisse' : ''}${chose.deplacable === true ? '' : ' cal-fixe'}${chose.finInconnue ? ' cal-coupee' : ''}`}
+        className={`cal-barre ${CLASSE_TEINTE[chose.rangee]}${bas?.ou === 'barre' ? ' cal-barre-2l' : ''}${proposee ? ' cal-pointille' : ''}${chose.pasBrassee ? ' cal-prevu' : ''}${epinglee ? ' cal-epi' : ''}${selectionnee ? ' cal-sel' : ''}${decalage || allongement ? ' cal-glisse' : ''}${chose.deplacable === true ? '' : ' cal-fixe'}${chose.finInconnue ? ' cal-coupee' : ''}`}
         style={style}
         {...gestes}
         onKeyDown={e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); if (el.current) props.onToucher(chose, el.current); } }}

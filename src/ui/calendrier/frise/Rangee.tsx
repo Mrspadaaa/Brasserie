@@ -4,6 +4,7 @@ import { ajouterJours, ecartJours, estMarque, etiquetteS, francsSignes, jourLisi
 import { Barre, dureeDansBarre, formesDuree, largeurDuree, montantBarre, type BarreProps, type CoteEtiquette } from './Barre';
 import { CLASSE_TEINTE, Marque, couperNom, dureeVue, largeurPastilleLie, largeurTexte, lieMontre, type ModeDeuxLignes } from './Marque';
 import { appuiCommenceSur } from './usePointeur';
+import { aDesJours } from '../echelle';
 
 /**
  * Une rangée de la frise (E20 à E23) : son titre à gauche, juste au-dessus de ses barres, le carré de couleur qui porte le + blanc (E21),
@@ -199,8 +200,9 @@ export function disposer(choses: readonly ChoseCalendrier[], colonnes: readonly 
   if (options.zoneTitre && options.zoneTitre > 0) lignes.push([[-1000, options.zoneTitre]]);
   const items: Disposition[] = [];
   const emprises = new Map<string, { emprise: [number, number]; o0: number; o1: number; lab: number; labCourt: number; labNom: number; w: number; marque: boolean; dureeMin: number; formes: string[] }>();
-  /* l'année (colonnes d'un mois) : la chose garde sa vraie durée, au jour près ; en semaines, elle prend ses colonnes entières */
-  const auJour = colonnes.length > 0 && ecartJours(colonnes[0].debut, colonnes[0].fin) >= 14;
+  /* l'année (colonnes d'un mois) : la chose garde sa vraie durée, au jour près ; en semaines, elle prend ses colonnes entières. D385 : un axe qui
+     porte des jours (vue Jour, semaine dépliée) pose aussi chaque chose au jour près, sur ses colonnes d'un jour */
+  const auJour = (colonnes.length > 0 && ecartJours(colonnes[0].debut, colonnes[0].fin) >= 14) || aDesJours(colonnes);
   const xDuJour = (iso: string): number => {
     const i = colonnes.findIndex(c => iso >= c.debut && iso <= c.fin);
     if (i < 0) return iso < colonnes[0].debut ? 0 : colonnes.length * largeurColonne;
@@ -515,6 +517,8 @@ export interface RangeeProps {
   detail?: React.ReactNode;
   /** CRITIQUE-13 n° 1 (règle n° 1, `as/cap/p-f6b-apres`) : l'alerte f6-b, dans le flux sous la vente promise ; elle pousse la suite. */
   alerte?: React.ReactNode;
+  /** D385 : la grille des jours (vue Jour, semaine dépliée), posée sous les choses de la piste ; absente : les traits de semaine, comme avant. */
+  grille?: React.ReactNode;
 }
 
 /** Paysage : la largeur estimée du titre (carré +, nom, œil, pastille), posé sur la première ligne. */
@@ -644,6 +648,11 @@ export const Rangee: React.FC<RangeeProps> = props => {
   const hauteurLane = lignes === 0 ? 0 : lignes * mesures.ligne + 2;
   const fantome = drag ? items.find(i => i.chose.id === drag.id) : undefined;
   const auJour = colonnes.length > 0 && ecartJours(colonnes[0].debut, colonnes[0].fin) >= 14;
+  /* D385 : le bord se tire au jour ; sa colonne de fin dit la largeur d'un jour (une colonne d'un jour, ou 1/7 d'une semaine) */
+  const largeurJourA = (pos: { b: number } | null): number => {
+    const c = pos ? colonnes[Math.min(colonnes.length - 1, pos.b)] : undefined;
+    return c && c.debut === c.fin ? largeurColonne : largeurColonne / 7;
+  };
   const parts = partMax > 0 ? Math.max(8, Math.round((p.part / partMax) * 100)) : 0;
   /* CRITIQUE-11 n° 2 a (E22) : l'œil, et « n choses cachées », n'agissent que sur un toucher voulu : un clic de pointeur (`detail > 0`) dont
      l'appui n'a pas commencé sur le bouton (le clic que Chrome émet au lâcher d'un glissé de 14 px, sur des rangées poussées) ne fait rien.
@@ -692,7 +701,8 @@ export const Rangee: React.FC<RangeeProps> = props => {
         )}
       </header>
       {hauteurLane > 0 && (
-        <div className="cal-lane" style={{ height: hauteurLane }} data-lane={id}>
+        <div className={`cal-lane${props.grille ? ' cal-lane-jours' : ''}`} style={{ height: hauteurLane }} data-lane={id}>
+          {props.grille}
           {fantome && !fantome.petite && (
             <i className="cal-fantome cal-pointille" aria-hidden="true" data-fantome style={{ left: fantome.gauche, width: fantome.largeur, top: fantome.ligne * mesures.ligne + 2, height: mesures.barre }} />
           )}
@@ -725,7 +735,8 @@ export const Rangee: React.FC<RangeeProps> = props => {
                 largeurColonne={auJour ? 0 : largeurColonne} bornes={[-d.a, colonnes.length - 1 - d.a]}
                 epinglee={epingles.includes(c.id)} etoilee={etoiles.includes(c.id)} selectionnee={selectionId === c.id} menuOuvert={menuId === c.id} lieCourt={lieCourt}
                 decalage={surDrag && drag.mode === 'glisse' ? drag.k * largeurColonne : 0}
-                allongement={surDrag && drag.mode === 'bord' ? (drag.jours * largeurColonne) / 7 : 0}
+                largeurJour={largeurJourA(pos)}
+                allongement={surDrag && drag.mode === 'bord' ? drag.jours * largeurJourA(pos) : 0}
                 etiquetteDuree={etiquetteDuree && etiquetteDuree.id === c.id ? etiquetteDuree.texte : undefined}
                 {...props.barre}
               />

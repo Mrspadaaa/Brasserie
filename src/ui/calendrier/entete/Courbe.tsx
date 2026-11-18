@@ -307,12 +307,22 @@ export function lignesEtiquette(texte: string, largeurCadre: number): string[] {
   const k = texte.indexOf(' – ');
   return k < 0 ? [texte] : [`${texte.slice(0, k)} –`, texte.slice(k + 3)];
 }
-/** La boîte de l'étiquette de la fenêtre, centrée en bas du cadre (obstacle pour les noms). */
-export function boiteEtiquette(texte: string, gauche: number, largeurCadre: number, bas: number): Boite {
+/** La place de l'étiquette de la fenêtre : centrée en bas du cadre (une ou deux lignes) ; quand le cadre est plus étroit que ses lignes
+ *  (fenêtre de 2 semaines, D385), une ligne posée à côté du cadre, à droite si la courbe a la place, sinon à gauche, jamais hors de la courbe
+ *  (au banc du 18.11, « S47 – S48 » centrée sur un cadre de 14 px sortait de l'écran). `l` est en px de la courbe. */
+export function placeEtiquette(texte: string, gauche: number, largeurCadre: number, largeurCourbe: number): { lignes: string[]; l: number; w: number; dehors: boolean } {
   const lignes = lignesEtiquette(texte, largeurCadre);
-  const w = Math.max(...lignes.map(l => largeurTexte(l, true)));
-  const centre = gauche + largeurCadre / 2;
-  return { l: centre - w / 2, r: centre + w / 2, t: bas - 2 - lignes.length * LIGNE_NOM, b: bas };
+  const w = Math.max(...lignes.map(t => largeurTexte(t, true)));
+  if (w <= largeurCadre - 4) return { lignes, l: gauche + largeurCadre / 2 - w / 2, w, dehors: false };
+  const w1 = largeurTexte(texte, true);
+  const droite = gauche + largeurCadre + 4;
+  const l = droite + w1 <= largeurCourbe ? droite : Math.max(0, gauche - 4 - w1);
+  return { lignes: [texte], l, w: w1, dehors: true };
+}
+/** La boîte de l'étiquette de la fenêtre (obstacle pour les noms), à la place que lui donne `placeEtiquette`. */
+export function boiteEtiquette(texte: string, gauche: number, largeurCadre: number, bas: number, largeurCourbe = Infinity): Boite {
+  const p = placeEtiquette(texte, gauche, largeurCadre, largeurCourbe);
+  return { l: p.l, r: p.l + p.w, t: bas - 2 - p.lignes.length * LIGNE_NOM, b: bas };
 }
 
 /** Écart minimal entre deux libellés de mois (CRITIQUE-3 n° 33). */
@@ -392,7 +402,7 @@ export function obstaclesCourbe(g: Geo, cadre: CourbeProps['cadre'], creux: { in
     for (const bord of [l, r]) obstacles.push({ l: bord - 6, r: bord + 6, t: milieu - 16, b: milieu + 16 });
     // Les bords haut et bas du cadre (2 px de trait).
     obstacles.push({ l, r, t: g.haut, b: g.haut + 2 }, { l, r, t: g.bas - 2, b: g.bas });
-    if (cadre.etiquette) obstacles.push(boiteEtiquette(cadre.etiquette, l, r - l, g.bas));
+    if (cadre.etiquette) obstacles.push(boiteEtiquette(cadre.etiquette, l, r - l, g.bas, g.largeur));
   }
   if (creux) obstacles.push({ l: g.x(creux.index) + g.unit / 2 - 9, r: g.x(creux.index) + g.unit / 2 + 9, t: g.y(creux.centimes) - 9, b: g.y(creux.centimes) + 9 });
   return obstacles;

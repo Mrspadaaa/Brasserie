@@ -747,9 +747,20 @@ export function choseBrassin(batch: Batch, aujourdhui: string, options: { comman
      * sa durée dit « pas brassée · prête le … » ; sans `finPrevue`, « pas brassée · prévue le … ».
      */
     if (j0 < aujourdhui) {
-      const brassage = jalonsBrassin(batch).filter(j => j.id === 'brassage');
       /* CRITIQUE-6 n° 2 : « prête le » se compte depuis aujourd'hui (brassée au plus tôt aujourd'hui), jamais depuis le jour prévu passé */
       const prete = preteAuPlusTot(batch, aujourdhui);
+      /*
+       * D385 (variante C, son pied par phases) : brassée au plus tôt aujourd'hui, ses étapes suivent la recette depuis ce jour-là : fermentation,
+       * dry hop et garde recalés sur aujourd'hui (le même écart qu'à la recette), puis le conditionnement à « prête ». Ce sont des prévisions :
+       * elles ne se glissent pas (le brassage replanifie ; le conditionnement, comme le bord, règle « prête »). Sans cycle connu, le brassage seul, comme avant : aucune date inventée.
+       */
+      const finRecalee = prete ? ecartJours(aujourdhui, prete) : null;
+      const brassage: JalonBrassin[] = jalonsBrassin(batch).flatMap((j): JalonBrassin[] => {
+        if (j.id === 'brassage') return [j];
+        if (finRecalee === null || j.id === 'commander' || j.id === 'conditionnement' || j.ecart >= finRecalee) return [];
+        return [{ id: j.id, libelle: j.libelle, jour: ajouterJours(aujourdhui, j.ecart), ecart: j.ecart, glissable: false, raison: 'Prévu d’après la recette' }];
+      });
+      if (prete && finRecalee !== null && finRecalee > 0) brassage.push({ id: 'conditionnement', libelle: 'Conditionnement', jour: prete, ecart: finRecalee, glissable: 'fin' });
       /*
        * CRITIQUE-7 n° 2 (D-47, D-190, E29) : la barre court de max(jour prévu, aujourd'hui) = aujourd'hui jusqu'à « prête » : le temps qu'elle
        * passera en cuve, comme un brassin planifié (J0 → prête). Tirer son bord déplace donc la date dite. Sans cycle connu : aujourd'hui seul,
