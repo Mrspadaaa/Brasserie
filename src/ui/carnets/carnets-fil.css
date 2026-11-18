@@ -76,3 +76,14 @@
 /* Critique 5 : la flèche ou le crayon d'une tête de cadre reste sur la ligne de son libellé (« ↓ va dans Évier inox ») */
 .cn-cadre-bloc .cn-cadre-tete > .cn-vert { display: inline-flex; align-items: center; gap: 4px; flex-wrap: wrap; }
 .cn-cadre-bloc .cn-cadre-tete > .cn-vert > svg { flex: none; }
+
+/* Critique 6, n° 29 : les puces « Va dans » tiennent sur un rang à 390 ; au-delà, le rang défile, il ne passe jamais à la ligne */
+.cn-champ-zone .cn-vadans { flex-wrap: nowrap; overflow-x: auto; scrollbar-width: none; gap: 6px; }
+.cn-champ-zone .cn-vadans::-webkit-scrollbar { display: none; }
+.cn-champ-zone .cn-vadans > .cn-puce { flex: none; white-space: nowrap; }
+
+/* Critique 6, n° 24 : « Ranger maintenant », au retour du réseau */
+.cnf-reprise .cn-bandeau-tete { gap: 8px; }
+
+/* g5:v01-15, v01-16 : « › Texte d’origine », la flèche en tête */
+.cnf-origine-fleche { margin-right: 6px; }

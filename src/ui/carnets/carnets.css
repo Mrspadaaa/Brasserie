@@ -521,3 +521,68 @@
 .cn-rubrique-ligne .cn-rubrique-tete > svg { flex: none; align-self: center; }
 .cn-rubrique-ligne .cn-rubrique-tete > b { flex: none; }
 .cn-rubrique-ligne .cn-rubrique-tete > .cn-mut, .cn-rubrique-ligne .cn-rubrique-tete > .cn-cqc-texte { min-width: 0; }
+
+/* ---------- Correction 6, lot C : figés h05-3 et h01-6 à 390 (critique 6, n° 8, 33, 34) ---------- */
+/* n° 8 : « Articles 6 ⌄ · Comparer › » sur une ligne, Comparer juste après le point (h05-3). */
+.cn-tete-articles { flex-wrap: nowrap; gap: 8px; }
+.cn-tete-articles .cn-comparer-lien { margin-left: 0; white-space: nowrap; }
+.cn-tete-articles .cn-compte { font-size: 16px; }
+/* n° 34 : « 1 critère sans valeur à comparer ⌄ », une ligne à part, sous la ligne Critère, alignée sur son texte. */
+.cn-critere-bloc > .cn-critere-plus { display: inline-flex; align-items: center; gap: 4px; align-self: flex-start; margin-left: 26px; min-height: 32px; }
+.cn-critere-une .cn-critere-plus { display: inline-flex; align-items: center; gap: 2px; min-height: 0; padding: 0; font-size: inherit; vertical-align: baseline; }
+.cn-critere-plus .cn-tourne { transform: rotate(180deg); }
+/* n° 33 : le fil d'Ariane de l'article sur une ligne : court à 390, entier à 1280. */
+.cn-fil-ariane { min-width: 0; white-space: nowrap; overflow: hidden; }
+.cn-fil-ariane > span { overflow: hidden; text-overflow: ellipsis; }
+.cn-fil-long { display: none; }
+@media (min-width: 900px) {
+  .cn-fil-court { display: none; }
+  .cn-fil-long { display: inline; }
+}
+@media (max-width: 899px) {
+  /* h05-3 et h01-6 : la marge de la maquette (12 px du bord), contenu resserré pour que deux façons et « Retenir la hotte » (h05-3),
+     « Choisir · fournisseur » et la veille (h01-6) tiennent au-dessus du champ. */
+  .cn-page.cn-ouvert, .cn-page.cn-fiche { padding-left: 0; padding-right: 0; gap: 8px; }
+  .cn-page.cn-ouvert, .cn-page.cn-fiche { padding-top: 2px; }
+  .cn-page.cn-ouvert { gap: 6px; }
+  .cn-ouvert .cn-tete, .cn-fiche .cn-tete { min-height: 34px; }
+  .cn-ouvert .cn-titre { font-size: 21px; line-height: 1.12; }
+  .cn-ouvert .cn-ligne-etat { margin-top: -4px; font-size: 15px; }
+  .cn-ouvert .cn-critere-une { font-size: 15px; }
+  .cn-ouvert .cn-tete-articles { min-height: 30px; }
+  .cn-ouvert .cn-tete-articles .cn-tete-bouton, .cn-ouvert .cn-tete-articles .cn-comparer-lien { min-height: 30px; }
+  .cn-ouvert .cn-tab { --cn-col: 46px; --cn-rangl: 28px; --cn-vignl: 30px; gap: 6px; }
+  .cn-ouvert .cn-tab-facon { padding: 4px 10px; }
+  .cn-ouvert .cn-tab-facon b { font-size: 15px; }
+  .cn-ouvert .cn-tab-ligne { gap: 6px; min-height: 40px; padding: 4px 8px 4px 6px; }
+  .cn-ouvert .cn-tab-cols { min-height: 20px; padding-top: 1px; padding-bottom: 1px; font-size: 13px; }
+  .cn-ouvert .cn-tab-ligne .cn-rang { width: 28px; height: 28px; font-size: 14px; }
+  .cn-ouvert .cn-tab-ligne .cn-vignette-petite { width: 30px; height: 30px; }
+  .cn-ouvert .cn-tab-nom { font-size: 15px; line-height: 1.15; gap: 0; }
+  .cn-ouvert .cn-tab-nom > .cn-mut { font-size: 13px; }
+  .cn-ouvert .cn-tab-num { font-size: 14px; }
+  .cn-ouvert .cn-tab-relire-ligne { grid-template-columns: 28px 30px minmax(0, 1fr) auto; }
+  .cn-ouvert .cn-separe { padding: 6px 10px; font-size: 14px; line-height: 1.25; }
+  .cn-ouvert .cn-separe .cn-action { min-height: 40px; }
+  /* h01-6 : photo basse, la valeur et sa réglette côte à côte, la grille serrée */
+  .cn-page.cn-fiche { gap: 6px; }
+  .cn-fiche .cn-fiche-photo img { height: 104px; max-height: 104px; object-fit: contain; }
+  .cn-fiche .cn-fiche-picto { min-height: 104px; }
+  .cn-fiche .cn-vignette-fiche { height: 104px; }
+  .cn-fiche .cn-titre { font-size: 21px; }
+  .cn-fiche .cn-heros { flex-direction: row; align-items: center; gap: 10px; padding: 6px 12px; }
+  .cn-fiche .cn-heros .cn-heros-val > .cn-mut, .cn-fiche .cn-heros .cn-heros-place { font-size: 13px; }
+  .cn-fiche .cn-heros .cn-piste { margin: 0 4px; }
+  .cn-fiche .cn-heros .cn-piste-legende { font-size: 13px; gap: 8px; }
+  .cn-fiche .cn-heros > .cn-heros-val { flex: none; }
+  .cn-fiche .cn-heros .cn-mesure-val { font-size: 28px; line-height: 1.1; }
+  .cn-fiche .cn-heros .cn-piste { flex: 1; min-width: 0; }
+  .cn-fiche .cn-offre { padding: 5px 10px; }
+  .cn-fiche .cn-carac > div { padding: 3px 0; line-height: 1.25; }
+  .cn-fiche .cn-veille-ligne { min-height: 48px; }
+  .cn-fiche .cn-action.cn-large { min-height: 44px; }
+}
+
+/* h01-6 : la veille dit son état sous son réglage, dans la même ligne */
+.cn-veille-tx { display: flex; flex-direction: column; min-width: 0; padding: 6px 0; }
+.cn-veille-tx > .cn-veille-etat { padding: 0; font-size: 14px; }

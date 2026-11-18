@@ -214,7 +214,8 @@ describe('P1, P2, P3 (vision 1) : le bandeau suit le rangement final ; un lien s
     expect(e.vue.container.querySelector('[data-vue="liste"]')).not.toBeNull();
     const b = e.bandeau()!;
     expect(b.getAttribute('data-sorte')).toBe('ailleurs');
-    expect(b.textContent).toMatch(/Rangé dans Ventilation de la salle de brassage, à l'instant/);
+    /* décision du pilote (critique 6) : le titre stocké, « ZZ TEST — » compris */
+    expect(b.textContent).toMatch(/Rangé dans (ZZ TEST — )?Ventilation de la salle de brassage, à l'instant/);
     expect(b.textContent).toContain(url);
     expect(b.textContent).not.toMatch(/Carnet créé|votre phrase en titre/);
     expect(e.vue.container.querySelector('[aria-label="Carnet créé"]')).toBeNull();
@@ -344,14 +345,23 @@ describe('corr2-L1 (vision 2 : d1280-1, m390-1, m390-2, L4-7, d1280-3) : ce que 
     expect(b.textContent).toContain(`3 lignes rangées dans ${mPendant} carnet${mPendant > 1 ? 's' : ''}`);
     expect(e.vue.container.querySelector('.cn-vrac-apres details.cn-origine')?.textContent).toContain(note);
     const apres = lire();
-    expect(apres.map(l => l.cible).sort()).toEqual(pendant.map(l => l.cible).sort());
+    /* critique 6, n° 1 (g5:v01-16) : après, la puce dit le carnet seul ; pendant, « → Nouveau carnet « X » » ou « → Nouveau carnet » (titré
+       par la ligne même). On compare le carnet nommé, marque du banc retirée. */
+    const sansBanc = (t: string) => t.replace(/^ZZ TEST — /, '');
+    const nomme = (l: { texte: string; cible: string }) => {
+      const c = l.cible.replace(/^→ /, '');
+      const m = /^Nouveau carnet « (.*) »$/.exec(c);
+      return sansBanc(m ? m[1] : c === 'Nouveau carnet' ? l.texte : c);
+    };
+    expect(apres.map(l => sansBanc(l.cible)).sort()).toEqual(pendant.map(nomme).sort());
     // dans le magasin : chaque ligne là où le cadre l'a dite
     const msg = e.magasin.lire().find(i => i.type === 'carnet-message' && i.title === note) as unknown as { carnetMessage: { effets: { carnetId: string; cible: string }[] } };
     const cibles = new Set(msg.carnetMessage.effets.filter(x => x.cible !== 'carnet').map(x => x.carnetId));
     expect(cibles.size).toBe(mPendant);
     const evier = e.carnets().find(c => c.id === 'ZZ-CARNET-EVIER')!;
     if (pendant.some(l => /Évier/.test(l.cible))) expect(evier.carnet.notes.some(x => /2 bacs pour laver/.test(x.texte))).toBe(true);
-    expect(e.carnets()).toHaveLength(n + (pendant.some(l => /Nouveau carnet/.test(l.cible)) ? 1 : 0));
+    /* critique 6, n° 1 : un carnet neuf par objet ; on compte les carnets neufs annoncés */
+    expect(e.carnets()).toHaveLength(n + new Set(pendant.filter(l => /Nouveau carnet/.test(l.cible)).map(l => l.cible)).size);
     await act(async () => { fireEvent.click(within(b as HTMLElement).getByRole('button', { name: /Annuler/ })); });
     expect(e.carnets()).toHaveLength(n);
     expect(autres(e, IDS())).toBe(avant);

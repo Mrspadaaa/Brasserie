@@ -24,7 +24,9 @@ export const MOTS_VIDES = new Set([
   'as', 'avons', 'faut', 'fait', 'plus', 'moins', 'tres', 'trop', 'pas', 'ne', 'n', 'se', 's', 'y', 'si', 'mais', 'donc', 'car', 'comme', 'aussi',
   'tout', 'tous', 'toute', 'toutes', 'bien', 'peu', 'vu', 'vue', 'mettre', 'faire', 'deja', 'encore', 'alors', 'ici', 'la', 'cm', 'mm', 'kg', 'chf',
   'fr', 'eur', 'http', 'https', 'www', 'com', 'ch', 'qu', 'c', 'm', 't', 'zz', 'test', 'autre', 'autres', 'meme', 'quelque', 'petit', 'petite',
-  'gros', 'grosse', 'grand', 'grande', 'nouveau', 'nouvelle', 'pourquoi', 'quand', 'comment', 'combien', 'chose', 'truc', 'genre', 'idee'
+  'gros', 'grosse', 'grand', 'grande', 'nouveau', 'nouvelle', 'pourquoi', 'quand', 'comment', 'combien', 'chose', 'truc', 'genre', 'idee',
+  /* critique 6, n° 1 : un jour dit quand, jamais de quoi parle la ligne (« …, jeudi » va dans le carnet de son objet) */
+  'lundi', 'mardi', 'mercredi', 'jeudi', 'vendredi', 'samedi', 'dimanche', 'demain', 'aujourd', 'hui', 'semaine'
 ]);
 
 /** Racine légère : pluriels en -s, -x retirés (bacs → bac, fûts → fut). */
@@ -41,7 +43,22 @@ export function jetons(texte: string): string[] {
 export function decouper(texte: string): string[] {
   return texte.split(/\r?\n|;/)
     .map(l => l.replace(/^\s*(?:[-•*–—]|\d+[.)])\s+/, '').trim())
-    .filter(l => l !== '');
+    .filter(l => l !== '')
+    .flatMap(phrasesEtiquetees);
+}
+
+/** Une étiquette de tête (« Pour le bac : », « Sol local : ») : 2 à 40 caractères sans chiffre ni fin de phrase, puis « : ». */
+const ETIQUETTE = /^[^:.!?\d]{2,40}?\s?:\s*\S/u;
+
+/**
+ * Critique 6, n° 1 (390 clair-22) : une note tapée sur une seule ligne qui enchaîne des phrases étiquetées (« Pour le bac : 2 bacs de
+ * lavage. Pour la hotte : tient 80 °C. Pour la pompe : 1 800 m³/h. ») est une note en vrac : une ligne par phrase. Toutes les phrases
+ * doivent porter leur étiquette ; sinon la ligne reste entière (« Fr. 189,90 », « env. 30 L » ne coupent rien).
+ */
+export function phrasesEtiquetees(ligne: string): string[] {
+  const parts = ligne.split(/(?<=[.!?])\s+(?=\S)/).map(s => s.trim()).filter(Boolean);
+  if (parts.length < 2 || !parts.every(s => ETIQUETTE.test(sansPrefixeBanc(s)))) return [ligne];
+  return parts.map(s => s.replace(/\.\s*$/, '').trim());
 }
 
 /* ---------- URL ---------- */
@@ -162,8 +179,55 @@ export function quantitesDe(texte: string): Quantite[] {
 const PAS_VERBES = new Set(['pour', 'entre', 'notre', 'votre', 'autre', 'contre', 'leur', 'premier', 'dernier', 'hier', 'fer', 'mer', 'cher', 'super', 'hiver', 'quatre', 'litre', 'metre', 'filtre', 'centre', 'cidre', 'sucre', 'ordre', 'titre', 'chiffre', 'nombre', 'cadre', 'poudre', 'vitre', 'lettre', 'plutot', 'desir', 'plaisir', 'loisir', 'avenir', 'soir', 'noir', 'espoir', 'tiroir', 'miroir', 'couloir', 'reservoir', 'arrosoir', 'entonnoir', 'comptoir', 'pressoir', 'laminoir', 'evier', 'panier', 'papier', 'acier', 'atelier', 'calendrier', 'fournisseur', 'boucher', 'boulanger', 'rocher', 'plancher', 'escalier', 'dossier', 'fichier', 'cahier', 'clavier', 'collier', 'levier', 'quartier', 'chantier', 'sentier', 'mobilier', 'premiere', 'derniere', 'bière', 'biere', 'verre']);
 
 /** Un nombre de pièces (« 2 pièces », « 3 pcs », « x2 », « 2x ») ou un diamètre (« Ø 150 ») : la ligne désigne une chose à acheter. */
-const PIECES = /\b\d+\s?(?:pieces?|pcs|pce|x)\b|\bx\s?\d+\b/;
+const PIECES = /\b\d+\s?(?:pieces?|pcs|pce|x|sachets?|paquets?|boites?|sacs?|bidons?)\b|\bx\s?\d+\b/;
 const DIAMETRE = /[Øø⌀]\s?\d/;
+
+/**
+ * Critique 6, n° 2 (D-124) : une étiquette de tête qui dit le genre (« Ajoute : 2 sachets de levure », « À faire : », « Question : »).
+ * Le même genre pendant (aperçu local) et après (IA simulée, `formerLigne`) : un seul tableau, ici.
+ */
+export const GENRE_PAR_ETIQUETTE: ReadonlyArray<readonly [RegExp, GenreNote]> = [
+  [/^(?:ajoute|ajouter|a acheter|acheter|achats?|courses|commander)$/, 'a-acheter'], [/^(?:a faire|todo|faire)$/, 'a-faire'],
+  [/^questions?$/, 'question'], [/^(?:conseils?|astuces?)$/, 'conseil']
+];
+/** Le genre dit par l'étiquette de tête d'une ligne, sinon `undefined`. */
+export function genreDEtiquette(ligne: string): GenreNote | undefined {
+  const lib = /^([^:]{2,30}?)\s*:\s*\S/.exec(sansPrefixeBanc(ligne).trim())?.[1];
+  if (!lib) return undefined;
+  const n = normaliser(lib);
+  return GENRE_PAR_ETIQUETTE.find(([re]) => re.test(n))?.[1];
+}
+
+/**
+ * Le brassin (le métier même de la brasserie, pas une catégorie d'objet) : une ligne qui parle du prochain brassin, de ses ingrédients
+ * ou de son jour (« 2 sachets de levure », « Prochain brassage mardi »). Critique 6, n° 1 : ces lignes vont ensemble dans « Prochain
+ * brassin » (G23, g5:v02-19), jamais dans le carnet d'un objet voisin (« Sol local »).
+ */
+/* « malt » n'y est pas : « moulin à malt » est un équipement, pas le brassin */
+const MOTS_BRASSIN = /\b(?:brassin|brassins|brassage|brasser|levure|levures|houblon|houblons|empatage|ebullition|whirlpool|recette)\b/;
+export const parleDuBrassin = (texte: string): boolean => MOTS_BRASSIN.test(normaliser(sansPrefixeBanc(texte)));
+export const TITRE_BRASSIN = 'Prochain brassin';
+
+/**
+ * Critique 6, n° 1 : l'objet d'une ligne, qui titre le carnet neuf qu'elle ouvre — jamais la note entière. L'étiquette de tête si elle
+ * nomme une chose (« Sol local : 2 bacs » → « Sol local » ; « Pour la pompe : … » → « Pompe »), pas si elle dit le genre (« Ajoute : »).
+ * Sinon le début de la ligne, avant sa première mesure (« Hotte 120 cm trop large » → « Hotte »), sans compte de tête (« 2 sachets de
+ * levure » → « Levure »). 40 caractères au plus, coupé sur un mot.
+ */
+export function objetDe(ligne: string): string {
+  const t = sansPrefixeBanc(ligne).trim();
+  const lib = /^([^:]{2,40}?)\s*:\s*\S/.exec(t);
+  let o = lib && /\p{L}/u.test(lib[1]) && !genreDEtiquette(t) ? lib[1] : lib && genreDEtiquette(t) ? t.slice(lib[0].length - 1) : t.split(/[,;?!(]/)[0];
+  o = o.trim()
+    .replace(/^(?:pour|chez|a propos d[eu]|à propos d[eu])\s+/i, '')
+    .replace(/^(?:l['’]\s*|les\s+|le\s+|la\s+|une?\s+|des\s+|du\s+)/i, '')
+    .replace(/^\d+\s+\p{L}+\s+(?:de\s+|d['’]\s*)/u, '');
+  const avantMesure = o.split(/\s+(?=[\dØø⌀])/)[0].trim();
+  if (avantMesure.length >= 3) o = avantMesure;
+  o = o.replace(/[\s.:·\-–—]+$/, '').trim();
+  if (o.length > 40) o = o.slice(0, 40).replace(/\s+\S*$/, '');
+  return o ? majuscule(o) : majuscule(t.slice(0, 40));
+}
 
 /**
  * Le genre d'une ligne, par mots-clés : question, achat dit (acheter, prix, lien), conseil, à faire (verbe en tête), achat devinée (pièces,
@@ -172,6 +236,8 @@ const DIAMETRE = /[Øø⌀]\s?\d/;
 export function genreLocal(ligne: string, indices: { prix?: boolean; url?: boolean } = {}): GenreNote {
   const brut = sansPrefixeBanc(ligne);
   const n = normaliser(brut);
+  const parEtiquette = genreDEtiquette(brut);
+  if (parEtiquette) return parEtiquette;
   if (/\?\s*$/.test(brut.trim()) || /^(est ce|faut il|combien|pourquoi|quel|quelle|comment)\b/.test(n)) return 'question';
   if (indices.prix || indices.url || /\b(acheter|achat|achats|commander|commande|racheter|devis|prix|budget)\b/.test(n)) return 'a-acheter';
   if (/^(penser a|pense a|conseil|astuce|attention|eviter|ne pas)\b/.test(n) || /\bconseil\b/.test(n)) return 'conseil';

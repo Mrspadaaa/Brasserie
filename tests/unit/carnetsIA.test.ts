@@ -214,7 +214,8 @@ describe('IA simulée (B6, B7) : marquée « exemple »', () => {
   });
 
   it('frigo, ventilation, évier : des caractéristiques différentes, venues de la réponse', () => {
-    const k = (texte: string) => simuler(texte, null, []).flatMap((l) => (l.caracteristique ? [l.caracteristique.nom] : []));
+    /* critique 6, n° 9 (D-35) : les caractéristiques proposées en puces (`propose`) ne sont pas des critères rangés */
+    const k = (texte: string) => simuler(texte, null, []).flatMap((l) => (l.caracteristique && !l.propose ? [l.caracteristique.nom] : []));
     const frigo = k('un frigo pour garder les fûts au froid');
     const ventil = k('trop de condensation au plafond, une hotte ?');
     const evier = k('évier où un fût couché entre dans le bac');
@@ -277,14 +278,14 @@ describe('corr2-L1 : l’IA simulée garde « ZZ TEST — », découpe une note 
     const g29 = simuler('ZZ TEST — 2 bacs pour laver les fûts', 'c-evier').find((x) => x.titrePropose);
     expect(g29?.titrePropose).toBe('ZZ TEST — Évier inox 2 bacs');
     // « Ce qui compte, tiré de votre phrase » : ce que la phrase dit (la condensation), pas « garder au froid » qu'elle ne dit pas
-    const k = simuler('ZZ TEST — rangement du frigo, plus de condensation au plafond', null, []).filter((x) => x.sorte === 'critere').map((x) => x.texte);
+    const k = simuler('ZZ TEST — rangement du frigo, plus de condensation au plafond', null, []).filter((x) => x.sorte === 'critere' && !x.propose).map((x) => x.texte);
     // P15 : « plus de condensation » dit une gêne ; le critère dit l'inverse
     expect(k).toEqual(['Moins de condensation au plafond : capter la buée']);
     // sans préfixe, rien n'est ajouté
     expect(simuler('chambre froide pour garder 6 fûts', null, [EVIER]).find((x) => x.sorte === 'idee')?.titre).toBe('Frigo pour les fûts');
   });
 
-  it('m390-2 : une note de 3 lignes depuis la liste n’est pas prise par G29 ; chaque ligne a sa cible, les lignes sans carnet partagent UN carnet neuf', () => {
+  it('m390-2 : une note de 3 lignes depuis la liste n’est pas prise par G29 ; chaque ligne a sa cible, un carnet neuf par objet (critique 6, n° 1)', () => {
     const l = simuler('ZZ TEST — 2 bacs pour laver les fûts ; ZZ TEST — ajouter le sel ; ZZ TEST — prochain brassage jeudi');
     expect(l).toHaveLength(3);
     expect(l.every((x) => x.sorte === 'note')).toBe(true);
@@ -292,7 +293,8 @@ describe('corr2-L1 : l’IA simulée garde « ZZ TEST — », découpe une note 
     expect(l[0].raisonCarnet).toBe('votre message parle de « bacs » : comme Évier inox');
     /* n° 30 : le titre du carnet neuf est mis en forme (majuscule) */
     expect(l[1].carnetNeuf).toBe('ZZ TEST — Ajouter le sel');
-    expect(l[2].carnetNeuf).toBe('ZZ TEST — Ajouter le sel');
+    /* critique 6, n° 1 : le jour de brassage va dans « Prochain brassin » (G23), pas dans le carnet de la ligne voisine */
+    expect(l[2].carnetNeuf).toBe('ZZ TEST — Prochain brassin');
     // dans un carnet ouvert, toutes les lignes y vont (« ↓ va atterrir ici »)
     expect(simuler('hotte trop large ; acheter du sel', 'c-evier').every((x) => x.carnetId === 'c-evier')).toBe(true);
   });
@@ -300,7 +302,9 @@ describe('corr2-L1 : l’IA simulée garde « ZZ TEST — », découpe une note 
   it('G21 : un lien collé depuis la liste, rangé dans un carnet connu, dit pourquoi ; un lien seul sans carnet ouvre un carnet au nom lu', () => {
     const hotte = simuler('https://exemple.invalid/hotte-140');
     expect(hotte[0]).toMatchObject({ sorte: 'article', carnetId: 'c-ventil', raisonCarnet: 'la page parle de « hotte » : comme Ventilation de la salle' });
+    /* critique 6, n° 13 (D-7, D-13, R17, g5:v06-10) : le carnet né d'un lien porte le besoin, pas le nom du produit */
     const pompe = simuler('https://exemple.invalid/pompe-inox', null, [EVIER]);
-    expect(pompe.every((x) => x.carnetNeuf === 'Pompe de transfert inox')).toBe(true);
+    expect(pompe.every((x) => x.carnetNeuf === 'Pompe pour le moût')).toBe(true);
+    expect(pompe.find((x) => x.sorte === 'article')?.titre).toBe('Pompe de transfert inox');
   });
 });

@@ -40,7 +40,7 @@ import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import type { CreativeItem } from '../types';
 import type { FinanceTransaction, FinancialPlan } from '../domain/finance/types';
 import { magasinMemoire, type MagasinCarnets } from '../services/carnetsStore';
-import { fixtureCarnets, fixturePlanRealise, fixturePlans, ID_DENSIMETRE, ID_EMBOUTEILLAGE, ID_EVIER, ID_EXTRACTION, ID_FRIGO, ID_VENTILATION } from '../domain/carnets/fixture';
+import { fixtureCarnets, fixturePlanRealise, fixturePlans, NOTE_EN_VRAC_BANC, ID_DENSIMETRE, ID_EMBOUTEILLAGE, ID_EVIER, ID_EXTRACTION, ID_FRIGO, ID_VENTILATION } from '../domain/carnets/fixture';
 import { DELAI_LECTURE_BANC, lireLienSimule } from '../domain/carnets/iaSimulee';
 import { aidesCarnet, comportementSimule, type AidesCarnet, type ComportementSimule, type ModeCarnetIA } from '../config/carnetIA';
 import { appelsSimules, type AppelsIA } from '../ui/carnets/rangement';
@@ -105,6 +105,16 @@ export const ETATS_BANC: readonly { d: string; capture: string; adresse: string;
     gestes: ['··· d’une note › Modifier : « ✎ Se modifie ici » à la place de la note, le texte dans le champ', 'changer le texte · Enregistrer : « ✓ Note modifiée · Annuler »'] },
   { d: 'D-120', capture: '35b et 35c', adresse: '?preview=carnets&ouvrir=ventilation',
     gestes: ['··· d’une note › Supprimer : « Note supprimée · Annuler » à sa place (35b)', 'Annuler : la note revient, plus aucun bandeau (35c)'] },
+  /* Critique 6 (lot C) : 14b et 15b collent une adresse que la lecture simulée connaît (jamais `hotte-inox-80c` ni `hotte-2`, qui
+     tombent en « page non lue ») ; 19b fait naître le tableau au 2e lien d'un carnet né d'un lien (G20). */
+  { d: 'D-27, G20', capture: '14b et 15b', adresse: '?preview=carnets&ouvrir=ventilation',
+    gestes: ['coller « https://exemple.invalid/hotte-140 » · Ajouter : la carte complète (g5:v06-10), « tient 80 °C : oui »'] },
+  { d: 'G20', capture: '19b', adresse: '?preview=carnets',
+    gestes: ['coller « https://exemple.invalid/pompe-inox » · Ajouter (le carnet né du lien s’ouvre)', 'coller « https://exemple.invalid/pompe-magnetique » · Ajouter : le tableau naît'] },
+  /* Doute de la critique 6 : la note du banc tapée à la main portait une pompe à « 1 800 m³/h » ; une pompe de brasserie débite 2 à
+     5 m³/h. La note à taper est `NOTE_EN_VRAC_BANC` (fixture), aux valeurs plausibles. */
+  { d: 'D-139, D-140', capture: '22 et 23', adresse: '?preview=carnets',
+    gestes: [`taper la note en vrac « ${NOTE_EN_VRAC_BANC.replace(/\n/g, ' / ')} » · Ajouter`] },
   { d: 'D-46', capture: '55', adresse: '?preview=carnets&lien-retient=a-venir',
     gestes: ['le Frigo ouvert : pastille « À venir · … » sous le titre', 'la toucher : l’aperçu « dans À venir · depuis le … » et « Ouvrir dans À venir »'] }
 ];

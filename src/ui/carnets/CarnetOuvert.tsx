@@ -14,7 +14,10 @@
  * Toucher « Articles » ouvre la feuille des cartes (P12, figé h03-5) : photo, valeur du critère en gros, réglette, « Veiller ».
  * Avant le 2e article : les façons en cartes et l'article en carte. Notes : chaque note porte son genre et son picto (G22).
  */
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
+import { normaliser } from '../../domain/carnets/analyseLocale';
+import { comptesCarnet, pluriel } from '../../domain/carnets/comptes';
+import { sourceDuCritere } from '../../domain/carnets/modele';
 import { CalendarCheck, ChevronDown, ChevronLeft, ChevronRight, Ellipsis, ExternalLink, Eye, FileText, GitFork, Image as ImageIcon, Lightbulb, Link2, ListTodo, Pencil, ShoppingBasket, Tag, Target, X } from 'lucide-react';
 import { Bandeau } from './Bandeau';
 import { CarteArticle, CarteClassee, estExemple, nombreValeur } from './CarteArticle';
@@ -98,12 +101,14 @@ function etendue(centimes: number[]): string | null {
  */
 export function provenanceCritere(cr: Pick<CritereV, 'origine' | 'source'>): string {
   const o = String(cr.origine);
-  if (o === 'vous' || o === 'phrase') return 'de votre phrase';
-  if (o === 'locale') return 'calculé sur place';
-  if (o === 'page') return 'lu sur la page';
-  /* lot A : la source réelle du critère (`phrase` : tiré de ses mots, même quand l'IA simulée l'a mis en forme) */
-  if (cr.source === 'phrase') return 'de votre phrase';
-  return "proposé par l'IA";
+  if (o === 'phrase') return 'de votre phrase';
+  if (o === 'locale' && !cr.source) return 'calculé sur place';
+  if (o === 'page' && !cr.source) return 'lu sur la page';
+  /* l'exemple du banc sans source dite : proposé (simulé) par l'IA, comme h05-3 */
+  if (o === 'exemple' && !cr.source) return "proposé par l'IA";
+  /* Critique 6, point 13 : la source réelle du critère se lit par `sourceDuCritere` (lot A, modele.ts) : `phrase` = tiré de ses mots,
+     même quand l'IA l'a mis en forme ; `ia` = proposé par l'IA. */
+  return sourceDuCritere(cr as Parameters<typeof sourceDuCritere>[0]) === 'phrase' ? 'de votre phrase' : "proposé par l'IA";
 }
 
 /**
@@ -183,12 +188,27 @@ function pastilleFacon(k: ContenuCarnetV, f: FaconV, sep: Separation | null): { 
 export function CarnetOuvert(p: CarnetOuvertProps) {
   const c = p.carnet, k = c.carnet;
   const [menu, setMenu] = useState(false);
+  /* critique 6, n° 22 (R21) : le menu « Renommer / Supprimer l'idée » se ferme dès qu'on choisit (✎ compris), à Échap et au toucher
+     ailleurs ; il ne reste jamais au-dessus du cadre de renommage. */
+  const refMenu = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    if (!menu) return;
+    const touche = (e: KeyboardEvent) => { if (e.key === 'Escape') setMenu(false); };
+    const ailleurs = (e: PointerEvent) => {
+      const t = e.target as Node | null;
+      if (refMenu.current && t && !refMenu.current.contains(t) && !(t instanceof Element && t.closest('[aria-label="Plus"]'))) setMenu(false);
+    };
+    window.addEventListener('keydown', touche);
+    window.addEventListener('pointerdown', ailleurs);
+    return () => { window.removeEventListener('keydown', touche); window.removeEventListener('pointerdown', ailleurs); };
+  }, [menu]);
   const [cartes, setCartes] = useState(false);
   const [apercu, setApercu] = useState<string | null>(null);
   const [voirCriteres, setVoirCriteres] = useState(false);
   const r = p.rangee;
   const critere = k.criteres.find(x => x.caracteristique) ?? k.criteres[0];
-  const lus = k.articles.filter(a => a.lecture === 'lue').length;
+  /* critique 6, n° 15 : les comptes viennent de `comptesCarnet`, comme la liste et la suppression */
+  const n = comptesCarnet(k);
   const enDouble = new Set(p.aides.doublon ? p.doublons ?? [] : []);
   const question = k.facons.length === 2 ? `${k.facons[0].nom} ou ${k.facons[1].nom} ?` : null;
   const neuf = !!p.vientDEtreCree && c.status === 'idea';
@@ -197,7 +217,6 @@ export function CarnetOuvert(p: CarnetOuvertProps) {
   const aRelire: ArticleV[] = p.tableau
     ? ((p.tableau as { aRelire?: ArticleV[] }).aRelire ?? k.articles.filter(a => sansApercu(a) && !a.prixCentimes && !Object.keys(a.valeurs).length))
     : [];
-  const sansApercuN = k.articles.filter(a => sansApercu(a)).length;
 
   const encadre = (cible: RangeeV['cible'], id: string, noeud: React.ReactNode) =>
     r && r.cible === cible && r.id === id
@@ -210,14 +229,20 @@ export function CarnetOuvert(p: CarnetOuvertProps) {
      valeur à comparer) sont rangés derrière « +1 sans valeur », un toucher les montre ; un critère tout juste rangé (rangée) les ouvre.
      P11 : un critère par texte normalisé. */
   const criteres = uniquesParTexte(k.criteres);
-  const classants = criteres.filter(u => u.el.caracteristique);
-  const tete = classants.length ? classants : criteres.slice(0, 1);
-  const derriere = criteres.filter(u => !tete.includes(u));
+  /* critique 6, n° 14 (g5:v03-8, D-38) : chaque critère est écrit une fois. Le critère tout juste rangé ne se dit que dans sa ligne
+     rangée (« ✓ Rangé ici · Annuler »), jamais en plus dans la ligne Critère ni dans une sous-liste de tous les critères. */
+  const uRange = r && r.cible === 'critere' ? criteres.find(u => u.ids.includes(r.id)) : undefined;
+  const critereRange = !!uRange;
+  const autres = uRange ? criteres.filter(u => u !== uRange) : criteres;
+  const classants = autres.filter(u => u.el.caracteristique);
+  const tete = classants.length ? classants : autres.slice(0, 1);
+  const derriere = autres.filter(u => !tete.includes(u));
   const provsTete = [...new Set(tete.map(u => provenanceCritere(u.el)))];
-  const critereRange = !!r && r.cible === 'critere' && criteres.some(u => u.ids.includes(r.id));
-  const criteresOuverts = voirCriteres || critereRange;
-  const encadreCritere = (ids: string[], noeud: React.ReactNode) =>
-    r && r.cible === 'critere' && ids.includes(r.id) ? encadre('critere', r.id, noeud) : <React.Fragment key={ids[0]}>{noeud}</React.Fragment>;
+  /* n° 34 : « 1 critère sans valeur à comparer ⌄ », compté sans le critère rangé ; pendant que l'IA range (un cadre de geste est
+     posé), le compte reste celui d'avant l'envoi : il ne bouge pas sous les yeux. */
+  const derriereAvant = useRef(derriere.length);
+  if (!p.cadre) derriereAvant.current = derriere.length;
+  const nDerriere = p.cadre ? derriereAvant.current : derriere.length;
   const texteTete = (
     <>
       {tete.map((u, i) => (
@@ -229,43 +254,58 @@ export function CarnetOuvert(p: CarnetOuvertProps) {
       {provsTete.length === 1 && <span className="cn-mut"> · {provsTete[0]}</span>}
     </>
   );
+  /* La phrase du critère rangé : citée une fois. Si le critère est sa phrase même (normalisée), « · de votre phrase » le dit déjà. */
+  const phraseRangee = uRange && r?.phrase && normaliser(r.phrase) !== normaliser(uRange.el.texte) ? r.phrase : undefined;
+  /* n° 34 : à la suite de la ligne Critère (h05-3 n'a qu'une ligne : pas une ligne de plus à 390) */
+  const plusCriteres = nDerriere > 0 ? (
+    <button type="button" className="cn-lien cn-critere-plus" aria-expanded={voirCriteres} onClick={() => setVoirCriteres(v => !v)}>
+      {pluriel(nDerriere, 'critère')} sans valeur à comparer <ChevronDown size={15} aria-hidden className={voirCriteres ? 'cn-tourne' : undefined} />
+    </button>
+  ) : null;
+  const rangeeCritere = uRange && r ? (
+    <LigneRangee phrase={phraseRangee} rangeSur={r.rangeSur} onAnnuler={r.onAnnuler} onVotreTexte={r.onVotreTexte} onDeplacer={r.onDeplacer} onChangerEnNote={r.onChangerEnNote}>
+      <p className="cn-critere cn-critere-court"><b>{uRange.el.texte}</b><span className="cn-mut"> · {provenanceCritere(uRange.el)}{uRange.el.caracteristique ? '' : ' · sans valeur à comparer'}</span></p>
+    </LigneRangee>
+  ) : null;
   const ligneCritere = criteres.length > 0 && (
     <section className="cn-critere-bloc" aria-label="Ce qui compte">
-      <p className="cn-critere cn-critere-une">
-        <Target size={18} aria-hidden className="cn-vert cn-critere-ico" />
-        <span className="cn-sp">Critère : {texteTete}
-          {derriere.length > 0 && (
-            <> <button type="button" className="cn-lien cn-critere-plus" aria-expanded={criteresOuverts} onClick={() => setVoirCriteres(v => !v)}>· +{derriere.length} sans valeur</button></>
-          )}
-        </span>
-      </p>
-      {criteresOuverts && (
-        <div className="cn-criteres-derriere" role="list" aria-label="Tous les critères">
-          {criteres.map(u => encadreCritere(u.ids, (
-            <p className="cn-critere cn-critere-court" role="listitem">
+      {tete.length > 0 && (
+        <p className="cn-critere cn-critere-une">
+          <Target size={18} aria-hidden className="cn-vert cn-critere-ico" />
+          <span className="cn-sp"><span className="cn-critere-tx">Critère : {texteTete}</span>{plusCriteres && <> <span className="cn-mut" aria-hidden>·</span> {plusCriteres}</>}</span>
+        </p>
+      )}
+      {rangeeCritere}
+      {tete.length === 0 && plusCriteres}
+      {voirCriteres && derriere.length > 0 && (
+        <div className="cn-criteres-derriere" role="list" aria-label="Critères sans valeur à comparer">
+          {derriere.map(u => (
+            <p key={u.ids[0]} className="cn-critere cn-critere-court" role="listitem">
               <b>{u.el.texte}</b>
-              <span className="cn-mut"> · {provenanceCritere(u.el)}{u.el.caracteristique ? '' : ' · sans valeur à comparer'}{u.el.raison ? ` · ${u.el.raison}` : ''}</span>
+              <span className="cn-mut"> · {provenanceCritere(u.el)}{u.el.raison ? ` · ${u.el.raison}` : ''}</span>
             </p>
-          )))}
+          ))}
         </div>
       )}
     </section>
   );
   /* n° 19 (h05-3) : la ligne d'état sous le titre, « 2 façons à comparer · attendre l'avis du ferblantier » (le « à faire » du carnet, tel
      qu'il l'a écrit) ; rien d'inventé, rien à 0. */
-  const faconsEnLice = k.facons.filter(f => f.etat !== 'ecartee');
-  const aFaire = k.notes.find(n => n.genre === 'a-faire')?.texte;
+  const aFaire = k.notes.find(x => x.genre === 'a-faire')?.texte;
+  /* n° 15 et 28 : « 2 façons à comparer » (les façons en lice, comme la liste), sinon « 2 articles à comparer » ; accordés. */
   const etatTete = c.status === 'validated' || neuf ? null
-    : p.tableau ? (faconsEnLice.length >= 2 ? `${faconsEnLice.length} façons à comparer` : `${lus} articles à comparer`)
-      : faconsEnLice.length >= 2 ? `${faconsEnLice.length} façons` : null;
+    : p.tableau ? (n.facons >= 2 ? `${pluriel(n.facons, 'façon')} à comparer` : `${pluriel(n.articles, 'article')} à comparer`)
+      : n.facons >= 2 ? pluriel(n.facons, 'façon') : null;
   const ligneEtat = (etatTete || (aFaire && !neuf && c.status !== 'validated'))
     ? <p className="cn-ligne-etat">{etatTete && <span>{etatTete}</span>}{etatTete && aFaire ? <span className="cn-mut"> · </span> : null}{aFaire && <span className="cn-mut">{aFaire}</span>}</p>
     : null;
   const ia = !p.iaIndisponible;
-  /* tout juste créé, le bandeau cite déjà sa phrase (g5:v04-4 ; n° 39 : jamais deux fois) */
-  const phraseCitee = k.phrase && !p.vientDEtreCree ? (phraseEnTitre(c.title, k.phrase)
-    ? (p.vientDEtreCree ? null : <p className="cn-cite">votre phrase en titre</p>)
-    : <p className="cn-cite">« {k.phrase} »</p>) : null;
+  /* tout juste créé, le bandeau cite déjà sa phrase (g5:v04-4 ; n° 39 : jamais deux fois). Critique 6, n° 30 (R25) : la phrase citée
+     dit ce qu'elle est, « votre phrase : « … » », jamais des guillemets seuls qui flottent ; n° 14 : pas une seconde fois si la ligne
+     rangée la cite déjà. */
+  const phraseCitee = k.phrase && !p.vientDEtreCree && !(r?.phrase && normaliser(r.phrase) === normaliser(k.phrase)) ? (phraseEnTitre(c.title, k.phrase)
+    ? <p className="cn-cite">votre phrase en titre</p>
+    : <p className="cn-cite">votre phrase : « {k.phrase} »</p>) : null;
 
   const articleRange = r?.cible === 'article' ? k.articles.find(a => a.id === r.id) : undefined;
   const faconRange = articleRange?.faconId ? k.facons.find(f => f.id === articleRange.faconId) : undefined;
@@ -280,29 +320,24 @@ export function CarnetOuvert(p: CarnetOuvertProps) {
       <div className="cn-tete">
         <button type="button" className="cn-retour" onClick={p.onRetour}><ChevronLeft size={20} aria-hidden /> Carnets</button>
         <span className="cn-sp" />
-        {neuf
-          ? <span className="cn-etapes" aria-label="idée"><span className="cn-etape-on" /><span /><span /><span /><span className="cn-lien-texte">idée</span></span>
-          : !(etatTete && c.status === 'research') && <span className={`cn-pastille cn-statut-${c.status}`}>{etiquetteStatut(c)}</span>}
+        {/* critique 6, n° 32 : l'état n'a qu'une forme, la pastille (g05-1 « Idée », h05-3 : la ligne d'état la remplace quand elle
+            dit « 2 façons à comparer ») ; jamais de points ●○○○ en plus (n° 16). */}
+        {!(etatTete && c.status === 'research') && <span className={`cn-pastille cn-statut-${c.status}`}>{etiquetteStatut(c)}</span>}
         <button type="button" className="cn-ico" aria-label="Plus" aria-expanded={menu} onClick={() => setMenu(m => !m)}><Ellipsis size={22} aria-hidden /></button>
       </div>
       {menu && (
-        <div className="cn-feuille cn-menu" role="menu">
+        <div ref={refMenu} className="cn-feuille cn-menu" role="menu">
           <button type="button" role="menuitem" className="cn-feuille-item" onClick={() => { setMenu(false); p.onRenommer(); }}><Pencil size={18} aria-hidden /> Renommer</button>
           <button type="button" role="menuitem" className="cn-feuille-item cn-rouge" onClick={() => { setMenu(false); p.onSupprimer(); }}>Supprimer l'idée</button>
         </div>
       )}
       <div className="cn-titre-ligne">
         <h2 className="cn-titre">{c.title}</h2>
-        <button type="button" className="cn-ico" aria-label="Renommer" onClick={p.onRenommer}><Pencil size={20} aria-hidden /></button>
+        <button type="button" className="cn-ico" aria-label="Renommer" onClick={() => { setMenu(false); p.onRenommer(); }}><Pencil size={20} aria-hidden /></button>
       </div>
-      {/* P27 (g5:v04-4) : l'en-tête d'état du carnet tout juste créé, comme la maquette (« Idée · 17 nov. / Ensuite : … »). Quand l'IA
-          ne répond pas, est éteinte ou hors ligne, la suite ne promet rien d'elle (n° 24) : « Ensuite : collez un lien ». */}
-      {neuf && (
-        <div className="cn-encadre-idee">
-          <b className="cn-att">{etiquetteStatut(c)}</b>
-          <b>Ensuite : {ia && k.facons.length === 0 ? "l'IA cherche les façons" : k.articles.length === 0 ? 'collez un lien' : ia ? "l'IA compare" : 'comparez les articles'}</b>
-        </div>
-      )}
+      {/* Critique 6, n° 16 (R11, g5:v04-4) : tout juste créé, une seule nouvelle : le bandeau « ✓ Carnet créé · ↺ Annuler » et « votre
+          phrase en titre » (lot A). Ni l'encadré « Idée · Ensuite… » ni les points ●○○○ en plus : l'état est la pastille « Idée · 17 nov. »
+          en tête, et chaque rubrique dit qui agit (« Façons · aucune : l'IA les cherche » ; sans IA, rien n'est promis, n° 24). */}
       {/* P9 (vision 1) : la confirmation, le bandeau et le cadre du geste restent juste sous le titre, avant la ligne d'état et le tableau :
           à 390 ils doivent être à l'écran quand on les touche */}
       {p.bandeau}
@@ -357,8 +392,8 @@ export function CarnetOuvert(p: CarnetOuvertProps) {
           {criteres.length === 0
             ? <p className="cn-rubrique-tete"><Target size={18} aria-hidden /> <b>Ce qui compte</b> <span className="cn-mut">· rien encore{ia ? " : l'IA le proposera" : ''}</span></p>
             : <>
-              <p className="cn-rubrique-tete cn-cqc-ligne"><Target size={18} aria-hidden /> <b>Ce qui compte</b> <span className="cn-cqc-texte">· {texteTete}</span></p>
-              {critereRange && ligneCritere}
+              <p className="cn-rubrique-tete cn-cqc-ligne"><Target size={18} aria-hidden /> <b>Ce qui compte</b> {tete.length > 0 && <span className="cn-cqc-texte">· {texteTete}</span>}</p>
+              {rangeeCritere}
             </>}
         </section>
       )}
@@ -370,7 +405,7 @@ export function CarnetOuvert(p: CarnetOuvertProps) {
             <p className="cn-rubrique-tete"><GitFork size={18} aria-hidden /> <b>Façons</b> <span className="cn-mut">· aucune{ia ? " : l'IA les cherche" : ''}</span></p>
           ) : (
             <>
-              <h3 className="cn-rubrique-tete">{question ?? <><GitFork size={18} aria-hidden /> Façons</>} <span className="cn-mut cn-nowrap">{k.facons.length} façons</span></h3>
+              <h3 className="cn-rubrique-tete">{question ?? <><GitFork size={18} aria-hidden /> Façons</>} <span className="cn-mut cn-nowrap">{pluriel(k.facons.length, 'façon')}</span></h3>
               <div className="cn-facons">
                 {k.facons.map(f => {
                   const sesArticles = k.articles.filter(a => a.faconId === f.id);
@@ -398,19 +433,20 @@ export function CarnetOuvert(p: CarnetOuvertProps) {
           <p className="cn-rubrique-tete"><Tag size={18} aria-hidden /> <b>Articles</b> <span className="cn-mut">· aucun : collez un lien</span></p>
         ) : (
           <>
-            {/* P10 : le compte garde sa largeur ; faute de place (390), « Comparer côte à côte › » passe à la ligne, calé à droite.
-                P12 (h03-5) : toucher « Articles » ouvre la feuille des cartes. */}
+            {/* Critique 6, n° 8 (R03, D-99, h05-3) : une seule ligne, « Articles 6 ⌄ · Comparer › ». Le compte est le total de
+                `comptesCarnet` (lus et sans aperçu ensemble, n° 15) ; le lien sans aperçu se lit dans le tableau (« Lien sans aperçu ·
+                Ouvrir »). P12 (h03-5) : toucher « Articles » ouvre la feuille des cartes. */}
             <div className="cn-rubrique-tete cn-tete-articles">
               {p.tableau ? (
                 <button type="button" className="cn-tete-bouton" aria-haspopup="dialog" aria-expanded={cartes} onClick={() => setCartes(true)}>
                   <Tag size={18} aria-hidden /><b>Articles</b>
-                  <span className="cn-mut cn-nowrap cn-compte">{lus} lu{lus > 1 ? 's' : ''}{sansApercuN ? `, ${sansApercuN} sans aperçu` : ''}</span>
+                  <span className="cn-mut cn-mono cn-compte">{n.articles}</span>
                   <ChevronDown size={16} aria-hidden className="cn-mut" />
                 </button>
               ) : (
-                <><Tag size={18} aria-hidden /><b>Articles</b><span className="cn-mut cn-nowrap cn-compte">{lus} lu{lus > 1 ? 's' : ''}{sansApercuN ? `, ${sansApercuN} sans aperçu` : ''}</span></>
+                <><Tag size={18} aria-hidden /><b>Articles</b><span className="cn-mut cn-mono cn-compte">{n.articles}</span></>
               )}
-              {p.tableau && <button type="button" className="cn-lien cn-comparer-lien" onClick={p.onComparer}>Comparer côte à côte <ChevronRight size={16} aria-hidden /></button>}
+              {p.tableau && <><span className="cn-mut" aria-hidden>·</span><button type="button" className="cn-lien cn-comparer-lien" onClick={p.onComparer}>Comparer <ChevronRight size={16} aria-hidden /></button></>}
             </div>
             {articleRange && r && (
               <LigneRangee sorte="article" faconNom={faconRange?.nom} phrase={r.phrase} onAnnuler={r.onAnnuler} onDeplacer={r.onDeplacer}>
@@ -422,7 +458,8 @@ export function CarnetOuvert(p: CarnetOuvertProps) {
               <TableauCarnet carnet={k} titre={c.title} tableau={p.tableau} aRelire={aRelire} sep={sep} sauf={articleRange?.id} onOuvrir={p.onOuvrirArticle}
                 conclusion={conclusion && (
                   <div className="cn-encart cn-separe" role="note">
-                    <span className="cn-sp"><Provenance origine={conclusion.ia ? 'ia' : 'locale'} /> {conclusion.texte}</span>
+                    {/* un nombre ne se sépare pas de son unité (« 80 °C » jamais coupé en fin de ligne) */}
+                    <span className="cn-sp"><Provenance origine={conclusion.ia ? 'ia' : 'locale'} /> {conclusion.texte.replace(/(\d) (°C|m³\/h|L\/min|CHF|kg|cm|L)\b/g, (_, n: string, u: string) => `${n} ${u}`)}</span>
                     <button type="button" className="cn-action cn-action-vert" onClick={conclusion.onRetenir}>Retenir {conclusion.retenir}</button>
                   </div>
                 )} />
@@ -552,7 +589,7 @@ function TableauCarnet({ carnet: k, titre, tableau, aRelire, sep, sauf, onOuvrir
   const enLice = [...blocsDe(k.facons.filter(f => f.etat !== 'ecartee')), sansFacon].filter(b => b.lignes.length || (b.facon && b.facon.etat !== 'ecartee'));
   const ecartees = blocsDe(k.facons.filter(f => f.etat === 'ecartee')).filter(b => b.lignes.length);
   const blocs = [...enLice, ...ecartees];
-  const gabarit = { gridTemplateColumns: `32px 34px minmax(0, 1fr) ${cols.map(() => 'var(--cn-col, 54px)').join(' ')}` } as React.CSSProperties;
+  const gabarit = { gridTemplateColumns: `var(--cn-rangl, 32px) var(--cn-vignl, 34px) minmax(0, 1fr) ${cols.map(() => 'var(--cn-col, 54px)').join(' ')}` } as React.CSSProperties;
 
   return (
     <div className="cn-tab" role="table" aria-label="Articles, rangés dans leur façon">
@@ -580,7 +617,7 @@ function TableauCarnet({ carnet: k, titre, tableau, aRelire, sep, sauf, onOuvrir
             )}
             {b.lignes.map(l => {
               const a = art(l.articleId);
-              const sous = l.ecarte ? libelleEcarte(l.ecarte.raison) : [a?.pays, a?.dispo].filter(Boolean).join(' · ');
+              const sous = l.ecarte ? libelleEcarte(l.ecarte.raison) : [a?.pays, a?.dispo?.replace(/\bsemaines?\b/, 'sem.')].filter(Boolean).join(' · ');
               const moinsBien = l.ecarte ? null : texteMoinsBien(tableau, l);
               return (
                 <button key={l.articleId} type="button" className={`cn-tab-ligne${l.ecarte ? ' cn-ecarte' : ''}`} style={gabarit} role="row" onClick={() => onOuvrir(l.articleId)}>
@@ -590,7 +627,8 @@ function TableauCarnet({ carnet: k, titre, tableau, aRelire, sep, sauf, onOuvrir
                     <span className="cn-deux-lignes">{l.nom}</span>
                     <span className="cn-mut">
                       {sous}
-                      {a?.veille?.active && <span className="cn-nowrap">{sous ? ' · ' : ''}<Eye size={15} aria-hidden className="cn-inline" /> veille demandée</span>}
+                      {/* h05-3 : « DE · délai 2 sem. · ⊙ veille » (n° 8 : la ligne tient sur 2 lignes au plus à 390) */}
+                      {a?.veille?.active && <span className="cn-nowrap" title="veille demandée">{sous ? ' ·' : ''}<Eye size={15} aria-hidden className="cn-inline" /> veille</span>}
                       {!l.ecarte && moinsBien && <span className="cn-att">{sous || a?.veille?.active ? ' · ' : ''}{moinsBien}</span>}
                     </span>
                   </span>
@@ -601,12 +639,15 @@ function TableauCarnet({ carnet: k, titre, tableau, aRelire, sep, sauf, onOuvrir
                 </button>
               );
             })}
+            {/* critique 6, n° 8 (h05-3) : « ? · Lien sans aperçu · à relire · Ouvrir ↗ » dans le tableau, au pied des façons en lice,
+                avant la conclusion ; jamais classé (P6) */}
+            {i === enLice.length - 1 && aRelire.map(a => <LigneARelire key={a.id} article={a} />)}
           </div>
           </React.Fragment>
         );
       })}
       {enLice.length === blocs.length && conclusion}
-      {aRelire.length > 0 && (
+      {enLice.length === 0 && aRelire.length > 0 && (
         <div className="cn-tab-bloc cn-tab-relire" role="rowgroup" aria-label="À relire, hors classement">
           {aRelire.map(a => <LigneARelire key={a.id} article={a} />)}
         </div>
@@ -652,7 +693,7 @@ function FeuilleCartes({ carnet: k, titre, tableau, aRelire, onFermer, onOuvrir,
       <section className="cn-feuille-cartes" role="dialog" aria-modal="true" aria-label={`Articles · ${k.articles.length}`} onClick={e => e.stopPropagation()}>
         <span className="cn-poignee" aria-hidden />
         <div className="cn-feuille-cartes-tete">
-          <h3 className="cn-sp"><b>Articles · {k.articles.length}</b> {k.facons.length > 0 && <span className="cn-mut">{k.facons.filter(f => f.etat !== 'ecartee').length} façon{k.facons.filter(f => f.etat !== 'ecartee').length > 1 ? 's' : ''}</span>}</h3>
+          <h3 className="cn-sp"><b>Articles · {k.articles.length}</b> {comptesCarnet(k).facons > 0 && <span className="cn-mut">{pluriel(comptesCarnet(k).facons, 'façon')}</span>}</h3>
           <button type="button" className="cn-lien cn-fermer" onClick={onFermer}><X size={18} aria-hidden /> Fermer</button>
         </div>
         {carac && <p className="cn-mut">Classés par ce qui compte : <b className="cn-encre">{critere?.texte ?? carac.nom}</b></p>}

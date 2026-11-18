@@ -9,6 +9,7 @@
  */
 import React from 'react';
 import { Archive, ArrowRightToLine, Trash2 } from 'lucide-react';
+import { accord, comptesCarnet, pluriel } from '../../domain/carnets/comptes';
 import { PictoLocal, type ContenuCarnetV } from './EtatIA';
 import './carnets-decider.css';
 
@@ -29,13 +30,17 @@ export interface SupprimerCarnetProps {
   onGarder: () => void;
 }
 
-function compte(n: number, un: string, plusieurs: string) { return n ? `${n} ${n > 1 ? plusieurs : un}` : null; }
+function compte(n: number, un: string, plusieurs?: string) { return n ? pluriel(n, un, plusieurs) : null; }
 
-/** « 1 article, 1 photo, 2 façons et 1 note » ; rien ne part : null. */
+/**
+ * « 1 article, 1 photo, 2 façons et 1 note » ; rien ne part : null. Critique 6, n° 15 : les nombres viennent de `comptesCarnet`, comme
+ * la liste et le carnet ouvert ; l'écartée part aussi, elle est dite à part (« 2 façons, 1 façon écartée »).
+ */
 export function cequiPart(c: ContenuCarnetV): string | null {
+  const n = comptesCarnet(c);
   const parts = [
-    compte(c.articles.length, 'article', 'articles'), compte(c.photos.length, 'photo', 'photos'),
-    compte(c.facons.length, 'façon', 'façons'), compte(c.notes.length, 'note', 'notes'),
+    compte(n.articles, 'article'), compte(n.photos, 'photo'),
+    compte(n.facons, 'façon'), n.ecartees ? `${pluriel(n.ecartees, 'façon')} ${accord(n.ecartees, 'écartée')}` : null, compte(n.notes, 'note'),
   ].filter(Boolean) as string[];
   if (!parts.length) return null;
   return parts.length > 1 ? `${parts.slice(0, -1).join(', ')} et ${parts[parts.length - 1]}` : parts[0];
@@ -45,7 +50,7 @@ export function SupprimerCarnet(p: SupprimerCarnetProps) {
   const n = p.liens.length;
   const realise = p.liens.some(l => l.reglage === 'archiver');
   const part = cequiPart(p.contenu);
-  const enVeille = p.contenu.articles.filter(a => a.veille?.active).length;
+  const enVeille = comptesCarnet(p.contenu).veilles;
   /* P9 : la carte est à l'écran dès le geste, à 390 comme à 1280 ; le focus y va (le lecteur d'écran l'annonce, Tab mène à Garder). */
   const ref = React.useRef<HTMLElement>(null);
   React.useEffect(() => {
@@ -80,7 +85,8 @@ export function SupprimerCarnet(p: SupprimerCarnetProps) {
       {enVeille > 0 && p.proche && p.proche.memeCategorie !== false && (
         <div className="cn-g35" data-source="locale">
           <PictoLocal />
-          <span className="cn-sp">{enVeille} article{enVeille > 1 ? 's' : ''} en veille : les déplacer dans {p.proche.titre}</span>
+          {/* critique 6, n° 31 : « 1 article en veille : le déplacer », « 2 articles en veille : les déplacer » */}
+          <span className="cn-sp">{pluriel(enVeille, 'article')} en veille : {accord(enVeille, 'le', 'les')} déplacer dans {p.proche.titre}</span>
           <button type="button" className="cn-puce cn-g35-bouton" onClick={p.proche.onDeplacer}><ArrowRightToLine size={18} aria-hidden /> Déplacer</button>
         </div>
       )}

@@ -8,8 +8,8 @@
  *   pas encore envoyée, sinon « Dans À venir depuis le … · Voir » (R32). Aucune caisse ni trésorerie ici.
  */
 import React, { useEffect, useMemo, useRef, useState } from 'react';
-import { CalendarCheck, Check, ChevronLeft, ChevronRight, ExternalLink, X } from 'lucide-react';
-import { libelleEcarte, nombreTexte, placesDe, pourquoiDe, prixTexte, tableau, type Place } from '../../domain/carnets/comparer';
+import { CalendarCheck, Check, ChevronLeft, ChevronRight, ExternalLink, Target, X } from 'lucide-react';
+import { libelleEcarte, nombreTexte, placesDe, placesParmiTous, pourquoiDe, prixTexte, tableau, type Place } from '../../domain/carnets/comparer';
 import { normaliser } from '../../domain/carnets/analyseLocale';
 import { sourceDuCritere, type Article, type DonneesCarnet } from '../../domain/carnets/modele';
 import { dateCourte, montant, PictoLocal, Provenance, rangTexte, type ArticleV, type ChoixV, type CritereV, type FaconV } from './EtatIA';
@@ -66,8 +66,25 @@ function carnetDeCalcul(p: { carnet?: CarnetPourChoisir }, articles: readonly Ar
   return { criteres: [], facons: [], articles: articles as unknown as Article[], choix: undefined };
 }
 
-/** « 1er sur 5 » (g05-11) : la place, au masculin comme la maquette. */
-const placeTexte = (pl: Place) => (pl.rang ? `${pl.rang === 1 ? '1er' : `${pl.rang}e`} sur ${pl.sur}${pl.exAequo ? ' ex aequo' : ''}` : null);
+/**
+ * « 1er sur 5 » (g05-11) : la place, au masculin comme la maquette. Critique 6, n° 6 : un ex aequo se compte sur les seuls articles qui
+ * partagent la valeur (« 1er sur 2 ex aequo » quand deux tiennent 80 °C), jamais sur tous les connus.
+ */
+const placeTexte = (pl: Place) => (pl.rang ? `${pl.rang === 1 ? '1er' : `${pl.rang}e`} sur ${pl.exAequo && pl.partage ? `${pl.partage} ex aequo` : pl.sur}` : null);
+/** Le nom d'une place, par sa caractéristique (n° 7 : « Ambiance max », jamais « °C » seul), avec une majuscule. */
+const nomPlace = (pl: Place) => { const n = pl.libelle ?? pl.nom; return n.charAt(0).toUpperCase() + n.slice(1); };
+
+/**
+ * g05-11 : ce qui a été retenu, une ligne chacun : le critère (◎, avec sa source : « proposé par l'IA » ou de votre phrase), la façon (✓)
+ * et le fournisseur (✓). Rien d'inventé : chaque mot vient du carnet.
+ */
+function Retenus({ critere, facon, vendeur, dispo }: { critere?: CritereV; facon?: FaconV; vendeur?: string; dispo?: string }) {
+  return <>
+    {critere && <li><Target size={18} role="img" aria-label="critère" className="cn-ok" /><span><b>Critère</b> : {critere.texte}{sourceDuCritere(critere) === 'ia' ? ", proposé par l'IA" : ''}</span></li>}
+    {facon && <li><Check size={18} role="img" aria-label="retenu" className="cn-ok" /><span><b>Façon {facon.nom.toLowerCase()}</b>{facon.raison ? ` : ${facon.raison}` : ''}</span></li>}
+    {vendeur && <li><Check size={18} role="img" aria-label="retenu" className="cn-ok" /><span><b>{vendeur}</b>{dispo ? ` : ${dispo}` : ''}</span></li>}
+  </>;
+}
 const chiffre = (n: number) => String(n).replace(/\B(?=(\d{3})+(?!\d))/g, ' ');
 
 /**
@@ -82,8 +99,8 @@ export function Reglette({ place, sansTete }: { place: Place; sansTete?: boolean
   const pos = (v: number) => (etendue === 0 ? 0 : Math.max(0, Math.min(1, (v - place.meilleure!) / etendue)));
   const unite = place.unite ? ` ${place.unite}` : '';
   return (
-    <div className={`cn-reglette${sansTete ? ' cn-reglette-seule' : ''}`} role="img" aria-label={`${place.nom} : ${place.texte}, ${placeTexte(place) ?? ''}`}>
-      {!sansTete && <div className="cn-reglette-tete"><b>{place.nom.charAt(0).toUpperCase() + place.nom.slice(1)}</b><span className="cn-sp" /><span><b className="cn-mono">{place.texte}</b>{placeTexte(place) ? <span className="cn-mut"> · {placeTexte(place)}</span> : null}</span></div>}
+    <div className={`cn-reglette${sansTete ? ' cn-reglette-seule' : ''}`} role="img" aria-label={`${place.libelle ?? place.nom} : ${place.texte}, ${placeTexte(place) ?? ''}`}>
+      {!sansTete && <div className="cn-reglette-tete"><b>{nomPlace(place)}</b><span className="cn-sp" /><span><b className="cn-mono">{place.texte}</b>{placeTexte(place) ? <span className="cn-mut"> · {placeTexte(place)}</span> : null}</span></div>}
       <div className="cn-reglette-piste" aria-hidden>
         {place.toutes.map((v, i) => <i key={i} style={{ left: `${pos(v) * 100}%` }} />)}
         <i className="cn-reglette-moi" style={{ left: `${pos(place.valeur) * 100}%` }} />
@@ -125,7 +142,8 @@ function ChoisiVue(p: Extract<ChoisirProps, { etape: 'choisi' }>) {
   const calc = useMemo(() => {
     const c = p.carnet ?? null;
     const t = c ? tableau(c) : null;
-    const places = t ? placesDe(t, a.id) : [];
+    /* g05-11 : « 1er sur 5 », parmi tout ce qu'il a vu, écartés compris (le choix revu du frigo n'a plus qu'un article en lice) */
+    const places = t ? placesParmiTous(t, a.id) : [];
     const premierChiffre = places.find(pl => pl.critere && pl.rang && (pl.sens === 'plus' || pl.sens === 'moins'));
     const prixPl = places.find(pl => pl.nom === 'prix' && pl.rang);
     return {
@@ -157,9 +175,7 @@ function ChoisiVue(p: Extract<ChoisirProps, { etape: 'choisi' }>) {
         {sienne && sienne !== calc.phrase && <p className="cn-pourquoi-sienne">« {sienne} »</p>}
         {calc.reglettes.map(pl => <Reglette key={pl.nom} place={pl} />)}
         <ul className="cn-raisons">
-          {p.critere && <li><Check size={18} role="img" aria-label="retenu" className="cn-ok" /><span><b>Critère</b> : {p.critere.texte}{sourceDuCritere(p.critere) === 'ia' ? ", proposé par l'IA" : ''}</span></li>}
-          {p.facon && <li><Check size={18} role="img" aria-label="retenu" className="cn-ok" /><span><b>Façon {p.facon.nom.toLowerCase()}</b>{p.facon.raison ? ` : ${p.facon.raison}` : ''}</span></li>}
-          {a.vendeur && <li><Check size={18} role="img" aria-label="retenu" className="cn-ok" /><span><b>{a.vendeur}</b>{a.dispo ? ` : ${a.dispo}` : ''}</span></li>}
+          <Retenus critere={p.critere} facon={p.facon} vendeur={a.vendeur} dispo={a.dispo} />
           {calc.ecartes.map(e => <li key={e.nom}><X size={18} role="img" aria-label="écarté" /><span><b>{e.nom}</b> : {e.raison}</span></li>)}
         </ul>
         {p.choix.aRevoirSi && <p className="cn-mut">À revoir si : {p.choix.aRevoirSi}</p>}
@@ -190,12 +206,18 @@ function ChoisirArticle(p: Extract<ChoisirProps, { etape: 'choisir' }>) {
      n° 10 (g05-11) : chaque valeur chiffrée porte sa réglette ; les écartés du tableau sont dits avec leur ✕ et leur raison. */
   const calc = useMemo(() => {
     const c = carnetDeCalcul(p, [a, ...p.autres.map(o => o.article)]);
+    /* n° 6 : le même tableau que Comparer (`tableau(carnet)`), donc le même rang ; places par `placesDe` */
     const t = tableau(c);
     const places = t ? placesDe(t, a.id) : [];
+    /* g05-11 : le critère qui range d'abord (sa caractéristique a une colonne), la façon de l'article */
+    const critere = p.carnet?.criteres.find(k => k.caracteristique && k.caracteristique.sens !== 'texte' && t?.colonnes.some(x => x.critereId === k.id));
+    const facon = p.carnet?.facons.find(f => f.id === a.faconId);
+    const hors = new Map((t?.lignes ?? []).map(l => [l.articleId, Object.values(l.horsSeuil ?? {})[0]]));
     return {
       pourquoi: pourquoiDe(c, a.id),
-      valeurs: places.filter(pl => pl.texte).map(pl => ({ nom: pl.nom.charAt(0).toUpperCase() + pl.nom.slice(1), texte: pl.texte, ...(pl.rang ? { rang: pl.rang } : {}), ...(pl.exAequo ? { exAequo: true } : {}), place: pl })),
-      ecartes: p.carnet ? ecartesDe({ ecartes: [] }, p.carnet) : []
+      valeurs: places.filter(pl => pl.texte).map(pl => ({ nom: nomPlace(pl), texte: pl.texte, ...(pl.rang ? { rang: pl.rang } : {}), ...(pl.exAequo ? { exAequo: true } : {}), place: pl })),
+      ecartes: p.carnet ? ecartesDe({ ecartes: [] }, p.carnet) : [],
+      critere, facon, hors
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [p.carnet, a.id]);
@@ -205,8 +227,11 @@ function ChoisirArticle(p: Extract<ChoisirProps, { etape: 'choisir' }>) {
   const [raison, setRaison] = useState<string | null>(null);
   /* Une page non lue ne se choisit pas : rien n'en est connu (ni nom, ni prix, ni valeurs) ; l'inconnu n'est jamais 0. */
   const sa = sansApercu(a);
+  /* n° 5 : touchée au bas de Comparer, la feuille s'ouvre en haut de l'écran (sinon on reste face au bas de la page d'avant) */
+  const haut = useRef<HTMLElement>(null);
+  useEffect(() => { haut.current?.scrollIntoView?.({ block: 'start' }); }, []);
   return (
-    <article className="cn-page cn-choisir">
+    <article ref={haut} className="cn-page cn-choisir">
       <div className="cn-tete">
         <button type="button" className="cn-retour" onClick={p.onRetour}><ChevronLeft size={20} aria-hidden /> {p.titre}</button>
         <span className="cn-sp" />
@@ -219,7 +244,8 @@ function ChoisirArticle(p: Extract<ChoisirProps, { etape: 'choisir' }>) {
           {sa
             ? <div className="cn-sp"><b>{sa.titre}</b><span className="cn-mut">{sa.sous}</span></div>
             : <div className="cn-sp cn-offre-nom"><b>{a.nom ?? a.vendeur}</b><span className="cn-mut">{[a.nom ? a.vendeur : null, a.pays].filter(Boolean).join(' · ')}{a.dispo ? `${a.vendeur || a.pays ? ' · ' : ''}${a.dispo}` : ''}</span>
-              {prix && <span className="cn-offre-prix"><span className="cn-radio" aria-hidden /><span className="cn-mono cn-prix-grand">{prix}</span></span>}</div>}
+              {/* n° 39 : le prix seul, sans rond vide devant (il n'avait aucun rôle) */}
+              {prix && <span className="cn-offre-prix"><span className="cn-mono cn-prix-grand">{prix}</span></span>}</div>}
           {a.url && <a className="cn-lien" href={a.url} target="_blank" rel="noreferrer noopener" aria-label={`Ouvrir la page${a.vendeur ? ` de ${a.vendeur}` : ''}, nouvel onglet`}>Ouvrir <ExternalLink size={16} aria-hidden /></a>}
         </div>
         {/* g05-9 : « Ses autres valeurs · place parmi les n » ; g05-11 : sous chaque valeur chiffrée, sa réglette (« 1er sur 4 ») */}
@@ -240,6 +266,12 @@ function ChoisirArticle(p: Extract<ChoisirProps, { etape: 'choisir' }>) {
               })}
             </tbody>
           </table>
+        )}
+        {/* g05-11 : critère, façon, fournisseur (◎ ✓ ✓), puis chaque écarté avec son ✕ et sa raison */}
+        {!sa && (calc.critere || calc.facon || a.vendeur) && (
+          <ul className="cn-raisons cn-choisir-retenus" aria-label="Retenu">
+            <Retenus critere={calc.critere} facon={calc.facon} vendeur={a.vendeur} dispo={a.dispo} />
+          </ul>
         )}
         {calc.ecartes.length > 0 && (
           <ul className="cn-raisons cn-choisir-ecartes" aria-label={`Écartés, ${calc.ecartes.length}`}>
@@ -274,7 +306,7 @@ function ChoisirArticle(p: Extract<ChoisirProps, { etape: 'choisir' }>) {
             {so
               ? <div className="cn-article-tx"><b>{so.titre}</b><span className="cn-mut">{so.sous}</span></div>
               : <div className="cn-article-tx"><b>{o.article.nom}</b><span className="cn-mut">{[o.article.vendeur, o.article.pays].filter(Boolean).join(' · ')}</span></div>}
-            <div className="cn-droite">{montant(o.article.prixCentimes) && <span className="cn-mono cn-prix">{montant(o.article.prixCentimes)}</span>}{o.mesure && <span className="cn-mut">{o.mesure}</span>}</div>
+            <div className="cn-droite">{montant(o.article.prixCentimes) && <span className="cn-mono cn-prix">{montant(o.article.prixCentimes)}</span>}{o.mesure && <span className="cn-mut">{o.mesure}</span>}{calc.hors.get(o.article.id) && <span className="cn-hors-seuil">{calc.hors.get(o.article.id)}</span>}</div>
           </div>
         );
       })}

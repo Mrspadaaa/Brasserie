@@ -14,6 +14,8 @@ export interface LigneRangeeProps {
   /** `article` : en-tête d'article (G19 si `faconNom`). */
   sorte?: 'ligne' | 'article';
   faconNom?: string;
+  /** Critique 6, n° 12 (R26, G20) : le rang de l'article rangé (« 1re de sa façon, devant Hotte inox 120 cm »), dit dans le bandeau. */
+  rang?: string;
   /** Sa phrase telle qu'il l'a tapée (R25). */
   phrase?: string;
   /** « fond de bac, 38 cm au moins » : ce que le dépôt change pour comparer (R26). */
@@ -33,7 +35,7 @@ export function LigneRangee(p: LigneRangeeProps) {
   ].filter(Boolean) as { cle: string; libelle: string; fn: () => void }[];
   return (
     <div className="cn-rangee" data-sorte={p.sorte ?? 'ligne'}>
-      <Bandeau bandeau={p.sorte === 'article' ? { sorte: 'article', faconNom: p.faconNom } : { sorte: 'range' }} onAnnuler={p.onAnnuler} />
+      <Bandeau bandeau={p.sorte === 'article' ? { sorte: 'article', faconNom: p.faconNom, ...(p.rang ? { rang: p.rang } : {}) } : { sorte: 'range' }} onAnnuler={p.onAnnuler} />
       <div className="cn-rangee-corps">
         {p.children}
         {p.rangeSur && <p className="cn-mut"><Provenance origine="locale" /> articles rangés sur : {p.rangeSur}</p>}

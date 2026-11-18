@@ -11,7 +11,7 @@
 import React from 'react';
 import { ChevronLeft, ExternalLink, Scale } from 'lucide-react';
 import { sourceDuCritere } from '../../domain/carnets/modele';
-import { compromisDe, libelleEcarte, nombreDe, type Tableau } from '../../domain/carnets/comparer';
+import { compromisDe, libelleCaracteristique, libelleEcarte, nombreDe, type Tableau } from '../../domain/carnets/comparer';
 import { montant, Provenance, rangTexte, STATUT_LIBELLE, valeurTexte, type ArticleV, type CritereV, type Sens, type StatutCarnet, type ValeurV } from './EtatIA';
 import './carnets-decider.css';
 
@@ -148,7 +148,9 @@ export function critereQuiClasse(t: Tableau | null, critere?: CritereV): { texte
   const col = t?.colonnes.find(c => c.critereId && c.sens !== 'texte');
   if (!col) return null;
   if (critere && critere.id === col.critereId) return { texte: critere.texte, origine: critere.origine, source: sourceDuCritere(critere) };
-  return { texte: col.critereTexte ?? col.nom };
+  /* critique 6, point 16 : la source du critère qui classe vient de sa colonne (`sourceDuCritere` dans comparer.ts), même quand le critère
+     passé en props est un autre (le 1er du carnet, sans valeur) */
+  return { texte: col.critereTexte ?? col.nom, ...(col.critereSource ? { source: col.critereSource } : {}) };
 }
 
 /**
@@ -204,7 +206,8 @@ function deLExemple(t: Tableau): boolean {
 function Vignette({ photo, picto }: { photo?: string; picto?: React.ReactNode }) {
   if (photo) return <img src={photo} alt="" className="cn-vignette cn-cmp-vignette" />;
   if (picto) return <span className="cn-vignette cn-cmp-vignette cn-vignette-vide" aria-hidden>{picto}</span>;
-  return null;
+  /* critique 6 (1280, 22) : sans photo ni picto, la place reste vide et réservée, pour que rangs et noms s'alignent d'une colonne à l'autre */
+  return <span className="cn-cmp-vignette cn-cmp-vignette-place" aria-hidden />;
 }
 
 export function Comparer(p: ComparerProps) {
@@ -222,6 +225,9 @@ export function Comparer(p: ComparerProps) {
   const sansValeur = premierSansValeur(t, p.critere);
   /* n° 23 : la phrase dite sous le tableau, pas une pastille dans l'en-tête (elle creusait ~100 px de vide sous les noms, n° 9) */
   const domines = t ? actifs.map(l => ({ l, par: moinsBienQueDe(t, l) })).filter((x): x is { l: LigneT; par: number } => x.par !== null) : [];
+  /* n° 17 : une caractéristique dont personne n'a la valeur n'a pas de ligne (une rangée de « – » ne compare rien) ; elle se nomme dessous */
+  const lignesVues = t ? cols.filter(c => c.cle === '__prix' || t.lignes.some(l => l.cellules[c.cle] !== undefined)) : [];
+  const sansValeurLue = t ? cols.filter(c => !lignesVues.includes(c)) : [];
   return (
     <article className="cn-page cn-comparer">
       <div className="cn-tete">
@@ -244,7 +250,8 @@ export function Comparer(p: ComparerProps) {
           <div className="cn-entete-groupe">
             <span className="cn-groupe">Côte à côte <span className="cn-mono">{actifs.length}</span></span>
             <span className="cn-sp" />
-            {t.rangePar && <span className="cn-mut">rangé par : {t.rangePar}</span>}
+            {/* g01-8 : « classées par l'oxygène » ; la règle même du tri (P32) */}
+            {t.rangePar && <span className="cn-mut cn-cmp-classees">classées par {t.rangePar}</span>}
           </div>
           {/* À 1280, tout tient (noms et raisons repliés) ; à 390, la colonne des noms reste fixe et un fondu dit la suite à droite. */}
           <div className="cn-tableau-cadre" data-suite={suite ? true : undefined}>
@@ -269,16 +276,23 @@ export function Comparer(p: ComparerProps) {
                 </tr>
               </thead>
               <tbody>
-                {cols.map(c => {
+                {lignesVues.map(c => {
                   const meilleurs = meilleursDe(t, c);
+                  /* n° 7 (L14) : la ligne porte le nom de sa caractéristique (« ambiance max °C »), jamais l'unité seule */
+                  const libelle = c.cle === '__prix' ? c.nom : libelleCaracteristique(c.nom);
                   return (
                     <tr key={c.cle} className={c.critere ? 'cn-ligne-critere' : undefined}>
-                      <th scope="row">{c.nom}{c.unite ? <span className="cn-mut"> {c.unite}</span> : null}</th>
+                      <th scope="row" title={libelle !== c.nom ? c.nom : undefined}>{libelle}{c.unite ? <span className="cn-mut"> {c.unite}</span> : null}</th>
                       {ordre.map(l => {
                         const txt = texteCellule(l, c);
+                        const v = c.cle === '__prix' ? undefined : l.cellules[c.cle];
+                        /* n° 18 : « non » lu sur sa façon (« ne tient pas 80 °C ») ; doute D-122 : « sous votre minimum » */
+                        const deFacon = v?.origine === 'locale' && typeof v.valeur === 'boolean';
+                        const hors = l.horsSeuil?.[c.cle];
                         return (
-                          <td key={l.articleId} className={`${meilleurs.has(l.articleId) ? 'cn-meilleur' : ''}${l.ecarte ? ' cn-ecarte' : ''}`}>
+                          <td key={l.articleId} className={`${meilleurs.has(l.articleId) ? 'cn-meilleur' : ''}${l.ecarte ? ' cn-ecarte' : ''}`} title={deFacon ? 'd’après sa façon' : undefined}>
                             {txt ? <span className="cn-mono">{txt}</span> : <span className="cn-inconnu" aria-label="inconnu">–</span>}
+                            {hors && <span className="cn-hors-seuil">{hors}</span>}
                           </td>
                         );
                       })}
@@ -290,6 +304,7 @@ export function Comparer(p: ComparerProps) {
           </div>
           </div>
           {suite > 0 && <p className="cn-suite-indice" aria-hidden>→ {suite} de plus</p>}
+          {sansValeurLue.length > 0 && <p className="cn-mut cn-cmp-sans-lue">Aucune valeur lue pour : {sansValeurLue.map(c => libelleCaracteristique(c.nom)).join(', ')}</p>}
           {domines.length > 0 && (
             <ul className="cn-cmp-domines" aria-label="Moins bien sur tout">
               {domines.map(({ l, par }) => <li key={l.articleId}><b className="cn-encre">{rangF(l.rang!)}, {l.nom}</b> : moins bien que {rangF(par)} sur tout</li>)}

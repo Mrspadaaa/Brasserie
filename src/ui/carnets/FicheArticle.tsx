@@ -15,7 +15,7 @@
  */
 import React from 'react';
 import { Camera, Check, ChevronLeft, ExternalLink, Eye } from 'lucide-react';
-import { Bascule, mesureCritere, nombreValeur } from './CarteArticle';
+import { Bascule, estExemple, mesureCritere, nombreValeur } from './CarteArticle';
 import { normaliser } from '../../domain/carnets/analyseLocale';
 import { nombreTexte, placesDe, prixTexte, tableau as calculerTableau, type Place } from '../../domain/carnets/comparer';
 import { dateCourte, Provenance, rangTexte, valeurTexte, type ArticleV, type ContenuCarnetV, type CritereV, type FaconV, type ValeurV } from './EtatIA';
@@ -55,6 +55,25 @@ function herosDe(places: Place[], criteres: CritereV[]): Heros | null {
   const suffixe = pl.unite ? ` ${pl.unite}` : '';
   const texte = suffixe && pl.texte.endsWith(suffixe) ? pl.texte.slice(0, -suffixe.length) : pl.texte;
   return { nom: pl.nom, libelle: cr?.texte ?? pl.nom, texte, unite: pl.unite, valeurs: pl.toutes && pl.toutes.length > 1 ? pl.toutes : null, moi: pl.valeur ?? null, sens: pl.sens, rang: pl.rang, sur: pl.toutes?.length ?? pl.sur };
+}
+
+/** Les petits mots qu'un titre coupé ne garde pas en dernier (« Ventilation de… » se lit « Ventilation… »). */
+const MOTS_VIDES = new Set(['de', 'du', 'des', 'la', 'le', 'les', 'à', 'au', 'aux', 'pour', 'et', 'en', 'sur', 'avec', '—', '-', '·']);
+
+/**
+ * Critique 6, n° 33 : le titre du carnet dans le fil d'Ariane, coupé sur un mot (jamais au milieu), sans finir sur un petit mot ni un
+ * tiret, suivi de « … » s'il est coupé. `max` en caractères : 22 tient à 390 avec « ‹ Articles · » et la pastille « 2e sur 4 ».
+ */
+export function filArianeCourt(titre: string, max = 22): string {
+  const t = titre.trim();
+  if (t.length <= max) return t;
+  const garde: string[] = [];
+  for (const m of t.split(/\s+/)) {
+    if ([...garde, m].join(' ').length > max) break;
+    garde.push(m);
+  }
+  while (garde.length > 1 && MOTS_VIDES.has(garde[garde.length - 1].toLowerCase())) garde.pop();
+  return `${garde.length ? garde.join(' ') : t.slice(0, max)}…`;
 }
 
 /** Une case de la grille « Caractéristiques » : son nom, sa valeur dite (ou « non publié »), son rang s'il classe. */
@@ -119,13 +138,20 @@ export function FicheArticle(p: FicheArticleProps) {
   return (
     <article className="cn-page cn-fiche">
       <div className="cn-tete">
-        <button type="button" className="cn-retour" onClick={p.onRetour}><ChevronLeft size={20} aria-hidden /> Articles · {p.titreCarnet}</button>
+        {/* critique 6, n° 33 (h01-6 « ‹ Articles · Embouteillage ») : le fil d'Ariane tient sur une ligne à 390, le titre coupé sur un
+            mot (`filArianeCourt`) ; à 1280, le titre entier. Le nom complet reste lu par le lecteur d'écran. */}
+        <button type="button" className="cn-retour cn-fil-ariane" onClick={p.onRetour} aria-label={`Articles · ${p.titreCarnet}`}>
+          <ChevronLeft size={20} aria-hidden />
+          <span className="cn-fil-court" aria-hidden>Articles · {filArianeCourt(p.titreCarnet)}</span>
+          <span className="cn-fil-long" aria-hidden>Articles · {p.titreCarnet}</span>
+        </button>
         <span className="cn-sp" />
         {rang !== undefined && sur ? <span className="cn-pastille cn-pastille-vert">{rangTexte(rang)} sur {sur}</span> : null}
       </div>
-      {/* n° 8 : le cadre photo est toujours là (h01-6) ; sans photo, l'objet dessiné en grand */}
+      {/* n° 8 : le cadre photo est toujours là (h01-6) ; sans photo, l'objet dessiné en grand. Critique 6, n° 20 (D-78) : la photo lue
+          de la page ; celle du banc est simulée et le dit (« exemple »). */}
       {a.photo ? (
-        <figure className="cn-fiche-photo" data-cadre="photo"><img src={a.photo} alt="" /><figcaption><Camera size={16} aria-hidden /> photo de la page collée</figcaption></figure>
+        <figure className="cn-fiche-photo" data-cadre="photo"><img src={a.photo} alt={`photo de la page collée : ${a.nom ?? a.domaine ?? 'article'}`} /><figcaption><Camera size={16} aria-hidden /> photo de la page collée{estExemple(a) ? <> <Provenance origine="exemple" /></> : null}</figcaption></figure>
       ) : (
         <figure className="cn-fiche-photo cn-fiche-picto" data-cadre="picto" aria-hidden>
           <VignetteObjet mots={[a.nom, p.facon?.nom, p.titreCarnet]} classe="cn-vignette-fiche" taille={132} />
@@ -194,10 +220,14 @@ export function FicheArticle(p: FicheArticleProps) {
       <div className="cn-veille-bloc">
         <div className="cn-veille-ligne">
           <Eye size={18} aria-hidden />
-          <span className="cn-sp">Veille du prix, tous les 3 jours</span>
+          {/* h01-6 : le réglage et son état sur la même ligne (« tous les 3 jours · revu le 13 nov. ») ; sans relève, « demandée · pas
+              encore relevée » (R31) */}
+          <span className="cn-sp cn-veille-tx">
+            <span>Veille du prix, tous les 3 jours</span>
+            {veille && !a.veille?.releveLe && <span className="cn-mut cn-veille-etat">demandée · pas encore relevée</span>}
+          </span>
           <Bascule active={veille} onChange={p.onVeille} etiquette="Veille du prix, tous les 3 jours" />
         </div>
-        {veille && !a.veille?.releveLe && <p className="cn-mut cn-veille-etat">demandée · pas encore relevée</p>}
       </div>
       {!p.choisi && p.onChoisir && (
         <>

@@ -8,7 +8,11 @@ const F = fixtureCarnets();
 const carnet = (id: string): CarnetDoc => lireCarnet(F.find(i => i.id === id))!;
 /* critique 5, n° 21 : la fixture par défaut n'a pas de bulle G8 (rien à trancher) ; ces tests de calcul G8 prennent l'option `g8` */
 const FG8 = fixtureCarnets({ g8: true, g35: true });
-const carnetG8 = (id: string): CarnetDoc => lireCarnet(FG8.find(i => i.id === id))!;
+/* critique 6, n° 17 : un critère ne tranche que si sa caractéristique a une colonne (au moins une valeur lue). Changement proposé au lot C
+   pour la fixture `g8` : le bruit lu sur la 3e et la 4e (62 et 58 dB) ; ce test l'applique s'il manque (sans effet une fois la fixture à jour). */
+const BRUIT_LU: Record<string, number> = { 'ZZ-V-A3': 62, 'ZZ-V-A4': 58 };
+const bruitLu = (c: CarnetDoc): CarnetDoc => (c.id !== ID_VENTILATION ? c : { ...c, carnet: { ...c.carnet, articles: c.carnet.articles.map(a => (BRUIT_LU[a.id] && !a.valeurs.bruit ? { ...a, valeurs: { ...a.valeurs, bruit: { valeur: BRUIT_LU[a.id], unite: 'dB', origine: 'exemple' as const } } } : a)) } });
+const carnetG8 = (id: string): CarnetDoc => bruitLu(lireCarnet(FG8.find(i => i.id === id))!);
 const art = (id: string, valeurs: Article['valeurs'], o: Partial<Article> = {}): Article => ({ id, nom: id, valeurs, lecture: 'lue', ...o });
 const ex = (valeur: number | boolean, unite?: string) => (unite ? { valeur, unite, origine: 'exemple' as const } : { valeur, origine: 'exemple' as const });
 const avec = (c: CarnetDoc, d: Partial<DonneesCarnet>): CarnetDoc => ({ ...c, carnet: { ...c.carnet, ...d } });
@@ -123,12 +127,15 @@ describe('G8 et G9, calcul local (A13, R44, R45)', () => {
     expect(critereQuiTranche(avec(V, { facons: V.carnet.facons.slice(0, 1), articles: V.carnet.articles.slice(0, 1) }))).toBeNull();
     const ecartee = avec(V, { facons: [V.carnet.facons[0], { ...V.carnet.facons[1], etat: 'ecartee' }], articles: [] });
     expect(critereQuiTranche(ecartee)).toBeNull();
-    const trois = avec(V, { facons: [{ ...V.carnet.facons[0], etat: 'ecartee' }, ...V.carnet.facons.slice(1), { id: 'F3', nom: 'Ouvrir la fenêtre', etat: 'ouverte', origine: 'vous' }] });
+    /* n° 17 : la hotte écartée, les deux premiers sont la 3e et la 4e ; le bruit n'est lu que sur l'écartée (une colonne existe) */
+    const bruitSurA1 = V.carnet.articles.map(a => ({ ...a, valeurs: Object.fromEntries(Object.entries(a.valeurs).filter(([k]) => k !== 'bruit').concat(a.id === 'ZZ-V-A1' ? [['bruit', ex(70, 'dB')]] : [])) }));
+    const trois = avec(V, { articles: bruitSurA1, facons: [{ ...V.carnet.facons[0], etat: 'ecartee' }, ...V.carnet.facons.slice(1), { id: 'F3', nom: 'Ouvrir la fenêtre', etat: 'ouverte', origine: 'vous' }] });
     expect(critereQuiTranche(trois)!.entre).toEqual(['Extracteur mural seul', 'Ouvrir la fenêtre']);
   });
   it('sans façons : les deux premiers articles, sur un critère inconnu pour les deux', () => {
     const B = carnet(ID_EMBOUTEILLAGE);
-    const c = avec(B, { facons: [], choix: undefined, criteres: [B.carnet.criteres[0], { id: 'K2', texte: 'nettoyage facile', caracteristique: { nom: 'nettoyage', sens: 'oui-non' }, origine: 'vous' }] });
+    /* n° 17 : le nettoyage est lu sur un autre article (une colonne existe), pas sur les deux premiers */
+    const c = avec(B, { facons: [], choix: undefined, articles: B.carnet.articles.map(a => (a.id === 'ZZ-B-A1' ? { ...a, valeurs: { ...a.valeurs, nettoyage: ex(true) } } : a)), criteres: [B.carnet.criteres[0], { id: 'K2', texte: 'nettoyage facile', caracteristique: { nom: 'nettoyage', sens: 'oui-non' }, origine: 'vous' }] });
     const t = critereQuiTranche(c)!;
     expect(t.critere.id).toBe('K2');
     /* corr. 2 (L4-4) : deux articles au même nom se distinguent par leur vendeur, jamais « X et X » */
@@ -167,7 +174,8 @@ describe('G8 (R44), corr. 2 L4-4 : deux candidats ne se nomment jamais pareil', 
 
   it('deux articles au même domaine, sans nom lu : le domaine et un bout du chemin, dans la bulle', () => {
     /* un prix connu (tapé par lui) : ils se comparent ; sans rien de connu, ils seraient à relire (P6), jamais classés */
-    const t = critereQuiTranche(sansFacons([sansNom('X1', 'https://exemple.test/hottes/hotte-inox-120', { prixCentimes: 100000 }), sansNom('X2', 'https://www.exemple.test/extracteur-mural.html', { prixCentimes: 120000 })]))!;
+    /* n° 17 : un 3e article a le bruit (une colonne existe), les deux premiers non */
+    const t = critereQuiTranche(sansFacons([sansNom('X1', 'https://exemple.test/hottes/hotte-inox-120', { prixCentimes: 100000, valeurs: { 'débit': ex(1800, 'm³/h') } }), sansNom('X2', 'https://www.exemple.test/extracteur-mural.html', { prixCentimes: 120000, valeurs: { 'débit': ex(1500, 'm³/h') } }), sansNom('X3', 'https://exemple.test/x3', { prixCentimes: 150000, valeurs: { bruit: ex(60, 'dB') } })]))!;
     expect(t).not.toBeNull();
     expect(t.entre).toEqual(['exemple.test/hotte-inox-120', 'exemple.test/extracteur-mural']);
     expect(texteTranche(t)).not.toContain('exemple.test et exemple.test');

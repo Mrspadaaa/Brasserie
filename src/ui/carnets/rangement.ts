@@ -17,8 +17,7 @@ import type { ComportementSimule, ModeCarnetIA } from '../../config/carnetIA';
 import { contexteModele, liensDuTexte, lireReponse, type CarnetPourIA, type LigneCarnet, type PageLue } from '../../domain/carnets/ia';
 import { pageSimulee, reponseSimulee } from '../../domain/carnets/iaSimulee';
 import type { ContexteRangerCarnet } from '../../../functions/src/carnetIA';
-import { titreNeufDe } from '../../domain/carnets/modele';
-import { jetons } from '../../domain/carnets/analyseLocale';
+import { jetons, objetDe, parleDuBrassin, TITRE_BRASSIN } from '../../domain/carnets/analyseLocale';
 
 export type EtatRangement<L = unknown> =
   | { etape: 'repos' }
@@ -39,7 +38,7 @@ export const AVIS = {
   panne: "L'IA n'a pas répondu : rangé sur l'appareil, votre message est gardé.",
   illisible: "Réponse de l'IA illisible : rangé sur l'appareil, votre message est gardé.",
   delai: "L'IA a mis trop de temps : rangé sur l'appareil, votre message est gardé.",
-  horsLigne: "Hors ligne : rangé sur l'appareil. Rien ne bougera au retour du réseau."
+  horsLigne: "Hors ligne : rangé sur l'appareil, tel quel."
 } as const;
 
 const attendre = (ms: number, signal: AbortSignal) => new Promise<void>((resolve, reject) => {
@@ -127,18 +126,22 @@ export const texteDecompte = (lignes: number, carnets: number): string =>
 
 export interface LignePlanVrac<T> {
   ligne: T;
-  /** Le carnet existant (par `rattacher`) ; absent : le carnet neuf. */
+  /** Le carnet existant (par `rattacher`) ; absent : un carnet neuf (`neufIndex`). */
   carnetId?: string;
-  /** Le titre du carnet visé (existant, ou `titreNeuf`). */
+  /** Le titre du carnet visé (existant, ou celui du carnet neuf). */
   titre: string;
   neuf: boolean;
+  /** L'indice du carnet neuf dans `PlanVrac.neufs` (lignes sans carnet proche). */
+  neufIndex?: number;
   /** Achat, travail, conseil, question ou note (R35, R36). */
   sorte: SorteVrac;
 }
 
 export interface PlanVrac<T> {
   lignes: Array<LignePlanVrac<T>>;
-  /** Le titre du seul carnet neuf, mis en forme (`titreNeufDe` : nom d'objet, majuscule) ; `null` si toutes les lignes ont un carnet. */
+  /** Les titres des carnets neufs, un par objet (critique 6, n° 1) ; vide si toutes les lignes ont un carnet. */
+  neufs: string[];
+  /** Le titre du premier carnet neuf ; `null` si toutes les lignes ont un carnet. */
   titreNeuf: string | null;
   carnets: number;
   /** « 3 lignes · 2 carnets ». */
@@ -146,23 +149,36 @@ export interface PlanVrac<T> {
 }
 
 /**
- * Critique 5, n° 7 et 30 : chaque ligne avec sa sorte et son carnet (existant par `proche`, ou UN seul carnet neuf, au titre mis en forme,
- * né à l'état Idée par `ranger`). Le décompte compte le carnet neuf une fois.
+ * Critique 5, n° 7 et 30 ; critique 6, n° 1 (R18, R19 ; D-122, D-139, D-140 ; g5:v01-15, v02-19, v01-16) : chaque ligne avec sa sorte et son
+ * carnet. Une ligne qui a un carnet proche (`proche`, fuse.js) y va. Les autres ouvrent un carnet neuf titré par l'OBJET de leur ligne
+ * (`objetDe` : « Sol local », jamais la note entière) ; deux lignes du même objet (un mot en commun dans l'objet) partagent le leur, et les
+ * lignes du brassin (ingrédient, jour de brassage) vont ensemble dans « Prochain brassin » (G23). Le décompte compte chaque carnet une fois.
+ * `prefixe` : la marque des données de test (« ZZ TEST — »), posée sur les titres neufs quand le message la porte (L05).
  */
 export function planVrac<T extends { texte: string; sorte?: string; genre?: string }>(
   lignes: readonly T[],
-  proche: (texte: string) => { carnetId: string; titre: string } | null
+  proche: (texte: string) => { carnetId: string; titre: string } | null,
+  prefixe = ''
 ): PlanVrac<T> {
-  let titreNeuf: string | null = null;
+  const neufs: { titre: string; mots: Set<string>; brassin: boolean }[] = [];
+  const groupe = (texte: string): number => {
+    const brassin = parleDuBrassin(texte);
+    const objet = brassin ? TITRE_BRASSIN : objetDe(texte);
+    const mots = new Set(jetons(objet));
+    const i = neufs.findIndex(n => (brassin ? n.brassin : !n.brassin && [...mots].some(m => n.mots.has(m))));
+    if (i >= 0) return i;
+    neufs.push({ titre: `${prefixe}${objet}`, mots, brassin });
+    return neufs.length - 1;
+  };
   const sortie = lignes.map((ligne): LignePlanVrac<T> => {
     const sorte = sorteVrac(ligne);
     const p = proche(ligne.texte);
     if (p) return { ligne, carnetId: p.carnetId, titre: p.titre, neuf: false, sorte };
-    titreNeuf ??= titreNeufDe(ligne.texte);
-    return { ligne, titre: titreNeuf, neuf: true, sorte };
+    const neufIndex = groupe(ligne.texte);
+    return { ligne, titre: neufs[neufIndex].titre, neuf: true, neufIndex, sorte };
   });
-  const carnets = new Set(sortie.map(l => l.carnetId ?? '\u0000neuf')).size;
-  return { lignes: sortie, titreNeuf, carnets, decompte: texteDecompte(sortie.length, carnets) };
+  const carnets = new Set(sortie.map(l => l.carnetId ?? `\u0000neuf${l.neufIndex}`)).size;
+  return { lignes: sortie, neufs: neufs.map(n => n.titre), titreNeuf: neufs[0]?.titre ?? null, carnets, decompte: texteDecompte(sortie.length, carnets) };
 }
 
 /**
@@ -210,6 +226,8 @@ export interface Rangement<L> {
   etat(): EtatRangement<L>;
   taper(texte: string): EtatRangement<L>;
   envoyer(texte: string): Promise<EtatRangement<L>>;
+  /** Critique 6, n° 24 : un message gardé hors ligne, mis en forme par l'IA au retour du réseau, sur son toucher (« Ranger maintenant »). */
+  reprendre(messageId: string, texte: string): Promise<EtatRangement<L>>;
   /** ✕ pendant `en-cours` : coupe l'attente ; rien de plus n'est écrit. Sans effet à un autre moment. */
   annuler(): void;
 }
@@ -237,7 +255,18 @@ export function creerRangement<L>(deps: DependancesRangement<L>): Rangement<L> {
     const { messageId } = await deps.ecrireLocal(texte, local, { iaAttendue: deps.mode !== 'eteint' && !horsLigne });
     if (deps.mode === 'eteint') return poser({ etape: 'range', messageId, texte, rangement: 'locale', lignes: null });
     if (horsLigne) return poser({ etape: 'hors-ligne', messageId, texte, avis: AVIS.horsLigne });
+    return passerIA(messageId, texte, carnets);
+  }
 
+  /** Critique 6, n° 24 (D-113, D-142) : « Ranger maintenant », au retour du réseau, d'un toucher : l'IA met en forme un message déjà gardé. */
+  async function reprendre(messageId: string, brut: string): Promise<EtatRangement<L>> {
+    const texte = brut.trim();
+    if (!texte || occupe || deps.mode === 'eteint' || !deps.enLigne()) return etat;
+    occupe = true;
+    try { return await passerIA(messageId, texte, deps.carnets()); } finally { occupe = false; }
+  }
+
+  async function passerIA(messageId: string, texte: string, carnets: readonly CarnetPourIA[]): Promise<EtatRangement<L>> {
     const ctrl = new AbortController();
     controleur = ctrl;
     const delai = setTimeout(() => ctrl.abort(new DOMException('délai', 'TimeoutError')), deps.delaiMs ?? 45_000);
@@ -287,6 +316,7 @@ export function creerRangement<L>(deps: DependancesRangement<L>): Rangement<L> {
       return poser(texte.trim() ? { etape: 'apercu', texte, lignes: deps.analyseLocale(texte) } : { etape: 'repos' });
     },
     envoyer,
+    reprendre,
     annuler() { controleur?.abort(new DOMException('annulé', 'AbortError')); }
   };
 }

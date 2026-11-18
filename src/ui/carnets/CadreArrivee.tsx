@@ -13,6 +13,7 @@
 import React, { useEffect, useRef } from 'react';
 import { ArrowDown, GitFork, Pencil, Trash2, X } from 'lucide-react';
 import { lienCourt } from './ChampCarnet';
+import { sourceDuCritere } from '../../domain/carnets/modele';
 import { Provenance, type AidesV, type Origine } from './EtatIA';
 
 /** G11 : la note répétée ; `le` vide quand sa date est inconnue (rien d'inventé : son texte la nomme alors). */
@@ -24,8 +25,10 @@ export type CadreV =
   | { sorte: 'avant'; exemples: string[]; onExemple: (texte: string) => void }
   | { sorte: 'creer'; titre: string; proche?: { titre: string; onAjouter: () => void } | null; raisonNeuf?: string; ceQuiCompte?: string }
   /* Critique 5, n° 3 (G4) : `vers`, le carnet visé quand ce n'est pas l'ouvert (« ↓ va dans Évier inox ») ; même calcul qu'à l'envoi */
-  | { sorte: 'texte'; rubrique: 'Ce qui compte' | 'Façons' | 'Articles' | 'Notes'; texte: string; origine: Origine; compareSur?: string; vers?: string }
-  | { sorte: 'lien'; url: string; phase: 'avant' | 'lecture'; depuisListe?: boolean; apercu?: string; lus?: { nom: boolean; photo: boolean; prix: boolean; stock: boolean; valeurs: boolean }; cherche?: string[] }
+  /* `source` (décision du pilote, critique 6) : d'où vient le critère annoncé, lu par `sourceDuCritere` */
+  | { sorte: 'texte'; rubrique: 'Ce qui compte' | 'Façons' | 'Articles' | 'Notes'; texte: string; origine: Origine; compareSur?: string; vers?: string; source?: 'phrase' | 'ia' }
+  /* `lecturePossible` (critique 6, n° 11) : faux si l'IA est éteinte ou hors ligne ; la promesse « se lisent à l'envoi » se tait */
+  | { sorte: 'lien'; url: string; phase: 'avant' | 'lecture'; depuisListe?: boolean; lecturePossible?: boolean; apercu?: string; lus?: { nom: boolean; photo: boolean; prix: boolean; stock: boolean; valeurs: boolean }; cherche?: string[] }
   | { sorte: 'modifier'; texte?: string; onSupprimer: () => void };
 
 export interface CadreArriveeProps {
@@ -110,7 +113,7 @@ function CadreContenu({ cadre: c, onAnnuler, consequence, aides, doublon, regrou
         <section className="cn-cadre" aria-label={c.vers ? `Va dans ${c.vers}` : 'Va atterrir ici'} data-vers={c.vers ?? 'ici'}>
           <div className="cn-cadre-tete">
             <span className="cn-vert"><ArrowDown size={16} aria-hidden /> {c.vers ? <>va dans <b>{c.vers}</b></> : 'va atterrir ici'}</span><span className="cn-sp" />
-            {c.origine === 'ia' && <span className="cn-ia">✻ tiré de votre phrase</span>}
+            {c.origine === 'ia' && <span className="cn-ia">✻ {sourceDuCritere({ origine: 'vous', ...(c.source ? { source: c.source } : {}) }) === 'ia' ? 'proposé par l’IA' : 'tiré de votre phrase'}</span>}
             {c.origine === 'locale' && <span className="cn-mut"><Provenance origine="locale" /> tiré de votre phrase</span>}
             <Croix onAnnuler={onAnnuler} />
           </div>
@@ -137,7 +140,10 @@ function CadreContenu({ cadre: c, onAnnuler, consequence, aides, doublon, regrou
         </div>
         <p className="cn-mono cn-lien-clair">{lienCourt(c.url, 40)}</p>
         {c.phase === 'avant' ? (
-          <p className="cn-mut">{c.apercu ? <><Provenance origine="ia" /> d'après le lien : {c.apercu}. </> : null}Nom, prix et photo se lisent à l'envoi.</p>
+          /* critique 6, n° 11 (D-137) : la promesse seulement si la lecture peut la tenir (IA allumée, en ligne) ; sinon, ce qui arrivera */
+          <p className="cn-mut">{c.apercu ? <><Provenance origine="ia" /> d'après le lien : {c.apercu}. </> : null}{c.lecturePossible === false
+            ? 'Sans lecture ici : le lien est gardé tel quel, page non lue.'
+            : 'Nom, prix et photo se lisent à l\'envoi.'}</p>
         ) : (
           <>
             <p className="cn-ia">✻ lecture de la page…</p>

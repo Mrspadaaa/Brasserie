@@ -89,7 +89,8 @@ function suivreEffet(b: Brouillon, de: { carnetId: string; cible: CibleEffet; id
 /* ---------- ranger des lignes (créer, ajouter) ---------- */
 
 /** Où va une ligne : un carnet connu, ou un carnet neuf (créé une fois par id). */
-export type Destination = { carnetId: string; carnetNeuf?: undefined } | { carnetNeuf: { id: string; titre: string }; carnetId?: undefined };
+/** `carnetNeuf.phrase` (critique 6, n° 1) : la phrase du carnet neuf, quand ce n'est pas le message entier (ses lignes d'une note en vrac). */
+export type Destination = { carnetId: string; carnetNeuf?: undefined } | { carnetNeuf: { id: string; titre: string; phrase?: string }; carnetId?: undefined };
 
 export type LigneARanger = Destination & (
   /** `propose` (P10, P23) : un critère que l'IA propose ; `ranger` ne l'écrit pas, il reste sur le message (`propositions`). */
@@ -125,8 +126,14 @@ function ajouterLigne(c: CarnetDoc, l: LigneARanger, messageId: string): EffetMe
       }
       /* P7 : un critère qui précise une caractéristique déjà là (même nom et unité, ou même unité lue dans la phrase) se fond dans le critère
          existant, s'il n'est pas de ses mots à lui (`origine: 'vous'` reste intact). L'effet garde le critère d'avant. */
-      const cible = critereAPreciser(d.criteres, l);
+      const cible = critereAPreciser(d.criteres, l) ?? critereARemplacer(d.criteres, l);
       if (cible) {
+        /* critique 6, n° 3 (D-53, D-113, D-122) : sa valeur, sur le même axe que le critère proposé par l'IA, le remplace et passe en tête */
+        if (critereARemplacer([cible], l)) {
+          d.criteres.splice(d.criteres.indexOf(cible), 1);
+          d.criteres.unshift(cible);
+          if (l.caracteristique) cible.caracteristique = copie(l.caracteristique);
+        }
         const fusion = sansIndefinis({ texte: cible.texte, origine: cible.origine, messageId: cible.messageId });
         cible.texte = l.texte; cible.origine = l.origine; cible.messageId = messageId;
         if (l.source) cible.source = l.source; else delete cible.source;
@@ -195,6 +202,30 @@ function critereAPreciser(criteres: readonly Critere[], l: Extract<LigneARanger,
   return unites.size === 1 ? libres.find(k => unites.has(k.caracteristique!.unite!)) : undefined;
 }
 
+/** Un critère qui vient de sa phrase : écrit par lui, lu sur place dans ses mots, ou tiré de ses mots par l'IA (`source: 'phrase'`). */
+const deSaPhrase = (l: { origine: Origine; source?: 'phrase' | 'ia' }): boolean => l.origine === 'vous' || l.origine === 'locale' || l.source === 'phrase';
+/** L'axe d'un critère : sa caractéristique (nom normalisé) et son unité, lue sur la caractéristique ou dans le texte. */
+const axeDe = (k: { texte: string; caracteristique?: Caracteristique }): { nom?: string; unites: Set<string> } => ({
+  ...(k.caracteristique?.nom ? { nom: nomNormal(k.caracteristique.nom) } : {}),
+  unites: k.caracteristique?.unite ? new Set([k.caracteristique.unite]) : unitesDe(k.texte)
+});
+
+/**
+ * Critique 6, n° 3 (D-53, D-113, D-122) : le critère proposé par l'IA (`origine` ia ou exemple, `source` ia) que la valeur qu'il tape remplace,
+ * sur le même axe : même caractéristique, ou même unité (« fond de bac, 38 cm au moins » remplace « assez profond pour un fût », fond de bac
+ * en cm). Un critère de ses mots n'est jamais remplacé ; une ligne de l'IA seule ne remplace rien.
+ */
+function critereARemplacer(criteres: readonly Critere[], l: Extract<LigneARanger, { sorte: 'critere' }>): Critere | undefined {
+  if (!deSaPhrase(l)) return undefined;
+  const a = axeDe(l);
+  if (!a.nom && !a.unites.size) return undefined;
+  return criteres.find(k => {
+    if (k.origine === 'vous' || k.origine === 'locale' || k.source === 'phrase') return false;
+    const b = axeDe(k);
+    return (!!a.nom && a.nom === b.nom) || [...a.unites].some(u => b.unites.has(u));
+  });
+}
+
 function rangerDans(b: Brouillon, message: MessageARanger, lignes: readonly LigneARanger[]): { effets: EffetMessage[]; carnets: Set<string>; crees: number; propositions: PropositionCritere[] } | string {
   const effets: EffetMessage[] = [];
   const carnets = new Set<string>();
@@ -203,7 +234,9 @@ function rangerDans(b: Brouillon, message: MessageARanger, lignes: readonly Lign
   for (const l of lignes) {
     /* P10, P23 : un critère proposé n'est pas écrit ; il reste sur le message, à accepter d'un toucher. */
     if (l.sorte === 'critere' && l.propose) {
-      if (l.carnetId) propositions.push(sansIndefinis({ carnetId: l.carnetId, texte: l.texte, caracteristique: l.caracteristique ? copie(l.caracteristique) : undefined, origine: l.origine }));
+      /* critique 6, n° 9 (D-35) : aussi pour le carnet neuf que ce message ouvre (les caractéristiques de sa catégorie) */
+      const cid = l.carnetId ?? l.carnetNeuf?.id;
+      if (cid) propositions.push(sansIndefinis({ carnetId: cid, texte: l.texte, caracteristique: l.caracteristique ? copie(l.caracteristique) : undefined, origine: l.origine }));
       continue;
     }
     let c: CarnetDoc | null;
@@ -213,7 +246,10 @@ function rangerDans(b: Brouillon, message: MessageARanger, lignes: readonly Lign
         /* P1 (vision 3) : le titre garde la phrase, sans ses liens ni ses prix (ils vont à l'article) ; `carnet.phrase` reste entière. */
         const titre = titreDePhrase(l.carnetNeuf.titre) || titreDePhrase(message.texte);
         if (!titre) return 'Un carnet neuf demande un titre.';
-        c = { id: l.carnetNeuf.id, type: 'carnet', title: titre, status: 'idea', carnet: donneesVides(message.texte, message.le) };
+        /* critique 6, n° 1 : un carnet né d'une note en vrac garde ses lignes à lui pour phrase, jamais la note entière (« Sol local » ne cite
+           pas « 2 sachets de levure ») */
+        const phrase = (l.carnetNeuf as { phrase?: string }).phrase;
+        c = { id: l.carnetNeuf.id, type: 'carnet', title: titre, status: 'idea', carnet: donneesVides(phrase?.trim() || message.texte, message.le) };
         effets.push({ carnetId: c.id, cible: 'carnet', id: c.id });
         crees += 1;
       }

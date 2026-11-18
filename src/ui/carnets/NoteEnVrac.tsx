@@ -69,7 +69,7 @@ export function libelleCarnet(l: Pick<LigneVracV, 'texte' | 'carnetTitre' | 'neu
 }
 
 /** Le nombre de carnets distincts : un carnet connu par son id, LE carnet neuf de la note une seule fois. */
-export const carnetsDistincts = (lignes: readonly LigneVracV[]): number => new Set(lignes.map(l => l.carnetId ?? (l.neuf ? '\u0000neuf' : l.carnetTitre))).size;
+export const carnetsDistincts = (lignes: readonly LigneVracV[]): number => new Set(lignes.map(l => l.carnetId ?? (l.neuf ? `\u0000neuf:${l.carnetTitre}` : l.carnetTitre))).size;
 
 /** « 1 chose à faire et 1 note, pas d'achat » (G23) : ce qu'il y a, et l'absence d'achat dite. */
 export function resumeVrac(lignes: LigneVracV[]): string {
@@ -119,8 +119,9 @@ export function NoteEnVrac(p: NoteEnVracProps) {
               <p>{l.texte}</p>
               {p.etat === 'apres' && p.onChangerCarnet && l.carnetId && p.carnets?.length
                 ? (
+                  /* critique 6, n° 1 (g5:v01-16) : après, la puce dit le carnet seul (« Évier inox ▾ ») ; « → Nouveau carnet « … » » est du pendant */
                   <label className="cn-puce cnf-choix">
-                    <span>→ {libelleCarnet(l)}</span> <span aria-hidden>▾</span>
+                    <span>{l.carnetTitre}</span> <span aria-hidden>▾</span>
                     <select aria-label={`Carnet de « ${l.texte} »`} value={l.carnetId} onChange={e => p.onChangerCarnet!(l.id, e.target.value)}>
                       {!p.carnets.some(c => c.id === l.carnetId) && <option value={l.carnetId}>{libelleCarnet(l)}</option>}
                       {p.carnets.map(c => <option key={c.id} value={c.id}>{c.titre}</option>)}
@@ -137,7 +138,8 @@ export function NoteEnVrac(p: NoteEnVracProps) {
       )}
       {p.etat === 'pendant' && !p.rattacheA && <p className="cn-mut">Va dans : selon chaque ligne</p>}
       <details className="cn-origine">
-        <summary>Texte d'origine</summary>
+        {/* g5:v01-15, v01-16 : « › Texte d'origine » */}
+        <summary><span className="cnf-origine-fleche" aria-hidden>›</span> Texte d'origine</summary>
         <p className="cn-cite">{p.texteOrigine}</p>
       </details>
     </section>

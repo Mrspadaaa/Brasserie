@@ -28,3 +28,6 @@
 .upgrade-prev { white-space:normal; }
 .upgrade-prev-oui { color:rgb(var(--area-finances-texte)); font-weight:600; }
 .upgrade-renvoi { align-self:flex-start; margin:2px 0 4px; }
+
+/* Critique 6, n° 38 : Stocks › Matériel, cartes à la largeur du segment (736 px à 1280) ; l'Atelier garde ses 680 px. */
+.kh.kh-carnet { max-width:none; }

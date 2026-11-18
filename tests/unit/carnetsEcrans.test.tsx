@@ -163,12 +163,14 @@ describe('C1 · écrans figés', () => {
     expect(screen.getByRole('heading', { name: 'Ventilation de la salle de brassage' })).toBeTruthy();
     /* critique 5 (h05-3) : une seule ligne « Critère : ce qui range · sa provenance », les critères sans valeur derrière « +1 sans valeur » */
     expect(container.textContent).toContain("Critère : débit · proposé par l'IA");
-    expect(container.textContent).toContain('+1 sans valeur');
+    /* critique 6, n° 34 : « 1 critère sans valeur à comparer », clair */
+    expect(container.textContent).toContain('1 critère sans valeur à comparer');
     /* corr. 4 P5 (h05-3) : les façons sont dans le tableau, chacune avec sa pastille sur le critère */
     expect(container.querySelector('.cn-tab-facon')?.textContent).toContain('Hotte + extracteur');
     expect(container.textContent).toContain('capte la buée');
-    expect(container.textContent).toContain('1 sans aperçu');
-    expect(screen.getByRole('button', { name: /Comparer côte à côte/ })).toBeTruthy();
+    /* critique 6, n° 8 : « Articles 4 ⌄ · Comparer › » ; le lien sans aperçu est dans le tableau */
+    expect(container.querySelector('.cn-tab .cn-tab-relire-ligne')?.textContent).toContain('Lien sans aperçu');
+    expect(screen.getByRole('button', { name: /^Comparer/ })).toBeTruthy();
     expect(screen.getByRole('button', { name: 'Renommer' })).toBeTruthy();
     for (const tuile of ['Article', 'Façon', 'Critère']) expect(screen.queryByRole('button', { name: tuile })).toBeNull();
     sansRefus(container);
@@ -202,7 +204,7 @@ describe('C1 · écrans figés', () => {
   });
   it('R06 comparer : rangé par, rangs, meilleur surligné, critère sans valeur dit, écarté à la fin avec sa raison, inconnu vide', () => {
     const { container } = render(<Comparer titre="Ventilation" statut="research" critere={ventilation.carnet.criteres[0]} tableau={tableau} onRetour={rien} onChoisir={rien} />);
-    expect(container.textContent).toContain('rangé par : tient 80 °C d’abord, puis le débit');
+    expect(container.textContent).toContain('classées par tient 80 °C d’abord, puis le débit');
     /* critique 5, n° 22 et 23 : le critère sans valeur ne range pas, et personne n'est « moins bien partout » ici (aucun article dominé par chacun des autres) */
     expect(container.textContent).toContain('sans valeur à comparer, il ne range pas');
     expect(container.textContent).not.toContain('moins bien partout');
@@ -224,7 +226,7 @@ describe('C1 · écrans figés', () => {
     expect(t).not.toBeNull();
     const { container } = render(<Comparer titre={vue.title} statut={vue.status} critere={vue.carnet.criteres[0]} tableau={t} onRetour={rien} onChoisir={rien} exemple />);
     expect(container.querySelectorAll('thead th').length).toBe(t!.lignes.length + 1);
-    if (t!.rangePar) expect(container.textContent).toContain(`rangé par : ${t!.rangePar}`);
+    if (t!.rangePar) expect(container.textContent).toContain(`classées par ${t!.rangePar}`);
     sansZeroInvente(container);
     sansRefus(container);
     cleanup();
@@ -290,9 +292,10 @@ describe('Gestes : créer, ajouter, lien, note en vrac (R09 à R19)', () => {
     expect(container.textContent).toContain("aucune : l'IA les cherche");
     expect(container.textContent).toContain('aucun : collez un lien');
     expect(container.textContent).toContain('Le champ en bas range tout ici');
-    /* corr. 4 P27 (g5:v04-4) : l'encadré d'état en entier, et « Photos · aucune » dans cet état seulement */
-    expect(container.textContent).toContain('Idée · 17 nov.');
-    expect(container.textContent).toContain("Ensuite : l'IA cherche les façons");
+    /* critique 6, n° 16 et 32 : l'état en une forme, la pastille ; ni encadré « Ensuite… » ni points ; « Photos · aucune » ici seulement */
+    expect(container.querySelector('.cn-tete .cn-pastille')?.textContent).toBe('Idée · 17 nov.');
+    expect(container.textContent).not.toContain('Ensuite :');
+    expect(container.querySelector('.cn-encadre-idee, .cn-etapes')).toBeNull();
     expect(container.textContent).toContain('Photos · aucune');
     fireEvent.click(screen.getByRole('button', { name: /Annuler/ }));
     expect(onAnnuler).toHaveBeenCalled();
@@ -591,10 +594,10 @@ describe('C6 · Suppression v2 (D-47b) et veille (R31)', () => {
     expect(s === null || s.disabled).toBe(true);
     expect(r.container.textContent).not.toMatch(/stock/i);
   });
-  it('G35 « n articles en veille : les déplacer dans <carnet> · Déplacer », picto local', () => {
+  it('G35 « 1 article en veille : le déplacer dans <carnet> · Déplacer » (critique 6, n° 31 : accordé), picto local', () => {
     const onDeplacer = vi.fn();
     const r = render(<SupprimerCarnet {...base} contenu={k} liens={[]} proche={{ titre: 'Ventilation', onDeplacer }} />);
-    const g35 = screen.getByText((_, el) => !!el?.classList.contains('cn-sp') && /1 article en veille : les déplacer dans Ventilation/.test(el.textContent ?? '')).parentElement!;
+    const g35 = screen.getByText((_, el) => !!el?.classList.contains('cn-sp') && /1 article en veille : le déplacer dans Ventilation/.test(el.textContent ?? '')).parentElement!;
     expect(g35.querySelector('[data-picto="local"]')).toBeTruthy();
     expect(g35.textContent).not.toContain('✻');
     fireEvent.click(screen.getByRole('button', { name: 'Déplacer' }));
@@ -671,8 +674,9 @@ describe('Correction 1, lot L2 : lisibilité du carnet ouvert et du champ (P10 �
     expect(t.match(/de votre phrase/g)).toHaveLength(1);
     expect(t.match(/condensation au plafond/gi)).toHaveLength(1);
     expect(container.querySelectorAll('.cn-critere-court')).toHaveLength(0);
-    fireEvent.click(rub.getByRole('button', { name: /[+]2 sans valeur/ }));
-    expect(container.querySelectorAll('.cn-critere-court')).toHaveLength(3);
+    /* critique 6, n° 14 et 34 : « 2 critères sans valeur à comparer » ; la liste ne redit pas le critère de la ligne */
+    fireEvent.click(rub.getByRole('button', { name: /^2 critères sans valeur à comparer$/ }));
+    expect(container.querySelectorAll('.cn-critere-court')).toHaveLength(2);
   });
   it('P11 : provenances mêlées, chaque critère de la tête dit la sienne ; un critère sans valeur reste derrière le bouton', () => {
     ouvert({ carnet: avecCriteres([
@@ -683,7 +687,7 @@ describe('Correction 1, lot L2 : lisibilité du carnet ouvert et du champ (P10 �
     const t = screen.getByRole('region', { name: 'Ce qui compte' }).textContent!;
     expect(t).toContain("le débit · proposé par l'IA");
     expect(t).toContain('tient 80 °C · de votre phrase');
-    expect(t).toContain('+1 sans valeur');
+    expect(t).toContain('1 critère sans valeur à comparer');
     expect(t).not.toContain('capter la buée');
   });
   it('P11 : la ligne rangée d’un critère en double s’encadre sur la ligne gardée', () => {
@@ -694,12 +698,12 @@ describe('Correction 1, lot L2 : lisibilité du carnet ouvert et du champ (P10 �
     ]), rangee: { cible: 'critere', id: 'k4', phrase: 'Plus de condensation au plafond', onAnnuler: rien } });
     expect(screen.getByRole('button', { name: 'Annuler' })).toBeTruthy();
   });
-  it('P10 : l’en-tête Articles garde le compte entier et met « Comparer côte à côte » à part, poussé à droite', () => {
+  it('P10 et critique 6 n° 8 : une seule ligne « Articles 4 ⌄ · Comparer › » ; le compte est le total (lus et sans aperçu)', () => {
     const { container } = ouvert();
     const tete = container.querySelector('.cn-tete-articles')!;
-    expect(tete.querySelector('.cn-compte')!.textContent).toBe('3 lus, 1 sans aperçu');
+    expect(tete.querySelector('.cn-compte')!.textContent).toBe('4');
     expect(tete.querySelector('.cn-compte')!.classList.contains('cn-sp')).toBe(false);
-    expect(tete.querySelector('.cn-comparer-lien')!.textContent).toContain('Comparer côte à côte');
+    expect((tete.textContent ?? '').replace(/\s+/g, ' ').trim()).toBe('Articles4·Comparer');
   });
 });
 

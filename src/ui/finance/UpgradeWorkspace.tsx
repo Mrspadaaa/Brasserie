@@ -7,6 +7,7 @@ import { buildForecast, type FinanceForecast } from '../../domain/finance/foreca
 import { anneauDe, avecDevisDemande, avecPrix, dateFacture, estRealise, ETAPES_ANNEAU, fournisseursConnus, indexMoisSortie, parsePrix, texteTientDansBarre, type Anneau, type Fournisseur, type TonAnneau } from '../../domain/finance/upgradeRing';
 import type { CreativeItem } from '../../types';
 import { lireCarnet, type CarnetDoc } from '../../domain/carnets/modele';
+import { prixTexte as prixCarnet } from '../../domain/carnets/comparer';
 import { VignetteObjet } from '../carnets/pictos';
 import { MOIS_BANDEAU, REPERES, caisseAvantSortie, echelleCaisse, effetProjet, estPose, etapeHero, moisDePlan, partsInconnues, prochainAchat, repereDe, suivants, titreCourt, type EffetProjet } from '../../domain/finance/upgradeForecast';
 import { Sheet } from '../Sheet';
@@ -100,7 +101,7 @@ function ChoisisEnAttente({ carnets, onOuvrir }: { carnets: CarnetDoc[]; onOuvri
           <ChevronRight size={18} aria-hidden className="shrink-0 text-cave-400"/>
         </button></li>; })}
     </ul>
-    <p className="mt-1 text-sm text-cave-400">« Envoyer dans À venir » se trouve sous le pourquoi du choix.</p>
+    {/* Critique 6, n° 23 (D-122, h05-9) : plus de mode d'emploi ; la ligne s'ouvre d'un toucher, rien d'autre (h05-9 n'en montre aucun). */}
   </section>;
 }
 
@@ -342,7 +343,8 @@ function AVenir({ plans, transactions, payments, prevision, busy, onEdit, onPose
   const focus = plans.find(p => p.id === marque) ?? null, effetFocus = focus && estPose(focus) ? effetProjet(focus, plans, prevision.months, prevision.items) : null;
   const poser = async (plan: FinancialPlan, m: string | null) => { setPicker(null); if (await onPoser(plan, m)) setMarque(m ? plan.id : null); };
   const dansFiche = plans.find(p => p.id === fiche);
-  return <div className="kh">
+  /* Critique 6, n° 38 : dans Stocks › Matériel, les cartes prennent la largeur du segment (736 px à 1280), pas les 680 px de l'Atelier */
+  return <div className={`kh${carnet ? ' kh-carnet' : ''}`}>
     {hero && carnet && <ProchainAchatCarnet plan={hero} doc={carnetsLus.find(c => c.id === hero.upgrade?.sourceCarnetId)} present={!!hero.upgrade?.sourceCarnetId && carnetIds.has(hero.upgrade.sourceCarnetId)}
       mois={mois} ouvert={picker === hero.id} onDate={() => setPicker(picker === hero.id ? null : hero.id)} onPoser={m => void poser(hero, m)} onEdit={() => onEdit(hero)} onFiche={() => setFiche(hero.id)} onOuvrir={onOpenCarnet}/>}
     {hero && !carnet && <section className="kh-hero" aria-label="Prochain achat">
@@ -489,10 +491,14 @@ export function UpgradeWorkspace({ onOpenProject, createRequest, onCreateRequest
         <span className="finance-row-main"><strong>{plan.title}</strong><span className="finance-muted">{realises.has(plan.id) && dateFacture(plan, data.transactions) ? `Payé · facture du ${new Date(`${dateFacture(plan, data.transactions)}T12:00:00`).toLocaleDateString('fr-CH', { day: 'numeric', month: 'short', year: 'numeric' })}` : upgradeDateLabel(plan)}{scope === 'future' ? ` · ${UPGRADE_STAGES[detail.stage]}` : ''}{scope === 'future' && <>{' · '}{dansLesPrevisions(plan)
           ? <span className="upgrade-prev upgrade-prev-oui">dans les prévisions · {moisCourtDe(plan)}</span>
           : <span className="upgrade-prev">pas dans les prévisions</span>}</>}</span>{!mobile && detail.purpose && <span className="upgrade-purpose">{detail.purpose}</span>}</span>
-        <span className="upgrade-price">{detail.budgetKnown ? formatCHF(plan.amountCents) : 'À estimer'}<ChevronRight size={16}/></span>
+        <span className="upgrade-price">{detail.budgetKnown ? (vue ? prixCarnet(plan.amountCents) : formatCHF(plan.amountCents)) : 'À estimer'}<ChevronRight size={16}/></span>
       </button>
       <LigneCarnet plan={plan} present={!!plan.upgrade?.sourceCarnetId && data.carnetIds.has(plan.upgrade.sourceCarnetId)} onOuvrir={ouvrirCarnet}/>
-      {progress.invoiceCount > 0 && <p className="finance-muted upgrade-actual">Achats liés : {progress.invoicedComplete && detail.budgetKnown && progress.invoicedCents === plan.amountCents ? 'comme prévu' /* un montant une seule fois : il est déjà à droite */ : <>{progress.invoicedComplete?formatCHF(progress.invoicedCents):'À répartir'}{detail.budgetKnown ? ` sur ${formatCHF(plan.amountCents)} prévus` : ''}</>}</p>}
+      {/* Critique 6, n° 37 : dans Stocks › Matériel, un seul format de prix (« 11 700 CHF », comme le carnet) et la ligne dit ce qui a été
+          payé contre ce qui était prévu, jamais « comme prévu ». L'Atelier garde sa ligne (D-41). */}
+      {progress.invoiceCount > 0 && (vue
+        ? <p className="finance-muted upgrade-actual" data-paye-prevu>{progress.invoicedComplete ? <>Payé <b className="text-cave-50">{prixCarnet(progress.invoicedCents)}</b></> : 'Payé : à répartir'}{detail.budgetKnown ? ` · prévu ${prixCarnet(plan.amountCents)}` : ''}</p>
+        : <p className="finance-muted upgrade-actual">Achats liés : {progress.invoicedComplete && detail.budgetKnown && progress.invoicedCents === plan.amountCents ? 'comme prévu' /* un montant une seule fois : il est déjà à droite */ : <>{progress.invoicedComplete?formatCHF(progress.invoicedCents):'À répartir'}{detail.budgetKnown ? ` sur ${formatCHF(plan.amountCents)} prévus` : ''}</>}</p>)}
       {scope === 'future' && <div className="upgrade-project-actions">
         {missing.length && plan.status !== 'active' ? <button className="finance-link" onClick={() => open(plan)}>Budget ou date à compléter<ChevronRight size={16}/></button> : <label className="finance-check"><input type="checkbox" aria-label={`Inclure ${plan.title} dans les prévisions`} checked={plan.status === 'active'} disabled={!!busy} onChange={e => void changeInclusion(plan, e.target.checked)}/>Inclure dans mes prévisions{/* TE-36 : un seul libellé pour la case, cochée ou non (comme la feuille du projet) */}</label>}
         <button className="finance-link" onClick={() => setPurchase(plan)}>Noter l’achat<ArrowRight size={16}/></button>

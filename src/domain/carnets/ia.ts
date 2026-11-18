@@ -283,7 +283,8 @@ export function lireReponse(brut: unknown, ctx: ContexteGarde): LigneCarnet[] | 
     // P10, P23 : une proposition n'existe que sur un critère d'un carnet connu, avec sa caractéristique (sinon rien à comparer).
     // Une proposition mal formée est retirée : jamais écrite comme si elle était acceptée.
     if (r.propose === true) {
-      if (sorte !== 'critere' || !connu || !ligne.caracteristique) continue;
+      /* critique 6, n° 9 (D-35) : aussi dans le carnet neuf que le message ouvre (les caractéristiques de sa catégorie, en puces) */
+      if (sorte !== 'critere' || !(connu || typeof r.carnetNeuf === 'string') || !ligne.caracteristique) continue;
       ligne.propose = true;
     } else if (sorte === 'critere') {
       /* critique 5, n° 1 : sa source réelle, jamais celle de la réponse entière */

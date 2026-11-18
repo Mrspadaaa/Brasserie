@@ -17,7 +17,8 @@ import { Bandeau } from './Bandeau';
 import { normaliser } from '../../domain/carnets/analyseLocale';
 import { tableau as calculerTableau, prixTexte } from '../../domain/carnets/comparer';
 import { titreDePhrase } from '../../domain/carnets/modele';
-import { dateCourte, GENRE_LIBELLE, montant, pluriel, Provenance, STATUT_LIBELLE, type ArticleV, type CarnetV, type GenreNote, type StatutCarnet } from './EtatIA';
+import { comptesCarnet, texteComptes } from '../../domain/carnets/comptes';
+import { dateCourte, GENRE_LIBELLE, montant, Provenance, STATUT_LIBELLE, type ArticleV, type CarnetV, type GenreNote, type StatutCarnet } from './EtatIA';
 import { VignetteObjet } from './pictos';
 
 export interface EclaireV { carnetId: string; quoi: string; tireDe: string; onDeplacer: () => void; onAnnuler: () => void }
@@ -108,16 +109,18 @@ export function ajoutsDuMessage(carnets: CarnetV[], messageId: string | null | u
 /** « +2 · question, à acheter » : le compte, puis les genres dits une fois, dans l'ordre de g5:v01-16. */
 export function texteAjouts(genres: GenreNote[]): string {
   const dits = ORDRE_GENRES.filter(g => genres.includes(g)).map(g => GENRE_LIBELLE[g]);
-  return `+${genres.length} · ${(dits.length ? dits : [GENRE_LIBELLE.note]).join(', ')}`;
+  /* le compte suit les genres dits : une note sans genre ne s'ajoute pas à « +1 · à acheter » (critique 6, lot A) */
+  const n = dits.length ? genres.filter(g => ORDRE_GENRES.includes(g)).length : genres.length;
+  return `+${n} · ${(dits.length ? dits : [GENRE_LIBELLE.note]).join(', ')}`;
 }
 
-/** « 3 façons · 6 articles · 1 en veille » : rien de ce qui vaut 0 n'est écrit. */
+/**
+ * « 2 façons · 6 articles · 1 en veille » (g05-1) : rien de ce qui vaut 0 n'est écrit. Critique 6, n° 15 : lu par `comptesCarnet`, la
+ * même fonction que le carnet ouvert et la suppression (façons en lice, l'écartée à part ; articles lus et sans aperçu ensemble).
+ */
 function compte(c: CarnetV): { parts: string[]; veilles: number } {
-  const k = c.carnet;
-  const parts: string[] = [];
-  if (k.facons.length) parts.push(pluriel(k.facons.length, 'façon', 'façons'));
-  if (k.articles.length) parts.push(pluriel(k.articles.length, 'article', 'articles'));
-  return { parts, veilles: k.articles.filter(a => a.veille?.active).length };
+  const n = comptesCarnet(c.carnet);
+  return { parts: texteComptes(n), veilles: n.veilles };
 }
 
 /**

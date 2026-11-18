@@ -46,8 +46,9 @@ describe('(1) Comparer, n° 9, 22, 23 : colonnes de g01-8, critère qui range no
   });
   it('n° 22 : « rangé par » nomme le critère qui range ; le premier critère, sans valeur, est dit sans valeur', () => {
     const { container } = vue();
-    expect(container.querySelector('.cn-cmp-critere')!.textContent).toBe('Ce qui compte tient 80 °C');
-    expect(container.textContent).toContain('rangé par : tient 80 °C d\'abord, puis le débit, puis le prix');
+    expect(container.querySelector('.cn-cmp-critere')!.textContent).toBe("Ce qui compte tient 80 °C · proposé par l'IA"); /* critique 6, point 16 : sa source, lue sur la colonne */
+    /* critique 6, n° 4 (g01-8) : « classées par … » */
+    expect(container.textContent).toContain('classées par tient 80 °C d\'abord, puis le débit, puis le prix');
     expect(container.querySelector('.cn-cmp-sans-valeur')!.textContent).toBe('« Moins de condensation au plafond : capter la buée » : sans valeur à comparer, il ne range pas');
     /* un premier critère qui range n'est pas dit sans valeur */
     expect(premierSansValeur(tableau(V), V.carnet.criteres[1] as never)).toBeNull();
@@ -126,7 +127,8 @@ describe('(4) Supprimer, n° 27 et 38 : G35 seulement de même catégorie, picto
   it('carnet de même catégorie : G35, picto local (calculette), ni ✻ ni habit violet de l\'IA', () => {
     vue({ titre: 'Ventilation de la salle de brassage', onDeplacer: rien, memeCategorie: true });
     const aide = document.querySelector('.cn-g35')!;
-    expect(aide.textContent).toContain('1 article en veille : les déplacer dans Ventilation de la salle de brassage');
+    /* critique 6, n° 31 (SupprimerCarnet, autre lot) : un seul article se dit au singulier, « le déplacer » */
+    expect(aide.textContent).toContain('1 article en veille : le déplacer dans Ventilation de la salle de brassage');
     expect(aide.classList.contains('cn-aide')).toBe(false);
     expect(aide.querySelector('[data-picto="local"]')).not.toBeNull();
     expect(aide.textContent).not.toContain('✻');

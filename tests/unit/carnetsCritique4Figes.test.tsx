@@ -142,13 +142,16 @@ describe('P5, P6, P38 · tableau du carnet ouvert (h05-3)', () => {
     expect(hotte.querySelector('[data-picto="hotte"]')).toBeTruthy();
     expect(texte(hotte)).toContain('CH · en stock');
     const murale = lignes.find(l => l.textContent?.includes('Hotte murale'))!;
-    expect(murale.textContent).toContain('veille demandée');
+    /* critique 6, n° 8 (h05-3 « DE · délai 2 sem. · ⊙ veille ») : « veille » à l'écran, « veille demandée » en titre */
+    expect(murale.textContent).toContain('délai 4 sem. · veille');
+    expect(murale.querySelector('[title="veille demandée"]')).toBeTruthy();
     expect(murale.querySelector('svg.lucide-eye, svg')).toBeTruthy();
     expect(container.querySelector('.cn-tab-ligne [data-picto="ventilateur"]')).toBeTruthy();
   });
   it('P6 : le lien non lu n’est jamais classé : « ? Lien sans aperçu · … · à relire · Ouvrir ↗ » sous le tableau', () => {
     const { container } = ouvrir();
-    const relire = container.querySelector('.cn-tab-relire')!;
+    /* critique 6, n° 8 (h05-3) : la ligne est dans le tableau, au pied des façons en lice */
+    const relire = container.querySelector('.cn-tab .cn-tab-relire-ligne')!;
     expect(relire).toBeTruthy();
     expect(texte(relire)).toMatch(/^\?Lien sans aperçuexemple\.invalid\/v5 · à relireOuvrir/);
     expect(within(relire as HTMLElement).getByRole('link', { name: /Ouvrir/ })).toBeTruthy();
@@ -210,9 +213,12 @@ describe('P5, P6, P38 · tableau du carnet ouvert (h05-3)', () => {
 describe('P27 · en-tête du carnet créé (g5:v04-4), Photos', () => {
   const neuf: CarnetV = { id: 'n', title: 'Embouteillage', status: 'idea', carnet: { creeLe: '2026-11-17T08:00:00.000Z', phrase: 'embouteillage', criteres: [], facons: [], articles: [], notes: [], photos: [] } };
   const monter = (vient: boolean) => render(<CarnetOuvert carnet={neuf} aides={AIDES_ETEINTES} liens={[]} tableau={null} vientDEtreCree={vient} onRetour={rien} onRenommer={rien} onSupprimer={rien} onNote={rien} onOuvrirArticle={rien} onComparer={rien} />);
-  it('tout juste créé : « Idée · 17 nov. / Ensuite : l’IA cherche les façons » en entier ; « Photos · aucune »', () => {
+  it('tout juste créé (critique 6, n° 16 et 32) : l’état en une forme, la pastille « Idée · 17 nov. » ; ni encadré ni points ; « Photos · aucune »', () => {
     const { container } = monter(true);
-    expect(texte(container.querySelector('.cn-encadre-idee')!)).toBe("Idée · 17 nov.Ensuite : l'IA cherche les façons");
+    expect(container.querySelector('.cn-encadre-idee')).toBeNull();
+    expect(container.querySelector('.cn-etapes')).toBeNull();
+    expect(texte(container.querySelector('.cn-tete .cn-pastille')!)).toBe('Idée · 17 nov.');
+    expect(texte(container)).toContain("Façons · aucune : l'IA les cherche");
     expect(texte(container)).toContain('Photos · aucune');
   });
   it('ailleurs, la rubrique Photos vide reste masquée (MISSION « Rangé derrière »)', () => {

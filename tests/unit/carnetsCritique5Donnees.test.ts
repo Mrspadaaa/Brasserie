@@ -138,7 +138,9 @@ describe('(d) n° 21 : critereQuiTranche vise une caractéristique manquante, ja
   });
   it('une caractéristique inconnue des deux premiers est proposée ; un critère sans caractéristique ne l’est jamais', () => {
     const v = V();
-    const avecBruit: CarnetDoc = { ...v, carnet: { ...v.carnet, criteres: [...v.carnet.criteres, { id: 'K-BRUIT', texte: 'pas trop de bruit', caracteristique: { nom: 'bruit', unite: 'dB', sens: 'moins' }, origine: 'vous' }] } };
+    /* critique 6, n° 17 : le bruit n'est proposé que si un 3e article le porte (jamais un critère dont personne n'a la valeur) */
+    const articles = v.carnet.articles.map((a, i) => i === 2 ? { ...a, valeurs: { ...(a.valeurs ?? {}), bruit: { valeur: 60, unite: 'dB', origine: 'vous' as const } } } : a);
+    const avecBruit: CarnetDoc = { ...v, carnet: { ...v.carnet, articles, criteres: [...v.carnet.criteres, { id: 'K-BRUIT', texte: 'pas trop de bruit', caracteristique: { nom: 'bruit', unite: 'dB', sens: 'moins' }, origine: 'vous' }] } };
     const t = critereQuiTranche(avecBruit)!;
     expect(t.critere.id).toBe('K-BRUIT');
     expect(t.critere.caracteristique).toBeDefined();
@@ -304,9 +306,12 @@ describe('(k) bis : G8 et G35 restent atteignables au banc, par option de fixtur
     expect(t.critere).toMatchObject({ id: 'ZZ-V-K4', texte: CRITERE_BRUIT, caracteristique: { nom: 'bruit', unite: 'dB' } });
     expect(t.entre).toEqual(['Hotte inox + extracteur', 'Extracteur mural seul']);
   });
-  it('`g35` : la 2e idée de ventilation reçoit les articles en veille ; jamais l’extracteur CO₂', () => {
+  /* critique 6, n° 31 : « Ventilation de la cave de garde » répond à un autre besoin ; G35 se prouve sur une idée du même besoin
+     (carnetsCritique6Fil, 14). La fixture `g35` reste à donner une 2e idée du même besoin (lot de la fixture). */
+  it('`g35` : la 2e idée de ventilation, d’un autre besoin (cave de garde), n’est pas proposée ; jamais l’extracteur CO₂', () => {
     const cs = lireCarnets(fixtureCarnets({ g35: true }));
-    expect(carnetProche(cs.find(c => c.id === ID_VENTILATION)!, cs)?.carnetId).toBe(ID_VENTILATION_CAVE);
+    expect(cs.some(c => c.id === ID_VENTILATION_CAVE)).toBe(true);
+    expect(carnetProche(cs.find(c => c.id === ID_VENTILATION)!, cs)).toBeNull();
   });
 });
 

@@ -67,18 +67,19 @@ describe('1 · n° 3 : le cadre nomme le carnet où la phrase ira ; ce qui est a
     expect(dest.carnetId).toBe(ID_EVIER);
     taper(champ, PHRASE);
     const cadre = document.querySelector('[data-cadre="texte"] section')!;
-    expect(cadre.getAttribute('data-vers')).toBe('Évier inox');
-    expect(cadre.textContent).toContain('va dans Évier inox');
+    /* décision du pilote (critique 6) : le titre stocké, « ZZ TEST — » compris */
+    expect(cadre.getAttribute('data-vers')).toBe('ZZ TEST — Évier inox');
+    expect(cadre.textContent).toContain('va dans ZZ TEST — Évier inox');
     expect(cadre.textContent).not.toContain('va atterrir ici');
     const groupe = screen.getByRole('group', { name: 'Va dans le carnet' });
-    expect(groupe.querySelector('[aria-pressed="true"]')?.textContent).toBe('Évier inox');
+    expect(groupe.querySelector('[aria-pressed="true"]')?.getAttribute('aria-label')).toBe('ZZ TEST — Évier inox');
     await soumettre(champ);
     await attendre(120);
     const effets = effetsDe(magasin, PHRASE);
     expect(effets.length).toBeGreaterThan(0);
     expect(effets.every(e => e.carnetId === ID_EVIER)).toBe(true);
     expect(lireCarnets(magasin.lire()).length).toBe(n0);
-    expect(texteDe()).toContain('Rangé dans Évier inox');
+    expect(texteDe()).toContain('Rangé dans ZZ TEST — Évier inox');
   });
 
   it('corrigé d’un toucher sur « Ici » : le cadre dit « va atterrir ici » et la phrase reste dans Ventilation', async () => {
@@ -185,7 +186,8 @@ describe('5 · n° 7 : la note en vrac, pendant puis après', () => {
     expect(apres.textContent).toContain('3 lignes rangées dans 2 carnets');
     expect(apres.querySelectorAll('select[aria-label^="Carnet de"]').length).toBe(3);
     expect(apres.querySelectorAll('select[aria-label^="Type de"]').length).toBeGreaterThanOrEqual(1);
-    expect(apres.querySelector('details.cn-origine summary')?.textContent).toBe('Texte d\'origine');
+    /* critique 6 (g5:v01-16) : « › Texte d'origine » */
+    expect(apres.querySelector('details.cn-origine summary')?.textContent).toBe('› Texte d\'origine');
     fireEvent.click(apres.querySelector('.cn-bandeau button')!);
     expect(JSON.stringify(magasin.lire().filter(i => i.type === 'carnet'))).toBe(avant);
   });
@@ -208,7 +210,9 @@ describe('6 · n° 24 et 43 : IA en échec ou hors ligne, l’avis et jamais « 
     taper(champ, 'filtre à air G4, 2 pièces');
     await soumettre(champ);
     await attendre(60);
-    expect(document.querySelector('.cn-bandeau[data-avis="hors-ligne"]')?.textContent).toContain('ne le reprendra pas au retour du réseau');
+    /* critique 6, n° 24 : l'avis est court ; au retour du réseau, « Ranger maintenant » (carnetsCritique6Fil, 10) */
+    expect(document.querySelector('.cn-bandeau[data-avis="hors-ligne"]')?.textContent).toContain('Hors ligne : rangé sur l’appareil, tel quel');
+    expect(texteDe()).not.toMatch(/ne le reprendra pas/);
     expect(texteDe()).not.toMatch(/rien ne bougera/);
     expect(texteDe()).not.toContain('Rangé ici, à l\'instant');
   });
@@ -245,13 +249,15 @@ describe('7 · n° 26 : renommer garde l’en-tête et le contenu', () => {
 
 describe('8 et 9 · n° 34 et 42 : placeholder lisible, un seul habit d’envoi', () => {
   it('titreCourt coupe au mot, sans finir sur un petit mot', () => {
-    expect(titreCourt('Ventilation de la salle de brassage')).toBe('Ventilation');
-    expect(titreCourt('Frigo de garde pour fûts')).toBe('Frigo de garde');
+    /* critique 6, n° 26 : la coupe se dit par « … » */
+    expect(titreCourt('Ventilation de la salle de brassage')).toBe('Ventilation…');
+    expect(titreCourt('Frigo de garde pour fûts')).toBe('Frigo de garde…');
     expect(titreCourt('Évier inox')).toBe('Évier inox');
   });
   it('dans Ventilation, à 390 : « Ajouter à Ventilation… » ; partout le même bouton « Ajouter », jamais la flèche', () => {
     const { champ } = monter({ ouvrir: ID_VENTILATION });
-    expect(champ().getAttribute('placeholder')).toBe('Ajouter à Ventilation…');
+    /* décision du pilote (critique 6) : le titre stocké, « ZZ TEST — » compris, est passé au placeholder */
+    expect(champ().getAttribute('placeholder')).toBe('Ajouter à ZZ TEST — Ventilation…');
     taper(champ, 'une note');
     expect(screen.getByRole('button', { name: 'Ajouter' }).className).toContain('cn-envoi-mot');
     cleanup();

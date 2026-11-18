@@ -75,6 +75,20 @@
 .cn-cmp-domines li + li { margin-top: 4px; }
 @media (min-width: 900px) { .cn-comparer .cn-tableau-comparer .cn-col-tete { max-width: 132px; } .cn-comparer .cn-cmp-vignette { width: 52px; height: 52px; } }
 
+/* Critique 6, n° 36 (D-58) : un nom ne se coupe pas quand la place existe. À 390, 3 lignes avant le « … » (colonnes de 78 px) ; à
+   1280, le nom entier, écarté compris (la règle de l'écarté, plus précise, gardait 78 px et coupait « Ventilateur de plafon… »). */
+.cn-comparer .cn-cmp-nom { -webkit-line-clamp: 3; }
+@media (min-width: 900px) {
+  .cn-comparer .cn-cmp-nom { display: block; -webkit-line-clamp: unset; overflow: visible; }
+  .cn-comparer .cn-tableau-comparer thead th.cn-ecarte .cn-col-tete { max-width: 132px; }
+}
+/* n° 17 : les caractéristiques sans aucune valeur lue, nommées sous le tableau (pas de rangée de « – »). */
+.cn-cmp-sans-lue { margin: 6px 2px 0; font-size: 14px; }
+/* Doute D-122 : « sous votre minimum » sous la valeur, en encre d'alerte discrète (le seuil est le sien, écrit dans une note). */
+.cn-hors-seuil { display: block; font-size: 12px; line-height: 1.25; color: var(--c-rouge); font-weight: 600; white-space: normal; }
+.cn-choisir .cn-droite .cn-hors-seuil { text-align: right; }
+.cn-choisir-retenus li { font-size: 15px; line-height: 1.4; }
+
 /* Le compromis (g01-8) : la balance verte, « Compromis : » en gras, fond de zone. */
 .cn-compromis { align-items: flex-start; margin-top: 12px; background: var(--c-zonebg); border-color: transparent; line-height: 1.45; }
 .cn-compromis svg { flex: none; margin-top: 2px; }
@@ -147,3 +161,5 @@
     }
   }
 }
+/* Une colonne sans photo ni picto garde la place de la vignette (ni fond ni cube) : rangs et noms alignés. */
+.cn-comparer .cn-cmp-vignette-place { display: block; background: none; border: 0; }

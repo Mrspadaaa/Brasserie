@@ -82,9 +82,10 @@ describe('P10 et P32 · l\'ordre suit les critères, puis le prix croissant ; l\
     const egaux = tableau(avec(V, { articles: [V.carnet.articles[0], { ...V.carnet.articles[0], id: 'X', prixCentimes: 200000 }] }))!;
     expect(egaux.lignes.map(l => l.articleId)).toEqual(['X', 'ZZ-V-A1']);
     const { container } = render(<Comparer titre="Ventilation" statut="research" critere={V.carnet.criteres[0] as never} tableau={t} onRetour={rien} />);
-    expect(container.textContent).toContain(`rangé par : ${t.rangePar}`);
+    /* critique 6, n° 4 (g01-8) : « classées par … », la même règle */
+    expect(container.textContent).toContain(`classées par ${t.rangePar}`);
     /* « Ce qui compte » nomme le critère qui classe d'abord, pas une phrase qui ne classe rien (« plus de condensation ») */
-    expect(container.querySelector('.cn-cmp-critere')!.textContent).toBe('Ce qui compte tient 80 °C');
+    expect(container.querySelector('.cn-cmp-critere')!.textContent).toBe("Ce qui compte tient 80 °C · proposé par l'IA"); /* critique 6, point 16 : sa source, lue sur la colonne */
   });
 });
 
@@ -142,7 +143,8 @@ const articleV = (id: string) => V.carnet.articles.find(a => a.id === id) as unk
 describe('P16 · Choisir = g05-9 et g05-11 : la 1re nommée, le pourquoi prérempli avec valeurs et rangs', () => {
   it('pourquoiDe cite les valeurs et les rangs du tableau', () => {
     const p = pourquoiDe(V, 'ZZ-V-A1')!;
-    expect(p).toBe('Tient 80 °C : oui ; le débit 1 800 m³/h, 1er sur 4 ; 2 600 CHF, 4e sur 4 au prix ; en stock, Inox Broye (CH).');
+    /* critique 6, n° 21 : le problème réglé, sans recopier les chiffres (ils sont dans le tableau et les réglettes) */
+    expect(p).toBe('La seule à tenir 80 °C avec le plus gros débit ; en stock, Inox Broye (CH).');
     const places = placesDe(tableau(V)!, 'ZZ-V-A1');
     expect(places.find(x => x.nom === 'débit')).toMatchObject({ rang: 1, sur: 4, texte: '1 800 m³/h' });
     expect(places.find(x => x.nom === 'prix')).toMatchObject({ rang: 4, sur: 4, texte: '2 600 CHF' });
@@ -162,7 +164,9 @@ describe('P16 · Choisir = g05-9 et g05-11 : la 1re nommée, le pourquoi prérem
   it('sans carnet passé : le pourquoi se calcule sur les articles reçus (prix et rang), jamais vide', () => {
     render(<Choisir etape="choisir" titre="Pompe" article={pompe245 as unknown as ArticleV} sur={2} valeurs={[]} autres={[{ article: pompe690 as unknown as ArticleV, rang: 2 }]} onRetour={rien} onChoisir={rien} onEcarter={rien} />);
     const champ = screen.getByRole('textbox', { name: /Pourquoi/ }) as HTMLTextAreaElement;
-    expect(champ.value).toBe('245 CHF, 1er sur 2 au prix ; le débit 25 L/min ; la température max 100 °C.');
+    /* critique 6, n° 21 : sans critère, le prix seul départage : « la moins chère », sans chiffre recopié */
+    expect(champ.value).toMatch(/^La moins chère/);
+    expect(champ.value).not.toMatch(/[0-9]/);
   });
 });
 
@@ -174,7 +178,7 @@ describe('P17 et P40 · Pourquoi ce choix = g05-11 : phrase avec valeurs, régle
   it('la phrase de calcul avec ses valeurs, puis sa phrase à lui', () => {
     const { container } = vue();
     const section = screen.getByRole('region', { name: 'Pourquoi ce choix' });
-    expect(section.querySelector('.cn-pourquoi-phrase')!.textContent).toContain('le débit 1 800 m³/h, 1er sur 4');
+    expect(section.querySelector('.cn-pourquoi-phrase')!.textContent).toContain('La seule à tenir 80 °C avec le plus gros débit');
     expect(section.querySelector('.cn-pourquoi-sienne')!.textContent).toBe('« la seule qui sort la buée »');
     expect(container.querySelector('img.cn-choisi-photo')).not.toBeNull();
   });

@@ -252,10 +252,11 @@ describe('P19, P20 : la fixture atteint G25 à G27 et G35', () => {
     expect(v.carnet.articles.some(a => a.veille?.active)).toBe(true);
     /* critique 5, n° 27 : G35 ne propose qu'un carnet de même catégorie ; l'extracteur CO₂ n'en est pas un (rien par défaut), l'option `g35` ajoute une 2e idée de ventilation */
     expect(carnetProche(v, lireCarnets(F))).toBeNull();
+    /* critique 6, n° 31 : la 2e idée de ventilation de l'option `g35` (« Ventilation de la cave de garde ») répond à un autre besoin que
+       « … de la salle de brassage » : elle n'est plus proposée. G35 se prouve sur une idée du même besoin (carnetsCritique6Fil, 14). */
     const FG = fixtureCarnets({ g35: true });
-    const p = carnetProche(carnet(FG, ID_VENTILATION), lireCarnets(FG));
-    expect(p).not.toBeNull();
-    expect(p!.carnetId).toBe(ID_VENTILATION_CAVE);
+    expect(lireCarnets(FG).some(c => c.id === ID_VENTILATION_CAVE)).toBe(true);
+    expect(carnetProche(carnet(FG, ID_VENTILATION), lireCarnets(FG))).toBeNull();
   });
   it('les ID d’avant ne changent pas ; le préfixe « ZZ TEST — » reste sur chaque carnet', () => {
     const ids = F.map(d => d.id);

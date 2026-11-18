@@ -37,14 +37,17 @@ describe('1 · carnet ouvert = h05-3 : ligne d’état, une ligne Critère, le t
     const { container } = ouvrir(carnet(ID_VENTILATION));
     const lignes = container.querySelectorAll('.cn-critere-une');
     expect(lignes).toHaveLength(1);
-    expect(texte(lignes[0])).toMatch(/^Critère : tient 80 °C, puis le débit · proposé par l'IA · \+1 sans valeur$/);
+    /* critique 6, n° 34 : la mention sans valeur est claire, sur sa ligne : « 1 critère sans valeur à comparer ⌄ » */
+    expect(texte(lignes[0].querySelector('.cn-critere-tx')!)).toBe("Critère : tient 80 °C, puis le débit · proposé par l'IA");
+    expect(texte(lignes[0])).toBe("Critère : tient 80 °C, puis le débit · proposé par l'IA · 1 critère sans valeur à comparer ");
     expect(container.querySelector('.cn-encart-critere')).toBeNull();
     expect(texte(container)).not.toContain('tiré de votre phrase');
     /* son critère à lui (sans valeur) est rangé derrière, un toucher le montre, avec sa vraie provenance */
-    fireEvent.click(screen.getByRole('button', { name: /\+1 sans valeur/ }));
-    const tous = within(screen.getByRole('list', { name: 'Tous les critères' })).getAllByRole('listitem').map(texte);
-    expect(tous[0]).toMatch(/de votre phrase · sans valeur à comparer/);
-    expect(tous.slice(1).every(t => t.includes("proposé par l'IA"))).toBe(true);
+    fireEvent.click(screen.getByRole('button', { name: /^1 critère sans valeur à comparer$/ }));
+    /* critique 6, n° 14 : la liste ne redit que les critères absents de la ligne Critère */
+    const tous = within(screen.getByRole('list', { name: 'Critères sans valeur à comparer' })).getAllByRole('listitem').map(texte);
+    expect(tous).toHaveLength(1);
+    expect(tous[0]).toMatch(/de votre phrase/);
     expect(provenanceCritere({ origine: 'vous' })).toBe('de votre phrase');
     expect(provenanceCritere({ origine: 'locale' })).toBe('calculé sur place');
   });
@@ -97,10 +100,13 @@ describe('3 · IA indisponible : aucun « Ensuite : l’IA … » (n° 24)', () 
     expect(t).not.toMatch(/Ensuite : l'IA/);
     expect(t).not.toContain("l'IA le proposera");
     expect(t).not.toContain("l'IA les cherche");
-    expect(t).toContain('Ensuite : collez un lien');
+    /* critique 6, n° 16 : plus d'encadré « Ensuite… » ; les rubriques disent qui agit, sans promesse de l'IA */
+    expect(t).toContain('Façons · aucune');
   });
-  it('IA disponible : la suite de v04-4 reste', () => {
-    expect(texte(monter(null).container)).toContain("Ensuite : l'IA cherche les façons");
+  it('IA disponible : chaque rubrique dit qui agit (v04-4), sans encadré « Ensuite »', () => {
+    const t = texte(monter(null).container);
+    expect(t).toContain("Façons · aucune : l'IA les cherche");
+    expect(t).not.toContain('Ensuite :');
   });
 });
 

@@ -233,14 +233,19 @@ describe('P1, P2 : retourDuRangement suit les effets finaux du message, jamais l
 describe('corr2-L1 : la découpe annoncée est celle appliquée (planVrac, versLignesAnnoncees)', () => {
   const proche = (t: string) => (/bacs/.test(t) ? { carnetId: 'c-evier', titre: 'Évier inox' } : /hotte/.test(t) ? { carnetId: 'c-ventil', titre: 'Ventilation' } : null);
 
-  it('les lignes sans carnet proche vont ensemble dans UN carnet neuf, titré par la première ; le compteur compte les carnets distincts', () => {
+  /* critique 6, n° 1 : un carnet neuf par objet (titré par sa ligne), le brassin ensemble ; plus jamais UN carnet pour toutes les lignes */
+  it('les lignes sans carnet proche ouvrent un carnet par objet ; le brassin va dans « Prochain brassin » ; le compteur compte les carnets distincts', () => {
     const plan = planVrac([{ texte: '2 bacs pour laver' }, { texte: 'ajouter le sel' }, { texte: 'prochain brassage jeudi' }, { texte: 'hotte trop large' }], proche);
     /* n° 30 : le titre neuf est mis en forme */
     expect(plan.titreNeuf).toBe('Ajouter le sel');
-    expect(plan.lignes.map((l) => l.carnetId ?? `neuf:${l.titre}`)).toEqual(['c-evier', 'neuf:Ajouter le sel', 'neuf:Ajouter le sel', 'c-ventil']);
-    expect(plan.carnets).toBe(3);
+    expect(plan.neufs).toEqual(['Ajouter le sel', 'Prochain brassin']);
+    expect(plan.lignes.map((l) => l.carnetId ?? `neuf:${l.titre}`)).toEqual(['c-evier', 'neuf:Ajouter le sel', 'neuf:Prochain brassin', 'c-ventil']);
+    expect(plan.carnets).toBe(4);
     expect(planVrac([{ texte: '2 bacs' }, { texte: 'bacs encore' }], proche)).toMatchObject({ carnets: 1, titreNeuf: null });
-    expect(planVrac([{ texte: 'a b c' }, { texte: 'd e f' }], proche).carnets).toBe(1);
+    /* deux lignes du même objet partagent leur carnet ; deux objets sans mot commun, deux carnets */
+    expect(planVrac([{ texte: 'moulin à malt : 2 cylindres ?' }, { texte: 'poussière du moulin' }], proche)).toMatchObject({ carnets: 1, neufs: ['Moulin à malt'] });
+    expect(planVrac([{ texte: 'a b c' }, { texte: 'd e f' }], proche).carnets).toBe(2);
+    expect(planVrac([{ texte: 'Sol local : 2 bacs' }], () => null, 'ZZ TEST — ').neufs).toEqual(['ZZ TEST — Sol local']);
   });
 
   it('P3 (vision 3, m390 22-23) : sur la fixture, la note de m390 touche 2 carnets (Évier + UN neuf), celle du rejeu 2 (Évier, Ventilation)', () => {
@@ -248,8 +253,9 @@ describe('corr2-L1 : la découpe annoncée est celle appliquée (planVrac, versL
     const plan = (note: string) => planVrac(analyserTexte(note), t => rattacher(t, cs));
     const m390 = plan('ZZ TEST — 2 bacs pour laver les fûts ; ZZ TEST — ajouter le sel ; ZZ TEST — prochain brassage jeudi');
     /* critique 4 (lot A, P4, P11) : l'analyse locale met la ligne en forme (préfixe du banc retiré, majuscule) ; le carnet neuf en prend le titre */
-    expect(m390.lignes.map(l => l.carnetId ?? `neuf:${l.titre}`)).toEqual([ID_EVIER, 'neuf:Ajouter le sel', 'neuf:Ajouter le sel']);
-    expect(m390.carnets).toBe(2);
+    /* critique 6, n° 1 : un carnet par objet ; le jour de brassage dans « Prochain brassin » */
+    expect(m390.lignes.map(l => l.carnetId ?? `neuf:${l.titre}`)).toEqual([ID_EVIER, 'neuf:Ajouter le sel', 'neuf:Prochain brassin']);
+    expect(m390.carnets).toBe(3);
     const rejeu = plan('ZZ TEST — évier : 2 bacs inox de 40 cm\nventilation : hotte 120 cm au-dessus de la cuve\névier : robinet à pédale');
     expect(rejeu.lignes.map(l => l.carnetId)).toEqual([ID_EVIER, ID_VENTILATION, ID_EVIER]);
     expect(rejeu.carnets).toBe(2);

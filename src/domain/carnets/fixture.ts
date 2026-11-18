@@ -11,6 +11,32 @@ import type { Article, CarnetDoc, DonneesCarnet, MessageDoc, Valeur } from './mo
 
 export const PREFIXE_BANC = 'ZZ TEST — ';
 
+/**
+ * La note en vrac à taper au banc (états 22 et 23, D-139, D-140). Critique 6, doute : une note tapée à la main portait une pompe à
+ * « 1 800 m³/h » (absurde : une pompe de transfert de brasserie débite 2 à 5 m³/h, 30 à 80 L/min). Valeurs plausibles, exemples.
+ */
+export const NOTE_EN_VRAC_BANC = 'Pour le bac : 2 bacs de lavage.\nPour la hotte : tient 80 °C.\nPour la pompe : 3 m³/h.';
+
+/**
+ * Critique 6, n° 20 (R05, D-78, p2:h01-6) : une « photo de la page collée » **simulée**, pour prouver la photo lue de l'article ouvert.
+ * Image locale (SVG en URL de données : aucun réseau, aucun site réel), dessinée pour le banc : une hotte inox au-dessus d'une cuve,
+ * sur un mur carrelé. Les articles qui la portent sont des exemples (`origine: 'exemple'`), l'écran le dit (« exemple »).
+ */
+export const PHOTO_BANC_HOTTE = `data:image/svg+xml;charset=utf-8,${encodeURIComponent([
+  '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 360" width="640" height="360">',
+  '<defs><linearGradient id="m" x1="0" x2="1"><stop offset="0" stop-color="#9aa6ad"/><stop offset=".5" stop-color="#e4e9ec"/><stop offset="1" stop-color="#8d989f"/></linearGradient>',
+  '<pattern id="c" width="40" height="40" patternUnits="userSpaceOnUse"><rect width="40" height="40" fill="#eef1ee"/><path d="M40 0H0V40" fill="none" stroke="#d3d9d4" stroke-width="2"/></pattern></defs>',
+  '<rect width="640" height="360" fill="url(#c)"/>',
+  '<rect y="300" width="640" height="60" fill="#c9c2b6"/>',
+  '<rect x="290" y="0" width="60" height="70" fill="url(#m)" stroke="#7d878d" stroke-width="2"/>',
+  '<path d="M200 150 L270 70 H370 L440 150 Z" fill="url(#m)" stroke="#6f797f" stroke-width="3"/>',
+  '<rect x="186" y="150" width="268" height="18" rx="4" fill="#b8c1c6" stroke="#6f797f" stroke-width="3"/>',
+  '<path d="M260 190 q10 -14 0 -28 M320 196 q10 -14 0 -28 M380 190 q10 -14 0 -28" fill="none" stroke="#ffffff" stroke-width="6" stroke-linecap="round" opacity=".9"/>',
+  '<rect x="236" y="205" width="168" height="95" rx="8" fill="url(#m)" stroke="#6f797f" stroke-width="3"/>',
+  '<rect x="226" y="198" width="188" height="14" rx="5" fill="#a9b3b8" stroke="#6f797f" stroke-width="3"/>',
+  '</svg>'
+].join(''))}`;
+
 const ex = (valeur: number | string | boolean, unite?: string): Valeur => (unite ? { valeur, unite, origine: 'exemple' } : { valeur, origine: 'exemple' });
 const lien = (n: string) => `https://exemple.invalid/${n}`;
 const article = (a: Omit<Article, 'lecture' | 'domaine' | 'devise'> & { devise?: string }): Article => ({
@@ -91,7 +117,7 @@ function ventilation(): CarnetDoc {
     ],
     articles: [
       article({ id: 'ZZ-V-A1', url: lien('v1'), nom: 'Hotte inox 120 cm + moteur', prixCentimes: 260000, vendeur: 'Inox Broye', pays: 'CH', dispo: 'en stock', faconId: 'ZZ-V-F1', valeurs: { 'débit': ex(1800, 'm³/h'), 'tient 80 °C': ex(true) } }),
-      article({ id: 'ZZ-V-A2', url: lien('v2'), nom: 'Hotte murale 100 cm', prixCentimes: 145000, vendeur: 'Gastro Lüftung', pays: 'DE', dispo: 'délai 4 semaines', faconId: 'ZZ-V-F1', valeurs: { 'débit': ex(1200, 'm³/h'), 'tient 80 °C': ex(true) }, veille: { active: true, depuis: '2026-11-04T09:00:00.000Z' } }),
+      article({ id: 'ZZ-V-A2', url: lien('v2'), nom: 'Hotte murale 100 cm', photo: PHOTO_BANC_HOTTE, prixCentimes: 145000, vendeur: 'Gastro Lüftung', pays: 'DE', dispo: 'délai 4 semaines', faconId: 'ZZ-V-F1', valeurs: { 'débit': ex(1200, 'm³/h'), 'tient 80 °C': ex(true) }, veille: { active: true, depuis: '2026-11-04T09:00:00.000Z' } }),
       article({ id: 'ZZ-V-A3', url: lien('v3'), nom: 'Extracteur mural hélicoïde', prixCentimes: 42000, vendeur: 'Ventil Jura', pays: 'CH', dispo: 'en stock', faconId: 'ZZ-V-F2', valeurs: { 'débit': ex(1500, 'm³/h'), 'tient 80 °C': ex(false) } }),
       article({ id: 'ZZ-V-A4', url: lien('v4'), nom: 'Extracteur centrifuge en ligne', prixCentimes: 69000, vendeur: 'Aéro Rhône', pays: 'FR', dispo: 'en stock', faconId: 'ZZ-V-F2', valeurs: { 'débit': ex(1100, 'm³/h') } }),
       article({ id: 'ZZ-V-A5', url: lien('v5'), valeurs: {} }),
@@ -319,6 +345,11 @@ export function fixtureCarnets(o: OptionsFixture = {}): CreativeItem[] {
     const garde = new Set<string>(ARTICLES_REDUITS.slice(0, o.articles));
     v.carnet.articles = v.carnet.articles.filter(a => garde.has(a.id));
     v.carnet.facons = v.carnet.facons.filter(f => f.etat !== 'ecartee');
+  }
+  if (o.g8) {
+    /* critique 6, n° 17 : « pas trop de bruit » ne tranche que si un 3e article le porte (valeurs d'exemple, marquées) */
+    const bruit: Record<string, Valeur> = { 'ZZ-V-A3': ex(62, 'dB'), 'ZZ-V-A4': ex(58, 'dB') };
+    for (const a of v.carnet.articles) if (bruit[a.id]) a.valeurs = { ...(a.valeurs ?? {}), bruit: bruit[a.id] };
   }
   if (o.g8) v.carnet.criteres.push({ id: 'ZZ-V-K4', texte: CRITERE_BRUIT, caracteristique: { nom: 'bruit', unite: 'dB', sens: 'moins' }, origine: 'ia', source: 'ia' });
   return JSON.parse(JSON.stringify([v, evier(), embouteillage(), frigo(), densimetre(), extraction(), ...(o.g35 ? [ventilationCave()] : []), ...messages()])) as CreativeItem[];

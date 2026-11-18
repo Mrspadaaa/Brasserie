@@ -36,7 +36,8 @@ export type BandeauV =
   | { sorte: 'lien'; url: string; lu: boolean; ici?: boolean }
   /* P21 : une photo rangée */
   | { sorte: 'photo'; ici?: boolean }
-  | { sorte: 'article'; faconNom?: string }
+  /* critique 6, n° 12 : `rang`, « 1re de sa façon, devant Hotte inox 120 cm » (R26, G20) */
+  | { sorte: 'article'; faconNom?: string; rang?: string }
   | { sorte: 'deuxieme'; nom: string; rang: number; faconsNees?: number }
   | { sorte: 'ailleurs'; carnet: string; raison?: string; onDeplacer?: () => void; cite?: string; article?: ArticleRangeV }
   | { sorte: 'vrac'; lignes: number; carnets: number }
@@ -54,7 +55,7 @@ export function texteBandeau(b: BandeauV): string {
     case 'range': return '✓ Rangé ici, à l\'instant';
     case 'lien': return b.lu ? '✓ Lien rangé ici' : '✓ Lien rangé ici · page non lue';
     case 'photo': return '✓ Photo rangée ici';
-    case 'article': return b.faconNom ? `✓ Article rangé ici, dans ${b.faconNom}` : '✓ Article rangé ici, à l\'instant';
+    case 'article': return `${b.faconNom ? `✓ Article rangé ici, dans ${b.faconNom}` : '✓ Article rangé ici, à l\'instant'}${b.rang ? ` · ${b.rang}` : ''}`;
     case 'deuxieme': return `${b.nom} rangé, ${b.rang === 1 ? '1er' : `${b.rang}e`}`;
     case 'ailleurs': return `Rangé dans ${b.carnet}, à l'instant`;
     case 'vrac': return `✓ ${b.lignes} ligne${b.lignes > 1 ? 's' : ''} rangée${b.lignes > 1 ? 's' : ''} dans ${b.carnets} carnet${b.carnets > 1 ? 's' : ''}`;

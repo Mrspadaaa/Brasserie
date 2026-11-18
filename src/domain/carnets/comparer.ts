@@ -7,7 +7,7 @@
  */
 import { parseDecimal } from '../../ui/numericInput';
 import { quantitesDe, normaliser, type LigneLocale, type Quantite } from './analyseLocale';
-import { nomArticle, statutDe, type Article, type CarnetDoc, type Caracteristique, type Critere, type DonneesCarnet, type StatutCarnet, type Valeur } from './modele';
+import { nomArticle, sourceDuCritere, statutDe, type Article, type CarnetDoc, type Caracteristique, type Critere, type DonneesCarnet, type StatutCarnet, type Valeur } from './modele';
 
 type Donnees = Pick<DonneesCarnet, 'criteres' | 'facons' | 'articles' | 'choix'>;
 const donnees = (c: CarnetDoc | Donnees): Donnees => ('carnet' in c ? c.carnet : c);
@@ -35,7 +35,11 @@ export function avecArticle(nom: string, sens?: Caracteristique['sens']): string
  * Une colonne : la caractéristique d'un critère (`critereId`, `critereTexte`), ou une valeur lue sur au moins 2 articles (`lue`, sens
  * 'texte' : montrée, jamais classée, car son sens n'est dit par aucun critère).
  */
-export interface Colonne { nom: string; unite?: string; sens: Caracteristique['sens']; critereId?: string; critereTexte?: string; lue?: boolean }
+export interface Colonne {
+  nom: string; unite?: string; sens: Caracteristique['sens']; critereId?: string; critereTexte?: string; lue?: boolean;
+  /** D'où vient le critère de la colonne (`sourceDuCritere`) : « proposé par l'IA » se dit dans Comparer sans relire le carnet. */
+  critereSource?: 'phrase' | 'ia';
+}
 /** La colonne du prix (sens moins), comparée seulement entre prix connus de même devise. */
 export const COLONNE_PRIX = 'prix';
 
@@ -47,7 +51,7 @@ export function colonnesDe(c: CarnetDoc | Donnees): Colonne[] {
     const car = k.caracteristique;
     if (!car || vues.has(normaliser(car.nom))) continue;
     vues.add(normaliser(car.nom));
-    sortie.push({ nom: car.nom, ...(car.unite ? { unite: car.unite } : {}), sens: car.sens, critereId: k.id, critereTexte: k.texte });
+    sortie.push({ nom: car.nom, ...(car.unite ? { unite: car.unite } : {}), sens: car.sens, critereId: k.id, critereTexte: k.texte, critereSource: sourceDuCritere(k) });
   }
   return sortie;
 }
@@ -88,13 +92,68 @@ export function aRelireDe(c: CarnetDoc | Donnees): Article[] {
   return d.articles.filter(a => estARelire(a) && raisonEcarte(d, a) === null);
 }
 
-/** La valeur d'un article pour une colonne ; absente si inconnue ou dans une autre unité (jamais convertie, jamais 0). */
-export function valeurDe(a: Article, col: Pick<Colonne, 'nom' | 'unite'>): Valeur | undefined {
+/** La valeur que porte l'article lui-même ; absente si inconnue ou dans une autre unité (jamais convertie, jamais 0). */
+function valeurPropre(a: Article, col: Pick<Colonne, 'nom' | 'unite'>): Valeur | undefined {
   const cle = Object.keys(a.valeurs).find(k => normaliser(k) === normaliser(col.nom));
   const v = cle ? a.valeurs[cle] : undefined;
   if (!v) return undefined;
   if (col.unite && v.unite && v.unite !== col.unite) return undefined;
   return v;
+}
+
+/**
+ * Critique 6, n° 18 : l'état oui/non que porte sa façon (« ne tient pas 80 °C », pastille de la façon dans le carnet). L'article ne dit
+ * rien de cette caractéristique, et tous les articles lus de la même façon qui la disent disent la même chose : la cellule prend cet
+ * état, marqué `locale` (calcul local, d'après sa façon). Façon muette ou partagée : `undefined`, l'inconnu reste inconnu, jamais 0.
+ */
+export function valeurDeFacon(c: CarnetDoc | Donnees, a: Article, nom: string): Valeur | undefined {
+  const d = donnees(c);
+  /* la façon doit être une façon du carnet : c'est elle qui porte l'état (sa pastille), pas un identifiant orphelin */
+  if (!a.faconId || !d.facons.some(f => f.id === a.faconId)) return undefined;
+  const vus = d.articles
+    .filter(x => x.id !== a.id && x.faconId === a.faconId && x.lecture === 'lue')
+    .map(x => ordonnable(valeurPropre(x, { nom }), 'oui-non'))
+    .filter((n): n is number => n !== null);
+  if (!vus.length || vus.some(n => n !== vus[0])) return undefined;
+  return { valeur: vus[0] === 1, origine: 'locale' };
+}
+
+/**
+ * La valeur d'un article pour une colonne ; absente si inconnue ou dans une autre unité (jamais convertie, jamais 0). Avec le carnet et
+ * une colonne oui-non, une valeur absente se lit sur sa façon (`valeurDeFacon`, critique 6 n° 18).
+ */
+export function valeurDe(a: Article, col: Pick<Colonne, 'nom' | 'unite'> & { sens?: Colonne['sens'] }, carnet?: CarnetDoc | Donnees): Valeur | undefined {
+  const v = valeurPropre(a, col);
+  if (v || !carnet || col.sens !== 'oui-non') return v;
+  return valeurDeFacon(carnet, a, col.nom);
+}
+
+/** L'article avec, pour chaque colonne oui-non qu'il tait, l'état de sa façon (n° 18) ; le même objet si rien ne s'ajoute. */
+function completeParFacon(d: Donnees, a: Article, colonnes: readonly Colonne[]): Article {
+  let valeurs = a.valeurs;
+  for (const k of colonnes) {
+    if (k.sens !== 'oui-non' || valeurPropre(a, k)) continue;
+    const v = valeurDeFacon(d, a, k.nom);
+    if (v) valeurs = { ...valeurs, [k.nom]: v };
+  }
+  return valeurs === a.valeurs ? a : { ...a, valeurs };
+}
+
+/* ---------- libellé d'une caractéristique (critique 6, n° 7, L14) ---------- */
+
+/** « ambiante » → « ambiance » : l'adjectif qui suit « température » devient le nom de ce qui est mesuré. */
+const NOM_DE_L_ADJECTIF: Record<string, string> = { ambiante: 'ambiance', exterieure: 'extérieur', interieure: 'intérieur' };
+
+/**
+ * Le nom court d'une colonne, par sa caractéristique et jamais par l'unité seule : « température ambiante max » (°C) → « ambiance max »,
+ * pour qu'un appareil de froid ne lise pas « 43 °C » mais « ambiance max 43 °C ». Un nom sans « température + adjectif » reste tel quel.
+ */
+export function libelleCaracteristique(nom: string): string {
+  const n = nom.trim();
+  const m = /^temp[ée]rature\s+(\S+)(.*)$/i.exec(n);
+  if (!m) return n;
+  const court = NOM_DE_L_ADJECTIF[normaliser(m[1])];
+  return court ? `${court}${m[2]}` : n;
 }
 
 /** Valeur ordonnable : nombre pour plus/moins, booléen pour oui-non ; sinon `null` (inconnue ou non comparable). */
@@ -155,6 +214,14 @@ export interface LigneTableau {
   moinsBienQue?: number;
   /** Écarté (façon écartée ou écarté au choix), avec sa raison : gardé à la fin (D-52). */
   ecarte?: { raison: string };
+  /**
+   * Critique 6 (doute D-122) : par nom de colonne, la valeur qui manque le seuil que vous avez écrit (dans le critère ou dans une note :
+   * « il faudrait au moins 1 500 m³/h ») : « sous votre minimum » ou « au-dessus de votre maximum ». Absent si tout passe ou si rien
+   * n'est su.
+   */
+  horsSeuil?: Record<string, string>;
+  /** Écarté au moment du choix (et non par sa façon) : il compte parmi ceux entre lesquels il a choisi (`placesParmiTous`). */
+  ecarteAuChoix?: true;
 }
 
 /**
@@ -163,7 +230,11 @@ export interface LigneTableau {
  * contrat lu par l'IA et le carnet). `rangePar` : la règle même du classement, en mots (« tient 80 °C d'abord, puis le débit, puis le
  * prix ») ; `null` si rien ne classe.
  */
-export interface Tableau { colonnes: Colonne[]; lignes: LigneTableau[]; rangePar: string | null; aRelire: Article[] }
+export interface Tableau {
+  colonnes: Colonne[]; lignes: LigneTableau[]; rangePar: string | null; aRelire: Article[];
+  /** Critique 6, n° 19 : les caractéristiques qui rangent, dans l'ordre (« tient 80 °C », « le débit ») ; « le prix » s'il range seul. */
+  rangeParNoms?: string[];
+}
 
 /**
  * La raison d'un article écarté : écarté au choix, sinon sa façon écartée ; `null` s'il ne l'est pas. Le nom de l'article se dit à côté
@@ -311,13 +382,16 @@ export function rangeParDetail(c: CarnetDoc | Donnees): RangeParDetail {
  * et sans valeur n'y entre pas : il va dans `aRelire` (P6).
  */
 export function tableau(c: CarnetDoc | Donnees): Tableau | null {
-  const d = donnees(c);
-  if (d.articles.length < 2) return null;
-  const aRelire = aRelireDe(d);
+  const d0 = donnees(c);
+  if (d0.articles.length < 2) return null;
+  const aRelire = aRelireDe(d0);
   const relire = new Set(aRelire.map(a => a.id));
+  const criteres = colonnesDe(d0);
+  /* n° 18 : une cellule oui-non muette prend l'état de sa façon, partout (tri, places, compromis, « moins bien que ») */
+  const d: Donnees = { ...d0, articles: d0.articles.map(a => completeParFacon(d0, a, criteres)) };
   const ecartes = d.articles.filter(a => raisonEcarte(d, a) !== null);
   const libres = d.articles.filter(a => raisonEcarte(d, a) === null && !relire.has(a.id));
-  const criteres = colonnesDe(d);
+  const seuils = seuilsDe(c, d.criteres);
   const colonnes = [...criteres, ...colonnesLues([...libres, ...ecartes], criteres)];
   const cles = clesDe(criteres, libres);
   const enLice = trier(libres, cles);
@@ -329,15 +403,67 @@ export function tableau(c: CarnetDoc | Donnees): Tableau | null {
     for (const k of colonnes) { const v = valeurDe(a, k); if (v) cellules[k.nom] = v; }
     const raison = raisonEcarte(d, a);
     const dominant = rang !== null ? moinsBienQue(a, enLice, colonnes) : null;
+    const hors: Record<string, string> = {};
+    for (const s of seuils) {
+      const v = ordonnable(cellules[s.colonne], s.sens);
+      if (v === null) continue;
+      if (s.sens === 'plus' ? v < s.valeur : v > s.valeur) hors[s.colonne] = s.sens === 'plus' ? 'sous votre minimum' : 'au-dessus de votre maximum';
+    }
     return {
       articleId: a.id, nom: noms.get(a.id) ?? nomArticle(a), rang, cellules,
       ...(a.prixCentimes !== undefined ? { prixCentimes: a.prixCentimes } : {}), ...(a.devise ? { devise: a.devise } : {}),
       moinsBienPartout: rang !== null && moinsBienPartout(a, enLice, colonnes),
       ...(dominant !== null ? { moinsBienQue: dominant } : {}),
-      ...(raison !== null ? { ecarte: { raison } } : {})
+      ...(raison !== null ? { ecarte: { raison } } : {}),
+      ...(d.choix?.ecartes.some(e => e.articleId === a.id) ? { ecarteAuChoix: true as const } : {}),
+      ...(Object.keys(hors).length ? { horsSeuil: hors } : {})
     };
   };
-  return { colonnes, lignes: [...enLice.map((a, i) => ligne(a, i + 1)), ...ecartes.map(a => ligne(a, null))], rangePar: rangeParCles(cles), aRelire };
+  const rangeParNoms = cles.some(k => k.sorte === 'colonne')
+    ? cles.flatMap(k => (k.sorte === 'colonne' ? [avecArticle(k.colonne.nom, k.colonne.sens)] : []))
+    : cles.length ? ['le prix'] : [];
+  return { colonnes, lignes: [...enLice.map((a, i) => ligne(a, i + 1)), ...ecartes.map(a => ligne(a, null))], rangePar: rangeParCles(cles), aRelire, rangeParNoms };
+}
+
+/* ---------- seuils écrits par lui : dans le critère, sinon dans une note (critique 6, doute D-122) ---------- */
+
+type NoteLue = { texte: string };
+const notesDe = (c: CarnetDoc | Donnees): NoteLue[] => {
+  const n = 'carnet' in c ? c.carnet.notes : (c as { notes?: unknown }).notes;
+  return Array.isArray(n) ? n.filter((x): x is NoteLue => !!x && typeof (x as NoteLue).texte === 'string') : [];
+};
+const MOTS_MINIMUM = /(au moins|minimum|pas moins de|\bmin\b)/i;
+const MOTS_MAXIMUM = /(au plus|maximum|pas plus de|\bmax\b)/i;
+
+/**
+ * Le seuil d'un critère chiffré : écrit dans le critère (`seuilDe`), sinon dans une note du carnet qui le borne, dans l'unité de sa
+ * caractéristique (« il faudrait au moins 1 500 m³/h » : minimum d'un critère « plus » en m³/h). `null` si rien ne le dit. Le nombre
+ * vient de son texte, jamais d'ailleurs.
+ */
+export function seuilDuCarnet(c: CarnetDoc | Donnees, k: Critere): (Quantite & { source: 'critere' | 'note' }) | null {
+  const car = k.caracteristique;
+  if (!car || (car.sens !== 'plus' && car.sens !== 'moins')) return null;
+  const s = seuilDe(k);
+  if (s) return { ...s, source: 'critere' };
+  if (!car.unite) return null;
+  const mots = car.sens === 'plus' ? MOTS_MINIMUM : MOTS_MAXIMUM;
+  for (const n of notesDe(c)) {
+    if (!mots.test(n.texte)) continue;
+    const q = quantitesDe(n.texte).find(x => x.unite === car.unite);
+    if (q) return { ...q, source: 'note' };
+  }
+  return null;
+}
+
+function seuilsDe(c: CarnetDoc | Donnees, criteres: readonly Critere[]): Array<{ colonne: string; sens: 'plus' | 'moins'; valeur: number }> {
+  const sortie: Array<{ colonne: string; sens: 'plus' | 'moins'; valeur: number }> = [];
+  for (const k of criteres) {
+    const car = k.caracteristique;
+    if (!car || (car.sens !== 'plus' && car.sens !== 'moins')) continue;
+    const s = seuilDuCarnet(c, k);
+    if (s && !sortie.some(x => normaliser(x.colonne) === normaliser(car.nom))) sortie.push({ colonne: car.nom, sens: car.sens, valeur: s.valeur });
+  }
+  return sortie;
 }
 
 /* ---------- places, compromis, pourquoi (P14, P16, P17) : calcul local, chaque nombre vient du tableau ---------- */
@@ -370,6 +496,12 @@ export interface Place {
   /** Rang (1 = le meilleur) ; absent si la colonne ne classe pas (sens texte) ou si la valeur est inconnue. */
   rang?: number;
   exAequo?: boolean;
+  /** Critique 6, n° 6 : le nombre d'articles qui partagent la valeur (ex aequo) ; « 1er sur 2 ex aequo » se compte sur eux seuls. */
+  partage?: number;
+  /** Critique 6, n° 19 : le rang sur cette colonne, dit avec son nom : « 3e pour le débit », « 1er ex aequo pour tient 80 °C ». */
+  rangColonne?: string;
+  /** Critique 6, n° 7 : le nom court de la caractéristique (« ambiance max » pour « température ambiante max »). */
+  libelle?: string;
   /** Le nombre d'articles en lice dont la valeur est connue. */
   sur: number;
   /** Pour la réglette : la valeur, la meilleure et la pire connues, et toutes les valeurs connues (rangs). */
@@ -387,47 +519,75 @@ function nombreCellule(l: LigneTableau, k: Colonne): number | null {
   return ordonnable(l.cellules[k.nom], k.sens === 'texte' ? 'plus' : k.sens);
 }
 
-function placeSur(t: Tableau, l: LigneTableau, nom: string, unite: string | undefined, sens: Colonne['sens'], lire: (x: LigneTableau) => number | null, texte: string | null, critere: boolean): Place | null {
+function placeSur(lignes: readonly LigneTableau[], tous: boolean, l: LigneTableau, nom: string, unite: string | undefined, sens: Colonne['sens'], lire: (x: LigneTableau) => number | null, texte: string | null, critere: boolean): Place | null {
   if (texte === null) return null;
-  const connues = lignesEnLice(t).map(lire).filter((n): n is number => n !== null);
+  const connues = lignes.map(lire).filter((n): n is number => n !== null);
   const v = lire(l);
-  const base: Place = { nom, ...(unite ? { unite } : {}), sens, texte, sur: connues.length, critere };
-  if (v === null || sens === 'texte' || l.rang === null) return base;
+  const libelle = nom === 'prix' ? 'prix' : libelleCaracteristique(nom);
+  const base: Place = { nom, ...(unite ? { unite } : {}), sens, texte, sur: connues.length, critere, ...(libelle !== nom ? { libelle } : {}) };
+  if (v === null || sens === 'texte' || (!tous && l.rang === null)) return base;
   const mieux = (a: number, b: number) => (sens === 'moins' ? a < b : a > b);
   const rang = 1 + connues.filter(x => mieux(x, v)).length;
-  const exAequo = connues.filter(x => x === v).length > 1;
+  /* n° 6 : l'ex aequo se compte sur les seuls articles qui partagent la valeur (« 1er sur 2 ex aequo »), jamais sur tous les connus */
+  const partage = connues.filter(x => x === v).length;
+  const exAequo = partage > 1;
   const meilleure = sens === 'moins' ? Math.min(...connues) : Math.max(...connues);
   const pire = sens === 'moins' ? Math.max(...connues) : Math.min(...connues);
-  return { ...base, rang, ...(exAequo ? { exAequo } : {}), valeur: v, meilleure, pire, toutes: connues };
+  const rangColonne = `${ordinal(rang)}${exAequo ? ' ex aequo' : ''} pour ${nom === 'prix' ? 'le prix' : avecArticle(libelle, sens)}`;
+  return { ...base, rang, ...(exAequo ? { exAequo, partage } : {}), rangColonne, valeur: v, meilleure, pire, toutes: connues };
 }
 
-/** Les places d'un article : chaque colonne connue (critères, valeurs lues), et le prix ; dans l'ordre de Comparer (critères, prix, lues). */
-export function placesDe(t: Tableau, articleId: string): Place[] {
+function placesSelon(t: Tableau, articleId: string, tous: boolean): Place[] {
   const l = t.lignes.find(x => x.articleId === articleId);
   if (!l) return [];
+  const lignes = tous ? t.lignes.filter(x => x.rang !== null || x.ecarteAuChoix) : lignesEnLice(t);
   const sortie: Place[] = [];
   const devise = t.lignes.find(x => x.devise)?.devise ?? 'CHF';
   const deCol = (k: Colonne) => {
     const v = l.cellules[k.nom];
     const texte = v ? `${nombreTexte(v.valeur)}${v.unite && typeof v.valeur !== 'boolean' ? ` ${v.unite}` : ''}` : null;
-    return placeSur(t, l, k.nom, k.unite, k.sens, x => nombreCellule(x, k), texte, !!k.critereId);
+    return placeSur(lignes, tous, l, k.nom, k.unite, k.sens, x => nombreCellule(x, k), texte, !!k.critereId);
   };
   for (const k of t.colonnes.filter(x => x.critereId)) { const p = deCol(k); if (p) sortie.push(p); }
-  const prix = placeSur(t, l, 'prix', devise, 'moins', x => x.prixCentimes ?? null, prixTexte(l.prixCentimes, l.devise), false);
+  const prix = placeSur(lignes, tous, l, 'prix', devise, 'moins', x => x.prixCentimes ?? null, prixTexte(l.prixCentimes, l.devise), false);
   if (prix) sortie.push(prix);
   for (const k of t.colonnes.filter(x => !x.critereId)) { const p = deCol(k); if (p) sortie.push(p); }
   return sortie;
 }
 
+/**
+ * Les places d'un article parmi les articles en lice : chaque colonne connue (critères, valeurs lues), et le prix ; dans l'ordre de
+ * Comparer (critères, prix, lues). Même tableau que Comparer, donc même rang (n° 6). `rangColonne` dit le rang d'une colonne avec son nom
+ * (« 3e pour le débit », n° 19) ; le rang général se lit par `rangGeneral`.
+ */
+export function placesDe(t: Tableau, articleId: string): Place[] {
+  return placesSelon(t, articleId, false);
+}
+
+/**
+ * Les places d'un article parmi ceux entre lesquels il a choisi : les articles en lice et les écartés au choix (g05-11, « 1er sur 5 » :
+ * le choix revu se mesure à ce qu'il a départagé, même quand le choix a écarté les autres). Un article d'une façon écartée n'y est pas :
+ * il répond à une autre façon de faire.
+ */
+export function placesParmiTous(t: Tableau, articleId: string): Place[] {
+  return placesSelon(t, articleId, true);
+}
+
+/**
+ * Critique 6, n° 19 : le seul rang général d'un article, nommé : « 2e sur 4, rangé par tient 80 °C puis le débit ». `null` pour un écarté
+ * ou un article hors du tableau. Le rang d'une colonne, lui, se dit « 3e pour le débit » (`Place.rangColonne`).
+ */
+export function rangGeneral(t: Tableau, articleId: string): string | null {
+  const l = t.lignes.find(x => x.articleId === articleId);
+  if (!l || l.rang === null) return null;
+  const n = lignesEnLice(t).length;
+  const noms = t.rangeParNoms ?? [];
+  return `${ordinal(l.rang)} sur ${n}${noms.length ? `, rangé par ${noms.join(' puis ')}` : ''}`;
+}
+
 const rangF = (n: number) => (n === 1 ? 'la 1re' : `la ${n}e`);
 const majuscule = (s: string) => s.charAt(0).toUpperCase() + s.slice(1);
 
-/** « débit 1 800 m³/h », « tient 80 °C : oui » : une valeur avec le nom de sa colonne. */
-function dite(p: Place): string {
-  if (p.nom === 'prix') return p.texte;
-  /* une valeur oui-non, même lue sans critère (« tient 80 °C : oui »), se dit sans article */
-  return p.sens === 'oui-non' || /^(oui|non)$/.test(p.texte) ? `${p.nom} : ${p.texte}` : `${avecArticle(p.nom, p.sens)} ${p.texte}`;
-}
 
 /**
  * Le compromis, calculé sur le tableau (P14, g01-8 « Compromis : la 1re, … ») quand l'IA n'en a pas dit. Parmi les articles en lice qui
@@ -489,27 +649,93 @@ export function compromisDe(t: Tableau | null): string | null {
   return `la 1re, ${dits.join(' ; ')}`;
 }
 
+/** « tient 80 °C » → « à tenir 80 °C » ; « passe la porte » → « à passer la porte » ; un état (« stable sur une heure ») → « à être … ». */
+const INFINITIFS: Record<string, string> = {
+  tient: 'tenir', passe: 'passer', aspire: 'aspirer', capte: 'capter', sort: 'sortir', resiste: 'résister', supporte: 'supporter',
+  entre: 'entrer', rentre: 'rentrer', garde: 'garder', fait: 'faire', a: 'avoir', est: 'être', monte: 'monter', chauffe: 'chauffer'
+};
+function aFaire(nom: string): string {
+  const m = /^(\S+)(.*)$/.exec(nom.trim());
+  if (!m) return `à être ${nom.trim()}`;
+  const inf = INFINITIFS[normaliser(m[1])];
+  return inf ? `à ${inf}${m[2]}` : `à être ${nom.trim()}`;
+}
+
+/** « le plus gros débit », « le moins d'oxygène capté », « la cadence la plus haute », « l'ambiance max la plus haute ». */
+function superlatif(k: Colonne): string {
+  const nom = libelleCaracteristique(k.nom);
+  const n = normaliser(nom);
+  if (/^debit/.test(n)) return `le plus ${k.sens === 'plus' ? 'gros' : 'petit'} ${nom}`;
+  if (/^precision/.test(n)) return 'la meilleure précision';
+  if (k.sens === 'moins') return `le moins ${/^[aeiouyh]/.test(n) ? "d'" : 'de '}${nom}`;
+  const art = avecArticle(nom, k.sens);
+  if (art.startsWith('les ')) return `le plus de ${nom}`;
+  const mot = n.split(' ')[0] ?? '';
+  const feminin = art.startsWith('la ') || (art.startsWith("l'") && FEMININS.test(mot) && !MASCULINS_EN_EUR.test(mot));
+  return `${art} ${feminin ? 'la plus haute' : 'le plus haut'}`;
+}
+
 /**
- * Le pourquoi proposé à Choisir (P16) et redit sous « Pourquoi ce choix » (P17) : les valeurs et les rangs de l'article, calculés sur
- * le tableau. « Tient 80 °C : oui ; le débit 1 800 m³/h, 1er sur 3 ; 2 600 CHF, 4e sur 4 au prix ; en stock, Inox Broye (CH). »
- * Modifiable par lui ; `null` si l'article n'est pas dans le tableau.
+ * Critique 6, n° 21 (D-13, D-20) : le problème que l'article règle, en mots, sans recopier les chiffres (ils sont dans le tableau et sur
+ * les réglettes) : « la seule à tenir 80 °C avec le plus gros débit ». Calcul sur le tableau : les critères oui-non qu'il tient
+ * resserrent le groupe ; seule du groupe : « la seule à … » ; sinon la meilleure du groupe sur le premier critère chiffré : « … avec le
+ * plus gros débit » ; puis le prix s'il départage (« la moins chère », « moins chère que la 1re »). En lice : parmi les articles en
+ * lice ; choix revu (lui seul en lice) : parmi tous ceux du tableau, écartés compris. `null` si rien ne le distingue.
+ */
+function problemeRegle(t: Tableau, l: LigneTableau): string | null {
+  const enLice = lignesEnLice(t);
+  const pool = l.rang !== null && enLice.length >= 2 ? enLice : t.lignes.filter(x => x.rang !== null || x.ecarteAuChoix);
+  if (pool.length < 2) return null;
+  const criteres = t.colonnes.filter(k => k.critereId && k.sens !== 'texte');
+  let groupe = pool;
+  const tenus: string[] = [];
+  for (const k of criteres.filter(x => x.sens === 'oui-non')) {
+    if (nombreCellule(l, k) !== 1) continue;
+    tenus.push(k.nom);
+    groupe = groupe.filter(x => nombreCellule(x, k) === 1);
+  }
+  const morceaux: string[] = [];
+  const faire = tenus.map(aFaire).join(' et ');
+  const chiffre = criteres.find(k => (k.sens === 'plus' || k.sens === 'moins') && nombreCellule(l, k) !== null);
+  let sup: string | null = null;
+  let egal = false;
+  if (chiffre) {
+    const v = nombreCellule(l, chiffre)!;
+    const autres = groupe.filter(x => x.articleId !== l.articleId).map(x => nombreCellule(x, chiffre)).filter((n): n is number => n !== null);
+    if (autres.length && !autres.some(x => (chiffre.sens === 'moins' ? x < v : x > v))) { sup = superlatif(chiffre); egal = autres.includes(v); }
+  }
+  const p = l.prixCentimes;
+  const memes = groupe.filter(x => x.articleId !== l.articleId && x.prixCentimes !== undefined && (x.devise ?? 'CHF') === (l.devise ?? 'CHF'));
+  const moinsChere = p !== undefined && memes.length > 0 && memes.every(x => x.prixCentimes! > p);
+  let prixDit = false;
+  if (tenus.length && groupe.length === 1) morceaux.push(`la seule ${faire}`);
+  else if (tenus.length && sup && !egal) morceaux.push(`la seule ${faire} avec ${sup}`);
+  else if (tenus.length && sup) morceaux.push(`${tenus.join(' et ')}, avec ${sup} ex aequo`);
+  else if (tenus.length && moinsChere) { morceaux.push(`la moins chère qui ${tenus.join(' et ')}`); prixDit = true; }
+  else if (tenus.length) morceaux.push(tenus.join(' et '));
+  else if (sup) morceaux.push(egal ? `${sup}, ex aequo` : sup);
+  if (!prixDit && p !== undefined) {
+    const premier = enLice[0];
+    if (moinsChere) morceaux.push(morceaux.length ? 'et la moins chère' : 'la moins chère');
+    else if (l.rang !== null && l.rang > 1 && premier?.prixCentimes !== undefined && premier.prixCentimes > p) morceaux.push('moins chère que la 1re');
+  }
+  return morceaux.length ? morceaux.join(', ') : null;
+}
+
+/**
+ * Le pourquoi proposé à Choisir (P16) et redit sous « Pourquoi ce choix » (P17). Critique 6, n° 21 : il dit le problème réglé, pas les
+ * chiffres : « La seule à tenir 80 °C avec le plus gros débit ; en stock, Inox Broye (CH). » Modifiable par lui ; `null` si rien n'est
+ * à dire.
  */
 export function pourquoiDe(c: CarnetDoc | Donnees, articleId: string): string | null {
   const d = donnees(c);
-  const t = tableau(d);
+  const t = tableau(c);
   const a = d.articles.find(x => x.id === articleId);
   if (!a) return null;
   const parts: string[] = [];
-  if (t && t.lignes.some(l => l.articleId === articleId)) {
-    for (const p of placesDe(t, articleId)) {
-      if (p.nom === 'prix') { parts.push(`${p.texte}${p.rang && p.sur > 1 ? `, ${ordinal(p.rang)} sur ${p.sur} au prix` : ''}`); continue; }
-      if (!p.critere && !p.rang) { parts.push(dite(p)); continue; }
-      parts.push(`${dite(p)}${p.rang && p.sur > 1 && p.sens !== 'oui-non' ? `, ${ordinal(p.rang)} sur ${p.sur}${p.exAequo ? ' ex aequo' : ''}` : ''}`);
-    }
-  } else {
-    const prix = prixTexte(a.prixCentimes, a.devise);
-    if (prix) parts.push(prix);
-  }
+  const l = t?.lignes.find(x => x.articleId === articleId);
+  const regle = t && l ? problemeRegle(t, l) : null;
+  if (regle) parts.push(regle);
   const chez = [a.dispo, a.vendeur ? `${a.vendeur}${a.pays ? ` (${a.pays})` : ''}` : null].filter(Boolean).join(', ');
   if (chez) parts.push(chez);
   if (!parts.length) return null;
@@ -660,9 +886,15 @@ export function critereQuiTranche(c: CarnetDoc | Donnees): Tranche | null {
   }
   if (entre.length < 2) return null;
   /* critique 5, n° 21 : seulement une caractéristique mesurable que les deux premiers n'ont pas (absente ou inconnue) ; jamais un critère
-     sans caractéristique (« capter la buée » dit le besoin, il ne départage rien) */
+     sans caractéristique (« capter la buée » dit le besoin, il ne départage rien).
+     Critique 6, n° 17 (R44, D-133) : et seulement si cette caractéristique a une colonne, c'est-à-dire au moins une valeur connue dans le
+     tableau. Un critère déjà affiché dont personne n'a la valeur (« pas trop de bruit », aucune colonne de bruit) ne tranche rien. */
+  const colonneConnue = (k: Critere): boolean => {
+    const col = t?.colonnes.find(x => x.critereId === k.id);
+    return !!col && !!t && t.lignes.some(l => l.cellules[col.nom] !== undefined) && premiers.every(l => l.cellules[col.nom] === undefined);
+  };
   const critere = articles.length === 2
-    ? d.criteres.find(k => k.caracteristique && k.caracteristique.sens !== 'texte' && articles.every(a => !valeurDe(a, k.caracteristique!)))
+    ? d.criteres.find(k => k.caracteristique && k.caracteristique.sens !== 'texte' && articles.every(a => !valeurDe(a, k.caracteristique!, d)) && colonneConnue(k))
     : undefined;
   return critere ? { critere, entre: [entre[0], entre[1]] } : null;
 }

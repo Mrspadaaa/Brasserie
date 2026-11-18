@@ -153,7 +153,8 @@ describe('P22, P36 : IA éteinte, hors ligne, en échec', () => {
     expect(b).not.toBeNull();
     expect(b.textContent).toContain('IA éteinte : rangé sur l’appareil');
     expect(b.textContent).toContain('« filtre à air G4, 2 pièces »');
-    expect(b.textContent).toMatch(/dans Frigo de garde/);
+    /* décision du pilote (critique 6) : le titre stocké, « ZZ TEST — » compris */
+    expect(b.textContent).toMatch(/dans (ZZ TEST — )?Frigo de garde/);
   });
 
   it('hors ligne : même chose', async () => {
@@ -161,7 +162,7 @@ describe('P22, P36 : IA éteinte, hors ligne, en échec', () => {
     await envoyer(champ, 'filtre à air G4, 2 pièces');
     const b = document.querySelector('.cn-bandeau[data-avis="hors-ligne"]')!;
     expect(b.textContent).toContain('Hors ligne : rangé sur l’appareil');
-    expect(b.textContent).toMatch(/dans Frigo de garde/);
+    expect(b.textContent).toMatch(/dans (ZZ TEST — )?Frigo de garde/);
   });
 
   it('échec : un avis distinct de « L’IA range… », sans roue', async () => {

@@ -88,6 +88,16 @@ export function rattacher(texte: string, carnets: readonly CarnetDoc[], seuil = 
   return p && p.score >= seuil ? p : null;
 }
 
+/**
+ * Critique 6, n° 35 : « aucun de vos 0 carnets » ne se dit pas. 0 : « Aucun carnet encore » ; 1 : « Votre seul carnet n'en parle pas » ;
+ * sinon « Aucun de vos n carnets n'en parle ».
+ */
+export function aucunCarnetNEnParle(n: number): string {
+  if (n <= 0) return 'Aucun carnet encore';
+  if (n === 1) return 'Votre seul carnet n’en parle pas';
+  return `Aucun de vos ${n} carnets n’en parle`;
+}
+
 /** La raison dite d'un rattachement : « comme <titre> : <mots> ». Picto local (Q19). */
 export const raisonRattachement = (p: Proposition): string => `comme ${titreSansBanc(p.titre)} : ${p.mots.slice(0, 3).join(', ')}`;
 
@@ -104,7 +114,12 @@ export const categorieDe = (c: Pick<CarnetDoc, 'title'>): string | undefined => 
 export function carnetProche(c: CarnetDoc, carnets: readonly CarnetDoc[], seuil = SEUIL_RATTACHER): Proposition | null {
   const cat = categorieDe(c);
   if (!cat) return null;
-  const memes = carnets.filter(x => x.id !== c.id && !x.carnet.archive && categorieDe(x) === cat);
+  /* critique 6, n° 31 : le même objet ne suffit pas, il faut le même besoin. Les qualifiants des titres (« salle de brassage », « cave de
+     garde ») se recoupent, ou l'un des deux titres n'en a pas (« Hotte » et « Hotte de la salle ») ; sinon, c'est un autre besoin. */
+  const besoin = (x: CarnetDoc) => new Set(jetons(nomEtQualifiants(titreSansBanc(x.title))[1]));
+  const ici = besoin(c);
+  const memeBesoin = (x: CarnetDoc) => { const la = besoin(x); return !ici.size || !la.size || [...ici].some(m => la.has(m)); };
+  const memes = carnets.filter(x => x.id !== c.id && !x.carnet.archive && categorieDe(x) === cat && memeBesoin(x));
   if (!memes.length) return null;
   const texte = [titreSansBanc(c.title), c.carnet.phrase, ...c.carnet.facons.map(f => f.nom), ...c.carnet.articles.map(a => a.nom ?? '')].join(' ');
   /* la même catégorie est le signe sûr : parmi elles, la plus proche (seuil gardé seulement s'il y en a plusieurs à départager) */

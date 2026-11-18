@@ -43,13 +43,14 @@ describe('P11 : un critère au même texte normalisé ne fait qu’une ligne', (
   });
   it('deux fois le même critère dans un message : une ligne ; la raison manquante complète l’ancien', () => {
     const etat = fixtureCarnets();
-    const r = ok(ranger(etat, { message: message('M-P11b', 'tient 90 °C\nTient 90 °C'), lignes: [
-      { carnetId: ID_VENTILATION, sorte: 'critere', texte: 'tient 90 °C', origine: 'locale' },
-      { carnetId: ID_VENTILATION, sorte: 'critere', texte: 'Tient 90 °C', origine: 'locale' },
+    /* critique 6, n° 3 : une valeur à lui en °C remplacerait « tient 80 °C » (même axe) ; le doublon se prouve donc sans unité */
+    const r = ok(ranger(etat, { message: message('M-P11b', 'filtre lavable\nFiltre lavable'), lignes: [
+      { carnetId: ID_VENTILATION, sorte: 'critere', texte: 'filtre lavable', origine: 'locale' },
+      { carnetId: ID_VENTILATION, sorte: 'critere', texte: 'Filtre lavable', origine: 'locale' },
       { carnetId: ID_VENTILATION, sorte: 'critere', texte: 'TIENT 80 °C', raison: 'la buée est chaude', origine: 'ia' }
     ] }));
     const k = carnet(allerRetour(etat, r), ID_VENTILATION).carnet.criteres;
-    expect(k.filter(x => /90/.test(x.texte)).length).toBe(1);
+    expect(k.filter(x => /filtre lavable/i.test(x.texte)).length).toBe(1);
     expect(k.find(x => x.id === 'ZZ-V-K2')).toMatchObject({ texte: 'tient 80 °C', raison: 'la buée est chaude' });
   });
   it('remplacerRangement (l’IA reprend le message) : pas de doublon non plus', () => {

@@ -61,15 +61,46 @@ const MOTS_VIDES = new Set(['de', 'du', 'des', 'la', 'le', 'les', 'à', 'au', 'a
  */
 export function titreCourt(titre: string, max = 18): string {
   const t = titre.trim();
-  if (t.length <= max) return t;
-  const mots = t.split(/\s+/);
+  /* décision du pilote (critique 6) : le titre stocké, « ZZ TEST — » compris ; la marque reste entière, le raccourci porte sur le reste */
+  const pre = /^ZZ TEST\s*[—–-]\s*/i.exec(t)?.[0] ?? '';
+  const corps = t.slice(pre.length);
+  if (corps.length <= max) return t;
+  const mots = corps.split(/\s+/);
   const garde: string[] = [];
   for (const m of mots) {
     if ([...garde, m].join(' ').length > max) break;
     garde.push(m);
   }
   while (garde.length > 1 && MOTS_VIDES.has(garde[garde.length - 1].toLowerCase())) garde.pop();
-  return garde.length ? garde.join(' ') : t.slice(0, max);
+  /* critique 6, n° 26 : coupé sur un mot, jamais au milieu, et « … » le dit */
+  return `${pre}${garde.length ? garde.join(' ') : mots[0]}…`;
+}
+
+/**
+ * Critique 6, n° 26 : le titre qui tient dans la place mesurée du champ (`measureText` sur sa police : la méthode standard pour ajuster un
+ * texte), coupé sur un mot avec « … ». Sans mesure possible (tests), `titreCourt`.
+ */
+export function titreQuiTient(titre: string, place: number, mesurer: (s: string) => number, avant = 'Ajouter à '): string {
+  const t = titre.trim();
+  if (mesurer(`${avant}${t}…`) <= place) return t;
+  /* du plus long au plus court, mot par mot sur le titre entier (marque comprise : à 390, « ZZ TEST — Évier inox » devient « ZZ TEST… »
+     plutôt que « ZZ TEST — Évi ») ; jamais un petit mot ni un tiret en dernier */
+  const mots = t.split(/\s+/);
+  for (let n = mots.length - 1; n >= 1; n--) {
+    const garde = mots.slice(0, n);
+    while (garde.length > 1 && (MOTS_VIDES.has(garde[garde.length - 1].toLowerCase()) || /^[—–-]$/.test(garde[garde.length - 1]))) garde.pop();
+    const c = `${garde.join(' ')}…`;
+    if (mesurer(`${avant}${c}`) <= place) return c;
+  }
+  return `${mots[0]}…`;
+}
+function mesureurDe(el: HTMLElement | null): ((s: string) => number) | null {
+  if (!el || typeof navigator === 'undefined' || /jsdom/i.test(navigator.userAgent)) return null;
+  const ctx = document.createElement('canvas').getContext('2d');
+  if (!ctx) return null;
+  const st = getComputedStyle(el);
+  ctx.font = `${st.fontStyle} ${st.fontWeight} ${st.fontSize} ${st.fontFamily}`;
+  return s => ctx.measureText(s).width;
 }
 /** Large (≥ 900 px) : le titre entier tient dans le champ ; sinon le titre court. */
 function useLarge(): boolean {
@@ -151,8 +182,20 @@ export function ChampCarnet(p: ChampCarnetProps) {
   const dansCarnet = !!p.titreCarnet;
   const ecoute = dictee.disponible && dictee.ecoute;
   const large = useLarge();
-  const titreVu = p.titreCarnet ? (large ? p.titreCarnet : titreCourt(p.titreCarnet)) : '';
-  const placeholder = ecoute ? 'J’écoute…' : dansCarnet ? `Ajouter à ${titreVu}…` : 'Une idée, un besoin…';
+  /* critique 6, n° 26 : la place réelle du champ, mesurée (ResizeObserver), pour que le placeholder se coupe sur un mot */
+  const zoneTexte = useRef<HTMLTextAreaElement | null>(null);
+  const [placeTexte, setPlaceTexte] = useState(0);
+  useEffect(() => {
+    const el = zoneTexte.current;
+    if (!el || typeof ResizeObserver === 'undefined') return;
+    const ro = new ResizeObserver(() => setPlaceTexte(el.clientWidth));
+    ro.observe(el);
+    setPlaceTexte(el.clientWidth);
+    return () => ro.disconnect();
+  }, []);
+  const mesurer = placeTexte > 0 ? mesureurDe(zoneTexte.current) : null;
+  const titreVu = p.titreCarnet ? (mesurer ? titreQuiTient(p.titreCarnet, placeTexte - 2, mesurer) : large ? p.titreCarnet : titreCourt(p.titreCarnet)) : '';
+  const placeholder = ecoute ? 'J’écoute…' : dansCarnet ? `Ajouter à ${titreVu}${titreVu.endsWith('…') ? '' : '…'}` : 'Une idée, un besoin…';
   const libelle = dansCarnet ? `Ajouter à ${p.titreCarnet}…` : 'Une idée, un besoin…';
   /* Critique 5, n° 42 : un seul habit d'envoi partout, le bouton vert à mot des maquettes du champ qui tape (g5:v02-10, v03-7, v07-10,
      v01-15 sur la liste) : « Ajouter », et « Enregistrer » ou « Renommer » quand le champ modifie. */
@@ -194,8 +237,9 @@ export function ChampCarnet(p: ChampCarnetProps) {
         <div className="cn-vadans cnf-vadans-carnet" role="group" aria-label="Va dans le carnet">
           <span className="cn-mut cn-vadans-libelle">Va dans</span>
           {p.vaDansCarnet.options.map(o => (
-            <button key={o.id} type="button" className="cn-puce" aria-pressed={o.id === p.vaDansCarnet!.choisi} onMouseDown={e => e.preventDefault()} onClick={() => p.vaDansCarnet!.onChoisir(o.id)}>
-              {o.libelle}
+            /* critique 6, n° 29 : un rang à 390 ; le titre court sur la puce, entier au survol et pour le lecteur d'écran */
+            <button key={o.id} type="button" className="cn-puce" aria-pressed={o.id === p.vaDansCarnet!.choisi} title={o.libelle} aria-label={o.libelle} onMouseDown={e => e.preventDefault()} onClick={() => p.vaDansCarnet!.onChoisir(o.id)}>
+              {large ? o.libelle : titreCourt(o.libelle, 14)}
             </button>
           ))}
         </div>
@@ -226,7 +270,11 @@ export function ChampCarnet(p: ChampCarnetProps) {
         <label htmlFor={id} className="cn-cache">{libelle}</label>
         <textarea
           id={id}
-          ref={p.inputRef}
+          ref={el => {
+            zoneTexte.current = el;
+            const r = p.inputRef;
+            if (typeof r === 'function') r(el); else if (r) (r as React.MutableRefObject<HTMLTextAreaElement | null>).current = el;
+          }}
           rows={1}
           value={p.valeur}
           placeholder={placeholder}
