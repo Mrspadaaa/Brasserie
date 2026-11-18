@@ -236,7 +236,8 @@ export interface BancCarnetsProps {
   /** « Nouvelle idée » du + volant (R28) : un horodatage neuf met le focus dans le champ du bas, comme dans l'app (StocksTab). */
   focusChamp?: number | null;
   onVoirAVenir?: () => void;
-  onPlan?: (plan: FinancialPlan) => void;
+  onVoirRealises?: () => void;
+  onPlan?:(plan: FinancialPlan) => void;
   /** `&texte=…` : le champ arrive rempli. */
   texte?: string;
 }
@@ -253,7 +254,7 @@ export function BancCarnets(p: BancCarnetsProps) {
     <div data-banc-carnets className="flex h-full min-h-0 flex-col">
       <CarnetsVue className="min-h-0 flex-1" magasin={magasin} finances={finances} mode={mode}
         appels={p.appels ?? appelsSimules(comportementSimule())} aides={p.aides ?? aidesCarnet(mode, {}, param('aides'))} horsLigne={p.horsLigne}
-        ouvrir={p.ouvrir} focusChamp={p.focusChamp} onVoirAVenir={p.onVoirAVenir} {...(p.texte ? { texteInitial: p.texte } : {})}
+        ouvrir={p.ouvrir} focusChamp={p.focusChamp} onVoirAVenir={p.onVoirAVenir} onVoirRealises={p.onVoirRealises} {...(p.texte ? { texteInitial: p.texte } : {})}
         ecrirePlan={plan => {
           p.onPlan?.(plan);
           if (p.ecrirePlan) p.ecrirePlan(plan);
@@ -331,7 +332,7 @@ export function CarnetsPreview() {
         <div className={segment === 'carnets' ? 'flex min-h-0 flex-1 flex-col' : 'hidden'}>
           <BancCarnets magasin={magasin} {...(cache ? { finances: financesCache, ecrirePlan } : { realise: prm.realise, articles: prm.articles })}
             vide={prm.vide} horsLigne={prm.horsLigne} mode={prm.mode} appels={appels}
-            ouvrir={ouvrir} focusChamp={focusChamp} onVoirAVenir={() => setSegment('avenir')} {...(prm.texte ? { texte: prm.texte } : {})} />
+            ouvrir={ouvrir} focusChamp={focusChamp} onVoirAVenir={() => setSegment('avenir')} onVoirRealises={() => setSegment('realises')} {...(prm.texte ? { texte: prm.texte } : {})} />
         </div>
       </div>
       <div className="app-bottom-dock">

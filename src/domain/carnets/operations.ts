@@ -9,7 +9,7 @@
  */
 import type { CreativeItem } from '../../types';
 import type { FinanceTransaction, FinancialPayment, FinancialPlan } from '../finance/types';
-import { estRealise } from '../finance/upgradeRing';
+import { dateFacture, estRealise } from '../finance/upgradeRing';
 import { statutApres } from './comparer';
 import { memeTexte } from './doublons';
 import { jetons, normaliser, quantitesDe } from './analyseLocale';
@@ -607,6 +607,19 @@ export function liensDe(c: CarnetDoc, plans: readonly FinancialPlan[], transacti
   /* le plan a été supprimé côté À venir : son titre n'est plus connu ; aucun nom inventé */
   if (!plan) return [{ sorte: 'a-venir', id: s.planId, libelle: 'plan d’À venir', etat: 'supprime' }];
   return [{ sorte: estRealise(plan, [...transactions], [...payments]) ? 'realise' : 'a-venir', id: plan.id, libelle: plan.title, etat: 'present' }];
+}
+
+/**
+ * Critique 7, n° 5 : l'état de la sortie d'un carnet, par la règle même d'À venir et de Réalisés (`estRealise`). Plan payé : « réalisé »,
+ * daté de sa dernière facture (aucune date inventée : `le` vide sans facture datée) ; sinon « à venir », daté de l'envoi. Plan disparu :
+ * « à venir » (la sortie seule le dit encore). Sans sortie : null.
+ */
+export function etatSortie(c: CarnetDoc, plans: readonly FinancialPlan[], transactions: readonly FinanceTransaction[] = [], payments: readonly FinancialPayment[] = []): { sorte: 'a-venir' | 'realise'; le: string } | null {
+  const s = c.carnet.sortie;
+  if (!s) return null;
+  const plan = plans.find(p => p.id === s.planId);
+  if (plan && estRealise(plan, [...transactions], [...payments])) return { sorte: 'realise', le: dateFacture(plan, [...transactions]) ?? '' };
+  return { sorte: 'a-venir', le: s.le };
 }
 
 export interface LienQuiRetient { sorte: 'plan-a-venir' | 'plan-realise'; planId: string; libelle: string; reglage: 'detacher' | 'archiver' }

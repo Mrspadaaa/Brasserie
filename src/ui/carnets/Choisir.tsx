@@ -12,7 +12,7 @@ import { CalendarCheck, Check, ChevronLeft, ChevronRight, ExternalLink, Target, 
 import { libelleEcarte, nombreTexte, placesDe, placesParmiTous, pourquoiDe, prixTexte, tableau, type Place } from '../../domain/carnets/comparer';
 import { normaliser } from '../../domain/carnets/analyseLocale';
 import { sourceDuCritere, type Article, type DonneesCarnet } from '../../domain/carnets/modele';
-import { dateCourte, montant, PictoLocal, Provenance, rangTexte, type ArticleV, type ChoixV, type CritereV, type FaconV } from './EtatIA';
+import { dateCourte, montant, PictoLocal, Provenance, rangTexte, texteSortie, type SortieV, type ArticleV, type ChoixV, type CritereV, type FaconV } from './EtatIA';
 import { sansApercu } from './Comparer';
 import { Input, Textarea } from '../Input';
 import './carnets-decider.css';
@@ -49,7 +49,7 @@ export type ChoisirProps = {
     /** Les articles écartés au choix, avec leur nom. */
     ecartes: { nom: string; raison: string }[];
     remplaces?: { nom: string; pourquoi: string; le: string }[];
-    sortie?: { le: string } | null;
+    sortie?: SortieV | null;
     onEnvoyerAVenir?: () => void;
     onVoirAVenir?: () => void;
   }
@@ -133,7 +133,6 @@ function ecartesDe(p: { ecartes: { nom: string; raison: string }[] }, c: CarnetP
 function ChoisiVue(p: Extract<ChoisirProps, { etape: 'choisi' }>) {
   const a = p.article;
   const le = dateCourte(p.choix.le);
-  const sortieLe = dateCourte(p.sortie?.le);
   const haut = useRef<HTMLElement>(null);
   useEffect(() => { haut.current?.scrollIntoView?.({ block: 'start' }); }, []);
   /* n° 37 : « 2 600 CHF », espace avant les milliers, comme partout (prixTexte) */
@@ -189,7 +188,7 @@ function ChoisiVue(p: Extract<ChoisirProps, { etape: 'choisi' }>) {
       </section>
       {p.sortie ? (
         <button type="button" className="cn-avenir" onClick={p.onVoirAVenir}>
-          <CalendarCheck size={18} aria-hidden /><span className="cn-sp">Dans À venir{sortieLe ? ` depuis le ${sortieLe}` : ''}</span><span>Voir</span><ChevronRight size={18} aria-hidden />
+          <CalendarCheck size={18} aria-hidden /><span className="cn-sp">{texteSortie(p.sortie)}</span><span>Voir</span><ChevronRight size={18} aria-hidden />
         </button>
       ) : p.onEnvoyerAVenir ? (
         <button type="button" className="cn-action" onClick={p.onEnvoyerAVenir}><CalendarCheck size={18} aria-hidden /> Envoyer dans À venir</button>

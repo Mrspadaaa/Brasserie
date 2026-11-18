@@ -149,7 +149,7 @@ describe('critique 6, lot B (Décider, Stocks › Matériel)', () => {
 
   it('8 · n° 21 (D-13, D-20) : pourquoiDe dit le problème réglé, sans recopier les chiffres', () => {
     const p = pourquoiDe(V, 'ZZ-V-A1')!;
-    expect(p).toBe('La seule à tenir 80 °C avec le plus gros débit ; en stock, Inox Broye (CH).');
+    expect(p).toBe('Le plus gros débit des deux à tenir 80 °C ; en stock, Inox Broye (CH).');
     expect(p.replace('80 °C', '')).not.toMatch(/[0-9]/);
     /* la 2e : parmi celles qui tiennent 80 °C, la moins chère */
     expect(pourquoiDe(V, 'ZZ-V-A2')).toBe('La moins chère qui tient 80 °C ; délai 4 semaines, Gastro Lüftung (DE).');

@@ -144,7 +144,7 @@ describe('P16 · Choisir = g05-9 et g05-11 : la 1re nommée, le pourquoi prérem
   it('pourquoiDe cite les valeurs et les rangs du tableau', () => {
     const p = pourquoiDe(V, 'ZZ-V-A1')!;
     /* critique 6, n° 21 : le problème réglé, sans recopier les chiffres (ils sont dans le tableau et les réglettes) */
-    expect(p).toBe('La seule à tenir 80 °C avec le plus gros débit ; en stock, Inox Broye (CH).');
+    expect(p).toBe('Le plus gros débit des deux à tenir 80 °C ; en stock, Inox Broye (CH).');
     const places = placesDe(tableau(V)!, 'ZZ-V-A1');
     expect(places.find(x => x.nom === 'débit')).toMatchObject({ rang: 1, sur: 4, texte: '1 800 m³/h' });
     expect(places.find(x => x.nom === 'prix')).toMatchObject({ rang: 4, sur: 4, texte: '2 600 CHF' });
@@ -178,7 +178,7 @@ describe('P17 et P40 · Pourquoi ce choix = g05-11 : phrase avec valeurs, régle
   it('la phrase de calcul avec ses valeurs, puis sa phrase à lui', () => {
     const { container } = vue();
     const section = screen.getByRole('region', { name: 'Pourquoi ce choix' });
-    expect(section.querySelector('.cn-pourquoi-phrase')!.textContent).toContain('La seule à tenir 80 °C avec le plus gros débit');
+    expect(section.querySelector('.cn-pourquoi-phrase')!.textContent).toContain('Le plus gros débit des deux à tenir 80 °C');
     expect(section.querySelector('.cn-pourquoi-sienne')!.textContent).toBe('« la seule qui sort la buée »');
     expect(container.querySelector('img.cn-choisi-photo')).not.toBeNull();
   });

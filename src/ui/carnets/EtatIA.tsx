@@ -32,7 +32,15 @@ export interface PhotoV { id: string; jpeg: string; messageId?: string; le?: str
 export interface ChoixV { articleId: string; faconId?: string; pourquoi: string; ecartes: { articleId: string; raison: string }[]; aRevoirSi?: string; le: string; remplaces: ChoixV[] }
 export interface ContenuCarnetV {
   creeLe: string; phrase: string; criteres: CritereV[]; facons: FaconV[]; articles: ArticleV[]; notes: NoteV[]; photos: PhotoV[];
-  choix?: ChoixV; sortie?: { planId: string; le: string }; archive?: { le: string; raison: string };
+  choix?: ChoixV; sortie?: SortieV; archive?: { le: string; raison: string };
+}
+/** La sortie vers À venir ; `etat` et `realiseLe` posés par la vue d'après `etatSortie` (critique 7, n° 5). */
+export interface SortieV { planId?: string; le: string; etat?: 'a-venir' | 'realise'; realiseLe?: string }
+/** « Dans À venir depuis le 15 nov. », ou, plan payé, « Réalisé, payé le 16 nov. » : une seule règle pour la liste, la fiche et Choisir. */
+export function texteSortie(s: SortieV): string {
+  if (s.etat === 'realise') { const d = dateCourte(s.realiseLe); return `Réalisé, payé${d ? ` le ${d}` : ''}`; }
+  const d = dateCourte(s.le);
+  return `Dans À venir${d ? ` depuis le ${d}` : ''}`;
 }
 /** Le document Firestore tel quel (`title`, `status`, `date?`, `carnet`), ce que rend `lireCarnet`. */
 export interface CarnetV { id: string; title: string; status: StatutCarnet; date?: string; carnet: ContenuCarnetV }

@@ -14,7 +14,7 @@ import { magasinFirestore, type MagasinCarnets } from '../../services/carnetsSto
 import { estLienSeul, lireCarnets, lireMessages, nomArticle, nouvelIdCarnet, titreDePhrase, type CarnetDoc } from '../../domain/carnets/modele';
 import {
   accepterProposition, archiverCarnet, basculerVeille, changerGenre, changerSorte, choisir, creerCarnet, deplacer, deplacerArticles, detacherPlan, fusionnerNotes, garderAPart,
-  liensDe, liensQuiRetiennent, modifierNote, noteEnCritere, planDepuisChoix, poserSortie, ranger, remplacerRangement, renommer, supprimerCarnet, supprimerNote,
+  etatSortie, liensDe, liensQuiRetiennent, modifierNote, noteEnCritere, planDepuisChoix, poserSortie, ranger, remplacerRangement, renommer, supprimerCarnet, supprimerNote,
   type Destination, type EcritureCarnet, type Journal, type LigneARanger, type Resultat
 } from '../../domain/carnets/operations';
 import { consequenceApercu, critereQuiTranche, passe, placesDe, tableau as tableauDe } from '../../domain/carnets/comparer';
@@ -62,6 +62,8 @@ export interface CarnetsVueProps {
   /** + « Nouvelle idée » : le champ du bas prend le focus. */
   focusChamp?: number | null;
   onVoirAVenir?: () => void;
+  /** « Voir » d'un carnet dont le plan est payé (critique 7, n° 5) : Réalisés ; sans lui, À venir. */
+  onVoirRealises?: () => void;
   onMessage?: (texte: string) => void;
   maintenant?: () => Date;
   /** Banc seulement (`&texte=…`) : le champ arrive rempli, pour atteindre un état « pendant » par une adresse (D-131). */
@@ -772,6 +774,13 @@ export function CarnetsVue(p: CarnetsVueProps) {
   const rubriqueChoisie = auto ? corrige ?? auto : null;
   const RUBRIQUE_LIBELLE = { critere: 'Ce qui compte', facon: 'Façons', note: 'Notes' } as const;
   const liens: LienV[] = ouvert ? liensDe(ouvert, finances.plans, finances.transactions, finances.payments) : [];
+  /* Critique 7, n° 5 : `estRealise` gouverne la liste, la fiche et Choisir ; un plan payé se dit réalisé et « Voir » ouvre Réalisés. */
+  const sortieV = (c: CarnetDoc) => {
+    const e = etatSortie(c, finances.plans, finances.transactions, finances.payments);
+    return e && c.carnet.sortie ? { ...c.carnet.sortie, etat: e.sorte, realiseLe: e.sorte === 'realise' ? e.le : undefined } : null;
+  };
+  const enV = (c: CarnetDoc): CarnetV => { const s = sortieV(c); return s ? versV({ ...c, carnet: { ...c.carnet, sortie: s } } as CarnetDoc) : versV(c); };
+  const voirSortie = (c: CarnetDoc | undefined) => (c && sortieV(c)?.etat === 'realise' && p.onVoirRealises ? p.onVoirRealises() : p.onVoirAVenir?.());
   /* R26 : le tableau vient de `comparer.ts`, passé tel quel aux vues ; `null` à 0 ou 1 article. */
   const tableauV = ouvert ? tableauDe(ouvert) : null;
 
@@ -962,12 +971,12 @@ export function CarnetsVue(p: CarnetsVueProps) {
   /* ---------- écrans ---------- */
   let ecran: React.ReactNode;
   if (!ouvert || vue.sorte === 'liste') {
-    ecran = <ListeCarnets carnets={carnets.map(versV)} enTete={enTete} messageRecent={retour?.bandeau.sorte === 'vrac' ? (retour.messageId ?? null) : null}
+    ecran = <ListeCarnets carnets={carnets.map(enV)}enTete={enTete} messageRecent={retour?.bandeau.sorte === 'vrac' ? (retour.messageId ?? null) : null}
       supprime={supprime ? { titre: supprime.titre, statut: supprime.statut, onAnnuler: () => { annuler(supprime.inverse); setSupprime(null); } } : null}
       enHaut={<>{repriseNode}{bandeauNode}{cadre()}</>}
       onOuvrir={id => { setVue({ sorte: 'carnet', id }); setRetour(null); }}
       onCollerLien={id => { setVue({ sorte: 'carnet', id }); setTimeout(() => champRef.current?.focus(), 0); }}
-      onVoirAVenir={() => p.onVoirAVenir?.()}
+      onVoirAVenir={id => voirSortie(carnets.find(c => c.id === id))}
       onExemple={t => { setTexte(t); rangement.taper(t); champRef.current?.focus(); }} />;
   } else if (vue.sorte === 'article') {
     const a = ouvert.carnet.articles.find(x => x.id === vue.articleId);
@@ -991,8 +1000,8 @@ export function CarnetsVue(p: CarnetsVueProps) {
       const a = ouvert.carnet.articles.find(x => x.id === choix.articleId)!;
       ecran = <Choisir etape="choisi" titre={ouvert.title} choix={choix as never} article={a as unknown as ArticleV} critere={ouvert.carnet.criteres[0]} carnet={ouvert.carnet as never} picto={pictoArticle(ouvert, a)}
         facon={ouvert.carnet.facons.find(f => f.id === (choix.faconId ?? a?.faconId))} ecartes={choix.ecartes.map(e => ({ nom: nom(e.articleId), raison: e.raison }))}
-        remplaces={choix.remplaces.map(r => ({ nom: nom(r.articleId), pourquoi: r.pourquoi, le: r.le }))} sortie={ouvert.carnet.sortie ?? null}
-        onRetour={() => setVue({ sorte: 'carnet', id: ouvert.id })} onEnvoyerAVenir={() => void envoyerAVenir(ouvert)} onVoirAVenir={() => p.onVoirAVenir?.()} />;
+        remplaces={choix.remplaces.map(r => ({ nom: nom(r.articleId), pourquoi: r.pourquoi, le: r.le }))} sortie={sortieV(ouvert)}
+        onRetour={() => setVue({ sorte: 'carnet', id: ouvert.id })} onEnvoyerAVenir={() => void envoyerAVenir(ouvert)} onVoirAVenir={() => voirSortie(ouvert)} />;
     } else {
       const rangees = (tableauV?.lignes ?? []).filter(l => !l.ecarte);
       /* critique 6, n° 4 : « Retenir la hotte » : le premier de cette façon (g05-11), sinon le premier du tableau */
@@ -1033,7 +1042,7 @@ export function CarnetsVue(p: CarnetsVueProps) {
     const manque = iaManquee[c.id];
     const iaIndisponible = mode === 'eteint' ? 'eteinte' : !enLigne ? 'hors-ligne' : manque === 'eteint' ? 'eteinte' : manque ?? null;
         ecran = <>
-      <CarnetOuvert carnet={versV(c)} aides={aides as never} liens={liens} tableau={tableauV} iaIndisponible={iaIndisponible}
+      <CarnetOuvert carnet={enV(c)}aides={aides as never} liens={liens} tableau={tableauV} iaIndisponible={iaIndisponible}
         bandeau={cadreRenommer ?? carteSupprimer ?? (repriseNode || bandeauNode || proposees ? <>{repriseNode}{bandeauNode}{proposees}</> : null)} rangee={carteSupprimer || cadreRenommer ? null : rangee} cadre={carteSupprimer || cadreRenommer ? null : cadre()}
         vientDEtreCree={vientDEtreCree === c.id} doublons={aides.doublon ? notesEnDouble(c).flat() : []}
         noteSupprimee={noteSupprimee ? { id: noteSupprimee.id, onAnnuler: () => annulerSuppressionNote(noteSupprimee) } : null}
@@ -1056,7 +1065,7 @@ export function CarnetsVue(p: CarnetsVueProps) {
         onVeille={articleId => { appliquer(basculerVeille(magasin.lire(), { carnetId: c.id, articleId, le: maintenant().toISOString() })); }}
         onVoirChoix={() => setVue({ sorte: 'choisir', id: c.id })}
         onEnvoyerAVenir={() => void envoyerAVenir(c)}
-        onOuvrirLien={() => p.onVoirAVenir?.()} />
+        onOuvrirLien={l => (l.sorte === 'realise' && p.onVoirRealises ? p.onVoirRealises() : p.onVoirAVenir?.())} />
     </>;
   }
 

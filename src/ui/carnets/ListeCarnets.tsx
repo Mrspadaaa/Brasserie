@@ -18,7 +18,7 @@ import { normaliser } from '../../domain/carnets/analyseLocale';
 import { tableau as calculerTableau, prixTexte } from '../../domain/carnets/comparer';
 import { titreDePhrase } from '../../domain/carnets/modele';
 import { comptesCarnet, texteComptes } from '../../domain/carnets/comptes';
-import { dateCourte, GENRE_LIBELLE, montant, Provenance, STATUT_LIBELLE, type ArticleV, type CarnetV, type GenreNote, type StatutCarnet } from './EtatIA';
+import { dateCourte, GENRE_LIBELLE, montant, Provenance, STATUT_LIBELLE, texteSortie, type ArticleV, type CarnetV, type GenreNote, type StatutCarnet } from './EtatIA';
 import { VignetteObjet } from './pictos';
 
 export interface EclaireV { carnetId: string; quoi: string; tireDe: string; onDeplacer: () => void; onAnnuler: () => void }
@@ -169,7 +169,6 @@ function CarteCarnet({ c, ajouts, onOuvrir, onCollerLien, onVoirAVenir }: { c: C
   const ensuite = k.notes.find(n => n.genre === 'a-faire')?.texte;
   const choisi = c.status === 'validated' && k.choix ? k.articles.find(a => a.id === k.choix!.articleId) : undefined;
   const vide = c.status === 'idea' && k.articles.length === 0;
-  const sortieLe = dateCourte(k.sortie?.le);
   return (
     <div className="cn-carnet-bloc">
       <div className={`cn-carnet${vide && onCollerLien ? ' cn-carnet-coller' : ''}`}>
@@ -212,7 +211,7 @@ function CarteCarnet({ c, ajouts, onOuvrir, onCollerLien, onVoirAVenir }: { c: C
       </div>
       {k.sortie && (
         <button type="button" className="cn-avenir" onClick={() => onVoirAVenir?.(c.id)}>
-          <CalendarCheck size={18} aria-hidden /><span className="cn-sp">Dans À venir{sortieLe ? ` depuis le ${sortieLe}` : ''}</span><span>Voir</span><ChevronRight size={18} aria-hidden />
+          <CalendarCheck size={18} aria-hidden /><span className="cn-sp">{texteSortie(k.sortie)}</span><span>Voir</span><ChevronRight size={18} aria-hidden />
         </button>
       )}
     </div>

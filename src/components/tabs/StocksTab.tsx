@@ -751,7 +751,7 @@ export const StocksTab: React.FC<StocksTabProps> = ({
       {subTab === 'materiel' && segMateriel === 'carnets' && (
         <Suspense fallback={<div role="status" className="py-3 text-sm text-cave-400">Chargement des carnets…</div>}>
           <CarnetsVue className="min-h-0 flex-1" ouvrir={carnetOuvert} focusChamp={focusChamp}
-            onVoirAVenir={() => setSegMateriel('avenir')} onMessage={onSuccessMessage} />
+            onVoirAVenir={() => setSegMateriel('avenir')} onVoirRealises={() => setSegMateriel('realises')} onMessage={onSuccessMessage} />
         </Suspense>
       )}
 

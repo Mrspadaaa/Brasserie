@@ -677,11 +677,12 @@ function superlatif(k: Colonne): string {
 
 /**
  * Critique 6, n° 21 (D-13, D-20) : le problème que l'article règle, en mots, sans recopier les chiffres (ils sont dans le tableau et sur
- * les réglettes) : « la seule à tenir 80 °C avec le plus gros débit ». Calcul sur le tableau : les critères oui-non qu'il tient
+ * les réglettes) : « la seule à tenir 80 °C », ou « le plus gros débit des deux à tenir 80 °C ». Calcul sur le tableau : les critères oui-non qu'il tient
  * resserrent le groupe ; seule du groupe : « la seule à … » ; sinon la meilleure du groupe sur le premier critère chiffré : « … avec le
  * plus gros débit » ; puis le prix s'il départage (« la moins chère », « moins chère que la 1re »). En lice : parmi les articles en
  * lice ; choix revu (lui seul en lice) : parmi tous ceux du tableau, écartés compris. `null` si rien ne le distingue.
  */
+const COMPTE_EN_LETTRES: Record<number, string> = { 2: 'deux', 3: 'trois', 4: 'quatre', 5: 'cinq', 6: 'six', 7: 'sept', 8: 'huit', 9: 'neuf', 10: 'dix' };
 function problemeRegle(t: Tableau, l: LigneTableau): string | null {
   const enLice = lignesEnLice(t);
   const pool = l.rang !== null && enLice.length >= 2 ? enLice : t.lignes.filter(x => x.rang !== null || x.ecarteAuChoix);
@@ -709,7 +710,8 @@ function problemeRegle(t: Tableau, l: LigneTableau): string | null {
   const moinsChere = p !== undefined && memes.length > 0 && memes.every(x => x.prixCentimes! > p);
   let prixDit = false;
   if (tenus.length && groupe.length === 1) morceaux.push(`la seule ${faire}`);
-  else if (tenus.length && sup && !egal) morceaux.push(`la seule ${faire} avec ${sup}`);
+  /* Critique 7, n° 6 : plusieurs tiennent le critère (« 1er sur 2 ex aequo ») ; jamais « la seule », le nombre vient du groupe présent. */
+  else if (tenus.length && sup && !egal) morceaux.push(`${sup} des ${COMPTE_EN_LETTRES[groupe.length] ?? groupe.length} ${faire}`);
   else if (tenus.length && sup) morceaux.push(`${tenus.join(' et ')}, avec ${sup} ex aequo`);
   else if (tenus.length && moinsChere) { morceaux.push(`la moins chère qui ${tenus.join(' et ')}`); prixDit = true; }
   else if (tenus.length) morceaux.push(tenus.join(' et '));
@@ -724,7 +726,7 @@ function problemeRegle(t: Tableau, l: LigneTableau): string | null {
 
 /**
  * Le pourquoi proposé à Choisir (P16) et redit sous « Pourquoi ce choix » (P17). Critique 6, n° 21 : il dit le problème réglé, pas les
- * chiffres : « La seule à tenir 80 °C avec le plus gros débit ; en stock, Inox Broye (CH). » Modifiable par lui ; `null` si rien n'est
+ * chiffres : « Le plus gros débit des deux à tenir 80 °C ; en stock, Inox Broye (CH). » Modifiable par lui ; `null` si rien n'est
  * à dire.
  */
 export function pourquoiDe(c: CarnetDoc | Donnees, articleId: string): string | null {

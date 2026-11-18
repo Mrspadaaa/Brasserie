@@ -24,7 +24,7 @@ import { CarteArticle, CarteClassee, estExemple, nombreValeur } from './CarteArt
 import { colonnesVue, meilleursDe, moinsBienQueDe, sansApercu, texteCellule, type ColonneVue, type TableauV } from './Comparer';
 import { avecArticle, domaineEtChemin, libelleCaracteristique, libelleEcarte, passe, texteMoinsBienQue } from '../../domain/carnets/comparer';
 import { uniquesParTexte } from '../../domain/carnets/doublons';
-import { dateCourte, GENRE_LIBELLE, montant, Provenance, STATUT_LIBELLE, type AidesV, type ArticleV, type CarnetV, type ContenuCarnetV, type CritereV, type FaconV, type GenreNote, type NoteV } from './EtatIA';
+import { dateCourte, GENRE_LIBELLE, montant, Provenance, STATUT_LIBELLE, texteSortie, type AidesV, type ArticleV, type CarnetV, type ContenuCarnetV, type CritereV, type FaconV, type GenreNote, type NoteV } from './EtatIA';
 import { LigneRangee } from './LigneRangee';
 import { phraseEnTitre } from './ListeCarnets';
 import { Photos } from './Photos';
@@ -40,6 +40,8 @@ export interface RangeeV {
   rangeSur?: string;
   luSurPage?: string[];
   verdict?: string;
+  /** Critique 7, n° 7 (G20, R26) : le rang de l'article déposé (`rangDuLien`), dit dans le bandeau « ✓ Article rangé ici · 2e … ». */
+  rang?: string;
   onAnnuler: () => void;
   onVotreTexte?: () => void;
   onDeplacer?: () => void;
@@ -380,7 +382,7 @@ export function CarnetOuvert(p: CarnetOuvertProps) {
             <span className="cn-lien">Pourquoi <ChevronRight size={16} aria-hidden /></span>
           </button>
           {k.sortie
-            ? <p className="cn-avenir-ligne"><CalendarCheck size={18} aria-hidden /> Dans À venir{dateCourte(k.sortie.le) ? ` depuis le ${dateCourte(k.sortie.le)}` : ''}</p>
+            ? <p className="cn-avenir-ligne"><CalendarCheck size={18} aria-hidden /> {texteSortie(k.sortie)}</p>
             : p.onEnvoyerAVenir && <button type="button" className="cn-action" onClick={p.onEnvoyerAVenir}><CalendarCheck size={18} aria-hidden /> Envoyer dans À venir</button>}
         </div>
       )}
@@ -449,7 +451,7 @@ export function CarnetOuvert(p: CarnetOuvertProps) {
               {p.tableau && <><span className="cn-mut" aria-hidden>·</span><button type="button" className="cn-lien cn-comparer-lien" onClick={p.onComparer}>Comparer <ChevronRight size={16} aria-hidden /></button></>}
             </div>
             {articleRange && r && (
-              <LigneRangee sorte="article" faconNom={faconRange?.nom} phrase={r.phrase} onAnnuler={r.onAnnuler} onDeplacer={r.onDeplacer}>
+              <LigneRangee sorte="article" faconNom={faconRange?.nom} rang={r.rang} phrase={r.phrase}onAnnuler={r.onAnnuler} onDeplacer={r.onDeplacer}>
                 <CarteArticle article={articleRange} critere={critere} faconNom={faconRange?.nom} carnetTitre={c.title} variante="complete" luSurPage={r.luSurPage} verdict={r.verdict} onVeille={v => p.onVeille?.(articleRange.id, v)} />
               </LigneRangee>
             )}
