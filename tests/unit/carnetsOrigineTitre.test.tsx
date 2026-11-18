@@ -5,7 +5,7 @@
  * Fixture « ZZ TEST — … », magasin mémoire, IA simulée : aucun appel réel.
  */
 import React from 'react';
-import { act, cleanup, fireEvent, render } from '@testing-library/react';
+import { act, cleanup, fireEvent, render, screen } from '@testing-library/react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { CarnetsVue } from '../../src/ui/carnets/CarnetsVue';
 import { origineDuTitre } from '../../src/ui/carnets/Bandeau';
@@ -42,25 +42,80 @@ describe('origineDuTitre : qui a fourni le titre', () => {
   });
 });
 
-describe('une phrase sur un autre objet : carnet neuf par la règle locale', () => {
-  it('le bandeau dit « titre tiré de votre phrase », avant comme après la réponse de l’IA simulée, jamais « mis en forme par l’IA »', async () => {
-    const magasin = magasinMemoire(fixtureCarnets());
-    render(<CarnetsVue magasin={magasin} finances={{ plans: [], transactions: [], payments: [] }} mode="simule"
-      appels={appelsSimules('normal', 20)} aides={aidesCarnet('simule', {})} ouvrir={{ id: ID_VENTILATION, at: 1 }} ecrirePlan={() => {}} />);
-    const champ = () => document.querySelector('.cn-champ textarea') as HTMLTextAreaElement;
+/** D383 : le rangement de l'IA fait foi ; la règle locale n'est qu'un aperçu en attendant, ou le repli hors ligne. */
+function monter(o: { appels?: ReturnType<typeof appelsSimules>; horsLigne?: boolean } = {}) {
+  const magasin = magasinMemoire(fixtureCarnets());
+  render(<CarnetsVue magasin={magasin} finances={{ plans: [], transactions: [], payments: [] }} mode="simule" horsLigne={o.horsLigne}
+    appels={o.appels ?? appelsSimules('normal', 20)} aides={aidesCarnet('simule', {})} ouvrir={{ id: ID_VENTILATION, at: 1 }} ecrirePlan={() => {}} />);
+  const champ = () => document.querySelector('.cn-champ textarea') as HTMLTextAreaElement;
+  const envoyer = async (t: string) => { fireEvent.change(champ(), { target: { value: t } }); await act(async () => { fireEvent.submit(champ().closest('form')!); }); };
+  return { magasin, champ, envoyer, carnets: () => lireCarnets(magasin.lire()) };
+}
+const PHRASE = 'tuyau silicone 8 mm, 5 m';
+
+describe('une phrase sur un autre objet, tapée dans un carnet ouvert (D383)', () => {
+  it('l’aperçu local annonce un carnet neuf « Tuyau silicone » et le crée en attendant ; après la réponse de l’IA, son rangement fait foi : plus de carnet neuf, le critère dans Ventilation, un bandeau qui ne cite plus aucun titre', async () => {
+    const { magasin, champ, envoyer, carnets } = monter();
     await attendre();
-    const n0 = lireCarnets(magasin.lire()).length;
-    fireEvent.change(champ(), { target: { value: 'tuyau silicone 8 mm, 5 m' } });
-    /* le cadre annonce le carnet neuf « Tuyau silicone », tiré de la règle locale (destinationDans) */
+    const n0 = carnets().length;
+    fireEvent.change(champ(), { target: { value: PHRASE } });
     expect(document.querySelector('[data-cadre="texte"]')!.textContent).toContain('Nouveau carnet Tuyau silicone');
-    await act(async () => { fireEvent.submit(champ().closest('form')!); });
-    expect(lireCarnets(magasin.lire()).length).toBe(n0 + 1);
+    await envoyer(PHRASE);
+    expect(carnets().length).toBe(n0 + 1);
     await attendre(150);
-    /* après la réponse de l'IA simulée : le carnet porte le titre de la règle locale, et le bandeau ne le prête pas à l'IA */
-    expect(lireCarnets(magasin.lire()).some(c => c.title === 'Tuyau silicone')).toBe(true);
+    /* la réponse de l'IA simulée range le critère dans Ventilation ; le carnet local, resté vide, a disparu */
+    expect(carnets().length).toBe(n0);
+    expect(carnets().some(c => c.title === 'Tuyau silicone')).toBe(false);
+    expect(carnets().find(c => c.id === ID_VENTILATION)!.carnet.criteres.some(k => /Tuyau silicone 8 mm/.test(k.texte))).toBe(true);
+    const bandeau = document.querySelector('.cn-bandeau[role="status"]')!;
+    expect(bandeau.getAttribute('data-sorte')).not.toBe('cree');
+    expect(bandeau.textContent).not.toContain('votre phrase en titre');
+    expect(bandeau.textContent).not.toContain('Carnet créé');
+    /* Annuler défait le rangement réel */
+    await act(async () => { fireEvent.click(bandeau.querySelector('button')!); });
+    expect(carnets().length).toBe(n0);
+    expect(carnets().find(c => c.id === ID_VENTILATION)!.carnet.criteres.some(k => /Tuyau silicone 8 mm/.test(k.texte))).toBe(false);
+    expect(magasin.lire().some(i => i.type === 'carnet-message' && i.title === PHRASE)).toBe(false);
+  });
+
+  it('hors ligne (l’IA ne répond pas) : l’aperçu local reste, carnet neuf titré par la phrase, « votre phrase en titre », jamais « mis en forme par l’IA »', async () => {
+    const { envoyer, carnets } = monter({ appels: appelsSimules('echec', 20) });
+    await attendre();
+    const n0 = carnets().length;
+    await envoyer(PHRASE);
+    await attendre(150);
+    expect(carnets().length).toBe(n0 + 1);
+    expect(carnets().some(c => c.title === PHRASE)).toBe(true);
     const cite = document.querySelector('.cn-bandeau .cn-cite')?.textContent ?? '';
-    expect(cite).toContain('titre tiré de votre phrase');
-    expect(cite).not.toContain('mis en forme par l’IA');
+    expect(cite).toContain('votre phrase en titre');
     expect(document.body.textContent).not.toContain('mis en forme par l’IA');
   });
+
+  it('hors ligne déclaré (props.horsLigne) : l’aperçu local reste de même, sans appel à l’IA', async () => {
+    const appels = appelsSimules('normal', 20);
+    const ranger = vi.spyOn(appels, 'ranger');
+    const { envoyer, carnets } = monter({ appels, horsLigne: true });
+    await attendre();
+    const n0 = carnets().length;
+    await envoyer(PHRASE);
+    await attendre(150);
+    expect(ranger).not.toHaveBeenCalled();
+    expect(carnets().length).toBe(n0 + 1);
+    expect(carnets().some(c => c.title === PHRASE)).toBe(true);
+    expect(document.querySelector('.cn-bandeau .cn-cite')?.textContent ?? '').toContain('votre phrase en titre');
+  });
+
+  it('corrigé d’un toucher sur « Ici » : son choix reste, la phrase est rangée dans Ventilation même si l’IA veut un carnet neuf', async () => {
+    const { champ, envoyer, carnets } = monter();
+    await attendre();
+    const n0 = carnets().length;
+    fireEvent.change(champ(), { target: { value: PHRASE } });
+    fireEvent.click(screen.getByRole('button', { name: 'Ici' }));
+    await envoyer(PHRASE);
+    await attendre(150);
+    expect(carnets().length).toBe(n0);
+    expect(carnets().find(c => c.id === ID_VENTILATION)!.carnet.criteres.some(k => /Tuyau silicone 8 mm/.test(k.texte))).toBe(true);
+    expect(document.querySelector('.cn-bandeau[role="status"]')!.textContent).toMatch(/Rangé ici/);
+  });
 });
+

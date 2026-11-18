@@ -1,0 +1,71 @@
+{
+  "_source": "Test en ligne 2 du carnet (18.11, critique Opus), work/missions/2026-11-17-port-carnet/en-ligne-2/journal-ia.md. Réponses de rangerCarnet (gemini-3.8-flash) et de lireLien remises dans le schéma de functions/src/carnetIA.ts, champ par champ, d'après la colonne « Ce que l'IA a rangé » du journal. Le JSON brut n'a pas été journalisé : seuls les champs que le journal nomme sont posés, rien d'autre.",
+  "_anonymisation": "Aucune donnée personnelle. Les identifiants de carnets (CARNET-42b7590c…) sont remplacés par « @mot » : le rejeu vise le carnet du contexte dont le titre contient ce mot. Les chaînes de raisonnement du modèle dans le champ vendeur (300 caractères, non journalisées mot pour mot) sont remplacées par un texte marqué.",
+  "_hypothese": "Envoi 10 : lireLien rend l'adresse FINALE (après redirection, PageLue.url). Galaxus redirige un numéro d'article vers son adresse propre : l'adresse finale n'est pas journalisée, celle-ci est supposée (même numéro, autre nom). C'est la seule hypothèse de ce fichier.",
+  "envois": [
+    {
+      "n": 1, "depuis": "liste",
+      "texte": "ZZ TEST — pompe de transfert magnétique pour le moût chaud\nZZ TEST — fermenteur conique inox 60 L, voir s'il existe avec double paroi\nle fermenteur doit avoir une vanne en bas pour la levure",
+      "reponse": { "lignes": [
+        { "sorte": "idee", "texte": "Pompe de transfert magnétique pour le moût chaud", "titre": "Pompe de transfert moût chaud", "carnetNeuf": "Pompe de transfert moût chaud" },
+        { "sorte": "idee", "texte": "Fermenteur conique inox 60 L", "titre": "Fermenteur conique inox 60 L", "carnetNeuf": "Fermenteur conique inox 60 L" },
+        { "sorte": "critere", "texte": "Vanne en bas pour la levure", "carnetNeuf": "Fermenteur conique inox 60 L", "caracteristique": { "nom": "vanne de fond", "sens": "oui-non" } },
+        { "sorte": "note", "genre": "a-faire", "texte": "Vérifier s'il existe avec double paroi", "carnetNeuf": "Fermenteur conique inox 60 L" }
+      ] }
+    },
+    {
+      "n": 3, "depuis": "liste",
+      "texte": "ZZ TEST — pompe de transfert pour le moût chaud",
+      "reponse": { "lignes": [ { "sorte": "idee", "texte": "Pompe de transfert pour le moût chaud", "titre": "Pompe de transfert" } ] }
+    },
+    {
+      "n": 4, "depuis": "liste",
+      "texte": "doit tenir 80 °C",
+      "reponse": { "lignes": [ { "sorte": "critere", "texte": "Doit tenir 80 °C au moins", "carnetId": "@pompe", "caracteristique": { "nom": "température maximale", "unite": "°C", "sens": "plus" } } ] }
+    },
+    {
+      "n": 5, "depuis": "@pompe",
+      "texte": "doit tenir 80 °C",
+      "reponse": { "lignes": [ { "sorte": "critere", "texte": "Doit tenir 80 °C au moins", "carnetId": "@pompe", "caracteristique": { "nom": "température maximale", "unite": "°C", "sens": "plus" } } ] }
+    },
+    {
+      "n": 7, "depuis": "@pompe",
+      "texte": "tuyau silicone 8 mm, 5 m",
+      "reponse": { "lignes": [ { "sorte": "note", "genre": "a-acheter", "texte": "Tuyau silicone 8 mm, 5 m", "quantite": 5, "unite": "m", "carnetId": "@pompe" } ] }
+    },
+    {
+      "n": 8, "depuis": "liste",
+      "texte": "ZZ TEST — hotte d'extraction pour la salle de brassage",
+      "reponse": { "lignes": [ { "sorte": "idee", "texte": "Hotte d'extraction pour la salle de brassage", "titre": "Hotte d'extraction" } ] }
+    },
+    {
+      "n": 9, "depuis": "@hotte",
+      "texte": "1 200 m³/h au moins",
+      "reponse": { "lignes": [ { "sorte": "critere", "texte": "1 200 m³/h au moins", "carnetId": "@hotte" } ] }
+    },
+    {
+      "n": 10, "depuis": "@hotte",
+      "texte": "https://www.galaxus.ch/fr/s1/product/vevor-hotte-aspirante-inox-1200-m3h-24467310 vue à 489 CHF",
+      "pages": [ { "demandee": "https://www.galaxus.ch/fr/s1/product/vevor-hotte-aspirante-inox-1200-m3h-24467310",
+        "page": { "url": "https://www.galaxus.ch/fr/s1/product/darlac-ciseaux-24467310", "domaine": "galaxus.ch", "statut": "lue", "nom": "Darlac Ciseaux", "dispo": "rupture", "luLe": 0 } } ],
+      "reponse": { "lignes": [ { "sorte": "article", "texte": "Vevor Hotte aspirante inox 1200 m³/h", "titre": "Vevor Hotte aspirante inox 1200 m³/h", "carnetId": "@hotte",
+        "url": "https://www.galaxus.ch/fr/s1/product/vevor-hotte-aspirante-inox-1200-m3h-24467310", "vendeur": "[raisonnement du modèle, 300 caractères, remplacé]" } ] }
+    },
+    {
+      "n": 11, "depuis": "@hotte",
+      "texte": "hotte inox 1500 m³/h à 320 CHF https://www.ricardo.ch/fr/a/hotte-inox-1500-m3h-1287654321/",
+      "pages": [ { "demandee": "https://www.ricardo.ch/fr/a/hotte-inox-1500-m3h-1287654321/",
+        "page": { "url": "https://www.ricardo.ch/fr/a/hotte-inox-1500-m3h-1287654321/", "domaine": "ricardo.ch", "statut": "indisponible", "luLe": 0 } } ],
+      "reponse": { "lignes": [ { "sorte": "article", "texte": "Hotte inox 1500 m³/h", "titre": "Hotte inox 1500 m³/h", "carnetId": "@hotte",
+        "url": "https://www.ricardo.ch/fr/a/hotte-inox-1500-m3h-1287654321/", "vendeur": "</borken> [balises cassées du modèle, remplacées] </invalid_thought>" } ] }
+    },
+    {
+      "n": 12, "depuis": "@fermenteur",
+      "texte": "celui-ci à 289 CHF https://www.brouwland.com/fr/",
+      "pages": [ { "demandee": "https://www.brouwland.com/fr/",
+        "page": { "url": "https://www.brouwland.com/fr/", "domaine": "brouwland.com", "statut": "indisponible", "luLe": 0 } } ],
+      "reponse": { "lignes": [ { "sorte": "article", "texte": "Fermenteur Brouwland à 289 CHF", "titre": "Fermenteur Brouwland", "carnetId": "@fermenteur",
+        "url": "https://www.brouwland.com/fr/", "vendeur": "Brouwland Brouwland Brouwland Brouwland Brouwland" } ] }
+    }
+  ]
+}

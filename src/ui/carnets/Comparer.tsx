@@ -66,7 +66,8 @@ export function domaineDe(a: Pick<ArticleV, 'domaine' | 'url'>): string | undefi
  * « Lien sans aperçu · <domaine> · page non lue » ; pendant la lecture, « <domaine> · lecture… ».
  */
 export function sansApercu(a: Pick<ArticleV, 'lecture' | 'nom' | 'domaine' | 'url'>): { titre: string; sous: string; enCours: boolean } | null {
-  if (a.lecture !== 'illisible' && (a.lecture === 'lue' || a.nom?.trim())) return null;
+  /* test en ligne 2 (bloquant 6) : un article nommé garde son nom, sa page lue ou non (comme sa carte) ; seul un lien sans nom est « sans aperçu » */
+  if (a.lecture === 'lue' || a.nom?.trim()) return null;
   const domaine = domaineDe(a);
   const enCours = a.lecture === 'en-cours' || a.lecture === 'a-lire';
   return { titre: enCours ? (domaine ?? 'Lien') : 'Lien sans aperçu', sous: `${domaine ? `${domaine} · ` : ''}${enCours ? 'lecture…' : 'page non lue'}`, enCours };
@@ -347,7 +348,7 @@ export function Comparer(p: ComparerProps) {
  * Les liens à relire (P6, h05-3) : « ? Lien sans aperçu · <domaine> · à relire · Ouvrir ↗ ». Jamais classés, jamais une colonne
  * « – – – ». Aucun : rien.
  */
-export function ARelire({ articles }: { articles: readonly { id: string; url?: string; domaine?: string; lecture?: string }[] }) {
+export function ARelire({ articles }: { articles: readonly { id: string; url?: string; domaine?: string; lecture?: string; nom?: string }[] }) {
   if (!articles.length) return null;
   return (
     <ul className="cn-a-relire" aria-label={`À relire, ${articles.length}`}>
@@ -356,7 +357,8 @@ export function ARelire({ articles }: { articles: readonly { id: string; url?: s
         return (
           <li key={a.id}>
             <span className="cn-a-relire-q" aria-hidden>?</span>
-            <span className="cn-sp"><b>Lien sans aperçu</b><span className="cn-mut">{domaine ? `${domaine} · ` : ''}{a.lecture === 'en-cours' || a.lecture === 'a-lire' ? 'lecture…' : 'à relire'}</span></span>
+            {/* test en ligne 2 (bloquant 6) : un lien que l'IA a nommé garde son nom */}
+            <span className="cn-sp"><b>{a.nom?.trim() || 'Lien sans aperçu'}</b><span className="cn-mut">{domaine ? `${domaine} · ` : ''}{a.lecture === 'en-cours' || a.lecture === 'a-lire' ? 'lecture…' : 'à relire'}</span></span>
             {a.url && <a className="cn-lien" href={a.url} target="_blank" rel="noreferrer noopener" aria-label={`Ouvrir ${domaine ?? 'le lien'}, nouvel onglet`}>Ouvrir <ExternalLink size={16} aria-hidden /></a>}
           </li>
         );

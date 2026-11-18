@@ -225,8 +225,26 @@ describe('P1, P2, P3 (vision 1) : le bandeau suit le rangement final ; un lien s
     expect(e.magasin.lire().some(i => i.type === 'carnet-message' && i.title === url)).toBe(false);
   });
 
-  it('une phrase depuis la liste que l’IA rangerait dans le Frigo existant : le cadre annonçait un carnet neuf, c’est un carnet neuf (corr2, m390-1 ; remplace P2)', async () => {
+  it('une phrase depuis la liste que l’IA range dans le Frigo existant : le rangement de l’IA fait foi (D383, remplace corr2 m390-1 et P2) : pas de carnet neuf, « Rangé dans … Frigo », Annuler rend le Frigo d’avant', async () => {
     const e = ecran(fixtureCarnets());
+    const avant = e.carnets().length;
+    const frigo = JSON.stringify(e.carnets().find(c => c.id === ID_FRIGO));
+    await e.taperEtEnvoyer('chambre froide pour garder 6 fûts');
+    await e.attendre(40);
+    /* l'IA simulée range deux critères dans le Frigo : le carnet neuf local, annoncé en attendant, disparaît */
+    expect(e.carnets().length).toBe(avant);
+    expect(JSON.stringify(e.carnets().find(c => c.id === ID_FRIGO))).not.toBe(frigo);
+    expect(e.carnets().find(c => c.id === ID_FRIGO)!.carnet.criteres.some(k => /6 fûts/.test(k.texte))).toBe(true);
+    expect(e.bandeau()?.getAttribute('data-sorte')).toBe('ailleurs');
+    expect(e.bandeau()?.textContent).toMatch(/Rangé dans (ZZ TEST — )?Frigo/);
+    expect(e.vue.container.textContent).not.toMatch(/Carnet créé/);
+    await act(async () => { fireEvent.click(within(e.bandeau() as HTMLElement).getByRole('button', { name: /Annuler/ })); });
+    expect(e.carnets().length).toBe(avant);
+    expect(JSON.stringify(e.carnets().find(c => c.id === ID_FRIGO))).toBe(frigo);
+  });
+
+  it('la même phrase, IA en panne (hors ligne) : l’aperçu local reste, un carnet neuf « Carnet créé », le Frigo intact (D383)', async () => {
+    const e = ecran(fixtureCarnets(), appelsSimules('echec', 0));
     const avant = e.carnets().length;
     const frigo = JSON.stringify(e.carnets().find(c => c.id === ID_FRIGO));
     await e.taperEtEnvoyer('chambre froide pour garder 6 fûts');
@@ -287,30 +305,46 @@ describe('corr2-L1 (vision 2 : d1280-1, m390-1, m390-2, L4-7, d1280-3) : ce que 
     expect(e.vue.container.querySelector('[data-vue="carnet"]')).not.toBeNull();
   });
 
-  it('IA lente (ia=lent) et bulle « Déjà un carnet proche » non touchée : « Carnet créé » tout de suite et après l’IA ; un seul carnet neuf ; Annuler rend la liste d’avant', async () => {
+  it('IA lente (ia=lent) et bulle « Déjà un carnet proche » non touchée : « Carnet créé » pendant l’attente (aperçu) ; après l’IA, son rangement fait foi (Frigo) : « Rangé dans », aucun carnet neuf ; Annuler rend la liste d’avant (D383)', async () => {
     const e = ecran(fixtureCarnets(), appelsSimules('lent', 150));
     const avant = autres(e, IDS()), n = e.carnets().length;
     const phrase = 'ZZ TEST — rangement du frigo, plus de condensation au plafond';
     fireEvent.change(e.vue.container.querySelector('.cn-champ textarea')!, { target: { value: phrase } });
     expect(e.vue.container.textContent).toMatch(/Nouveau carnet/);
     await act(async () => { fireEvent.submit(e.vue.container.querySelector('form')!); });
-    // pendant que l'IA tourne : le retour est déjà là, le carnet ouvert
+    // pendant que l'IA tourne : l'aperçu local est déjà là, le carnet ouvert
     expect(e.bandeau()?.getAttribute('data-sorte')).toBe('cree');
     expect(e.vue.container.querySelector('[data-vue="carnet"]')).not.toBeNull();
-    await e.attendre(400);
-    expect(e.bandeau()?.getAttribute('data-sorte')).toBe('cree');
-    expect(e.bandeau()?.textContent).toContain(`« ${phrase} » · votre phrase en titre`);
-    expect(e.vue.container.textContent).not.toMatch(/Rangé dans/);
     expect(e.carnets()).toHaveLength(n + 1);
-    expect(autres(e, IDS())).toBe(avant);
-    const neuf = e.carnets().find(c => !IDS().includes(c.id))!;
-    expect(neuf.title).toBe(phrase);
+    await e.attendre(400);
+    // après : l'IA range le critère dans le Frigo, le carnet local resté vide a disparu
+    expect(e.bandeau()?.getAttribute('data-sorte')).toBe('ailleurs');
+    expect(e.bandeau()?.textContent).toMatch(/Rangé dans (ZZ TEST — )?Frigo/);
+    expect(e.vue.container.textContent).not.toMatch(/Carnet créé/);
+    expect(e.carnets()).toHaveLength(n);
+    expect(e.carnets().find(c => c.id === ID_FRIGO)!.carnet.criteres.some(k => /condensation/i.test(k.texte))).toBe(true);
     // Annuler : la liste d'avant
     await act(async () => { fireEvent.click(within(e.bandeau() as HTMLElement).getByRole('button', { name: /Annuler/ })); });
     expect(e.carnets()).toHaveLength(n);
     expect(autres(e, IDS())).toBe(avant);
     expect(e.vue.container.querySelector('[data-vue="liste"]')).not.toBeNull();
     expect(e.magasin.lire().some(i => i.type === 'carnet-message' && i.title === phrase)).toBe(false);
+  });
+
+  it('IA lente puis en panne (hors ligne) : le carnet local de l’aperçu reste, « Carnet créé », et Annuler le retire (D383)', async () => {
+    const e = ecran(fixtureCarnets(), appelsSimules('echec', 60));
+    const avant = autres(e, IDS()), n = e.carnets().length;
+    const phrase = 'ZZ TEST — rangement du frigo, plus de condensation au plafond';
+    fireEvent.change(e.vue.container.querySelector('.cn-champ textarea')!, { target: { value: phrase } });
+    await act(async () => { fireEvent.submit(e.vue.container.querySelector('form')!); });
+    await e.attendre(200);
+    expect(e.bandeau()?.getAttribute('data-sorte')).toBe('cree');
+    expect(e.bandeau()?.textContent).toContain(`« ${phrase} » · votre phrase en titre`);
+    expect(e.carnets()).toHaveLength(n + 1);
+    expect(autres(e, IDS())).toBe(avant);
+    await act(async () => { fireEvent.click(within(e.bandeau() as HTMLElement).getByRole('button', { name: /Annuler/ })); });
+    expect(e.carnets()).toHaveLength(n);
+    expect(autres(e, IDS())).toBe(avant);
   });
 
   it('Annuler pendant que l’IA tourne : l’IA est coupée, rien n’est réécrit après', async () => {

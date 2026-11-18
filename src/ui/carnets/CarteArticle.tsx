@@ -102,7 +102,7 @@ export function verdictDe(a: ArticleV, critere?: CritereV): string | null {
 }
 
 function Vignette({ article, faconNom, carnetTitre, classe }: { article: ArticleV; faconNom?: string; carnetTitre?: string; classe?: string }) {
-  if (!article.photo && (article.lecture === 'illisible' || (article.lecture !== 'lue' && !article.nom))) {
+  if (!article.photo && article.lecture !== 'lue' && !article.nom?.trim()) {
     return <span className={`cn-vignette cn-vignette-lien${classe ? ` ${classe}` : ''}`} aria-hidden><Link2 size={22} /></span>;
   }
   return <VignetteObjet photo={article.photo} mots={[article.nom, faconNom, carnetTitre]} classe={classe} />;
@@ -116,7 +116,8 @@ export function CarteArticle(p: CarteArticleProps) {
   const carac = p.critere?.caracteristique;
   const veilleDemandee = !!a.veille?.active;
 
-  if (a.lecture === 'illisible' || (a.lecture !== 'lue' && !a.nom)) {
+  /* test en ligne 2 (bloquant 6) : un article que l'IA a nommé garde son nom, sa page lue ou non ; seul un lien sans nom est « sans aperçu » */
+  if (a.lecture !== 'lue' && !a.nom?.trim()) {
     const enCours = a.lecture === 'en-cours' || a.lecture === 'a-lire';
     return (
       <div className="cn-article" data-lecture={a.lecture}>

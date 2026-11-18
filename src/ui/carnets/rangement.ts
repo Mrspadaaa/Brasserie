@@ -199,6 +199,38 @@ export function versLignesAnnoncees(textesIA: readonly string[], annoncees: read
   });
 }
 
+/** Une adresse sans schéma, `www.`, ni `/`, `?` ou `#` final : deux écritures du même lien se reconnaissent. */
+const formeLien = (u: string) => u.trim().toLowerCase().replace(/^https?:\/\//, '').replace(/^www\./, '').replace(/[/#?]+$/, '');
+
+/**
+ * Test en ligne 2 (bloquant 5 : « 489 CHF » perdu sur 3 liens sur 3) : un article de l'IA sans prix reprend le prix écrit dans le message,
+ * tel que l'analyse locale l'a lu (motifs suisses, `parseDecimal`) : celui de son lien, sinon le seul prix écrit pour le seul article
+ * sans prix. Un prix rendu par l'IA (déjà vérifié par le garde) n'est jamais remplacé ; rien n'est inventé.
+ */
+export function prixEcrits<T extends { sorte: string; url?: string; prixCentimes?: number; devise?: string }>(lignes: LigneCarnet[], locales: readonly T[]): LigneCarnet[] {
+  const ecrits = locales.filter(l => l.sorte === 'article' && l.prixCentimes !== undefined);
+  if (!ecrits.length) return lignes;
+  const sansPrix = lignes.filter(l => l.sorte === 'article' && l.prixCentimes === undefined);
+  const pris = new Set<T>();
+  return lignes.map(l => {
+    if (!sansPrix.includes(l)) return l;
+    const parLien = l.url ? ecrits.find(e => e.url && !pris.has(e) && formeLien(e.url) === formeLien(l.url!)) : undefined;
+    const seul = !parLien && sansPrix.length === 1 && ecrits.length === 1 && !pris.has(ecrits[0]) ? ecrits[0] : undefined;
+    const e = parLien ?? seul;
+    if (!e) return l;
+    pris.add(e);
+    return { ...l, prixCentimes: e.prixCentimes, devise: e.devise ?? 'CHF', prixSource: 'texte' as const };
+  });
+}
+
+/**
+ * Test en ligne 2 (bloquant 6) : `lireLien` rend l'adresse FINALE (après redirection) ; le message garde celle qu'il a collée. La page est
+ * rattachée à l'adresse demandée, sinon elle ne retrouve jamais son article (« lecture… » sans fin). L'article garde le lien collé.
+ */
+export function pagesDesLiens(urls: readonly string[], pages: readonly PageLue[]): PageLue[] {
+  return pages.map((p, i) => (urls[i] && formeLien(p.url) !== formeLien(urls[i]) ? { ...p, url: urls[i] } : p));
+}
+
 export interface DependancesRangement<L> {
   mode: ModeCarnetIA;
   /** Le carnet ouvert, ou `null` depuis la liste. */
@@ -290,7 +322,7 @@ export function creerRangement<L>(deps: DependancesRangement<L>): Rangement<L> {
       let pages: PageLue[] = [];
       if (urls.length) {
         poser({ etape: 'en-cours', messageId, texte, lecture: { url: urls[0] } });
-        pages = await course(Promise.all(urls.map(url => appels.lire(url, ctrl.signal))));
+        pages = pagesDesLiens(urls, await course(Promise.all(urls.map(url => appels.lire(url, ctrl.signal)))));
         poser({ etape: 'en-cours', messageId, texte, lecture: { url: urls[0], statut: pages[0].statut } });
       }
       const contexte = contexteModele(texte, deps.maintenant?.() ?? new Date(), deps.depuis, carnets, pages);

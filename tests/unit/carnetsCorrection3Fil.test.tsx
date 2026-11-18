@@ -92,15 +92,48 @@ describe('P8 (R11) : « ✓ Carnet créé · ↺ Annuler » agit même si l’IA
     expect(nb()).toBe(nb0);
     expect(lireCarnets(fixtureCarnets()).length).toBe(nb0);
   });
-  it.each([['pendant la lecture de la page', 60], ['après la fin de l’IA', 600]])('phrase avec lien et prix (état 08 du banc) : Annuler %s défait tout', async (_q, ms) => {
+  const LIEN = 'ZZ TEST — ventilateur de condensation https://exemple.test/ZZ-TEST-ventilo 189,90 CHF';
+  it('phrase avec lien et prix (état 08 du banc) : Annuler pendant la lecture de la page défait tout (l’aperçu local « Carnet créé »)', async () => {
     const { champ, nb, nb0 } = monter(150);
-    await envoyer(champ, 'ZZ TEST — ventilateur de condensation https://exemple.test/ZZ-TEST-ventilo 189,90 CHF');
-    await attendre(ms);
+    await envoyer(champ, LIEN);
+    await attendre(60);
     expect(nb()).toBe(nb0 + 1);
     fireEvent.click(boutonAnnuler());
     await attendre(600);
     expect(nb()).toBe(nb0);
     expect(document.querySelector('[data-vue]')!.getAttribute('data-vue')).toBe('liste');
+  });
+  it('même phrase : après la fin de l’IA, son rangement fait foi (D383) : l’article va dans Ventilation, aucun carnet neuf, bandeau « Rangé dans » ; Annuler défait l’écriture de l’IA et la locale', async () => {
+    const { champ, nb, nb0, magasin } = monter(150);
+    const articles = () => lireCarnets(magasin.lire()).find(c => c.id === ID_VENTILATION)!.carnet.articles.length;
+    const a0 = articles();
+    await envoyer(champ, LIEN);
+    await attendre(600);
+    expect(nb()).toBe(nb0);
+    expect(articles()).toBe(a0 + 1);
+    const bandeau = document.querySelector('.cn-bandeau[role="status"]')!;
+    expect(bandeau.getAttribute('data-sorte')).toBe('ailleurs');
+    expect(bandeau.textContent).toMatch(/Rangé dans (ZZ TEST — )?Ventilation/);
+    expect(document.querySelector('.cn-bandeau[data-sorte="cree"]')).toBeNull();
+    fireEvent.click(bandeau.querySelector('button.cn-lien') as HTMLButtonElement);
+    await attendre(300);
+    expect(nb()).toBe(nb0);
+    expect(articles()).toBe(a0);
+    expect(document.querySelector('[data-vue]')!.getAttribute('data-vue')).toBe('liste');
+  });
+  it('même phrase, IA en panne (hors ligne) : l’aperçu local reste « Carnet créé » après l’attente ; Annuler le défait', async () => {
+    const magasin = magasinMemoire(fixtureCarnets());
+    const nb0 = lireCarnets(magasin.lire()).length;
+    render(<CarnetsVue magasin={magasin} finances={{ plans: [], transactions: [], payments: [] }} mode="simule" appels={appelsSimules('echec', 60)}
+      aides={aidesCarnet('simule', {})} ecrirePlan={rien} />);
+    const champ = () => document.querySelector('.cn-champ textarea') as HTMLTextAreaElement;
+    await envoyer(champ, LIEN);
+    await attendre(600);
+    expect(lireCarnets(magasin.lire()).length).toBe(nb0 + 1);
+    expect(document.querySelector('.cn-bandeau[data-sorte="cree"]')).not.toBeNull();
+    fireEvent.click(boutonAnnuler());
+    await attendre(300);
+    expect(lireCarnets(magasin.lire()).length).toBe(nb0);
   });
   it('Annuler après la fin de l’IA défait l’écriture de l’IA et la locale', async () => {
     const { champ, nb, nb0 } = monter(0);

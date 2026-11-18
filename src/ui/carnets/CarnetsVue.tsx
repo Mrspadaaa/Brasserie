@@ -23,7 +23,7 @@ import { aucunCarnetNEnParle, carnetProche, rattacher } from '../../domain/carne
 import { doublonsDe, notesEnDouble } from '../../domain/carnets/doublons';
 import type { CarnetPourIA, LigneCarnet } from '../../domain/carnets/ia';
 import { aidesCourantes, comportementSimule, modeCarnet, type AidesCarnet, type ModeCarnetIA } from '../../config/carnetIA';
-import { appelsSimules, creerRangement, planVrac, retourDuRangement, versLignesAnnoncees, type AppelsIA, type EtatRangement, type PlanVrac, type Rangement as Envoi } from './rangement';
+import { appelsSimules, creerRangement, planVrac, prixEcrits, retourDuRangement, versLignesAnnoncees, type AppelsIA, type EtatRangement, type PlanVrac, type Rangement as Envoi } from './rangement';
 import { ListeCarnets } from './ListeCarnets';
 import { CarnetOuvert, type LienV, type RangeeV } from './CarnetOuvert';
 import { ChampCarnet } from './ChampCarnet';
@@ -132,7 +132,8 @@ type Annonce =
   /* Critique 5, n° 3 et 6 : écrit dans un carnet ouvert, tout va dans le carnet annoncé (l'ouvert, ou celui que le cadre a nommé) */
   /* Critique 7, n° 3 : `rubrique` : la puce « Va dans » cochée d'avance à l'envoi (Ce qui compte, Note, Façon) ; l'IA met en forme, la
      rubrique annoncée tient */
-  | { sorte: 'ici'; carnetId: string; rubrique?: RubriqueVaDans };
+  /* Test en ligne 2 : `choisi` : le carnet corrigé d'un toucher (« Ici », ou un autre) ; un choix du brasseur, l'IA ne le change pas */
+  | { sorte: 'ici'; carnetId: string; rubrique?: RubriqueVaDans; choisi?: true };
 const memeTexte = (x: string, y: string) => x.trim().localeCompare(y.trim(), 'fr', { sensitivity: 'base' }) === 0;
 
 /**
@@ -241,6 +242,8 @@ export function rangDuLien(t: NonNullable<ReturnType<typeof tableauDe>>, article
   return null;
 }
 
+/** Test en ligne 2 (bloquant 8) : le délai avant de replier « Créer » quand le champ de la liste perd le focus. */
+const PLIER_APRES_MS = 300;
 /** G1 (g5:v04-1) : les exemples de Créer · avant, touchables ; un toucher remplit le champ. */
 const EXEMPLES_CREER = ['Frigo de garde', 'Ventilation de la salle', 'Évier pour les fûts'];
 const RUBRIQUE_DE: Record<string, string> = { critere: 'Ce qui compte', facon: 'Façons', article: 'Articles', note: 'Notes', photo: 'Photos' };
@@ -315,7 +318,8 @@ export function depuisIA(l: LigneCarnet, dest: Destination): LigneARanger {
       const valeurs: Record<string, { valeur: string; unite?: string; origine: 'page' }> = {};
       for (const v of p?.valeurs ?? []) valeurs[v.nom] = { valeur: v.valeur, ...(v.unite ? { unite: v.unite } : {}), origine: 'page' };
       return {
-        ...dest, sorte: 'article', origine, lecture: l.url ? (lue ? 'lue' : p ? 'illisible' : 'a-lire') : 'lue',
+        /* test en ligne 2 (bloquant 6) : l'IA passée, les pages ont été lues ; un lien sans page n'attend plus rien (jamais « lecture… » sans fin) */
+        ...dest, sorte: 'article', origine, lecture: l.url ? (lue ? 'lue' : 'illisible') : 'lue',
         ...(l.url ? { url: l.url } : {}), ...(p?.domaine ? { domaine: p.domaine } : {}),
         ...(p?.nom ?? l.titre ? { nom: p?.nom ?? l.titre } : !l.url ? { nom: l.texte } : {}),
         ...(l.prixCentimes !== undefined ? { prixCentimes: l.prixCentimes, devise: l.devise ?? 'CHF' } : {}),
@@ -385,6 +389,13 @@ export function CarnetsVue(p: CarnetsVueProps) {
   const [ecartees, setEcartees] = useState<ReadonlySet<string>>(() => new Set());
   /** P28 (R09) : le champ de la liste a le focus, vide : « Créer · avant » (g5:v03-2, G1, G2). */
   const [focusListe, setFocusListe] = useState(false);
+  /**
+   * Test en ligne 2 (bloquant 8) : le toucher sur un carnet retire le focus du champ AVANT son clic. Replier « Créer » aussitôt faisait
+   * remonter la liste (~120 px) sous le doigt : le clic tombait à côté. Le cadre se replie après le geste (le clic arrive en ~100 ms).
+   */
+  const pliage = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
+  const plierApresToucher = useCallback(() => { clearTimeout(pliage.current); pliage.current = setTimeout(() => setFocusListe(false), PLIER_APRES_MS); }, []);
+  useEffect(() => () => clearTimeout(pliage.current), []);
   const aidesRef = useRef(aides);
   aidesRef.current = aides;
   /** P5 (R13, G10) : la rubrique corrigée d'un toucher sur les puces « Va dans » ; elle prime sur le choix d'avance, jusqu'à l'envoi. */
@@ -398,6 +409,8 @@ export function CarnetsVue(p: CarnetsVueProps) {
   const destEnvoi = useRef<string | null>(null);
   /** Critique 8, n° 1 : le titre du carnet neuf annoncé pour une phrase qui parle d'un autre objet. */
   const titreNeufEnvoi = useRef<string | null>(null);
+  /** Test en ligne 2 : le carnet de l'envoi en cours a été corrigé d'un toucher (un choix : l'IA ne le change pas). */
+  const carnetChoisi = useRef(false);
   /** Critique 5, n° 24 : les carnets dont le dernier envoi n'a pas eu l'IA (échec, hors ligne, éteinte) : passés à CarnetOuvert. */
   const [iaManquee, setIaManquee] = useState<Readonly<Record<string, AvisIA['sorte']>>>({});
   /** Critique 6, n° 24 : les messages rangés hors ligne, tels quels ; au retour du réseau, « Ranger maintenant » les passe à l'IA. */
@@ -529,7 +542,8 @@ export function CarnetsVue(p: CarnetsVueProps) {
       const ici = depuis && !titreNeuf ? destEnvoi.current ?? depuis : null;
       destEnvoi.current = null; titreNeufEnvoi.current = null;
       const rubrique = ici && !force ? vaDansDe(txt) : null;
-      let annonce: Annonce | null = ici ? { sorte: 'ici', carnetId: ici, ...(rubrique ? { rubrique } : {}) } : null;
+      const choisi = carnetChoisi.current; carnetChoisi.current = false;
+      let annonce: Annonce | null = ici ? { sorte: 'ici', carnetId: ici, ...(rubrique ? { rubrique } : {}), ...(choisi ? { choisi: true as const } : {}) } : null;
       if (ici && force && lignes.length === 1 && lignes[0].sorte !== 'article') {
         const l0 = lignes[0];
         const ligne: LigneARanger = force === 'critere' ? { carnetId: ici, sorte: 'critere', texte: l0.texte, origine: 'vous' }
@@ -589,34 +603,58 @@ export function CarnetsVue(p: CarnetsVueProps) {
       const an = annonces.current.get(messageId);
       annonces.current.delete(messageId);
       const txt = msg?.carnetMessage.texte ?? '';
+      /* Test en ligne 2 (bloquant 5) : un prix écrit dans le message que l'IA n'a pas rendu reste sur son article */
+      lignes = prixEcrits(lignes, analyserTexte(txt));
       let aRanger: LigneARanger[];
       let propose: { carnetId: string; titre: string } | undefined;
+      /*
+       * Test en ligne 2 (18.11) : quand l'IA a répondu, son rangement fait foi : le carnet (connu, ou neuf qu'elle nomme), la sorte et le
+       * critère. L'annonce locale n'a été qu'un aperçu en attendant ; elle ne sert plus que quand l'IA ne dit pas où (aucun carnet rendu).
+       * Les carnets neufs que l'IA nomme portent la marque des données de test du message (L05).
+       */
+      const neufsIA = new Map<string, Destination>();
+      const versNeufIA = (titre: string): Destination => {
+        const t = prefixeDe(txt) && !/^\s*ZZ TEST/i.test(titre) ? `${prefixeDe(txt)}${titre}` : titre;
+        const cle = normaliser(t);
+        if (!neufsIA.has(cle)) neufsIA.set(cle, { carnetNeuf: { id: nouvelIdCarnet('CARNET'), titre: t } });
+        return neufsIA.get(cle)!;
+      };
+      const connu = (id: string | undefined) => !!id && lireCarnets(etat, { archives: true }).some(c => c.id === id);
       if (an?.sorte === 'cree') {
-        /* m390-1, d1280-1, L4-7 : tout reste dans SON carnet, sous sa phrase ; un autre titre de l'IA devient un titre proposé (G29) */
+        /* m390-1, d1280-1, L4-7 : ce qui n'a pas d'autre carnet reste dans SON carnet, sous sa phrase ; un autre titre de l'IA devient un
+           titre proposé (G29). Test en ligne 2 (bloquants 3 et 4) : une ligne que l'IA range dans un carnet connu y va ; le carnet créé
+           pendant l'attente, resté vide, disparaît. */
         const dest: Destination = { carnetNeuf: { id: an.carnetId, titre: an.titre } };
-        /* n° 2 : la phrase recopiée telle quelle (en note ou en critère) n'est pas une mise en forme : elle est déjà le titre */
-        aRanger = [{ ...dest, sorte: 'idee' } as LigneARanger,
-          ...lignes.filter(l => l.sorte !== 'idee' && !(l.sorte !== 'article' && memeTexte(l.texte, an.phrase))).map(l => depuisIA(l, dest))];
+        const ailleurs = (l: LigneCarnet) => l.sorte !== 'idee' && connu(l.carnetId) && l.carnetId !== an.carnetId;
+        const ici = lignes.filter(l => !ailleurs(l));
+        /* n° 2 : la phrase recopiée telle quelle (en note ou en critère) n'est pas une mise en forme : elle est déjà le titre ; sauf si elle
+           porte une quantité ou un prix (« tuyau silicone 8 mm, 5 m » à acheter : rien n'est perdu) */
+        const recopie = (l: LigneCarnet) => l.sorte !== 'article' && memeTexte(l.texte, an.phrase) && l.quantite === undefined && l.prixCentimes === undefined;
+        aRanger = [
+          ...(ici.length || !lignes.some(ailleurs) ? [{ ...dest, sorte: 'idee' } as LigneARanger] : []),
+          ...ici.filter(l => l.sorte !== 'idee' && !recopie(l)).map(l => depuisIA(l, dest)),
+          ...lignes.filter(ailleurs).map(l => depuisIA(l, { carnetId: l.carnetId! }))];
         const titreIA = lignes.find(l => l.sorte === 'idee')?.titre ?? lignes.find(l => l.carnetNeuf)?.carnetNeuf ?? lignes.find(l => l.titrePropose)?.titrePropose;
-        if (titreIA && !memeTexte(titreIA, an.titre)) propose = { carnetId: an.carnetId, titre: titreIA };
+        if (aRanger.some(l => l.sorte === 'idee') && titreIA && !memeTexte(titreIA, an.titre)) propose = { carnetId: an.carnetId, titre: titreIA };
       } else if (an?.sorte === 'vrac') {
-        /* m390-2 : la découpe annoncée est appliquée ligne par ligne ; l'IA type et met en forme, elle ne change pas la cible */
-        const utiles = lignes.filter(l => l.sorte !== 'idee');
-        const idx = versLignesAnnoncees(utiles.map(l => l.texte), an.lignes.map(x => x.texte));
-        /* critique 6, n° 2 (D-124) : le type annoncé pendant est celui qui s'applique ; l'IA met en forme le texte, pas le type */
-        aRanger = utiles.map((l, i) => {
-          const g = an.vues[idx[i]]?.genre;
-          const typee = typerVrac(l, an.lignes[idx[i]]?.sorte, g);
-          return depuisIA(typee as LigneCarnet, an.lignes[idx[i]]?.dest ?? an.lignes[0].dest);
+        /* Test en ligne 2 (bloquants 1 et 2) : chaque ligne va où l'IA la range (un carnet connu, ou le carnet neuf qu'elle nomme, une idée
+           comprise : « Pompe » n'est plus annoncée puis perdue), avec la sorte qu'elle lui donne. Sans carnet rendu : la ligne annoncée. */
+        const sansIdee = lignes.filter(l => l.sorte !== 'idee');
+        const idx = versLignesAnnoncees(sansIdee.map(l => l.texte), an.lignes.map(x => x.texte));
+        const annonceDe = (l: LigneCarnet): Destination => {
+          const i = sansIdee.indexOf(l);
+          return (i >= 0 ? an.lignes[idx[i]]?.dest : undefined) ?? an.lignes[0].dest;
+        };
+        aRanger = lignes.flatMap(l => {
+          const dest = connu(l.carnetId) ? { carnetId: l.carnetId! } : l.carnetNeuf ? versNeufIA(l.carnetNeuf) : l.sorte === 'idee' ? null : annonceDe(l);
+          return dest ? [depuisIA(l, dest)] : [];
         });
-        const neufsIds = new Set(an.lignes.flatMap(x => (x.dest.carnetNeuf ? [x.dest.carnetNeuf.id] : [])));
-        const neufVrac = neufsIds.size === 1 ? an.lignes.find(x => x.dest.carnetNeuf)?.dest.carnetNeuf : undefined;
-        const titreIA = neufVrac ? utiles.find((l, i) => an.lignes[idx[i]]?.dest.carnetNeuf && l.carnetNeuf)?.carnetNeuf : undefined;
-        if (neufVrac && titreIA && !memeTexte(titreIA, neufVrac.titre)) propose = { carnetId: neufVrac.id, titre: titreIA };
       } else if (an?.sorte === 'ici') {
-        /* n° 3 et 6 : l'IA met en forme (critère, façon, article lu, note) ; elle ne range ni ailleurs ni dans un carnet neuf */
-        const dest: Destination = { carnetId: an.carnetId };
-        aRanger = lignes.filter(l => l.sorte !== 'idee').map(l => depuisIA(an.rubrique ? versRubrique(l, an.rubrique, txt) : l, dest));
+        /* n° 3 et 6 : écrit dans un carnet ouvert, l'IA met en forme (critère, façon, article lu, note). Test en ligne 2 (bloquant 2) : le
+           carnet qu'elle rend fait foi (« doit tenir 80 °C » écrit dans Pompe reste dans Pompe, même si un carnet porte ce titre), et la
+           sorte qu'elle donne aussi ; sans carnet rendu, le carnet annoncé. */
+        const dest = (l: LigneCarnet): Destination => (an.choisi ? { carnetId: an.carnetId } : connu(l.carnetId) ? { carnetId: l.carnetId! } : l.carnetNeuf ? versNeufIA(l.carnetNeuf) : { carnetId: an.carnetId });
+        aRanger = lignes.filter(l => l.sorte !== 'idee').map(l => depuisIA(l, dest(l)));
         const p2 = lignes.find(l => l.titrePropose && l.carnetId === an.carnetId);
         if (p2) propose = { carnetId: an.carnetId, titre: p2.titrePropose! };
         if (!aRanger.length) {
@@ -674,10 +712,17 @@ export function CarnetsVue(p: CarnetsVueProps) {
          seul ce qu'Annuler défait s'étend à l'écriture de l'IA. Un toucher sur Annuler pendant que l'IA finit agit donc toujours. */
       const affiche = retourRef.current;
       if (affiche && affiche.messageId === messageId) {
-        /* même sorte : le texte suit la réponse (d'où vient le titre), sous la même clé ; la ligne « Annuler » ne bouge pas */
-        poserRetourEtat({ ...affiche, inverse: final.inverse, ...(final.bandeau.sorte === affiche.bandeau.sorte ? { bandeau: final.bandeau } : {}) });
+        /* même sorte : le texte suit la réponse (d'où vient le titre), sous la même clé ; la ligne « Annuler » ne bouge pas. Test en
+           ligne 2 : l'IA a rangé ailleurs que le carnet créé pendant l'attente : le retour dit où, sous la même clé */
+        poserRetourEtat({ ...affiche, inverse: final.inverse, bandeau: final.bandeau, detail: final.detail,
+          ...(final.bandeau.sorte !== affiche.bandeau.sorte ? { carnetId: final.carnetId } : {}) });
       }
       else setRetour(final);
+      /* Test en ligne 2 (bloquant 4) : le carnet créé pendant l'attente a disparu (l'IA a rangé dans le carnet ouvert) : on y revient */
+      if (enAttente?.montre && final.bandeau.sorte !== 'cree') {
+        setEnTete(undefined); setVientDEtreCree(null);
+        if (depuis) setVue({ sorte: 'carnet', id: final.carnetId ?? depuis });
+      }
       if (final.bandeau.sorte === 'cree' && final.carnetId) {
         setEnTete(final.carnetId); setVientDEtreCree(final.carnetId);
         if (!depuis && !enAttente?.montre) setVue({ sorte: 'carnet', id: final.carnetId });
@@ -709,6 +754,7 @@ export function CarnetsVue(p: CarnetsVueProps) {
     const dEnvoi = ouvert && depuis ? destinationDans(txt, ouvert, carnets) : null;
     destEnvoi.current = dEnvoi ? corrigeCarnet ?? dEnvoi.carnetId : null;
     titreNeufEnvoi.current = destEnvoi.current === CARNET_NEUF && dEnvoi ? dEnvoi.titre : null;
+    carnetChoisi.current = !!dEnvoi && !!corrigeCarnet;
     setCorrigeCarnet(null);
     setTexte('');
     envoiActif.current = { envoi: rangement, depuis };
@@ -1013,14 +1059,14 @@ export function CarnetsVue(p: CarnetsVueProps) {
       onEnvoyer={() => void envoyer()}
       vaDansCarnet={vaDansCarnet}
       {...(ouvert && vue.sorte !== 'liste' ? { titreCarnet: ouvert.title, libelleEnvoi: edition ? 'Enregistrer' : 'Ajouter' } : {})}
-      onBlurChamp={() => setFocusListe(false)}
+      onBlurChamp={plierApresToucher}
       onPhoto={f => void photo(f)}
       jointe={jointe ? { lecture: !jointe.jpeg, ...(jointe.jpeg ? { apercu: jointe.jpeg } : {}) } : null}
       onRetirerJointe={retirerJointe}
       suggestion={vue.sorte === 'carnet' ? suggestion : null}
       vaDans={auto ? { options: [...PUCES_VA_DANS], choisi: rubriqueChoisie!, onChoisir: id => setCorrige(id as RubriqueVaDans) } : null}
       coller={presse} onColler={() => { if (presse) { setTexte(presse); rangement.taper(presse); setPresse(undefined); } }}
-      onFocusChamp={() => { setFocusListe(true); void lirePresse().then(setPresse); }}
+      onFocusChamp={() => { clearTimeout(pliage.current); setFocusListe(true); void lirePresse().then(setPresse); }}
       desactive={vue.sorte === 'supprimer'} />
   );
 

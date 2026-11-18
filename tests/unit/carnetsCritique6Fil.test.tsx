@@ -94,9 +94,14 @@ describe('1 · n° 1 : la note en vrac se découpe ligne par ligne, un carnet pa
     expect(decouper('Ventilateur Fr. 189,90 chez Exemple')).toHaveLength(1);
     expect(decouper('Un fût env. 30 L couché. Il doit entrer dans le bac')).toHaveLength(1);
   });
-  it('de bout en bout, depuis la liste : pendant « ✻ L’IA découpe votre note : 3 lignes, 2 carnets », après « ✓ 3 lignes rangées dans 2 carnets », « Texte d’origine »', async () => {
+  it('de bout en bout, depuis la liste (D383) : pendant, l’aperçu local « ✻ L’IA découpe votre note : 3 lignes, 2 carnets » ; après, le rangement de l’IA fait foi : « ✓ 3 lignes rangées dans 2 carnets » (Prochain brassin neuf, Évier inox existant), « Texte d’origine »', async () => {
     const { magasin, champ, carnets } = monter({ delai: 300 });
     const n0 = carnets().length;
+    /* ce que l'IA simulée rendra : la vérité de l'après (D383), lue sur la même réponse que l'app */
+    const ia = reponseSimulee(contexteModele(NOTE_1280, new Date('2026-11-18'), null, pourIA(carnets()), []))!.lignes as { carnetId?: string; carnetNeuf?: string; texte: string }[];
+    const titreDe = (l: { carnetId?: string; carnetNeuf?: string }) => l.carnetNeuf ?? carnets().find(c => c.id === l.carnetId)!.title;
+    const attenduCarnets = [...new Set(ia.map(titreDe))];
+    expect(attenduCarnets.sort()).toEqual(['Prochain brassin', 'ZZ TEST — Évier inox']);
     taper(champ, NOTE_1280);
     expect(document.querySelector('.cn-vrac')?.textContent).toMatch(/3 lignes, 2 carnets/);
     await soumettre(champ);
@@ -107,19 +112,32 @@ describe('1 · n° 1 : la note en vrac se découpe ligne par ligne, un carnet pa
     expect(apres.textContent).toContain('3 lignes rangées dans 2 carnets');
     expect(apres.querySelector('details.cn-origine summary')?.textContent).toContain('Texte d\'origine');
     const neufs = carnets().filter(c => !fixtureCarnets().some(f => (f as { id: string }).id === c.id));
-    expect(carnets().length).toBe(n0 + 2);
-    expect(neufs.map(c => c.title).sort()).toEqual(['Prochain brassin', 'Sol local']);
-    const brassin = neufs.find(c => c.title === 'Prochain brassin')!;
+    /* « Sol local » n'est plus un carnet : l'IA a rangé « Sol local : 2 bacs » dans l'Évier existant */
+    expect(carnets().length).toBe(n0 + 1);
+    expect(neufs.map(c => c.title)).toEqual(['Prochain brassin']);
+    const brassin = neufs[0];
     expect(brassin.carnet.notes.map(n => n.texte).join(' | ')).toMatch(/levure/);
-    expect(neufs.find(c => c.title === 'Sol local')!.carnet.notes.map(n => n.texte).join(' ')).not.toMatch(/levure|brassage/i);
-    /* la carte de « Sol local » cite sa ligne, jamais la note entière */
-    expect(neufs.find(c => c.title === 'Sol local')!.carnet.phrase).toBe('Sol local : 2 bacs');
+    expect(brassin.carnet.notes.map(n => n.texte).join(' | ')).toMatch(/brassage/);
+    expect(brassin.carnet.notes.map(n => n.texte).join(' ')).not.toMatch(/bacs/);
     expect(brassin.carnet.phrase).toMatch(/levure/);
-    /* après (g5:v01-16) : la puce dit le carnet seul */
+    const evier = carnets().find(c => c.id === 'ZZ-CARNET-EVIER')!;
+    expect(evier.carnet.notes.map(n => n.texte).join(' | ')).toMatch(/Sol local : 2 bacs/);
+    /* après (g5:v01-16) : la puce dit le carnet seul, celui où l'IA a rangé */
     const puces = [...apres.querySelectorAll('label.cn-puce > span:first-child')].map(e => e.textContent);
-    expect(puces.sort()).toEqual(['Prochain brassin', 'Prochain brassin', 'Sol local']);
+    expect(puces.sort()).toEqual(['Prochain brassin', 'Prochain brassin', 'ZZ TEST — Évier inox']);
     const msg = lireMessages(magasin.lire()).find(m => m.carnetMessage.texte === NOTE_1280)!;
     expect(new Set(msg.carnetMessage.effets.filter(e => e.cible !== 'carnet').map(e => e.carnetId)).size).toBe(2);
+  });
+  it('la même note, IA en panne (hors ligne) : l’aperçu local reste, « Prochain brassin » et « Sol local » en carnets neufs', async () => {
+    const { champ, carnets } = monter({ appels: appelsSimules('echec', 40) });
+    const n0 = carnets().length;
+    taper(champ, NOTE_1280);
+    await soumettre(champ);
+    await attendre(300);
+    const neufs = carnets().filter(c => !fixtureCarnets().some(f => (f as { id: string }).id === c.id));
+    expect(carnets().length).toBe(n0 + 2);
+    expect(neufs.map(c => c.title).sort()).toEqual(['Prochain brassin', 'Sol local']);
+    expect(neufs.find(c => c.title === 'Sol local')!.carnet.phrase).toBe('Sol local : 2 bacs');
   });
   it('de bout en bout, la note 390 sur une ligne : pas « Carnet créé », mais la découpe', async () => {
     const { champ } = monter({ delai: 40 });
@@ -141,15 +159,34 @@ describe('2 · n° 2 : le type annoncé pendant est celui qui s’applique', () 
     const r = reponseSimulee(ctx)!;
     expect(r.lignes.find(x => /levure/i.test(String(x.texte)))!.genre).toBe('a-acheter');
   });
-  it('de bout en bout : la note en carnet porte le type annoncé, 1 achat et 2 notes, jamais 3 achats', async () => {
+  it('de bout en bout (D383) : le genre que rend l’IA fait foi : la note en carnet porte les genres de `reponseSimulee`, 1 achat et 2 notes, jamais 3 achats', async () => {
     const { champ, carnets } = monter({ delai: 40 });
+    const ia = reponseSimulee(contexteModele(NOTE_1280, new Date('2026-11-18'), null, pourIA(carnets()), []))!.lignes as { texte: string; genre: string }[];
+    const attendus = ia.map(l => l.genre);
+    expect(attendus.filter(g => g === 'a-acheter')).toHaveLength(1);
+    taper(champ, NOTE_1280);
+    await soumettre(champ);
+    await attendre(300);
+    const genresDe = (re: RegExp) => carnets().flatMap(c => c.carnet.notes.filter(n => re.test(n.texte)).map(n => n.genre));
+    /* chaque ligne porte le genre que l'IA lui a donné */
+    for (const l of ia) expect(genresDe(new RegExp(l.texte.replace(/[.*+?^${}()|[\]\\]/g, m => `\\${m}`))), l.texte).toContain(l.genre);
+    const genres = carnets().flatMap(c => c.carnet.notes.filter(n => /levure|bacs|brassage/i.test(n.texte)).map(n => n.genre));
+    expect(genres.filter(g => g === 'a-acheter')).toHaveLength(1);
+    expect(genres.filter(g => g === 'note')).toHaveLength(2);
+  });
+  it('hors ligne (IA en panne) : le type annoncé pendant est celui de la règle locale : un critère, une note, un achat', async () => {
+    const { champ, carnets } = monter({ appels: appelsSimules('echec', 20) });
     taper(champ, NOTE_1280);
     const pendant = [...document.querySelectorAll('.cn-vrac-ligne .cn-genre')].map(e => e.textContent?.trim());
     await soumettre(champ);
     await attendre(300);
+    expect([...pendant].sort()).toEqual(['critère', 'note', 'à acheter']);
+    /* hors ligne, aucune réponse de l'IA : la règle locale s'applique telle qu'annoncée (« 2 bacs » en critère, la levure en achat) */
     const apres = [...document.querySelectorAll('.cn-vrac-apres .cn-vrac-ligne .cn-genre')]
       .map(e => (e.textContent ?? '').replace(e.querySelector('select')?.textContent ?? '', '').replace('▾', '').trim());
-    expect(apres.sort()).toEqual(pendant.sort());
+    expect(apres).toContain('à acheter');
+    expect(apres).toContain('note');
+    expect(carnets().some(c => c.carnet.criteres.some(k => /2 bacs/.test(k.texte)))).toBe(true);
     const genres = carnets().flatMap(c => c.carnet.notes.filter(n => /levure|bacs|brassage/i.test(n.texte)).map(n => n.genre));
     expect(genres.filter(g => g === 'a-acheter')).toHaveLength(1);
   });
