@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
-import { ChartLine, ChevronDown, Clock, EyeOff, Link2, Maximize2, Minimize2 } from 'lucide-react';
+import { ChartLine, ChevronDown, Clock, EyeOff, Maximize2, Minimize2, Ruler } from 'lucide-react';
 import { alignerSemaines, colonnesDeSemaines, semaineSous } from './alignement';
 import type { Periode } from '../../../components/periode/periode';
 import { dateDeSemaine, etiquetteS, lundiDe, type ModeleCalendrier, type Retard } from '../../../domain/calendrier';
@@ -172,7 +172,7 @@ export function EnTeteCalendrier(props: EnTeteCalendrierProps) {
   const boutonsTete = useRef<HTMLSpanElement>(null);
   const mesure = useMesure(zone);
   // ---- D387, D388 : la courbe posée sur les colonnes de la frise (bouton allumé, ou pendant un glisser, comme le jouable) ----
-  // Lot C (18.11) : le bouton à bascule (Link2) a la taille des autres boutons-icônes, dans la rangée du chiffre, partout. Allumé en paysage, la
+  // Lot C (18.11) : le bouton à bascule (Ruler, pas Link2 qui dit « Lier ») a la taille des autres boutons-icônes, dans la rangée du chiffre, partout. Allumé en paysage, la
   // rangée du chiffre passe au-dessus et la courbe prend toute la largeur de l'en-tête (n° 7, comme le jouable).
   const alignee = !!props.aligne && !!props.onAligne && !graph && !liste && !cachee && !!base;
   const paysageAligne = paysage && alignee;
@@ -619,7 +619,7 @@ export function EnTeteCalendrier(props: EnTeteCalendrierProps) {
           {boutonAligne && (
             <button type="button" className="ent-al" data-ent-aligne aria-pressed={!!props.aligne} aria-label="Aligner la courbe sur la frise"
               title={props.aligne ? 'La courbe suit la frise ; éteint, elle montre l’année' : 'Aligner la courbe sur la frise'} onClick={() => props.onAligne?.(!props.aligne)}>
-              <Link2 size={17} strokeWidth={2.4} aria-hidden="true" />
+              <Ruler size={17} strokeWidth={2.4} aria-hidden="true" />
             </button>
           )}
           {props.onCourbeCachee && base && !graph && (
