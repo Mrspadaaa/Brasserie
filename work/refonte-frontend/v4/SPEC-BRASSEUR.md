@@ -2162,3 +2162,7 @@ Placement du jalon : lié à une barre (ex. la tireuse pour la foire) → posé 
 > Sauf que la foire sera dans fête ou événement, et l'achat ou la vente sera dans achat ou vente, comment tu mets le jalon dans la barre de fête ??
 
 Lecture : un jalon reste dans sa rangée (Achats, Ventes) ; « lié à une barre » ne peut pas vouloir dire « posé dans la barre d'une autre rangée ». Le lien se montre autrement : choix à montrer en mini maquettes (L24).
+
+> un fil discret entre le jalon et la barre de la foire ; oui ça suffit pas besoin de mini maquettes
+
+Choix : un jalon lié à une barre d'une autre rangée y est relié par un fil discret (jalon → barre) ; sans maquette.
