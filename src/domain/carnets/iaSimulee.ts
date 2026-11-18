@@ -10,8 +10,9 @@
 import type { ContexteRangerCarnet, PageLue } from '../../../functions/src/carnetIA';
 import { liensDuTexte, sansAccents } from './ia';
 import { fixtureCarnets } from './fixture';
-import { prixLus } from './modele';
-import { analyserLigne, genreLocal, mettreEnForme, quantitesDe, sansPrefixeBanc } from './analyseLocale';
+import { prixLus, sansLiensNiPrix, titreNeufDe, type CarnetDoc } from './modele';
+import { extraireCriteres, genreLocal, mettreEnForme, quantitesDe, sansPrefixeBanc, urlsDe } from './analyseLocale';
+import { rattacher } from './rattacher';
 
 type Brut = Record<string, unknown>;
 export interface ReponseSimulee { lignes: Brut[]; exemple: true }
@@ -178,6 +179,18 @@ export function pageSimulee(url: string, luLe = 0): PageLue {
   return test !== null ? { ...pageDeLienTest(test), url, domaine, luLe } : { url, domaine, statut: 'illisible', luLe };
 }
 
+/**
+ * Critique 5, n° 6 : le lien que le banc propose de coller dans un carnet ouvert (puce « Coller : … », R15), de la famille de son titre :
+ * une hotte dans Ventilation (débit, « tient 80 °C »), un évier dans Évier, une pompe ; sinon `LIEN_COLLER_BANC`. Page simulée, « exemple ».
+ */
+export function lienACollerPour(titre: string | null | undefined): string {
+  const t = sansAccents(titre ?? '');
+  if (/ventil|hotte|extract|buee/.test(t)) return 'https://exemple.invalid/hotte-140';
+  if (/evier|\bbacs?\b/.test(t)) return 'https://exemple.invalid/evier-riviera';
+  if (/pompe|transfert/.test(t)) return 'https://exemple.invalid/pompe-inox';
+  return LIEN_COLLER_BANC;
+}
+
 /** Durée de lecture d'une page au banc : assez pour voir le squelette « ✻ lecture de la page… » (g5:v03-10). */
 export const DELAI_LECTURE_BANC = 1500;
 
@@ -266,13 +279,16 @@ function texteCritere(k: CritereBanc, phrase: string): string {
   return `${base}${base.includes(':') ? ',' : ' :'} ${q.texte} ${u} ${k.caracteristique.sens === 'moins' ? 'au plus' : 'au moins'}`;
 }
 
-/** Les catégories du banc : chacune a ses caractéristiques (R30 : générique côté app, la variété vient de la réponse). */
+/**
+ * Les catégories du banc : chacune a ses caractéristiques (R30 : générique côté app, la variété vient de la réponse). Critique 5, n° 4 :
+ * un critère de catégorie ne paraît que si la phrase en dit les mots, et ne porte que les nombres de la phrase (aucun exemple de maquette,
+ * ni « 30 L », ni « 80 °C » qu'elle n'écrit pas) ; les mesures écrites passent par `extraireCriteres` (`criteresDeLaPhrase`).
+ */
 const CATEGORIES: Array<{ motif: RegExp; carnet: RegExp; neuf: string; criteres: CritereBanc[] }> = [
   {
     motif: /frigo|chambre froide|refroidi|garder au froid/, carnet: /frigo|froid/, neuf: 'Frigo pour les fûts',
     criteres: [
-      { quand: /°c|degre|froid/, texte: 'Garder les fûts au froid', caracteristique: { nom: 'température mini', unite: '°C', sens: 'moins' } },
-      { quand: /fut|litre|\bl\b|volume/, texte: 'Assez de place pour les fûts', caracteristique: { nom: 'volume utile', unite: 'L', sens: 'plus' } }
+      { quand: /°c|degre|froid/, texte: (phrase) => (/fut/.test(sansAccents(phrase)) ? 'Garder les fûts au froid' : 'Garder au froid'), caracteristique: { nom: 'température mini', unite: '°C', sens: 'moins' } }
     ]
   },
   {
@@ -285,20 +301,80 @@ const CATEGORIES: Array<{ motif: RegExp; carnet: RegExp; neuf: string; criteres:
       { quand: /bruit|calme/, texte: 'Pas trop de bruit', caracteristique: { nom: 'bruit', unite: 'dB', sens: 'moins' } }
     ]
   },
+  /* critique 5, n° 4 : le besoin G13 seulement s'il le dit (« un fût couché entre dans le bac »), avec ses nombres à lui ; jamais le « 30 L »
+     de la maquette. « fond de bac 38 cm minimum » se lit dans la phrase (`extraireCriteres`). */
   {
     motif: /evier|bac\b|bacs\b|laver/, carnet: /evier/, neuf: 'Évier inox',
-    /* P44 : la reformulation G9 garde le nombre de sa phrase (« (38 cm) ») */
-    criteres: [{ quand: /fut|fond|bac|couche/, texte: 'Un fût de 30 L couché entre dans le bac', valeur: 'entre-parentheses', caracteristique: { nom: 'fond de bac', unite: 'cm', sens: 'plus' } }]
+    criteres: [{
+      quand: /fut[^,;]*couche|couche[^,;]*fut|entre dans le bac/, valeur: 'entre-parentheses',
+      texte: (phrase) => { const l = /(\d+(?:[.,]\d+)?)\s?l\b/.exec(sansAccents(phrase)); return `Un fût${l ? ` de ${l[1]} L` : ''} couché entre dans le bac`; },
+      caracteristique: { nom: 'fond de bac', unite: 'cm', sens: 'plus' }
+    }]
   },
   {
     motif: /embouteill|bouteille|oxygene|isobar/, carnet: /embouteill/, neuf: 'Embouteillage',
-    criteres: [{ quand: /oxygene|isobar/, texte: "Minimiser l'oxygène", caracteristique: { nom: 'oxygène dissous', unite: 'ppb', sens: 'moins' } }]
+    criteres: [{ quand: /oxygene/, texte: "Minimiser l'oxygène", caracteristique: { nom: 'oxygène dissous', unite: 'ppb', sens: 'moins' } }]
   },
-  {
-    motif: /pompe|transfert/, carnet: /pompe|transfert/, neuf: 'Pompe de transfert',
-    criteres: [{ quand: /80|chaud|temperature/, texte: 'Tient 80 °C', caracteristique: { nom: 'tient 80 °C', sens: 'oui-non' } }]
-  }
+  /* « tient 80 °C » seulement s'il l'écrit (`extraireCriteres`) */
+  { motif: /pompe|transfert/, carnet: /pompe|transfert/, neuf: 'Pompe de transfert', criteres: [] }
 ];
+
+/** Le texte sans ses adresses (mêmes positions) : une catégorie se lit dans ses mots, jamais dans une URL (critique 5, n° 6). */
+function sansLiens(texte: string): string {
+  let s = texte;
+  for (const u of urlsDe(texte)) s = s.slice(0, u.debut) + ' '.repeat(u.fin - u.debut) + s.slice(u.fin);
+  return s;
+}
+
+type CritereSimule = { texte: string; caracteristique?: Brut };
+const cleValeur = (valeur: number | string, unite: string) => `${String(valeur).replace(',', '.')}|${unite}`;
+const normal = (t: string) => sansAccents(sansPrefixeBanc(t)).replace(/[^a-z0-9]+/g, ' ').trim();
+
+/**
+ * Les critères d'une phrase, tirés de ses mots (critique 5, n° 2, 4, 24) : ceux que ses catégories reformulent (P7, P15 ; le nombre de
+ * la phrase gardé), puis ceux d'`extraireCriteres` dont la valeur n'est pas déjà dite. Aucun en double ; jamais le titre de l'idée. Une
+ * phrase sans mesure ni besoin reconnu : aucun.
+ */
+function criteresDeLaPhrase(texte: string, categories: typeof CATEGORIES, titre?: string): CritereSimule[] {
+  const t = sansAccents(texte);
+  const sortie: CritereSimule[] = [];
+  const vus = new Set<string>(titre ? [normal(titre)] : []);
+  const valeurs = new Set<string>();
+  const ajouter = (k: CritereSimule, cle?: string) => {
+    const n = normal(k.texte);
+    if (!n || vus.has(n) || (cle && valeurs.has(cle))) return;
+    vus.add(n);
+    if (cle) valeurs.add(cle);
+    sortie.push(k);
+  };
+  for (const cat of categories) for (const k of cat.criteres) {
+    if (!k.quand.test(t) || k.sauf?.test(t)) continue;
+    const u = k.caracteristique.unite;
+    const q = u ? quantitesDe(texte).find((x) => x.unite === u) : undefined;
+    ajouter({ texte: texteCritere(k, texte), caracteristique: k.caracteristique }, q ? cleValeur(q.valeur, q.unite) : undefined);
+  }
+  for (const k of extraireCriteres(texte).criteres) {
+    const tient = /^Tient (\d+(?:[.,]\d+)?) °C$/.exec(k.texte);
+    ajouter({ texte: k.texte, ...(k.caracteristique ? { caracteristique: k.caracteristique } : {}) },
+      k.quantite ? cleValeur(k.quantite.valeur, k.quantite.unite) : tient ? cleValeur(tient[1], '°C') : undefined);
+  }
+  return sortie;
+}
+
+/** Les carnets du contexte sous la forme que lit `rattacher` (même règle que la découpe annoncée, `planVrac`). */
+function docsDuContexte(ctx: ContexteRangerCarnet): CarnetDoc[] {
+  return ctx.carnets.map((c) => ({
+    id: c.id, type: 'carnet', title: c.titre, status: 'idea',
+    carnet: {
+      version: 1, creeLe: '', phrase: '',
+      criteres: c.criteres.map((k, i) => ({ id: `k${i}`, texte: k.texte, origine: 'ia' as const })),
+      facons: c.facons.map((nom, i) => ({ id: `f${i}`, nom, etat: 'ouverte' as const, origine: 'ia' as const })),
+      articles: c.articles.map((a, i) => ({ id: `a${i}`, nom: a.nom, valeurs: {}, lecture: 'lue' as const })),
+      notes: c.notes.map((n) => ({ id: n.id, texte: n.texte, genre: 'note' as const })),
+      photos: []
+    }
+  })) as unknown as CarnetDoc[];
+}
 
 /** Les trois notes de son téléphone (ref/, D-123, D-124, D-126), transcrites des images et rangées comme le ferait le modèle. */
 function notesRef(t: string, ctx: ContexteRangerCarnet): ReponseSimulee | null {
@@ -426,10 +502,16 @@ function reponseBrute(ctx: ContexteRangerCarnet, texte: string): ReponseSimulee 
   if (aide) return aide;
 
   const lignes: Brut[] = [];
-  const categorie = CATEGORIES.find((c) => c.motif.test(t));
-  const mot = categorie ? motDe(texte, categorie.motif) : undefined;
-  // Une catégorie reconnue (frigo, ventilation, évier) va dans son carnet, ou dans une idée neuve : jamais dans un autre carnet resté ouvert.
-  const cible = categorie ? par(ctx, categorie.carnet) : ouvert(ctx);
+  // Critique 5, n° 6 : la catégorie se lit dans les mots du message, jamais dans une adresse (« …/pompe-magnetique » n'est pas une pompe dite).
+  const mots = sansLiens(texte);
+  const tm = sansAccents(mots);
+  const ici = ouvert(ctx);
+  // Depuis la liste, l'adresse aide à trouver le carnet (G21 : « la page parle de « hotte » : comme … ») ; dans un carnet ouvert, non.
+  const categorie = CATEGORIES.find((c) => c.motif.test(ici ? tm : t));
+  const mot = categorie ? motDe(ici ? mots : texte, categorie.motif) : undefined;
+  // Un lien collé dans un carnet ouvert devient un article de CE carnet, jamais un carnet neuf (n° 6). Sans lien, une catégorie reconnue
+  // (frigo, ventilation, évier) va dans son carnet, ou dans une idée neuve : jamais dans un autre carnet resté ouvert.
+  const cible = liens.length && ici ? ici : categorie ? par(ctx, categorie.carnet) : ici;
   // Un lien seul qui n'a pas de carnet ouvre un carnet au nom lu sur sa page, sinon à son domaine (R16, R17 ; g5:v06-10).
   const premiere = liens.length ? (ctx.pages ?? []).find((p) => p.url === liens[0]) ?? pageSimulee(liens[0]) : null;
   const lienSeul = !!premiere && texte.trim().replace(/[.,;:!?)\]]+$/, '') === liens[0];
@@ -449,32 +531,44 @@ function reponseBrute(ctx: ContexteRangerCarnet, texte: string): ReponseSimulee 
       ...rangement(ctx, cible, neuf ?? page.nom ?? page.domaine, mot, true)
     });
   }
+  // Un prix écrit sans lien (« Ventilateur moteur EC 189,90 CHF ») : un article au nom de la phrase sans son prix ; le prix lu dans la
+  // phrase par `prixTousDe` (décision du pilote : « 189,90 CHF » en CHF ; EUR seulement s'il est écrit). Pas de critère : c'est un objet.
+  const ligneSeule = morceaux.length === 1 ? morceaux[0] : '';
+  if (!liens.length && ligneSeule && prixEcrits.length === 1 && genreLocal(ligneSeule) !== 'question') {
+    const brut = sansLiensNiPrix(sansPrefixeBanc(ligneSeule));
+    const nom = brut.charAt(0).toLocaleUpperCase('fr-CH') + brut.slice(1);
+    if (nom) lignes.push({ sorte: 'article', texte: nom, titre: nom, prix: prixEcrits[0].centimes / 100, devise: prixEcrits[0].devise, ...rangement(ctx, cible, categorie?.neuf ?? nom, mot) });
+  }
+  const article = lignes.some((l) => l.sorte === 'article');
   // P10, P23 (D-35, D-24) : un carnet sans critère reçoit son 2e article lu → la caractéristique commune lue, proposée (pas rangée).
   const proposee = cible && !cible.criteres.length && cible.articles.length >= 1 && liens.length
     ? communeLue(liens.map((u) => (ctx.pages ?? []).find((p) => p.url === u) ?? pageSimulee(u)), cible.articles) : null;
   if (proposee) lignes.push({ sorte: 'critere', propose: true, carnetId: cible!.id, ...proposee });
   if (categorie) {
-    const ou = rangement(ctx, cible, neuf ?? categorie.neuf, mot, !!liens.length);
-    if (!cible) lignes.push({ sorte: 'idee', texte: texte.trim().split('\n')[0].slice(0, 120), titre: neuf ?? categorie.neuf, ...ou });
+    const titre = neuf ?? categorie.neuf;
+    const ou = rangement(ctx, cible, titre, mot, !!liens.length);
+    if (!cible && !article) lignes.push({ sorte: 'idee', texte: texte.trim().split('\n')[0].slice(0, 120), titre, ...ou });
     /* « Ce qui compte, tiré de votre phrase » : seulement ce que la phrase dit, toutes catégories nommées comprises (« rangement du
-       frigo, plus de condensation au plafond » → la condensation, pas « garder au froid ») */
-    for (const cat of CATEGORIES.filter((c) => c.motif.test(t))) {
-      for (const k of cat.criteres) {
-        if (k.quand.test(t) && !k.sauf?.test(t)) lignes.push({ sorte: 'critere', texte: texteCritere(k, texte), caracteristique: k.caracteristique, ...ou });
-      }
+       frigo, plus de condensation au plafond » → la condensation, pas « garder au froid ») ; jamais pour un article */
+    if (!article && !liens.length) {
+      for (const k of criteresDeLaPhrase(mots, CATEGORIES.filter((c) => c.motif.test(tm)), cible ? cible.titre : titre)) lignes.push({ sorte: 'critere', ...k, ...ou });
     }
     if (lignes.length) return reponse(lignes.slice(0, 12));
   }
   if (lignes.length) return reponse(lignes);
-  // P4 (G5) : une phrase qui porte un critère (« Moulin à malt : 2 cylindres, 150 kg/h minimum ») → l'idée à son titre, le critère seul.
-  if (morceaux.length === 1) {
-    const l = analyserLigne(morceaux[0]);
-    if (l.sorte === 'critere') {
-      const ici = ouvert(ctx);
-      const titre = /^([^:]{2,60}?)\s*:/.exec(sansPrefixeBanc(morceaux[0]).trim())?.[1]?.trim();
-      const ou = rangement(ctx, ici, titre ?? morceaux[0].slice(0, 60));
-      const critere: Brut = { sorte: 'critere', texte: l.texte, ...ou };
-      return reponse(ici ? [critere] : [{ sorte: 'idee', texte: morceaux[0], titre: titre ?? morceaux[0].slice(0, 60), ...ou }, critere]);
+  // P4 (G5), critique 5 n° 2 : une phrase qui mesure (« Moulin à malt : 2 cylindres, 150 kg/h ») → l'idée à son titre (le libellé), le
+  // critère tiré de la mesure (« Débit : 150 kg/h au moins »), le compte sans unité en façon (« 2 cylindres ») ; jamais le titre en critère.
+  if (ligneSeule && genreLocal(ligneSeule) !== 'question') {
+    const lib = /^([^:]{2,60}?)\s*:/.exec(sansPrefixeBanc(ligneSeule).trim())?.[1]?.trim();
+    const titre = lib ?? sansPrefixeBanc(titreNeufDe(ligneSeule));
+    const criteres = criteresDeLaPhrase(ligneSeule, [], titre);
+    if (criteres.length) {
+      const ou = rangement(ctx, ici, titre);
+      const sortie: Brut[] = [
+        ...criteres.map((k) => ({ sorte: 'critere', ...k, ...ou })),
+        ...extraireCriteres(ligneSeule).facons.map((f) => ({ sorte: 'facon', texte: f, titre: f, ...ou }))
+      ];
+      return reponse(ici ? sortie : [{ sorte: 'idee', texte: ligneSeule, titre, ...ou }, ...sortie]);
     }
   }
   return decoupe(ctx, morceaux);
@@ -504,25 +598,28 @@ function communeLue(pages: ReadonlyArray<Pick<PageLue, 'valeurs'> & { statut?: P
 }
 
 /**
- * Découpe générique : chaque ligne du message devient une note typée. Dans un carnet ouvert, toutes y vont (« ↓ va atterrir ici »).
- * Depuis la liste, chaque ligne va dans le carnet que sa catégorie nomme ; les autres, ensemble, dans UN carnet neuf titré par la
- * première d'entre elles (G23, g5:v02-19).
+ * Découpe générique : chaque ligne du message devient une note typée (achat, à faire, conseil, question, note). Dans un carnet ouvert,
+ * toutes y vont (« ↓ va atterrir ici »). Depuis la liste (critique 5, n° 7 et 30), chaque ligne va dans le carnet que sa catégorie nomme,
+ * sinon dans le carnet que `rattacher` trouve (même règle que `planVrac`) ; les autres, ensemble, dans UN carnet neuf au titre mis en forme
+ * (`titreNeufDe` : nom d'objet, majuscule ; G23, g5:v02-19).
  */
 function decoupe(ctx: ContexteRangerCarnet, morceaux: string[]): ReponseSimulee {
   const ici = ouvert(ctx);
   // Achats en tête (R35, D-128), dans les deux cas ; tri stable.
   if (ici || morceaux.length <= 1) {
-    const ou = rangement(ctx, ici, morceaux[0].slice(0, 60));
+    const ou = rangement(ctx, ici, titreNeufDe(morceaux[0]));
     return reponse(morceaux.map((m) => ({ sorte: 'note', ...formerLigne(m), ...ou })).sort(ACHAT_D_ABORD));
   }
   let neuf: string | null = null;
+  const docs = docsDuContexte(ctx);
   return reponse(morceaux.map((m) => {
     const tm = sansAccents(m);
     const categorie = CATEGORIES.find((c) => c.motif.test(tm));
-    const c = categorie ? par(ctx, categorie.carnet) : undefined;
+    const parCategorie = categorie ? par(ctx, categorie.carnet) : undefined;
+    const proche = parCategorie ? null : rattacher(m, docs);
+    const c = parCategorie ?? (proche ? ctx.carnets.find((x) => x.id === proche.carnetId) : undefined);
     const f = formerLigne(m);
-    // le titre d'un carnet neuf reste sa phrase (« votre phrase en titre », R11), préfixe de test compris
-    if (!c) neuf ??= m.slice(0, 60);
-    return { sorte: 'note', ...f, ...rangement(ctx, c, neuf ?? m.slice(0, 60), categorie ? motDe(m, categorie.motif) : undefined) };
+    if (!c) neuf ??= titreNeufDe(m);
+    return { sorte: 'note', ...f, ...rangement(ctx, c, neuf ?? titreNeufDe(m), parCategorie ? motDe(m, categorie!.motif) : undefined) };
   }).sort(ACHAT_D_ABORD));
 }

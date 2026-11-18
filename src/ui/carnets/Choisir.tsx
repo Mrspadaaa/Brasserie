@@ -9,9 +9,9 @@
  */
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { CalendarCheck, Check, ChevronLeft, ChevronRight, ExternalLink, X } from 'lucide-react';
-import { libelleEcarte, nombreTexte, placesDe, pourquoiDe, tableau, type Place } from '../../domain/carnets/comparer';
+import { libelleEcarte, nombreTexte, placesDe, pourquoiDe, prixTexte, tableau, type Place } from '../../domain/carnets/comparer';
 import { normaliser } from '../../domain/carnets/analyseLocale';
-import type { Article, DonneesCarnet } from '../../domain/carnets/modele';
+import { sourceDuCritere, type Article, type DonneesCarnet } from '../../domain/carnets/modele';
 import { dateCourte, montant, PictoLocal, Provenance, rangTexte, type ArticleV, type ChoixV, type CritereV, type FaconV } from './EtatIA';
 import { sansApercu } from './Comparer';
 import { Input, Textarea } from '../Input';
@@ -74,7 +74,7 @@ const chiffre = (n: number) => String(n).replace(/\B(?=(\d{3})+(?!\d))/g, ' ');
  * La réglette de g05-11 : un point par article en lice dont la valeur est connue, le choisi plein ; à gauche le meilleur (« ‹ mieux · 0 »,
  * « ‹ moins cher · 190 »), à droite le pire, avec l'unité. La place se lit en chiffres au-dessus (« 1 800 m³/h · 1er sur 4 »).
  */
-export function Reglette({ place }: { place: Place }) {
+export function Reglette({ place, sansTete }: { place: Place; sansTete?: boolean }) {
   if (place.valeur === undefined || place.meilleure === undefined || place.pire === undefined || !place.toutes) return null;
   const prix = place.nom === 'prix';
   const borne = (v: number) => (prix ? chiffre(Math.round(v / 100)) : nombreTexte(v));
@@ -82,8 +82,8 @@ export function Reglette({ place }: { place: Place }) {
   const pos = (v: number) => (etendue === 0 ? 0 : Math.max(0, Math.min(1, (v - place.meilleure!) / etendue)));
   const unite = place.unite ? ` ${place.unite}` : '';
   return (
-    <div className="cn-reglette" role="img" aria-label={`${place.nom} : ${place.texte}, ${placeTexte(place) ?? ''}`}>
-      <div className="cn-reglette-tete"><b>{place.nom.charAt(0).toUpperCase() + place.nom.slice(1)}</b><span className="cn-sp" /><span><b className="cn-mono">{place.texte}</b>{placeTexte(place) ? <span className="cn-mut"> · {placeTexte(place)}</span> : null}</span></div>
+    <div className={`cn-reglette${sansTete ? ' cn-reglette-seule' : ''}`} role="img" aria-label={`${place.nom} : ${place.texte}, ${placeTexte(place) ?? ''}`}>
+      {!sansTete && <div className="cn-reglette-tete"><b>{place.nom.charAt(0).toUpperCase() + place.nom.slice(1)}</b><span className="cn-sp" /><span><b className="cn-mono">{place.texte}</b>{placeTexte(place) ? <span className="cn-mut"> · {placeTexte(place)}</span> : null}</span></div>}
       <div className="cn-reglette-piste" aria-hidden>
         {place.toutes.map((v, i) => <i key={i} style={{ left: `${pos(v) * 100}%` }} />)}
         <i className="cn-reglette-moi" style={{ left: `${pos(place.valeur) * 100}%` }} />
@@ -119,7 +119,8 @@ function ChoisiVue(p: Extract<ChoisirProps, { etape: 'choisi' }>) {
   const sortieLe = dateCourte(p.sortie?.le);
   const haut = useRef<HTMLElement>(null);
   useEffect(() => { haut.current?.scrollIntoView?.({ block: 'start' }); }, []);
-  const prix = montant(a.prixCentimes);
+  /* n° 37 : « 2 600 CHF », espace avant les milliers, comme partout (prixTexte) */
+  const prix = prixTexte(a.prixCentimes, a.devise);
   /* P17 : la phrase avec ses valeurs (calcul local sur le tableau), ses réglettes (le critère chiffré qui classe, puis le prix), les ✕ */
   const calc = useMemo(() => {
     const c = p.carnet ?? null;
@@ -147,7 +148,7 @@ function ChoisiVue(p: Extract<ChoisirProps, { etape: 'choisi' }>) {
         <div className="cn-sp">
           <b>{a.nom}</b>
           <span className="cn-mut">{[a.vendeur, a.pays].filter(Boolean).join(' · ')}</span>
-          {(prix || a.dispo) && <span><b className="cn-mono">{prix ? `${prix} ${a.devise ?? 'CHF'}` : ''}</b>{prix && a.dispo ? <span className="cn-mut"> · </span> : null}{a.dispo ? <span className="cn-mut">{a.dispo}</span> : null}</span>}
+          {(prix || a.dispo) && <span><b className="cn-mono">{prix ?? ''}</b>{prix && a.dispo ? <span className="cn-mut"> · </span> : null}{a.dispo ? <span className="cn-mut">{a.dispo}</span> : null}</span>}
         </div>
       </div>
       <section className="cn-pourquoi" aria-label="Pourquoi ce choix">
@@ -156,7 +157,7 @@ function ChoisiVue(p: Extract<ChoisirProps, { etape: 'choisi' }>) {
         {sienne && sienne !== calc.phrase && <p className="cn-pourquoi-sienne">« {sienne} »</p>}
         {calc.reglettes.map(pl => <Reglette key={pl.nom} place={pl} />)}
         <ul className="cn-raisons">
-          {p.critere && <li><Check size={18} role="img" aria-label="retenu" className="cn-ok" /><span><b>Critère</b> : {p.critere.texte}{p.critere.origine === 'ia' ? ", proposé par l'IA" : ''}</span></li>}
+          {p.critere && <li><Check size={18} role="img" aria-label="retenu" className="cn-ok" /><span><b>Critère</b> : {p.critere.texte}{sourceDuCritere(p.critere) === 'ia' ? ", proposé par l'IA" : ''}</span></li>}
           {p.facon && <li><Check size={18} role="img" aria-label="retenu" className="cn-ok" /><span><b>Façon {p.facon.nom.toLowerCase()}</b>{p.facon.raison ? ` : ${p.facon.raison}` : ''}</span></li>}
           {a.vendeur && <li><Check size={18} role="img" aria-label="retenu" className="cn-ok" /><span><b>{a.vendeur}</b>{a.dispo ? ` : ${a.dispo}` : ''}</span></li>}
           {calc.ecartes.map(e => <li key={e.nom}><X size={18} role="img" aria-label="écarté" /><span><b>{e.nom}</b> : {e.raison}</span></li>)}
@@ -183,19 +184,22 @@ function ChoisiVue(p: Extract<ChoisirProps, { etape: 'choisi' }>) {
 
 function ChoisirArticle(p: Extract<ChoisirProps, { etape: 'choisir' }>) {
   const a = p.article;
-  const prix = montant(a.prixCentimes);
-  /* P16 : places et pourquoi calculés sur le carnet (valeurs et rangs), jamais un champ vide à taper ; l'IA, si elle a dit, prime */
+  /* n° 37 : « 2 600 CHF » (prixTexte), jamais « 2600 » */
+  const prix = prixTexte(a.prixCentimes, a.devise);
+  /* P16 : places et pourquoi calculés sur le carnet (valeurs et rangs), jamais un champ vide à taper ; l'IA, si elle a dit, prime.
+     n° 10 (g05-11) : chaque valeur chiffrée porte sa réglette ; les écartés du tableau sont dits avec leur ✕ et leur raison. */
   const calc = useMemo(() => {
     const c = carnetDeCalcul(p, [a, ...p.autres.map(o => o.article)]);
     const t = tableau(c);
     const places = t ? placesDe(t, a.id) : [];
     return {
       pourquoi: pourquoiDe(c, a.id),
-      valeurs: places.filter(pl => pl.texte).map(pl => ({ nom: pl.nom.charAt(0).toUpperCase() + pl.nom.slice(1), texte: pl.texte, ...(pl.rang ? { rang: pl.rang } : {}), ...(pl.exAequo ? { exAequo: true } : {}) }))
+      valeurs: places.filter(pl => pl.texte).map(pl => ({ nom: pl.nom.charAt(0).toUpperCase() + pl.nom.slice(1), texte: pl.texte, ...(pl.rang ? { rang: pl.rang } : {}), ...(pl.exAequo ? { exAequo: true } : {}), place: pl })),
+      ecartes: p.carnet ? ecartesDe({ ecartes: [] }, p.carnet) : []
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [p.carnet, a.id]);
-  const valeurs = p.valeurs.length ? p.valeurs : calc.valeurs;
+  const valeurs: (ValeurPlaceeV & { place?: Place })[] = p.valeurs.length ? p.valeurs : calc.valeurs;
   const propose = p.pourquoiPropose ?? calc.pourquoi ?? '';
   const [pourquoi, setPourquoi] = useState(propose);
   const [raison, setRaison] = useState<string | null>(null);
@@ -209,30 +213,46 @@ function ChoisirArticle(p: Extract<ChoisirProps, { etape: 'choisir' }>) {
         <span className="cn-pastille cn-statut-research">À comparer</span>
       </div>
       <section className="cn-choisir-cadre" aria-label="Choisir">
-        <div className="cn-offre" data-apercu={sa ? 'aucun' : undefined}>
-          <span className="cn-radio" aria-hidden />
-          {prix && <span className="cn-mono cn-prix-grand">{prix}</span>}
+        {/* n° 10 : la photo du choisi, ou à défaut son picto en grand dans le cadre photo (R05, D-102) ; jamais un cube générique */}
+        <div className="cn-offre cn-offre-choisir" data-apercu={sa ? 'aucun' : undefined}>
+          {a.photo ? <img className="cn-vignette cn-offre-photo" src={a.photo} alt="" /> : p.picto ? <span className="cn-vignette cn-offre-photo cn-vignette-vide" aria-hidden>{p.picto}</span> : null}
           {sa
             ? <div className="cn-sp"><b>{sa.titre}</b><span className="cn-mut">{sa.sous}</span></div>
-            : <div className="cn-sp cn-offre-nom"><b>{a.nom ?? a.vendeur}</b><span className="cn-mut">{[a.nom ? a.vendeur : null, a.pays].filter(Boolean).join(' · ')}{a.dispo ? `${a.vendeur || a.pays ? ' · ' : ''}${a.dispo}` : ''}</span></div>}
+            : <div className="cn-sp cn-offre-nom"><b>{a.nom ?? a.vendeur}</b><span className="cn-mut">{[a.nom ? a.vendeur : null, a.pays].filter(Boolean).join(' · ')}{a.dispo ? `${a.vendeur || a.pays ? ' · ' : ''}${a.dispo}` : ''}</span>
+              {prix && <span className="cn-offre-prix"><span className="cn-radio" aria-hidden /><span className="cn-mono cn-prix-grand">{prix}</span></span>}</div>}
           {a.url && <a className="cn-lien" href={a.url} target="_blank" rel="noreferrer noopener" aria-label={`Ouvrir la page${a.vendeur ? ` de ${a.vendeur}` : ''}, nouvel onglet`}>Ouvrir <ExternalLink size={16} aria-hidden /></a>}
         </div>
+        {/* g05-9 : « Ses autres valeurs · place parmi les n » ; g05-11 : sous chaque valeur chiffrée, sa réglette (« 1er sur 4 ») */}
         {valeurs.length > 0 && (
           <table className="cn-place">
             <thead><tr><th scope="col" colSpan={2}>Ses autres valeurs</th><th scope="col" className="cn-mut">place parmi les {p.sur}</th></tr></thead>
             <tbody>
-              {valeurs.map(v => (
-                <tr key={v.nom}><th scope="row">{v.nom}</th><td className="cn-mono">{v.texte}</td><td className={v.rang === 1 ? 'cn-vert' : 'cn-mut'}>{v.rang ? `${rangTexte(v.rang)}${v.exAequo ? ' ex aequo' : ''}` : ''}</td></tr>
-              ))}
+              {valeurs.map(v => {
+                const pl = v.place;
+                const chiffree = !!pl && pl.valeur !== undefined && pl.sur > 1 && (pl.sens === 'plus' || pl.sens === 'moins');
+                const rang = pl ? placeTexte(pl) : v.rang ? `${rangTexte(v.rang)}${v.exAequo ? ' ex aequo' : ''}` : '';
+                return (
+                  <React.Fragment key={v.nom}>
+                    <tr className={chiffree ? 'cn-place-avec-reglette' : undefined}><th scope="row">{v.nom}</th><td className="cn-mono">{v.texte}</td><td className={v.rang === 1 ? 'cn-vert' : 'cn-mut'}>{rang}</td></tr>
+                    {chiffree && <tr className="cn-place-reglette"><td colSpan={3}><Reglette place={pl!} sansTete /></td></tr>}
+                  </React.Fragment>
+                );
+              })}
             </tbody>
           </table>
+        )}
+        {calc.ecartes.length > 0 && (
+          <ul className="cn-raisons cn-choisir-ecartes" aria-label={`Écartés, ${calc.ecartes.length}`}>
+            {calc.ecartes.map(e => <li key={e.nom}><X size={18} role="img" aria-label="écarté" /><span><b>{e.nom}</b> : {e.raison}</span></li>)}
+          </ul>
         )}
         <label className="cn-pourquoi-champ">
           <span>Pourquoi {p.pourquoiPropose ? <Provenance origine="ia" /> : propose ? <PictoLocal /> : null}{propose ? <span className="cn-mut"> · proposé, à corriger</span> : null}</span>
           <Textarea rows={3} value={pourquoi} onChange={e => setPourquoi(e.target.value)} placeholder="une phrase suffit" />
         </label>
         <div className="cn-rang-boutons">
-          <button type="button" className="cn-action cn-sp" disabled={!!sa} aria-describedby={sa ? `cn-non-lue-${a.id}` : undefined} onClick={() => { if (!sa) p.onChoisir(pourquoi.trim()); }}>Choisir{a.vendeur && !sa ? ` chez ${a.vendeur}` : ''}</button>
+          {/* n° 33 : un geste, un habit : vert et ✓, comme « Choisir · <vendeur> » de l'article (FicheArticle) */}
+          <button type="button" className="cn-action cn-action-vert cn-sp" disabled={!!sa} aria-describedby={sa ? `cn-non-lue-${a.id}` : undefined} onClick={() => { if (!sa) p.onChoisir(pourquoi.trim()); }}><Check size={18} aria-hidden /> Choisir{a.vendeur && !sa ? ` chez ${a.vendeur}` : ''}</button>
           <button type="button" className="cn-second" onClick={() => setRaison(raison === null ? '' : null)}>Écarter</button>
         </div>
         {raison !== null && (
@@ -243,7 +263,7 @@ function ChoisirArticle(p: Extract<ChoisirProps, { etape: 'choisir' }>) {
         )}
         {sa
           ? <p id={`cn-non-lue-${a.id}`} className="cn-mut">Page non lue : ni nom, ni prix connus. Elle se choisit une fois lue.</p>
-          : <p className="cn-mut">Part dans À venir : {[prix ? `${prix} ${a.devise ?? 'CHF'}` : null, a.dispo, a.vendeur].filter(Boolean).join(', ')}, avec le pourquoi.</p>}
+          : <p className="cn-mut">Part dans À venir : {[prix, a.dispo, a.vendeur].filter(Boolean).join(', ')}, avec le pourquoi.</p>}
       </section>
       {p.autres.map(o => {
         const so = sansApercu(o.article);

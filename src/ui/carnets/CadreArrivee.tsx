@@ -23,7 +23,8 @@ export type CadreV =
   /* P28 (R09) : Créer · avant, g5:v03-2 ; G1 (g5:v04-1) les exemples touchables ; G2 (g5:v07-2) « Une note en vrac marche aussi. » */
   | { sorte: 'avant'; exemples: string[]; onExemple: (texte: string) => void }
   | { sorte: 'creer'; titre: string; proche?: { titre: string; onAjouter: () => void } | null; raisonNeuf?: string; ceQuiCompte?: string }
-  | { sorte: 'texte'; rubrique: 'Ce qui compte' | 'Façons' | 'Articles' | 'Notes'; texte: string; origine: Origine; compareSur?: string }
+  /* Critique 5, n° 3 (G4) : `vers`, le carnet visé quand ce n'est pas l'ouvert (« ↓ va dans Évier inox ») ; même calcul qu'à l'envoi */
+  | { sorte: 'texte'; rubrique: 'Ce qui compte' | 'Façons' | 'Articles' | 'Notes'; texte: string; origine: Origine; compareSur?: string; vers?: string }
   | { sorte: 'lien'; url: string; phase: 'avant' | 'lecture'; depuisListe?: boolean; apercu?: string; lus?: { nom: boolean; photo: boolean; prix: boolean; stock: boolean; valeurs: boolean }; cherche?: string[] }
   | { sorte: 'modifier'; texte?: string; onSupprimer: () => void };
 
@@ -106,9 +107,9 @@ function CadreContenu({ cadre: c, onAnnuler, consequence, aides, doublon, regrou
   if (c.sorte === 'texte') {
     return (
       <>
-        <section className="cn-cadre" aria-label="Va atterrir ici">
+        <section className="cn-cadre" aria-label={c.vers ? `Va dans ${c.vers}` : 'Va atterrir ici'} data-vers={c.vers ?? 'ici'}>
           <div className="cn-cadre-tete">
-            <span className="cn-vert"><ArrowDown size={16} aria-hidden /> va atterrir ici</span><span className="cn-sp" />
+            <span className="cn-vert"><ArrowDown size={16} aria-hidden /> {c.vers ? <>va dans <b>{c.vers}</b></> : 'va atterrir ici'}</span><span className="cn-sp" />
             {c.origine === 'ia' && <span className="cn-ia">✻ tiré de votre phrase</span>}
             {c.origine === 'locale' && <span className="cn-mut"><Provenance origine="locale" /> tiré de votre phrase</span>}
             <Croix onAnnuler={onAnnuler} />

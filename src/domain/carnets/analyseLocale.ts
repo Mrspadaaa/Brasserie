@@ -133,7 +133,8 @@ function masquer(texte: string, plages: readonly { debut: number; fin: number }[
 
 /** Liste fermée des unités du métier (MISSION) ; variantes écrites ramenées à la forme canonique. */
 const UNITES: readonly [string, string][] = [
-  ['m³/h', 'm³/h'], ['m3/h', 'm³/h'], ['°C', '°C'], ['° C', '°C'], ['kW', 'kW'], ['kg', 'kg'], ['dB', 'dB'], ['bar', 'bar'], ['cm', 'cm'], ['mm', 'mm'],
+  /* les unités composées d'abord (« 150 kg/h » n'est pas « 150 kg ») : l'alternance du motif garde la première qui lit */
+  ['m³/h', 'm³/h'], ['m3/h', 'm³/h'], ['kg/h', 'kg/h'], ['L/min', 'L/min'], ['l/min', 'L/min'], ['L/h', 'L/h'], ['l/h', 'L/h'], ['°C', '°C'], ['° C', '°C'], ['kW', 'kW'], ['kg', 'kg'], ['dB', 'dB'], ['bar', 'bar'], ['cm', 'cm'], ['mm', 'mm'],
   ['W', 'W'], ['L', 'L'], ['l', 'L'], ['bacs', 'bacs'], ['bac', 'bacs'], ['becs', 'becs'], ['bec', 'becs'], ['fûts', 'fûts'], ['fût', 'fûts'], ['futs', 'fûts'], ['fut', 'fûts']
 ];
 const echapper = (s: string) => s.replace(/[.*+?^${}()|[\]\\/]/g, ch => '\\' + ch);
@@ -212,6 +213,95 @@ export function critereDe(ligne: string, seule = true): string {
   const virgule = /^([^,:\d]{3,}?),\s*(\d[\d'’   .,]*\s?\S.*)$/.exec(t);
   if (virgule && quantitesDe(virgule[2]).length > 0) return `${majuscule(virgule[1].trim())} : ${virgule[2].trim()}`;
   return t;
+}
+
+/* ---------- critères tirés d'une phrase (critique 5, n° 2, 4, 24) ---------- */
+
+/**
+ * Le nom d'une caractéristique déduit de son unité (liste fermée du § État de l'art), quand la phrase ne le dit pas : « 150 kg/h » → débit.
+ * Les unités de compte (bacs, becs, fûts) se nomment elles-mêmes. cm et mm n'ont pas de nom sûr (largeur, profondeur…) : la phrase doit le dire.
+ */
+const NOM_PAR_UNITE: Readonly<Record<string, string>> = {
+  'm³/h': 'débit', 'kg/h': 'débit', 'L/min': 'débit', 'L/h': 'débit', kW: 'puissance', W: 'puissance', dB: 'bruit', bar: 'pression', L: 'volume',
+  kg: 'poids', '°C': 'température', bacs: 'bacs', becs: 'becs', 'fûts': 'fûts'
+};
+const UNITES_DE_COMPTE = new Set(['bacs', 'becs', 'fûts']);
+/** Les mots qui bordent le nom d'une caractéristique sans en faire partie (« il faudrait au moins … », « la porte du local fait … »). */
+const BORDS = new Set([
+  'le', 'la', 'les', 'l', 'un', 'une', 'des', 'du', 'de', 'd', 'a', 'au', 'aux', 'en', 'pour', 'avec', 'il', 'faut', 'faudrait', 'doit', 'doivent',
+  'fait', 'font', 'fasse', 'mesure', 'avoir', 'ait', 'moins', 'plus', 'minimum', 'mini', 'min', 'maximum', 'maxi', 'max', 'pas', 'environ', 'env',
+  'garder', 'tenir', 'maintenir', 'qui', 'que', 'soit', 'est', 'sont', 'et', 'ou', 'sur', 'dans', 'vers', 'tient', 'supporte', 'jusqu', 'il', 'on'
+]);
+const SEUIL_BAS = /\b(?:au plus|maximum|maxi|max|pas plus de|moins de|jusqu a)\b/;
+const SEUIL_HAUT = /\b(?:au moins|minimum|mini|min|pas moins de|plus de)\b/;
+const MOT_SEUIL = /\b(au moins|au plus|minimum|maximum|mini|maxi|min|max)\b/;
+const MOINS_MIEUX = /bruit|prix|poids|consommation|oxygene|delai|encombrement/;
+/** « tient 80 °C », « supporte 90 °C » : une caractéristique oui-non, nommée par la phrase (comme « tient 80 °C » des pages lues). */
+const TIENT = /\b(?:tient|tenir|tiennent|supporte|supporter|resiste|resister)\s+(?:a\s+|jusqu'?\s?a\s+)?(\d+(?:[.,]\d+)?)\s?°\s?c\b/;
+
+/** Un critère tiré des mots de la phrase : sa caractéristique (nom, unité, sens) quand la phrase la mesure. */
+export interface CritereLu {
+  texte: string;
+  caracteristique?: { nom: string; unite?: string; sens: 'plus' | 'moins' | 'oui-non' };
+  quantite?: Quantite;
+}
+/** Ce qu'une phrase dit de mesurable (`criteres`) et ce qui décrit une façon de faire, sans seuil (« 2 cylindres » : `facons`). */
+export interface CriteresLus { criteres: CritereLu[]; facons: string[] }
+
+const sansAccentsMin = (t: string): string => t.normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase();
+const estBord = (mot: string): boolean => { const n = normaliser(mot); return n === '' || n.split(' ').every(m => BORDS.has(m)); };
+
+/** Les mots avant le nombre, sans leurs bords : le nom de la caractéristique quand il tient en 1 à 4 mots ; sinon `undefined`. */
+function nomAvant(avant: string): string | undefined {
+  const mots = avant.trim().split(/\s+/).filter(Boolean);
+  while (mots.length && estBord(mots[0])) mots.shift();
+  while (mots.length && estBord(mots[mots.length - 1])) mots.pop();
+  if (!mots.length || mots.length > 4 || !/\p{L}/u.test(mots.join(' '))) return undefined;
+  const nom = mots.join(' ');
+  return nom.charAt(0).toLowerCase() + nom.slice(1);
+}
+
+/**
+ * Les critères d'une phrase, tirés de ses mots (§ État de l'art : motifs et liste fermée d'unités ; aucun nombre qui n'y soit pas). Le libellé
+ * de tête (« Moulin à malt : … ») est le titre de l'idée, jamais un critère ; liens et prix (un article) sont masqués. Chaque morceau (entre
+ * virgules) qui porte une quantité de la liste devient un critère : « fond de bac 38 cm minimum » → « Fond de bac 38 cm minimum » (fond de
+ * bac, cm, plus) ; « 150 kg/h » → « Débit : 150 kg/h au moins » (débit, kg/h, plus). « tient 80 °C » → oui-non. Un compte sans unité de la
+ * liste (« 2 cylindres ») décrit une façon, pas un seuil. Une phrase sans mesure : aucun critère (l'écran dit « l'IA le proposera »).
+ */
+export function extraireCriteres(texte: string): CriteresLus {
+  const ligne = sansPrefixeBanc(texte).trim();
+  const lib = /^([^:]{2,60}?)\s*:\s*(.+)$/.exec(ligne);
+  const libelle = lib && /\p{L}/u.test(lib[1]) && !/(?:^|\s)https?$/i.test(lib[1].trim()) ? lib[1].trim() : undefined;
+  const corps = libelle ? lib![2] : ligne;
+  const masque = masquer(corps, [...urlsDe(corps), ...prixTousDe(corps)]);
+  const criteres: CritereLu[] = [];
+  const facons: string[] = [];
+  const vus = new Set<string>();
+  const garder = (k: CritereLu) => { const cle = normaliser(k.texte); if (cle && !vus.has(cle)) { vus.add(cle); criteres.push(k); } };
+  for (const brut of masque.split(/[,;]/)) {
+    const seg = brut.replace(/\s+/g, ' ').trim();
+    if (!seg) continue;
+    const bas = sansAccentsMin(seg);
+    const tient = TIENT.exec(bas);
+    if (tient) { garder({ texte: `Tient ${tient[1]} °C`, caracteristique: { nom: `tient ${tient[1]} °C`, sens: 'oui-non' } }); continue; }
+    const q = quantitesDe(seg)[0];
+    if (!q) {
+      if (/^\d+\s+\p{L}[\p{L}-]{2,}$/u.test(seg)) facons.push(seg);
+      continue;
+    }
+    const n = normaliser(seg);
+    const avant = nomAvant(seg.slice(0, Math.max(0, seg.indexOf(q.texte))));
+    const compte = UNITES_DE_COMPTE.has(q.unite);
+    const nom = avant ?? NOM_PAR_UNITE[q.unite] ?? (libelle ? libelle.charAt(0).toLowerCase() + libelle.slice(1) : undefined);
+    if (!nom) continue;
+    const sens: 'plus' | 'moins' = SEUIL_BAS.test(n) ? 'moins' : SEUIL_HAUT.test(n) ? 'plus' : MOINS_MIEUX.test(normaliser(nom)) || q.unite === 'dB' ? 'moins' : 'plus';
+    const mot = MOT_SEUIL.exec(n)?.[1];
+    const seuil = mot ? ` ${/^min/.test(mot) ? 'minimum' : /^max/.test(mot) ? 'maximum' : mot}` : compte ? '' : sens === 'moins' ? ' au plus' : ' au moins';
+    const valeur = `${q.texte} ${q.unite}${seuil}`;
+    const t = avant && !compte ? `${avant} ${valeur}` : compte ? valeur : `${nom} : ${valeur}`;
+    garder({ texte: majuscule(t), caracteristique: { nom, unite: q.unite, sens }, quantite: q });
+  }
+  return { criteres, facons };
 }
 
 const MOTS_CRITERE = /\b(minimum|maximum|mini|maxi|min|max|au moins|au plus|il faut|faut que|doit|doivent|pas plus de|pas moins de|tient|tenir|supporte|minimiser|maximiser|eviter)\b/;

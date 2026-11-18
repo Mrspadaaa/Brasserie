@@ -12,10 +12,10 @@
  * Le segment « À venir · Carnets · Réalisés » et le + volant appartiennent au conteneur (lot D) ; le champ est ChampCarnet.
  */
 import React from 'react';
-import { CalendarCheck, ChevronRight, Eye, Link2 } from 'lucide-react';
+import { ArrowDown, CalendarCheck, ChevronRight, Eye, Link2 } from 'lucide-react';
 import { Bandeau } from './Bandeau';
 import { normaliser } from '../../domain/carnets/analyseLocale';
-import { tableau as calculerTableau } from '../../domain/carnets/comparer';
+import { tableau as calculerTableau, prixTexte } from '../../domain/carnets/comparer';
 import { titreDePhrase } from '../../domain/carnets/modele';
 import { dateCourte, GENRE_LIBELLE, montant, pluriel, Provenance, STATUT_LIBELLE, type ArticleV, type CarnetV, type GenreNote, type StatutCarnet } from './EtatIA';
 import { VignetteObjet } from './pictos';
@@ -120,6 +120,38 @@ function compte(c: CarnetV): { parts: string[]; veilles: number } {
   return { parts, veilles: k.articles.filter(a => a.veille?.active).length };
 }
 
+/**
+ * En veille (n° 32) : une ligne par machine. Deux articles du même carnet au même nom (normalisé comme `nomsDistincts` de
+ * comparer.ts) sont deux offres de la même machine : une seule ligne « Isobarique 4 becs pré-évacuation · 2 offres », la moins chère
+ * en tête.
+ */
+export function offresEnVeille(carnets: CarnetV[]): { c: CarnetV; a: ArticleV; offres: ArticleV[] }[] {
+  const sortie: { c: CarnetV; a: ArticleV; offres: ArticleV[] }[] = [];
+  for (const c of carnets) {
+    const groupes = new Map<string, ArticleV[]>();
+    for (const a of c.carnet.articles.filter(x => x.veille?.active)) {
+      const cle = a.nom?.trim() ? normaliser(a.nom) : `#${a.id}`;
+      groupes.set(cle, [...(groupes.get(cle) ?? []), a]);
+    }
+    for (const offres of groupes.values()) {
+      const tri = [...offres].sort((x, y) => (x.prixCentimes ?? Infinity) - (y.prixCentimes ?? Infinity));
+      sortie.push({ c, a: tri[0], offres: tri });
+    }
+  }
+  return sortie;
+}
+
+/** « 11 200 à 11 700 » CHF : l'étendue des prix connus des offres d'une même devise ; null si aucun prix n'est connu (jamais 0). */
+export function prixOffres(offres: ArticleV[]): { nombres: string; devise: string } | null {
+  const avecPrix = offres.filter(o => typeof o.prixCentimes === 'number' && Number.isFinite(o.prixCentimes));
+  if (!avecPrix.length) return null;
+  const devise = avecPrix[0].devise ?? 'CHF';
+  const memes = avecPrix.filter(o => (o.devise ?? 'CHF') === devise).map(o => o.prixCentimes!);
+  const nb = (x: number) => prixTexte(x, devise)!.slice(0, -(devise.length + 1));
+  const min = Math.min(...memes), max = Math.max(...memes);
+  return { nombres: min === max ? nb(min) : `${nb(min)} à ${nb(max)}`, devise };
+}
+
 function Vignette({ c }: { c: CarnetV }) {
   const k = c.carnet;
   const choisi = k.choix ? k.articles.find(a => a.id === k.choix!.articleId) : undefined;
@@ -189,9 +221,12 @@ export function ListeCarnets(p: ListeCarnetsProps) {
   if (!visibles.length && !p.supprime) return <ListeVide enHaut={p.enHaut} onExemple={p.onExemple} />;
 
   const ajouts = p.ajouts ?? ajoutsDuMessage(visibles, p.messageRecent);
+  /* n° 30 et R11 : le carnet tout juste créé reste dans le groupe de son état (une idée dans « Idée »), en tête de ce groupe, et ce
+     groupe passe en tête de la liste ; il ne flotte jamais au-dessus des groupes. */
   const enTete = p.enTete ? visibles.find(c => c.id === p.enTete) : undefined;
-  const groupes = ORDRE.map(s => ({ s, carnets: visibles.filter(c => c.status === s && c.id !== enTete?.id) }));
-  const enVeille = visibles.flatMap(c => c.carnet.articles.filter(a => a.veille?.active).map(a => ({ c, a })));
+  const ordre = enTete ? [enTete.status, ...ORDRE.filter(s => s !== enTete.status)] : ORDRE;
+  const groupes = ordre.map(s => ({ s, carnets: [...(enTete?.status === s ? [enTete] : []), ...visibles.filter(c => c.status === s && c.id !== enTete?.id)] }));
+  const enVeille = offresEnVeille(visibles);
   const exemple = visibles.some(c => c.carnet.articles.some(a => a.origine === 'exemple'));
 
   const rendre = (c: CarnetV) => {
@@ -213,7 +248,6 @@ export function ListeCarnets(p: ListeCarnetsProps) {
   return (
     <div className="cn-page cn-liste">
       {p.enHaut}
-      {enTete && <section className="cn-groupe-bloc" aria-label="Carnet créé">{rendre(enTete)}</section>}
       {groupes.map(({ s, carnets }) => {
         const supp = p.supprime?.statut === s ? p.supprime : null;
         if (!carnets.length && !supp) return null;
@@ -237,11 +271,20 @@ export function ListeCarnets(p: ListeCarnetsProps) {
             <span className="cn-sp" /><span className="cn-mut">demandée · pas encore relevée</span>
           </div>
           <div className="cn-cartes">
-            {enVeille.map(({ c, a }) => (
+            {enVeille.map(({ c, a, offres }) => (
               <button key={a.id} type="button" className="cn-veille-rangee" onClick={() => p.onOuvrir(c.id)}>
-                <VignetteObjet photo={a.photo} mots={[a.nom, c.carnet.facons.find(f => f.id === a.faconId)?.nom, c.title]} classe="cn-vignette-petite" taille={22} />
-                <span className="cn-sp"><b>{a.nom ?? a.domaine}</b> <span className="cn-mut">· {c.title.replace(/^ZZ TEST — /, '')}</span></span>
-                {montant(a.prixCentimes) && <span className="cn-nowrap"><span className="cn-mono">{montant(a.prixCentimes)}</span> <span className="cn-mut">{a.devise ?? 'CHF'}</span></span>}
+                <VignetteObjet photo={a.photo} mots={[a.nom, c.carnet.facons.find(f => f.id === a.faconId)?.nom, c.title]} classe="cn-vignette-petite" />
+                {/* n° 32 : « Isobarique 4 becs pré-évacuation » / « 2 offres · 11 200 à 11 700 CHF » / « dans <carnet> » : le nom garde la largeur */}
+                <span className="cn-sp cn-veille-tx">
+                  <b>{a.nom ?? a.domaine}</b>
+                  {(offres.length > 1 || prixOffres(offres)) && (
+                    <span className="cn-encre-2">
+                      {offres.length > 1 ? `${offres.length} offres` : ''}{offres.length > 1 && prixOffres(offres) ? ' · ' : ''}
+                      {prixOffres(offres) && <span className="cn-nowrap"><span className="cn-mono">{prixOffres(offres)!.nombres}</span> <span className="cn-mut">{prixOffres(offres)!.devise}</span></span>}
+                    </span>
+                  )}
+                  <span className="cn-mut">dans {c.title}</span>
+                </span>
               </button>
             ))}
           </div>
@@ -252,39 +295,34 @@ export function ListeCarnets(p: ListeCarnetsProps) {
 }
 
 /**
- * Premier usage (R02, figé p2:i02-2) : le cadre pointillé « Votre premier carnet s'affichera ici », « Un carnet garde » et ses trois
- * lignes (les objets, le prix, le choix), la bulle verte « Écrivez ici un besoin » qui pointe le champ. Dans la bulle, G1 : les
- * exemples touchables remplissent le champ ; G2 : « Une note en vrac marche aussi. ». Pendant la frappe, le cadre du geste (`enHaut`)
- * prend la place du cadre pointillé et la bulle se retire.
+ * Premier usage (R02, figé p2:i06-2, critique 5 n° 11) : le titre « Carnets », sa phrase, la carte exemple « Évier inox, 2 bacs ·
+ * exemple · votre premier carnet · ↓ arrive ici » en pointillé, puis « Par exemple : » et ses puces touchables (G1, g5:v04-1), et
+ * « Une note en vrac marche aussi. » (G2). Aucune flèche ni bulle vers le champ (D-108 la refuse). Pendant la frappe, le cadre du
+ * geste (`enHaut`) prend la place de la carte exemple.
  */
 function ListeVide({ enHaut, onExemple }: { enHaut?: React.ReactNode; onExemple?: (t: string) => void }) {
   const cadreGeste = React.isValidElement(enHaut) ? hasContenu(enHaut) : Boolean(enHaut);
   return (
     <div className="cn-page cn-liste cn-vide-page">
+      <h2 className="cn-vide-titre">Carnets</h2>
+      <p className="cn-vide-phrase">Collez le lien d'un objet ou notez un besoin : on garde sa photo, son prix, et on le surveille.</p>
       {cadreGeste ? enHaut : (
-        <div className="cn-premier" aria-label="Votre premier carnet s'affichera ici">
-          <span className="cn-premier-titre">Votre premier carnet</span>
-          <span className="cn-premier-ici">s'affichera ici</span>
-          <span className="cn-premier-sous cn-mut">Nouveau carnet · <b className="cn-vert">Idée</b></span>
+        <div className="cn-exemple-carte" aria-label="Exemple : votre premier carnet arrive ici">
+          <VignetteObjet mots={['Évier inox, 2 bacs']} />
+          <span className="cn-sp cn-exemple-tx">
+            <b>Évier inox, 2 bacs</b>
+            <span><Provenance origine="exemple" /> <span className="cn-mut">votre premier carnet</span></span>
+          </span>
+          <span className="cn-arrive"><ArrowDown size={18} aria-hidden /> arrive ici</span>
         </div>
       )}
-      <section className="cn-garde" aria-label="Un carnet garde">
-        <h3 className="cn-garde-titre">Un carnet garde</h3>
-        <ul>
-          <li><span className="cn-garde-ico" aria-hidden><Link2 size={20} /></span><span><b>Les objets</b> : un lien collé montre l'objet, une photo aussi</span></li>
-          <li><span className="cn-garde-ico" aria-hidden><Eye size={20} /></span><span><b>Le prix</b>, surveillé tous les 3 jours</span></li>
-          <li><span className="cn-garde-ico" aria-hidden><CalendarCheck size={20} /></span><span><b>Le choix</b>, qui part dans À venir</span></li>
-        </ul>
-      </section>
-      {!cadreGeste && (
-        <div className="cn-bulle-champ" role="note">
-          <p><b>Écrivez ici un besoin</b> : un frigo, une ventilation, un évier…</p>
-          <div className="cn-exemples">
-            {EXEMPLES.map(e => <button key={e} type="button" className="cn-puce cn-puce-bulle" onClick={() => onExemple?.(e)}>{e}</button>)}
-          </div>
-          <p className="cn-bulle-petit">Entrée crée le carnet. Une note en vrac marche aussi.</p>
-        </div>
-      )}
+      {/* G1 (g5:v04-1) : les exemples d'i06-2 se touchent et remplissent le champ ; G2 (g5:v07-2). Aucune flèche ni bulle vers le
+          champ (D-108). */}
+      <div className="cn-par-exemple">
+        <span className="cn-mut">Par exemple :</span>
+        {EXEMPLES.map(e => <button key={e} type="button" className="cn-puce cn-puce-exemple" onClick={() => onExemple?.(e)}>{e}</button>)}
+      </div>
+      <p className="cn-mut">Une note en vrac marche aussi.</p>
     </div>
   );
 }

@@ -5,7 +5,7 @@
 import { describe, expect, it } from 'vitest';
 import { analyserLigne, analyserTexte, genreLocal, prixTousDe } from '../../src/domain/carnets/analyseLocale';
 import {
-  CRITERE_CONDENSATION, fixtureCarnets, ID_EVIER, ID_EXTRACTION, ID_VENTILATION, NOTE_COMME_CRITERE, NOTE_VRAC_BANC
+  CRITERE_CONDENSATION, fixtureCarnets, ID_EVIER, ID_EXTRACTION, ID_VENTILATION, ID_VENTILATION_CAVE, NOTE_COMME_CRITERE, NOTE_VRAC_BANC
 } from '../../src/domain/carnets/fixture';
 import { contexteModele, lireReponse, type CarnetPourIA, type LigneCarnet, type PageLue } from '../../src/domain/carnets/ia';
 import { caracteristiquesLues, PAGES_BANC, pageSimulee, reponseSimulee } from '../../src/domain/carnets/iaSimulee';
@@ -67,7 +67,8 @@ describe('P4 (G5) : le critère est la partie mesurable, sans titre ni préfixe'
     const l = simuler(PHRASE, null);
     const idee = l.find(x => x.sorte === 'idee')!, k = l.find(x => x.sorte === 'critere')!;
     expect(idee.titre?.replace(/^ZZ TEST — /, '')).toBe('Moulin à malt');
-    expect(k.texte).toBe('2 cylindres, 150 kg/h minimum');
+    /* critique 5, n° 4 : le critère est la mesure de la phrase (kg/h composé) ; « 2 cylindres » est une façon, jamais un critère */
+    expect(k.texte).toBe('Débit : 150 kg/h minimum');
     expect(k.texte).not.toMatch(/ZZ TEST|Moulin/);
   });
 });
@@ -88,16 +89,16 @@ describe('P7 : « buées au-dessus de la cuve, 1 200 m³/h » devient un critèr
     let k = carnet(etat, ID_VENTILATION).carnet.criteres;
     expect(k).toHaveLength(3);
     expect(k.find(x => x.id === 'ZZ-V-K3')).toMatchObject({ texte: 'Buées au-dessus de la cuve : 1 200 m³/h', origine: 'locale', messageId: 'M-P7' });
-    expect(lireMessage(etat.find(d => d.id === 'M-P7'))!.carnetMessage.effets).toEqual([{ carnetId: ID_VENTILATION, cible: 'critere', id: 'ZZ-V-K3', fusion: { texte: 'le débit', origine: 'exemple' } }]);
+    expect(lireMessage(etat.find(d => d.id === 'M-P7'))!.carnetMessage.effets).toEqual([{ carnetId: ID_VENTILATION, cible: 'critere', id: 'ZZ-V-K3', fusion: { texte: 'le débit', origine: 'ia' } }]);
     const ia = simuler(PHRASE, ID_VENTILATION).find(x => x.sorte === 'critere')!;
     etat = appliquer(etat, remplacerRangement(etat, { messageId: 'M-P7', rangement: 'simulee', lignes: [{ carnetId: ID_VENTILATION, sorte: 'critere', texte: ia.texte, caracteristique: ia.caracteristique, origine: 'exemple' }] }));
     k = carnet(etat, ID_VENTILATION).carnet.criteres;
     expect(k).toHaveLength(3);
     expect(k.find(x => x.id === 'ZZ-V-K3')!.texte).toBe('Capter les buées au-dessus de la cuve : 1 200 m³/h au moins');
     // l'effet garde toujours le critère d'avant le message (« le débit »), pas la version locale
-    expect(lireMessage(etat.find(d => d.id === 'M-P7'))!.carnetMessage.effets[0].fusion).toEqual({ texte: 'le débit', origine: 'exemple' });
+    expect(lireMessage(etat.find(d => d.id === 'M-P7'))!.carnetMessage.effets[0].fusion).toEqual({ texte: 'le débit', origine: 'ia' });
     etat = appliquer(etat, remplacerRangement(etat, { messageId: 'M-P7', rangement: 'simulee', lignes: [{ carnetId: ID_VENTILATION, sorte: 'note', texte: 'buées' }] }));
-    expect(carnet(etat, ID_VENTILATION).carnet.criteres.find(x => x.id === 'ZZ-V-K3')).toMatchObject({ texte: 'le débit', origine: 'exemple' });
+    expect(carnet(etat, ID_VENTILATION).carnet.criteres.find(x => x.id === 'ZZ-V-K3')).toMatchObject({ texte: 'le débit', origine: 'ia' });
     expect(carnet(etat, ID_VENTILATION).carnet.criteres.find(x => x.id === 'ZZ-V-K3')).not.toHaveProperty('messageId');
   });
   it('ses mots à lui (origine « vous ») ne sont jamais réécrits par une fusion', () => {
@@ -156,10 +157,11 @@ describe('P11, P22 : note en vrac typée, mise en forme, achats en tête (IA sim
 });
 
 describe('P44 : la reformulation G9 garde le nombre de la phrase', () => {
-  it('« fond de bac 38 cm minimum » → « Un fût de 30 L couché entre dans le bac (38 cm) »', () => {
+  it('« fond de bac 38 cm minimum » garde son 38 cm et n’invente aucune mesure (critique 5, n° 4 : plus de « 30 L »)', () => {
     const k = simuler('fond de bac 38 cm minimum', ID_EVIER).find(x => x.sorte === 'critere')!;
-    expect(k.texte).toBe('Un fût de 30 L couché entre dans le bac (38 cm)');
+    expect(k.texte).toBe('Fond de bac 38 cm minimum');
     expect(k.texte).toContain('38 cm');
+    expect(k.texte).not.toMatch(/30 L/);
   });
 });
 
@@ -220,9 +222,9 @@ describe('P10, P23 (D-35, D-24) : au 2e article lu, l’IA propose la caractéri
     expect(m.carnetMessage.effets.map(e => e.cible)).toEqual(['note']);
     const acc = accepterProposition(apres, { messageId: 'M-P10', index: 0 });
     const fin = appliquer(apres, acc);
-    // l'Évier a déjà « assez profond pour un fût » (fond de bac, cm, exemple) : la proposition le précise
-    const k2 = carnet(fin, ID_EVIER).carnet.criteres.find(k => k.id === 'ZZ-E-K2')!;
-    expect(k2.texte).toBe('Fond de bac : le plus haut (cm)');
+    // critique 5, n° 4 : « assez profond pour un fût » dit un usage, pas une caractéristique vague : il reste, la proposition s'ajoute
+    expect(carnet(fin, ID_EVIER).carnet.criteres.find(k => k.id === 'ZZ-E-K2')!.texte).toBe('assez profond pour un fût');
+    expect(carnet(fin, ID_EVIER).carnet.criteres.some(k => k.texte === 'Fond de bac : le plus haut (cm)')).toBe(true);
     const m2 = lireMessage(fin.find(d => d.id === 'M-P10'))!;
     expect(m2.carnetMessage.propositions).toBeUndefined();
     expect(m2.carnetMessage.effets.map(e => e.cible)).toEqual(['note', 'critere']);
@@ -248,9 +250,12 @@ describe('P19, P20 : la fixture atteint G25 à G27 et G35', () => {
   it('P20 : Ventilation a des articles en veille et un carnet proche (G35 « les déplacer dans … »)', () => {
     const v = carnet(F, ID_VENTILATION);
     expect(v.carnet.articles.some(a => a.veille?.active)).toBe(true);
-    const p = carnetProche(v, lireCarnets(F));
+    /* critique 5, n° 27 : G35 ne propose qu'un carnet de même catégorie ; l'extracteur CO₂ n'en est pas un (rien par défaut), l'option `g35` ajoute une 2e idée de ventilation */
+    expect(carnetProche(v, lireCarnets(F))).toBeNull();
+    const FG = fixtureCarnets({ g35: true });
+    const p = carnetProche(carnet(FG, ID_VENTILATION), lireCarnets(FG));
     expect(p).not.toBeNull();
-    expect(p!.carnetId).toBe(ID_EXTRACTION);
+    expect(p!.carnetId).toBe(ID_VENTILATION_CAVE);
   });
   it('les ID d’avant ne changent pas ; le préfixe « ZZ TEST — » reste sur chaque carnet', () => {
     const ids = F.map(d => d.id);

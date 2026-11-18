@@ -235,8 +235,9 @@ describe('corr2-L1 : la découpe annoncée est celle appliquée (planVrac, versL
 
   it('les lignes sans carnet proche vont ensemble dans UN carnet neuf, titré par la première ; le compteur compte les carnets distincts', () => {
     const plan = planVrac([{ texte: '2 bacs pour laver' }, { texte: 'ajouter le sel' }, { texte: 'prochain brassage jeudi' }, { texte: 'hotte trop large' }], proche);
-    expect(plan.titreNeuf).toBe('ajouter le sel');
-    expect(plan.lignes.map((l) => l.carnetId ?? `neuf:${l.titre}`)).toEqual(['c-evier', 'neuf:ajouter le sel', 'neuf:ajouter le sel', 'c-ventil']);
+    /* n° 30 : le titre neuf est mis en forme */
+    expect(plan.titreNeuf).toBe('Ajouter le sel');
+    expect(plan.lignes.map((l) => l.carnetId ?? `neuf:${l.titre}`)).toEqual(['c-evier', 'neuf:Ajouter le sel', 'neuf:Ajouter le sel', 'c-ventil']);
     expect(plan.carnets).toBe(3);
     expect(planVrac([{ texte: '2 bacs' }, { texte: 'bacs encore' }], proche)).toMatchObject({ carnets: 1, titreNeuf: null });
     expect(planVrac([{ texte: 'a b c' }, { texte: 'd e f' }], proche).carnets).toBe(1);

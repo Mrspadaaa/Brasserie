@@ -98,12 +98,17 @@ export function Bandeau({ bandeau, onAnnuler, consequence, aideConsequence, enLi
   detail?: string;
 }) {
   const b = bandeau;
-  const avecCoche = b.sorte !== 'note-supprimee' && b.sorte !== 'carnet-supprime' && b.sorte !== 'deuxieme';
-  const texte = texteBandeau(b).replace(/^✓ /, '');
+  /* Critique 5, n° 24 : quand l'IA n'est pas passée, « ✓ Rangé ici » (ou « Lien rangé ici », « Photo rangée ici ») cède la tête du
+     bandeau à l'avis : c'est lui qui dit l'état ; ce qui a été rangé, et où, suit en détail. « Carnet créé », « Rangé dans … » et « n lignes
+     rangées » restent vrais et gardent leur tête, l'avis dessous. */
+  const avisEnTete = !!avis && (b.sorte === 'range' || b.sorte === 'lien' || b.sorte === 'photo');
+  const avecCoche = !avisEnTete && b.sorte !== 'note-supprimee' && b.sorte !== 'carnet-supprime' && b.sorte !== 'deuxieme';
+  const texte = avisEnTete ? avis!.texte : texteBandeau(b).replace(/^✓ /, '');
   const ref = useAmeneEnVue<HTMLDivElement>();
   return (
     <div ref={ref} className={`cn-bandeau${enLigne ? ' cn-bandeau-ligne' : ''}${avis ? ' cnf-bandeau-avis' : ''}`} role="status" data-sorte={b.sorte} data-avis={avis?.sorte}>
       <div className="cn-bandeau-tete">
+        {avisEnTete && (avis!.sorte === 'hors-ligne' ? <WifiOff size={18} aria-hidden /> : avis!.sorte === 'echec' ? <TriangleAlert size={18} aria-hidden className="cnf-avis-picto" /> : <Calculator size={18} aria-hidden />)}
         {avecCoche && <Check size={18} aria-hidden className="cn-ok" />}
         <span className="cn-sp">
           {avecCoche && <span className="cn-cache">✓ </span>}
@@ -122,7 +127,8 @@ export function Bandeau({ bandeau, onAnnuler, consequence, aideConsequence, enLi
           <a className="cn-lien cnf-ouvrir" href={b.url} target="_blank" rel="noopener noreferrer">Ouvrir ↗</a>
         </p>
       )}
-      {avis && (
+      {avisEnTete && detail && <p className="cnf-avis cnf-avis-detail" data-avis={avis!.sorte}><span className="cn-sp">{detail}</span></p>}
+      {avis && !avisEnTete && (
         <p className="cnf-avis" data-avis={avis.sorte}>
           {avis.sorte === 'hors-ligne' ? <WifiOff size={16} aria-hidden /> : avis.sorte === 'echec' ? <TriangleAlert size={16} aria-hidden /> : <Calculator size={16} aria-hidden />}
           <span className="cn-sp">{avis.texte}{detail ? <span className="cnf-avis-detail"> — {detail}</span> : null}</span>

@@ -74,6 +74,33 @@ export function valeursLues(valeurs: Record<string, ValeurV>, sauf?: string | nu
   });
 }
 
+/**
+ * Ce que la page a donné (g5:v06-10, « lu sur la page : nom, prix, photo, débit, °C ») quand le geste ne le passe pas : lu sur
+ * l'article même. Un champ ne se dit que s'il existe ; les caractéristiques se nomment (« débit »), celle du verdict exclue.
+ */
+export function luDeLArticle(a: ArticleV, sauf?: string | null): string[] {
+  if (a.lecture !== 'lue') return [];
+  const champs: string[] = [];
+  if (a.nom?.trim()) champs.push('nom');
+  if (montant(a.prixCentimes)) champs.push('prix');
+  if (a.photo) champs.push('photo');
+  for (const [nom, v] of Object.entries(a.valeurs)) {
+    if (sauf && nom === sauf) continue;
+    if (v.origine === 'vous' || valeurTexte(v) === null) continue;
+    champs.push(nom);
+  }
+  return champs;
+}
+
+/** Le verdict de l'article sur le critère oui-non (« tient 80 °C : oui ») ; null si la valeur est inconnue (jamais « non » par défaut). */
+export function verdictDe(a: ArticleV, critere?: CritereV): string | null {
+  const c = critere?.caracteristique;
+  if (!c || c.sens !== 'oui-non') return null;
+  const v = a.valeurs[c.nom];
+  if (!v || typeof v.valeur !== 'boolean') return null;
+  return `${c.nom} : ${v.valeur ? 'oui' : 'non'}`;
+}
+
 function Vignette({ article, faconNom, carnetTitre, classe }: { article: ArticleV; faconNom?: string; carnetTitre?: string; classe?: string }) {
   if (!article.photo && (article.lecture === 'illisible' || (article.lecture !== 'lue' && !article.nom))) {
     return <span className={`cn-vignette cn-vignette-lien${classe ? ` ${classe}` : ''}`} aria-hidden><Link2 size={22} /></span>;
@@ -106,34 +133,41 @@ export function CarteArticle(p: CarteArticleProps) {
 
   if (p.variante === 'complete') {
     /* g5:v06-10 : le verdict écrit une fois (pas dans les valeurs, pas dans « lu sur la page ») */
-    const sujet = sujetDuVerdict(p.verdict);
+    /* sans `luSurPage` ni `verdict` du geste, ils se lisent sur l'article (critique 5, n° 6 : la carte ne maigrit jamais) */
+    const verdict = p.verdict ?? verdictDe(a, p.critere) ?? undefined;
+    const sujet = sujetDuVerdict(verdict);
     const valeurs = valeursLues(a.valeurs, sujet);
-    const lu = (p.luSurPage ?? []).filter(x => x !== sujet);
+    const lu = (p.luSurPage ?? luDeLArticle(a, sujet)).filter(x => x !== sujet);
     const origine = [a.domaine ?? a.vendeur, a.pays].filter(Boolean).join(' · ');
+    const haut = (
+      <>
+        <Vignette article={a} faconNom={p.faconNom} carnetTitre={p.carnetTitre} classe="cn-vignette-grande" />
+        <span className="cn-article-tx">
+          <b className="cn-article-nom">{a.nom}</b>
+          {(origine || estExemple(a)) && <span className="cn-mut">{origine}{estExemple(a) && <> <Provenance origine="exemple" /></>}</span>}
+          {valeurs.length > 0 && <span className="cn-encre-2 cn-mono-chiffres cn-valeurs-lues">{valeurs.join(' · ')}</span>}
+          {(prix || a.dispo) && (
+            <span className="cn-ligne cn-article-pied">
+              {prix && <span className="cn-nowrap"><span className="cn-mono cn-prix">{prix}</span> {devise}</span>}
+              {a.dispo && <span className="cn-pastille cn-pastille-vert">{a.dispo}</span>}
+            </span>
+          )}
+        </span>
+      </>
+    );
     return (
       <div className="cn-article-complet">
-        <div className="cn-article cn-article-grand">
-          <Vignette article={a} faconNom={p.faconNom} carnetTitre={p.carnetTitre} classe="cn-vignette-grande" />
-          <div className="cn-article-tx">
-            <b className="cn-article-nom">{a.nom}</b>
-            {(origine || estExemple(a)) && <span className="cn-mut">{origine}{estExemple(a) && <> <Provenance origine="exemple" /></>}</span>}
-            {valeurs.length > 0 && <span className="cn-encre-2 cn-mono-chiffres">{valeurs.join(' · ')}</span>}
-            {(prix || a.dispo) && (
-              <span className="cn-ligne cn-article-pied">
-                {prix && <span className="cn-nowrap"><span className="cn-mono cn-prix">{prix}</span> {devise}</span>}
-                {a.dispo && <span className="cn-pastille cn-pastille-vert">{a.dispo}</span>}
-              </span>
-            )}
-          </div>
-        </div>
+        {p.onOuvrir
+          ? <button type="button" className="cn-article cn-article-grand" onClick={p.onOuvrir}>{haut}</button>
+          : <div className="cn-article cn-article-grand">{haut}</div>}
         <div className="cn-veille-ligne">
           <Eye size={18} aria-hidden />
           <span className="cn-sp">Veille du prix, tous les 3 jours</span>
           <Bascule active={veilleDemandee} onChange={v => p.onVeille?.(v)} etiquette="Veille du prix, tous les 3 jours" />
         </div>
         {veilleDemandee && !a.veille?.releveLe && <p className="cn-mut cn-veille-etat">demandée · pas encore relevée</p>}
-        {(lu.length > 0 || p.verdict) && (
-          <p className="cn-mut cn-lu"><Provenance origine={estExemple(a) ? 'ia' : 'page'} /> lu sur la page{lu.length ? ` : ${lu.join(', ')}` : ''}{p.verdict ? <> · <b className="cn-encre">{p.verdict}</b></> : null}</p>
+        {(lu.length > 0 || verdict) && (
+          <p className="cn-mut cn-lu"><Provenance origine={estExemple(a) ? 'ia' : 'page'} /> lu sur la page{lu.length ? ` : ${lu.join(', ')}` : ''}{verdict ? <> · <b className="cn-encre">{verdict}</b></> : null}</p>
         )}
       </div>
     );
@@ -150,6 +184,8 @@ export function CarteArticle(p: CarteArticleProps) {
           {p.ecarte ? libelleEcarte(p.ecarte.raison) : [origine, a.dispo].filter(Boolean).join(' · ')}
           {a.origine === 'exemple' && <> <Provenance origine="exemple" /></>}
         </span>
+        {/* critique 5, n° 6 : les caractéristiques lues, avec leur unité (« 40 L/min · jusqu'à 90 °C »), celle du critère exclue */}
+        {(() => { const autres = valeursLues(a.valeurs, carac?.nom); return autres.length ? <span className="cn-encre-2 cn-valeurs-lues">{autres.join(' · ')}</span> : null; })()}
         <span className="cn-ligne cn-article-pied">
           {mesure && carac ? (
             <span className="cn-pastille cn-pastille-vert"><span className="cn-mono">{mesure.texte}</span>{mesure.unite ? ` ${mesure.unite}` : ''}{p.rang ? ` · ${rangTexte(p.rang)}` : ''}</span>

@@ -10,6 +10,7 @@
  */
 import React from 'react';
 import { ChevronLeft, ExternalLink, Scale } from 'lucide-react';
+import { sourceDuCritere } from '../../domain/carnets/modele';
 import { compromisDe, libelleEcarte, nombreDe, type Tableau } from '../../domain/carnets/comparer';
 import { montant, Provenance, rangTexte, STATUT_LIBELLE, valeurTexte, type ArticleV, type CritereV, type Sens, type StatutCarnet, type ValeurV } from './EtatIA';
 import './carnets-decider.css';
@@ -143,12 +144,56 @@ function useSuiteADroite(): [React.RefObject<HTMLDivElement | null>, number] {
  * Le critère qui classe d'abord (P32) : la 1re colonne de critère du tableau ; le critère passé en props s'il est celui-là (avec son
  * origine), sinon le texte du critère de la colonne. Aucun critère ne classe : `null` (l'en-tête dit alors « rangé par : le prix »).
  */
-export function critereQuiClasse(t: Tableau | null, critere?: CritereV): { texte: string; origine?: CritereV['origine'] } | null {
+export function critereQuiClasse(t: Tableau | null, critere?: CritereV): { texte: string; origine?: CritereV['origine']; source?: 'phrase' | 'ia' } | null {
   const col = t?.colonnes.find(c => c.critereId && c.sens !== 'texte');
   if (!col) return null;
-  if (critere && critere.id === col.critereId) return { texte: critere.texte, origine: critere.origine };
+  if (critere && critere.id === col.critereId) return { texte: critere.texte, origine: critere.origine, source: sourceDuCritere(critere) };
   return { texte: col.critereTexte ?? col.nom };
 }
+
+/**
+ * Critique 5, n° 22 : le premier critère du carnet (`critere`, « capter la buée ») ne range rien quand il n'a pas de valeur (aucune
+ * caractéristique, ou aucune colonne du tableau ne la porte). L'écran le dit au lieu de laisser croire qu'il classe. `null` s'il range,
+ * ou si la règle du tableau (`rangePar`, lot A) le nomme déjà.
+ */
+export function premierSansValeur(t: Tableau | null, critere?: CritereV): string | null {
+  if (!t || !critere?.texte?.trim()) return null;
+  const range = t.colonnes.some(c => c.critereId === critere.id && c.sens !== 'texte');
+  if (range) return null;
+  if (t.rangePar && t.rangePar.includes(critere.texte.trim())) return null;
+  return critere.texte.trim();
+}
+
+/**
+ * Critique 5, n° 23 : « moins bien que la 3e sur tout » au lieu de « moins bien partout ». Le rang du meilleur article en lice qui
+ * domine `l` au sens de Pareto, sur les mêmes colonnes que `domine` (lot A, `comparer.ts`) : les critères qui classent (plus, moins,
+ * oui-non) et le prix de même devise, comparés seulement où les deux valeurs sont connues (au moins 2), au moins aussi bon partout et
+ * meilleur sur une. Le champ `moinsBienQue` du tableau (lot A) prime s'il existe. `null` si personne ne le domine.
+ */
+export function moinsBienQueDe(t: Tableau, l: LigneT): number | null {
+  const duLotA = (l as LigneT & { moinsBienQue?: number | null }).moinsBienQue;
+  if (typeof duLotA === 'number') return duLotA;
+  if (l.rang === null) return null;
+  const cols = t.colonnes.filter(c => c.critereId && c.sens !== 'texte');
+  const num = (x: LigneT, c: Tableau['colonnes'][number]): number | null => {
+    const v = x.cellules[c.nom];
+    if (c.sens === 'oui-non' && typeof v?.valeur === 'string') { const s = v.valeur.trim().toLowerCase(); return s === 'oui' ? 1 : s === 'non' ? 0 : null; }
+    return nombre(v);
+  };
+  const domine = (b: LigneT): boolean => {
+    const ecarts: number[] = [];
+    for (const c of cols) {
+      const va = num(l, c), vb = num(b, c);
+      if (va === null || vb === null) continue;
+      ecarts.push(c.sens === 'moins' ? vb - va : va - vb); /* < 0 : b meilleur */
+    }
+    if (l.prixCentimes !== undefined && b.prixCentimes !== undefined && (l.devise ?? 'CHF') === (b.devise ?? 'CHF')) ecarts.push(b.prixCentimes - l.prixCentimes);
+    return ecarts.length >= 2 && ecarts.every(e => e <= 0) && ecarts.some(e => e < 0);
+  };
+  const par = t.lignes.filter(b => b.rang !== null && b.articleId !== l.articleId && domine(b)).sort((a, b) => a.rang! - b.rang!)[0];
+  return par?.rang ?? null;
+}
+const rangF = (n: number) => (n === 1 ? 'la 1re' : `la ${n}e`);
 
 /** Les valeurs du tableau sont-elles celles de l'exemple (fixture) ? Une seule cellule « exemple » suffit à le dire. */
 function deLExemple(t: Tableau): boolean {
@@ -174,6 +219,9 @@ export function Comparer(p: ComparerProps) {
   const compromisLocal = p.compromis ? null : compromisDe(t);
   /* le tableau naît au 2e article LU : un lien non lu n'en tient pas lieu (P6) */
   const naissant = !t || ordre.length < 2;
+  const sansValeur = premierSansValeur(t, p.critere);
+  /* n° 23 : la phrase dite sous le tableau, pas une pastille dans l'en-tête (elle creusait ~100 px de vide sous les noms, n° 9) */
+  const domines = t ? actifs.map(l => ({ l, par: moinsBienQueDe(t, l) })).filter((x): x is { l: LigneT; par: number } => x.par !== null) : [];
   return (
     <article className="cn-page cn-comparer">
       <div className="cn-tete">
@@ -183,8 +231,9 @@ export function Comparer(p: ComparerProps) {
       </div>
       <h2 className="cn-titre">{p.titre}</h2>
       {classe && (
-        <p className="cn-mut cn-cmp-critere">Ce qui compte <b className="cn-encre">{classe.texte}</b>{classe.origine === 'ia' ? ' · proposé par l\'IA' : ''}</p>
+        <p className="cn-mut cn-cmp-critere">Ce qui compte <b className="cn-encre">{classe.texte}</b>{classe.source === 'ia' ? ' · proposé par l\'IA' : ''}</p>
       )}
+      {classe && sansValeur && <p className="cn-mut cn-cmp-sans-valeur">« {sansValeur} » : sans valeur à comparer, il ne range pas</p>}
       {naissant ? (
         <>
           <p className="cn-vide">Le tableau naît au 2e article lu : collez un 2e lien dans le champ.</p>
@@ -213,7 +262,6 @@ export function Comparer(p: ComparerProps) {
                           <b>{l.ecarte ? 'écarté' : l.rang ? rangTexte(l.rang) : ''}</b>
                           <span className="cn-cmp-nom">{sa ? sa.titre : l.nom}</span>
                           {sa && <span className="cn-mut cn-sans-apercu">{sa.sous}</span>}
-                          {l.moinsBienPartout && <span className="cn-pastille cn-pastille-att">moins bien partout</span>}
                         </button>
                       </th>
                     );
@@ -242,6 +290,11 @@ export function Comparer(p: ComparerProps) {
           </div>
           </div>
           {suite > 0 && <p className="cn-suite-indice" aria-hidden>→ {suite} de plus</p>}
+          {domines.length > 0 && (
+            <ul className="cn-cmp-domines" aria-label="Moins bien sur tout">
+              {domines.map(({ l, par }) => <li key={l.articleId}><b className="cn-encre">{rangF(l.rang!)}, {l.nom}</b> : moins bien que {rangF(par)} sur tout</li>)}
+            </ul>
+          )}
           {/* g01-8 : « Compromis : la 1re, … », de l'IA, sinon calculé sur place avec les valeurs du tableau (picto local, pas le ✻ : Q19). */}
           {(p.compromis || compromisLocal) && (
             <p className="cn-encart cn-compromis" data-source={p.compromis ? 'ia' : 'locale'}>

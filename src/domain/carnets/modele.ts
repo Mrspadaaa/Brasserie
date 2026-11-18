@@ -25,8 +25,17 @@ export const SENS: readonly Sens[] = ['plus', 'moins', 'oui-non', 'texte'];
 
 export interface Caracteristique { nom: string; unite?: string; sens: Sens }
 
-/** « Ce qui compte » : un critère, avec la caractéristique qui le mesure si elle est connue. */
-export interface Critere { id: string; texte: string; raison?: string; caracteristique?: Caracteristique; origine: Origine; messageId?: string }
+/**
+ * « Ce qui compte » : un critère, avec la caractéristique qui le mesure si elle est connue. `source` (critique 5, n° 1) : `phrase` s'il est
+ * tiré de ses mots, `ia` s'il est proposé par l'IA ; absent sur les critères d'avant : `sourceDuCritere` le déduit.
+ */
+export interface Critere { id: string; texte: string; raison?: string; caracteristique?: Caracteristique; origine: Origine; messageId?: string; source?: 'phrase' | 'ia' }
+
+/**
+ * Critique 5, n° 1 (pour les lots B, C, D) : « tiré de votre phrase » (`phrase`) ou « proposé par l'IA » (`ia`). La source écrite prime ;
+ * sans elle : `ia` pour un critère d'origine `ia`, `phrase` pour ses mots (`vous`), le repli local (`locale`) et le reste.
+ */
+export const sourceDuCritere = (k: Pick<Critere, 'origine' | 'source'>): 'phrase' | 'ia' => k.source ?? (k.origine === 'ia' ? 'ia' : 'phrase');
 
 export type EtatFacon = 'ouverte' | 'retenue' | 'ecartee';
 /** Une façon de faire (D-16) : ouverte, retenue ou écartée, avec sa raison. */
@@ -160,7 +169,10 @@ function lireCaracteristique(v: unknown): Caracteristique | undefined {
 
 function lireCritere(v: unknown): Critere | null {
   if (!estObjet(v) || !texteNonVide(v.id) || !texteNonVide(v.texte)) return null;
-  return sansIndefinis({ id: v.id, texte: v.texte, raison: optTexte(v.raison), caracteristique: lireCaracteristique(v.caracteristique), origine: origineLue(v.origine), messageId: optTexte(v.messageId) });
+  return sansIndefinis({
+    id: v.id, texte: v.texte, raison: optTexte(v.raison), caracteristique: lireCaracteristique(v.caracteristique), origine: origineLue(v.origine), messageId: optTexte(v.messageId),
+    source: v.source === 'phrase' || v.source === 'ia' ? v.source : undefined
+  });
 }
 
 function lireFacon(v: unknown): Facon | null {
@@ -421,6 +433,40 @@ export function titreDePhrase(phrase: string): string {
   const deux = /^(.{2,60}?)\s*:\s*(.+)$/u.exec(titre);
   if (deux && /\p{L}/u.test(deux[1].replace(MARQUE_TEST_SEULE, '')) && analyserLigne(deux[2]).sorte === 'critere') titre = deux[1].trim();
   return titre.length > 120 ? `${titre.slice(0, 119).trimEnd()}…` : titre;
+}
+
+/** Les verbes d'achat qui précèdent l'objet (« commander un robinet à pédale ») : retirés du titre d'un carnet neuf, avec leur article. */
+const VERBE_ACHAT = /^(?:commander|acheter|racheter|prendre|trouver)\s+(?:(?:une|un|des|du|de la|les|le|la)\s+|l['’]\s*)/i;
+
+/**
+ * Critique 5, n° 30 : le titre d'un carnet né d'une note en vrac, mis en forme. Le nom de l'objet : la ligne sans liens ni prix
+ * (`titreDePhrase`), sans préfixe de test, son libellé de tête s'il y en a un (« Moulin à malt : est-ce que… » → « Moulin à malt »),
+ * sinon jusqu'à la première virgule ou au « ? », sans verbe d'achat en tête ; une majuscule initiale ; 60 caractères au plus (coupé à un mot).
+ * Le préfixe « ZZ TEST — » de la ligne est gardé (données de test, L05). Rien d'inventé : chaque mot vient de la ligne.
+ */
+export function titreNeufDe(ligne: string): string {
+  const brut = titreDePhrase(ligne);
+  const prefixe = PREFIXE_TEST.exec(brut)?.[0] ?? '';
+  let t = brut.slice(prefixe.length).trim();
+  const lib = /^([^:]{2,60}?)\s*:\s*\S/.exec(t);
+  if (lib && /\p{L}/u.test(lib[1])) t = lib[1];
+  else t = t.split(/[,;?!]/)[0];
+  t = t.replace(VERBE_ACHAT, () => '').replace(/[\s.:·\-–—]+$/, () => '').trim() || brut.slice(prefixe.length).trim();
+  if (t.length > 60) t = `${t.slice(0, 60).replace(/\s+\S*$/, () => '')}…`;
+  return `${prefixe}${t.charAt(0).toLocaleUpperCase('fr-CH')}${t.slice(1)}`;
+}
+
+/**
+ * R17 (g5:v06-10, D-138) : « lu sur la page : nom, prix, photo, débit, tient 80 °C » : ce que la page lue a donné à l'article, dans cet
+ * ordre ; `null` si l'article n'a pas de lien lu ou si rien n'a été lu. Les noms des valeurs sont ceux de la page, rien d'inventé.
+ */
+export function extraitLu(a: Pick<Article, 'url' | 'lecture' | 'nom' | 'prixCentimes' | 'photo' | 'valeurs'>): string | null {
+  if (!a.url || a.lecture !== 'lue') return null;
+  const lu = [
+    a.nom ? 'nom' : null, a.prixCentimes !== undefined ? 'prix' : null, a.photo ? 'photo' : null,
+    ...Object.entries(a.valeurs).filter(([, v]) => v.origine === 'page' || v.origine === 'exemple').map(([nom]) => nom)
+  ].filter((x): x is string => !!x);
+  return lu.length ? `lu sur la page : ${lu.join(', ')}` : null;
 }
 
 /**

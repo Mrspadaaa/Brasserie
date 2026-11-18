@@ -70,8 +70,15 @@ describe('D2 CARNET-COEUR : de zéro, magasin mémoire vide, IA simulée', () =>
     expect(e().status).toBe('research');
     m.vue.unmount();
     const m2 = { ...m, ...monterSur(m.magasin) };
+    /* Critique 5, n° 3 : écrit dans un carnet ouvert, une phrase va dans ce carnet (ou celui que le cadre nomme), jamais dans un carnet
+       neuf dans son dos ; une idée neuve se crée depuis la liste. D-63 : chaque idée part donc de la liste (‹ Carnets, 1 geste, puis
+       l'envoi : 2 gestes par ajout). */
     for (const phrase of ['frigo de garde pour fûts à 2 °C', 'ventilation de la salle de brassage contre la buée', 'évier inox 2 bacs']) {
-      expect(await m2.envoyer(phrase)).toBeLessThanOrEqual(2);
+      const retour = document.querySelector('.cn-retour') as HTMLElement | null;
+      let g = 0;
+      if (retour) { await act(async () => { fireEvent.click(retour); }); g += 1; }
+      g += await m2.envoyer(phrase);
+      expect(g).toBeLessThanOrEqual(2);
     }
     const noms = (re: RegExp) => (lireCarnets(m.magasin.lire()).find(c => re.test(c.title))?.carnet.criteres ?? []).map(k => k.caracteristique?.nom ?? k.texte);
     expect(lireCarnets(m.magasin.lire()).length).toBeGreaterThanOrEqual(4);
@@ -132,8 +139,13 @@ describe('D3 et D7 : sortie vers À venir, liens, Suppression v2', () => {
     expect(vue.container.querySelector('[data-vue="carnet"]')).not.toBeNull();
   });
 
-  it('G8 au banc : la fixture Ventilation montre la bulle « peut trancher » (calcul local, R44)', async () => {
-    const m = monter(fixtureCarnets());
+  it('G8 au banc : la fixture Ventilation se tait par défaut ; avec l’option g8 (`&g8=1`, critique 5 n° 21), elle montre la bulle « peut trancher » (calcul local, R44)', async () => {
+    const defaut = monter(fixtureCarnets());
+    const v0 = render(<CarnetsVue {...defaut.props} ouvrir={{ id: ID_VENTILATION, at: 1 }} />);
+    await act(async () => { (v0.container.querySelector('.cn-champ textarea') as HTMLTextAreaElement).focus(); });
+    expect(v0.container.textContent).not.toMatch(/peut trancher/);
+    v0.unmount();
+    const m = monter(fixtureCarnets({ g8: true }));
     const vue = render(<CarnetsVue {...m.props} ouvrir={{ id: ID_VENTILATION, at: 1 }} />);
     await act(async () => { (vue.container.querySelector('.cn-champ textarea') as HTMLTextAreaElement).focus(); });
     expect(vue.container.textContent).toMatch(/peut trancher/);
@@ -172,9 +184,9 @@ describe('D9 (R48) : l’idée du calendrier arrive au carnet', () => {
 });
 
 /** Un écran seul, ses appels IA au choix ; frappe et envoi dans son propre conteneur. */
-function ecran(items: CreativeItem[], appels = appelsSimules('normal', 0), finances: FinancesCarnet = vides()) {
+function ecran(items: CreativeItem[], appels = appelsSimules('normal', 0), finances: FinancesCarnet = vides(), ouvrir?: string) {
   const magasin = magasinMemoire(items);
-  const vue = render(<CarnetsVue magasin={magasin} finances={finances} mode="simule" appels={appels} aides={AIDES} />);
+  const vue = render(<CarnetsVue magasin={magasin} finances={finances} mode="simule" appels={appels} aides={AIDES} {...(ouvrir ? { ouvrir: { id: ouvrir, at: 1 } } : {})} />);
   const champ = () => vue.container.querySelector('.cn-champ textarea') as HTMLTextAreaElement;
   const taperEtEnvoyer = async (texte: string) => {
     fireEvent.change(champ(), { target: { value: texte } });
@@ -381,13 +393,78 @@ describe('P9 (vision 1, m390 état 36) : la confirmation de suppression est à l
       const enfants = [...page.children];
       const titre = enfants.findIndex(x => x.classList.contains('cn-titre-ligne'));
       const iCarte = enfants.indexOf(carte);
-      const iCompte = enfants.findIndex(x => /Ce qui compte/.test(x.textContent ?? ''));
+      /* critique 5 (h05-3) : « Ce qui compte » est une ligne « Critère : … » ; sa section porte ce nom accessible */
+      const iCompte = enfants.findIndex(x => x.matches('.cn-critere-bloc, [aria-label="Ce qui compte"]') || x.querySelector('.cn-critere-bloc') !== null);
       expect(titre).toBeGreaterThanOrEqual(0);
       expect(iCarte).toBeGreaterThan(titre);
       expect(iCarte).toBeLessThan(iCompte);
       expect(document.activeElement).toBe(carte);
       expect(defile).toHaveBeenCalled();
       expect(within(carte).getByRole('button', { name: 'Garder' })).toBeTruthy();
+    } finally {
+      proto.scrollIntoView = ancien;
+    }
+  });
+});
+
+/* Critique 5, lot D, corrections 10 et 11 : décisions du pilote, jouées de bout en bout sur le banc (BancCarnets, fixture, IA simulée). */
+describe('Critique 5 · 10 : « Garder à part » branché de bout en bout', () => {
+  it('toucher la puce retire la proposition ; l’envoi écrit garderAPart ; la note reste séparée ; la même phrase ne repropose pas la fusion', async () => {
+    const proto = Element.prototype as unknown as { scrollIntoView?: () => void };
+    const ancien = proto.scrollIntoView;
+    proto.scrollIntoView = () => {};
+    try {
+      const { PHRASE_DOUBLON } = await import('../../src/domain/carnets/fixture');
+      const { lireMessages } = await import('../../src/domain/carnets/modele');
+      const e = ecran(fixtureCarnets(), appelsSimules('normal', 20), vides(), ID_VENTILATION);
+      const ventil = () => e.carnets().find(c => c.id === ID_VENTILATION)!;
+      const n0 = ventil().carnet.notes.length;
+      const champ = () => e.vue.container.querySelector('.cn-champ textarea') as HTMLTextAreaElement;
+      fireEvent.change(champ(), { target: { value: PHRASE_DOUBLON } });
+      expect(e.vue.container.textContent).toContain('elles seront fusionnées');
+      fireEvent.click(within(e.vue.container).getByRole('button', { name: 'Garder à part' }));
+      expect(e.vue.container.textContent).not.toContain('elles seront fusionnées');
+      await act(async () => { fireEvent.submit(champ().closest('form')!); });
+      await e.attendre(150);
+      const msg = lireMessages(e.magasin.lire()).find(m => m.carnetMessage.texte === PHRASE_DOUBLON)!;
+      expect(msg.carnetMessage.gardeAPart).toBe(true);
+      expect(ventil().carnet.notes.length).toBe(n0 + 1);
+      expect(ventil().carnet.notes.some(n => (n.fusionDe ?? []).length > 0)).toBe(false);
+      /* la même phrase, de nouveau : aucune proposition de fusion, et rien n'est fusionné en douce */
+      fireEvent.change(champ(), { target: { value: PHRASE_DOUBLON } });
+      expect(e.vue.container.textContent).not.toContain('elles seront fusionnées');
+      expect(within(e.vue.container).queryByRole('button', { name: 'Garder à part' })).toBeNull();
+      await act(async () => { fireEvent.submit(champ().closest('form')!); });
+      await e.attendre(150);
+      expect(ventil().carnet.notes.length).toBe(n0 + 2);
+      expect(ventil().carnet.notes.some(n => (n.fusionDe ?? []).length > 0)).toBe(false);
+    } finally {
+      proto.scrollIntoView = ancien;
+    }
+  });
+});
+
+describe('Critique 5 · 11 : « Note supprimée » disparaît après Annuler', () => {
+  it('··· › Supprimer : « Note supprimée · Annuler » à sa place ; Annuler : la note revient et plus aucun bandeau de cette suppression', async () => {
+    const proto = Element.prototype as unknown as { scrollIntoView?: () => void };
+    const ancien = proto.scrollIntoView;
+    proto.scrollIntoView = () => {};
+    try {
+      const e = ecran(fixtureCarnets(), appelsSimules('normal', 0), vides(), ID_VENTILATION);
+      const ventil = () => e.carnets().find(c => c.id === ID_VENTILATION)!;
+      const note = ventil().carnet.notes[0];
+      fireEvent.click(within(e.vue.container).getByRole('button', { name: `Note : ${note.texte}, actions` }));
+      fireEvent.click(within(e.vue.container).getByRole('menuitem', { name: /Supprimer/ }));
+      expect(ventil().carnet.notes.some(n => n.id === note.id)).toBe(false);
+      const b = e.vue.container.querySelector('.cn-bandeau[data-sorte="note-supprimee"]')!;
+      expect(b).not.toBeNull();
+      fireEvent.click(within(b as HTMLElement).getByRole('button', { name: /Annuler/ }));
+      await e.attendre(20);
+      expect(ventil().carnet.notes.some(n => n.id === note.id)).toBe(true);
+      expect(e.vue.container.querySelector('.cn-bandeau[data-sorte="note-supprimee"]')).toBeNull();
+      expect(e.vue.container.textContent).not.toMatch(/Note supprimée/);
+      await e.attendre(20);
+      expect(e.vue.container.querySelector('.cn-bandeau[data-sorte="note-supprimee"]')).toBeNull();
     } finally {
       proto.scrollIntoView = ancien;
     }

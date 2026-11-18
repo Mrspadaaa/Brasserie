@@ -9,7 +9,7 @@
  * - Puces « Va dans » (R13) : correction seulement, préchoisies ; rangées derrière le champ.
  */
 import React, { useEffect, useId, useLayoutEffect, useRef, useState } from 'react';
-import { ArrowUp, Camera, Mic, X } from 'lucide-react';
+import { Camera, Mic, X } from 'lucide-react';
 import { useDictee } from '../atelier/dictee';
 import { useKeyboardInset } from '../useViewport';
 import { PictoLocal } from './EtatIA';
@@ -44,6 +44,44 @@ export interface ChampCarnetProps {
    */
   jointe?: { apercu?: string; lecture: boolean } | null;
   onRetirerJointe?: () => void;
+  /**
+   * Critique 5, n° 3 (G4) : le carnet où la phrase ira, préchoisi, corrigeable d'un toucher (« Va dans » : Évier inox · Ventilation).
+   * Rendu seulement quand un autre carnet que l'ouvert en parle ; sinon la phrase reste ici, sans puce de plus.
+   */
+  vaDansCarnet?: VaDans | null;
+  /** Critique 5, n° 26 (g4:v01-13) : la ligne sous le champ (« Annuler · Entrée = renommer »). */
+  pied?: React.ReactNode;
+}
+
+/** Les petits mots qu'un titre raccourci ne garde pas en dernier (« Ventilation de… » se lit « Ventilation… »). */
+const MOTS_VIDES = new Set(['de', 'du', 'des', 'la', 'le', 'les', 'à', 'au', 'aux', 'pour', 'et', 'en', 'sur', 'avec', 'd’', 'l’', "d'", "l'"]);
+/**
+ * Critique 5, n° 34 : « Ajouter à Ventilation de » coupé par le téléphone. Le titre se raccourcit au mot, sans finir sur un petit mot,
+ * pour que le placeholder se lise entier à 390 (« Ajouter à Ventilation… ») ; un titre court reste tel quel.
+ */
+export function titreCourt(titre: string, max = 18): string {
+  const t = titre.trim();
+  if (t.length <= max) return t;
+  const mots = t.split(/\s+/);
+  const garde: string[] = [];
+  for (const m of mots) {
+    if ([...garde, m].join(' ').length > max) break;
+    garde.push(m);
+  }
+  while (garde.length > 1 && MOTS_VIDES.has(garde[garde.length - 1].toLowerCase())) garde.pop();
+  return garde.length ? garde.join(' ') : t.slice(0, max);
+}
+/** Large (≥ 900 px) : le titre entier tient dans le champ ; sinon le titre court. */
+function useLarge(): boolean {
+  const q = typeof window !== 'undefined' && typeof window.matchMedia === 'function' ? window.matchMedia('(min-width: 900px)') : null;
+  const [large, setLarge] = useState(() => !!q?.matches);
+  useEffect(() => {
+    if (!q) return;
+    const maj = () => setLarge(q.matches);
+    q.addEventListener?.('change', maj);
+    return () => q.removeEventListener?.('change', maj);
+  }, [q]);
+  return large;
 }
 
 /** « plaque-froid.ch/echan… » : le lien en clair, raccourci pour tenir sur la puce. */
@@ -112,9 +150,13 @@ export function ChampCarnet(p: ChampCarnetProps) {
   const dictee = useDictee(t => p.onChange(p.valeur ? `${p.valeur} ${t}` : t));
   const dansCarnet = !!p.titreCarnet;
   const ecoute = dictee.disponible && dictee.ecoute;
-  const placeholder = ecoute ? 'J’écoute…' : dansCarnet ? `Ajouter à ${p.titreCarnet}…` : 'Une idée, un besoin…';
+  const large = useLarge();
+  const titreVu = p.titreCarnet ? (large ? p.titreCarnet : titreCourt(p.titreCarnet)) : '';
+  const placeholder = ecoute ? 'J’écoute…' : dansCarnet ? `Ajouter à ${titreVu}…` : 'Une idée, un besoin…';
   const libelle = dansCarnet ? `Ajouter à ${p.titreCarnet}…` : 'Une idée, un besoin…';
-  const envoi = p.libelleEnvoi ?? (dansCarnet ? 'Ajouter' : null);
+  /* Critique 5, n° 42 : un seul habit d'envoi partout, le bouton vert à mot des maquettes du champ qui tape (g5:v02-10, v03-7, v07-10,
+     v01-15 sur la liste) : « Ajouter », et « Enregistrer » ou « Renommer » quand le champ modifie. */
+  const envoi = p.libelleEnvoi ?? 'Ajouter';
   const plein = p.valeur.trim().length > 0;
   /* une photo prête s'envoie seule ; pendant sa lecture, l'envoi attend */
   const jointe = p.jointe ?? null;
@@ -126,8 +168,9 @@ export function ChampCarnet(p: ChampCarnetProps) {
     <div ref={zone} className="cn-champ-zone" style={{ bottom: inset, marginBottom: inset }} aria-disabled={p.desactive || undefined} data-clavier={inset || undefined}>
       {/* P37 (R27, CARNET-CLAV) : clavier ouvert, la bulle G8 et la puce « Coller » tiennent ensemble sur une ligne (`.cnf-aides-ligne`),
           pour laisser au carnet le plus de hauteur ; clavier fermé, chacune sa ligne. */}
+      {/* Critique 5, n° 5 et 21 : la bulle G8 tient toujours sur une ligne (texte entier en `title`), clavier ouvert ou non */}
       {(montrerBulle || (p.coller && !plein)) && (
-        <div className={inset ? 'cnf-aides-ligne' : 'cnf-aides'}>
+        <div className="cnf-aides-ligne">
           {montrerBulle && p.suggestion && (
             <button
               type="button"
@@ -147,10 +190,21 @@ export function ChampCarnet(p: ChampCarnetProps) {
           )}
         </div>
       )}
+      {plein && p.vaDansCarnet && (
+        <div className="cn-vadans cnf-vadans-carnet" role="group" aria-label="Va dans le carnet">
+          <span className="cn-mut cn-vadans-libelle">Va dans</span>
+          {p.vaDansCarnet.options.map(o => (
+            <button key={o.id} type="button" className="cn-puce" aria-pressed={o.id === p.vaDansCarnet!.choisi} onMouseDown={e => e.preventDefault()} onClick={() => p.vaDansCarnet!.onChoisir(o.id)}>
+              {o.libelle}
+            </button>
+          ))}
+        </div>
+      )}
       {p.vaDans && plein && (
         <div className="cn-vadans" role="group" aria-label="Va dans">
-          {/* P6 : un libellé insécable ; ce sont les puces qui passent à la ligne */}
-          <span className="cn-mut cn-vadans-libelle">Va{' '}dans</span>
+          {/* P6 : un libellé insécable ; ce sont les puces qui passent à la ligne. Sous la ligne du carnet (n° 3), « en » suffit. */}
+          {p.vaDansCarnet && <span className="cn-mut cn-vadans-libelle" aria-hidden>en</span>}
+          <span className={p.vaDansCarnet ? 'cn-cache' : 'cn-mut cn-vadans-libelle'}>Va{' '}dans</span>
           {p.vaDans.options.map(o => (
             <button key={o.id} type="button" className="cn-puce" aria-pressed={o.id === p.vaDans!.choisi} onClick={() => p.vaDans!.onChoisir(o.id)}>
               {o.libelle}
@@ -212,10 +266,9 @@ export function ChampCarnet(p: ChampCarnetProps) {
             {ecoute && <span className="cn-ecoute-mot" aria-hidden>Arrêter la dictée</span>}
           </button>
         )}
-        {(plein || jointe) && !ecoute && (envoi
-          ? <button type="submit" className="cn-envoi-mot" disabled={p.desactive || !pret}>{envoi}</button>
-          : <button type="submit" className="cn-envoi" aria-label="Envoyer" disabled={p.desactive || !pret}><ArrowUp size={22} aria-hidden /></button>)}
+        {(plein || jointe) && !ecoute && <button type="submit" className="cn-envoi-mot" disabled={p.desactive || !pret}>{envoi}</button>}
       </form>
+      {p.pied}
     </div>
   );
 }

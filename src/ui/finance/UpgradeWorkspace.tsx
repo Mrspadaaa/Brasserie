@@ -6,6 +6,8 @@ import { formatCHF, isoDate, todayISO } from '../../domain/finance/ledger';
 import { buildForecast, type FinanceForecast } from '../../domain/finance/forecast';
 import { anneauDe, avecDevisDemande, avecPrix, dateFacture, estRealise, ETAPES_ANNEAU, fournisseursConnus, indexMoisSortie, parsePrix, texteTientDansBarre, type Anneau, type Fournisseur, type TonAnneau } from '../../domain/finance/upgradeRing';
 import type { CreativeItem } from '../../types';
+import { lireCarnet, type CarnetDoc } from '../../domain/carnets/modele';
+import { VignetteObjet } from '../carnets/pictos';
 import { MOIS_BANDEAU, REPERES, caisseAvantSortie, echelleCaisse, effetProjet, estPose, etapeHero, moisDePlan, partsInconnues, prochainAchat, repereDe, suivants, titreCourt, type EffetProjet } from '../../domain/finance/upgradeForecast';
 import { Sheet } from '../Sheet';
 import { FinanceService } from '../../services/financeService';
@@ -24,16 +26,89 @@ import './upgrade-plan.css';
 
 const read = () => {
   const items = StorageService.getCreativeItems();
+  const carnets = items.filter(i => i.type === 'carnet');
   return { ...FinanceService.snapshot(), transactions: StorageService.getTransactions(), batches: StorageService.getBatches(), stocks: StorageService.getStocks(), contacts: items.filter(i => i.type === 'prospect'),
     /* R08 : les carnets d'idées présents (archivés compris : « Ouvrir le carnet » rouvre une idée archivée, D-47b). */
-    carnetIds: new Set(items.filter(i => i.type === 'carnet').map(i => i.id)) };
+    carnetIds: new Set(carnets.map(i => i.id)),
+    /* Critique 5, n° 12 (h05-9) : l'article choisi du carnet d'origine donne la vignette, le vendeur et « en stock » (lecture seule). */
+    carnetsLus: carnets.map(lireCarnet).filter((c): c is CarnetDoc => !!c) };
 };
+
+/** L'article choisi d'un carnet (photo, nom, vendeur, dispo) ; `undefined` sans choix. */
+const articleChoisi = (c: CarnetDoc | undefined) => {
+  const choix = c?.carnet.choix;
+  return choix ? c!.carnet.articles.find(a => a.id === choix.articleId) : undefined;
+};
+const memeTexte = (a?: string, b?: string) => !!a && !!b && a.trim().toLowerCase() === b.trim().toLowerCase();
+/* « 2026-11-16T10:00:00.000Z » : le jour seul (isoDate ne lit que AAAA-MM-JJ) */
+const jourCourt = (iso?: string) => { const d = isoDate((iso ?? '').slice(0, 10)); return d ? new Date(`${d}T12:00:00`).toLocaleDateString('fr-CH', { day: 'numeric', month: 'short' }) : ''; };
+
+/**
+ * Stocks › Matériel › À venir, la carte du prochain achat telle que h05-9 (critique 5, n° 12) : « Ajouté le … · du carnet … » (le
+ * titre une seule fois), la vignette de l'article choisi, « <prix> CHF TTC · <vendeur> · en stock », « Fixer la date » et « Ouvrir le
+ * carnet ». Le crayon (D-3) reste, discret, en haut à droite. Ni caisse ni trésorerie ici (R32) ; la facture payée la fait passer
+ * dans Réalisés, sans geste (D-2, D-8). Hors de Stocks (Atelier), la carte kh1r ne change pas (D-41).
+ */
+function ProchainAchatCarnet({ plan, doc, present, mois, ouvert, onDate, onPoser, onEdit, onFiche, onOuvrir }: { plan: FinancialPlan; doc?: CarnetDoc; present: boolean; mois: string[]; ouvert: boolean;
+  onDate: () => void; onPoser: (m: string | null) => void; onEdit: () => void; onFiche: () => void; onOuvrir?: (id: string) => void }) {
+  const d = upgradeDetails(plan), m = moisDePlan(plan), art = articleChoisi(doc), u = plan.upgrade;
+  const titreCarnet = u?.sourceCarnetTitre?.trim();
+  const le = jourCourt(plan.createdAt);
+  const origine = u?.sourceCarnetId ? (memeTexte(titreCarnet, plan.title) || !titreCarnet ? 'depuis son carnet' : `du carnet ${titreCarnet}`) + (present ? '' : ' · supprimé') : '';
+  /* « 4 900 CHF TTC » : espace avant les milliers, comme les prix du carnet (critique 5, n° 37) */
+  const francs = String(Math.round(plan.amountCents / 100)).replace(/\B(?=(\d{3})+(?!\d))/g, ' ');
+  const prix = d.budgetKnown ? `${francs} CHF TTC${partsInconnues(plan) ? ', au moins' : ''}` : 'prix à estimer';
+  const vendeur = plan.vendor ?? art?.vendeur;
+  const details = [vendeur, vendeur && art?.dispo ? art.dispo : null].filter(Boolean).join(' · ');
+  return <section aria-label="Prochain achat" data-prochain-carnet>
+    <h3 className="mb-2 text-base font-semibold text-cave-50">{m ? `Prévu en ${nomMois(m, 'long')}` : 'Sans date'}<span className="font-normal text-cave-400"> · 1</span></h3>
+    <div className="rounded-panel border border-area-finances/50 border-l-4 border-l-area-finances bg-cave-950 p-3">
+      <div className="flex items-start gap-2">
+        <span className="flex min-h-11 flex-1 items-center gap-2 text-sm font-semibold text-area-finances"><i aria-hidden className="inline-block h-3 w-3 rounded-[3px] bg-area-finances"/>Prochain achat</span>
+        <button type="button" className="-mr-1 grid h-11 w-11 shrink-0 place-items-center rounded-full text-cave-400 hover:text-cave-50" aria-label={`Modifier ${plan.title}`} onClick={onEdit}><PenLine size={18}/></button>
+      </div>
+      {(le || origine) && <p className="text-sm text-cave-200" data-carnet={u?.sourceCarnetId}>{le && <b className="text-cave-50">Ajouté le {le}</b>}{le && origine ? ' · ' : ''}{origine}</p>}
+      <div className="mt-2 flex items-start gap-3">
+        <VignetteObjet photo={art?.photo} mots={[art?.nom, plan.title]} classe="!m-0 grid !h-16 !w-16 shrink-0 place-items-center overflow-hidden rounded-xl !bg-cave-850 object-cover" taille={44}/>
+        <div className="min-w-0 flex-1">
+          <h2 className="text-lg font-semibold leading-snug text-cave-50"><button type="button" className="text-left" onClick={onFiche}>{plan.title}</button></h2>
+          <p className="text-sm text-cave-200"><span className="font-mono text-cave-50">{prix}</span>{details ? ` · ${details}` : ''}</p>
+        </div>
+      </div>
+      <div className={`mt-3 grid gap-2 ${u?.sourceCarnetId && present && onOuvrir ? 'grid-cols-2' : 'grid-cols-1'}`}>
+        <button type="button" className="flex min-h-11 items-center justify-center gap-2 rounded-control bg-area-finances px-3 font-semibold !text-[rgb(var(--cave-950))]" aria-expanded={ouvert} onClick={onDate}>
+          <Calendar size={18} aria-hidden/>{m ? `Date : ${nomMois(m, 'long')}` : 'Fixer la date'}</button>
+        {u?.sourceCarnetId && present && onOuvrir && <button type="button" className="min-h-11 rounded-control border border-cave-700 px-3 font-semibold text-cave-50" onClick={() => onOuvrir(u.sourceCarnetId!)}>Ouvrir le carnet</button>}
+      </div>
+      {ouvert && <ChoixMois plan={plan} mois={mois} onChoisir={onPoser}/>}
+      <p className="mt-2 text-sm text-cave-400">Il passe seul dans Réalisés quand sa dépense liée est payée.</p>
+    </div>
+  </section>;
+}
+
+/** Les carnets choisis qui n'ont pas encore de plan (critique 5, n° 12 : rien d'inventé ; ils attendent « Envoyer dans À venir »). */
+function ChoisisEnAttente({ carnets, onOuvrir }: { carnets: CarnetDoc[]; onOuvrir?: (id: string) => void }) {
+  const attente = carnets.filter(c => c.carnet.choix && !c.carnet.sortie && !c.carnet.archive);
+  if (!attente.length || !onOuvrir) return null;
+  return <section aria-label="Choisis, pas encore dans À venir" className="mt-4">
+    <h3 className="mb-1 text-base font-semibold text-cave-50">Choisis, pas encore dans À venir<span className="font-normal text-cave-400"> · {attente.length}</span></h3>
+    <ul className="divide-y divide-cave-800 rounded-panel border border-cave-800">
+      {attente.map(c => { const a = articleChoisi(c); const le = jourCourt(c.carnet.choix?.le); return <li key={c.id}>
+        <button type="button" className="flex min-h-14 w-full items-center gap-3 px-3 py-2 text-left" onClick={() => onOuvrir(c.id)} aria-label={`Ouvrir le carnet ${c.title}`}>
+          <VignetteObjet photo={a?.photo} mots={[a?.nom, c.title]} classe="!m-0 grid !h-11 !w-11 shrink-0 place-items-center overflow-hidden rounded-lg !bg-cave-850 object-cover" taille={30}/>
+          <span className="min-w-0 flex-1"><b className="block font-semibold text-cave-50">{c.title}</b><span className="block text-sm text-cave-200">{[a?.nom, le ? `choisi le ${le}` : null].filter(Boolean).join(' · ')}</span></span>
+          <ChevronRight size={18} aria-hidden className="shrink-0 text-cave-400"/>
+        </button></li>; })}
+    </ul>
+    <p className="mt-1 text-sm text-cave-400">« Envoyer dans À venir » se trouve sous le pourquoi du choix.</p>
+  </section>;
+}
 
 /** R08 (h05-9) : la carte d'un plan venu d'un carnet dit d'où il vient. « Ouvrir le carnet » le rouvre ; carnet supprimé : la ligne le dit, sans Ouvrir. */
 function LigneCarnet({ plan, present, onOuvrir, compact }: { plan: FinancialPlan; present: boolean; onOuvrir?: (id: string) => void; compact?: boolean }) {
   const u = plan.upgrade;
   if (!u?.sourceCarnetId) return null;
-  const le = isoDate(plan.createdAt);
+  const le = isoDate((plan.createdAt ?? '').slice(0, 10));
   const titre = u.sourceCarnetTitre?.trim();
   /* P39 (h05-9) : dans la liste des suivants, l'origine tient sur une ligne et s'ouvre d'un toucher ; le bouton « Ouvrir le carnet »
      ne se montre qu'une fois, sur la carte du prochain achat (et sur chaque carte de Réalisés). */
@@ -256,8 +331,10 @@ function FicheProjet({ plan, plans, prevision, transactions, payments, mois, bus
 interface AVenirProps { plans: FinancialPlan[]; transactions: FinanceTransaction[]; payments: FinancialPayment[]; prevision: FinanceForecast; busy?: string; onEdit: (p: FinancialPlan) => void; onPoser: (p: FinancialPlan, m: string | null) => Promise<boolean>;
   onInclusion: (p: FinancialPlan, inc: boolean) => void; onStatut: (p: FinancialPlan, s: 'completed' | 'cancelled') => Promise<boolean>; onSupprimer: (p: FinancialPlan) => string | null; onPrevisions: () => void;
   contacts: CreativeItem[]; onPrix: (p: FinancialPlan, cents: number) => Promise<boolean>; onDevis: (p: FinancialPlan, contact: string) => Promise<boolean>;
-  fournisseurs: Fournisseur[]; avis: SortieMarque | null; onVoirRealises: () => void; onFermerAvis: () => void; carnetIds: Set<string>; onOpenCarnet?: (id: string) => void }
-function AVenir({ plans, transactions, payments, prevision, busy, onEdit, onPoser, onInclusion, onStatut, onSupprimer, onPrevisions, contacts, fournisseurs, onPrix, onDevis, avis, onVoirRealises, onFermerAvis, carnetIds, onOpenCarnet }: AVenirProps) {
+  fournisseurs: Fournisseur[]; avis: SortieMarque | null; onVoirRealises: () => void; onFermerAvis: () => void; carnetIds: Set<string>; onOpenCarnet?: (id: string) => void;
+  /** Stocks › Matériel (segment « À venir · Carnets · Réalisés ») : la carte de h05-9, sans caisse (R32). Absent (Atelier) : kh1r tel quel. */
+  carnet?: boolean; carnetsLus?: CarnetDoc[] }
+function AVenir({ plans, transactions, payments, prevision, busy, onEdit, onPoser, onInclusion, onStatut, onSupprimer, onPrevisions, contacts, fournisseurs, onPrix, onDevis, avis, onVoirRealises, onFermerAvis, carnetIds, onOpenCarnet, carnet, carnetsLus = [] }: AVenirProps) {
   const [picker, setPicker] = useState<string | null>(null), [fiche, setFiche] = useState<string | null>(null), [marque, setMarque] = useState<string | null>(null), [etape, setEtape] = useState<string | null>(null);
   const hero = prochainAchat(plans), { lignes, connuCents, inconnus } = suivants(plans, hero), mois = prevision.months.slice(1, MOIS_BANDEAU).map(m => m.month);
   /* Le prochain achat peut n'être pas posé (repli, constat 7) : sans les prévisions, pas d'effet sur la caisse à dessiner. */
@@ -266,7 +343,9 @@ function AVenir({ plans, transactions, payments, prevision, busy, onEdit, onPose
   const poser = async (plan: FinancialPlan, m: string | null) => { setPicker(null); if (await onPoser(plan, m)) setMarque(m ? plan.id : null); };
   const dansFiche = plans.find(p => p.id === fiche);
   return <div className="kh">
-    {hero && <section className="kh-hero" aria-label="Prochain achat">
+    {hero && carnet && <ProchainAchatCarnet plan={hero} doc={carnetsLus.find(c => c.id === hero.upgrade?.sourceCarnetId)} present={!!hero.upgrade?.sourceCarnetId && carnetIds.has(hero.upgrade.sourceCarnetId)}
+      mois={mois} ouvert={picker === hero.id} onDate={() => setPicker(picker === hero.id ? null : hero.id)} onPoser={m => void poser(hero, m)} onEdit={() => onEdit(hero)} onFiche={() => setFiche(hero.id)} onOuvrir={onOpenCarnet}/>}
+    {hero && !carnet && <section className="kh-hero" aria-label="Prochain achat">
       <div className="kh-ht"><span className="kh-kick">Prochain achat</span><span className="kh-pill">D’abord · {etapeHero(hero)}</span></div>
       <div className="kh-hm"><h2><button type="button" className="kh-hbtn" onClick={() => setFiche(hero.id)}>{hero.title}</button></h2>
         {upgradeDetails(hero).budgetKnown ? <><b className="kh-big kh-m">{chf0(hero.amountCents)}</b><small>{partsInconnues(hero) ? 'au moins · ' : ''}CHF TTC</small></> : <b className="kh-big kh-bigu">à estimer</b>}</div>
@@ -287,7 +366,7 @@ function AVenir({ plans, transactions, payments, prevision, busy, onEdit, onPose
           const anneau = anneauDe(plan), ouvert = etape === plan.id;
           return <React.Fragment key={plan.id}><div className={`kh-r${(marque === plan.id && pose) || ouvert ? ' kh-on' : ''}`}>
             {/* Constat 7 (16.11) : la ligne sans prix a, comme les autres, son « + mois » et son crayon ; sans prix, le mois se pose mais rien n'entre dans les prévisions. */}
-            <button type="button" className={`kh-chip ${m && estPose(plan) ? 'on' : 'off'}`} aria-expanded={picker === plan.id} aria-label={m ? `Mois de ${plan.title} : ${nomMois(m, 'long')}` : `Poser ${plan.title} sur un mois`} onClick={() => { setEtape(null); setPicker(picker === plan.id ? null : plan.id); }}>{m ? nomMois(m, 'short') : '+ mois'}</button>
+            <button type="button" className={`kh-chip ${m && estPose(plan) ? 'on' : 'off'}`} aria-expanded={picker === plan.id} aria-label={m ? `Mois de ${plan.title} : ${nomMois(m, 'long')}` : `Poser ${plan.title} sur un mois`} onClick={() => { setEtape(null); setPicker(picker === plan.id ? null : plan.id); }}>{m ? nomMois(m, 'short') : carnet ? 'Dater' : '+ mois'}</button>
             <button type="button" className="kh-rb" aria-expanded={ouvert} aria-label={`${anneau.libelle} : ${plan.title}`} onClick={() => { setPicker(null); setEtape(ouvert ? null : plan.id); }}><AnneauSvg anneau={anneau} titre={false}/></button>
             {/* P39 : à 390, le prix passe sous le nom ; le nom prend la largeur et tient entier sur 2 lignes. */}
             <button type="button" className="kh-rmain max-[639px]:!flex-col max-[639px]:!items-start max-[639px]:!gap-0" onClick={() => setFiche(plan.id)}><span className="kh-nm max-[639px]:w-full"><b>{plan.title}</b>{repereDe(plan) === 'devis' && plan.vendor && <small>{plan.vendor}</small>}</span>{d.budgetKnown && <span className="kh-a kh-m">{chf0(plan.amountCents)}</span>}</button>
@@ -299,7 +378,9 @@ function AVenir({ plans, transactions, payments, prevision, busy, onEdit, onPose
         })}</section> : null;
       })}</>}
     {avis && <Avis avis={avis} onVoir={onVoirRealises} onFermer={onFermerAvis}/>}
-    <Bandeau prevision={prevision} hero={hero} effetHero={effetHero} focus={focus} effetFocus={effetFocus} sortie={avis} onPrevisions={onPrevisions}/>
+    {/* R32 : ni caisse ni trésorerie dans le carnet (Stocks › Matériel) ; la courbe reste dans l'Atelier et dans Finances › Prévisions. */}
+    {carnet ? <ChoisisEnAttente carnets={carnetsLus} onOuvrir={onOpenCarnet}/>
+      : <Bandeau prevision={prevision} hero={hero} effetHero={effetHero} focus={focus} effetFocus={effetFocus} sortie={avis} onPrevisions={onPrevisions}/>}
     {dansFiche && <FicheProjet plan={dansFiche} plans={plans} prevision={prevision} transactions={transactions} payments={payments} mois={mois} busy={busy} onClose={() => setFiche(null)}
       onEdit={() => { setFiche(null); onEdit(dansFiche); }} onPoser={m => void poser(dansFiche, m)} onInclusion={inc => onInclusion(dansFiche, inc)} onStatut={s => void onStatut(dansFiche, s).then(ok => { if (ok) setFiche(null); })} onSupprimer={() => { const r = onSupprimer(dansFiche); if (!r) setFiche(null); return r; }} onPrevisions={() => { setFiche(null); onPrevisions(); }}/>}
   </div>;
@@ -442,14 +523,17 @@ export function UpgradeWorkspace({ onOpenProject, createRequest, onCreateRequest
     {ailleurs && <p className="finance-muted" role="status">{ailleurs}</p>}
     {prevision && visible.length > 0 ? <AVenir plans={aVenir} transactions={data.transactions} payments={data.payments} prevision={prevision} busy={busy} onEdit={open} onPoser={poser} onInclusion={(p, inc) => void changeInclusion(p, inc)} onStatut={changerStatut} onSupprimer={supprimer} onPrevisions={voirPrevisions}
       contacts={data.contacts} fournisseurs={fournisseurs} onPrix={(p, cents) => enregistrer(p, avecPrix(p, cents))} onDevis={(p, contact) => enregistrer(p, avecDevisDemande(p, contact))}
-      avis={avis} onVoirRealises={() => { setAvis(null); setScope('completed'); }} onFermerAvis={() => setAvis(null)} carnetIds={data.carnetIds} onOpenCarnet={ouvrirCarnet}/>
+      avis={avis} onVoirRealises={() => { setAvis(null); setScope('completed'); }} onFermerAvis={() => setAvis(null)} carnetIds={data.carnetIds} onOpenCarnet={ouvrirCarnet}
+      carnet={!!vue} carnetsLus={data.carnetsLus}/>
     : vueAVenir ? null : !compact && scope === 'archived' && visible.length > 0 ? <ArchivesCarte plans={visible} transactions={data.transactions} payments={data.payments} busy={busy} onOuvrir={open} onReprendre={p => void reprendre(p)}/>
     : scope === 'future' ? Object.entries(UPGRADE_TIMINGS).map(([timing, label]) => {
       const rows = visible.filter(p => upgradeDetails(p).timing === timing).sort((a, b) => (a.date || '9999').localeCompare(b.date || '9999') || a.title.localeCompare(b.title, 'fr'));
       return rows.length ? <section className="upgrade-stage" key={timing}><h3>{label}</h3>{rows.map(renderProject)}</section> : null;
     }) : visible.map(renderProject)}
     {!visible.length && !compact && scope === 'future' && <CarteVide onAjouter={() => open(null)}/>}
-    {!visible.length && !(!compact && scope === 'future') && <div className="finance-empty"><Wrench className="mx-auto"/><h3>{scope === 'future' ? 'Quel matériel te manque ?' : scope === 'completed' ? 'Tes projets réalisés' : 'Tes projets mis de côté'}</h3><p>{scope === 'future' ? 'Commence par le besoin. Le prix et la date pourront venir ensuite.' : scope === 'completed' ? 'Marque un projet comme réalisé pour le retrouver ici avec ses achats.' : 'Un projet archivé se retrouve ici et peut être repris.'}</p></div>}
+    {/* Critique 5, n° 35 (D-2, D-8) : dans Stocks › Matériel, Réalisés dit que la facture payée solde le projet, sans geste à faire, et vouvoie. */}
+    {!visible.length && vue && scope === 'completed' && <div className="finance-empty" data-realises-vide><Receipt className="mx-auto"/><h3>Projets réalisés</h3><p>Un projet arrive ici seul, quand sa dépense liée est payée : la facture le solde. Rien à cocher.</p></div>}
+    {!visible.length && !(!compact && scope === 'future') && !(vue && scope === 'completed') && <div className="finance-empty"><Wrench className="mx-auto"/><h3>{scope === 'future' ? 'Quel matériel te manque ?' : scope === 'completed' ? 'Tes projets réalisés' : 'Tes projets mis de côté'}</h3><p>{scope === 'future' ? 'Commence par le besoin. Le prix et la date pourront venir ensuite.' : scope === 'completed' ? 'Marque un projet comme réalisé pour le retrouver ici avec ses achats.' : 'Un projet archivé se retrouve ici et peut être repris.'}</p></div>}
     {repris && <div className="kh"><div className="kh-toast ak-avis" role="status"><span className="kh-tt"><b>{repris} · de retour dans À venir</b><small>repris, pas encore dans tes prévisions</small></span>
       <button type="button" className="kh-voir" onClick={() => { setRepris(null); setScope('future'); }}>Voir</button></div></div>}
     {editing !== undefined && <UpgradeSheet plan={editing ?? undefined} onClose={() => setEditing(undefined)}/>}
@@ -474,7 +558,14 @@ export const COLONNE_MATERIEL = 'px-3 pt-2 pb-4 min-[900px]:mx-auto min-[900px]:
  * au bord bas de la barre, sous son ombre, au lieu d'être coupée dans l'écart (le repos garde son air : 8 px en haut de `.cn-page` et
  * de la colonne d'À venir).
  */
-export const BARRE_MATERIEL = 'relative z-10 shrink-0 flex gap-1 p-1 rounded-control bg-cave-900 border border-cave-800 overflow-x-auto shadow-lift';
+export const BARRE_BASE = 'relative z-10 shrink-0 flex gap-1 p-1 rounded-control bg-cave-900 border border-cave-800 overflow-x-auto shadow-lift';
+/**
+ * Critique 5, n° 41 : à 1280, le segment « À venir · Carnets · Réalisés » a la largeur de la colonne (736 px de contenu, comme `.cn-page`
+ * et `COLONNE_MATERIEL`), et non plus 1 150 px. `cn-barre-materiel` en fait l'ancre du + volant (carnets-decider.css), posé au bord de
+ * la colonne. Le Parc garde sa barre pleine largeur (`BARRE_BASE`), sa liste étant large.
+ */
+export const BARRE_COLONNE = 'cn-barre-materiel min-[900px]:mx-auto min-[900px]:w-full min-[900px]:max-w-[736px]';
+export const BARRE_MATERIEL = `${BARRE_BASE} ${BARRE_COLONNE}`;
 export const BARRE_SUR_DEFILEMENT = '-mb-1';
 
 export function UpgradeAnalytics({ plans, transactions, payments, onOpen, onBrowse }: { plans: FinancialPlan[]; transactions: FinanceTransaction[]; payments: FinancialPayment[]; onOpen: (plan: FinancialPlan) => void; onBrowse: () => void }) {

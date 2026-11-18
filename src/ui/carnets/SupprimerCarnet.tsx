@@ -18,8 +18,11 @@ export interface SupprimerCarnetProps {
   titre: string;
   contenu: ContenuCarnetV;
   liens: LienRetientV[];
-  /** G35 : un carnet proche (rattacher.ts) où déplacer les articles en veille. */
-  proche?: { titre: string; onDeplacer: () => void } | null;
+  /**
+   * G35 : un carnet proche (`carnetProche`, lot A) où déplacer les articles en veille. Critique 5, n° 27 : seulement un carnet du même
+   * objet (une hotte ne part pas dans l'extracteur CO₂) ; `memeCategorie: false` le tait, faute de quoi rien n'est proposé.
+   */
+  proche?: { titre: string; onDeplacer: () => void; memeCategorie?: boolean } | null;
   onDetacher: (planId: string) => void;
   onArchiver: (planId: string) => void;
   onSupprimer: () => void;
@@ -72,15 +75,16 @@ export function SupprimerCarnet(p: SupprimerCarnetProps) {
           ))}
         </div>
       )}
-      {/* G35 (g5:v08-27) : proposé avant, sans bloquer ; calcul local (rattacher.ts), picto local. */}
-      {enVeille > 0 && p.proche && (
-        <div className="cn-aide cn-g35">
+      {/* G35 (g5:v08-27) : proposé avant, sans bloquer ; calcul local (rattacher.ts), picto local en couleur neutre (n° 38, Q19 : le
+          calcul local ne passe pas pour de l'IA, ni violet ni ✻). */}
+      {enVeille > 0 && p.proche && p.proche.memeCategorie !== false && (
+        <div className="cn-g35" data-source="locale">
           <PictoLocal />
           <span className="cn-sp">{enVeille} article{enVeille > 1 ? 's' : ''} en veille : les déplacer dans {p.proche.titre}</span>
           <button type="button" className="cn-puce cn-g35-bouton" onClick={p.proche.onDeplacer}><ArrowRightToLine size={18} aria-hidden /> Déplacer</button>
         </div>
       )}
-      {n === 0 && <p className="cn-mut"><PictoLocal /> ni dans À venir, ni en commande</p>}
+      {n === 0 && <p className="cn-mut cn-g36"><PictoLocal /> ni dans À venir, ni en commande</p>}
       <div className="cn-rang-boutons">
         {!realise && (
           <button type="button" className="cn-supprimer-bouton cn-sp" disabled={n > 0} data-allume={n === 0 ? true : undefined}

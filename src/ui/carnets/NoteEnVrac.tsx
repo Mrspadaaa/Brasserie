@@ -7,7 +7,7 @@
  *   (correction d'un toucher, rangée derrière), puis « › Texte d'origine » : son message, tel quel (R25).
  */
 import React from 'react';
-import { CircleHelp, FileText, GitFork, Lightbulb, ListTodo, ShoppingBasket, Target } from 'lucide-react';
+import { CircleHelp, FileText, GitFork, Lightbulb, ListTodo, ShoppingBasket, Target, X } from 'lucide-react';
 import { Bandeau } from './Bandeau';
 import { GENRE_LIBELLE, Provenance, type GenreNote, type Origine } from './EtatIA';
 
@@ -35,6 +35,10 @@ export interface NoteEnVracProps {
   onAnnuler: () => void;
   /** Le nombre de carnets distincts, quand l'appelant le tient du plan (pendant) ou des effets (après) ; sinon compté sur les lignes. */
   nbCarnets?: number;
+  /** Critique 5, n° 7 : l'envoi est parti, l'IA découpe (✕ la coupe, la découpe annoncée reste rangée). */
+  enCours?: boolean;
+  /** Critique 5, n° 24 : l'IA n'a pas répondu ou hors ligne : l'avis se lit dans le bandeau « n lignes rangées », jamais un « ✓ » seul. */
+  avis?: { sorte: 'eteint' | 'hors-ligne' | 'echec'; texte: string } | null;
 }
 
 const ORDRE: TypeLigneVrac[] = ['a-acheter', 'a-faire', 'question', 'critere', 'facon', 'conseil', 'note'];
@@ -84,10 +88,13 @@ export function NoteEnVrac(p: NoteEnVracProps) {
   const lignes = trierLignes(p.lignes);
   const carnets = p.nbCarnets ?? carnetsDistincts(lignes);
   const tete = p.etat === 'apres'
-    ? <Bandeau bandeau={{ sorte: 'vrac', lignes: lignes.length, carnets }} onAnnuler={p.onAnnuler} />
+    ? <Bandeau bandeau={{ sorte: 'vrac', lignes: lignes.length, carnets }} onAnnuler={p.onAnnuler} {...(p.avis ? { avis: p.avis } : {})} />
     : (
       <div className="cn-cadre-tete">
-        <span className="cn-sp"><Provenance origine={p.origine} /> {p.origine === 'ia' ? "L'IA découpe votre note" : 'Votre note, découpée sur place'} : {lignes.length} ligne{lignes.length > 1 ? 's' : ''}, {carnets} carnet{carnets > 1 ? 's' : ''}</span>
+        {/* Critique 5, n° 7 (g5:v01-15) : « ✻ L'IA découpe votre note : 3 lignes, 2 carnets » pendant que l'IA tourne ; avant l'envoi, la
+            découpe locale le dit sans le ✻ (Q19) */}
+        <span className="cn-sp"><Provenance origine={p.origine === 'locale' ? 'locale' : 'ia'} /> {p.origine === 'locale' ? 'Votre note, découpée sur place' : "L'IA découpe votre note"} : {lignes.length} ligne{lignes.length > 1 ? 's' : ''}, {carnets} carnet{carnets > 1 ? 's' : ''}{p.origine === 'exemple' && <> <Provenance origine="exemple" /></>}</span>
+        {p.enCours && <button type="button" className="cn-x" aria-label="Annuler" onClick={p.onAnnuler}><X size={18} aria-hidden /></button>}
       </div>
     );
   return (

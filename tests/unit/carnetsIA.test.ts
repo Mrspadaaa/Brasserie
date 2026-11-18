@@ -290,8 +290,9 @@ describe('corr2-L1 : l’IA simulée garde « ZZ TEST — », découpe une note 
     expect(l.every((x) => x.sorte === 'note')).toBe(true);
     expect(l[0].carnetId).toBe('c-evier');
     expect(l[0].raisonCarnet).toBe('votre message parle de « bacs » : comme Évier inox');
-    expect(l[1].carnetNeuf).toBe('ZZ TEST — ajouter le sel');
-    expect(l[2].carnetNeuf).toBe('ZZ TEST — ajouter le sel');
+    /* n° 30 : le titre du carnet neuf est mis en forme (majuscule) */
+    expect(l[1].carnetNeuf).toBe('ZZ TEST — Ajouter le sel');
+    expect(l[2].carnetNeuf).toBe('ZZ TEST — Ajouter le sel');
     // dans un carnet ouvert, toutes les lignes y vont (« ↓ va atterrir ici »)
     expect(simuler('hotte trop large ; acheter du sel', 'c-evier').every((x) => x.carnetId === 'c-evier')).toBe(true);
   });

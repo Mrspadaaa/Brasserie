@@ -54,3 +54,25 @@
 .cnf-choix > span:not([aria-hidden]) { min-width: 0; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
 .cnf-choix > select { position: absolute; inset: 0; width: 100%; height: 100%; opacity: 0; cursor: pointer; font-size: 16px; }
 .cnf-choix:focus-within { outline: 2px solid var(--c-zone); outline-offset: 2px; }
+
+/* Critique 5, n° 5 et 21 : la bulle G8 sur une ligne, au focus seulement ; le texte entier est dans `title` */
+.cnf-aides-ligne > .cn-bulle { white-space: nowrap; }
+
+/* Critique 5, n° 3 : la ligne du carnet visé, au-dessus des rubriques ; « en » relie les deux lignes */
+.cnf-vadans-carnet .cn-puce[aria-pressed="true"] { font-weight: 700; }
+
+/* Critique 5, n° 26 (g4:v01-13) : « Se renomme ici » se pose à la place du titre ; l'en-tête et le contenu restent */
+.cn-ouvert:has(> .cnf-renommer) { display: flex; flex-direction: column; }
+.cn-ouvert:has(> .cnf-renommer) > .cn-tete,
+.cn-ouvert:has(> .cnf-renommer) > .cn-menu { order: -2; }
+.cn-ouvert > .cnf-renommer { order: -1; margin-bottom: 8px; }
+.cn-ouvert:has(> .cnf-renommer) > .cn-titre-ligne { display: none; }
+.cnf-renommer-tete { display: inline-flex; align-items: center; gap: 6px; }
+.cnf-renommer-tete > svg { flex: none; }
+.cnf-renommer-titre { font-size: 24px; line-height: 30px; font-weight: 800; color: var(--c-ink); margin: 4px 0 0; overflow-wrap: anywhere; }
+.cnf-renommer-pied { display: flex; align-items: center; gap: 8px; padding: 0 4px; min-height: 36px; }
+.cnf-renommer-pied .cn-lien { min-height: 44px; display: inline-flex; align-items: center; }
+
+/* Critique 5 : la flèche ou le crayon d'une tête de cadre reste sur la ligne de son libellé (« ↓ va dans Évier inox ») */
+.cn-cadre-bloc .cn-cadre-tete > .cn-vert { display: inline-flex; align-items: center; gap: 4px; flex-wrap: wrap; }
+.cn-cadre-bloc .cn-cadre-tete > .cn-vert > svg { flex: none; }

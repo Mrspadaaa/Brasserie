@@ -1,11 +1,14 @@
 import { describe, expect, it } from 'vitest';
 import { analyserTexte, nombresEcrits } from '../../src/domain/carnets/analyseLocale';
 import { consequenceApercu, critereQuiTranche, difference, domaineEtChemin, nomsDistincts, rangePar, statutApres, tableau, texteTranche } from '../../src/domain/carnets/comparer';
-import { fixtureCarnets, ID_EMBOUTEILLAGE, ID_EVIER, ID_VENTILATION, PHRASES_ESSAI } from '../../src/domain/carnets/fixture';
+import { CRITERE_BRUIT, fixtureCarnets, ID_EMBOUTEILLAGE, ID_EVIER, ID_VENTILATION, PHRASES_ESSAI } from '../../src/domain/carnets/fixture';
 import { lireCarnet, type Article, type CarnetDoc, type DonneesCarnet } from '../../src/domain/carnets/modele';
 
 const F = fixtureCarnets();
 const carnet = (id: string): CarnetDoc => lireCarnet(F.find(i => i.id === id))!;
+/* critique 5, n° 21 : la fixture par défaut n'a pas de bulle G8 (rien à trancher) ; ces tests de calcul G8 prennent l'option `g8` */
+const FG8 = fixtureCarnets({ g8: true, g35: true });
+const carnetG8 = (id: string): CarnetDoc => lireCarnet(FG8.find(i => i.id === id))!;
 const art = (id: string, valeurs: Article['valeurs'], o: Partial<Article> = {}): Article => ({ id, nom: id, valeurs, lecture: 'lue', ...o });
 const ex = (valeur: number | boolean, unite?: string) => (unite ? { valeur, unite, origine: 'exemple' as const } : { valeur, origine: 'exemple' as const });
 const avec = (c: CarnetDoc, d: Partial<DonneesCarnet>): CarnetDoc => ({ ...c, carnet: { ...c.carnet, ...d } });
@@ -37,11 +40,20 @@ describe('Comparer (A9), 12 cas', () => {
     expect(t.lignes[2].cellules).toEqual({});
     expect(JSON.stringify(t.lignes[2])).not.toMatch(/"valeur":0/);
   });
-  it('6. un article dominé sur 2 caractéristiques comparables porte « moins bien partout »', () => {
-    /* A4 (débit 1100, 690 CHF, tient inconnu) face à A3 (1500, 420 CHF) : pire sur débit et prix */
+  it('6. « moins bien partout » seulement contre chacun des autres ; sinon « moins bien que la 2e » (critique 5, n° 23)', () => {
+    /* A4 (débit 1100, 690 CHF, tient inconnu) est dominé par A3 (1500, 420 CHF), mais pas par chacun des autres : il dit le rang de A3 */
     const t = tableau(V)!;
-    expect(t.lignes.find(l => l.articleId === 'ZZ-V-A4')!.moinsBienPartout).toBe(true);
+    const a4 = t.lignes.find(l => l.articleId === 'ZZ-V-A4')!;
+    expect(a4.moinsBienPartout).toBe(false);
+    expect(typeof a4.moinsBienQue).toBe('number');
     expect(t.lignes.find(l => l.articleId === 'ZZ-V-A2')!.moinsBienPartout).toBe(false);
+    /* dominé par chacun des deux autres sur débit et prix : « moins bien partout » */
+    const c = avec(V, { criteres: [V.carnet.criteres[2]], facons: [], articles: [art('P', { 'débit': ex(900, 'm³/h') }, { prixCentimes: 50000 }), art('Q', { 'débit': ex(1200, 'm³/h') }, { prixCentimes: 40000 }), art('R', { 'débit': ex(1500, 'm³/h') }, { prixCentimes: 30000 })] });
+    const u = tableau(c)!;
+    expect(u.lignes.find(l => l.articleId === 'P')!.moinsBienPartout).toBe(true);
+    expect(u.lignes.find(l => l.articleId === 'Q')!.moinsBienPartout).toBe(false);
+    expect(u.lignes.find(l => l.articleId === 'Q')!.moinsBienQue).toBe(1);
+    expect(u.lignes.find(l => l.articleId === 'R')!.moinsBienQue).toBeUndefined();
   });
   it('7. avec une seule caractéristique comparable : rien', () => {
     const c = avec(V, { criteres: [V.carnet.criteres[2]], articles: [art('P', { 'débit': ex(900, 'm³/h') }), art('Q', { 'débit': ex(1200, 'm³/h') })] });
@@ -95,17 +107,19 @@ describe('Comparer (A9), 12 cas', () => {
 });
 
 describe('G8 et G9, calcul local (A13, R44, R45)', () => {
-  it('critereQuiTranche sur Ventilation : le critère sans caractéristique et les deux façons ouvertes', () => {
-    const V = carnet(ID_VENTILATION);
+  it('critereQuiTranche : rien à trancher sur la fixture Ventilation par défaut (aucune caractéristique inconnue des deux premiers)', () => {
+    expect(critereQuiTranche(carnet(ID_VENTILATION))).toBeNull();
+  });
+  it('critereQuiTranche sur Ventilation (option g8) : la caractéristique que les deux premiers n’ont pas, et les deux façons ouvertes', () => {
+    const V = carnetG8(ID_VENTILATION);
     const t = critereQuiTranche(V)!;
-    /* le texte du 1er critère vient de la fixture (lot A le corrige en correction 4, P15) : il n'est pas répété ici */
-    const premier = V.carnet.criteres.find(k => !k.caracteristique)!.texte;
+    const premier = CRITERE_BRUIT;
     expect(t.critere.texte).toBe(premier);
     expect(t.entre).toEqual(['Hotte inox + extracteur', 'Extracteur mural seul']);
     expect(texteTranche(t)).toBe(`Le critère « ${premier} » peut trancher entre Hotte inox + extracteur et Extracteur mural seul`);
   });
   it('un seul candidat : null ; une façon écartée n’est jamais proposée', () => {
-    const V = carnet(ID_VENTILATION);
+    const V = carnetG8(ID_VENTILATION);
     expect(critereQuiTranche(avec(V, { facons: V.carnet.facons.slice(0, 1), articles: V.carnet.articles.slice(0, 1) }))).toBeNull();
     const ecartee = avec(V, { facons: [V.carnet.facons[0], { ...V.carnet.facons[1], etat: 'ecartee' }], articles: [] });
     expect(critereQuiTranche(ecartee)).toBeNull();
@@ -148,7 +162,7 @@ describe('G8 et G9, calcul local (A13, R44, R45)', () => {
 
 describe('G8 (R44), corr. 2 L4-4 : deux candidats ne se nomment jamais pareil', () => {
   const sansNom = (id: string, url: string, o: Partial<Article> = {}): Article => ({ id, url, domaine: 'exemple.test', valeurs: {}, lecture: 'illisible', ...o });
-  const V = carnet(ID_VENTILATION);
+  const V = carnetG8(ID_VENTILATION);
   const sansFacons = (articles: Article[]) => avec(V, { facons: [], articles, choix: undefined });
 
   it('deux articles au même domaine, sans nom lu : le domaine et un bout du chemin, dans la bulle', () => {

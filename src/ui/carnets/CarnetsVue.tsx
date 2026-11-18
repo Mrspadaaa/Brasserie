@@ -23,7 +23,7 @@ import { carnetProche, rattacher } from '../../domain/carnets/rattacher';
 import { doublonsDe, notesEnDouble } from '../../domain/carnets/doublons';
 import type { CarnetPourIA, LigneCarnet } from '../../domain/carnets/ia';
 import { aidesCourantes, comportementSimule, modeCarnet, type AidesCarnet, type ModeCarnetIA } from '../../config/carnetIA';
-import { appelsSimules, creerRangement, planVrac, retourDuRangement, versLignesAnnoncees, type AppelsIA, type EtatRangement, type Rangement as Envoi } from './rangement';
+import { appelsSimules, creerRangement, planVrac, retourDuRangement, versLignesAnnoncees, type AppelsIA, type EtatRangement, type PlanVrac, type Rangement as Envoi } from './rangement';
 import { ListeCarnets } from './ListeCarnets';
 import { CarnetOuvert, type LienV, type RangeeV } from './CarnetOuvert';
 import { ChampCarnet } from './ChampCarnet';
@@ -36,7 +36,7 @@ import { Choisir } from './Choisir';
 import { SupprimerCarnet } from './SupprimerCarnet';
 import { FeuilleNote } from './FeuilleNote';
 import { PictoObjet, pictoDe } from './pictos';
-import { RenommerCarnet } from './RenommerCarnet';
+import { RenommerCarnet, titreProposeDe } from './RenommerCarnet';
 import { dateCourte, EtatIA, montant, type ArticleV, type CarnetV, type GenreNote } from './EtatIA';
 import { reduirePhoto } from './photo';
 import './carnets.css';
@@ -64,6 +64,8 @@ export interface CarnetsVueProps {
   onVoirAVenir?: () => void;
   onMessage?: (texte: string) => void;
   maintenant?: () => Date;
+  /** Banc seulement (`&texte=…`) : le champ arrive rempli, pour atteindre un état « pendant » par une adresse (D-131). */
+  texteInitial?: string;
 }
 
 type Vue =
@@ -88,10 +90,14 @@ interface Retour {
   detail?: string;
 }
 type AvisIA = { sorte: 'eteint' | 'hors-ligne' | 'echec'; texte: string };
-const AVIS_IA: Record<AvisIA['sorte'], string> = {
-  eteint: 'IA éteinte : rangé sur l’appareil',
-  'hors-ligne': 'Hors ligne : rangé sur l’appareil, rien ne bougera au retour du réseau',
-  echec: 'L’IA n’a pas répondu : rangé sur l’appareil, rien n’est perdu'
+/**
+ * Critique 5, n° 43 : la formule vraie selon le code. Rien ne se rerange au retour du réseau (MISSION, § IA, « Déroulé d'un envoi » :
+ * aucun rerangement automatique) : l'avis le dit sans ambiguïté, au lieu de « rien ne bougera », qu'on lisait « l'IA rangera-t-elle ? ».
+ */
+export const AVIS_IA: Record<AvisIA['sorte'], string> = {
+  eteint: 'IA éteinte : rangé sur l’appareil, tel quel',
+  'hors-ligne': 'Hors ligne : rangé sur l’appareil, tel quel ; l’IA ne le reprendra pas au retour du réseau',
+  echec: 'L’IA n’a pas répondu : rangé sur l’appareil, tel quel ; rien n’est perdu'
 };
 /**
  * P23 (D-35) : un critère que l'IA propose sans le ranger (`propose`, contrat du lot A : gardé sur le message, `propositions`), le plus
@@ -117,8 +123,26 @@ interface Jointe { jeton: number; jpeg?: string }
  */
 type Annonce =
   | { sorte: 'cree'; carnetId: string; titre: string; phrase: string }
-  | { sorte: 'vrac'; lignes: { texte: string; dest: Destination }[] };
+  /* Critique 5, n° 7 : `vues` et `carnets`, la découpe telle que le pendant « ✻ L'IA découpe votre note » la montre */
+  | { sorte: 'vrac'; lignes: { texte: string; dest: Destination }[]; vues: LigneVracV[]; carnets: number }
+  /* Critique 5, n° 3 et 6 : écrit dans un carnet ouvert, tout va dans le carnet annoncé (l'ouvert, ou celui que le cadre a nommé) */
+  | { sorte: 'ici'; carnetId: string };
 const memeTexte = (x: string, y: string) => x.trim().localeCompare(y.trim(), 'fr', { sensitivity: 'base' }) === 0;
+
+/**
+ * Critique 5, n° 3 (G4, D-134) : le carnet où ira ce qu'on tape dans un carnet ouvert. Le même calcul sert au cadre, pendant la frappe,
+ * et à l'envoi : ce qui est annoncé est ce qui est fait. Le carnet ouvert garde la phrase s'il en parle, ou si aucun autre n'en parle
+ * (`rattacher`, fuse.js, lot A) ; un lien, une note de plusieurs lignes, restent toujours ici (n° 6 : un lien collé dans un carnet est
+ * l'article de ce carnet).
+ */
+export function destinationDans(texte: string, ouvert: CarnetDoc, carnets: readonly CarnetDoc[]): { carnetId: string; titre: string } {
+  const ici = { carnetId: ouvert.id, titre: ouvert.title };
+  const t = texte.trim();
+  if (!t || plusieursLignes(t) || analyserTexte(t).some(l => l.url)) return ici;
+  if (rattacher(t, [ouvert])) return ici;
+  const autre = rattacher(t, carnets.filter(c => c.id !== ouvert.id && !c.carnet.archive));
+  return autre ? { carnetId: autre.carnetId, titre: autre.titre } : ici;
+}
 
 const lireFinances = (): FinancesCarnet => ({
   plans: FinanceService.getPlans(), transactions: StorageService.getTransactions() as unknown as FinanceTransaction[], payments: FinanceService.getPayments()
@@ -135,6 +159,11 @@ async function lirePresse(): Promise<string | undefined> {
   } catch { return undefined; }
 }
 const plusieursLignes = (t: string) => t.split(/\r?\n/).filter(l => l.trim() !== '').length > 1;
+/** La découpe d'une note en vrac telle que NoteEnVrac la montre (pendant la frappe, puis pendant que l'IA découpe) : même plan. */
+function vuesVrac(plan: PlanVrac<LigneLocale>): LigneVracV[] {
+  return plan.lignes.map((x, i) => ({ id: String(i), texte: x.ligne.texte, genre: x.ligne.genre,
+    ...(x.carnetId ? { carnetId: x.carnetId, carnetTitre: titreSansBanc(x.titre) } : { carnetTitre: titreSansBanc(x.titre), neuf: true }) }));
+}
 
 /** G1 (g5:v04-1) : les exemples de Créer · avant, touchables ; un toucher remplit le champ. */
 const EXEMPLES_CREER = ['Frigo de garde', 'Ventilation de la salle', 'Évier pour les fûts'];
@@ -178,7 +207,7 @@ export function depuisIA(l: LigneCarnet, dest: Destination): LigneARanger {
   switch (l.sorte) {
     case 'idee': return { ...dest, sorte: 'idee' } as LigneARanger;
     /* P23 : `propose` (lot A) suit la ligne : `ranger` la garde sur le message, la puce la range d'un toucher */
-    case 'critere': return { ...dest, sorte: 'critere', texte: l.texte, origine, ...(l.caracteristique ? { caracteristique: l.caracteristique } : {}), ...(l.propose ? { propose: true } : {}) } as LigneARanger;
+    case 'critere': return { ...dest, sorte: 'critere', texte: l.texte, origine, ...(l.caracteristique ? { caracteristique: l.caracteristique } : {}), ...(l.propose ? { propose: true } : {}), ...(l.source ? { source: l.source } : {}) } as LigneARanger;
     case 'facon': return { ...dest, sorte: 'facon', nom: l.titre ?? l.texte, origine } as LigneARanger;
     case 'article': {
       const p = l.page;
@@ -230,7 +259,7 @@ export function CarnetsVue(p: CarnetsVueProps) {
   const [vue, setVue] = useState<Vue>({ sorte: 'liste' });
   const idOuvert = vue.sorte === 'liste' ? null : vue.id;
   const ouvert = idOuvert ? tous.find(c => c.id === idOuvert) ?? null : null;
-  const [texte, setTexte] = useState('');
+  const [texte, setTexte] = useState(p.texteInitial ?? '');
   const [etatR, setEtatR] = useState<EtatRangement<LigneLocale>>({ etape: 'repos' });
   const [retour, setRetourEtat] = useState<Retour | null>(null);
   /** Le retour tel qu'il est maintenant, lu par Annuler et par la fin de l'IA (une fermeture plus ancienne ne le perd pas). */
@@ -263,6 +292,14 @@ export function CarnetsVue(p: CarnetsVueProps) {
   /** La rubrique forcée de l'envoi en cours : lue par `ecrireLocal`, puis `ecrireIA` ne reprend pas ce message (sa correction est un choix). */
   const aForcer = useRef<RubriqueVaDans | null>(null);
   const forcee = useRef<string | null>(null);
+  /** Critique 5, n° 3 : le carnet corrigé d'un toucher sur la puce « Va dans » (prime sur le calcul, jusqu'à l'envoi). */
+  const [corrigeCarnet, setCorrigeCarnet] = useState<string | null>(null);
+  /** Le carnet annoncé de l'envoi en cours, lu par `ecrireLocal` (même calcul que le cadre). */
+  const destEnvoi = useRef<string | null>(null);
+  /** Critique 5, n° 24 : les carnets dont le dernier envoi n'a pas eu l'IA (échec, hors ligne, éteinte) : passés à CarnetOuvert. */
+  const [iaManquee, setIaManquee] = useState<Readonly<Record<string, AvisIA['sorte']>>>({});
+  /** Critique 5, n° 26 : le titre tapé dans le champ du bas pendant « Se renomme ici ». */
+  const [titreEdite, setTitreEdite] = useState('');
   /** G14 (R15) : le lien que le presse-papier tient, lu au focus du champ ; refus silencieux. */
   const [presse, setPresse] = useState<string | undefined>();
   const champRef = useRef<HTMLTextAreaElement>(null);
@@ -346,9 +383,13 @@ export function CarnetsVue(p: CarnetsVueProps) {
   const poserAvis = useCallback((messageId: string, sorte: AvisIA['sorte'], enReserve?: RetourNeuf | null) => {
     const avis: AvisIA = { sorte, texte: AVIS_IA[sorte] };
     const cur = retourRef.current;
+    const vise = cur && cur.messageId === messageId ? cur : enReserve;
+    /* n° 24 : le carnet où ce message est rangé sait que l'IA n'y est pas passée (« Ensuite : l'IA cherche… » ne promet plus rien) */
+    const carnetVise = vise?.carnetId ?? lireMessages(magasin.lire()).find(m => m.id === messageId)?.carnetMessage.effets[0]?.carnetId;
+    if (carnetVise) setIaManquee(m => ({ ...m, [carnetVise]: sorte }));
     if (cur && cur.messageId === messageId) { poserRetourEtat({ ...cur, avis }); return; }
     if (enReserve) setRetour({ ...enReserve, avis });
-  }, [poserRetourEtat, setRetour]);
+  }, [poserRetourEtat, setRetour, magasin]);
 
   /* ---------- le fil : un champ, l'IA met en forme et range ---------- */
   const depuis = ouvert && vue.sorte !== 'liste' ? ouvert.id : null;
@@ -380,19 +421,23 @@ export function CarnetsVue(p: CarnetsVueProps) {
       let r: Resultat;
       let neuf: string | null = null;
       const force = aForcer.current; aForcer.current = null;
-      if (depuis && force && lignes.length === 1 && lignes[0].sorte !== 'article') {
+      /* n° 3 : le carnet annoncé par le cadre (l'ouvert, ou celui qu'il a nommé, corrigé ou non d'un toucher) */
+      const ici = depuis ? destEnvoi.current ?? depuis : null;
+      destEnvoi.current = null;
+      let annonce: Annonce | null = ici ? { sorte: 'ici', carnetId: ici } : null;
+      if (ici && force && lignes.length === 1 && lignes[0].sorte !== 'article') {
         const l0 = lignes[0];
-        const ligne: LigneARanger = force === 'critere' ? { carnetId: depuis, sorte: 'critere', texte: l0.texte, origine: 'vous' }
-          : force === 'facon' ? { carnetId: depuis, sorte: 'facon', nom: l0.texte, origine: 'vous' }
-          : { carnetId: depuis, sorte: 'note', texte: l0.texte, ...(l0.sorte === 'note' ? { genre: l0.genre } : {}) };
+        const ligne: LigneARanger = force === 'critere' ? { carnetId: ici, sorte: 'critere', texte: l0.texte, origine: 'vous' }
+          : force === 'facon' ? { carnetId: ici, sorte: 'facon', nom: l0.texte, origine: 'vous' }
+          : { carnetId: ici, sorte: 'note', texte: l0.texte, ...(l0.sorte === 'note' ? { genre: l0.genre } : {}) };
         r = ranger(etat, { message, lignes: [ligne] });
         forcee.current = message.id;
-      } else if (depuis) r = ranger(etat, { message, lignes: lignes.map(l => depuisLocale(l, { carnetId: depuis })) });
-      let annonce: Annonce | null = null;
-      if (depuis) { /* rangé ci-dessus */ } else if (lignes.length <= 1) {
+      } else if (ici) r = ranger(etat, { message, lignes: lignes.map(l => depuisLocale(l, { carnetId: ici })) });
+      if (ici) { /* rangé ci-dessus */ } else if (lignes.length <= 1) {
         neuf = nouvelIdCarnet('CARNET');
         const titre = titreDePhrase(txt);
-        r = creerCarnet(etat, { id: neuf, message, lignes: lignes.filter(l => l.sorte !== 'note').map(l => depuisLocale(l, { carnetNeuf: { id: neuf!, titre } })) });
+        /* n° 2 : la phrase entière n'est pas un critère d'elle-même (« Ce qui compte : Moulin à malt… ») ; elle est déjà le titre */
+        r = creerCarnet(etat, { id: neuf, message, lignes: lignes.filter(l => l.sorte !== 'note' && !(l.sorte !== 'article' && memeTexte(l.texte, txt))).map(l => depuisLocale(l, { carnetNeuf: { id: neuf!, titre } })) });
         if (!estLienSeul(txt)) annonce = { sorte: 'cree', carnetId: neuf, titre, phrase: txt };
       } else {
         /* la découpe annoncée par le cadre (même `planVrac`, mêmes carnets) : chaque ligne là où elle a été annoncée */
@@ -401,7 +446,7 @@ export function CarnetsVue(p: CarnetsVueProps) {
         const neufVrac = plan.titreNeuf ? { id: nouvelIdCarnet('CARNET'), titre: plan.titreNeuf } : null;
         const dests: Destination[] = plan.lignes.map(x => (x.carnetId ? { carnetId: x.carnetId } : { carnetNeuf: neufVrac! }));
         r = ranger(etat, { message, lignes: lignes.map((l, i) => depuisLocale(l, dests[i])) });
-        annonce = { sorte: 'vrac', lignes: lignes.map((l, i) => ({ texte: l.texte, dest: dests[i] })) };
+        annonce = { sorte: 'vrac', lignes: lignes.map((l, i) => ({ texte: l.texte, dest: dests[i] })), vues: vuesVrac(plan), carnets: plan.carnets };
       }
       const fait = appliquer(r!);
       if (!fait) throw new Error((r! as { raison?: string }).raison ?? 'refus');
@@ -413,9 +458,10 @@ export function CarnetsVue(p: CarnetsVueProps) {
       }
       const local = retourDe(message.id, txt, depuis, fait.inverse) ?? { bandeau: { sorte: 'range' }, inverse: fait.inverse, messageId: message.id };
       /* L'IA va tourner : son rangement peut remplacer celui-ci (P1, P2) ; le retour attend la fin, rien n'est annoncé qui pourrait mentir.
-         Sauf quand la cible est annoncée et tenue (créer, note en vrac) : l'IA ne fait que mettre en forme, le retour paraît tout de suite. */
+         Sauf à la création, où la cible est tenue : l'IA ne fait que mettre en forme, « Carnet créé » paraît tout de suite. La note en vrac
+         montre pendant ce temps « ✻ L'IA découpe votre note » (n° 7), puis « ✓ n lignes rangées dans m carnets ». */
       if (annonce && iaAttendue) annonces.current.set(message.id, annonce);
-      const definitif = annonce !== null;
+      const definitif = annonce?.sorte === 'cree';
       if (iaAttendue) attente.current = { messageId: message.id, retour: local, montre: definitif };
       if (!iaAttendue || definitif) setRetour(local);
       if (neuf) { setEnTete(neuf); setVientDEtreCree(neuf); setVue({ sorte: 'carnet', id: neuf }); }
@@ -441,8 +487,9 @@ export function CarnetsVue(p: CarnetsVueProps) {
       if (an?.sorte === 'cree') {
         /* m390-1, d1280-1, L4-7 : tout reste dans SON carnet, sous sa phrase ; un autre titre de l'IA devient un titre proposé (G29) */
         const dest: Destination = { carnetNeuf: { id: an.carnetId, titre: an.titre } };
+        /* n° 2 : la phrase recopiée telle quelle (en note ou en critère) n'est pas une mise en forme : elle est déjà le titre */
         aRanger = [{ ...dest, sorte: 'idee' } as LigneARanger,
-          ...lignes.filter(l => l.sorte !== 'idee' && !(l.sorte === 'note' && memeTexte(l.texte, an.phrase))).map(l => depuisIA(l, dest))];
+          ...lignes.filter(l => l.sorte !== 'idee' && !(l.sorte !== 'article' && memeTexte(l.texte, an.phrase))).map(l => depuisIA(l, dest))];
         const titreIA = lignes.find(l => l.sorte === 'idee')?.titre ?? lignes.find(l => l.carnetNeuf)?.carnetNeuf ?? lignes.find(l => l.titrePropose)?.titrePropose;
         if (titreIA && !memeTexte(titreIA, an.titre)) propose = { carnetId: an.carnetId, titre: titreIA };
       } else if (an?.sorte === 'vrac') {
@@ -453,6 +500,18 @@ export function CarnetsVue(p: CarnetsVueProps) {
         const neufVrac = an.lignes.find(x => x.dest.carnetNeuf)?.dest.carnetNeuf;
         const titreIA = neufVrac ? utiles.find((l, i) => an.lignes[idx[i]]?.dest.carnetNeuf && l.carnetNeuf)?.carnetNeuf : undefined;
         if (neufVrac && titreIA && !memeTexte(titreIA, neufVrac.titre)) propose = { carnetId: neufVrac.id, titre: titreIA };
+      } else if (an?.sorte === 'ici') {
+        /* n° 3 et 6 : l'IA met en forme (critère, façon, article lu, note) ; elle ne range ni ailleurs ni dans un carnet neuf */
+        const dest: Destination = { carnetId: an.carnetId };
+        aRanger = lignes.filter(l => l.sorte !== 'idee').map(l => depuisIA(l, dest));
+        const p2 = lignes.find(l => l.titrePropose && l.carnetId === an.carnetId);
+        if (p2) propose = { carnetId: an.carnetId, titre: p2.titrePropose! };
+        if (!aRanger.length) {
+          const local = attente.current?.messageId === messageId ? attente.current.retour : null;
+          attente.current = null;
+          if (local) setRetour(local);
+          return;
+        }
       } else {
         const neufs = new Map<string, string>();
         /* un lien seul qui ouvre un carnet : le nom lu sur sa page, sinon son domaine (R16, R17 ; g5:v03-10, g5:v06-10) */
@@ -476,11 +535,14 @@ export function CarnetsVue(p: CarnetsVueProps) {
       attente.current = null;
       if (!fait) { if (local && !enAttente?.montre) setRetour(local); return; }
       /* P18 (G11) : la note qui répète une note connue y est fusionnée (« elles seront fusionnées »), sauf « Garder à part » */
-      const garde = lireMessages(magasin.lire()).find(m => m.id === messageId)?.carnetMessage.gardeAPart;
+      /* n° 10 : une phrase déjà gardée à part ne se fusionne pas en douce à son retour (la proposition n'est plus montrée, cf. `cadre`) */
+      const tousMsg = lireMessages(magasin.lire());
+      const garde = tousMsg.find(m => m.id === messageId)?.carnetMessage.gardeAPart
+        || tousMsg.some(m => m.id !== messageId && m.carnetMessage.gardeAPart && memeTexte(m.carnetMessage.texte, txt));
       if (aidesRef.current.doublon && !garde) {
         for (const l of lignes) {
           if (l.sorte !== 'note' || !l.doublonDe) continue;
-          const cid = l.carnetId ?? depuis;
+          const cid = an?.sorte === 'ici' ? an.carnetId : l.carnetId ?? depuis;
           const eff = lireMessages(magasin.lire()).find(m => m.id === messageId)?.carnetMessage.effets
             .find(e => e.cible === 'note' && e.carnetId === cid && e.id !== l.doublonDe);
           if (!cid || !eff) continue;
@@ -527,6 +589,9 @@ export function CarnetsVue(p: CarnetsVueProps) {
     }
     gardeAPartRef.current = aPart && !!depuis; setAPart(false);
     aForcer.current = depuis && !edition ? corrige : null; setCorrige(null); setPresse(undefined);
+    /* n° 3 : le carnet que le cadre a annoncé, par le même calcul, ou celui qu'il a choisi d'un toucher */
+    destEnvoi.current = ouvert && depuis ? corrigeCarnet ?? destinationDans(txt, ouvert, carnets).carnetId : null;
+    setCorrigeCarnet(null);
     setTexte('');
     envoiActif.current = { envoi: rangement, depuis };
     try { await rangement.envoyer(txt); } catch { setTexte(txt); }
@@ -577,11 +642,49 @@ export function CarnetsVue(p: CarnetsVueProps) {
     if (r) setRetour({ bandeau: { sorte: 'range' }, inverse: r.inverse, carnetId: pr.carnetId });
   };
 
+  /**
+   * Critique 5, n° 26 (g4:v01-13) : « ✎ Se renomme ici » se pose à la place du titre, le carnet reste à l'écran, et le titre se tape dans
+   * le champ du bas (« Renommer », « Annuler · Entrée = renommer »). G29 : prérempli par le titre proposé s'il existe et que l'aide est
+   * allumée.
+   */
+  const propositionTitre = (c: CarnetDoc) => {
+    const m = [...messages].reverse().find(x => x.carnetMessage.titrePropose?.carnetId === c.id && !x.carnetMessage.titrePropose.applique);
+    return m ? { titre: m.carnetMessage.titrePropose!.titre, phrase: m.carnetMessage.texte, messageId: m.id } : null;
+  };
+  const ouvrirRenommer = (c: CarnetDoc) => {
+    const pr = propositionTitre(c);
+    const propose = titreProposeDe({ titre: c.title, aides, proposition: pr });
+    setTitreEdite(propose ? propose.titre : c.title);
+    setFeuille(null); setEdition(null);
+    setVue({ sorte: 'renommer', id: c.id });
+    setTimeout(() => champRef.current?.focus(), 0);
+  };
+  const renommerOuvert = (c: CarnetDoc, titre: string) => {
+    const t = titre.trim();
+    setVue({ sorte: 'carnet', id: c.id });
+    if (!t || t === c.title) return;
+    const pr = propositionTitre(c);
+    const r = appliquer(renommer(magasin.lire(), { carnetId: c.id, titre: t, ...(pr ? { messageId: pr.messageId } : {}) }));
+    if (r) setRetour({ bandeau: { sorte: 'renomme', avant: titreSansBanc(r.avant ?? c.title) }, inverse: r.inverse, carnetId: c.id });
+  };
+
   /* ---------- calculs passés aux vues (R44, R45, R47) ---------- */
   const tranche = ouvert ? critereQuiTranche(ouvert) : null;
-  const suggestion = tranche ? { critere: tranche.critere.texte, a: tranche.entre[0], b: tranche.entre[1] } : null;
+  /* n° 5 et 21 : la bulle G8 seulement pour « ajouter · avant » (carnet au repos, champ pris et vide : ChampCarnet tient le focus) ;
+     jamais sous un retour, une IA en cours ou une modification */
+  const suggestion = tranche && vue.sorte === 'carnet' && !retour && etatR.etape !== 'en-cours' && !edition && !feuille
+    ? { critere: tranche.critere.texte, a: tranche.entre[0], b: tranche.entre[1] } : null;
   const consequence = ouvert && lignesApercu.length ? consequenceApercu(ouvert, lignesApercu) : null;
   const auto = ouvert && vue.sorte === 'carnet' && !edition ? vaDansDe(texte) : null;
+  /* n° 3 : le carnet visé pendant la frappe (même calcul qu'à l'envoi), corrigeable d'un toucher */
+  const destCalculee = ouvert && vue.sorte === 'carnet' && !edition && texte.trim() ? destinationDans(texte, ouvert, carnets) : null;
+  const destChoisie = destCalculee ? corrigeCarnet ?? destCalculee.carnetId : null;
+  const titreDe = (id: string) => titreSansBanc(tous.find(c => c.id === id)?.title ?? '');
+  const vers = ouvert && destChoisie && destChoisie !== ouvert.id ? titreDe(destChoisie) : undefined;
+  const vaDansCarnet = ouvert && destCalculee && (destCalculee.carnetId !== ouvert.id || (corrigeCarnet && corrigeCarnet !== ouvert.id))
+    ? { options: [...new Set([destCalculee.carnetId, corrigeCarnet, ouvert.id].filter((x): x is string => !!x))].map(id => ({ id, libelle: id === ouvert.id ? 'Ici' : titreDe(id) })),
+      choisi: destChoisie!, onChoisir: (id: string) => setCorrigeCarnet(id) }
+    : null;
   const rubriqueChoisie = auto ? corrige ?? auto : null;
   const RUBRIQUE_LIBELLE = { critere: 'Ce qui compte', facon: 'Façons', note: 'Notes' } as const;
   const liens: LienV[] = ouvert ? liensDe(ouvert, finances.plans, finances.transactions, finances.payments) : [];
@@ -597,10 +700,15 @@ export function CarnetsVue(p: CarnetsVueProps) {
         const c: CadreV = { sorte: 'lien', url: etatR.lecture.url, phase: 'lecture', depuisListe: (envoiActif.current?.depuis ?? depuis) === null };
         return <CadreArrivee cadre={c} onAnnuler={couperEnvoi} aides={aides} />;
       }
+      /* n° 7 (g5:v01-15) : la note en vrac envoyée : « ✻ L'IA découpe votre note : 3 lignes, 2 carnets », la découpe annoncée dessous */
+      const an = annonces.current.get(etatR.messageId);
+      if (an?.sorte === 'vrac' && !retourDuMessage(etatR.messageId)) {
+        return <NoteEnVrac etat="pendant" enCours lignes={an.vues} texteOrigine={etatR.texte} origine={mode === 'production' ? 'ia' : 'exemple'} nbCarnets={an.carnets} onAnnuler={couperEnvoi} />;
+      }
       if (!retourDuMessage(etatR.messageId)) return <EtatIA etat="en-cours" quoi={etatR.texte} onAnnuler={couperEnvoi} />;
     }
     if ((etatR.etape === 'echec' || etatR.etape === 'hors-ligne') && !retourDuMessage(etatR.messageId) && !texte.trim()) {
-      return <EtatIA etat={etatR.etape} quoi={etatR.avis} />;
+      return <EtatIA etat={etatR.etape} quoi={AVIS_IA[etatR.etape]} />;
     }
     if (edition) return null;
     if (!texte.trim()) {
@@ -616,12 +724,11 @@ export function CarnetsVue(p: CarnetsVueProps) {
       if (lignesApercu.length > 1) {
         /* la découpe annoncée : celle que l'envoi appliquera (même `planVrac`) ; le compteur compte le carnet neuf une fois */
         const plan = planVrac(lignesApercu, t => rattacher(t, carnets));
-        const lignes: LigneVracV[] = plan.lignes.map((x, i) => ({ id: String(i), texte: x.ligne.texte, genre: x.ligne.genre,
-          ...(x.carnetId ? { carnetId: x.carnetId, carnetTitre: titreSansBanc(x.titre) } : { carnetTitre: titreSansBanc(x.titre), neuf: true }) }));
-        return <NoteEnVrac etat="pendant" lignes={lignes} texteOrigine={texte} origine="locale" nbCarnets={plan.carnets} onAnnuler={() => setTexte('')} />;
+        return <NoteEnVrac etat="pendant" lignes={vuesVrac(plan)} texteOrigine={texte} origine="locale" nbCarnets={plan.carnets} onAnnuler={() => setTexte('')} />;
       }
       const pr = rattacher(texte, carnets);
-      const critere = lignesApercu.find(l => l.sorte === 'critere');
+      /* n° 2 : la phrase entière n'est pas son propre critère (« Ce qui compte » reste à l'IA), seulement un critère tiré d'elle */
+      const critere = lignesApercu.find(l => l.sorte === 'critere' && !memeTexte(l.texte, texte));
       const c: CadreV = { sorte: 'creer', titre: titreDePhrase(texte),
         proche: pr ? { titre: titreSansBanc(pr.titre), onAjouter: () => setVue({ sorte: 'carnet', id: pr.carnetId }) } : null,
         ...(pr ? {} : { raisonNeuf: !estLienSeul(texte)
@@ -636,11 +743,14 @@ export function CarnetsVue(p: CarnetsVueProps) {
     if (l0?.url) return <CadreArrivee cadre={{ sorte: 'lien', url: l0.url, phase: 'avant' }} onAnnuler={() => setTexte('')} aides={aides} />;
     const rubrique = rubriqueChoisie ? RUBRIQUE_LIBELLE[rubriqueChoisie] : l0?.sorte === 'critere' ? 'Ce qui compte' : l0?.sorte === 'article' ? 'Articles' : 'Notes';
     /* P18 (G11) : la phrase répète une note du carnet (`doublons.ts`, pendant la frappe) : « Même chose que la note du … · Garder à part » */
-    const dbl = aides.doublon && !aPart && ouvert ? doublonsDe(texte, ouvert.carnet.notes)[0] : undefined;
+    /* n° 10 : une phrase déjà gardée à part (message `gardeAPart`) ne repropose pas la fusion ; la note visée doit être dans le carnet
+       où la phrase va (un autre carnet annoncé, n° 3 : pas de fusion proposée ici) */
+    const dejaAPart = messages.some(m => m.carnetMessage.gardeAPart && memeTexte(m.carnetMessage.texte, texte));
+    const dbl = aides.doublon && !aPart && !dejaAPart && !vers && ouvert ? doublonsDe(texte, ouvert.carnet.notes)[0] : undefined;
     const noteDbl = dbl && ouvert ? ouvert.carnet.notes.find(n => n.id === dbl.noteId) : undefined;
     const leDbl = noteDbl ? dateCourte(noteDbl.modifieeLe ?? messages.find(m => m.id === noteDbl.messageId)?.carnetMessage.le ?? ouvert?.carnet.creeLe) : null;
     const doublon = noteDbl ? { le: leDbl ?? '', texte: noteDbl.texte, onGarderAPart: () => setAPart(true) } : null;
-    return <CadreArrivee cadre={{ sorte: 'texte', rubrique, texte, origine: 'locale' }} onAnnuler={() => { setTexte(''); setAPart(false); }} consequence={consequence} aides={aides} doublon={doublon} />;
+    return <CadreArrivee cadre={{ sorte: 'texte', rubrique, texte, origine: 'locale', ...(vers ? { vers } : {}) }} onAnnuler={() => { setTexte(''); setAPart(false); setCorrigeCarnet(null); }} consequence={vers ? null : consequence} aides={aides} doublon={doublon} />;
   };
   /**
    * R14, R17, R25 : la ligne qu'un message vient de ranger dans le carnet ouvert s'éclaire à sa place, sa phrase citée dessous ; pour un
@@ -704,7 +814,7 @@ export function CarnetsVue(p: CarnetsVueProps) {
       const cur = retourRef.current;
       if (r && cur && cur.id === rt.id) poserRetourEtat({ ...cur, inverse: [...r.inverse, ...cur.inverse] });
     };
-    return <NoteEnVrac etat="apres" lignes={lignes} texteOrigine={msg.carnetMessage.texte} origine={origine}
+    return <NoteEnVrac etat="apres" lignes={lignes} texteOrigine={msg.carnetMessage.texte} origine={origine} avis={rt.avis ?? null}
       nbCarnets={new Set(lignes.map(l => l.carnetId)).size} onAnnuler={() => annulerRetour(rt)}
       carnets={carnets.map(c => ({ id: c.id, titre: titreSansBanc(c.title) }))}
       onChangerGenre={(id, g) => { const l = lignes.find(x => x.id === id); if (l?.carnetId) etendre(appliquer(changerGenre(magasin.lire(), { carnetId: l.carnetId, noteId: id, genre: g as GenreNote }))); }}
@@ -734,10 +844,17 @@ export function CarnetsVue(p: CarnetsVueProps) {
     </div>
   ) : null;
 
-  const champ = (
+  const renomme = vue.sorte === 'renommer' && ouvert ? ouvert : null;
+  const champ = renomme ? (
+    /* n° 26 (g4:v01-13) : le titre dans le champ du bas, « Renommer », puis « Annuler · Entrée = renommer » */
+    <ChampCarnet valeur={titreEdite} inputRef={champRef} onChange={setTitreEdite} onEnvoyer={() => renommerOuvert(renomme, titreEdite)}
+      titreCarnet={titreSansBanc(renomme.title)} libelleEnvoi="Renommer"
+      pied={<div className="cnf-renommer-pied"><button type="button" className="cn-lien" onClick={() => setVue({ sorte: 'carnet', id: renomme.id })}>Annuler</button><span className="cn-sp" /><span className="cn-mut">Entrée = renommer</span></div>} />
+  ) : (
     <ChampCarnet valeur={texte} inputRef={champRef}
-      onChange={t => { setTexte(t); if (!t.trim()) setCorrige(null); if (!edition) rangement.taper(t); }}
+      onChange={t => { setTexte(t); if (!t.trim()) { setCorrige(null); setCorrigeCarnet(null); } if (!edition) rangement.taper(t); }}
       onEnvoyer={() => void envoyer()}
+      vaDansCarnet={vaDansCarnet}
       {...(ouvert && vue.sorte !== 'liste' ? { titreCarnet: titreSansBanc(ouvert.title), libelleEnvoi: edition ? 'Enregistrer' : 'Ajouter' } : {})}
       onBlurChamp={() => setFocusListe(false)}
       onPhoto={f => void photo(f)}
@@ -769,7 +886,7 @@ export function CarnetsVue(p: CarnetsVueProps) {
   } else if (vue.sorte === 'article') {
     const a = ouvert.carnet.articles.find(x => x.id === vue.articleId);
     const ligne = tableauV?.lignes.find(l => l.articleId === vue.articleId);
-    ecran = a ? <FicheArticle article={a as unknown as ArticleV} titreCarnet={titreSansBanc(ouvert.title)} critere={ouvert.carnet.criteres[0]}
+    ecran = a ? <FicheArticle article={a as unknown as ArticleV} titreCarnet={ouvert.title} critere={ouvert.carnet.criteres[0]}
       facon={ouvert.carnet.facons.find(f => f.id === a.faconId)} {...(ligne?.rang ? { rang: ligne.rang, sur: tableauV!.lignes.filter(l => !l.ecarte).length } : {})}
       choisi={ouvert.carnet.choix?.articleId === a.id}
       onRetour={() => setVue({ sorte: 'carnet', id: ouvert.id })}
@@ -777,7 +894,7 @@ export function CarnetsVue(p: CarnetsVueProps) {
       carnet={ouvert.carnet as never} onOffre={articleId => setVue({ sorte: 'article', id: ouvert.id, articleId })}
       onChoisir={() => setVue({ sorte: 'choisir', id: ouvert.id })} /> : null;
   } else if (vue.sorte === 'comparer') {
-    ecran = <Comparer titre={titreSansBanc(ouvert.title)} statut={ouvert.status} critere={ouvert.carnet.criteres[0]} tableau={tableauV}
+    ecran = <Comparer titre={ouvert.title} statut={ouvert.status} critere={ouvert.carnet.criteres[0]} tableau={tableauV}
       onRetour={() => setVue({ sorte: 'carnet', id: ouvert.id })} onOuvrirArticle={articleId => setVue({ sorte: 'article', id: ouvert.id, articleId })}
       nonLus={nonLusDe(ouvert.carnet.articles as never)} pictos={pictosDe(ouvert)}
       onChoisir={() => setVue({ sorte: 'choisir', id: ouvert.id })} />;
@@ -786,25 +903,19 @@ export function CarnetsVue(p: CarnetsVueProps) {
     const nom = (id: string) => { const a = ouvert.carnet.articles.find(x => x.id === id); return a?.nom ?? a?.domaine ?? 'lien'; };
     if (choix) {
       const a = ouvert.carnet.articles.find(x => x.id === choix.articleId)!;
-      ecran = <Choisir etape="choisi" titre={titreSansBanc(ouvert.title)} choix={choix as never} article={a as unknown as ArticleV} critere={ouvert.carnet.criteres[0]} carnet={ouvert.carnet as never} picto={pictoArticle(ouvert, a)}
+      ecran = <Choisir etape="choisi" titre={ouvert.title} choix={choix as never} article={a as unknown as ArticleV} critere={ouvert.carnet.criteres[0]} carnet={ouvert.carnet as never} picto={pictoArticle(ouvert, a)}
         facon={ouvert.carnet.facons.find(f => f.id === (choix.faconId ?? a?.faconId))} ecartes={choix.ecartes.map(e => ({ nom: nom(e.articleId), raison: e.raison }))}
         remplaces={choix.remplaces.map(r => ({ nom: nom(r.articleId), pourquoi: r.pourquoi, le: r.le }))} sortie={ouvert.carnet.sortie ?? null}
         onRetour={() => setVue({ sorte: 'carnet', id: ouvert.id })} onEnvoyerAVenir={() => void envoyerAVenir(ouvert)} onVoirAVenir={() => p.onVoirAVenir?.()} />;
     } else {
       const rangees = (tableauV?.lignes ?? []).filter(l => !l.ecarte);
       const premier = ouvert.carnet.articles.find(x => x.id === rangees[0]?.articleId) ?? ouvert.carnet.articles[0];
-      ecran = premier ? <Choisir etape="choisir" titre={titreSansBanc(ouvert.title)} carnet={ouvert.carnet as never} picto={pictoArticle(ouvert, premier)} article={premier as unknown as ArticleV} sur={Math.max(rangees.length, 1)} valeurs={[]}
+      ecran = premier ? <Choisir etape="choisir" titre={ouvert.title} carnet={ouvert.carnet as never} picto={pictoArticle(ouvert, premier)} article={premier as unknown as ArticleV} sur={Math.max(rangees.length, 1)} valeurs={[]}
         autres={rangees.slice(1).map((l, i) => ({ article: ouvert.carnet.articles.find(x => x.id === l.articleId) as unknown as ArticleV, rang: l.rang ?? i + 2 }))}
         onRetour={() => setVue({ sorte: 'carnet', id: ouvert.id })}
         onChoisir={pourquoi => { const r = appliquer(choisir(magasin.lire(), { carnetId: ouvert.id, articleId: premier.id, ...(premier.faconId ? { faconId: premier.faconId } : {}), pourquoi, le: maintenant().toISOString() })); if (r) setRetour({ bandeau: { sorte: 'range' }, inverse: r.inverse, carnetId: ouvert.id }); }}
         onEcarter={() => setVue({ sorte: 'comparer', id: ouvert.id })} /> : null;
     }
-  } else if (vue.sorte === 'renommer') {
-    const prop = [...messages].reverse().find(m => m.carnetMessage.titrePropose?.carnetId === ouvert.id && !m.carnetMessage.titrePropose.applique);
-    ecran = <RenommerCarnet titre={ouvert.title} aides={aides}
-      proposition={prop ? { titre: prop.carnetMessage.titrePropose!.titre, phrase: prop.carnetMessage.texte } : null}
-      onRenommer={titre => { const r = appliquer(renommer(magasin.lire(), { carnetId: ouvert.id, titre, ...(prop ? { messageId: prop.id } : {}) })); setVue({ sorte: 'carnet', id: ouvert.id }); if (r) setRetour({ bandeau: { sorte: 'renomme', avant: titreSansBanc(r.avant ?? ouvert.title) }, inverse: r.inverse, carnetId: ouvert.id }); }}
-      onAnnuler={() => setVue({ sorte: 'carnet', id: ouvert.id })} />;
   } else {
     const c = ouvert;
     const note = feuille ? c.carnet.notes.find(n => n.id === feuille) : undefined;
@@ -822,9 +933,19 @@ export function CarnetsVue(p: CarnetsVueProps) {
       onArchiver={() => { const r = appliquer(archiverCarnet(magasin.lire(), { carnetId: c.id, le: maintenant().toISOString(), raison: 'plan réalisé' })); if (r) { setVue({ sorte: 'liste' }); setRetour({ bandeau: { sorte: 'range' }, inverse: r.inverse }); } }}
       onSupprimer={() => { const r = appliquer(supprimerCarnet(magasin.lire(), { carnetId: c.id, ...finance })); if (r) { setSupprime({ titre: c.title, statut: c.status, inverse: r.inverse }); setVue({ sorte: 'liste' }); } }}
       onGarder={() => setVue({ sorte: 'carnet', id: c.id })} />;
-    ecran = <>
-      <CarnetOuvert carnet={versV(c)} aides={aides as never} liens={liens} tableau={tableauV}
-        bandeau={carteSupprimer ?? (bandeauNode || proposeesNode ? <>{bandeauNode}{proposeesNode}</> : null)} rangee={carteSupprimer ? null : rangee} cadre={carteSupprimer ? null : cadre()}
+    /* n° 26 : renommer garde l'en-tête et le contenu ; le cadre se pose à la place du titre (carnets-fil.css, `.cnf-renommer`) */
+    const cadreRenommer = vue.sorte === 'renommer' ? (() => {
+      const pr = propositionTitre(c);
+      return <RenommerCarnet titre={titreSansBanc(c.title)} aides={aides} proposition={pr} champBas={{ valeur: titreEdite }} onRenommer={t => renommerOuvert(c, t)} onAnnuler={() => setVue({ sorte: 'carnet', id: c.id })} />;
+    })() : null;
+    /* n° 2 (g5:v04-4) : un seul bandeau après la création ; les puces proposées attendent qu'il parte */
+    const proposees = retour?.bandeau.sorte === 'cree' ? null : proposeesNode;
+    /* n° 24 : l'IA n'est pas passée pour ce carnet (éteinte, hors ligne, échec du dernier envoi) ; prop du lot B, passée telle quelle */
+    const manque = iaManquee[c.id];
+    const iaIndisponible = mode === 'eteint' ? 'eteinte' : !enLigne ? 'hors-ligne' : manque === 'eteint' ? 'eteinte' : manque ?? null;
+        ecran = <>
+      <CarnetOuvert carnet={versV(c)} aides={aides as never} liens={liens} tableau={tableauV} iaIndisponible={iaIndisponible}
+        bandeau={cadreRenommer ?? carteSupprimer ?? (bandeauNode || proposees ? <>{bandeauNode}{proposees}</> : null)} rangee={carteSupprimer || cadreRenommer ? null : rangee} cadre={carteSupprimer || cadreRenommer ? null : cadre()}
         vientDEtreCree={vientDEtreCree === c.id} doublons={aides.doublon ? notesEnDouble(c).flat() : []}
         noteSupprimee={noteSupprimee ? { id: noteSupprimee.id, onAnnuler: () => annulerSuppressionNote(noteSupprimee) } : null}
         feuille={noteEditee ? { noteId: noteEditee.id, contenu: cadreModifier(noteEditee) } : note ? { noteId: note.id, contenu: <FeuilleNote note={note as never} aides={aides as never}
@@ -837,7 +958,7 @@ export function CarnetsVue(p: CarnetsVueProps) {
           onFermer={() => setFeuille(null)} /> } : null}
         grise={vue.sorte === 'supprimer'}
         onRetour={() => { setVue({ sorte: 'liste' }); setVientDEtreCree(null); }}
-        onRenommer={() => setVue({ sorte: 'renommer', id: c.id })}
+        onRenommer={() => ouvrirRenommer(c)}
         onSupprimer={() => setVue({ sorte: 'supprimer', id: c.id })}
         onNote={id => setFeuille(f => (f === id ? null : id))}
         onOuvrirArticle={articleId => setVue({ sorte: 'article', id: c.id, articleId })}
@@ -862,7 +983,7 @@ export function CarnetsVue(p: CarnetsVueProps) {
   return (
     <div className={`cn ${p.className ?? ''}`} data-carnets data-vue={vue.sorte} style={{ display: 'flex', flexDirection: 'column', minHeight: 0 }}>
       <div style={{ flex: 1, minHeight: 0, overflowY: 'auto' }}>{ecran}</div>
-      {vue.sorte !== 'renommer' && champ}
+      {champ}
     </div>
   );
 }

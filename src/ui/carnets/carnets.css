@@ -456,3 +456,68 @@
   .cn-voile { align-items: center; }
   .cn-feuille-cartes { border-radius: 20px; }
 }
+
+/* ---------- Correction 5, lot B : figés h05-3, v04-4, v06-10, h01-6, i06-2 (critique 5) ---------- */
+/* n° 29 : l'objet dessiné, surfaces pleines, teintes par thème ; lisible à 40 px. Rouge exclu (Q12). */
+.cn-picto { --pm: #cdd5db; --pm2: #9eaab3; --pk: #39424a; --pb: #5b8ec4; --pv: #7a4a22; --po: #d9a03f; --pf: #f6f8f9; --pt: #4a545c; }
+[data-theme='cave'] .cn-picto { --pm: #8c98a1; --pm2: #66727b; --pk: #1d2226; --pb: #6d9fd3; --pv: #a56c3b; --po: #e0ac52; --pf: #c9d1d6; --pt: #d4dbe0; }
+.cn-picto :is(.m, .m2, .k, .a, .b, .v, .o, .f) { stroke: var(--pt); stroke-width: .9; stroke-linejoin: round; }
+.cn-picto .m { fill: var(--pm); } .cn-picto .m2 { fill: var(--pm2); } .cn-picto .k { fill: var(--pk); }
+.cn-picto .a { fill: rgb(var(--area-stocks)); } .cn-picto .b { fill: var(--pb); } .cn-picto .v { fill: var(--pv); }
+.cn-picto .o { fill: var(--po); } .cn-picto .f { fill: var(--pf); }
+.cn-picto .ac { fill: none; stroke: rgb(var(--area-stocks)); stroke-width: 2.6; }
+.cn-picto :is(.tl, .tg, .tt) { fill: none; stroke-linecap: round; stroke-linejoin: round; }
+.cn-picto .tl { stroke: var(--pt); stroke-width: 1.4; }
+.cn-picto .tg { stroke: var(--pm2); stroke-width: 3; }
+.cn-picto .tt { stroke: rgb(var(--area-stocks)); stroke-width: 4.5; }
+.cn-picto-initiale text { fill: var(--c-ink2, currentColor); font-family: inherit; }
+.cn-vignette-vide { background: rgb(var(--cave-850)); color: var(--c-ink2); }
+[data-theme='clair'] .cn-vignette-vide, :root:not([data-theme='cave']) .cn-vignette-vide { background: #e9eef1; }
+
+/* n° 19 et 1 : ligne d'état, puis la ligne Critère (h05-3) */
+.cn-ligne-etat { font-size: 16px; color: var(--c-ink); margin-top: -6px; }
+.cn-critere-bloc { display: flex; flex-direction: column; gap: 6px; }
+.cn-critere-une { align-items: baseline; font-size: 16px; color: var(--c-ink2); }
+.cn-critere-une .cn-critere-ico { flex: none; align-self: center; }
+.cn-critere-une b { color: var(--c-ink); }
+.cn-critere-plus { display: inline; min-height: 0; padding: 0; font-size: 15px; }
+.cn-criteres-derriere { display: flex; flex-direction: column; gap: 6px; padding: 8px 12px 8px 26px; border-left: 2px solid var(--c-line2); }
+.cn-cqc-ligne .cn-cqc-texte { font-weight: 400; color: var(--c-ink2); }
+.cn-cqc-ligne .cn-cqc-texte b { font-weight: 700; color: var(--c-ink); }
+/* une ligne pour « Articles 5 lus ⌄ · Comparer côte à côte › » à 390 */
+.cn-tete-articles .cn-comparer-lien { white-space: nowrap; }
+.cn-valeurs-lues { font-size: 14px; }
+.cn-carte-complete { border: 1px solid var(--c-line); border-radius: 16px; overflow: hidden; }
+.cn-carte-complete .cn-article-grand { width: 100%; text-align: left; }
+
+/* n° 11 : liste vide = i06-2, sans flèche ni bulle */
+.cn-vide-page { min-height: 0; gap: 12px; }
+.cn-vide-titre { font-size: 30px; font-weight: 800; line-height: 1.1; color: var(--c-ink); }
+.cn-vide-phrase { font-size: 17px; color: var(--c-ink2); }
+.cn-exemple-carte { display: flex; align-items: center; gap: 12px; padding: 14px; border: 2px dashed rgb(var(--area-stocks) / .7); border-radius: 14px; background: var(--c-zonebg); }
+.cn-exemple-tx { display: flex; flex-direction: column; gap: 4px; }
+.cn-exemple-tx b { font-size: 17px; color: var(--c-ink2); }
+.cn-arrive { display: inline-flex; align-items: center; gap: 4px; flex: none; color: var(--c-zonet); font-weight: 700; }
+.cn-par-exemple { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
+.cn-puce-exemple { min-height: 44px; border-style: dashed !important; color: var(--c-ink2); }
+
+/* n° 32 : en veille, une ligne par machine */
+.cn-veille-tx { display: flex; flex-direction: column; }
+.cn-veille-prix { align-self: center; }
+
+/* n° 8, 28, 36 : l'article ouvert (h01-6) */
+.cn-fiche-picto { min-height: 150px; background: #e9eef1; }
+[data-theme='cave'] .cn-fiche-picto { background: rgb(var(--cave-850)); }
+.cn-vignette-fiche { width: 100%; height: 150px; border-radius: 0; background: transparent !important; display: grid; place-items: center; }
+.cn-heros-val .cn-heros-place { font-size: 15px; }
+.cn-heros .cn-piste { height: 52px; }
+.cn-piste-legende { top: 24px; align-items: baseline; }
+.cn-piste-borne { white-space: nowrap; }
+.cn-carac { grid-template-columns: 1fr 1fr; }
+.cn-carac dd { display: flex; flex-wrap: wrap; align-items: baseline; gap: 2px 4px; }
+.cn-prix-mono .cn-prix { font-weight: 600; }
+/* v04-4 : « Ce qui compte · rien encore : l'IA le proposera » sur la ligne de son titre */
+.cn-rubrique-ligne .cn-rubrique-tete { flex-wrap: nowrap; align-items: baseline; }
+.cn-rubrique-ligne .cn-rubrique-tete > svg { flex: none; align-self: center; }
+.cn-rubrique-ligne .cn-rubrique-tete > b { flex: none; }
+.cn-rubrique-ligne .cn-rubrique-tete > .cn-mut, .cn-rubrique-ligne .cn-rubrique-tete > .cn-cqc-texte { min-width: 0; }

@@ -15,10 +15,34 @@ export interface RenommerCarnetProps {
   proposition?: { titre: string; phrase: string } | null;
   onRenommer: (titre: string) => void;
   onAnnuler: () => void;
+  /**
+   * Critique 5, n° 26 (g4:v01-13) : le titre se tape dans le champ du bas, avec « Renommer » et « Annuler · Entrée = renommer ». Le cadre
+   * se pose alors à la place du titre, dans le carnet qui reste à l'écran, et montre le titre tel qu'il est tapé, en grand.
+   */
+  champBas?: { valeur: string };
+}
+
+/** Le titre proposé par l'IA (G29), s'il est allumé, existe et diffère du titre actuel ; sinon `null`. */
+export function titreProposeDe(p: Pick<RenommerCarnetProps, 'titre' | 'aides' | 'proposition'>): { titre: string; phrase: string } | null {
+  return p.aides.renommerPropose && p.proposition && p.proposition.titre.trim() && p.proposition.titre !== p.titre ? p.proposition : null;
 }
 
 export function RenommerCarnet(p: RenommerCarnetProps) {
-  const propose = p.aides.renommerPropose && p.proposition && p.proposition.titre.trim() && p.proposition.titre !== p.titre ? p.proposition : null;
+  const propose = titreProposeDe(p);
+  if (p.champBas) {
+    return (
+      <section className="cn-cadre cn-renommer cnf-renommer" aria-label="Se renomme ici">
+        <div className="cn-cadre-tete">
+          <span className="cn-vert cnf-renommer-tete"><Pencil size={16} aria-hidden /> Se renomme ici</span><span className="cn-sp" />
+          <span className="cn-mut">titre du carnet</span>
+        </div>
+        <p className="cnf-renommer-titre">{p.champBas.valeur || p.titre}</p>
+        {propose && p.champBas.valeur === propose.titre && (
+          <p className="cn-mut"><Provenance origine="ia" /> proposé d'après « {propose.phrase} » · avant : « {p.titre} »</p>
+        )}
+      </section>
+    );
+  }
   const [valeur, setValeur] = useState(propose ? propose.titre : p.titre);
   const id = useId();
   const pret = valeur.trim().length > 0 && valeur.trim() !== p.titre;

@@ -17,7 +17,7 @@ import type { ComportementSimule, ModeCarnetIA } from '../../config/carnetIA';
 import { contexteModele, liensDuTexte, lireReponse, type CarnetPourIA, type LigneCarnet, type PageLue } from '../../domain/carnets/ia';
 import { pageSimulee, reponseSimulee } from '../../domain/carnets/iaSimulee';
 import type { ContexteRangerCarnet } from '../../../functions/src/carnetIA';
-import { titreDePhrase } from '../../domain/carnets/modele';
+import { titreNeufDe } from '../../domain/carnets/modele';
 import { jetons } from '../../domain/carnets/analyseLocale';
 
 export type EtatRangement<L = unknown> =
@@ -110,25 +110,59 @@ export function retourDuRangement(
  * sans carnet proche vont ensemble dans UN carnet neuf (G23, g5:v02-19 : « Prochain brassin · aucun carnet proche »), titré par la
  * première d'entre elles. `carnets` : le nombre de carnets distincts touchés, carnet neuf compris — le même pendant et après.
  */
-export interface PlanVrac<T> {
-  lignes: Array<{ ligne: T; carnetId?: string; titre: string; neuf: boolean }>;
-  titreNeuf: string | null;
-  carnets: number;
+/** La sorte d'une ligne de note en vrac, dans les mots de ses notes (R35, R36) : achat, travail, conseil, question, note. */
+export type SorteVrac = 'achat' | 'travail' | 'conseil' | 'question' | 'note';
+
+/** La sorte d'une ligne : un article ou un achat → achat ; à faire → travail ; conseil ; question ; sinon note. */
+export function sorteVrac(l: { sorte?: string; genre?: string }): SorteVrac {
+  if (l.sorte === 'article' || l.genre === 'a-acheter') return 'achat';
+  if (l.genre === 'a-faire') return 'travail';
+  if (l.genre === 'conseil' || l.genre === 'question') return l.genre;
+  return 'note';
 }
 
-export function planVrac<T extends { texte: string }>(
+/** « 3 lignes · 2 carnets » (R18, R19 : le même décompte pendant et après). */
+export const texteDecompte = (lignes: number, carnets: number): string =>
+  `${lignes} ligne${lignes > 1 ? 's' : ''} · ${carnets} carnet${carnets > 1 ? 's' : ''}`;
+
+export interface LignePlanVrac<T> {
+  ligne: T;
+  /** Le carnet existant (par `rattacher`) ; absent : le carnet neuf. */
+  carnetId?: string;
+  /** Le titre du carnet visé (existant, ou `titreNeuf`). */
+  titre: string;
+  neuf: boolean;
+  /** Achat, travail, conseil, question ou note (R35, R36). */
+  sorte: SorteVrac;
+}
+
+export interface PlanVrac<T> {
+  lignes: Array<LignePlanVrac<T>>;
+  /** Le titre du seul carnet neuf, mis en forme (`titreNeufDe` : nom d'objet, majuscule) ; `null` si toutes les lignes ont un carnet. */
+  titreNeuf: string | null;
+  carnets: number;
+  /** « 3 lignes · 2 carnets ». */
+  decompte: string;
+}
+
+/**
+ * Critique 5, n° 7 et 30 : chaque ligne avec sa sorte et son carnet (existant par `proche`, ou UN seul carnet neuf, au titre mis en forme,
+ * né à l'état Idée par `ranger`). Le décompte compte le carnet neuf une fois.
+ */
+export function planVrac<T extends { texte: string; sorte?: string; genre?: string }>(
   lignes: readonly T[],
   proche: (texte: string) => { carnetId: string; titre: string } | null
 ): PlanVrac<T> {
   let titreNeuf: string | null = null;
-  const sortie = lignes.map(ligne => {
+  const sortie = lignes.map((ligne): LignePlanVrac<T> => {
+    const sorte = sorteVrac(ligne);
     const p = proche(ligne.texte);
-    if (p) return { ligne, carnetId: p.carnetId, titre: p.titre, neuf: false };
-    titreNeuf ??= titreDePhrase(ligne.texte);
-    return { ligne, titre: titreNeuf, neuf: true };
+    if (p) return { ligne, carnetId: p.carnetId, titre: p.titre, neuf: false, sorte };
+    titreNeuf ??= titreNeufDe(ligne.texte);
+    return { ligne, titre: titreNeuf, neuf: true, sorte };
   });
-  const ids = new Set(sortie.map(l => l.carnetId ?? '\u0000neuf'));
-  return { lignes: sortie, titreNeuf, carnets: ids.size };
+  const carnets = new Set(sortie.map(l => l.carnetId ?? '\u0000neuf')).size;
+  return { lignes: sortie, titreNeuf, carnets, decompte: texteDecompte(sortie.length, carnets) };
 }
 
 /**

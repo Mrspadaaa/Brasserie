@@ -49,32 +49,32 @@ describe('P1 · pictos par objet (R01, R04, D-25, D-78)', () => {
   });
 });
 
-describe('P2 · liste vide = p2:i02-2', () => {
-  it('cadre pointillé, « Un carnet garde » et ses trois lignes, bulle verte vers le champ ; puces G1 touchables, G2', () => {
+describe('P2 · liste vide = p2:i06-2 (critique 5, n° 11 : la bulle vers le champ est retirée, D-108)', () => {
+  it('carte exemple en pointillé (« votre premier carnet », ↓ arrive ici), puces G1 touchables, G2 ; aucune bulle ni flèche vers le champ', () => {
     const onExemple = vi.fn();
     const { container } = render(<ListeCarnets carnets={[]} onOuvrir={rien} onExemple={onExemple} />);
     const t = texte(container);
-    expect(container.querySelector('.cn-premier')!.textContent).toMatch(/Votre premier carnet\s*s'affichera ici/);
-    expect(t).toContain('Nouveau carnet · Idée');
-    const garde = within(screen.getByRole('region', { name: 'Un carnet garde' }));
-    expect(garde.getAllByRole('listitem').map(li => li.textContent)).toEqual([
-      "Les objets : un lien collé montre l'objet, une photo aussi", 'Le prix, surveillé tous les 3 jours', 'Le choix, qui part dans À venir'
-    ]);
-    const bulle = screen.getByRole('note');
-    expect(bulle.textContent).toContain('Écrivez ici un besoin : un frigo, une ventilation, un évier…');
-    expect(bulle.textContent).toContain('Entrée crée le carnet.');
-    expect(bulle.textContent).toContain('Une note en vrac marche aussi.');
-    fireEvent.click(within(bulle).getByRole('button', { name: 'Ventilation de la salle' }));
+    expect(t).toContain('Carnets');
+    const carte = screen.getByLabelText('Exemple : votre premier carnet arrive ici');
+    expect(carte.textContent).toContain('Évier inox, 2 bacs');
+    expect(carte.textContent).toContain('votre premier carnet');
+    expect(carte.textContent).toContain('arrive ici');
+    expect(t).toContain('Par exemple :');
+    expect(t).toContain('Une note en vrac marche aussi.');
+    expect(screen.queryByRole('note')).toBeNull();
+    expect(t).not.toContain('Écrivez ici un besoin');
+    fireEvent.click(screen.getByRole('button', { name: 'Ventilation de la salle' }));
     expect(onExemple).toHaveBeenCalledWith('Ventilation de la salle');
     expect(t).not.toContain('Aucun carnet encore. Par exemple');
   });
-  it('pendant la frappe, le cadre du geste prend la place du cadre pointillé et la bulle se retire', () => {
+  it('pendant la frappe, le cadre du geste prend la place de la carte exemple', () => {
     render(<ListeCarnets carnets={[]} onOuvrir={rien} enHaut={<><div>cadre du geste</div>{null}</>} />);
     expect(screen.getByText('cadre du geste')).toBeTruthy();
-    expect(screen.queryByRole('note')).toBeNull();
+    expect(screen.queryByLabelText('Exemple : votre premier carnet arrive ici')).toBeNull();
     cleanup();
     render(<ListeCarnets carnets={[]} onOuvrir={rien} enHaut={<>{null}{false}</>} />);
-    expect(screen.getByRole('note')).toBeTruthy();
+    expect(screen.getByLabelText('Exemple : votre premier carnet arrive ici')).toBeTruthy();
+    expect(screen.queryByRole('note')).toBeNull();
   });
 });
 

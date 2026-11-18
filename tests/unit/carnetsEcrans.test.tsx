@@ -145,14 +145,14 @@ describe('C1 · écrans figés', () => {
     expect(container.textContent).not.toContain('CHF');
     sansZeroInvente(container);
   });
-  it('R02 liste vide (i02-2, corr. 4 P2) : cadre « Votre premier carnet s’affichera ici », « Un carnet garde », bulle ; G1, G2', () => {
+  it('R02 liste vide (i06-2, corr. 5 n° 11) : carte exemple « votre premier carnet », puces G1, G2 ; ni bulle ni « Un carnet garde »', () => {
     const onExemple = vi.fn();
     const { container } = render(<ListeCarnets carnets={[]} onOuvrir={rien} onExemple={onExemple} />);
-    expect(container.textContent).toContain('Votre premier carnet');
-    expect(container.textContent).toContain("s'affichera ici");
-    expect(container.textContent).toContain('Un carnet garde');
-    expect(container.textContent).toContain('Écrivez ici un besoin');
+    expect(container.textContent).toContain('votre premier carnet');
+    expect(container.textContent).toContain('arrive ici');
+    expect(container.textContent).toContain('Par exemple :');
     expect(container.textContent).toContain('Une note en vrac marche aussi.');
+    expect(container.textContent).not.toContain('Écrivez ici un besoin');
     fireEvent.click(screen.getByRole('button', { name: 'Frigo de garde' }));
     expect(onExemple).toHaveBeenCalledWith('Frigo de garde');
     expect(container.textContent).not.toMatch(/Écrivez ou collez ici/);
@@ -161,8 +161,9 @@ describe('C1 · écrans figés', () => {
   it('R03 carnet ouvert : titre, Ce qui compte, façons, articles en tableau, sans tuiles « quoi ? »', () => {
     const { container } = ouvert();
     expect(screen.getByRole('heading', { name: 'Ventilation de la salle de brassage' })).toBeTruthy();
-    /* P11 : deux critères, « Ce qui compte » et la provenance une fois en tête, puis une ligne courte par critère */
-    expect(container.textContent).toContain("Ce qui compte, proposé par l'IA :capter la buée à la source");
+    /* critique 5 (h05-3) : une seule ligne « Critère : ce qui range · sa provenance », les critères sans valeur derrière « +1 sans valeur » */
+    expect(container.textContent).toContain("Critère : débit · proposé par l'IA");
+    expect(container.textContent).toContain('+1 sans valeur');
     /* corr. 4 P5 (h05-3) : les façons sont dans le tableau, chacune avec sa pastille sur le critère */
     expect(container.querySelector('.cn-tab-facon')?.textContent).toContain('Hotte + extracteur');
     expect(container.textContent).toContain('capte la buée');
@@ -199,10 +200,12 @@ describe('C1 · écrans figés', () => {
     expect(screen.getByRole('button', { name: /Choisir · Brassage Romandie/ })).toBeTruthy();
     expect(container.textContent).toContain('Part dans À venir');
   });
-  it('R06 comparer : rangé par, rangs, meilleur surligné, moins bien partout, écarté à la fin avec sa raison, inconnu vide', () => {
+  it('R06 comparer : rangé par, rangs, meilleur surligné, critère sans valeur dit, écarté à la fin avec sa raison, inconnu vide', () => {
     const { container } = render(<Comparer titre="Ventilation" statut="research" critere={ventilation.carnet.criteres[0]} tableau={tableau} onRetour={rien} onChoisir={rien} />);
     expect(container.textContent).toContain('rangé par : tient 80 °C d’abord, puis le débit');
-    expect(container.textContent).toContain('moins bien partout');
+    /* critique 5, n° 22 et 23 : le critère sans valeur ne range pas, et personne n'est « moins bien partout » ici (aucun article dominé par chacun des autres) */
+    expect(container.textContent).toContain('sans valeur à comparer, il ne range pas');
+    expect(container.textContent).not.toContain('moins bien partout');
     const tetes = Array.from(container.querySelectorAll('thead th')).map(t => t.textContent);
     expect(tetes[tetes.length - 1]).toContain('Hélicoïde mural');
     expect(tetes[tetes.length - 1]).toContain('écarté');
@@ -477,10 +480,11 @@ describe('C6 · G8, G29, pastilles, G30, G32', () => {
     fireEvent.focus(screen.getByRole('textbox'));
     expect(screen.queryByRole('button', { name: /peut trancher/ })).toBeNull();
   });
-  it('champ : un geste envoie (Entrée ou Ajouter), ↑ sur la liste ; micro absent sans dictée ; aucune voix mise en avant', () => {
+  it('champ : un seul habit d’envoi, le bouton « Ajouter » (critique 5, n° 42), ou Entrée ; micro absent sans dictée ; aucune voix mise en avant', () => {
     const onEnvoyer = vi.fn();
     const r = render(<ChampCarnet valeur="hotte au-dessus de la cuve" onChange={rien} onEnvoyer={onEnvoyer} onPhoto={rien} />);
-    fireEvent.click(screen.getByRole('button', { name: 'Envoyer' }));
+    fireEvent.click(screen.getByRole('button', { name: 'Ajouter' }));
+    expect(screen.queryByRole('button', { name: 'Envoyer' })).toBeNull();
     fireEvent.keyDown(screen.getByRole('textbox'), { key: 'Enter' });
     expect(onEnvoyer).toHaveBeenCalledTimes(2);
     expect(screen.queryByRole('button', { name: 'Dicter' })).toBeNull();
@@ -654,7 +658,7 @@ describe('Photos, état de l’IA, valeurs', () => {
 
 describe('Correction 1, lot L2 : lisibilité du carnet ouvert et du champ (P10 à P13)', () => {
   const avecCriteres = (criteres: CarnetV['carnet']['criteres']): CarnetV => ({ ...ventilation, carnet: { ...ventilation.carnet, criteres } });
-  it('P11 : « Ce qui compte » et « tiré de votre phrase » une seule fois ; un critère en double, une ligne', () => {
+  it('P11 (critique 5, h05-3) : une seule ligne « Critère : … » avec sa provenance une fois ; un critère en double, une ligne ; le reste derrière « +2 sans valeur »', () => {
     const { container } = ouvert({ carnet: avecCriteres([
       { id: 'k1', texte: 'plus de condensation au plafond', origine: 'vous' },
       { id: 'k2', texte: 'tient 80 °C', origine: 'exemple' },
@@ -662,22 +666,25 @@ describe('Correction 1, lot L2 : lisibilité du carnet ouvert et du champ (P10 �
       { id: 'k4', texte: 'Plus de condensation au plafond', origine: 'locale' },
     ]) });
     const rub = within(screen.getByRole('region', { name: 'Ce qui compte' }));
-    const t = rub.getByText(/Ce qui compte/).closest('section')!.textContent!;
-    expect(t.match(/Ce qui compte/g)).toHaveLength(1);
-    expect(t.match(/tiré de votre phrase/g)).toHaveLength(1);
+    const t = rub.getByText(/Critère :/).closest('section')!.textContent!;
+    expect(t.match(/Critère :/g)).toHaveLength(1);
+    expect(t.match(/de votre phrase/g)).toHaveLength(1);
     expect(t.match(/condensation au plafond/gi)).toHaveLength(1);
+    expect(container.querySelectorAll('.cn-critere-court')).toHaveLength(0);
+    fireEvent.click(rub.getByRole('button', { name: /[+]2 sans valeur/ }));
     expect(container.querySelectorAll('.cn-critere-court')).toHaveLength(3);
   });
-  it('P11 : provenances mêlées, la tête dit la plus fréquente, la ligne d’une autre provenance le dit en court', () => {
+  it('P11 : provenances mêlées, chaque critère de la tête dit la sienne ; un critère sans valeur reste derrière le bouton', () => {
     ouvert({ carnet: avecCriteres([
       { id: 'k1', texte: 'capter la buée à la source', origine: 'ia' },
-      { id: 'k2', texte: 'le débit', origine: 'ia' },
-      { id: 'k3', texte: 'tient 80 °C', origine: 'vous' },
+      { id: 'k2', texte: 'le débit', origine: 'ia', caracteristique: { nom: 'débit', unite: 'm³/h', sens: 'plus' } },
+      { id: 'k3', texte: 'tient 80 °C', origine: 'vous', caracteristique: { nom: 'tient 80 °C', sens: 'oui-non' } },
     ]) });
     const t = screen.getByRole('region', { name: 'Ce qui compte' }).textContent!;
-    expect(t).toContain("Ce qui compte, proposé par l'IA :");
-    expect(t.match(/proposé par l'IA/g)).toHaveLength(1);
-    expect(t).toContain('tient 80 °C · tiré de votre phrase');
+    expect(t).toContain("le débit · proposé par l'IA");
+    expect(t).toContain('tient 80 °C · de votre phrase');
+    expect(t).toContain('+1 sans valeur');
+    expect(t).not.toContain('capter la buée');
   });
   it('P11 : la ligne rangée d’un critère en double s’encadre sur la ligne gardée', () => {
     ouvert({ carnet: avecCriteres([
@@ -697,15 +704,19 @@ describe('Correction 1, lot L2 : lisibilité du carnet ouvert et du champ (P10 �
 });
 
 describe('Correction 1, lot L2 : le champ dans le vrai conteneur (fixture, magasin mémoire, IA simulée)', () => {
-  const monter = () => {
-    const magasin = magasinMemoire(fixtureCarnets());
+  const monter = (o: Parameters<typeof fixtureCarnets>[0] = {}) => {
+    const magasin = magasinMemoire(fixtureCarnets(o));
     render(<CarnetsVue magasin={magasin} finances={{ plans: [], transactions: [], payments: [] }} mode="simule" appels={appelsSimules('normal', 0)}
       aides={aidesCarnet('simule', {})} ouvrir={{ id: ID_VENTILATION, at: 1 }} ecrirePlan={rien} />);
     const champ = () => document.querySelector('.cn-champ textarea') as HTMLTextAreaElement;
     return { magasin, champ };
   };
-  it('P13 : sur Ventilation, au focus du champ vide, la bulle G8 paraît, picto local, sans ✻', () => {
-    const { champ } = monter();
+  it('P13 : sur Ventilation par défaut, la bulle G8 se tait (rien à trancher) ; avec l’option g8 (critique 5, n° 21), elle paraît au focus, picto local, sans ✻', () => {
+    const defaut = monter();
+    fireEvent.focus(defaut.champ());
+    expect(screen.queryByRole('button', { name: /peut trancher/ })).toBeNull();
+    cleanup();
+    const { champ } = monter({ g8: true });
     expect(screen.queryByRole('button', { name: /peut trancher/ })).toBeNull();
     fireEvent.focus(champ());
     const bulle = screen.getByRole('button', { name: /peut trancher entre/ });

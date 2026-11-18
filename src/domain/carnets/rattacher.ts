@@ -91,8 +91,24 @@ export function rattacher(texte: string, carnets: readonly CarnetDoc[], seuil = 
 /** La raison dite d'un rattachement : « comme <titre> : <mots> ». Picto local (Q19). */
 export const raisonRattachement = (p: Proposition): string => `comme ${titreSansBanc(p.titre)} : ${p.mots.slice(0, 3).join(', ')}`;
 
-/** G35 : le carnet le plus proche d'un autre (pour y déplacer ses articles en veille), lui-même exclu. */
+/**
+ * La catégorie d'objet d'une idée, dérivée de son titre : le nom de l'idée (premier mot significatif, racine ; « Hotte de la salle »
+ * → hotte, « Extracteur pour la cave » → extracteur). Aucun champ de catégorie n'existe : `undefined` si le titre n'a pas de mot sûr.
+ */
+export const categorieDe = (c: Pick<CarnetDoc, 'title'>): string | undefined => nomEtQualifiants(titreSansBanc(c.title))[0];
+
+/**
+ * G35 : le carnet le plus proche d'un autre (pour y déplacer ses articles en veille), lui-même exclu. Critique 5, n° 27 : seulement un
+ * carnet de même catégorie d'objet (`categorieDe`) ; sans catégorie sûre, ou sans carnet de même catégorie : `null` (G35 ne s'affiche pas).
+ */
 export function carnetProche(c: CarnetDoc, carnets: readonly CarnetDoc[], seuil = SEUIL_RATTACHER): Proposition | null {
+  const cat = categorieDe(c);
+  if (!cat) return null;
+  const memes = carnets.filter(x => x.id !== c.id && !x.carnet.archive && categorieDe(x) === cat);
+  if (!memes.length) return null;
   const texte = [titreSansBanc(c.title), c.carnet.phrase, ...c.carnet.facons.map(f => f.nom), ...c.carnet.articles.map(a => a.nom ?? '')].join(' ');
-  return rattacher(texte, carnets.filter(x => x.id !== c.id && !x.carnet.archive), seuil);
+  /* la même catégorie est le signe sûr : parmi elles, la plus proche (seuil gardé seulement s'il y en a plusieurs à départager) */
+  const p = propositions(texte, memes);
+  if (memes.length === 1) return p[0] ?? { carnetId: memes[0].id, titre: memes[0].title, score: 0, mots: [cat] };
+  return p[0] && p[0].score >= seuil ? p[0] : null;
 }

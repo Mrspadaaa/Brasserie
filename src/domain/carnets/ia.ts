@@ -14,6 +14,7 @@ import {
   CARNETS_MAX, GENRES_CARNET, LIGNES_MAX, PAGES_MAX, SENS_CARNET, SORTES_CARNET,
   type ContexteRangerCarnet, type GenreCarnet, type PageLue, type SensCarnet, type SorteCarnet
 } from '../../../functions/src/carnetIA';
+import { jetons } from './analyseLocale';
 
 export type { PageLue } from '../../../functions/src/carnetIA';
 export type SorteLigne = SorteCarnet;
@@ -52,7 +53,13 @@ export interface LigneCarnet {
   propose?: true;
   /** La page lue du lien de la ligne, telle que `lireLien` l'a rendue. */
   page?: PageLue;
+  /** `ia` (Gemini) ou `exemple` (simulation, B7 : toute ligne simulée reste marquée « exemple »). */
   origine: 'ia' | 'exemple';
+  /**
+   * Critique 5, n° 1 : d'où vient un critère, décidé par le garde (`critereTireDe`), réponse réelle ou simulée : `phrase` s'il est tiré de
+   * ses mots (« tiré de votre phrase »), sinon `ia` (« proposé par l'IA »). Absent sur les autres sortes.
+   */
+  source?: 'phrase' | 'ia';
 }
 
 /** La forme minimale d'une idée pour l'IA ; `CarnetsVue.tsx` (lot D) la tire du modèle du lot A. */
@@ -144,6 +151,23 @@ function nombresDuCarnet(c: CarnetPourIA | undefined): number[] {
     for (const v of Object.values(a.valeurs ?? {})) if (typeof v?.valeur === 'number' || typeof v?.valeur === 'string') morceaux.push(String(v.valeur));
   }
   return nombresDe(morceaux.join(' \n '));
+}
+
+/**
+ * Critique 5, n° 1 : un critère est-il tiré des mots du message ? Ses mots significatifs (hors nom de sa caractéristique, que l'IA
+ * peut nommer : « débit » pour « 150 kg/h ») sont pour 60 % au moins dans le message, et chacun de ses nombres y est écrit. Un critère
+ * qui n'a ni mot propre ni nombre (« le débit ») n'est pas tiré du message : il est proposé par l'IA.
+ */
+export function critereTireDe(texte: string, caracteristique: { nom: string } | undefined, message: string): boolean {
+  const nom = new Set(jetons(caracteristique?.nom ?? ''));
+  const mots = [...new Set(jetons(texte))].filter(m => !nom.has(m));
+  const nombres = nombresDe(texte);
+  if (!mots.length && !nombres.length) return false;
+  const dits = nombresDe(message);
+  if (!nombres.every(n => contient(dits, n))) return false;
+  if (!mots.length) return true;
+  const ecrits = new Set(jetons(message));
+  return mots.filter(m => ecrits.has(m)).length / mots.length >= 0.6;
 }
 
 const memeTitre = (a: string, b: string) => sansAccents(espaces(a)) === sansAccents(espaces(b));
@@ -261,6 +285,9 @@ export function lireReponse(brut: unknown, ctx: ContexteGarde): LigneCarnet[] | 
     if (r.propose === true) {
       if (sorte !== 'critere' || !connu || !ligne.caracteristique) continue;
       ligne.propose = true;
+    } else if (sorte === 'critere') {
+      /* critique 5, n° 1 : sa source réelle, jamais celle de la réponse entière */
+      ligne.source = critereTireDe(texte, ligne.caracteristique, ctx.texte) ? 'phrase' : 'ia';
     }
     const propose = chaine(r.titrePropose, 200);
     if (propose && sorte === 'idee' && connu && propose.length <= TITRE_MAX && !memeTitre(propose, parId.get(idDemande!)!.titre))

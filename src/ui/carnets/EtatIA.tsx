@@ -18,7 +18,7 @@ export type GenreNote = 'a-acheter' | 'a-faire' | 'question' | 'conseil' | 'note
 export type StatutCarnet = 'idea' | 'research' | 'validated';
 
 export interface CaracteristiqueV { nom: string; unite?: string; sens: Sens }
-export interface CritereV { id: string; texte: string; raison?: string; caracteristique?: CaracteristiqueV; origine: Origine; messageId?: string }
+export interface CritereV { id: string; texte: string; raison?: string; caracteristique?: CaracteristiqueV; origine: Origine; messageId?: string; source?: 'phrase' | 'ia' }
 export interface FaconV { id: string; nom: string; etat: 'ouverte' | 'retenue' | 'ecartee'; raison?: string; origine: Origine; messageId?: string }
 export interface ValeurV { valeur: number | string | boolean; unite?: string; origine: Origine; luLe?: string }
 export interface VeilleV { active: boolean; depuis: string; releveLe?: string }

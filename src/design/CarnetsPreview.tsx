@@ -12,6 +12,8 @@
  * Paramètres, et l'état qu'ils ouvrent :
  * - `&vide=1` : aucun carnet (Créer · avant, p2:i02-2) ; `&zero=1` : le même départ vide, pour jouer le scénario D-63 de zéro (créer,
  *   puis frigo, ventilation, évier) ;
+ * - `&g8=1` : Ventilation reçoit un critère mesurable que les deux premiers articles n'ont pas (la bulle G8 « peut trancher » paraît au focus du
+ *   champ) ; `&g35=1` : une 2e idée de ventilation existe (G35 « déplacer les articles en veille dans … ») ;
  * - `&hors-ligne=1` : hors ligne, rangé sur l'appareil ;
  * - `&ia=eteint` : sans IA (analyse locale seule) ; `&ia=echec` : l'IA simulée tombe en panne ; `&ia=lent` : elle met 4 s, et la
  *   lecture d'une page aussi ;
@@ -38,7 +40,7 @@ import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import type { CreativeItem } from '../types';
 import type { FinanceTransaction, FinancialPlan } from '../domain/finance/types';
 import { magasinMemoire, type MagasinCarnets } from '../services/carnetsStore';
-import { fixtureCarnets, fixturePlanRealise, fixturePlans, ID_EMBOUTEILLAGE, ID_FRIGO, ID_VENTILATION } from '../domain/carnets/fixture';
+import { fixtureCarnets, fixturePlanRealise, fixturePlans, ID_DENSIMETRE, ID_EMBOUTEILLAGE, ID_EVIER, ID_EXTRACTION, ID_FRIGO, ID_VENTILATION } from '../domain/carnets/fixture';
 import { DELAI_LECTURE_BANC, lireLienSimule } from '../domain/carnets/iaSimulee';
 import { aidesCarnet, comportementSimule, type AidesCarnet, type ComportementSimule, type ModeCarnetIA } from '../config/carnetIA';
 import { appelsSimules, type AppelsIA } from '../ui/carnets/rangement';
@@ -69,11 +71,43 @@ export interface ParametresBanc {
   realise: boolean;
   /** 1 ou 2 : Ventilation réduite (état 52). */
   articles?: 1 | 2;
+  /** Critique 5, n° 21 et 27 : les options `g8` et `g35` de la fixture, par l'adresse. */
+  g8?: boolean;
+  g35?: boolean;
   /** Le carnet ouvert d'entrée. */
   ouvrir?: string;
   /** Le segment d'entrée de Stocks › Matériel. */
   segment: SegmentBanc;
+  /** `&texte=…` : le champ arrive rempli (un état « pendant » atteint par l'adresse). */
+  texte?: string;
 }
+
+/** `&ouvrir=<nom>` : le carnet de la fixture ouvert d'entrée. */
+const CARNETS_BANC: Record<string, string> = {
+  ventilation: ID_VENTILATION, evier: ID_EVIER, embouteillage: ID_EMBOUTEILLAGE, frigo: ID_FRIGO, densimetre: ID_DENSIMETRE, extraction: ID_EXTRACTION
+};
+
+/**
+ * Critique 5, correction 12 : chaque état que la critique n'a pas atteint (n° 13 à 18), avec son adresse et les gestes qui y mènent.
+ * Les gestes se jouent au doigt (390 tactile) comme à la souris (1280) ; les captures de la voie corr5-D suivent cette liste.
+ */
+export const ETATS_BANC: readonly { d: string; capture: string; adresse: string; gestes: readonly string[] }[] = [
+  { d: 'D-35', capture: '23p', adresse: '?preview=carnets',
+    gestes: ['coller « https://exemple.invalid/pompe-inox » · Ajouter (un carnet « Pompe… » naît et s’ouvre)',
+      'coller « https://exemple.invalid/pompe-magnetique » · Ajouter', 'la puce « ✻ Comparer sur … · Ajouter » paraît sous le bandeau ; la toucher'] },
+  { d: 'D-63', capture: 'zero-0 à zero-4', adresse: '?preview=carnets&zero=1',
+    gestes: ['zero-0 : la liste vide', 'zero-1 : « frigo de garde pour 6 fûts » · Ajouter', 'zero-2 : ‹ Carnets, « ventilation de la salle de brassage » · Ajouter',
+      'zero-3 : ‹ Carnets, « évier 2 bacs pour laver les fûts » · Ajouter', 'zero-4 : ‹ Carnets (3 carnets)'] },
+  { d: 'D-131', capture: '05/04', adresse: '?preview=carnets&texte=hotte%20au-dessus%20de%20la%20cuve',
+    gestes: ['le cadre « Nouveau carnet · ↓ arrive ici » et « ✻ Déjà un carnet proche : Ventilation de la salle de brassage · Y ajouter en façon »',
+      'toucher « Y ajouter en façon » : Ventilation s’ouvre'] },
+  { d: 'D-118', capture: '32b', adresse: '?preview=carnets&ouvrir=ventilation',
+    gestes: ['··· d’une note › Modifier : « ✎ Se modifie ici » à la place de la note, le texte dans le champ', 'changer le texte · Enregistrer : « ✓ Note modifiée · Annuler »'] },
+  { d: 'D-120', capture: '35b et 35c', adresse: '?preview=carnets&ouvrir=ventilation',
+    gestes: ['··· d’une note › Supprimer : « Note supprimée · Annuler » à sa place (35b)', 'Annuler : la note revient, plus aucun bandeau (35c)'] },
+  { d: 'D-46', capture: '55', adresse: '?preview=carnets&lien-retient=a-venir',
+    gestes: ['le Frigo ouvert : pastille « À venir · … » sous le titre', 'la toucher : l’aperçu « dans À venir · depuis le … » et « Ouvrir dans À venir »'] }
+];
 
 /** Lit l'adresse du banc (voir l'en-tête) : quel jeu de données, quel carnet ouvert, quel segment. */
 export function lireParametresBanc(search: string): ParametresBanc {
@@ -81,7 +115,9 @@ export function lireParametresBanc(search: string): ParametresBanc {
   const n = Number(q.get('articles'));
   const articles = n === 1 || n === 2 ? n : undefined;
   const retient = q.get('lien-retient');
-  const ouvrir = articles ? ID_VENTILATION
+  const texte = q.get('texte') ?? undefined;
+  const ouvrir = CARNETS_BANC[q.get('ouvrir') ?? ''] ? CARNETS_BANC[q.get('ouvrir')!]
+    : articles ? ID_VENTILATION
     : retient === 'a-venir' ? ID_FRIGO
       : retient === 'realise' ? ID_EMBOUTEILLAGE
         : q.get('adr') === '1' ? ID_FRIGO
@@ -93,13 +129,16 @@ export function lireParametresBanc(search: string): ParametresBanc {
     mode: q.get('ia') === 'eteint' ? 'eteint' : 'simule',
     realise: q.get('realise') === '1' || retient === 'realise',
     ...(articles ? { articles } : {}),
+    ...(q.get('g8') === '1' ? { g8: true } : {}),
+    ...(q.get('g35') === '1' ? { g35: true } : {}),
     ...(ouvrir ? { ouvrir } : {}),
+    ...(texte ? { texte } : {}),
     segment: q.get('realise') === '1' && !ouvrir ? 'realises' : 'carnets'
   };
 }
 
 /** Le jeu de départ : idées et messages, plans, dépense et paiement (tous « ZZ TEST — … », exemple). */
-export function departBanc(o: { vide?: boolean; realise?: boolean; articles?: number; items?: CreativeItem[] }): { items: CreativeItem[]; finances: FinancesCarnet } {
+export function departBanc(o: { vide?: boolean; realise?: boolean; articles?: number; g8?: boolean; g35?: boolean; items?: CreativeItem[] }): { items: CreativeItem[]; finances: FinancesCarnet } {
   if (o.items) return { items: o.items, finances: SANS_FINANCES };
   if (o.vide) return { items: [], finances: SANS_FINANCES };
   if (o.realise) {
@@ -108,7 +147,7 @@ export function departBanc(o: { vide?: boolean; realise?: boolean; articles?: nu
     const items = reduite ? r.items.map(d => (d.id === ID_VENTILATION ? reduite : d)) : r.items;
     return { items, finances: { plans: r.plans, transactions: r.transactions, payments: r.payments } };
   }
-  return { items: fixtureCarnets({ articles: o.articles }), finances: { plans: fixturePlans(), transactions: [], payments: [] } };
+  return { items: fixtureCarnets({ articles: o.articles, ...(o.g8 ? { g8: true } : {}), ...(o.g35 ? { g35: true } : {}) }), finances: { plans: fixturePlans(), transactions: [], payments: [] } };
 }
 
 /** Les appels du banc : le rangement simulé de l'app, et `lireLien` simulé lent (1,5 s ; 4 s en `&ia=lent`) pour voir le squelette. */
@@ -188,6 +227,8 @@ export interface BancCarnetsProps {
   focusChamp?: number | null;
   onVoirAVenir?: () => void;
   onPlan?: (plan: FinancialPlan) => void;
+  /** `&texte=…` : le champ arrive rempli. */
+  texte?: string;
 }
 
 /** Le banc lui-même (aussi monté par `carnetsParcours.test.tsx`) : magasin mémoire, plans en mémoire, IA simulée. */
@@ -202,7 +243,7 @@ export function BancCarnets(p: BancCarnetsProps) {
     <div data-banc-carnets className="flex h-full min-h-0 flex-col">
       <CarnetsVue className="min-h-0 flex-1" magasin={magasin} finances={finances} mode={mode}
         appels={p.appels ?? appelsSimules(comportementSimule())} aides={p.aides ?? aidesCarnet(mode, {}, param('aides'))} horsLigne={p.horsLigne}
-        ouvrir={p.ouvrir} focusChamp={p.focusChamp} onVoirAVenir={p.onVoirAVenir}
+        ouvrir={p.ouvrir} focusChamp={p.focusChamp} onVoirAVenir={p.onVoirAVenir} {...(p.texte ? { texteInitial: p.texte } : {})}
         ecrirePlan={plan => {
           p.onPlan?.(plan);
           if (p.ecrirePlan) p.ecrirePlan(plan);
@@ -280,7 +321,7 @@ export function CarnetsPreview() {
         <div className={segment === 'carnets' ? 'flex min-h-0 flex-1 flex-col' : 'hidden'}>
           <BancCarnets magasin={magasin} {...(cache ? { finances: financesCache, ecrirePlan } : { realise: prm.realise, articles: prm.articles })}
             vide={prm.vide} horsLigne={prm.horsLigne} mode={prm.mode} appels={appels}
-            ouvrir={ouvrir} focusChamp={focusChamp} onVoirAVenir={() => setSegment('avenir')} />
+            ouvrir={ouvrir} focusChamp={focusChamp} onVoirAVenir={() => setSegment('avenir')} {...(prm.texte ? { texte: prm.texte } : {})} />
         </div>
       </div>
       <div className="app-bottom-dock">

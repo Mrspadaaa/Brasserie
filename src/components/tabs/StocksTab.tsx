@@ -24,7 +24,9 @@ import type { FinanceTransaction } from '../../domain/finance/types';
 import { FinanceService } from '../../services/financeService';
 import { isUpgradePlan } from '../../domain/finance/upgrades';
 import { estRealise } from '../../domain/finance/upgradeRing';
-import { BARRE_MATERIEL, BARRE_SUR_DEFILEMENT, UpgradeWorkspace } from '../../ui/finance/UpgradeWorkspace';
+import { BARRE_BASE, BARRE_MATERIEL, BARRE_SUR_DEFILEMENT, UpgradeWorkspace } from '../../ui/finance/UpgradeWorkspace';
+/* Critique 5, n° 41 : la barre de Matériel ancre le + volant au bord de la colonne (règle dans carnets-decider.css). */
+import '../../ui/carnets/carnets-decider.css';
 import { Sheet } from '../../ui/Sheet';
 import { Button } from '../ui/Button';
 import { FormNav, Field, TextInput, inputClass } from '../../ui/FormNav';
@@ -724,7 +726,7 @@ export const StocksTab: React.FC<StocksTabProps> = ({
 
       {subTab === 'materiel' && (
         /* m390-6 : barre opaque, avec l'ombre `shadow-lift` (voir BARRE_MATERIEL). */
-        <nav aria-label="Vue du matériel" className={segMateriel === 'parc' ? BARRE_MATERIEL : `${BARRE_MATERIEL} ${BARRE_SUR_DEFILEMENT}`}>
+        <nav aria-label="Vue du matériel" className={segMateriel === 'parc' ? BARRE_BASE : `${BARRE_MATERIEL} ${BARRE_SUR_DEFILEMENT}`}>
           {SEGMENTS_MATERIEL.map((seg) => {
             const libelle = seg === 'parc' ? 'Parc' : seg === 'avenir' ? 'À venir' : seg === 'carnets' ? 'Carnets' : 'Réalisés';
             const n = seg === 'avenir' ? segments.avenir : seg === 'carnets' ? segments.carnets : seg === 'realises' ? segments.realises : undefined;

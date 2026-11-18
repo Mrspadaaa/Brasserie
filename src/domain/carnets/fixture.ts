@@ -44,6 +44,12 @@ export const NOTE_COMME_CRITERE = 'il faudrait au moins 1 500 m³/h';
  */
 export const NOTE_VRAC_BANC = 'ZZ TEST — demander au ferblantier le diamètre d’évacuation de l’évier, jeudi\nhotte 120 cm trop large pour la salle ?\ngaine alu Ø 150 mm, 2 pièces';
 
+/**
+ * Critique 5, n° 7 et 30 (R18, R19, g5:v01-15, g5:v01-16) : une note en vrac de 3 lignes qui va dans 2 carnets : un achat dans Évier
+ * (carnet existant), une question et un conseil dans UN carnet neuf, « Moulin à malt » (titre mis en forme, état Idée). Trois sortes.
+ */
+export const NOTE_VRAC_DEUX_CARNETS = 'ZZ TEST — commander un robinet à pédale pour l’évier\nmoulin à malt : est-ce que 2 cylindres suffisent ?\nattention à la poussière du moulin, prévoir une aspiration';
+
 export const ID_VENTILATION = 'ZZ-CARNET-VENTILATION';
 export const ID_EVIER = 'ZZ-CARNET-EVIER';
 export const ID_EMBOUTEILLAGE = 'ZZ-CARNET-EMBOUTEILLAGE';
@@ -73,8 +79,9 @@ function ventilation(): CarnetDoc {
       /* P15 : sa phrase « plus de condensation au plafond » dit une gêne ; le critère dit ce qu'il veut (la phrase reste dans ZZ-MSG-V1, R25).
          Sans caractéristique : c'est lui que G8 propose pour trancher entre les deux façons (« capte la buée / ne la capte pas »). */
       { id: 'ZZ-V-K1', texte: CRITERE_CONDENSATION, origine: 'vous', messageId: 'ZZ-MSG-V1' },
-      { id: 'ZZ-V-K2', texte: 'tient 80 °C', caracteristique: { nom: 'tient 80 °C', sens: 'oui-non' }, origine: 'exemple' },
-      { id: 'ZZ-V-K3', texte: 'le débit', caracteristique: { nom: 'débit', unite: 'm³/h', sens: 'plus' }, origine: 'exemple' }
+      /* critique 5, n° 1 : ni « tient 80 °C » ni « le débit » ne viennent de sa phrase (« buées au-dessus de la cuve ») : proposés par l'IA */
+      { id: 'ZZ-V-K2', texte: 'tient 80 °C', caracteristique: { nom: 'tient 80 °C', sens: 'oui-non' }, origine: 'ia', source: 'ia' },
+      { id: 'ZZ-V-K3', texte: 'le débit', caracteristique: { nom: 'débit', unite: 'm³/h', sens: 'plus' }, origine: 'ia', source: 'ia' }
     ],
     facons: [
       { id: 'ZZ-V-F1', nom: 'Hotte inox + extracteur', etat: 'ouverte', origine: 'exemple' },
@@ -104,8 +111,9 @@ function evier(): CarnetDoc {
   return carnet(ID_EVIER, 'Évier inox', 'idea', {
     creeLe: '2026-11-15T17:00:00.000Z', phrase: '2 bacs pour laver les fûts',
     criteres: [
-      { id: 'ZZ-E-K1', texte: '2 bacs', caracteristique: { nom: 'bacs', sens: 'plus' }, origine: 'exemple', messageId: 'ZZ-MSG-E1' },
-      { id: 'ZZ-E-K2', texte: 'assez profond pour un fût', caracteristique: { nom: 'fond de bac', unite: 'cm', sens: 'plus' }, origine: 'exemple', messageId: 'ZZ-MSG-E1' }
+      /* critique 5, n° 1 : « 2 bacs » est de sa phrase (« 2 bacs pour laver les fûts ») ; « assez profond pour un fût », proposé par l'IA */
+      { id: 'ZZ-E-K1', texte: '2 bacs', caracteristique: { nom: 'bacs', sens: 'plus' }, origine: 'vous', source: 'phrase', messageId: 'ZZ-MSG-E1' },
+      { id: 'ZZ-E-K2', texte: 'assez profond pour un fût', caracteristique: { nom: 'fond de bac', unite: 'cm', sens: 'plus' }, origine: 'ia', source: 'ia', messageId: 'ZZ-MSG-E1' }
     ],
     facons: [], articles: [], notes: [], photos: []
   });
@@ -266,7 +274,8 @@ export const PHRASES_ESSAI: readonly { texte: string; urls?: string[]; centimes?
   { texte: 'Sol local\nRouleau qui pousse plutôt qui absorbe.\n2 couches, petit pinceau ou plus facile. Tout jetter...\nPlus gros seau ?\nPetit récipient pour transférer' },
   { texte: 'Ajoute\nPrévision prix pour prochains brassin + ajout aussi de combien l’estimation d’upgrade dans le dashboard principal' },
   { texte: 'À faire au prochain brassage\nPrédictions de coûts\nCoûts et visu, tout est déjà payer\nHoublon\nLevures\nVolume' },
-  { texte: 'Plus gros seau ?' },
+  /* critique 5 (n° 7) : la note de 3 lignes et 2 carnets remplace « Plus gros seau ? », déjà une ligne de la note « Sol local » ci-dessus */
+  { texte: NOTE_VRAC_DEUX_CARNETS },
   { texte: 'commander 2 fûts de 20 L à 85 CHF pièce', centimes: 8500 },
   { texte: 'lien : https://exemple.invalid/f1?ref=12, prix 4 900 CHF', urls: ['https://exemple.invalid/f1?ref=12'], centimes: 490000 }
 ];
@@ -281,6 +290,26 @@ export const ARTICLES_REDUITS = ['ZZ-V-A1', 'ZZ-V-A3'] as const;
 export interface OptionsFixture {
   /** 1 ou 2 : Ventilation réduite (état 52). Toute autre valeur : la fixture entière. */
   articles?: number;
+  /**
+   * Critique 5, n° 21 : la bulle G8 ne vise qu'une caractéristique que les deux premiers n'ont pas. Vrai : Ventilation reçoit « pas trop de
+   * bruit » (bruit, dB, proposé par l'IA), qu'aucune page n'a donné ; G8 la propose. Défaut : absent (Ventilation n'a rien à trancher).
+   */
+  g8?: boolean;
+  /**
+   * Critique 5, n° 27 : G35 ne propose qu'un carnet de même catégorie d'objet. Vrai : une 2e idée de ventilation (« Ventilation de la
+   * cave de garde ») reçoit les articles en veille. Défaut : absente (Ventilation n'a pas de carnet proche ; l'extracteur CO₂ n'en est pas un).
+   */
+  g35?: boolean;
+}
+
+export const ID_VENTILATION_CAVE = 'ZZ-CARNET-VENTILATION-CAVE';
+/** Le critère de G8 (option `g8`) : une caractéristique mesurable, inconnue des deux premiers articles. */
+export const CRITERE_BRUIT = 'pas trop de bruit';
+
+function ventilationCave(): CarnetDoc {
+  return carnet(ID_VENTILATION_CAVE, 'Ventilation de la cave de garde', 'idea', {
+    creeLe: '2026-11-17T08:00:00.000Z', phrase: 'renouveler l’air de la cave de garde', criteres: [], facons: [], articles: [], notes: [], photos: []
+  });
 }
 
 /** Les documents de la fixture (idées et messages), copies neuves à chaque appel. */
@@ -291,7 +320,8 @@ export function fixtureCarnets(o: OptionsFixture = {}): CreativeItem[] {
     v.carnet.articles = v.carnet.articles.filter(a => garde.has(a.id));
     v.carnet.facons = v.carnet.facons.filter(f => f.etat !== 'ecartee');
   }
-  return JSON.parse(JSON.stringify([v, evier(), embouteillage(), frigo(), densimetre(), extraction(), ...messages()])) as CreativeItem[];
+  if (o.g8) v.carnet.criteres.push({ id: 'ZZ-V-K4', texte: CRITERE_BRUIT, caracteristique: { nom: 'bruit', unite: 'dB', sens: 'moins' }, origine: 'ia', source: 'ia' });
+  return JSON.parse(JSON.stringify([v, evier(), embouteillage(), frigo(), densimetre(), extraction(), ...(o.g35 ? [ventilationCave()] : []), ...messages()])) as CreativeItem[];
 }
 
 const planDe = (id: string, titre: string, carnetId: string, cents: number, vendor: string, createdAt: string): FinancialPlan => ({

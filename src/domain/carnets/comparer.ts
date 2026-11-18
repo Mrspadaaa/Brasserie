@@ -149,7 +149,10 @@ export interface LigneTableau {
   cellules: Record<string, Valeur | undefined>;
   prixCentimes?: number;
   devise?: string;
+  /** Vrai seulement s'il est dominé par CHACUN des autres articles en lice (critique 5, n° 23). */
   moinsBienPartout: boolean;
+  /** Le rang de l'article en lice qui le domine sur toutes les colonnes connues des deux (`moinsBienQue`) ; absent sinon. */
+  moinsBienQue?: number;
   /** Écarté (façon écartée ou écarté au choix), avec sa raison : gardé à la fin (D-52). */
   ecarte?: { raison: string };
 }
@@ -232,10 +235,26 @@ export function domine(a: Article, b: Article, colonnes: readonly Colonne[]): bo
   return ecarts.length >= 2 && ecarts.every(e => e <= 0) && ecarts.some(e => e < 0);
 }
 
-/** « moins bien partout » : un autre article (non écarté) le domine. */
+/**
+ * « moins bien partout » (critique 5, n° 23) : vrai seulement s'il est dominé par CHACUN des autres articles (non écartés) ; un article
+ * moins cher que la 1re n'est jamais « moins bien partout ». Faux s'il est seul.
+ */
 export function moinsBienPartout(article: Article, autres: readonly Article[], colonnes: readonly Colonne[]): boolean {
-  return autres.some(b => b.id !== article.id && domine(article, b, colonnes));
+  const vs = autres.filter(b => b.id !== article.id);
+  return vs.length > 0 && vs.every(b => domine(article, b, colonnes));
 }
+
+/**
+ * Critique 5, n° 23 : le rang (1 = en tête de `autres`, dans leur ordre) du premier article qui le domine sur toutes les colonnes connues
+ * des deux (Pareto, prix compris ; inconnu n'est pas pire, il ne compte pas) ; `null` si aucun ne le domine. Texte : `texteMoinsBienQue`.
+ */
+export function moinsBienQue(article: Article, autres: readonly Article[], colonnes: readonly Colonne[]): number | null {
+  const i = autres.findIndex(b => b.id !== article.id && domine(article, b, colonnes));
+  return i < 0 ? null : i + 1;
+}
+
+/** « moins bien que la 3e sur tout » (critique 5, n° 23). */
+export const texteMoinsBienQue = (rang: number): string => `moins bien que ${rang === 1 ? 'la 1re' : `la ${rang}e`} sur tout`;
 
 /**
  * « tient 80 °C d'abord, puis le débit, puis le prix » : la règle même du tri de `tableau` (P32), prix compris quand il départage ;
@@ -245,6 +264,46 @@ export function rangePar(c: CarnetDoc | Donnees): string | null {
   const d = donnees(c);
   const enLice = d.articles.filter(a => raisonEcarte(d, a) === null && !estARelire(a));
   return rangeParCles(clesDe(colonnesDe(d), enLice));
+}
+
+/** La forme courte d'un critère, pour le citer : la part après « : » (« Moins de condensation au plafond : capter la buée » → « capter la buée »). */
+export function critereCourt(texte: string): string {
+  const i = texte.lastIndexOf(' : ');
+  return (i > 0 ? texte.slice(i + 3) : texte).trim();
+}
+
+/**
+ * Critique 5, n° 22 (pour les lots B et C) : ce qui range, nommé, et les critères qui ne rangent pas faute de valeur mesurable.
+ * - `texte` : `rangePar` (« tient 80 °C d'abord, puis le débit, puis le prix ») ; `null` si rien ne classe ;
+ * - `critere` : le critère dont la caractéristique range en premier (id, texte, nom de la caractéristique) ; `prix` si seul le prix classe ;
+ * - `sansValeur` : les critères placés avant lui (ou tous, si rien ne classe) qui n'ont pas de caractéristique mesurable ;
+ * - `phrase` : « rangé par tient 80 °C ; « capter la buée » n'a pas de valeur mesurable » ; `null` si rien ne classe et rien à dire.
+ */
+export interface RangeParDetail {
+  texte: string | null;
+  critere: { id: string; texte: string; nom: string } | 'prix' | null;
+  sansValeur: Array<{ id: string; texte: string; court: string }>;
+  phrase: string | null;
+}
+
+export function rangeParDetail(c: CarnetDoc | Donnees): RangeParDetail {
+  const d = donnees(c);
+  const enLice = d.articles.filter(a => raisonEcarte(d, a) === null && !estARelire(a));
+  const cles = clesDe(colonnesDe(d), enLice);
+  const texte = rangeParCles(cles);
+  const premiere = cles[0];
+  const critere: RangeParDetail['critere'] = !premiere ? null : premiere.sorte === 'prix' ? 'prix'
+    : { id: premiere.colonne.critereId!, texte: premiere.colonne.critereTexte ?? premiere.colonne.nom, nom: premiere.colonne.nom };
+  const idx = critere && critere !== 'prix' ? d.criteres.findIndex(k => k.id === critere.id) : d.criteres.length;
+  const sansValeur = d.criteres.slice(0, idx < 0 ? d.criteres.length : idx)
+    .filter(k => !k.caracteristique || k.caracteristique.sens === 'texte')
+    .map(k => ({ id: k.id, texte: k.texte, court: critereCourt(k.texte) }));
+  const cites = sansValeur.map(k => `« ${k.court} »`);
+  const dit = cites.length === 0 ? '' : cites.length === 1 ? `${cites[0]} n'a pas de valeur mesurable`
+    : `${cites.slice(0, -1).join(', ')} et ${cites[cites.length - 1]} n'ont pas de valeur mesurable`;
+  const tete = texte ? `rangé par ${premiere?.sorte === 'colonne' ? avecArticle(premiere.colonne.nom, premiere.colonne.sens) : 'le prix'}` : '';
+  const phrase = [tete, dit].filter(Boolean).join(' ; ') || null;
+  return { texte, critere, sansValeur, phrase };
 }
 
 /**
@@ -269,10 +328,12 @@ export function tableau(c: CarnetDoc | Donnees): Tableau | null {
     const cellules: Record<string, Valeur | undefined> = {};
     for (const k of colonnes) { const v = valeurDe(a, k); if (v) cellules[k.nom] = v; }
     const raison = raisonEcarte(d, a);
+    const dominant = rang !== null ? moinsBienQue(a, enLice, colonnes) : null;
     return {
       articleId: a.id, nom: noms.get(a.id) ?? nomArticle(a), rang, cellules,
       ...(a.prixCentimes !== undefined ? { prixCentimes: a.prixCentimes } : {}), ...(a.devise ? { devise: a.devise } : {}),
       moinsBienPartout: rang !== null && moinsBienPartout(a, enLice, colonnes),
+      ...(dominant !== null ? { moinsBienQue: dominant } : {}),
       ...(raison !== null ? { ecarte: { raison } } : {})
     };
   };
@@ -598,7 +659,11 @@ export function critereQuiTranche(c: CarnetDoc | Donnees): Tranche | null {
     entre = premiers.map(l => l.nom);
   }
   if (entre.length < 2) return null;
-  const critere = d.criteres.find(k => !k.caracteristique || (articles.length === 2 && articles.every(a => !valeurDe(a, k.caracteristique!))));
+  /* critique 5, n° 21 : seulement une caractéristique mesurable que les deux premiers n'ont pas (absente ou inconnue) ; jamais un critère
+     sans caractéristique (« capter la buée » dit le besoin, il ne départage rien) */
+  const critere = articles.length === 2
+    ? d.criteres.find(k => k.caracteristique && k.caracteristique.sens !== 'texte' && articles.every(a => !valeurDe(a, k.caracteristique!)))
+    : undefined;
   return critere ? { critere, entre: [entre[0], entre[1]] } : null;
 }
 

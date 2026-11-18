@@ -12,7 +12,7 @@ import type { FinanceTransaction, FinancialPayment, FinancialPlan } from '../fin
 import { estRealise } from '../finance/upgradeRing';
 import { statutApres } from './comparer';
 import { memeTexte } from './doublons';
-import { normaliser, quantitesDe } from './analyseLocale';
+import { jetons, normaliser, quantitesDe } from './analyseLocale';
 import {
   lireCarnet, lireMessage, nouvelIdCarnet, sansIndefinis, donneesVides, titreDePhrase, VERSION_CARNET,
   type Article, type CarnetDoc, type Caracteristique, type CibleEffet, type Choix, type Critere, type EffetMessage, type EtatFacon, type Facon,
@@ -93,7 +93,7 @@ export type Destination = { carnetId: string; carnetNeuf?: undefined } | { carne
 
 export type LigneARanger = Destination & (
   /** `propose` (P10, P23) : un critère que l'IA propose ; `ranger` ne l'écrit pas, il reste sur le message (`propositions`). */
-  | { sorte: 'critere'; id?: string; texte: string; raison?: string; caracteristique?: Caracteristique; origine: Origine; propose?: true }
+  | { sorte: 'critere'; id?: string; texte: string; raison?: string; caracteristique?: Caracteristique; origine: Origine; propose?: true; source?: 'phrase' | 'ia' }
   | { sorte: 'facon'; id?: string; nom: string; etat?: EtatFacon; raison?: string; origine: Origine }
   | {
     sorte: 'article'; id?: string; url?: string; domaine?: string; nom?: string; prixCentimes?: number; devise?: string; vendeur?: string; pays?: string;
@@ -112,6 +112,9 @@ function ajouterLigne(c: CarnetDoc, l: LigneARanger, messageId: string): EffetMe
   switch (l.sorte) {
     case 'idee': return null;
     case 'critere': {
+      /* Critique 5, n° 24 : le titre de l'idée n'est jamais un critère, ni la phrase entière quand elle porte plus que son titre (« Moulin à
+         malt : 2 cylindres, 150 kg/h ») ; aucun effet, le message garde la phrase (R25). */
+      if (estTitreOuPhrase(c, l.texte)) return null;
       /* P11 : un critère au même texte normalisé n'ajoute pas de ligne. Le critère déjà là reste la source (son id, son `messageId`) ;
          il reçoit seulement ce qui lui manque (raison, caractéristique). Aucun effet : annuler ce message ne retire pas l'ancien. */
       const deja = d.criteres.find(x => memeTexte(x.texte, l.texte));
@@ -126,10 +129,11 @@ function ajouterLigne(c: CarnetDoc, l: LigneARanger, messageId: string): EffetMe
       if (cible) {
         const fusion = sansIndefinis({ texte: cible.texte, origine: cible.origine, messageId: cible.messageId });
         cible.texte = l.texte; cible.origine = l.origine; cible.messageId = messageId;
+        if (l.source) cible.source = l.source; else delete cible.source;
         if (!cible.raison && l.raison) cible.raison = l.raison;
         return { carnetId: c.id, cible: 'critere', id: cible.id, fusion };
       }
-      const k: Critere = sansIndefinis({ id: l.id ?? nouvelIdCarnet('CRIT'), texte: l.texte, raison: l.raison, caracteristique: l.caracteristique, origine: l.origine, messageId });
+      const k: Critere = sansIndefinis({ id: l.id ?? nouvelIdCarnet('CRIT'), texte: l.texte, raison: l.raison, caracteristique: l.caracteristique, origine: l.origine, messageId, source: l.source });
       d.criteres.push(k); return { carnetId: c.id, cible: 'critere', id: k.id };
     }
     case 'facon': {
@@ -161,9 +165,27 @@ function ajouterLigne(c: CarnetDoc, l: LigneARanger, messageId: string): EffetMe
 const unitesDe = (texte: string): Set<string> => new Set(quantitesDe(texte).map(q => q.unite));
 const nomNormal = (t: string) => normaliser(t);
 
+const sansPrefixeTest = (t: string) => t.replace(/^\s*ZZ TEST\s*[—–-]\s*/i, '');
+/** Critique 5, n° 24 : le texte est le titre de l'idée, ou sa phrase entière quand la phrase dit plus que le titre. */
+function estTitreOuPhrase(c: CarnetDoc, texte: string): boolean {
+  const t = sansPrefixeTest(texte);
+  if (memeTexte(t, sansPrefixeTest(c.title))) return true;
+  const phrase = sansPrefixeTest(c.carnet.phrase);
+  return memeTexte(t, phrase) && !memeTexte(sansPrefixeTest(titreDePhrase(c.carnet.phrase)), phrase);
+}
+
+/**
+ * Un critère vague : ses mots ne disent que le nom de sa caractéristique (« le débit » pour débit). Lui seul se laisse préciser (P7) ;
+ * « assez profond pour un fût » dit un usage et reste (critique 5, n° 4).
+ */
+const estVague = (k: Critere): boolean => {
+  const nom = new Set(jetons(k.caracteristique?.nom ?? ''));
+  return jetons(k.texte).every(m => nom.has(m));
+};
+
 /** P7 : le critère qu'une ligne précise (même caractéristique), hors des critères qu'il a écrits lui-même ; sinon `undefined`. */
 function critereAPreciser(criteres: readonly Critere[], l: Extract<LigneARanger, { sorte: 'critere' }>): Critere | undefined {
-  const libres = criteres.filter(k => k.caracteristique?.unite && k.origine !== 'vous');
+  const libres = criteres.filter(k => k.caracteristique?.unite && k.origine !== 'vous' && estVague(k));
   if (l.caracteristique?.unite) {
     const nom = nomNormal(l.caracteristique.nom);
     return libres.find(k => k.caracteristique!.unite === l.caracteristique!.unite && nomNormal(k.caracteristique!.nom) === nom);
