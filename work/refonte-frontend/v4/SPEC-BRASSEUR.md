@@ -2158,3 +2158,7 @@ Règle (ses exemples l'illustrent, L01) : dans toutes les rangées, ce qui dure 
 > une icône posée à sa date, même au milieu d'une barre de la même période -> pas sûr ça risque d'être illisible, SI c'est lié à l'événement ok, SI non c'est une ligne à part comme sur l'image envoyé
 
 Placement du jalon : lié à une barre (ex. la tireuse pour la foire) → posé sur cette barre ; non lié (ex. Dédé, hors foire) → sur sa propre ligne de la rangée, comme sur jalons-18-11.jpg, jamais sur une barre qui ne le concerne pas.
+
+> Sauf que la foire sera dans fête ou événement, et l'achat ou la vente sera dans achat ou vente, comment tu mets le jalon dans la barre de fête ??
+
+Lecture : un jalon reste dans sa rangée (Achats, Ventes) ; « lié à une barre » ne peut pas vouloir dire « posé dans la barre d'une autre rangée ». Le lien se montre autrement : choix à montrer en mini maquettes (L24).
