@@ -30,9 +30,17 @@ const court = (nom: string): string => (nom.length > NOM_MAX ? `${nom.slice(0, N
  * dit en chiffres : « Lignes 56,80 · total 51,80 · 5,00 de plus » ou « de moins » (attention).
  * `lignes` et `total` sont en centimes (l'arrondi à 5 centimes dans `lignes`) ; `fr` écrit un montant en centimes (« 51,80 »).
  */
-export function phraseDuPied(lignes: number, total: number, ajouts: readonly AjoutMain[], fr: (cents: number) => string): { texte: string; attention: boolean } {
+export function phraseDuPied(lignes: number, total: number, ajouts: readonly AjoutMain[], fr: (cents: number) => string,
+  /** v3-6 (tour 3) : les lignes lues que le brasseur a retirées lui-même (pas encore rendues par « ↶ Annuler »). Un manque qu'elles couvrent exactement (5 centimes d'arrondi)
+   *  n'est pas une erreur : « Lignes 84,10 = total 86,50 − 2,40 retiré (Bouchons) », neutre. */
+  retires: readonly AjoutMain[] = []): { texte: string; attention: boolean } {
   const ecart = lignes - total;
   if (ecart === 0) return { texte: `Lignes = total ${fr(total)}`, attention: false };
+  const retire = retires.reduce((s, a) => s + a.cents, 0);
+  if (ecart < 0 && retire > 0 && Math.abs(retire + ecart) <= 5) {
+    const qui = retires.length <= 2 ? retires.map(a => court(a.nom) || 'sans nom').join(', ') : `${retires.length} lignes`;
+    return { texte: `Lignes ${fr(lignes)} = total ${fr(total)} − ${fr(retire)} retiré (${qui})`, attention: false };
+  }
   const ajoutes = ajouts.reduce((s, a) => s + a.cents, 0);
   if (ecart > 0 && ajouts.length > 0 && ecart === ajoutes) {
     const qui = ajouts.length <= 2 ? ajouts.map(a => court(a.nom) || 'sans nom').join(', ') : `${ajouts.length} lignes`;

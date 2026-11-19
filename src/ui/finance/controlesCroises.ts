@@ -79,6 +79,9 @@ export interface EntreeControles {
   tvaCorrigee?: { avantCents: number; apresCents: number } | null;
   /** p2 : le nombre de lignes retirées que le brasseur a GARDÉES. Le comptage indépendant (fait par la 3.8, qui ne les avait pas lues) ne les connaît pas : un surplus de lignes d'au plus ce nombre n'est ni faux ni prouvé (neutre). */
   gardees?: number;
+  /** v3-6 (tour 3, M9-3 : « Retirer la ligne 3 » puis « 2,40 CHF manquants », « Ajouter la ligne manquante ») : les lignes LUES que le brasseur a retirées lui-même (corbeille), pas encore rendues
+   *  par « ↶ Annuler » : leur nombre et leur somme en centimes. Un écart qu'elles expliquent n'est pas un manque : il se dit « 1 ligne retirée · 2,40 », neutre, sans geste d'ajout. */
+  retraitsBrasseur?: { n: number; cents: number } | null;
   /** Le moyen de règlement lu (« TWINT »), sans montant ou avec ; `null` : non lu. */
   moyen: string | null;
   /** L'arithmétique `quantité × prix = montant` de chaque ligne : `ok` si toutes passent ; `null` : non contrôlée. */
@@ -184,6 +187,11 @@ export function controlesCroises(e: EntreeControles): ControlesCroises {
   const totalChg = e.totalCorrige && e.totalCorrige.avantCents !== e.totalCorrige.apresCents ? e.totalCorrige : null;
   const tvaChg = e.tvaCorrigee && e.tvaCorrigee.avantCents !== e.tvaCorrigee.apresCents ? e.tvaCorrigee : null;
   const enAttente = Boolean(retirees || totalChg);
+  /* v3-6 : ce que le brasseur a retiré lui-même explique l'écart quand il le couvre exactement (5 centimes d'arrondi passent) ; les articles, quand il en couvre le manque. */
+  const retraits = e.retraitsBrasseur && e.retraitsBrasseur.n > 0 ? e.retraitsBrasseur : null;
+  const nRetraits = retraits ? `${retraits.n} ligne${retraits.n > 1 ? 's' : ''} retirée${retraits.n > 1 ? 's' : ''}` : '';
+  const retraitExplique = Boolean(retraits && retraits.cents > 0 && ecartCents !== null && ecartCents < 0 && Math.abs(retraits.cents + ecartCents) <= 5);
+  const articlesRetires = Boolean(retraits && ecartArticles !== null && ecartArticles < 0 && -ecartArticles <= retraits.n);
   /* p1 relance (VERDICT-4) : le geste d'une ligne qui manque. Plus d'un article (−2 et au-delà) et un justificatif : la photo (les lignes sont sur le ticket, une ligne vide n'en rendrait qu'une) ;
      une ligne ajoutée pas remplie : on la remplit, on n'en ajoute pas une deuxième ; sinon on ajoute la ligne. */
   const gesteManque = (): { geste: string; renvoi: Renvoi; lignes?: number[] } => (ecartArticles !== null && ecartArticles < -1 && e.photo ? { geste: 'Comparer à la photo', renvoi: 'photo' }
@@ -193,6 +201,7 @@ export function controlesCroises(e: EntreeControles): ControlesCroises {
   /* Pas de vert sans comptage indépendant concordant (P2, banc b1) : l'annonce du modèle qui transcrit ne prouve rien quand elle égale ce qu'il a transcrit. */
   if (ecartArticles === null) rangs.push({ cle: 'articles', verdict: 'inconnu', texte: 'Articles', valeurs: `${nLus} lus${rabais} · non imprimé` });
   else if (ecartArticles !== null && ecartArticles > 0 && (e.gardees ?? 0) >= ecartArticles) rangs.push({ cle: 'articles', verdict: 'inconnu', texte: 'Articles lus', valeurs: `${nLus}${rabais} · dont ${e.gardees} gardée${(e.gardees ?? 0) > 1 ? 's' : ''}` });
+  else if (articlesRetires) rangs.push({ cle: 'articles', verdict: 'inconnu', texte: 'Articles lus', valeurs: `${nLus}${rabais} · ${-ecartArticles!} retirée${-ecartArticles! > 1 ? 's' : ''}` });
   else if (ecartArticles === 0 && independant !== null && enAttente) rangs.push({ cle: 'articles', verdict: 'inconnu', texte: 'Articles lus', valeurs: `${nLus}${rabais}` });
   else if (ecartArticles === 0 && independant !== null) rangs.push({ cle: 'articles', verdict: 'ok', texte: 'Articles lus = comptés', valeurs: `${nLus}${rabais}` });
   else if (ecartArticles === 0) rangs.push({ cle: 'articles', verdict: 'inconnu', texte: 'Articles lus', valeurs: `${nLus}${rabais}`, note: 'annoncé par la lecture' }); /* p1 : la valeur reste courte (« 5 · 2 rabais »), jamais sur le libellé à 390 ; « annoncé » est la note sous la rangée. */
@@ -207,6 +216,7 @@ export function controlesCroises(e: EntreeControles): ControlesCroises {
   if (e.totalCents === null) rangs.push({ cle: 'somme', verdict: 'inconnu', texte: 'Total non imprimé', valeurs: `lignes ${montant(e.lignesCents)}` });
   else if (ecartCents === 0 && enAttente) rangs.push({ cle: 'somme', verdict: 'inconnu', texte: 'Somme des lignes', valeurs: montant(e.totalCents) });
   else if (ecartCents === 0) rangs.push({ cle: 'somme', verdict: 'ok', texte: 'Somme = imprimé', valeurs: montant(e.totalCents) });
+  else if (retraitExplique) rangs.push({ cle: 'somme', verdict: 'inconnu', texte: 'Somme = imprimé −', valeurs: `${nRetraits} · ${montant(retraits!.cents)}`, resume: `${nRetraits} · ${montant(retraits!.cents)} CHF` });
   else if (ajoutExplique) rangs.push({ cle: 'somme', verdict: 'ok', texte: 'Somme = imprimé + ajouté', valeurs: `${montant(e.totalCents)} + ${montant(e.ajoutsCents)}` });
   else rangs.push({ cle: 'somme', verdict: 'ecart', texte: 'Somme ≠ imprimé', valeurs: `${montant(e.lignesCents)} / ${montant(e.totalCents)}`, ecart: ecartTexte(ecartCents!),
     ...(payeRaisonAuxLignes ? { geste: 'Total imprimé douteux ? (rare)', renvoi: 'total' as const } : retiresExpliquent ? { geste: `Les garder · ${montant(retirees!.cents)} retirés`, renvoi: 'perdues' as const } : ecartCents! < 0 && ecartArticles === 0 && independant !== null ? gesteMontants(e.ligneSuspecte ?? null, Boolean(e.photo)) : ecartCents! < 0 ? gesteManque() : { geste: 'Voir la ligne en trop', renvoi: 'fausse' as const }) });
@@ -254,8 +264,8 @@ export function controlesCroises(e: EntreeControles): ControlesCroises {
 
   /* p1 relance : l'en-tête dit le pire point seul (D277) : les CHF d'abord, sinon les articles ; le reste est dans les rangées. */
   const articlesGardes = ecartArticles !== null && ecartArticles > 0 && (e.gardees ?? 0) >= ecartArticles; /* le surplus est celui des lignes que le brasseur a gardées : pas le pire point */
-  const nArt = articlesGardes ? 0 : Math.abs(ecartArticles ?? 0), pl = nArt > 1 ? 's' : '';
-  const resume = ecartCents && !ajoutExplique ? `${montant(ecartCents)} CHF ${ecartCents < 0 ? 'manquants' : 'en trop'}` : nArt ? `${nArt} article${pl} ${ecartArticles < 0 ? 'manquant' : 'en trop'}${ecartArticles < 0 ? pl : ''}` : '';
+  const nArt = articlesGardes || articlesRetires ? 0 : Math.abs(ecartArticles ?? 0), pl = nArt > 1 ? 's' : '';
+  const resume = ecartCents && !ajoutExplique && !retraitExplique ? `${montant(ecartCents)} CHF ${ecartCents < 0 ? 'manquants' : 'en trop'}` : nArt ? `${nArt} article${pl} ${ecartArticles < 0 ? 'manquant' : 'en trop'}${ecartArticles < 0 ? pl : ''}` : '';
   return { rangs, drapeau: rangs.some(r => r.verdict === 'ecart'), ecartCents, ecartArticles, resume };
 }
 
