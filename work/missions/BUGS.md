@@ -51,6 +51,7 @@ Lire :
 
 | chemin | préfixe | constats | notes | empreinte |
 |---|---|---|---|---|
+| work/missions/2026-11-18-choix-calendrier/tour2/en-ligne/RAPPORT-2.md | T2B | 3 | 1 | ef66f11d5dda |
 | work/missions/2026-11-18-choix-calendrier/tour2/en-ligne/RAPPORT.md | T2 | 10 | 1 | b0fb71f51615 |
 | work/missions/2026-10-31-ecran-fermentescibles/banc-critique/RAPPORT.md | B1 | 15 | 4 | c816dfc0a63a |
 | C:\Users\mrspa\AppData\Local\Temp\affinee-test-ferm\RAPPORT.md | B1 | 15 | 4 | c816dfc0a63a |
@@ -1687,3 +1688,7 @@ Verdict : 5/6 corrigés, 4 problèmes (0 bloquant), 6 envois IA (cumul ≈ 32 su
 | T2-9 | tour2/fin/RESULTAT.md | Finances 1280 | Champs « du / au » gardés à 1280 (option a, pilote). | — | écarté | | décidé par le pilote |
 | T2-10 | tour2/fin/RESULTAT.md | En-tête › période | Nom accessible « 30 nov.. » (double point). | b | corrigé | be036eb21 | en ligne (en-ligne/2026-11-19-tour2) |
 | T2-NOTE-1 | en-ligne tour 2 réserve | tous | Joué en 390 clair seulement (iframe) ; 844, 1280, sombre, plein écran, Confirmer le paiement, Eau et sels, Ma levure non joués en ligne. | — | ouvert, doute non compté | | |
+| T2B-1 | en-ligne tour 2 bis n° 1 | Brassins › Brasser depuis une recette | Planifier un brassin depuis une recette au matériel « pas figé » est sans effet : message rouge qui renvoie à « Modifier la recette › Adapter à mon matériel actuel ». | m | ouvert | | bloque le rejeu de T2-2 |
+| T2B-2 | en-ligne tour 2 bis n° 2 | Calendrier 390 | Un « déc. » coupé reste en haut de la frise, au-dessus des semaines (S47…). | b | ouvert | | proche de T2-1 |
+| T2B-3 | en-ligne tour 2 bis n° 3 | Recette › Levure | Le retour sur l'onglet « Ma levure » prend ≈ 1,2 s (mesuré sur PC, dans une iframe). | m | ouvert | | ML-1 |
+| T2B-NOTE-1 | en-ligne tour 2 bis réserve | tous | 844×340, 1280 et sombre non joués : le navigateur intégré demande une connexion Google, Claude in Chrome ne se redimensionne pas. | — | ouvert, doute non compté | | |
