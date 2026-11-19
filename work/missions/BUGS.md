@@ -51,6 +51,7 @@ Lire :
 
 | chemin | préfixe | constats | notes | empreinte |
 |---|---|---|---|---|
+| work/missions/2026-11-18-choix-calendrier/tour2/en-ligne/RAPPORT.md | T2 | 10 | 1 | b0fb71f51615 |
 | work/missions/2026-10-31-ecran-fermentescibles/banc-critique/RAPPORT.md | B1 | 15 | 4 | c816dfc0a63a |
 | C:\Users\mrspa\AppData\Local\Temp\affinee-test-ferm\RAPPORT.md | B1 | 15 | 4 | c816dfc0a63a |
 | work/missions/2026-10-31-ecran-fermentescibles/banc-critique/RESULTAT.md | B1 | 0 | 3 |  |
@@ -1685,4 +1686,4 @@ Verdict : 5/6 corrigés, 4 problèmes (0 bloquant), 6 envois IA (cumul ≈ 32 su
 | T2-8 | tour2/id/RESULTAT.md | Recette › Identité | Eau ajoutée ignorée par brewerRecipeRefresh, brewerTools, brewSystemInsights ; 3,7 L retenu (pilote). Sombre non capturé après correctif. | m | ouvert | | |
 | T2-9 | tour2/fin/RESULTAT.md | Finances 1280 | Champs « du / au » gardés à 1280 (option a, pilote). | — | écarté | | décidé par le pilote |
 | T2-10 | tour2/fin/RESULTAT.md | En-tête › période | Nom accessible « 30 nov.. » (double point). | b | corrigé | be036eb21 | en ligne (en-ligne/2026-11-19-tour2) |
-| T2-NOTE | en-ligne tour 2 réserve | tous | Joué en 390 clair seulement (iframe) ; 844, 1280, sombre, plein écran, Confirmer le paiement, Eau et sels, Ma levure non joués en ligne. | — | ouvert, doute non compté | | |
+| T2-NOTE-1 | en-ligne tour 2 réserve | tous | Joué en 390 clair seulement (iframe) ; 844, 1280, sombre, plein écran, Confirmer le paiement, Eau et sels, Ma levure non joués en ligne. | — | ouvert, doute non compté | | |
