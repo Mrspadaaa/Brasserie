@@ -51,6 +51,7 @@ Lire :
 
 | chemin | préfixe | constats | notes | empreinte |
 |---|---|---|---|---|
+| work/missions/2026-11-18-choix-calendrier/tour2/en-ligne/RAPPORT-3.md | T3 | 4 | 1 | en cours |
 | work/missions/2026-11-18-choix-calendrier/tour2/en-ligne/RAPPORT-2.md | T2B | 3 | 1 | ef66f11d5dda |
 | work/missions/2026-11-18-choix-calendrier/tour2/en-ligne/RAPPORT.md | T2 | 10 | 1 | b0fb71f51615 |
 | work/missions/2026-10-31-ecran-fermentescibles/banc-critique/RAPPORT.md | B1 | 15 | 4 | c816dfc0a63a |
@@ -1678,7 +1679,7 @@ Verdict : 5/6 corrigés, 4 problèmes (0 bloquant), 6 envois IA (cumul ≈ 32 su
 | id | source | écran | constat | gravité | état | commit | note |
 |---|---|---|---|---|---|---|---|
 | T2-1 | en-ligne tour 2 n° 1 | Calendrier 390 (aligné) | Deux rangées d'axe : les mois en haut de la courbe alignée, les semaines sous la frise. Le lot a gardé les mois quand la courbe est alignée (« ce sont ceux de la frise »). | m | ouvert | | choix d'axe au brasseur (mini-maquettes), pas de règle du pilote |
-| T2-2 | en-ligne tour 2 n° 2 | Calendrier 390 | Toucher la barre minuscule du brassin « Ttt » n'ouvre aucune fiche ; non rejoué sur un brassin ZZ TEST. | G si confirmé | ouvert, à rejouer | | |
+| T2-2 | en-ligne tour 2 n° 2 | Calendrier 390 | Toucher la barre minuscule du brassin « Ttt » n'ouvre aucune fiche ; non rejoué sur un brassin ZZ TEST. | G si confirmé | ouvert, à rejouer | | passe 3 : la barre Ttt (normale) ouvre son détail ; barre minuscule non revue |
 | T2-3 | en-ligne tour 2 n° 3 | Finances › Opérations | Période oct. : « 0 opération » alors que la liste montre une opération à payer du 19.11. | m | ouvert | | |
 | T2-4 | en-ligne tour 2 n° 4 | Fiche d'opération | Une opération à payer n'offre que « Annuler cette écriture » (la pièce reste, annulée) ; « Noter un paiement » au lieu de « Confirmer le paiement ». | m | ouvert | | la ZZ TEST annulée reste dans Archives |
 | T2-5 | tour2/VERDICT.md | Calendrier 844 × 340 | Frise à 45 % de la hauteur au repos (visé 25 %) ; le brasseur trouvait le paysage déjà bon. | m | ouvert | | |
@@ -1692,3 +1693,13 @@ Verdict : 5/6 corrigés, 4 problèmes (0 bloquant), 6 envois IA (cumul ≈ 32 su
 | T2B-2 | en-ligne tour 2 bis n° 2 | Calendrier 390 | Un « déc. » coupé reste en haut de la frise, au-dessus des semaines (S47…). | b | ouvert | | proche de T2-1 |
 | T2B-3 | en-ligne tour 2 bis n° 3 | Recette › Levure | Le retour sur l'onglet « Ma levure » prend ≈ 1,2 s (mesuré sur PC, dans une iframe). | m | ouvert | | ML-1 |
 | T2B-NOTE-1 | en-ligne tour 2 bis réserve | tous | 844×340, 1280 et sombre non joués : le navigateur intégré demande une connexion Google, Claude in Chrome ne se redimensionne pas. | — | ouvert, doute non compté | | |
+
+## Test en ligne passe 3, 19.11 (Claude in Chrome, iframe émulée ; tag en-ligne/2026-11-19-tour2 ; source work/missions/2026-11-18-choix-calendrier/tour2/en-ligne/RAPPORT-3.md)
+
+| id | source | écran | constat | gravité | état | commit | note |
+|---|---|---|---|---|---|---|---|
+| T3-1 | en-ligne passe 3 n° 1 | Calendrier 390 › détail d'un brassin | La phrase « pas brassée · brassage prévu le 8 sept. · prête le 4 déc. au plus tôt » est hachée en quatre colonnes. | m | ouvert | | |
+| T3-2 | en-ligne passe 3 n° 2 | Calendrier › détail d'un brassin | « Brassage 8 sept. · pas brassée » puis Fermentation 20 nov., Dry hop 22 nov. : brassage passé non fait, étapes recalées sur aujourd'hui sans le dire. | m | ouvert | | brassin réel Ttt, lu seulement |
+| T3-3 | en-ligne passe 3 n° 3 | Calendrier (390, 1280, deux thèmes) | « Emballage · Jhhh » paraît deux fois de suite dans la rangée Brassins. | b | ouvert | | doublon ou deux emballages non distingués |
+| T3-4 | en-ligne passe 3 n° 4 | Calendrier 844×340 | Plein écran refusé par le navigateur (iPhone Safari, iframe) : en paysage, aucun effet ni message. | m | ouvert | | EnTete.tsx basculerPlein : invitation seulement téléphone droit |
+| T3-NOTE-1 | en-ligne passe 3 réserve | tous | Banc : premier clic réel après chargement perdu (3 fois) ; plein écran non jouable dans l'iframe ; tâches longues 11–15 s sur Finances › Opérations après plusieurs ouvertures. À mesurer sur téléphone. | — | ouvert, doute non compté | | |
