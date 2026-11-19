@@ -2210,3 +2210,11 @@ Choix : un interrupteur aligne ou non la courbe sur la frise (même axe de temps
 > Pas de mini maquettes
 
 Capture : work/missions/2026-11-18-choix-calendrier/brasseur/zoom-glisser-18-11.jpg (jouable paysage : pendant le glisser, la courbe zoome sur les semaines touchées, « avant » en pointillé, « si tu lâches en S51 : S50 5 120 → 4 480 », écart −640). Lecture : (1) retenu à porter : glisser une chose qui change la courbe la zoome sur les semaines concernées, avant/après et écart ; (2) un bouton cache la courbe, la frise prend toute la place, seule la bande de l'axe (semaines/jours) reste.
+
+### Calendrier au téléphone : place gâchée, retour du mode horizontal, en-tête caché, fiche d'un brassin (19.11)
+
+- Carnet (19.11, 06:3x) : « En 8h c'est toujours pas bon le carnet ??? »
+- (capture 390 portrait, entoure le haut : barre du navigateur, en-tête, zone de la courbe vide, deux rangées d'axe « déc. févr. avr. … » et « S47 S48 … » ; et le bas : Fêtes, Ventes, Achats, barre d'onglets) « Il y a un petit soucis techniques, sur mobile, il y a quand même beaucoup d'espace "gâché" pour le calendrier.. je sais pas ce qui est possible de faire ou pas.. »
+- (capture paysage, entoure le bouton ↘↖ de la barre d'outils) « En mode horizontal ça fonctionne bien mais mettre un highlights sur le bouton pour revenir normal »
+- « Et aussi le header est un peu caché » (capture paysage : la barre d'outils ± / 3 mois / horloge / œil passe sous l'en-tête de l'app)
+- (capture 390 : fiche de Ttt ouverte, la barre de Ttt réduite à un trait au-dessus) « Regarde ce qui se passe quand on clique sur un brassin ?? »
