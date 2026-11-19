@@ -52,6 +52,16 @@ function motsDe(c: CarnetDoc): MotIndexe[] {
   return [...meilleur].map(([mot, poids]) => ({ mot, carnetId: c.id, poids }));
 }
 
+/**
+ * Tour 3, f5b n° 3 : le texte tapé nomme-t-il ce carnet même ? Vrai quand chacun de ses mots est un mot du titre (« Ventilation de la
+ * salle » → « ZZ TEST — Ventilation de la salle de brassage ») : on l'ouvre, il ne devient pas une façon de lui-même.
+ */
+export function nommeLeCarnet(texte: string, titre: string): boolean {
+  const mots = jetons(texte.replace(/^\s*ZZ TEST\s*[—–-]\s*/i, ''));
+  const duTitre = new Set(jetons(titreSansBanc(titre)));
+  return mots.length > 0 && mots.every(m => duTitre.has(m));
+}
+
 /** Les carnets proches d'un texte, du plus proche au moins proche (score > 0). */
 export function propositions(texte: string, carnets: readonly CarnetDoc[]): Proposition[] {
   const requete = [...new Set(jetons(texte))];

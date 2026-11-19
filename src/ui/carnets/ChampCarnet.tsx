@@ -213,7 +213,8 @@ export function ChampCarnet(p: ChampCarnetProps) {
           pour laisser au carnet le plus de hauteur ; clavier fermé, chacune sa ligne. */}
       {/* Critique 5, n° 5 et 21 ; tour 3, PCN-103 : la bulle G8 tient en deux lignes au plus, clavier ouvert ou non */}
       {(montrerBulle || (p.coller && !plein)) && (
-        <div className="cnf-aides-ligne">
+        /* tour 3, f5b n° 13 : seule (sans la bulle), la puce « Coller » prend sa ligne (`.cnf-aides`), jamais bornée à 55 % ni coupée net */
+        <div className={montrerBulle ? 'cnf-aides-ligne' : 'cnf-aides'}>
           {montrerBulle && p.suggestion && (
             <button
               type="button"
@@ -229,7 +230,8 @@ export function ChampCarnet(p: ChampCarnetProps) {
           )}
           {p.coller && !plein && (
             <button type="button" className="cn-puce cn-coller" onMouseDown={e => e.preventDefault()} onClick={p.onColler}>
-              Coller : <span className="cn-mono">{lienCourt(p.coller)}</span>
+              {/* à côté de la bulle (55 %), le lien se coupe par « … » visible, jamais net (f5b n° 13) */}
+              Coller : <span className="cn-mono" style={{ minWidth: 0, overflow: 'hidden', textOverflow: 'ellipsis' }}>{lienCourt(p.coller)}</span>
             </button>
           )}
         </div>

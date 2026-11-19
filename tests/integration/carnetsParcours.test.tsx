@@ -211,7 +211,8 @@ describe('P1, P2, P3 (vision 1) : le bandeau suit le rangement final ; un lien s
     await e.taperEtEnvoyer(url);
     /* pendant : le carnet neuf porte le domaine, jamais l'URL brute ; aucun « Carnet créé » annoncé avant la fin */
     expect(e.carnets().some(c => c.title === url)).toBe(false);
-    expect(e.vue.container.querySelector('.cn-titre')?.textContent).toBe('brewshop.invalid');
+    /* tour 3, f5b n° 12 : le carnet proche (Ventilation) annoncé reçoit le lien dès l'envoi ; aucun carnet titré du domaine, même en attendant */
+    expect(e.carnets().some(c => c.title === 'brewshop.invalid')).toBe(false);
     expect(e.vue.container.textContent).not.toMatch(/Carnet créé/);
     await e.attendre(400);
     expect(ventil()).toBe(avant.articles + 1);

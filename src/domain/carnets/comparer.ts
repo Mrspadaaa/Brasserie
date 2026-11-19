@@ -297,7 +297,13 @@ const prixComparable = (a: Article, b: Article): boolean => a.prixCentimes !== u
 export function domine(a: Article, b: Article, colonnes: readonly Colonne[]): boolean {
   const ecarts: number[] = [];
   for (const k of colonnes) {
-    if (k.sens === 'texte') continue;
+    if (k.sens === 'texte') {
+      /* tour 3, f5b n° 10 : une colonne sans sens (le débit lu, pas encore un critère : 40 contre 25 L/min) où les deux diffèrent :
+         rien ne dit qui y gagne, donc « moins bien … sur tout » serait faux */
+      const ta = valeurDe(a, k), tb = valeurDe(b, k);
+      if (ta && tb && normaliser(`${ta.valeur} ${ta.unite ?? ''}`) !== normaliser(`${tb.valeur} ${tb.unite ?? ''}`)) return false;
+      continue;
+    }
     const va = ordonnable(valeurDe(a, k), k.sens), vb = ordonnable(valeurDe(b, k), k.sens);
     if (va === null || vb === null) continue;
     ecarts.push(comparerSur(vb, va, k.sens)); /* < 0 : b meilleur */

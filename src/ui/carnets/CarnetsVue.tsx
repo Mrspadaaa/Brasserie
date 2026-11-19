@@ -19,7 +19,7 @@ import {
 } from '../../domain/carnets/operations';
 import { consequenceApercu, critereQuiTranche, mentionValeurs, passe, placesDe, tableau as tableauDe } from '../../domain/carnets/comparer';
 import { analyserLigne, analyserTexte, decouper, genreLocal, jetons, normaliser, objetDe, PUCES_VA_DANS, vaDansDe, type LigneLocale, type RubriqueVaDans } from '../../domain/carnets/analyseLocale';
-import { aucunCarnetNEnParle, carnetProche, rattacher } from '../../domain/carnets/rattacher';
+import { aucunCarnetNEnParle, carnetProche, nommeLeCarnet, rattacher } from '../../domain/carnets/rattacher';
 import { doublonsDe, notesEnDouble } from '../../domain/carnets/doublons';
 import { liensDuTexte, nombresDe, type CarnetPourIA, type LigneCarnet } from '../../domain/carnets/ia';
 import { aidesCourantes, comportementSimule, modeCarnet, type AidesCarnet, type ModeCarnetIA } from '../../config/carnetIA';
@@ -615,7 +615,8 @@ export function CarnetsVue(p: CarnetsVueProps) {
       const force = aForcer.current; aForcer.current = null;
       /* n° 3 : le carnet annoncé par le cadre (l'ouvert, ou celui qu'il a nommé, corrigé ou non d'un toucher) */
       const titreNeuf = destEnvoi.current === CARNET_NEUF ? titreNeufEnvoi.current : null;
-      const ici = depuis && !titreNeuf ? destEnvoi.current ?? depuis : null;
+      /* f5b n° 12 : depuis la liste, seul un lien seul a un carnet annoncé (`envoyer`) */
+      const ici = depuis ? (!titreNeuf ? destEnvoi.current ?? depuis : null) : destEnvoi.current;
       destEnvoi.current = null; titreNeufEnvoi.current = null;
       const rubrique = ici && !force ? vaDansDe(txt) : null;
       const choisi = carnetChoisi.current; carnetChoisi.current = false;
@@ -858,6 +859,8 @@ export function CarnetsVue(p: CarnetsVueProps) {
     /* n° 3 : le carnet que le cadre a annoncé, par le même calcul, ou celui qu'il a choisi d'un toucher */
     const dEnvoi = ouvert && depuis ? destinationDans(txt, ouvert, carnets) : null;
     destEnvoi.current = dEnvoi ? corrigeCarnet ?? dEnvoi.carnetId : null;
+    /* tour 3, f5b n° 12 : un lien seul envoyé depuis la liste va dans le carnet que le cadre a annoncé (même `rattacher`) */
+    if (!depuis && estLienSeul(txt)) destEnvoi.current = rattacher(txt, carnets)?.carnetId ?? null;
     /* tour 3, f5 (n° 1) : « autre projet, sans rapport : … » envoyé ailleurs : une note, sans la phrase de renvoi (jamais un critère) */
     const horsSujet = ouvert && destEnvoi.current && destEnvoi.current !== ouvert.id ? sansAutreSujet(txt) : null;
     if (horsSujet) { txt = horsSujet; aForcer.current = aForcer.current ?? 'note'; }
@@ -1039,10 +1042,18 @@ export function CarnetsVue(p: CarnetsVueProps) {
         return <NoteEnVrac etat="pendant" lignes={vuesVrac(plan)} texteOrigine={texte} origine="locale" nbCarnets={plan.carnets} onAnnuler={() => setTexte('')} />;
       }
       const pr = rattacher(texte, carnets);
+      /* tour 3, f5b n° 12 : un lien seul collé depuis la liste, quand un carnet parle déjà de l'objet : l'article va dans ce carnet (même
+         calcul qu'à l'envoi), jamais un carnet titré du domaine ni une façon */
+      if (pr && estLienSeul(texte)) {
+        const url = lignesApercu.find(l => l.url)?.url ?? texte.trim();
+        return <CadreArrivee cadre={{ sorte: 'lien', url, phase: 'avant', depuisListe: true, vers: pr.titre, lecturePossible: mode !== 'eteint' && enLigne }} onAnnuler={() => setTexte('')} aides={aides} />;
+      }
       /* n° 2 : la phrase entière n'est pas son propre critère (« Ce qui compte » reste à l'IA), seulement un critère tiré d'elle */
       const critere = lignesApercu.find(l => l.sorte === 'critere' && !memeTexte(l.texte, texte));
+      /* tour 3, f5b n° 3 : la phrase nomme le carnet proche lui-même (« Ventilation de la salle ») : « Ouvrir ce carnet », le champ se vide */
+      const ouvrir = !!pr && nommeLeCarnet(texte, pr.titre);
       const c: CadreV = { sorte: 'creer', titre: titreDePhrase(texte),
-        proche: pr ? { titre: pr.titre, onAjouter: () => setVue({ sorte: 'carnet', id: pr.carnetId }) } : null,
+        proche: pr ? { titre: pr.titre, ...(ouvrir ? { ouvrir } : {}), onAjouter: () => { if (ouvrir) setTexte(''); setVue({ sorte: 'carnet', id: pr.carnetId }); } } : null,
         ...(pr ? {} : { raisonNeuf: !estLienSeul(texte)
           ? `${aucunCarnetNEnParle(carnets.length)} : nouveau carnet, votre phrase en titre`
           : mode !== 'eteint' && enLigne

@@ -11,7 +11,7 @@
  *   `aides.regrouper`).
  */
 import React, { useEffect, useRef } from 'react';
-import { ArrowDown, GitFork, Pencil, Trash2, X } from 'lucide-react';
+import { ArrowDown, ArrowRight, GitFork, Pencil, Trash2, X } from 'lucide-react';
 import { lienCourt } from './ChampCarnet';
 import { sourceDuCritere } from '../../domain/carnets/modele';
 import { Provenance, type AidesV, type Origine } from './EtatIA';
@@ -23,12 +23,14 @@ export interface RegrouperV { avec: string; onRegrouper: () => void }
 export type CadreV =
   /* P28 (R09) : Créer · avant, g5:v03-2 ; G1 (g5:v04-1) les exemples touchables ; G2 (g5:v07-2) « Une note en vrac marche aussi. » */
   | { sorte: 'avant'; exemples: string[]; onExemple: (texte: string) => void }
-  | { sorte: 'creer'; titre: string; proche?: { titre: string; onAjouter: () => void } | null; raisonNeuf?: string; ceQuiCompte?: string }
+  /* tour 3, f5b n° 3 : `ouvrir`, la phrase nomme le carnet proche lui-même (« Ventilation de la salle ») : « Ouvrir ce carnet », pas une façon */
+  | { sorte: 'creer'; titre: string; proche?: { titre: string; onAjouter: () => void; ouvrir?: boolean } | null; raisonNeuf?: string; ceQuiCompte?: string }
   /* Critique 5, n° 3 (G4) : `vers`, le carnet visé quand ce n'est pas l'ouvert (« ↓ va dans Évier inox ») ; même calcul qu'à l'envoi */
   /* `source` (décision du pilote, critique 6) : d'où vient le critère annoncé, lu par `sourceDuCritere` */
   | { sorte: 'texte'; rubrique: 'Ce qui compte' | 'Façons' | 'Articles' | 'Notes'; texte: string; origine: Origine; compareSur?: string; vers?: string; source?: 'phrase' | 'ia' }
   /* `lecturePossible` (critique 6, n° 11) : faux si l'IA est éteinte ou hors ligne ; la promesse « se lisent à l'envoi » se tait */
-  | { sorte: 'lien'; url: string; phase: 'avant' | 'lecture'; depuisListe?: boolean; lecturePossible?: boolean; apercu?: string; lus?: { nom: boolean; photo: boolean; prix: boolean; stock: boolean; valeurs: boolean }; cherche?: string[] }
+  /* tour 3, f5b n° 12 : `vers`, collé depuis la liste, le carnet qui parle déjà de l'objet : l'article y va (« va dans Ventilation… ») */
+  | { sorte: 'lien'; url: string; phase: 'avant' | 'lecture'; depuisListe?: boolean; vers?: string; lecturePossible?: boolean; apercu?: string; lus?: { nom: boolean; photo: boolean; prix: boolean; stock: boolean; valeurs: boolean }; cherche?: string[] }
   | { sorte: 'modifier'; texte?: string; onSupprimer: () => void };
 
 export interface CadreArriveeProps {
@@ -101,7 +103,9 @@ function CadreContenu({ cadre: c, onAnnuler, consequence, aides, doublon, regrou
         {c.proche ? (
           <div className="cn-proche">
             <p><Provenance origine="ia" /> Déjà un carnet proche : <b>{c.proche.titre}</b></p>
-            <button type="button" className="cn-puce cn-puce-ia" onClick={c.proche.onAjouter}><GitFork size={16} aria-hidden /> Y ajouter en façon</button>
+            {c.proche.ouvrir
+              ? <button type="button" className="cn-puce cn-puce-ia" onClick={c.proche.onAjouter}><ArrowRight size={16} aria-hidden /> Ouvrir ce carnet</button>
+              : <button type="button" className="cn-puce cn-puce-ia" onClick={c.proche.onAjouter}><GitFork size={16} aria-hidden /> Y ajouter en façon</button>}
           </div>
         ) : c.raisonNeuf ? <p className="cn-mut"><Provenance origine="ia" /> {c.raisonNeuf}</p> : null}
       </section>
@@ -133,9 +137,9 @@ function CadreContenu({ cadre: c, onAnnuler, consequence, aides, doublon, regrou
   if (c.sorte === 'lien') {
     const lus = c.lus;
     return (
-      <section className="cn-cadre" aria-label="Arrive ici, dans Articles">
+      <section className="cn-cadre" aria-label={c.vers ? `Va dans ${c.vers}, dans Articles` : 'Arrive ici, dans Articles'} data-vers={c.vers ? 'carnet' : undefined}>
         <div className="cn-cadre-tete">
-          <span className="cn-vert"><ArrowDown size={16} aria-hidden /> {c.depuisListe ? 'Va atterrir ici · lien collé' : 'Arrive ici, dans Articles'}</span>
+          <span className="cn-vert"><ArrowDown size={16} aria-hidden /> {c.vers ? <>va dans <b>{c.vers}</b> · Articles</> : c.depuisListe ? 'Va atterrir ici · lien collé' : 'Arrive ici, dans Articles'}</span>
           <span className="cn-sp" /><Croix onAnnuler={onAnnuler} />
         </div>
         <p className="cn-mono cn-lien-clair">{lienCourt(c.url, 40)}</p>
