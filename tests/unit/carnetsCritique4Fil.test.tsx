@@ -231,7 +231,7 @@ describe('P28 (R09) et P33 (R20)', () => {
   it('Créer · avant : le champ de la liste pris montre la phrase, les exemples touchables et « Une note en vrac marche aussi. »', () => {
     const { champ } = monter();
     fireEvent.focus(champ());
-    expect(document.body.textContent).toContain('on garde sa photo, son prix, et on le surveille');
+    expect(document.body.textContent).toContain('on garde sa photo et son prix, pour comparer');
     expect(document.body.textContent).toContain('Une note en vrac marche aussi.');
     fireEvent.click(screen.getByRole('button', { name: 'Frigo de garde' }));
     expect(champ().value).toBe('Frigo de garde');

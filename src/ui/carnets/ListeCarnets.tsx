@@ -307,7 +307,7 @@ function ListeVide({ enHaut, onExemple }: { enHaut?: React.ReactNode; onExemple?
   return (
     <div className="cn-page cn-liste cn-vide-page">
       <h2 className="cn-vide-titre">Carnets</h2>
-      <p className="cn-vide-phrase">Collez le lien d'un objet ou notez un besoin : on garde sa photo, son prix, et on le surveille.</p>
+      <p className="cn-vide-phrase">Collez le lien d'un objet ou notez un besoin : on garde sa photo et son prix, pour comparer.</p>
       {cadreGeste ? enHaut : (
         <div className="cn-exemple-carte" aria-label="Exemple : votre premier carnet arrive ici">
           <VignetteObjet mots={['Évier inox, 2 bacs']} />

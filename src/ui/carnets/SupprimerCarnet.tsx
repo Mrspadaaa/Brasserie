@@ -39,7 +39,7 @@ function compte(n: number, un: string, plusieurs?: string) { return n ? pluriel(
 export function cequiPart(c: ContenuCarnetV): string | null {
   const n = comptesCarnet(c);
   const parts = [
-    compte(n.articles, 'article'), compte(n.photos, 'photo'),
+    compte(c.criteres?.length ?? 0, 'critère'), compte(n.articles, 'article'), compte(n.photos, 'photo'),
     compte(n.facons, 'façon'), n.ecartees ? `${pluriel(n.ecartees, 'façon')} ${accord(n.ecartees, 'écartée')}` : null, compte(n.notes, 'note'),
   ].filter(Boolean) as string[];
   if (!parts.length) return null;

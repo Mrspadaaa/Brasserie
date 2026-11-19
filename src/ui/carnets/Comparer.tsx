@@ -13,6 +13,7 @@ import { ChevronLeft, ExternalLink, Scale } from 'lucide-react';
 import { sourceDuCritere } from '../../domain/carnets/modele';
 import { compromisDe, libelleCaracteristique, libelleEcarte, nombreDe, type Tableau } from '../../domain/carnets/comparer';
 import { montant, Provenance, rangTexte, STATUT_LIBELLE, valeurTexte, type ArticleV, type CritereV, type Sens, type StatutCarnet, type ValeurV } from './EtatIA';
+import { Photo } from './pictos';
 import './carnets-decider.css';
 
 /** Le tableau tel que `tableau(carnet)` de `comparer.ts` le rend (lot A, critère A9). */
@@ -71,6 +72,14 @@ export function sansApercu(a: Pick<ArticleV, 'lecture' | 'nom' | 'domaine' | 'ur
   const domaine = domaineDe(a);
   const enCours = a.lecture === 'en-cours' || a.lecture === 'a-lire';
   return { titre: enCours ? (domaine ?? 'Lien') : 'Lien sans aperçu', sous: `${domaine ? `${domaine} · ` : ''}${enCours ? 'lecture…' : 'page non lue'}`, enCours };
+}
+
+/**
+ * Paquet 1, PCN-162 (test en ligne 1, n° 7) : un article ne se choisit pas tant que rien n'en est connu ; un prix connu (écrit dans sa
+ * phrase) suffit, même si sa page n'a pas été lue. Le message dit « ni nom, ni prix connus » : il ne ment plus quand le prix s'affiche.
+ */
+export function choixBloque(a: Pick<ArticleV, 'lecture' | 'nom' | 'domaine' | 'url' | 'prixCentimes'>): ReturnType<typeof sansApercu> {
+  return a.prixCentimes !== undefined ? null : sansApercu(a);
 }
 
 /** Pour `nonLus` : les articles dont la page n'est pas lue, par id, avec leur domaine (à passer par le conteneur). */
@@ -205,7 +214,7 @@ function deLExemple(t: Tableau): boolean {
 
 /** La vignette d'une colonne (g01-8) : la photo, sinon le picto de l'objet (lot B) ; sinon rien, jamais un cube générique. */
 function Vignette({ photo, picto }: { photo?: string; picto?: React.ReactNode }) {
-  if (photo) return <img src={photo} alt="" className="cn-vignette cn-cmp-vignette" />;
+  if (photo) return <Photo src={photo} className="cn-vignette cn-cmp-vignette" repli={<Vignette picto={picto} />} />;
   if (picto) return <span className="cn-vignette cn-cmp-vignette cn-vignette-vide" aria-hidden>{picto}</span>;
   /* critique 6 (1280, 22) : sans photo ni picto, la place reste vide et réservée, pour que rangs et noms s'alignent d'une colonne à l'autre */
   return <span className="cn-cmp-vignette cn-cmp-vignette-place" aria-hidden />;

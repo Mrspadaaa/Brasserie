@@ -13,7 +13,8 @@ import { libelleEcarte, nombreTexte, placesDe, placesParmiTous, pourquoiDe, prix
 import { normaliser } from '../../domain/carnets/analyseLocale';
 import { sourceDuCritere, type Article, type DonneesCarnet } from '../../domain/carnets/modele';
 import { dateCourte, montant, PictoLocal, Provenance, rangTexte, texteSortie, type SortieV, type ArticleV, type ChoixV, type CritereV, type FaconV } from './EtatIA';
-import { sansApercu } from './Comparer';
+import { choixBloque, sansApercu } from './Comparer';
+import { Photo } from './pictos';
 import { Input, Textarea } from '../Input';
 import './carnets-decider.css';
 
@@ -161,7 +162,7 @@ function ChoisiVue(p: Extract<ChoisirProps, { etape: 'choisi' }>) {
       </div>
       <h2 className="cn-titre">{p.titre}</h2>
       <div className="cn-carte cn-choisi-carte">
-        {a.photo ? <img className="cn-vignette cn-choisi-photo" src={a.photo} alt="" /> : p.picto ? <span className="cn-vignette cn-choisi-photo cn-vignette-vide" aria-hidden>{p.picto}</span> : null}
+        <Photo src={a.photo} className="cn-vignette cn-choisi-photo" repli={p.picto ? <span className="cn-vignette cn-choisi-photo cn-vignette-vide" aria-hidden>{p.picto}</span> : null} />
         <div className="cn-sp">
           <b>{a.nom}</b>
           <span className="cn-mut">{[a.vendeur, a.pays].filter(Boolean).join(' · ')}</span>
@@ -225,7 +226,7 @@ function ChoisirArticle(p: Extract<ChoisirProps, { etape: 'choisir' }>) {
   const [pourquoi, setPourquoi] = useState(propose);
   const [raison, setRaison] = useState<string | null>(null);
   /* Une page non lue ne se choisit pas : rien n'en est connu (ni nom, ni prix, ni valeurs) ; l'inconnu n'est jamais 0. */
-  const sa = sansApercu(a);
+  const sa = choixBloque(a);
   /* n° 5 : touchée au bas de Comparer, la feuille s'ouvre en haut de l'écran (sinon on reste face au bas de la page d'avant) */
   const haut = useRef<HTMLElement>(null);
   useEffect(() => { haut.current?.scrollIntoView?.({ block: 'start' }); }, []);
@@ -239,7 +240,7 @@ function ChoisirArticle(p: Extract<ChoisirProps, { etape: 'choisir' }>) {
       <section className="cn-choisir-cadre" aria-label="Choisir">
         {/* n° 10 : la photo du choisi, ou à défaut son picto en grand dans le cadre photo (R05, D-102) ; jamais un cube générique */}
         <div className="cn-offre cn-offre-choisir" data-apercu={sa ? 'aucun' : undefined}>
-          {a.photo ? <img className="cn-vignette cn-offre-photo" src={a.photo} alt="" /> : p.picto ? <span className="cn-vignette cn-offre-photo cn-vignette-vide" aria-hidden>{p.picto}</span> : null}
+          <Photo src={a.photo} className="cn-vignette cn-offre-photo" repli={p.picto ? <span className="cn-vignette cn-offre-photo cn-vignette-vide" aria-hidden>{p.picto}</span> : null} />
           {sa
             ? <div className="cn-sp"><b>{sa.titre}</b><span className="cn-mut">{sa.sous}</span></div>
             : <div className="cn-sp cn-offre-nom"><b>{a.nom ?? a.vendeur}</b><span className="cn-mut">{[a.nom ? a.vendeur : null, a.pays].filter(Boolean).join(' · ')}{a.dispo ? `${a.vendeur || a.pays ? ' · ' : ''}${a.dispo}` : ''}</span>
@@ -301,7 +302,7 @@ function ChoisirArticle(p: Extract<ChoisirProps, { etape: 'choisir' }>) {
         return (
           <div key={o.article.id} className="cn-carte cn-article" data-apercu={so ? 'aucun' : undefined}>
             <span className="cn-rang">{o.rang}</span>
-            {o.article.photo ? <img className="cn-vignette" src={o.article.photo} alt="" /> : null}
+            <Photo src={o.article.photo} className="cn-vignette" />
             {so
               ? <div className="cn-article-tx"><b>{so.titre}</b><span className="cn-mut">{so.sous}</span></div>
               : <div className="cn-article-tx"><b>{o.article.nom}</b><span className="cn-mut">{[o.article.vendeur, o.article.pays].filter(Boolean).join(' · ')}</span></div>}

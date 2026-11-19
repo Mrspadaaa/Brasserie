@@ -79,7 +79,7 @@ function CadreContenu({ cadre: c, onAnnuler, consequence, aides, doublon, regrou
     const garder = (e: React.SyntheticEvent) => e.preventDefault();
     return (
       <section className="cn-cadre cnf-avant" aria-label="Créer un carnet">
-        <p className="cnf-avant-phrase">Collez le lien d'un objet ou notez un besoin : on garde sa photo, son prix, et on le surveille.</p>
+        <p className="cnf-avant-phrase">Collez le lien d'un objet ou notez un besoin : on garde sa photo et son prix, pour comparer.</p>
         <div className="cnf-fantome" aria-hidden>
           <span className="cnf-fantome-photo" />
           <span className="cn-sp"><b>Évier inox, 2 bacs</b><span className="cn-mut"> · exemple</span></span>

@@ -200,7 +200,7 @@ describe('7 · liste vide = i06-2, sans flèche ni bulle (n° 11, D-108)', () =>
     const { container } = render(<ListeCarnets carnets={[]} onOuvrir={rien} onExemple={onExemple} />);
     const t = texte(container);
     expect(container.querySelector('h2')!.textContent).toBe('Carnets');
-    expect(t).toContain("Collez le lien d'un objet ou notez un besoin : on garde sa photo, son prix, et on le surveille.");
+    expect(t).toContain("Collez le lien d'un objet ou notez un besoin : on garde sa photo et son prix, pour comparer.");
     const ex = container.querySelector('.cn-exemple-carte')!;
     expect(texte(ex)).toMatch(/Évier inox, 2 bacs.*exemple.*votre premier carnet.*arrive ici/);
     expect(ex.querySelector('[data-picto="evier"]')).toBeTruthy();

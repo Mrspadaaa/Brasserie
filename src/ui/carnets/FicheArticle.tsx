@@ -19,7 +19,7 @@ import { Bascule, estExemple, mesureCritere, nombreValeur } from './CarteArticle
 import { normaliser } from '../../domain/carnets/analyseLocale';
 import { nombreTexte, placesDe, prixTexte, tableau as calculerTableau, type Place } from '../../domain/carnets/comparer';
 import { dateCourte, Provenance, rangTexte, valeurTexte, type ArticleV, type ContenuCarnetV, type CritereV, type FaconV, type ValeurV } from './EtatIA';
-import { VignetteObjet } from './pictos';
+import { marquerCassee, photoCassee, VignetteObjet } from './pictos';
 
 export interface FicheArticleProps {
   article: ArticleV;
@@ -81,6 +81,7 @@ interface Case { nom: string; texte: string | null; unite?: string; rang?: numbe
 
 export function FicheArticle(p: FicheArticleProps) {
   const a = p.article;
+  const [, redessiner] = React.useState(0);
   const k = p.carnet;
   const devise = a.devise ?? 'CHF';
   const prix = prixTexte(a.prixCentimes, devise);
@@ -150,8 +151,8 @@ export function FicheArticle(p: FicheArticleProps) {
       </div>
       {/* n° 8 : le cadre photo est toujours là (h01-6) ; sans photo, l'objet dessiné en grand. Critique 6, n° 20 (D-78) : la photo lue
           de la page ; celle du banc est simulée et le dit (« exemple »). */}
-      {a.photo ? (
-        <figure className="cn-fiche-photo" data-cadre="photo"><img src={a.photo} alt={`photo de la page collée : ${a.nom ?? a.domaine ?? 'article'}`} /><figcaption><Camera size={16} aria-hidden /> photo de la page collée{estExemple(a) ? <> <Provenance origine="exemple" /></> : null}</figcaption></figure>
+      {a.photo && !photoCassee(a.photo) ? (
+        <figure className="cn-fiche-photo" data-cadre="photo"><img onError={() => { marquerCassee(a.photo!); redessiner(n => n + 1); }} src={a.photo} alt={`photo de la page collée : ${a.nom ?? a.domaine ?? 'article'}`} /><figcaption><Camera size={16} aria-hidden /> photo de la page collée{estExemple(a) ? <> <Provenance origine="exemple" /></> : null}</figcaption></figure>
       ) : (
         <figure className="cn-fiche-photo cn-fiche-picto" data-cadre="picto" aria-hidden>
           <VignetteObjet mots={[a.nom, p.facon?.nom, p.titreCarnet]} classe="cn-vignette-fiche" taille={132} />

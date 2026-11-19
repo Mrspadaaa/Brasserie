@@ -185,6 +185,20 @@ export interface ContexteGarde {
  * Relit la réponse. `null` : réponse hors schéma, vide, trop longue ou sans ligne valable ; l'appelant garde le rangement local.
  * Une ligne fautive perd son champ fautif (lien, prix, aide…), jamais la phrase du brasseur.
  */
+/**
+ * Paquet 1, PCN-176 et 181 (tests en ligne 2 et 3) : le champ vendeur du modèle a porté son raisonnement (« galaxus.ch (Darlac Ciseaux /
+ * Galaxus marketplace ou Galaxus, gardons le domaine… »), des balises cassées, l'URL entière, ou le nom répété cinq fois. Un vendeur est un
+ * nom court : un mot répété se réduit à un ; une adresse, une parenthèse, une balise ou une phrase n'en sont pas (le domaine de la page
+ * reste, lui, sur l'article).
+ */
+export function vendeurPropre(v: string | undefined): string | undefined {
+  if (!v) return undefined;
+  const mots = v.split(/\s+/).filter(Boolean);
+  if (mots.length > 1 && mots.every((m) => sansAccents(m) === sansAccents(mots[0]))) return mots[0];
+  if (/[/\\<>[\](){}|;=?!"«»…]|https?:|www\./i.test(v) || mots.length > 5 || v.length > 40) return undefined;
+  return v;
+}
+
 export function lireReponse(brut: unknown, ctx: ContexteGarde): LigneCarnet[] | null {
   if (!brut || typeof brut !== 'object') return null;
   const lignes = (brut as { lignes?: unknown }).lignes;
@@ -249,7 +263,7 @@ export function lireReponse(brut: unknown, ctx: ContexteGarde): LigneCarnet[] | 
     }
 
     // D-35 : un vendeur n'est gardé que si le message ou la page lue le nomment.
-    const vendeur = chaine(r.vendeur, 80);
+    const vendeur = vendeurPropre(chaine(r.vendeur, 80));
     if (vendeur) {
       const v = sansAccents(vendeur);
       const nomme = texteNormal.includes(v) || pagesDeLigne.some((p) =>
