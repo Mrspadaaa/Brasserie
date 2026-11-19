@@ -1176,7 +1176,7 @@
           "date": "2026-11-19",
           "source": "en-ligne-1911.png",
           "signature": {
-            "regex": "1,0dd"
+            "regex": "1,0[0-9][0-9]"
           }
         },
         {

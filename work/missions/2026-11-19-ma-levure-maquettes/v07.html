@@ -1,0 +1,315 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Ma levure — v07 : la fiche se lit comme une jauge, l'IA en est le bout</title>
+<!--
+  v07 — axe n° 7. Une seule décision de forme change par rapport à la carte en ligne (base 19.11) :
+  les traits de la fiche ont une JAUGE DE COMPLÉTUDE (5 segments, un par trait, à sa couleur), et le geste
+  « Compléter par l'IA » est le bout de cette jauge. Une seule recherche pour la fiche (LEV-5), les
+  propositions à confirmer sur leur ligne, ✓ ✗ en icônes (LEV-11). Le reste suit la base : levure en tête,
+  FG (depuis OG) · floculation, conduite hors fiche en alerte dans la carte et « Caler à 11 °C » (LEV-3, état après calage en bas),
+  Annuler le changement, Changer de levure et ses puces, Retour / Suivant.
+  Statique (L30) : repos au premier écran ; « pendant » et « après » en défilant.
+-->
+<style>
+  :root{
+    --page:#FFFFFF; --pan:#F5F5F5; --sur:#EBEBEB; --bord:#DDDDDD; --bordm:#BFBFBF; --trait:#9E9E9E;
+    --t2:#666666; --t1:#333333; --t0:#111111;
+    --or:#E0A02E; --paille:#F2C14E; --ortx:#7A5A12; --ambtx:#8A5212; --cuivre:#A0522D; --cuivtx:#8D442C;
+    --esters:#E7A070; --phenols:#A0522D; --thiols:#6E9B5B; --terpenes:#A3C97A; --sucres:#C87A2C;
+    --froid:#86B9E6; --eau:#4F7E9B; --alerte:#D6453D;
+    --sans:"Source Sans 3","Source Sans Pro",system-ui,-apple-system,"Segoe UI",sans-serif;
+    --mono:"IBM Plex Mono",ui-monospace,"Cascadia Mono",Consolas,monospace;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;background:var(--page);color:var(--t0);font:14px/1.3 var(--sans);-webkit-text-size-adjust:100%}
+  .l7-m{font-family:var(--mono);font-variant-numeric:tabular-nums}
+  .l7-ecran{max-width:390px;margin:0 auto;padding:0 0 132px}
+
+  /* En-tête de l'assistant (comme la base) */
+  .l7-tete{position:sticky;top:0;z-index:5;background:var(--page);border-bottom:1px solid var(--bord)}
+  .l7-tl{display:flex;align-items:center;gap:8px;height:44px;padding:0 12px}
+  .l7-ret{width:28px;height:28px;display:grid;place-items:center;color:var(--t0)}
+  .l7-titre{font-size:18px;font-weight:700}
+  .l7-titre span{font-weight:400;color:var(--t2);font-family:var(--mono);font-size:16px;margin-left:4px}
+  .l7-ex{margin-left:auto;font-size:14px;color:var(--ortx);border:1px dashed var(--or);border-radius:999px;padding:1px 8px}
+  .l7-aband{font-size:14px;color:var(--t1);text-decoration:underline;text-underline-offset:3px}
+  .l7-etapes{display:flex;justify-content:space-between;gap:4px;padding:0 8px;overflow:hidden;white-space:nowrap;height:32px;align-items:flex-start}
+  .l7-etapes span{font-size:14px;letter-spacing:-.2px;color:var(--t2);padding-bottom:6px;border-bottom:3px solid #6f6f6f;flex:none}
+  .l7-etapes .l7-fait{color:var(--t1)}
+  .l7-etapes .l7-ici{color:var(--t0);font-weight:700;border-color:var(--t0)}
+  .l7-etapes .l7-avenir{border-color:var(--sur)}
+
+  .l7-annul{display:flex;align-items:center;gap:6px;margin:8px 12px 0;font-size:14px;color:var(--t1);text-decoration:underline;text-underline-offset:3px}
+  /* La carte de la levure */
+  .l7-carte{margin:10px 12px 0;background:var(--pan);border:1px solid var(--t0);border-radius:14px;overflow:hidden;box-shadow:0 0 0 1px var(--t0)}
+  .l7-lev{display:grid;grid-template-columns:36px minmax(0,1fr) auto 28px;column-gap:10px;row-gap:1px;align-items:center;padding:10px 10px 8px 12px}
+  .l7-lev .l7-marque,.l7-lev .l7-dfiche{grid-column:2/5}
+  .l7-fiole{width:36px;height:36px;border-radius:50%;background:#FBEFC8;border:1px solid var(--or);display:grid;place-items:center}
+  .l7-nom{font-size:18px;font-weight:700;line-height:1.15;white-space:nowrap}
+  .l7-marque{font-size:14px;color:var(--t2);white-space:nowrap}
+  .l7-dfiche{font-size:14px;color:var(--t2);white-space:nowrap}
+  .l7-dfiche b{font-family:var(--mono);font-weight:600;color:var(--t1)}
+  .l7-dose{text-align:right;white-space:nowrap}
+  .l7-dose b{font-family:var(--mono);font-size:22px}
+  .l7-dose i{font-style:normal;font-size:14px;color:var(--t2)}
+  .l7-dose small{display:block;font-size:14px;color:var(--t2)}
+  .l7-x{width:28px;height:28px;display:grid;place-items:center;color:var(--t2)}
+
+  .l7-bande{display:grid;grid-template-columns:1.5fr 1fr;border-top:1px solid var(--bord);border-bottom:1px solid var(--bord)}
+  .l7-cel{padding:8px 8px 9px;border-left:1px solid var(--bord);min-width:0}
+  .l7-cel:first-child{border-left:0;padding-left:12px}
+  .l7-lib{font-size:14px;color:var(--t2);white-space:nowrap}
+  .l7-val{font-family:var(--mono);font-variant-numeric:tabular-nums;font-size:16px;font-weight:600;white-space:nowrap;margin-top:2px}
+  .l7-val .l7-hors{color:var(--ambtx)}
+  .l7-sous{font-size:14px;color:var(--t2);white-space:nowrap}
+  .l7-piste{position:relative;height:8px;border-radius:4px;background:var(--sur);margin-top:7px}
+  .l7-piste .l7-zone{position:absolute;top:0;bottom:0;border-radius:3px;background:repeating-linear-gradient(135deg,var(--or) 0 3px,var(--paille) 3px 6px)}
+  .l7-chaud{background:linear-gradient(90deg,#5B8AA6,var(--froid) 30%,var(--paille) 58%,#E7A070 78%,var(--alerte))}
+  .l7-chaud .l7-zone{border:1px solid var(--t0);background:rgba(255,255,255,.55)}
+  .l7-chaud .l7-ici{position:absolute;top:-4px;width:3px;height:16px;border-radius:2px;background:var(--t0)}
+  .l7-caler{display:inline-flex;align-items:center;gap:4px;margin-top:6px;height:28px;padding:0 9px;border:1px solid var(--or);border-radius:8px;background:#FFF7E0;color:var(--ambtx);font-family:var(--mono);font-size:14px;font-weight:600;white-space:nowrap}
+  .l7-floc{display:flex;gap:3px;margin-top:7px}
+  .l7-floc b{flex:1;height:8px;border-radius:3px;background:#8a8a8a}
+  .l7-floc b.l7-vide{background:var(--bordm)}
+
+  /* Conduite hors fiche : une seule place, dans la carte (LEV-3) */
+  .l7-hp{margin:0;padding:9px 10px 10px 12px;background:#FBE4DF;border-bottom:1px solid #EBB3A8;border-left:5px solid var(--alerte)}
+  .l7-hp-t{display:flex;align-items:center;gap:8px;font-size:15px;font-weight:700;color:#8E2A22;white-space:nowrap}
+  .l7-hp-t .l7-ecart{margin-left:auto;font-family:var(--mono);font-size:15px;padding:1px 8px;border-radius:999px;background:var(--alerte);color:#fff}
+  .l7-hp-g{position:relative;height:12px;border-radius:6px;margin:12px 0 4px;background:linear-gradient(90deg,#5B8AA6,var(--froid) 30%,var(--paille) 58%,#E7A070 78%,var(--alerte))}
+  .l7-hp-g .l7-zone{position:absolute;top:-2px;bottom:-2px;border:2px solid var(--t0);border-radius:4px;background:rgba(255,255,255,.6)}
+  .l7-hp-g .l7-ici{position:absolute;top:-6px;width:4px;height:24px;border-radius:2px;background:var(--t0)}
+  .l7-hp-ax{position:relative;height:18px;font-family:var(--mono);font-size:14px;color:var(--t1)}
+  .l7-hp-ax span{position:absolute;transform:translateX(-50%);white-space:nowrap}
+  .l7-hp-b{display:flex;align-items:center;gap:8px;margin-top:6px}
+  .l7-hp-b .l7-pal{flex:1;min-width:0}
+  .l7-hp .l7-caler{display:inline-flex;align-items:center;gap:6px;height:40px;margin:0;padding:0 14px;border:0;border-radius:10px;background:var(--t0);color:#fff;font-family:var(--sans);font-size:15px;font-weight:700;white-space:nowrap;flex:none}
+  .l7-hp.l7-ok{background:#EAF2E4;border-left-color:var(--thiols);border-bottom-color:#C6DBB8}
+  .l7-hp.l7-ok .l7-hp-t{color:#2F5523}
+  .l7-hp.l7-ok .l7-ecart{background:#3F6B2E}
+  .l7-defaire{font-size:14px;color:var(--t1);text-decoration:underline;text-underline-offset:3px;white-space:nowrap}
+
+  /* L'axe n° 7 : la jauge de complétude, son bout = le geste IA */
+  .l7-fiche{padding:9px 10px 8px 12px}
+  .l7-jauge{display:flex;align-items:center;gap:8px}
+  .l7-jlib{font-size:14px;color:var(--t1);white-space:nowrap}
+  .l7-jlib b{font-family:var(--mono);font-variant-numeric:tabular-nums;color:var(--t0)}
+  .l7-segs{display:flex;gap:3px;flex:1;min-width:64px}
+  .l7-segs i{flex:1;height:12px;border-radius:3px}
+  .l7-segs i.l7-trou{background:repeating-linear-gradient(135deg,var(--bordm) 0 2px,transparent 2px 5px);border:1px solid var(--bordm)}
+  .l7-segs i.l7-prop{outline:1.5px dashed var(--or);outline-offset:1px}
+  .l7-segs i.l7-rien{background:var(--sur);border:1px solid var(--bordm)}
+  .l7-ia{display:inline-flex;align-items:center;gap:6px;height:34px;padding:0 11px 0 9px;border-radius:999px;border:1px solid var(--or);background:#FDF0CC;color:var(--ortx);font-weight:700;font-size:15px;white-space:nowrap;flex:none}
+  .l7-ia small{font-weight:400;font-size:14px;color:var(--ambtx)}
+  .l7-ia.l7-encours{background:var(--page);border-style:dashed}
+  .l7-ia.l7-tout{background:var(--page);color:var(--t0);border-color:var(--t0)}
+
+  .l7-traits{margin:8px 0 0;padding:0;list-style:none}
+  .l7-traits li{display:grid;grid-template-columns:132px 1fr;align-items:center;min-height:32px;border-top:1px solid var(--bord)}
+  .l7-tn{display:flex;align-items:center;gap:8px;font-size:15px;color:var(--t1);white-space:nowrap}
+  .l7-tn i{width:12px;height:12px;border-radius:50%;flex:none}
+  .l7-tv{display:flex;align-items:center;gap:6px;justify-content:flex-end;white-space:nowrap;min-width:0}
+  .l7-tv b{font-weight:700;font-size:15px}
+  .l7-tv em{font-style:normal;font-size:14px;color:var(--t2)}
+  .l7-pts{display:inline-flex;gap:2px}
+  .l7-pts u{display:block;width:12px;height:8px;border-radius:2px;background:var(--sur);text-decoration:none}
+  .l7-manque{font-size:14px;color:var(--t2)}
+  .l7-manque::before{content:"";display:inline-block;width:26px;height:10px;margin-right:6px;vertical-align:-1px;border-radius:3px;background:repeating-linear-gradient(135deg,var(--bordm) 0 2px,transparent 2px 5px);border:1px solid var(--bordm)}
+  .l7-lit{display:inline-flex;align-items:center;gap:6px;font-size:14px;color:var(--ambtx)}
+  .l7-lit::before{content:"";display:inline-block;width:56px;height:12px;border-radius:4px;background:linear-gradient(90deg,#EAD9AE,var(--paille) 50%,#EAD9AE);border:1px dashed var(--or)}
+  .l7-stop{display:inline-flex;align-items:center;gap:6px;height:36px;padding:0 12px;border:1px solid var(--t1);border-radius:10px;background:var(--page);color:var(--t0);font-size:15px;font-weight:600;white-space:nowrap}
+  .l7-srcl{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-top:8px;font-size:14px;color:var(--t2)}
+  .l7-saisir{display:inline-flex;align-items:center;gap:5px;height:30px;padding:0 10px;border:1px solid var(--bordm);border-radius:8px;background:var(--page);color:var(--t0);font-size:14px;font-weight:600}
+  .l7-propo{display:inline-flex;align-items:center;gap:6px;padding:1px 7px;border:1px dashed var(--or);border-radius:8px;background:#FFFBEF}
+  .l7-oui,.l7-non{width:30px;height:30px;display:grid;place-items:center;border-radius:8px;border:1px solid var(--bordm);background:var(--page)}
+  .l7-oui{border-color:var(--thiols)}
+  .l7-src{margin-top:6px;font-size:14px;color:var(--t2)}
+
+  /* Changer de levure (comme la base) */
+  .l7-changer{margin:10px 12px 0;padding:8px;border-radius:14px;background:var(--pan)}
+  .l7-champ{display:flex;align-items:center;gap:8px;height:40px;padding:0 12px;border:1px dashed var(--trait);border-radius:20px;background:var(--page);color:var(--t2);font-size:16px}
+  .l7-puces{display:flex;gap:6px;margin-top:8px;overflow:hidden;white-space:nowrap}
+  .l7-puce{display:inline-flex;align-items:center;gap:6px;height:32px;padding:0 11px;border:1px solid var(--bordm);border-radius:999px;background:var(--page);font-size:14px;flex:none}
+  .l7-puce.l7-hc{margin-left:auto;border-style:dashed}
+
+  /* Conduite repliée, sous la carte (dans l'app : la station YeastRecipePlan) */
+  .l7-conduite{display:grid;grid-template-columns:auto 1fr auto;gap:10px;align-items:center;margin:10px 12px 0;padding:8px 12px;border:1px solid var(--bord);border-radius:12px}
+  .l7-conduite .l7-lib{color:var(--t1);font-weight:600}
+  .l7-courbe{height:30px;width:100%}
+  .l7-pal{font-family:var(--mono);font-size:14px;color:var(--t1);white-space:nowrap}
+  .l7-pal .l7-hors{color:var(--ambtx);font-weight:600}
+
+  /* États pendant et après, en défilant */
+  .l7-sep{display:flex;align-items:center;gap:8px;margin:22px 12px 0;font-size:14px;color:var(--t2)}
+  .l7-sep::before,.l7-sep::after{content:"";flex:1;height:1px;background:var(--bord)}
+  .l7-mini{margin:8px 12px 0;background:var(--pan);border:1px solid var(--bordm);border-radius:14px}
+  .l7-mini .l7-fiche{padding-top:10px}
+  .l7-etat{display:inline-block;margin:10px 0 0 12px;font-size:14px;font-weight:700;color:var(--t1)}
+
+  /* Pied : Retour / Suivant, puis le + volant, puis les onglets */
+  .l7-pied{position:fixed;left:0;right:0;bottom:56px;height:56px;z-index:6;background:var(--page);border-top:1px solid var(--bord)}
+  .l7-pied-in{max-width:390px;margin:0 auto;display:flex;gap:8px;align-items:center;height:100%;padding:0 82px 0 12px}
+  .l7-retour{height:40px;padding:0 14px;border:1px solid var(--bordm);border-radius:10px;background:var(--page);font-size:15px;color:var(--t1);display:grid;place-items:center}
+  .l7-suivant{height:40px;padding:0 14px;border-radius:10px;background:var(--t0);color:#fff;font-weight:700;font-size:15px;display:grid;place-items:center;white-space:nowrap}
+  .l7-fab{position:fixed;bottom:66px;right:max(14px,calc(50vw - 181px));width:54px;height:54px;border-radius:50%;background:var(--t0);color:#fff;display:grid;place-items:center;font-size:30px;line-height:1;box-shadow:0 4px 12px rgba(0,0,0,.28);z-index:8}
+  .l7-onglets{position:fixed;left:0;right:0;bottom:0;height:56px;z-index:7;background:var(--page);border-top:1px solid var(--bord)}
+  .l7-onglets-in{max-width:390px;margin:0 auto;display:flex;justify-content:space-between;padding:5px 6px 0}
+  .l7-og{display:flex;flex-direction:column;align-items:center;gap:1px;font-size:14px;color:var(--t2);flex:1 1 auto;min-width:0}
+  .l7-og svg{width:20px;height:20px}
+  .l7-og.l7-actif{color:var(--cuivtx);font-weight:700}
+</style>
+</head>
+<body>
+<div class="l7-ecran">
+
+  <header class="l7-tete">
+    <div class="l7-tl">
+      <span class="l7-ret" aria-label="Retour"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M15 5l-7 7 7 7"/></svg></span>
+      <span class="l7-titre">Levure<span>4/7</span></span>
+      <span class="l7-ex">exemple</span>
+      <span class="l7-aband">Abandonner</span>
+    </div>
+    <nav class="l7-etapes" aria-label="Étapes de la recette">
+      <span class="l7-fait">Identité</span><span class="l7-fait">Malts/sucres</span><span class="l7-fait">Houblons</span><span class="l7-ici">Levure</span><span class="l7-avenir">Paliers</span><span class="l7-avenir">Eau</span><span class="l7-avenir">Récap.</span>
+    </nav>
+  </header>
+
+  <span class="l7-annul" role="button"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 14L4 9l5-5"/><path d="M4 9h10a6 6 0 0 1 0 12h-3"/></svg>Annuler le changement</span>
+
+  <!-- ÉTAT AU REPOS : la carte, la jauge de la fiche et son bout « Compléter par l'IA » -->
+  <section class="l7-carte" aria-label="Ma levure">
+    <div class="l7-lev">
+      <span class="l7-fiole"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#7A5A12" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 3h6M10 3v6L4.5 19a1.5 1.5 0 0 0 1.3 2h12.4a1.5 1.5 0 0 0 1.3-2L14 9V3"/><path d="M7 15h10"/></svg></span>
+      <div class="l7-nom">Munich Lager Yeast</div>
+      <div class="l7-dose"><b>15</b> <i>g</i></div>
+      <span class="l7-x" aria-label="Retirer la levure"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg></span>
+      <div class="l7-marque">White Labs · vendue par Lallemand</div>
+      <div class="l7-dfiche">fiche <b>500 g / 10 hL</b> → <b>15 g</b> pour 30 L</div>
+    </div>
+
+    <div class="l7-bande">
+      <div class="l7-cel">
+        <div class="l7-lib">FG · depuis OG <span class="l7-m">1,067</span></div>
+        <div class="l7-val">1,018–1,021</div>
+        <div class="l7-sous">≈ 6,0–6,4 % vol</div>
+        <div class="l7-piste"><span class="l7-zone" style="left:64%;width:14%"></span></div>
+      </div>
+      <div class="l7-cel">
+        <div class="l7-lib">floculation</div>
+        <div class="l7-sous" style="color:#333;margin-top:2px">moyenne</div>
+        <div class="l7-floc"><b></b><b></b><b class="l7-vide"></b></div>
+      </div>
+    </div>
+
+    <div class="l7-hp" aria-label="Conduite de la primaire">
+      <div class="l7-hp-t"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#8E2A22" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l10 18H2z"/><path d="M12 10v5M12 18v.5"/></svg>Primaire hors fiche<span class="l7-ecart">+8 °C</span></div>
+      <div class="l7-hp-g"><span class="l7-zone" style="left:25.0%;width:10%"></span><span class="l7-ici" style="left:calc(75.0% - 2px)"></span></div>
+      <div class="l7-hp-ax"><span style="left:25.0%">9</span><span style="left:35.0%">11</span><span style="left:75.0%">19</span></div>
+      <div class="l7-hp-b">
+        <span class="l7-pal"><span class="l7-hors">19 °C</span> 10 j → 2 °C</span>
+        <span class="l7-caler" role="button" aria-label="Caler la primaire à 11 °C">Caler à 11 °C</span>
+      </div>
+    </div>
+
+    <div class="l7-fiche">
+      <div class="l7-jauge">
+        <span class="l7-jlib">fiche <b>2/5</b></span>
+        <span class="l7-segs" aria-label="2 traits sur 5 renseignés">
+          <i style="background:var(--esters)"></i><i style="background:var(--phenols)"></i><i class="l7-trou"></i><i class="l7-trou"></i><i class="l7-trou"></i>
+        </span>
+        <span class="l7-ia" role="button" aria-label="Compléter les 3 traits manquants par l'IA">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="#E0A02E"><path d="M12 2l2.2 6.6L21 11l-6.8 2.4L12 20l-2.2-6.6L3 11l6.8-2.4z"/></svg>
+          Compléter <small>· IA</small>
+        </span>
+      </div>
+      <ul class="l7-traits">
+        <li><span class="l7-tn"><i style="background:var(--esters)"></i>esters</span><span class="l7-tv"><span class="l7-pts"><u style="background:var(--esters)"></u><u></u><u></u></span><b>faible</b></span></li>
+        <li><span class="l7-tn"><i style="background:var(--phenols)"></i>phénols</span><span class="l7-tv"><b>aucun</b><em>POF−</em></span></li>
+        <li><span class="l7-tn"><i style="background:var(--thiols)"></i>thiols</span><span class="l7-tv"><span class="l7-manque">à compléter</span></span></li>
+        <li><span class="l7-tn"><i style="background:var(--terpenes)"></i>terpènes</span><span class="l7-tv"><span class="l7-manque">à compléter</span></span></li>
+        <li><span class="l7-tn"><i style="background:var(--sucres)"></i>sucres restants</span><span class="l7-tv"><span class="l7-manque">à compléter</span></span></li>
+      </ul>
+    </div>
+  </section>
+
+  <section class="l7-changer" aria-label="Changer de levure">
+    <div class="l7-champ"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="M20 20l-4-4"/></svg>Changer de levure</div>
+    <div class="l7-puces">
+      <span class="l7-puce"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#4C6B2A" stroke-width="2" stroke-linejoin="round"><path d="M12 2l9 5v10l-9 5-9-5V7z"/><path d="M3 7l9 5 9-5M12 12v10"/></svg>Pomona</span>
+      <span class="l7-puce"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#4C6B2A" stroke-width="2" stroke-linejoin="round"><path d="M12 2l9 5v10l-9 5-9-5V7z"/><path d="M3 7l9 5 9-5M12 12v10"/></svg>Verdant IPA</span>
+      <span class="l7-puce l7-hc">Hors catalogue</span>
+    </div>
+  </section>
+
+  <!-- ÉTAT PENDANT : une seule recherche pour la fiche -->
+  <div class="l7-sep">la même fiche, après un toucher sur « Compléter »</div>
+  <span class="l7-etat">Pendant</span>
+  <section class="l7-mini" aria-label="Traits, pendant la recherche">
+    <div class="l7-fiche">
+      <div class="l7-jauge">
+        <span class="l7-jlib">fiche <b>2/5</b></span>
+        <span class="l7-segs"><i style="background:var(--esters)"></i><i style="background:var(--phenols)"></i><i class="l7-trou" style="border-color:var(--or)"></i><i class="l7-trou" style="border-color:var(--or)"></i><i class="l7-trou" style="border-color:var(--or)"></i></span>
+        <span class="l7-ia l7-encours">L'IA lit la fiche…</span>
+      </div>
+      <ul class="l7-traits">
+        <li><span class="l7-tn"><i style="background:var(--thiols)"></i>thiols</span><span class="l7-tv"><span class="l7-lit">en lecture</span></span></li>
+        <li><span class="l7-tn"><i style="background:var(--terpenes)"></i>terpènes</span><span class="l7-tv"><span class="l7-lit">en lecture</span></span></li>
+        <li><span class="l7-tn"><i style="background:var(--sucres)"></i>sucres restants</span><span class="l7-tv"><span class="l7-lit">en lecture</span></span></li>
+      </ul>
+      <div class="l7-srcl"><span>1 recherche pour les 3 traits</span><span class="l7-stop" role="button">Annuler</span></div>
+    </div>
+  </section>
+
+  <!-- ÉTAT APRÈS : les propositions sur leur ligne, à confirmer -->
+  <span class="l7-etat">Après</span>
+  <section class="l7-mini" aria-label="Traits proposés, à confirmer">
+    <div class="l7-fiche">
+      <div class="l7-jauge">
+        <span class="l7-jlib">fiche <b>4/5</b></span>
+        <span class="l7-segs"><i style="background:var(--esters)"></i><i style="background:var(--phenols)"></i><i class="l7-prop" style="background:var(--thiols)"></i><i class="l7-prop" style="background:var(--terpenes)"></i><i class="l7-rien"></i></span>
+        <span class="l7-ia l7-tout" role="button">Tout retenir</span>
+      </div>
+      <ul class="l7-traits">
+        <li><span class="l7-tn"><i style="background:var(--thiols)"></i>thiols</span><span class="l7-tv"><span class="l7-propo"><b>faible</b><em>proposé</em></span><span class="l7-oui" aria-label="Retenir"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#3F6B2E" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5 9-10"/></svg></span><span class="l7-non" aria-label="Écarter"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#666" stroke-width="2.4" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg></span></span></li>
+        <li><span class="l7-tn"><i style="background:var(--terpenes)"></i>terpènes</span><span class="l7-tv"><span class="l7-propo"><b>faible</b><em>proposé</em></span><span class="l7-oui" aria-label="Retenir"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#3F6B2E" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5 9-10"/></svg></span><span class="l7-non" aria-label="Écarter"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#666" stroke-width="2.4" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg></span></span></li>
+        <li><span class="l7-tn"><i style="background:var(--sucres)"></i>sucres restants</span><span class="l7-tv"><em>rien de publié</em><span class="l7-saisir" role="button"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20h4L19 9l-4-4L4 16z"/></svg>Saisir</span></span></li>
+      </ul>
+      <div class="l7-src">Source : fiche White Labs, lue par l'IA</div>
+    </div>
+  </section>
+
+  <!-- ÉTAT APRÈS CALAGE : la même ligne, dans la fiche -->
+  <div class="l7-sep">la conduite, après « Caler à 11 °C »</div>
+  <section class="l7-mini" aria-label="Conduite calée" style="overflow:hidden">
+    <div class="l7-hp l7-ok" aria-label="Conduite de la primaire">
+      <div class="l7-hp-t"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#2F5523" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5 9-10"/></svg>Primaire dans la fiche<span class="l7-ecart">11 °C</span></div>
+      <div class="l7-hp-g"><span class="l7-zone" style="left:25.0%;width:10%"></span><span class="l7-ici" style="left:calc(35.0% - 2px)"></span></div>
+      <div class="l7-hp-ax"><span style="left:25.0%">9</span><span style="left:35.0%">11</span></div>
+      <div class="l7-hp-b">
+        <span class="l7-pal">11 °C · 10 j → 2 °C</span>
+        <span class="l7-defaire" role="button">↶ Défaire</span>
+      </div>
+    </div>
+  </section>
+</div>
+
+<div class="l7-pied"><div class="l7-pied-in">
+  <span class="l7-retour">Retour</span>
+  <span class="l7-suivant">Suivant — Paliers</span>
+</div></div>
+
+<span class="l7-fab" role="button" aria-label="Ajouter">+</span>
+
+<nav class="l7-onglets" aria-label="Rubriques"><div class="l7-onglets-in">
+  <span class="l7-og"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 13a8 8 0 0 1 16 0"/><path d="M12 13l4-4"/><path d="M4 17h16"/></svg>Bord</span>
+  <span class="l7-og"><svg viewBox="0 0 24 24" fill="none" stroke="#1F64A3" stroke-width="2" stroke-linecap="round"><path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/></svg>Finances</span>
+  <span class="l7-og"><svg viewBox="0 0 24 24" fill="none" stroke="#6A4FB0" stroke-width="2" stroke-linecap="round"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/></svg>Calendrier</span>
+  <span class="l7-og l7-actif"><svg viewBox="0 0 24 24" fill="none" stroke="#8D442C" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 8h10v11a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2z"/><path d="M16 11h2a2 2 0 0 1 2 2v2a2 2 0 0 1-2 2h-2"/><path d="M6 8a3 3 0 0 1 3-4 3 3 0 0 1 4 0 2.5 2.5 0 0 1 3 4"/></svg>Brassins</span>
+  <span class="l7-og"><svg viewBox="0 0 24 24" fill="none" stroke="#4C6B2A" stroke-width="2" stroke-linejoin="round"><path d="M12 2l9 5v10l-9 5-9-5V7z"/><path d="M3 7l9 5 9-5M12 12v10"/></svg>Stocks</span>
+  <span class="l7-og"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></svg>Clients</span>
+</div></nav>
+</body>
+</html>

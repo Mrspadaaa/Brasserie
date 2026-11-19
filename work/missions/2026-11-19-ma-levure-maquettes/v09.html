@@ -1,0 +1,262 @@
+<!doctype html>
+<html lang="fr" data-theme="clair">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Ma levure — v09 : les traits en jauges, l'IA en hachuré</title>
+<!-- Parti pris v09 (axe 9) : une seule décision de forme. Les cinq traits (esters, phénols, thiols, terpènes,
+     sucres restants) deviennent des jauges à quatre crans, le vocabulaire de la floculation de la base :
+     une ligne par trait, jamais de retour à la ligne. Ce que l'IA propose se dessine en hachuré, ce qui est
+     retenu en plein ; Retenir / Écarter par ligne cèdent la place à une confirmation groupée.
+     Tout le reste est la carte en ligne du 19.11. Données d'exemple. -->
+<style>
+  :root{
+    --page:#FFFFFF;--panneau:#F5F5F5;--sur:#EBEBEB;--bord:#DDDDDD;--bord-m:#BFBFBF;--trait:#9E9E9E;
+    --t2:#666666;--t1:#333333;--t0:#111111;
+    --or:#E0A02E;--paille:#F2C14E;--attention:#9C7020;--attention-t:#7F5B10;--alerte:#C8382F;--alerte-t:#A8291F;
+    --eau:#4F7E9B;--prod:#9A4F1E;
+    --esters:#E0A02E;--phenols:#6B3A1E;--thiols:#3E9C7E;--terpenes:#8FAE2F;--sucres:#A0522D;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;background:var(--page);color:var(--t0)}
+  body{font:16px/1.3 "Source Sans 3",system-ui,-apple-system,"Segoe UI",sans-serif;-webkit-font-smoothing:antialiased}
+  .v9-app{max-width:390px;margin:0 auto;padding-bottom:150px;position:relative}
+  .v9-mono{font-family:"IBM Plex Mono",ui-monospace,Consolas,monospace}
+  svg{display:block}
+
+  /* en-tête de l'assistant, comme en ligne */
+  .v9-tete{display:flex;align-items:center;gap:10px;padding:10px 14px 4px}
+  .v9-tete h1{margin:0;font-size:22px;font-weight:600;flex:1;white-space:nowrap}
+  .v9-tete h1 span{color:var(--t2);font-weight:400;font-size:18px;margin-left:4px}
+  .v9-tete a{color:var(--t0);font-size:16px}
+  .v9-etapes{display:flex;gap:8px;padding:6px 10px 0;overflow:hidden;white-space:nowrap;border-bottom:1px solid var(--bord)}
+  .v9-etapes span{font-size:14px;color:var(--t2);padding-bottom:7px;border-bottom:4px solid var(--bord-m);border-radius:2px}
+  .v9-etapes span.fait{border-color:#555}
+  .v9-etapes span.ici{color:var(--t0);font-weight:600;border-color:var(--t0)}
+  .v9-etapes span.apres{border-color:var(--sur)}
+  .v9-annuler{display:flex;justify-content:space-between;align-items:center;margin:6px 10px 0;padding:4px 12px;background:var(--panneau);border-radius:12px 12px 0 0;font-size:14px}
+  .v9-annuler a{color:var(--t0)}
+  .v9-annuler .ex{color:var(--t2);border:1px dashed var(--bord-m);border-radius:8px;padding:0 6px}
+
+  /* la carte de la levure */
+  .v9-carte{margin:6px 8px 0;border:2px solid var(--t0);border-radius:16px;background:var(--panneau);overflow:hidden}
+  .v9-id{display:flex;gap:10px;align-items:center;padding:10px 10px 8px 10px}
+  .v9-pion{width:42px;height:42px;border-radius:50%;background:#F7E7B4;border:1.5px solid var(--or);display:grid;place-items:center;flex:none}
+  a{text-decoration:none;color:inherit}
+  .v9-tete a,.v9-annuler a,.v9-revoir{text-decoration:underline;text-underline-offset:3px}
+  .v9-nom{flex:1;min-width:0}
+  .v9-l1{display:flex;align-items:baseline;justify-content:space-between;gap:6px}
+  .v9-l1 > b{display:block;font-size:19px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .v9-nom small{display:block;font-size:14px;color:var(--t2);white-space:nowrap}
+  .v9-dose{text-align:right;white-space:nowrap;flex:none}
+  .v9-dose b{font-size:22px;font-weight:600}
+  .v9-dose span{font-size:14px;color:var(--t2)}
+  .v9-x{width:32px;height:32px;display:grid;place-items:center;color:var(--t2);flex:none}
+
+  .v9-trio{display:grid;grid-template-columns:1fr 1.18fr .82fr;border-top:1px solid var(--bord-m);border-bottom:1px solid var(--bord-m)}
+  .v9-trio > div{padding:8px 9px 9px;border-right:1px solid var(--bord-m);min-width:0}
+  .v9-trio > div:last-child{border-right:0}
+  .v9-lab{font-size:14px;color:var(--t2);white-space:nowrap}
+  .v9-val{font-size:17px;font-weight:600;margin-top:2px;white-space:nowrap}
+  .v9-sous{font-size:14px;color:var(--t2);white-space:nowrap}
+  .v9-fg-bar{height:10px;border-radius:5px;background:linear-gradient(90deg,var(--sur),#F7E7B4);margin-top:9px;position:relative;border:1px solid var(--bord-m)}
+  .v9-fg-bar i{position:absolute;left:25%;width:7%;min-width:7px;top:-4px;bottom:-4px;border-radius:3px;background:var(--or);border:1.5px solid var(--attention)}
+  .v9-fg-ech{display:flex;justify-content:space-between;font-size:14px;color:var(--t2);margin-top:4px;white-space:nowrap}
+  .v9-hors{color:var(--alerte-t);font-weight:600}
+  .v9-thermo-lab{position:relative;height:19px;margin-top:3px;font-size:15px;white-space:nowrap}
+  .v9-thermo-lab span{position:absolute;transform:translateX(-50%);color:var(--attention-t);font-weight:600}
+  .v9-thermo-lab span.hors{color:var(--alerte-t)}
+  .v9-thermo{height:10px;border-radius:5px;margin:4px 0 8px;position:relative;background:linear-gradient(90deg,#4F7E9B,#A7C4D8 30%,#F2C14E 62%,#C8382F)}
+  .v9-thermo .plage{position:absolute;left:30%;width:7%;top:-3px;bottom:-3px;border:2px solid var(--attention);border-radius:3px;background:rgba(255,255,255,.45)}
+  .v9-thermo .ici{position:absolute;left:calc(80% - 2px);width:4px;top:-5px;bottom:-5px;background:var(--alerte-t);border-radius:2px}
+  .v9-caler{display:flex;align-items:center;justify-content:center;gap:4px;width:100%;min-height:34px;border:1.5px solid var(--attention);border-radius:10px;background:#FFF6DE;color:var(--attention-t);font-size:15px;font-weight:600;line-height:1;white-space:nowrap}
+  .v9-floc{display:flex;gap:3px;margin-top:42px}
+  .v9-floc i{flex:1;height:10px;border-radius:3px;background:#8A8A8A}
+  .v9-floc i.vide{background:var(--bord-m)}
+
+  /* LA décision v09 : le profil en jauges à quatre crans */
+  .v9-profil{background:var(--page)}
+  .v9-profil-tete{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:7px 10px 4px}
+  .v9-profil-tete h2{margin:0;font-size:16px;font-weight:600}
+  .v9-profil-tete h2 span{font-weight:400;color:var(--t2);font-size:14px;margin-left:4px}
+  .v9-ia{display:inline-flex;align-items:center;gap:6px;min-height:36px;padding:0 12px;border-radius:18px;border:1.5px solid var(--t0);background:var(--page);color:var(--t0);font-size:15px;font-weight:600;white-space:nowrap}
+  .v9-ia .etoile{color:var(--or)}
+  .v9-ia.fait{border-color:var(--bord-m);color:var(--t1);font-weight:500}
+  .v9-ia.fait .ok{color:var(--thiols);font-weight:700}
+  .v9-echelle{display:grid;grid-template-columns:120px 1fr 100px;padding:0 10px 2px;font-size:14px;color:var(--t2)}
+  .v9-ech em{font-style:normal;white-space:nowrap}
+  .v9-ech em:last-child{justify-self:end}
+  .v9-ligne{display:grid;grid-template-columns:120px 1fr 100px;align-items:center;min-height:36px;padding:0 10px;border-top:1px solid var(--bord)}
+  .v9-trait{display:flex;align-items:center;gap:7px;font-size:15px;white-space:nowrap}
+  .v9-trait i{width:11px;height:11px;border-radius:50%;flex:none}
+  /* cinq positions : 0 (rond, rien), puis quatre crans jusqu'à fort ; l'échelle suit la même grille */
+  .v9-jauge{display:grid;grid-template-columns:16px repeat(4,1fr);gap:3px;padding-right:10px;align-items:center}
+  .v9-jauge s{height:14px;border-radius:3px;border:1.5px dashed var(--bord-m);background:transparent}
+  .v9-jauge s:first-child{border-radius:50%;width:14px}
+  .v9-jauge s.ia{border:1.5px solid var(--c);background:repeating-linear-gradient(135deg,var(--c) 0 2.5px,transparent 2.5px 6px)}
+  .v9-jauge s.plein{border:1.5px solid var(--c);background:var(--c)}
+  .v9-valeur{text-align:right;font-size:15px;white-space:nowrap}
+  .v9-valeur.propose{font-weight:600}
+  .v9-valeur.rien{color:var(--t2);font-size:14px}
+  .v9-saisir{display:inline-flex;align-items:center;gap:4px;min-height:30px;padding:0 9px;border:1.5px solid var(--bord-m);border-radius:8px;font-size:14px;color:var(--t1);background:var(--page)}
+
+  .v9-confirmer{display:flex;align-items:center;gap:8px;padding:6px 10px;border-top:1px solid var(--bord);background:#FFF6DE}
+  .v9-confirmer p{margin:0;flex:1;font-size:15px;line-height:1.25;color:var(--t0);font-weight:600;white-space:nowrap}
+  .v9-revoir{font-size:15px;color:var(--t0);text-decoration:underline;white-space:nowrap}
+  .v9-retenir{min-height:36px;padding:0 12px;border-radius:10px;background:var(--t0);color:#fff;font-size:15px;font-weight:600;display:inline-flex;align-items:center;white-space:nowrap}
+
+  /* changer de levure, comme en ligne */
+  .v9-changer{margin:8px 8px 0;padding:8px 10px 10px;background:var(--panneau);border-radius:16px}
+  .v9-cherche{display:flex;align-items:center;gap:10px;min-height:44px;padding:0 6px 0 14px;border:1.5px dashed var(--bord-m);border-radius:24px;background:var(--page);font-size:18px;color:var(--t2)}
+  .v9-puces{display:flex;gap:8px;margin-top:7px}
+  .v9-puce{display:inline-flex;align-items:center;gap:6px;min-height:36px;padding:0 11px;border:1.5px solid var(--bord-m);border-radius:18px;background:var(--page);font-size:15px;white-space:nowrap}
+  .v9-cherche > span{flex:1}
+  .v9-hc{font-size:15px;color:var(--t1);text-decoration:underline;text-underline-offset:3px;white-space:nowrap;min-height:40px;display:inline-flex;align-items:center;border-left:1px solid var(--bord);padding:0 8px 0 10px}
+
+  /* le geste en trois temps, sous le pli */
+  .v9-temps{margin:22px 8px 0;padding:10px 8px 2px;border:1.5px dashed var(--trait);border-radius:14px;background:var(--panneau)}
+  .v9-temps h3{margin:0 0 6px;font-size:15px;font-weight:600}
+  .v9-temps h3 span{font-weight:400;color:var(--t2);font-size:14px}
+  .v9-vignette{border:1.5px solid var(--bord-m);border-radius:12px;background:var(--page);margin-bottom:8px;overflow:hidden}
+  .v9-vignette .quand{font-size:14px;color:var(--t2);padding:6px 10px 0}
+  .v9-vignette .v9-profil-tete{padding-top:4px}
+  .v9-ia.encours{border-color:var(--attention);color:var(--attention-t);background:#FFF6DE}
+  .v9-ia.encours i{width:14px;height:14px;border-radius:50%;border:2px solid var(--attention);border-right-color:transparent;animation:v9tour 1s linear infinite}
+  @keyframes v9tour{to{transform:rotate(360deg)}}
+  .v9-jauge s.cherche{border:1.5px solid var(--bord);background:linear-gradient(90deg,var(--sur),#F7F7F7,var(--sur));background-size:200% 100%;animation:v9lueur 1.4s ease-in-out infinite}
+  @keyframes v9lueur{0%{background-position:100% 0}100%{background-position:-100% 0}}
+
+  /* bas d'écran : assistant, + volant, onglets */
+  .v9-assist{position:fixed;left:50%;transform:translateX(-50%);bottom:60px;width:390px;max-width:100%;display:flex;align-items:center;gap:10px;padding:10px 84px 8px 12px;pointer-events:none;background:linear-gradient(rgba(255,255,255,0),#fff 10px)}
+  .v9-assist a{pointer-events:auto}
+  .v9-retour{min-height:44px;padding:0 16px;display:inline-flex;align-items:center;border:1.5px solid var(--bord-m);border-radius:12px;background:var(--page);color:var(--t2);font-size:16px}
+  .v9-suivant{min-height:44px;padding:0 16px;display:inline-flex;align-items:center;margin-left:auto;border-radius:12px;background:var(--t0);color:#fff;font-size:16px;font-weight:600;white-space:nowrap}
+  .v9-fab{position:fixed;right:calc(50% - 195px + 14px);bottom:72px;width:58px;height:58px;border-radius:50%;background:var(--t0);color:#fff;display:grid;place-items:center;font-size:34px;font-weight:300;line-height:1;box-shadow:0 6px 16px rgba(0,0,0,.28)}
+  .v9-onglets{position:fixed;left:50%;transform:translateX(-50%);bottom:0;width:390px;max-width:100%;height:60px;display:grid;grid-template-columns:repeat(6,1fr);background:var(--page);border-top:1px solid var(--bord)}
+  .v9-onglets a{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;color:var(--t2);font-size:14px;letter-spacing:-.2px;text-decoration:none;white-space:nowrap}
+  .v9-onglets a.ici{color:var(--prod);font-weight:600}
+  .v9-onglets svg{width:20px;height:20px}
+</style>
+</head>
+<body>
+<div class="v9-app">
+
+  <header class="v9-tete">
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#111" stroke-width="2" stroke-linecap="round" aria-label="Retour"><path d="M15 5l-7 7 7 7"/></svg>
+    <h1>Levure<span class="v9-mono">4/7</span></h1>
+    <a href="#">Abandonner</a>
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#333" stroke-width="1.8" stroke-linecap="round" aria-label="Exporter"><rect x="5" y="4" width="12" height="16" rx="2"/><path d="M9 4V2.8h4V4M12 12h9M18 9l3 3-3 3"/></svg>
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#333" stroke-width="1.8" aria-label="Thème"><path d="M20 14.5A8 8 0 1 1 9.5 4a6.5 6.5 0 0 0 10.5 10.5z"/></svg>
+  </header>
+  <nav class="v9-etapes" aria-label="Étapes de la recette">
+    <span class="fait">Identité</span><span class="fait">Malts/sucres</span><span class="fait">Houblons</span><span class="ici">Levure</span><span class="apres">Paliers</span><span class="apres">Eau</span><span class="apres">Récap.</span>
+  </nav>
+
+  <div class="v9-annuler"><a href="#">↶ Annuler le changement</a><span class="ex">exemple</span></div>
+
+  <section class="v9-carte" aria-label="Ma levure">
+    <div class="v9-id">
+      <div class="v9-pion"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#9C7020" stroke-width="1.9" stroke-linejoin="round"><path d="M9 3h6M10 3v6l-5 9a2 2 0 0 0 1.8 3h10.4a2 2 0 0 0 1.8-3l-5-9V3"/><path d="M7.5 15h9"/></svg></div>
+      <div class="v9-nom"><div class="v9-l1"><b>Munich Lager Yeast</b><span class="v9-dose"><b>≥&#8239;15</b> <span>g</span></span></div><small>White Labs · vendue par Lallemand</small></div>
+      <div class="v9-x" aria-label="Retirer"><svg width="18" height="18" viewBox="0 0 24 24" stroke="#666" stroke-width="2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg></div>
+    </div>
+
+    <div class="v9-trio">
+      <div>
+        <div class="v9-lab">FG</div>
+        <div class="v9-val v9-mono">1,018–1,021</div>
+        <div class="v9-sous">≈ 6,0–6,4 % vol</div>
+        <div class="v9-fg-bar" aria-label="FG attendue, entre sec 1,000 et l'OG 1,066"><i></i></div>
+        <div class="v9-fg-ech"><span>1,000</span><span>OG&#8239;1,066</span></div>
+      </div>
+      <div>
+        <div class="v9-lab">fiche · conduite</div>
+        <div class="v9-thermo-lab"><span style="left:33%">9–11</span><span class="hors" style="left:78%">19 °C</span></div>
+        <div class="v9-thermo" aria-label="Plage de la fiche 9 à 11 °C, conduite 19 °C hors plage"><span class="plage"></span><span class="ici"></span></div>
+        <a class="v9-caler" href="#">Caler à 11 °C</a>
+      </div>
+      <div>
+        <div class="v9-lab">floculation</div>
+        <div class="v9-val">moyenne</div>
+        <div class="v9-floc"><i></i><i></i><i class="vide"></i></div>
+      </div>
+    </div>
+
+    <div class="v9-profil">
+      <div class="v9-profil-tete">
+        <h2>Profil<span>de la fiche</span></h2>
+        <a class="v9-ia fait" href="#"><span class="ok">✓</span>Relancer l'IA</a>
+      </div>
+      <div class="v9-echelle"><span></span><span class="v9-jauge v9-ech"><em>rien</em><em></em><em></em><em></em><em>fort</em></span><span></span></div>
+
+      <div class="v9-ligne" style="--c:var(--esters)">
+        <span class="v9-trait"><i style="background:var(--esters)"></i>esters</span>
+        <span class="v9-jauge"><s></s><s></s><s></s><s></s><s></s></span>
+        <span class="v9-valeur"><a class="v9-saisir" href="#">✎ saisir</a></span>
+      </div>
+      <div class="v9-ligne" style="--c:var(--phenols)">
+        <span class="v9-trait"><i style="background:var(--phenols)"></i>phénols</span>
+        <span class="v9-jauge"><s class="ia"></s><s></s><s></s><s></s><s></s></span>
+        <span class="v9-valeur propose">négatif</span>
+      </div>
+      <div class="v9-ligne" style="--c:var(--thiols)">
+        <span class="v9-trait"><i style="background:var(--thiols)"></i>thiols</span>
+        <span class="v9-jauge"><s></s><s class="ia"></s><s></s><s></s><s></s></span>
+        <span class="v9-valeur propose">faible</span>
+      </div>
+      <div class="v9-ligne" style="--c:var(--terpenes)">
+        <span class="v9-trait"><i style="background:var(--terpenes)"></i>terpènes</span>
+        <span class="v9-jauge"><s></s><s class="ia"></s><s></s><s></s><s></s></span>
+        <span class="v9-valeur propose">faible</span>
+      </div>
+      <div class="v9-ligne" style="--c:var(--sucres)">
+        <span class="v9-trait"><i style="background:var(--sucres)"></i>sucres restants</span>
+        <span class="v9-jauge"><s></s><s class="plein"></s><s class="plein"></s><s></s><s></s></span>
+        <span class="v9-valeur">moyens · FG</span>
+      </div>
+
+      <div class="v9-confirmer">
+        <p>3 traits à confirmer</p>
+        <a class="v9-revoir" href="#">Revoir</a>
+        <a class="v9-retenir" href="#">Tout retenir</a>
+      </div>
+    </div>
+  </section>
+
+  <section class="v9-changer">
+    <div class="v9-cherche"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#666" stroke-width="2" stroke-linecap="round"><circle cx="10.5" cy="10.5" r="6.5"/><path d="M15.5 15.5L21 21"/></svg><span>Changer de levure</span><a class="v9-hc" href="#">Hors catalogue</a></div>
+    <div class="v9-puces">
+      <span class="v9-puce"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#4F7E9B" stroke-width="1.8" stroke-linejoin="round"><path d="M12 3l8 4.5v9L12 21l-8-4.5v-9z"/><path d="M4 7.5l8 4.5 8-4.5M12 12v9"/></svg>Pomona</span>
+      <span class="v9-puce"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#4F7E9B" stroke-width="1.8" stroke-linejoin="round"><path d="M12 3l8 4.5v9L12 21l-8-4.5v-9z"/><path d="M4 7.5l8 4.5 8-4.5M12 12v9"/></svg>Verdant IPA</span>
+    </div>
+  </section>
+
+  <section class="v9-temps" aria-label="États du bouton IA, hors écran">
+    <h3>Hors écran : le bouton IA avant et pendant <span>· exemple</span></h3>
+    <div class="v9-vignette">
+      <div class="quand">avant : traits sans valeur</div>
+      <div class="v9-profil-tete"><h2>Profil<span>de la fiche</span></h2><a class="v9-ia" href="#"><span class="etoile">✦</span>Compléter par l'IA</a></div>
+      <div class="v9-ligne" style="--c:var(--thiols)"><span class="v9-trait"><i style="background:var(--thiols)"></i>thiols</span><span class="v9-jauge"><s></s><s></s><s></s><s></s><s></s></span><span class="v9-valeur rien">non renseigné</span></div>
+    </div>
+    <div class="v9-vignette">
+      <div class="quand">pendant : une seule recherche remplit tous les traits</div>
+      <div class="v9-profil-tete"><h2>Profil<span>de la fiche</span></h2><span class="v9-ia encours"><i></i>Lecture de la fiche…</span></div>
+      <div class="v9-ligne" style="--c:var(--thiols)"><span class="v9-trait"><i style="background:var(--thiols)"></i>thiols</span><span class="v9-jauge"><s class="cherche"></s><s class="cherche"></s><s class="cherche"></s><s class="cherche"></s><s class="cherche"></s></span><span class="v9-valeur rien">en cours</span></div>
+      <div class="v9-ligne" style="--c:var(--terpenes)"><span class="v9-trait"><i style="background:var(--terpenes)"></i>terpènes</span><span class="v9-jauge"><s class="cherche"></s><s class="cherche"></s><s class="cherche"></s><s class="cherche"></s><s class="cherche"></s></span><span class="v9-valeur rien">en cours</span></div>
+    </div>
+  </section>
+</div>
+
+<div class="v9-assist"><a class="v9-retour" href="#">Retour</a><a class="v9-suivant" href="#">Suivant — Paliers</a></div>
+<a class="v9-fab" href="#" aria-label="Ajouter">+</a>
+
+<nav class="v9-onglets" aria-label="Onglets">
+  <a href="#"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="4" y="4" width="7" height="7" rx="1.5"/><rect x="13" y="4" width="7" height="7" rx="1.5"/><rect x="4" y="13" width="7" height="7" rx="1.5"/><rect x="13" y="13" width="7" height="7" rx="1.5"/></svg>Bord</a>
+  <a href="#"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M4 20V10M10 20V5M16 20v-7M21 20H3"/></svg>Finances</a>
+  <a href="#"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="4" y="5" width="16" height="15" rx="2"/><path d="M4 10h16M9 3v4M15 3v4"/></svg>Calendrier</a>
+  <a href="#" class="ici"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><path d="M6 4h12l-1.5 16h-9z"/><path d="M6.5 9h11"/></svg>Brassins</a>
+  <a href="#"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><path d="M12 3l8 4.5v9L12 21l-8-4.5v-9z"/><path d="M4 7.5l8 4.5 8-4.5M12 12v9"/></svg>Stocks</a>
+  <a href="#"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="8.5" r="3.5"/><path d="M5 20c1-4 4-5.5 7-5.5s6 1.5 7 5.5"/></svg>Clients</a>
+</nav>
+</body>
+</html>

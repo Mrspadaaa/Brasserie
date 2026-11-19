@@ -1,0 +1,238 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Ma levure — v10 : une seule barre de confirmation</title>
+<!-- Axe n° 10 : une seule décision de forme. Les valeurs à confirmer (simulées ou proposées par l'IA)
+     ne portent plus chacune « à confirmer · Retenir · Écarter » (LEV-7, LEV-11) : une barre unique, au pied
+     des traits, les retient d'un geste ; toucher une valeur l'écarte seule. Le reste suit la base en ligne du 19.11.
+     Passe de correction : FG et degré de la base gardés (OG 1,067 cohérente, atténuation 69–73 %) ; jauge FG sans repère retirée. -->
+<style>
+*{box-sizing:border-box}
+html,body{margin:0;background:#FFFFFF}
+body{font-family:"Source Sans 3",system-ui,sans-serif;font-size:15px;line-height:1.25;color:#111111;padding-bottom:140px;max-width:390px}
+.v10-mono{font-family:"IBM Plex Mono",ui-monospace,monospace;font-weight:600;letter-spacing:-.01em}
+
+/* En-tête de l'assistant de recette (base) */
+.v10-tete{display:flex;align-items:center;gap:10px;padding:8px 12px 2px;height:44px}
+.v10-tete b{font-size:20px;font-weight:600}
+.v10-tete .v10-etape{color:#666666;font-size:16px}
+.v10-tete .v10-abandon{margin-left:auto;font-size:15px;text-decoration:underline;color:#111111}
+.v10-tete .v10-ico{width:32px;height:32px;display:grid;place-items:center;color:#111111}
+.v10-retour{font-size:22px;color:#111111;width:20px}
+.v10-etapes{display:flex;gap:8px;padding:2px 12px 0;white-space:nowrap;overflow:hidden;border-bottom:1px solid #EBEBEB}
+.v10-etapes span{font-size:14px;color:#666666;padding:4px 0 6px;border-bottom:4px solid #575757;flex:0 0 auto}
+.v10-etapes .v10-ici{color:#111111;font-weight:600;border-bottom-color:#111111}
+.v10-etapes .v10-apres{border-bottom-color:#EBEBEB}
+.v10-exemple{display:flex;justify-content:space-between;align-items:center;padding:6px 12px 0;font-size:14px;color:#666666}
+.v10-exemple u{color:#111111}
+
+/* Carte « Ma levure » */
+.v10-carte{margin:6px 12px 0;border:2px solid #111111;border-radius:16px;background:#F5F5F5;overflow:hidden}
+.v10-haut{display:grid;grid-template-columns:38px minmax(0,1fr) auto 22px;column-gap:8px;row-gap:1px;align-items:center;padding:10px 10px 8px 10px}
+.v10-haut .v10-marque{grid-column:2/5}
+.v10-flacon{grid-row:1/3;width:38px;height:38px;border-radius:50%;background:#FBEBC2;border:2px solid #E0A02E;display:grid;place-items:center}
+.v10-nom{font-size:20px;font-weight:600;line-height:1.15;white-space:nowrap}
+.v10-marque{font-size:14px;color:#666666;white-space:nowrap}
+.v10-dose{font-size:22px;white-space:nowrap}
+.v10-dose small{font-size:14px;color:#666666;font-weight:400}
+.v10-ferme{font-size:22px;color:#666666;text-align:center}
+
+.v10-mesures{display:grid;grid-template-columns:1.2fr 1.35fr .95fr;border-top:1px solid #D6D6D6;border-bottom:1px solid #D6D6D6}
+.v10-mesures>div{padding:8px 10px 10px;border-right:1px solid #D6D6D6;min-width:0}
+.v10-mesures>div:last-child{border-right:0}
+.v10-lib{font-size:14px;color:#666666}
+.v10-val{font-size:17px;margin-top:3px;white-space:nowrap}
+.v10-sous{font-size:14px;color:#666666;margin-top:2px;white-space:nowrap}
+.v10-jauge{height:8px;border-radius:4px;background:#E2E2E2;margin-top:8px;position:relative}
+.v10-jauge b{position:absolute;left:20%;width:40%;top:0;bottom:0;background:#BDBDBD}
+.v10-jauge i{position:absolute;left:40%;width:30%;top:0;bottom:0;background:repeating-linear-gradient(135deg,#E0A02E 0 3px,#F2C14E 3px 6px);border-radius:2px}
+.v10-hors{color:#9A4F1E}
+.v10-alerte{display:inline-block;margin-top:3px;padding:0 6px;border-radius:8px;background:#FBE3CF;color:#9A4F1E;font-size:14px;font-weight:600;white-space:nowrap}
+.v10-borne{font-size:14px;color:#666666;margin-top:3px;white-space:nowrap}
+.v10-plage{height:8px;border-radius:4px;margin-top:7px;position:relative;background:linear-gradient(90deg,#4F7E9B,#86B9E6 30%,#F2C14E 60%,#C87A2C 85%,#8D442C)}
+.v10-plage .v10-fiche{position:absolute;left:12%;width:10%;top:-3px;bottom:-3px;border:2px dashed #7A5A12;border-radius:3px}
+.v10-plage .v10-cond{position:absolute;left:47%;width:3px;top:-4px;bottom:-4px;background:#111111;border-radius:2px}
+.v10-caler{display:inline-flex;align-items:center;gap:4px;margin-top:8px;height:30px;padding:0 9px;border:1.5px solid #9C7020;border-radius:10px;color:#7A5A12;font-size:14px;font-weight:600;background:#FFFFFF;white-space:nowrap}
+.v10-flocu{display:flex;gap:3px;margin-top:10px}
+.v10-flocu i{flex:1;height:10px;border-radius:3px;background:#8A8A8A}
+.v10-flocu i:last-child{background:#CFCFCF}
+
+/* Traits */
+.v10-traits{padding:6px 12px 0}
+.v10-traits-tete{display:flex;align-items:center;justify-content:space-between;height:40px}
+.v10-ia{display:inline-flex;align-items:center;gap:6px;height:32px;padding:0 12px;border-radius:16px;background:#FFF3D6;border:1.5px solid #E0A02E;color:#7A5A12;font-size:15px;font-weight:600;white-space:nowrap}
+.v10-ia.v10-encours{background:#FFFFFF;border-style:dashed}
+.v10-rang{display:grid;grid-template-columns:12px minmax(0,1fr) auto;align-items:center;gap:10px;height:32px;white-space:nowrap}
+.v10-pt{width:12px;height:12px;border-radius:50%}
+.v10-nomt{font-size:15px}
+.v10-v{display:inline-flex;align-items:center;gap:6px;font-size:15px}
+.v10-v b{font-weight:600}
+.v10-tag{font-size:14px;padding:1px 7px;border-radius:9px;border:1.5px dashed #9C7020;color:#7A5A12;background:#FFFFFF}
+.v10-tag.v10-iatag{border-color:#E0A02E;background:#FFF3D6;border-style:solid}
+.v10-x{display:inline-grid;place-items:center;width:24px;height:24px;border-radius:50%;border:1.5px solid #CFCFCF;background:#FFFFFF;color:#666666;font-size:15px;line-height:1}
+.v10-attend{font-size:15px;color:#7A5A12;font-weight:600}
+.v10-annuler{font-size:15px;text-decoration:underline;color:#111111;margin-left:14px}
+.v10-rien{color:#666666;font-size:14px}
+.v10-lit{display:inline-block;width:86px;height:12px;border-radius:6px;background:linear-gradient(90deg,#EBEBEB,#FBEBC2,#EBEBEB)}
+
+/* La décision de la v10 : une seule barre de confirmation */
+.v10-barre{display:flex;align-items:center;gap:10px;margin:8px -12px 0;padding:8px 12px;background:#FFF3D6;border-top:1.5px dashed #E0A02E;white-space:nowrap}
+.v10-barre .v10-compte{font-size:15px;color:#7A5A12;flex:1;min-width:0}
+.v10-barre .v10-compte b{color:#111111}
+.v10-ecarter{font-size:15px;text-decoration:underline;color:#111111}
+.v10-retenir{height:32px;padding:0 12px;border-radius:10px;background:#111111;color:#FFFFFF;font-size:15px;font-weight:600;display:inline-flex;align-items:center}
+.v10-barre.v10-second{margin-top:0;background:#F5F5F5;border-top:1px solid #E2E2E2}
+.v10-barre.v10-second .v10-retenir{background:#FFFFFF;color:#111111;border:1.5px solid #111111}
+.v10-barre.v10-attente{background:#F5F5F5;border-top-color:#CFCFCF}
+.v10-barre.v10-attente .v10-compte{color:#666666}
+
+/* Changer de levure (base) */
+.v10-changer{margin:10px 12px 0;padding:10px;border-radius:16px;background:#F5F5F5}
+.v10-cherche{display:flex;align-items:center;gap:8px;height:42px;padding:0 14px;border:1.5px dashed #9A9A9A;border-radius:21px;background:#FFFFFF;color:#666666;font-size:17px}
+.v10-puces{display:flex;gap:8px;margin-top:8px}
+.v10-puce{display:inline-flex;align-items:center;gap:5px;height:32px;padding:0 9px;border:1.5px solid #CFCFCF;border-radius:10px;background:#FFFFFF;font-size:14px;white-space:nowrap}
+.v10-puce.v10-hc{margin-left:auto;border-style:dashed}
+
+/* Suite du geste IA, sous le pli */
+.v10-suite{margin:18px 12px 0}
+.v10-suite h2{font-size:15px;font-weight:600;color:#666666;margin:0 0 6px}
+.v10-temps{border:1.5px solid #CFCFCF;border-radius:16px;background:#F5F5F5;padding:0 12px;margin-bottom:12px;overflow:hidden}
+.v10-temps .v10-quand{font-size:14px;font-weight:600;color:#7A5A12;padding-top:8px}
+.v10-note{font-size:14px;color:#666666;padding:6px 0 10px}
+
+/* Pied de l'assistant, + volant, barre d'onglets */
+.v10-pied{position:fixed;left:0;width:390px;bottom:56px;height:60px;z-index:1;background:#FFFFFF;display:flex;align-items:center;gap:10px;padding:0 12px;box-shadow:0 -1px 0 #EBEBEB}
+.v10-pied-retour{height:40px;padding:0 16px;border:1.5px solid #CFCFCF;border-radius:10px;display:inline-flex;align-items:center;font-size:16px;color:#666666;background:#FFFFFF}
+.v10-pied-suivant{height:40px;padding:0 14px;border-radius:10px;background:#111111;color:#FFFFFF;display:inline-flex;align-items:center;font-size:16px;font-weight:600;margin-left:auto;margin-right:66px}
+.v10-fab{position:fixed;right:12px;bottom:72px;width:56px;height:56px;border-radius:50%;background:#111111;color:#FFFFFF;display:grid;place-items:center;font-size:32px;line-height:1;box-shadow:0 4px 12px rgba(0,0,0,.25);z-index:10}
+.v10-onglets{position:fixed;left:0;bottom:0;width:390px;height:56px;background:#FFFFFF;border-top:1px solid #EBEBEB;display:flex;z-index:2}
+.v10-onglets a{flex:1 1 auto;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;font-size:14px;color:#666666;text-decoration:none;letter-spacing:-.01em;position:relative}
+.v10-onglets a.v10-actif{color:#111111;font-weight:600}
+.v10-onglets a.v10-actif::before{content:"";position:absolute;top:0;left:22%;right:22%;height:3px;border-radius:2px;background:#E7A070}
+.v10-onglets svg{width:20px;height:20px}
+</style>
+</head>
+<body>
+
+<header class="v10-tete">
+  <span class="v10-retour">‹</span><b>Levure</b><span class="v10-etape">4/7</span>
+  <span class="v10-abandon">Abandonner</span>
+  <span class="v10-ico" aria-label="Exporter la fiche"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="4" width="12" height="17" rx="2"/><path d="M9 2.5h4v3H9z"/><path d="M13 13h8M18 10l3 3-3 3"/></svg></span>
+  <span class="v10-ico" aria-label="Thème sombre"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 14.5A8 8 0 0 1 9.5 4a8 8 0 1 0 10.5 10.5z"/></svg></span>
+</header>
+<nav class="v10-etapes" aria-label="Étapes de la recette">
+  <span>Identité</span><span>Malts/sucres</span><span>Houblons</span><span class="v10-ici">Levure</span><span class="v10-apres">Paliers</span><span class="v10-apres">Eau</span><span class="v10-apres">Récap.</span>
+</nav>
+<div class="v10-exemple"><span>Maibock · OG 1,067 · exemple</span><u>↶ Revenir à W-34/70</u></div>
+
+<section class="v10-carte" aria-label="Ma levure">
+  <div class="v10-haut">
+    <div class="v10-flacon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#7A5A12" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 3h6M10 3v6l-5 9a2 2 0 0 0 1.7 3h10.6a2 2 0 0 0 1.7-3l-5-9V3"/><path d="M7.5 15h9"/></svg></div>
+    <div class="v10-nom">Munich Lager Yeast</div>
+    <div class="v10-dose v10-mono">≥ 15 <small>g</small></div>
+    <div class="v10-ferme" aria-label="Retirer la levure">×</div>
+    <div class="v10-marque">White Labs · vendue par Lallemand</div>
+  </div>
+
+  <div class="v10-mesures">
+    <div>
+      <div class="v10-lib">FG</div>
+      <div class="v10-val v10-mono">1,018–1,021</div>
+      <div class="v10-sous">≈ 6,0–6,4 % vol</div>
+      <div class="v10-sous">att. 69–73 %</div>
+    </div>
+    <div>
+      <div class="v10-lib">fiche · conduite</div>
+      <div class="v10-val v10-mono">9–11 · <span class="v10-hors">19 °C</span></div>
+      <span class="v10-alerte">▲ hors fiche</span>
+      <div class="v10-plage"><span class="v10-fiche"></span><span class="v10-cond"></span></div>
+      <span class="v10-caler">→ Caler à 11 °C</span>
+    </div>
+    <div>
+      <div class="v10-lib">floculation</div>
+      <div class="v10-val">moyenne</div>
+      <div class="v10-flocu"><i></i><i></i><i></i></div>
+    </div>
+  </div>
+
+  <div class="v10-traits">
+    <div class="v10-traits-tete">
+      <span class="v10-lib">Traits · 2 sans source</span>
+      <span class="v10-ia">✦ Compléter par l'IA</span>
+    </div>
+    <div class="v10-rang"><i class="v10-pt" style="background:#E0A02E"></i><span class="v10-nomt">esters</span><span class="v10-rien">— non publié</span></div>
+    <div class="v10-rang"><i class="v10-pt" style="background:#A0522D"></i><span class="v10-nomt">phénols</span><span class="v10-v"><b>négatif</b><span class="v10-tag">simulé</span><span class="v10-x" aria-label="Écarter cette valeur">×</span></span></div>
+    <div class="v10-rang"><i class="v10-pt" style="background:#4F9E8F"></i><span class="v10-nomt">thiols</span><span class="v10-v"><b>faible</b><span class="v10-tag">simulé</span><span class="v10-x" aria-label="Écarter cette valeur">×</span></span></div>
+    <div class="v10-rang"><i class="v10-pt" style="background:#6E9B5B"></i><span class="v10-nomt">terpènes</span><span class="v10-v"><b>faible</b><span class="v10-tag">simulé</span><span class="v10-x" aria-label="Écarter cette valeur">×</span></span></div>
+    <div class="v10-rang"><i class="v10-pt" style="background:#A08A62"></i><span class="v10-nomt">sucres restants</span><span class="v10-rien">— non publié</span></div>
+    <div class="v10-barre">
+      <span class="v10-compte"><b>3</b> à confirmer</span>
+      <span class="v10-ecarter">Écarter les 3</span>
+      <span class="v10-retenir">Retenir les 3</span>
+    </div>
+  </div>
+</section>
+
+<section class="v10-changer" aria-label="Changer de levure">
+  <div class="v10-cherche"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#666666" stroke-width="2"><circle cx="10.5" cy="10.5" r="6.5"/><path d="M15.5 15.5 21 21"/></svg>Changer de levure</div>
+  <div class="v10-puces">
+    <span class="v10-puce"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#5B8AA6" stroke-width="2"><path d="M12 3 3 7.5v9L12 21l9-4.5v-9z"/><path d="M3 7.5 12 12l9-4.5M12 12v9"/></svg>Pomona</span>
+    <span class="v10-puce"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#5B8AA6" stroke-width="2"><path d="M12 3 3 7.5v9L12 21l9-4.5v-9z"/><path d="M3 7.5 12 12l9-4.5M12 12v9"/></svg>Verdant IPA</span>
+    <span class="v10-puce v10-hc">Hors catalogue</span>
+  </div>
+</section>
+
+<section class="v10-suite" aria-label="Le geste IA, pendant puis après">
+  <h2>✦ Le geste IA : pendant, puis après · exemple</h2>
+
+  <div class="v10-temps">
+    <div class="v10-quand">Pendant · lit la fiche White Labs</div>
+    <div class="v10-traits-tete"><span class="v10-lib">Traits</span><span><span class="v10-attend">✦ Lecture…</span><span class="v10-annuler">Annuler</span></span></div>
+    <div class="v10-rang"><i class="v10-pt" style="background:#E0A02E"></i><span class="v10-nomt">esters</span><span class="v10-lit"></span></div>
+    <div class="v10-rang"><i class="v10-pt" style="background:#A0522D"></i><span class="v10-nomt">phénols</span><span class="v10-v"><b>négatif</b><span class="v10-tag">simulé</span></span></div>
+    <div class="v10-rang"><i class="v10-pt" style="background:#4F9E8F"></i><span class="v10-nomt">thiols</span><span class="v10-v"><b>faible</b><span class="v10-tag">simulé</span></span></div>
+    <div class="v10-rang"><i class="v10-pt" style="background:#6E9B5B"></i><span class="v10-nomt">terpènes</span><span class="v10-v"><b>faible</b><span class="v10-tag">simulé</span></span></div>
+    <div class="v10-rang"><i class="v10-pt" style="background:#A08A62"></i><span class="v10-nomt">sucres restants</span><span class="v10-lit"></span></div>
+    <div class="v10-barre v10-attente"><span class="v10-compte">Confirmation après la lecture</span></div>
+  </div>
+
+  <div class="v10-temps">
+    <div class="v10-quand">Après · 2 proposés, 3 simulés</div>
+    <div class="v10-rang"><i class="v10-pt" style="background:#E0A02E"></i><span class="v10-nomt">esters</span><span class="v10-v"><b>faibles</b><span class="v10-tag v10-iatag">IA</span><span class="v10-x" aria-label="Écarter cette valeur">×</span></span></div>
+    <div class="v10-rang"><i class="v10-pt" style="background:#A0522D"></i><span class="v10-nomt">phénols</span><span class="v10-v"><b>négatif</b><span class="v10-tag">simulé</span><span class="v10-x" aria-label="Écarter cette valeur">×</span></span></div>
+    <div class="v10-rang"><i class="v10-pt" style="background:#4F9E8F"></i><span class="v10-nomt">thiols</span><span class="v10-v"><b>faible</b><span class="v10-tag">simulé</span><span class="v10-x" aria-label="Écarter cette valeur">×</span></span></div>
+    <div class="v10-rang"><i class="v10-pt" style="background:#6E9B5B"></i><span class="v10-nomt">terpènes</span><span class="v10-v"><b>faible</b><span class="v10-tag">simulé</span><span class="v10-x" aria-label="Écarter cette valeur">×</span></span></div>
+    <div class="v10-rang"><i class="v10-pt" style="background:#A08A62"></i><span class="v10-nomt">sucres restants</span><span class="v10-v"><b>moyens</b><span class="v10-tag v10-iatag">IA</span><span class="v10-x" aria-label="Écarter cette valeur">×</span></span></div>
+    <div class="v10-barre">
+      <span class="v10-compte"><b>2</b> lus par l'IA</span>
+      <span class="v10-ecarter">Écarter les 2</span>
+      <span class="v10-retenir">Retenir 2 IA</span>
+    </div>
+    <div class="v10-barre v10-second">
+      <span class="v10-compte"><b>3</b> simulés, à part</span>
+      <span class="v10-ecarter">Écarter les 3</span>
+      <span class="v10-retenir">Retenir les 3</span>
+    </div>
+    <div class="v10-note">× écarte une seule valeur.</div>
+  </div>
+</section>
+
+<div class="v10-pied">
+  <span class="v10-pied-retour">Retour</span>
+  <span class="v10-pied-suivant">Suivant — Paliers</span>
+</div>
+<span class="v10-fab" aria-label="Ajouter">+</span>
+
+<nav class="v10-onglets" aria-label="Navigation principale">
+  <a><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 13a8 8 0 0 1 16 0"/><path d="M12 13l4-4"/><path d="M3 17h18"/></svg>Bord</a>
+  <a><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="6" width="18" height="12" rx="2"/><circle cx="12" cy="12" r="2.5"/></svg>Finances</a>
+  <a><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/></svg>Calendrier</a>
+  <a class="v10-actif"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 4h12v4a6 6 0 0 1-12 0z"/><path d="M12 14v6M8 20h8"/></svg>Brassins</a>
+  <a><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3 3 7.5v9L12 21l9-4.5v-9z"/><path d="M3 7.5 12 12l9-4.5"/></svg>Stocks</a>
+  <a><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="3.5"/><path d="M5 20a7 7 0 0 1 14 0"/></svg>Clients</a>
+</nav>
+
+</body>
+</html>

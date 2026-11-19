@@ -1,0 +1,327 @@
+<!doctype html>
+<html lang="fr">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="claude:viewport-fit-sides" content="cover">
+<title>Ma levure · 12 versions, par état · 19.11</title>
+<style>
+:root{--bg:#f6f4ef;--carte:#fff;--fg:#1f1b16;--doux:#675e54;--ligne:#e2dbd0;--accent:#4f6f2f;--base:#efe9df;--or:#b07a12;color-scheme:light}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#16130f;--carte:#221e18;--fg:#f1ece4;--doux:#b3a898;--ligne:#3a332a;--accent:#9cc06b;--base:#2b261f;--or:#f0b83a;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#16130f;--carte:#221e18;--fg:#f1ece4;--doux:#b3a898;--ligne:#3a332a;--accent:#9cc06b;--base:#2b261f;--or:#f0b83a;color-scheme:dark}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--fg);font:15px/1.45 system-ui,-apple-system,"Segoe UI",sans-serif}
+.page{padding-block:18px 96px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));max-width:100vw;overflow-x:clip}
+h1{font-size:22px;margin:0 0 6px;text-wrap:balance}
+.doux{color:var(--doux)}
+#a-choisir{background:var(--carte);border:1px solid var(--ligne);border-radius:12px;padding:12px 14px;margin:10px 0 14px;max-width:900px}
+#a-choisir p{margin:0 0 6px}
+#a-choisir p:last-child{margin:0}
+#a-choisir q{font-style:italic}
+.vers{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:8px;margin:0 0 8px;max-width:1240px;padding:0;list-style:none}
+.v{background:var(--carte);border:1px solid var(--ligne);border-radius:10px;padding:8px 10px;font-size:14px;margin:0;min-width:0}
+.v.base{background:var(--base)}
+.v b{font-size:15px}
+.v .n{display:block;color:var(--doux);font-size:14px}
+.v .c{display:inline-block;margin-left:6px;padding:0 6px;border-radius:6px;background:var(--base);color:var(--fg);font-weight:700;font-size:14px}
+nav.som{display:flex;flex-wrap:wrap;gap:6px;margin:14px 0 0;max-width:1240px}
+nav.som a{font-size:14px;color:var(--fg);text-decoration:none;border:1px solid var(--ligne);background:var(--carte);border-radius:16px;padding:6px 10px;min-height:32px}
+section.rang{margin-top:26px;padding-top:10px;border-top:2px solid var(--ligne)}
+section.rang h2{font-size:18px;margin:0 0 2px}
+section.rang .sous{margin:0 0 8px;font-size:14px;color:var(--doux);max-width:900px}
+.podium{font-size:15px;font-weight:600;color:var(--accent);margin-left:6px}
+.bande{display:flex;gap:10px;overflow-x:auto;padding-bottom:10px;scroll-snap-type:x proximity;max-width:100%}
+figure{--l:200px;--k:1;margin:0;flex:0 0 auto;width:var(--l);background:var(--carte);border:1px solid var(--ligne);border-radius:10px;overflow:hidden;scroll-snap-align:start;display:flex;flex-direction:column}
+figure.base{background:var(--base)}
+figure.vide{background:transparent;border-style:dashed}
+figure button.zoom{all:unset;cursor:zoom-in;display:block}
+figure img{display:block;width:var(--l);height:calc(var(--h) * var(--k));object-fit:contain;object-position:top center;background:var(--carte);border-bottom:1px solid var(--ligne)}
+.tiret{width:var(--l);height:calc(var(--h) * var(--k));display:flex;flex-direction:column;gap:6px;align-items:center;justify-content:center;font-size:40px;color:var(--doux);border-bottom:1px dashed var(--ligne)}
+.tiret span{font-size:14px;max-width:150px;text-align:center}
+figcaption{padding:6px 8px;display:flex;flex-direction:column;gap:6px;font-size:14px;flex:1}
+figcaption .t{font-weight:700;font-size:16px}
+.rgs{display:flex;gap:4px;margin-top:auto}
+.rg{flex:1;min-width:0;height:40px;border:1.5px solid var(--ligne);border-radius:20px;background:var(--carte);color:var(--doux);font:inherit;font-weight:700;font-size:15px;cursor:pointer;padding:0}
+.rg[aria-pressed="true"]{color:#1f1b16;border-color:transparent}
+.rg[data-n="1"][aria-pressed="true"]{background:#e2b23a}
+.rg[data-n="2"][aria-pressed="true"]{background:#c4c8cc}
+.rg[data-n="3"][aria-pressed="true"]{background:#d49a6a}
+.rg[data-n="4"][aria-pressed="true"]{background:#b9c7d8}
+.rg[data-n="5"][aria-pressed="true"]{background:#d9d2c2}
+figcaption input{width:100%;height:36px;border:1.5px solid var(--ligne);border-radius:8px;padding:0 8px;font:inherit;font-size:14px;background:var(--carte);color:var(--fg)}
+figure[data-rang="1"]{outline:3px solid #e2b23a;outline-offset:-1px}
+figure[data-rang="2"]{outline:3px solid #a9adb2;outline-offset:-1px}
+figure[data-rang="3"]{outline:3px solid #c98b58;outline-offset:-1px}
+figure[data-rang="4"]{outline:3px solid #8fa4bd;outline-offset:-1px}
+figure[data-rang="5"]{outline:3px solid #b8ad96;outline-offset:-1px}
+.pied{position:fixed;left:0;right:0;bottom:0;background:var(--carte);border-top:1px solid var(--ligne);padding-block:10px calc(10px + env(safe-area-inset-bottom,0px));padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));display:flex;gap:10px;align-items:center;z-index:5}
+.pied button{height:44px;padding:0 16px;border-radius:10px;border:0;background:var(--accent);color:var(--carte);font:inherit;font-weight:700;cursor:pointer}
+.pied button.theme{background:transparent;color:var(--fg);border:1.5px solid var(--ligne);margin-left:auto}
+.pied span{color:var(--doux);font-size:14px}
+#sortie{width:100%;min-height:150px;margin-top:14px;font:14px/1.4 ui-monospace,monospace;background:var(--carte);color:var(--fg);border:1px solid var(--ligne);border-radius:8px;padding:8px}
+#loupe{position:fixed;inset:0;background:rgba(0,0,0,.85);display:flex;align-items:flex-start;justify-content:center;z-index:9;padding:16px;overflow:auto}
+#loupe img{max-width:100%;width:420px;border-radius:8px;background:#fff}
+[hidden]{display:none!important}
+@media (max-width:520px){figure{--l:168px;--k:.84}}
+</style>
+<body>
+<div class="page">
+<h1>Ma levure · 12 versions, par état · 19.11</h1>
+<div id="a-choisir">
+<p><b>À choisir :</b> <span class="doux">ton classement, état par état, de la carte Ma levure : au repos, avant le geste IA, pendant, après, retenu, hors plage, calé, changer de levure.</span></p>
+<p class="doux">Tes mots : <q>Il y a énormément de problème, même en terme de fluidité</q> ; <q>Pourquoi il y a pas la possibilité d'appeler l'autocomplete de l'agent IA ?</q></p>
+<p class="doux">Une rangée par état : ta capture en ligne d'abord (fond beige), puis v01 à v12. Glisse de côté, touche une image pour l'agrandir. «&nbsp;—&nbsp;» : la version ne montre pas cet état.</p>
+<p class="doux">Sous chaque vignette : 1 à 5 (plusieurs au même rang ; retouche pour l'enlever), une note si tu veux, puis Copier en bas.</p>
+</div>
+<ul class="vers">
+<li class="v base"><b>base</b> la carte en ligne du 19.11, ta capture <span class="n">Une loupe IA par trait, «&nbsp;à confirmer · Retenir · Écarter&nbsp;» sur chaque ligne, «&nbsp;→ 11 °C&nbsp;» sous la conduite.</span></li>
+<li class="v"><b>v01</b> Un seul «&nbsp;Compléter la fiche&nbsp;» dans la carte <span class="c">6,5/10</span><span class="n">Le bouton dit «&nbsp;2 vides, 3 simulés&nbsp;» ; une seule confirmation «&nbsp;Tout retenir&nbsp;». Critique avant correction : état pendant trop proche du repos.</span></li>
+<li class="v"><b>v02</b> Les cinq traits en cinq colonnes <span class="c">6,5/10</span><span class="n">Bouton or «&nbsp;Compléter par l'IA&nbsp;» ; proposés en hachuré, «&nbsp;Retenir les 3&nbsp;» ou «&nbsp;Écarter les 3&nbsp;». Critique : jauge à 15 cases muette au repos.</span></li>
+<li class="v"><b>v03</b> Une barre IA en tête des traits <span class="c">7/10</span><span class="n">«&nbsp;Tout retenir&nbsp;» ou «&nbsp;Revoir un par un&nbsp;» avec ✓ et ✕ par trait ; source fiche ou estimé. Critique : le geste manquait dans la carte, corrigé.</span></li>
+<li class="v"><b>v04</b> Le geste en tête, la conduite en bandeau <span class="c">7/10</span><span class="n">«&nbsp;Conduite à 19 °C, 8 °C au-dessus&nbsp;» et «&nbsp;→ Caler à 11 °C&nbsp;» ; une seule confirmation. Critique : le + cachait «&nbsp;Hors catalogue&nbsp;».</span></li>
+<li class="v"><b>v05</b> L'IA écrit dans les lignes, comme un clavier <span class="c">6/10</span><span class="n">Valeurs proposées en grisé souligné, ✕ par trait, «&nbsp;Retenir les 3&nbsp;». Critique : bas d'écran mêlé à l'app, source douteuse.</span></li>
+<li class="v"><b>v06</b> La carte de la base, un bandeau au pied <span class="c">6,5/10</span><span class="n">«&nbsp;2 lus sur la fiche · Retenir les 2&nbsp;», ✕ sur chaque valeur. Critique : on ne savait pas dans quel état était la carte.</span></li>
+<li class="v"><b>v07</b> Une jauge «&nbsp;fiche 2/5&nbsp;», le hors plage en rouge <span class="c">7/10</span><span class="n">Au bout de la jauge, «&nbsp;✦ Compléter · IA&nbsp;» ; bandeau «&nbsp;Primaire hors fiche +8 °C&nbsp;», «&nbsp;Caler à 11 °C&nbsp;». Critique : hors plage peu visible, corrigé.</span></li>
+<li class="v"><b>v08</b> Un tableau trait, fiche, IA <span class="c">6,5/10</span><span class="n">«&nbsp;Compléter par l'IA&nbsp;» remplit la colonne IA ; toucher une valeur l'écarte ; «&nbsp;Retenir 3&nbsp;». Critique : l'état après manquait, ajouté.</span></li>
+<li class="v"><b>v09</b> Les traits en jauges à crans, comme la floculation <span class="c">7/10</span><span class="n">Proposé hachuré, retenu plein ; «&nbsp;3 traits à confirmer · Revoir · Tout retenir&nbsp;». Critique : bouton d'en-tête contraire à l'état.</span></li>
+<li class="v"><b>v10</b> Une barre de confirmation au pied des traits <span class="c">6/10</span><span class="n">«&nbsp;3 à confirmer · Écarter les 3 · Retenir les 3&nbsp;», lus par l'IA à part des simulés. Critique : recette d'exemple fausse, corrigée.</span></li>
+<li class="v"><b>v11</b> La bande IA au pied de la fiche <span class="c">6,5/10</span><span class="n">Geste, progression avec «&nbsp;Arrêter&nbsp;», puis «&nbsp;Tout retenir (3)&nbsp;» ; ✓ et ✕ par trait. Critique : chiffres qui changeaient d'un état à l'autre, corrigé.</span></li>
+<li class="v"><b>v12</b> Deux colonnes, fiche et IA <span class="c">7/10</span><span class="n">La tête de la colonne IA est le geste ; propositions en pointillé, ✕ pour écarter, «&nbsp;Retenir tout&nbsp;». Critique : flacon peu lisible.</span></li>
+</ul>
+<p class="doux" style="font-size:14px;margin:0">Note : celle du critique avant sa correction ; les douze versions passent ensuite le contrôle de base, des règles dures et du statique.</p>
+<nav class="som" aria-label="États">
+<a href="#e-repos">Au repos</a><a href="#e-avant">Avant le geste</a><a href="#e-pendant">Pendant</a><a href="#e-apres">Après</a><a href="#e-retenu">Retenu</a><a href="#e-horsplage">Hors plage</a><a href="#e-cale">Calé</a><a href="#e-changer">Changer</a>
+</nav>
+
+<section class="rang" id="e-repos" data-choix="Au repos" style="--h:433px">
+<h2>1 · Au repos <span class="podium"></span></h2>
+<p class="sous">Le premier écran au téléphone, tel qu'il s'ouvre (390 × 844).</p>
+<div class="bande">
+<figure class="base" data-reference data-vignette data-cle="repos|base"><button class="zoom" type="button" data-agrandir aria-label="Agrandir la base"><img src="img/repos-base.webp" alt="Base, en ligne le 19.11, au repos"></button><figcaption><b class="t">base</b><div class="rgs"></div><input aria-label="Note base" placeholder="note"></figcaption></figure>
+<figure data-variante data-vignette data-cle="repos|v01"><button class="zoom" type="button" data-agrandir aria-label="Agrandir v01"><img src="img/repos-v01.webp" alt="v01 au repos"></button><figcaption><b class="t">v01</b><div class="rgs"></div><input aria-label="Note v01" placeholder="note"></figcaption></figure>
+<figure data-variante data-vignette data-cle="repos|v02"><button class="zoom" type="button" data-agrandir aria-label="Agrandir v02"><img src="img/repos-v02.webp" alt="v02 au repos"></button><figcaption><b class="t">v02</b><div class="rgs"></div><input aria-label="Note v02" placeholder="note"></figcaption></figure>
+<figure data-variante data-vignette data-cle="repos|v03"><button class="zoom" type="button" data-agrandir aria-label="Agrandir v03"><img src="img/repos-v03.webp" alt="v03 au repos"></button><figcaption><b class="t">v03</b><div class="rgs"></div><input aria-label="Note v03" placeholder="note"></figcaption></figure>
+<figure data-variante data-vignette data-cle="repos|v04"><button class="zoom" type="button" data-agrandir aria-label="Agrandir v04"><img src="img/repos-v04.webp" alt="v04 au repos"></button><figcaption><b class="t">v04</b><div class="rgs"></div><input aria-label="Note v04" placeholder="note"></figcaption></figure>
+<figure data-variante data-vignette data-cle="repos|v05"><button class="zoom" type="button" data-agrandir aria-label="Agrandir v05"><img src="img/repos-v05.webp" alt="v05 au repos"></button><figcaption><b class="t">v05</b><div class="rgs"></div><input aria-label="Note v05" placeholder="note"></figcaption></figure>
+<figure data-variante data-vignette data-cle="repos|v06"><button class="zoom" type="button" data-agrandir aria-label="Agrandir v06"><img src="img/repos-v06.webp" alt="v06 au repos"></button><figcaption><b class="t">v06</b><div class="rgs"></div><input aria-label="Note v06" placeholder="note"></figcaption></figure>
+<figure data-variante data-vignette data-cle="repos|v07"><button class="zoom" type="button" data-agrandir aria-label="Agrandir v07"><img src="img/repos-v07.webp" alt="v07 au repos"></button><figcaption><b class="t">v07</b><div class="rgs"></div><input aria-label="Note v07" placeholder="note"></figcaption></figure>
+<figure data-variante data-vignette data-cle="repos|v08"><button class="zoom" type="button" data-agrandir aria-label="Agrandir v08"><img src="img/repos-v08.webp" alt="v08 au repos"></button><figcaption><b class="t">v08</b><div class="rgs"></div><input aria-label="Note v08" placeholder="note"></figcaption></figure>
+<figure data-variante data-vignette data-cle="repos|v09"><button class="zoom" type="button" data-agrandir aria-label="Agrandir v09"><img src="img/repos-v09.webp" alt="v09 au repos"></button><figcaption><b class="t">v09</b><div class="rgs"></div><input aria-label="Note v09" placeholder="note"></figcaption></figure>
+<figure data-variante data-vignette data-cle="repos|v10"><button class="zoom" type="button" data-agrandir aria-label="Agrandir v10"><img src="img/repos-v10.webp" alt="v10 au repos"></button><figcaption><b class="t">v10</b><div class="rgs"></div><input aria-label="Note v10" placeholder="note"></figcaption></figure>
+<figure data-variante data-vignette data-cle="repos|v11"><button class="zoom" type="button" data-agrandir aria-label="Agrandir v11"><img src="img/repos-v11.webp" alt="v11 au repos"></button><figcaption><b class="t">v11</b><div class="rgs"></div><input aria-label="Note v11" placeholder="note"></figcaption></figure>
+<figure data-variante data-vignette data-cle="repos|v12"><button class="zoom" type="button" data-agrandir aria-label="Agrandir v12"><img src="img/repos-v12.webp" alt="v12 au repos"></button><figcaption><b class="t">v12</b><div class="rgs"></div><input aria-label="Note v12" placeholder="note"></figcaption></figure>
+</div>
+</section>
+
+<section class="rang" id="e-avant" data-choix="Avant le geste IA" style="--h:294px">
+<h2>2 · Avant le geste IA <span class="podium"></span></h2>
+<p class="sous">La carte avant de toucher l'IA : où est le geste, ce qu'il annonce. La base n'en a pas : une loupe par trait.</p>
+<div class="bande">
+<figure class="base" data-reference data-vignette data-cle="avant|base"><button class="zoom" type="button" data-agrandir aria-label="Agrandir la base"><img src="img/avant-base.webp" alt="Base : les traits, une loupe par trait"></button><figcaption><b class="t">base</b><div class="rgs"></div><input aria-label="Note base" placeholder="note"></figcaption></figure>
+<figure data-variante data-vignette data-cle="avant|v01"><button class="zoom" type="button" data-agrandir aria-label="Agrandir v01"><img src="img/avant-v01.webp" alt="v01 avant le geste"></button><figcaption><b class="t">v01</b><div class="rgs"></div><input aria-label="Note v01" placeholder="note"></figcaption></figure>
+<figure data-variante data-vignette data-cle="avant|v02"><button class="zoom" type="button" data-agrandir aria-label="Agrandir v02"><img src="img/avant-v02.webp" alt="v02 avant le geste"></button><figcaption><b class="t">v02</b><div class="rgs"></div><input aria-label="Note v02" placeholder="note"></figcaption></figure>
+<figure data-variante data-vignette data-cle="avant|v03"><button class="zoom" type="button" data-agrandir aria-label="Agrandir v03"><img src="img/avant-v03.webp" alt="v03 avant le geste"></button><figcaption><b class="t">v03</b><div class="rgs"></div><input aria-label="Note v03" placeholder="note"></figcaption></figure>
+<figure data-variante data-vignette data-cle="avant|v04"><button class="zoom" type="button" data-agrandir aria-label="Agrandir v04"><img src="img/avant-v04.webp" alt="v04 avant le geste"></button><figcaption><b class="t">v04</b><div class="rgs"></div><input aria-label="Note v04" placeholder="note"></figcaption></figure>
+<figure data-variante data-vignette data-cle="avant|v05"><button class="zoom" type="button" data-agrandir aria-label="Agrandir v05"><img src="img/avant-v05.webp" alt="v05 avant le geste"></button><figcaption><b class="t">v05</b><div class="rgs"></div><input aria-label="Note v05" placeholder="note"></figcaption></figure>
+<figure data-variante data-vignette data-cle="avant|v06"><button class="zoom" type="button" data-agrandir aria-label="Agrandir v06"><img src="img/avant-v06.webp" alt="v06 avant le geste"></button><figcaption><b class="t">v06</b><div class="rgs"></div><input aria-label="Note v06" placeholder="note"></figcaption></figure>
+<figure data-variante data-vignette data-cle="avant|v07"><button class="zoom" type="button" data-agrandir aria-label="Agrandir v07"><img src="img/avant-v07.webp" alt="v07 avant le geste"></button><figcaption><b class="t">v07</b><div class="rgs"></div><input aria-label="Note v07" placeholder="note"></figcaption></figure>
+<figure data-variante data-vignette data-cle="avant|v08"><button class="zoom" type="button" data-agrandir aria-label="Agrandir v08"><img src="img/avant-v08.webp" alt="v08 avant le geste"></button><figcaption><b class="t">v08</b><div class="rgs"></div><input aria-label="Note v08" placeholder="note"></figcaption></figure>
+<figure data-variante data-vignette data-cle="avant|v09"><button class="zoom" type="button" data-agrandir aria-label="Agrandir v09"><img src="img/avant-v09.webp" alt="v09 avant le geste"></button><figcaption><b class="t">v09</b><div class="rgs"></div><input aria-label="Note v09" placeholder="note"></figcaption></figure>
+<figure class="vide"><div class="tiret">—<span>s'ouvre déjà sur les propositions</span></div><figcaption><b class="t">v10</b></figcaption></figure>
+<figure data-variante data-vignette data-cle="avant|v11"><button class="zoom" type="button" data-agrandir aria-label="Agrandir v11"><img src="img/avant-v11.webp" alt="v11 avant le geste"></button><figcaption><b class="t">v11</b><div class="rgs"></div><input aria-label="Note v11" placeholder="note"></figcaption></figure>
+<figure data-variante data-vignette data-cle="avant|v12"><button class="zoom" type="button" data-agrandir aria-label="Agrandir v12"><img src="img/avant-v12.webp" alt="v12 : le bouton IA avant, pendant, après"></button><figcaption><b class="t">v12</b><div class="rgs"></div><input aria-label="Note v12" placeholder="note"></figcaption></figure>
+</div>
+</section>
+
+<section class="rang" id="e-pendant" data-choix="Pendant" style="--h:279px">
+<h2>3 · Pendant : l'IA lit <span class="podium"></span></h2>
+<p class="sous">La carte reste-t-elle utilisable, et peut-on arrêter ? La base n'a pas cet état : sa carte en ligne en référence.</p>
+<div class="bande">
+<figure class="base" data-reference data-vignette data-cle="pendant|base"><button class="zoom" type="button" data-agrandir aria-label="Agrandir la base"><img src="img/pendant-base.webp" alt="Base : les traits, sans état pendant"></button><figcaption><b class="t">base</b><div class="rgs"></div><input aria-label="Note base" placeholder="note"></figcaption></figure>
+<figure data-variante data-vignette data-cle="pendant|v01"><button class="zoom" type="button" data-agrandir aria-label="Agrandir v01"><img src="img/pendant-v01.webp" alt="v01 pendant"></button><figcaption><b class="t">v01</b><div class="rgs"></div><input aria-label="Note v01" placeholder="note"></figcaption></figure>
+<figure data-variante data-vignette data-cle="pendant|v02"><button class="zoom" type="button" data-agrandir aria-label="Agrandir v02"><img src="img/pendant-v02.webp" alt="v02 pendant"></button><figcaption><b class="t">v02</b><div class="rgs"></div><input aria-label="Note v02" placeholder="note"></figcaption></figure>
+<figure data-variante data-vignette data-cle="pendant|v03"><button class="zoom" type="button" data-agrandir aria-label="Agrandir v03"><img src="img/pendant-v03.webp" alt="v03 pendant"></button><figcaption><b class="t">v03</b><div class="rgs"></div><input aria-label="Note v03" placeholder="note"></figcaption></figure>
+<figure data-variante data-vignette data-cle="pendant|v04"><button class="zoom" type="button" data-agrandir aria-label="Agrandir v04"><img src="img/pendant-v04.webp" alt="v04 pendant"></button><figcaption><b class="t">v04</b><div class="rgs"></div><input aria-label="Note v04" placeholder="note"></figcaption></figure>
+<figure data-variante data-vignette data-cle="pendant|v05"><button class="zoom" type="button" data-agrandir aria-label="Agrandir v05"><img src="img/pendant-v05.webp" alt="v05 pendant"></button><figcaption><b class="t">v05</b><div class="rgs"></div><input aria-label="Note v05" placeholder="note"></figcaption></figure>
+<figure data-variante data-vignette data-cle="pendant|v06"><button class="zoom" type="button" data-agrandir aria-label="Agrandir v06"><img src="img/pendant-v06.webp" alt="v06 pendant"></button><figcaption><b class="t">v06</b><div class="rgs"></div><input aria-label="Note v06" placeholder="note"></figcaption></figure>
+<figure data-variante data-vignette data-cle="pendant|v07"><button class="zoom" type="button" data-agrandir aria-label="Agrandir v07"><img src="img/pendant-v07.webp" alt="v07 pendant"></button><figcaption><b class="t">v07</b><div class="rgs"></div><input aria-label="Note v07" placeholder="note"></figcaption></figure>
+<figure data-variante data-vignette data-cle="pendant|v08"><button class="zoom" type="button" data-agrandir aria-label="Agrandir v08"><img src="img/pendant-v08.webp" alt="v08 pendant"></button><figcaption><b class="t">v08</b><div class="rgs"></div><input aria-label="Note v08" placeholder="note"></figcaption></figure>
+<figure data-variante data-vignette data-cle="pendant|v09"><button class="zoom" type="button" data-agrandir aria-label="Agrandir v09"><img src="img/pendant-v09.webp" alt="v09 pendant"></button><figcaption><b class="t">v09</b><div class="rgs"></div><input aria-label="Note v09" placeholder="note"></figcaption></figure>
+<figure data-variante data-vignette data-cle="pendant|v10"><button class="zoom" type="button" data-agrandir aria-label="Agrandir v10"><img src="img/pendant-v10.webp" alt="v10 pendant"></button><figcaption><b class="t">v10</b><div class="rgs"></div><input aria-label="Note v10" placeholder="note"></figcaption></figure>
+<figure data-variante data-vignette data-cle="pendant|v11"><button class="zoom" type="button" data-agrandir aria-label="Agrandir v11"><img src="img/pendant-v11.webp" alt="v11 pendant"></button><figcaption><b class="t">v11</b><div class="rgs"></div><input aria-label="Note v11" placeholder="note"></figcaption></figure>
+<figure data-variante data-vignette data-cle="pendant|v12"><button class="zoom" type="button" data-agrandir aria-label="Agrandir v12"><img src="img/pendant-v12.webp" alt="v12 : le bouton IA avant, pendant, après"></button><figcaption><b class="t">v12</b><div class="rgs"></div><input aria-label="Note v12" placeholder="note"></figcaption></figure>
+</div>
+</section>
+
+<section class="rang" id="e-apres" data-choix="Après" style="--h:380px">
+<h2>4 · Après : traits proposés, à confirmer <span class="podium"></span></h2>
+<p class="sous">Comment on retient tout, comment on écarte un seul trait. Base : «&nbsp;à confirmer · Retenir · Écarter&nbsp;» sur chaque ligne.</p>
+<div class="bande">
+<figure class="base" data-reference data-vignette data-cle="apres|base"><button class="zoom" type="button" data-agrandir aria-label="Agrandir la base"><img src="img/apres-base.webp" alt="Base : à confirmer, Retenir, Écarter par trait"></button><figcaption><b class="t">base</b><div class="rgs"></div><input aria-label="Note base" placeholder="note"></figcaption></figure>
+<figure data-variante data-vignette data-cle="apres|v01"><button class="zoom" type="button" data-agrandir aria-label="Agrandir v01"><img src="img/apres-v01.webp" alt="v01 après"></button><figcaption><b class="t">v01</b><div class="rgs"></div><input aria-label="Note v01" placeholder="note"></figcaption></figure>
+<figure data-variante data-vignette data-cle="apres|v02"><button class="zoom" type="button" data-agrandir aria-label="Agrandir v02"><img src="img/apres-v02.webp" alt="v02 après"></button><figcaption><b class="t">v02</b><div class="rgs"></div><input aria-label="Note v02" placeholder="note"></figcaption></figure>
+<figure data-variante data-vignette data-cle="apres|v03"><button class="zoom" type="button" data-agrandir aria-label="Agrandir v03"><img src="img/apres-v03.webp" alt="v03 après"></button><figcaption><b class="t">v03</b><div class="rgs"></div><input aria-label="Note v03" placeholder="note"></figcaption></figure>
+<figure data-variante data-vignette data-cle="apres|v04"><button class="zoom" type="button" data-agrandir aria-label="Agrandir v04"><img src="img/apres-v04.webp" alt="v04 après"></button><figcaption><b class="t">v04</b><div class="rgs"></div><input aria-label="Note v04" placeholder="note"></figcaption></figure>
+<figure data-variante data-vignette data-cle="apres|v05"><button class="zoom" type="button" data-agrandir aria-label="Agrandir v05"><img src="img/apres-v05.webp" alt="v05 après"></button><figcaption><b class="t">v05</b><div class="rgs"></div><input aria-label="Note v05" placeholder="note"></figcaption></figure>
+<figure data-variante data-vignette data-cle="apres|v06"><button class="zoom" type="button" data-agrandir aria-label="Agrandir v06"><img src="img/apres-v06.webp" alt="v06 après"></button><figcaption><b class="t">v06</b><div class="rgs"></div><input aria-label="Note v06" placeholder="note"></figcaption></figure>
+<figure data-variante data-vignette data-cle="apres|v07"><button class="zoom" type="button" data-agrandir aria-label="Agrandir v07"><img src="img/apres-v07.webp" alt="v07 après"></button><figcaption><b class="t">v07</b><div class="rgs"></div><input aria-label="Note v07" placeholder="note"></figcaption></figure>
+<figure data-variante data-vignette data-cle="apres|v08"><button class="zoom" type="button" data-agrandir aria-label="Agrandir v08"><img src="img/apres-v08.webp" alt="v08 après"></button><figcaption><b class="t">v08</b><div class="rgs"></div><input aria-label="Note v08" placeholder="note"></figcaption></figure>
+<figure data-variante data-vignette data-cle="apres|v09"><button class="zoom" type="button" data-agrandir aria-label="Agrandir v09"><img src="img/apres-v09.webp" alt="v09 après"></button><figcaption><b class="t">v09</b><div class="rgs"></div><input aria-label="Note v09" placeholder="note"></figcaption></figure>
+<figure data-variante data-vignette data-cle="apres|v10"><button class="zoom" type="button" data-agrandir aria-label="Agrandir v10"><img src="img/apres-v10.webp" alt="v10 après"></button><figcaption><b class="t">v10</b><div class="rgs"></div><input aria-label="Note v10" placeholder="note"></figcaption></figure>
+<figure data-variante data-vignette data-cle="apres|v11"><button class="zoom" type="button" data-agrandir aria-label="Agrandir v11"><img src="img/apres-v11.webp" alt="v11 après"></button><figcaption><b class="t">v11</b><div class="rgs"></div><input aria-label="Note v11" placeholder="note"></figcaption></figure>
+<figure data-variante data-vignette data-cle="apres|v12"><button class="zoom" type="button" data-agrandir aria-label="Agrandir v12"><img src="img/apres-v12.webp" alt="v12 après"></button><figcaption><b class="t">v12</b><div class="rgs"></div><input aria-label="Note v12" placeholder="note"></figcaption></figure>
+</div>
+</section>
+
+<section class="rang" id="e-retenu" data-choix="Retenu ou écarté" style="--h:229px">
+<h2>5 · Retenu ou écarté <span class="podium"></span></h2>
+<p class="sous">Après «&nbsp;Tout retenir&nbsp;» ou un trait écarté. Trois versions seulement le montrent.</p>
+<div class="bande">
+<figure class="base" data-reference data-vignette data-cle="retenu|base"><button class="zoom" type="button" data-agrandir aria-label="Agrandir la base"><img src="img/retenu-base.webp" alt="Base : les traits en ligne"></button><figcaption><b class="t">base</b><div class="rgs"></div><input aria-label="Note base" placeholder="note"></figcaption></figure>
+<figure class="vide"><div class="tiret">—<span>pas montré</span></div><figcaption><b class="t">v01</b></figcaption></figure>
+<figure class="vide"><div class="tiret">—<span>pas montré</span></div><figcaption><b class="t">v02</b></figcaption></figure>
+<figure data-variante data-vignette data-cle="retenu|v03"><button class="zoom" type="button" data-agrandir aria-label="Agrandir v03"><img src="img/retenu-v03.webp" alt="v03 : cinq traits retenus"></button><figcaption><b class="t">v03</b><div class="rgs"></div><input aria-label="Note v03" placeholder="note"></figcaption></figure>
+<figure class="vide"><div class="tiret">—<span>pas montré</span></div><figcaption><b class="t">v04</b></figcaption></figure>
+<figure data-variante data-vignette data-cle="retenu|v05"><button class="zoom" type="button" data-agrandir aria-label="Agrandir v05"><img src="img/retenu-v05.webp" alt="v05 : thiols écartés, le reste retenu"></button><figcaption><b class="t">v05</b><div class="rgs"></div><input aria-label="Note v05" placeholder="note"></figcaption></figure>
+<figure class="vide"><div class="tiret">—<span>pas montré</span></div><figcaption><b class="t">v06</b></figcaption></figure>
+<figure class="vide"><div class="tiret">—<span>pas montré</span></div><figcaption><b class="t">v07</b></figcaption></figure>
+<figure data-variante data-vignette data-cle="retenu|v08"><button class="zoom" type="button" data-agrandir aria-label="Agrandir v08"><img src="img/retenu-v08.webp" alt="v08 : après Retenir 3"></button><figcaption><b class="t">v08</b><div class="rgs"></div><input aria-label="Note v08" placeholder="note"></figcaption></figure>
+<figure class="vide"><div class="tiret">—<span>pas montré</span></div><figcaption><b class="t">v09</b></figcaption></figure>
+<figure class="vide"><div class="tiret">—<span>pas montré</span></div><figcaption><b class="t">v10</b></figcaption></figure>
+<figure class="vide"><div class="tiret">—<span>pas montré</span></div><figcaption><b class="t">v11</b></figcaption></figure>
+<figure class="vide"><div class="tiret">—<span>pas montré</span></div><figcaption><b class="t">v12</b></figcaption></figure>
+</div>
+</section>
+
+<section class="rang" id="e-horsplage" data-choix="Conduite hors plage" style="--h:174px">
+<h2>6 · Conduite hors plage <span class="podium"></span></h2>
+<p class="sous">19 °C pour une fiche à 9–11 °C : l'écart se voit-il, et «&nbsp;Caler à 11 °C&nbsp;» est-il à portée de pouce ?</p>
+<div class="bande">
+<figure class="base" data-reference data-vignette data-cle="horsplage|base"><button class="zoom" type="button" data-agrandir aria-label="Agrandir la base"><img src="img/horsplage-base.webp" alt="Base : FG, conduite et floculation"></button><figcaption><b class="t">base</b><div class="rgs"></div><input aria-label="Note base" placeholder="note"></figcaption></figure>
+<figure data-variante data-vignette data-cle="horsplage|v01"><button class="zoom" type="button" data-agrandir aria-label="Agrandir v01"><img src="img/horsplage-v01.webp" alt="v01 conduite"></button><figcaption><b class="t">v01</b><div class="rgs"></div><input aria-label="Note v01" placeholder="note"></figcaption></figure>
+<figure data-variante data-vignette data-cle="horsplage|v02"><button class="zoom" type="button" data-agrandir aria-label="Agrandir v02"><img src="img/horsplage-v02.webp" alt="v02 conduite"></button><figcaption><b class="t">v02</b><div class="rgs"></div><input aria-label="Note v02" placeholder="note"></figcaption></figure>
+<figure data-variante data-vignette data-cle="horsplage|v03"><button class="zoom" type="button" data-agrandir aria-label="Agrandir v03"><img src="img/horsplage-v03.webp" alt="v03 conduite"></button><figcaption><b class="t">v03</b><div class="rgs"></div><input aria-label="Note v03" placeholder="note"></figcaption></figure>
+<figure data-variante data-vignette data-cle="horsplage|v04"><button class="zoom" type="button" data-agrandir aria-label="Agrandir v04"><img src="img/horsplage-v04.webp" alt="v04 conduite"></button><figcaption><b class="t">v04</b><div class="rgs"></div><input aria-label="Note v04" placeholder="note"></figcaption></figure>
+<figure data-variante data-vignette data-cle="horsplage|v05"><button class="zoom" type="button" data-agrandir aria-label="Agrandir v05"><img src="img/horsplage-v05.webp" alt="v05 conduite"></button><figcaption><b class="t">v05</b><div class="rgs"></div><input aria-label="Note v05" placeholder="note"></figcaption></figure>
+<figure data-variante data-vignette data-cle="horsplage|v06"><button class="zoom" type="button" data-agrandir aria-label="Agrandir v06"><img src="img/horsplage-v06.webp" alt="v06 conduite"></button><figcaption><b class="t">v06</b><div class="rgs"></div><input aria-label="Note v06" placeholder="note"></figcaption></figure>
+<figure data-variante data-vignette data-cle="horsplage|v07"><button class="zoom" type="button" data-agrandir aria-label="Agrandir v07"><img src="img/horsplage-v07.webp" alt="v07 conduite"></button><figcaption><b class="t">v07</b><div class="rgs"></div><input aria-label="Note v07" placeholder="note"></figcaption></figure>
+<figure data-variante data-vignette data-cle="horsplage|v08"><button class="zoom" type="button" data-agrandir aria-label="Agrandir v08"><img src="img/horsplage-v08.webp" alt="v08 conduite"></button><figcaption><b class="t">v08</b><div class="rgs"></div><input aria-label="Note v08" placeholder="note"></figcaption></figure>
+<figure data-variante data-vignette data-cle="horsplage|v09"><button class="zoom" type="button" data-agrandir aria-label="Agrandir v09"><img src="img/horsplage-v09.webp" alt="v09 conduite"></button><figcaption><b class="t">v09</b><div class="rgs"></div><input aria-label="Note v09" placeholder="note"></figcaption></figure>
+<figure data-variante data-vignette data-cle="horsplage|v10"><button class="zoom" type="button" data-agrandir aria-label="Agrandir v10"><img src="img/horsplage-v10.webp" alt="v10 conduite"></button><figcaption><b class="t">v10</b><div class="rgs"></div><input aria-label="Note v10" placeholder="note"></figcaption></figure>
+<figure data-variante data-vignette data-cle="horsplage|v11"><button class="zoom" type="button" data-agrandir aria-label="Agrandir v11"><img src="img/horsplage-v11.webp" alt="v11 conduite"></button><figcaption><b class="t">v11</b><div class="rgs"></div><input aria-label="Note v11" placeholder="note"></figcaption></figure>
+<figure data-variante data-vignette data-cle="horsplage|v12"><button class="zoom" type="button" data-agrandir aria-label="Agrandir v12"><img src="img/horsplage-v12.webp" alt="v12 conduite"></button><figcaption><b class="t">v12</b><div class="rgs"></div><input aria-label="Note v12" placeholder="note"></figcaption></figure>
+</div>
+</section>
+
+<section class="rang" id="e-cale" data-choix="Calé à 11 °C" style="--h:120px">
+<h2>7 · Calé à 11 °C <span class="podium"></span></h2>
+<p class="sous">Après «&nbsp;Caler à 11 °C&nbsp;». Deux versions seulement le montrent ; la base en ligne en référence.</p>
+<div class="bande">
+<figure class="base" data-reference data-vignette data-cle="cale|base"><button class="zoom" type="button" data-agrandir aria-label="Agrandir la base"><img src="img/cale-base.webp" alt="Base : la conduite avant calage"></button><figcaption><b class="t">base</b><div class="rgs"></div><input aria-label="Note base" placeholder="note"></figcaption></figure>
+<figure class="vide"><div class="tiret">—<span>pas montré</span></div><figcaption><b class="t">v01</b></figcaption></figure>
+<figure data-variante data-vignette data-cle="cale|v02"><button class="zoom" type="button" data-agrandir aria-label="Agrandir v02"><img src="img/cale-v02.webp" alt="v02 : calé à 11 °C, dans la plage"></button><figcaption><b class="t">v02</b><div class="rgs"></div><input aria-label="Note v02" placeholder="note"></figcaption></figure>
+<figure class="vide"><div class="tiret">—<span>pas montré</span></div><figcaption><b class="t">v03</b></figcaption></figure>
+<figure class="vide"><div class="tiret">—<span>pas montré</span></div><figcaption><b class="t">v04</b></figcaption></figure>
+<figure class="vide"><div class="tiret">—<span>pas montré</span></div><figcaption><b class="t">v05</b></figcaption></figure>
+<figure class="vide"><div class="tiret">—<span>pas montré</span></div><figcaption><b class="t">v06</b></figcaption></figure>
+<figure data-variante data-vignette data-cle="cale|v07"><button class="zoom" type="button" data-agrandir aria-label="Agrandir v07"><img src="img/cale-v07.webp" alt="v07 : primaire dans la fiche, 11 °C"></button><figcaption><b class="t">v07</b><div class="rgs"></div><input aria-label="Note v07" placeholder="note"></figcaption></figure>
+<figure class="vide"><div class="tiret">—<span>pas montré</span></div><figcaption><b class="t">v08</b></figcaption></figure>
+<figure class="vide"><div class="tiret">—<span>pas montré</span></div><figcaption><b class="t">v09</b></figcaption></figure>
+<figure class="vide"><div class="tiret">—<span>pas montré</span></div><figcaption><b class="t">v10</b></figcaption></figure>
+<figure class="vide"><div class="tiret">—<span>pas montré</span></div><figcaption><b class="t">v11</b></figcaption></figure>
+<figure class="vide"><div class="tiret">—<span>pas montré</span></div><figcaption><b class="t">v12</b></figcaption></figure>
+</div>
+</section>
+
+<section class="rang" id="e-changer" data-choix="Changer de levure" style="--h:120px">
+<h2>8 · Changer de levure <span class="podium"></span></h2>
+<p class="sous">Sous la carte : la recherche, Pomona et Verdant IPA en stock, Hors catalogue.</p>
+<div class="bande">
+<figure class="base" data-reference data-vignette data-cle="changer|base"><button class="zoom" type="button" data-agrandir aria-label="Agrandir la base"><img src="img/changer-base.webp" alt="Base : changer de levure"></button><figcaption><b class="t">base</b><div class="rgs"></div><input aria-label="Note base" placeholder="note"></figcaption></figure>
+<figure data-variante data-vignette data-cle="changer|v01"><button class="zoom" type="button" data-agrandir aria-label="Agrandir v01"><img src="img/changer-v01.webp" alt="v01 changer de levure"></button><figcaption><b class="t">v01</b><div class="rgs"></div><input aria-label="Note v01" placeholder="note"></figcaption></figure>
+<figure data-variante data-vignette data-cle="changer|v02"><button class="zoom" type="button" data-agrandir aria-label="Agrandir v02"><img src="img/changer-v02.webp" alt="v02 changer de levure"></button><figcaption><b class="t">v02</b><div class="rgs"></div><input aria-label="Note v02" placeholder="note"></figcaption></figure>
+<figure data-variante data-vignette data-cle="changer|v03"><button class="zoom" type="button" data-agrandir aria-label="Agrandir v03"><img src="img/changer-v03.webp" alt="v03 changer de levure"></button><figcaption><b class="t">v03</b><div class="rgs"></div><input aria-label="Note v03" placeholder="note"></figcaption></figure>
+<figure data-variante data-vignette data-cle="changer|v04"><button class="zoom" type="button" data-agrandir aria-label="Agrandir v04"><img src="img/changer-v04.webp" alt="v04 changer de levure"></button><figcaption><b class="t">v04</b><div class="rgs"></div><input aria-label="Note v04" placeholder="note"></figcaption></figure>
+<figure data-variante data-vignette data-cle="changer|v05"><button class="zoom" type="button" data-agrandir aria-label="Agrandir v05"><img src="img/changer-v05.webp" alt="v05 changer de levure"></button><figcaption><b class="t">v05</b><div class="rgs"></div><input aria-label="Note v05" placeholder="note"></figcaption></figure>
+<figure data-variante data-vignette data-cle="changer|v06"><button class="zoom" type="button" data-agrandir aria-label="Agrandir v06"><img src="img/changer-v06.webp" alt="v06 changer de levure"></button><figcaption><b class="t">v06</b><div class="rgs"></div><input aria-label="Note v06" placeholder="note"></figcaption></figure>
+<figure data-variante data-vignette data-cle="changer|v07"><button class="zoom" type="button" data-agrandir aria-label="Agrandir v07"><img src="img/changer-v07.webp" alt="v07 changer de levure"></button><figcaption><b class="t">v07</b><div class="rgs"></div><input aria-label="Note v07" placeholder="note"></figcaption></figure>
+<figure data-variante data-vignette data-cle="changer|v08"><button class="zoom" type="button" data-agrandir aria-label="Agrandir v08"><img src="img/changer-v08.webp" alt="v08 changer de levure"></button><figcaption><b class="t">v08</b><div class="rgs"></div><input aria-label="Note v08" placeholder="note"></figcaption></figure>
+<figure data-variante data-vignette data-cle="changer|v09"><button class="zoom" type="button" data-agrandir aria-label="Agrandir v09"><img src="img/changer-v09.webp" alt="v09 changer de levure"></button><figcaption><b class="t">v09</b><div class="rgs"></div><input aria-label="Note v09" placeholder="note"></figcaption></figure>
+<figure data-variante data-vignette data-cle="changer|v10"><button class="zoom" type="button" data-agrandir aria-label="Agrandir v10"><img src="img/changer-v10.webp" alt="v10 changer de levure"></button><figcaption><b class="t">v10</b><div class="rgs"></div><input aria-label="Note v10" placeholder="note"></figcaption></figure>
+<figure data-variante data-vignette data-cle="changer|v11"><button class="zoom" type="button" data-agrandir aria-label="Agrandir v11"><img src="img/changer-v11.webp" alt="v11 changer de levure"></button><figcaption><b class="t">v11</b><div class="rgs"></div><input aria-label="Note v11" placeholder="note"></figcaption></figure>
+<figure data-variante data-vignette data-cle="changer|v12"><button class="zoom" type="button" data-agrandir aria-label="Agrandir v12"><img src="img/changer-v12.webp" alt="v12 changer de levure"></button><figcaption><b class="t">v12</b><div class="rgs"></div><input aria-label="Note v12" placeholder="note"></figcaption></figure>
+</div>
+</section>
+
+<textarea id="sortie" hidden aria-label="Classement copié"></textarea>
+</div>
+<div class="pied"><button type="button" id="copier">Copier</button><span id="compte">0 rang donné</span><button type="button" class="theme" id="theme">Thème</button></div>
+<div id="loupe" hidden><img alt="Vignette agrandie"></div>
+<script>
+(function () {
+  // Classement par état : 1 à 5 sous chaque vignette, plusieurs au même rang ; retoucher enlève le rang.
+  var K = 'ma-levure-1911', etat = {};
+  try { etat = JSON.parse(localStorage.getItem(K) || '{}'); } catch (e) {}
+  etat.r = etat.r || {}; etat.note = etat.note || {};
+  var RANGS = [1, 2, 3, 4, 5];
+  var sections = [].slice.call(document.querySelectorAll('section.rang'));
+  function sauver() { try { localStorage.setItem(K, JSON.stringify(etat)); } catch (e) {} }
+  function nom(f) { return f.getAttribute('data-cle').split('|')[1]; }
+  function podium(sec) {
+    var par = {}, out = [];
+    [].forEach.call(sec.querySelectorAll('figure[data-cle]'), function (f) { var n = etat.r[f.getAttribute('data-cle')]; if (n) (par[n] = par[n] || []).push(nom(f)); });
+    RANGS.forEach(function (n) { if (par[n]) out.push(n + ' ' + par[n].join(', ')); });
+    return out;
+  }
+  function rendre() {
+    var total = 0;
+    sections.forEach(function (sec) {
+      [].forEach.call(sec.querySelectorAll('figure[data-cle]'), function (f) {
+        var mon = etat.r[f.getAttribute('data-cle')] || 0; if (mon) total++;
+        f.setAttribute('data-rang', mon || '');
+        [].forEach.call(f.querySelectorAll('.rg'), function (b) { b.setAttribute('aria-pressed', +b.getAttribute('data-n') === mon ? 'true' : 'false'); });
+      });
+      var p = podium(sec);
+      sec.querySelector('.podium').textContent = p.length ? p.join(' · ') : '';
+    });
+    document.getElementById('compte').textContent = total + (total > 1 ? ' rangs donnés' : ' rang donné');
+  }
+  sections.forEach(function (sec) {
+    [].forEach.call(sec.querySelectorAll('figure[data-cle]'), function (f) {
+      var k = f.getAttribute('data-cle'), i = f.querySelector('input'), rgs = f.querySelector('.rgs');
+      RANGS.forEach(function (n) {
+        var b = document.createElement('button');
+        b.type = 'button'; b.className = 'rg'; b.textContent = n; b.setAttribute('data-n', n);
+        b.setAttribute('aria-label', 'Rang ' + n + ' pour ' + nom(f));
+        b.addEventListener('click', function () { if (etat.r[k] === n) delete etat.r[k]; else etat.r[k] = n; sauver(); rendre(); });
+        rgs.appendChild(b);
+      });
+      if (etat.note[k]) i.value = etat.note[k];
+      i.addEventListener('input', function () { etat.note[k] = i.value; sauver(); });
+      f.querySelector('.zoom').addEventListener('click', function () { var l = document.getElementById('loupe'); l.querySelector('img').src = f.querySelector('img').src; l.hidden = false; });
+    });
+  });
+  document.getElementById('loupe').addEventListener('click', function () { this.hidden = true; });
+  document.getElementById('copier').addEventListener('click', function () {
+    var lignes = [];
+    sections.forEach(function (sec) {
+      var titre = sec.getAttribute('data-choix'), p = podium(sec);
+      var notes = [].slice.call(sec.querySelectorAll('figure[data-cle]')).filter(function (f) { return etat.note[f.getAttribute('data-cle')]; })
+        .map(function (f) { return nom(f) + ' : ' + etat.note[f.getAttribute('data-cle')]; });
+      if (p.length || notes.length) lignes.push(titre + ' : ' + (p.join(' · ') || '—') + (notes.length ? ' (' + notes.join(' ; ') + ')' : ''));
+    });
+    var t = 'Ma levure, classement par état (19.11)\n' + (lignes.join('\n') || 'rien de classé');
+    var o = document.getElementById('sortie'); o.value = t; o.hidden = false; o.select();
+    try { navigator.clipboard.writeText(t).catch(function () {}); } catch (e) {}
+  });
+  var racine = document.documentElement;
+  try { var th = localStorage.getItem(K + '-theme'); if (th) racine.setAttribute('data-theme', th); } catch (e) {}
+  document.getElementById('theme').addEventListener('click', function () {
+    var sombre = racine.getAttribute('data-theme') ? racine.getAttribute('data-theme') === 'dark' : matchMedia('(prefers-color-scheme: dark)').matches;
+    var n = sombre ? 'light' : 'dark'; racine.setAttribute('data-theme', n);
+    try { localStorage.setItem(K + '-theme', n); } catch (e) {}
+  });
+  rendre();
+})();
+</script>
+</body>
+</html>
