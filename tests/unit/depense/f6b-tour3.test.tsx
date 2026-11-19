@@ -143,3 +143,17 @@ describe('LR1-7 réserve : un prix que le trio écrit (prix vidé, 2 × ? = 50) 
     expect(l1().querySelector('[data-dp-prix]')!.getAttribute('data-dp-prix-deduit')).toBeNull();
   });
 });
+
+describe('v3-2 : l’en-tête de bande cède la place au montant, jamais l’inverse (doc25, bande Rénovation qui débordait)', () => {
+  it('nom et quantité rétrécissent (min-w-0, tronqués, le texte entier en title) ; le montant ne rétrécit jamais', async () => {
+    const view = await lire();
+    const qte = view.container.querySelector<HTMLElement>('[data-dp-sous-qte]')!;
+    const tete = qte.parentElement!;
+    const nom = tete.querySelector<HTMLElement>('strong')!;
+    expect(nom.className).toMatch(/\bmin-w-0\b/); expect(nom.className).toMatch(/\btruncate\b/);
+    expect(nom.getAttribute('title')).toBe(nom.textContent);
+    expect(qte.className).toMatch(/\bmin-w-0\b/); expect(qte.className).toMatch(/\btruncate\b/);
+    expect(qte.getAttribute('title')).toBe(qte.textContent);
+    expect(tete.querySelector('[data-dp-sous-montant]')!.className).toMatch(/\bshrink-0\b/);
+  });
+});
