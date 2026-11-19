@@ -10,7 +10,7 @@ import { Ligne, type ActionsLigne, type AnnMoment } from './Ligne';
 import { Plateau } from './Plateau';
 import { Reperes } from './Reperes';
 import {
-  FAMILLES, JOUR_PAR_DEFAUT, kgTxt, MASSE_MAX_KG, messageMoment, MOMENT_SUIVANT, momentParDefaut, momentsPermis, pmax, teinte, type Candidat,
+  estEpice, FAMILLES, JOUR_PAR_DEFAUT, kgTxt, MASSE_MAX_KG, messageMoment, messageTeinte, MOMENT_SUIVANT, momentParDefaut, momentsPermis, pmax, teinte, type Candidat,
 } from './modele';
 
 /**
@@ -236,9 +236,9 @@ export const EtapeFermentescibles: React.FC<EtapeFermentesciblesProps> = ({
     ajouterLigne(c.nom, c.article, kg, c.famille);
     if (kg != null) requestAnimationFrame(versAjout);
   };
-  const creer = (nom: string, kg: number | null) => {
-    const cree = onCreateStockItem(nom, defs[famille].newCat, 'kg');
-    ajouterLigne(cree.name, cree, kg);
+  const creer = (nom: string, kg: number | null, fam: FermentableKind = famille) => {
+    const cree = onCreateStockItem(nom, defs[fam].newCat, 'kg');
+    ajouterLigne(cree.name, cree, kg, fam);
     if (kg != null) requestAnimationFrame(versAjout);
   };
 
@@ -345,6 +345,12 @@ export const EtapeFermentescibles: React.FC<EtapeFermentesciblesProps> = ({
         })}
         {sansBase && <p className="fer-alerte" data-hors="base" role="status">{sansBase}</p>}
         {alerteDensite && <p className="fer-alerte">{alerteDensite}</p>}
+        {/* M-4 : une teinte que nulle bière n'atteint est dite, pas seulement posée au bord de l'échelle. Une teinte inconnue (null) ne dit rien. */}
+        {messageTeinte(teinteBiere?.ebc) && <p className="fer-alerte" data-hors="teinte" role="status">{messageTeinte(teinteBiere?.ebc)}</p>}
+        {/* MV-8 : une épice (coriandre, zeste…) n'est pas un fermentescible : « 1 % du grain » ne veut rien dire pour elle. */}
+        {fermentables.map((f, i) => estEpice(f.name) ? (
+          <p key={`epice-${i}`} className="fer-alerte" data-hors="epice" role="status">{f.name} : une épice n’est pas un fermentescible, elle serait comptée comme {f.kind === 'grain' ? 'du grain' : 'du sucre'}. Elle se note en additif, en grammes.</p>
+        ) : null)}
       </div>
       <Plateau f={selF} i={selI} setKg={setKg} setJour={a.setJour} tourner={tourner} retirer={retirer}
         setCouleur={(i, v) => patch(i, { colorEbc: v })} patch={patch} onLearnIngredient={onLearnIngredient} versAjout={versAjout} onRefus={setRefusSaisie} />

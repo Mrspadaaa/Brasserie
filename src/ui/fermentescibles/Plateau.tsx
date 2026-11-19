@@ -4,8 +4,8 @@ import type { LearnIngredient } from '../../domain/ingredientFacts';
 import { ChampLigne } from './ChampLigne';
 import { Fiche } from './Fiche';
 import { CouleurChamp } from './CouleurChamp';
-import { Corbeille, Cube, Moins, Plus16, Croix, Tour } from './icones';
-import { arrondiKg, cran, fr, graduationsPiste, kgTxt, MOMENT_SUIVANT, momentPermis, momentTourne, MOT_MOMENT, pas, pmax, teinte } from './modele';
+import { Corbeille, Cube, Moins, Plus16, Croix, Remettre, Tour } from './icones';
+import { arrondiKg, cran, fr, gesteMoment, graduationsPiste, kgTxt, momentPermis, momentTourne, MOT_MOMENT, pas, pmax, teinte } from './modele';
 
 /**
  * Le plateau (D212 : toujours visible, clair) : le détail de la ligne choisie. Sa couleur, son moment, la corbeille ; la lecture de la
@@ -69,8 +69,8 @@ export const Plateau: React.FC<{
         {momentTourne(f) ? (
           <button type="button" className={`fer-bmo${momentPermis(f) ? '' : ' fer-bmo-hors'}`} data-mom={i} data-m={MOT_MOMENT[f.use]} data-booster="moment-cycle"
             data-hors={momentPermis(f) ? undefined : 'moment'}
-            aria-label={`Moment de ${f.name} : ${MOT_MOMENT[f.use]}${momentPermis(f) ? '' : ', impossible pour cet ingrédient'}. Toucher : ${MOT_MOMENT[MOMENT_SUIVANT(f)]}`}
-            onClick={() => tourner(i)}>{MOT_MOMENT[f.use]}<Tour /></button>
+            aria-label={`Moment de ${f.name} : ${MOT_MOMENT[f.use]}${momentPermis(f) ? '' : ', impossible pour cet ingrédient'}. ${gesteMoment(f)}`}
+            onClick={() => tourner(i)}>{MOT_MOMENT[f.use]}{momentPermis(f) ? <Tour /> : <Remettre />}</button>
         ) : (
           <span className="fer-bmo fer-bmo-fixe" data-mom={i} data-m={MOT_MOMENT[f.use]}>{MOT_MOMENT[f.use]}</span>
         )}

@@ -4,7 +4,7 @@ import { Units } from '../../services/units';
 import { proposerFermentables } from '../../domain/fermentables/proposition';
 import { Bascule, Entree, Etoile, Plus, Sac } from './icones';
 import { Input } from '../Input';
-import { chercher, chercherAilleurs, decouper, kgTxt, lireAjout, memeArticle, nomPossible, qteTxt, teinte, texteSurTeinte, type Candidat } from './modele';
+import { chercher, chercherAilleurs, decouper, familleDevinee, kgTxt, lireAjout, memeArticle, nomPossible, nu, qteTxt, teinte, texteSurTeinte, type Candidat } from './modele';
 import { chargerTypicite } from '../../domain/fermentables/typicite';
 import { refAffichable } from '../../domain/stock/regles';
 
@@ -31,7 +31,7 @@ export interface AjoutProps {
   /** Ajoute (ou retrouve) la ligne de ce candidat ; `kg` est la masse tapée avec le nom (« cara 0,3 »), sinon `null`. */
   onChoisir: (c: Candidat, kg: number | null) => void;
   /** Crée l'article à stock zéro puis sa ligne (`onCreateStockItem` de l'app). */
-  onCreer: (nom: string, kg: number | null) => void;
+  onCreer: (nom: string, kg: number | null, famille?: FermentableKind) => void;
 }
 
 const QUAND: Record<FermentableUse, string> = { empatage: 'à l’empâtage', ebullition: 'à l’ébullition', fermentation: 'en fermentation, J+3' };
@@ -119,9 +119,15 @@ export const Ajout: React.FC<AjoutProps> = ({ famille, familles, defs, onFamille
 
   // Une masse entière sans « kg » seulement derrière un nom déjà là (en tête de nom) : « Crystal 60 » reste un nom (critique B1 n° 2).
   // Hors du grain (sucre, sucre de lait, fruit, extrait), un petit entier est une masse même derrière un nom neuf (« sirop candi 1 », RO-2 ; « Mangue 20 », MV-10).
-  const s = lireAjout(valeur, (nom) => chercher(nom, articles, lignes).some((c) => c.rang <= 1), famille !== 'grain',
-    // RO-2 : hors du grain, seul un nom EXACT de la liste garde le petit entier dans le nom ; « sirop candi 1 » (début d'un nom plus long) donne 1 kg, comme « Mangue 20 ».
-    (nom) => chercher(nom, articles, lignes).some((c) => c.rang === 0));
+  const connu = (nom: string) => chercher(nom, articles, lignes).some((c) => c.rang <= 1);
+  // RO-2 : hors du grain, seul un nom EXACT de la liste garde le petit entier dans le nom ; « sirop candi 1 » (début d'un nom plus long) donne 1 kg, comme « Mangue 20 ».
+  const exact = (nom: string) => chercher(nom, articles, lignes).some((c) => c.rang === 0);
+  // MV-7, MV-9 : « Miel » ou « Mangue 20 » tapés dans Grain (la famille par défaut) créent un sucre ou un fruit, et la règle de masse du sucre s'applique alors.
+  // Une famille choisie à la bascule n'est jamais changée par le nom.
+  const sGrain = lireAjout(valeur, connu, famille !== 'grain', exact);
+  const famCreee = familleDevinee(sGrain.nom, famille);
+  const s = famCreee !== famille ? lireAjout(valeur, connu, true, exact) : sGrain;
+  const defCreee = defs[famCreee];
   const t = s.nom;
   const on = ouvert || !!t;
   // Les autres rayons comptent : « dext » en Grain propose Dextrose (rayon Sucre), qui s'ajoute dans sa famille. Les noms de la famille du champ restent devant
@@ -130,7 +136,15 @@ export const Ajout: React.FC<AjoutProps> = ({ famille, familles, defs, onFamille
     if (!t) return [];
     const propres = chercher(t, articles, lignes);
     const ailleurs = chercherAilleurs(t, famille, familles, defs, stockItems, fermentables);
-    return [...propres.filter((c) => c.rang <= 3), ...ailleurs, ...propres.filter((c) => c.rang > 3)];
+    // BR-11 : « dext » trouvait Carapils (un surnom : malt dextrine) devant Dextrose, dont le nom COMMENCE par « dext » : Entrée ajoutait le malt. Un surnom seul
+    // (le texte n'est dans aucun mot du nom) passe derrière un autre rayon dont le nom commence par le texte ; tout le reste de l'ordre est inchangé.
+    const nt = nu(t.trim());
+    const surnom = (c: Candidat) => c.rang === 0 && !nu(c.nom).includes(nt);
+    const proches = ailleurs.filter((c) => c.rang <= 1);
+    return [
+      ...propres.filter((c) => c.rang <= 3 && !surnom(c)), ...proches, ...propres.filter((c) => c.rang <= 3 && surnom(c)),
+      ...ailleurs.filter((c) => c.rang > 1), ...propres.filter((c) => c.rang > 3),
+    ];
   }, [t, articles, lignes, famille, familles, defs, stockItems, fermentables]);
   const affiches = t ? trouves.slice(0, 6) : [];
   const propositions = useMemo(
@@ -180,7 +194,7 @@ export const Ajout: React.FC<AjoutProps> = ({ famille, familles, defs, onFamille
   const entree = () => {
     if (t.length >= 2) {
       if (trouves.length) choisir(trouves[Math.min(cible, trouves.length - 1)], s.kg);
-      else if (nomPossible(t)) { reinit(); onCreer(t, s.kg); }
+      else if (nomPossible(t)) { reinit(); onCreer(t, s.kg, famCreee); }
     } else if (flechee && liste[iCible]) choisir(liste[iCible], null);
   };
 
@@ -269,9 +283,9 @@ export const Ajout: React.FC<AjoutProps> = ({ famille, familles, defs, onFamille
           );
         })}
         {on && creer && (
-          <button type="button" role="option" aria-selected className="fer-tu fer-large fer-cree fer-prem" data-role="creer" data-cree="1" onClick={() => { const now = Date.now(); if (now - dernierClic.current < 400) return; dernierClic.current = now; reinit(); onCreer(t, s.kg); }}>
+          <button type="button" role="option" aria-selected className="fer-tu fer-large fer-cree fer-prem" data-role="creer" data-cree="1" onClick={() => { const now = Date.now(); if (now - dernierClic.current < 400) return; dernierClic.current = now; reinit(); onCreer(t, s.kg, famCreee); }}>
             <span className="fer-l1"><Plus /><span className="fer-nm2">Créer « {t} » (stock à zéro)</span></span>
-            <span className="fer-l2">{def.label.toLowerCase()} : {QUAND[def.use]}</span><i className="fer-ent" aria-hidden="true"><Entree /></i>
+            <span className="fer-l2">{defCreee.label.toLowerCase()} : {QUAND[defCreee.use]}</span><i className="fer-ent" aria-hidden="true"><Entree /></i>
           </button>
         )}
         {on && !t && prete && !liste.length && <p className="fer-rien">Rien en stock pour {def.label.toLowerCase()}</p>}

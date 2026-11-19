@@ -18,6 +18,11 @@ export const MOT_MOMENT: Record<FermentableUse, string> = { empatage: 'empâtage
  */
 export const MOMENT_SUIVANT = (f: Pick<Fermentable, 'kind' | 'use'>): FermentableUse => momentSuivant(f);
 export { grainEmpate, grainHorsEmpatage, momentPermis, momentTourne, messageMoment, momentParDefaut, momentsPermis };
+/** Le moment avec son article, pour une phrase : « Remettre à l’empâtage ». */
+export const MOMENT_AVEC_ARTICLE: Record<FermentableUse, string> = { empatage: 'l’empâtage', ebullition: 'l’ébullition', fermentation: 'la fermentation' };
+/** PI-1 : ce que dit la pastille d'un moment IMPOSSIBLE (donnée ancienne) : un seul geste, revenir au moment permis, pas un cycle. */
+export const gesteMoment = (f: Pick<Fermentable, 'kind' | 'use'>): string =>
+  momentPermis(f) ? `Toucher : ${MOT_MOMENT[MOMENT_SUIVANT(f)]}` : `Remettre à ${MOMENT_AVEC_ARTICLE[MOMENT_SUIVANT(f)]}`;
 export const JOUR_PAR_DEFAUT = 3;
 
 export const FAMILLES: readonly FermentableKind[] = ['grain', 'sucre', 'fruit'];
@@ -250,6 +255,35 @@ export function lireAjout(v: string, connu?: (nom: string) => boolean, sucre = f
   const masse = Boolean(m[3]) || /[.,]/.test(m[2]) || (sucre && petitEntier && !((exact ?? connu)?.(s) ?? false)) || (connu !== undefined && connu(m[1].trim()) && !connu(s));
   return masse ? { nom: m[1].trim(), kg: lit(m[2]) } : { nom: s, kg: null };
 }
+
+// ---------------------------------------------------------------------------------------------------------------- famille et plausibilité (voie a1, 19.11)
+/** M-4 : 40 SRM (« 40+ » de l'échelle BJCP 2021, Russian Imperial Stout 30–40+) × 1,97 = 78,8 EBC. Au-delà, aucune bière n'a jamais été classée : une saisie à vérifier. */
+export const EBC_NOIR_MAX = 79;
+export function messageTeinte(ebc: number | null | undefined): string | null {
+  if (typeof ebc !== 'number' || !Number.isFinite(ebc) || ebc <= EBC_NOIR_MAX) return null;
+  return `Teinte ${fr(ebc, 1)} EBC : plus noire que les stouts les plus foncées (40 SRM ≈ ${EBC_NOIR_MAX} EBC, BJCP 2021). Vérifier les masses de malts colorés.`;
+}
+
+// MV-7, MV-9 : un nom neuf tapé dans la famille par défaut (Grain) qui dit sans ambiguïté un sucre ou un fruit va dans sa famille. Les mots sont lus sans accents.
+// Jamais appliqué à une famille que le brasseur a choisie à la bascule, et jamais à un nom de malt (« Honey Malt » est un malt).
+const MOTS_MALT = /malt|malz|flock|flake|farine|cereal|orge|ble\b|avoine|seigle/;
+const MOTS_LACTOSE = /\blactose\b/;
+const MOTS_SUCRE = /\b(miel|honey|sucre|sugar|sirop|syrup|candi|cassonade|melasse|molasses|dextrose|glucose|saccharose|erable|maple|agave|muscovado|jaggery|rapadura)\b/;
+const MOTS_FRUIT = /\b(fruits?|puree|mangues?|mango|fraises?|framboises?|cerises?|cassis|myrtilles?|abricots?|peches?|pommes?|poires?|prunes?|bananes?|ananas|maracuja|raisins?|dattes?|figues?|groseilles?|rhubarbe|coing|kiwi|litchi|goyave|mures?)\b/;
+/** La famille d'une ligne neuve : celle du champ, sauf si le champ est en Grain et que le nom est d'un sucre, du lactose ou d'un fruit. */
+export function familleDevinee(nom: string, courante: FermentableKind): FermentableKind {
+  if (courante !== 'grain') return courante;
+  const n = nu(nom);
+  if (MOTS_MALT.test(n)) return courante;
+  if (MOTS_LACTOSE.test(n)) return 'lactose';
+  if (MOTS_SUCRE.test(n)) return 'sucre';
+  if (MOTS_FRUIT.test(n)) return 'fruit';
+  return courante;
+}
+
+// MV-8 : une épice n'est pas un fermentescible. Aucune famille ne l'accueille ici : l'écran le dit, la ligne reste au brasseur (rien n'est refusé).
+const MOTS_EPICE = /\b(coriandre|coriander|zestes?|peel|cannelle|cinnamon|vanille|vanilla|gingembre|ginger|poivre|pepper|cardamome|cardamom|clous?|clove|anis|badiane|muscade|nutmeg|camomille|hibiscus|lavande|sel|salt)\b/;
+export const estEpice = (nom: string) => MOTS_EPICE.test(nu(nom));
 
 /** Un nom d'ingrédient a au moins une lettre : « 0,2 » ou « 60 » seuls ne créent rien (critique B1 n° 3, 07.11). */
 export const nomPossible = (t: string) => /\p{L}/u.test(t);

@@ -2,9 +2,9 @@ import React, { useRef, useState } from 'react';
 import type { Fermentable, FermentableKind } from '../../types';
 import { ChampLigne } from './ChampLigne';
 import { CouleurChamp } from './CouleurChamp';
-import { Croix, Cube, Tour } from './icones';
+import { Croix, Cube, Remettre, Tour } from './icones';
 import {
-  arrondiKg, autresKg, cran, cranPas, grainEmpate, grainHorsEmpatage, grainKg, kgPourPart, kgTxt, MOMENT_SUIVANT, momentPermis, momentTourne, MOT_MOMENT, nu,
+  arrondiKg, autresKg, cran, cranPas, gesteMoment, grainEmpate, grainHorsEmpatage, grainKg, kgPourPart, kgTxt, momentPermis, momentTourne, MOT_MOMENT, nu,
   pas, partN, teinte, voile,
 } from './modele';
 import { nombreFr } from '../../domain/nombreAffiche';
@@ -77,7 +77,6 @@ export const Ligne: React.FC<LigneProps> = ({ f, i, fermentables, selectionnee, 
   const largeur = part ? (total ? (f.weightKg / total) * 100 : 0) : Math.min(100, (f.weightKg / echelle) * 100);
   const maxCur = part ? kgPourPart(fermentables, i, 95) ?? f.weightKg : echelle;
   const fond = grain && f.colorEbc != null ? { ['--fond' as string]: voile(f.colorEbc) } : undefined;
-  const suivant = MOMENT_SUIVANT(f);
   // Table famille × moment (AM 1 et 2, 08.11) : un grain n'a qu'un moment et jamais de J+ ; mal placé (donnée ancienne), il le dit et un toucher le remet.
   const hors = !momentPermis(f);
   const tourne = momentTourne(f);
@@ -108,9 +107,9 @@ export const Ligne: React.FC<LigneProps> = ({ f, i, fermentables, selectionnee, 
   ) : (
     <button type="button" className={`fer-mo${hors ? ' fer-mo-hors' : ''}`} data-role="moment-ligne" data-ml={i} data-m={ferm ? undefined : MOT_MOMENT[f.use]}
       data-hors={hors ? 'moment' : undefined} data-booster="moment-tourne"
-      aria-label={`Moment de ${f.name} : ${MOT_MOMENT[f.use]}${hors ? ', impossible pour cet ingrédient' : ''}. Toucher : ${MOT_MOMENT[suivant]}`}
+      aria-label={`Moment de ${f.name} : ${MOT_MOMENT[f.use]}${hors ? ', impossible pour cet ingrédient' : ''}. ${gesteMoment(f)}`}
       onClick={() => a.tourner(i)}>
-      {ferm ? 'J+' : <>{MOT_MOMENT[f.use]}<Tour /></>}
+      {ferm ? 'J+' : <>{MOT_MOMENT[f.use]}{hors ? <Remettre /> : <Tour />}</>}
     </button>
   );
 
