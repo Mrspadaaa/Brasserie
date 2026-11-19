@@ -185,6 +185,7 @@ Lire :
 | work/missions/2026-11-18-choix-calendrier/en-ligne-lot-bc/RAPPORT.md | PC | 5 | 6 | 127522c2789a |
 | work/missions/2026-11-18-choix-calendrier/en-ligne-paquet-d/RAPPORT.md | PC | 1 | 3 | a815f0e44047 |
 | work/missions/2026-11-18-choix-calendrier/en-ligne-paquet-e/RAPPORT.md | PC | 1 | 4 | 41340b8b917c |
+| work/missions/2026-11-17-port-carnet/en-ligne-4/RAPPORT.md | PC | 0 | 0 | en cours |
 | work/missions/2026-11-18-choix-calendrier/en-ligne-mois/RAPPORT.md | PC | 5 | 0 | 96e0a88f963f |
 | work/missions/2026-11-18-choix-calendrier/en-ligne-paquet-f/RAPPORT.md | PC | 2 | 3 | 8d4efca5a715 |
 | work/missions/2026-11-17-port-carnet/vision-4/RAPPORT-d1280.md | PCN | 0 | 0 | b9b896566b01 |
