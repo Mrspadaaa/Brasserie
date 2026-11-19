@@ -648,7 +648,9 @@ export function runBrewerTool(
           rig,
           recipe.mash?.spargeType ?? 'batch',
           recipe.boilMin,
-          recipe.hops.filter((h) => h.stage !== 'dryHop').reduce((sum, h) => sum + h.weightG, 0)
+          recipe.hops.filter((h) => h.stage !== 'dryHop').reduce((sum, h) => sum + h.weightG, 0),
+          // T2-8 : l'eau ajoutée pendant ou après l'ébullition, si le brasseur l'a choisie, se lit comme dans l'assistant.
+          recipe.installation?.kettleTopUp ? { topUpToKettle: true } : undefined
         )
       : null;
     const preBoilL =

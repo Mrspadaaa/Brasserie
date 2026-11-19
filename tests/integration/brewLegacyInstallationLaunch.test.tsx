@@ -60,9 +60,11 @@ describe('nouveau lancement depuis une recette sans capacités figées', () => {
     const close = vi.fn();
     render(<QuickActionModal isOpen initialScreen="brew-batch" recipes={[recipe]} onClose={close} />);
     fireEvent.click(screen.getByRole('button', { name: /^Brasser$/ }));
+    // T2B-1 (19.11) : plus de message rouge au clic. « Planifier » est désactivé, la phrase et le geste direct sont sur la feuille.
+    expect(screen.getByRole('button', { name: /^Planifier/ })).toBeDisabled();
     fireEvent.click(screen.getByRole('button', { name: /^Planifier/ }));
-    expect(screen.getByRole('alert')).toHaveTextContent('Modifier la recette');
-    expect(screen.getByRole('alert')).toHaveTextContent('Adapter à mon matériel actuel');
+    expect(screen.getByRole('status', { name: 'Volume et matériel actuel' })).toHaveTextContent('Recette à adapter');
+    expect(screen.getByRole('button', { name: /Adapter à mon matériel actuel/ })).toBeVisible();
     expect(StorageService.addBatch).not.toHaveBeenCalled();
     expect(FirestoreRepo.waitForDocument).not.toHaveBeenCalled();
     expect(created).toEqual([]);

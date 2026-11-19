@@ -56,6 +56,7 @@ import { nombreFr } from '../domain/nombreAffiche';
 import { avertissementMaterielActuel } from '../domain/materielActuel';
 import { BrewLaunchAdoption } from '../ui/BrewLaunchPanel';
 import { recetteAdaptee } from '../domain/brewLaunch';
+import { adaptRecipeEquipment } from '../domain/adaptRecipeEquipment';
 
 interface QuickActionModalProps {
   isOpen: boolean;
@@ -190,9 +191,12 @@ export const QuickActionModal: React.FC<QuickActionModalProps> = ({
   const pendingBatch = useRef<Batch | undefined>(undefined);
   /** Le jour du brassin déjà écrit dont la confirmation n'est pas reçue : la feuille le fige (pendingBatch est une ref, elle ne redessine pas). */
   const [jourAttente, setJourAttente] = useState<string | undefined>(undefined);
+  /** T2B-1 : la recette adaptée au matériel actuel POUR CE BRASSIN (« Adapter à mon matériel actuel » sur la feuille). La recette enregistrée ne change pas. */
+  const [adoptee, setAdoptee] = useState<{ recette: Recipe; profilId: string } | undefined>(undefined);
   useEffect(() => {
     if (!isOpen) return;
     const selected = recipes.find(recipe => recipe.id === initialRecipeId) ?? recipes[0];
+    setAdoptee(undefined);
     setSelectedRecipeId(selected?.id ?? '');
     setBatchVolumeL(selected?.volumeL ?? 30);
     setBrewhouseId(undefined);
@@ -566,7 +570,8 @@ export const QuickActionModal: React.FC<QuickActionModalProps> = ({
   /** d1b : `jour` est le jour choisi sur la feuille (« 21.11.2026 »). */
   const handleLaunchBrew = async (jour: string) => {
     if (brewBusy.current) return;
-    const selected = recipes.find((r) => r.id === selectedRecipeId);
+    const choisieBrute = recipes.find((r) => r.id === selectedRecipeId);
+    const selected = choisieBrute && adoptee && adoptee.recette.id === choisieBrute.id ? adoptee.recette : choisieBrute;
     if (!selected || !(batchVolumeL > 0)) return;
     const plannedDate = jour;
     if (!normalizeBrewDate(plannedDate)) {
@@ -618,14 +623,26 @@ export const QuickActionModal: React.FC<QuickActionModalProps> = ({
   if(expenseMode) return <ExpenseSheet onClose={resetAndClose} onSaved={()=>onSuccessMessage?.('Achat enregistré.')} startWithScan={expenseMode==='scan'} apercu={apercuDepense ?? undefined} onOpenExpense={onOpenExpense}/>;
 
   /* Nouveau brassin : dit AVANT le geste ce qui empêcherait de lancer (recette sans le matériel de la brasserie choisie), et lit ce qui manque à ce volume. */
-  const recetteLancement = screen === 'brew-batch' ? recipes.find((r) => r.id === selectedRecipeId) : undefined;
   const profilLancement = brasserieChoisie ?? brasserieActive;
+  const recetteBrute = screen === 'brew-batch' ? recipes.find((r) => r.id === selectedRecipeId) : undefined;
+  const adopteePourCeBrassin = !!(recetteBrute && adoptee && adoptee.recette.id === recetteBrute.id && adoptee.profilId === profilLancement?.id);
+  const recetteLancement = adopteePourCeBrassin ? adoptee!.recette : recetteBrute;
   const adoptionTexte = recetteLancement && profilLancement ? recipeInstallationAdoptionIssue(recetteLancement, profilLancement) : undefined;
   const adoption = adoptionTexte && profilLancement
     ? (profilLancement.equipment
       ? { texte: `Recette à adapter à ${profilLancement.name} avant de lancer`, modifiable: true }
       : { texte: `Matériel de ${profilLancement.name} à renseigner, puis recette à adapter, avant de lancer`, modifiable: false })
     : undefined;
+  /** T2B-1 : le geste direct. Adapte pour ce brassin (volume choisi conservé) ; si le volume ne tient pas, le moteur le dit et rien n'est adapté. */
+  const adapterPourCeBrassin = () => {
+    if (!recetteBrute || !profilLancement?.equipment) return;
+    try {
+      setAdoptee({ recette: adaptRecipeEquipment(recetteBrute, profilLancement, batchVolumeL), profilId: profilLancement.id });
+      setBrewError('');
+    } catch (error) {
+      setBrewError(error instanceof Error ? error.message : 'La recette ne peut pas être adaptée à ce matériel.');
+    }
+  };
 
   return (
     <>
@@ -1243,15 +1260,15 @@ export const QuickActionModal: React.FC<QuickActionModalProps> = ({
               onBrasser={(id) => {
                 const trouvee = recipes.find((r) => r.id === id);
                 setSelectedRecipeId(id); if (trouvee) setBatchVolumeL(trouvee.volumeL);
-                setBrewError(''); pendingBatch.current = undefined; setJourAttente(undefined); setRecettePosee(true);
+                setBrewError(''); setAdoptee(undefined); pendingBatch.current = undefined; setJourAttente(undefined); setRecettePosee(true);
               }}
               onOuvrirBrassin={(b) => { onClose(); onOpenBatch?.(b); }}
               onNouvelleRecette={() => { if (onOpenCreateBatch) { onClose(); onOpenCreateBatch(); } }} />
           )}
           {screen === 'brew-batch' && !!recipes.length && recettePosee && recetteChoisie && (
             <FeuilleBrasser key={recetteChoisie.id} recipe={recetteChoisie} batches={lots} stock={articles} capaciteL={capaciteCuveL} volumeL={batchVolumeL}
-              erreur={brewError} enCours={brewSaving} jourFige={jourAttente}
-              avertissement={(materielActuel || adoption) && (
+              erreur={brewError} enCours={brewSaving} jourFige={jourAttente} planifierBloque={!!adoption}
+              avertissement={(materielActuel || adoption || adopteePourCeBrassin) && (
                 <div role="status" aria-label="Volume et matériel actuel" className="space-y-1 border-l-2 border-ebc-straw pl-2 text-footnote font-normal text-cave-200">
                   {adoption && (
                     <BrewLaunchAdoption texte={adoption.texte} onModifier={adoption.modifiable ? () => {
@@ -1260,11 +1277,21 @@ export const QuickActionModal: React.FC<QuickActionModalProps> = ({
                       if (pris) onClose(); else setBrewError('Ouvre la fiche de la recette, puis « Modifier la recette » et « Adapter à mon matériel actuel ».');
                     } : undefined} />
                   )}
+                  {/* T2B-1 : le geste direct, sans quitter la feuille ; il adapte ce brassin, la recette enregistrée ne change pas. */}
+                  {adoption?.modifiable && profilLancement && (
+                    <button type="button" disabled={brewSaving} onClick={adapterPourCeBrassin}
+                      className="min-h-[44px] w-full rounded-control border border-cave-600 px-2 text-2xs font-semibold text-cave-50 disabled:opacity-50">
+                      Adapter à mon matériel actuel · {profilLancement.name}
+                    </button>
+                  )}
+                  {adopteePourCeBrassin && profilLancement && (
+                    <p>Matériel de {profilLancement.name} pris pour ce brassin · la recette enregistrée ne change pas.</p>
+                  )}
                   {materielActuel && <p>{materielActuel.message}</p>}
                   {materielActuel?.adaptationL != null && <button type="button" className="min-h-touch rounded-control border border-cave-600 px-2 text-2xs text-cave-50" onClick={() => { setBatchVolumeL(materielActuel.adaptationL!); setBrewError(''); }}>Adapter à {nombreFr(materielActuel.adaptationL, 1)} L</button>}
                 </div>
               )}
-              onAnnuler={() => { if (initialRecipeId) resetAndClose(); else { setRecettePosee(false); setBrewError(''); } }}
+              onAnnuler={() => { if (initialRecipeId) resetAndClose(); else { setRecettePosee(false); setBrewError(''); setAdoptee(undefined); } }}
               onPlanifier={(jour) => void handleLaunchBrew(jour)} />
           )}
         </div>

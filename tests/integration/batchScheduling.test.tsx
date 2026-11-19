@@ -51,8 +51,10 @@ describe('prepare and schedule a reusable recipe', () => {
     // c2a : la liste des recettes d’abord, « Brasser » ouvre la feuille d1b.
     fireEvent.click(screen.getByRole('button', { name: /^Brasser$/ }));
     choisir('dimanche 20 septembre');
+    // T2B-1 (19.11) : « Planifier » est désactivé (plus de message rouge au clic) ; « Adapter à mon matériel actuel » est sur la feuille.
+    expect(planifier('dim. 20.09')).toBeDisabled();
     fireEvent.click(planifier('dim. 20.09'));
-    expect(screen.getByRole('alert')).toHaveTextContent('Adapter à mon matériel actuel');
+    expect(screen.getByRole('button', { name: /Adapter à mon matériel actuel/ })).toBeVisible();
     expect(StorageService.addBatch).not.toHaveBeenCalled();
     expect(FirestoreRepo.waitForDocument).not.toHaveBeenCalled();
     expect(onCreated).not.toHaveBeenCalled();

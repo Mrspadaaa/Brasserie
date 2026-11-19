@@ -63,8 +63,11 @@ describe('contrôle App avant le nouveau lancement d’une ancienne recette', ()
     render(<App />);
     fireEvent.click(await screen.findByRole('button', { name: 'Lancer depuis la recette' }));
     // d1b : la recette ouvre la feuille « Brasser » ; « Planifier » est le geste qui crée.
-    fireEvent.click(await screen.findByRole('button', { name: /^Planifier/ }));
-    expect(await screen.findByRole('alert')).toHaveTextContent('Adapter à mon matériel actuel');
+    // T2B-1 (19.11) : « Planifier » est désactivé tant que la recette n'est pas adaptée ; le geste « Adapter à mon matériel actuel » est sur la feuille.
+    const planifier = await screen.findByRole('button', { name: /^Planifier/ }, { timeout: 15000 }); // la feuille est chargée à la demande (lazy)
+    expect(planifier).toBeDisabled();
+    fireEvent.click(planifier);
+    expect(await screen.findByRole('button', { name: /Adapter à mon matériel actuel/ })).toBeVisible();
     expect(saveRecipeConfirmed).not.toHaveBeenCalled();
     expect(StorageService.addBatch).not.toHaveBeenCalled();
     expect(StorageService.updateBatch).not.toHaveBeenCalled();

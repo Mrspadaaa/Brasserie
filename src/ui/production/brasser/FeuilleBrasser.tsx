@@ -35,6 +35,8 @@ interface Props {
   avertissement?: React.ReactNode;
   erreur?: string;
   enCours?: boolean;
+  /** T2B-1 : le brassin ne peut pas encore se planifier (recette sans le matériel actuel). Le bouton est désactivé ; l'avertissement dit quoi faire et propose le geste. */
+  planifierBloque?: boolean;
   /** Le brassin est déjà écrit à ce jour (« 21.11.2026 ») mais sa confirmation n'est pas reçue : le jour est figé, « Confirmer l'enregistrement » rejoue la confirmation. */
   jourFige?: string;
   maintenant?: number;
@@ -59,7 +61,7 @@ export function joursDepuis(n: number): string {
   return n === 0 ? "aujourd'hui" : `${n} jour${Math.abs(n) > 1 ? 's' : ''} depuis aujourd'hui`;
 }
 
-export function FeuilleBrasser({ recipe, batches, stock, capaciteL, volumeL: volumeAdapte, avertissement, erreur, enCours = false, jourFige, maintenant, onAnnuler, onPlanifier }: Props) {
+export function FeuilleBrasser({ recipe, batches, stock, capaciteL, volumeL: volumeAdapte, avertissement, erreur, enCours = false, planifierBloque = false, jourFige, maintenant, onAnnuler, onPlanifier }: Props) {
   const aujourdhui = debutDeJour(maintenant ?? Date.now());
   const volumeL = volumeAdapte ?? recipe.volumeL;
   const ctx: Contexte = useMemo(() => ({ occ: occupations(batches), evts: evenements(batches), capaciteL, volumeL, aujourdhui }), [batches, capaciteL, volumeL, aujourdhui]);
@@ -167,7 +169,7 @@ export function FeuilleBrasser({ recipe, batches, stock, capaciteL, volumeL: vol
 
       <div className="d1b-pied">
         <button type="button" className="d1b-btn" disabled={enCours} onClick={onAnnuler}>Annuler</button>
-        <button type="button" className={`d1b-btn ${raison.conflit ? '' : 'd1b-primaire'}`} disabled={enCours} onClick={() => onPlanifier(dateSuisse(choisi))}>
+        <button type="button" className={`d1b-btn ${raison.conflit ? '' : 'd1b-primaire'}`} disabled={enCours || (planifierBloque && figeLe === undefined)} onClick={() => onPlanifier(dateSuisse(choisi))}>
           {enCours ? 'Enregistrement…' : figeLe !== undefined ? "Confirmer l'enregistrement" : raison.conflit ? 'Planifier quand même' : `Planifier ${jourBouton(choisi)}`}
         </button>
       </div>
