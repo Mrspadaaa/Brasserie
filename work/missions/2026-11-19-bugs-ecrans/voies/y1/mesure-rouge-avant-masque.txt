@@ -1,0 +1,109 @@
+Serveur 1/1 : npm run dev -- --port 3109 --strictPort  (journal : C:\Users\mrspa\AppData\Local\Temp\with-server-aBumYC\serveur-1-3109.log)
+Attente du port 3109…
+Serveur prêt sur le port 3109
+
+Tous les serveurs sont prêts. Lancement : sh -c node work/missions/2026-11-19-bugs-ecrans/voies/y1/banc/mesurer-fiche.mjs avant-masque-fiche; node work/missions/2026-11-19-bugs-ecrans/voies/y1/banc/mesurer-wizard.mjs avant-masque-wizard
+
+390x660 clair hauteur défilable 288
+390x660 cave hauteur défilable 288
+844x340 clair hauteur défilable 536
+844x340 cave hauteur défilable 536
+1280 clair hauteur défilable 76
+1280 cave hauteur défilable 76
+
+AUCUN RECOUVREMENT
+390x660 clair étape 1 « Levure 4/7 » : le + recouvre commande « Comparer les souches pour ce profil » en défilant
+390x660 clair étape 1 « Levure 4/7 » : le + recouvre texte « Style non reconnu : choisis une famille  » en défilant
+390x660 clair étape 1 « Levure 4/7 » : le + recouvre texte « 4 °C » en défilant
+390x660 clair étape 1 « Levure 4/7 » : le + recouvre texte « · » en défilant
+390x660 clair étape 1 « Levure 4/7 » : le + recouvre texte « 5 j » en défilant
+390x660 clair étape 1 « Levure 4/7 » : le + recouvre commande « Palier 2 · Maturation4 °C · 5 jJ début 1 » en défilant
+390x660 clair étape 1 « Levure 4/7 » : le + recouvre texte « 19 °C » en défilant
+390x660 clair étape 1 « Levure 4/7 » : le + recouvre texte « 10 j » en défilant
+390x660 clair étape 1 « Levure 4/7 » : le + recouvre commande « Palier 1 · Fermentation primaire19 °C ·  » en défilant
+390x660 clair étape 1 « Levure 4/7 » : le + recouvre texte « 15 j indicatifs » en défilant
+390x660 clair étape 1 « Levure 4/7 » : le + recouvre texte « Rétablir ce palier » en défilant
+390x660 clair étape 1 « Levure 4/7 » : le + recouvre texte « Jours de début suivants vs brouillon · M » en défilant
+390x660 clair étape 1 « Levure 4/7 » : le + recouvre commande « Rétablir ce palier » en défilant
+390x660 clair étape 1 « Levure 4/7 » : le + recouvre texte « Après » en défilant
+390x660 clair étape 1 « Levure 4/7 » : le + recouvre commande « Ajouter un palier après le palier 1 » en défilant
+390x660 clair étape 1 « Levure 4/7 » : le + recouvre texte « j » en défilant
+390x660 clair étape 1 « Levure 4/7 » : le + recouvre commande « Durée du palier 1 · Fermentation primair » en défilant
+390x660 clair étape 1 « Levure 4/7 » : le + recouvre texte « J début 0 · J fin 10 » en défilant
+390x660 clair étape 3 « Eau et sels 6/7 » : le + recouvre commande « Retour à la fiche de brassage » en défilant
+390x660 clair étape 3 « Eau et sels 6/7 » : le + recouvre commande « Profil et pesée des sels » en défilant
+390x660 clair étape 3 « Eau et sels 6/7 » : le + recouvre texte « rien à corriger » en défilant
+390x660 clair étape 3 « Eau et sels 6/7 » : le + recouvre texte « Le pH d’empâtage ne se prédit pas d’ici  » en défilant
+390x660 clair étape 3 « Eau et sels 6/7 » : le + recouvre texte « bière de couleur inconnue » en défilant
+390x660 clair étape 3 « Eau et sels 6/7 » : le + recouvre texte « 68 » en défilant
+390x660 clair étape 3 « Eau et sels 6/7 » : le + recouvre commande « Rinçage » en défilant
+390x660 clair étape 3 « Eau et sels 6/7 » : le + recouvre commande « Sels et acides suivent la recette » en défilant
+390x660 clair étape 4 « Récapitulatif 7/7 » : le + recouvre commande « À peser : revoir l’eau » en défilant
+390x660 clair étape 4 « Récapitulatif 7/7 » : le + recouvre texte « 50–120 » en défilant
+390x660 cave étape 1 « Levure 4/7 » : le + recouvre commande « Comparer les souches pour ce profil » en défilant
+390x660 cave étape 1 « Levure 4/7 » : le + recouvre texte « Style non reconnu : choisis une famille  » en défilant
+390x660 cave étape 1 « Levure 4/7 » : le + recouvre texte « 4 °C » en défilant
+390x660 cave étape 1 « Levure 4/7 » : le + recouvre texte « · » en défilant
+390x660 cave étape 1 « Levure 4/7 » : le + recouvre texte « 5 j » en défilant
+390x660 cave étape 1 « Levure 4/7 » : le + recouvre commande « Palier 2 · Maturation4 °C · 5 jJ début 1 » en défilant
+390x660 cave étape 1 « Levure 4/7 » : le + recouvre texte « 19 °C » en défilant
+390x660 cave étape 1 « Levure 4/7 » : le + recouvre texte « 10 j » en défilant
+390x660 cave étape 1 « Levure 4/7 » : le + recouvre commande « Palier 1 · Fermentation primaire19 °C ·  » en défilant
+390x660 cave étape 1 « Levure 4/7 » : le + recouvre texte « 15 j indicatifs » en défilant
+390x660 cave étape 1 « Levure 4/7 » : le + recouvre texte « Rétablir ce palier » en défilant
+390x660 cave étape 1 « Levure 4/7 » : le + recouvre texte « Jours de début suivants vs brouillon · M » en défilant
+390x660 cave étape 1 « Levure 4/7 » : le + recouvre commande « Rétablir ce palier » en défilant
+390x660 cave étape 1 « Levure 4/7 » : le + recouvre texte « Après » en défilant
+390x660 cave étape 1 « Levure 4/7 » : le + recouvre commande « Ajouter un palier après le palier 1 » en défilant
+390x660 cave étape 1 « Levure 4/7 » : le + recouvre texte « j » en défilant
+390x660 cave étape 1 « Levure 4/7 » : le + recouvre commande « Durée du palier 1 · Fermentation primair » en défilant
+390x660 cave étape 1 « Levure 4/7 » : le + recouvre texte « J début 0 · J fin 10 » en défilant
+390x660 cave étape 3 « Eau et sels 6/7 » : le + recouvre commande « Retour à la fiche de brassage » en défilant
+390x660 cave étape 3 « Eau et sels 6/7 » : le + recouvre commande « Profil et pesée des sels » en défilant
+390x660 cave étape 3 « Eau et sels 6/7 » : le + recouvre texte « rien à corriger » en défilant
+390x660 cave étape 3 « Eau et sels 6/7 » : le + recouvre texte « Le pH d’empâtage ne se prédit pas d’ici  » en défilant
+390x660 cave étape 3 « Eau et sels 6/7 » : le + recouvre texte « bière de couleur inconnue » en défilant
+390x660 cave étape 3 « Eau et sels 6/7 » : le + recouvre texte « 68 » en défilant
+390x660 cave étape 3 « Eau et sels 6/7 » : le + recouvre commande « Rinçage » en défilant
+390x660 cave étape 3 « Eau et sels 6/7 » : le + recouvre commande « Sels et acides suivent la recette » en défilant
+390x660 cave étape 4 « Récapitulatif 7/7 » : le + recouvre commande « À peser : revoir l’eau » en défilant
+390x660 cave étape 4 « Récapitulatif 7/7 » : le + recouvre texte « 50–120 » en défilant
+844x340 clair étape 0 « Houblons 3/7 » : le + recouvre commande « Ouvrir l'analyse de ma bière » en défilant
+844x340 clair étape 0 « Houblons 3/7 » : le + recouvre texte « Absolu » en défilant
+844x340 clair étape 0 « Houblons 3/7 » : le + recouvre commande « Absolu » en défilant
+844x340 clair étape 0 « Houblons 3/7 » : le + recouvre commande « Recherche avancée » en défilant
+844x340 clair étape 1 « Levure 4/7 » : le + recouvre commande « Comparer les souches pour ce profil » en défilant
+844x340 clair étape 1 « Levure 4/7 » : le + recouvre commande « Palier 2 · Maturation4 °C · 5 jJ début 1 » en défilant
+844x340 clair étape 1 « Levure 4/7 » : le + recouvre texte « 4 °C » en défilant
+844x340 clair étape 1 « Levure 4/7 » : le + recouvre texte « · » en défilant
+844x340 clair étape 1 « Levure 4/7 » : le + recouvre texte « 5 j » en défilant
+844x340 clair étape 1 « Levure 4/7 » : le + recouvre commande « Palier 1 · Fermentation primaire19 °C ·  » en défilant
+844x340 clair étape 1 « Levure 4/7 » : le + recouvre texte « 15 j indicatifs » en défilant
+844x340 clair étape 1 « Levure 4/7 » : le + recouvre texte « 19 °C » en défilant
+844x340 clair étape 1 « Levure 4/7 » : le + recouvre texte « 10 j » en défilant
+844x340 clair étape 1 « Levure 4/7 » : le + recouvre commande « Rétablir ce palier » en défilant
+844x340 clair étape 1 « Levure 4/7 » : le + recouvre texte « Rétablir ce palier » en défilant
+844x340 clair étape 1 « Levure 4/7 » : le + recouvre texte « Supprimer » en défilant
+844x340 clair étape 1 « Levure 4/7 » : le + recouvre commande « Supprimer le palier 1 · Fermentation pri » en défilant
+844x340 clair étape 1 « Levure 4/7 » : le + recouvre texte « j » en défilant
+844x340 clair étape 1 « Levure 4/7 » : le + recouvre commande « Durée du palier 1 · Fermentation primair » en défilant
+844x340 clair étape 1 « Levure 4/7 » : le + recouvre texte « J début 0 · J fin 10 » en défilant
+844x340 clair étape 1 « Levure 4/7 » : le + recouvre commande « Conduite · température × jours2 paliers  » en défilant
+844x340 cave étape 0 « Houblons 3/7 » : le + recouvre commande « Ouvrir l'analyse de ma bière » en défilant
+844x340 cave étape 0 « Houblons 3/7 » : le + recouvre texte « Absolu » en défilant
+844x340 cave étape 0 « Houblons 3/7 » : le + recouvre commande « Absolu » en défilant
+844x340 cave étape 0 « Houblons 3/7 » : le + recouvre commande « Recherche avancée » en défilant
+844x340 cave étape 1 « Levure 4/7 » : le + recouvre commande « Comparer les souches pour ce profil » en défilant
+844x340 cave étape 1 « Levure 4/7 » : le + recouvre commande « Palier 2 · Maturation4 °C · 5 jJ début 1 » en défilant
+844x340 cave étape 1 « Levure 4/7 » : le + recouvre texte « 4 °C » en défilant
+844x340 cave étape 1 « Levure 4/7 » : le + recouvre texte « · » en défilant
+844x340 cave étape 1 « Levure 4/7 » : le + recouvre texte « 5 j » en défilant
+844x340 cave étape 1 « Levure 4/7 » : le + recouvre commande « Palier 1 · Fermentation primaire19 °C ·  » en défilant
+844x340 cave étape 1 « Levure 4/7 » : le + recouvre texte « 15 j indicatifs » en défilant
+844x340 cave étape 1 « Levure 4/7 » : le + recouvre texte « 19 °C » en défilant
+844x340 cave étape 1 « Levure 4/7 » : le + recouvre texte « 10 j » en défilant
+RECOUVREMENTS 98
+
+Commande terminée, code 1.
+
+Arrêt de 1 serveur(s)…

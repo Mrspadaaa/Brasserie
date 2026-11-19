@@ -1,0 +1,120 @@
+ DEPRECATED  "environmentMatchGlobs" is deprecated. Use `test.projects` to define different configurations instead.
+
+ RUN  v3.2.7 C:/Users/mrspa/.codex/worktrees/openai-clean-start/port-carnet
+
+stderr | tests/integration/compactStocks.test.tsx > stocks compacts > combine pastille d'état, épinglés et recherche (pastilles à bascule, un seul filtre à la fois)
+Not implemented: Window's scrollTo() method
+
+stderr | tests/integration/compactStocks.test.tsx > stocks compacts > combine pastille d'état, épinglés et recherche (pastilles à bascule, un seul filtre à la fois)
+Not implemented: Window's scrollTo() method
+
+stderr | tests/integration/stockCompteursOnglet.test.tsx > filtres du stock (pastilles, ligne de filtre, Recompter) > les pastilles comptent tout le stock et ne bougent pas quand on filtre ; une seule active à la fois, re-toucher l'ôte
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+
+stderr | tests/integration/compactStocks.test.tsx > stocks compacts > combine pastille d'état, épinglés et recherche (pastilles à bascule, un seul filtre à la fois)
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+
+stderr | tests/integration/stockCompteursOnglet.test.tsx > filtres du stock (pastilles, ligne de filtre, Recompter) > la pastille « bas » ne garde que les articles au seuil ou dessous, et la ligne de filtre dit « Filtre bas : N articles · Tout voir »
+Not implemented: Window's scrollTo() method
+
+ ✓ tests/integration/stockHorizonOnglet.test.tsx (4 tests) 1874ms
+   ✓ chiffre clé, pastille et courses : un seul horizon > par défaut « avant le prochain brassin » : 2 articles (Munich, Malt chocolat) ; Tout en compte 4, seuil compris  911ms
+   ✓ chiffre clé, pastille et courses : un seul horizon > le chiffre et la pastille de l’onglet (la même vue) comptent pareil, à chaque horizon  430ms
+   ✓ chiffre clé, pastille et courses : un seul horizon > « Commander ces 2 » replie le bloc sur les courses limitées à l’horizon, qui le disent et offrent Tout voir  322ms
+stderr | tests/integration/stockCompteursOnglet.test.tsx > filtres du stock (pastilles, ligne de filtre, Recompter) > la pastille « bas » ne garde que les articles au seuil ou dessous, et la ligne de filtre dit « Filtre bas : N articles · Tout voir »
+Not implemented: Window's scrollTo() method
+
+stderr | tests/integration/stockCompteursOnglet.test.tsx > filtres du stock (pastilles, ligne de filtre, Recompter) > la pastille « ★ épinglés » n'apparaît que s'il y a des épinglés, et filtre
+Not implemented: Window's scrollTo() method
+
+stderr | tests/integration/stockCompteursOnglet.test.tsx > filtres du stock (pastilles, ligne de filtre, Recompter) > la recherche compte à partir de 2 lettres, se dit dans la ligne de filtre, et « Tout voir » efface filtre ET recherche
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+
+stderr | tests/integration/stockCompteursOnglet.test.tsx > filtres du stock (pastilles, ligne de filtre, Recompter) > la recherche compte à partir de 2 lettres, se dit dans la ligne de filtre, et « Tout voir » efface filtre ET recherche
+Not implemented: Window's scrollTo() method
+
+stderr | tests/integration/stockCompteursOnglet.test.tsx > filtres du stock (pastilles, ligne de filtre, Recompter) > un rayon touché au mur remplace le filtre ; la liste montre les six familles, sucre dans Malts
+Not implemented: Window's scrollTo() method
+
+ ✓ tests/integration/compactStocks.test.tsx (9 tests) 3132ms
+   ✓ stocks compacts > place le focus dans la fiche et le rend à l’article après Échap  996ms
+   ✓ stocks compacts > combine pastille d'état, épinglés et recherche (pastilles à bascule, un seul filtre à la fois)  739ms
+   ✓ stocks compacts > édite un seuil, garde les données techniques et journalise le stock compté  1051ms
+stderr | tests/integration/stockCompteursOnglet.test.tsx > filtres du stock (pastilles, ligne de filtre, Recompter) > un rayon touché au mur remplace le filtre ; la liste montre les six familles, sucre dans Malts
+Not implemented: Window's scrollTo() method
+
+stderr | tests/integration/stockCompteursOnglet.test.tsx > filtres du stock (pastilles, ligne de filtre, Recompter) > un rayon touché au mur remplace le filtre ; la liste montre les six familles, sucre dans Malts
+Not implemented: Window's scrollTo() method
+
+stderr | tests/integration/floatingActionsShellLayout.test.tsx > Lanceur global · case réservée hors de la zone défilante > reste rendu et actionnable sous une feuille d’écran qui le masquait par son nom, pastille ou non ; seule une vraie modale l’efface
+An update to FloatingActions inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() => {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+
+stderr | tests/integration/stockCompteursOnglet.test.tsx > filtres du stock (pastilles, ligne de filtre, Recompter) > Recompter garde la recherche et le filtre de l'étagère ; ses tuiles sont des filtres
+Not implemented: Window's scrollTo() method
+
+ ✓ tests/integration/floatingActionsShellLayout.test.tsx (11 tests) 438ms
+stderr | tests/integration/stockCompteursOnglet.test.tsx > filtres du stock (pastilles, ligne de filtre, Recompter) > Recompter garde la recherche et le filtre de l'étagère ; ses tuiles sont des filtres
+Not implemented: Window's scrollTo() method
+
+stderr | tests/unit/bugs-b1-mesures.test.tsx > Feuille Mesures > BR-114 : une densité initiale de 2,5 est refusée avec un message, rien n’est enregistré
+The width(0) and height(0) of chart should be greater than 0,
+       please check the style of container, or the props width(100%) and height(100%),
+       or add a minWidth(0) or minHeight(undefined) or use aspect(undefined) to control the
+       height and width.
+The width(0) and height(0) of chart should be greater than 0,
+       please check the style of container, or the props width(100%) and height(100%),
+       or add a minWidth(0) or minHeight(undefined) or use aspect(undefined) to control the
+       height and width.
+The width(0) and height(0) of chart should be greater than 0,
+       please check the style of container, or the props width(100%) and height(100%),
+       or add a minWidth(0) or minHeight(undefined) or use aspect(undefined) to control the
+       height and width.
+
+stderr | tests/unit/bugs-b1-mesures.test.tsx > Feuille Mesures > BR-115 : un volume conditionné au-dessus du volume brassé est signalé, sans être effacé
+The width(0) and height(0) of chart should be greater than 0,
+       please check the style of container, or the props width(100%) and height(100%),
+       or add a minWidth(0) or minHeight(undefined) or use aspect(undefined) to control the
+       height and width.
+
+stderr | tests/unit/bugs-b1-mesures.test.tsx > Feuille Mesures > BR-115 : un volume conditionné cohérent ne déclenche aucune alerte
+The width(0) and height(0) of chart should be greater than 0,
+       please check the style of container, or the props width(100%) and height(100%),
+       or add a minWidth(0) or minHeight(undefined) or use aspect(undefined) to control the
+       height and width.
+
+ ✓ tests/unit/bugs-b1-mesures.test.tsx (4 tests) 540ms
+ ✓ tests/integration/stockCompteursOnglet.test.tsx (8 tests) 6955ms
+   ✓ filtres du stock (pastilles, ligne de filtre, Recompter) > les pastilles comptent tout le stock et ne bougent pas quand on filtre ; une seule active à la fois, re-toucher l'ôte  1604ms
+   ✓ filtres du stock (pastilles, ligne de filtre, Recompter) > la pastille « bas » ne garde que les articles au seuil ou dessous, et la ligne de filtre dit « Filtre bas : N articles · Tout voir »  476ms
+   ✓ filtres du stock (pastilles, ligne de filtre, Recompter) > la pastille « ★ épinglés » n'apparaît que s'il y a des épinglés, et filtre  334ms
+   ✓ filtres du stock (pastilles, ligne de filtre, Recompter) > la recherche compte à partir de 2 lettres, se dit dans la ligne de filtre, et « Tout voir » efface filtre ET recherche  446ms
+   ✓ filtres du stock (pastilles, ligne de filtre, Recompter) > un rayon touché au mur remplace le filtre ; la liste montre les six familles, sucre dans Malts  1260ms
+   ✓ filtres du stock (pastilles, ligne de filtre, Recompter) > Recompter garde la recherche et le filtre de l'étagère ; ses tuiles sont des filtres  1361ms
+   ✓ filtres du stock (pastilles, ligne de filtre, Recompter) > un comptage de Recompter met le stock à la quantité lue (virgule ou point) et écrit un mouvement « comptage » ; un champ vide n'écrit rien  857ms
+   ✓ filtres du stock (pastilles, ligne de filtre, Recompter) > Autres stocks : le sucre est rangé une fois (dans Malts), l'Emballage est présent  616ms
+ ✓ tests/unit/bugs-y1-t310.test.tsx (2 tests) 130ms
+ ✓ tests/integration/FloatingActions.behavior.test.tsx (5 tests) 190ms
+ ✓ tests/unit/bugs-y1-t311.test.tsx (1 test) 1119ms
+   ✓ T3-11 : une recette neuve naît sur le matériel actuel > enregistrée sans retouche, elle porte le matériel de la brasserie active et peut être planifiée  1118ms
+ ✓ tests/unit/bugs-y1-masque.test.tsx (9 tests) 125ms
+ ✓ tests/unit/bugs-y1-t312.test.tsx (1 test) 166ms
+ ✓ tests/integration/bStockSousOnglet.test.tsx (1 test) 42ms
+
+ Test Files  11 passed (11)
+      Tests  55 passed (55)
+   Start at  20:08:45
+   Duration  18.17s (transform 14.39s, setup 2.36s, collect 40.47s, tests 14.71s, environment 8.17s, prepare 800ms)
+
