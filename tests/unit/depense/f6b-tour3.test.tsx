@@ -121,3 +121,25 @@ describe('v3-5 : pendant la 3e lecture, le bouton dit ce qu’on attend (pas « 
     expect(view.container.textContent).toMatch(/Confirmer/);
   });
 });
+
+describe('LR1-7 réserve : un prix que le trio écrit (prix vidé, 2 × ? = 50) est marqué « déduit », dans le champ et sur la rangée', () => {
+  it('ligne 1 lue 2 × 25,00 = 50,00 ; prix vidé (rangée 25,00 déduit) puis quantité 4 : le champ porte 12,50 écrit par le trio, marqué déduit (jaune, title), la rangée aussi ; un prix tapé efface la marque', async () => {
+    const view = await lire(f => { Object.assign(f.items[0], { quantity: 2, unit: '', price: 25, amountTTC: 50 }); });
+    const l1 = () => rangees(view)[0];
+    const champ = () => l1().querySelector<HTMLInputElement>('[aria-label="Prix ligne 1"]')!;
+    expect(l1().querySelector('[data-dp-prix]')!.getAttribute('data-dp-prix-deduit')).toBeNull();
+    await act(async () => { fireEvent.focus(champ()); fireEvent.change(champ(), { target: { value: '' } }); fireEvent.blur(champ()); });
+    await waitFor(() => expect(l1().querySelector('[data-dp-prix]')!.textContent).toBe('25,00'));
+    expect(l1().querySelector('[data-dp-prix]')!.getAttribute('data-dp-prix-deduit')).toBe('1');
+    expect(champ().value).toBe('');
+    const qte = l1().querySelector<HTMLInputElement>('[aria-label="Quantité ligne 1"]')!;
+    await act(async () => { fireEvent.focus(qte); fireEvent.change(qte, { target: { value: '4' } }); fireEvent.blur(qte); });
+    await waitFor(() => expect(champ().value).toBe('12,50'));
+    const marque = champ().closest<HTMLElement>('[data-dp-prix-deduit]');
+    expect(marque).not.toBeNull();
+    expect(marque!.getAttribute('title')).toMatch(/prix déduit : montant ÷ quantité/);
+    await act(async () => { fireEvent.focus(champ()); fireEvent.change(champ(), { target: { value: '24' } }); fireEvent.blur(champ()); });
+    expect(champ().closest('[data-dp-prix-deduit]')).toBeNull();
+    expect(l1().querySelector('[data-dp-prix]')!.getAttribute('data-dp-prix-deduit')).toBeNull();
+  });
+});
