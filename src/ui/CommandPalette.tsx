@@ -169,9 +169,12 @@ export const CommandPalette: React.FC<CommandPaletteProps> = ({ open, onOpenChan
 
   const resultats = useMemo(() => {
     if (!open) return { items: [] as CommandItem[], total: 0, visible: 0, archives: 0 };
-    const r = searchCommandGroups(groups, query, includeArchives);
+    // LR1-NOTE-5 : le montant d'une écriture (« 17,50 CHF ») se cherche comme son nom. Seules les écritures : la valeur d'un
+    // article est son stock (« 12 kg »), et « 12 » ne doit pas ramener tout le rayon.
+    const indexes = groups.map(g => ({ ...g, items: g.items.map(it => (it.valeur && typeDeId(it.id) === 'ecriture' ? { ...it, keywords: [...(it.keywords ?? []), it.valeur] } : it)) }));
+    const r = searchCommandGroups(indexes, query, includeArchives);
     let archives = 0;
-    if (requete && !includeArchives) archives = searchCommandGroups(groups, query, true).total - r.total;
+    if (requete && !includeArchives) archives = searchCommandGroups(indexes, query, true).total - r.total;
     return { items: classer(r.groups.flatMap(g => g.items), query, prioritaire), total: r.total, visible: r.visible, archives };
   }, [open, groups, query, requete, includeArchives, prioritaire]);
 
