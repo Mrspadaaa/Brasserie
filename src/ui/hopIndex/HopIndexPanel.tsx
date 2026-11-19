@@ -32,11 +32,11 @@ function HopAliasesEditor({ value, onChange }: { value: string[]; onChange: (v: 
 export function HopFactsView({ lot, variety }: { lot?: HopLot; variety?: HopVariety }) {
   const facts = resolveHopFacts(lot, variety);
   return <div className="divide-y divide-cave-800">
-    {facts.filter(f => f.measurement || f.documentary || ['alpha', 'totalOil', '3mhCys', '3mhGsh', '4mmpFree'].includes(f.analyte)).map(f => <details key={f.analyte} className="py-3">
+    {facts.filter(f => f.measurement || f.documentary || ['alpha', 'totalOil'].includes(f.analyte)).map(f => <details key={f.analyte} className="py-3">
       <summary className="cursor-pointer grid grid-cols-[1fr_auto] gap-x-3 gap-y-1">
         <span className="text-cave-50">{HOP_ANALYTE_LABELS[f.analyte]}</span>
         <span className="font-mono text-right text-cave-50">{formatHopMeasurement(f.measurement)}</span>
-        <span className="col-span-2 flex flex-wrap gap-2"><BrewTag tone={f.origin === 'lot' ? 'done' : f.origin === 'variety' ? 'info' : 'neutral'}>{f.origin === 'lot' ? 'COA du lot' : f.origin === 'variety' ? 'Référence variété' : 'Inconnu'}</BrewTag><BrewTag tone={f.confidence === 'high' ? 'done' : 'neutral'}>Confiance {({ low: 'faible', medium: 'moyenne', high: 'élevée' })[f.confidence]}</BrewTag></span>
+        <span className="col-span-2 flex flex-wrap gap-2"><BrewTag tone={f.origin === 'lot' ? 'done' : f.origin === 'variety' ? 'info' : 'neutral'}>{f.origin === 'lot' ? 'COA du lot' : f.origin === 'variety' ? 'Référence variété' : 'Inconnu'}</BrewTag>{/* TE-49 : une valeur inconnue n'a pas de confiance à dire */}{f.origin !== 'unknown' && <BrewTag tone={f.confidence === 'high' ? 'done' : 'neutral'}>Confiance {({ low: 'faible', medium: 'moyenne', high: 'élevée' })[f.confidence]}</BrewTag>}</span>
       </summary>
       <div className="pt-2 text-sm text-cave-200 space-y-1">
         {f.reasons.map(reason => <p key={reason}>{reason}</p>)}
@@ -196,7 +196,7 @@ export function HopIndexPanel({ createRequest, onNotice }: { createRequest?: { k
           onClick={() => { setSelected(v.id); setLotId(undefined); }} aria-pressed={selected === v.id}>
           <span className="flex justify-between items-center gap-2 text-sm font-semibold text-cave-50"><span>{v.name}</span><ChevronRight size={16} className="text-cave-400 shrink-0" aria-hidden="true" /></span>
           <span className="block text-xs text-water break-words">{hopReferenceSource(v)}{v.origin ? ` · ${v.origin}` : ''}</span>
-          {(!mobile||v.form!=='unknown'||!!lotCounts.get(v.id))&&<span className="flex flex-wrap gap-2">{(!mobile||v.form!=='unknown')&&<BrewTag>{HOP_FORM_LABELS[v.form]}</BrewTag>}{!!lotCounts.get(v.id) && <BrewTag tone="info">{lotCounts.get(v.id)} lot(s)</BrewTag>}</span>}
+          {(v.form!=='unknown'||!!lotCounts.get(v.id))&&<span className="flex flex-wrap gap-2">{v.form!=='unknown'&&<BrewTag>{HOP_FORM_LABELS[v.form]}</BrewTag>}{!!lotCounts.get(v.id) && <BrewTag tone="info">{lotCounts.get(v.id)} lot(s)</BrewTag>}</span>}
           {!mobile && v.descriptions.find(d => d.context === 'rawHop') && <span className="block text-sm text-cave-200 line-clamp-2">{v.descriptions.find(d => d.context === 'rawHop')?.text}</span>}
         </button>)}
         {!matches.length && <p className="py-5 text-cave-400">{loading ? 'Chargement du catalogue…' : catalogueError || 'Aucune variété correspondante. Ajoute une fiche ou recherche une source publiée.'}</p>}
