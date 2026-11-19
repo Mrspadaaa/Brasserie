@@ -184,7 +184,8 @@ Lire :
 | work/missions/2026-11-18-choix-calendrier/en-ligne-lot-a/RAPPORT.md | PC | 5 | 4 | 29a17d14fdd0 |
 | work/missions/2026-11-18-choix-calendrier/en-ligne-lot-bc/RAPPORT.md | PC | 5 | 6 | 127522c2789a |
 | work/missions/2026-11-18-choix-calendrier/en-ligne-paquet-d/RAPPORT.md | PC | 1 | 3 | a815f0e44047 |
-| work/missions/2026-11-18-choix-calendrier/en-ligne-paquet-e/RAPPORT.md | PC | 0 | 0 | en cours |
+| work/missions/2026-11-18-choix-calendrier/en-ligne-paquet-e/RAPPORT.md | PC | 1 | 4 | 41340b8b917c |
+| work/missions/2026-11-18-choix-calendrier/en-ligne-mois/RAPPORT.md | PC | 5 | 0 | 96e0a88f963f |
 | work/missions/2026-11-17-port-carnet/vision-4/RAPPORT-d1280.md | PCN | 0 | 0 | b9b896566b01 |
 | work/missions/2026-11-17-port-carnet/vision-4/RAPPORT-m390.md | PCN | 0 | 0 | 9f4b1417fdd7 |
 | work/missions/2026-11-17-port-carnet/vision-5/RAPPORT-d1280.md | PCN | 0 | 0 | 35b17d70cc0e |
@@ -1604,7 +1605,24 @@ Verdict du paquet D : 5/7 points OK, 0 bloquant, ZZ TEST retirés (oui). Corrig�
 
 | id | source | écran | constat | gravité | état | commit | note |
 |---|---|---|---|---|---|---|---|
-| PC-136 | en-ligne-paquet-d n° 1 (suite) | Calendrier, glisser des marques ponctuelles (en ligne) | En ligne : vente et achat d'un jour ne se glissent pas en vue Semaine (la vente reste au 7 déc.) ; glisser réel sans effet, pointeurs synthétiques sans effet. | G | ouvert | | rapport, problème 1 ; geste 11 ; non bloquant, hors des 7 points |
+| PC-136 | en-ligne-paquet-d n° 1 (suite) | Calendrier, glisser des marques ponctuelles (en ligne) | En ligne : vente et achat d'un jour ne se glissent pas en vue Semaine (la vente reste au 7 déc.) ; glisser réel sans effet, pointeurs synthétiques sans effet. | G | corrigé | 35637e86c534597f74988ead3e95bfcd142e0ea8 | tag en-ligne/2026-11-19-paquet-e ; corrigé en ligne paquet E (19.11, point 1 OK : gestes 7 et 8, vente et achat glissés 30 nov. → 7 déc. en Semaine) ; rapport, problème 1 ; geste 11 |
 | PC-NOTE-11 | en-ligne-paquet-d doute n° 1 | Calendrier, achat lié à une fête glissée | L'achat lié n'a pas suivi la fête glissée d'une semaine (reste 7 déc., fête au 14 déc.) : à confirmer comme voulu. | — | ouvert, doute non compté | | rapport, doutes |
 | PC-NOTE-12 | en-ligne-paquet-d doute n° 2 | Feuilles d'ajout, puces de semaine | Le texte de date des puces est à 12 px. | — | ouvert, doute non compté | | rapport, doutes |
 | PC-NOTE-13 | en-ligne-paquet-d doute n° 3 | Calendrier, fil de la vente | Le fil longe l'icône de la vente à environ 6 px sans la toucher ; jugé à la souris sur 390 émulé, pas au doigt. | — | ouvert, doute non compté | | rapport, doutes |
+
+## Test en ligne du paquet E et de la vue Mois, 19.11 (critique Opus, tags en-ligne/2026-11-19-paquet-e et en-ligne/2026-11-19-mois ; sources work/missions/2026-11-18-choix-calendrier/en-ligne-paquet-e/RAPPORT.md, empreinte 41340b8b917c, et en-ligne-mois/RAPPORT.md, empreinte 96e0a88f963f, 5 constats)
+
+Verdict du paquet E : 2/4 OK (n° 2 non joué), 1 bloquant (corrigé ensuite, voir PC-137), ZZ TEST retirés : oui après le nettoyage final (19.11, un restant retiré). Verdict de la vue Mois : 3/3 OK, 0 bloquant ; ZZ TEST non retirés : 7 restent dans Sans date (6 des tests précédents), effacement en base en attente d'accord du brasseur. Corrigés confirmés : PC-136 (paquet E, gestes 7 et 8), PC-137 (vue Mois, tag en-ligne/2026-11-19-mois). Constats nouveaux : PC-137 à PC-142. Doutes non comptés, versés en notes : PC-NOTE-14 à PC-NOTE-17.
+
+| id | source | écran | constat | gravité | état | commit | note |
+|---|---|---|---|---|---|---|---|
+| PC-137 | en-ligne-paquet-e n° 3 | Calendrier, vue Mois, glisser vente et achat d'un jour (en ligne) | En ligne, vue Mois : une vente et un achat d'un jour ne se glissent pas (souris réelle, +55 à +63 px pour une colonne de 52,5 px) ; geste sans effet, aucune bulle ni message ; la même marque se glisse en Semaine. | B | corrigé | fff4793cf3398e11d14591185ddb6d2a9e16eb3d | tag en-ligne/2026-11-19-mois ; confirmé en ligne (vente +218 px, une colonne, 14 janv. ; rapport mois, geste 6) ; bloquant du paquet E, rapport, problème 1 |
+| PC-138 | en-ligne-mois verdict 1 et geste 9 | Calendrier, Retirer une fête ou une vente | « Retirer » une fête la range dans Sans date au lieu de l'effacer ; « Retirer » une vente la marque Annulé : deux sens pour un même mot. | G | ouvert | | rapport mois, verdict 1 et geste 9 ; doute « même verbe » inclus |
+| PC-139 | en-ligne-mois geste 7 et verdict 2 | Calendrier, échelle au rechargement | Après rechargement, l'échelle revient à Semaine alors que la plage « 3 mois » est gardée. | G | ouvert | | rapport mois, verdict 2 |
+| PC-140 | en-ligne-mois doute | Calendrier, menu d'échelle « 3 mois » | Le menu dit « 3 mois » mais affiche 4 colonnes (déc. à mars, 14 déc. → 14 mars). | non graduée | ouvert | | rapport mois, doutes |
+| PC-141 | en-ligne-mois doute | Calendrier, fiche d'une fête de 3 j | La fiche dit « Date 14 déc. → 20 déc. » (la semaine, pas les 3 jours). | non graduée | ouvert | | rapport mois, doutes |
+| PC-142 | en-ligne-mois verdict 1 et geste 10 (ajout du coordinateur, 19.11) | Finances, Sans date | La fiche Sans date n'offre que Poser et Fait : aucun geste pour supprimer une fête ou un achat ; 7 restes ZZ TEST y restent, effacement en base en attente d'accord du brasseur. | G | ouvert | | source : rapport mois, verdict 1 et geste 10 (« Sans date · 11 ») ; les mots « Poser », « Fait » et « Nettoyage final » ne figurent pas dans ce rapport, à vérifier |
+| PC-NOTE-14 | en-ligne-paquet-e n° 2 | Calendrier, en-tête paysage | L'en-tête paysage aligné n'est pas joué en ligne (émulation 844 × 390 sans effet, rotation impossible ici). | — | ouvert, doute non compté | | rapport paquet E, geste 13 et point 2 non joué |
+| PC-NOTE-15 | en-ligne-paquet-e doute | Calendrier, message du déplacement d'achat | « à dépenser inchangé · S50 : −660 → −659 » : dit inchangé et montre un écart. | — | ouvert, doute non compté | | rapport paquet E, doutes |
+| PC-NOTE-16 | en-ligne-paquet-e doute | Feuilles d'ajout, puce « 3 j » | La puce « 3 j » choisie est peu distincte. | — | ouvert, doute non compté | | rapport paquet E, doutes |
+| PC-NOTE-17 | en-ligne-paquet-e geste 15 | Calendrier, vue Mois à 2560, fiche de la fête | Trois touchers réels sur la fête n'ouvrent ni fiche ni « Retirer » en vue Mois à 2560 (doute : fête non ouvrable). | — | ouvert, doute non compté | | rapport paquet E, geste 15 |
