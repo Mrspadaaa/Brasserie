@@ -14,7 +14,7 @@ import { useStorageValue } from '../../hooks/useLiveData';
 import { StorageService } from '../../services/storage';
 import { useHopCatalogue } from './useHopCatalogue';
 import { ensureGuideReferences } from './guideData';
-import { hopReferenceSource, HOP_FORM_LABELS } from '../../domain/hopIndex/labels';
+import { optionsReference } from './pickerOptions';
 import { NumberInput } from '../NumberInput';
 import { Combobox } from '../Combobox';
 import { SegmentedControl } from '../SegmentedControl';
@@ -133,8 +133,11 @@ export function HopRecipeWorkbench({ recipe, onChange, onNavigate, onPlanYeast, 
       onValue={value => patch({ [field]: value })} /><span id={`${uid}-${field}-unit`}>{unit}</span>
   </div>; };
   const maxMass = Math.max(1, ...analysis.phases.map(p => p.grams ?? 0));
-  const varietyOptions = visibleVarieties.map(v => ({ value: v.id, label: v.name,
-    group: v.fits ? 'Repères pour ce style' : 'Autres usages · choix libre', detail: `${hopReferenceSource(v)} · ${HOP_FORM_LABELS[v.form]}` }));
+  // BR-98 : le détail est celui du sélecteur de la recette (α publié, arômes, puis source et forme), jamais « Hopsteiner · Forme non précisée » seul.
+  // Deux appels, un par groupe : l'ordre « repères du style d'abord » est gardé, `optionsReference` ne trie que par α dans chaque groupe.
+  const optionsGroupe = (fits: boolean, group: string) => optionsReference(visibleVarieties.filter(v => v.fits === fits), () => group)
+    .map(o => ({ ...o, value: o.value.replace(/^ref:/, '') }));
+  const varietyOptions = [...optionsGroupe(true, 'Repères pour ce style'), ...optionsGroupe(false, 'Autres usages · choix libre')];
   if (draft.name && !draft.varietyId) varietyOptions.unshift({ value: '__current', label: draft.name, group: draft.index === -1 ? 'Saisie libre' : 'Ajout actuel', detail: 'Sans référence catalogue associée' });
 
   return <section className="hop-workbench" aria-label="Atelier de houblonnage par style">
