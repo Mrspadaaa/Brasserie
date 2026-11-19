@@ -189,7 +189,10 @@ export const RecipePage: React.FC<RecipePageProps> = ({
   const bitterness = useMemo(() => amertumeRecette(recipe, recipe.efficiencyPct ?? brewhouse?.efficiencyPct ?? 75, { og: og || null, nolo: !!recipe.nolo?.enabled }),
     [recipe, og, brewhouse?.efficiencyPct]);
   const ibuOf = (hop: HopIngredient) => ibuDeLAjout(hops, hop, recipe.volumeL, boilOg, recipe.boilMin ?? 60);
-  const ibuTotal = bitterness.total == null ? null : Math.round(bitterness.total);
+  // TE-33 : sans ajout à chaud dosé, pas de « 0 IBU » : l'IBU annoncé s'il y en a un (comme la liste, ibuListe), sinon l'inconnu.
+  const ajoutAChaud = hops.some((h) => h.stage !== 'dryHop' && h.weightG > 0);
+  const ibuTotal = !ajoutAChaud ? (recipe.ibuTarget && recipe.ibuTarget > 0 && !recipe.nolo?.enabled ? recipe.ibuTarget : null)
+    : bitterness.total == null ? null : Math.round(bitterness.total);
 
   const hopsMissingAlpha = hops.filter((h) => h.stage !== 'dryHop' && !h.alpha).map((h) => h.name);
 
