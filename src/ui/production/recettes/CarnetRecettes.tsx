@@ -96,8 +96,7 @@ export function CarnetRecettes({ recipes, batches, onOpenRecipe, onEditRecipe, o
   const gardees = (l: Lignee[]) => (familles ? l.filter((x) => familles.has(x.id)) : l);
 
   const groupes = useMemo(() => grouper(gardees(toutes)), [toutes, familles]);
-  // La phrase de la tête parle du carnet entier : elle ne bouge ni à la frappe ni au filtre (r2a). Le résultat se dit sous le champ.
-  const carnet = useMemo(() => grouper(toutes), [toutes]);
+  // Le résultat d'un filtre se dit sous le champ (r2a) ; la phrase de tête est partie le 19.11 (LST-TITRE-COMPTEUR).
   const archivees = useMemo(() => gardees(toutesArchivees), [toutesArchivees, familles]);
 
   const ouverteLignee = ouverte ? [...toutes, ...toutesArchivees].find((l) => l.id === ouverte) ?? null : null;
@@ -187,15 +186,6 @@ export function CarnetRecettes({ recipes, batches, onOpenRecipe, onEditRecipe, o
       <span>{droite}</span>
     </button>
   );
-
-  const nbPretes = carnet.pretes.length;
-  const nbPresque = carnet.presque.length;
-  const phrase = nbPretes + nbPresque === 0
-    ? <span>Rien de prêt à brasser</span>
-    : <>
-        {nbPretes > 0 && <span className="rcp-ok">{nbPretes} {pluriel(nbPretes, 'prête', 'prêtes')} à brasser</span>}
-        {nbPresque > 0 && <span className="rcp-presque">{nbPresque} à un achat près</span>}
-      </>;
 
   const montrees = groupes.pretes.length + groupes.presque.length + groupes.loin.length + groupes.inconnues.length;
   const rien = groupes.pretes.length + groupes.presque.length + groupes.loin.length + groupes.inconnues.length === 0;
@@ -327,10 +317,7 @@ export function CarnetRecettes({ recipes, batches, onOpenRecipe, onEditRecipe, o
   return (
     <div className="rcp-ecran">
       <div className="rcp-col-g">
-        <div className="rcp-tete">
-          <p className="rcp-phrase">{phrase}</p>
-          <p className="rcp-total"><b>{toutes.length}</b>{pluriel(toutes.length, 'lignée', 'lignées')}<br />{courantes.length} {pluriel(courantes.length, 'recette', 'recettes')}</p>
-        </div>
+        {/* LST-TITRE-COMPTEUR (19.11, « Pareil, inutile ») : plus de « N à un achat près » ni de « N lignées · N recettes » ; les sections le disent. */}
         <div className="rcp-cherche">
           <label className="rcp-champ">
             <Search aria-hidden="true" />

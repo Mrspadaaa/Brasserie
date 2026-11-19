@@ -1,4 +1,4 @@
-// La liste des brassins d'e6a : une phrase qui répond, la recherche, des puces qui comptent, le tri et la période, des cartes à un seul geste.
+// La liste des brassins d'e6a (sans sa phrase de tête depuis le 19.11, LST-TITRE-COMPTEUR) : la recherche, des puces qui comptent, le tri et la période, des cartes à un seul geste.
 // Un geste (puce, recherche) pose un critère : la puce passe en tête avec son ×, le reste se replie en « n autres hors du filtre ».
 import React, { useEffect, useMemo, useState } from 'react';
 import { Archive, Calendar, ChevronRight, Search, SlidersHorizontal, X } from 'lucide-react';
@@ -18,7 +18,6 @@ import {
   criteresPoses,
   dansLeDossier,
   miniModel,
-  phraseListe,
   type Avancement,
   type Contexte,
   type Criteres
@@ -101,7 +100,6 @@ export function ListeBrassins({
   const sansRecherche = poses.filter((x) => x.groupe !== 'recherche').length;
   const bornesPosees = [filtres.volumeMin, filtres.volumeMax, filtres.ibuMin, filtres.ibuMax, filtres.colorMin, filtres.colorMax].filter((v) => v.trim()).length;
   const nbFiltres = sansRecherche + (bornesPosees ? 1 : 0);
-  const phrase = phraseListe(ctx, resultats);
   const archives = entries.filter(isArchived).length;
   const vide = resultats.length === 0;
   const horsFiltre = poses.length > 0 && !vide ? dossier.filter((e) => !resultats.some((r) => r.id === e.id)) : [];
@@ -146,15 +144,7 @@ export function ListeBrassins({
 
   return (
     <div className="lst-racine" aria-label="Liste des brassins" data-liste-brassins>
-      <div className="lst-rep">
-        <h2 className="lst-h1">
-          {phrase.lignes.map((l, i) => (
-            <span key={i} className={l.ton === 'hop' ? 'lst-hop' : l.ton === 'attention' ? 'lst-att' : undefined}>{l.texte}</span>
-          ))}
-        </h2>
-        <div className="lst-cnt" role="status"><b>{phrase.compteurN}</b>{phrase.compteurLabel}</div>
-      </div>
-
+      {/* BRS-TITRE-INUTILE, LST-TITRE-COMPTEUR (19.11, « Ça c'est inutile ») : plus de titre-compteur au-dessus de la recherche ; les puces comptent. */}
       <div className="lst-search">
         <div className={`lst-field${filtres.search ? ' lst-plein' : ''}`}>
           <Search aria-hidden />
@@ -201,6 +191,8 @@ export function ListeBrassins({
 
       {/* e6a (vide) : pas de ligne tri / période ; « Tout effacer » vit dans la carte du vide. */}
       {!vide && ligneEtat}
+      {/* Le titre parti, le nombre de résultats d'un filtre se dit ici, petit, comme dans le carnet de recettes (rcp-resultat). */}
+      {!vide && poses.length > 0 && <p className="lst-resultat" role="status">{resultats.length} sur {dossier.length} {dossier.length > 1 ? 'brassins' : 'brassin'}</p>}
 
       {!vide && (
         <div className="lst-liste">

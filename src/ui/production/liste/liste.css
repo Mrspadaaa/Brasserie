@@ -18,17 +18,12 @@
 .lst-btn-primaire { background: rgb(var(--ebc-straw)); border-color: rgb(var(--ebc-straw)); color: rgb(var(--sur-paille)); }
 .lst-btn:focus-visible, .lst-puce:focus-visible, .lst-sel:focus-visible, .lst-fbtn:focus-visible, .lst-lien:focus-visible { outline: 2px solid rgb(var(--water)); outline-offset: 2px; }
 
-/* ---- Phrase de tête ---- */
-.lst-rep { display: flex; align-items: flex-end; justify-content: space-between; gap: 8px; margin: 4px 0 10px; }
-.lst-h1 { font-size: 28px; line-height: 1.15; font-weight: 600; color: rgb(var(--cave-texte-50)); min-width: 0; }
-.lst-h1 span { display: block; }
-.lst-h1 .lst-hop { color: rgb(var(--hop-texte)); }
-.lst-h1 .lst-att { color: rgb(var(--attention-texte)); }
-.lst-cnt { font-size: 12px; color: rgb(var(--cave-texte-400)); text-align: right; line-height: 1.2; flex: none; }
-.lst-cnt b { display: block; font-family: theme('fontFamily.mono'); font-variant-numeric: tabular-nums; font-size: 16px; font-weight: 600; color: rgb(var(--cave-texte-50)); }
+/* ---- Phrase de tête : partie le 19.11 (BRS-TITRE-INUTILE, LST-TITRE-COMPTEUR, « Ça c'est inutile ») ; la recherche ouvre la liste ---- */
+
+.lst-resultat { margin: -4px 2px 6px; font-size: 12px; color: rgb(var(--cave-texte-400)); }
 
 /* ---- Recherche ---- */
-.lst-search { display: flex; gap: 8px; }
+.lst-search { display: flex; gap: 8px; margin-top: 2px; }
 .lst-field { position: relative; flex: 1; min-width: 0; height: 44px; border: 1px solid rgb(var(--cave-700)); border-radius: 10px; display: flex; align-items: center; gap: 8px; padding: 0 12px;
   background: rgb(var(--cave-950)); color: rgb(var(--cave-texte-400)); }
 .lst-field svg { width: 18px; height: 18px; flex: none; }
@@ -45,7 +40,7 @@
 .lst-fbtn > span { position: absolute; top: -6px; right: -6px; background: rgb(var(--ebc-straw)); color: rgb(var(--sur-paille)); font-size: 12px; font-weight: 600; min-width: 20px; height: 20px; border-radius: 10px; display: grid; place-items: center; }
 
 /* ---- Puces d'avancement ---- */
-.lst-puces { display: flex; gap: 6px; overflow-x: auto; scrollbar-width: none; margin: 12px -12px 0; padding: 0 12px; }
+.lst-puces { display: flex; gap: 6px; overflow-x: auto; scrollbar-width: none; margin: 8px -12px 0; padding: 0 12px; } /* 19.11 : 12 → 8 px, la place va aux cartes */
 .lst-puces::-webkit-scrollbar { display: none; }
 .lst-puce { position: relative; flex: none; display: inline-flex; align-items: center; gap: 6px; min-height: 32px; padding: 0 12px; border-radius: 999px; font-size: 14px; white-space: nowrap;
   border: 1px solid rgb(var(--cave-700)); background: rgb(var(--cave-850)); color: rgb(var(--cave-texte-200)); }
@@ -64,7 +59,7 @@
 .lst-puce.lst-plus { background: transparent; border-style: dashed; }
 
 /* ---- Tri et période ---- */
-.lst-row { display: flex; gap: 6px; margin: 12px 0; }
+.lst-row { display: flex; gap: 6px; margin: 8px 0; } /* 19.11 : 12 → 8 px (espace entre groupes, DESIGN.md : 8–12 px) */
 .lst-sel { position: relative; height: 36px; border-radius: 10px; padding: 0 10px; display: flex; align-items: center; gap: 6px; font-size: 14px; font-weight: 600; white-space: nowrap;
   color: rgb(var(--cave-texte-50)); border: 1px solid rgb(var(--cave-700)); background: rgb(var(--cave-950)); }
 .lst-sel::after { content: ''; position: absolute; left: 0; right: 0; top: 50%; height: 44px; transform: translateY(-50%); pointer-events: none; }
@@ -78,21 +73,34 @@
 
 /* ---- Carte ---- */
 .lst-liste { display: flex; flex-direction: column; }
-.lst-card { position: relative; display: flex; border-radius: 24px; background: rgb(var(--cave-900)); border: 1px solid rgb(var(--cave-800)); margin-bottom: 8px; overflow: hidden; }
+/* BRS-CARTES-GROSSES (19.11, « les fiche de brassin sont beaucoup trop gros ») : ≈ 145 px à 390, ramenée à deux rangées (≈ 66 px).
+   Rangée 1 : nom, style, état ; rangée 2 : lot et lieu, mesure, action ; étoile et ··· en colonne à droite. Le bouton d'ouverture
+   s'étend à toute la carte (::after) ; action, étoile et ··· passent au-dessus. Dimensions de DESIGN.md : rangée de deux lignes 40–48 px,
+   bouton courant 28 px, rembourrage 6–8 px, rayon 16. */
+.lst-card { position: relative; display: flex; border-radius: 16px; background: rgb(var(--cave-900)); border: 1px solid rgb(var(--cave-800)); margin-bottom: 6px; overflow: hidden; }
 .lst-bar { width: 4px; flex: none; }
-.lst-body { flex: 1; padding: 8px 2px 10px 10px; min-width: 0; }
+.lst-body { flex: 1; padding: 6px 0 6px 10px; min-width: 0; }
 .lst-ouvrir { display: block; width: 100%; text-align: left; }
-.lst-l1 { display: flex; align-items: center; flex-wrap: wrap; gap: 6px; font-size: 12px; color: rgb(var(--cave-texte-400)); }
-.lst-l2 { display: flex; align-items: center; flex-wrap: wrap; gap: 8px; margin-top: 6px; }
-.lst-nom { font-size: 18px; font-weight: 600; color: rgb(var(--cave-texte-50)); }
-.lst-l3 { display: flex; align-items: center; gap: 8px; margin-top: 8px; }
-.lst-key { display: inline-flex; align-items: baseline; gap: 6px; min-width: 0; }
-.lst-key .lst-reading { font-size: 18px; }
-.lst-go { margin-left: auto; flex: none; min-height: 44px; padding: 0 10px 0 12px; white-space: nowrap; }
-.lst-side { display: flex; flex-direction: column; justify-content: space-between; align-items: center; width: 44px; padding: 0 0 2px; flex: none; }
-.lst-side button { width: 44px; height: 44px; display: grid; place-items: center; color: rgb(var(--cave-texte-400)); }
+.lst-ouvrir::after { content: ''; position: absolute; inset: 0; border-radius: 16px; }
+.lst-ouvrir:focus-visible { outline: none; }
+.lst-ouvrir:focus-visible::after { outline: 2px solid rgb(var(--water)); outline-offset: -2px; }
+/* Rangée 1 : le nom et son style à gauche (un nom long passe à la ligne, jamais coupé), l'état toujours en haut à droite. */
+.lst-l2 { display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: center; column-gap: 6px; min-height: 22px; }
+.lst-titre { display: flex; align-items: center; flex-wrap: wrap; gap: 2px 6px; min-width: 0; }
+.lst-nom { font-size: 16px; line-height: 20px; font-weight: 600; color: rgb(var(--cave-texte-50)); min-width: 0; overflow-wrap: anywhere; }
+/* Rangée 2 : à gauche, lot et lieu (12 px) au-dessus de la mesure (16 px mono) ; à droite, l'action. 32 px. */
+.lst-l3 { display: flex; align-items: center; gap: 8px; margin-top: 2px; min-height: 32px; }
+.lst-key { flex: 1; display: flex; flex-direction: column; align-items: flex-start; min-width: 0; }
+.lst-l1 { display: flex; flex-wrap: wrap; column-gap: 4px; font-size: 12px; line-height: 14px; color: rgb(var(--cave-texte-400)); }
+.lst-mesure { display: flex; align-items: baseline; flex-wrap: wrap; column-gap: 4px; }
+.lst-key .lst-reading { font-size: 16px; line-height: 18px; }
+.lst-mesure .lst-unite { line-height: 14px; }
+.lst-go { position: relative; z-index: 1; margin-left: auto; flex: none; min-height: 28px; padding: 0 6px 0 10px; gap: 2px; white-space: nowrap; }
+.lst-go::after { content: ''; position: absolute; left: 0; right: 0; top: 50%; height: 40px; transform: translateY(-50%); }
+.lst-side { position: relative; z-index: 1; display: flex; flex-direction: column; justify-content: space-between; align-items: center; width: 36px; padding: 2px 0; flex: none; }
+.lst-side button { width: 36px; height: 30px; min-width: 0; min-height: 0; display: grid; place-items: center; color: rgb(var(--cave-texte-400)); }
 .lst-side .lst-fav svg { fill: rgb(var(--lst-or)); color: rgb(var(--lst-or)); }
-.lst-side svg { width: 20px; height: 20px; }
+.lst-side svg { width: 18px; height: 18px; }
 .lst-pastille { display: inline-flex; align-items: center; min-height: 20px; padding: 0 8px; border-radius: 999px; font-size: 12px; font-weight: 600; white-space: nowrap; border: 1px solid; }
 .lst-pastille[data-ton='cuve'] { border-color: rgb(var(--hop) / .6); background: rgb(var(--hop) / .15); color: rgb(var(--hop-texte)); }
 .lst-pastille[data-ton='garde'] { border-color: rgb(var(--water) / .6); background: rgb(var(--water) / .15); color: rgb(var(--cave-texte-50)); }

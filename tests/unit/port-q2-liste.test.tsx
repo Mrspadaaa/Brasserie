@@ -188,11 +188,11 @@ function Banc({ search = '', toutes = true }: { search?: string; toutes?: boolea
 }
 
 describe('rendu de la liste', () => {
-  it('au repos : les cinq cartes, la phrase, les puces', () => {
+  it('au repos : les cinq cartes, les puces ; plus de phrase de tête (LST-TITRE-COMPTEUR, 19.11)', () => {
     render(<Banc />);
     expect(screen.getByRole('group', { name: 'Avancement' })).toBeTruthy();
     expect(screen.getAllByText(/ZZ Z[1-5]/).length).toBeGreaterThanOrEqual(5);
-    expect(screen.getByText('2 en cuve')).toBeTruthy();
+    expect(screen.queryByText('2 en cuve')).toBeNull();
   });
   it('geste : une puce posée filtre, Tout effacer la retire', () => {
     render(<Banc />);
@@ -206,7 +206,7 @@ describe('rendu de la liste', () => {
   });
   it('état vide : la recherche sans résultat se dit et s’efface', () => {
     render(<Banc search="Galaxy" />);
-    expect(screen.getByText('Rien pour')).toBeTruthy();
+    expect(screen.getByText('Aucun brassin avec Galaxy')).toBeTruthy();
     fireEvent.click(screen.getAllByRole('button', { name: /Effacer la recherche/ })[0]);
     expect(screen.getAllByText('ZZ Z1').length).toBeGreaterThan(0);
   });

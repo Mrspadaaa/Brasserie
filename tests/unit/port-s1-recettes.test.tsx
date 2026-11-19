@@ -138,11 +138,11 @@ describe('CarnetRecettes', () => {
   const neipa = recette('n1', { name: 'ZZ NEIPA' });
   const stock = [article('ZZ-PALE', 'ZZ Pale', 'Malt', 25, 'kg'), article('ZZ-CITRA', 'ZZ Citra', 'Houblon', 300), article('ZZ-VERDANT', 'ZZ Verdant', 'Levure', 2, 'sachet')];
 
-  it('au repos : la phrase dit ce qui est prêt ; Brasser appelle onBrew avec l’id de la recette', () => {
+  it('au repos : la section « Prêtes » dit ce qui est prêt ; Brasser appelle onBrew avec l’id de la recette', () => {
     stockCourant.items = stock;
     const p = props();
     render(<CarnetRecettes recipes={[blonde]} batches={[]} {...p} />);
-    expect(screen.getByText(/1 prête à brasser/)).toBeTruthy();
+    expect(screen.getByText('Prêtes')).toBeTruthy();
     expect(screen.getByText('jamais brassée')).toBeTruthy();
     fireEvent.click(screen.getByRole('button', { name: 'Brasser' }));
     expect(p.onBrew).toHaveBeenCalledWith('b1');
@@ -152,7 +152,7 @@ describe('CarnetRecettes', () => {
     stockCourant.items = stockNeipa;
     const p = props();
     render(<CarnetRecettes recipes={[neipa]} batches={[lot019]} {...p} />);
-    expect(screen.getByText(/1 à un achat près/)).toBeTruthy();
+    expect(screen.getByText('À un achat près')).toBeTruthy();
     expect(screen.getByText('ZZ Citra 250 g')).toBeTruthy();
     expect(screen.getByText(/les 100 g du stock vont au LOT-019/)).toBeTruthy();
     fireEvent.click(screen.getByText('ZZ NEIPA'));
@@ -169,7 +169,8 @@ describe('CarnetRecettes', () => {
     render(<CarnetRecettes recipes={[blonde]} batches={[]} {...props()} />);
     expect(screen.getByText('À vérifier')).toBeTruthy();
     expect(screen.queryByText('Prêtes')).toBeNull();
-    expect(screen.getByText('Rien de prêt à brasser')).toBeTruthy();
+    // 19.11 (LST-TITRE-COMPTEUR) : plus de titre « Rien de prêt à brasser » ; l'absence de la section « Prêtes » le dit.
+    expect(screen.queryByText('Rien de prêt à brasser')).toBeNull();
   });
 
   it('vide : exemple, stock du jour, Nouvelle recette', () => {
@@ -207,24 +208,23 @@ describe('ks1 n° 1 : l’IBU affiché est celui de la fiche, calculé ; une blo
   });
 });
 
-describe('ks1 n° 2 : la tête parle du carnet entier, jamais du filtre', () => {
+// ks1 n° 2, revu le 19.11 (LST-TITRE-COMPTEUR, « Pareil, inutile ») : la tête « 1 prête / 1 à un achat près » est partie ; le résultat se dit sous le champ.
+describe('ks1 n° 2 : sans titre-compteur, le résultat du filtre se dit sous le champ', () => {
   const props = () => ({ onOpenRecipe: vi.fn(), onEditRecipe: vi.fn(), onOpenBatch: vi.fn(), onBrew: vi.fn(), onNewRecipe: vi.fn() });
   const prete = recette('b1', { name: 'ZZ Blonde de soif', hops: [] });
   const presque = recette('n1', { name: 'ZZ NEIPA' });
-  it('une recherche sans résultat laisse « 1 prête » et « 1 à un achat près » ; le résultat se dit sous le champ', () => {
+  it('ni « 1 prête à brasser » ni « 1 à un achat près » en tête, avant comme après une recherche', () => {
     stockCourant.items = stockNeipa;
     render(<CarnetRecettes recipes={[prete, presque]} batches={[lot019]} {...props()} />);
     const champ = screen.getByRole('searchbox');
-    expect(screen.getByText(/1 prête à brasser/)).toBeTruthy();
-    expect(screen.getByText(/1 à un achat près/)).toBeTruthy();
+    expect(screen.queryByText(/1 prête à brasser/)).toBeNull();
+    expect(screen.queryByText(/1 à un achat près/)).toBeNull();
+    expect(screen.getByText('À un achat près')).toBeTruthy();
     fireEvent.change(champ, { target: { value: 'zzzzzz' } });
-    expect(screen.getByText(/1 prête à brasser/)).toBeTruthy();
-    expect(screen.getByText(/1 à un achat près/)).toBeTruthy();
     expect(screen.queryByText('Rien de prêt à brasser')).toBeNull();
     expect(screen.getByText(/Aucune recette ne correspond/)).toBeTruthy();
     fireEvent.change(champ, { target: { value: 'neipa' } });
-    expect(screen.getByText(/1 prête à brasser/)).toBeTruthy();
-    expect(screen.getByText(/1 à un achat près/)).toBeTruthy();
+    expect(screen.queryByText(/1 à un achat près/)).toBeNull();
     expect(screen.getByRole('status').textContent).toBe('1 sur 2 lignées');
   });
 });

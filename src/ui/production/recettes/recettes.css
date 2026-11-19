@@ -4,13 +4,8 @@
  * Échelle 12 / 13 / 14 / 15 / 16 / 28, graisse 600 au plus. Classes préfixées rcp- (L26).
  */
 .rcp-ecran { display: block; }
-.rcp-tete { display: flex; align-items: flex-end; justify-content: space-between; gap: 8px; margin: 6px 0 4px; }
-.rcp-phrase { display: flex; flex-direction: column; font-size: 28px; line-height: 1.12; font-weight: 600; letter-spacing: -0.01em; color: rgb(var(--cave-texte-50)); min-width: 0; }
-.rcp-phrase .rcp-ok { color: rgb(var(--hop-texte)); }
-.rcp-phrase .rcp-presque { color: rgb(var(--attention-texte)); }
-.rcp-total { text-align: right; font-size: 12px; line-height: 1.25; color: rgb(var(--cave-texte-400)); flex: none; }
-.rcp-total b { display: block; font-family: theme('fontFamily.mono'); font-variant-numeric: tabular-nums; font-size: 18px; font-weight: 600; color: rgb(var(--cave-texte-50)); }
-.rcp-cherche { display: flex; gap: 8px; margin: 8px 0 10px; }
+/* LST-TITRE-COMPTEUR (19.11) : la phrase de tête (« 3 à un achat près ») et le total (« 22 lignées · 23 recettes ») sont partis ; la recherche ouvre l'écran. */
+.rcp-cherche { display: flex; gap: 8px; margin: 2px 0 10px; }
 .rcp-champ { flex: 1; min-width: 0; display: flex; align-items: center; gap: 8px; min-height: 44px; padding: 0 12px; border-radius: 10px;
   background: rgb(var(--cave-900)); border: 1px solid rgb(var(--cave-700)); color: rgb(var(--cave-texte-400)); }
 .rcp-champ:focus-within { border-color: rgb(var(--water)); }

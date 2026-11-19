@@ -37,16 +37,19 @@ describe('e11a : la phrase-réponse de la liste', () => {
     expect(phraseBrassins(LOTS).map((f) => f.texte)).toEqual(['Pils à confirmer', 'NEIPA dry hop demain']);
   });
 
-  it('elle ouvre la page des brassins (titre visible), puis disparaît seulement dans le Bilan et revient', () => {
+  it('la liste s’ouvre sur sa recherche, sans titre-compteur ; elle laisse place au Bilan et revient', () => {
     monter();
-    // q2 : la liste porte sa propre phrase (e6a : « 2 en cuve / 1 à brasser ») ; q6 : les analyses se rangent dans la feuille de filtres.
-    const titre = () => screen.queryByRole('heading', { level: 2, name: /2 en cuve/ });
-    expect(titre()).toBeInTheDocument();
+    // 19.11 (BRS-TITRE-INUTILE, LST-TITRE-COMPTEUR) : plus de titre « 2 en cuve / 1 à brasser » ; la recherche ouvre la liste.
+    // q6 : les analyses se rangent dans la feuille de filtres.
+    expect(screen.queryByRole('heading', { level: 2, name: /en cuve|à brasser/ })).not.toBeInTheDocument();
+    const recherche = () => screen.queryByLabelText('Chercher un brassin');
+    expect(recherche()).toBeInTheDocument();
     fireEvent.click(screen.getByRole('button', { name: 'Filtrer' }));
     fireEvent.click(screen.getByRole('button', { name: /Voir les analyses des brassins/ }));
-    expect(titre()).not.toBeInTheDocument();
+    expect(recherche()).not.toBeInTheDocument();
     fireEvent.click(screen.getByRole('button', { name: 'Retour aux brassins' }));
-    expect(titre()).toBeInTheDocument();
+    expect(recherche()).toBeInTheDocument();
+    expect(screen.queryByRole('heading', { level: 2, name: /en cuve|à brasser/ })).not.toBeInTheDocument();
   });
 });
 
