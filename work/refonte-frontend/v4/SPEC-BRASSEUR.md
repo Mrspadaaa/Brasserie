@@ -2242,3 +2242,7 @@ Capture : work/missions/2026-11-18-choix-calendrier/brasseur/zoom-glisser-18-11.
 - (suite, 19.11) « On a pas perdu une donné, je pouvais avant choisir si je barssais avec un malt très mouillé ou non » (réponse du pilote : le choix vit à l'étape 6 Eau, interrupteur Rinçage et curseur Eau / grain ; Identité ne le montre pas)
 - (suite, 19.11) « Juste, alors juste, de l'eau à la fin après l'ebul ou durant »
 - (suite, 19.11, sur « le curseur Eau / grain ») « Juste alors ajouter un renvoi »
+
+### Finances › Opérations : les barres (19.11)
+
+- (capture 390 : barres Brassage 110,40 · Nettoyage 23,00 · Autres 132,00 · Matériel 5 500,00, entoure Autres et Matériel) « SI je click sur les barre ici, ça n'a aucun effet... »
