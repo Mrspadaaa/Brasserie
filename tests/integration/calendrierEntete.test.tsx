@@ -532,7 +532,9 @@ describe('CRITIQUE-2 n° 7, 8, 10 : la tête lisible, les noms comme z2s', () =>
   it('les noms rendus à 390 : au moins 4 avec la mise de côté, chacun sur une ligne (aucun tspan qui passe à la ligne)', () => {
     const { container } = render(<Banc {...espions()} modele={modele({ courbe: cz, creux: creuxDepuis(cz) })} />);
     const noms = container.querySelectorAll('[data-nom-courbe]');
-    expect(noms.length + container.querySelectorAll('[data-mise-de-cote="etiquette"]').length).toBeGreaterThanOrEqual(4);
+    // Paquet G n° 1 (CAL-PLACE-GACHEE) : la courbe portrait passe de 110 à 88 px (tracé de 68 px) ; à 390 (largeurs estimées hors navigateur), « Hotte » ne tient plus
+    // à côté de la mise de côté : 3 au moins, lus au doigt pour les autres (c2-b). Avant : 4.
+    expect(noms.length + container.querySelectorAll('[data-mise-de-cote="etiquette"]').length).toBeGreaterThanOrEqual(3);
     noms.forEach(n => n.querySelectorAll('tspan').forEach(t => { expect(t.getAttribute('dy')).toBeNull(); expect(t.getAttribute('x')).toBeNull(); }));
   });
 });
@@ -822,7 +824,8 @@ describe('CRITIQUE-3 n° 17 et 24 : les noms sur leur marche, l’étiquette du 
   const verifierNoms = (container: HTMLElement) => {
     const svg = courbeSvg(container);
     // Aucun trait de rappel : les seules lignes sont le zéro et les marches colorées.
-    for (const l of Array.from(svg.querySelectorAll('line'))) expect(l.classList.contains('ent-zero') || l.classList.contains('ent-mk')).toBe(true);
+    // Paquet G n° 2 : le trait « |déc. » des mois en haut (w3s, et le portrait) n'est pas un trait de rappel.
+    for (const l of Array.from(svg.querySelectorAll('line'))) expect(l.classList.contains('ent-zero') || l.classList.contains('ent-mk') || l.classList.contains('ent-mois-t')).toBe(true);
     const n = svg.querySelectorAll('[data-point-semaine]').length, u = Number(svg.getAttribute('width')) / n;
     const noms = nomsCourbe(container);
     expect(noms.length).toBeGreaterThan(0);

@@ -658,6 +658,14 @@ export const Rangee: React.FC<RangeeProps> = props => {
     [montrees, colonnes, largeurColonne, largeur, reserveDroite, zoneTitre, paysage, vueLarge, cleRenvois, lieCourt, auJourVue]
   );
   const hauteurLane = lignes === 0 ? 0 : lignes * mesures.ligne + 2;
+  /*
+   * CAL-FICHE-CACHE-BARRE (paquet G n° 4, 19.11) : la fiche d'une chose touchée s'ouvrait en fin de rangée, d'autres barres entre elle et la
+   * barre touchée. Elle s'ouvre juste sous la ligne de sa barre : la piste se coupe après cette ligne (et après toute chose qui la déborde,
+   * phrase ou points posés sur la ligne au-dessous), les lignes suivantes descendent sous la fiche et remontent à sa fermeture. Une chose
+   * qui n'est pas posée dans la rangée (masquée, série d'An) garde l'ancienne place, en fin de rangée.
+   */
+  const choisie = props.detail && selectionId ? items.find(d => d.chose.id === selectionId) : undefined;
+  const coupe = choisie ? ligneDeCoupe(items, choisie) : -1;
   const fantome = drag ? items.find(i => i.chose.id === drag.id) : undefined;
   const auJour = colonnes.length > 0 && ecartJours(colonnes[0].debut, colonnes[0].fin) >= 14;
   /* D385 : le bord se tire au jour ; sa colonne de fin dit la largeur d'un jour (une colonne d'un jour, ou 1/7 d'une semaine) */
@@ -712,15 +720,37 @@ export const Rangee: React.FC<RangeeProps> = props => {
           </span>
         )}
       </header>
-      {hauteurLane > 0 && (
-        <div className={`cal-lane${props.grille ? ' cal-lane-jours' : ''}`} style={{ height: hauteurLane }} data-lane={id}>
-          {props.grille}
-          {fantome && !fantome.petite && (
-            <i className="cal-fantome cal-pointille" aria-hidden="true" data-fantome style={{ left: fantome.gauche, width: fantome.largeur, top: fantome.ligne * mesures.ligne + 2, height: mesures.barre }} />
+      {hauteurLane > 0 && (coupe < 0 || coupe >= lignes - 1
+        ? piste(0, lignes - 1, hauteurLane, false)
+        : piste(0, coupe, (coupe + 1) * mesures.ligne, false))}
+      {choisie && (
+        <div className="cal-det-sous" data-detail-sous={choisie.chose.id} data-detail-ligne={coupe}>{props.detail}</div>
+      )}
+      {hauteurLane > 0 && coupe >= 0 && coupe < lignes - 1 && piste(coupe + 1, lignes - 1, (lignes - coupe - 1) * mesures.ligne + 2, true)}
+      {props.alerte}
+      {!choisie && props.detail}
+    </section>
+  );
+
+  /**
+   * Une piste : les lignes `de` à `a` de la rangée, dans une boîte de hauteur `hauteur` ; chaque chose y garde sa place, remontée de `de`
+   * lignes. Sans fiche ouverte, une seule piste porte toutes les lignes (comme avant) ; `suite` : la piste sous la fiche.
+   */
+  function piste(de: number, a: number, hauteur: number, suite: boolean): React.ReactNode {
+    const y = (ligne: number) => (ligne - de) * mesures.ligne + 2;
+    const dedansPiste = (ligne: number) => ligne >= de && ligne <= a;
+    /* la grille des jours se pose dans chaque morceau ; son mot « auj. » au pied du dernier seulement */
+    const grille = props.grille && React.isValidElement<{ mot?: boolean }>(props.grille) && coupe >= 0 && !suite && a < lignes - 1
+      ? React.cloneElement(props.grille, { mot: false }) : props.grille;
+    return (
+        <div className={`cal-lane${props.grille ? ' cal-lane-jours' : ''}`} style={{ height: hauteur }} data-lane={id} {...(suite ? { 'data-lane-suite': '' } : {})}>
+          {grille}
+          {fantome && !fantome.petite && dedansPiste(fantome.ligne) && (
+            <i className="cal-fantome cal-pointille" aria-hidden="true" data-fantome style={{ left: fantome.gauche, width: fantome.largeur, top: y(fantome.ligne), height: mesures.barre }} />
           )}
-          {items.map(d => {
+          {items.filter(d => dedansPiste(d.ligne)).map(d => {
             const c = d.chose;
-            const top = d.ligne * mesures.ligne + 2;
+            const top = y(d.ligne);
             const surDrag = drag && drag.id === c.id;
             if (d.marque) {
               const commeBarre = !d.petite;
@@ -763,8 +793,8 @@ export const Rangee: React.FC<RangeeProps> = props => {
               />
             );
           })}
-          {caddies.map(k => {
-            const top = k.ligne * mesures.ligne + 2 + Math.max(0, (mesures.barre - 18) / 2);
+          {caddies.filter(k => dedansPiste(k.ligne)).map(k => {
+            const top = y(k.ligne) + Math.max(0, (mesures.barre - 18) / 2);
             const aria = `Commander avant le ${jourLisible(k.jour)} · ${k.texte ?? k.chose.titre}`;
             return (
               <React.Fragment key={`cmd-${k.chose.id}`}>
@@ -774,7 +804,7 @@ export const Rangee: React.FC<RangeeProps> = props => {
                 {k.texte && (
                   <span
                     className={`cal-lbl cal-lbl-${k.cote} cal-lbl-caddie${k.lignes ? ' cal-lbl-2n' : ''}`} aria-hidden="true"
-                    style={{ ...(k.lignes ? { top: k.ligne * mesures.ligne, height: mesures.barre + 4 } : { top: k.ligne * mesures.ligne + 2, height: mesures.barre }), maxWidth: Math.max(40, k.place), ...(k.cote === 'droite' ? { left: k.centre + CADDIE_PX / 2 + 6 } : { right: `calc(100% - ${k.centre - CADDIE_PX / 2 - (k.retrait ?? 0)}px + 6px)` }) }}
+                    style={{ ...(k.lignes ? { top: y(k.ligne) - 2, height: mesures.barre + 4 } : { top: y(k.ligne), height: mesures.barre }), maxWidth: Math.max(40, k.place), ...(k.cote === 'droite' ? { left: k.centre + CADDIE_PX / 2 + 6 } : { right: `calc(100% - ${k.centre - CADDIE_PX / 2 - (k.retrait ?? 0)}px + 6px)` }) }}
                   >
                     {k.lignes
                       ? <><span className="cal-lbl-l1"><span className="cal-lbl-t cal-lbl-ent">{k.lignes[0]}</span></span><span className="cal-lbl-l2"><span className="cal-lbl-t cal-lbl-ent">{k.lignes[1]}</span></span></>
@@ -786,30 +816,41 @@ export const Rangee: React.FC<RangeeProps> = props => {
           })}
           {renvois.map((r, i) => {
             const pos = posRenvois[i];
-            if (!pos) return null;
+            if (!pos || !dedansPiste(pos.ligne)) return null;
             return (
               <button
                 key={r.chose.id} type="button" className="cal-renvoi" data-renvoi={r.chose.id}
-                style={{ left: pos.x, top: pos.ligne * mesures.ligne + 2 + Math.max(0, (mesures.barre - 24) / 2), maxWidth: largeursRenvois[i] }}
+                style={{ left: pos.x, top: y(pos.ligne) + Math.max(0, (mesures.barre - 24) / 2), maxWidth: largeursRenvois[i] }}
                 onClick={() => props.onRenvoi?.(r.chose)}
               >
                 {r.texte}<ChevronRight size={14} aria-hidden="true" />
               </button>
             );
           })}
-          {drag && ici && fantome && (
+          {drag && ici && fantome && dedansPiste(fantome.ligne) && (
             <BulleIci
               texte={ici} x={(fantome.a + drag.k + 0.5) * largeurColonne} largeur={largeur} choseId={fantome.chose.id}
-              haut={fantome.ligne * mesures.ligne + 2} bas={fantome.ligne * mesures.ligne + 2 + mesures.barre}
+              haut={y(fantome.ligne)} bas={y(fantome.ligne) + mesures.barre}
             />
           )}
         </div>
-      )}
-      {props.alerte}
-      {props.detail}
-    </section>
-  );
+    );
+  }
 };
+
+/**
+ * La dernière ligne que la fiche de `choisie` laisse au-dessus d'elle (paquet G n° 4) : la ligne de sa chose, ou la suivante quand sa phrase
+ * ou ses points y sont posés ; puis toute chose d'une ligne déjà gardée qui déborde plus bas l'emporte aussi (jamais une barre coupée).
+ */
+export function ligneDeCoupe(items: readonly Pick<Disposition, 'ligne' | 'phraseBas'>[], choisie: Pick<Disposition, 'ligne' | 'phraseBas'>): number {
+  const fin = (d: Pick<Disposition, 'ligne' | 'phraseBas'>) => d.ligne + (d.phraseBas ? 1 : 0);
+  let coupe = fin(choisie);
+  for (let encore = true; encore;) {
+    encore = false;
+    for (const d of items) if (d.ligne <= coupe && fin(d) > coupe) { coupe = fin(d); encore = true; }
+  }
+  return coupe;
+}
 
 /** « Livraison La Cigogne · S1 › » : le renvoi d'une vente liée à un brassin visible, quand la vente est hors de la vue (E32). */
 export function texteRenvoi(c: ChoseCalendrier): string {

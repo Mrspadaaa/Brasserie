@@ -8,6 +8,8 @@ import { plusMenuFor } from '../domain/plusEcran';
 import { ajouterJours, lundiDe, numeroSemaine } from '../domain/calendrier';
 import { brewBudgetDemands } from '../domain/finance/brewBudget';
 import { BottomNav } from '../components/BottomNav';
+import { Header } from '../components/Header';
+import type { Periode } from '../components/periode/periode';
 import { CalendrierTab } from '../components/tabs/CalendrierTab';
 import { FloatingActions } from '../ui/FloatingActions';
 import { Sheet } from '../ui/Sheet';
@@ -311,10 +313,24 @@ export interface BancProps {
   callbacks?: Partial<React.ComponentProps<typeof CalendrierTab>>;
   /** Sans la barre d'onglets ni le + volant (les tests de la frise seule). */
   sansChrome?: boolean;
+  /** Paquet G n° 7 : l'en-tête de l'app, collé en haut (le banc servi pose le vrai `Header`) ; absent dans les tests. */
+  enTeteApp?: React.ReactNode;
+  /** Ce que le banc dit de ses données, à côté de « banc — données simulées ». */
+  noteBanc?: string;
+}
+
+/**
+ * Paquet G (CAL-PLACE-GACHEE, R3) : le jeu « brasseur », `?preview=calendrier&jeu=brasseur`. **Banc — données simulées**, posées comme sa
+ * capture du 19.11 : ses brassins, sans coût connu (aucune estimation de budget : la prévision n'en tire rien, la courbe reste plate au solde de
+ * départ) ; aucune fête, vente, achat ni facture. L'inconnu n'est pas 0 : ce qui n'est pas connu est absent, rien n'est inventé.
+ */
+export function etatBrasseur(aujourdhui: string): EtatBanc {
+  const base = etatBanc(aujourdhui);
+  return { batches: base.batches, plans: [], items: [], recettes: base.recettes, clients: [], transactions: [], reglages: REGLAGES_VIDES, lignesCourses: [] };
 }
 
 /** L'onglet Calendrier sur la fixture, avec la barre d'onglets et le + volant de l'app. */
-export const BancCalendrier: React.FC<BancProps> = ({ aujourdhui: jour, etat, solde = 403200, onAppel, callbacks, sansChrome }) => {
+export const BancCalendrier: React.FC<BancProps> = ({ aujourdhui: jour, etat, solde = 403200, onAppel, callbacks, sansChrome, enTeteApp, noteBanc }) => {
   const aujourdhui = jour ?? todayISO();
   const [e, setE] = useState<EtatBanc>(() => etat ?? etatBanc(aujourdhui));
   const ref = useRef(e);
@@ -347,7 +363,8 @@ export const BancCalendrier: React.FC<BancProps> = ({ aujourdhui: jour, etat, so
   const lundiLisible = (iso: string) => new Intl.DateTimeFormat('fr-CH', { day: 'numeric', month: 'short', timeZone: 'UTC' }).format(new Date(`${iso}T00:00:00Z`));
   return (
     <div className="min-h-screen bg-cave-950 text-cave-50" data-banc-calendrier>
-      <p className="px-3 pt-1 text-sm text-cave-200" data-banc>banc — données simulées</p>
+      <p className="px-3 pt-1 text-sm text-cave-200" data-banc>banc — données simulées{noteBanc ? ` · ${noteBanc}` : ''}</p>
+      {enTeteApp}
       {renvoi && (
         <Sheet open title="banc — l’app ouvrirait" onClose={() => setRenvoi(null)}>
           <div className="space-y-2 px-4 pb-4 text-sm text-cave-100" data-banc-renvoi data-banc-quitte={renvoi.quitte ? 'oui' : undefined}>
@@ -387,12 +404,18 @@ export const BancCalendrier: React.FC<BancProps> = ({ aujourdhui: jour, etat, so
 /** Le banc servi (`?preview=calendrier`) : la fixture, plus la tendance de Finances simulée (E01) ; les tests gardent `etatBanc` seul. */
 export const CalendrierPreview: React.FC = () => {
   const aujourdhui = todayISO();
-  const [etat] = useState(() => avecTendance(etatBanc(aujourdhui), aujourdhui));
+  const brasseur = typeof window !== 'undefined' && new URLSearchParams(window.location.search).get('jeu') === 'brasseur';
+  const [etat] = useState(() => (brasseur ? etatBrasseur(aujourdhui) : avecTendance(etatBanc(aujourdhui), aujourdhui)));
+  /* Paquet G n° 7 : le vrai en-tête de l'app (48 px au téléphone), collé ; il publie sa hauteur, la zone du calendrier se colle dessous */
+  const [periode, setPeriode] = useState<Periode>({ genre: 'tout' });
+  const enTeteApp = <Header globalTimeFilter={periode} onChangeGlobalTimeFilter={setPeriode} hidePeriod onGoHome={() => undefined} onOpenSearch={() => undefined} onOpenPlus={() => undefined} />;
   /* CRITIQUE-11 (état 35, D-81) : la trace des écritures du banc, lue par le harnais de vision (`window.__bancAppels`) ; en mémoire, rien ne part */
   const onAppel = useCallback((a: Appel) => {
     const w = window as unknown as { __bancAppels?: Appel[] };
     (w.__bancAppels ??= []).push(a);
   }, []);
   /* les six mois de charges payées (6 × 650) s'ajoutent au solde de départ : la caisse d'aujourd'hui reste celle de la fixture (4 032) */
-  return <BancCalendrier aujourdhui={aujourdhui} etat={etat} solde={403200 + 6 * 65000} onAppel={onAppel} />;
+  /* le jeu brasseur : sans tendance ni charges payées, la caisse est le solde du banc (4 032) */
+  return <BancCalendrier aujourdhui={aujourdhui} etat={etat} solde={brasseur ? 403200 : 403200 + 6 * 65000} onAppel={onAppel} enTeteApp={enTeteApp}
+    noteBanc={brasseur ? 'jeu brasseur : brassins sans coût connu, ni fête, ni vente, ni achat' : undefined} />;
 };

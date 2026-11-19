@@ -45,10 +45,17 @@ beforeEach(() => {
 });
 afterEach(cleanup);
 
+// 19.11 (STK-COMMANDE-REPLIEE) : le bloc vit replié en tête de Courses ; on l'y ouvre d'un toucher.
+async function ouvrirBloc() {
+  fireEvent.click(await screen.findByRole('button', { name: 'Courses' }));
+  fireEvent.click(await screen.findByRole('button', { name: /à commander/, expanded: false }));
+  await screen.findByTestId('chiffre-a-commander');
+}
+
 describe('chiffre clé, pastille et courses : un seul horizon', () => {
   it('par défaut « avant le prochain brassin » : 2 articles (Munich, Malt chocolat) ; Tout en compte 4, seuil compris', async () => {
     render(<Catalogue/>);
-    await screen.findByTestId('chiffre-a-commander');
+    await ouvrirBloc();
     expect(screen.getByTestId('cac-gros')).toHaveTextContent('2');
     fireEvent.click(screen.getByRole('radio', { name: /Tout/ }));
     expect(screen.getByTestId('cac-gros')).toHaveTextContent('4'); // + Pilsner (brassin dans 40 jours, hors des six semaines) et Gypse (au seuil)
@@ -56,7 +63,7 @@ describe('chiffre clé, pastille et courses : un seul horizon', () => {
 
   it('le chiffre et la pastille de l’onglet (la même vue) comptent pareil, à chaque horizon', async () => {
     render(<Catalogue/>);
-    await screen.findByTestId('chiffre-a-commander');
+    await ouvrirBloc();
     const stocks = StorageService.getStocks();
     const vue = vueHorizon(articlesACommander([...stocks.rawMaterials, ...stocks.cleaning], BATCHES, []), BATCHES, aujourdhuiLocal());
     for (const [nom, h] of [[/prochain brassin/, 'brassin'], [/6 sem\./, 'six'], [/Tout/, 'tout']] as const) {
@@ -65,10 +72,11 @@ describe('chiffre clé, pastille et courses : un seul horizon', () => {
     }
   });
 
-  it('« Commander ces 2 » ouvre les courses limitées à l’horizon, qui le disent et offrent Tout voir', async () => {
+  it('« Commander ces 2 » replie le bloc sur les courses limitées à l’horizon, qui le disent et offrent Tout voir', async () => {
     render(<Catalogue/>);
-    await screen.findByTestId('chiffre-a-commander');
+    await ouvrirBloc();
     fireEvent.click(screen.getByRole('button', { name: 'Commander ces 2' }));
+    expect(screen.queryByTestId('chiffre-a-commander')).toBeNull();
     const bandeau = await screen.findByTestId('courses-horizon');
     expect(bandeau).toHaveTextContent(/2 sur 4 : avant S\d+ · Porter/);
     expect(screen.getByText('Munich')).toBeVisible();
@@ -78,12 +86,11 @@ describe('chiffre clé, pastille et courses : un seul horizon', () => {
     expect(screen.queryByTestId('courses-horizon')).toBeNull();
   });
 
-  it('les sous-onglets n’ont plus de chiffre ; une recherche ou un filtre cache la carte, pour montrer les résultats', async () => {
+  it('les sous-onglets n’ont plus de chiffre ; Articles ne montre plus la carte (elle est repliée dans Courses)', async () => {
     render(<Catalogue/>);
-    await screen.findByTestId('chiffre-a-commander');
+    await screen.findByRole('searchbox', { name: 'Rechercher dans le stock' });
     expect(screen.getByRole('button', { name: 'Courses' })).toBeVisible();
     expect(screen.queryByRole('button', { name: /Articles \(\d+\)|Courses \(\d+\)/ })).toBeNull();
-    fireEvent.change(screen.getByRole('searchbox', { name: 'Rechercher dans le stock' }), { target: { value: 'munich' } });
-    await waitFor(() => expect(screen.queryByTestId('chiffre-a-commander')).toBeNull());
+    expect(screen.queryByTestId('chiffre-a-commander')).toBeNull();
   });
 });

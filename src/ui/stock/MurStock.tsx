@@ -25,6 +25,10 @@ interface Props {
   onOnglet: (o: OngletMur) => void;
   /** Les états de chaque article (`infoLigne`) : les cartes d'Autres stocks disent les mots des pastilles (« manque », « bas »). */
   infos?: ReadonlyMap<string, { etats: ReadonlyArray<string> }>;
+  /** Une carte d'Autres stocks touchée (son id : « Additifs », « Emballage », « Nettoyage », « Fûts », « Matériel »). */
+  onCarte?: (id: string) => void;
+  /** La carte dont le filtre est actif (aria-pressed). */
+  carteActive?: string | null;
 }
 
 const esc = (t: string) => t.replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c] as string));
@@ -258,7 +262,7 @@ function Mur({ m, parRef, onOpen, onFiltre, filtre, retenus, ouvertLegende, onLe
   );
 }
 
-export function MurStock({ items, equipements = [], futs = [], onOpen, onFiltre, filtre, retenus = null, onglet, onOnglet, infos }: Props) {
+export function MurStock({ items, equipements = [], futs = [], onOpen, onFiltre, filtre, retenus = null, onglet, onOnglet, infos, onCarte, carteActive = null }: Props) {
   const m = useMemo(() => construireMur(items, sourcesDeLApp, equipements, futs), [items, equipements, futs]);
   const autres = useMemo(() => cartesAutres(items, equipements, futs, infos), [items, equipements, futs, infos]);
   const sig = signature(m);
@@ -275,12 +279,18 @@ export function MurStock({ items, equipements = [], futs = [], onOpen, onFiltre,
       {onglet === 'autres' && (
         <div className="sv-autres">
           {autres.length === 0 && <div className="sv-ot"><span>Aucun autre stock enregistré</span></div>}
-          {autres.map((c) => (
-            <div key={c.id} className="sv-ot" data-autre={c.id}>
-              <span><em>{c.nom}</em> {c.total}</span>
-              <span>{c.lignes.length ? c.lignes.map((l, k) => <Fragment key={k}>{k ? ' · ' : ''}<b className={l.alerte ? 'sv-al' : undefined}>{l.n}</b> {l.texte}</Fragment>) : 'rien à signaler'}</span>
-            </div>
-          ))}
+          {autres.map((c) => {
+            // STK-AUTRES-MORT (19.11) : une carte se touche. Additifs, Emballage, Nettoyage filtrent la liste (re-toucher l'ôte) ; Fûts et Matériel ouvrent leur sous-onglet.
+            const filtre = c.id !== 'Fûts' && c.id !== 'Matériel';
+            const action = filtre ? (carteActive === c.id ? 'retirer le filtre' : 'filtrer la liste') : `ouvrir l'onglet ${c.nom}`;
+            return (
+              <button key={c.id} type="button" className="sv-ot" data-autre={c.id} aria-pressed={filtre ? carteActive === c.id : undefined}
+                aria-label={`${c.nom} : ${c.total} ; ${c.lignes.length ? c.lignes.map((l) => `${l.n} ${l.texte}`).join(', ') : 'rien à signaler'} ; ${action}`} onClick={() => onCarte?.(c.id)}>
+                <span><em>{c.nom}</em> {c.total}{!filtre && <span className="sv-ot-v" aria-hidden="true"> ›</span>}</span>
+                <span>{c.lignes.length ? c.lignes.map((l, k) => <Fragment key={k}>{k ? ' · ' : ''}<b className={l.alerte ? 'sv-al' : undefined}>{l.n}</b> {l.texte}</Fragment>) : 'rien à signaler'}</span>
+              </button>
+            );
+          })}
         </div>
       )}
     </div>

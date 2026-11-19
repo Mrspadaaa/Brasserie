@@ -10,7 +10,8 @@ import { dernierMouvementDit, mouvementsParRef } from '../../domain/stock/dernie
 import type { MouvementBrut } from '../../domain/stock/mouvementsArticle';
 import { libelleSource, type SourceBesoin } from '../../domain/stock/disponibilite';
 import { lignesDeReglage, phraseReglage, vueHorizon } from '../../domain/stock/horizon';
-import { ChiffreACommander } from '../../ui/stock/ChiffreACommander';
+import { CommandeRepliee } from '../../ui/stock/ChiffreACommander';
+import { estFamilleAutre, FAMILLES_AUTRES } from '../../domain/stock/murDonnees';
 import { aujourdhuiLocal, useHorizonStock } from '../../ui/stock/useHorizonStock';
 import { nextUniqueRef } from '../../services/refs';
 import { EntityList } from '../../ui/EntityList';
@@ -44,8 +45,8 @@ import { formatLitres } from '../../domain/recipeMetrics';
 import { quantiteLue } from '../../domain/stock/regles';
 import { createSearch, runSearch } from '../../services/search';
 import { rechercherStock } from '../../domain/stock/recherche';
-import { infoLigne, compterEtats, trierArticles, resumeRayon, TRIS, type TriListe } from '../../domain/stock/liste';
-import { GROUPES_LISTE, groupeListe, lignesRetenues, texteFiltre, type FiltreListe } from '../../domain/stock/listeFiltres';
+import { infoLigne, compterEtats, trierArticles, resumeRayon, familleRecompter, TRIS, type TriListe } from '../../domain/stock/liste';
+import { GROUPES_LISTE, LIBELLE_FAMILLE, groupeListe, lignesRetenues, texteFiltre, type FiltreListe } from '../../domain/stock/listeFiltres';
 import { BasculeVue, Recherche, Pastilles, LigneFiltre, LigneTri, type VueStock } from '../../ui/stock/OutilsStock';
 import { RecompterStock } from '../../ui/stock/RecompterStock';
 
@@ -378,7 +379,7 @@ export const StocksTab: React.FC<StocksTabProps> = ({
   // Pastille C (16.11) : un seul horizon (S49 · 6 sem. · Tout) règle le chiffre clé, la pastille de l'onglet et la liste de courses.
   const [horizon, setHorizon] = useHorizonStock();
   const vueH = useMemo(() => vueHorizon(aCommander, batches, aujourdhuiLocal()), [aCommander, batches]);
-  const refsHorizon = useMemo(() => new Set(lignesDeReglage(vueH, horizon).map(l => l.item.ref)), [vue, horizon]);
+  const refsHorizon = useMemo(() => new Set(lignesDeReglage(vueH, horizon).map(l => l.item.ref)), [vueH, horizon]);
 
   /**
    * Liste de courses : ce qui manque pour couvrir les brassins planifiés,
@@ -416,7 +417,25 @@ export const StocksTab: React.FC<StocksTabProps> = ({
   const retenus = useMemo(() => lignesRetenues(allItems, infos, { filtre, recherche }), [allItems, infos, filtre, recherche]);
   // Le mur suit la liste : ses marques hors filtre ou recherche pâlissent (maquette fA).
   const refsRetenues = useMemo(() => (filtre || recherche) ? new Set(retenus.map(i => i.ref)) : null, [filtre, recherche, retenus]);
-  const visibleItems = useMemo(() => trierArticles(retenus, tri, infos), [retenus, tri, infos]);
+  // Autres stocks (STK-AUTRES-MORT, 19.11) : la liste ne garde que les familles hors du mur (Additifs, Emballage, Nettoyage), sans le tri des ingrédients ;
+  // Ingrédients rend la liste entière et son tri. Recompter garde ses tuiles (l'onglet du mur n'y paraît pas).
+  const autresStocks = ongletMur === 'autres' && vue === 'etagere';
+  const visibleItems = useMemo(() => {
+    const tries = trierArticles(retenus, tri, infos);
+    return autresStocks ? tries.filter(i => estFamilleAutre(familleRecompter(i))) : tries;
+  }, [retenus, tri, infos, autresStocks]);
+  const groupesVisibles = useMemo(() => autresStocks ? FAMILLES_AUTRES.map(f => LIBELLE_FAMILLE[f]) : GROUPES_LISTE, [autresStocks]);
+  const changerOngletMur = (o: 'ing' | 'autres') => {
+    setOngletMur(o);
+    // Un filtre de l'autre onglet viderait la liste : il s'ôte au passage (Malts en Autres stocks, Additifs en Ingrédients).
+    if (o === 'autres' ? filtre === 'Malts' || filtre === 'Houblons' || filtre === 'Levures' : estFamilleAutre(filtre)) setFiltre(null);
+  };
+  // Une carte d'Autres stocks : Additifs, Emballage, Nettoyage filtrent la liste (re-toucher l'ôte) ; Fûts et Matériel ouvrent leur sous-onglet, où vivent leurs articles.
+  const toucherCarte = (id: string) => {
+    if (id === 'Fûts') setSubTab('futs');
+    else if (id === 'Matériel') { setSegMateriel('parc'); setSubTab('materiel'); }
+    else if (estFamilleAutre(id)) setFiltre(f => (f === id ? null : id));
+  };
   // Un rayon se plie (chevron ⌃ de la maquette g6) : son en-tête garde son compte et dit en une ligne ce qui compte (manque, épuisés, bas…). L'état vit le temps de l'écran.
   const [plies, setPlies] = useState<ReadonlySet<string>>(() => new Set());
   const basculerPli = useCallback((nom: string) => setPlies(p => { const n = new Set(p); if (!n.delete(nom)) n.add(nom); return n; }), []);
@@ -610,11 +629,10 @@ export const StocksTab: React.FC<StocksTabProps> = ({
           : <div ref={setParentListe} className="min-h-0 flex-1 overflow-y-auto" data-testid="stock-defile">
         <div ref={refHaut}>
         {blocOutils}
-        {!filtre && !recherche && (
-          <ChiffreACommander vue={vueH} horizon={horizon} onHorizon={setHorizon} onOuvrir={setSelected} onCommander={() => setSubTab('courses')} />
-        )}
+        {/* STK-COMMANDE-REPLIEE (19.11) : le bloc « à commander » vit replié en tête de Courses ; Articles s'ouvre sur le mur et la liste. */}
         <Suspense fallback={<div role="status" className="py-3 text-sm text-cave-400">Chargement du mur du stock…</div>}>
-          <MurStock items={allItems} equipements={stocks.equipment} futs={stocks.kegs} onOpen={setSelected} onFiltre={(r) => setFiltre(r)} filtre={filtre === 'Malts' || filtre === 'Houblons' || filtre === 'Levures' ? filtre : null} retenus={refsRetenues} onglet={ongletMur} onOnglet={setOngletMur} infos={infos} />
+          <MurStock items={allItems} equipements={stocks.equipment} futs={stocks.kegs} onOpen={setSelected} onFiltre={(r) => setFiltre(r)} filtre={filtre === 'Malts' || filtre === 'Houblons' || filtre === 'Levures' ? filtre : null} retenus={refsRetenues} onglet={ongletMur} onOnglet={changerOngletMur} infos={infos}
+            onCarte={toucherCarte} carteActive={estFamilleAutre(filtre) ? filtre : null} />
         </Suspense>
         </div>
         <EntityList
@@ -624,12 +642,12 @@ export const StocksTab: React.FC<StocksTabProps> = ({
           items={visibleItems}
           keyOf={(i) => i.ref}
           groupOf={groupeListe}
-          groupOrder={GROUPES_LISTE}
+          groupOrder={groupesVisibles}
           groupesPlies={plies}
           renderGroupHeader={(nom, compte) => <EnteteRayon nom={nom} compte={compte} sur={totauxGroupes.get(nom)} tri={tri} onTri={setTri} plie={plies.has(nom)} onPli={() => basculerPli(nom)} resume={resumes.get(nom)} />}
           isFavorite={(i) => !!i.favorite}
           resetKey={tri}
-          header={allItems.length > 0 && <LigneTri tri={tri} onTri={setTri} />}
+          header={allItems.length > 0 && !autresStocks && <LigneTri tri={tri} onTri={setTri} />}
           emptyState={
             allItems.length > 0 ? <div className="py-6 text-center space-y-2" role="status">
               <p className="text-sm text-cave-200">Aucun article ne correspond</p>
@@ -663,6 +681,8 @@ export const StocksTab: React.FC<StocksTabProps> = ({
 
       {subTab === 'courses' && (
         <div className="flex-1 overflow-y-auto space-y-2 pb-4">
+          {/* Le chiffre clé, son horizon et son histogramme (Pastille C), repliés en une ligne discrète : un toucher les déplie (19.11). */}
+          <CommandeRepliee vue={vueH} horizon={horizon} onHorizon={setHorizon} onOuvrir={setSelected} />
           {aCommander.length > totalToOrder && (
             <p className="flex items-center gap-2 px-1 text-sm text-cave-200" role="status" data-testid="courses-horizon">
               <span className="min-w-0 flex-1">{totalToOrder} sur {aCommander.length} : {phraseReglage(vueH, horizon)}</span>

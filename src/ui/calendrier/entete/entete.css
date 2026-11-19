@@ -64,6 +64,10 @@
 .ent-per { flex: none; gap: 3px; padding: 0 7px 0 7px; background: rgb(var(--cave-50)); color: rgb(var(--cave-950)); }
 .ent-ret-b { gap: 2px; min-width: 28px; padding: 0 4px; border: 1.5px solid rgb(var(--alert)); color: var(--ent-bad); background: rgb(var(--alert) / 0.1); }
 .ent-pl { width: 24px; background: transparent; }
+/* Paquet G n° 8 (CAL-RETOUR-PLEIN) : en plein écran seulement, « Quitter le plein écran » sur l'aplat d'action du thème (paille en cave, encre en
+   clair), l'icône dans la couleur posée sur cet aplat ; plus large d'un cran pour se repérer. Au repos, rien ne change. */
+.ent .ent-pl.ent-pl--plein { width: 30px; border-radius: 8px; background: rgb(var(--ebc-straw)); color: rgb(var(--sur-paille)); }
+.ent .ent-pl.ent-pl--plein svg { stroke-width: 2.6; }
 .ent-lit { display: inline-flex; flex: 1 1 auto; align-items: baseline; gap: 4px; min-width: 0; height: 28px; line-height: 28px; white-space: nowrap; overflow: hidden; color: var(--ent-mut); }
 .ent-lit b, .ent-lit em, .ent-lit i { flex: none; }
 /* CRITIQUE-7 n° 5 : aucun morceau ne rétrécit (ni « … ») ; la tête choisit la forme la plus longue qui tient (LectureTete, as/cal.html). */
@@ -124,6 +128,13 @@
 .ent-cadre[data-glisse] { background: rgb(var(--area-finances) / 0.16); }
 /* Pendant le tirage, l'étiquette suit le doigt en haut de la courbe (jamais sur « 1 740 mis de côté », n° 24) ; les noms qu'elle couvrirait
    s'effacent le temps du geste. */
+/* Paquet G n° 2 : mois en haut (w3s, et le portrait depuis le paquet G) : le cadre et ses poignées commencent sous la rangée des mois (18 px). */
+.ent-cb[data-mois-haut] .ent-cadre, .ent-cb[data-mois-haut] .ent-poi { top: 18px; bottom: 2px; }
+/* Paquet G n° 1 : courbe plate (44 px, 24 px de cadre) : l'étiquette sur une ligne, les barres des poignées à la hauteur du cadre. */
+/* Centrée sur un cadre étroit (6 semaines sur 52 : 42 px), la ligne sortait par la gauche (« 7 – S52 », banc du 19.11) : elle se pose à droite du
+   cadre, sur la courbe plate où rien d'autre ne s'écrit ; une place déjà calculée par Fenetre (style en ligne) reste la sienne. */
+.ent-cb[data-courbe-plate] .ent-cadre-l { flex-direction: row; gap: 4px; bottom: 3px; left: calc(100% + 6px); transform: none; }
+.ent-cb[data-courbe-plate] .ent-poi i { height: 18px; margin-top: -9px; }
 .ent-cadre-tir { position: absolute; top: 0; z-index: 2; box-sizing: border-box; height: 22px; display: flex; align-items: center; justify-content: center; font-size: 14px; font-weight: 700; line-height: 20px; white-space: nowrap; color: var(--ent-fin-t); background: rgb(var(--cave-950)); border: 1.5px solid var(--ent-fin); border-radius: 11px; pointer-events: none; }
 .ent-nom-cache { visibility: hidden; }
 /* L'étoile d'une chose (E31) : collée à son nom, dans la couleur du texte de l'app. */
@@ -179,7 +190,8 @@
 .ent-zoom-tout { position: absolute; left: 0; right: 0; top: 0; z-index: 44; display: flex; flex-direction: column; overflow: hidden; background: rgb(var(--cave-950)); border-bottom: 1px solid var(--ent-line2); pointer-events: none; }
 
 /* ---- la bande des semaines : au repos la semaine seule, 40 px au plus ---- */
-.ent-bz { position: relative; margin-top: 12px; }
+/* Paquet G n° 2 : les mois sont en haut de la courbe partout ; la bande vient juste sous elle (4 px), une seule rangée d'axe. */
+.ent-bz { position: relative; margin-top: 4px; }
 .ent-bd { display: grid; grid-template-columns: repeat(var(--n, 6), minmax(0, 1fr)); border-bottom: 1px solid var(--ent-line); }
 .ent-bd-c { position: relative; display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 28px; padding: 0; color: var(--ent-mut); -webkit-touch-callout: none; user-select: none; }
 .ent-sem { font-size: 14px; font-weight: 600; line-height: 20px; color: var(--ent-mut); }

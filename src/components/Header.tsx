@@ -61,10 +61,34 @@ export const Header: React.FC<HeaderProps> = ({
   const autre = courant === 'Gaëtan' ? 'Aricia' : 'Gaëtan';
   const compact = useDensity() !== 'comfortable';
   const mobile = useMobileLayout();
+  const enTete = React.useRef<HTMLElement | null>(null);
+  /*
+   * Paquet G n° 7 (CAL-ENTETE-CACHE, 19.11 : « le header est un peu caché ») : l'en-tête publie sa hauteur (zone sûre comprise) dans
+   * `--main-header-height`, comme BottomNav publie `--main-navigation-height` : une zone collée d'un onglet se colle SOUS lui, jamais dessous.
+   */
+  React.useLayoutEffect(() => {
+    const el = enTete.current;
+    if (!el) return undefined;
+    const root = document.documentElement;
+    const propriete = '--main-header-height';
+    const avant = root.style.getPropertyValue(propriete);
+    const publier = () => {
+      const h = `${Math.round(el.getBoundingClientRect().height * 100) / 100}px`;
+      if (root.style.getPropertyValue(propriete) !== h) root.style.setProperty(propriete, h);
+    };
+    publier();
+    const observateur = typeof ResizeObserver !== 'undefined' ? new ResizeObserver(publier) : null;
+    observateur?.observe(el, { box: 'border-box' });
+    return () => {
+      observateur?.disconnect();
+      if (avant) root.style.setProperty(propriete, avant);
+      else root.style.removeProperty(propriete);
+    };
+  }, []);
 
   /* V-a : en-tête opaque. Un fond à 95 % et un flou laissaient voir à travers lui ce qui défile dessous (fantôme gris sous « L'Affinée » à 390). */
   return (
-    <header className="sticky top-0 z-40 bg-cave-950 border-b border-cave-800 pt-safe">
+    <header ref={enTete} className="sticky top-0 z-40 bg-cave-950 border-b border-cave-800 pt-safe">
       {/* La disposition compacte démarre à 36 px et grandit avec le texte. */}
       <div
         className={`app-titlebar max-w-4xl ${large ? 'min-[900px]:max-w-[1264px]' : ''} mx-auto px-2 flex items-center ${

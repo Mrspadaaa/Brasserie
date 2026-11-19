@@ -810,10 +810,11 @@ export function CalendrierTab(props: CalendrierTabProps) {
   );
 
   return (
-    <div ref={racine} className={`cal-tab space-y-2 pt-1 pb-[calc(var(--main-navigation-height,2.5rem)+6.5rem)] text-sm${paysage ? ' cal-tab-paysage' : ''}`} data-calendrier data-vue={vue} data-orientation={orientation}>
+    <div ref={racine} className={`cal-tab space-y-2 pt-1 text-sm${paysage ? ' cal-tab-paysage' : ''}`} data-calendrier data-vue={vue} data-orientation={orientation}>
       <h1 className="sr-only">Calendrier</h1>
 
-      <div className="cal-entete-zone sticky top-0 z-30 bg-cave-950" data-entete-zone onClickCapture={toucherIconeIdee}>
+      {/* Paquet G n° 7 (CAL-ENTETE-CACHE) : collée SOUS l'en-tête de l'app (sa hauteur publiée par Header), jamais dessous. */}
+      <div className="cal-entete-zone sticky z-30 bg-cave-950" style={{ top: 'var(--main-header-height, 0px)' }} data-entete-zone onClickCapture={toucherIconeIdee}>
         <EnTeteCalendrier
           modele={modele}
           fenetre={fenetre}
@@ -1003,6 +1004,10 @@ export function CalendrierTab(props: CalendrierTabProps) {
           </div>
         </Sheet>
       )}
+      {/* Paquet G n° 7 : la place laissée sous la frise (barre d'onglets, + volant) est un bloc, plus une marge intérieure : une zone collée ne
+          quitte son parent qu'à la fin de son contenu ; avec la marge, l'en-tête du calendrier remontait sous celui de l'app en bas de page
+          (844 × 390, défilé de 600 px : 13 px au lieu de 49). */}
+      <div aria-hidden="true" className="cal-tab-fin" style={{ height: 'calc(var(--main-navigation-height, 2.5rem) + 6.5rem)', marginTop: 0 }} />
     </div>
   );
 }

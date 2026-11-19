@@ -143,7 +143,15 @@ export function degagerDuVolant(det: HTMLElement): number {
   const bande = document.querySelector('[data-entete-zone] [data-msg-bande]')?.getBoundingClientRect();
   const bas = Math.max(entete && entete.height > 0 ? entete.bottom : 0, bande && bande.height > 0 ? bande.bottom : 0);
   const plafond = bas > 0 ? bas + 8 : 8;
-  const delta = Math.min(besoin, Math.max(0, Math.floor(r.top - plafond)));
+  /* CAL-FICHE-CACHE-BARRE (paquet G n° 4) : la fiche s'ouvre sous la barre touchée ; c'est la barre, pas la fiche, qui borne le défilement :
+     son haut reste 8 px sous l'en-tête collé (avant, la fiche montait sous l'en-tête et la barre passait dessous) */
+  const id = det.getAttribute('data-detail');
+  const zone = det.closest('[data-frise]') ?? document;
+  const barre = id ? [...zone.querySelectorAll<HTMLElement>('[data-chose]')]
+    .filter(x => x.getAttribute('data-chose') === id && !det.contains(x))
+    .map(x => x.getBoundingClientRect()).find(b => b.height > 0) : undefined;
+  const haut = barre ? Math.min(barre.top, r.top) : r.top;
+  const delta = Math.min(besoin, Math.max(0, Math.floor(haut - plafond)));
   if (delta > 0) window.scrollBy({ top: delta, left: 0, behavior: 'auto' });
   return delta;
 }

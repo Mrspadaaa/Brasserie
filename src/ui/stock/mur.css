@@ -89,6 +89,11 @@ html[data-theme="cave"] .stock-mur{--l1-page:#12100E;--l1-panel:#1A1613;--l1-rai
 .sv-ot{display:flex;flex-direction:column;gap:3px;min-height:58px;padding:9px 12px;border-radius:12px;background:var(--l1-page,#fff);box-shadow:inset 0 0 0 1px var(--l1-border,#E6E2D8);font-size:13px;line-height:17px;color:var(--l1-t1)}
 .sv-ot em{font-style:normal;font-weight:700;font-size:14px;color:var(--l1-t0)}.sv-ot>span:first-child{font-family:var(--l1-mono);color:var(--l1-t2)}.sv-ot>span:first-child em{font-family:var(--l1-sans,inherit)}
 .sv-ot b{font-weight:700;color:var(--l1-t0)}.sv-ot .sv-al{color:var(--l1-alertt,#B3261E)}
+/* STK-AUTRES-MORT (19.11) : les cartes sont des boutons ; celle qui filtre la liste porte le cadre de la sélection. */
+button.sv-ot{width:100%;text-align:left;font-family:inherit;cursor:pointer;align-items:stretch}
+button.sv-ot[aria-pressed="true"]{box-shadow:inset 0 0 0 2px var(--l1-t0)}
+button.sv-ot:focus-visible{outline:2px solid var(--l1-t0);outline-offset:2px}
+.sv-ot-v{font-family:var(--l1-sans,inherit);color:var(--l1-t2)}
 .l1e-b.l1e-hs{display:block;flex:none;overflow:visible;background:none!important;box-shadow:none!important}
 .l1e-c1 .sv-i{position:absolute;left:-3px;bottom:-1px;min-width:24px;height:17px;padding:0 4px;border:0;border-radius:9px;background:#EAEAEA;font:700 12px/17px var(--l1-sans,inherit);color:var(--l1-t1);letter-spacing:.02em;cursor:pointer}
 .l1e-c1 .sv-i::before{content:"";position:absolute;inset:-8px -14px -6px -6px}

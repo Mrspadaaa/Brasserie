@@ -406,7 +406,7 @@ export const Frise: React.FC<FriseProps> = props => {
           </g>
         </svg>
       )}
-      {rangees.map(r => {
+      {grouperVides(rangees.map(r => {
         const dedans = parRangee(r);
         const filtreeParFiltre = !!filtre && filtre !== r;
         const masqueeParOeil = masquees.includes(r);
@@ -414,7 +414,9 @@ export const Frise: React.FC<FriseProps> = props => {
         const epinglees = dedans.filter(c => epingles.includes(c.id) && positionDans(colonnes, c));
         /* un filtre sans rien d'épinglé ne laisse pas la rangée : « Tout afficher » la rend */
         if (filtreeParFiltre && !masqueeParOeil && epinglees.length === 0) return null;
-        return (
+        /* paquet G n° 3 : une rangée vide (rien dans la fenêtre, ni renvoi, ni alerte), affichée, se range avec ses voisines vides */
+        const vide = !masquee && !dedans.some(c => positionDans(colonnes, c)) && !(r === 'ventes' && renvois.length) && !(props.alerte && props.alerte.rangee === r);
+        return { r, vide, noeud: (
           <Rangee
             key={r}
             id={r}
@@ -448,10 +450,41 @@ export const Frise: React.FC<FriseProps> = props => {
             rangeeDeBarre={rangeeDeBarre}
             grille={avecJours ? <GrilleJours colonnes={colonnes} largeurColonne={largeurColonne} aujourdhui={props.aujourdhui} mot={r === derniereAvecPiste} /> : undefined}
           />
+        ) };
+      }), groupe => {
+        /* pas de zone gardée sous le + volant ici (D-135 vaut pour les noms posés dans une piste) : la zone, prise au défilement et gardée,
+           renvoyait le groupe à la ligne en cours de route (24 → 54 px) et la suite sautait */
+        return (
+          <div key={`vides-${groupe[0].r}`} className={`cal-vides${groupe.length > 1 ? ' cal-vides-n' : ''}`} data-rangees-vides={groupe.map(g => g.r).join(' ')}>
+            {/* en tête du groupe : posé au bout, « vides » renvoyait à la ligne six rangées qui tiennent sur deux */}
+            {groupe.length > 1 && <span className="cal-vides-mot" aria-hidden="true" data-vides-mot>vides</span>}
+            {groupe.map(g => g.noeud)}
+          </div>
         );
       })}
     </div>
   );
 };
+
+/**
+ * CAL-PLACE-GACHEE c (paquet G n° 3, 19.11) : Fêtes, Ventes, Achats « vide » prenaient chacune une rangée pleine. Les rangées vides
+ * consécutives se rangent sur une même ligne compacte, dans l'ordre des rangées ; chacune garde son +, son nom, son œil et « vide ». Une
+ * rangée non vide coupe le groupe ; au-delà de la largeur, la ligne revient à la ligne (frise.css, `.cal-vides`).
+ */
+export function grouperVides<T extends { r: IdRangee; vide: boolean; noeud: React.ReactNode }>(
+  entrees: ReadonlyArray<T | null>, groupe: (g: T[]) => React.ReactNode
+): React.ReactNode[] {
+  const sortie: React.ReactNode[] = [];
+  let courant: T[] = [];
+  const fermer = () => { if (courant.length) sortie.push(groupe(courant)); courant = []; };
+  for (const e of entrees) {
+    if (!e) continue;
+    if (e.vide) { courant.push(e); continue; }
+    fermer();
+    sortie.push(e.noeud);
+  }
+  fermer();
+  return sortie;
+}
 
 export type { Colonne, DragEtat };

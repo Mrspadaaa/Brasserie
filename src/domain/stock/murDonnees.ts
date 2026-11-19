@@ -4,6 +4,12 @@
 import type { StockItem, EquipmentItem, KegItem } from '../../types';
 import { estSucre } from './murRayon';
 import { formeLevureLue } from './formeLevure';
+import { familleRecompter, type FamilleRecompter } from './liste';
+
+/** Les familles d'Autres stocks (hors des trois rayons du mur) : leurs cartes filtrent la liste, la liste d'Autres stocks n'en montre pas d'autre. */
+export const FAMILLES_AUTRES = ['Additifs', 'Emballage', 'Nettoyage'] as const;
+export type FamilleAutre = (typeof FAMILLES_AUTRES)[number];
+export const estFamilleAutre = (f: FamilleRecompter | string | null | undefined): f is FamilleAutre => (FAMILLES_AUTRES as ReadonlyArray<string>).includes(f as string);
 import {
   ALPHA_MIN, ALPHA_MAX, COLONNES_STYLE, SOMMET, bornesAttenuation, classerHoublons, couleurALaClarte, couleurHoublon, couleurLevure, couleurMalt, couleurSocle,
   formeCereale, ordreColonne, pastillesVides, traceCereale, traceHoublon, type FamilleBrasseur, type FormeCereale, type SommetHoublon,
@@ -300,10 +306,11 @@ const bas = (i: StockItem) => (i.minStock != null && Number.isFinite(i.currentSt
  * « 1 bas » (pile au seuil), « 1 épuisé », « 1 à compter ». Sans `infos` : l'ancien compte « bas » (au seuil ou en dessous), gardé pour les aperçus.
  */
 export function cartesAutres(items: StockItem[], equipements: EquipmentItem[], futs: KegItem[], infos?: ReadonlyMap<string, { etats: ReadonlyArray<string> }>): CarteAutre[] {
-  const autres = items.filter((i) => !/^(malt|houblon|levure)/i.test(i.category) && !estSucre(i)); // le sucre est au rayon Malts
-  const groupe = (i: StockItem): 'Additifs' | 'Emballage' | 'Nettoyage' => /emballage/i.test(i.category) ? 'Emballage' : /cip|d[ée]sinfect|d[ée]tergent|sols|epi|nettoy/i.test(i.category) ? 'Nettoyage' : 'Additifs';
+  // La famille de la liste (`familleRecompter`) : la carte compte ce que son filtre montre (19.11, STK-AUTRES-MORT ; le sucre reste au rayon Malts).
+  const autres = items.filter((i) => estFamilleAutre(familleRecompter(i)));
+  const groupe = (i: StockItem) => familleRecompter(i);
   const cartes: CarteAutre[] = [];
-  for (const nom of ['Additifs', 'Emballage', 'Nettoyage'] as const) {
+  for (const nom of FAMILLES_AUTRES) {
     const li = autres.filter((i) => groupe(i) === nom); if (!li.length) continue;
     const lignes: CarteAutre['lignes'] = [];
     if (infos) {

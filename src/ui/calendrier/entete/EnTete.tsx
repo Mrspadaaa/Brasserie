@@ -7,7 +7,7 @@ import { creuxDepuis, miseDeCoteVisible, type CourbeCaisse, type MouvementNomme 
 import type { Orientation } from '../useOrientation';
 import { entrerPleinEcran, estPleinEcran, sortirPleinEcran } from '../pleinEcran';
 import { usePointeurCourbe } from '../usePointeurCourbe';
-import { Courbe, CourbeZoom, HAUTEUR_MOIS, MOIS_MIN, ajouterJours, chf, jourCourt, moisDeSemaine, semaineCourte, type Boite, type EtoileCourbe } from './Courbe';
+import { Courbe, CourbeZoom, HAUTEUR_MOIS, MOIS_MIN, ajouterJours, chf, courbePlate, jourCourt, moisDeSemaine, semaineCourte, type Boite, type EtoileCourbe } from './Courbe';
 import { Cadre, etiquetteCadre, fenetreDePeriode, libelleDuree, libellePeriode, periodeDeFenetre, SEMAINES_ANNEE, type FenetreSemaines, type PriseCadre } from './Fenetre';
 import { BandeSemaines } from './BandeSemaines';
 import { BandeColonnes, jourEntier } from './BandeColonnes';
@@ -99,12 +99,15 @@ const clamp = (v: number, a: number, b: number) => Math.max(a, Math.min(b, v));
 /** Largeur de la colonne du chiffre clé et des boutons en paysage (w3s). */
 const COLONNE_T = 214;
 /**
- * Portrait : 110 px, les mois dessous (z2s). Paysage : 90 px, les mois EN HAUT, dans la courbe, comme w3s (l-repos) ; le tracé garde 70 px
+ * Portrait (avant le paquet G) : 110 px, les mois dessous (z2s) ; voir HAUTEUR_COURBE. Paysage : 90 px, les mois EN HAUT, dans la courbe, comme w3s (l-repos) ; le tracé garde 70 px
  * (E02, CRITIQUE-4 n° 11) et l'en-tête tient dans 120 px (E10) : la place est prise sur la bande et l'écart, pas sur la courbe.
  */
 /* lot C n° 7 : alignée en paysage, la rangée du chiffre passait au-dessus (28 px) ; paquet D n° 6 : 90 px de courbe (147 px d'en-tête).
    Paquet E n° 2 : la rangée du chiffre se pose sur celle des mois ; 92 px pour tout (rangée de 28 px, puis 62 px de tracé), 119 px d'en-tête. */
-const HAUTEUR_COURBE = { portrait: 110, paysage: 90, paysageAlignee: 92 };
+/* Paquet G n° 1 et 2 (CAL-PLACE-GACHEE, 19.11 : « beaucoup d'espace "gâché" ») : en portrait, les mois passent EN HAUT de la courbe, comme w3s
+   (une seule rangée d'axe : la bande des semaines dessous) ; la courbe fait 88 px (plancher CAL-GRAPH-PETIT : 80), 44 px quand elle est plate
+   (solde constant : rien à lire). Alignée en portrait, 110 px, comme avant. */
+const HAUTEUR_COURBE = { portrait: 88, portraitPlate: 44, portraitAlignee: 110, paysage: 90, paysageAlignee: 92 };
 /** Paquet E n° 2 : la rangée du chiffre et des boutons en paysage aligné (boutons de 28 px), posée sur la rangée des mois de la courbe. */
 export const RANGEE_CHIFFRE_PAYSAGE = 28;
 /** Hauteur de la grande courbe au téléphone (p-c3a-pendant : environ 250 px, le détail dessous). */
@@ -184,7 +187,10 @@ export function EnTeteCalendrier(props: EnTeteCalendrierProps) {
   const repliTotal = largeurColonne > 0 ? largeurColonne * Math.max(1, nombre) : 390;
   const repli = paysage && !graph && !paysageAligne ? Math.max(200, repliTotal - COLONNE_T - 8) : repliTotal;
   const largeur = mesure || repli;
-  const hauteur = paysageAligne ? HAUTEUR_COURBE.paysageAlignee : paysage ? HAUTEUR_COURBE.paysage : HAUTEUR_COURBE.portrait;
+  // La platitude se lit sur la courbe du modèle, jamais sur l'aperçu d'un geste : la hauteur ne saute pas pendant un glisser.
+  const plate = !!base && courbePlate(base.semaines);
+  const hauteur = paysageAligne ? HAUTEUR_COURBE.paysageAlignee : paysage ? HAUTEUR_COURBE.paysage
+    : alignee ? HAUTEUR_COURBE.portraitAlignee : plate ? HAUTEUR_COURBE.portraitPlate : HAUTEUR_COURBE.portrait;
   const zoomee = !!apercuC && !graph && !cachee && !!base;
   /*
    * Paquet E n° 2 (E10, « en-tête de 120 px au plus » en paysage) : alignée en paysage, la rangée du chiffre (28 px) se posait au-dessus de la
@@ -665,7 +671,9 @@ export function EnTeteCalendrier(props: EnTeteCalendrierProps) {
               {cachee ? <ChartLine size={17} strokeWidth={2.2} aria-hidden="true" /> : <EyeOff size={17} strokeWidth={2.2} aria-hidden="true" />}
             </button>
           )}
-          <button type="button" className="ent-pl" aria-label={plein ? 'Quitter le plein écran' : 'Plein écran'} onClick={() => { void basculerPlein(); }}>
+          {/* Paquet G n° 8 (CAL-RETOUR-PLEIN, 19.11 : « mettre un highlights sur le bouton pour revenir normal ») : en plein écran seulement, le
+              retour prend le fond d'accent et une icône contrastée, deux thèmes ; aucun texte ajouté. */}
+          <button type="button" className={plein ? 'ent-pl ent-pl--plein' : 'ent-pl'} data-plein={plein ? '' : undefined} aria-label={plein ? 'Quitter le plein écran' : 'Plein écran'} onClick={() => { void basculerPlein(); }}>
             {plein ? <Minimize2 size={18} aria-hidden="true" /> : <Maximize2 size={18} aria-hidden="true" />}
           </button>
         </span>
@@ -677,7 +685,7 @@ export function EnTeteCalendrier(props: EnTeteCalendrierProps) {
         ) : courbe && base && cachee ? null : courbe && base && vueAl && alignement ? (
           <Courbe courbe={vueAl.sem} abscisses={alignement.abscisses} creuxIndex={vueAl.creuxIndex} largeur={largeur} hauteur={hauteur}
             curseur={lecture !== null && !apercuC ? lecture - vueAl.d : null} reference={refCourbe} gestes={apercuC ? undefined : gestesCourbe}
-            mise={vueAl.mise} mois moisEnHaut={paysage} etoiles={vueAl.etoiles} {...(paysageAligne ? { rangeeHaute: { hauteur: RANGEE_CHIFFRE_PAYSAGE, reserves } } : {})}>
+            mise={vueAl.mise} mois moisEnHaut etoiles={vueAl.etoiles} {...(paysageAligne ? { rangeeHaute: { hauteur: RANGEE_CHIFFRE_PAYSAGE, reserves } } : {})}>
             {vueAl.ap && !zoomTout && (
               <div className="ent-zoom-c" data-zoom-aligne style={{ height: hauteur }}>
                 <CourbeZoom avant={vueAl.sem.map(s => s.libre)} apres={vueAl.ap.map(s => s.libre)} abscisses={alignement.abscisses} largeur={largeur} hauteur={hauteur} lacher={lacherZoom} />
@@ -686,7 +694,7 @@ export function EnTeteCalendrier(props: EnTeteCalendrierProps) {
           </Courbe>
         ) : courbe && base ? (
           <Courbe courbe={courbe} largeur={largeur} hauteur={hauteur} curseur={lecture} reference={refCourbe} gestes={apercuC ? undefined : gestesCourbe} mise={miseCourbe}
-            mois={!annee} moisEnHaut={paysage} etoiles={etoilesCourbe} masque={apercuC ? null : tirage}
+            mois={!annee} moisEnHaut plate={plate && !paysage} etoiles={etoilesCourbe} masque={apercuC ? null : tirage}
             cadre={apercuC ? undefined : { index, nombre, etiquette: etiquetteCadre(semainesTot.map(s => s.numero), index, nombre, annee, etiquetteAnnee, lundis) }}>
             {apercuC ? (
               <div className="ent-zoom-c" style={{ height: hauteur }}>

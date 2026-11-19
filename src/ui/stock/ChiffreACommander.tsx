@@ -1,5 +1,5 @@
 import React, { useRef, useState } from 'react';
-import { ShoppingCart } from 'lucide-react';
+import { ChevronRight, ShoppingCart } from 'lucide-react';
 import { Units } from '../../services/units';
 import {
   HORIZONS, POSITION_SEUIL, etiquetteSemaine, fenetreDeReglage, libelleFenetre, lignesDeReglage, phraseReglage, reglageDeFenetre,
@@ -21,6 +21,36 @@ import './chiffreACommander.css';
  */
 
 const LIGNES_VISIBLES = 6;
+
+/**
+ * Le même bloc, replié en tête de Courses (19.11, ses mots : « la vue de commande de matériel soit replié, et pas très visible, elle
+ * apporte peu », puis « Ou mettre cette vue dans les courses... »). Replié : une ligne discrète « n à commander › » (texte secondaire,
+ * 44 px). Un toucher déplie le bloc entier de la maquette Pastille C, intact (chiffre, horizon, histogramme, liste, « Commander ces n ») ;
+ * ici « Commander ces n » replie le bloc pour laisser la liste de courses sous le doigt.
+ */
+export function CommandeRepliee({ vue, horizon, onHorizon, onOuvrir }: {
+  vue: VueHorizon;
+  horizon: Reglage;
+  onHorizon: (r: Reglage) => void;
+  onOuvrir: (item: StockItem) => void;
+}) {
+  const [ouvert, setOuvert] = useState(false);
+  const n = lignesDeReglage(vue, horizon).length;
+  return (
+    <div className="cac-repli" data-testid="commande-repliee">
+      <button type="button" className="cac-repli-l" aria-expanded={ouvert} aria-controls="cac-repli-bloc" onClick={() => setOuvert((o) => !o)}>
+        {/* « n à commander › » seulement : l'horizon se lit dans la ligne « 5 sur 28 : avant S48… » des courses, juste dessous (pas deux fois la même phrase). */}
+        <span>{n === 0 ? 'Rien à commander' : `${n} à commander`}</span>
+        <ChevronRight size={16} aria-hidden="true" className="cac-repli-c" />
+      </button>
+      {ouvert && (
+        <div id="cac-repli-bloc">
+          <ChiffreACommander vue={vue} horizon={horizon} onHorizon={onHorizon} onOuvrir={onOuvrir} onCommander={() => setOuvert(false)} />
+        </div>
+      )}
+    </div>
+  );
+}
 
 const quantite = (l: LigneHorizon) => l.missing > 0 ? `${l.auMoins ? 'au moins ' : ''}${Units.format(l.missing, l.item.unit)}` : 'à définir';
 const majuscule = (t: string) => t.charAt(0).toUpperCase() + t.slice(1);
