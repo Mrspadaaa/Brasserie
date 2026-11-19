@@ -2234,3 +2234,7 @@ Capture : work/missions/2026-11-18-choix-calendrier/brasseur/zoom-glisser-18-11.
 
 - (capture 390 : Brassins, entoure « 2 en cuve / 14 à brasser » en grand ; cartes Milk Stout, NEIPA Test, Jhhh) « Ça c'est inutile, et les fiche de brassin sont beaucoup trop gros »
 - (capture 390 : Brassins › Recettes, entoure « 3 à un achat près » en grand, avec « 22 lignées · 23 recettes ») « Pareil, inutile »
+
+### Recette › Identité : volume et ébullition (19.11)
+
+- (capture 390 : 29 L visés, fermenteur 30 L, cuve 35 L, ébullition 130 min, « ~6,5 L évaporés », « ~38,7 L à chaud avant ébullition · +3,7 L de trop ») « Plus on evapore, plus on a de litre en trop ??? »
