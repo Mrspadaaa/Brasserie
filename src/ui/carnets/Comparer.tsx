@@ -222,6 +222,9 @@ export function premierSansValeur(t: Tableau | null, critere?: CritereV): string
 export function moinsBienQueDe(t: Tableau, l: LigneT): number | null {
   const duLotA = (l as LigneT & { moinsBienQue?: number | null }).moinsBienQue;
   if (typeof duLotA === 'number') return duLotA;
+  /* tour 3, f5d n° 10 : une ligne venue de `tableau()` (elle porte `moinsBienPartout`) : le domaine a jugé, et une colonne lue sans sens
+     (débit 40 contre 25 L/min) peut séparer deux articles que les seuls critères diraient dominés. Pas de second calcul. */
+  if (typeof (l as LigneT & { moinsBienPartout?: boolean }).moinsBienPartout === 'boolean') return null;
   if (l.rang === null) return null;
   const cols = t.colonnes.filter(c => c.critereId && c.sens !== 'texte');
   const num = (x: LigneT, c: Tableau['colonnes'][number]): number | null => {

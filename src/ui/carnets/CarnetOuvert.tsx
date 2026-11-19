@@ -17,7 +17,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { normaliser } from '../../domain/carnets/analyseLocale';
 import { comptesCarnet, pluriel } from '../../domain/carnets/comptes';
-import { sourceDuCritere } from '../../domain/carnets/modele';
+import { estLienSeul, sourceDuCritere } from '../../domain/carnets/modele';
 import { CalendarCheck, ChevronDown, ChevronLeft, ChevronRight, Ellipsis, ExternalLink, Eye, FileText, GitFork, Image as ImageIcon, Lightbulb, Link2, ListTodo, Pencil, ShoppingBasket, Tag, Target, X } from 'lucide-react';
 import { Bandeau } from './Bandeau';
 import { CarteArticle, CarteClassee, estExemple, nombreValeur } from './CarteArticle';
@@ -313,7 +313,7 @@ export function CarnetOuvert(p: CarnetOuvertProps) {
      rangée la cite déjà. */
   const phraseCitee = k.phrase && !p.vientDEtreCree && !(r?.phrase && normaliser(r.phrase) === normaliser(k.phrase)) ? (phraseEnTitre(c.title, k.phrase)
     ? <p className="cn-cite" data-en-titre>votre phrase en titre</p>
-    : <p className="cn-cite">votre phrase : « {k.phrase} »</p>) : null;
+    : <p className="cn-cite">{estLienSeul(k.phrase) ? 'votre lien' : 'votre phrase'} : « {k.phrase} »</p>) : null; /* f5d n° 11 */
 
   const articleRange = r?.cible === 'article' ? k.articles.find(a => a.id === r.id) : undefined;
   const faconRange = articleRange?.faconId ? k.facons.find(f => f.id === articleRange.faconId) : undefined;

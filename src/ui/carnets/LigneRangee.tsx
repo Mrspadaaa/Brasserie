@@ -9,6 +9,7 @@
 import React from 'react';
 import { Bandeau } from './Bandeau';
 import { Provenance } from './EtatIA';
+import { estLienSeul } from '../../domain/carnets/modele';
 
 export interface LigneRangeeProps {
   /** `article` : en-tête d'article (G19 si `faconNom`). */
@@ -39,7 +40,8 @@ export function LigneRangee(p: LigneRangeeProps) {
       <div className="cn-rangee-corps">
         {p.children}
         {p.rangeSur && <p className="cn-mut"><Provenance origine="locale" /> articles rangés sur : {p.rangeSur}</p>}
-        {p.phrase && <p className="cn-cite">votre phrase : « {p.phrase} »</p>}
+        {/* tour 3, f5d n° 11 : un lien collé seul est « votre lien » ; l'URL reste citée, c'est le seul nom de l'article rangé */}
+        {p.phrase && <p className="cn-cite">{estLienSeul(p.phrase) ? 'votre lien' : 'votre phrase'} : « {p.phrase} »</p>}
       </div>
       {corrections.length > 0 && (
         <div className="cn-corrections" role="group" aria-label="Corriger">

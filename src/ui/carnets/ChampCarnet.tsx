@@ -167,8 +167,10 @@ function useChampPublie(zone: React.RefObject<HTMLDivElement | null>, inset: num
     const b = el?.querySelector<HTMLElement>('.cn-bulle');
     if (!el || !b) return;
     const d = defileurDe(el);
-    /* la bulle et son écart (gap de la zone) ; rien à faire en haut d'une page qui ne défile pas */
-    d?.scrollBy?.({ top: b.offsetHeight + 8 });
+    /* la bulle et son écart (gap de la zone) ; rien à faire en haut d'une page qui ne défile pas. Tour 3, f5d n° 4 : seulement si la
+       page était en bas (la bulle couvrirait sa dernière ligne) ; en haut, défiler poussait le titre sous la barre À venir / Carnets / Réalisés. */
+    if (!d || d.scrollTop <= 0 || d.scrollTop + d.clientHeight < d.scrollHeight - b.offsetHeight - 10) return;
+    d.scrollBy?.({ top: b.offsetHeight + 8 });
   }, [zone, bulle]);
 }
 
