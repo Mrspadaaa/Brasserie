@@ -20,7 +20,7 @@ import { nextClientId } from '../../services/refs';
 import { preparerQrFacture, problemesAdresse, QrFactureInvalide } from '../../services/swissQrBill';
 import { brassinsVendables, jaugeBrassin, litresVendus } from './brassinsVendables';
 import { formatsDuBrassin, tarifDuFormat } from './formatsVente';
-import { messageBornes, PRIX_UNITAIRE_MAX, problemePanier, QUANTITE_MAX, totauxPanier, versArticles, type LignePanier } from './panier';
+import { arrondiEspeces, messageBornes, PRIX_UNITAIRE_MAX, problemePanier, QUANTITE_MAX, totauxPanier, versArticles, type LignePanier } from './panier';
 import { debiteurDe, preparerVente, type Echeance, type ModeVente, type VentePreparee } from './enregistrerVente';
 import { effacerBrouillon, garderBrouillon, lireBrouillon } from './brouillon';
 import { IdentiteBrasserieFeuille } from './IdentiteBrasserie';
@@ -271,10 +271,14 @@ export function CaisseContenu({ clientIdInitial, onClose, onSaved, onBusy, ferme
   const nouvelleVente = () => { setResultat(null); setLignes([]); setErreur(''); numeroRef.current = null; setDateIso(todayISO()); };
 
   const peutPrimaire = !occupe && (enAttente || (Boolean(totaux) && !bornes && !dateErreur && !(mode === 'paye' && !moyen) && !(mode === 'qr' && (!client || bloqueQr || manqueQrHorsLigne))) && !manqueUid);
-  const libelleTotal = totaux ? fr(totaux.totalCents) : '—';
+  /* AM-69 : en espèces, le montant encaissé est arrondi à 5 ct ; l'écart se voit en une ligne au ticket et à l'annexe. */
+  const rond = mode === 'paye' && moyen === 'cash' && totaux ? arrondiEspeces(totaux.totalCents) : null;
+  const ecartRond = rond?.ecartCents ?? 0;
+  const libelleTotal = totaux ? fr(rond ? rond.totalCents : totaux.totalCents) : '—';
+  const ligneArrondi = (ecartCents: number) => <div className="cs-tl cs-muted" data-arrondi><span>Arrondi à 5 centimes</span><span className="cs-m">{ecartCents > 0 ? '+' : '−'}{fr(Math.abs(ecartCents))}</span></div>;
   /* Mon mois (f2d) : l'effet de CETTE vente sur son mois, par `periodeSynthese`. Le mode (Payé ici | Facture QR) est le seul état : la bascule de la carte l'écrit. */
   const choisirQr = () => { if (!client) { setVeutFacture(true); return; } setMode('qr'); };
-  const effetMois = useEffetPiece({ sens: 'in', date: dateIso, montantCents: totaux?.totalCents ?? 0, categorie: 'recettes', description: nomAnnexe0(client), reglement: mode === 'paye' ? 'paye' : 'a-payer', dateReglement: dateIso, moyen: moyen === 'cash' ? 'cash' : moyen === 'twint' ? 'twint' : 'other', echeance: dueDate }, transactions, useMemo(() => { try { return FinanceService.getPayments?.() ?? []; } catch { return []; } }, [transactions]));
+  const effetMois = useEffetPiece({ sens: 'in', date: dateIso, montantCents: rond ? rond.totalCents : totaux?.totalCents ?? 0, categorie: 'recettes', description: nomAnnexe0(client), reglement: mode === 'paye' ? 'paye' : 'a-payer', dateReglement: dateIso, moyen: moyen === 'cash' ? 'cash' : moyen === 'twint' ? 'twint' : 'other', echeance: dueDate }, transactions, useMemo(() => { try { return FinanceService.getPayments?.() ?? []; } catch { return []; } }, [transactions]));
   const libellePrimaire = occupe ? 'Enregistrement…' : enAttente ? 'Reprendre la confirmation' : null;
 
   const choisirDate = (valeur: string) => {
@@ -373,6 +377,7 @@ export function CaisseContenu({ clientIdInitial, onClose, onSaved, onBusy, ferme
               </div>
             ))}
             {assujetti && totaux && <div className="cs-tl"><span>TVA {String((taux * 100).toFixed(1)).replace('.', ',')} %</span><span className="cs-m">{fr(totaux.vatCents)}</span></div>}
+            {ecartRond !== 0 && ligneArrondi(ecartRond)}
             <div className="cs-tt">
               <span>{demo && <span className="cs-ex">prix exemple</span>}<span className="cs-tva">{assujetti ? 'TVA incluse' : 'sans TVA'}</span></span>
               <b className="cs-m" aria-label="Total">{libelleTotal}<small>CHF</small></b>
@@ -431,6 +436,7 @@ export function CaisseContenu({ clientIdInitial, onClose, onSaved, onBusy, ferme
             {mode === 'qr'
               ? lignes.map((l, i) => <div className="cs-dl" key={l.cle}><span>{l.designation} · {l.quantite} × <span className="cs-m">{montantChf(l.prixHT ?? NaN)}</span></span><span className="cs-m">{totaux ? fr(totaux.lines[i].netCents) : '—'}</span></div>)
               : <div className="cs-dl"><span>{lignes.length ? versArticles(lignes, taux).map(a => `${String(a.quantity).replace('.', ',')} × ${a.description}`).join(' · ') : '—'}</span><span className="cs-m">{totaux ? fr(totaux.totalCents) : '—'}</span></div>}
+            {mode === 'paye' && ecartRond !== 0 && ligneArrondi(ecartRond)}
             <div className="cs-dsum"><span>Total CHF · {assujetti ? 'TVA incluse' : 'sans TVA'}{mode === 'qr' && dueDate ? <> · payable au <span className="cs-m">{dateLongue(dueDate)}</span></> : mode === 'paye' ? <> · {moyen === 'twint' ? 'payé par TWINT' : moyen === 'cash' ? 'payé en espèces' : 'payé ici'}</> : null}</span><b className="cs-m">{libelleTotal}</b></div>
             {mode === 'qr' && <>
               <div className="cs-cut"><span>✂</span></div>

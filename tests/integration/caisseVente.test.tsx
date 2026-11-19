@@ -230,7 +230,9 @@ describe('Payé ici', () => {
     expect(cents(tx.amountHT) + cents(tx.tvaAmount)).toBe(cents(tx.amountTTC));
     expect(tx.finance.lines.reduce((n: number, l: any) => n + l.amountCents, 0)).toBe(tx.finance.amountCents);
     expect(tx.finance.amountCents).toBe(cents(tx.amountTTC));
-    if (assujetti) expect([cents(tx.amountHT), cents(tx.tvaAmount), cents(tx.amountTTC)]).toEqual([2500, 203, 2703]);
+    /* AM-69 : espèces arrondies à 5 ct (27,03 → 27,05) ; l'écart de 2 ct va au HT, la TVA des articles (2,03) ne bouge pas. */
+    if (assujetti) expect([cents(tx.amountHT), cents(tx.tvaAmount), cents(tx.amountTTC)]).toEqual([2502, 203, 2705]);
+    if (assujetti) expect(tx.finance.lines.find((l: any) => /arrondi/i.test(l.description))).toMatchObject({ amountCents: 2, kind: 'other' });
     const recu = (ReceiptService.generateReceiptPdf as any).mock.calls[0][0];
     expect(recu.beerName).toContain('3 × Pale Ale · 33 cl');
     expect(recu.beerName).toContain('1 × Pale Ale · 75 cl');

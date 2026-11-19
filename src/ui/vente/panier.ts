@@ -29,6 +29,15 @@ export function totauxPanier(lignes: LignePanier[], assujetti: boolean, tvaRate:
   try { return invoiceTotals(versArticles(lignes, tvaRate), assujetti); } catch { return null; }
 }
 
+/**
+ * AM-69 : un paiement en espèces s'arrondit au multiple de 5 centimes le plus proche (`Math.round(x * 20) / 20`, en centimes entiers).
+ * L'écart est une ligne « Arrondi à 5 centimes », jamais une TVA ni un prix changé. Un total qui tomberait à 0 (1 ou 2 ct) reste exact.
+ */
+export function arrondiEspeces(totalCents: number): { totalCents: number; ecartCents: number } {
+  const arrondi = Math.round(totalCents / 5) * 5;
+  return arrondi < 5 ? { totalCents, ecartCents: 0 } : { totalCents: arrondi, ecartCents: arrondi - totalCents };
+}
+
 /** La borne d'une vente (MV-38 : 50 000 CHF), en message, sinon `null`. */
 export const messageBornes = (totalCents: number | null): string | null => totalCents === null ? null : messageMontantChfHorsBornes(totalCents / 100, 'income');
 

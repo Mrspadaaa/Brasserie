@@ -10,7 +10,7 @@ import { ReceiptService } from '../../services/receiptService';
 import { COMPANY_FALLBACK, adresseBrasserie } from '../../domain/companyDefaults';
 import { echeanceFacture } from '../../domain/finance/numeroFacture';
 import { encoderLigneVente } from './ligneVente';
-import { resumePanier, versArticles, type LignePanier } from './panier';
+import { arrondiEspeces, resumePanier, versArticles, type LignePanier } from './panier';
 
 export type ModeVente = 'qr' | 'paye';
 export type Echeance = 'reception' | 10 | 30;
@@ -89,16 +89,20 @@ export async function preparerVente(e: EntreeVente): Promise<VentePreparee> {
   if (!e.moyen) throw new Error('Choisis TWINT ou espèces.');
   const id = `REC-${crypto.randomUUID()}`;
   const methode = e.moyen === 'twint' ? 'TWINT' : 'Espèces';
+  /* AM-69 : en espèces le montant encaissé est arrondi à 5 ct ; l'écart est SA ligne (comme la Dépense), le prix et la TVA des articles ne bougent pas. */
+  const { totalCents: encaisse, ecartCents } = e.moyen === 'cash' ? arrondiEspeces(totaux.totalCents) : { totalCents: totaux.totalCents, ecartCents: 0 };
+  const lignesVente: FinanceLine[] = [...lignesFinance(e.lignes, id, totaux), ...(ecartCents ? [{ id: `${id}-arrondi`, description: 'Arrondi à 5 centimes', kind: (ecartCents < 0 ? 'discount' : 'other') as FinanceLine['kind'], amountCents: ecartCents }] : [])];
   /* La quittance imprimée porte UNE ligne de résumé et le total (le service A5 ne connaît pas les lignes) ; l'écriture, elle, porte toutes les lignes. */
-  const recu = ReceiptService.generateReceiptPdf({ clientName: nomClient, beerName: resume, amountTTC: totaux.totalCents / 100, tvaRate: assujetti ? taux : 0, paymentMethod: methode, date: e.dateIso.split('-').reverse().join('.'), notes: `Règlement : ${methode}`, receiptNumber: id }, e.config);
+  const recu = ReceiptService.generateReceiptPdf({ clientName: nomClient, beerName: resume, amountTTC: encaisse / 100, tvaRate: assujetti ? taux : 0, paymentMethod: methode, date: e.dateIso.split('-').reverse().join('.'), notes: `Règlement : ${methode}${ecartCents ? ' (arrondi à 5 centimes)' : ''}`, receiptNumber: id }, e.config);
   const proof = justificatif(`proof-${crypto.randomUUID()}`, recu.dataUrl, recu.fileName, 'quittance');
   const tx: Transaction = {
-    id, ...base, description: `Vente ${resume} — ${nomClient}`, subcategory: 'Vente directe', proofNotes: `Client: ${nomClient} · Paiement: ${methode}`,
+    /* L'écart d'arrondi va au HT : HT + TVA = TTC reste vrai, la TVA des articles ne change pas. */
+    id, ...base, amountHT: (encaisse - totaux.vatCents) / 100, amountTTC: encaisse / 100, description: `Vente ${resume} — ${nomClient}`, subcategory: 'Vente directe', proofNotes: `Client: ${nomClient} · Paiement: ${methode}`,
     proofFileName: proof.fileName, proofType: 'application/pdf', syncedToDrive: true,
-    finance: { version: 1, kind: 'income', amountCents: totaux.totalCents, ...(e.client ? { vendor: e.client.name } : {}), paymentStatus: 'paid', recordedAt, proofDocumentId: proof.id, ...(batchId ? { batchId } : {}), lines: lignesFinance(e.lignes, id, totaux) }
+    finance: { version: 1, kind: 'income', amountCents: encaisse, ...(e.client ? { vendor: e.client.name } : {}), paymentStatus: 'paid', recordedAt, proofDocumentId: proof.id, ...(batchId ? { batchId } : {}), lines: lignesVente }
   };
-  const payment: FinancialPayment = { id: `PAY-${id}`, transactionId: id, date: e.dateIso, amountCents: totaux.totalCents, direction: 'in', method: e.moyen === 'twint' ? 'twint' : 'cash', recordedAt };
-  return { entry: { transaction: tx, proof, payment }, pdf: recu, numero: id, totalCents: totaux.totalCents, mode: 'paye' };
+  const payment: FinancialPayment = { id: `PAY-${id}`, transactionId: id, date: e.dateIso, amountCents: encaisse, direction: 'in', method: e.moyen === 'twint' ? 'twint' : 'cash', recordedAt };
+  return { entry: { transaction: tx, proof, payment }, pdf: recu, numero: id, totalCents: encaisse, mode: 'paye' };
 }
 
 export { QrFactureInvalide };
