@@ -18,6 +18,8 @@ import { changerUniteArticle } from '../domain/stock/changerUnite';
 import { estVide, ficheDe } from '../domain/stock/ficheValeurs';
 import { champsASaisir, MOT_A_SAISIR, subscribeEnrichissement } from '../services/enrichissement';
 import type { ChampEcrit } from '../services/enrichissementStore';
+import { AiAssist } from './AiAssist';
+import { factsForStock, type IngredientFacts, type IngredientKind } from '../domain/ingredientFacts';
 import { bandForEbc } from '../domain/beerColor';
 import { familleDe, jourCourt, lotsDe, nombreSuisse, phraseRemplacant, prixDernierAchat, prixLu, quantiteArticle, remplacantDe, variation, type Lot, type RemplacantFiche } from '../domain/stock/ficheArticle';
 import type { MouvementBrut } from '../domain/stock/mouvementsArticle';
@@ -74,6 +76,18 @@ function pasDe(unite: string): number[] {
   return [...[...montee].reverse().map(v => -v), ...montee];
 }
 const arrondi = (v: number) => Math.round(v * 1e6) / 1e6;
+
+/**
+ * « Compléter avec l'IA » (IA-COMPLETER-ABSENT, 19.11) : ce qui manque à la fiche d'un article, dans les mots d'`ingredientGaps` (ce sont eux que `fillsGap` lit).
+ * Houblon, malt (grain, pas sucre) et levure ; sel, matériel et fût n'ont aucune source ni `kind` côté IA.
+ */
+function trousPourIA(draft: StockItem, categorie: string): { kind: IngredientKind; missing: string[] } | null {
+  if (categorie === 'Houblon') return { kind: 'houblon', missing: estVide(draft, 'alphaPct') ? ['acides alpha'] : [] };
+  if (categorie === 'Malt') return { kind: 'malt', missing: [estVide(draft, 'colorEbc') && 'couleur EBC', estVide(draft, 'potentialPpg') && 'potentiel PPG'].filter(Boolean) as string[] };
+  if (categorie === 'Levure') return { kind: 'levure', missing: [estVide(draft, 'yeastAttenuationPct') && 'atténuation', estVide(draft, 'yeastTempMinC') && 'température minimale',
+    estVide(draft, 'yeastTempMaxC') && 'température maximale', estVide(draft, 'yeastLab') && 'laboratoire'].filter(Boolean) as string[] };
+  return null;
+}
 
 type Motif = 'comptage' | 'perte' | 'autre';
 const AUTRES: { code: InventoryReason; label: string }[] = [{ code: 'casse', label: 'Casse' }, { code: 'saisie', label: 'Erreur de saisie' }, { code: 'don', label: 'Don ou dégustation' }];
@@ -207,6 +221,16 @@ const FichePage: React.FC<StockDetailSheetProps & { item: StockItem }> = ({
   // Un champ tapé depuis n'est plus « à saisir » (le brouillon fait foi). Sans fiche liée, le produit n'a pas été reconnu : un mot près du nom.
   const aSaisir = (champ: ChampEcrit) => manque.includes(champ) && estVide(draft, champ as keyof StockItem);
   const nonReconnu = manque.length > 0 && !ficheDe(item);
+  // La fiche retrouvée par l'IA ne comble que les trous du brouillon (jamais une valeur du brasseur) ; elle ne s'écrit qu'à « Enregistrer ».
+  const trousIA = trousPourIA(draft, categorie);
+  const [repriseIA, setRepriseIA] = useState(false);
+  const reprendreIA = (kind: IngredientKind, facts: IngredientFacts) => {
+    const { category: _categorie, ...valeurs } = factsForStock(kind, facts);
+    const ajout: Record<string, unknown> = {};
+    for (const [champ, v] of Object.entries(valeurs)) if (v != null && v !== '' && !(Array.isArray(v) && !v.length) && estVide(draft, champ as keyof StockItem)) ajout[champ] = v;
+    setDraft({ ...draft, ...ajout });
+    setRepriseIA(Object.keys(ajout).length > 0);
+  };
   const attPubliee = attenuationPubliee(draft);
   // Choix B (voie n1-nom-fr) : les noms imprimés de l'article sur les factures, en petit sous « Nom » ; jamais le nom de l'article lui-même ; lecture seule.
   const nomsFacture = (draft.nomsFacture ?? []).filter(nom => nom.trim() && !memeNom(nom, draft.name)); // la même égalité que l'écriture (N2, N4) : `memeNom`
@@ -378,6 +402,8 @@ const FichePage: React.FC<StockDetailSheetProps & { item: StockItem }> = ({
                 <div className="sfp-info"><dt>Dernier prix</dt><dd>{prix ?? 'inconnu'}</dd></div>
                 <div className="sfp-info"><dt>Entrée</dt><dd>{infoEntree}</dd></div>
               </dl>
+              {trousIA && <AiAssist className="mt-2" kind={trousIA.kind} name={nomAffiche} missing={trousIA.missing} sansExplication onApply={facts => reprendreIA(trousIA.kind, facts)}/>}
+              {repriseIA && <p className="sfp-note" role="status" data-ia-reprise>Valeurs reprises dans « Modifier la fiche ». Enregistre pour les garder.</p>}
             </section>
           </div>
 
