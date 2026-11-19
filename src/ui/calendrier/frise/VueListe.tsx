@@ -153,9 +153,12 @@ export const VueListe: React.FC<VueListeProps> = ({ choses, sansDate, aujourdhui
   /* CRITIQUE-3 n° 35 : ce qui a commencé et court encore (un brassin en cuve) va dans « En cours », en tête ; « À venir » commence
      aujourd'hui. En tête de « En cours » : les retards et les bières pas brassées (n° 4, n° 22), par date ; puis les brassins, puis par date. */
   const parDate = (a: ChoseCalendrier, b: ChoseCalendrier) => dateDe(a).localeCompare(dateDe(b)) || a.titre.localeCompare(b.titre, 'fr');
+  /* PC-112 (CRITIQUE-13 n° 6, E40, E08) : une bière pas brassée ou une pièce due n'est pas « en cours » : elles ont leur section, « En retard »,
+     en tête ; « En cours » ne garde que ce qui a commencé et court encore (un brassin en cuve) */
+  const enRetard = React.useMemo(() => choses.filter(c => c.debut && enAttente(c)).slice().sort(parDate), [choses]);
   const enCours = React.useMemo(
-    () => choses.filter(c => c.debut && (enAttente(c) || (c.debut < aujourdhui && (c.fin || c.debut) >= aujourdhui))).slice()
-      .sort((a, b) => Number(enAttente(b)) - Number(enAttente(a)) || Number(b.rangee === 'brassins') - Number(a.rangee === 'brassins') || parDate(a, b)),
+    () => choses.filter(c => c.debut && !enAttente(c) && c.debut < aujourdhui && (c.fin || c.debut) >= aujourdhui).slice()
+      .sort((a, b) => Number(b.rangee === 'brassins') - Number(a.rangee === 'brassins') || parDate(a, b)),
     [choses, aujourdhui]
   );
   const aVenir = React.useMemo(() => choses.filter(c => c.debut && !enAttente(c) && c.debut >= aujourdhui).slice().sort(parDate), [choses, aujourdhui]);
@@ -168,7 +171,13 @@ export const VueListe: React.FC<VueListeProps> = ({ choses, sansDate, aujourdhui
 
   return (
     <div ref={racine} className="cal-liste" data-vue-liste style={reserve ? { paddingBottom: reserve } : undefined} data-reserve-volant={reserve || undefined}>
-      {groupes.length === 0 && enCours.length === 0 && <p className="cal-li-vide">Rien à venir. Le + pose un brassin, une fête, une vente…</p>}
+      {groupes.length === 0 && enCours.length === 0 && enRetard.length === 0 && <p className="cal-li-vide">Rien à venir. Le + pose un brassin, une fête, une vente…</p>}
+      {enRetard.length > 0 && (
+        <section aria-label="En retard" data-en-retard>
+          <h3 className="cal-li-mois">En retard · {enRetard.length}</h3>
+          <ul>{enRetard.map(c => <Ligne key={c.id} c={c} selectionId={selectionId} onChose={onChose} detail={detail} />)}</ul>
+        </section>
+      )}
       {enCours.length > 0 && (
         <section aria-label="En cours" data-en-cours>
           <h3 className="cal-li-mois">En cours · {enCours.length}</h3>

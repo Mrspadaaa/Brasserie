@@ -9,7 +9,7 @@ import { useDonneesCalendrier, type DonneesCalendrier } from '../../ui/calendrie
 import { appliquer, portParDefaut, type EcritureFaite, type PortEcritures } from '../../ui/calendrier/ecritures';
 import { useOrientation } from '../../ui/calendrier/useOrientation';
 import { EnTeteCalendrier, type VueCalendrier } from '../../ui/calendrier/entete/EnTete';
-import { fenetreDePeriode, periodeDeFenetre, SEMAINES_ANNEE, type FenetreSemaines } from '../../ui/calendrier/entete/Fenetre';
+import { fenetreDePeriode, libelleDuree, periodeDeFenetre, SEMAINES_ANNEE, type FenetreSemaines } from '../../ui/calendrier/entete/Fenetre';
 import { Frise, ordreComplet } from '../../ui/calendrier/frise/Frise';
 import type { SaisieRapide } from '../../ui/finance/prevision/PlanSheetC';
 import { Message, type MessageCal } from '../../ui/calendrier/frise/Message';
@@ -19,7 +19,7 @@ import { FeuilleAjout, type ResultatAjout } from '../../ui/calendrier/frise/Feui
 import { VueListe } from '../../ui/calendrier/frise/VueListe';
 import { CLASSE_TEINTE } from '../../ui/calendrier/frise/Marque';
 import { positionDans, type Colonne, type DragEtat } from '../../ui/calendrier/frise/Rangee';
-import { aDesJours, ajouterMois, cibleDuGlisse, colonnesDeLAxe, enMois, echelleApres, echelleEffective, peutDeplier, PERIODE_DE_L_ECHELLE, type Echelle, type SensPincement } from '../../ui/calendrier/echelle';
+import { aDesJours, ajouterMois, cibleDuGlisse, colonnesDeLAxe, ECHELLES, enMois, echelleApres, echelleEffective, peutDeplier, PERIODE_DE_L_ECHELLE, type Echelle, type SensPincement } from '../../ui/calendrier/echelle';
 import {
   RANGEES, ajouterJours, barreLiee, dateDeSemaine, ecartJours, estPonctuel, etiquetteS, jourLisible, lundiDe, nomRangee, nomSeules, preparerChoses,
   type CibleOuverture, type ChoseCalendrier, type ModeleCalendrier, type Rangee as IdRangee
@@ -535,7 +535,20 @@ export function CalendrierTab(props: CalendrierTabProps) {
     setMessage(null); setMenu(null); setAncreListe(undefined);
     setEchelleVoulue(e); setDeplie(null);
     setVueEtat('semaines'); setFenetre(fen); onPeriode(periodeDeFenetre(fen));
-  }, [modele.semaines, fenetre.du, premierLundi, onPeriode]);
+    /* PC-144 (paquet F n° 2) : l'échelle règle la période de toute l'app (D385, ses crans) ; quand elle la change, le message le dit, avec
+       Finances qui suit, et Annuler remet l'échelle et la période d'avant */
+    const avant = { fenetre, annee: vue === 'annee', echelle: echelleVoulue };
+    if (avant.annee || avant.fenetre.semaines !== fen.semaines) {
+      const nom = ECHELLES.find(x => x.id === e)?.nom ?? e;
+      montrer({
+        role: 'status', texte: `${nom} : période ${libelleDuree(avant.fenetre.semaines, avant.annee)} → ${libelleDuree(fen.semaines, false)} · Finances suit`,
+        annuler: () => {
+          setMessage(null); setEchelleVoulue(avant.echelle); setDeplie(null);
+          setVueEtat(avant.annee ? 'annee' : 'semaines'); setFenetre(avant.fenetre); onPeriode(periodeDeFenetre(avant.fenetre));
+        }
+      });
+    }
+  }, [modele.semaines, fenetre, vue, echelleVoulue, premierLundi, onPeriode, montrer]);
   /* D385 (variante B) : écarter les doigts ouvre l'échelle plus fine, les pincer la plus large ; un cran par geste, autour du jour visé */
   const surPincer = useCallback((sens: SensPincement, x: number) => {
     const suivante = echelleApres(echelleRef.current, sens);

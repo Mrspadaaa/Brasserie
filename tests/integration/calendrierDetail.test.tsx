@@ -84,8 +84,10 @@ describe('CRITIQUE-5 n° 4, 21, 22 : la vue Liste (E40, D-19, D-204, E47 c)', ()
     expect(f.texte).not.toContain('17 nov.');
     expect(f.texte).toMatch(/en retard/);
     expect(l[0].id).toBe('facture-hopfen');
-    const enCours = screen.getByRole('region', { name: 'En cours' });
-    expect(within(enCours).getAllByRole('listitem')[0]).toHaveAttribute('data-liste-chose', 'facture-hopfen');
+    /* PC-112 (CRITIQUE-13 n° 6) : ce qui attend un geste a sa section, « En retard », avant « En cours » ; « En cours » garde ce qui court */
+    const enRetard = screen.getByRole('region', { name: 'En retard' });
+    expect(within(enRetard).getAllByRole('listitem')[0]).toHaveAttribute('data-liste-chose', 'facture-hopfen');
+    expect(document.querySelector('[data-en-cours] [data-liste-chose="facture-hopfen"]')).toBeNull();
   });
 
   it('n° 22 : la Saison « pas brassée » va avec les retards, en tête, et sa date ne se lit qu’une fois', () => {
@@ -169,8 +171,9 @@ describe('CRITIQUE-10 n° 3, 4, 7 : une date, une plage entière, un lien lisibl
     const ligne = document.querySelector(`[data-liste-chose="${c.id}"]`)!;
     expect(ligne.textContent).toMatch(/pas brassée · prévue le 10 nov\. · S46/);
     expect(ligne.textContent).not.toMatch(/18 nov/);
-    /* le tri ne change pas : elle reste en tête de « En cours » */
-    expect(document.querySelector('[data-en-cours]')?.contains(ligne)).toBe(true);
+    /* PC-112 (CRITIQUE-13 n° 6) : une bière pas brassée n'est pas en cours ; elle va en tête, dans « En retard » */
+    expect(document.querySelector('[data-en-retard]')?.contains(ligne)).toBe(true);
+    expect(document.querySelector('[data-en-cours]')).toBeNull();
     rerender(
       <VueListe
         choses={[c]} sansDate={[]} aujourdhui={AUJ} selectionId={c.id} onChose={() => {}}
@@ -184,7 +187,14 @@ describe('CRITIQUE-10 n° 3, 4, 7 : une date, une plage entière, un lien lisibl
 
   it('n° 4 : « S49, 30 nov. – 6 déc. » : la plage est insécable ([data-plage] .cal-nowrap), « S49, » peut seul passer à la ligne', () => {
     const hotte = { id: 'P-HOTTE', rangee: 'achats', titre: 'Hotte', debut: '2026-11-30', fin: '2026-11-30', centimes: -90000, source: { genre: 'plan', id: 'P-HOTTE', origine: 'manual', statut: 'active' }, ouvre: { ecran: 'plan', id: 'P-HOTTE' }, deplacable: true } as ChoseCalendrier;
-    render(<DetailChose chose={hotte} libreSemaine={113300} onFermer={() => {}} onOuvrir={() => {}} />);
+    /* PC-NOTE-4 et PC-118 (en ligne) : une chose d'un jour (la Hotte, le 30 nov.) ne dit pas deux dates (« Semaine S49, 30 nov. – 6 déc. » à côté
+       de « Date 30 nov. ») : sa semaine est « S49 », sur une ligne ; la plage reste pour ce qui dure (ci-dessous, une fête du 30 nov. au 2 déc.) */
+    const { unmount } = render(<DetailChose chose={hotte} libreSemaine={113300} onFermer={() => {}} onOuvrir={() => {}} />);
+    expect(document.querySelector('[data-plage]')).toBeNull();
+    expect(document.querySelector('[data-semaine-detail]')?.textContent).toBe('S49');
+    expect(document.querySelector('.cal-det-et')?.textContent).toMatch(/Date30 nov\./);
+    unmount();
+    render(<DetailChose chose={{ ...hotte, fin: '2026-12-02' }} libreSemaine={113300} onFermer={() => {}} onOuvrir={() => {}} />);
     const plage = document.querySelector<HTMLElement>('[data-plage]')!;
     expect(plage.textContent).toBe('30 nov. – 6 déc.');
     expect(plage).toHaveClass('cal-nowrap');

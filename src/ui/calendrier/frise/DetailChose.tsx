@@ -232,7 +232,10 @@ export const DetailChose: React.FC<DetailChoseProps> = props => {
         </>
       ) : (
         <div className="cal-det-et">
-          {semaine && <div><span>Semaine</span><b>{texteSemaine(semaine)}</b></div>}
+          {/* PC-NOTE-4, PC-118 : une chose d'un jour ne dit pas deux dates (« S49, 30 nov. – 6 déc. » à côté de « Date 30 nov. ») : « S49 » seul */}
+          {semaine && (chose.fin && chose.fin !== chose.debut
+            ? <div><span>Semaine</span><b>{texteSemaine(semaine)}</b></div>
+            : <div><span>Semaine</span><b className="cal-nowrap" data-semaine-detail>{etiquetteS(lundiDe(chose.debut))}</b></div>)}
           {chose.debut && !joursDansFenetre && <div><span>Date</span><b><time className="cal-nowrap" dateTime={chose.debut}>{date(chose.debut)}</time>{chose.fin && chose.fin !== chose.debut ? <> → <time className="cal-nowrap" dateTime={chose.fin}>{date(chose.fin)}</time></> : ''}</b></div>}
           {/* paquet F n° 5 (PC-141) : une fête de 3 jours posée sur une semaine ne dure pas « 14 déc. → 20 déc. ». Ses jours ne sont pas écrits (la
               feuille choisit des semaines) : la date dit ce qui est su, « 3 j entre le 14 déc. et le 20 déc. », sans jour inventé */}

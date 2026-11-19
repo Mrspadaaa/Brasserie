@@ -176,6 +176,13 @@ describe('E01 : le chiffre clé et le creux', () => {
 });
 
 describe('E07 : la période, la même que celle de l’app (ET-PER)', () => {
+  it('PC-NOTE-18 (paquet F) : le bouton de la période a un nom propre, qui commence par son texte visible (« 6 sem. · période… »)', () => {
+    render(<Banc {...espions()} />);
+    const b = document.querySelector('[data-ent-periode]')!;
+    expect(b.getAttribute('aria-label')).toMatch(/^6 sem\. · période/);
+    expect(screen.getByRole('button', { name: /^6 sem\. · période, liste, tri et filtre$/ })).toBe(b);
+  });
+
   it('B4 : « 3 mois » écrit la période du lundi au dimanche de la 13e semaine', () => {
     const e = espions();
     render(<Banc {...e} />);

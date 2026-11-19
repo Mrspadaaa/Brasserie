@@ -1,6 +1,6 @@
 import React from 'react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
-import { act, cleanup, fireEvent, render, screen, waitFor } from '@testing-library/react';
+import { act, cleanup, fireEvent, render, screen, waitFor, within } from '@testing-library/react';
 import { BancCalendrier } from '../../src/design/CalendrierPreview';
 import { StorageService } from '../../src/services/storage';
 
@@ -71,6 +71,17 @@ describe('D385, variante D : l’échelle au menu de la période', () => {
     expect(echelle()).toBe('semaine');
     expect(nbColonnes()).toBe(6);
     expect(boutonPeriode().textContent).toBe('6 sem.');
+  });
+
+  it('PC-144 (paquet F n° 2) : une échelle qui change la période le dit (« Mois : période 6 sem. → 6 mois · Finances suit ») ; Annuler remet l’échelle et la période', () => {
+    const { appels } = monter();
+    choisirEchelle('mois');
+    const msg = screen.getByRole('status');
+    expect(msg.textContent).toMatch(/Mois : période 6 sem\. → 6 mois · Finances suit/);
+    fireEvent.click(within(msg).getByRole('button', { name: /Annuler/ }));
+    expect(echelle()).toBe('semaine');
+    expect(boutonPeriode().textContent).toBe('6 sem.');
+    expect(appels.length).toBeGreaterThanOrEqual(0);
   });
 
   it('« 2 sem. » des durées ouvre la vue Jour ; « 3 mois » choisi en Jour repasse l’axe en semaines', () => {

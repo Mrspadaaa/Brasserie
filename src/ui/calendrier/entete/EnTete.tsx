@@ -660,7 +660,8 @@ export function EnTeteCalendrier(props: EnTeteCalendrierProps) {
         {lecture !== null && !graph && courbeC ? <LectureTete courbe={courbeC} index={lecture} boutons={paysage ? undefined : boutonsTete} /> : cle}
         <span ref={boutonsTete} className="ent-t-b">
           <button type="button" className="ent-mb" aria-pressed={mouvements} title="Afficher les + et − et les icônes de chaque semaine" onClick={() => onMouvements(!mouvements)}>±</button>
-          <button ref={boutonPeriode} type="button" className="ent-per" data-ent-periode aria-haspopup="dialog" aria-expanded={menuOuvert} title="Période, liste, tri et filtre" onClick={() => setMenuOuvert(o => !o)}>
+          <button ref={boutonPeriode} type="button" className="ent-per" data-ent-periode aria-haspopup="dialog" aria-expanded={menuOuvert} title="Période, liste, tri et filtre"
+            aria-label={`${props.echelle === 'jour' && !annee ? `${libelle} · j` : libelle} · période, liste, tri et filtre`} onClick={() => setMenuOuvert(o => !o)}>
             {props.echelle === 'jour' && !annee ? `${libelle} · j` : libelle}<ChevronDown size={14} strokeWidth={2.4} aria-hidden="true" />
           </button>
           {retards.length > 0 && (
