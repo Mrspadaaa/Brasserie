@@ -350,8 +350,9 @@
 .ent--paysage .ent-cbz { grid-area: c; min-width: 0; }
 /* Les mois sont EN HAUT de la courbe (w3s) : la bande vient juste dessous, 4 px ; ses cases font 24 px (la date au toucher s'étend par ::after).
    Le tracé garde 70 px, l'en-tête 120 px au plus (E02, E10, CRITIQUE-4 n° 11). */
-.ent--paysage .ent-bz { grid-area: b; margin-top: 2px; }
-.ent--paysage .ent-bd-c { min-height: 24px; }
+/* Tour 3 T2-5 : en paysage, la bande des semaines colle à la courbe (0 px, le cadre garde 2 px) et ses cases font 22 px : la frise gagne 4 px. */
+.ent--paysage .ent-bz { grid-area: b; margin-top: 0; }
+.ent--paysage .ent-bd-c { min-height: 22px; }
 .ent--paysage .ent-cadre, .ent--paysage .ent-poi { top: 18px; bottom: 2px; }
 .ent--paysage .ent-lit { white-space: normal; height: auto; line-height: 20px; }
 .ent--paysage .ent-lit b { font-size: 20px; }

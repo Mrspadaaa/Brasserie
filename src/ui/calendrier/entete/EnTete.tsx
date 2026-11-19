@@ -87,6 +87,11 @@ export interface EnTeteCalendrierProps {
    * Le chiffre « à dépenser » garde sa règle (le creux de toute la courbe). Sans `onAligne`, pas d'interrupteur.
    */
   aligne?: boolean;
+  /**
+   * Tour 3 n° T2-1 (19.11, Calendrier 390 : « deux rangées d'axe ») : la courbe alignée ne porte plus sa rangée de mois ; la bande des semaines
+   * sous la frise est le seul axe, comme la courbe non alignée. Le code des mois reste : `true` les remet (ils tiennent entiers au bord, T2B-2).
+   */
+  moisCourbeAlignee?: boolean;
   onAligne?: (aligne: boolean) => void;
   /** D389 : « un bouton qui peut cacher le graph » ; cachée, seule la bande de l'axe reste sous la tête. Sans `onCourbeCachee`, pas de bouton. */
   courbeCachee?: boolean;
@@ -693,7 +698,7 @@ export function EnTeteCalendrier(props: EnTeteCalendrierProps) {
         ) : courbe && base && cachee ? null : courbe && base && vueAl && alignement ? (
           <Courbe courbe={vueAl.sem} abscisses={alignement.abscisses} creuxIndex={vueAl.creuxIndex} largeur={largeur} hauteur={hauteur}
             curseur={lecture !== null && !apercuC ? lecture - vueAl.d : null} reference={refCourbe} gestes={apercuC ? undefined : gestesCourbe}
-            mise={vueAl.mise} mois moisEnHaut etoiles={vueAl.etoiles} {...(paysageAligne ? { rangeeHaute: { hauteur: RANGEE_CHIFFRE_PAYSAGE, reserves } } : {})}>
+            mise={vueAl.mise} mois={!!props.moisCourbeAlignee} moisEnHaut etoiles={vueAl.etoiles} {...(paysageAligne ? { rangeeHaute: { hauteur: RANGEE_CHIFFRE_PAYSAGE, reserves } } : {})}>
             {vueAl.ap && !zoomTout && (
               <div className="ent-zoom-c" data-zoom-aligne style={{ height: hauteur }}>
                 <CourbeZoom avant={vueAl.sem.map(s => s.libre)} apres={vueAl.ap.map(s => s.libre)} abscisses={alignement.abscisses} largeur={largeur} hauteur={hauteur} lacher={lacherZoom} />

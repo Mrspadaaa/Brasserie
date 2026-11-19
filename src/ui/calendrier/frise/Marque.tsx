@@ -2,6 +2,7 @@ import React from 'react';
 import { Beer, FileText, Hammer, Link2, ListChecks, PartyPopper, ShoppingCart, TrendingUp } from 'lucide-react';
 import { etiquetteS, francsSignes, jourLisible, texteDuree, type ChoseCalendrier, type Rangee } from '../../../domain/calendrier';
 import { usePointeur } from './usePointeur';
+import { useToucherNom } from './zoneToucher';
 
 /* ---------- la largeur réelle d'un texte (CRITIQUE-4 n° 24) ----------
    Problème d'école : mesurer un texte avant de le poser. Méthode standard du navigateur : `CanvasRenderingContext2D.measureText` avec la police
@@ -247,6 +248,8 @@ export const Marque: React.FC<MarqueProps> = props => {
     onGlisse: k => props.onGlisse?.(chose, k),
     onLacheGlisse: (k, annule) => props.onLacheGlisse?.(chose, k, annule)
   });
+  /* T2-2 : le nom posé à côté de la vignette s'ouvre au toucher comme elle */
+  const toucheNom = useToucherNom(() => { if (cible.current) props.onToucher(chose, cible.current); });
   const proposee = !!(chose.proposition || chose.probable);
   const montant = montantDe(chose);
   const style: React.CSSProperties = { left: centre - hauteur / 2, top: haut, width: hauteur, height: hauteur, transform: decalage ? `translateX(${decalage}px)` : undefined };
@@ -287,7 +290,7 @@ export const Marque: React.FC<MarqueProps> = props => {
         {props.pointLie && <i className={`cal-point-lie ${CLASSE_TEINTE[props.pointLie]}`} data-point-lie={props.pointLie} aria-hidden="true" />}
       </button>
       {libelle && lbl && (
-        <span className={`cal-lbl cal-lbl-${libelle.cote}${libelle.deux ? ' cal-lbl-2n' : ''} ${CLASSE_TEINTE[chose.rangee]}${props.ton ? ` cal-ponctuel-${props.ton}` : ''}`} style={lbl}>
+        <span className={`cal-lbl cal-lbl-${libelle.cote}${libelle.deux ? ' cal-lbl-2n' : ''} ${CLASSE_TEINTE[chose.rangee]}${props.ton ? ` cal-ponctuel-${props.ton}` : ''}`} style={lbl} data-nom-touchable="" {...toucheNom}>
           <ContenuEtiquette chose={chose} nom={libelle.texte ?? chose.etiquette ?? chose.titre} montant={montant} deux={libelle.deux} lieCourt={props.lieCourt} sansLie={libelle.sansLie} />
         </span>
       )}

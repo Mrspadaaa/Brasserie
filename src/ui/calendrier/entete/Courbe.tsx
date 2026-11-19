@@ -337,6 +337,8 @@ export function boiteEtiquette(texte: string, gauche: number, largeurCadre: numb
 
 /** Écart minimal entre deux libellés de mois (CRITIQUE-3 n° 33). */
 export const ECART_MOIS = 24;
+/** T2B-2 (19.11, « déc. » coupé au bord) : un libellé de mois qui ne tient pas ENTIER avant le bord de la courbe ne s'écrit pas (ni coupé, ni orphelin). */
+export const MARGE_BORD_MOIS = 4;
 /** Jour du mois du jeudi d'une semaine. */
 const jourDuJeudi = (lundi: string): number => Number(ajouterJours(lundi, 3).slice(8, 10));
 /**
@@ -356,7 +358,7 @@ export function etiquettesMois(courbe: readonly SoldeSemaine[], g: Geo): { x: nu
   });
   const tous = debuts.map(d => ({ x: g.x(d.i) + 3, texte: MOIS_MIN[d.m] as string })).map(e => ({ ...e, w: largeurTexte(e.texte) }));
   for (let pas = 1; pas <= 6; pas++) {
-    const pris = tous.filter((_, k) => k % pas === 0).filter(e => e.x + e.w <= g.largeur);
+    const pris = tous.filter((_, k) => k % pas === 0).filter(e => e.x + e.w + MARGE_BORD_MOIS <= g.largeur);
     if (pris.every((e, k) => k === 0 || e.x - (pris[k - 1].x + pris[k - 1].w) >= ECART_MOIS)) return pris.map(({ x, texte }) => ({ x, texte }));
   }
   return [];
@@ -488,7 +490,9 @@ export function Courbe({ courbe, largeur, hauteur, curseur = null, reference, ge
   const causes = creux ? causesDuCreux(courbe, creux.index) : null;
   const misDeCote = courbe.some(s => s.caisse - s.libre > 1);
   const mois0 = avecMois ? etiquettesMois(courbe, g) : [];
-  const mois = rangeeHaute && moisEnHaut ? moisHorsReserves(mois0, rangeeHaute.reserves, largeur) : mois0.map(m => ({ ...m, trait: true }));
+  const moisPose = rangeeHaute && moisEnHaut ? moisHorsReserves(mois0, rangeeHaute.reserves, largeur) : mois0.map(m => ({ ...m, trait: true }));
+  /* T2B-2 : jamais un libellé coupé au bord, quelle que soit la route (colonne du chiffre, abscisses de la frise) */
+  const mois = moisPose.filter(m => m.x >= 0 && m.x + largeurTexte(m.texte) + MARGE_BORD_MOIS <= largeur);
   // Les mois d'abord : un nom peut se poser dans leur rangée, entre deux mois, à 8 px d'eux.
   const boitesMois = mois.map(m => ({ l: m.x - 8, r: m.x + largeurTexte(m.texte) + 8, t: yMois - 11, b: yMois + 3 }));
   // Un nom peut se poser dans la rangée des mois, entre deux mois (z2s « Six fûts inox −1 080 », w3s « Festival +2 450 »).

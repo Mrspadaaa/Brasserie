@@ -95,6 +95,9 @@ button.cal-lie::before { content: ''; position: absolute; inset: -6px -2px; }
 
 .cal-lbl { position: absolute; z-index: 3; display: flex; align-items: center; gap: 6px; overflow: hidden; white-space: nowrap; pointer-events: none; font-size: 14px; line-height: 18px; font-weight: 600; color: rgb(var(--cave-50)); }
 .cal-lbl-gauche { justify-content: flex-end; }
+/* T2-2 : le nom posé à côté de sa chose s'ouvre au toucher comme elle ; la zone élargie d'une barre minuscule est invisible (44 × 24 px au moins) */
+.cal-lbl[data-nom-touchable] { pointer-events: auto; cursor: pointer; touch-action: pan-y; -webkit-touch-callout: none; user-select: none; -webkit-user-select: none; }
+.cal-zone-tactile { position: absolute; z-index: 0; background: transparent; pointer-events: auto; }
 .cal-lbl-t { min-width: 0; overflow: hidden; text-overflow: ellipsis; }
 /* CRITIQUE-6 n° 6 et 17 : une ligne d'un nom posé sur deux lignes (`disposer` lui a donné sa place) ne se coupe jamais */
 .cal-lbl-t.cal-lbl-ent { flex: none; overflow: visible; text-overflow: clip; }

@@ -812,19 +812,22 @@ export function CalendrierTab(props: CalendrierTabProps) {
   /* CRITIQUE-13 n° 1 (règle n° 1, `as/cap/p-f6b-apres`) : l'alerte f6-b (et f2-a) se pose dans la rangée de la vente promise, sous elle, dans le
      flux ; elle pousse la suite et ne cache rien. Vente hors de la vue, rangée masquée ou vue Liste : le message reste à sa place commune. */
   const rangeeAlerte: IdRangee | null = (() => {
-    if (!message || message.role !== 'alert' || !message.ancre || liste || graph) return null;
+    /* PC-109, PC-96, PC-85 (CRITIQUE-13 n° 3, E33) : un message sans place qui laisse les noms libres passe lui aussi dans le flux, sous sa chose */
+    if (!message || (message.role !== 'alert' && fluxForce !== message.id) || !message.ancre || liste || graph) return null;
     const a = message.ancre;
     const c = choses.find(x => x.id === a) ?? choses.find(x => x.id.startsWith(a));
-    if (!c || !positionDans(colonnes, c) || masquees.includes(c.rangee) || (filtre && filtre !== c.rangee)) return null;
+    /* hors de la vue (Livrer au 5 janv., hors des 6 semaines) : au pied de sa rangée, jamais sur un nom */
+    if (!c || (!positionDans(colonnes, c) && fluxForce !== message.id) || masquees.includes(c.rangee) || (filtre && filtre !== c.rangee)) return null;
     return c.rangee;
   })();
   const noeudMessage = (
-    <Message message={message} onFermer={fermerMessage} detailOuvert={selectionId} dansLaFrise={rangeeAlerte !== null} onDefileSeul={absorberDefilement} />
+    <Message message={message} onFermer={fermerMessage} detailOuvert={selectionId} dansLaFrise={rangeeAlerte !== null} onDefileSeul={absorberDefilement}
+      onSansPlace={() => { if (message && fluxForce !== message.id) setFluxForce(message.id); }} />
   );
 
   return (
     /* Tour 2 n° 1 (paysage 844 × 340) : couché, 4 px entre l'en-tête et la frise, rien au-dessus ; chaque pixel va aux rangées. */
-    <div ref={racine} className={`cal-tab text-sm${paysage ? ' cal-tab-paysage space-y-1' : ' space-y-2 pt-1'}`} data-calendrier data-vue={vue} data-orientation={orientation}>
+    <div ref={racine} className={`cal-tab text-sm${paysage ? ' cal-tab-paysage space-y-0.5' : ' space-y-2 pt-1'}`} data-calendrier data-vue={vue} data-orientation={orientation}>
       <h1 className="sr-only">Calendrier</h1>
 
       {/* Paquet G n° 7 (CAL-ENTETE-CACHE) : collée SOUS l'en-tête de l'app (sa hauteur publiée par Header), jamais dessous. */}

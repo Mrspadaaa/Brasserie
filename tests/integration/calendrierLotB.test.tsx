@@ -164,7 +164,8 @@ describe('Lot C n° 7 : en paysage, alignée et zoomée sur toute la largeur de 
   });
 
   it('paquet E n° 2 (E10) : alignée en paysage, la rangée du chiffre se pose sur celle des mois ; le tracé commence sous elle, les mois évitent le chiffre et les boutons', () => {
-    const { container } = render(<Banc orientation="paysage" aligne onAligne={() => undefined} />);
+    /* Tour 3 T2-1 : la courbe alignée n'écrit plus ses mois par défaut (la bande des semaines est l'axe) ; l'option les remet, c'est elle qu'on place ici. */
+    const { container } = render(<Banc orientation="paysage" aligne onAligne={() => undefined} moisCourbeAlignee />);
     const svg = container.querySelector('.ent-cbz svg.ent-svg')!;
     /* les mois sur la ligne du milieu de la rangée de 28 px (y = 19), pas sur une rangée à eux au-dessus du tracé (y = 13) */
     const mois = [...svg.querySelectorAll('text.ent-mois')];

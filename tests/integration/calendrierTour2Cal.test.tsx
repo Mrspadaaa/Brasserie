@@ -102,9 +102,11 @@ describe('tour 2 n° 2 — CAL-PLACE-GACHEE : une seule rangée d’axe quand la
       expect(container.querySelector('[data-bande-semaines]')).not.toBeNull();
     });
   }
-  it('alignée sur la frise, la courbe garde ses mois (ceux de la frise), inchangé', () => {
+  it('alignée sur la frise, la courbe n’écrit plus ses mois par défaut (tour 3 T2-1) ; l’option moisCourbeAlignee les remet (ceux de la frise)', () => {
     const { container } = render(<EnTeteCalendrier {...props(vivante, { aligne: true, onAligne: () => undefined })} />);
-    expect(svgCourbe(container).querySelectorAll('text.ent-mois').length).toBeGreaterThan(0);
+    expect(svgCourbe(container).querySelectorAll('text.ent-mois')).toHaveLength(0);
+    const avec = render(<EnTeteCalendrier {...props(vivante, { aligne: true, onAligne: () => undefined, moisCourbeAlignee: true })} />);
+    expect(svgCourbe(avec.container).querySelectorAll('text.ent-mois').length).toBeGreaterThan(0);
   });
 });
 

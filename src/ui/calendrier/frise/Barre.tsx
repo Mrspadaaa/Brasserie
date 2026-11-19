@@ -3,6 +3,7 @@ import { Link2, Pin, Star } from 'lucide-react';
 import { ecartJours, etiquetteS, francsSignes, jourLisible, type ChoseCalendrier, type JalonBrassin } from '../../../domain/calendrier';
 import { CLASSE_TEINTE, ContenuEtiquette, PastilleLie, dureeVue, largeurTexte, nomAccessible, type ModeDeuxLignes } from './Marque';
 import { usePointeur } from './usePointeur';
+import { useToucherNom, zoneToucher } from './zoneToucher';
 import { ETAPE_BRASSIN, couleurEtape, encreEtape, estEtape, type EtapeBrassin } from './etapes';
 
 /**
@@ -228,6 +229,9 @@ export const Barre: React.FC<BarreProps> = props => {
     onLacheBord: (k, annule) => props.onLacheBord(chose, k, annule)
   });
 
+  /* T2-2 : le nom posé à côté de la barre s'ouvre au toucher comme elle (ni glisser, ni menu) */
+  const toucheNom = useToucherNom(() => { setPointVu(null); if (el.current) props.onToucher(chose, el.current); });
+
   /* les jours montrés, depuis le début de la chose : `[o, f]` (toute la chose quand elle n'est pas coupée : rien ne change) */
   const o = props.coupe?.du ? Math.min(total, Math.max(0, ecartJours(chose.debut, props.coupe.du))) : 0;
   const f = props.coupe?.au ? Math.max(o, Math.min(total, ecartJours(chose.debut, props.coupe.au))) : total;
@@ -258,6 +262,9 @@ export const Barre: React.FC<BarreProps> = props => {
   /* la phrase posée sous la barre suit le doigt de même ; pendant le geste, elle seule dit la nouvelle date (aucune bulle en double) */
   const phraseDessous = bas?.ou === 'dessous' ? (etiquetteDuree ?? formeEntiere) : null;
   const n = chose.joursActifs && chose.joursActifs > 0 ? chose.joursActifs : 0;
+  /* PC-143, PC-NOTE-2 (paquet F) : sur un axe en jours, des points répartis sur la semaine passent pour des jours choisis (la feuille ne choisit
+     que des semaines) : ils sont groupés au début de la barre, « 3 j » sans date inventée ; en semaines et en mois, répartis comme avant */
+  const pointsGroupes = n > 0 && !!props.largeurJour && props.largeurJour >= props.largeurColonne - 0.5;
   const style: React.CSSProperties = { left: gauche, top: haut, width: w, height: hauteur, transform: decalage ? `translateX(${decalage}px)` : undefined };
   const lblStyle: React.CSSProperties = cote === 'gauche'
     ? { right: `calc(100% - ${gauche + decalage - (props.retrait ?? 0)}px + 6px)` }
@@ -276,6 +283,8 @@ export const Barre: React.FC<BarreProps> = props => {
      ouvre l'aperçu. Le bouton, nommé « Hotte, liée à Blonde d'automne : aperçu », est posé sur l'icône, hors de la barre (jamais un bouton dans
      un bouton) ; l'icône reste dessinée par le badge (une seule à l'image) */
   const lienIcone = props.sansLie && chose.lie ? chose.lie : null;
+  const zoneBarre = zoneToucher(w, hauteur);
+  const nomTouchable = cote !== 'dedans' && !cede;
 
   return (
     <>
@@ -299,6 +308,8 @@ export const Barre: React.FC<BarreProps> = props => {
         {...gestes}
         onKeyDown={e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); if (el.current) props.onToucher(chose, el.current); } }}
       >
+        {/* T2-2 : zone de toucher d'au moins 44 × 24 px, invisible, sous les points et le reste de la barre (ses gestes remontent à la barre) */}
+        {zoneBarre && <i className="cal-zone-tactile" data-zone-tactile aria-hidden="true" style={zoneBarre} />}
         {brassin && segments.length > 0 && (
           /* D384 (jeu C, `.phases`) : le pied de la barre, coloré par phase, d'un bord à l'autre, sans jour ni espace entre deux phases. La
              piste couvre les bords de la barre ; une phase se place sur la largeur intérieure (celle des icônes), la première et la dernière
@@ -345,8 +356,8 @@ export const Barre: React.FC<BarreProps> = props => {
         })()}
         {n > 0 && (
           /* CRITIQUE-10 n° 2 (E24, D-9) : un conteneur à part du libellé ; dans la barre haute, il prend la ligne sous le nom */
-          <span className={`cal-pts${bas?.ou === 'barre' ? ' cal-pts-bas' : ''}`} data-points={n} aria-hidden="true">
-            {Array.from({ length: n }, (_, i) => <i key={i} data-point style={{ left: `${((i + 0.5) / n) * 100}%` }} />)}
+          <span className={`cal-pts${bas?.ou === 'barre' ? ' cal-pts-bas' : ''}`} data-points={n} {...(pointsGroupes ? { 'data-points-groupes': '' } : {})} aria-hidden="true">
+            {Array.from({ length: n }, (_, i) => <i key={i} data-point style={{ left: pointsGroupes ? `${4 + i * 10}px` : `${((i + 0.5) / n) * 100}%` }} />)}
           </span>
         )}
         {etiquetteDuree && bas?.ou !== 'dessous' && <em className={`cal-duree${dureeHors && !bas ? ' cal-duree-hors' : ''}${bas ? ' cal-duree-in' : ''}`} data-duree>{etiquetteDuree}</em>}
@@ -363,7 +374,8 @@ export const Barre: React.FC<BarreProps> = props => {
       </div>
       {/* CRITIQUE-5 n° 26 : sur deux lignes, le nom et son montant restent ensemble ; la pastille « lié à » passe dessous */}
       {/* f2-a : la durée tirée, posée à droite de la barre, prend la place de l'étiquette le temps du geste (jamais l'une sur l'autre) */}
-      <span className={`cal-lbl cal-lbl-${cote}${props.deuxLignes ? ' cal-lbl-2n' : ''}${cede ? ' cal-lbl-cede' : ''} ${CLASSE_TEINTE[chose.rangee]}`} style={lblPlace}>
+      <span className={`cal-lbl cal-lbl-${cote}${props.deuxLignes ? ' cal-lbl-2n' : ''}${cede ? ' cal-lbl-cede' : ''} ${CLASSE_TEINTE[chose.rangee]}`} style={lblPlace}
+        {...(nomTouchable ? { 'data-nom-touchable': '', ...toucheNom } : {})}>
         <ContenuEtiquette chose={chose} nom={nom} montant={montant} duree={dureeEtiquette} deux={props.deuxLignes} lieCourt={props.lieCourt} sansLie={props.sansLie} />
       </span>
       {bas?.ou === 'dessous' && phraseDessous && (
