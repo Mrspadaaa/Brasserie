@@ -1,0 +1,28 @@
+Serveur 1/1 : npm run dev  (journal : C:\Users\mrspa\AppData\Local\Temp\with-server-PAaCiF\serveur-1-3102.log)
+Attente du port 3102…
+Serveur prêt sur le port 3102
+
+Tous les serveurs sont prêts. Lancement : node work/missions/2026-11-19-bugs-ecrans/voies/r1/banc/capturer.mjs apres
+
+apres-390-clair-fiche-us05 pastilles ["FG1,010–1,012plage","ABV5,6–5,9 %plage"] repères Grain4,9 kgOG1,054IBU42EBC19,2Pale AleFG1,010–1,012plageABV5,6–5,9 %plage
+apres-390-clair-fiche-us05 contrastes < 4,5 : 0 []
+apres-390-clair-fiche-hefe pastilles ["FG1,010–1,012plage","ABV5,6–5,9 %plage"] repères Grain4,9 kgOG1,054IBU— vérifie les ajouts de houblonsEBC19,2Weissbier10AFG1,010–1,012plageABV5,6–5,9 %plageIBU : ajouts de houblon à vérifier
+apres-390-clair-fiche-hefe contrastes < 4,5 : 0 []
+apres-390-cave-fiche-us05 pastilles ["FG1,010–1,012plage","ABV5,6–5,9 %plage"] repères Grain4,9 kgOG1,054IBU42EBC19,2Pale AleFG1,010–1,012plageABV5,6–5,9 %plage
+apres-390-cave-fiche-us05 contrastes < 4,5 : 0 []
+apres-390-cave-fiche-hefe pastilles ["FG1,010–1,012plage","ABV5,6–5,9 %plage"] repères Grain4,9 kgOG1,054IBU— vérifie les ajouts de houblonsEBC19,2Weissbier10AFG1,010–1,012plageABV5,6–5,9 %plageIBU : ajouts de houblon à vérifier
+apres-390-cave-fiche-hefe contrastes < 4,5 : 0 []
+erreurs 390 [] bloquées 12
+apres-1280-clair-fiche-us05 pastilles ["FG1,010–1,012plage","ABV5,6–5,9 %plage"] repères Grain4,9 kgOG1,054IBU42EBC19,2Pale AleFG1,010–1,012plageABV5,6–5,9 %plage
+apres-1280-clair-fiche-us05 contrastes < 4,5 : 0 []
+apres-1280-clair-fiche-hefe pastilles ["FG1,010–1,012plage","ABV5,6–5,9 %plage"] repères Grain4,9 kgOG1,054IBU— vérifie les ajouts de houblonsEBC19,2Weissbier10AFG1,010–1,012plageABV5,6–5,9 %plageIBU : ajouts de houblon à vérifier
+apres-1280-clair-fiche-hefe contrastes < 4,5 : 0 []
+apres-1280-cave-fiche-us05 pastilles ["FG1,010–1,012plage","ABV5,6–5,9 %plage"] repères Grain4,9 kgOG1,054IBU42EBC19,2Pale AleFG1,010–1,012plageABV5,6–5,9 %plage
+apres-1280-cave-fiche-us05 contrastes < 4,5 : 0 []
+apres-1280-cave-fiche-hefe pastilles ["FG1,010–1,012plage","ABV5,6–5,9 %plage"] repères Grain4,9 kgOG1,054IBU— vérifie les ajouts de houblonsEBC19,2Weissbier10AFG1,010–1,012plageABV5,6–5,9 %plageIBU : ajouts de houblon à vérifier
+apres-1280-cave-fiche-hefe contrastes < 4,5 : 0 []
+erreurs 1280 [] bloquées 8
+
+Commande terminée, code 0.
+
+Arrêt de 1 serveur(s)…
