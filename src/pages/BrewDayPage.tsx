@@ -143,6 +143,10 @@ interface Props {
 }
 /** Un nombre décimal s'écrit avec la virgule partout sur l'écran (BR-56, BE-… 08.11 : « 19.75 L » à côté de « 3,216 L », « Consigne 78.5 °C »). */
 const fr = (n: number | string) => String(n).replace('.', ',');
+/** RL-13 : le texte de notes enregistré avec le brassin est figé avec des points (« OG 1.031 », « 11.3 % AA ») ; il se lit en virgule fr-CH.
+ *  Une date (05.09.2026) ou une version (2.1.3) garde ses points : un décimal n'est ni précédé ni suivi d'un autre « chiffre.point ». */
+export const notesEnVirgule = (texte?: string | null): string =>
+  (texte ?? '').replace(/(?<![\d.])(\d+)\.(\d+)(?!\.?\d)/g, (_m, entier: string, decimales: string) => `${entier},${decimales}`);
 
 /**
  * p2c : les heures prévues par A3 (`planJournee`) posées sur les relevés d'A1, par id d'atome. Rien n'est inventé ici : une heure que le
@@ -2155,7 +2159,7 @@ export function BrewDayPage({ batch, config, stockItems = [], onClose, onSave, o
                           </li>
                         ))}
                       </ul>
-                      <p className="brew-recipe-notes">{recipe.instructions}</p>
+                      <p className="brew-recipe-notes">{notesEnVirgule(recipe.instructions)}</p>
                       {(recipe.notes ?? []).map((n, i) => (
                         <p key={i}>{n}</p>
                       ))}
