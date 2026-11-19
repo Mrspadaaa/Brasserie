@@ -12,6 +12,7 @@ import { brewingStyles } from '../../src/domain/brewingStyles';
 import { styleWaterForReference, styleIonRange } from '../../src/domain/waterStyles';
 import { inferYeastRecipeStyle } from '../../src/domain/yeastRecipeDesign';
 import { styleNomme } from '../../src/ui/recap/styleRecette';
+import { Piste, domaineSo4 } from '../../src/ui/recap/pistes';
 
 vi.mock('../../src/services/aiClient', () => ({ AiClient: { run: vi.fn() } }));
 
@@ -107,14 +108,46 @@ describe('Récap m2 : les éléments de la maquette, au repos', () => {
 });
 
 describe('Récap m2 : la toile de l’eau dans la rangée Eau', () => {
-  it('montre la toile d’ions dans le résumé de la rangée (pas dans un repli), avec ses six ions nommés, une seule fois', () => {
+  // EAU-7 (19.11, « Pareil ici, gros pro ») : la toile pleine largeur restait ouverte rangée repliée. Repliée : la piste SO₄ seule ;
+  // dépliée : la toile, en tête de la fiche de l'eau.
+  it('rangée repliée : pas de toile dans le résumé ; dépliée : la toile, avec ses six ions nommés, une seule fois', () => {
     recap();
-    const toile = rangee('eau').querySelector('summary [data-element="m2-toile-eau"]')!;
+    expect(rangee('eau').querySelector('summary [data-element="m2-toile-eau"]')).toBeNull();
+    expect(rangee('eau').querySelector('summary [data-piste="SO₄"]')).toBeTruthy();
+    const toile = rangee('eau').querySelector('details > :not(summary) [data-element="m2-toile-eau"], details > [data-element="m2-toile-eau"]')!;
     expect(toile).toBeTruthy();
     const svg = toile.querySelector('svg[role="img"]')!;
     expect(svg).toBeTruthy();
     for (const ion of ['Cl', 'SO₄', 'Ca', 'Mg', 'Na', 'HCO₃']) expect(svg.textContent, ion).toContain(ion);
     expect(rangee('eau').querySelectorAll('[data-element="m2-toile-eau"]')).toHaveLength(1);
+  });
+});
+
+describe('EAU-6 et EAU-8 : la piste SO₄ et la légende de la toile', () => {
+  it('SO₄ dans la plage : son chiffre n’est pas en ocre (couleur d’alerte réservée au hors plage)', () => {
+    render(<Piste nom="SO₄" aria="" domaine={{ min: 0, max: 400 }} plageStyle={{ min: 40, max: 100 }} point={40} etiquettePoint="40" droite="40–100" />);
+    expect(document.querySelector('.rc2-pd')!.className).not.toMatch(/rc2-hors/);
+    cleanup();
+    render(<Piste nom="SO₄" aria="" domaine={{ min: 0, max: 400 }} plageStyle={{ min: 40, max: 100 }} point={30} etiquettePoint="30" droite="40–100" />);
+    expect(document.querySelector('.rc2-pd')!.className).toMatch(/rc2-hors/);
+  });
+
+  it('l’échelle de SO₄ suit la plage du style : 40–100 occupe au moins le quart de la piste (6 % sur 0–400)', () => {
+    const d = domaineSo4({ min: 40, max: 100 });
+    expect((100 - 40) / (d.max - d.min)).toBeGreaterThanOrEqual(0.25);
+    expect(d.max).toBeGreaterThanOrEqual(100);
+    const ipa = domaineSo4({ min: 175, max: 300 });
+    expect(ipa.max).toBeGreaterThanOrEqual(300);
+    expect(domaineSo4(undefined)).toEqual({ min: 0, max: 400 });
+  });
+
+  it('la toile du récap dit ce qu’est le pointillé : légende visible au téléphone, « Départ » et « Après sels et acide »', () => {
+    recap();
+    const toile = rangee('eau').querySelector('[data-element="m2-toile-eau"]')!;
+    expect(toile.textContent).toMatch(/Départ/);
+    expect(toile.textContent).toMatch(/Après sels et acide/);
+    const css = readFileSync('src/ui/recap/recap.css', 'utf8');
+    expect(css).toMatch(/\.rc2-toile \.water-radar \.water-radar-legend\s*\{[^}]*display:\s*flex/);
   });
 });
 

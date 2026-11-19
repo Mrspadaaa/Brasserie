@@ -401,7 +401,7 @@ export const WaterRadar: React.FC<WaterRadarProps> = ({
       </p>
       <div className="water-radar-legend flex flex-wrap justify-center gap-x-3 gap-y-1 py-1 text-2xs text-cave-400" aria-hidden>
         <span className="inline-flex items-center gap-1.5"><span className="w-4 border-t-2 border-dashed border-water" />Départ</span>
-        <span className="inline-flex items-center gap-1.5"><span className="w-4 border-t-2 border-ebc-straw" />Corrigée</span>
+        <span className="inline-flex items-center gap-1.5"><span className="w-4 border-t-2 border-ebc-straw" />Après sels et acide</span>
         <span className="inline-flex items-center gap-1.5"><span className="h-2 w-3 rounded-sm bg-hop/50" />Cible</span>
       </div>
     </div>
