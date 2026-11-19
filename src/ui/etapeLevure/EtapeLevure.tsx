@@ -230,7 +230,8 @@ export function EtapeLevure(p: PropsEtapeLevure) {
       <button type="button" className="lv-lien" onClick={annuler}><Undo2 size={13} aria-hidden="true" /> {change!.source === 'undo' ? `Rétablir ${change!.from.yeast.name ? nomCourtLevure(change!.from.yeast.name, change!.from.yeast.lab) : 'sans levure'}` : 'Annuler le changement'}</button></p>}
 
     <div role="tabpanel" id={`lv-vue-${vue}`} aria-labelledby={`lv-tab-${vue}`}>
-      {vue === 'ma-levure' && <>
+      {/* T2B-3 (19.11) : Ma levure reste montée et se masque ; un retour d'onglet ne la remonte plus (≈ 70 ms à chaque retour). */}
+      <div hidden={vue !== 'ma-levure'} data-lv="vue-ma-levure">
         <MaLevure recipe={recipeVue} refs={refs} supply={supply} levure={levure} {...gestes} onNavigate={p.onNavigate ? gestes.onNavigate : undefined}
           stock={p.stockItems} libre={ouverts.stock && libreSous ? repliStock : undefined} proposees={proposees}
           reperes={reperes} classement={classement} stockIds={stockIds} conduiteCachee={!!ouverts.atelier} precedente={precedente} onPrecedente={precedente ? gestes.onPrecedente : undefined} />
@@ -252,7 +253,7 @@ export function EtapeLevure(p: PropsEtapeLevure) {
             <Suspense fallback={<p role="status" className="lv-note">Chargement de l’atelier…</p>}>{p.atelier(cible)}</Suspense></Repli>
           </div></Repli>
         </div>
-      </>}
+      </div>
       {vue === 'chercher' && <Chercher {...props} stockIds={stockIds} />}
       {vue === 'comparer' && <Comparer {...props} recette={recipe} supply={supply} />}
       {vue === 'suggerer' && <Suggerer {...props} />}
