@@ -88,12 +88,12 @@ describe('n° 5 : la vue « à commander » quitte Articles, repliée en tête d
 
     fireEvent.click(screen.getByRole('radio', { name: /Tout/ }));
     await waitFor(() => expect(screen.getAllByText('Gypse').length).toBeGreaterThan(0));
-    expect(screen.getByRole('button', { name: /^4 à commander/ })).toHaveAttribute('aria-expanded', 'true');
+    expect(screen.getByRole('button', { name: /^4 manquent/ })).toHaveAttribute('aria-expanded', 'true');
     expect(screen.getByTestId('cac-gros')).toHaveTextContent('4');
 
     // « Commander ces 4 » replie le bloc : la liste de courses reste sous le doigt.
     fireEvent.click(screen.getByRole('button', { name: 'Commander ces 4' }));
-    expect(screen.getByRole('button', { name: /^4 à commander/ })).toHaveAttribute('aria-expanded', 'false');
+    expect(screen.getByRole('button', { name: /^4 manquent/ })).toHaveAttribute('aria-expanded', 'false');
     expect(screen.queryByTestId('chiffre-a-commander')).toBeNull();
     expect(screen.getByText('Gypse')).toBeVisible();
   });

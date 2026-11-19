@@ -121,6 +121,22 @@ export function libelleSource(s: Pick<SourceBesoin, 'genre' | 'nom' | 'date'>): 
   return `${s.nom} prévu${jour ? ` le ${jour}` : ''}`;
 }
 
+/**
+ * T3-5 (19.11) : les sources en mots, une fois chacune. Une recette qui cite l'article sur plusieurs lignes donnait
+ * « neipa v3 prévu » sept fois. Par recette (genre + nom) : une mention par date distincte ; une mention sans date
+ * s'efface devant une datée de la même recette.
+ */
+export function libellesSources(sources: Pick<SourceBesoin, 'genre' | 'nom' | 'date'>[]): string[] {
+  const groupes = new Map<string, Pick<SourceBesoin, 'genre' | 'nom' | 'date'>[]>();
+  for (const s of sources) { const k = s.genre + '|' + s.nom; groupes.set(k, [...(groupes.get(k) ?? []), s]); }
+  const sortie: string[] = [];
+  for (const g of groupes.values()) {
+    const datees = g.filter(s => jourMois(s.date));
+    for (const s of datees.length ? datees : g.slice(0, 1)) { const l = libelleSource(s); if (!sortie.includes(l)) sortie.push(l); }
+  }
+  return sortie;
+}
+
 /** « REC-<horodatage en base 36> » (App.tsx) : la date de création s'y lit ; tout autre identifiant n'en donne aucune. */
 export function dateDepuisIdRecette(id: string): string | null {
   const m = /^REC-([0-9A-Z]{7,9})$/.exec(id);

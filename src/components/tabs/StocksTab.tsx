@@ -8,7 +8,7 @@ import { articlesACommander, compareRecipeWithStock, type RecipeStockComparison 
 import { EnteteRayon } from '../../ui/stock/EnteteRayon';
 import { dernierMouvementDit, mouvementsParRef } from '../../domain/stock/dernierMouvement';
 import type { MouvementBrut } from '../../domain/stock/mouvementsArticle';
-import { libelleSource, type SourceBesoin } from '../../domain/stock/disponibilite';
+import { libellesSources, type SourceBesoin } from '../../domain/stock/disponibilite';
 import { lignesDeReglage, phraseReglage, vueHorizon } from '../../domain/stock/horizon';
 import { CommandeRepliee } from '../../ui/stock/ChiffreACommander';
 import { estFamilleAutre, FAMILLES_AUTRES } from '../../domain/stock/murDonnees';
@@ -49,7 +49,6 @@ import { infoLigne, compterEtats, trierArticles, resumeRayon, familleRecompter, 
 import { GROUPES_LISTE, LIBELLE_FAMILLE, groupeListe, lignesRetenues, texteFiltre, type FiltreListe } from '../../domain/stock/listeFiltres';
 import { BasculeVue, Recherche, Pastilles, LigneFiltre, LigneTri, type VueStock } from '../../ui/stock/OutilsStock';
 import { RecompterStock } from '../../ui/stock/RecompterStock';
-import { brancherSurFenetre } from '../../ui/stock/defileFenetre';
 
 /* Carnet d'idées (R01 à R08) : chargé à l'ouverture du segment Carnets seulement. */
 const CarnetsVue = lazy(() => import('../../ui/carnets/CarnetsVue').then(({ CarnetsVue }) => ({ default: CarnetsVue })));
@@ -201,15 +200,6 @@ export const StocksTab: React.FC<StocksTabProps> = ({
   });
   const setTri = (t: TriListe) => { setTriEtat(t); StorageService.setUiState('stock_tri', t); };
   const [vue, setVueEtat] = useState<VueStock>(() => StorageService.getUiState<VueStock>('stock_vue', 'etagere') === 'recompter' ? 'recompter' : 'etagere');
-  // Le conteneur qui défile en Étagère : la liste virtualisée s'y appuie (customScrollParent).
-  // APP-ENTETE-COLLE (19.11) : c'est la fenêtre qui défile ; la liste la voit à travers un relais fixe (defileFenetre.ts).
-  const [parentListe, setParentListe] = useState<HTMLDivElement | null>(null);
-  const debrancherFenetre = useRef<(() => void) | null>(null);
-  const refFenetre = useCallback((el: HTMLDivElement | null) => {
-    debrancherFenetre.current?.();
-    debrancherFenetre.current = el ? brancherSurFenetre(el) : null;
-    setParentListe(el);
-  }, []);
   const setVue = (v: VueStock) => { setVueEtat(v); StorageService.setUiState('stock_vue', v); };
 
   /*
@@ -508,19 +498,20 @@ export const StocksTab: React.FC<StocksTabProps> = ({
   const filtreDejaLu = useRef(false);
   useEffect(() => {
     if (!filtreDejaLu.current) { filtreDejaLu.current = true; return; }
-    const sc = parentListe; const el = refPanneau.current;
-    if (!sc || !el) return;
-    const cible = sc.scrollTop + el.getBoundingClientRect().top - sc.getBoundingClientRect().top - 4;
-    if (sc.scrollTop > cible) sc.scrollTop = Math.max(0, cible);
+    const el = refPanneau.current;
+    if (!el) return;
+    // APP-ENTETE-COLLE (19.11) : c'est la fenêtre qui défile (EntityList `defileFenetre`).
+    const cible = window.scrollY + el.getBoundingClientRect().top - 4;
+    if (window.scrollY > cible) window.scrollTo(window.scrollX, Math.max(0, cible));
   }, [filtre, q]);
   // La liste virtualisée mesure sa distance au haut du bloc : quand les outils ou le mur changent de hauteur (onglet Autres stocks plus bas que le mur, légende), on le lui redit (verdict n° 5).
   useEffect(() => {
-    const haut = refHaut.current; const sc = parentListe;
-    if (!haut || !sc || typeof ResizeObserver === 'undefined') return;
-    const o = new ResizeObserver(() => sc.dispatchEvent(new Event('scroll')));
+    const haut = refHaut.current;
+    if (!haut || typeof ResizeObserver === 'undefined') return;
+    const o = new ResizeObserver(() => window.dispatchEvent(new Event('scroll')));
     o.observe(haut);
     return () => o.disconnect();
-  }, [parentListe]);
+  }, []);
   // Le bloc d'outils (segment, recherche, pastilles, ligne de filtre) : fixe en Recompter, il défile avec le mur et la liste en Étagère (sinon la liste n'avait que 158 px à 390).
   const blocOutils = (
     <div className="stock-outils shrink-0 pt-1">
@@ -637,7 +628,6 @@ export const StocksTab: React.FC<StocksTabProps> = ({
             </div>
           </>
           : <div data-testid="stock-defile">
-        <div ref={refFenetre} data-testid="stock-fenetre" aria-hidden="true" className="pointer-events-none invisible fixed inset-0 -z-10" />
         <div ref={refHaut}>
         {blocOutils}
         {/* STK-COMMANDE-REPLIEE (19.11) : le bloc « à commander » vit replié en tête de Courses ; Articles s'ouvre sur le mur et la liste. */}
@@ -649,7 +639,7 @@ export const StocksTab: React.FC<StocksTabProps> = ({
         <EntityList
           className={mobile ? 'pb-16' : 'pb-10'}
           repartDuHaut={false}
-          scrollParent={parentListe}
+          defileFenetre
           items={visibleItems}
           keyOf={(i) => i.ref}
           groupOf={groupeListe}
@@ -693,7 +683,7 @@ export const StocksTab: React.FC<StocksTabProps> = ({
       {subTab === 'courses' && (
         <div className={`space-y-2 ${mobile ? 'pb-20' : 'pb-4'}`}>
           {/* Le chiffre clé, son horizon et son histogramme (Pastille C), repliés en une ligne discrète : un toucher les déplie (19.11). */}
-          <CommandeRepliee vue={vueH} horizon={horizon} onHorizon={setHorizon} onOuvrir={setSelected} />
+          <CommandeRepliee vue={vueH} horizon={horizon} onHorizon={setHorizon} onOuvrir={setSelected} manquent={comptesEtats.manque + comptesEtats.manquePlus} />
           {/* Vision du 19.11, n° 2 et 3 : la ligne repliée dit seule le compte (horizon, puis total) ; ici, le seul geste « Tout voir ». */}
           {aCommander.length > totalToOrder && (
             <p className="flex items-center px-1" data-testid="courses-horizon">
@@ -732,7 +722,7 @@ export const StocksTab: React.FC<StocksTabProps> = ({
                       <span className="min-w-0">
                         <span className="block text-sm text-cave-200 break-words">{item.name}</span>
                         {sources.length > 0 && <span data-stock-sources className="block text-xs text-cave-400 break-words">
-                          {sources.map(libelleSource).join(' · ')}
+                          {libellesSources(sources).join(' · ')}
                         </span>}
                       </span>
                       <span className="font-mono text-sm text-ebc-straw shrink-0">

@@ -1,6 +1,6 @@
 // Vision du 19.11, lot stock (tour 2), de bout en bout dans StocksTab. Fixtures simulées, dates relatives à aujourd'hui.
 // APP-ENTETE-COLLE : Stocks défilait dans un conteneur interne (`overflow-y-auto`), l'en-tête de l'app ne partait pas ; il défile
-// avec la fenêtre, la liste virtualisée s'appuie sur un relais de la fenêtre.
+// avec la fenêtre (EntityList `defileFenetre`, tour 3).
 // n° 2 : « Rien à commander » en gros alors qu'Étagère dit « manque 24 » (« 24 manquent et il me dit rien à commander ?? ») ;
 // n° 3 : « Rien à commander » dit deux fois. La ligne repliée dit le compte de l'horizon et le total, seule.
 import React from 'react';
@@ -60,18 +60,13 @@ describe('APP-ENTETE-COLLE : Stocks défile avec la fenêtre', () => {
     expect(ecran.querySelectorAll('.overflow-y-auto')).toHaveLength(0);
   });
 
-  it('la liste virtualisée s’appuie sur le relais de la fenêtre : son défilement est celui de la fenêtre', async () => {
+  it('la liste défile par la fenêtre (option d’EntityList) : plus de relais, plus de zone défilante dans la liste', async () => {
     semer(true);
-    render(<Catalogue/>);
+    const { container } = render(<Catalogue/>);
     await screen.findByRole('searchbox', { name: 'Rechercher dans le stock' });
-    const relais = screen.getByTestId('stock-fenetre');
-    Object.defineProperty(window, 'scrollY', { configurable: true, value: 320 });
-    const vu = vi.fn();
-    relais.addEventListener('scroll', vu);
-    window.dispatchEvent(new Event('scroll'));
-    expect(relais.scrollTop).toBe(320);
-    expect(vu).toHaveBeenCalled();
-    Object.defineProperty(window, 'scrollY', { configurable: true, value: 0 });
+    expect(screen.queryByTestId('stock-fenetre')).toBeNull();
+    const zone = container.querySelector<HTMLElement>('[data-testid="virtuoso-scroller"]');
+    expect(zone?.style.overflowY ?? '').not.toBe('auto');
   });
 });
 
@@ -84,7 +79,7 @@ describe('n° 2 et 3 : Courses ne dit pas « Rien à commander » quand des arti
     expect(manque).toHaveTextContent('3');
     fireEvent.click(screen.getByRole('button', { name: 'Courses' }));
     const ligne = await screen.findByRole('button', { name: /à commander/, expanded: false });
-    expect(ligne).toHaveTextContent(/^0 à commander avant S\d+ · 3 en tout$/);
+    expect(ligne).toHaveTextContent(/^0 à commander avant S\d+ · 3 manquent$/);
     const courses = screen.getByTestId('commande-repliee').parentElement!;
     expect(within(courses).queryByText(/Rien à commander/)).toBeNull();
     // Une seule phrase de compte : « à commander » et « avant S.. » ne reviennent pas sous la ligne repliée.
@@ -94,7 +89,7 @@ describe('n° 2 et 3 : Courses ne dit pas « Rien à commander » quand des arti
     fireEvent.click(within(courses).getByRole('button', { name: 'Tout voir' }));
     expect(await screen.findByText('Pilsner')).toBeVisible();
     expect(screen.getByText('Gypse')).toBeVisible();
-    expect(ligne).toHaveTextContent(/^3 à commander$/);
+    expect(ligne).toHaveTextContent(/^3 manquent$/);
   });
 
   it('stock couvrant tout : « Rien à commander » une seule fois, puis la raison', async () => {

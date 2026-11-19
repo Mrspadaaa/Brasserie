@@ -5,7 +5,7 @@ import { computeStockLevel, pendingStockSummary, type ArticleACommander, type Re
 import { infoLigne, type InfoLigne } from '../domain/stock/liste';
 import { LigneStock } from './stock/LigneStock';
 import { libelleDurabilite, quantiteLue } from '../domain/stock/regles';
-import { libelleSource } from '../domain/stock/disponibilite';
+import { libellesSources } from '../domain/stock/disponibilite';
 import { todayISO } from '../domain/finance/ledger';
 import { FavoriteToggle } from './EntityList';
 import { LevelGauge, stockLevelLabel } from './LevelGauge';
@@ -63,7 +63,7 @@ function RecipeComparison({ comparison }: { comparison: RecipeStockComparison })
       <div><dt className="text-cave-400">Besoin prévu</dt><dd className="font-mono tabular-nums text-cave-200">{quantity(needed, unit)}</dd></div>
       <div><dt className="text-cave-400">Manque</dt><dd className={`font-mono tabular-nums ${shortage === null ? 'text-cave-200' : shortage > 0 ? 'text-alert-strong' : 'text-hop'}`}>{quantity(shortage, unit)}</dd></div>
     </dl>
-    {elsewhereSources.length > 0 && <p data-stock-sources className="text-xs text-cave-400 break-words">Déjà prévu : {elsewhereSources.map(libelleSource).join(' · ')}</p>}
+    {elsewhereSources.length > 0 && <p data-stock-sources className="text-xs text-cave-400 break-words">Déjà prévu : {libellesSources(elsewhereSources).join(' · ')}</p>}
     {issue && <p className="text-xs text-attention">{issue}</p>}
     {availabilityIssue && <p className="text-xs text-attention">{availabilityIssue}</p>}
   </div>;

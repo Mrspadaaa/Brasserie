@@ -51,8 +51,8 @@ export interface EntityListProps<T> {
   /** Sous la dernière ligne, dans le défilement (« Archivés · n ») : à la suite de la liste, jamais au bas d'un grand vide. */
   footer?: React.ReactNode;
   toolbarAction?: React.ReactNode;
-  /** Un conteneur extérieur qui défile : la liste s'y appuie au lieu d'avoir sa propre zone défilante (l'Étagère du Stock : outils, mur et liste défilent ensemble). */
-  scrollParent?: HTMLElement | null;
+  /** La liste défile avec la fenêtre (react-virtuoso `useWindowScroll`) au lieu d'avoir sa propre zone défilante : l'en-tête de l'app part, comme sur les autres onglets (Étagère du Stock). Faux par défaut. */
+  defileFenetre?: boolean;
   /** Hauteur de la zone défilante. Par défaut, tout l'espace disponible. */
   className?: string;
 }
@@ -78,7 +78,7 @@ export function EntityList<T>({
   header,
   footer,
   toolbarAction,
-  scrollParent,
+  defileFenetre = false,
   className = ''
 }: EntityListProps<T>) {
   const [query, setQuery] = useState('');
@@ -217,8 +217,8 @@ export function EntityList<T>({
       {!isEmpty && !noResults && grouped && (
         <GroupedVirtuoso
           ref={defilement as never}
-          className={scrollParent ? undefined : "flex-1 min-h-0"}
-          customScrollParent={scrollParent ?? undefined}
+          className={defileFenetre ? undefined : "flex-1 min-h-0"}
+          useWindowScroll={defileFenetre}
           components={COMPOSANTS_LISTE as never}
           context={{ pied: footer } as never}
           groupCounts={grouped.counts}
@@ -246,8 +246,8 @@ export function EntityList<T>({
       {!isEmpty && !noResults && !grouped && (
         <Virtuoso
           ref={defilement as never}
-          className={scrollParent ? undefined : "flex-1 min-h-0"}
-          customScrollParent={scrollParent ?? undefined}
+          className={defileFenetre ? undefined : "flex-1 min-h-0"}
+          useWindowScroll={defileFenetre}
           components={COMPOSANTS_LISTE as never}
           context={{ pied: footer } as never}
           data={filtered}

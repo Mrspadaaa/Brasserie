@@ -28,18 +28,22 @@ const LIGNES_VISIBLES = 6;
  * 44 px). Un toucher déplie le bloc entier de la maquette Pastille C, intact (chiffre, horizon, histogramme, liste, « Commander ces n ») ;
  * ici « Commander ces n » replie le bloc pour laisser la liste de courses sous le doigt.
  */
-export function CommandeRepliee({ vue, horizon, onHorizon, onOuvrir }: {
+export function CommandeRepliee({ vue, horizon, onHorizon, onOuvrir, manquent }: {
   vue: VueHorizon;
   horizon: Reglage;
   onHorizon: (r: Reglage) => void;
   onOuvrir: (item: StockItem) => void;
+  /** Le compte « manque » d'Étagère (pastille), pour que Courses dise le même. Absent : tous les articles comptent comme manquants. */
+  manquent?: number;
 }) {
   const [ouvert, setOuvert] = useState(false);
+  const rien = vue.comptes.tout === 0;
   return (
     <div className="cac-repli" data-testid="commande-repliee">
       <button type="button" className="cac-repli-l" aria-expanded={ouvert} aria-controls="cac-repli-bloc" onClick={() => setOuvert((o) => !o)}>
-        {/* La seule phrase de compte de Courses (vision du 19.11, n° 2 et 3) : le compte de l'horizon choisi, puis le total quand il diffère. */}
-        <span>{phraseRepliee(vue, horizon)}</span>
+        {/* La seule phrase de compte de Courses (vision du 19.11, n° 2 et 3 ; tour 3, T2-6) : le compte de l'horizon, puis les mots d'Étagère
+            (« 22 manquent · 2 au seuil »). Rien à commander : dit ici une fois, replié ; déplié, l'encadré du bloc le dit et la ligne s'efface. */}
+        <span>{rien && ouvert ? 'À commander' : phraseRepliee(vue, horizon, manquent)}</span>
         <ChevronRight size={16} aria-hidden="true" className="cac-repli-c" />
       </button>
       {ouvert && (
@@ -70,11 +74,15 @@ export function horizonCourt(vue: VueHorizon, r: Reglage): string {
  * l'horizon choisi (celui du chiffre clé et de la pastille de l'onglet), puis le total, qui est celui d'Étagère : « 0 à commander avant
  * S48 · 24 en tout ». Jamais « Rien à commander » quand des articles manquent hors de l'horizon.
  */
-export function phraseRepliee(vue: VueHorizon, r: Reglage): string {
+export function phraseRepliee(vue: VueHorizon, r: Reglage, manquent?: number): string {
   const tout = vue.comptes.tout;
   if (tout === 0) return 'Rien à commander';
+  const m = Math.min(tout, Math.max(0, manquent ?? tout));
+  const auSeuil = tout - m;
+  // Les mots et le compte de la pastille « manque » d'Étagère ; les articles pile au seuil (retenus, mais « bas » en Étagère) à part.
+  const total = [m > 0 ? `${m} ${m > 1 ? 'manquent' : 'manque'}` : '', auSeuil > 0 ? `${auSeuil} au seuil` : ''].filter(Boolean).join(' · ');
   const n = lignesDeReglage(vue, r).length;
-  return n === tout ? `${n} à commander` : `${n} à commander ${horizonCourt(vue, r)} · ${tout} en tout`;
+  return n === tout ? total : `${n} à commander ${horizonCourt(vue, r)} · ${total}`;
 }
 
 const quantite = (l: LigneHorizon) => l.missing > 0 ? `${l.auMoins ? 'au moins ' : ''}${Units.format(l.missing, l.item.unit)}` : 'à définir';
@@ -165,9 +173,10 @@ export function ChiffreACommander({ vue, horizon, onHorizon, onOuvrir, onCommand
     <section className="cac" aria-label="À commander" data-testid="chiffre-a-commander">
       <div className="cac-tete">
         <span className="cac-gros" data-testid="cac-gros">{n}</span>
+        {/* Rien à commander : l'encadré plus bas le dit, une fois ; ici le chiffre n'a que son étiquette. */}
         <p className="cac-phrase" aria-live="polite">
-          <span>{rien ? 'rien' : 'à commander'}</span>
-          <b>{rien ? 'à commander' : phraseReglage(vue, horizon)}</b>
+          <span>à commander</span>
+          {!rien && <b>{phraseReglage(vue, horizon)}</b>}
         </p>
       </div>
 
