@@ -311,7 +311,8 @@ describe('(k) bis : G8 et G35 restent atteignables au banc, par option de fixtur
   it('`g35` : la 2e idée de ventilation, d’un autre besoin (cave de garde), n’est pas proposée ; jamais l’extracteur CO₂', () => {
     const cs = lireCarnets(fixtureCarnets({ g35: true }));
     expect(cs.some(c => c.id === ID_VENTILATION_CAVE)).toBe(true);
-    expect(carnetProche(cs.find(c => c.id === ID_VENTILATION)!, cs)).toBeNull();
+    /* tour 3, f4c (PCN-20) : la 2e idée du même besoin, seule proposée */
+    expect(carnetProche(cs.find(c => c.id === ID_VENTILATION)!, cs)?.carnetId).toBe('ZZ-CARNET-VENTILATION-SALLE-2');
   });
 });
 

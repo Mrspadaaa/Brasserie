@@ -256,7 +256,8 @@ describe('P19, P20 : la fixture atteint G25 à G27 et G35', () => {
        « … de la salle de brassage » : elle n'est plus proposée. G35 se prouve sur une idée du même besoin (carnetsCritique6Fil, 14). */
     const FG = fixtureCarnets({ g35: true });
     expect(lireCarnets(FG).some(c => c.id === ID_VENTILATION_CAVE)).toBe(true);
-    expect(carnetProche(carnet(FG, ID_VENTILATION), lireCarnets(FG))).toBeNull();
+    /* tour 3, f4c (PCN-20) : l'option donne aussi la 2e idée du même besoin, seule proposée */
+    expect(carnetProche(carnet(FG, ID_VENTILATION), lireCarnets(FG))?.carnetId).toBe('ZZ-CARNET-VENTILATION-SALLE-2');
   });
   it('les ID d’avant ne changent pas ; le préfixe « ZZ TEST — » reste sur chaque carnet', () => {
     const ids = F.map(d => d.id);

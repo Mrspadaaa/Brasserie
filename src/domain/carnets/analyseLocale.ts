@@ -400,6 +400,12 @@ export function extraireCriteres(texte: string): CriteresLus {
     const q = quantitesDe(seg)[0];
     if (!q) {
       if (/^\d+\s+\p{L}[\p{L}-]{2,}$/u.test(seg)) facons.push(seg);
+      /* tour 3, f4a (v1-neuf 1) : « Moulin à malt 2 cylindres, 150 kg/h » : le compte qui suit l'objet est une façon (comme « Moulin à
+         malt : 2 cylindres ») ; un compte d'achat (« 2 pièces ») n'en est pas une */
+      else {
+        const queue = /\s(\d+\s+\p{L}[\p{L}-]{2,})$/u.exec(seg)?.[1];
+        if (queue && !/^\d+\s+(?:pi[eè]ces?|pcs|sachets?|paquets?|bo[iî]tes?|sacs?|bidons?)$/iu.test(queue)) facons.push(queue);
+      }
       continue;
     }
     const n = normaliser(seg);

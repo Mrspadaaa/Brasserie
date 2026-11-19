@@ -338,6 +338,17 @@ function ventilationCave(): CarnetDoc {
   });
 }
 
+/**
+ * Tour 3, f4c (PCN-20 ; critique 6, n° 31) : la 2e idée du MÊME besoin (la salle), seule cible de G35 quand on supprime Ventilation ;
+ * la cave de garde (autre besoin) et l'extracteur CO₂ (autre objet) ne le sont jamais.
+ */
+export const ID_VENTILATION_SALLE_2 = 'ZZ-CARNET-VENTILATION-SALLE-2';
+function ventilationSalle2(): CarnetDoc {
+  return carnet(ID_VENTILATION_SALLE_2, 'Ventilation de la salle de brassage, 2e idée', 'idea', {
+    creeLe: '2026-11-18T08:00:00.000Z', phrase: 'une autre façon de ventiler la salle de brassage', criteres: [], facons: [], articles: [], notes: [], photos: []
+  });
+}
+
 /** Les documents de la fixture (idées et messages), copies neuves à chaque appel. */
 export function fixtureCarnets(o: OptionsFixture = {}): CreativeItem[] {
   const v = ventilation();
@@ -352,7 +363,7 @@ export function fixtureCarnets(o: OptionsFixture = {}): CreativeItem[] {
     for (const a of v.carnet.articles) if (bruit[a.id]) a.valeurs = { ...(a.valeurs ?? {}), bruit: bruit[a.id] };
   }
   if (o.g8) v.carnet.criteres.push({ id: 'ZZ-V-K4', texte: CRITERE_BRUIT, caracteristique: { nom: 'bruit', unite: 'dB', sens: 'moins' }, origine: 'ia', source: 'ia' });
-  return JSON.parse(JSON.stringify([v, evier(), embouteillage(), frigo(), densimetre(), extraction(), ...(o.g35 ? [ventilationCave()] : []), ...messages()])) as CreativeItem[];
+  return JSON.parse(JSON.stringify([v, evier(), embouteillage(), frigo(), densimetre(), extraction(), ...(o.g35 ? [ventilationCave(), ventilationSalle2()] : []), ...messages()])) as CreativeItem[];
 }
 
 const planDe = (id: string, titre: string, carnetId: string, cents: number, vendor: string, createdAt: string): FinancialPlan => ({

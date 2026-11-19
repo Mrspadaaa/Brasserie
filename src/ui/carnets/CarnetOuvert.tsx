@@ -360,7 +360,8 @@ export function CarnetOuvert(p: CarnetOuvertProps) {
           Sinon la phrase citée (R25) : sous le titre tant qu'il n'y a pas de tableau ; avec le tableau, sous lui (le tableau monte). */}
       {!p.tableau && phraseCitee}
 
-      {p.liens.length > 0 && (
+      {/* tour 3, f4c (PCN-42) : grisé derrière la carte de suppression, le lien est dit par la carte ; la pastille ne le double pas */}
+      {p.liens.length > 0 && !p.grise && (
         <div className="cn-liens">
           {p.liens.slice(0, 3).map(l => (
             <button key={`${l.sorte}:${l.id}`} type="button" className="cn-pastille cn-pastille-lien" aria-expanded={apercu === l.id} onClick={() => setApercu(a => (a === l.id ? null : l.id))}>

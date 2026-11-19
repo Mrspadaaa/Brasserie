@@ -399,11 +399,12 @@ describe('14 · n° 31 : carnetProche ne propose pas un carnet d’un autre beso
     const salle = FG.find(c => c.id === ID_VENTILATION)!;
     const cave = FG.find(c => c.id === ID_VENTILATION_CAVE)!;
     expect(cave.title).toMatch(/cave de garde/);
-    expect(carnetProche(salle, FG)).toBeNull();
+    /* tour 3, f4c (PCN-20) : l'option donne la 2e idée du même besoin, seule proposée */
+    expect(carnetProche(salle, FG)?.carnetId).toBe('ZZ-CARNET-VENTILATION-SALLE-2');
     expect(carnetProche(cave, FG)).toBeNull();
     const meme = { ...cave, id: 'ZZ-2E-IDEE', title: 'ZZ TEST — Ventilation de la salle, 2e idée' } as typeof cave;
-    expect(carnetProche(salle, [...FG, meme])?.carnetId).toBe('ZZ-2E-IDEE');
-    expect(carnetProche(salle, [...FG, meme])?.carnetId).not.toBe('ZZ-CARNET-EXTRACTION');
+    expect(carnetProche(salle, [...FG.filter(c => c.id !== 'ZZ-CARNET-VENTILATION-SALLE-2'), meme])?.carnetId).toBe('ZZ-2E-IDEE');
+    expect(carnetProche(salle, [...FG.filter(c => c.id !== 'ZZ-CARNET-VENTILATION-SALLE-2'), meme])?.carnetId).not.toBe('ZZ-CARNET-EXTRACTION');
   });
 });
 

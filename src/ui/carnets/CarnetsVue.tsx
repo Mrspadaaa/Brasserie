@@ -37,7 +37,8 @@ import { SupprimerCarnet } from './SupprimerCarnet';
 import { FeuilleNote } from './FeuilleNote';
 import { PictoObjet, pictoDe } from './pictos';
 import { RenommerCarnet, titreProposeDe } from './RenommerCarnet';
-import { dateCourte, EtatIA, montant, type ArticleV, type CarnetV, type GenreNote } from './EtatIA';
+import { dateCourte, EtatIA, GENRE_LIBELLE, montant, type ArticleV, type CarnetV, type GenreNote } from './EtatIA';
+const majusculeFr = (t: string) => t.charAt(0).toLocaleUpperCase('fr-CH') + t.slice(1);
 import { reduirePhoto } from './photo';
 import './carnets.css';
 import './carnets-fil.css';
@@ -226,6 +227,8 @@ const OBJETS_A_PART = new Set(jetons([
   'densimètre réfractomètre balance embouteilleuse tireuse capsuleuse échangeur refroidisseur serpentin chaudière brûleur plaque',
   'osmoseur adoucisseur laveuse nettoyeur karcher lampe éclairage prise tableau onduleur'
 ].join(' ')));
+/** Une tête qui dit « ce n'est pas d'ici » (« autre projet, sans rapport : », « rien à voir : »). */
+const AUTRE_SUJET = /^(?:(?:un |une )?autre (?:projet|sujet|chose|idée)|sans rapport|rien à voir)(?:\s*,\s*(?:sans rapport|rien à voir))?\s*[:—–-]\s*/i;
 const TETE_SANS_OBJET =/^(?:doit|doivent|tient|tenir|tiennent|faut|faudrait|il|on|au|aux|minimum|maximum|mini|maxi|min|max|moins|plus|pas|entre|supporte|resiste|assez|trop|tres|bien|mieux|avec|sans|pour|si|et|ou)(?:\s|$)|^\d/;
 /**
  * L'objet que nomme une phrase quand il n'est pas celui du carnet ouvert (« tuyau silicone 8 mm, 5 m » dans la Ventilation → « Tuyau
@@ -234,7 +237,10 @@ const TETE_SANS_OBJET =/^(?:doit|doivent|tient|tenir|tiennent|faut|faudrait|il|o
  * notes : « hotte murale » dans un carnet de hottes, « fût de 30 L couché » dans l'évier pour les fûts).
  */
 export function autreObjet(texte: string, ouvert: CarnetDoc): string | null {
-  const t = texte.replace(/^\s*ZZ TEST\s*[—–-]\s*/i, '').trim();
+  const brut = texte.replace(/^\s*ZZ TEST\s*[—–-]\s*/i, '').trim();
+  /* tour 3, f4c (PCN-126) : « autre projet, sans rapport : un frigo de garde… » le dit lui-même : l'objet qui suit quitte le carnet ouvert */
+  const horsSujet = AUTRE_SUJET.exec(brut);
+  const t = horsSujet ? brut.slice(horsSujet[0].length).trim() : brut;
   const g = genreLocal(t);
   if (g === 'a-faire' || g === 'question' || g === 'conseil') return null;
   const objet = objetDe(t);
@@ -243,6 +249,7 @@ export function autreObjet(texte: string, ouvert: CarnetDoc): string | null {
   const mots = jetons(objet);
   /* reprise chir8 : seul un objet qui vit à part (un équipement, une pièce du local) quitte le carnet ouvert. Une pièce de l'appareil
      (« compresseur silencieux », « filtre à air G4 » dans le frigo) ou une façon (« système isobarique » dans l'embouteillage) y reste. */
+  if (horsSujet && mots.length) return objet.charAt(0).toLocaleUpperCase('fr-CH') + objet.slice(1);
   if (!mots.length || !OBJETS_A_PART.has(mots[0])) return null;
   const d = ouvert.carnet;
   const vocab = new Set(jetons([ouvert.title, d.phrase, ...d.criteres.map(k => `${k.texte} ${k.caracteristique?.nom ?? ''}`), ...d.facons.map(f => f.nom),
@@ -318,7 +325,10 @@ export function detailDe(etat: Parameters<typeof lireCarnets>[0], effets: readon
             : e.cible === 'photo' ? 'une photo' : undefined;
     if (!quoi) return null;
     const cite = e.cible === 'photo' ? quoi : `« ${quoi.length > 48 ? `${quoi.slice(0, 47)}…` : quoi} »`;
-    return `${RUBRIQUE_DE[e.cible] ?? e.cible} : ${cite} · dans ${c.title}`;
+    /* tour 3, f4a (PCN-22) : une note typée (achat, à faire…) se dit par son genre (« À acheter : « filtre à air G4, 2 pièces » ») */
+    const genre = e.cible === 'note' ? d.notes.find(x => x.id === e.id)?.genre : undefined;
+    const rubrique = genre && genre !== 'note' ? majusculeFr(GENRE_LIBELLE[genre]) : RUBRIQUE_DE[e.cible] ?? e.cible;
+    return `${rubrique} : ${cite} · dans ${c.title}`;
   }).filter((x): x is string => !!x);
   if (!parties.length) return undefined;
   return parties.length > 3 ? `${parties.slice(0, 3).join(' ; ')} ; +${parties.length - 3}` : parties.join(' ; ');

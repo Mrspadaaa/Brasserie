@@ -375,7 +375,11 @@ export function accepterProposition(etat: Etat, args: { messageId: string; index
   const b = new Brouillon(etat);
   const c = b.carnet(p.carnetId);
   if (!c) return refus('Ce carnet n’existe plus.');
-  const e = ajouterLigne(c, sansIndefinis({ carnetId: p.carnetId, sorte: 'critere' as const, texte: p.texte, caracteristique: p.caracteristique ? copie(p.caracteristique) : undefined, origine: p.origine }), m.id);
+  /* tour 3, f4a (v2-neuf 2) : « Comparer sur … » est le verbe de la puce, pas le critère : le critère est la caractéristique (« le débit »,
+     comme « tient 80 °C, puis le débit ») */
+  const nom = p.caracteristique?.nom;
+  const texte = nom && /^\s*comparer sur\b/i.test(p.texte) ? `${/^[aeéèêiouyh]/i.test(nom) ? 'l’' : 'le '}${nom}` : p.texte;
+  const e = ajouterLigne(c, sansIndefinis({ carnetId: p.carnetId, sorte: 'critere' as const, texte, caracteristique: p.caracteristique ? copie(p.caracteristique) : undefined, origine: p.origine }), m.id);
   poser(b, c);
   const reste = (m.carnetMessage.propositions ?? []).filter((_, i) => i !== args.index);
   b.ecrire({ ...m, carnetMessage: sansIndefinis({ ...m.carnetMessage, effets: e ? [...m.carnetMessage.effets, e] : m.carnetMessage.effets, propositions: reste.length ? reste : undefined }) });
