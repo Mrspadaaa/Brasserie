@@ -1,0 +1,419 @@
+{
+ "mesures": [
+  {
+   "tag": "390-clair",
+   "k": "injection",
+   "n": 32
+  },
+  {
+   "tag": "390-clair",
+   "k": "art-repos",
+   "scrollY": 0,
+   "docH": 2676,
+   "enteteTop": 0,
+   "lignesRendues": 3,
+   "lignesVisibles": 3,
+   "hautPremiere": 532,
+   "basDerniere": 704,
+   "defileInterne": [],
+   "pastilleCompagnon": 571,
+   "manque": "manque 22✕"
+  },
+  {
+   "tag": "390-clair",
+   "k": "art-400",
+   "scrollY": 400,
+   "docH": 2676,
+   "enteteTop": -400,
+   "lignesRendues": 11,
+   "lignesVisibles": 11,
+   "hautPremiere": 132,
+   "basDerniere": 704,
+   "defileInterne": [],
+   "pastilleCompagnon": 571,
+   "manque": "manque 22✕"
+  },
+  {
+   "tag": "390-clair",
+   "k": "art-bas",
+   "scrollY": 1952,
+   "docH": 2612,
+   "enteteTop": -1952,
+   "lignesRendues": 11,
+   "lignesVisibles": 11,
+   "hautPremiere": -4,
+   "basDerniere": 476,
+   "defileInterne": [],
+   "pastilleCompagnon": 571,
+   "manque": "manque 22✕"
+  },
+  {
+   "tag": "390-clair",
+   "k": "recompter-300",
+   "scrollY": 300,
+   "rechercheTop": 47,
+   "colle": {
+    "top": 0,
+    "h": 128,
+    "parentH": 2400
+   }
+  },
+  {
+   "tag": "390-clair",
+   "k": "courses",
+   "replie": "0 à commander cette semaine · 24 en tout",
+   "rien": 0,
+   "aCommander": 1,
+   "avant": 0,
+   "coupe": false,
+   "bandeau": "Tout voir",
+   "defile": "visible"
+  },
+  {
+   "tag": "390-cave",
+   "k": "injection",
+   "n": 32
+  },
+  {
+   "tag": "390-cave",
+   "k": "art-repos",
+   "scrollY": 0,
+   "docH": 2676,
+   "enteteTop": 0,
+   "lignesRendues": 6,
+   "lignesVisibles": 3,
+   "hautPremiere": 532,
+   "basDerniere": 854,
+   "defileInterne": [],
+   "pastilleCompagnon": 571,
+   "manque": "manque 22✕"
+  },
+  {
+   "tag": "390-cave",
+   "k": "art-400",
+   "scrollY": 400,
+   "docH": 2676,
+   "enteteTop": -400,
+   "lignesRendues": 11,
+   "lignesVisibles": 11,
+   "hautPremiere": 132,
+   "basDerniere": 704,
+   "defileInterne": [],
+   "pastilleCompagnon": 571,
+   "manque": "manque 22✕"
+  },
+  {
+   "tag": "390-cave",
+   "k": "art-bas",
+   "scrollY": 1952,
+   "docH": 2612,
+   "enteteTop": -1952,
+   "lignesRendues": 11,
+   "lignesVisibles": 11,
+   "hautPremiere": -4,
+   "basDerniere": 476,
+   "defileInterne": [],
+   "pastilleCompagnon": 571,
+   "manque": "manque 22✕"
+  },
+  {
+   "tag": "390-cave",
+   "k": "recompter-300",
+   "scrollY": 300,
+   "rechercheTop": 47,
+   "colle": {
+    "top": 0,
+    "h": 128,
+    "parentH": 2400
+   }
+  },
+  {
+   "tag": "390-cave",
+   "k": "courses",
+   "replie": "0 à commander cette semaine · 24 en tout",
+   "rien": 0,
+   "aCommander": 1,
+   "avant": 0,
+   "coupe": false,
+   "bandeau": "Tout voir",
+   "defile": "visible"
+  },
+  {
+   "tag": "844-clair",
+   "k": "injection",
+   "n": 32
+  },
+  {
+   "tag": "844-clair",
+   "k": "art-repos",
+   "scrollY": 0,
+   "docH": 668,
+   "enteteTop": 0,
+   "lignesRendues": 2,
+   "lignesVisibles": 0,
+   "hautPremiere": 508,
+   "basDerniere": 630,
+   "defileInterne": [],
+   "pastilleCompagnon": 251,
+   "manque": "manque 22✕"
+  },
+  {
+   "tag": "844-clair",
+   "k": "art-400",
+   "scrollY": 328,
+   "docH": 2628,
+   "enteteTop": -328,
+   "lignesRendues": 3,
+   "lignesVisibles": 3,
+   "hautPremiere": 180,
+   "basDerniere": 352,
+   "defileInterne": [],
+   "pastilleCompagnon": 251,
+   "manque": "manque 22✕"
+  },
+  {
+   "tag": "844-clair",
+   "k": "art-bas",
+   "scrollY": 2224,
+   "docH": 2564,
+   "enteteTop": -2224,
+   "lignesRendues": 5,
+   "lignesVisibles": 5,
+   "hautPremiere": -10,
+   "basDerniere": 180,
+   "defileInterne": [],
+   "pastilleCompagnon": 251,
+   "manque": "manque 22✕"
+  },
+  {
+   "tag": "844-clair",
+   "k": "recompter-300",
+   "scrollY": 300,
+   "rechercheTop": 47,
+   "colle": {
+    "top": 0,
+    "h": 128,
+    "parentH": 2336
+   }
+  },
+  {
+   "tag": "844-clair",
+   "k": "courses",
+   "replie": "0 à commander cette semaine · 24 en tout",
+   "rien": 0,
+   "aCommander": 1,
+   "avant": 0,
+   "coupe": false,
+   "bandeau": "Tout voir",
+   "defile": "visible"
+  },
+  {
+   "tag": "844-cave",
+   "k": "injection",
+   "n": 32
+  },
+  {
+   "tag": "844-cave",
+   "k": "art-repos",
+   "scrollY": 0,
+   "docH": 668,
+   "enteteTop": 0,
+   "lignesRendues": 2,
+   "lignesVisibles": 0,
+   "hautPremiere": 508,
+   "basDerniere": 630,
+   "defileInterne": [],
+   "pastilleCompagnon": 251,
+   "manque": "manque 22✕"
+  },
+  {
+   "tag": "844-cave",
+   "k": "art-400",
+   "scrollY": 328,
+   "docH": 2628,
+   "enteteTop": -328,
+   "lignesRendues": 3,
+   "lignesVisibles": 3,
+   "hautPremiere": 180,
+   "basDerniere": 352,
+   "defileInterne": [],
+   "pastilleCompagnon": 251,
+   "manque": "manque 22✕"
+  },
+  {
+   "tag": "844-cave",
+   "k": "art-bas",
+   "scrollY": 2224,
+   "docH": 2564,
+   "enteteTop": -2224,
+   "lignesRendues": 5,
+   "lignesVisibles": 5,
+   "hautPremiere": -10,
+   "basDerniere": 180,
+   "defileInterne": [],
+   "pastilleCompagnon": 251,
+   "manque": "manque 22✕"
+  },
+  {
+   "tag": "844-cave",
+   "k": "recompter-300",
+   "scrollY": 300,
+   "rechercheTop": 47,
+   "colle": {
+    "top": 0,
+    "h": 128,
+    "parentH": 2336
+   }
+  },
+  {
+   "tag": "844-cave",
+   "k": "courses",
+   "replie": "0 à commander cette semaine · 24 en tout",
+   "rien": 0,
+   "aCommander": 1,
+   "avant": 0,
+   "coupe": false,
+   "bandeau": "Tout voir",
+   "defile": "visible"
+  },
+  {
+   "tag": "1280-clair",
+   "k": "injection",
+   "n": 32
+  },
+  {
+   "tag": "1280-clair",
+   "k": "art-repos",
+   "scrollY": 0,
+   "docH": 2632,
+   "enteteTop": 0,
+   "lignesRendues": 9,
+   "lignesVisibles": 5,
+   "hautPremiere": 539,
+   "basDerniere": 1012,
+   "defileInterne": [],
+   "pastilleCompagnon": 711,
+   "manque": "manque 22✕"
+  },
+  {
+   "tag": "1280-clair",
+   "k": "art-400",
+   "scrollY": 400,
+   "docH": 2632,
+   "enteteTop": -400,
+   "lignesRendues": 13,
+   "lignesVisibles": 13,
+   "hautPremiere": 139,
+   "basDerniere": 812,
+   "defileInterne": [],
+   "pastilleCompagnon": 711,
+   "manque": "manque 22✕"
+  },
+  {
+   "tag": "1280-clair",
+   "k": "art-bas",
+   "scrollY": 1830,
+   "docH": 2630,
+   "enteteTop": -1830,
+   "lignesRendues": 13,
+   "lignesVisibles": 13,
+   "hautPremiere": 0,
+   "basDerniere": 672,
+   "defileInterne": [],
+   "pastilleCompagnon": 711,
+   "manque": "manque 22✕"
+  },
+  {
+   "tag": "1280-clair",
+   "k": "recompter-300",
+   "scrollY": 300,
+   "rechercheTop": 47,
+   "colle": {
+    "top": 0,
+    "h": 128,
+    "parentH": 2320
+   }
+  },
+  {
+   "tag": "1280-clair",
+   "k": "courses",
+   "replie": "0 à commander cette semaine · 24 en tout",
+   "rien": 0,
+   "aCommander": 1,
+   "avant": 0,
+   "coupe": false,
+   "bandeau": "Tout voir",
+   "defile": "visible"
+  },
+  {
+   "tag": "1280-cave",
+   "k": "injection",
+   "n": 32
+  },
+  {
+   "tag": "1280-cave",
+   "k": "art-repos",
+   "scrollY": 0,
+   "docH": 2632,
+   "enteteTop": 0,
+   "lignesRendues": 9,
+   "lignesVisibles": 5,
+   "hautPremiere": 539,
+   "basDerniere": 1012,
+   "defileInterne": [],
+   "pastilleCompagnon": 711,
+   "manque": "manque 22✕"
+  },
+  {
+   "tag": "1280-cave",
+   "k": "art-400",
+   "scrollY": 400,
+   "docH": 2632,
+   "enteteTop": -400,
+   "lignesRendues": 13,
+   "lignesVisibles": 13,
+   "hautPremiere": 139,
+   "basDerniere": 812,
+   "defileInterne": [],
+   "pastilleCompagnon": 711,
+   "manque": "manque 22✕"
+  },
+  {
+   "tag": "1280-cave",
+   "k": "art-bas",
+   "scrollY": 1830,
+   "docH": 2630,
+   "enteteTop": -1830,
+   "lignesRendues": 13,
+   "lignesVisibles": 13,
+   "hautPremiere": 0,
+   "basDerniere": 672,
+   "defileInterne": [],
+   "pastilleCompagnon": 711,
+   "manque": "manque 22✕"
+  },
+  {
+   "tag": "1280-cave",
+   "k": "recompter-300",
+   "scrollY": 300,
+   "rechercheTop": 47,
+   "colle": {
+    "top": 0,
+    "h": 128,
+    "parentH": 2320
+   }
+  },
+  {
+   "tag": "1280-cave",
+   "k": "courses",
+   "replie": "0 à commander cette semaine · 24 en tout",
+   "rien": 0,
+   "aCommander": 1,
+   "avant": 0,
+   "coupe": false,
+   "bandeau": "Tout voir",
+   "defile": "visible"
+  }
+ ],
+ "erreurs": []
+}

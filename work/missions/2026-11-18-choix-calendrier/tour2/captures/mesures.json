@@ -1,0 +1,6369 @@
+{
+ "mesures": [
+  {
+   "tag": "calendrier-390-clair",
+   "etat": "repos",
+   "vw": 390,
+   "vh": 660,
+   "scrollY": 0,
+   "orientation": "portrait",
+   "header": [
+    0,
+    24,
+    390,
+    49
+   ],
+   "headerTop": 24,
+   "entete": [
+    12,
+    85,
+    366,
+    149
+   ],
+   "premiereBarre": {
+    "top": 270,
+    "h": 26
+   },
+   "nbBarres": 9,
+   "rangees": {
+    "brassins": 7,
+    "fetes": 3,
+    "ventes": 6,
+    "achats": 6,
+    "travaux": 1,
+    "activites": 2,
+    "papiers": 3
+   },
+   "axe": [],
+   "courbe": {
+    "rect": [
+     12,
+     113,
+     366,
+     88
+    ],
+    "visible": true
+   },
+   "plein": false,
+   "noms": [
+    {
+     "id": "brassin-LOT-SAISON",
+     "rangee": "brassins",
+     "barre": [
+      14,
+      270,
+      301,
+      26
+     ],
+     "nom": [
+      20,
+      270,
+      144,
+      26
+     ],
+     "texte": "Saison de ferme−137",
+     "dedans": true
+    },
+    {
+     "id": "brassin-LOT-IPA",
+     "rangee": "brassins",
+     "barre": [
+      14,
+      300,
+      240,
+      26
+     ],
+     "nom": [
+      20,
+      300,
+      142,
+      26
+     ],
+     "texte": "IPA de printemps−45",
+     "dedans": true
+    },
+    {
+     "id": "brassin-LOT-BLONDE",
+     "rangee": "brassins",
+     "barre": [
+      75,
+      330,
+      301,
+      26
+     ],
+     "nom": [
+      81,
+      330,
+      158,
+      26
+     ],
+     "texte": "Blonde d’automne−158",
+     "dedans": true
+    },
+    {
+     "id": "brassin-LOT-STOUT-4",
+     "rangee": "brassins",
+     "barre": [
+      75,
+      360,
+      301,
+      26
+     ],
+     "nom": [
+      81,
+      360,
+      127,
+      26
+     ],
+     "texte": "Stout maison−142",
+     "dedans": true
+    },
+    {
+     "id": "brassin-LOT-PORTER",
+     "rangee": "brassins",
+     "barre": [
+      197,
+      390,
+      179,
+      26
+     ],
+     "nom": [
+      203,
+      390,
+      131,
+      26
+     ],
+     "texte": "Porter d’hiver−141",
+     "dedans": true
+    },
+    {
+     "id": "proposition-brassin-R-AMBREE",
+     "rangee": "brassins",
+     "barre": [
+      319,
+      420,
+      57,
+      26
+     ],
+     "nom": [
+      86,
+      420,
+      227,
+      26
+     ],
+     "texte": "Ambrée maisonJ0 / 28 · prête 18 janv.",
+     "dedans": false
+    },
+    {
+     "id": "creatif-CR-FOIRE",
+     "rangee": "fetes",
+     "barre": [
+      136,
+      506,
+      57,
+      26
+     ],
+     "nom": [
+      199,
+      504,
+      81,
+      30
+     ],
+     "texte": "Foire duValais+2 400",
+     "dedans": false
+    },
+    {
+     "id": "argent-P-LOYER:2026-11-26",
+     "rangee": "papiers",
+     "barre": [
+      75,
+      1024,
+      57,
+      26
+     ],
+     "nom": [
+      138,
+      1024,
+      119,
+      26
+     ],
+     "texte": "Loyer du local−400",
+     "dedans": false
+    },
+    {
+     "id": "argent-P-LOYER:2026-12-26",
+     "rangee": "papiers",
+     "barre": [
+      319,
+      1054,
+      57,
+      26
+     ],
+     "nom": [
+      194,
+      1054,
+      119,
+      26
+     ],
+     "texte": "Loyer du local−400",
+     "dedans": false
+    }
+   ]
+  },
+  {
+   "tag": "calendrier-390-clair",
+   "etat": "defile-400",
+   "scroller": "fenetre",
+   "vw": 390,
+   "vh": 660,
+   "scrollY": 400,
+   "orientation": "portrait",
+   "header": [
+    0,
+    -376,
+    390,
+    49
+   ],
+   "headerTop": -376,
+   "entete": [
+    12,
+    0,
+    366,
+    149
+   ],
+   "premiereBarre": {
+    "top": -130,
+    "h": 26
+   },
+   "nbBarres": 9,
+   "rangees": {
+    "brassins": 7,
+    "fetes": 3,
+    "ventes": 6,
+    "achats": 6,
+    "travaux": 1,
+    "activites": 2,
+    "papiers": 3
+   },
+   "axe": [],
+   "courbe": {
+    "rect": [
+     12,
+     28,
+     366,
+     88
+    ],
+    "visible": true
+   },
+   "plein": false,
+   "noms": [
+    {
+     "id": "brassin-LOT-SAISON",
+     "rangee": "brassins",
+     "barre": [
+      14,
+      -130,
+      301,
+      26
+     ],
+     "nom": [
+      20,
+      -130,
+      144,
+      26
+     ],
+     "texte": "Saison de ferme−137",
+     "dedans": true
+    },
+    {
+     "id": "brassin-LOT-IPA",
+     "rangee": "brassins",
+     "barre": [
+      14,
+      -100,
+      240,
+      26
+     ],
+     "nom": [
+      20,
+      -100,
+      142,
+      26
+     ],
+     "texte": "IPA de printemps−45",
+     "dedans": true
+    },
+    {
+     "id": "brassin-LOT-BLONDE",
+     "rangee": "brassins",
+     "barre": [
+      75,
+      -70,
+      301,
+      26
+     ],
+     "nom": [
+      81,
+      -70,
+      158,
+      26
+     ],
+     "texte": "Blonde d’automne−158",
+     "dedans": true
+    },
+    {
+     "id": "brassin-LOT-STOUT-4",
+     "rangee": "brassins",
+     "barre": [
+      75,
+      -40,
+      301,
+      26
+     ],
+     "nom": [
+      81,
+      -40,
+      127,
+      26
+     ],
+     "texte": "Stout maison−142",
+     "dedans": true
+    },
+    {
+     "id": "brassin-LOT-PORTER",
+     "rangee": "brassins",
+     "barre": [
+      197,
+      -10,
+      179,
+      26
+     ],
+     "nom": [
+      203,
+      -10,
+      131,
+      26
+     ],
+     "texte": "Porter d’hiver−141",
+     "dedans": true
+    },
+    {
+     "id": "proposition-brassin-R-AMBREE",
+     "rangee": "brassins",
+     "barre": [
+      319,
+      20,
+      57,
+      26
+     ],
+     "nom": [
+      86,
+      20,
+      227,
+      26
+     ],
+     "texte": "Ambrée maisonJ0 / 28 · prête 18 janv.",
+     "dedans": false
+    },
+    {
+     "id": "creatif-CR-FOIRE",
+     "rangee": "fetes",
+     "barre": [
+      136,
+      106,
+      57,
+      26
+     ],
+     "nom": [
+      199,
+      104,
+      81,
+      30
+     ],
+     "texte": "Foire duValais+2 400",
+     "dedans": false
+    },
+    {
+     "id": "argent-P-LOYER:2026-11-26",
+     "rangee": "papiers",
+     "barre": [
+      75,
+      624,
+      57,
+      26
+     ],
+     "nom": [
+      138,
+      624,
+      119,
+      26
+     ],
+     "texte": "Loyer du local−400",
+     "dedans": false
+    },
+    {
+     "id": "argent-P-LOYER:2026-12-26",
+     "rangee": "papiers",
+     "barre": [
+      319,
+      654,
+      57,
+      26
+     ],
+     "nom": [
+      183,
+      654,
+      119,
+      26
+     ],
+     "texte": "Loyer du local−400",
+     "dedans": false
+    }
+   ]
+  },
+  {
+   "tag": "calendrier-390-clair",
+   "etat": "defile-bas",
+   "vw": 390,
+   "vh": 660,
+   "scrollY": 692,
+   "orientation": "portrait",
+   "header": [
+    0,
+    -668,
+    390,
+    49
+   ],
+   "headerTop": -668,
+   "entete": [
+    12,
+    0,
+    366,
+    149
+   ],
+   "premiereBarre": {
+    "top": -422,
+    "h": 26
+   },
+   "nbBarres": 9,
+   "rangees": {
+    "brassins": 7,
+    "fetes": 3,
+    "ventes": 6,
+    "achats": 6,
+    "travaux": 1,
+    "activites": 2,
+    "papiers": 3
+   },
+   "axe": [],
+   "courbe": {
+    "rect": [
+     12,
+     28,
+     366,
+     88
+    ],
+    "visible": true
+   },
+   "plein": false,
+   "noms": [
+    {
+     "id": "brassin-LOT-SAISON",
+     "rangee": "brassins",
+     "barre": [
+      14,
+      -422,
+      301,
+      26
+     ],
+     "nom": [
+      20,
+      -422,
+      144,
+      26
+     ],
+     "texte": "Saison de ferme−137",
+     "dedans": true
+    },
+    {
+     "id": "brassin-LOT-IPA",
+     "rangee": "brassins",
+     "barre": [
+      14,
+      -392,
+      240,
+      26
+     ],
+     "nom": [
+      20,
+      -392,
+      142,
+      26
+     ],
+     "texte": "IPA de printemps−45",
+     "dedans": true
+    },
+    {
+     "id": "brassin-LOT-BLONDE",
+     "rangee": "brassins",
+     "barre": [
+      75,
+      -362,
+      301,
+      26
+     ],
+     "nom": [
+      81,
+      -362,
+      158,
+      26
+     ],
+     "texte": "Blonde d’automne−158",
+     "dedans": true
+    },
+    {
+     "id": "brassin-LOT-STOUT-4",
+     "rangee": "brassins",
+     "barre": [
+      75,
+      -332,
+      301,
+      26
+     ],
+     "nom": [
+      81,
+      -332,
+      127,
+      26
+     ],
+     "texte": "Stout maison−142",
+     "dedans": true
+    },
+    {
+     "id": "brassin-LOT-PORTER",
+     "rangee": "brassins",
+     "barre": [
+      197,
+      -302,
+      179,
+      26
+     ],
+     "nom": [
+      203,
+      -302,
+      131,
+      26
+     ],
+     "texte": "Porter d’hiver−141",
+     "dedans": true
+    },
+    {
+     "id": "proposition-brassin-R-AMBREE",
+     "rangee": "brassins",
+     "barre": [
+      319,
+      -272,
+      57,
+      26
+     ],
+     "nom": [
+      86,
+      -272,
+      227,
+      26
+     ],
+     "texte": "Ambrée maisonJ0 / 28 · prête 18 janv.",
+     "dedans": false
+    },
+    {
+     "id": "creatif-CR-FOIRE",
+     "rangee": "fetes",
+     "barre": [
+      136,
+      -186,
+      57,
+      26
+     ],
+     "nom": [
+      199,
+      -188,
+      81,
+      30
+     ],
+     "texte": "Foire duValais+2 400",
+     "dedans": false
+    },
+    {
+     "id": "argent-P-LOYER:2026-11-26",
+     "rangee": "papiers",
+     "barre": [
+      75,
+      332,
+      57,
+      26
+     ],
+     "nom": [
+      138,
+      332,
+      119,
+      26
+     ],
+     "texte": "Loyer du local−400",
+     "dedans": false
+    },
+    {
+     "id": "argent-P-LOYER:2026-12-26",
+     "rangee": "papiers",
+     "barre": [
+      319,
+      362,
+      57,
+      26
+     ],
+     "nom": [
+      183,
+      362,
+      119,
+      26
+     ],
+     "texte": "Loyer du local−400",
+     "dedans": false
+    }
+   ]
+  },
+  {
+   "tag": "calendrier-390-clair",
+   "etat": "fiche",
+   "touche": true,
+   "vw": 390,
+   "vh": 660,
+   "scrollY": 28,
+   "orientation": "portrait",
+   "header": [
+    0,
+    -4,
+    390,
+    49
+   ],
+   "headerTop": -4,
+   "entete": [
+    12,
+    57,
+    366,
+    149
+   ],
+   "premiereBarre": {
+    "top": 242,
+    "h": 26
+   },
+   "nbBarres": 9,
+   "rangees": {
+    "brassins": 7,
+    "fetes": 3,
+    "ventes": 6,
+    "achats": 6,
+    "travaux": 1,
+    "activites": 2,
+    "papiers": 3
+   },
+   "axe": [],
+   "courbe": {
+    "rect": [
+     12,
+     85,
+     366,
+     88
+    ],
+    "visible": true
+   },
+   "plein": false,
+   "noms": [
+    {
+     "id": "brassin-LOT-SAISON",
+     "rangee": "brassins",
+     "barre": [
+      14,
+      242,
+      301,
+      26
+     ],
+     "nom": [
+      20,
+      242,
+      144,
+      26
+     ],
+     "texte": "Saison de ferme−137",
+     "dedans": true
+    },
+    {
+     "id": "brassin-LOT-IPA",
+     "rangee": "brassins",
+     "barre": [
+      14,
+      739,
+      240,
+      26
+     ],
+     "nom": [
+      20,
+      739,
+      142,
+      26
+     ],
+     "texte": "IPA de printemps−45",
+     "dedans": true
+    },
+    {
+     "id": "brassin-LOT-BLONDE",
+     "rangee": "brassins",
+     "barre": [
+      75,
+      769,
+      301,
+      26
+     ],
+     "nom": [
+      81,
+      769,
+      158,
+      26
+     ],
+     "texte": "Blonde d’automne−158",
+     "dedans": true
+    },
+    {
+     "id": "brassin-LOT-STOUT-4",
+     "rangee": "brassins",
+     "barre": [
+      75,
+      799,
+      301,
+      26
+     ],
+     "nom": [
+      81,
+      799,
+      127,
+      26
+     ],
+     "texte": "Stout maison−142",
+     "dedans": true
+    },
+    {
+     "id": "brassin-LOT-PORTER",
+     "rangee": "brassins",
+     "barre": [
+      197,
+      829,
+      179,
+      26
+     ],
+     "nom": [
+      203,
+      829,
+      131,
+      26
+     ],
+     "texte": "Porter d’hiver−141",
+     "dedans": true
+    },
+    {
+     "id": "proposition-brassin-R-AMBREE",
+     "rangee": "brassins",
+     "barre": [
+      319,
+      859,
+      57,
+      26
+     ],
+     "nom": [
+      75,
+      859,
+      227,
+      26
+     ],
+     "texte": "Ambrée maisonJ0 / 28 · prête 18 janv.",
+     "dedans": false
+    },
+    {
+     "id": "creatif-CR-FOIRE",
+     "rangee": "fetes",
+     "barre": [
+      136,
+      945,
+      57,
+      26
+     ],
+     "nom": [
+      199,
+      943,
+      81,
+      30
+     ],
+     "texte": "Foire duValais+2 400",
+     "dedans": false
+    },
+    {
+     "id": "argent-P-LOYER:2026-11-26",
+     "rangee": "papiers",
+     "barre": [
+      75,
+      1463,
+      57,
+      26
+     ],
+     "nom": [
+      138,
+      1463,
+      119,
+      26
+     ],
+     "texte": "Loyer du local−400",
+     "dedans": false
+    },
+    {
+     "id": "argent-P-LOYER:2026-12-26",
+     "rangee": "papiers",
+     "barre": [
+      319,
+      1493,
+      57,
+      26
+     ],
+     "nom": [
+      194,
+      1493,
+      119,
+      26
+     ],
+     "texte": "Loyer du local−400",
+     "dedans": false
+    }
+   ]
+  },
+  {
+   "tag": "calendrier-390-cave",
+   "etat": "repos",
+   "vw": 390,
+   "vh": 660,
+   "scrollY": 0,
+   "orientation": "portrait",
+   "header": [
+    0,
+    24,
+    390,
+    49
+   ],
+   "headerTop": 24,
+   "entete": [
+    12,
+    85,
+    366,
+    149
+   ],
+   "premiereBarre": {
+    "top": 270,
+    "h": 26
+   },
+   "nbBarres": 9,
+   "rangees": {
+    "brassins": 7,
+    "fetes": 3,
+    "ventes": 6,
+    "achats": 6,
+    "travaux": 1,
+    "activites": 2,
+    "papiers": 3
+   },
+   "axe": [],
+   "courbe": {
+    "rect": [
+     12,
+     113,
+     366,
+     88
+    ],
+    "visible": true
+   },
+   "plein": false,
+   "noms": [
+    {
+     "id": "brassin-LOT-SAISON",
+     "rangee": "brassins",
+     "barre": [
+      14,
+      270,
+      301,
+      26
+     ],
+     "nom": [
+      20,
+      270,
+      144,
+      26
+     ],
+     "texte": "Saison de ferme−137",
+     "dedans": true
+    },
+    {
+     "id": "brassin-LOT-IPA",
+     "rangee": "brassins",
+     "barre": [
+      14,
+      300,
+      240,
+      26
+     ],
+     "nom": [
+      20,
+      300,
+      142,
+      26
+     ],
+     "texte": "IPA de printemps−45",
+     "dedans": true
+    },
+    {
+     "id": "brassin-LOT-BLONDE",
+     "rangee": "brassins",
+     "barre": [
+      75,
+      330,
+      301,
+      26
+     ],
+     "nom": [
+      81,
+      330,
+      158,
+      26
+     ],
+     "texte": "Blonde d’automne−158",
+     "dedans": true
+    },
+    {
+     "id": "brassin-LOT-STOUT-4",
+     "rangee": "brassins",
+     "barre": [
+      75,
+      360,
+      301,
+      26
+     ],
+     "nom": [
+      81,
+      360,
+      127,
+      26
+     ],
+     "texte": "Stout maison−142",
+     "dedans": true
+    },
+    {
+     "id": "brassin-LOT-PORTER",
+     "rangee": "brassins",
+     "barre": [
+      197,
+      390,
+      179,
+      26
+     ],
+     "nom": [
+      203,
+      390,
+      131,
+      26
+     ],
+     "texte": "Porter d’hiver−141",
+     "dedans": true
+    },
+    {
+     "id": "proposition-brassin-R-AMBREE",
+     "rangee": "brassins",
+     "barre": [
+      319,
+      420,
+      57,
+      26
+     ],
+     "nom": [
+      86,
+      420,
+      227,
+      26
+     ],
+     "texte": "Ambrée maisonJ0 / 28 · prête 18 janv.",
+     "dedans": false
+    },
+    {
+     "id": "creatif-CR-FOIRE",
+     "rangee": "fetes",
+     "barre": [
+      136,
+      506,
+      57,
+      26
+     ],
+     "nom": [
+      199,
+      504,
+      81,
+      30
+     ],
+     "texte": "Foire duValais+2 400",
+     "dedans": false
+    },
+    {
+     "id": "argent-P-LOYER:2026-11-26",
+     "rangee": "papiers",
+     "barre": [
+      75,
+      1024,
+      57,
+      26
+     ],
+     "nom": [
+      138,
+      1024,
+      119,
+      26
+     ],
+     "texte": "Loyer du local−400",
+     "dedans": false
+    },
+    {
+     "id": "argent-P-LOYER:2026-12-26",
+     "rangee": "papiers",
+     "barre": [
+      319,
+      1054,
+      57,
+      26
+     ],
+     "nom": [
+      194,
+      1054,
+      119,
+      26
+     ],
+     "texte": "Loyer du local−400",
+     "dedans": false
+    }
+   ]
+  },
+  {
+   "tag": "calendrier-390-cave",
+   "etat": "defile-400",
+   "scroller": "fenetre",
+   "vw": 390,
+   "vh": 660,
+   "scrollY": 400,
+   "orientation": "portrait",
+   "header": [
+    0,
+    -376,
+    390,
+    49
+   ],
+   "headerTop": -376,
+   "entete": [
+    12,
+    0,
+    366,
+    149
+   ],
+   "premiereBarre": {
+    "top": -130,
+    "h": 26
+   },
+   "nbBarres": 9,
+   "rangees": {
+    "brassins": 7,
+    "fetes": 3,
+    "ventes": 6,
+    "achats": 6,
+    "travaux": 1,
+    "activites": 2,
+    "papiers": 3
+   },
+   "axe": [],
+   "courbe": {
+    "rect": [
+     12,
+     28,
+     366,
+     88
+    ],
+    "visible": true
+   },
+   "plein": false,
+   "noms": [
+    {
+     "id": "brassin-LOT-SAISON",
+     "rangee": "brassins",
+     "barre": [
+      14,
+      -130,
+      301,
+      26
+     ],
+     "nom": [
+      20,
+      -130,
+      144,
+      26
+     ],
+     "texte": "Saison de ferme−137",
+     "dedans": true
+    },
+    {
+     "id": "brassin-LOT-IPA",
+     "rangee": "brassins",
+     "barre": [
+      14,
+      -100,
+      240,
+      26
+     ],
+     "nom": [
+      20,
+      -100,
+      142,
+      26
+     ],
+     "texte": "IPA de printemps−45",
+     "dedans": true
+    },
+    {
+     "id": "brassin-LOT-BLONDE",
+     "rangee": "brassins",
+     "barre": [
+      75,
+      -70,
+      301,
+      26
+     ],
+     "nom": [
+      81,
+      -70,
+      158,
+      26
+     ],
+     "texte": "Blonde d’automne−158",
+     "dedans": true
+    },
+    {
+     "id": "brassin-LOT-STOUT-4",
+     "rangee": "brassins",
+     "barre": [
+      75,
+      -40,
+      301,
+      26
+     ],
+     "nom": [
+      81,
+      -40,
+      127,
+      26
+     ],
+     "texte": "Stout maison−142",
+     "dedans": true
+    },
+    {
+     "id": "brassin-LOT-PORTER",
+     "rangee": "brassins",
+     "barre": [
+      197,
+      -10,
+      179,
+      26
+     ],
+     "nom": [
+      203,
+      -10,
+      131,
+      26
+     ],
+     "texte": "Porter d’hiver−141",
+     "dedans": true
+    },
+    {
+     "id": "proposition-brassin-R-AMBREE",
+     "rangee": "brassins",
+     "barre": [
+      319,
+      20,
+      57,
+      26
+     ],
+     "nom": [
+      86,
+      20,
+      227,
+      26
+     ],
+     "texte": "Ambrée maisonJ0 / 28 · prête 18 janv.",
+     "dedans": false
+    },
+    {
+     "id": "creatif-CR-FOIRE",
+     "rangee": "fetes",
+     "barre": [
+      136,
+      106,
+      57,
+      26
+     ],
+     "nom": [
+      199,
+      104,
+      81,
+      30
+     ],
+     "texte": "Foire duValais+2 400",
+     "dedans": false
+    },
+    {
+     "id": "argent-P-LOYER:2026-11-26",
+     "rangee": "papiers",
+     "barre": [
+      75,
+      624,
+      57,
+      26
+     ],
+     "nom": [
+      138,
+      624,
+      119,
+      26
+     ],
+     "texte": "Loyer du local−400",
+     "dedans": false
+    },
+    {
+     "id": "argent-P-LOYER:2026-12-26",
+     "rangee": "papiers",
+     "barre": [
+      319,
+      654,
+      57,
+      26
+     ],
+     "nom": [
+      183,
+      654,
+      119,
+      26
+     ],
+     "texte": "Loyer du local−400",
+     "dedans": false
+    }
+   ]
+  },
+  {
+   "tag": "calendrier-390-cave",
+   "etat": "defile-bas",
+   "vw": 390,
+   "vh": 660,
+   "scrollY": 692,
+   "orientation": "portrait",
+   "header": [
+    0,
+    -668,
+    390,
+    49
+   ],
+   "headerTop": -668,
+   "entete": [
+    12,
+    0,
+    366,
+    149
+   ],
+   "premiereBarre": {
+    "top": -422,
+    "h": 26
+   },
+   "nbBarres": 9,
+   "rangees": {
+    "brassins": 7,
+    "fetes": 3,
+    "ventes": 6,
+    "achats": 6,
+    "travaux": 1,
+    "activites": 2,
+    "papiers": 3
+   },
+   "axe": [],
+   "courbe": {
+    "rect": [
+     12,
+     28,
+     366,
+     88
+    ],
+    "visible": true
+   },
+   "plein": false,
+   "noms": [
+    {
+     "id": "brassin-LOT-SAISON",
+     "rangee": "brassins",
+     "barre": [
+      14,
+      -422,
+      301,
+      26
+     ],
+     "nom": [
+      20,
+      -422,
+      144,
+      26
+     ],
+     "texte": "Saison de ferme−137",
+     "dedans": true
+    },
+    {
+     "id": "brassin-LOT-IPA",
+     "rangee": "brassins",
+     "barre": [
+      14,
+      -392,
+      240,
+      26
+     ],
+     "nom": [
+      20,
+      -392,
+      142,
+      26
+     ],
+     "texte": "IPA de printemps−45",
+     "dedans": true
+    },
+    {
+     "id": "brassin-LOT-BLONDE",
+     "rangee": "brassins",
+     "barre": [
+      75,
+      -362,
+      301,
+      26
+     ],
+     "nom": [
+      81,
+      -362,
+      158,
+      26
+     ],
+     "texte": "Blonde d’automne−158",
+     "dedans": true
+    },
+    {
+     "id": "brassin-LOT-STOUT-4",
+     "rangee": "brassins",
+     "barre": [
+      75,
+      -332,
+      301,
+      26
+     ],
+     "nom": [
+      81,
+      -332,
+      127,
+      26
+     ],
+     "texte": "Stout maison−142",
+     "dedans": true
+    },
+    {
+     "id": "brassin-LOT-PORTER",
+     "rangee": "brassins",
+     "barre": [
+      197,
+      -302,
+      179,
+      26
+     ],
+     "nom": [
+      203,
+      -302,
+      131,
+      26
+     ],
+     "texte": "Porter d’hiver−141",
+     "dedans": true
+    },
+    {
+     "id": "proposition-brassin-R-AMBREE",
+     "rangee": "brassins",
+     "barre": [
+      319,
+      -272,
+      57,
+      26
+     ],
+     "nom": [
+      86,
+      -272,
+      227,
+      26
+     ],
+     "texte": "Ambrée maisonJ0 / 28 · prête 18 janv.",
+     "dedans": false
+    },
+    {
+     "id": "creatif-CR-FOIRE",
+     "rangee": "fetes",
+     "barre": [
+      136,
+      -186,
+      57,
+      26
+     ],
+     "nom": [
+      199,
+      -188,
+      81,
+      30
+     ],
+     "texte": "Foire duValais+2 400",
+     "dedans": false
+    },
+    {
+     "id": "argent-P-LOYER:2026-11-26",
+     "rangee": "papiers",
+     "barre": [
+      75,
+      332,
+      57,
+      26
+     ],
+     "nom": [
+      138,
+      332,
+      119,
+      26
+     ],
+     "texte": "Loyer du local−400",
+     "dedans": false
+    },
+    {
+     "id": "argent-P-LOYER:2026-12-26",
+     "rangee": "papiers",
+     "barre": [
+      319,
+      362,
+      57,
+      26
+     ],
+     "nom": [
+      183,
+      362,
+      119,
+      26
+     ],
+     "texte": "Loyer du local−400",
+     "dedans": false
+    }
+   ]
+  },
+  {
+   "tag": "calendrier-390-cave",
+   "etat": "fiche",
+   "touche": true,
+   "vw": 390,
+   "vh": 660,
+   "scrollY": 28,
+   "orientation": "portrait",
+   "header": [
+    0,
+    -4,
+    390,
+    49
+   ],
+   "headerTop": -4,
+   "entete": [
+    12,
+    57,
+    366,
+    149
+   ],
+   "premiereBarre": {
+    "top": 242,
+    "h": 26
+   },
+   "nbBarres": 9,
+   "rangees": {
+    "brassins": 7,
+    "fetes": 3,
+    "ventes": 6,
+    "achats": 6,
+    "travaux": 1,
+    "activites": 2,
+    "papiers": 3
+   },
+   "axe": [],
+   "courbe": {
+    "rect": [
+     12,
+     85,
+     366,
+     88
+    ],
+    "visible": true
+   },
+   "plein": false,
+   "noms": [
+    {
+     "id": "brassin-LOT-SAISON",
+     "rangee": "brassins",
+     "barre": [
+      14,
+      242,
+      301,
+      26
+     ],
+     "nom": [
+      20,
+      242,
+      144,
+      26
+     ],
+     "texte": "Saison de ferme−137",
+     "dedans": true
+    },
+    {
+     "id": "brassin-LOT-IPA",
+     "rangee": "brassins",
+     "barre": [
+      14,
+      739,
+      240,
+      26
+     ],
+     "nom": [
+      20,
+      739,
+      142,
+      26
+     ],
+     "texte": "IPA de printemps−45",
+     "dedans": true
+    },
+    {
+     "id": "brassin-LOT-BLONDE",
+     "rangee": "brassins",
+     "barre": [
+      75,
+      769,
+      301,
+      26
+     ],
+     "nom": [
+      81,
+      769,
+      158,
+      26
+     ],
+     "texte": "Blonde d’automne−158",
+     "dedans": true
+    },
+    {
+     "id": "brassin-LOT-STOUT-4",
+     "rangee": "brassins",
+     "barre": [
+      75,
+      799,
+      301,
+      26
+     ],
+     "nom": [
+      81,
+      799,
+      127,
+      26
+     ],
+     "texte": "Stout maison−142",
+     "dedans": true
+    },
+    {
+     "id": "brassin-LOT-PORTER",
+     "rangee": "brassins",
+     "barre": [
+      197,
+      829,
+      179,
+      26
+     ],
+     "nom": [
+      203,
+      829,
+      131,
+      26
+     ],
+     "texte": "Porter d’hiver−141",
+     "dedans": true
+    },
+    {
+     "id": "proposition-brassin-R-AMBREE",
+     "rangee": "brassins",
+     "barre": [
+      319,
+      859,
+      57,
+      26
+     ],
+     "nom": [
+      75,
+      859,
+      227,
+      26
+     ],
+     "texte": "Ambrée maisonJ0 / 28 · prête 18 janv.",
+     "dedans": false
+    },
+    {
+     "id": "creatif-CR-FOIRE",
+     "rangee": "fetes",
+     "barre": [
+      136,
+      945,
+      57,
+      26
+     ],
+     "nom": [
+      199,
+      943,
+      81,
+      30
+     ],
+     "texte": "Foire duValais+2 400",
+     "dedans": false
+    },
+    {
+     "id": "argent-P-LOYER:2026-11-26",
+     "rangee": "papiers",
+     "barre": [
+      75,
+      1463,
+      57,
+      26
+     ],
+     "nom": [
+      138,
+      1463,
+      119,
+      26
+     ],
+     "texte": "Loyer du local−400",
+     "dedans": false
+    },
+    {
+     "id": "argent-P-LOYER:2026-12-26",
+     "rangee": "papiers",
+     "barre": [
+      319,
+      1493,
+      57,
+      26
+     ],
+     "nom": [
+      194,
+      1493,
+      119,
+      26
+     ],
+     "texte": "Loyer du local−400",
+     "dedans": false
+    }
+   ]
+  },
+  {
+   "tag": "calendrier-844-clair",
+   "etat": "repos",
+   "vw": 844,
+   "vh": 340,
+   "scrollY": 0,
+   "orientation": "paysage",
+   "header": [
+    0,
+    24,
+    844,
+    41
+   ],
+   "headerTop": 24,
+   "entete": [
+    12,
+    65,
+    820,
+    87
+   ],
+   "premiereBarre": {
+    "top": 180,
+    "h": 18
+   },
+   "nbBarres": 12,
+   "rangees": {
+    "brassins": 7,
+    "fetes": 3,
+    "ventes": 7,
+    "achats": 6,
+    "travaux": 2,
+    "activites": 3,
+    "papiers": 6
+   },
+   "axe": [],
+   "courbe": {
+    "rect": [
+     226,
+     65,
+     606,
+     60
+    ],
+    "visible": true
+   },
+   "plein": false,
+   "noms": [
+    {
+     "id": "brassin-LOT-SAISON",
+     "rangee": "brassins",
+     "barre": [
+      14,
+      180,
+      311,
+      18
+     ],
+     "nom": [
+      20,
+      180,
+      144,
+      18
+     ],
+     "texte": "Saison de ferme−137",
+     "dedans": true
+    },
+    {
+     "id": "brassin-LOT-IPA",
+     "rangee": "brassins",
+     "barre": [
+      14,
+      200,
+      248,
+      18
+     ],
+     "nom": [
+      20,
+      200,
+      142,
+      18
+     ],
+     "texte": "IPA de printemps−45",
+     "dedans": true
+    },
+    {
+     "id": "brassin-LOT-BLONDE",
+     "rangee": "brassins",
+     "barre": [
+      77,
+      220,
+      311,
+      18
+     ],
+     "nom": [
+      83,
+      220,
+      158,
+      18
+     ],
+     "texte": "Blonde d’automne−158",
+     "dedans": true
+    },
+    {
+     "id": "brassin-LOT-STOUT-4",
+     "rangee": "brassins",
+     "barre": [
+      77,
+      240,
+      311,
+      18
+     ],
+     "nom": [
+      83,
+      240,
+      127,
+      18
+     ],
+     "texte": "Stout maison−142",
+     "dedans": true
+    },
+    {
+     "id": "brassin-LOT-PORTER",
+     "rangee": "brassins",
+     "barre": [
+      203,
+      260,
+      374,
+      18
+     ],
+     "nom": [
+      209,
+      260,
+      131,
+      18
+     ],
+     "texte": "Porter d’hiver−141",
+     "dedans": true
+    },
+    {
+     "id": "proposition-brassin-R-AMBREE",
+     "rangee": "brassins",
+     "barre": [
+      329,
+      160,
+      311,
+      18
+     ],
+     "nom": [
+      335,
+      160,
+      100,
+      18
+     ],
+     "texte": "Ambrée maison",
+     "dedans": true
+    },
+    {
+     "id": "creatif-CR-FOIRE",
+     "rangee": "fetes",
+     "barre": [
+      140,
+      302,
+      59,
+      18
+     ],
+     "nom": [
+      205,
+      302,
+      133,
+      18
+     ],
+     "texte": "Foire du Valais+2 400",
+     "dedans": false
+    },
+    {
+     "id": "argent-P-FRIGO",
+     "rangee": "travaux",
+     "barre": [
+      771,
+      528,
+      59,
+      18
+     ],
+     "nom": [
+      680,
+      528,
+      76,
+      18
+     ],
+     "texte": "Frigo−1 800",
+     "dedans": false
+    },
+    {
+     "id": "creatif-CR-RANGER",
+     "rangee": "activites",
+     "barre": [
+      456,
+      550,
+      122,
+      18
+     ],
+     "nom": [
+      584,
+      550,
+      124,
+      18
+     ],
+     "texte": "Ranger la réserve3 j",
+     "dedans": false
+    },
+    {
+     "id": "argent-P-LOYER:2026-11-26",
+     "rangee": "papiers",
+     "barre": [
+      77,
+      612,
+      59,
+      18
+     ],
+     "nom": [
+      142,
+      612,
+      119,
+      18
+     ],
+     "texte": "Loyer du local−400",
+     "dedans": false
+    },
+    {
+     "id": "argent-P-LOYER:2026-12-26",
+     "rangee": "papiers",
+     "barre": [
+      329,
+      592,
+      59,
+      18
+     ],
+     "nom": [
+      394,
+      592,
+      119,
+      18
+     ],
+     "texte": "Loyer du local−400",
+     "dedans": false
+    },
+    {
+     "id": "argent-P-LOYER:2027-01-26",
+     "rangee": "papiers",
+     "barre": [
+      645,
+      612,
+      59,
+      18
+     ],
+     "nom": [
+      519,
+      612,
+      119,
+      18
+     ],
+     "texte": "Loyer du local−400",
+     "dedans": false
+    }
+   ]
+  },
+  {
+   "tag": "calendrier-844-clair",
+   "etat": "defile-400",
+   "scroller": "fenetre",
+   "vw": 844,
+   "vh": 340,
+   "scrollY": 400,
+   "orientation": "paysage",
+   "header": [
+    0,
+    -376,
+    844,
+    41
+   ],
+   "headerTop": -376,
+   "entete": [
+    12,
+    0,
+    820,
+    87
+   ],
+   "premiereBarre": {
+    "top": -220,
+    "h": 18
+   },
+   "nbBarres": 12,
+   "rangees": {
+    "brassins": 7,
+    "fetes": 3,
+    "ventes": 7,
+    "achats": 6,
+    "travaux": 2,
+    "activites": 3,
+    "papiers": 6
+   },
+   "axe": [],
+   "courbe": {
+    "rect": [
+     226,
+     0,
+     606,
+     60
+    ],
+    "visible": true
+   },
+   "plein": false,
+   "noms": [
+    {
+     "id": "brassin-LOT-SAISON",
+     "rangee": "brassins",
+     "barre": [
+      14,
+      -220,
+      311,
+      18
+     ],
+     "nom": [
+      20,
+      -220,
+      144,
+      18
+     ],
+     "texte": "Saison de ferme−137",
+     "dedans": true
+    },
+    {
+     "id": "brassin-LOT-IPA",
+     "rangee": "brassins",
+     "barre": [
+      14,
+      -200,
+      248,
+      18
+     ],
+     "nom": [
+      20,
+      -200,
+      142,
+      18
+     ],
+     "texte": "IPA de printemps−45",
+     "dedans": true
+    },
+    {
+     "id": "brassin-LOT-BLONDE",
+     "rangee": "brassins",
+     "barre": [
+      77,
+      -180,
+      311,
+      18
+     ],
+     "nom": [
+      83,
+      -180,
+      158,
+      18
+     ],
+     "texte": "Blonde d’automne−158",
+     "dedans": true
+    },
+    {
+     "id": "brassin-LOT-STOUT-4",
+     "rangee": "brassins",
+     "barre": [
+      77,
+      -160,
+      311,
+      18
+     ],
+     "nom": [
+      83,
+      -160,
+      127,
+      18
+     ],
+     "texte": "Stout maison−142",
+     "dedans": true
+    },
+    {
+     "id": "brassin-LOT-PORTER",
+     "rangee": "brassins",
+     "barre": [
+      203,
+      -140,
+      374,
+      18
+     ],
+     "nom": [
+      209,
+      -140,
+      131,
+      18
+     ],
+     "texte": "Porter d’hiver−141",
+     "dedans": true
+    },
+    {
+     "id": "proposition-brassin-R-AMBREE",
+     "rangee": "brassins",
+     "barre": [
+      329,
+      -240,
+      311,
+      18
+     ],
+     "nom": [
+      335,
+      -240,
+      100,
+      18
+     ],
+     "texte": "Ambrée maison",
+     "dedans": true
+    },
+    {
+     "id": "creatif-CR-FOIRE",
+     "rangee": "fetes",
+     "barre": [
+      140,
+      -98,
+      59,
+      18
+     ],
+     "nom": [
+      205,
+      -98,
+      133,
+      18
+     ],
+     "texte": "Foire du Valais+2 400",
+     "dedans": false
+    },
+    {
+     "id": "argent-P-FRIGO",
+     "rangee": "travaux",
+     "barre": [
+      771,
+      128,
+      59,
+      18
+     ],
+     "nom": [
+      680,
+      128,
+      76,
+      18
+     ],
+     "texte": "Frigo−1 800",
+     "dedans": false
+    },
+    {
+     "id": "creatif-CR-RANGER",
+     "rangee": "activites",
+     "barre": [
+      456,
+      150,
+      122,
+      18
+     ],
+     "nom": [
+      584,
+      150,
+      124,
+      18
+     ],
+     "texte": "Ranger la réserve3 j",
+     "dedans": false
+    },
+    {
+     "id": "argent-P-LOYER:2026-11-26",
+     "rangee": "papiers",
+     "barre": [
+      77,
+      212,
+      59,
+      18
+     ],
+     "nom": [
+      142,
+      212,
+      119,
+      18
+     ],
+     "texte": "Loyer du local−400",
+     "dedans": false
+    },
+    {
+     "id": "argent-P-LOYER:2026-12-26",
+     "rangee": "papiers",
+     "barre": [
+      329,
+      192,
+      59,
+      18
+     ],
+     "nom": [
+      394,
+      192,
+      119,
+      18
+     ],
+     "texte": "Loyer du local−400",
+     "dedans": false
+    },
+    {
+     "id": "argent-P-LOYER:2027-01-26",
+     "rangee": "papiers",
+     "barre": [
+      645,
+      212,
+      59,
+      18
+     ],
+     "nom": [
+      519,
+      212,
+      119,
+      18
+     ],
+     "texte": "Loyer du local−400",
+     "dedans": false
+    }
+   ]
+  },
+  {
+   "tag": "calendrier-844-clair",
+   "etat": "defile-bas",
+   "vw": 844,
+   "vh": 340,
+   "scrollY": 600,
+   "orientation": "paysage",
+   "header": [
+    0,
+    -576,
+    844,
+    41
+   ],
+   "headerTop": -576,
+   "entete": [
+    12,
+    0,
+    820,
+    87
+   ],
+   "premiereBarre": {
+    "top": -420,
+    "h": 18
+   },
+   "nbBarres": 12,
+   "rangees": {
+    "brassins": 7,
+    "fetes": 3,
+    "ventes": 7,
+    "achats": 6,
+    "travaux": 2,
+    "activites": 3,
+    "papiers": 6
+   },
+   "axe": [],
+   "courbe": {
+    "rect": [
+     226,
+     0,
+     606,
+     60
+    ],
+    "visible": true
+   },
+   "plein": false,
+   "noms": [
+    {
+     "id": "brassin-LOT-SAISON",
+     "rangee": "brassins",
+     "barre": [
+      14,
+      -420,
+      311,
+      18
+     ],
+     "nom": [
+      20,
+      -420,
+      144,
+      18
+     ],
+     "texte": "Saison de ferme−137",
+     "dedans": true
+    },
+    {
+     "id": "brassin-LOT-IPA",
+     "rangee": "brassins",
+     "barre": [
+      14,
+      -400,
+      248,
+      18
+     ],
+     "nom": [
+      20,
+      -400,
+      142,
+      18
+     ],
+     "texte": "IPA de printemps−45",
+     "dedans": true
+    },
+    {
+     "id": "brassin-LOT-BLONDE",
+     "rangee": "brassins",
+     "barre": [
+      77,
+      -380,
+      311,
+      18
+     ],
+     "nom": [
+      83,
+      -380,
+      158,
+      18
+     ],
+     "texte": "Blonde d’automne−158",
+     "dedans": true
+    },
+    {
+     "id": "brassin-LOT-STOUT-4",
+     "rangee": "brassins",
+     "barre": [
+      77,
+      -360,
+      311,
+      18
+     ],
+     "nom": [
+      83,
+      -360,
+      127,
+      18
+     ],
+     "texte": "Stout maison−142",
+     "dedans": true
+    },
+    {
+     "id": "brassin-LOT-PORTER",
+     "rangee": "brassins",
+     "barre": [
+      203,
+      -340,
+      374,
+      18
+     ],
+     "nom": [
+      209,
+      -340,
+      131,
+      18
+     ],
+     "texte": "Porter d’hiver−141",
+     "dedans": true
+    },
+    {
+     "id": "proposition-brassin-R-AMBREE",
+     "rangee": "brassins",
+     "barre": [
+      329,
+      -440,
+      311,
+      18
+     ],
+     "nom": [
+      335,
+      -440,
+      100,
+      18
+     ],
+     "texte": "Ambrée maison",
+     "dedans": true
+    },
+    {
+     "id": "creatif-CR-FOIRE",
+     "rangee": "fetes",
+     "barre": [
+      140,
+      -298,
+      59,
+      18
+     ],
+     "nom": [
+      205,
+      -298,
+      133,
+      18
+     ],
+     "texte": "Foire du Valais+2 400",
+     "dedans": false
+    },
+    {
+     "id": "argent-P-FRIGO",
+     "rangee": "travaux",
+     "barre": [
+      771,
+      -72,
+      59,
+      18
+     ],
+     "nom": [
+      680,
+      -72,
+      76,
+      18
+     ],
+     "texte": "Frigo−1 800",
+     "dedans": false
+    },
+    {
+     "id": "creatif-CR-RANGER",
+     "rangee": "activites",
+     "barre": [
+      456,
+      -50,
+      122,
+      18
+     ],
+     "nom": [
+      584,
+      -50,
+      124,
+      18
+     ],
+     "texte": "Ranger la réserve3 j",
+     "dedans": false
+    },
+    {
+     "id": "argent-P-LOYER:2026-11-26",
+     "rangee": "papiers",
+     "barre": [
+      77,
+      12,
+      59,
+      18
+     ],
+     "nom": [
+      142,
+      12,
+      119,
+      18
+     ],
+     "texte": "Loyer du local−400",
+     "dedans": false
+    },
+    {
+     "id": "argent-P-LOYER:2026-12-26",
+     "rangee": "papiers",
+     "barre": [
+      329,
+      -8,
+      59,
+      18
+     ],
+     "nom": [
+      394,
+      -8,
+      119,
+      18
+     ],
+     "texte": "Loyer du local−400",
+     "dedans": false
+    },
+    {
+     "id": "argent-P-LOYER:2027-01-26",
+     "rangee": "papiers",
+     "barre": [
+      645,
+      12,
+      59,
+      18
+     ],
+     "nom": [
+      519,
+      12,
+      119,
+      18
+     ],
+     "texte": "Loyer du local−400",
+     "dedans": false
+    }
+   ]
+  },
+  {
+   "tag": "calendrier-844-clair",
+   "etat": "fiche",
+   "touche": true,
+   "vw": 844,
+   "vh": 340,
+   "scrollY": 39,
+   "orientation": "paysage",
+   "header": [
+    0,
+    -15,
+    844,
+    41
+   ],
+   "headerTop": -15,
+   "entete": [
+    12,
+    26,
+    820,
+    87
+   ],
+   "premiereBarre": {
+    "top": 141,
+    "h": 18
+   },
+   "nbBarres": 12,
+   "rangees": {
+    "brassins": 7,
+    "fetes": 3,
+    "ventes": 7,
+    "achats": 6,
+    "travaux": 2,
+    "activites": 3,
+    "papiers": 6
+   },
+   "axe": [],
+   "courbe": {
+    "rect": [
+     226,
+     26,
+     606,
+     60
+    ],
+    "visible": true
+   },
+   "plein": false,
+   "noms": [
+    {
+     "id": "brassin-LOT-SAISON",
+     "rangee": "brassins",
+     "barre": [
+      14,
+      141,
+      311,
+      18
+     ],
+     "nom": [
+      20,
+      141,
+      144,
+      18
+     ],
+     "texte": "Saison de ferme−137",
+     "dedans": true
+    },
+    {
+     "id": "proposition-brassin-R-AMBREE",
+     "rangee": "brassins",
+     "barre": [
+      329,
+      121,
+      311,
+      18
+     ],
+     "nom": [
+      335,
+      121,
+      100,
+      18
+     ],
+     "texte": "Ambrée maison",
+     "dedans": true
+    },
+    {
+     "id": "brassin-LOT-IPA",
+     "rangee": "brassins",
+     "barre": [
+      14,
+      472,
+      248,
+      18
+     ],
+     "nom": [
+      20,
+      472,
+      142,
+      18
+     ],
+     "texte": "IPA de printemps−45",
+     "dedans": true
+    },
+    {
+     "id": "brassin-LOT-BLONDE",
+     "rangee": "brassins",
+     "barre": [
+      77,
+      492,
+      311,
+      18
+     ],
+     "nom": [
+      83,
+      492,
+      158,
+      18
+     ],
+     "texte": "Blonde d’automne−158",
+     "dedans": true
+    },
+    {
+     "id": "brassin-LOT-STOUT-4",
+     "rangee": "brassins",
+     "barre": [
+      77,
+      512,
+      311,
+      18
+     ],
+     "nom": [
+      83,
+      512,
+      127,
+      18
+     ],
+     "texte": "Stout maison−142",
+     "dedans": true
+    },
+    {
+     "id": "brassin-LOT-PORTER",
+     "rangee": "brassins",
+     "barre": [
+      203,
+      532,
+      374,
+      18
+     ],
+     "nom": [
+      209,
+      532,
+      131,
+      18
+     ],
+     "texte": "Porter d’hiver−141",
+     "dedans": true
+    },
+    {
+     "id": "creatif-CR-FOIRE",
+     "rangee": "fetes",
+     "barre": [
+      140,
+      574,
+      59,
+      18
+     ],
+     "nom": [
+      205,
+      574,
+      133,
+      18
+     ],
+     "texte": "Foire du Valais+2 400",
+     "dedans": false
+    },
+    {
+     "id": "argent-P-FRIGO",
+     "rangee": "travaux",
+     "barre": [
+      771,
+      800,
+      59,
+      18
+     ],
+     "nom": [
+      680,
+      800,
+      76,
+      18
+     ],
+     "texte": "Frigo−1 800",
+     "dedans": false
+    },
+    {
+     "id": "creatif-CR-RANGER",
+     "rangee": "activites",
+     "barre": [
+      456,
+      822,
+      122,
+      18
+     ],
+     "nom": [
+      584,
+      822,
+      124,
+      18
+     ],
+     "texte": "Ranger la réserve3 j",
+     "dedans": false
+    },
+    {
+     "id": "argent-P-LOYER:2026-11-26",
+     "rangee": "papiers",
+     "barre": [
+      77,
+      884,
+      59,
+      18
+     ],
+     "nom": [
+      142,
+      884,
+      119,
+      18
+     ],
+     "texte": "Loyer du local−400",
+     "dedans": false
+    },
+    {
+     "id": "argent-P-LOYER:2026-12-26",
+     "rangee": "papiers",
+     "barre": [
+      329,
+      864,
+      59,
+      18
+     ],
+     "nom": [
+      394,
+      864,
+      119,
+      18
+     ],
+     "texte": "Loyer du local−400",
+     "dedans": false
+    },
+    {
+     "id": "argent-P-LOYER:2027-01-26",
+     "rangee": "papiers",
+     "barre": [
+      645,
+      884,
+      59,
+      18
+     ],
+     "nom": [
+      519,
+      884,
+      119,
+      18
+     ],
+     "texte": "Loyer du local−400",
+     "dedans": false
+    }
+   ]
+  },
+  {
+   "tag": "calendrier-844-clair",
+   "etat": "plein",
+   "touche": true,
+   "vw": 844,
+   "vh": 340,
+   "scrollY": 0,
+   "orientation": "paysage",
+   "header": [
+    0,
+    0,
+    0,
+    0
+   ],
+   "headerTop": 0,
+   "entete": [
+    12,
+    24,
+    820,
+    87
+   ],
+   "premiereBarre": {
+    "top": 139,
+    "h": 18
+   },
+   "nbBarres": 12,
+   "rangees": {
+    "brassins": 7,
+    "fetes": 3,
+    "ventes": 7,
+    "achats": 6,
+    "travaux": 2,
+    "activites": 3,
+    "papiers": 6
+   },
+   "axe": [],
+   "courbe": {
+    "rect": [
+     226,
+     24,
+     606,
+     60
+    ],
+    "visible": true
+   },
+   "plein": true,
+   "noms": [
+    {
+     "id": "brassin-LOT-SAISON",
+     "rangee": "brassins",
+     "barre": [
+      14,
+      139,
+      311,
+      18
+     ],
+     "nom": [
+      20,
+      139,
+      144,
+      18
+     ],
+     "texte": "Saison de ferme−137",
+     "dedans": true
+    },
+    {
+     "id": "brassin-LOT-IPA",
+     "rangee": "brassins",
+     "barre": [
+      14,
+      159,
+      248,
+      18
+     ],
+     "nom": [
+      20,
+      159,
+      142,
+      18
+     ],
+     "texte": "IPA de printemps−45",
+     "dedans": true
+    },
+    {
+     "id": "brassin-LOT-BLONDE",
+     "rangee": "brassins",
+     "barre": [
+      77,
+      179,
+      311,
+      18
+     ],
+     "nom": [
+      83,
+      179,
+      158,
+      18
+     ],
+     "texte": "Blonde d’automne−158",
+     "dedans": true
+    },
+    {
+     "id": "brassin-LOT-STOUT-4",
+     "rangee": "brassins",
+     "barre": [
+      77,
+      199,
+      311,
+      18
+     ],
+     "nom": [
+      83,
+      199,
+      127,
+      18
+     ],
+     "texte": "Stout maison−142",
+     "dedans": true
+    },
+    {
+     "id": "brassin-LOT-PORTER",
+     "rangee": "brassins",
+     "barre": [
+      203,
+      219,
+      374,
+      18
+     ],
+     "nom": [
+      209,
+      219,
+      131,
+      18
+     ],
+     "texte": "Porter d’hiver−141",
+     "dedans": true
+    },
+    {
+     "id": "proposition-brassin-R-AMBREE",
+     "rangee": "brassins",
+     "barre": [
+      329,
+      119,
+      311,
+      18
+     ],
+     "nom": [
+      335,
+      119,
+      100,
+      18
+     ],
+     "texte": "Ambrée maison",
+     "dedans": true
+    },
+    {
+     "id": "creatif-CR-FOIRE",
+     "rangee": "fetes",
+     "barre": [
+      140,
+      261,
+      59,
+      18
+     ],
+     "nom": [
+      205,
+      261,
+      133,
+      18
+     ],
+     "texte": "Foire du Valais+2 400",
+     "dedans": false
+    },
+    {
+     "id": "argent-P-FRIGO",
+     "rangee": "travaux",
+     "barre": [
+      771,
+      487,
+      59,
+      18
+     ],
+     "nom": [
+      680,
+      487,
+      76,
+      18
+     ],
+     "texte": "Frigo−1 800",
+     "dedans": false
+    },
+    {
+     "id": "creatif-CR-RANGER",
+     "rangee": "activites",
+     "barre": [
+      456,
+      509,
+      122,
+      18
+     ],
+     "nom": [
+      584,
+      509,
+      124,
+      18
+     ],
+     "texte": "Ranger la réserve3 j",
+     "dedans": false
+    },
+    {
+     "id": "argent-P-LOYER:2026-11-26",
+     "rangee": "papiers",
+     "barre": [
+      77,
+      571,
+      59,
+      18
+     ],
+     "nom": [
+      142,
+      571,
+      119,
+      18
+     ],
+     "texte": "Loyer du local−400",
+     "dedans": false
+    },
+    {
+     "id": "argent-P-LOYER:2026-12-26",
+     "rangee": "papiers",
+     "barre": [
+      329,
+      551,
+      59,
+      18
+     ],
+     "nom": [
+      394,
+      551,
+      119,
+      18
+     ],
+     "texte": "Loyer du local−400",
+     "dedans": false
+    },
+    {
+     "id": "argent-P-LOYER:2027-01-26",
+     "rangee": "papiers",
+     "barre": [
+      645,
+      571,
+      59,
+      18
+     ],
+     "nom": [
+      519,
+      571,
+      119,
+      18
+     ],
+     "texte": "Loyer du local−400",
+     "dedans": false
+    }
+   ]
+  },
+  {
+   "tag": "calendrier-844-cave",
+   "etat": "repos",
+   "vw": 844,
+   "vh": 340,
+   "scrollY": 0,
+   "orientation": "paysage",
+   "header": [
+    0,
+    24,
+    844,
+    41
+   ],
+   "headerTop": 24,
+   "entete": [
+    12,
+    65,
+    820,
+    87
+   ],
+   "premiereBarre": {
+    "top": 180,
+    "h": 18
+   },
+   "nbBarres": 12,
+   "rangees": {
+    "brassins": 7,
+    "fetes": 3,
+    "ventes": 7,
+    "achats": 6,
+    "travaux": 2,
+    "activites": 3,
+    "papiers": 6
+   },
+   "axe": [],
+   "courbe": {
+    "rect": [
+     226,
+     65,
+     606,
+     60
+    ],
+    "visible": true
+   },
+   "plein": false,
+   "noms": [
+    {
+     "id": "brassin-LOT-SAISON",
+     "rangee": "brassins",
+     "barre": [
+      14,
+      180,
+      311,
+      18
+     ],
+     "nom": [
+      20,
+      180,
+      144,
+      18
+     ],
+     "texte": "Saison de ferme−137",
+     "dedans": true
+    },
+    {
+     "id": "brassin-LOT-IPA",
+     "rangee": "brassins",
+     "barre": [
+      14,
+      200,
+      248,
+      18
+     ],
+     "nom": [
+      20,
+      200,
+      142,
+      18
+     ],
+     "texte": "IPA de printemps−45",
+     "dedans": true
+    },
+    {
+     "id": "brassin-LOT-BLONDE",
+     "rangee": "brassins",
+     "barre": [
+      77,
+      220,
+      311,
+      18
+     ],
+     "nom": [
+      83,
+      220,
+      158,
+      18
+     ],
+     "texte": "Blonde d’automne−158",
+     "dedans": true
+    },
+    {
+     "id": "brassin-LOT-STOUT-4",
+     "rangee": "brassins",
+     "barre": [
+      77,
+      240,
+      311,
+      18
+     ],
+     "nom": [
+      83,
+      240,
+      127,
+      18
+     ],
+     "texte": "Stout maison−142",
+     "dedans": true
+    },
+    {
+     "id": "brassin-LOT-PORTER",
+     "rangee": "brassins",
+     "barre": [
+      203,
+      260,
+      374,
+      18
+     ],
+     "nom": [
+      209,
+      260,
+      131,
+      18
+     ],
+     "texte": "Porter d’hiver−141",
+     "dedans": true
+    },
+    {
+     "id": "proposition-brassin-R-AMBREE",
+     "rangee": "brassins",
+     "barre": [
+      329,
+      160,
+      311,
+      18
+     ],
+     "nom": [
+      335,
+      160,
+      100,
+      18
+     ],
+     "texte": "Ambrée maison",
+     "dedans": true
+    },
+    {
+     "id": "creatif-CR-FOIRE",
+     "rangee": "fetes",
+     "barre": [
+      140,
+      302,
+      59,
+      18
+     ],
+     "nom": [
+      205,
+      302,
+      133,
+      18
+     ],
+     "texte": "Foire du Valais+2 400",
+     "dedans": false
+    },
+    {
+     "id": "argent-P-FRIGO",
+     "rangee": "travaux",
+     "barre": [
+      771,
+      528,
+      59,
+      18
+     ],
+     "nom": [
+      680,
+      528,
+      76,
+      18
+     ],
+     "texte": "Frigo−1 800",
+     "dedans": false
+    },
+    {
+     "id": "creatif-CR-RANGER",
+     "rangee": "activites",
+     "barre": [
+      456,
+      550,
+      122,
+      18
+     ],
+     "nom": [
+      584,
+      550,
+      124,
+      18
+     ],
+     "texte": "Ranger la réserve3 j",
+     "dedans": false
+    },
+    {
+     "id": "argent-P-LOYER:2026-11-26",
+     "rangee": "papiers",
+     "barre": [
+      77,
+      612,
+      59,
+      18
+     ],
+     "nom": [
+      142,
+      612,
+      119,
+      18
+     ],
+     "texte": "Loyer du local−400",
+     "dedans": false
+    },
+    {
+     "id": "argent-P-LOYER:2026-12-26",
+     "rangee": "papiers",
+     "barre": [
+      329,
+      592,
+      59,
+      18
+     ],
+     "nom": [
+      394,
+      592,
+      119,
+      18
+     ],
+     "texte": "Loyer du local−400",
+     "dedans": false
+    },
+    {
+     "id": "argent-P-LOYER:2027-01-26",
+     "rangee": "papiers",
+     "barre": [
+      645,
+      612,
+      59,
+      18
+     ],
+     "nom": [
+      519,
+      612,
+      119,
+      18
+     ],
+     "texte": "Loyer du local−400",
+     "dedans": false
+    }
+   ]
+  },
+  {
+   "tag": "calendrier-844-cave",
+   "etat": "defile-400",
+   "scroller": "fenetre",
+   "vw": 844,
+   "vh": 340,
+   "scrollY": 400,
+   "orientation": "paysage",
+   "header": [
+    0,
+    -376,
+    844,
+    41
+   ],
+   "headerTop": -376,
+   "entete": [
+    12,
+    0,
+    820,
+    87
+   ],
+   "premiereBarre": {
+    "top": -220,
+    "h": 18
+   },
+   "nbBarres": 12,
+   "rangees": {
+    "brassins": 7,
+    "fetes": 3,
+    "ventes": 7,
+    "achats": 6,
+    "travaux": 2,
+    "activites": 3,
+    "papiers": 6
+   },
+   "axe": [],
+   "courbe": {
+    "rect": [
+     226,
+     0,
+     606,
+     60
+    ],
+    "visible": true
+   },
+   "plein": false,
+   "noms": [
+    {
+     "id": "brassin-LOT-SAISON",
+     "rangee": "brassins",
+     "barre": [
+      14,
+      -220,
+      311,
+      18
+     ],
+     "nom": [
+      20,
+      -220,
+      144,
+      18
+     ],
+     "texte": "Saison de ferme−137",
+     "dedans": true
+    },
+    {
+     "id": "brassin-LOT-IPA",
+     "rangee": "brassins",
+     "barre": [
+      14,
+      -200,
+      248,
+      18
+     ],
+     "nom": [
+      20,
+      -200,
+      142,
+      18
+     ],
+     "texte": "IPA de printemps−45",
+     "dedans": true
+    },
+    {
+     "id": "brassin-LOT-BLONDE",
+     "rangee": "brassins",
+     "barre": [
+      77,
+      -180,
+      311,
+      18
+     ],
+     "nom": [
+      83,
+      -180,
+      158,
+      18
+     ],
+     "texte": "Blonde d’automne−158",
+     "dedans": true
+    },
+    {
+     "id": "brassin-LOT-STOUT-4",
+     "rangee": "brassins",
+     "barre": [
+      77,
+      -160,
+      311,
+      18
+     ],
+     "nom": [
+      83,
+      -160,
+      127,
+      18
+     ],
+     "texte": "Stout maison−142",
+     "dedans": true
+    },
+    {
+     "id": "brassin-LOT-PORTER",
+     "rangee": "brassins",
+     "barre": [
+      203,
+      -140,
+      374,
+      18
+     ],
+     "nom": [
+      209,
+      -140,
+      131,
+      18
+     ],
+     "texte": "Porter d’hiver−141",
+     "dedans": true
+    },
+    {
+     "id": "proposition-brassin-R-AMBREE",
+     "rangee": "brassins",
+     "barre": [
+      329,
+      -240,
+      311,
+      18
+     ],
+     "nom": [
+      335,
+      -240,
+      100,
+      18
+     ],
+     "texte": "Ambrée maison",
+     "dedans": true
+    },
+    {
+     "id": "creatif-CR-FOIRE",
+     "rangee": "fetes",
+     "barre": [
+      140,
+      -98,
+      59,
+      18
+     ],
+     "nom": [
+      205,
+      -98,
+      133,
+      18
+     ],
+     "texte": "Foire du Valais+2 400",
+     "dedans": false
+    },
+    {
+     "id": "argent-P-FRIGO",
+     "rangee": "travaux",
+     "barre": [
+      771,
+      128,
+      59,
+      18
+     ],
+     "nom": [
+      680,
+      128,
+      76,
+      18
+     ],
+     "texte": "Frigo−1 800",
+     "dedans": false
+    },
+    {
+     "id": "creatif-CR-RANGER",
+     "rangee": "activites",
+     "barre": [
+      456,
+      150,
+      122,
+      18
+     ],
+     "nom": [
+      584,
+      150,
+      124,
+      18
+     ],
+     "texte": "Ranger la réserve3 j",
+     "dedans": false
+    },
+    {
+     "id": "argent-P-LOYER:2026-11-26",
+     "rangee": "papiers",
+     "barre": [
+      77,
+      212,
+      59,
+      18
+     ],
+     "nom": [
+      142,
+      212,
+      119,
+      18
+     ],
+     "texte": "Loyer du local−400",
+     "dedans": false
+    },
+    {
+     "id": "argent-P-LOYER:2026-12-26",
+     "rangee": "papiers",
+     "barre": [
+      329,
+      192,
+      59,
+      18
+     ],
+     "nom": [
+      394,
+      192,
+      119,
+      18
+     ],
+     "texte": "Loyer du local−400",
+     "dedans": false
+    },
+    {
+     "id": "argent-P-LOYER:2027-01-26",
+     "rangee": "papiers",
+     "barre": [
+      645,
+      212,
+      59,
+      18
+     ],
+     "nom": [
+      519,
+      212,
+      119,
+      18
+     ],
+     "texte": "Loyer du local−400",
+     "dedans": false
+    }
+   ]
+  },
+  {
+   "tag": "calendrier-844-cave",
+   "etat": "defile-bas",
+   "vw": 844,
+   "vh": 340,
+   "scrollY": 600,
+   "orientation": "paysage",
+   "header": [
+    0,
+    -576,
+    844,
+    41
+   ],
+   "headerTop": -576,
+   "entete": [
+    12,
+    0,
+    820,
+    87
+   ],
+   "premiereBarre": {
+    "top": -420,
+    "h": 18
+   },
+   "nbBarres": 12,
+   "rangees": {
+    "brassins": 7,
+    "fetes": 3,
+    "ventes": 7,
+    "achats": 6,
+    "travaux": 2,
+    "activites": 3,
+    "papiers": 6
+   },
+   "axe": [],
+   "courbe": {
+    "rect": [
+     226,
+     0,
+     606,
+     60
+    ],
+    "visible": true
+   },
+   "plein": false,
+   "noms": [
+    {
+     "id": "brassin-LOT-SAISON",
+     "rangee": "brassins",
+     "barre": [
+      14,
+      -420,
+      311,
+      18
+     ],
+     "nom": [
+      20,
+      -420,
+      144,
+      18
+     ],
+     "texte": "Saison de ferme−137",
+     "dedans": true
+    },
+    {
+     "id": "brassin-LOT-IPA",
+     "rangee": "brassins",
+     "barre": [
+      14,
+      -400,
+      248,
+      18
+     ],
+     "nom": [
+      20,
+      -400,
+      142,
+      18
+     ],
+     "texte": "IPA de printemps−45",
+     "dedans": true
+    },
+    {
+     "id": "brassin-LOT-BLONDE",
+     "rangee": "brassins",
+     "barre": [
+      77,
+      -380,
+      311,
+      18
+     ],
+     "nom": [
+      83,
+      -380,
+      158,
+      18
+     ],
+     "texte": "Blonde d’automne−158",
+     "dedans": true
+    },
+    {
+     "id": "brassin-LOT-STOUT-4",
+     "rangee": "brassins",
+     "barre": [
+      77,
+      -360,
+      311,
+      18
+     ],
+     "nom": [
+      83,
+      -360,
+      127,
+      18
+     ],
+     "texte": "Stout maison−142",
+     "dedans": true
+    },
+    {
+     "id": "brassin-LOT-PORTER",
+     "rangee": "brassins",
+     "barre": [
+      203,
+      -340,
+      374,
+      18
+     ],
+     "nom": [
+      209,
+      -340,
+      131,
+      18
+     ],
+     "texte": "Porter d’hiver−141",
+     "dedans": true
+    },
+    {
+     "id": "proposition-brassin-R-AMBREE",
+     "rangee": "brassins",
+     "barre": [
+      329,
+      -440,
+      311,
+      18
+     ],
+     "nom": [
+      335,
+      -440,
+      100,
+      18
+     ],
+     "texte": "Ambrée maison",
+     "dedans": true
+    },
+    {
+     "id": "creatif-CR-FOIRE",
+     "rangee": "fetes",
+     "barre": [
+      140,
+      -298,
+      59,
+      18
+     ],
+     "nom": [
+      205,
+      -298,
+      133,
+      18
+     ],
+     "texte": "Foire du Valais+2 400",
+     "dedans": false
+    },
+    {
+     "id": "argent-P-FRIGO",
+     "rangee": "travaux",
+     "barre": [
+      771,
+      -72,
+      59,
+      18
+     ],
+     "nom": [
+      680,
+      -72,
+      76,
+      18
+     ],
+     "texte": "Frigo−1 800",
+     "dedans": false
+    },
+    {
+     "id": "creatif-CR-RANGER",
+     "rangee": "activites",
+     "barre": [
+      456,
+      -50,
+      122,
+      18
+     ],
+     "nom": [
+      584,
+      -50,
+      124,
+      18
+     ],
+     "texte": "Ranger la réserve3 j",
+     "dedans": false
+    },
+    {
+     "id": "argent-P-LOYER:2026-11-26",
+     "rangee": "papiers",
+     "barre": [
+      77,
+      12,
+      59,
+      18
+     ],
+     "nom": [
+      142,
+      12,
+      119,
+      18
+     ],
+     "texte": "Loyer du local−400",
+     "dedans": false
+    },
+    {
+     "id": "argent-P-LOYER:2026-12-26",
+     "rangee": "papiers",
+     "barre": [
+      329,
+      -8,
+      59,
+      18
+     ],
+     "nom": [
+      394,
+      -8,
+      119,
+      18
+     ],
+     "texte": "Loyer du local−400",
+     "dedans": false
+    },
+    {
+     "id": "argent-P-LOYER:2027-01-26",
+     "rangee": "papiers",
+     "barre": [
+      645,
+      12,
+      59,
+      18
+     ],
+     "nom": [
+      519,
+      12,
+      119,
+      18
+     ],
+     "texte": "Loyer du local−400",
+     "dedans": false
+    }
+   ]
+  },
+  {
+   "tag": "calendrier-844-cave",
+   "etat": "fiche",
+   "touche": true,
+   "vw": 844,
+   "vh": 340,
+   "scrollY": 39,
+   "orientation": "paysage",
+   "header": [
+    0,
+    -15,
+    844,
+    41
+   ],
+   "headerTop": -15,
+   "entete": [
+    12,
+    26,
+    820,
+    87
+   ],
+   "premiereBarre": {
+    "top": 141,
+    "h": 18
+   },
+   "nbBarres": 12,
+   "rangees": {
+    "brassins": 7,
+    "fetes": 3,
+    "ventes": 7,
+    "achats": 6,
+    "travaux": 2,
+    "activites": 3,
+    "papiers": 6
+   },
+   "axe": [],
+   "courbe": {
+    "rect": [
+     226,
+     26,
+     606,
+     60
+    ],
+    "visible": true
+   },
+   "plein": false,
+   "noms": [
+    {
+     "id": "brassin-LOT-SAISON",
+     "rangee": "brassins",
+     "barre": [
+      14,
+      141,
+      311,
+      18
+     ],
+     "nom": [
+      20,
+      141,
+      144,
+      18
+     ],
+     "texte": "Saison de ferme−137",
+     "dedans": true
+    },
+    {
+     "id": "proposition-brassin-R-AMBREE",
+     "rangee": "brassins",
+     "barre": [
+      329,
+      121,
+      311,
+      18
+     ],
+     "nom": [
+      335,
+      121,
+      100,
+      18
+     ],
+     "texte": "Ambrée maison",
+     "dedans": true
+    },
+    {
+     "id": "brassin-LOT-IPA",
+     "rangee": "brassins",
+     "barre": [
+      14,
+      472,
+      248,
+      18
+     ],
+     "nom": [
+      20,
+      472,
+      142,
+      18
+     ],
+     "texte": "IPA de printemps−45",
+     "dedans": true
+    },
+    {
+     "id": "brassin-LOT-BLONDE",
+     "rangee": "brassins",
+     "barre": [
+      77,
+      492,
+      311,
+      18
+     ],
+     "nom": [
+      83,
+      492,
+      158,
+      18
+     ],
+     "texte": "Blonde d’automne−158",
+     "dedans": true
+    },
+    {
+     "id": "brassin-LOT-STOUT-4",
+     "rangee": "brassins",
+     "barre": [
+      77,
+      512,
+      311,
+      18
+     ],
+     "nom": [
+      83,
+      512,
+      127,
+      18
+     ],
+     "texte": "Stout maison−142",
+     "dedans": true
+    },
+    {
+     "id": "brassin-LOT-PORTER",
+     "rangee": "brassins",
+     "barre": [
+      203,
+      532,
+      374,
+      18
+     ],
+     "nom": [
+      209,
+      532,
+      131,
+      18
+     ],
+     "texte": "Porter d’hiver−141",
+     "dedans": true
+    },
+    {
+     "id": "creatif-CR-FOIRE",
+     "rangee": "fetes",
+     "barre": [
+      140,
+      574,
+      59,
+      18
+     ],
+     "nom": [
+      205,
+      574,
+      133,
+      18
+     ],
+     "texte": "Foire du Valais+2 400",
+     "dedans": false
+    },
+    {
+     "id": "argent-P-FRIGO",
+     "rangee": "travaux",
+     "barre": [
+      771,
+      800,
+      59,
+      18
+     ],
+     "nom": [
+      680,
+      800,
+      76,
+      18
+     ],
+     "texte": "Frigo−1 800",
+     "dedans": false
+    },
+    {
+     "id": "creatif-CR-RANGER",
+     "rangee": "activites",
+     "barre": [
+      456,
+      822,
+      122,
+      18
+     ],
+     "nom": [
+      584,
+      822,
+      124,
+      18
+     ],
+     "texte": "Ranger la réserve3 j",
+     "dedans": false
+    },
+    {
+     "id": "argent-P-LOYER:2026-11-26",
+     "rangee": "papiers",
+     "barre": [
+      77,
+      884,
+      59,
+      18
+     ],
+     "nom": [
+      142,
+      884,
+      119,
+      18
+     ],
+     "texte": "Loyer du local−400",
+     "dedans": false
+    },
+    {
+     "id": "argent-P-LOYER:2026-12-26",
+     "rangee": "papiers",
+     "barre": [
+      329,
+      864,
+      59,
+      18
+     ],
+     "nom": [
+      394,
+      864,
+      119,
+      18
+     ],
+     "texte": "Loyer du local−400",
+     "dedans": false
+    },
+    {
+     "id": "argent-P-LOYER:2027-01-26",
+     "rangee": "papiers",
+     "barre": [
+      645,
+      884,
+      59,
+      18
+     ],
+     "nom": [
+      519,
+      884,
+      119,
+      18
+     ],
+     "texte": "Loyer du local−400",
+     "dedans": false
+    }
+   ]
+  },
+  {
+   "tag": "calendrier-844-cave",
+   "etat": "plein",
+   "touche": true,
+   "vw": 844,
+   "vh": 340,
+   "scrollY": 0,
+   "orientation": "paysage",
+   "header": [
+    0,
+    0,
+    0,
+    0
+   ],
+   "headerTop": 0,
+   "entete": [
+    12,
+    24,
+    820,
+    87
+   ],
+   "premiereBarre": {
+    "top": 139,
+    "h": 18
+   },
+   "nbBarres": 12,
+   "rangees": {
+    "brassins": 7,
+    "fetes": 3,
+    "ventes": 7,
+    "achats": 6,
+    "travaux": 2,
+    "activites": 3,
+    "papiers": 6
+   },
+   "axe": [],
+   "courbe": {
+    "rect": [
+     226,
+     24,
+     606,
+     60
+    ],
+    "visible": true
+   },
+   "plein": true,
+   "noms": [
+    {
+     "id": "brassin-LOT-SAISON",
+     "rangee": "brassins",
+     "barre": [
+      14,
+      139,
+      311,
+      18
+     ],
+     "nom": [
+      20,
+      139,
+      144,
+      18
+     ],
+     "texte": "Saison de ferme−137",
+     "dedans": true
+    },
+    {
+     "id": "brassin-LOT-IPA",
+     "rangee": "brassins",
+     "barre": [
+      14,
+      159,
+      248,
+      18
+     ],
+     "nom": [
+      20,
+      159,
+      142,
+      18
+     ],
+     "texte": "IPA de printemps−45",
+     "dedans": true
+    },
+    {
+     "id": "brassin-LOT-BLONDE",
+     "rangee": "brassins",
+     "barre": [
+      77,
+      179,
+      311,
+      18
+     ],
+     "nom": [
+      83,
+      179,
+      158,
+      18
+     ],
+     "texte": "Blonde d’automne−158",
+     "dedans": true
+    },
+    {
+     "id": "brassin-LOT-STOUT-4",
+     "rangee": "brassins",
+     "barre": [
+      77,
+      199,
+      311,
+      18
+     ],
+     "nom": [
+      83,
+      199,
+      127,
+      18
+     ],
+     "texte": "Stout maison−142",
+     "dedans": true
+    },
+    {
+     "id": "brassin-LOT-PORTER",
+     "rangee": "brassins",
+     "barre": [
+      203,
+      219,
+      374,
+      18
+     ],
+     "nom": [
+      209,
+      219,
+      131,
+      18
+     ],
+     "texte": "Porter d’hiver−141",
+     "dedans": true
+    },
+    {
+     "id": "proposition-brassin-R-AMBREE",
+     "rangee": "brassins",
+     "barre": [
+      329,
+      119,
+      311,
+      18
+     ],
+     "nom": [
+      335,
+      119,
+      100,
+      18
+     ],
+     "texte": "Ambrée maison",
+     "dedans": true
+    },
+    {
+     "id": "creatif-CR-FOIRE",
+     "rangee": "fetes",
+     "barre": [
+      140,
+      261,
+      59,
+      18
+     ],
+     "nom": [
+      205,
+      261,
+      133,
+      18
+     ],
+     "texte": "Foire du Valais+2 400",
+     "dedans": false
+    },
+    {
+     "id": "argent-P-FRIGO",
+     "rangee": "travaux",
+     "barre": [
+      771,
+      487,
+      59,
+      18
+     ],
+     "nom": [
+      680,
+      487,
+      76,
+      18
+     ],
+     "texte": "Frigo−1 800",
+     "dedans": false
+    },
+    {
+     "id": "creatif-CR-RANGER",
+     "rangee": "activites",
+     "barre": [
+      456,
+      509,
+      122,
+      18
+     ],
+     "nom": [
+      584,
+      509,
+      124,
+      18
+     ],
+     "texte": "Ranger la réserve3 j",
+     "dedans": false
+    },
+    {
+     "id": "argent-P-LOYER:2026-11-26",
+     "rangee": "papiers",
+     "barre": [
+      77,
+      571,
+      59,
+      18
+     ],
+     "nom": [
+      142,
+      571,
+      119,
+      18
+     ],
+     "texte": "Loyer du local−400",
+     "dedans": false
+    },
+    {
+     "id": "argent-P-LOYER:2026-12-26",
+     "rangee": "papiers",
+     "barre": [
+      329,
+      551,
+      59,
+      18
+     ],
+     "nom": [
+      394,
+      551,
+      119,
+      18
+     ],
+     "texte": "Loyer du local−400",
+     "dedans": false
+    },
+    {
+     "id": "argent-P-LOYER:2027-01-26",
+     "rangee": "papiers",
+     "barre": [
+      645,
+      571,
+      59,
+      18
+     ],
+     "nom": [
+      519,
+      571,
+      119,
+      18
+     ],
+     "texte": "Loyer du local−400",
+     "dedans": false
+    }
+   ]
+  },
+  {
+   "tag": "calendrier-1280-clair",
+   "etat": "repos",
+   "vw": 1280,
+   "vh": 800,
+   "scrollY": 0,
+   "orientation": "portrait",
+   "header": [
+    0,
+    24,
+    1280,
+    65
+   ],
+   "headerTop": 24,
+   "entete": [
+    248,
+    101,
+    872,
+    149
+   ],
+   "premiereBarre": {
+    "top": 286,
+    "h": 26
+   },
+   "nbBarres": 9,
+   "rangees": {
+    "brassins": 7,
+    "fetes": 3,
+    "ventes": 6,
+    "achats": 6,
+    "travaux": 1,
+    "activites": 2,
+    "papiers": 3
+   },
+   "axe": [],
+   "courbe": {
+    "rect": [
+     248,
+     129,
+     872,
+     88
+    ],
+    "visible": true
+   },
+   "plein": false,
+   "noms": [
+    {
+     "id": "brassin-LOT-SAISON",
+     "rangee": "brassins",
+     "barre": [
+      250,
+      286,
+      723,
+      26
+     ],
+     "nom": [
+      256,
+      286,
+      144,
+      26
+     ],
+     "texte": "Saison de ferme−137",
+     "dedans": true
+    },
+    {
+     "id": "brassin-LOT-IPA",
+     "rangee": "brassins",
+     "barre": [
+      250,
+      316,
+      577,
+      26
+     ],
+     "nom": [
+      256,
+      316,
+      142,
+      26
+     ],
+     "texte": "IPA de printemps−45",
+     "dedans": true
+    },
+    {
+     "id": "brassin-LOT-BLONDE",
+     "rangee": "brassins",
+     "barre": [
+      395,
+      346,
+      723,
+      26
+     ],
+     "nom": [
+      401,
+      346,
+      158,
+      26
+     ],
+     "texte": "Blonde d’automne−158",
+     "dedans": true
+    },
+    {
+     "id": "brassin-LOT-STOUT-4",
+     "rangee": "brassins",
+     "barre": [
+      395,
+      376,
+      723,
+      26
+     ],
+     "nom": [
+      401,
+      376,
+      127,
+      26
+     ],
+     "texte": "Stout maison−142",
+     "dedans": true
+    },
+    {
+     "id": "brassin-LOT-PORTER",
+     "rangee": "brassins",
+     "barre": [
+      686,
+      406,
+      432,
+      26
+     ],
+     "nom": [
+      692,
+      406,
+      131,
+      26
+     ],
+     "texte": "Porter d’hiver−141",
+     "dedans": true
+    },
+    {
+     "id": "proposition-brassin-R-AMBREE",
+     "rangee": "brassins",
+     "barre": [
+      977,
+      436,
+      141,
+      26
+     ],
+     "nom": [
+      744,
+      436,
+      227,
+      26
+     ],
+     "texte": "Ambrée maisonJ0 / 28 · prête 18 janv.",
+     "dedans": false
+    },
+    {
+     "id": "creatif-CR-FOIRE",
+     "rangee": "fetes",
+     "barre": [
+      541,
+      492,
+      141,
+      26
+     ],
+     "nom": [
+      688,
+      492,
+      133,
+      26
+     ],
+     "texte": "Foire du Valais+2 400",
+     "dedans": false
+    },
+    {
+     "id": "argent-P-LOYER:2026-11-26",
+     "rangee": "papiers",
+     "barre": [
+      395,
+      860,
+      141,
+      26
+     ],
+     "nom": [
+      543,
+      860,
+      119,
+      26
+     ],
+     "texte": "Loyer du local−400",
+     "dedans": false
+    },
+    {
+     "id": "argent-P-LOYER:2026-12-26",
+     "rangee": "papiers",
+     "barre": [
+      977,
+      860,
+      141,
+      26
+     ],
+     "nom": [
+      851,
+      860,
+      119,
+      26
+     ],
+     "texte": "Loyer du local−400",
+     "dedans": false
+    }
+   ]
+  },
+  {
+   "tag": "calendrier-1280-clair",
+   "etat": "defile-400",
+   "scroller": "fenetre",
+   "vw": 1280,
+   "vh": 800,
+   "scrollY": 286,
+   "orientation": "portrait",
+   "header": [
+    0,
+    -262,
+    1280,
+    65
+   ],
+   "headerTop": -262,
+   "entete": [
+    248,
+    0,
+    872,
+    149
+   ],
+   "premiereBarre": {
+    "top": 0,
+    "h": 26
+   },
+   "nbBarres": 9,
+   "rangees": {
+    "brassins": 7,
+    "fetes": 3,
+    "ventes": 6,
+    "achats": 6,
+    "travaux": 1,
+    "activites": 2,
+    "papiers": 3
+   },
+   "axe": [],
+   "courbe": {
+    "rect": [
+     248,
+     28,
+     872,
+     88
+    ],
+    "visible": true
+   },
+   "plein": false,
+   "noms": [
+    {
+     "id": "brassin-LOT-SAISON",
+     "rangee": "brassins",
+     "barre": [
+      250,
+      0,
+      723,
+      26
+     ],
+     "nom": [
+      256,
+      0,
+      144,
+      26
+     ],
+     "texte": "Saison de ferme−137",
+     "dedans": true
+    },
+    {
+     "id": "brassin-LOT-IPA",
+     "rangee": "brassins",
+     "barre": [
+      250,
+      30,
+      577,
+      26
+     ],
+     "nom": [
+      256,
+      30,
+      142,
+      26
+     ],
+     "texte": "IPA de printemps−45",
+     "dedans": true
+    },
+    {
+     "id": "brassin-LOT-BLONDE",
+     "rangee": "brassins",
+     "barre": [
+      395,
+      60,
+      723,
+      26
+     ],
+     "nom": [
+      401,
+      60,
+      158,
+      26
+     ],
+     "texte": "Blonde d’automne−158",
+     "dedans": true
+    },
+    {
+     "id": "brassin-LOT-STOUT-4",
+     "rangee": "brassins",
+     "barre": [
+      395,
+      90,
+      723,
+      26
+     ],
+     "nom": [
+      401,
+      90,
+      127,
+      26
+     ],
+     "texte": "Stout maison−142",
+     "dedans": true
+    },
+    {
+     "id": "brassin-LOT-PORTER",
+     "rangee": "brassins",
+     "barre": [
+      686,
+      120,
+      432,
+      26
+     ],
+     "nom": [
+      692,
+      120,
+      131,
+      26
+     ],
+     "texte": "Porter d’hiver−141",
+     "dedans": true
+    },
+    {
+     "id": "proposition-brassin-R-AMBREE",
+     "rangee": "brassins",
+     "barre": [
+      977,
+      150,
+      141,
+      26
+     ],
+     "nom": [
+      744,
+      150,
+      227,
+      26
+     ],
+     "texte": "Ambrée maisonJ0 / 28 · prête 18 janv.",
+     "dedans": false
+    },
+    {
+     "id": "creatif-CR-FOIRE",
+     "rangee": "fetes",
+     "barre": [
+      541,
+      206,
+      141,
+      26
+     ],
+     "nom": [
+      688,
+      206,
+      133,
+      26
+     ],
+     "texte": "Foire du Valais+2 400",
+     "dedans": false
+    },
+    {
+     "id": "argent-P-LOYER:2026-11-26",
+     "rangee": "papiers",
+     "barre": [
+      395,
+      574,
+      141,
+      26
+     ],
+     "nom": [
+      543,
+      574,
+      119,
+      26
+     ],
+     "texte": "Loyer du local−400",
+     "dedans": false
+    },
+    {
+     "id": "argent-P-LOYER:2026-12-26",
+     "rangee": "papiers",
+     "barre": [
+      977,
+      574,
+      141,
+      26
+     ],
+     "nom": [
+      851,
+      574,
+      119,
+      26
+     ],
+     "texte": "Loyer du local−400",
+     "dedans": false
+    }
+   ]
+  },
+  {
+   "tag": "calendrier-1280-clair",
+   "etat": "defile-bas",
+   "vw": 1280,
+   "vh": 800,
+   "scrollY": 286,
+   "orientation": "portrait",
+   "header": [
+    0,
+    -262,
+    1280,
+    65
+   ],
+   "headerTop": -262,
+   "entete": [
+    248,
+    0,
+    872,
+    149
+   ],
+   "premiereBarre": {
+    "top": 0,
+    "h": 26
+   },
+   "nbBarres": 9,
+   "rangees": {
+    "brassins": 7,
+    "fetes": 3,
+    "ventes": 6,
+    "achats": 6,
+    "travaux": 1,
+    "activites": 2,
+    "papiers": 3
+   },
+   "axe": [],
+   "courbe": {
+    "rect": [
+     248,
+     28,
+     872,
+     88
+    ],
+    "visible": true
+   },
+   "plein": false,
+   "noms": [
+    {
+     "id": "brassin-LOT-SAISON",
+     "rangee": "brassins",
+     "barre": [
+      250,
+      0,
+      723,
+      26
+     ],
+     "nom": [
+      256,
+      0,
+      144,
+      26
+     ],
+     "texte": "Saison de ferme−137",
+     "dedans": true
+    },
+    {
+     "id": "brassin-LOT-IPA",
+     "rangee": "brassins",
+     "barre": [
+      250,
+      30,
+      577,
+      26
+     ],
+     "nom": [
+      256,
+      30,
+      142,
+      26
+     ],
+     "texte": "IPA de printemps−45",
+     "dedans": true
+    },
+    {
+     "id": "brassin-LOT-BLONDE",
+     "rangee": "brassins",
+     "barre": [
+      395,
+      60,
+      723,
+      26
+     ],
+     "nom": [
+      401,
+      60,
+      158,
+      26
+     ],
+     "texte": "Blonde d’automne−158",
+     "dedans": true
+    },
+    {
+     "id": "brassin-LOT-STOUT-4",
+     "rangee": "brassins",
+     "barre": [
+      395,
+      90,
+      723,
+      26
+     ],
+     "nom": [
+      401,
+      90,
+      127,
+      26
+     ],
+     "texte": "Stout maison−142",
+     "dedans": true
+    },
+    {
+     "id": "brassin-LOT-PORTER",
+     "rangee": "brassins",
+     "barre": [
+      686,
+      120,
+      432,
+      26
+     ],
+     "nom": [
+      692,
+      120,
+      131,
+      26
+     ],
+     "texte": "Porter d’hiver−141",
+     "dedans": true
+    },
+    {
+     "id": "proposition-brassin-R-AMBREE",
+     "rangee": "brassins",
+     "barre": [
+      977,
+      150,
+      141,
+      26
+     ],
+     "nom": [
+      744,
+      150,
+      227,
+      26
+     ],
+     "texte": "Ambrée maisonJ0 / 28 · prête 18 janv.",
+     "dedans": false
+    },
+    {
+     "id": "creatif-CR-FOIRE",
+     "rangee": "fetes",
+     "barre": [
+      541,
+      206,
+      141,
+      26
+     ],
+     "nom": [
+      688,
+      206,
+      133,
+      26
+     ],
+     "texte": "Foire du Valais+2 400",
+     "dedans": false
+    },
+    {
+     "id": "argent-P-LOYER:2026-11-26",
+     "rangee": "papiers",
+     "barre": [
+      395,
+      574,
+      141,
+      26
+     ],
+     "nom": [
+      543,
+      574,
+      119,
+      26
+     ],
+     "texte": "Loyer du local−400",
+     "dedans": false
+    },
+    {
+     "id": "argent-P-LOYER:2026-12-26",
+     "rangee": "papiers",
+     "barre": [
+      977,
+      574,
+      141,
+      26
+     ],
+     "nom": [
+      851,
+      574,
+      119,
+      26
+     ],
+     "texte": "Loyer du local−400",
+     "dedans": false
+    }
+   ]
+  },
+  {
+   "tag": "calendrier-1280-clair",
+   "etat": "fiche",
+   "touche": true,
+   "vw": 1280,
+   "vh": 800,
+   "scrollY": 28,
+   "orientation": "portrait",
+   "header": [
+    0,
+    -4,
+    1280,
+    65
+   ],
+   "headerTop": -4,
+   "entete": [
+    248,
+    73,
+    872,
+    149
+   ],
+   "premiereBarre": {
+    "top": 258,
+    "h": 26
+   },
+   "nbBarres": 9,
+   "rangees": {
+    "brassins": 7,
+    "fetes": 3,
+    "ventes": 6,
+    "achats": 6,
+    "travaux": 1,
+    "activites": 2,
+    "papiers": 3
+   },
+   "axe": [],
+   "courbe": {
+    "rect": [
+     248,
+     101,
+     872,
+     88
+    ],
+    "visible": true
+   },
+   "plein": false,
+   "noms": [
+    {
+     "id": "brassin-LOT-SAISON",
+     "rangee": "brassins",
+     "barre": [
+      250,
+      258,
+      723,
+      26
+     ],
+     "nom": [
+      256,
+      258,
+      144,
+      26
+     ],
+     "texte": "Saison de ferme−137",
+     "dedans": true
+    },
+    {
+     "id": "brassin-LOT-IPA",
+     "rangee": "brassins",
+     "barre": [
+      250,
+      599,
+      577,
+      26
+     ],
+     "nom": [
+      256,
+      599,
+      142,
+      26
+     ],
+     "texte": "IPA de printemps−45",
+     "dedans": true
+    },
+    {
+     "id": "brassin-LOT-BLONDE",
+     "rangee": "brassins",
+     "barre": [
+      395,
+      629,
+      723,
+      26
+     ],
+     "nom": [
+      401,
+      629,
+      158,
+      26
+     ],
+     "texte": "Blonde d’automne−158",
+     "dedans": true
+    },
+    {
+     "id": "brassin-LOT-STOUT-4",
+     "rangee": "brassins",
+     "barre": [
+      395,
+      659,
+      723,
+      26
+     ],
+     "nom": [
+      401,
+      659,
+      127,
+      26
+     ],
+     "texte": "Stout maison−142",
+     "dedans": true
+    },
+    {
+     "id": "brassin-LOT-PORTER",
+     "rangee": "brassins",
+     "barre": [
+      686,
+      689,
+      432,
+      26
+     ],
+     "nom": [
+      692,
+      689,
+      131,
+      26
+     ],
+     "texte": "Porter d’hiver−141",
+     "dedans": true
+    },
+    {
+     "id": "proposition-brassin-R-AMBREE",
+     "rangee": "brassins",
+     "barre": [
+      977,
+      719,
+      141,
+      26
+     ],
+     "nom": [
+      744,
+      719,
+      227,
+      26
+     ],
+     "texte": "Ambrée maisonJ0 / 28 · prête 18 janv.",
+     "dedans": false
+    },
+    {
+     "id": "creatif-CR-FOIRE",
+     "rangee": "fetes",
+     "barre": [
+      541,
+      775,
+      141,
+      26
+     ],
+     "nom": [
+      688,
+      775,
+      133,
+      26
+     ],
+     "texte": "Foire du Valais+2 400",
+     "dedans": false
+    },
+    {
+     "id": "argent-P-LOYER:2026-11-26",
+     "rangee": "papiers",
+     "barre": [
+      395,
+      1143,
+      141,
+      26
+     ],
+     "nom": [
+      543,
+      1143,
+      119,
+      26
+     ],
+     "texte": "Loyer du local−400",
+     "dedans": false
+    },
+    {
+     "id": "argent-P-LOYER:2026-12-26",
+     "rangee": "papiers",
+     "barre": [
+      977,
+      1143,
+      141,
+      26
+     ],
+     "nom": [
+      851,
+      1143,
+      119,
+      26
+     ],
+     "texte": "Loyer du local−400",
+     "dedans": false
+    }
+   ]
+  },
+  {
+   "tag": "calendrier-1280-cave",
+   "etat": "repos",
+   "vw": 1280,
+   "vh": 800,
+   "scrollY": 0,
+   "orientation": "portrait",
+   "header": [
+    0,
+    24,
+    1280,
+    65
+   ],
+   "headerTop": 24,
+   "entete": [
+    248,
+    101,
+    872,
+    149
+   ],
+   "premiereBarre": {
+    "top": 286,
+    "h": 26
+   },
+   "nbBarres": 9,
+   "rangees": {
+    "brassins": 7,
+    "fetes": 3,
+    "ventes": 6,
+    "achats": 6,
+    "travaux": 1,
+    "activites": 2,
+    "papiers": 3
+   },
+   "axe": [],
+   "courbe": {
+    "rect": [
+     248,
+     129,
+     872,
+     88
+    ],
+    "visible": true
+   },
+   "plein": false,
+   "noms": [
+    {
+     "id": "brassin-LOT-SAISON",
+     "rangee": "brassins",
+     "barre": [
+      250,
+      286,
+      723,
+      26
+     ],
+     "nom": [
+      256,
+      286,
+      144,
+      26
+     ],
+     "texte": "Saison de ferme−137",
+     "dedans": true
+    },
+    {
+     "id": "brassin-LOT-IPA",
+     "rangee": "brassins",
+     "barre": [
+      250,
+      316,
+      577,
+      26
+     ],
+     "nom": [
+      256,
+      316,
+      142,
+      26
+     ],
+     "texte": "IPA de printemps−45",
+     "dedans": true
+    },
+    {
+     "id": "brassin-LOT-BLONDE",
+     "rangee": "brassins",
+     "barre": [
+      395,
+      346,
+      723,
+      26
+     ],
+     "nom": [
+      401,
+      346,
+      158,
+      26
+     ],
+     "texte": "Blonde d’automne−158",
+     "dedans": true
+    },
+    {
+     "id": "brassin-LOT-STOUT-4",
+     "rangee": "brassins",
+     "barre": [
+      395,
+      376,
+      723,
+      26
+     ],
+     "nom": [
+      401,
+      376,
+      127,
+      26
+     ],
+     "texte": "Stout maison−142",
+     "dedans": true
+    },
+    {
+     "id": "brassin-LOT-PORTER",
+     "rangee": "brassins",
+     "barre": [
+      686,
+      406,
+      432,
+      26
+     ],
+     "nom": [
+      692,
+      406,
+      131,
+      26
+     ],
+     "texte": "Porter d’hiver−141",
+     "dedans": true
+    },
+    {
+     "id": "proposition-brassin-R-AMBREE",
+     "rangee": "brassins",
+     "barre": [
+      977,
+      436,
+      141,
+      26
+     ],
+     "nom": [
+      744,
+      436,
+      227,
+      26
+     ],
+     "texte": "Ambrée maisonJ0 / 28 · prête 18 janv.",
+     "dedans": false
+    },
+    {
+     "id": "creatif-CR-FOIRE",
+     "rangee": "fetes",
+     "barre": [
+      541,
+      492,
+      141,
+      26
+     ],
+     "nom": [
+      688,
+      492,
+      133,
+      26
+     ],
+     "texte": "Foire du Valais+2 400",
+     "dedans": false
+    },
+    {
+     "id": "argent-P-LOYER:2026-11-26",
+     "rangee": "papiers",
+     "barre": [
+      395,
+      860,
+      141,
+      26
+     ],
+     "nom": [
+      543,
+      860,
+      119,
+      26
+     ],
+     "texte": "Loyer du local−400",
+     "dedans": false
+    },
+    {
+     "id": "argent-P-LOYER:2026-12-26",
+     "rangee": "papiers",
+     "barre": [
+      977,
+      860,
+      141,
+      26
+     ],
+     "nom": [
+      851,
+      860,
+      119,
+      26
+     ],
+     "texte": "Loyer du local−400",
+     "dedans": false
+    }
+   ]
+  },
+  {
+   "tag": "calendrier-1280-cave",
+   "etat": "defile-400",
+   "scroller": "fenetre",
+   "vw": 1280,
+   "vh": 800,
+   "scrollY": 286,
+   "orientation": "portrait",
+   "header": [
+    0,
+    -262,
+    1280,
+    65
+   ],
+   "headerTop": -262,
+   "entete": [
+    248,
+    0,
+    872,
+    149
+   ],
+   "premiereBarre": {
+    "top": 0,
+    "h": 26
+   },
+   "nbBarres": 9,
+   "rangees": {
+    "brassins": 7,
+    "fetes": 3,
+    "ventes": 6,
+    "achats": 6,
+    "travaux": 1,
+    "activites": 2,
+    "papiers": 3
+   },
+   "axe": [],
+   "courbe": {
+    "rect": [
+     248,
+     28,
+     872,
+     88
+    ],
+    "visible": true
+   },
+   "plein": false,
+   "noms": [
+    {
+     "id": "brassin-LOT-SAISON",
+     "rangee": "brassins",
+     "barre": [
+      250,
+      0,
+      723,
+      26
+     ],
+     "nom": [
+      256,
+      0,
+      144,
+      26
+     ],
+     "texte": "Saison de ferme−137",
+     "dedans": true
+    },
+    {
+     "id": "brassin-LOT-IPA",
+     "rangee": "brassins",
+     "barre": [
+      250,
+      30,
+      577,
+      26
+     ],
+     "nom": [
+      256,
+      30,
+      142,
+      26
+     ],
+     "texte": "IPA de printemps−45",
+     "dedans": true
+    },
+    {
+     "id": "brassin-LOT-BLONDE",
+     "rangee": "brassins",
+     "barre": [
+      395,
+      60,
+      723,
+      26
+     ],
+     "nom": [
+      401,
+      60,
+      158,
+      26
+     ],
+     "texte": "Blonde d’automne−158",
+     "dedans": true
+    },
+    {
+     "id": "brassin-LOT-STOUT-4",
+     "rangee": "brassins",
+     "barre": [
+      395,
+      90,
+      723,
+      26
+     ],
+     "nom": [
+      401,
+      90,
+      127,
+      26
+     ],
+     "texte": "Stout maison−142",
+     "dedans": true
+    },
+    {
+     "id": "brassin-LOT-PORTER",
+     "rangee": "brassins",
+     "barre": [
+      686,
+      120,
+      432,
+      26
+     ],
+     "nom": [
+      692,
+      120,
+      131,
+      26
+     ],
+     "texte": "Porter d’hiver−141",
+     "dedans": true
+    },
+    {
+     "id": "proposition-brassin-R-AMBREE",
+     "rangee": "brassins",
+     "barre": [
+      977,
+      150,
+      141,
+      26
+     ],
+     "nom": [
+      744,
+      150,
+      227,
+      26
+     ],
+     "texte": "Ambrée maisonJ0 / 28 · prête 18 janv.",
+     "dedans": false
+    },
+    {
+     "id": "creatif-CR-FOIRE",
+     "rangee": "fetes",
+     "barre": [
+      541,
+      206,
+      141,
+      26
+     ],
+     "nom": [
+      688,
+      206,
+      133,
+      26
+     ],
+     "texte": "Foire du Valais+2 400",
+     "dedans": false
+    },
+    {
+     "id": "argent-P-LOYER:2026-11-26",
+     "rangee": "papiers",
+     "barre": [
+      395,
+      574,
+      141,
+      26
+     ],
+     "nom": [
+      543,
+      574,
+      119,
+      26
+     ],
+     "texte": "Loyer du local−400",
+     "dedans": false
+    },
+    {
+     "id": "argent-P-LOYER:2026-12-26",
+     "rangee": "papiers",
+     "barre": [
+      977,
+      574,
+      141,
+      26
+     ],
+     "nom": [
+      851,
+      574,
+      119,
+      26
+     ],
+     "texte": "Loyer du local−400",
+     "dedans": false
+    }
+   ]
+  },
+  {
+   "tag": "calendrier-1280-cave",
+   "etat": "defile-bas",
+   "vw": 1280,
+   "vh": 800,
+   "scrollY": 286,
+   "orientation": "portrait",
+   "header": [
+    0,
+    -262,
+    1280,
+    65
+   ],
+   "headerTop": -262,
+   "entete": [
+    248,
+    0,
+    872,
+    149
+   ],
+   "premiereBarre": {
+    "top": 0,
+    "h": 26
+   },
+   "nbBarres": 9,
+   "rangees": {
+    "brassins": 7,
+    "fetes": 3,
+    "ventes": 6,
+    "achats": 6,
+    "travaux": 1,
+    "activites": 2,
+    "papiers": 3
+   },
+   "axe": [],
+   "courbe": {
+    "rect": [
+     248,
+     28,
+     872,
+     88
+    ],
+    "visible": true
+   },
+   "plein": false,
+   "noms": [
+    {
+     "id": "brassin-LOT-SAISON",
+     "rangee": "brassins",
+     "barre": [
+      250,
+      0,
+      723,
+      26
+     ],
+     "nom": [
+      256,
+      0,
+      144,
+      26
+     ],
+     "texte": "Saison de ferme−137",
+     "dedans": true
+    },
+    {
+     "id": "brassin-LOT-IPA",
+     "rangee": "brassins",
+     "barre": [
+      250,
+      30,
+      577,
+      26
+     ],
+     "nom": [
+      256,
+      30,
+      142,
+      26
+     ],
+     "texte": "IPA de printemps−45",
+     "dedans": true
+    },
+    {
+     "id": "brassin-LOT-BLONDE",
+     "rangee": "brassins",
+     "barre": [
+      395,
+      60,
+      723,
+      26
+     ],
+     "nom": [
+      401,
+      60,
+      158,
+      26
+     ],
+     "texte": "Blonde d’automne−158",
+     "dedans": true
+    },
+    {
+     "id": "brassin-LOT-STOUT-4",
+     "rangee": "brassins",
+     "barre": [
+      395,
+      90,
+      723,
+      26
+     ],
+     "nom": [
+      401,
+      90,
+      127,
+      26
+     ],
+     "texte": "Stout maison−142",
+     "dedans": true
+    },
+    {
+     "id": "brassin-LOT-PORTER",
+     "rangee": "brassins",
+     "barre": [
+      686,
+      120,
+      432,
+      26
+     ],
+     "nom": [
+      692,
+      120,
+      131,
+      26
+     ],
+     "texte": "Porter d’hiver−141",
+     "dedans": true
+    },
+    {
+     "id": "proposition-brassin-R-AMBREE",
+     "rangee": "brassins",
+     "barre": [
+      977,
+      150,
+      141,
+      26
+     ],
+     "nom": [
+      744,
+      150,
+      227,
+      26
+     ],
+     "texte": "Ambrée maisonJ0 / 28 · prête 18 janv.",
+     "dedans": false
+    },
+    {
+     "id": "creatif-CR-FOIRE",
+     "rangee": "fetes",
+     "barre": [
+      541,
+      206,
+      141,
+      26
+     ],
+     "nom": [
+      688,
+      206,
+      133,
+      26
+     ],
+     "texte": "Foire du Valais+2 400",
+     "dedans": false
+    },
+    {
+     "id": "argent-P-LOYER:2026-11-26",
+     "rangee": "papiers",
+     "barre": [
+      395,
+      574,
+      141,
+      26
+     ],
+     "nom": [
+      543,
+      574,
+      119,
+      26
+     ],
+     "texte": "Loyer du local−400",
+     "dedans": false
+    },
+    {
+     "id": "argent-P-LOYER:2026-12-26",
+     "rangee": "papiers",
+     "barre": [
+      977,
+      574,
+      141,
+      26
+     ],
+     "nom": [
+      851,
+      574,
+      119,
+      26
+     ],
+     "texte": "Loyer du local−400",
+     "dedans": false
+    }
+   ]
+  },
+  {
+   "tag": "calendrier-1280-cave",
+   "etat": "fiche",
+   "touche": true,
+   "vw": 1280,
+   "vh": 800,
+   "scrollY": 28,
+   "orientation": "portrait",
+   "header": [
+    0,
+    -4,
+    1280,
+    65
+   ],
+   "headerTop": -4,
+   "entete": [
+    248,
+    73,
+    872,
+    149
+   ],
+   "premiereBarre": {
+    "top": 258,
+    "h": 26
+   },
+   "nbBarres": 9,
+   "rangees": {
+    "brassins": 7,
+    "fetes": 3,
+    "ventes": 6,
+    "achats": 6,
+    "travaux": 1,
+    "activites": 2,
+    "papiers": 3
+   },
+   "axe": [],
+   "courbe": {
+    "rect": [
+     248,
+     101,
+     872,
+     88
+    ],
+    "visible": true
+   },
+   "plein": false,
+   "noms": [
+    {
+     "id": "brassin-LOT-SAISON",
+     "rangee": "brassins",
+     "barre": [
+      250,
+      258,
+      723,
+      26
+     ],
+     "nom": [
+      256,
+      258,
+      144,
+      26
+     ],
+     "texte": "Saison de ferme−137",
+     "dedans": true
+    },
+    {
+     "id": "brassin-LOT-IPA",
+     "rangee": "brassins",
+     "barre": [
+      250,
+      599,
+      577,
+      26
+     ],
+     "nom": [
+      256,
+      599,
+      142,
+      26
+     ],
+     "texte": "IPA de printemps−45",
+     "dedans": true
+    },
+    {
+     "id": "brassin-LOT-BLONDE",
+     "rangee": "brassins",
+     "barre": [
+      395,
+      629,
+      723,
+      26
+     ],
+     "nom": [
+      401,
+      629,
+      158,
+      26
+     ],
+     "texte": "Blonde d’automne−158",
+     "dedans": true
+    },
+    {
+     "id": "brassin-LOT-STOUT-4",
+     "rangee": "brassins",
+     "barre": [
+      395,
+      659,
+      723,
+      26
+     ],
+     "nom": [
+      401,
+      659,
+      127,
+      26
+     ],
+     "texte": "Stout maison−142",
+     "dedans": true
+    },
+    {
+     "id": "brassin-LOT-PORTER",
+     "rangee": "brassins",
+     "barre": [
+      686,
+      689,
+      432,
+      26
+     ],
+     "nom": [
+      692,
+      689,
+      131,
+      26
+     ],
+     "texte": "Porter d’hiver−141",
+     "dedans": true
+    },
+    {
+     "id": "proposition-brassin-R-AMBREE",
+     "rangee": "brassins",
+     "barre": [
+      977,
+      719,
+      141,
+      26
+     ],
+     "nom": [
+      744,
+      719,
+      227,
+      26
+     ],
+     "texte": "Ambrée maisonJ0 / 28 · prête 18 janv.",
+     "dedans": false
+    },
+    {
+     "id": "creatif-CR-FOIRE",
+     "rangee": "fetes",
+     "barre": [
+      541,
+      775,
+      141,
+      26
+     ],
+     "nom": [
+      688,
+      775,
+      133,
+      26
+     ],
+     "texte": "Foire du Valais+2 400",
+     "dedans": false
+    },
+    {
+     "id": "argent-P-LOYER:2026-11-26",
+     "rangee": "papiers",
+     "barre": [
+      395,
+      1143,
+      141,
+      26
+     ],
+     "nom": [
+      543,
+      1143,
+      119,
+      26
+     ],
+     "texte": "Loyer du local−400",
+     "dedans": false
+    },
+    {
+     "id": "argent-P-LOYER:2026-12-26",
+     "rangee": "papiers",
+     "barre": [
+      977,
+      1143,
+      141,
+      26
+     ],
+     "nom": [
+      851,
+      1143,
+      119,
+      26
+     ],
+     "texte": "Loyer du local−400",
+     "dedans": false
+    }
+   ]
+  },
+  {
+   "tag": "stock-390-clair",
+   "etat": "boutons-preview",
+   "boutons": [
+    "24",
+    "200",
+    "5 000",
+    "Retirer 0,5 kg",
+    "Ajouter 0,5 kg",
+    "Retirer 5 kg",
+    "Retirer 1 kg",
+    "Ajouter 1 kg",
+    "Ajouter 5 kg",
+    "Ouvrir la liste",
+    "Ouvrir la liste",
+    "1.5",
+    "2.5",
+    "3.5"
+   ]
+  },
+  {
+   "tag": "stock-390-clair",
+   "etat": "etagere-repos",
+   "scrollY": 0,
+   "headerTop": 24
+  },
+  {
+   "tag": "stock-390-clair",
+   "etat": "defile-400",
+   "scroller": "fenetre",
+   "scrollY": 166,
+   "headerTop": -142
+  },
+  {
+   "tag": "stock-390-clair",
+   "etat": "autres-stocks",
+   "touche": false
+  },
+  {
+   "tag": "stock-390-clair",
+   "etat": "autres-carte-touchee",
+   "touche": false
+  },
+  {
+   "tag": "stock-390-clair",
+   "etat": "courses-touche",
+   "touche": false,
+   "repliee": null
+  },
+  {
+   "tag": "stock-390-clair",
+   "etat": "courses-deplie",
+   "touche": false,
+   "texteZone": ""
+  },
+  {
+   "tag": "stock-390-cave",
+   "etat": "boutons-preview",
+   "boutons": [
+    "24",
+    "200",
+    "5 000",
+    "Retirer 0,5 kg",
+    "Ajouter 0,5 kg",
+    "Retirer 5 kg",
+    "Retirer 1 kg",
+    "Ajouter 1 kg",
+    "Ajouter 5 kg",
+    "Ouvrir la liste",
+    "Ouvrir la liste",
+    "1.5",
+    "2.5",
+    "3.5"
+   ]
+  },
+  {
+   "tag": "stock-390-cave",
+   "etat": "etagere-repos",
+   "scrollY": 0,
+   "headerTop": 24
+  },
+  {
+   "tag": "stock-390-cave",
+   "etat": "defile-400",
+   "scroller": "fenetre",
+   "scrollY": 166,
+   "headerTop": -142
+  },
+  {
+   "tag": "stock-390-cave",
+   "etat": "autres-stocks",
+   "touche": false
+  },
+  {
+   "tag": "stock-390-cave",
+   "etat": "autres-carte-touchee",
+   "touche": false
+  },
+  {
+   "tag": "stock-390-cave",
+   "etat": "courses-touche",
+   "touche": false,
+   "repliee": null
+  },
+  {
+   "tag": "stock-390-cave",
+   "etat": "courses-deplie",
+   "touche": false,
+   "texteZone": ""
+  },
+  {
+   "tag": "finances-390-clair",
+   "etat": "synthese-aout-nov",
+   "entete": "Période : 1er août → 30 nov.. Choisir la plage",
+   "onglet": "Synthèse",
+   "debut": null,
+   "fin": null,
+   "rd": null,
+   "actifs": [],
+   "plage": "d’août 2026au novembre 2026"
+  },
+  {
+   "tag": "finances-390-clair",
+   "etat": "operations-depuis-synthese",
+   "barre": "Autres frais 250,20 CHF, voir ces opérations d’août – nov. 2026",
+   "touche": true,
+   "entete": "Période : 1er août → 30 nov.. Choisir la plage",
+   "onglet": "Opérations",
+   "debut": "1er août 2026",
+   "fin": "30 nov. 2026",
+   "rd": "122 jours · 1 opération× mois entier",
+   "actifs": [
+    "Autres frais"
+   ],
+   "plage": null
+  },
+  {
+   "tag": "finances-390-clair",
+   "etat": "operations-repos",
+   "choixPeriode": [],
+   "nbChoix": 0,
+   "entete": "Période : Novembre 2026. Choisir la plage",
+   "onglet": "Opérations",
+   "debut": "1er nov. 2026",
+   "fin": "30 nov. 2026",
+   "rd": "30 jours · 5 opérations",
+   "actifs": [],
+   "plage": null
+  },
+  {
+   "tag": "finances-390-clair",
+   "etat": "poignee-gauche-bord",
+   "avant": {
+    "debut": "1er nov. 2026",
+    "fin": "30 nov. 2026",
+    "rd": "30 jours · 5 opérations"
+   },
+   "serie": [
+    "1er août 2026",
+    "1er août 2026",
+    "1er juil. 2026",
+    "1er juil. 2026",
+    "1er juil. 2026",
+    "1er juin 2026",
+    "1er juin 2026",
+    "1er juin 2026"
+   ],
+   "bulle": {
+    "l": 20,
+    "r": 122,
+    "t": 276,
+    "b": 294,
+    "txt": "1er juin → 30 nov.",
+    "couvre": []
+   },
+   "apres": {
+    "debut": "1er juin 2026",
+    "fin": "30 nov. 2026",
+    "rd": "183 jours · 5 opérations× mois entier",
+    "entete": "Période : 1er juin → 30 nov.. Choisir la plage"
+   }
+  },
+  {
+   "tag": "finances-390-clair",
+   "etat": "fiche-a-confirmer",
+   "touche": false,
+   "confirmer": false
+  },
+  {
+   "tag": "finances-390-clair",
+   "etat": "fiche-c-est-normal",
+   "touche": false,
+   "confirmer": false
+  },
+  {
+   "tag": "finances-390-cave",
+   "etat": "synthese-aout-nov",
+   "entete": "Période : 1er août → 30 nov.. Choisir la plage",
+   "onglet": "Synthèse",
+   "debut": null,
+   "fin": null,
+   "rd": null,
+   "actifs": [],
+   "plage": "d’août 2026au novembre 2026"
+  },
+  {
+   "tag": "finances-390-cave",
+   "etat": "operations-depuis-synthese",
+   "barre": "Autres frais 250,20 CHF, voir ces opérations d’août – nov. 2026",
+   "touche": true,
+   "entete": "Période : 1er août → 30 nov.. Choisir la plage",
+   "onglet": "Opérations",
+   "debut": "1er août 2026",
+   "fin": "30 nov. 2026",
+   "rd": "122 jours · 1 opération× mois entier",
+   "actifs": [
+    "Autres frais"
+   ],
+   "plage": null
+  },
+  {
+   "tag": "finances-390-cave",
+   "etat": "operations-repos",
+   "choixPeriode": [],
+   "nbChoix": 0,
+   "entete": "Période : Novembre 2026. Choisir la plage",
+   "onglet": "Opérations",
+   "debut": "1er nov. 2026",
+   "fin": "30 nov. 2026",
+   "rd": "30 jours · 5 opérations",
+   "actifs": [],
+   "plage": null
+  },
+  {
+   "tag": "finances-390-cave",
+   "etat": "poignee-gauche-bord",
+   "avant": {
+    "debut": "1er nov. 2026",
+    "fin": "30 nov. 2026",
+    "rd": "30 jours · 5 opérations"
+   },
+   "serie": [
+    "1er août 2026",
+    "1er août 2026",
+    "1er juil. 2026",
+    "1er juil. 2026",
+    "1er juil. 2026",
+    "1er juin 2026",
+    "1er juin 2026",
+    "1er juin 2026"
+   ],
+   "bulle": {
+    "l": 20,
+    "r": 122,
+    "t": 276,
+    "b": 294,
+    "txt": "1er juin → 30 nov.",
+    "couvre": []
+   },
+   "apres": {
+    "debut": "1er juin 2026",
+    "fin": "30 nov. 2026",
+    "rd": "183 jours · 5 opérations× mois entier",
+    "entete": "Période : 1er juin → 30 nov.. Choisir la plage"
+   }
+  },
+  {
+   "tag": "finances-390-cave",
+   "etat": "fiche-a-confirmer",
+   "touche": false,
+   "confirmer": false
+  },
+  {
+   "tag": "finances-390-cave",
+   "etat": "fiche-c-est-normal",
+   "touche": false,
+   "confirmer": false
+  },
+  {
+   "tag": "identite-390-clair",
+   "etat": "acces",
+   "recettes": false,
+   "nouvelle": false,
+   "identite": false,
+   "inputs": []
+  },
+  {
+   "tag": "identite-390-clair",
+   "etat": "message-remede",
+   "saisies": {
+    "volume": false,
+    "minutes": false,
+    "cuve": false
+   },
+   "debordement": null,
+   "preb": null,
+   "remede": [],
+   "remedeTexte": null,
+   "eauAjoutee": null,
+   "rectRemede": null,
+   "volumeAff": null
+  },
+  {
+   "tag": "identite-390-clair",
+   "etat": "remede-choisi",
+   "touche": false,
+   "debordement": null,
+   "preb": null,
+   "remede": [],
+   "remedeTexte": null,
+   "eauAjoutee": null,
+   "rectRemede": null,
+   "volumeAff": null
+  },
+  {
+   "tag": "identite-390-cave",
+   "etat": "acces",
+   "recettes": false,
+   "nouvelle": false,
+   "identite": false,
+   "inputs": []
+  },
+  {
+   "tag": "identite-390-cave",
+   "etat": "message-remede",
+   "saisies": {
+    "volume": false,
+    "minutes": false,
+    "cuve": false
+   },
+   "debordement": null,
+   "preb": null,
+   "remede": [],
+   "remedeTexte": null,
+   "eauAjoutee": null,
+   "rectRemede": null,
+   "volumeAff": null
+  },
+  {
+   "tag": "identite-390-cave",
+   "etat": "remede-choisi",
+   "touche": false,
+   "debordement": null,
+   "preb": null,
+   "remede": [],
+   "remedeTexte": null,
+   "eauAjoutee": null,
+   "rectRemede": null,
+   "volumeAff": null
+  }
+ ],
+ "erreurs": []
+}

@@ -1670,3 +1670,19 @@ Verdict : 5/6 corrigés, 4 problèmes (0 bloquant), 6 envois IA (cumul ≈ 32 su
 | LEV-9 | captures du brasseur 19.11 07:42 | Recette › Levure › Ma levure | À 390, « °C » de l'axe du graphe de conduite sort du cadre de la carte. | basse | corrigé | 580cffdcd | work/missions/2026-11-19-ma-levure/LISTE.md |
 | LEV-10 | captures du brasseur 19.11 07:42 | Recette › Levure › Ma levure | « Brouillon » dit deux fois dans la conduite (en-tête et titre du graphe). | basse | corrigé | 580cffdcd | work/missions/2026-11-19-ma-levure/LISTE.md |
 | LEV-11 | captures du brasseur 19.11 07:42 | Recette › Levure › Ma levure | Après une recherche, les cellules « à confirmer · Retenir · Écarter » passent sur deux lignes à 390 (cellule partagée). | basse | ouvert |  | work/missions/2026-11-19-ma-levure/LISTE.md |
+
+## Tour 2 du 19.11 en ligne (tag en-ligne/2026-11-19-tour2, port-carnet 2aa618133 + correctif de la pastille ; test en ligne : work/missions/2026-11-18-choix-calendrier/tour2/en-ligne/RAPPORT.md ; verdict local : tour2/VERDICT.md)
+
+| id | source | écran | constat | gravité | état | commit | note |
+|---|---|---|---|---|---|---|---|
+| T2-1 | en-ligne tour 2 n° 1 | Calendrier 390 (aligné) | Deux rangées d'axe : les mois en haut de la courbe alignée, les semaines sous la frise. Le lot a gardé les mois quand la courbe est alignée (« ce sont ceux de la frise »). | m | ouvert | | choix d'axe au brasseur (mini-maquettes), pas de règle du pilote |
+| T2-2 | en-ligne tour 2 n° 2 | Calendrier 390 | Toucher la barre minuscule du brassin « Ttt » n'ouvre aucune fiche ; non rejoué sur un brassin ZZ TEST. | G si confirmé | ouvert, à rejouer | | |
+| T2-3 | en-ligne tour 2 n° 3 | Finances › Opérations | Période oct. : « 0 opération » alors que la liste montre une opération à payer du 19.11. | m | ouvert | | |
+| T2-4 | en-ligne tour 2 n° 4 | Fiche d'opération | Une opération à payer n'offre que « Annuler cette écriture » (la pièce reste, annulée) ; « Noter un paiement » au lieu de « Confirmer le paiement ». | m | ouvert | | la ZZ TEST annulée reste dans Archives |
+| T2-5 | tour2/VERDICT.md | Calendrier 844 × 340 | Frise à 45 % de la hauteur au repos (visé 25 %) ; le brasseur trouvait le paysage déjà bon. | m | ouvert | | |
+| T2-6 | tour2/VERDICT.md | Stocks › Courses | « Rien à commander » dit trois fois une fois déplié ; « 24 en tout » contre « manque 22 » à Étagère (2 articles pile au seuil). | m | ouvert | | |
+| T2-7 | tour2/stock/RESULTAT.md | Stocks | Défilement par relais : remplacer par une option `useWindowScroll` d'EntityList. | b | ouvert | | dette |
+| T2-8 | tour2/id/RESULTAT.md | Recette › Identité | Eau ajoutée ignorée par brewerRecipeRefresh, brewerTools, brewSystemInsights ; 3,7 L retenu (pilote). Sombre non capturé après correctif. | m | ouvert | | |
+| T2-9 | tour2/fin/RESULTAT.md | Finances 1280 | Champs « du / au » gardés à 1280 (option a, pilote). | — | décidé | | |
+| T2-10 | tour2/fin/RESULTAT.md | En-tête › période | Nom accessible « 30 nov.. » (double point). | b | corrigé | en-ligne/2026-11-19-tour2 | |
+| T2-NOTE | en-ligne tour 2 réserve | tous | Joué en 390 clair seulement (iframe) ; 844, 1280, sombre, plein écran, Confirmer le paiement, Eau et sels, Ma levure non joués en ligne. | — | ouvert, doute non compté | | |
