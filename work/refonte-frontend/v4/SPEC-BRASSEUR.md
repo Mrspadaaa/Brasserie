@@ -2240,3 +2240,4 @@ Capture : work/missions/2026-11-18-choix-calendrier/brasseur/zoom-glisser-18-11.
 - (capture 390 : 29 L visés, fermenteur 30 L, cuve 35 L, ébullition 130 min, « ~6,5 L évaporés », « ~38,7 L à chaud avant ébullition · +3,7 L de trop ») « Plus on evapore, plus on a de litre en trop ??? »
 - (suite, 19.11) « Ou faire plus de sparge ??? »
 - (suite, 19.11) « On a pas perdu une donné, je pouvais avant choisir si je barssais avec un malt très mouillé ou non » (réponse du pilote : le choix vit à l'étape 6 Eau, interrupteur Rinçage et curseur Eau / grain ; Identité ne le montre pas)
+- (suite, 19.11) « Juste, alors juste, de l'eau à la fin après l'ebul ou durant »
