@@ -32,6 +32,8 @@ async function lire(variante: VarianteLenteur, o: { patch?: (r: any, final: bool
   const { provisoire, final, jeton } = lecturesLenteur(variante), stocks = apercuDepense(`lenteur-${variante}`).stocks;
   (stocks as any).rawMaterials.forEach((a: any) => { a.currentStock = 1; });
   if (o.unites !== false) for (const r of [provisoire, final]) for (const i of r?.items ?? []) if (i.name === 'Sucre candi') i.unit = 'Kg';
+  // LR1-5 (tour 3) : sans unité le provisoire montre « 30 g » déduit ; une 3.8 qui lit « g » ne corrige rien. Pour garder trois VRAIES corrections, le provisoire lit Kg (final sans unité : Kg aussi, donc inchangé).
+  for (const r of [provisoire, final]) for (const i of r?.items ?? []) if (i.name === 'Sabro 13.4%' || i.name === 'Citra 12.5%') { if (r === provisoire || !i.unit) i.unit = 'Kg'; }
   for (const r of [provisoire, final]) if (r) o.patch?.(r, r === final);
   const g = porte();
   state.scanned.mockImplementation(async (_f: any, _t: any, opts: any) => {

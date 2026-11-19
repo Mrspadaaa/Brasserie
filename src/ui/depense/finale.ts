@@ -180,6 +180,9 @@ export const CELLULES_LIGNE = ['description', 'nomLu', 'imprime', 'kind', 'quant
 export type Cellule = typeof CELLULES_LIGNE[number];
 const NOM_CELLULES: readonly Cellule[] = ['description', 'nomLu', 'imprime'];
 const LIEN_CELLULES: readonly Cellule[] = ['stockAction', 'stockRef', 'articleName', 'equipmentAction'];
+/** LR3-3 : les valeurs lues qu'un final muet (non lues par la 3.8) ne vide jamais. */
+const VALEURS_GARDEES: readonly Cellule[] = ['quantity', 'unitPrice', 'amount'];
+const inconnue = (v: unknown) => v === undefined || v === null || v === '';
 export type CellulesLigne = Partial<Pick<PurchaseLineDraft, Cellule | 'evidence' | 'nameFr' | 'uniteDeduite'>>;
 /** Les groupes d'en-tête : une cellule d'écran peut être posée par plusieurs champs du brouillon (le total : trois ; la TVA : deux). `registre` : ce qui dit « il l'a touchée ». */
 const GROUPES_ENTETE: Array<{ cle: string; champs: Array<keyof PurchaseDraft>; registre: string[] }> = [
@@ -208,6 +211,26 @@ export function varianteDeNom(champ: Cellule, avant: unknown, apres: unknown): b
   const a = avant as { nom?: string; variante?: string } | undefined, b = apres as { nom?: string; variante?: string } | undefined;
   return (a?.variante ?? '') === (b?.variante ?? '') && ressemblanceNoms(a?.nom, b?.nom) >= SEUIL_VARIANTE_NOM;
 }
+const motsDe = (v: unknown): string => String(v ?? '').normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase().replace(/[^a-z0-9]+/g, ' ').trim();
+/**
+ * LR1-5 (en-tête) et v3-3 (vision v3) : le fournisseur que la 3.8 lit autrement n'est pas une correction quand c'est le même nom : à la casse ou à quelques lettres près (ressemblance ≥ 0,9,
+ * « Brau- und Rauchshop » / « BRAU- UND RAUCHSHOP »), ou le nom court contenu, en mots entiers, dans le nom long (« … Sàrl » / « … Sàrl - Médecins vétérinaires »). La valeur de la 3.8 est reprise sans barré ni compte.
+ */
+export function varianteDeFournisseur(avant: unknown, apres: unknown): boolean {
+  const a = motsDe(avant), b = motsDe(apres);
+  if (!a || !b) return false;
+  if (ressemblanceNoms(a, b) >= SEUIL_VARIANTE_NOM) return true;
+  const [court, long] = a.length <= b.length ? [a, b] : [b, a];
+  return court.length >= 4 && ` ${long} `.includes(` ${court} `);
+}
+/**
+ * v3-4 (vision v3, doc2) : le règlement de la 1re lecture n'est une LECTURE que si elle a lu une preuve (payé, à payer) ou un type qui le décide (pro-forma, devis, avoir). Sinon « Payé » est
+ * la supposition de `scannedPayment` (date du document passée) : la 3.8 qui lit « à payer » complète, elle ne corrige rien ; aucun barré.
+ */
+const reglementLu = (r: ScannedInvoiceResult): boolean => {
+  const type = r.documentTypeRetenu ?? r.documentType;
+  return r.paymentEvidence === 'paid' || r.paymentEvidence === 'unpaid' || Boolean(r.proForma) || type === 'quote' || type === 'credit_note';
+};
 const prendre = <T extends object>(o: T, cles: readonly string[]): Record<string, unknown> => Object.fromEntries(cles.map(k => [k, (o as Record<string, unknown>)[k]]));
 /** L'instantané du brouillon posé : par id de ligne et par cellule, pour toutes les cellules (B1). Il se met à jour de la seule écriture du programme entre les deux (la traduction). */
 export function baseDeBrouillon(draft: PurchaseDraft, jeton: string, propositions: Propositions, nProvisoire: number): BaseFusion {
@@ -253,15 +276,62 @@ export interface EntreeFusion {
 const rangDe = (id: string): number => { const m = /^line-(\d+)$/.exec(id); return m ? Number(m[1]) : Number.NaN; };
 const clone = <T,>(x: T): T => JSON.parse(JSON.stringify(x));
 
+export interface LigneAAligner { name?: string | null; amountTTC?: number | null }
+const SEUIL_PAIRE_PROPOSEE = 0.5, SEUIL_PAIRE_LIBRE = 0.7, SEUIL_PAIRE_MEME_MONTANT = 0.5;
+/**
+ * LR3-3 (vision v3, doc25) : les rangs que le serveur donne (`rangProvisoire`) ou la position (M4) ne portent une correction que si les deux lignes sont la même. Au doc25, dès « ROULEAU … TUBEO »
+ * relu sans rang, le serveur donnait à chaque ligne suivante le rang de la PRÉCÉDENTE : « MASQUE DE PROTECT. » portait « COMBINAISON JETABLE · 9,50 » barré, deux lignes partaient « retirées ».
+ * Problème d'école : l'alignement de deux séquences ordonnées autour d'ancres (Needleman-Wunsch, la méthode du serveur `rangsProvisoires`), en programmation dynamique, écart de coût nul.
+ * Ancres : les paires proposées dont les noms se ressemblent ou dont le montant est le même (ressemblance ≥ 0,5, Levenshtein normalisée `ressemblanceNoms`, la même que le serveur), ou sans nom des deux côtés ; une pièce d'une seule
+ * ligne de chaque côté garde sa paire. Les lignes restées seules s'alignent dans l'ordre ; une paire y est admise dès 0,7, ou 0,5 à montant égal (les seuils du serveur).
+ * Une ligne sans paire est « pas retrouvée » au provisoire, « ajoutée » au final : jamais une valeur de la voisine.
+ */
+export function alignerLignesLues(provisoire: readonly LigneAAligner[], final: readonly LigneAAligner[], proposes: ReadonlyArray<number | null>): Array<number | null> {
+  const seule = final.length === 1 && provisoire.length === 1;
+  const cts = (v: number | null | undefined) => (typeof v === 'number' && Number.isFinite(v) ? Math.round(v * 100) : null);
+  const rangs: Array<number | null> = final.map(() => null), pris = new Set<number>();
+  // 1. La paire proposée est gardée si les noms se ressemblent (ou s'il n'y a de nom d'aucun côté) : elle peut croiser une autre paire (une ligne de port que la 3.8 range ailleurs, E3).
+  proposes.forEach((p, f) => {
+    if (p === null || p === undefined || p < 0 || p >= provisoire.length || pris.has(p)) return;
+    const sansNoms = !motsDe(final[f].name) && !motsDe(provisoire[p].name), s = ressemblanceNoms(final[f].name, provisoire[p].name);
+    // Une autre ligne du provisoire porte presque le même nom (≥ 0,9) et ressemble mieux : la paire proposée est décalée, elle n'est pas une ancre.
+    const mieux = provisoire.some((q, k) => k !== p && ressemblanceNoms(final[f].name, q.name) >= Math.max(SEUIL_VARIANTE_NOM, s + 1e-9));
+    const memeMontant = cts(final[f].amountTTC) !== null && cts(final[f].amountTTC) === cts(provisoire[p].amountTTC); // « Malt Pilsner » relu « Pilsner Malz » au même montant
+    if (seule || sansNoms || ((s >= SEUIL_PAIRE_PROPOSEE || memeMontant) && !mieux)) { rangs[f] = p; pris.add(p); }
+  });
+  // 2. Les lignes restées seules des deux côtés s'alignent dans l'ordre (Needleman-Wunsch) : score = 1 + ressemblance (+ 0,25 à montant égal) ; paire admise dès 0,7, ou 0,5 à montant égal.
+  const F = final.map((_, f) => f).filter(f => rangs[f] === null), P = provisoire.map((_, p) => p).filter(p => !pris.has(p));
+  const score = (f: number, p: number): number | null => {
+    const s = ressemblanceNoms(final[f].name, provisoire[p].name), a = cts(final[f].amountTTC), memeMontant = a !== null && a === cts(provisoire[p].amountTTC);
+    return s >= SEUIL_PAIRE_LIBRE || (memeMontant && s >= SEUIL_PAIRE_MEME_MONTANT) ? 1 + s + (memeMontant ? 0.25 : 0) : null;
+  };
+  const S = F.map(f => P.map(p => score(f, p)));
+  const H: number[][] = Array.from({ length: F.length + 1 }, () => new Array<number>(P.length + 1).fill(0));
+  for (let i = 1; i <= F.length; i++) for (let j = 1; j <= P.length; j++) {
+    const d = S[i - 1][j - 1];
+    H[i][j] = Math.max(H[i - 1][j], H[i][j - 1], d === null ? -Infinity : H[i - 1][j - 1] + d);
+  }
+  for (let i = F.length, j = P.length; i > 0 && j > 0;) {
+    const d = S[i - 1][j - 1];
+    if (d !== null && H[i][j] === H[i - 1][j - 1] + d) { rangs[F[i - 1]] = P[j - 1]; i -= 1; j -= 1; }
+    else if (H[i][j] === H[i - 1][j]) i -= 1;
+    else j -= 1;
+  }
+  return rangs;
+}
+
 /** B3 : « rang final → id du brouillon ». `fiable` : le jeton du morceau reçu est celui du final et chaque ligne dit son rang ; sinon (M4) la position, si les deux listes ont la même longueur. */
-export function tableDeRangs(final: ScannedInvoiceResult, nProvisoire: number, jeton: string): { ok: boolean; table: Map<string, string>; ajoutees: string[]; paires: Set<number> } {
+export function tableDeRangs(final: ScannedInvoiceResult, nProvisoire: number, jeton: string, provisoire?: readonly LigneAAligner[]): { ok: boolean; table: Map<string, string>; ajoutees: string[]; paires: Set<number> } {
   const table = new Map<string, string>(), ajoutees: string[] = [], paires = new Set<number>();
   const fiable = final.provisoireJeton === jeton && final.items.length > 0 && final.items.every(i => i.rangProvisoire !== undefined);
   const parPosition = !fiable && final.items.length === nProvisoire && nProvisoire > 0;
   if (!fiable && !parPosition) return { ok: false, table, ajoutees, paires };
+  const proposes = final.items.map((item, j) => (fiable ? item.rangProvisoire ?? null : j));
+  // LR3-3 : la paire proposée (serveur ou position) passe par l'alignement des noms quand les lignes du provisoire sont connues.
+  const rangs = provisoire && provisoire.length === nProvisoire ? alignerLignesLues(provisoire, final.items, proposes) : proposes;
   let k = 0;
   final.items.forEach((item, j) => {
-    const r = fiable ? item.rangProvisoire : j;
+    const r = rangs[j];
     if (typeof r === 'number' && r >= 0 && r < nProvisoire && !paires.has(r)) { paires.add(r); table.set(item.id, `line-${r + 1}`); }
     else { k += 1; const id = `line-${nProvisoire + k}`; table.set(item.id, id); ajoutees.push(id); }
   });
@@ -319,7 +389,7 @@ export function rangerLaPerdue(lignes: readonly PurchaseLineDraft[], perdue: Per
 export function appliquerFinale(e: EntreeFusion): SortieFusion {
   const { base, courant, provisoire, final, registres: reg } = e;
   const vide = (): SortieFusion => ({ etat: 'echec', draft: courant, result: ajouterCoupure(clone(provisoire) as any, 'delai-saute', phraseCoupure('delai-saute')) as ScannedInvoiceResult, table: new Map(), corrections: { lignes: {}, entete: {} }, ajoutees: [], perdues: [], nCorrigees: 0, aRetraduire: [], reprises: [], propositions: propositionsVides() });
-  const t = tableDeRangs(final, base.nProvisoire, base.jeton);
+  const t = tableDeRangs(final, base.nProvisoire, base.jeton, provisoire.items);
   if (!t.ok) return vide();
 
   // Les lignes du final passent par les MÊMES transformations que celles du provisoire (B1), puis changent d'id par la table.
@@ -366,13 +436,21 @@ export function appliquerFinale(e: EntreeFusion): SortieFusion {
     }
     const fusionnee: PurchaseLineDraft = { ...l, evidence: F.evidence };
     const faites: Correction[] = [];
+    /* LR3-3 (« 1 ? × 4,95 » barré sous « ? × — ») : une ligne « 1 × total » (la quantité 1 et le prix égal au montant, lus ou déduits) dont la 3.8 ne dit ni quantité ni prix
+       (une autre nature, où `totalSeulEnUn` ne déduit rien) garde 1 × total : le prix suit le montant retenu. */
+    const unFoisTotal = b.quantity === 1 && b.unitPrice !== undefined && memes(b.unitPrice, b.amount) && F.quantity === undefined && F.unitPrice === undefined;
     for (const c of CELLULES_LIGNE) {
       if (touchee(l.id, c, l, b)) continue;
       if (memes(F[c], b[c])) continue;
+      /* LR3-3 : une valeur connue n'est jamais remplacée par l'inconnu de la 3.8 (elle ne l'a pas lue : rien n'est corrigé). */
+      if (VALEURS_GARDEES.includes(c) && inconnue(F[c]) && !inconnue(b[c])) continue;
       (fusionnee as unknown as Record<string, unknown>)[c] = F[c];
       if (varianteDeNom(c, b[c], F[c])) continue; // LR1-5 : le même nom lu autrement, repris sans correction ni barré
+      /* LR1-5 (« 30 g » barré sous « 30 g ») : l'unité lue égale l'unité que la ligne montrait déjà (déduite) : reprise sans correction. */
+      if (c === 'unit' && uniteEffective({ unit: String(b.unit ?? ''), uniteDeduite: b.uniteDeduite }) === uniteEffective({ unit: String(F.unit ?? ''), uniteDeduite: F.uniteDeduite })) continue;
       faites.push({ id: l.id, champ: c, avant: b[c], apres: F[c] });
     }
+    if (unFoisTotal && !touchee(l.id, 'unitPrice', l, b) && typeof fusionnee.amount === 'number') fusionnee.unitPrice = fusionnee.amount;
     // Les marques de lien viennent du final seulement pour une rangée dont il n'a pas touché le lien.
     if (!LIEN_CELLULES.some(c => touchee(l.id, c, l, b))) { reprises.push(l.id); marquesFinales(idFinalDe.get(l.id)!, l.id, propositions); }
     if (faites.length) corrections.lignes[l.id] = faites.filter(c => c.champ !== 'equipmentAction');
@@ -404,7 +482,11 @@ export function appliquerFinale(e: EntreeFusion): SortieFusion {
     if (registre || !memes(maintenant, avant)) continue;
     Object.assign(patch, apres);
     /* Une correction se dit sur la valeur que la case MONTRE (le premier champ du groupe : le montant de TVA, l'état du règlement) ; un autre champ du groupe qui change seul s'applique sans marque et sans compte. */
-    if (!memes(apres[g.champs[0] as string], avant[g.champs[0] as string])) corrections.entete[g.cle] = { avant: avant[g.champs[0] as string], apres: apres[g.champs[0] as string] };
+    const montre = g.champs[0] as string;
+    if (memes(apres[montre], avant[montre])) continue;
+    if (g.cle === 'vendor' && varianteDeFournisseur(avant[montre], apres[montre])) continue; // LR1-5, v3-3 : le même fournisseur lu autrement
+    if (g.cle === 'paiement' && !reglementLu(provisoire)) continue; // v3-4 : « Payé » supposé, jamais lu
+    corrections.entete[g.cle] = { avant: avant[montre], apres: apres[montre] };
   }
   const draft = { ...patchPurchaseDraft(courant, { ...patch, lines: ordre, ...(e.model ? { scanModel: e.model } : {}) } as Partial<PurchaseDraft>, e.today), duplicateConfirmed: courant.duplicateConfirmed };
 

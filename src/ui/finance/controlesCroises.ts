@@ -147,6 +147,21 @@ export const montant = (cents: number): string => {
   const n = Math.abs(Math.round(cents)), e = Math.floor(n / 100), c = String(n % 100).padStart(2, '0');
   return `${String(e).replace(/\B(?=(\d{3})+$)/g, ' ')},${c}`;
 };
+/**
+ * LR2-3 (vision v3 : doc25 « 3/3 · 7 désaccords » pour 35 points des lectures) : la rangée « Lectures » dit ce qu'elle compte. Elle compte des VALEURS (un champ d'une ligne ou de l'en-tête)
+ * sur lesquelles les lectures n'ont pas de majorité, la nature disputée exclue (`pointsAMontrer`) ; une valeur qu'une seule lecture lisait autrement est tranchée par la majorité et ne compte pas.
+ * `attente` : la 3e lecture tourne encore (points ●●◌) ; `lectures` 0 : aucune rangée.
+ */
+export function rangDesLectures(e: { attente: boolean; lectures: number; nPagesLues: number; nDesaccords: number }): RangControle[] {
+  if (e.attente) return [{ cle: 'lectures', verdict: 'inconnu', texte: 'Lectures', valeurs: '', lectures: { faites: 2, sur: 3 } }];
+  if (!e.lectures) return [];
+  if (e.nDesaccords > 0) {
+    const compte = `${e.nDesaccords} valeur${e.nDesaccords > 1 ? 's' : ''} en désaccord`;
+    return [{ cle: 'lectures', verdict: 'ecart', texte: e.nPagesLues > 1 ? `Lectures · ${e.nPagesLues} pages` : 'Lectures', valeurs: `${e.lectures}/${e.lectures} · ${compte}`, resume: compte, geste: 'Voir le désaccord', renvoi: 'lectures' }];
+  }
+  return [e.nPagesLues > 1 ? { cle: 'lectures', verdict: 'ok', texte: `${e.nPagesLues} pages lues`, valeurs: '' } : { cle: 'lectures', verdict: 'ok', texte: 'Lectures', valeurs: `${e.lectures}/${e.lectures} d'accord` }];
+}
+
 const signe = (n: number) => (n < 0 ? '−' : '+');
 const ecartTexte = (cents: number) => `${signe(cents)}${montant(cents)}`;
 

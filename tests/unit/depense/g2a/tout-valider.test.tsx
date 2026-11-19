@@ -28,6 +28,8 @@ async function lire(variante: VarianteLenteur, patch?: (r: any, final: boolean) 
   const { provisoire, final, jeton } = lecturesLenteur(variante), stocks = apercuDepense(`lenteur-${variante}`).stocks;
   (stocks as any).rawMaterials.forEach((a: any) => { a.currentStock = 1; });
   for (const r of [provisoire, final]) for (const i of r?.items ?? []) if (i.name === 'Sucre candi') i.unit = 'Kg';
+  // LR1-5 (tour 3) : sans unité le provisoire montre « 30 g » déduit ; une 3.8 qui lit « g » ne corrige rien. Pour garder trois VRAIES corrections, le provisoire lit Kg (final sans unité : Kg aussi, donc inchangé).
+  for (const r of [provisoire, final]) for (const i of r?.items ?? []) if (i.name === 'Sabro 13.4%' || i.name === 'Citra 12.5%') { if (r === provisoire || !i.unit) i.unit = 'Kg'; }
   for (const r of [provisoire, final]) if (r) patch?.(r, r === final);
   const g = porte();
   state.scanned.mockImplementation(async (_f: any, _t: any, opts: any) => { if (provisoire) opts?.onProvisoire?.(sortie(provisoire, { jeton })); await g.promesse; return sortie(final); });
@@ -76,7 +78,7 @@ describe('D329 : les valeurs corrigées passent par le bandeau', () => {
     expect(v.container.querySelector('[data-va="corrigees"]')!.textContent).toMatch(/2\s*corrigées/);
     fireEvent.click(geste(v, 'annuler'));
     await waitFor(() => expect(nom(v)).toBe('Citra'));
-    expect(ligne(v, 'line-4')!.querySelector('[data-dp-corrige]')).toBeNull(); /* 28c98cba (pu4d, D350) : plus de champ « Unité ligne 4 » ; l'unité déduite (g) est allumée au segment et jaune « repris » : elle n'est pas écrite (D213). */ expect(ligne(v, 'line-4')!.querySelector('[data-dp-unite-segments]')!.getAttribute('data-dp-niveau')).toBe('repris');
+    expect(ligne(v, 'line-4')!.querySelector('[data-dp-corrige]')).toBeNull(); /* 28c98cba (pu4d, D350) : plus de champ « Unité ligne 4 » ; l'unité déduite (g) est allumée au segment et jaune « repris » : elle n'est pas écrite (D213). */ expect(ligne(v, 'line-4')!.querySelector('[data-dp-unite-segments]')!.getAttribute('data-dp-niveau')).toBeNull(); /* tour 3 (LR1-5) : le provisoire lit Kg, donc l'unité rendue par « Annuler » est lue, pas déduite : ni jaune ni « repris ». */
     expect(v.container.querySelector('[data-va="corrigees"]')!.textContent).toMatch(/1\s*corrigée(?!s)/);
     expect(rang(v)).toBe('3/3');
     fireEvent.click(geste(v, 'garder'));
