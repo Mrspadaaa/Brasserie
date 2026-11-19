@@ -1,0 +1,16 @@
+Serveur 1/1 : npm run dev -- --port 3109 --strictPort  (journal : C:\Users\mrspa\AppData\Local\Temp\with-server-9YWxEA\serveur-1-3109.log)
+Attente du port 3109…
+Serveur prêt sur le port 3109
+
+Tous les serveurs sont prêts. Lancement : node work/missions/2026-11-19-bugs-ecrans/voies/k1/banc/mesurer-repos.mjs ancien
+
+390x660 cave étape 0 « Houblons 3/7 » fin : le + au repos recouvre « Suivant — Levure » (128 px²)
+390x660 cave étape 1 « Levure 4/7 » fin : le + au repos recouvre « Suivant — Paliers » (96 px²)
+390x660 cave étape 2 « Paliers 5/7 » fin : le + au repos recouvre « Suivant — Eau et sels » (128 px²)
+390x660 cave étape 3 « Eau et sels 6/7 » fin : le + au repos recouvre « Suivant — Récapitulatif » (128 px²)
+RECOUVREMENTS 4
+
+Commande terminée, code 1.
+
+Arrêt de 1 serveur(s)…
+code 1

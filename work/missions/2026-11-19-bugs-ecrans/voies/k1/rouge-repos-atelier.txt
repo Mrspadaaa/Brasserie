@@ -1,0 +1,26 @@
+Serveur 1/1 : npm run dev -- --port 3109 --strictPort  (journal : C:\Users\mrspa\AppData\Local\Temp\with-server-D5xIZO\serveur-1-3109.log)
+Attente du port 3109…
+Serveur prêt sur le port 3109
+
+Tous les serveurs sont prêts. Lancement : node work/missions/2026-11-19-bugs-ecrans/voies/k1/banc/mesurer-repos.mjs avant
+
+390x660 clair : atelier houblons (.hv-nav) non rendu en 20 s
+390x660 cave : atelier houblons (.hv-nav) non rendu en 20 s
+844x340 clair : atelier houblons (.hv-nav) non rendu en 20 s
+844x340 clair étape 0 « Houblons 3/7 » recherche avancée : le + au repos recouvre « Recherche avancée » (896 px²)
+844x340 clair étape 0 « Houblons 3/7 » carte détail : le + au repos recouvre « Recherche avancée » (896 px²)
+844x340 clair étape 0 « Houblons 3/7 » carte détail : le + au repos recouvre « Légende : les icônes des ajouts pr » (952 px²)
+844x340 clair étape 0 « Houblons 3/7 » carte détail : le + au repos recouvre « Mon goût pour Whitbread Golding Va » (576 px²)
+844x340 cave : atelier houblons (.hv-nav) non rendu en 20 s
+844x340 cave étape 0 « Houblons 3/7 » recherche avancée : le + au repos recouvre « Recherche avancée » (896 px²)
+844x340 cave étape 0 « Houblons 3/7 » carte détail : le + au repos recouvre « Recherche avancée » (896 px²)
+844x340 cave étape 0 « Houblons 3/7 » carte détail : le + au repos recouvre « Légende : les icônes des ajouts pr » (952 px²)
+844x340 cave étape 0 « Houblons 3/7 » carte détail : le + au repos recouvre « Mon goût pour Whitbread Golding Va » (576 px²)
+1280 clair : atelier houblons (.hv-nav) non rendu en 20 s
+1280 cave : atelier houblons (.hv-nav) non rendu en 20 s
+RECOUVREMENTS 14
+
+Commande terminée, code 1.
+
+Arrêt de 1 serveur(s)…
+code 1

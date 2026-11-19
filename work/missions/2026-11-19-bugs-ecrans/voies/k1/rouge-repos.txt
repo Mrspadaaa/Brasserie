@@ -1,0 +1,19 @@
+Serveur 1/1 : npm run dev -- --port 3109 --strictPort  (journal : C:\Users\mrspa\AppData\Local\Temp\with-server-lSEqLS\serveur-1-3109.log)
+Attente du port 3109…
+Serveur prêt sur le port 3109
+
+Tous les serveurs sont prêts. Lancement : node work/missions/2026-11-19-bugs-ecrans/voies/k1/banc/mesurer-repos.mjs avant
+
+844x340 clair étape 0 « Houblons 3/7 » recherche avancée : le + au repos recouvre « Recherche avancée » (896 px²)
+844x340 clair étape 0 « Houblons 3/7 » carte détail : le + au repos recouvre « Recherche avancée » (896 px²)
+844x340 clair étape 0 « Houblons 3/7 » carte détail : le + au repos recouvre « Légende : les icônes des ajouts pr » (952 px²)
+844x340 clair étape 0 « Houblons 3/7 » carte détail : le + au repos recouvre « Mon goût pour Whitbread Golding Va » (576 px²)
+844x340 cave étape 0 « Houblons 3/7 » recherche avancée : le + au repos recouvre « Recherche avancée » (896 px²)
+844x340 cave étape 0 « Houblons 3/7 » carte détail : le + au repos recouvre « Recherche avancée » (896 px²)
+844x340 cave étape 0 « Houblons 3/7 » carte détail : le + au repos recouvre « Légende : les icônes des ajouts pr » (952 px²)
+RECOUVREMENTS 7
+
+Commande terminée, code 1.
+
+Arrêt de 1 serveur(s)…
+code 1

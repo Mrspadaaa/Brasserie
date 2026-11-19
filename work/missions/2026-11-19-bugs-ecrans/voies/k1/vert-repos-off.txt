@@ -1,0 +1,13 @@
+Serveur 1/1 : npm run dev -- --port 3109 --strictPort  (journal : C:\Users\mrspa\AppData\Local\Temp\with-server-rHsCie\serveur-1-3109.log)
+Attente du port 3109…
+Serveur prêt sur le port 3109
+
+Tous les serveurs sont prêts. Lancement : node work/missions/2026-11-19-bugs-ecrans/voies/k1/banc/mesurer-repos.mjs apres-off
+
+
+AUCUN RECOUVREMENT AU REPOS
+
+Commande terminée, code 0.
+
+Arrêt de 1 serveur(s)…
+code 0

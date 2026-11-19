@@ -127,3 +127,19 @@ body[data-has-fab] [data-floating-actions-gap="true"] {
     padding-right: 4.75rem;
   }
 }
+
+/* k1, points 9 et 10 (19.11, critique) : AU REPOS (page arrêtée, le + visible) le + (56 px, 12 px du bord) couvrait la rangée d'onglets de l'atelier houblons
+   (« Historique ») dans l'étape Houblons, au téléphone debout et couché, et — couché seulement (844 × 340, le + tombe à la hauteur du champ) — « Recherche avancée »,
+   la légende et les cartes de la liste d'ajouts. Ces rangées gardent la place du + (76 px : 56 + 12 + 8 d'air) à leur droite, sous 1024 px et seulement quand le + flotte ;
+   le reste de la page, en défilement, est servi par le masque (BR-28). La rangée « Suivant » a la sienne depuis b4c92eb73 (page-shell.css). */
+@media (max-width: 1023px) {
+  :root body[data-has-fab-floating] .recipe-hop-v55 .hv-nav {
+    padding-right: 4.75rem;
+  }
+}
+
+@media (orientation: landscape) and (max-height: 520px) {
+  :root body[data-has-fab-floating] [data-role="ajouts-proposes"] {
+    padding-right: 4.75rem;
+  }
+}

@@ -45,6 +45,8 @@ for (const mode of MODES) {
     await p.goto(`http://localhost:${port}/?dev-local&etape=houblons`, { waitUntil: 'domcontentloaded' });
     await p.waitForSelector('.recipe-step-actions', { timeout: 150000 });
     await p.evaluate((t) => { document.documentElement.dataset.theme = t; }, theme);
+    // ANCIEN=1 : la rangée de fin d'avant b4c92eb73 (pr-16, 64 px) = le rouge du point 9.
+    if (process.env.ANCIEN) await p.addStyleTag({ content: ':root body[data-has-fab-floating] .page-shell [data-page-end-actions]{padding-right:4rem!important}' });
     await p.evaluate(() => document.fonts.ready);
     await dormir(800);
     if (!process.env.SANS_ATELIER) await p.waitForSelector('.hv-nav', { timeout: 20000 }).catch(() => rapport.push(mode.id + ' ' + theme + ' : atelier houblons (.hv-nav) non rendu en 20 s'));
@@ -79,7 +81,7 @@ for (const mode of MODES) {
           if (rangee.nom === 'onglet atelier' && m.tronque) { echecs++; rapport.push(`${mode.id} ${theme} étape ${etape} onglet « ${m.nom} » tronqué (${m.visibleDe} px)`); }
         }
       }
-      if (process.env.CAPTURES && etape === 2) {
+      if (process.env.CAPTURES && etape === 0) {
         // Capture « repos » : l'atelier houblons, onglets à la hauteur du +.
         await p.evaluate(() => {
           const e = document.querySelector('.hv-nav button'); const fab = document.querySelector('.floating-actions > button');
@@ -94,7 +96,7 @@ for (const mode of MODES) {
       }
       await p.evaluate(() => { const m = document.querySelector('[data-page-shell] main'); if (m) m.scrollTop = m.scrollHeight; });
       await dormir(1100);
-      if (process.env.CAPTURES && etape >= 3 && etape <= 5) await p.screenshot({ path: path.join(SORTIE, `${prefixe}-${mode.id}-${theme}-fin-etape${etape}.png`) });
+      if (process.env.CAPTURES && etape === 0) await p.screenshot({ path: path.join(SORTIE, `${prefixe}-${mode.id}-${theme}-fin-etape${etape}.png`) });
       const suivant = await p.$('.recipe-step-actions .recipe-primary-action');
       if (!suivant) break;
       await suivant.evaluate((b) => b.scrollIntoView({ block: 'center' }));

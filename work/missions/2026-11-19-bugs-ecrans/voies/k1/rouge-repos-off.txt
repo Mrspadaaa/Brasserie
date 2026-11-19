@@ -1,0 +1,16 @@
+Serveur 1/1 : npm run dev -- --port 3109 --strictPort  (journal : C:\Users\mrspa\AppData\Local\Temp\with-server-CxpEY6\serveur-1-3109.log)
+Attente du port 3109…
+Serveur prêt sur le port 3109
+
+Tous les serveurs sont prêts. Lancement : node work/missions/2026-11-19-bugs-ecrans/voies/k1/banc/mesurer-repos.mjs avantoff
+
+390x660 clair étape 0 « Houblons 3/7 » onglet atelier : le + au repos recouvre « Historique » (1440 px²)
+390x660 cave étape 0 « Houblons 3/7 » onglet atelier : le + au repos recouvre « Historique » (1440 px²)
+844x340 clair étape 0 « Houblons 3/7 » onglet atelier : le + au repos recouvre « Historique » (1320 px²)
+844x340 cave étape 0 « Houblons 3/7 » onglet atelier : le + au repos recouvre « Historique » (1320 px²)
+RECOUVREMENTS 4
+
+Commande terminée, code 1.
+
+Arrêt de 1 serveur(s)…
+code 1
