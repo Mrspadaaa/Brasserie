@@ -733,8 +733,8 @@ export function ExpenseSheet({onClose,onSaved,initialIntent='expense',existingEq
     // Devant un achat peut-être déjà enregistré, le choix passe avant les champs : « même achat » n'en demande aucun.
     if(errors.length){setAttempted(true);setError('');focusIssue(shownErrors.find(message=>message.includes('doublon'))??shownErrors[0]);return;}
     saveLocked.current=true;setSaving(true);setError('');setProofSending('');
+    let proof=receipt;
     try {
-      let proof=receipt;
       if(apercu){proof=await apercu.enregistrer(draftEff);setReceipt(proof);}
       else{
       /* `proofSent` ne se pose qu'à un signal sûr : le retour du service (original confirmé dans Drive) ou `drive/in-progress` (plus bas). Jamais avant l'appel. */
@@ -748,7 +748,12 @@ export function ExpenseSheet({onClose,onSaved,initialIntent='expense',existingEq
       }
       /* Envoi en arrière-plan : la feuille se ferme, le reçu se lit dans la fiche. Chemin synchrone (repli) : le reçu reste affiché jusqu'à « Terminé » ; sans reçu Drive à montrer, la feuille se ferme comme avant. */
       if(mounted.current){if(queuedRef.current){onSaved();onClose();}else{onSaved(proof);if(proof)setDone(proof);else onClose();}}
-    }catch(e:any){if(mounted.current){if(isConfirmedWriteRejection(e)){pendingRef.current=false;setPendingId(null);setReceipt(undefined);}if(e?.code==='drive/auth-required')setDriveAuthError(true);if(e?.code==='drive/in-progress'){proofSent.current=true;setProofSending(e.message);}else setError(e.message||'L’enregistrement reste à confirmer.');}}
+    }catch(e:any){
+      /* T3-6 (en ligne, 19.11) : la relecture du serveur n'a pas répondu à temps (`pending`, jamais un refus) alors que la dépense est déjà écrite ici et listée.
+         Comme hors ligne (T5) : la feuille se ferme, l'accusé est attendu hors d'elle (un refus plus tard est dit par le bandeau d'écriture). Un refus certain ou un conflit gardent la feuille. */
+      const txId=`TX-${draft.submissionId}`;
+      if(mounted.current&&e?.status==='pending'&&pendingRef.current&&!apercu&&StorageService.getTransactions().some(tx=>tx.id===txId)){watchPurchaseConfirmation(draftEff);if(queuedRef.current){onSaved();onClose();}else{onSaved(proof);if(proof)setDone(proof);else onClose();}return;}
+      if(mounted.current){if(isConfirmedWriteRejection(e)){pendingRef.current=false;setPendingId(null);setReceipt(undefined);}if(e?.code==='drive/auth-required')setDriveAuthError(true);if(e?.code==='drive/in-progress'){proofSent.current=true;setProofSending(e.message);}else setError(e.message||'L’enregistrement reste à confirmer.');}}
     finally{saveLocked.current=false;if(mounted.current)setSaving(false);}
   };
   const attachToExisting=async(id:string)=>{
@@ -1051,7 +1056,7 @@ export function ExpenseSheet({onClose,onSaved,initialIntent='expense',existingEq
     const stockBisEl=bisAConfirmer&&regle&&voisin?<span data-dp-stock-bis className="inline-flex items-center gap-1 whitespace-nowrap text-xs text-cave-400 opacity-80"><Package size={14}/>stock : {etiquetteVoisin(regle,voisin)}</span>:null;
     const bisFondu=bisAConfirmer&&ouverte;
     const fixNiveau:Niveau|undefined=precisIds.has(line.id)?'inconnu':(bisAConfirmer&&!bisFondu)||ambigu?'repris':undefined;
-    const correctionBarre=precisIds.has(line.id)?<><span className="text-xs text-alert">imprimé {line.quantity===undefined?'—':fr(line.quantity)} ? ·</span>{['g','kg','Stk'].map(u=><button key={u} type="button" onClick={()=>updateLine(line.id,{unit:u})} className="min-h-7 rounded-control border border-cave-600 px-2 text-sm text-cave-50">{u}</button>)}</>
+    const correctionBarre=precisIds.has(line.id)?<><span className="text-xs text-alert">imprimé {line.quantity===undefined?'—':fr(line.quantity)} ? ·</span>{/* BE-23 : « Stk » (Stück) n'est pas un mot de l'écran : le choix dit et écrit « pièce » (TL-42, une seule langue). */['g','kg','pièce'].map(u=><button key={u} type="button" onClick={()=>updateLine(line.id,{unit:u})} className="min-h-7 rounded-control border border-cave-600 px-2 text-sm text-cave-50">{u}</button>)}</>
       :bisAConfirmer&&regle&&voisin?(bisFondu?null:<>{stockBisEl}{/* B2 n° 16 : « Garder » et ⇄ vont ensemble à la ligne (jamais le ⇄ seul en bas) */}<span className="inline-flex min-w-0 max-w-full items-center gap-1.5">{garderBisEl}{autre}</span></>)
       :ambigu?<><span data-dp-ambigu className="text-xs text-attention">plusieurs articles « {plusieurs?nomAffiche(line.description):voisin!.name} » : choisis</span>{autre}</>
       :null;

@@ -16,7 +16,9 @@ export type VarianteMois = 'depense' | 'caisse';
 const signe = (cents: number) => `${cents < 0 ? '−' : '+'}${amountOnly(Math.abs(cents))}`;
 
 export function BoutonMois({ effet, variante, ouvert, onBascule }: { effet: EffetPiece | null; variante: VarianteMois; ouvert: boolean; onBascule: () => void }) {
-  const ecart = effet && effet.ecart.principal ? effet.ecart.principalCents : 0;
+  /* T3-7 (en ligne, 19.11) : « +1,00 » sur une dépense se lisait comme un gain. La pastille dit le sens de l'argent : une sortie (dépensé, matériel) en « − », une entrée en « + ». */
+  const brut = effet && effet.ecart.principal ? effet.ecart.principalCents : 0;
+  const ecart = effet && effet.ecart.principal !== 'entre' ? -brut : brut;
   return <button type="button" data-om="bouton" data-variante={variante} aria-expanded={ouvert} aria-disabled={!effet || undefined} title={effet ? undefined : 'Saisis un montant, une date et une catégorie'}
     aria-label={effet && ecart ? `Mon mois, ${signe(ecart)} CHF` : 'Mon mois'} onClick={() => { if (effet) onBascule(); }} className="om-mo">
     <svg width="22" height="18" viewBox="0 0 22 18" aria-hidden="true"><rect x="0" y="2" width="5" height="16" rx="1.5" fill="#56D27B" /><rect x="7" y="7" width="4" height="11" rx="1.2" fill="#9856D2" /><rect x="12" y="10" width="4" height="8" rx="1.2" fill="#D2B356" /><rect x="17" y="15" width="4" height="3" rx="1" fill="#56C1D2" /></svg>
