@@ -1,0 +1,20 @@
+br98 390-cave champ : true
+br98 390-cave options (40) : Alora7–10 % α · Familles déclarées sur houblon brut : Fruité, Agrumes,… · Hopsteiner · Forme non précisée || Ariana9–13 % α · Familles déclarées sur houblon brut : Fruité, Agrumes,… · Hopsteiner · Forme non précisée || Callista2–5 % α · Familles déclarées sur houblon brut : Fruité. · Hopsteiner · Forme non précisée
+br98 1280-clair champ : true
+br98 1280-clair options (40) : Dolcitaα non publié · Crosby Hops décrit ce profil : Des notes de pêche, anan… · Crosby Hops · Forme non précisée || Citraα non publié · Le fabricant décrit des agrumes, fruits à noyau et frui… · Yakima Chief Hops · Forme non précisée || Nectaronα non publié · NZ Hops décrit ce profil : Des notes d’ananas, fruit de… · NZ Hops · Forme non précisée
+br98 390-clair champ : true
+br98 390-clair options (40) : Alora7–10 % α · Familles déclarées sur houblon brut : Fruité, Agrumes,… · Hopsteiner · Forme non précisée || Ariana9–13 % α · Familles déclarées sur houblon brut : Fruité, Agrumes,… · Hopsteiner · Forme non précisée || Callista2–5 % α · Familles déclarées sur houblon brut : Fruité. · Hopsteiner · Forme non précisée
+br98 1280-cave champ : true
+br98 1280-cave options (40) : Dolcitaα non publié · Crosby Hops décrit ce profil : Des notes de pêche, anan… · Crosby Hops · Forme non précisée || Citraα non publié · Le fabricant décrit des agrumes, fruits à noyau et frui… · Yakima Chief Hops · Forme non précisée || Nectaronα non publié · NZ Hops décrit ce profil : Des notes d’ananas, fruit de… · NZ Hops · Forme non précisée
+lactose 390-cave champ Nom : false
+lactose 390-cave ligne : (aucune « ne fermente pas ») ; thème = cave ; fond = rgb(18, 16, 14)
+lactose 1280-cave champ Nom : true
+lactose 1280-cave ligne : LactoseSucre de laitkgébullitionne fermente pas ; thème = cave ; fond = rgb(18, 16, 14)
+lactose 390-clair champ Nom : false
+lactose 390-clair ligne : (aucune « ne fermente pas ») ; thème = clair ; fond = rgb(255, 255, 255)
+palette 390-clair écriture locale écrite : 1
+palette 390-clair résultats : ZZ TEST — achat houblon19.11.2026 · Houblons · 17,50 CHF
+palette 1280-clair écriture locale écrite : 1
+palette 1280-clair résultats : ZZ TEST — achat houblon19.11.2026 · Houblons · 17,50 CHF17,50 CHF
+palette 390-cave écriture locale écrite : 1
+palette 390-cave résultats : ZZ TEST — achat houblon19.11.2026 · Houblons · 17,50 CHF

@@ -74,7 +74,7 @@ for (const mode of MODES) {
             const x = Math.max(0, Math.min(a.right, f.right) - Math.max(a.left, f.left)); const y = Math.max(0, Math.min(a.bottom, f.bottom) - Math.max(a.top, f.top));
             const sF = getComputedStyle(fab);
             return { surface: Math.round(x * y), masque: Number(sF.opacity) < 0.05, nom: (e.getAttribute('aria-label') || e.textContent || '').replace(/\s+/g, ' ').trim().slice(0, 34),
-              haut: a.top < innerHeight && a.bottom > 0, visibleDe: Math.round(a.width), tronque: e.scrollWidth > e.clientWidth + 1 };
+              haut: a.top < innerHeight && a.bottom > 0, visibleDe: Math.round(a.width), tronque: e.scrollWidth > e.clientWidth + 1 || (() => { const r = document.createRange(); r.selectNodeContents(e); return r.getClientRects().length > 1; })() };
           }, rangee.sel, i);
           if (!m || m.masque || !m.haut) continue;
           if (m.surface > 4) { echecs++; rapport.push(`${mode.id} ${theme} étape ${etape} « ${titre} » ${rangee.nom} : le + au repos recouvre « ${m.nom} » (${m.surface} px²)`); }
@@ -93,6 +93,9 @@ for (const mode of MODES) {
           if (e && fab) { const main = e.closest('main'); const re = e.getBoundingClientRect(); const rf = fab.getBoundingClientRect(); main.scrollTop += (re.top + re.height / 2) - (rf.top + rf.height / 2); } });
         await dormir(1100);
         await p.screenshot({ path: path.join(SORTIE, `${prefixe}-${mode.id}-${theme}-avancee.png`) });
+        await p.evaluate(() => { const m = document.querySelector('[data-page-shell] main'); if (m) m.scrollTop = 0; });
+        await dormir(1100);
+        await p.screenshot({ path: path.join(SORTIE, `${prefixe}-${mode.id}-${theme}-haut.png`) });
       }
       await p.evaluate(() => { const m = document.querySelector('[data-page-shell] main'); if (m) m.scrollTop = m.scrollHeight; });
       await dormir(1100);
