@@ -160,6 +160,19 @@ function hopStage(line: string): { stage: HopStage; timeMin?: number; dayOffset?
   return { stage: 'boil', timeMin: min ? Number(min[1]) : undefined };
 }
 
+/**
+ * AM-33 : ce que la ligne dit du moment, quand elle ne le dit pas assez pour
+ * qu'une ébullition soit une lecture et non un défaut. « mash » / « empâtage »
+ * : le modèle n'a pas de houblon d'empâtage, l'ébullition n'est qu'un repli.
+ * Ni mot de moment ni durée : le moment est inconnu, il ne se devine pas.
+ */
+function momentFlou(line: string, stage: HopStage, timeMin?: number): 'mash' | 'absent' | undefined {
+  if (/\bmash\b|emp[âa]t?tage/i.test(line)) return 'mash';
+  if (stage !== 'boil' || timeMin !== undefined) return undefined;
+  if (/boil|[ée]bullition|am[ée]risant|aromatique|flame/i.test(line)) return undefined;
+  return 'absent';
+}
+
 /** Read a contact only when it is stated on that ingredient's line. A day is not a phase. */
 function hopContact(line: string, stage: HopStage): Partial<HopIngredient> {
   const temperature = tempC(line);
@@ -418,6 +431,13 @@ export const RecipeTextParser = {
          * bas. Prévenir maintenant produisait « Alpha absent pour Amarillo »
          * alors que la recette le donnait deux lignes plus haut.
          */
+
+        const flou = momentFlou(line, stage, timeMin);
+        if (flou === 'mash') {
+          warnings.push(`Houblon à l’empâtage : ${hopName} — ce moment n’existe pas ici, lu à l’ébullition ; à corriger.`);
+        } else if (flou === 'absent') {
+          warnings.push(`Moment absent : ${hopName} — lu à l’ébullition faute d’indication ; à confirmer.`);
+        }
 
         hops.push({
           name: hopName,
