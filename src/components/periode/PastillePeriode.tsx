@@ -32,7 +32,7 @@ export const PastillePeriode: React.FC<Props> = ({ periode, onChoisir, transacti
         <button type="button" className="pr-fl" disabled={!ok} aria-label="Période précédente" onClick={() => choisir(pas(p, -1))}>
           <ChevronLeft size={18} aria-hidden="true" />
         </button>
-        <button type="button" className="pr-ce" aria-haspopup="dialog" aria-label={`Période : ${titre(p)}. Choisir la plage`} onClick={() => setOuverte(true)}>
+        <button type="button" className="pr-ce" aria-haspopup="dialog" aria-label={`Période : ${titre(p).replace(/\.$/, '')}. Choisir la plage`} onClick={() => setOuverte(true)}>
           {p.genre === 'dates' ? <><span className="pr-long">{etiquetteCourte(p)}</span><span className="pr-court">{jj(bornes(p).du)}–{jj(bornes(p).au)}</span></> : etiquetteCourte(p)}
         </button>
         <button type="button" className="pr-fl" disabled={!ok} aria-label="Période suivante" onClick={() => choisir(pas(p, 1))}>
