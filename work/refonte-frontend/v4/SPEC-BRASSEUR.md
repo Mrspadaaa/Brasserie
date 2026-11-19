@@ -2219,3 +2219,7 @@ Capture : work/missions/2026-11-18-choix-calendrier/brasseur/zoom-glisser-18-11.
 - « Et aussi le header est un peu caché » (capture paysage : la barre d'outils ± / 3 mois / horloge / œil passe sous l'en-tête de l'app)
 - (capture 390 : fiche de Ttt ouverte, la barre de Ttt réduite à un trait au-dessus) « Regarde ce qui se passe quand on clique sur un brassin ?? »
 - (19.11, 06:5x) « J'ai l'impression que le calendrier a pas été encore super bien testé, critiqué ECT.. Il y a encore beaucoup de problèmes... »
+
+### Stocks : l'onglet Autres stocks (19.11)
+
+- (capture 390 : onglet « Autres stocks » choisi, cartes Additifs, Nettoyage, Fûts, Matériel, puis la liste des Malts et la ligne « Trié par couleur (malts)… » en dessous) « 2 petit problème sur le stock, autre stock n'est pas dynamique sur les boutons et tout, et ça affiche toujours les malt »
