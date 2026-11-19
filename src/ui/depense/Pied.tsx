@@ -30,8 +30,9 @@ export function Pied(p: {
       : <>{p.ordre ? <div role="group" aria-label="Ordre des lignes" className="inline-flex shrink-0 overflow-hidden rounded-control border border-cave-600">
         {(['cat', 'papier'] as const).map(o => <button key={o} type="button" data-ordre={o} aria-pressed={p.ordre === o} onClick={() => p.onOrdre(o)} className={`min-h-8 px-2.5 text-sm ${p.ordre === o ? 'bg-ebc-straw text-cave-950' : 'text-cave-200'}`}>{o === 'cat' ? 'Catégorie' : 'Papier'}</button>)}</div> : null}
         <span className="min-w-0 flex-1"/></>}
+    {/* v3-5 suite (tour 3, « 3e lecture en c… » coupé à 390) : le bouton rétrécit et passe à la ligne au lieu de sortir de l'écran (« 3e lecture / en cours… ») ; sa largeur minimale est son mot le plus long. */}
     <button type="button" data-primary aria-label={p.bouton.aria} title={p.bouton.titre} disabled={p.bouton.disabled} onClick={p.bouton.onClick}
-      className="ml-auto inline-flex min-h-9 shrink-0 items-center justify-center gap-1.5 rounded-control border border-ebc-straw bg-ebc-straw px-3.5 text-sm font-semibold text-cave-950 disabled:opacity-40">{icone} {p.bouton.texte}</button>
+      className="ml-auto inline-flex min-h-9 items-center justify-center gap-1.5 rounded-control border border-ebc-straw bg-ebc-straw px-3 py-0.5 text-left text-sm font-semibold leading-tight text-cave-950 disabled:opacity-40">{icone}<span data-dp="pied-texte">{p.bouton.texte}</span></button>
   </footer>;
 }
 

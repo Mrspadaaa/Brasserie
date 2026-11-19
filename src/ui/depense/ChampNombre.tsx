@@ -12,14 +12,16 @@ export interface ChampNombreProps {
   maxDecimales?: number; className?: string; placeholder?: string; 'aria-label'?: string; id?: string;
   /** Le refus se DIT aussi en texte (role="alert"), avec la valeur d'avant gardée, et reste là après la sortie du champ jusqu'à la saisie suivante (BE-71, comme VI-9). */
   dire?: boolean;
+  /** LR1-7 (tour 3) : ce que la valeur EST, dit en mots quand la couleur le dit seule (« prix déduit : 50,00 ÷ 2 ») : `title` et texte lu (aria-describedby). Un refus prime. */
+  note?: string;
 }
 
-export const ChampNombre: React.FC<ChampNombreProps> = ({ value, onValue, max, fractionDigits, maxDecimales, className = '', placeholder, 'aria-label': ariaLabel, id, dire = false }) => {
+export const ChampNombre: React.FC<ChampNombreProps> = ({ value, onValue, max, fractionDigits, maxDecimales, className = '', placeholder, 'aria-label': ariaLabel, id, dire = false, note }) => {
   const [texte, setTexte] = useState<string | null>(null);
   const [refus, setRefus] = useState<Refus>(null);
   const debut = useRef<number | undefined>(value);
   const [dit, setDit] = useState<string | null>(null);
-  const idDit = useId();
+  const idDit = useId(), idNote = useId();
   const phrase = (r: Exclude<Refus, null>, t: string) => {
     const raison = r === 'negatif' ? 'une valeur négative n’existe pas ici' : r === 'illisible' ? 'ce n’est pas un nombre' : r === 'plafond' ? `au plus ${formatDecimal(max)}` : `au plus ${maxDecimales} décimales`;
     const avant = debut.current;
@@ -30,7 +32,7 @@ export const ChampNombre: React.FC<ChampNombreProps> = ({ value, onValue, max, f
   const motif = refus === 'negatif' ? 'Pas de valeur négative' : refus === 'illisible' ? 'Pas un nombre' : refus === 'plafond' ? `Au plus ${formatDecimal(max)}` : refus === 'decimales' ? `Au plus ${maxDecimales} décimales` : undefined;
   return <>
   <Input
-    id={id} aria-label={ariaLabel} aria-invalid={refus || dit ? true : undefined} aria-describedby={dit ? idDit : undefined} title={motif} data-dp-refus={refus ?? undefined}
+    id={id} aria-label={ariaLabel} aria-invalid={refus || dit ? true : undefined} aria-describedby={dit ? idDit : note && !refus ? idNote : undefined} title={motif ?? note} data-dp-refus={refus ?? undefined}
     type="text" inputMode="decimal" enterKeyHint="next" autoComplete="off" autoCorrect="off" spellCheck={false}
     data-form-type="other" data-lpignore="true" data-1p-ignore="true" data-bwignore="true"
     placeholder={placeholder} value={affiche} className={`${className}${refus ? ' !border-solid !border-alert !text-alert' : ''}`}
@@ -50,6 +52,7 @@ export const ChampNombre: React.FC<ChampNombreProps> = ({ value, onValue, max, f
     // Un refus rend la valeur d'avant la frappe (« 99999999 » a pu retenir « 99999 » en route : elle ne reste pas).
     onBlur={() => { if (refus && !Object.is(value, debut.current)) onValue(debut.current); setTexte(null); setRefus(null); }}
   />
+  {note && !refus && !dit ? <span id={idNote} className="sr-only">{note}</span> : null}
   {dit && <span id={idDit} role="alert" className="block text-xs text-alert leading-snug">{dit}</span>}
   </>;
 };

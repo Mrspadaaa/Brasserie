@@ -23,3 +23,26 @@ export function ressemblanceNoms(a: unknown, b: unknown): number {
  * la 3.8 ne « corrige » rien. Le rejeu des 12 tirages du doc25 (voie r, 19.11) montre ces variantes à 94-95 % ; un vrai changement de nom est bien plus bas.
  */
 export const SEUIL_VARIANTE_NOM = 0.9;
+
+const motsDe = (v: unknown): string => String(v ?? '').normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase().replace(/[^a-z0-9]+/g, ' ').trim();
+/**
+ * LR1-5 (en-tête) et v3-3 (vision v3) : le fournisseur que la 3.8 lit autrement n'est pas une correction quand c'est le même nom : à la casse ou à quelques lettres près (ressemblance ≥ 0,9,
+ * « Brau- und Rauchshop » / « BRAU- UND RAUCHSHOP »), ou le nom court contenu, en mots entiers, dans le nom long (« … Sàrl » / « … Sàrl - Médecins vétérinaires »). La valeur de la 3.8 est reprise sans barré ni compte.
+ */
+export function varianteDeFournisseur(avant: unknown, apres: unknown): boolean {
+  const a = motsDe(avant), b = motsDe(apres);
+  if (!a || !b) return false;
+  if (ressemblanceNoms(a, b) >= SEUIL_VARIANTE_NOM) return true;
+  const [court, long] = a.length <= b.length ? [a, b] : [b, a];
+  return court.length >= 4 && ` ${long} `.includes(` ${court} `);
+}
+/**
+ * doc2 (critique v5b, problème 2) : un désaccord de lecture sur le fournisseur dont toutes les valeurs sont le même nom (« Drs H. et I. Gauderon-Comment Sàrl »,
+ * « Cabinet Vétérinaire Drs H. et I. … Sàrl », « Drs H. et I. … Sàrl - Médecins vétérinaires ») n'en est pas un : le nom le plus court est une variante de chacun des autres.
+ */
+export function variantesDUnMemeFournisseur(valeurs: readonly unknown[]): boolean {
+  const noms = valeurs.map(v => String(v ?? '').trim()).filter(Boolean);
+  if (noms.length < 2 || noms.length !== valeurs.length) return false;
+  const court = [...noms].sort((a, b) => motsDe(a).length - motsDe(b).length)[0];
+  return noms.every(n => n === court || varianteDeFournisseur(court, n));
+}

@@ -18,7 +18,7 @@ export interface BoutonMouture { liee: boolean; parent: string; onBascule: () =>
 export interface NiveauxAffiches { qte: Niveau; prix: Niveau; montant: Niveau; nom: Niveau; raisons: string[] }
 export interface LigneP3cProps {
   id: string; rang: number; numeroPapier?: number; nom: string; lien: LienStock; groupe: GroupeCle; alpha?: string; ebc?: string; conversion?: string;
-  qte: { texte: string }; prix: string; /** LR1-7 : le prix n'est pas imprimé, il est déduit du montant et de la quantité. */ prixDeduit?: boolean; montant: string; prixKg?: { texte: string; aria: string }; niveaux: NiveauxAffiches;
+  qte: { texte: string }; prix: string; /** LR1-7 : le prix n'est pas imprimé, il est déduit du montant et de la quantité ; la valeur est sa formule (« 50,00 ÷ 2 »), dite en mots (title, texte lu). */ prixDeduit?: string; montant: string; prixKg?: { texte: string; aria: string }; niveaux: NiveauxAffiches;
   pastilleMouture?: PastilleMouture; etat?: PastilleEtat; boutonMouture?: BoutonMouture; douteux: boolean; garde: boolean; masquee: boolean; ouverte: boolean;
   fix?: React.ReactNode; fixNiveau?: Niveau;
   /** D277 : le lien proposé par la lecture, jaune tant qu’il n’est pas confirmé. */
@@ -73,7 +73,7 @@ export function LigneP3c(p: LigneP3cProps) {
             className="inline-flex h-6 shrink-0 items-center gap-0.5 rounded-control border border-cave-600 bg-cave-950 px-1 font-mono text-xs tabular-nums text-cave-200">
             {p.etat.cle === 'concasse' ? <><PictoLien lien="mouture" size={12}/>{p.etat.texte.replace(/^↳\s*/, '')}</> : p.etat.texte}</span> : null}
         <span className={`dp-p3c-dq${p.rabais ? ' hidden' : ''}`} aria-label={p.qte.texte ? `${p.qte.texte} × ${p.prix}` : p.prix}>
-          <span data-dp-qte {...niveau(n.qte)} {...(c?.qte ? { 'data-dp-corrige': '1' } : {})} className={`font-semibold ${c?.qte || p.neuve ? (c?.qte ? BLEU : 'text-area-finances') : MARQUE[n.qte]}`}>{p.qte.texte}</span><i>{p.qte.texte || p.prix !== '—' ? '×' : ''}</i><span data-dp-prix {...niveau(n.prix)} {...(c?.prix ? { 'data-dp-corrige': '1' } : {})} {...(p.prixDeduit ? { 'data-dp-prix-deduit': '1', title: 'prix déduit : montant ÷ quantité, non imprimé' } : {})} className={c?.prix ? BLEU : p.neuve ? 'text-area-finances' : MARQUE[n.prix]}>{p.qte.texte || p.prix !== '—' ? p.prix : ''}</span>
+          <span data-dp-qte {...niveau(n.qte)} {...(c?.qte ? { 'data-dp-corrige': '1' } : {})} className={`font-semibold ${c?.qte || p.neuve ? (c?.qte ? BLEU : 'text-area-finances') : MARQUE[n.qte]}`}>{p.qte.texte}</span><i>{p.qte.texte || p.prix !== '—' ? '×' : ''}</i><span data-dp-prix {...niveau(n.prix)} {...(c?.prix ? { 'data-dp-corrige': '1' } : {})} {...(p.prixDeduit ? { 'data-dp-prix-deduit': '1', title: `prix déduit : ${p.prixDeduit} (montant ÷ quantité, non imprimé)` } : {})} className={c?.prix ? BLEU : p.neuve ? 'text-area-finances' : MARQUE[n.prix]}>{p.qte.texte || p.prix !== '—' ? p.prix : ''}</span>{p.prixDeduit ? <span data-dp-prix-dit className="sr-only"> (prix déduit : {p.prixDeduit})</span> : null}
         </span>
         <span data-dp-montant {...niveau(n.montant)} {...(c?.montant ? { 'data-dp-corrige': '1' } : {})} className={`w-[54px] shrink-0 text-right font-mono text-sm ${c?.montant ? BLEU : p.neuve ? 'text-area-finances' : 'text-cave-50'} ${MARQUE[n.montant]}`}>{p.montant}</span>
       </summary>

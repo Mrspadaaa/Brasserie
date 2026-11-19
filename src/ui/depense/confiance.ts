@@ -16,6 +16,7 @@ import { ligneDeBrouillon } from '../../domain/stock/articleNeuf';
 import type { StockItem } from '../../types';
 import { uniteHorsArticle } from './calculPlateau';
 import { pieceSansPoids } from './poidsPiece';
+import { variantesDUnMemeFournisseur } from './ressemblanceNoms';
 import { estFamilleIngredient, familleAUnStock, familleDe, jetons, type FamilleCle } from './familles';
 
 export type Niveau = 'sur' | 'repris' | 'inconnu';
@@ -365,7 +366,12 @@ export function natureSansEnjeu(p: InvoicePoint, c: ContexteConfiance): boolean 
  * La rangée d'une famille qui entre en stock garde sa marque (`confianceLigne` lit tous les points, D328a) ; seul le compte et la file le taisent.
  */
 export function pointsAMontrer<P extends InvoicePoint>(points: readonly P[]): P[] {
-  return points.filter(p => !estDesaccordDeNature(p));
+  return points.filter(p => !estDesaccordDeNature(p) && !estVarianteDeFournisseur(p));
+}
+/** doc2 (critique v5b, problème 2) : les lectures du fournisseur sont le même nom lu autrement (`variantesDUnMemeFournisseur`, la règle de `varianteDeFournisseur`) : ni compte, ni file, ni « À confirmer ». */
+export function estVarianteDeFournisseur(p: InvoicePoint): boolean {
+  const v = (p as InvoicePoint & { valeurs?: ReadonlyArray<{ valeur?: unknown }> }).valeurs;
+  return p.code === 'lectures-divergentes' && p.champs.length === 1 && p.champs[0] === 'vendor' && Array.isArray(v) && variantesDUnMemeFournisseur(v.map(x => x.valeur));
 }
 
 /** La somme des montants des lignes tombe sur le total imprimé : le total corrobore chaque montant (règle du serveur, `sumCheck`). */
@@ -449,7 +455,7 @@ export function confianceEntete(lecture: LectureConfiance, brouillon: BrouillonE
   const tapes = brouillon.tapes ?? new Set<ChampEntete>();
   const corrobore = brouillon.amount !== undefined && sumCheck(lignes.map(l => ({ amountTTC: nombre(l.amount) ?? null })), brouillon.amount, null, 0).sum.statut === 'ok';
   // Une jonction douteuse (D381) porte le rang de sa première ligne, mais marque aussi la liste entière.
-  const cibles = (lecture.points ?? []).filter(p => p.ligne === null || p.ligne === undefined || p.code === 'lignes-non-rapprochees').flatMap(p => ciblesDuPoint(p, corrobore));
+  const cibles = (lecture.points ?? []).filter(p => !estVarianteDeFournisseur(p)).filter(p => p.ligne === null || p.ligne === undefined || p.code === 'lignes-non-rapprochees').flatMap(p => ciblesDuPoint(p, corrobore));
   const finir = <T>(champ: ChampEntete, v: Valeur<T>): Valeur<T> => (tapes.has(champ) && v.valeur !== undefined ? { ...v, niveau: 'sur', raison: 'tapé par lui' } : baisser(v, cibles.filter(x => x.champ === champ)));
   const absent = (raison: string, facultatif = false): Valeur<never> => ({ niveau: 'inconnu', raison, ...(facultatif ? { facultatif: true as const } : {}) });
 

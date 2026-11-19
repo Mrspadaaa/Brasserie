@@ -19,7 +19,7 @@ import { groupeDe } from './groupes';
 import { tvaImprimee } from './tva';
 import { auPoidsLu } from './poidsPiece';
 import { categorieDeLaPiece, depenseHorsBrassage, familleAUnStock, NATURE_DE_FAMILLE, type FamilleCle } from './familles';
-import { ressemblanceNoms, SEUIL_VARIANTE_NOM } from './ressemblanceNoms';
+import { ressemblanceNoms, SEUIL_VARIANTE_NOM, varianteDeFournisseur } from './ressemblanceNoms';
 import type { StockItem } from '../../types';
 
 // Le point « lecture coupée » (R1) : recopié du serveur (`functions/src/invoiceVisionReview.ts`, `phraseCoupure`, `pointLectureCoupee`, `ajouterCoupure`) en fonctions pures, parce que ce module tire `invoiceScanCore`, `models` et `node:*`
@@ -212,17 +212,7 @@ export function varianteDeNom(champ: Cellule, avant: unknown, apres: unknown): b
   return (a?.variante ?? '') === (b?.variante ?? '') && ressemblanceNoms(a?.nom, b?.nom) >= SEUIL_VARIANTE_NOM;
 }
 const motsDe = (v: unknown): string => String(v ?? '').normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase().replace(/[^a-z0-9]+/g, ' ').trim();
-/**
- * LR1-5 (en-tête) et v3-3 (vision v3) : le fournisseur que la 3.8 lit autrement n'est pas une correction quand c'est le même nom : à la casse ou à quelques lettres près (ressemblance ≥ 0,9,
- * « Brau- und Rauchshop » / « BRAU- UND RAUCHSHOP »), ou le nom court contenu, en mots entiers, dans le nom long (« … Sàrl » / « … Sàrl - Médecins vétérinaires »). La valeur de la 3.8 est reprise sans barré ni compte.
- */
-export function varianteDeFournisseur(avant: unknown, apres: unknown): boolean {
-  const a = motsDe(avant), b = motsDe(apres);
-  if (!a || !b) return false;
-  if (ressemblanceNoms(a, b) >= SEUIL_VARIANTE_NOM) return true;
-  const [court, long] = a.length <= b.length ? [a, b] : [b, a];
-  return court.length >= 4 && ` ${long} `.includes(` ${court} `);
-}
+export { varianteDeFournisseur };
 /**
  * v3-4 (vision v3, doc2) : le règlement de la 1re lecture n'est une LECTURE que si elle a lu une preuve (payé, à payer) ou un type qui le décide (pro-forma, devis, avoir). Sinon « Payé » est
  * la supposition de `scannedPayment` (date du document passée) : la 3.8 qui lit « à payer » complète, elle ne corrige rien ; aucun barré.

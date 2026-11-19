@@ -137,7 +137,7 @@ describe('LR1-7 réserve : un prix que le trio écrit (prix vidé, 2 × ? = 50) 
     await waitFor(() => expect(champ().value).toBe('12,50'));
     const marque = champ().closest<HTMLElement>('[data-dp-prix-deduit]');
     expect(marque).not.toBeNull();
-    expect(marque!.getAttribute('title')).toMatch(/prix déduit : montant ÷ quantité/);
+    expect(marque!.getAttribute('title')).toMatch(/prix déduit : 50,00 ÷ 4 \(montant ÷ quantité/);
     await act(async () => { fireEvent.focus(champ()); fireEvent.change(champ(), { target: { value: '24' } }); fireEvent.blur(champ()); });
     expect(champ().closest('[data-dp-prix-deduit]')).toBeNull();
     expect(l1().querySelector('[data-dp-prix]')!.getAttribute('data-dp-prix-deduit')).toBeNull();
