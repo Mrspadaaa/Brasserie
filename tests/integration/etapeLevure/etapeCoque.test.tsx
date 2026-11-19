@@ -51,11 +51,12 @@ describe('Ma levure (l5b)', () => {
     expect(esters.getAttribute('data-genre')).toBe('jauge');                                       // « Low » de la fiche Fermentis : un niveau publié
     expect(esters.textContent).toContain('faible');
     // Les valeurs viennent de l'API du domaine (d1) : on ne fige pas ses données, on vérifie la règle d'affichage. Ce que la source ne dit pas se touche pour chercher.
-    const genres = [...document.querySelectorAll('[data-axe]')].map(e => e.getAttribute('data-genre'));
+    // 19.11 : les inconnues se groupent en une rangée (une recherche) ; chacune garde son nom (`data-axe-inconnu`).
+    const genres = [...document.querySelectorAll('[data-axe], [data-axe-inconnu]')].map(e => e.getAttribute('data-genre') ?? 'inconnu');
     expect(genres).toHaveLength(5);
     expect(genres.every(g => ['jauge', 'mot', 'nombre', 'inconnu'].includes(g!))).toBe(true);
-    expect(screen.getAllByRole('button', { name: /non documenté : chercher la donnée/ }).length).toBeGreaterThanOrEqual(genres.filter(g => g === 'inconnu').length);
-    expect(document.querySelector('[data-axe="thiols"]')!.getAttribute('data-genre')).toBe('inconnu');   // US-05 : aucun fait de biotransformation dans le dépôt
+    expect(screen.getAllByRole('button', { name: /non documentés? : chercher/ })).toHaveLength(1);
+    expect(document.querySelector('[data-axe-inconnu="thiols"]')).toBeTruthy();   // US-05 : aucun fait de biotransformation dans le dépôt
   });
 
   // Défaut en ligne (09.11, « ZZ TEST — Recette ») : « ? dose à saisir » au lieu de la plage de sachets ; qty 0 enregistrée = inconnue, jamais 0.
@@ -81,7 +82,7 @@ describe('Ma levure (l5b)', () => {
   it('« ⌕ non documenté » lance la recherche de la fiche : « recherche… · 1/20 » dans la cellule, puis la valeur « à confirmer », sans quitter Ma levure', async () => {
     const { lookup, rendre } = recherchePilotee();
     render(<Banc recherche={lookup} />);
-    fireEvent.click(screen.getAllByRole('button', { name: /thiols non documenté/ })[0]);
+    fireEvent.click(screen.getAllByRole('button', { name: /thiols.*non documentés?/ })[0]);
     expect(lookup).toHaveBeenCalledOnce();
     expect(lookup.mock.calls[0][0]).toMatchObject({ name: 'SafAle US-05', hopIndexId: 'fermentis-us05' });
     const cellule = document.querySelector('[data-axe="thiols"]')!;
@@ -93,14 +94,14 @@ describe('Ma levure (l5b)', () => {
     expect(cellule.textContent).toContain('élevée');
     expect(cellule.textContent).toContain('à confirmer');
     expect(document.querySelector('[data-vue="ma-levure"]')).toBeTruthy();
-    expect(document.querySelector('[data-repli="fiche"]')!.hasAttribute('open')).toBe(false);          // plus de repli ouvert à la place de la recherche
+    expect(document.querySelector('[data-repli="fiche"]')?.hasAttribute('open') ?? false).toBe(false);          // plus de repli ouvert à la place de la recherche
   });
 
   // Verdict final L-a et L-b : texte court dans la cellule (détail dans le title), et le nom de la donnée devant l'état.
   it('issue d’échec : « IA indisponible · OK » dans la cellule, le détail dans le title, jamais une phrase coupée', async () => {
     const { lookup, rendre } = recherchePilotee();
     render(<Banc recherche={lookup} />);
-    fireEvent.click(screen.getAllByRole('button', { name: /thiols non documenté/ })[0]);
+    fireEvent.click(screen.getAllByRole('button', { name: /thiols.*non documentés?/ })[0]);
     await rendre({ ok: false, error: 'Service IA momentanément indisponible.' });
     const cellule = document.querySelector('[data-axe="thiols"] [data-recherche="erreur"]')!;
     expect(cellule.textContent).toContain('IA indisponible');
@@ -124,7 +125,7 @@ describe('Ma levure (l5b)', () => {
     const { lookup, rendre } = recherchePilotee();
     const onRetenir = vi.fn(() => true);
     render(<Banc recherche={lookup} onRetenir={onRetenir} />);
-    fireEvent.click(screen.getAllByRole('button', { name: /thiols non documenté/ })[0]);
+    fireEvent.click(screen.getAllByRole('button', { name: /thiols.*non documentés?/ })[0]);
     await rendre({ ok: true, facts: { technicalFacts: [{ key: 'biotransformation', reported: 'élevée', origin: 'ai' } as never] } });
     fireEvent.click(within(document.querySelector('[data-axe="thiols"]')!).getByRole('button', { name: 'Retenir' }));
     expect(onRetenir).toHaveBeenCalledWith(expect.objectContaining({ key: 'biotransformation', reported: 'élevée' }));
@@ -135,7 +136,7 @@ describe('Ma levure (l5b)', () => {
     window.localStorage.setItem(cleCompte(), String(PLAFOND_JOUR));
     const { lookup } = recherchePilotee();
     render(<Banc recherche={lookup} />);
-    fireEvent.click(screen.getAllByRole('button', { name: /thiols non documenté/ })[0]);
+    fireEvent.click(screen.getAllByRole('button', { name: /thiols.*non documentés?/ })[0]);
     expect(lookup).not.toHaveBeenCalled();
     expect(document.querySelector('[data-axe="thiols"]')!.textContent).toContain(PLAFOND_JOUR + '/' + PLAFOND_JOUR);
   });
@@ -252,9 +253,11 @@ describe('le segment et les trois autres vues', () => {
 describe('rien ne se perd : chaque fonction de l’ancienne étape a son repli', () => {
   it('stock et saisie libre, produit exact et offres, fiche, dose et starter, objectifs, sources, atelier complet', async () => {
     render(<Banc />);
-    const attendus = ['stock', 'produit', 'fiche', 'dose', 'objectifs', 'sources', 'atelier'];
-    expect([...document.querySelectorAll('[data-repli]')].map(d => d.getAttribute('data-repli'))).toEqual(attendus);
+    // 19.11 : sous la conduite, la dose puis « Plus », qui range les six autres (rien n'est perdu, un toucher de plus).
+    expect([...document.querySelectorAll('[data-repli]')].map(d => d.getAttribute('data-repli'))).toEqual(['dose', 'plus']);
     const ouvre = (id: string) => { const d = document.querySelector(`[data-repli="${id}"]`) as HTMLDetailsElement; d.open = true; fireEvent(d, new Event('toggle')); };
+    ouvre('plus');
+    expect([...document.querySelectorAll('[data-repli]')].map(d => d.getAttribute('data-repli'))).toEqual(['dose', 'plus', 'stock', 'produit', 'fiche', 'objectifs', 'sources', 'atelier']);
     ouvre('stock');
     expect(await screen.findByText('éditeur stock (test)')).toBeTruthy();
     ouvre('fiche');

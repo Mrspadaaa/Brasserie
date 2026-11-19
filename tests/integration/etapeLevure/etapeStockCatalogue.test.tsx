@@ -53,7 +53,7 @@ describe('Ma levure : un article du stock relié à sa fiche du catalogue', () =
   it('un article sans correspondance sûre garde sa carte honnête : « ? » et « non documenté », jamais une fiche approchée', () => {
     render(<Banc depart={recetteDuStock(maison)} stockItems={[maison]} />);
     expect(valeurFg()).toBe('?');
-    expect(carte().querySelectorAll('.lv-ev[data-genre="inconnu"]').length).toBe(5);
+    expect(carte().querySelectorAll('[data-axe-inconnu]').length).toBe(5);                        // 19.11 : en une rangée, une seule recherche
   });
 
   it('une puce par levure : Verdant du stock ne s’affiche pas une seconde fois comme levure proposée', () => {

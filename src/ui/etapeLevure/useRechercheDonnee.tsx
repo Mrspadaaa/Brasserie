@@ -38,7 +38,8 @@ export const specDeLevure = (levure: YeastReference): YeastSpec =>
 
 export interface CrochetRecherche {
   etat: (levureId: string, axe: string) => EtatRecherche | undefined;
-  chercher: (levure: YeastReference, axe: string, spec?: YeastSpec) => void;
+  /** Un axe, ou plusieurs d'un seul toucher (19.11 : les données non documentées d'une levure, groupées) : une seule recherche, comptée une fois. */
+  chercher: (levure: YeastReference, axe: string | readonly string[], spec?: YeastSpec) => void;
   ecarter: (levureId: string, axe: string) => void;
   retenir: (levureId: string, axe: string) => void;
 }
@@ -48,19 +49,24 @@ export function useRechercheDonnee({ lookup = rechercheParDefaut, onRetenir }: {
   const [etats, setEtats] = useState<Record<string, EtatRecherche>>({});
   const enCours = useRef(new Set<string>());
   const mettre = useCallback((cle: string, etat?: EtatRecherche) => setEtats(s => { const { [cle]: _, ...reste } = s; return etat ? { ...reste, [cle]: etat } : reste; }), []);
-  const chercher = useCallback((levure: YeastReference, axe: string, spec?: YeastSpec) => {
-    const cle = cleDe(levure.id, axe);
-    if (enCours.current.has(cle)) return;
+  const chercher = useCallback((levure: YeastReference, axe: string | readonly string[], spec?: YeastSpec) => {
+    // La fiche entière revient d'une recherche : plusieurs axes d'un toucher ne coûtent qu'une recherche du plafond (19.11).
+    const axes = (typeof axe === 'string' ? [axe] : [...axe]).filter(a => !enCours.current.has(cleDe(levure.id, a)));
+    if (!axes.length) return;
+    const cles = axes.map(a => cleDe(levure.id, a));
     const deja = lireCompte();
-    if (deja >= PLAFOND_JOUR) { mettre(cle, { statut: 'plafond', n: deja, court: courtDe('plafond', '', deja), message: `${deja}/${PLAFOND_JOUR} recherches aujourd’hui : reprends demain, ou saisis la valeur à la main.` }); return; }
+    if (deja >= PLAFOND_JOUR) { for (const cle of cles) mettre(cle, { statut: 'plafond', n: deja, court: courtDe('plafond', '', deja), message: `${deja}/${PLAFOND_JOUR} recherches aujourd’hui : reprends demain, ou saisis la valeur à la main.` }); return; }
     const n = deja + 1;
-    ecrireCompte(n); enCours.current.add(cle);
-    mettre(cle, { statut: 'cours', n });
+    ecrireCompte(n); for (const cle of cles) { enCours.current.add(cle); mettre(cle, { statut: 'cours', n }); }
     lookup(spec ?? specDeLevure(levure)).then(rep => {
-      if (rep.ok === false) { mettre(cle, { statut: 'erreur', n, court: courtDe('erreur', (rep as { error: string }).error), message: (rep as { error: string }).error }); return; }
-      const fait = ((rep as { facts: { technicalFacts?: YeastTechnicalFact[] } }).facts.technicalFacts ?? []).find(f => (CLES[axe] ?? []).includes(f.key));
-      mettre(cle, fait ? { statut: 'a-confirmer', n, texte: fait.reported, source: fait.source, fait } : { statut: 'rien', n, court: courtDe('rien'), message: 'Rien de publié sur cette donnée.' });
-    }, () => mettre(cle, { statut: 'erreur', n, court: courtDe('erreur', 'interrompue'), message: 'Recherche interrompue. Tu peux réessayer.' })).finally(() => enCours.current.delete(cle));
+      if (rep.ok === false) { for (const cle of cles) mettre(cle, { statut: 'erreur', n, court: courtDe('erreur', (rep as { error: string }).error), message: (rep as { error: string }).error }); return; }
+      const faits = (rep as { facts: { technicalFacts?: YeastTechnicalFact[] } }).facts.technicalFacts ?? [];
+      axes.forEach((a, i) => {
+        const fait = faits.find(f => (CLES[a] ?? []).includes(f.key));
+        mettre(cles[i], fait ? { statut: 'a-confirmer', n, texte: fait.reported, source: fait.source, fait } : { statut: 'rien', n, court: courtDe('rien'), message: 'Rien de publié sur cette donnée.' });
+      });
+    }, () => { for (const cle of cles) mettre(cle, { statut: 'erreur', n, court: courtDe('erreur', 'interrompue'), message: 'Recherche interrompue. Tu peux réessayer.' }); })
+      .finally(() => { for (const cle of cles) enCours.current.delete(cle); });
   }, [lookup, mettre]);
   const etat = useCallback((levureId: string, axe: string) => etats[cleDe(levureId, axe)], [etats]);
   const ecarter = useCallback((levureId: string, axe: string) => mettre(cleDe(levureId, axe)), [mettre]);
