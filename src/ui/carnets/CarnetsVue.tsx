@@ -21,7 +21,7 @@ import { consequenceApercu, critereQuiTranche, passe, placesDe, tableau as table
 import { analyserLigne, analyserTexte, decouper, genreLocal, jetons, normaliser, objetDe, PUCES_VA_DANS, vaDansDe, type LigneLocale, type RubriqueVaDans } from '../../domain/carnets/analyseLocale';
 import { aucunCarnetNEnParle, carnetProche, rattacher } from '../../domain/carnets/rattacher';
 import { doublonsDe, notesEnDouble } from '../../domain/carnets/doublons';
-import type { CarnetPourIA, LigneCarnet } from '../../domain/carnets/ia';
+import { liensDuTexte, nombresDe, type CarnetPourIA, type LigneCarnet } from '../../domain/carnets/ia';
 import { aidesCourantes, comportementSimule, modeCarnet, type AidesCarnet, type ModeCarnetIA } from '../../config/carnetIA';
 import { appelsSimules, creerRangement, planVrac, prixEcrits, retourDuRangement, versLignesAnnoncees, type AppelsIA, type EtatRangement, type PlanVrac, type Rangement as Envoi } from './rangement';
 import { ListeCarnets } from './ListeCarnets';
@@ -148,6 +148,34 @@ export function ligneBrute(texteIA: string, brutes: readonly string[]): number {
   let best = -1, score = 0;
   brutes.forEach((b, i) => { const s = jetons(b).filter(m => js.has(m)).length; if (s > score) { score = s; best = i; } });
   return best;
+}
+
+const LIEN_BRUT = /\b(?:https?:\/\/|www\.)[^\s<>"'«»]+|\b[a-z0-9-]+(?:\.[a-z0-9-]+)*\.(?:ch|com|de|fr|it|at|eu|net|org|shop|store)\/[^\s<>"'«»]*/gi;
+const formeLien = (u: string) => u.trim().toLowerCase().replace(/^https?:\/\//, '').replace(/^www\./, '').replace(/[/#?]+$/, '');
+/**
+ * PCN-188 (test en ligne 4) : les morceaux d'une note en vrac (ses lignes, coupées aux « , » et « ; ») que la réponse de l'IA ne reprend
+ * pas : plus de la moitié de leurs mots absents de toutes ses lignes (texte, titre, carnet neuf, grandeur), ou un de leurs nombres absent.
+ * Une reformulation (« voir » → « Vérifier s'il existe avec double paroi ») n'est donc pas une perte.
+ */
+export function morceauxPerdus(txt: string, lignes: readonly LigneCarnet[]): { brute: number; texte: string }[] {
+  const dits = lignes.map(l => [l.texte, l.titre, l.carnetNeuf, l.caracteristique?.nom, l.caracteristique?.unite, l.unite].filter(Boolean).join(' ')).join(' \n ');
+  const mots = new Set(jetons(dits));
+  const nombres = [...nombresDe(dits), ...lignes.flatMap(l => [l.quantite, l.prixCentimes !== undefined ? l.prixCentimes / 100 : undefined])
+    .filter((n): n is number => n !== undefined)];
+  const urls = new Set(lignes.flatMap(l => (l.url ? [formeLien(l.url)] : [])));
+  const perdus: { brute: number; texte: string }[] = [];
+  txt.split(/\r?\n/).map(s => s.trim()).filter(Boolean).forEach((b, brute) => {
+    for (const morceau of b.replace(/^\s*ZZ TEST\s*[—–-]\s*/i, '').split(/\s*[,;]\s+/)) {
+      /* un lien se juge entier (repris en « url » ou non), jamais par les mots et numéros de son adresse */
+      const lienPerdu = liensDuTexte(morceau).some(u => !urls.has(formeLien(u)));
+      const sansLien = morceau.replace(LIEN_BRUT, ' ');
+      const ms = jetons(sansLien);
+      const motsPerdus = ms.filter(x => !mots.has(x)).length;
+      const nombrePerdu = nombresDe(sansLien).some(n => !nombres.some(x => Math.abs(x - n) < 0.005));
+      if (morceau.trim() && ((ms.length && motsPerdus * 2 > ms.length) || nombrePerdu || lienPerdu)) perdus.push({ brute, texte: morceau.trim() });
+    }
+  });
+  return perdus;
 }
 
 export function destinationDans(texte: string, ouvert: CarnetDoc, carnets: readonly CarnetDoc[]): { carnetId: string; titre: string } {
@@ -657,12 +685,21 @@ export function CarnetsVue(p: CarnetsVueProps) {
           const i = sansIdee.indexOf(l);
           return (i >= 0 ? an.lignes[idx[i]]?.dest : undefined) ?? an.lignes[0].dest;
         };
+        const brutes = txt.split(/\r?\n/).map(s => s.trim()).filter(Boolean);
+        const destParBrute = new Map<number, Destination>();
         aRanger = lignes.flatMap(l => {
           const dest = connu(l.carnetId) ? { carnetId: l.carnetId! } : l.carnetNeuf ? versNeufIA(l.carnetNeuf) : l.sorte === 'idee' ? null : annonceDe(l);
+          const i = ligneBrute(`${l.texte} ${l.titre ?? ''}`, brutes);
+          if (dest && i >= 0 && !destParBrute.has(i)) destParBrute.set(i, dest);
           return dest ? [depuisIA(l, dest)] : [];
         });
+        /* PCN-188 (test en ligne 4) : un morceau de la note que l'IA n'a repris nulle part (« voir s'il existe avec double paroi », « 60 L »)
+           reste, tel que l'analyse locale le lit, dans le carnet où va sa ligne ; aucune ligne du brasseur ne se perd. */
+        for (const m of morceauxPerdus(txt, lignes)) {
+          const dest = destParBrute.get(m.brute) ?? an.lignes[Math.max(0, ligneBrute(m.texte, an.lignes.map(x => x.texte)))]?.dest ?? an.lignes[0].dest;
+          for (const l of analyserTexte(m.texte)) aRanger.push(depuisLocale(l, dest));
+        }
         /* Paquet 1, PCN-186 (test en ligne 3) : chaque carnet neuf de l'IA cite ses lignes de la note, pas la note entière */
-        const brutes = txt.split(/\r?\n/).map(s => s.trim()).filter(Boolean);
         for (const [cle, d] of neufsIA) {
           const siennes = lignes.filter(l => l.carnetNeuf && normaliser(prefixeDe(txt) && !/^\s*ZZ TEST/i.test(l.carnetNeuf) ? `${prefixeDe(txt)}${l.carnetNeuf}` : l.carnetNeuf) === cle);
           const idx = new Set(siennes.map(l => ligneBrute(l.texte, brutes)).filter(i => i >= 0));

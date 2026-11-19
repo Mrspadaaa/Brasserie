@@ -330,7 +330,9 @@ export function CarnetOuvert(p: CarnetOuvertProps) {
       {menu && (
         <div ref={refMenu} className="cn-feuille cn-menu" role="menu">
           <button type="button" role="menuitem" className="cn-feuille-item" onClick={() => { setMenu(false); p.onRenommer(); }}><Pencil size={18} aria-hidden /> Renommer</button>
-          <button type="button" role="menuitem" className="cn-feuille-item cn-rouge" onClick={() => { setMenu(false); p.onSupprimer(); }}>Supprimer l'idée</button>
+          <button type="button" role="menuitem" className="cn-feuille-item cn-rouge" onClick={() => { setMenu(false); p.onSupprimer(); }}>
+            {/* PCN-189 (test en ligne 4) : un carnet choisi n'est plus une idée */}
+            {c.status === 'validated' ? 'Supprimer le carnet' : "Supprimer l'idée"}</button>
         </div>
       )}
       <div className="cn-titre-ligne">

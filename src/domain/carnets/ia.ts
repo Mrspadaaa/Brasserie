@@ -210,6 +210,35 @@ export function lireReponse(brut: unknown, ctx: ContexteGarde): LigneCarnet[] | 
   const texteNormal = sansAccents(ctx.texte);
   const origine = ctx.origine ?? 'ia';
   const sortie: LigneCarnet[] = [];
+  /*
+   * Test en ligne 4 (PCN-183, 187, 190) : écrite depuis un carnet ouvert, une idée est un AUTRE carnet quand son titre ne partage aucun mot
+   * avec celui de l'ouvert. L'IA l'a rendue sans carnet (« idée, Moulin à malt », envoi 6 depuis le Fermenteur), ou avec l'id de l'ouvert ;
+   * le repli « dans depuis » en faisait le carnet ouvert lui-même, puis l'écran la jetait et gardait la phrase brute en note. Elle devient
+   * le carnet neuf qu'elle nomme ; les lignes sans carnet du même message qui parlent d'elle la suivent (« 20 fûts » ne devient pas un
+   * critère de la Pompe). Un titre proposé (`titrePropose`) reste un renommage de l'ouvert.
+   */
+  const ouvert = ctx.depuis ? parId.get(ctx.depuis) : undefined;
+  const motsOuvert = new Set(jetons(ouvert?.titre ?? ''));
+  const ideesAilleurs = new Map<object, { titre: string; mots: Set<string>; nombres: number[] }>();
+  if (ouvert) for (const l of lignes) {
+    if (!l || typeof l !== 'object') continue;
+    const r = l as Record<string, unknown>;
+    const texte = chaine(r.texte);
+    if (r.sorte !== 'idee' || !texte || chaine(r.carnetNeuf, TITRE_MAX) || chaine(r.titrePropose, 200)) continue;
+    const id = chaine(r.carnetId, 120);
+    if (id && id !== ouvert.id && parId.has(id)) continue;
+    const titre = chaine(r.titre, TITRE_MAX) ?? texte.slice(0, TITRE_MAX);
+    const mots = jetons(titre);
+    if (!mots.length || mots.some((m) => motsOuvert.has(m))) continue;
+    ideesAilleurs.set(l, { titre, mots: new Set([...mots, ...jetons(texte)]), nombres: nombresDe(texte) });
+  }
+  /** La seule idée neuve du message dont une ligne sans carnet parle (un mot ou un nombre en commun) ; sinon aucune. */
+  const ideeDe = (texte: string): string | undefined => {
+    if (ideesAilleurs.size !== 1) return undefined;
+    const [i] = ideesAilleurs.values();
+    const parle = jetons(texte).some((m) => i.mots.has(m)) || nombresDe(texte).some((n) => contient(i.nombres, n));
+    return parle ? i.titre : undefined;
+  };
 
   for (const l of lignes) {
     if (!l || typeof l !== 'object') continue;
@@ -224,10 +253,12 @@ export function lireReponse(brut: unknown, ctx: ContexteGarde): LigneCarnet[] | 
 
     // Rangement : un id connu, sinon une idée neuve (jamais un id inventé).
     const idDemande = chaine(r.carnetId, 120);
-    const connu = idDemande !== undefined && parId.has(idDemande);
+    const ailleurs = ideesAilleurs.get(l as object);
+    const connu = idDemande !== undefined && parId.has(idDemande) && !ailleurs;
     if (connu) ligne.carnetId = idDemande;
+    else if (ailleurs) ligne.carnetNeuf = ailleurs.titre;
     else {
-      const neuf = chaine(r.carnetNeuf, TITRE_MAX) ?? (idDemande ? (titre ?? texte).slice(0, TITRE_MAX) : undefined);
+      const neuf = chaine(r.carnetNeuf, TITRE_MAX) ?? (idDemande ? (titre ?? texte).slice(0, TITRE_MAX) : undefined) ?? ideeDe(texte);
       if (neuf) ligne.carnetNeuf = neuf;
       else if (ctx.depuis && parId.has(ctx.depuis)) ligne.carnetId = ctx.depuis;
     }
