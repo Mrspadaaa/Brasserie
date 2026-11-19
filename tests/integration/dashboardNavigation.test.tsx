@@ -161,7 +161,7 @@ describe('Direct batch navigation from the dashboard', () => {
 
     view.rerender(<ProductionTab {...props} openBatchRequest={request} />);
     let dialog = await screen.findByRole('dialog', { name: oldBatch.name });
-    expect(within(dialog).getByLabelText('Densité initiale')).toHaveValue('1.050');
+    expect(within(dialog).getByLabelText('Densité initiale')).toHaveValue('1,050');
     expect(handled).toHaveBeenCalledTimes(1);
     fireEvent.click(within(dialog).getByRole('button', { name: 'Carnet', exact: true }));
     fireEvent.click(within(dialog).getAllByRole('button', { name: 'Fermer', exact: true })[0]);
@@ -176,7 +176,7 @@ describe('Direct batch navigation from the dashboard', () => {
 
     view.rerender(<ProductionTab {...props} batches={[updated, finiBatch, currentBatch]} openBatchRequest={{ id: oldBatch.id, at: 2 }} />);
     dialog = await screen.findByRole('dialog', { name: updated.name });
-    expect(within(dialog).getByLabelText('Densité initiale')).toHaveValue('1.052');
+    expect(within(dialog).getByLabelText('Densité initiale')).toHaveValue('1,052');
     expect(within(dialog).getByRole('button', { name: 'Mesures', exact: true })).toHaveAttribute('aria-pressed', 'true');
     expect(handled).toHaveBeenCalledTimes(2);
     expect(props.onOpenBrewDay).not.toHaveBeenCalled();
@@ -201,7 +201,7 @@ describe('Direct batch navigation from the dashboard', () => {
 
     const updated = { ...oldBatch, name: 'Nom synchronisé', og: '1.056' };
     view.rerender(<React.StrictMode><ProductionTab {...props} batches={[updated, currentBatch]} /></React.StrictMode>);
-    expect(within(screen.getByRole('dialog', { name: updated.name })).getByLabelText('Densité initiale')).toHaveValue('1.056');
+    expect(within(screen.getByRole('dialog', { name: updated.name })).getByLabelText('Densité initiale')).toHaveValue('1,056');
     expect(handled).toHaveBeenCalledTimes(1);
   });
 
@@ -232,7 +232,7 @@ describe('Direct batch navigation from the dashboard', () => {
     fireEvent.click(screen.getByRole('button', { name: 'Fermer la saisie rapide' }));
     fireEvent.click(open);
     let dialog = await screen.findByRole('dialog', { name: oldBatch.name });
-    expect(within(dialog).getByLabelText('Densité initiale')).toHaveValue('1.050');
+    expect(within(dialog).getByLabelText('Densité initiale')).toHaveValue('1,050');
     fireEvent.click(within(dialog).getAllByRole('button', { name: 'Fermer', exact: true })[0]);
     // L'action de l'écran reste la première du menu du bouton flottant.
     fireEvent.click(screen.getByRole('button', { name: 'Actions rapides' }));
@@ -247,7 +247,7 @@ describe('Direct batch navigation from the dashboard', () => {
     fireEvent.click(within(navigation).getByRole('button', { name: 'Bord', exact: true }));
     fireEvent.click(screen.getByRole('button', { name: new RegExp(oldBatch.name) }));
     dialog = screen.getByRole('dialog', { name: oldBatch.name });
-    expect(within(dialog).getByLabelText('Densité initiale')).toHaveValue('1.050');
+    expect(within(dialog).getByLabelText('Densité initiale')).toHaveValue('1,050');
     /* La période de l'app se garde en texte daté (ET-PER) : « this-month » relu au 12.09.2026 devient « month-2026-09 » ; elle n'a pas été élargie. */
     expect(StorageService.getUiState('app_global_time_filter', '')).toBe('month-2026-09');
   });

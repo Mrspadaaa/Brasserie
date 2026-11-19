@@ -143,7 +143,7 @@ describe('AM 5 · OG et FG bornées', () => {
     typeBlur(og(), '5');
     expect(screen.getByRole('alert')).toBeInTheDocument();
     fireEvent.click(screen.getByRole('button', { name: 'Annuler la saisie' }));
-    expect(og()).toHaveValue('1.050');
+    expect(og()).toHaveValue('1,050');
     expect(StorageService.updateBatch).not.toHaveBeenCalled();
   });
 

@@ -35,9 +35,9 @@ describe('Feuille Mesures', () => {
 
   it('BR-115 : un volume conditionné au-dessus du volume brassé est signalé, sans être effacé', () => {
     render(<BatchDetailSheet batch={base({ status: 'conditionne', volumeBrewedL: 19.8, volumePackagedL: 57.9 })} initialSection="measurements" onClose={vi.fn()} />);
-    // Dans le panneau « Contenants » de la fiche (visible), et dans « Corriger les mesures ».
+    // Une seule fois (k1 n° 4) : dans le panneau « Contenants » de la fiche, plus sous « Corriger les mesures ».
     expect(document.querySelector('[data-conditionne-trop]')?.textContent).toMatch(/57,9 L pour 19,8 L brassés/);
-    expect(screen.getAllByText(/57,9 L conditionnés pour 19,8 L brassés/).length).toBeGreaterThan(0);
+    expect(screen.queryByText(/57,9 L conditionnés pour 19,8 L brassés/)).toBeNull();
     expect(screen.getAllByText('57,9 L').length).toBeGreaterThan(0);
   });
 

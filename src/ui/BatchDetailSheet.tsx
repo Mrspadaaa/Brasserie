@@ -267,6 +267,10 @@ export const BatchDetailSheet: React.FC<BatchDetailSheetProps> = ({
       : { abv: abvFromGravities(pair.og, pair.fg) !== null ? `${abvFromGravities(pair.og, pair.fg)}%` : '' };
     save({ [field]: text, ...abvPatch });
   };
+  // k1 n° 1 : une densité refusée reste dans son champ, jamais dans les résumés ni la courbe : eux gardent la dernière valeur enregistrée.
+  const enregistre: Batch = gravityAlert ? { ...draft, [gravityAlert.field]: batch[gravityAlert.field] } : draft;
+  // k1 n° 3 : une densité enregistrée au point (« 1.012 ») se lit à la virgule, comme le message qui l'exige ; la saisie en cours n'est pas réécrite d'un autre signe que le point.
+  const auPoint = (texte: string | undefined) => (texte ?? '').replace(/^(\d)\.(\d*)$/, (_tout, entier: string, decimales: string) => `${entier},${decimales}`);
   const gravityText = (alert: NonNullable<typeof gravityAlert>) => alert.problem === 'unreadable'
     ? 'Valeur illisible : tape un nombre, par exemple 1,048.'
     : gravityMessage(alert.problem, alert.value!, alert.field === 'fg' ? og : null, alert.keepable, alert.field === 'og' ? fg : null);
@@ -562,7 +566,7 @@ export const BatchDetailSheet: React.FC<BatchDetailSheetProps> = ({
                 ? <CurseurFg batch={draft} valeur={fgMilli ?? fgDepart} onValeur={setFgMilli} onConfirmer={() => confirmFg(fgMilli ?? fgDepart)} erreur={fgError} />
                 : <TuilesFg batch={draft} onConditionner={openLadder} />)}
               {draft.status === 'conditionne' && <Contenants batch={draft} futs={(draft.packaging?.kegIds ?? []).map(id => StorageService.getStocks().kegs.find(k => k.id === id)).filter((k): k is import('../types').KegItem => !!k)} onCorriger={() => setPackaging({ target: null })} />}
-              <CarteDensite batch={draft} />
+              <CarteDensite batch={enregistre} />
               {draft.status === 'garde' && <LignesCuve batch={draft} onReleve={ouvrirReleve} onVolume={() => setPackaging({ target: null })} />}
               {draft.status === 'conditionne' && <Panneau className="p-2.5"><div className="flex items-center justify-between"><span className="text-sm font-semibold text-cave-50">Étape</span><Cible onClick={openLadder} aria-label="Ouvrir l’échelle des étapes">Étape <ChevronRight size={14} aria-hidden="true" /></Cible></div><EtapesPills courante={MARCHES.indexOf('conditionne')} /></Panneau>}
               {/* Maquette lot/v1 (16.11) : le lot se ramifie vers chaque client ; les gestes du menu « Plus » (Rentrer, Livrer) s'y jouent. */}
@@ -598,7 +602,7 @@ export const BatchDetailSheet: React.FC<BatchDetailSheetProps> = ({
                       className={`${field} font-mono`}
                       inputMode="decimal"
                       placeholder="À mesurer"
-                      value={draft.og || ''}
+                      value={auPoint(draft.og)}
                       onChange={(e) => setDraft({ ...draft, og: e.target.value })}
                       aria-invalid={gravityAlert?.field === 'og' || undefined}
                       onBlur={() => saveGravity('og')}
@@ -627,7 +631,7 @@ export const BatchDetailSheet: React.FC<BatchDetailSheetProps> = ({
                       className={`${field} font-mono`}
                       inputMode="decimal"
                       placeholder="Non confirmée"
-                      value={draft.fg || ''}
+                      value={auPoint(draft.fg)}
                       onChange={(e) => setDraft({ ...draft, fg: e.target.value })}
                       aria-invalid={gravityAlert?.field === 'fg' || undefined}
                       onBlur={() => saveGravity('fg')}
@@ -698,10 +702,11 @@ export const BatchDetailSheet: React.FC<BatchDetailSheetProps> = ({
               </div>
               {needsPackagingVolume(draft) && <p role="status" className="text-xs text-attention">Volume conditionné manquant : ce lot échappe au calcul de la taxe sur la bière et au bilan de pertes.</p>}
               {/* BR-115, BE-86 : un brassin ne donne pas plus de bière qu'il n'en contenait. Une valeur douteuse est signalée, jamais effacée. */}
-              {draft.volumePackagedL != null && packagingLimitL(draft) !== null && draft.volumePackagedL > packagingLimitL(draft)! + 1e-9 &&
+              {/* k1 n° 4 : un brassin conditionné le dit déjà dans sa carte « Contenants » ; ici seulement quand cette carte n'est pas à l'écran (une alerte, pas deux). */}
+              {draft.status !== 'conditionne' && draft.volumePackagedL != null && packagingLimitL(draft) !== null && draft.volumePackagedL > packagingLimitL(draft)! + 1e-9 &&
                 <p role="status" className="text-xs text-attention">{nombreFr(draft.volumePackagedL, 1)} L conditionnés pour {nombreFr(packagingLimitL(draft)!, 1)} L brassés : vérifie le volume conditionné ou les fûts.</p>}
               {/* Une densité en attente de confirmation n'est pas encore une mesure : la courbe garde la valeur enregistrée. */}
-              <FermentationCurveChart batch={gravityAlert ? { ...draft, [gravityAlert.field]: batch[gravityAlert.field] } : draft} />
+              <FermentationCurveChart batch={enregistre} />
               {draft.brewDay?.pitchedAt != null && <p className="text-xs text-cave-200">Levure ajoutée le {new Date(draft.brewDay.pitchedAt).toLocaleString('fr-CH')}{draft.brewDay.pitchTemperatureC != null ? ` à ${nombreFr(draft.brewDay.pitchTemperatureC, 1)} °C` : ' · température non relevée'}.</p>}
               {awaitingPitch && <p role="status" className="text-sm text-water">En attente d’ensemencement. Reprends le jour de brassage depuis le carnet des brassins.</p>}
               {draft.recipeSnapshot && draft.brewDay && <BrewSystemFeedback recipe={draft.recipeSnapshot} state={draft.brewDay}/>}

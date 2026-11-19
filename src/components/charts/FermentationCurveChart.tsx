@@ -13,17 +13,22 @@ import { formatDecimal } from '../../ui/numericInput';
 import { fermentationReadings } from '../../domain/fermentationReadings';
 import { densityAxisDomain } from '../../domain/gravityBounds';
 import { nombreFr } from '../../domain/nombreAffiche';
+import { releves } from '../../ui/production/fiche/ficheModel';
 
 export function FermentationCurveChart({ batch }: { batch: Batch }) {
   const { points, target, latest, attenuation } = fermentationReadings(batch);
+  const nReleves = releves(batch).length;
   return (
     <section className="panel p-4 space-y-3" aria-label="Courbe des densités mesurées">
       <div className="flex justify-between items-start gap-3">
         <div>
           <h3 className="text-base font-semibold text-cave-50">Densité au fil du brassin</h3>
           <p className="text-sm text-cave-400">
-            {points.length} mesure{points.length > 1 ? 's' : ''} enregistrée
-            {points.length > 1 ? 's' : ''}
+            {/* k1 n° 2 : le même compte de relevés que le résumé « Densité » de la fiche (le journal), jamais un second compte qui y ajoute l'OG et la FG. */}
+            {points.length
+              ? [points.some((p) => p.name === 'OG mesurée') ? 'OG' : null, points.some((p) => p.name === 'FG mesurée') ? 'FG' : null,
+                  `${nReleves} relevé${nReleves > 1 ? 's' : ''}`].filter(Boolean).join(' · ')
+              : 'Aucune mesure enregistrée'}
           </p>
         </div>
         {latest !== undefined && (
