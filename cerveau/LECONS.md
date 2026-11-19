@@ -69,7 +69,7 @@ Erreurs de méthode déjà commises, cause, remède. Chargé par CLAUDE.md : rel
 ### L12 — Un effet doit se voir, et une capture non regardée ne prouve rien
 - Erreur : 19.10, loupe p02 : 19 à 20 px sous le doigt, 8 à 13 au loin. 02.11, Bauhaus : « MAIS QU'EST-CE QUI A ÉTÉ TESTÉ ».
 - Cause : aucune force minimale exigée, captures non ouvertes.
-- Faire : « sous le doigt / au loin » ×3 au moins. Capture ouverte avant OK, zone en plein format. Avant de déployer : une pièce de chaque genre, chaque état touché, deux thèmes, 390 tactile en défilant et 1280, côte à côte avec sa maquette, question ouverte « combien et quels problèmes ? », critique puis pilote (D342). (16.11 : [[maquettes-16-11]])
+- Faire : « sous le doigt / au loin » ×3 au moins. Capture ouverte avant OK, zone en plein format. Avant de déployer : une pièce de chaque genre, chaque état touché, deux thèmes, 390 tactile en défilant et 1280, côte à côte avec sa maquette, question ouverte « combien et quels problèmes ? », critique puis pilote (D342). Téléphone réel, pas la fenêtre du banc : 390×660 utiles (barres du navigateur et d’onglets) et paysage 844×340 ; le geste principal (toucher une barre) joué et regardé (19.11 : « pas été encore super bien testé »). (16.11 : [[maquettes-16-11]])
 - Rôles : pilote, relecteur, auteur, exécutant
 - Contrôle : aucun
 
