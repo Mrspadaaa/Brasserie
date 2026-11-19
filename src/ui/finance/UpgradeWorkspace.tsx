@@ -320,7 +320,7 @@ function FicheProjet({ plan, plans, prevision, transactions, payments, mois, bus
       <div className="kh-lbl">Posé sur</div>
       <ChoixMois plan={plan} mois={mois} onChoisir={onPoser}/>
       {!d.budgetKnown && <p className="finance-muted">Sans prix, le mois se pose mais rien n’entre dans tes prévisions : chiffre le projet avec Modifier.</p>}
-      <button type="button" role="switch" aria-checked={plan.status === 'active'} className="kh-sw" disabled={!!busy} onClick={() => onInclusion(plan.status !== 'active')}><i/>Dans mes prévisions</button>
+      <button type="button" role="switch" aria-checked={plan.status === 'active'} className="kh-sw" disabled={!!busy} onClick={() => onInclusion(plan.status !== 'active')}><i/>Inclure dans mes prévisions</button>{/* TE-36 : le mot de la feuille et de la liste, un seul partout */}
       {effet && effet.avecCents != null && effet.sansCents != null
         ? <><div className="kh-lbl">Fin {mTxt}</div><div className="kh-vs"><button type="button" className="w" onClick={onPrevisions}><small>Avec {titreCourt(plan.title)}{effet.auPlus ? ', au plus' : ''}</small><b className="kh-m">{chf0(effet.avecCents)}</b></button><div className="wo"><small>Sans</small><b className="kh-m">{chf0(effet.sansCents)}</b></div></div></>
         : !d.budgetKnown ? null

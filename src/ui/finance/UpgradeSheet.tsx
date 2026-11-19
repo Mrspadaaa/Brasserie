@@ -41,7 +41,7 @@ export function UpgradeSheet({ plan, onClose, onSaved, onOpenTransaction }: { pl
   const invoices = purchases.transactions.filter(tx => isActiveTransaction(tx) && transactionKind(tx) === 'expense' && tx.finance?.planId === draft.id);
   const [ouvert, setOuvert] = useState<StationId | null>(() => etatPiste(draft, invoices.length, todayISO().slice(0, 7)).actuelle);
   const locked = useRef(false), erreurRef = useRef<HTMLParagraphElement>(null);
-  /* TE-35 : le refus de l'enregistrement s'écrit en haut de la feuille ; qui vient de cocher « Dans mes prévisions » plus bas ne le voyait pas : il est amené dans la vue. */
+  /* TE-35 : le refus de l'enregistrement s'écrit en haut de la feuille ; qui vient de cocher « Inclure dans mes prévisions » plus bas ne le voyait pas : il est amené dans la vue. */
   useEffect(() => { if (error) erreurRef.current?.scrollIntoView?.({ block: 'nearest' }); }, [error]);
   const patch = (value: Partial<EquipmentUpgrade>) => setDraft(previous => {
     const upgrade = { ...previous.upgrade!, ...value }, total = upgradeBudget(upgrade);

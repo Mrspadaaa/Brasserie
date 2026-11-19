@@ -84,7 +84,7 @@ export function ProjetPiste(props: ProjetPisteProps) {
             <label className="pjd-mois"><Calendar aria-hidden="true" /><span>{quandTexte ?? 'Mois'}</span>
               <input type="month" aria-label="Paiement prévu en" value={draft.date.slice(0, 7)} onInput={e => setMonth(e.currentTarget.value)} onChange={e => setMonth(e.target.value)} onClick={e => { try { e.currentTarget.showPicker?.(); } catch { /* saisie au clavier */ } }} />
             </label></div>
-          <label className="pjd-l pjd-incl"><span><b>Dans mes prévisions</b>
+          <label className="pjd-l pjd-incl"><span><b>Inclure dans mes prévisions</b>
             <small>{draft.status === 'active' ? (missing.length ? missing.join(' ') : quandTexte ? `compté dans les sorties de ${quandTexte}` : 'compté dans les sorties prévues') : 'le projet reste dans tes idées de matériel'}</small></span>
             <Interrupteur label="Inclure dans mes prévisions" checked={draft.status === 'active'} onChange={v => setDraft(d => ({ ...d, status: v ? 'active' : 'draft' }))} /></label></>;
       case 'bought': return <>

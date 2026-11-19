@@ -52,6 +52,14 @@ describe('TE-35 : « Prévoir du matériel », chaque montant refuse en le disan
   });
 });
 
+describe('TE-36 : un seul mot pour la case des prévisions, dans la feuille du projet', () => {
+  it('le libellé lu est celui de l’interrupteur : « Inclure dans mes prévisions », jamais « Dans mes prévisions »', () => {
+    render(<UpgradeSheet onClose={() => {}} />);
+    expect(screen.getByText('Inclure dans mes prévisions', { selector: 'b' })).toBeInTheDocument();
+    expect(screen.queryByText('Dans mes prévisions')).toBeNull();
+  });
+});
+
 /* Fixture c3a (celle de brewBudgetSheet.test.tsx) : énergie 8, nettoyage 3, emballage 24, charges fixes 4 800, usure 360. */
 const pilsner = { id: 'MP-1', ref: 'MP-1', name: 'Pilsner', unit: 'kg', currentStock: 6, category: 'Malt', minStock: 0, reorder: false } as StockItem;
 const pale = { id: 'MP-2', ref: 'MP-2', name: 'Pale', unit: 'kg', currentStock: 0, category: 'Malt', minStock: 0, reorder: false } as StockItem;

@@ -73,11 +73,13 @@ describe('Projets de matériel, du besoin à l’achat', () => {
     await FinanceService.saveUpgrade(hotte()); render(<UpgradeWorkspace/>);
     // kh1r : l'interrupteur vit dans la fiche du projet (touche le titre de la carte « Prochain achat »), même mot allumé ou éteint
     fireEvent.click(screen.getByRole('button', { name: 'Hotte de brassage' }));
-    const case_ = screen.getByRole('switch', { name: 'Dans mes prévisions' });
+    // Carnet tour 3 (f3) : le mot est celui de la feuille du projet et de la liste, « Inclure dans mes prévisions », partout.
+    const case_ = screen.getByRole('switch', { name: 'Inclure dans mes prévisions' });
     expect(case_).toHaveAttribute('aria-checked', 'true');
     fireEvent.click(case_);
-    await waitFor(() => expect(screen.getByRole('switch', { name: 'Dans mes prévisions' })).toHaveAttribute('aria-checked', 'false'));
-    expect(screen.getByRole('switch', { name: 'Dans mes prévisions' })).toHaveTextContent('Dans mes prévisions');
+    await waitFor(() => expect(screen.getByRole('switch', { name: 'Inclure dans mes prévisions' })).toHaveAttribute('aria-checked', 'false'));
+    expect(screen.getByRole('switch', { name: 'Inclure dans mes prévisions' })).toHaveTextContent('Inclure dans mes prévisions');
+    expect(screen.queryByText('Dans mes prévisions')).toBeNull();
   });
   it('reprend les idées R&D, archive sans résurrection et restaure les notes', async () => {
     const legacy = { id: 'OLD-HOTTE', type: 'equipment' as const, title: 'Hotte historique', status: 'quote' as const, estimatedCost: 750, description: 'Évacuer la vapeur', notes: 'Devis fournisseur conservé' };
