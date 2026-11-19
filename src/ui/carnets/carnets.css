@@ -132,7 +132,9 @@
 .cn-doublon { color: var(--c-ia); font-weight: 600; }
 
 /* Tableaux (R06, i06-4) */
-.cn-tableau-zone { overflow-x: auto; border: 1px solid var(--c-line); border-radius: 16px; }
+/* f9 n° 3 : position: relative, pour que les textes cachés (.cn-cache, absolus) restent dans la zone qui défile : sinon ils débordent dans
+   la page, qu'un glissé du doigt décalait de 67 px à 390 (seul le tableau défile, la page jamais) */
+.cn-tableau-zone { position: relative; overflow-x: auto; border: 1px solid var(--c-line); border-radius: 16px; }
 .cn-tableau { border-collapse: collapse; width: 100%; font-size: 15px; }
 .cn-tableau th, .cn-tableau td { padding: 8px; text-align: left; vertical-align: middle; border-top: 1px solid var(--c-line); }
 .cn-tableau thead th { border-top: 0; font-weight: 400; vertical-align: bottom; }

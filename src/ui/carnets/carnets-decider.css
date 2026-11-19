@@ -91,6 +91,9 @@
 .cn-tableau-comparer .cn-hors-seuil { white-space: nowrap; }
 .cn-comparer .cn-tableau-comparer thead th:not(:first-child) { width: var(--cn-col); min-width: var(--cn-col); box-sizing: border-box; }
 .cn-choisir .cn-droite .cn-hors-seuil { text-align: right; }
+/* f9 n° 2 : à 390, la colonne de droite (prix, seuil court « < min. 1 500 ») ne prend jamais la place du nom : bornée, le nom garde le reste */
+.cn-choisir .cn-article .cn-droite { flex: 0 0 auto; max-width: 40%; }
+.cn-choisir .cn-droite .cn-hors-seuil { white-space: nowrap; }
 .cn-choisir-retenus li { font-size: 15px; line-height: 1.4; }
 
 /* Le compromis (g01-8) : la balance verte, « Compromis : » en gras, fond de zone. */

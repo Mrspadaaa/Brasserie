@@ -13,7 +13,7 @@ import { libelleEcarte, nombreTexte, placesDe, placesParmiTous, pourquoiDe, prix
 import { normaliser } from '../../domain/carnets/analyseLocale';
 import { sourceDuCritere, type Article, type DonneesCarnet } from '../../domain/carnets/modele';
 import { dateCourte, montant, PictoLocal, Provenance, rangTexte, texteSortie, type SortieV, type ArticleV, type ChoixV, type CritereV, type FaconV } from './EtatIA';
-import { choixBloque, sansApercu } from './Comparer';
+import { choixBloque, horsSeuilCourt, sansApercu } from './Comparer';
 import { Photo } from './pictos';
 import { Input, Textarea } from '../Input';
 import './carnets-decider.css';
@@ -158,8 +158,9 @@ function ChoisiVue(p: Extract<ChoisirProps, { etape: 'choisi' }>) {
     const prixPl = places.find(pl => pl.nom === 'prix' && pl.rang);
     return {
       phrase: c ? pourquoiDe(c, a.id) : null,
-      /* f5c n° 8 : le critère reçu, suivi des autres qui classent s'il est le 1er d'entre eux */
-      criteres: ((r: CritereV[]) => (p.critere && r[0]?.id === p.critere.id ? r : p.critere ? [p.critere] : []))(criteresQuiRangent(c, t)),
+      /* f5c n° 8, f9 n° 1 : les critères qui ont classé le choix, dans l'ordre (« tient 80 °C, puis le débit ») ; le critère reçu
+         (le 1er du carnet) seulement si aucun ne classe : sans valeur à comparer (« capter la buée »), il n'a pas fait le choix */
+      criteres: ((r: CritereV[]) => (r.length ? r : p.critere ? [p.critere] : []))(criteresQuiRangent(c, t)),
       reglettes: [premierChiffre, prixPl].filter((x): x is Place => !!x && x.sur > 1),
       ecartes: ecartesDe(p, c)
     };
@@ -318,7 +319,7 @@ function ChoisirArticle(p: Extract<ChoisirProps, { etape: 'choisir' }>) {
             {so
               ? <div className="cn-article-tx"><b>{so.titre}</b><span className="cn-mut">{so.sous}</span></div>
               : <div className="cn-article-tx"><b>{o.article.nom}</b><span className="cn-mut">{[o.article.vendeur, o.article.pays].filter(Boolean).join(' · ')}</span></div>}
-            <div className="cn-droite">{montant(o.article.prixCentimes) && <span className="cn-mono cn-prix">{montant(o.article.prixCentimes)}</span>}{o.mesure && <span className="cn-mut">{o.mesure}</span>}{calc.hors.get(o.article.id) && <span className="cn-hors-seuil">{calc.hors.get(o.article.id)}</span>}</div>
+            <div className="cn-droite">{montant(o.article.prixCentimes) && <span className="cn-mono cn-prix">{montant(o.article.prixCentimes)}</span>}{o.mesure && <span className="cn-mut">{o.mesure}</span>}{calc.hors.get(o.article.id) && <span className="cn-hors-seuil" title={calc.hors.get(o.article.id)}><span aria-hidden>{horsSeuilCourt(calc.hors.get(o.article.id)!)}</span><span className="cn-cache">{calc.hors.get(o.article.id)}</span></span>}</div>
           </div>
         );
       })}
