@@ -5,7 +5,7 @@ import { CouleurChamp } from './CouleurChamp';
 import { Croix, Cube, Remettre, Tour } from './icones';
 import {
   arrondiKg, autresKg, cran, cranPas, etiquetteFermentescibilite, gesteMoment, grainEmpate, grainHorsEmpatage, grainKg, kgPourPart, kgTxt, momentPermis, momentTourne, MOT_MOMENT, nu,
-  pas, partN, teinte, voile,
+  estEpice, estSombre, pas, partN, teinte, voile,
 } from './modele';
 
 export interface AnnMoment { i: number; use: Fermentable['use']; dayOffset?: number; t: number }
@@ -60,7 +60,7 @@ function Pastille({ f, i, ouverte, a }: { f: Fermentable; i: number; ouverte: bo
     <button type="button" className="fer-pas fer-inc" data-role="couleur-ligne" data-cl={i} data-booster="couleur-sur-ligne"
       aria-label={`Couleur de ${f.name} à renseigner, en EBC`} onClick={() => a.ouvrirEbc(i)}>?</button>
   ) : (
-    <button type="button" className="fer-pas" data-role="couleur-ligne" data-cl={i} data-booster="couleur-sur-ligne"
+    <button type="button" className={`fer-pas${estSombre(f.colorEbc as number) ? ' fer-sombre' : ''}`} data-role="couleur-ligne" data-cl={i} data-booster="couleur-sur-ligne"
       style={{ background: teinte(f.colorEbc as number) }} aria-label={`Couleur de ${f.name} : ${String(f.colorEbc).replace('.', ',')} EBC`}
       onClick={() => a.ouvrirEbc(i)} />
   );
@@ -96,6 +96,8 @@ export const Ligne: React.FC<LigneProps> = ({ f, i, fermentables, selectionnee, 
 
   const pc = grain && grainHorsEmpatage(f)
     ? <span className="fer-pc fer-pc-hors" data-pc={i}>compté 0</span>
+    : grain && estEpice(f.name)
+    ? <span className="fer-pc" data-pc={i}>hors du grain</span>
     : grain
     ? <span className="fer-pc" data-pc={i}><span className="fer-pn">{total ? partN(fermentables, f) : '—'}</span> %{ann ? '' : ' du grain'}</span>
     : <span className="fer-pc" data-pc={i}>{nolo && f.use === 'fermentation' ? 'Sucres : bilan NOLO' : etiquetteFermentescibilite(f.fermentabilityPct)}</span>;

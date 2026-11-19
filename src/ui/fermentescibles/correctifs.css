@@ -50,3 +50,10 @@
 .fer .fer-pts { display: inline-flex; gap: 3px; align-items: center; margin-left: 2px; }
 .fer .fer-pts i { width: 4px; height: 4px; border-radius: 50%; background: var(--f-t2); opacity: .55; }
 .fer .fer-pts i.fer-pt-on { background: var(--f-t0); opacity: 1; }
+
+/* k1 point 13 : une pastille de malt très sombre (≥ 60 EBC) était noire sur le fond noir de la cave : liseré clair, même taille (la bordure remplace la bordure sombre). */
+.fer button.fer-pas.fer-sombre, .fer .fer-bpas.fer-sombre { border: 1.5px solid var(--f-t1); }
+/* k1 point 12 : le + flottant (64 px à 12 px du bord) mordait le bord des alertes ; elles gardent sa gouttière (76 px) tant qu'il flotte. Au rail (1024 px et plus), aucune. */
+@media (max-width: 1023px) {
+  :root body[data-has-fab-floating] .fer [data-role="alertes"] { padding-right: 4.75rem; }
+}

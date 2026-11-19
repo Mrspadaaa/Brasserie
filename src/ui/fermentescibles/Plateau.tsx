@@ -5,7 +5,7 @@ import { ChampLigne } from './ChampLigne';
 import { Fiche } from './Fiche';
 import { CouleurChamp } from './CouleurChamp';
 import { Corbeille, Cube, Moins, Plus16, Croix, Remettre, Tour } from './icones';
-import { arrondiKg, cran, fr, gesteMoment, graduationsPiste, kgTxt, momentPermis, momentTourne, MOT_MOMENT, pas, pmax, teinte } from './modele';
+import { arrondiKg, cran, estSombre, fr, gesteMoment, graduationsPiste, kgTxt, momentPermis, momentTourne, MOT_MOMENT, pas, pmax, teinte } from './modele';
 
 /**
  * Le plateau (D212 : toujours visible, clair) : le détail de la ligne choisie. Sa couleur, son moment, la corbeille ; la lecture de la
@@ -57,7 +57,7 @@ export const Plateau: React.FC<{
   } else if (f.colorEbc == null) {
     sw = <button type="button" className="fer-bpas fer-inc" data-role="bteinte" data-teinte={i} data-booster="teinte-plateau" aria-label={`Couleur de ${f.name} à renseigner`} onClick={() => setSaisieEbc(true)}>?</button>;
   } else {
-    sw = <button type="button" className="fer-bpas" data-role="bteinte" data-teinte={i} data-booster="teinte-plateau" style={{ background: teinte(f.colorEbc) }}
+    sw = <button type="button" className={`fer-bpas${estSombre(f.colorEbc) ? ' fer-sombre' : ''}`} data-role="bteinte" data-teinte={i} data-booster="teinte-plateau" style={{ background: teinte(f.colorEbc) }}
       aria-label={`Couleur de ${f.name} : ${String(f.colorEbc).replace('.', ',')} EBC`} onClick={() => setSaisieEbc(true)} />;
   }
 

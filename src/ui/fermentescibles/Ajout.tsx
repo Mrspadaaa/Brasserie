@@ -247,8 +247,9 @@ export const Ajout: React.FC<AjoutProps> = ({ famille, familles, defs, onFamille
             }
           }}
         />
-        <span className={`fer-ap${nomCible ? ' fer-vu' : ''}`} data-role="apercu" aria-live="polite">
-          {nomCible && (
+        {/* k1 point 11 : quand la ligne « Créer » est là, elle porte seule le geste (nom, masse, famille) : l'aperçu ne le répète pas. */}
+        <span className={`fer-ap${nomCible && !creer ? ' fer-vu' : ''}`} data-role="apercu" aria-live="polite">
+          {nomCible && !creer && (
             <>{creer ? <Plus /> : null}{nomCible.split(' ')[0]}{s.kg != null && <> <b>{kgTxt(s.kg)}</b> kg</>}<Entree /></>
           )}
         </span>
@@ -290,7 +291,7 @@ export const Ajout: React.FC<AjoutProps> = ({ famille, familles, defs, onFamille
         })}
         {on && creer && (
           <button type="button" role="option" aria-selected className="fer-tu fer-large fer-cree fer-prem" data-role="creer" data-cree="1" onClick={() => { const now = Date.now(); if (now - dernierClic.current < 400) return; dernierClic.current = now; reinit(); onCreer(t, s.kg, famCreee); }}>
-            <span className="fer-l1"><Plus /><span className="fer-nm2">Créer « {t} » (stock à zéro)</span></span>
+            <span className="fer-l1"><Plus /><span className="fer-nm2">Créer « {t} »{s.kg != null && <> · <b>{kgTxt(s.kg)}</b> kg</>} (stock à zéro)</span></span>
             <span className="fer-l2">{defCreee.label.toLowerCase()} : {QUAND[defCreee.use]}</span><i className="fer-ent" aria-hidden="true"><Entree /></i>
           </button>
         )}

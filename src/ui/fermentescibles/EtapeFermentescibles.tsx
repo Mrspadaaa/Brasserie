@@ -77,7 +77,7 @@ export const EtapeFermentescibles: React.FC<EtapeFermentesciblesProps> = ({
 
   const n = fermentables.length;
   const selI = n ? Math.min(sel, n - 1) : -1;
-  const aRenseigner = fermentables.filter((f) => f.kind === 'grain' && f.colorEbc == null && f.weightKg !== 0).length;
+  const aRenseigner = fermentables.filter((f) => f.kind === 'grain' && f.colorEbc == null && f.weightKg !== 0 && !estEpice(f.name)).length;
   useEffect(() => () => { clearTimeout(minutRetrait.current); clearTimeout(minutMoment.current); clearTimeout(minutPlafond.current); }, []);
 
   // L'ajout mène à la masse de la ligne, sur la ligne (le focus est donné quand la ligne est montée).
@@ -349,7 +349,7 @@ export const EtapeFermentescibles: React.FC<EtapeFermentesciblesProps> = ({
         {messageTeinte(teinteBiere?.ebc) && <p className="fer-alerte" data-hors="teinte" role="status">{messageTeinte(teinteBiere?.ebc)}</p>}
         {/* MV-8 : une épice (coriandre, zeste…) n'est pas un fermentescible : « 1 % du grain » ne veut rien dire pour elle. */}
         {fermentables.map((f, i) => estEpice(f.name) ? (
-          <p key={`epice-${i}`} className="fer-alerte" data-hors="epice" role="status">{f.name} : une épice n’est pas un fermentescible, elle serait comptée comme {f.kind === 'grain' ? 'du grain' : 'du sucre'}. Elle se note en additif, en grammes.</p>
+          <p key={`epice-${i}`} className="fer-alerte" data-hors="epice" role="status">{f.name} : une épice n’est pas un fermentescible{f.kind === 'grain' ? ' ; elle n’est comptée ni dans le grain ni dans la teinte' : ' ; elle est comptée comme du sucre'}. Elle se note en additif, en grammes.</p>
         ) : null)}
       </div>
       <Plateau f={selF} i={selI} setKg={setKg} setJour={a.setJour} tourner={tourner} retirer={retirer}

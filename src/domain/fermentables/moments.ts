@@ -27,7 +27,7 @@ export const MOMENTS_PERMIS: Readonly<Record<FermentableKind, readonly Fermentab
   fruit: ['fermentation', 'ebullition'],
 };
 
-type Ligne = Pick<Fermentable, 'kind' | 'use'> | { kind?: FermentableKind; use?: FermentableUse };
+type Ligne = { kind?: FermentableKind; use?: FermentableUse; name?: string };
 
 // Une ligne ancienne sans famille est un grain ; sans moment, un empâtage (`normalizeRecipe`, `recipeSnapshot`).
 const familleDe = (f: Ligne): FermentableKind => f.kind ?? 'grain';
@@ -59,8 +59,13 @@ export const momentTourne = (f: Ligne): boolean => momentSuivant(f) !== momentDe
  */
 export const grainHorsEmpatage = (f: Ligne): boolean => familleDe(f) === 'grain' && momentDe(f) !== 'empatage';
 
-/** Le grain qui passe vraiment par la maische : celui de la facture, de la couleur et de l'eau. */
-export const grainEmpate = (f: Ligne): boolean => familleDe(f) === 'grain' && momentDe(f) === 'empatage';
+// MV-8, k1 point 12 : une épice (coriandre, zeste…) n'est pas un fermentescible. Aucune famille ne l'accueille : la ligne reste au brasseur (rien n'est refusé),
+// mais elle n'est comptée ni dans le grain, ni dans la couleur, ni dans l'eau.
+const MOTS_EPICE = /\b(coriandre|coriander|zestes?|peel|cannelle|cinnamon|vanille|vanilla|gingembre|ginger|poivre|pepper|cardamome|cardamom|clous?|clove|anis|badiane|muscade|nutmeg|camomille|hibiscus|lavande|sel|salt)\b/;
+export const estEpice = (nom: string | undefined): boolean => MOTS_EPICE.test((nom ?? '').toLowerCase().normalize('NFD').replace(/\p{M}/gu, ''));
+
+/** Le grain qui passe vraiment par la maische : celui de la facture, de la couleur et de l'eau (une épice n'en est pas). */
+export const grainEmpate = (f: Ligne): boolean => familleDe(f) === 'grain' && momentDe(f) === 'empatage' && !estEpice(f.name);
 
 const MOT: Record<FermentableUse, string> = { empatage: 'l’empâtage', ebullition: 'l’ébullition', fermentation: 'la fermentation' };
 

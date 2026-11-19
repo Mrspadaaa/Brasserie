@@ -6,7 +6,7 @@ import type { Fermentable, FermentableKind, FermentableUse, StockItem } from '..
 import { nomsParAlias, normaliser } from '../../domain/fermentables/noms';
 import { BORNES } from '../../domain/bornesMetier';
 import {
-  grainEmpate, grainHorsEmpatage, messageMoment, momentParDefaut, momentPermis, momentsPermis, momentSuivant, momentTourne,
+  estEpice, grainEmpate, grainHorsEmpatage, messageMoment, momentParDefaut, momentPermis, momentsPermis, momentSuivant, momentTourne,
 } from '../../domain/fermentables/moments';
 
 export const MOMENTS: readonly FermentableUse[] = ['empatage', 'ebullition', 'fermentation'];
@@ -17,7 +17,7 @@ export const MOT_MOMENT: Record<FermentableUse, string> = { empatage: 'empâtage
  * un grain reste à l'empâtage, un sucre tourne entre ébullition et fermentation. Un moment interdit (donnée ancienne) revient au premier permis.
  */
 export const MOMENT_SUIVANT = (f: Pick<Fermentable, 'kind' | 'use'>): FermentableUse => momentSuivant(f);
-export { grainEmpate, grainHorsEmpatage, momentPermis, momentTourne, messageMoment, momentParDefaut, momentsPermis };
+export { estEpice, grainEmpate, grainHorsEmpatage, momentPermis, momentTourne, messageMoment, momentParDefaut, momentsPermis };
 /** Le moment avec son article, pour une phrase : « Remettre à l’empâtage ». */
 export const MOMENT_AVEC_ARTICLE: Record<FermentableUse, string> = { empatage: 'l’empâtage', ebullition: 'l’ébullition', fermentation: 'la fermentation' };
 /** PI-1 : ce que dit la pastille d'un moment IMPOSSIBLE (donnée ancienne) : un seul geste, revenir au moment permis, pas un cycle. */
@@ -144,6 +144,8 @@ function rgb(e: number): [number, number, number] {
 export const teinte = (e: number) => `rgb(${rgb(e).join(',')})`;
 export const voile = (e: number) => `rgba(${rgb(e).join(',')},.35)`;
 export const texteSurTeinte = (e: number) => (e >= 18 ? '#fff' : '#111');
+/** k1 point 13 : une teinte de malt si sombre (≥ 60 EBC) que sa pastille se perd sur le fond de la cave : elle porte un liseré clair. */
+export const estSombre = (e: number) => e >= 60;
 export const pc = (v: number, a: number, b: number) => Math.max(0, Math.min(100, ((v - a) / (b - a)) * 100));
 
 // ---------------------------------------------------------------------------------------------------------------- recherche
@@ -285,8 +287,7 @@ export function familleDevinee(nom: string, courante: FermentableKind): Fermenta
 }
 
 // MV-8 : une épice n'est pas un fermentescible. Aucune famille ne l'accueille ici : l'écran le dit, la ligne reste au brasseur (rien n'est refusé).
-const MOTS_EPICE = /\b(coriandre|coriander|zestes?|peel|cannelle|cinnamon|vanille|vanilla|gingembre|ginger|poivre|pepper|cardamome|cardamom|clous?|clove|anis|badiane|muscade|nutmeg|camomille|hibiscus|lavande|sel|salt)\b/;
-export const estEpice = (nom: string) => MOTS_EPICE.test(nu(nom));
+// (estEpice vit dans le domaine : `domain/fermentables/moments.ts`.)
 
 /** Un nom d'ingrédient a au moins une lettre : « 0,2 » ou « 60 » seuls ne créent rien (critique B1 n° 3, 07.11). */
 export const nomPossible = (t: string) => /\p{L}/u.test(t);
