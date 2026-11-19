@@ -43,7 +43,7 @@ export function Piste({ nom, aria, domaine, plageStyle, point, plageValeur, droi
         {typeof point === 'number' && Number.isFinite(point) && (
           <>
             <b className={`${hors ? 'rc2-hors' : ''}${teinte ? ' rc2-verre' : ''}`} style={{ left: `${pos(point)}%`, ...(teinte ? { background: teinte.fond } : {}) }} />
-            {etiquettePoint && <span className="rc2-pd" style={{ left: `calc(${pos(point)}% + 11px)` }}>{etiquettePoint}</span>}
+            {etiquettePoint && <span className={`rc2-pd${hors ? ' rc2-hors' : ''}`} style={{ left: `calc(${pos(point)}% + 11px)` }}>{etiquettePoint}</span>}
           </>
         )}
       </span>
@@ -51,6 +51,13 @@ export function Piste({ nom, aria, domaine, plageStyle, point, plageValeur, droi
     </span>
   );
 }
+
+/**
+ * EAU-6 (19.11) : l'échelle de la piste SO₄ suit la plage du style (une fois et demie son haut, au pas de 50, 150 au moins).
+ * Sur 0–400, une plage 40–100 tenait 15 % de la piste et son chiffre recouvrait le point. Sans plage : 0–400.
+ */
+export const domaineSo4 = (plage?: Plage): Plage =>
+  plage ? { min: 0, max: Math.max(150, Math.ceil((plage.max * 1.5) / 50) * 50) } : { min: 0, max: 400 };
 
 /** Texte d'une plage du style, ou « — » : l'absence de plage se dit. */
 export const texteHorsPlage = (position: ReturnType<typeof positionDansPlage>) =>

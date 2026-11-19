@@ -15,7 +15,7 @@ import { RecapEtat } from '../RecapEtat';
 import { teinte as teinteEbc } from '../fermentescibles/modele';
 import { plageEbc } from '../identite/plages';
 import { ACIDS } from '../../domain/water/substances';
-import { Piste, Aromes, MiniCourbe, DEGRADE_EBC, fr, texteSuisse, type Plage } from './pistes';
+import { Piste, domaineSo4, Aromes, MiniCourbe, DEGRADE_EBC, fr, texteSuisse, type Plage } from './pistes';
 import './recap.css';
 import {
   Fermentable,
@@ -207,8 +207,8 @@ const Rangee: React.FC<{ id: RangeeId; title: string; children: React.ReactNode 
           <span className="rc2-n"><strong aria-hidden="true">{r.nom}</strong><span>{r.texte}</span>{r.pistes && <span className="rc2-pis">{r.pistes}</span>}</span>
           <span className="rc2-x">{r.droite}</span>
           <ChevronDown className="rc2-chev w-4 h-4" aria-hidden="true" />
-          {r.toile}
         </summary>
+        {r.toile}
         {r.geste && <div className="rc2-dep" data-element={`m2-depli-${id}`}>{r.geste}</div>}
         <div className="rc2-corps divide-y divide-cave-850">{children}</div>
       </details>
@@ -427,7 +427,7 @@ export const EtapeRecap: React.FC<EtapeRecapProps> = ({
     eau: {
       manques: manques('eau'), nom: 'Eau',
       texte: <span className="rc2-m">{formatQuantity(total, 'L')}</span>,
-      pistes: finie(so4) ? <Piste nom="SO₄" domaine={{ min: 0, max: 400 }} plageStyle={plageSo4} point={so4} etiquettePoint={String(Math.round(so4))}
+      pistes: finie(so4) ? <Piste nom="SO₄" domaine={domaineSo4(plageSo4)} plageStyle={plageSo4} point={so4} etiquettePoint={String(Math.round(so4))}
         droite={plageSo4 ? texteSuisse(plageSo4) : '—'}
         aria={`Sulfate ${Math.round(so4)} ppm, ${posTxt(so4, plageSo4)}${plageSo4 ? ` ${water?.style?.code ?? 'style'} ${texteSuisse(plageSo4)} ppm` : ''}`} /> : undefined,
       toile: water?.style && water.wortIons && water.startIons

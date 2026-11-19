@@ -1,5 +1,10 @@
 import { useLayoutEffect, type RefObject } from 'react';
 
+/** Haut du « + » docké (40 px) dans la rangée « 1. Eau | 2. Sels » : centré dans sa hauteur, jamais au-dessus (EAU-3, 19.11). */
+export function hautBoutonDocke(navTop: number, navHeight: number, bouton = 40): number {
+  return navTop + Math.max(0, (navHeight - bouton) / 2);
+}
+
 /** Reserve the mobile viewport for the radar and the complete set of dosing controls. */
 export function useWaterControlsLayout(ref: RefObject<HTMLDivElement | null>) {
   useLayoutEffect(() => {
@@ -24,7 +29,10 @@ export function useWaterControlsLayout(ref: RefObject<HTMLDivElement | null>) {
       const value = `${height}px`;
       if (root.style.getPropertyValue('--water-radar-max-height') !== value) root.style.setProperty('--water-radar-max-height', value);
       const nav = root.closest('.water-workshop')?.querySelector('[data-water-navigation]');
-      if (nav) document.documentElement.style.setProperty('--water-navigation-top', `${nav.getBoundingClientRect().top + 6}px`);
+      if (nav) {
+        const r = nav.getBoundingClientRect();
+        document.documentElement.style.setProperty('--water-navigation-top', `${hautBoutonDocke(r.top, r.height)}px`);
+      }
     };
     const schedule = () => { cancelAnimationFrame(frame); frame = requestAnimationFrame(measure); };
     const observer = new ResizeObserver(schedule);

@@ -1807,3 +1807,10 @@ Mais bien revoir cette écran notamment pour la sélection de date » (lu : c2a 
   (lu, pilote Finances : m4bb-a est portée en premier plan de la feuille du budget (choix du brassin, piles « quand tu paies ») ; le flux c3a, son choix du 09.11, reste à un toucher, rien n'est retiré.)
 - **18.11**, mot pour mot, Finances : « Parfois j'ai des entrée sans justificatif, je veux juste une coche que je puisse coché pour ces cas là pour ne pas être flaggé comme dans justificatif. C'est normal »
   (lu : sur la fiche (m5fo-a), la case « Sans justificatif » porte une coche « c’est normal » ; cochée, la pièce sort du filtre, du « + pièce », des compteurs et de l'Annuel ; l'export dit « Sans justificatif (normal) ».)
+
+### 19.11 — Recette, Eau et sels (partie Sels)
+
+- **19.11, 07:35**, mot pour mot, capture à 390 de la création de recette, étape 6/7 « Eau et sels », segment « 2. Sels » choisi : « Gros problème sur la partie sel !!! Lance une sous session pour fix ça »
+  (lu : sous « 2. Sels », l'écran gardait le contenu de l'Eau (Empâtage, Rinçage, Eau/grain, Osmosée) ; corrigé EAU-1 à EAU-3, be201f85d.)
+- **19.11, 07:36**, mot pour mot, deux captures à 390 du récapitulatif 7/7, rangée Eau repliée puis dépliée : « Pareil ici, gros pro »
+  (lu : la toile pleine largeur restait ouverte rangée repliée, la piste SO₄ serrait son chiffre contre le point, le pointillé du départ (HCO₃) n'était pas expliqué ; corrigé EAU-6 à EAU-8, e86249a9c.)
