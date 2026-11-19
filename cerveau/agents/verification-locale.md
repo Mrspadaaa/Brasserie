@@ -2,7 +2,7 @@
 name: verification-locale
 description: Comment vérifier localement l'app Brasserie L'Affinée — contournement auth en dev sous ?dev-local, et scripts de contrôle.
 type: agents
-maj: 2026-11-02
+maj: 2026-11-19
 sources: mémoire locale affinee-verification-locale.md ; src/App.tsx ; scripts/check-no-dev-auth.mjs ; scripts/check-water.mjs ; vite.config.ts ; firebase.json ; firestore.rules ; src/ui/useViewport.ts ; src/data/seedData.ts
 ---
 
@@ -44,3 +44,4 @@ Contrôle post-déploiement : chercher `dev-local`, `devLocalUser`, `preview=` d
 
 Voir [[socle-v01]] et [[chimie-eau]].
 - **Lecture seule en ligne** (10.11, VB-2) : annuler seulement les écritures nommées (`saveBrewSession`…), pas tout non GET (Firestore et les fonctions lisent en POST) ; partir d’un profil sans `brew-outbox-*` hérité (un brouillon périmé repart au retour du réseau) ; ouvrir une feuille d’écriture compte comme un geste.
+- Vision complète (19.11) : le critique a 30 tours ; capturer ET juger les dépasse (4 critiques sans rapport). Un agent capture et mesure, le critique juge ces captures (35 images au plus) et écrit tôt.
