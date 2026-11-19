@@ -11,6 +11,7 @@ import { Caisse } from './synthese/Caisse';
 import { AlerteTva, LigneLitre, Replie, Verifier } from './synthese/Lignes';
 import { Pourquoi } from './synthese/Pourquoi';
 import { Analyse } from './analyse/Analyse';
+import { finDuMois } from './operations/plage';
 import './synthese.css';
 
 interface Props {
@@ -84,9 +85,9 @@ export function FinanceOverview(props: Props) {
   const choix = { mois: month, tout: allDates && !plage, plage };
   const nomPeriode = titrePeriode(choix, aujourdhui.slice(0, 4)).toLowerCase();
   const mois = plage ? plage.du : allDates ? null : month;
-  // Le journal ne filtre pas encore une plage : il s'ouvre sur toutes les dates, la catégorie reste filtrée.
   const jusqua = plage?.au;
-  const portee = plage ? { allDates: true } : { month: mois ?? undefined, allDates };
+  // 19.11 (« ça me renvoie sur le tout ») : une plage s'ouvre telle quelle dans Opérations, du 1er du premier mois au dernier jour du dernier.
+  const portee = plage ? { allDates: false, du: `${plage.du}-01`, au: finDuMois(plage.au) } : { month: mois ?? undefined, allDates };
   const ouvrir = (extra: Omit<JournalRequest, 'key' | 'scope'>) => props.onJournal({ scope: 'all', ...extra });
   const choisirPlage = (du: string, au: string) => {
     if (du === au) { setPlage(null); props.onMonth(du); } else setPlage({ du, au });

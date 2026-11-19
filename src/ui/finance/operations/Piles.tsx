@@ -25,21 +25,33 @@ export function colonnesDe(p: PeriodeSynthese): { ventes: Colonne | null; charge
   return { ventes, charges, materiel };
 }
 
-function Pile({ c, max }: { c: Colonne; max: number }) {
+/**
+ * FIN-BARRES-MORTES (19.11, « SI je click sur les barre ici, ça n'a aucun effet... ») : avec `onChoisir`, la pile est un bouton qui filtre la liste
+ * sur sa catégorie ; `choisie` la marque (aria-pressed), un second toucher rend tout. Sans `onChoisir`, la pile reste un dessin.
+ */
+function Pile({ c, max, choisie, onChoisir }: { c: Colonne; max: number; choisie?: boolean; onChoisir?: (cle: string) => void }) {
   const ratio = max > 0 ? Math.max(c.cents / max, 0.04) : 0;
   const plein = Math.max(c.cents - c.hachureCents, 0);
-  return <div className="ops-pile" data-pile={c.cle}>
+  const corps = <>
     <b className="ops-m" data-signe={c.signe}>{c.signe ?? ''}{amountOnly(c.cents)}</b>
     <span className="ops-st" style={{ height: `calc(var(--ops-haut) * ${ratio.toFixed(4)})` }}>
       {c.hachureCents > 0 && <i className="ops-hach" style={{ flex: c.hachureCents }}/>}
       {plein > 0 && <i style={{ flex: plein, background: c.couleur }}/>}
     </span>
     <span className="ops-nom-pile">{c.libelle}</span>
-  </div>;
+  </>;
+  if (!onChoisir) return <div className="ops-pile" data-pile={c.cle}>{corps}</div>;
+  return <button type="button" className="ops-pile" data-pile={c.cle} aria-pressed={!!choisie}
+    aria-label={`${c.libelle} ${c.signe ?? ''}${amountOnly(c.cents)} : ${choisie ? 'montrer toutes les opérations' : 'ne montrer que cette catégorie'}`}
+    onClick={() => onChoisir(c.cle)}>{corps}</button>;
 }
 
 /** `nom` : ce que les piles couvrent (« le mois », « la période », « tout l'historique ») ; il ne sert qu'aux noms accessibles. */
-export function Piles({ periode, nom = 'le mois', apports = null, frise = null, videTexte }: { periode: PeriodeSynthese; nom?: string; apports?: number | null; frise?: React.ReactNode; videTexte?: string }) {
+export function Piles({ periode, nom = 'le mois', apports = null, frise = null, videTexte, choisie = null, onChoisir }: { periode: PeriodeSynthese; nom?: string; apports?: number | null; frise?: React.ReactNode; videTexte?: string;
+  /** La pile dont la catégorie filtre la liste (`cle` de colonne), ou null. */
+  choisie?: string | null;
+  /** Toucher une pile : le parent pose ou retire le filtre de sa catégorie. */
+  onChoisir?: (cle: string) => void }) {
   const { ventes, charges, materiel } = colonnesDe(periode);
   const apport: Colonne | null = apports ? { cle: 'apports', libelle: 'Apports', cents: Math.abs(apports), hachureCents: 0, couleur: couleurDe('apports'), signe: apports > 0 ? '+' : '−' } : null;
   const toutes = [ventes, ...charges, materiel, apport].filter((c): c is Colonne => !!c);
@@ -49,14 +61,14 @@ export function Piles({ periode, nom = 'le mois', apports = null, frise = null, 
   const sep = (cle: string) => <span key={cle} className="ops-sep" aria-hidden="true"/>;
   const nuancier = `linear-gradient(90deg, ${charges.map((c, i) => `${c.couleur} ${(i / Math.max(charges.length, 1)) * 100}% ${((i + 1) / Math.max(charges.length, 1)) * 100}%`).join(', ') || 'transparent 0 100%'})`;
   return <>
-    <div className="ops-piles" role="group" aria-label={`${nom[0].toLocaleUpperCase('fr')}${nom.slice(1)} par catégorie`}>
-      {ventes && <Pile c={ventes} max={max}/>}
+    <div className="ops-piles" data-choix={choisie && toutes.some(c => c.cle === choisie) ? '' : undefined} role="group" aria-label={`${nom[0].toLocaleUpperCase('fr')}${nom.slice(1)} par catégorie`}>
+      {ventes && <Pile c={ventes} max={max} choisie={choisie === ventes.cle} onChoisir={onChoisir}/>}
       {ventes && (charges.length > 0 || materiel) && sep('s1')}
-      {charges.map(c => <Pile key={c.cle} c={c} max={max}/>)}
+      {charges.map(c => <Pile key={c.cle} c={c} max={max} choisie={choisie === c.cle} onChoisir={onChoisir}/>)}
       {materiel && charges.length > 0 && sep('s2')}
-      {materiel && <Pile c={materiel} max={max}/>}
+      {materiel && <Pile c={materiel} max={max} choisie={choisie === materiel.cle} onChoisir={onChoisir}/>}
       {apport && (ventes || charges.length > 0 || materiel) && sep('s3')}
-      {apport && <Pile c={apport} max={max}/>}
+      {apport && <Pile c={apport} max={max} choisie={choisie === apport.cle} onChoisir={onChoisir}/>}
     </div>
     {frise}
     <p className="ops-legende" aria-label={`Payé, à payer et dépensé ${nom === 'le mois' ? 'du mois' : nom.replace(/^la /, 'de la ').replace(/^tout /, 'sur tout ')}`}>

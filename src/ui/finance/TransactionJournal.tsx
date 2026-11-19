@@ -29,6 +29,9 @@ export const CATEGORIE_A_PART = 'apart';
 const libelleCategorie = (c: string): string => c === CATEGORIE_A_PART ? 'Matériel · à part' : CATEGORY_LABELS[c as keyof typeof CATEGORY_LABELS] ?? c;
 const estAPart = (t: Transaction): boolean => t.category === 'materiel' || t.category === 'renovation'
   || !!t.finance?.lines.some(l => l.kind === 'equipment' && l.capitalTreatment !== 'expense');
+/** FIN-BARRES-MORTES : une pile filtre sur la catégorie qu'elle dessine ; « Matériel » dessine le « à part » (matériel, local et travaux). */
+const categorieDePile = (cle: string): string => cle === 'materiel' ? CATEGORIE_A_PART : cle;
+const pileDeCategorie = (categorie: string): string | null => categorie === 'all' ? null : categorie === CATEGORIE_A_PART ? 'materiel' : categorie;
 export const sansJustificatif = (t: Transaction): boolean => !t.proofUrl && !t.finance?.proofDocumentId && !t.finance?.proofNotNeeded;
 
 export type JournalScope = 'current' | 'archives' | 'all';
@@ -43,6 +46,9 @@ export interface JournalRequest {
   allDates?: boolean;
   archiveYear?: string;
   year?: string;
+  /** Une plage venue de la Synthèse (19.11, « ça me renvoie sur le tout ») : jours `AAAA-MM-JJ`, bornes incluses ; elle remplace « toutes les dates ». */
+  du?: string;
+  au?: string;
 }
 export interface JournalState {
   scope: JournalScope;
@@ -176,7 +182,8 @@ export function TransactionJournal({ transactions, payments, archives, request, 
     const next = createJournalState({
       scope: request.scope ?? 'all', query: request.query ?? '', category: request.category ?? 'all',
       filter: request.filter ?? 'all', month: request.month ?? todayISO().slice(0, 7),
-      allDates: request.allDates ?? true, archiveYear: request.archiveYear ?? '', year: request.year ?? '', requestKey: request.key,
+      allDates: request.du && request.au ? false : request.allDates ?? true, archiveYear: request.archiveYear ?? '', year: request.year ?? '',
+      du: request.du && request.au ? request.du : '', au: request.du && request.au ? request.au : '', requestKey: request.key,
     });
     setInternalState(next);
     onStateChange?.(next);
@@ -389,6 +396,7 @@ export function TransactionJournal({ transactions, payments, archives, request, 
       rechercheOuverte={loupe || !!query} onLoupe={() => { if (!query) setLoupe(open => !open); }}
       query={query} onQuery={value => { change({ query: value }); if (!value) searchRef.current?.focus(); }} searchRef={searchRef} searchId={searchId}
       actifs={actifs} piles={piles} apportsCents={apportsCents} nomPiles={nomPiles} plage={plage} jours={jours} donneesFrise={donneesFrise} nbOperations={nbOperations} jourMax={jourMaxi(aujourdhui)} videTexte={videTexte}
+      pileChoisie={pileDeCategorie(category)} onPile={cle => { const c = categorieDePile(cle); change({ category: category === c ? 'all' : c }); }}
       onPlage={(du, au) => change({ du, au, allDates: false, year: '', ...(scope === 'archives' ? { scope: 'all' as JournalScope } : {}), ...(followingUp ? { filter: 'all' } : {}) })}/>
 
     {vueDoublons && <PaireDoublons groupes={groupesDoublons} nombre={nombreDoublons} onEcarter={ecarter} onAnnulees={setDoublonsAnnules}/>}

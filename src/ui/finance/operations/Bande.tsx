@@ -24,7 +24,7 @@ export interface Actif { cle: string; libelle: string; retirer: () => void }
  * La bande du haut (v6b) : la pastille de mois, la pastille « en retard », la loupe, puis les piles du mois et leur légende.
  * Tout filtre actif se dit ici, hors du panneau « Filtres » : une liste qui change ne doit jamais changer sans le dire.
  */
-export function Bande({ libellePeriode, contexte, moisActif, month, today, onMonth, retardCents, onRetard, rechercheOuverte, onLoupe, query, onQuery, searchRef, searchId, actifs, piles, plage, onPlage, nomPiles, apportsCents, jours, donneesFrise, nbOperations, jourMax, videTexte }: {
+export function Bande({ libellePeriode, contexte, moisActif, month, today, onMonth, retardCents, onRetard, rechercheOuverte, onLoupe, query, onQuery, searchRef, searchId, actifs, piles, plage, onPlage, nomPiles, apportsCents, jours, donneesFrise, nbOperations, jourMax, videTexte, pileChoisie = null, onPile }: {
   libellePeriode: string;
   /** Ce que la période contient en plus de son intitulé, quand ce n'est pas évident (suivi sur tous les exercices, archives comprises). */
   contexte?: string;
@@ -59,6 +59,10 @@ export function Bande({ libellePeriode, contexte, moisActif, month, today, onMon
   nomPiles?: string;
   /** La phrase de la bande quand la période n'a ni vente ni dépense (par défaut « Ni vente ni dépense sur … ») ; les archives disent ce qu'elles contiennent. */
   videTexte?: string;
+  /** La pile qui filtre la liste (FIN-BARRES-MORTES), ou null. */
+  pileChoisie?: string | null;
+  /** Toucher une pile : poser ou retirer le filtre de sa catégorie. */
+  onPile?: (cle: string) => void;
 }) {
   const [friseOuverte, setFriseOuverte] = useState(false);
   const champ = useRef<HTMLInputElement>(null);
@@ -109,6 +113,6 @@ export function Bande({ libellePeriode, contexte, moisActif, month, today, onMon
     {actifs.length > 0 && <div className="ops-actifs" role="group" aria-label="Filtres actifs">
       {actifs.map(a => <button type="button" key={a.cle} className="ops-actif" aria-label={`Retirer le filtre : ${a.libelle}`} onClick={a.retirer}>{a.libelle}<X size={12} aria-hidden="true"/></button>)}
     </div>}
-    {piles ? <Piles periode={piles} nom={nomPiles} apports={apportsCents ?? null} frise={frise} videTexte={videTexte}/> : frise}
+    {piles ? <Piles periode={piles} nom={nomPiles} apports={apportsCents ?? null} frise={frise} videTexte={videTexte} choisie={pileChoisie} onChoisir={onPile}/> : frise}
   </div>;
 }
