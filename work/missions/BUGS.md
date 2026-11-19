@@ -1,4 +1,11 @@
- ouvert — pas corrigé en ligne (test 4 : l'IA rend « idée, Moulin à malt », l'app garde la phrase brute en note dans le carnet ouvert) | 57254e47c || 57254e47c || 57254e47c || 57254e47c || 57254e47c || 57254e47c || 57254e47c || 57254e47c || 57254e47c || statut | lignes | ce que dit la colonne « état » |
+ouvert — pas corrigé en ligne (test 4 : l'IA rend « idée, Moulin à malt », l'app garde la phrase brute en note dans le carnet ouvert) ; passe 3 : confirmé, toutes tailles, deux thèmes ; passe 3 : confirmé (oct. 0 opération, ZZ TEST à payer du 19.11 listée) ; passe 3 : confirmé (« Noter un paiement ») ; paiement et retrait fonctionnent ; passe 3 : confirmé, frise à 164 px sur 340 (48 %) ; passe 3 : non reproduit (Courses refait par fournisseur) ; passe 3 : confirmé, toutes tailles ; passe 3 : 7,9 / 5,6 / 3,7 s sur PC, page directe, recette ZZ TEST |
+|
+|
+|
+|
+|
+|
+| 57254e47c || 57254e47c || 57254e47c || 57254e47c || 57254e47c || 57254e47c || 57254e47c || 57254e47c || 57254e47c || statut | lignes | ce que dit la colonne « état » |
 |---|---|---|
 | corrigé | 15 | « déployé (corrigé, vérifié au code du tag …) » et le commit |
 | encore présent | 75 | « ouvert — présent » avec le fichier et la ligne |
@@ -51,7 +58,7 @@ Lire :
 
 | chemin | préfixe | constats | notes | empreinte |
 |---|---|---|---|---|
-| work/missions/2026-11-18-choix-calendrier/tour2/en-ligne/RAPPORT-3.md | T3 | 4 | 1 | en cours |
+| work/missions/2026-11-18-choix-calendrier/tour2/en-ligne/RAPPORT-3.md | T3 | 7 | 1 | 72a7f3ff2174 |
 | work/missions/2026-11-18-choix-calendrier/tour2/en-ligne/RAPPORT-2.md | T2B | 3 | 1 | ef66f11d5dda |
 | work/missions/2026-11-18-choix-calendrier/tour2/en-ligne/RAPPORT.md | T2 | 10 | 1 | b0fb71f51615 |
 | work/missions/2026-10-31-ecran-fermentescibles/banc-critique/RAPPORT.md | B1 | 15 | 4 | c816dfc0a63a |
@@ -1702,4 +1709,7 @@ Verdict : 5/6 corrigés, 4 problèmes (0 bloquant), 6 envois IA (cumul ≈ 32 su
 | T3-2 | en-ligne passe 3 n° 2 | Calendrier › détail d'un brassin | « Brassage 8 sept. · pas brassée » puis Fermentation 20 nov., Dry hop 22 nov. : brassage passé non fait, étapes recalées sur aujourd'hui sans le dire. | m | ouvert | | brassin réel Ttt, lu seulement |
 | T3-3 | en-ligne passe 3 n° 3 | Calendrier (390, 1280, deux thèmes) | « Emballage · Jhhh » paraît deux fois de suite dans la rangée Brassins. | b | ouvert | | doublon ou deux emballages non distingués |
 | T3-4 | en-ligne passe 3 n° 4 | Calendrier 844×340 | Plein écran refusé par le navigateur (iPhone Safari, iframe) : en paysage, aucun effet ni message. | m | ouvert | | EnTete.tsx basculerPlein : invitation seulement téléphone droit |
+| T3-5 | en-ligne passe 3 n° 5 | Stocks › Courses | La ligne des recettes d'un article répète la même recette (« neipa v3 prévu » ×7, date sur deux ; « Jhhh prévu le 05.09.2026 » ×2). | m | ouvert | | |
+| T3-6 | en-ligne passe 3 n° 6 | Finances › Nouvelle dépense | Après « Enregistrer », la feuille reste ouverte « Confirmation de cette écriture en attente… Vérifier la synchronisation » alors que l'écriture est déjà dans la liste. | m | ouvert | | vu une fois, page figée pendant le clic |
+| T3-7 | en-ligne passe 3 n° 7 | Finances › Nouvelle dépense | Dépense à payer de 1,00 : la pastille « Mon mois » dit « +1,00 ». | b | ouvert | | |
 | T3-NOTE-1 | en-ligne passe 3 réserve | tous | Banc : premier clic réel après chargement perdu (3 fois) ; plein écran non jouable dans l'iframe ; tâches longues 11–15 s sur Finances › Opérations après plusieurs ouvertures. À mesurer sur téléphone. | — | ouvert, doute non compté | | |
