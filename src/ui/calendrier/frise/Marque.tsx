@@ -230,15 +230,18 @@ export const Marque: React.FC<MarqueProps> = props => {
   const { chose, centre, haut, hauteur = 28, largeurColonne, epinglee, etoilee, selectionnee, menuOuvert, libelle, decalage = 0, bornes } = props;
   const cible = React.useRef<HTMLButtonElement | null>(null);
   const Icone = chose.brassinLie ? ShoppingCart : ICONE_RANGEE[chose.rangee];
-  const commeBarre = !!bornes;
+  /* test en ligne du paquet E (bloquant) : en Mois, une vente ou un achat d'un jour est une petite marque ; elle se glisse aussi (d'un mois par
+     colonne), son appui long ouvrant toujours les 6 semaines (E27). `bornes` dit qu'elle se glisse ; `onAppuiLong`, qu'elle ouvre le menu. */
+  const glissable = !!bornes;
+  const avecMenu = glissable && !!props.onAppuiLong;
   const gestes = usePointeur({
     largeurColonne,
     borne: () => bornes ?? [0, 0],
-    refuseGlisse: () => (commeBarre && chose.deplacable !== true ? chose.deplacable.raison : commeBarre ? null : 'marque'),
-    onRefus: raison => { if (commeBarre) props.onRefus?.(chose, raison); },
+    refuseGlisse: () => (glissable && chose.deplacable !== true ? chose.deplacable.raison : glissable ? null : 'marque'),
+    onRefus: raison => { if (glissable) props.onRefus?.(chose, raison); },
     onToucher: () => cible.current && props.onToucher(chose, cible.current),
     onAppuiLong: () => {
-      if (commeBarre && cible.current && props.onAppuiLong) props.onAppuiLong(chose, cible.current);
+      if (avecMenu && cible.current && props.onAppuiLong) props.onAppuiLong(chose, cible.current);
       else props.onSixSemaines?.(chose);
     },
     onGlisse: k => props.onGlisse?.(chose, k),
@@ -272,7 +275,7 @@ export const Marque: React.FC<MarqueProps> = props => {
         {...(proposee ? { 'data-probable': '' } : {})}
         aria-label={`${nomAccessible(chose)}${montant ? `, ${montant}` : ''}${props.jalon && chose.lie ? `, ${chose.lie.texte}` : ''}`}
         aria-pressed={selectionnee || undefined}
-        aria-haspopup={commeBarre ? 'menu' : undefined}
+        aria-haspopup={avecMenu ? 'menu' : undefined}
         aria-expanded={menuOuvert || undefined}
         className={`cal-marque ${CLASSE_TEINTE[chose.rangee]}${proposee ? ' cal-pointille' : ''}${epinglee ? ' cal-epi' : ''}${selectionnee ? ' cal-sel' : ''}${decalage ? ' cal-glisse' : ''}${props.jalon ? ' cal-ponctuel' : ''}${props.ton ? ` cal-ponctuel-${props.ton}` : ''}`}
         style={style}

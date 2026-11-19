@@ -95,8 +95,10 @@ export function texteEffetCreux(avant: CourbeCaisse | null, apres: CourbeCaisse 
   const a = creuxDepuis(avant, 0), b = creuxDepuis(apres, 0);
   if (!a || !b) return null;
   const va = francs(a.centimes), vb = francs(b.centimes), sa = `S${a.numero}`, sb = `S${b.numero}`;
-  /* le chiffre clé ne bouge pas : la semaine qui change (la forme de f1-a, as-gestes.js), et le chiffre clé dit inchangé */
-  if (va === vb && sa === sb) return `${effet.texte} · à dépenser inchangé`;
+  /* le chiffre clé ne bouge pas : la semaine qui change (la forme de f1-a, as-gestes.js), et le chiffre clé AVEC sa valeur, qui reste.
+     Test en ligne du paquet E : « à dépenser inchangé · S50 : −660 → −659 » se lisait comme un chiffre clé qui bouge. « à dépenser reste −660 »
+     nomme le chiffre qui ne bouge pas, à côté du solde de la semaine qui, lui, bouge ; court, il tient à 390 (le nom du message cède le premier). */
+  if (va === vb && sa === sb) return `${effet.texte} · à dépenser reste ${va}`;
   if (va === vb) return `À dépenser ${va} : creux ${sa} → ${sb}`;
   if (sa === sb) return `À dépenser : ${va} → ${vb} · ${sa}`;
   return `À dépenser : ${va} · ${sa} → ${vb} · ${sb}`;

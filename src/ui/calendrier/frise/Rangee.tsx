@@ -737,9 +737,11 @@ export const Rangee: React.FC<RangeeProps> = props => {
                   epinglee={epingles.includes(c.id)} etoilee={etoiles.includes(c.id)} selectionnee={selectionId === c.id} menuOuvert={menuId === c.id} lieCourt={lieCourt}
                   libelle={d.avecLibelle ? { cote: d.cote === 'gauche' ? 'gauche' : 'droite', place: d.place, deux: d.deuxLignes, ...(c.brassinLie ? { texte: c.titre } : {}), ...(d.sansLie ? { sansLie: true } : {}), ...(d.retrait ? { retrait: d.retrait } : {}) } : undefined}
                   decalage={surDrag && drag.mode === 'glisse' ? drag.k * pas : 0}
-                  bornes={commeBarre ? [-d.a, colonnes.length - 1 - d.a] : undefined}
+                  bornes={[-d.a, colonnes.length - 1 - d.a]}
                   onToucher={props.barre.onToucher} onSixSemaines={props.onSixSemaines}
-                  {...(commeBarre ? { onAppuiLong: props.barre.onAppuiLong, onGlisse: props.barre.onGlisse, onLacheGlisse: props.barre.onLacheGlisse, onRefus: (ch: ChoseCalendrier, raison: string) => props.barre.onRefus(ch, raison) } : {})}
+                  onGlisse={props.barre.onGlisse} onLacheGlisse={props.barre.onLacheGlisse} onRefus={(ch: ChoseCalendrier, raison: string) => props.barre.onRefus(ch, raison)}
+                  /* test en ligne du paquet E : la petite marque (Mois, 3 mois, An) se glisse comme une barre ; son appui long garde les 6 semaines (E27) */
+                  {...(commeBarre ? { onAppuiLong: props.barre.onAppuiLong } : {})}
                 />
               );
             }
