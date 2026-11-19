@@ -36,6 +36,9 @@ describe('k1 A — feuille Mesures', () => {
     const resume = carteDensite().textContent ?? '';
     expect(resume).not.toMatch(/2,500/);
     expect(resume).toMatch(/OG 1,060/);
+    // La tuile « OG » du bandeau du haut garde aussi la valeur enregistrée.
+    expect(screen.queryAllByText('2,500')).toHaveLength(0);
+    expect(screen.getAllByText('1,060').length).toBeGreaterThan(0);
   });
 
   it('2 : un seul compte de relevés, le même dans le résumé « Densité » et sous « Densité au fil du brassin »', () => {
@@ -62,5 +65,7 @@ describe('k1 A — feuille Mesures', () => {
     rendre(base({ volumePackagedL: 57.9 }));
     const dit = (document.body.textContent ?? '').match(/57,9 L\s*(?:conditionnés\s*)?pour 19,8 L brassés/g) ?? [];
     expect(dit.length).toBe(1);
+    // Et la carte « Contenants » n'ajoute pas une seconde alerte de volume (« non répartis ») pour le même fait.
+    expect(screen.queryByText(/non répartis/)).toBeNull();
   });
 });

@@ -431,7 +431,7 @@ export const BatchDetailSheet: React.FC<BatchDetailSheetProps> = ({
           {planned
             ? <PlannedDate batch={draft} now={nowMs} geste={datePlan} onGeste={setDatePlan} onSave={date => void saveDate(date)} erreur={dateError} />
             : post
-              ? <HeroEtat batch={draft} now={nowMs} />
+              ? <HeroEtat batch={enregistre} now={nowMs} />
               : ficheM
               ? <FicheFermentation m={ficheM} verbe={draft.brewDay?.pitchedAt != null ? 'levuré' : 'brassé'} toast={toastStock} onTache={basculerTache}
                   reserve={pending.map(l => `${stockNames.get(l.stockItemRef) ?? l.stockItemRef} · ${Units.format(l.quantity, l.unit)}`)}

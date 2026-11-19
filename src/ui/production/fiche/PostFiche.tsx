@@ -201,7 +201,8 @@ export const Contenants: React.FC<{ batch: Batch; futs: Array<{ id: string; capa
       {/* BR-115, BE-86 : un brassin ne donne pas plus de bière qu'il n'en contenait ; douteux = signalé, jamais effacé. */}
       {(() => { const cuve = packagingLimitL(batch); return cuve !== null && batch.volumePackagedL != null && batch.volumePackagedL > cuve + 1e-9
         ? <p role="status" data-conditionne-trop className="mt-2 flex items-start gap-1.5 border-t border-cave-800 pt-2 text-sm text-attention"><AlertTriangle size={16} className="mt-0.5 shrink-0" aria-hidden="true" /><span><Mono className="font-semibold">{nombreFr(batch.volumePackagedL, 1)} L</Mono> pour {nombreFr(cuve, 1)} L brassés : vérifie le volume ou les fûts</span></p> : null; })()}
-      {vol && vol.nonRepartisL > 0 && <p role="status" data-non-repartis className="mt-2 flex items-start gap-1.5 border-t border-cave-800 pt-2 text-sm text-attention"><AlertTriangle size={16} className="mt-0.5 shrink-0" aria-hidden="true" /><span><Mono className="font-semibold">{nombreFr(vol.nonRepartisL, 1)} L</Mono> non répartis (volume conditionné supérieur aux contenants)</span></p>}
+      {/* k1 n° 4 : « pour 19,8 L brassés » dit déjà que le volume est trop grand ; « non répartis » le redirait (une seule alerte de volume). */}
+      {vol && vol.nonRepartisL > 0 && !(packagingLimitL(batch) !== null && batch.volumePackagedL != null && batch.volumePackagedL > packagingLimitL(batch)! + 1e-9) && <p role="status" data-non-repartis className="mt-2 flex items-start gap-1.5 border-t border-cave-800 pt-2 text-sm text-attention"><AlertTriangle size={16} className="mt-0.5 shrink-0" aria-hidden="true" /><span><Mono className="font-semibold">{nombreFr(vol.nonRepartisL, 1)} L</Mono> non répartis (volume conditionné supérieur aux contenants)</span></p>}
     </Panneau>
   );
 };
