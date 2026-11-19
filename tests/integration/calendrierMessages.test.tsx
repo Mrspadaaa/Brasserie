@@ -552,15 +552,16 @@ describe('CRITIQUE-12 n° 1 : le message se pose près de la chose ou en bas à 
     expect(m.getBoundingClientRect().top).toBeLessThan(560);
   });
 
-  it('390 × 844 : f1-a de la Saison sans place libre près d’elle : en bas, à gauche du + (left 8, largeur bornée par le +), au-dessus des onglets', () => {
+  it('390 × 844 : f1-a de la Saison sans place libre près d’elle : une bande libre plus loin, à gauche du + (PC-109 : jamais sur un nom), au-dessus des onglets', () => {
     monterEcran(PORTRAIT, { w: 500, h: 46 });
     render(<Message message={SEPT[0].msg} onFermer={() => undefined} />);
     const m = document.querySelector<HTMLElement>('[data-message]')!;
     const b = m.getBoundingClientRect();
-    expect(m.dataset.place).toBe('bas');
+    /* PC-109 (CRITIQUE-13 n° 3) : avant le bas, la bande la plus proche qui ne couvre aucun nom ; le bas reste le dernier recours */
+    expect(m.dataset.place).toBe('pres');
+    expect([...document.querySelectorAll(NOMS_MESSAGE)].filter(n => croise(b, n.getBoundingClientRect())).map(n => n.textContent)).toEqual([]);
     expect(b.left).toBe(8);
     expect(b.right).toBeLessThanOrEqual(PORTRAIT.fab.left - 8);
     expect(b.bottom).toBeLessThanOrEqual(PORTRAIT.nav.top - 8 + 1);
-    expect(b.bottom).toBeGreaterThan(PORTRAIT.nav.top - 20);
   });
 });

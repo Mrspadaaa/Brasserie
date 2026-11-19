@@ -58,6 +58,8 @@ export interface FriseProps extends Pick<RangeeProps, 'drag' | 'ici' | 'etiquett
   detail?: (chose: ChoseCalendrier) => React.ReactNode;
   /** CRITIQUE-13 n° 1 : l'alerte f6-b et la rangée de la vente promise, où elle se pose dans le flux (sous la vente, elle pousse la suite). */
   alerte?: { rangee: IdRangee; noeud: React.ReactNode } | null;
+  /** PC-109 (E33) : un message sans chose (l'échelle qui change la période) et sans place libre, posé en tête de la frise, dans le flux. */
+  tete?: React.ReactNode;
   /** Largeur de repli quand rien ne se mesure (jsdom). */
   largeurRepli?: number;
   /** Largeur, à droite, où aucun nom ne se pose : la zone du + volant au téléphone (D-135). En paysage, réservée sur toute la hauteur (n° 27). */
@@ -406,6 +408,7 @@ export const Frise: React.FC<FriseProps> = props => {
           </g>
         </svg>
       )}
+      {props.tete}
       {grouperVides(rangees.map(r => {
         const dedans = parRangee(r);
         const filtreeParFiltre = !!filtre && filtre !== r;

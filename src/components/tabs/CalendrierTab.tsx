@@ -822,8 +822,10 @@ export function CalendrierTab(props: CalendrierTabProps) {
     if (!c || (!positionDans(colonnes, c) && fluxForce !== message.id) || masquees.includes(c.rangee) || (filtre && filtre !== c.rangee)) return null;
     return c.rangee;
   })();
+  /* sans chose dans la frise (l'échelle qui change la période, une fête rangée sans date) : en tête de la frise */
+  const messageEnTete = !!message && fluxForce === message.id && rangeeAlerte === null && !liste && !graph;
   const noeudMessage = (
-    <Message message={message} onFermer={fermerMessage} detailOuvert={selectionId} dansLaFrise={rangeeAlerte !== null} onDefileSeul={absorberDefilement}
+    <Message message={message} onFermer={fermerMessage} detailOuvert={selectionId} dansLaFrise={rangeeAlerte !== null || messageEnTete} onDefileSeul={absorberDefilement}
       onSansPlace={() => { if (message && fluxForce !== message.id) setFluxForce(message.id); }} />
   );
 
@@ -922,6 +924,7 @@ export function CalendrierTab(props: CalendrierTabProps) {
           etiquetteDuree={duree}
           detail={detail}
           alerte={rangeeAlerte ? { rangee: rangeeAlerte, noeud: noeudMessage } : null}
+          tete={messageEnTete ? noeudMessage : undefined}
           onMesure={setMesure}
           reserveDroite={reserveDroite}
           onRenvoi={surRenvoi}
@@ -935,7 +938,7 @@ export function CalendrierTab(props: CalendrierTabProps) {
         />
       )}
 
-      {rangeeAlerte === null && noeudMessage}
+      {rangeeAlerte === null && !messageEnTete && noeudMessage}
 
       {menu && chosesMenu && (() => {
         const c = chosesMenu;

@@ -204,7 +204,8 @@ export function placerMessage(el: HTMLElement, ancre: string | undefined): 'pres
      (Livrer sur Achats, Lier sur Travaux, refus de jalon sur Ventes). Avant lui, une place qui ne couvre aucun nom, titre, détail, ni le + ni la
      chose (une barre peut passer dessous) : la bande la plus proche de la chose (sinon du bas), à gauche, à gauche du +, puis au milieu. */
   if (!libre) {
-    const durs = obs.filter(o => o.p >= 1);
+    /* 3 px d'air autour de chaque nom : collé à lui, le message se lit comme son étiquette */
+    const durs = obs.filter(o => o.p >= 1).map(o => ({ ...o, l: o.l - 3, t: o.t - 3, r: o.r + 3, b: o.b + 3 }));
     const cible = r && r.height > 0 ? r.top + r.height / 2 : bas;
     const ys: number[] = [];
     for (let y = haut; y + h <= bas + 1; y += 4) ys.push(y);
@@ -241,10 +242,17 @@ export function montrerEntiere(el: HTMLElement, ancre: string | undefined, avant
   if (nav && vu(nav) && nav.width >= nav.height) bas = nav.top - 8;
   const fab = document.querySelector('.floating-actions button, button[aria-label^="Actions rapides"]')?.getBoundingClientRect();
   if (fab && vu(fab) && fab.left < r.right && fab.right > r.left) bas = Math.min(bas, fab.top - 8);
-  const besoin = r.bottom - bas;
-  if (besoin <= 0) return false;
   const entete = document.querySelector('[data-entete-zone]')?.getBoundingClientRect();
   const haut = entete && entete.height > 0 ? entete.bottom + 6 : 8;
+  /* PC-109 : posé en tête de la frise (sans chose), le message peut être au-dessus de l'écran, sous l'en-tête collé : la frise remonte jusqu'à lui */
+  if (r.top < haut - 1) {
+    avant?.();
+    const d = defilant(el);
+    if (d) d.scrollBy({ top: Math.round(r.top - haut) }); else window.scrollBy({ top: Math.round(r.top - haut) });
+    return true;
+  }
+  const besoin = r.bottom - bas;
+  if (besoin <= 0) return false;
   const a = chose(ancre)?.getBoundingClientRect();
   const dy = Math.round(Math.max(0, Math.min(besoin, (a && a.height > 0 ? a.top : r.top) - haut)));
   if (dy < 1) return false;
@@ -294,8 +302,8 @@ export const Message: React.FC<MessageProps> = ({ message, onFermer, dureeMs = D
       if (!el.isConnected) return;
       const place = placerMessage(el, ancre);
       if (place) el.dataset.place = place; else delete el.dataset.place;
-      /* le bas couvrirait des noms : le message passe dans le flux de la rangée de sa chose, sous elle (comme l'alerte f6-b) */
-      if (place === 'bas' && ancre) sansPlace.current?.();
+      /* le bas couvrirait des noms : le message passe dans le flux, sous sa chose (comme l'alerte f6-b), ou en tête de la frise s'il n'en a pas */
+      if (place === 'bas') sansPlace.current?.();
     };
     const minuteries: Array<ReturnType<typeof setTimeout>> = [];
     placer();

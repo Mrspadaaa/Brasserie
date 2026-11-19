@@ -1432,7 +1432,7 @@ async function mesureMessage(p) {
     const z = document.querySelector('[data-entete-zone]'); const bas = z ? z.getBoundingClientRect().bottom : 0;
     const titres = [...document.querySelectorAll('[data-nom-rangee], [data-rangee] .cal-nom')].map(boite).filter(q => q.width > 0 && q.top >= bas - 1 && q.bottom <= innerHeight);
     const premier = titres.length ? Math.min(...titres.map(q => q.top)) : null;
-    const auDessus = premier !== null && M.top < premier - 1;
+    /* dans le flux (place « flux »), le message en tête de la frise est dans la zone du message, entre la bande et les rangées (PC-85) */ const auDessus = place !== 'flux' && premier !== null && M.top < premier - 1;
     const ok = croise.length === 0 && places.includes(place) && !auDessus;
     const raisons = [...(places.includes(place) ? [] : [`place « ${place} » hors de {${places.join(', ')}}`]), ...(auDessus ? [`au-dessus de la première rangée visible (message ${Math.round(M.top)} px, premier titre ${Math.round(premier)} px)`] : []), ...(croise.length ? [`croise ${croise.length} : ${[...new Set(croise)].slice(0, 6).join(' | ')}`] : [])];
     return { ok, place, croise, dit: `${ok ? 'MESSAGE OK' : 'MESSAGE ECHEC'} : boîte ${Math.round(M.left)},${Math.round(M.top)} ${Math.round(M.width)}×${Math.round(M.height)}, place « ${place} », ${ok ? '0 intersection' : raisons.join(' ; ')} — « ${(m.textContent || '').replace(/\s+/g, ' ').trim().slice(0, 60)} »` };
