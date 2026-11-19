@@ -204,7 +204,7 @@ export function HopIndexPanel({ createRequest, onNotice }: { createRequest?: { k
     {matches.length > limit && <Button onClick={() => setLimit(n => n + 20)}>Afficher les fiches suivantes</Button>}
     <Sheet open={!!variety && !editor} onClose={() => { setSelected(undefined); setLotId(undefined); }} title={variety?.name ?? 'Variété'} subtitle="Référence documentaire et analyses des lots">
       {variety && <article className="space-y-4 pb-6">
-        <div className="flex justify-between items-center gap-2 flex-wrap"><div className="flex flex-wrap gap-2"><BrewTag tone="info">{HOP_FORM_LABELS[variety.form]}</BrewTag><BrewTag>{hopReferenceSource(variety)}</BrewTag></div>
+        <div className="flex justify-between items-center gap-2 flex-wrap"><div className="flex flex-wrap gap-2">{variety.form !== 'unknown' && <BrewTag tone="info">{HOP_FORM_LABELS[variety.form]}</BrewTag>}<BrewTag>{hopReferenceSource(variety)}</BrewTag></div>
           <Button onClick={() => { setEditor({ kind: 'variety', value: structuredClone(variety) }); setError(''); }}>Modifier la variété</Button></div>
         {variety.descriptions.map((d, i) => <p key={i} className="text-cave-200">{d.text}<span className="block text-sm text-cave-400">{d.source.author}, {d.source.year ?? 'année inconnue'} — {({ rawHop: 'houblon brut', infusion: 'infusion', beer: 'bière d’essai', unspecified: 'contexte non précisé' })[d.context]}</span></p>)}
         <div className="flex flex-wrap gap-2 items-end"><Field label="Lot à consulter" className="flex-1 min-w-40"><select className={inputClass} value={lotId ?? ''} onChange={e => setLotId(e.target.value || undefined)}>

@@ -23,7 +23,8 @@ describe('TE-49 — la fiche sans l’inconnu empilé', () => {
     render(<HopIndexPanel />);
     expect(document.body.textContent).not.toMatch(/Forme non précisée/);
     fireEvent.click(screen.getByRole('button', { name: /Variété témoin/ }));
-    const lignes = [...document.querySelectorAll('details > summary')].map((s) => (s.textContent || '').replace(/\s+/g, ' '));
+    expect(document.body.textContent).not.toMatch(/Forme non précisée/);
+    const lignes =[...document.querySelectorAll('details > summary')].map((s) => (s.textContent || '').replace(/\s+/g, ' '));
     const inconnues = lignes.filter((t) => /Inconnu/.test(t));
     expect(inconnues.length).toBeGreaterThan(0);
     for (const t of inconnues) expect(t).not.toMatch(/Confiance/);
