@@ -158,7 +158,7 @@ describe('C16 (n° 35, E40, E46) : la vue Liste et la poche « Sans date »', ()
   it('Retirer une fête : « Sans date › » ouvre la Liste sur la poche, qui la contient ; un toucher ouvre son détail ; « Poser » la remet', async () => {
     const appels = monterBanc();
     toucher(boutonDe('[data-chose$="CR-NOEL"]'));
-    fireEvent.click(await screen.findByRole('button', { name: /^Retirer/ }));
+    fireEvent.click(await screen.findByRole('button', { name: /^(Ranger sans date|Annuler (la vente|l’achat|les travaux|le papier|la prévision))/ }));
     const lien = await screen.findByRole('button', { name: 'Sans date ›' });
     fireEvent.click(lien);
     const liste = document.querySelector('[data-vue-liste]') as HTMLElement;
@@ -188,9 +188,9 @@ describe('C16 (n° 35, E40, E46) : la vue Liste et la poche « Sans date »', ()
       const b = await screen.findByRole('button', { name: /^Marché de Noël/ });
       expect(b.getAttribute('data-semaine')).toBe('S52');
       toucher(b);
-      fireEvent.click(await screen.findByRole('button', { name: /^Retirer/ }));
+      fireEvent.click(await screen.findByRole('button', { name: /^(Ranger sans date|Annuler (la vente|l’achat|les travaux|le papier|la prévision))/ }));
       const m = await screen.findByRole('status');
-      expect(m.textContent).toMatch(/Retirée de S52 · Sans date ›/);
+      expect(m.textContent).toMatch(/Rangée sans date, plus en S52 · Sans date ›/);
       await waitFor(() => expect(StorageService.getCreativeItems().find(i => i.id === 'ZZ-NOEL')?.date).toBe(''));
       await waitFor(() => expect(screen.queryByRole('button', { name: /^Marché de Noël/ })).toBeNull());
       fireEvent.click(within(m).getByRole('button', { name: /Annuler/ }));
@@ -510,9 +510,10 @@ describe('CRITIQUE-11 n° 4 (E31, D-48, D-192) : le menu d’une fête dit l’e
     appuiLongSur(screen.getByRole('button', { name: /^Marché de Noël/ }));
     const menu = within(screen.getByRole('menu'));
     const dup = menu.getByRole('menuitem', { name: /^Dupliquer en S53/ });
-    const ret = menu.getByRole('menuitem', { name: /^Retirer/ });
+    const ret = menu.getByRole('menuitem', { name: /^(Ranger sans date|Annuler (la vente|l’achat|les travaux|le papier|la prévision))/ });
     expect(dup.textContent).toMatch(/^Dupliquer en S53 · \S.+$/u);
-    expect(ret.textContent).toMatch(/^Retirer · \S.+$/u);
+    /* paquet F n° 2 : une fête se range sans date, son libellé le dit */
+    expect(ret.textContent).toMatch(/^Ranger sans date · \S.+$/u);
     for (const item of [dup, ret]) {
       /* la courbe de Finances ne compte pas le carnet : la vérité en mots, jamais une flèche ni un 0 inventés */
       expect(item.textContent).toMatch(/recette estimée 1\s180 · ne change pas la courbe \(pas dans Finances\)$/u);

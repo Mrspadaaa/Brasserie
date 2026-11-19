@@ -72,6 +72,9 @@ const septJours = (lundi: string): Colonne[] => Array.from({ length: 7 }, (_, i)
   return { debut: j, fin: j, etiquette: jourLisible(j) };
 });
 
+/** Le nombre de mois que dit une période de `semaines` semaines (13 : « 3 mois » ; 26 : « 6 mois ») : un mois moyen fait 30,44 jours. */
+export const moisDeLaPeriode = (semaines: number): number => Math.max(1, Math.round((semaines * 7) / 30.44));
+
 export interface SemaineAxe { debut: string; numero: number }
 export interface MoisAxe { debut: string; fin: string; court: string }
 
@@ -86,8 +89,11 @@ export function colonnesDeLAxe(o: { echelle: Echelle; semaines: readonly Semaine
   const vues = o.semaines.slice(i, i + Math.max(1, o.nombre));
   if (o.echelle === 'jour') return vues.flatMap(s => septJours(s.debut));
   if (o.echelle === 'mois' && vues.length) {
+    /* paquet F n° 4 (PC-140) : « 3 mois » montrait 4 colonnes (13 semaines du 14 déc. touchent déc., janv., févr. et mars). La période en mois
+       montre autant de mois qu'elle en dit (13 semaines : 3 ; 26 : 6), à partir du mois où elle commence */
     const du = vues[0].debut, au = ajouterJours(vues[vues.length - 1].debut, 6);
-    const mois = o.mois.filter(m => m.fin >= du && m.debut <= au).map(m => ({ debut: m.debut, fin: m.fin, etiquette: m.court }));
+    const touches = o.mois.filter(m => m.fin >= du && m.debut <= au);
+    const mois = (vues.length >= MOIS_SEMAINES_MIN ? touches.slice(0, moisDeLaPeriode(vues.length)) : touches).map(m => ({ debut: m.debut, fin: m.fin, etiquette: m.court }));
     if (mois.length) return mois;
   }
   return vues.flatMap(s => (o.deplie && s.debut === o.deplie ? septJours(s.debut) : [{ debut: s.debut, fin: ajouterJours(s.debut, 6), etiquette: `S${s.numero}` }]));

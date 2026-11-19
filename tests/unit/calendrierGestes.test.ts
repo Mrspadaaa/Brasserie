@@ -117,7 +117,8 @@ describe('A6 : l’effet sur la caisse dit la première semaine qui change, une 
     expect(d.ecritures[0]).toMatchObject({ op: 'creer', collection: 'financialPlans', document: { id: 'PLAN-NEW', date: '2026-11-30', status: 'active', title: 'Malt' } });
     const r = bien(retirer(chose, ctx({ plans: [p], courbe })));
     expect(r.effet).toMatchObject({ numero: 52, avant: 452400, apres: 506400 });
-    expect(r.message.lecture).toBe('Annulé · S52 : 4 524 → 5 064 · dans Finances › · Annuler');
+    /* paquet F n° 2 : le message dit ce qui est annulé (une prévision d'achat) */
+    expect(r.message.lecture).toBe('Achat annulé · S52 : 4 524 → 5 064 · dans Finances › · Annuler');
   });
 });
 
@@ -181,10 +182,10 @@ describe('A9 (D-103) : le brassin planifié, ses jalons et le jalon de fin', () 
 
 describe('A10, retirer, dupliquer, accepter, fait, lier : les écritures et leurs refus (L33)', () => {
   const fete = (): CreativeItem => ({ id: 'CR-1', type: 'event', title: 'Marché de Noël', status: 'todo', date: '2026-12-14' });
-  it('retirer une fête enlève sa date et le dit : « Retirée de S51 · Sans date › · Annuler » ; rien n’est supprimé', () => {
+  it('ranger une fête sans date enlève sa date et le dit : « Rangée sans date, plus en S51 · Sans date › · Annuler » ; rien n’est supprimé', () => {
     const r = bien(retirer(choseCreative(fete())!, ctx()));
     expect(r.ecritures).toEqual([{ op: 'patch', collection: 'creativeItems', id: 'CR-1', patch: { date: '' } }]);
-    expect(r.message).toMatchObject({ lecture: 'Retirée de S51 · Sans date › · Annuler', lien: { ancre: 'sans-date' }, action: 'Annuler' });
+    expect(r.message).toMatchObject({ lecture: 'Rangée sans date, plus en S51 · Sans date › · Annuler', lien: { ancre: 'sans-date' }, action: 'Annuler' });
     expect(r.ecritures.some(e => e.op === 'supprimer')).toBe(false);
   });
   it('retirer un plan manuel le passe à cancelled ; un brassin, une facture refusent', () => {

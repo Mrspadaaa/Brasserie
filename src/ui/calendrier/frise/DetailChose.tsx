@@ -1,7 +1,8 @@
 import React from 'react';
-import { Beer, Check, ChevronRight, Link2, Receipt, ShoppingCart, Unlink, Wheat, X } from 'lucide-react';
+import { Beer, Check, ChevronRight, Link2, Receipt, ShoppingCart, Trash2, Unlink, Wheat, X } from 'lucide-react';
 import { ETAPE_BRASSIN } from './etapes';
-import { dateDeSemaine, etiquetteS, francsSignes, jourLisible, lundiDe, type ChoseCalendrier, type JalonBrassin, type JalonId } from '../../../domain/calendrier';
+import { libelleRetirer } from '../../../domain/calendrierGestes';
+import { dateDeSemaine, ecartJours, etiquetteS, francsSignes, jourLisible, lundiDe, type ChoseCalendrier, type JalonBrassin, type JalonId } from '../../../domain/calendrier';
 import { CLASSE_TEINTE, apercuSansNom, champ, dureeVue, lieMontre, nomLie } from './Marque';
 import type { LiensPossibles } from './MenuAppuiLong';
 
@@ -26,6 +27,8 @@ export interface DetailChoseProps {
   onBudget?: () => void;
   onModifier?: () => void;
   onRetirer?: () => void;
+  /** Paquet F n° 1 : une chose de la poche « Sans date » se supprime (effacée ; Annuler dans le message). */
+  onSupprimer?: () => void;
   onFait?: () => void;
   onPoser?: () => void;
   onAccepter?: () => void;
@@ -188,6 +191,8 @@ export const DetailChose: React.FC<DetailChoseProps> = props => {
   const frais = texteFrais(chose);
   const duree = brassin ? dureeVue(chose) : null;
   const pasBrassee = champ(chose, 'pasBrassee') === true;
+  /* des jours actifs moins nombreux que les jours de sa fenêtre : la date ne s'écrit pas comme une plage pleine */
+  const joursDansFenetre = !brassin && !!chose.joursActifs && !!chose.debut && !!chose.fin && ecartJours(chose.debut, chose.fin) + 1 > chose.joursActifs;
   /* CRITIQUE-5 n° 31 : la date se lit une fois. Hors d'un brassin, « Date 10 déc. » est déjà dans la grille : le morceau « le 10 déc. » du
      détail part (le reste du détail, une note ou « montant non renseigné », reste). */
   const detailSansDate = brassin ? chose.detail : sansLaDate(chose.detail, chose.debut);
@@ -220,9 +225,12 @@ export const DetailChose: React.FC<DetailChoseProps> = props => {
       ) : (
         <div className="cal-det-et">
           {semaine && <div><span>Semaine</span><b>{texteSemaine(semaine)}</b></div>}
-          {chose.debut && <div><span>Date</span><b><time className="cal-nowrap" dateTime={chose.debut}>{date(chose.debut)}</time>{chose.fin && chose.fin !== chose.debut ? <> → <time className="cal-nowrap" dateTime={chose.fin}>{date(chose.fin)}</time></> : ''}</b></div>}
+          {chose.debut && !joursDansFenetre && <div><span>Date</span><b><time className="cal-nowrap" dateTime={chose.debut}>{date(chose.debut)}</time>{chose.fin && chose.fin !== chose.debut ? <> → <time className="cal-nowrap" dateTime={chose.fin}>{date(chose.fin)}</time></> : ''}</b></div>}
+          {/* paquet F n° 5 (PC-141) : une fête de 3 jours posée sur une semaine ne dure pas « 14 déc. → 20 déc. ». Ses jours ne sont pas écrits (la
+              feuille choisit des semaines) : la date dit ce qui est su, « 3 j entre le 14 déc. et le 20 déc. », sans jour inventé */}
+          {chose.debut && joursDansFenetre && <div data-date-jours><span>Date</span><b>{chose.joursActifs} j entre le <time className="cal-nowrap" dateTime={chose.debut}>{date(chose.debut)}</time> et le <time className="cal-nowrap" dateTime={chose.fin}>{date(chose.fin)}</time></b></div>}
           {chose.fenetre && <div><span>Fenêtre</span><b>{etiquetteS(chose.fenetre.du)} → {etiquetteS(chose.fenetre.au)}</b></div>}
-          {chose.joursActifs ? <div><span>Jours actifs</span><b>{chose.joursActifs} j</b></div> : null}
+          {chose.joursActifs && !joursDansFenetre ? <div><span>Jours actifs</span><b>{chose.joursActifs} j</b></div> : null}
           {libreSemaine !== undefined && libreSemaine !== null && <div><span>Libre de la semaine</span><b>{francsSignes(libreSemaine).replace(/^\+/, '')}</b></div>}
           {!semaine && <div><span>Date</span><b>Sans date</b></div>}
         </div>
@@ -276,7 +284,9 @@ export const DetailChose: React.FC<DetailChoseProps> = props => {
         {props.onDelier && chose.liens && lieeA.length > 0 && (
           <button type="button" className="cal-b" aria-label={`Délier de ${lieeA.join(' et ')}`} data-delier onClick={() => props.onDelier?.(lieeA.join(' et '))}><Unlink size={16} aria-hidden="true" />Délier</button>
         )}
-        {props.onRetirer && <button type="button" className="cal-b cal-b-ret" onClick={props.onRetirer}>Retirer</button>}
+        {/* paquet F n° 2 : le libellé dit ce que fait le geste (« Ranger sans date », « Annuler la vente ») ; ranger se défait sans perte, pas en rouge */}
+        {props.onRetirer && <button type="button" className={chose.source.genre === 'creative' ? 'cal-b' : 'cal-b cal-b-ret'} data-retirer onClick={props.onRetirer}>{libelleRetirer(chose)}</button>}
+        {props.onSupprimer && <button type="button" className="cal-b cal-b-ret" data-supprimer onClick={props.onSupprimer}><Trash2 size={16} aria-hidden="true" />Supprimer</button>}
       </div>
       {/* lot A du test en ligne (18.11, n° 2, D386) : « Lier » déplie les puces de l'appui long, groupées ; un toucher pose le lien, la fiche
           reste ouverte et montre « lié à … » */}

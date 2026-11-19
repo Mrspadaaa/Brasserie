@@ -249,9 +249,9 @@ describe('CRITIQUE-5 n° 5 : le message de Retirer d’un plan manuel garde son 
     act(() => { vi.advanceTimersByTime(500); });
     vi.useRealTimers();
     fireEvent.pointerUp(b, { clientX: 100, clientY: 10, pointerId: 1 });
-    fireEvent.click(await screen.findByRole('menuitem', { name: /Retirer/ }));
+    fireEvent.click(await screen.findByRole('menuitem', { name: /^(Ranger sans date|Annuler (la vente|l’achat|les travaux|le papier|la prévision))/ }));
     const m = await screen.findByRole('status');
-    expect(m.querySelector('.cal-msg-ligne')!.textContent).toMatch(/^Annulé · S\d+ : [\d\s −]+ → [\d\s −]+$/);
+    expect(m.querySelector('.cal-msg-ligne')!.textContent).toMatch(/^Achat annulé · S\d+ : [\d\s −]+ → [\d\s −]+$/);
     expect(within(m).getByRole('button', { name: /Finances ›/ }).textContent).toBe('Finances ›');
     expect(within(m).getByRole('button', { name: /Annuler/ })).toBeInTheDocument();
   });
@@ -339,11 +339,11 @@ describe('CRITIQUE-11 et 12 : le message ne déplace rien ; au grand écran et p
     expect(f1a.closest('[data-entete-zone]')).toBeNull();
     expect(document.querySelector('[data-msg-bande]')).toBeNull();
     appuiLong(barre(/^Marché de Noël/));
-    fireEvent.click(within(await screen.findByRole('menu')).getByRole('menuitem', { name: /^Retirer/ }));
-    await waitFor(() => expect(messages().some(x => /^Retirée de S52/.test(x.textContent ?? ''))).toBe(true));
-    const ret = messages().find(x => /^Retirée de S52/.test(x.textContent ?? ''))!;
+    fireEvent.click(within(await screen.findByRole('menu')).getByRole('menuitem', { name: /^(Ranger sans date|Annuler (la vente|l’achat|les travaux|le papier|la prévision))/ }));
+    await waitFor(() => expect(messages().some(x => /^Rangée sans date, plus en S52/.test(x.textContent ?? ''))).toBe(true));
+    const ret = messages().find(x => /^Rangée sans date, plus en S52/.test(x.textContent ?? ''))!;
     expect(ret.closest('[data-message]')!.getAttribute('data-ancre')).toBeTruthy();
-    expect(ret.textContent).toMatch(/^Retirée de S52 · Sans date › · Annuler$/);
+    expect(ret.textContent).toMatch(/^Rangée sans date, plus en S52 · Sans date › · Annuler$/);
     expect(ret.closest('[data-entete-zone]')).toBeNull();
   });
 

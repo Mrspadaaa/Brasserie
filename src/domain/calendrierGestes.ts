@@ -456,6 +456,25 @@ export function dupliquer(chose: ChoseCalendrier, versLundi: string, ctx: Contex
  * f5-a (D-113, L33) : Retirer n'efface rien. Une fête ou une activité perd sa date (elle reste dans sa source, dans la poche « Sans date ») ;
  * un plan manuel passe à `cancelled` (il reste dans Finances). Un brassin, une facture, une charge fixe : refus, avec l'écran où le faire.
  */
+/**
+ * Paquet F n° 2 (PC-138, décision du pilote, 19.11) : « Retirer » avait deux sens (une fête part dans Sans date, une vente est marquée annulée).
+ * Le libellé dit ce que fait le geste, et le message le redit : « Ranger sans date » / « Rangée sans date » ; « Annuler la vente » / « Vente
+ * annulée ». Une prévision d'une autre rangée se nomme de même par ce qu'elle est.
+ */
+const ANNULATION_DE_RANGEE: Partial<Record<ChoseCalendrier['rangee'], { libelle: string; fait: string }>> = {
+  ventes: { libelle: 'Annuler la vente', fait: 'Vente annulée' },
+  achats: { libelle: 'Annuler l’achat', fait: 'Achat annulé' },
+  travaux: { libelle: 'Annuler les travaux', fait: 'Travaux annulés' },
+  papiers: { libelle: 'Annuler le papier', fait: 'Papier annulé' }
+};
+const ANNULATION_PAR_DEFAUT = { libelle: 'Annuler la prévision', fait: 'Prévision annulée' };
+
+/** Le libellé du geste Retirer pour cette chose : ce qu'il fait, jamais « Retirer » seul. */
+export function libelleRetirer(chose: Pick<ChoseCalendrier, 'source' | 'rangee'>): string {
+  if (chose.source.genre === 'creative') return 'Ranger sans date';
+  return (ANNULATION_DE_RANGEE[chose.rangee] ?? ANNULATION_PAR_DEFAUT).libelle;
+}
+
 export function retirer(chose: ChoseCalendrier, ctx: ContexteGestes): Resolution {
   const source = chose.source;
   /* CRITIQUE-11 n° 4 (E31, D-192) : comme Dupliquer, Retirer dit son effet ; sans effet sur la courbe, en mots (`effetEnMots`) */
@@ -465,16 +484,17 @@ export function retirer(chose: ChoseCalendrier, ctx: ContexteGestes): Resolution
     const effetMots = effet ? undefined : effetEnMots(chose, ctx);
     return {
       ok: true, ecritures: [{ op: 'patch', collection: 'creativeItems', id: source.id, patch: { date: '' } }], effet, ...(effetMots ? { effetMots } : {}), promesse: null, courbeApres: apres,
-      message: annuler(`Retirée de ${etiquetteS(chose.debut)}`, { texte: 'Sans date ›', ancre: 'sans-date' })
+      message: annuler(`Rangée sans date, plus en ${etiquetteS(chose.debut)}`, { texte: 'Sans date ›', ancre: 'sans-date' })
     };
   }
   if (source.genre === 'plan' && source.origine === 'manual') {
     const apres = ctx.courbe ? courbeSans(ctx.courbe, chose.id) : null;
     const effet = effetCaisse(ctx.courbe, apres);
     const effetMots = effet ? undefined : effetEnMots(chose, ctx);
+    const { fait: annule } = ANNULATION_DE_RANGEE[chose.rangee] ?? ANNULATION_PAR_DEFAUT;
     return {
       ok: true, ecritures: [{ op: 'patch', collection: 'financialPlans', id: source.id, patch: { status: 'cancelled' } }], effet, ...(effetMots ? { effetMots } : {}), promesse: null, courbeApres: apres,
-      message: annuler(`Annulé${effet ? ` · ${effet.texte}` : ''}`, { texte: 'dans Finances ›', ancre: 'finances', cible: { ecran: 'finances' } })
+      message: annuler(`${annule}${effet ? ` · ${effet.texte}` : ''}`, { texte: 'dans Finances ›', ancre: 'finances', cible: { ecran: 'finances' } })
     };
   }
   if (source.genre === 'batch') return refus('Un brassin ne se retire pas d’ici : on ne supprime rien. Ouvre le brassin pour l’annuler (Brassins).', chose.ouvre, { texte: 'Ouvrir le brassin ›', ancre: 'brassin', cible: chose.ouvre });
@@ -519,6 +539,16 @@ export function accepterVente(chose: ChoseCalendrier, ctx: ContexteGestes): Reso
   const apres = ctx.courbe && plan.amountCents > 0 ? courbeAvec(ctx.courbe, [mouvement]) : ctx.courbe;
   const effet = effetCaisse(ctx.courbe, apres);
   return { ok: true, ecritures: [{ op: 'patch', collection: 'financialPlans', id: plan.id, patch: { status: 'active' } }], effet, promesse: null, courbeApres: apres, message: annuler(effet ? `Vente acceptée · ${effet.texte}` : 'Vente acceptée') };
+}
+
+/**
+ * Paquet F n° 1 (PC-142) : une chose de la poche « Sans date » se supprime pour de vrai (le document de la source est effacé), sans dialogue :
+ * le message dit « Supprimée : … · Annuler » le temps du message, et Annuler recrée le document d'avant (`appliquer`, inverse d'un `supprimer`).
+ * Seule la poche le propose : une chose datée se range sans date ou s'annule (L33 : rien d'ancien ne s'efface d'un geste de la frise).
+ */
+export function supprimerSansDate(chose: ChoseCalendrier): Resolution {
+  if (!chose.sansDate || chose.source.genre !== 'creative') return refus('Seule une chose sans date se supprime d’ici.', chose.ouvre);
+  return { ok: true, ecritures: [{ op: 'supprimer', collection: 'creativeItems', id: chose.source.id }], effet: null, promesse: null, courbeApres: null, message: annuler(`Supprimée : ${chose.titre}`) };
 }
 
 /** E30, E46 : « Fait » pour une activité ou une tâche : elle quitte la frise et la poche. */

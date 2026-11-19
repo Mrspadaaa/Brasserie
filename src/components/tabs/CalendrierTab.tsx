@@ -30,7 +30,7 @@ import {
   type BrouillonAjout, type ContexteAjout
 } from '../../domain/calendrierAjout';
 import {
-  accepterVente, alignerCourbe, allonger, deplacer, deplacerJours, dupliquer, dureeAllongee, fait, lier, delier, livrer, mettreDeCote, retirer, noterIdee,
+  accepterVente, alignerCourbe, allonger, deplacer, deplacerJours, dupliquer, dureeAllongee, fait, lier, delier, livrer, mettreDeCote, retirer, noterIdee, supprimerSansDate,
   type ContexteGestes, type Ecriture, type Message as MessageGeste, type Promesse, type Resolution
 } from '../../domain/calendrierGestes';
 
@@ -242,8 +242,9 @@ export function CalendrierTab(props: CalendrierTabProps) {
   const [courbeCachee, setCourbeCachee] = useEtatGarde<boolean>('calendrier_courbe_cachee', false);
   const [duree, setDuree] = useState<{ id: string; texte: string } | null>(null);
   const [mesure, setMesure] = useState({ largeur: 0, largeurColonne: 0 });
-  /* D385 : l'échelle de l'axe (Jour, Semaine, Mois), Semaine à chaque ouverture (« semaine par default », #202) ; la semaine dépliée (C) */
-  const [echelleVoulue, setEchelleVoulue] = useState<Echelle>('semaine');
+  /* D385 : l'échelle de l'axe (Jour, Semaine, Mois), Semaine par défaut (« semaine par default », #202) ; la semaine dépliée (C).
+     Paquet F n° 3 (PC-139) : l'échelle choisie se garde par appareil, comme la plage : au rechargement, « 3 mois » en Mois reste en Mois */
+  const [echelleVoulue, setEchelleVoulue] = useEtatGarde<Echelle>('calendrier_echelle', 'semaine');
   const [deplie, setDeplie] = useState<string | null>(null);
   const compteur = useRef(0);
 
@@ -276,7 +277,16 @@ export function CalendrierTab(props: CalendrierTabProps) {
   echelleRef.current = echelle;
   /* une période réglée ailleurs (menu, Finances, cadre de la courbe) que l'échelle voulue ne permet pas la ramène à celle montrée ; jamais en
      paysage (13 semaines le temps de la rotation : l'échelle revient au retour) */
-  useEffect(() => { if (!paysage && !annee && echelleVoulue !== echelle) setEchelleVoulue(echelle); }, [paysage, annee, echelleVoulue, echelle]);
+  /* paquet F n° 3 : pas avant que la fenêtre ait rejoint la période de l'app (au montage, 6 semaines le temps que l'en-tête lise « 3 mois ») ;
+     sinon l'échelle gardée retomberait à Semaine à chaque rechargement */
+  const semainesDeLaPeriode = useMemo(() => {
+    const total = modele.semaines.length;
+    return periodeLocale && total ? fenetreDePeriode(periodeLocale, modele.semaines[0].debut, total)?.semaines ?? null : null;
+  }, [periodeLocale, modele.semaines]);
+  const fenetreSurLaPeriode = !periodeLocale || (modele.semaines.length > 0 && (semainesDeLaPeriode === null || semainesDeLaPeriode === fenetre.semaines));
+  useEffect(() => {
+    if (!paysage && !annee && fenetreSurLaPeriode && echelleVoulue !== echelle) setEchelleVoulue(echelle);
+  }, [paysage, annee, fenetreSurLaPeriode, echelleVoulue, echelle, setEchelleVoulue]);
 
   /* ---------- le message : UN canal pour tout l'onglet (E33, D-200, CRITIQUE-3 n° 7) ----------
      Un message chasse le précédent. Il part au premier défilement de 24 px (la page ou un conteneur de l'onglet, la frise comprise), à tout
@@ -723,6 +733,7 @@ export function CalendrierTab(props: CalendrierTabProps) {
         {...(editable && !sansDate ? { onRetirer: () => { void ecrire(retirer(chose, ctxRef.current)); } } : {})}
         {...(creative && chose.source.genre === 'creative' && chose.source.type !== 'recipe-idea' && (chose.rangee === 'activites' || sansDate) ? { onFait: () => { void ecrire(fait(chose)); } } : {})}
         {...(chose.rangee === 'ventes' && chose.source.genre === 'plan' && !chose.probable ? { onFacturer: () => { setSelectionId(null); onOpenFinances(); } } : {})}
+        {...(/* paquet F n° 1 (PC-142) : toute chose de la poche se supprime, sans dialogue ; le message garde Annuler (7 s) */ sansDate && creative ? { onSupprimer: () => { setSelectionId(null); void ecrire(supprimerSansDate(chose)); } } : {})}
         {...(sansDate ? { onPoser: () => { setSelectionId(null); setFeuille({ mode: 'modifier', initial: { ...brouillonDepuisChose(chose), debut: premierLundi, debutChoisi: true }, chose, cle: ++compteur.current }); } } : {})}
         {...(chose.probable && chose.source.genre === 'plan' && !chose.proposition ? { onAccepter: () => { void ecrire(accepterVente(chose, ctxRef.current)); } } : {})}
         {...(editable ? { onMettreDeCote: (actif: boolean) => { void ecrire(mettreDeCote(chose, actif, ctxRef.current)); } } : {})}

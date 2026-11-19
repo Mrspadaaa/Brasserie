@@ -1,6 +1,7 @@
 import React from 'react';
-import { Copy, ExternalLink, Filter, Link2, Pin, Star, Trash2 } from 'lucide-react';
+import { Ban, CalendarX, Copy, ExternalLink, Filter, Link2, Pin, Star } from 'lucide-react';
 import type { ChoseCalendrier } from '../../../domain/calendrier';
+import { libelleRetirer } from '../../../domain/calendrierGestes';
 import './feuille.css';
 /* `.cal-ml-mots` (CRITIQUE-11 n° 4) vit dans message.css, au lot du domaine des messages ; frise.css est au lot de la frise */
 import '../message.css';
@@ -250,7 +251,8 @@ export const MenuAppuiLong: React.FC<MenuAppuiLongProps> = props => {
       </button>
       {retirable ? (
         <button type="button" role="menuitem" {...agir(props.onRetirer)} className={`cal-ml cal-ml-ret${enMots(retirable.effet) ? ' cal-ml-mots' : ''}`}>
-          <Trash2 size={20} aria-hidden="true" /><span>Retirer</span>{retirable.effet && <><span className="sr-only"> · </span><em data-effet-retirer>{effetVu(retirable.effet)}</em></>}
+          {/* paquet F n° 2 (PC-138) : le libellé dit ce que fait le geste ; ranger n'efface rien, son picto n'est pas une corbeille */}
+          {chose.source.genre === 'creative' ? <CalendarX size={20} aria-hidden="true" /> : <Ban size={20} aria-hidden="true" />}<span>{libelleRetirer(chose)}</span>{retirable.effet && <><span className="sr-only"> · </span><em data-effet-retirer>{effetVu(retirable.effet)}</em></>}
         </button>
       ) : (
         <>

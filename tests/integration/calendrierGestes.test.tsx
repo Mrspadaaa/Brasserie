@@ -81,8 +81,8 @@ describe('C4 : appui long, le menu (f5-a)', () => {
     appuiLong(barre(/^Marché de Noël/));
     const menu = within(await screen.findByRole('menu'));
     const noms = [...screen.getByRole('menu').querySelectorAll('[role^="menuitem"]')].map(i => i.textContent ?? '');
-    expect(noms.join('|')).toMatch(/Épingler.*Étoile.*Fêtes seules.*Dupliquer en S\d+.*Lier à un brassin, un client.*Retirer/);
-    fireEvent.click(menu.getByRole('menuitem', { name: /Retirer/ }));
+    expect(noms.join('|')).toMatch(/Épingler.*Étoile.*Fêtes seules.*Dupliquer en S\d+.*Lier à un brassin, un client.*Ranger sans date/);
+    fireEvent.click(menu.getByRole('menuitem', { name: /^(Ranger sans date|Annuler (la vente|l’achat|les travaux|le papier|la prévision))/ }));
     await waitFor(() => expect(appels).toHaveLength(1));
     expect(appels[0]).toMatchObject({ op: 'patch', collection: 'creativeItems', id: 'CR-NOEL', patch: { date: '' } });
     expect(appels.some(a => a.op === 'supprimer')).toBe(false);
@@ -162,7 +162,7 @@ describe('C16 (D-67, D-93, E46) : Retirer, la poche « Sans date », Poser, Fait
   it('Retirer une fête : « Sans date › » ; un toucher ouvre la Liste sur la poche ; « Poser » rouvre la feuille et la remet sur la frise', async () => {
     const { appels } = monter();
     appuiLong(barre(/^Marché de Noël/));
-    fireEvent.click(await screen.findByRole('menuitem', { name: /Retirer/ }));
+    fireEvent.click(await screen.findByRole('menuitem', { name: /^(Ranger sans date|Annuler (la vente|l’achat|les travaux|le papier|la prévision))/ }));
     const m = await screen.findByRole('status');
     expect(m.textContent).toContain('Sans date ›');
     fireEvent.click(within(m).getByRole('button', { name: 'Sans date ›' }));
@@ -200,9 +200,9 @@ describe('C16 (D-67, D-93, E46) : Retirer, la poche « Sans date », Poser, Fait
     const semaine = barre(/^Marché de Noël/).getAttribute('data-semaine');
     expect(semaine).toBe('S52');
     appuiLong(barre(/^Marché de Noël/));
-    fireEvent.click(await screen.findByRole('menuitem', { name: /Retirer/ }));
+    fireEvent.click(await screen.findByRole('menuitem', { name: /^(Ranger sans date|Annuler (la vente|l’achat|les travaux|le papier|la prévision))/ }));
     const m = await screen.findByRole('status');
-    expect(m.textContent).toMatch(/Retirée de S52 · Sans date ›/);
+    expect(m.textContent).toMatch(/Rangée sans date, plus en S52 · Sans date ›/);
     await waitFor(() => expect(screen.queryByRole('button', { name: /^Marché de Noël/ })).toBeNull());
     /* Annuler n'écoute qu'après 400 ms (le doigt du menu) */
     await new Promise(r => setTimeout(r, 450));
@@ -278,7 +278,7 @@ describe('CRITIQUE-2 (corr. 2, L2) : glisser au vrai toucher, menu borné, effet
     const top = parseFloat(menu.style.top);
     expect(top).toBeGreaterThanOrEqual(8);
     expect(top + HAUTEUR_REPLI_PX).toBeLessThanOrEqual(h - 40);
-    expect(within(menu).getByRole('menuitem', { name: /Retirer/ })).toBeInTheDocument();
+    expect(within(menu).getByRole('menuitem', { name: /^(Ranger sans date|Annuler (la vente|l’achat|les travaux|le papier|la prévision))/ })).toBeInTheDocument();
   });
 
   it('n° 32 : Lier pose « lié à La Cigogne » ; Étoile marque la courbe ; Retirer fait voir « Retirée de S… · Sans date › »', async () => {
@@ -294,8 +294,8 @@ describe('CRITIQUE-2 (corr. 2, L2) : glisser au vrai toucher, menu borné, effet
     fireEvent.click(within(await screen.findByRole('menu')).getByRole('menuitemcheckbox', { name: /Étoile/ }));
     await waitFor(() => expect(barre(/^Marché de Noël/).querySelector('.cal-etoile, .lucide-star')).not.toBeNull());
     appuiLong(barre(/^Marché de Noël/));
-    fireEvent.click(within(await screen.findByRole('menu')).getByRole('menuitem', { name: /Retirer/ }));
-    await waitFor(() => expect(messages().map(m => m.textContent).join(' ')).toMatch(/Retirée de S\d+ · Sans date ›/));
+    fireEvent.click(within(await screen.findByRole('menu')).getByRole('menuitem', { name: /^(Ranger sans date|Annuler (la vente|l’achat|les travaux|le papier|la prévision))/ }));
+    await waitFor(() => expect(messages().map(m => m.textContent).join(' ')).toMatch(/Rangée sans date, plus en S\d+ · Sans date ›/));
   });
 
   it('n° 30 f2-a : tirer le bord de la Blonde fait voir « J0 / 35 » pendant et après, écrit finPrevue et ouvre l’alerte de la promesse', async () => {
@@ -437,7 +437,7 @@ describe('CRITIQUE-3 (lot t3-c-frise) : le menu de l’appui long', () => {
     expect(m).toHaveAttribute('data-colonnes', '2');
     const actions = [...m.querySelectorAll('[role^="menuitem"]')].map(x => x.textContent ?? '');
     expect(actions).toHaveLength(6);
-    expect(actions.join('|')).toMatch(/Épingler.*Étoile.*Fêtes seules.*Dupliquer en S52.*Lier à un brassin, un client.*Retirer/);
+    expect(actions.join('|')).toMatch(/Épingler.*Étoile.*Fêtes seules.*Dupliquer en S52.*Lier à un brassin, un client.*Ranger sans date/);
     expect(m.querySelectorAll('.cal-m2c')).toHaveLength(2);
     const top = parseFloat(m.style.top);
     expect(top).toBeGreaterThanOrEqual(8);
@@ -873,7 +873,7 @@ describe('CRITIQUE-10 n° 5 (E31) : « Dupliquer en S… » montre son effet, qu
     expect(item.textContent).toMatch(/^Dupliquer en S48 · coût à venir$/);
     expect(item.querySelector('[data-effet-dupliquer]')?.textContent).toBe('coût à venir');
     /* même forme que Retirer : l'effet dans un <em> à part, sous son action dans un menu étroit (deux lignes au plus) */
-    expect(screen.getByRole('menuitem', { name: /^Retirer/ }).querySelector('em')?.tagName).toBe('EM');
+    expect(screen.getByRole('menuitem', { name: /^(Ranger sans date|Annuler (la vente|l’achat|les travaux|le papier|la prévision))/ }).querySelector('em')?.tagName).toBe('EM');
   });
 
   it('un effet chiffré se lit de même ; sans effet, l’action seule (jamais un effet inventé)', () => {
