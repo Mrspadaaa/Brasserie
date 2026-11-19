@@ -29,6 +29,9 @@ export const FAMILLES: readonly FermentableKind[] = ['grain', 'sucre', 'fruit'];
 
 // ---------------------------------------------------------------------------------------------------------------- formats
 export const fr = (x: number, d: number) => x.toFixed(d).replace('.', ',');
+/** TL-26 : « 0 % ferm. » à côté d'une barre se lisait comme un réglage (la barre règle la masse) ; un sucre qui ne fermente pas le dit en mots. L'inconnu vaut 100 % (défaut du moteur). */
+export const etiquetteFermentescibilite = (pct: number | undefined): string =>
+  pct === 0 ? 'ne fermente pas' : `${fr(pct ?? 100, Number.isInteger(pct ?? 100) ? 0 : 1)} % ferm.`;
 /** 5 → « 5,0 », 0,3 → « 0,30 », 0 → « 0 » (la maquette). */
 export function kgTxt(x: number): string {
   if (!x) return '0';
