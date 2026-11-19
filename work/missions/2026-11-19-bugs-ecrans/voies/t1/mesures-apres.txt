@@ -1,0 +1,17 @@
+palette 390 clair {"loupe":{"present":true,"valeur":"17,50 Cascade","focus":true},"cmdk":{"present":true,"valeur":"Versandkosten","focus":true,"archives":true}} | erreurs page 0
+palette 1280 clair {"loupe":{"present":true,"valeur":"17,50 Cascade","focus":true},"cmdk":{"present":true,"valeur":"Versandkosten","focus":true,"archives":true}} | erreurs page 0
+wizard-Eau-390-cave-avant FAB [314,788,64,40] max 331
+erreurs page : 0  | bloquées 1
+wizard-Rcap-390-cave-avant FAB [314,737,64,40] max 0
+erreurs page : 0  | bloquées 1
+clic raté Eau TimeoutError: Timed out after waiting 8000ms
+wizard-Eau-1280-clair-avant FAB [1204,744,64,40] max 1123
+erreurs page : 0  | bloquées 1
+clic raté Récap. TimeoutError: Timed out after waiting 8000ms
+wizard-Rcap-1280-cave-avant FAB [1204,744,64,40] max 1123
+erreurs page : 0  | bloquées 1
+recette-390-cave-avant FAB [338,798,44,44] max 259
+erreurs page : 0  | bloquées 4
+recette-1280-cave-avant FAB [972,754,44,44] max 223
+erreurs page : 0  | bloquées 4
+FIN
