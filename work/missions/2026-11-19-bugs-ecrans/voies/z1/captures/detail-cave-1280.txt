@@ -1,0 +1,131 @@
+Brassage — banc d’essai
+
+La NEIPA de Brew Your Own, avec ses huit ajouts de houblon sur quatre moments. Les chiffres affichés sont calculés, pas saisis.
+
+Recette
+Assistant
+Brassage
+Eau
+New England IPA 19 L
+Modifier
+Exporter
+Grain
+5,8 kg
+OG
+1,061
+IBU
+61
+EBC
+9,4
+Hazy IPA
+21C
+FG
+1,012
+ABV
+6,5 %
+Houblons
+1er moût
+0′
+whirlpool
+dry hop
+Amarillo
+α 8,6
+double
+agrumes
+43
+43
+Citra
+α 12
+aromatique
+groseille à maquereau
+28
+85
+Galaxy
+α 14
+aromatique
+groseille à maquereau
+28
+43
+Mosaic
+α 12,5
+aromatique
+myrtille
+28
+43
+Détail des ajouts et IBU
+Potentiel aromatique
+171 g
+IBU à chaud · Tinseth
+61,1
+Simuler l’amertume à cru
+9 g/L
+
+Le dry hop peut modifier l’amertume. Il n’entre pas dans la formule Tinseth.
+
+Modèle à chaud et limites
+Premier moût
+43 g
+
+Versé dans la cuve avant le début de l’ébullition.
+
+Amarillo
+avant ébullition · 8,6 % α
+43 g
+46,7 IBU
+Ébullition
+43 g
+
+Compté en minutes AVANT la fin de l’ébullition.
+
+Amarillo
+flameout · 8,6 % α
+43 g
+0,0 IBU
+Whirlpool
+84 g
+
+Après l’arrêt du feu. La température pilote l’amertume extraite.
+
+Citra
+20 min à 82 °C · 12 % α
+28 g
+4,5 IBU
+Galaxy
+20 min à 82 °C · 14 % α
+28 g
+5,2 IBU
+Mosaic
+20 min à 82 °C · 12,5 % α
+28 g
+4,7 IBU
+Houblonnage à cru
+171 g
+
+En fermenteur. L’effet sur l’amertume se simule séparément des IBU à chaud.
+
+Citra
+J+2 · 12 % α
+85 g
+Galaxy
+J+6 · 14 % α
+43 g
+Mosaic
+J+9 · 12,5 % α
+43 g
+Vermont IPA · 1 flacon
+Grain
+Empâtage
+67 °C
+Ébullition
+75′
+Eau
+31 L
+Fermentation
+10 j
+Déroulé
+Tel qu’il figure sur la recette d’origine.
+Brassins
+1
+Dupliquer
+Supprimer la recette
+Préparer un brassin

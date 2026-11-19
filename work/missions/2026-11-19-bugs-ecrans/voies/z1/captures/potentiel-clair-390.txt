@@ -1,0 +1,133 @@
+Brassage — banc d’essai
+
+La NEIPA de Brew Your Own, avec ses huit ajouts de houblon sur quatre moments. Les chiffres affichés sont calculés, pas saisis.
+
+Recette
+Assistant
+Brassage
+Eau
+New England IPA 19 L
+Modifier
+Exporter
+Grain
+5,8 kg
+OG
+1,061
+IBU
+61
+EBC
+9,4
+Hazy IPA
+21C
+FG
+1,012
+ABV
+6,5 %
+Houblons
+1er moût
+0′
+whirlpool
+dry hop
+Amarillo
+α 8,6
+double
+agrumes
+43
+43
+Citra
+α 12
+aromatique
+groseille à maquereau
+28
+85
+Galaxy
+α 14
+aromatique
+groseille à maquereau
+28
+43
+Mosaic
+α 12,5
+aromatique
+myrtille
+28
+43
+Détail des ajouts et IBU
+Potentiel aromatique
+171 g
+Style et sources
+
+Vermont IPA · lecture seule
+
+Modifier la recette
+Hazy IPA
+
+Arômes de houblon et esters se complètent. Comparer les apports tardifs et à cru, puis leur phase de fermentation.
+
+Bilan
+Simuler
+Goût / levure
+IBU à chaud · Tinseth
+61,1
+0
+Repère du style : 25–60 IBU
+72
+Premier moût
+43 g · 2,3 g/L
+Ébullition
+43 g · 2,3 g/L
+Whirlpool
+84 g · 4,4 g/L
+À cru
+171 g · 9 g/L
+Amarillo
+Premier moût · 43 g
+Simuler
+Amarillo
+Ébullition · 43 g
+Simuler
+Citra
+Whirlpool · 28 g
+Simuler
+Galaxy
+Whirlpool · 28 g
+Simuler
+Mosaic
+Whirlpool · 28 g
+Simuler
+Citra
+À cru · 85 g · 4,5 g/L
+Simuler
+Galaxy
+À cru · 43 g · 2,3 g/L
+Simuler
+Mosaic
+À cru · 43 g · 2,3 g/L
+Simuler
+Calculer ma dose amère
+Préparer le dry hop
+Variétés à comparer dans ce style
+
+L’amertume calculée dépasse le repère Hazy IPA. Compare la dose de l’ajout amer.
+
+3 consignes de conduite
+Planning du houblonnage à cru
+Méthode et cas documentés
+Analyses aromatiques avancées
+Vermont IPA · 1 flacon
+Grain
+Empâtage
+67 °C
+Ébullition
+75′
+Eau
+31 L
+Fermentation
+10 j
+Déroulé
+Tel qu’il figure sur la recette d’origine.
+Brassins
+1
+Dupliquer
+Supprimer la recette
+Préparer un brassin

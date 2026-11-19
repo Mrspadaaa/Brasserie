@@ -1,0 +1,79 @@
+Brassage — banc d’essai
+
+La NEIPA de Brew Your Own, avec ses huit ajouts de houblon sur quatre moments. Les chiffres affichés sont calculés, pas saisis.
+
+Recette
+Assistant
+Brassage
+Eau
+Malts/sucres 2/7
+Identité
+Malts/sucres
+Houblons
+Levure
+Paliers
+Eau
+Récap.
+Grain
+8 kg
+OG
+—
+IBU chaud
+—
+EBC
+7,6
+Pilsner Malz
+kg
+empâtage
+63 % du grain
+Weizenmalz hell
+kg
+empâtage
+19 % du grain
+Haferflocken
+kg
+empâtage
+19 % du grain
+Dextrose
+Sucre
+kg
+ébullition
+100 % ferm.
+Lactose
+Sucre de lait
+kg
+ébullition
+ne fermente pas
+Grain
+Pale Ale Malz
+6,5
+12,5 kg en stock
+Carapils
+4
+1,2 kg en stock
+Carahell
+25
+3 kg en stock
+Caramünch II
+120
+800 g en stock
+Münchner Malz
+15
+stock épuisé
+Rendement
+75%
+style 1,060–1,085
+Paille
+style 6–14
+
+Lactose : non fermentescible, il remonte la densité finale.
+
+Lactose
+ébullition
+kg
+0
+2 ›
+PPG 35 · fiche
+›
+Retour
+Suivant — Houblons

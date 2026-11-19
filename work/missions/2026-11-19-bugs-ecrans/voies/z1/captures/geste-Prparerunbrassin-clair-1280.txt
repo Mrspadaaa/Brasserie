@@ -1,0 +1,157 @@
+Brassage — banc d’essai
+
+La NEIPA de Brew Your Own, avec ses huit ajouts de houblon sur quatre moments. Les chiffres affichés sont calculés, pas saisis.
+
+Recette
+Assistant
+Brassage
+Eau
+New England IPA
+
+LOT-DEMO · 19 L
+
+réveil
+écran
+Conduite
+Recette
+Journal
+à jour
+à côté
+relevés
+21 h
+22 h
+23 h
+0 h
+1 h
+19 h 48
+Préparer
+Empâter
+Ébullition
+Refroidir
+rinçage 76 °C
+levure
+refroidisseur
+
+dans la cible
+écart
+à relever
+pas relevé
+dû maintenant
+
+Prévu le 15.09.2026
+Date dépassée
+Changer la date
+1
+Eau et sels
+ensuite Concassage
+Maintenant · relevé dû
+Eau d’empâtage
+avant de verser sur le grain
+?°C
+10
+55
+100
+
+Toucher le pouce pose 55,0 · ou la piste, puis ±0,1
+
+−0,1
++0,1
+Enregistrer
+Eau d’empâtage
+0/3
+Eau
+Eau d’empâtage
+18,5
+ 
+L à froid
+À ajouter
+5,6 réseau
+13 osmosée
+Gypse
+2
+ 
+g
+À ajouter
+Chlorure de calcium
+6
+ 
+g
+À ajouter
+Eau de rinçage
+Consigne 76 °C
+0/2
+Eau
+Eau de rinçage
+12,5
+ 
+L à froid
+À ajouter
+3,8 réseau
+8,8 osmosée
+Acide lactique 80 %
+4,5
+ 
+mL
+À ajouter
+Ensuite
+Concassage 5,8 kg
+à ~20 h 48 · puis empâtage 67 °C, fin ~22 h 03
+4,1 US 2-row
+0,91 UK Golden Promise
+0,45 Flaked wheat
+0,34 Flaked oats
+Relevés du jour · bilan visé
+0 relevé sur 9 · fin ~1 h 36 estimé
+Eau d’empâtage
+?
+Relevé dû.
+maintenant
+Empâtage
+? °C · pH ?
+cible 67 °C · pH 5,2–5,5
+À relever.
+au départ du palier · dès 10 min de palier
+Avant ébullition
+? · ?
+cible 25,4 L
+À relever.
+vers 23 h 04
+Densité à la coupure
+?
+pour agir avant le refroidissement
+À relever.
+vers 0 h 51
+OG · densité initiale
+?
+cible 1,061
+À relever.
+au fermenteur ~1 h 21
+Au fermenteur
+?
+cible 19 L
+À relever.
+ensemencement ~1 h 21
+Rendement d’empâtage
+?
+visé ?
+À relever.
+calculé au relevé avant ébullition
+Ensemencement
+?
+cible 18 °C · 1 flacon
+À relever.
+~ 1 h 21
+Au jour J
+dose
+houblon manquant
+Aide
+À anticiper
+0/4
+Vérifier la balance et peser les ajouts
+Régler le moulin et concasser le grain
+Étalonner le pH-mètre et vérifier la sonde
+Sortir la levure
+Vermont IPA · 1 flacon
+Mesurer
+Note
+Commencer aujourd’hui

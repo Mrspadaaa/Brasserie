@@ -1,0 +1,132 @@
+Exporter clair 1280 : Exporter la recette
+
+Exporter la recette
+
+Copier la recette en texte
+Texte complet et fichier .txt
+Dupliquer clair 1280 : 
+Préparer un brassin clair 1280 : 
+Estimer clair 1280 : New England IPA
+
+Coût du brassin
+
+19 L
+brassés ·
+? L
+nets ›
+Quand tu paies
+ton litre ›
+?
+?
+?
+=
+litres nets ?
+—
+CHF / L
+déjà payé
+stock
+à payer
+part de l'année
+÷ ? L
+
+14 ingrédients sans prix. Pour com | 14 ingrédients sans prix. Pour compléter ce coût :
+relire clair 1280 : 
+Exporter clair 390 : Exporter la recette
+
+Exporter la recette
+
+Copier la recette en texte
+Texte complet et fichier .txt
+Dupliquer clair 390 : 
+Préparer un brassin clair 390 :  | Mesurer · Eau et selspHTemp.Volume?°CTempérature (°C)−0,1+0,11055100Pourquoi maintenantConseilEnregistrerAucun relevé cette étape · un toucher sur le pouce pose 55,0 | Note · Eau et selsObservationNoterConseil IA
+Estimer clair 390 : New England IPA
+
+Coût du brassin
+
+19 L
+brassés ·
+? L
+nets ›
+Quand tu paies
+ton litre ›
+?
+?
+?
+=
+litres nets ?
+—
+CHF / L
+déjà payé
+stock
+à payer
+part de l'année
+÷ ? L
+
+14 ingrédients sans prix. Pour com | 14 ingrédients sans prix. Pour compléter ce coût :
+relire clair 390 : 
+Exporter cave 1280 : Exporter la recette
+
+Exporter la recette
+
+Copier la recette en texte
+Texte complet et fichier .txt
+Dupliquer cave 1280 : 
+Préparer un brassin cave 1280 : 
+Estimer cave 1280 : New England IPA
+
+Coût du brassin
+
+19 L
+brassés ·
+? L
+nets ›
+Quand tu paies
+ton litre ›
+?
+?
+?
+=
+litres nets ?
+—
+CHF / L
+déjà payé
+stock
+à payer
+part de l'année
+÷ ? L
+
+14 ingrédients sans prix. Pour com | 14 ingrédients sans prix. Pour compléter ce coût :
+relire cave 1280 : 
+Exporter cave 390 : Exporter la recette
+
+Exporter la recette
+
+Copier la recette en texte
+Texte complet et fichier .txt
+Dupliquer cave 390 : 
+Préparer un brassin cave 390 :  | Mesurer · Eau et selspHTemp.Volume?°CTempérature (°C)−0,1+0,11055100Pourquoi maintenantConseilEnregistrerAucun relevé cette étape · un toucher sur le pouce pose 55,0 | Note · Eau et selsObservationNoterConseil IA
+Estimer cave 390 : New England IPA
+
+Coût du brassin
+
+19 L
+brassés ·
+? L
+nets ›
+Quand tu paies
+ton litre ›
+?
+?
+?
+=
+litres nets ?
+—
+CHF / L
+déjà payé
+stock
+à payer
+part de l'année
+÷ ? L
+
+14 ingrédients sans prix. Pour com | 14 ingrédients sans prix. Pour compléter ce coût :
+relire cave 390 : Chargement de la brasserie…
