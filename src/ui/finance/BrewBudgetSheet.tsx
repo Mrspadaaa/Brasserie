@@ -1,6 +1,8 @@
 import { batchDisplayDate } from '../../domain/batchSchedule';
 import { Input } from '../Input';
-import React, { useMemo, useRef, useState } from 'react';
+import React, { useId, useMemo, useRef, useState } from 'react';
+import { formatDecimal, parseDecimal } from '../numericInput';
+import { BORNES_FINANCE } from '../../domain/finance/bornesFinance';
 import { AlertCircle, CalendarPlus, Check, ChevronLeft, ChevronRight, Package, Save, Sparkles } from 'lucide-react';
 import type { AppConfig, Batch, Recipe, StockItem } from '../../types';
 import { Sheet } from '../Sheet';
@@ -35,6 +37,40 @@ const Aide = ({ children }: { children: React.ReactNode }) => {
   return <div className="cbf-aide" data-ouvert={ouvert ? 'true' : undefined}><button type="button" aria-label="Explication" aria-expanded={ouvert} onClick={() => setOuvert(o => !o)}>?</button>{ouvert && <div className="cbf-aide-texte">{children}</div>}</div>;
 };
 const chf = (v: number) => new Intl.NumberFormat('fr-CH', { minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(v);
+
+/** Plafond d'un montant du budget : celui d'une écriture (`BORNES_FINANCE.operationCents`, 250 000 CHF), au-delà c'est une faute de frappe. */
+const MAX_CHF = BORNES_FINANCE.operationCents.valeur / 100;
+type RefusCHF = 'negatif' | 'illisible' | 'plafond' | 'decimales';
+/**
+ * BR-27 : un montant du budget (frais, charges, prix d'un ingrédient) ne s'avale plus : « −1 » devenait 0 en silence (`min={0}` à la sortie du champ).
+ * Mêmes refus et même phrase que `ChampNombre` (BE-71) : rien n'est retenu, le champ est marqué, la valeur d'avant revient à la sortie, et le message
+ * le dit. L'appelant le pose sous la rangée (`onDit`) : la case de 148 px ne le tient pas. `ChampNombre` n'a pas `disabled`, que les postes décochés demandent.
+ */
+function ChampCHF({ value, onValue, onDit, ditId, maxDecimales, className = '', ...reste }: { value: number | undefined; onValue: (v: number | undefined) => void; onDit: (message: string | null) => void; ditId?: string; maxDecimales?: number; className?: string; placeholder?: string; disabled?: boolean; 'aria-label': string }) {
+  const [texte, setTexte] = useState<string | null>(null), [refus, setRefus] = useState<RefusCHF | null>(null);
+  const debut = useRef(value);
+  const refuser = (r: RefusCHF, t: string) => {
+    setRefus(r);
+    const raison = r === 'negatif' ? 'une valeur négative n’existe pas ici' : r === 'illisible' ? 'ce n’est pas un nombre' : r === 'plafond' ? `au plus ${formatDecimal(MAX_CHF)}` : `au plus ${maxDecimales} décimales`;
+    onDit(`« ${t.trim()} » : ${raison}. ${debut.current === undefined ? 'Le champ reste vide.' : `La valeur précédente (${formatDecimal(debut.current)}) est conservée.`}`);
+  };
+  return <Input {...reste} aria-invalid={refus || ditId ? true : undefined} aria-describedby={ditId} type="text" inputMode="decimal" enterKeyHint="next" autoComplete="off" autoCorrect="off" spellCheck={false}
+    data-form-type="other" data-lpignore="true" data-1p-ignore="true" data-bwignore="true" value={texte ?? formatDecimal(value)} className={`${className}${refus ? ' !border-solid !border-alert !text-alert' : ''}`}
+    onFocus={e => { debut.current = value; onDit(null); e.currentTarget.select(); }}
+    onChange={e => {
+      const t = e.target.value;
+      setTexte(t); onDit(null);
+      if (t.trim() === '') { setRefus(null); if (value !== undefined) onValue(undefined); return; }
+      if (/^\s*[-−–]/.test(t)) return refuser('negatif', t);
+      const n = parseDecimal(t);
+      if (n === null) { if (/[^\d\s.,]/.test(t)) refuser('illisible', t); else setRefus(null); return; } // « 12, » : frappe en cours
+      if (maxDecimales !== undefined && (t.trim().replace(',', '.').split('.')[1] ?? '').length > maxDecimales) return refuser('decimales', t);
+      if (n > MAX_CHF) return refuser('plafond', t);
+      setRefus(null);
+      if (n !== value) onValue(n);
+    }}
+    onBlur={() => { if (refus && !Object.is(value, debut.current)) onValue(debut.current); setTexte(null); setRefus(null); }} />;
+}
 
 export interface BrewBudgetSheetProps {
   open: boolean;
@@ -112,6 +148,13 @@ function BrewBudgetDraft({ recipe, batch, stockItems, batches, config, savedEsti
   const [selection, setSelection] = useState<SourceId | null>(null);
   const [question, setQuestion] = useState<string>();
   const [regleOuverte, setRegleOuverte] = useState(false);
+  /* BR-27 : le refus d'un montant, par champ, posé sous sa rangée jusqu'à la saisie suivante. */
+  const [dits, setDits] = useState<Record<string, string>>({}), idDit = useId();
+  const dire = (cle: string) => ({
+    ditId: dits[cle] ? `${idDit}${cle}` : undefined,
+    onDit: (message: string | null) => setDits(d => { if (message) return { ...d, [cle]: message }; if (!(cle in d)) return d; const { [cle]: _, ...reste } = d; return reste; }),
+  });
+  const dit = (cle: string) => dits[cle] ? <p id={`${idDit}${cle}`} role="alert" className="block text-xs text-alert leading-snug">{dits[cle]}</p> : null;
   const [profil, setProfil] = useState(false);
   const [lineFilter, setLineFilter] = useState<'all' | 'buy' | 'missing'>('all');
   const [focusedLineKey, setFocusedLineKey] = useState<string | null>(null);
@@ -313,7 +356,8 @@ function BrewBudgetDraft({ recipe, batch, stockItems, batches, config, savedEsti
               <div className="brew-budget-stock-note"><span>Disponible : <b>{Units.format(line.available, line.unit)}</b></span>{line.reserved > 0 && <span>Réservé avant : <b>{Units.format(line.reserved, line.unit)}</b></span>}</div>
               <Field label="Article de stock"><select aria-label={`Article de stock pour ${line.name}`} className={inputClass} value={line.stockItemRef ?? ''} onChange={e => setBindings(current => ({ ...current, [line.key]: e.target.value }))}><option value="">Aucun article associé</option>{stockItems.map(s => <option key={s.ref} value={s.ref}>{s.name} · {s.ref} · {s.unit}</option>)}</select></Field>
               <label className="brew-budget-recurring"><input type="checkbox" checked={line.cashTreatment === 'included-in-recurring'} onChange={e => setCashTreatments(current => ({ ...current, [line.key]: e.target.checked ? 'included-in-recurring' : 'additional' }))} /><span>Déjà compris dans une facture récurrente<small>Garder le coût de revient, sans ajouter une seconde dépense prévue.</small></span></label>
-              <div className="brew-budget-two"><Field label="Prix du format" hint="CHF"><NumberInput aria-label={`Prix de ${line.name}`} className={inputClass} min={0} value={price?.amount} emptyValue={undefined} placeholder={item?.pricePerUnit != null ? `${item.pricePerUnit} à confirmer` : 'À renseigner'} onValue={amount => changePrice(line, { amount })} /></Field><Field label="Pour une quantité de"><NumberInput aria-label={`Quantité du prix de ${line.name}`} className={inputClass} min={0.001} value={price?.quantity ?? 1} onValue={quantity => changePrice(line, { quantity })} /></Field></div>
+              <div className="brew-budget-two"><Field label="Prix du format" hint="CHF"><ChampCHF aria-label={`Prix de ${line.name}`} className={inputClass} value={price?.amount} {...dire(`prix-${line.key}`)} placeholder={item?.pricePerUnit != null ? `${item.pricePerUnit} à confirmer` : 'À renseigner'} onValue={amount => changePrice(line, { amount })} /></Field><Field label="Pour une quantité de"><NumberInput aria-label={`Quantité du prix de ${line.name}`} className={inputClass} min={0.001} value={price?.quantity ?? 1} onValue={quantity => changePrice(line, { quantity })} /></Field></div>
+              {dit(`prix-${line.key}`)}
               <div className="brew-budget-two"><Field label="Unité du prix"><select aria-label={`Unité du prix de ${line.name}`} className={inputClass} value={price?.unit ?? line.unit} onChange={e => changePrice(line, { unit: e.target.value })}>{[...new Set([line.unit, item?.unit, 'kg', 'g', 'L', 'mL', 'sachet', 'pièce'].filter(Boolean))].map(unit => <option key={unit} value={unit}>{unit}</option>)}</select></Field><Field label="Lot minimum d’achat" hint={`en ${price?.unit ?? line.unit} · vide si achat au détail`}><NumberInput aria-label={`Lot minimum de ${line.name}`} className={inputClass} min={0.001} value={price?.packQuantity} emptyValue={undefined} placeholder="Au détail" onValue={packQuantity => changePrice(line, { packQuantity })} /></Field></div>
               {line.missing > 0 && line.purchaseQuantity > line.missing && <p className="brew-budget-hint">Il manque {Units.format(line.missing, line.unit)}. Le format d’achat impose {Units.format(line.purchaseQuantity, line.unit)} : le reste pourra servir à d’autres brassins.</p>}
               <details className="brew-budget-advanced"><summary>TVA et origine du prix <span>{price?.basis ?? 'TTC'} · {price?.source === 'invoice' ? 'Facture' : price?.source === 'quote' ? 'Devis' : 'Estimation'}</span><ChevronRight size={16} /></summary><div>
@@ -331,10 +375,11 @@ function BrewBudgetDraft({ recipe, batch, stockItems, batches, config, savedEsti
       {vue.id === 'frais' && <section className="brew-budget-section">
         <div className="cbf-tete"><h3>Frais du brassin</h3><Aide><p>Saisis le coût TTC de chaque poste pour ce brassin. Coche « Déjà prévu » si son paiement figure dans tes charges récurrentes. Évite de reprendre les consommables déjà chiffrés dans les ingrédients.</p></Aide></div>
         {costsNeedVolumeReview && <p className="brew-budget-warning" role="status">Volume modifié ({Units.format(costBasisVolume, 'L')} brassés / {Units.format(costBasisNetVolume!, 'L')} nets → {Units.format(volume, 'L')} / {Units.format(netConnu!, 'L')}) : vérifie l’énergie, le nettoyage, l’emballage et l’impôt.</p>}
-        {(Object.keys(LABELS_FRAIS) as BrewCostKey[]).map(key => <div key={key} data-poste-actif={vue.poste === key ? 'true' : undefined}>
+        {(Object.keys(LABELS_FRAIS) as BrewCostKey[]).map(key => <div key={key} data-poste={key} data-poste-actif={vue.poste === key ? 'true' : undefined}>
           {key === 'beerTax' && estimate.beerTaxSource === 'calcule' && settings.costs?.beerTax?.enabled !== false
             ? <div className="brew-budget-cost-row"><label><input type="checkbox" checked onChange={e => setSettings(s => ({ ...s, costs: { ...s.costs, beerTax: { ...s.costs?.beerTax, enabled: e.target.checked } } }))} /><span>{LABELS_FRAIS[key]}</span></label><div><strong aria-label="Impôt bière calculé">{chf(estimate.beerTaxCost ?? 0)}</strong><span>CHF · calculé</span></div></div>
-            : <div className="brew-budget-cost-row"><label><input type="checkbox" checked={settings.costs?.[key]?.enabled !== false} onChange={e => setSettings(s => ({ ...s, costs: { ...s.costs, [key]: { ...s.costs?.[key], enabled: e.target.checked } } }))} /><span>{LABELS_FRAIS[key]}</span></label><div><NumberInput aria-label={`${LABELS_FRAIS[key]} en CHF`} className={inputClass} value={settings.costs?.[key]?.amountTTC} emptyValue={undefined} min={0} placeholder="À estimer" disabled={settings.costs?.[key]?.enabled === false} onValue={amountTTC => setSettings(s => ({ ...s, costs: { ...s.costs, [key]: { ...s.costs?.[key], enabled: s.costs?.[key]?.enabled !== false, amountTTC } } }))} /><span>CHF</span></div></div>}
+            : <div className="brew-budget-cost-row"><label><input type="checkbox" checked={settings.costs?.[key]?.enabled !== false} onChange={e => setSettings(s => ({ ...s, costs: { ...s.costs, [key]: { ...s.costs?.[key], enabled: e.target.checked } } }))} /><span>{LABELS_FRAIS[key]}</span></label><div><ChampCHF aria-label={`${LABELS_FRAIS[key]} en CHF`} className={inputClass} value={settings.costs?.[key]?.amountTTC} maxDecimales={2} {...dire(`cout-${key}`)} placeholder="À estimer" disabled={settings.costs?.[key]?.enabled === false} onValue={amountTTC => setSettings(s => ({ ...s, costs: { ...s.costs, [key]: { ...s.costs?.[key], enabled: s.costs?.[key]?.enabled !== false, amountTTC } } }))} /><span>CHF</span></div></div>}
+          {dit(`cout-${key}`)}
           {settings.costs?.[key]?.enabled !== false && !(key === 'beerTax' && estimate.beerTaxSource === 'calcule') && <label className="brew-budget-recurring"><input type="checkbox" checked={settings.costs?.[key]?.cashTreatment === 'included-in-recurring'} onChange={e => setSettings(s => ({ ...s, costs: { ...s.costs, [key]: { ...s.costs?.[key], enabled: true, cashTreatment: e.target.checked ? 'included-in-recurring' : 'additional' } } }))} /><span>Déjà prévu dans les charges récurrentes</span></label>}
           {key === 'beerTax' && settings.costs?.beerTax?.enabled !== false && (estimate.beerTaxSource === 'calcule'
             ? <p className="brew-budget-hint">{netConnu !== undefined ? Units.format(netConnu, 'L') : '—'} nets · densité {ogMesuree ? 'mesurée' : 'visée (estimé)'} {ogUtilisee === undefined ? '' : Number(ogUtilisee).toFixed(3).replace('.', ',')} · {estimate.beerTaxExonere ? 'exonérée (sans alcool) · ' : ''}{reductionPct ? `réduction ${reductionPct} %` : 'taux plein'}</p>
@@ -350,7 +395,8 @@ function BrewBudgetDraft({ recipe, batch, stockItems, batches, config, savedEsti
         {settingsWarnings?.map(warning => /à renseigner|à compléter|à confirmer/.test(warning) && onRegistre ? <button type="button" className="cbf-lien-ligne brew-budget-warning" key={warning} onClick={onRegistre}>{warning}<i aria-hidden="true"> ›</i></button> : <p className="brew-budget-warning" key={warning}>{warning}</p>)}
         {settings.annualVolumeL == null && profile && <button type="button" className="cbf-lien-ligne" onClick={() => setProfil(true)}>Production annuelle : la noter dans les paramètres du solde ›</button>}
         <Field label="Production annuelle prévue" hint="L de bière conditionnée"><NumberInput aria-label="Production annuelle prévue" className={inputClass} value={settings.annualVolumeL} emptyValue={undefined} min={1} onValue={annualVolumeL => setSettings(s => ({ ...s, annualVolumeL }))} /></Field>
-        {([{ key: 'annualFixedCHF', enabled: 'includeFixed', label: 'Charges fixes annuelles', poste: 'fix' }, { key: 'annualDepreciationCHF', enabled: 'includeDepreciation', label: 'Usure annuelle du matériel', poste: 'mat' }] as const).map(field => <div key={field.key} className="brew-budget-cost-row" data-poste-actif={vue.poste === field.poste ? 'true' : undefined}><label><input type="checkbox" aria-label={`Inclure ${field.label.toLocaleLowerCase('fr-CH')}`} checked={settings[field.enabled] !== false} onChange={e => setSettings(s => ({ ...s, [field.enabled]: e.target.checked }))} /><span>{field.label}</span></label><div><NumberInput aria-label={field.label} className={inputClass} value={effectiveSettings[field.key]} emptyValue={undefined} min={0} disabled={settings[field.enabled] === false} placeholder="À estimer" onValue={v => { if (field.key === 'annualDepreciationCHF') setUseRegisterDepreciation(false); setSettings(s => ({ ...s, [field.key]: v })); }} /><span>CHF</span></div></div>)}
+        {([{ key: 'annualFixedCHF', enabled: 'includeFixed', label: 'Charges fixes annuelles', poste: 'fix' }, { key: 'annualDepreciationCHF', enabled: 'includeDepreciation', label: 'Usure annuelle du matériel', poste: 'mat' }] as const).map(field => <div key={field.key} className="brew-budget-cost-row" data-poste-actif={vue.poste === field.poste ? 'true' : undefined}><label><input type="checkbox" aria-label={`Inclure ${field.label.toLocaleLowerCase('fr-CH')}`} checked={settings[field.enabled] !== false} onChange={e => setSettings(s => ({ ...s, [field.enabled]: e.target.checked }))} /><span>{field.label}</span></label><div><ChampCHF aria-label={field.label} className={inputClass} value={effectiveSettings[field.key]} maxDecimales={2} {...dire(field.key)} disabled={settings[field.enabled] === false} placeholder="À estimer" onValue={v => { if (field.key === 'annualDepreciationCHF') setUseRegisterDepreciation(false); setSettings(s => ({ ...s, [field.key]: v })); }} /><span>CHF</span></div></div>)}
+        {dit('annualFixedCHF')}{dit('annualDepreciationCHF')}
         {usureForBudgetDate && settings.includeDepreciation !== false && <div className="brew-budget-hint">
           <p>{useRegisterDepreciation ? `Usure reprise du registre du matériel pour ${budgetYear || 'l’année du brassin'}.` : 'Usure conservée dans cette estimation. Tu peux reprendre le montant du registre pour l’année du brassin.'}</p>
           {useRegisterDepreciation ? registerDepreciation?.warnings.map(warning => /à renseigner|à compléter|à confirmer/.test(warning) && onRegistre ? <button type="button" className="cbf-lien-ligne brew-budget-warning" key={warning} onClick={onRegistre}>{warning}<i aria-hidden="true"> ›</i></button> : <p className="brew-budget-warning" key={warning}>{warning}</p>) : <button type="button" className="brew-budget-text-action" onClick={() => setUseRegisterDepreciation(true)}>Reprendre le registre {budgetYear || ''}</button>}
