@@ -61,8 +61,8 @@ Erreurs de méthode déjà commises, cause, remède. Chargé par CLAUDE.md : rel
 
 ### L11 — Fini veut dire utilisable, pas un reçu
 - Erreur : 08.10, reçus, couches V3 à V5.5 : rien d'utilisable. 07.11 : « 2 115 verts », 27 fichiers non chargés.
-- Cause : preuves déclarées comptées, non des parcours réels.
-- Faire : fini = branché, atteint depuis le menu dans Chrome, typé, testé, build vert. Un banc ne contourne aucun geste (D367) ; un drapeau se lit au paquet (D368). Donnée jetée ou test non chargé : jamais un vert. Écran déployé ou rallumé : joué en ligne, chaque onglet (HX-1). (16.11 : [[maquettes-16-11]])
+- Cause : preuves déclarées, non des parcours réels.
+- Faire : fini = branché, atteint depuis le menu dans Chrome, typé, testé, build vert. Un banc ne contourne aucun geste (D367) ; un drapeau se lit au paquet (D368). Donnée jetée ou test non chargé : jamais un vert. Écran déployé ou rallumé : joué en ligne, chaque onglet (HX-1). Défaut ouvert : corrigé sans attendre (19.11). (16.11 : [[maquettes-16-11]])
 - Rôles : pilote, relecteur, exécutant
 - Contrôle : aucun
 

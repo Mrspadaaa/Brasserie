@@ -71,7 +71,7 @@ sont chargés à chaque session par CLAUDE.md. Les notes se lisent à la demande
 - [[maquettes-16-11]] — ajouts du 16.11 aux leçons
 
 ### sources/ — références externes
-- [[moneaudebrassage]] (atelier de l'eau), [[beermaverick-radar]] (radar : anneaux chiffrés, zéro hors du centre) — références visuelles
+- [[moneaudebrassage]] (atelier de l'eau), [[beermaverick-radar]] (radar) — références visuelles
 
 ### decisions/ — transcriptions du conseil
 - [[2026-10-22-carte-outils-houblons]] — un facteur libre par écran

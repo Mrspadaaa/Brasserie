@@ -2292,3 +2292,11 @@ Sur sa capture de Ma levure en ligne (Munich Lager Yeast, « ≥ 15 g », sans q
 > « Fait passer plusieurs critique de tout type, regarde les autres vue, et propose des vrais solution qui répondent aux problématiques »
 
 (lu : besoin 1 = voir d'un coup d'œil quelle levure et combien — sachets ou grammes choisis contre le besoin de la recette — et le changer en un geste, comme la ligne d'un malt ; « ≥ 15 g » est une dose du fabricant, pas un choix.)
+
+Sur l'état du registre (382 défauts ouverts, dont 221 au carnet) après le tour 2 :
+
+> « Et le carnet ?? »
+>
+> « Corrige tout alors tu attendais quoi ??? Tout tout tout »
+
+(lu : tout défaut ouvert du registre se corrige, sans attendre de demande ; le test en ligne passe par son Chrome ouvert sur le PC, via des sessions.)
