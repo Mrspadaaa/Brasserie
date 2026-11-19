@@ -2238,3 +2238,4 @@ Capture : work/missions/2026-11-18-choix-calendrier/brasseur/zoom-glisser-18-11.
 ### Recette › Identité : volume et ébullition (19.11)
 
 - (capture 390 : 29 L visés, fermenteur 30 L, cuve 35 L, ébullition 130 min, « ~6,5 L évaporés », « ~38,7 L à chaud avant ébullition · +3,7 L de trop ») « Plus on evapore, plus on a de litre en trop ??? »
+- (suite, 19.11) « Ou faire plus de sparge ??? »
