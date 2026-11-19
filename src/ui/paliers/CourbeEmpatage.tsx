@@ -7,7 +7,7 @@ import type { MashProgram } from '../../domain/brewPrograms';
 import { NumberInput } from '../NumberInput';
 import { declarerAjoutPalier } from './ajoutPalier';
 import {
-  BANDE_CORPS, G, basculerMashout, disposer, dureeDepuisX, dureeTotale, echelleTemp, insererAvant, rangFinDeCourbe, rangMashout, renommerColonne,
+  BANDE_CORPS, G, basculerMashout, disposer, dureeDepuisX, dureeTotale, xPoigneeDuree, echelleTemp, insererAvant, rangFinDeCourbe, rangMashout, renommerColonne,
   reglerColonne, tempDepuisY, traceCourbe, yDeTemp, type Colonne, type EtatEmpatage,
 } from './modele';
 
@@ -219,7 +219,9 @@ export function CourbeEmpatage({ colonnes, etat, onChange, programmes, programme
 
       {sel && (() => {
         // La poignée ↔ marque la fin de la colonne ; à la fin de la courbe, elle se retire de 16 px pour ne pas toucher le « + » (centre 352, rayon 12).
-        const v = vues[sel.rang], { x, w } = dispo.colonnes[sel.rang], cx = x + w / 2, fin = Math.min(x + w, 314);
+        const v = vues[sel.rang], { x, w } = dispo.colonnes[sel.rang], cx = x + w / 2, finBrute = Math.min(x + w, 314);
+        // k1 point 17 : la poignée ne couvre pas l'étiquette « ≈18′ » de la montée qui suit.
+        const fin = xPoigneeDuree(finBrute, x, dispo.montees.find(m => m.rang === sel.rang + 1));
         return <>
           {fini(v.tempC) && <>
             <path d={`M${G.x0} ${y(v.tempC)}H${n2(cx)}`} stroke="var(--pal-ambre)" strokeWidth="1.5" strokeDasharray="4 3" />

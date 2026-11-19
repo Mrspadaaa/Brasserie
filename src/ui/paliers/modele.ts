@@ -216,6 +216,17 @@ export function traceCourbe(colonnes: readonly Colonne[], d: Disposition, e: { m
 }
 
 /** Durée totale : maintiens + montées ; `montees` faux quand une montée reste à mesurer (le total est alors un plancher, dit sans « ≈ »). */
+/**
+ * k1 point 17 : abscisse (centre) de la poignée ↔ de durée. Elle marque la fin de la colonne choisie, là où commence la montée ; l'étiquette de cette
+ * montée (« ≈18′ », ≈ 28 px, centrée sur la montée) passait sous elle. Quand une montée suit, la poignée se retire à gauche (dans sa colonne, dont l'étiquette
+ * de durée est déjà masquée) jusqu'à laisser l'étiquette libre, 2 px d'air ; elle ne sort pas de la colonne par la gauche.
+ */
+export function xPoigneeDuree(fin: number, xColonne: number, montee?: { x: number; w: number }): number {
+  if (!montee) return fin;
+  const gaucheEtiquette = montee.x + montee.w / 2 - 14 - 2;
+  return Math.max(xColonne + 20, Math.min(fin, gaucheEtiquette - 20));
+}
+
 export function dureeTotale(colonnes: readonly Colonne[]): { minutes?: number; montees: boolean } {
   if (!colonnes.length || colonnes.some(c => !fini(c.durationMin))) return { montees: false };
   const maintiens = colonnes.reduce((s, c) => s + c.durationMin!, 0);
