@@ -51,7 +51,7 @@ Lire :
 
 | chemin | préfixe | constats | notes | empreinte |
 |---|---|---|---|---|
-| work/missions/2026-11-18-choix-calendrier/tour2/en-ligne/RAPPORT-3.md | T3 | 7 | 1 | 72a7f3ff2174 |
+| work/missions/2026-11-18-choix-calendrier/tour2/en-ligne/RAPPORT-3.md | T3 | 12 | 1 | 559969af9ee3 |
 | work/missions/2026-11-18-choix-calendrier/tour2/en-ligne/RAPPORT-2.md | T2B | 3 | 1 | ef66f11d5dda |
 | work/missions/2026-11-18-choix-calendrier/tour2/en-ligne/RAPPORT.md | T2 | 10 | 1 | b0fb71f51615 |
 | work/missions/2026-10-31-ecran-fermentescibles/banc-critique/RAPPORT.md | B1 | 15 | 4 | c816dfc0a63a |
@@ -1679,7 +1679,7 @@ Verdict : 5/6 corrigés, 4 problèmes (0 bloquant), 6 envois IA (cumul ≈ 32 su
 | id | source | écran | constat | gravité | état | commit | note |
 |---|---|---|---|---|---|---|---|
 | T2-1 | en-ligne tour 2 n° 1 | Calendrier 390 (aligné) | Deux rangées d'axe : les mois en haut de la courbe alignée, les semaines sous la frise. Le lot a gardé les mois quand la courbe est alignée (« ce sont ceux de la frise »). | m | ouvert | | choix d'axe au brasseur (mini-maquettes), pas de règle du pilote ; passe 3 : confirmé, toutes tailles, deux thèmes |
-| T2-2 | en-ligne tour 2 n° 2 | Calendrier 390 | Toucher la barre minuscule du brassin « Ttt » n'ouvre aucune fiche ; non rejoué sur un brassin ZZ TEST. | G si confirmé | ouvert, à rejouer | | passe 3 : la barre Ttt (normale) ouvre son détail ; barre minuscule non revue |
+| T2-2 | en-ligne tour 2 n° 2 | Calendrier 390 | Toucher la barre minuscule du brassin « Ttt » n'ouvre aucune fiche ; non rejoué sur un brassin ZZ TEST. | G si confirmé | ouvert, à rejouer | | passe 3 : la barre Ttt (normale) ouvre son détail ; barre minuscule non revue ; passe 3 bis : barre ZZ TEST ouverte au premier toucher, infirmé |
 | T2-3 | en-ligne tour 2 n° 3 | Finances › Opérations | Période oct. : « 0 opération » alors que la liste montre une opération à payer du 19.11. | m | ouvert | | passe 3 : confirmé (oct. 0 opération, ZZ TEST à payer du 19.11 listée) |
 | T2-4 | en-ligne tour 2 n° 4 | Fiche d'opération | Une opération à payer n'offre que « Annuler cette écriture » (la pièce reste, annulée) ; « Noter un paiement » au lieu de « Confirmer le paiement ». | m | ouvert | | la ZZ TEST annulée reste dans Archives ; passe 3 : confirmé (« Noter un paiement ») ; paiement et retrait fonctionnent |
 | T2-5 | tour2/VERDICT.md | Calendrier 844 × 340 | Frise à 45 % de la hauteur au repos (visé 25 %) ; le brasseur trouvait le paysage déjà bon. | m | ouvert | | passe 3 : confirmé, frise à 164 px sur 340 (48 %) |
@@ -1689,7 +1689,7 @@ Verdict : 5/6 corrigés, 4 problèmes (0 bloquant), 6 envois IA (cumul ≈ 32 su
 | T2-9 | tour2/fin/RESULTAT.md | Finances 1280 | Champs « du / au » gardés à 1280 (option a, pilote). | — | écarté | | décidé par le pilote |
 | T2-10 | tour2/fin/RESULTAT.md | En-tête › période | Nom accessible « 30 nov.. » (double point). | b | corrigé | be036eb21 | en ligne (en-ligne/2026-11-19-tour2) |
 | T2-NOTE-1 | en-ligne tour 2 réserve | tous | Joué en 390 clair seulement (iframe) ; 844, 1280, sombre, plein écran, Confirmer le paiement, Eau et sels, Ma levure non joués en ligne. | — | ouvert, doute non compté | | |
-| T2B-1 | en-ligne tour 2 bis n° 1 | Brassins › Brasser depuis une recette | Planifier un brassin depuis une recette au matériel « pas figé » est sans effet : message rouge qui renvoie à « Modifier la recette › Adapter à mon matériel actuel ». | m | ouvert | | bloque le rejeu de T2-2 |
+| T2B-1 | en-ligne tour 2 bis n° 1 | Brassins › Brasser depuis une recette | Planifier un brassin depuis une recette au matériel « pas figé » est sans effet : message rouge qui renvoie à « Modifier la recette › Adapter à mon matériel actuel ». | m | ouvert | | bloque le rejeu de T2-2 ; passe 3 : confirmé sur une recette neuve, cause T3-11 ; planifie après « Adapter à mon matériel actuel » |
 | T2B-2 | en-ligne tour 2 bis n° 2 | Calendrier 390 | Un « déc. » coupé reste en haut de la frise, au-dessus des semaines (S47…). | b | ouvert | | proche de T2-1 ; passe 3 : confirmé, toutes tailles |
 | T2B-3 | en-ligne tour 2 bis n° 3 | Recette › Levure | Le retour sur l'onglet « Ma levure » prend ≈ 1,2 s (mesuré sur PC, dans une iframe). | m | ouvert | | ML-1 ; passe 3 : 7,9 / 5,6 / 3,7 s sur PC, page directe, recette ZZ TEST |
 | T2B-NOTE-1 | en-ligne tour 2 bis réserve | tous | 844×340, 1280 et sombre non joués : le navigateur intégré demande une connexion Google, Claude in Chrome ne se redimensionne pas. | — | ouvert, doute non compté | | |
@@ -1705,4 +1705,9 @@ Verdict : 5/6 corrigés, 4 problèmes (0 bloquant), 6 envois IA (cumul ≈ 32 su
 | T3-5 | en-ligne passe 3 n° 5 | Stocks › Courses | La ligne des recettes d'un article répète la même recette (« neipa v3 prévu » ×7, date sur deux ; « Jhhh prévu le 05.09.2026 » ×2). | m | ouvert | | |
 | T3-6 | en-ligne passe 3 n° 6 | Finances › Nouvelle dépense | Après « Enregistrer », la feuille reste ouverte « Confirmation de cette écriture en attente… Vérifier la synchronisation » alors que l'écriture est déjà dans la liste. | m | ouvert | | vu une fois, page figée pendant le clic |
 | T3-7 | en-ligne passe 3 n° 7 | Finances › Nouvelle dépense | Dépense à payer de 1,00 : la pastille « Mon mois » dit « +1,00 ». | b | ouvert | | |
+| T3-8 | en-ligne passe 3 n° 8 | Finances › Opérations (Tout) | Barre « Apports » +800,00 contre +8 290,00 dans la section Apports et prélèvements (800 + 3 890 + 3 600, à confirmer). | m | ouvert | | |
+| T3-9 | en-ligne passe 3 n° 9 | Finances › Opérations 844×340 | Le graphe des catégories remplit l'écran utile ; aucune opération visible sans défiler. | m | ouvert | | |
+| T3-10 | en-ligne passe 3 n° 10 | Courses, éditeur de recette (390, 844) | Le + flottant cache des quantités (Courses) et le bout de « Suivant » (éditeur). | b | ouvert | | |
+| T3-11 | en-ligne passe 3 n° 11 | Recette neuve › planifier | Une recette neuve naît sur un matériel 30 L qui n'est pas l'actuel (Royal Catering 45 L) ; impossible à planifier sans « Adapter à mon matériel actuel ». | m | ouvert | | cause de T2B-1 |
+| T3-12 | en-ligne passe 3 n° 12 | Brassin › Plus | « Supprimer ce brassin » supprime sans confirmation ni retour visible. | m | ouvert | | joué sur le brassin ZZ TEST |
 | T3-NOTE-1 | en-ligne passe 3 réserve | tous | Banc : premier clic réel après chargement perdu (3 fois) ; plein écran non jouable dans l'iframe ; tâches longues 11–15 s sur Finances › Opérations après plusieurs ouvertures. À mesurer sur téléphone. | — | ouvert, doute non compté | | |
