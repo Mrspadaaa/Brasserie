@@ -1812,3 +1812,5 @@ Mais bien revoir cette écran notamment pour la sélection de date » (lu : c2a 
 
 - **19.11, 07:35**, mot pour mot, capture à 390 de la création de recette, étape 6/7 « Eau et sels », segment « 2. Sels » choisi : « Gros problème sur la partie sel !!! Lance une sous session pour fix ça »
   (lu : sous « 2. Sels », l'écran gardait le contenu de l'Eau (Empâtage, Rinçage, Eau/grain, Osmosée) ; corrigé EAU-1 à EAU-3, be201f85d.)
+- **19.11, 07:36**, mot pour mot, deux captures à 390 du récapitulatif 7/7, rangée Eau repliée puis dépliée : « Pareil ici, gros pro »
+  (lu : la toile pleine largeur restait ouverte rangée repliée, la piste SO₄ serrait son chiffre contre le point, le pointillé du départ (HCO₃) n'était pas expliqué ; corrigé EAU-6 à EAU-8, e86249a9c.)
