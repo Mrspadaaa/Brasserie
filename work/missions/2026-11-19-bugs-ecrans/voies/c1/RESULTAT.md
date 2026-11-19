@@ -20,3 +20,40 @@ DEMANDE EXECUTANT :
 DÉCISION À PRENDRE : LR3-NOTE-1 (vente réelle de 5 695 CHF) : annuler ou garder ? Recommandation : annuler si le brasseur confirme que c'est un test.
 CONNAISSANCE : en espèces, l'écart d'arrondi de 5 ct s'inscrit comme ligne « Arrondi à 5 centimes » (kind `other` si +, `discount` si −) et l'amountHT l'absorbe : même règle que la Dépense (purchaseEntry), sans toucher la TVA.
 LEÇON PROPOSÉE : aucune
+
+## Preuves (exécutant)
+
+Corrections du script (`voies/c1/capturer.mjs`) : (a) le menu « Actions rapides » liste « Vente », pas « Vendre » (diagnostic : libellés visibles relevés, capture `diag-menu.png` hors `captures/`) ; (b) reprise par parcours (3 essais) : les rechargements HMR déclenchés par d'autres sessions qui éditent le même dépôt (`src/ui/finance/ExpenseSheet.tsx`) détruisaient le document ; (c) défilement des « bas » : le conteneur n'était pas `.cs`, le « bas » était identique au « haut » ; corrigé (le « bas » montre désormais la quittance et les boutons).
+
+Journal, dernier passage (`with_server.mjs`, port 3107, `npm run dev`, code 0) :
+```
+1280 clair Vendre true
+1280 clair {"total":"11,90CHF","arrondi":["Arrondi à 5 centimes+0,02","Arrondi à 5 centimes+0,02"],"bouton":"Encaisser 11,90 CHF"}
+1280 clair erreurs []
+1280 cave Vendre true
+1280 cave {"total":"11,90CHF","arrondi":["Arrondi à 5 centimes+0,02","Arrondi à 5 centimes+0,02"],"bouton":"Encaisser 11,90 CHF"}
+1280 cave erreurs []
+390 clair Vendre true
+390 clair {"total":"11,90CHF","arrondi":["Arrondi à 5 centimes+0,02","Arrondi à 5 centimes+0,02"],"bouton":"Encaisser 11,90 CHF"}
+390 clair erreurs []
+390 cave Vendre true
+390 cave {"total":"11,90CHF","arrondi":["Arrondi à 5 centimes+0,02","Arrondi à 5 centimes+0,02"],"bouton":"Encaisser 11,90 CHF"}
+390 cave erreurs []
+```
+Écart au point 4 : la ligne d'arrondi existe en deux exemplaires (bloc des totaux et quittance annexe), donc deux entrées identiques, non une. Total, bouton et erreurs conformes.
+
+Captures ouvertes, une ligne chacune :
+- c1-caisse-1280-clair-haut : total 11,90, « Arrondi à 5 centimes +0,02 » lisible, « Encaisser 11,90 CHF », quittance en annexe. Défaut à regarder : bande blanche derrière « Mon mois » et « Encaisser » qui tranche sur le fond gris (le cave, lui, a une bande sombre).
+- c1-caisse-1280-cave-haut : tout lisible, contraste correct, bouton crème. OK.
+- c1-caisse-390-clair-haut : ligne d'arrondi lisible, pas de recouvrement. OK.
+- c1-caisse-390-clair-bas : quittance « Arrondi à 5 centimes +0,02 », « Total CHF 11,90 », « Modifier » et « Envoyer le PDF » visibles. OK.
+- c1-caisse-390-cave-haut : lisible. OK.
+- c1-caisse-390-cave-bas : idem en sombre, quittance et boutons visibles. OK.
+
+Défauts renvoyés au pilote (point 5) :
+1. Bande blanche derrière « Mon mois / Encaisser » en thème clair, 1280 et 390 (apparence de zone collante, à confirmer).
+2. Ligne d'arrondi affichée deux fois dans la même vue (totaux et quittance) : voulu, à confirmer.
+
+Non vérifié : le ticket et l'annexe en ligne, les tests de LR3-NOTE-1 (décision du brasseur, pas de capture).
+
+Commande du point 1 : `node scripts/with_server.mjs --server "npm run dev" --port 3107 --env PORT=3107 -- node work/missions/2026-11-19-bugs-ecrans/voies/c1/capturer.mjs`, lancée 5 fois (échecs sur le libellé du menu, puis rechargements HMR, puis défilement), dernier passage propre.

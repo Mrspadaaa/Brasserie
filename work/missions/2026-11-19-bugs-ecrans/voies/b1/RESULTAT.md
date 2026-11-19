@@ -29,3 +29,46 @@ DEMANDE EXECUTANT :
 
 CONNAISSANCE : une voie qui ne touche qu'un affichage fige-le dans le banc `banc-main.tsx` : le carnet est vide sous `?dev-local`, monter la vraie feuille sur une fixture ZZ TEST évite tout passage par Firestore.
 LEÇON PROPOSÉE : aucune
+
+## Preuves (exécutant)
+
+Point 1 non fait : `rm captures/*.png` refusé (suppression interdite par le cadre d'exécution). Les 4 anciennes captures portent les mêmes noms que les nouvelles : le banc les a écrasées, aucune capture périmée ne reste (11 PNG, tous datés du passage final).
+
+Corrections du banc (`banc/capturer.mjs`, seul fichier modifié hors RESULTAT) : (a) saisie OG ouverte via « Corriger les mesures » avant le clic (`not clickable` sinon) ; (b) sélection Ctrl+A avant « 2,5 » (la saisie s'ajoutait à « 1.060 » → « 1.0602,5 ») ; (c) sonde d'alerte sur le texte réel « pour 19,8 L brassés » ; (d) sonde de disponibilité sur le texte du body (la feuille se monte en portail, `#root` reste vide) ; (e) `racine vide` ne sort plus sur les feuilles.
+
+Journal, dernier passage (`with_server.mjs`, port 3105, `npx vite`, code 0) :
+```
+mesures-clair-1280 : ALERTE conditionné présente
+courbe-clair-1280 : pas d’alerte conditionné
+mesures-clair-390 : ALERTE conditionné présente
+courbe-clair-390 : pas d’alerte conditionné
+mesures-cave-1280 : ALERTE conditionné présente
+courbe-cave-1280 : pas d’alerte conditionné
+mesures-cave-390 : ALERTE conditionné présente
+courbe-cave-390 : pas d’alerte conditionné
+mesures-ok-clair-1280 : pas d’alerte conditionné
+og-2-5-clair-1280 : ALERTE conditionné présente
+supprimer-clair-1280 : pas d’alerte conditionné
+```
+`pageerror` : 0. `racine vide` : 0.
+
+Captures ouvertes, une ligne chacune :
+- mesures-clair-1280 : alerte ambre « 57,9 L pour 19,8 L brassés : vérifie le volume ou les fûts » sous « Bouteilles », et « 57,9 L non répartis ». Visible, pas de défaut.
+- mesures-clair-390 : même alerte, retour à la ligne propre, « Corriger les mesures » replié en bas. OK.
+- mesures-cave-1280 : alerte ambre lisible sur fond sombre. OK.
+- mesures-cave-390 : idem. OK.
+- courbe-clair-1280 : « 20,5 °C » lisible sur la bande, « fin J9 » libre. OK.
+- courbe-clair-390 : idem, légende repliée. OK.
+- courbe-cave-1280 : lisible ; légende « J5 · Montée de fin » en bleu clair peu contrasté, graduations grises discrètes. À surveiller, pas bloquant.
+- courbe-cave-390 : lisible. OK.
+- mesures-ok-clair-1280 (18,5 L conditionnés) : pas d’alerte conditionné. Reste « 18,5 L non répartis » : avertissement existant, sans lien avec BR-115.
+- og-2-5-clair-1280 : champ « 2,5 », message rouge au champ « OG 2,500 : au-dessus de 1,130, … Cette valeur est impossible : elle ne s’enregistre pas. ». Le refus est visible. Défauts, voir ci-dessous.
+- supprimer-clair-1280 : feuille « ZZ-LOT-004 · suppression demandée », « plus rien ne le retient », boutons « Supprimer ZZ-LOT-004 » et « Archiver plutôt ». Visible, rien cliqué. OK.
+
+Défauts renvoyés au pilote (point 5) :
+1. OG 2,5 : la ligne de résumé « Densité OG 2,500 · 0 relevé » affiche la valeur refusée (la courbe et l'alcool restent inchangés, mais le chiffre refusé s'affiche).
+2. Le message donne la borne haute 1,130 ; le verdict BR-114 cite 0,990–1,200. À trancher : quelle borne et quel texte.
+3. Double alerte : « 57,9 L conditionnés pour 19,8 L brassés » apparaît aussi sous « Corriger les mesures ». Deux lignes pour un même fait.
+4. Hors banc, non vérifié : marge de fin de défilement pour le « + » flottant sur « fin J9 » (BE-42, à confirmer en ligne).
+
+Commande de capture du point 2 : `PORT=3105 node scripts/with_server.mjs --server "npx vite --port 3105 --strictPort" --port 3105 --timeout 300 -- node work/missions/2026-11-19-bugs-ecrans/voies/b1/banc/capturer.mjs`, lancée 5 fois : 1 échec de clic (OG), 3 passages où une sonde ou la saisie était fausse (corrigés), dernier passage propre.

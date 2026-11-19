@@ -18,13 +18,16 @@ async function vue(nom, query, largeur, action) {
   await page.setRequestInterception(true);
   page.on('request', (r) => (/^(https?|ws)s?:\/\/(localhost|127\.0\.0\.1)/i.test(r.url()) || /^(data|blob|about):/i.test(r.url()) ? r.continue() : r.abort('blockedbyclient')));
   await page.goto(`${BASE}?${query}`, { waitUntil: 'domcontentloaded', timeout: 240000 });
-  await page.waitForSelector('#root > *', { timeout: 240000 }).catch(() => journal.push(`${nom} : racine vide`));
+  // La feuille (Sheet) se monte en portail hors de #root : #root reste vide alors que la page est rendue. On attend du texte dans le body.
+  await page.waitForFunction(() => (document.body.innerText || '').trim().length > 40, { timeout: 240000 })
+    .catch((e) => journal.push(`${nom} : racine vide (${String(e?.message ?? e).slice(0, 100)})`));
   await dormir(2500);
   if (action) await action(page);
   await dormir(600);
   await page.screenshot({ path: path.join(SORTIE, `${nom}.png`), fullPage: false });
   const texte = await page.evaluate(() => document.body.innerText);
-  journal.push(`${nom} : ${texte.includes('conditionnés pour') ? 'ALERTE conditionné présente' : 'pas d’alerte conditionné'}`);
+  // Le texte réel de l'alerte est « 57,9 L pour 19,8 L brassés : vérifie… » (ligne sous « Contenants ») : l'ancien test « conditionnés pour » ne la trouvait pas.
+  journal.push(`${nom} : ${/pour\s*[\d\s,.  ]+L\s*brassés/.test(texte) ? 'ALERTE conditionné présente' : 'pas d’alerte conditionné'}`);
   await page.close();
 }
 const cliquer = (t) => async (page) => {
@@ -40,8 +43,13 @@ for (const theme of ['clair', 'cave']) {
 }
 await vue('mesures-ok-clair-1280', 'vue=feuille&theme=clair&cond=18.5', 1280);
 await vue('og-2-5-clair-1280', 'vue=feuille&theme=clair', 1280, async (page) => {
+  // La saisie OG est repliée sous « Corriger les mesures » (summary) : l'ouvrir avant de cliquer, sinon « not clickable ».
+  await page.evaluate(() => [...document.querySelectorAll('summary')].find((s) => /Corriger les mesures/.test(s.textContent || ''))?.click());
+  await dormir(400);
   await page.focus('input[name="batch_sheet_og"]');
-  await page.click('input[name="batch_sheet_og"]', { clickCount: 3 });
+  // Sélection explicite du contenu (le triple-clic ne suffisait pas : la saisie s'ajoutait à « 1.060 » → « 1.0602,5 »).
+  await page.keyboard.down('Control'); await page.keyboard.press('KeyA'); await page.keyboard.up('Control');
+  await page.keyboard.press('Backspace');
   await page.keyboard.type('2,5');
   await page.keyboard.press('Tab');
 });

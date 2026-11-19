@@ -38,7 +38,15 @@ async function une(largeur, theme) {
   await poserFixtures()(page);
   await dormir(500);
   await cliquerTexte(page, /^Actions rapides$/); await dormir(600);
-  console.log(largeur, theme, 'Vendre', await cliquerTexte(page, /^Vendre$/));
+  // Le menu « Actions rapides » (diagnostic du 19.11) liste « Vente », pas « Vendre » : c'est l'entrée de la caisse (App.tsx, case 'vente').
+  const vendu = await cliquerTexte(page, /^Vente$/);
+  console.log(largeur, theme, 'Vendre', vendu);
+  if (!vendu) {
+    // Diagnostic : libellés réellement visibles après « Actions rapides », et capture du menu tel qu'il est.
+    const libelles = await page.evaluate(() => [...document.querySelectorAll('button,[role=button],[role=menuitem],[aria-label]')].filter((x) => x.getClientRects().length).map((x) => (x.getAttribute('aria-label') || x.textContent || '').trim().slice(0, 40)).filter(Boolean).slice(0, 120));
+    console.log('libellés visibles :', JSON.stringify(libelles));
+    await page.screenshot({ path: path.join(import.meta.dirname, 'diag-menu.png') });
+  }
   await page.waitForSelector('.cs', { timeout: 20000 }); await dormir(900);
   for (let i = 0; i < 3; i++) await cliquerTexte(page, /^33 cl/);
   await cliquerTexte(page, /^Espèces$/); await dormir(600);
@@ -47,10 +55,20 @@ async function une(largeur, theme) {
   const base = path.join(SORTIE, `c1-caisse-${largeur}-${theme}`);
   await page.screenshot({ path: `${base}-haut.png` });
   if (mobile) {
-    await page.evaluate(() => { const s = [...document.querySelectorAll('.cs, .cs-app, [role=dialog]')].reverse().find((n) => n.scrollHeight > n.clientHeight + 20); (s ?? document.scrollingElement).scrollTo(0, 99999); });
+    // Le conteneur qui défile n'est pas forcément .cs : on fait défiler tout élément à défilement réel, puis la page.
+    await page.evaluate(() => {
+      const defilants = [...document.querySelectorAll('*')].filter((n) => n.scrollHeight > n.clientHeight + 20 && /auto|scroll/.test(getComputedStyle(n).overflowY));
+      defilants.forEach((n) => { n.scrollTop = n.scrollHeight; });
+      document.scrollingElement?.scrollTo(0, 99999);
+    });
     await dormir(500); await page.screenshot({ path: `${base}-bas.png` });
   }
   console.log(largeur, theme, 'erreurs', JSON.stringify(journal.erreurs.slice(0, 3)));
   await browser.close();
 }
-for (const [l, t] of [[1280, 'clair'], [1280, 'cave'], [390, 'clair'], [390, 'cave']]) await une(l, t);
+// Les rechargements HMR (d'autres sessions éditent le même dépôt pendant le banc) détruisent le document : un parcours est rejoué, trois essais au plus.
+for (const [l, t] of [[1280, 'clair'], [1280, 'cave'], [390, 'clair'], [390, 'cave']]) {
+  for (let essai = 1; essai <= 3; essai++) {
+    try { await une(l, t); break; } catch (e) { console.log(l, t, 'essai', essai, 'échec :', String(e?.message ?? e).slice(0, 140)); }
+  }
+}
