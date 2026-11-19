@@ -157,3 +157,20 @@ describe('v3-2 : l’en-tête de bande cède la place au montant, jamais l’inv
     expect(tete.querySelector('[data-dp-sous-montant]')!.className).toMatch(/\bshrink-0\b/);
   });
 });
+
+describe('v3-7 et v3-8 (écartés : artefact du banc) : « supprimer » et les champs d’une ligne vivent dans son <details> ; fermée, ils ne se touchent pas ; ouverte, si', () => {
+  it('ligne 3 fermée : « Retirer la ligne 3 » et « Quantité ligne 3 » dans un details fermé ; toucher la rangée l’ouvre ; « supprimer » la retire', async () => {
+    const view = await lire();
+    const l3 = rangees(view)[2];
+    const retirer = () => l3.querySelector<HTMLElement>('[aria-label="Retirer la ligne 3"]')!;
+    expect(retirer()).not.toBeNull();
+    expect(retirer().closest('details')!.open).toBe(false);
+    expect(l3.querySelector<HTMLElement>('[aria-label="Quantité ligne 3"]')!.closest('details')!.open).toBe(false);
+    expect(retirer().closest('details')!.querySelector(':scope > summary')!.contains(retirer())).toBe(false);
+    const avant = rangees(view).length;
+    await act(async () => { fireEvent.click(l3.querySelector('summary')!); });
+    await waitFor(() => expect(retirer().closest('details')!.open).toBe(true));
+    await act(async () => { fireEvent.click(retirer()); });
+    await waitFor(() => expect(rangees(view).length).toBe(avant - 1));
+  });
+});
