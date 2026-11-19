@@ -1749,7 +1749,8 @@ export function ExpenseSheet({onClose,onSaved,initialIntent='expense',existingEq
   const enteteFichier=surFichier;
   return <ModalShell open onClose={()=>{if(!saving)fermer();}} dismissible={!saving} labelledBy={titleId} size="xl" plein>
     {/* u1 (18) : à 1280, la feuille est une colonne centrée comme les autres feuilles : en-tête, bande des documents, champs et pied dans la même largeur (le fond reste plein écran, D235). */}
-    <div data-dp="colonne" className="flex min-h-0 w-full flex-1 flex-col lg:mx-auto lg:max-w-[760px] lg:border-x lg:border-cave-700">
+    {/* v3-1 (tour 3, doc14 à 1280 : liste de ~300 px, barré sur 5 lignes) : une lecture pose preuve (420) et liste (760) côte à côte : la colonne les tient (1220) ; la saisie à la main garde 760 (u1 n° 18). */}
+    <div data-dp="colonne" className={`flex min-h-0 w-full flex-1 flex-col lg:mx-auto ${scanLayout?'lg:max-w-[1220px]':'lg:max-w-[760px]'} lg:border-x lg:border-cave-700`}>
     <Entete titleId={titleId} titre={initialIntent==='equipment'?'Acheter du matériel':'Nouvelle dépense'} horsLigne={!online} fichier={enteteFichier} pages={pagesJointes} ouvert={justifOuvert} fermerOff={saving} onFermer={fermer} onBasculer={()=>{if(justifOuvert)setEntreeOuverte(false);setJustifOuvert(o=>!o);}}
       milieu={ordre==='cat'&&etatSeg.visible?<SegmentPlier plie={etatSeg.plie} deplie={etatSeg.deplie} onPlier={()=>toutPlierGroupes()} onDeplier={()=>toutDeplierGroupes()}/>:undefined}/>
     {abandon?<div data-dp="abandon" role="alertdialog" aria-labelledby="dp-abandon-titre" className="mx-2 mt-1.5 space-y-1.5 rounded-panel border border-attention/40 bg-attention/10 p-2.5 text-sm text-cave-50">

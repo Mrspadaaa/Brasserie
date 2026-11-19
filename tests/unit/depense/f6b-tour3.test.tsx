@@ -67,3 +67,15 @@ describe('LR1-9 : « Voir le désaccord » ouvre la ligne en désaccord et y mon
     expect(view.container.querySelector('[data-dp="panneau-paye"]')!.className).toMatch(/\bblock\b/);
   });
 });
+
+describe('v3-1 : à 1280, la colonne d’une lecture tient la preuve (420) ET la liste (760), pas 760 en tout', () => {
+  it('sans lecture : colonne 760 (saisie à la main, u1 n° 18) ; avec lecture : 1220 = 420 + 16 + 760 + 24', async () => {
+    const vide = render(<ExpenseSheet onClose={() => {}} onSaved={() => {}}/>);
+    expect(vide.container.querySelector('[data-dp="colonne"]')!.className).toMatch(/lg:max-w-\[760px\]/);
+    cleanup();
+    const view = await lire();
+    const colonne = view.container.querySelector('[data-dp="colonne"]')!;
+    expect(colonne.className).toMatch(/lg:max-w-\[1220px\]/);
+    expect(colonne.className).not.toMatch(/lg:max-w-\[760px\]/);
+  });
+});
