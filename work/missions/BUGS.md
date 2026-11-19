@@ -1683,6 +1683,6 @@ Verdict : 5/6 corrigés, 4 problèmes (0 bloquant), 6 envois IA (cumul ≈ 32 su
 | T2-6 | tour2/VERDICT.md | Stocks › Courses | « Rien à commander » dit trois fois une fois déplié ; « 24 en tout » contre « manque 22 » à Étagère (2 articles pile au seuil). | m | ouvert | | |
 | T2-7 | tour2/stock/RESULTAT.md | Stocks | Défilement par relais : remplacer par une option `useWindowScroll` d'EntityList. | b | ouvert | | dette |
 | T2-8 | tour2/id/RESULTAT.md | Recette › Identité | Eau ajoutée ignorée par brewerRecipeRefresh, brewerTools, brewSystemInsights ; 3,7 L retenu (pilote). Sombre non capturé après correctif. | m | ouvert | | |
-| T2-9 | tour2/fin/RESULTAT.md | Finances 1280 | Champs « du / au » gardés à 1280 (option a, pilote). | — | décidé | | |
-| T2-10 | tour2/fin/RESULTAT.md | En-tête › période | Nom accessible « 30 nov.. » (double point). | b | corrigé | en-ligne/2026-11-19-tour2 | |
+| T2-9 | tour2/fin/RESULTAT.md | Finances 1280 | Champs « du / au » gardés à 1280 (option a, pilote). | — | écarté | | décidé par le pilote |
+| T2-10 | tour2/fin/RESULTAT.md | En-tête › période | Nom accessible « 30 nov.. » (double point). | b | corrigé | be036eb21 | en ligne (en-ligne/2026-11-19-tour2) |
 | T2-NOTE | en-ligne tour 2 réserve | tous | Joué en 390 clair seulement (iframe) ; 844, 1280, sombre, plein écran, Confirmer le paiement, Eau et sels, Ma levure non joués en ligne. | — | ouvert, doute non compté | | |
