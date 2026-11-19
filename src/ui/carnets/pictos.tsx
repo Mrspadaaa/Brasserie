@@ -256,11 +256,23 @@ export const libellePicto = (nom: PictoNom): string => LIBELLE[nom];
  * (`cn-vignette-petite`, `cn-vignette-grande`, `cn-vignette-fiche`).
  */
 export function VignetteObjet({ photo, mots, classe, taille }: { photo?: string; mots: (string | undefined | null)[]; classe?: string; taille?: number }) {
-  if (photo) return <img className={`cn-vignette${classe ? ` ${classe}` : ''}`} src={photo} alt="" loading="lazy" />;
   const nom = pictoDe(...mots);
-  return (
+  const picto = (
     <span className={`cn-vignette cn-vignette-vide${classe ? ` ${classe}` : ''}`} data-picto={nom} aria-hidden>
       <PictoObjet nom={nom} taille={taille ?? 40} lettre={initialeDe(...mots)} />
     </span>
   );
+  return <Photo src={photo} className={`cn-vignette${classe ? ` ${classe}` : ''}`} loading="lazy" repli={picto} />;
+}
+
+/* Paquet 1, PCN-185 (test en ligne 3, n° 3) : une photo de page qui ne charge pas (lien mort, page qui refuse) n'affiche jamais l'icône
+   d'image cassée ; l'adresse est retenue pour la session et chaque vignette de cet article reprend son repli (picto, ou rien). */
+const PHOTOS_CASSEES = new Set<string>();
+export const photoCassee = (src: string): boolean => PHOTOS_CASSEES.has(src);
+export const marquerCassee = (src: string): void => { PHOTOS_CASSEES.add(src); };
+
+export function Photo({ src, className, alt = '', loading, repli = null }: { src?: string; className?: string; alt?: string; loading?: 'lazy'; repli?: React.ReactNode }) {
+  const [, redessiner] = React.useState(0);
+  if (!src || PHOTOS_CASSEES.has(src)) return <>{repli}</>;
+  return <img className={className} src={src} alt={alt} loading={loading} onError={() => { PHOTOS_CASSEES.add(src); redessiner(n => n + 1); }} />;
 }

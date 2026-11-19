@@ -74,7 +74,7 @@ describe('critique 6 · figés carnet ouvert, liste, article (lot C)', () => {
     expect(texte(ouvert.container.querySelector('.cn-ligne-etat')!)).toMatch(/^2 façons à comparer/);
     expect(texte(ouvert.container.querySelector('.cn-tete-articles .cn-compte')!)).toBe('6');
     cleanup();
-    expect(cequiPart(v.carnet)).toBe('6 articles, 2 façons, 1 façon écartée et 3 notes');
+    expect(cequiPart(v.carnet)).toBe('3 critères, 6 articles, 2 façons, 1 façon écartée et 3 notes'); // paquet 1, PCN-165 : les critères partent aussi
     const supp = render(<SupprimerCarnet titre={v.title} contenu={v.carnet} liens={[]} onDetacher={rien} onArchiver={rien} onSupprimer={rien} onGarder={rien} />);
     expect(texte(supp.container)).toContain('6 articles, 2 façons, 1 façon écartée');
   });
@@ -177,7 +177,7 @@ describe('critique 6 · figés carnet ouvert, liste, article (lot C)', () => {
     const deux = { ...v.carnet, articles: v.carnet.articles.map(a => ({ ...a, veille: { active: true, depuis: '2026-11-04T09:00:00.000Z' } })).slice(0, 2) };
     const d = render(<SupprimerCarnet titre="t" contenu={deux} liens={[]} proche={{ titre: 'Ventilation', onDeplacer: rien }} onDetacher={rien} onArchiver={rien} onSupprimer={rien} onGarder={rien} />);
     expect(texte(d.container)).toContain('2 articles en veille : les déplacer dans Ventilation');
-    expect(cequiPart({ ...v.carnet, articles: v.carnet.articles.slice(0, 1), facons: [], notes: [], photos: [] })).toBe('1 article');
+    expect(cequiPart({ ...v.carnet, articles: v.carnet.articles.slice(0, 1), criteres: [], facons: [], notes: [], photos: [] })).toBe('1 article');
   });
 
   it('12 · n° 34 : « 1 critère sans valeur à comparer ⌄ », clair, et qui ne bouge pas pendant que l’IA range', () => {
