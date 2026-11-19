@@ -1153,10 +1153,10 @@
     },
     "ma-levure": {
       "base": {
-        "proto": "work/missions/2026-11-19-ma-levure-maquettes/base/proto.html",
-        "parole": "Il y a énormément de problème, même en terme de fluidité",
+        "proto": "work/missions/2026-11-19-ma-levure-maquettes/v01.html",
+        "parole": "v01 c'est bien mais le rest.... C'était surtout pas du tout ce que j'ai demandé, on voit même pas en une vue, le nombre que j'ai choisi ECT...",
         "date": "2026-11-19",
-        "note": "Aucune version choisie : la base est la carte en ligne (capture du 19.11). Les mini maquettes viennent de « la session levure n'a pas fait de mini maquettes ??? »."
+        "note": "v01 pour la carte du haut. « Toute cette partie là » : le bas de l'étape en ligne (base/volets-en-ligne-1911.jpg, huit volets) est à refaire, toute l'étape en une vue."
       },
       "gardes": [
         {
@@ -1208,11 +1208,48 @@
           "signature": {
             "regex": "IA|[Cc]ompléter"
           }
+        },
+        {
+          "id": "G6",
+          "element": "Le nombre choisi se voit en une vue (dose)",
+          "parole": "on voit même pas en une vue, le nombre que j'ai choisi",
+          "date": "2026-11-19",
+          "source": "SPEC 19.11",
+          "signature": {
+            "regex": "[0-9]+ ?g"
+          }
         }
       ],
-      "refuses": [],
+      "refuses": [
+        {
+          "id": "R1",
+          "element": "Le bas de l'étape en volets empilés (Produit exact et offres, Repères et sources, Atelier complet…)",
+          "parole": "Toute cette partie là",
+          "date": "2026-11-19",
+          "source": "base/volets-en-ligne-1911.jpg",
+          "signature": {
+            "tous": [
+              {
+                "texte": "Produit exact et offres"
+              },
+              {
+                "texte": "Atelier complet"
+              }
+            ]
+          }
+        }
+      ],
       "idees": [],
-      "a_preciser": []
+      "a_preciser": [],
+      "anciennes_bases": [
+        {
+          "proto": "work/missions/2026-11-19-ma-levure-maquettes/base/proto.html",
+          "parole": "Il y a énormément de problème, même en terme de fluidité",
+          "date": "2026-11-19",
+          "note": "Aucune version choisie : la base est la carte en ligne (capture du 19.11). Les mini maquettes viennent de « la session levure n'a pas fait de mini maquettes ??? ».",
+          "remplacee_par": "v01.html, le 19.11"
+        }
+      ]
     }
   }
 }

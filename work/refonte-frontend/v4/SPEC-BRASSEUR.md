@@ -2270,3 +2270,9 @@ Sur sa capture de Ma levure en ligne (Munich Lager Yeast, traits « rien de publ
 > « Pareil sur beaucoup de fiches, c'est une fonctionnalité oublié ? »
 >
 > « Aussi la session levure n'a pas fait de mini maquettes ??? »
+
+Sur la page des 12 mini maquettes de Ma levure, puis sur sa capture du bas de l'étape en ligne (Conduite repliée, « Mon stock ou saisie libre », « Produit exact et offres », « Fiche : compléter, corriger, chercher avec l'IA », « Dose, ensemencement et starter », « Objectifs », « Repères et sources », « Atelier complet ») :
+
+> « v01 c'est bien mais le rest.... C'était surtout pas du tout ce que j'ai demandé, on voit même pas en une vue, le nombre que j'ai choisi ECT... »
+>
+> « Toute cette partie là »
