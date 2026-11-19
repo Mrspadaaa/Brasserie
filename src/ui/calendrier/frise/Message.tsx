@@ -140,6 +140,10 @@ export function placerMessage(el: HTMLElement, ancre: string | undefined): 'pres
   const nav = navEl ? navEl.getBoundingClientRect() : null;
   let gauche = 8, bas = vh - 8;
   if (nav && vu(nav)) { if (nav.width >= nav.height) bas = nav.top - 8; else gauche = nav.right + 8; }
+  /* critique 3 du 19.11 : à 1280, le message se tient dans la colonne de la frise (il partait sous le rail, loin de sa chose, ou au bord de l'écran) */
+  const zoneFrise = document.querySelector('[data-frise]')?.getBoundingClientRect();
+  let droite = vw - 8;
+  if (zoneFrise && zoneFrise.width > 240 && vw >= 1024) { gauche = Math.max(gauche, zoneFrise.left); droite = Math.min(droite, zoneFrise.right); }
   /* l'alerte f6-b au téléphone en hauteur : toute la largeur (son texte, puis Livrer et Annuler), au-dessus du + en bas ; ailleurs, à gauche du + */
   const alerte = el.getAttribute('role') === 'alert';
   const large = alerte && vw < 1024 && !(vw > vh && vh <= 520);
@@ -207,7 +211,7 @@ export function placerMessage(el: HTMLElement, ancre: string | undefined): 'pres
     const loin = (p: Place) => Math.hypot(Math.max(gauche, Math.min(vw - 8 - w, p.x)) + w / 2 - cx, p.y + h / 2 - cy);
     places.sort((p, q) => loin(p) - loin(q));
   }
-  let libre = premiereLibre(w, h, places, obs, gauche, vw - 8, haut, bas + 1);
+  let libre = premiereLibre(w, h, places, obs, gauche, droite, haut, bas + 1);
   /* PC-109, PC-96, PC-85 (CRITIQUE-13 n° 3, E33 « jamais sur un nom ») : faute d'une place libre près de la chose, le bas couvrait des noms
      (Livrer sur Achats, Lier sur Travaux, refus de jalon sur Ventes). Avant lui, une place qui ne couvre aucun nom, titre, détail, ni le + ni la
      chose (une barre peut passer dessous) : la bande la plus proche de la chose (sinon du bas), à gauche, à gauche du +, puis au milieu. */
@@ -220,8 +224,8 @@ export function placerMessage(el: HTMLElement, ancre: string | undefined): 'pres
     /* sans chose : sous le titre de la première rangée, jamais à sa hauteur */
     for (let y = r && r.height > 0 ? haut : haut + 20; y + h <= bas + 1; y += 4) ys.push(y);
     ys.sort((u, v) => Math.abs(u + h / 2 - cible) - Math.abs(v + h / 2 - cible));
-    const xs = r && r.height > 0 ? [gauche, (fab ? fab.left : vw) - w - 12, (vw - w) / 2] : [vw - 8 - w, (vw - w) / 2, gauche];
-    libre = premiereLibre(w, h, ys.flatMap(y => xs.map(x => ({ x, y }))), durs, gauche, vw - 8, haut, bas + 1);
+    const xs = r && r.height > 0 ? [gauche, (fab ? fab.left : vw) - w - 12, (vw - w) / 2] : [droite - w, (gauche + droite - w) / 2, gauche];
+    libre = premiereLibre(w, h, ys.flatMap(y => xs.map(x => ({ x, y }))), durs, gauche, droite, haut, bas + 1);
   }
   /* sinon en bas, au-dessus des onglets, à gauche du + (l'alerte large : au-dessus du + qu'elle croiserait) */
   const fond = large && fab && fab.left < gauche + w ? Math.min(bas, fab.top - 10) : bas;
