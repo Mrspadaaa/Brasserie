@@ -1814,3 +1814,5 @@ Mais bien revoir cette écran notamment pour la sélection de date » (lu : c2a 
   (lu : sous « 2. Sels », l'écran gardait le contenu de l'Eau (Empâtage, Rinçage, Eau/grain, Osmosée) ; corrigé EAU-1 à EAU-3, be201f85d.)
 - **19.11, 07:36**, mot pour mot, deux captures à 390 du récapitulatif 7/7, rangée Eau repliée puis dépliée : « Pareil ici, gros pro »
   (lu : la toile pleine largeur restait ouverte rangée repliée, la piste SO₄ serrait son chiffre contre le point, le pointillé du départ (HCO₃) n'était pas expliqué ; corrigé EAU-6 à EAU-8, e86249a9c.)
+- **19.11** (07:42), mot pour mot, trois captures à 390 de l'étape Levure 4/7, onglet « Ma levure » (White Labs Munich Lager Yeast 500g après Andechs Lager, OG 1,026, conduite 19 °C puis 4 °C) : « Lance une sous session pour la levure uniquement sur la partie "ma levure" en /rc. Il y a énormément de problème, même en terme de fluidité »
+  (lu : portée Ma levure seule ; liste figée LEV-1 à LEV-11 dans `work/missions/2026-11-19-ma-levure/LISTE.md` ; la fluidité se chronomètre au téléphone simulé, CPU ×4, une interaction au-delà de 100 ms est un défaut.)

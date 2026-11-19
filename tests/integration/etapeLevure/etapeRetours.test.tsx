@@ -170,6 +170,8 @@ describe('Ma levure : la conduite de base revient', () => {
     render(<Banc />);
     const base = document.querySelector('[data-lv="conduite-base"]') as HTMLElement;
     expect(base.hidden).toBe(false);
+    const plus = document.querySelector('[data-repli="plus"]') as HTMLDetailsElement;            // 19.11 : l'atelier est rangé sous « Plus »
+    plus.open = true; fireEvent(plus, new Event('toggle'));
     const atelier = document.querySelector('[data-repli="atelier"]') as HTMLDetailsElement;
     atelier.open = true; fireEvent(atelier, new Event('toggle'));
     expect((document.querySelector('[data-lv="conduite-base"]') as HTMLElement).hidden).toBe(true);

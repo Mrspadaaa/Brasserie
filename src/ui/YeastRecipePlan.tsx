@@ -24,7 +24,13 @@ import type { YeastSpec } from '../types';
 import { readYeastFactValue, type YeastTechnicalFact } from '../../functions/src/yeastTechnicalFacts';
 
 const finite = (n: unknown): n is number => typeof n === 'number' && Number.isFinite(n);
-const number = (value?: number | null, digits = 1) => Number.isFinite(value) ? value!.toLocaleString('fr-FR', { maximumFractionDigits: digits }) : '—';
+// Les formats créés une fois par nombre de décimales (19.11, fluidité du glisser) : même texte que `toLocaleString`.
+const FORMATS = new Map<number, Intl.NumberFormat>();
+const number = (value?: number | null, digits = 1) => {
+  if (!Number.isFinite(value)) return '—';
+  let f = FORMATS.get(digits); if (!f) { f = new Intl.NumberFormat('fr-FR', { maximumFractionDigits: digits }); FORMATS.set(digits, f); }
+  return f.format(value!);
+};
 const plural = (count: number, word: string) => `${count} ${word}${count > 1 ? 's' : ''}`;
 export const projectionRange = (value: { min: number; max: number } | null | undefined, digits: number) => value
   ? `${value.min.toLocaleString('fr-FR', { minimumFractionDigits: digits, maximumFractionDigits: digits })}${value.min === value.max ? '' : `–${value.max.toLocaleString('fr-FR', { minimumFractionDigits: digits, maximumFractionDigits: digits })}`}` : 'À préciser';
@@ -665,7 +671,7 @@ export function YeastRecipePlan({ recipe, refs, onChange, onCompare, onGoal, ini
         </details>}
         {beforeProposal?.key === key && <p className="yeast-small">La proposition remplace les paliers de l’essai. <button type="button" className="yeast-link" onClick={restoreBeforeProposal}>Rétablir l’essai avant proposition</button></p>}
       </section>}
-      <div className="yc-projection-title"><h4>{result.candidate?.label || recipe.yeast.name || 'Sans levure'} · {edited ? 'essai' : 'conduite actuelle'}</h4><span className="yc-tag">{edited ? 'Non appliqué' : 'Brouillon'}</span></div>
+      <div className="yc-projection-title"><h4>{result.candidate?.label || recipe.yeast.name || 'Sans levure'} · {edited ? 'essai' : 'conduite actuelle'}</h4><span className="yc-tag" data-etat-conduite={edited ? 'essai' : 'brouillon'}>{edited ? 'Non appliqué' : 'Brouillon'}</span></div>
       {(draft.styleId === 'sour' || currentDraft.process !== 'unspecified') && <p className="yeast-small">{processLabels[currentDraft.process ?? 'unspecified']}</p>}
       <FermentationTemperatureChart steps={programme} referenceSteps={edited ? recipe.fermentation ?? [] : []} pitchTempC={draft.pitchTempC}
         bands={programme.map(phase => phase.kind === 'primaire' && result.projection.dossier.temperature?.qualifier === 'range' ? result.projection.dossier.temperature.range : undefined)}

@@ -178,3 +178,34 @@
 /* L'unité « j » / « °C » d'un palier garde sa place quand le champ a le focus (retour du critique, constat 7) : l'anneau de focus ne la recouvre plus. */
 .lv-base .yc-phase-editor label > span.flex { gap: 8px; }
 .lv-base .yc-phase-editor label > span.flex > span { flex: 0 0 auto; min-width: 1ch; }
+
+/* 19.11 (retour du brasseur, captures à 390) ------------------------------------------------------------------------------------------- */
+/* La dose se touche : elle ouvre « Dose, ensemencement et starter ». Même dessin qu'avant, sans cadre de bouton. */
+.lv-dose { border: 0; background: transparent; padding: 0; margin: 0; cursor: pointer; font: inherit; text-align: right; border-radius: 8px; min-height: 32px; }
+.lv-dose:focus-visible { outline: 2px solid theme('colors.ebc.straw'); outline-offset: 2px; }
+.lv-dose[data-dose='inconnue'] b { font-size: 1.125rem; color: theme('colors.attention'); }
+.lv-dose[data-dose='inconnue'] span { color: theme('colors.attention'); text-decoration: underline dotted; text-underline-offset: 3px; }
+.lv-dose[data-dose='fabricant'] b { font-size: 1.375rem; }
+/* La conduite hors de la plage de la levure : sa valeur en couleur d'alerte, un toucher la cale dans la plage. */
+.lv-cel[data-hors-plage] .lv-tc { color: theme('colors.attention'); font-weight: 600; }
+.lv-caler { display: inline-flex; align-items: center; min-height: 24px; padding: 0 8px; border: 1px solid theme('colors.attention'); border-radius: 10px; background: transparent;
+  color: theme('colors.attention'); font-size: .75rem; font-weight: 600; font-family: 'IBM Plex Mono', monospace; white-space: nowrap; cursor: pointer; }
+.lv-caler:focus-visible, .lv-retablir:focus-visible { outline: 2px solid theme('colors.ebc.straw'); outline-offset: 2px; }
+.lv-retablir { display: inline-flex; align-items: center; gap: 3px; min-height: 24px; font-size: .75rem; }
+/* Les données non documentées d'une levure en une rangée : leurs pastilles et noms à gauche, une recherche à droite. */
+.lv-el-groupe { flex-wrap: wrap; white-space: normal; gap: 2px 10px; color: theme('colors.cave.400'); }
+.lv-el-n { display: inline-flex; align-items: center; gap: 5px; white-space: nowrap; }
+.lv-el-n i { width: 8px; height: 8px; border-radius: 50%; flex: none; opacity: .7; }
+/* « Plus » : les volets rangés, à un toucher ; dedans, la même liste, un cran en retrait. */
+.lv-replis-plus { padding: 4px 0 0; }
+/* « Brouillon » ne se dit qu'une fois : l'en-tête du volet le porte déjà. */
+.lv-base .yc-tag[data-etat-conduite='brouillon'] { display: none; }
+/* Fluidité (19.11) : hors de l'écran, la conduite et les volets ne sont ni restylés ni remis en page ; leur dernière taille tient leur place. */
+.lv-base, .lv-replis[data-lv='replis'] { content-visibility: auto; contain-intrinsic-size: auto 640px; }
+.lv-groupe { grid-column: 1 / -1; display: flex; align-items: flex-start; justify-content: space-between; gap: 4px 10px; min-width: 0; padding: 2px 0; }
+.lv-groupe > .lv-el-groupe { flex: 1 1 auto; min-width: 0; }
+.lv-groupe > .lv-ev { flex: none; }
+/* À 390, le graphe de la conduite déborde de 20 px de chaque côté (yeast-choice.css) : dans la carte de Ma levure, « °C » sortait du cadre (capture du 19.11). */
+@media (max-width: 639px) {
+  .lv-base .yc-conduct-station .yc-editable-chart > .yc-chart-surface { width: calc(100% + 12px); margin-inline: -6px; }
+}

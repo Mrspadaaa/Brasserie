@@ -15,7 +15,7 @@
 //  essai de conduite, profil de fermentation, comparaison d'offres, corriger la fiche catalogue partagée, écarts du brouillon :
 //                                  repli « Atelier complet » (YeastRecipeChoice, inchangé, monté à l'ouverture)
 //  mode NOLO ..................... inchangé : le wizard garde YeastRecipeChoice (NoloPanel) quand NOLO est actif.
-import { Suspense, useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
+import { Suspense, useDeferredValue, useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
 import { ChevronDown, Undo2 } from 'lucide-react';
 import type { StockItem } from '../../types';
 import type { TrialRecipe } from '../../domain/hopIndex/trials';
@@ -33,7 +33,7 @@ import { YeastPitchingPanel } from '../YeastPitchingPanel';
 import { NomLibreInitial } from '../nomLibreLevure';
 import { YeastStrainDetails } from '../YeastStrainDetails';
 import { YeastBeerTargetPanel } from '../YeastBeerTargetPanel';
-import { MaLevure } from './MaLevure';
+import { MaLevure, nomCourtLevure } from './MaLevure';
 import { apiLevure } from './domaine';
 import { FournisseurRecherche, specDeLevure, useRechercheDonnee, type Recherche } from './useRechercheDonnee';
 import type { YeastTechnicalFact } from '../../../functions/src/yeastTechnicalFacts';
@@ -47,7 +47,16 @@ const VUES: ReadonlyArray<{ id: VueLevure; libelle: string }> = [
   { id: 'ma-levure', libelle: 'Ma levure' }, { id: 'chercher', libelle: 'Chercher' },
   { id: 'comparer', libelle: 'Comparer' }, { id: 'suggerer', libelle: 'Suggérer' },
 ];
-type RepliId = 'stock' | 'produit' | 'fiche' | 'dose' | 'objectifs' | 'sources' | 'atelier';
+type RepliId = 'stock' | 'produit' | 'fiche' | 'dose' | 'objectifs' | 'sources' | 'atelier' | 'plus';
+/** Les volets rangés sous « Plus » (19.11 : huit volets sous la conduite, « trop d'actions ») : la dose reste dehors, le reste à un toucher de plus. */
+const DANS_PLUS: readonly RepliId[] = ['stock', 'produit', 'fiche', 'objectifs', 'sources', 'atelier'];
+/** Des gestes au nom stable (la carte mémorisée ne se refait pas pour une nouvelle flèche à chaque rendu), qui appellent toujours la dernière version. */
+function useGestes<T extends Record<string, (...a: never[]) => unknown>>(gestes: T): T {
+  const ref = useRef(gestes);
+  ref.current = gestes;
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  return useMemo(() => Object.fromEntries(Object.keys(gestes).map(k => [k, (...a: never[]) => ref.current[k](...a)])) as T, []);
+}
 const identite = (y: TrialRecipe['yeast']) => JSON.stringify([y.name ?? '', y.hopIndexId ?? '', y.stockItemRef ?? '']);
 const champsDuChoix = (r: TrialRecipe): YeastChoiceFields => structuredClone({
   yeast: r.yeast, yeastDesign: r.yeastDesign, yeastGuide: r.yeastGuide, hopPredictionIds: r.hopPredictionIds, hopMatrixId: r.hopMatrixId, hopTrialId: r.hopTrialId,
@@ -57,9 +66,11 @@ const champsDuChoix = (r: TrialRecipe): YeastChoiceFields => structuredClone({
 function Repli({ id, titre, resume, ouvert, onOuvre, children }: {
   id: RepliId; titre: string; resume?: string; ouvert: boolean; onOuvre: (o: boolean) => void; children: ReactNode;
 }) {
+  // 19.11, fluidité : le volet s'ouvre tout de suite, son contenu (lourd) se monte juste après, en différé.
+  const monte = useDeferredValue(ouvert);
   return <details className="lv-repli" data-repli={id} open={ouvert} onToggle={e => onOuvre(e.currentTarget.open)}>
     <summary><span><b>{titre}</b>{resume && <small>{resume}</small>}</span><ChevronDown size={14} aria-hidden="true" /></summary>
-    {ouvert && <div className="lv-repli-corps">{children}</div>}
+    {ouvert && <div className="lv-repli-corps">{monte ? children : <p role="status" className="lv-note">…</p>}</div>}
   </details>;
 }
 
@@ -113,14 +124,14 @@ export function EtapeLevure(p: PropsEtapeLevure) {
   const recipeVue = useMemo<TrialRecipe>(() => reliee ? { ...recipe, yeast: { ...recipe.yeast, hopIndexId: reliee.id } } : recipe, [recipe, reliee]);
   const choisie = !!recipe.yeast.name?.trim();
   const [ouverts, setOuverts] = useState<Partial<Record<RepliId, boolean>>>({});
-  const ouvre = (id: RepliId, o = true) => setOuverts(s => ({ ...s, [id]: o }));
+  const ouvre = (id: RepliId, o = true) => setOuverts(s => ({ ...s, [id]: o, ...(o && DANS_PLUS.includes(id) ? { plus: true } : {}) }));
   // Le texte tapé sans résultat : « Mon stock ou saisie libre » s'ouvre sur la saisie hors catalogue, ce nom dedans.
   // `libreN` change à chaque geste : la saisie se remonte, ouverte, le champ pris par le focus.
   const [nomLibre, setNomLibre] = useState<string>();
   const [libreN, setLibreN] = useState(0);
   const [libreSous, setLibreSous] = useState(false);
   /** Un lien de la conduite de base (« Corriger la fiche », « Objectifs ») : le repli s'ouvre et vient dans l'écran. */
-  const vaAu = (id: RepliId) => { ouvre(id); requestAnimationFrame(() => racine.current?.querySelector(`[data-repli="${id}"]`)?.scrollIntoView?.({ block: 'start' })); };
+  const vaAu = (id: RepliId) => { ouvre(id); requestAnimationFrame(() => requestAnimationFrame(() => racine.current?.querySelector(`[data-repli="${id}"]`)?.scrollIntoView?.({ block: 'start' }))); };
   const cible: string | undefined = undefined;
   const racine = useRef<HTMLDivElement>(null);
   // « ⌕ » LANCE la recherche, sur la vue en cours (maquette l5b : « recherche… · 3/20 » dans la cellule) ; le résultat reste « à confirmer ».
@@ -165,9 +176,12 @@ export function EtapeLevure(p: PropsEtapeLevure) {
   const abvVise = useMemo(() => abvViseDe(recipe, refs), [recipe, refs]);
   const primaire = (recipe.fermentation ?? []).find(f => f.kind === 'primaire') ?? (recipe.fermentation ?? [])[0];
   const style = inferYeastRecipeStyle(recipe);
+  const tPrimaire = Number.isFinite(primaire?.tempC) ? primaire!.tempC : undefined;
+  const reperes = useMemo(() => ({ temperatureC: tPrimaire, volumeL: recipe.volumeL, abvVise, ogVisee: recipe.ogTarget ?? undefined, styleId: style === 'unknown' ? undefined : style }),
+    [tPrimaire, recipe.volumeL, abvVise, recipe.ogTarget, style]);
   const props: PropsVue = {
     base: levure,
-    reperes: { temperatureC: Number.isFinite(primaire?.tempC) ? primaire!.tempC : undefined, volumeL: recipe.volumeL, abvVise, ogVisee: recipe.ogTarget ?? undefined, styleId: style === 'unknown' ? undefined : style },
+    reperes,
     onChoisir: l => { p.onChoisir(l); onVue('ma-levure'); },
     comparees: p.comparees, onComparees: p.onComparees, onVue,
     // Toucher « ⌕ » : la recherche IA existante part, comptée au plafond du jour ; la vue en cours reste à l'écran.
@@ -175,52 +189,68 @@ export function EtapeLevure(p: PropsEtapeLevure) {
   };
   // Une levure du stock ou une saisie libre n'a pas de fiche du catalogue : la recherche part de la levure de la recette.
   const maLevureRef = levure ?? ({ id: 'recette', name: recipe.yeast.name, form: recipe.yeast.form } as YeastReference);
-  const chercherDeMaLevure = (axe: string) => crochet.chercher(maLevureRef, axe, recipe.yeast);
+  const chercherDeMaLevure = (axe: string | string[]) => crochet.chercher(maLevureRef, axe, recipe.yeast);
 
   const onStock = (item: StockItem) => { p.onStock(item); onVue('ma-levure'); };
   // Les levures proposées sous « Changer de levure » : vendues en CH · FR · DE, les plus proches de la recette (API de d1, jamais un filtre imposé).
+  // Le catalogue rangé pour la recette, calculé une fois par repères et en différé (19.11, fluidité : choisir une levure peint d'abord la carte, le classement
+  // suit) ; il sert aux puces proposées et à l'ordre des résultats de « Changer de levure ».
+  const reperesDiff = useDeferredValue(reperes);
+  const classement = useMemo(() => {
+    if (!apiLevure) return refs;
+    try { return apiLevure.chercher('', {}, reperesDiff).liste; } catch { return refs; }
+  }, [reperesDiff, refs]);
   const proposees = useMemo(() => {
     if (!apiLevure) return [];
     try {
-      return apiLevure.chercher('', {}, props.reperes).liste.filter(l => l.id !== levure?.id && l.id !== (change?.from.yeast.hopIndexId) && !stockIds.includes(l.id) && apiLevure!.disponibilite(l).rang === 'ici').slice(0, 2);
+      return classement.filter(l => l.id !== levure?.id && l.id !== (change?.from.yeast.hopIndexId) && !stockIds.includes(l.id) && apiLevure!.disponibilite(l).rang === 'ici').slice(0, 2);
     } catch { return []; }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [levure?.id, stockIds, props.reperes.temperatureC, props.reperes.abvVise, props.reperes.styleId, change?.from.yeast.hopIndexId]);
+  }, [classement, levure?.id, stockIds, change?.from.yeast.hopIndexId]);
   // Ouvert, « Mon stock ou saisie libre » se pose sous le champ de recherche (à la place des tuiles) ; fermé, il reste dans la liste des replis.
   const repliStock = <Repli id="stock" titre="Mon stock ou saisie libre" resume="une levure de l’atelier, ou hors catalogue" ouvert={!!ouverts.stock} onOuvre={o => { ouvre('stock', o); if (!o) setLibreSous(false); }}>
             <NomLibreInitial.Provider key={libreN} value={nomLibre}>{p.identityEditor}</NomLibreInitial.Provider></Repli>;
+  const precedente = change?.from.yeast.name && change.from.yeast.name !== recipe.yeast.name ? change.from.yeast.name : undefined;
+  const gestes = useGestes({
+    onConduite: (next: TrialRecipe) => p.onChange(next, 'conduct'),
+    onChercherDonnee: chercherDeMaLevure, onRetirer: () => p.onRetirer(), onStock,
+    onHorsCatalogue: (texte?: string) => { setNomLibre(texte?.trim() ?? ''); setLibreN(n => n + 1); setLibreSous(true); ouvre('stock'); },
+    onProposee: (l: YeastReference) => props.onChoisir(l),
+    onComparer: () => onVue('comparer'), onFiche: () => vaAu('fiche'), onObjectifs: () => vaAu('objectifs'), onDose: () => vaAu('dose'),
+    onNavigate: (d: Parameters<NonNullable<PropsEtapeLevure['onNavigate']>>[0]) => p.onNavigate?.(d),
+    onPrecedente: () => { const avant = refs.find(r => r.id === change?.from.yeast.hopIndexId); if (avant) props.onChoisir!(avant); },
+  });
   return <FournisseurRecherche crochet={crochet}><div className="lv-etape" ref={racine} data-lv="etape" data-vue={vue}>
     <div className="lv-seg" role="tablist" aria-label="Vues de l’étape Levure">
       {VUES.map(v => <button key={v.id} type="button" role="tab" id={`lv-tab-${v.id}`} aria-selected={vue === v.id} aria-controls={`lv-vue-${v.id}`}
         data-vue-id={v.id} className="lv-seg-bt" onClick={() => onVue(v.id)}>{v.libelle}{v.id === 'comparer' && p.comparees.length > 0 && <span className="lv-seg-n"> ({p.comparees.length})</span>}</button>)}
     </div>
     {annulable && !ouverts.atelier && <p className="lv-annule" role="status" data-lv="annuler">
-      <span>{change!.source === 'undo' ? `${change!.to!.yeast.name || 'Brouillon sans levure'} rétablie` : change!.from.yeast.name ? `Depuis ${change!.from.yeast.name}` : 'Levure choisie'} · non enregistré</span>
-      <button type="button" className="lv-lien" onClick={annuler}><Undo2 size={13} aria-hidden="true" /> {change!.source === 'undo' ? `Rétablir ${change!.from.yeast.name || 'sans levure'}` : 'Annuler le changement'}</button></p>}
+      {/* 19.11 : « Depuis Brewing Science Institute · Andechs Lager » se lisait comme une troisième levure : la levure remplacée, par son nom court. */}
+      <span title={change!.from.yeast.name || undefined}>{change!.source === 'undo' ? `${change!.to!.yeast.name ? nomCourtLevure(change!.to!.yeast.name, change!.to!.yeast.lab) : 'Brouillon sans levure'} rétablie` : change!.from.yeast.name ? `Avant : ${nomCourtLevure(change!.from.yeast.name, change!.from.yeast.lab)}` : 'Levure choisie'} · non enregistré</span>
+      <button type="button" className="lv-lien" onClick={annuler}><Undo2 size={13} aria-hidden="true" /> {change!.source === 'undo' ? `Rétablir ${change!.from.yeast.name ? nomCourtLevure(change!.from.yeast.name, change!.from.yeast.lab) : 'sans levure'}` : 'Annuler le changement'}</button></p>}
 
     <div role="tabpanel" id={`lv-vue-${vue}`} aria-labelledby={`lv-tab-${vue}`}>
       {vue === 'ma-levure' && <>
-        <MaLevure recipe={recipeVue} refs={refs} supply={supply} levure={levure} onConduite={next => p.onChange(next, 'conduct')}
-          onChercherDonnee={chercherDeMaLevure} onRetirer={p.onRetirer}
-          stock={p.stockItems} onStock={onStock} onHorsCatalogue={texte => { setNomLibre(texte?.trim() ?? ''); setLibreN(n => n + 1); setLibreSous(true); ouvre('stock'); }} libre={ouverts.stock && libreSous ? repliStock : undefined} proposees={proposees} onProposee={l => props.onChoisir(l)}
-          reperes={props.reperes} stockIds={stockIds} conduiteCachee={!!ouverts.atelier}
-          onComparer={() => onVue('comparer')} onFiche={() => vaAu('fiche')} onObjectifs={() => vaAu('objectifs')} onNavigate={p.onNavigate}
-          precedente={change?.from.yeast.name && change.from.yeast.name !== recipe.yeast.name ? change.from.yeast.name : undefined}
-          onPrecedente={() => { const avant = refs.find(r => r.id === change?.from.yeast.hopIndexId); if (avant) props.onChoisir!(avant); }} />
+        <MaLevure recipe={recipeVue} refs={refs} supply={supply} levure={levure} {...gestes} onNavigate={p.onNavigate ? gestes.onNavigate : undefined}
+          stock={p.stockItems} libre={ouverts.stock && libreSous ? repliStock : undefined} proposees={proposees}
+          reperes={reperes} classement={classement} stockIds={stockIds} conduiteCachee={!!ouverts.atelier} precedente={precedente} onPrecedente={precedente ? gestes.onPrecedente : undefined} />
         <div className="lv-replis" data-lv="replis">
+          {choisie && <Repli id="dose" titre="Dose, ensemencement et starter" resume="quantité prévue, moût à ensemencer, préparation" ouvert={!!ouverts.dose} onOuvre={o => ouvre('dose', o)}>
+            <YeastPitchingPanel part="pitching" recipe={recipe} onChange={next => p.onChange(next, 'pitching')} quantityEditor={p.quantityEditor} /></Repli>}
+          <Repli id="plus" titre="Plus" resume={choisie ? 'stock, produit et offres, fiche, objectifs, sources, atelier' : 'stock et saisie libre, atelier'} ouvert={!!ouverts.plus} onOuvre={o => ouvre('plus', o)}>
+          <div className="lv-replis lv-replis-plus">
           {!(ouverts.stock && libreSous) && repliStock}
           {choisie && <Repli id="produit" titre="Produit exact et offres" resume="facultatif · vendeurs, « Corriger la fiche produit »" ouvert={!!ouverts.produit} onOuvre={o => ouvre('produit', o)}>
             <YeastPitchingPanel part="supply" recipe={recipe} onChange={next => p.onChange(next, 'pitching')} /></Repli>}
           {choisie && <Repli id="fiche" titre="Fiche : compléter, corriger, chercher avec l’IA" resume="valeurs typées, sources" ouvert={!!ouverts.fiche} onOuvre={o => ouvre('fiche', o)}>
             {p.aiEditor}{p.factsEditor}</Repli>}
-          {choisie && <Repli id="dose" titre="Dose, ensemencement et starter" resume="quantité prévue, moût à ensemencer, préparation" ouvert={!!ouverts.dose} onOuvre={o => ouvre('dose', o)}>
-            <YeastPitchingPanel part="pitching" recipe={recipe} onChange={next => p.onChange(next, 'pitching')} quantityEditor={p.quantityEditor} /></Repli>}
           {choisie && <Repli id="objectifs" titre="Objectifs" resume="cible de la bière" ouvert={!!ouverts.objectifs} onOuvre={o => ouvre('objectifs', o)}>
             <YeastBeerTargetPanel recipe={recipe} refs={refs} onChange={next => p.onChange(next, 'conduct')} onNavigate={p.onNavigate} /></Repli>}
           {choisie && <Repli id="sources" titre="Repères et sources" resume="ce que la fiche du catalogue dit" ouvert={!!ouverts.sources} onOuvre={o => ouvre('sources', o)}>
             <YeastStrainDetails information={yeastStrainInformation(levure, recipe.yeast.form)} /></Repli>}
           <Repli id="atelier" titre="Atelier complet" resume="essai de conduite, profil, comparaison des offres, fiche partagée" ouvert={!!ouverts.atelier} onOuvre={o => ouvre('atelier', o)}>
             <Suspense fallback={<p role="status" className="lv-note">Chargement de l’atelier…</p>}>{p.atelier(cible)}</Suspense></Repli>
+          </div></Repli>
         </div>
       </>}
       {vue === 'chercher' && <Chercher {...props} stockIds={stockIds} />}

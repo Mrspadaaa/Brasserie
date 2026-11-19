@@ -1,0 +1,341 @@
+{
+ "vp": "1280",
+ "theme": "sombre",
+ "cpu": 1,
+ "etats": {
+  "depart": {
+   "nom": "SafAle US-05",
+   "sous": "sèche · Fermentis15–24 g",
+   "dose": "2–3sachets",
+   "fg": "FG1,012–1,015≈ 6,9–7,2 % vol",
+   "temp": "fiche · conduite18–26 · 19 °C",
+   "floc": "floculation à chercher",
+   "effets": [
+    "esters:faible",
+    "rondeur:11 g/L · mesure fabricant",
+    "undefined:non documentés"
+   ],
+   "nonDoc": 1,
+   "conduite": "1Conduite · température × jours4 paliers · fin J12Brouillon1 point à vérifier",
+   "alertes": [
+    "Quantité de levure sèche à renseigner en grammes ; consulter la plage puis saisir la quantité réellement prévue."
+   ],
+   "paliers": [
+    "0-4j@19",
+    "4-7j@19",
+    "7-9j@19",
+    "9-12j@4"
+   ],
+   "replis": [
+    "Dose, ensemencement et starterquantité prévue, moût à ensemencer, préparation",
+    "Plusstock, produit et offres, fiche, objectifs, sources, atelier"
+   ],
+   "puces": [
+    "Pomona",
+    "Verdant IPA",
+    "Hors catalogue"
+   ]
+  },
+  "andechs": {
+   "nom": "Andechs Lager",
+   "sous": "Brewing Science Institute",
+   "dose": "?dose à saisir",
+   "bandeau": "Avant : SafAle US-05 · non enregistré Annuler le changement",
+   "fg": "FG1,017–1,018≈ 6,4–6,5 % vol",
+   "temp": "fiche · conduite? · 19 °C",
+   "floc": "floculationmoyen",
+   "effets": [
+    "esters:neutre · estimé",
+    "undefined:non documentés"
+   ],
+   "nonDoc": 1,
+   "conduite": "1Conduite · température × jours4 paliers · fin J12Brouillon1 point à vérifier",
+   "alertes": [
+    "Température : données absentes, conditionnelles ou non concordantes ; aucune plage n’est inventée."
+   ],
+   "paliers": [
+    "0-4j@19",
+    "4-7j@19",
+    "7-9j@19",
+    "9-12j@4"
+   ],
+   "replis": [
+    "Dose, ensemencement et starterquantité prévue, moût à ensemencer, préparation",
+    "Plusstock, produit et offres, fiche, objectifs, sources, atelier"
+   ],
+   "puces": [
+    "Pomona",
+    "Verdant IPA",
+    "SafAle US-05",
+    "Hors catalogue"
+   ]
+  },
+  "munich": {
+   "nom": "Munich Lager Yeast",
+   "sous": "White Labs · vendue par Lallemand",
+   "dose": "≥ 15g",
+   "bandeau": "Avant : Andechs Lager · non enregistré Annuler le changement",
+   "fg": "FG1,018–1,021≈ 6,0–6,4 % vol",
+   "temp": "fiche · conduite9–11 · 19 °C→ 11 °C",
+   "floc": "floculationmoyen",
+   "effets": [
+    "undefined:non documentés"
+   ],
+   "nonDoc": 1,
+   "conduite": "1Conduite · température × jours4 paliers · fin J12Brouillon2 points à vérifier",
+   "alertes": [
+    "Fermentation principale : 19 °C, hors de la plage de conduite retenue (9–11 °C).",
+    "Repos diacétyle : 19 °C, hors de la plage de conduite retenue (9–11 °C)."
+   ],
+   "paliers": [
+    "0-4j@19",
+    "4-7j@19",
+    "7-9j@19",
+    "9-12j@4"
+   ],
+   "replis": [
+    "Dose, ensemencement et starterquantité prévue, moût à ensemencer, préparation",
+    "Plusstock, produit et offres, fiche, objectifs, sources, atelier"
+   ],
+   "puces": [
+    "Pomona",
+    "Verdant IPA",
+    "Andechs Lager",
+    "Hors catalogue"
+   ]
+  },
+  "cale": {
+   "nom": "Munich Lager Yeast",
+   "sous": "White Labs · vendue par Lallemand",
+   "dose": "≥ 15g",
+   "bandeau": "Avant : Andechs Lager · non enregistré Annuler le changement",
+   "fg": "FG1,018–1,021≈ 6,0–6,4 % vol",
+   "temp": "fiche · conduite9–11 · 11 °C 19 °C",
+   "floc": "floculationmoyen",
+   "effets": [
+    "undefined:non documentés"
+   ],
+   "nonDoc": 1,
+   "conduite": "1Conduite · température × jours4 paliers · fin J12Brouillon1 point à vérifier",
+   "alertes": [
+    "Repos diacétyle : 19 °C, hors de la plage de conduite retenue (9–11 °C)."
+   ],
+   "paliers": [
+    "0-4j@11",
+    "4-7j@19",
+    "7-9j@19",
+    "9-12j@4"
+   ],
+   "replis": [
+    "Dose, ensemencement et starterquantité prévue, moût à ensemencer, préparation",
+    "Plusstock, produit et offres, fiche, objectifs, sources, atelier"
+   ],
+   "puces": [
+    "LalBrew NovaLager™ Brewers Yeast",
+    "Pomona",
+    "Andechs Lager",
+    "Hors catalogue"
+   ]
+  },
+  "retabli": {
+   "nom": "Munich Lager Yeast",
+   "sous": "White Labs · vendue par Lallemand",
+   "dose": "≥ 15g",
+   "bandeau": "Avant : Andechs Lager · non enregistré Annuler le changement",
+   "fg": "FG1,018–1,021≈ 6,0–6,4 % vol",
+   "temp": "fiche · conduite9–11 · 19 °C→ 11 °C",
+   "floc": "floculationmoyen",
+   "effets": [
+    "undefined:non documentés"
+   ],
+   "nonDoc": 1,
+   "conduite": "1Conduite · température × jours4 paliers · fin J12Brouillon2 points à vérifier",
+   "alertes": [
+    "Fermentation principale : 19 °C, hors de la plage de conduite retenue (9–11 °C).",
+    "Repos diacétyle : 19 °C, hors de la plage de conduite retenue (9–11 °C)."
+   ],
+   "paliers": [
+    "0-4j@19",
+    "4-7j@19",
+    "7-9j@19",
+    "9-12j@4"
+   ],
+   "replis": [
+    "Dose, ensemencement et starterquantité prévue, moût à ensemencer, préparation",
+    "Plusstock, produit et offres, fiche, objectifs, sources, atelier"
+   ],
+   "puces": [
+    "Pomona",
+    "Verdant IPA",
+    "Andechs Lager",
+    "Hors catalogue"
+   ]
+  },
+  "apresGlisse": {
+   "nom": "Munich Lager Yeast",
+   "sous": "White Labs · vendue par Lallemand",
+   "dose": "≥ 15g",
+   "bandeau": "Avant : Andechs Lager · non enregistré Annuler le changement",
+   "fg": "FG1,018–1,021≈ 6,0–6,4 % vol",
+   "temp": "fiche · conduite9–11 · 19 °C→ 11 °C",
+   "floc": "floculationmoyen",
+   "effets": [
+    "esters:rien de publiéOK",
+    "phenols:négatif (simulé) à confirmerRetenirÉcarter",
+    "thiols:faible (simulé) à confirmerRetenirÉcarter",
+    "terpenes:faible (simulé) à confirmerRetenirÉcarter",
+    "rondeur:rien de publiéOK"
+   ],
+   "nonDoc": 2,
+   "conduite": "1Conduite · température × jours4 paliers · fin J13,5Essai · 2 changements2 points à vérifier",
+   "alertes": [
+    "Fermentation principale : 27 °C, hors de la plage de conduite retenue (9–11 °C).",
+    "Repos diacétyle : 19 °C, hors de la plage de conduite retenue (9–11 °C)."
+   ],
+   "paliers": [
+    "0-5.5j@27",
+    "5.5-8.5j@19",
+    "8.5-10.5j@19",
+    "10.5-13.5j@4"
+   ],
+   "replis": [
+    "Dose, ensemencement et starterquantité prévue, moût à ensemencer, préparation",
+    "Plusstock, produit et offres, fiche, objectifs, sources, atelier"
+   ],
+   "puces": [
+    "Pomona",
+    "Verdant IPA",
+    "Andechs Lager",
+    "Hors catalogue"
+   ]
+  }
+ },
+ "andechs": {
+  "tuiles": [
+   "Andechs German Lager (AGL) *BETA*Bootleg Biology",
+   "Andechs LagerBrewing Science Institute",
+   "Andechs WeizenBrewing Science Institute",
+   "Express Andechs LagerBrewing Science Institute"
+  ],
+  "choisie": "Andechs LagerBrewing Science Institute"
+ },
+ "munich": {
+  "tuiles": [
+   "White Labs Munich Lager Yeast 500gWhite Labs · par Lallemand",
+   "White Labs Munich Lager Yeast Sachet 11gWhite Labs · par Lallemand",
+   "WLP860 Munich Lager YeastWhite Labs",
+   "2352-PC Munich Lager IIWyeast",
+   "2308 Munich LagerWyeast · liquide",
+   "Biergarten LagerEscarpment Labs · liquide",
+   "Biergarten Lager [HB]Escarpment Labs"
+  ],
+  "choisie": "White Labs Munich Lager Yeast 500gWhite Labs · par Lallemand"
+ },
+ "glisse": {
+  "temperature": {
+   "images": 157,
+   "pire": 21,
+   "lentes": 0
+  },
+  "duree": {
+   "images": 156,
+   "pire": 14,
+   "lentes": 0
+  }
+ },
+ "mesures": [
+  {
+   "geste": "frappe:Andechs",
+   "pireMs": 32,
+   "evt": "pointerover",
+   "tachesLongues": 0,
+   "pireTacheMs": 0
+  },
+  {
+   "geste": "choix:Andechs",
+   "pireMs": 40,
+   "evt": "pointerdown",
+   "tachesLongues": 0,
+   "pireTacheMs": 0
+  },
+  {
+   "geste": "frappe:Munich Lager",
+   "pireMs": 40,
+   "evt": "keydown",
+   "tachesLongues": 0,
+   "pireTacheMs": 0
+  },
+  {
+   "geste": "choix:Munich Lager",
+   "pireMs": 48,
+   "evt": "pointerout",
+   "tachesLongues": 0,
+   "pireTacheMs": 0
+  },
+  {
+   "geste": "caler",
+   "pireMs": 24,
+   "evt": "pointerdown",
+   "tachesLongues": 0,
+   "pireTacheMs": 0
+  },
+  {
+   "geste": "retablir",
+   "pireMs": 24,
+   "evt": "pointerout",
+   "tachesLongues": 0,
+   "pireTacheMs": 0
+  },
+  {
+   "geste": "chercher-groupe",
+   "pireMs": 24,
+   "evt": "pointerout",
+   "tachesLongues": 0,
+   "pireTacheMs": 0
+  },
+  {
+   "geste": "ouvre:dose",
+   "pireMs": 1816,
+   "evt": "pointerout",
+   "tachesLongues": 0,
+   "pireTacheMs": 0
+  },
+  {
+   "geste": "ferme:dose",
+   "pireMs": 2856,
+   "evt": "pointerdown",
+   "tachesLongues": 0,
+   "pireTacheMs": 0
+  },
+  {
+   "geste": "ouvre:plus",
+   "pireMs": 1816,
+   "evt": "pointerout",
+   "tachesLongues": 0,
+   "pireTacheMs": 0
+  },
+  {
+   "geste": "ferme:plus",
+   "pireMs": 0,
+   "tachesLongues": 0,
+   "pireTacheMs": 0
+  },
+  {
+   "geste": "glisse:temperature",
+   "pireMs": 40,
+   "evt": "pointerup",
+   "tachesLongues": 0,
+   "pireTacheMs": 0
+  },
+  {
+   "geste": "glisse:duration",
+   "pireMs": 24,
+   "evt": "pointerup",
+   "tachesLongues": 0,
+   "pireTacheMs": 0
+  }
+ ],
+ "erreurs": [
+  "[Firebase] Configuration absente. Copie `.env.example` en `.env` et remplis les variables VITE_FIREBASE_* avec les valeurs de la console Firebase."
+ ]
+}

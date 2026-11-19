@@ -13,7 +13,9 @@ export type FermentationChartAxis = 'temperature' | 'duration';
 /** A committed chart edit, phrased for the brewer and for an undo next to the chart. */
 export interface FermentationChartEdit { index: number; label: string; source: 'pointer' | 'keyboard'; axis?: FermentationChartAxis }
 
-const number = (n: number) => n.toLocaleString('fr-FR', { maximumSignificantDigits: 4 });
+// Un seul format, créé une fois (19.11 : un `toLocaleString` par nombre, une trentaine par image pendant le glisser d'un palier).
+const FORMAT_NOMBRE = new Intl.NumberFormat('fr-FR', { maximumSignificantDigits: 4 });
+const number = (n: number) => FORMAT_NOMBRE.format(n);
 const phaseDate = (step: PositionedFermentationStep) => step.start === null
   ? 'début inconnu, fin inconnue'
   : step.end === null
