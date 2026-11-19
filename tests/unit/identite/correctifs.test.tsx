@@ -31,7 +31,7 @@ describe('n° 9 et n° 10 : la carte du volume', () => {
   it('la cuve dit son dépassement sur la barre, une fois', () => {
     rendre();
     const deb = document.querySelector('[data-role="debordement"]')!;
-    expect(deb.textContent).toMatch(/\+36,2 L.*de trop/);
+    expect(deb.textContent).toBe('Cuve trop petite : 71,2 L pour 35 L');
     expect(document.querySelectorAll('[data-role="debordement"]')).toHaveLength(1);
   });
   it('les zones de la barre se lisent sur la règle : la zone rouge va jusqu\'au bout de la barre coupée', () => {

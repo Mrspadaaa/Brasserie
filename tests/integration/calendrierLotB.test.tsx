@@ -159,7 +159,8 @@ describe('Lot C n° 7 : en paysage, alignée et zoomée sur toute la largeur de 
     expect(container.querySelector('.ent-cbz svg.ent-svg')?.getAttribute('height')).toBe('92');
     rerender(<Banc orientation="paysage" aligne={false} onAligne={() => undefined} />);
     expect(ent).not.toHaveAttribute('data-aligne');
-    expect(container.querySelector('.ent-cbz svg.ent-svg')?.getAttribute('height')).toBe('90');
+    /* tour 2 n° 1 (paysage 844 × 340) : éteinte, la courbe a la hauteur de la colonne du chiffre, 60 px (avant : 90) */
+    expect(container.querySelector('.ent-cbz svg.ent-svg')?.getAttribute('height')).toBe('60');
   });
 
   it('paquet E n° 2 (E10) : alignée en paysage, la rangée du chiffre se pose sur celle des mois ; le tracé commence sous elle, les mois évitent le chiffre et les boutons', () => {

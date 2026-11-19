@@ -76,10 +76,12 @@ export function Bande({ libellePeriode, contexte, moisActif, month, today, onMon
   // s2ap2 : la frise se pose sous les piles et au-dessus de la légende (payé · à payer · dépensé) ; sans piles, elle est seule.
   const frise = montrerFrise ? <Frise mois={month} plage={plage ?? null} aujourdhui={today} jourMax={jourMax} nbOperations={nbOperations} donnees={donneesFrise}
     onPlage={onPlage} onMois={() => { if (plage) onMonth(plage.au.slice(0, 7)); }}/> : null;
-  return <div className="ops-bande" role="group" aria-label="La période en cours">
+  /* Tour 2 (19.11) : la bande n'est plus un « choix de période » (le seul est l'en-tête de l'app) : elle se nomme par ce qu'elle filtre,
+     et la lecture de la plage reste au lecteur d'écran sans se donner pour un second choix. */
+  return <div className="ops-bande" role="group" aria-label="Filtres des opérations">
     <div className="ops-haut" data-serre={libelle.length > 12 || undefined}>
-      {/* La période se dit au lecteur d'écran ; à l'œil, l'en-tête et la frise la montrent. */}
-      <p className="sr-only" role="status" aria-label={plage ? `Plage du ${titre}` : `Période : ${libelle}`}>{plage ? <TitrePlage texte={titre}/> : libelle}</p>
+      {/* Ce qui est montré se dit au lecteur d'écran ; à l'œil, l'en-tête et la frise le montrent. */}
+      <p className="sr-only" role="status" aria-label={plage ? `Plage du ${titre}` : `Opérations : ${libelle}`}>{plage ? <TitrePlage texte={titre}/> : libelle}</p>
       {retardCents > 0 && <button type="button" className="ops-due" onClick={onRetard} aria-label={`En retard ${amountOnly(retardCents)} CHF : voir les factures échues`}>
         <i aria-hidden="true"/><span className="ops-en">en </span>retard <b className="ops-m">{amountOnly(retardCents)}</b></button>}
       <button type="button" className="ops-loupe" aria-label="Rechercher" aria-expanded={rechercheOuverte} onClick={onLoupe}><Search size={16} aria-hidden="true"/></button>

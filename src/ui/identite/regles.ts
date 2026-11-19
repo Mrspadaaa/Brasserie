@@ -214,6 +214,39 @@ export function barreCuve(avantL: number | null | undefined, evapL: number | nul
   return { total: Math.max(cuveL, avantL), moutL: r1(avantL - evap), evapL: evap, depasseL: depasse, deborde: depasse > 0 };
 }
 
+export interface RemedesCuve {
+  /** Ce que le moût d'avant ébullition dépasse de la cuve, à chaud. */
+  tropL: number;
+  /** L'eau à ajouter pendant ou après l'ébullition (son choix, 19.11) : le dépassement lu, en eau froide. */
+  eauL: number;
+  /** L'ébullition la plus longue qui tient, par 5′ ; null si l'évaporation est inconnue ou si raccourcir ne suffit pas. */
+  ebullitionMin: number | null;
+  /** Le plus grand volume en fermenteur qui tient, au litre ; null si aucun. */
+  volumeL: number | null;
+}
+
+/**
+ * ID-TROP-AMBIGU (19.11) : quand le moût d'avant ébullition dépasse la cuve, les remèdes chiffrés. Le plan d'eau est linéaire :
+ * 1 L de moins en fermenteur retire 1 / (1 − rétraction) L à chaud ; 1 min d'ébullition de moins retire évaporation / durée.
+ * L'eau ajoutée vaut le dépassement (en eau froide, elle retire un peu plus, à chaud : le moût tient toujours).
+ */
+export function remedesCuve(o: { avantL: number | null | undefined; cuveL: number | undefined; evapL: number | null | undefined; minutes: number; retraitPct: number | undefined; volumeL: number }): RemedesCuve | null {
+  if (!fini(o.avantL) || !fini(o.cuveL) || o.cuveL <= 0) return null;
+  const trop = r1(o.avantL - o.cuveL);
+  if (trop <= 0) return null;
+  const parMin = fini(o.evapL) && o.evapL > 0 && fini(o.minutes) && o.minutes > 0 ? o.evapL / o.minutes : null;
+  const minutes = parMin ? Math.floor((o.minutes - trop / parMin + 1e-9) / EBULLITION_PAS) * EBULLITION_PAS : null;
+  const froid = fini(o.retraitPct) && o.retraitPct >= 0 && o.retraitPct < 20 ? 1 - o.retraitPct / 100 : null;
+  const volume = froid && fini(o.volumeL) ? Math.floor(o.volumeL - trop * froid + 1e-9) : null;
+  return {
+    tropL: trop,
+    eauL: trop,
+    // Sous 30 min, raccourcir n'est plus un remède de brasseur (amertume, DMS) : on ne le propose pas.
+    ebullitionMin: minutes !== null && minutes >= 30 ? minutes : null,
+    volumeL: volume !== null && volume >= 1 ? volume : null
+  };
+}
+
 /**
  * La part évaporée (bleue) de la barre de la cuve, coupée à la cuve : au-delà, seules les hachures rouges du dépassement se voient
  * (sinon bleu et rouge se mêlent en un bout violet). null = rien à peindre (évaporation inconnue, ou moût déjà plus grand que la cuve).

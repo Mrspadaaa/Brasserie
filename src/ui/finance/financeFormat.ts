@@ -56,6 +56,14 @@ export const signedCHF = (cents: number): string =>
  */
 export const amountOnly = (cents: number): string => amountFormatter.format(cents / 100);
 
+/** Commence par une voyelle (ou un h muet de mois : aucun) : « août », « avril », « octobre ». */
+const voyelle = (texte: string) => /^[aeiouyàâäéèêëîïôöûü]/i.test(texte);
+/** « de novembre 2026 », « d’août – nov. 2026 » (neuf n° 5 du 19.11 : jamais « de août »). */
+export const de = (texte: string): string => (voyelle(texte) ? `d’${texte}` : `de ${texte}`);
+/** La rangée « du … au … » : « du juin », « d’août » ; « au novembre », « à août ». */
+export const duMois = (texte: string): string => (voyelle(texte) ? 'd’' : 'du ');
+export const auMois = (texte: string): string => (voyelle(texte) ? 'à ' : 'au ');
+
 /** Mois voisin, sans passer par le sélecteur natif. */
 export const shiftMonth = (month: string, step: number): string => {
   const date = new Date(Number(month.slice(0, 4)), Number(month.slice(5, 7)) - 1 + step, 1);

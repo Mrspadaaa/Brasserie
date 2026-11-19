@@ -38,12 +38,16 @@ export function adaptRecipeEquipment(
     recipe.mash?.spargeType ?? 'batch',
     recipe.boilMin ?? 60,
     kettleHopGrams(hops),
-    recipe.installation?.manualWaterSplit && recipe.waterPlan ? {
-      manualWaterSplit: {
-        mashWaterL: round(recipe.waterPlan.mashWaterL * ratio, 1),
-        spargeWaterL: round(recipe.waterPlan.spargeWaterL * ratio, 1)
-      }
-    } : undefined
+    {
+      ...(recipe.installation?.manualWaterSplit && recipe.waterPlan ? {
+        manualWaterSplit: {
+          mashWaterL: round(recipe.waterPlan.mashWaterL * ratio, 1),
+          spargeWaterL: round(recipe.waterPlan.spargeWaterL * ratio, 1)
+        }
+      } : {}),
+      // ID-TROP-AMBIGU (19.11) : l'eau ajoutée pendant ou après l'ébullition, s'il l'a choisie, se recalcule pour ce matériel.
+      topUpToKettle: !!recipe.installation?.kettleTopUp
+    }
   );
   if (water.planningStatus === 'invalid') throw Error(water.issues.join(' '));
   const recommendation = fermenterRecommendation(recipe, profile.equipment);
@@ -69,7 +73,7 @@ export function adaptRecipeEquipment(
     volumeL: targetL,
     brewhouse: snapshotBrewhouse(rig),
     efficiencyPct: profile.efficiencyPct,
-    installation: { ...recipe.installation, manualWaterSplit: !!recipe.installation?.manualWaterSplit, spargeExceptionAccepted: false },
+    installation: { ...recipe.installation, manualWaterSplit: !!recipe.installation?.manualWaterSplit, spargeExceptionAccepted: false, topUpL: water.topUpL || undefined },
     notesCreation: [
       recipe.notesCreation,
       `Matériel : ${recipe.volumeL} → ${nombreFr(targetL, 1)} L ; les quantités structurées sont recalculées. Vérifier les volumes des notes libres de la source.`

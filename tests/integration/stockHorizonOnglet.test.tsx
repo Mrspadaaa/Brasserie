@@ -78,7 +78,9 @@ describe('chiffre clé, pastille et courses : un seul horizon', () => {
     fireEvent.click(screen.getByRole('button', { name: 'Commander ces 2' }));
     expect(screen.queryByTestId('chiffre-a-commander')).toBeNull();
     const bandeau = await screen.findByTestId('courses-horizon');
-    expect(bandeau).toHaveTextContent(/2 sur 4 : avant S\d+ · Porter/);
+    // Vision du 19.11, n° 3 : le compte se dit une fois, dans la ligne repliée ; le bandeau ne garde que « Tout voir ».
+    expect(screen.getByRole('button', { name: /à commander/, expanded: false })).toHaveTextContent(/^2 à commander avant S\d+ · 4 en tout$/);
+    expect(bandeau).toHaveTextContent(/^Tout voir$/);
     expect(screen.getByText('Munich')).toBeVisible();
     expect(screen.queryByText('Gypse')).toBeNull();
     fireEvent.click(within(bandeau).getByRole('button', { name: 'Tout voir' }));

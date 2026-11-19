@@ -59,7 +59,7 @@ describe('Opérations v6b : le mois se change partout, depuis l’en-tête seul'
       state={createJournalState({ scope: 'all', allDates: false })} onStateChange={() => {}}/>);
     expect(screen.getByText('Archives comprises')).toBeVisible();
     sansPastilleDePage();
-    expect(screen.getByRole('status', { name: `Période : ${moisCourt(moisCourant, today)}` })).toBeInTheDocument();
+    expect(screen.getByRole('status', { name: `Opérations : ${moisCourt(moisCourant, today)}` })).toBeInTheDocument();
     expect(screen.getByTestId('frise')).toBeInTheDocument();
     expect(montre('Op CE-MOIS')).toBe(true);
     expect(montre('Op MOIS-PRECEDENT')).toBe(false);
@@ -71,7 +71,7 @@ describe('Opérations v6b : le mois se change partout, depuis l’en-tête seul'
     act(() => entete.current!());
     expect(montre('Op MOIS-PRECEDENT')).toBe(true);
     expect(montre('Op CE-MOIS')).toBe(false);
-    expect(screen.getByRole('status', { name: `Période : ${moisCourt(moisPrecedent, today)}` })).toBeInTheDocument();
+    expect(screen.getByRole('status', { name: `Opérations : ${moisCourt(moisPrecedent, today)}` })).toBeInTheDocument();
     sansPastilleDePage();
   });
 
@@ -99,7 +99,7 @@ describe('Opérations v6b : le mois se change partout, depuis l’en-tête seul'
   it('depuis un exercice (année, ouvert depuis les archives) : pas de ‹ › ; sa pastille « Exercice × » le quitte, puis l’en-tête règne', () => {
     const entete: { current?: () => void } = {};
     render(<HoteEntete initial={{ year: moisCourant.slice(0, 4), allDates: true }} entete={entete}/>);
-    expect(screen.getByRole('status', { name: `Période : Exercice ${moisCourant.slice(0, 4)}` })).toBeInTheDocument();
+    expect(screen.getByRole('status', { name: `Opérations : Exercice ${moisCourant.slice(0, 4)}` })).toBeInTheDocument();
     sansPastilleDePage();
     fireEvent.click(screen.getByRole('button', { name: `Retirer le filtre : Exercice ${moisCourant.slice(0, 4)}` }));
     expect(screen.queryByRole('status', { name: /Exercice/ })).not.toBeInTheDocument();

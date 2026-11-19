@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { formatCHF } from '../../../domain/finance/ledger';
 import { echelle, regrouperPetits, type PeriodeSynthese, type Reste } from '../../../domain/finance/periodeSynthese';
-import { amountOnly, shortDate } from '../financeFormat';
+import { amountOnly, de, shortDate } from '../financeFormat';
 import { PlageMois } from '../PlageMois';
 import { couleur, hachure, libelleCategorie, libelleVente, fenetreMois, moisCourt, texteSur, titreMois, titrePlage } from './libelles';
 
@@ -105,7 +105,7 @@ export function Scene({ periode: p, nomPeriode, onCategorie, onPiece, onVentes, 
         {vide && <div className="syn-pile-vide" style={{ height: HAUTEUR }} aria-hidden="true"/>}
         {p.depenseCents > 0 && <div className="syn-pile" style={{ height: hPileDepense, borderRadius: gain ? '0 0 10px 10px' : 10 }}>
           {payes.map(x => <button type="button" key={x.categorie} className="syn-s" style={{ flex: x.payeCents, background: couleur(x.categorie), color: texteSur(x.categorie), ...segMin }}
-            aria-label={`${libelleCategorie(x.categorie)} ${formatCHF(x.payeCents)}, voir ces opérations de ${nomPeriode}`} onClick={() => onCategorie(x.categorie)}>
+            aria-label={`${libelleCategorie(x.categorie)} ${formatCHF(x.payeCents)}, voir ces opérations ${de(nomPeriode)}`} onClick={() => onCategorie(x.categorie)}>
             {(ecrasee || pctDe(x.payeCents) >= 4) && <><span className="syn-lib">{libelleCategorie(x.categorie)}</span><span className="syn-m">{amountOnly(x.payeCents)}</span></>}
           </button>)}
           {p.aPayer.map(r => <button type="button" key={r.id} className="syn-s syn-ap" style={{ flex: r.cents, backgroundImage: hachure(r.categorie), flexDirection: 'column', gap: 2, ...segMin }}
@@ -119,7 +119,7 @@ export function Scene({ periode: p, nomPeriode, onCategorie, onPiece, onVentes, 
       <div className="syn-col syn-apart">
         {p.materielCents > 0 && <>
           <div className="syn-hc"><span>Matériel</span><span className="syn-m">{amountOnly(p.materielCents)}</span><span>à part</span></div>
-          <button type="button" className="syn-pile syn-pile-mat" aria-label={`Matériel ${formatCHF(p.materielCents)} à part, voir ces opérations de ${nomPeriode}`} onClick={onMateriel}/>
+          <button type="button" className="syn-pile syn-pile-mat" aria-label={`Matériel ${formatCHF(p.materielCents)} à part, voir ces opérations ${de(nomPeriode)}`} onClick={onMateriel}/>
         </>}
       </div>
 

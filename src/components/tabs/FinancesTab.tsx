@@ -57,6 +57,8 @@ const initialView = (): FinanceView => {
   return views.some(([key]) => key === saved) ? saved as FinanceView : 'overview';
 };
 const EMPTY: never[]=[];
+/** Tour 2 (19.11) : l'en-tête change de période : un exercice ouvert (depuis Annuel ou les archives) s'efface, la liste suit l'en-tête. Sans exercice, l'état est rendu tel quel. */
+export const journalApresEntete=<T extends {year:string;allDates:boolean}>(s:T):T=>s.year?{...s,year:'',allDates:false}:s;
 const ONGLETS_DEMANDES:Record<string,FinanceView>={synthese:'overview',operations:'journal',previsions:'forecast',annuel:'annual'};
 
 export function FinancesTab({transactions,config,globalTimeFilter,onChangeGlobalTimeFilter,recipes=EMPTY,batches=EMPTY,stockItems=EMPTY,openTransactionRequest,onOpenStockItem,onOpenRecipe,onOpenSale,ongletRequest}:FinancesTabProps) {
@@ -77,6 +79,8 @@ export function FinancesTab({transactions,config,globalTimeFilter,onChangeGlobal
      Un exercice ou les archives (year, scope) gardent leur propre lecture. */
   const suitApp=!journalState.year&&journalState.scope!=='archives';
   const etatJournal=useMemo(()=>suitApp?{...journalState,...enJournal(periodeApp)}:journalState,[journalState,cleP,suitApp]); // eslint-disable-line react-hooks/exhaustive-deps
+  const cleVue=useRef(cleP);
+  useEffect(()=>{if(cleVue.current===cleP)return;cleVue.current=cleP;setJournalState(journalApresEntete);},[cleP]);
   const changerJournal=(s:typeof journalState)=>{setJournalState(s);if(!s.year&&s.scope!=='archives'){const p=depuisJournal(s);if(serialiser(p)!==cleP)changerPeriode(p);}};
   const {month,allDates,plage}=useMemo(()=>pourFinances(periodeApp),[cleP]); // eslint-disable-line react-hooks/exhaustive-deps
   const [year,setYear]=useState(new Date().getFullYear()),[horizon,setHorizon]=useState<30|90|365>(90);

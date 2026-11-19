@@ -35,12 +35,11 @@ export function CommandeRepliee({ vue, horizon, onHorizon, onOuvrir }: {
   onOuvrir: (item: StockItem) => void;
 }) {
   const [ouvert, setOuvert] = useState(false);
-  const n = lignesDeReglage(vue, horizon).length;
   return (
     <div className="cac-repli" data-testid="commande-repliee">
       <button type="button" className="cac-repli-l" aria-expanded={ouvert} aria-controls="cac-repli-bloc" onClick={() => setOuvert((o) => !o)}>
-        {/* « n à commander › » seulement : l'horizon se lit dans la ligne « 5 sur 28 : avant S48… » des courses, juste dessous (pas deux fois la même phrase). */}
-        <span>{n === 0 ? 'Rien à commander' : `${n} à commander`}</span>
+        {/* La seule phrase de compte de Courses (vision du 19.11, n° 2 et 3) : le compte de l'horizon choisi, puis le total quand il diffère. */}
+        <span>{phraseRepliee(vue, horizon)}</span>
         <ChevronRight size={16} aria-hidden="true" className="cac-repli-c" />
       </button>
       {ouvert && (
@@ -50,6 +49,32 @@ export function CommandeRepliee({ vue, horizon, onHorizon, onOuvrir }: {
       )}
     </div>
   );
+}
+
+/**
+ * L'horizon en trois mots, pour la ligne repliée : « avant S48 », « d'ici S52 », « jusqu'à S50 », « en S50–S51 », « au seuil ».
+ * Le nom du brassin reste dans le bloc déplié (« avant S48 · Saison de ferme »).
+ */
+export function horizonCourt(vue: VueHorizon, r: Reglage): string {
+  if (r === 'tout') return 'en tout';
+  if (r === 'brassin') return vue.brassin ? `avant ${etiquetteSemaine(vue.limiteBrassin)}` : 'cette semaine';
+  if (r === 'six') return `d’ici ${etiquetteSemaine(vue.limiteSix)}`;
+  const f = fenetreDeReglage(vue, r);
+  if (f.a === f.b) return vue.colonnes[f.a]?.semaine == null ? 'au seuil' : `en ${vue.colonnes[f.a].etiquette}`;
+  const l = libelleFenetre(vue, f);
+  return f.a === 0 || f.b === POSITION_SEUIL ? l : `en ${l}`;
+}
+
+/**
+ * La ligne repliée de Courses (vision du 19.11, n° 2) : « Rien à commander » quand la liste est vraiment vide ; sinon le compte de
+ * l'horizon choisi (celui du chiffre clé et de la pastille de l'onglet), puis le total, qui est celui d'Étagère : « 0 à commander avant
+ * S48 · 24 en tout ». Jamais « Rien à commander » quand des articles manquent hors de l'horizon.
+ */
+export function phraseRepliee(vue: VueHorizon, r: Reglage): string {
+  const tout = vue.comptes.tout;
+  if (tout === 0) return 'Rien à commander';
+  const n = lignesDeReglage(vue, r).length;
+  return n === tout ? `${n} à commander` : `${n} à commander ${horizonCourt(vue, r)} · ${tout} en tout`;
 }
 
 const quantite = (l: LigneHorizon) => l.missing > 0 ? `${l.auMoins ? 'au moins ' : ''}${Units.format(l.missing, l.item.unit)}` : 'à définir';

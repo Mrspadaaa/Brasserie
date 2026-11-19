@@ -30,6 +30,12 @@ export const OG_PLAUSIBLE_MAX_TXT = '1,130';
 export interface WaterVolumeOptions {
   /** Cold preparation quantities explicitly chosen by the brewer. */
   manualWaterSplit?: { mashWaterL: number; spargeWaterL: number };
+  /**
+   * ID-TROP-AMBIGU (19.11) : le moût d'avant ébullition dépasse la cuve utile ; le brasseur choisit d'ajouter l'eau qui dépasse
+   * pendant ou après l'ébullition (« de l'eau à la fin après l'ebul ou durant »). Cette eau quitte l'empâtage et le rinçage et compte
+   * dans le volume final. Sans matériel connu, sans effet.
+   */
+  topUpToKettle?: boolean;
 }
 export interface WaterVolumePlan {
   mashWaterL: number;
@@ -52,6 +58,8 @@ export interface WaterVolumePlan {
   /** TE-39 : présent quand l'empâtage voulu ne tient pas dans la cuve ; vaut la cuve utile (L) qui le borne. */
   mashLimitedByKettleL?: number;
   waterBalanceErrorL?: number;
+  /** Eau (L, froide) ajoutée pendant ou après l'ébullition pour que le moût d'avant ébullition tienne dans la cuve ; seulement si demandé. */
+  topUpL?: number;
 }
 
 /**
@@ -552,7 +560,11 @@ export const BrewingMath = {
       const preferences = brewhouse?.preferences;
       const coldFactor = 1 - e.coolingShrinkagePct / 100;
       const evaporationHot = e.boilOffLPerHour * safeBoilMin / 60;
-      const preHot = (volumeL + deadSpaceL + hopLossL) / coldFactor + evaporationHot;
+      // L'eau ajoutée pendant ou après l'ébullition : le dépassement lu par le brasseur (« 38,7 L pour 35 L » → 3,7 L), en eau froide.
+      // Elle retire T / rétraction du moût à chaud, un peu plus que le dépassement : le moût tient toujours dans la cuve.
+      const sansAjoutHot = (volumeL + deadSpaceL + hopLossL) / coldFactor + evaporationHot;
+      const topUpL = options.topUpToKettle ? Math.max(0, round1(round1(sansAjoutHot) - e.kettleWorkingL)) : 0;
+      const preHot = (volumeL + deadSpaceL + hopLossL - topUpL) / coldFactor + evaporationHot;
       const preCold = preHot * coldFactor;
       const absorption = totalGristKg * e.grainAbsorptionLPerKg;
       const totalWater = round1(preCold + absorption);
@@ -593,6 +605,7 @@ export const BrewingMath = {
         mashIncreasedForSparge: !manual && spargeType !== 'none' && mash > preferred + 0.05,
         ...(!manual && spargeType !== 'none' && maxMash < Math.min(totalWater, requiredMash) - 0.05 ? { mashLimitedByKettleL: e.kettleWorkingL } : {}),
         waterBalanceErrorL: balanceError,
+        ...(options.topUpToKettle ? { topUpL } : {}),
         spargeHotL: check.spargeHotL, spargeMainHotL: check.spargeMainHotL,
         spargeAuxiliaryHotL: check.spargeAuxiliaryHotL, spargePreferredHotL: check.spargePreferredHotL,
         ...(check.spargeMaximumHotL != null ? { spargeMaximumHotL: check.spargeMaximumHotL } : {})
@@ -741,12 +754,15 @@ export const BrewingMath = {
       recipe.boilMin ?? 60,
       // Les houblons mis à l'échelle : ce sont eux qui boiront dans la cuve.
       kettleHopGrams(scaledHops),
-      recipe.installation?.manualWaterSplit && recipe.waterPlan ? {
-        manualWaterSplit: {
-          mashWaterL: Math.round(recipe.waterPlan.mashWaterL * volumeRatio * 10) / 10,
-          spargeWaterL: Math.round(recipe.waterPlan.spargeWaterL * volumeRatio * 10) / 10
-        }
-      } : undefined
+      {
+        ...(recipe.installation?.manualWaterSplit && recipe.waterPlan ? {
+          manualWaterSplit: {
+            mashWaterL: Math.round(recipe.waterPlan.mashWaterL * volumeRatio * 10) / 10,
+            spargeWaterL: Math.round(recipe.waterPlan.spargeWaterL * volumeRatio * 10) / 10
+          }
+        } : {}),
+        topUpToKettle: !!recipe.installation?.kettleTopUp
+      }
     );
     const { mashWaterL, spargeWaterL, preBoilVolumeL, grainAbsorptionL } = waterPlan;
 
@@ -756,7 +772,7 @@ export const BrewingMath = {
       volumeL: targetVolumeL,
       brewhouse: snapshotBrewhouse(targetBrewhouse),
       efficiencyPct: targetBrewhouse.efficiencyPct,
-      installation: { ...recipe.installation, manualWaterSplit: !!recipe.installation?.manualWaterSplit, spargeExceptionAccepted: false },
+      installation: { ...recipe.installation, manualWaterSplit: !!recipe.installation?.manualWaterSplit, spargeExceptionAccepted: false, topUpL: waterPlan.topUpL || undefined },
       preBoilL: preBoilVolumeL,
       preBoilHotL: waterPlan.preBoilHotL,
       waterPlan: waterPlan.planningStatus !== 'invalid' ? resizeWaterPlan(recipe, waterPlan, volumeRatio) : undefined,

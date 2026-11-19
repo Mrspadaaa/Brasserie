@@ -810,11 +810,12 @@ export function CalendrierTab(props: CalendrierTabProps) {
   );
 
   return (
-    <div ref={racine} className={`cal-tab space-y-2 pt-1 text-sm${paysage ? ' cal-tab-paysage' : ''}`} data-calendrier data-vue={vue} data-orientation={orientation}>
+    /* Tour 2 n° 1 (paysage 844 × 340) : couché, 4 px entre l'en-tête et la frise, rien au-dessus ; chaque pixel va aux rangées. */
+    <div ref={racine} className={`cal-tab text-sm${paysage ? ' cal-tab-paysage space-y-1' : ' space-y-2 pt-1'}`} data-calendrier data-vue={vue} data-orientation={orientation}>
       <h1 className="sr-only">Calendrier</h1>
 
       {/* Paquet G n° 7 (CAL-ENTETE-CACHE) : collée SOUS l'en-tête de l'app (sa hauteur publiée par Header), jamais dessous. */}
-      <div className="cal-entete-zone sticky z-30 bg-cave-950" style={{ top: 'var(--main-header-height, 0px)' }} data-entete-zone onClickCapture={toucherIconeIdee}>
+      <div className={`cal-entete-zone sticky z-30 bg-cave-950${paysage ? ' !mt-0' : ''}`} style={{ top: 'var(--main-header-height, 0px)' }} data-entete-zone onClickCapture={toucherIconeIdee}>
         <EnTeteCalendrier
           modele={modele}
           fenetre={fenetre}

@@ -14,6 +14,10 @@ export interface RecipeInstallationChoice {
   spargeExceptionAccepted?: boolean;
   /** User-selected split must be validated, never silently replaced. */
   manualWaterSplit?: boolean;
+  /** Choix du brasseur (19.11) : quand le moût d'avant ébullition dépasse la cuve, ajouter l'eau qui dépasse pendant ou après l'ébullition. */
+  kettleTopUp?: boolean;
+  /** Cette eau, en litres froids, calculée par le plan d'eau ; comptée dans le volume final et la densité avant ébullition. */
+  topUpL?: number;
 }
 
 export type SystemParameter = 'efficiencyPct' | 'boilOffLPerHour' | 'grainAbsorptionLPerKg' | 'heatingRateCPerMin';

@@ -113,7 +113,7 @@ describe('Vues quotidiennes sur téléphone',()=>{
     // v6b : la recherche vit derrière la loupe, toujours visible dans la bande du mois.
     expect(screen.getByRole('button',{name:'Rechercher'})).toBeVisible();
     // FIN-DEUX-PERIODES : une seule période, celle de l'en-tête (ici « all ») ; Opérations la dit sans pastille à elle.
-    expect(screen.getByRole('status',{name:'Période : Toutes les dates'})).toBeVisible();
+    expect(screen.getByRole('status',{name:'Opérations : Toutes les dates'})).toBeVisible();
     expect(screen.queryByLabelText('Période du journal')).toBeNull();
     expect(screen.getByRole('button',{name:/Houblon Cascade/})).toBeVisible();
     expect(screen.getByRole('button',{name:'Archives',exact:true})).toBeVisible();

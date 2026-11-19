@@ -4,6 +4,7 @@ import { formatCHF } from '../../../domain/finance/ledger';
 import { nombreFr } from '../../../domain/nombreAffiche';
 import { explication, type PeriodeSynthese } from '../../../domain/finance/periodeSynthese';
 import { couleur, libelleCategorie, texteSur } from './libelles';
+import { de } from '../financeFormat';
 
 interface Unite { cle: string; categorie: string; libelle: string; cents: number }
 /**
@@ -61,7 +62,7 @@ export function Pourquoi({ periode: p, nomPeriode, onClose }: { periode: Periode
       {parts.length > 0 && <div className="syn-bar" role="img" aria-label={`Parts de l’entré : ${parts.map(x => `${x.cle === 'gain' ? 'gain' : x.libelle} ${nombreFr(x.pct, 0)} %`).join(', ')}`}>
         {parts.map(x => <i key={x.cle} style={{ flex: x.cents, background: couleur(x.categorie), color: texteSur(x.categorie), ...(x.cle.startsWith('reste:') ? { boxShadow: 'inset 2px 0 0 rgba(255,255,255,.75)' } : {}) }}>{x.pct >= 12 ? `${x.libelle} ${nombreFr(x.pct, 0)} %` : ''}</i>)}
       </div>}
-      <p className="syn-src">Source : Opérations de {nomPeriode} ({p.lignes} ligne{p.lignes > 1 ? 's' : ''}). Calcul fait ici, sans IA.</p>
+      <p className="syn-src">Source : Opérations {de(nomPeriode)} ({p.lignes} ligne{p.lignes > 1 ? 's' : ''}). Calcul fait ici, sans IA.</p>
     </div>
   </Sheet>;
 }

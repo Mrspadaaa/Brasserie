@@ -32,7 +32,7 @@ export function recipeInstallationIssues(recipe: Recipe, activeProfile?: Brewhou
   if(!recipe.waterPlan || grain<=0) return issues;
   const mashL=recipe.waterPlan.mashWaterL,spargeL=recipe.waterPlan.spargeWaterL;
   if(recipe.mash?.spargeType==='none' && spargeL>0) issues.push('Un rinçage est saisi alors que le programme est prévu sans rinçage.');
-  const water=BrewingMath.waterVolumes(grain,recipe.volumeL,rig,recipe.mash?.spargeType??'batch',recipe.boilMin,kettleHopGrams(recipe.hops??[]));
+  const water=BrewingMath.waterVolumes(grain,recipe.volumeL,rig,recipe.mash?.spargeType??'batch',recipe.boilMin,kettleHopGrams(recipe.hops??[]),recipe.installation?.kettleTopUp?{topUpToKettle:true}:undefined);
   if(water.planningStatus==='invalid') return [...issues,...water.issues];
   const check=equipmentCheck(e,{volumeL:recipe.volumeL,grainKg:grain,mashL,spargeL,preBoilHotL:water.preBoilHotL,preferences:rig.preferences,fermenterHeadspacePct:recommendation?.headspacePct});
   if(check?.mashTooFull) issues.push('L’eau et les grains dépassent la limite utile de la cuve.');

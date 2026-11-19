@@ -230,7 +230,7 @@ export function buildTimeline(recipe: Recipe | RecipeSnapshot): BrewDayStep[] {
     steps.push({
       id: 'preboil',
       label: 'Contrôle avant ébullition',
-      detail: `Environ ${nombreFr(preBoilL, 1)} L ${recipe.preBoilHotL != null ? `à froid, soit ≈ ${nombreFr(recipe.preBoilHotL, 1)} L à ébullition` : 'collectés'}. Relève le volume et la densité : c’est ici qu’un rinçage court ou un rendement bas se rattrape encore.`,
+      detail: `Environ ${nombreFr(preBoilL, 1)} L ${recipe.preBoilHotL != null ? `à froid, soit ≈ ${nombreFr(recipe.preBoilHotL, 1)} L à ébullition` : 'collectés'}. Relève le volume et la densité : c’est ici qu’un rinçage court ou un rendement bas se rattrape encore.${(recipe.installation?.topUpL ?? 0) > 0 ? ` Puis ajouter ${nombreFr(recipe.installation!.topUpL!, 1)} L d’eau pendant ou après l’ébullition : la cuve n’en tient pas plus.` : ''}`,
       durationMin: 0
     });
   }

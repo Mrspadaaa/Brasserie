@@ -75,7 +75,7 @@ describe('Synthèse : choisir n’importe quelle période (CP-9)', () => {
     expect(screen.getByRole('heading', { level: 2, name: 'Août – nov. 2026' })).toBeVisible();
     expect(screen.getByText('Entré').parentElement).toHaveTextContent('400,00');
     fireEvent.click(screen.getByRole('button', { name: /Pourquoi \?/ }));
-    expect(within(screen.getByRole('dialog')).getByText(/Source : Opérations de août – nov\. 2026 \(8 lignes\)/)).toBeVisible();
+    expect(within(screen.getByRole('dialog')).getByText(/Source : Opérations d’août – nov\. 2026 \(8 lignes\)/)).toBeVisible();
   });
 
   it('à cheval sur deux années : « Déc. 2025 – mars 2026 », 4 mois', () => {

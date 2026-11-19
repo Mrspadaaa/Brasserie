@@ -57,7 +57,7 @@ describe('Opérations : une seule vue, quelle que soit la période', () => {
     expect(groupes.length).toBe(4);
     expect(new Set(groupes)).toEqual(new Set(['jour']));
     // « Par date » ne change pas la période : elle se dit toujours la même (FIN-DEUX-PERIODES : plus de pastille dans la page, l'en-tête la porte).
-    expect(screen.getByRole('status', { name: 'Période : Toutes les dates' })).toBeInTheDocument();
+    expect(screen.getByRole('status', { name: 'Opérations : Toutes les dates' })).toBeInTheDocument();
     expect(screen.queryByRole('button', { name: /^Choisir le mois|^Mois (précédent|suivant)$/ })).toBeNull();
   });
 
@@ -131,7 +131,7 @@ describe('Opérations : une seule vue, quelle que soit la période', () => {
     fireEvent.click(screen.getByRole('button', { name: 'Revenir au mois entier' }));
     expect(screen.queryByLabelText(/^Plage du \d/)).not.toBeInTheDocument();
     // Le mois entier de la fin de plage (mai) ; la frise reste ouverte sur lui, sans pastille à déplier.
-    expect(screen.getByRole('status', { name: `Période : ${moisCourt(`${annee}-05`, today)}` })).toBeInTheDocument();
+    expect(screen.getByRole('status', { name: `Opérations : ${moisCourt(`${annee}-05`, today)}` })).toBeInTheDocument();
     expect(screen.getByTestId('frise')).toBeInTheDocument();
   });
 

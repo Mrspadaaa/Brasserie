@@ -74,6 +74,25 @@ export async function entrerPleinEcran(cible?: HTMLElement | null): Promise<Resu
   return (await Promise.race([attendrePaysage(), refus])) ? 'verrouille' : 'invite';
 }
 
+/*
+ * Tour 2 n° 1 (19.11, capture b19e2698 : « L'Affinée » encore là en plein écran ; verdict vision n° 1) : le plein écran du calendrier libère
+ * aussi la page. Tant que l'en-tête du calendrier est en plein écran, l'en-tête de l'app (Header) disparaît. Un petit magasin externe, lu par
+ * `useSyncExternalStore` : l'en-tête du calendrier le pose, et le retire en partant (un autre onglet retrouve toujours l'en-tête).
+ */
+let pleinCalendrier = false;
+const abonnes = new Set<() => void>();
+/** Le calendrier dit qu'il est (ou n'est plus) en plein écran. */
+export function poserPleinCalendrier(v: boolean): void {
+  if (pleinCalendrier === v) return;
+  pleinCalendrier = v;
+  abonnes.forEach(f => f());
+}
+export const lirePleinCalendrier = (): boolean => pleinCalendrier;
+export function abonnerPleinCalendrier(f: () => void): () => void {
+  abonnes.add(f);
+  return () => { abonnes.delete(f); };
+}
+
 /** Quitte le plein écran et rend l'orientation. */
 export async function sortirPleinEcran(): Promise<void> {
   try { (screen.orientation as unknown as Verrou | undefined)?.unlock?.(); } catch { /* rien à rendre */ }

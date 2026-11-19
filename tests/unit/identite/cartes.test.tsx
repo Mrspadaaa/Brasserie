@@ -164,12 +164,11 @@ describe('CarteVolume', () => {
     expect(screen.getByText(/libre, plein/)).toBeTruthy();
   });
 
-  it('55 L, fermenteur 60 L, ~67 L avant ébullition dans une cuve de 45 L : la cuve dit « +22 L de trop »', () => {
+  it('55 L, fermenteur 60 L, ~67 L avant ébullition dans une cuve de 45 L : la cuve dit « Cuve trop petite : 67 L pour 45 L » (ID-TROP-AMBIGU)', () => {
     render(<Vol depart={55} capaciteL={60} avant={67} cuveL={45} />);
     const alerte = document.querySelector('[data-role="debordement"]')!;
     expect(alerte.getAttribute('role')).toBe('alert');
-    expect(alerte.textContent).toContain('+22 L');
-    expect(alerte.textContent).toContain('de trop');
+    expect(alerte.textContent).toBe('Cuve trop petite : 67 L pour 45 L');
     expect(document.querySelector('.idn-ctrack.idn-deb')).toBeTruthy();
     expect(document.querySelector('.idn-cdep')).toBeTruthy();
     expect(screen.getByText(/5 L/, { selector: '.idn-etat span' })).toBeTruthy(); // 5 L libres dans le fermenteur

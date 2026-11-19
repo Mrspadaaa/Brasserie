@@ -55,7 +55,7 @@
 /* Replié en tête de Courses (19.11) : une ligne discrète, texte secondaire, une cible de 44 px ; le chevron tourne quand le bloc est ouvert. */
 .cac-repli{border-bottom:1px solid rgb(var(--cave-800))}
 .cac-repli-l{display:flex;align-items:center;gap:8px;width:100%;height:44px;padding:0 4px;font-size:14px;line-height:1.2;text-align:left;color:rgb(var(--cave-texte-400));white-space:nowrap;overflow:hidden}
-.cac-repli-l>span:first-child{flex:none}
+.cac-repli-l>span:first-child{flex:0 1 auto;min-width:0;overflow:hidden;text-overflow:ellipsis}
 .cac-repli-c{flex:none;transition:transform .15s}
 .cac-repli-l[aria-expanded="true"] .cac-repli-c{transform:rotate(90deg)}
 .cac-repli-l:focus-visible{outline:2px solid rgb(var(--cave-50));outline-offset:-2px}

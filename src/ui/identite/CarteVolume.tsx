@@ -3,7 +3,7 @@ import { ChampNombre } from './ChampNombre';
 import { Regle, useRegleFigee } from './Regle';
 import {
   VOLUME_SAISIE_MAX, barreCuve, echelleBarre, partEvapDansCuve, etatVolume, etendreVolume, fr, pourcent, zonesPiste,
-  type AvantEbullition
+  type AvantEbullition, type RemedesCuve
 } from './regles';
 
 const ICONE_FERMENTEUR = (
@@ -32,13 +32,24 @@ export interface CarteVolumeProps {
   onOuvrirFermenteur: () => void;
   invalide?: boolean;
   decrit?: string;
+  /** ID-TROP-AMBIGU (19.11) : les remèdes chiffrés quand la cuve déborde (`remedesCuve`). */
+  remedes?: RemedesCuve | null;
+  /** Durée d'ébullition, pour dire la cause du débordement. */
+  minutes?: number;
+  /** L'eau ajoutée pendant ou après l'ébullition, quand il l'a choisie (L froids, > 0). */
+  eauAjouteeL?: number;
+  onEauAjoutee?: (oui: boolean) => void;
+  onMinutes?: (m: number) => void;
+  /** Le renvoi vers Eau / grain et Rinçage, à l'étape Eau. */
+  onVersEau?: () => void;
 }
 
 /**
  * Le volume en fermenteur, r4-a : la grande lecture se tape, le curseur la suit, la règle s'étend, la barre de la cuve
  * se lit sur la même règle (moût d'avant ébullition, part évaporée, et « +N L de trop » quand elle déborde).
  */
-export function CarteVolume({ volumeL, onVolume, capaciteL, profilL, conseilL, cuveL, avantEbullition, onOuvrirFermenteur, invalide, decrit }: CarteVolumeProps) {
+export function CarteVolume({ volumeL, onVolume, capaciteL, profilL, conseilL, cuveL, avantEbullition, onOuvrirFermenteur, invalide, decrit,
+  remedes, minutes, eauAjouteeL, onEauAjoutee, onMinutes, onVersEau }: CarteVolumeProps) {
   const [refus, setRefus] = React.useState<string | null>(null);
   const voulue = etendreVolume({ cuveL, capaciteL, volumeL });
   const { regle, auToucher } = useRegleFigee(voulue);
@@ -158,12 +169,42 @@ export function CarteVolume({ volumeL, onVolume, capaciteL, profilL, conseilL, c
           <div className="idn-ih" style={{ justifyContent: 'space-between', marginTop: 3 }}>
             <span className="idn-k">cuve <b className="idn-m" style={{ color: 'rgb(var(--cave-texte-50))' }}>{fr(cuveL!)}</b> L</span>
             <span className="idn-cv">
-              {avantEbullition ? <><b data-role="preb">~{fr(avantEbullition.litres)} L</b> à chaud avant ébullition</> : <><b data-role="preb">—</b> avant ébullition · sans malts</>}
-              {barre?.deborde && (
-                <> · <span className="idn-trop" role="alert" data-role="debordement"><b>+{fr(barre.depasseL)} L</b> de trop</span></>
-              )}
+              {/* ID-TROP-AMBIGU (19.11) : « +3,7 L de trop » se lisait comme du moût en trop ; c'est la cuve qui est trop petite. */}
+              {barre?.deborde && avantEbullition
+                ? <span className="idn-trop" role="alert" data-role="debordement">Cuve trop petite : <b data-role="preb">{fr(avantEbullition.litres)} L</b> pour <b>{fr(cuveL!)} L</b></span>
+                : avantEbullition ? <><b data-role="preb">~{fr(avantEbullition.litres)} L</b> à chaud avant ébullition</> : <><b data-role="preb">—</b> avant ébullition · sans malts</>}
             </span>
           </div>
+          {barre?.deborde && remedes && (
+            <div className="idn-remede" data-role="remede">
+              {Number.isFinite(minutes) && avantEbullition?.evapL != null && avantEbullition.evapL > 0 && (
+                <p className="idn-cause" data-role="cause-cuve">
+                  {fr(minutes!)} min d’ébullition évaporent ~{fr(avantEbullition.evapL)} L : plus elle dure, plus il faut de moût au départ.
+                </p>
+              )}
+              {onEauAjoutee && (
+                <button type="button" className="idn-ajout" data-role="ajouter-eau" onClick={() => onEauAjoutee(true)}>
+                  Ajouter {fr(remedes.eauL)} L d’eau pendant ou après l’ébullition
+                </button>
+              )}
+              <div className="idn-liens idn-autres">
+                {remedes.ebullitionMin !== null && onMinutes && (
+                  <button type="button" className="idn-lien-ligne" onClick={() => onMinutes(remedes.ebullitionMin!)}>ou ébullition {remedes.ebullitionMin} min</button>
+                )}
+                {remedes.volumeL !== null && (
+                  <button type="button" className="idn-lien-ligne" onClick={() => onVolume(remedes.volumeL!)}>ou {fr(remedes.volumeL)} L</button>
+                )}
+                {onVersEau && <button type="button" className="idn-lien-ligne" data-role="vers-eau" onClick={onVersEau}>Eau / grain et rinçage ›</button>}
+              </div>
+            </div>
+          )}
+          {!barre?.deborde && eauAjouteeL != null && eauAjouteeL > 0 && (
+            <p className="idn-remede idn-eau-ok" data-role="eau-ajoutee">
+              <span><b className="idn-m">+{fr(eauAjouteeL)} L</b> d’eau pendant ou après l’ébullition</span>
+              {onEauAjoutee && <button type="button" className="idn-lien-ligne" aria-label="Retirer l’eau ajoutée" onClick={() => onEauAjoutee(false)}>Retirer</button>}
+              {onVersEau && <button type="button" className="idn-lien-ligne" data-role="vers-eau" onClick={onVersEau}>Eau / grain et rinçage ›</button>}
+            </p>
+          )}
         </>
       )}
     </section>

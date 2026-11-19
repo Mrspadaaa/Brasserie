@@ -39,7 +39,7 @@ describe('Archives accessibles et journal quotidien', () => {
     render(<TransactionJournal transactions={[older,latest]} payments={[]} archives={[]} renderRow={t=><button>{t.description}</button>} onManageArchives={()=>{}} onSale={()=>{}} onPrivateMovement={()=>{}}/>);
     expect(screen.getAllByRole('button',{name:/^Achat /}).map(button=>button.textContent)).toEqual(['Achat Z-DERNIER','Achat A-PREMIER']);
     // FIN-DEUX-PERIODES : la période se choisit dans l'en-tête ; la page la dit (lecteur d'écran) sans pastille à elle.
-    expect(screen.getByRole('status', { name: /^Période : / })).toBeVisible();
+    expect(screen.getByRole('status', { name: /^Opérations : / })).toBeVisible();
     expect(screen.queryByLabelText('Période du journal')).toBeNull();
   });
   it('archive une année depuis le récapitulatif puis la réintègre sans changer les pièces', async () => {

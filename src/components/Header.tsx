@@ -6,6 +6,8 @@ import { StorageService } from '../services/storage';
 import { useDensity, useMobileLayout } from '../ui/useViewport';
 import { PastillePeriode } from './periode/PastillePeriode';
 import type { Periode, PeriodeEntree } from './periode/periode';
+import { useOrientation } from '../ui/calendrier/useOrientation';
+import { abonnerPleinCalendrier, lirePleinCalendrier } from '../ui/calendrier/pleinEcran';
 
 interface HeaderProps {
   /** Barre compacte de l'application, extensible avec le texte. */
@@ -62,6 +64,10 @@ export const Header: React.FC<HeaderProps> = ({
   const compact = useDensity() !== 'comfortable';
   const mobile = useMobileLayout();
   const enTete = React.useRef<HTMLElement | null>(null);
+  /* Tour 2 n° 1 (19.11, capture b19e2698, paysage 844 × 340 : la frise commençait à 212 px sur 340) : téléphone couché, l'en-tête tient sur
+     une ligne de 40 px (« Villars-sur-Glâne » part) ; en plein écran du calendrier, il disparaît, la page entière va au calendrier. */
+  const paysage = useOrientation() === 'paysage';
+  const plein = React.useSyncExternalStore(abonnerPleinCalendrier, lirePleinCalendrier, () => false);
   /*
    * Paquet G n° 7 (CAL-ENTETE-CACHE, 19.11 : « le header est un peu caché ») : l'en-tête publie sa hauteur (zone sûre comprise) dans
    * `--main-header-height`, comme BottomNav publie `--main-navigation-height` : une zone collée d'un onglet se colle SOUS lui, jamais dessous.
@@ -90,11 +96,11 @@ export const Header: React.FC<HeaderProps> = ({
   /* V-a : en-tête opaque. Un fond à 95 % et un flou laissaient voir à travers lui ce qui défile dessous (fantôme gris sous « L'Affinée » à 390). */
   /* APP-ENTETE-COLLE (19.11 : « le header n'a pas besoin d'être visible partout, en tout cas pas en mode "floatting" docked en haut ») : l'en-tête défile avec la page. */
   return (
-    <header ref={enTete} className="relative z-40 bg-cave-950 border-b border-cave-800 pt-safe">
+    <header ref={enTete} className={`relative z-40 bg-cave-950 border-b border-cave-800 pt-safe${plein ? ' hidden' : ''}`} data-entete-app={paysage ? 'paysage' : undefined} hidden={plein || undefined}>
       {/* La disposition compacte démarre à 36 px et grandit avec le texte. */}
       <div
         className={`app-titlebar max-w-4xl ${large ? 'min-[900px]:max-w-[1264px]' : ''} mx-auto px-2 flex items-center ${
-          compactLayout ? 'min-h-9 flex-wrap gap-1 py-0.5' : compact || mobile ? 'h-12 gap-2' : 'h-16 gap-2'
+          compactLayout ? 'min-h-9 flex-wrap gap-1 py-0.5' : paysage ? 'h-10 gap-2' : compact || mobile ? 'h-12 gap-2' : 'h-16 gap-2'
         }`}
       >
         {/* Identité — ramène à l'accueil. `min-w-0` : sans lui, un élément de flex refuse de descendre sous la largeur de son contenu
@@ -115,7 +121,7 @@ export const Header: React.FC<HeaderProps> = ({
             <span className={`block font-semibold text-cave-50 leading-tight truncate group-hover:text-ebc-straw transition-colors ${compactLayout ? 'text-sm' : 'text-base'}`}>
               L'Affinée
             </span>
-            <span className={`${compactLayout ? 'hidden' : 'hidden sm:block'} text-sm text-cave-400 leading-tight truncate`}>
+            <span className={`${compactLayout || paysage ? 'hidden' : 'hidden sm:block'} text-sm text-cave-400 leading-tight truncate`}>
               Villars-sur-Glâne
             </span>
           </span>

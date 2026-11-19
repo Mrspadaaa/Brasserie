@@ -2,7 +2,7 @@ import React, { useEffect, useMemo, useRef, useState } from 'react';
 import type { PeriodeSynthese } from '../../../domain/finance/periodeSynthese';
 import { colonnesDe } from './Piles';
 import {
-  PREMIER_JOUR, ajouterJours, contient, estLundi, etiquettesAxe, fenetreInitiale, finFenetre, jourCourt, jourDeFenetre, joursDeFenetre, joursEntre0,
+  PREMIER_JOUR, ajouterJours, contient, estLundi, etiquettesAxe, fenetreInitiale, finDuMois, finFenetre, jourCourt, jourDeFenetre, joursDeFenetre, joursEntre0,
   montrer, plageDuMois, plagesInconnues, palierMois, etendre, texteInconnu, titreJours, xDebut, xFin, type Fenetre, type Plage,
 } from './plage';
 
@@ -62,7 +62,7 @@ export function Frise({ mois, plage, aujourdhui, jourMax, nbOperations, donnees,
     vif.current.eff = { du, au };
     pose(du, au);
   };
-  /* FIN-FRISE-AGRANDIR : au bord, un palier d'un mois toutes les PALIER_MS (le premier tout de suite) ; 1 s tenue = 2 mois, jamais des années. */
+  /* FIN-FRISE-AGRANDIR : au bord, un palier d'un mois toutes les PALIER_MS ; 1 s tenue = 1 mois, 1,6 s = 2 mois, jamais des années. */
   const pousseUnPas = () => {
     const g = glisse.current;
     if (!g?.cible || !g.sens) return;
@@ -82,9 +82,19 @@ export function Frise({ mois, plage, aujourdhui, jourMax, nbOperations, donnees,
       if (Math.abs(clientX - g.x0) < 3) return;
       g.cible = clientX < g.x0 ? 'du' : 'au'; setTenue(g.cible);
     }
-    const sens = g.cible === 'du' && x < r.left - BORD ? -1 : g.cible === 'au' && x > r.right + BORD ? 1 : 0;
+    /* Tour 2 (19.11, la poignée tenue au bord ne bougeait pas) : le bord est une zone DANS la piste (un doigt ne dépasse pas l'écran),
+       la moitié d'un jour, BORD px au moins. Y entrer cale d'abord la poignée au 1er (ou au dernier) du mois ; tenir étend d'un mois par palier. */
+    const zone = Math.max(BORD, r.width / vif.current.fen.nb / 2);
+    const sens = g.cible === 'du' && x <= r.left + zone ? -1 : g.cible === 'au' && x >= r.right - zone ? 1 : 0;
     g.sens = sens;
-    if (sens) { if (poussee.current === null) { pousseUnPas(); poussee.current = window.setInterval(pousseUnPas, PALIER_MS); } return; }
+    if (sens) {
+      if (poussee.current === null) {
+        const { eff: e } = vif.current, ici = sens < 0 ? e.du : e.au;
+        if (ici !== (sens < 0 ? `${ici.slice(0, 7)}-01` : finDuMois(ici.slice(0, 7)))) pousseUnPas();
+        poussee.current = window.setInterval(pousseUnPas, PALIER_MS);
+      }
+      return;
+    }
     arreter();
     const { fen: f } = vif.current, cellule = Math.round(((x - r.left) / r.width) * f.nb);
     poser(g.cible, jourDeFenetre(f, g.cible === 'du' ? cellule : cellule - 1));
@@ -140,11 +150,11 @@ export function Frise({ mois, plage, aujourdhui, jourMax, nbOperations, donnees,
       onKeyDown={e => clavier(e, quelle)}><i className="ops-gp"/></span>;
   };
   return <>
-    {/* FIN-FRISE-AGRANDIR : poignée tenue, la bulle dit la plage à la place de « n jours · n opération » (effacée), elle ne couvre aucun texte. */}
+    {/* FIN-FRISE-AGRANDIR : poignée tenue, la bulle dit la plage à la place de « n jours · n opération », retirée (pas seulement cachée) : elle ne couvre aucun chiffre. La ligne garde sa hauteur. */}
     <div className="ops-frise" data-testid="frise" data-tenue={tenue ? '' : undefined}>
       <div className="ops-fr-rd">
-        {resume ?? <span><b className="ops-m">{n}</b> jour{n > 1 ? 's' : ''} · <b className="ops-m">{nbOperations}</b> opération{nbOperations > 1 ? 's' : ''}</span>}
-        {plage && !resume && <button type="button" className="ops-fr-x" aria-label="Revenir au mois entier" onClick={onMois}>× mois entier</button>}
+        {tenue ? null : resume ?? <span><b className="ops-m">{n}</b> jour{n > 1 ? 's' : ''} · <b className="ops-m">{nbOperations}</b> opération{nbOperations > 1 ? 's' : ''}</span>}
+        {plage && !resume && !tenue && <button type="button" className="ops-fr-x" aria-label="Revenir au mois entier" onClick={onMois}>× mois entier</button>}
       </div>
       <div className="ops-tr" ref={piste} onClick={toucher}>
         <span className="ops-sel" style={{ left: pct(duX), width: pct(auX - duX) }}/>

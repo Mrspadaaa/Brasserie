@@ -141,7 +141,10 @@ export function densiteAvantEbullition(recipe?: RecipeSnapshot): number | undefi
       ? recipe!.preBoilL! / (1 - shrink / 100)
       : undefined;
   if (avant == null) return undefined;
-  const apres = avant - (e.boilOffLPerHour * recipe!.boilMin!) / 60;
+  // L'eau ajoutée pendant ou après l'ébullition (choix « eau ajoutée », 19.11) rejoint les points du moût : à chaud, T / (1 − rétraction).
+  const ajout = fini(recipe?.installation?.topUpL) && recipe!.installation!.topUpL! > 0 && fini(shrink) && shrink >= 0 && shrink < 20
+    ? recipe!.installation!.topUpL! / (1 - shrink / 100) : 0;
+  const apres = avant - (e.boilOffLPerHour * recipe!.boilMin!) / 60 + ajout;
   if (apres <= 0) return undefined;
   return Math.round((1 + (og - 1) * (apres / avant)) * 1000) / 1000;
 }

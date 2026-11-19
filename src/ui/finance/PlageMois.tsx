@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { auMois, duMois } from './financeFormat';
 
 /** Le premier mois qu'on peut demander : le même plancher que la Synthèse. */
 export const PREMIER_MOIS = '2000-01';
@@ -28,9 +29,10 @@ export function PlageMois({ courant, du: duInitial, au: auInitial, onPlage }: { 
   // 19.11 : le champ natif s'écrit dans la langue du téléphone (« August 2026 ») et se coupe à 390 (« November 202 ») : il reste, transparent,
   // posé sur le mois écrit en français ; le toucher ouvre toujours le sélecteur du téléphone.
   return <div className="syn-plage" role="group" aria-label="Plage de mois">
-    <label>du <span className="syn-plage-champ"><span className="syn-plage-mois" aria-hidden="true">{moisEnClair(du)}</span>
+    {/* Neuf n° 5 (19.11) : « d’août », « à août », jamais « du août ». */}
+    <label>{duMois(moisEnClair(du))}<span className="syn-plage-champ"><span className="syn-plage-mois" aria-hidden="true">{moisEnClair(du)}</span>
       <input type="month" aria-label="Du mois" value={du} min={PREMIER_MOIS} max={au} onChange={e => changer('du', e.target.value)}/></span></label>
-    <label>au <span className="syn-plage-champ"><span className="syn-plage-mois" aria-hidden="true">{moisEnClair(au)}</span>
+    <label>{auMois(moisEnClair(au))}<span className="syn-plage-champ"><span className="syn-plage-mois" aria-hidden="true">{moisEnClair(au)}</span>
       <input type="month" aria-label="Au mois" value={au} min={du} max={courant} onChange={e => changer('au', e.target.value)}/></span></label>
   </div>;
 }

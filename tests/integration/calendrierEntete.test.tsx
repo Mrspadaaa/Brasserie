@@ -129,8 +129,8 @@ describe('E02 : la courbe', () => {
     expect(svg.textContent).toContain('Festival +2 450');
     // La mise de côté se voit : zone hachurée entre la caisse et le libre.
     expect(container.querySelector('.ent-miscote')).not.toBeNull();
-    // Les mois sont sous la courbe (dans le SVG, sous le tracé), une courbe d'au moins 80 px de haut.
-    expect(container.querySelectorAll('.ent-mois').length).toBeGreaterThan(2);
+    // Tour 2 n° 2 (CAL-PLACE-GACHEE, « une seule rangée d'axe ») : la courbe non alignée ne porte plus de mois ; une courbe d'au moins 80 px de haut.
+    expect(container.querySelectorAll('.ent-cbz .ent-mois')).toHaveLength(0);
     expect(Number(container.querySelector('.ent-svg')!.getAttribute('height'))).toBeGreaterThanOrEqual(80);
   });
 
@@ -748,16 +748,12 @@ describe('CRITIQUE-3 n° 11 et 33 : une seule échelle de mois dans l’An, des 
     expect(container.querySelectorAll('[data-bande-annee] .ent-an-m')).toHaveLength(13);
   });
 
-  it('hors An, un mois sur n, toujours au même pas, chacun au lundi de sa première semaine, et 24 px au moins entre deux', () => {
+  /* Tour 2 n° 2 (19.11, CAL-PLACE-GACHEE : « une seule rangée d'axe ») : hors An et non alignée, la courbe n'a plus de rangée de mois ; la bande
+     des semaines, dessous, est la seule échelle. (Avant : un mois sur n, au même pas, dans la courbe.) */
+  it('hors An, non alignée : aucun mois dans la courbe ; la bande des semaines est la seule échelle', () => {
     const { container } = render(<Banc {...espions()} />);
-    const MOIS = ['janv.', 'févr.', 'mars', 'avr.', 'mai', 'juin', 'juil.', 'août', 'sept.', 'oct.', 'nov.', 'déc.'];
-    const mois = Array.from(courbeSvg(container).querySelectorAll('.ent-mois')).map(t => ({ m: MOIS.indexOf(t.textContent ?? ''), x: Number(t.getAttribute('x')) }));
-    expect(mois.length).toBeGreaterThanOrEqual(3);
-    const pas = mois.slice(1).map((v, k) => (v.m - mois[k].m + 12) % 12);
-    expect(new Set(pas).size).toBe(1);
-    // Au lundi de la semaine dont le jeudi ouvre le mois : x = index × 7,5 + 3.
-    for (const v of mois) expect(((v.x - 3) / 7.5) % 1).toBeCloseTo(0, 5);
-    mois.slice(1).forEach((v, k) => expect(v.x - mois[k].x).toBeGreaterThanOrEqual(24 + 30));
+    expect(courbeSvg(container).querySelectorAll('.ent-mois')).toHaveLength(0);
+    expect(container.querySelector('[data-bande-semaines]')).not.toBeNull();
   });
 });
 
@@ -969,21 +965,20 @@ describe('CRITIQUE-4 (lot q1-entete) : le doigt à 390, le paysage, le menu, le 
     expect([rect.getAttribute('width'), rect.getAttribute('height')]).toEqual([svg.getAttribute('width'), svg.getAttribute('height')]);
   });
 
-  it('n° 11 : en paysage, la courbe fait 90 px, les mois en haut avec leur trait (w3s), le tracé dessous de 18 à 88 px (70 px)', () => {
+  /* Tour 2 n° 1 et 2 (19.11, capture b19e2698 en paysage 844 × 340, la frise à 212 px sur 340) : la courbe descend à 60 px, la hauteur de la
+     colonne du chiffre et des boutons, et n'a plus de rangée de mois (la bande des semaines est la seule échelle). Avant : 90 px, mois en haut. */
+  it('n° 11 (tour 2) : en paysage, la courbe fait 60 px, sans mois ; le tracé dessous la rangée des noms, de 18 à 58 px', () => {
     const props = { modele: modele(), fenetre: { du: LUNDI0, semaines: 13 }, onFenetre: vi.fn(), periode: periodeDeFenetre({ du: LUNDI0, semaines: 13 }), onPeriode: vi.fn(), vue: 'semaines' as const,
       onVue: vi.fn(), mouvements: false, onMouvements: vi.fn(), largeurColonne: 48 };
     const { container } = render(<EnTeteCalendrier {...props} orientation="paysage" />);
     const svg = courbeSvg(container);
-    expect(Number(svg.getAttribute('height'))).toBe(90);
-    const mois = Array.from(svg.querySelectorAll('.ent-mois'));
-    expect(mois.length).toBeGreaterThan(0);
-    mois.forEach(m => expect(Number(m.getAttribute('y'))).toBe(13));
-    expect(svg.querySelectorAll('.ent-mois-t')).toHaveLength(mois.length);
+    expect(Number(svg.getAttribute('height'))).toBe(60);
+    expect(svg.querySelectorAll('.ent-mois')).toHaveLength(0);
     const ys = Array.from(svg.querySelectorAll('[data-point-semaine]')).map(p => Number(p.getAttribute('cy')));
     expect(Math.min(...ys)).toBeGreaterThanOrEqual(18);
-    expect(Math.max(...ys)).toBeLessThanOrEqual(88);
-    // L'étendue du tracé : le plus haut et le plus bas de la courbe sont à 60 px au moins l'un de l'autre (l'échelle ajoute 4 % en haut).
-    expect(Math.max(...ys) - Math.min(...ys)).toBeGreaterThanOrEqual(60);
+    expect(Math.max(...ys)).toBeLessThanOrEqual(58);
+    // L'étendue du tracé : le plus haut et le plus bas de la courbe restent lisibles, 30 px au moins l'un de l'autre.
+    expect(Math.max(...ys) - Math.min(...ys)).toBeGreaterThanOrEqual(30);
   });
 
   it('n° 23 : le détail du creux reprend z2s (S.. → S.. · n à dépenser, ses sorties, la mise de côté) et dit la tendance de Finances avec sa source', () => {

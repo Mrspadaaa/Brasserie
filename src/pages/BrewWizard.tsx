@@ -44,7 +44,7 @@ import { PlagesStyle } from '../ui/identite/PlagesStyle';
 import { TuilesMateriel } from '../ui/identite/TuilesMateriel';
 import { InterrupteurNolo } from '../ui/identite/InterrupteurNolo';
 import { VolumesReplies } from '../ui/identite/VolumesReplies';
-import { evaporation, avantEbullitionDuPlan, barreCuve, etatVolume } from '../ui/identite/regles';
+import { evaporation, avantEbullitionDuPlan, barreCuve, etatVolume, remedesCuve } from '../ui/identite/regles';
 import { aAdopter, alertesDeMateriel, lignePremierPlan, resumeVolumes } from '../ui/identite/alertes';
 import { teinteDuStyle } from '../ui/identite/teinteStyle';
 import { fermenterRecommendation } from '../domain/fermenterPlanning';
@@ -1063,6 +1063,10 @@ const BrewWizardEditor: React.FC<BrewWizardProps & {
   /** Ce que le houblon boira dans la cuve — le houblonnage à cru en est exclu. */
   const kettleHopG = useMemo(() => kettleHopGrammesBornes(hops, volumeL), [hops, volumeL]);
 
+  /** ID-TROP-AMBIGU (19.11) : l'eau ajoutée pendant ou après l'ébullition (L froids), quand il l'a choisie ; le plan d'eau la calcule. */
+  const [eauAjouteeL, setEauAjouteeL] = useState<number>(() => details.installation?.topUpL ?? 0);
+  const eauAjouteeChoisie = !!details.installation?.kettleTopUp;
+
   useEffect(() => {
     if (volumesEdited || !Number.isFinite(totalGrist) || totalGrist <= 0 || !Number.isFinite(volumeL) || !Number.isFinite(boilMin) || (details.nolo?.enabled&&details.nolo.process==='secondRunnings')) return;
     const v = BrewingMath.waterVolumes(
@@ -1071,7 +1075,8 @@ const BrewWizardEditor: React.FC<BrewWizardProps & {
       rig,
       spargeType,
       boilMin,
-      kettleHopG
+      kettleHopG,
+      eauAjouteeChoisie ? { topUpToKettle: true } : undefined
     );
     // Automatic setting of the water volumes: never a change of the brewer.
     applyAutomatic(() => {
@@ -1080,8 +1085,27 @@ const BrewWizardEditor: React.FC<BrewWizardProps & {
           ? w
           : { ...w, mashWaterL: v.mashWaterL, spargeWaterL: v.spargeWaterL }
       );
+      setEauAjouteeL(v.topUpL ?? 0);
     });
-  }, [totalGrist, volumeL, rig, spargeType, boilMin, kettleHopG, volumesEdited,details.nolo?.process]);
+  }, [totalGrist, volumeL, rig, spargeType, boilMin, kettleHopG, volumesEdited,details.nolo?.process, eauAjouteeChoisie]);
+
+  /** Son choix (19.11) : « de l'eau à la fin après l'ebul ou durant ». Les volumes d'eau suivent de nouveau le calcul, comme pour le rinçage. */
+  const choisirEauAjoutee = (oui: boolean) => {
+    setDetails(d => ({ ...d, installation: { ...d.installation, kettleTopUp: oui || undefined } }));
+    if (!oui) setEauAjouteeL(0);
+    setVolumesEdited(false);
+  };
+  /** « Juste alors ajouter un renvoi » : l'étape Eau, au curseur Eau / grain (ou à l'interrupteur Rinçage s'il n'y a pas de rinçage). */
+  const versEauGrain = () => {
+    setStep('eau');
+    let essais = 0;
+    const viser = () => {
+      const cible = document.getElementById('w-mash-ratio') ?? document.querySelector<HTMLElement>('.ew-cuve [role="switch"]');
+      if (cible) { cible.scrollIntoView({ block: 'center' }); cible.focus({ preventScroll: true }); }
+      else if (++essais < 20) window.setTimeout(viser, 50);
+    };
+    window.setTimeout(viser, 0);
+  };
 
   /**
    * Les deux doses d'acide, calculées ici pour être ENREGISTRÉES.
@@ -1216,7 +1240,8 @@ const BrewWizardEditor: React.FC<BrewWizardProps & {
       rig,
       next ? 'none' : 'batch',
       boilMin,
-      kettleHopG
+      kettleHopG,
+      eauAjouteeChoisie ? { topUpToKettle: true } : undefined
     );
     if (v.mashWaterL > 0) {
       setWater((w) => ({ ...w, mashWaterL: v.mashWaterL, spargeWaterL: v.spargeWaterL }));
@@ -1237,8 +1262,8 @@ const BrewWizardEditor: React.FC<BrewWizardProps & {
    * et on laisse un geste pour le corriger.
    */
   const suggestedVolumes = useMemo(
-    () => BrewingMath.waterVolumes(totalGrist, volumeL, rig, spargeType, boilMin, kettleHopG),
-    [totalGrist, volumeL, rig, spargeType, boilMin, kettleHopG]
+    () => BrewingMath.waterVolumes(totalGrist, volumeL, rig, spargeType, boilMin, kettleHopG, eauAjouteeChoisie ? { topUpToKettle: true } : undefined),
+    [totalGrist, volumeL, rig, spargeType, boilMin, kettleHopG, eauAjouteeChoisie]
   );
 
   /*
@@ -1737,7 +1762,9 @@ const BrewWizardEditor: React.FC<BrewWizardProps & {
       // Retaining old volumes does not turn them into an explicit manual choice.
       manualWaterSplit: installationNeedsAdoption && details.installation?.manualWaterSplit == null &&
         water.mashWaterL === details.waterPlan?.mashWaterL && water.spargeWaterL === details.waterPlan?.spargeWaterL
-        ? undefined : volumesEdited
+        ? undefined : volumesEdited,
+      // ID-TROP-AMBIGU (19.11) : l'eau ajoutée pendant ou après l'ébullition, calculée par le plan d'eau, lue par le jour de brassage.
+      topUpL: details.installation?.kettleTopUp && eauAjouteeL > 0 ? eauAjouteeL : undefined
     },
     carboTarget: carboTarget.trim() || undefined,
     fermentables,
@@ -1839,7 +1866,8 @@ const BrewWizardEditor: React.FC<BrewWizardProps & {
         next.brewhouse?.equipment && next.waterPlan && evaluateNoloRecipe(next)?.simulationActive) {
       const fit = BrewingMath.waterVolumes(next.totalGristKg, next.volumeL, next.brewhouse,
         next.mash?.spargeType, next.boilMin, kettleHopGrams(next.hops), {
-          manualWaterSplit: { mashWaterL: next.waterPlan.mashWaterL, spargeWaterL: next.waterPlan.spargeWaterL }
+          manualWaterSplit: { mashWaterL: next.waterPlan.mashWaterL, spargeWaterL: next.waterPlan.spargeWaterL },
+          topUpToKettle: !!next.installation?.kettleTopUp
         });
       if (fit.planningStatus === 'invalid' || fit.planningStatus === 'impossible') {
         throw Error(`La proposition d’eau ne tient pas dans le matériel : ${fit.issues.join(' ')} Ajuste la répartition avant de l’appliquer.`);
@@ -2654,6 +2682,13 @@ const BrewWizardEditor: React.FC<BrewWizardProps & {
               conseilL={reco?.recommendedFillL}
               cuveL={equipement?.kettleWorkingL}
               avantEbullition={avantMoteur}
+              remedes={remedesCuve({ avantL: avantMoteur?.litres, cuveL: equipement?.kettleWorkingL, evapL: avantMoteur?.evapL,
+                minutes: boilMin, retraitPct: equipement?.coolingShrinkagePct, volumeL })}
+              minutes={boilMin}
+              eauAjouteeL={eauAjouteeChoisie ? eauAjouteeL : undefined}
+              onEauAjoutee={choisirEauAjoutee}
+              onMinutes={setBoilMin}
+              onVersEau={versEauGrain}
               onOuvrirFermenteur={ouvrirFermenteur}
               invalide={!!fieldError('wz-volume')}
               decrit={fieldError('wz-volume') ? 'wz-validation' : undefined}

@@ -51,29 +51,22 @@ describe('paquet G n° 1 — CAL-PLACE-GACHEE a : la courbe plate ne gâche pas 
     expect(h).toBeLessThanOrEqual(88);
     expect(container.querySelector('.ent-cb')).not.toHaveAttribute('data-courbe-plate');
   });
-  it('alignée en portrait : 110 px, inchangé ; paysage : 90 px, inchangé', () => {
+  it('alignée en portrait : 110 px, inchangé ; paysage : 60 px (tour 2 n° 1, avant 90)', () => {
     const al = render(<EnTeteCalendrier {...props(vivante, { aligne: true, onAligne: () => undefined })} />);
     expect(hauteurSvg(al.container)).toBe(110);
     al.unmount();
     const pa = render(<EnTeteCalendrier {...props(plate, { orientation: 'paysage', fenetre: { du: LUNDI0, semaines: 13 }, periode: periodeDeFenetre({ du: LUNDI0, semaines: 13 }) })} />);
-    expect(hauteurSvg(pa.container)).toBe(90);
+    expect(hauteurSvg(pa.container)).toBe(60);
   });
 });
 
 describe('paquet G n° 2 — CAL-PLACE-GACHEE b : une seule rangée d’axe en portrait', () => {
   for (const [nom, c] of [['non plate', vivante], ['plate', plate]] as const) {
-    it(`${nom} : chaque mois est dans les 20 px du haut de la courbe, aucun sous le tracé`, () => {
+    /* Tour 2 n° 2 (vision 19.11 : « reste deux rangées d'axe, mois au-dessus de la courbe, semaines dessous ») : plus aucun mois dans la courbe
+       non alignée ; la bande des semaines est la seule rangée d'axe. */
+    it(`${nom} : aucun mois dans la courbe ; la bande des semaines est la seule rangée d’axe`, () => {
       const { container } = render(<EnTeteCalendrier {...props(c)} />);
-      const svg = svgCourbe(container);
-      const mois = [...svg.querySelectorAll('text.ent-mois')];
-      expect(mois.length).toBeGreaterThan(0);
-      const haut = Math.min(...[...svg.querySelectorAll('circle.ent-pt')].map(p => Number(p.getAttribute('cy'))));
-      for (const m of mois) {
-        const y = Number(m.getAttribute('y'));
-        // le texte de 14 px : sa boîte va de y − 11 à y + 3 ; elle tient dans les 20 px du haut, au-dessus du plus haut point du tracé
-        expect(y + 3).toBeLessThanOrEqual(20);
-        expect(y).toBeLessThan(haut);
-      }
+      expect(svgCourbe(container).querySelectorAll('text.ent-mois')).toHaveLength(0);
       // la bande des semaines reste (choisie) : c'est la seule rangée d'axe sous la courbe
       expect(container.querySelector('[data-bande-semaines]')).not.toBeNull();
     });

@@ -315,7 +315,8 @@ export function TransactionJournal({ transactions, payments, archives, request, 
     ? (years.length ? `Ni vente ni dépense dans ${selectedYear === 'all' ? 'les années archivées' : `l’année archivée ${selectedYear}`}.` : 'Aucune année archivée.') : undefined;
   /** Point 11 : la bande vide le dit déjà ; la carte de la liste ne le répète pas (elle garde ses liens, et sa phrase pour le lecteur d'écran). */
   const pilesVides = !!piles && !piles.entreCents && !piles.materielCents && !piles.postes.length && !apportsCents;
-  const nomPiles = modeMois ? 'le mois' : !year && !allDates && scope !== 'archives' ? 'la période' : 'tout l’historique';
+  // Tour 2 (19.11) : « la plage », pas « la période » : les piles se lisent, elles ne sont pas un second choix de période.
+  const nomPiles = modeMois ? 'le mois' : !year && !allDates && scope !== 'archives' ? 'la plage' : 'tout l’historique';
   const retard = useMemo(() => retardTotal(classified, aujourdhui), [classified, aujourdhui]);
   // fx1 : la puce IA pose la question du plus gros poste des piles (v6b) ; sans poste, son libellé actuel.
   const pose = useMemo(() => piles ? questionPoste(piles, modeMois ? `en ${moisDit(month)}` : plage ? `la période ${titreJours(plage, aujourdhui)}` : nomPiles) : null, [piles, modeMois, month, nomPiles, plage, aujourdhui]);

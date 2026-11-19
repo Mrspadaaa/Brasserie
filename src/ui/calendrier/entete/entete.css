@@ -338,7 +338,8 @@
 
 /* ---- paysage (w3s) : la colonne du chiffre clé à gauche, la courbe à droite, la bande dessous sur toute la largeur ; 120 px au plus ---- */
 .ent--paysage { display: grid; grid-template-columns: 214px minmax(0, 1fr); grid-template-areas: 't c' 'b b'; align-items: start; }
-.ent--paysage .ent-t { grid-area: t; flex-direction: column; align-items: flex-start; justify-content: flex-start; gap: 4px; padding: 2px 8px 0 12px; }
+/* Tour 2 n° 1 (paysage 844 × 340) : 2 px entre le chiffre et les boutons ; la colonne fait 60 px, la hauteur de la courbe. */
+.ent--paysage .ent-t { grid-area: t; flex-direction: column; align-items: flex-start; justify-content: flex-start; gap: 2px; padding: 2px 8px 0 12px; }
 .ent--paysage .ent-t-b { margin-left: 0; }
 /* CRITIQUE-6 n° 14 : le chiffre clé reste dans sa colonne (214 px) ; s'il ne tient pas en ligne, la semaine passe dessous (data-empile),
    jamais sur la courbe, ni sous le bord du cadre, ni sous l'axe de la courbe zoomée. */
@@ -349,7 +350,7 @@
 .ent--paysage .ent-cbz { grid-area: c; min-width: 0; }
 /* Les mois sont EN HAUT de la courbe (w3s) : la bande vient juste dessous, 4 px ; ses cases font 24 px (la date au toucher s'étend par ::after).
    Le tracé garde 70 px, l'en-tête 120 px au plus (E02, E10, CRITIQUE-4 n° 11). */
-.ent--paysage .ent-bz { grid-area: b; margin-top: 4px; }
+.ent--paysage .ent-bz { grid-area: b; margin-top: 2px; }
 .ent--paysage .ent-bd-c { min-height: 24px; }
 .ent--paysage .ent-cadre, .ent--paysage .ent-poi { top: 18px; bottom: 2px; }
 .ent--paysage .ent-lit { white-space: normal; height: auto; line-height: 20px; }

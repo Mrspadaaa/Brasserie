@@ -49,7 +49,7 @@ describe('Journal financier compact', () => {
       return <TransactionJournal {...defaults} transactions={[current, oldPaid, oldDue]} payments={[paymentFor(current), paymentFor(oldPaid)]} state={etat} onStateChange={setEtat}/>;
     };
     render(<Hote/>);
-    expect(screen.getByRole('status', { name: /^Période : / })).toBeVisible();
+    expect(screen.getByRole('status', { name: /^Opérations : / })).toBeVisible();
     expect(screen.queryByLabelText('Période du journal')).toBeNull();
     expect(categorie()).toBeVisible();
     expect(recherche()).toBeVisible();
@@ -163,7 +163,7 @@ describe('Journal financier compact', () => {
     expect(screen.getByRole('button', { name: 'Opération ARCHIVÉ' })).toBeInTheDocument();
     expect(screen.getByRole('button', { name: 'Tout', exact: true })).toHaveAttribute('aria-pressed', 'true');
     expect(screen.getByRole('button', { name: 'Par date', exact: true })).toHaveAttribute('aria-pressed', 'false');
-    expect(screen.getByRole('status', { name: 'Période : Toutes les dates' })).toBeInTheDocument();
+    expect(screen.getByRole('status', { name: 'Opérations : Toutes les dates' })).toBeInTheDocument();
     expect(JSON.stringify(transactions)).toBe(initial);
   });
 

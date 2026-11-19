@@ -49,6 +49,7 @@ import { infoLigne, compterEtats, trierArticles, resumeRayon, familleRecompter, 
 import { GROUPES_LISTE, LIBELLE_FAMILLE, groupeListe, lignesRetenues, texteFiltre, type FiltreListe } from '../../domain/stock/listeFiltres';
 import { BasculeVue, Recherche, Pastilles, LigneFiltre, LigneTri, type VueStock } from '../../ui/stock/OutilsStock';
 import { RecompterStock } from '../../ui/stock/RecompterStock';
+import { brancherSurFenetre } from '../../ui/stock/defileFenetre';
 
 /* Carnet d'idées (R01 à R08) : chargé à l'ouverture du segment Carnets seulement. */
 const CarnetsVue = lazy(() => import('../../ui/carnets/CarnetsVue').then(({ CarnetsVue }) => ({ default: CarnetsVue })));
@@ -201,7 +202,14 @@ export const StocksTab: React.FC<StocksTabProps> = ({
   const setTri = (t: TriListe) => { setTriEtat(t); StorageService.setUiState('stock_tri', t); };
   const [vue, setVueEtat] = useState<VueStock>(() => StorageService.getUiState<VueStock>('stock_vue', 'etagere') === 'recompter' ? 'recompter' : 'etagere');
   // Le conteneur qui défile en Étagère : la liste virtualisée s'y appuie (customScrollParent).
+  // APP-ENTETE-COLLE (19.11) : c'est la fenêtre qui défile ; la liste la voit à travers un relais fixe (defileFenetre.ts).
   const [parentListe, setParentListe] = useState<HTMLDivElement | null>(null);
+  const debrancherFenetre = useRef<(() => void) | null>(null);
+  const refFenetre = useCallback((el: HTMLDivElement | null) => {
+    debrancherFenetre.current?.();
+    debrancherFenetre.current = el ? brancherSurFenetre(el) : null;
+    setParentListe(el);
+  }, []);
   const setVue = (v: VueStock) => { setVueEtat(v); StorageService.setUiState('stock_vue', v); };
 
   /*
@@ -526,7 +534,8 @@ export const StocksTab: React.FC<StocksTabProps> = ({
   );
 
   return (
-    <div className={`stocks-screen flex flex-col h-[calc(100dvh-8.5rem)] pt-1 gap-1`}>
+    // Articles et Courses défilent avec la fenêtre : l'en-tête de l'app part comme ailleurs (APP-ENTETE-COLLE, 19.11). Fûts, Matériel, Houblons gardent leur hauteur.
+    <div className={`stocks-screen flex flex-col ${subTab === 'stock' || subTab === 'courses' ? 'stocks-fenetre' : 'h-[calc(100dvh-8.5rem)]'} pt-1 gap-1`}>
       <div className="min-w-0 shrink-0">
       <ViewNavigation<typeof subTab> label="Vue des stocks" value={subTab} onChange={setSubTab} options={tabs.map(tab => ({value:tab.id,label:tab.label+(tab.badge ? ` (${tab.badge})` : ''),shortLabel:tab.label}))}>
       <nav ref={tabsRef} className="shrink-0 flex gap-1 p-1 rounded-control bg-cave-900 border border-cave-800 overflow-x-auto">
@@ -621,12 +630,14 @@ export const StocksTab: React.FC<StocksTabProps> = ({
         </details>
         {vue === 'recompter'
           ? <>
-            {blocOutils}
-            <div className={`stock-outils min-h-0 flex-1 overflow-y-auto ${mobile ? 'pb-16' : ''}`}>
+            {/* En Recompter, les outils restent sous le doigt : collés en haut de la fenêtre pendant que les tuiles défilent. */}
+            <div className="sticky top-0 z-10 bg-cave-950">{blocOutils}</div>
+            <div className={`stock-outils ${mobile ? 'pb-16' : ''}`}>
               <RecompterStock items={allItems} retenus={retenus} infos={infos} aCommander={aCommanderParRef} mouvements={movements} filtre={filtre} onFiltre={setFiltre} filtreActif={!!filtre || !!recherche} onOuvrir={setSelected} onCompter={compter} />
             </div>
           </>
-          : <div ref={setParentListe} className="min-h-0 flex-1 overflow-y-auto" data-testid="stock-defile">
+          : <div data-testid="stock-defile">
+        <div ref={refFenetre} data-testid="stock-fenetre" aria-hidden="true" className="pointer-events-none invisible fixed inset-0 -z-10" />
         <div ref={refHaut}>
         {blocOutils}
         {/* STK-COMMANDE-REPLIEE (19.11) : le bloc « à commander » vit replié en tête de Courses ; Articles s'ouvre sur le mur et la liste. */}
@@ -636,7 +647,7 @@ export const StocksTab: React.FC<StocksTabProps> = ({
         </Suspense>
         </div>
         <EntityList
-          className={mobile ? 'pb-16' : ''}
+          className={mobile ? 'pb-16' : 'pb-10'}
           repartDuHaut={false}
           scrollParent={parentListe}
           items={visibleItems}
@@ -680,24 +691,19 @@ export const StocksTab: React.FC<StocksTabProps> = ({
       )}
 
       {subTab === 'courses' && (
-        <div className="flex-1 overflow-y-auto space-y-2 pb-4">
+        <div className={`space-y-2 ${mobile ? 'pb-20' : 'pb-4'}`}>
           {/* Le chiffre clé, son horizon et son histogramme (Pastille C), repliés en une ligne discrète : un toucher les déplie (19.11). */}
           <CommandeRepliee vue={vueH} horizon={horizon} onHorizon={setHorizon} onOuvrir={setSelected} />
+          {/* Vision du 19.11, n° 2 et 3 : la ligne repliée dit seule le compte (horizon, puis total) ; ici, le seul geste « Tout voir ». */}
           {aCommander.length > totalToOrder && (
-            <p className="flex items-center gap-2 px-1 text-sm text-cave-200" role="status" data-testid="courses-horizon">
-              <span className="min-w-0 flex-1">{totalToOrder} sur {aCommander.length} : {phraseReglage(vueH, horizon)}</span>
+            <p className="flex items-center px-1" data-testid="courses-horizon">
               <button type="button" className="min-h-[44px] px-2 text-sm font-semibold underline underline-offset-4 text-cave-50" onClick={() => setHorizon('tout')}>Tout voir</button>
             </p>
           )}
           {totalToOrder === 0 ? (
-            <div className="py-12 text-center space-y-2">
-              <p className="text-base text-cave-200">Rien à commander{aCommander.length > 0 ? ` ${phraseReglage(vueH, horizon)}` : ''}</p>
-              <p className="text-sm text-cave-400 max-w-xs mx-auto leading-relaxed">
-                {aCommander.length > 0
-                  ? `${aCommander.length} ${aCommander.length > 1 ? 'articles viennent' : 'article vient'} plus tard.`
-                  : 'Le stock couvre les brassins planifiés, les recettes écrites et les seuils minimums.'}
-              </p>
-            </div>
+            aCommander.length === 0 && <p className="py-8 text-center text-sm text-cave-400 max-w-xs mx-auto leading-relaxed" role="status">
+              Le stock couvre les brassins planifiés, les recettes écrites et les seuils minimums.
+            </p>
           ) : (
             shoppingBySupplier.map(([supplier, list]) => (
               <section key={supplier} className="panel p-2 space-y-1">

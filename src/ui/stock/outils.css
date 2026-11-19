@@ -17,3 +17,5 @@
 .sz-fli span{flex:1}.sz-fli b{color:var(--l1-t0)}
 .sz-tv{height:34px;padding:0 6px;font-size:14px;font-weight:600;color:var(--l1-t0);text-decoration:underline;text-underline-offset:3px}
 .sz-seg{height:38px}.sz-puces{margin-top:4px}.sz-tri,.sz-tb{min-height:28px}
+/* APP-ENTETE-COLLE (19.11) : Articles et Courses défilent avec la fenêtre ; la hauteur d'écran imposée en paysage bas (stocks.css) ne s'y applique pas. */
+@media (max-height:480px){.stocks-screen.stocks-fenetre{height:auto}}

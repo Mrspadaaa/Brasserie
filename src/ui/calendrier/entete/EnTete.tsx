@@ -5,7 +5,7 @@ import type { Periode } from '../../../components/periode/periode';
 import { dateDeSemaine, etiquetteS, lundiDe, type ModeleCalendrier, type Retard } from '../../../domain/calendrier';
 import { creuxDepuis, miseDeCoteVisible, type CourbeCaisse, type MouvementNomme } from '../../../domain/calendrierCaisse';
 import type { Orientation } from '../useOrientation';
-import { entrerPleinEcran, estPleinEcran, sortirPleinEcran } from '../pleinEcran';
+import { entrerPleinEcran, estPleinEcran, poserPleinCalendrier, sortirPleinEcran } from '../pleinEcran';
 import { usePointeurCourbe } from '../usePointeurCourbe';
 import { Courbe, CourbeZoom, HAUTEUR_MOIS, MOIS_MIN, ajouterJours, chf, courbePlate, jourCourt, moisDeSemaine, semaineCourte, type Boite, type EtoileCourbe } from './Courbe';
 import { Cadre, etiquetteCadre, fenetreDePeriode, libelleDuree, libellePeriode, periodeDeFenetre, SEMAINES_ANNEE, type FenetreSemaines, type PriseCadre } from './Fenetre';
@@ -107,7 +107,11 @@ const COLONNE_T = 214;
 /* Paquet G n° 1 et 2 (CAL-PLACE-GACHEE, 19.11 : « beaucoup d'espace "gâché" ») : en portrait, les mois passent EN HAUT de la courbe, comme w3s
    (une seule rangée d'axe : la bande des semaines dessous) ; la courbe fait 88 px (plancher CAL-GRAPH-PETIT : 80), 44 px quand elle est plate
    (solde constant : rien à lire). Alignée en portrait, 110 px, comme avant. */
-const HAUTEUR_COURBE = { portrait: 88, portraitPlate: 44, portraitAlignee: 110, paysage: 90, paysageAlignee: 92 };
+/* Tour 2 n° 2 (CAL-PLACE-GACHEE, « une seule rangée d'axe ») : la courbe non alignée (l'année) ne porte plus sa rangée de mois ; la bande des
+   semaines, dessous, est la seule rangée d'axe. Son cadre (« S47 – S52 ») dit où est la fenêtre ; alignée, la courbe garde ses mois (ils sont
+   ceux de la frise). Tour 2 n° 1 (capture b19e2698, paysage 844 × 340) : en paysage, la courbe descend à la hauteur de la colonne du chiffre
+   (60 px, le chiffre et les boutons) ; la frise commence avant 40 % de la hauteur. */
+const HAUTEUR_COURBE = { portrait: 88, portraitPlate: 44, portraitAlignee: 110, paysage: 60, paysageAlignee: 92 };
 /** Paquet E n° 2 : la rangée du chiffre et des boutons en paysage aligné (boutons de 28 px), posée sur la rangée des mois de la courbe. */
 export const RANGEE_CHIFFRE_PAYSAGE = 28;
 /** Hauteur de la grande courbe au téléphone (p-c3a-pendant : environ 250 px, le détail dessous). */
@@ -362,6 +366,9 @@ export function EnTeteCalendrier(props: EnTeteCalendrierProps) {
     document.addEventListener('fullscreenchange', h);
     return () => document.removeEventListener('fullscreenchange', h);
   }, []);
+  /* Tour 2 n° 1 : en plein écran, l'en-tête de l'app s'efface (Header lit ce magasin) ; il revient au retour et quand le calendrier part. */
+  useEffect(() => { poserPleinCalendrier(plein); }, [plein]);
+  useEffect(() => () => poserPleinCalendrier(false), []);
   const basculerPlein = async () => {
     if (plein) { await sortirPleinEcran(); setPlein(false); return; }
     // L'invitation est pour le téléphone tenu droit (CRITIQUE-4 n° 19) ; un écran large n'a rien à tourner. La largeur se lit AVANT le plein
@@ -694,7 +701,7 @@ export function EnTeteCalendrier(props: EnTeteCalendrierProps) {
           </Courbe>
         ) : courbe && base ? (
           <Courbe courbe={courbe} largeur={largeur} hauteur={hauteur} curseur={lecture} reference={refCourbe} gestes={apercuC ? undefined : gestesCourbe} mise={miseCourbe}
-            mois={!annee} moisEnHaut plate={plate && !paysage} etoiles={etoilesCourbe} masque={apercuC ? null : tirage}
+            mois={false} moisEnHaut plate={plate && !paysage} etoiles={etoilesCourbe} masque={apercuC ? null : tirage}
             cadre={apercuC ? undefined : { index, nombre, etiquette: etiquetteCadre(semainesTot.map(s => s.numero), index, nombre, annee, etiquetteAnnee, lundis) }}>
             {apercuC ? (
               <div className="ent-zoom-c" style={{ height: hauteur }}>

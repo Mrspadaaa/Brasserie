@@ -59,6 +59,8 @@ export interface BarreProps {
   deuxLignes?: ModeDeuxLignes;
   /** La pastille « lié à » n'a pas la place à côté du nom : elle n'est pas posée (le badge lien de la barre reste). */
   sansLie?: boolean;
+  /** Tour 2 n° 3 : le titre seul dans la barre (« · coût à venir » n'y tient pas avec lui) ; le nom ne sort jamais de sa barre pour lui. */
+  titreSeul?: boolean;
   /** La durée à côté du nom d'un brassin, entière (« J0 / 28 · prête 21 déc. ») ou courte (« J0 / 28 »), posée par `disposer` ; absente : dans la barre. */
   dureeACote?: string | null;
   largeurColonne: number;
@@ -123,11 +125,11 @@ export function formesDuree(d: string): string[] {
  * La forme de durée que la barre porte dedans, la première qui tient (entière, puis courte) ; `nomDedans` : le nom et son montant sont sur la
  * même ligne, à gauche. `null` : aucune. Une seule mesure pour `disposer` (Rangee) et la barre, sans quoi l'une promet ce que l'autre coupe.
  */
-export function dureeDansBarre(chose: ChoseCalendrier, w: number, nomDedans: boolean): string | null {
+export function dureeDansBarre(chose: ChoseCalendrier, w: number, nomDedans: boolean, nom: string = chose.etiquette ?? chose.titre): string | null {
   const duree = dureeVue(chose);
   if (!duree) return null;
   const montant = montantBarre(chose);
-  const nomEntier = nomDedans ? largeurTexte(chose.etiquette ?? chose.titre, 600) + (montant ? largeurTexte(montant, 700) + 6 : 0) + 12 : 0;
+  const nomEntier = nomDedans ? largeurTexte(nom, 600) + (montant ? largeurTexte(montant, 700) + 6 : 0) + 12 : 0;
   return formesDuree(duree).find(t => w - 16 - nomEntier >= largeurDuree(t)) ?? null;
 }
 /** La largeur d'une durée posée dans la barre ou sous elle (son jeu compris). */
@@ -235,7 +237,7 @@ export const Barre: React.FC<BarreProps> = props => {
   const w = Math.max(10, largeur + allongement);
   const etapesVues = brassin ? iconesQuiTiennent(chose.jalons ?? [], jalonVu, w) : [];
   const duree = dureeVue(chose);
-  const nom = chose.etiquette ?? chose.titre;
+  const nom = props.titreSeul ? chose.titre : chose.etiquette ?? chose.titre;
   /* CRITIQUE-9 n° 3 : la phrase entière en bas de la barre haute (as/cap/p-repos), ou sur la ligne sous elle ; le nom reste seul en haut */
   const bas = props.phraseBas ?? null;
   const formeEntiere = duree ? formesDuree(duree)[0] : null;
@@ -244,7 +246,7 @@ export const Barre: React.FC<BarreProps> = props => {
   const dureeDedans = ((): { texte: string; largeur: number } | null => {
     if (!duree || props.dureeACote || props.deuxLignes === 'duree' || bas?.ou === 'dessous') return null;
     if (bas?.ou === 'barre' && formeEntiere) return { texte: formeEntiere, largeur: largeurDuree(formeEntiere) };
-    const t = dureeDansBarre(chose, w, cote === 'dedans');
+    const t = dureeDansBarre(chose, w, cote === 'dedans', nom);
     return t ? { texte: t, largeur: largeurDuree(t) } : null;
   })();
   /* f2-a (E29, CRITIQUE-5 n° 1) : pendant le geste, « J0 / 35 · prête 21 déc. » ou « pas brassée · prête le 24 nov. » se lit en entier : dans la
