@@ -1,0 +1,703 @@
+<!doctype html>
+<html lang="fr" data-theme="clair">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Ma levure r3 — v02 : sachets en jetons</title>
+<!--
+  r3, version 2 sur 8 : « Sachets en jetons », passe de correction (une seule). Base (règle n° 1) : v01, son haut retenu tel quel
+  (pastille, nom, marque, ×, cases FG / fiche · conduite / floculation avec « Caler à 11 °C », Changer de levure et ses puces, pied,
+  + volant, onglets).
+  Le parti : la dose se compte dans l'unité de l'achat, un jeton par sachet, sur la ligne. Toucher le N-ième jeton règle la dose à N ;
+  − et + aux deux bouts (la langue de l'éditeur d'un malt, « − 1,7 kg + », au pas d'un sachet ; au-delà de 5, + continue et le
+  nombre en grand le dit). Le nombre choisi est en grand (comme « 1,7 kg »).
+  Le besoin de la recette : un trait sur la rangée et une part (comme « 62 % du grain ») : lager 1,5 M/mL/°P × 20 L × 6,57 °P
+  (OG 1,026 de sa capture) = 197 G de cellules. Cellules par gramme de sèche : 10 G/g, exemple (2 sachets = 230 G = 117 %).
+  Le « ≥ 15 g » du fabricant est un plancher, dit en petit, jamais un plafond.
+  Stock : une seule icône, ou « manque 1 ». L'unité vient de la forme du produit (sachet, brique en g, pack liquide), pas d'un
+  interrupteur. Poids du sachet 11,5 g : exemple, à confirmer (SPEC 10.11) ; forme de la levure (sèche ou liquide) à vérifier.
+  Effets : crans nommés à valeur (phénols négatif, thiols faible, terpènes faible, v01) ; les deux non publiés et l'IA à un toucher.
+  Valeurs de sa capture du 19.11 (FG 1,006–1,007, ≈ 2,5–2,7 % vol). Données : exemple. Statique : HTML et CSS seuls.
+-->
+<style>
+  :root{
+    --page:#FFFFFF; --panneau:#F5F5F5; --sur:#EBEBEB; --bord:#DDDDDD; --bord2:#BFBFBF; --trait:#9E9E9E;
+    --t2:#666666; --t1:#333333; --t0:#111111;
+    --or:#7A5A12; --or-aplat:#F2C14E; --att:#9C7020; --alerte:#C8382F; --alerte-t:#A8291F; --prod:#9A4F1E; --eau:#5B8AA6; --vert:#2F7A4A;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;background:var(--page);color:var(--t0)}
+  body{font:15px/1.3 "Source Sans 3",system-ui,-apple-system,"Segoe UI",sans-serif;-webkit-text-size-adjust:100%}
+  .j2-mono{font-family:"IBM Plex Mono",ui-monospace,Consolas,monospace;letter-spacing:-.01em}
+  .j2-app{max-width:390px;min-height:844px;margin:0 auto;padding-bottom:132px}
+  .j2-esp{flex:1}
+
+  /* En-tête et étapes : v01 */
+  .j2-tete{position:sticky;top:0;z-index:5;background:var(--page);border-bottom:1px solid var(--bord)}
+  .j2-l1{display:flex;align-items:center;gap:8px;height:46px;padding:0 10px 0 6px}
+  .j2-retour,.j2-ico{width:32px;height:32px;display:grid;place-items:center;color:var(--t1)}
+  .j2-titre{font-size:20px;font-weight:600;letter-spacing:-.01em}
+  .j2-titre span{font-weight:400;color:var(--t2);margin-left:4px}
+  .j2-lien{font-size:15px;color:var(--t0);text-decoration:underline;text-underline-offset:3px}
+  .j2-etapes{display:flex;justify-content:space-between;gap:6px;padding:0 8px;overflow:hidden;white-space:nowrap}
+  .j2-etapes span{font-size:14px;color:var(--t2);padding:4px 0 6px;border-bottom:4px solid var(--bord2)}
+  .j2-etapes span.fait{border-color:#555}
+  .j2-etapes span.ici{color:var(--t0);font-weight:600;border-color:var(--t0)}
+  .j2-etapes span.apres{border-color:var(--bord)}
+
+  /* Bande de la recette (app, les deux captures) */
+  .j2-bande{display:flex;justify-content:space-between;align-items:center;margin:8px 8px 0;height:38px;padding:0 12px;border:1.5px solid var(--bord);border-radius:999px;background:var(--page);font-size:14px;color:var(--t2);white-space:nowrap}
+  .j2-bande b{font-size:16px;color:var(--t0);font-weight:600;margin-left:3px}
+  .j2-ebc{display:inline-block;width:11px;height:11px;border-radius:50%;background:#E0A02E;margin-left:4px;vertical-align:-1px}
+
+  /* Carte Ma levure : v01 */
+  .j2-carte{margin:8px 8px 0;border:2px solid var(--t0);border-radius:16px;background:var(--panneau);overflow:hidden}
+  .j2-hd{display:grid;grid-template-columns:40px 1fr auto 30px;column-gap:8px;align-items:center;padding:10px 4px 6px 10px}
+  .j2-pastille{grid-row:1 / span 2;width:40px;height:40px;border-radius:50%;background:#FBEBC0;border:2px solid var(--or-aplat);display:grid;place-items:center;color:var(--or)}
+  .j2-nom{min-width:0}
+  .j2-nom b{display:block;font-size:20px;font-weight:600;line-height:1.15;letter-spacing:-.01em;white-space:nowrap}
+  .j2-marque{grid-column:2 / span 3;font-size:14px;color:var(--t2);white-space:nowrap;margin-top:1px}
+  .j2-ex{font-size:14px;color:var(--t2);border:1px solid var(--bord2);border-radius:999px;padding:0 7px}
+  .j2-dose{text-align:right;white-space:nowrap;line-height:1}
+  .j2-gros{font-size:30px;font-weight:700;letter-spacing:-.03em}
+  .j2-dose em{font-style:normal;font-size:14px;color:var(--t2);margin-left:4px}
+  .j2-x{width:30px;height:30px;display:grid;place-items:center;color:var(--t1)}
+  .j2-achoisir{display:inline-block;font-size:17px;font-weight:600;color:var(--or);border-bottom:2px dashed var(--att);padding-bottom:1px}
+
+
+  /* LE PARTI : un jeton par sachet, sur la ligne, entre − et + (la langue de l'éditeur d'un malt : − nombre +) */
+  .j2-choix{grid-column:1 / -1;display:flex;align-items:flex-start;gap:4px;margin-top:10px;padding:0 6px 0 0}
+  .j2-pm{flex:none;width:44px;height:50px;display:grid;place-items:center;border-radius:12px;border:1.5px solid var(--bord2);background:var(--page);color:var(--t0);font-size:26px;font-weight:500;line-height:1}
+  .j2-rail{position:relative;display:flex;gap:4px;padding-bottom:24px}
+  .j2-jt{position:relative;width:44px;height:50px;display:grid;place-items:center;border-radius:10px}
+  .j2-jt.touche{background:var(--page);box-shadow:0 0 0 2.5px var(--t0)}
+  .j2-sv path{stroke-linejoin:round}
+  .j2-sv.plein path{fill:var(--or-aplat);stroke:var(--t0);stroke-width:1.7}
+  .j2-sv.plein .j2-soude{fill:none;stroke:var(--t0);stroke-width:1.2}
+  .j2-sv.vide path{fill:#FFF8E6;stroke:var(--att);stroke-width:1.7;stroke-dasharray:3 2.4}
+  .j2-sv.vide .j2-soude{fill:none;stroke:var(--att);stroke-width:1;stroke-dasharray:2 2}
+  .j2-sv.libre path{fill:var(--page);stroke:var(--bord2);stroke-width:1.5}
+  .j2-sv.libre .j2-soude{fill:none;stroke:var(--bord);stroke-width:1}
+  .j2-trait{position:absolute;top:-2px;bottom:18px;width:0;border-left:2.5px dashed var(--t0)}
+  .j2-trait b{position:absolute;top:100%;left:-2px;margin-top:2px;font-size:14px;font-weight:600;color:var(--t0);white-space:nowrap}
+  .j2-part{grid-column:1 / -1;display:flex;align-items:center;gap:8px;margin-top:4px;padding-right:8px;font-size:15px;white-space:nowrap}
+  .j2-ok{display:inline-flex;align-items:center;gap:5px;color:var(--vert);font-weight:600}
+  .j2-sous-dose{display:inline-flex;align-items:center;height:26px;padding:0 8px;border-radius:6px;background:#FFF1CC;border:1.5px solid var(--att);color:var(--or);font-weight:600}
+  .j2-pct{font-family:"IBM Plex Mono",ui-monospace,Consolas,monospace;font-weight:700}
+  .j2-conseille{color:var(--t1)}
+  .j2-conseille b{font-family:"IBM Plex Mono",ui-monospace,Consolas,monospace}
+  .j2-stock{margin-left:auto;display:inline-grid;place-items:center;width:30px;height:30px}
+  .j2-manque{margin-left:auto;display:inline-flex;align-items:center;gap:5px;height:28px;padding:0 9px;border-radius:999px;background:#FBE3E1;color:var(--alerte-t);font-size:15px;font-weight:600}
+  .j2-calc{grid-column:1 / -1;margin-top:3px;padding:0 8px 6px 0;font-size:14px;color:var(--t2)}
+  .j2-calc b{color:var(--t1);font-weight:600}
+  .j2-retour-geste{grid-column:1 / -1;display:flex;align-items:center;justify-content:space-between;height:40px;margin:6px 8px 8px 0;padding:0 4px 0 12px;border-radius:10px;background:var(--t0);color:#fff;font-size:15px}
+  .j2-retour-geste b{font-family:"IBM Plex Mono",ui-monospace,Consolas,monospace}
+  .j2-annuler{display:inline-flex;align-items:center;height:36px;padding:0 10px;color:var(--or-aplat);font-weight:600;text-decoration:underline;text-underline-offset:3px}
+
+  /* Brique : l'éditeur d'un malt (− nombre +, piste et ses bornes) */
+  .j2-ed{grid-column:1 / -1;display:flex;align-items:center;gap:8px;margin-top:10px;padding-right:8px}
+  .j2-edn{font-family:"IBM Plex Mono",ui-monospace,Consolas,monospace;font-size:20px;font-weight:700;border-bottom:2px dotted var(--t0);padding:0 2px}
+  .j2-piste{position:relative;flex:1;height:46px}
+  .j2-piste::before{content:"";position:absolute;left:0;right:0;top:15px;height:6px;border-radius:3px;background:var(--sur)}
+  .j2-rempli{position:absolute;left:0;top:15px;height:6px;border-radius:3px;background:var(--or-aplat)}
+  .j2-poignee{position:absolute;top:6px;width:24px;height:24px;margin-left:-12px;border-radius:50%;background:var(--t0);border:3px solid var(--page);box-shadow:0 1px 3px rgba(0,0,0,.35)}
+  .j2-piste .j2-trait{top:2px;bottom:auto;height:30px;z-index:1}
+  .j2-piste .j2-trait b{margin-top:-1px;left:-26px}
+  .j2-bornes{position:absolute;left:0;right:0;top:30px;font-size:14px;color:var(--t2)}
+  .j2-bornes span{position:absolute}
+  .j2-bornes span:first-child{left:0}
+  .j2-bornes span:last-child{right:0}
+
+  /* Cases : v01, valeurs de sa capture */
+  .j2-cases{display:grid;grid-template-columns:1fr 1.18fr .86fr;border-top:1px solid var(--bord2);border-bottom:1px solid var(--bord2)}
+  .j2-case{padding:7px 8px 8px;min-width:0}
+  .j2-case + .j2-case{border-left:1px solid var(--bord2)}
+  .j2-et{font-size:14px;color:var(--t2);white-space:nowrap}
+  .j2-val{font-size:16px;font-weight:600;margin-top:1px;white-space:nowrap}
+  .j2-sous{font-size:14px;color:var(--t2);white-space:nowrap}
+  .j2-jauge{position:relative;height:8px;border-radius:4px;background:var(--sur);margin-top:8px}
+  .j2-jauge i{position:absolute;top:0;bottom:0;border-radius:3px;background:repeating-linear-gradient(135deg,var(--or-aplat) 0 3px,#F7DC93 3px 6px);border:1px solid var(--att)}
+  .j2-hors{color:var(--alerte-t)}
+  .j2-plage{position:relative;height:8px;border-radius:4px;margin-top:6px;background:linear-gradient(90deg,#4F7E9B,#A9C6D8 30%,#F2C14E 62%,#D6453D)}
+  .j2-plage .fiche{position:absolute;top:-3px;bottom:-3px;left:24%;width:12%;border:2px solid var(--t0);border-radius:3px;background:rgba(255,255,255,.35)}
+  .j2-plage .ici{position:absolute;top:-5px;bottom:-5px;left:74%;width:3px;border-radius:2px;background:var(--alerte)}
+  .j2-caler{display:inline-flex;align-items:center;gap:5px;margin-top:7px;height:30px;padding:0 9px;border:1.5px solid var(--att);border-radius:10px;background:var(--page);color:var(--or);font-size:14px;font-weight:600;white-space:nowrap}
+  .j2-floc{display:flex;gap:3px;margin-top:10px}
+  .j2-floc i{flex:1;height:8px;border-radius:3px;background:#8C8C8C}
+  .j2-floc i.non{background:var(--bord2)}
+
+  /* Greffe : conduite en une ligne */
+  .j2-conduite{display:flex;align-items:center;gap:10px;height:44px;padding:0 12px 0 10px;border-bottom:1px solid var(--bord2);color:var(--t1)}
+  .j2-cd{font-size:16px;font-weight:600;color:var(--t0);white-space:nowrap}
+  .j2-fl{color:var(--t2);font-weight:400}
+  .j2-fin{font-size:14px;color:var(--t2);margin-left:auto;white-space:nowrap}
+
+
+  .j2-caler{height:32px}
+
+  /* Effets : crans nommés, à valeur (v01) ; les non publiés et l'IA à un toucher */
+  .j2-eff{padding:6px 10px 8px}
+  .j2-eff-l1{display:flex;align-items:center;height:30px;font-size:14px;color:var(--t2)}
+  .j2-eff-l1 a{margin-left:auto;display:inline-flex;align-items:center;gap:4px;height:30px;color:var(--or);font-weight:600;text-decoration:none}
+  .j2-eff ul{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(3,1fr);gap:6px}
+  .j2-eff li{padding:6px 8px;border-radius:10px;background:var(--page);border:1px solid var(--bord)}
+  .j2-tn{display:flex;align-items:center;gap:5px;font-size:14px;color:var(--t1)}
+  .j2-tn i{width:8px;height:8px;border-radius:50%;background:var(--c)}
+  .j2-tvr{display:flex;align-items:center;gap:6px;margin-top:3px}
+  .j2-crans{display:flex;gap:2px;width:30px}
+  .j2-crans i{flex:1;height:8px;border-radius:2px;background:var(--bord)}
+  .j2-crans i.on{background:var(--c)}
+  .j2-tv{font-size:16px;font-weight:600}
+
+  /* Changer de levure : v01 */
+  .j2-chg{margin:10px 8px 0;padding:10px;border-radius:16px;background:var(--panneau)}
+  .j2-champ{display:flex;align-items:center;gap:10px;height:46px;padding:0 14px;border:1.5px dashed var(--trait);border-radius:999px;background:var(--page);color:var(--t2);font-size:17px}
+  .j2-puces{display:flex;gap:6px;margin-top:10px}
+  .j2-puce{display:inline-flex;align-items:center;gap:6px;height:36px;padding:0 9px;border:1.5px solid var(--bord2);border-radius:12px;background:var(--page);font-size:15px;color:var(--t0);white-space:nowrap}
+  .j2-puce.hc{margin-left:auto;border-style:dashed}
+
+  /* Le reste à un toucher, jamais empilé (R1) */
+  .j2-tiroirs{display:flex;gap:6px;margin:8px 8px 0}
+  .j2-tir{flex:1;display:inline-flex;align-items:center;justify-content:center;gap:6px;height:40px;border-radius:12px;border:1px solid var(--bord2);background:var(--page);font-size:15px;color:var(--t1)}
+  .j2-n{display:inline-grid;place-items:center;min-width:22px;height:22px;border-radius:11px;background:var(--sur);font-size:14px;font-weight:600}
+
+  /* Pied, + volant, onglets : v01 */
+  .j2-btn{display:inline-flex;align-items:center;height:42px;padding:0 16px;border-radius:10px;font-size:16px;font-weight:600;white-space:nowrap}
+  .j2-btn.noir{background:var(--t0);color:#fff}
+  .j2-btn.trait{border:1px solid var(--bord2);background:var(--page);color:var(--t0)}
+  .j2-pied{position:fixed;left:0;right:0;bottom:62px;z-index:6;height:58px;background:var(--page);border-top:1px solid var(--bord)}
+  .j2-pied > div{max-width:390px;margin:0 auto;height:100%;display:flex;align-items:center;gap:10px;padding:0 90px 0 10px}
+  .fab{position:fixed;z-index:8;bottom:70px;right:max(16px,calc(50% - 179px));width:56px;height:56px;border-radius:50%;background:var(--t0);color:#fff;display:grid;place-items:center;font-size:32px;font-weight:300;line-height:1;box-shadow:0 4px 12px rgba(0,0,0,.28)}
+  .j2-onglets{position:fixed;left:0;right:0;bottom:0;z-index:7;height:62px;background:var(--page);border-top:1px solid var(--bord)}
+  .j2-onglets > div{max-width:390px;margin:0 auto;height:100%;display:grid;grid-template-columns:repeat(6,1fr)}
+  .j2-onglets a{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;color:var(--t2);text-decoration:none;font-size:14px;letter-spacing:-.02em}
+  .j2-onglets a.ici{color:var(--prod);font-weight:600}
+  .j2-onglets svg{width:22px;height:22px}
+
+  /* Planche : écrans 390 × 844 côte à côte */
+  .j2-planche{margin:28px 0 0;padding:14px 0 150px;background:var(--sur);border-top:3px solid var(--t0)}
+  .j2-planche h2{margin:0 12px 4px;font-size:16px;font-weight:600}
+  .j2-planche h2 span{font-weight:400;color:var(--t2)}
+  .j2-planche > p{margin:0 12px 12px;font-size:14px;color:var(--t1);max-width:820px}
+  .j2-rang{display:flex;gap:16px;overflow-x:auto;scroll-snap-type:x mandatory;padding:0 8px 6px}
+  .j2-mini{flex:none;width:390px;scroll-snap-align:start}
+  .j2-mini h3{margin:0 4px 2px;font-size:15px;font-weight:600}
+  .j2-mini h3 > span{display:inline-grid;place-items:center;width:24px;height:24px;margin-right:6px;border-radius:50%;background:var(--t0);color:#fff;font-size:14px}
+  .j2-mini sup{font-size:14px;line-height:0}
+  .j2-explique{margin:0 4px 8px;min-height:38px;font-size:14px;color:var(--t2)}
+  .j2-ecran{position:relative;width:390px;height:844px;overflow:hidden;border:1px solid var(--bord2);border-radius:22px;background:var(--page)}
+  .j2-ecran .j2-tete{position:relative}
+  .j2-ecran .j2-pied,.j2-ecran .j2-onglets{position:absolute}
+  .j2-ecran .j2-pied > div{padding-right:90px}
+  .j2-fabm{position:absolute;z-index:8;bottom:70px;right:16px;width:56px;height:56px;border-radius:50%;background:var(--t0);color:#fff;display:grid;place-items:center;font-size:32px;font-weight:300;line-height:1;box-shadow:0 4px 12px rgba(0,0,0,.28)}
+  .j2-toast{position:absolute;z-index:9;left:10px;right:84px;bottom:132px;height:46px;display:flex;align-items:center;justify-content:space-between;padding:0 6px 0 14px;border-radius:12px;background:var(--t0);color:#fff;font-size:15px}
+  .j2-toast b{font-size:16px}
+  .j2-annuler{display:inline-flex;align-items:center;height:36px;padding:0 10px;color:var(--or-aplat);font-weight:600;text-decoration:underline;text-underline-offset:3px}
+
+
+  .j2-planche sup{font-size:14px;line-height:0}
+</style>
+</head>
+<body>
+<div class="j2-app">
+  <header class="j2-tete">
+    <div class="j2-l1">
+      <span class="j2-retour" aria-label="Retour"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M15 5l-7 7 7 7"/></svg></span>
+      <span class="j2-titre">Levure<span class="j2-mono">4/7</span></span>
+      <span class="j2-esp"></span>
+      <span class="j2-lien">Abandonner</span>
+      <span class="j2-ico" aria-label="Importer"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><path d="M8 3h8l3 3v14H5V6z"/><path d="M11 13h8m-3-3 3 3-3 3"/></svg></span>
+      <span class="j2-ico" aria-label="Thème"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M20 14.5A8 8 0 1 1 9.5 4a6.5 6.5 0 0 0 10.5 10.5z"/></svg></span>
+    </div>
+    <nav class="j2-etapes" aria-label="Étapes de la recette"><span class="fait">Identité</span><span class="fait">Malts/sucres</span><span class="fait">Houblons</span><span class="ici">Levure</span><span class="apres">Paliers</span><span class="apres">Eau</span><span class="apres">Récap.</span></nav>
+  </header>
+  <div class="j2-bande" aria-label="Recette, exemple"><span>Grain <b class="j2-mono">2,75 kg</b></span><span>OG <b class="j2-mono">1,026</b></span><span>IBU <b class="j2-mono">65</b></span><span>EBC <i class="j2-ebc"></i><b class="j2-mono">11,9</b></span></div>
+  <section class="j2-carte" aria-label="Ma levure">
+    <div class="j2-hd">
+      <span class="j2-pastille"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linejoin="round"><path d="M9 3h6M10 3v6l-5 9a2 2 0 0 0 1.8 3h10.4a2 2 0 0 0 1.8-3l-5-9V3"/><path d="M7.5 15h9"/></svg></span>
+      <div class="j2-nom"><b>Munich Lager Yeast</b></div>
+      <div class="j2-dose"><span class="j2-mono j2-gros">2</span><em>sachets</em></div>
+      <span class="j2-x" aria-label="Retirer la levure"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 6l12 12M18 6 6 18"/></svg></span>
+      <div class="j2-marque">White Labs · vendue par Lallemand · <span class="j2-ex">exemple</span></div>
+      <div class="j2-choix"><span class="j2-pm" role="button" aria-label="Un sachet de moins">−</span><div class="j2-rail"><span class="j2-jt" role="button" aria-label="Régler à 1 sachet"><svg class="j2-sv plein" width="30" height="38" viewBox="0 0 28 36" aria-hidden="true"><path d="M3 7 6 4l3 3 3-3 3 3 3-3 3 3 3-3 2 2v26a3 3 0 0 1-3 3H6a3 3 0 0 1-3-3z"/><path class="j2-soude" d="M3 11h22"/></svg></span><span class="j2-jt" role="button" aria-label="Régler à 2 sachets"><svg class="j2-sv plein" width="30" height="38" viewBox="0 0 28 36" aria-hidden="true"><path d="M3 7 6 4l3 3 3-3 3 3 3-3 3 3 3-3 2 2v26a3 3 0 0 1-3 3H6a3 3 0 0 1-3-3z"/><path class="j2-soude" d="M3 11h22"/></svg></span><span class="j2-jt" role="button" aria-label="Régler à 3 sachets"><svg class="j2-sv libre" width="30" height="38" viewBox="0 0 28 36" aria-hidden="true"><path d="M3 7 6 4l3 3 3-3 3 3 3-3 3 3 3-3 2 2v26a3 3 0 0 1-3 3H6a3 3 0 0 1-3-3z"/><path class="j2-soude" d="M3 11h22"/></svg></span><span class="j2-jt" role="button" aria-label="Régler à 4 sachets"><svg class="j2-sv libre" width="30" height="38" viewBox="0 0 28 36" aria-hidden="true"><path d="M3 7 6 4l3 3 3-3 3 3 3-3 3 3 3-3 2 2v26a3 3 0 0 1-3 3H6a3 3 0 0 1-3-3z"/><path class="j2-soude" d="M3 11h22"/></svg></span><span class="j2-jt" role="button" aria-label="Régler à 5 sachets"><svg class="j2-sv libre" width="30" height="38" viewBox="0 0 28 36" aria-hidden="true"><path d="M3 7 6 4l3 3 3-3 3 3 3-3 3 3 3-3 2 2v26a3 3 0 0 1-3 3H6a3 3 0 0 1-3-3z"/><path class="j2-soude" d="M3 11h22"/></svg></span><span class="j2-trait" style="left:78px" aria-label="besoin de la recette : 197 G de cellules"><b>besoin</b></span></div><span class="j2-pm" role="button" aria-label="Un sachet de plus">+</span></div>
+      <div class="j2-part"><span class="j2-ok"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>couvre le besoin</span><span class="j2-pct">117 %</span><span class="j2-stock" aria-label="en stock"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#5B8AA6" stroke-width="2.4" stroke-linejoin="round"><path d="M12 3l8 4.5v9L12 21l-8-4.5v-9z"/><path d="M4 7.5l8 4.5 8-4.5M12 12v9"/></svg></span></div>
+      <div class="j2-calc">= <b class="j2-mono">23 g</b> · sachet 11,5 g à confirmer · fabricant ≥ 15 g</div>
+    </div>
+    <div class="j2-cases">
+      <div class="j2-case">
+        <div class="j2-et">FG</div>
+        <div class="j2-val j2-mono">1,006–1,007</div>
+        <div class="j2-sous">≈ 2,5–2,7 % vol</div>
+        <div class="j2-jauge" aria-label="FG 1,006 à 1,007 sur une échelle de 1,000 à 1,030"><i style="left:20%;width:4%"></i></div>
+      </div>
+      <div class="j2-case">
+        <div class="j2-et">fiche · conduite</div>
+        <div class="j2-val j2-mono">9–11 · <span class="j2-hors">19 °C</span></div>
+        <div class="j2-plage" aria-label="Plage de la fiche 9 à 11 °C, conduite 19 °C hors plage"><span class="fiche"></span><span class="ici"></span></div>
+        <span class="j2-caler" role="button">Caler à 11 °C</span>
+      </div>
+      <div class="j2-case">
+        <div class="j2-et">floculation</div>
+        <div class="j2-val" style="font-weight:400;color:var(--t1)">moyenne</div>
+        <div class="j2-floc"><i></i><i></i><i class="non"></i></div>
+      </div>
+    </div>
+    <div class="j2-conduite" role="button" aria-label="Conduite, régler">
+      <svg class="j2-marches" width="44" height="22" viewBox="0 0 44 22" aria-hidden="true"><path d="M1 5h22v12h20" fill="none" stroke="#C8382F" stroke-width="3" stroke-linejoin="round"/><path d="M1 9h22" stroke="#5B8AA6" stroke-width="1.5" stroke-dasharray="2 2"/></svg>
+      <span class="j2-mono j2-cd">19 °C · 7 j <span class="j2-fl">→</span> 4 °C · 8 j</span>
+      <span class="j2-fin">fin J15</span>
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M9 5l7 7-7 7"/></svg>
+    </div>
+    <div class="j2-eff" aria-label="Effets de fermentation">
+      <div class="j2-eff-l1">Effets · simulés<a role="button" aria-label="Deux effets non publiés, compléter la fiche">2 non publiés · Compléter <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M9 5l7 7-7 7"/></svg></a></div>
+      <ul>
+        <li style="--c:#7A4A3A"><span class="j2-tn"><i></i>phénols</span><span class="j2-tvr"><span class="j2-crans"><i></i><i></i><i></i></span><span class="j2-tv">négatif</span></span></li>
+        <li style="--c:#6CC4A0"><span class="j2-tn"><i></i>thiols</span><span class="j2-tvr"><span class="j2-crans"><i class="on"></i><i></i><i></i></span><span class="j2-tv">faible</span></span></li>
+        <li style="--c:#A8C040"><span class="j2-tn"><i></i>terpènes</span><span class="j2-tvr"><span class="j2-crans"><i class="on"></i><i></i><i></i></span><span class="j2-tv">faible</span></span></li>
+      </ul>
+    </div>
+  </section>
+  <section class="j2-chg" aria-label="Changer de levure">
+    <div class="j2-champ"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="6.5"/><path d="M16 16l4.5 4.5" stroke-linecap="round"/></svg>Changer de levure</div>
+    <div class="j2-puces">
+      <span class="j2-puce"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#5B8AA6" stroke-width="2.4" stroke-linejoin="round"><path d="M12 3l8 4.5v9L12 21l-8-4.5v-9z"/><path d="M4 7.5l8 4.5 8-4.5M12 12v9"/></svg>Pomona</span>
+      <span class="j2-puce"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#5B8AA6" stroke-width="2.4" stroke-linejoin="round"><path d="M12 3l8 4.5v9L12 21l-8-4.5v-9z"/><path d="M4 7.5l8 4.5 8-4.5M12 12v9"/></svg>Verdant IPA</span>
+      <span class="j2-puce hc">Hors catalogue</span>
+    </div>
+  </section>
+  <div class="j2-tiroirs" aria-label="À un toucher">
+    <span class="j2-tir" role="button">1 offre</span>
+    <span class="j2-tir" role="button">Repères</span>
+    <span class="j2-tir" role="button">Atelier</span>
+  </div>
+</div>
+
+<div class="j2-pied"><div><span class="j2-btn trait">Retour</span><span class="j2-esp"></span><span class="j2-btn noir">Suivant — Paliers</span></div></div>
+<span class="fab" aria-label="Ajouter">+</span>
+<nav class="j2-onglets " aria-label="Onglets"><div>
+  <a><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M4 16a8 8 0 1 1 16 0"/><path d="M12 16l4-5"/></svg>Bord</a>
+  <a><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="8"/><path d="M12 7v10M9.5 9.5h4a1.5 1.5 0 0 1 0 3h-3a1.5 1.5 0 0 0 0 3h4" stroke-linecap="round"/></svg>Finances</a>
+  <a><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><rect x="4" y="5" width="16" height="15" rx="2"/><path d="M4 10h16M9 3v4M15 3v4"/></svg>Calendrier</a>
+  <a class="ici"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><path d="M9 3h6M10 3v6l-5 9a2 2 0 0 0 1.8 3h10.4a2 2 0 0 0 1.8-3l-5-9V3"/></svg>Brassins</a>
+  <a><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><path d="M12 3l8 4.5v9L12 21l-8-4.5v-9z"/><path d="M4 7.5l8 4.5 8-4.5M12 12v9"/></svg>Stocks</a>
+  <a><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="12" cy="8" r="3.5"/><path d="M5 20a7 7 0 0 1 14 0"/></svg>Clients</a>
+</div></nav>
+
+<section class="j2-planche" aria-label="Le geste et les cas limites">
+  <h2>Sachets en jetons <span>· écrans 390 × 844 · exemple</span></h2>
+  <p>① au repos : l'écran ci-dessus. Jeton plein = choisi · blanc = libre (le toucher règle la dose jusqu'à lui) · pointillé = dose à choisir · trait « besoin » = ce que demande la recette (197 G de cellules, lager 20 L à 1,026) · cube = en stock. Pour descendre de 3 à 2 : toucher le 2<sup>e</sup> jeton, ou −.</p>
+  <div class="j2-rang">
+    <div class="j2-mini">
+      <h3><span>2</span>Après un toucher sur le 3<sup>e</sup> jeton</h3>
+      <p class="j2-explique">Un geste : la dose passe à 3. Le retour reste dans la carte, avec Annuler ; rien n'est recouvert.</p>
+      <div class="j2-ecran"><header class="j2-tete">
+    <div class="j2-l1">
+      <span class="j2-retour" aria-label="Retour"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M15 5l-7 7 7 7"/></svg></span>
+      <span class="j2-titre">Levure<span class="j2-mono">4/7</span></span>
+      <span class="j2-esp"></span>
+      <span class="j2-lien">Abandonner</span>
+      <span class="j2-ico" aria-label="Importer"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><path d="M8 3h8l3 3v14H5V6z"/><path d="M11 13h8m-3-3 3 3-3 3"/></svg></span>
+      <span class="j2-ico" aria-label="Thème"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M20 14.5A8 8 0 1 1 9.5 4a6.5 6.5 0 0 0 10.5 10.5z"/></svg></span>
+    </div>
+    <nav class="j2-etapes" aria-label="Étapes de la recette"><span class="fait">Identité</span><span class="fait">Malts/sucres</span><span class="fait">Houblons</span><span class="ici">Levure</span><span class="apres">Paliers</span><span class="apres">Eau</span><span class="apres">Récap.</span></nav>
+  </header>
+  <div class="j2-bande" aria-label="Recette, exemple"><span>Grain <b class="j2-mono">2,75 kg</b></span><span>OG <b class="j2-mono">1,026</b></span><span>IBU <b class="j2-mono">65</b></span><span>EBC <i class="j2-ebc"></i><b class="j2-mono">11,9</b></span></div>
+  <section class="j2-carte" aria-label="Ma levure">
+    <div class="j2-hd">
+      <span class="j2-pastille"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linejoin="round"><path d="M9 3h6M10 3v6l-5 9a2 2 0 0 0 1.8 3h10.4a2 2 0 0 0 1.8-3l-5-9V3"/><path d="M7.5 15h9"/></svg></span>
+      <div class="j2-nom"><b>Munich Lager Yeast</b></div>
+      <div class="j2-dose"><span class="j2-mono j2-gros">3</span><em>sachets</em></div>
+      <span class="j2-x" aria-label="Retirer la levure"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 6l12 12M18 6 6 18"/></svg></span>
+      <div class="j2-marque">White Labs · vendue par Lallemand · <span class="j2-ex">exemple</span></div>
+      <div class="j2-choix"><span class="j2-pm" role="button" aria-label="Un sachet de moins">−</span><div class="j2-rail"><span class="j2-jt" role="button" aria-label="Régler à 1 sachet"><svg class="j2-sv plein" width="30" height="38" viewBox="0 0 28 36" aria-hidden="true"><path d="M3 7 6 4l3 3 3-3 3 3 3-3 3 3 3-3 2 2v26a3 3 0 0 1-3 3H6a3 3 0 0 1-3-3z"/><path class="j2-soude" d="M3 11h22"/></svg></span><span class="j2-jt" role="button" aria-label="Régler à 2 sachets"><svg class="j2-sv plein" width="30" height="38" viewBox="0 0 28 36" aria-hidden="true"><path d="M3 7 6 4l3 3 3-3 3 3 3-3 3 3 3-3 2 2v26a3 3 0 0 1-3 3H6a3 3 0 0 1-3-3z"/><path class="j2-soude" d="M3 11h22"/></svg></span><span class="j2-jt touche" role="button" aria-label="Régler à 3 sachets"><svg class="j2-sv plein" width="30" height="38" viewBox="0 0 28 36" aria-hidden="true"><path d="M3 7 6 4l3 3 3-3 3 3 3-3 3 3 3-3 2 2v26a3 3 0 0 1-3 3H6a3 3 0 0 1-3-3z"/><path class="j2-soude" d="M3 11h22"/></svg></span><span class="j2-jt" role="button" aria-label="Régler à 4 sachets"><svg class="j2-sv libre" width="30" height="38" viewBox="0 0 28 36" aria-hidden="true"><path d="M3 7 6 4l3 3 3-3 3 3 3-3 3 3 3-3 2 2v26a3 3 0 0 1-3 3H6a3 3 0 0 1-3-3z"/><path class="j2-soude" d="M3 11h22"/></svg></span><span class="j2-jt" role="button" aria-label="Régler à 5 sachets"><svg class="j2-sv libre" width="30" height="38" viewBox="0 0 28 36" aria-hidden="true"><path d="M3 7 6 4l3 3 3-3 3 3 3-3 3 3 3-3 2 2v26a3 3 0 0 1-3 3H6a3 3 0 0 1-3-3z"/><path class="j2-soude" d="M3 11h22"/></svg></span><span class="j2-trait" style="left:78px" aria-label="besoin de la recette : 197 G de cellules"><b>besoin</b></span></div><span class="j2-pm" role="button" aria-label="Un sachet de plus">+</span></div>
+      <div class="j2-part"><span class="j2-ok"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>couvre le besoin</span><span class="j2-pct">175 %</span><span class="j2-stock" aria-label="en stock"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#5B8AA6" stroke-width="2.4" stroke-linejoin="round"><path d="M12 3l8 4.5v9L12 21l-8-4.5v-9z"/><path d="M4 7.5l8 4.5 8-4.5M12 12v9"/></svg></span></div>
+      <div class="j2-retour-geste"><span>2 → <b>3</b> sachets · 34,5 g</span><span class="j2-annuler">Annuler</span></div>
+    </div>
+    <div class="j2-cases">
+      <div class="j2-case">
+        <div class="j2-et">FG</div>
+        <div class="j2-val j2-mono">1,006–1,007</div>
+        <div class="j2-sous">≈ 2,5–2,7 % vol</div>
+        <div class="j2-jauge" aria-label="FG 1,006 à 1,007 sur une échelle de 1,000 à 1,030"><i style="left:20%;width:4%"></i></div>
+      </div>
+      <div class="j2-case">
+        <div class="j2-et">fiche · conduite</div>
+        <div class="j2-val j2-mono">9–11 · <span class="j2-hors">19 °C</span></div>
+        <div class="j2-plage" aria-label="Plage de la fiche 9 à 11 °C, conduite 19 °C hors plage"><span class="fiche"></span><span class="ici"></span></div>
+        <span class="j2-caler" role="button">Caler à 11 °C</span>
+      </div>
+      <div class="j2-case">
+        <div class="j2-et">floculation</div>
+        <div class="j2-val" style="font-weight:400;color:var(--t1)">moyenne</div>
+        <div class="j2-floc"><i></i><i></i><i class="non"></i></div>
+      </div>
+    </div>
+    <div class="j2-conduite" role="button" aria-label="Conduite, régler">
+      <svg class="j2-marches" width="44" height="22" viewBox="0 0 44 22" aria-hidden="true"><path d="M1 5h22v12h20" fill="none" stroke="#C8382F" stroke-width="3" stroke-linejoin="round"/><path d="M1 9h22" stroke="#5B8AA6" stroke-width="1.5" stroke-dasharray="2 2"/></svg>
+      <span class="j2-mono j2-cd">19 °C · 7 j <span class="j2-fl">→</span> 4 °C · 8 j</span>
+      <span class="j2-fin">fin J15</span>
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M9 5l7 7-7 7"/></svg>
+    </div>
+    <div class="j2-eff" aria-label="Effets de fermentation">
+      <div class="j2-eff-l1">Effets · simulés<a role="button" aria-label="Deux effets non publiés, compléter la fiche">2 non publiés · Compléter <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M9 5l7 7-7 7"/></svg></a></div>
+      <ul>
+        <li style="--c:#7A4A3A"><span class="j2-tn"><i></i>phénols</span><span class="j2-tvr"><span class="j2-crans"><i></i><i></i><i></i></span><span class="j2-tv">négatif</span></span></li>
+        <li style="--c:#6CC4A0"><span class="j2-tn"><i></i>thiols</span><span class="j2-tvr"><span class="j2-crans"><i class="on"></i><i></i><i></i></span><span class="j2-tv">faible</span></span></li>
+        <li style="--c:#A8C040"><span class="j2-tn"><i></i>terpènes</span><span class="j2-tvr"><span class="j2-crans"><i class="on"></i><i></i><i></i></span><span class="j2-tv">faible</span></span></li>
+      </ul>
+    </div>
+  </section>
+  <section class="j2-chg" aria-label="Changer de levure">
+    <div class="j2-champ"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="6.5"/><path d="M16 16l4.5 4.5" stroke-linecap="round"/></svg>Changer de levure</div>
+    <div class="j2-puces">
+      <span class="j2-puce"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#5B8AA6" stroke-width="2.4" stroke-linejoin="round"><path d="M12 3l8 4.5v9L12 21l-8-4.5v-9z"/><path d="M4 7.5l8 4.5 8-4.5M12 12v9"/></svg>Pomona</span>
+      <span class="j2-puce"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#5B8AA6" stroke-width="2.4" stroke-linejoin="round"><path d="M12 3l8 4.5v9L12 21l-8-4.5v-9z"/><path d="M4 7.5l8 4.5 8-4.5M12 12v9"/></svg>Verdant IPA</span>
+      <span class="j2-puce hc">Hors catalogue</span>
+    </div>
+  </section>
+  <div class="j2-tiroirs" aria-label="À un toucher">
+    <span class="j2-tir" role="button">1 offre</span>
+    <span class="j2-tir" role="button">Repères</span>
+    <span class="j2-tir" role="button">Atelier</span>
+  </div><div class="j2-pied"><div><span class="j2-btn trait">Retour</span><span class="j2-esp"></span><span class="j2-btn noir">Suivant — Paliers</span></div></div>
+<span class="j2-fabm" aria-hidden="true">+</span><nav class="j2-onglets m" aria-label="Onglets"><div>
+  <a><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M4 16a8 8 0 1 1 16 0"/><path d="M12 16l4-5"/></svg>Bord</a>
+  <a><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="8"/><path d="M12 7v10M9.5 9.5h4a1.5 1.5 0 0 1 0 3h-3a1.5 1.5 0 0 0 0 3h4" stroke-linecap="round"/></svg>Finances</a>
+  <a><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><rect x="4" y="5" width="16" height="15" rx="2"/><path d="M4 10h16M9 3v4M15 3v4"/></svg>Calendrier</a>
+  <a class="ici"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><path d="M9 3h6M10 3v6l-5 9a2 2 0 0 0 1.8 3h10.4a2 2 0 0 0 1.8-3l-5-9V3"/></svg>Brassins</a>
+  <a><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><path d="M12 3l8 4.5v9L12 21l-8-4.5v-9z"/><path d="M4 7.5l8 4.5 8-4.5M12 12v9"/></svg>Stocks</a>
+  <a><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="12" cy="8" r="3.5"/><path d="M5 20a7 7 0 0 1 14 0"/></svg>Clients</a>
+</div></nav></div>
+    </div>
+    <div class="j2-mini">
+      <h3><span>3</span>Stock insuffisant</h3>
+      <p class="j2-explique">2 choisis, 1 seul en stock : une seule marque, « manque 1 », à la place du cube.</p>
+      <div class="j2-ecran"><header class="j2-tete">
+    <div class="j2-l1">
+      <span class="j2-retour" aria-label="Retour"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M15 5l-7 7 7 7"/></svg></span>
+      <span class="j2-titre">Levure<span class="j2-mono">4/7</span></span>
+      <span class="j2-esp"></span>
+      <span class="j2-lien">Abandonner</span>
+      <span class="j2-ico" aria-label="Importer"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><path d="M8 3h8l3 3v14H5V6z"/><path d="M11 13h8m-3-3 3 3-3 3"/></svg></span>
+      <span class="j2-ico" aria-label="Thème"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M20 14.5A8 8 0 1 1 9.5 4a6.5 6.5 0 0 0 10.5 10.5z"/></svg></span>
+    </div>
+    <nav class="j2-etapes" aria-label="Étapes de la recette"><span class="fait">Identité</span><span class="fait">Malts/sucres</span><span class="fait">Houblons</span><span class="ici">Levure</span><span class="apres">Paliers</span><span class="apres">Eau</span><span class="apres">Récap.</span></nav>
+  </header>
+  <div class="j2-bande" aria-label="Recette, exemple"><span>Grain <b class="j2-mono">2,75 kg</b></span><span>OG <b class="j2-mono">1,026</b></span><span>IBU <b class="j2-mono">65</b></span><span>EBC <i class="j2-ebc"></i><b class="j2-mono">11,9</b></span></div>
+  <section class="j2-carte" aria-label="Ma levure">
+    <div class="j2-hd">
+      <span class="j2-pastille"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linejoin="round"><path d="M9 3h6M10 3v6l-5 9a2 2 0 0 0 1.8 3h10.4a2 2 0 0 0 1.8-3l-5-9V3"/><path d="M7.5 15h9"/></svg></span>
+      <div class="j2-nom"><b>Munich Lager Yeast</b></div>
+      <div class="j2-dose"><span class="j2-mono j2-gros">2</span><em>sachets</em></div>
+      <span class="j2-x" aria-label="Retirer la levure"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 6l12 12M18 6 6 18"/></svg></span>
+      <div class="j2-marque">White Labs · vendue par Lallemand · <span class="j2-ex">exemple</span></div>
+      <div class="j2-choix"><span class="j2-pm" role="button" aria-label="Un sachet de moins">−</span><div class="j2-rail"><span class="j2-jt" role="button" aria-label="Régler à 1 sachet"><svg class="j2-sv plein" width="30" height="38" viewBox="0 0 28 36" aria-hidden="true"><path d="M3 7 6 4l3 3 3-3 3 3 3-3 3 3 3-3 2 2v26a3 3 0 0 1-3 3H6a3 3 0 0 1-3-3z"/><path class="j2-soude" d="M3 11h22"/></svg></span><span class="j2-jt" role="button" aria-label="Régler à 2 sachets"><svg class="j2-sv plein" width="30" height="38" viewBox="0 0 28 36" aria-hidden="true"><path d="M3 7 6 4l3 3 3-3 3 3 3-3 3 3 3-3 2 2v26a3 3 0 0 1-3 3H6a3 3 0 0 1-3-3z"/><path class="j2-soude" d="M3 11h22"/></svg></span><span class="j2-jt" role="button" aria-label="Régler à 3 sachets"><svg class="j2-sv libre" width="30" height="38" viewBox="0 0 28 36" aria-hidden="true"><path d="M3 7 6 4l3 3 3-3 3 3 3-3 3 3 3-3 2 2v26a3 3 0 0 1-3 3H6a3 3 0 0 1-3-3z"/><path class="j2-soude" d="M3 11h22"/></svg></span><span class="j2-jt" role="button" aria-label="Régler à 4 sachets"><svg class="j2-sv libre" width="30" height="38" viewBox="0 0 28 36" aria-hidden="true"><path d="M3 7 6 4l3 3 3-3 3 3 3-3 3 3 3-3 2 2v26a3 3 0 0 1-3 3H6a3 3 0 0 1-3-3z"/><path class="j2-soude" d="M3 11h22"/></svg></span><span class="j2-jt" role="button" aria-label="Régler à 5 sachets"><svg class="j2-sv libre" width="30" height="38" viewBox="0 0 28 36" aria-hidden="true"><path d="M3 7 6 4l3 3 3-3 3 3 3-3 3 3 3-3 2 2v26a3 3 0 0 1-3 3H6a3 3 0 0 1-3-3z"/><path class="j2-soude" d="M3 11h22"/></svg></span><span class="j2-trait" style="left:78px" aria-label="besoin de la recette : 197 G de cellules"><b>besoin</b></span></div><span class="j2-pm" role="button" aria-label="Un sachet de plus">+</span></div>
+      <div class="j2-part"><span class="j2-ok"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>couvre le besoin</span><span class="j2-pct">117 %</span><span class="j2-manque" aria-label="manque 1 sachet"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linejoin="round"><path d="M12 3l8 4.5v9L12 21l-8-4.5v-9z"/><path d="M4 7.5l8 4.5 8-4.5M12 12v9"/></svg>manque 1</span></div>
+      <div class="j2-calc">= <b class="j2-mono">23 g</b> · sachet 11,5 g à confirmer · fabricant ≥ 15 g</div>
+    </div>
+    <div class="j2-cases">
+      <div class="j2-case">
+        <div class="j2-et">FG</div>
+        <div class="j2-val j2-mono">1,006–1,007</div>
+        <div class="j2-sous">≈ 2,5–2,7 % vol</div>
+        <div class="j2-jauge" aria-label="FG 1,006 à 1,007 sur une échelle de 1,000 à 1,030"><i style="left:20%;width:4%"></i></div>
+      </div>
+      <div class="j2-case">
+        <div class="j2-et">fiche · conduite</div>
+        <div class="j2-val j2-mono">9–11 · <span class="j2-hors">19 °C</span></div>
+        <div class="j2-plage" aria-label="Plage de la fiche 9 à 11 °C, conduite 19 °C hors plage"><span class="fiche"></span><span class="ici"></span></div>
+        <span class="j2-caler" role="button">Caler à 11 °C</span>
+      </div>
+      <div class="j2-case">
+        <div class="j2-et">floculation</div>
+        <div class="j2-val" style="font-weight:400;color:var(--t1)">moyenne</div>
+        <div class="j2-floc"><i></i><i></i><i class="non"></i></div>
+      </div>
+    </div>
+    <div class="j2-conduite" role="button" aria-label="Conduite, régler">
+      <svg class="j2-marches" width="44" height="22" viewBox="0 0 44 22" aria-hidden="true"><path d="M1 5h22v12h20" fill="none" stroke="#C8382F" stroke-width="3" stroke-linejoin="round"/><path d="M1 9h22" stroke="#5B8AA6" stroke-width="1.5" stroke-dasharray="2 2"/></svg>
+      <span class="j2-mono j2-cd">19 °C · 7 j <span class="j2-fl">→</span> 4 °C · 8 j</span>
+      <span class="j2-fin">fin J15</span>
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M9 5l7 7-7 7"/></svg>
+    </div>
+    <div class="j2-eff" aria-label="Effets de fermentation">
+      <div class="j2-eff-l1">Effets · simulés<a role="button" aria-label="Deux effets non publiés, compléter la fiche">2 non publiés · Compléter <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M9 5l7 7-7 7"/></svg></a></div>
+      <ul>
+        <li style="--c:#7A4A3A"><span class="j2-tn"><i></i>phénols</span><span class="j2-tvr"><span class="j2-crans"><i></i><i></i><i></i></span><span class="j2-tv">négatif</span></span></li>
+        <li style="--c:#6CC4A0"><span class="j2-tn"><i></i>thiols</span><span class="j2-tvr"><span class="j2-crans"><i class="on"></i><i></i><i></i></span><span class="j2-tv">faible</span></span></li>
+        <li style="--c:#A8C040"><span class="j2-tn"><i></i>terpènes</span><span class="j2-tvr"><span class="j2-crans"><i class="on"></i><i></i><i></i></span><span class="j2-tv">faible</span></span></li>
+      </ul>
+    </div>
+  </section>
+  <section class="j2-chg" aria-label="Changer de levure">
+    <div class="j2-champ"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="6.5"/><path d="M16 16l4.5 4.5" stroke-linecap="round"/></svg>Changer de levure</div>
+    <div class="j2-puces">
+      <span class="j2-puce"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#5B8AA6" stroke-width="2.4" stroke-linejoin="round"><path d="M12 3l8 4.5v9L12 21l-8-4.5v-9z"/><path d="M4 7.5l8 4.5 8-4.5M12 12v9"/></svg>Pomona</span>
+      <span class="j2-puce"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#5B8AA6" stroke-width="2.4" stroke-linejoin="round"><path d="M12 3l8 4.5v9L12 21l-8-4.5v-9z"/><path d="M4 7.5l8 4.5 8-4.5M12 12v9"/></svg>Verdant IPA</span>
+      <span class="j2-puce hc">Hors catalogue</span>
+    </div>
+  </section>
+  <div class="j2-tiroirs" aria-label="À un toucher">
+    <span class="j2-tir" role="button">1 offre</span>
+    <span class="j2-tir" role="button">Repères</span>
+    <span class="j2-tir" role="button">Atelier</span>
+  </div><div class="j2-pied"><div><span class="j2-btn trait">Retour</span><span class="j2-esp"></span><span class="j2-btn noir">Suivant — Paliers</span></div></div>
+<span class="j2-fabm" aria-hidden="true">+</span><nav class="j2-onglets m" aria-label="Onglets"><div>
+  <a><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M4 16a8 8 0 1 1 16 0"/><path d="M12 16l4-5"/></svg>Bord</a>
+  <a><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="8"/><path d="M12 7v10M9.5 9.5h4a1.5 1.5 0 0 1 0 3h-3a1.5 1.5 0 0 0 0 3h4" stroke-linecap="round"/></svg>Finances</a>
+  <a><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><rect x="4" y="5" width="16" height="15" rx="2"/><path d="M4 10h16M9 3v4M15 3v4"/></svg>Calendrier</a>
+  <a class="ici"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><path d="M9 3h6M10 3v6l-5 9a2 2 0 0 0 1.8 3h10.4a2 2 0 0 0 1.8-3l-5-9V3"/></svg>Brassins</a>
+  <a><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><path d="M12 3l8 4.5v9L12 21l-8-4.5v-9z"/><path d="M4 7.5l8 4.5 8-4.5M12 12v9"/></svg>Stocks</a>
+  <a><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="12" cy="8" r="3.5"/><path d="M5 20a7 7 0 0 1 14 0"/></svg>Clients</a>
+</div></nav></div>
+    </div>
+    <div class="j2-mini">
+      <h3><span>4</span>À choisir</h3>
+      <p class="j2-explique">Sa recette d'aujourd'hui, ou une levure qu'on vient de changer : « à choisir », jamais 0. Le conseil en petit, avec son mot. L'ancienne dose n'est pas effacée en silence.</p>
+      <div class="j2-ecran"><header class="j2-tete">
+    <div class="j2-l1">
+      <span class="j2-retour" aria-label="Retour"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M15 5l-7 7 7 7"/></svg></span>
+      <span class="j2-titre">Levure<span class="j2-mono">4/7</span></span>
+      <span class="j2-esp"></span>
+      <span class="j2-lien">Abandonner</span>
+      <span class="j2-ico" aria-label="Importer"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><path d="M8 3h8l3 3v14H5V6z"/><path d="M11 13h8m-3-3 3 3-3 3"/></svg></span>
+      <span class="j2-ico" aria-label="Thème"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M20 14.5A8 8 0 1 1 9.5 4a6.5 6.5 0 0 0 10.5 10.5z"/></svg></span>
+    </div>
+    <nav class="j2-etapes" aria-label="Étapes de la recette"><span class="fait">Identité</span><span class="fait">Malts/sucres</span><span class="fait">Houblons</span><span class="ici">Levure</span><span class="apres">Paliers</span><span class="apres">Eau</span><span class="apres">Récap.</span></nav>
+  </header>
+  <div class="j2-bande" aria-label="Recette, exemple"><span>Grain <b class="j2-mono">2,75 kg</b></span><span>OG <b class="j2-mono">1,026</b></span><span>IBU <b class="j2-mono">65</b></span><span>EBC <i class="j2-ebc"></i><b class="j2-mono">11,9</b></span></div>
+  <section class="j2-carte" aria-label="Ma levure">
+    <div class="j2-hd">
+      <span class="j2-pastille"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linejoin="round"><path d="M9 3h6M10 3v6l-5 9a2 2 0 0 0 1.8 3h10.4a2 2 0 0 0 1.8-3l-5-9V3"/><path d="M7.5 15h9"/></svg></span>
+      <div class="j2-nom"><b>Munich Lager Yeast</b></div>
+      <div class="j2-dose"><span class="j2-achoisir">à choisir</span></div>
+      <span class="j2-x" aria-label="Retirer la levure"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 6l12 12M18 6 6 18"/></svg></span>
+      <div class="j2-marque">White Labs · vendue par Lallemand · <span class="j2-ex">exemple</span></div>
+      <div class="j2-choix"><span class="j2-pm" role="button" aria-label="Un sachet de moins">−</span><div class="j2-rail"><span class="j2-jt" role="button" aria-label="Régler à 1 sachet"><svg class="j2-sv vide" width="30" height="38" viewBox="0 0 28 36" aria-hidden="true"><path d="M3 7 6 4l3 3 3-3 3 3 3-3 3 3 3-3 2 2v26a3 3 0 0 1-3 3H6a3 3 0 0 1-3-3z"/><path class="j2-soude" d="M3 11h22"/></svg></span><span class="j2-jt" role="button" aria-label="Régler à 2 sachets"><svg class="j2-sv vide" width="30" height="38" viewBox="0 0 28 36" aria-hidden="true"><path d="M3 7 6 4l3 3 3-3 3 3 3-3 3 3 3-3 2 2v26a3 3 0 0 1-3 3H6a3 3 0 0 1-3-3z"/><path class="j2-soude" d="M3 11h22"/></svg></span><span class="j2-jt" role="button" aria-label="Régler à 3 sachets"><svg class="j2-sv vide" width="30" height="38" viewBox="0 0 28 36" aria-hidden="true"><path d="M3 7 6 4l3 3 3-3 3 3 3-3 3 3 3-3 2 2v26a3 3 0 0 1-3 3H6a3 3 0 0 1-3-3z"/><path class="j2-soude" d="M3 11h22"/></svg></span><span class="j2-jt" role="button" aria-label="Régler à 4 sachets"><svg class="j2-sv vide" width="30" height="38" viewBox="0 0 28 36" aria-hidden="true"><path d="M3 7 6 4l3 3 3-3 3 3 3-3 3 3 3-3 2 2v26a3 3 0 0 1-3 3H6a3 3 0 0 1-3-3z"/><path class="j2-soude" d="M3 11h22"/></svg></span><span class="j2-jt" role="button" aria-label="Régler à 5 sachets"><svg class="j2-sv vide" width="30" height="38" viewBox="0 0 28 36" aria-hidden="true"><path d="M3 7 6 4l3 3 3-3 3 3 3-3 3 3 3-3 2 2v26a3 3 0 0 1-3 3H6a3 3 0 0 1-3-3z"/><path class="j2-soude" d="M3 11h22"/></svg></span><span class="j2-trait" style="left:78px" aria-label="besoin de la recette : 197 G de cellules"><b>besoin</b></span></div><span class="j2-pm" role="button" aria-label="Un sachet de plus">+</span></div>
+      <div class="j2-part"><span class="j2-conseille">conseillé <b>2 sachets</b> · besoin 197 G</span><span class="j2-stock" aria-label="en stock"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#5B8AA6" stroke-width="2.4" stroke-linejoin="round"><path d="M12 3l8 4.5v9L12 21l-8-4.5v-9z"/><path d="M4 7.5l8 4.5 8-4.5M12 12v9"/></svg></span></div>
+      <div class="j2-retour-geste"><span>Ancienne dose : <b>2</b> sachets</span><span class="j2-annuler">Reprendre</span></div>
+    </div>
+    <div class="j2-cases">
+      <div class="j2-case">
+        <div class="j2-et">FG</div>
+        <div class="j2-val j2-mono">1,006–1,007</div>
+        <div class="j2-sous">≈ 2,5–2,7 % vol</div>
+        <div class="j2-jauge" aria-label="FG 1,006 à 1,007 sur une échelle de 1,000 à 1,030"><i style="left:20%;width:4%"></i></div>
+      </div>
+      <div class="j2-case">
+        <div class="j2-et">fiche · conduite</div>
+        <div class="j2-val j2-mono">9–11 · <span class="j2-hors">19 °C</span></div>
+        <div class="j2-plage" aria-label="Plage de la fiche 9 à 11 °C, conduite 19 °C hors plage"><span class="fiche"></span><span class="ici"></span></div>
+        <span class="j2-caler" role="button">Caler à 11 °C</span>
+      </div>
+      <div class="j2-case">
+        <div class="j2-et">floculation</div>
+        <div class="j2-val" style="font-weight:400;color:var(--t1)">moyenne</div>
+        <div class="j2-floc"><i></i><i></i><i class="non"></i></div>
+      </div>
+    </div>
+    <div class="j2-conduite" role="button" aria-label="Conduite, régler">
+      <svg class="j2-marches" width="44" height="22" viewBox="0 0 44 22" aria-hidden="true"><path d="M1 5h22v12h20" fill="none" stroke="#C8382F" stroke-width="3" stroke-linejoin="round"/><path d="M1 9h22" stroke="#5B8AA6" stroke-width="1.5" stroke-dasharray="2 2"/></svg>
+      <span class="j2-mono j2-cd">19 °C · 7 j <span class="j2-fl">→</span> 4 °C · 8 j</span>
+      <span class="j2-fin">fin J15</span>
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M9 5l7 7-7 7"/></svg>
+    </div>
+    <div class="j2-eff" aria-label="Effets de fermentation">
+      <div class="j2-eff-l1">Effets · simulés<a role="button" aria-label="Deux effets non publiés, compléter la fiche">2 non publiés · Compléter <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M9 5l7 7-7 7"/></svg></a></div>
+      <ul>
+        <li style="--c:#7A4A3A"><span class="j2-tn"><i></i>phénols</span><span class="j2-tvr"><span class="j2-crans"><i></i><i></i><i></i></span><span class="j2-tv">négatif</span></span></li>
+        <li style="--c:#6CC4A0"><span class="j2-tn"><i></i>thiols</span><span class="j2-tvr"><span class="j2-crans"><i class="on"></i><i></i><i></i></span><span class="j2-tv">faible</span></span></li>
+        <li style="--c:#A8C040"><span class="j2-tn"><i></i>terpènes</span><span class="j2-tvr"><span class="j2-crans"><i class="on"></i><i></i><i></i></span><span class="j2-tv">faible</span></span></li>
+      </ul>
+    </div>
+  </section>
+  <section class="j2-chg" aria-label="Changer de levure">
+    <div class="j2-champ"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="6.5"/><path d="M16 16l4.5 4.5" stroke-linecap="round"/></svg>Changer de levure</div>
+    <div class="j2-puces">
+      <span class="j2-puce"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#5B8AA6" stroke-width="2.4" stroke-linejoin="round"><path d="M12 3l8 4.5v9L12 21l-8-4.5v-9z"/><path d="M4 7.5l8 4.5 8-4.5M12 12v9"/></svg>Pomona</span>
+      <span class="j2-puce"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#5B8AA6" stroke-width="2.4" stroke-linejoin="round"><path d="M12 3l8 4.5v9L12 21l-8-4.5v-9z"/><path d="M4 7.5l8 4.5 8-4.5M12 12v9"/></svg>Verdant IPA</span>
+      <span class="j2-puce hc">Hors catalogue</span>
+    </div>
+  </section>
+  <div class="j2-tiroirs" aria-label="À un toucher">
+    <span class="j2-tir" role="button">1 offre</span>
+    <span class="j2-tir" role="button">Repères</span>
+    <span class="j2-tir" role="button">Atelier</span>
+  </div><div class="j2-pied"><div><span class="j2-btn trait">Retour</span><span class="j2-esp"></span><span class="j2-btn noir">Suivant — Paliers</span></div></div>
+<span class="j2-fabm" aria-hidden="true">+</span><nav class="j2-onglets m" aria-label="Onglets"><div>
+  <a><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M4 16a8 8 0 1 1 16 0"/><path d="M12 16l4-5"/></svg>Bord</a>
+  <a><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="8"/><path d="M12 7v10M9.5 9.5h4a1.5 1.5 0 0 1 0 3h-3a1.5 1.5 0 0 0 0 3h4" stroke-linecap="round"/></svg>Finances</a>
+  <a><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><rect x="4" y="5" width="16" height="15" rx="2"/><path d="M4 10h16M9 3v4M15 3v4"/></svg>Calendrier</a>
+  <a class="ici"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><path d="M9 3h6M10 3v6l-5 9a2 2 0 0 0 1.8 3h10.4a2 2 0 0 0 1.8-3l-5-9V3"/></svg>Brassins</a>
+  <a><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><path d="M12 3l8 4.5v9L12 21l-8-4.5v-9z"/><path d="M4 7.5l8 4.5 8-4.5M12 12v9"/></svg>Stocks</a>
+  <a><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="12" cy="8" r="3.5"/><path d="M5 20a7 7 0 0 1 14 0"/></svg>Clients</a>
+</div></nav></div>
+    </div>
+    <div class="j2-mini">
+      <h3><span>5</span>Produit vendu en brique</h3>
+      <p class="j2-explique">L'unité vient du produit : en g, avec l'éditeur d'un malt (− nombre +, piste). Aucune zone haute : seul le besoin est tracé.</p>
+      <div class="j2-ecran"><header class="j2-tete">
+    <div class="j2-l1">
+      <span class="j2-retour" aria-label="Retour"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M15 5l-7 7 7 7"/></svg></span>
+      <span class="j2-titre">Levure<span class="j2-mono">4/7</span></span>
+      <span class="j2-esp"></span>
+      <span class="j2-lien">Abandonner</span>
+      <span class="j2-ico" aria-label="Importer"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><path d="M8 3h8l3 3v14H5V6z"/><path d="M11 13h8m-3-3 3 3-3 3"/></svg></span>
+      <span class="j2-ico" aria-label="Thème"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M20 14.5A8 8 0 1 1 9.5 4a6.5 6.5 0 0 0 10.5 10.5z"/></svg></span>
+    </div>
+    <nav class="j2-etapes" aria-label="Étapes de la recette"><span class="fait">Identité</span><span class="fait">Malts/sucres</span><span class="fait">Houblons</span><span class="ici">Levure</span><span class="apres">Paliers</span><span class="apres">Eau</span><span class="apres">Récap.</span></nav>
+  </header>
+  <div class="j2-bande" aria-label="Recette, exemple"><span>Grain <b class="j2-mono">2,75 kg</b></span><span>OG <b class="j2-mono">1,026</b></span><span>IBU <b class="j2-mono">65</b></span><span>EBC <i class="j2-ebc"></i><b class="j2-mono">11,9</b></span></div>
+  <section class="j2-carte" aria-label="Ma levure">
+    <div class="j2-hd">
+      <span class="j2-pastille"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linejoin="round"><path d="M9 3h6M10 3v6l-5 9a2 2 0 0 0 1.8 3h10.4a2 2 0 0 0 1.8-3l-5-9V3"/><path d="M7.5 15h9"/></svg></span>
+      <div class="j2-nom"><b>Munich Lager Yeast</b></div>
+      <div class="j2-dose"><span class="j2-mono j2-gros">23</span><em>g</em></div>
+      <span class="j2-x" aria-label="Retirer la levure"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 6l12 12M18 6 6 18"/></svg></span>
+      <div class="j2-marque">White Labs · brique 500 g · <span class="j2-ex">exemple</span></div>
+      <div class="j2-ed"><span class="j2-pm" role="button" aria-label="1 g de moins">−</span><div class="j2-piste" aria-label="23 g sur une piste de 0 à 60 g"><i class="j2-rempli" style="width:38.3%"></i><span class="j2-trait" style="left:32.8%" aria-label="besoin 19,7 g"><b>besoin</b></span><b class="j2-poignee" style="left:38.3%"></b><span class="j2-bornes j2-mono"><span>0</span><span>60 g</span></span></div><span class="j2-edn">23 g</span><span class="j2-pm" role="button" aria-label="1 g de plus">+</span></div>
+      <div class="j2-part"><span class="j2-ok"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>couvre le besoin</span><span class="j2-pct">117 %</span><span class="j2-stock" aria-label="en stock"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#5B8AA6" stroke-width="2.4" stroke-linejoin="round"><path d="M12 3l8 4.5v9L12 21l-8-4.5v-9z"/><path d="M4 7.5l8 4.5 8-4.5M12 12v9"/></svg></span></div>
+      <div class="j2-calc">besoin <b class="j2-mono">19,7 g</b> · fabricant ≥ 15 g</div>
+    </div>
+    <div class="j2-cases">
+      <div class="j2-case">
+        <div class="j2-et">FG</div>
+        <div class="j2-val j2-mono">1,006–1,007</div>
+        <div class="j2-sous">≈ 2,5–2,7 % vol</div>
+        <div class="j2-jauge" aria-label="FG 1,006 à 1,007 sur une échelle de 1,000 à 1,030"><i style="left:20%;width:4%"></i></div>
+      </div>
+      <div class="j2-case">
+        <div class="j2-et">fiche · conduite</div>
+        <div class="j2-val j2-mono">9–11 · <span class="j2-hors">19 °C</span></div>
+        <div class="j2-plage" aria-label="Plage de la fiche 9 à 11 °C, conduite 19 °C hors plage"><span class="fiche"></span><span class="ici"></span></div>
+        <span class="j2-caler" role="button">Caler à 11 °C</span>
+      </div>
+      <div class="j2-case">
+        <div class="j2-et">floculation</div>
+        <div class="j2-val" style="font-weight:400;color:var(--t1)">moyenne</div>
+        <div class="j2-floc"><i></i><i></i><i class="non"></i></div>
+      </div>
+    </div>
+    <div class="j2-conduite" role="button" aria-label="Conduite, régler">
+      <svg class="j2-marches" width="44" height="22" viewBox="0 0 44 22" aria-hidden="true"><path d="M1 5h22v12h20" fill="none" stroke="#C8382F" stroke-width="3" stroke-linejoin="round"/><path d="M1 9h22" stroke="#5B8AA6" stroke-width="1.5" stroke-dasharray="2 2"/></svg>
+      <span class="j2-mono j2-cd">19 °C · 7 j <span class="j2-fl">→</span> 4 °C · 8 j</span>
+      <span class="j2-fin">fin J15</span>
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M9 5l7 7-7 7"/></svg>
+    </div>
+    <div class="j2-eff" aria-label="Effets de fermentation">
+      <div class="j2-eff-l1">Effets · simulés<a role="button" aria-label="Deux effets non publiés, compléter la fiche">2 non publiés · Compléter <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M9 5l7 7-7 7"/></svg></a></div>
+      <ul>
+        <li style="--c:#7A4A3A"><span class="j2-tn"><i></i>phénols</span><span class="j2-tvr"><span class="j2-crans"><i></i><i></i><i></i></span><span class="j2-tv">négatif</span></span></li>
+        <li style="--c:#6CC4A0"><span class="j2-tn"><i></i>thiols</span><span class="j2-tvr"><span class="j2-crans"><i class="on"></i><i></i><i></i></span><span class="j2-tv">faible</span></span></li>
+        <li style="--c:#A8C040"><span class="j2-tn"><i></i>terpènes</span><span class="j2-tvr"><span class="j2-crans"><i class="on"></i><i></i><i></i></span><span class="j2-tv">faible</span></span></li>
+      </ul>
+    </div>
+  </section>
+  <section class="j2-chg" aria-label="Changer de levure">
+    <div class="j2-champ"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="6.5"/><path d="M16 16l4.5 4.5" stroke-linecap="round"/></svg>Changer de levure</div>
+    <div class="j2-puces">
+      <span class="j2-puce"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#5B8AA6" stroke-width="2.4" stroke-linejoin="round"><path d="M12 3l8 4.5v9L12 21l-8-4.5v-9z"/><path d="M4 7.5l8 4.5 8-4.5M12 12v9"/></svg>Pomona</span>
+      <span class="j2-puce"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#5B8AA6" stroke-width="2.4" stroke-linejoin="round"><path d="M12 3l8 4.5v9L12 21l-8-4.5v-9z"/><path d="M4 7.5l8 4.5 8-4.5M12 12v9"/></svg>Verdant IPA</span>
+      <span class="j2-puce hc">Hors catalogue</span>
+    </div>
+  </section>
+  <div class="j2-tiroirs" aria-label="À un toucher">
+    <span class="j2-tir" role="button">1 offre</span>
+    <span class="j2-tir" role="button">Repères</span>
+    <span class="j2-tir" role="button">Atelier</span>
+  </div><div class="j2-pied"><div><span class="j2-btn trait">Retour</span><span class="j2-esp"></span><span class="j2-btn noir">Suivant — Paliers</span></div></div>
+<span class="j2-fabm" aria-hidden="true">+</span><nav class="j2-onglets m" aria-label="Onglets"><div>
+  <a><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M4 16a8 8 0 1 1 16 0"/><path d="M12 16l4-5"/></svg>Bord</a>
+  <a><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="8"/><path d="M12 7v10M9.5 9.5h4a1.5 1.5 0 0 1 0 3h-3a1.5 1.5 0 0 0 0 3h4" stroke-linecap="round"/></svg>Finances</a>
+  <a><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><rect x="4" y="5" width="16" height="15" rx="2"/><path d="M4 10h16M9 3v4M15 3v4"/></svg>Calendrier</a>
+  <a class="ici"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><path d="M9 3h6M10 3v6l-5 9a2 2 0 0 0 1.8 3h10.4a2 2 0 0 0 1.8-3l-5-9V3"/></svg>Brassins</a>
+  <a><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><path d="M12 3l8 4.5v9L12 21l-8-4.5v-9z"/><path d="M4 7.5l8 4.5 8-4.5M12 12v9"/></svg>Stocks</a>
+  <a><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="12" cy="8" r="3.5"/><path d="M5 20a7 7 0 0 1 14 0"/></svg>Clients</a>
+</div></nav></div>
+    </div>
+    <div class="j2-mini">
+      <h3><span>6</span>Produit liquide</h3>
+      <p class="j2-explique">Un jeton par pack. Le besoin se lit pareil, en part des cellules.</p>
+      <div class="j2-ecran"><header class="j2-tete">
+    <div class="j2-l1">
+      <span class="j2-retour" aria-label="Retour"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M15 5l-7 7 7 7"/></svg></span>
+      <span class="j2-titre">Levure<span class="j2-mono">4/7</span></span>
+      <span class="j2-esp"></span>
+      <span class="j2-lien">Abandonner</span>
+      <span class="j2-ico" aria-label="Importer"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><path d="M8 3h8l3 3v14H5V6z"/><path d="M11 13h8m-3-3 3 3-3 3"/></svg></span>
+      <span class="j2-ico" aria-label="Thème"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M20 14.5A8 8 0 1 1 9.5 4a6.5 6.5 0 0 0 10.5 10.5z"/></svg></span>
+    </div>
+    <nav class="j2-etapes" aria-label="Étapes de la recette"><span class="fait">Identité</span><span class="fait">Malts/sucres</span><span class="fait">Houblons</span><span class="ici">Levure</span><span class="apres">Paliers</span><span class="apres">Eau</span><span class="apres">Récap.</span></nav>
+  </header>
+  <div class="j2-bande" aria-label="Recette, exemple"><span>Grain <b class="j2-mono">2,75 kg</b></span><span>OG <b class="j2-mono">1,026</b></span><span>IBU <b class="j2-mono">65</b></span><span>EBC <i class="j2-ebc"></i><b class="j2-mono">11,9</b></span></div>
+  <section class="j2-carte" aria-label="Ma levure">
+    <div class="j2-hd">
+      <span class="j2-pastille"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linejoin="round"><path d="M9 3h6M10 3v6l-5 9a2 2 0 0 0 1.8 3h10.4a2 2 0 0 0 1.8-3l-5-9V3"/><path d="M7.5 15h9"/></svg></span>
+      <div class="j2-nom"><b>Munich Lager Yeast</b></div>
+      <div class="j2-dose"><span class="j2-mono j2-gros">2</span><em>packs</em></div>
+      <span class="j2-x" aria-label="Retirer la levure"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 6l12 12M18 6 6 18"/></svg></span>
+      <div class="j2-marque">White Labs · pack liquide · <span class="j2-ex">exemple</span></div>
+      <div class="j2-choix"><span class="j2-pm" role="button" aria-label="Un pack de moins">−</span><div class="j2-rail"><span class="j2-jt" role="button" aria-label="Régler à 1 pack"><svg class="j2-sv plein" width="30" height="38" viewBox="0 0 28 36" aria-hidden="true"><path d="M8 2h12v5l3 4v20a3 3 0 0 1-3 3H8a3 3 0 0 1-3-3V11l3-4z"/><path class="j2-soude" d="M8 7h12"/></svg></span><span class="j2-jt" role="button" aria-label="Régler à 2 packs"><svg class="j2-sv plein" width="30" height="38" viewBox="0 0 28 36" aria-hidden="true"><path d="M8 2h12v5l3 4v20a3 3 0 0 1-3 3H8a3 3 0 0 1-3-3V11l3-4z"/><path class="j2-soude" d="M8 7h12"/></svg></span><span class="j2-jt" role="button" aria-label="Régler à 3 packs"><svg class="j2-sv libre" width="30" height="38" viewBox="0 0 28 36" aria-hidden="true"><path d="M8 2h12v5l3 4v20a3 3 0 0 1-3 3H8a3 3 0 0 1-3-3V11l3-4z"/><path class="j2-soude" d="M8 7h12"/></svg></span><span class="j2-jt" role="button" aria-label="Régler à 4 packs"><svg class="j2-sv libre" width="30" height="38" viewBox="0 0 28 36" aria-hidden="true"><path d="M8 2h12v5l3 4v20a3 3 0 0 1-3 3H8a3 3 0 0 1-3-3V11l3-4z"/><path class="j2-soude" d="M8 7h12"/></svg></span><span class="j2-jt" role="button" aria-label="Régler à 5 packs"><svg class="j2-sv libre" width="30" height="38" viewBox="0 0 28 36" aria-hidden="true"><path d="M8 2h12v5l3 4v20a3 3 0 0 1-3 3H8a3 3 0 0 1-3-3V11l3-4z"/><path class="j2-soude" d="M8 7h12"/></svg></span><span class="j2-trait" style="left:91px" aria-label="besoin de la recette : 197 G de cellules"><b>besoin</b></span></div><span class="j2-pm" role="button" aria-label="Un pack de plus">+</span></div>
+      <div class="j2-part"><span class="j2-ok"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>couvre le besoin</span><span class="j2-pct">102 %</span><span class="j2-stock" aria-label="en stock"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#5B8AA6" stroke-width="2.4" stroke-linejoin="round"><path d="M12 3l8 4.5v9L12 21l-8-4.5v-9z"/><path d="M4 7.5l8 4.5 8-4.5M12 12v9"/></svg></span></div>
+      <div class="j2-calc">pack ≈ <b class="j2-mono">100 G</b> de cellules · à confirmer</div>
+    </div>
+    <div class="j2-cases">
+      <div class="j2-case">
+        <div class="j2-et">FG</div>
+        <div class="j2-val j2-mono">1,006–1,007</div>
+        <div class="j2-sous">≈ 2,5–2,7 % vol</div>
+        <div class="j2-jauge" aria-label="FG 1,006 à 1,007 sur une échelle de 1,000 à 1,030"><i style="left:20%;width:4%"></i></div>
+      </div>
+      <div class="j2-case">
+        <div class="j2-et">fiche · conduite</div>
+        <div class="j2-val j2-mono">9–11 · <span class="j2-hors">19 °C</span></div>
+        <div class="j2-plage" aria-label="Plage de la fiche 9 à 11 °C, conduite 19 °C hors plage"><span class="fiche"></span><span class="ici"></span></div>
+        <span class="j2-caler" role="button">Caler à 11 °C</span>
+      </div>
+      <div class="j2-case">
+        <div class="j2-et">floculation</div>
+        <div class="j2-val" style="font-weight:400;color:var(--t1)">moyenne</div>
+        <div class="j2-floc"><i></i><i></i><i class="non"></i></div>
+      </div>
+    </div>
+    <div class="j2-conduite" role="button" aria-label="Conduite, régler">
+      <svg class="j2-marches" width="44" height="22" viewBox="0 0 44 22" aria-hidden="true"><path d="M1 5h22v12h20" fill="none" stroke="#C8382F" stroke-width="3" stroke-linejoin="round"/><path d="M1 9h22" stroke="#5B8AA6" stroke-width="1.5" stroke-dasharray="2 2"/></svg>
+      <span class="j2-mono j2-cd">19 °C · 7 j <span class="j2-fl">→</span> 4 °C · 8 j</span>
+      <span class="j2-fin">fin J15</span>
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M9 5l7 7-7 7"/></svg>
+    </div>
+    <div class="j2-eff" aria-label="Effets de fermentation">
+      <div class="j2-eff-l1">Effets · simulés<a role="button" aria-label="Deux effets non publiés, compléter la fiche">2 non publiés · Compléter <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M9 5l7 7-7 7"/></svg></a></div>
+      <ul>
+        <li style="--c:#7A4A3A"><span class="j2-tn"><i></i>phénols</span><span class="j2-tvr"><span class="j2-crans"><i></i><i></i><i></i></span><span class="j2-tv">négatif</span></span></li>
+        <li style="--c:#6CC4A0"><span class="j2-tn"><i></i>thiols</span><span class="j2-tvr"><span class="j2-crans"><i class="on"></i><i></i><i></i></span><span class="j2-tv">faible</span></span></li>
+        <li style="--c:#A8C040"><span class="j2-tn"><i></i>terpènes</span><span class="j2-tvr"><span class="j2-crans"><i class="on"></i><i></i><i></i></span><span class="j2-tv">faible</span></span></li>
+      </ul>
+    </div>
+  </section>
+  <section class="j2-chg" aria-label="Changer de levure">
+    <div class="j2-champ"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="6.5"/><path d="M16 16l4.5 4.5" stroke-linecap="round"/></svg>Changer de levure</div>
+    <div class="j2-puces">
+      <span class="j2-puce"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#5B8AA6" stroke-width="2.4" stroke-linejoin="round"><path d="M12 3l8 4.5v9L12 21l-8-4.5v-9z"/><path d="M4 7.5l8 4.5 8-4.5M12 12v9"/></svg>Pomona</span>
+      <span class="j2-puce"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#5B8AA6" stroke-width="2.4" stroke-linejoin="round"><path d="M12 3l8 4.5v9L12 21l-8-4.5v-9z"/><path d="M4 7.5l8 4.5 8-4.5M12 12v9"/></svg>Verdant IPA</span>
+      <span class="j2-puce hc">Hors catalogue</span>
+    </div>
+  </section>
+  <div class="j2-tiroirs" aria-label="À un toucher">
+    <span class="j2-tir" role="button">1 offre</span>
+    <span class="j2-tir" role="button">Repères</span>
+    <span class="j2-tir" role="button">Atelier</span>
+  </div><div class="j2-pied"><div><span class="j2-btn trait">Retour</span><span class="j2-esp"></span><span class="j2-btn noir">Suivant — Paliers</span></div></div>
+<span class="j2-fabm" aria-hidden="true">+</span><nav class="j2-onglets m" aria-label="Onglets"><div>
+  <a><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M4 16a8 8 0 1 1 16 0"/><path d="M12 16l4-5"/></svg>Bord</a>
+  <a><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="8"/><path d="M12 7v10M9.5 9.5h4a1.5 1.5 0 0 1 0 3h-3a1.5 1.5 0 0 0 0 3h4" stroke-linecap="round"/></svg>Finances</a>
+  <a><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><rect x="4" y="5" width="16" height="15" rx="2"/><path d="M4 10h16M9 3v4M15 3v4"/></svg>Calendrier</a>
+  <a class="ici"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><path d="M9 3h6M10 3v6l-5 9a2 2 0 0 0 1.8 3h10.4a2 2 0 0 0 1.8-3l-5-9V3"/></svg>Brassins</a>
+  <a><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><path d="M12 3l8 4.5v9L12 21l-8-4.5v-9z"/><path d="M4 7.5l8 4.5 8-4.5M12 12v9"/></svg>Stocks</a>
+  <a><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="12" cy="8" r="3.5"/><path d="M5 20a7 7 0 0 1 14 0"/></svg>Clients</a>
+</div></nav></div>
+    </div>
+  </div>
+</section>
+</body>
+</html>
