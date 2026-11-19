@@ -1,11 +1,4 @@
-ouvert — pas corrigé en ligne (test 4 : l'IA rend « idée, Moulin à malt », l'app garde la phrase brute en note dans le carnet ouvert) ; passe 3 : confirmé, toutes tailles, deux thèmes ; passe 3 : confirmé (oct. 0 opération, ZZ TEST à payer du 19.11 listée) ; passe 3 : confirmé (« Noter un paiement ») ; paiement et retrait fonctionnent ; passe 3 : confirmé, frise à 164 px sur 340 (48 %) ; passe 3 : non reproduit (Courses refait par fournisseur) ; passe 3 : confirmé, toutes tailles ; passe 3 : 7,9 / 5,6 / 3,7 s sur PC, page directe, recette ZZ TEST |
-|
-|
-|
-|
-|
-|
-| 57254e47c || 57254e47c || 57254e47c || 57254e47c || 57254e47c || 57254e47c || 57254e47c || 57254e47c || 57254e47c || statut | lignes | ce que dit la colonne « état » |
+ ouvert — pas corrigé en ligne (test 4 : l'IA rend « idée, Moulin à malt », l'app garde la phrase brute en note dans le carnet ouvert) | 57254e47c || 57254e47c || 57254e47c || 57254e47c || 57254e47c || 57254e47c || 57254e47c || 57254e47c || 57254e47c || statut | lignes | ce que dit la colonne « état » |
 |---|---|---|
 | corrigé | 15 | « déployé (corrigé, vérifié au code du tag …) » et le commit |
 | encore présent | 75 | « ouvert — présent » avec le fichier et la ligne |
@@ -1685,20 +1678,20 @@ Verdict : 5/6 corrigés, 4 problèmes (0 bloquant), 6 envois IA (cumul ≈ 32 su
 
 | id | source | écran | constat | gravité | état | commit | note |
 |---|---|---|---|---|---|---|---|
-| T2-1 | en-ligne tour 2 n° 1 | Calendrier 390 (aligné) | Deux rangées d'axe : les mois en haut de la courbe alignée, les semaines sous la frise. Le lot a gardé les mois quand la courbe est alignée (« ce sont ceux de la frise »). | m | ouvert | | choix d'axe au brasseur (mini-maquettes), pas de règle du pilote |
+| T2-1 | en-ligne tour 2 n° 1 | Calendrier 390 (aligné) | Deux rangées d'axe : les mois en haut de la courbe alignée, les semaines sous la frise. Le lot a gardé les mois quand la courbe est alignée (« ce sont ceux de la frise »). | m | ouvert | | choix d'axe au brasseur (mini-maquettes), pas de règle du pilote ; passe 3 : confirmé, toutes tailles, deux thèmes |
 | T2-2 | en-ligne tour 2 n° 2 | Calendrier 390 | Toucher la barre minuscule du brassin « Ttt » n'ouvre aucune fiche ; non rejoué sur un brassin ZZ TEST. | G si confirmé | ouvert, à rejouer | | passe 3 : la barre Ttt (normale) ouvre son détail ; barre minuscule non revue |
-| T2-3 | en-ligne tour 2 n° 3 | Finances › Opérations | Période oct. : « 0 opération » alors que la liste montre une opération à payer du 19.11. | m | ouvert | | |
-| T2-4 | en-ligne tour 2 n° 4 | Fiche d'opération | Une opération à payer n'offre que « Annuler cette écriture » (la pièce reste, annulée) ; « Noter un paiement » au lieu de « Confirmer le paiement ». | m | ouvert | | la ZZ TEST annulée reste dans Archives |
-| T2-5 | tour2/VERDICT.md | Calendrier 844 × 340 | Frise à 45 % de la hauteur au repos (visé 25 %) ; le brasseur trouvait le paysage déjà bon. | m | ouvert | | |
-| T2-6 | tour2/VERDICT.md | Stocks › Courses | « Rien à commander » dit trois fois une fois déplié ; « 24 en tout » contre « manque 22 » à Étagère (2 articles pile au seuil). | m | ouvert | | |
+| T2-3 | en-ligne tour 2 n° 3 | Finances › Opérations | Période oct. : « 0 opération » alors que la liste montre une opération à payer du 19.11. | m | ouvert | | passe 3 : confirmé (oct. 0 opération, ZZ TEST à payer du 19.11 listée) |
+| T2-4 | en-ligne tour 2 n° 4 | Fiche d'opération | Une opération à payer n'offre que « Annuler cette écriture » (la pièce reste, annulée) ; « Noter un paiement » au lieu de « Confirmer le paiement ». | m | ouvert | | la ZZ TEST annulée reste dans Archives ; passe 3 : confirmé (« Noter un paiement ») ; paiement et retrait fonctionnent |
+| T2-5 | tour2/VERDICT.md | Calendrier 844 × 340 | Frise à 45 % de la hauteur au repos (visé 25 %) ; le brasseur trouvait le paysage déjà bon. | m | ouvert | | passe 3 : confirmé, frise à 164 px sur 340 (48 %) |
+| T2-6 | tour2/VERDICT.md | Stocks › Courses | « Rien à commander » dit trois fois une fois déplié ; « 24 en tout » contre « manque 22 » à Étagère (2 articles pile au seuil). | m | ouvert | | passe 3 : non reproduit (Courses refait par fournisseur) |
 | T2-7 | tour2/stock/RESULTAT.md | Stocks | Défilement par relais : remplacer par une option `useWindowScroll` d'EntityList. | b | ouvert | | dette |
 | T2-8 | tour2/id/RESULTAT.md | Recette › Identité | Eau ajoutée ignorée par brewerRecipeRefresh, brewerTools, brewSystemInsights ; 3,7 L retenu (pilote). Sombre non capturé après correctif. | m | ouvert | | |
 | T2-9 | tour2/fin/RESULTAT.md | Finances 1280 | Champs « du / au » gardés à 1280 (option a, pilote). | — | écarté | | décidé par le pilote |
 | T2-10 | tour2/fin/RESULTAT.md | En-tête › période | Nom accessible « 30 nov.. » (double point). | b | corrigé | be036eb21 | en ligne (en-ligne/2026-11-19-tour2) |
 | T2-NOTE-1 | en-ligne tour 2 réserve | tous | Joué en 390 clair seulement (iframe) ; 844, 1280, sombre, plein écran, Confirmer le paiement, Eau et sels, Ma levure non joués en ligne. | — | ouvert, doute non compté | | |
 | T2B-1 | en-ligne tour 2 bis n° 1 | Brassins › Brasser depuis une recette | Planifier un brassin depuis une recette au matériel « pas figé » est sans effet : message rouge qui renvoie à « Modifier la recette › Adapter à mon matériel actuel ». | m | ouvert | | bloque le rejeu de T2-2 |
-| T2B-2 | en-ligne tour 2 bis n° 2 | Calendrier 390 | Un « déc. » coupé reste en haut de la frise, au-dessus des semaines (S47…). | b | ouvert | | proche de T2-1 |
-| T2B-3 | en-ligne tour 2 bis n° 3 | Recette › Levure | Le retour sur l'onglet « Ma levure » prend ≈ 1,2 s (mesuré sur PC, dans une iframe). | m | ouvert | | ML-1 |
+| T2B-2 | en-ligne tour 2 bis n° 2 | Calendrier 390 | Un « déc. » coupé reste en haut de la frise, au-dessus des semaines (S47…). | b | ouvert | | proche de T2-1 ; passe 3 : confirmé, toutes tailles |
+| T2B-3 | en-ligne tour 2 bis n° 3 | Recette › Levure | Le retour sur l'onglet « Ma levure » prend ≈ 1,2 s (mesuré sur PC, dans une iframe). | m | ouvert | | ML-1 ; passe 3 : 7,9 / 5,6 / 3,7 s sur PC, page directe, recette ZZ TEST |
 | T2B-NOTE-1 | en-ligne tour 2 bis réserve | tous | 844×340, 1280 et sombre non joués : le navigateur intégré demande une connexion Google, Claude in Chrome ne se redimensionne pas. | — | ouvert, doute non compté | | |
 
 ## Test en ligne passe 3, 19.11 (Claude in Chrome, iframe émulée ; tag en-ligne/2026-11-19-tour2 ; source work/missions/2026-11-18-choix-calendrier/tour2/en-ligne/RAPPORT-3.md)
