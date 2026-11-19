@@ -131,6 +131,17 @@ const CONSOMMABLE = liste(`
   brosse burste brush spazzola eponge schwamm sponge spugna verbrauchsmaterial consommable consommables consumable consumables epi ppe dpi
 `);
 const SERVICE = liste('abonnement subscription dienstleistung servizio analyse analysis analisi miete location rental noleggio');
+/**
+ * LR2-7 : les actes (vétérinaires, médicaux) et les prestations facturées au temps : des mots SANS ÉQUIVOQUE, jamais un mot du brassage (« injection » seule y est
+ * rare ; « stérilisation » et « infusion » en sont exclus : un stérilisateur, une infusion de houblon). Quatre langues, pliées.
+ */
+const ACTES = liste(`
+  veterinaire veterinaires veterinary veterinario veterinaria tierarzt tierarztlich tierarztliche tierarztlicher tierarztin tierklinik
+  consultation consultations konsultation consulenza narcose narkose anesthesie anaesthesie anesthesia anestesia sedation sedierung sedazione intubation intubazione
+  perfusion catheter katheter catetere ovariectomie ovariektomie castration kastration chirurgie chirurgisch surgery chirurgia
+  injection injections injektion injektionen iniezione vaccination impfung vaccinazione untersuchung honoraire honoraires honorar onorario
+`);
+const ACTES_PHRASES = [' main d oeuvre ', ' main doeuvre ', ' heures de travail ', ' arbeitszeit '];
 
 const finit = (t: string, suffixes: readonly string[]) => suffixes.some(s => t.length > s.length && t.endsWith(s));
 const commence = (t: string, prefixes: readonly string[]) => prefixes.some(p => t.startsWith(p));
@@ -330,6 +341,8 @@ export function familleDe(e: EntreeFamille): FamilleCle {
   }
   // 2. D306. Le port et la remise ne changent pas.
   if (kind === 'shipping' || kind === 'discount') return 'autres';
+  // LR2-7 (voie r, DÉCISION 3) : un acte (soin, consultation, honoraires) est un service sous toute nature lue : la nature varie d'un tirage à l'autre (doc2 : `other` partout).
+  if (t.some(j => ACTES.has(j)) || ACTES_PHRASES.some(p => joint.includes(p))) return 'service';
   if (detartrant) return 'nettoyage';
   const mNettoyage = estNettoyage(t, joint);
   if (kind === 'service') return renov && !t.some(j => SERVICE.has(j)) ? 'renovation' : 'service';

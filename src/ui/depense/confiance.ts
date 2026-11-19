@@ -359,6 +359,14 @@ export function natureSansEnjeu(p: InvoicePoint, c: ContexteConfiance): boolean 
   const famille = familleDeLigne(l, c);
   return !familleAUnStock(famille) && famille !== 'autres';
 }
+/**
+ * LR2-3, LR2-5, LR3-4 (voie r, DÉCISION 2) : les points de désaccord que l'écran compte (« Lectures 3/3 · n désaccords ») et met dans la file. Un désaccord sur la seule
+ * nature (`items.<n>.kind`) n'y est jamais : la famille vient des mots (`familles.ts`), et le serveur en pose un par ligne sans majorité (5 par tirage du doc25).
+ * La rangée d'une famille qui entre en stock garde sa marque (`confianceLigne` lit tous les points, D328a) ; seul le compte et la file le taisent.
+ */
+export function pointsAMontrer<P extends InvoicePoint>(points: readonly P[]): P[] {
+  return points.filter(p => !estDesaccordDeNature(p));
+}
 
 /** La somme des montants des lignes tombe sur le total imprimé : le total corrobore chaque montant (règle du serveur, `sumCheck`). */
 export function totalCorrobore(c: ContexteConfiance): boolean {

@@ -7,7 +7,7 @@ import { RefreshCw } from 'lucide-react';
 import { PictoLien, type LienStock } from './Pictos';
 import { FILET_FAMILLE, type GroupeCle } from './groupes';
 import { familleHorsBrassage } from './familles';
-import { pastilleConversion } from './etat';
+import { barreMuet, pastilleConversion } from './etat';
 import type { Niveau } from './confiance';
 import type { PastilleEtat } from './rangees';
 import './p3c.css';
@@ -63,7 +63,7 @@ export function LigneP3c(p: LigneP3cProps) {
           {p.prixKg ? <span data-dp-prixkg aria-label={p.prixKg.aria} className="rounded-control bg-cave-800 px-1.5 text-xs leading-[18px] text-hop">{p.prixKg.texte}</span> : null}
           {p.alpha ? <span data-dp-alpha className="font-mono text-xs text-cave-400">α {p.alpha}</span> : null}
           {p.ebc ? <span data-dp-ebc className="font-mono text-xs text-cave-400">{p.ebc} EBC</span> : null}{/* virgule-ok : p.ebc est le texte déjà formaté par le plateau */}
-          {c?.avant ? <s data-dp-avant className="basis-full font-mono text-xs font-normal text-cave-400">{c.avant}</s> : null}
+          {c?.avant && !barreMuet(c.avant) ? <s data-dp-avant className="basis-full font-mono text-xs font-normal text-cave-400">{c.avant}</s> : null}
           {mout && p.conversion ? <span data-dp-conversion className="whitespace-nowrap rounded-control bg-cave-800 px-1.5 text-xs leading-[18px] text-cave-200">{pastilleConversion(p.conversion)}</span> : null}
         </span>
         {p.pastilleMouture ? <button type="button" data-dp-mouture={p.pastilleMouture.id} aria-label={p.pastilleMouture.aria} onClick={e => { stop(e); p.pastilleMouture!.onBascule(); }}

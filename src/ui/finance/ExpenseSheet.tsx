@@ -68,7 +68,7 @@ import { Comptes,motStatut,type CompteItem,type ItemBarre,type Rang } from '../d
 import { articleDuDessus,bandes as calculerBandes,ORDRE_GROUPES,NOMS_GROUPES,groupeDe,sousFamilleDeLigne,lignesDePort,portCents,numerosPapier,fr2 as fr2c,texteQte,poserGroupe,etatSegment,toutPlier as plierTout,toutDeplier as deplierTout,pliable,type ChoixGroupes,type GroupeCle,type LigneBande,type SousGroupe } from '../depense/groupes';
 import type { LienStock } from '../depense/Pictos';
 import { articleCompte,avecUnitesDeduites,champsARemplir,confianceLigne,contexteConfiance,decimalesAuRepos,libelleLu,ligneConfianceDe,motDeCorrection,natureDuSegment,niveauxRangee,sansTraductions,optionsEnFrancais,pastilleEtat,texteQuantite,uniteAffichee,type Changement,type ChampARemplir,type NatureSegment } from '../depense/rangees';
-import { PAS_BRASSERIE,confianceEntete,natureSansEnjeu,pireNiveau,type ChampEntete,type Niveau } from '../depense/confiance';
+import { PAS_BRASSERIE,confianceEntete,pointsAMontrer,pireNiveau,type ChampEntete,type Niveau } from '../depense/confiance';
 import { arrondiDuTotal,uniteEffective,purchaseIsoDate as isoDeLaSaisie } from '../../services/purchaseEntry';
 import { illisibleSiVide,lectureSansRien } from '../../services/lectureIllisible';
 import { regleProduit,linkUnit,donneesDArticle } from '../../services/stockLineMatching';
@@ -851,7 +851,8 @@ export function ExpenseSheet({onClose,onSaved,initialIntent='expense',existingEq
   /* D277 : le point « unité absente » d'une ligne dont l'unité se déduit n'est plus un point : la rangée la dit (jaune, ou rien si elle est sûre). */
   const uniteDeduiteDe=(c:Chip)=>{const l=c.ligne?draft.lines.find(x=>x.id===`line-${c.ligne}`):undefined;return Boolean(l&&isReadableUnit(uniteDe(l)));};
   /* D328a, D353 : un désaccord sur la seule nature d'une ligne sans stock (matériel, rénovation, services) n'engage rien : sûr = rien, ni chip ni file. */
-  const ctxPoints=contexteConfiance(draftEff,articlesStock,points),pointsMontres=points?.filter(p=>!natureSansEnjeu(p,ctxPoints));
+  /* LR2-3, LR2-5, LR3-4 : la nature disputée (`kind`) n'entre ni dans le compte « n désaccords » ni dans la file ; la rangée garde sa marque (confianceLigne). */
+  const pointsMontres=points?pointsAMontrer(points):points;
   const chips=[...chipQr,...chipsDeLecture(pointsMontres,extras).filter(c=>!(qrContredit&&c.nom==='Total'&&c.source==='point')&&!(c.codes.length>0&&c.codes.every(code=>code==='unite-absente')&&uniteDeduiteDe(c)))].map(c=>c.source==='mouture'?{...c,nom:`${c.nom}${sommeMoutures>0?` +${(sommeMoutures/100).toFixed(2).replace('.',',')}`:''}`}:c.codes.includes('unite-absente')&&c.ligne?{...c,nom:`${premierMot(nomAffiche(draft.lines.find(l=>l.id===`line-${c.ligne}`)?.description??c.nom))} unité`}:c);
   const ligneDe=(chip:Chip)=>chip.cible??(chip.ligne?`line-${chip.ligne}`:undefined);
   const estRegle=(chip:Chip):boolean=>{
@@ -1375,7 +1376,7 @@ export function ExpenseSheet({onClose,onSaved,initialIntent='expense',existingEq
     setNTranchees(n=>n+1);};
   const toutValider=()=>{setPerdues([]);setTranchees(t=>new Set([...t,'entete:total','entete:tva',...fileChangements.filter(c=>c.type==='corrigee'||c.type==='ajoutee').map(c=>c.cle)]));setReglees(r=>new Set([...r,...desaccordsRestants.map(c=>c.id)]));setNTranchees(n=>n+fileChangements.length);};
   const ligneChg=courantChg?(courantChg.type==='perdue'?perdues.find(x=>x.ligne.id===courantChg.id)?.ligne:draft.lines.find(l=>l.id===courantChg.id)):undefined;
-  const chgNom=courantChg?.type==='desaccord'?sansMotsBruts((points??[]).find(pt=>pt.code==='lectures-divergentes'&&!/tva/i.test(pt.champ))?.message??'Les lectures divergent'):ligneChg?nomAffiche(ligneChg.description):'';
+  const chgNom=courantChg?.type==='desaccord'?sansMotsBruts((pointsMontres??[]).find(pt=>pt.code==='lectures-divergentes'&&!/tva/i.test(pt.champ))?.message??'Les lectures divergent'):ligneChg?nomAffiche(ligneChg.description):'';
   const chgMontant=courantChg?.type==='desaccord'?'':ligneChg?.amount===undefined?'—':fr2c(Math.round(ligneChg.amount*100));
   const chgSecond=!courantChg?undefined:courantChg.type==='corrigee'?{geste:'annuler' as const,label:'Annuler',onClick:()=>{annulerCorrection(courantChg.id);setNTranchees(n=>n+1);}}
     :courantChg.type==='desaccord'?{geste:'voir' as const,label:'Voir',onClick:()=>{const ch=chips.find(x=>x.id===courantChg.id);if(ch)aller(ch);}}

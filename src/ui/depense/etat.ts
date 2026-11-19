@@ -12,6 +12,8 @@ import type { ScannedInvoiceResult } from '../../services/geminiScanner';
 import type { StockItem } from '../../types';
 
 type Code = InvoicePoint['code'];
+/** LR3-3 : un barré qui ne dit que des inconnus (« ? × ? », « ? ») ne dit rien de la 1re lecture : la rangée le tait. « 30 ? » et « × 1,45 » parlent. */
+export const barreMuet = (avant: string): boolean => !/[^?×·\s]/.test(avant);
 export type Enjeu = 'argent' | 'stock' | 'info';
 export interface ChipDef { nom: string; enjeu: Enjeu }
 export interface Chip { id: string; nom: string; enjeu: Enjeu; ligne: number | null; codes: string[]; source: 'point' | 'paiement' | 'mouture' | 'voisin' | 'unite' | 'qr'; cible?: string }

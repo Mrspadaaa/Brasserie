@@ -19,6 +19,7 @@ import { groupeDe } from './groupes';
 import { tvaImprimee } from './tva';
 import { auPoidsLu } from './poidsPiece';
 import { categorieDeLaPiece, depenseHorsBrassage, familleAUnStock, NATURE_DE_FAMILLE, type FamilleCle } from './familles';
+import { ressemblanceNoms, SEUIL_VARIANTE_NOM } from './ressemblanceNoms';
 import type { StockItem } from '../../types';
 
 // Le point « lecture coupée » (R1) : recopié du serveur (`functions/src/invoiceVisionReview.ts`, `phraseCoupure`, `pointLectureCoupee`, `ajouterCoupure`) en fonctions pures, parce que ce module tire `invoiceScanCore`, `models` et `node:*`
@@ -197,6 +198,16 @@ export interface BaseFusion {
   proposes: string[]; neufsOffice: string[];
 }
 const memes = (a: unknown, b: unknown) => JSON.stringify(a ?? null) === JSON.stringify(b ?? null);
+/**
+ * LR1-5, LR3-3 (voie r, DÉCISION 1) : une cellule de nom que la 3.8 lit autrement de quelques lettres (ressemblance ≥ 0,9 : « TUBEO » / « TUBEQ », « 2,5L » / « 2.5L »)
+ * n'est pas une correction : la valeur de la 3.8 est reprise sans marque, sans barré et sans compte. `imprime` compare son nom ; sa variante doit rester la même.
+ */
+export function varianteDeNom(champ: Cellule, avant: unknown, apres: unknown): boolean {
+  if (!(NOM_CELLULES as readonly string[]).includes(champ)) return false;
+  if (champ !== 'imprime') return ressemblanceNoms(avant, apres) >= SEUIL_VARIANTE_NOM;
+  const a = avant as { nom?: string; variante?: string } | undefined, b = apres as { nom?: string; variante?: string } | undefined;
+  return (a?.variante ?? '') === (b?.variante ?? '') && ressemblanceNoms(a?.nom, b?.nom) >= SEUIL_VARIANTE_NOM;
+}
 const prendre = <T extends object>(o: T, cles: readonly string[]): Record<string, unknown> => Object.fromEntries(cles.map(k => [k, (o as Record<string, unknown>)[k]]));
 /** L'instantané du brouillon posé : par id de ligne et par cellule, pour toutes les cellules (B1). Il se met à jour de la seule écriture du programme entre les deux (la traduction). */
 export function baseDeBrouillon(draft: PurchaseDraft, jeton: string, propositions: Propositions, nProvisoire: number): BaseFusion {
@@ -359,6 +370,7 @@ export function appliquerFinale(e: EntreeFusion): SortieFusion {
       if (touchee(l.id, c, l, b)) continue;
       if (memes(F[c], b[c])) continue;
       (fusionnee as unknown as Record<string, unknown>)[c] = F[c];
+      if (varianteDeNom(c, b[c], F[c])) continue; // LR1-5 : le même nom lu autrement, repris sans correction ni barré
       faites.push({ id: l.id, champ: c, avant: b[c], apres: F[c] });
     }
     // Les marques de lien viennent du final seulement pour une rangée dont il n'a pas touché le lien.
