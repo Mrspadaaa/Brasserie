@@ -46,3 +46,7 @@
 .fer .fer-li[aria-current='true'] .fer-mo:not(.fer-mo-hors), .fer .fer-li[aria-current='true'] .fer-pc:not(.fer-pc-hors) { color: var(--f-t0); }
 /* BR-14 : la bascule des repères faisait 16 × 24 px. */
 .fer button.fer-pl { min-width: 24px; justify-content: center; }
+/* BR-19 : la position de la famille de l'ajout dans la bascule (une rangée de points, le plein est la famille courante). */
+.fer .fer-pts { display: inline-flex; gap: 3px; align-items: center; margin-left: 2px; }
+.fer .fer-pts i { width: 4px; height: 4px; border-radius: 50%; background: var(--f-t2); opacity: .55; }
+.fer .fer-pts i.fer-pt-on { background: var(--f-t0); opacity: 1; }

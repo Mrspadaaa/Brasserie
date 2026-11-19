@@ -138,6 +138,25 @@ describe('SU-NOTE-2 — « 0,2 » Entrée juste après une création est sa mass
   });
 });
 
+describe('BR-19 — la bascule de famille dit où l’on est parmi les cinq', () => {
+  const FAMILLES5: FermentableKind[] = ['grain', 'sucre', 'lactose', 'fruit', 'extrait'];
+  function Banc5() {
+    const [famille, setFamille] = useState<FermentableKind>('grain');
+    return (
+      <EtapeFermentescibles fermentables={[]} onFermentables={() => {}} stockItems={[]} famille={famille} onFamille={setFamille} defs={DEFS} familles={FAMILLES5}
+        onCreateStockItem={() => ({}) as StockItem} onLearnIngredient={() => {}} nolo={false} og={null} teinteBiere={null} rendementPct={75} rendementDeclare={false} erreur={() => undefined} />
+    );
+  }
+  it('cinq points, un seul plein ; il avance à chaque toucher', async () => {
+    const u = userEvent.setup();
+    render(<Banc5 />);
+    const pos = () => [...document.querySelectorAll('[data-role="fam-pos"] i')].map((p) => p.classList.contains('fer-pt-on'));
+    expect(pos()).toEqual([true, false, false, false, false]);
+    await u.click(document.querySelector('[data-role="fam"]')!);
+    expect(pos()).toEqual([false, true, false, false, false]);
+  });
+});
+
 describe('BR-11 — « dext » : l’ordre des propositions', () => {
   it('Dextrose (début de son nom) n’est pas derrière un malt qui ne la porte qu’en surnom', async () => {
     const u = userEvent.setup();

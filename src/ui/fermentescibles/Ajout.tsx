@@ -213,6 +213,12 @@ export const Ajout: React.FC<AjoutProps> = ({ famille, familles, defs, onFamille
           title={`${def.hint ? `${def.hint} ` : ''}Toucher : ${defs[suivante].label}`} onMouseDown={(e) => e.preventDefault()}
           onClick={(e) => { e.preventDefault(); onFamille(suivante); reinit(); }}>
           {def.label} <Bascule />
+          {/* BR-19 : cinq familles se parcourent d'un toucher ; les points disent où l'on est et combien il en reste, sans mot de plus. */}
+          {familles.length > 2 && (
+            <span className="fer-pts" data-role="fam-pos" aria-hidden="true">
+              {familles.map((k) => <i key={k} className={k === famille ? 'fer-pt-on' : undefined} />)}
+            </span>
+          )}
         </button>
         <Input
           ref={champ}
