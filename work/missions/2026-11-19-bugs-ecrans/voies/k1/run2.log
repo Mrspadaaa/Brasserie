@@ -1,0 +1,9 @@
+RL-13 notes "OG 1,031 · 11,3 % AA · ensemencement 27,5 °C · Empâtage 22,8 L · enregistré le 05.09.2026"
+caisse 390 clair {"bande":"rgb(245, 245, 245)","feuille":{"c":"rgb(245, 245, 245)","n":"w-full sm:max-w-lg lg:max-w-[min(1240px,"},"bouton":"Encaisser 11,90 CHF"}
+caisse 390 cave {"bande":"rgb(26, 22, 19)","feuille":{"c":"rgb(26, 22, 19)","n":"w-full sm:max-w-lg lg:max-w-[min(1240px,"},"bouton":"Encaisser 11,90 CHF"}
+1280 clair essai 1 échec : Execution context was destroyed, most likely because of a navigation.
+caisse 1280 clair {"bande":"rgb(245, 245, 245)","feuille":{"c":"rgb(245, 245, 245)","n":"w-full sm:max-w-lg lg:max-w-[min(1240px,"},"bouton":"Encaisser — CHF"}
+OK RL-13 bloc de notes : « OG 1,031 · 11,3 % AA · ensemencement 27,5 °C · Empâtage 22,8 L · enregistré le 05.09.2026 »
+OK AM-69 rangée « Mon mois · Encaisser » 390 clair : bande rgb(245, 245, 245) / feuille rgb(245, 245, 245)
+OK AM-69 rangée « Mon mois · Encaisser » 390 cave : bande rgb(26, 22, 19) / feuille rgb(26, 22, 19)
+OK AM-69 rangée « Mon mois · Encaisser » 1280 clair : bande rgb(245, 245, 245) / feuille rgb(245, 245, 245)

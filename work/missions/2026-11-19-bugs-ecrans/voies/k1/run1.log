@@ -1,0 +1,16 @@
+p1 1280 clair {"alertesVolume":1,"carte":"Densité OG 1,060 · 0 relevéalcool 6,4 %","og":"2,5","fg":"1,012","courbe":"OG · FG · 0 relevé"}
+p1 390 cave {"alertesVolume":1,"carte":"Densité OG 1,060 · 0 relevéalcool 6,4 %","og":"2,5","fg":"1,012","courbe":"OG · FG · 0 relevé"}
+p4 390 cave {"alertesVolume":1,"carte":"Densité OG 1,060 · 0 relevéalcool 6,4 %","og":"1,060","fg":"1,012","courbe":"OG · FG · 0 relevé"}
+RL-13 notes null
+caisse 390 clair {"bande":"rgb(255, 255, 255)","feuille":{"c":"rgb(245, 245, 245)","n":"w-full sm:max-w-lg lg:max-w-[min(1240px,"},"bouton":"Encaisser 11,90 CHF"}
+caisse 390 cave {"bande":"rgb(18, 16, 14)","feuille":{"c":"rgb(26, 22, 19)","n":"w-full sm:max-w-lg lg:max-w-[min(1240px,"},"bouton":"Encaisser 11,90 CHF"}
+caisse 1280 clair {"bande":"rgb(255, 255, 255)","feuille":{"c":"rgb(245, 245, 245)","n":"w-full sm:max-w-lg lg:max-w-[min(1240px,"},"bouton":"Encaisser 11,90 CHF"}
+OK p1 résumé sans la valeur refusée : « Densité OG 1,060 · 0 relevéalcool 6,4 % »
+OK p3 densité finale à la virgule : « 1,012 »
+OK p2 même compte : « Densité OG 1,060 · 0 relevéalcool 6,4 % » / « OG · FG · 0 relevé »
+OK p4 alertes de volume : 1
+OK p4 390 cave alertes de volume : 1
+ÉCHEC RL-13 bloc de notes : « null »
+ÉCHEC AM-69 rangée « Mon mois · Encaisser » 390 clair : bande rgb(255, 255, 255) / feuille rgb(245, 245, 245)
+ÉCHEC AM-69 rangée « Mon mois · Encaisser » 390 cave : bande rgb(18, 16, 14) / feuille rgb(26, 22, 19)
+ÉCHEC AM-69 rangée « Mon mois · Encaisser » 1280 clair : bande rgb(255, 255, 255) / feuille rgb(245, 245, 245)
