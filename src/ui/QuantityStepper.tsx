@@ -2,7 +2,7 @@ import { Input, type InputElement } from './Input';
 import React, { useRef, useCallback, useEffect, useState } from 'react';
 import { Minus, Plus, RotateCcw } from 'lucide-react';
 import { Units } from '../services/units';
-import { formatDecimal, parseDecimal, useNumericDraft } from './numericInput';
+import { formatDecimal, lireAvecUnite, parseDecimal, useNumericDraft } from './numericInput';
 import { useCoarsePointer } from './useViewport';
 
 /**
@@ -83,7 +83,8 @@ export const QuantityStepper: React.FC<QuantityStepperProps> = ({
     [min, max]
   );
 
-  const { draft, push, settle } = useNumericDraft(value, onChange, { emptyValue: emptyValue ?? min });
+  // BR-6 : « 0,1 kg » tapé dans un champ en g est lu avec son unité (100 g) ; une autre unité est refusée, avec un message (avis).
+  const { draft, push, settle, avis } = useNumericDraft(value, onChange, { emptyValue: emptyValue ?? min, unite: unit });
   // BR-102, BE-55, BE-101 : « 0 » tapé devenait « 1 » ou « 0,5 » sans un mot. La borne est dite, avec la valeur retenue.
   const [refused, setRefused] = useState<string | null>(null);
 
@@ -240,7 +241,8 @@ export const QuantityStepper: React.FC<QuantityStepperProps> = ({
             aria-label={label || `Quantité en ${unit}`}
             onFocus={(e) => e.currentTarget.select()}
             onBlur={() => {
-              const typed = parseDecimal(draft);
+              const lue = lireAvecUnite(draft, unit);
+              const typed = lue ? (lue.genre === 'valeur' ? lue.valeur : null) : parseDecimal(draft);
               const kept = typed === null ? null : clamp(typed);
               setRefused(typed !== null && kept !== typed ? `${formatDecimal(typed)} ${unit} est hors bornes : ${max !== undefined ? `de ${formatDecimal(min)} à ${formatDecimal(max)}` : `au moins ${formatDecimal(min)}`} ${unit}. ${formatDecimal(kept!)} ${unit} retenu.` : null);
               settle({ min, max });
@@ -264,6 +266,7 @@ export const QuantityStepper: React.FC<QuantityStepperProps> = ({
       </div>
 
       {refused && <p role="status" data-role="borne-refusee" className="text-xs text-ebc-amber leading-snug">{refused}</p>}
+      {!refused && avis && <p role="status" data-role="unite-lue" className="text-xs text-ebc-amber leading-snug">{avis}</p>}
 
       {/*
         Paliers : le geste courant du brasseur, adapté à l'unité.

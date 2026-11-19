@@ -1,4 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
+import { Units } from '../services/units';
 
 /**
  * La mécanique commune à toute saisie de nombre.
@@ -27,6 +28,41 @@ export function parseDecimal(input: string): number | null {
   return Number.isFinite(n) ? n : null;
 }
 
+/** Ce que dit un texte tapé avec une unité (« 0,1 kg ») dans un champ qui a la sienne (« g »). */
+export type LectureUnite =
+  | { genre: 'valeur'; valeur: number; converti: boolean; saisi: string }
+  | { genre: 'attente' }
+  | { genre: 'refus'; message: string };
+
+// Débuts d'unités de masse et de volume : « k », « kil » ou « m » en cours de frappe attendent la suite au lieu d'être refusés.
+const UNITES_LUES = ['kg', 'mg', 'ml', 'cl', 'dl', 'kilo', 'kilogramme', 'kilogrammes', 'gramme', 'grammes', 'milligramme', 'litre', 'litres', 'millilitre', 'centilitre', 'decilitre', 'lb', 'oz', 'gal'];
+const arrondi6 = (x: number) => Math.round(x * 1e6) / 1e6;
+
+/**
+ * BR-6 (08.11) : « 0,1 kg » tapé dans un champ en g devenait 0,1 g en silence (IBU 60 → 0). Le texte tapé est lu AVEC son unité :
+ * une unité de la même famille est convertie (kg → ×1000), une autre famille ou un texte illisible est refusé (message), jamais deviné.
+ * `null` : rien à lire de plus (aucune lettre, ou champ sans unité de masse ni de volume) : la lecture ordinaire de `parseDecimal` s'applique.
+ */
+export function lireAvecUnite(input: string, unite: string): LectureUnite | null {
+  if (!unite || Units.familyOf(unite) === 'piece') return null;
+  const brut = input.trim();
+  const i = brut.search(/[A-Za-zµ]/);
+  if (i < 0) return null;
+  const nombre = parseDecimal(brut.slice(0, i));
+  if (nombre === null) return { genre: 'refus', message: `« ${brut} » : pas un nombre.` };
+  const suffixe = brut.slice(i).trim();
+  const converti = Units.convert(nombre, suffixe, unite);
+  if (converti !== null) {
+    const memeUnite = Units.convert(1, suffixe, unite) === 1;
+    return { genre: 'valeur', valeur: arrondi6(converti), converti: !memeUnite, saisi: `${formatDecimal(nombre)} ${suffixe}` };
+  }
+  const connue = Units.familyOf(suffixe) !== 'piece';
+  const bas = suffixe.toLowerCase();
+  // Une unité complète d'une autre famille (« L » dans un champ en g) est refusée tout de suite ; seul un début d'unité attend.
+  if (!connue && UNITES_LUES.some(u => u.length > bas.length && u.startsWith(bas))) return { genre: 'attente' };
+  return { genre: 'refus', message: `« ${formatDecimal(nombre)} ${suffixe} » : ${connue ? 'ce champ est en' : 'unité non reconnue, ce champ est en'} ${unite}.` };
+}
+
 /** Nombre ➔ texte affiché, séparateur décimal suisse romand. */
 export function formatDecimal(n: number | null | undefined, fractionDigits?: number): string {
   // `fractionDigits` (facultatif) : affichage hors frappe d'un montant (« 86,50 ») ; sans lui, l'affichage est inchangé.
@@ -47,6 +83,8 @@ interface DraftOptions {
   emptyValue?: number | undefined;
   /** Décimales affichées hors frappe (un montant : 2). Absent : affichage inchangé. */
   fractionDigits?: number;
+  /** L'unité du champ (« g », « kg », « L »…) : un nombre tapé avec une unité de la même famille est converti, une autre est refusée avec un message (BR-6). */
+  unite?: string;
 }
 
 /**
@@ -68,7 +106,12 @@ export function useNumericDraft(
 ) {
   const emptyValue = 'emptyValue' in options ? options.emptyValue : 0;
   const digits = options.fractionDigits;
+  const unite = options.unite;
   const [draft, setDraft] = useState(() => formatDecimal(value, digits));
+  /** Ce que dit le champ de la dernière saisie lue avec son unité (« 0,1 kg lu comme 100 g. » ou un refus) ; effacé à la frappe suivante. */
+  const [avis, setAvis] = useState<string | null>(null);
+  /** La valeur du champ avant la saisie en cours : ce que reprend un refus (le « 0,1 » du début de frappe est déjà parti au parent). */
+  const base = useRef<number | undefined>(value);
 
   /*
    * Dernière valeur QUE L'ON A REMONTÉE. Elle distingue un changement venu du
@@ -96,6 +139,7 @@ export function useNumericDraft(
     if (focused.current) return;
     if (!Object.is(value, emitted.current)) {
       emitted.current = value;
+      base.current = value;
       setDraft(formatDecimal(value, digits));
     }
   }, [value, leaves]);
@@ -103,6 +147,7 @@ export function useNumericDraft(
   /** Reçoit le texte tapé, remonte le nombre s'il est complet. */
   const push = (next: string) => {
     setDraft(next);
+    setAvis(null);
 
     if (next.trim() === '') {
       if (!Object.is(emitted.current, emptyValue)) {
@@ -112,6 +157,14 @@ export function useNumericDraft(
       return;
     }
 
+    if (unite) {
+      const lue = lireAvecUnite(next, unite);
+      if (lue) {
+        // Unité complète : la valeur convertie part tout de suite ; unité en cours ou refusée : on attend la sortie du champ.
+        if (lue.genre === 'valeur' && lue.valeur !== emitted.current) { emitted.current = lue.valeur; onChange(lue.valeur); }
+        return;
+      }
+    }
     const parsed = parseDecimal(next);
     // Frappe intermédiaire (« 12, », « - ») : on attend la suite sans rien dire.
     if (parsed === null || parsed === emitted.current) return;
@@ -127,7 +180,18 @@ export function useNumericDraft(
    * le « 5 ».
    */
   const settle = (bounds: { min?: number; max?: number; integer?: boolean } = {}) => {
-    const parsed = parseDecimal(draft);
+    const lue = unite ? lireAvecUnite(draft, unite) : null;
+    let parsed = lue?.genre === 'valeur' ? lue.valeur : parseDecimal(draft);
+    // BR-6 : avec une unité au champ, un texte qu'on ne sait pas lire n'est jamais repris en silence.
+    const illisible = unite && draft.trim() !== '' && (lue ? lue.genre !== 'valeur' : parsed === null);
+    if (illisible) {
+      const raison = lue?.genre === 'refus' ? lue.message : `« ${draft.trim()} » : ${lue ? 'unité à finir de taper' : 'pas un nombre'}.`;
+      const avant = base.current;
+      const gardee = avant === undefined || !Number.isFinite(avant) ? 'Le champ reste vide.' : `La valeur précédente (${formatDecimal(avant)} ${unite}) est conservée.`;
+      setAvis(`${raison} ${gardee}`);
+      revert(avant);
+      return avant;
+    }
     if (parsed === null) {
       setDraft(formatDecimal(emitted.current, digits));
       return emitted.current;
@@ -137,6 +201,8 @@ export function useNumericDraft(
     if (bounds.min !== undefined) next = Math.max(bounds.min, next);
     if (bounds.max !== undefined) next = Math.min(bounds.max, next);
     setDraft(formatDecimal(next, digits));
+    setAvis(lue?.genre === 'valeur' && lue.converti ? `${lue.saisi} lu comme ${formatDecimal(next)} ${unite}.` : null);
+    base.current = next;
     if (next !== emitted.current) {
       emitted.current = next;
       onChange(next);
@@ -153,7 +219,7 @@ export function useNumericDraft(
     }
   };
 
-  return { draft, push, settle, revert, onFocusChange };
+  return { draft, push, settle, revert, onFocusChange, avis };
 }
 
 /**
