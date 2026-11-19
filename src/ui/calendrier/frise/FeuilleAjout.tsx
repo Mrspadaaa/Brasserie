@@ -273,7 +273,7 @@ export const FeuilleAjout: React.FC<FeuilleAjoutProps> = ({ mode, initial, conte
             <span className="text-sm text-cave-200">Jours actifs</span>
             {puceJours(b).map(p => (
               <button key={p.jours} type="button" aria-pressed={p.choisie} disabled={p.grisee} onClick={() => regler(choisirJours(b, p.jours))}
-                className="min-h-9 rounded-full border border-cave-700 px-3 text-sm text-cave-50 aria-pressed:border-cave-50 aria-pressed:bg-cave-850 disabled:opacity-40">{p.jours} j</button>
+                className="cal-jour-puce min-h-9 rounded-full border border-cave-700 px-3 text-sm text-cave-50 aria-pressed:border-cave-50 aria-pressed:bg-cave-850 aria-pressed:font-bold disabled:opacity-40">{p.jours} j</button>
             ))}
           </div>
         )}

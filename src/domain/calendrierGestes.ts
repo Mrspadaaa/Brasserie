@@ -564,7 +564,10 @@ export function fait(chose: ChoseCalendrier): Resolution {
  */
 export function lier(chose: ChoseCalendrier, liens: { batchId?: string; clientId?: string; evenementId?: string }, ctx: ContexteGestes, nom?: string): Resolution {
   const source = chose.source;
-  const texte = nom?.trim() ? `Liée à ${nom.trim()}` : 'Liée';
+  /* PC-NOTE-7 (lot B-C) : « Liée » pour un achat se lisait faux ; l'accord suit la chose : une vente, une fête, une activité « liée », un achat,
+     un papier « lié », des travaux « liés » */
+  const accord = chose.rangee === 'achats' || chose.rangee === 'papiers' || chose.rangee === 'brassins' ? 'Lié' : chose.rangee === 'travaux' ? 'Liés' : 'Liée';
+  const texte = nom?.trim() ? `${accord} à ${nom.trim()}` : accord;
   if (source.genre === 'creative') return { ok: true, ecritures: [{ op: 'patch', collection: 'creativeItems', id: source.id, patch: { liens: { ...chose.liens, ...liens } } }], effet: null, promesse: null, courbeApres: ctx.courbe, message: annuler(texte) };
   const plan = planDe(chose, ctx);
   if (!plan || plan.source !== 'manual') return refus('Un lien se pose sur une prévision manuelle ou une chose du carnet.', chose.ouvre);

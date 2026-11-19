@@ -794,7 +794,7 @@ const ETATS = [
       }
     },
     interdit: [/Blonde d’automne · Blonde d’automne/, /lié à Blonde d’automne · Blonde d’automne/],
-    attendu: [fn(async p => ({ ok: /Lié/.test(p.message || ''), dit: `message « ${(p.message || '').slice(0, 60)} »` }), 'le message « Liée à Blonde d’automne · Annuler »'),
+    attendu: [fn(async p => ({ ok: /Lié/.test(p.message || ''), dit: `message « ${(p.message || '').slice(0, 60)} »` }), 'le message « Liée? à Blonde d’automne · Annuler »'),
       fn(async p => p.evaluate(() => [...document.querySelectorAll('[data-chose], [data-barre]')].some(e => /^Hotte/.test(e.getAttribute('data-titre') || e.getAttribute('aria-label') || '') && /Blonde/.test(`${e.textContent} ${e.getAttribute('aria-label') || ''}`))), 'la pastille « lié à Blonde » sur la Hotte')] },
   { n: '50', nom: 'source-facture', geste: 'toucher la facture Brouwland', jouer: async p => { await toucher(p, { titre: 'Brouwland' }); }, attendu: [/Payé/] },
   { n: '51', nom: 'source-vente', geste: 'toucher la vente Noël privés', jouer: async p => {
@@ -1065,7 +1065,7 @@ const ETATS = [
   { n: '31d', nom: 'liste-dates-une-ligne', cave: true, geste: 'période, puis Liste ; chaque date lue sur une seule ligne', mesure: p => p.evaluate(() => (document.querySelector('[data-vue-liste]') ? 'liste' : 'frise')),
     jouer: async p => { await menuPeriode(p, /^Liste/); await p.keyboard.press('Escape').catch(() => {}); await attendre(400); },
     attendu: [fn(datesUneLigne, 'chaque date de la Liste sur une seule ligne (getClientRects : une ligne)')] },
-  /* n° 8 (E31, E37, D-113, D-126) : après Lier, « Liée à Blonde d’automne » et Annuler visibles en même temps que le détail ouvert de la Hotte */
+  /* n° 8 (E31, E37, D-113, D-126) : après Lier, « Liée? à Blonde d’automne » et Annuler visibles en même temps que le détail ouvert de la Hotte */
   { n: '49m', nom: 'lier-message-detail', cave: true, geste: 'appui long sur la Hotte, Lier, Blonde d’automne ; le détail de la Hotte ouvert ; message et Annuler lus en même temps', mesure: p => choseLue(p, 'Hotte'),
     jouer: async p => {
       await appuiLong(p, { titre: 'Hotte' }); await toucher(p, { dans: { role: 'menu' }, texte: /^Lier/ }); await toucher(p, { dans: { role: 'menu' }, texte: /^Blonde d’automne$/ });
@@ -1082,7 +1082,7 @@ const ETATS = [
       const an = m && [...m.querySelectorAll('button')].find(b => /Annuler$/.test((b.textContent || '').trim()));
       const d = [...document.querySelectorAll('[role="region"][aria-label^="Détail"]')].find(x => /Hotte/.test(`${x.getAttribute('aria-label')} ${x.textContent}`));
       return { ok: /Liée? à Blonde d’automne/.test(t) && vis(m) && vis(an) && vis(d), dit: `message « ${t.slice(0, 60) || 'absent'} » ${vis(m) ? 'visible' : 'invisible'}, Annuler ${vis(an) ? 'visible' : 'absent'}, détail de la Hotte ${vis(d) ? 'ouvert à l’écran' : 'absent'}` };
-    }), '« Liée à Blonde d’automne · Annuler » et le détail de la Hotte, à l’écran ensemble'),
+    }), '« Liée? à Blonde d’automne · Annuler » et le détail de la Hotte, à l’écran ensemble'),
       /* CRITIQUE-12 n° 3 (m49m : « prête 21 » puis « déc. ») : chaque date du détail de la Hotte liée sur une seule ligne */
       fn(async p => datesUneLigne(p, '[role="region"][aria-label^="Détail : Hotte"], [data-detail]'), 'chaque date du détail de la Hotte sur une seule ligne (n° 3 de CRITIQUE-12)')] },
   /* reste corr10 (m38) : plein écran à 390, puis 30 px de défilement : l'invite « Tourne le téléphone » est partie, ou ne couvre aucun nom */

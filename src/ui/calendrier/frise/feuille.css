@@ -50,3 +50,6 @@
 .cal-liste [data-poche] { scroll-margin-top: 200px; }
 .cal-liste [data-poche]:focus { outline: none; }
 .cal-liste [data-poche]:focus-visible { outline: 2px solid rgb(var(--cave-50)); outline-offset: 2px; }
+
+/* PC-NOTE-16 (paquet E) : la puce de jours actifs choisie (« 3 j ») se distinguait mal : coche et gras, sans changer son nom accessible */
+.cal-jour-puce[aria-pressed="true"]::before { content: "✓ "; }

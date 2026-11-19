@@ -359,7 +359,7 @@ describe('CRITIQUE-11 et 12 : le message ne déplace rien ; au grand écran et p
     const det = await screen.findByRole('region', { name: /^Détail : Hotte/ });
     await waitFor(() => expect(det.querySelector('[data-apercu-lien]')?.textContent).toMatch(/lié à Blonde d’automne/));
     const m = screen.getByRole('status');
-    expect(m.textContent).toMatch(/^Liée à Blonde d’automne · Annuler$/);
+    /* PC-NOTE-7 (lot B-C) : un achat est « lié », une vente « liée » */ expect(m.textContent).toMatch(/^Lié à Blonde d’automne · Annuler$/);
     expect(within(m).getByRole('button', { name: /Annuler/ })).toBeInTheDocument();
     /* marqué comme le message d'un geste qui ouvre son détail ; ancré sur la Hotte, hors de l'en-tête (CRITIQUE-12 n° 1 ; le détail est un
        obstacle : bloc CRITIQUE-12, « Lier ») */
