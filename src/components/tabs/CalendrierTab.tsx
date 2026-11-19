@@ -234,6 +234,8 @@ export function CalendrierTab(props: CalendrierTabProps) {
   const [feuille, setFeuille] = useState<FeuilleEtat | null>(null);
   const [idee, setIdee] = useState<string | null>(null);
   const [message, setMessage] = useState<MessageCal | null>(null);
+  /** L'id du message posé dans le flux faute de place libre (PC-109). */
+  const [fluxForce, setFluxForce] = useState<number | null>(null);
   const [drag, setDrag] = useState<DragEtat | null>(null);
   const [ici, setIci] = useState<string | null>(null);
   const [apercuLundi, setApercu] = useState<{ courbe: ReturnType<typeof courbeDecalee>; lache: string } | null>(null);

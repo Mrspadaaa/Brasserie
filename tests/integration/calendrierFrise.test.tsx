@@ -109,6 +109,16 @@ describe('C8 : une barre de moins de 24 px devient une marque (3 mois, 6 mois, A
     expect(nomsBarres()).toEqual([]);
   });
 
+  it('PC-110 (CRITIQUE-13 n° 4) : en 3 mois et en 6 mois aussi, les loyers sont UNE barre « Loyer du local −400 / mois », jamais un escalier', () => {
+    for (const semaines of [13, 26]) {
+      monter({ callbacks: { periode: plage(semaines) } });
+      const loyers = [...document.querySelectorAll('[data-rangee="papiers"] [data-chose]')].filter(e => /^Loyer du local/.test(e.getAttribute('aria-label') ?? ''));
+      expect(loyers, `${semaines} sem.`).toHaveLength(1);
+      expect(document.querySelector('[data-rangee="papiers"]')!.textContent).toContain('−400 / mois');
+      cleanup();
+    }
+  });
+
   it('en An : les choses gardent leur vraie durée, la courte devient une marque', () => {
     monter();
     fireEvent.click(document.querySelector('[data-ent-periode]')!);

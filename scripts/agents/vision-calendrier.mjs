@@ -407,7 +407,7 @@ const ETATS = [
   { n: '11', nom: 'f5a-menu', geste: 'appui long sur la Hotte', cave: true, jouer: async p => { await appuiLong(p, { titre: 'Hotte' }); },
     attendu: [/Épingler/, /Étoile/, /Achats seul/, /Dupliquer/, /Lier/, /Retirer/, fn(async p => p.evaluate(() => {
       const m = document.querySelector('[role="menu"]'); if (!m) return false;
-      const r = [...m.querySelectorAll('button, [role="menuitem"]')].find(b => /^Retirer/.test((b.textContent || '').trim())); if (!r) return false;
+      const r = [...m.querySelectorAll('button, [role="menuitem"]')].find(b => /^(Retirer|Ranger sans date|Annuler l|Annuler la|Annuler le)/.test((b.textContent || '').trim())); if (!r) return false;
       const q = r.getBoundingClientRect(); const e = document.elementFromPoint(q.left + q.width / 2, q.top + q.height / 2);
       return q.top >= 0 && q.bottom <= innerHeight && !!e && (r === e || r.contains(e));
     }), 'Retirer dans l’écran et touchable')] },
@@ -415,11 +415,11 @@ const ETATS = [
      état ; le Marché de Noël revient dans Fêtes, en S52, sans rechargement entre Retirer et Annuler */
   { n: '13a', nom: 'f5a-avant-retirer', geste: 'aller au Marché de Noël (aucun geste)', cave: true, repos: true, mesure: p => fetesLues(p), jouer: async p => { await trouver(p, { titre: 'Marché de Noël' }); await attendre(300); },
     attendu: [fn(noelEnS52, 'le Marché de Noël est dans Fêtes, en S52')] },
-  { n: '12', nom: 'f5a-retirer', geste: 'appui long sur le Marché de Noël, puis Retirer', cave: true, mesure: p => fetesLues(p), jouer: async p => { await appuiLong(p, { titre: 'Marché de Noël' }); await toucher(p, { dans: { role: 'menu' }, texte: /^Retirer/ }); },
+  { n: '12', nom: 'f5a-retirer', geste: 'appui long sur le Marché de Noël, puis Retirer', cave: true, mesure: p => fetesLues(p), jouer: async p => { await appuiLong(p, { titre: 'Marché de Noël' }); await toucher(p, { dans: { role: 'menu' }, texte: /^(Retirer|Ranger sans date|Annuler l|Annuler la|Annuler le)/ }); },
     attendu: [/Retirée? de S\d+/, /Sans date ›/, /Annuler/, fn(async p => { const t = await fetesLues(p); return { ok: !/Marché de Noël/.test(t), dit: `Fêtes : « ${t.slice(0, 60)} »` }; }, 'le Marché de Noël a quitté la rangée Fêtes')] },
   { n: '13', nom: 'f5a-annuler', geste: 'Retirer le Marché de Noël, puis Annuler (sans rechargement)', cave: true, /* l'effet voulu est le retour au repos : le changement est prouvé par 12 et par « il avait bien quitté Fêtes » */ repos: true, mesure: p => fetesLues(p),
     jouer: async p => {
-      await appuiLong(p, { titre: 'Marché de Noël' }); await toucher(p, { dans: { role: 'menu' }, texte: /^Retirer/ });
+      await appuiLong(p, { titre: 'Marché de Noël' }); await toucher(p, { dans: { role: 'menu' }, texte: /^(Retirer|Ranger sans date|Annuler l|Annuler la|Annuler le)/ });
       p.fetesRetiree = await fetesLues(p);
       await toucher(p, { dans: { role: 'status|alert' }, role: 'button', texte: /Annuler$/ });
       await attendre(400);
@@ -1009,7 +1009,7 @@ const ETATS = [
     ['M3', 'message-f6b', 'glisser la Blonde de 2 colonnes (promesse La Cigogne : alerte)', async p => { await glisserChose(p, 'Blonde d’automne', 2); }],
     ['M4', 'message-livrer', 'glisser la Blonde de 2 colonnes, puis « Livrer le … »', async p => { await glisserChose(p, 'Blonde d’automne', 2); await toucher(p, { texte: /^Livrer le/ }); }],
     ['M5', 'message-lier', 'appui long sur la Hotte, Lier, Blonde d’automne', async p => { await appuiLong(p, { titre: 'Hotte' }); await toucher(p, { dans: { role: 'menu' }, texte: /^Lier/ }); await toucher(p, { dans: { role: 'menu' }, texte: /^Blonde d’automne$/ }); }],
-    ['M6', 'message-retirer', 'appui long sur le Marché de Noël, Retirer', async p => { await appuiLong(p, { titre: 'Marché de Noël' }); await toucher(p, { dans: { role: 'menu' }, texte: /^Retirer/ }); }],
+    ['M6', 'message-retirer', 'appui long sur le Marché de Noël, Retirer', async p => { await appuiLong(p, { titre: 'Marché de Noël' }); await toucher(p, { dans: { role: 'menu' }, texte: /^(Retirer|Ranger sans date|Annuler l|Annuler la|Annuler le)/ }); }],
     ['M7', 'message-refus-jalon', 'tirer le jalon dry hop de la Blonde (intermédiaire) : refus', async p => {
       if (!(await existe(p, { titre: 'Blonde d’automne', sous: '[data-jalon="dry-hop"]' }))) throw new Absent('jalon [data-jalon="dry-hop"] de la Blonde introuvable');
       await glisserChose(p, 'Blonde d’automne', 1, { sous: '[data-jalon="dry-hop"]' });
@@ -1044,12 +1044,12 @@ const ETATS = [
     jouer: async p => { await glisserChose(p, 'Hotte', 2); await attendre(300); p.message = await messageLu(p); p.noteEtat = `message « ${p.message.slice(0, 80)} »`; },
     attendu: [/Annuler/, fn(messageSansNom, 'le message ne couvre aucun nom'), fn(annulerTouchable, 'Annuler touchable : elementFromPoint en son centre = Annuler')] },
   { n: '12m', nom: 'retirer-message-place', geste: 'appui long sur le Marché de Noël, Retirer ; lire la place du message et de son Annuler', mesure: p => fetesLues(p),
-    jouer: async p => { await appuiLong(p, { titre: 'Marché de Noël' }); await toucher(p, { dans: { role: 'menu' }, texte: /^Retirer/ }); await attendre(300); p.message = await messageLu(p); p.noteEtat = `message « ${p.message.slice(0, 80)} »`; },
+    jouer: async p => { await appuiLong(p, { titre: 'Marché de Noël' }); await toucher(p, { dans: { role: 'menu' }, texte: /^(Retirer|Ranger sans date|Annuler l|Annuler la|Annuler le)/ }); await attendre(300); p.message = await messageLu(p); p.noteEtat = `message « ${p.message.slice(0, 80)} »`; },
     attendu: [/Retirée? de S\d+/, fn(messageSansNom, 'le message ne couvre aucun nom'), fn(annulerTouchable, 'Annuler touchable : elementFromPoint en son centre = Annuler')] },
   /* n° 4 (E31, D-192) : le menu d'une fête dit l'effet de Dupliquer et de Retirer */
   { n: '11f', nom: 'f5a-menu-fete', cave: true, geste: 'appui long sur le Marché de Noël ; lire Dupliquer et Retirer avec leur effet',
     jouer: async p => { await appuiLong(p, { titre: 'Marché de Noël' }); await attendre(200); p.items = await itemsMenu(p); p.noteEtat = p.items.map(i => `« ${i.texte} »`).join(' ; ').slice(0, 300); },
-    attendu: [fn(async p => effetDit(p, /^Dupliquer en S\d+/), '« Dupliquer en S… » avec son effet'), fn(async p => effetDit(p, /^Retirer/), '« Retirer » avec son effet')] },
+    attendu: [fn(async p => effetDit(p, /^Dupliquer en S\d+/), '« Dupliquer en S… » avec son effet'), fn(async p => effetDit(p, /^(Retirer|Ranger sans date|Annuler l|Annuler la|Annuler le)/), '« Retirer » avec son effet')] },
   /* n° 6 (E33) : pendant f1-a (la Saison, sur la rangée Brassins, comme m390-09), la bulle ne croise ni un titre de rangée ni une pastille, et le tracé
      de la courbe ne barre aucune étiquette d'axe ; en 6 sem. puis en 6 mois */
   ...[['07b', 'f1a-bulle-6sem', null], ['07m', 'f1a-bulle-6mois', /^6 mois/]].map(([n, nom, periode]) => ({
@@ -1411,7 +1411,8 @@ const preteSur = (p, titre) => p.evaluate(t => {
  * jamais au-dessus du titre de la première rangée visible (la surimpression « sous-entete » de ea05c6bb8 l'était).
  */
 const NOMS_MESSAGE_REPLI = '[data-nom-rangee], [data-rangee] .cal-nom, [data-frise] .cal-lbl-t, [data-frise] .cal-lbl-m, [data-frise] .cal-lbl-j, [data-frise] .cal-duree, [data-frise] .cal-lie, [data-frise] .cal-pastille-p, [data-frise] .cal-renvoi';
-const PLACES_MESSAGE = ['pres', 'bas'];
+/* PC-107, PC-109 : l'alerte f6-b, et un message sans place libre, se posent dans le flux de la frise, sous leur chose (data-place="flux") */
+const PLACES_MESSAGE = ['pres', 'bas', 'flux'];
 async function mesureMessage(p) {
   const sel = await p.evaluate(async repli => {
     try { const m = await import('/src/ui/calendrier/frise/Message.tsx'); return typeof m.NOMS_MESSAGE === 'string' && m.NOMS_MESSAGE ? { s: m.NOMS_MESSAGE, d: 'Message.tsx' } : { s: repli, d: 'copie du harnais' }; }

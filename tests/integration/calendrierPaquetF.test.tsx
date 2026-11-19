@@ -138,3 +138,16 @@ describe('paquet F n° 5 (PC-141) : la fiche d’une fête de 3 jours dit ses jo
     expect(ligne.textContent).toMatch(/3 j/);
   });
 });
+
+describe('PC-143 et PC-NOTE-2 (paquet F, lot A) : les points d’une fête de 3 j ne font pas croire à des jours choisis', () => {
+  it('en échelle Jour, ses 3 points sont groupés (« 3 j »), jamais répartis sur les 7 jours de la semaine ; en Semaine, inchangés', () => {
+    StorageService.setUiState('calendrier_echelle', 'jour');
+    monter({ items: [FETE_3J], callbacks: { periode: { genre: 'dates', du: '2026-12-14', au: '2026-12-27' } as Periode } });
+    const pts = chose(/^Fête trois jours/).closest('[data-barre]')?.querySelector<HTMLElement>('[data-points]')
+      ?? document.querySelector<HTMLElement>('[data-points="3"]')!;
+    expect(document.querySelector('[data-frise]')!.getAttribute('data-echelle')).toBe('jour');
+    expect(pts.getAttribute('data-points-groupes')).toBe('');
+    const gauches = [...pts.querySelectorAll<HTMLElement>('[data-point]')].map(i => i.style.left);
+    expect(gauches.some(g => g.endsWith('%'))).toBe(false);
+  });
+});

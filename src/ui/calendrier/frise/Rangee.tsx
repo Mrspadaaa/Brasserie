@@ -661,10 +661,12 @@ export const Rangee: React.FC<RangeeProps> = props => {
   const cleRenvois = largeursRenvois.join(',');
   /* n° 15 : au téléphone et dès 3 mois, la pastille « lié à » dit l'icône lien et le nom court ; au 1280, le texte entier */
   const lieCourt = largeur < 700 || vueLarge;
+  /* PC-110 (CRITIQUE-13 n° 4, E43, E47 c) : une série mensuelle (3 occurrences au moins) est une barre « / mois » à toute échelle, pas seulement
+     dans l'An : en 3 et 6 mois, six « Loyer du local −400 » en escalier prenaient 150 px ; en 6 semaines (deux loyers au plus), rien ne change */
   const auJourVue = colonnes.length > 0 && ecartJours(colonnes[0].debut, colonnes[0].fin) >= 14;
   const { items, lignes, caddies, renvois: posRenvois } = React.useMemo(
     /* en An, une série mensuelle se pose en une barre (doute Papiers en An, CRITIQUE-12) */
-    () => disposer(auJourVue ? seriesEnBarres(montrees) : montrees, colonnes, largeurColonne, largeur, {
+    () => disposer(seriesEnBarres(montrees), colonnes, largeurColonne, largeur, {
       /* CRITIQUE-5 n° 14 : partout (téléphone, paysage, 1280), un nom reste entier tant que la place existe, quitte à ouvrir une ligne */
       reserveDroite, zoneTitre, vueLarge, renvois: largeursRenvois, paysage, lieCourt
     }),

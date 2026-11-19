@@ -57,6 +57,8 @@ export interface MessageProps {
   dansLaFrise?: boolean;
   /** Appelé juste avant ce défilement : il n'est pas celui du brasseur et ne chasse pas l'alerte. */
   onDefileSeul?: () => void;
+  /** PC-109 (CRITIQUE-13 n° 3, E33) : aucune place ne laisse les noms libres ; le conteneur pose alors le message dans le flux, sous la chose. */
+  onSansPlace?: () => void;
 }
 
 export const DUREE_MESSAGE_MS = 7000;
@@ -197,7 +199,19 @@ export function placerMessage(el: HTMLElement, ancre: string | undefined): 'pres
       for (const y of [r.top + (r.height - h) / 2, r.bottom + 6, r.top - 6 - h]) places.push({ x, y });
     }
   }
-  const libre = premiereLibre(w, h, places, obs, gauche, vw - 8, haut, bas + 1);
+  let libre = premiereLibre(w, h, places, obs, gauche, vw - 8, haut, bas + 1);
+  /* PC-109, PC-96, PC-85 (CRITIQUE-13 n° 3, E33 « jamais sur un nom ») : faute d'une place libre près de la chose, le bas couvrait des noms
+     (Livrer sur Achats, Lier sur Travaux, refus de jalon sur Ventes). Avant lui, une place qui ne couvre aucun nom, titre, détail, ni le + ni la
+     chose (une barre peut passer dessous) : la bande la plus proche de la chose (sinon du bas), à gauche, à gauche du +, puis au milieu. */
+  if (!libre) {
+    const durs = obs.filter(o => o.p >= 1);
+    const cible = r && r.height > 0 ? r.top + r.height / 2 : bas;
+    const ys: number[] = [];
+    for (let y = haut; y + h <= bas + 1; y += 4) ys.push(y);
+    ys.sort((u, v) => Math.abs(u + h / 2 - cible) - Math.abs(v + h / 2 - cible));
+    const xs = [gauche, (fab ? fab.left : vw) - w - 12, (vw - w) / 2];
+    libre = premiereLibre(w, h, ys.flatMap(y => xs.map(x => ({ x, y }))), durs, gauche, vw - 8, haut, bas + 1);
+  }
   /* sinon en bas, au-dessus des onglets, à gauche du + (l'alerte large : au-dessus du + qu'elle croiserait) */
   const fond = large && fab && fab.left < gauche + w ? Math.min(bas, fab.top - 10) : bas;
   const p = libre ?? { x: gauche, y: fond - h };
@@ -240,13 +254,15 @@ export function montrerEntiere(el: HTMLElement, ancre: string | undefined, avant
   return true;
 }
 
-export const Message: React.FC<MessageProps> = ({ message, onFermer, dureeMs = DUREE_MESSAGE_MS, detailOuvert = null, dansLaFrise = false, onDefileSeul }) => {
+export const Message: React.FC<MessageProps> = ({ message, onFermer, dureeMs = DUREE_MESSAGE_MS, detailOuvert = null, dansLaFrise = false, onDefileSeul, onSansPlace }) => {
   const [detailOuvertLigne, setDetailOuvertLigne] = React.useState(false);
   const racine = React.useRef<HTMLDivElement>(null);
   const fermer = React.useRef(onFermer);
   fermer.current = onFermer;
   const defileSeul = React.useRef(onDefileSeul);
   defileSeul.current = onDefileSeul;
+  const sansPlace = React.useRef(onSansPlace);
+  sansPlace.current = onSansPlace;
   const id = message?.id;
   const ancre = message?.ancre;
   /* CRITIQUE-4 n° 20 : une alerte qui attend une décision (« Livrer le 5 janv. ») ne part pas seule au bout de 7 s ; elle part au défilement,
@@ -268,6 +284,7 @@ export const Message: React.FC<MessageProps> = ({ message, onFermer, dureeMs = D
     if (dansLaFrise) {
       /* dans le flux de la frise : aucune place à calculer ; la frise défile pour la montrer entière, puis encore une fois après la remise en
          page qui suit l'écriture (le jouable attend 30 ms) */
+      el.dataset.place = 'flux';
       const avant = () => defileSeul.current?.();
       montrerEntiere(el, ancre, avant);
       const t = [150, 500, 900].map(ms => setTimeout(() => { if (el.isConnected) montrerEntiere(el, ancre, avant); }, ms));
@@ -277,6 +294,8 @@ export const Message: React.FC<MessageProps> = ({ message, onFermer, dureeMs = D
       if (!el.isConnected) return;
       const place = placerMessage(el, ancre);
       if (place) el.dataset.place = place; else delete el.dataset.place;
+      /* le bas couvrirait des noms : le message passe dans le flux de la rangée de sa chose, sous elle (comme l'alerte f6-b) */
+      if (place === 'bas' && ancre) sansPlace.current?.();
     };
     const minuteries: Array<ReturnType<typeof setTimeout>> = [];
     placer();
