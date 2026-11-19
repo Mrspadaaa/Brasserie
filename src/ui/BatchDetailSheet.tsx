@@ -33,7 +33,7 @@ import { BrewSystemFeedback } from './BrewSystemFeedback';
 import { yeastPreparationState } from '../domain/yeastPitching';
 import type { YeastPreparationPlan } from '../../functions/src/yeastSupplySchema';
 import { formatLitres } from '../domain/recipeMetrics';
-import { needsPackagingVolume } from '../domain/batchPackaging';
+import { needsPackagingVolume, packagingLimitL } from '../domain/batchPackaging';
 import { BatchPackagingForm } from './production/BatchPackagingForm';
 import { nombreFr } from '../domain/nombreAffiche';
 import { PlannedDate, PiedPlanifie, planDeStarter } from './production/fiche/PlannedDate';
@@ -697,6 +697,9 @@ export const BatchDetailSheet: React.FC<BatchDetailSheetProps> = ({
                 </p>
               </div>
               {needsPackagingVolume(draft) && <p role="status" className="text-xs text-attention">Volume conditionné manquant : ce lot échappe au calcul de la taxe sur la bière et au bilan de pertes.</p>}
+              {/* BR-115, BE-86 : un brassin ne donne pas plus de bière qu'il n'en contenait. Une valeur douteuse est signalée, jamais effacée. */}
+              {draft.volumePackagedL != null && packagingLimitL(draft) !== null && draft.volumePackagedL > packagingLimitL(draft)! + 1e-9 &&
+                <p role="status" className="text-xs text-attention">{nombreFr(draft.volumePackagedL, 1)} L conditionnés pour {nombreFr(packagingLimitL(draft)!, 1)} L brassés : vérifie le volume conditionné ou les fûts.</p>}
               {/* Une densité en attente de confirmation n'est pas encore une mesure : la courbe garde la valeur enregistrée. */}
               <FermentationCurveChart batch={gravityAlert ? { ...draft, [gravityAlert.field]: batch[gravityAlert.field] } : draft} />
               {draft.brewDay?.pitchedAt != null && <p className="text-xs text-cave-200">Levure ajoutée le {new Date(draft.brewDay.pitchedAt).toLocaleString('fr-CH')}{draft.brewDay.pitchTemperatureC != null ? ` à ${nombreFr(draft.brewDay.pitchTemperatureC, 1)} °C` : ' · température non relevée'}.</p>}
