@@ -29,8 +29,8 @@ function Sup({ texte }: { texte: string }) {
   return apres === undefined ? <>{texte}</> : <>{avant}1<sup>er</sup>{apres}</>;
 }
 
-export function Frise({ mois, plage, aujourdhui, jourMax, nbOperations, donnees, onPlage, onMois, resume }: {
-  mois: string; plage: Plage | null; aujourdhui: string; jourMax: string; nbOperations: number; donnees: DonneesFrise;
+export function Frise({ mois, plage, aujourdhui, jourMax, nbOperations, horsPeriode = '', donnees, onPlage, onMois, resume }: {
+  mois: string; plage: Plage | null; aujourdhui: string; jourMax: string; nbOperations: number; horsPeriode?: string; donnees: DonneesFrise;
   onPlage: (du: string, au: string) => void; onMois: () => void;
   /** v1 (33) : quand la période n'est pas la fenêtre dessinée (« Tout l'historique » : la frise montre le mois en cours), la ligne de compte dit la période, jamais « 30 jours » du mois montré. */
   resume?: React.ReactNode;
@@ -153,7 +153,7 @@ export function Frise({ mois, plage, aujourdhui, jourMax, nbOperations, donnees,
     {/* FIN-FRISE-AGRANDIR : poignée tenue, la bulle dit la plage à la place de « n jours · n opération », retirée (pas seulement cachée) : elle ne couvre aucun chiffre. La ligne garde sa hauteur. */}
     <div className="ops-frise" data-testid="frise" data-tenue={tenue ? '' : undefined}>
       <div className="ops-fr-rd">
-        {tenue ? null : resume ?? <span><b className="ops-m">{n}</b> jour{n > 1 ? 's' : ''} · <b className="ops-m">{nbOperations}</b> opération{nbOperations > 1 ? 's' : ''}</span>}
+        {tenue ? null : resume ?? <span><b className="ops-m">{n}</b> jour{n > 1 ? 's' : ''} · <b className="ops-m">{nbOperations}</b> opération{nbOperations > 1 ? 's' : ''}{horsPeriode ? <> · <b className="ops-m">{horsPeriode.split(' ')[0]}</b> {horsPeriode.split(' ').slice(1).join(' ')}</> : null}</span>}
         {plage && !resume && !tenue && <button type="button" className="ops-fr-x" aria-label="Revenir au mois entier" onClick={onMois}>× mois entier</button>}
       </div>
       <div className="ops-tr" ref={piste} onClick={toucher}>

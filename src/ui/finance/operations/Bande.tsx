@@ -22,7 +22,7 @@ export interface Actif { cle: string; libelle: string; retirer: () => void }
  * La bande du haut (v6b) : la pastille de mois, la pastille « en retard », la loupe, puis les piles du mois et leur légende.
  * Tout filtre actif se dit ici, hors du panneau « Filtres » : une liste qui change ne doit jamais changer sans le dire.
  */
-export function Bande({ libellePeriode, contexte, moisActif, month, today, onMonth, retardCents, onRetard, rechercheOuverte, onLoupe, query, onQuery, searchRef, searchId, actifs, piles, plage, onPlage, nomPiles, apportsCents, jours, donneesFrise, nbOperations, jourMax, videTexte, pileChoisie = null, onPile }: {
+export function Bande({ libellePeriode, contexte, moisActif, month, today, onMonth, retardCents, onRetard, rechercheOuverte, onLoupe, query, onQuery, searchRef, searchId, actifs, piles, plage, onPlage, nomPiles, apportsCents, jours, donneesFrise, nbOperations, horsPeriode = '', jourMax, videTexte, pileChoisie = null, onPile }: {
   libellePeriode: string;
   /** Ce que la période contient en plus de son intitulé, quand ce n'est pas évident (suivi sur tous les exercices, archives comprises). */
   contexte?: string;
@@ -51,6 +51,8 @@ export function Bande({ libellePeriode, contexte, moisActif, month, today, onMon
   donneesFrise: DonneesFrise;
   /** Opérations actives dans la plage (ou le mois) montrée par la frise. */
   nbOperations: number;
+  /** T2-3 : « 1 à payer » : les opérations à régler que la liste garde hors de la période ; vide = aucune. */
+  horsPeriode?: string;
   /** Dernier jour qu'on peut demander (un an après aujourd'hui). */
   jourMax: string;
   /** Ce que les piles couvrent, pour le lecteur d'écran (« le mois », « la période », « tout l'historique »). */
@@ -74,7 +76,7 @@ export function Bande({ libellePeriode, contexte, moisActif, month, today, onMon
   };
   const titre = plage ? titreJours(plage, today) : '';
   // s2ap2 : la frise se pose sous les piles et au-dessus de la légende (payé · à payer · dépensé) ; sans piles, elle est seule.
-  const frise = montrerFrise ? <Frise mois={month} plage={plage ?? null} aujourdhui={today} jourMax={jourMax} nbOperations={nbOperations} donnees={donneesFrise}
+  const frise = montrerFrise ? <Frise mois={month} plage={plage ?? null} aujourdhui={today} jourMax={jourMax} nbOperations={nbOperations} horsPeriode={horsPeriode} donnees={donneesFrise}
     onPlage={onPlage} onMois={() => { if (plage) onMonth(plage.au.slice(0, 7)); }}/> : null;
   /* Tour 2 (19.11) : la bande n'est plus un « choix de période » (le seul est l'en-tête de l'app) : elle se nomme par ce qu'elle filtre,
      et la lecture de la plage reste au lecteur d'écran sans se donner pour un second choix. */

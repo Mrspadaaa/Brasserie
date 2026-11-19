@@ -328,6 +328,15 @@ export function TransactionJournal({ transactions, payments, archives, request, 
   /* t3 (problème 5) : une année d'archive consultée remplit les champs « du … au … » à cette année ; « toutes les années » les laisse vides (aucune plage unique). */
   const jours = plage ?? (modeMois ? plageDuMois(month) : scope === 'archives' && /^\d{4}$/.test(String(selectedYear)) ? { du: `${selectedYear}-01-01`, au: `${selectedYear}-12-31` } : null);
   const nbOperations = useMemo(() => jours ? filtrees.filter(e => { const j = jourPlage(e); return j && isActiveTransaction(e.transaction) && dansJours(j, jours.du, jours.au); }).length : 0, [filtrees, jours?.du, jours?.au, plage, joursCompte]);
+  /* T2-3 (tour 3, 19.11) : la liste épingle les opérations encore à régler même hors de la période (voulu : « Tout montre au moins ce que montrent les courantes »).
+     Le compte de la frise le dit : « 0 opération · 1 à payer » ; sans lui, l'en-tête disait 0 pendant que la liste montrait une ligne. Seules ces lignes-là, jamais celles de la période. */
+  const horsPeriodeAReglerLibelle = useMemo(() => {
+    if (!jours || scope === 'archives' || year) return '';
+    const ouvertes = filtrees.filter(e => { const j = jourPlage(e); return j && e.open && ['unpaid', 'partial'].includes(e.payment.state) && isActiveTransaction(e.transaction) && !dansJours(j, jours.du, jours.au); });
+    if (!ouvertes.length) return '';
+    const sorties = ouvertes.filter(e => e.direction === 'out').length;
+    return `${ouvertes.length} ${sorties === ouvertes.length ? 'à payer' : sorties === 0 ? 'à encaisser' : 'à régler'}`;
+  }, [filtrees, jours?.du, jours?.au, plage, joursCompte, scope, year]);
   const puce = pose && React.isValidElement(assistant) ? React.cloneElement(assistant as React.ReactElement<{ pose?: typeof pose }>, { pose }) : assistant;
   const actifs: Actif[] = [
     /* FIN-DEUX-PERIODES : sans pastille ‹ › dans la page, un exercice (ouvert depuis les archives) se quitte par sa pastille ; la liste revient à la période de l'en-tête. */
@@ -405,7 +414,7 @@ export function TransactionJournal({ transactions, payments, archives, request, 
       retardCents={retard.totalCents} onRetard={() => change({ filter: 'late' })}
       rechercheOuverte={loupe || !!query} onLoupe={() => { if (!query) setLoupe(open => !open); }}
       query={query} onQuery={value => { change({ query: value }); if (!value) searchRef.current?.focus(); }} searchRef={searchRef} searchId={searchId}
-      actifs={actifs} piles={piles} apportsCents={apportsCents} nomPiles={nomPiles} plage={plage} jours={jours} donneesFrise={donneesFrise} nbOperations={nbOperations} jourMax={jourMaxi(aujourdhui)} videTexte={videTexte}
+      actifs={actifs} piles={piles} apportsCents={apportsCents} nomPiles={nomPiles} plage={plage} jours={jours} donneesFrise={donneesFrise} nbOperations={nbOperations} horsPeriode={horsPeriodeAReglerLibelle} jourMax={jourMaxi(aujourdhui)} videTexte={videTexte}
       pileChoisie={pileDeCategorie(category)} onPile={cle => { const c = categorieDePile(cle); change({ category: category === c ? 'all' : c }); }}
       onPlage={(du, au) => change({ du, au, allDates: false, year: '', ...(scope === 'archives' ? { scope: 'all' as JournalScope } : {}), ...(followingUp ? { filter: 'all' } : {}) })}/>
 

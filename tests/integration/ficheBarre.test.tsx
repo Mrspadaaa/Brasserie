@@ -84,12 +84,12 @@ describe('fiche m5fo-a', () => {
   it('les actions restent atteignables : Noter un paiement, Modifier, Avoir, recette, Échéance, Annuler l’écriture', () => {
     const p = { onPay: vi.fn(), onEdit: vi.fn(), onRefund: vi.fn(), onOpenRecipe: vi.fn() };
     ouvre(facture({}, {}), p);
-    fireEvent.click(screen.getByRole('button', { name: 'Noter un paiement' })); expect(p.onPay).toHaveBeenCalled();
+    fireEvent.click(screen.getByRole('button', { name: 'Confirmer le paiement' })); expect(p.onPay).toHaveBeenCalled();
     fireEvent.click(screen.getByRole('button', { name: /^Modifier$/ })); expect(p.onEdit).toHaveBeenCalled();
     fireEvent.click(screen.getByRole('button', { name: /Avoir ou remboursement/ })); expect(p.onRefund).toHaveBeenCalled();
     expect(screen.getByText('Échéance et prévision')).toBeTruthy();
     fireEvent.click(screen.getByText('Corriger une erreur de saisie'));
-    expect(screen.getByRole('button', { name: 'Annuler cette écriture' })).toBeTruthy();
+    expect(screen.getByRole('button', { name: 'Retirer cette écriture' })).toBeTruthy();
   });
   it('payée : l’état dit la date et le mode, plus de « Noter un paiement » ; le paiement se corrige par une contre-écriture', async () => {
     const { FinanceService } = await import('../../src/services/financeService');

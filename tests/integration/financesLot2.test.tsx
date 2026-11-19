@@ -128,7 +128,8 @@ describe('FIN-FICHE-CONFIRMER : la fiche confirme le paiement au jour même', ()
     expect(StorageService.getTransactions().find(t => t.id === 'T-BOUTON')?.finance?.proofNotNeeded).toBeUndefined();
   });
   it('une pièce déjà payée n’a pas de bouton « Confirmer le paiement »', () => {
-    StorageService.addTransaction({ ...aConfirmer('T-PAYE'), finance: { ...aConfirmer('T-PAYE').finance!, paymentStatus: 'unpaid' } } as Transaction);
+    StorageService.addTransaction({ ...aConfirmer('T-PAYE'), finance: { ...aConfirmer('T-PAYE').finance!, paymentStatus: 'paid' } } as Transaction);
+    FinanceService.recordPayment({ id: 'PAI-T-PAYE', transactionId: 'T-PAYE', date: '2026-11-15', amountCents: 800, direction: 'out', method: 'bank', recordedAt: '2026-11-15T08:00:00.000Z' } as never);
     ouvrir('T-PAYE');
     expect(screen.queryByRole('button', { name: /^Confirmer le paiement/ })).toBeNull();
   });

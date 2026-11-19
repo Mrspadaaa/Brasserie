@@ -93,9 +93,9 @@ describe('FN-12, FN-11 : un apport n’est jamais une créance', () => {
     expect(document.body.textContent).not.toMatch(/À encaisser/);
     expect(screen.getByText(/Apport : aucun paiement noté/)).toBeInTheDocument();
   });
-  it('une dépense à payer garde « Noter un paiement » et son échéance', () => {
+  it('une dépense à payer garde « Confirmer le paiement » et son échéance', () => {
     fiche(piece('T-2', 1500, {}, { dueDate: '2026-11-16' }));
-    expect(screen.getByText('Noter un paiement')).toBeInTheDocument();
+    expect(screen.getByText('Confirmer le paiement')).toBeInTheDocument();
     expect(screen.getByText('Échéance et prévision')).toBeInTheDocument();
   });
 });

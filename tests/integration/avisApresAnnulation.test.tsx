@@ -37,8 +37,8 @@ describe('3 : l’avis d’un mouvement ne survit pas à son annulation', () => 
     fireEvent.click(await screen.findByRole('button', { name: /ZZ TEST — Apport/ }));
     fireEvent.click(await screen.findByRole('button', { name: 'Corriger ce paiement saisi par erreur' }));
     fireEvent.click(screen.getByRole('button', { name: 'Confirmer la correction' }));
-    fireEvent.click(await screen.findByRole('button', { name: 'Annuler cette écriture' }));
-    fireEvent.click(screen.getByRole('button', { name: 'Confirmer la correction' }));
+    fireEvent.click(await screen.findByRole('button', { name: 'Retirer cette écriture' }));
+    fireEvent.click(screen.getByRole('button', { name: 'Confirmer le retrait' }));
     await waitFor(() => expect(screen.getByText(/Écriture annulée\./)).toBeInTheDocument());
     expect(screen.queryByText('Mouvement enregistré.')).not.toBeInTheDocument();
   });
