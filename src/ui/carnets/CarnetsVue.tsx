@@ -17,7 +17,7 @@ import {
   etatSortie, liensDe, liensQuiRetiennent, modifierNote, noteEnCritere, planDepuisChoix, poserSortie, ranger, remplacerRangement, renommer, supprimerCarnet, supprimerNote,
   type Destination, type EcritureCarnet, type Journal, type LigneARanger, type Resultat
 } from '../../domain/carnets/operations';
-import { consequenceApercu, critereQuiTranche, passe, placesDe, tableau as tableauDe } from '../../domain/carnets/comparer';
+import { consequenceApercu, critereQuiTranche, mentionValeurs, passe, placesDe, tableau as tableauDe } from '../../domain/carnets/comparer';
 import { analyserLigne, analyserTexte, decouper, genreLocal, jetons, normaliser, objetDe, PUCES_VA_DANS, vaDansDe, type LigneLocale, type RubriqueVaDans } from '../../domain/carnets/analyseLocale';
 import { aucunCarnetNEnParle, carnetProche, rattacher } from '../../domain/carnets/rattacher';
 import { doublonsDe, notesEnDouble } from '../../domain/carnets/doublons';
@@ -112,6 +112,24 @@ interface Proposee { cle: string; messageId: string; index: number; carnetId: st
 export function libelleProposee(l: Proposee['ligne']): string {
   const k = l.caracteristique;
   return k ? `Comparer sur ${/^[aeéèêiouyh]/i.test(k.nom) ? 'l’' : 'le '}${k.nom}${k.unite ? ` (${k.unite})` : ''}` : l.texte;
+}
+/**
+ * Tour 3, PCN-133 : les puces proposées du carnet ouvert, une par caractéristique (libellé normalisé), sans celles qui sont déjà un
+ * critère du carnet, 3 au plus (la plus ancienne d'abord).
+ */
+export function pucesDuCarnet(messages: ReturnType<typeof lireMessages>, carnet: ReturnType<typeof lireCarnets>[number], ecartees: ReadonlySet<string>): Proposee[] {
+  const cle = (k: { nom?: string } | undefined, texte: string) => normaliser(k?.nom ?? texte);
+  const deja = new Set(carnet.carnet.criteres.map(k => cle(k.caracteristique, k.texte)));
+  const vus = new Set<string>();
+  const sortie: Proposee[] = [];
+  for (const m of messages) (m.carnetMessage.propositions ?? []).forEach((pp, index) => {
+    const c = `${m.id}:${index}:${pp.texte}`;
+    const n = cle(pp.caracteristique, pp.texte);
+    if (pp.carnetId !== carnet.id || ecartees.has(c) || deja.has(n) || vus.has(n)) return;
+    vus.add(n);
+    sortie.push({ cle: c, messageId: m.id, index, carnetId: pp.carnetId, ligne: pp });
+  });
+  return sortie.slice(0, 3);
 }
 type RetourNeuf = Omit<Retour, 'id'>;
 /** La photo jointe au champ (P7, tour 3) : `jeton` écarte une lecture finie après un ✕. */
@@ -524,8 +542,11 @@ export function CarnetsVue(p: CarnetsVueProps) {
     const prix = a ? montant(a.prixCentimes) : null;
     const detailArt = a ? [a.nom ? a.domaine ?? a.vendeur : a.vendeur, a.pays].filter(Boolean).join(' · ') : '';
     const raison = lignesIA?.find(l => l.carnetId === rr.carnetId && l.raisonCarnet)?.raisonCarnet;
+    /* tour 3, PCN-100 : déposé depuis la liste, le retour dit aussi la place de l'article dans le carnet d'arrivée */
+    const tA = c && a ? tableauDe(c) : null;
+    const rangA = tA && a && c ? rangDuLien(tA, a.id, c.carnet.articles) : null;
     const bandeau: BandeauV = {
-      sorte: 'ailleurs', carnet: c?.title ?? 'un autre carnet', cite: txt, ...(raison ? { raison } : {}),
+      sorte: 'ailleurs', carnet: c?.title ?? 'un autre carnet', cite: txt, ...(raison ? { raison } : {}), ...(rangA ? { rang: rangA } : {}),
       ...(a ? { article: { nom: nomArticle(a), ...(detailArt ? { detail: detailArt } : {}), ...(prix ? { prix: `${prix} ${a.devise ?? 'CHF'}` } : {}), ...(a.origine === 'exemple' ? { exemple: true } : {}) } } : {})
     };
     return { bandeau, inverse, messageId, detail, ...(depuisM ? { carnetId: depuisM } : {}) };
@@ -1098,8 +1119,7 @@ export function CarnetsVue(p: CarnetsVueProps) {
     : null;
   /* P23 (D-35) : les puces proposées par l'IA pour le carnet ouvert, sous le bandeau ; elles restent jusqu'au toucher ou au ✕ */
   const pucesProposees: Proposee[] = ouvert && vue.sorte === 'carnet'
-    ? messages.flatMap(m => (m.carnetMessage.propositions ?? []).map((pp, index) => ({ cle: `${m.id}:${index}:${pp.texte}`, messageId: m.id, index, carnetId: pp.carnetId, ligne: pp })))
-      .filter(x => x.carnetId === ouvert.id && !ecartees.has(x.cle))
+    ? pucesDuCarnet(messages, ouvert, ecartees)
     : [];
   const proposeesNode = pucesProposees.length ? (
     <div className="cnf-proposees" role="group" aria-label="Proposé par l’IA">
@@ -1166,7 +1186,7 @@ export function CarnetsVue(p: CarnetsVueProps) {
   } else if (vue.sorte === 'comparer') {
     ecran = <Comparer titre={ouvert.title} statut={ouvert.status} critere={ouvert.carnet.criteres[0]} tableau={tableauV}
       onRetour={() => setVue({ sorte: 'carnet', id: ouvert.id })} onOuvrirArticle={articleId => setVue({ sorte: 'article', id: ouvert.id, articleId })}
-      nonLus={nonLusDe(ouvert.carnet.articles as never)} pictos={pictosDe(ouvert)}
+      nonLus={nonLusDe(ouvert.carnet.articles as never)} pictos={pictosDe(ouvert)} mention={mentionValeurs(ouvert.carnet.articles)}
       onChoisir={() => setVue({ sorte: 'choisir', id: ouvert.id })} />;
   } else if (vue.sorte === 'choisir') {
     const choix = ouvert.carnet.choix;

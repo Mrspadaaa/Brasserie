@@ -39,7 +39,7 @@ describe('critique 8, n° 2 : un seuil s’ajoute au critère débit sans efface
     const enLice = t.lignes.filter(l => l.rang !== null);
     expect(enLice[0].articleId).toBe('ZZ-V-A1');
     /* le seuil est lu : 1 100 m³/h est sous le minimum écrit, 1 500 et 1 800 ne le sont pas */
-    expect(t.lignes.find(l => l.articleId === 'ZZ-V-A4')?.horsSeuil?.['débit']).toBe('sous votre minimum');
+    expect(t.lignes.find(l => l.articleId === 'ZZ-V-A4')?.horsSeuil?.['débit']).toMatch(/^sous votre minimum de 1\s?200 m³\/h$/); /* tour 3, PCN-136 */
     expect(t.lignes.find(l => l.articleId === 'ZZ-V-A3')?.horsSeuil?.['débit']).toBeUndefined();
   });
 });

@@ -85,17 +85,17 @@ describe('P10 et P32 · l\'ordre suit les critères, puis le prix croissant ; l\
     /* critique 6, n° 4 (g01-8) : « classées par … », la même règle */
     expect(container.textContent).toContain(`classées par ${t.rangePar}`);
     /* « Ce qui compte » nomme le critère qui classe d'abord, pas une phrase qui ne classe rien (« plus de condensation ») */
-    expect(container.querySelector('.cn-cmp-critere')!.textContent).toBe("Ce qui compte tient 80 °C · proposé par l'IA"); /* critique 6, point 16 : sa source, lue sur la colonne */
+    expect(container.querySelector('.cn-cmp-critere')!.textContent).toBe("Ce qui compte tient 80 °C · proposé par l'IA, puis le débit · proposé par l'IA"); /* tour 3, PCN-118 : tous les critères qui classent ; critique 6, point 16 : sa source, lue sur la colonne */
   });
 });
 
 describe('P14 · Comparer = g01-8 : compromis calculé avec les valeurs, « Valeurs annoncées par les vendeurs », vignettes', () => {
-  it('compromisDe cite des valeurs du tableau (Ventilation : la 2e, moins chère, même tenue à 80 °C)', () => {
+  it('compromisDe (tour 3, PCN-106) : la 2e est sous le minimum de 1 500 m³/h, jamais proposée ; la 1re, seule à tenir 80 °C, et son écart', () => {
     const t = tableau(V)!;
     const c = compromisDe(t)!;
-    expect(c).toBe('la 2e, 1 450 CHF, soit 1 150 CHF de moins que la 1re ; le débit 1 200 m³/h au lieu de 1 800 m³/h ; tient 80 °C : oui, comme la 1re');
-    /* chaque nombre cité est une valeur ou un écart du tableau */
-    for (const n of ['1 450', '1 150', '1 200', '1 800']) expect(c).toContain(n);
+    expect(c).toBe('la 1re, la seule à tenir 80 °C, pour 1 150 CHF de plus que la 2e');
+    /* l'écart est un écart du tableau (2 600 − 1 450) ; aucune valeur alignée (g01-8) */
+    expect(c).not.toMatch(/m³\/h|: oui/);
   });
   it('compromisDe sur le prix seul : la 1re, la moins chère, et les valeurs lues citées sans jugement', () => {
     expect(compromisDe(tableau(pompes([pompe690, pompe245])))).toBe('la 1re, 245 CHF, la moins chère ; 445 CHF de moins que la 2e ; le débit 25 L/min contre 40 L/min ; la température max 100 °C contre 90 °C');
@@ -109,7 +109,7 @@ describe('P14 · Comparer = g01-8 : compromis calculé avec les valeurs, « Vale
     const { container } = render(<Comparer titre="Ventilation" statut="research" tableau={t} photos={{ 'ZZ-V-A1': 'data:image/png;base64,AA' }} onRetour={rien} />);
     const encart = container.querySelector('.cn-compromis')!;
     expect(encart.getAttribute('data-source')).toBe('locale');
-    expect(encart.textContent).toContain('Compromis : la 2e, 1 450 CHF');
+    expect(encart.textContent).toContain('Compromis : la 1re, la seule à tenir 80 °C, pour 1 150 CHF de plus que la 2e'); /* tour 3, PCN-106 */
     expect(encart.textContent).not.toContain('✻');
     expect(container.querySelector('.cn-annonce')!.textContent).toContain('Valeurs annoncées par les vendeurs');
     expect(container.querySelector('.cn-annonce')!.textContent).toContain('exemple');

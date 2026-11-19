@@ -171,7 +171,7 @@ function CarteCarnet({ c, ajouts, onOuvrir, onCollerLien, onVoirAVenir }: { c: C
   const vide = c.status === 'idea' && k.articles.length === 0;
   return (
     <div className="cn-carnet-bloc">
-      <div className={`cn-carnet${vide && onCollerLien ? ' cn-carnet-coller' : ''}`}>
+      <div className={`cn-carnet${vide && onCollerLien ? ` cn-carnet-coller${c.title.length > 24 ? ' cn-carnet-long' : ''}` : ''}`}>
         <button type="button" className="cn-carnet-corps" onClick={() => onOuvrir(c.id)}>
           <Vignette c={c} />
           <span className="cn-carnet-tx">

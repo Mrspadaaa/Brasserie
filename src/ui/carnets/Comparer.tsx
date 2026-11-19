@@ -121,6 +121,8 @@ export interface ComparerProps {
   onRetour: () => void;
   onOuvrirArticle?: (articleId: string) => void;
   onChoisir?: () => void;
+  /** Tour 3, PCN-164 : d'où viennent les valeurs (`mentionValeurs`) ; absent : les vendeurs. */
+  mention?: string;
 }
 
 /**
@@ -154,6 +156,13 @@ function useSuiteADroite(): [React.RefObject<HTMLDivElement | null>, number] {
  * Le critère qui classe d'abord (P32) : la 1re colonne de critère du tableau ; le critère passé en props s'il est celui-là (avec son
  * origine), sinon le texte du critère de la colonne. Aucun critère ne classe : `null` (l'en-tête dit alors « rangé par : le prix »).
  */
+/** Tour 3, PCN-118 : tous les critères qui classent, dans l'ordre des colonnes ; le 1er comme `critereQuiClasse`. */
+export function criteresQuiClassent(t: Tableau | null, critere?: CritereV): Array<{ texte: string; source?: 'phrase' | 'ia' }> {
+  return (t?.colonnes ?? []).filter(c => c.critereId && c.sens !== 'texte').map(col => (critere && critere.id === col.critereId
+    ? { texte: critere.texte, source: sourceDuCritere(critere) }
+    : { texte: col.critereTexte ?? col.nom, ...(col.critereSource ? { source: col.critereSource } : {}) }));
+}
+
 export function critereQuiClasse(t: Tableau | null, critere?: CritereV): { texte: string; origine?: CritereV['origine']; source?: 'phrase' | 'ia' } | null {
   const col = t?.colonnes.find(c => c.critereId && c.sens !== 'texte');
   if (!col) return null;
@@ -247,7 +256,7 @@ export function Comparer(p: ComparerProps) {
       </div>
       <h2 className="cn-titre">{p.titre}</h2>
       {classe && (
-        <p className="cn-mut cn-cmp-critere">Ce qui compte <b className="cn-encre">{classe.texte}</b>{classe.source === 'ia' ? ' · proposé par l\'IA' : ''}</p>
+        <p className="cn-mut cn-cmp-critere">Ce qui compte {criteresQuiClassent(t, p.critere).map((x, i) => <React.Fragment key={i}>{i ? ', puis ' : ''}<b className="cn-encre">{x.texte}</b>{x.source === 'ia' ? ' · proposé par l\'IA' : ''}</React.Fragment>)}</p>
       )}
       {classe && sansValeur && <p className="cn-mut cn-cmp-sans-valeur">« {sansValeur} » : sans valeur à comparer, il ne range pas</p>}
       {naissant ? (
@@ -327,7 +336,7 @@ export function Comparer(p: ComparerProps) {
               <span><b>Compromis :</b> {p.compromis ?? compromisLocal} <Provenance origine={p.compromis ? 'ia' : 'locale'} /></span>
             </p>
           )}
-          <p className="cn-mut cn-annonce">Valeurs annoncées par les vendeurs{p.exemple || (t && deLExemple(t)) ? <> · <Provenance origine="exemple" /></> : null}</p>
+          <p className="cn-mut cn-annonce">{p.mention ?? 'Valeurs annoncées par les vendeurs'}{p.exemple || (t && deLExemple(t)) ? <> · <Provenance origine="exemple" /></> : null}</p>
           {/* La ligne « Écarté » (D-52) : chaque écarté, son nom et sa raison, lisibles sans défiler (p2:h04-7) ; aucun écarté, aucune ligne. */}
           {ecartes.length > 0 && (
             <table className="cn-ecartes" aria-label={`Écartés, ${ecartes.length}`}>

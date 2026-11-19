@@ -166,28 +166,30 @@ describe('critique 6, lot B (Décider, Stocks › Matériel)', () => {
     expect(container.querySelector('.cn-offre-prix')!.textContent).toBe('2 600 CHF');
   });
 
-  it('15 · doute D-122 : sous le minimum de sa note (1 200 contre 1 500 m³/h), « sous votre minimum »', () => {
+  it('15 · doute D-122 : sous le minimum de sa note (1 200 contre 1 500 m³/h), « sous votre minimum de 1 500 m³/h » (tour 3, PCN-136)', () => {
     const k3 = V.carnet.criteres.find(k => k.id === 'ZZ-V-K3')!;
     expect(seuilDuCarnet(V, k3)).toMatchObject({ valeur: 1500, unite: 'm³/h', source: 'note' });
     const t = tableau(V)!;
-    expect(t.lignes.find(l => l.articleId === 'ZZ-V-A2')!.horsSeuil).toEqual({ 'débit': 'sous votre minimum' });
+    expect(t.lignes.find(l => l.articleId === 'ZZ-V-A2')!.horsSeuil!['débit']).toMatch(/^sous votre minimum de 1\s?500 m³\/h$/);
     expect(t.lignes.find(l => l.articleId === 'ZZ-V-A1')!.horsSeuil).toBeUndefined();
     expect(t.lignes.find(l => l.articleId === 'ZZ-V-A3')!.horsSeuil).toBeUndefined(); /* 1 500 : au minimum, il passe */
     const { container } = comparerV();
-    expect([...container.querySelectorAll('.cn-hors-seuil')].map(x => x.textContent)).toEqual(['sous votre minimum', 'sous votre minimum']);
+    const hs = [...container.querySelectorAll('.cn-hors-seuil')].map(x => x.textContent);
+    expect(hs).toHaveLength(2);
+    for (const x of hs) expect(x).toMatch(/^sous votre minimum de 1\s?500 m³\/h$/);
     cleanup();
     choisirV();
     const hotte = screen.getAllByText('Hotte murale 100 cm')[0].closest('.cn-article')!;
-    expect(hotte.textContent).toContain('sous votre minimum');
+    expect(hotte.textContent).toMatch(/sous votre minimum de 1\s?500 m³\/h/);
   });
 
   it('16 · Comparer et Choisir lisent sourceDuCritere : « proposé par l\'IA » pour un critère de l\'IA, rien pour sa phrase', () => {
     const { container } = comparerV();
-    expect(container.querySelector('.cn-cmp-critere')!.textContent).toBe("Ce qui compte tient 80 °C · proposé par l'IA");
+    expect(container.querySelector('.cn-cmp-critere')!.textContent).toBe("Ce qui compte tient 80 °C · proposé par l'IA, puis le débit · proposé par l'IA"); /* tour 3, PCN-118 */
     cleanup();
     const sienne = avec(V, { criteres: V.carnet.criteres.map(k => (k.id === 'ZZ-V-K2' ? { ...k, origine: 'vous' as const, source: 'phrase' as const } : k)) });
     const c2 = render(<Comparer titre={TITRE} statut="research" critere={sienne.carnet.criteres[0] as never} tableau={tableau(sienne)} onRetour={rien} />);
-    expect(c2.container.querySelector('.cn-cmp-critere')!.textContent).toBe('Ce qui compte tient 80 °C');
+    expect(c2.container.querySelector('.cn-cmp-critere')!.textContent).toBe("Ce qui compte tient 80 °C, puis le débit · proposé par l'IA"); /* tour 3, PCN-118 : sa phrase sans mention, le 2e critère (de l'IA) avec */
     cleanup();
     choisiFrigo();
     expect(screen.getByRole('region', { name: 'Pourquoi ce choix' }).textContent).toContain('Critère : tenir 2 °C stable en été');

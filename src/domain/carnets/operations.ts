@@ -709,8 +709,11 @@ export function supprimerCarnet(etat: Etat, args: { carnetId: string } & Finance
   const liens = liensQuiRetiennent(c, args.plans, args.transactions, args.payments);
   if (liens.length) return refus(verificationSuppression(liens));
   b.retirer(c.id);
+  /* tour 3, PCN-167 : ses messages partent avec lui (même écriture, même Annuler) ; un message qui a aussi rangé ailleurs reste, marqué */
   for (const m of b.messages()) {
-    if (!m.carnetMessage.effets.some(e => e.carnetId === c.id)) continue;
+    const effets = m.carnetMessage.effets;
+    if (!effets.some(e => e.carnetId === c.id) && m.carnetMessage.depuis !== c.id) continue;
+    if (effets.every(e => e.carnetId === c.id)) { b.retirer(m.id); continue; }
     b.ecrire({ ...m, carnetMessage: { ...m.carnetMessage, effets: m.carnetMessage.effets.map(e => (e.carnetId === c.id ? { ...e, carnetSupprime: true as const } : e)) } });
   }
   return b.resultat(`Carnet supprimé · ${c.title}`, { journal: { action: 'Suppression', entityId: c.id, resume: `Carnet d'idées supprimé : ${c.title}` } });

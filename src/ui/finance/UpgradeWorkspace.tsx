@@ -497,6 +497,8 @@ export function UpgradeWorkspace({ onOpenProject, createRequest, onCreateRequest
     const detail = upgradeDetails(plan), progress = upgradeProgress(plan, data.transactions, data.payments), missing = upgradeReadiness(plan);
     return <article className="upgrade-item" key={plan.id}>
       <button className="upgrade-project" onClick={() => open(plan)}>
+        {/* tour 3, PCN-124 : dans Stocks › Matériel, Réalisés porte la vignette de l'objet comme les rangées de g05-1 */}
+        {vue && scope === 'completed' && <span data-vignette-realise className="shrink-0"><VignetteObjet mots={[plan.title]} classe="!m-0 grid !h-11 !w-11 shrink-0 place-items-center overflow-hidden rounded-lg !bg-cave-850 object-cover" taille={30}/></span>}
         <span className="finance-row-main"><strong>{plan.title}</strong><span className="finance-muted">{realises.has(plan.id) && dateFacture(plan, data.transactions) ? `Payé · facture du ${new Date(`${dateFacture(plan, data.transactions)}T12:00:00`).toLocaleDateString('fr-CH', { day: 'numeric', month: 'short', year: 'numeric' })}` : upgradeDateLabel(plan)}{scope === 'future' ? ` · ${UPGRADE_STAGES[detail.stage]}` : ''}{scope === 'future' && <>{' · '}{dansLesPrevisions(plan)
           ? <span className="upgrade-prev upgrade-prev-oui">dans les prévisions · {moisCourtDe(plan)}</span>
           : <span className="upgrade-prev">pas dans les prévisions</span>}</>}</span>{!mobile && detail.purpose && <span className="upgrade-purpose">{detail.purpose}</span>}</span>

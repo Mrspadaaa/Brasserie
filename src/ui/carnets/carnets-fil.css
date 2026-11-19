@@ -78,7 +78,8 @@
 .cn-cadre-bloc .cn-cadre-tete > .cn-vert > svg { flex: none; }
 
 /* Critique 6, n° 29 : les puces « Va dans » tiennent sur un rang à 390 ; au-delà, le rang défile, il ne passe jamais à la ligne */
-.cn-champ-zone .cn-vadans { flex-wrap: nowrap; overflow-x: auto; scrollbar-width: none; gap: 6px; }
+/* Tour 3, PCN-121 : un fondu à droite dit que le rang défile ; la dernière puce n'est jamais coupée sans indice */
+.cn-champ-zone .cn-vadans { flex-wrap: nowrap; overflow-x: auto; scrollbar-width: none; gap: 6px; padding-right: 24px; -webkit-mask-image: linear-gradient(to right, #000 calc(100% - 28px), transparent); mask-image: linear-gradient(to right, #000 calc(100% - 28px), transparent); }
 .cn-champ-zone .cn-vadans::-webkit-scrollbar { display: none; }
 .cn-champ-zone .cn-vadans > .cn-puce { flex: none; white-space: nowrap; }
 

@@ -298,7 +298,8 @@ export const estDocCarnet = (item: Pick<CreativeItem, 'type'> | null | undefined
 /** Statut d'après le contenu : un choix → Choisi ; au moins un article → À comparer ; sinon Idée. */
 export function statutDe(carnet: Pick<DonneesCarnet, 'articles' | 'choix'>): StatutCarnet {
   if (carnet.choix) return 'validated';
-  return carnet.articles.length > 0 ? 'research' : 'idea';
+  /* tour 3, PCN-155 : « À comparer » demande au moins un article lu ; un lien à lire ou illisible laisse l'idée en Idée */
+  return carnet.articles.some(a => a.lecture === 'lue') ? 'research' : 'idea';
 }
 
 /** Les idées de la liste : lisibles et non archivées (une archivée se rouvre depuis Réalisés). `archives: true` les rend aussi. */

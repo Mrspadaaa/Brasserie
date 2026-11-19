@@ -64,17 +64,15 @@ describe('plan à venir : refusé, détacher, puis supprimer (aucune écriture h
     expect(JSON.stringify(plans)).toBe(plansAvant);
   });
 
-  it('la suppression retire articles, notes, façons, photos ; les messages restent, effet « carnet supprimé »', () => {
+  it('la suppression retire articles, notes, façons, photos, et ses messages avec lui (tour 3, PCN-167) ; Annuler rend tout', () => {
     const F = fixtureCarnets();
     const s = ok(supprimerCarnet(F, { carnetId: ID_EMBOUTEILLAGE, plans: [] }));
     const m = magasinMemoire(F); m.appliquer(s.ecritures);
     const apres = m.lire();
     expect(JSON.stringify(apres)).not.toContain('ZZ-B-A5');
     expect(apres.find(i => i.id === ID_EMBOUTEILLAGE)).toBeUndefined();
-    const msg = lireMessage(apres.find(i => i.id === 'ZZ-MSG-B2'))!;
-    expect(msg.carnetMessage.effets.every(e => e.carnetSupprime === true)).toBe(true);
-    expect(msg.title).toBe('gravité 4 becs vu chez un collègue, pas mal');
-    expect(filDe(apres, ID_EMBOUTEILLAGE).map(e => e.carnetSupprime)).toEqual([true, true, true]);
+    for (const id of ['ZZ-MSG-B1', 'ZZ-MSG-B2', 'ZZ-MSG-B3']) expect(apres.find(i => i.id === id)).toBeUndefined();
+    expect(filDe(apres, ID_EMBOUTEILLAGE)).toEqual([]);
     /* A2 */
     m.appliquer(s.inverse);
     expect(m.lire()).toEqual(magasinMemoire(F).lire());

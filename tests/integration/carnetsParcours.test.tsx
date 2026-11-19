@@ -66,7 +66,12 @@ describe('D2 CARNET-COEUR : de zéro, magasin mémoire vide, IA simulée', () =>
     expect(textes).toContain('système isobarique');
     expect(textes).toContain('penser à demander le SAV suisse');
     expect(Math.max(...ajouts)).toBeLessThanOrEqual(2);
-    /* Comparer : le tableau existe dès le 2e article (R26) */
+    /* tour 3, PCN-155 : les 6 pages de vendeur-N.ch sont illisibles (rien d'inventé) : l'idée reste Idée. Un lien lu ensuite la passe
+       en À comparer : le statut suit la lecture (remplacerRangement → poser → statutApres). */
+    expect(e().carnet.articles.every(a => a.lecture !== 'lue')).toBe(true);
+    expect(e().status).toBe('idea');
+    await m.envoyer('https://exemple.invalid/zz-test-isobarique-7-becs');
+    expect(e().carnet.articles.some(a => a.lecture === 'lue')).toBe(true);
     expect(e().status).toBe('research');
     m.vue.unmount();
     const m2 = { ...m, ...monterSur(m.magasin) };

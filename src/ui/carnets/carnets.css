@@ -588,3 +588,13 @@
 /* h01-6 : la veille dit son état sous son réglage, dans la même ligne */
 .cn-veille-tx { display: flex; flex-direction: column; min-width: 0; padding: 6px 0; }
 .cn-veille-tx > .cn-veille-etat { padding: 0; font-size: 14px; }
+
+/* Tour 3, PCN-154 : le menu ··· flotte sous son bouton, hors du flux */
+.cn-tete { position: relative; }
+.cn-tete > .cn-menu { position: absolute; top: 100%; right: 0; z-index: 30; }
+/* Tour 3, PCN-120 : à 390, une carte Idée au titre long prend toute la largeur ; « Coller un lien » passe dessous, à droite (court : g05-1 tel quel) */
+@media (max-width: 599px) {
+  .cn-carnet-long.cn-carnet-coller { display: grid; grid-template-columns: 1fr; grid-template-areas: "corps" "lien"; padding-right: 12px; }
+  .cn-carnet-long.cn-carnet-coller > .cn-carnet-corps { grid-area: corps; padding-right: 0; }
+  .cn-carnet-long.cn-carnet-coller > .cn-coller-lien { grid-area: lien; justify-self: end; margin: -4px 0 10px; }
+}

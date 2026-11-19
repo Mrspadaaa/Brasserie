@@ -407,7 +407,9 @@ export function tableau(c: CarnetDoc | Donnees): Tableau | null {
     for (const s of seuils) {
       const v = ordonnable(cellules[s.colonne], s.sens);
       if (v === null) continue;
-      if (s.sens === 'plus' ? v < s.valeur : v > s.valeur) hors[s.colonne] = s.sens === 'plus' ? 'sous votre minimum' : 'au-dessus de votre maximum';
+      /* tour 3, PCN-136 : le seuil s'écrit (« sous votre minimum de 1 500 m³/h ») */
+      const u = colonnes.find(k => k.nom === s.colonne)?.unite;
+      if (s.sens === 'plus' ? v < s.valeur : v > s.valeur) hors[s.colonne] = `${s.sens === 'plus' ? 'sous votre minimum' : 'au-dessus de votre maximum'} de ${nombreTexte(s.valeur)}${u ? ` ${u}` : ''}`;
     }
     return {
       articleId: a.id, nom: noms.get(a.id) ?? nomArticle(a), rang, cellules,
@@ -608,7 +610,8 @@ export function compromisDe(t: Tableau | null): string | null {
   const unite = (k: Colonne) => (k.unite ? ` ${k.unite}` : '');
   const val = (x: LigneTableau, k: Colonne) => { const v = x.cellules[k.nom]; return v ? `${nombreTexte(v.valeur)}${unite(k)}` : null; };
   if (p1 !== undefined) {
-    const candidats = L.slice(1).filter(x => x.prixCentimes !== undefined && memeDevise(x) && x.prixCentimes < p1
+    /* tour 3, PCN-106 : jamais une proposition sous son minimum (ou au-dessus de son maximum) */
+    const candidats = L.slice(1).filter(x => !x.horsSeuil && x.prixCentimes !== undefined && memeDevise(x) && x.prixCentimes < p1
       && ouiNon.every(k => nombreCellule(x, k) !== null && nombreCellule(x, k) === nombreCellule(premier, k)));
     if (candidats.length) {
       const perte = (x: LigneTableau) => {
@@ -626,6 +629,14 @@ export function compromisDe(t: Tableau | null): string | null {
       for (const k of ouiNon) parts.push(`${k.nom} : ${nombreTexte(nombreCellule(c, k) === 1)}, comme la 1re`);
       return parts.join(' ; ');
     }
+  }
+  /* tour 3, PCN-106 (g01-8) : la 1re seule à tenir un critère oui-non dit sa raison et son écart, sans aligner les valeurs */
+  const seuls = ouiNon.filter(k => nombreCellule(premier, k) === 1 && L.slice(1).every(x => !!x.horsSeuil || nombreCellule(x, k) !== 1));
+  if (seuls.length) {
+    const d2 = L[1];
+    const ecart = p1 !== undefined && d2.prixCentimes !== undefined && memeDevise(d2) ? d2.prixCentimes - p1 : null;
+    const tx = ecart === null || ecart === 0 ? '' : ecart < 0 ? `, pour ${prixTexte(-ecart, premier.devise)} de plus que la 2e` : `, et ${prixTexte(ecart, premier.devise)} de moins que la 2e`;
+    return `la 1re, la seule ${seuls.map(k => aFaire(k.nom)).join(' et ')}${tx}`;
   }
   /* aucun moins cher qui tienne les mêmes critères : la 1re, avec ce qui la met devant */
   const dits: string[] = [];
@@ -742,6 +753,14 @@ export function pourquoiDe(c: CarnetDoc | Donnees, articleId: string): string | 
   if (chez) parts.push(chez);
   if (!parts.length) return null;
   return `${majuscule(parts.join(' ; '))}.`;
+}
+
+/**
+ * Tour 3, PCN-164 : d'où viennent les valeurs comparées. Un article sans lien vient de sa phrase ; un lien lu, de la page du vendeur.
+ */
+export function mentionValeurs(articles: readonly Pick<Article, 'url' | 'lecture'>[]): string {
+  const vous = articles.some(a => !a.url), vendeurs = articles.some(a => !!a.url && a.lecture === 'lue');
+  return vous && vendeurs ? 'Valeurs annoncées par les vendeurs ou écrites par vous' : vous ? 'Valeurs écrites par vous' : 'Valeurs annoncées par les vendeurs';
 }
 
 /** Statut après un dépôt : Choisi reste Choisi ; sinon d'après le contenu (Idée → À comparer au 1er article). */

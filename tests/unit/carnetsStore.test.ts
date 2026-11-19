@@ -45,8 +45,9 @@ describe('magasin Firestore (port injecté)', () => {
     const s = supprimerCarnet(m.lire(), { carnetId: ID_EVIER, plans: [] });
     if (!s.ok) throw new Error(s.raison);
     m.appliquer(s.ecritures, s.journal);
-    expect(p.retires).toEqual([ID_EVIER]);
-    expect(p.poses).toEqual(['ZZ-MSG-E1']);
+    /* tour 3, PCN-167 : son message (qui ne visait que lui) part avec lui, document par document */
+    expect(p.retires).toEqual([ID_EVIER, 'ZZ-MSG-E1']);
+    expect(p.poses).toEqual([]);
     expect(p.journal).toEqual([{ action: 'Suppression', entityId: ID_EVIER, resume: 'Carnet d\'idées supprimé : ZZ TEST — Évier inox' }]);
   });
 });

@@ -270,7 +270,9 @@ export function objetDe(ligne: string): string {
   const avantMesure = o.split(/\s+(?=[\dØø⌀])/)[0].trim();
   if (avantMesure.length >= 3) o = avantMesure;
   o = o.replace(/[\s.:·\-–—]+$/, '').trim();
-  if (o.length > 40) o = o.slice(0, 40).replace(/\s+\S*$/, '');
+  /* tour 3, PCN-159 : « …pour le moût chaud » (48 car.) gardait « pour le » ; 60 car. au plus, jamais fini sur un mot-outil */
+  if (o.length > 60) o = o.slice(0, 60).replace(/\s+\S*$/, '');
+  o = o.replace(/(?:\s+(?:pour|le|la|les|de|du|des|à|au|aux|en|et|avec|sur|par))+$/i, '');
   return o ? majuscule(o) : majuscule(t.slice(0, 40));
 }
 

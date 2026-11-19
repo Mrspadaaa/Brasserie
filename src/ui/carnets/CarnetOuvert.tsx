@@ -87,6 +87,8 @@ export interface CarnetOuvertProps {
 
 function etiquetteStatut(c: CarnetV): string {
   if (c.status === 'idea') { const d = dateCourte(c.carnet.creeLe); return d ? `Idée · ${d}` : 'Idée'; }
+  /* tour 3, PCN-151 : réalisé (plan payé), la pastille le dit comme la ligne de sortie */
+  if (c.status === 'validated' && c.carnet.sortie?.etat === 'realise') { const d = dateCourte(c.carnet.sortie.realiseLe); return d ? `Réalisé le ${d}` : 'Réalisé'; }
   if (c.status === 'validated') { const d = dateCourte(c.carnet.choix?.le); return d ? `Choisi le ${d}` : 'Choisi'; }
   return STATUT_LIBELLE.research;
 }
@@ -189,6 +191,8 @@ function pastilleFacon(k: ContenuCarnetV, f: FaconV, sep: Separation | null): { 
 
 export function CarnetOuvert(p: CarnetOuvertProps) {
   const c = p.carnet, k = c.carnet;
+  /* tour 3, PCN-109 : la pastille R47 dit le lien vers À venir ; la ligne de sortie sous le choix ne le redit pas */
+  const sortieEnPastille = !!k.sortie?.planId && p.liens.some(l => l.id === k.sortie!.planId);
   const [menu, setMenu] = useState(false);
   /* critique 6, n° 22 (R21) : le menu « Renommer / Supprimer l'idée » se ferme dès qu'on choisit (✎ compris), à Échap et au toucher
      ailleurs ; il ne reste jamais au-dessus du cadre de renommage. */
@@ -326,15 +330,16 @@ export function CarnetOuvert(p: CarnetOuvertProps) {
             dit « 2 façons à comparer ») ; jamais de points ●○○○ en plus (n° 16). */}
         {!(etatTete && c.status === 'research') && <span className={`cn-pastille cn-statut-${c.status}`}>{etiquetteStatut(c)}</span>}
         <button type="button" className="cn-ico" aria-label="Plus" aria-expanded={menu} onClick={() => setMenu(m => !m)}><Ellipsis size={22} aria-hidden /></button>
+        {/* tour 3, PCN-154 : le menu flotte sous ···, hors du flux (le titre ne descend plus) */}
+        {menu && (
+          <div ref={refMenu} className="cn-feuille cn-menu" role="menu">
+            <button type="button" role="menuitem" className="cn-feuille-item" onClick={() => { setMenu(false); p.onRenommer(); }}><Pencil size={18} aria-hidden /> Renommer</button>
+            <button type="button" role="menuitem" className="cn-feuille-item cn-rouge" onClick={() => { setMenu(false); p.onSupprimer(); }}>
+              {/* PCN-189 (test en ligne 4) : un carnet choisi n'est plus une idée */}
+              {c.status === 'validated' ? 'Supprimer le carnet' : "Supprimer l'idée"}</button>
+          </div>
+        )}
       </div>
-      {menu && (
-        <div ref={refMenu} className="cn-feuille cn-menu" role="menu">
-          <button type="button" role="menuitem" className="cn-feuille-item" onClick={() => { setMenu(false); p.onRenommer(); }}><Pencil size={18} aria-hidden /> Renommer</button>
-          <button type="button" role="menuitem" className="cn-feuille-item cn-rouge" onClick={() => { setMenu(false); p.onSupprimer(); }}>
-            {/* PCN-189 (test en ligne 4) : un carnet choisi n'est plus une idée */}
-            {c.status === 'validated' ? 'Supprimer le carnet' : "Supprimer l'idée"}</button>
-        </div>
-      )}
       <div className="cn-titre-ligne">
         <h2 className="cn-titre">{c.title}</h2>
         <button type="button" className="cn-ico" aria-label="Renommer" onClick={() => { setMenu(false); p.onRenommer(); }}><Pencil size={20} aria-hidden /></button>
@@ -384,7 +389,7 @@ export function CarnetOuvert(p: CarnetOuvertProps) {
             <span className="cn-lien">Pourquoi <ChevronRight size={16} aria-hidden /></span>
           </button>
           {k.sortie
-            ? <p className="cn-avenir-ligne"><CalendarCheck size={18} aria-hidden /> {texteSortie(k.sortie)}</p>
+            ? !sortieEnPastille && <p className="cn-avenir-ligne"><CalendarCheck size={18} aria-hidden /> {texteSortie(k.sortie)}</p>
             : p.onEnvoyerAVenir && <button type="button" className="cn-action" onClick={p.onEnvoyerAVenir}><CalendarCheck size={18} aria-hidden /> Envoyer dans À venir</button>}
         </div>
       )}
