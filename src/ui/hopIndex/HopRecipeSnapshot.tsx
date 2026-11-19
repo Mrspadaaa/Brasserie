@@ -18,7 +18,8 @@ const doseText = (doseGL: number | undefined) => doseGL === undefined ? 'dose in
 
 /** Read-only step header: the same model and rounding as the scenario workshop. */
 export function HopRecipeSnapshot({ recipe }: { recipe: TrialRecipe }) {
-  const analysis = analyseHopRecipe(recipe);
+  // TL-27 : le défaut de la fiche (`recipe.boilMin ?? 60`), pour ne pas écrire « IBU incomplets : durée d'ébullition » sur une recette sans durée enregistrée.
+  const analysis = analyseHopRecipe({ ...recipe, boilMin: recipe.boilMin ?? 60 });
   return <section className="hop-workbench hop-recipe-snapshot" aria-label="Bilan de houblonnage de la recette">
     <div className="hop-style-heading"><h3>Amertume et répartition</h3><span className="hop-small">{analysis.style.name ? (analysis.style.ibu ? analysis.style.name : `${analysis.style.name} · style non reconnu`) : 'Style à préciser'}</span></div>
     {!analysis.style.ibu && !(analysis.hot.total != null && analysis.hot.total > 0)

@@ -49,7 +49,8 @@ export function HopRecipeWorkbench({ recipe, onChange, onNavigate, onPlanYeast, 
 }) {
   const uid = useId(), { varieties, loading, error: catalogueError } = useHopCatalogue();
   const knowledge = useStorageValue(StorageService.getHopKnowledge);
-  const analysis = analyseHopRecipe(recipe), key = hopRecipeKey(recipe);
+  // TL-27 : une recette sans durée d'ébullition enregistrée bout 60 min, comme sur la fiche (`recipe.boilMin ?? 60`) ; sans ce défaut, « Calcul incomplet : durée d'ébullition » s'écrivait pour toute la recette.
+  const analysis = analyseHopRecipe({ ...recipe, boilMin: recipe.boilMin ?? 60 }), key = hopRecipeKey(recipe);
   const [view, setView] = useState<'balance' | 'adjust' | 'flavor'>(() => session?.current?.view ?? 'balance');
   const [local, setLocal] = useState(() => session?.current?.local ?? ({ key, draft: createHopRecipeAdjustment(recipe) }));
   const [goal, setGoal] = useState<SensoryGoal>(() => session?.current?.goal ?? 'balanced'), [allVarieties, setAllVarieties] = useState(() => session?.current?.allVarieties ?? false);
