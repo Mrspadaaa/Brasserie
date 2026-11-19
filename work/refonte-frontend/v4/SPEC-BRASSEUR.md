@@ -2260,3 +2260,13 @@ Capture : work/missions/2026-11-18-choix-calendrier/brasseur/zoom-glisser-18-11.
   (lu : la toile pleine largeur restait ouverte rangée repliée, la piste SO₄ serrait son chiffre contre le point, le pointillé du départ (HCO₃) n'était pas expliqué ; corrigé EAU-6 à EAU-8, e86249a9c.)
 - **19.11** (07:42), mot pour mot, trois captures à 390 de l'étape Levure 4/7, onglet « Ma levure » (White Labs Munich Lager Yeast 500g après Andechs Lager, OG 1,026, conduite 19 °C puis 4 °C) : « Lance une sous session pour la levure uniquement sur la partie "ma levure" en /rc. Il y a énormément de problème, même en terme de fluidité »
   (lu : portée Ma levure seule ; liste figée LEV-1 à LEV-11 dans `work/missions/2026-11-19-ma-levure/LISTE.md` ; la fluidité se chronomètre au téléphone simulé, CPU ×4, une interaction au-delà de 100 ms est un défaut.)
+
+### Recette › Levure › Ma levure : l'autocomplétion par l'IA, et la méthode (19.11)
+
+Sur sa capture de Ma levure en ligne (Munich Lager Yeast, traits « rien de publié », « négatif (simulé) à confirmer ») :
+
+> « Pourquoi il y a pas la possibilité d'appeler l'autocomplete de l'agent IA ? »
+>
+> « Pareil sur beaucoup de fiches, c'est une fonctionnalité oublié ? »
+>
+> « Aussi la session levure n'a pas fait de mini maquettes ??? »
