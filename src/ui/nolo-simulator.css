@@ -35,7 +35,8 @@
 .nolo-solver-reset { border: 1px solid rgb(var(--c-665548)); color: rgb(var(--ct-d1c2b5)); }
 .nolo-solver-reset:hover { background: rgb(var(--c-302820)); }
 .nolo-solver-details { border-top: 1px solid rgb(var(--cave-700)); padding-top: 2px; }
-.nolo-solver-details summary { min-height: 28px; padding: 5px 0; color: rgb(var(--ct-cbbcaf)); cursor: pointer; }
+/* k1 point 8 : `padding: 5px 0` effaçait la réserve de 1,75 rem que index.css garde pour le chevron : le texte touchait la flèche. */
+.nolo-solver-details summary { min-height: 28px; padding: 5px 1.75rem 5px 0; color: rgb(var(--ct-cbbcaf)); cursor: pointer; }
 .nolo-solver-details[open] > :not(summary) { margin-top: 6px; }
 .nolo-solver-details ul { padding-left: 16px; display: grid; gap: 5px; }
 .nolo-solver-details table { width: 100%; table-layout: fixed; border-collapse: collapse; font-size: 12px; }
