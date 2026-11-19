@@ -109,3 +109,15 @@ describe('LR1-6 réserve : pendant la 3e lecture, le total n’est pas souligné
     expect(niveau().getAttribute('data-dp-niveau')).not.toBe('inconnu');
   });
 });
+
+describe('v3-5 : pendant la 3e lecture, le bouton dit ce qu’on attend (pas « Confirmer » gris à roue)', () => {
+  it('attente : « 3e lecture en cours… », désactivé ; la 3.8 finie : « Confirmer »', async () => {
+    const { view, ouvrir } = await lireEnFlux();
+    const bouton = screen.getByRole('button', { name: 'Vérification en cours' });
+    expect(bouton.textContent).toMatch(/3e lecture en cours…/);
+    expect(bouton.textContent).not.toMatch(/Confirmer/);
+    expect((bouton as HTMLButtonElement).disabled).toBe(true);
+    await ouvrir();
+    expect(view.container.textContent).toMatch(/Confirmer/);
+  });
+});
