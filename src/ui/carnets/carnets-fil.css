@@ -15,8 +15,8 @@
 .cnf-aides > .cn-coller { align-self: flex-start; }
 .cnf-aides-ligne { display: flex; gap: 6px; align-items: center; min-width: 0; }
 .cnf-aides-ligne > .cn-bulle { flex: 1 1 auto; min-width: 0; min-height: 36px; padding: 6px 10px; align-items: center; }
-/* tour 3, PCN-103 : la bulle dit entre quoi ; deux lignes au plus, jamais coupée par « … » sur une seule */
-.cnf-aides-ligne > .cn-bulle > span:last-child { min-width: 0; overflow: hidden; display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; line-height: 1.25; text-align: left; }
+/* tour 3, PCN-103 et f5 n° 2 : la bulle dit entre quoi, les deux façons entières ; elle prend les lignes qu’il faut, jamais coupée par « … » */
+.cnf-aides-ligne > .cn-bulle > span:last-child { min-width: 0; overflow-wrap: anywhere; line-height: 1.25; text-align: left; }
 .cnf-aides-ligne > .cn-coller { flex: 0 1 auto; min-width: 0; max-width: 55%; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; min-height: 36px; }
 .cn-champ-zone[data-clavier] { gap: 6px; padding-top: 6px; padding-bottom: 6px; }
 

@@ -229,6 +229,13 @@ const OBJETS_A_PART = new Set(jetons([
 ].join(' ')));
 /** Une tête qui dit « ce n'est pas d'ici » (« autre projet, sans rapport : », « rien à voir : »). */
 const AUTRE_SUJET = /^(?:(?:un |une )?autre (?:projet|sujet|chose|idée)|sans rapport|rien à voir)(?:\s*,\s*(?:sans rapport|rien à voir))?\s*[:—–-]\s*/i;
+/** Tour 3, f5 (n° 1) : la phrase sans sa tête de renvoi (« autre projet, sans rapport : un frigo… » → « un frigo… ») ; `null` sans elle. */
+export function sansAutreSujet(texte: string): string | null {
+  const brut = texte.replace(/^\s*ZZ TEST\s*[—–-]\s*/i, '').trim();
+  const m = AUTRE_SUJET.exec(brut);
+  const reste = m ? brut.slice(m[0].length).trim() : '';
+  return reste ? reste : null;
+}
 const TETE_SANS_OBJET =/^(?:doit|doivent|tient|tenir|tiennent|faut|faudrait|il|on|au|aux|minimum|maximum|mini|maxi|min|max|moins|plus|pas|entre|supporte|resiste|assez|trop|tres|bien|mieux|avec|sans|pour|si|et|ou)(?:\s|$)|^\d/;
 /**
  * L'objet que nomme une phrase quand il n'est pas celui du carnet ouvert (« tuyau silicone 8 mm, 5 m » dans la Ventilation → « Tuyau
@@ -835,7 +842,7 @@ export function CarnetsVue(p: CarnetsVueProps) {
   };
   const lignesApercu = useMemo(() => (texte.trim() ? analyserTexte(texte) : []), [texte]);
   const envoyer = async () => {
-    const txt = texte.trim();
+    let txt = texte.trim();
     /* P7 : la photo jointe et prête part avec l'envoi (seule, ou avant le texte) ; en lecture, elle attend */
     const ph = jointe?.jpeg && !edition ? jointe.jpeg : null;
     if (!txt && !ph) return;
@@ -851,6 +858,9 @@ export function CarnetsVue(p: CarnetsVueProps) {
     /* n° 3 : le carnet que le cadre a annoncé, par le même calcul, ou celui qu'il a choisi d'un toucher */
     const dEnvoi = ouvert && depuis ? destinationDans(txt, ouvert, carnets) : null;
     destEnvoi.current = dEnvoi ? corrigeCarnet ?? dEnvoi.carnetId : null;
+    /* tour 3, f5 (n° 1) : « autre projet, sans rapport : … » envoyé ailleurs : une note, sans la phrase de renvoi (jamais un critère) */
+    const horsSujet = ouvert && destEnvoi.current && destEnvoi.current !== ouvert.id ? sansAutreSujet(txt) : null;
+    if (horsSujet) { txt = horsSujet; aForcer.current = aForcer.current ?? 'note'; }
     titreNeufEnvoi.current = destEnvoi.current === CARNET_NEUF && dEnvoi ? dEnvoi.titre : null;
     carnetChoisi.current = !!dEnvoi && !!corrigeCarnet;
     setCorrigeCarnet(null);
@@ -967,12 +977,15 @@ export function CarnetsVue(p: CarnetsVueProps) {
   const suggestion = tranche && vue.sorte === 'carnet' && !retour && etatR.etape !== 'en-cours' && !edition && !feuille
     ? { critere: tranche.critere.texte, a: tranche.entre[0], b: tranche.entre[1] } : null;
   const consequence = ouvert && lignesApercu.length ? consequenceApercu(ouvert, lignesApercu) : null;
-  const auto = ouvert && vue.sorte === 'carnet' && !edition ? vaDansDe(texte) : null;
+  const autoBrut = ouvert && vue.sorte === 'carnet' && !edition ? vaDansDe(texte) : null;
   /* n° 3 : le carnet visé pendant la frappe (même calcul qu'à l'envoi), corrigeable d'un toucher */
   const destCalculee = ouvert && vue.sorte === 'carnet' && !edition && texte.trim() ? destinationDans(texte, ouvert, carnets) : null;
   const destChoisie = destCalculee ? corrigeCarnet ?? destCalculee.carnetId : null;
   const titreDe = (id: string) => (id === CARNET_NEUF ? `Nouveau carnet ${destCalculee?.titre ?? ''}` : tous.find(c => c.id === id)?.title ?? '');
   const vers = ouvert && destChoisie && destChoisie !== ouvert.id ? titreDe(destChoisie) : undefined;
+  /* tour 3, f5 (n° 1) : la phrase de renvoi (« autre projet, sans rapport : ») n'est jamais un critère : une note, citée sans elle */
+  const horsSujetVu = vers ? sansAutreSujet(texte) : null;
+  const auto: RubriqueVaDans | null = autoBrut && horsSujetVu ? 'note' : autoBrut;
   const vaDansCarnet = ouvert && destCalculee && (destCalculee.carnetId !== ouvert.id || (corrigeCarnet && corrigeCarnet !== ouvert.id))
     ? { options: [...new Set([destCalculee.carnetId, corrigeCarnet, ouvert.id].filter((x): x is string => !!x))].map(id => ({ id, libelle: id === ouvert.id ? 'Ici' : titreDe(id) })),
       choisi: destChoisie!, onChoisir: (id: string) => setCorrigeCarnet(id) }
@@ -1049,7 +1062,7 @@ export function CarnetsVue(p: CarnetsVueProps) {
     const noteDbl = dbl && ouvert ? ouvert.carnet.notes.find(n => n.id === dbl.noteId) : undefined;
     const leDbl = noteDbl ? dateCourte(noteDbl.modifieeLe ?? messages.find(m => m.id === noteDbl.messageId)?.carnetMessage.le ?? ouvert?.carnet.creeLe) : null;
     const doublon = noteDbl ? { le: leDbl ?? '', texte: noteDbl.texte, onGarderAPart: () => setAPart(true) } : null;
-    return <CadreArrivee cadre={{ sorte: 'texte', rubrique, texte, origine: 'locale', ...(vers ? { vers } : {}) }} onAnnuler={() => { setTexte(''); setAPart(false); setCorrigeCarnet(null); }} consequence={vers ? null : consequence} aides={aides} doublon={doublon} />;
+    return <CadreArrivee cadre={{ sorte: 'texte', rubrique, texte: horsSujetVu ?? texte, origine: 'locale', ...(vers ? { vers } : {}) }} onAnnuler={() => { setTexte(''); setAPart(false); setCorrigeCarnet(null); }} consequence={vers ? null : consequence} aides={aides} doublon={doublon} />;
   };
   /**
    * R14, R17, R25 : la ligne qu'un message vient de ranger dans le carnet ouvert s'éclaire à sa place, sa phrase citée dessous ; pour un
