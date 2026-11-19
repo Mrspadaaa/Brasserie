@@ -1,0 +1,44 @@
+Serveur 1/1 : npm run dev -- --port 3110 --strictPort  (journal : C:\Users\mrspa\AppData\Local\Temp\with-server-xp7W78\serveur-1-3110.log)
+Attente du port 3110…
+Serveur prêt sur le port 3110
+
+Tous les serveurs sont prêts. Lancement : node work/missions/2026-11-19-bugs-ecrans/voies/k1/capturer-x1.mjs
+
+390-clair br6 : avant « 46 » ; après « 0,1 kg » : champ = 100 ; avis = 0,1 kg lu comme 100 g.
+390-clair br6 refus : champ = 100 ; avis = « 0,1 L » : ce champ est en g. La valeur précédente (100 g) est conservée.
+390-clair paliers (clic) : true
+390-clair br5 par défaut : 68,5 °C : FG plus haute d’environ 2 points (repère : 66,5 °C).
+390-clair br5 palier touché : Palier 1 · Saccharification, 68,5 °C, 60 min
+390-clair br5 à 63 °C : 68,5 °C : FG plus haute d’environ 2 points (repère : 66,5 °C).
+390-clair br98 onglet Simuler : true
+390-clair br98 options : 
+390-cave br6 : avant « 46 » ; après « 0,1 kg » : champ = 100 ; avis = 0,1 kg lu comme 100 g.
+390-cave br6 refus : champ = 100 ; avis = « 0,1 L » : ce champ est en g. La valeur précédente (100 g) est conservée.
+390-cave paliers (clic) : true
+390-cave br5 par défaut : 68,5 °C : FG plus haute d’environ 2 points (repère : 66,5 °C).
+390-cave br5 palier touché : Palier 1 · Saccharification, 68,5 °C, 60 min
+390-cave br5 à 63 °C : 68,5 °C : FG plus haute d’environ 2 points (repère : 66,5 °C).
+390-cave br98 onglet Simuler : true
+390-cave br98 options : 
+1280-clair br6 : avant « 46 » ; après « 0,1 kg » : champ = 100 ; avis = 0,1 kg lu comme 100 g.
+1280-clair br6 refus : champ = 100 ; avis = « 0,1 L » : ce champ est en g. La valeur précédente (100 g) est conservée.
+1280-clair paliers (clic) : true
+1280-clair br5 par défaut : 68,5 °C : FG plus haute d’environ 2 points (repère : 66,5 °C).
+1280-clair br5 palier touché : Palier 1 · Saccharification, 68,5 °C, 60 min
+1280-clair br5 à 63 °C : 63 °C : FG plus basse d’environ 3 points (repère : 66,5 °C).
+1280-clair br98 onglet Simuler : true
+1280-clair br98 options : 
+1280-cave br6 : avant « 46 » ; après « 0,1 kg » : champ = 100 ; avis = 0,1 kg lu comme 100 g.
+1280-cave br6 refus : champ = 100 ; avis = « 0,1 L » : ce champ est en g. La valeur précédente (100 g) est conservée.
+1280-cave paliers (clic) : true
+1280-cave br5 par défaut : 68,5 °C : FG plus haute d’environ 2 points (repère : 66,5 °C).
+1280-cave br5 palier touché : Palier 1 · Saccharification, 68,5 °C, 60 min
+1280-cave br5 à 63 °C : 63 °C : FG plus basse d’environ 3 points (repère : 66,5 °C).
+1280-cave br98 onglet Simuler : true
+1280-cave br98 options : 
+CAPTURES OK 20
+
+Commande terminée, code 0.
+
+Arrêt de 1 serveur(s)…
+EXIT-X1 0

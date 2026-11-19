@@ -1,0 +1,48 @@
+Serveur 1/1 : npm run dev -- --port 3110 --strictPort  (journal : C:\Users\mrspa\AppData\Local\Temp\with-server-3hSpWh\serveur-1-3110.log)
+Attente du port 3110…
+Serveur prêt sur le port 3110
+
+Tous les serveurs sont prêts. Lancement : node work/missions/2026-11-19-bugs-ecrans/voies/k1/capturer-a1.mjs
+
+390-clair pi1 : Moment de Pilsner Malz : fermentation, impossible pour cet ingrédient. Remettre à l’empâtage | cycle=false retour=true ; Moment de Caramünch II : fermentation, impossible pour cet ingrédient. Remettre à l’empâtage | cycle=false retour=true
+390-clair br19 : 5 points
+390-clair mv7 : Créer « Miel » (stock à zéro)sucre : à l’ébullition
+390-clair br11 : Dextrose > Carapils
+390-clair mv8 alertes : Coriandre : une épice n’est pas un fermentescible ; elle n’est comptée ni dans le grain ni dans la teinte. Elle se note en additif, en grammes.
+390-clair m4 pastille trouvée : true (ligne 3)
+390-clair m4 alertes : Teinte 169,5 EBC : plus noire que les stouts les plus foncées (40 SRM ≈ 79 EBC, BJCP 2021). Vérifier les masses de malts colorés.
+390-clair m4 contient Teinte et 79 EBC : true
+390-clair te17 ligne : J+390 % ferm. | plateau : Purée de manguefermentation1,0kg02 ›J+3J0J7J14PPG — · fiche›
+390-cave pi1 : Moment de Pilsner Malz : fermentation, impossible pour cet ingrédient. Remettre à l’empâtage | cycle=false retour=true ; Moment de Caramünch II : fermentation, impossible pour cet ingrédient. Remettre à l’empâtage | cycle=false retour=true
+390-cave br19 : 5 points
+390-cave mv7 : Créer « Miel » (stock à zéro)sucre : à l’ébullition
+390-cave br11 : Dextrose > Carapils
+390-cave mv8 alertes : Coriandre : une épice n’est pas un fermentescible ; elle n’est comptée ni dans le grain ni dans la teinte. Elle se note en additif, en grammes.
+390-cave m4 pastille trouvée : true (ligne 3)
+390-cave m4 alertes : Teinte 169,5 EBC : plus noire que les stouts les plus foncées (40 SRM ≈ 79 EBC, BJCP 2021). Vérifier les masses de malts colorés.
+390-cave m4 contient Teinte et 79 EBC : true
+390-cave te17 ligne : J+390 % ferm. | plateau : Purée de manguefermentation1,0kg02 ›J+3J0J7J14PPG — · fiche›
+1280-clair pi1 : Moment de Pilsner Malz : fermentation, impossible pour cet ingrédient. Remettre à l’empâtage | cycle=false retour=true ; Moment de Caramünch II : fermentation, impossible pour cet ingrédient. Remettre à l’empâtage | cycle=false retour=true
+1280-clair br19 : 5 points
+1280-clair mv7 : Créer « Miel » (stock à zéro)sucre : à l’ébullition
+1280-clair br11 : Dextrose > Carapils
+1280-clair mv8 alertes : Coriandre : une épice n’est pas un fermentescible ; elle n’est comptée ni dans le grain ni dans la teinte. Elle se note en additif, en grammes.
+1280-clair m4 pastille trouvée : true (ligne 3)
+1280-clair m4 alertes : Teinte 169,5 EBC : plus noire que les stouts les plus foncées (40 SRM ≈ 79 EBC, BJCP 2021). Vérifier les masses de malts colorés.
+1280-clair m4 contient Teinte et 79 EBC : true
+1280-clair te17 ligne : J+90 % ferm. | plateau : Purée de manguefermentationkg02 ›J+J0J7J14PPG — · fiche›
+1280-cave pi1 : Moment de Pilsner Malz : fermentation, impossible pour cet ingrédient. Remettre à l’empâtage | cycle=false retour=true ; Moment de Caramünch II : fermentation, impossible pour cet ingrédient. Remettre à l’empâtage | cycle=false retour=true
+1280-cave br19 : 5 points
+1280-cave mv7 : Créer « Miel » (stock à zéro)sucre : à l’ébullition
+1280-cave br11 : Dextrose > Carapils
+1280-cave mv8 alertes : Coriandre : une épice n’est pas un fermentescible ; elle n’est comptée ni dans le grain ni dans la teinte. Elle se note en additif, en grammes.
+1280-cave m4 pastille trouvée : true (ligne 3)
+1280-cave m4 alertes : Teinte 169,5 EBC : plus noire que les stouts les plus foncées (40 SRM ≈ 79 EBC, BJCP 2021). Vérifier les masses de malts colorés.
+1280-cave m4 contient Teinte et 79 EBC : true
+1280-cave te17 ligne : J+90 % ferm. | plateau : Purée de manguefermentationkg02 ›J+J0J7J14PPG — · fiche›
+CAPTURES OK 24
+
+Commande terminée, code 0.
+
+Arrêt de 1 serveur(s)…
+EXIT-A1 0
