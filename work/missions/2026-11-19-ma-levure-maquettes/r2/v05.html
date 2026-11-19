@@ -1,0 +1,1472 @@
+<!doctype html>
+<html lang="fr" data-theme="clair">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Ma levure — r2 · v05 : le graphe à nu (passe de correction)</title>
+<!--
+  r2 · v05, recette « 5 · Graphe à nu » (mode greffe), passe de correction après le critique. Base : v01.html (« v01 c'est bien »).
+  Corrigé : 23 g (le nombre choisi) en tête de carte, 2 × 11,5 g et ≥ 15 conseillé dessous ; FG recalculée sur l'OG 1,026
+  (1,005–1,006, ≈ 2,6–2,7 % vol) ; objectifs complets et leur feuille (B′) ; Offres et Repères dessinés (F, F′) ;
+  graphe de 132 px gradué en °C, poignées de 32 px, J0 · 23 g hors du tracé ; un seul « Caler » pendant le réglage ;
+  Annuler à la place du pied (C′) ; le rare en quatre puces de 40 px ; « 1 point : 19 °C hors plage ».
+  Statique (L30) : HTML et CSS seuls. Données : exemple.
+-->
+<style>
+  :root{
+    --page:#FFFFFF; --panneau:#F5F5F5; --sur:#EBEBEB; --bord:#DDDDDD; --bord2:#BFBFBF; --trait:#9E9E9E;
+    --t2:#666666; --t1:#333333; --t0:#111111;
+    --or:#7A5A12; --or-aplat:#F2C14E; --att:#9C7020; --alerte:#C8382F; --alerte-t:#A8291F; --prod:#9A4F1E; --eau:#4F7E9B; --eau-clair:#86B9E6;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;background:var(--sur);color:var(--t0)}
+  body{font:15px/1.3 "Source Sans 3",system-ui,-apple-system,"Segoe UI",sans-serif;-webkit-text-size-adjust:100%}
+  .v5-mono{font-family:"IBM Plex Mono",ui-monospace,Consolas,monospace;letter-spacing:-.01em}
+
+  /* Planche : un écran de 390 × 844 par temps du parcours, côte à côte ; A en haut à gauche */
+  .v5-rang{display:flex;gap:18px;align-items:flex-start;overflow-x:auto;width:100%}
+  .v5-col{flex:none;width:390px}
+  .v5-ecran{position:relative;width:390px;height:844px;overflow:hidden;background:var(--page)}
+  .v5-leg{padding:10px 10px 24px}
+  .v5-leg h3{margin:0 0 4px;font-size:16px;font-weight:600}
+  .v5-leg h3 span{display:inline-grid;place-items:center;min-width:26px;height:26px;margin-right:6px;padding:0 6px;border-radius:13px;background:var(--t0);color:#fff;font-size:14px}
+  .v5-leg p{margin:0 0 4px;font-size:14px;color:var(--t1)}
+
+  /* En-tête et étapes (v01) */
+  .v5-tete{position:relative;z-index:5;background:var(--page);border-bottom:1px solid var(--bord)}
+  .v5-l1{display:flex;align-items:center;gap:8px;height:46px;padding:0 10px 0 6px}
+  .v5-retour{width:32px;height:32px;display:grid;place-items:center}
+  .v5-titre{font-size:20px;font-weight:600;letter-spacing:-.01em}
+  .v5-titre span{font-weight:400;color:var(--t2);margin-left:4px}
+  .v5-esp{flex:1}
+  .v5-lien{font-size:15px;color:var(--t0);text-decoration:underline;text-underline-offset:3px}
+  .v5-ico{width:32px;height:32px;display:grid;place-items:center;color:var(--t1)}
+  .v5-etapes{display:flex;justify-content:space-between;gap:6px;padding:0 8px;overflow:hidden;white-space:nowrap}
+  .v5-etapes span{font-size:14px;color:var(--t2);padding:4px 0 6px;border-bottom:4px solid var(--bord2)}
+  .v5-etapes span.fait{border-color:#555}
+  .v5-etapes span.ici{color:var(--t0);font-weight:600;border-color:var(--t0)}
+  .v5-etapes span.apres{border-color:var(--bord)}
+  .v5-annuler{display:flex;align-items:center;gap:8px;height:40px;padding:0 12px;background:#FFF8E6;border-bottom:1px solid #EAD9A8;font-size:15px}
+  .v5-annuler b{font-weight:600;text-decoration:underline;text-underline-offset:3px}
+  .v5-annuler span{color:var(--t1)}
+
+  /* Corps : coupé au-dessus du pied, défilable (décalé dans C après) */
+  .v5-corps{position:absolute;left:0;right:0;bottom:120px;overflow:hidden}
+  .v5-ex{font-size:14px;color:var(--t2);border:1px solid var(--bord2);border-radius:999px;padding:0 7px;margin-left:4px}
+
+  /* Carte Ma levure (v01) */
+  .v5-carte{margin:8px 8px 0;border:2px solid var(--t0);border-radius:16px;background:var(--panneau);overflow:hidden}
+  .v5-hd{display:grid;grid-template-columns:40px 1fr auto 28px;column-gap:8px;align-items:center;padding:5px 6px 5px 10px}
+  .v5-pastille{grid-row:1 / span 2;width:40px;height:40px;border-radius:50%;background:#FBEBC0;border:2px solid var(--or-aplat);display:grid;place-items:center;color:var(--or)}
+  .v5-nom{min-width:0}
+  .v5-nom b{display:block;font-size:20px;font-weight:600;line-height:1.15;letter-spacing:-.01em}
+  .v5-marque{grid-column:2 / span 3;font-size:14px;color:var(--t2);white-space:nowrap;margin-top:1px}
+  .v5-dose{text-align:right;white-space:nowrap}
+  .v5-dose .v5-mono{font-size:22px;font-weight:600}
+  .v5-dose em{font-style:normal;font-size:14px;color:var(--t2);margin-left:2px}
+  .v5-x{width:32px;height:32px;display:grid;place-items:center;color:var(--t1)}
+  .v5-cases{display:grid;grid-template-columns:1fr 1.18fr .86fr;border-top:1px solid var(--bord2);border-bottom:1px solid var(--bord2)}
+  .v5-case{padding:8px 8px 9px;min-width:0}
+  .v5-case + .v5-case{border-left:1px solid var(--bord2)}
+  .v5-et{font-size:14px;color:var(--t2);white-space:nowrap}
+  .v5-val{font-size:16px;font-weight:600;margin-top:2px;white-space:nowrap}
+  .v5-sous{font-size:14px;color:var(--t2);white-space:nowrap}
+  .v5-ech{display:flex;justify-content:space-between;font-size:14px;color:var(--t2);margin-top:3px}
+  .v5-jauge{position:relative;height:8px;border-radius:4px;background:var(--sur);margin-top:8px}
+  .v5-jauge i{position:absolute;top:0;bottom:0;border-radius:4px;background:repeating-linear-gradient(135deg,var(--or-aplat) 0 3px,#F7DC93 3px 6px)}
+  .v5-hors{color:var(--alerte-t)}
+  .v5-plage{position:relative;height:8px;border-radius:4px;margin-top:7px;background:linear-gradient(90deg,#4F7E9B,#A9C6D8 30%,#F2C14E 62%,#D6453D)}
+  .v5-plage .fiche{position:absolute;top:-3px;bottom:-3px;left:24%;width:12%;border:2px solid var(--t0);border-radius:3px;background:rgba(255,255,255,.35)}
+  .v5-plage .ici{position:absolute;top:-5px;bottom:-5px;width:3px;border-radius:2px;background:var(--alerte)}
+  .v5-caler{display:inline-flex;align-items:center;gap:5px;height:32px;padding:0 9px;border:1.5px solid var(--att);border-radius:10px;background:var(--page);color:var(--or);font-size:14px;font-weight:600;white-space:nowrap}
+  .v5-case .v5-caler{margin-top:8px}
+  .v5-floc{display:flex;gap:3px;margin-top:10px}
+  .v5-floc i{flex:1;height:8px;border-radius:3px;background:#8C8C8C}
+  .v5-floc i.non{background:var(--bord2)}
+
+  /* Geste IA (v01) */
+  .v5-ia{display:flex;align-items:center;gap:10px;margin:5px 8px 2px;padding:0 10px 0 12px;height:44px;border-radius:12px;border:1.5px dashed var(--att);background:#FFF8E6;color:var(--t0)}
+  .v5-etoile{flex:none;color:var(--att)}
+  .v5-ia b{font-size:16px;font-weight:600}
+  .v5-cpt{font-size:14px;color:var(--or);white-space:nowrap}
+  .v5-ia.pendant{border:1.5px solid var(--t1);background:var(--sur)}
+  .v5-ia.pendant .v5-cpt{color:var(--t1);font-weight:600}
+  .v5-ia.apres{border-style:solid;border-color:var(--t0);background:var(--page)}
+  .v5-prog{flex:1;height:6px;border-radius:3px;background:#DADADA;overflow:hidden}
+  .v5-prog i{display:block;height:100%;width:40%;background:var(--att)}
+  .v5-btn{display:inline-flex;align-items:center;justify-content:center;height:34px;padding:0 12px;border-radius:10px;font-size:15px;font-weight:600;white-space:nowrap}
+  .v5-btn.noir{background:var(--t0);color:#fff}
+  .v5-btn.trait{border:1px solid var(--bord2);background:var(--page);color:var(--t0)}
+  .v5-lienpetit{font-size:15px;color:var(--t1);text-decoration:underline;text-underline-offset:3px;white-space:nowrap}
+
+  /* Effets : lignes de 32 px */
+  .v5-traits{list-style:none;margin:0;padding:0 0 2px}
+  .v5-traits li{display:flex;align-items:center;gap:6px;height:32px;padding:0 10px}
+  .v5-traits li + li{border-top:1px solid #E4E4E4}
+  .v5-traits li.prop{background:#FFF8E6}
+  .v5-dot{flex:none;width:12px;height:12px;border-radius:50%;background:var(--c)}
+  .v5-tn{flex:1;min-width:0;font-size:15px;color:var(--t1);white-space:nowrap}
+  .v5-crans{flex:none;display:flex;gap:2px;width:40px}
+  .v5-crans i{flex:1;height:8px;border-radius:2px;background:var(--bord)}
+  .v5-crans i.on{background:var(--c)}
+  .v5-crans.vide i{background:transparent;border:1px dashed var(--bord2)}
+  .v5-tv{width:58px;flex:none;font-size:16px;font-weight:600;white-space:nowrap}
+  .v5-tv.vide{width:auto;font-weight:400;color:var(--t2)}
+  .v5-src{font-size:14px;color:var(--t2);white-space:nowrap}
+  .v5-tag{flex:none;display:inline-flex;align-items:center;height:24px;padding:0 6px;border-radius:6px;font-size:14px;font-weight:600;white-space:nowrap}
+  .v5-tag.fiche{border:1.5px solid var(--t1);color:var(--t1);background:var(--page)}
+  .v5-tag.ia{border:1.5px dashed var(--att);color:var(--or);background:#FFF8E6}
+  .v5-act{flex:none;width:28px;height:28px;border-radius:50%;border:1.5px solid var(--bord2);background:var(--page);display:grid;place-items:center;color:var(--t1)}
+  .v5-act.remettre{border-color:var(--t1)}
+  .v5-ecarte{width:58px;flex:none;font-size:16px;color:var(--t2);text-decoration:line-through;white-space:nowrap}
+  .v5-attente{flex:none;display:inline-block;width:98px;height:12px;border-radius:6px;background:linear-gradient(90deg,var(--sur),#F7F7F7,var(--sur))}
+
+  /* Changer de levure : resserré, deux lignes de 40 px */
+  .v5-chg{margin:4px 8px 0;padding:3px;border-radius:14px;background:var(--panneau)}
+  .v5-champ{display:flex;align-items:center;gap:8px;height:40px;padding:0 12px;border:1.5px dashed var(--trait);border-radius:999px;background:var(--page);color:var(--t2);font-size:16px}
+  .v5-puces{display:flex;gap:6px;margin-top:3px}
+  .v5-puce{display:inline-flex;align-items:center;gap:6px;height:40px;padding:0 10px;border:1.5px solid var(--bord2);border-radius:12px;background:var(--page);font-size:15px;color:var(--t0);white-space:nowrap}
+  .v5-puce svg{color:var(--eau)}
+  .v5-puce.hc{margin-left:auto;border-style:dashed}
+
+  /* LE GRAPHE À NU : °C × jours de l'app (l5b), réglable au repos */
+  .v5-gr{position:relative;margin:4px 8px 0;height:110px;border-radius:14px;background:var(--panneau);border:1px solid var(--bord)}
+  .v5-gr svg.v5-trace{position:absolute;inset:0}
+  .v5-gr .g{position:absolute;white-space:nowrap;font-size:14px;line-height:16px}
+  .v5-gr .g.titre{left:10px;top:6px;color:var(--t2)}
+  .v5-gr .g.pal{font-weight:600;color:var(--t0)}
+  .v5-gr .g.pal.hors{color:var(--alerte-t)}
+  .v5-gr .g.bande{color:var(--eau);font-weight:600}
+  .v5-gr .g.axe{color:var(--t2);top:91px}
+  .v5-gr .g.fin{right:8px;top:91px;color:var(--t0);font-weight:600}
+  .v5-etats{position:absolute;right:6px;top:5px;display:flex;gap:4px}
+  .v5-etat{display:inline-flex;align-items:center;height:22px;padding:0 7px;border-radius:999px;font-size:14px;white-space:nowrap;background:var(--page)}
+  .v5-etat.brouillon{border:1.5px solid var(--bord2);color:var(--t1)}
+  .v5-etat.verifier{border:1.5px solid var(--att);color:var(--or);font-weight:600}
+  .v5-dosepas{position:absolute;left:28px;top:75px;display:inline-flex;align-items:center;gap:5px;height:26px;padding:0 10px 0 6px;border-radius:13px;background:var(--t0);color:#fff;font-size:16px;font-weight:700;box-shadow:0 0 0 3px var(--panneau)}
+  .v5-dosepas i{width:12px;height:12px;border-radius:50%;background:var(--or-aplat);border:2px solid #fff}
+  .v5-dosepas.touche{box-shadow:0 0 0 3px var(--panneau),0 0 0 9px rgba(242,193,78,.55)}
+  .v5-bulle{position:absolute;display:inline-flex;align-items:center;height:28px;padding:0 10px;border-radius:9px;background:var(--t0);color:#fff;font-size:16px;font-weight:700;white-space:nowrap}
+  .v5-bulle:after{content:"";position:absolute;left:50%;bottom:-5px;margin-left:-5px;border:5px solid transparent;border-bottom:0;border-top-color:var(--t0)}
+  .v5-gr .v5-caler{position:absolute;left:8px;top:4px;height:28px;box-shadow:0 2px 6px rgba(0,0,0,.12)}
+
+  /* Objectifs et le rare, sous le graphe */
+  .v5-sous-gr{display:flex;align-items:center;gap:8px;height:36px;margin:0 8px;padding:0 2px 0 4px}
+  .v5-obj{display:grid;grid-template-columns:18px auto;column-gap:5px;align-items:center;min-width:0;font-size:14px;line-height:16px;color:var(--t2);white-space:nowrap}
+  .v5-obj svg{grid-row:1 / span 2}
+  .v5-obj svg{flex:none;color:var(--prod)}
+  .v5-obj b{font-weight:600;color:var(--t0);font-size:15px;line-height:17px}
+  .v5-rare{margin-left:auto;display:flex;gap:4px;align-items:center;font-size:15px;color:var(--t2);white-space:nowrap}
+  .v5-rare a{color:var(--t0);text-decoration:underline;text-underline-offset:3px}
+  .v5-rare a.touche{background:#FBEBC0;border-radius:6px;padding:0 3px;box-shadow:0 0 0 3px rgba(242,193,78,.55)}
+
+  /* Pied, + volant, onglets (v01) */
+  .v5-pied{position:absolute;left:0;right:0;bottom:62px;z-index:6;height:58px;background:var(--page);border-top:1px solid var(--bord);display:flex;align-items:center;gap:10px;padding:0 90px 0 10px}
+  .v5-pied .v5-btn{height:42px;padding:0 16px;font-size:16px}
+  .fab{position:absolute;z-index:8;bottom:70px;right:16px;width:56px;height:56px;border-radius:50%;background:var(--t0);color:#fff;display:grid;place-items:center;font-size:32px;font-weight:300;line-height:1;box-shadow:0 4px 12px rgba(0,0,0,.28)}
+  .v5-onglets{position:absolute;left:0;right:0;bottom:0;z-index:12;height:62px;background:var(--page);border-top:1px solid var(--bord);display:grid;grid-template-columns:repeat(6,1fr)}
+  .v5-onglets a{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;color:var(--t2);text-decoration:none;font-size:14px;letter-spacing:-.02em}
+  .v5-onglets a.ici{color:var(--prod);font-weight:600}
+  .v5-onglets svg{width:22px;height:22px}
+
+  /* Feuilles basses (B, F) */
+  .v5-voile{position:absolute;left:0;right:0;top:0;bottom:62px;z-index:10;background:rgba(17,17,17,.42)}
+  .v5-feuille{position:absolute;left:0;right:0;bottom:62px;z-index:11;background:var(--page);border-radius:20px 20px 0 0;box-shadow:0 -6px 24px rgba(0,0,0,.18);padding:6px 12px 12px}
+  .v5-poignee{width:40px;height:4px;border-radius:2px;background:var(--bord2);margin:2px auto 8px}
+  .v5-fhd{display:flex;align-items:flex-start;gap:8px}
+  .v5-fhd h4{margin:0;font-size:19px;font-weight:600;line-height:1.2}
+  .v5-fhd p{margin:1px 0 0;font-size:14px;color:var(--t2)}
+  .v5-fhd .v5-x{margin-left:auto;flex:none;border:1px solid var(--bord2);border-radius:50%}
+  .v5-qte{margin-top:12px;padding:10px 12px 12px;border:2px solid var(--t0);border-radius:14px;background:var(--panneau)}
+  .v5-qte .v5-et{display:flex;justify-content:space-between}
+  .v5-pas{display:flex;align-items:center;gap:10px;margin-top:6px}
+  .v5-pm{flex:none;width:44px;height:44px;border-radius:12px;border:1.5px solid var(--bord2);background:var(--page);display:grid;place-items:center;font-size:24px;font-weight:500;color:var(--t0)}
+  .v5-pas .v5-grand{font-size:36px;font-weight:700;line-height:1}
+  .v5-pas .v5-grand em{font-style:normal;font-size:18px;font-weight:600;color:var(--t1);margin-left:3px}
+  .v5-pas .v5-sach{margin-left:auto;text-align:right;font-size:14px;color:var(--t1)}
+  .v5-regle{position:relative;height:10px;margin:14px 0 2px;border-radius:5px;background:var(--sur)}
+  .v5-regle .rempli{position:absolute;left:0;top:0;bottom:0;border-radius:5px;background:var(--or-aplat)}
+  .v5-regle .min{position:absolute;top:-5px;bottom:-5px;width:2px;background:var(--t0)}
+  .v5-regle-et{position:relative;height:18px;font-size:14px;color:var(--t2)}
+  .v5-regle-et span{position:absolute;top:0;white-space:nowrap}
+  .v5-lignes{list-style:none;margin:8px 0 0;padding:0}
+  .v5-lignes li{display:flex;align-items:center;gap:8px;min-height:50px;padding:4px 2px;border-bottom:1px solid #E4E4E4}
+  .v5-lignes .lab{flex:1;min-width:0}
+  .v5-lignes .lab b{display:block;font-size:15px;font-weight:600}
+  .v5-lignes .lab small{display:block;font-size:14px;color:var(--t2)}
+  .v5-lignes .vv{font-size:16px;font-weight:600;white-space:nowrap;text-align:right}
+  .v5-lignes .vv small{display:block;font-size:14px;font-weight:400;color:var(--t2)}
+  .v5-bascule{flex:none;width:44px;height:26px;border-radius:13px;background:var(--bord2);position:relative}
+  .v5-bascule:after{content:"";position:absolute;left:3px;top:3px;width:20px;height:20px;border-radius:50%;background:#fff;box-shadow:0 1px 2px rgba(0,0,0,.25)}
+  .v5-conseil{margin-top:8px;padding:8px 10px;border-radius:10px;background:#EEF4F8;border-left:4px solid var(--eau);font-size:14px;color:var(--t1)}
+  .v5-ok{margin-top:10px;width:100%;height:44px;font-size:16px}
+  .v5-onglets-f{display:flex;gap:4px;margin-top:12px;padding:3px;border-radius:12px;background:var(--sur)}
+  .v5-onglets-f span{flex:1;display:grid;place-items:center;height:38px;border-radius:10px;font-size:15px;color:var(--t1)}
+  .v5-onglets-f span.ici{background:var(--page);color:var(--t0);font-weight:600;box-shadow:0 1px 3px rgba(0,0,0,.15)}
+  .v5-atelier li{min-height:60px}
+  .v5-pic{flex:none;width:36px;height:36px;border-radius:10px;display:grid;place-items:center;background:var(--panneau);border:1px solid var(--bord)}
+  .v5-chev{flex:none;color:var(--t2)}
+
+  /* Passe de correction (critique r2·v05) */
+  .v5-hd{grid-template-columns:40px 1fr auto 28px;padding:4px 6px 5px 10px}
+  .v5-pastille{grid-row:1 / span 3;align-self:start;margin-top:2px}
+  .v5-nom{grid-column:2;grid-row:1;align-self:center}
+  .v5-x{grid-column:4;grid-row:1}
+  .v5-marque{grid-column:2;grid-row:2 / span 2;white-space:normal;line-height:17px;margin-top:0}
+  .v5-dose{grid-column:3;grid-row:1;justify-self:end;display:inline-flex;align-items:baseline;gap:2px;height:34px;padding:0 9px;border:2px solid var(--t0);border-radius:10px;background:var(--page);line-height:30px}
+  .v5-dose .v5-mono{font-size:26px;font-weight:700}
+  .v5-dose em{font-size:16px;font-weight:600;color:var(--t1)}
+  .v5-dose.touche{box-shadow:0 0 0 4px rgba(242,193,78,.7)}
+  .v5-dose-s{grid-column:3 / span 2;justify-self:end;font-size:14px;line-height:17px;color:var(--t2);white-space:nowrap;padding-right:2px}
+  .v5-dose-s.n{grid-row:2;color:var(--t1)}
+  .v5-dose-s.c{grid-row:3}
+  .v5-case{padding:6px 8px 7px}
+  .v5-caler.attente{border:1.5px dashed var(--bord2);color:var(--t2);background:var(--panneau)}
+  .v5-ia{height:40px;margin:4px 8px 2px}
+  .v5-traits li{height:28px}
+  .v5-chg{margin:5px 8px 0;padding:0;background:none}
+  .v5-champ{padding:0 4px 0 12px}
+  .v5-hc{display:inline-flex;align-items:center;height:32px;padding:0 10px;border:1.5px dashed var(--bord2);border-radius:999px;font-size:14px;color:var(--t1);white-space:nowrap}
+  .v5-gr{height:132px;margin-top:6px}
+  .v5-gr .g.axe{top:113px}
+  .v5-gr .g.fin{top:113px}
+  .v5-gr .g.grad{left:2px;width:42px;text-align:right;color:var(--t2)}
+  .v5-gr .g.titre{top:5px}
+  .v5-gr .g.pal{background:rgba(245,245,245,.85);border-radius:4px;padding:0 2px}
+  .v5-etats{top:3px;align-items:center}
+  .v5-etat{height:24px}
+  .v5-etat.verifier{border-color:var(--alerte);color:var(--alerte-t);gap:5px}
+  .v5-etat.verifier i{width:8px;height:8px;border-radius:50%;background:var(--alerte)}
+  .v5-etats .v5-caler{position:static;height:32px;box-shadow:0 2px 6px rgba(0,0,0,.12)}
+  .v5-j0{position:absolute;left:38px;top:111px;display:inline-flex;align-items:center;gap:4px;height:20px;padding:0 7px;border-radius:10px;background:var(--t0);color:#fff;font-size:14px;font-weight:600;white-space:nowrap}
+  .v5-bulle{height:28px;font-size:15px}
+  .v5-bulle:after{display:none}
+  .v5-objs{position:relative;margin:11px 8px 0;padding:7px 10px 5px;border:1.5px solid var(--prod);border-radius:12px;background:var(--page);font-size:14px;line-height:19px;color:var(--t2)}
+  .v5-objs div{white-space:nowrap}
+  .v5-objs b{color:var(--t0);font-weight:600;font-size:15px}
+  .v5-objs-t{position:absolute;left:10px;top:-11px;padding:0 5px;background:var(--page);color:var(--prod);font-weight:600;font-size:14px;line-height:19px}
+  .v5-objs.touche{box-shadow:0 0 0 4px rgba(242,193,78,.7)}
+  .v5-rares{display:flex;gap:5px;margin:6px 8px 0}
+  .v5-rp{flex:1 1 auto;min-width:0;display:inline-flex;align-items:center;justify-content:center;gap:4px;height:40px;padding:0 6px;border:1.5px solid var(--bord2);border-radius:12px;background:var(--panneau);font-size:15px;color:var(--t0);white-space:nowrap}
+  .v5-rp svg{flex:none;color:var(--t1)}
+  .v5-rp em{font-style:normal;font-size:14px;color:var(--t2);margin-left:2px}
+  .v5-rp.chg{flex:2 1 auto;justify-content:flex-start;padding:0 10px;border-style:dashed;border-color:var(--trait);background:var(--page);color:var(--t1)}
+  .v5-rp.touche{border-color:var(--att);background:#FBEBC0;box-shadow:0 0 0 3px rgba(242,193,78,.55)}
+  .v5-pied-annuler{gap:10px;background:#FFF8E6;border-top:1px solid #EAD9A8;font-size:15px;color:var(--t0)}
+  .v5-pied-annuler span{display:flex;flex-direction:column;line-height:19px}
+  .v5-pied-annuler b{font-weight:600;text-decoration:underline;text-underline-offset:3px}
+  .v5-pied-annuler small{font-size:14px;color:var(--t1)}
+  .v5-regle .cible{position:absolute;top:-3px;bottom:-3px;border:2px solid var(--t0);border-radius:4px;background:rgba(242,193,78,.5)}
+  .v5-regle .est{position:absolute;top:0;bottom:0;background:var(--prod);border-radius:2px}
+  .v5-dans{color:#2E7D4F;font-weight:600}
+  .v5-obj-l{margin-top:10px}
+  .v5-obj-l b{display:block;font-size:15px;font-weight:600;margin-bottom:5px}
+  .v5-seg{display:flex;gap:3px;padding:3px;border-radius:12px;background:var(--sur)}
+  .v5-seg span{flex:1 1 auto;display:grid;place-items:center;height:36px;padding:0 6px;border-radius:9px;font-size:14px;color:var(--t1);white-space:nowrap}
+  .v5-seg span.ici{background:var(--page);color:var(--t0);font-weight:600;box-shadow:0 1px 3px rgba(0,0,0,.15)}
+  .v5-bascule.on{background:var(--t0)}
+  .v5-bascule.on:after{left:21px}
+  .v5-offre{margin-top:12px;padding:10px 12px;border:2px solid var(--t0);border-radius:14px;background:var(--panneau)}
+  .v5-offre .v5-et{display:flex;justify-content:space-between}
+  .v5-offre-l{display:flex;justify-content:space-between;align-items:baseline;margin-top:4px;font-size:17px}
+  .v5-offre-l b{font-weight:600}
+  .v5-offre-l .v5-mono{font-size:20px;font-weight:700}
+  .v5-offre-s{display:flex;justify-content:space-between;font-size:14px;color:var(--t1);margin-top:2px}
+</style>
+</head>
+<body>
+<div class="v5-rang">
+<div class="v5-col">
+<div class="v5-ecran">
+<header class="v5-tete">
+  <div class="v5-l1">
+    <span class="v5-retour" aria-label="Retour"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M15 5l-7 7 7 7"/></svg></span>
+    <span class="v5-titre">Levure<span class="v5-mono">4/7</span></span>
+    <span class="v5-esp"></span>
+    <span class="v5-lien">Abandonner</span>
+    <span class="v5-ico" aria-label="Importer"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><path d="M8 3h8l3 3v14H5V6z"/><path d="M11 13h8m-3-3 3 3-3 3"/></svg></span>
+    <span class="v5-ico" aria-label="Thème"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M20 14.5A8 8 0 1 1 9.5 4a6.5 6.5 0 0 0 10.5 10.5z"/></svg></span>
+  </div>
+  <nav class="v5-etapes" aria-label="Étapes de la recette"><span class="fait">Identité</span><span class="fait">Malts/sucres</span><span class="fait">Houblons</span><span class="ici">Levure</span><span class="apres">Paliers</span><span class="apres">Eau</span><span class="apres">Récap.</span></nav>
+  
+</header>
+<div class="v5-corps" style="top:79px"><div>
+<section class="v5-carte" aria-label="Ma levure">
+  <div class="v5-hd">
+    <span class="v5-pastille"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linejoin="round"><path d="M9 3h6M10 3v6l-5 9a2 2 0 0 0 1.8 3h10.4a2 2 0 0 0 1.8-3l-5-9V3"/><path d="M7.5 15h9"/></svg></span>
+    <div class="v5-nom"><b>Munich Lager Yeast</b></div>
+    <div class="v5-dose" role="button" aria-label="Dose choisie : 23 g, 2 sachets de 11,5 g ; 15 g au moins conseillé"><span class="v5-mono">23</span><em>g</em></div>
+    <div class="v5-dose-s n v5-mono">2 × 11,5 g</div>
+    <div class="v5-dose-s c">≥ 15 conseillé</div>
+    <span class="v5-x" aria-label="Retirer la levure"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 6l12 12M18 6 6 18"/></svg></span>
+    <div class="v5-marque">White Labs · vendue par Lallemand · <span class="v5-ex">exemple</span></div>
+  </div>
+  <div class="v5-cases">
+    <div class="v5-case">
+      <div class="v5-et">FG</div>
+      <div class="v5-val v5-mono">1,005–1,006</div>
+      <div class="v5-sous">≈ 2,6–2,7 % vol</div>
+      <div class="v5-jauge" aria-label="FG 1,005 à 1,006 sur une échelle de 1,000 à 1,030, OG 1,026"><i style="left:16%;width:5%"></i></div>
+      <div class="v5-ech v5-mono"><span>1,000</span><span>1,030</span></div>
+    </div>
+    <div class="v5-case">
+      <div class="v5-et">fiche · conduite</div>
+      <div class="v5-val v5-mono">9–11 · <span class="v5-hors">19 °C</span></div>
+      <div class="v5-plage" aria-label="Plage de la fiche 9 à 11 °C, conduite 19 °C hors plage"><span class="fiche"></span><span class="ici" style="left:84%"></span></div>
+      <span class="v5-caler"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M5 12h13m-5-5 5 5-5 5"/></svg>Caler à 11 °C</span>
+    </div>
+    <div class="v5-case">
+      <div class="v5-et">floculation</div>
+      <div class="v5-val" style="font-weight:400;color:var(--t1)">moyenne</div>
+      <div class="v5-floc"><i></i><i></i><i class="non"></i></div>
+    </div>
+  </div>
+  <div class="v5-ia" role="button" aria-label="Compléter la fiche par l'IA"><svg class="v5-etoile" width="22" height="22" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l2.2 6.6L21 11l-6.8 2.4L12 20l-2.2-6.6L3 11l6.8-2.4z"/><path d="M19 15l.9 2.3L22 18l-2.1.8L19 21l-.9-2.2L16 18l2.1-.7z"/></svg><b>Compléter la fiche</b><span class="v5-esp"></span><span class="v5-cpt">IA · 2 vides, 3 simulés</span></div>
+  <ul class="v5-traits" aria-label="Effets de fermentation"><li style="--c:#F0A030"><i class="v5-dot"></i><span class="v5-tn">esters</span><span class="v5-crans vide"><i></i><i></i><i></i></span><span class="v5-tv vide">non publié</span></li>
+<li style="--c:#7A4A3A"><i class="v5-dot"></i><span class="v5-tn">phénols</span><span class="v5-crans"><i></i><i></i><i></i></span><span class="v5-tv">négatif</span><span class="v5-src">simulé</span></li>
+<li style="--c:#6CC4A0"><i class="v5-dot"></i><span class="v5-tn">thiols</span><span class="v5-crans"><i class="on"></i><i></i><i></i></span><span class="v5-tv">faible</span><span class="v5-src">simulé</span></li>
+<li style="--c:#A8C040"><i class="v5-dot"></i><span class="v5-tn">terpènes</span><span class="v5-crans"><i class="on"></i><i></i><i></i></span><span class="v5-tv">faible</span><span class="v5-src">simulé</span></li>
+<li style="--c:#A89070"><i class="v5-dot"></i><span class="v5-tn">sucres restants</span><span class="v5-crans vide"><i></i><i></i><i></i></span><span class="v5-tv vide">non publié</span></li></ul>
+</section>
+<div class="v5-gr" aria-label="Conduite, température × jours, réglable : 19 °C pendant 7 jours puis 4 °C pendant 8 jours, fin J15">
+  <svg class="v5-trace" width="374" height="132" viewBox="0 0 374 132" aria-hidden="true">
+    <line x1="50" y1="42" x2="346" y2="42" stroke="#D2D2D2" stroke-width="1" stroke-dasharray="2 3"/>
+    <line x1="50" y1="76" x2="346" y2="76" stroke="#D2D2D2" stroke-width="1" stroke-dasharray="2 3"/>
+    <rect x="50" y="72.6" width="296" height="6.800000000000011" fill="#86B9E6" fill-opacity=".6" stroke="#4F7E9B" stroke-width="1.2" stroke-dasharray="4 2"/>
+    <line x1="46" y1="110" x2="350" y2="110" stroke="#9E9E9E" stroke-width="1.4"/>
+    <line x1="188.1" y1="107" x2="188.1" y2="113" stroke="#9E9E9E" stroke-width="1.4"/>
+    <path d="M50 110V45.4H188.1" fill="none" stroke="#C8382F" stroke-width="3" stroke-linejoin="round"/>
+    <path d="M188.1 45.4V96.4H346V110" fill="none" stroke="#333333" stroke-width="3" stroke-linejoin="round"/>
+    <circle cx="150" cy="45.4" r="16" fill="#fff" stroke="#111" stroke-width="1.6"/><path d="M150 38.4v14M146 42.4l4-4 4 4M146 48.4l4 4 4-4" stroke="#111" stroke-width="1.8" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+    <circle cx="188.1" cy="70.9" r="16" fill="#fff" stroke="#111" stroke-width="1.6"/><path d="M181.1 70.9h14M185.1 66.9l-4 4 4 4M191.1 66.9l4 4-4 4" stroke="#111" stroke-width="1.8" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+    <circle cx="300" cy="96.4" r="16" fill="#fff" stroke="#111" stroke-width="1.6"/><path d="M300 89.4v14M296 93.4l4-4 4 4M296 99.4l4 4 4-4" stroke="#111" stroke-width="1.8" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+    <circle cx="346" cy="96.4" r="16" fill="#fff" stroke="#111" stroke-width="1.6"/><path d="M339 96.4h14M343 92.4l-4 4 4 4M349 92.4l4 4-4 4" stroke="#111" stroke-width="1.8" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+  </svg>
+  <span class="g titre">conduite</span>
+  <span class="v5-etats"><span class="v5-etat brouillon">Brouillon</span><span class="v5-etat verifier" aria-label="1 point à vérifier : premier palier à 19 °C, hors de la plage 9 à 11 °C"><i></i>1 point : 19 °C hors plage</span></span>
+  <span class="g grad" style="top:34px">20 °C</span>
+  <span class="g grad" style="top:68px">10 °C</span>
+  <span class="g pal hors" style="left:58px;top:50.4px">19 °C · 7 j</span>
+  <span class="g bande" style="left:58px;top:81.4px">fiche 9–11 °C</span>
+  <span class="g pal" style="left:212px;top:78.4px">4 °C · 8 j</span>
+  <span class="v5-j0" aria-label="Dose choisie, 23 g, à J0">J0 · 23 g</span>
+  <span class="g axe" style="left:179.1px">J7</span>
+  <span class="g fin">fin J15</span>
+</div>
+<div class="v5-objs" role="button" aria-label="Objectifs : ma cible 2,5 à 3,0 % vol ; atténuation sur ce moût 76 à 80 % ; finale sèche ; accent lager propre ; effervescence : effervescente. Toucher pour régler">
+  <span class="v5-objs-t">objectifs ›</span>
+  <div>ma cible <b class="v5-mono">2,5–3,0 % vol</b> · atténuation <b class="v5-mono">76–80 %</b></div>
+  <div>finale <b>sèche</b> · accent <b>lager propre</b> · <b>effervescente</b></div>
+</div>
+<nav class="v5-rares" aria-label="Changer de levure, et le rare">
+  <span class="v5-rp chg"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="6.5"/><path d="M16 16l4.5 4.5" stroke-linecap="round"/></svg>Changer de levure</span><span class="v5-rp">Offres</span><span class="v5-rp">Repères</span><span class="v5-rp">Atelier</span>
+</nav>
+</div></div>
+<div class="v5-pied"><span class="v5-btn trait">Retour</span><span class="v5-esp"></span><span class="v5-btn noir">Suivant — Paliers</span></div>
+<span class="fab" aria-label="Ajouter">+</span>
+
+<nav class="v5-onglets" aria-label="Onglets">
+  <a><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M4 16a8 8 0 1 1 16 0"/><path d="M12 16l4-5"/></svg>Bord</a>
+  <a><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="8"/><path d="M12 7v10M9.5 9.5h4a1.5 1.5 0 0 1 0 3h-3a1.5 1.5 0 0 0 0 3h4" stroke-linecap="round"/></svg>Finances</a>
+  <a><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><rect x="4" y="5" width="16" height="15" rx="2"/><path d="M4 10h16M9 3v4M15 3v4"/></svg>Calendrier</a>
+  <a class="ici"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><path d="M9 3h6M10 3v6l-5 9a2 2 0 0 0 1.8 3h10.4a2 2 0 0 0 1.8-3l-5-9V3"/></svg>Brassins</a>
+  <a><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><path d="M12 3l8 4.5v9L12 21l-8-4.5v-9z"/><path d="M4 7.5l8 4.5 8-4.5M12 12v9"/></svg>Stocks</a>
+  <a><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="12" cy="8" r="3.5"/><path d="M5 20a7 7 0 0 1 14 0"/></svg>Clients</a>
+</nav>
+</div>
+<div class="v5-leg"><h3><span>A</span>Repos : toute l'étape en une vue</h3><p>En tête, le nombre choisi : <b>23 g</b>, en gros ; 2 × 11,5 g et ≥ 15 conseillé dessous (touché : B).</p><p>FG recalculée sur l'OG de la recette (1,026) et l'atténuation de la fiche (76–80 %) : 1,005–1,006, ≈ 2,6–2,7 % vol.</p><p>Graphe de 132 px : graduations 20 et 10 °C, poignées de 32 px, « 1 point : 19 °C hors plage » relié au palier rouge ; J0 · 23 g sous l'axe, hors du tracé.</p><p>Objectifs complets en deux lignes (touchés : B′). Rangée du bas, quatre puces de 40 px : Changer de levure (Mon stock et Hors catalogue dans sa feuille, G), Offres, Repères, Atelier.</p></div>
+</div>
+<div class="v5-col">
+<div class="v5-ecran">
+<header class="v5-tete">
+  <div class="v5-l1">
+    <span class="v5-retour" aria-label="Retour"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M15 5l-7 7 7 7"/></svg></span>
+    <span class="v5-titre">Levure<span class="v5-mono">4/7</span></span>
+    <span class="v5-esp"></span>
+    <span class="v5-lien">Abandonner</span>
+    <span class="v5-ico" aria-label="Importer"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><path d="M8 3h8l3 3v14H5V6z"/><path d="M11 13h8m-3-3 3 3-3 3"/></svg></span>
+    <span class="v5-ico" aria-label="Thème"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M20 14.5A8 8 0 1 1 9.5 4a6.5 6.5 0 0 0 10.5 10.5z"/></svg></span>
+  </div>
+  <nav class="v5-etapes" aria-label="Étapes de la recette"><span class="fait">Identité</span><span class="fait">Malts/sucres</span><span class="fait">Houblons</span><span class="ici">Levure</span><span class="apres">Paliers</span><span class="apres">Eau</span><span class="apres">Récap.</span></nav>
+  
+</header>
+<div class="v5-corps" style="top:79px"><div>
+<section class="v5-carte" aria-label="Ma levure">
+  <div class="v5-hd">
+    <span class="v5-pastille"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linejoin="round"><path d="M9 3h6M10 3v6l-5 9a2 2 0 0 0 1.8 3h10.4a2 2 0 0 0 1.8-3l-5-9V3"/><path d="M7.5 15h9"/></svg></span>
+    <div class="v5-nom"><b>Munich Lager Yeast</b></div>
+    <div class="v5-dose touche" role="button" aria-label="Dose choisie : 23 g, 2 sachets de 11,5 g ; 15 g au moins conseillé"><span class="v5-mono">23</span><em>g</em></div>
+    <div class="v5-dose-s n v5-mono">2 × 11,5 g</div>
+    <div class="v5-dose-s c">≥ 15 conseillé</div>
+    <span class="v5-x" aria-label="Retirer la levure"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 6l12 12M18 6 6 18"/></svg></span>
+    <div class="v5-marque">White Labs · vendue par Lallemand · <span class="v5-ex">exemple</span></div>
+  </div>
+  <div class="v5-cases">
+    <div class="v5-case">
+      <div class="v5-et">FG</div>
+      <div class="v5-val v5-mono">1,005–1,006</div>
+      <div class="v5-sous">≈ 2,6–2,7 % vol</div>
+      <div class="v5-jauge" aria-label="FG 1,005 à 1,006 sur une échelle de 1,000 à 1,030, OG 1,026"><i style="left:16%;width:5%"></i></div>
+      <div class="v5-ech v5-mono"><span>1,000</span><span>1,030</span></div>
+    </div>
+    <div class="v5-case">
+      <div class="v5-et">fiche · conduite</div>
+      <div class="v5-val v5-mono">9–11 · <span class="v5-hors">19 °C</span></div>
+      <div class="v5-plage" aria-label="Plage de la fiche 9 à 11 °C, conduite 19 °C hors plage"><span class="fiche"></span><span class="ici" style="left:84%"></span></div>
+      <span class="v5-caler"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M5 12h13m-5-5 5 5-5 5"/></svg>Caler à 11 °C</span>
+    </div>
+    <div class="v5-case">
+      <div class="v5-et">floculation</div>
+      <div class="v5-val" style="font-weight:400;color:var(--t1)">moyenne</div>
+      <div class="v5-floc"><i></i><i></i><i class="non"></i></div>
+    </div>
+  </div>
+  <div class="v5-ia" role="button" aria-label="Compléter la fiche par l'IA"><svg class="v5-etoile" width="22" height="22" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l2.2 6.6L21 11l-6.8 2.4L12 20l-2.2-6.6L3 11l6.8-2.4z"/><path d="M19 15l.9 2.3L22 18l-2.1.8L19 21l-.9-2.2L16 18l2.1-.7z"/></svg><b>Compléter la fiche</b><span class="v5-esp"></span><span class="v5-cpt">IA · 2 vides, 3 simulés</span></div>
+  <ul class="v5-traits" aria-label="Effets de fermentation"><li style="--c:#F0A030"><i class="v5-dot"></i><span class="v5-tn">esters</span><span class="v5-crans vide"><i></i><i></i><i></i></span><span class="v5-tv vide">non publié</span></li>
+<li style="--c:#7A4A3A"><i class="v5-dot"></i><span class="v5-tn">phénols</span><span class="v5-crans"><i></i><i></i><i></i></span><span class="v5-tv">négatif</span><span class="v5-src">simulé</span></li>
+<li style="--c:#6CC4A0"><i class="v5-dot"></i><span class="v5-tn">thiols</span><span class="v5-crans"><i class="on"></i><i></i><i></i></span><span class="v5-tv">faible</span><span class="v5-src">simulé</span></li>
+<li style="--c:#A8C040"><i class="v5-dot"></i><span class="v5-tn">terpènes</span><span class="v5-crans"><i class="on"></i><i></i><i></i></span><span class="v5-tv">faible</span><span class="v5-src">simulé</span></li>
+<li style="--c:#A89070"><i class="v5-dot"></i><span class="v5-tn">sucres restants</span><span class="v5-crans vide"><i></i><i></i><i></i></span><span class="v5-tv vide">non publié</span></li></ul>
+</section>
+<div class="v5-gr" aria-label="Conduite, température × jours, réglable : 19 °C pendant 7 jours puis 4 °C pendant 8 jours, fin J15">
+  <svg class="v5-trace" width="374" height="132" viewBox="0 0 374 132" aria-hidden="true">
+    <line x1="50" y1="42" x2="346" y2="42" stroke="#D2D2D2" stroke-width="1" stroke-dasharray="2 3"/>
+    <line x1="50" y1="76" x2="346" y2="76" stroke="#D2D2D2" stroke-width="1" stroke-dasharray="2 3"/>
+    <rect x="50" y="72.6" width="296" height="6.800000000000011" fill="#86B9E6" fill-opacity=".6" stroke="#4F7E9B" stroke-width="1.2" stroke-dasharray="4 2"/>
+    <line x1="46" y1="110" x2="350" y2="110" stroke="#9E9E9E" stroke-width="1.4"/>
+    <line x1="188.1" y1="107" x2="188.1" y2="113" stroke="#9E9E9E" stroke-width="1.4"/>
+    <path d="M50 110V45.4H188.1" fill="none" stroke="#C8382F" stroke-width="3" stroke-linejoin="round"/>
+    <path d="M188.1 45.4V96.4H346V110" fill="none" stroke="#333333" stroke-width="3" stroke-linejoin="round"/>
+    <circle cx="150" cy="45.4" r="16" fill="#fff" stroke="#111" stroke-width="1.6"/><path d="M150 38.4v14M146 42.4l4-4 4 4M146 48.4l4 4 4-4" stroke="#111" stroke-width="1.8" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+    <circle cx="188.1" cy="70.9" r="16" fill="#fff" stroke="#111" stroke-width="1.6"/><path d="M181.1 70.9h14M185.1 66.9l-4 4 4 4M191.1 66.9l4 4-4 4" stroke="#111" stroke-width="1.8" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+    <circle cx="300" cy="96.4" r="16" fill="#fff" stroke="#111" stroke-width="1.6"/><path d="M300 89.4v14M296 93.4l4-4 4 4M296 99.4l4 4 4-4" stroke="#111" stroke-width="1.8" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+    <circle cx="346" cy="96.4" r="16" fill="#fff" stroke="#111" stroke-width="1.6"/><path d="M339 96.4h14M343 92.4l-4 4 4 4M349 92.4l4 4-4 4" stroke="#111" stroke-width="1.8" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+  </svg>
+  <span class="g titre">conduite</span>
+  <span class="v5-etats"><span class="v5-etat brouillon">Brouillon</span><span class="v5-etat verifier" aria-label="1 point à vérifier : premier palier à 19 °C, hors de la plage 9 à 11 °C"><i></i>1 point : 19 °C hors plage</span></span>
+  <span class="g grad" style="top:34px">20 °C</span>
+  <span class="g grad" style="top:68px">10 °C</span>
+  <span class="g pal hors" style="left:58px;top:50.4px">19 °C · 7 j</span>
+  <span class="g bande" style="left:58px;top:81.4px">fiche 9–11 °C</span>
+  <span class="g pal" style="left:212px;top:78.4px">4 °C · 8 j</span>
+  <span class="v5-j0" aria-label="Dose choisie, 23 g, à J0">J0 · 23 g</span>
+  <span class="g axe" style="left:179.1px">J7</span>
+  <span class="g fin">fin J15</span>
+</div>
+<div class="v5-objs" role="button" aria-label="Objectifs : ma cible 2,5 à 3,0 % vol ; atténuation sur ce moût 76 à 80 % ; finale sèche ; accent lager propre ; effervescence : effervescente. Toucher pour régler">
+  <span class="v5-objs-t">objectifs ›</span>
+  <div>ma cible <b class="v5-mono">2,5–3,0 % vol</b> · atténuation <b class="v5-mono">76–80 %</b></div>
+  <div>finale <b>sèche</b> · accent <b>lager propre</b> · <b>effervescente</b></div>
+</div>
+<nav class="v5-rares" aria-label="Changer de levure, et le rare">
+  <span class="v5-rp chg"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="6.5"/><path d="M16 16l4.5 4.5" stroke-linecap="round"/></svg>Changer de levure</span><span class="v5-rp">Offres</span><span class="v5-rp">Repères</span><span class="v5-rp">Atelier</span>
+</nav>
+</div></div>
+<div class="v5-pied"><span class="v5-btn trait">Retour</span><span class="v5-esp"></span><span class="v5-btn noir">Suivant — Paliers</span></div>
+<span class="fab" aria-label="Ajouter">+</span>
+<div class="v5-voile"></div>
+<section class="v5-feuille" aria-label="Dose, ensemencement et starter">
+  <div class="v5-poignee"></div>
+  <div class="v5-fhd"><div><h4>Dose · ensemencement</h4><p>Munich Lager Yeast · à J0 · <span class="v5-ex">exemple</span></p></div><span class="v5-x" aria-label="Fermer"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 6l12 12M18 6 6 18"/></svg></span></div>
+  <div class="v5-qte">
+    <div class="v5-et"><span>Quantité prévue</span><span>2 sachets de 11,5 g</span></div>
+    <div class="v5-pas"><span class="v5-pm">−</span><span class="v5-grand v5-mono">23<em>g</em></span><span class="v5-pm">+</span><span class="v5-sach">pas de 0,5 g<br>ou d'un sachet</span></div>
+    <div class="v5-regle" aria-label="23 g sur une règle de 0 à 40 g, minimum conseillé 15 g"><span class="rempli" style="width:57.5%"></span><span class="min" style="left:37.5%"></span></div>
+    <div class="v5-regle-et"><span style="left:0">0</span><span style="left:calc(37.5% - 30px)">≥ 15 conseillé</span><span style="left:calc(57.5% + 6px);color:var(--t0);font-weight:600">23</span><span style="right:0">40 g</span></div>
+  </div>
+  <ul class="v5-lignes">
+    <li><div class="lab"><b>Moût à ensemencer</b><small>repris de la recette</small></div><div class="vv v5-mono">20 L · 1,026<small>6,5 °P</small></div></li>
+    <li><div class="lab"><b>Inoculum</b><small><span class="v5-lienpetit">Estimer depuis la recette</span></small></div><div class="vv v5-mono">1,5<small>M/mL/°P</small></div></li>
+    <li><div class="lab"><b>Préparation avant J0</b><small>starter · facultatif, aucun prévu</small></div><span class="v5-bascule" aria-label="Starter : non"></span></li>
+  </ul>
+  <div class="v5-conseil"><b>Conseil ≥ 15 g</b> si 1,5 M/mL/°P sur 20 L à 6,5 °P, levure sèche fraîche ; il monte si la levure est vieille ou le moût plus dense.</div>
+  <span class="v5-btn noir v5-ok">OK · 23 g à J0</span>
+</section>
+<nav class="v5-onglets" aria-label="Onglets">
+  <a><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M4 16a8 8 0 1 1 16 0"/><path d="M12 16l4-5"/></svg>Bord</a>
+  <a><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="8"/><path d="M12 7v10M9.5 9.5h4a1.5 1.5 0 0 1 0 3h-3a1.5 1.5 0 0 0 0 3h4" stroke-linecap="round"/></svg>Finances</a>
+  <a><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><rect x="4" y="5" width="16" height="15" rx="2"/><path d="M4 10h16M9 3v4M15 3v4"/></svg>Calendrier</a>
+  <a class="ici"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><path d="M9 3h6M10 3v6l-5 9a2 2 0 0 0 1.8 3h10.4a2 2 0 0 0 1.8-3l-5-9V3"/></svg>Brassins</a>
+  <a><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><path d="M12 3l8 4.5v9L12 21l-8-4.5v-9z"/><path d="M4 7.5l8 4.5 8-4.5M12 12v9"/></svg>Stocks</a>
+  <a><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="12" cy="8" r="3.5"/><path d="M5 20a7 7 0 0 1 14 0"/></svg>Clients</a>
+</nav>
+</div>
+<div class="v5-leg"><h3><span>B</span>Régler la dose : 23 g touché en tête</h3><p>Feuille basse : quantité prévue en grand, − et +, minimum conseillé sur la règle.</p><p>Moût (20 L · 1,026), inoculum, starter facultatif et le conseil avec ses conditions (volet Dose). OK : la tête garde 23 g.</p></div>
+</div>
+<div class="v5-col">
+<div class="v5-ecran">
+<header class="v5-tete">
+  <div class="v5-l1">
+    <span class="v5-retour" aria-label="Retour"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M15 5l-7 7 7 7"/></svg></span>
+    <span class="v5-titre">Levure<span class="v5-mono">4/7</span></span>
+    <span class="v5-esp"></span>
+    <span class="v5-lien">Abandonner</span>
+    <span class="v5-ico" aria-label="Importer"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><path d="M8 3h8l3 3v14H5V6z"/><path d="M11 13h8m-3-3 3 3-3 3"/></svg></span>
+    <span class="v5-ico" aria-label="Thème"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M20 14.5A8 8 0 1 1 9.5 4a6.5 6.5 0 0 0 10.5 10.5z"/></svg></span>
+  </div>
+  <nav class="v5-etapes" aria-label="Étapes de la recette"><span class="fait">Identité</span><span class="fait">Malts/sucres</span><span class="fait">Houblons</span><span class="ici">Levure</span><span class="apres">Paliers</span><span class="apres">Eau</span><span class="apres">Récap.</span></nav>
+  
+</header>
+<div class="v5-corps" style="top:79px"><div>
+<section class="v5-carte" aria-label="Ma levure">
+  <div class="v5-hd">
+    <span class="v5-pastille"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linejoin="round"><path d="M9 3h6M10 3v6l-5 9a2 2 0 0 0 1.8 3h10.4a2 2 0 0 0 1.8-3l-5-9V3"/><path d="M7.5 15h9"/></svg></span>
+    <div class="v5-nom"><b>Munich Lager Yeast</b></div>
+    <div class="v5-dose" role="button" aria-label="Dose choisie : 23 g, 2 sachets de 11,5 g ; 15 g au moins conseillé"><span class="v5-mono">23</span><em>g</em></div>
+    <div class="v5-dose-s n v5-mono">2 × 11,5 g</div>
+    <div class="v5-dose-s c">≥ 15 conseillé</div>
+    <span class="v5-x" aria-label="Retirer la levure"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 6l12 12M18 6 6 18"/></svg></span>
+    <div class="v5-marque">White Labs · vendue par Lallemand · <span class="v5-ex">exemple</span></div>
+  </div>
+  <div class="v5-cases">
+    <div class="v5-case">
+      <div class="v5-et">FG</div>
+      <div class="v5-val v5-mono">1,005–1,006</div>
+      <div class="v5-sous">≈ 2,6–2,7 % vol</div>
+      <div class="v5-jauge" aria-label="FG 1,005 à 1,006 sur une échelle de 1,000 à 1,030, OG 1,026"><i style="left:16%;width:5%"></i></div>
+      <div class="v5-ech v5-mono"><span>1,000</span><span>1,030</span></div>
+    </div>
+    <div class="v5-case">
+      <div class="v5-et">fiche · conduite</div>
+      <div class="v5-val v5-mono">9–11 · <span class="v5-hors">19 °C</span></div>
+      <div class="v5-plage" aria-label="Plage de la fiche 9 à 11 °C, conduite 19 °C hors plage"><span class="fiche"></span><span class="ici" style="left:84%"></span></div>
+      <span class="v5-caler"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M5 12h13m-5-5 5 5-5 5"/></svg>Caler à 11 °C</span>
+    </div>
+    <div class="v5-case">
+      <div class="v5-et">floculation</div>
+      <div class="v5-val" style="font-weight:400;color:var(--t1)">moyenne</div>
+      <div class="v5-floc"><i></i><i></i><i class="non"></i></div>
+    </div>
+  </div>
+  <div class="v5-ia" role="button" aria-label="Compléter la fiche par l'IA"><svg class="v5-etoile" width="22" height="22" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l2.2 6.6L21 11l-6.8 2.4L12 20l-2.2-6.6L3 11l6.8-2.4z"/><path d="M19 15l.9 2.3L22 18l-2.1.8L19 21l-.9-2.2L16 18l2.1-.7z"/></svg><b>Compléter la fiche</b><span class="v5-esp"></span><span class="v5-cpt">IA · 2 vides, 3 simulés</span></div>
+  <ul class="v5-traits" aria-label="Effets de fermentation"><li style="--c:#F0A030"><i class="v5-dot"></i><span class="v5-tn">esters</span><span class="v5-crans vide"><i></i><i></i><i></i></span><span class="v5-tv vide">non publié</span></li>
+<li style="--c:#7A4A3A"><i class="v5-dot"></i><span class="v5-tn">phénols</span><span class="v5-crans"><i></i><i></i><i></i></span><span class="v5-tv">négatif</span><span class="v5-src">simulé</span></li>
+<li style="--c:#6CC4A0"><i class="v5-dot"></i><span class="v5-tn">thiols</span><span class="v5-crans"><i class="on"></i><i></i><i></i></span><span class="v5-tv">faible</span><span class="v5-src">simulé</span></li>
+<li style="--c:#A8C040"><i class="v5-dot"></i><span class="v5-tn">terpènes</span><span class="v5-crans"><i class="on"></i><i></i><i></i></span><span class="v5-tv">faible</span><span class="v5-src">simulé</span></li>
+<li style="--c:#A89070"><i class="v5-dot"></i><span class="v5-tn">sucres restants</span><span class="v5-crans vide"><i></i><i></i><i></i></span><span class="v5-tv vide">non publié</span></li></ul>
+</section>
+<div class="v5-gr" aria-label="Conduite, température × jours, réglable : 19 °C pendant 7 jours puis 4 °C pendant 8 jours, fin J15">
+  <svg class="v5-trace" width="374" height="132" viewBox="0 0 374 132" aria-hidden="true">
+    <line x1="50" y1="42" x2="346" y2="42" stroke="#D2D2D2" stroke-width="1" stroke-dasharray="2 3"/>
+    <line x1="50" y1="76" x2="346" y2="76" stroke="#D2D2D2" stroke-width="1" stroke-dasharray="2 3"/>
+    <rect x="50" y="72.6" width="296" height="6.800000000000011" fill="#86B9E6" fill-opacity=".6" stroke="#4F7E9B" stroke-width="1.2" stroke-dasharray="4 2"/>
+    <line x1="46" y1="110" x2="350" y2="110" stroke="#9E9E9E" stroke-width="1.4"/>
+    <line x1="188.1" y1="107" x2="188.1" y2="113" stroke="#9E9E9E" stroke-width="1.4"/>
+    <path d="M50 110V45.4H188.1" fill="none" stroke="#C8382F" stroke-width="3" stroke-linejoin="round"/>
+    <path d="M188.1 45.4V96.4H346V110" fill="none" stroke="#333333" stroke-width="3" stroke-linejoin="round"/>
+    <circle cx="150" cy="45.4" r="16" fill="#fff" stroke="#111" stroke-width="1.6"/><path d="M150 38.4v14M146 42.4l4-4 4 4M146 48.4l4 4 4-4" stroke="#111" stroke-width="1.8" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+    <circle cx="188.1" cy="70.9" r="16" fill="#fff" stroke="#111" stroke-width="1.6"/><path d="M181.1 70.9h14M185.1 66.9l-4 4 4 4M191.1 66.9l4 4-4 4" stroke="#111" stroke-width="1.8" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+    <circle cx="300" cy="96.4" r="16" fill="#fff" stroke="#111" stroke-width="1.6"/><path d="M300 89.4v14M296 93.4l4-4 4 4M296 99.4l4 4 4-4" stroke="#111" stroke-width="1.8" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+    <circle cx="346" cy="96.4" r="16" fill="#fff" stroke="#111" stroke-width="1.6"/><path d="M339 96.4h14M343 92.4l-4 4 4 4M349 92.4l4 4-4 4" stroke="#111" stroke-width="1.8" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+  </svg>
+  <span class="g titre">conduite</span>
+  <span class="v5-etats"><span class="v5-etat brouillon">Brouillon</span><span class="v5-etat verifier" aria-label="1 point à vérifier : premier palier à 19 °C, hors de la plage 9 à 11 °C"><i></i>1 point : 19 °C hors plage</span></span>
+  <span class="g grad" style="top:34px">20 °C</span>
+  <span class="g grad" style="top:68px">10 °C</span>
+  <span class="g pal hors" style="left:58px;top:50.4px">19 °C · 7 j</span>
+  <span class="g bande" style="left:58px;top:81.4px">fiche 9–11 °C</span>
+  <span class="g pal" style="left:212px;top:78.4px">4 °C · 8 j</span>
+  <span class="v5-j0" aria-label="Dose choisie, 23 g, à J0">J0 · 23 g</span>
+  <span class="g axe" style="left:179.1px">J7</span>
+  <span class="g fin">fin J15</span>
+</div>
+<div class="v5-objs touche" role="button" aria-label="Objectifs : ma cible 2,5 à 3,0 % vol ; atténuation sur ce moût 76 à 80 % ; finale sèche ; accent lager propre ; effervescence : effervescente. Toucher pour régler">
+  <span class="v5-objs-t">objectifs ›</span>
+  <div>ma cible <b class="v5-mono">2,5–3,0 % vol</b> · atténuation <b class="v5-mono">76–80 %</b></div>
+  <div>finale <b>sèche</b> · accent <b>lager propre</b> · <b>effervescente</b></div>
+</div>
+<nav class="v5-rares" aria-label="Changer de levure, et le rare">
+  <span class="v5-rp chg"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="6.5"/><path d="M16 16l4.5 4.5" stroke-linecap="round"/></svg>Changer de levure</span><span class="v5-rp">Offres</span><span class="v5-rp">Repères</span><span class="v5-rp">Atelier</span>
+</nav>
+</div></div>
+<div class="v5-pied"><span class="v5-btn trait">Retour</span><span class="v5-esp"></span><span class="v5-btn noir">Suivant — Paliers</span></div>
+<span class="fab" aria-label="Ajouter">+</span>
+<div class="v5-voile"></div>
+<section class="v5-feuille" aria-label="Objectifs">
+  <div class="v5-poignee"></div>
+  <div class="v5-fhd"><div><h4>Objectifs</h4><p>sur ce moût : 20 L · OG 1,026 · <span class="v5-ex">exemple</span></p></div><span class="v5-x" aria-label="Fermer"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 6l12 12M18 6 6 18"/></svg></span></div>
+  <div class="v5-qte">
+    <div class="v5-et"><span>Ma cible</span><span>estimation 2,6–2,7 · <b class="v5-dans">dans la cible</b></span></div>
+    <div class="v5-pas"><span class="v5-pm">−</span><span class="v5-grand v5-mono" style="font-size:30px;white-space:nowrap">2,5–3,0<em>% vol</em></span><span class="v5-pm">+</span></div>
+    <div class="v5-regle" aria-label="Cible 2,5 à 3,0 % vol, estimation 2,6 à 2,7, sur une règle de 0 à 5 % vol"><span class="cible" style="left:50%;width:10%"></span><span class="est" style="left:52%;width:2%"></span></div>
+    <div class="v5-regle-et"><span style="left:0">0</span><span style="left:calc(50% - 4px)">2,5–3,0</span><span style="right:0">5 % vol</span></div>
+  </div>
+  <div class="v5-obj-l"><b>Finale recherchée</b><div class="v5-seg"><span>Sans préf.</span><span class="ici">Sèche</span><span>Ronde / douce</span><span>Sucrée</span></div></div>
+  <div class="v5-obj-l"><b>Accent recherché</b><div class="v5-seg"><span>Aucun</span><span class="ici">Lager propre</span><span>Chocolat</span></div></div>
+  <ul class="v5-lignes">
+    <li><div class="lab"><b>Effervescence</b><small>bière effervescente visée</small></div><span class="v5-bascule on" aria-label="Effervescente : oui"></span></li>
+    <li><div class="lab"><b>Atténuation sur ce moût</b><small>calculée : fiche et OG 1,026</small></div><div class="vv v5-mono">76–80 %<small>FG 1,005–1,006</small></div></li>
+  </ul>
+  <div class="v5-conseil"><b>Finale sèche</b> : l'atténuation et le moût conditionnent la finale. Vérifie la fin de fermentation.</div>
+  <span class="v5-btn noir v5-ok">OK · objectifs</span>
+</section>
+<nav class="v5-onglets" aria-label="Onglets">
+  <a><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M4 16a8 8 0 1 1 16 0"/><path d="M12 16l4-5"/></svg>Bord</a>
+  <a><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="8"/><path d="M12 7v10M9.5 9.5h4a1.5 1.5 0 0 1 0 3h-3a1.5 1.5 0 0 0 0 3h4" stroke-linecap="round"/></svg>Finances</a>
+  <a><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><rect x="4" y="5" width="16" height="15" rx="2"/><path d="M4 10h16M9 3v4M15 3v4"/></svg>Calendrier</a>
+  <a class="ici"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><path d="M9 3h6M10 3v6l-5 9a2 2 0 0 0 1.8 3h10.4a2 2 0 0 0 1.8-3l-5-9V3"/></svg>Brassins</a>
+  <a><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><path d="M12 3l8 4.5v9L12 21l-8-4.5v-9z"/><path d="M4 7.5l8 4.5 8-4.5M12 12v9"/></svg>Stocks</a>
+  <a><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="12" cy="8" r="3.5"/><path d="M5 20a7 7 0 0 1 14 0"/></svg>Clients</a>
+</nav>
+</div>
+<div class="v5-leg"><h3><span>B′</span>Régler les objectifs : la ligne Objectifs touchée</h3><p>Ma cible en % vol, avec − et + et l'estimation dessus : dans la cible.</p><p>Finale recherchée et Accent recherché en segments, Effervescence en bascule, Atténuation sur ce moût calculée (volet Objectifs).</p></div>
+</div>
+<div class="v5-col">
+<div class="v5-ecran">
+<header class="v5-tete">
+  <div class="v5-l1">
+    <span class="v5-retour" aria-label="Retour"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M15 5l-7 7 7 7"/></svg></span>
+    <span class="v5-titre">Levure<span class="v5-mono">4/7</span></span>
+    <span class="v5-esp"></span>
+    <span class="v5-lien">Abandonner</span>
+    <span class="v5-ico" aria-label="Importer"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><path d="M8 3h8l3 3v14H5V6z"/><path d="M11 13h8m-3-3 3 3-3 3"/></svg></span>
+    <span class="v5-ico" aria-label="Thème"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M20 14.5A8 8 0 1 1 9.5 4a6.5 6.5 0 0 0 10.5 10.5z"/></svg></span>
+  </div>
+  <nav class="v5-etapes" aria-label="Étapes de la recette"><span class="fait">Identité</span><span class="fait">Malts/sucres</span><span class="fait">Houblons</span><span class="ici">Levure</span><span class="apres">Paliers</span><span class="apres">Eau</span><span class="apres">Récap.</span></nav>
+  
+</header>
+<div class="v5-corps" style="top:79px"><div>
+<section class="v5-carte" aria-label="Ma levure">
+  <div class="v5-hd">
+    <span class="v5-pastille"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linejoin="round"><path d="M9 3h6M10 3v6l-5 9a2 2 0 0 0 1.8 3h10.4a2 2 0 0 0 1.8-3l-5-9V3"/><path d="M7.5 15h9"/></svg></span>
+    <div class="v5-nom"><b>Munich Lager Yeast</b></div>
+    <div class="v5-dose" role="button" aria-label="Dose choisie : 23 g, 2 sachets de 11,5 g ; 15 g au moins conseillé"><span class="v5-mono">23</span><em>g</em></div>
+    <div class="v5-dose-s n v5-mono">2 × 11,5 g</div>
+    <div class="v5-dose-s c">≥ 15 conseillé</div>
+    <span class="v5-x" aria-label="Retirer la levure"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 6l12 12M18 6 6 18"/></svg></span>
+    <div class="v5-marque">White Labs · vendue par Lallemand · <span class="v5-ex">exemple</span></div>
+  </div>
+  <div class="v5-cases">
+    <div class="v5-case">
+      <div class="v5-et">FG</div>
+      <div class="v5-val v5-mono">1,005–1,006</div>
+      <div class="v5-sous">≈ 2,6–2,7 % vol</div>
+      <div class="v5-jauge" aria-label="FG 1,005 à 1,006 sur une échelle de 1,000 à 1,030, OG 1,026"><i style="left:16%;width:5%"></i></div>
+      <div class="v5-ech v5-mono"><span>1,000</span><span>1,030</span></div>
+    </div>
+    <div class="v5-case">
+      <div class="v5-et">fiche · conduite</div>
+      <div class="v5-val v5-mono">9–11 · <span class="v5-hors">12 °C</span></div>
+      <div class="v5-plage" aria-label="Plage de la fiche 9 à 11 °C, conduite 12 °C hors plage"><span class="fiche"></span><span class="ici" style="left:42%"></span></div>
+      <span class="v5-caler attente" aria-disabled="true"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M5 12h13m-5-5 5 5-5 5"/></svg>Caler à 11 °C</span>
+    </div>
+    <div class="v5-case">
+      <div class="v5-et">floculation</div>
+      <div class="v5-val" style="font-weight:400;color:var(--t1)">moyenne</div>
+      <div class="v5-floc"><i></i><i></i><i class="non"></i></div>
+    </div>
+  </div>
+  <div class="v5-ia" role="button" aria-label="Compléter la fiche par l'IA"><svg class="v5-etoile" width="22" height="22" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l2.2 6.6L21 11l-6.8 2.4L12 20l-2.2-6.6L3 11l6.8-2.4z"/><path d="M19 15l.9 2.3L22 18l-2.1.8L19 21l-.9-2.2L16 18l2.1-.7z"/></svg><b>Compléter la fiche</b><span class="v5-esp"></span><span class="v5-cpt">IA · 2 vides, 3 simulés</span></div>
+  <ul class="v5-traits" aria-label="Effets de fermentation"><li style="--c:#F0A030"><i class="v5-dot"></i><span class="v5-tn">esters</span><span class="v5-crans vide"><i></i><i></i><i></i></span><span class="v5-tv vide">non publié</span></li>
+<li style="--c:#7A4A3A"><i class="v5-dot"></i><span class="v5-tn">phénols</span><span class="v5-crans"><i></i><i></i><i></i></span><span class="v5-tv">négatif</span><span class="v5-src">simulé</span></li>
+<li style="--c:#6CC4A0"><i class="v5-dot"></i><span class="v5-tn">thiols</span><span class="v5-crans"><i class="on"></i><i></i><i></i></span><span class="v5-tv">faible</span><span class="v5-src">simulé</span></li>
+<li style="--c:#A8C040"><i class="v5-dot"></i><span class="v5-tn">terpènes</span><span class="v5-crans"><i class="on"></i><i></i><i></i></span><span class="v5-tv">faible</span><span class="v5-src">simulé</span></li>
+<li style="--c:#A89070"><i class="v5-dot"></i><span class="v5-tn">sucres restants</span><span class="v5-crans vide"><i></i><i></i><i></i></span><span class="v5-tv vide">non publié</span></li></ul>
+</section>
+<div class="v5-gr" aria-label="Conduite, température × jours, réglable : 12 °C pendant 7 jours puis 4 °C pendant 8 jours, fin J15">
+  <svg class="v5-trace" width="374" height="132" viewBox="0 0 374 132" aria-hidden="true">
+    <line x1="50" y1="42" x2="346" y2="42" stroke="#D2D2D2" stroke-width="1" stroke-dasharray="2 3"/>
+    <line x1="50" y1="76" x2="346" y2="76" stroke="#D2D2D2" stroke-width="1" stroke-dasharray="2 3"/>
+    <rect x="50" y="72.6" width="296" height="6.800000000000011" fill="#86B9E6" fill-opacity=".6" stroke="#4F7E9B" stroke-width="1.2" stroke-dasharray="4 2"/>
+    <line x1="46" y1="110" x2="350" y2="110" stroke="#9E9E9E" stroke-width="1.4"/>
+    <line x1="188.1" y1="107" x2="188.1" y2="113" stroke="#9E9E9E" stroke-width="1.4"/>
+    <line x1="50" y1="45.4" x2="188.1" y2="45.4" stroke="#9E9E9E" stroke-width="2" stroke-dasharray="4 3"/>
+    <path d="M50 110V69.2H188.1" fill="none" stroke="#111111" stroke-width="4" stroke-linejoin="round"/>
+    <path d="M188.1 69.2V96.4H346V110" fill="none" stroke="#333333" stroke-width="3" stroke-linejoin="round"/>
+    <circle cx="150" cy="69.2" r="26" fill="rgba(17,17,17,.12)"/><circle cx="150" cy="69.2" r="18" fill="#111"/><path d="M150 62.2v14M146 66.2l4-4 4 4M146 72.2l4 4 4-4" stroke="#fff" stroke-width="1.8" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+    <circle cx="188.1" cy="82.8" r="16" fill="#fff" stroke="#111" stroke-width="1.6"/><path d="M181.1 82.8h14M185.1 78.8l-4 4 4 4M191.1 78.8l4 4-4 4" stroke="#111" stroke-width="1.8" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+    <circle cx="300" cy="96.4" r="16" fill="#fff" stroke="#111" stroke-width="1.6"/><path d="M300 89.4v14M296 93.4l4-4 4 4M296 99.4l4 4 4-4" stroke="#111" stroke-width="1.8" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+    <circle cx="346" cy="96.4" r="16" fill="#fff" stroke="#111" stroke-width="1.6"/><path d="M339 96.4h14M343 92.4l-4 4 4 4M349 92.4l4 4-4 4" stroke="#111" stroke-width="1.8" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+  </svg>
+  <span class="g titre">conduite</span>
+  <span class="v5-etats"><span class="v5-etat brouillon">Brouillon</span><span class="v5-caler"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M5 12h13m-5-5 5 5-5 5"/></svg>Caler à 11 °C</span></span>
+  <span class="g grad" style="top:34px">20 °C</span>
+  <span class="g grad" style="top:68px">10 °C</span>
+  <span class="v5-bulle" style="left:66px;top:55.2px">12 °C</span>
+  <span class="g bande" style="left:58px;top:81.4px">fiche 9–11 °C</span>
+  <span class="g pal" style="left:212px;top:78.4px">4 °C · 8 j</span>
+  <span class="v5-j0" aria-label="Dose choisie, 23 g, à J0">J0 · 23 g</span>
+  <span class="g axe" style="left:179.1px">J7</span>
+  <span class="g fin">fin J15</span>
+</div>
+<div class="v5-objs" role="button" aria-label="Objectifs : ma cible 2,5 à 3,0 % vol ; atténuation sur ce moût 76 à 80 % ; finale sèche ; accent lager propre ; effervescence : effervescente. Toucher pour régler">
+  <span class="v5-objs-t">objectifs ›</span>
+  <div>ma cible <b class="v5-mono">2,5–3,0 % vol</b> · atténuation <b class="v5-mono">76–80 %</b></div>
+  <div>finale <b>sèche</b> · accent <b>lager propre</b> · <b>effervescente</b></div>
+</div>
+<nav class="v5-rares" aria-label="Changer de levure, et le rare">
+  <span class="v5-rp chg"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="6.5"/><path d="M16 16l4.5 4.5" stroke-linecap="round"/></svg>Changer de levure</span><span class="v5-rp">Offres</span><span class="v5-rp">Repères</span><span class="v5-rp">Atelier</span>
+</nav>
+</div></div>
+<div class="v5-pied"><span class="v5-btn trait">Retour</span><span class="v5-esp"></span><span class="v5-btn noir">Suivant — Paliers</span></div>
+<span class="fab" aria-label="Ajouter">+</span>
+
+<nav class="v5-onglets" aria-label="Onglets">
+  <a><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M4 16a8 8 0 1 1 16 0"/><path d="M12 16l4-5"/></svg>Bord</a>
+  <a><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="8"/><path d="M12 7v10M9.5 9.5h4a1.5 1.5 0 0 1 0 3h-3a1.5 1.5 0 0 0 0 3h4" stroke-linecap="round"/></svg>Finances</a>
+  <a><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><rect x="4" y="5" width="16" height="15" rx="2"/><path d="M4 10h16M9 3v4M15 3v4"/></svg>Calendrier</a>
+  <a class="ici"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><path d="M9 3h6M10 3v6l-5 9a2 2 0 0 0 1.8 3h10.4a2 2 0 0 0 1.8-3l-5-9V3"/></svg>Brassins</a>
+  <a><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><path d="M12 3l8 4.5v9L12 21l-8-4.5v-9z"/><path d="M4 7.5l8 4.5 8-4.5M12 12v9"/></svg>Stocks</a>
+  <a><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="12" cy="8" r="3.5"/><path d="M5 20a7 7 0 0 1 14 0"/></svg>Clients</a>
+</nav>
+</div>
+<div class="v5-leg"><h3><span>C</span>Régler la conduite, sur place : le doigt sur une poignée</h3><p>Le palier tenu passe en noir, sa valeur en bulle : 12 °C ; l'ancien tracé reste en pointillé.</p><p>Un seul calage actif : « Caler à 11 °C » dans le graphe ; celui de la carte attend (grisé).</p></div>
+</div>
+<div class="v5-col">
+<div class="v5-ecran">
+<header class="v5-tete">
+  <div class="v5-l1">
+    <span class="v5-retour" aria-label="Retour"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M15 5l-7 7 7 7"/></svg></span>
+    <span class="v5-titre">Levure<span class="v5-mono">4/7</span></span>
+    <span class="v5-esp"></span>
+    <span class="v5-lien">Abandonner</span>
+    <span class="v5-ico" aria-label="Importer"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><path d="M8 3h8l3 3v14H5V6z"/><path d="M11 13h8m-3-3 3 3-3 3"/></svg></span>
+    <span class="v5-ico" aria-label="Thème"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M20 14.5A8 8 0 1 1 9.5 4a6.5 6.5 0 0 0 10.5 10.5z"/></svg></span>
+  </div>
+  <nav class="v5-etapes" aria-label="Étapes de la recette"><span class="fait">Identité</span><span class="fait">Malts/sucres</span><span class="fait">Houblons</span><span class="ici">Levure</span><span class="apres">Paliers</span><span class="apres">Eau</span><span class="apres">Récap.</span></nav>
+</header>
+<div class="v5-corps" style="top:79px"><div>
+<section class="v5-carte" aria-label="Ma levure">
+  <div class="v5-hd">
+    <span class="v5-pastille"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linejoin="round"><path d="M9 3h6M10 3v6l-5 9a2 2 0 0 0 1.8 3h10.4a2 2 0 0 0 1.8-3l-5-9V3"/><path d="M7.5 15h9"/></svg></span>
+    <div class="v5-nom"><b>Munich Lager Yeast</b></div>
+    <div class="v5-dose" role="button" aria-label="Dose choisie : 23 g, 2 sachets de 11,5 g ; 15 g au moins conseillé"><span class="v5-mono">23</span><em>g</em></div>
+    <div class="v5-dose-s n v5-mono">2 × 11,5 g</div>
+    <div class="v5-dose-s c">≥ 15 conseillé</div>
+    <span class="v5-x" aria-label="Retirer la levure"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 6l12 12M18 6 6 18"/></svg></span>
+    <div class="v5-marque">White Labs · vendue par Lallemand · <span class="v5-ex">exemple</span></div>
+  </div>
+  <div class="v5-cases">
+    <div class="v5-case">
+      <div class="v5-et">FG</div>
+      <div class="v5-val v5-mono">1,005–1,006</div>
+      <div class="v5-sous">≈ 2,6–2,7 % vol</div>
+      <div class="v5-jauge" aria-label="FG 1,005 à 1,006 sur une échelle de 1,000 à 1,030, OG 1,026"><i style="left:16%;width:5%"></i></div>
+      <div class="v5-ech v5-mono"><span>1,000</span><span>1,030</span></div>
+    </div>
+    <div class="v5-case">
+      <div class="v5-et">fiche · conduite</div>
+      <div class="v5-val v5-mono">9–11 · <span class="v5-hors">12 °C</span></div>
+      <div class="v5-plage" aria-label="Plage de la fiche 9 à 11 °C, conduite 12 °C hors plage"><span class="fiche"></span><span class="ici" style="left:42%"></span></div>
+      <span class="v5-caler"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M5 12h13m-5-5 5 5-5 5"/></svg>Caler à 11 °C</span>
+    </div>
+    <div class="v5-case">
+      <div class="v5-et">floculation</div>
+      <div class="v5-val" style="font-weight:400;color:var(--t1)">moyenne</div>
+      <div class="v5-floc"><i></i><i></i><i class="non"></i></div>
+    </div>
+  </div>
+  <div class="v5-ia" role="button" aria-label="Compléter la fiche par l'IA"><svg class="v5-etoile" width="22" height="22" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l2.2 6.6L21 11l-6.8 2.4L12 20l-2.2-6.6L3 11l6.8-2.4z"/><path d="M19 15l.9 2.3L22 18l-2.1.8L19 21l-.9-2.2L16 18l2.1-.7z"/></svg><b>Compléter la fiche</b><span class="v5-esp"></span><span class="v5-cpt">IA · 2 vides, 3 simulés</span></div>
+  <ul class="v5-traits" aria-label="Effets de fermentation"><li style="--c:#F0A030"><i class="v5-dot"></i><span class="v5-tn">esters</span><span class="v5-crans vide"><i></i><i></i><i></i></span><span class="v5-tv vide">non publié</span></li>
+<li style="--c:#7A4A3A"><i class="v5-dot"></i><span class="v5-tn">phénols</span><span class="v5-crans"><i></i><i></i><i></i></span><span class="v5-tv">négatif</span><span class="v5-src">simulé</span></li>
+<li style="--c:#6CC4A0"><i class="v5-dot"></i><span class="v5-tn">thiols</span><span class="v5-crans"><i class="on"></i><i></i><i></i></span><span class="v5-tv">faible</span><span class="v5-src">simulé</span></li>
+<li style="--c:#A8C040"><i class="v5-dot"></i><span class="v5-tn">terpènes</span><span class="v5-crans"><i class="on"></i><i></i><i></i></span><span class="v5-tv">faible</span><span class="v5-src">simulé</span></li>
+<li style="--c:#A89070"><i class="v5-dot"></i><span class="v5-tn">sucres restants</span><span class="v5-crans vide"><i></i><i></i><i></i></span><span class="v5-tv vide">non publié</span></li></ul>
+</section>
+<div class="v5-gr" aria-label="Conduite, température × jours, réglable : 12 °C pendant 7 jours puis 4 °C pendant 8 jours, fin J15">
+  <svg class="v5-trace" width="374" height="132" viewBox="0 0 374 132" aria-hidden="true">
+    <line x1="50" y1="42" x2="346" y2="42" stroke="#D2D2D2" stroke-width="1" stroke-dasharray="2 3"/>
+    <line x1="50" y1="76" x2="346" y2="76" stroke="#D2D2D2" stroke-width="1" stroke-dasharray="2 3"/>
+    <rect x="50" y="72.6" width="296" height="6.800000000000011" fill="#86B9E6" fill-opacity=".6" stroke="#4F7E9B" stroke-width="1.2" stroke-dasharray="4 2"/>
+    <line x1="46" y1="110" x2="350" y2="110" stroke="#9E9E9E" stroke-width="1.4"/>
+    <line x1="188.1" y1="107" x2="188.1" y2="113" stroke="#9E9E9E" stroke-width="1.4"/>
+    <path d="M50 110V69.2H188.1" fill="none" stroke="#C8382F" stroke-width="3" stroke-linejoin="round"/>
+    <path d="M188.1 69.2V96.4H346V110" fill="none" stroke="#333333" stroke-width="3" stroke-linejoin="round"/>
+    <circle cx="150" cy="69.2" r="16" fill="#fff" stroke="#111" stroke-width="1.6"/><path d="M150 62.2v14M146 66.2l4-4 4 4M146 72.2l4 4 4-4" stroke="#111" stroke-width="1.8" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+    <circle cx="188.1" cy="82.8" r="16" fill="#fff" stroke="#111" stroke-width="1.6"/><path d="M181.1 82.8h14M185.1 78.8l-4 4 4 4M191.1 78.8l4 4-4 4" stroke="#111" stroke-width="1.8" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+    <circle cx="300" cy="96.4" r="16" fill="#fff" stroke="#111" stroke-width="1.6"/><path d="M300 89.4v14M296 93.4l4-4 4 4M296 99.4l4 4 4-4" stroke="#111" stroke-width="1.8" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+    <circle cx="346" cy="96.4" r="16" fill="#fff" stroke="#111" stroke-width="1.6"/><path d="M339 96.4h14M343 92.4l-4 4 4 4M349 92.4l4 4-4 4" stroke="#111" stroke-width="1.8" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+  </svg>
+  <span class="g titre">conduite</span>
+  <span class="v5-etats"><span class="v5-etat brouillon">Brouillon</span><span class="v5-etat verifier" aria-label="1 point à vérifier : premier palier à 12 °C, hors de la plage 9 à 11 °C"><i></i>1 point : 12 °C hors plage</span></span>
+  <span class="g grad" style="top:34px">20 °C</span>
+  <span class="g grad" style="top:68px">10 °C</span>
+  <span class="g pal hors" style="left:58px;top:49.2px">12 °C · 7 j</span>
+  <span class="g bande" style="left:58px;top:81.4px">fiche 9–11 °C</span>
+  <span class="g pal" style="left:212px;top:78.4px">4 °C · 8 j</span>
+  <span class="v5-j0" aria-label="Dose choisie, 23 g, à J0">J0 · 23 g</span>
+  <span class="g axe" style="left:179.1px">J7</span>
+  <span class="g fin">fin J15</span>
+</div>
+<div class="v5-objs" role="button" aria-label="Objectifs : ma cible 2,5 à 3,0 % vol ; atténuation sur ce moût 76 à 80 % ; finale sèche ; accent lager propre ; effervescence : effervescente. Toucher pour régler">
+  <span class="v5-objs-t">objectifs ›</span>
+  <div>ma cible <b class="v5-mono">2,5–3,0 % vol</b> · atténuation <b class="v5-mono">76–80 %</b></div>
+  <div>finale <b>sèche</b> · accent <b>lager propre</b> · <b>effervescente</b></div>
+</div>
+<nav class="v5-rares" aria-label="Changer de levure, et le rare">
+  <span class="v5-rp chg"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="6.5"/><path d="M16 16l4.5 4.5" stroke-linecap="round"/></svg>Changer de levure</span><span class="v5-rp">Offres</span><span class="v5-rp">Repères</span><span class="v5-rp">Atelier</span>
+</nav>
+</div></div>
+<div class="v5-pied v5-pied-annuler" role="button" aria-label="Annuler le changement"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 14 4 9l5-5"/><path d="M4 9h10.5a5.5 5.5 0 0 1 0 11H11"/></svg><span><b>Annuler le changement</b><small>1ᵉʳ palier 19 → 12 °C</small></span></div>
+<span class="fab" aria-label="Ajouter">+</span>
+
+<nav class="v5-onglets" aria-label="Onglets">
+  <a><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M4 16a8 8 0 1 1 16 0"/><path d="M12 16l4-5"/></svg>Bord</a>
+  <a><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="8"/><path d="M12 7v10M9.5 9.5h4a1.5 1.5 0 0 1 0 3h-3a1.5 1.5 0 0 0 0 3h4" stroke-linecap="round"/></svg>Finances</a>
+  <a><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><rect x="4" y="5" width="16" height="15" rx="2"/><path d="M4 10h16M9 3v4M15 3v4"/></svg>Calendrier</a>
+  <a class="ici"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><path d="M9 3h6M10 3v6l-5 9a2 2 0 0 0 1.8 3h10.4a2 2 0 0 0 1.8-3l-5-9V3"/></svg>Brassins</a>
+  <a><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><path d="M12 3l8 4.5v9L12 21l-8-4.5v-9z"/><path d="M4 7.5l8 4.5 8-4.5M12 12v9"/></svg>Stocks</a>
+  <a><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="12" cy="8" r="3.5"/><path d="M5 20a7 7 0 0 1 14 0"/></svg>Clients</a>
+</nav>
+</div>
+<div class="v5-leg"><h3><span>C′</span>Conduite lâchée : Annuler le changement</h3><p>La barre « Annuler le changement » prend la place du pied quelques secondes : la carte ne bouge pas, « Munich Lager Yeast » reste lisible.</p><p>Le palier à 12 °C reste hors de la plage : trait rouge, « 1 point : 12 °C hors plage » ; Caler à 11 °C de la carte revient.</p></div>
+</div>
+<div class="v5-col">
+<div class="v5-ecran">
+<header class="v5-tete">
+  <div class="v5-l1">
+    <span class="v5-retour" aria-label="Retour"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M15 5l-7 7 7 7"/></svg></span>
+    <span class="v5-titre">Levure<span class="v5-mono">4/7</span></span>
+    <span class="v5-esp"></span>
+    <span class="v5-lien">Abandonner</span>
+    <span class="v5-ico" aria-label="Importer"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><path d="M8 3h8l3 3v14H5V6z"/><path d="M11 13h8m-3-3 3 3-3 3"/></svg></span>
+    <span class="v5-ico" aria-label="Thème"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M20 14.5A8 8 0 1 1 9.5 4a6.5 6.5 0 0 0 10.5 10.5z"/></svg></span>
+  </div>
+  <nav class="v5-etapes" aria-label="Étapes de la recette"><span class="fait">Identité</span><span class="fait">Malts/sucres</span><span class="fait">Houblons</span><span class="ici">Levure</span><span class="apres">Paliers</span><span class="apres">Eau</span><span class="apres">Récap.</span></nav>
+  
+</header>
+<div class="v5-corps" style="top:79px"><div>
+<section class="v5-carte" aria-label="Ma levure">
+  <div class="v5-hd">
+    <span class="v5-pastille"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linejoin="round"><path d="M9 3h6M10 3v6l-5 9a2 2 0 0 0 1.8 3h10.4a2 2 0 0 0 1.8-3l-5-9V3"/><path d="M7.5 15h9"/></svg></span>
+    <div class="v5-nom"><b>Munich Lager Yeast</b></div>
+    <div class="v5-dose" role="button" aria-label="Dose choisie : 23 g, 2 sachets de 11,5 g ; 15 g au moins conseillé"><span class="v5-mono">23</span><em>g</em></div>
+    <div class="v5-dose-s n v5-mono">2 × 11,5 g</div>
+    <div class="v5-dose-s c">≥ 15 conseillé</div>
+    <span class="v5-x" aria-label="Retirer la levure"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 6l12 12M18 6 6 18"/></svg></span>
+    <div class="v5-marque">White Labs · vendue par Lallemand · <span class="v5-ex">exemple</span></div>
+  </div>
+  <div class="v5-cases">
+    <div class="v5-case">
+      <div class="v5-et">FG</div>
+      <div class="v5-val v5-mono">1,005–1,006</div>
+      <div class="v5-sous">≈ 2,6–2,7 % vol</div>
+      <div class="v5-jauge" aria-label="FG 1,005 à 1,006 sur une échelle de 1,000 à 1,030, OG 1,026"><i style="left:16%;width:5%"></i></div>
+      <div class="v5-ech v5-mono"><span>1,000</span><span>1,030</span></div>
+    </div>
+    <div class="v5-case">
+      <div class="v5-et">fiche · conduite</div>
+      <div class="v5-val v5-mono">9–11 · <span class="v5-hors">19 °C</span></div>
+      <div class="v5-plage" aria-label="Plage de la fiche 9 à 11 °C, conduite 19 °C hors plage"><span class="fiche"></span><span class="ici" style="left:84%"></span></div>
+      <span class="v5-caler"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M5 12h13m-5-5 5 5-5 5"/></svg>Caler à 11 °C</span>
+    </div>
+    <div class="v5-case">
+      <div class="v5-et">floculation</div>
+      <div class="v5-val" style="font-weight:400;color:var(--t1)">moyenne</div>
+      <div class="v5-floc"><i></i><i></i><i class="non"></i></div>
+    </div>
+  </div>
+  <div class="v5-ia pendant"><svg class="v5-etoile" width="22" height="22" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l2.2 6.6L21 11l-6.8 2.4L12 20l-2.2-6.6L3 11l6.8-2.4z"/></svg><span class="v5-cpt">Lecture fiche · 2/5</span><span class="v5-prog"><i></i></span><span class="v5-lienpetit">Arrêter</span></div>
+  <ul class="v5-traits" aria-label="Effets de fermentation"><li style="--c:#F0A030"><i class="v5-dot"></i><span class="v5-tn">esters</span><span class="v5-crans"><i class="on"></i><i></i><i></i></span><span class="v5-tv">faible</span><span class="v5-tag fiche">fiche</span></li>
+<li style="--c:#7A4A3A"><i class="v5-dot"></i><span class="v5-tn">phénols</span><span class="v5-crans"><i></i><i></i><i></i></span><span class="v5-tv">négatif</span><span class="v5-tag fiche">fiche</span></li>
+<li style="--c:#6CC4A0"><i class="v5-dot"></i><span class="v5-tn">thiols</span><span class="v5-attente" aria-label="en cours"></span><span class="v5-tag ia">IA estimé</span></li>
+<li style="--c:#A8C040"><i class="v5-dot"></i><span class="v5-tn">terpènes</span><span class="v5-attente" aria-label="en cours"></span><span class="v5-tag ia">IA estimé</span></li>
+<li style="--c:#A89070"><i class="v5-dot"></i><span class="v5-tn">sucres restants</span><span class="v5-attente" aria-label="en cours"></span><span class="v5-tag ia">IA estimé</span></li></ul>
+</section>
+<div class="v5-gr" aria-label="Conduite, température × jours, réglable : 19 °C pendant 7 jours puis 4 °C pendant 8 jours, fin J15">
+  <svg class="v5-trace" width="374" height="132" viewBox="0 0 374 132" aria-hidden="true">
+    <line x1="50" y1="42" x2="346" y2="42" stroke="#D2D2D2" stroke-width="1" stroke-dasharray="2 3"/>
+    <line x1="50" y1="76" x2="346" y2="76" stroke="#D2D2D2" stroke-width="1" stroke-dasharray="2 3"/>
+    <rect x="50" y="72.6" width="296" height="6.800000000000011" fill="#86B9E6" fill-opacity=".6" stroke="#4F7E9B" stroke-width="1.2" stroke-dasharray="4 2"/>
+    <line x1="46" y1="110" x2="350" y2="110" stroke="#9E9E9E" stroke-width="1.4"/>
+    <line x1="188.1" y1="107" x2="188.1" y2="113" stroke="#9E9E9E" stroke-width="1.4"/>
+    <path d="M50 110V45.4H188.1" fill="none" stroke="#C8382F" stroke-width="3" stroke-linejoin="round"/>
+    <path d="M188.1 45.4V96.4H346V110" fill="none" stroke="#333333" stroke-width="3" stroke-linejoin="round"/>
+    <circle cx="150" cy="45.4" r="16" fill="#fff" stroke="#111" stroke-width="1.6"/><path d="M150 38.4v14M146 42.4l4-4 4 4M146 48.4l4 4 4-4" stroke="#111" stroke-width="1.8" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+    <circle cx="188.1" cy="70.9" r="16" fill="#fff" stroke="#111" stroke-width="1.6"/><path d="M181.1 70.9h14M185.1 66.9l-4 4 4 4M191.1 66.9l4 4-4 4" stroke="#111" stroke-width="1.8" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+    <circle cx="300" cy="96.4" r="16" fill="#fff" stroke="#111" stroke-width="1.6"/><path d="M300 89.4v14M296 93.4l4-4 4 4M296 99.4l4 4 4-4" stroke="#111" stroke-width="1.8" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+    <circle cx="346" cy="96.4" r="16" fill="#fff" stroke="#111" stroke-width="1.6"/><path d="M339 96.4h14M343 92.4l-4 4 4 4M349 92.4l4 4-4 4" stroke="#111" stroke-width="1.8" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+  </svg>
+  <span class="g titre">conduite</span>
+  <span class="v5-etats"><span class="v5-etat brouillon">Brouillon</span><span class="v5-etat verifier" aria-label="1 point à vérifier : premier palier à 19 °C, hors de la plage 9 à 11 °C"><i></i>1 point : 19 °C hors plage</span></span>
+  <span class="g grad" style="top:34px">20 °C</span>
+  <span class="g grad" style="top:68px">10 °C</span>
+  <span class="g pal hors" style="left:58px;top:50.4px">19 °C · 7 j</span>
+  <span class="g bande" style="left:58px;top:81.4px">fiche 9–11 °C</span>
+  <span class="g pal" style="left:212px;top:78.4px">4 °C · 8 j</span>
+  <span class="v5-j0" aria-label="Dose choisie, 23 g, à J0">J0 · 23 g</span>
+  <span class="g axe" style="left:179.1px">J7</span>
+  <span class="g fin">fin J15</span>
+</div>
+<div class="v5-objs" role="button" aria-label="Objectifs : ma cible 2,5 à 3,0 % vol ; atténuation sur ce moût 76 à 80 % ; finale sèche ; accent lager propre ; effervescence : effervescente. Toucher pour régler">
+  <span class="v5-objs-t">objectifs ›</span>
+  <div>ma cible <b class="v5-mono">2,5–3,0 % vol</b> · atténuation <b class="v5-mono">76–80 %</b></div>
+  <div>finale <b>sèche</b> · accent <b>lager propre</b> · <b>effervescente</b></div>
+</div>
+<nav class="v5-rares" aria-label="Changer de levure, et le rare">
+  <span class="v5-rp chg"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="6.5"/><path d="M16 16l4.5 4.5" stroke-linecap="round"/></svg>Changer de levure</span><span class="v5-rp">Offres</span><span class="v5-rp">Repères</span><span class="v5-rp">Atelier</span>
+</nav>
+</div></div>
+<div class="v5-pied"><span class="v5-btn trait">Retour</span><span class="v5-esp"></span><span class="v5-btn noir">Suivant — Paliers</span></div>
+<span class="fab" aria-label="Ajouter">+</span>
+
+<nav class="v5-onglets" aria-label="Onglets">
+  <a><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M4 16a8 8 0 1 1 16 0"/><path d="M12 16l4-5"/></svg>Bord</a>
+  <a><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="8"/><path d="M12 7v10M9.5 9.5h4a1.5 1.5 0 0 1 0 3h-3a1.5 1.5 0 0 0 0 3h4" stroke-linecap="round"/></svg>Finances</a>
+  <a><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><rect x="4" y="5" width="16" height="15" rx="2"/><path d="M4 10h16M9 3v4M15 3v4"/></svg>Calendrier</a>
+  <a class="ici"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><path d="M9 3h6M10 3v6l-5 9a2 2 0 0 0 1.8 3h10.4a2 2 0 0 0 1.8-3l-5-9V3"/></svg>Brassins</a>
+  <a><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><path d="M12 3l8 4.5v9L12 21l-8-4.5v-9z"/><path d="M4 7.5l8 4.5 8-4.5M12 12v9"/></svg>Stocks</a>
+  <a><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="12" cy="8" r="3.5"/><path d="M5 20a7 7 0 0 1 14 0"/></svg>Clients</a>
+</nav>
+</div>
+<div class="v5-leg"><h3><span>D</span>IA pendant (v01)</h3><p>Lecture fiche · 2/5, Arrêter ; les lignes en attente portent « IA estimé ».</p><p>Le graphe, la dose (23 g en tête) et les objectifs restent lisibles pendant la lecture.</p></div>
+</div>
+<div class="v5-col">
+<div class="v5-ecran">
+<header class="v5-tete">
+  <div class="v5-l1">
+    <span class="v5-retour" aria-label="Retour"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M15 5l-7 7 7 7"/></svg></span>
+    <span class="v5-titre">Levure<span class="v5-mono">4/7</span></span>
+    <span class="v5-esp"></span>
+    <span class="v5-lien">Abandonner</span>
+    <span class="v5-ico" aria-label="Importer"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><path d="M8 3h8l3 3v14H5V6z"/><path d="M11 13h8m-3-3 3 3-3 3"/></svg></span>
+    <span class="v5-ico" aria-label="Thème"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M20 14.5A8 8 0 1 1 9.5 4a6.5 6.5 0 0 0 10.5 10.5z"/></svg></span>
+  </div>
+  <nav class="v5-etapes" aria-label="Étapes de la recette"><span class="fait">Identité</span><span class="fait">Malts/sucres</span><span class="fait">Houblons</span><span class="ici">Levure</span><span class="apres">Paliers</span><span class="apres">Eau</span><span class="apres">Récap.</span></nav>
+  
+</header>
+<div class="v5-corps" style="top:79px"><div>
+<section class="v5-carte" aria-label="Ma levure">
+  <div class="v5-hd">
+    <span class="v5-pastille"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linejoin="round"><path d="M9 3h6M10 3v6l-5 9a2 2 0 0 0 1.8 3h10.4a2 2 0 0 0 1.8-3l-5-9V3"/><path d="M7.5 15h9"/></svg></span>
+    <div class="v5-nom"><b>Munich Lager Yeast</b></div>
+    <div class="v5-dose" role="button" aria-label="Dose choisie : 23 g, 2 sachets de 11,5 g ; 15 g au moins conseillé"><span class="v5-mono">23</span><em>g</em></div>
+    <div class="v5-dose-s n v5-mono">2 × 11,5 g</div>
+    <div class="v5-dose-s c">≥ 15 conseillé</div>
+    <span class="v5-x" aria-label="Retirer la levure"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 6l12 12M18 6 6 18"/></svg></span>
+    <div class="v5-marque">White Labs · vendue par Lallemand · <span class="v5-ex">exemple</span></div>
+  </div>
+  <div class="v5-cases">
+    <div class="v5-case">
+      <div class="v5-et">FG</div>
+      <div class="v5-val v5-mono">1,005–1,006</div>
+      <div class="v5-sous">≈ 2,6–2,7 % vol</div>
+      <div class="v5-jauge" aria-label="FG 1,005 à 1,006 sur une échelle de 1,000 à 1,030, OG 1,026"><i style="left:16%;width:5%"></i></div>
+      <div class="v5-ech v5-mono"><span>1,000</span><span>1,030</span></div>
+    </div>
+    <div class="v5-case">
+      <div class="v5-et">fiche · conduite</div>
+      <div class="v5-val v5-mono">9–11 · <span class="v5-hors">19 °C</span></div>
+      <div class="v5-plage" aria-label="Plage de la fiche 9 à 11 °C, conduite 19 °C hors plage"><span class="fiche"></span><span class="ici" style="left:84%"></span></div>
+      <span class="v5-caler"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M5 12h13m-5-5 5 5-5 5"/></svg>Caler à 11 °C</span>
+    </div>
+    <div class="v5-case">
+      <div class="v5-et">floculation</div>
+      <div class="v5-val" style="font-weight:400;color:var(--t1)">moyenne</div>
+      <div class="v5-floc"><i></i><i></i><i class="non"></i></div>
+    </div>
+  </div>
+  <div class="v5-ia apres"><svg class="v5-etoile" width="22" height="22" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l2.2 6.6L21 11l-6.8 2.4L12 20l-2.2-6.6L3 11l6.8-2.4z"/></svg><span class="v5-cpt">4 à confirmer · 1 écarté</span><span class="v5-esp"></span><span class="v5-btn noir">Tout retenir (4)</span></div>
+  <ul class="v5-traits" aria-label="Effets de fermentation"><li class="prop" style="--c:#F0A030"><i class="v5-dot"></i><span class="v5-tn">esters</span><span class="v5-crans"><i class="on"></i><i></i><i></i></span><span class="v5-tv">faible</span><span class="v5-tag fiche">fiche</span><span class="v5-act" role="button" aria-label="Écarter esters"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M6 6l12 12M18 6 6 18"/></svg></span></li>
+<li class="prop" style="--c:#7A4A3A"><i class="v5-dot"></i><span class="v5-tn">phénols</span><span class="v5-crans"><i></i><i></i><i></i></span><span class="v5-tv">négatif</span><span class="v5-tag fiche">fiche</span><span class="v5-act" role="button" aria-label="Écarter phénols"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M6 6l12 12M18 6 6 18"/></svg></span></li>
+<li style="--c:#6CC4A0"><i class="v5-dot"></i><span class="v5-tn">thiols</span><span class="v5-crans vide"><i></i><i></i><i></i></span><span class="v5-ecarte">faible</span><span class="v5-tag ia">IA estimé</span><span class="v5-act remettre" role="button" aria-label="Remettre thiols"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12a8 8 0 1 0 2.5-5.8"/><path d="M4 4v4h4"/></svg></span></li>
+<li class="prop" style="--c:#A8C040"><i class="v5-dot"></i><span class="v5-tn">terpènes</span><span class="v5-crans"><i class="on"></i><i></i><i></i></span><span class="v5-tv">faible</span><span class="v5-tag ia">IA estimé</span><span class="v5-act" role="button" aria-label="Écarter terpènes"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M6 6l12 12M18 6 6 18"/></svg></span></li>
+<li class="prop" style="--c:#A89070"><i class="v5-dot"></i><span class="v5-tn">sucres restants</span><span class="v5-crans"><i class="on"></i><i class="on"></i><i></i></span><span class="v5-tv">moyens</span><span class="v5-tag ia">IA estimé</span><span class="v5-act" role="button" aria-label="Écarter sucres restants"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M6 6l12 12M18 6 6 18"/></svg></span></li></ul>
+</section>
+<div class="v5-gr" aria-label="Conduite, température × jours, réglable : 19 °C pendant 7 jours puis 4 °C pendant 8 jours, fin J15">
+  <svg class="v5-trace" width="374" height="132" viewBox="0 0 374 132" aria-hidden="true">
+    <line x1="50" y1="42" x2="346" y2="42" stroke="#D2D2D2" stroke-width="1" stroke-dasharray="2 3"/>
+    <line x1="50" y1="76" x2="346" y2="76" stroke="#D2D2D2" stroke-width="1" stroke-dasharray="2 3"/>
+    <rect x="50" y="72.6" width="296" height="6.800000000000011" fill="#86B9E6" fill-opacity=".6" stroke="#4F7E9B" stroke-width="1.2" stroke-dasharray="4 2"/>
+    <line x1="46" y1="110" x2="350" y2="110" stroke="#9E9E9E" stroke-width="1.4"/>
+    <line x1="188.1" y1="107" x2="188.1" y2="113" stroke="#9E9E9E" stroke-width="1.4"/>
+    <path d="M50 110V45.4H188.1" fill="none" stroke="#C8382F" stroke-width="3" stroke-linejoin="round"/>
+    <path d="M188.1 45.4V96.4H346V110" fill="none" stroke="#333333" stroke-width="3" stroke-linejoin="round"/>
+    <circle cx="150" cy="45.4" r="16" fill="#fff" stroke="#111" stroke-width="1.6"/><path d="M150 38.4v14M146 42.4l4-4 4 4M146 48.4l4 4 4-4" stroke="#111" stroke-width="1.8" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+    <circle cx="188.1" cy="70.9" r="16" fill="#fff" stroke="#111" stroke-width="1.6"/><path d="M181.1 70.9h14M185.1 66.9l-4 4 4 4M191.1 66.9l4 4-4 4" stroke="#111" stroke-width="1.8" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+    <circle cx="300" cy="96.4" r="16" fill="#fff" stroke="#111" stroke-width="1.6"/><path d="M300 89.4v14M296 93.4l4-4 4 4M296 99.4l4 4 4-4" stroke="#111" stroke-width="1.8" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+    <circle cx="346" cy="96.4" r="16" fill="#fff" stroke="#111" stroke-width="1.6"/><path d="M339 96.4h14M343 92.4l-4 4 4 4M349 92.4l4 4-4 4" stroke="#111" stroke-width="1.8" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+  </svg>
+  <span class="g titre">conduite</span>
+  <span class="v5-etats"><span class="v5-etat brouillon">Brouillon</span><span class="v5-etat verifier" aria-label="1 point à vérifier : premier palier à 19 °C, hors de la plage 9 à 11 °C"><i></i>1 point : 19 °C hors plage</span></span>
+  <span class="g grad" style="top:34px">20 °C</span>
+  <span class="g grad" style="top:68px">10 °C</span>
+  <span class="g pal hors" style="left:58px;top:50.4px">19 °C · 7 j</span>
+  <span class="g bande" style="left:58px;top:81.4px">fiche 9–11 °C</span>
+  <span class="g pal" style="left:212px;top:78.4px">4 °C · 8 j</span>
+  <span class="v5-j0" aria-label="Dose choisie, 23 g, à J0">J0 · 23 g</span>
+  <span class="g axe" style="left:179.1px">J7</span>
+  <span class="g fin">fin J15</span>
+</div>
+<div class="v5-objs" role="button" aria-label="Objectifs : ma cible 2,5 à 3,0 % vol ; atténuation sur ce moût 76 à 80 % ; finale sèche ; accent lager propre ; effervescence : effervescente. Toucher pour régler">
+  <span class="v5-objs-t">objectifs ›</span>
+  <div>ma cible <b class="v5-mono">2,5–3,0 % vol</b> · atténuation <b class="v5-mono">76–80 %</b></div>
+  <div>finale <b>sèche</b> · accent <b>lager propre</b> · <b>effervescente</b></div>
+</div>
+<nav class="v5-rares" aria-label="Changer de levure, et le rare">
+  <span class="v5-rp chg"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="6.5"/><path d="M16 16l4.5 4.5" stroke-linecap="round"/></svg>Changer de levure</span><span class="v5-rp">Offres</span><span class="v5-rp">Repères</span><span class="v5-rp">Atelier</span>
+</nav>
+</div></div>
+<div class="v5-pied"><span class="v5-btn trait">Retour</span><span class="v5-esp"></span><span class="v5-btn noir">Suivant — Paliers</span></div>
+<span class="fab" aria-label="Ajouter">+</span>
+
+<nav class="v5-onglets" aria-label="Onglets">
+  <a><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M4 16a8 8 0 1 1 16 0"/><path d="M12 16l4-5"/></svg>Bord</a>
+  <a><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="8"/><path d="M12 7v10M9.5 9.5h4a1.5 1.5 0 0 1 0 3h-3a1.5 1.5 0 0 0 0 3h4" stroke-linecap="round"/></svg>Finances</a>
+  <a><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><rect x="4" y="5" width="16" height="15" rx="2"/><path d="M4 10h16M9 3v4M15 3v4"/></svg>Calendrier</a>
+  <a class="ici"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><path d="M9 3h6M10 3v6l-5 9a2 2 0 0 0 1.8 3h10.4a2 2 0 0 0 1.8-3l-5-9V3"/></svg>Brassins</a>
+  <a><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><path d="M12 3l8 4.5v9L12 21l-8-4.5v-9z"/><path d="M4 7.5l8 4.5 8-4.5M12 12v9"/></svg>Stocks</a>
+  <a><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="12" cy="8" r="3.5"/><path d="M5 20a7 7 0 0 1 14 0"/></svg>Clients</a>
+</nav>
+</div>
+<div class="v5-leg"><h3><span>E</span>IA après (v01)</h3><p>4 à confirmer · 1 écarté, Tout retenir (4) ; × ou ↺ par ligne, source fiche ou IA estimé.</p></div>
+</div>
+<div class="v5-col">
+<div class="v5-ecran">
+<header class="v5-tete">
+  <div class="v5-l1">
+    <span class="v5-retour" aria-label="Retour"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M15 5l-7 7 7 7"/></svg></span>
+    <span class="v5-titre">Levure<span class="v5-mono">4/7</span></span>
+    <span class="v5-esp"></span>
+    <span class="v5-lien">Abandonner</span>
+    <span class="v5-ico" aria-label="Importer"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><path d="M8 3h8l3 3v14H5V6z"/><path d="M11 13h8m-3-3 3 3-3 3"/></svg></span>
+    <span class="v5-ico" aria-label="Thème"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M20 14.5A8 8 0 1 1 9.5 4a6.5 6.5 0 0 0 10.5 10.5z"/></svg></span>
+  </div>
+  <nav class="v5-etapes" aria-label="Étapes de la recette"><span class="fait">Identité</span><span class="fait">Malts/sucres</span><span class="fait">Houblons</span><span class="ici">Levure</span><span class="apres">Paliers</span><span class="apres">Eau</span><span class="apres">Récap.</span></nav>
+  
+</header>
+<div class="v5-corps" style="top:79px"><div>
+<section class="v5-carte" aria-label="Ma levure">
+  <div class="v5-hd">
+    <span class="v5-pastille"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linejoin="round"><path d="M9 3h6M10 3v6l-5 9a2 2 0 0 0 1.8 3h10.4a2 2 0 0 0 1.8-3l-5-9V3"/><path d="M7.5 15h9"/></svg></span>
+    <div class="v5-nom"><b>Munich Lager Yeast</b></div>
+    <div class="v5-dose" role="button" aria-label="Dose choisie : 23 g, 2 sachets de 11,5 g ; 15 g au moins conseillé"><span class="v5-mono">23</span><em>g</em></div>
+    <div class="v5-dose-s n v5-mono">2 × 11,5 g</div>
+    <div class="v5-dose-s c">≥ 15 conseillé</div>
+    <span class="v5-x" aria-label="Retirer la levure"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 6l12 12M18 6 6 18"/></svg></span>
+    <div class="v5-marque">White Labs · vendue par Lallemand · <span class="v5-ex">exemple</span></div>
+  </div>
+  <div class="v5-cases">
+    <div class="v5-case">
+      <div class="v5-et">FG</div>
+      <div class="v5-val v5-mono">1,005–1,006</div>
+      <div class="v5-sous">≈ 2,6–2,7 % vol</div>
+      <div class="v5-jauge" aria-label="FG 1,005 à 1,006 sur une échelle de 1,000 à 1,030, OG 1,026"><i style="left:16%;width:5%"></i></div>
+      <div class="v5-ech v5-mono"><span>1,000</span><span>1,030</span></div>
+    </div>
+    <div class="v5-case">
+      <div class="v5-et">fiche · conduite</div>
+      <div class="v5-val v5-mono">9–11 · <span class="v5-hors">19 °C</span></div>
+      <div class="v5-plage" aria-label="Plage de la fiche 9 à 11 °C, conduite 19 °C hors plage"><span class="fiche"></span><span class="ici" style="left:84%"></span></div>
+      <span class="v5-caler"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M5 12h13m-5-5 5 5-5 5"/></svg>Caler à 11 °C</span>
+    </div>
+    <div class="v5-case">
+      <div class="v5-et">floculation</div>
+      <div class="v5-val" style="font-weight:400;color:var(--t1)">moyenne</div>
+      <div class="v5-floc"><i></i><i></i><i class="non"></i></div>
+    </div>
+  </div>
+  <div class="v5-ia" role="button" aria-label="Compléter la fiche par l'IA"><svg class="v5-etoile" width="22" height="22" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l2.2 6.6L21 11l-6.8 2.4L12 20l-2.2-6.6L3 11l6.8-2.4z"/><path d="M19 15l.9 2.3L22 18l-2.1.8L19 21l-.9-2.2L16 18l2.1-.7z"/></svg><b>Compléter la fiche</b><span class="v5-esp"></span><span class="v5-cpt">IA · 2 vides, 3 simulés</span></div>
+  <ul class="v5-traits" aria-label="Effets de fermentation"><li style="--c:#F0A030"><i class="v5-dot"></i><span class="v5-tn">esters</span><span class="v5-crans vide"><i></i><i></i><i></i></span><span class="v5-tv vide">non publié</span></li>
+<li style="--c:#7A4A3A"><i class="v5-dot"></i><span class="v5-tn">phénols</span><span class="v5-crans"><i></i><i></i><i></i></span><span class="v5-tv">négatif</span><span class="v5-src">simulé</span></li>
+<li style="--c:#6CC4A0"><i class="v5-dot"></i><span class="v5-tn">thiols</span><span class="v5-crans"><i class="on"></i><i></i><i></i></span><span class="v5-tv">faible</span><span class="v5-src">simulé</span></li>
+<li style="--c:#A8C040"><i class="v5-dot"></i><span class="v5-tn">terpènes</span><span class="v5-crans"><i class="on"></i><i></i><i></i></span><span class="v5-tv">faible</span><span class="v5-src">simulé</span></li>
+<li style="--c:#A89070"><i class="v5-dot"></i><span class="v5-tn">sucres restants</span><span class="v5-crans vide"><i></i><i></i><i></i></span><span class="v5-tv vide">non publié</span></li></ul>
+</section>
+<div class="v5-gr" aria-label="Conduite, température × jours, réglable : 19 °C pendant 7 jours puis 4 °C pendant 8 jours, fin J15">
+  <svg class="v5-trace" width="374" height="132" viewBox="0 0 374 132" aria-hidden="true">
+    <line x1="50" y1="42" x2="346" y2="42" stroke="#D2D2D2" stroke-width="1" stroke-dasharray="2 3"/>
+    <line x1="50" y1="76" x2="346" y2="76" stroke="#D2D2D2" stroke-width="1" stroke-dasharray="2 3"/>
+    <rect x="50" y="72.6" width="296" height="6.800000000000011" fill="#86B9E6" fill-opacity=".6" stroke="#4F7E9B" stroke-width="1.2" stroke-dasharray="4 2"/>
+    <line x1="46" y1="110" x2="350" y2="110" stroke="#9E9E9E" stroke-width="1.4"/>
+    <line x1="188.1" y1="107" x2="188.1" y2="113" stroke="#9E9E9E" stroke-width="1.4"/>
+    <path d="M50 110V45.4H188.1" fill="none" stroke="#C8382F" stroke-width="3" stroke-linejoin="round"/>
+    <path d="M188.1 45.4V96.4H346V110" fill="none" stroke="#333333" stroke-width="3" stroke-linejoin="round"/>
+    <circle cx="150" cy="45.4" r="16" fill="#fff" stroke="#111" stroke-width="1.6"/><path d="M150 38.4v14M146 42.4l4-4 4 4M146 48.4l4 4 4-4" stroke="#111" stroke-width="1.8" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+    <circle cx="188.1" cy="70.9" r="16" fill="#fff" stroke="#111" stroke-width="1.6"/><path d="M181.1 70.9h14M185.1 66.9l-4 4 4 4M191.1 66.9l4 4-4 4" stroke="#111" stroke-width="1.8" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+    <circle cx="300" cy="96.4" r="16" fill="#fff" stroke="#111" stroke-width="1.6"/><path d="M300 89.4v14M296 93.4l4-4 4 4M296 99.4l4 4 4-4" stroke="#111" stroke-width="1.8" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+    <circle cx="346" cy="96.4" r="16" fill="#fff" stroke="#111" stroke-width="1.6"/><path d="M339 96.4h14M343 92.4l-4 4 4 4M349 92.4l4 4-4 4" stroke="#111" stroke-width="1.8" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+  </svg>
+  <span class="g titre">conduite</span>
+  <span class="v5-etats"><span class="v5-etat brouillon">Brouillon</span><span class="v5-etat verifier" aria-label="1 point à vérifier : premier palier à 19 °C, hors de la plage 9 à 11 °C"><i></i>1 point : 19 °C hors plage</span></span>
+  <span class="g grad" style="top:34px">20 °C</span>
+  <span class="g grad" style="top:68px">10 °C</span>
+  <span class="g pal hors" style="left:58px;top:50.4px">19 °C · 7 j</span>
+  <span class="g bande" style="left:58px;top:81.4px">fiche 9–11 °C</span>
+  <span class="g pal" style="left:212px;top:78.4px">4 °C · 8 j</span>
+  <span class="v5-j0" aria-label="Dose choisie, 23 g, à J0">J0 · 23 g</span>
+  <span class="g axe" style="left:179.1px">J7</span>
+  <span class="g fin">fin J15</span>
+</div>
+<div class="v5-objs" role="button" aria-label="Objectifs : ma cible 2,5 à 3,0 % vol ; atténuation sur ce moût 76 à 80 % ; finale sèche ; accent lager propre ; effervescence : effervescente. Toucher pour régler">
+  <span class="v5-objs-t">objectifs ›</span>
+  <div>ma cible <b class="v5-mono">2,5–3,0 % vol</b> · atténuation <b class="v5-mono">76–80 %</b></div>
+  <div>finale <b>sèche</b> · accent <b>lager propre</b> · <b>effervescente</b></div>
+</div>
+<nav class="v5-rares" aria-label="Changer de levure, et le rare">
+  <span class="v5-rp chg"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="6.5"/><path d="M16 16l4.5 4.5" stroke-linecap="round"/></svg>Changer de levure</span><span class="v5-rp touche">Offres</span><span class="v5-rp">Repères</span><span class="v5-rp">Atelier</span>
+</nav>
+</div></div>
+<div class="v5-pied"><span class="v5-btn trait">Retour</span><span class="v5-esp"></span><span class="v5-btn noir">Suivant — Paliers</span></div>
+<span class="fab" aria-label="Ajouter">+</span>
+<div class="v5-voile"></div>
+<section class="v5-feuille" aria-label="Le rare : offres">
+  <div class="v5-poignee"></div>
+  <div class="v5-fhd"><div><h4>Offres</h4><p>Munich Lager Yeast · <span class="v5-ex">exemple</span></p></div><span class="v5-x" aria-label="Fermer"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 6l12 12M18 6 6 18"/></svg></span></div>
+  <div class="v5-onglets-f"><span class="ici">Offres</span><span>Repères</span><span>Atelier</span></div>
+  <div class="v5-offre">
+    <div class="v5-et"><span>Offre retenue</span><span>1 offre relevée</span></div>
+    <div class="v5-offre-l"><b>Lallemand · sachet 11,5 g</b><span class="v5-mono">CHF 6.90</span></div>
+    <div class="v5-offre-s"><span>2 sachets pour 23 g</span><span class="v5-mono">CHF 13.80</span></div>
+  </div>
+  <ul class="v5-lignes">
+    <li><div class="lab"><b>Livraison CH</b><small>2 à 4 jours ouvrés</small></div><div class="vv v5-mono">CHF 9.–<small>port</small></div></li>
+    <li><div class="lab"><b>Lot associé</b><small>lot de l'offre retenue</small></div><div class="vv v5-mono">L24-118<small>DLUO 03.2027</small></div></li>
+    <li><div class="lab"><b>Produit exact</b><small>Munich Lager Yeast, sèche, 11,5 g</small></div><span class="v5-chev"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M9 6l6 6-6 6"/></svg></span></li>
+  </ul>
+  <span class="v5-btn trait v5-ok">Corriger la fiche produit</span>
+</section>
+<nav class="v5-onglets" aria-label="Onglets">
+  <a><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M4 16a8 8 0 1 1 16 0"/><path d="M12 16l4-5"/></svg>Bord</a>
+  <a><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="8"/><path d="M12 7v10M9.5 9.5h4a1.5 1.5 0 0 1 0 3h-3a1.5 1.5 0 0 0 0 3h4" stroke-linecap="round"/></svg>Finances</a>
+  <a><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><rect x="4" y="5" width="16" height="15" rx="2"/><path d="M4 10h16M9 3v4M15 3v4"/></svg>Calendrier</a>
+  <a class="ici"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><path d="M9 3h6M10 3v6l-5 9a2 2 0 0 0 1.8 3h10.4a2 2 0 0 0 1.8-3l-5-9V3"/></svg>Brassins</a>
+  <a><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><path d="M12 3l8 4.5v9L12 21l-8-4.5v-9z"/><path d="M4 7.5l8 4.5 8-4.5M12 12v9"/></svg>Stocks</a>
+  <a><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="12" cy="8" r="3.5"/><path d="M5 20a7 7 0 0 1 14 0"/></svg>Clients</a>
+</nav>
+</div>
+<div class="v5-leg"><h3><span>F</span>Le rare : Offres touché</h3><p>Feuille, trois onglets. Offres : offre retenue et prix, livraison CH, lot associé, produit exact, « Corriger la fiche produit ».</p></div>
+</div>
+<div class="v5-col">
+<div class="v5-ecran">
+<header class="v5-tete">
+  <div class="v5-l1">
+    <span class="v5-retour" aria-label="Retour"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M15 5l-7 7 7 7"/></svg></span>
+    <span class="v5-titre">Levure<span class="v5-mono">4/7</span></span>
+    <span class="v5-esp"></span>
+    <span class="v5-lien">Abandonner</span>
+    <span class="v5-ico" aria-label="Importer"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><path d="M8 3h8l3 3v14H5V6z"/><path d="M11 13h8m-3-3 3 3-3 3"/></svg></span>
+    <span class="v5-ico" aria-label="Thème"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M20 14.5A8 8 0 1 1 9.5 4a6.5 6.5 0 0 0 10.5 10.5z"/></svg></span>
+  </div>
+  <nav class="v5-etapes" aria-label="Étapes de la recette"><span class="fait">Identité</span><span class="fait">Malts/sucres</span><span class="fait">Houblons</span><span class="ici">Levure</span><span class="apres">Paliers</span><span class="apres">Eau</span><span class="apres">Récap.</span></nav>
+  
+</header>
+<div class="v5-corps" style="top:79px"><div>
+<section class="v5-carte" aria-label="Ma levure">
+  <div class="v5-hd">
+    <span class="v5-pastille"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linejoin="round"><path d="M9 3h6M10 3v6l-5 9a2 2 0 0 0 1.8 3h10.4a2 2 0 0 0 1.8-3l-5-9V3"/><path d="M7.5 15h9"/></svg></span>
+    <div class="v5-nom"><b>Munich Lager Yeast</b></div>
+    <div class="v5-dose" role="button" aria-label="Dose choisie : 23 g, 2 sachets de 11,5 g ; 15 g au moins conseillé"><span class="v5-mono">23</span><em>g</em></div>
+    <div class="v5-dose-s n v5-mono">2 × 11,5 g</div>
+    <div class="v5-dose-s c">≥ 15 conseillé</div>
+    <span class="v5-x" aria-label="Retirer la levure"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 6l12 12M18 6 6 18"/></svg></span>
+    <div class="v5-marque">White Labs · vendue par Lallemand · <span class="v5-ex">exemple</span></div>
+  </div>
+  <div class="v5-cases">
+    <div class="v5-case">
+      <div class="v5-et">FG</div>
+      <div class="v5-val v5-mono">1,005–1,006</div>
+      <div class="v5-sous">≈ 2,6–2,7 % vol</div>
+      <div class="v5-jauge" aria-label="FG 1,005 à 1,006 sur une échelle de 1,000 à 1,030, OG 1,026"><i style="left:16%;width:5%"></i></div>
+      <div class="v5-ech v5-mono"><span>1,000</span><span>1,030</span></div>
+    </div>
+    <div class="v5-case">
+      <div class="v5-et">fiche · conduite</div>
+      <div class="v5-val v5-mono">9–11 · <span class="v5-hors">19 °C</span></div>
+      <div class="v5-plage" aria-label="Plage de la fiche 9 à 11 °C, conduite 19 °C hors plage"><span class="fiche"></span><span class="ici" style="left:84%"></span></div>
+      <span class="v5-caler"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M5 12h13m-5-5 5 5-5 5"/></svg>Caler à 11 °C</span>
+    </div>
+    <div class="v5-case">
+      <div class="v5-et">floculation</div>
+      <div class="v5-val" style="font-weight:400;color:var(--t1)">moyenne</div>
+      <div class="v5-floc"><i></i><i></i><i class="non"></i></div>
+    </div>
+  </div>
+  <div class="v5-ia" role="button" aria-label="Compléter la fiche par l'IA"><svg class="v5-etoile" width="22" height="22" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l2.2 6.6L21 11l-6.8 2.4L12 20l-2.2-6.6L3 11l6.8-2.4z"/><path d="M19 15l.9 2.3L22 18l-2.1.8L19 21l-.9-2.2L16 18l2.1-.7z"/></svg><b>Compléter la fiche</b><span class="v5-esp"></span><span class="v5-cpt">IA · 2 vides, 3 simulés</span></div>
+  <ul class="v5-traits" aria-label="Effets de fermentation"><li style="--c:#F0A030"><i class="v5-dot"></i><span class="v5-tn">esters</span><span class="v5-crans vide"><i></i><i></i><i></i></span><span class="v5-tv vide">non publié</span></li>
+<li style="--c:#7A4A3A"><i class="v5-dot"></i><span class="v5-tn">phénols</span><span class="v5-crans"><i></i><i></i><i></i></span><span class="v5-tv">négatif</span><span class="v5-src">simulé</span></li>
+<li style="--c:#6CC4A0"><i class="v5-dot"></i><span class="v5-tn">thiols</span><span class="v5-crans"><i class="on"></i><i></i><i></i></span><span class="v5-tv">faible</span><span class="v5-src">simulé</span></li>
+<li style="--c:#A8C040"><i class="v5-dot"></i><span class="v5-tn">terpènes</span><span class="v5-crans"><i class="on"></i><i></i><i></i></span><span class="v5-tv">faible</span><span class="v5-src">simulé</span></li>
+<li style="--c:#A89070"><i class="v5-dot"></i><span class="v5-tn">sucres restants</span><span class="v5-crans vide"><i></i><i></i><i></i></span><span class="v5-tv vide">non publié</span></li></ul>
+</section>
+<div class="v5-gr" aria-label="Conduite, température × jours, réglable : 19 °C pendant 7 jours puis 4 °C pendant 8 jours, fin J15">
+  <svg class="v5-trace" width="374" height="132" viewBox="0 0 374 132" aria-hidden="true">
+    <line x1="50" y1="42" x2="346" y2="42" stroke="#D2D2D2" stroke-width="1" stroke-dasharray="2 3"/>
+    <line x1="50" y1="76" x2="346" y2="76" stroke="#D2D2D2" stroke-width="1" stroke-dasharray="2 3"/>
+    <rect x="50" y="72.6" width="296" height="6.800000000000011" fill="#86B9E6" fill-opacity=".6" stroke="#4F7E9B" stroke-width="1.2" stroke-dasharray="4 2"/>
+    <line x1="46" y1="110" x2="350" y2="110" stroke="#9E9E9E" stroke-width="1.4"/>
+    <line x1="188.1" y1="107" x2="188.1" y2="113" stroke="#9E9E9E" stroke-width="1.4"/>
+    <path d="M50 110V45.4H188.1" fill="none" stroke="#C8382F" stroke-width="3" stroke-linejoin="round"/>
+    <path d="M188.1 45.4V96.4H346V110" fill="none" stroke="#333333" stroke-width="3" stroke-linejoin="round"/>
+    <circle cx="150" cy="45.4" r="16" fill="#fff" stroke="#111" stroke-width="1.6"/><path d="M150 38.4v14M146 42.4l4-4 4 4M146 48.4l4 4 4-4" stroke="#111" stroke-width="1.8" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+    <circle cx="188.1" cy="70.9" r="16" fill="#fff" stroke="#111" stroke-width="1.6"/><path d="M181.1 70.9h14M185.1 66.9l-4 4 4 4M191.1 66.9l4 4-4 4" stroke="#111" stroke-width="1.8" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+    <circle cx="300" cy="96.4" r="16" fill="#fff" stroke="#111" stroke-width="1.6"/><path d="M300 89.4v14M296 93.4l4-4 4 4M296 99.4l4 4 4-4" stroke="#111" stroke-width="1.8" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+    <circle cx="346" cy="96.4" r="16" fill="#fff" stroke="#111" stroke-width="1.6"/><path d="M339 96.4h14M343 92.4l-4 4 4 4M349 92.4l4 4-4 4" stroke="#111" stroke-width="1.8" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+  </svg>
+  <span class="g titre">conduite</span>
+  <span class="v5-etats"><span class="v5-etat brouillon">Brouillon</span><span class="v5-etat verifier" aria-label="1 point à vérifier : premier palier à 19 °C, hors de la plage 9 à 11 °C"><i></i>1 point : 19 °C hors plage</span></span>
+  <span class="g grad" style="top:34px">20 °C</span>
+  <span class="g grad" style="top:68px">10 °C</span>
+  <span class="g pal hors" style="left:58px;top:50.4px">19 °C · 7 j</span>
+  <span class="g bande" style="left:58px;top:81.4px">fiche 9–11 °C</span>
+  <span class="g pal" style="left:212px;top:78.4px">4 °C · 8 j</span>
+  <span class="v5-j0" aria-label="Dose choisie, 23 g, à J0">J0 · 23 g</span>
+  <span class="g axe" style="left:179.1px">J7</span>
+  <span class="g fin">fin J15</span>
+</div>
+<div class="v5-objs" role="button" aria-label="Objectifs : ma cible 2,5 à 3,0 % vol ; atténuation sur ce moût 76 à 80 % ; finale sèche ; accent lager propre ; effervescence : effervescente. Toucher pour régler">
+  <span class="v5-objs-t">objectifs ›</span>
+  <div>ma cible <b class="v5-mono">2,5–3,0 % vol</b> · atténuation <b class="v5-mono">76–80 %</b></div>
+  <div>finale <b>sèche</b> · accent <b>lager propre</b> · <b>effervescente</b></div>
+</div>
+<nav class="v5-rares" aria-label="Changer de levure, et le rare">
+  <span class="v5-rp chg"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="6.5"/><path d="M16 16l4.5 4.5" stroke-linecap="round"/></svg>Changer de levure</span><span class="v5-rp">Offres</span><span class="v5-rp touche">Repères</span><span class="v5-rp">Atelier</span>
+</nav>
+</div></div>
+<div class="v5-pied"><span class="v5-btn trait">Retour</span><span class="v5-esp"></span><span class="v5-btn noir">Suivant — Paliers</span></div>
+<span class="fab" aria-label="Ajouter">+</span>
+<div class="v5-voile"></div>
+<section class="v5-feuille" aria-label="Le rare : repères">
+  <div class="v5-poignee"></div>
+  <div class="v5-fhd"><div><h4>Repères</h4><p>Munich Lager Yeast · <span class="v5-ex">exemple</span></p></div><span class="v5-x" aria-label="Fermer"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 6l12 12M18 6 6 18"/></svg></span></div>
+  <div class="v5-onglets-f"><span>Offres</span><span class="ici">Repères</span><span>Atelier</span></div>
+  <div class="v5-et" style="margin-top:12px">Ce que dit la fiche du catalogue</div>
+  <ul class="v5-lignes">
+    <li><div class="lab"><b>Plage de fermentation</b><small>fiche White Labs</small></div><div class="vv v5-mono">9–11 °C</div></li>
+    <li><div class="lab"><b>Atténuation</b><small>fiche White Labs</small></div><div class="vv v5-mono">76–80 %</div></li>
+    <li><div class="lab"><b>Floculation</b><small>fiche White Labs</small></div><div class="vv">moyenne</div></li>
+    <li><div class="lab"><b>Esters, sucres restants</b><small>la fiche ne les publie pas</small></div><div class="vv" style="font-weight:400;color:var(--t2)">non publié</div></li>
+  </ul>
+  <div class="v5-et" style="margin-top:12px">Liens</div>
+  <ul class="v5-lignes">
+    <li><div class="lab"><b>Fiche du fabricant</b><small>whitelabs.com</small></div><span class="v5-chev"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 4h6v6M20 4l-9 9"/><path d="M18 14v5H5V6h5"/></svg></span></li>
+    <li><div class="lab"><b>Fiche technique</b><small>lallemandbrewing.com · PDF</small></div><span class="v5-chev"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 4h6v6M20 4l-9 9"/><path d="M18 14v5H5V6h5"/></svg></span></li>
+  </ul>
+</section>
+<nav class="v5-onglets" aria-label="Onglets">
+  <a><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M4 16a8 8 0 1 1 16 0"/><path d="M12 16l4-5"/></svg>Bord</a>
+  <a><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="8"/><path d="M12 7v10M9.5 9.5h4a1.5 1.5 0 0 1 0 3h-3a1.5 1.5 0 0 0 0 3h4" stroke-linecap="round"/></svg>Finances</a>
+  <a><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><rect x="4" y="5" width="16" height="15" rx="2"/><path d="M4 10h16M9 3v4M15 3v4"/></svg>Calendrier</a>
+  <a class="ici"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><path d="M9 3h6M10 3v6l-5 9a2 2 0 0 0 1.8 3h10.4a2 2 0 0 0 1.8-3l-5-9V3"/></svg>Brassins</a>
+  <a><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><path d="M12 3l8 4.5v9L12 21l-8-4.5v-9z"/><path d="M4 7.5l8 4.5 8-4.5M12 12v9"/></svg>Stocks</a>
+  <a><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="12" cy="8" r="3.5"/><path d="M5 20a7 7 0 0 1 14 0"/></svg>Clients</a>
+</nav>
+</div>
+<div class="v5-leg"><h3><span>F′</span>Le rare : Repères touché</h3><p>Ce que dit la fiche du catalogue, valeur par valeur, et ses liens.</p></div>
+</div>
+<div class="v5-col">
+<div class="v5-ecran">
+<header class="v5-tete">
+  <div class="v5-l1">
+    <span class="v5-retour" aria-label="Retour"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M15 5l-7 7 7 7"/></svg></span>
+    <span class="v5-titre">Levure<span class="v5-mono">4/7</span></span>
+    <span class="v5-esp"></span>
+    <span class="v5-lien">Abandonner</span>
+    <span class="v5-ico" aria-label="Importer"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><path d="M8 3h8l3 3v14H5V6z"/><path d="M11 13h8m-3-3 3 3-3 3"/></svg></span>
+    <span class="v5-ico" aria-label="Thème"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M20 14.5A8 8 0 1 1 9.5 4a6.5 6.5 0 0 0 10.5 10.5z"/></svg></span>
+  </div>
+  <nav class="v5-etapes" aria-label="Étapes de la recette"><span class="fait">Identité</span><span class="fait">Malts/sucres</span><span class="fait">Houblons</span><span class="ici">Levure</span><span class="apres">Paliers</span><span class="apres">Eau</span><span class="apres">Récap.</span></nav>
+  
+</header>
+<div class="v5-corps" style="top:79px"><div>
+<section class="v5-carte" aria-label="Ma levure">
+  <div class="v5-hd">
+    <span class="v5-pastille"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linejoin="round"><path d="M9 3h6M10 3v6l-5 9a2 2 0 0 0 1.8 3h10.4a2 2 0 0 0 1.8-3l-5-9V3"/><path d="M7.5 15h9"/></svg></span>
+    <div class="v5-nom"><b>Munich Lager Yeast</b></div>
+    <div class="v5-dose" role="button" aria-label="Dose choisie : 23 g, 2 sachets de 11,5 g ; 15 g au moins conseillé"><span class="v5-mono">23</span><em>g</em></div>
+    <div class="v5-dose-s n v5-mono">2 × 11,5 g</div>
+    <div class="v5-dose-s c">≥ 15 conseillé</div>
+    <span class="v5-x" aria-label="Retirer la levure"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 6l12 12M18 6 6 18"/></svg></span>
+    <div class="v5-marque">White Labs · vendue par Lallemand · <span class="v5-ex">exemple</span></div>
+  </div>
+  <div class="v5-cases">
+    <div class="v5-case">
+      <div class="v5-et">FG</div>
+      <div class="v5-val v5-mono">1,005–1,006</div>
+      <div class="v5-sous">≈ 2,6–2,7 % vol</div>
+      <div class="v5-jauge" aria-label="FG 1,005 à 1,006 sur une échelle de 1,000 à 1,030, OG 1,026"><i style="left:16%;width:5%"></i></div>
+      <div class="v5-ech v5-mono"><span>1,000</span><span>1,030</span></div>
+    </div>
+    <div class="v5-case">
+      <div class="v5-et">fiche · conduite</div>
+      <div class="v5-val v5-mono">9–11 · <span class="v5-hors">19 °C</span></div>
+      <div class="v5-plage" aria-label="Plage de la fiche 9 à 11 °C, conduite 19 °C hors plage"><span class="fiche"></span><span class="ici" style="left:84%"></span></div>
+      <span class="v5-caler"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M5 12h13m-5-5 5 5-5 5"/></svg>Caler à 11 °C</span>
+    </div>
+    <div class="v5-case">
+      <div class="v5-et">floculation</div>
+      <div class="v5-val" style="font-weight:400;color:var(--t1)">moyenne</div>
+      <div class="v5-floc"><i></i><i></i><i class="non"></i></div>
+    </div>
+  </div>
+  <div class="v5-ia" role="button" aria-label="Compléter la fiche par l'IA"><svg class="v5-etoile" width="22" height="22" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l2.2 6.6L21 11l-6.8 2.4L12 20l-2.2-6.6L3 11l6.8-2.4z"/><path d="M19 15l.9 2.3L22 18l-2.1.8L19 21l-.9-2.2L16 18l2.1-.7z"/></svg><b>Compléter la fiche</b><span class="v5-esp"></span><span class="v5-cpt">IA · 2 vides, 3 simulés</span></div>
+  <ul class="v5-traits" aria-label="Effets de fermentation"><li style="--c:#F0A030"><i class="v5-dot"></i><span class="v5-tn">esters</span><span class="v5-crans vide"><i></i><i></i><i></i></span><span class="v5-tv vide">non publié</span></li>
+<li style="--c:#7A4A3A"><i class="v5-dot"></i><span class="v5-tn">phénols</span><span class="v5-crans"><i></i><i></i><i></i></span><span class="v5-tv">négatif</span><span class="v5-src">simulé</span></li>
+<li style="--c:#6CC4A0"><i class="v5-dot"></i><span class="v5-tn">thiols</span><span class="v5-crans"><i class="on"></i><i></i><i></i></span><span class="v5-tv">faible</span><span class="v5-src">simulé</span></li>
+<li style="--c:#A8C040"><i class="v5-dot"></i><span class="v5-tn">terpènes</span><span class="v5-crans"><i class="on"></i><i></i><i></i></span><span class="v5-tv">faible</span><span class="v5-src">simulé</span></li>
+<li style="--c:#A89070"><i class="v5-dot"></i><span class="v5-tn">sucres restants</span><span class="v5-crans vide"><i></i><i></i><i></i></span><span class="v5-tv vide">non publié</span></li></ul>
+</section>
+<div class="v5-gr" aria-label="Conduite, température × jours, réglable : 19 °C pendant 7 jours puis 4 °C pendant 8 jours, fin J15">
+  <svg class="v5-trace" width="374" height="132" viewBox="0 0 374 132" aria-hidden="true">
+    <line x1="50" y1="42" x2="346" y2="42" stroke="#D2D2D2" stroke-width="1" stroke-dasharray="2 3"/>
+    <line x1="50" y1="76" x2="346" y2="76" stroke="#D2D2D2" stroke-width="1" stroke-dasharray="2 3"/>
+    <rect x="50" y="72.6" width="296" height="6.800000000000011" fill="#86B9E6" fill-opacity=".6" stroke="#4F7E9B" stroke-width="1.2" stroke-dasharray="4 2"/>
+    <line x1="46" y1="110" x2="350" y2="110" stroke="#9E9E9E" stroke-width="1.4"/>
+    <line x1="188.1" y1="107" x2="188.1" y2="113" stroke="#9E9E9E" stroke-width="1.4"/>
+    <path d="M50 110V45.4H188.1" fill="none" stroke="#C8382F" stroke-width="3" stroke-linejoin="round"/>
+    <path d="M188.1 45.4V96.4H346V110" fill="none" stroke="#333333" stroke-width="3" stroke-linejoin="round"/>
+    <circle cx="150" cy="45.4" r="16" fill="#fff" stroke="#111" stroke-width="1.6"/><path d="M150 38.4v14M146 42.4l4-4 4 4M146 48.4l4 4 4-4" stroke="#111" stroke-width="1.8" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+    <circle cx="188.1" cy="70.9" r="16" fill="#fff" stroke="#111" stroke-width="1.6"/><path d="M181.1 70.9h14M185.1 66.9l-4 4 4 4M191.1 66.9l4 4-4 4" stroke="#111" stroke-width="1.8" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+    <circle cx="300" cy="96.4" r="16" fill="#fff" stroke="#111" stroke-width="1.6"/><path d="M300 89.4v14M296 93.4l4-4 4 4M296 99.4l4 4 4-4" stroke="#111" stroke-width="1.8" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+    <circle cx="346" cy="96.4" r="16" fill="#fff" stroke="#111" stroke-width="1.6"/><path d="M339 96.4h14M343 92.4l-4 4 4 4M349 92.4l4 4-4 4" stroke="#111" stroke-width="1.8" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+  </svg>
+  <span class="g titre">conduite</span>
+  <span class="v5-etats"><span class="v5-etat brouillon">Brouillon</span><span class="v5-etat verifier" aria-label="1 point à vérifier : premier palier à 19 °C, hors de la plage 9 à 11 °C"><i></i>1 point : 19 °C hors plage</span></span>
+  <span class="g grad" style="top:34px">20 °C</span>
+  <span class="g grad" style="top:68px">10 °C</span>
+  <span class="g pal hors" style="left:58px;top:50.4px">19 °C · 7 j</span>
+  <span class="g bande" style="left:58px;top:81.4px">fiche 9–11 °C</span>
+  <span class="g pal" style="left:212px;top:78.4px">4 °C · 8 j</span>
+  <span class="v5-j0" aria-label="Dose choisie, 23 g, à J0">J0 · 23 g</span>
+  <span class="g axe" style="left:179.1px">J7</span>
+  <span class="g fin">fin J15</span>
+</div>
+<div class="v5-objs" role="button" aria-label="Objectifs : ma cible 2,5 à 3,0 % vol ; atténuation sur ce moût 76 à 80 % ; finale sèche ; accent lager propre ; effervescence : effervescente. Toucher pour régler">
+  <span class="v5-objs-t">objectifs ›</span>
+  <div>ma cible <b class="v5-mono">2,5–3,0 % vol</b> · atténuation <b class="v5-mono">76–80 %</b></div>
+  <div>finale <b>sèche</b> · accent <b>lager propre</b> · <b>effervescente</b></div>
+</div>
+<nav class="v5-rares" aria-label="Changer de levure, et le rare">
+  <span class="v5-rp chg"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="6.5"/><path d="M16 16l4.5 4.5" stroke-linecap="round"/></svg>Changer de levure</span><span class="v5-rp">Offres</span><span class="v5-rp">Repères</span><span class="v5-rp touche">Atelier</span>
+</nav>
+</div></div>
+<div class="v5-pied"><span class="v5-btn trait">Retour</span><span class="v5-esp"></span><span class="v5-btn noir">Suivant — Paliers</span></div>
+<span class="fab" aria-label="Ajouter">+</span>
+<div class="v5-voile"></div>
+<section class="v5-feuille" aria-label="Le rare : atelier">
+  <div class="v5-poignee"></div>
+  <div class="v5-fhd"><div><h4>Atelier</h4><p>Munich Lager Yeast · <span class="v5-ex">exemple</span></p></div><span class="v5-x" aria-label="Fermer"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 6l12 12M18 6 6 18"/></svg></span></div>
+  <div class="v5-onglets-f"><span>Offres</span><span>Repères</span><span class="ici">Atelier</span></div>
+  <ul class="v5-lignes v5-atelier">
+    <li><span class="v5-pic"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#333" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 17h5V8h6v5h7"/><circle cx="8" cy="8" r="1.6"/><circle cx="14" cy="13" r="1.6"/></svg></span><div class="lab"><b>Essai de conduite</b><small>une autre conduite, sans toucher la recette</small></div><span class="v5-chev"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M9 6l6 6-6 6"/></svg></span></li>
+    <li><span class="v5-pic"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#333" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l7.5 5.5-2.9 9H7.4l-2.9-9z"/><path d="M12 8l3.2 2.4-1.2 3.8H10l-1.2-3.8z"/></svg></span><div class="lab"><b>Profil</b><small>effets, floculation, FG, face à une autre levure</small></div><span class="v5-chev"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M9 6l6 6-6 6"/></svg></span></li>
+    <li><span class="v5-pic"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#333" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h10M4 12h16M4 17h7"/><circle cx="17" cy="7" r="2"/><circle cx="14" cy="17" r="2"/></svg></span><div class="lab"><b>Comparaison des offres</b><small>Lallemand · 1 offre relevée</small></div><span class="v5-chev"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M9 6l6 6-6 6"/></svg></span></li>
+    <li><span class="v5-pic"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#333" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="6" cy="12" r="2.5"/><circle cx="18" cy="6" r="2.5"/><circle cx="18" cy="18" r="2.5"/><path d="M8.2 10.8l7.6-3.6M8.2 13.2l7.6 3.6"/></svg></span><div class="lab"><b>Fiche partagée</b><small>la fiche corrigée, pour tout l'atelier</small></div><span class="v5-chev"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M9 6l6 6-6 6"/></svg></span></li>
+  </ul>
+  <span class="v5-btn trait v5-ok">Fermer</span>
+</section>
+<nav class="v5-onglets" aria-label="Onglets">
+  <a><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M4 16a8 8 0 1 1 16 0"/><path d="M12 16l4-5"/></svg>Bord</a>
+  <a><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="8"/><path d="M12 7v10M9.5 9.5h4a1.5 1.5 0 0 1 0 3h-3a1.5 1.5 0 0 0 0 3h4" stroke-linecap="round"/></svg>Finances</a>
+  <a><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><rect x="4" y="5" width="16" height="15" rx="2"/><path d="M4 10h16M9 3v4M15 3v4"/></svg>Calendrier</a>
+  <a class="ici"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><path d="M9 3h6M10 3v6l-5 9a2 2 0 0 0 1.8 3h10.4a2 2 0 0 0 1.8-3l-5-9V3"/></svg>Brassins</a>
+  <a><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><path d="M12 3l8 4.5v9L12 21l-8-4.5v-9z"/><path d="M4 7.5l8 4.5 8-4.5M12 12v9"/></svg>Stocks</a>
+  <a><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="12" cy="8" r="3.5"/><path d="M5 20a7 7 0 0 1 14 0"/></svg>Clients</a>
+</nav>
+</div>
+<div class="v5-leg"><h3><span>F″</span>Le rare : Atelier touché</h3><p>Atelier : essai de conduite, profil, comparaison des offres, fiche partagée.</p></div>
+</div>
+<div class="v5-col">
+<div class="v5-ecran">
+<header class="v5-tete">
+  <div class="v5-l1">
+    <span class="v5-retour" aria-label="Retour"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M15 5l-7 7 7 7"/></svg></span>
+    <span class="v5-titre">Levure<span class="v5-mono">4/7</span></span>
+    <span class="v5-esp"></span>
+    <span class="v5-lien">Abandonner</span>
+    <span class="v5-ico" aria-label="Importer"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><path d="M8 3h8l3 3v14H5V6z"/><path d="M11 13h8m-3-3 3 3-3 3"/></svg></span>
+    <span class="v5-ico" aria-label="Thème"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M20 14.5A8 8 0 1 1 9.5 4a6.5 6.5 0 0 0 10.5 10.5z"/></svg></span>
+  </div>
+  <nav class="v5-etapes" aria-label="Étapes de la recette"><span class="fait">Identité</span><span class="fait">Malts/sucres</span><span class="fait">Houblons</span><span class="ici">Levure</span><span class="apres">Paliers</span><span class="apres">Eau</span><span class="apres">Récap.</span></nav>
+  
+</header>
+<div class="v5-corps" style="top:79px"><div>
+<section class="v5-carte" aria-label="Ma levure">
+  <div class="v5-hd">
+    <span class="v5-pastille"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linejoin="round"><path d="M9 3h6M10 3v6l-5 9a2 2 0 0 0 1.8 3h10.4a2 2 0 0 0 1.8-3l-5-9V3"/><path d="M7.5 15h9"/></svg></span>
+    <div class="v5-nom"><b>Munich Lager Yeast</b></div>
+    <div class="v5-dose" role="button" aria-label="Dose choisie : 23 g, 2 sachets de 11,5 g ; 15 g au moins conseillé"><span class="v5-mono">23</span><em>g</em></div>
+    <div class="v5-dose-s n v5-mono">2 × 11,5 g</div>
+    <div class="v5-dose-s c">≥ 15 conseillé</div>
+    <span class="v5-x" aria-label="Retirer la levure"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 6l12 12M18 6 6 18"/></svg></span>
+    <div class="v5-marque">White Labs · vendue par Lallemand · <span class="v5-ex">exemple</span></div>
+  </div>
+  <div class="v5-cases">
+    <div class="v5-case">
+      <div class="v5-et">FG</div>
+      <div class="v5-val v5-mono">1,005–1,006</div>
+      <div class="v5-sous">≈ 2,6–2,7 % vol</div>
+      <div class="v5-jauge" aria-label="FG 1,005 à 1,006 sur une échelle de 1,000 à 1,030, OG 1,026"><i style="left:16%;width:5%"></i></div>
+      <div class="v5-ech v5-mono"><span>1,000</span><span>1,030</span></div>
+    </div>
+    <div class="v5-case">
+      <div class="v5-et">fiche · conduite</div>
+      <div class="v5-val v5-mono">9–11 · <span class="v5-hors">19 °C</span></div>
+      <div class="v5-plage" aria-label="Plage de la fiche 9 à 11 °C, conduite 19 °C hors plage"><span class="fiche"></span><span class="ici" style="left:84%"></span></div>
+      <span class="v5-caler"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M5 12h13m-5-5 5 5-5 5"/></svg>Caler à 11 °C</span>
+    </div>
+    <div class="v5-case">
+      <div class="v5-et">floculation</div>
+      <div class="v5-val" style="font-weight:400;color:var(--t1)">moyenne</div>
+      <div class="v5-floc"><i></i><i></i><i class="non"></i></div>
+    </div>
+  </div>
+  <div class="v5-ia" role="button" aria-label="Compléter la fiche par l'IA"><svg class="v5-etoile" width="22" height="22" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l2.2 6.6L21 11l-6.8 2.4L12 20l-2.2-6.6L3 11l6.8-2.4z"/><path d="M19 15l.9 2.3L22 18l-2.1.8L19 21l-.9-2.2L16 18l2.1-.7z"/></svg><b>Compléter la fiche</b><span class="v5-esp"></span><span class="v5-cpt">IA · 2 vides, 3 simulés</span></div>
+  <ul class="v5-traits" aria-label="Effets de fermentation"><li style="--c:#F0A030"><i class="v5-dot"></i><span class="v5-tn">esters</span><span class="v5-crans vide"><i></i><i></i><i></i></span><span class="v5-tv vide">non publié</span></li>
+<li style="--c:#7A4A3A"><i class="v5-dot"></i><span class="v5-tn">phénols</span><span class="v5-crans"><i></i><i></i><i></i></span><span class="v5-tv">négatif</span><span class="v5-src">simulé</span></li>
+<li style="--c:#6CC4A0"><i class="v5-dot"></i><span class="v5-tn">thiols</span><span class="v5-crans"><i class="on"></i><i></i><i></i></span><span class="v5-tv">faible</span><span class="v5-src">simulé</span></li>
+<li style="--c:#A8C040"><i class="v5-dot"></i><span class="v5-tn">terpènes</span><span class="v5-crans"><i class="on"></i><i></i><i></i></span><span class="v5-tv">faible</span><span class="v5-src">simulé</span></li>
+<li style="--c:#A89070"><i class="v5-dot"></i><span class="v5-tn">sucres restants</span><span class="v5-crans vide"><i></i><i></i><i></i></span><span class="v5-tv vide">non publié</span></li></ul>
+</section>
+<div class="v5-gr" aria-label="Conduite, température × jours, réglable : 19 °C pendant 7 jours puis 4 °C pendant 8 jours, fin J15">
+  <svg class="v5-trace" width="374" height="132" viewBox="0 0 374 132" aria-hidden="true">
+    <line x1="50" y1="42" x2="346" y2="42" stroke="#D2D2D2" stroke-width="1" stroke-dasharray="2 3"/>
+    <line x1="50" y1="76" x2="346" y2="76" stroke="#D2D2D2" stroke-width="1" stroke-dasharray="2 3"/>
+    <rect x="50" y="72.6" width="296" height="6.800000000000011" fill="#86B9E6" fill-opacity=".6" stroke="#4F7E9B" stroke-width="1.2" stroke-dasharray="4 2"/>
+    <line x1="46" y1="110" x2="350" y2="110" stroke="#9E9E9E" stroke-width="1.4"/>
+    <line x1="188.1" y1="107" x2="188.1" y2="113" stroke="#9E9E9E" stroke-width="1.4"/>
+    <path d="M50 110V45.4H188.1" fill="none" stroke="#C8382F" stroke-width="3" stroke-linejoin="round"/>
+    <path d="M188.1 45.4V96.4H346V110" fill="none" stroke="#333333" stroke-width="3" stroke-linejoin="round"/>
+    <circle cx="150" cy="45.4" r="16" fill="#fff" stroke="#111" stroke-width="1.6"/><path d="M150 38.4v14M146 42.4l4-4 4 4M146 48.4l4 4 4-4" stroke="#111" stroke-width="1.8" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+    <circle cx="188.1" cy="70.9" r="16" fill="#fff" stroke="#111" stroke-width="1.6"/><path d="M181.1 70.9h14M185.1 66.9l-4 4 4 4M191.1 66.9l4 4-4 4" stroke="#111" stroke-width="1.8" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+    <circle cx="300" cy="96.4" r="16" fill="#fff" stroke="#111" stroke-width="1.6"/><path d="M300 89.4v14M296 93.4l4-4 4 4M296 99.4l4 4 4-4" stroke="#111" stroke-width="1.8" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+    <circle cx="346" cy="96.4" r="16" fill="#fff" stroke="#111" stroke-width="1.6"/><path d="M339 96.4h14M343 92.4l-4 4 4 4M349 92.4l4 4-4 4" stroke="#111" stroke-width="1.8" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+  </svg>
+  <span class="g titre">conduite</span>
+  <span class="v5-etats"><span class="v5-etat brouillon">Brouillon</span><span class="v5-etat verifier" aria-label="1 point à vérifier : premier palier à 19 °C, hors de la plage 9 à 11 °C"><i></i>1 point : 19 °C hors plage</span></span>
+  <span class="g grad" style="top:34px">20 °C</span>
+  <span class="g grad" style="top:68px">10 °C</span>
+  <span class="g pal hors" style="left:58px;top:50.4px">19 °C · 7 j</span>
+  <span class="g bande" style="left:58px;top:81.4px">fiche 9–11 °C</span>
+  <span class="g pal" style="left:212px;top:78.4px">4 °C · 8 j</span>
+  <span class="v5-j0" aria-label="Dose choisie, 23 g, à J0">J0 · 23 g</span>
+  <span class="g axe" style="left:179.1px">J7</span>
+  <span class="g fin">fin J15</span>
+</div>
+<div class="v5-objs" role="button" aria-label="Objectifs : ma cible 2,5 à 3,0 % vol ; atténuation sur ce moût 76 à 80 % ; finale sèche ; accent lager propre ; effervescence : effervescente. Toucher pour régler">
+  <span class="v5-objs-t">objectifs ›</span>
+  <div>ma cible <b class="v5-mono">2,5–3,0 % vol</b> · atténuation <b class="v5-mono">76–80 %</b></div>
+  <div>finale <b>sèche</b> · accent <b>lager propre</b> · <b>effervescente</b></div>
+</div>
+<nav class="v5-rares" aria-label="Changer de levure, et le rare">
+  <span class="v5-rp chg touche"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="6.5"/><path d="M16 16l4.5 4.5" stroke-linecap="round"/></svg>Changer de levure</span><span class="v5-rp">Offres</span><span class="v5-rp">Repères</span><span class="v5-rp">Atelier</span>
+</nav>
+</div></div>
+<div class="v5-pied"><span class="v5-btn trait">Retour</span><span class="v5-esp"></span><span class="v5-btn noir">Suivant — Paliers</span></div>
+<span class="fab" aria-label="Ajouter">+</span>
+<div class="v5-voile"></div>
+<section class="v5-feuille" aria-label="Changer de levure">
+  <div class="v5-poignee"></div>
+  <div class="v5-fhd"><div><h4>Changer de levure</h4><p>Mon stock ou saisie libre · <span class="v5-ex">exemple</span></p></div><span class="v5-x" aria-label="Fermer"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 6l12 12M18 6 6 18"/></svg></span></div>
+  <div class="v5-champ" style="margin-top:12px"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="6.5"/><path d="M16 16l4.5 4.5" stroke-linecap="round"/></svg>Chercher une levure</div>
+  <div class="v5-et" style="margin-top:12px">Mon stock · 2</div>
+  <ul class="v5-lignes">
+    <li><span class="v5-pic" style="color:var(--eau)"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linejoin="round"><path d="M12 3l8 4.5v9L12 21l-8-4.5v-9z"/><path d="M4 7.5l8 4.5 8-4.5M12 12v9"/></svg></span><div class="lab"><b>Pomona</b><small>en stock · 1 sachet</small></div><span class="v5-chev"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M9 6l6 6-6 6"/></svg></span></li>
+    <li><span class="v5-pic" style="color:var(--eau)"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linejoin="round"><path d="M12 3l8 4.5v9L12 21l-8-4.5v-9z"/><path d="M4 7.5l8 4.5 8-4.5M12 12v9"/></svg></span><div class="lab"><b>Verdant IPA</b><small>en stock · 2 sachets</small></div><span class="v5-chev"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M9 6l6 6-6 6"/></svg></span></li>
+    <li><span class="v5-pic">+</span><div class="lab"><b>Hors catalogue</b><small>saisie libre : nom, marque, plage</small></div><span class="v5-chev"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M9 6l6 6-6 6"/></svg></span></li>
+  </ul>
+</section>
+<nav class="v5-onglets" aria-label="Onglets">
+  <a><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M4 16a8 8 0 1 1 16 0"/><path d="M12 16l4-5"/></svg>Bord</a>
+  <a><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="8"/><path d="M12 7v10M9.5 9.5h4a1.5 1.5 0 0 1 0 3h-3a1.5 1.5 0 0 0 0 3h4" stroke-linecap="round"/></svg>Finances</a>
+  <a><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><rect x="4" y="5" width="16" height="15" rx="2"/><path d="M4 10h16M9 3v4M15 3v4"/></svg>Calendrier</a>
+  <a class="ici"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><path d="M9 3h6M10 3v6l-5 9a2 2 0 0 0 1.8 3h10.4a2 2 0 0 0 1.8-3l-5-9V3"/></svg>Brassins</a>
+  <a><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><path d="M12 3l8 4.5v9L12 21l-8-4.5v-9z"/><path d="M4 7.5l8 4.5 8-4.5M12 12v9"/></svg>Stocks</a>
+  <a><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="12" cy="8" r="3.5"/><path d="M5 20a7 7 0 0 1 14 0"/></svg>Clients</a>
+</nav>
+</div>
+<div class="v5-leg"><h3><span>G</span>Changer de levure touché</h3><p>Une feuille : la recherche, Mon stock (Pomona, Verdant IPA) et Hors catalogue (saisie libre).</p></div>
+</div>
+</div>
+</body>
+</html>
