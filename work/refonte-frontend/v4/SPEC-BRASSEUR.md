@@ -2251,3 +2251,12 @@ Capture : work/missions/2026-11-18-choix-calendrier/brasseur/zoom-glisser-18-11.
 - (capture : frise des opérations, « 68 jours · 0 opération », poignées 9 juin → 15, « × mois entier », jours sans opération grisés) « Cette frize des opérations est vraiment bien »
 - (capture 390 : poignée de gauche tirée, bulle « 3 févr. → 8 juin 2022 » posée sur « jours · opération », période partie en 2022, « Ni vente ni dépense ») « Parcontre "agrandir" la frize est pas pratique.. »
 - (capture 390 : fiche « Versement mensuel Aricia », 800,00 CHF, « Paiement à confirmer », « Sans justificatif · c'est normal », Modifier, Plus d'actions, Paiements, Corriger une erreur de saisie) « Je peux pas confirmer le paiement sur cette vue, et la coche justificatif a plus d'effet. Je voudrais que SI je la coche il y en a 2, sans justificatif et payment confirme( ça prends la date du jour) » ; « Mais il faut aussi facilement pour confirmer le paiement »
+
+### 19.11 — Recette, Eau et sels (partie Sels)
+
+- **19.11, 07:35**, mot pour mot, capture à 390 de la création de recette, étape 6/7 « Eau et sels », segment « 2. Sels » choisi : « Gros problème sur la partie sel !!! Lance une sous session pour fix ça »
+  (lu : sous « 2. Sels », l'écran gardait le contenu de l'Eau (Empâtage, Rinçage, Eau/grain, Osmosée) ; corrigé EAU-1 à EAU-3, be201f85d.)
+- **19.11, 07:36**, mot pour mot, deux captures à 390 du récapitulatif 7/7, rangée Eau repliée puis dépliée : « Pareil ici, gros pro »
+  (lu : la toile pleine largeur restait ouverte rangée repliée, la piste SO₄ serrait son chiffre contre le point, le pointillé du départ (HCO₃) n'était pas expliqué ; corrigé EAU-6 à EAU-8, e86249a9c.)
+- **19.11** (07:42), mot pour mot, trois captures à 390 de l'étape Levure 4/7, onglet « Ma levure » (White Labs Munich Lager Yeast 500g après Andechs Lager, OG 1,026, conduite 19 °C puis 4 °C) : « Lance une sous session pour la levure uniquement sur la partie "ma levure" en /rc. Il y a énormément de problème, même en terme de fluidité »
+  (lu : portée Ma levure seule ; liste figée LEV-1 à LEV-11 dans `work/missions/2026-11-19-ma-levure/LISTE.md` ; la fluidité se chronomètre au téléphone simulé, CPU ×4, une interaction au-delà de 100 ms est un défaut.)
