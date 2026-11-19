@@ -2300,3 +2300,12 @@ Sur l'état du registre (382 défauts ouverts, dont 221 au carnet) après le tou
 > « Corrige tout alors tu attendais quoi ??? Tout tout tout »
 
 (lu : tout défaut ouvert du registre se corrige, sans attendre de demande ; le test en ligne passe par son Chrome ouvert sur le PC, via des sessions.)
+
+Classement de la page r3 de Ma levure (https://claude.ai/artifact/DKAJe8ESeMR4igtdE5WaJf), mot pour mot :
+
+> Ma levure r3, combien et quelle levure, classement par écran (19.11)
+> Au repos, en une vue : 2 v03, v05 · 3 v08 · 4 v01, v04 (v02 : J'aime bien sauf les  sachets et pas de bouton IA, ; v04 : J'aime bien le 117% lager ; v08 : Pas mal dans l'idée mais réalisation bof)
+> Après le geste : 3 v01, v03, v08 · 4 v05 · 5 v02, v04 (v03 : Bien dans l'idée mais assez dur à lire ; v08 : Bien dans l'idée mauvaise réalisation )
+> Cas limite : à choisir : 2 v04, v05 · 3 v03 (v03 : Normalement la forme est de base défini )
+
+(lu : aucun rang 1, aucune version ne convient telle quelle ; greffe r4 : repos de v03 et v05, la part « 117 % lager » de v04, le geste de v01, v03, v08 rendu lisible, le cas limite de v04 et v05 ; la forme de la levure est connue d'office, jamais « à choisir ».)
