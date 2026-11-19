@@ -33,6 +33,9 @@
 
 /* f6-b : l'alerte d'une promesse ; le texte entier sur la première ligne, Livrer et Annuler sur la seconde (passe 8, 03-p-f6b-alerte). Au
    téléphone en hauteur, elle prend la largeur (le script pose `width`) : sous la vente promise, ou en bas au-dessus du + volant. */
+/* critique 2 du 19.11 : à 1280, son parent espace ses enfants (marge haute de 8 px, règle plus forte que la sienne) : posé par son haut, il
+   tombait 8 px plus bas que sa place, sur la tête de rangée du dessous. Hors du flux, aucune marge. */
+.cal-msg[data-message]:not([data-flux]) { margin: 0; }
 .cal-msg-alerte[data-message] {
   right: 8px; flex-direction: column; align-items: stretch; gap: 6px; padding: 8px 10px 8px 12px;
   bottom: calc(var(--main-navigation-height, 2.5rem) + 84px + env(safe-area-inset-bottom, 0px));
