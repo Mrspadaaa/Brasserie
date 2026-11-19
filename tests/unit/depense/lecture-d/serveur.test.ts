@@ -8,7 +8,7 @@ import { logger } from '../../../../functions/node_modules/firebase-functions';
 import { scanInvoiceSafely } from '../../../../functions/src/ai';
 import { lireCsv8, type Csv8Io } from '../../../../functions/src/invoiceScanVote';
 import { alignerLignes, ScanReadCutError } from '../../../../functions/src/invoiceVisionReview';
-import { readFileSync } from 'node:fs';
+import { existsSync, readFileSync } from 'node:fs';
 import { SCAN_MODEL, engineDigestOf, normalizeInvoiceScan } from '../../../../functions/src/invoiceScanCore';
 import { INVOICE_SCAN_PROMPTS } from '../../../../functions/src/invoiceScanPrompts';
 
@@ -298,7 +298,11 @@ describe('s-serveur — scanInvoiceSafely et le jeton', () => {
 describe('s-serveur — l’empreinte du moteur suit ces modules', () => {
   // Ce port modifie ai.ts, invoiceScanVote.ts et invoiceVisionReview.ts : l'identifiant du cache change (une pièce lue et jamais enregistrée est
   // relue, environ 0,0445 CHF). Le test le dit sans figer une valeur : changer une ligne de chacun de ces trois modules change l'empreinte.
-  const source = (module: string) => readFileSync(new URL(`../../../../functions/src/${module}.ts`, import.meta.url), 'utf8');
+  // f8 (tour 3) : un module livré en JavaScript (hopAdviceContentReference, importé de proche en proche) n'a dans src/ que sa déclaration `.d.ts` : on lit celle-ci (lecture seule).
+  const source = (module: string) => {
+    const ts = new URL(`../../../../functions/src/${module}.ts`, import.meta.url);
+    return readFileSync(existsSync(ts) ? ts : new URL(`../../../../functions/src/${module}.d.ts`, import.meta.url), 'utf8');
+  };
   it.each(['ai', 'invoiceScanVote', 'invoiceVisionReview'])('une ligne de plus dans %s change l’empreinte, donc la clé de cache', module => {
     const avant = engineDigestOf(source).digest;
     expect(engineDigestOf(m => m === module ? `${source(m)}\n// une ligne de plus` : source(m)).digest).not.toBe(avant);

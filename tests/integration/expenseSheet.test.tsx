@@ -152,7 +152,9 @@ describe('Lecture et vérification visuelle du justificatif',()=>{
     fireEvent.click(screen.getByRole('button',{name:'Confirmer et enregistrer'}));
     await waitFor(()=>expect(state.saved).toHaveBeenCalledOnce());
     expect(state.scanned).toHaveBeenCalledOnce();
-    expect(state.saved.mock.calls[0][0]).toMatchObject({amount:555,proofFileName:'Facture synthétique.pdf',lines:[{kind:'equipment',equipmentAction:'none'},{kind:'maintenance',equipmentAction:'none'}]});
+    /* f8 (tour 3) : les deux valeurs corrigées par le brasseur (total 555, ligne 1 505) sont celles enregistrées. Le « Fermenteur 30 L » (Matériel de brassage) part avec sa fiche
+       matériel à créer, présélectionnée et changeable depuis ST-T34 (2eb6d551d, 14.11, `finale.ts`) : l'ancien attendu « none » datait d'avant ; l'entretien reste sans fiche. */
+    expect(state.saved.mock.calls[0][0]).toMatchObject({amount:555,proofFileName:'Facture synthétique.pdf',lines:[{kind:'equipment',equipmentAction:'new',amount:505},{kind:'maintenance',equipmentAction:'none'}]});
   });
 });
 
