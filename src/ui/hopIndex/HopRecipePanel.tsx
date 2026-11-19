@@ -10,7 +10,7 @@ export function HopRecipePanel({ recipe, onEdit }: {
 }) {
   const [advancedMounted, setAdvancedMounted] = useState(false);
   return <section className="space-y-4" aria-label="Potentiel aromatique de la recette">
-    <div className="flex flex-wrap items-center justify-between gap-3"><p className="text-sm text-cave-400">{recipe.yeast?.name || 'Levure à choisir'} · lecture seule</p>{onEdit && <Button type="button" onClick={onEdit}>Modifier dans l’atelier de recette</Button>}</div>
+    <div className="flex flex-wrap items-center justify-between gap-3"><p className="text-sm text-cave-400">{recipe.yeast?.name || 'Levure à choisir'} · lecture seule</p>{onEdit && <Button type="button" onClick={onEdit}>Modifier la recette</Button>}</div>
     <HopRecipeWorkbench recipe={recipe} />
     <details onToggle={event => { if (event.currentTarget.open) setAdvancedMounted(true); }}><summary className="min-h-touch cursor-pointer text-[13px] text-cave-200">Analyses aromatiques avancées</summary>{advancedMounted && <HopRecipeSimulationPanel recipe={recipe} readOnly />}</details>
   </section>;

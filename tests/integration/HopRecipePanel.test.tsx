@@ -64,7 +64,7 @@ describe('Bilan aromatique en lecture seule', () => {
     fireEvent.click(screen.getByText('Composition, thiols et phénols'));
     fireEvent.click(await screen.findByRole('button', {name:'Phénols et polyphénols'}));
     expect(screen.getByText(/Phénols de levure/)).toBeInTheDocument();
-    fireEvent.click(screen.getByRole('button', {name:'Modifier dans l’atelier de recette'}));
+    fireEvent.click(screen.getByRole('button', {name:'Modifier la recette'}));
     expect(onEdit).toHaveBeenCalledOnce();
     expect(initial).toEqual(before); expect(memory.writes).not.toHaveBeenCalled();
     expect(StorageService.getHopPredictions()).toEqual([]);
