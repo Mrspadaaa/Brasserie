@@ -2241,3 +2241,4 @@ Capture : work/missions/2026-11-18-choix-calendrier/brasseur/zoom-glisser-18-11.
 - (suite, 19.11) « Ou faire plus de sparge ??? »
 - (suite, 19.11) « On a pas perdu une donné, je pouvais avant choisir si je barssais avec un malt très mouillé ou non » (réponse du pilote : le choix vit à l'étape 6 Eau, interrupteur Rinçage et curseur Eau / grain ; Identité ne le montre pas)
 - (suite, 19.11) « Juste, alors juste, de l'eau à la fin après l'ebul ou durant »
+- (suite, 19.11, sur « le curseur Eau / grain ») « Juste alors ajouter un renvoi »
