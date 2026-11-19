@@ -2224,3 +2224,4 @@ Capture : work/missions/2026-11-18-choix-calendrier/brasseur/zoom-glisser-18-11.
 
 - (capture 390 : onglet « Autres stocks » choisi, cartes Additifs, Nettoyage, Fûts, Matériel, puis la liste des Malts et la ligne « Trié par couleur (malts)… » en dessous) « 2 petit problème sur le stock, autre stock n'est pas dynamique sur les boutons et tout, et ça affiche toujours les malt »
 - (capture 390 : Stocks › Articles › Étagère, bloc « 24 à commander · tout, seuil compris », choix « pastille et chiffre comptent jusqu'à Cette sem. / 6 sem. / Tout » et histogramme S47…seuil) « J'aimerais que la vue de commande de matériel soit replié, et pas très visible, elle apporte peu »
+- (suite, 19.11) « Ou mettre cette vue dans les courses... »
