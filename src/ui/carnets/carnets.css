@@ -70,7 +70,8 @@
 .cn-pastille-att { background: var(--c-attbg); color: var(--c-att); }
 .cn-pastille-ajout { background: var(--c-iabg); color: var(--c-ia); font-weight: 600; align-self: flex-start; }
 .cn-pastille-lien { min-height: 44px; border: 1px solid var(--c-line2); }
-.cn-statut-research { background: var(--c-attbg); color: var(--c-att); }
+/* tour 3, v1-neuf 5 : « À comparer » a une couleur, celle de la liste (g05-1) et de Comparer (g01-8) */
+.cn-statut-research { background: var(--c-zonebg); color: var(--c-zonet); }
 .cn-statut-idea { background: var(--c-s2); color: var(--c-ink2); }
 .cn-statut-validated { background: var(--c-zonebg); color: var(--c-zonet); }
 .cn-entete-groupe { display: flex; align-items: center; gap: 8px; min-height: 32px; }
@@ -571,6 +572,8 @@
   .cn-fiche .cn-fiche-photo img { height: 104px; max-height: 104px; object-fit: contain; }
   .cn-fiche .cn-fiche-picto { min-height: 104px; }
   .cn-fiche .cn-vignette-fiche { height: 104px; }
+  /* tour 3, PCN-54 : le dessin (132 px) tient entier dans le cadre de 104 px, jamais rogné ni débordant */
+  .cn-fiche .cn-vignette-fiche svg { width: 92px; height: 92px; max-height: 92px; }
   .cn-fiche .cn-titre { font-size: 21px; }
   .cn-fiche .cn-heros { flex-direction: row; align-items: center; gap: 10px; padding: 6px 12px; }
   .cn-fiche .cn-heros .cn-heros-val > .cn-mut, .cn-fiche .cn-heros .cn-heros-place { font-size: 13px; }

@@ -471,9 +471,9 @@ describe('C6 · G8, G29, pastilles, G30, G32', () => {
     const onChange = vi.fn();
     const r = render(<ChampCarnet valeur="" onChange={onChange} onEnvoyer={rien} titreCarnet="Ventilation" suggestion={{ critere: 'plus de condensation au plafond', a: 'Hotte inox + extracteur', b: 'Extracteur mural seul' }} />);
     fireEvent.focus(screen.getByRole('textbox'));
-    const bulle = screen.getByRole('button', { name: /peut trancher entre/ });
+    const bulle = screen.getByRole('button', { name: /tranche entre/ });
     /* la bulle cite le critère passé en props, tel quel */
-    expect(bulle.textContent).toMatch(/Le critère « plus de condensation au plafond » peut trancher entre Hotte inox \+ extracteur et Extracteur mural seul/);
+    expect(bulle.textContent).toMatch(/« plus de condensation au plafond » tranche entre Hotte inox \+ extracteur et Extracteur mural seul/);
     expect(bulle.querySelector('[data-picto="local"]')).toBeTruthy();
     expect(bulle.textContent).not.toContain('✻');
     fireEvent.click(bulle);
@@ -481,7 +481,7 @@ describe('C6 · G8, G29, pastilles, G30, G32', () => {
     r.unmount();
     render(<ChampCarnet valeur="" onChange={rien} onEnvoyer={rien} titreCarnet="Ventilation" />);
     fireEvent.focus(screen.getByRole('textbox'));
-    expect(screen.queryByRole('button', { name: /peut trancher/ })).toBeNull();
+    expect(screen.queryByRole('button', { name: /tranche entre/ })).toBeNull();
   });
   it('champ : un seul habit d’envoi, le bouton « Ajouter » (critique 5, n° 42), ou Entrée ; micro absent sans dictée ; aucune voix mise en avant', () => {
     const onEnvoyer = vi.fn();
@@ -718,14 +718,14 @@ describe('Correction 1, lot L2 : le champ dans le vrai conteneur (fixture, magas
   it('P13 : sur Ventilation par défaut, la bulle G8 se tait (rien à trancher) ; avec l’option g8 (critique 5, n° 21), elle paraît au focus, picto local, sans ✻', () => {
     const defaut = monter();
     fireEvent.focus(defaut.champ());
-    expect(screen.queryByRole('button', { name: /peut trancher/ })).toBeNull();
+    expect(screen.queryByRole('button', { name: /tranche entre/ })).toBeNull();
     cleanup();
     const { champ } = monter({ g8: true });
-    expect(screen.queryByRole('button', { name: /peut trancher/ })).toBeNull();
+    expect(screen.queryByRole('button', { name: /tranche entre/ })).toBeNull();
     fireEvent.focus(champ());
-    const bulle = screen.getByRole('button', { name: /peut trancher entre/ });
+    const bulle = screen.getByRole('button', { name: /tranche entre/ });
     /* corr. 4 (lot A, critique 15) : la fixture dit désormais ce qu'il veut ; la bulle cite le critère tel quel */
-    expect(bulle.textContent).toMatch(/Le critère « [^»]+ » peut trancher entre Hotte inox \+ extracteur et Extracteur mural seul/);
+    expect(bulle.textContent).toMatch(/« [^»]+ » tranche entre Hotte inox \+ extracteur et Extracteur mural seul/);
     expect(bulle.textContent).not.toMatch(/plus de condensation/i);
     expect(bulle.querySelector('[data-picto="local"]')).toBeTruthy();
     expect(bulle.textContent).not.toContain('✻');

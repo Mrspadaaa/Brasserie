@@ -211,7 +211,7 @@ export function ChampCarnet(p: ChampCarnetProps) {
     <div ref={zone} className="cn-champ-zone" style={{ bottom: inset, marginBottom: inset }} aria-disabled={p.desactive || undefined} data-clavier={inset || undefined}>
       {/* P37 (R27, CARNET-CLAV) : clavier ouvert, la bulle G8 et la puce « Coller » tiennent ensemble sur une ligne (`.cnf-aides-ligne`),
           pour laisser au carnet le plus de hauteur ; clavier fermé, chacune sa ligne. */}
-      {/* Critique 5, n° 5 et 21 : la bulle G8 tient toujours sur une ligne (texte entier en `title`), clavier ouvert ou non */}
+      {/* Critique 5, n° 5 et 21 ; tour 3, PCN-103 : la bulle G8 tient en deux lignes au plus, clavier ouvert ou non */}
       {(montrerBulle || (p.coller && !plein)) && (
         <div className="cnf-aides-ligne">
           {montrerBulle && p.suggestion && (
@@ -220,10 +220,11 @@ export function ChampCarnet(p: ChampCarnetProps) {
               className="cn-bulle"
               onMouseDown={e => e.preventDefault()}
               onClick={() => p.onChange(`${p.suggestion!.critere} : `)}
-              title={`Le critère « ${p.suggestion.critere} » peut trancher entre ${p.suggestion.a} et ${p.suggestion.b}`}
+              title={`Le critère « ${p.suggestion.critere} » tranche entre ${p.suggestion.a} et ${p.suggestion.b}`}
             >
               <PictoLocal />
-              <span>Le critère « {p.suggestion.critere} » peut trancher entre {p.suggestion.a} et {p.suggestion.b}</span>
+              {/* tour 3, PCN-103 : dit entre quoi, en deux lignes au plus (carnets-fil.css) */}
+              <span>« {p.suggestion.critere} » tranche entre {p.suggestion.a} et {p.suggestion.b}</span>
             </button>
           )}
           {p.coller && !plein && (

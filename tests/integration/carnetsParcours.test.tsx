@@ -148,12 +148,12 @@ describe('D3 et D7 : sortie vers À venir, liens, Suppression v2', () => {
     const defaut = monter(fixtureCarnets());
     const v0 = render(<CarnetsVue {...defaut.props} ouvrir={{ id: ID_VENTILATION, at: 1 }} />);
     await act(async () => { (v0.container.querySelector('.cn-champ textarea') as HTMLTextAreaElement).focus(); });
-    expect(v0.container.textContent).not.toMatch(/peut trancher/);
+    expect(v0.container.textContent).not.toMatch(/tranche entre/);
     v0.unmount();
     const m = monter(fixtureCarnets({ g8: true }));
     const vue = render(<CarnetsVue {...m.props} ouvrir={{ id: ID_VENTILATION, at: 1 }} />);
     await act(async () => { (vue.container.querySelector('.cn-champ textarea') as HTMLTextAreaElement).focus(); });
-    expect(vue.container.textContent).toMatch(/peut trancher/);
+    expect(vue.container.textContent).toMatch(/tranche entre/);
   });
 
   it('aides : au banc toutes vraies ; éteintes comme en production sans VITE_CARNET_AIDES', () => {

@@ -101,7 +101,8 @@ describe('3 · IA indisponible : aucun « Ensuite : l’IA … » (n° 24)', () 
     expect(t).not.toContain("l'IA le proposera");
     expect(t).not.toContain("l'IA les cherche");
     /* critique 6, n° 16 : plus d'encadré « Ensuite… » ; les rubriques disent qui agit, sans promesse de l'IA */
-    expect(t).toContain('Façons · aucune');
+    /* tour 3, PCN-113 : hors ligne, une ligne « au retour du réseau » remplace les rubriques vides */
+    expect(t).toContain(sorte === 'hors-ligne' ? 'au retour du réseau' : 'Façons · aucune');
   });
   it('IA disponible : chaque rubrique dit qui agit (v04-4), sans encadré « Ensuite »', () => {
     const t = texte(monter(null).container);

@@ -15,7 +15,8 @@
 .cnf-aides > .cn-coller { align-self: flex-start; }
 .cnf-aides-ligne { display: flex; gap: 6px; align-items: center; min-width: 0; }
 .cnf-aides-ligne > .cn-bulle { flex: 1 1 auto; min-width: 0; min-height: 36px; padding: 6px 10px; align-items: center; }
-.cnf-aides-ligne > .cn-bulle > span:last-child { min-width: 0; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
+/* tour 3, PCN-103 : la bulle dit entre quoi ; deux lignes au plus, jamais coupée par « … » sur une seule */
+.cnf-aides-ligne > .cn-bulle > span:last-child { min-width: 0; overflow: hidden; display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; line-height: 1.25; text-align: left; }
 .cnf-aides-ligne > .cn-coller { flex: 0 1 auto; min-width: 0; max-width: 55%; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; min-height: 36px; }
 .cn-champ-zone[data-clavier] { gap: 6px; padding-top: 6px; padding-bottom: 6px; }
 
@@ -43,7 +44,8 @@
 .cn-etat[data-etat="echec"] { border: 1px solid var(--c-warn, #a15c00); color: var(--c-ink); background: var(--c-s1); }
 
 /* P23 (D-35) : les puces que l'IA propose, un toucher les range */
-.cnf-proposees { display: flex; flex-direction: column; gap: 6px; margin-top: 8px; }
+/* tour 3, v1-neuf 3 : une marge sous la puce, avant « 2 articles à comparer » */
+.cnf-proposees { display: flex; flex-direction: column; gap: 6px; margin-top: 8px; margin-bottom: 10px; }
 .cnf-proposee { display: flex; align-items: center; gap: 8px; min-height: 44px; padding: 2px 4px 2px 12px; border: 1px dashed var(--c-ia); border-radius: 12px; background: var(--c-iabg); color: var(--c-ink); }
 .cnf-proposee-ia { color: var(--c-ia); flex: none; }
 .cnf-proposee-texte { flex: 1 1 auto; min-width: 0; }
@@ -55,8 +57,7 @@
 .cnf-choix > select { position: absolute; inset: 0; width: 100%; height: 100%; opacity: 0; cursor: pointer; font-size: 16px; }
 .cnf-choix:focus-within { outline: 2px solid var(--c-zone); outline-offset: 2px; }
 
-/* Critique 5, n° 5 et 21 : la bulle G8 sur une ligne, au focus seulement ; le texte entier est dans `title` */
-.cnf-aides-ligne > .cn-bulle { white-space: nowrap; }
+/* Critique 5, n° 5 et 21 : la bulle G8 au focus seulement ; tour 3, PCN-103 : deux lignes au plus (plus d'ellipse) */
 
 /* Critique 5, n° 3 : la ligne du carnet visé, au-dessus des rubriques ; « en » relie les deux lignes */
 .cnf-vadans-carnet .cn-puce[aria-pressed="true"] { font-weight: 700; }

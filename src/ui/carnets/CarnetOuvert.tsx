@@ -306,11 +306,13 @@ export function CarnetOuvert(p: CarnetOuvertProps) {
     ? <p className="cn-ligne-etat">{etatTete && <span>{etatTete}</span>}{etatTete && aFaire ? <span className="cn-mut"> · </span> : null}{aFaire && <span className="cn-mut">{aFaire}</span>}</p>
     : null;
   const ia = !p.iaIndisponible;
+  /* tour 3, PCN-113 : créé hors ligne, rien n'est encore rangé : une ligne dit que l'IA le range au retour du réseau, sans rubriques vides */
+  const enAttente = neuf && p.iaIndisponible === 'hors-ligne' && !k.criteres.length && !k.facons.length && !k.articles.length && !k.notes.length && !k.photos.length;
   /* tout juste créé, le bandeau cite déjà sa phrase (g5:v04-4 ; n° 39 : jamais deux fois). Critique 6, n° 30 (R25) : la phrase citée
      dit ce qu'elle est, « votre phrase : « … » », jamais des guillemets seuls qui flottent ; n° 14 : pas une seconde fois si la ligne
      rangée la cite déjà. */
   const phraseCitee = k.phrase && !p.vientDEtreCree && !(r?.phrase && normaliser(r.phrase) === normaliser(k.phrase)) ? (phraseEnTitre(c.title, k.phrase)
-    ? <p className="cn-cite">votre phrase en titre</p>
+    ? <p className="cn-cite" data-en-titre>votre phrase en titre</p>
     : <p className="cn-cite">votre phrase : « {k.phrase} »</p>) : null;
 
   const articleRange = r?.cible === 'article' ? k.articles.find(a => a.id === r.id) : undefined;
@@ -396,7 +398,8 @@ export function CarnetOuvert(p: CarnetOuvertProps) {
 
       {/* n° 2 (g5:v04-4) : tout juste créé, « Ce qui compte » est une rubrique à filet comme les autres, jamais un encadré ; sans
           critère, « rien encore : l'IA le proposera » (sans promesse quand l'IA manque, n° 24). Ailleurs, la ligne Critère est en haut. */}
-      {(neuf || criteres.length === 0) && (
+      {enAttente && <p className="cn-mut cn-attente" data-attente="hors-ligne">L'IA le range au retour du réseau : ce qui compte, façons, articles. Rien n'est perdu.</p>}
+      {!enAttente && (neuf || criteres.length === 0) && (
         <section className={`cn-rubrique${neuf ? ' cn-rubrique-ligne' : ''}`} aria-label="Ce qui compte">
           {criteres.length === 0
             ? <p className="cn-rubrique-tete"><Target size={18} aria-hidden /> <b>Ce qui compte</b> <span className="cn-mut">· rien encore{ia ? " : l'IA le proposera" : ''}</span></p>
@@ -408,7 +411,7 @@ export function CarnetOuvert(p: CarnetOuvertProps) {
       )}
 
       {/* Sans tableau : les façons en cartes (i06-4). Avec tableau : elles sont dans le tableau, avec leur pastille (h05-3). */}
-      {(!p.tableau || k.facons.length === 0) && (
+      {!enAttente && (!p.tableau || k.facons.length === 0) && (
         <section className={`cn-rubrique${neuf ? ' cn-rubrique-ligne' : ''}`} aria-label="Façons">
           {k.facons.length === 0 ? (
             <p className="cn-rubrique-tete"><GitFork size={18} aria-hidden /> <b>Façons</b> <span className="cn-mut">· aucune{ia ? " : l'IA les cherche" : ''}</span></p>
@@ -437,7 +440,7 @@ export function CarnetOuvert(p: CarnetOuvertProps) {
         </section>
       )}
 
-      <section className={`cn-rubrique${neuf ? ' cn-rubrique-ligne' : ''}`} aria-label="Articles">
+      {!enAttente && <section className={`cn-rubrique${neuf ? ' cn-rubrique-ligne' : ''}`} aria-label="Articles">
         {k.articles.length === 0 ? (
           <p className="cn-rubrique-tete"><Tag size={18} aria-hidden /> <b>Articles</b> <span className="cn-mut">· aucun : collez un lien</span></p>
         ) : (
@@ -457,14 +460,14 @@ export function CarnetOuvert(p: CarnetOuvertProps) {
               )}
               {p.tableau && <><span className="cn-mut" aria-hidden>·</span><button type="button" className="cn-lien cn-comparer-lien" onClick={p.onComparer}>Comparer <ChevronRight size={16} aria-hidden /></button></>}
             </div>
-            {articleRange && r && (
+            {articleRange && r && !p.tableau && (
               <LigneRangee sorte="article" faconNom={faconRange?.nom} rang={r.rang} phrase={r.phrase}onAnnuler={r.onAnnuler} onDeplacer={r.onDeplacer}>
                 <CarteArticle article={articleRange} critere={critere} faconNom={faconRange?.nom} carnetTitre={c.title} variante="complete" luSurPage={r.luSurPage} verdict={r.verdict} onVeille={v => p.onVeille?.(articleRange.id, v)} />
               </LigneRangee>
             )}
-            {p.tableau ? (
-              /* n° 20 : la conclusion se colle aux façons en lice, avant l'écartée et le lien à relire */
-              <TableauCarnet carnet={k} titre={c.title} tableau={p.tableau} aRelire={aRelire} sep={sep} sauf={articleRange?.id} onOuvrir={p.onOuvrirArticle}
+            {p.tableau ? (<>
+              {/* n° 20 : la conclusion se colle aux façons en lice, avant l'écartée et le lien à relire */}
+              <TableauCarnet carnet={k} titre={c.title} tableau={p.tableau} aRelire={aRelire} sep={sep} onOuvrir={p.onOuvrirArticle}
                 conclusion={conclusion && (
                   <div className="cn-encart cn-separe" role="note">
                     {/* un nombre ne se sépare pas de son unité (« 80 °C » jamais coupé en fin de ligne) */}
@@ -472,7 +475,12 @@ export function CarnetOuvert(p: CarnetOuvertProps) {
                     <button type="button" className="cn-action cn-action-vert" onClick={conclusion.onRetenir}>Retenir {conclusion.retenir}</button>
                   </div>
                 )} />
-            ) : (
+              {/* tour 3, PCN-108 et 132 (G20, g5:v06-11) : au 2e article, le tableau est à l'écran avec l'article déposé dans ses
+                  lignes ; « Article rangé ici · 2e · Annuler » dessous, sans carte complète qui pousserait le tableau sous la flottaison */}
+              {articleRange && r && (
+                <LigneRangee sorte="article" faconNom={faconRange?.nom} rang={r.rang} phrase={r.phrase} onAnnuler={r.onAnnuler} onDeplacer={r.onDeplacer}>{null}</LigneRangee>
+              )}
+            </>) : (
               <div className="cn-cartes">
                 {(() => {
                   /* n° 6 (g5:v06-10) : un seul article lu, la carte complète (valeurs avec unité, « lu sur la page : … », veille) */
@@ -494,15 +502,16 @@ export function CarnetOuvert(p: CarnetOuvertProps) {
             )}
           </>
         )}
-      </section>
+      </section>}
 
-      {p.tableau && phraseCitee}
+      {/* tour 3, v1-neuf 6 : sous le tableau, « votre phrase en titre » flotterait seul, loin du titre : il ne se dit que sous le titre */}
+      {p.tableau && !phraseEnTitre(c.title, k.phrase ?? '') && phraseCitee}
 
-      {neuf && k.photos.length === 0
+      {enAttente ? null : neuf && k.photos.length === 0
         ? <section className="cn-rubrique cn-rubrique-ligne" aria-label="Photos"><p className="cn-rubrique-tete"><ImageIcon size={18} aria-hidden /> <b>Photos</b> <span className="cn-mut">· aucune</span></p></section>
         : <Photos photos={k.photos} />}
 
-      <section className={`cn-rubrique${neuf ? ' cn-rubrique-ligne' : ''}`} aria-label="Notes">
+      {!enAttente && <section className={`cn-rubrique${neuf ? ' cn-rubrique-ligne' : ''}`} aria-label="Notes">
         {k.notes.length === 0 && !p.noteSupprimee ? (
           <p className="cn-rubrique-tete"><FileText size={18} aria-hidden /> <b>Notes</b> <span className="cn-mut">· aucune</span></p>
         ) : (
@@ -521,7 +530,7 @@ export function CarnetOuvert(p: CarnetOuvertProps) {
             </div>
           </>
         )}
-      </section>
+      </section>}
 
       {p.vientDEtreCree && <p className="cn-mut cn-g6">Le champ en bas range tout ici : une phrase, un lien collé, une photo.</p>}
 
