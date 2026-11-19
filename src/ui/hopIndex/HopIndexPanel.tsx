@@ -165,14 +165,14 @@ export function HopIndexPanel({ createRequest, onNotice }: { createRequest?: { k
     catch (e) { setError((e as Error).message); }
   };
 
-  return <section aria-label="Index houblon" className="px-1 space-y-2">
-    {!mobile&&<div className="space-y-1"><h2 className="text-base font-semibold text-cave-50">Index houblon</h2>
-      <p className="text-sm text-cave-200 max-w-2xl">Compare les sources, puis précise ton lot et son analyse.</p>
+  /* BR-110 : un seul nom (celui de l'onglet) et une même tête aux deux largeurs : le titre et les comptes en pastilles ; la phrase d'aide vit dans « Options du catalogue ». */
+  return <section aria-label="Houblons" className="px-1 space-y-2">
+    <div className="space-y-1"><h2 className="text-base font-semibold text-cave-50">Houblons</h2>
       <div className="flex flex-wrap gap-1">{resume.map((texte, i) => <BrewTag key={texte} tone={i === 0 ? 'info' : undefined}>{texte}</BrewTag>)}</div>
-    </div>}
+    </div>
     <Field label={mobile?'Variété ou arôme':'Rechercher une variété ou un arôme documenté'}><TextInput value={query} onChange={setQuery} placeholder="Nom, alias, agrumes…" /></Field>
     <MobileDetails title="Options du catalogue" summary={[sourceFilter||'Toutes les sources',includeArchived?'Archives incluses':''].filter(Boolean).join(' · ')}>
-    {mobile&&<p className="text-sm text-cave-400">{resume.join(' · ')}. Compare les sources, puis précise ton lot et son analyse.</p>}
+    <p className="text-sm text-cave-400">Compare les sources, puis précise ton lot et son analyse.</p>
     {sources.length > 1 && <Field label="Source du référentiel"><select className={inputClass} value={sourceFilter} onChange={e => setSourceFilter(e.target.value)}><option value="">Toutes les sources</option>{sources.map(s => <option key={s} value={s}>{s}</option>)}</select></Field>}
     <div className="flex flex-wrap gap-2">
       <Button onClick={() => { requestEpoch.current++; setBusy(false); setTried(false);
