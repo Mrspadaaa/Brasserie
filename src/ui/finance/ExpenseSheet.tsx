@@ -47,7 +47,7 @@ import { RelireFin } from '../depense/RelireFin';
 import { relectureGardee } from '../depense/comparerRelecture';
 import { controlesPiece,compterArticles,payeEffectif,type ContexteControles,type LectureControlee } from '../../domain/finance/controlesPiece';
 import { rangsDePiece,notePaiement } from './controlesPieceRangs';
-import { controlesCroises,controlesProvisoires,chercherLignes,phraseDuManque,CAUSES_DU_MANQUE,montantDeLaLigneManquante,resumeDuBloc,montant as montantCts,type RangControle,type Renvoi } from './controlesCroises';
+import { controlesCroises,controlesProvisoires,rangDesLectures,chercherLignes,phraseDuManque,CAUSES_DU_MANQUE,montantDeLaLigneManquante,resumeDuBloc,montant as montantCts,type RangControle,type Renvoi } from './controlesCroises';
 import { LIGNES_HT_PASSEES_AU_TTC } from '../../services/lignesHt';
 import { Entete,Justificatif } from '../depense/Entete';
 import { Pied,BandeauPerdues,type BoutonPied } from '../depense/Pied';
@@ -1515,7 +1515,8 @@ export function ExpenseSheet({onClose,onSaved,initialIntent='expense',existingEq
   /* d3 (VERDICT-2, bloquant 1) : une seule source pour l'accord des lectures, celle de la barre du bas : les chips « lectures-divergentes » encore à trancher (TVA comprise). L'ancien compte lisait origine 'lecture' et pese : il disait « 3/3 d'accord » pendant que la barre disait « désaccord ». */
   const nDesaccords=chips.filter(c=>c.source==='point'&&!reglesSet.has(c.id)).reduce((t,c)=>t+c.codes.filter(k=>k==='lectures-divergentes').length,0);
   const rangsLecture:RangControle[]=result?[
-    ...(verif==='attente'?[{cle:'lectures',verdict:'inconnu' as const,texte:'Lectures',valeurs:'',lectures:{faites:2,sur:3}}]:lectures?[nDesaccords?{cle:'lectures',verdict:'ecart' as const,texte:nPagesLues>1?`Lectures · ${nPagesLues} pages`:'Lectures',valeurs:`${lectures}/${lectures} · ${nDesaccords} désaccord${nDesaccords>1?'s':''}`,resume:`${nDesaccords} désaccord${nDesaccords>1?'s':''} de lecture`,geste:'Voir le désaccord',renvoi:'lectures' as const}:nPagesLues>1?{cle:'lectures',verdict:'ok' as const,texte:`${nPagesLues} pages lues`,valeurs:''}:{cle:'lectures',verdict:'ok' as const,texte:'Lectures',valeurs:`${lectures}/${lectures} d'accord`}]:[]),
+    /* LR2-3 (f6a) : la rangée « Lectures » compte des valeurs (« 3/3 · 7 valeurs en désaccord »), dite par controlesCroises. */
+    ...rangDesLectures({attente:verif==='attente',lectures:lectures??0,nPagesLues,nDesaccords}),
     ...((result.linesLost??0)>0?[{cle:'perdues',verdict:'ecart' as const,texte:'Lignes non gardées',valeurs:String(result.linesLost),resume:`${result.linesLost} ligne${(result.linesLost??0)>1?'s':''} non gardée${(result.linesLost??0)>1?'s':''}`,geste:'Voir la liste',renvoi:'liste' as const}]:[]),
   ]:[];
   const rangsLus=result?[...ctrlBloc.rangs,...rangsLecture]:[];

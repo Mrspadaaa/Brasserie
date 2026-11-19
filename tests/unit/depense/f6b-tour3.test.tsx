@@ -174,3 +174,12 @@ describe('v3-7 et v3-8 (écartés : artefact du banc) : « supprimer » et les c
     await waitFor(() => expect(rangees(view).length).toBe(avant - 1));
   });
 });
+
+describe('LR2-3 (DEMANDE de f6a) : la rangée « Lectures » du bloc compte des valeurs, par rangDesLectures', () => {
+  it('doc2 (forme), 2 lectures, 2 valeurs en désaccord : « 2/2 · 2 valeurs en désaccord » et « Voir le désaccord »', async () => {
+    const view = await lire(f => { f.points = POINTS_DOC2; f.review = { ...f.review, readers: 2 }; });
+    const rang = await waitFor(() => { const b = view.container.querySelector<HTMLElement>('[data-dp-controle-cle="lectures"]'); expect(b).not.toBeNull(); return b!; });
+    expect(rang.textContent).toMatch(/2\/2 · 2 valeurs en désaccord/);
+    expect(rang.textContent).toMatch(/Voir le désaccord/);
+  });
+});
