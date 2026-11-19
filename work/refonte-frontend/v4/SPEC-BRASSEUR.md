@@ -2276,3 +2276,19 @@ Sur la page des 12 mini maquettes de Ma levure, puis sur sa capture du bas de l'
 > « v01 c'est bien mais le rest.... C'était surtout pas du tout ce que j'ai demandé, on voit même pas en une vue, le nombre que j'ai choisi ECT... »
 >
 > « Toute cette partie là »
+
+Sur sa capture de Ma levure en ligne (Munich Lager Yeast, « ≥ 15 g », sans quantité prévue) et sa capture de Malts/sucres (Pilsner Malz 1,7 kg, 62 % du grain, curseur, − et +), sur la page r2 :
+
+> « Il y a beaucoup de choses bien mais le problème principal, vraiment le main problème, c'est que je vous même pas combien et quel levure j'ai choisi. »
+>
+> « Par exemple pour les Malts je vois en un coup d'œil les kg et combien j'ai besoin pour ma recette. Et je peux en UNE actions modifier ça »
+>
+> « Sur la levure j'ai 0, info sur ça, 0 vision... »
+>
+> « Analyse les besoins brasseur, besoin 1,2,3 ecttt regarde aussi comment sont les autres vue et tout. »
+>
+> « Il y a vraiment du meilleur dans les mini maquettes mais ça répond pas à la question 1. »
+>
+> « Fait passer plusieurs critique de tout type, regarde les autres vue, et propose des vrais solution qui répondent aux problématiques »
+
+(lu : besoin 1 = voir d'un coup d'œil quelle levure et combien — sachets ou grammes choisis contre le besoin de la recette — et le changer en un geste, comme la ligne d'un malt ; « ≥ 15 g » est une dose du fabricant, pas un choix.)
