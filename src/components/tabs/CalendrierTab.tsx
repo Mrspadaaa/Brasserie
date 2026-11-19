@@ -543,7 +543,7 @@ export function CalendrierTab(props: CalendrierTabProps) {
     if (avant.annee || avant.fenetre.semaines !== fen.semaines) {
       const nom = ECHELLES.find(x => x.id === e)?.nom ?? e;
       montrer({
-        role: 'status', texte: `${nom} : période ${libelleDuree(avant.fenetre.semaines, avant.annee)} → ${libelleDuree(fen.semaines, false)} · Finances suit`,
+        role: 'status', texte: `${nom} : période ${libelleDuree(avant.fenetre.semaines, avant.annee)} → ${libelleDuree(fen.semaines, false)}, Finances aussi`,
         annuler: () => {
           setMessage(null); setEchelleVoulue(avant.echelle); setDeplie(null);
           setVueEtat(avant.annee ? 'annee' : 'semaines'); setFenetre(avant.fenetre); onPeriode(periodeDeFenetre(avant.fenetre));

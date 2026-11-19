@@ -87,7 +87,8 @@ const texteDe = (t: Element): DOMRect => {
 };
 /* les noms que le message ne couvre jamais (E33) : titres de rangée, noms et montants des choses, pastilles, renvois */
 const TITRES = '[data-nom-rangee], [data-rangee] .cal-nom';
-export const NOMS_MESSAGE = `${TITRES}, [data-frise] .cal-lbl-t, [data-frise] .cal-lbl-m, [data-frise] .cal-lbl-j, [data-frise] .cal-duree, [data-frise] .cal-lie, [data-frise] .cal-pastille-p, [data-frise] .cal-renvoi`;
+/* critique du 19.11 n° 13 et 15 : la tête de rangée entière (+, œil, pastille, « confirmé S47–S52 ») est un nom */
+export const NOMS_MESSAGE = `${TITRES}, [data-frise] .cal-rh > *, [data-frise] .cal-lbl-t, [data-frise] .cal-lbl-m, [data-frise] .cal-lbl-j, [data-frise] .cal-duree, [data-frise] .cal-lie, [data-frise] .cal-pastille-p, [data-frise] .cal-renvoi`;
 
 /** Une fois par image (défilement) ; sans `requestAnimationFrame`, au tour suivant. */
 function prochaineImage(f: () => void): () => void {
@@ -179,7 +180,7 @@ export function placerMessage(el: HTMLElement, ancre: string | undefined): 'pres
   if (premiere) haut = Math.max(haut, Math.min(premiere.top, bas - h));
   /* les obstacles du jouable : noms et titres (1), barres (0,25), le détail ouvert (D-126), le + avec 6 px de marge (50), la chose annoncée (400) */
   const obs: Obstacle[] = [
-    ...obstacles(NOMS_MESSAGE, 1, el, texteDe),
+    ...obstacles(NOMS_MESSAGE, 1, el, texteDe, 3),
     ...obstacles('[data-frise] [data-chose]', 0.25, el),
     ...obstacles('[data-detail]', 50, el)
   ];
@@ -204,8 +205,8 @@ export function placerMessage(el: HTMLElement, ancre: string | undefined): 'pres
      (Livrer sur Achats, Lier sur Travaux, refus de jalon sur Ventes). Avant lui, une place qui ne couvre aucun nom, titre, détail, ni le + ni la
      chose (une barre peut passer dessous) : la bande la plus proche de la chose (sinon du bas), à gauche, à gauche du +, puis au milieu. */
   if (!libre) {
-    /* 3 px d'air autour de chaque nom : collé à lui, le message se lit comme son étiquette */
-    const durs = obs.filter(o => o.p >= 1).map(o => ({ ...o, l: o.l - 3, t: o.t - 3, r: o.r + 3, b: o.b + 3 }));
+    /* les noms portent 3 px d'air (obstacles ci-dessus) : collé à un nom, le message se lit comme son étiquette */
+    const durs = obs.filter(o => o.p >= 1);
     const cible = r && r.height > 0 ? r.top + r.height / 2 : bas;
     const ys: number[] = [];
     for (let y = haut; y + h <= bas + 1; y += 4) ys.push(y);
@@ -307,7 +308,12 @@ export const Message: React.FC<MessageProps> = ({ message, onFermer, dureeMs = D
     };
     const minuteries: Array<ReturnType<typeof setTimeout>> = [];
     placer();
-    minuteries.push(setTimeout(placer, 150), setTimeout(placer, 500));
+    minuteries.push(setTimeout(placer, 150), setTimeout(placer, 500), setTimeout(placer, 1000));
+    /* critique du 19.11 n° 13 : la frise se remet en page après l'écriture, parfois au-delà de 500 ms (rangées remesurées) ; un nom venait alors
+       sous le message posé avant. Chaque changement de taille de la frise le replace. */
+    const frise = document.querySelector('[data-frise]');
+    const ro = frise && typeof ResizeObserver !== 'undefined' ? new ResizeObserver(() => placer()) : null;
+    if (ro && frise) { ro.observe(frise); frise.querySelectorAll('[data-rangee]').forEach(r => ro.observe(r)); }
     const surTaille = () => { placer(); minuteries.push(setTimeout(placer, 150)); };
     window.addEventListener('resize', surTaille);
     let image: (() => void) | null = null;
@@ -315,7 +321,7 @@ export const Message: React.FC<MessageProps> = ({ message, onFermer, dureeMs = D
     window.addEventListener('scroll', surDefilement, { passive: true, capture: true });
     return () => {
       window.removeEventListener('resize', surTaille); window.removeEventListener('scroll', surDefilement, { capture: true });
-      minuteries.forEach(clearTimeout); image?.();
+      minuteries.forEach(clearTimeout); image?.(); ro?.disconnect();
     };
   }, [id, ancre, detailOuvert, dansLaFrise]);
 
