@@ -63,7 +63,7 @@ import { LigneP3c,LignePerdue } from '../depense/Ligne';
 import { Imprime,RangeeCalcul,Op,SegmentUnite,BoiteUniteVide,CasesUnite,Duel,Petit,Nom,Apres,Marque,Sortie,SegmentNature,LigneArticle,BoutonCarre,BoutonTexte,HorsStock,RangeeMouture,RangeeRare,CHAMP_PU4D,largeur,NombresRapides,TuilesQuantite } from '../depense/Plateau';
 import { apresReception,prixDeLaRangee,choixUnite,cleUnite,CINQ_UNITES,genreDeUnite,motUnite,nombreFr,nombresRapides,metUn,quantiteGardantMontant,recalculer,convertirMasse,facteurMasse,moutureSuit,uniteHorsArticle,type ChampCalcul } from '../depense/calculPlateau';
 import { ecartsEntre,type DonneesProduit,type Ecart } from '../../domain/stock/donnees';
-import { totalSeulEnUn,appliquerFinale,payeCopieDuTotal,provisoireDeRetirees,JETON_CACHE,baseDeBrouillon,type CellulesLigne,enteteDeLecture,libelleAvant,lignesDeLecture,prixImprime,provisoireCoupe,rangerLaPerdue,type BaseFusion,type Correction,type Perdue,type Propositions } from '../depense/finale';
+import { totalSeulEnUn,appliquerFinale,payeCopieDuTotal,provisoireDeRetirees,JETON_CACHE,baseDeBrouillon,type CellulesLigne,enteteDeLecture,libelleAvant,barreSansInfo,lignesDeLecture,prixImprime,provisoireCoupe,rangerLaPerdue,type BaseFusion,type Correction,type Perdue,type Propositions } from '../depense/finale';
 import { Comptes,motStatut,type CompteItem,type ItemBarre,type Rang } from '../depense/Recap';
 import { articleDuDessus,bandes as calculerBandes,ORDRE_GROUPES,NOMS_GROUPES,groupeDe,sousFamilleDeLigne,lignesDePort,portCents,numerosPapier,fr2 as fr2c,texteQte,poserGroupe,etatSegment,toutPlier as plierTout,toutDeplier as deplierTout,pliable,type ChoixGroupes,type GroupeCle,type LigneBande,type SousGroupe } from '../depense/groupes';
 import type { LienStock } from '../depense/Pictos';
@@ -995,7 +995,7 @@ export function ExpenseSheet({onClose,onSaved,initialIntent='expense',existingEq
     const cs=fusion?.lignes[line.id]?.filter(c=>memeValeur((line as unknown as Record<string,unknown>)[c.champ],c.apres));
     if(!fusion||!cs?.length)return undefined;
     const champs=new Set<string>(cs.map(c=>c.champ));
-    return {qte:champs.has('quantity')||champs.has('unit'),prix:champs.has('unitPrice'),montant:champs.has('amount'),nom:champs.has('description')||champs.has('imprime')||champs.has('nomLu'),avant:libelleAvant(fusion.avant[line.id]??{},cs,line)};
+    return {qte:champs.has('quantity')||champs.has('unit'),prix:champs.has('unitPrice'),montant:champs.has('amount'),nom:champs.has('description')||champs.has('imprime')||champs.has('nomLu'),avant:libelleAvant(fusion.avant[line.id]??{},cs,line),muet:barreSansInfo(fusion.avant[line.id]??{},cs,line)};
   };
   const construire=(line:PurchaseLineDraft,index:number,simple:boolean):React.ReactNode=>{
     const mp=mouturesPropositions.find(p=>p.lineId===line.id),parentIdx=parentDeLaMouture(draft.lines,index),neuf=neufParLigne.get(line.id),nomRefuse=line.stockAction==='new'&&Boolean(line.articleName?.trim())&&nomPrisParAutre(line.id,line.articleName!);

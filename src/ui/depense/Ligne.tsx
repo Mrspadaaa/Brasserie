@@ -26,7 +26,7 @@ export interface LigneP3cProps {
   sansStock?: boolean; lienNiveau?: Niveau; plateau: React.ReactNode; moutureArticles?: React.ReactNode;
   onToggle: (id: string, ouvert: boolean) => void;
   /** Lenteur D (`choix-lenteur/d-lue`) : les cellules que la 3.8 a corrigées sont sur le bleu des corrections, l'ancienne valeur barrée sous le nom (« 10 Kg × 1,45 »). */
-  corrigee?: { qte?: boolean; prix?: boolean; montant?: boolean; nom?: boolean; avant: string };
+  corrigee?: { qte?: boolean; prix?: boolean; montant?: boolean; nom?: boolean; avant: string; /** f12 P-2 : le barré ne diffère de la rangée que par des « ? » : il ne s'affiche pas. */ muet?: boolean };
   /** Lenteur D, son choix 1 B (`choix-lignes-38/q1-b`) : une ligne que la 3.8 ajoute : toute la rangée sur le bleu des corrections, un ↻ devant le nom, aucune ancienne valeur. */
   neuve?: boolean;
   /** D2 (sa maquette `p3c-3-renvoi`) : sous un filtre, chaque rangée gardée est sur fond jaune avec un bord. */
@@ -63,7 +63,7 @@ export function LigneP3c(p: LigneP3cProps) {
           {p.prixKg ? <span data-dp-prixkg aria-label={p.prixKg.aria} className="rounded-control bg-cave-800 px-1.5 text-xs leading-[18px] text-hop">{p.prixKg.texte}</span> : null}
           {p.alpha ? <span data-dp-alpha className="font-mono text-xs text-cave-400">α {p.alpha}</span> : null}
           {p.ebc ? <span data-dp-ebc className="font-mono text-xs text-cave-400">{p.ebc} EBC</span> : null}{/* virgule-ok : p.ebc est le texte déjà formaté par le plateau */}
-          {c?.avant && !barreMuet(c.avant) ? <s data-dp-avant className="basis-full font-mono text-xs font-normal text-cave-400">{c.avant}</s> : null}
+          {c?.avant && !c.muet && !barreMuet(c.avant) ? <s data-dp-avant className="basis-full font-mono text-xs font-normal text-cave-400">{c.avant}</s> : null}
           {mout && p.conversion ? <span data-dp-conversion className="whitespace-nowrap rounded-control bg-cave-800 px-1.5 text-xs leading-[18px] text-cave-200">{pastilleConversion(p.conversion)}</span> : null}
         </span>
         {p.pastilleMouture ? <button type="button" data-dp-mouture={p.pastilleMouture.id} aria-label={p.pastilleMouture.aria} onClick={e => { stop(e); p.pastilleMouture!.onBascule(); }}

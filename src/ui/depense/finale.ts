@@ -115,7 +115,9 @@ export function lignesDeLecture(result: ScannedInvoiceResult, stockItems: readon
      jamais de « nouvel article » d'office (nettoyage et emballage non plus : seul un article déjà là se relie). Exceptions : un article déjà au stock la garde en ingrédient (familles sans stock) ;
      une ligne « Autres » d'une dépense de brassage (un adjuvant que nul mot ne classe) reste un ingrédient, jamais perdue. */
   const lues: PurchaseLineDraft[] = lues0.map(l => {
-    if (l.kind !== 'ingredient') return l;
+    /* f12 P-1 : une ligne que la famille range sous « Services » (un acte, LR2-7 : la lecture le dit `other` ou `equipment` d'un tirage à l'autre) a la nature Service :
+       la bande, le choix de nature et la ligne enregistrée disent la même chose (sinon l'acte part en matériel). Le port et la remise gardent la leur. */
+    if (l.kind !== 'ingredient') return l.kind !== 'service' && l.kind !== 'shipping' && l.kind !== 'discount' && familleDeLigne(l) === 'service' ? { ...l, kind: 'service' as const, stockAction: 'none' as const } : l;
     const famille = familleDeLigne(l), nature = NATURE_DE_FAMILLE[famille];
     if (!nature || (famille === 'autres' && categorie === 'brassage') || dejaAuStock(l, famille)) return l;
     return { ...l, kind: nature, stockAction: 'none' as const };
@@ -363,6 +365,24 @@ export function libelleAvant(base: CellulesLigne, corrections: readonly Pick<Cor
   if (champs.has('amount')) parts.push(base.amount === undefined ? '?' : fr2(base.amount));
   if (NOM_CELLULES.some(c => champs.has(c)) && base.description) parts.unshift(base.description);
   return parts.join(' · ');
+}
+
+/**
+ * f12 P-2 : un barré qui ne dit rien de plus que la rangée. Le barré (`libelleAvant`) et le même libellé tiré des valeurs d'aujourd'hui sont comparés mot à mot :
+ * chaque mot du barré est « ? » (une valeur que la 1re lecture n'avait pas) ou le mot d'aujourd'hui (casse ignorée). « Collerette … · ? » sous « Collerette … »,
+ * « 3 cp × ? · ? » sous 3 cp × 1,50 : muets. Un autre nom, une autre quantité ou un autre prix connus parlent (« 10 Kg × 1,45 » sous 5 Kg × 2,90).
+ * Même règle que `barreMuet` (« ? × ? », 7b199eb85) et la variante de nom (LR1-5, 84551fc8e), étendue au nom identique suivi de « ? ».
+ */
+export function barreSansInfo(base: CellulesLigne, corrections: readonly Pick<Correction, 'champ'>[], courant: Partial<Pick<PurchaseLineDraft, 'quantity' | 'unit' | 'uniteDeduite' | 'description' | 'unitPrice' | 'amount'>>): boolean {
+  const avant = libelleAvant(base, corrections, courant as Pick<PurchaseLineDraft, 'quantity' | 'unit' | 'uniteDeduite'>);
+  if (!avant) return true;
+  const ici: CellulesLigne = { ...base, quantity: courant.quantity, unit: courant.unit, uniteDeduite: courant.uniteDeduite, description: courant.description, unitPrice: courant.unitPrice, amount: courant.amount };
+  /* Le libellé d'aujourd'hui garde la forme du barré : sans quantité quand le barré n'en montre pas (sa quantité tapée, `qteLaSienne`). */
+  const champs = new Set(corrections.map(c => c.champ));
+  const sansQte = !(champs.has('quantity') || champs.has('unit')) && !(memes(courant.quantity, base.quantity) && (courant.unit ?? '') === (base.unit ?? ''));
+  const maintenant = sansQte ? libelleAvant(ici, corrections, { quantity: -1, unit: '' } as PurchaseLineDraft) : libelleAvant(ici, corrections, courant as PurchaseLineDraft);
+  const a = avant.toLowerCase().split(/\s+/).filter(Boolean), b = maintenant.toLowerCase().split(/\s+/).filter(Boolean);
+  return a.length === b.length && a.every((m, i) => m === '?' || m === b[i]);
 }
 
 /** « Garder » : la ligne pas retrouvée revient à sa place (après la ligne qui la précédait, avant les lignes de rang plus haut). */
