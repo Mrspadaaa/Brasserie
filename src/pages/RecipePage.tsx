@@ -201,16 +201,20 @@ export const RecipePage: React.FC<RecipePageProps> = ({
 
   const projectedAbv = projection?.abv.range?.min === projection?.abv.range?.max ? projection?.abv.range?.min ?? null : null;
   const abv = recipe.nolo?.enabled ? null : recipe.abvTarget ?? projectedAbv;
+  // TE-12 / PD-8 : sans cible ni point unique, la plage sourcée de la levure s'écrit (« 1,008–1,012 », « plage ») au lieu d'un « — » renvoyé à la Levure.
+  const plageFg = !fg && projection?.fg.range && projection.fg.range.min !== projection.fg.range.max ? projection.fg.range : null;
+  const plageAbv = !abv && projection?.abv.range && projection.abv.range.min !== projection.abv.range.max ? projection.abv.range : null;
+  const pourquoiVide = (e?: { reasons: string[] }) => e?.reasons?.[0] ?? 'projection indisponible · voir Levure';
 
   /** Les mesures de tête sans chiffre, groupées par raison : une ligne sous la carte, jamais du texte dans une case (n° 11). */
   const raisonsDeTete = (() => {
     const nolo = !!recipe.nolo?.enabled;
     const brut: [string, string][] = [];
     if (!(og > 1)) brut.push(['OG', nolo ? 'moût à caractériser' : 'potentiel des malts à renseigner']);
-    if (!nolo && !fg) brut.push(['FG', projection?.fg.range ? 'plage dans la conduite de levure' : 'projection indisponible · voir Levure']);
+    if (!nolo && !fg && !plageFg) brut.push(['FG', 'projection indisponible · voir Levure']);
     if (ibuTotal === null) brut.push(['IBU', 'ajouts de houblon à vérifier']);
     if (!color && colorMissing.length === 0) brut.push(['EBC', measuredExtraction ? 'extraction à caractériser' : 'couleur des malts à renseigner']);
-    if (!nolo && !abv) brut.push(['ABV', projection?.abv.range ? 'plage dans la conduite de levure' : 'projection indisponible · voir Levure']);
+    if (!nolo && !abv && !plageAbv) brut.push(['ABV', 'projection indisponible · voir Levure']);
     if (!nolo && abv && !projection?.abv.range && recipe.abvTarget != null) brut.push(['ABV', 'cible conservée, projection indisponible · voir Levure']);
     const parRaison = new Map<string, string[]>();
     for (const [nom, raison] of brut) parRaison.set(raison, [...(parRaison.get(raison) ?? []), nom]);
@@ -320,12 +324,16 @@ export const RecipePage: React.FC<RecipePageProps> = ({
           {recipe.style && <span className="rc-pastille rc-sty" data-role="style"><i aria-hidden="true" />{styleResolu?.name ?? recipe.style}{styleResolu && <small>{styleResolu.code}</small>}</span>}
           {!recipe.nolo?.enabled && <span className="rc-pastille" data-booster="plage-fg">
             <span className="rc-l">FG</span>
-            {fg ? <b className="rc-v reading">{formatDensite(fg)}</b> : <b className="rc-v reading" title={projection?.fg.range ? 'plage dans la conduite de levure' : 'projection indisponible · voir Levure'}>—</b>}
+            {fg ? <b className="rc-v reading">{formatDensite(fg)}</b>
+              : plageFg ? <><b className="rc-v reading" title="plage d'atténuation documentée de la levure">{formatDensite(plageFg.min)}–{formatDensite(plageFg.max)}</b><span className="rc-note">plage</span></>
+              : <b className="rc-v reading" title={pourquoiVide(projection?.fg)}>—</b>}
             {fg && <Piste valeur={fg} plage={plage('fg')} etiquette="FG" />}
           </span>}
           {!recipe.nolo?.enabled && <span className="rc-pastille" data-booster="plage-abv">
             <span className="rc-l">ABV</span>
-            {abv ? <b className="rc-v reading">{`${formatDecimal(abv, 1)} %`}</b> : <b className="rc-v reading" title={projection?.abv.range ? 'plage dans la conduite de levure' : 'projection indisponible · voir Levure'}>—</b>}
+            {abv ? <b className="rc-v reading">{`${formatDecimal(abv, 1)} %`}</b>
+              : plageAbv ? <><b className="rc-v reading" title="plage d'atténuation documentée de la levure">{`${formatDecimal(plageAbv.min, 1)}–${formatDecimal(plageAbv.max, 1)} %`}</b><span className="rc-note">plage</span></>
+              : <b className="rc-v reading" title={pourquoiVide(projection?.abv)}>—</b>}
             {abv && <Piste valeur={abv} plage={plage('abv')} etiquette="ABV" />}
             {abv && !projection?.abv.range && recipe.abvTarget != null && <span className="rc-note">cible</span>}
           </span>}
