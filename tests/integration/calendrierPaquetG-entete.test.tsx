@@ -101,7 +101,9 @@ describe('paquet G n° 7 — CAL-ENTETE-CACHE : la zone du calendrier se colle s
   it('Header publie sa hauteur dans --main-header-height, et la retire en partant', () => {
     vi.spyOn(HTMLElement.prototype, 'getBoundingClientRect').mockReturnValue({ left: 0, top: 0, right: 390, bottom: 48, width: 390, height: 48, x: 0, y: 0, toJSON: () => ({}) } as DOMRect);
     const { unmount } = render(<Header globalTimeFilter={{ genre: 'tout' }} onChangeGlobalTimeFilter={() => undefined} hidePeriod onGoHome={() => undefined} onOpenSearch={() => undefined} />);
-    expect(document.documentElement.style.getPropertyValue('--main-header-height')).toBe('48px');
+    /* APP-ENTETE-COLLE (19.11) : l'en-tête ne colle plus, la zone se colle au haut de l'écran : 0px. */
+    expect(document.documentElement.style.getPropertyValue('--main-header-height')).toBe('0px');
+    expect(document.querySelector('header')?.className).not.toMatch(/sticky/);
     unmount();
     expect(document.documentElement.style.getPropertyValue('--main-header-height')).toBe('');
   });

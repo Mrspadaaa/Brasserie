@@ -73,7 +73,8 @@ export const Header: React.FC<HeaderProps> = ({
     const propriete = '--main-header-height';
     const avant = root.style.getPropertyValue(propriete);
     const publier = () => {
-      const h = `${Math.round(el.getBoundingClientRect().height * 100) / 100}px`;
+      /* APP-ENTETE-COLLE : l'en-tête ne colle plus ; une zone collée d'un onglet se colle donc au haut de l'écran. */
+      const h = getComputedStyle(el).position === 'sticky' ? `${Math.round(el.getBoundingClientRect().height * 100) / 100}px` : '0px';
       if (root.style.getPropertyValue(propriete) !== h) root.style.setProperty(propriete, h);
     };
     publier();
@@ -87,8 +88,9 @@ export const Header: React.FC<HeaderProps> = ({
   }, []);
 
   /* V-a : en-tête opaque. Un fond à 95 % et un flou laissaient voir à travers lui ce qui défile dessous (fantôme gris sous « L'Affinée » à 390). */
+  /* APP-ENTETE-COLLE (19.11 : « le header n'a pas besoin d'être visible partout, en tout cas pas en mode "floatting" docked en haut ») : l'en-tête défile avec la page. */
   return (
-    <header ref={enTete} className="sticky top-0 z-40 bg-cave-950 border-b border-cave-800 pt-safe">
+    <header ref={enTete} className="relative z-40 bg-cave-950 border-b border-cave-800 pt-safe">
       {/* La disposition compacte démarre à 36 px et grandit avec le texte. */}
       <div
         className={`app-titlebar max-w-4xl ${large ? 'min-[900px]:max-w-[1264px]' : ''} mx-auto px-2 flex items-center ${
