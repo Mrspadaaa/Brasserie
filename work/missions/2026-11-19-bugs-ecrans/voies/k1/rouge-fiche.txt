@@ -1,0 +1,18 @@
+[31m   [31m×[31m k1 — la fiche d’un houblon (points 14, 15, 16)[2m > [22m14 : « Confiance faible » une seule fois dans la fiche, « Référence variété » une seule fois comme pastille[39m[32m 121[2mms[22m[39m
+[31m   [31m×[31m k1 — la fiche d’un houblon (points 14, 15, 16)[2m > [22m14 : l’α (et β, huiles) ne se lisent qu’une fois : pas de seconde « Composition » qui les répète[39m[32m 46[2mms[22m[39m
+[31m   [31m×[31m k1 — la fiche d’un houblon (points 14, 15, 16)[2m > [22m15 : la classe thiols tient en une ligne courte ; l’explication longue est repliée[39m[32m 34[2mms[22m[39m
+[31m   [31m×[31m k1 — la fiche d’un houblon (points 14, 15, 16)[2m > [22m16 : le titre « Houblons » est réservé à la lecture d’écran (l’onglet le dit déjà) ; un seul compte, sans « (s) »[39m[32m 8[2mms[22m[39m
+[31m   [31m×[31m k1 — la fiche d’un houblon (points 14, 15, 16)[2m > [22m16 : une recherche dit son compte une fois, au pluriel juste[39m[32m 11[2mms[22m[39m
+[31m⎯⎯⎯⎯⎯⎯⎯[39m[1m[41m Failed Tests 5 [49m[22m[31m⎯⎯⎯⎯⎯⎯⎯[39m
+[41m[1m FAIL [22m[49m tests/integration/bugs-k1-fiche-houblon.test.tsx[2m > [22mk1 — la fiche d’un houblon (points 14, 15, 16)[2m > [22m14 : « Confiance faible » une seule fois dans la fiche, « Référence variété » une seule fois comme pastille
+[31m[1mAssertionError[22m: expected 3 to be 1 // Object.is equality[39m
+[41m[1m FAIL [22m[49m tests/integration/bugs-k1-fiche-houblon.test.tsx[2m > [22mk1 — la fiche d’un houblon (points 14, 15, 16)[2m > [22m14 : l’α (et β, huiles) ne se lisent qu’une fois : pas de seconde « Composition » qui les répète
+[31m[1mAssertionError[22m: expected [ …(2) ] to have a length of 1 but got 2[39m
+[41m[1m FAIL [22m[49m tests/integration/bugs-k1-fiche-houblon.test.tsx[2m > [22mk1 — la fiche d’un houblon (points 14, 15, 16)[2m > [22m15 : la classe thiols tient en une ligne courte ; l’explication longue est repliée
+[31m[1mAssertionError[22m: expected 191 to be less than or equal to 60[39m
+[41m[1m FAIL [22m[49m tests/integration/bugs-k1-fiche-houblon.test.tsx[2m > [22mk1 — la fiche d’un houblon (points 14, 15, 16)[2m > [22m16 : le titre « Houblons » est réservé à la lecture d’écran (l’onglet le dit déjà) ; un seul compte, sans « (s) »
+[31m[1mAssertionError[22m: expected 'text-base font-semibold text-cave-50' to match /sr-only/[39m
+[41m[1m FAIL [22m[49m tests/integration/bugs-k1-fiche-houblon.test.tsx[2m > [22mk1 — la fiche d’un houblon (points 14, 15, 16)[2m > [22m16 : une recherche dit son compte une fois, au pluriel juste
+[31m[1mAssertionError[22m: expected 'Houblons2 référencesaucun lotRecherch…' to match /2 fiches correspondantes/[39m
+"Houblons2 référencesaucun lotRechercher une variété ou un arôme documentéCompare les sources, puis précise ton lot et son analyse.Nouvelle variétéRechercher une fiche publiéeImport, export et archivesExporter l’indexImporter un indexInclure les variétés archivées2 fiche(s) correspondante(s). Une variété peut avoir plusieurs sources. Le contexte de chaque description est indiqué dans sa fiche.AdmirableTests locauxPellets T90Agrumes (fixture)AdmiralTests locauxPellets T90Agrumes (fixture)"
+[2m      Tests [22m [1m[31m5 failed[39m[22m[90m (5)[39m

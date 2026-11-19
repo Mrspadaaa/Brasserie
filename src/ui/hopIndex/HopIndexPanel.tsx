@@ -11,9 +11,9 @@ import { TextInput, inputClass } from '../FormNav';
 import { NumberInput } from '../NumberInput';
 import { HopField as Field, HopFactsEditor, HopSourceEditor, blankHopSource } from './HopFactsEditor';
 import { BrewTag } from '../BrewTag';
-import { ChevronRight } from 'lucide-react';
+import { ChevronDown, ChevronRight } from 'lucide-react';
 import { useHopCatalogue } from './useHopCatalogue';
-import { HopTechnicalPanel } from './HopTechnicalPanel';
+import { HopTechnicalPanel, BarreMesure } from './HopTechnicalPanel';
 import { MobileDetails } from '../ViewNavigation';
 import { useMobileLayout } from '../useViewport';
 import { resumeIndexHoublon } from '../../domain/stock/regles';
@@ -29,14 +29,46 @@ function HopAliasesEditor({ value, onChange }: { value: string[]; onChange: (v: 
   }} /></Field>;
 }
 
+/** Les deux pastilles d'une valeur : d'où elle vient, et la confiance qu'on lui prête (une valeur inconnue n'a pas de confiance : TE-49). */
+function Pastilles({ origin, confidence }: { origin: 'lot' | 'variety' | 'unknown'; confidence: 'low' | 'medium' | 'high' }) {
+  return <span className="flex flex-wrap gap-2"><BrewTag tone={origin === 'lot' ? 'done' : origin === 'variety' ? 'info' : 'neutral'}>{origin === 'lot' ? 'COA du lot' : origin === 'variety' ? 'Référence variété' : 'Inconnu'}</BrewTag>
+    {origin !== 'unknown' && <BrewTag tone={confidence === 'high' ? 'done' : 'neutral'}>Confiance {({ low: 'faible', medium: 'moyenne', high: 'élevée' })[confidence]}</BrewTag>}</span>;
+}
+
+const CONTEXTES_DESCRIPTION = { rawHop: 'houblon brut', infusion: 'infusion', beer: 'bière d’essai', unspecified: 'contexte non précisé' } as const;
+/* k1, point 15 (19.11) : la classe « Thiol impact » du fabricant tenait en trois lignes de phrase de précaution en tête de fiche. Au premier plan : une ligne
+   (« Classe thiols Hopsteiner : faible ») ; la précaution (thiols libres du houblon, ni rendement de levure ni intensité en bière) et la source sont à un toucher.
+   La phrase vient de src/data/hopManufacturerBootstrap.json et n'est pas modifiée : on la coupe à l'affichage. */
+const CLASSE_THIOL = /^Classe fabricant « Thiol impact » : ([^.]+)\.\s*(.*)$/u;
+function DescriptionFiche({ d }: { d: HopDescription }) {
+  const source = <span className="block text-sm text-cave-400">{d.source.author}, {d.source.year ?? 'année inconnue'} — {CONTEXTES_DESCRIPTION[d.context]}</span>;
+  const thiol = CLASSE_THIOL.exec(d.text);
+  if (!thiol) return <p className="text-cave-200">{d.text}{source}</p>;
+  return <details data-role="classe-thiols" className="text-cave-200">
+    <summary className="cursor-pointer min-h-touch flex items-center justify-between gap-2"><span>Classe thiols {d.source.author} : {thiol[1]}</span><ChevronDown size={16} className="shrink-0 text-cave-400" aria-hidden="true" /></summary>
+    <div className="pb-1 text-sm">{thiol[2] && <p>{thiol[2]}</p>}{source}</div>
+  </details>;
+}
+
 export function HopFactsView({ lot, variety }: { lot?: HopLot; variety?: HopVariety }) {
   const facts = resolveHopFacts(lot, variety);
-  return <div className="divide-y divide-cave-800">
-    {facts.filter(f => f.measurement || f.documentary || ['alpha', 'totalOil'].includes(f.analyte)).map(f => <details key={f.analyte} className="py-3">
+  const lignes = facts.filter(f => f.measurement || f.documentary || ['alpha', 'totalOil'].includes(f.analyte));
+  /* k1 (19.11) : « Référence variété · Confiance faible » ne se répète pas à chaque ligne. Quand toutes les valeurs connues ont la même origine et la même
+     confiance, les pastilles se disent une fois, au-dessus ; une ligne qui diffère (un lot mesuré parmi des références) garde les siennes. */
+  const connues = lignes.filter(f => f.origin !== 'unknown');
+  const commune = connues.length > 1 && connues.every(f => f.origin === connues[0].origin && f.confidence === connues[0].confidence) ? connues[0] : null;
+  /* L'α se lit une fois : la barre de la « Composition » (échelle par unité et matrice) vit dans la ligne, sous sa valeur. */
+  const echelle = (f: (typeof lignes)[number]) => Math.max(0, ...lignes.filter(g => g.measurement && f.measurement && `${g.measurement.unit}:${g.measurement.basis}` === `${f.measurement!.unit}:${f.measurement!.basis}`)
+    .map(g => g.range?.max ?? g.measurement!.value ?? g.measurement!.limit ?? 0));
+  return <div>
+    {commune && <div data-role="fiche-origine" className="pb-2"><Pastilles origin={commune.origin} confidence={commune.confidence} /></div>}
+    <div className="divide-y divide-cave-800">
+    {lignes.map(f => <details key={f.analyte} className="py-3">
       <summary className="cursor-pointer grid grid-cols-[1fr_auto] gap-x-3 gap-y-1">
         <span className="text-cave-50">{HOP_ANALYTE_LABELS[f.analyte]}</span>
         <span className="font-mono text-right text-cave-50">{formatHopMeasurement(f.measurement)}</span>
-        <span className="col-span-2 flex flex-wrap gap-2"><BrewTag tone={f.origin === 'lot' ? 'done' : f.origin === 'variety' ? 'info' : 'neutral'}>{f.origin === 'lot' ? 'COA du lot' : f.origin === 'variety' ? 'Référence variété' : 'Inconnu'}</BrewTag>{/* TE-49 : une valeur inconnue n'a pas de confiance à dire */}{f.origin !== 'unknown' && <BrewTag tone={f.confidence === 'high' ? 'done' : 'neutral'}>Confiance {({ low: 'faible', medium: 'moyenne', high: 'élevée' })[f.confidence]}</BrewTag>}</span>
+        {f.measurement && <span className="col-span-2"><BarreMesure range={f.range ?? (f.measurement.kind === 'point' && f.measurement.value != null ? { min: f.measurement.value, max: f.measurement.value } : null)} max={echelle(f)} /></span>}
+        {!(commune && f.origin !== 'unknown') && <span className="col-span-2"><Pastilles origin={f.origin} confidence={f.confidence} /></span>}
       </summary>
       <div className="pt-2 text-sm text-cave-200 space-y-1">
         {f.reasons.map(reason => <p key={reason}>{reason}</p>)}
@@ -50,6 +82,7 @@ export function HopFactsView({ lot, variety }: { lot?: HopLot; variety?: HopVari
         </>}
       </div>
     </details>)}
+    </div>
   </div>;
 }
 
@@ -167,12 +200,12 @@ export function HopIndexPanel({ createRequest, onNotice }: { createRequest?: { k
 
   /* BR-110 : un seul nom (celui de l'onglet) et une même tête aux deux largeurs : le titre et les comptes en pastilles ; la phrase d'aide vit dans « Options du catalogue ». */
   return <section aria-label="Houblons" className="px-1 space-y-2">
-    <div className="space-y-1"><h2 className="text-base font-semibold text-cave-50">Houblons</h2>
+    <div className="space-y-1">{/* k1 (19.11) : l'onglet « Houblons » juste au-dessus dit déjà le nom ; le titre ne reste que pour la lecture d'écran. */}<h2 className="sr-only">Houblons</h2>
       <div className="flex flex-wrap gap-1">{resume.map((texte, i) => <BrewTag key={texte} tone={i === 0 ? 'info' : undefined}>{texte}</BrewTag>)}</div>
     </div>
     <Field label={mobile?'Variété ou arôme':'Rechercher une variété ou un arôme documenté'}><TextInput value={query} onChange={setQuery} placeholder="Nom, alias, agrumes…" /></Field>
     <MobileDetails title="Options du catalogue" summary={[sourceFilter||'Toutes les sources',includeArchived?'Archives incluses':''].filter(Boolean).join(' · ')}>
-    <p className="text-sm text-cave-400">Compare les sources, puis précise ton lot et son analyse.</p>
+    <p className="text-sm text-cave-400">Compare les sources, puis précise ton lot et son analyse.{!mobile && ' Une variété peut avoir plusieurs sources ; le contexte de chaque description est dit dans sa fiche.'}</p>
     {sources.length > 1 && <Field label="Source du référentiel"><select className={inputClass} value={sourceFilter} onChange={e => setSourceFilter(e.target.value)}><option value="">Toutes les sources</option>{sources.map(s => <option key={s} value={s}>{s}</option>)}</select></Field>}
     <div className="flex flex-wrap gap-2">
       <Button onClick={() => { requestEpoch.current++; setBusy(false); setTried(false);
@@ -190,7 +223,8 @@ export function HopIndexPanel({ createRequest, onNotice }: { createRequest?: { k
     </div></details>
     </MobileDetails>
     {error && !editor && <p role="alert" className="text-alert">{error}</p>}
-    <p className="text-sm text-cave-400" role="status">{matches.length} fiche(s){query ? ' correspondante(s)' : ' disponibles'}.{!mobile&&' Une variété peut avoir plusieurs sources. Le contexte de chaque description est indiqué dans sa fiche.'}</p>
+    {/* k1 (19.11) : un seul compte. Les pastilles du haut disent « 136 références » ; cette ligne ne vient que quand la recherche ou la source en retient une partie. */}
+    {(query.trim() || sourceFilter) && <p className="text-sm text-cave-400" role="status">{matches.length} {matches.length === 1 ? 'fiche correspondante' : 'fiches correspondantes'}.</p>}
     <div className="grid sm:grid-cols-2 xl:grid-cols-3 gap-1 sm:gap-2">
         {matches.slice(0, limit).map(v => <button key={v.id} className={`w-full min-h-touch px-2 py-1.5 text-left rounded-control border ${selected === v.id ? 'bg-cave-850 border-ebc-straw/40' : 'border-cave-800 bg-cave-900 hover:bg-cave-850'} space-y-0.5`}
           onClick={() => { setSelected(v.id); setLotId(undefined); }} aria-pressed={selected === v.id}>
@@ -206,7 +240,7 @@ export function HopIndexPanel({ createRequest, onNotice }: { createRequest?: { k
       {variety && <article className="space-y-4 pb-6">
         <div className="flex justify-between items-center gap-2 flex-wrap"><div className="flex flex-wrap gap-2">{variety.form !== 'unknown' && <BrewTag tone="info">{HOP_FORM_LABELS[variety.form]}</BrewTag>}<BrewTag>{hopReferenceSource(variety)}</BrewTag></div>
           <Button onClick={() => { setEditor({ kind: 'variety', value: structuredClone(variety) }); setError(''); }}>Modifier la variété</Button></div>
-        {variety.descriptions.map((d, i) => <p key={i} className="text-cave-200">{d.text}<span className="block text-sm text-cave-400">{d.source.author}, {d.source.year ?? 'année inconnue'} — {({ rawHop: 'houblon brut', infusion: 'infusion', beer: 'bière d’essai', unspecified: 'contexte non précisé' })[d.context]}</span></p>)}
+        {variety.descriptions.map((d, i) => <DescriptionFiche key={i} d={d} />)}
         <div className="flex flex-wrap gap-2 items-end"><Field label="Lot à consulter" className="flex-1 min-w-40"><select className={inputClass} value={lotId ?? ''} onChange={e => setLotId(e.target.value || undefined)}>
           <option value="">Référence variété</option>{lots.filter(l => l.varietyId === variety.id).map(l => <option key={l.id} value={l.id}>{l.name}{l.archived ? ' (archivé)' : ''}</option>)}
         </select></Field><Button onClick={openLot}>Ajouter un lot</Button>
@@ -217,7 +251,7 @@ export function HopIndexPanel({ createRequest, onNotice }: { createRequest?: { k
         {lot && <div className="space-y-1 text-sm text-cave-200"><p>{lot.growingRegion || 'Région inconnue'} · {lot.grower || 'Producteur inconnu'}</p>{lot.storageNotes && <p>Stockage : {lot.storageNotes}</p>}</div>}
         {lot?.notes && <p className="text-sm text-cave-400">{lot.notes}</p>}
         <HopFactsView lot={lot} variety={variety} />
-        <HopTechnicalPanel lot={lot} variety={variety} />
+        <HopTechnicalPanel lot={lot} variety={variety} sansComposition />
       </article>}
     </Sheet>
     <Sheet open={!!editor} dismissible={!busy} onClose={() => { if (!busy) closeEditor(); }} title={editor?.kind === 'lot' ? 'Lot de houblon et COA' : 'Fiche variété de houblon'}

@@ -32,6 +32,13 @@ function BeerMaverickLink({ variety }: { variety: HopVariety }) {
   return reference ? <a href={reference} target="_blank" rel="noreferrer" className="inline-flex min-h-touch items-center text-sm text-water underline">Fiche complète de {variety.name} sur Beer Maverick</a> : null;
 }
 
+/** La barre d'une mesure sur l'échelle de son unité et de sa matrice (k1 : réemployée dans la ligne de la fiche). */
+export function BarreMesure({ range, max }: { range: { min: number; max: number } | null; max: number }) {
+  return <span className="relative block h-3 rounded bg-cave-800 overflow-hidden" aria-hidden="true">
+    {range && max > 0 && <span className="absolute inset-y-0 bg-water/70 rounded min-w-[2px]" style={{ left: `${100 * range.min / max}%`, width: `${100 * (range.max - range.min) / max}%`, transform: range.min === range.max ? 'translateX(-2px)' : undefined }} />}
+  </span>;
+}
+
 /** Each small plot has one unit AND one matrix basis. Points are observations, not CIs. */
 export function HopChemistryChart({ variety, lot }: { variety?: HopVariety; lot?: HopLot }) {
   const facts = resolveHopFacts(lot, variety).filter(f => f.measurement);
@@ -68,14 +75,15 @@ const topics = [
   { name: 'Esters et lactones', ids: ['research-branched-esters-transfer-2018', 'research-lactones-beer-fruit-2017', 'research-lactone-biosynthesis-2008'] },
   { name: 'Phénols et polyphénols', ids: ['technical-pof', 'technical-polyphenols'] }
 ];
-export function HopTechnicalPanel({ variety, lot }: { variety?: HopVariety; lot?: HopLot }) {
+/** `sansComposition` (k1, 19.11) : la fiche d'une variété (Stocks › Houblons) a déjà ses valeurs en liste, avec leur barre ; la « Composition » les redirait (α deux fois). */
+export function HopTechnicalPanel({ variety, lot, sansComposition = false }: { variety?: HopVariety; lot?: HopLot; sansComposition?: boolean }) {
   const [topic, setTopic] = useState(topics[0].name);
   const selected = topics.find(t => t.name === topic)!;
   const knowledge = useStorageValue(StorageService.getHopKnowledge);
   const saved = usableHopKnowledge(knowledge).valid.filter(k => k.kind === 'note');
   const notes = [...new Map([...technical, ...research, ...saved].map(n => [n.id, n])).values()].filter(n => selected.ids.includes(n.id));
   return <section aria-label="Chimie et biotransformation" className="space-y-4">
-    {(variety || lot) && <HopChemistryChart variety={variety} lot={lot} />}
+    {(variety || lot) && !sansComposition && <HopChemistryChart variety={variety} lot={lot} />}
     {variety && <BeerMaverickLink variety={variety} />}
     <h3 className="text-lg font-semibold text-cave-50">Comprendre les transformations</h3>
     <div className="flex flex-wrap gap-1" role="group" aria-label="Familles chimiques">{topics.map(t => <button key={t.name} type="button" aria-pressed={topic === t.name} onClick={() => setTopic(t.name)} className={`min-h-touch px-3 rounded-control text-sm ${topic === t.name ? 'bg-cave-700 text-ebc-straw' : 'text-cave-200 bg-cave-850'}`}>{t.name}</button>)}</div>
