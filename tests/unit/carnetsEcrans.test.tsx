@@ -204,7 +204,8 @@ describe('C1 · écrans figés', () => {
   });
   it('R06 comparer : rangé par, rangs, meilleur surligné, critère sans valeur dit, écarté à la fin avec sa raison, inconnu vide', () => {
     const { container } = render(<Comparer titre="Ventilation" statut="research" critere={ventilation.carnet.criteres[0]} tableau={tableau} onRetour={rien} onChoisir={rien} />);
-    expect(container.textContent).toContain('classées par tient 80 °C d’abord, puis le débit');
+    /* f5c n° 6 : la règle (sans prix) redirait « Ce qui compte » : plus de « classées par » ici */
+    expect(container.textContent).not.toContain('classées par');
     /* critique 5, n° 22 et 23 : le critère sans valeur ne range pas, et personne n'est « moins bien partout » ici (aucun article dominé par chacun des autres) */
     expect(container.textContent).toContain('sans valeur à comparer, il ne range pas');
     expect(container.textContent).not.toContain('moins bien partout');
@@ -226,7 +227,8 @@ describe('C1 · écrans figés', () => {
     expect(t).not.toBeNull();
     const { container } = render(<Comparer titre={vue.title} statut={vue.status} critere={vue.carnet.criteres[0]} tableau={t} onRetour={rien} onChoisir={rien} exemple />);
     expect(container.querySelectorAll('thead th').length).toBe(t!.lignes.length + 1);
-    if (t!.rangePar) expect(container.textContent).toContain(`classées par ${t!.rangePar}`);
+    /* f5c n° 6 : sous « Ce qui compte », seul le prix qui départage s'ajoute */
+    if (t!.rangePar) expect(container.querySelector('.cn-cmp-classees')?.textContent ?? null).toBe(/le prix$/.test(t!.rangePar) ? 'à égalité, le moins cher' : null);
     sansZeroInvente(container);
     sansRefus(container);
     cleanup();

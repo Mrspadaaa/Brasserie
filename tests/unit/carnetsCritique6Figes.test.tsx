@@ -41,7 +41,7 @@ describe('critique 6 · figés carnet ouvert, liste, article (lot C)', () => {
     expect(texte(relire)).toMatch(/Lien sans aperçu.*Ouvrir/);
     const sep = container.querySelector('.cn-separe')!;
     expect(relire.compareDocumentPosition(sep) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
-    for (const nom of container.querySelectorAll('button.cn-tab-ligne .cn-tab-nom > span:first-child')) expect(nom.classList.contains('cn-deux-lignes')).toBe(true);
+    for (const nom of container.querySelectorAll('button.cn-tab-ligne .cn-tab-nom > span:first-child')) expect(nom.classList.contains('cn-nom-entier')).toBe(true); /* f5c n° 9 : noms entiers, plus coupés par « … » */
   });
 
   it('2 · n° 14 (g5:v03-8) : un critère tout juste rangé n’est écrit qu’une fois ; sa phrase n’est pas recitée quand elle est le critère', () => {
@@ -155,8 +155,11 @@ describe('critique 6 · figés carnet ouvert, liste, article (lot C)', () => {
     expect(pluriel(2, 'façon')).toBe('2 façons');
     expect(accord(1, 'le', 'les')).toBe('le');
     const { container } = ouvrir(neuf({ facons: [{ id: 'f', nom: 'Sur pieds', etat: 'ouverte', origine: 'ia' }] }), { tableau: null });
-    expect(texte(container)).toContain('1 façon');
-    expect(texte(container)).not.toMatch(/\b1 façons\b/);
+    /* f5c n° 5 : une seule façon, sa carte est juste dessous : pas de compte (ni « 1 façon » ni « 1 façons ») */
+    expect(texte(container)).not.toMatch(/\b1 façons?\b/);
+    cleanup();
+    const deux = ouvrir(neuf({ facons: [{ id: 'f', nom: 'Sur pieds', etat: 'ouverte', origine: 'ia' }, { id: 'g', nom: 'Murale', etat: 'ouverte', origine: 'ia' }] }), { tableau: null });
+    expect(texte(deux.container)).toContain('2 façons');
   });
 
   it('10 · n° 30 (R25) : la phrase citée dit « votre phrase : « … » », jamais des guillemets seuls', () => {

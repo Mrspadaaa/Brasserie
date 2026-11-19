@@ -137,6 +137,15 @@ function useSuiteADroite(): [React.RefObject<HTMLDivElement | null>, number] {
     if (!el) return;
     /* « → n de plus » : les colonnes d'article pas entièrement visibles à droite (la colonne des noms, collée, n'en est pas). */
     const mesurer = () => {
+      /* tour 3, f5c n° 7 : à 390, les colonnes d'articles se partagent la place en entier (3 de 85 px plutôt qu'une 4e coupée au bord) ;
+         la suite se dit par l'ombre et « → n de plus ». Rien à 1280, où tout tient. */
+      const tetes0 = el.querySelectorAll<HTMLElement>('thead th');
+      const nCols = tetes0.length - 1;
+      if (nCols > 0) {
+        const dispo = el.clientWidth - tetes0[0].offsetWidth;
+        const n = Math.max(1, Math.floor(dispo / LARGEUR_COLONNE));
+        if (nCols > n && dispo > 0) el.style.setProperty('--cn-col', `${Math.floor(dispo / n)}px`); else el.style.removeProperty('--cn-col');
+      }
       if (el.scrollLeft + el.clientWidth >= el.scrollWidth - 1) { setSuite(0); return; }
       const bord = el.getBoundingClientRect().right;
       const tetes = [...el.querySelectorAll('thead th')].slice(1);
@@ -162,6 +171,25 @@ export function criteresQuiClassent(t: Tableau | null, critere?: CritereV): Arra
     ? { texte: critere.texte, source: sourceDuCritere(critere) }
     : { texte: col.critereTexte ?? col.nom, ...(col.critereSource ? { source: col.critereSource } : {}) }));
 }
+
+/**
+ * Tour 3, f5c n° 6 : « classées par … » ne redit pas « Ce qui compte » (déjà au-dessus, critère par critère) ; il ne garde que ce qui
+ * s'ajoute : le prix qui départage les ex aequo (« à égalité, le moins cher »). Sans critère qui classe, la règle entière (g01-8).
+ */
+export function texteClassees(t: Tableau, nCriteres: number): string | null {
+  if (!t.rangePar) return null;
+  if (!nCriteres) return `classées par ${t.rangePar}`;
+  return /le prix$/.test(t.rangePar) ? 'à égalité, le moins cher' : null;
+}
+
+/** Tour 3, f5c n° 7 : « sous votre minimum de 1 500 m³/h » dit court dans sa cellule (« < min. 1 500 », l'unité est sur la ligne). */
+export function horsSeuilCourt(h: string): string {
+  const m = /^(sous votre minimum|au-dessus de votre maximum) de (.+?)(\s+[^\d\s].*)?$/.exec(h.trim());
+  return m ? `${m[1].startsWith('sous') ? '< min.' : '> max.'} ${m[2].trim()}` : h;
+}
+
+/** f5c n° 7 : la largeur d'une colonne d'article (nom replié 70 à 78 px, et ses marges). */
+const LARGEUR_COLONNE = 82;
 
 export function critereQuiClasse(t: Tableau | null, critere?: CritereV): { texte: string; origine?: CritereV['origine']; source?: 'phrase' | 'ia' } | null {
   const col = t?.colonnes.find(c => c.critereId && c.sens !== 'texte');
@@ -238,6 +266,10 @@ export function Comparer(p: ComparerProps) {
   const aRelire = t?.aRelire ?? [];
   const [zone, suite] = useSuiteADroite();
   const classe = critereQuiClasse(t, p.critere);
+  /* tour 3, f5c n° 6 : la source se dit une fois quand tous les critères ont la même (« · proposé par l'IA ») */
+  const cqc = criteresQuiClassent(t, p.critere);
+  const sourceUnique = cqc.length > 0 && cqc.every(x => x.source === cqc[0].source) ? cqc[0].source : undefined;
+  const classees = t ? texteClassees(t, classe ? cqc.length : 0) : null;
   const compromisLocal = p.compromis ? null : compromisDe(t);
   /* le tableau naît au 2e article LU : un lien non lu n'en tient pas lieu (P6) */
   const naissant = !t || ordre.length < 2;
@@ -256,7 +288,7 @@ export function Comparer(p: ComparerProps) {
       </div>
       <h2 className="cn-titre">{p.titre}</h2>
       {classe && (
-        <p className="cn-mut cn-cmp-critere">Ce qui compte {criteresQuiClassent(t, p.critere).map((x, i) => <React.Fragment key={i}>{i ? ', puis ' : ''}<b className="cn-encre">{x.texte}</b>{x.source === 'ia' ? ' · proposé par l\'IA' : ''}</React.Fragment>)}</p>
+        <p className="cn-mut cn-cmp-critere">Ce qui compte {cqc.map((x, i) => <React.Fragment key={i}>{i ? ', puis ' : ''}<b className="cn-encre">{x.texte}</b>{!sourceUnique && x.source === 'ia' ? ' (proposé par l\'IA)' : ''}</React.Fragment>)}{sourceUnique === 'ia' ? ' · proposé par l\'IA' : ''}</p>
       )}
       {classe && sansValeur && <p className="cn-mut cn-cmp-sans-valeur">« {sansValeur} » : sans valeur à comparer, il ne range pas</p>}
       {naissant ? (
@@ -270,7 +302,7 @@ export function Comparer(p: ComparerProps) {
             <span className="cn-groupe">Côte à côte <span className="cn-mono">{actifs.length}</span></span>
             <span className="cn-sp" />
             {/* g01-8 : « classées par l'oxygène » ; la règle même du tri (P32) */}
-            {t.rangePar && <span className="cn-mut cn-cmp-classees">classées par {t.rangePar}</span>}
+            {classees && <span className="cn-mut cn-cmp-classees">{classees}</span>}
           </div>
           {/* À 1280, tout tient (noms et raisons repliés) ; à 390, la colonne des noms reste fixe et un fondu dit la suite à droite. */}
           <div className="cn-tableau-cadre" data-suite={suite ? true : undefined}>
@@ -311,7 +343,7 @@ export function Comparer(p: ComparerProps) {
                         return (
                           <td key={l.articleId} className={`${meilleurs.has(l.articleId) ? 'cn-meilleur' : ''}${l.ecarte ? ' cn-ecarte' : ''}`} title={deFacon ? 'd’après sa façon' : undefined}>
                             {txt ? <span className="cn-mono">{txt}</span> : <span className="cn-inconnu" aria-label="inconnu">–</span>}
-                            {hors && <span className="cn-hors-seuil">{hors}</span>}
+                            {hors && <span className="cn-hors-seuil" title={hors}><span aria-hidden>{horsSeuilCourt(hors)}</span><span className="cn-cache">{hors}</span></span>}
                           </td>
                         );
                       })}

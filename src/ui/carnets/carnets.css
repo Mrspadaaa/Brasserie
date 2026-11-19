@@ -396,6 +396,7 @@
 .cn-tab-num { text-align: right; white-space: nowrap; }
 /* critique 7, n° 4 : « amb. max °C » : l'en-tête d'une température dit ce qu'elle mesure, sur deux lignes au plus */
 .cn-tab-cols .cn-tab-num { white-space: normal; line-height: 1.15; overflow-wrap: normal; }
+.cn-tab-nom > .cn-nom-entier { overflow-wrap: anywhere; }
 .cn-tab-nom { display: flex; flex-direction: column; min-width: 0; gap: 2px; }
 .cn-tab-nom > .cn-mut { font-size: 14px; }
 .cn-tab-ligne .cn-meilleur { color: var(--c-zonet); font-weight: 700; }

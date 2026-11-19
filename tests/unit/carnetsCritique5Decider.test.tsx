@@ -32,7 +32,7 @@ const F = fixtureCarnets();
 const V: CarnetDoc = lireCarnet(F.find(i => i.id === ID_VENTILATION))!;
 const avec = (c: CarnetDoc, d: Partial<DonneesCarnet>): CarnetDoc => ({ ...c, carnet: { ...c.carnet, ...d } });
 const articleV = (id: string) => V.carnet.articles.find(a => a.id === id) as unknown as ArticleV;
-const CSS = fs.readFileSync(path.resolve(__dirname, '../../src/ui/carnets/carnets-decider.css'), 'utf8');
+const CSS = fs.readFileSync(path.resolve(__dirname, '../../src/ui/carnets/carnets-decider.css'), 'utf8').replace(/\r\n/g, '\n'); /* f5d : le poste écrit en CRLF (autocrlf), la règle se lit en LF */
 const TITRE = 'ZZ TEST — Ventilation de la salle de brassage';
 
 describe('(1) Comparer, n° 9, 22, 23 : colonnes de g01-8, critère qui range nommé, « moins bien que la 3e sur tout », écartés à la fin', () => {
@@ -46,9 +46,9 @@ describe('(1) Comparer, n° 9, 22, 23 : colonnes de g01-8, critère qui range no
   });
   it('n° 22 : « rangé par » nomme le critère qui range ; le premier critère, sans valeur, est dit sans valeur', () => {
     const { container } = vue();
-    expect(container.querySelector('.cn-cmp-critere')!.textContent).toBe("Ce qui compte tient 80 °C · proposé par l'IA, puis le débit · proposé par l'IA"); /* tour 3, PCN-118 : tous les critères qui classent ; critique 6, point 16 : sa source, lue sur la colonne */
-    /* critique 6, n° 4 (g01-8) : « classées par … » */
-    expect(container.textContent).toContain('classées par tient 80 °C d\'abord, puis le débit, puis le prix');
+    expect(container.querySelector('.cn-cmp-critere')!.textContent).toBe("Ce qui compte tient 80 °C, puis le débit · proposé par l'IA"); /* tour 3, PCN-118 : tous les critères qui classent ; critique 6, point 16 : sa source ; f5c n° 6 : une seule fois quand elle est commune */
+    /* critique 6, n° 4 (g01-8) ; f5c n° 6 : la règle n'est plus redite, seul le prix qui départage s'ajoute */
+    expect(container.querySelector('.cn-cmp-classees')!.textContent).toBe('à égalité, le moins cher');
     expect(container.querySelector('.cn-cmp-sans-valeur')!.textContent).toBe('« Moins de condensation au plafond : capter la buée » : sans valeur à comparer, il ne range pas');
     /* un premier critère qui range n'est pas dit sans valeur */
     expect(premierSansValeur(tableau(V), V.carnet.criteres[1] as never)).toBeNull();

@@ -86,6 +86,10 @@
 .cn-cmp-sans-lue { margin: 6px 2px 0; font-size: 14px; }
 /* Doute D-122 : « sous votre minimum » sous la valeur, en encre d'alerte discrète (le seuil est le sien, écrit dans une note). */
 .cn-hors-seuil { display: block; font-size: 12px; line-height: 1.25; color: var(--c-rouge); font-weight: 600; white-space: normal; }
+/* tour 3, f5c n° 7 : dans le tableau, la forme courte (« < min. 1 500 ») tient sur une ligne ; les colonnes d'articles se partagent la
+   place mesurée (--cn-col, posée par Comparer quand le tableau déborde) : aucune colonne coupée au repos */
+.cn-tableau-comparer .cn-hors-seuil { white-space: nowrap; }
+.cn-comparer .cn-tableau-comparer thead th:not(:first-child) { width: var(--cn-col); min-width: var(--cn-col); box-sizing: border-box; }
 .cn-choisir .cn-droite .cn-hors-seuil { text-align: right; }
 .cn-choisir-retenus li { font-size: 15px; line-height: 1.4; }
 

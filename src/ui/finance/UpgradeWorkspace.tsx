@@ -508,7 +508,10 @@ export function UpgradeWorkspace({ onOpenProject, createRequest, onCreateRequest
       {/* Critique 6, n° 37 : dans Stocks › Matériel, un seul format de prix (« 11 700 CHF », comme le carnet) et la ligne dit ce qui a été
           payé contre ce qui était prévu, jamais « comme prévu ». L'Atelier garde sa ligne (D-41). */}
       {progress.invoiceCount > 0 && (vue
-        ? <p className="finance-muted upgrade-actual" data-paye-prevu>{progress.invoicedComplete ? <>Payé <b className="text-cave-50">{prixCarnet(progress.invoicedCents)}</b></> : 'Payé : à répartir'}{detail.budgetKnown ? ` · prévu ${prixCarnet(plan.amountCents)}` : ''}</p>
+        ? <p className="finance-muted upgrade-actual" data-paye-prevu>{/* tour 3, f5c n° 9 : réalisé au montant prévu, le montant est déjà à droite : il ne se redit pas deux fois de plus */}
+          {realises.has(plan.id) && progress.invoicedComplete && detail.budgetKnown && progress.invoicedCents === plan.amountCents
+            ? 'Payé en entier, au montant prévu'
+            : <>{progress.invoicedComplete ? <>Payé <b className="text-cave-50">{prixCarnet(progress.invoicedCents)}</b></> : 'Payé : à répartir'}{detail.budgetKnown ? ` · prévu ${prixCarnet(plan.amountCents)}` : ''}</>}</p>
         : <p className="finance-muted upgrade-actual">Achats liés : {progress.invoicedComplete && detail.budgetKnown && progress.invoicedCents === plan.amountCents ? 'comme prévu' /* un montant une seule fois : il est déjà à droite */ : <>{progress.invoicedComplete?formatCHF(progress.invoicedCents):'À répartir'}{detail.budgetKnown ? ` sur ${formatCHF(plan.amountCents)} prévus` : ''}</>}</p>)}
       {scope === 'future' && <div className="upgrade-project-actions">
         {missing.length && plan.status !== 'active' ? <button className="finance-link" onClick={() => open(plan)}>Budget ou date à compléter<ChevronRight size={16}/></button> : <label className="finance-check"><input type="checkbox" aria-label={`Inclure ${plan.title} dans les prévisions`} checked={plan.status === 'active'} disabled={!!busy} onChange={e => void changeInclusion(plan, e.target.checked)}/>Inclure dans mes prévisions{/* TE-36 : un seul libellé pour la case, cochée ou non (comme la feuille du projet) */}</label>}

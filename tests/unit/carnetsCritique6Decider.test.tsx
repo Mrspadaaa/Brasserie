@@ -58,7 +58,7 @@ describe('critique 6, lot B (Décider, Stocks › Matériel)', () => {
     expect(tetes[5].className).toContain('cn-ecarte');
     expect(container.querySelectorAll('td.cn-meilleur').length).toBeGreaterThan(0);
     expect(container.textContent).toContain('Compromis :');
-    expect(container.querySelector('.cn-cmp-classees')!.textContent).toBe("classées par tient 80 °C d'abord, puis le débit, puis le prix");
+    expect(container.querySelector('.cn-cmp-classees')!.textContent).toBe('à égalité, le moins cher'); /* f5c n° 6 : la règle n'est plus redite sous « Ce qui compte » */
     expect(container.querySelector('table.cn-ecartes')!.textContent).toContain('brasse la buée sans la sortir');
     const table = container.querySelector('table.cn-tableau-comparer')!;
     const choisir = screen.getByRole('button', { name: 'Choisir' });
@@ -76,7 +76,7 @@ describe('critique 6, lot B (Décider, Stocks › Matériel)', () => {
     const cadre = screen.getByRole('region', { name: 'Choisir' });
     expect(within(cadre).getAllByRole('img', { name: /sur 4/ }).map(r => r.getAttribute('aria-label'))).toEqual(['débit : 1 800 m³/h, 1er sur 4', 'prix : 2 600 CHF, 4e sur 4']);
     const retenus = within(cadre).getByRole('list', { name: 'Retenu' });
-    expect(retenus.textContent).toContain("Critère : tient 80 °C, proposé par l'IA");
+    expect(retenus.textContent).toContain("Critères : tient 80 °C, puis le débit, proposé par l'IA"); /* f5c n° 8 : tous les critères qui classent */
     expect(retenus.textContent).toContain('Façon hotte inox + extracteur');
     expect(retenus.textContent).toContain('Inox Broye : en stock');
     expect(within(cadre).getByRole('img', { name: 'critère' })).toBeInTheDocument();
@@ -174,9 +174,14 @@ describe('critique 6, lot B (Décider, Stocks › Matériel)', () => {
     expect(t.lignes.find(l => l.articleId === 'ZZ-V-A1')!.horsSeuil).toBeUndefined();
     expect(t.lignes.find(l => l.articleId === 'ZZ-V-A3')!.horsSeuil).toBeUndefined(); /* 1 500 : au minimum, il passe */
     const { container } = comparerV();
-    const hs = [...container.querySelectorAll('.cn-hors-seuil')].map(x => x.textContent);
+    /* f5c n° 7 : dans la cellule, « < min. 1 500 » sur une ligne ; la phrase entière reste en title et pour le lecteur d'écran */
+    const hs = [...container.querySelectorAll('.cn-hors-seuil')];
     expect(hs).toHaveLength(2);
-    for (const x of hs) expect(x).toMatch(/^sous votre minimum de 1\s?500 m³\/h$/);
+    for (const x of hs) {
+      expect(x.getAttribute('title')).toMatch(/^sous votre minimum de 1\s?500 m³\/h$/);
+      expect(x.querySelector('[aria-hidden]')!.textContent).toMatch(/^< min\. 1\s?500$/);
+      expect(x.querySelector('.cn-cache')!.textContent).toMatch(/^sous votre minimum de 1\s?500 m³\/h$/);
+    }
     cleanup();
     choisirV();
     const hotte = screen.getAllByText('Hotte murale 100 cm')[0].closest('.cn-article')!;
@@ -185,14 +190,14 @@ describe('critique 6, lot B (Décider, Stocks › Matériel)', () => {
 
   it('16 · Comparer et Choisir lisent sourceDuCritere : « proposé par l\'IA » pour un critère de l\'IA, rien pour sa phrase', () => {
     const { container } = comparerV();
-    expect(container.querySelector('.cn-cmp-critere')!.textContent).toBe("Ce qui compte tient 80 °C · proposé par l'IA, puis le débit · proposé par l'IA"); /* tour 3, PCN-118 */
+    expect(container.querySelector('.cn-cmp-critere')!.textContent).toBe("Ce qui compte tient 80 °C, puis le débit · proposé par l'IA"); /* tour 3, PCN-118 ; f5c n° 6 : source commune dite une fois */
     cleanup();
     const sienne = avec(V, { criteres: V.carnet.criteres.map(k => (k.id === 'ZZ-V-K2' ? { ...k, origine: 'vous' as const, source: 'phrase' as const } : k)) });
     const c2 = render(<Comparer titre={TITRE} statut="research" critere={sienne.carnet.criteres[0] as never} tableau={tableau(sienne)} onRetour={rien} />);
-    expect(c2.container.querySelector('.cn-cmp-critere')!.textContent).toBe("Ce qui compte tient 80 °C, puis le débit · proposé par l'IA"); /* tour 3, PCN-118 : sa phrase sans mention, le 2e critère (de l'IA) avec */
+    expect(c2.container.querySelector('.cn-cmp-critere')!.textContent).toBe("Ce qui compte tient 80 °C, puis le débit (proposé par l'IA)"); /* tour 3, PCN-118 : sa phrase sans mention, le 2e critère (de l'IA) avec ; f5d : sources mêlées entre parenthèses, distinctes de la source commune */
     cleanup();
     choisiFrigo();
-    expect(screen.getByRole('region', { name: 'Pourquoi ce choix' }).textContent).toContain('Critère : tenir 2 °C stable en été');
+    expect(screen.getByRole('region', { name: 'Pourquoi ce choix' }).textContent).toContain('Critères : tenir 2 °C stable en été, puis passe la porte de 80 cm'); /* f5c n° 8 : tous les critères qui classent, dans l'ordre */
     expect(screen.getByRole('region', { name: 'Pourquoi ce choix' }).textContent).not.toContain("tenir 2 °C stable en été, proposé par l'IA");
   });
 
@@ -233,7 +238,7 @@ describe('critique 6, lot B : Stocks › Matériel', () => {
     const colonne = document.querySelector('[data-colonne-materiel]') as HTMLElement;
     expect(colonne.textContent).not.toContain('11 700,00');
     expect(colonne.textContent).not.toContain('comme prévu');
-    expect(colonne.querySelector('[data-paye-prevu]')!.textContent).toBe('Payé 11 700 CHF · prévu 11 700 CHF');
+    expect(colonne.querySelector('[data-paye-prevu]')!.textContent).toBe('Payé en entier, au montant prévu'); /* f5c n° 9 : 11 700 CHF une seule fois, à droite */
     expect(colonne.querySelector('.upgrade-price')!.textContent).toBe('11 700 CHF');
   });
   it('13 · n° 38 : À venir à la largeur du segment (la règle de 680 px de l\'Atelier levée dans Stocks)', async () => {

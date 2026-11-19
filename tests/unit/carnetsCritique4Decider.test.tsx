@@ -83,9 +83,11 @@ describe('P10 et P32 · l\'ordre suit les critères, puis le prix croissant ; l\
     expect(egaux.lignes.map(l => l.articleId)).toEqual(['X', 'ZZ-V-A1']);
     const { container } = render(<Comparer titre="Ventilation" statut="research" critere={V.carnet.criteres[0] as never} tableau={t} onRetour={rien} />);
     /* critique 6, n° 4 (g01-8) : « classées par … », la même règle */
-    expect(container.textContent).toContain(`classées par ${t.rangePar}`);
+    /* f5c n° 6 : « classées par … » ne redit plus « Ce qui compte » ; il garde ce qui s'ajoute, le prix qui départage */
+    expect(container.querySelector('.cn-cmp-classees')!.textContent).toBe('à égalité, le moins cher');
+    expect(container.textContent).not.toContain('classées par');
     /* « Ce qui compte » nomme le critère qui classe d'abord, pas une phrase qui ne classe rien (« plus de condensation ») */
-    expect(container.querySelector('.cn-cmp-critere')!.textContent).toBe("Ce qui compte tient 80 °C · proposé par l'IA, puis le débit · proposé par l'IA"); /* tour 3, PCN-118 : tous les critères qui classent ; critique 6, point 16 : sa source, lue sur la colonne */
+    expect(container.querySelector('.cn-cmp-critere')!.textContent).toBe("Ce qui compte tient 80 °C, puis le débit · proposé par l'IA"); /* tour 3, PCN-118 : tous les critères qui classent ; critique 6, point 16 : sa source ; f5c n° 6 : une seule fois quand elle est commune */
   });
 });
 

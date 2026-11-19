@@ -79,12 +79,22 @@ const nomPlace = (pl: Place) => { const n = pl.libelle ?? pl.nom; return n.charA
  * g05-11 : ce qui a été retenu, une ligne chacun : le critère (◎, avec sa source : « proposé par l'IA » ou de votre phrase), la façon (✓)
  * et le fournisseur (✓). Rien d'inventé : chaque mot vient du carnet.
  */
-function Retenus({ critere, facon, vendeur, dispo }: { critere?: CritereV; facon?: FaconV; vendeur?: string; dispo?: string }) {
+function Retenus({ criteres, facon, vendeur, dispo }: { criteres: readonly CritereV[]; facon?: FaconV; vendeur?: string; dispo?: string }) {
+  /* tour 3, f5c n° 8 : tous les critères qui classent, dans l'ordre (« tient 80 °C, puis le débit ») ; la source une fois si commune */
+  const sources = criteres.map(k => sourceDuCritere(k));
+  const une = sources.every(s => s === sources[0]);
   return <>
-    {critere && <li><Target size={18} role="img" aria-label="critère" className="cn-ok" /><span><b>Critère</b> : {critere.texte}{sourceDuCritere(critere) === 'ia' ? ", proposé par l'IA" : ''}</span></li>}
+    {criteres.length > 0 && <li><Target size={18} role="img" aria-label="critère" className="cn-ok" /><span><b>{criteres.length > 1 ? 'Critères' : 'Critère'}</b> : {criteres.map((k, i) => `${i ? ', puis ' : ''}${k.texte}${!une && sources[i] === 'ia' ? " (proposé par l'IA)" : ''}`).join('')}{une && sources[0] === 'ia' ? ", proposé par l'IA" : ''}</span></li>}
     {facon && <li><Check size={18} role="img" aria-label="retenu" className="cn-ok" /><span><b>Façon {facon.nom.toLowerCase()}</b>{facon.raison ? ` : ${facon.raison}` : ''}</span></li>}
     {vendeur && <li><Check size={18} role="img" aria-label="retenu" className="cn-ok" /><span><b>{vendeur}</b>{dispo ? ` : ${dispo}` : ''}</span></li>}
   </>;
+}
+/** Tour 3, f5c n° 8 : les critères du carnet qui classent, dans l'ordre des colonnes du tableau (celui de Comparer). */
+function criteresQuiRangent(c: CarnetPourChoisir | null | undefined, t: ReturnType<typeof tableau> | null): CritereV[] {
+  if (!c || !t) return [];
+  return t.colonnes.filter(x => x.critereId && x.sens !== 'texte')
+    .map(x => c.criteres.find(k => k.id === x.critereId))
+    .filter((k): k is NonNullable<typeof k> => !!k && !!k.caracteristique && k.caracteristique.sens !== 'texte') as unknown as CritereV[];
 }
 const chiffre = (n: number) => String(n).replace(/\B(?=(\d{3})+(?!\d))/g, ' ');
 
@@ -148,6 +158,8 @@ function ChoisiVue(p: Extract<ChoisirProps, { etape: 'choisi' }>) {
     const prixPl = places.find(pl => pl.nom === 'prix' && pl.rang);
     return {
       phrase: c ? pourquoiDe(c, a.id) : null,
+      /* f5c n° 8 : le critère reçu, suivi des autres qui classent s'il est le 1er d'entre eux */
+      criteres: ((r: CritereV[]) => (p.critere && r[0]?.id === p.critere.id ? r : p.critere ? [p.critere] : []))(criteresQuiRangent(c, t)),
       reglettes: [premierChiffre, prixPl].filter((x): x is Place => !!x && x.sur > 1),
       ecartes: ecartesDe(p, c)
     };
@@ -175,7 +187,7 @@ function ChoisiVue(p: Extract<ChoisirProps, { etape: 'choisi' }>) {
         {sienne && sienne !== calc.phrase && <p className="cn-pourquoi-sienne">« {sienne} »</p>}
         {calc.reglettes.map(pl => <Reglette key={pl.nom} place={pl} />)}
         <ul className="cn-raisons">
-          <Retenus critere={p.critere} facon={p.facon} vendeur={a.vendeur} dispo={a.dispo} />
+          <Retenus criteres={calc.criteres} facon={p.facon} vendeur={a.vendeur} dispo={a.dispo} />
           {calc.ecartes.map(e => <li key={e.nom}><X size={18} role="img" aria-label="écarté" /><span><b>{e.nom}</b> : {e.raison}</span></li>)}
         </ul>
         {p.choix.aRevoirSi && <p className="cn-mut">À revoir si : {p.choix.aRevoirSi}</p>}
@@ -210,14 +222,14 @@ function ChoisirArticle(p: Extract<ChoisirProps, { etape: 'choisir' }>) {
     const t = tableau(c);
     const places = t ? placesDe(t, a.id) : [];
     /* g05-11 : le critère qui range d'abord (sa caractéristique a une colonne), la façon de l'article */
-    const critere = p.carnet?.criteres.find(k => k.caracteristique && k.caracteristique.sens !== 'texte' && t?.colonnes.some(x => x.critereId === k.id));
+    const criteres = criteresQuiRangent(p.carnet, t);
     const facon = p.carnet?.facons.find(f => f.id === a.faconId);
     const hors = new Map((t?.lignes ?? []).map(l => [l.articleId, Object.values(l.horsSeuil ?? {})[0]]));
     return {
       pourquoi: pourquoiDe(c, a.id),
       valeurs: places.filter(pl => pl.texte).map(pl => ({ nom: nomPlace(pl), texte: pl.texte, ...(pl.rang ? { rang: pl.rang } : {}), ...(pl.exAequo ? { exAequo: true } : {}), place: pl })),
       ecartes: p.carnet ? ecartesDe({ ecartes: [] }, p.carnet) : [],
-      critere, facon, hors
+      criteres, facon, hors
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [p.carnet, a.id]);
@@ -268,9 +280,9 @@ function ChoisirArticle(p: Extract<ChoisirProps, { etape: 'choisir' }>) {
           </table>
         )}
         {/* g05-11 : critère, façon, fournisseur (◎ ✓ ✓), puis chaque écarté avec son ✕ et sa raison */}
-        {!sa && (calc.critere || calc.facon || a.vendeur) && (
+        {!sa && (calc.criteres.length > 0 || calc.facon || a.vendeur) && (
           <ul className="cn-raisons cn-choisir-retenus" aria-label="Retenu">
-            <Retenus critere={calc.critere} facon={calc.facon} vendeur={a.vendeur} dispo={a.dispo} />
+            <Retenus criteres={calc.criteres} facon={calc.facon} vendeur={a.vendeur} dispo={a.dispo} />
           </ul>
         )}
         {calc.ecartes.length > 0 && (

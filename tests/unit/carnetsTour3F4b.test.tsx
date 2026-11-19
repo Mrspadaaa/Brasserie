@@ -52,12 +52,13 @@ describe('PCN-103 : la bulle G8 dit entre quoi, sans « … »', () => {
     expect(texte(b)).toContain('« pas trop de bruit » tranche entre Hotte inox + extracteur et Extracteur mural seul');
     expect(texte(b)).not.toContain('peut trancher');
   });
-  it('la bulle passe sur deux lignes (jamais d’ellipse sur une seule)', () => {
+  it('la bulle n’est jamais coupée (ni ellipse sur une ligne, ni line-clamp : f5 n° 2, 1f243127a)', () => {
     const fil = css('carnets-fil.css');
     const r = /\.cnf-aides-ligne > \.cn-bulle > span:last-child\s*\{([^}]*)\}/.exec(fil);
     expect(r).not.toBeNull();
     expect(r![1]).not.toMatch(/white-space:\s*nowrap/);
-    expect(r![1]).toMatch(/-webkit-line-clamp:\s*2/);
+    expect(r![1]).not.toMatch(/line-clamp|ellipsis/); /* f5 n° 2 : les deux façons entières (la règle de deux lignes coupait « et… ») */
+    expect(r![1]).toMatch(/overflow-wrap:\s*anywhere/);
     expect(fil).not.toMatch(/\.cnf-aides-ligne > \.cn-bulle\s*\{\s*white-space:\s*nowrap/);
   });
 });

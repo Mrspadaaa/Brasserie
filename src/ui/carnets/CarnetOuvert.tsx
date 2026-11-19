@@ -418,7 +418,7 @@ export function CarnetOuvert(p: CarnetOuvertProps) {
             <p className="cn-rubrique-tete"><GitFork size={18} aria-hidden /> <b>Façons</b> <span className="cn-mut">· aucune{ia ? " : l'IA les cherche" : ''}</span></p>
           ) : (
             <>
-              <h3 className="cn-rubrique-tete">{question ?? <><GitFork size={18} aria-hidden /> Façons</>} <span className="cn-mut cn-nowrap">{pluriel(k.facons.length, 'façon')}</span></h3>
+              <h3 className="cn-rubrique-tete">{question ?? <><GitFork size={18} aria-hidden /> Façons</>}{/* tour 3, f5c n° 5 : une seule façon, sa carte est juste dessous : le compte la redirait */}{k.facons.length >= 2 && <> <span className="cn-mut cn-nowrap">{pluriel(k.facons.length, 'façon')}</span></>}</h3>
               <div className="cn-facons">
                 {k.facons.map(f => {
                   const sesArticles = k.articles.filter(a => a.faconId === f.id);
@@ -651,7 +651,8 @@ function TableauCarnet({ carnet: k, titre, tableau, aRelire, sep, sauf, onOuvrir
                   {l.rang && !l.ecarte ? <span className={`cn-rang${l.rang === 1 ? ' cn-rang-1' : ''}`}>{l.rang}</span> : <span className="cn-rang cn-rang-vide" aria-label="écarté">–</span>}
                   <VignetteObjet photo={a?.photo} mots={[a?.nom ?? l.nom, b.facon?.nom, titre]} classe="cn-vignette-petite" taille={30} />
                   <span className="cn-tab-nom" role="cell">
-                    <span className="cn-deux-lignes">{l.nom}</span>
+                    {/* tour 3, f5c n° 9 : le nom entier ; deux articles de même nom se distinguent par leur vendeur (« · Brassage Romandie ») */}
+                    <span className="cn-nom-entier">{l.nom}</span>
                     <span className="cn-mut">
                       {sous}
                       {/* h05-3 : « DE · délai 2 sem. · ⊙ veille » (n° 8 : la ligne tient sur 2 lignes au plus à 390) */}
