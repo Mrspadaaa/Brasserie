@@ -14,6 +14,15 @@
   font-size: 20px; line-height: 32px; font-weight: 600; color: rgb(var(--cave-texte-50));
 }
 .recipe-wizard :is(input, textarea).idn-nom:not([type='range']):not([type='radio']):not([type='checkbox']):focus { outline: none; border-bottom: 2px solid rgb(var(--cave-50)); }
+/* TL-30 : un nom plus long que la place laissée par la pastille descend la pastille sur une ligne à elle (le nom s'affiche en entier) ; un nom court
+   garde la ligne unique de r4-a. `field-sizing: content` donne au champ la largeur de son texte (Chrome 123+ ; ailleurs, la ligne unique et sa coupure). */
+@supports (field-sizing: content) {
+  .idn-id { flex-wrap: wrap; row-gap: 4px; }
+  .recipe-wizard :is(input, textarea).idn-nom:not([type='range']):not([type='radio']):not([type='checkbox']):not(:placeholder-shown) {
+    field-sizing: content; flex: 1 1 auto; min-width: 8rem; max-width: 100%;
+  }
+}
+.recipe-wizard :is(input, textarea).idn-nom:not([type='range']):not([type='radio']):not([type='checkbox']) { text-overflow: ellipsis; }
 .idn-pas {
   position: relative; display: inline-flex; align-items: center; flex-shrink: 0; width: 13.5rem; max-width: 62%;
   height: 30px; border-radius: 10px; border: 1px solid rgb(var(--idn-teinte, var(--cave-600)) / 0.5);
@@ -57,6 +66,9 @@
   display: inline-flex; align-items: center; min-height: 28px; padding: 0 2px; border: 0; background: none;
   font-size: 13px; text-decoration: underline; text-underline-offset: 2px; color: rgb(var(--water-texte)); text-align: left;
 }
+
+/* BR-67 : le retour d'un lien « Proposer » (ce qui vient d'être posé dans la recette). */
+.idn-pose { margin: 0; font-size: 12px; line-height: 1.35; color: rgb(var(--cave-texte-200)); }
 
 /* Cartes à curseur */
 .idn-inst { background: rgb(var(--cave-900)); border-radius: 16px; padding: 8px 12px 10px; }

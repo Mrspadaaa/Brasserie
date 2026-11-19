@@ -32,6 +32,8 @@ export function PlagesStyle({ recipe, style, styles, onChange, valeurs }: {
   valeurs: ValeursRecette;
 }) {
   const [ouvert, setOuvert] = useState(false);
+  /** BR-67 : ce que le dernier lien a posé dans la recette (les paliers se voient à une autre étape : sans ce retour, rien ne dit que c'est fait). */
+  const [pose, setPose] = useState<{ code: string; texte: string } | null>(null);
   const idReperes = useId();
   if (!style) {
     return recipe.styleRef ? <p className="text-xs text-cave-400">Édition du style conservée indisponible : paramètres personnels conservés.</p> : null;
@@ -67,14 +69,23 @@ export function PlagesStyle({ recipe, style, styles, onChange, valeurs }: {
           <div className="idn-liens" title="Points de départ de L’Affinée : les adapter à la souche choisie.">
             {mash && (
               <button type="button" className="idn-lien-ligne" aria-label={`Proposer l’empâtage « ${mash.name} »`}
-                onClick={() => onChange({ ...recipe, mash: { ...recipe.mash, steps: structuredClone(mash.steps) } })}>Empâtage « {mash.name} »</button>
+                onClick={() => {
+                  onChange({ ...recipe, mash: { ...recipe.mash, steps: structuredClone(mash.steps) } });
+                  const nb = (n: number) => String(Math.round(n * 10) / 10).replace('.', ',');
+                  const paliers = mash.steps.map((p) => `${nb(p.tempC)} °C${Number.isFinite(p.durationMin) ? ` ${nb(p.durationMin)}′` : ''}`).join(' · ');
+                  setPose({ code: style.code, texte: `Empâtage « ${mash.name} » posé : ${paliers}. À revoir à l’étape Paliers.` });
+                }}>Empâtage « {mash.name} »</button>
             )}
             {conduite && (
               <button type="button" className="idn-lien-ligne" aria-label={`Proposer la conduite « ${conduite.name} »`}
-                onClick={() => onChange({ ...recipe, fermentation: structuredClone(conduite.steps), yeastGuide: undefined })}>Conduite « {conduite.name} »</button>
+                onClick={() => {
+                  onChange({ ...recipe, fermentation: structuredClone(conduite.steps), yeastGuide: undefined });
+                  setPose({ code: style.code, texte: `Conduite « ${conduite.name} » posée. À revoir à l’étape Levure.` });
+                }}>Conduite « {conduite.name} »</button>
             )}
           </div>
         )}
+        {pose && pose.code === style.code && <p role="status" className="idn-pose">{pose.texte}</p>}
         {onChange && !recipe.nolo?.enabled && !sug?.fermentation && <p className="text-xs text-cave-400">Ce style appelle une conduite spécifique à définir avec la souche et le procédé.</p>}
       </div>
     </>
