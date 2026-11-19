@@ -14,9 +14,11 @@ import { redater } from './plage';
 export function donneesFriseDe(
   sources: ReadonlyArray<{ transaction: Transaction; date: string | null }>,
   payments: FinancialPayment[], aujourdhui: string, joursCompte: Map<string, string>,
+  /** Les pièces que la liste garde (filtre de catégorie, recherche) : elles seules font les barres ; `sources` dit quels mois sont saisis. */
+  dessinees: ReadonlyArray<{ transaction: Transaction }> = sources,
 ): DonneesFrise {
   const cache = new Map<string, PeriodeSynthese>(), saisis = new Set<string>();
-  const tx = redater(sources.map(e => e.transaction), joursCompte);
+  const tx = redater(dessinees.map(e => e.transaction), joursCompte);
   for (const e of sources) if (e.date && isActiveTransaction(e.transaction)) { saisis.add(e.date.slice(0, 7)); const j = joursCompte.get(e.transaction.id); if (j) saisis.add(j.slice(0, 7)); }
   return {
     periodeJour: (jour: string) => { let p = cache.get(jour); if (!p) { p = periodeSynthese({ transactions: tx, payments, mois: jour, aujourdhui }); cache.set(jour, p); } return p; },

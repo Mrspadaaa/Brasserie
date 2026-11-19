@@ -75,6 +75,10 @@
 .ops-bulle[data-ancre='gauche'] { transform:translateX(-12px); }
 .ops-bulle[data-ancre='droite'] { transform:translateX(calc(-100% + 12px)); }
 .ops-bulle sup { font-size:9px; line-height:0; }
+/* FIN-FRISE-AGRANDIR : la bulle se pose sur la ligne « n jours · n opération », qui s'efface tant qu'une poignée est tenue. */
+.ops-frise[data-tenue] .ops-fr-rd > * { visibility:hidden; }
+/* Capture du 19.11 (390) : à 24 px de haut et 30 px au-dessus de la piste, la bulle débordait la ligne et couvrait « Ventes » ; elle tient dans ses 18 px. */
+.ops-frise[data-tenue] .ops-bulle { top:-18px; padding:1px 8px; line-height:16px; }
 /* margin-top : l'anneau d'une poignée descend de 1 px sous le trait ; sans ce jeu, « 1er » ou « 29 oct. » le touche (14.11). La hauteur totale ne change pas. */
 .ops-ax { position:relative; height:9px; margin-top:3px; font-size:12px; line-height:12px; color:var(--ops-t2); }
 .ops-ax span { position:absolute; top:0; white-space:nowrap; transform:translateX(-50%); }

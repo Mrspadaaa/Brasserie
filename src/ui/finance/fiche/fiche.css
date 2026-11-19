@@ -65,6 +65,8 @@
 .fiche-acts { display:grid; grid-template-columns:.8fr 1.5fr; gap:8px; margin:4px 0 10px; }
 .fiche-acts > * { white-space:nowrap; }
 .fiche-b1, .fiche-b2 { min-height:44px; border-radius:14px; font-size:15px; display:inline-flex; align-items:center; justify-content:center; gap:6px; padding:0 14px; text-align:center; }
+.fiche .fiche-confirmer { flex-direction:column; gap:0; margin:8px 0 2px; }
+.fiche .fiche-confirmer span { font-size:12px; font-weight:500; opacity:.75; }
 .fiche .fiche-b1 { text-align:center; width:100%; background:rgb(var(--cave-texte-50)); color:rgb(var(--cave-900)); font-weight:600; font-size:16px; margin:6px 0 0; border:0; }
 .fiche-b2 { background:rgb(var(--cave-800)); border:1px solid rgb(var(--cave-600)); }
 .fiche-b2:only-child { grid-column:1 / -1; }

@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { cleanup, fireEvent, render, screen, within } from '@testing-library/react';
+import { act, cleanup, fireEvent, render, screen, within } from '@testing-library/react';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 vi.mock('../../src/services/firebase', () => ({ db: {}, functions: {} }));
 import { TransactionJournal, createJournalState, type JournalRequest, type JournalState } from '../../src/ui/finance/TransactionJournal';
@@ -41,13 +41,21 @@ describe('Journal financier compact', () => {
     const current = purchase('CE-MOIS');
     const oldPaid = purchase('ANCIEN-PAYÉ', { date: `${previousYear}-02-10` });
     const oldDue = purchase('ANCIEN-OUVERT', { date: `${previousYear}-02-11` });
-    render(<TransactionJournal {...defaults} transactions={[current, oldPaid, oldDue]} payments={[paymentFor(current), paymentFor(oldPaid)]}/>);
-    expect(screen.getByLabelText('Période du journal')).toBeVisible();
+    // FIN-DEUX-PERIODES : le mois vient de l'en-tête (état contrôlé, comme FinancesTab) ; la page n'a plus de champ de mois à elle.
+    const entete: { mois?: (m: string) => void } = {};
+    const Hote = () => {
+      const [etat, setEtat] = useState(() => createJournalState());
+      entete.mois = m => setEtat(e => ({ ...e, month: m, allDates: false, du: '', au: '' }));
+      return <TransactionJournal {...defaults} transactions={[current, oldPaid, oldDue]} payments={[paymentFor(current), paymentFor(oldPaid)]} state={etat} onStateChange={setEtat}/>;
+    };
+    render(<Hote/>);
+    expect(screen.getByRole('status', { name: /^Période : / })).toBeVisible();
+    expect(screen.queryByLabelText('Période du journal')).toBeNull();
     expect(categorie()).toBeVisible();
     expect(recherche()).toBeVisible();
     expect(screen.queryByRole('button', { name: 'Opération ANCIEN-PAYÉ' })).not.toBeInTheDocument();
     expect(screen.getByRole('button', { name: 'Opération ANCIEN-OUVERT' })).toBeInTheDocument();
-    fireEvent.change(screen.getByLabelText('Période du journal'), { target: { value: `${previousYear}-02` } });
+    act(() => entete.mois!(`${previousYear}-02`));
     expect(screen.getByRole('button', { name: 'Opération ANCIEN-PAYÉ' })).toBeInTheDocument();
     expect(screen.queryByRole('button', { name: 'Opération CE-MOIS' })).not.toBeInTheDocument();
     // CP-12 : « Par date » ne change plus la période (il range par jour) ; toutes les dates se demandent par « Tout ».
@@ -155,7 +163,7 @@ describe('Journal financier compact', () => {
     expect(screen.getByRole('button', { name: 'Opération ARCHIVÉ' })).toBeInTheDocument();
     expect(screen.getByRole('button', { name: 'Tout', exact: true })).toHaveAttribute('aria-pressed', 'true');
     expect(screen.getByRole('button', { name: 'Par date', exact: true })).toHaveAttribute('aria-pressed', 'false');
-    expect(screen.getByRole('button', { name: /Choisir le mois, Toutes les dates/ })).toBeInTheDocument();
+    expect(screen.getByRole('status', { name: 'Période : Toutes les dates' })).toBeInTheDocument();
     expect(JSON.stringify(transactions)).toBe(initial);
   });
 

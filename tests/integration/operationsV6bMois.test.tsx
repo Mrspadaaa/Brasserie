@@ -1,10 +1,12 @@
 import React from 'react';
-import { cleanup, fireEvent, render, screen } from '@testing-library/react';
+import { act, cleanup, fireEvent, render, screen } from '@testing-library/react';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 vi.mock('../../src/services/firebase', () => ({ db: {}, functions: {} }));
 import { TransactionJournal, createJournalState } from '../../src/ui/finance/TransactionJournal';
 import { todayISO } from '../../src/domain/finance/ledger';
 import { shiftMonth } from '../../src/ui/finance/financeFormat';
+import { moisCourt } from '../../src/ui/finance/operations/calculs';
+import { enJournal } from '../../src/components/periode/periode';
 import type { Transaction } from '../../src/types';
 import type { FinancialPayment } from '../../src/domain/finance/types';
 
@@ -33,27 +35,44 @@ const payments = [pay(ce), pay(avant), pay(vente)];
 const montre = (name: string) => !!screen.queryByRole('button', { name });
 afterEach(cleanup);
 
-describe('Opérations v6b : le mois se change partout', () => {
-  it('archives comprises (périmètre « Tout ») : ‹ est actif et la liste passe au mois précédent', () => {
+/**
+ * FIN-DEUX-PERIODES (19.11, « Ces différents en fonction de son je click sur le milieu ou < > ??? ») : la page n'a plus sa pastille ‹ › ;
+ * le mois se change dans l'en-tête, qui pose dans le journal ce que `enJournal` en tire (FinancesTab : `{ ...état, ...enJournal(période) }`).
+ */
+const [anneeP, moisP] = moisPrecedent.split('-').map(Number);
+const enteteMoisPrecedent = enJournal({ genre: 'mois', annee: anneeP, mois: moisP });
+/** Aucun choix de période propre à la page : ni ‹ ›, ni champ de mois, ni pastille à déplier. */
+const sansPastilleDePage = () => {
+  expect(screen.queryByRole('button', { name: /^Mois (précédent|suivant)$|jours plus (tôt|tard)$|^Choisir le mois|les jours de/ })).toBeNull();
+  expect(screen.queryByLabelText('Période du journal')).toBeNull();
+};
+/** Hôte contrôlé ; `entete` rejoue le geste de l'en-tête comme FinancesTab le fait. */
+const HoteEntete = ({ initial, entete }: { initial: Parameters<typeof createJournalState>[0]; entete: { current?: () => void } }) => {
+  const [etat, setEtat] = React.useState(() => createJournalState(initial));
+  entete.current = () => setEtat(e => (!e.year && e.scope !== 'archives' ? { ...e, ...enteteMoisPrecedent } : e));
+  return <TransactionJournal {...defaults} transactions={[ce, avant]} payments={payments} state={etat} onStateChange={setEtat}/>;
+};
+
+describe('Opérations v6b : le mois se change partout, depuis l’en-tête seul', () => {
+  it('archives comprises (périmètre « Tout ») : pas de ‹ › dans la page ; la période se dit (lecteur d’écran) et la liste est celle du mois', () => {
     render(<TransactionJournal {...defaults} transactions={[ce, avant]} payments={payments}
       state={createJournalState({ scope: 'all', allDates: false })} onStateChange={() => {}}/>);
     expect(screen.getByText('Archives comprises')).toBeVisible();
-    const precedent = screen.getByRole('button', { name: 'Mois précédent' });
-    expect(precedent).toBeEnabled();
+    sansPastilleDePage();
+    expect(screen.getByRole('status', { name: `Période : ${moisCourt(moisCourant, today)}` })).toBeInTheDocument();
+    expect(screen.getByTestId('frise')).toBeInTheDocument();
     expect(montre('Op CE-MOIS')).toBe(true);
     expect(montre('Op MOIS-PRECEDENT')).toBe(false);
   });
 
-  it('archives comprises : toucher ‹ change vraiment le mois (état contrôlé)', () => {
-    const Hote = () => {
-      const [etat, setEtat] = React.useState(() => createJournalState({ scope: 'all', allDates: false }));
-      return <TransactionJournal {...defaults} transactions={[ce, avant]} payments={payments} state={etat} onStateChange={setEtat}/>;
-    };
-    render(<Hote/>);
-    fireEvent.click(screen.getByRole('button', { name: 'Mois précédent' }));
+  it('archives comprises : le mois précédent choisi dans l’en-tête change vraiment la liste (état contrôlé)', () => {
+    const entete: { current?: () => void } = {};
+    render(<HoteEntete initial={{ scope: 'all', allDates: false }} entete={entete}/>);
+    act(() => entete.current!());
     expect(montre('Op MOIS-PRECEDENT')).toBe(true);
     expect(montre('Op CE-MOIS')).toBe(false);
-    expect((screen.getByLabelText('Période du journal') as HTMLInputElement).value).toBe(moisPrecedent);
+    expect(screen.getByRole('status', { name: `Période : ${moisCourt(moisPrecedent, today)}` })).toBeInTheDocument();
+    sansPastilleDePage();
   });
 
   it('archives comprises, mois affiché : le graphe du mois est rendu', () => {
@@ -63,43 +82,39 @@ describe('Opérations v6b : le mois se change partout', () => {
     expect(screen.getByLabelText('Payé, à payer et dépensé du mois')).toBeInTheDocument();
   });
 
-  it('depuis « Par date », toucher ‹ revient au mois (précédent) et rend le graphe', () => {
-    const Hote = () => {
-      const [etat, setEtat] = React.useState(() => createJournalState({ allDates: true }));
-      return <TransactionJournal {...defaults} transactions={[ce, avant]} payments={payments} state={etat} onStateChange={setEtat}/>;
-    };
-    render(<Hote/>);
+  it('depuis « Toutes les dates », le mois précédent de l’en-tête revient au mois et rend le graphe du mois', () => {
+    const entete: { current?: () => void } = {};
+    render(<HoteEntete initial={{ allDates: true }} entete={entete}/>);
     expect(montre('Op CE-MOIS') && montre('Op MOIS-PRECEDENT')).toBe(true);
     // CP-12 : « toutes les dates » garde la même vue ; ses piles couvrent tout l'historique, pas le mois.
     expect(screen.queryByRole('group', { name: 'Le mois par catégorie' })).not.toBeInTheDocument();
     expect(screen.getByRole('group', { name: 'Tout l’historique par catégorie' })).toBeInTheDocument();
-    fireEvent.click(screen.getByRole('button', { name: 'Mois précédent' }));
+    sansPastilleDePage();
+    act(() => entete.current!());
     expect(montre('Op MOIS-PRECEDENT')).toBe(true);
     expect(montre('Op CE-MOIS')).toBe(false);
     expect(screen.getByRole('group', { name: 'Le mois par catégorie' })).toBeInTheDocument();
   });
 
-  it('depuis un exercice (année), toucher ‹ revient au mois', () => {
-    const Hote = () => {
-      const [etat, setEtat] = React.useState(() => createJournalState({ year: moisCourant.slice(0, 4), allDates: true }));
-      return <TransactionJournal {...defaults} transactions={[ce, avant]} payments={payments} state={etat} onStateChange={setEtat}/>;
-    };
-    render(<Hote/>);
-    expect(screen.getByText(`Exercice ${moisCourant.slice(0, 4)}`)).toBeVisible();
-    fireEvent.click(screen.getByRole('button', { name: 'Mois précédent' }));
-    expect(screen.queryByText(/^Exercice /)).not.toBeInTheDocument();
+  it('depuis un exercice (année, ouvert depuis les archives) : pas de ‹ › ; sa pastille « Exercice × » le quitte, puis l’en-tête règne', () => {
+    const entete: { current?: () => void } = {};
+    render(<HoteEntete initial={{ year: moisCourant.slice(0, 4), allDates: true }} entete={entete}/>);
+    expect(screen.getByRole('status', { name: `Période : Exercice ${moisCourant.slice(0, 4)}` })).toBeInTheDocument();
+    sansPastilleDePage();
+    fireEvent.click(screen.getByRole('button', { name: `Retirer le filtre : Exercice ${moisCourant.slice(0, 4)}` }));
+    expect(screen.queryByRole('status', { name: /Exercice/ })).not.toBeInTheDocument();
+    act(() => entete.current!());
     expect(montre('Op MOIS-PRECEDENT')).toBe(true);
     expect(montre('Op CE-MOIS')).toBe(false);
   });
 
-  it('depuis un suivi (« À payer »), toucher ‹ sort du suivi et revient au mois', () => {
-    const Hote = () => {
-      const [etat, setEtat] = React.useState(() => createJournalState({ filter: 'payable' }));
-      return <TransactionJournal {...defaults} transactions={[ce, avant]} payments={[pay(ce), pay(avant)]} state={etat} onStateChange={setEtat}/>;
-    };
-    render(<Hote/>);
+  it('depuis un suivi (« À payer ») : pas de ‹ › ; retirer « À payer » sort du suivi et rend le mois de l’en-tête', () => {
+    const entete: { current?: () => void } = {};
+    render(<HoteEntete initial={{ filter: 'payable' }} entete={entete}/>);
     expect(screen.getByText('Tous les exercices')).toBeVisible();
-    fireEvent.click(screen.getByRole('button', { name: 'Mois précédent' }));
+    sansPastilleDePage();
+    act(() => entete.current!());
+    fireEvent.click(screen.getByRole('button', { name: 'Retirer le filtre : À payer' }));
     expect(screen.queryByText('Tous les exercices')).not.toBeInTheDocument();
     expect(montre('Op MOIS-PRECEDENT')).toBe(true);
     expect(montre('Op CE-MOIS')).toBe(false);

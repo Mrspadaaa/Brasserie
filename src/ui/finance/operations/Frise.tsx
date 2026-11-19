@@ -3,7 +3,7 @@ import type { PeriodeSynthese } from '../../../domain/finance/periodeSynthese';
 import { colonnesDe } from './Piles';
 import {
   PREMIER_JOUR, ajouterJours, contient, estLundi, etiquettesAxe, fenetreInitiale, finFenetre, jourCourt, jourDeFenetre, joursDeFenetre, joursEntre0,
-  montrer, plageDuMois, plagesInconnues, pousser, texteInconnu, titreJours, xDebut, xFin, type Fenetre, type Plage,
+  montrer, plageDuMois, plagesInconnues, palierMois, etendre, texteInconnu, titreJours, xDebut, xFin, type Fenetre, type Plage,
 } from './plage';
 
 /**
@@ -19,7 +19,7 @@ export interface DonneesFrise {
   moisSaisi: (mois: string) => boolean;
 }
 
-const HAUTEUR_MAX = 18, BORD = 3, ROUTE_MAX = 1500;
+const HAUTEUR_MAX = 18, BORD = 3, ROUTE_MAX = 1500, PALIER_MS = 600;
 
 /** La bulle de la poignée tenue reste dans la frise : collée à gauche ou à droite quand la poignée est près d'un bord (capture du 14.11 : « 22 oct. » coupé). */
 const bulleX = (x: number) => (x < 0.22 ? 'gauche' : x > 0.78 ? 'droite' : undefined);
@@ -62,12 +62,16 @@ export function Frise({ mois, plage, aujourdhui, jourMax, nbOperations, donnees,
     vif.current.eff = { du, au };
     pose(du, au);
   };
+  /* FIN-FRISE-AGRANDIR : au bord, un palier d'un mois toutes les PALIER_MS (le premier tout de suite) ; 1 s tenue = 2 mois, jamais des années. */
   const pousseUnPas = () => {
     const g = glisse.current;
     if (!g?.cible || !g.sens) return;
-    const f = pousser(vif.current.fen, vif.current.eff, g.sens);
-    const jour = g.sens < 0 ? f.debut : finFenetre(f);
-    if (jour < PREMIER_JOUR || jour > vif.current.jourMax) { arreter(); return; }
+    const { eff: e, jourMax: max } = vif.current;
+    const ici = g.cible === 'du' ? e.du : e.au;
+    const brut = palierMois(ici, g.sens);
+    const jour = brut < PREMIER_JOUR ? PREMIER_JOUR : brut > max ? max : brut;
+    if (jour === ici) { arreter(); return; }
+    const f = etendre(vif.current.fen, jour);
     vif.current.fen = f; setFen(f); poser(g.cible, jour);
   };
   const bouger = (clientX: number) => {
@@ -80,7 +84,7 @@ export function Frise({ mois, plage, aujourdhui, jourMax, nbOperations, donnees,
     }
     const sens = g.cible === 'du' && x < r.left - BORD ? -1 : g.cible === 'au' && x > r.right + BORD ? 1 : 0;
     g.sens = sens;
-    if (sens) { if (poussee.current === null) { pousseUnPas(); poussee.current = window.setInterval(pousseUnPas, 110); } return; }
+    if (sens) { if (poussee.current === null) { pousseUnPas(); poussee.current = window.setInterval(pousseUnPas, PALIER_MS); } return; }
     arreter();
     const { fen: f } = vif.current, cellule = Math.round(((x - r.left) / r.width) * f.nb);
     poser(g.cible, jourDeFenetre(f, g.cible === 'du' ? cellule : cellule - 1));
@@ -136,7 +140,8 @@ export function Frise({ mois, plage, aujourdhui, jourMax, nbOperations, donnees,
       onKeyDown={e => clavier(e, quelle)}><i className="ops-gp"/></span>;
   };
   return <>
-    <div className="ops-frise" data-testid="frise">
+    {/* FIN-FRISE-AGRANDIR : poignée tenue, la bulle dit la plage à la place de « n jours · n opération » (effacée), elle ne couvre aucun texte. */}
+    <div className="ops-frise" data-testid="frise" data-tenue={tenue ? '' : undefined}>
       <div className="ops-fr-rd">
         {resume ?? <span><b className="ops-m">{n}</b> jour{n > 1 ? 's' : ''} · <b className="ops-m">{nbOperations}</b> opération{nbOperations > 1 ? 's' : ''}</span>}
         {plage && !resume && <button type="button" className="ops-fr-x" aria-label="Revenir au mois entier" onClick={onMois}>× mois entier</button>}

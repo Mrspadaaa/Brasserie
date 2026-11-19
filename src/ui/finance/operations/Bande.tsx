@@ -1,13 +1,13 @@
-import React, { useRef, useState } from 'react';
+import React from 'react';
 import { Search, X } from 'lucide-react';
 import { Input, type InputElement } from '../../Input';
 import type { PeriodeSynthese } from '../../../domain/finance/periodeSynthese';
 import { messageDateHorsBornes } from '../../../domain/finance/bornesFinance';
-import { amountOnly, shiftMonth } from '../financeFormat';
+import { amountOnly } from '../financeFormat';
 import { moisCourt } from './calculs';
 import { Piles } from './Piles';
 import { Frise, type DonneesFrise } from './Frise';
-import { PREMIER_JOUR, duree, estJour, glisser, peutGlisser, titreJours, type Plage } from './plage';
+import { PREMIER_JOUR, estJour, titreJours, type Plage } from './plage';
 
 /** Le « 1er » de la pilule s'écrit « 1<sup>er</sup> » (s2ap2). */
 function TitrePlage({ texte }: { texte: string }) {
@@ -15,8 +15,6 @@ function TitrePlage({ texte }: { texte: string }) {
   return apres === undefined ? <>{texte}</> : <>{avant}1<sup>er</sup>{apres}</>;
 }
 
-/** BE-70 : un mois hors des bornes d'une pièce (2000 à +1 an) n'est pas retenu ; le champ revient au mois courant. */
-const moisValide = (mois: string, today: string) => /^\d{4}-\d{2}$/.test(mois) && messageDateHorsBornes(`${mois}-01`, today) === null;
 
 export interface Actif { cle: string; libelle: string; retirer: () => void }
 
@@ -64,12 +62,10 @@ export function Bande({ libellePeriode, contexte, moisActif, month, today, onMon
   /** Toucher une pile : poser ou retirer le filtre de sa catégorie. */
   onPile?: (cle: string) => void;
 }) {
-  const [friseOuverte, setFriseOuverte] = useState(false);
-  const champ = useRef<HTMLInputElement>(null);
+  /* FIN-DEUX-PERIODES (19.11, « Ces différents en fonction de son je click sur le milieu ou < > ??? ») : la période se choisit dans l'en-tête
+     de l'app, seul ‹ milieu › ; la page n'a plus sa pastille. La frise (« vraiment bien ») reste, toujours ouverte sur un mois ou une plage, et pose la même période. */
   const libelle = moisActif ? moisCourt(month, today) : libellePeriode;
-  const montrerFrise = !!plage || (moisActif && friseOuverte);
-  const glissable = (sens: -1 | 1) => !plage || peutGlisser(plage, sens, PREMIER_JOUR, jourMax);
-  const decaler = (sens: -1 | 1) => { if (plage) { const g = glisser(plage, sens, PREMIER_JOUR, jourMax); onPlage(g.du, g.au); } else onMonth(shiftMonth(month, sens)); };
+  const montrerFrise = !!plage || moisActif;
   /** Deux champs date pour taper la plage (ordinateur) : poser le début tire la fin avec lui, et inversement, jamais de plage inversée. */
   const taper = (champDate: 'du' | 'au', valeur: string) => {
     if (!estJour(valeur) || valeur < PREMIER_JOUR || valeur > jourMax || messageDateHorsBornes(valeur, today) !== null) return;
@@ -79,21 +75,11 @@ export function Bande({ libellePeriode, contexte, moisActif, month, today, onMon
   const titre = plage ? titreJours(plage, today) : '';
   // s2ap2 : la frise se pose sous les piles et au-dessus de la légende (payé · à payer · dépensé) ; sans piles, elle est seule.
   const frise = montrerFrise ? <Frise mois={month} plage={plage ?? null} aujourdhui={today} jourMax={jourMax} nbOperations={nbOperations} donnees={donneesFrise}
-    onPlage={onPlage} onMois={() => { setFriseOuverte(true); if (plage) onMonth(plage.au.slice(0, 7)); }}/> : null;
+    onPlage={onPlage} onMois={() => { if (plage) onMonth(plage.au.slice(0, 7)); }}/> : null;
   return <div className="ops-bande" role="group" aria-label="La période en cours">
     <div className="ops-haut" data-serre={libelle.length > 12 || undefined}>
-      <span className="ops-pill" data-plage={plage ? '' : undefined}>
-        <button type="button" aria-label={plage ? `${duree(plage)} jours plus tôt` : 'Mois précédent'} disabled={!glissable(-1)} onClick={() => decaler(-1)}>‹</button>
-        {plage
-          ? <b className="ops-plage-titre" aria-label={`Plage du ${titre}`}><TitrePlage texte={titre}/></b>
-          : <button type="button" className="ops-mois" aria-label={moisActif ? `${friseOuverte ? 'Replier' : 'Déplier'} les jours de ${libelle}` : `Choisir le mois, ${libelle}`}
-            aria-expanded={moisActif ? friseOuverte : undefined}
-            onClick={() => { if (moisActif) setFriseOuverte(open => !open); else { try { champ.current?.showPicker?.(); } catch { champ.current?.focus(); } } }}>
-            <b>{libelle}</b>{moisActif && <svg className="ops-ico-frise" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" aria-hidden="true"><path d="M3 19h18M8 19v-6M12 19v-10M16 19v-4"/><circle cx="4" cy="19" r="2.4"/><circle cx="20" cy="19" r="2.4"/></svg>}</button>}
-        <input ref={champ} type="month" className="ops-mois-champ" aria-label="Période du journal" value={month} min="2000-01"
-          onChange={e => { if (e.target.value && moisValide(e.target.value, today)) onMonth(e.target.value); }}/>
-        <button type="button" aria-label={plage ? `${duree(plage)} jours plus tard` : 'Mois suivant'} disabled={!glissable(1)} onClick={() => decaler(1)}>›</button>
-      </span>
+      {/* La période se dit au lecteur d'écran ; à l'œil, l'en-tête et la frise la montrent. */}
+      <p className="sr-only" role="status" aria-label={plage ? `Plage du ${titre}` : `Période : ${libelle}`}>{plage ? <TitrePlage texte={titre}/> : libelle}</p>
       {retardCents > 0 && <button type="button" className="ops-due" onClick={onRetard} aria-label={`En retard ${amountOnly(retardCents)} CHF : voir les factures échues`}>
         <i aria-hidden="true"/><span className="ops-en">en </span>retard <b className="ops-m">{amountOnly(retardCents)}</b></button>}
       <button type="button" className="ops-loupe" aria-label="Rechercher" aria-expanded={rechercheOuverte} onClick={onLoupe}><Search size={16} aria-hidden="true"/></button>

@@ -210,25 +210,30 @@ export function TransactionJournal({ transactions, payments, archives, request, 
    * élargit la période), donc deux passes suffisent pour toutes les puces. L'ÉTAT ne regarde ensuite que des valeurs déjà calculées. Un seul
    * prédicat pour la liste et pour les comptes : une puce n'annonce jamais un nombre que son propre filtre ne montre pas.
    */
-  const bases = useMemo(() => {
+  /** La recherche et la catégorie : un seul prédicat pour la liste, le compte de la frise et ses barres (FIN-DEUX-PERIODES). */
+  const correspond = useMemo(() => {
     const needle = query.trim().toLocaleLowerCase('fr').replace(/(\d),(\d)/g, '$1.$2');
+    return ({ transaction: t, search }: { transaction: Transaction; search: string }): boolean => {
+      if (needle && !search.includes(needle)) return false;
+      if (category === CATEGORIE_A_PART) return estAPart(t);
+      return category === 'all' || t.category === category || !!t.finance?.lines.some(line =>
+        (line.category ?? (line.kind === 'equipment' ? 'materiel' : line.kind === 'cleaning' ? 'nettoyage' : ['ingredient', 'packaging'].includes(line.kind) ? 'brassage' : t.category)) === category);
+    };
+  }, [query, category]);
+  const bases = useMemo(() => {
     const keep = (entry: typeof classified[number], chasing: boolean) => {
-      const { transaction: t, date, open, search, archived } = entry;
+      const { date, open, archived } = entry;
       if (scope === 'archives' && (!archived || selectedYear !== 'all' && date?.slice(0, 4) !== selectedYear)) return false;
       if (scope === 'current' && !chasing && archived && !open) return false;
       if (scope !== 'archives' && !chasing && year && date?.slice(0, 4) !== year) return false;
       // Une facture ouverte reste dans la liste du mois, archives comprises aussi : « Tout » montre au moins ce que montrent les courantes (la pastille « en retard » ne promet rien d'absent).
       if (scope !== 'archives' && !year && !chasing && !open && !dansJours(jourPlage(entry) ?? '', debut, fin)) return false;
-      if (needle && !search.includes(needle)) return false;
-      if (category === CATEGORIE_A_PART) { if (!estAPart(t)) return false; }
-      else if (category !== 'all' && t.category !== category && !t.finance?.lines.some(line =>
-        (line.category ?? (line.kind === 'equipment' ? 'materiel' : line.kind === 'cleaning' ? 'nettoyage' : ['ingredient', 'packaging'].includes(line.kind) ? 'brassage' : t.category)) === category)) return false;
-      return true;
+      return correspond(entry);
     };
     const scoped = classified.filter(entry => keep(entry, false));
     // Hors périmètre « courantes », un suivi ne change rien à la période.
     return { scoped, chasing: scope === 'current' ? classified.filter(entry => keep(entry, true)) : scoped };
-  }, [classified, scope, selectedYear, query, category, debut, fin, year, plage, joursCompte]);
+  }, [classified, scope, selectedYear, correspond, debut, fin, year, plage, joursCompte]);
   const matchesState = useMemo(() => {
     const today = todayISO();
     return ({ transaction: t, payment, date, direction }: typeof classified[number], wanted: string) => {
@@ -316,12 +321,16 @@ export function TransactionJournal({ transactions, payments, archives, request, 
   const pose = useMemo(() => piles ? questionPoste(piles, modeMois ? `en ${moisDit(month)}` : plage ? `la période ${titreJours(plage, aujourdhui)}` : nomPiles) : null, [piles, modeMois, month, nomPiles, plage, aujourdhui]);
   /** La frise (s2ap2) : un jour à la fois, par `periodeSynthese` (une seule règle de « dépensé ») ; un mois sans aucune opération saisie est inconnu, pas vide. */
   const sourcesFrise = useMemo(() => (scope === 'current' ? classified.filter(e => !e.archived || e.open) : classified), [classified, scope]);
-  const donneesFrise = useMemo(() => donneesFriseDe(sourcesFrise, payments, aujourdhui, joursCompte), [sourcesFrise, payments, aujourdhui, joursCompte]);
+  /* FIN-DEUX-PERIODES : filtré (catégorie, recherche), les barres des jours et « n opération » suivent la liste ; un mois reste « saisi » par toutes ses pièces. */
+  const filtrees = useMemo(() => (query || category !== 'all' ? sourcesFrise.filter(correspond) : sourcesFrise), [sourcesFrise, correspond, query, category]);
+  const donneesFrise = useMemo(() => donneesFriseDe(sourcesFrise, payments, aujourdhui, joursCompte, filtrees), [sourcesFrise, filtrees, payments, aujourdhui, joursCompte]);
   /* t3 (problème 5) : une année d'archive consultée remplit les champs « du … au … » à cette année ; « toutes les années » les laisse vides (aucune plage unique). */
-  const jours = plage ?? (modeMois ? plageDuMois(month) : scope === 'archives' && /^d{4}$/.test(String(selectedYear)) ? { du: `${selectedYear}-01-01`, au: `${selectedYear}-12-31` } : null);
-  const nbOperations = useMemo(() => jours ? sourcesFrise.filter(e => { const j = jourPlage(e); return j && isActiveTransaction(e.transaction) && dansJours(j, jours.du, jours.au); }).length : 0, [sourcesFrise, jours?.du, jours?.au, plage, joursCompte]);
+  const jours = plage ?? (modeMois ? plageDuMois(month) : scope === 'archives' && /^\d{4}$/.test(String(selectedYear)) ? { du: `${selectedYear}-01-01`, au: `${selectedYear}-12-31` } : null);
+  const nbOperations = useMemo(() => jours ? filtrees.filter(e => { const j = jourPlage(e); return j && isActiveTransaction(e.transaction) && dansJours(j, jours.du, jours.au); }).length : 0, [filtrees, jours?.du, jours?.au, plage, joursCompte]);
   const puce = pose && React.isValidElement(assistant) ? React.cloneElement(assistant as React.ReactElement<{ pose?: typeof pose }>, { pose }) : assistant;
   const actifs: Actif[] = [
+    /* FIN-DEUX-PERIODES : sans pastille ‹ › dans la page, un exercice (ouvert depuis les archives) se quitte par sa pastille ; la liste revient à la période de l'en-tête. */
+    ...(year && scope !== 'archives' ? [{ cle: 'exercice', libelle: `Exercice ${year}`, retirer: () => change({ year: '', allDates: false }) }] : []),
     // m1do-a : « Doublons » ouvert se lit sur sa propre pastille (pleine) ; ni pastille « Doublons possibles × » sous le mois ni « Filtres 1 » (la maquette n'en a pas).
     ...(filter !== 'all' && filter !== 'doublon' ? [{ cle: 'filtre', libelle: FILTER_LABELS[filter] ?? filter, retirer: () => change({ filter: 'all' }) }] : []),
     ...(category !== 'all' ? [{ cle: 'categorie', libelle: libelleCategorie(category), retirer: () => change({ category: 'all' }) }] : []),

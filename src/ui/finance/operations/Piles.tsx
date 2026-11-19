@@ -54,14 +54,23 @@ export function Piles({ periode, nom = 'le mois', apports = null, frise = null, 
   onChoisir?: (cle: string) => void }) {
   const { ventes, charges, materiel } = colonnesDe(periode);
   const apport: Colonne | null = apports ? { cle: 'apports', libelle: 'Apports', cents: Math.abs(apports), hachureCents: 0, couleur: couleurDe('apports'), signe: apports > 0 ? '+' : '−' } : null;
-  const toutes = [ventes, ...charges, materiel, apport].filter((c): c is Colonne => !!c);
+  const presentes = [ventes, ...charges, materiel, apport].filter((c): c is Colonne => !!c);
   // « Pas de graph ? » (10.11) : une période sans vente ni dépense garde sa bande et le dit.
-  if (!toutes.length) return <><p className="ops-vide" data-piles="">{videTexte ?? `Ni vente ni dépense sur ${nom}.`}</p>{frise}</>;
-  const max = Math.max(...toutes.map(c => c.cents));
+  if (!presentes.length) return <><p className="ops-vide" data-piles="">{videTexte ?? `Ni vente ni dépense sur ${nom}.`}</p>{frise}</>;
+  /* FIN-DEUX-PERIODES (19.11) : filtré sur une catégorie absente de la période (« Autres frais »), les barres le disent : la sienne à 0,00, marquée,
+     les autres effacées ; jamais la barre Nettoyage pleine au-dessus d'une liste vide. La période a des opérations : ce zéro est connu. */
+  const fantome: Colonne | null = choisie && !presentes.some(c => c.cle === choisie) ? { cle: choisie, libelle: COURT[choisie] ?? choisie, cents: 0, hachureCents: 0, couleur: couleurDe(choisie) } : null;
+  if (fantome) charges.push(fantome);
+  const toutes = fantome ? [...presentes, fantome] : presentes;
+  const elue = choisie ? toutes.find(c => c.cle === choisie) ?? null : null;
+  const max = Math.max(1, ...toutes.map(c => c.cents));
+  /* La légende suit la barre choisie (payé · à payer · total de sa catégorie) ; sans choix, la période entière. */
+  const vente = elue?.cle === 'recettes';
+  const leg = elue ? { paye: elue.cents - elue.hachureCents, aPayer: elue.hachureCents, total: elue.cents } : { paye: periode.payeCents, aPayer: periode.aPayerCents, total: periode.depenseCents };
   const sep = (cle: string) => <span key={cle} className="ops-sep" aria-hidden="true"/>;
   const nuancier = `linear-gradient(90deg, ${charges.map((c, i) => `${c.couleur} ${(i / Math.max(charges.length, 1)) * 100}% ${((i + 1) / Math.max(charges.length, 1)) * 100}%`).join(', ') || 'transparent 0 100%'})`;
   return <>
-    <div className="ops-piles" data-choix={choisie && toutes.some(c => c.cle === choisie) ? '' : undefined} role="group" aria-label={`${nom[0].toLocaleUpperCase('fr')}${nom.slice(1)} par catégorie`}>
+    <div className="ops-piles" data-choix={elue ? '' : undefined} role="group" aria-label={`${nom[0].toLocaleUpperCase('fr')}${nom.slice(1)} par catégorie`}>
       {ventes && <Pile c={ventes} max={max} choisie={choisie === ventes.cle} onChoisir={onChoisir}/>}
       {ventes && (charges.length > 0 || materiel) && sep('s1')}
       {charges.map(c => <Pile key={c.cle} c={c} max={max} choisie={choisie === c.cle} onChoisir={onChoisir}/>)}
@@ -72,9 +81,9 @@ export function Piles({ periode, nom = 'le mois', apports = null, frise = null, 
     </div>
     {frise}
     <p className="ops-legende" aria-label={`Payé, à payer et dépensé ${nom === 'le mois' ? 'du mois' : nom.replace(/^la /, 'de la ').replace(/^tout /, 'sur tout ')}`}>
-      <span><i className="ops-sw" style={{ background: nuancier }}/>payé <b className="ops-m">{amountOnly(periode.payeCents)}</b></span>
-      <span><i className="ops-sw ops-hach"/>à payer <b className="ops-m">{amountOnly(periode.aPayerCents)}</b></span>
-      <span>dépensé <b className="ops-m">{amountOnly(periode.depenseCents)}</b></span>
+      <span><i className="ops-sw" style={{ background: elue ? elue.couleur : nuancier }}/>{vente ? 'encaissé' : 'payé'} <b className="ops-m">{amountOnly(leg.paye)}</b></span>
+      <span><i className="ops-sw ops-hach"/>{vente ? 'à encaisser' : 'à payer'} <b className="ops-m">{amountOnly(leg.aPayer)}</b></span>
+      <span>{vente ? 'vendu' : 'dépensé'} <b className="ops-m">{amountOnly(leg.total)}</b></span>
     </p>
   </>;
 }

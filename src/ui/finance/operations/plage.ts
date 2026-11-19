@@ -120,6 +120,23 @@ export function pousser(f: Fenetre, p: Plage, sens: -1 | 1): Fenetre {
   return entre(debut > p.du ? p.du : debut, ajouterJours(fin, 1));
 }
 
+/**
+ * FIN-FRISE-AGRANDIR (19.11, « "agrandir" la frize est pas pratique.. ») : une poignée tenue contre le bord avance d'un PALIER d'un mois,
+ * jamais jour par jour sans fin. Vers le passé : au 1er de son mois, ou au 1er du mois d'avant s'il y est déjà ; vers l'avenir : au dernier
+ * jour de son mois, ou à celui du mois suivant.
+ */
+export function palierMois(jour: string, sens: -1 | 1): string {
+  const mois = jour.slice(0, 7);
+  if (sens < 0) return jour.endsWith('-01') ? `${ajouterJours(jour, -1).slice(0, 7)}-01` : `${mois}-01`;
+  const fin = finDuMois(mois);
+  return jour === fin ? finDuMois(ajouterJours(fin, 1).slice(0, 7)) : fin;
+}
+/** La fenêtre s'élargit jusqu'au jour atteint, l'autre bord ne bouge pas. */
+export const etendre = (f: Fenetre, jour: string): Fenetre => {
+  const fin = finFenetre(f);
+  return entre(jour < f.debut ? jour : f.debut, jour > fin ? jour : fin);
+};
+
 /** Rend visible un jour atteint au clavier : la fenêtre glisse juste ce qu'il faut. */
 export function montrer(f: Fenetre, p: Plage, jour: string): Fenetre {
   const fin = finFenetre(f);

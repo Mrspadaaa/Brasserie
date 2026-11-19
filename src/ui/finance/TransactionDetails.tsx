@@ -7,7 +7,8 @@ import { DocumentProofLink } from './DocumentProofLink';
 import { ProofResendPanel } from './ProofUploadNotice';
 import { Field, MoneyInput, CATEGORY_LABELS } from './FinanceForms';
 import { amountOnly } from './financeFormat';
-import { etatDeLigne } from './operations/calculs';
+import { etatDeLigne, paiementRapide } from './operations/calculs';
+import { idFor } from './FinanceForms';
 import { GROUPES, groupeDe } from './operations/groupes';
 import { FactureLignes } from './fiche/FactureLignes';
 import { dateFiche, MODE_COURT } from './fiche/format';
@@ -64,7 +65,13 @@ export function TransactionDetails({transaction:tx,transactions,payments,plans,o
   const year=Number((isoDate(tx.date)??todayISO()).slice(0,4));
   const occurrences=plan?.recurrence?planOccurrences(plan,`${year-1}-01-01`,`${year+2}-12-31`):[];
   const apply=(fn:()=>void)=>{try{fn();setError('');setCorrection(null);}catch(e){setError((e as Error).message);}};
-  const update=(patch:Partial<NonNullable<Transaction['finance']>>)=>apply(()=>StorageService.updateTransaction({...tx,finance:{version:1,kind:transactionKind(tx),amountCents:transactionAmount(tx),lines:[],...tx.finance,...patch}}));
+  const ecrire=(patch:Partial<NonNullable<Transaction['finance']>>)=>StorageService.updateTransaction({...tx,finance:{version:1,kind:transactionKind(tx),amountCents:transactionAmount(tx),lines:[],...tx.finance,...patch}});
+  const update=(patch:Partial<NonNullable<Transaction['finance']>>)=>apply(()=>ecrire(patch));
+  /* FIN-FICHE-CONFIRMER (19.11, « Je peux pas confirmer le paiement sur cette vue ») : un paiement « à confirmer » se confirme payé au jour même, en
+     banque, par le paiement rapide de la ligne (`paiementRapide`, `FinanceService.recordPayment`) ; une autre date ou un autre montant passe par « Noter un paiement ». */
+  const confirmerPaye=()=>{const p=paiementRapide(tx,{...state,state:'unpaid'},outgoing?'out':'in',todayISO(),idFor('PAI'),new Date().toISOString());if(!p)throw new Error('Rien à confirmer sur cette pièce.');FinanceService.recordPayment(p);};
+  /* « SI je la coche il y en a 2, sans justificatif et payment confirmé (ça prend la date du jour) » : sur une pièce à confirmer, la coche fait les deux. */
+  const cocherNormal=(oui:boolean)=>apply(()=>{ecrire({proofNotNeeded:oui});if(oui&&!voided&&state.state==='unknown')confirmerPaye();});
   const groupe=GROUPES[groupeDe(tx,{retardHorsMois:false})];
   const lines=tx.finance?.lines??[];
   const equipement=!voided&&lines.some(l=>l.kind==='equipment');
@@ -94,16 +101,17 @@ export function TransactionDetails({transaction:tx,transactions,payments,plans,o
       {!voided&&state.state==='partial'&&state.paidCents>0&&<p className="fiche-note">{outgoing?'Déjà payé':'Déjà encaissé'} : {formatCHF(state.paidCents)}</p>}
       {tx.finance?.refundApplication==='offset'?<p className="fiche-note">Cet avoir est imputé sur la facture d’origine. Aucun mouvement d’argent n’est enregistré.</p>:state.appliedCreditCents>0?<p className="fiche-note">Avoirs imputés : {formatCHF(state.appliedCreditCents)}. Reste à régler : {formatCHF(state.remainingCents)}.</p>:null}
       {!voided&&state.overpaidCents>0&&<p className="fiche-note">Paiement en trop : {formatCHF(state.overpaidCents)}. Vérifie l’historique des paiements.</p>}
+      {aConfirmer&&<button type="button" className="fiche-b1 fiche-confirmer" onClick={()=>apply(confirmerPaye)}>Confirmer le paiement<span>{outgoing?'payé':'reçu'} aujourd’hui · banque</span></button>}
       <ProofResendPanel transaction={tx}/>
       {aJustificatif
         ? <div className="fiche-pj"><FileCheck2 size={18} aria-hidden="true"/><span>{tx.finance?.sourceDocumentType==='receipt'?'ticket':tx.finance?.sourceDocumentType==='credit_note'?'avoir':'facture'}{nomPiece&&<> · <em>{nomPiece}</em></>}</span><DocumentProofLink transaction={tx} className="fiche-voir"/></div>
-        : !tx.finance?.proofUpload&&<div className="fiche-pj fiche-pj-sans"><FileText size={18} aria-hidden="true" strokeDasharray="3 2.4"/><span>Sans justificatif</span>{!voided&&<label className="fiche-pj-normal"><input type="checkbox" checked={!!tx.finance?.proofNotNeeded} onChange={e=>update({proofNotNeeded:e.target.checked})}/>c’est normal</label>}</div>}
+        : !tx.finance?.proofUpload&&<div className="fiche-pj fiche-pj-sans"><FileText size={18} aria-hidden="true" strokeDasharray="3 2.4"/><span>Sans justificatif</span>{!voided&&<label className="fiche-pj-normal"><input type="checkbox" checked={!!tx.finance?.proofNotNeeded} onChange={e=>cocherNormal(e.target.checked)}/>c’est normal</label>}</div>}
       {/* ⚠️ Le détail d'un achat est l'endroit où le brasseur se demande « il m'en reste combien ? ». Le segment ou la rangée qui sait de quel
           article elle parle y renvoie directement : sans ce lien il fallait retenir le nom, changer d'onglet et le rechercher dans l'inventaire. */}
       <FactureLignes lines={lines} onOpenStockItem={onOpenStockItem}/>
       {brewRecipeId&&onOpenRecipe&&<button type="button" className="fiche-rec" onClick={()=>onOpenRecipe(brewRecipeId)}>
         <Wheat size={17} aria-hidden="true"/>Recette{brewTitle?` · ${brewTitle}`:''}<ChevronRight size={14} aria-hidden="true"/></button>}
-      {!voided&&!prive&&state.remainingCents>0&&<button type="button" className="fiche-b1" onClick={onPay}>{outgoing?'Noter un paiement':'Noter un encaissement'}</button>}
+      {!voided&&!prive&&state.remainingCents>0&&<button type="button" className={aConfirmer?'fiche-b2':'fiche-b1'} onClick={onPay}>{outgoing?'Noter un paiement':'Noter un encaissement'}</button>}
       {!voided&&<div className="fiche-acts" style={{marginTop:state.remainingCents>0&&!prive?8:4}}>
         <button type="button" className="fiche-b2" onClick={onEdit}><Pencil size={15} aria-hidden="true"/>Modifier</button>
         {['expense','income'].includes(transactionKind(tx))&&<button type="button" className="fiche-b2" onClick={onRefund}><Undo2 size={15} aria-hidden="true"/>Avoir ou remboursement</button>}

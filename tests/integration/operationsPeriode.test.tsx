@@ -10,6 +10,8 @@ vi.mock('../../src/services/financeService', async (importOriginal) => {
 import { TransactionJournal, createJournalState } from '../../src/ui/finance/TransactionJournal';
 import { TransactionRow } from '../../src/ui/finance/TransactionRow';
 import { todayISO } from '../../src/domain/finance/ledger';
+import { moisCourt } from '../../src/ui/finance/operations/calculs';
+import { enJournal } from '../../src/components/periode/periode';
 import type { Transaction } from '../../src/types';
 import type { FinancialPayment } from '../../src/domain/finance/types';
 
@@ -54,8 +56,9 @@ describe('Opérations : une seule vue, quelle que soit la période', () => {
     const groupes = [...container.querySelectorAll('[data-groupe]')].map(g => g.getAttribute('data-groupe'));
     expect(groupes.length).toBe(4);
     expect(new Set(groupes)).toEqual(new Set(['jour']));
-    // « Par date » ne change pas la période : la pastille dit toujours la même chose.
-    expect(screen.getByRole('button', { name: /Choisir le mois, Toutes les dates/ })).toBeInTheDocument();
+    // « Par date » ne change pas la période : elle se dit toujours la même (FIN-DEUX-PERIODES : plus de pastille dans la page, l'en-tête la porte).
+    expect(screen.getByRole('status', { name: 'Période : Toutes les dates' })).toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: /^Choisir le mois|^Mois (précédent|suivant)$/ })).toBeNull();
   });
 
   it('(a bis) « Par date » se défait : retour aux groupes par catégorie, sans toucher la période', () => {
@@ -108,21 +111,28 @@ describe('Opérations : une seule vue, quelle que soit la période', () => {
     expect(container.querySelector('[data-groupe="jour"]')).toBeNull();
   });
 
-  it('(c bis) ‹ › glissent la plage de sa durée (122 jours) ; « × mois entier » la défait', () => {
-    render(<Hote initial={{ scope: 'all', du: `${annee}-06-01`, au: `${annee}-09-30` }}/>);
+  it('(c bis) la plage glissée dans l’en-tête (aucun ‹ › dans la page) : liste et titre suivent ; « × mois entier » la défait, la frise reste ouverte', () => {
+    // FIN-DEUX-PERIODES : l'en-tête est le seul choix de période ; il pose sa plage par `enJournal` (FinancesTab), la page la suit.
+    const entete: { poser?: (du: string, au: string) => void } = {};
+    const HotePlage = () => {
+      const [etat, setEtat] = React.useState(() => createJournalState({ scope: 'all', du: `${annee}-06-01`, au: `${annee}-09-30` }));
+      entete.poser = (du, au) => setEtat(e => ({ ...e, ...enJournal({ genre: 'dates', du, au }) }));
+      return <TransactionJournal {...defaults} transactions={toutes} payments={paiements} state={etat} onStateChange={setEtat}/>;
+    };
+    render(<HotePlage/>);
+    expect(screen.queryByRole('button', { name: /jours plus (tôt|tard)$|^Mois (précédent|suivant)$/ })).toBeNull();
     expect(montre('Op MARS')).toBe(false);
     expect(montre('Op JUIN')).toBe(true);
-    fireEvent.click(screen.getByRole('button', { name: '122 jours plus tôt' }));
     // 1er juin − 122 jours = 30 janv. ; 30 sept. − 122 jours = 31 mai : la plage garde sa durée.
+    act(() => entete.poser!(`${annee}-01-30`, `${annee}-05-31`));
     expect(screen.getByLabelText(/Plage du 30 janv\. → 31 mai/)).toBeInTheDocument();
     expect(montre('Op MARS')).toBe(true);
     expect(montre('Op JUIN')).toBe(false);
-    fireEvent.click(screen.getByRole('button', { name: '122 jours plus tard' }));
-    expect(montre('Op JUIN')).toBe(true);
-    expect(montre('Op MARS')).toBe(false);
     fireEvent.click(screen.getByRole('button', { name: 'Revenir au mois entier' }));
     expect(screen.queryByLabelText(/^Plage du \d/)).not.toBeInTheDocument();
-    expect(screen.getByRole('button', { name: /^Replier les jours de/ })).toBeInTheDocument();
+    // Le mois entier de la fin de plage (mai) ; la frise reste ouverte sur lui, sans pastille à déplier.
+    expect(screen.getByRole('status', { name: `Période : ${moisCourt(`${annee}-05`, today)}` })).toBeInTheDocument();
+    expect(screen.getByTestId('frise')).toBeInTheDocument();
   });
 
   it('(c ter) une poignée au clavier resserre la plage (Page ± 7 jours) : la pièce du jour écarté sort de la liste', () => {
