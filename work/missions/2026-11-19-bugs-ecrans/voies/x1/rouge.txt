@@ -1,0 +1,2123 @@
+[1m[43m DEPRECATED [49m[22m [33m"environmentMatchGlobs" is deprecated. Use `test.projects` to define different configurations instead.[39m
+
+[1m[46m RUN [49m[22m [36mv3.2.7 [39m[90mC:/Users/mrspa/.codex/worktrees/openai-clean-start/port-carnet[39m
+
+ [31m❯[39m tests/unit/bugs-x1-br6.test.tsx [2m([22m[2m10 tests[22m[2m | [22m[31m9 failed[39m[2m)[22m[32m 137[2mms[22m[39m
+[31m   [31m×[31m lireAvecUnite : le nombre tapé et son unité[2m > [22mconvertit dans l’unité du champ[39m[32m 3[2mms[22m[39m
+[31m     → (0 , lireAvecUnite) is not a function[39m
+[31m   [31m×[31m lireAvecUnite : le nombre tapé et son unité[2m > [22mla même unité, ou aucune, se lit tel quel[39m[32m 0[2mms[22m[39m
+[31m     → (0 , lireAvecUnite) is not a function[39m
+[31m   [31m×[31m lireAvecUnite : le nombre tapé et son unité[2m > [22mune unité d’une autre famille est refusée, jamais devinée[39m[32m 0[2mms[22m[39m
+[31m     → (0 , lireAvecUnite) is not a function[39m
+[31m   [31m×[31m lireAvecUnite : le nombre tapé et son unité[2m > [22mune fin d’unité en cours de frappe attend[39m[32m 0[2mms[22m[39m
+[31m     → (0 , lireAvecUnite) is not a function[39m
+[31m   [31m×[31m BR-6 : QuantityStepper en g, « 0,1 kg » tapé[2m > [22mlit les kg : 100 g, et le dit[39m[32m 77[2mms[22m[39m
+[31m     → expected last "spy" call to have been called with [ 100 ][39m
+[31m   [31m×[31m BR-6 : QuantityStepper en g, « 0,1 kg » tapé[2m > [22mlit les g dans un champ en kg[39m[32m 8[2mms[22m[39m
+[31m     → expected last "spy" call to have been called with [ 0.25 ][39m
+[31m   [31m×[31m BR-6 : QuantityStepper en g, « 0,1 kg » tapé[2m > [22mrefuse une autre famille d’unité avec un message, et garde la valeur d’avant[39m[32m 21[2mms[22m[39m
+[31m     → Unable to find an accessible element with the role "status"
+
+Here are the accessible roles:
+
+  button:
+
+  Name "Retirer 25 g":
+  [36m<button[31m
+    [33maria-label[31m=[32m"Retirer 25 g"[31m
+    [33mclass[31m=[32m"w-touch h-touch shrink-0 rounded-control border border-cave-700 bg-cave-850 text-cave-50 flex items-center justify-center transition-colors active:bg-cave-800 disabled:opacity-40 disabled:pointer-events-none"[31m
+    [33mtype[31m=[32m"button"[31m
+  [36m/>[31m
+
+  Name "Ajouter 25 g":
+  [36m<button[31m
+    [33maria-label[31m=[32m"Ajouter 25 g"[31m
+    [33mclass[31m=[32m"w-touch h-touch shrink-0 rounded-control border border-cave-700 bg-cave-850 text-cave-50 flex items-center justify-center transition-colors active:bg-cave-800 disabled:opacity-40 disabled:pointer-events-none"[31m
+    [33mtype[31m=[32m"button"[31m
+  [36m/>[31m
+
+  --------------------------------------------------
+  textbox:
+
+  Name "Dose":
+  [36m<input[31m
+    [33maria-label[31m=[32m"Dose"[31m
+    [33mautocapitalize[31m=[32m"none"[31m
+    [33mautocomplete[31m=[32m"off"[31m
+    [33mautocorrect[31m=[32m"off"[31m
+    [33mclass[31m=[32m"w-full min-w-0 min-h-touch-lg bg-transparent text-center reading text-base text-ebc-straw rounded-control py-0.5 focus:outline-none focus:bg-cave-850"[31m
+    [33mdata-1p-ignore[31m=[32m"true"[31m
+    [33mdata-bwignore[31m=[32m"true"[31m
+    [33mdata-form-type[31m=[32m"other"[31m
+    [33mdata-lpignore[31m=[32m"true"[31m
+    [33menterkeyhint[31m=[32m"done"[31m
+    [33minputmode[31m=[32m"decimal"[31m
+    [33mname[31m=[32m"qty_stepper_input"[31m
+    [33mspellcheck[31m=[32m"false"[31m
+    [33mtype[31m=[32m"text"[31m
+    [33mvalue[31m=[32m"50"[31m
+  [36m/>[31m
+
+  --------------------------------------------------
+
+Ignored nodes: comments, script, style
+[36m<body>[31m
+  [36m<div>[31m
+    [36m<div[31m
+      [33mclass[31m=[32m"space-y-1"[31m
+    [36m>[31m
+      [36m<div[31m
+        [33mclass[31m=[32m"flex items-baseline justify-between gap-2"[31m
+      [36m>[31m
+        [36m<span[31m
+          [33mclass[31m=[32m"text-xs text-cave-400 font-medium"[31m
+        [36m>[31m
+          [0mDose[0m
+        [36m</span>[31m
+      [36m</div>[31m
+      [36m<div[31m
+        [33mclass[31m=[32m"flex items-center gap-1 sm:gap-1.5"[31m
+      [36m>[31m
+        [36m<button[31m
+          [33maria-label[31m=[32m"Retirer 25 g"[31m
+          [33mclass[31m=[32m"w-touch h-touch shrink-0 rounded-control border border-cave-700 bg-cave-850 text-cave-50 flex items-center justify-center transition-colors active:bg-cave-800 disabled:opacity-40 disabled:pointer-events-none"[31m
+          [33mtype[31m=[32m"button"[31m
+        [36m>[31m
+          [36m<svg[31m
+            [33maria-hidden[31m=[32m"true"[31m
+            [33mclass[31m=[32m"lucide lucide-minus w-4 h-4"[31m
+            [33mfill[31m=[32m"none"[31m
+            [33mheight[31m=[32m"24"[31m
+            [33mstroke[31m=[32m"currentColor"[31m
+            [33mstroke-linecap[31m=[32m"round"[31m
+            [33mstroke-linejoin[31m=[32m"round"[31m
+            [33mstroke-width[31m=[32m"2"[31m
+            [33mviewBox[31m=[32m"0 0 24 24"[31m
+            [33mwidth[31m=[32m"24"[31m
+            [33mxmlns[31m=[32m"http://www.w3.org/2000/svg"[31m
+          [36m>[31m
+            [36m<path[31m
+              [33md[31m=[32m"M5 12h14"[31m
+            [36m/>[31m
+          [36m</svg>[31m
+        [36m</button>[31m
+        [36m<div[31m
+          [33mclass[31m=[32m"flex-1 flex items-baseline justify-center gap-0.5 sm:gap-1 min-w-0"[31m
+        [36m>[31m
+          [36m<input[31m
+            [33maria-label[31m=[32m"Dose"[31m
+            [33mautocapitalize[31m=[32m"none"[31m
+            [33mautocomplete[31m=[32m"off"[31m
+            [33mautocorrect[31m=[32m"off"[31m
+            [33mclass[31m=[32m"w-full min-w-0 min-h-touch-lg bg-transparent text-center reading text-base text-ebc-straw rounded-control py-0.5 focus:outline-none focus:bg-cave-850"[31m
+            [33mdata-1p-ignore[31m=[32m"true"[31m
+            [33mdata-bwignore[31m=[32m"true"[31m
+            [33mdata-form-type[31m=[32m"other"[31m
+            [33mdata-lpignore[31m=[32m"true"[31m
+            [33menterkeyhint[31m=[32m"done"[31m
+            [33minputmode[31m=[32m"decimal"[31m
+            [33mname[31m=[32m"qty_stepper_input"[31m
+            [33mspellcheck[31m=[32m"false"[31m
+            [33mtype[31m=[32m"text"[31m
+            [33mvalue[31m=[32m"50"[31m
+          [36m/>[31m
+          [36m<span[31m
+            [33mclass[31m=[32m"reading-unit shrink-0 text-xs"[31m
+          [36m>[31m
+            [0mg[0m
+          [36m</span>[31m
+        [36m</div>[31m
+        [36m<button[31m
+          [33maria-label[31m=[32m"Ajouter 25 g"[31m
+          [33mclass[31m=[32m"w-touch h-touch shrink-0 rounded-control border border-cave-700 bg-cave-850 text-cave-50 flex items-center justify-center transition-colors active:bg-cave-800 disabled:opacity-40 disabled:pointer-events-none"[31m
+          [33mtype[31m=[32m"button"[31m
+        [36m>[31m
+          [36m<svg[31m
+            [33maria-hidden[31m=[32m"true"[31m
+            [33mclass[31m=[32m"lucide lucide-plus w-4 h-4"[31m
+            [33mfill[31m=[32m"none"[31m
+            [33mheight[31m=[32m"24"[31m
+            [33mstroke[31m=[32m"currentColor"[31m
+            [33mstroke-linecap[31m=[32m"round"[31m
+            [33mstroke-linejoin[31m=[32m"round"[31m
+            [33mstroke-width[31m=[32m"2"[31m
+            [33mviewBox[31m=[32m"0 0 24 24"[31m
+            [33mwidth[31m=[32m"24"[31m
+            [33mxmlns[31m=[32m"http://www.w3.org/2000/svg"[31m
+          [36m>[31m
+            [36m<path[31m
+              [33md[31m=[32m"M5 12h14"[31m
+            [36m/>[31m
+            [36m<path[31m
+              [33md[31m=[32m"M12 5v14"[31m
+            [36m/>[31m
+          [36m</svg>[31m
+        [36m</button>[31m
+      [36m</div>[31m
+    [36m</div>[31m
+  [36m</div>[31m
+[36m</body>[31m[39m
+[31m   [31m×[31m BR-6 : QuantityStepper en g, « 0,1 kg » tapé[2m > [22men vrai frappe, « 0,1 » est parti au parent puis « 0,1 L » est refusé : le parent retrouve 50[39m[32m 9[2mms[22m[39m
+[31m     → expected last "spy" call to have been called with [ 50 ][39m
+[31m   [31m×[31m BR-6 : QuantityStepper en g, « 0,1 kg » tapé[2m > [22mrefuse un texte illisible avec un message[39m[32m 14[2mms[22m[39m
+[31m     → Unable to find an accessible element with the role "status"
+
+Here are the accessible roles:
+
+  button:
+
+  Name "Retirer 25 g":
+  [36m<button[31m
+    [33maria-label[31m=[32m"Retirer 25 g"[31m
+    [33mclass[31m=[32m"w-touch h-touch shrink-0 rounded-control border border-cave-700 bg-cave-850 text-cave-50 flex items-center justify-center transition-colors active:bg-cave-800 disabled:opacity-40 disabled:pointer-events-none"[31m
+    [33mtype[31m=[32m"button"[31m
+  [36m/>[31m
+
+  Name "Ajouter 25 g":
+  [36m<button[31m
+    [33maria-label[31m=[32m"Ajouter 25 g"[31m
+    [33mclass[31m=[32m"w-touch h-touch shrink-0 rounded-control border border-cave-700 bg-cave-850 text-cave-50 flex items-center justify-center transition-colors active:bg-cave-800 disabled:opacity-40 disabled:pointer-events-none"[31m
+    [33mtype[31m=[32m"button"[31m
+  [36m/>[31m
+
+  --------------------------------------------------
+  textbox:
+
+  Name "Dose":
+  [36m<input[31m
+    [33maria-label[31m=[32m"Dose"[31m
+    [33mautocapitalize[31m=[32m"none"[31m
+    [33mautocomplete[31m=[32m"off"[31m
+    [33mautocorrect[31m=[32m"off"[31m
+    [33mclass[31m=[32m"w-full min-w-0 min-h-touch-lg bg-transparent text-center reading text-base text-ebc-straw rounded-control py-0.5 focus:outline-none focus:bg-cave-850"[31m
+    [33mdata-1p-ignore[31m=[32m"true"[31m
+    [33mdata-bwignore[31m=[32m"true"[31m
+    [33mdata-form-type[31m=[32m"other"[31m
+    [33mdata-lpignore[31m=[32m"true"[31m
+    [33menterkeyhint[31m=[32m"done"[31m
+    [33minputmode[31m=[32m"decimal"[31m
+    [33mname[31m=[32m"qty_stepper_input"[31m
+    [33mspellcheck[31m=[32m"false"[31m
+    [33mtype[31m=[32m"text"[31m
+    [33mvalue[31m=[32m"50"[31m
+  [36m/>[31m
+
+  --------------------------------------------------
+
+Ignored nodes: comments, script, style
+[36m<body>[31m
+  [36m<div>[31m
+    [36m<div[31m
+      [33mclass[31m=[32m"space-y-1"[31m
+    [36m>[31m
+      [36m<div[31m
+        [33mclass[31m=[32m"flex items-baseline justify-between gap-2"[31m
+      [36m>[31m
+        [36m<span[31m
+          [33mclass[31m=[32m"text-xs text-cave-400 font-medium"[31m
+        [36m>[31m
+          [0mDose[0m
+        [36m</span>[31m
+      [36m</div>[31m
+      [36m<div[31m
+        [33mclass[31m=[32m"flex items-center gap-1 sm:gap-1.5"[31m
+      [36m>[31m
+        [36m<button[31m
+          [33maria-label[31m=[32m"Retirer 25 g"[31m
+          [33mclass[31m=[32m"w-touch h-touch shrink-0 rounded-control border border-cave-700 bg-cave-850 text-cave-50 flex items-center justify-center transition-colors active:bg-cave-800 disabled:opacity-40 disabled:pointer-events-none"[31m
+          [33mtype[31m=[32m"button"[31m
+        [36m>[31m
+          [36m<svg[31m
+            [33maria-hidden[31m=[32m"true"[31m
+            [33mclass[31m=[32m"lucide lucide-minus w-4 h-4"[31m
+            [33mfill[31m=[32m"none"[31m
+            [33mheight[31m=[32m"24"[31m
+            [33mstroke[31m=[32m"currentColor"[31m
+            [33mstroke-linecap[31m=[32m"round"[31m
+            [33mstroke-linejoin[31m=[32m"round"[31m
+            [33mstroke-width[31m=[32m"2"[31m
+            [33mviewBox[31m=[32m"0 0 24 24"[31m
+            [33mwidth[31m=[32m"24"[31m
+            [33mxmlns[31m=[32m"http://www.w3.org/2000/svg"[31m
+          [36m>[31m
+            [36m<path[31m
+              [33md[31m=[32m"M5 12h14"[31m
+            [36m/>[31m
+          [36m</svg>[31m
+        [36m</button>[31m
+        [36m<div[31m
+          [33mclass[31m=[32m"flex-1 flex items-baseline justify-center gap-0.5 sm:gap-1 min-w-0"[31m
+        [36m>[31m
+          [36m<input[31m
+            [33maria-label[31m=[32m"Dose"[31m
+            [33mautocapitalize[31m=[32m"none"[31m
+            [33mautocomplete[31m=[32m"off"[31m
+            [33mautocorrect[31m=[32m"off"[31m
+            [33mclass[31m=[32m"w-full min-w-0 min-h-touch-lg bg-transparent text-center reading text-base text-ebc-straw rounded-control py-0.5 focus:outline-none focus:bg-cave-850"[31m
+            [33mdata-1p-ignore[31m=[32m"true"[31m
+            [33mdata-bwignore[31m=[32m"true"[31m
+            [33mdata-form-type[31m=[32m"other"[31m
+            [33mdata-lpignore[31m=[32m"true"[31m
+            [33menterkeyhint[31m=[32m"done"[31m
+            [33minputmode[31m=[32m"decimal"[31m
+            [33mname[31m=[32m"qty_stepper_input"[31m
+            [33mspellcheck[31m=[32m"false"[31m
+            [33mtype[31m=[32m"text"[31m
+            [33mvalue[31m=[32m"50"[31m
+          [36m/>[31m
+          [36m<span[31m
+            [33mclass[31m=[32m"reading-unit shrink-0 text-xs"[31m
+          [36m>[31m
+            [0mg[0m
+          [36m</span>[31m
+        [36m</div>[31m
+        [36m<button[31m
+          [33maria-label[31m=[32m"Ajouter 25 g"[31m
+          [33mclass[31m=[32m"w-touch h-touch shrink-0 rounded-control border border-cave-700 bg-cave-850 text-cave-50 flex items-center justify-center transition-colors active:bg-cave-800 disabled:opacity-40 disabled:pointer-events-none"[31m
+          [33mtype[31m=[32m"button"[31m
+        [36m>[31m
+          [36m<svg[31m
+            [33maria-hidden[31m=[32m"true"[31m
+            [33mclass[31m=[32m"lucide lucide-plus w-4 h-4"[31m
+            [33mfill[31m=[32m"none"[31m
+            [33mheight[31m=[32m"24"[31m
+            [33mstroke[31m=[32m"currentColor"[31m
+            [33mstroke-linecap[31m=[32m"round"[31m
+            [33mstroke-linejoin[31m=[32m"round"[31m
+            [33mstroke-width[31m=[32m"2"[31m
+            [33mviewBox[31m=[32m"0 0 24 24"[31m
+            [33mwidth[31m=[32m"24"[31m
+            [33mxmlns[31m=[32m"http://www.w3.org/2000/svg"[31m
+          [36m>[31m
+            [36m<path[31m
+              [33md[31m=[32m"M5 12h14"[31m
+            [36m/>[31m
+            [36m<path[31m
+              [33md[31m=[32m"M12 5v14"[31m
+            [36m/>[31m
+          [36m</svg>[31m
+        [36m</button>[31m
+      [36m</div>[31m
+    [36m</div>[31m
+  [36m</div>[31m
+[36m</body>[31m[39m
+   [32m✓[39m BR-6 : QuantityStepper en g, « 0,1 kg » tapé[2m > [22mun nombre sans unité reste lu dans l’unité du champ, sans message[32m 5[2mms[22m[39m
+ [31m❯[39m tests/unit/bugs-x1-br98.test.tsx [2m([22m[2m1 test[22m[2m | [22m[31m1 failed[39m[2m)[22m[32m 139[2mms[22m[39m
+[31m   [31m×[31m BR-98 : la liste « Houblon pour ce style » dit l’α et les arômes[2m > [22mune variété de référence montre son α publié et ses arômes avant la source[39m[32m 138[2mms[22m[39m
+[31m     → [2mexpect([22m[31melement[31m[2m).toHaveTextContent()[22m
+
+Expected element to have text content:
+[32m  11–13 % α[31m
+Received:
+[31m  CitraHopsteiner · Pellets T90[31m[39m
+ [31m❯[39m tests/unit/bugs-x1-br5.test.tsx [2m([22m[2m8 tests[22m[2m | [22m[31m7 failed[39m[2m)[22m[33m 1501[2mms[22m[39m
+[31m   [31m×[31m avisSaccharification : l’écart de FG annoncé[2m > [22m63 °C : FG plus basse, en points de densité (OG 1,075 → environ 4 points)[39m[32m 4[2mms[22m[39m
+[31m     → avisSaccharification is not a function[39m
+[31m   [31m×[31m avisSaccharification : l’écart de FG annoncé[2m > [22m69 °C : FG plus haute, corps plus rond[39m[32m 1[2mms[22m[39m
+[31m     → avisSaccharification is not a function[39m
+[31m   [31m×[31m avisSaccharification : l’écart de FG annoncé[2m > [22mau repère, ou presque : aucun avis[39m[32m 1[2mms[22m[39m
+[31m     → avisSaccharification is not a function[39m
+[31m   [31m×[31m avisSaccharification : l’écart de FG annoncé[2m > [22msans OG connue : dit le sens, jamais un chiffre inventé[39m[32m 1[2mms[22m[39m
+[31m     → avisSaccharification is not a function[39m
+[31m   [31m×[31m avisSaccharification : l’écart de FG annoncé[2m > [22mprend le palier de saccharification le plus long, pas le repos protéique ni le mash-out[39m[32m 1[2mms[22m[39m
+[31m     → avisSaccharification is not a function[39m
+[31m   [31m×[31m avisSaccharification : l’écart de FG annoncé[2m > [22msans palier de saccharification (62–72 °C) : rien[39m[32m 0[2mms[22m[39m
+[31m     → avisSaccharification is not a function[39m
+[31m   [31m×[31m BR-5 : l’étape Paliers montre l’avis, et le tait au repère[2m > [22m63 °C : un avis court sous la courbe[39m[33m 1282[2mms[22m[39m
+[31m     → Unable to find an accessible element with the role "note" and name "Effet de l’empâtage sur la FG"
+
+Here are the accessible roles:
+
+  banner:
+
+  Name "":
+  [36m<header[31m
+    [33mclass[31m=[32m"shrink-0 border-b border-cave-800 bg-cave-950/95 backdrop-blur-sm pt-safe"[31m
+  [36m/>[31m
+
+  --------------------------------------------------
+  button:
+
+  Name "Fermer":
+  [36m<button[31m
+    [33maria-label[31m=[32m"Fermer"[31m
+    [33mclass[31m=[32m"w-7 h-7 rounded-control flex items-center justify-center text-cave-400 hover:text-cave-50 active:bg-cave-850 shrink-0 transition-colors"[31m
+    [33mtype[31m=[32m"button"[31m
+  [36m/>[31m
+
+  Name "Coller une recette":
+  [36m<button[31m
+    [33maria-label[31m=[32m"Coller une recette"[31m
+    [33mclass[31m=[32m"w-7 h-7 rounded-control flex items-center justify-center text-cave-400 hover:text-ebc-straw active:bg-cave-850 shrink-0 transition-colors"[31m
+    [33mtype[31m=[32m"button"[31m
+  [36m/>[31m
+
+  Name "Thème sombre (cave)":
+  [36m<button[31m
+    [33maria-label[31m=[32m"Thème sombre (cave)"[31m
+    [33mclass[31m=[32m"w-7 h-7 rounded-control flex items-center justify-center text-cave-400 hover:text-cave-50 active:bg-cave-850 shrink-0 transition-colors "[31m
+    [33mdata-theme-toggle[31m=[32m"clair"[31m
+    [33mtitle[31m=[32m"Thème sombre (cave)"[31m
+    [33mtype[31m=[32m"button"[31m
+  [36m/>[31m
+
+  Name "Identité":
+  [36m<button[31m
+    [33maria-label[31m=[32m"Identité"[31m
+    [33mclass[31m=[32m"group flex min-h-touch min-w-0 shrink-0 grow px-0.5 items-center rounded-control focus-visible:outline focus-visible:outline-2 focus-visible:outline-water
+                     disabled:opacity-40 disabled:pointer-events-none flex-col justify-center gap-1"[31m
+    [33mtitle[31m=[32m"Identité"[31m
+    [33mtype[31m=[32m"button"[31m
+  [36m/>[31m
+
+  Name "Malts/sucres":
+  [36m<button[31m
+    [33maria-label[31m=[32m"Malts/sucres"[31m
+    [33mclass[31m=[32m"group flex min-h-touch min-w-0 shrink-0 grow px-0.5 items-center rounded-control focus-visible:outline focus-visible:outline-2 focus-visible:outline-water
+                     disabled:opacity-40 disabled:pointer-events-none flex-col justify-center gap-1"[31m
+    [33mtitle[31m=[32m"Malts/sucres"[31m
+    [33mtype[31m=[32m"button"[31m
+  [36m/>[31m
+
+  Name "Houblons":
+  [36m<button[31m
+    [33maria-label[31m=[32m"Houblons"[31m
+    [33mclass[31m=[32m"group flex min-h-touch min-w-0 shrink-0 grow px-0.5 items-center rounded-control focus-visible:outline focus-visible:outline-2 focus-visible:outline-water
+                     disabled:opacity-40 disabled:pointer-events-none flex-col justify-center gap-1"[31m
+    [33mtitle[31m=[32m"Houblons"[31m
+    [33mtype[31m=[32m"button"[31m
+  [36m/>[31m
+
+  Name "Levure":
+  [36m<button[31m
+    [33maria-label[31m=[32m"Levure"[31m
+    [33mclass[31m=[32m"group flex min-h-touch min-w-0 shrink-0 grow px-0.5 items-center rounded-control focus-visible:outline focus-visible:outline-2 focus-visible:outline-water
+                     disabled:opacity-40 disabled:pointer-events-none flex-col justify-center gap-1"[31m
+    [33mtitle[31m=[32m"Levure"[31m
+    [33mtype[31m=[32m"button"[31m
+  [36m/>[31m
+
+  Name "Paliers":
+  [36m<button[31m
+    [33maria-current[31m=[32m"step"[31m
+    [33maria-label[31m=[32m"Paliers"[31m
+    [33mclass[31m=[32m"group flex min-h-touch min-w-0 shrink-0 grow px-0.5 items-center rounded-control focus-visible:outline focus-visible:outline-2 focus-visible:outline-water
+                     disabled:opacity-40 disabled:pointer-events-none flex-col justify-center gap-1"[31m
+    [33mtitle[31m=[32m"Paliers"[31m
+    [33mtype[31m=[32m"button"[31m
+  [36m/>[31m
+
+  Name "Eau et sels":
+  [36m<button[31m
+    [33maria-label[31m=[32m"Eau et sels"[31m
+    [33mclass[31m=[32m"group flex min-h-touch min-w-0 shrink-0 grow px-0.5 items-center rounded-control focus-visible:outline focus-visible:outline-2 focus-visible:outline-water
+                     disabled:opacity-40 disabled:pointer-events-none flex-col justify-center gap-1"[31m
+    [33mtitle[31m=[32m"Eau et sels"[31m
+    [33mtype[31m=[32m"button"[31m
+  [36m/>[31m
+
+  Name "Récapitulatif":
+  [36m<button[31m
+    [33maria-label[31m=[32m"Récapitulatif"[31m
+    [33mclass[31m=[32m"group flex min-h-touch min-w-0 shrink-0 grow px-0.5 items-center rounded-control focus-visible:outline focus-visible:outline-2 focus-visible:outline-water
+                     disabled:opacity-40 disabled:pointer-events-none flex-col justify-center gap-1"[31m
+    [33mtitle[31m=[32m"Récapitulatif"[31m
+    [33mtype[31m=[32m"button"[31m
+  [36m/>[31m
+
+  Name "Fermer":
+  [36m<button[31m
+    [33maria-label[31m=[32m"Fermer"[31m
+    [33mclass[31m=[32m"w-7 h-7 rounded-control flex items-center justify-center text-cave-200 hover:text-cave-50 active:bg-cave-850 shrink-0 transition-colors"[31m
+    [33mtype[31m=[32m"button"[31m
+  [36m/>[31m
+
+  Name "Thème sombre (cave)":
+  [36m<button[31m
+    [33maria-label[31m=[32m"Thème sombre (cave)"[31m
+    [33mclass[31m=[32m"w-7 h-7 rounded-control flex items-center justify-center text-cave-400 hover:text-cave-50 active:bg-cave-850 shrink-0 transition-colors "[31m
+    [33mdata-theme-toggle[31m=[32m"clair"[31m
+    [33mtitle[31m=[32m"Thème sombre (cave)"[31m
+    [33mtype[31m=[32m"button"[31m
+  [36m/>[31m
+
+  Name "Identité":
+  [36m<button[31m
+    [33maria-label[31m=[32m"Identité"[31m
+    [33mclass[31m=[32m"group flex min-h-touch min-w-0 shrink-0 grow px-0.5 items-center rounded-control focus-visible:outline focus-visible:outline-2 focus-visible:outline-water
+                     disabled:opacity-40 disabled:pointer-events-none flex-col justify-center gap-1"[31m
+    [33mtitle[31m=[32m"Identité"[31m
+    [33mtype[31m=[32m"button"[31m
+  [36m/>[31m
+
+  Name "Malts/sucres":
+  [36m<button[31m
+    [33maria-label[31m=[32m"Malts/sucres"[31m
+    [33mclass[31m=[32m"group flex min-h-touch min-w-0 shrink-0 grow px-0.5 items-center rounded-control focus-visible:outline focus-visible:outline-2 focus-visible:outline-water
+                     disabled:opacity-40 disabled:pointer-events-none flex-col justify-center gap-1"[31m
+    [33mtitle[31m=[32m"Malts/sucres"[31m
+    [33mtype[31m=[32m"button"[31m
+  [36m/>[31m
+
+  Name "Houblons":
+  [36m<button[31m
+    [33maria-label[31m=[32m"Houblons"[31m
+    [33mclass[31m=[32m"group flex min-h-touch min-w-0 shrink-0 grow px-0.5 items-center rounded-control focus-visible:outline focus-visible:outline-2 focus-visible:outline-water
+                     disabled:opacity-40 disabled:pointer-events-none flex-col justify-center gap-1"[31m
+    [33mtitle[31m=[32m"Houblons"[31m
+    [33mtype[31m=[32m"button"[31m
+  [36m/>[31m
+
+  Name "Levure":
+  [36m<button[31m
+    [33maria-label[31m=[32m"Levure"[31m
+    [33mclass[31m=[32m"group flex min-h-touch min-w-0 shrink-0 grow px-0.5 items-center rounded-control focus-visible:outline focus-visible:outline-2 focus-visible:outline-water
+                     disabled:opacity-40 disabled:pointer-events-none flex-col justify-center gap-1"[31m
+    [33mtitle[31m=[32m"Levure"[31m
+    [33mtype[31m=[32m"button"[31m
+  [36m/>[31m
+
+  Name "Paliers":
+  [36m<button[31m
+    [33maria-current[31m=[32m"step"[31m
+    [33maria-label[31m=[32m"Paliers"[31m
+    [33mclass[31m=[32m"group flex min-h-touch min-w-0 shrink-0 grow px-0.5 items-center rounded-control focus-visible:outline focus-visible:outline-2 focus-visible:outline-water
+                     disabled:opacity-40 disabled:pointer-events-none flex-col justify-center gap-1"[31m
+    [33mtitle[31m=[32m"Paliers"[31m
+    [33mtype[31m=[32m"button"[31m
+  [36m/>[31m
+
+  Name "Eau et sels":
+  [36m<button[31m
+    [33maria-label[31m=[32m"Eau et sels"[31m
+    [33mclass[31m=[32m"group flex min-h-touch min-w-0 shrink-0 grow px-0.5 items-center rounded-control focus-visible:outline focus-visible:outline-2 focus-visible:outline-water
+                     disabled:opacity-40 disabled:pointer-events-none flex-col justify-center gap-1"[31m
+    [33mtitle[31m=[32m"Eau et sels"[31m
+    [33mtype[31m=[32m"button"[31m
+  [36m/>[31m
+
+  Name "Récapitulatif":
+  [36m<button[31m
+    [33maria-label[31m=[32m"Récapitulatif"[31m
+    [33mclass[31m=[32m"group flex min-h-touch min-w-0 shrink-0 grow px-0.5 items-center rounded-control focus-visible:outline focus-visible:outline-2 focus-visible:outline-water
+                     disabled:opacity-40 disabled:pointer-events-none flex-col justify-center gap-1"[31m
+    [33mtitle[31m=[32m"Récapitulatif"[31m
+    [33mtype[31m=[32m"button"[31m
+  [36m/>[31m
+
+  Name "Programme d’empâtage":
+  [36m<button[31m
+    [33maria-expanded[31m=[32m"false"[31m
+    [33maria-haspopup[31m=[32m"listbox"[31m
+    [33maria-label[31m=[32m"Programme d’empâtage"[31m
+    [33mclass[31m=[32m"pal-prog"[31m
+    [33mdata-booster[31m=[32m"programme"[31m
+    [33mtype[31m=[32m"button"[31m
+  [36m/>[31m
+
+  Name "Palier 1 · Saccharification, 63 °C, 60 min":
+  [36m<rect[31m
+    [33maria-label[31m=[32m"Palier 1 · Saccharification, 63 °C, 60 min"[31m
+    [33maria-pressed[31m=[32m"false"[31m
+    [33mclass[31m=[32m"pal-pal"[31m
+    [33mdata-booster[31m=[32m"palier"[31m
+    [33mdata-hit[31m=[32m""[31m
+    [33mheight[31m=[32m"240"[31m
+    [33mrole[31m=[32m"button"[31m
+    [33mrx[31m=[32m"10"[31m
+    [33mtabindex[31m=[32m"0"[31m
+    [33mwidth[31m=[32m"177.33"[31m
+    [33mx[31m=[32m"30"[31m
+    [33my[31m=[32m"10"[31m
+  [36m/>[31m
+
+  Name "Palier 2 (mash-out) · Mash-out, 76 °C, 10 min":
+  [36m<rect[31m
+    [33maria-label[31m=[32m"Palier 2 (mash-out) · Mash-out, 76 °C, 10 min"[31m
+    [33maria-pressed[31m=[32m"false"[31m
+    [33mclass[31m=[32m"pal-pal"[31m
+    [33mdata-booster[31m=[32m"palier"[31m
+    [33mdata-hit[31m=[32m""[31m
+    [33mheight[31m=[32m"240"[31m
+    [33mrole[31m=[32m"button"[31m
+    [33mrx[31m=[32m"10"[31m
+    [33mtabindex[31m=[32m"0"[31m
+    [33mwidth[31m=[32m"34"[31m
+    [33mx[31m=[32m"296"[31m
+    [33my[31m=[32m"10"[31m
+  [36m/>[31m
+
+  Name "Ajouter un palier":
+  [36m<g[31m
+    [33maria-label[31m=[32m"Ajouter un palier"[31m
+    [33mclass[31m=[32m"pal-plus"[31m
+    [33mdata-booster[31m=[32m"ajout-frontiere"[31m
+    [33mdata-frontiere[31m=[32m"fin"[31m
+    [33mdata-hit[31m=[32m""[31m
+    [33mrole[31m=[32m"button"[31m
+    [33mtabindex[31m=[32m"0"[31m
+  [36m/>[31m
+
+  Name "Choisir le programme sans mash-out":
+  [36m<button[31m
+    [33mtype[31m=[32m"button"[31m
+  [36m/>[31m
+
+  Name "Ensemencement 18 °Crefroidir · programme":
+  [36m<button[31m
+    [33maria-controls[31m=[32m"pal-ens-corps"[31m
+    [33maria-expanded[31m=[32m"false"[31m
+    [33mclass[31m=[32m"pal-ens"[31m
+    [33mtype[31m=[32m"button"[31m
+  [36m/>[31m
+
+  Name "Fermentation, 17 jours, en lecture : se règle dans Levure":
+  [36m<button[31m
+    [33maria-invalid[31m=[32m"false"[31m
+    [33maria-label[31m=[32m"Fermentation, 17 jours, en lecture : se règle dans Levure"[31m
+    [33mclass[31m=[32m"pal-fer"[31m
+    [33mdata-booster[31m=[32m"fermentation-courbe"[31m
+    [33mtype[31m=[32m"button"[31m
+  [36m/>[31m
+
+  Name "Comparer":
+  [36m<button[31m
+    [33mtype[31m=[32m"button"[31m
+  [36m/>[31m
+
+  Name "Retour":
+  [36m<button[31m
+    [33mclass[31m=[32m"min-h-touch-sm px-3 rounded-control border border-cave-800
+                     text-cave-400 text-sm disabled:opacity-30 transition-colors hover:bg-cave-850"[31m
+    [33mtype[31m=[32m"button"[31m
+  [36m/>[31m
+
+  Name "Suivant — Eau et sels":
+  [36m<button[31m
+    [33mclass[31m=[32m"recipe-primary-action min-h-touch px-2 rounded-control bg-ebc-straw text-cave-950
+                     text-sm font-semibold disabled:opacity-40 transition-colors hover:brightness-105"[31m
+    [33mtype[31m=[32m"button"[31m
+  [36m/>[31m
+
+  --------------------------------------------------
+  paragraph:
+
+  Name "":
+  [36m<p[31m
+    [33mclass[31m=[32m"flex min-w-0 flex-1 items-baseline gap-1.5"[31m
+  [36m/>[31m
+
+  Name "":
+  [36m<p[31m
+    [33mclass[31m=[32m"text-xs text-cave-400 break-words leading-tight mt-0.5"[31m
+  [36m/>[31m
+
+  Name "":
+  [36m<p />[31m
+
+  Name "":
+  [36m<p />[31m
+
+  Name "":
+  [36m<p />[31m
+
+  Name "":
+  [36m<p[31m
+    [33mclass[31m=[32m"yeast-notice"[31m
+  [36m/>[31m
+
+  Name "":
+  [36m<p[31m
+    [33mclass[31m=[32m"text-[13px]"[31m
+  [36m/>[31m
+
+  Name "":
+  [36m<p />[31m
+
+  Name "":
+  [36m<p />[31m
+
+  Name "":
+  [36m<p />[31m
+
+  --------------------------------------------------
+  navigation:
+
+  Name "Étapes":
+  [36m<nav[31m
+    [33maria-label[31m=[32m"Étapes"[31m
+    [33mclass[31m=[32m"wizard-step-rail flex w-full gap-0.5 overflow-x-auto overscroll-x-contain"[31m
+  [36m/>[31m
+
+  Name "Étapes":
+  [36m<nav[31m
+    [33maria-label[31m=[32m"Étapes"[31m
+    [33mclass[31m=[32m"wizard-step-rail flex w-full gap-0.5 overflow-x-auto overscroll-x-contain"[31m
+  [36m/>[31m
+
+  Name "":
+  [36m<nav[31m
+    [33mclass[31m=[32m"recipe-step-actions flex justify-between gap-2 pt-1 pb-2"[31m
+  [36m/>[31m
+
+  --------------------------------------------------
+  heading:
+
+  Name "Paliers 5/7":
+  [36m<h1[31m
+    [33mclass[31m=[32m"text-sm font-semibold text-cave-50 break-words leading-tight"[31m
+  [36m/>[31m
+
+  --------------------------------------------------
+  main:
+
+  Name "Paliers":
+  [36m<main[31m
+    [33maria-label[31m=[32m"Paliers"[31m
+    [33mclass[31m=[32m"flex-1 min-h-0 overflow-y-auto overscroll-contain outline-none focus:outline-none focus-visible:outline-none"[31m
+    [33mtabindex[31m=[32m"-1"[31m
+  [36m/>[31m
+
+  --------------------------------------------------
+  group:
+
+  Name "":
+  [36m<fieldset[31m
+    [33maria-busy[31m=[32m"false"[31m
+    [33mclass[31m=[32m"contents space-y-3"[31m
+  [36m/>[31m
+
+  Name "Courbe : 63 °C pendant 60 minutes, montée d'environ 30 minutes, 76 °C pendant 10 minutes":
+  [36m<svg[31m
+    [33maria-label[31m=[32m"Courbe : 63 °C pendant 60 minutes, montée d'environ 30 minutes, 76 °C pendant 10 minutes"[31m
+    [33mclass[31m=[32m"pal-g"[31m
+    [33mdata-booster[31m=[32m"courbe-empatage"[31m
+    [33mrole[31m=[32m"group"[31m
+    [33mviewBox[31m=[32m"0 0 370 284"[31m
+  [36m/>[31m
+
+  Name "":
+  [36m<details[31m
+    [33mclass[31m=[32m"pal-cmp"[31m
+  [36m/>[31m
+
+  Name "":
+  [36m<details />[31m
+
+  --------------------------------------------------
+  region:
+
+  Name "Courbe d'empâtage":
+  [36m<section[31m
+    [33maria-label[31m=[32m"Courbe d'empâtage"[31m
+    [33mclass[31m=[32m"pal-carte"[31m
+    [33mdata-paliers[31m=[32m"courbe"[31m
+  [36m/>[31m
+
+  --------------------------------------------------
+  switch:
+
+  Name "Mash-out":
+  [36m<button[31m
+    [33maria-checked[31m=[32m"true"[31m
+    [33maria-label[31m=[32m"Mash-out"[31m
+    [33mclass[31m=[32m"pal-tg"[31m
+    [33mdata-booster[31m=[32m"mash-out"[31m
+    [33mrole[31m=[32m"switch"[31m
+    [33mtype[31m=[32m"button"[31m
+  [36m/>[31m
+
+  --------------------------------------------------
+  link:
+
+  Name "Repères de Palmer":
+  [36m<a[31m
+    [33mhref[31m=[32m"https://howtobrew.com/section-3/chapter-17/"[31m
+    [33mrel[31m=[32m"noreferrer"[31m
+    [33mtarget[31m=[32m"_blank"[31m
+  [36m/>[31m
+
+  --------------------------------------------------
+  radiogroup:
+
+  Name "Type de rinçage":
+  [36m<div[31m
+    [33maria-label[31m=[32m"Type de rinçage"[31m
+    [33mclass[31m=[32m"flex gap-1 p-0.5 rounded-control bg-cave-950 border border-cave-800 pal-seg"[31m
+    [33mrole[31m=[32m"radiogroup"[31m
+  [36m/>[31m
+
+  --------------------------------------------------
+  radio:
+
+  Name "Par bacs":
+  [36m<button[31m
+    [33maria-checked[31m=[32m"true"[31m
+    [33mclass[31m=[32m"min-h-touch px-1.5 py-0.5 rounded-control text-2xs leading-tight transition-colors
+                          flex items-center justify-center gap-1
+                          flex-1 min-w-0
+                          focus:outline-none focus-visible:ring-2 focus-visible:ring-ebc-straw
+                          disabled:opacity-40 disabled:cursor-not-allowed
+                          seg-actif font-semibold"[31m
+    [33mid[31m=[32m"_r_8_-batch"[31m
+    [33mrole[31m=[32m"radio"[31m
+    [33mtabindex[31m=[32m"0"[31m
+    [33mtype[31m=[32m"button"[31m
+  [36m/>[31m
+
+  Name "Continu":
+  [36m<button[31m
+    [33maria-checked[31m=[32m"false"[31m
+    [33mclass[31m=[32m"min-h-touch px-1.5 py-0.5 rounded-control text-2xs leading-tight transition-colors
+                          flex items-center justify-center gap-1
+                          flex-1 min-w-0
+                          focus:outline-none focus-visible:ring-2 focus-visible:ring-ebc-straw
+                          disabled:opacity-40 disabled:cursor-not-allowed
+                          text-cave-200 hover:text-cave-50 hover:bg-cave-900"[31m
+    [33mid[31m=[32m"_r_8_-fly"[31m
+    [33mrole[31m=[32m"radio"[31m
+    [33mtabindex[31m=[32m"-1"[31m
+    [33mtype[31m=[32m"button"[31m
+  [36m/>[31m
+
+  Name "Aucun":
+  [36m<button[31m
+    [33maria-checked[31m=[32m"false"[31m
+    [33mclass[31m=[32m"min-h-touch px-1.5 py-0.5 rounded-control text-2xs leading-tight transition-colors
+                          flex items-center justify-center gap-1
+                          flex-1 min-w-0
+                          focus:outline-none focus-visible:ring-2 focus-visible:ring-ebc-straw
+                          disabled:opacity-40 disabled:cursor-not-allowed
+                          text-cave-200 hover:text-cave-50 hover:bg-cave-900"[31m
+    [33mid[31m=[32m"_r_8_-none"[31m
+    [33mrole[31m=[32m"radio"[31m
+    [33mtabindex[31m=[32m"-1"[31m
+    [33mtype[31m=[32m"button"[31m
+  [36m/>[31m
+
+  --------------------------------------------------
+  complementary:
+
+  Name "Levure et conduite liées à la recette":
+  [36m<aside[31m
+    [33maria-label[31m=[32m"Levure et conduite liées à la recette"[31m
+    [33mclass[31m=[32m"yeast-workbench border-t border-cave-700 pt-2"[31m
+  [36m/>[31m
+
+  --------------------------------------------------
+  strong:
+
+  Name "":
+  [36m<strong />[31m
+
+  Name "":
+  [36m<strong />[31m
+
+  Name "":
+  [36m<strong />[31m
+
+  Name "":
+  [36m<strong />[31m
+
+  --------------------------------------------------
+
+Ignored nodes: comments, script, style
+[36m<body>[31m
+  [36m<div>[31m
+    [36m<div[31m
+      [33mclass[31m=[32m"page-shell fixed inset-0 z-[49] flex flex-col bg-cave-950 recipe-wizard"[31m
+      [33mdata-page-shell[31m=[32m"true"[31m
+    [36m>[31m
+      [36m<header[31m
+        [33mclass[31m=[32m"shrink-0 border-b border-cave-800 bg-cave-950/95 backdrop-blur-sm pt-safe"[31m
+      [36m>[31m
+        [36m<div[31m
+          [33mclass[31m=[32m"flex items-start"[31m
+        [36m>[31m
+          [36m<div[31m
+            [33mclass[31m=[32m"min-w-0 flex-1"[31m
+          [36m>[31m
+            [36m<div[31m
+              [33mclass[31m=[32m"sm:hidden"[31m
+            [36m>[31m
+              [36m<div[31m
+                [33mclass[31m=[32m"recipe-mobile-header px-2 bg-cave-950"[31m
+              [36m>[31m
+                [36m<div[31m
+                  [33mclass[31m=[32m"recipe-titlebar flex items-center gap-1.5"[31m
+                [36m>[31m
+                  [36m<button[31m
+                    [33maria-label[31m=[32m"Fermer"[31m
+                    [33mclass[31m=[32m"w-7 h-7 rounded-control flex items-center justify-center text-cave-400 hover:text-cave-50 active:bg-cave-850 shrink-0 transition-colors"[31m
+                    [33mtype[31m=[32m"button"[31m
+                  [36m>[31m
+                    [36m<svg[31m
+                      [33maria-hidden[31m=[32m"true"[31m
+                      [33mclass[31m=[32m"lucide lucide-chevron-left w-4 h-4"[31m
+                      [33mfill[31m=[32m"none"[31m
+                      [33mheight[31m=[32m"24"[31m
+                      [33mstroke[31m=[32m"currentColor"[31m
+                      [33mstroke-linecap[31m=[32m"round"[31m
+                      [33mstroke-linejoin[31m=[32m"round"[31m
+                      [33mstroke-width[31m=[32m"2"[31m
+                      [33mviewBox[31m=[32m"0 0 24 24"[31m
+                      [33mwidth[31m=[32m"24"[31m
+                      [33mxmlns[31m=[32m"http://www.w3.org/2000/svg"[31m
+                    [36m>[31m
+                      [36m<path[31m
+                        [33md[31m=[32m"m15 18-6-6 6-6"[31m
+                      [36m/>[31m
+                    [36m</svg>[31m
+                  [36m</button>[31m
+                  [36m<p[31m
+                    [33mclass[31m=[32m"flex min-w-0 flex-1 items-baseline gap-1.5"[31m
+                  [36m>[31m
+                    [36m<span[31m
+                      [33mclass[31m=[32m"min-w-0 truncate text-base font-semibold text-cave-50"[31m
+                    [36m>[31m
+                      [0mPaliers[0m
+                    [36m</span>[31m
+                    [36m<span[31m
+                      [33mclass[31m=[32m"shrink-0 font-mono text-sm text-cave-400"[31m
+                    [36m>[31m
+                      [0m5[0m
+                      [0m/[0m
+                      [0m7[0m
+                    [36m</span>[31m
+                    [36m<span[31m
+                      [33maria-live[31m=[32m"polite"[31m
+                      [33mclass[31m=[32m"sr-only"[31m
+                    [36m>[31m
+                      [0mPaliers — étape 5 sur 7[0m
+                    [36m</span>[31m
+                  [36m</p>[31m
+                  [36m<button[31m
+                    [33maria-label[31m=[32m"Coller une recette"[31m
+                    [33mclass[31m=[32m"w-7 h-7 rounded-control flex items-center justify-center text-cave-400 hover:text-ebc-straw active:bg-cave-850 shrink-0 transition-colors"[31m
+                    [33mtype[31m=[32m"button"[31m
+                  [36m>[31m
+                    [36m<svg[31m
+                      [33maria-hidden[31m=[32m"true"[31m
+                      [33mclass[31m=[32m"lucide lucide-clipboard-paste w-3.5 h-3.5"[31m
+                      [33mfill[31m=[32m"none"[31m
+                      [33mheight[31m=[32m"24"[31m
+                      [33mstroke[31m=[32m"currentColor"[31m
+                      [33mstroke-linecap[31m=[32m"round"[31m
+                      [33mstroke-linejoin[31m=[32m"round"[31m
+                      [33mstroke-width[31m=[32m"2"[31m
+                      [33mviewBox[31m=[32m"0 0 24 24"[31m
+                      [33mwidth[31m=[32m"24"[31m
+                      [33mxmlns[31m=[32m"http://www.w3.org/2000/svg"[31m
+                    [36m>[31m
+                      [36m<path[31m
+                        [33md[31m=[32m"M11 14h10"[31m
+                      [36m/>[31m
+                      [36m<path[31m
+                        [33md[31m=[32m"M16 4h2a2 2 0 0 1 2 2v1.344"[31m
+                      [36m/>[31m
+                      [36m<path[31m
+                        [33md[31m=[32m"m17 18 4-4-4-4"[31m
+                      [36m/>[31m
+                      [36m<path[31m
+                        [33md[31m=[32m"M8 4H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 1.793-1.113"[31m
+                      [36m/>[31m
+                      [36m<rect[31m
+                        [33mheight[31m=[32m"4"[31m
+                        [33mrx[31m=[32m"1"[31m
+                        [33mwidth[31m=[32m"8"[31m
+                        [33mx[31m=[32m"8"[31m
+                        [33my[31m=[32m"2"[31m
+                      [36m/>[31m
+                    [36m</svg>[31m
+                  [36m</button>[31m
+                  [36m<button[31m
+                    [33maria-label[31m=[32m"Thème sombre (cave)"[31m
+                    [33mclass[31m=[32m"w-7 h-7 rounded-control flex items-center justify-center text-cave-400 hover:text-cave-50 active:bg-cave-850 shrink-0 transition-colors "[31m
+                    [33mdata-theme-toggle[31m=[32m"clair"[31m
+                    [33mtitle[31m=[32m"Thème sombre (cave)"[31m
+                    [33mtype[31m=[32m"button"[31m
+                  [36m>[31m
+                    [36m<svg[31m
+                      [33maria-hidden[31m=[32m"true"[31m
+                      [33mclass[31m=[32m"lucide lucide-moon w-3.5 h-3.5"[31m
+                      [33mfill[31m=[32m"none"[31m
+                      [33mheight[31m=[32m"24"[31m
+                      [33mstroke[31m=[32m"currentColor"[31m
+                      [33mstroke-linecap[31m=[32m"round"[31m
+                      [33mstroke-linejoin[31m=[32m"round"[31m
+                      [33mstroke-width[31m=[32m"2"[31m
+                      [33mviewBox[31m=[32m"0 0 24 24"[31m
+                      [33mwidth[31m=[32m"24"[31m
+                      [33mxmlns[31m=[32m"http://www.w3.org/2000/svg"[31m
+                    [36m>[31m
+                      [36m<path[31m
+                        [33md[31m=[32m"M20.985 12.486a9 9 0 1 1-9.473-9.472c.405-.022.617.46.402.803a6 6 0 0 0 8.268 8.268c.344-.215.825-.004.803.401"[31m
+                      [36m/>[31m
+                    [...[39m
+   [32m✓[39m BR-5 : l’étape Paliers montre l’avis, et le tait au repère[2m > [22m66,5 °C : pas d’avis[32m 207[2mms[22m[39m
+
+[31m⎯⎯⎯⎯⎯⎯[39m[1m[41m Failed Tests 17 [49m[22m[31m⎯⎯⎯⎯⎯⎯⎯[39m
+
+[41m[1m FAIL [22m[49m tests/unit/bugs-x1-br5.test.tsx[2m > [22mavisSaccharification : l’écart de FG annoncé[2m > [22m63 °C : FG plus basse, en points de densité (OG 1,075 → environ 4 points)
+[31m[1mTypeError[22m: avisSaccharification is not a function[39m
+[36m [2m❯[22m tests/unit/bugs-x1-br5.test.tsx:[2m22:15[22m[39m
+    [90m 20| [39m[34mdescribe[39m([32m'avisSaccharification : l’écart de FG annoncé'[39m[33m,[39m () [33m=>[39m {
+    [90m 21| [39m  it('63 °C : FG plus basse, en points de densité (OG 1,075 → environ …
+    [90m 22| [39m    [35mconst[39m a [33m=[39m [34mavisSaccharification[39m([[34mpas[39m([34m63[39m)][33m,[39m [34m1.075[39m)[33m;[39m
+    [90m   | [39m              [31m^[39m
+    [90m 23| [39m    expect(a?.texte).toBe('63 °C : FG plus basse d’environ 4 points (r…
+    [90m 24| [39m  })[33m;[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/17]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m tests/unit/bugs-x1-br5.test.tsx[2m > [22mavisSaccharification : l’écart de FG annoncé[2m > [22m69 °C : FG plus haute, corps plus rond
+[31m[1mTypeError[22m: avisSaccharification is not a function[39m
+[36m [2m❯[22m tests/unit/bugs-x1-br5.test.tsx:[2m26:12[22m[39m
+    [90m 24| [39m  })[33m;[39m
+    [90m 25| [39m  [34mit[39m([32m'69 °C : FG plus haute, corps plus rond'[39m[33m,[39m () [33m=>[39m {
+    [90m 26| [39m    expect(avisSaccharification([pas(69)], 1.05)?.texte).toBe('69 °C :…
+    [90m   | [39m           [31m^[39m
+    [90m 27| [39m  })[33m;[39m
+    [90m 28| [39m  [34mit[39m([32m'au repère, ou presque : aucun avis'[39m[33m,[39m () [33m=>[39m {
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/17]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m tests/unit/bugs-x1-br5.test.tsx[2m > [22mavisSaccharification : l’écart de FG annoncé[2m > [22mau repère, ou presque : aucun avis
+[31m[1mTypeError[22m: avisSaccharification is not a function[39m
+[36m [2m❯[22m tests/unit/bugs-x1-br5.test.tsx:[2m29:12[22m[39m
+    [90m 27| [39m  })[33m;[39m
+    [90m 28| [39m  [34mit[39m([32m'au repère, ou presque : aucun avis'[39m[33m,[39m () [33m=>[39m {
+    [90m 29| [39m    [34mexpect[39m([34mavisSaccharification[39m([[34mpas[39m([34m66.5[39m)][33m,[39m [34m1.075[39m))[33m.[39m[34mtoBeNull[39m()[33m;[39m
+    [90m   | [39m           [31m^[39m
+    [90m 30| [39m    [34mexpect[39m([34mavisSaccharification[39m([[34mpas[39m([34m66[39m)][33m,[39m [34m1.05[39m))[33m.[39m[34mtoBeNull[39m()[33m;[39m
+    [90m 31| [39m  })[33m;[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/17]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m tests/unit/bugs-x1-br5.test.tsx[2m > [22mavisSaccharification : l’écart de FG annoncé[2m > [22msans OG connue : dit le sens, jamais un chiffre inventé
+[31m[1mTypeError[22m: avisSaccharification is not a function[39m
+[36m [2m❯[22m tests/unit/bugs-x1-br5.test.tsx:[2m33:12[22m[39m
+    [90m 31| [39m  })[33m;[39m
+    [90m 32| [39m  [34mit[39m([32m'sans OG connue : dit le sens, jamais un chiffre inventé'[39m[33m,[39m () [33m=>[39m {
+    [90m 33| [39m    expect(avisSaccharification([pas(63)], null)?.texte).toBe('63 °C :…
+    [90m   | [39m           [31m^[39m
+    [90m 34| [39m  })[33m;[39m
+    [90m 35| [39m  it('prend le palier de saccharification le plus long, pas le repos p…
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/17]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m tests/unit/bugs-x1-br5.test.tsx[2m > [22mavisSaccharification : l’écart de FG annoncé[2m > [22mprend le palier de saccharification le plus long, pas le repos protéique ni le mash-out
+[31m[1mTypeError[22m: avisSaccharification is not a function[39m
+[36m [2m❯[22m tests/unit/bugs-x1-br5.test.tsx:[2m36:15[22m[39m
+    [90m 34| [39m  })[33m;[39m
+    [90m 35| [39m  it('prend le palier de saccharification le plus long, pas le repos p…
+    [90m 36| [39m    const a = avisSaccharification([pas(52, 15, 'Repos protéique'), pa…
+    [90m   | [39m              [31m^[39m
+    [90m 37| [39m    [34mexpect[39m(a[33m?.[39mtexte)[33m.[39m[34mtoMatch[39m([36m/^63 °C : FG plus basse/[39m)[33m;[39m
+    [90m 38| [39m  })[33m;[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[5/17]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m tests/unit/bugs-x1-br5.test.tsx[2m > [22mavisSaccharification : l’écart de FG annoncé[2m > [22msans palier de saccharification (62–72 °C) : rien
+[31m[1mTypeError[22m: avisSaccharification is not a function[39m
+[36m [2m❯[22m tests/unit/bugs-x1-br5.test.tsx:[2m40:12[22m[39m
+    [90m 38| [39m  })[33m;[39m
+    [90m 39| [39m  [34mit[39m([32m'sans palier de saccharification (62–72 °C) : rien'[39m[33m,[39m () [33m=>[39m {
+    [90m 40| [39m    expect(avisSaccharification([pas(52, 15, 'Repos protéique')], 1.05…
+    [90m   | [39m           [31m^[39m
+    [90m 41| [39m    [34mexpect[39m([34mavisSaccharification[39m([][33m,[39m [34m1.05[39m))[33m.[39m[34mtoBeNull[39m()[33m;[39m
+    [90m 42| [39m  })[33m;[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[6/17]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m tests/unit/bugs-x1-br5.test.tsx[2m > [22mBR-5 : l’étape Paliers montre l’avis, et le tait au repère[2m > [22m63 °C : un avis court sous la courbe
+[31m[1mTestingLibraryElementError[22m[39m: Unable to find an accessible element with the role "note" and name "Effet de l’empâtage sur la FG"
+
+Here are the accessible roles:
+
+  banner:
+
+  Name "":
+  [36m<header[39m
+    [33mclass[39m=[32m"shrink-0 border-b border-cave-800 bg-cave-950/95 backdrop-blur-sm pt-safe"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  button:
+
+  Name "Fermer":
+  [36m<button[39m
+    [33maria-label[39m=[32m"Fermer"[39m
+    [33mclass[39m=[32m"w-7 h-7 rounded-control flex items-center justify-center text-cave-400 hover:text-cave-50 active:bg-cave-850 shrink-0 transition-colors"[39m
+    [33mtype[39m=[32m"button"[39m
+  [36m/>[39m
+
+  Name "Coller une recette":
+  [36m<button[39m
+    [33maria-label[39m=[32m"Coller une recette"[39m
+    [33mclass[39m=[32m"w-7 h-7 rounded-control flex items-center justify-center text-cave-400 hover:text-ebc-straw active:bg-cave-850 shrink-0 transition-colors"[39m
+    [33mtype[39m=[32m"button"[39m
+  [36m/>[39m
+
+  Name "Thème sombre (cave)":
+  [36m<button[39m
+    [33maria-label[39m=[32m"Thème sombre (cave)"[39m
+    [33mclass[39m=[32m"w-7 h-7 rounded-control flex items-center justify-center text-cave-400 hover:text-cave-50 active:bg-cave-850 shrink-0 transition-colors "[39m
+    [33mdata-theme-toggle[39m=[32m"clair"[39m
+    [33mtitle[39m=[32m"Thème sombre (cave)"[39m
+    [33mtype[39m=[32m"button"[39m
+  [36m/>[39m
+
+  Name "Identité":
+  [36m<button[39m
+    [33maria-label[39m=[32m"Identité"[39m
+    [33mclass[39m=[32m"group flex min-h-touch min-w-0 shrink-0 grow px-0.5 items-center rounded-control focus-visible:outline focus-visible:outline-2 focus-visible:outline-water
+                     disabled:opacity-40 disabled:pointer-events-none flex-col justify-center gap-1"[39m
+    [33mtitle[39m=[32m"Identité"[39m
+    [33mtype[39m=[32m"button"[39m
+  [36m/>[39m
+
+  Name "Malts/sucres":
+  [36m<button[39m
+    [33maria-label[39m=[32m"Malts/sucres"[39m
+    [33mclass[39m=[32m"group flex min-h-touch min-w-0 shrink-0 grow px-0.5 items-center rounded-control focus-visible:outline focus-visible:outline-2 focus-visible:outline-water
+                     disabled:opacity-40 disabled:pointer-events-none flex-col justify-center gap-1"[39m
+    [33mtitle[39m=[32m"Malts/sucres"[39m
+    [33mtype[39m=[32m"button"[39m
+  [36m/>[39m
+
+  Name "Houblons":
+  [36m<button[39m
+    [33maria-label[39m=[32m"Houblons"[39m
+    [33mclass[39m=[32m"group flex min-h-touch min-w-0 shrink-0 grow px-0.5 items-center rounded-control focus-visible:outline focus-visible:outline-2 focus-visible:outline-water
+                     disabled:opacity-40 disabled:pointer-events-none flex-col justify-center gap-1"[39m
+    [33mtitle[39m=[32m"Houblons"[39m
+    [33mtype[39m=[32m"button"[39m
+  [36m/>[39m
+
+  Name "Levure":
+  [36m<button[39m
+    [33maria-label[39m=[32m"Levure"[39m
+    [33mclass[39m=[32m"group flex min-h-touch min-w-0 shrink-0 grow px-0.5 items-center rounded-control focus-visible:outline focus-visible:outline-2 focus-visible:outline-water
+                     disabled:opacity-40 disabled:pointer-events-none flex-col justify-center gap-1"[39m
+    [33mtitle[39m=[32m"Levure"[39m
+    [33mtype[39m=[32m"button"[39m
+  [36m/>[39m
+
+  Name "Paliers":
+  [36m<button[39m
+    [33maria-current[39m=[32m"step"[39m
+    [33maria-label[39m=[32m"Paliers"[39m
+    [33mclass[39m=[32m"group flex min-h-touch min-w-0 shrink-0 grow px-0.5 items-center rounded-control focus-visible:outline focus-visible:outline-2 focus-visible:outline-water
+                     disabled:opacity-40 disabled:pointer-events-none flex-col justify-center gap-1"[39m
+    [33mtitle[39m=[32m"Paliers"[39m
+    [33mtype[39m=[32m"button"[39m
+  [36m/>[39m
+
+  Name "Eau et sels":
+  [36m<button[39m
+    [33maria-label[39m=[32m"Eau et sels"[39m
+    [33mclass[39m=[32m"group flex min-h-touch min-w-0 shrink-0 grow px-0.5 items-center rounded-control focus-visible:outline focus-visible:outline-2 focus-visible:outline-water
+                     disabled:opacity-40 disabled:pointer-events-none flex-col justify-center gap-1"[39m
+    [33mtitle[39m=[32m"Eau et sels"[39m
+    [33mtype[39m=[32m"button"[39m
+  [36m/>[39m
+
+  Name "Récapitulatif":
+  [36m<button[39m
+    [33maria-label[39m=[32m"Récapitulatif"[39m
+    [33mclass[39m=[32m"group flex min-h-touch min-w-0 shrink-0 grow px-0.5 items-center rounded-control focus-visible:outline focus-visible:outline-2 focus-visible:outline-water
+                     disabled:opacity-40 disabled:pointer-events-none flex-col justify-center gap-1"[39m
+    [33mtitle[39m=[32m"Récapitulatif"[39m
+    [33mtype[39m=[32m"button"[39m
+  [36m/>[39m
+
+  Name "Fermer":
+  [36m<button[39m
+    [33maria-label[39m=[32m"Fermer"[39m
+    [33mclass[39m=[32m"w-7 h-7 rounded-control flex items-center justify-center text-cave-200 hover:text-cave-50 active:bg-cave-850 shrink-0 transition-colors"[39m
+    [33mtype[39m=[32m"button"[39m
+  [36m/>[39m
+
+  Name "Thème sombre (cave)":
+  [36m<button[39m
+    [33maria-label[39m=[32m"Thème sombre (cave)"[39m
+    [33mclass[39m=[32m"w-7 h-7 rounded-control flex items-center justify-center text-cave-400 hover:text-cave-50 active:bg-cave-850 shrink-0 transition-colors "[39m
+    [33mdata-theme-toggle[39m=[32m"clair"[39m
+    [33mtitle[39m=[32m"Thème sombre (cave)"[39m
+    [33mtype[39m=[32m"button"[39m
+  [36m/>[39m
+
+  Name "Identité":
+  [36m<button[39m
+    [33maria-label[39m=[32m"Identité"[39m
+    [33mclass[39m=[32m"group flex min-h-touch min-w-0 shrink-0 grow px-0.5 items-center rounded-control focus-visible:outline focus-visible:outline-2 focus-visible:outline-water
+                     disabled:opacity-40 disabled:pointer-events-none flex-col justify-center gap-1"[39m
+    [33mtitle[39m=[32m"Identité"[39m
+    [33mtype[39m=[32m"button"[39m
+  [36m/>[39m
+
+  Name "Malts/sucres":
+  [36m<button[39m
+    [33maria-label[39m=[32m"Malts/sucres"[39m
+    [33mclass[39m=[32m"group flex min-h-touch min-w-0 shrink-0 grow px-0.5 items-center rounded-control focus-visible:outline focus-visible:outline-2 focus-visible:outline-water
+                     disabled:opacity-40 disabled:pointer-events-none flex-col justify-center gap-1"[39m
+    [33mtitle[39m=[32m"Malts/sucres"[39m
+    [33mtype[39m=[32m"button"[39m
+  [36m/>[39m
+
+  Name "Houblons":
+  [36m<button[39m
+    [33maria-label[39m=[32m"Houblons"[39m
+    [33mclass[39m=[32m"group flex min-h-touch min-w-0 shrink-0 grow px-0.5 items-center rounded-control focus-visible:outline focus-visible:outline-2 focus-visible:outline-water
+                     disabled:opacity-40 disabled:pointer-events-none flex-col justify-center gap-1"[39m
+    [33mtitle[39m=[32m"Houblons"[39m
+    [33mtype[39m=[32m"button"[39m
+  [36m/>[39m
+
+  Name "Levure":
+  [36m<button[39m
+    [33maria-label[39m=[32m"Levure"[39m
+    [33mclass[39m=[32m"group flex min-h-touch min-w-0 shrink-0 grow px-0.5 items-center rounded-control focus-visible:outline focus-visible:outline-2 focus-visible:outline-water
+                     disabled:opacity-40 disabled:pointer-events-none flex-col justify-center gap-1"[39m
+    [33mtitle[39m=[32m"Levure"[39m
+    [33mtype[39m=[32m"button"[39m
+  [36m/>[39m
+
+  Name "Paliers":
+  [36m<button[39m
+    [33maria-current[39m=[32m"step"[39m
+    [33maria-label[39m=[32m"Paliers"[39m
+    [33mclass[39m=[32m"group flex min-h-touch min-w-0 shrink-0 grow px-0.5 items-center rounded-control focus-visible:outline focus-visible:outline-2 focus-visible:outline-water
+                     disabled:opacity-40 disabled:pointer-events-none flex-col justify-center gap-1"[39m
+    [33mtitle[39m=[32m"Paliers"[39m
+    [33mtype[39m=[32m"button"[39m
+  [36m/>[39m
+
+  Name "Eau et sels":
+  [36m<button[39m
+    [33maria-label[39m=[32m"Eau et sels"[39m
+    [33mclass[39m=[32m"group flex min-h-touch min-w-0 shrink-0 grow px-0.5 items-center rounded-control focus-visible:outline focus-visible:outline-2 focus-visible:outline-water
+                     disabled:opacity-40 disabled:pointer-events-none flex-col justify-center gap-1"[39m
+    [33mtitle[39m=[32m"Eau et sels"[39m
+    [33mtype[39m=[32m"button"[39m
+  [36m/>[39m
+
+  Name "Récapitulatif":
+  [36m<button[39m
+    [33maria-label[39m=[32m"Récapitulatif"[39m
+    [33mclass[39m=[32m"group flex min-h-touch min-w-0 shrink-0 grow px-0.5 items-center rounded-control focus-visible:outline focus-visible:outline-2 focus-visible:outline-water
+                     disabled:opacity-40 disabled:pointer-events-none flex-col justify-center gap-1"[39m
+    [33mtitle[39m=[32m"Récapitulatif"[39m
+    [33mtype[39m=[32m"button"[39m
+  [36m/>[39m
+
+  Name "Programme d’empâtage":
+  [36m<button[39m
+    [33maria-expanded[39m=[32m"false"[39m
+    [33maria-haspopup[39m=[32m"listbox"[39m
+    [33maria-label[39m=[32m"Programme d’empâtage"[39m
+    [33mclass[39m=[32m"pal-prog"[39m
+    [33mdata-booster[39m=[32m"programme"[39m
+    [33mtype[39m=[32m"button"[39m
+  [36m/>[39m
+
+  Name "Palier 1 · Saccharification, 63 °C, 60 min":
+  [36m<rect[39m
+    [33maria-label[39m=[32m"Palier 1 · Saccharification, 63 °C, 60 min"[39m
+    [33maria-pressed[39m=[32m"false"[39m
+    [33mclass[39m=[32m"pal-pal"[39m
+    [33mdata-booster[39m=[32m"palier"[39m
+    [33mdata-hit[39m=[32m""[39m
+    [33mheight[39m=[32m"240"[39m
+    [33mrole[39m=[32m"button"[39m
+    [33mrx[39m=[32m"10"[39m
+    [33mtabindex[39m=[32m"0"[39m
+    [33mwidth[39m=[32m"177.33"[39m
+    [33mx[39m=[32m"30"[39m
+    [33my[39m=[32m"10"[39m
+  [36m/>[39m
+
+  Name "Palier 2 (mash-out) · Mash-out, 76 °C, 10 min":
+  [36m<rect[39m
+    [33maria-label[39m=[32m"Palier 2 (mash-out) · Mash-out, 76 °C, 10 min"[39m
+    [33maria-pressed[39m=[32m"false"[39m
+    [33mclass[39m=[32m"pal-pal"[39m
+    [33mdata-booster[39m=[32m"palier"[39m
+    [33mdata-hit[39m=[32m""[39m
+    [33mheight[39m=[32m"240"[39m
+    [33mrole[39m=[32m"button"[39m
+    [33mrx[39m=[32m"10"[39m
+    [33mtabindex[39m=[32m"0"[39m
+    [33mwidth[39m=[32m"34"[39m
+    [33mx[39m=[32m"296"[39m
+    [33my[39m=[32m"10"[39m
+  [36m/>[39m
+
+  Name "Ajouter un palier":
+  [36m<g[39m
+    [33maria-label[39m=[32m"Ajouter un palier"[39m
+    [33mclass[39m=[32m"pal-plus"[39m
+    [33mdata-booster[39m=[32m"ajout-frontiere"[39m
+    [33mdata-frontiere[39m=[32m"fin"[39m
+    [33mdata-hit[39m=[32m""[39m
+    [33mrole[39m=[32m"button"[39m
+    [33mtabindex[39m=[32m"0"[39m
+  [36m/>[39m
+
+  Name "Choisir le programme sans mash-out":
+  [36m<button[39m
+    [33mtype[39m=[32m"button"[39m
+  [36m/>[39m
+
+  Name "Ensemencement 18 °Crefroidir · programme":
+  [36m<button[39m
+    [33maria-controls[39m=[32m"pal-ens-corps"[39m
+    [33maria-expanded[39m=[32m"false"[39m
+    [33mclass[39m=[32m"pal-ens"[39m
+    [33mtype[39m=[32m"button"[39m
+  [36m/>[39m
+
+  Name "Fermentation, 17 jours, en lecture : se règle dans Levure":
+  [36m<button[39m
+    [33maria-invalid[39m=[32m"false"[39m
+    [33maria-label[39m=[32m"Fermentation, 17 jours, en lecture : se règle dans Levure"[39m
+    [33mclass[39m=[32m"pal-fer"[39m
+    [33mdata-booster[39m=[32m"fermentation-courbe"[39m
+    [33mtype[39m=[32m"button"[39m
+  [36m/>[39m
+
+  Name "Comparer":
+  [36m<button[39m
+    [33mtype[39m=[32m"button"[39m
+  [36m/>[39m
+
+  Name "Retour":
+  [36m<button[39m
+    [33mclass[39m=[32m"min-h-touch-sm px-3 rounded-control border border-cave-800
+                     text-cave-400 text-sm disabled:opacity-30 transition-colors hover:bg-cave-850"[39m
+    [33mtype[39m=[32m"button"[39m
+  [36m/>[39m
+
+  Name "Suivant — Eau et sels":
+  [36m<button[39m
+    [33mclass[39m=[32m"recipe-primary-action min-h-touch px-2 rounded-control bg-ebc-straw text-cave-950
+                     text-sm font-semibold disabled:opacity-40 transition-colors hover:brightness-105"[39m
+    [33mtype[39m=[32m"button"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  paragraph:
+
+  Name "":
+  [36m<p[39m
+    [33mclass[39m=[32m"flex min-w-0 flex-1 items-baseline gap-1.5"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<p[39m
+    [33mclass[39m=[32m"text-xs text-cave-400 break-words leading-tight mt-0.5"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<p />[39m
+
+  Name "":
+  [36m<p />[39m
+
+  Name "":
+  [36m<p />[39m
+
+  Name "":
+  [36m<p[39m
+    [33mclass[39m=[32m"yeast-notice"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<p[39m
+    [33mclass[39m=[32m"text-[13px]"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<p />[39m
+
+  Name "":
+  [36m<p />[39m
+
+  Name "":
+  [36m<p />[39m
+
+  --------------------------------------------------
+  navigation:
+
+  Name "Étapes":
+  [36m<nav[39m
+    [33maria-label[39m=[32m"Étapes"[39m
+    [33mclass[39m=[32m"wizard-step-rail flex w-full gap-0.5 overflow-x-auto overscroll-x-contain"[39m
+  [36m/>[39m
+
+  Name "Étapes":
+  [36m<nav[39m
+    [33maria-label[39m=[32m"Étapes"[39m
+    [33mclass[39m=[32m"wizard-step-rail flex w-full gap-0.5 overflow-x-auto overscroll-x-contain"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<nav[39m
+    [33mclass[39m=[32m"recipe-step-actions flex justify-between gap-2 pt-1 pb-2"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  heading:
+
+  Name "Paliers 5/7":
+  [36m<h1[39m
+    [33mclass[39m=[32m"text-sm font-semibold text-cave-50 break-words leading-tight"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  main:
+
+  Name "Paliers":
+  [36m<main[39m
+    [33maria-label[39m=[32m"Paliers"[39m
+    [33mclass[39m=[32m"flex-1 min-h-0 overflow-y-auto overscroll-contain outline-none focus:outline-none focus-visible:outline-none"[39m
+    [33mtabindex[39m=[32m"-1"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  group:
+
+  Name "":
+  [36m<fieldset[39m
+    [33maria-busy[39m=[32m"false"[39m
+    [33mclass[39m=[32m"contents space-y-3"[39m
+  [36m/>[39m
+
+  Name "Courbe : 63 °C pendant 60 minutes, montée d'environ 30 minutes, 76 °C pendant 10 minutes":
+  [36m<svg[39m
+    [33maria-label[39m=[32m"Courbe : 63 °C pendant 60 minutes, montée d'environ 30 minutes, 76 °C pendant 10 minutes"[39m
+    [33mclass[39m=[32m"pal-g"[39m
+    [33mdata-booster[39m=[32m"courbe-empatage"[39m
+    [33mrole[39m=[32m"group"[39m
+    [33mviewBox[39m=[32m"0 0 370 284"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<details[39m
+    [33mclass[39m=[32m"pal-cmp"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<details />[39m
+
+  --------------------------------------------------
+  region:
+
+  Name "Courbe d'empâtage":
+  [36m<section[39m
+    [33maria-label[39m=[32m"Courbe d'empâtage"[39m
+    [33mclass[39m=[32m"pal-carte"[39m
+    [33mdata-paliers[39m=[32m"courbe"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  switch:
+
+  Name "Mash-out":
+  [36m<button[39m
+    [33maria-checked[39m=[32m"true"[39m
+    [33maria-label[39m=[32m"Mash-out"[39m
+    [33mclass[39m=[32m"pal-tg"[39m
+    [33mdata-booster[39m=[32m"mash-out"[39m
+    [33mrole[39m=[32m"switch"[39m
+    [33mtype[39m=[32m"button"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  link:
+
+  Name "Repères de Palmer":
+  [36m<a[39m
+    [33mhref[39m=[32m"https://howtobrew.com/section-3/chapter-17/"[39m
+    [33mrel[39m=[32m"noreferrer"[39m
+    [33mtarget[39m=[32m"_blank"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  radiogroup:
+
+  Name "Type de rinçage":
+  [36m<div[39m
+    [33maria-label[39m=[32m"Type de rinçage"[39m
+    [33mclass[39m=[32m"flex gap-1 p-0.5 rounded-control bg-cave-950 border border-cave-800 pal-seg"[39m
+    [33mrole[39m=[32m"radiogroup"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  radio:
+
+  Name "Par bacs":
+  [36m<button[39m
+    [33maria-checked[39m=[32m"true"[39m
+    [33mclass[39m=[32m"min-h-touch px-1.5 py-0.5 rounded-control text-2xs leading-tight transition-colors
+                          flex items-center justify-center gap-1
+                          flex-1 min-w-0
+                          focus:outline-none focus-visible:ring-2 focus-visible:ring-ebc-straw
+                          disabled:opacity-40 disabled:cursor-not-allowed
+                          seg-actif font-semibold"[39m
+    [33mid[39m=[32m"_r_8_-batch"[39m
+    [33mrole[39m=[32m"radio"[39m
+    [33mtabindex[39m=[32m"0"[39m
+    [33mtype[39m=[32m"button"[39m
+  [36m/>[39m
+
+  Name "Continu":
+  [36m<button[39m
+    [33maria-checked[39m=[32m"false"[39m
+    [33mclass[39m=[32m"min-h-touch px-1.5 py-0.5 rounded-control text-2xs leading-tight transition-colors
+                          flex items-center justify-center gap-1
+                          flex-1 min-w-0
+                          focus:outline-none focus-visible:ring-2 focus-visible:ring-ebc-straw
+                          disabled:opacity-40 disabled:cursor-not-allowed
+                          text-cave-200 hover:text-cave-50 hover:bg-cave-900"[39m
+    [33mid[39m=[32m"_r_8_-fly"[39m
+    [33mrole[39m=[32m"radio"[39m
+    [33mtabindex[39m=[32m"-1"[39m
+    [33mtype[39m=[32m"button"[39m
+  [36m/>[39m
+
+  Name "Aucun":
+  [36m<button[39m
+    [33maria-checked[39m=[32m"false"[39m
+    [33mclass[39m=[32m"min-h-touch px-1.5 py-0.5 rounded-control text-2xs leading-tight transition-colors
+                          flex items-center justify-center gap-1
+                          flex-1 min-w-0
+                          focus:outline-none focus-visible:ring-2 focus-visible:ring-ebc-straw
+                          disabled:opacity-40 disabled:cursor-not-allowed
+                          text-cave-200 hover:text-cave-50 hover:bg-cave-900"[39m
+    [33mid[39m=[32m"_r_8_-none"[39m
+    [33mrole[39m=[32m"radio"[39m
+    [33mtabindex[39m=[32m"-1"[39m
+    [33mtype[39m=[32m"button"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  complementary:
+
+  Name "Levure et conduite liées à la recette":
+  [36m<aside[39m
+    [33maria-label[39m=[32m"Levure et conduite liées à la recette"[39m
+    [33mclass[39m=[32m"yeast-workbench border-t border-cave-700 pt-2"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  strong:
+
+  Name "":
+  [36m<strong />[39m
+
+  Name "":
+  [36m<strong />[39m
+
+  Name "":
+  [36m<strong />[39m
+
+  Name "":
+  [36m<strong />[39m
+
+  --------------------------------------------------
+
+Ignored nodes: comments, script, style
+[36m<body>[39m
+  [36m<div>[39m
+    [36m<div[39m
+      [33mclass[39m=[32m"page-shell fixed inset-0 z-[49] flex flex-col bg-cave-950 recipe-wizard"[39m
+      [33mdata-page-shell[39m=[32m"true"[39m
+    [36m>[39m
+      [36m<header[39m
+        [33mclass[39m=[32m"shrink-0 border-b border-cave-800 bg-cave-950/95 backdrop-blur-sm pt-safe"[39m
+      [36m>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"flex items-start"[39m
+        [36m>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"min-w-0 flex-1"[39m
+          [36m>[39m
+            [36m<div[39m
+              [33mclass[39m=[32m"sm:hidden"[39m
+            [36m>[39m
+              [36m<div[39m
+                [33mclass[39m=[32m"recipe-mobile-header px-2 bg-cave-950"[39m
+              [36m>[39m
+                [36m<div[39m
+                  [33mclass[39m=[32m"recipe-titlebar flex items-center gap-1.5"[39m
+                [36m>[39m
+                  [36m<button[39m
+                    [33maria-label[39m=[32m"Fermer"[39m
+                    [33mclass[39m=[32m"w-7 h-7 rounded-control flex items-center justify-center text-cave-400 hover:text-cave-50 active:bg-cave-850 shrink-0 transition-colors"[39m
+                    [33mtype[39m=[32m"button"[39m
+                  [36m>[39m
+                    [36m<svg[39m
+                      [33maria-hidden[39m=[32m"true"[39m
+                      [33mclass[39m=[32m"lucide lucide-chevron-left w-4 h-4"[39m
+                      [33mfill[39m=[32m"none"[39m
+                      [33mheight[39m=[32m"24"[39m
+                      [33mstroke[39m=[32m"currentColor"[39m
+                      [33mstroke-linecap[39m=[32m"round"[39m
+                      [33mstroke-linejoin[39m=[32m"round"[39m
+                      [33mstroke-width[39m=[32m"2"[39m
+                      [33mviewBox[39m=[32m"0 0 24 24"[39m
+                      [33mwidth[39m=[32m"24"[39m
+                      [33mxmlns[39m=[32m"http://www.w3.org/2000/svg"[39m
+                    [36m>[39m
+                      [36m<path[39m
+                        [33md[39m=[32m"m15 18-6-6 6-6"[39m
+                      [36m/>[39m
+                    [36m</svg>[39m
+                  [36m</button>[39m
+                  [36m<p[39m
+                    [33mclass[39m=[32m"flex min-w-0 flex-1 items-baseline gap-1.5"[39m
+                  [36m>[39m
+                    [36m<span[39m
+                      [33mclass[39m=[32m"min-w-0 truncate text-base font-semibold text-cave-50"[39m
+                    [36m>[39m
+                      [0mPaliers[0m
+                    [36m</span>[39m
+                    [36m<span[39m
+                      [33mclass[39m=[32m"shrink-0 font-mono text-sm text-cave-400"[39m
+                    [36m>[39m
+                      [0m5[0m
+                      [0m/[0m
+                      [0m7[0m
+                    [36m</span>[39m
+                    [36m<span[39m
+                      [33maria-live[39m=[32m"polite"[39m
+                      [33mclass[39m=[32m"sr-only"[39m
+                    [36m>[39m
+                      [0mPaliers — étape 5 sur 7[0m
+                    [36m</span>[39m
+                  [36m</p>[39m
+                  [36m<button[39m
+                    [33maria-label[39m=[32m"Coller une recette"[39m
+                    [33mclass[39m=[32m"w-7 h-7 rounded-control flex items-center justify-center text-cave-400 hover:text-ebc-straw active:bg-cave-850 shrink-0 transition-colors"[39m
+                    [33mtype[39m=[32m"button"[39m
+                  [36m>[39m
+                    [36m<svg[39m
+                      [33maria-hidden[39m=[32m"true"[39m
+                      [33mclass[39m=[32m"lucide lucide-clipboard-paste w-3.5 h-3.5"[39m
+                      [33mfill[39m=[32m"none"[39m
+                      [33mheight[39m=[32m"24"[39m
+                      [33mstroke[39m=[32m"currentColor"[39m
+                      [33mstroke-linecap[39m=[32m"round"[39m
+                      [33mstroke-linejoin[39m=[32m"round"[39m
+                      [33mstroke-width[39m=[32m"2"[39m
+                      [33mviewBox[39m=[32m"0 0 24 24"[39m
+                      [33mwidth[39m=[32m"24"[39m
+                      [33mxmlns[39m=[32m"http://www.w3.org/2000/svg"[39m
+                    [36m>[39m
+                      [36m<path[39m
+                        [33md[39m=[32m"M11 14h10"[39m
+                      [36m/>[39m
+                      [36m<path[39m
+                        [33md[39m=[32m"M16 4h2a2 2 0 0 1 2 2v1.344"[39m
+                      [36m/>[39m
+                      [36m<path[39m
+                        [33md[39m=[32m"m17 18 4-4-4-4"[39m
+                      [36m/>[39m
+                      [36m<path[39m
+                        [33md[39m=[32m"M8 4H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 1.793-1.113"[39m
+                      [36m/>[39m
+                      [36m<rect[39m
+                        [33mheight[39m=[32m"4"[39m
+                        [33mrx[39m=[32m"1"[39m
+                        [33mwidth[39m=[32m"8"[39m
+                        [33mx[39m=[32m"8"[39m
+                        [33my[39m=[32m"2"[39m
+                      [36m/>[39m
+                    [36m</svg>[39m
+                  [36m</button>[39m
+                  [36m<button[39m
+                    [33maria-label[39m=[32m"Thème sombre (cave)"[39m
+                    [33mclass[39m=[32m"w-7 h-7 rounded-control flex items-center justify-center text-cave-400 hover:text-cave-50 active:bg-cave-850 shrink-0 transition-colors "[39m
+                    [33mdata-theme-toggle[39m=[32m"clair"[39m
+                    [33mtitle[39m=[32m"Thème sombre (cave)"[39m
+                    [33mtype[39m=[32m"button"[39m
+                  [36m>[39m
+                    [36m<svg[39m
+                      [33maria-hidden[39m=[32m"true"[39m
+                      [33mclass[39m=[32m"lucide lucide-moon w-3.5 h-3.5"[39m
+                      [33mfill[39m=[32m"none"[39m
+                      [33mheight[39m=[32m"24"[39m
+                      [33mstroke[39m=[32m"currentColor"[39m
+                      [33mstroke-linecap[39m=[32m"round"[39m
+                      [33mstroke-linejoin[39m=[32m"round"[39m
+                      [33mstroke-width[39m=[32m"2"[39m
+                      [33mviewBox[39m=[32m"0 0 24 24"[39m
+                      [33mwidth[39m=[32m"24"[39m
+                      [33mxmlns[39m=[32m"http://www.w3.org/2000/svg"[39m
+                    [36m>[39m
+                      [36m<path[39m
+                        [33md[39m=[32m"M20.985 12.486a9 9 0 1 1-9.473-9.472c.405-.022.617.46.402.803a6 6 0 0 0 8.268 8.268c.344-.215.825-.004.803.401"[39m
+                      [36m/>[39m
+                    [...
+[90m [2m❯[22m Object.getElementError ../ports-nuit/node_modules/@testing-library/dom/dist/config.js:[2m37:19[22m[39m
+[90m [2m❯[22m ../ports-nuit/node_modules/@testing-library/dom/dist/query-helpers.js:[2m76:38[22m[39m
+[90m [2m❯[22m ../ports-nuit/node_modules/@testing-library/dom/dist/query-helpers.js:[2m52:17[22m[39m
+[90m [2m❯[22m ../ports-nuit/node_modules/@testing-library/dom/dist/query-helpers.js:[2m95:19[22m[39m
+[36m [2m❯[22m tests/unit/bugs-x1-br5.test.tsx:[2m54:19[22m[39m
+    [90m 52| [39m  [34mit[39m([32m'63 °C : un avis court sous la courbe'[39m[33m,[39m () [33m=>[39m {
+    [90m 53| [39m    [34mouvrir[39m([34m63[39m)[33m;[39m
+    [90m 54| [39m    expect(screen.getByRole('note', { name: 'Effet de l’empâtage sur l…
+    [90m   | [39m                  [31m^[39m
+    [90m 55| [39m  })[33m;[39m
+    [90m 56| [39m  [34mit[39m([32m'66,5 °C : pas d’avis'[39m[33m,[39m () [33m=>[39m {
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[7/17]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m tests/unit/bugs-x1-br6.test.tsx[2m > [22mlireAvecUnite : le nombre tapé et son unité[2m > [22mconvertit dans l’unité du champ
+[31m[1mTypeError[22m: (0 , lireAvecUnite) is not a function[39m
+[36m [2m❯[22m tests/unit/bugs-x1-br6.test.tsx:[2m17:12[22m[39m
+    [90m 15| [39m[34mdescribe[39m([32m'lireAvecUnite : le nombre tapé et son unité'[39m[33m,[39m () [33m=>[39m {
+    [90m 16| [39m  [34mit[39m([32m'convertit dans l’unité du champ'[39m[33m,[39m () [33m=>[39m {
+    [90m 17| [39m    expect(lireAvecUnite('0,1 kg', 'g')).toMatchObject({ genre: 'valeu…
+    [90m   | [39m           [31m^[39m
+    [90m 18| [39m    expect(lireAvecUnite('0,1kg', 'g')).toMatchObject({ genre: 'valeur…
+    [90m 19| [39m    expect(lireAvecUnite('250 g', 'kg')).toMatchObject({ genre: 'valeu…
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[8/17]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m tests/unit/bugs-x1-br6.test.tsx[2m > [22mlireAvecUnite : le nombre tapé et son unité[2m > [22mla même unité, ou aucune, se lit tel quel
+[31m[1mTypeError[22m: (0 , lireAvecUnite) is not a function[39m
+[36m [2m❯[22m tests/unit/bugs-x1-br6.test.tsx:[2m23:12[22m[39m
+    [90m 21| [39m  })[33m;[39m
+    [90m 22| [39m  [34mit[39m([32m'la même unité, ou aucune, se lit tel quel'[39m[33m,[39m () [33m=>[39m {
+    [90m 23| [39m    expect(lireAvecUnite('12,5 g', 'g')).toMatchObject({ genre: 'valeu…
+    [90m   | [39m           [31m^[39m
+    [90m 24| [39m    [34mexpect[39m([34mlireAvecUnite[39m([32m'12,5'[39m[33m,[39m [32m'g'[39m))[33m.[39m[34mtoBeNull[39m()[33m;[39m
+    [90m 25| [39m  })[33m;[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[9/17]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m tests/unit/bugs-x1-br6.test.tsx[2m > [22mlireAvecUnite : le nombre tapé et son unité[2m > [22mune unité d’une autre famille est refusée, jamais devinée
+[31m[1mTypeError[22m: (0 , lireAvecUnite) is not a function[39m
+[36m [2m❯[22m tests/unit/bugs-x1-br6.test.tsx:[2m27:12[22m[39m
+    [90m 25| [39m  })[33m;[39m
+    [90m 26| [39m  it('une unité d’une autre famille est refusée, jamais devinée', () =…
+    [90m 27| [39m    expect(lireAvecUnite('0,1 L', 'g')).toMatchObject({ genre: 'refus'…
+    [90m   | [39m           [31m^[39m
+    [90m 28| [39m    expect(lireAvecUnite('3 fûts', 'g')).toMatchObject({ genre: 'refus…
+    [90m 29| [39m  })[33m;[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[10/17]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m tests/unit/bugs-x1-br6.test.tsx[2m > [22mlireAvecUnite : le nombre tapé et son unité[2m > [22mune fin d’unité en cours de frappe attend
+[31m[1mTypeError[22m: (0 , lireAvecUnite) is not a function[39m
+[36m [2m❯[22m tests/unit/bugs-x1-br6.test.tsx:[2m31:12[22m[39m
+    [90m 29| [39m  })[33m;[39m
+    [90m 30| [39m  [34mit[39m([32m'une fin d’unité en cours de frappe attend'[39m[33m,[39m () [33m=>[39m {
+    [90m 31| [39m    expect(lireAvecUnite('0,1 k', 'g')).toMatchObject({ genre: 'attent…
+    [90m   | [39m           [31m^[39m
+    [90m 32| [39m  })[33m;[39m
+    [90m 33| [39m})[33m;[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[11/17]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m tests/unit/bugs-x1-br6.test.tsx[2m > [22mBR-6 : QuantityStepper en g, « 0,1 kg » tapé[2m > [22mlit les kg : 100 g, et le dit
+[31m[1mAssertionError[22m: expected last "spy" call to have been called with [ 100 ][39m
+
+[32m- Expected:[39m 
+[
+  100,
+]
+
+[31m+ Received:[39m 
+undefined
+
+[36m [2m❯[22m tests/unit/bugs-x1-br6.test.tsx:[2m52:20[22m[39m
+    [90m 50| [39m    [34mrender[39m([33m<[39m[33mHote[39m [33msuivre[39m[33m=[39m[33m{[39msuivre[33m}[39m [33m/[39m[33m>[39m)[33m;[39m
+    [90m 51| [39m    [35mconst[39m champ [33m=[39m [34mtaper[39m([32m'0,1 kg'[39m)[33m;[39m
+    [90m 52| [39m    [34mexpect[39m(suivre)[33m.[39m[34mtoHaveBeenLastCalledWith[39m([34m100[39m)[33m;[39m
+    [90m   | [39m                   [31m^[39m
+    [90m 53| [39m    [34mexpect[39m(champ[33m.[39mvalue)[33m.[39m[34mtoBe[39m([32m'100'[39m)[33m;[39m
+    [90m 54| [39m    expect(screen.getByRole('status')).toHaveTextContent('0,1 kg lu co…
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[12/17]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m tests/unit/bugs-x1-br6.test.tsx[2m > [22mBR-6 : QuantityStepper en g, « 0,1 kg » tapé[2m > [22mlit les g dans un champ en kg
+[31m[1mAssertionError[22m: expected last "spy" call to have been called with [ 0.25 ][39m
+
+[32m- Expected:[39m 
+[
+  0.25,
+]
+
+[31m+ Received:[39m 
+undefined
+
+[36m [2m❯[22m tests/unit/bugs-x1-br6.test.tsx:[2m60:20[22m[39m
+    [90m 58| [39m    [34mrender[39m([33m<[39m[33mHote[39m [33mdepart[39m[33m=[39m[33m{[39m[34m2[39m[33m}[39m [33munit[39m[33m=[39m[32m"kg"[39m [33msuivre[39m[33m=[39m[33m{[39msuivre[33m}[39m [33m/[39m[33m>[39m)[33m;[39m
+    [90m 59| [39m    [35mconst[39m champ [33m=[39m [34mtaper[39m([32m'250 g'[39m)[33m;[39m
+    [90m 60| [39m    [34mexpect[39m(suivre)[33m.[39m[34mtoHaveBeenLastCalledWith[39m([34m0.25[39m)[33m;[39m
+    [90m   | [39m                   [31m^[39m
+    [90m 61| [39m    [34mexpect[39m(champ[33m.[39mvalue)[33m.[39m[34mtoBe[39m([32m'0,25'[39m)[33m;[39m
+    [90m 62| [39m  })[33m;[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[13/17]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m tests/unit/bugs-x1-br6.test.tsx[2m > [22mBR-6 : QuantityStepper en g, « 0,1 kg » tapé[2m > [22mrefuse une autre famille d’unité avec un message, et garde la valeur d’avant
+[31m[1mTestingLibraryElementError[22m[39m: Unable to find an accessible element with the role "status"
+
+Here are the accessible roles:
+
+  button:
+
+  Name "Retirer 25 g":
+  [36m<button[39m
+    [33maria-label[39m=[32m"Retirer 25 g"[39m
+    [33mclass[39m=[32m"w-touch h-touch shrink-0 rounded-control border border-cave-700 bg-cave-850 text-cave-50 flex items-center justify-center transition-colors active:bg-cave-800 disabled:opacity-40 disabled:pointer-events-none"[39m
+    [33mtype[39m=[32m"button"[39m
+  [36m/>[39m
+
+  Name "Ajouter 25 g":
+  [36m<button[39m
+    [33maria-label[39m=[32m"Ajouter 25 g"[39m
+    [33mclass[39m=[32m"w-touch h-touch shrink-0 rounded-control border border-cave-700 bg-cave-850 text-cave-50 flex items-center justify-center transition-colors active:bg-cave-800 disabled:opacity-40 disabled:pointer-events-none"[39m
+    [33mtype[39m=[32m"button"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  textbox:
+
+  Name "Dose":
+  [36m<input[39m
+    [33maria-label[39m=[32m"Dose"[39m
+    [33mautocapitalize[39m=[32m"none"[39m
+    [33mautocomplete[39m=[32m"off"[39m
+    [33mautocorrect[39m=[32m"off"[39m
+    [33mclass[39m=[32m"w-full min-w-0 min-h-touch-lg bg-transparent text-center reading text-base text-ebc-straw rounded-control py-0.5 focus:outline-none focus:bg-cave-850"[39m
+    [33mdata-1p-ignore[39m=[32m"true"[39m
+    [33mdata-bwignore[39m=[32m"true"[39m
+    [33mdata-form-type[39m=[32m"other"[39m
+    [33mdata-lpignore[39m=[32m"true"[39m
+    [33menterkeyhint[39m=[32m"done"[39m
+    [33minputmode[39m=[32m"decimal"[39m
+    [33mname[39m=[32m"qty_stepper_input"[39m
+    [33mspellcheck[39m=[32m"false"[39m
+    [33mtype[39m=[32m"text"[39m
+    [33mvalue[39m=[32m"50"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+
+Ignored nodes: comments, script, style
+[36m<body>[39m
+  [36m<div>[39m
+    [36m<div[39m
+      [33mclass[39m=[32m"space-y-1"[39m
+    [36m>[39m
+      [36m<div[39m
+        [33mclass[39m=[32m"flex items-baseline justify-between gap-2"[39m
+      [36m>[39m
+        [36m<span[39m
+          [33mclass[39m=[32m"text-xs text-cave-400 font-medium"[39m
+        [36m>[39m
+          [0mDose[0m
+        [36m</span>[39m
+      [36m</div>[39m
+      [36m<div[39m
+        [33mclass[39m=[32m"flex items-center gap-1 sm:gap-1.5"[39m
+      [36m>[39m
+        [36m<button[39m
+          [33maria-label[39m=[32m"Retirer 25 g"[39m
+          [33mclass[39m=[32m"w-touch h-touch shrink-0 rounded-control border border-cave-700 bg-cave-850 text-cave-50 flex items-center justify-center transition-colors active:bg-cave-800 disabled:opacity-40 disabled:pointer-events-none"[39m
+          [33mtype[39m=[32m"button"[39m
+        [36m>[39m
+          [36m<svg[39m
+            [33maria-hidden[39m=[32m"true"[39m
+            [33mclass[39m=[32m"lucide lucide-minus w-4 h-4"[39m
+            [33mfill[39m=[32m"none"[39m
+            [33mheight[39m=[32m"24"[39m
+            [33mstroke[39m=[32m"currentColor"[39m
+            [33mstroke-linecap[39m=[32m"round"[39m
+            [33mstroke-linejoin[39m=[32m"round"[39m
+            [33mstroke-width[39m=[32m"2"[39m
+            [33mviewBox[39m=[32m"0 0 24 24"[39m
+            [33mwidth[39m=[32m"24"[39m
+            [33mxmlns[39m=[32m"http://www.w3.org/2000/svg"[39m
+          [36m>[39m
+            [36m<path[39m
+              [33md[39m=[32m"M5 12h14"[39m
+            [36m/>[39m
+          [36m</svg>[39m
+        [36m</button>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"flex-1 flex items-baseline justify-center gap-0.5 sm:gap-1 min-w-0"[39m
+        [36m>[39m
+          [36m<input[39m
+            [33maria-label[39m=[32m"Dose"[39m
+            [33mautocapitalize[39m=[32m"none"[39m
+            [33mautocomplete[39m=[32m"off"[39m
+            [33mautocorrect[39m=[32m"off"[39m
+            [33mclass[39m=[32m"w-full min-w-0 min-h-touch-lg bg-transparent text-center reading text-base text-ebc-straw rounded-control py-0.5 focus:outline-none focus:bg-cave-850"[39m
+            [33mdata-1p-ignore[39m=[32m"true"[39m
+            [33mdata-bwignore[39m=[32m"true"[39m
+            [33mdata-form-type[39m=[32m"other"[39m
+            [33mdata-lpignore[39m=[32m"true"[39m
+            [33menterkeyhint[39m=[32m"done"[39m
+            [33minputmode[39m=[32m"decimal"[39m
+            [33mname[39m=[32m"qty_stepper_input"[39m
+            [33mspellcheck[39m=[32m"false"[39m
+            [33mtype[39m=[32m"text"[39m
+            [33mvalue[39m=[32m"50"[39m
+          [36m/>[39m
+          [36m<span[39m
+            [33mclass[39m=[32m"reading-unit shrink-0 text-xs"[39m
+          [36m>[39m
+            [0mg[0m
+          [36m</span>[39m
+        [36m</div>[39m
+        [36m<button[39m
+          [33maria-label[39m=[32m"Ajouter 25 g"[39m
+          [33mclass[39m=[32m"w-touch h-touch shrink-0 rounded-control border border-cave-700 bg-cave-850 text-cave-50 flex items-center justify-center transition-colors active:bg-cave-800 disabled:opacity-40 disabled:pointer-events-none"[39m
+          [33mtype[39m=[32m"button"[39m
+        [36m>[39m
+          [36m<svg[39m
+            [33maria-hidden[39m=[32m"true"[39m
+            [33mclass[39m=[32m"lucide lucide-plus w-4 h-4"[39m
+            [33mfill[39m=[32m"none"[39m
+            [33mheight[39m=[32m"24"[39m
+            [33mstroke[39m=[32m"currentColor"[39m
+            [33mstroke-linecap[39m=[32m"round"[39m
+            [33mstroke-linejoin[39m=[32m"round"[39m
+            [33mstroke-width[39m=[32m"2"[39m
+            [33mviewBox[39m=[32m"0 0 24 24"[39m
+            [33mwidth[39m=[32m"24"[39m
+            [33mxmlns[39m=[32m"http://www.w3.org/2000/svg"[39m
+          [36m>[39m
+            [36m<path[39m
+              [33md[39m=[32m"M5 12h14"[39m
+            [36m/>[39m
+            [36m<path[39m
+              [33md[39m=[32m"M12 5v14"[39m
+            [36m/>[39m
+          [36m</svg>[39m
+        [36m</button>[39m
+      [36m</div>[39m
+    [36m</div>[39m
+  [36m</div>[39m
+[36m</body>[39m
+[90m [2m❯[22m Object.getElementError ../ports-nuit/node_modules/@testing-library/dom/dist/config.js:[2m37:19[22m[39m
+[90m [2m❯[22m ../ports-nuit/node_modules/@testing-library/dom/dist/query-helpers.js:[2m76:38[22m[39m
+[90m [2m❯[22m ../ports-nuit/node_modules/@testing-library/dom/dist/query-helpers.js:[2m52:17[22m[39m
+[90m [2m❯[22m ../ports-nuit/node_modules/@testing-library/dom/dist/query-helpers.js:[2m95:19[22m[39m
+[36m [2m❯[22m tests/unit/bugs-x1-br6.test.tsx:[2m69:19[22m[39m
+    [90m 67| [39m    [34mexpect[39m(champ[33m.[39mvalue)[33m.[39m[34mtoBe[39m([32m'50'[39m)[33m;[39m
+    [90m 68| [39m    [34mexpect[39m(suivre)[33m.[39mnot[33m.[39m[34mtoHaveBeenCalled[39m()[33m;[39m
+    [90m 69| [39m    expect(screen.getByRole('status')).toHaveTextContent('« 0,1 L » : …
+    [90m   | [39m                  [31m^[39m
+    [90m 70| [39m    [34mexpect[39m(screen[33m.[39m[34mgetByRole[39m([32m'status'[39m))[33m.[39m[34mtoHaveTextContent[39m([32m'50 g'[39m)[33m;[39m
+    [90m 71| [39m  })[33m;[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[14/17]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m tests/unit/bugs-x1-br6.test.tsx[2m > [22mBR-6 : QuantityStepper en g, « 0,1 kg » tapé[2m > [22men vrai frappe, « 0,1 » est parti au parent puis « 0,1 L » est refusé : le parent retrouve 50
+[31m[1mAssertionError[22m: expected last "spy" call to have been called with [ 50 ][39m
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[2m  [[22m
+[32m-   50,[39m
+[31m+   0.1,[39m
+[2m  ][22m
+
+[36m [2m❯[22m tests/unit/bugs-x1-br6.test.tsx:[2m81:20[22m[39m
+    [90m 79| [39m    fireEvent[33m.[39m[34mblur[39m(champ)[33m;[39m
+    [90m 80| [39m    [34mexpect[39m(suivre)[33m.[39m[34mtoHaveBeenNthCalledWith[39m([34m1[39m[33m,[39m [34m0.1[39m)[33m;[39m
+    [90m 81| [39m    [34mexpect[39m(suivre)[33m.[39m[34mtoHaveBeenLastCalledWith[39m([34m50[39m)[33m;[39m
+    [90m   | [39m                   [31m^[39m
+    [90m 82| [39m    [34mexpect[39m(champ[33m.[39mvalue)[33m.[39m[34mtoBe[39m([32m'50'[39m)[33m;[39m
+    [90m 83| [39m  })[33m;[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[15/17]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m tests/unit/bugs-x1-br6.test.tsx[2m > [22mBR-6 : QuantityStepper en g, « 0,1 kg » tapé[2m > [22mrefuse un texte illisible avec un message
+[31m[1mTestingLibraryElementError[22m[39m: Unable to find an accessible element with the role "status"
+
+Here are the accessible roles:
+
+  button:
+
+  Name "Retirer 25 g":
+  [36m<button[39m
+    [33maria-label[39m=[32m"Retirer 25 g"[39m
+    [33mclass[39m=[32m"w-touch h-touch shrink-0 rounded-control border border-cave-700 bg-cave-850 text-cave-50 flex items-center justify-center transition-colors active:bg-cave-800 disabled:opacity-40 disabled:pointer-events-none"[39m
+    [33mtype[39m=[32m"button"[39m
+  [36m/>[39m
+
+  Name "Ajouter 25 g":
+  [36m<button[39m
+    [33maria-label[39m=[32m"Ajouter 25 g"[39m
+    [33mclass[39m=[32m"w-touch h-touch shrink-0 rounded-control border border-cave-700 bg-cave-850 text-cave-50 flex items-center justify-center transition-colors active:bg-cave-800 disabled:opacity-40 disabled:pointer-events-none"[39m
+    [33mtype[39m=[32m"button"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  textbox:
+
+  Name "Dose":
+  [36m<input[39m
+    [33maria-label[39m=[32m"Dose"[39m
+    [33mautocapitalize[39m=[32m"none"[39m
+    [33mautocomplete[39m=[32m"off"[39m
+    [33mautocorrect[39m=[32m"off"[39m
+    [33mclass[39m=[32m"w-full min-w-0 min-h-touch-lg bg-transparent text-center reading text-base text-ebc-straw rounded-control py-0.5 focus:outline-none focus:bg-cave-850"[39m
+    [33mdata-1p-ignore[39m=[32m"true"[39m
+    [33mdata-bwignore[39m=[32m"true"[39m
+    [33mdata-form-type[39m=[32m"other"[39m
+    [33mdata-lpignore[39m=[32m"true"[39m
+    [33menterkeyhint[39m=[32m"done"[39m
+    [33minputmode[39m=[32m"decimal"[39m
+    [33mname[39m=[32m"qty_stepper_input"[39m
+    [33mspellcheck[39m=[32m"false"[39m
+    [33mtype[39m=[32m"text"[39m
+    [33mvalue[39m=[32m"50"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+
+Ignored nodes: comments, script, style
+[36m<body>[39m
+  [36m<div>[39m
+    [36m<div[39m
+      [33mclass[39m=[32m"space-y-1"[39m
+    [36m>[39m
+      [36m<div[39m
+        [33mclass[39m=[32m"flex items-baseline justify-between gap-2"[39m
+      [36m>[39m
+        [36m<span[39m
+          [33mclass[39m=[32m"text-xs text-cave-400 font-medium"[39m
+        [36m>[39m
+          [0mDose[0m
+        [36m</span>[39m
+      [36m</div>[39m
+      [36m<div[39m
+        [33mclass[39m=[32m"flex items-center gap-1 sm:gap-1.5"[39m
+      [36m>[39m
+        [36m<button[39m
+          [33maria-label[39m=[32m"Retirer 25 g"[39m
+          [33mclass[39m=[32m"w-touch h-touch shrink-0 rounded-control border border-cave-700 bg-cave-850 text-cave-50 flex items-center justify-center transition-colors active:bg-cave-800 disabled:opacity-40 disabled:pointer-events-none"[39m
+          [33mtype[39m=[32m"button"[39m
+        [36m>[39m
+          [36m<svg[39m
+            [33maria-hidden[39m=[32m"true"[39m
+            [33mclass[39m=[32m"lucide lucide-minus w-4 h-4"[39m
+            [33mfill[39m=[32m"none"[39m
+            [33mheight[39m=[32m"24"[39m
+            [33mstroke[39m=[32m"currentColor"[39m
+            [33mstroke-linecap[39m=[32m"round"[39m
+            [33mstroke-linejoin[39m=[32m"round"[39m
+            [33mstroke-width[39m=[32m"2"[39m
+            [33mviewBox[39m=[32m"0 0 24 24"[39m
+            [33mwidth[39m=[32m"24"[39m
+            [33mxmlns[39m=[32m"http://www.w3.org/2000/svg"[39m
+          [36m>[39m
+            [36m<path[39m
+              [33md[39m=[32m"M5 12h14"[39m
+            [36m/>[39m
+          [36m</svg>[39m
+        [36m</button>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"flex-1 flex items-baseline justify-center gap-0.5 sm:gap-1 min-w-0"[39m
+        [36m>[39m
+          [36m<input[39m
+            [33maria-label[39m=[32m"Dose"[39m
+            [33mautocapitalize[39m=[32m"none"[39m
+            [33mautocomplete[39m=[32m"off"[39m
+            [33mautocorrect[39m=[32m"off"[39m
+            [33mclass[39m=[32m"w-full min-w-0 min-h-touch-lg bg-transparent text-center reading text-base text-ebc-straw rounded-control py-0.5 focus:outline-none focus:bg-cave-850"[39m
+            [33mdata-1p-ignore[39m=[32m"true"[39m
+            [33mdata-bwignore[39m=[32m"true"[39m
+            [33mdata-form-type[39m=[32m"other"[39m
+            [33mdata-lpignore[39m=[32m"true"[39m
+            [33menterkeyhint[39m=[32m"done"[39m
+            [33minputmode[39m=[32m"decimal"[39m
+            [33mname[39m=[32m"qty_stepper_input"[39m
+            [33mspellcheck[39m=[32m"false"[39m
+            [33mtype[39m=[32m"text"[39m
+            [33mvalue[39m=[32m"50"[39m
+          [36m/>[39m
+          [36m<span[39m
+            [33mclass[39m=[32m"reading-unit shrink-0 text-xs"[39m
+          [36m>[39m
+            [0mg[0m
+          [36m</span>[39m
+        [36m</div>[39m
+        [36m<button[39m
+          [33maria-label[39m=[32m"Ajouter 25 g"[39m
+          [33mclass[39m=[32m"w-touch h-touch shrink-0 rounded-control border border-cave-700 bg-cave-850 text-cave-50 flex items-center justify-center transition-colors active:bg-cave-800 disabled:opacity-40 disabled:pointer-events-none"[39m
+          [33mtype[39m=[32m"button"[39m
+        [36m>[39m
+          [36m<svg[39m
+            [33maria-hidden[39m=[32m"true"[39m
+            [33mclass[39m=[32m"lucide lucide-plus w-4 h-4"[39m
+            [33mfill[39m=[32m"none"[39m
+            [33mheight[39m=[32m"24"[39m
+            [33mstroke[39m=[32m"currentColor"[39m
+            [33mstroke-linecap[39m=[32m"round"[39m
+            [33mstroke-linejoin[39m=[32m"round"[39m
+            [33mstroke-width[39m=[32m"2"[39m
+            [33mviewBox[39m=[32m"0 0 24 24"[39m
+            [33mwidth[39m=[32m"24"[39m
+            [33mxmlns[39m=[32m"http://www.w3.org/2000/svg"[39m
+          [36m>[39m
+            [36m<path[39m
+              [33md[39m=[32m"M5 12h14"[39m
+            [36m/>[39m
+            [36m<path[39m
+              [33md[39m=[32m"M12 5v14"[39m
+            [36m/>[39m
+          [36m</svg>[39m
+        [36m</button>[39m
+      [36m</div>[39m
+    [36m</div>[39m
+  [36m</div>[39m
+[36m</body>[39m
+[90m [2m❯[22m Object.getElementError ../ports-nuit/node_modules/@testing-library/dom/dist/config.js:[2m37:19[22m[39m
+[90m [2m❯[22m ../ports-nuit/node_modules/@testing-library/dom/dist/query-helpers.js:[2m76:38[22m[39m
+[90m [2m❯[22m ../ports-nuit/node_modules/@testing-library/dom/dist/query-helpers.js:[2m52:17[22m[39m
+[90m [2m❯[22m ../ports-nuit/node_modules/@testing-library/dom/dist/query-helpers.js:[2m95:19[22m[39m
+[36m [2m❯[22m tests/unit/bugs-x1-br6.test.tsx:[2m87:19[22m[39m
+    [90m 85| [39m    [34mrender[39m([33m<[39m[33mHote[39m [33msuivre[39m[33m=[39m[33m{[39mvi[33m.[39m[34mfn[39m()[33m}[39m [33m/[39m[33m>[39m)[33m;[39m
+    [90m 86| [39m    [34mtaper[39m([32m'beaucoup'[39m)[33m;[39m
+    [90m 87| [39m    expect(screen.getByRole('status')).toHaveTextContent('« beaucoup »…
+    [90m   | [39m                  [31m^[39m
+    [90m 88| [39m  })[33m;[39m
+    [90m 89| [39m  it('un nombre sans unité reste lu dans l’unité du champ, sans messag…
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[16/17]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m tests/unit/bugs-x1-br98.test.tsx[2m > [22mBR-98 : la liste « Houblon pour ce style » dit l’α et les arômes[2m > [22mune variété de référence montre son α publié et ses arômes avant la source
+[31m[1mError[22m: [2mexpect([22m[31melement[31m[2m).toHaveTextContent()[22m
+
+Expected element to have text content:
+[32m  11–13 % α[31m
+Received:
+[31m  CitraHopsteiner · Pellets T90[31m[39m
+[36m [2m❯[22m tests/unit/bugs-x1-br98.test.tsx:[2m34:19[22m[39m
+    [90m 32| [39m    fireEvent.click(screen.getByRole('combobox', { name: 'Houblon du s…
+    [90m 33| [39m    [35mconst[39m citra [33m=[39m screen[33m.[39m[34mgetByRole[39m([32m'option'[39m[33m,[39m { name[33m:[39m [36m/Citra/[39m })[33m;[39m
+    [90m 34| [39m    [34mexpect[39m(citra)[33m.[39m[34mtoHaveTextContent[39m([32m'11–13 % α'[39m)[33m;[39m
+    [90m   | [39m                  [31m^[39m
+    [90m 35| [39m    [34mexpect[39m(citra)[33m.[39m[34mtoHaveTextContent[39m([32m'Agrumes'[39m)[33m;[39m
+    [90m 36| [39m    [90m// Sans α publié : dit « α non publié », jamais 0 ni vide.[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[17/17]⎯[22m[39m
+
+
+[2m Test Files [22m [1m[31m3 failed[39m[22m[90m (3)[39m
+[2m      Tests [22m [1m[31m17 failed[39m[22m[2m | [22m[1m[32m2 passed[39m[22m[90m (19)[39m
+[2m   Start at [22m 18:48:08
+[2m   Duration [22m 11.50s[2m (transform 6.30s, setup 886ms, collect 10.09s, tests 1.78s, environment 2.08s, prepare 204ms)[22m
+

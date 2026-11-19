@@ -1,0 +1,32 @@
+390-clair br6 : avant « 46 » ; après « 0,1 kg » : champ = 100 ; avis = 0,1 kg lu comme 100 g.
+390-clair br6 refus : champ = 100 ; avis = « 0,1 L » : ce champ est en g. La valeur précédente (100 g) est conservée.
+390-clair paliers (clic) : true
+390-clair br5 par défaut : 68,5 °C : FG plus haute d’environ 2 points (repère : 66,5 °C).
+390-clair br5 palier touché : false
+390-clair br5 à 63 °C : 68,5 °C : FG plus haute d’environ 2 points (repère : 66,5 °C).
+390-clair br98 onglet Simuler : true
+390-clair br98 options : 
+390-cave br6 : avant « 46 » ; après « 0,1 kg » : champ = 100 ; avis = 0,1 kg lu comme 100 g.
+390-cave br6 refus : champ = 100 ; avis = « 0,1 L » : ce champ est en g. La valeur précédente (100 g) est conservée.
+390-cave paliers (clic) : true
+390-cave br5 par défaut : 68,5 °C : FG plus haute d’environ 2 points (repère : 66,5 °C).
+390-cave br5 palier touché : false
+390-cave br5 à 63 °C : 68,5 °C : FG plus haute d’environ 2 points (repère : 66,5 °C).
+390-cave br98 onglet Simuler : true
+390-cave br98 options : 
+1280-clair br6 : avant « 46 » ; après « 0,1 kg » : champ = 100 ; avis = 0,1 kg lu comme 100 g.
+1280-clair br6 refus : champ = 100 ; avis = « 0,1 L » : ce champ est en g. La valeur précédente (100 g) est conservée.
+1280-clair paliers (clic) : true
+1280-clair br5 par défaut : 68,5 °C : FG plus haute d’environ 2 points (repère : 66,5 °C).
+1280-clair br5 palier touché : false
+1280-clair br5 à 63 °C : 68,5 °C : FG plus haute d’environ 2 points (repère : 66,5 °C).
+1280-clair br98 onglet Simuler : true
+1280-clair br98 options : 
+1280-cave br6 : avant « 46 » ; après « 0,1 kg » : champ = 100 ; avis = 0,1 kg lu comme 100 g.
+1280-cave br6 refus : champ = 100 ; avis = « 0,1 L » : ce champ est en g. La valeur précédente (100 g) est conservée.
+1280-cave paliers (clic) : true
+1280-cave br5 par défaut : 68,5 °C : FG plus haute d’environ 2 points (repère : 66,5 °C).
+1280-cave br5 palier touché : false
+1280-cave br5 à 63 °C : 68,5 °C : FG plus haute d’environ 2 points (repère : 66,5 °C).
+1280-cave br98 onglet Simuler : true
+1280-cave br98 options : 
