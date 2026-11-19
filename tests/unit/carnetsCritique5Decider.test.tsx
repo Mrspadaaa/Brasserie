@@ -188,7 +188,7 @@ describe('(6) À venir et Réalisés dans Stocks › Matériel, n° 12 et 35 (h0
     expect(colonne.textContent).not.toContain('Caisse fin de mois');
     expect(colonne.textContent).toContain('Il passe seul dans Réalisés quand sa dépense liée est payée');
     /* le Densimètre, choisi sans plan, attend « Envoyer dans À venir » : rappelé, rien d'inventé */
-    expect(within(colonne).getByRole('region', { name: 'Choisis, pas encore dans À venir' }).textContent).toContain('Densimètre');
+    expect(within(colonne).getByRole('region', { name: 'Choisis, pas encore planifiés' }).textContent).toContain('Densimètre');
   });
   it('Réalisés vide : la facture payée solde le projet, sans geste ; vouvoiement', async () => {
     const { items } = fixturePlanRealise();

@@ -27,7 +27,9 @@ export type CadreV =
   | { sorte: 'creer'; titre: string; proche?: { titre: string; onAjouter: () => void; ouvrir?: boolean } | null; raisonNeuf?: string; ceQuiCompte?: string }
   /* Critique 5, n° 3 (G4) : `vers`, le carnet visé quand ce n'est pas l'ouvert (« ↓ va dans Évier inox ») ; même calcul qu'à l'envoi */
   /* `source` (décision du pilote, critique 6) : d'où vient le critère annoncé, lu par `sourceDuCritere` */
-  | { sorte: 'texte'; rubrique: 'Ce qui compte' | 'Façons' | 'Articles' | 'Notes'; texte: string; origine: Origine; compareSur?: string; vers?: string; source?: 'phrase' | 'ia' }
+  /* tour 3, f7 n° 6 : `rangeeGenre` : les puces « Va dans [carnet] · en [genre] » sous le cadre disent le genre ; le cadre ne redit pas « Notes : ».
+     « ↓ va dans X » reste : c'est la tête du cadre de la maquette (G4, critique 5 n° 3) */
+  | { sorte: 'texte'; rubrique: 'Ce qui compte' | 'Façons' | 'Articles' | 'Notes'; texte: string; origine: Origine; compareSur?: string; vers?: string; source?: 'phrase' | 'ia'; rangeeGenre?: boolean }
   /* `lecturePossible` (critique 6, n° 11) : faux si l'IA est éteinte ou hors ligne ; la promesse « se lisent à l'envoi » se tait */
   /* tour 3, f5b n° 12 : `vers`, collé depuis la liste, le carnet qui parle déjà de l'objet : l'article y va (« va dans Ventilation… ») */
   | { sorte: 'lien'; url: string; phase: 'avant' | 'lecture'; depuisListe?: boolean; vers?: string; lecturePossible?: boolean; apercu?: string; lus?: { nom: boolean; photo: boolean; prix: boolean; stock: boolean; valeurs: boolean }; cherche?: string[] }
@@ -94,6 +96,18 @@ function CadreContenu({ cadre: c, onAnnuler, consequence, aides, doublon, regrou
       </section>
     );
   }
+  /* tour 3, f7 n° 2 : la phrase nomme un carnet existant (« Ventilation de la salle ») : une seule annonce, ce carnet ; ni « Nouveau carnet »
+     ni « arrive ici », puisque rien n'est créé (Ajouter l'ouvre aussi, CarnetsVue) */
+  if (c.sorte === 'creer' && c.proche?.ouvrir) {
+    return (
+      <section className="cn-cadre" aria-label={`Ce carnet existe déjà : ${c.proche.titre}`} data-existant="">
+        <div className="cn-proche">
+          <p><Provenance origine="ia" /> Déjà un carnet proche : <b>{c.proche.titre}</b></p>
+          <button type="button" className="cn-puce cn-puce-ia" onClick={c.proche.onAjouter}><ArrowRight size={16} aria-hidden /> Ouvrir ce carnet</button>
+        </div>
+      </section>
+    );
+  }
   if (c.sorte === 'creer') {
     return (
       <section className="cn-cadre" aria-label="Arrive ici">
@@ -121,7 +135,7 @@ function CadreContenu({ cadre: c, onAnnuler, consequence, aides, doublon, regrou
             {c.origine === 'locale' && <span className="cn-mut"><Provenance origine="locale" /> tiré de votre phrase</span>}
             <Croix onAnnuler={onAnnuler} />
           </div>
-          <p className="cn-cadre-titre">{c.rubrique} : {c.texte}</p>
+          <p className="cn-cadre-titre">{c.rangeeGenre ? c.texte : `${c.rubrique} : ${c.texte}`}</p>
           {c.compareSur && <p className="cn-mut">comparé sur {c.compareSur}</p>}
           {aides?.doublon && doublon && (
             <div className="cn-aide">

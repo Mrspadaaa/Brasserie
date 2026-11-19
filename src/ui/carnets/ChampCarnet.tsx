@@ -121,6 +121,26 @@ export function lienCourt(url: string, max = 22): string {
   return sans.length > max ? `${sans.slice(0, max)}…` : sans;
 }
 
+/**
+ * Tour 3, f7 n° 3 : un rang « Va dans » ne se fond à droite (`data-deborde`, carnets-fil.css) que si sa dernière puce dépasse vraiment ;
+ * sinon il montre toutes ses puces entières. La mesure lit la position de la dernière puce (scroll compris), pas `scrollWidth`, que la marge
+ * du fondu fausserait. À chaque rendu (le texte change les puces) et au redimensionnement.
+ */
+function useDebordVaDans(zone: React.RefObject<HTMLDivElement | null>) {
+  const mesurer = React.useCallback(() => {
+    zone.current?.querySelectorAll<HTMLElement>('.cn-vadans').forEach(rang => {
+      const derniere = rang.lastElementChild;
+      const deborde = !!derniere && derniere.getBoundingClientRect().right + rang.scrollLeft > rang.getBoundingClientRect().right + 0.5;
+      if (deborde !== rang.hasAttribute('data-deborde')) rang.toggleAttribute('data-deborde', deborde);
+    });
+  }, [zone]);
+  useLayoutEffect(mesurer);
+  useEffect(() => {
+    window.addEventListener('resize', mesurer);
+    return () => window.removeEventListener('resize', mesurer);
+  }, [mesurer]);
+}
+
 /** Le conteneur qui défile sous le champ : la zone voisine qui défile (vue à hauteur bornée), sinon un ancêtre, sinon la page. */
 function defileurDe(zone: HTMLElement): Element | null {
   const defile = (e: Element) => {
@@ -208,6 +228,7 @@ export function ChampCarnet(p: ChampCarnetProps) {
   const pret = (plein || (!!jointe && !jointe.lecture)) && !jointe?.lecture;
   const montrerBulle = !!p.suggestion && focus && !plein;
   useChampPublie(zone, inset, montrerBulle);
+  useDebordVaDans(zone);
 
   return (
     <div ref={zone} className="cn-champ-zone" style={{ bottom: inset, marginBottom: inset }} aria-disabled={p.desactive || undefined} data-clavier={inset || undefined}>

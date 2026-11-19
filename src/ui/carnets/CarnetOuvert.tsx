@@ -23,6 +23,8 @@ import { Bandeau } from './Bandeau';
 import { CarteArticle, CarteClassee, estExemple, nombreValeur } from './CarteArticle';
 import { colonnesVue, meilleursDe, moinsBienQueDe, sansApercu, texteCellule, type ColonneVue, type TableauV } from './Comparer';
 import { avecArticle, domaineEtChemin, libelleCaracteristique, libelleEcarte, passe, texteMoinsBienQue } from '../../domain/carnets/comparer';
+/** f7 n° 7 : une raison d'écart sans son préfixe « écarté : », pour comparer celle d'un article à celle de sa façon. */
+const sansEcarte = (r: string) => r.trim().replace(/^écartée?s*:s*/i, '').trim().toLowerCase();
 import { uniquesParTexte } from '../../domain/carnets/doublons';
 import { dateCourte, GENRE_LIBELLE, montant, Provenance, STATUT_LIBELLE, texteSortie, type AidesV, type ArticleV, type CarnetV, type ContenuCarnetV, type CritereV, type FaconV, type GenreNote, type NoteV } from './EtatIA';
 import { LigneRangee } from './LigneRangee';
@@ -644,7 +646,9 @@ function TableauCarnet({ carnet: k, titre, tableau, aRelire, sep, sauf, onOuvrir
             )}
             {b.lignes.map(l => {
               const a = art(l.articleId);
-              const sous = l.ecarte ? libelleEcarte(l.ecarte.raison) : [a?.pays, a?.dispo?.replace(/\bsemaines?\b/, 'sem.')].filter(Boolean).join(' · ');
+              /* tour 3, f7 n° 7 : la façon écartée porte déjà la raison en pastille ; son article, écarté pour la même raison, dit « écarté » seul */
+              const memeRaison = !!l.ecarte && b.facon?.etat === 'ecartee' && !!b.facon.raison && sansEcarte(l.ecarte.raison) === sansEcarte(b.facon.raison);
+              const sous = l.ecarte ? (memeRaison ? 'écarté' : libelleEcarte(l.ecarte.raison)) : [a?.pays, a?.dispo?.replace(/\bsemaines?\b/, 'sem.')].filter(Boolean).join(' · ');
               const moinsBien = l.ecarte ? null : texteMoinsBien(tableau, l);
               return (
                 <button key={l.articleId} type="button" className={`cn-tab-ligne${l.ecarte ? ' cn-ecarte' : ''}`} style={gabarit} role="row" onClick={() => onOuvrir(l.articleId)}>

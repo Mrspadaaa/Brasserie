@@ -165,7 +165,8 @@ describe('PCN-120, PCN-121 : liste et rangée « Va dans »', () => {
     expect(css('carnets.css')).toMatch(/\.cn-carnet-coller \{[^}]*grid-template-areas/);
   });
   it('121 : la rangée « Va dans » dit qu\'elle défile (fondu à droite)', () => {
-    expect(css('carnets-fil.css')).toMatch(/\.cn-champ-zone \.cn-vadans \{[^}]*mask-image/);
+    /* f7 n° 3 : le fondu seulement au débord réel (`data-deborde`, posé par ChampCarnet) */
+    expect(css('carnets-fil.css')).toMatch(/\.cn-champ-zone \.cn-vadans\[data-deborde\] \{[^}]*mask-image/);
   });
 });
 

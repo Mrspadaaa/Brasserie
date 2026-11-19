@@ -13,11 +13,13 @@
 /* P37 : clavier ouvert, la bulle G8 et « Coller » sur une seule ligne ; chacune se tronque plutôt que de prendre deux lignes. */
 .cnf-aides { display: flex; flex-direction: column; gap: 8px; align-items: stretch; }
 .cnf-aides > .cn-coller { align-self: flex-start; }
-.cnf-aides-ligne { display: flex; gap: 6px; align-items: center; min-width: 0; }
-.cnf-aides-ligne > .cn-bulle { flex: 1 1 auto; min-width: 0; min-height: 36px; padding: 6px 10px; align-items: center; }
+/* tour 3, f7 n° 1 : à 390, la bulle et la puce ne tiennent pas ensemble (278 px) : la ligne passe à la ligne, la puce dessous garde sa largeur ;
+   à 1280, elles restent sur une ligne (P37). */
+.cnf-aides-ligne { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; min-width: 0; }
+.cnf-aides-ligne > .cn-bulle { flex: 1 1 13rem; min-width: 0; min-height: 36px; padding: 6px 10px; align-items: center; }
 /* tour 3, PCN-103 et f5 n° 2 : la bulle dit entre quoi, les deux façons entières ; elle prend les lignes qu’il faut, jamais coupée par « … » */
 .cnf-aides-ligne > .cn-bulle > span:last-child { min-width: 0; overflow-wrap: anywhere; line-height: 1.25; text-align: left; }
-.cnf-aides-ligne > .cn-coller { flex: 0 1 auto; min-width: 0; max-width: 55%; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; min-height: 36px; }
+.cnf-aides-ligne > .cn-coller { flex: 0 1 auto; min-width: 0; max-width: 100%; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; min-height: 36px; }
 .cn-champ-zone[data-clavier] { gap: 6px; padding-top: 6px; padding-bottom: 6px; }
 
 /* P28 (R09, g5:v03-2) : Créer · avant */
@@ -80,9 +82,17 @@
 
 /* Critique 6, n° 29 : les puces « Va dans » tiennent sur un rang à 390 ; au-delà, le rang défile, il ne passe jamais à la ligne */
 /* Tour 3, PCN-121 : un fondu à droite dit que le rang défile ; la dernière puce n'est jamais coupée sans indice */
-.cn-champ-zone .cn-vadans { flex-wrap: nowrap; overflow-x: auto; scrollbar-width: none; gap: 6px; padding-right: 24px; -webkit-mask-image: linear-gradient(to right, #000 calc(100% - 28px), transparent); mask-image: linear-gradient(to right, #000 calc(100% - 28px), transparent); }
+/* Tour 3, f7 n° 3 : le fondu et sa marge seulement quand la dernière puce dépasse (`data-deborde`, posé par ChampCarnet) ; sinon la puce entière */
+.cn-champ-zone .cn-vadans { flex-wrap: nowrap; overflow-x: auto; scrollbar-width: none; gap: 6px; }
+.cn-champ-zone .cn-vadans[data-deborde] { padding-right: 24px; -webkit-mask-image: linear-gradient(to right, #000 calc(100% - 28px), transparent); mask-image: linear-gradient(to right, #000 calc(100% - 28px), transparent); }
 .cn-champ-zone .cn-vadans::-webkit-scrollbar { display: none; }
 .cn-champ-zone .cn-vadans > .cn-puce { flex: none; white-space: nowrap; }
+/* Tour 3, f7 n° 3 : sous 900 px, les rangs « Va dans » (au-dessus du champ, jamais à sa hauteur) prennent aussi la colonne du + : 342 px à 390
+   au lieu de 278. Le champ descend de 6 px de plus : le + (8 px plus haut que le champ) reste à 8 px sous le dernier rang. */
+@media (max-width: 899px) {
+  .cn-champ-zone > .cn-vadans { margin-right: -64px; }
+  .cn-champ-zone > .cn-vadans + .cn-champ { margin-top: 6px; }
+}
 
 /* Critique 6, n° 24 : « Ranger maintenant », au retour du réseau */
 .cnf-reprise .cn-bandeau-tete { gap: 8px; }

@@ -45,7 +45,7 @@ describe('critique 8, n° 2 : un seuil s’ajoute au critère débit sans efface
 });
 
 describe('critique 8, n° 4 : après « Garder le plan sans ce carnet », À venir n’est plus contradictoire', () => {
-  it('le plan du Frigo est « détaché », et le Frigo n’attend plus dans « Choisis, pas encore dans À venir »', async () => {
+  it('le plan du Frigo est « détaché », et le Frigo n’attend plus dans « Choisis, pas encore planifiés »', async () => {
     const { detacherPlan, lienDuPlan, choisisEnAttente } = await import('../../src/domain/carnets/operations');
     const { fixturePlans, ID_FRIGO } = await import('../../src/domain/carnets/fixture');
     const items = fixtureCarnets();

@@ -99,8 +99,9 @@ function ChoisisEnAttente({ carnets, plans, onOuvrir }: { carnets: CarnetDoc[]; 
   /* critique 8, n° 4 : un carnet dont un plan est déjà dans À venir (lié ou détaché) n'attend plus */
   const attente = choisisEnAttente(carnets, plans);
   if (!attente.length || !onOuvrir) return null;
-  return <section aria-label="Choisis, pas encore dans À venir" className="mt-4">
-    <h3 className="mb-1 text-base font-semibold text-cave-50">Choisis, pas encore dans À venir<span className="font-normal text-cave-400"> · {attente.length}</span></h3>
+  /* tour 3, f7 n° 5 : montrée dans l’onglet À venir, la section ne contredit plus l’onglet qui la montre : ils attendent leur plan */
+  return <section aria-label="Choisis, pas encore planifiés" className="mt-4">
+    <h3 className="mb-1 text-base font-semibold text-cave-50">Choisis, pas encore planifiés<span className="font-normal text-cave-400"> · {attente.length}</span></h3>
     <ul className="divide-y divide-cave-800 rounded-panel border border-cave-800">
       {attente.map(c => { const a = articleChoisi(c); const le = jourCourt(c.carnet.choix?.le); return <li key={c.id}>
         <button type="button" className="flex min-h-14 w-full items-center gap-3 px-3 py-2 text-left" onClick={() => onOuvrir(c.id)} aria-label={`Ouvrir le carnet ${c.title}`}>

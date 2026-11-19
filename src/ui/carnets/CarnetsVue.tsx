@@ -304,7 +304,8 @@ export function rangDuLien(t: NonNullable<ReturnType<typeof tableauDe>>, article
   const n = i + 1;
   const ordinal = n === 1 ? '1re' : `${n}e`;
   const place = placesDe(t, articleId).find(p => p.rang !== undefined);
-  const par = place && place.rang === 1 ? ` · ${place.nom} ${place.texte}` : '';
+  /* tour 3, f7 n° 4 : un critère oui/non se dit par son nom (« tient 80 °C »), sans « oui » qui restait seul sur sa ligne à 1280 */
+  const par = place && place.rang === 1 ? ` · ${place.texte === 'oui' ? place.nom : `${place.nom} ${place.texte}`}` : '';
   if (facon && memes.length > 1) return n === 1 ? `${ordinal} de sa façon, devant ${memes[1].nom}${par}` : `${ordinal} de sa façon, après ${memes[i - 1].nom}`;
   if (enLice.length > 1) return `${n === 1 ? '1er' : `${n}e`} sur ${enLice.length}${n === 1 ? par : ''}`;
   return null;
@@ -854,6 +855,12 @@ export function CarnetsVue(p: CarnetsVueProps) {
       if (r) setRetour({ bandeau: { sorte: 'modifiee' }, inverse: r.inverse, carnetId: ouvert.id });
       setEdition(null); setTexte(''); return;
     }
+    /* tour 3, f7 n° 2 : dans la liste, la phrase nomme un carnet existant : le cadre n'annonce que lui (« Ouvrir ce carnet ») ; Ajouter fait
+       ce qu'il annonce, ouvre ce carnet, jamais un doublon. Même calcul que le cadre (`rattacher`, `nommeLeCarnet`). */
+    if (!depuis && !estLienSeul(txt)) {
+      const pr = rattacher(txt, carnets);
+      if (pr && nommeLeCarnet(txt, pr.titre)) { setTexte(''); setVue({ sorte: 'carnet', id: pr.carnetId }); return; }
+    }
     gardeAPartRef.current = aPart && !!depuis; setAPart(false);
     aForcer.current = depuis && !edition ? corrige : null; setCorrige(null); setPresse(undefined);
     /* n° 3 : le carnet que le cadre a annoncé, par le même calcul, ou celui qu'il a choisi d'un toucher */
@@ -1073,7 +1080,7 @@ export function CarnetsVue(p: CarnetsVueProps) {
     const noteDbl = dbl && ouvert ? ouvert.carnet.notes.find(n => n.id === dbl.noteId) : undefined;
     const leDbl = noteDbl ? dateCourte(noteDbl.modifieeLe ?? messages.find(m => m.id === noteDbl.messageId)?.carnetMessage.le ?? ouvert?.carnet.creeLe) : null;
     const doublon = noteDbl ? { le: leDbl ?? '', texte: noteDbl.texte, onGarderAPart: () => setAPart(true) } : null;
-    return <CadreArrivee cadre={{ sorte: 'texte', rubrique, texte: horsSujetVu ?? texte, origine: 'locale', ...(vers ? { vers } : {}) }} onAnnuler={() => { setTexte(''); setAPart(false); setCorrigeCarnet(null); }} consequence={vers ? null : consequence} aides={aides} doublon={doublon} />;
+    return <CadreArrivee cadre={{ sorte: 'texte', rubrique, texte: horsSujetVu ?? texte, origine: 'locale', ...(vers ? { vers } : {}), ...(vaDansCarnet && auto ? { rangeeGenre: true } : {}) }} onAnnuler={() => { setTexte(''); setAPart(false); setCorrigeCarnet(null); }} consequence={vers ? null : consequence} aides={aides} doublon={doublon} />;
   };
   /**
    * R14, R17, R25 : la ligne qu'un message vient de ranger dans le carnet ouvert s'éclaire à sa place, sa phrase citée dessous ; pour un

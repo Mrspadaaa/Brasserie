@@ -230,7 +230,7 @@ describe('critique 6, lot B : Stocks › Matériel', () => {
     await monter('avenir');
     const colonne = document.querySelector('[data-colonne-materiel]') as HTMLElement;
     expect(colonne.textContent).not.toContain('se trouve sous le pourquoi');
-    const attente = within(colonne).getByRole('region', { name: 'Choisis, pas encore dans À venir' });
+    const attente = within(colonne).getByRole('region', { name: 'Choisis, pas encore planifiés' });
     expect(within(attente).getAllByRole('button', { name: /Ouvrir le carnet/ }).length).toBeGreaterThan(0);
   });
   it('12 · n° 37 : Réalisés au même format (« 11 700 CHF ») ; la ligne dit payé contre prévu, jamais « comme prévu »', async () => {

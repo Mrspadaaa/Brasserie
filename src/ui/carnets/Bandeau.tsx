@@ -11,6 +11,7 @@
 import React, { useEffect, useRef } from 'react';
 import { Calculator, Check, TriangleAlert, Undo2, WifiOff } from 'lucide-react';
 import { PictoLocal, Provenance } from './EtatIA';
+import { estLienSeul } from '../../domain/carnets/modele';
 
 /** La fin de la ligne citée sous « ✓ Carnet créé » : d'où vient le titre. Seule la phrase écrite par lui est « votre phrase en titre ». */
 const ORIGINE_TITRE: Record<TitreDe, string> = {
@@ -158,7 +159,8 @@ export function Bandeau({ bandeau, onAnnuler, consequence, aideConsequence, enLi
           {b.article.prix && <span> · <b className="cn-chiffre">{b.article.prix}</b></span>}
         </p>
       )}
-      {b.sorte === 'ailleurs' && b.cite && <p className="cn-cite">votre message : « {b.cite} »</p>}
+      {/* tour 3, f7 n° 4 : un lien collé seul se cite « votre lien », comme dans le carnet (f5d n° 11) */}
+      {b.sorte === 'ailleurs' && b.cite && <p className="cn-cite">{estLienSeul(b.cite) ? 'votre lien' : 'votre message'} : « {b.cite} »</p>}
       {b.sorte === 'ailleurs' && (b.raison || b.onDeplacer) && (
         <div className="cn-bandeau-pied">
           {b.raison && <span className="cn-mut cn-sp"><Provenance origine="ia" /> {b.raison}</span>}
