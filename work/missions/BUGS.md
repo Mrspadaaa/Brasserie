@@ -1,10 +1,4 @@
-# Registre unique des bugs — L'Affinée
-
-## Revue au code en ligne, 16.11 (tag `en-ligne/2026-11-16-finances`)
-
-Les 156 lignes ouvertes (ouvert + en cours) ont été relues dans le code du tag (`git show`, `git grep`) ; seule la colonne « état » (et « commit » quand la correction est trouvée) a changé, aucune ligne n'a été retirée. Aucun écran n'a été rejoué : un « présent » dit que le code du tag a encore le défaut, un « corrigé » que le code du tag ne l'a plus. Le tableau d'en-tête ci-dessus date du 08.11 et n'est pas recompté.
-
-| statut | lignes | ce que dit la colonne « état » |
+ ouvert — pas corrigé en ligne (test 4 : l'IA rend « idée, Moulin à malt », l'app garde la phrase brute en note dans le carnet ouvert) | 57254e47c || 57254e47c || 57254e47c || 57254e47c || 57254e47c || 57254e47c || 57254e47c || 57254e47c || 57254e47c || statut | lignes | ce que dit la colonne « état » |
 |---|---|---|
 | corrigé | 15 | « déployé (corrigé, vérifié au code du tag …) » et le commit |
 | encore présent | 75 | « ouvert — présent » avec le fichier et la ligne |
@@ -185,7 +179,7 @@ Lire :
 | work/missions/2026-11-18-choix-calendrier/en-ligne-lot-bc/RAPPORT.md | PC | 5 | 6 | 127522c2789a |
 | work/missions/2026-11-18-choix-calendrier/en-ligne-paquet-d/RAPPORT.md | PC | 1 | 3 | a815f0e44047 |
 | work/missions/2026-11-18-choix-calendrier/en-ligne-paquet-e/RAPPORT.md | PC | 1 | 4 | 41340b8b917c |
-| work/missions/2026-11-17-port-carnet/en-ligne-4/RAPPORT.md | PC | 0 | 0 | en cours |
+| work/missions/2026-11-17-port-carnet/en-ligne-4/RAPPORT.md | PCN | 4 | 1 | e43ef93058d3 |
 | work/missions/2026-11-18-choix-calendrier/en-ligne-mois/RAPPORT.md | PC | 5 | 0 | 96e0a88f963f |
 | work/missions/2026-11-18-choix-calendrier/en-ligne-paquet-f/RAPPORT.md | PC | 2 | 3 | 8d4efca5a715 |
 | work/missions/2026-11-17-port-carnet/vision-4/RAPPORT-d1280.md | PCN | 0 | 0 | b9b896566b01 |
@@ -1640,3 +1634,15 @@ Verdict du paquet F : 5/5 OK, 2 problèmes non bloquants, ZZ TEST restants 0 ; c
 | PC-NOTE-18 | en-ligne-paquet-f doute | Calendrier, menu de période | Le bouton du menu n'a pas de nom accessible propre (son texte seul : « 3 mois », « 2 sem. · j »). | — | ouvert, doute non compté | | rapport paquet F, doutes |
 | PC-NOTE-19 | en-ligne-paquet-f doute | Calendrier, aria de la période | L'aria de la période « 14 → 27 déc.. » a un point doublé. | — | ouvert, doute non compté | | rapport paquet F, doutes |
 | PC-NOTE-20 | en-ligne-paquet-f doute | Calendrier, échelle Mois « 3 mois » | « 3 mois » depuis le 14 déc. montre déc.–févr. alors que la plage finit le 14 mars (les 14 jours de mars sans colonne). | — | ouvert, doute non compté | | rapport paquet F, doutes ; suite de PC-140 |
+
+## Test en ligne 4 du carnet, 19.11 (critique Opus, tag en-ligne/2026-11-19-carnet-paquet-1, commit 57254e47c ; source work/missions/2026-11-17-port-carnet/en-ligne-4/RAPPORT.md, empreinte e43ef93058d3, 4 constats)
+
+Verdict : 5/6 corrigés, 4 problèmes (0 bloquant), 6 envois IA (cumul ≈ 32 sur le crédit de 5 CHF), carnets ZZ TEST retirés. Joué à 2560 de large seulement : 390 et 1280 non joués en ligne (l'extension garde l'onglet à 2560). 6 messages ZZ TEST restants listés au rapport.
+
+| id | source | écran | constat | gravité | état | commit | note |
+|---|---|---|---|---|---|---|---|
+| PCN-187 | en-ligne-4 A | Carnet (en ligne, test 4) | Dans le carnet Pompe, une idée sans rapport (« frigo de garde pour 20 fûts ») devient un critère de Pompe et s'affiche sous l'article choisi ; même cause que PCN-183. | G | ouvert | | |
+| PCN-188 | en-ligne-4 B | Carnet (en ligne, test 4) | Note en vrac : la ligne « voir s'il existe avec double paroi » se perd et le titre du fermenteur perd « 60 L » (réponse IA non capturée : IA ou app, à trancher). | G | ouvert | | |
+| PCN-189 | en-ligne-4 C | Carnet (en ligne, test 4) | Sur un carnet déjà choisi, le menu dit encore « Supprimer l'idée ». | m | ouvert | | |
+| PCN-190 | en-ligne-4 n° 1 | Carnet (en ligne, test 4) | Une idée écrite depuis un carnet ouvert n'ouvre pas de carnet neuf (suite de PCN-183, pas corrigé). | G | ouvert | | |
+| PCN-NOTE-4 | en-ligne-4 réserve | Carnet (en ligne, test 4) | 390 et 1280 non joués en ligne. | — | ouvert, doute non compté | | |
