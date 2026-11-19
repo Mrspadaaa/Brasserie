@@ -2229,3 +2229,7 @@ Capture : work/missions/2026-11-18-choix-calendrier/brasseur/zoom-glisser-18-11.
 ### En-tête de l'app (19.11)
 
 - (capture : en-tête « L'Affinée · ‹ 16.11–31.12 › · loupe · G A ») « Je pense que le header n'a pas besoin d'être visible partout, en tout cas pas en mode "floatting" docked en haut »
+
+### Brassins : la liste (19.11)
+
+- (capture 390 : Brassins, entoure « 2 en cuve / 14 à brasser » en grand ; cartes Milk Stout, NEIPA Test, Jhhh) « Ça c'est inutile, et les fiche de brassin sont beaucoup trop gros »
