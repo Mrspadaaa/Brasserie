@@ -169,9 +169,13 @@ function CarteCarnet({ c, ajouts, onOuvrir, onCollerLien, onVoirAVenir }: { c: C
   const ensuite = k.notes.find(n => n.genre === 'a-faire')?.texte;
   const choisi = c.status === 'validated' && k.choix ? k.articles.find(a => a.id === k.choix!.articleId) : undefined;
   const vide = c.status === 'idea' && k.articles.length === 0;
+  /* tour 3, f11 (v7-3) : à 390, une citation de plus de 26 signes ne tient pas (mesuré : « 2 bacs pour laver les fûts », 26, tient ; « acheter 2 sachets de levure », 27, coupée) en deux lignes à côté de « Coller un lien » : le bouton
+     passe dessous (comme un titre long) et la citation prend la largeur */
+  const citee = vide && !phraseEnTitre(c.title, k.phrase) ? (k.phrase ?? '') : '';
+  const long = c.title.length > 24 || citee.length > 26;
   return (
     <div className="cn-carnet-bloc">
-      <div className={`cn-carnet${vide && onCollerLien ? ` cn-carnet-coller${c.title.length > 24 ? ' cn-carnet-long' : ''}` : ''}`}>
+      <div className={`cn-carnet${vide && onCollerLien ? ` cn-carnet-coller${long ? ' cn-carnet-long' : ''}` : ''}`}>
         <button type="button" className="cn-carnet-corps" onClick={() => onOuvrir(c.id)}>
           <Vignette c={c} />
           <span className="cn-carnet-tx">

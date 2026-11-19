@@ -43,6 +43,7 @@
 .cn-titre-grand { font-size: 28px; font-weight: 700; }
 .cn-titre-ligne { display: flex; align-items: center; gap: 8px; }
 .cn-sous { font-size: 16px; font-weight: 700; display: flex; gap: 8px; align-items: baseline; flex-wrap: wrap; }
+.cn-sous > .cn-mut { font-weight: 400; font-size: 14px; } /* f11 (PCN-110) : « lues sur la fiche du vendeur, <date> » comme h01-6, maigre, à la suite du titre */
 .cn-accroche { font-size: 16px; color: var(--c-ink2); }
 .cn-vide { color: var(--c-mut); padding: 12px; border: 1px dashed var(--c-line2); border-radius: 12px; }
 .cn-g6 { padding: 8px 0; }

@@ -13,7 +13,7 @@ import { normaliser } from '../../domain/carnets/analyseLocale';
 
 export type PictoNom =
   | 'hotte' | 'ventilateur' | 'centrifuge' | 'evier' | 'tireuse' | 'frigo' | 'pompe' | 'moulin' | 'embouteillage' | 'fut' | 'cuve'
-  | 'densimetre' | 'mesure' | 'balance' | 'tuyau' | 'chauffe' | 'filtre' | 'echangeur' | 'gaz' | 'etagere' | 'chariot' | 'objet';
+  | 'densimetre' | 'mesure' | 'balance' | 'tuyau' | 'chauffe' | 'filtre' | 'echangeur' | 'gaz' | 'etagere' | 'chariot' | 'pot' | 'objet';
 
 /** Mots (normalisés : minuscules, sans accents) → picto ; le premier qui répond l'emporte, dans cet ordre. */
 const REGLES: readonly [PictoNom, RegExp][] = [
@@ -39,7 +39,9 @@ const REGLES: readonly [PictoNom, RegExp][] = [
   ['gaz', /\bbouteilles? de (co2|gaz)\b/],
   ['etagere', /\b(etageres?|rayonnages?|rangements?|palettes?|stockage)\b/],
   ['chariot', /\b(diables?|chariots?|transpalettes?|roulettes?)\b/],
-  ['hotte', /\b(ventilation|buees?|vmc|aspiration|vapeurs?)\b/]
+  ['hotte', /\b(ventilation|buees?|vmc|aspiration|vapeurs?)\b/],
+  /* tour 3, f11 (v7-2) : travaux et produits (résine du sol, peinture, nettoyage) : un pot dessiné, plus une initiale */
+  ['pot', /\b(resines?|epoxy|peintures?|vernis|enduits?|colles?|mastics?|revetements?|sols?|detergents?|desinfectants?|nettoyants?|soude|acides?)\b/]
 ];
 
 /** Le picto d'un objet d'après ses mots, dans l'ordre donné (le nom avant la façon, la façon avant le carnet) ; `objet` sinon. */
@@ -215,6 +217,14 @@ const DESSINS: Record<Exclude<PictoNom, 'objet'>, React.ReactNode> = {
     <rect className="m" x="16" y="8" width="14" height="12" rx="1" />
     <circle className="k" cx="15" cy="41" r="5" />
     <circle className="f" cx="15" cy="41" r="1.8" />
+  </>,
+  /* f11 (v7-2) : un pot de résine (anse, couvercle, étiquette ambre, une coulure) */
+  pot: <>
+    <path className="tl" d="M12 17 C12 5 36 5 36 17" />
+    <path className="m" d="M10 17 H38 L35 44 H13 Z" />
+    <path className="o" d="M11.2 25 H36.8 L35.9 34 H12.1 Z" />
+    <path className="o" d="M15 17 H21 V25 H15 Z" />
+    <rect className="m2" x="8" y="13" width="32" height="5" rx="1.5" />
   </>
 };
 
@@ -222,7 +232,7 @@ const LIBELLE: Record<PictoNom, string> = {
   hotte: 'hotte', ventilateur: 'extracteur', centrifuge: 'centrifuge', evier: 'évier', tireuse: 'tireuse', frigo: 'frigo', pompe: 'pompe',
   moulin: 'moulin', embouteillage: 'remplisseuse', fut: 'fût', cuve: 'cuve', densimetre: 'densimètre', mesure: 'thermomètre',
   balance: 'balance', tuyau: 'tuyau', chauffe: 'chauffe-eau', filtre: 'filtre', echangeur: 'échangeur', gaz: 'bouteille de gaz',
-  etagere: 'étagère', chariot: 'diable', objet: 'objet'
+  etagere: 'étagère', chariot: 'diable', pot: 'pot', objet: 'objet'
 };
 
 /** L'initiale d'un objet sans dessin (« T » pour « Tuyau… » s'il n'avait pas de dessin) ; « ? » si rien n'est nommé. */

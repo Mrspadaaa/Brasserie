@@ -17,7 +17,7 @@ import {
   etatSortie, liensDe, liensQuiRetiennent, modifierNote, noteEnCritere, planDepuisChoix, poserSortie, ranger, remplacerRangement, renommer, supprimerCarnet, supprimerNote,
   type Destination, type EcritureCarnet, type Journal, type LigneARanger, type Resultat
 } from '../../domain/carnets/operations';
-import { consequenceApercu, critereQuiTranche, mentionValeurs, passe, placesDe, tableau as tableauDe } from '../../domain/carnets/comparer';
+import { avecArticleTypo, consequenceApercu, critereQuiTranche, mentionValeurs, passe, placesDe, tableau as tableauDe } from '../../domain/carnets/comparer';
 import { analyserLigne, analyserTexte, decouper, genreLocal, jetons, normaliser, objetDe, PUCES_VA_DANS, vaDansDe, type LigneLocale, type RubriqueVaDans } from '../../domain/carnets/analyseLocale';
 import { aucunCarnetNEnParle, carnetProche, nommeLeCarnet, rattacher } from '../../domain/carnets/rattacher';
 import { doublonsDe, notesEnDouble } from '../../domain/carnets/doublons';
@@ -112,7 +112,8 @@ export const AVIS_IA: Record<AvisIA['sorte'], string> = {
 interface Proposee { cle: string; messageId: string; index: number; carnetId: string; ligne: { texte: string; caracteristique?: { nom: string; unite?: string }; origine: string } }
 export function libelleProposee(l: Proposee['ligne']): string {
   const k = l.caracteristique;
-  return k ? `Comparer sur ${/^[aeéèêiouyh]/i.test(k.nom) ? 'l’' : 'le '}${k.nom}${k.unite ? ` (${k.unite})` : ''}` : l.texte;
+  /* tour 3, f11 (v7-1) : l'article suit le genre de la caractéristique (avecArticle), jamais « le température mini » */
+  return k ? `Comparer sur ${avecArticleTypo(k.nom)}${k.unite ? ` (${k.unite})` : ''}` : l.texte;
 }
 /**
  * Tour 3, PCN-133 : les puces proposées du carnet ouvert, une par caractéristique (libellé normalisé), sans celles qui sont déjà un
@@ -387,8 +388,10 @@ export function depuisIA(l: LigneCarnet, dest: Destination): LigneARanger {
     case 'article': {
       const p = l.page;
       const lue = p ? p.statut === 'lue' : !l.url;
-      const valeurs: Record<string, { valeur: string; unite?: string; origine: 'page' }> = {};
-      for (const v of p?.valeurs ?? []) valeurs[v.nom] = { valeur: v.valeur, ...(v.unite ? { unite: v.unite } : {}), origine: 'page' };
+      /* tour 3, f11 (PCN-110) : une valeur lue sur la page porte la date de sa lecture ; la fiche dit « lues sur la fiche du vendeur, <date> » (h01-6) */
+      const luLe = p?.statut === 'lue' && p.luLe > 0 ? new Date(p.luLe).toISOString() : undefined;
+      const valeurs: Record<string, { valeur: string; unite?: string; origine: 'page'; luLe?: string }> = {};
+      for (const v of p?.valeurs ?? []) valeurs[v.nom] = { valeur: v.valeur, ...(v.unite ? { unite: v.unite } : {}), origine: 'page', ...(luLe ? { luLe } : {}) };
       return {
         /* test en ligne 2 (bloquant 6) : l'IA passée, les pages ont été lues ; un lien sans page n'attend plus rien (jamais « lecture… » sans fin) */
         ...dest, sorte: 'article', origine, lecture: l.url ? (lue ? 'lue' : 'illisible') : 'lue',

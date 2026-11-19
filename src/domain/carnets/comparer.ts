@@ -29,6 +29,9 @@ export function avecArticle(nom: string, sens?: Caracteristique['sens']): string
   return `${feminin ? 'la' : 'le'} ${minuscule}`;
 }
 
+/** Tour 3, f11 (v7-1) : l'article des libellés « Comparer sur la température mini », « l’oxygène capté » (apostrophe typographique). */
+export const avecArticleTypo = (nom: string): string => avecArticle(nom).replace(/^l'/, 'l’');
+
 /* ---------- colonnes et valeurs ---------- */
 
 /**
