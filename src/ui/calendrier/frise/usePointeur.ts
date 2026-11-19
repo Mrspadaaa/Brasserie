@@ -159,6 +159,10 @@ export function usePointeur(options: OptionsPointeur) {
       opts.current.onDebutBord?.();
       return;
     }
+    /* paquet E n° 1 (PC-136, « la vente reste au 7 déc. ») : un doigt est capturé d'office par le navigateur (capture implicite des
+       Pointer Events), une souris ou un stylet non. Une marque fait 28 px : le premier mouvement d'un glisser rapide sortait de la marque,
+       le `pointermove` tombait sur la piste, et le glisser n'était jamais lu. On capture donc dès l'appui, comme le doigt. */
+    if (e.pointerType !== 'touch') capturer(e.currentTarget, e.pointerId);
     s.minuterie = setTimeout(() => {
       s.minuterie = null;
       if (etat.current === s && s.mode === 'appui') { s.mode = 'long'; opts.current.onAppuiLong?.(); }

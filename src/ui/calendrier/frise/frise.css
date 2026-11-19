@@ -187,6 +187,8 @@ button.cal-lie::before { content: ''; position: absolute; inset: -6px -2px; }
 .cal-msg-ch { display: inline; vertical-align: middle; transition: transform 0.15s; }
 .cal-msg-ch-o { transform: rotate(90deg); }
 .cal-msg-detail { display: block; margin-top: 4px; font-size: 14px; opacity: 0.85; }
+/* paquet E n° 4 : « 1 achat lié reste au 4 déc. », sous la ligne du glisser de la fête */
+.cal-msg-aussi { margin: 2px 0 0; font-size: 14px; line-height: 18px; opacity: 0.9; }
 .cal-msg-bt { display: flex; flex: none; gap: 6px; }
 .cal-msg-b { display: inline-flex; align-items: center; gap: 4px; min-height: 38px; padding: 0 12px; border-radius: 19px; border: 1.5px solid currentColor; background: transparent; color: inherit; font: inherit; font-weight: 700; }
 .cal-msg-b-pri { background: rgb(var(--cave-50)); color: rgb(var(--cave-950)); border-color: rgb(var(--cave-50)); }

@@ -26,7 +26,7 @@ import { periodeDeFenetre, type FenetreSemaines } from '../../src/ui/calendrier/
 import { ajouterJours, semainesDe } from '../../src/domain/calendrier';
 import { courbeCaisse, courbeDecalee, creuxDepuis, type MouvementCaisse } from '../../src/domain/calendrierCaisse';
 import { alignerSemaines, xDeDate } from '../../src/ui/calendrier/entete/alignement';
-import { chf } from '../../src/ui/calendrier/entete/Courbe';
+import { chf, moisHorsReserves } from '../../src/ui/calendrier/entete/Courbe';
 import { colonnesDeLAxe } from '../../src/ui/calendrier/echelle';
 import { BancCalendrier } from '../../src/design/CalendrierPreview';
 import { StorageService } from '../../src/services/storage';
@@ -155,10 +155,24 @@ describe('Lot C n° 7 : en paysage, alignée et zoomée sur toute la largeur de 
     const ent = container.querySelector('[data-calendrier-entete]')!;
     expect(ent).toHaveAttribute('data-aligne', 'oui');
     expect(ent).toHaveAttribute('data-bouton-al');
-    expect(container.querySelector('.ent-cbz svg.ent-svg')?.getAttribute('height')).toBe('90');
+    /* paquet E n° 2 : 92 px, la rangée du chiffre (28 px) posée sur celle des mois, le tracé dessous (E10 : 119 px d'en-tête au banc) */
+    expect(container.querySelector('.ent-cbz svg.ent-svg')?.getAttribute('height')).toBe('92');
     rerender(<Banc orientation="paysage" aligne={false} onAligne={() => undefined} />);
     expect(ent).not.toHaveAttribute('data-aligne');
     expect(container.querySelector('.ent-cbz svg.ent-svg')?.getAttribute('height')).toBe('90');
+  });
+
+  it('paquet E n° 2 (E10) : alignée en paysage, la rangée du chiffre se pose sur celle des mois ; le tracé commence sous elle, les mois évitent le chiffre et les boutons', () => {
+    const { container } = render(<Banc orientation="paysage" aligne onAligne={() => undefined} />);
+    const svg = container.querySelector('.ent-cbz svg.ent-svg')!;
+    /* les mois sur la ligne du milieu de la rangée de 28 px (y = 19), pas sur une rangée à eux au-dessus du tracé (y = 13) */
+    const mois = [...svg.querySelectorAll('text.ent-mois')];
+    expect(mois.length).toBeGreaterThan(0);
+    mois.forEach(m => expect(m.getAttribute('y')).toBe('19'));
+    /* aucun point du tracé dans la rangée du chiffre */
+    [...svg.querySelectorAll('circle.ent-pt')].forEach(p => expect(Number(p.getAttribute('cy'))).toBeGreaterThanOrEqual(30));
+    expect(moisHorsReserves([{ x: 140, texte: 'déc.' }, { x: 455, texte: 'janv.' }, { x: 705, texte: 'févr.' }], [[12, 217], [591, 816]], 820, () => 30))
+      .toEqual([{ x: 227, texte: 'déc.', trait: false }, { x: 455, texte: 'janv.', trait: true }]);
   });
 
   it('pendant le glisser, la courbe zoomée couvre tout l’en-tête : sa largeur, sa hauteur, ses semaines sur les colonnes de la frise', () => {

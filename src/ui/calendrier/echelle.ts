@@ -44,6 +44,21 @@ export function uniteColonne(c: Pick<Colonne, 'debut' | 'fin'>): UniteColonne {
   return n <= 0 ? 'jour' : n <= 6 ? 'semaine' : 'mois';
 }
 
+/**
+ * Paquet E n° 3 : `n` mois plus loin, même jour du mois ; quand ce jour manque (le 30 en février), le dernier jour du mois. C'est la règle
+ * standard du calendrier (date-fns `addMonths`, Java `LocalDate.plusMonths`), en UTC pour ne jamais glisser d'un jour à l'heure d'été.
+ */
+export function ajouterMois(iso: string, n: number): string {
+  const [a, m, j] = iso.split('-').map(Number);
+  const total = a * 12 + (m - 1) + n;
+  const an = Math.floor(total / 12), mois = total - an * 12;
+  const dernier = new Date(Date.UTC(an, mois + 1, 0)).getUTCDate();
+  return new Date(Date.UTC(an, mois, Math.min(j, dernier))).toISOString().slice(0, 10);
+}
+
+/** L'axe est-il en mois (Mois, An) ? */
+export const enMois = (colonnes: readonly Colonne[]): boolean => colonnes.length > 0 && uniteColonne(colonnes[0]) === 'mois';
+
 /** L'axe porte-t-il au moins une colonne d'un jour (Jour, ou une semaine dépliée) ? */
 export const aDesJours = (colonnes: readonly Colonne[]): boolean => colonnes.some(c => c.debut === c.fin);
 

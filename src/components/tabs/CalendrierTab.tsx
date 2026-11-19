@@ -19,9 +19,9 @@ import { FeuilleAjout, type ResultatAjout } from '../../ui/calendrier/frise/Feui
 import { VueListe } from '../../ui/calendrier/frise/VueListe';
 import { CLASSE_TEINTE } from '../../ui/calendrier/frise/Marque';
 import { positionDans, type Colonne, type DragEtat } from '../../ui/calendrier/frise/Rangee';
-import { aDesJours, cibleDuGlisse, colonnesDeLAxe, echelleApres, echelleEffective, peutDeplier, PERIODE_DE_L_ECHELLE, type Echelle, type SensPincement } from '../../ui/calendrier/echelle';
+import { aDesJours, ajouterMois, cibleDuGlisse, colonnesDeLAxe, enMois, echelleApres, echelleEffective, peutDeplier, PERIODE_DE_L_ECHELLE, type Echelle, type SensPincement } from '../../ui/calendrier/echelle';
 import {
-  RANGEES, ajouterJours, dateDeSemaine, estPonctuel, etiquetteS, jourLisible, lundiDe, nomRangee, nomSeules, preparerChoses,
+  RANGEES, ajouterJours, barreLiee, dateDeSemaine, ecartJours, estPonctuel, etiquetteS, jourLisible, lundiDe, nomRangee, nomSeules, preparerChoses,
   type CibleOuverture, type ChoseCalendrier, type ModeleCalendrier, type Rangee as IdRangee
 } from '../../domain/calendrier';
 import { courbeDecalee, courbeAvec, effetCaisse } from '../../domain/calendrierCaisse';
@@ -254,6 +254,8 @@ export function CalendrierTab(props: CalendrierTabProps) {
   const ctxGestes: ContexteGestes = useMemo(() => ({ aujourdhui, batches: don.batches, plans: don.plans, courbe: modele.courbe }), [aujourdhui, don.batches, don.plans, modele.courbe]);
   const ctxRef = useRef(ctxGestes);
   ctxRef.current = ctxGestes;
+  const modeleRef = useRef(modele);
+  modeleRef.current = modele;
   const ctxClients = useRef(don.clients);
   ctxClients.current = don.clients;
   const ctxAjout: ContexteAjout = useMemo(() => ({ aujourdhui, recettes: don.recettes, clients: don.clients, plans: don.plans, choses: modele.choses }), [aujourdhui, don.recettes, don.clients, don.plans, modele.choses]);
@@ -359,7 +361,7 @@ export function CalendrierTab(props: CalendrierTabProps) {
 
   /* ---------- écrire : la source, puis le message avec son inverse ---------- */
   /* CRITIQUE-12 n° 1 : `ancre` (id de la chose touchée, `data-chose`) : le message se pose près d'elle s'il n'y cache aucun texte, sinon en bas */
-  const ecrire = useCallback(async (res: Resolution, depuisMenu = false, ancre?: string, ouvreSonDetail = false): Promise<boolean> => {
+  const ecrire = useCallback(async (res: Resolution, depuisMenu = false, ancre?: string, ouvreSonDetail = false, aussi?: MessageCal['aussi']): Promise<boolean> => {
     if (res.ok === false) { montrer({ role: 'status', texte: res.raison, ...(ancre ? { ancre } : {}), ...(res.message.lien ? { lien: lienDe(res.message.lien) } : {}) }); return false; }
     let faite: EcritureFaite;
     try { faite = await appliquer(res.ecritures as Ecriture[], port); } catch (e) { montrer({ role: 'status', texte: e instanceof Error ? e.message : 'Écriture impossible. Rien n’a changé.' }); return false; }
@@ -376,7 +378,7 @@ export function CalendrierTab(props: CalendrierTabProps) {
         livrer: { texte: `Livrer le ${jourLisible(p.livrerLe)}`, agir: () => { void ecrire(livrer(p, ctxRef.current), false, `argent-${p.planId}`); } },
         ...(res.effet ? { detail: `Caisse : ${res.effet.texte}` } : {})
       });
-    } else montrer({ role: 'status', texte: res.message.texte, annuler, ...(ancre ? { ancre } : {}), ...(res.message.lien ? { lien: lienDe(res.message.lien) } : {}), ...(ouvreSonDetail ? { ouvreSonDetail: true } : {}) });
+    } else montrer({ role: 'status', texte: res.message.texte, annuler, ...(ancre ? { ancre } : {}), ...(res.message.lien ? { lien: lienDe(res.message.lien) } : {}), ...(ouvreSonDetail ? { ouvreSonDetail: true } : {}), ...(aussi ? { aussi } : {}) });
     return true;
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [port, montrer, lienDe]);
@@ -393,6 +395,15 @@ export function CalendrierTab(props: CalendrierTabProps) {
   };
   const surGlisse = useCallback((chose: ChoseCalendrier, k: number) => {
     setDrag({ id: chose.id, mode: 'glisse', k, jours: 0 });
+    /* paquet E n° 3 : sur un axe en mois (Mois, An), une colonne est un mois ; le glisser va de `k` mois, au même jour du mois si possible */
+    if (enMois(colonnesRef.current)) {
+      const cible = ajouterMois(chose.debut, k);
+      const jours = ecartJours(chose.debut, cible);
+      setIci(k === 0 ? null : `${jourLisible(cible)} · lâcher ici`);
+      setApercu(k !== 0 && modele.courbe ? { courbe: courbeDecalee(modele.courbe, chose.id, jours), lache: cible } : null);
+      setMessage(null); setMenu(null); setSelectionId(null);
+      return;
+    }
     const auJour = aDesJours(colonnesRef.current);
     const r = auJour ? cibleJour(chose, k) : null;
     if (auJour) {
@@ -416,16 +427,44 @@ export function CalendrierTab(props: CalendrierTabProps) {
     setMessage(null); setMenu(null); setSelectionId(null);
   }, [modele.courbe]);
   const finGeste = useCallback(() => { setDrag(null); setIci(null); setApercu(null); setDuree(null); }, []);
+  /*
+   * Paquet E n° 4 (PC-NOTE-11, décision du pilote) : une fête ou une activité glissée n'emmène pas seuls ses achats et ventes d'un jour liés (une
+   * date réelle d'achat ne bouge pas toute seule). Le message le dit (« 1 achat lié reste au 4 déc. ») et offre « Le déplacer aussi », qui les
+   * déplace du même écart, en une écriture (un seul Annuler).
+   */
+  const suiviDesLies = (chose: ChoseCalendrier, jours: number): MessageCal['aussi'] | undefined => {
+    if (chose.source.genre !== 'creative' || jours === 0) return undefined;
+    const lies = modeleRef.current.choses.filter(x => estPonctuel(x) && barreLiee(x) === chose.id);
+    if (!lies.length) return undefined;
+    const n = lies.length;
+    const genres = new Set(lies.map(x => x.rangee));
+    const [nom, feminin] = genres.size === 1 && genres.has('achats') ? ['achat', false] : genres.size === 1 && genres.has('ventes') ? ['vente', true] : ['chose', true];
+    const lie = `${nom}${n > 1 ? 's' : ''} lié${feminin ? 'e' : ''}${n > 1 ? 's' : ''}`;
+    const memeJour = lies.every(x => x.debut === lies[0].debut);
+    const texte = `${n} ${lie} ${n > 1 ? 'restent' : 'reste'} ${memeJour ? `au ${jourLisible(lies[0].debut)}` : 'à leur date'}`;
+    return {
+      texte: sansPointDouble(texte), bouton: n > 1 ? 'Les déplacer aussi' : 'Le déplacer aussi',
+      agir: () => {
+        const res = lies.map(x => deplacerJours(x, jours, ctxRef.current));
+        const refus = res.find(r => r.ok === false);
+        if (refus) { void ecrire(refus, false, lies[0].id); return; }
+        const oks = res as Array<Extract<Resolution, { ok: true }>>;
+        void ecrire({ ...oks[0], ecritures: oks.flatMap(r => r.ecritures) }, false, lies[0].id);
+      }
+    };
+  };
   const surLacheGlisse = useCallback((chose: ChoseCalendrier, k: number, annule: boolean) => {
     finGeste();
     if (annule || k === 0) return;
+    const glisserDe = (jours: number) => { if (jours !== 0) void ecrire(deplacerJours(chose, jours, ctxRef.current), false, chose.id, false, suiviDesLies(chose, jours)); };
+    if (enMois(colonnesRef.current)) { glisserDe(ecartJours(chose.debut, ajouterMois(chose.debut, k))); return; }
     if (aDesJours(colonnesRef.current)) {
       const r = cibleJour(chose, k);
-      if (r && r.jours !== 0) void ecrire(deplacerJours(chose, r.jours, ctxRef.current), false, chose.id);
+      if (r) glisserDe(r.jours);
       return;
     }
-    if (estPonctuel(chose)) { void ecrire(deplacerJours(chose, k * 7, ctxRef.current), false, chose.id); return; }
-    void ecrire(deplacer(chose, k, ctxRef.current), false, chose.id);
+    if (estPonctuel(chose)) { glisserDe(k * 7); return; }
+    void ecrire(deplacer(chose, k, ctxRef.current), false, chose.id, false, suiviDesLies(chose, k * 7));
   }, [ecrire, finGeste]);
   const surBord = useCallback((chose: ChoseCalendrier, jours: number) => {
     setDrag({ id: chose.id, mode: 'bord', k: 0, jours });

@@ -102,7 +102,11 @@ const COLONNE_T = 214;
  * Portrait : 110 px, les mois dessous (z2s). Paysage : 90 px, les mois EN HAUT, dans la courbe, comme w3s (l-repos) ; le tracé garde 70 px
  * (E02, CRITIQUE-4 n° 11) et l'en-tête tient dans 120 px (E10) : la place est prise sur la bande et l'écart, pas sur la courbe.
  */
-const HAUTEUR_COURBE = { portrait: 110, paysage: 90, /* lot C n° 7 : alignée en paysage, la rangée du chiffre passe au-dessus (28 px) ; paquet D n° 6 : 90 px, environ 70 px de tracé comme le jouable */ paysageAlignee: 90 };
+/* lot C n° 7 : alignée en paysage, la rangée du chiffre passait au-dessus (28 px) ; paquet D n° 6 : 90 px de courbe (147 px d'en-tête).
+   Paquet E n° 2 : la rangée du chiffre se pose sur celle des mois ; 92 px pour tout (rangée de 28 px, puis 62 px de tracé), 119 px d'en-tête. */
+const HAUTEUR_COURBE = { portrait: 110, paysage: 90, paysageAlignee: 92 };
+/** Paquet E n° 2 : la rangée du chiffre et des boutons en paysage aligné (boutons de 28 px), posée sur la rangée des mois de la courbe. */
+export const RANGEE_CHIFFRE_PAYSAGE = 28;
 /** Hauteur de la grande courbe au téléphone (p-c3a-pendant : environ 250 px, le détail dessous). */
 const HAUTEUR_GRANDE_TEL = 250;
 /** Ce qui, sous la grande courbe, doit rester visible : son titre (44), le détail de la semaine (3 lignes), la légende, une marge. */
@@ -182,6 +186,33 @@ export function EnTeteCalendrier(props: EnTeteCalendrierProps) {
   const largeur = mesure || repli;
   const hauteur = paysageAligne ? HAUTEUR_COURBE.paysageAlignee : paysage ? HAUTEUR_COURBE.paysage : HAUTEUR_COURBE.portrait;
   const zoomee = !!apercuC && !graph && !cachee && !!base;
+  /*
+   * Paquet E n° 2 (E10, « en-tête de 120 px au plus » en paysage) : alignée en paysage, la rangée du chiffre (28 px) se posait au-dessus de la
+   * courbe (147 px en tout). Elle se pose maintenant sur la rangée des mois de la courbe (CSS : même case de grille) ; la courbe garde le tracé
+   * dessous, et ses mois évitent le chiffre et les boutons, mesurés ici (px de la courbe).
+   */
+  const [reserves, setReserves] = useState<Array<[number, number]>>([]);
+  useLayoutEffect(() => {
+    if (!paysageAligne) { setReserves(r => (r.length ? [] : r)); return undefined; }
+    const mesurer = () => {
+      const z = zone.current?.getBoundingClientRect(), t = racine.current?.querySelector('.ent-t');
+      if (!z || !t) return;
+      /* l'étendue du contenu (le texte du chiffre, les boutons), pas la boîte : celle du chiffre s'étire sur la rangée */
+      const etendue = (e: Element) => {
+        const r = document.createRange();
+        r.selectNodeContents(e);
+        const b = typeof r.getBoundingClientRect === 'function' ? r.getBoundingClientRect() : null;
+        return b && b.width > 0 ? b : e.getBoundingClientRect();
+      };
+      const plages = [...t.children].map(etendue).filter(b => b.width > 0)
+        .map(b => [Math.round(b.left - z.left), Math.round(b.right - z.left)] as [number, number]);
+      setReserves(r => (r.length === plages.length && r.every((p, i) => p[0] === plages[i][0] && p[1] === plages[i][1]) ? r : plages));
+    };
+    mesurer();
+    const t = setTimeout(mesurer, 300);
+    window.addEventListener('resize', mesurer);
+    return () => { clearTimeout(t); window.removeEventListener('resize', mesurer); };
+  });
   /** La frise mesurée : son bord gauche moins celui de la courbe (`decalage`) et moins celui de l'en-tête (`decEnt`) ; la boîte de l'en-tête. */
   const [frise, setFrise] = useState<{ decalage: number; largeur: number; decEnt: number; largEnt: number; hautEnt: number } | null>(null);
   useLayoutEffect(() => {
@@ -646,7 +677,7 @@ export function EnTeteCalendrier(props: EnTeteCalendrierProps) {
         ) : courbe && base && cachee ? null : courbe && base && vueAl && alignement ? (
           <Courbe courbe={vueAl.sem} abscisses={alignement.abscisses} creuxIndex={vueAl.creuxIndex} largeur={largeur} hauteur={hauteur}
             curseur={lecture !== null && !apercuC ? lecture - vueAl.d : null} reference={refCourbe} gestes={apercuC ? undefined : gestesCourbe}
-            mise={vueAl.mise} mois moisEnHaut={paysage} etoiles={vueAl.etoiles}>
+            mise={vueAl.mise} mois moisEnHaut={paysage} etoiles={vueAl.etoiles} {...(paysageAligne ? { rangeeHaute: { hauteur: RANGEE_CHIFFRE_PAYSAGE, reserves } } : {})}>
             {vueAl.ap && !zoomTout && (
               <div className="ent-zoom-c" data-zoom-aligne style={{ height: hauteur }}>
                 <CourbeZoom avant={vueAl.sem.map(s => s.libre)} apres={vueAl.ap.map(s => s.libre)} abscisses={alignement.abscisses} largeur={largeur} hauteur={hauteur} lacher={lacherZoom} />

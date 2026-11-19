@@ -32,6 +32,8 @@ export interface MessageCal {
   annuler?: () => void;
   /** f6-b : [Livrer le 5 janv.]. */
   livrer?: { texte: string; agir: () => void };
+  /** Paquet E n° 4 : une fête glissée sans ses achats liés : « 1 achat lié reste au 4 déc. » et [Le déplacer aussi]. */
+  aussi?: { texte: string; bouton: string; agir: () => void };
   /** Le détail (client, caisse), au toucher de la ligne. */
   detail?: string;
   /** Un message de l'en-tête : son retrait (`onMessage(null)`) ne chasse que lui. */
@@ -249,7 +251,7 @@ export const Message: React.FC<MessageProps> = ({ message, onFermer, dureeMs = D
   const ancre = message?.ancre;
   /* CRITIQUE-4 n° 20 : une alerte qui attend une décision (« Livrer le 5 janv. ») ne part pas seule au bout de 7 s ; elle part au défilement,
      à un toucher ailleurs, à l'ouverture d'un détail (E33) ou par ses boutons. Le bandeau Annuler, lui, part seul. */
-  const attend = !!message?.livrer;
+  const attend = !!message?.livrer || !!message?.aussi;
   React.useEffect(() => {
     setDetailOuvertLigne(false);
     if (id === undefined || attend) return;
@@ -291,7 +293,7 @@ export const Message: React.FC<MessageProps> = ({ message, onFermer, dureeMs = D
   }, [id, ancre, detailOuvert, dansLaFrise]);
 
   if (!message) return null;
-  const { role, texte, lien, annuler, livrer, detail } = message;
+  const { role, texte, lien, annuler, livrer, detail, aussi } = message;
   const { nom, effet } = separerEffet(texte);
   /* avec un effet chiffré : le nom cède (points de suite), « · S49 : 1 088 → 1 988 » reste entier ; sinon le texte, deux lignes au plus */
   const corps = effet ? (
@@ -317,8 +319,9 @@ export const Message: React.FC<MessageProps> = ({ message, onFermer, dureeMs = D
           </button>
         ) : <p className={`cal-msg-ligne${effet ? ' cal-msg-2l' : ''}`}>{corps}</p>}
         {detail && detailOuvertLigne && <small className="cal-msg-detail">{detail}</small>}
+        {aussi && <p className="cal-msg-aussi" data-msg-aussi><span className="sr-only"> · </span>{aussi.texte}</p>}
       </div>
-      {(lien || livrer || annuler) && (
+      {(lien || livrer || annuler || aussi) && (
         <div className="cal-msg-bt" data-msg-boutons>
           {lien && (
             <>
@@ -327,6 +330,7 @@ export const Message: React.FC<MessageProps> = ({ message, onFermer, dureeMs = D
             </>
           )}
           {livrer && <button type="button" className="cal-msg-b cal-msg-b-pri" onClick={livrer.agir}>{livrer.texte}</button>}
+          {aussi && <button type="button" className="cal-msg-b cal-msg-b-pri" data-msg-aussi-b onClick={aussi.agir}>{aussi.bouton}</button>}
           {annuler && (
             <>
               <span className="sr-only"> · </span>

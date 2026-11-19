@@ -732,7 +732,7 @@ export const Rangee: React.FC<RangeeProps> = props => {
               const pointLie = lieA ? props.rangeeDeBarre?.get(lieA) : undefined;
               return (
                 <Marque
-                  key={c.id} chose={c} centre={d.gauche + 14} haut={top} hauteur={Math.min(28, mesures.barre + 2)} largeurColonne={auJour ? 0 : pas}
+                  key={c.id} chose={c} centre={d.gauche + 14} haut={top} hauteur={Math.min(28, mesures.barre + 2)} largeurColonne={pas}
                   {...(d.jalon ? { jalon: true, lieA, ton, ...(pointLie ? { pointLie } : {}) } : {})}
                   epinglee={epingles.includes(c.id)} etoilee={etoiles.includes(c.id)} selectionnee={selectionId === c.id} menuOuvert={menuId === c.id} lieCourt={lieCourt}
                   libelle={d.avecLibelle ? { cote: d.cote === 'gauche' ? 'gauche' : 'droite', place: d.place, deux: d.deuxLignes, ...(c.brassinLie ? { texte: c.titre } : {}), ...(d.sansLie ? { sansLie: true } : {}), ...(d.retrait ? { retrait: d.retrait } : {}) } : undefined}
@@ -751,7 +751,7 @@ export const Rangee: React.FC<RangeeProps> = props => {
               <Barre
                 key={c.id} chose={c} gauche={d.gauche} largeur={d.largeur} coupe={coupe} haut={top} hauteur={d.phraseBas?.ou === 'barre' ? mesures.barre + mesures.ligne : mesures.barre} cote={d.cote}
                 phraseBas={d.phraseBas ? (d.phraseBas.ou === 'barre' ? { ou: 'barre' } : { ou: 'dessous', x: d.phraseBas.x0, dy: mesures.ligne }) : null} placeEtiquette={d.place} retrait={d.retrait} dureeACote={d.duree} deuxLignes={d.deuxLignes} sansLie={d.sansLie}
-                largeurColonne={auJour ? 0 : largeurColonne} bornes={[-d.a, colonnes.length - 1 - d.a]}
+                largeurColonne={largeurColonne} bornes={[-d.a, colonnes.length - 1 - d.a]}
                 epinglee={epingles.includes(c.id)} etoilee={etoiles.includes(c.id)} selectionnee={selectionId === c.id} menuOuvert={menuId === c.id} lieCourt={lieCourt}
                 decalage={surDrag && drag.mode === 'glisse' ? drag.k * largeurColonne : 0}
                 largeurJour={largeurJourA(pos)}

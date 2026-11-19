@@ -351,6 +351,12 @@
 .ent--paysage[data-aligne] { grid-template-columns: minmax(0, 1fr); grid-template-areas: 't' 'c' 'b'; }
 .ent--paysage[data-aligne] .ent-t { flex-direction: row; align-items: center; gap: 3px; padding: 0 4px 0 12px; }
 .ent--paysage[data-aligne] .ent-t-b { margin-left: auto; }
+/* Paquet E n° 2 (E10, 120 px au plus) : la rangée du chiffre se pose sur la rangée des mois de la courbe, dans la même case ; son milieu
+   laisse passer le doigt vers la courbe ; les mois évitent le chiffre et les boutons (Courbe, `rangeeHaute`). */
+.ent--paysage[data-aligne] { grid-template-areas: 'c' 'b'; }
+.ent--paysage[data-aligne] .ent-t { grid-area: c; position: relative; z-index: 2; height: 28px; pointer-events: none; }
+.ent--paysage[data-aligne] .ent-t > * { pointer-events: auto; }
+.ent--paysage[data-aligne] .ent-bz { margin-top: 2px; }
 .ent--paysage[data-vue='graph'] { grid-template-columns: minmax(0, 1fr); grid-template-areas: 't' 'c'; }
 .ent--paysage[data-vue='graph'] .ent-t { flex-direction: row; align-items: center; }
 .ent--paysage[data-vue='graph'] .ent-t-b { margin-left: auto; }

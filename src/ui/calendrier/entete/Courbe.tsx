@@ -389,6 +389,13 @@ export interface CourbeProps {
    * sont sous la courbe (z2s, portrait).
    */
   moisEnHaut?: boolean;
+  /**
+   * Paquet E n° 2 (E10 : 120 px au plus en paysage) : en paysage aligné, la rangée du chiffre et des boutons se pose SUR la rangée des mois.
+   * `hauteur` : celle de cette rangée partagée (le tracé commence dessous, rien ne passe sous le chiffre) ; `reserves` : les plages [x0, x1]
+   * du chiffre et des boutons, en px de la courbe. Un mois dont le nom tombe sous le chiffre se pose juste à sa droite tant qu'il reste dans
+   * son mois (étiquette collante, comme l'en-tête de mois d'une frise) ; sinon, et sous les boutons, il ne s'écrit pas (la bande le date).
+   */
+  rangeeHaute?: { hauteur: number; reserves: ReadonlyArray<readonly [number, number]> };
   /** D387 : les bords des semaines lus dans la frise (n + 1 valeurs, px de la courbe) ; absent : largeur / n. */
   abscisses?: readonly number[];
   /** D387 : le creux à marquer (index dans `courbe`) quand la courbe n'est qu'une part de l'année ; `null` : il est hors de la part. */
@@ -421,7 +428,32 @@ export function obstaclesCourbe(g: Geo, cadre: CourbeProps['cadre'], creux: { in
   return obstacles;
 }
 
-export function Courbe({ courbe, largeur, hauteur, curseur = null, reference, gestes, cadre, mise = null, mois: avecMois = true, etoiles, masque = null, children, moisEnHaut = false, abscisses, creuxIndex }: CourbeProps) {
+/**
+ * Paquet E n° 2 : les mois dans une rangée haute partagée avec le chiffre et les boutons. Chaque nom de mois évite les `reserves` : sous l'une
+ * d'elles, il glisse à sa droite s'il y tient avant le mois suivant (et avant le bord) ; sinon il part. `largeurNom` : la largeur du texte.
+ */
+export function moisHorsReserves(
+  mois: ReadonlyArray<{ x: number; texte: string }>, reserves: ReadonlyArray<readonly [number, number]>, largeur: number,
+  largeurNom: (t: string) => number = largeurTexte
+): Array<{ x: number; texte: string; trait: boolean }> {
+  const sous = (x0: number, x1: number) => reserves.find(([l, r]) => x1 > l - 6 && x0 < r + 6);
+  const sortie: Array<{ x: number; texte: string; trait: boolean }> = [];
+  mois.forEach((m, i) => {
+    const w = largeurNom(m.texte);
+    const fin = Math.min(largeur - 2, i + 1 < mois.length ? mois[i + 1].x - 10 : largeur - 2);
+    let x = m.x;
+    for (let essai = 0; essai < reserves.length + 1; essai++) {
+      const r = sous(x - 4, x + w);
+      if (!r) break;
+      x = r[1] + 10;
+    }
+    if (x + w > fin || sous(x - 4, x + w)) return;
+    sortie.push({ x, texte: m.texte, trait: x === m.x && !sous(m.x - 4, m.x - 2) });
+  });
+  return sortie;
+}
+
+export function Courbe({ courbe, largeur, hauteur, curseur = null, reference, gestes, cadre, mise = null, mois: avecMois = true, etoiles, masque = null, children, moisEnHaut = false, abscisses, creuxIndex, rangeeHaute }: CourbeProps) {
   const uid = useId().replace(/[^a-zA-Z0-9]/g, '');
   // La police réelle arrive après le premier rendu : les noms se replacent avec ses vraies largeurs.
   const [, setPolice] = useState(0);
@@ -433,22 +465,24 @@ export function Courbe({ courbe, largeur, hauteur, curseur = null, reference, ge
   }, []);
   const n = courbe.length;
   const g0 = moisEnHaut
-    ? geometrie(courbe.flatMap(s => [s.libre, s.caisse]), n, largeur, hauteur, HAUTEUR_MOIS_HAUT, hauteur - 2)
+    ? geometrie(courbe.flatMap(s => [s.libre, s.caisse]), n, largeur, hauteur, rangeeHaute ? rangeeHaute.hauteur + 2 : HAUTEUR_MOIS_HAUT, hauteur - 2)
     : geometrie(courbe.flatMap(s => [s.libre, s.caisse]), n, largeur, hauteur, 4, hauteur - HAUTEUR_MOIS);
   const g = abscisses && abscisses.length === n + 1 ? avecAbscisses(g0, abscisses) : g0;
-  // La ligne de base des mois : en haut (w3s) ou sous le tracé (z2s).
-  const yMois = moisEnHaut ? 13 : hauteur - 3;
+  // La ligne de base des mois : en haut (w3s) ou sous le tracé (z2s) ; au milieu de la rangée haute partagée (paquet E n° 2).
+  const yMois = rangeeHaute && moisEnHaut ? Math.round(rangeeHaute.hauteur / 2 + 5) : moisEnHaut ? 13 : hauteur - 3;
+  const reservesHaut = rangeeHaute && moisEnHaut ? rangeeHaute.reserves.map(([l, r]) => ({ l: l - 4, r: r + 4, t: 0, b: rangeeHaute.hauteur })) : [];
   const libres = courbe.map(s => s.libre), caisses = courbe.map(s => s.caisse);
   const creux = creuxIndex === undefined ? creuxDe(courbe)
     : creuxIndex === null || !courbe[creuxIndex] ? null
       : { index: creuxIndex, numero: courbe[creuxIndex].numero, lundi: courbe[creuxIndex].lundi, centimes: courbe[creuxIndex].libre };
   const causes = creux ? causesDuCreux(courbe, creux.index) : null;
   const misDeCote = courbe.some(s => s.caisse - s.libre > 1);
-  const mois = avecMois ? etiquettesMois(courbe, g) : [];
+  const mois0 = avecMois ? etiquettesMois(courbe, g) : [];
+  const mois = rangeeHaute && moisEnHaut ? moisHorsReserves(mois0, rangeeHaute.reserves, largeur) : mois0.map(m => ({ ...m, trait: true }));
   // Les mois d'abord : un nom peut se poser dans leur rangée, entre deux mois, à 8 px d'eux.
   const boitesMois = mois.map(m => ({ l: m.x - 8, r: m.x + largeurTexte(m.texte) + 8, t: yMois - 11, b: yMois + 3 }));
   // Un nom peut se poser dans la rangée des mois, entre deux mois (z2s « Six fûts inox −1 080 », w3s « Festival +2 450 »).
-  const noms = placerNoms(courbe, g, maxNoms(largeur), [...obstaclesCourbe(g, cadre, creux), ...boitesMois], mise, etoiles, [yMois]);
+  const noms = placerNoms(courbe, g, maxNoms(largeur), [...obstaclesCourbe(g, cadre, creux), ...boitesMois, ...reservesHaut], mise, etoiles, [yMois]);
   const y0 = g.y(0);
   const marques = courbe.map((s, i) => ({ i, d: variation(courbe, i), nomme: s.mouvements.length > 0 })).filter(m => m.nomme && m.d !== null && m.d !== 0 && m.i > 0);
   const cache = (e: Etiquette) => !!masque && boitesSeCroisent(e.boite, masque);
@@ -507,7 +541,7 @@ export function Courbe({ courbe, largeur, hauteur, curseur = null, reference, ge
           </g>
         )))}
         {creux && <circle className="ent-creux-pt" cx={g.x(creux.index) + g.unit / 2} cy={g.y(creux.centimes)} r={5.5} />}
-        {moisEnHaut && mois.map(m => <line key={`t${m.x}`} className="ent-mois-t" x1={m.x - 3} x2={m.x - 3} y1={1} y2={16} />)}
+        {moisEnHaut && mois.filter(m => m.trait).map(m => <line key={`t${m.x}`} className="ent-mois-t" x1={m.x - 3} x2={m.x - 3} y1={rangeeHaute ? yMois - 12 : 1} y2={rangeeHaute ? yMois + 3 : 16} />)}
         {mois.map(m => <text key={m.x} className="ent-mois" x={m.x} y={yMois}>{m.texte}</text>)}
       </svg>
       {/* CRITIQUE-6 n° 9 (E31, D-37) : chaque chose étoilée porte sa ★ sur la courbe, à sa semaine, sur sa marche, même quand son nom n'a pas de
