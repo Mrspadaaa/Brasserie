@@ -9,7 +9,7 @@ import { pitchingPlan } from '../../domain/pitchingPlan';
 import { formatDecimal } from '../numericInput';
 import { SegmentedControl } from '../SegmentedControl';
 import { CourbeEmpatage } from './CourbeEmpatage';
-import { colonnesDe, courbeFermentation, type EtatEmpatage } from './modele';
+import { avisSaccharification, colonnesDe, courbeFermentation, type EtatEmpatage } from './modele';
 import './paliers.css';
 
 export interface EtapePaliersProps {
@@ -45,6 +45,8 @@ export function EtapePaliers(p: EtapePaliersProps) {
   const pitch = pitchingPlan(p.recipe as RecipeSnapshot);
   const cible = pitch.targetC != null && Number.isFinite(pitch.targetC) ? pitch.targetC : undefined;
   const fer = courbeFermentation(p.ferment);
+  // BR-5 : l'écart de FG que la température de saccharification met au repère de 66,5 °C, dit sans changer le chiffre de la recette.
+  const effetEmpatage = avisSaccharification(p.etat.steps, p.recipe.ogTarget, p.recipe.yeast?.attenuationPct);
   const joursTexte = fer.jours === undefined ? '? j' : `${formatDecimal(fer.jours)} j`;
 
   return <div className="pal-etape" data-paliers="etape">
@@ -52,6 +54,8 @@ export function EtapePaliers(p: EtapePaliersProps) {
       onProgramme={p.onProgramme} onRetirer={p.onRetirer} erreur={p.erreur} verrou={p.verrou} avis={p.avisRetrait}
       cadence={plan.rate}
       comparaison={{ possible: plan.canConsiderSkipping, gainMin: plan.beforeFiltrationSavedMin, sans: p.etat.mash?.mashoutEnabled === false }} />
+
+    {effetEmpatage && <p className="pal-fgnote" role="note" aria-label="Effet de l’empâtage sur la FG">{effetEmpatage.texte}</p>}
 
     <div className="pal-rin"><span>Rinçage</span>
       <SegmentedControl label="Type de rinçage" value={p.spargeType} onChange={p.onSparge} className="pal-seg"

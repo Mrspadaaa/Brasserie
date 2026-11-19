@@ -2,7 +2,8 @@
 // Une seule source : les paliers de l'assistant (`mashSteps`) et, pour le mash-out qu'aucun palier n'écrit, `details.mash` (même lecture que
 // `recipeThermalPlan`, le plan que le récapitulatif et la fiche utilisent). Aucun calcul de moteur ici : IBU, OG et eau ne changent pas.
 import type { MashProfile, TempStep } from '../../types';
-import { nomPalierAjoute } from '../../domain/fermentables/empatage';
+import { nomPalierAjoute, SACCHARIFICATION_TEMP_C, SACCHARIFICATION_MIN_MIN } from '../../domain/fermentables/empatage';
+import { BrewingMath } from '../../services/brewingMath';
 
 /** Le mash-out qu'aucun palier n'écrit vit dans `details.mash` (`mashoutTempC`, `mashoutDurationMin`, `mashoutEnabled`). */
 export type MashDetails = Partial<MashProfile>;
@@ -91,7 +92,38 @@ export function rangFinDeCourbe(colonnes: readonly Colonne[]): number {
 // --- Géométrie de la maquette (viewBox 370 × 284) -----------------------------------------------------------------------------------------------
 
 export const G = { largeur: 370, hauteur: 284, x0: 30, w: 300, y0: 10, h: 240, minCol: 34, minMontee: 24, nominalMontee: 40, nominalColonne: 34 } as const;
-/** Le repère « sec ↔ rond » : indicatif, la FG ne dépend pas de l'empâtage (RC-8). */
+/** Un avis court sur l'effet de la saccharification, sans changer FG ni alcool (BR-5, lecture étroite : le calcul de la levure reste tel quel). */
+export interface AvisSaccharification { texte: string; tempC: number; ecartAttenuationPts: number; ecartFgPts?: number }
+
+const REPERE_EMPATAGE_C = 66.5;
+
+/**
+ * BR-5 (08.11) : la température de saccharification ne changeait rien d'écrit à l'écran. `BrewingMath.attenuationForMashTemp` (±1,5 point d'atténuation
+ * par °C autour de 66,5 °C, plafonné à ±8) donne l'écart ; il se dit ici en points de densité finale (OG 1,075, 63 °C : environ 4 points), sans toucher au chiffre
+ * de FG de la recette. Le palier retenu est la saccharification la plus longue entre 62 et 72 °C (ni repos protéique, ni mash-out). Sans OG connue : le sens
+ * et l'écart d'atténuation, jamais un chiffre de FG inventé. `null` près du repère (moins d'un point de FG, ou moins de 1 °C sans OG).
+ */
+export function avisSaccharification(steps: ReadonlyArray<{ tempC?: number; durationMin?: number }>, og: number | null | undefined, attenuationPct?: number): AvisSaccharification | null {
+  const candidats = steps.filter(s => fini(s.tempC) && s.tempC >= SACCHARIFICATION_TEMP_C.min && s.tempC <= SACCHARIFICATION_TEMP_C.max
+    && fini(s.durationMin) && s.durationMin >= SACCHARIFICATION_MIN_MIN);
+  if (!candidats.length) return null;
+  const palier = candidats.reduce((a, b) => (b.durationMin! > a.durationMin! ? b : a));
+  const tempC = palier.tempC!;
+  // L'écart d'atténuation ne dépend pas de la base, sauf aux bornes ; 75 % (un levain de bière ordinaire) sert quand la levure n'a pas d'atténuation écrite.
+  const base = fini(attenuationPct) && attenuationPct > 0 ? attenuationPct : 75;
+  const ecart = BrewingMath.attenuationForMashTemp(base, tempC) - base;
+  const temp = `${Number(tempC.toFixed(1)).toLocaleString('fr-FR')} °C`;
+  const plus = ecart > 0;
+  if (fini(og) && og > 1) {
+    const pts = Math.round((og - 1) * 1000 * Math.abs(ecart) / 100);
+    if (pts < 1) return null;
+    return { texte: `${temp} : FG plus ${plus ? 'basse' : 'haute'} d’environ ${pts} point${pts > 1 ? 's' : ''} (repère : 66,5 °C).`, tempC, ecartAttenuationPts: ecart, ecartFgPts: plus ? -pts : pts };
+  }
+  if (Math.abs(tempC - REPERE_EMPATAGE_C) < 1 || Math.round(Math.abs(ecart)) < 1) return null;
+  return { texte: `${temp} : FG plus ${plus ? 'basse' : 'haute'} que vers 66,5 °C (atténuation environ ${Math.round(Math.abs(ecart))} points plus ${plus ? 'haute' : 'basse'}).`, tempC, ecartAttenuationPts: ecart };
+}
+
+/** Le repère « sec ↔ rond » : indicatif, il ne change pas le chiffre de FG de la recette (RC-8) ; l'écart que l'empâtage y met se dit dans `avisSaccharification` (BR-5). */
 export const BANDE_CORPS = { min: 62, max: 72 } as const;
 
 /** Largeurs de dessin : chaque durée connue vaut sa part de 300 px, sans passer sous le minimum tactile ; un inconnu garde une largeur nominale. */
