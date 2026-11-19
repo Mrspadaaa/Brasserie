@@ -102,3 +102,28 @@ body[data-has-fab] [data-floating-actions-gap="true"] {
     scroll-padding-bottom: 0;
   }
 }
+
+/* BR-28, BR-89, BR-103, TL-31, BE-13, BE-56, T3-10 (19.11) : « masquer au défilement vers le bas, réafficher vers le haut ou à l'arrêt ». `FloatingActions`
+   pose `data-floating-actions-masque="true"` pendant la descente : le + est transparent et ne reçoit plus le toucher (rien ne se déclenche sous un +
+   invisible). La transition (160 ms) ne joue que si le brasseur n'a pas demandé moins de mouvement ; sinon le + apparaît et disparaît sans animation. */
+.floating-actions[data-floating-actions-masque="true"] > button {
+  opacity: 0;
+  scale: 0.85;
+  pointer-events: none;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .floating-actions > button {
+    transition: opacity 160ms ease, scale 160ms ease, transform 150ms ease;
+  }
+}
+
+/* T3-10 (19.11, en ligne) : sur une liste dont les quantités et les boutons vivent au bord droit (Stocks › Courses), le + flottant (56 px, 12 px du bord)
+   cachait « 2 L », « 133,7 g » ou « Copier » à chaque ligne qui passait dessous. Une gouttière de 76 px (56 + 12 + 8 d'air) à droite de la liste les garde
+   à gauche du +, à tout défilement. Au rail (1024 px et plus) le + est dans le coin du contenu large : aucune gouttière.
+   Le bloc Courses se reconnaît à son premier enfant (`data-testid="commande-repliee"`) : aucun attribut ajouté à StocksTab. */
+@media (max-width: 1023px) {
+  .stocks-screen > :has(> [data-testid="commande-repliee"]) {
+    padding-right: 4.75rem;
+  }
+}

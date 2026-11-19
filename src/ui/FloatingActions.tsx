@@ -25,6 +25,48 @@ function useHauteurCourte(): boolean {
   );
 }
 
+/** Descente cumulée (px) avant que le + se masque : un tressaillement du doigt ne le fait pas clignoter. */
+const SEUIL_MASQUE_PX = 8;
+/** Après le dernier défilement, le + se réaffiche (ms) : au repos, rien ne bouge. */
+const REPOS_MASQUE_MS = 700;
+
+/**
+ * « Masquer au défilement vers le bas, réafficher vers le haut ou à l'arrêt » (Material, hide on scroll ; BR-28, BR-89, BR-103, TL-31, BE-13, BE-56,
+ * T3-10, décision du pilote du 19.11 : lecture étroite, réversible). Le + (56 px, 12 px du bord) recouvre en défilant des valeurs et des commandes du
+ * bord droit ; masqué, il ne couvre plus rien pendant qu'on lit. N'importe quel conteneur qui défile compte : l'écouteur est sur le document, en capture
+ * (l'événement `scroll` ne remonte pas). Jamais masqué : pile ouverte (`actif` faux), focus clavier sur lui, ni par le défilement de sa propre pile.
+ */
+function useMasqueAuDefilement(actif: boolean, racine: React.RefObject<HTMLElement>, bouton: React.RefObject<HTMLButtonElement>): [boolean, () => void] {
+  const [masque, setMasque] = React.useState(false);
+  React.useEffect(() => {
+    if (!actif) { setMasque(false); return; }
+    const dernier = new WeakMap<Element, number>();
+    let cumul = 0;
+    let repos: ReturnType<typeof setTimeout> | undefined;
+    const reafficher = () => { cumul = 0; setMasque(false); };
+    const clavier = () => { try { return !!bouton.current?.matches(':focus-visible'); } catch { return false; } };
+    const surDefilement = (event: Event) => {
+      const cible = event.target;
+      const element = cible instanceof Document ? cible.scrollingElement : cible instanceof Element ? cible : null;
+      if (!element || racine.current?.contains(element)) return;
+      const y = element.scrollTop;
+      const avant = dernier.get(element);
+      dernier.set(element, y);
+      // Le premier événement d'un conteneur n'a pas de point de départ : il ne dit pas le sens.
+      if (avant === undefined || y === avant) return;
+      clearTimeout(repos);
+      if (y < avant) { reafficher(); return; }
+      repos = setTimeout(reafficher, REPOS_MASQUE_MS);
+      if (clavier()) return;
+      cumul += y - avant;
+      if (cumul >= SEUIL_MASQUE_PX) setMasque(true);
+    };
+    document.addEventListener('scroll', surDefilement, { capture: true, passive: true });
+    return () => { document.removeEventListener('scroll', surDefilement, { capture: true }); clearTimeout(repos); };
+  }, [actif, racine, bouton]);
+  return [masque, () => setMasque(false)];
+}
+
 /**
  * Le geste d'action de l'application : un bouton, partout, et tout ce qu'on
  * lance dix fois par semaine.
@@ -146,6 +188,8 @@ export const FloatingActions: React.FC<FloatingActionsProps> = ({
   // le bouton ne la suit pas, il flotte au-dessus de la page.
   const dock = anchor === 'page' && reserved?.kind === 'nav' ? null : reserved;
   const geometry = useDockGeometry(dock?.element);
+  /* Masqué en défilant seulement quand il FLOTTE (sur sa case, dans la barre ou l'en-tête, il ne couvre rien) et que sa pile est fermée. */
+  const [masque, reafficher] = useMasqueAuDefilement(!geometry && !open, rootRef, buttonRef);
 
   // Mêmes comptes que la boîte des conversations, pour que la pastille du
   // bouton et le résumé de l'écran ne racontent jamais deux choses.
@@ -253,6 +297,7 @@ export const FloatingActions: React.FC<FloatingActionsProps> = ({
       data-floating-actions-docked={geometry ? 'true' : 'false'}
       data-floating-actions-anchor={anchor}
       data-floating-actions-tone={quiet ? 'quiet' : 'primary'}
+      data-floating-actions-masque={masque ? 'true' : 'false'}
       className="floating-actions fixed z-[51]"
       style={{
         '--floating-actions-bottom': geometry ? `${geometry.bottom}px` : fallbackBottom,
@@ -302,6 +347,7 @@ export const FloatingActions: React.FC<FloatingActionsProps> = ({
           ? `Actions rapides · ${waiting} ${waiting > 1 ? 'réponses' : 'réponse'} du compagnon`
           : 'Actions rapides'}
         title="Actions rapides"
+        onFocus={reafficher}
         onKeyDown={(event) => { if (event.key === 'Escape' && open) { event.preventDefault(); close(); } }}
         onClick={(event) => {
           if (open) { close(false); return; }

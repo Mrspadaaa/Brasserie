@@ -5,3 +5,10 @@
   .page-shell [data-page-titlebar] { grid-template-columns: auto minmax(0, 1fr); }
   .page-shell .page-title-actions { grid-column: 2; justify-self: end; flex-wrap: wrap; }
 }
+
+/* T3-10 (19.11, en ligne) : le + flottant d'une page plein écran occupe 64 px et se pose à 12 px du bord droit, soit 76 px depuis le bord. La rangée de fin
+   (Retour · Suivant) ne gardait que 64 px (`pr-16`) : 12 px de « Suivant — Levure » passaient sous le +, à 390 de large. Elle garde les 76 px du + (la rangée
+   collée les gardait déjà), plus 2 px d'air. Seulement quand le + flotte (docké dans l'en-tête, clavier ouvert, la rangée reprend toute sa largeur). */
+:root body[data-has-fab-floating] .page-shell [data-page-end-actions] {
+  padding-right: 4.875rem;
+}
