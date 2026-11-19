@@ -79,6 +79,7 @@ export const SaltSolver: React.FC<SaltSolverProps> = (props) => {
       <WaterPreparation {...model} sousVolumes={props.sousVolumes} />
       <div
         className={`space-y-2 sm:space-y-4 ${activeStep === "sels" ? "block" : "hidden"}`}
+        data-ew-tab="sels"
       >
         <div className="hidden items-center gap-2 text-sm font-semibold uppercase tracking-wider text-cave-400 border-b border-cave-800 pb-1.5">
           <Scale className="w-4 h-4 text-hop" />

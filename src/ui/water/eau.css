@@ -9,6 +9,8 @@
   --ew-eau: rgb(var(--water)); --ew-eaut: rgb(var(--water-texte)); --ew-eaup: rgb(var(--water) / .16);
   display: flex; flex-direction: column; gap: 10px; min-width: 0; width: 100%; max-width: 560px; margin-inline: auto; color: var(--ew-t1);
 }
+/* EAU-1 (19.11) : chargée après Tailwind, `.ew { display: flex }` l’emportait sur `.hidden` : l’onglet Eau restait affiché sous « 2. Sels ». */
+.ew.hidden { display: none; }
 .ew button { font: inherit; color: inherit; cursor: pointer; text-align: left; }
 .ew button:focus-visible, .ew summary:focus-visible, .ew input:focus-visible { outline: 2px solid var(--ew-att); outline-offset: 2px; }
 .ew.ew summary { list-style: none; cursor: pointer; background-image: none; }
