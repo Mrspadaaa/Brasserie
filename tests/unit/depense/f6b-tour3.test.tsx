@@ -79,3 +79,33 @@ describe('v3-1 : à 1280, la colonne d’une lecture tient la preuve (420) ET la
     expect(colonne.className).not.toMatch(/lg:max-w-\[760px\]/);
   });
 });
+
+/** Le flux : le provisoire arrive (total 100 au-dessus de ses lignes), la porte retient la 3.8 ; `ouvrir` la laisse finir. */
+async function lireEnFlux() {
+  Object.defineProperty(crypto, 'subtle', { configurable: true, value: webcrypto.subtle });
+  const { provisoire, final, jeton } = lecturesLenteur('perdue') as any;
+  provisoire.amountTTC = Math.round((provisoire.items.reduce((t: number, i: any) => t + (i.amountTTC ?? 0), 0) + 100) * 100) / 100;
+  let ouvre!: () => void; const porteFinale = new Promise<void>(r => { ouvre = r; });
+  state.scanned.mockImplementation(async (_f: any, _t: any, opts: any) => { opts?.onProvisoire?.({ ...sortie(provisoire), jeton }); await porteFinale; return sortie(final); });
+  const view = render(<ExpenseSheet onClose={() => {}} onSaved={() => {}}/>);
+  fichier(view);
+  await screen.findByRole('region', { name: 'Vérification du justificatif' });
+  const ouvrir = async () => {
+    await act(async () => { ouvre(); await porteFinale; await new Promise(r => setTimeout(r, 0)); });
+    await waitFor(() => expect(view.container.querySelector('[data-dp="fil"]')).toBeNull());
+  };
+  return { view, ouvrir };
+}
+
+describe('LR1-6 réserve : pendant la 3e lecture, le total n’est pas souligné de tirets rouges', () => {
+  it('provisoire (somme ≠ total de 100) : total-niveau sans « inconnu » ; la 3.8 finie (somme = total) : rien non plus', async () => {
+    const { view, ouvrir } = await lireEnFlux();
+    const niveau = () => view.container.querySelector<HTMLElement>('[data-dp="total-niveau"]')!;
+    await waitFor(() => expect(niveau()).not.toBeNull());
+    expect(view.container.querySelector('[data-dp="fil"]')).not.toBeNull();
+    expect(niveau().getAttribute('data-dp-niveau')).not.toBe('inconnu');
+    expect(niveau().className).not.toMatch(/border-dashed/);
+    await ouvrir();
+    expect(niveau().getAttribute('data-dp-niveau')).not.toBe('inconnu');
+  });
+});

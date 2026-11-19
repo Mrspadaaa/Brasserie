@@ -1566,7 +1566,8 @@ export function ExpenseSheet({onClose,onSaved,initialIntent='expense',existingEq
   const entete=result?confianceEntete({points},{date:draft.date,vendor:draft.vendor,invoiceNumber:draft.invoiceNumber,amount:draft.amount,sourceVatAmount:draft.sourceVatAmount,sourceNetAmount:draft.sourceNetAmount,tapes},ctxConf.lignes):undefined;
   const dateChip=chips.find(c=>c.codes.includes('date-absente'));
   const niveauDate:Niveau=dateChip?(reglesSet.has(dateChip.id)?'sur':'inconnu'):entete?.date.niveau??'sur';
-  const niveauxEntete={date:niveauDate,lignes:pireNiveau([entete?.lignes.niveau??'sur',...(chips.some(c=>c.nom==='Lignes'&&!reglesSet.has(c.id))?['repris' as Niveau]:[])]),total:pireNiveau([entete?.total.niveau??'sur',...chips.filter(c=>c.nom==='Total'&&!reglesSet.has(c.id)).map(c=>rougeDe(c)?'inconnu' as Niveau:'repris' as Niveau)])};
+  const niveauxEntete={date:niveauDate,lignes:pireNiveau([entete?.lignes.niveau??'sur',...(chips.some(c=>c.nom==='Lignes'&&!reglesSet.has(c.id))?['repris' as Niveau]:[])]),total:verif==='attente'&&draft.amount!==undefined?'sur' as Niveau:pireNiveau([entete?.total.niveau??'sur',...chips.filter(c=>c.nom==='Total'&&!reglesSet.has(c.id)).map(c=>rougeDe(c)?'inconnu' as Niveau:'repris' as Niveau)])};
+  /* LR1-6 réserve (tour 3) : pendant la 3e lecture, le total lu n'est jugé ni rouge ni jaune sur le provisoire (comme le bloc, controlesProvisoires) ; un total absent reste rouge. */
   /* ------- le pied : le bouton principal garde tous les états d'aujourd'hui ------- */
   const bouton:BoutonPied=done||attached?{texte:'Terminé',aria:'Terminé',icone:'check',disabled:false,onClick:onClose}
     :dejaTx?{texte:onOpenExpense?'Ouvrir la dépense':'Fermer sans rien enregistrer',aria:onOpenExpense?'Ouvrir la dépense':'Fermer sans rien enregistrer',icone:onOpenExpense?'file':'x',disabled:false,onClick:()=>{onClose();onOpenExpense?.(dejaTx.id);}}
