@@ -2218,3 +2218,4 @@ Capture : work/missions/2026-11-18-choix-calendrier/brasseur/zoom-glisser-18-11.
 - (capture paysage, entoure le bouton ↘↖ de la barre d'outils) « En mode horizontal ça fonctionne bien mais mettre un highlights sur le bouton pour revenir normal »
 - « Et aussi le header est un peu caché » (capture paysage : la barre d'outils ± / 3 mois / horloge / œil passe sous l'en-tête de l'app)
 - (capture 390 : fiche de Ttt ouverte, la barre de Ttt réduite à un trait au-dessus) « Regarde ce qui se passe quand on clique sur un brassin ?? »
+- (19.11, 06:5x) « J'ai l'impression que le calendrier a pas été encore super bien testé, critiqué ECT.. Il y a encore beaucoup de problèmes... »
