@@ -40,7 +40,7 @@ describe('BE-79 — le champ fautif est marqué', () => {
 });
 
 describe('BE-78 — un ajout de référentiel dit ce qu’il a fait', () => {
-  it.each(['Ajouter hops-json', 'Ajouter HopDatabase', 'Ajouter les références d’amertume à cru'])('« %s » annonce le nombre de fiches ajoutées', async nom => {
+  it.each(['Ajouter hops-json', 'Ajouter HopDatabase', 'Ajouter les amertumes du houblon cru'])('« %s » annonce le nombre de fiches ajoutées', async nom => {
     render(<HopKnowledgePanel />);
     fireEvent.click(screen.getByRole('button', { name: nom }));
     await waitFor(() => expect(screen.getAllByRole('status').map(n => n.textContent).join('|')).toMatch(/7 fiche\(s\) ajoutée\(s\)/));

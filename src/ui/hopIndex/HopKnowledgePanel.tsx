@@ -107,14 +107,14 @@ export function HopKnowledgePanel() {
     <h2 className="text-lg text-cave-50 font-semibold">Sources et modèles</h2>
     <details className="border border-cave-700 rounded-control p-3" onToggle={event => setCatalogueOpen(event.currentTarget.open)}><summary className="cursor-pointer min-h-touch text-ebc-straw">Catalogue complet des levures · fiches et sources</summary><div className="pt-3">{catalogueOpen && <Suspense fallback={<p role="status" className="text-sm text-cave-400">Chargement du catalogue des levures…</p>}><YeastCataloguePanel/></Suspense>}</div></details>
     <MobileDetails title="Gérer les sources et les modèles">
-    <p className="text-cave-200">Les axes, plages, seuils et pondérations sont enregistrés dans l’index. Une révision prend effet au prochain calcul ; les prédictions figées restent consultables.</p>
+    <p className="text-cave-200">Ce que l’appli sait des houblons et des levures, à compléter ici. Un changement joue au prochain calcul ; les calculs déjà faits restent lisibles.</p>
     <div className="flex flex-wrap gap-2">
-      <Button disabled={installing || loadingCatalogue} onClick={install}>Installer les conventions initiales manquantes</Button>
+      <Button disabled={installing || loadingCatalogue} onClick={install}>Ajouter les repères de base</Button>
       <Button onClick={() => edit({ id: crypto.randomUUID(), kind: 'yeast', name: '', betaLyase: 'unknown', source: localSource() })}>Ajouter une levure</Button>
-      <Button onClick={() => edit(newModel())}>Documenter un modèle</Button>
-      <Button disabled={installing} onClick={() => installPack({hopKnowledge:bitternessPack})}>Ajouter les références d’amertume à cru</Button>
+      <Button onClick={() => edit(newModel())}>Ajouter un modèle</Button>
+      <Button disabled={installing} onClick={() => installPack({hopKnowledge:bitternessPack})}>Ajouter les amertumes du houblon cru</Button>
     </div>
-    <p className="text-sm text-cave-400">L’installation propose 12 familles aromatiques et des règles de vigilance, sans inventer de rendement ni de profil sensoriel. Les classes et l’importance égale des axes sont des conventions locales documentées.</p>
+    <p className="text-sm text-cave-400">Les repères de base : 12 familles d’arômes et des points de vigilance, sans rendement ni profil sensoriel inventés. Les axes pèsent autant les uns que les autres.</p>
     <a className="inline-block text-sm text-cave-400 underline" href={catalogueLicenses} download="licences-referentiels-houblon.txt">Attributions et licences des référentiels GitHub</a>
     </MobileDetails>
     <details className="border border-cave-700 rounded-control p-3 space-y-3"><summary className="cursor-pointer text-cave-50">Étude disponible · Cascade × Wyeast 1728</summary>

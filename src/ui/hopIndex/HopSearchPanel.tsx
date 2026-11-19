@@ -60,7 +60,7 @@ function HopModelSearchPanel() {
       const next = { ...target }; if (!e.target.value) delete next[a.id]; else next[a.id] = e.target.value === 'low' ? { min: a.scale.min, max: a.lowMax } : e.target.value === 'medium' ? { min: a.lowMax, max: a.mediumMax } : { min: a.mediumMax, max: a.scale.max }; setTarget(next);
     }}><option value="">Sans préférence</option><option value="low">Faible</option><option value="medium">Moyenne</option><option value="high">Forte</option></select></HopField>)}</div>
     {(visibleAxes.length < axes.length || showAllAxes) && <Button intent="ghost" onClick={() => setShowAllAxes(v => !v)}>{showAllAxes ? 'Réduire les familles affichées' : `Toutes les familles (${axes.length})`}</Button>}
-    {!axes.length && <p className="text-ebc-straw">Installer ou documenter les axes dans « Sources et modèles » pour définir une cible.</p>}
+    {!axes.length && <p className="text-ebc-straw">Ajoute d’abord les axes dans « Sources et modèles » pour définir une cible.</p>}
     {models.length > 0 && <HopField label="Partir d’un protocole documenté" hint="Préremplit des conditions explicites du domaine étudié. Vérifie leur correspondance avec ta bière ; tu peux ensuite les modifier."><select className={inputClass} value="" onChange={e => {
       const model = models.find(m => m.id === e.target.value); if (!model) return;
       const s = model.scope; setConditions({ varietyId: s.varietyId, lotId: null, yeastId: s.yeastId, timing: s.timing, doseGL: s.doseGL.min, temperatureC: s.temperatureC?.min ?? null, contactHours: s.contactHours?.min ?? null, matrixId: s.matrixId });
