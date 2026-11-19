@@ -2247,3 +2247,4 @@ Capture : work/missions/2026-11-18-choix-calendrier/brasseur/zoom-glisser-18-11.
 
 - (capture 390 : barres Brassage 110,40 · Nettoyage 23,00 · Autres 132,00 · Matériel 5 500,00, entoure Autres et Matériel) « SI je click sur les barre ici, ça n'a aucun effet... »
 - (captures 390 : Synthèse août–nov., choix « du August 2026 au November 202… », toucher la barre grise « Autres frais 132,00 » ; Opérations filtré « Autres frais » mais « Toutes les dates · Tout ») « Je choisis une range, (déjà petit problème UI, et ensuite je click sur la bare grise, mais sur l'autre vue, ça me renvoie sur le tout... »
+- (captures 390 : Opérations, en-tête « ‹ 17.10–28.01 › » et choix de la page « ‹ 17 oct. 2026 → 28 janv. 2027 › » ; filtre « Autres frais » : liste vide mais barre Nettoyage et « 1 opération ») « Ces différents en fonction de son je click sur le milieu ou < > ??? »
