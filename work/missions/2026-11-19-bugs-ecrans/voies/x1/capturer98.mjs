@@ -21,7 +21,7 @@ for (const [tag, l, h, tactile, echelle, theme] of cas) {
   const clic = (re) => q.evaluate((m) => { const b = [...document.querySelectorAll('button,[role="tab"]')].find((x) => new RegExp(m).test(x.getAttribute('aria-label') ?? x.textContent ?? '')); if (b) b.click(); return !!b; }, re);
   await clic('Potentiel'); await dormir(1500); await clic('^Simuler$'); await dormir(800);
   await q.select('select[aria-label="Ajout à simuler"]', '-1'); await dormir(600);
-  const combo = await q.$('input[aria-label="Houblon du scénario"]');
+  const combo = await q.$('[aria-label="Houblon du scénario"]');
   sortie.push(`${tag} combobox : ${!!combo}`);
   if (combo) { await combo.evaluate((c) => c.scrollIntoView({ block: 'start' })); await combo.click(); await combo.type('Cit'); await dormir(900); }
   sortie.push(`${tag} options : ${await q.evaluate(() => [...document.querySelectorAll('[role="option"]')].slice(0, 3).map((o) => o.textContent).join(' || '))}`);

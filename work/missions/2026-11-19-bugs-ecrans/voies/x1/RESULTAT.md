@@ -23,3 +23,24 @@ DEMANDE EXECUTANT :
 DÉCISION À PRENDRE : aucune.
 CONNAISSANCE : `BrewingMath.attenuationForMashTemp` n'est appelée que par `avisSaccharification` (paliers/modele.ts) ; yeastProjection.ts n'en dépend toujours pas (FG et alcool restent indifférents à l'empâtage ; seul l'avis le dit).
 LEÇON PROPOSÉE : aucune.
+
+## Preuves (exécutant)
+Journal : captures-journal.txt (dernier passage : capturer.mjs complet, « CAPTURES OK 20 »). Passage BR-98 seul (capturer98.mjs) : « CAPTURES98 OK » non atteint, erreur « Execution context was destroyed » au 2e essai.
+
+Corrections faites dans voies/x1/ : capturer98.mjs, le champ « Houblon du scénario » est un textarea (role combobox), sélecteur `input` remplacé par `[aria-label=…]` ; capturer.mjs, le palier est un `rect[role=button]` dont le libellé commence par « Palier 1 · Saccharification, 68,5 °C, 60 min » (sélecteur `button` remplacé), clic par dispatchEvent (un SVG n'a pas `click()`).
+
+Captures (une ligne chacune) :
+- br6-kg-390-clair / -cave : Nugget à 100 g, « 0,1 kg lu comme 100 g. » en orange sous le champ, IBU 129,9.
+- br6-litre-390-clair / -cave : « 0,1 L » refusé, champ reste 100 g, message « ce champ est en g. La valeur précédente (100 g) est conservée. »
+- br6-kg-1280-clair / -cave : même « 0,1 kg lu comme 100 g. » à 100 g.
+- br6-litre-1280-clair / -cave : même refus avec message, champ 100 g.
+- br5-defaut-390-clair / -cave : Paliers, Saccharification 68,5 °C, 60 min ; note « 68,5 °C : FG plus haute d’environ 2 points (repère : 66,5 °C). » sous la courbe, lisible.
+- br5-defaut-1280-clair / -cave : même note sous la courbe.
+- br5-63-390-clair / -cave : ÉCHEC du geste : après frappe de « 63 », le palier reste 68,5 °C et la note reste « 68,5 °C : FG plus haute… ». Le champ de température n'est pas atteint à 390 ; cas 63 non prouvé à 390.
+- br5-63-1280-clair / -cave : palier à 63 °C, note « 63 °C : FG plus basse d’environ 3 points (repère : 66,5 °C). » (BR-5 à 63 °C prouvé à 1280 seulement).
+- br98-liste-390-clair / -cave : Simuler ouvert, champ « Houblon du scénario » présent, liste non ouverte, aucune option visible. Non probant pour BR-98.
+- br98-liste-1280-clair / -cave : Simuler ouvert, liste non ouverte. La capture précédente (liste ouverte, 49 résultats, « α non publié · arômes · source · forme ») a été écrasée par ce passage et n'existe plus. BR-98 non capturé en ouvert, ni 390 ni 1280.
+
+Essais utilisés : demande 1, 3 passages ; demande 2, 2 passages.
+Douteux : BR-98 (liste jamais ouverte à ce passage, cause non trouvée) ; BR-5 à 63 °C à 390 (champ non atteint) ; l'ancienne capture 1280 BR-98 est perdue.
+La sonde de diagnostic est hors voie (dans le scratchpad), non commitée.

@@ -73,8 +73,8 @@ for (const mode of MODES) {
       await photo(p, `br5-defaut-${tag}`);
       infos.push(`${tag} br5 par défaut : ${await p.evaluate(() => document.querySelector('[role="note"][aria-label="Effet de l’empâtage sur la FG"]')?.textContent ?? '(aucun avis)')}`);
       const clicSacch = await p.evaluate(() => {
-        const b = [...document.querySelectorAll('button')].find((x) => /^Palier d/.test(x.getAttribute('aria-label') ?? '') && (x.getAttribute('aria-label') ?? '').includes('68,5'));
-        if (!b) return false; b.click(); return b.getAttribute('aria-label');
+        const b = [...document.querySelectorAll('[role="button"]')].find((x) => /^Palier \d/.test(x.getAttribute('aria-label') ?? '') && (x.getAttribute('aria-label') ?? '').includes('68,5'));
+        if (!b) return false; b.dispatchEvent(new MouseEvent('click', { bubbles: true })); return b.getAttribute('aria-label');
       });
       await dormir(400);
       infos.push(`${tag} br5 palier touché : ${clicSacch}`);
