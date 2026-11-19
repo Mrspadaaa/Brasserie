@@ -21,7 +21,7 @@ import type { DriveProofReceipt } from '../../services/financeDocuments';
 import type { FinanceCategory,StockItem } from '../../types';
 import { FinanceService } from '../../services/financeService';
 import { planOccurrences } from '../../domain/finance/forecast';
-import { lineMathCheck } from '../../domain/finance/invoicePoints';
+import { lineMathCheck, peserPoint, type InvoicePoint } from '../../domain/finance/invoicePoints';
 import { tvaImprimee } from '../depense/tva';
 import { DriveConnection } from './DriveConnection';
 import { PieceDejaSaisie,LienDepense } from './PieceDejaSaisie';
@@ -142,6 +142,9 @@ function NomArticle({index,line,neuf,prisParAutre,onNom,enLigne}:{index:number;l
   </div>;
 }
 
+/** LR1-9 : « les lectures diffèrent · variante : « — » / « ROUGE 25cm » » (une valeur absente s'écrit « — », les mots bruts traduits). */
+const CHAMP_DESACCORD:Record<string,string>={variant:'variante',reference:'référence',name:'nom',quantity:'quantité',unit:'unité',price:'prix',amountTTC:'montant',kind:'nature',vatCode:'code TVA'};
+const texteDesaccord=(p:Pick<InvoicePoint,'champ'|'champs'|'valeurs'>):string=>{const k=(p.champs?.[0]??p.champ).split('.').pop()??'';const v=[...new Set((p.valeurs??[]).map(x=>x.valeur===null||x.valeur===undefined||x.valeur===''?'—':String(x.valeur)))];return sansMotsBruts(`les lectures diffèrent · ${CHAMP_DESACCORD[k]??k} : ${v.map(x=>`« ${x} »`).join(' / ')}`);};
 export function ExpenseSheet({onClose,onSaved,initialIntent='expense',existingEquipmentId,existingEquipmentName,startWithScan=false,initialPlanId,apercu:apercuProp,onOpenExpense}:ExpenseSheetProps) {
   /* Le banc de développement : la prop n'existe qu'en développement (éliminée du bundle de production) ; elle remplace la lecture et l'enregistrement. */
   const apercu=import.meta.env.DEV?apercuProp:undefined;
@@ -160,7 +163,7 @@ export function ExpenseSheet({onClose,onSaved,initialIntent='expense',existingEq
   const keyboardInset=useKeyboardInset();
   const titleId=useId(),validationId=useId();
   const fileInput=useRef<HTMLInputElement>(null),cameraInput=useRef<HTMLInputElement>(null),scanLocked=useRef(false),mounted=useRef(true),saveLocked=useRef(false),pendingRef=useRef(false),proofSent=useRef(false),proofAttached=useRef(false),queuedRef=useRef(false),form=useRef<HTMLDivElement>(null),errorBox=useRef<HTMLDivElement>(null);
-  const scroller=useRef<HTMLDivElement>(null),bandeauRef=useRef<HTMLDivElement>(null),vueDeLaLigne=useRef<(()=>void)|null>(null),ligneSuivieVue=useRef<string|null>(null);
+  const scroller=useRef<HTMLDivElement>(null),bandeauRef=useRef<HTMLDivElement>(null),vueDeLaLigne=useRef<(()=>void)|null>(null),ligneSuivieVue=useRef<string|null>(null),desaccordVu=useRef(0);
   const manuallyClassified=useRef(new Set<string>());
   /* D361 : le groupe de cases de l'unité qui manque, par ligne (le mot « à remplir » y pose le focus), et D364 : la famille (la bande) que le brasseur a choisie pour une ligne ; elle prime la règle de `familleDe` et ne s'écrit pas (état d'écran). */
   const casesRefs=useRef(new Map<string,HTMLDivElement>());
@@ -858,6 +861,8 @@ export function ExpenseSheet({onClose,onSaved,initialIntent='expense',existingEq
   /* D328a, D353 : un désaccord sur la seule nature d'une ligne sans stock (matériel, rénovation, services) n'engage rien : sûr = rien, ni chip ni file. */
   /* LR2-3, LR2-5, LR3-4 : la nature disputée (`kind`) n'entre ni dans le compte « n désaccords » ni dans la file ; la rangée garde sa marque (confianceLigne). */
   const pointsMontres=points?pointsAMontrer(points):points;
+  /* LR1-9 (tour 3, doc2 : « Voir le désaccord » ouvrait une ligne sans montrer le désaccord) : les désaccords de lecture montrés, ceux d'une ligne d'abord, puis l'en-tête ; chaque toucher va au suivant. */
+  const desaccordsVus=(pointsMontres??[]).filter(p=>p.code==='lectures-divergentes'&&!/tva/i.test(p.champ)&&peserPoint(p)).sort((a,b)=>(a.ligne?0:1)-(b.ligne?0:1));
   const chips=[...chipQr,...chipsDeLecture(pointsMontres,extras).filter(c=>!(qrContredit&&c.nom==='Total'&&c.source==='point')&&!(c.codes.length>0&&c.codes.every(code=>code==='unite-absente')&&uniteDeduiteDe(c)))].map(c=>c.source==='mouture'?{...c,nom:`${c.nom}${sommeMoutures>0?` +${(sommeMoutures/100).toFixed(2).replace('.',',')}`:''}`}:c.codes.includes('unite-absente')&&c.ligne?{...c,nom:`${premierMot(nomAffiche(draft.lines.find(l=>l.id===`line-${c.ligne}`)?.description??c.nom))} unité`}:c);
   const ligneDe=(chip:Chip)=>chip.cible??(chip.ligne?`line-${chip.ligne}`:undefined);
   const estRegle=(chip:Chip):boolean=>{
@@ -1258,6 +1263,7 @@ export function ExpenseSheet({onClose,onSaved,initialIntent='expense',existingEq
       texte={`${enfant.quantity===undefined?'':`${fr(enfant.quantity)} ${uniteAffichee(enfant.unit)} × `}${enfant.unitPrice===undefined?'—':fr(enfant.unitPrice)} = ${enfant.amount===undefined?'—':fr2c(Math.round(enfant.amount*100))}`}/>:null;
     const plateauEl=<div data-dp-pu4d className="space-y-1.5">
       <Imprime texte={`${imprimeTexte}${pieceImprimee}`} reference={line.sourceReference}/>
+      {desaccordsVus.filter(p=>p.ligne&&`line-${p.ligne}`===line.id).map(p=><div key={p.cle} data-dp-desaccord-ligne data-dp-niveau="repris" className="text-xs text-attention">{texteDesaccord(p)}</div>)}
       {libelleChamp}
       {calculEl}
       {nombresEl}
@@ -1535,7 +1541,15 @@ export function ExpenseSheet({onClose,onSaved,initialIntent='expense',existingEq
     /* p2 : « Remettre 163,85 » : la valeur lue par les deux premiers lecteurs revient ; la correction ne se marque plus. */
     if(r==='reprendre-total'){const e=fusion?.entete.total;if(e&&typeof e.avant==='number'){setTotal(e.avant);setTranchees(t=>new Set(t).add('entete:total'));setFusion(f=>f?{...f,entete:Object.fromEntries(Object.entries(f.entete).filter(([k])=>k!=='total'))}:f);}return;}
     if(r==='reprendre-tva'){const e=fusion?.entete.tva;if(e&&typeof e.avant==='number'){patch({sourceVatAmount:e.avant});setTranchees(t=>new Set(t).add('entete:tva'));setFusion(f=>f?{...f,entete:Object.fromEntries(Object.entries(f.entete).filter(([k])=>k!=='tva'))}:f);}return;}
-    if(r==='lectures'){const c=desaccordsRestants[0];if(c)aller(c);else versListe();return;}
+    if(r==='lectures'){
+      const p=desaccordsVus.length?desaccordsVus[desaccordVu.current%desaccordsVus.length]:undefined;desaccordVu.current+=1;
+      const id=p?.ligne?`line-${p.ligne}`:undefined,k=p?(p.champs?.[0]??p.champ):'';
+      if(id&&draft.lines.some(l=>l.id===id)){flushSync(()=>setRecherche(''));versLigne(id);return;}
+      if(/payment/i.test(k)){flushSync(()=>setPanel('paye'));viser(q('[data-dp="panneau-paye"]'));return;}
+      const champ=/vendor/i.test(k)?q('#purchase-vendor'):/currency|amount|total/i.test(k)?q('#purchase-total'):null;
+      if(champ&&viser(champ,{focus:champ,block:'center'}))return;
+      const c=desaccordsRestants[0];if(c)aller(c);else versListe();return;
+    }
     versListe();
   };
   const corriges=[...new Set((result?.review?.correctedFields??[]).map(f=>f.startsWith('items')?'Articles':f))];
