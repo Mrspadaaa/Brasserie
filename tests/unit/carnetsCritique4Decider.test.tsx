@@ -93,7 +93,8 @@ describe('P14 · Comparer = g01-8 : compromis calculé avec les valeurs, « Vale
   it('compromisDe (tour 3, PCN-106) : la 2e est sous le minimum de 1 500 m³/h, jamais proposée ; la 1re, seule à tenir 80 °C, et son écart', () => {
     const t = tableau(V)!;
     const c = compromisDe(t)!;
-    expect(c).toBe('la 1re, la seule à tenir 80 °C, pour 1 150 CHF de plus que la 2e');
+    /* la 2e tient aussi 80 °C, mais sous le minimum : la phrase ne dit pas « la seule » sans le dire (vision tour 3) */
+    expect(c).toBe('la 1re, la seule à tenir 80 °C et votre minimum, pour 1 150 CHF de plus que la 2e');
     /* l'écart est un écart du tableau (2 600 − 1 450) ; aucune valeur alignée (g01-8) */
     expect(c).not.toMatch(/m³\/h|: oui/);
   });
@@ -109,7 +110,7 @@ describe('P14 · Comparer = g01-8 : compromis calculé avec les valeurs, « Vale
     const { container } = render(<Comparer titre="Ventilation" statut="research" tableau={t} photos={{ 'ZZ-V-A1': 'data:image/png;base64,AA' }} onRetour={rien} />);
     const encart = container.querySelector('.cn-compromis')!;
     expect(encart.getAttribute('data-source')).toBe('locale');
-    expect(encart.textContent).toContain('Compromis : la 1re, la seule à tenir 80 °C, pour 1 150 CHF de plus que la 2e'); /* tour 3, PCN-106 */
+    expect(encart.textContent).toContain('Compromis : la 1re, la seule à tenir 80 °C et votre minimum, pour 1 150 CHF de plus que la 2e'); /* tour 3, PCN-106 */
     expect(encart.textContent).not.toContain('✻');
     expect(container.querySelector('.cn-annonce')!.textContent).toContain('Valeurs annoncées par les vendeurs');
     expect(container.querySelector('.cn-annonce')!.textContent).toContain('exemple');

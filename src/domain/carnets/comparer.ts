@@ -636,7 +636,10 @@ export function compromisDe(t: Tableau | null): string | null {
     const d2 = L[1];
     const ecart = p1 !== undefined && d2.prixCentimes !== undefined && memeDevise(d2) ? d2.prixCentimes - p1 : null;
     const tx = ecart === null || ecart === 0 ? '' : ecart < 0 ? `, pour ${prixTexte(-ecart, premier.devise)} de plus que la 2e` : `, et ${prixTexte(ecart, premier.devise)} de moins que la 2e`;
-    return `la 1re, la seule ${seuls.map(k => aFaire(k.nom)).join(' et ')}${tx}`;
+    /* un article qui tient aussi ce critère mais hors de son seuil : « la seule » dit aussi le seuil, sinon la phrase contredit le tableau */
+    const horsTenants = L.slice(1).filter(x => !!x.horsSeuil && seuls.some(k => nombreCellule(x, k) === 1));
+    const seuil = !horsTenants.length ? '' : horsTenants.some(x => Object.values(x.horsSeuil!).some(v => /maximum/.test(v))) ? ' et votre maximum' : ' et votre minimum';
+    return `la 1re, la seule ${seuls.map(k => aFaire(k.nom)).join(' et ')}${seuil}${tx}`;
   }
   /* aucun moins cher qui tienne les mêmes critères : la 1re, avec ce qui la met devant */
   const dits: string[] = [];
