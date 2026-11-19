@@ -82,6 +82,8 @@ export function Liste(p: {
   onToutPlier?: (bande?: string) => void; onToutDeplier?: (bande?: string) => void;
   /** Lenteur D, son choix 2 D : les rangées barrées des lignes pas retrouvées, par bande (`GroupeCle`) ; en fin de bande, hors des sommes et du compte. Sans bande à elle (toutes ses lignes sont pas retrouvées), la rangée vient en fin de liste. */
   perdues?: ReadonlyMap<string, React.ReactNode>;
+  /** LR1-10 : les bandes dont une rangée barrée répond à la recherche (son EAN, son nom) : la bande reste montrée même si aucune de ses lignes ne répond. */
+  perduesVues?: ReadonlySet<string>;
 }) {
   const nMasquees = p.filtre ? Math.max(0, p.nAffichees - p.filtre.ids.length) : 0;
   const vide = p.nAffichees === 0;
@@ -91,7 +93,7 @@ export function Liste(p: {
       <button type="button" onClick={p.onSansFiltre} className="ml-auto min-h-7 rounded-control bg-cave-950 px-2.5 text-sm font-semibold text-cave-50">✕ Toutes les lignes</button></div> : null}
     <div data-dp="liste">
       {vide ? <div data-dp="aucune-ligne" className="m-2 flex min-h-20 items-center justify-center rounded-panel border border-dashed border-cave-600 text-sm text-cave-400">Aucune ligne</div> : null}
-      {p.ordre === 'cat' ? p.bandes.map(b => <div key={b.cle} data-dp-bande={b.cle} hidden={p.visibles ? !b.ids.some(id => p.visibles!.has(id)) : false}>
+      {p.ordre === 'cat' ? p.bandes.map(b => <div key={b.cle} data-dp-bande={b.cle} hidden={p.visibles ? !b.ids.some(id => p.visibles!.has(id)) && !p.perduesVues?.has(b.cle) : false}>
         <div data-dp-bande-entete className={`dp-p3c-bande-entete flex items-center gap-1 px-2.5 text-sm dp-p3c-t-${b.cle}`}>
           {(() => { const sg = b.sousGroupes?.length === 1 && b.sousGroupes[0].bande && pliable(b.sousGroupes[0]) ? b.sousGroupes[0] : undefined; if (!sg) return <span aria-hidden className="-ml-1 w-5 shrink-0"/>; /* B2 n° 9 : sans chevron (bande à sous-familles), la place reste : tous les points de couleur sont alignés */
             const ouvert = groupeOuvert(b.cle, sg, p.choixGroupes ?? new Map(), p.forces);

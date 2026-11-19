@@ -127,6 +127,15 @@ export function montantDeLaLigneManquante(c: Pick<ControlesCroises, 'ecartArticl
  * p1 : l'en-tête « À vérifier · … » dit le pire point seul : l'écart de totaux (CHF, sinon articles), à défaut la première autre rangée en écart par son `resume` (à défaut, son libellé et ses valeurs : « Prix connus 1 ligne à revoir »).
  * `croise` : le résumé des totaux de `controlesCroises`.
  */
+/**
+ * LR1-6 (tour 3 ; VERDICT-EN-LIGNE-1 n° 6 : « le provisoire affiche un rouge que le final renverse », Sun Store « 1 article en trop · 7 / 6+1 », doc25 « 231,61 manquants ») :
+ * tant que la 3e lecture tourne, un écart lu sur le provisoire n'est pas encore un verdict. Chaque rangée en écart se dit neutre, « en cours », sans valeurs, écart, geste ni ton ;
+ * son libellé perd son « ≠ ». Les rangées qui concordent ou sont non vérifiables ne changent pas. Le drapeau et l'en-tête suivent (aucun écart, aucun drapeau). Pur, aucune donnée changée.
+ */
+export function controlesProvisoires(rangs: readonly RangControle[]): RangControle[] {
+  return rangs.map(r => (r.verdict !== 'ecart' ? r : { cle: r.cle, verdict: 'inconnu' as const, texte: r.texte.replace(/\s*≠.*$/, '').replace(/\s*·\s*$/, '') || r.texte, valeurs: 'en cours' }));
+}
+
 export function resumeDuBloc(croise: string, rangs: readonly RangControle[]): string {
   if (croise) return croise;
   const autre = rangs.find(r => r.verdict === 'ecart' && !['articles', 'somme', 'une-lecture'].includes(r.cle));
@@ -254,11 +263,13 @@ const nombreFr = (n: number | undefined) => (n === undefined || !Number.isFinite
  * (s1, jeu en ligne : « peinture » trouve les lignes du sous-groupe « Peinture et sols » même quand l'OCR a abîmé leur nom).
  * Tous les mots tapés doivent se trouver dans la même ligne ; les accents et la casse ne comptent pas. Ne change aucune donnée.
  */
-export function chercherLignes(lignes: readonly PurchaseLineDraft[], saisie: string, etiquette?: (ligne: PurchaseLineDraft, index: number) => string | undefined): string[] {
+export function chercherLignes(lignes: readonly PurchaseLineDraft[], saisie: string, etiquette?: (ligne: PurchaseLineDraft, index: number) => string | undefined,
+  /** LR1-10 (tour 3) : ce que les lectures écartées ont lu sur cette ligne (la référence ou l'EAN d'avant la 3.8, son nom) : un EAN imprimé, barré à l'écran, se retrouve. */
+  ecartees?: (ligne: PurchaseLineDraft, index: number) => ReadonlyArray<string | undefined>): string[] {
   const mots = normalize(saisie).split(/\s+/).filter(Boolean).map(m => (/^[\d.,]+$/.test(m) ? m.replace(/\./g, ',') : m));
   if (!mots.length) return lignes.map(l => l.id);
   return lignes.filter((l, i) => {
-    const foin = normalize([l.description, l.nomLu, l.imprime?.nom, l.imprime?.variante, l.nameFr, l.sourceReference, nombreFr(l.amount), nombreFr(l.unitPrice), etiquette?.(l, i)].filter(Boolean).join(' ')).replace(/ /g, '');
+    const foin = normalize([l.description, l.nomLu, l.imprime?.nom, l.imprime?.variante, l.nameFr, l.sourceReference, nombreFr(l.amount), nombreFr(l.unitPrice), etiquette?.(l, i), ...(ecartees?.(l, i) ?? [])].filter(Boolean).join(' ')).replace(/ /g, '');
     return mots.every(m => foin.includes(m));
   }).map(l => l.id);
 }

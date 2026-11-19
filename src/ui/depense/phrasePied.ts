@@ -51,5 +51,15 @@ const NATURE_FR: Record<string, string> = {
  * passe en français. Hors parenthèses (le nom de l'article, la phrase) rien ne change : « service » dans un nom reste « service ».
  */
 export function sansMotsBruts(message: string): string {
-  return message.replace(/\(([^)]*)\)/g, (_tout, dedans: string) => `(${dedans.replace(/\b[a-z]+\b/g, mot => NATURE_FR[mot] ?? mot)})`);
+  return message.replace(/\(([^)]*)\)/g, (_tout, dedans: string) => `(${virguleSuisse(dedans.replace(/\b[a-z]+\b/g, mot => NATURE_FR[mot] ?? mot))})`);
+}
+
+/**
+ * LR1-12 (tour 3 ; VERDICT-EN-LIGNE-1 n° 12 : « Bloc TVA : lectures divergentes (2.6% … », « Le 2.6% est écrit au point ») : dans les parenthèses d'un message du serveur, un nombre décimal
+ * s'écrit à la virgule et un taux prend son espace (« 2,6 % »). Une date (« 19.11.2026 ») n'est pas un nombre décimal : deux points, rien ne change.
+ */
+function virguleSuisse(texte: string): string {
+  return texte
+    .replace(/(?<![\d.,])(\d+)\.(\d+)(?![.\d])/g, (_tout, entier: string, decimales: string) => `${entier},${decimales}`)
+    .replace(/(?<![\d.,])(\d+(?:,\d+)?)\s*%/g, (_tout, nombre: string) => `${nombre} %`);
 }

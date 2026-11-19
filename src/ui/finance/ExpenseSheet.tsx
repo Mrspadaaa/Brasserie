@@ -47,7 +47,7 @@ import { RelireFin } from '../depense/RelireFin';
 import { relectureGardee } from '../depense/comparerRelecture';
 import { controlesPiece,compterArticles,payeEffectif,type ContexteControles,type LectureControlee } from '../../domain/finance/controlesPiece';
 import { rangsDePiece,notePaiement } from './controlesPieceRangs';
-import { controlesCroises,chercherLignes,phraseDuManque,CAUSES_DU_MANQUE,montantDeLaLigneManquante,resumeDuBloc,montant as montantCts,type RangControle,type Renvoi } from './controlesCroises';
+import { controlesCroises,controlesProvisoires,chercherLignes,phraseDuManque,CAUSES_DU_MANQUE,montantDeLaLigneManquante,resumeDuBloc,montant as montantCts,type RangControle,type Renvoi } from './controlesCroises';
 import { LIGNES_HT_PASSEES_AU_TTC } from '../../services/lignesHt';
 import { Entete,Justificatif } from '../depense/Entete';
 import { Pied,BandeauPerdues,type BoutonPied } from '../depense/Pied';
@@ -61,7 +61,7 @@ import { Rubriques,type ItemRubrique } from '../depense/Rubriques';
 import { Liste,SegmentPlier } from '../depense/Liste';
 import { LigneP3c,LignePerdue } from '../depense/Ligne';
 import { Imprime,RangeeCalcul,Op,SegmentUnite,BoiteUniteVide,CasesUnite,Duel,Petit,Nom,Apres,Marque,Sortie,SegmentNature,LigneArticle,BoutonCarre,BoutonTexte,HorsStock,RangeeMouture,RangeeRare,CHAMP_PU4D,largeur,NombresRapides,TuilesQuantite } from '../depense/Plateau';
-import { apresReception,choixUnite,cleUnite,CINQ_UNITES,genreDeUnite,motUnite,nombreFr,nombresRapides,metUn,quantiteGardantMontant,recalculer,convertirMasse,facteurMasse,moutureSuit,uniteHorsArticle,type ChampCalcul } from '../depense/calculPlateau';
+import { apresReception,prixDeLaRangee,choixUnite,cleUnite,CINQ_UNITES,genreDeUnite,motUnite,nombreFr,nombresRapides,metUn,quantiteGardantMontant,recalculer,convertirMasse,facteurMasse,moutureSuit,uniteHorsArticle,type ChampCalcul } from '../depense/calculPlateau';
 import { ecartsEntre,type DonneesProduit,type Ecart } from '../../domain/stock/donnees';
 import { totalSeulEnUn,appliquerFinale,payeCopieDuTotal,provisoireDeRetirees,JETON_CACHE,baseDeBrouillon,type CellulesLigne,enteteDeLecture,libelleAvant,lignesDeLecture,prixImprime,provisoireCoupe,rangerLaPerdue,type BaseFusion,type Correction,type Perdue,type Propositions } from '../depense/finale';
 import { Comptes,motStatut,type CompteItem,type ItemBarre,type Rang } from '../depense/Recap';
@@ -961,7 +961,9 @@ export function ExpenseSheet({onClose,onSaved,initialIntent='expense',existingEq
   const sousFamilleLigne=(i:number):string|undefined=>{const l=draft.lines[rattacheA(i)];const fige=libelleFige.current.get(l.id);if(fige&&!famillesChoisies.current.has(l.id))return fige.sous;return famillesChoisies.current.has(l.id)?undefined:sousFamilleDeLigne(contexteLigne(l),l.kind,l.description,l.stockCategory,articleDe(l)?.category,draft.category);};
   const numeros=numerosPapier(draft.lines,port);
   /* t1 : la mini recherche filtre comme un compte (même mécanique : les groupes s'ouvrent sur les trouvailles) ; elle ne change aucune donnée. */
-  const idsRecherche=recherche.trim()?chercherLignes(draft.lines,recherche,(_l,i)=>[NOMS_GROUPES[groupeDeLigne(i)],sousFamilleLigne(i)].filter(Boolean).join(' ')):null;
+  /* LR1-10 (tour 3) : la recherche trouve aussi ce que les lectures écartées ont lu : la référence, l'EAN ou le nom d'avant la 3.8 d'une ligne corrigée, et les lignes barrées (pas retrouvées). */
+  const idsRecherche=recherche.trim()?chercherLignes(draft.lines,recherche,(_l,i)=>[NOMS_GROUPES[groupeDeLigne(i)],sousFamilleLigne(i)].filter(Boolean).join(' '),l=>{const a=fusion?.avant[l.id];return a?[a.sourceReference,a.nomLu,a.imprime?.nom,a.description]:[];}):null;
+  const perduesTrouvees=recherche.trim()&&perdues.length?new Set(chercherLignes(perdues.map(p=>p.ligne),recherche)):null;
   const filtreAff=idsRecherche?{mot:idsRecherche.length>1?'trouvées':'trouvée',ids:idsRecherche}:filtre;
   const visibles=filtreAff?new Set(filtreAff.ids.flatMap(id=>{const i=draft.lines.findIndex(l=>l.id===id);const p=parentIdxDe(i);return p>=0?[id,draft.lines[p].id]:[id];})):null;
   const douteuxIds=new Set<string>();
@@ -1264,11 +1266,13 @@ export function ExpenseSheet({onClose,onSaved,initialIntent='expense',existingEq
       {line.id===mouturesPropositions[0]?.parentId?tableauEl:null}
       <RangeeRare index={index+1} extrait={line.evidence} supprimable={draft.lines.length>1} famille={isMouture||estRabais?undefined:{valeur:groupeDeLigne(index),options:ORDRE_GROUPES.map(g=>({valeur:g,mot:NOMS_GROUPES[g]})),onChoisir:g=>{if(g===groupeDeLigne(index))return;famillesChoisies.current.set(line.id,g as GroupeCle);const k=KIND_DE_FAMILLE[g as GroupeCle];if(k!==line.kind)changerNature(k);else setPlateaux(n=>n+1);}}} onSupprimer={()=>retirerLigne(line.id)}/>
     </div>;
+    /* LR1-7 (tour 3, Sun Store H21 « 2 pièces × — 50,00 ») : quantité et montant lus sans prix unitaire : le prix se déduit (montant ÷ quantité), en jaune « à contrôler » (D277), dit déduit. Rien n'est écrit dans la ligne. */
+    const qteRangee=texteQuantite(line,unite,horsStock),prixRangee=qteRangee?prixDeLaRangee(line):line.unitPrice!==undefined?{valeur:line.unitPrice,deduit:false}:undefined;
     return <LigneP3c key={`${readCount}-${line.id}`} id={line.id} rang={index+1} numeroPapier={ordre==='papier'&&scan?.ok?numeros.get(line.id):undefined}
       nom={isMouture?'mouture':sansAlphaDoublon(line.nameFr&&!article&&!estRabais?nomAffiche(line.nameFr):line.stockAction==='new'&&neuf?.derive?(nomRefuse?neuf.nomPropose:neuf.name):nomAffiche(line.description,article),alphaLu)} lien={lien} sansStock={depenseHorsBrassage(draft.category)} rabais={line.kind==='discount'} groupe={groupeDeLigne(index)}
       alpha={alphaLu} ebc={ebcLu} conversion={article?conversionDe({...line,unit:unite},article):undefined}
-      qte={{texte:texteQuantite(line,unite,horsStock)}} niveaux={niveaux}
-      prix={line.unitPrice!==undefined?prixImprime(line.unitPrice):'—'} montant={line.amount===undefined?'—':fr2c(Math.round(line.amount*100))}
+      qte={{texte:qteRangee}} niveaux={prixRangee?.deduit?{...niveaux,prix:'repris' as Niveau}:niveaux}
+      prix={prixRangee?prixImprime(prixRangee.valeur):'—'} prixDeduit={prixRangee?.deduit} montant={line.amount===undefined?'—':fr2c(Math.round(line.amount*100))}
       prixKg={pk?{texte:`✓ ${pk}`,aria:`${pk} avec mouture`}:undefined} pastilleMouture={pastilleMouture} etat={etat}
       boutonMouture={isMouture&&parent?{liee:parentIdx>=0,parent:nomParent,onBascule:()=>basculeMouture(line.id,parentIdx>=0),attr:ordre==='papier'||!cestMoutureEnPastille}:undefined}
       douteux={douteux} filtree={Boolean(visibles&&visibles.has(line.id)&&!isMouture)} garde={garde.includes(line.id)} masquee={Boolean(visibles&&!visibles.has(line.id)&&!(isMouture&&ordre==='cat'))} ouverte={ouverte}
@@ -1340,9 +1344,9 @@ export function ExpenseSheet({onClose,onSaved,initialIntent='expense',existingEq
   };
   const ligneEls=new Map<string,React.ReactNode>();
   /* Lenteur D, son choix 2 D : les lignes que la 3.8 ne lit plus : barrées en fin de leur bande, hors des sommes (elles ne sont pas dans le brouillon). « Confirmer » sans trancher : elles partent. */
-  const perduesParBande=new Map<string,React.ReactNode[]>();
-  for(const p of perdues){const l=p.ligne,g=groupeDe(contexteLigne(l),l.kind,l.description,l.stockCategory,articleDe(l)?.category,draft.category),u=uniteEffective(l);
-    perduesParBande.set(g,[...(perduesParBande.get(g)??[]),<LignePerdue key={l.id} id={l.id} groupe={g} nom={nomAffiche(l.nameFr&&!articleDe(l)?l.nameFr:l.description,articleDe(l))} qte={texteQuantite(l,u,false)} prix={l.unitPrice!==undefined?prixImprime(l.unitPrice):'—'} montant={l.amount===undefined?'—':fr2c(Math.round(l.amount*100))} masquee={Boolean(visibles&&!visibles.has(l.id))} sansStock={depenseHorsBrassage(draft.category)}/>]);}
+  const perduesParBande=new Map<string,React.ReactNode[]>(),bandesPerduesVues=new Set<string>();
+  for(const p of perdues){const l=p.ligne,g=groupeDe(contexteLigne(l),l.kind,l.description,l.stockCategory,articleDe(l)?.category,draft.category),u=uniteEffective(l);if(perduesTrouvees?.has(l.id))bandesPerduesVues.add(g);
+    perduesParBande.set(g,[...(perduesParBande.get(g)??[]),<LignePerdue key={l.id} id={l.id} groupe={g} nom={nomAffiche(l.nameFr&&!articleDe(l)?l.nameFr:l.description,articleDe(l))} qte={texteQuantite(l,u,false)} prix={l.unitPrice!==undefined?prixImprime(l.unitPrice):'—'} montant={l.amount===undefined?'—':fr2c(Math.round(l.amount*100))} masquee={Boolean(visibles&&!visibles.has(l.id)&&!perduesTrouvees?.has(l.id))} sansStock={depenseHorsBrassage(draft.category)}/>]);}
   /* D329 (son choix B étendu) : le bandeau au pouce est la file de TOUS les changements de la 3e lecture encore à trancher, dans l'ordre : lignes pas retrouvées, valeurs corrigées, lignes ajoutées, désaccords qui pèsent. */
   const estDesaccord=(c:Chip)=>c.source==='point'&&c.codes.includes('lectures-divergentes')&&c.nom!=='TVA';
   const desaccordsRestants=chips.filter(c=>estDesaccord(c)&&!reglesSet.has(c.id));
@@ -1500,9 +1504,11 @@ export function ExpenseSheet({onClose,onSaved,initialIntent='expense',existingEq
     ...(verif==='attente'?[{cle:'lectures',verdict:'inconnu' as const,texte:'Lectures',valeurs:'',lectures:{faites:2,sur:3}}]:lectures?[nDesaccords?{cle:'lectures',verdict:'ecart' as const,texte:nPagesLues>1?`Lectures · ${nPagesLues} pages`:'Lectures',valeurs:`${lectures}/${lectures} · ${nDesaccords} désaccord${nDesaccords>1?'s':''}`,resume:`${nDesaccords} désaccord${nDesaccords>1?'s':''} de lecture`,geste:'Voir le désaccord',renvoi:'lectures' as const}:nPagesLues>1?{cle:'lectures',verdict:'ok' as const,texte:`${nPagesLues} pages lues`,valeurs:''}:{cle:'lectures',verdict:'ok' as const,texte:'Lectures',valeurs:`${lectures}/${lectures} d'accord`}]:[]),
     ...((result.linesLost??0)>0?[{cle:'perdues',verdict:'ecart' as const,texte:'Lignes non gardées',valeurs:String(result.linesLost),resume:`${result.linesLost} ligne${(result.linesLost??0)>1?'s':''} non gardée${(result.linesLost??0)>1?'s':''}`,geste:'Voir la liste',renvoi:'liste' as const}]:[]),
   ]:[];
-  const rangsBloc=result?[...ctrlBloc.rangs,...rangsLecture]:[];
+  const rangsLus=result?[...ctrlBloc.rangs,...rangsLecture]:[];
+  /* LR1-6 (tour 3) : pendant la 3e lecture, le bloc ne se rouge pas sur le provisoire (« 1 article en trop », « Ouvrir la ligne fausse » que le final renversait) : chaque écart dit « en cours », sans drapeau. */
+  const rangsBloc=verif==='attente'?controlesProvisoires(rangsLus):rangsLus;
   const drapeauBloc=rangsBloc.some(r=>r.verdict==='ecart');
-  const resumeBloc=resumeDuBloc(ctrlBloc.resume,rangsBloc);
+  const resumeBloc=drapeauBloc?resumeDuBloc(ctrlBloc.resume,rangsBloc):'';
   /* Une pastille d'erreur mène à son geste : ligne manquante → la recherche (et « Ajouter la ligne manquante » sous elle) ; ligne fausse ou en trop → la ligne, ouverte ; total douteux → son champ ; règlement ; désaccord. */
   const surRenvoi=(r:Renvoi,rang?:RangControle)=>{
     const q=(sel:string)=>form.current?.querySelector<HTMLElement>(sel)??null;
@@ -1698,9 +1704,9 @@ export function ExpenseSheet({onClose,onSaved,initialIntent='expense',existingEq
       <div className="order-3 lg:order-none lg:pb-0">{rubriquesScan}{phraseRecu}</div>
       </div>
       <div className="order-2 lg:order-none lg:col-start-2">
-        <div ref={rechercheZone} className="lg:sticky lg:top-0 lg:z-[5] lg:bg-cave-950"><RechercheLignes valeur={recherche} onChange={setRecherche} onFocus={()=>setRechercheOuverte(true)} nTrouvees={idsRecherche?.length??draft.lines.length} nTotal={draft.lines.length} inputRef={rechercheRef}/>{bandeManque&&(rechercheOuverte||recherche.trim())?<BandeManque texte={bandeManque} causes={CAUSES_DU_MANQUE} onAjouter={()=>ajouterManquante(montantDeLaLigneManquante(ctrlBloc))} ajouterOff={draft.lines.length>=LIGNES_MAX||ajouteeAVide!==null} onPhoto={surFichier?()=>{setJustifOuvert(true);scroller.current?.scrollTo?.({top:0,behavior:'smooth'});}:undefined}/>:null}</div><Liste ordre={ordre} bandes={bandesMontrees} papier={papier} lignes={ligneEls} filtre={filtreAff} visibles={visibles} nAffichees={lignesAff.length} choixGroupes={choixGroupes} forces={forcesGroupes} onBasculeGroupe={basculerGroupe} onToutPlier={toutPlierGroupes} onToutDeplier={toutDeplierGroupes} perdues={perduesParBande} onSansFiltre={()=>{setFiltre(null);setRecherche('');setGarde([]);}}
+        <div ref={rechercheZone} className="lg:sticky lg:top-0 lg:z-[5] lg:bg-cave-950"><RechercheLignes valeur={recherche} onChange={setRecherche} onFocus={()=>setRechercheOuverte(true)} nTrouvees={idsRecherche?.length??draft.lines.length} nTotal={draft.lines.length} inputRef={rechercheRef}/>{bandeManque&&(rechercheOuverte||recherche.trim())?<BandeManque texte={bandeManque} causes={CAUSES_DU_MANQUE} onAjouter={()=>ajouterManquante(montantDeLaLigneManquante(ctrlBloc))} ajouterOff={draft.lines.length>=LIGNES_MAX||ajouteeAVide!==null} onPhoto={surFichier?()=>{setJustifOuvert(true);scroller.current?.scrollTo?.({top:0,behavior:'smooth'});}:undefined}/>:null}</div><Liste ordre={ordre} bandes={bandesMontrees} papier={papier} lignes={ligneEls} filtre={filtreAff} visibles={visibles} nAffichees={lignesAff.length} choixGroupes={choixGroupes} forces={forcesGroupes} onBasculeGroupe={basculerGroupe} onToutPlier={toutPlierGroupes} onToutDeplier={toutDeplierGroupes} perdues={perduesParBande} perduesVues={bandesPerduesVues} onSansFiltre={()=>{setFiltre(null);setRecherche('');setGarde([]);}}
           rattacherTous={mouturesPropositions.length>1?{n:mouturesPropositions.length,onTous:()=>patch({lines:mouturesPropositions.reduce((acc,p)=>confirmMillingSurcharge(acc,p.lineId),draft.lines)})}:null}
-          pied={{ajouterOff:draft.lines.length>=LIGNES_MAX,ajouterTitre:draft.lines.length>=LIGNES_MAX?`${LIGNES_MAX} lignes au plus, port compris`:undefined,regrouper:draft.lines.length>1,arrondi:arrondiCents?{texte:`${arrondiCents<0?'−':'+'}${fr2c(Math.abs(arrondiCents))}`}:null,retablir:avantRegroupement&&draft.lines.length<=1?{n:avantRegroupement.length,onRetablir:retablir}:null,annuler:retraits.length?{nom:nomRetrait(),n:retraits.length,onAnnuler:annulerRetrait}:null,detail:draft.lines.length>1&&!(detailListe.ecart&&drapeauBloc)?{...detailListe,cache:Boolean(scan?.cached)}:null}}
+          pied={{ajouterOff:draft.lines.length>=LIGNES_MAX,ajouterTitre:draft.lines.length>=LIGNES_MAX?`${LIGNES_MAX} lignes au plus, port compris`:undefined,regrouper:draft.lines.length>1,arrondi:arrondiCents?{texte:`${arrondiCents<0?'−':'+'}${fr2c(Math.abs(arrondiCents))}`}:null,retablir:avantRegroupement&&draft.lines.length<=1?{n:avantRegroupement.length,onRetablir:retablir}:null,annuler:retraits.length?{nom:nomRetrait(),n:retraits.length,onAnnuler:annulerRetrait}:null,detail:draft.lines.length>1&&!(detailListe.ecart&&rangsLus.some(r=>r.verdict==='ecart'))?{...detailListe,cache:Boolean(scan?.cached)}:null}}
           onAjouter={()=>ajouterManquante()} onRegrouper={regrouper}>
           {tiroirPort}
         </Liste>

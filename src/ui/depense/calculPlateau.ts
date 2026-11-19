@@ -94,6 +94,16 @@ export function prixCalcule(montant: number, quantite: number): number {
   return Math.round(quantite * p3 * 100) === Math.round(montant * 100) ? p3 : Math.round(brut * 1e4) / 1e4;
 }
 
+/**
+ * LR1-7 (tour 3 ; VERDICT-EN-LIGNE-1 n° 7, Sun Store H21 « 2 pièces × — 50,00 ») : le prix unitaire de la rangée. Lu, il est montré tel quel ; absent, avec une quantité positive et un montant lus,
+ * il se déduit (montant ÷ quantité, `prixCalcule`, comme le plateau à l'édition) et se dit déduit. Rien n'est écrit dans la ligne : l'affichage seul. Un rabais n'a pas de prix unitaire.
+ */
+export function prixDeLaRangee(l: Pick<PurchaseLineDraft, 'kind' | 'quantity' | 'unitPrice' | 'amount'>): { valeur: number; deduit: boolean } | undefined {
+  if (l.unitPrice !== undefined) return { valeur: l.unitPrice, deduit: false };
+  if (l.kind === 'discount' || l.quantity === undefined || !(l.quantity > 0) || l.amount === undefined || !Number.isFinite(l.amount)) return undefined;
+  return { valeur: prixCalcule(l.amount, l.quantity), deduit: true };
+}
+
 /** B2 n° 3 : le facteur d'une unité de masse à une autre (« Kg » → « g » : 1000), `undefined` hors masse (pièce, sachet, litre) : rien ne se convertit. */
 const MASSE: Record<string, number> = { kg: 1000, g: 1 };
 export function facteurMasse(de: string, vers: string): number | undefined {
