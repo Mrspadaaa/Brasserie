@@ -58,7 +58,7 @@ function RangeSetting({ label, value, unit, onChange, min = 0, max = 100, digits
 }
 
 /** A bounded interval on an honest shared scale; the goal is a limit, not a mean. */
-function SimulationRange({ bound, target, current }: { bound: NoloBound; target: number; current: NoloBound | null }) {
+function SimulationRange({ bound, target, current, manque }: { bound: NoloBound; target: number; current: NoloBound | null; manque?: string }) {
   const limit = Math.max(.6, Math.ceil(Math.max(bound.max ?? target, target) * 10) / 10 + .1);
   const position = (n: number) => Math.min(100, Math.max(0, n / limit * 100));
   const crosses = bound.max != null && bound.min <= target && bound.max > target;
@@ -76,7 +76,9 @@ function SimulationRange({ bound, target, current }: { bound: NoloBound; target:
       <span className="nolo-target-legend">Cible ≤ {number(target)} %</span> ·{' '}
       {bound.max == null ? 'Compléter les points signalés pour calculer la plage.' : bound.min > target ? 'Toute la plage dépasse la consigne.' : crosses ? 'La borne haute dépasse la consigne.' : 'Plage sous la consigne, avec ces hypothèses.'}
     </p>
-    <p className="text-cave-400">Recette actuelle : {current ? noloDisplayRangeLabel(current) : 'à caractériser'}</p>
+    {/* TE-14 : « Données manquantes » seul ne disait pas lesquelles ; on nomme la prochaine donnée à compléter (celle que le moteur demande). */}
+    <p className="text-cave-400">Recette actuelle : {current && (current.max !== null || current.min > 0) ? noloDisplayRangeLabel(current)
+      : `à compléter${manque ? ` — ${manque.charAt(0).toLowerCase()}${manque.slice(1)}` : ' (données de la recette manquantes)'}`}</p>
     <p className="sr-only" aria-live="polite" aria-atomic="true">Estimation : {noloDisplayRangeLabel(bound)} ; cible au maximum {number(target)} % vol.{bound.max != null && bound.max > target ? ' Dépassement de la cible.' : ''}</p>
   </figure>;
 }
@@ -124,7 +126,8 @@ export function NoloRecipeSimulator({ recipe, onChange, science, saved = emptyKn
       acidPlanned: !!plan.acid };
   })();
   const waterBlocked = proposedWater?.fit?.planningStatus === 'invalid' || proposedWater?.fit?.planningStatus === 'impossible';
-  const current = useMemo(() => { try { return evaluateNoloRecipe(sourceRecipe, saved)?.projection ?? null; } catch { return null; } }, [sourceRecipe, saved]);
+  const evalCourante = useMemo(() => { try { return evaluateNoloRecipe(sourceRecipe, saved) ?? null; } catch { return null; } }, [sourceRecipe, saved]);
+  const current = evalCourante?.projection ?? null;
   const choose = () => { setEdited(null); setError(''); setNotice(''); };
   const adjust = (patch: Partial<NoloRecipeSettings>) => {
     if (!proposal || stale) return;
@@ -161,7 +164,10 @@ export function NoloRecipeSimulator({ recipe, onChange, science, saved = emptyKn
     {stale && <p role="alert" className="nolo-error">La recette a changé. Réinitialiser l’essai pour reprendre ses nouvelles données.</p>}
     {invalidFields.length > 0 && <p role="alert" className="nolo-error">Saisie à corriger : {invalidFields.join(', ')}. Entrer un nombre dans les limites du champ.</p>}
     {proposal && s && <>
-      <SimulationRange bound={!invalidFields.length && proposal.result?.projection || { min: 0, max: null, kind: 'unknown', confidence: 'low' }} target={target} current={current}/>
+      <SimulationRange bound={!invalidFields.length && proposal.result?.projection || { min: 0, max: null, kind: 'unknown', confidence: 'low' }} target={target} current={current} manque={evalCourante?.nextAction}/>
+      {/* TE-15 (lecture étroite) : au premier plan, le procédé, la consigne, la levure et la plage ; les réglages préremplis (densité, grain, atténuation…) se déplient. */}
+      <details className="nolo-solver-details nolo-solver-hypotheses" open={invalidFields.length > 0 || undefined}>
+      <summary>Hypothèses du calcul · densité {number(s.ogSg, 3)} · atténuation {number(s.attenuationPct.min, 1)}–{number(s.attenuationPct.max, 1)} %</summary>
       <div className="nolo-solver-knobs" aria-label="Réglages préremplis de la simulation">
         <Setting label="Densité initiale visée" value={s.ogSg} min={1} max={1.3} digits={3} slider={{ min: 1, max: Math.max(1.025, s.ogSg * 1.02), step: .001 }} onChange={ogSg => adjust({ ogSg })}/>
         {process !== 'secondRunnings' && <Setting label="Charge de grain" value={baseGrainKg * s.grainScale} unit="kg" max={100000} digits={3} onChange={value => { if (baseGrainKg > 0) adjust({ grainScale: value / baseGrainKg }); }}/ >}
@@ -180,6 +186,7 @@ export function NoloRecipeSimulator({ recipe, onChange, science, saved = emptyKn
         </>}
         {process === 'secondRunnings' && <Setting label="Volume de récupération visé" value={s.recoveredVolumeL} unit="L" max={100000} onChange={recoveredVolumeL => adjust({ recoveredVolumeL })}/>}
       </div>
+      </details>
       <p className="nolo-solver-confidence"><strong>Plage de simulation</strong> · {proposal.confidence.level === 'documented' ? 'atténuation publiée, extrait à confirmer par un pilote.' : 'atténuation et extrait à calibrer sur un pilote.'}</p>
       {proposedWater && <div role="region" aria-label="Eau proposée pour le scénario NOLO" className="rounded-control border border-cave-700 bg-cave-850/70 px-2 py-1.5 text-xs text-cave-200 space-y-0.5">
         <p><strong className="text-cave-50">Eau proposée</strong> · Empâtage <span className="reading">{number(proposedWater.mashL, 1)} L</span> + rinçage <span className="reading">{number(proposedWater.spargeL, 1)} L</span>
