@@ -37,14 +37,14 @@ describe('d3-1 : une seule vérité pour l’accord des lectures',()=>{
     const r=rangee(view,'lectures')!;
     expect(r.textContent).not.toMatch(/d.accord/);
     expect(r.getAttribute('data-dp-verdict')).toBe('ecart');
-    expect(r.textContent).toMatch(/2 désaccords/);
+    expect(r.textContent).toMatch(/2 valeurs en désaccord/);
     expect(view.container.textContent).toMatch(/désaccord/);
   });
   it('lectures réelles (origine « lecture ») : même compte que la barre',async()=>{
     const view=await ouvrir(lectureTicket({review:{status:'disputed',findings:[],readers:3},points:[desaccord(1)]}));
     const r=rangee(view,'lectures')!;
     expect(r.getAttribute('data-dp-verdict')).toBe('ecart');
-    expect(r.textContent).toMatch(/1 désaccord(?!s)/);
+    expect(r.textContent).toMatch(/1 valeur en désaccord/);
   });
   it('sans désaccord : « d’accord » reste vrai',async()=>{
     const view=await ouvrir(lectureTicket());
