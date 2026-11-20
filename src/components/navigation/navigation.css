@@ -373,3 +373,53 @@ body[data-has-fiche-page] .app-bottom-dock > nav.nav-principale {
 
 /* Pastille C (16.11) : la pastille de Stocks est bleue comme le chiffre clé qu'elle répète ; le texte prend la couleur de la page (blanc en clair, encre en cave). */
 .pastille-stocks { background: rgb(var(--area-finances)); color: rgb(var(--cave-950)); }
+
+/* CT4C n° 5 (critique, 20.11), voie g3 tour 2 : le + au repos (56 px, 12 px du bord) couvrait encore du contenu hors Finances. Même remède que CT4C-7 et T3-10 : la colonne
+   de droite reste libre (76 px : 56 + 12 + 8 d'air), le + reste en bas à droite (acquis). Seulement quand le + flotte, jamais au rail (1024 px et plus). Mesuré au banc à chaque
+   arrêt de défilement (`voies/g3/bench-t2.mjs`), pas à la position du + : un + qui bouge pour éviter le contenu ne serait plus « toujours en bas à droite ». */
+/* Stocks › Articles, téléphone debout : chaque bloc de rayon (en-tête, échelle) et chaque ligne (quantité, étoile) s'arrêtent avant le +. Le remplissage est posé sur le bloc
+   (`.l1-eh-bloc`, `.l1-li`) : l'échelle et les barres d'une ligne se mesurent dans la même largeur, elles rétrécissent ensemble et restent alignées. L'étoile, posée au bord du
+   bloc, doit suivre : sans cela son bouton (44 px) restait sous le +. Coût : le nom perd 76 px à 390 ; au-dessus de 640 px rien ne change (la ligne a la place). */
+@media (max-width: 639px) {
+  :root body[data-has-fab-floating] .stock-liste.l1-eh-bloc,
+  :root body[data-has-fab-floating] .stock-liste.l1-li {
+    padding-right: 4.75rem;
+  }
+
+  :root body[data-has-fab-floating] .stock-liste .l1-fav {
+    right: 4.75rem;
+  }
+}
+
+/* Même chose au rail (1280) : le + est au coin du contenu, à 24 px des bords (56 + 24 + 8 d'air = 88 px = 5,5 rem) ; la colonne « Fournisseur » et l'étoile passaient dessous. */
+@media (min-width: 1024px) {
+  :root body[data-has-fab-floating] .stock-liste.l1-eh-bloc,
+  :root body[data-has-fab-floating] .stock-liste.l1-li {
+    padding-right: 5.5rem;
+  }
+
+  :root body[data-has-fab-floating] .stock-liste .l1-fav {
+    right: 5.5rem;
+  }
+}
+
+/* Clients › Prix, debout et couché : la liste « Il manque ces données » et sa note « Anciens tarifs sans format » (sa colonne propre commence à 1000 px). */
+@media (max-width: 999px) {
+  :root body[data-has-fab-floating] .prx-manque {
+    padding-right: 4.75rem;
+  }
+}
+
+/* Opérations, téléphone debout : même gouttière que la disposition couchée (f2 k3) ; les montants et « + pièce » restent à gauche du +. */
+@media (max-width: 599px) {
+  :root body[data-has-fab-floating] .ops > :not(.ops-bande) {
+    padding-right: 4.75rem;
+  }
+}
+
+/* Synthèse, téléphone couché : la colonne « Matériel à part » (bord droit de la scène) tombait sous le +. */
+@media (orientation: landscape) and (max-height: 520px) and (max-width: 1023px) {
+  :root body[data-has-fab-floating] .syn-scene {
+    padding-right: 4.75rem;
+  }
+}
