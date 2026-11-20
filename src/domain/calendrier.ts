@@ -69,8 +69,12 @@ export function numeroSemaine(iso: string): number {
   return Math.floor((jeudi - debutAnnee) / JOUR / 7) + 1;
 }
 
-export function semainesDe(aujourdhui: string, nombre = 6): SemaineCalendrier[] {
-  const premier = utc(lundiDe(aujourdhui));
+/**
+ * `passe` (CAL-PASSE, 20.11 : « le passé est visible et modifiable ») : le nombre de semaines posées AVANT la semaine courante ; la première
+ * semaine est alors le lundi d'aujourd'hui moins `passe` semaines. `nombre` compte toutes les semaines, passé compris.
+ */
+export function semainesDe(aujourdhui: string, nombre = 6, passe = 0): SemaineCalendrier[] {
+  const premier = utc(lundiDe(aujourdhui)) - Math.max(0, Math.floor(passe)) * 7 * JOUR;
   return Array.from({ length: nombre }, (_, index) => {
     const debut = versIso(premier + index * 7 * JOUR);
     return { index, debut, numero: numeroSemaine(debut), jourMois: `${debut.slice(8, 10)}.${debut.slice(5, 7)}` };
@@ -251,6 +255,8 @@ export const francsSignes = (centimes: number): string => `${centimes < 0 ? '' :
 
 /** La courbe porte 52 semaines à partir du lundi de la semaine courante (E02). */
 export const NB_SEMAINES_COURBE = 52;
+/** CAL-PASSE (20.11) : jusqu'à 52 semaines de passé sont montrées et modifiables (la caisse les borne au solde de départ, jamais inventée). */
+export const SEMAINES_PASSEES_MAX = 52;
 
 /** Un tronçon de n semaines à partir de l'index `debut` (la fenêtre réglable, E06) ; borné aux semaines connues. */
 export function fenetreSemaines(semaines: readonly SemaineCalendrier[], debut: number, nombre: number): SemaineCalendrier[] {
@@ -263,8 +269,8 @@ export interface MoisCalendrier { index: number; debut: string; fin: string; ann
  * L'année (c1-d, E13) : les mois de toutes les semaines de la courbe, chaque semaine rangée dans le mois de son jeudi (ISO 8601). Douze mois en
  * général, treize quand la dernière des `nombreSemaines` semaines tombe dans le treizième (CRITIQUE-5 n° 2 : le creux de S44 2027 y est).
  */
-export function anneeEnMois(aujourdhui: string, nombreSemaines = NB_SEMAINES_COURBE): MoisCalendrier[] {
-  const jeudi0 = ajouterJours(lundiDe(aujourdhui), 3);
+export function anneeEnMois(aujourdhui: string, nombreSemaines = NB_SEMAINES_COURBE, passe = 0): MoisCalendrier[] {
+  const jeudi0 = ajouterJours(lundiDe(aujourdhui), 3 - Math.max(0, Math.floor(passe)) * 7);
   const jeudiN = ajouterJours(jeudi0, (Math.max(1, nombreSemaines) - 1) * 7);
   const a = Number(jeudi0.slice(0, 4)), m = Number(jeudi0.slice(5, 7)) - 1;
   const longueur = (Number(jeudiN.slice(0, 4)) - a) * 12 + Number(jeudiN.slice(5, 7)) - 1 - m + 1;
@@ -701,11 +707,18 @@ export function finDeBrassin(batch: Batch): { jour: string; origine: 'finPrevue'
  * moins jour prévu ; `finPrevue` écrite garde ainsi son allongement). La barre part de la semaine courante : la date dit la même chose qu'elle.
  * `null` quand rien ne dit la durée du cycle (jamais une fin inventée). Pure : `aujourdhui` est un paramètre.
  */
+/**
+ * CAL-PASSE (20.11, décision du pilote : le passé est visible et modifiable) : un brassin pas brassé dont le jour prévu tombe plus d'une semaine avant la semaine courante (un retard d'une semaine se rattrape encore cette semaine, T3-2) 
+ * D'AVANT la semaine courante est posé à SA date, dans le passé : il ne se ramène plus à aujourd'hui (T3-2, CRITIQUE-7 n° 2 : ne vaut que pour
+ * un jour prévu passé dans la semaine courante). Il se dit « pas brassée », et son « prête le » reste celui de sa date.
+ */
+export const brassagePoseAuPasse = (j0: string, aujourdhui: string): boolean => lundiDe(j0) < ajouterJours(lundiDe(aujourdhui), -7);
+
 export function preteAuPlusTot(batch: Batch, aujourdhui: string): string | null {
   const fin = finDeBrassin(batch);
   if (!fin) return null;
   const j0 = jourZero(batch);
-  if (!j0 || hasBrewStarted(batch) || j0 >= aujourdhui) return fin.jour;
+  if (!j0 || hasBrewStarted(batch) || j0 >= aujourdhui || brassagePoseAuPasse(j0, aujourdhui)) return fin.jour;
   return ajouterJours(aujourdhui, ecartJours(j0, fin.jour));
 }
 
@@ -776,6 +789,14 @@ export function choseBrassin(batch: Batch, aujourdhui: string, options: { comman
      * CRITIQUE-5 n° 1 : son bord se tire. `finPrevue` écrite au-delà du cycle de la recette allonge sa barre d'autant (après aujourd'hui) et
      * sa durée dit « pas brassée · prête le … » ; sans `finPrevue`, « pas brassée · prévue le … ».
      */
+    if (brassagePoseAuPasse(j0, aujourdhui)) {
+      const prete = fin?.jour ?? null;
+      return {
+        ...base, debut: j0, fin: prete ?? j0, pasBrassee: true, brassagePrevu: j0, ...(prete ? { pretePrevue: prete } : {}),
+        duree: prete ? dureePasBrassee(prete) : `pas brassée · prévue le ${jourLisible(j0)}`,
+        detail: `pas brassée · brassage prévu le ${jourLisible(j0)}${prete ? ` · prête le ${jourLisible(prete)}` : ''}`, jalons: jalonsBrassin(batch, options), deplacable: true
+      };
+    }
     if (j0 < aujourdhui) {
       /* CRITIQUE-6 n° 2 : « prête le » se compte depuis aujourd'hui (brassée au plus tôt aujourd'hui), jamais depuis le jour prévu passé */
       const prete = preteAuPlusTot(batch, aujourdhui);
@@ -1085,8 +1106,10 @@ export interface HypotheseCaisse { id: 'depart' | 'tendance' | `budget-repris-${
 
 export interface ModeleCalendrier {
   aujourdhui: string;
-  /** 52 semaines à partir du lundi de la semaine courante. */
+  /** `passe` semaines avant la semaine courante, puis 52 à partir de son lundi (CAL-PASSE : le passé est visible). */
   semaines: SemaineCalendrier[];
+  /** Le nombre de semaines d'avant la semaine courante dans `semaines` (0 : l'horizon commence à aujourd'hui). */
+  passe: number;
   mois: MoisCalendrier[];
   /** Tout ce qui se pose sur la frise, propositions comprises (`proposition`, `probable`). */
   choses: ChoseCalendrier[];

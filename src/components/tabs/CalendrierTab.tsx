@@ -200,13 +200,15 @@ export function CalendrierTab(props: CalendrierTabProps) {
   }, [modeleLu, nomsLiens]);
   const orientation = useOrientation();
   const paysage = orientation === 'paysage';
-  const premierLundi = lundiDe(aujourdhui);
+  /* CAL-PASSE : `premierLundi` est le bord de la frise (le passé en fait partie) ; `lundiAuj` la semaine courante, où l'on ajoute et d'où l'on part */
+  const premierLundi = modele.semaines[0]?.debut ?? lundiDe(aujourdhui);
+  const lundiAuj = lundiDe(aujourdhui);
 
   /* ---------- l'état de l'écran ---------- */
   const [vue, setVueEtat] = useState<VueCalendrier>('semaines');
   const [ancreListe, setAncreListe] = useState<'sans-date' | undefined>(undefined);
   const [fenetre, setFenetre] = useState<FenetreSemaines>(() => {
-    const du = centrerSur ? (lundiDe(ajouterJours(centrerSur, -14)) < premierLundi ? premierLundi : lundiDe(ajouterJours(centrerSur, -14))) : premierLundi;
+    const du = centrerSur ? (lundiDe(ajouterJours(centrerSur, -14)) < premierLundi ? premierLundi : lundiDe(ajouterJours(centrerSur, -14))) : lundiAuj;
     return { du, semaines: 6 };
   });
   const [periodeLocale, setPeriodeLocale] = useState<Periode | undefined>(props.periode);
@@ -254,7 +256,7 @@ export function CalendrierTab(props: CalendrierTabProps) {
   const choses = useMemo(() => (rangeesVisibles ? modele.choses.filter(c => rangeesVisibles.includes(c.rangee)) : modele.choses), [modele.choses, rangeesVisibles]);
   const choseDe = useCallback((id: string | null | undefined) => (id ? [...choses, ...modele.sansDate].find(c => c.id === id) : undefined), [choses, modele.sansDate]);
 
-  const ctxGestes: ContexteGestes = useMemo(() => ({ aujourdhui, batches: don.batches, plans: don.plans, courbe: modele.courbe }), [aujourdhui, don.batches, don.plans, modele.courbe]);
+  const ctxGestes: ContexteGestes = useMemo(() => ({ aujourdhui, batches: don.batches, plans: don.plans, courbe: modele.courbe, debutHorizon: premierLundi }), [aujourdhui, don.batches, don.plans, modele.courbe, premierLundi]);
   const ctxRef = useRef(ctxGestes);
   ctxRef.current = ctxGestes;
   const modeleRef = useRef(modele);
@@ -602,9 +604,9 @@ export function CalendrierTab(props: CalendrierTabProps) {
   /* ---------- la feuille d'ajout : le + de chaque rangée, le + volant, une proposition, Modifier, Poser ---------- */
   const ouvrirFeuille = useCallback((r: IdRangee) => {
     setMessage(null); setSelectionId(null); setMenu(null);
-    setFeuille({ mode: 'ajouter', initial: brouillonVide(r, fenetre.du < premierLundi ? premierLundi : fenetre.du), cle: ++compteur.current });
-  }, [fenetre.du, premierLundi]);
-  const ouvrirIdee = useCallback((lundi?: string) => { setMessage(null); setMenu(null); setIdee(lundi ?? premierLundi); }, [premierLundi]);
+    setFeuille({ mode: 'ajouter', initial: brouillonVide(r, fenetre.du < lundiAuj ? lundiAuj : fenetre.du), cle: ++compteur.current });
+  }, [fenetre.du, lundiAuj]);
+  const ouvrirIdee = useCallback((lundi?: string) => { setMessage(null); setMenu(null); setIdee(lundi ?? lundiAuj); }, [lundiAuj]);
 
   /**
    * R48 (L4-2) : un toucher sur l'icône d'idée d'une semaine (± affiché) ouvre son carnet (`CibleOuverture` `carnets`, Stocks › Matériel ›
@@ -641,7 +643,7 @@ export function CalendrierTab(props: CalendrierTabProps) {
   /* passe 10 (p-clair-ouvert) : « S47 · prête le … », la semaine où la feuille s'ouvre et 28 j en cuve (demande de L3, CRITIQUE-2 n° 12).
      CRITIQUE-7 n° 4 : « prête le » se compte depuis le jour où le brassin sera posé (`jourPose` : aujourd'hui dans la semaine en cours, jamais un
      lundi passé), comme la feuille et l'écriture : le 18 nov., « S47 · prête le 16 déc. », plus « 14 déc. ». */
-  const lundiPose = fenetre.du < premierLundi ? premierLundi : fenetre.du;
+  const lundiPose = fenetre.du < lundiAuj ? lundiAuj : fenetre.du;
   usePlusPage({
     titre: 'le calendrier',
     surOnglets: true,
@@ -704,7 +706,7 @@ export function CalendrierTab(props: CalendrierTabProps) {
   }, [feuille, ctxAjout, modele.courbe, ecrire, masquees, setMasquees, filtre, colonnes, voirEtendue]);
 
   const plusDeDetails = useCallback((b: BrouillonAjout) => {
-    const lundi = b.debut ?? premierLundi;
+    const lundi = b.debut ?? lundiAuj;
     setFeuille(null);
     /* lot A du test en ligne (18.11, n° 3) : ce qui est déjà tapé passe à la feuille complète, jamais perdu. Brassin : la recette choisie ;
        fête : le nom et le montant ; achat, travail, papier : le nom et le montant dans « Prévoir une dépense ». Rien de tapé : l'appel d'avant. */
@@ -715,7 +717,7 @@ export function CalendrierTab(props: CalendrierTabProps) {
     else if (b.rangee === 'fetes') { if (tape) onPoserFete(lundi, saisie); else onPoserFete(lundi); }
     else if (tape) onPoserDepense(lundi, b.rangee, CATEGORIE_DE_RANGEE[b.rangee], saisie);
     else onPoserDepense(lundi, b.rangee, CATEGORIE_DE_RANGEE[b.rangee]);
-  }, [premierLundi, onPoserBrassin, onPoserFete, onPoserDepense]);
+  }, [lundiAuj, onPoserBrassin, onPoserFete, onPoserDepense]);
 
   const idee_ecrire = useCallback(async (titre: string, lundi: string): Promise<string | null> => {
     const r = noterIdee(titre, lundi, {});
@@ -758,7 +760,7 @@ export function CalendrierTab(props: CalendrierTabProps) {
         {...(creative && chose.source.genre === 'creative' && chose.source.type !== 'recipe-idea' && (chose.rangee === 'activites' || sansDate) ? { onFait: () => { void ecrire(fait(chose)); } } : {})}
         {...(chose.rangee === 'ventes' && chose.source.genre === 'plan' && !chose.probable ? { onFacturer: () => { setSelectionId(null); onOpenFinances(); } } : {})}
         {...(/* paquet F n° 1 (PC-142) : toute chose de la poche se supprime, sans dialogue ; le message garde Annuler (7 s) */ sansDate && creative ? { onSupprimer: () => { setSelectionId(null); void ecrire(supprimerSansDate(chose)); } } : {})}
-        {...(sansDate ? { onPoser: () => { setSelectionId(null); setFeuille({ mode: 'modifier', initial: { ...brouillonDepuisChose(chose), debut: premierLundi, debutChoisi: true }, chose, cle: ++compteur.current }); } } : {})}
+        {...(sansDate ? { onPoser: () => { setSelectionId(null); setFeuille({ mode: 'modifier', initial: { ...brouillonDepuisChose(chose), debut: lundiAuj, debutChoisi: true }, chose, cle: ++compteur.current }); } } : {})}
         {...(chose.probable && chose.source.genre === 'plan' && !chose.proposition ? { onAccepter: () => { void ecrire(accepterVente(chose, ctxRef.current)); } } : {})}
         {...(editable ? { onMettreDeCote: (actif: boolean) => { void ecrire(mettreDeCote(chose, actif, ctxRef.current)); } } : {})}
         {...(!chose.proposition && !sansDate ? {
@@ -953,7 +955,7 @@ export function CalendrierTab(props: CalendrierTabProps) {
         const c = chosesMenu;
         /* jamais une semaine que la barre occupe déjà (« Dupliquer en S47 » sur ce qui est en S47 n'a pas de sens) : la semaine après sa fin ; un brassin se duplique sur la semaine qui suit son jour de brassage, au plus tôt la semaine prochaine */
         const apresFin = ajouterJours(lundiDe(c.fin || c.debut), 7);
-        const prochain = c.source.genre === 'batch' ? (() => { const s = ajouterJours(lundiDe(c.debut), 7), p = ajouterJours(premierLundi, 7); return s < p ? p : s; })() : apresFin;
+        const prochain = c.source.genre === 'batch' ? (() => { const s = ajouterJours(lundiDe(c.debut), 7), p = ajouterJours(lundiAuj, 7); return s < p ? p : s; })() : apresFin;
         const dup = dupliquer(c, prochain, ctxGestes);
         const ret = retirer(c, ctxGestes);
         return (

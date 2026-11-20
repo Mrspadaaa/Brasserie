@@ -351,7 +351,7 @@ describe('CRITIQUE-6 n° 2 (D-161, E25, E29) : une Saison pas brassée est prêt
     expect(r.promesse!.texte).toContain('prête le 29 déc.');
     /* CRITIQUE-10 n° 1 : une semaine plus tôt que la colonne affichée (S47), c'est le passé : refus, aucune écriture */
     const d = deplacer(chose, -1, ctx({ aujourdhui: JOUR, batches: [saison], plans: [cigogne('2026-12-20')] }));
-    expect(d).toMatchObject({ ok: false, raison: 'Le passé ne se replanifie pas : choisis S47 ou plus tard.' });
+    expect(d.ok).toBe(true); /* CAL-PASSE (20.11) : le passé se replanifie, le refus est levé */
     /* promise le 20 déc. : glissée d'une colonne (lundi de S48, 23 nov.), prête le 28 déc. : promesse touchée */
     const p = bien(deplacer(chose, 1, ctx({ aujourdhui: JOUR, batches: [saison], plans: [cigogne('2026-12-20')] })));
     expect(p.promesse).toMatchObject({ preteLe: '2026-12-28' });
@@ -556,8 +556,8 @@ describe('CRITIQUE-10 n° 1 (E28, D-46, D-189) : un brassin pas brassé, jour pr
   it('−1 colonne : le passé, refus avec sa raison, aucune écriture', () => {
     const chose = choseBrassin(saison, JOUR)!;
     const r = deplacer(chose, -1, ctx({ aujourdhui: JOUR, batches: [saison] }));
-    expect(r).toMatchObject({ ok: false, raison: 'Le passé ne se replanifie pas : choisis S47 ou plus tard.' });
-    expect('ecritures' in r).toBe(false);
+    expect(r.ok).toBe(true); /* CAL-PASSE (20.11) : le passé se replanifie, le refus est levé */
+    expect('ecritures' in r).toBe(true);
   });
 
   it('finPrevue écrite (bord tiré) : elle suit le vrai décalage du jour de brassage (10 nov. → 23 nov., +13 j), la longueur reste', () => {
@@ -574,7 +574,7 @@ describe('CRITIQUE-10 n° 1 (E28, D-46, D-189) : un brassin pas brassé, jour pr
     expect(ecrite(r)).toBe('2026-12-09');
     expect(r.message.texte).toBe('Saison de ferme : S49 → S50');
     expect(ecrite(deplacer(chose, -2, ctx({ aujourdhui: JOUR, batches: [futur] })))).toBe('2026-11-18');
-    expect(deplacer(chose, -3, ctx({ aujourdhui: JOUR, batches: [futur] }))).toMatchObject({ ok: false, raison: 'Le passé ne se replanifie pas : choisis S47 ou plus tard.' });
+    expect(deplacer(chose, -3, ctx({ aujourdhui: JOUR, batches: [futur] })).ok).toBe(true); /* CAL-PASSE (20.11) */
   });
 
   it('Dupliquer la Saison pas brassée en S48 : la copie au lundi de S48 (23 nov.), planifiée', () => {

@@ -43,7 +43,10 @@ export interface CourbeCaisse {
   depart: number;
   /** Le départ plus tout ce qui est daté avant la première semaine. */
   base: number;
+  /** Le lundi de la première semaine de la courbe : `passe` semaines avant la semaine courante (CAL-PASSE). */
   lundi0: string;
+  /** Le nombre de semaines d'avant la semaine courante : celle d'aujourd'hui est `semaines[passe]`. Absent : la courbe commence aujourd'hui. */
+  passe?: number;
   semaines: SoldeSemaine[];
   mouvements: MouvementCaisse[];
   mises: MiseDeCote[];
@@ -53,7 +56,7 @@ export interface Creux { index: number; lundi: string; numero: number; centimes:
 
 export const libelleMouvement = (nom: string, centimes: number): string => `${nom} ${francs(centimes) === '0' ? '' : centimes < 0 ? francs(centimes) : `+${francs(centimes)}`}`.trim();
 
-export interface EntreeCourbe { depart: number | null | undefined; lundi0: string; nbSemaines?: number; mouvements: readonly MouvementCaisse[]; mises?: readonly MiseDeCote[] }
+export interface EntreeCourbe { depart: number | null | undefined; lundi0: string; nbSemaines?: number; passe?: number; mouvements: readonly MouvementCaisse[]; mises?: readonly MiseDeCote[] }
 
 /** La courbe de 52 semaines ; `null` quand le solde de départ est inconnu (E02 : « Solde de départ inconnu »). */
 export function courbeCaisse(entree: EntreeCourbe): CourbeCaisse | null {
@@ -82,7 +85,7 @@ export function courbeCaisse(entree: EntreeCourbe): CourbeCaisse | null {
       .sort((a, b) => Math.abs(b.centimes) - Math.abs(a.centimes) || a.id.localeCompare(b.id));
     return { index, lundi, numero: numeroSemaine(lundi), caisse, libre: caisse - reserve, reserve, variation, mouvements: nommes, tendance: lignes.filter(m => m.tendance).reduce((s, m) => s + m.centimes, 0) };
   });
-  return { depart: entree.depart, base, lundi0, semaines, mouvements: [...entree.mouvements], mises };
+  return { depart: entree.depart, base, lundi0, ...(entree.passe ? { passe: entree.passe } : {}), semaines, mouvements: [...entree.mouvements], mises };
 }
 
 /** Le solde de caisse à la fin d'un jour (tendance comprise) ; `null` hors des semaines de la courbe. */
@@ -112,7 +115,7 @@ export function minimumSuffixe(valeurs: readonly number[]): number[] {
  * « À dépenser sans passer sous 0 » (E01) : le minimum de la courbe libre de la semaine `depuis` à la fin, avec sa semaine. Dépenser plus
  * ferait passer la courbe sous 0 à cette semaine. Au creux égal, la plus proche. Négatif : on passe déjà sous 0.
  */
-export function creuxDepuis(courbe: CourbeCaisse, depuis = 0): Creux | null {
+export function creuxDepuis(courbe: CourbeCaisse, depuis = courbe.passe ?? 0): Creux | null {
   let creux: Creux | null = null;
   for (const s of courbe.semaines.slice(Math.max(0, depuis))) {
     if (!creux || s.libre < creux.centimes) creux = { index: s.index, lundi: s.lundi, numero: s.numero, centimes: s.libre };
@@ -216,7 +219,7 @@ export function lectureSemaine(courbe: CourbeCaisse, index: number): LectureSema
 }
 
 const rebatir = (c: CourbeCaisse, mouvements: readonly MouvementCaisse[], mises: readonly MiseDeCote[]) =>
-  courbeCaisse({ depart: c.depart, lundi0: c.lundi0, nbSemaines: c.semaines.length, mouvements, mises })!;
+  courbeCaisse({ depart: c.depart, lundi0: c.lundi0, nbSemaines: c.semaines.length, ...(c.passe ? { passe: c.passe } : {}), mouvements, mises })!;
 const decaler = (jour: string, jours: number) => new Date(Date.parse(`${jour}T00:00:00Z`) + jours * 86400000).toISOString().slice(0, 10);
 
 /** La courbe si la chose `choseId` bougeait de `jours` jours : ses mouvements et sa mise de côté la suivent (aperçu de f1-a, effet du geste). */

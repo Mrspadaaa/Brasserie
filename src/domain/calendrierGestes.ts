@@ -4,7 +4,7 @@ import { isoDate } from './finance/ledger';
 import { plannedBrewDate, rescheduleBatchPatch } from './batchSchedule';
 import { datesSortiesBrassin } from './finance/brewForecast';
 import {
-  EFFET_HORS_COURBE, ajouterJours, dimancheDe, dureeBrassin, dureePasBrassee, ecartJours, etiquetteS, finDeBrassin, francs, idChoseArgent, jalonsBrassin, jourLisible, lundiDe, preteAuPlusTot,
+  EFFET_HORS_COURBE, ajouterJours, brassagePoseAuPasse, dimancheDe, dureeBrassin, dureePasBrassee, ecartJours, etiquetteS, finDeBrassin, francs, idChoseArgent, jalonsBrassin, jourLisible, lundiDe, preteAuPlusTot,
   type ChoseCalendrier, type CibleOuverture, type JalonId
 } from './calendrier';
 import {
@@ -76,6 +76,8 @@ export interface ContexteGestes {
   nouvelId?: (prefixe: string) => string;
   idBrassin?: () => string;
   maintenant?: string;
+  /** CAL-PASSE : le lundi de la première semaine montrée ; avant, une date n'a pas de place sur la frise (refusée). Absent : aucune borne. */
+  debutHorizon?: string;
 }
 
 const annuler = (texte: string, lien?: Message['lien']): Message => ({ texte, action: 'Annuler', ...(lien ? { lien } : {}), lecture: `${texte}${lien ? ` · ${lien.texte}` : ''} · Annuler` });
@@ -99,7 +101,7 @@ export function texteEffetCreux(avant: CourbeCaisse | null, apres: CourbeCaisse 
 
 function texteEffetCreuxSansNom(avant: CourbeCaisse | null, apres: CourbeCaisse | null, effet: EffetCaisse | null, nomme: boolean): string | null {
   if (!avant || !apres || !effet) return null;
-  const a = creuxDepuis(avant, 0), b = creuxDepuis(apres, 0);
+  const a = creuxDepuis(avant), b = creuxDepuis(apres);
   if (!a || !b) return null;
   const va = francs(a.centimes), vb = francs(b.centimes), sa = `S${a.numero}`, sb = `S${b.numero}`;
   /* le chiffre clé ne bouge pas : la semaine qui change (la forme de f1-a, as-gestes.js), et le chiffre clé AVEC sa valeur, qui reste.
@@ -243,9 +245,12 @@ function deplacerDe(chose: ChoseCalendrier, jours: number, ctx: ContexteGestes, 
      * annonce (« S48 · 23 nov. · lâcher ici »), jamais le jour prévu passé + n (qui retombait dans le passé et ramenait la barre à aujourd'hui).
      * Planifié dans le futur : jour prévu + n semaines, son jour de la semaine gardé. Une cible avant la semaine courante est refusée.
      */
-    const depart = chose.pasBrassee ? (auJour ? chose.debut : lundiDe(chose.debut)) : prevu;
+    /* CAL-PASSE (20.11) : seul le jour prévu passé dans la semaine COURANTE se dessine depuis aujourd'hui ; plus loin dans le passé, la barre est à sa date */
+    const ancre = chose.pasBrassee && !brassagePoseAuPasse(prevu, ctx.aujourdhui);
+    const depart = ancre ? (auJour ? chose.debut : lundiDe(chose.debut)) : prevu;
     const nouveau = decale(depart, jours);
-    if (auJour ? nouveau < ctx.aujourdhui : lundiDe(nouveau) < lundiDe(ctx.aujourdhui)) return refus(`Le passé ne se replanifie pas : choisis ${auJour ? `le ${jourLisible(ctx.aujourdhui)}` : etiquetteS(ctx.aujourdhui)} ou plus tard.`);
+    /* le passé se replanifie (décision du pilote, 20.11) ; seule borne : la frise n'a pas de colonne avant sa première semaine */
+    if (ctx.debutHorizon && lundiDe(nouveau) < ctx.debutHorizon) return refus(`Avant ${etiquetteS(ctx.debutHorizon)}, la frise n’a pas de semaine : choisis ${etiquetteS(ctx.debutHorizon)} ou plus tard.`);
     /* le vrai décalage du jour de brassage : `finPrevue` écrite et les sorties sans poste le suivent, la longueur reste */
     const ecart = ecartJours(prevu, nouveau);
     let patch: Record<string, unknown>;
@@ -309,7 +314,7 @@ function allongerBrassin(chose: ChoseCalendrier, jours: number, ctx: ContexteGes
   const ecrite = pasBrassee ? (finCycle as string) : (chose.preteLe ?? chose.fin);
   const nouvelle = decale(ecrite, jours);
   const dite = pasBrassee ? preteAuPlusTot({ ...batch, finPrevue: nouvelle } as Batch, ctx.aujourdhui) ?? nouvelle : nouvelle;
-  if (nouvelle <= prevu || (pasBrassee && dite <= ctx.aujourdhui)) return refus('Un brassin dure au moins un jour : tire moins loin.');
+  if (nouvelle <= prevu || (pasBrassee && !brassagePoseAuPasse(prevu, ctx.aujourdhui) && dite <= ctx.aujourdhui)) return refus('Un brassin dure au moins un jour : tire moins loin.');
   const promesse = promesseTouchee(ctx.plans, batch.id, dite);
   const duree = pasBrassee ? dureePasBrassee(dite) : dureeBrassin(debut, nouvelle, ctx.aujourdhui) ?? `prête ${jourLisible(nouvelle)}`;
   /* CRITIQUE-9 n° 4 : l'emballage et l'impôt suivent « prête » ; leur effet est rendu (courbe, détail), le message garde « prête le … » (f2-a) */
@@ -332,7 +337,8 @@ export function choseAllongee(chose: ChoseCalendrier, jours: number, aujourdhui:
     /* CRITIQUE-7 n° 2 : la barre court d'aujourd'hui à « prête » ; tirer de n jours repousse les deux d'autant. Sans cycle connu : rien ne bouge (le geste refuse) */
     if (!chose.pretePrevue) return chose;
     const prete = decale(chose.pretePrevue, jours);
-    if (prete <= (aujourdhui > chose.debut ? aujourdhui : chose.debut)) return chose;
+    const plancher = brassagePoseAuPasse(chose.brassagePrevu ?? chose.debut, aujourdhui) || aujourdhui <= chose.debut ? chose.debut : aujourdhui;
+    if (prete <= plancher) return chose;
     return { ...chose, fin: prete, pretePrevue: prete, duree: dureePasBrassee(prete) };
   }
   const nouvelle = decale(chose.preteLe ?? chose.fin, jours);

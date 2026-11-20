@@ -7,7 +7,7 @@ import { useStorageValue } from '../../hooks/useLiveData';
 import { useReglagesFournisseurs } from '../fournisseurs/useReglagesFournisseurs';
 import { buildForecast } from '../../domain/finance/forecast';
 import { periodeSynthese } from '../../domain/finance/periodeSynthese';
-import { todayISO } from '../../domain/finance/ledger';
+import { isoDate, todayISO, validPayment } from '../../domain/finance/ledger';
 import { fermentationReadings } from '../../domain/fermentationReadings';
 import { articlesACommander } from '../../domain/stockLevel';
 import { etiquetteSemaine, vueHorizon, type LigneHorizon } from '../../domain/stock/horizon';
@@ -16,7 +16,7 @@ import { planBrewBatchId } from '../../domain/finance/brewForecast';
 import { brewBudgetDemands } from '../../domain/finance/brewBudget';
 import { hasBrewStarted } from '../../domain/batchSchedule';
 import {
-  NB_SEMAINES_COURBE, ajouterJours, anneeEnMois, budgetBrassin, choseArgent, choseHorsCourbe, choseBrassin, choseCoutAVenir, choseCreative, choseSansDate, choseVenteProbable, estFactureDeMatieres,
+  NB_SEMAINES_COURBE, SEMAINES_PASSEES_MAX, ajouterJours, ecartJours, anneeEnMois, budgetBrassin, choseArgent, choseHorsCourbe, choseBrassin, choseCoutAVenir, choseCreative, choseSansDate, choseVenteProbable, estFactureDeMatieres,
   fournisseurDePiece, francs, francsSignes, fusionnerFacturesLivraisons, iconesIdees, jourLisible,
   livraisonsAttendues, lundiDe, numeroSemaine, positionChose, retardsDe, semainesDe,
   type ChoseCalendrier, type EstimationBudget, type HypotheseCaisse, type IconeSemaine, type ModeleCalendrier
@@ -132,10 +132,29 @@ export function budgetsDeRecette(
   return { plans: [...plans, ...virtuels], batches: batches.map(b => copies.get(b.id) ?? b), repris };
 }
 
+/**
+ * CAL-PASSE (20.11) : combien de semaines d'avant la semaine courante la frise montre, au plus `SEMAINES_PASSEES_MAX`. La caisse d'une semaine
+ * passée est le solde de Finances à cette date (`openingCash` + paiements), jamais inventée : la courbe commence au lundi dont la veille n'est
+ * pas avant la date du solde de départ. Sans solde confirmé, il n'y a pas de courbe et la frise reste visible sur tout le passé permis.
+ */
+export function semainesPassees(aujourdhui: string, profile: FinancialProfile, soldeConnu: boolean): number {
+  if (!soldeConnu) return SEMAINES_PASSEES_MAX;
+  const depart = isoDate(profile.openingCash?.date);
+  if (!depart) return 0;
+  const jours = ecartJours(depart, lundiDe(aujourdhui));
+  return jours <= 0 ? 0 : Math.max(0, Math.min(SEMAINES_PASSEES_MAX, Math.ceil(jours / 7) - 1));
+}
+
+/** Les paiements réels de la caisse du lundi `depuis` à aujourd'hui inclus : les mouvements des semaines passées de la courbe (les mêmes que `summarizeLedger`). */
+export function mouvementsPasses(payments: readonly FinancialPayment[], transactions: readonly Transaction[], depuis: string, aujourdhui: string): MouvementCaisse[] {
+  const noms = new Map(transactions.map(t => [t.id, t.description || t.id] as const));
+  return payments.filter(p => validPayment(p) && isoDate(p.date)! >= depuis && isoDate(p.date)! <= aujourdhui).map(p => ({
+    id: `paiement-${p.id}`, jour: isoDate(p.date)!, centimes: p.direction === 'in' ? p.amountCents : -p.amountCents, nom: noms.get(p.transactionId) ?? 'Paiement'
+  }));
+}
+
 export function construireModele(e: EntreesModele): ModeleCalendrier {
   const { aujourdhui } = e;
-  const lundi0 = lundiDe(aujourdhui);
-  const semaines = semainesDe(aujourdhui, NB_SEMAINES_COURBE);
   const prevoir = (plans: FinancialPlan[], batches: Batch[]) => buildForecast({
     transactions: e.transactions, payments: e.payments, plans, profile: e.profile, assets: e.assets, asOf: aujourdhui, months: 13,
     batches, stockItems: e.stockItems, includeEquipmentProjects: true
@@ -145,6 +164,9 @@ export function construireModele(e: EntreesModele): ModeleCalendrier {
   const chiffres = new Set(prevision.items.filter(i => i.source === 'brew' && i.batchId && i.amountCents > 0 && !i.id.endsWith(':impot')).map(i => i.batchId as string));
   const reprise = budgetsDeRecette(e.batches, e.plans, chiffres);
   if (reprise.repris.size) prevision = prevoir(reprise.plans, reprise.batches);
+  const passe = semainesPassees(aujourdhui, e.profile, prevision.openingCashCents !== null);
+  const semaines = semainesDe(aujourdhui, NB_SEMAINES_COURBE + passe, passe);
+  const lundi0 = semaines[0].debut;
   const marques = new Set(echeancesProposees(prevision.items).filter(i => i.proposition === 'echeance').map(i => `argent-${i.id}`));
 
   /* les articles qui manquent pour chaque brassin, lus dans les courses de l'app (`vueHorizon`) : leurs noms, jamais inventés (n° 2, n° 19) */
@@ -204,7 +226,10 @@ export function construireModele(e: EntreesModele): ModeleCalendrier {
     choseId: `argent-${i.id}`, ...(i.source === 'trend' ? { tendance: true } : {})
   }));
   const mises = misesDe(chosesBudget);
-  const courbe = courbeCaisse({ depart: prevision.openingCashCents, lundi0, mouvements, mises });
+  /* le passé : le départ de la courbe est la caisse d'aujourd'hui moins les paiements réels d'entre-temps (même formule que le solde de Finances) */
+  const reels = passe ? mouvementsPasses(e.payments, e.transactions, lundi0, aujourdhui) : [];
+  const depart = prevision.openingCashCents === null ? null : prevision.openingCashCents - reels.reduce((s, m) => s + m.centimes, 0);
+  const courbe = courbeCaisse({ depart, lundi0, nbSemaines: NB_SEMAINES_COURBE + passe, passe, mouvements: [...reels, ...mouvements], mises });
   /* CRITIQUE-12 n° 2 (E23, A2) : la règle de l'effet en mots (`effetEnMots`) posée sur la chose : une fête ou une activité chiffrée que la
      courbe ne compte pas est « hors courbe » ; sa rangée la dit « estimé », jamais « confirmé ». Les mouvements, pas la courbe : le marquage
      ne dépend pas du solde de départ. Elle n'entre pas dans la courbe (vérité croisée A2 : la courbe = `buildForecast`). */
@@ -244,7 +269,7 @@ export function construireModele(e: EntreesModele): ModeleCalendrier {
   ];
 
   return {
-    aujourdhui, semaines, mois: anneeEnMois(aujourdhui), choses, courbe, soldeDepartInconnu: courbe === null, creux: courbe ? creuxDepuis(courbe, 0) : null, hypotheses, retards,
+    aujourdhui, semaines, passe, mois: anneeEnMois(aujourdhui, NB_SEMAINES_COURBE + passe, passe), choses, courbe, soldeDepartInconnu: courbe === null, creux: courbe ? creuxDepuis(courbe, passe) : null, hypotheses, retards,
     propositions: choses.filter(c => c.proposition), sansDate: e.items.flatMap(i => { const c = choseSansDate(i); return c ? [c] : []; }), icones
   };
 }
