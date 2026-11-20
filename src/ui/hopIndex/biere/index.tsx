@@ -148,7 +148,7 @@ export default function Biere() {
           <Lentille label="Vue" marques="vue" value={vue} onChange={changerVue} options={[{ value: 'barres', label: 'Barres' }, { value: 'radar', label: 'Radar' }]} />
         </div>
         {!radar && (
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2" data-gouttiere-plus="">
             <p data-element="biere-decompte" className="text-base text-cave-200">{auStyle} au style · {nonSituees} non située{nonSituees > 1 ? 's' : ''}</p>
             <span className="ml-auto" />
             <Lentille label="Échelle" marques="e" value={echelle} onChange={setEchelle} options={[{ value: 'style', label: 'Au style' }, { value: 'absolu', label: 'Absolu' }]} />

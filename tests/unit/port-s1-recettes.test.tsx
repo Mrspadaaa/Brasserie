@@ -74,7 +74,7 @@ describe('l’inconnu n’est jamais 0', () => {
     const b = besoinsDe(recette('r1'), [], stockNeipa.filter((s) => s.ref !== 'ZZ-VERDANT'));
     const levure = b.find((x) => x.article === 'ZZ Verdant')!;
     expect(levure.etat).toBe('inconnu');
-    expect(levure.droite).toBe('pas au stock');
+    expect(levure.droite).toBe('non relié');
     expect(etatDe(0, b.filter((x) => x.etat === 'inconnu').length)).toBe('inconnu');
   });
   it('les adjuvants hors stock n’entrent jamais en « À vérifier » (décision du 15.11)', () => {

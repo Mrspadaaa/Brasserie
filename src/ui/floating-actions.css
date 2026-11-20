@@ -186,3 +186,38 @@ body[data-has-fab] [data-floating-actions-gap="true"] {
     padding-right: 4.75rem;
   }
 }
+
+/* ct4b tour 2, point 7 (CT4-B-12 rouvert, critique k4) : l'éditeur de recette. Au repos (le + visible), le + (64 px, 12 px du bord) recouvrait, à un état de défilement ou à l'autre,
+   la bascule NOLO de l'Identité, la rangée « Au style · Absolu » de l'étape Houblons, l'onglet « Rinçage » de l'Eau et « Rétablir ce palier » de la Levure (390, debout).
+   Même gouttière de 76 px (56 + 12 + 8 d'air) que T3-10 et k1 à k3 : ces rangées s'arrêtent avant le +. Mesuré à chaque pas de défilement (voies/ct4b/mesure.mjs 7). */
+@media (max-width: 1023px) {
+  :root body[data-has-fab-floating] [data-gouttiere-plus],
+  :root body[data-has-fab-floating] .recipe-wizard .ew-tabs,
+  :root body[data-has-fab-floating] .recipe-wizard .ew-arr,
+  :root body[data-has-fab-floating] .recipe-wizard .pq-comparer-rad-h,
+  :root body[data-has-fab-floating] .recipe-wizard .yc-phase-baseline,
+  :root body[data-has-fab-floating] .recipe-wizard .yc-phase-structure {
+    padding-right: 4.75rem;
+  }
+
+  :root body[data-has-fab-floating] .recipe-wizard .idn-nolo,
+  :root body[data-has-fab-floating] .recipe-wizard .pq-ma-biere-pont-analyse {
+    max-width: calc(100% - 4.75rem);
+  }
+
+  :root body[data-has-fab-floating] .recipe-wizard .ew.ew button.ew-lien {
+    width: calc(100% - 4.75rem);
+  }
+}
+
+/* Téléphone couché (844 × 340) : la largeur ne manque pas et le + tombe à la hauteur des champs (« 0 L libre, plein », la durée d'ébullition…). Tout le contenu de l'éditeur
+   garde la gouttière de 76 px à droite ; la rangée Retour / Suivant a déjà la sienne. */
+@media (orientation: landscape) and (max-height: 520px) {
+  :root body[data-has-fab-floating] .recipe-wizard :is([data-floating-actions-gap="page-row"], [data-floating-actions-gap="page"]) {
+    padding-right: 5.25rem;
+  }
+
+  :root body[data-has-fab-floating] .recipe-wizard .page-shell [data-page-end-actions][data-page-end-actions][data-page-end-actions] {
+    padding-right: 0;
+  }
+}

@@ -39,6 +39,11 @@ const rowAction = 'flex w-full min-h-7 items-center gap-2 px-2 py-1 text-left ho
 const smallAction = 'inline-flex min-h-7 items-center justify-center gap-1 rounded-control px-2 text-2xs font-semibold hover:bg-cave-850';
 const summaryAction = 'flex min-h-8 cursor-pointer list-none items-center gap-2 px-2 py-1.5';
 const dateOrder = (date?: string) => DateUtils.parseDate(date || '')?.getTime() ?? Infinity;
+/** Un événement daté avant aujourd'hui et pas fait est en retard : la ligne le dit avec sa date, jamais un compteur de jours (E08). */
+function estEnRetard(item: CreativeItem, aujourdhui: string): boolean {
+  const jour = DateUtils.parseDate(item.date || ''), ref = DateUtils.parseDate(aujourdhui);
+  return item.status !== 'done' && !!jour && !!ref && jour.getTime() < ref.getTime();
+}
 function displayDate(value?: string) {
   const date = DateUtils.parseDate(value || '');
   return date ? date.toLocaleDateString('fr-CH') : value || 'Date à préciser';
@@ -157,6 +162,7 @@ export const DashboardTab: React.FC<DashboardTabProps> = ({
     .sort((a, b) => Number(a.status === 'done') - Number(b.status === 'done') ||
       dateOrder(a.date) - dateOrder(b.date)), [creativeItems]);
   const pendingEvents = events.filter(item => item.status !== 'done');
+  const jourJ = todayISO();
   /* « Cette semaine au calendrier » (onglet/v1) : ce que le calendrier pose cette semaine, lu des mêmes brassins et événements que lui (les échéances de Finances ne s'y comptent pas : sans ligne, le Bord n'affirme pas « rien »). */
   const cetteSemaine = useMemo(() => {
     const aujourdhui = todayISO(), semaines = semainesDe(aujourdhui);
@@ -365,7 +371,7 @@ export const DashboardTab: React.FC<DashboardTabProps> = ({
                 className="h-4 w-4 shrink-0 accent-area-agenda" />
               <span className="min-w-0 flex-1">
                 <span className={`block break-words text-2xs ${item.status === 'done' ? 'text-cave-400 line-through' : 'text-cave-50'}`}>{item.title}</span>
-                {item.date && <span className="block text-xs text-cave-400">{displayDate(item.date)}</span>}
+                {item.date && <span className="block text-xs text-cave-400">{displayDate(item.date)}{estEnRetard(item, jourJ) && <> · <b className="font-semibold text-attention">en retard</b></>}</span>}
               </span>
               {item.status === 'done' && <span className="text-xs text-cave-400">Fait</span>}
             </label>)}

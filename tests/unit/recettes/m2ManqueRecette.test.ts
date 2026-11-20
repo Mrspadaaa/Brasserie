@@ -77,7 +77,7 @@ describe('point 37 — le manque d’une recette ne dépasse jamais ce qu’elle
     const proche = recette(5, 'Pilsner');
     const l = ligne(proche, [pilsner()]);
     expect(l.etat).toBe('inconnu');
-    expect(l.droite).toBe('pas au stock');
+    expect(l.droite).toBe('non relié');
   });
 
   it('nom proche : deux articles « Pilsner » et « Pilsner Malz », la recette lie le bon', () => {

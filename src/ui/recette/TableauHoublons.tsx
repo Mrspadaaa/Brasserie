@@ -91,7 +91,7 @@ export function TableauHoublons({ hops, actions, onNom }: { hops: readonly HopIn
       {/* La ligne du total : les liens à gauche, « 171 g » sous la colonne dry hop. */}
       {(tableau.totalDryHop != null || actions) && <>
         <div className="rc-liens" data-element="r1-houblons-liens" style={{ gridColumn: tableau.totalDryHop != null ? `1 / span ${n}` : '1 / -1' }}>{actions}</div>
-        {tableau.totalDryHop != null && <span className="rc-g rc-total" data-element="r1-total-dryhop">{nombreFr(tableau.totalDryHop, 0)} g</span>}
+        {tableau.totalDryHop != null && <span className="rc-g rc-total" data-element="r1-total-dryhop" title="Total du dry hop"><span className="rc-tl">total </span>{nombreFr(tableau.totalDryHop, 0)} g</span>}
       </>}
     </div>
   );

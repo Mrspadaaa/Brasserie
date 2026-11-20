@@ -14,3 +14,11 @@
     position: static;
   }
 }
+
+/* Tour 2, point 6 et 7 : l'étape Eau pose son + à droite de la page de 48 rem (eau.css : 50vw − 23,75 rem), et le cadre fait maintenant 56 rem : le + tombait sur
+   « Suivant — Récapitulatif » à 1280 (mesuré : + 956–1020, Suivant 852–998). Il suit le bord droit du cadre de 56 rem. */
+@media (min-width: 640px) {
+  body:has(.recipe-wizard [data-water-step="eau"]) .floating-actions[data-floating-actions-docked="false"] {
+    right: max(0.75rem, calc(50vw - 27.75rem));
+  }
+}

@@ -241,7 +241,7 @@ export function CarnetRecettes({ recipes, batches, onOpenRecipe, onEditRecipe, o
                   {l.inconnus.length > 0 && <small>Le stock de <b>{nomsDe(l.inconnus)}</b> est aussi à vérifier.</small>}
                 </div>
               ) : l.inconnus.length > 0 ? (
-                // CT4-B-4 : un petit repère, pas un bandeau de trois lignes ; ce qui n'est pas relié se lit sur chaque ligne (« pas au stock »).
+                // CT4-B-4 : un petit repère, pas un bandeau de trois lignes ; ce qui n'est pas relié se lit sur chaque ligne (« non relié »).
                 <p className="rcp-averifier"><TriangleAlert aria-hidden="true" />Stock à vérifier</p>
               ) : (
                 <p className="rcp-prete"><Check />Tout est en stock</p>

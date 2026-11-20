@@ -95,6 +95,17 @@
 .rcp-pied { display: flex; gap: 8px; }
 .rcp-pied .rcp-btn { flex: 1; }
 
+/* CT4-B-4 (suite, tour 2) : en paysage de téléphone (844 × 340) la feuille ne montre que ~220 px entre son titre et ses boutons : la ligne « OG · IBU › » et le dernier
+   ingrédient restaient sous les boutons. Les rangées du besoin se resserrent (24 px au lieu de 32 ; ce ne sont pas des boutons) et le titre du bloc se fait discret. */
+@media (max-height: 480px) {
+  .rcp-bloc { margin-top: 4px; gap: 0; }
+  .rcp-bloc h3 { padding: 2px 2px 0; line-height: 14px; }
+  .rcp-ingr { min-height: 24px; line-height: 1.2; }
+  .rcp-detail { min-height: 40px; margin-top: 2px; }
+  .rcp-averifier, .rcp-prete { line-height: 1.2; }
+  .rcp-prete { padding: 6px 12px; }
+}
+
 /* Feuille « Filtrer » */
 .rcp-filtres { display: flex; flex-direction: column; gap: 12px; }
 .rcp-filtres label { display: flex; flex-direction: column; gap: 4px; font-size: 13px; color: rgb(var(--cave-texte-400)); }

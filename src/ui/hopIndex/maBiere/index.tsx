@@ -143,7 +143,7 @@ export function EtapeHoublonsContenu({ bandeau = true }: { /** Faux dans le wiza
               </button>
             )}
           </div>
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2" data-gouttiere-plus="">
             <BoutonLegende ouverte={legende} onBasculer={basculerLegende} groupe="le profil de ma bière" controle="pq-ma-biere-legende-profil" />
             {/* a2 (D84) : la puce vient de sa demande (visée posée, sinon dégustation) ; ni l'une ni l'autre : rien. Plus de « + floral »
                 de la dégustation de test S1 sur toute recette. Elle ouvrait Suggérer ; le bouton « Suggérer » du cadre y mène aussi. */}

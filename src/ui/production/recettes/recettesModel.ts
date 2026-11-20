@@ -87,7 +87,7 @@ export function besoinsDe(recipe: Recipe, batches: Batch[], stock: StockItem[], 
     if (c.match !== 'linked' || c.shortage === null || !c.stockItem) {
       // Un stock négatif est une donnée fausse : jamais un manque gonflé, signalé à part (point 37).
       const negatif = c.match === 'linked' && !!c.stockItem && Number.isFinite(c.stockItem.currentStock) && c.stockItem.currentStock < 0;
-      return { cle: c.key, article: c.label, texte: dit, etat: 'inconnu', droite: negatif ? 'stock négatif : à corriger' : c.match === 'linked' ? 'stock à vérifier' : c.match === 'ambiguous' ? 'plusieurs articles' : 'pas au stock' };
+      return { cle: c.key, article: c.label, texte: dit, etat: 'inconnu', droite: negatif ? 'stock négatif : à corriger' : c.match === 'linked' ? 'stock à vérifier' : c.match === 'ambiguous' ? 'plusieurs articles' : 'non relié' };
     }
     // Point 37 : `shortage` est le chiffre de « À commander » (besoin de cette recette + prévu ailleurs − stock) et peut dépasser ce que
     // CETTE recette demande (« 49 kg » pour 5 kg). Sur la recette : manque = max(0, besoin − disponible), jamais au-delà du besoin.

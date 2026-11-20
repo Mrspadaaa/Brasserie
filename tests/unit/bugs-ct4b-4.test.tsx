@@ -1,6 +1,6 @@
 // @vitest-environment jsdom
 // CT4-B-4 (critique du tour 4) : l'aperçu d'une recette s'ouvrait sur un grand bandeau de stock (« est à vérifier : il n'est pas relié… »)
-// qui contredisait les lignes (« pas au stock »). Quand rien n'est relié, un petit repère dit « Stock à vérifier » ; les lignes disent pourquoi.
+// qui contredisait les lignes (« non relié »). Quand rien n'est relié, un petit repère dit « Stock à vérifier » ; les lignes disent pourquoi.
 import React from 'react';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { cleanup, fireEvent, render, screen } from '@testing-library/react';
@@ -28,14 +28,14 @@ const ipa = {
 } as unknown as Recipe;
 
 describe('CT4-B-4 : l’aperçu ne s’ouvre pas sur un bandeau de stock', () => {
-  it('stock non relié : plus de grand bandeau « il n’est pas relié… », un repère court, et les lignes disent « pas au stock »', () => {
+  it('stock non relié : plus de grand bandeau « il n’est pas relié… », un repère court, et les lignes disent « non relié »', () => {
     const { container } = render(<CarnetRecettes recipes={[ipa]} batches={[]} onOpenRecipe={vi.fn()} onEditRecipe={vi.fn()} onOpenBatch={vi.fn()} onBrew={vi.fn()} onNewRecipe={vi.fn()} />);
     fireEvent.click(screen.getByText('ZZ American IPA'));
     expect(screen.queryByText(/il n’est pas relié à un article/)).toBeNull();
     expect(container.ownerDocument.querySelector('.rcp-alerte')).toBeNull();
     const repere = screen.getByText('Stock à vérifier');
     expect(repere.closest('.rcp-averifier')).not.toBeNull();
-    expect(screen.getAllByText('pas au stock').length).toBeGreaterThan(0);
+    expect(screen.getAllByText('non relié').length).toBeGreaterThan(0);
     // La bière reste un toucher plus bas : OG et IBU, puis la fiche.
     expect(screen.getByRole('button', { name: /OG 1,066/ })).toBeTruthy();
   });
