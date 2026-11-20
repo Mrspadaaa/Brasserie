@@ -1,6 +1,7 @@
 import table from '../../data/malts/weyermann.json';
 import { deduireValeursMalt } from '../ingredientFacts';
 import { nombreFr } from '../nombreAffiche';
+import { fabricantEcrit } from '../stock/ficheCle';
 import { slugBeerAnalytics } from './noms';
 
 /**
@@ -36,7 +37,10 @@ export const plageEbc = (f: Pick<FichePubliee, 'ebcMin' | 'ebcMax'>): string => 
 };
 
 export function fichePubliee(nom: string): FichePubliee | null {
-  const slug = slugBeerAnalytics(nom ?? '');
+  // Un nom qui écrit un AUTRE malteur (« Castle Pilsner Malz ») n'est pas une fiche Weyermann : inconnu. « Weyermann » écrit devant le nom est retiré.
+  const fabricant = fabricantEcrit(nom ?? '');
+  if (fabricant && fabricant !== 'weyermann') return null;
+  const slug = slugBeerAnalytics(fabricant ? nom.replace(/weyermann\S*/gi, ' ').replace(/\s+/g, ' ').trim() : (nom ?? ''));
   const brut = slug ? MALTS[slug] : undefined;
   if (!brut) return null;
   const d = deduireValeursMalt({

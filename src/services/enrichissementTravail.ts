@@ -293,6 +293,15 @@ async function traiterSansManque(t: TravailFiche, tour: Tour): Promise<TravailFi
     }
   }
 
+  // TL-10 : un malt de la table du malteur (Weyermann) : EBC et PPG du catalogue, source citée, sans recherche en ligne. Hors table : la suite.
+  if (t.famille === 'malt') {
+    const v = tour.cat!.valeursDeCatalogueMalt(t.ligne.nomPropre);
+    if (v) {
+      const groupes: Ecriture[] = [{ valeurs: v.valeurs, par: 'catalogue', source: v.source, ...(v.url ? { url: v.url } : {}), niveau: 'repris', deduit: v.deduit }];
+      return fait(ecrire(t, tour, groupes, { lien: { id: `malt:${(v.nom ?? t.ligne.nomPropre).toLowerCase().replace(/\s+/g, '-')}`, approchee: false, par: 'catalogue' } }), 'fait');
+    }
+  }
+
   // 2. Fiches retenues : un article du même produit, puis la réponse déjà reçue pour cette clé. Aucun appel.
   const trous = trousDe(item, t.famille).filter(c => c !== 'technicalSource');
   const ret = retenueDe(t, tour);

@@ -4,6 +4,7 @@ import type { Fermentable, FermentableKind, StockItem } from '../../types';
 import type { LearnIngredient } from '../../domain/ingredientFacts';
 import './correctifs.css';
 import { messageSansMaltDeBase } from '../../domain/fermentables/base';
+import { fichePubliee } from '../../domain/fermentables/fichesMalts';
 import { messageJourFermentable } from '../../domain/fermentables/jours';
 import { Ajout, type DefFamille } from './Ajout';
 import { Ligne, type ActionsLigne, type AnnMoment } from './Ligne';
@@ -205,8 +206,9 @@ export const EtapeFermentescibles: React.FC<EtapeFermentesciblesProps> = ({
       kind: fam,
       use,
       fermentabilityPct: def.fermentability,
-      colorEbc: article?.colorEbc ?? (fam === 'grain' ? undefined : 0),
-      potentialPpg: article?.potentialPpg ?? def.ppg,
+      // TL-10 : couleur et potentiel non saisis sur l'article : la fiche du malteur (Weyermann) quand le nom y est, sinon inconnu (couleur) ou la valeur de la famille.
+      colorEbc: article?.colorEbc ?? (fam === 'grain' ? fichePubliee(nom)?.colorEbc : 0),
+      potentialPpg: article?.potentialPpg ?? (fam === 'grain' ? fichePubliee(nom)?.potentialPpg : undefined) ?? def.ppg,
       ...(use === 'fermentation' ? { dayOffset: JOUR_PAR_DEFAUT } : {}),
     };
     echelles.current.clear();

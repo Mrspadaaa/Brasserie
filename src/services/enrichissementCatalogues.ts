@@ -9,6 +9,7 @@ import type { CatalogueHop } from '../domain/hopIndex/v4/data';
 import type { ReferenceLevure } from '../domain/stock/ficheLevure';
 import type { ChampFiche } from '../domain/stock/ficheValeurs';
 import type { Famille } from '../domain/stock/ficheCle';
+import { valeursDeCatalogueMalt as valeursDeTableMalt } from '../domain/fermentables/fichesMalts';
 import { floculationFrancaise } from '../domain/yeastFlocculation';
 
 /** D2 (REVUE-code) : le catalogue des levures n'est chargé (`import()`) que quand un travail de levure le demande. */
@@ -19,6 +20,15 @@ export const valeursDeCatalogueLevure = async (ref: { id: string; name: string }
 export const cataloguePleinHoublons = async (): Promise<CatalogueHop[]> => (await import('../domain/hopIndex/v4/data')).chargerCataloguePlein();
 
 export interface ValeursTrouvees { valeurs: Partial<Record<ChampFiche, unknown>>; source: string; url?: string; deduit: Partial<Record<ChampFiche, string>>; nom?: string }
+
+/**
+ * TL-10 : les valeurs de la table du malteur (Weyermann, `src/data/malts/weyermann.json`) pour un nom de malt : EBC et PPG déduits par la règle du
+ * dépôt, source citée. `undefined` hors table (l'inconnu n'est jamais 0) et pour un nom qui écrit un AUTRE malteur (« Castle Pilsner Malz »).
+ */
+export function valeursDeCatalogueMalt(nom: string): ValeursTrouvees | undefined {
+  const v = valeursDeTableMalt(nom);
+  return v ? { valeurs: { ...v.valeurs }, source: v.source, url: v.url, deduit: { ...v.deduit }, nom: v.nom } : undefined;
+}
 export const urlDe = (s: string | undefined) => (s && /^https?:\/\//i.test(s.trim()) ? s.trim() : undefined);
 /** Les champs d'un `Partial<StockItem>` de levure qu'f4 écrit (jamais `yeastNotes`, `yeastLot`, `category`). */
 export function champsLevure(p: Partial<StockItem>): Partial<Record<ChampFiche, unknown>> {

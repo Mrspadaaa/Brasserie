@@ -5,6 +5,7 @@ import { proposerFermentables } from '../../domain/fermentables/proposition';
 import { Bascule, Entree, Etoile, Plus, Sac } from './icones';
 import { Input } from '../Input';
 import { chercher, chercherAilleurs, decouper, estEpice, familleDevinee, kgTxt, lireAjout, memeArticle, nomPossible, nu, qteTxt, teinte, texteSurTeinte, type Candidat } from './modele';
+import { fichePubliee } from '../../domain/fermentables/fichesMalts';
 import { chargerTypicite } from '../../domain/fermentables/typicite';
 import { refAffichable } from '../../domain/stock/regles';
 
@@ -263,7 +264,7 @@ export const Ajout: React.FC<AjoutProps> = ({ famille, familles, defs, onFamille
         {!on && prete && propositions.slice(0, 5).map((p) => (
           <button key={p.article.ref} type="button" className="fer-pu" data-pu={p.article.name} data-role="resultat" data-nom={p.article.name}
             onClick={() => cliquer({ nom: p.article.name, rang: 1, article: p.article, ligne: -1 }, s.kg)}>
-            <Sac famille={famille} ebc={p.article.colorEbc} />{p.article.name}
+            <Sac famille={famille} ebc={p.article.colorEbc ?? (famille === 'grain' ? fichePubliee(p.article.name)?.colorEbc : undefined)} />{p.article.name}
           </button>
         ))}
         {on && liste.map((c, k) => {
@@ -283,7 +284,8 @@ export const Ajout: React.FC<AjoutProps> = ({ famille, familles, defs, onFamille
             );
           }
           const a = c.article;
-          const ebc = (c.famille ?? famille) === 'grain' && a?.colorEbc != null ? a.colorEbc : null;
+          // TL-10 : un EBC non saisi se lit dans la fiche du malteur (Weyermann) quand elle existe ; sinon rien (jamais 0).
+          const ebc = (c.famille ?? famille) === 'grain' ? (a?.colorEbc ?? (a ? fichePubliee(a.name)?.colorEbc : undefined) ?? null) : null;
           return (
             <button key={a?.ref ?? c.nom} type="button" role="option" aria-selected={pr} className={`fer-tu${pr ? ' fer-prem' : ''}${a && !(a.currentStock > 0) ? ' fer-epuise' : ''}`} data-role="resultat"
               data-nom={c.nom} data-pu={c.nom} data-ailleurs={c.famille} aria-label={`Ajouter ${c.nom}${c.famille ? ` (${defs[c.famille].label})` : ''} : ${sousNom(a)}${ebc != null ? ` · ${qteTxt(ebc)} EBC` : ''}`} onClick={() => cliquer(c, s.kg)}>
