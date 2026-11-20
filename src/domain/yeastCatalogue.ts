@@ -40,6 +40,16 @@ export function yeastIdentitySearchIndex(identity: YeastSearchIdentity, extra: {
 /** Name, maker, printed code and aliases are identity; categories and reported facts are descriptive text.
  * One index per reference: homonyms keep their own row, id and sources. */
 export function yeastSearchIndex(yeast: HopYeast & { aliases?: string[] }, extra: { names?: string[]; makers?: string[]; descriptive?: string[] } = {}): YeastSearchIndex {
+  // T4-6 (20.11) : l'index d'une fiche sans ajout ne change pas tant que la fiche ne change pas. Sans ce cache, `relierAuCatalogue` le refaisait deux fois par fiche (1 734) et par
+  // levure de stock à chaque montage de l'étape Levure (≈ 700 ms au retour de Paliers, Houblons ou Eau). La fiche est une valeur (remplacée, jamais mutée) : clé = l'objet.
+  const sansAjout = !extra.names?.length && !extra.makers?.length && !extra.descriptive?.length;
+  if (sansAjout) { const connu = INDEX_FICHE.get(yeast); if (connu) return connu; }
+  const index = construireIndexFiche(yeast, extra);
+  if (sansAjout) INDEX_FICHE.set(yeast, index);
+  return index;
+}
+const INDEX_FICHE = new WeakMap<object, YeastSearchIndex>();
+function construireIndexFiche(yeast: HopYeast & { aliases?: string[] }, extra: { names?: string[]; makers?: string[]; descriptive?: string[] }): YeastSearchIndex {
   const catalogue = yeast.catalogue;
   return yeastIdentitySearchIndex({
     id: yeast.id,
