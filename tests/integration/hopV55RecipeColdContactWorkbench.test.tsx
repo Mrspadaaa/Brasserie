@@ -5,6 +5,12 @@ import { createHash } from 'node:crypto';
 import { dirname, resolve as resolvePath } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { afterEach, describe, expect, it, vi } from 'vitest';
+import { configure as configurerAttente } from '@testing-library/react';
+
+// Parcours lourds : seuls, ils passent en 6 à 40 s ; sous charge (suite complète, plusieurs sessions), 15 s par test et 1 s d'attente
+// de findBy ne suffisaient plus (20.11 : délais dépassés, textes « introuvables » encore en cours de rendu).
+configurerAttente({ asyncUtilTimeout: 10_000 });
+vi.setConfig({ testTimeout: 90_000 });
 import { act, cleanup, fireEvent, render, screen, waitFor } from '@testing-library/react';
 import type { Recipe } from '../../src/types';
 import type { HopV55RecipeColdContactChange } from '../../src/ui/hopV55/RecipeStep';

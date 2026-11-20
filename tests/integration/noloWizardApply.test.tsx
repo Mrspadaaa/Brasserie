@@ -1,5 +1,11 @@
 import React from 'react';
 import { afterEach, describe, expect, it, vi } from 'vitest';
+import { configure as configurerAttente } from '@testing-library/react';
+
+// Parcours lourds : seuls, ils passent en 6 à 40 s ; sous charge (suite complète, plusieurs sessions), 15 s par test et 1 s d'attente
+// de findBy ne suffisaient plus (20.11 : délais dépassés, textes « introuvables » encore en cours de rendu).
+configurerAttente({ asyncUtilTimeout: 10_000 });
+vi.setConfig({ testTimeout: 90_000 });
 import { cleanup, fireEvent, render, screen, waitFor, within } from '@testing-library/react';
 import { BrewWizard } from '../../src/pages/BrewWizard';
 import { RecipePage } from '../../src/pages/RecipePage';
