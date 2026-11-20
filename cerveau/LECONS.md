@@ -104,9 +104,9 @@ Erreurs de méthode déjà commises, cause, remède. Chargé par CLAUDE.md : rel
 - Contrôle : `systeme.mjs agents` ; `mission` : plafond ≤ maxTurns ; `.claude/hooks/garde-jetons.mjs` (3e relance, brief incomplet)
 
 ### L19 — Cadrer une décision sur l'acquis et les choix en attente, et lire la plainte comme une proposition
-- Erreur : 17.11, « beaucoup utilisé comme brouillon » lu en usage principal : « Non focus sur l'achat de matériel ». 22.10, conseil cadré sur « A, B ou C », sans savoir que Comparer était déjà intégré, qu'un choix de radar attendait, et que sa plainte contenait déjà une carte.
-- Cause : cadrage parti de la carte candidate du registre, sans relire acquis, décisions en attente ni mots exacts.
-- Faire : relire [[acquis-valides]], les choix en attente du registre et ses mots ; poser la cause observée (captures) avant les options ; citer la formule exacte, poids compris (D77).
+- Erreur : 17.11, « beaucoup utilisé comme brouillon » lu en usage principal : « Non focus sur l'achat de matériel ». 22.10, conseil cadré sur « A, B ou C », sans savoir que Comparer était intégré, qu'un choix de radar attendait, que sa plainte contenait une carte.
+- Cause : carte candidate du registre cadrée sans relire acquis, attentes ni mots exacts.
+- Faire : relire [[acquis-valides]], les choix en attente et ses mots ; poser la cause observée (captures) avant les options ; citer la formule exacte, poids compris (D77). Un parcours cite sa plainte (15.11 : « mal target »).
 - Rôles : pilote, conseil
 - Contrôle : aucun
 

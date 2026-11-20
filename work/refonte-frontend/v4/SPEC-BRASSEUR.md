@@ -2318,3 +2318,5 @@ Classement de la page r3 de Ma levure (https://claude.ai/artifact/DKAJe8ESeMR4ig
 > Implemnte
 
 (lu, 20.11 : choix fait. Au repos et cas limite : r3 v05 telle quelle ; après le geste : r4 v02, le meilleur rang donné. À porter dans l'app, avec la dose écrite au choix d'une levure.)
+- **16.11**, mot pour mot (relayé par la session pilote), sur la page « Simplicité · retenues » (https://claude.ai/artifact/Phf2ArFjBguzQNsAZGkqkf) : « pa1 · pa2 · pe1 · pe3 · pe4 · pb1 · pb2 · pb3 · pm1 · pl1 · pl2 »
+  (lu : son choix, celui que le conseil avait voté ; registre ecrans.json « simplicite » ; retouches gardées : pe4 sur Star San, soude ou PBW ; pm1 avec la valeur proposée et un curseur de pH.)

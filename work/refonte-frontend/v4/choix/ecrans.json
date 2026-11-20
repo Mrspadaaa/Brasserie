@@ -1,5 +1,5 @@
 {
-  "maj": "2026-11-15",
+  "maj": "2026-11-20",
   "regle": "« C'est critique que mes choix soient respectés. SI non, rien n'a de valeur. » (23.10). Chaque écran repart de la maquette qu'il a choisie, telle qu'il l'a vue (CLAUDE.md, règle n° 1 ; D105).",
   "usage": "controle-choix.mjs <dossier construit> : chaque écran « choisi » passe controle-reprise avec son inventaire (et ses contrôles) ; un écran « ouvert » est signalé avec ses options. À mettre à jour à chacun de ses choix, avec ses mots.",
   "ecrans": [
@@ -239,6 +239,18 @@
       "choix": "r3p2",
       "mots": "r3p2 top",
       "capture": "work/missions/2026-11-14-ecrans-transversaux/voies/voie-p2-r3/r3p2-a-390.png"
+    },
+    {
+      "ecran": "simplicite",
+      "route": "simplicite",
+      "statut": "choisi",
+      "choix": "pa1 · pa2 · pe1 · pe3 · pe4 · pb1 · pb2 · pb3 · pm1 · pl1 · pl2 (simplicité, passe 2b). Retouches gardées : pe4 sur un consommable de nettoyage (Star San, soude ou PBW), dose au curseur jamais inventée ; pm1 montre la valeur proposée (67 °C, à confirmer) et un curseur de pH, dans le compagnon p2a ; pb1 et pb3 dans la feuille d1b.",
+      "mots": "pa1 · pa2 · pe1 · pe3 · pe4 · pb1 · pb2 · pb3 · pm1 · pl1 · pl2",
+      "capture": "work/missions/2026-11-15-simplicite/captures/retenues-390.png",
+      "page": "https://claude.ai/artifact/Phf2ArFjBguzQNsAZGkqkf",
+      "controles": [
+        "npx vitest run tests/unit/consommationGestes.test.ts"
+      ]
     }
   ]
 }
