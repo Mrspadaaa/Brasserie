@@ -22,7 +22,8 @@ import { RANGER_NOTE, assainirRangerNote, contexteRangerNote } from './rangerNot
 import { RANGER_CARNET, assainirRangerCarnet, contexteRangerCarnet } from './carnetIA.js';
 import { lienDe, lireLien } from './lireLien.js';
 import {
-  AI_ATTEMPT_TIMEOUT_MS as ATTEMPT_TIMEOUT_MS, AI_OUT_OF_TIME_MESSAGE as OUT_OF_TIME, AI_TASK_DEADLINE_MS, AI_TASK_MIN_ATTEMPT_MS
+  AI_ATTEMPT_TIMEOUT_MS as ATTEMPT_TIMEOUT_MS, AI_OUT_OF_TIME_MESSAGE as OUT_OF_TIME, AI_TASK_DEADLINE_MS, AI_TASK_MIN_ATTEMPT_MS,
+  SCAN_LITE_TIMEOUT_MS, SCAN_STRONG_TIMEOUT_MS, SCAN_TOTAL_TIMEOUT_MS
 } from './aiTaskDeadline.js';
 
 /**
@@ -230,12 +231,12 @@ export async function scanInvoiceSafely(uid: string, suppliedFile: unknown | unk
   // Vrai seulement si le morceau provisoire est parti pendant CET appel (jamais pour un résultat servi du cache ou resservi après une relecture ratée).
   let provisoireParti = false;
   const reviewed = await runBudgetedInvoiceScan(uid, key, async generate => {
-    const deadline = AbortSignal.timeout(100_000);
+    const deadline = AbortSignal.timeout(SCAN_TOTAL_TIMEOUT_MS);
     // LE4 : une ligne de journal par lecture (durée, jetons, finishReason, coupée ou non), écrite AVANT le parsing ; aucun contenu de facture.
     const cause = (reason: any): CauseCoupure | null => reason instanceof ScanReadCutError ? 'sortie' : reason?.name === 'AbortError' || reason?.name === 'TimeoutError' ? 'delai' : null;
     const read = (callModel: string, prompt: string, lecture: number, etape: 'parallele' | 'troisieme', maxOutputTokens: number) => {
       const started = Date.now();
-      return generate(body(TASKS.scanInvoice.system, prompt, morceau ? SCHEMA_MORCEAU : TASKS.scanInvoice.schema, override ?? maxOutputTokens), AbortSignal.any([deadline, AbortSignal.timeout(45_000)]), callModel).then(
+      return generate(body(TASKS.scanInvoice.system, prompt, morceau ? SCHEMA_MORCEAU : TASKS.scanInvoice.schema, override ?? maxOutputTokens), AbortSignal.any([deadline, AbortSignal.timeout(etape === 'troisieme' ? SCAN_STRONG_TIMEOUT_MS : SCAN_LITE_TIMEOUT_MS)]), callModel).then(
         response => { logger.info('Lecture de facture', { ...ligneJournalLecture({ lecture, etape, elapsedMs: Date.now() - started, response }), model: callModel }); return normalizeInvoiceScan(parse(response)); },
         error => { logger.warn('Lecture de facture en échec', { lecture, etape, model: callModel, elapsedMs: Date.now() - started, cause: cause(error) === 'delai' ? 'delai' : 'erreur', erreur: String(error?.message ?? error).slice(0, 120) }); throw error; });
     };
