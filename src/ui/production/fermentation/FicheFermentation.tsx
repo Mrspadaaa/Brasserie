@@ -187,7 +187,7 @@ export const FicheFermentation: React.FC<FicheFermentationProps> = ({ m, verbe, 
       <div className="flex items-baseline justify-between px-0.5 pb-1 text-xs text-cave-400">
         <span className="font-semibold text-cave-200">Densité</span>
         <span>
-          {m.alcool !== null ? <>alc. <span className="tabular-nums">{nombreFr(m.alcool, 1)} %</span></> : 'alc. non calculé'}
+          {m.alcool !== null ? <>alc. <span className="tabular-nums">{m.alcool.toLocaleString('fr-FR', { minimumFractionDigits: 1, maximumFractionDigits: 1 })} %</span></> : 'alc. non calculé'}
           {' · '}{m.attenuation !== null ? <>att. <span className="tabular-nums">{m.attenuation} %</span></> : 'att. non calculée'}
           {!m.fgConfirmee && ' · provisoires'}
         </span>

@@ -1,6 +1,9 @@
 import { describe, expect, it, vi } from 'vitest';
 import { dosePrevueLevure, tuilesDuBilan, textePriseLevure } from '../../src/pages/BrewDayPage';
 import { relevesDuJour } from '../../src/domain/brewDayBilan';
+import { besoinDeLaLevure } from '../../src/ui/etapeLevure/dose';
+import { readYeastSupply } from '../../functions/src/yeastSupplySchema';
+import bootstrap from '../../src/data/yeastSupplyBootstrap.json';
 import { doseConseillee } from '../../src/ui/YeastRecipeHeading';
 import { brewState, recipe } from '../fixtures/brewCompanion';
 
@@ -31,8 +34,19 @@ describe('CT4-B-1 : la dose de levure du jour J', () => {
     const t = tuilesDuBilan(relevesDuJour(s, r, Date.now()), r, s).find((x) => x.id === 'ensemencement');
     expect(t!.cible).toMatch(/3 sachets$/);
   });
-  it('sans produit connu : « dose à écrire », pas de chiffre inventé', () => {
+  it('sans fiche liée : le besoin chiffré de l’étape Levure (même fonction), jamais « dose à écrire » seul', () => {
     const r = { ...sansDose(), yeast: { name: 'Levure maison', form: 'sèche' } as never };
-    expect(textePriseLevure(r)).toBe('dose à écrire');
+    const besoin = besoinDeLaLevure(r as never, readYeastSupply(bootstrap)!);
+    expect(besoin?.sachets).toBeGreaterThan(1);
+    const dit = besoin!.sachets!.toLocaleString('fr-FR', { minimumFractionDigits: 1, maximumFractionDigits: 1 });
+    expect(textePriseLevure(r)).toBe(`besoin ${dit} sachets · à écrire`);
+    const s = brewState(r);
+    const t = tuilesDuBilan(relevesDuJour(s, r, Date.now()), r, s).find((x) => x.id === 'ensemencement');
+    expect(t!.cible).toContain('à écrire');
+    expect(t!.cible).not.toMatch(/dose à écrire/);
+  });
+  it('sans volume ni densité : « dose à écrire », pas de chiffre inventé', () => {
+    const r = { ...sansDose(), volumeL: 0, ogTarget: undefined, yeast: { name: 'Levure maison', form: 'sèche' } as never };
+    expect(textePriseLevure(r as never)).toBe('dose à écrire');
   });
 });

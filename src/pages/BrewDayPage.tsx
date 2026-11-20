@@ -83,6 +83,9 @@ import type { Sachet } from '../domain/levure/sachet';
 import { BrewClotureReleves, CLOTURE_VIDE, cloturePartirDe, type ClotureReleves } from '../ui/BrewClotureReleves';
 import yeastSupplyBootstrap from '../data/yeastSupplyBootstrap.json';
 import { doseConseillee } from '../ui/YeastRecipeHeading';
+import { besoinDeLaLevure } from '../ui/etapeLevure/dose';
+import { motUnite } from '../ui/etapeLevure/CarteDose';
+import { readYeastSupply } from '../../functions/src/yeastSupplySchema';
 import { BrewJournal, phraseCorrection } from '../ui/BrewJournal';
 import { BrewCapturePanel } from '../ui/BrewCapturePanel';
 import { BrewChoice } from '../ui/BrewChoice';
@@ -183,10 +186,23 @@ export function dosePrevueLevure(recipe: RecipeSnapshot): { amount: number; unit
   if (typeof recipe.yeast?.qty === 'number' && recipe.yeast.qty > 0 && recipe.yeast.unit) return { amount: recipe.yeast.qty, unit: recipe.yeast.unit };
   return undefined;
 }
-/** Sans dose écrite : le besoin que la fiche de la recette donne (« 2–3 sachets · à écrire », même calcul que l'étape Levure), sinon « dose à écrire ». */
+const approvisionnementLevure = readYeastSupply(yeastSupplyBootstrap);
+/**
+ * Sans dose écrite : le besoin, jamais un 1 par défaut. Fiche liée : la plage du produit (« 2–3 sachets · à écrire », `doseConseillee`) ; sinon le besoin chiffré
+ * de l'étape Levure (CT4-B-1 tour 2 : « besoin 1,2 sachet · à écrire », `besoinDeLaLevure`, la même fonction que sa carte de dose, jamais un second calcul) ;
+ * sans volume, densité ni sachet connu : « dose à écrire » (l'inconnu n'est ni 0 ni 1).
+ */
 export function textePriseLevure(recipe: RecipeSnapshot): string {
-  const besoin = doseConseillee(recipe as never);
-  return besoin ? `${besoin} · à écrire` : 'dose à écrire';
+  const plage = doseConseillee(recipe as never);
+  if (plage) return `${plage} · à écrire`;
+  try {
+    const besoin = approvisionnementLevure ? besoinDeLaLevure(recipe as never, approvisionnementLevure) : undefined;
+    const n = besoin?.sachets;
+    if (besoin?.sachet && n !== undefined && Number.isFinite(n) && n > 0) {
+      return `besoin ${n.toLocaleString('fr-FR', { minimumFractionDigits: 1, maximumFractionDigits: 1 })} ${motUnite(besoin.sachet.unite, n)} · à écrire`;
+    }
+  } catch { /* besoin incalculable : la ligne neutre ci-dessous */ }
+  return 'dose à écrire';
 }
 /** « 1 sachet », « 2 sachets », « 11,5 g » : la dose dite comme la ligne Levure de p2c. */
 export function texteDoseLevure(dose: { amount: number; unit: string }): string {

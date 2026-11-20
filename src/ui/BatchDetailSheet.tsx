@@ -1,5 +1,5 @@
 import { Input, Textarea } from './Input';
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Trash2, ArrowRight, AlertTriangle, PackageCheck, X, Sparkles } from 'lucide-react';
 import { Batch, StockItem } from '../types';
 import { BATCH_STATUS, statusOfBatch } from '../domain/batchStatus';
@@ -108,6 +108,15 @@ export function volumeEnCuveLibelle(b: { volumeL?: number | null; volumeBrewedL?
   if (b.volumeBrewedL != null && Number.isFinite(brasse) && brasse > 0) return formatLitres(brasse);
   const vise = Number(b.volumeL);
   return b.volumeL != null && Number.isFinite(vise) && vise > 0 ? `visé ${formatLitres(vise)}` : null;
+}
+
+/** La plage de FG de la levure (projection de la recette : quelques ms) gardée par instantané de recette : la saisie du relevé redessine la feuille à chaque geste. */
+const plagesFg = new WeakMap<object, ReturnType<typeof plageFgDeLaLevure>>();
+function plageFgMemo(lot: Batch): ReturnType<typeof plageFgDeLaLevure> {
+  const cle = lot.recipeSnapshot as object | undefined;
+  if (!cle) return plageFgDeLaLevure(lot, StorageService.getHopKnowledge());
+  if (!plagesFg.has(cle)) plagesFg.set(cle, plageFgDeLaLevure(lot, StorageService.getHopKnowledge()));
+  return plagesFg.get(cle) ?? null;
 }
 
 export const BatchDetailSheet: React.FC<BatchDetailSheetProps> = ({
@@ -304,7 +313,8 @@ export const BatchDetailSheet: React.FC<BatchDetailSheetProps> = ({
   })();
   const ficheM = draft.status === 'fermentation' && section === 'measurements' ? modeleFiche(draft, Date.now(), stockCtx) : null;
   // CT4-B-11 : sans FG visée dans la recette, le repère de la saisie est la plage de la levure (même calcul que la fiche recette).
-  const fgPlage = useMemo(() => (ficheM && !ficheM.fg ? plageFgDeLaLevure(draft, StorageService.getHopKnowledge()) : null), [ficheM?.fg, draft.recipeSnapshot, draft.status, section]); // eslint-disable-line react-hooks/exhaustive-deps
+  // Pas de hook ici : la feuille a un retour anticipé plus haut (`batch` absent), un hook après lui lève « Rendered fewer hooks » à la fermeture.
+  const fgPlage = ficheM && !ficheM.fg ? plageFgMemo(draft) : null;
   // gfc n° 10 : les mesures de dossier se rangent sous le Dossier d'un brassin en fermentation, plus sous la fiche.
   const mesuresDansDossier = draft.status === 'fermentation' && section === 'overview';
   const Enveloppe: React.ElementType = post || ficheM || mesuresDansDossier ? 'details' : React.Fragment;

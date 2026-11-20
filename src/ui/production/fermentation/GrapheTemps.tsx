@@ -70,10 +70,23 @@ export const GrapheTemps: React.FC<{ m: ModeleFiche; g: Geometrie }> = ({ m, g }
       e.push(<circle key={`pt${i}`} cx={x} cy={yy} r={dernier ? 7 : p.og ? 4 : 5} fill={C.t0} />);
       // CT4-B-8 : la valeur ne se pose jamais sur la courbe qui arrive au point ni sous le pointillé « auj. » : le dernier relevé la met au-dessus de son point
       // (à droite, ou à gauche s'il n'y a plus la place), et chaque valeur porte un halo de la couleur du fond qui la détache de ce qui passe dessous.
-      const droite = dernier && !serre && x + 52 <= W;
-      const posX = x + (serre ? 12 : dernier ? (droite ? 11 : -11) : 9), posY = yy + (serre || dernier ? -12 : p.og ? -9 : -4);
-      e.push(<text key={`pl${i}`} x={posX} y={posY} textAnchor={dernier && !serre && !droite ? 'end' : 'start'} className={mono} fontWeight={600} fontSize={dernier ? 14 : 12} fill={C.t0} wordSpacing={-4}
-        stroke={C.page} strokeWidth={4} strokeLinejoin="round" paintOrder="stroke">{p.og ? `DO ${lab}` : lab}</text>);
+      // Tour 2 (critique k4) : le texte ne chevauche jamais non plus un des deux bords pointillés de la colonne « auj. » (à 390 comme à 1280) : parmi les places
+      // possibles (à droite, centré au-dessus, à gauche), la première dont la boîte n'enjambe aucun bord ; sinon la préférée.
+      const fs = dernier ? 14 : 12, texte = p.og ? `DO ${lab}` : lab, larg = texte.length * 0.6 * fs;
+      const hy = serre || dernier ? -12 : p.og ? -9 : -4;
+      const places: { px: number; py: number; ancre: 'start' | 'middle' | 'end' }[] = [
+        { px: x + (serre ? 12 : dernier ? 11 : 9), py: yy + hy, ancre: 'start' },
+        { px: x, py: yy - 13, ancre: 'middle' },
+        { px: x - (dernier ? 11 : 9), py: yy + hy, ancre: 'end' },
+      ];
+      const enjambe = (pl: typeof places[number]) => {
+        const a = pl.ancre === 'start' ? pl.px : pl.ancre === 'end' ? pl.px - larg : pl.px - larg / 2, b = a + larg;
+        if (a < 0 || b > W) return true;
+        return colAuj && [T * cw + 1, (T + 1) * cw - 1].some(bord => a < bord - 1 && b > bord + 1);
+      };
+      const place = places.find(pl => !enjambe(pl)) ?? places[0];
+      e.push(<text key={`pl${i}`} x={place.px} y={place.py} textAnchor={place.ancre} className={mono} fontWeight={600} fontSize={fs} fill={C.t0} wordSpacing={-4}
+        stroke={C.page} strokeWidth={4} strokeLinejoin="round" paintOrder="stroke">{texte}</text>);
     });
   }
   // °C de la cuve (pas celui de l'échantillon : gfc n° 5), face à la consigne de la recette
@@ -83,7 +96,8 @@ export const GrapheTemps: React.FC<{ m: ModeleFiche; g: Geometrie }> = ({ m, g }
   const tous = [...consignes, ...temps];
   const lo = (tous.length ? Math.min(...tous) : 18) - 0.4, hi = Math.max((tous.length ? Math.max(...tous) : 20) + 0.4, lo + 2.5);
   const yt = (c: number) => PH + TC - 6 - (c - lo) / (hi - lo) * (TC - 30);
-  e.push(<text key="tl" x={4} y={PH + 16} fontSize={12} fontWeight={600} fill={C.t1}>°C cuve</text>);
+  let consigneEnLegende = false;
+  const indexLegende = e.push(<text key="tl" x={4} y={PH + 16} fontSize={12} fontWeight={600} fill={C.t1}>°C cuve</text>) - 1;
   if (colAuj && !m.tempAujourdhui) e.push(<text key="tn" x={W - 2} y={PH + 16} textAnchor="end" fontSize={12} fill={C.t2}>auj. <tspan fontWeight={600} fill={C.attT}>non relevée</tspan></text>);
   const chauds = m.phases.filter(p => p.ton !== 'water');
   if (chauds.length) {
@@ -92,8 +106,17 @@ export const GrapheTemps: React.FC<{ m: ModeleFiche; g: Geometrie }> = ({ m, g }
     e.push(<path key="cs" d={d} fill="none" stroke={C.t2} strokeWidth={1.5} strokeDasharray="4 4" />);
     const dernierChaud = chauds[chauds.length - 1], premier = chauds[0];
     const cible = chauds.length > 1 ? dernierChaud : premier;
-    if ((cible.a - cible.de) >= 2) e.push(<text key="cl" x={cx((cible.de + Math.min(nb, cible.a) - 1) / 2)} y={yt(cible.tempC) + 15} textAnchor="middle" fontSize={12} fill={C.t2}>consigne</text>);
+    if ((cible.a - cible.de) >= 2) {
+      // Tour 2 (critique k4) : « consigne » ne se pose jamais sur le titre de la phase (« Fermenter 19 °C », à 390 les deux se recouvraient) : s'ils se
+      // touchent, le mot passe à la légende « °C cuve · pointillé : consigne » au lieu de s'écraser sur la courbe.
+      const cxm = cx((cible.de + Math.min(nb, cible.a) - 1) / 2), yc2 = yt(cible.tempC) + 15, wc = 8 * 0.6 * 12;
+      const titre = `${cible.titre}`, t0 = cible.de * cw + 3, t1 = t0 + titre.length * 0.6 * 12;
+      const touche = yc2 > ya - 22 && cxm - wc / 2 < t1 + 4 && cxm + wc / 2 > t0 - 4;
+      if (touche) consigneEnLegende = true;
+      else e.push(<text key="cl" x={cxm} y={yc2} textAnchor="middle" fontSize={12} fill={C.t2}>consigne</text>);
+    }
   }
+  if (consigneEnLegende) e[indexLegende] = <text key="tl" x={4} y={PH + 16} fontSize={12} fontWeight={600} fill={C.t1}>°C cuve <tspan fontWeight={400} fill={C.t2}>· tirets : consigne</tspan></text>;
   m.phases.filter(p => p.ton === 'water' && p.de < nb).forEach(p => {
     const x = cx(p.de), y0 = chauds.length ? yt(chauds[chauds.length - 1].tempC) : yt(p.tempC);
     e.push(<path key={`fl${p.de}`} d={`M${x} ${y0}V${PH + TC - 4}m-4 -5l4 5l4 -5`} fill="none" stroke={C.eau} strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" />);

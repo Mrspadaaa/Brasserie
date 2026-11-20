@@ -48,13 +48,13 @@ describe('n° 15 : le ⏸ garde sa place à l’ébullition', () => {
 
 describe('n° 28 : p2c à la lettre, le sachet prévu se dit ; la dose réelle reste « à choisir » (1C)', () => {
   const levure = () => ({ ...recipe(), yeast: { name: 'SafAle US-05', form: 'sèche' as const } } as ReturnType<typeof recipe>);
-  it('à l’ensemencement, avant le geste : la tuile dit « dose à écrire » (jamais « 1 sachet » par défaut, CT4-B-1) et la ligne Levure « à choisir » ; rien n’est posé dans l’état', () => {
+  it('à l’ensemencement, avant le geste : la tuile dit « besoin … sachet · à écrire » (jamais « 1 sachet » par défaut, CT4-B-1) et la ligne Levure « à choisir » ; rien n’est posé dans l’état', () => {
     const r = levure();
     const base = brewState(r);
     const index = Math.max(0, base.steps.findIndex((s) => s.id === 'ensemencement'));
     const onSave = vi.fn();
     monter(r, { ...base, currentIndex: index, startedAt: Date.now() - 5 * 3600000, steps: base.steps.map((s, i) => (i < index ? { ...s, doneAt: Date.now() - 60000 } : s)) }, onSave);
-    expect(document.body.textContent).toMatch(/Ensemencement\?dose à écrire/); // la tuile : sans dose écrite, le besoin de la fiche ou « dose à écrire »
+    expect(document.body.textContent).toMatch(/Ensemencement\?besoin \d,\d sachets? · à écrire/); // la tuile : sans dose écrite, le besoin de l’étape Levure ou « dose à écrire »
     expect(screen.getAllByText('à choisir').length).toBeGreaterThan(0);
     const posees = onSave.mock.calls.map((c) => (c[0] as Batch).brewDay?.additions?.yeast).filter(Boolean);
     expect(posees).toEqual([]);
