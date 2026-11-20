@@ -122,7 +122,7 @@ function administrativeReminders(config: AppConfig) {
 }
 
 export const DashboardTab: React.FC<DashboardTabProps> = ({
-  transactions, batches, stocks, config, globalTimeFilter, onNavigateTab, onOpenBatch,
+  transactions, batches, stocks, planning, config, globalTimeFilter, onNavigateTab, onOpenBatch,
   onNavigateToCreativeLab
 }) => {
   const creativeItems = useStorageValue(StorageService.getCreativeItems);
@@ -150,6 +150,8 @@ export const DashboardTab: React.FC<DashboardTabProps> = ({
   const aCommander = useMemo(() => articlesACommander([...stocks.rawMaterials, ...stocks.cleaning], batches, recettes)
     .sort((a, b) => Number(b.rupture) - Number(a.rupture)), [stocks, batches, recettes]);
   const itemsToOrder = useMemo(() => aCommander.map(({ item, missing }) => ({ ...item, missing })), [aCommander]);
+  const planningAFaire = useMemo(() => planning.filter(t => !t.completed)
+    .sort((a, b) => dateOrder(a.startDate) - dateOrder(b.startDate)), [planning]);
   // AM-56 : une levure périmée (ou à moins de 30 jours de l'être) se voit ici, avant de brasser.
   const levuresDatees = useMemo(() => levuresADateProche(stocks.rawMaterials, todayISO()), [stocks.rawMaterials]);
   const ruptures = aCommander.filter(a => a.rupture).length;
@@ -352,7 +354,17 @@ export const DashboardTab: React.FC<DashboardTabProps> = ({
             </span>
             <ChevronRight size={16} className="shrink-0 text-cave-400" aria-hidden="true" />
           </button>
-          {events.length === 0 && <p className="px-2 py-2 text-2xs text-cave-400">Aucune tâche prévue.</p>}
+          {events.length === 0 && planningAFaire.length === 0 && <p className="px-2 py-2 text-2xs text-cave-400">Aucune tâche prévue.</p>}
+          {/* BT-2 : les tâches du Planning (GanttTask) non faites, en lecture seule ; le Planning n'a pas d'écran de saisie. */}
+          {planningAFaire.length > 0 && <div className="divide-y divide-cave-800">
+            {planningAFaire.slice(0, 3).map(tache => <div key={tache.id} data-testid="bord-planning" className="flex min-h-8 items-center gap-2 px-2 py-1">
+              <Calendar size={14} className="shrink-0 text-area-agenda" aria-hidden="true" />
+              <span className="min-w-0 flex-1">
+                <span className="block break-words text-2xs text-cave-50">{tache.description}</span>
+                <span className="block text-xs text-cave-400">{displayDate(tache.startDate)}</span>
+              </span>
+            </div>)}
+          </div>}
           <div className="divide-y divide-cave-800">
             {events.slice(0, 3).map(item => <label key={item.id} className="flex min-h-8 cursor-pointer items-center gap-2 px-2 py-1">
               <input type="checkbox" checked={item.status === 'done'} onChange={() => toggleEvent(item)}
