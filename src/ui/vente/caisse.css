@@ -133,6 +133,9 @@
 /* k1 n° 5 (AM-69, critique du 19.11) : la rangée « Mon mois · Encaisser » est collée au bas de la feuille ; sa bande prenait le fond d'un écran plein (cave-950)
    et tranchait sur la feuille (cave-900) : elle prend le fond de la feuille, en clair comme en cave. Le style de base `.om-bas` vit dans finance/ongletMois (zone fermée). */
 .cs .om-bas { background: var(--cs-panneau); }
+/* k3 n° 17 (20.11) : à 390 la barre collante s'arrête au bord du contenu de la feuille, 12 px au-dessus du bas (le remplissage de la feuille, p-3) ; le panier passait
+   dans cette bande et dépassait sous la barre (« Payé ici », « Facture QR »). Un aplat de la couleur de la feuille, 12 px sous la barre, la ferme jusqu'au bord. */
+.cs .om-bas { box-shadow: 0 12px 0 0 var(--cs-panneau); }
 @media (min-width: 900px) {
   .cs-app { max-width: 1100px; display: grid; grid-template-columns: 1fr 1fr; gap: 0 20px; align-items: start; }
   .cs-left { grid-column: 1; } .cs-right { grid-column: 2; }

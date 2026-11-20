@@ -351,7 +351,8 @@ export function CaisseContenu({ clientIdInitial, onClose, onSaved, onBusy, ferme
                   aria-label={`${format.label}${note ? `, ${note.mot}` : ''}${prix !== null ? `, ${montantChf(prix)} CHF` : ', prix à indiquer'}`} onClick={() => ajouter(format.id, format.label, format.volumeL, prix, suspect ? note?.raison : undefined)}>
                   {ligne && <span className="cs-n cs-m">{ligne.quantite}</span>}
                   {format.id === 'fut' ? <Fut /> : <Bouteille grande={format.id === '75cl'} />}
-                  <div><b>{format.label}</b>{note && <small> · {note.mot}</small>}<div className="cs-p">{prix !== null ? <><span className="cs-m">{montantChf(prix)}</span> CHF</> : 'prix ?'}</div>{note && <div className="cs-p cs-nc">{note.court}</div>}</div>
+                  <div><b>{format.label}</b>{note && <small> · {note.mot}</small>}{/* k3 n° 15 : un tarif hors plage n'est pas « prix ? » (inconnu) : la tuile dit le tarif et son prix au litre, une seule fois. */}
+                  <div className="cs-p">{prix !== null ? <><span className="cs-m">{montantChf(prix)}</span> CHF</> : suspect && note ? <span className="cs-nc">{note.court}</span> : 'prix ?'}</div>{note && !(suspect && prix === null) && <div className="cs-p cs-nc">{note.court}</div>}</div>
                   {ligne && <span className="cs-minus" role="button" tabIndex={0} aria-label={`Retirer un ${format.label}`} onClick={e => { e.stopPropagation(); retirer(ligne.cle); }} onKeyDown={e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); e.stopPropagation(); retirer(ligne.cle); } }}>−</span>}
                 </button>
               );
@@ -363,8 +364,12 @@ export function CaisseContenu({ clientIdInitial, onClose, onSaved, onBusy, ferme
 
           {libre && (
             <div className="cs-libre" role="group" aria-label="Ligne libre">
-              {libre.note && <p className="cs-libre-note" role="note">{libre.note}</p>}
-              {(() => { const a = alerteDe({ batchId: libre.batchId, formatId: libre.formatId, litresUnite: libre.litres, prixHT: libre.prix ?? null }); return a ? <p className="cs-libre-note cs-alerte-prix" role="alert">{a}</p> : null; })()}
+              {/* k3 n° 14 : une seule ligne d'avis. Le prix saisi sort de l'ordinaire : l'alerte (qui redit le prix au litre) remplace la note du tarif ; sinon, la note seule. */}
+              {(() => {
+                const a = alerteDe({ batchId: libre.batchId, formatId: libre.formatId, litresUnite: libre.litres, prixHT: libre.prix ?? null });
+                if (a) return <p className="cs-libre-note cs-alerte-prix" role="alert">{a}</p>;
+                return libre.note ? <p className="cs-libre-note" role="note">{libre.note}</p> : null;
+              })()}
               <label>Désignation<Input value={libre.designation} onChange={e => setLibre({ ...libre, designation: e.target.value })} placeholder="Consigne, verres…" /></label>
               <div className="cs-libre-nb">
                 <label>Quantité<ChampNombre aria-label="Quantité" value={libre.quantite} onValue={v => setLibre({ ...libre, quantite: v })} max={QUANTITE_MAX} /></label>
@@ -411,6 +416,8 @@ export function CaisseContenu({ clientIdInitial, onClose, onSaved, onBusy, ferme
                   <button type="button" aria-pressed={echeance === 30} disabled={fieldsetOff} onClick={() => setEcheance(30)}>30 j</button>
                   <span className="cs-d">→ <span className="cs-m">{dueDate ? dateCourte(dueDate) : '—'}</span></span>
                 </div>}
+            {/* k3 n° 16 : « Encaisser » reste grisé tant que le moyen de paiement manque ; le dire en mots, pas seulement par le gris. */}
+            {mode === 'paye' && !moyen && lignes.length > 0 && !fieldsetOff && <p className="cs-aide" role="note">Choisis TWINT ou Espèces pour encaisser.</p>}
           </section>
 
           {!resultat
