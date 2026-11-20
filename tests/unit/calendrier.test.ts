@@ -521,6 +521,20 @@ describe('CRITIQUE-3 (17.11) : J réel, pas brassée, courses / frais / impôt, 
     expect(impot.mouvements).toEqual(['brew:LOT-B:impot', 'brew:LOT-P:impot']);
   });
 
+  it('CAL-PASSE n° 10 : une échéance d’impôt estimée n’est pas montrée quand une facture d’impôt réelle couvre la même échéance : une seule ligne, la réelle', () => {
+    const estimee = choseArgent(ligne('impot', 'Blonde · impôt sur la bière', '2027-01-30', 1800))!;
+    const autre = choseArgent({ ...ligne('impot', 'Porter · impôt sur la bière', '2027-01-30', 700), id: 'brew:LOT-P:impot', batchId: 'LOT-P' })!;
+    const reelle = choseArgent({ id: 'invoice:F-IMPOT', date: '2027-01-26', label: 'Impôt sur la bière · 4 brassins', amountCents: 5500, direction: 'out', source: 'invoice', category: 'brassage' }, [], undefined, new Set())!;
+    const prets = preparerChoses([estimee, autre, reelle]);
+    const impots = prets.filter(c => /^Impôt sur la bière/.test(c.titre));
+    expect(impots).toHaveLength(1);
+    expect(impots[0]).toMatchObject({ rangee: 'papiers', titre: 'Impôt sur la bière · 4 brassins', source: { genre: 'facture', id: 'F-IMPOT' } });
+    /* sans facture réelle, ou pour un autre trimestre (90 j plus loin), l'estimation reste */
+    expect(preparerChoses([estimee, autre]).filter(c => c.posteBrassin === 'impot')).toHaveLength(1);
+    const plusTard = choseArgent({ id: 'invoice:F-IMPOT2', date: '2027-04-30', label: 'Impôt sur la bière · 2 brassins', amountCents: 3000, direction: 'out', source: 'invoice', category: 'brassage' }, [], undefined, new Set())!;
+    expect(preparerChoses([estimee, plusTard]).filter(c => /^Impôt sur la bière/.test(c.titre))).toHaveLength(2);
+  });
+
   it('t8 : un calendrier vide n’a aucun retard ; une chose posée dans le futur n’en crée aucun', () => {
     expect(retardsDe({ aujourdhui: AUJOURDHUI, restes: [], batches: [], items: [], sansDensite: [], commandes: [], courses: null })).toHaveLength(0);
     /* des courses dont le jour n'est pas passé, une densité d'un brassin brassé aujourd'hui, une tâche de demain, une fenêtre en cours : rien */

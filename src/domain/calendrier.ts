@@ -640,7 +640,11 @@ export function preparerChoses(
       mouvements: lignes.flatMap(l => l.mouvements ?? []), brassinLie: batchId
     });
   }
+  /* CAL-PASSE (21.11, n° 10, décision du pilote) : une facture d'impôt réelle (pièce de Finances) couvre l'échéance estimée de la même période : on ne
+     montre que la réelle. L'impôt se paie par trimestre (90 j) ou par année : à 45 j ou moins, c'est la même échéance, sans jamais toucher la suivante. */
+  const reellesImpot = sortie.filter(c => c.source.genre === 'facture' && c.rangee === 'papiers' && /^imp[oô]ts?\b/i.test(c.titre) && c.debut).map(c => c.debut as string);
   for (const [jour, lignes] of impots) {
+    if (reellesImpot.some(r => ecartJours(r < jour ? r : jour, r < jour ? jour : r) <= 45)) continue;
     const nomDe = (l: ChoseCalendrier) => (l.ouvre.id ? noms.brassins?.get(l.ouvre.id) ?? brassins.get(l.ouvre.id)?.titre : undefined) ?? l.titre.split(' · ').slice(1).join(' · ');
     const chiffrees = lignes.filter(l => l.centimes !== undefined);
     const seul = lignes.length === 1 ? lignes[0] : null;

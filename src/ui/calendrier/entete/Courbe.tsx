@@ -168,6 +168,19 @@ export interface Etiquette {
   semaines: number[];
   /** Une chose étoilée (E31) : « ★ Hotte −900 », posée la première. */
   etoile: boolean;
+  /** Le nom entier, quand `nom` a été raccourci pour tenir (CAL-PASSE n° 7) : le titre de l'infobulle le garde. */
+  complet?: string;
+}
+/** La boîte que le navigateur rend pour un texte de 14 px (Source Sans 3 : 14,3 px au-dessus de la ligne de base, 5,6 px dessous, mesuré par getBBox). */
+export const HAUT_RENDU = 15;
+export const BAS_RENDU = 5;
+/** Les formes plus courtes d'un nom, de la moins coupée à la plus coupée : avant « · », puis les 14 premiers signes et « … ». */
+export function raccourcir(nom: string): string[] {
+  const sortie: string[] = [];
+  const k = nom.indexOf(' · ');
+  if (k > 3) sortie.push(nom.slice(0, k));
+  if (nom.length > 18) sortie.push(`${nom.slice(0, 14).trimEnd()}…`);
+  return sortie.filter((s, i) => s !== nom && sortie.indexOf(s) === i);
 }
 /** Une chose étoilée sur la courbe : le nom de son mouvement (ou son titre, si elle n'en a pas) et sa semaine (index dans la courbe). */
 export interface EtoileCourbe { nom: string; i: number }
@@ -266,9 +279,11 @@ export function placerNoms(courbe: readonly SoldeSemaine[], g: Geo, max: number,
   }
 
   const pris: Boite[] = [...exclusions];
+  /* CAL-PASSE (21.11, n° 7) : les boîtes RENDUES des noms posés (HAUT_RENDU + BAS_RENDU = 20 px, ce que mesurent getBBox et getBoundingClientRect), pas leur encre */
+  const rendus: Boite[] = [];
   const sortie: Etiquette[] = [];
   const lignes: number[] = [];
-  // La ligne de base d'un nom : sa boîte (le texte de 14 px) va de y − 11 à y + 3.
+  // La ligne de base d'un nom : son encre (le texte de 14 px) va de y − 11 à y + 3, sa boîte rendue de y − 15 à y + 5.
   for (let y = g.haut + 12; y + 3 <= g.bas - 2; y += PAS_Y) lignes.push(y);
   // La rangée sous le tracé (celle des mois), comme z2s y pose « Six fûts inox −1 080 » : entre les mois, que l'appelant passe en exclusions.
   lignes.push(...lignesSous);
@@ -286,8 +301,12 @@ export function placerNoms(courbe: readonly SoldeSemaine[], g: Geo, max: number,
     // Une chose étoilée doit se voir : toute la hauteur lui est ouverte, et son nom seul (sans montant) si le nom entier ne tient pas.
     const loin = m.etoile ? Infinity : mouvement ? LOIN_MARCHE : LOIN_MISE_MAX;
     const montant = mouvement && m.centimes !== null ? sg(m.centimes) : '';
+    /* CAL-PASSE (21.11, n° 7) : un nom qui ne tient pas se raccourcit (avant « · », puis coupé avec « … »), le montant gardé, avant de se taire */
+    const raccourcis = mouvement ? raccourcir(m.nom) : [];
     const formes = mouvement
-      ? [{ nom: m.nom, montant, w: largeurNom(m.nom, montant, m.etoile) }, ...(m.etoile && montant ? [{ nom: m.nom, montant: '', w: largeurNom(m.nom, '', true) }] : [])]
+      ? [{ nom: m.nom, montant, w: largeurNom(m.nom, montant, m.etoile) },
+        ...raccourcis.map(nom => ({ nom, montant, w: largeurNom(nom, montant, m.etoile) })),
+        ...(m.etoile && montant ? [{ nom: m.nom, montant: '', w: largeurNom(m.nom, '', true) }] : [])]
       : textesMise({ i: m.i, centimes: m.centimes ?? 0, titres: mise?.titres ?? [] }).map(t => ({ nom: t, montant: '', w: CARRE_MISE + largeurTexte(t) }));
     // À droite de la marche, à gauche, ou centré au-dessus (ou au-dessous) d'elle : l'abscisse d'ancrage reste celle de sa semaine. La mise de
     // côté n'a pas de marche : elle se pose sur sa zone hachurée, à la semaine la plus proche de la sienne où elle tient.
@@ -312,15 +331,18 @@ export function placerNoms(courbe: readonly SoldeSemaine[], g: Geo, max: number,
         const l = c.ancre === 'start' ? x : c.ancre === 'end' ? x - f.w : x - f.w / 2;
         const bo: Boite = { l, r: l + f.w, t: c.y - 11, b: c.y + 3 };
         if (bo.l < 2 || bo.r > g.largeur - 2) continue;
-        // Deux noms sur une même ligne gardent 8 px entre eux (on lit où l'un finit) ; les lignes voisines, 2 px.
-        if (pris.some(p => croise(p, bo) || (p.t < bo.b && bo.t < p.b && !(p.r + 8 <= bo.l || bo.r + 8 <= p.l)))) continue;
+        // Les exclusions (cadre, chiffre clé, mois…) : encre contre encre, 2 px. Deux noms : leurs boîtes RENDUES (20 px) ne se recouvrent pas, et sur
+        // une même rangée (boîtes qui se chevauchent en hauteur) ils gardent 8 px entre eux (on lit où l'un finit).
+        if (pris.some(p => croise(p, bo))) continue;
+        const rendu: Boite = { l: bo.l, r: bo.r, t: c.y - HAUT_RENDU, b: c.y + BAS_RENDU };
+        if (rendus.some(p => p.t < rendu.b && rendu.t < p.b && !(p.r + 8 <= rendu.l || rendu.r + 8 <= p.l))) continue;
         if (toucheLeTrace(courbe, g, bo)) continue;
-        pose = { genre: m.genre, i: m.i, nom: f.nom, montant: f.montant, x, y: c.y, ancre: c.ancre, neg: (m.centimes ?? 0) < 0, boite: bo, semaines: m.semaines, etoile: m.etoile };
+        pose = { genre: m.genre, i: m.i, nom: f.nom, montant: f.montant, x, y: c.y, ancre: c.ancre, neg: (m.centimes ?? 0) < 0, boite: bo, semaines: m.semaines, etoile: m.etoile, complet: m.nom };
         break;
       }
       if (pose) break;
     }
-    if (pose) { pris.push(pose.boite); sortie.push(pose); }
+    if (pose) { pris.push(pose.boite); rendus.push({ l: pose.boite.l, r: pose.boite.r, t: pose.y - HAUT_RENDU, b: pose.y + BAS_RENDU }); sortie.push(pose); }
   }
   return sortie;
 }
@@ -486,8 +508,11 @@ export function Courbe({ courbe, largeur, hauteur, curseur = null, reference, ge
   useEffect(() => {
     const f = typeof document !== 'undefined' ? (document as Document & { fonts?: FontFaceSet }).fonts : undefined;
     let vivant = true;
-    f?.ready?.then(() => { if (vivant) setPolice(p => p + 1); }).catch(() => undefined);
-    return () => { vivant = false; };
+    const replacer = () => { if (vivant) setPolice(p => p + 1); };
+    f?.ready?.then(replacer).catch(() => undefined);
+    /* CAL-PASSE (n° 7) : une graisse (le gras des montants) ne se charge qu'à son premier emploi, après `ready` : chaque chargement terminé replace les noms */
+    f?.addEventListener?.('loadingdone', replacer);
+    return () => { vivant = false; f?.removeEventListener?.('loadingdone', replacer); };
   }, []);
   const n = courbe.length;
   const g0 = moisEnHaut
@@ -508,7 +533,7 @@ export function Courbe({ courbe, largeur, hauteur, curseur = null, reference, ge
   /* T2B-2 : jamais un libellé coupé au bord, quelle que soit la route (colonne du chiffre, abscisses de la frise) */
   const mois = moisPose.filter(m => m.x >= 0 && m.x + largeurTexte(m.texte) + MARGE_BORD_MOIS <= largeur);
   // Les mois d'abord : un nom peut se poser dans leur rangée, entre deux mois, à 8 px d'eux.
-  const boitesMois = mois.map(m => ({ l: m.x - 8, r: m.x + largeurTexte(m.texte) + 8, t: yMois - 11, b: yMois + 3 }));
+  const boitesMois = mois.map(m => ({ l: m.x - 8, r: m.x + largeurTexte(m.texte) + 8, t: yMois - HAUT_RENDU, b: yMois + BAS_RENDU + 2 }));
   // Un nom peut se poser dans la rangée des mois, entre deux mois (z2s « Six fûts inox −1 080 », w3s « Festival +2 450 »).
   const noms = placerNoms(courbe, g, maxNoms(largeur), [...obstaclesCourbe(g, cadre, creux), ...boitesMois, ...reservesHaut], mise, etoiles, [yMois]);
   const y0 = g.y(0);
@@ -580,7 +605,7 @@ export function Courbe({ courbe, largeur, hauteur, curseur = null, reference, ge
             <text className="ent-nom" data-nom-courbe x={e.x} y={e.y} textAnchor={e.ancre}>
               {e.etoile && <tspan className="ent-etoile">★ </tspan>}{e.nom}{e.montant ? ' ' : ''}{e.montant && <tspan className={e.neg ? 'ent-m' : 'ent-p'}>{e.montant}</tspan>}
             </text>
-            <title>{`${e.etoile ? '★ ' : ''}${e.nom}${e.montant ? ` ${e.montant}` : ''}, ${e.semaines.length > 1 ? `${e.semaines.length} fois, dès S${e.semaines[0]}` : `S${e.semaines[0]}`}`}</title>
+            <title>{`${e.etoile ? '★ ' : ''}${e.complet ?? e.nom}${e.montant ? ` ${e.montant}` : ''}, ${e.semaines.length > 1 ? `${e.semaines.length} fois, dès S${e.semaines[0]}` : `S${e.semaines[0]}`}`}</title>
           </g>
         )))}
         {creux && <circle className="ent-creux-pt" cx={g.x(creux.index) + g.unit / 2} cy={g.y(creux.centimes)} r={5.5} />}
