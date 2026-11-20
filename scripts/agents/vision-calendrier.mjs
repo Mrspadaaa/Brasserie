@@ -323,6 +323,26 @@ const sansRotation = cfg => (cfg.tactile ? null : 'la rotation ne concerne que l
    libellé posé se lisait sous tous les états qui la partagent */
 const fn = (f, dit) => Object.assign((...a) => f(...a), { dit });
 
+/* Voie 1 bis (20.11) PC-149 : le haut du détail de la Hotte contre le bas de l'en-tête collant (lu par `lireDetailSousEntete`, jugé par ATTENDU_DETAIL_SOUS_ENTETE) */
+const periodeLue = p => p.evaluate(() => (document.querySelector('[data-ent-periode]')?.textContent || '').trim());
+async function lireDetailSousEntete(p) {
+  p.detailEntete = await p.evaluate(() => {
+    const ent = document.querySelector('[data-entete-zone]');
+    const collant = ent && getComputedStyle(ent).position === 'sticky';
+    const bas = collant ? ent.getBoundingClientRect().bottom : 0;
+    const d = [...document.querySelectorAll('[role="region"][aria-label^="Détail"]')].find(x => /Hotte/.test(x.getAttribute('aria-label') || ''));
+    if (!d) return { absent: true };
+    const vu = e => { if (!e) return null; const r = e.getBoundingClientRect(); return { haut: Math.round(r.top), bas: Math.round(r.bottom) }; };
+    const libelles = ['Semaine', 'Date', 'Libre'].map(t => { const s = [...d.querySelectorAll('span')].find(x => (x.textContent || '').trim().startsWith(t)); return { t, r: vu(s) }; });
+    return { bas: Math.round(bas), titre: vu(d.querySelector('h4')), libelles, detail: vu(d), h: innerHeight, sy: Math.round(scrollY) };
+  });
+  const m = p.detailEntete;
+  p.noteEtat = m.absent ? 'détail absent' : `en-tête bas ${m.bas} px ; titre ${m.titre?.haut}–${m.titre?.bas} ; libellés ${m.libelles.map(l => `${l.t} ${l.r ? l.r.haut : '—'}`).join(', ')} ; scrollY ${m.sy}`;
+}
+const ATTENDU_DETAIL_SOUS_ENTETE = [
+  fn(async p => { const m = p.detailEntete; if (!m || m.absent) return { ok: false, dit: 'détail de la Hotte absent' }; const ok = !!m.titre && m.titre.haut >= m.bas - 1 && m.titre.bas <= m.h; return { ok, dit: `titre du détail ${m.titre ? `${m.titre.haut}–${m.titre.bas}` : 'absent'} px, bas de l’en-tête collant ${m.bas} px, fenêtre ${m.h} px` }; }, 'le titre du détail est sous l’en-tête collant et dans la fenêtre'),
+  fn(async p => { const m = p.detailEntete; if (!m || m.absent) return { ok: false, dit: 'détail absent' }; const caches = m.libelles.filter(l => !l.r || l.r.haut < m.bas - 1 || l.r.bas > m.h); return { ok: caches.length === 0, dit: caches.length ? `cachés ou coupés : ${caches.map(l => l.t).join(', ')}` : 'Semaine, Date, Libre à l’écran' }; }, 'les libellés Semaine, Date et Libre sont à l’écran, sous l’en-tête')
+];
 const ETATS = [
   { n: '01', nom: 'repos', geste: 'ouverture du banc', cave: true, repos: true, jouer: async () => {}, attendu: [/banc — données simulées/, ...RANGEES.map(r => new RegExp(r)), /Marché de Noël/, /Frigo/] },
   { n: '02', nom: 'plusminus', geste: 'toucher ±', cave: true, jouer: async p => { await toucher(p, { texte: /^±$/ }); },
@@ -1166,7 +1186,53 @@ const ETATS = [
       p.noteEtat = `${p.voisins.n} barres de brassin ; espace mini ${p.voisins.espaceMini} px ; doigts sur le voisin : ${p.voisins.faux.length ? p.voisins.faux.join(' ; ') : 'aucun'}`;
     },
     attendu: [fn(async p => ({ ok: !!p.voisins && p.voisins.n >= 4 && p.voisins.faux.length === 0, dit: p.voisins ? `${p.voisins.faux.length} jalon(s) ou bord qui reçoivent le doigt d’un voisin${p.voisins.faux.length ? ` : ${p.voisins.faux.slice(0, 4).join(' ; ')}` : ''}` : 'non mesuré' }), 'le centre du bord et de chaque jalon d’une barre de brassin touche cette barre'),
-      fn(async p => ({ ok: !!p.voisins && p.voisins.espaceMini !== null && p.voisins.espaceMini >= 8, dit: `espace mini entre deux barres de brassin : ${p.voisins?.espaceMini} px` }), '8 px d’espace au moins entre deux barres de brassin (18.11)')] }
+      fn(async p => ({ ok: !!p.voisins && p.voisins.espaceMini !== null && p.voisins.espaceMini >= 8, dit: `espace mini entre deux barres de brassin : ${p.voisins?.espaceMini} px` }), '8 px d’espace au moins entre deux barres de brassin (18.11)')] },
+  /* Voie 1 bis (20.11) PC-149 : le détail de la Hotte ouvert (touchée en 6 semaines, ou ouverte par l'appui long qui amène du 3 mois aux
+     6 semaines, D-199) a son titre « Hotte −900 » et ses libellés Semaine, Date, Libre à l'écran, sous l'en-tête collant (jamais dessous) */
+  { n: 'V1d', nom: 'detail-sous-entete', cave: true, repos: true, geste: '6 semaines ; toucher la Hotte ; lire le haut du détail contre le bas de l’en-tête collant',
+    jouer: async p => {
+      if (!/^6 sem/.test(await periodeLue(p))) { await menuPeriode(p, /^6 sem/); await attendre(700); }
+      await toucher(p, { titre: 'Hotte' }); await attendre(1500);
+      await lireDetailSousEntete(p);
+    },
+    attendu: ATTENDU_DETAIL_SOUS_ENTETE },
+  { n: 'V1e', nom: 'detail-sous-entete-saut', cave: true, repos: true, geste: '3 mois ; appui long sur la Hotte (marque : les 6 semaines, D-199) ; lire le haut du détail contre le bas de l’en-tête collant',
+    jouer: async p => {
+      if (!/^3 mois/.test(await periodeLue(p))) { await menuPeriode(p, /^3 mois/); await attendre(900); }
+      await appuiLong(p, { titre: 'Hotte' }); await attendre(1800);
+      if (!/^6 sem/.test(await periodeLue(p))) throw new Absent('l’appui long sur la marque n’amène pas aux 6 semaines');
+      await lireDetailSousEntete(p);
+    },
+    attendu: ATTENDU_DETAIL_SOUS_ENTETE }
+,
+  /* Voie 1 bis (20.11) PC-157 : Mois, 6 mois, Papiers : chaque icône reste ENTIÈRE dans la piste de la rangée (« Impôt sur la bière · Porter d'hiver »,
+     30 avr., coupée au bord droit) et la pastille « −436 » ne touche pas la barre du loyer dessous (2 px d'air au moins) */
+  { n: 'V1f', nom: 'papiers-mois-bord', cave: true, repos: true, geste: 'échelle Mois (6 mois) ; Papiers au milieu de l’écran ; icônes contre le bord de la piste, pastille contre la barre dessous',
+    jouer: async p => {
+      await toucher(p, { data: 'data-ent-periode' }); await attendre(400);
+      await toucher(p, { data: 'data-echelle="mois"' }); await attendre(1200);
+      await p.evaluate(() => { const sec = document.querySelector('section[data-rangee="papiers"]'); const ent = document.querySelector('[data-entete-zone]'); const haut = ent && getComputedStyle(ent).position === 'sticky' ? ent.getBoundingClientRect().bottom : 0; if (sec) window.scrollBy(0, sec.getBoundingClientRect().top - haut - 4); }); await attendre(700);
+      p.papiersBord = await p.evaluate(() => {
+        const sec = document.querySelector('section[data-rangee="papiers"]');
+        if (!sec) return { absent: true };
+        const piste = sec.getBoundingClientRect();
+        const r = e => e.getBoundingClientRect();
+        const marques = [...sec.querySelectorAll('[data-marque]')].map(m => ({ t: (m.getAttribute('aria-label') || '').slice(0, 38), g: Math.round(r(m).left - piste.left), d: Math.round(piste.right - r(m).right) }));
+        const coupees = marques.filter(m => m.g < -0.5 || m.d < -0.5);
+        const past = sec.querySelector('.cal-pastille-p');
+        let air = null;
+        if (past) {
+          const pr = r(past);
+          const dessous = [...sec.querySelectorAll('[data-chose]:not([data-marque]), .cal-lbl')].map(r).filter(b => b.top >= pr.top + pr.height / 2 && b.right > pr.left && b.left < pr.right && b.top < pr.bottom + 12);
+          air = dessous.length ? Math.round((Math.min(...dessous.map(b => b.top)) - pr.bottom) * 10) / 10 : null;
+        }
+        return { n: marques.length, coupees, air, piste: `${Math.round(piste.left)}–${Math.round(piste.right)}` };
+      });
+      const m = p.papiersBord;
+      p.noteEtat = m.absent ? 'rangée Papiers absente' : `${m.n} icônes, coupées : ${m.coupees.length ? m.coupees.map(c => `${c.t} (gauche ${c.g}, droite ${c.d})`).join(' ; ') : 'aucune'} ; air sous la pastille : ${m.air === null ? 'aucune barre dessous' : `${m.air} px`}`;
+    },
+    attendu: [fn(async p => { const m = p.papiersBord; return { ok: !!m && !m.absent && m.n >= 2 && m.coupees.length === 0, dit: m ? (m.absent ? 'Papiers absent' : `${m.n} icônes, ${m.coupees.length} coupée(s)${m.coupees.length ? ` : ${m.coupees.map(c => `${c.t} (gauche ${c.g}, droite ${c.d})`).join(' ; ')}` : ''}`) : 'non mesuré' }; }, 'aucune icône de Papiers n’est coupée par le bord de la piste'),
+      fn(async p => { const m = p.papiersBord; return { ok: !!m && !m.absent && (m.air === null || m.air >= 2), dit: m ? `air sous la pastille : ${m.air === null ? 'aucune barre dessous' : `${m.air} px`}` : 'non mesuré' }; }, 'la pastille de la rangée laisse 2 px d’air au moins avant la barre dessous')] }
 ];
 /* ---------- CRITIQUE-10 : dates du banc (posé par rapport au jour) et lectures ---------- */
 /** Le lundi de la semaine en cours (UTC), comme le banc (`lundiDe(aujourdhui)`). */
@@ -2264,7 +2330,7 @@ async function chronometrer() {
 /* ------------------------------------------------------------------ tout jouer */
 
 /* groupes (CRITIQUE-12) : `msg` = M1 à M7 ; `et-per` ou `finances` = 33 (le parcours /?dev-local, jamais une capture du banc) ; `budget-app` = app (D-71) */
-const GROUPES = { v1: n => /^V1[a-c]$/.test(n), msg: n => /^M\d$/.test(n), 'et-per': n => n === '33', finances: n => n === '33', 'budget-app': n => n === 'app' };
+const GROUPES = { v1: n => /^V1[a-f]$/.test(n), msg: n => /^M\d$/.test(n), 'et-per': n => n === '33', finances: n => n === '33', 'budget-app': n => n === 'app' };
 const garde = n => !choixEtats || choixEtats.has(n) || [...choixEtats].some(g => GROUPES[g] && GROUPES[g](n));
 try {
   for (const cfgNom of choixConfigs) {

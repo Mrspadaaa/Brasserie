@@ -132,13 +132,10 @@ function texteFrais(c: ChoseCalendrier): string | null {
  */
 export function degagerDuVolant(det: HTMLElement): number {
   if (typeof window === 'undefined' || typeof document === 'undefined' || typeof window.scrollBy !== 'function') return 0;
-  const volant = document.querySelector('.floating-actions')?.getBoundingClientRect();
-  if (!volant || volant.height === 0 || volant.top >= window.innerHeight) return 0;
   const r = det.getBoundingClientRect();
   if (r.height === 0) return 0;
-  const besoin = Math.ceil(r.bottom - (volant.top - 8));
-  if (besoin <= 0) return 0;
-  const entete = document.querySelector('[data-entete-zone]')?.getBoundingClientRect();
+  const enteteEl = document.querySelector<HTMLElement>('[data-entete-zone]');
+  const entete = enteteEl?.getBoundingClientRect();
   /* CRITIQUE-11 n° 8 : « Liée à X · Annuler » reste avec le détail, dans sa bande au pied de l'en-tête ; le détail ne monte pas dessous */
   const bande = document.querySelector('[data-entete-zone] [data-msg-bande]')?.getBoundingClientRect();
   const bas = Math.max(entete && entete.height > 0 ? entete.bottom : 0, bande && bande.height > 0 ? bande.bottom : 0);
@@ -151,6 +148,18 @@ export function degagerDuVolant(det: HTMLElement): number {
     .filter(x => x.getAttribute('data-chose') === id && !det.contains(x))
     .map(x => x.getBoundingClientRect()).find(b => b.height > 0) : undefined;
   const haut = barre ? Math.min(barre.top, r.top) : r.top;
+  /* PC-149 (paysage, appui long qui amène du 3 mois aux 6 semaines, D-199) : la page garde son défilement d'avant, la chose et son détail se
+     retrouvent SOUS l'en-tête collé (« Hotte −900 », Semaine, Date, Libre cachés). Elle remonte alors juste assez pour que la chose revienne
+     à 8 px sous lui ; seulement si l'en-tête est collé (sticky ou fixe), sinon il part avec la page et rien ne le masque. */
+  const collant = !!enteteEl && ['sticky', 'fixed'].includes(getComputedStyle(enteteEl).position);
+  if (collant && bas > 0) {
+    const trop = Math.ceil(plafond - haut);
+    if (trop > 0) { window.scrollBy({ top: -trop, left: 0, behavior: 'auto' }); return -trop; }
+  }
+  const volant = document.querySelector('.floating-actions')?.getBoundingClientRect();
+  if (!volant || volant.height === 0 || volant.top >= window.innerHeight) return 0;
+  const besoin = Math.ceil(r.bottom - (volant.top - 8));
+  if (besoin <= 0) return 0;
   const delta = Math.min(besoin, Math.max(0, Math.floor(haut - plafond)));
   if (delta > 0) window.scrollBy({ top: delta, left: 0, behavior: 'auto' });
   return delta;
@@ -163,8 +172,20 @@ export const DetailChose: React.FC<DetailChoseProps> = props => {
   React.useEffect(() => {
     const el = racine.current;
     if (!el || typeof window === 'undefined') return undefined;
-    const raf = typeof window.requestAnimationFrame === 'function' ? window.requestAnimationFrame(() => degagerDuVolant(el)) : null;
-    return () => { if (raf !== null) window.cancelAnimationFrame?.(raf); };
+    const planifie = (): number | null => (typeof window.requestAnimationFrame === 'function' ? window.requestAnimationFrame(() => degagerDuVolant(el)) : null);
+    let raf = planifie();
+    /* PC-149 : ouvert par l'appui long qui change la période (D-199), le détail se pose avant que la frise ait fini sa mise en page (6 semaines :
+       rangées et hauteurs autres) ; la chose bouge ensuite sous l'en-tête. Pendant 800 ms, chaque changement de taille de la frise ou du détail
+       rejoue le dégagement (idempotent : rien ne bouge s'il est déjà dégagé) ; aucun effet sur un défilement du doigt, qui ne change aucune taille. */
+    const zone = el.closest('[data-frise]');
+    let ro: ResizeObserver | null = null;
+    let minuterie: ReturnType<typeof setTimeout> | null = null;
+    if (zone && typeof ResizeObserver !== 'undefined') {
+      ro = new ResizeObserver(() => { if (raf !== null) window.cancelAnimationFrame?.(raf); raf = planifie(); });
+      ro.observe(zone); ro.observe(el);
+      minuterie = setTimeout(() => ro?.disconnect(), 800);
+    }
+    return () => { if (raf !== null) window.cancelAnimationFrame?.(raf); ro?.disconnect(); if (minuterie) clearTimeout(minuterie); };
   }, [chose.id]);
   const brassin = chose.source.genre === 'batch';
   const [lierOuvert, setLierOuvert] = React.useState(false);

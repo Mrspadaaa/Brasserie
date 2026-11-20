@@ -291,7 +291,10 @@ export function disposer(choses: readonly ChoseCalendrier[], colonnes: readonly 
     let o0 = gauche, o1 = gauche + w;
     if (marque) {
       /* D386 : un jalon se pose au centre de SON jour, pas au milieu de sa semaine */
-      const centre = auJour ? gauche + w / 2 : jalon ? (xDuJour(c.debut) + xDuJour(ajouterJours(c.debut, 1))) / 2 : (p.a + 0.5) * largeurColonne;
+      const centreJour = auJour ? gauche + w / 2 : jalon ? (xDuJour(c.debut) + xDuJour(ajouterJours(c.debut, 1))) / 2 : (p.a + 0.5) * largeurColonne;
+      /* PC-157 (844 × 340, Mois, 6 mois) : une marque posée sur le premier ou le dernier jour de la fenêtre (30 avr.) dépassait de la piste, sa
+         moitié coupée ; son icône reste entière, au plus près de son jour */
+      const centre = Math.min(Math.max(centreJour, 14), Math.max(14, largeur - 14));
       gauche = centre - 14;
       o0 = gauche; o1 = centre + 14;
     }
