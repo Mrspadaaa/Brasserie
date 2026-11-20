@@ -190,3 +190,8 @@ button.ann-pa { cursor:pointer; font-family:inherit; min-height:24px; border:1.5
 .ann button.ann-pa { border:1.5px dashed var(--ann-att); min-height:24px; font-size:12px; font-weight:600; border-radius:10px; padding:2px 8px; }
 .ann button.ann-pa.at { color:var(--ann-attt); background:var(--ann-attf); }
 .ann button.ann-li.ann-li-q .tot { color:var(--ann-attt); }
+/* T4-1 (en ligne, passe 5) : au repos, le + flottant (56 px, 12 px du bord) cachait « 4 000,00 » (Annuel, téléphone couché) : piles, carte « prêtes », « Continuer » et rangées gardent
+   la gouttière de 76 px (56 + 12 + 8 d'air) à leur droite. Sous 1024 px, quand le + flotte. */
+@media (max-width: 1023px) {
+  :root body[data-has-fab-floating] .ann-wrap :is(.ann-pile, .ann-cl, .ann-row, .ann-next, .finance-assistant) { padding-right:4.75rem; }
+}

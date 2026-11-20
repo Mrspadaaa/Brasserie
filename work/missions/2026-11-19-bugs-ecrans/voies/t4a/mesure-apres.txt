@@ -1,0 +1,32 @@
+m390 clair fin-synthese H=1020 V=844 : ok
+m390 clair fin-operations H=1138 V=844 : ok
+m390 clair fin-previsions H=1108 V=844 : ok
+m390 clair fin-annuel H=875 V=844 : ok
+m390 clair stocks-courses H=844 V=844 : ok
+l844x340 clair fin-synthese H=980 V=340 : ok
+l844x340 clair fin-operations H=876 V=340 : ok
+l844x340 clair fin-previsions H=1008 V=340 : ok
+l844x340 clair fin-annuel H=859 V=340 : ok
+l844x340 clair stocks-courses H=401 V=340 : ok
+d1280 clair fin-synthese H=800 V=800 : ok
+d1280 clair fin-operations H=808 V=800 : ok
+d1280 clair fin-previsions H=976 V=800 : ok
+d1280 clair fin-annuel H=800 V=800 : ok
+d1280 clair stocks-courses H=800 V=800 : ok
+TOTAL recouvrements : 0
+m390 cave fin-synthese H=1020 V=844 : ok
+m390 cave fin-operations H=1138 V=844 : ok
+m390 cave fin-previsions H=1108 V=844 : ok
+m390 cave fin-annuel H=875 V=844 : ok
+m390 cave stocks-courses H=844 V=844 : ok
+l844x340 cave fin-synthese H=980 V=340 : ok
+l844x340 cave fin-operations H=876 V=340 : ok
+l844x340 cave fin-previsions H=1008 V=340 : ok
+l844x340 cave fin-annuel H=859 V=340 : ok
+l844x340 cave stocks-courses H=401 V=340 : ok
+d1280 cave fin-synthese H=800 V=800 : ok
+d1280 cave fin-operations H=808 V=800 : ok
+d1280 cave fin-previsions H=976 V=800 : ok
+d1280 cave fin-annuel H=800 V=800 : ok
+d1280 cave stocks-courses H=800 V=800 : ok
+TOTAL recouvrements : 0

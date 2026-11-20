@@ -106,3 +106,8 @@
 .prv-sw button > b { flex:none; white-space:nowrap; }
 /* CT4-A-7 : à 390 la carte fait 180 px dont 75 pour le montant ; le nom d'un projet (« Fermenteur supplémentaire ») se coupait au milieu du mot, un mot par ligne. Étroit, le montant passe SOUS le nom : le nom a la largeur de la carte, un mot ne se coupe plus. */
 @media (max-width:480px) { .prv-sw button { flex-direction:column; align-items:stretch; justify-content:center; gap:2px; } .prv-sw button > b { align-self:flex-start; } }
+/* T4-1 (en ligne, passe 5) : au repos, le + flottant (56 px, 12 px du bord) cachait « Vente » (bouton du pied) et « Compagnon brasseur » : le pied et le renvoi gardent la gouttière de 76 px
+   (56 + 12 + 8 d'air) à leur droite. La courbe garde sa largeur : seul un repère de l'axe (« févr. ») peut passer sous le +, comme le bout de l'échelle des Articles. Sous 1024 px, quand le + flotte. */
+@media (max-width: 1023px) {
+  :root body[data-has-fab-floating] .prv :is(.prv-pied, .finance-assistant) { padding-right:4.75rem; }
+}

@@ -368,7 +368,7 @@ function AVenir({ plans, transactions, payments, prevision, busy, onEdit, onPose
       {picker === hero.id && <ChoixMois plan={hero} mois={mois} onChoisir={m => void poser(hero, m)}/>}
     </section>}
     {lignes.length > 0 && <>
-      <div className="kh-lt">{hero ? 'Les suivants' : 'Mes achats'}<span>{lignes.length} achat{lignes.length > 1 ? 's' : ''} · {connuCents > 0 ? <>{inconnus ? 'au moins ' : ''}<b className="kh-m">{chf0(connuCents)}</b></> : 'prix à estimer'}</span></div>
+      <div className="kh-lt">{hero ? 'Les suivants' : 'Mes achats'}<span>{lignes.length} achat{lignes.length > 1 ? 's' : ''} · {connuCents > 0 ? <>{inconnus ? 'au moins ' : ''}<b className="kh-m">{chf0(connuCents)}</b>{carnet ? ' CHF' : ''}</> : 'prix à estimer'}</span></div>
       <Legende/>
       {Object.entries(UPGRADE_TIMINGS).map(([timing, label]) => {
         const rows = lignes.filter(p => upgradeDetails(p).timing === timing);
@@ -381,7 +381,7 @@ function AVenir({ plans, transactions, payments, prevision, busy, onEdit, onPose
             <button type="button" className={`kh-chip ${m && estPose(plan) ? 'on' : 'off'}`} aria-expanded={picker === plan.id} aria-label={m ? `Mois de ${plan.title} : ${nomMois(m, 'long')}` : `Poser ${plan.title} sur un mois`} onClick={() => { setEtape(null); setPicker(picker === plan.id ? null : plan.id); }}>{m ? nomMois(m, 'short') : carnet ? 'Dater' : '+ mois'}</button>
             <button type="button" className="kh-rb" aria-expanded={ouvert} aria-label={`${anneau.libelle} : ${plan.title}`} onClick={() => { setPicker(null); setEtape(ouvert ? null : plan.id); }}><AnneauSvg anneau={anneau} titre={false}/></button>
             {/* P39 : à 390, le prix passe sous le nom ; le nom prend la largeur et tient entier sur 2 lignes. */}
-            <button type="button" className="kh-rmain max-[639px]:!flex-col max-[639px]:!items-start max-[639px]:!gap-0" onClick={() => setFiche(plan.id)}><span className="kh-nm max-[639px]:w-full"><b>{plan.title}</b>{repereDe(plan) === 'devis' && plan.vendor && <small>{plan.vendor}</small>}</span>{d.budgetKnown && <span className="kh-a kh-m">{chf0(plan.amountCents)}</span>}</button>
+            <button type="button" className="kh-rmain max-[639px]:!flex-col max-[639px]:!items-start max-[639px]:!gap-0" onClick={() => setFiche(plan.id)}><span className="kh-nm max-[639px]:w-full"><b>{plan.title}</b>{repereDe(plan) === 'devis' && plan.vendor && <small>{plan.vendor}</small>}</span>{d.budgetKnown && <span className="kh-a kh-m">{chf0(plan.amountCents)}{carnet ? ' CHF' : ''}</span>}</button>
             {!d.budgetKnown && <button type="button" className="kh-u" aria-label={`Noter le prix : ${plan.title}`} onClick={() => { setPicker(null); setEtape(ouvert ? null : plan.id); }}><span>à estimer</span></button>}
             <button type="button" className="kh-ed" aria-label={`Modifier ${plan.title}`} onClick={() => onEdit(plan)}><PenLine size={18}/></button>
           </div><LigneCarnet compact plan={plan} lien={lienDuPlan(plan, carnetIds, carnetsLus)} onOuvrir={onOpenCarnet}/>

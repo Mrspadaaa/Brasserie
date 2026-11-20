@@ -117,3 +117,8 @@
 .syn-plage-champ:focus-within { outline:2px solid var(--syn-txt); outline-offset:1px; }
 .syn-plage input { position:absolute; inset:0; width:100%; height:100%; margin:0; padding:0; border:0; opacity:0; cursor:pointer; font-size:16px; color-scheme:light; min-width:0; }
 :root[data-theme='cave'] .syn-plage input { color-scheme:dark; }
+/* T4-1 (en ligne, passe 5) : au repos, le + flottant (56 px, 12 px du bord) cachait, à un défilement ou à l'autre, « 7,51 CHF/L », « Confirmer les paiements » et « Compagnon brasseur ».
+   Même gouttière de 76 px (56 + 12 + 8 d'air) que CT4C-7 (.syn-caisse) : les rangées de texte et le renvoi gardent la place du +. La scène (colonnes de piles) ne bouge pas : choix du brasseur. Sous 1024 px, quand le + flotte. */
+@media (max-width: 1023px) {
+  :root body[data-has-fab-floating] .syn-wrap :is(.syn-row, .syn-details, .syn-leg, .finance-assistant) { padding-right:4.75rem; }
+}
