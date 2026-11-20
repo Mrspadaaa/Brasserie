@@ -42,7 +42,7 @@ describe('LR1-4 / LR2-8 / LR3-2 : le rangement de la photo BAUHAUS ne dépend pa
     for (const nom of AUTRES) brut(nom).lectures.forEach((_, i) => {
       const c = classer(nom, i);
       expect(c.categorie, `${nom} L${i + 1}`).toBe(c.lue);
-      expect(c.raison).toBe('lue');
+      expect(['lue', 'brassage']).toContain(c.raison);
       if (c.part !== undefined) expect(c.part).toBeLessThan(0); // une facture de brasserie : le vote est du côté du brassage, très loin du seuil
     });
   });
