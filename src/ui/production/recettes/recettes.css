@@ -80,6 +80,8 @@
 .rcp-alerte p b { font-weight: 600; }
 .rcp-alerte small { font-size: 13px; color: rgb(var(--cave-texte-200)); }
 .rcp-prete { display: flex; align-items: center; gap: 8px; padding: 10px 12px; border-radius: 10px; background: rgb(var(--hop) / 0.12); border: 1px solid rgb(var(--hop) / 0.4); font-size: 15px; color: rgb(var(--cave-texte-50)); }
+.rcp-averifier { display: flex; align-items: center; gap: 6px; font-size: 13px; color: rgb(var(--cave-texte-200)); }
+.rcp-averifier svg { width: 15px; height: 15px; color: rgb(var(--attention)); flex: none; }
 .rcp-prete svg { width: 18px; height: 18px; color: rgb(var(--hop-texte)); flex: none; }
 .rcp-change { font-size: 13px; color: rgb(var(--cave-texte-200)); padding: 8px 2px 0; margin-top: 8px; border-top: 1px solid rgb(var(--cave-800)); }
 .rcp-change b { font-weight: 600; color: rgb(var(--cave-texte-50)); }
@@ -110,8 +112,10 @@
 .rcp-sources .rcp-btn { min-height: 56px; flex-direction: column; gap: 2px; font-size: 14px; }
 
 @media (min-width: 1024px) {
-  .rcp-ecran { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; align-items: start; }
-  .rcp-col-g { position: sticky; top: 8px; }
+  /* CT4-B-14 (critique du tour 4, « une colonne gauche vide ») : la recherche seule occupait la moitié gauche. Une seule colonne centrée :
+     la recherche au-dessus, la liste dessous, au même alignement. */
+  .rcp-ecran { display: block; max-width: 720px; margin-inline: auto; }
+  .rcp-col-g { position: static; }
 }
 
 /* Le focus initial d'une feuille est posé sur son contenu, jamais sur le ×, et ne dessine pas d'anneau */
