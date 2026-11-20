@@ -2,7 +2,7 @@ import { Input, Textarea } from '../Input';
 import { RecipeDisclosure, RecipeWaterVolumes } from '../RecipeDisclosure';
 import { MaltDetails } from '../MaltDetails';
 import { LearnIngredient } from '../../domain/ingredientFacts';
-import React, { createContext, useContext, useEffect, useRef, useState } from 'react';
+import React, { createContext, useContext, useEffect, useMemo, useRef, useState } from 'react';
 import { Trash2, Check, Droplets, ChevronDown, ShoppingCart, Scale, Copy, AlertTriangle } from 'lucide-react';
 import { RecipeTextExport } from '../RecipeTextExport';
 import type { BrewSheetProps, WaterRecap } from '../BrewSheet';
@@ -42,6 +42,10 @@ import { RecipeReview } from '../RecipeReview';
 import { formatDecimal, messageRefus } from '../numericInput';
 import { uniteAccordee } from '../../domain/fermentables/parts';
 import { reglageQuantiteLevure } from '../../domain/levure/affichage';
+import { besoinDeLaLevure } from '../etapeLevure/dose';
+import { useYeastSupply } from '../../hooks/useYeastSupply';
+import { yeastReferences } from '../../domain/yeastReferences';
+import { resolveFermentationYeast } from '../../domain/fermentationScenario';
 import { masseLigneRetenue } from '../../domain/bornesMetier';
 import { EBULLITION_SAISIE_MAX, VOLUME_SAISIE_MAX } from '../identite/regles';
 
@@ -308,6 +312,23 @@ export const EtapeRecap: React.FC<EtapeRecapProps> = ({
   shortages
 }) => {
   const tight = useDensity() === 'tight';
+  const supply = useYeastSupply();
+  // CT4-B-3 : la part du besoin que la dose écrite couvre (même calcul que la carte de dose de l'étape Levure : `besoinDeLaLevure`). Sous 100 %, la
+  // coche « Enregistrable » reste (une dose basse s'enregistre) mais le Récap le dit. Inconnu (sans volume, sans sachet) : rien, jamais 0 %.
+  const partDuBesoin = useMemo(() => {
+    if (!(Number.isFinite(yeast.qty) && yeast.qty > 0) || !yeast.name.trim()) return undefined;
+    try {
+      const recette = { ...recipeForCompanion, yeast } as TrialRecipe;
+      const levure = resolveFermentationYeast(recette as never, yeastReferences(knowledge));
+      const besoin = besoinDeLaLevure(recette, supply, recette.ogTarget, levure);
+      if (!besoin?.sachet || !(besoin.sachets !== undefined && besoin.sachets > 0)) return undefined;
+      const u = (yeast.unit ?? '').toLocaleLowerCase('fr');
+      const sachets = u === 'sachet' || u === 'pack' ? yeast.qty : u === 'g' && besoin.sachet.grammes ? yeast.qty / besoin.sachet.grammes : undefined;
+      if (sachets === undefined) return undefined;
+      const part = Math.round((sachets / besoin.sachets) * 100);
+      return part < 100 ? part : undefined;
+    } catch { return undefined; }
+  }, [recipeForCompanion, yeast, knowledge, supply]);
 
   const patchFerm = (i: number, patch: Partial<Fermentable>) => {
     // BR-21 : une masse négative ne se retient pas, 10 t au plus. Un champ VIDÉ du récapitulatif reste une absence (NaN, « à renseigner »), comme tous ses
@@ -395,7 +416,7 @@ export const EtapeRecap: React.FC<EtapeRecapProps> = ({
     },
     levure: {
       manques: manques('levure'), vide: !yeast.name.trim(), nom: 'Levure',
-      texte: yeast.name.trim() ? <>{yeast.name}{qteLevure ? <span className="rc2-m rc2-sp">{qteLevure}</span> : <span className="rc2-at rc2-sp">quantité, unité</span>}</> : <span className="rc2-at">à choisir</span>,
+      texte: yeast.name.trim() ? <>{yeast.name}{qteLevure ? <span className="rc2-m rc2-sp">{qteLevure}</span> : <span className="rc2-at rc2-sp">quantité, unité</span>}{partDuBesoin !== undefined && <span className="rc2-at rc2-sp">{partDuBesoin} % du besoin</span>}</> : <span className="rc2-at">à choisir</span>,
       pistes: <>
         <Piste nom="FG" domaine={{ min: 1, max: 1.024 }} plageStyle={stats?.fg} plageValeur={fgRange} droiteStyle="valeur" droite={fgRange ? plageTxt(fgRange, 3) : '— · voir Levure'}
           aria={`FG ${fgRange ? plageTxt(fgRange, 3) : 'inconnue'}${stats?.fg ? `, plage ${codeStyle ?? 'style'} ${texteSuisse(stats.fg, 3)}` : ''}`} />

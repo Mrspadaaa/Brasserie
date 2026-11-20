@@ -185,6 +185,8 @@ export function yeastWarningsForReading(result: YeastRecipeEvaluation): string[]
     ...result.effects.filter(effect => effect.state === 'warning' && !(effect.id === 'temperature' && temperatureExplained)).map(effect => effect.id === 'dose' ? `Quantité prévue hors du repère fabricant : ${effect.impact}.` : effect.impact)
   ])].filter(text => !text.startsWith('Souche non identifiée') && !text.startsWith('Fenêtre de température absente') && !text.startsWith('Usage non documenté pour cette famille') &&
     !(wineHypothesisExplained && text.startsWith('Usage vin, cidre')) &&
+    // CT4-B-7 : la carte de dose le dit déjà (« aucune dose écrite », « Mettre N sachets ») : pas de seconde alerte orange en grammes.
+    !text.startsWith('Quantité de levure sèche à renseigner') &&
     !(processExplained && /^(Fermentation acidulée ou culture spécialisée|Procédé acidulé à préciser)/.test(text)));
 }
 
@@ -708,7 +710,6 @@ export function YeastRecipePlan({ recipe, refs, onChange, onCompare, onGoal, ini
               className="w-full min-w-0 text-right" /><span className="shrink-0 text-cave-200">j</span></span>
           </label>
         </div>
-        <p className="text-xs text-cave-400">Vide = inconnu, distinct de 0 j.</p>
         <div className="yc-phase-structure" role="group" aria-label="Ajouter ou supprimer un palier">
           <label className="yc-phase-kind">Type à ajouter<select aria-label="Type du palier à ajouter" value={newPhaseKind} onChange={e => setNewPhaseKind(e.target.value as FermentationTimelineStep['kind'])}>
             {PHASE_KINDS.map(option => <option key={option.kind} value={option.kind}>{option.label}</option>)}</select></label>
@@ -728,7 +729,8 @@ export function YeastRecipePlan({ recipe, refs, onChange, onCompare, onGoal, ini
           ? `Dans le brouillon : ${Number.isFinite(programmeBaseline[activePhaseIndex]?.tempC) ? `${number(programmeBaseline[activePhaseIndex]!.tempC)} °C` : 'température inconnue'} · ${Number.isFinite(programmeBaseline[activePhaseIndex]?.days) ? `${number(programmeBaseline[activePhaseIndex]!.days)} j` : 'durée inconnue'}`
           : 'Palier ajouté dans l’essai · aucune phase correspondante dans le brouillon.'}</span>
           <button type="button" className="yeast-link" data-phase-restore={activePhaseIndex} onClick={() => restorePhase(activePhaseIndex)}>{programmeBaseline[activePhaseIndex] ? 'Rétablir ce palier' : 'Retirer ce palier ajouté'}</button></div>
-        <p className="text-xs text-cave-200" data-following-shift>{followingShift(activePhaseIndex)}</p>
+        {/* CT4-B-7 : le décalage des jours suivants se replie (détail de calcul, pas la conduite). */}
+        <details className="text-xs text-cave-200"><summary>Décalage des phases suivantes</summary><p data-following-shift>{followingShift(activePhaseIndex)}</p></details>
       </section>}
       {programme.length > 0 ? <section className="yc-programme" aria-label="Programme proposé"><div className="yc-projection-title"><h4>{edited ? 'Paliers de l’essai' : 'Paliers du brouillon'}</h4><span className="yc-number">{totalDays == null ? 'Durée totale inconnue' : `${number(totalDays)} j indicatifs`}</span></div>
         <ol>{positions.map((position, index) => { const phase = programme[index]; const before = programmeBaseline[index]; const condition = conditionFor(phase); const shift = phaseShift(index);
@@ -746,9 +748,11 @@ export function YeastRecipePlan({ recipe, refs, onChange, onCompare, onGoal, ini
           </button>
           {condition && index !== activePhaseIndex && <details className="yc-phase-note"><summary>Condition</summary><p className="yeast-small">{condition}</p></details>}
         </li>; })}</ol>
-        <p className="yc-end-shift" aria-live="polite">{recipeEnd === null || trialEnd === null ? 'Fin de consigne : décalage inconnu tant qu’une durée manque.'
+        <div className="yc-end-shift" aria-live="polite">{recipeEnd === null || trialEnd === null ? 'Fin de consigne : décalage inconnu tant qu’une durée manque.'
           : edited ? `Fin de consigne : brouillon J${number(recipeEnd)} → essai J${number(trialEnd)} (${trialEnd - recipeEnd > 0 ? '+' : ''}${number(trialEnd - recipeEnd)} j).`
-            : `Fin de consigne du brouillon : J${number(recipeEnd)}.`} Pas une fin de fermentation attestée.</p>
+            : `Fin de consigne du brouillon : J${number(recipeEnd)}.`}
+          {/* CT4-B-7 : la précision technique se replie ; le premier plan garde la date. */}
+          <details className="yeast-small mt-1"><summary>Ce que « fin de consigne » veut dire</summary>Pas une fin de fermentation attestée.</details></div>
       </section> : <p className="yeast-notice" data-empty-programme>Aucun palier dans cet essai. {addPrimaryButton}</p>}
       {warnings.length > 0 && <ul className="yc-alerts" aria-label="Points à vérifier dans le scénario">{warnings.map(text => <li key={text}>{text}</li>)}</ul>}
       {!!result.activeHopTemperatureConflicts?.length && <label className="yeast-check"><input type="checkbox" checked={draft.alignActiveHopTemperature ?? false} onChange={e => patch({ alignActiveHopTemperature: e.target.checked })} /><span>Aligner les ajouts en fermentation active sur {number(mainTemperature)} °C<span className="yeast-small block">Sans cette option, leurs températures restent celles de la recette.</span></span></label>}
