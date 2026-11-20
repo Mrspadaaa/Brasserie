@@ -112,6 +112,8 @@ export function abvViseDe(recipe: TrialRecipe, refs: YeastReference[]): number |
 
 export function EtapeLevure(p: PropsEtapeLevure) {
   const { recipe, vue, onVue } = p;
+  // LEV-8 (fluidité) : l'onglet répond tout de suite (segment, Ma levure masquée) ; la vue choisie, lourde, se monte juste après, en différé.
+  const vueMontee = useDeferredValue(vue);
   const supply = useYeastSupply();
   const saved = useStorageValue(StorageService.getHopKnowledge);
   const refs = useMemo(() => yeastReferences(saved), [saved]);
@@ -258,9 +260,10 @@ export function EtapeLevure(p: PropsEtapeLevure) {
             <Suspense fallback={<p role="status" className="lv-note">Chargement de l’atelier…</p>}>{p.atelier(cible)}</Suspense></Repli>
         </div>
       </div>
-      {vue === 'chercher' && <Chercher {...props} stockIds={stockIds} />}
-      {vue === 'comparer' && <Comparer {...props} recette={recipe} supply={supply} />}
-      {vue === 'suggerer' && <Suggerer {...props} />}
+      {vue !== 'ma-levure' && vueMontee !== vue && <p role="status" className="lv-note">…</p>}
+      {vue === 'chercher' && vueMontee === 'chercher' && <Chercher {...props} stockIds={stockIds} />}
+      {vue === 'comparer' && vueMontee === 'comparer' && <Comparer {...props} recette={recipe} supply={supply} />}
+      {vue === 'suggerer' && vueMontee === 'suggerer' && <Suggerer {...props} />}
     </div>
   </div></FournisseurRecherche>;
 }
