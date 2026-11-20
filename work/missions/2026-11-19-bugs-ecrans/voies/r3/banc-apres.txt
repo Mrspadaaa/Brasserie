@@ -1,0 +1,45 @@
+Serveur 1/1 : npm run dev  (journal : C:\Users\mrspa\AppData\Local\Temp\with-server-5wpn3h\serveur-1-3122.log)
+Attente du port 3122…
+Serveur prêt sur le port 3122
+
+Tous les serveurs sont prêts. Lancement : sh -c for l in 1280 390; do for t in clair cave; do node work/missions/2026-11-19-bugs-ecrans/voies/r3/banc-barre.mjs $l $t apres Identité,Houblons,Levure,Eau; done; done
+
+pas de barre au chargement
+file:///C:/Users/mrspa/.codex/worktrees/openai-clean-start/ports-nuit/node_modules/puppeteer-core/lib/puppeteer/cdp/ExecutionContext.js:468
+        throw new Error('Execution context was destroyed, most likely because of a navigation.');
+              ^
+
+Error: Execution context was destroyed, most likely because of a navigation.
+    at rewriteError (file:///C:/Users/mrspa/.codex/worktrees/openai-clean-start/ports-nuit/node_modules/puppeteer-core/lib/puppeteer/cdp/ExecutionContext.js:468:15)
+    at async #evaluate (file:///C:/Users/mrspa/.codex/worktrees/openai-clean-start/ports-nuit/node_modules/puppeteer-core/lib/puppeteer/cdp/ExecutionContext.js:400:60)
+    at async ExecutionContext.evaluate (file:///C:/Users/mrspa/.codex/worktrees/openai-clean-start/ports-nuit/node_modules/puppeteer-core/lib/puppeteer/cdp/ExecutionContext.js:288:16)
+    at async IsolatedWorld.evaluate (file:///C:/Users/mrspa/.codex/worktrees/openai-clean-start/ports-nuit/node_modules/puppeteer-core/lib/puppeteer/cdp/IsolatedWorld.js:104:16)
+    at async CdpFrame.evaluate (file:///C:/Users/mrspa/.codex/worktrees/openai-clean-start/ports-nuit/node_modules/puppeteer-core/lib/puppeteer/api/Frame.js:364:20)
+    at async CdpPage.evaluate (file:///C:/Users/mrspa/.codex/worktrees/openai-clean-start/ports-nuit/node_modules/puppeteer-core/lib/puppeteer/api/Page.js:832:20)
+    at async file:///C:/Users/mrspa/.codex/worktrees/openai-clean-start/port-carnet/work/missions/2026-11-19-bugs-ecrans/voies/r3/banc-barre.mjs:25:16
+
+Node.js v24.19.0
+assistant-identit-1280-cave-apres {"abandonner":true,"ecartOg":"OG visée 1,066 · calculée 1,068 avec tes malts | title=La cible saisie ; le calcul diffère car les malts ou le rendement ont changé","titre":["1/7","Identité 1/7"],"horsZone":true,"chevauche":0,"position":"static","barre":[756,44],"mainBas":752,"defilable":true,"reste":12,"coupes":[]}
+assistant-houblons-1280-cave-apres {"abandonner":true,"ecartOg":"OG visée 1,066 · calculée 1,068 avec tes malts | title=La cible saisie ; le calcul diffère car les malts ou le rendement ont changé","titre":["3/7","Houblons 3/7"],"horsZone":true,"chevauche":0,"position":"static","barre":[756,44],"mainBas":752,"defilable":false,"reste":0,"coupes":[]}
+assistant-levure-1280-cave-apres {"abandonner":false,"ecartOg":null,"titre":[],"barre":null}
+étape introuvable Eau
+assistant-eau-1280-cave-apres {"abandonner":true,"ecartOg":"OG visée 1,066 · calculée 1,068 avec tes malts | title=La cible saisie ; le calcul diffère car les malts ou le rendement ont changé","titre":["3/7","Houblons 3/7"],"horsZone":true,"chevauche":0,"position":"static","barre":[756,44],"mainBas":752,"defilable":false,"reste":0,"coupes":[]}
+assistant-identit-390-clair-apres {"abandonner":true,"ecartOg":"OG visée 1,066 · calculée 1,068 avec tes malts | title=La cible saisie ; le calcul diffère car les malts ou le rendement ont changé","titre":["1/7","Identité 1/7"],"horsZone":false,"chevauche":88,"position":"static","barre":[756,44],"mainBas":844,"defilable":false,"reste":0,"coupes":[]}
+assistant-houblons-390-clair-apres {"abandonner":true,"ecartOg":"OG visée 1,066 · calculée 1,068 avec tes malts | title=La cible saisie ; le calcul diffère car les malts ou le rendement ont changé","titre":["3/7","Houblons 3/7"],"horsZone":false,"chevauche":297,"position":"static","barre":[547,44],"mainBas":844,"defilable":false,"reste":0,"coupes":[]}
+assistant-levure-390-clair-apres {"abandonner":true,"ecartOg":"OG visée 1,066 · calculée 1,068 avec tes malts | title=La cible saisie ; le calcul diffère car les malts ou le rendement ont changé","titre":["4/7","Levure 4/7"],"horsZone":true,"chevauche":0,"position":"static","barre":[792,44],"mainBas":788,"defilable":true,"reste":1248,"coupes":["div.lv-etape : 1232 px sous la barre"]}
+assistant-eau-390-clair-apres {"abandonner":true,"ecartOg":null,"titre":["6/7","Eau 6/7"],"horsZone":false,"chevauche":0,"position":"static","barre":[1097,44],"mainBas":844,"defilable":true,"reste":318,"coupes":[]}
+assistant-identit-390-cave-apres {"abandonner":true,"ecartOg":"OG visée 1,066 · calculée 1,068 avec tes malts | title=La cible saisie ; le calcul diffère car les malts ou le rendement ont changé","titre":["1/7","Identité 1/7"],"horsZone":false,"chevauche":88,"position":"static","barre":[756,44],"mainBas":844,"defilable":false,"reste":0,"coupes":[]}
+assistant-houblons-390-cave-apres {"abandonner":true,"ecartOg":"OG visée 1,066 · calculée 1,068 avec tes malts | title=La cible saisie ; le calcul diffère car les malts ou le rendement ont changé","titre":["3/7","Houblons 3/7"],"horsZone":false,"chevauche":297,"position":"static","barre":[547,44],"mainBas":844,"defilable":false,"reste":0,"coupes":[]}
+assistant-levure-390-cave-apres {"abandonner":true,"ecartOg":"OG visée 1,066 · calculée 1,068 avec tes malts | title=La cible saisie ; le calcul diffère car les malts ou le rendement ont changé","titre":["4/7","Levure 4/7"],"horsZone":true,"chevauche":0,"position":"static","barre":[792,44],"mainBas":788,"defilable":true,"reste":1248,"coupes":["div.lv-etape : 1232 px sous la barre"]}
+assistant-eau-390-cave-apres {"abandonner":true,"ecartOg":null,"titre":["6/7","Eau 6/7"],"horsZone":false,"chevauche":0,"position":"static","barre":[1097,44],"mainBas":844,"defilable":true,"reste":318,"coupes":[]}
+
+Commande terminée, code 0.
+
+Arrêt de 1 serveur(s)…
+efilable":false,"reste":0,"coupes":[]}
+assistant-levure-390-cave-apres {"abandonner":true,"ecartOg":"OG visée 1,066 · calculée 1,068 avec tes malts | title=La cible saisie ; le calcul diffère car les malts ou le rendement ont changé","titre":["4/7","Levure 4/7"],"horsZone":true,"chevauche":0,"position":"static","barre":[792,44],"mainBas":788,"defilable":true,"reste":1248,"coupes":["div.lv-etape : 1232 px sous la barre"]}
+assistant-eau-390-cave-apres {"abandonner":true,"ecartOg":null,"titre":["6/7","Eau 6/7"],"horsZone":false,"chevauche":0,"position":"static","barre":[1097,44],"mainBas":844,"defilable":true,"reste":318,"coupes":[]}
+
+Commande terminée, code 0.
+
+Arrêt de 1 serveur(s)…

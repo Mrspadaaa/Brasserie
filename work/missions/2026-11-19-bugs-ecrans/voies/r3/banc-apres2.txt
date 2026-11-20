@@ -1,0 +1,18 @@
+Serveur 1/1 : npm run dev  (journal : C:\Users\mrspa\AppData\Local\Temp\with-server-eKlptT\serveur-1-3122.log)
+Attente du port 3122…
+Serveur prêt sur le port 3122
+
+Tous les serveurs sont prêts. Lancement : sh -c for t in clair cave; do node work/missions/2026-11-19-bugs-ecrans/voies/r3/banc-barre.mjs 1280 $t apres Identité,Houblons,Levure,Eau; done
+
+assistant-identit-1280-clair-apres {"abandonner":true,"ecartOg":"OG visée 1,066 · calculée 1,068 avec tes malts | title=La cible saisie ; le calcul diffère car les malts ou le rendement ont changé","titre":["1/7","Identité 1/7"],"horsZone":true,"chevauche":0,"position":"static","barre":[756,44],"mainBas":752,"defilable":true,"reste":12,"coupes":[]}
+assistant-houblons-1280-clair-apres {"abandonner":true,"ecartOg":"OG visée 1,066 · calculée 1,068 avec tes malts | title=La cible saisie ; le calcul diffère car les malts ou le rendement ont changé","titre":["3/7","Houblons 3/7"],"horsZone":true,"chevauche":0,"position":"static","barre":[756,44],"mainBas":752,"defilable":false,"reste":0,"coupes":[]}
+assistant-levure-1280-clair-apres {"abandonner":true,"ecartOg":"OG visée 1,066 · calculée 1,068 avec tes malts | title=La cible saisie ; le calcul diffère car les malts ou le rendement ont changé","titre":["4/7","Levure 4/7"],"horsZone":true,"chevauche":0,"position":"static","barre":[756,44],"mainBas":752,"defilable":true,"reste":1185,"coupes":["div.lv-etape : 1168 px sous la barre"]}
+assistant-eau-1280-clair-apres {"abandonner":true,"ecartOg":null,"titre":["6/7","Eau 6/7"],"horsZone":true,"chevauche":0,"position":"static","barre":[756,44],"mainBas":752,"defilable":true,"reste":436,"coupes":["div.!mt-0 : 420 px sous la barre"]}
+assistant-identit-1280-cave-apres {"abandonner":true,"ecartOg":"OG visée 1,066 · calculée 1,068 avec tes malts | title=La cible saisie ; le calcul diffère car les malts ou le rendement ont changé","titre":["1/7","Identité 1/7"],"horsZone":true,"chevauche":0,"position":"static","barre":[756,44],"mainBas":752,"defilable":true,"reste":12,"coupes":[]}
+assistant-houblons-1280-cave-apres {"abandonner":true,"ecartOg":"OG visée 1,066 · calculée 1,068 avec tes malts | title=La cible saisie ; le calcul diffère car les malts ou le rendement ont changé","titre":["3/7","Houblons 3/7"],"horsZone":true,"chevauche":0,"position":"static","barre":[756,44],"mainBas":752,"defilable":false,"reste":0,"coupes":[]}
+assistant-levure-1280-cave-apres {"abandonner":true,"ecartOg":"OG visée 1,066 · calculée 1,068 avec tes malts | title=La cible saisie ; le calcul diffère car les malts ou le rendement ont changé","titre":["4/7","Levure 4/7"],"horsZone":true,"chevauche":0,"position":"static","barre":[756,44],"mainBas":752,"defilable":true,"reste":1185,"coupes":["div.lv-etape : 1168 px sous la barre"]}
+assistant-eau-1280-cave-apres {"abandonner":true,"ecartOg":null,"titre":["6/7","Eau 6/7"],"horsZone":true,"chevauche":0,"position":"static","barre":[756,44],"mainBas":752,"defilable":true,"reste":436,"coupes":["div.!mt-0 : 420 px sous la barre"]}
+
+Commande terminée, code 0.
+
+Arrêt de 1 serveur(s)…
