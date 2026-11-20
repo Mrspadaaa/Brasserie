@@ -70,7 +70,8 @@
 .cs-pri { background: var(--cs-t0) !important; color: var(--cs-sur) !important; border-color: var(--cs-t0) !important; font-weight: 600; }
 
 .cs-ticket { margin: 10px 10px 0; background: var(--cs-ticket); border-radius: 16px; padding: 10px 12px 12px; }
-.cs-tl { display: flex; justify-content: space-between; gap: 8px; font-size: 13px; color: var(--cs-t1); padding: 1px 0; }
+.cs-tl { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 8px; font-size: 13px; color: var(--cs-t1); padding: 1px 0; }
+.cs-tl-alerte { flex: 0 0 100%; font-size: 12px; line-height: 16px; color: var(--cs-ambre-texte); }
 .cs-tl .cs-x { margin-left: 4px; width: 22px; text-align: center; color: var(--cs-t2); }
 .cs-muted { color: var(--cs-t2); }
 .cs-tt { display: flex; justify-content: space-between; align-items: center; border-top: 1px dashed var(--cs-t2); margin-top: 6px; padding-top: 6px; }

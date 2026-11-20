@@ -20,7 +20,7 @@ import { nextClientId } from '../../services/refs';
 import { preparerQrFacture, problemesAdresse, QrFactureInvalide } from '../../services/swissQrBill';
 import { brassinsVendables, jaugeBrassin, litresVendus } from './brassinsVendables';
 import { formatsDuBrassin, tarifDuFormat } from './formatsVente';
-import { noteDeTuile, prixDeTuile } from '../../domain/tarifs/tuileVente';
+import { alertePrixLigne, noteDeTuile, prixDeTuile } from '../../domain/tarifs/tuileVente';
 import { arrondiEspeces, messageBornes, PRIX_UNITAIRE_MAX, problemePanier, QUANTITE_MAX, totauxPanier, versArticles, type LignePanier } from './panier';
 import { debiteurDe, preparerVente, type Echeance, type ModeVente, type VentePreparee } from './enregistrerVente';
 import { effacerBrouillon, garderBrouillon, lireBrouillon } from './brouillon';
@@ -132,6 +132,12 @@ export function CaisseContenu({ clientIdInitial, onClose, onSaved, onBusy, ferme
   useEffect(() => { if (!selection.length && vendables.length) setSelection([vendables[0].id]); }, [vendables, selection.length]);
   const actifId = selection[0];
   const actif = vendables.find(b => b.id === actifId);
+  /** LR3-NOTE-1 : un prix de ligne à plus de 10 fois le tarif de son format (ou, sans tarif sûr, hors plage au litre) se dit ; il ne se refuse pas. */
+  const alerteDe = (l: { batchId?: string; formatId: string; litresUnite: number; prixHT: number | null | undefined }): string | null => {
+    if (l.formatId === 'libre' || !(l.litresUnite > 0)) return null;
+    const tarif = tarifDuFormat(tarifs, l.formatId, vendables.find(b => b.id === l.batchId)?.name);
+    return alertePrixLigne({ prixUnitaire: l.prixHT, volumeL: l.litresUnite, prixTarif: prixDeTuile(tarif?.priceHT, l.litresUnite).prix });
+  };
   const clientsTries = useMemo(() => clients.filter(c => !c.archivedAt || c.id === clientId).sort((a, b) => Number(Boolean(b.favorite)) - Number(Boolean(a.favorite)) || a.name.localeCompare(b.name, 'fr')), [clients, clientId]);
   const client = clients.find(c => c.id === clientId) ?? null;
 
@@ -358,6 +364,7 @@ export function CaisseContenu({ clientIdInitial, onClose, onSaved, onBusy, ferme
           {libre && (
             <div className="cs-libre" role="group" aria-label="Ligne libre">
               {libre.note && <p className="cs-libre-note" role="note">{libre.note}</p>}
+              {(() => { const a = alerteDe({ batchId: libre.batchId, formatId: libre.formatId, litresUnite: libre.litres, prixHT: libre.prix ?? null }); return a ? <p className="cs-libre-note cs-alerte-prix" role="alert">{a}</p> : null; })()}
               <label>Désignation<Input value={libre.designation} onChange={e => setLibre({ ...libre, designation: e.target.value })} placeholder="Consigne, verres…" /></label>
               <div className="cs-libre-nb">
                 <label>Quantité<ChampNombre aria-label="Quantité" value={libre.quantite} onValue={v => setLibre({ ...libre, quantite: v })} max={QUANTITE_MAX} /></label>
@@ -375,6 +382,7 @@ export function CaisseContenu({ clientIdInitial, onClose, onSaved, onBusy, ferme
               <div className="cs-tl" key={l.cle}>
                 <span>{String(l.quantite).replace('.', ',')} × {l.formatId !== 'libre' && !multiBiere ? l.designation.split(' · ').slice(-1)[0] : l.designation}</span>
                 <span className="cs-m">{totaux ? fr(totaux.lines[i].netCents) : '—'}</span>
+                {alerteDe(l) && <small className="cs-tl-alerte" role="note">à vérifier : {alerteDe(l)}</small>}
                 {l.formatId === 'libre' && !fieldsetOff && <button type="button" className="cs-x" aria-label={`Retirer ${l.designation}`} onClick={() => setLignes(ls => ls.filter(x => x.cle !== l.cle))}>×</button>}
               </div>
             ))}

@@ -40,3 +40,23 @@ export function noteDeTuile(p: { suspect: boolean; prixTarif: number | null | un
   }
   return null;
 }
+
+/**
+ * LR3-NOTE-1 (vente « 10 × Bière 75 cl » à 5 695 CHF, soit 569,50 la bouteille) : une ligne dont le prix unitaire dépasse 10 fois le tarif de son format,
+ * ou, sans tarif sûr, dont le prix au litre sort de la plage plausible, porte une ALERTE. Une valeur douteuse n'est pas refusée (un fût de collection existe) :
+ * elle se dit, avec le tarif et le prix au litre, pour que le brasseur la confirme ou la corrige. Inconnu (prix absent, volume nul) : aucune alerte inventée.
+ * `prixTarif` : le tarif du format s'il est sûr (`prixDeTuile(...).prix`), sinon `null`.
+ */
+export const FACTEUR_ALERTE_PRIX = 10;
+export function alertePrixLigne(p: { prixUnitaire: number | null | undefined; volumeL: number; prixTarif: number | null | undefined }): string | null {
+  const { prixUnitaire, volumeL, prixTarif } = p;
+  if (prixUnitaire == null || !Number.isFinite(prixUnitaire) || !(prixUnitaire > 0) || !(volumeL > 0)) return null;
+  const litre = `${chf.format(prixUnitaire / volumeL)} CHF le litre`;
+  if (prixTarif != null && Number.isFinite(prixTarif) && prixTarif > 0 && prixUnitaire > FACTEUR_ALERTE_PRIX * prixTarif) {
+    return `${chf.format(prixUnitaire)} CHF l’unité : plus de ${FACTEUR_ALERTE_PRIX} fois le tarif (${chf.format(prixTarif)} CHF), soit ${litre}. Vérifie le prix.`;
+  }
+  if ((prixTarif == null || !(prixTarif > 0)) && hors(prixUnitaire / volumeL)) {
+    return `${chf.format(prixUnitaire)} CHF l’unité, soit ${litre} : hors de l’ordinaire. Vérifie le prix.`;
+  }
+  return null;
+}
