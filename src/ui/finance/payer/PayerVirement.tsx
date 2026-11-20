@@ -36,7 +36,7 @@ const couleurDe = (p: PieceOuverte, aujourdhui: string): string => {
 interface Joint { nom: string; dataUrl: string; mime: string }
 const IcoDoc = ({ plein }: { plein?: boolean }) => <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeDasharray={plein ? undefined : '3 2.4'} aria-hidden="true"><path d="M7 3h7l4 4v14H7z" />{plein && <path d="M9.5 14l2 2 3.5-4" />}</svg>;
 
-export function PayerVirement({ transaction, payments: paiementsBruts, transactions, onClose, remplace }: { transaction: Transaction; payments: FinancialPayment[]; transactions: Transaction[]; onClose: () => void; remplace?: FinancialPayment }) {
+export function PayerVirement({ transaction, payments: paiementsBruts, transactions, onClose, remplace, seule }: { transaction: Transaction; payments: FinancialPayment[]; transactions: Transaction[]; onClose: () => void; remplace?: FinancialPayment; seule?: boolean }) {
   const aujourdhui = todayISO();
   /** « Autre montant » : le paiement rapide à remplacer ne compte pas (ni son inversion, une fois écrite) : la pièce se lit comme avant ce paiement, avec son montant comme reste. */
   const payments = useMemo(() => remplace ? paiementsBruts.filter(p => p.id !== remplace.id && p.reversalOfId !== remplace.id) : paiementsBruts, [paiementsBruts, remplace]);
@@ -45,7 +45,8 @@ export function PayerVirement({ transaction, payments: paiementsBruts, transacti
   const inconnu = paymentState(transaction, payments, transactions).state === 'unknown';
   const tiers = transactionVendor(transaction);
   // Avec un paiement à remplacer, la feuille s'ouvre sur cette seule pièce : les autres du tiers restent à cocher.
-  const [exclues, setExclues] = useState<Set<string>>(() => new Set(remplace ? pieces.filter(p => p.id !== transaction.id).map(p => p.id) : []));
+  // CT4-A-3 (critique tour 4) : touchée sur une ligne (« Payer » de la Synthèse, de la fiche), la feuille ne coche que cette ligne ; « Payer » sur « Solde atelier 60,00 » ouvrait 460,00 avec le loyer, pas encore dû, coché d'office. Les autres pièces du tiers restent visibles, à cocher d'un toucher.
+  const [exclues, setExclues] = useState<Set<string>>(() => new Set(remplace || seule ? pieces.filter(p => p.id !== transaction.id).map(p => p.id) : []));
   /** `null` : le montant par défaut (tout ce qui reste sur les pièces cochées) ; sinon la saisie du brasseur (`undefined` : champ vidé). */
   const [saisi, setSaisi] = useState<number | undefined | null>(null);
   const [modeDate, setModeDate] = useState<'auj' | 'autre'>(inconnu ? 'autre' : 'auj');
@@ -173,7 +174,7 @@ export function PayerVirement({ transaction, payments: paiementsBruts, transacti
             <span className={`pay-tg ${retard ? 'pay-tg-late' : 'pay-tg-pay'}`}>{retard ? echeance(p.echeance, aujourdhui).texte : `${entrant ? 'à encaisser' : 'à payer'}${p.echeance ? ` · ${shortDate(p.echeance)}` : ''}`}</span></span>
           <span className="pay-fill">
             {choisie && part && part.partCents > 0
-              ? <><span className="pay-m">{amountOnly(part.partCents)}</span>{part.soldee ? <small data-ok="">✓ soldé</small> : <small>sur {amountOnly(p.resteCents)} · reste {amountOnly(part.resteApresCents)}</small>}</>
+              ? <><span className="pay-m">{amountOnly(part.partCents)}</span>{part.soldee ? <small data-ok="">sera soldé</small> : <small>sur {amountOnly(p.resteCents)} · reste {amountOnly(part.resteApresCents)}</small>}</>
               : <><span className="pay-m">{choisie && rep ? '—' : amountOnly(p.resteCents)}</span><small>{choisie && rep ? `pas touchée · reste ${amountOnly(p.resteCents)}` : choisie ? `reste ${amountOnly(p.resteCents)}` : 'pas dans ce virement'}</small></>}
           </span>
         </div>;

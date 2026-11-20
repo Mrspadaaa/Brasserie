@@ -17,7 +17,8 @@ import './operations/paire.css';
  *   étage 2 : état · échéance ou date · pièce   [geste]
  *
  * Un seul geste par ligne, dans l'ordre : payer (ou encaisser), confirmer, annuler le paiement qu'on vient d'écrire, joindre une pièce.
- * ⚠️ « ✓ Payé » écrit un paiement du reste dû, daté d'aujourd'hui, par banque : une hypothèse du geste rapide, dite dans la pastille
+ * CT4-A-2 / CT4-A-4 (critique tour 4) : le geste se lit « Marquer payé » (« Marquer encaissé »), plus « ✓ Payé » : sur une facture NON payée, « ✓ Payé » se lisait « déjà payé », et deux « Payer » (celui-ci, un toucher ; celui de la Synthèse, qui ouvre la feuille) ne faisaient pas la même chose. Le geste est le même ; la coche reste à l'avis « Payé 400,00 » qui le suit.
+ * ⚠️ Le geste écrit un paiement du reste dû, daté d'aujourd'hui, par banque : une hypothèse du geste rapide, dite dans la pastille
  * (« · banque ») et, juste après, dans un avis « Payé 400,00 · Annuler · Autre montant » (FN-2) ; un autre mode ou une autre date se corrigent
  * par « Autre montant » (la feuille Payer m5pa-d, sans rien inverser avant l'enregistrement) ou dans la fiche. Un état « à confirmer » n'écrit rien : la date réelle se demande.
  * ⚠️ Un seul bouton contient le texte (le bouton principal) ; son ::after couvre la ligne, le geste est un second bouton au-dessus
@@ -123,7 +124,7 @@ export function TransactionRow({ transaction, transactions, payments, state: giv
       ? { texte: 'Annuler celle-ci', aria: 'Annuler cette pièce en double', fort: false, action: () => paire.annuler(transaction.id) }
       : null;
   const geste: Geste | null = paire ? gestePaire : avis ? null : ouvert
-    ? { texte: entrant ? '✓ Encaissé' : '✓ Payé', aria: `${entrant ? 'Encaisser' : 'Payer'} ${formatCHF(state.remainingCents)}`, fort: !etat.retard, action: payer }
+    ? { texte: entrant ? 'Marquer encaissé' : 'Marquer payé', aria: `${entrant ? 'Marquer encaissé' : 'Marquer payé'} ${formatCHF(state.remainingCents)}`, fort: !etat.retard, action: payer }
     : actif && state.state === 'unknown'
       ? { texte: 'À confirmer', aria: 'Confirmer le paiement', fort: false, action: confirmer }
       : annulable

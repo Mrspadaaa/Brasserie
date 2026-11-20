@@ -43,7 +43,7 @@ describe('Payer = m5pa-d : un virement, plusieurs pièces', () => {
     const fermer = vi.fn();
     ouvre(loyer(), fermer);
     montant('300');
-    expect(screen.getByText('✓ soldé')).toBeVisible();
+    expect(screen.getByText('sera soldé')).toBeVisible(); // CT4-A-3 : « soldé » seulement après le paiement
     expect(screen.getByText('sur 400,00 · reste 160,00')).toBeVisible();
     expect(screen.getByRole('button', { name: /^✓ Payer 300,00/ })).toBeEnabled();
     payer();

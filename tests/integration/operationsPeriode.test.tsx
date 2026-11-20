@@ -199,7 +199,7 @@ describe('Opérations : « Annuler » seulement juste après « ✓ Payé »', (
     try {
       const due = tx('DUE', today, 'brassage');
       const { rerender } = render(ligne(due, []));
-      fireEvent.click(screen.getByRole('button', { name: /^Payer/ }));
+      fireEvent.click(screen.getByRole('button', { name: /^Marquer payé/ }));
       expect(recordPayment).toHaveBeenCalledTimes(1);
       const ecrit = recordPayment.mock.calls[0][0] as FinancialPayment;
       rerender(ligne(due, [ecrit]));
@@ -222,7 +222,7 @@ describe('Opérations : « Annuler » seulement juste après « ✓ Payé »', (
       const onPay = vi.fn();
       const avecPay = (payments: FinancialPayment[]) => <TransactionRow transaction={due} transactions={[due]} payments={payments} onOpen={() => {}} onPay={onPay}/>;
       const { rerender } = render(avecPay([]));
-      fireEvent.click(screen.getByRole('button', { name: /^Payer/ }));
+      fireEvent.click(screen.getByRole('button', { name: /^Marquer payé/ }));
       const ecrit = recordPayment.mock.calls[0][0] as FinancialPayment;
       rerender(avecPay([ecrit]));
       // Le second toucher du double, 150 ms après, tombe sur l'avis : ni contre-paiement, ni feuille Payer.
@@ -242,7 +242,7 @@ describe('Opérations : « Annuler » seulement juste après « ✓ Payé »', (
       const onOpen = vi.fn();
       const rang = (payments: FinancialPayment[]) => <TransactionRow transaction={due} transactions={[due]} payments={payments} onOpen={onOpen}/>;
       const { rerender } = render(rang([]));
-      const payer = screen.getByRole('button', { name: /^Payer/ });
+      const payer = screen.getByRole('button', { name: /^Marquer payé/ });
       fireEvent.click(payer);
       fireEvent.click(payer); // avant que la liste se redessine
       expect(recordPayment).toHaveBeenCalledTimes(1);
@@ -260,7 +260,7 @@ describe('Opérations : « Annuler » seulement juste après « ✓ Payé »', (
     vi.useFakeTimers();
     const due = tx('DUE2', today, 'brassage');
     const { rerender } = render(ligne(due, []));
-    fireEvent.click(screen.getByRole('button', { name: /^Payer/ }));
+    fireEvent.click(screen.getByRole('button', { name: /^Marquer payé/ }));
     const ecrit = recordPayment.mock.calls[0][0] as FinancialPayment;
     rerender(ligne(due, [ecrit]));
     act(() => { vi.advanceTimersByTime(1200); });
@@ -278,7 +278,7 @@ describe('Opérations : « Annuler » seulement juste après « ✓ Payé »', (
     const onPay = vi.fn();
     const avecPay = (payments: FinancialPayment[]) => <TransactionRow transaction={due} transactions={[due]} payments={payments} onOpen={() => {}} onPay={onPay}/>;
     const { rerender } = render(avecPay([]));
-    fireEvent.click(screen.getByRole('button', { name: /^Payer/ }));
+    fireEvent.click(screen.getByRole('button', { name: /^Marquer payé/ }));
     const ecrit = recordPayment.mock.calls[0][0] as FinancialPayment;
     rerender(avecPay([ecrit]));
     vi.useFakeTimers(); vi.setSystemTime(Date.now() + 1200);
