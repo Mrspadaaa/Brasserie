@@ -2334,3 +2334,7 @@ Classement de la page r3 de Ma levure (https://claude.ai/artifact/DKAJe8ESeMR4ig
 > 10 oui
 
 (lu, 20.11 : Planning (GanttTask) supprimé, code et données ; 8 : réparer les noms de malts abîmés de la Milk Stout ; 9 : la vente 10 × 75 cl à 5 695 CHF (Restaurant du Lac, 10.11) est un test, à retirer ; 10 : retirer en ligne les données ZZ TEST listées.)
+
+> Porte le avec un. Sous session et critique sur le planning et des les projets du carnet ça fait un bon test. Et tu pourras le supprimer
+
+(lu, 20.11 : le Planning (19 étapes du plan de projet, coûts, jalons) se porte dans les projets du Carnet par une sous-session ; critique sur ces projets dans le Carnet ; ensuite seulement, le Planning (données et code) est supprimé.)
