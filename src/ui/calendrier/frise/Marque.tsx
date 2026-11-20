@@ -267,7 +267,8 @@ export const Marque: React.FC<MarqueProps> = props => {
   const style: React.CSSProperties = { left: centre - hauteur / 2, top: haut, width: hauteur, height: hauteur, transform: decalage ? `translateX(${decalage}px)` : undefined };
   const lbl: React.CSSProperties | undefined = libelle
     ? {
-      ...(libelle.deux ? { top: haut - 2, height: Math.max(hauteur + 4, 30) } : { top: haut, height: hauteur }), maxWidth: Math.max(40, libelle.place),
+      /* PC-158 : deux lignes (14 + 3 + 16 px avec la pastille « lié à »), la boîte centrée sur la marque ; 34 px au moins, la pastille ne touche pas le nom */
+      ...(libelle.deux ? { top: haut - (Math.max(hauteur + 6, 34) - hauteur) / 2, height: Math.max(hauteur + 6, 34) } : { top: haut, height: hauteur }), maxWidth: Math.max(40, libelle.place),
       ...(libelle.cote === 'droite' ? { left: centre + 14 + decalage + 6 } : { right: `calc(100% - ${centre - 14 + decalage - (libelle.retrait ?? 0)}px + 6px)` })
     }
     : undefined;

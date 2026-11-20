@@ -276,7 +276,8 @@ export const Barre: React.FC<BarreProps> = props => {
   /* deux lignes (n° 31) : 2 × 14 px, la boîte prend la hauteur de la ligne, jamais une lettre rognée ; la barre haute garde son nom sur sa
      première ligne (la hauteur d'une barre simple) */
   const hautNom = bas?.ou === 'barre' ? Math.max(18, hauteur - Math.round(hauteur / 2) - 2) : hauteur;
-  const lblHaut = props.deuxLignes ? { top: haut - 2, height: hauteur + 4 } : { top: haut, height: hautNom };
+  /* PC-158 : 34 px au moins, centrée sur la barre (14 + 3 d'air + 16 de pastille « lié à ») */
+  const lblHaut = props.deuxLignes ? { top: haut - (Math.max(hauteur + 6, 34) - hauteur) / 2, height: Math.max(hauteur + 6, 34) } : { top: haut, height: hautNom };
   const dureeMemeLigne = dureeDedans && bas?.ou !== 'barre' ? dureeDedans.largeur + 4 : 0;
   const lblPlace = { ...lblStyle, ...lblHaut, maxWidth: cote === 'dedans' ? Math.max(0, w - 12 - dureeMemeLigne) : Math.max(40, placeEtiquette) };
   /* pendant f2-a, la durée tirée remplace le nom d'une barre simple ; la barre haute et la phrase du dessous gardent le nom (elles ont leur ligne) */

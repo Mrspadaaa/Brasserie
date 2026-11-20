@@ -115,6 +115,8 @@ button.cal-lie::before { content: ''; position: absolute; inset: -6px -2px; }
    plus aucun texte en flot (« Hotte / −900 ») */
 .cal-lbl-2n { flex-direction: column; justify-content: center; align-items: flex-start; gap: 1px; line-height: 14px; }
 .cal-lbl-2n.cal-lbl-gauche { align-items: flex-end; }
+/* PC-158 : la pastille « lié à » ne colle pas au nom au-dessus (1 px d'air) : 3 px */
+.cal-lbl-2n:has(.cal-lie) { gap: 3px; }
 .cal-lbl-l1 { display: flex; align-items: center; gap: 6px; max-width: 100%; min-width: 0; white-space: nowrap; }
 .cal-lbl-l2 { display: flex; align-items: center; gap: 6px; }
 .cal-lbl-2n .cal-lie { line-height: 13px; }
@@ -250,6 +252,9 @@ button.cal-lie::before { content: ''; position: absolute; inset: -6px -2px; }
 .cal-det-et.cal-det-etapes { grid-template-columns: repeat(auto-fill, minmax(104px, 1fr)); row-gap: 8px; }
 .cal-det-et span > svg { flex: none; }
 .cal-det-x { position: absolute; top: 4px; right: 4px; width: 44px; height: 44px; display: grid; place-items: center; border: 0; border-radius: 22px; background: none; color: inherit; }
+/* PC-156 : Semaine, Date et Libre de la semaine : colonnes à leur largeur (le libellé ne se coupe pas en deux lignes à 390 : 109 px ne suffisaient pas), valeurs alignées */
+.cal-det-et:not(.cal-det-etapes) { grid-template-columns: max-content max-content minmax(0, 1fr); column-gap: 16px; }
+.cal-det-et:not(.cal-det-etapes) > div > span { white-space: nowrap; }
 .cal-det-et { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; margin-bottom: 10px; padding-bottom: 10px; border-bottom: 1px solid rgb(var(--cave-700)); }
 .cal-det-et span { display: flex; align-items: center; gap: 4px; color: rgb(var(--cave-200)); }
 .cal-det-et b { display: block; font-variant-numeric: tabular-nums; }

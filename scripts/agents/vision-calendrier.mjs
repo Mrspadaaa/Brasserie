@@ -1300,7 +1300,57 @@ const ETATS = [
       const m = p.reserve;
       p.noteEtat = m.absent ? 'étiquette absente' : `étiquette x ${m.gauche}–${m.droite} sur ${m.fenetre} px ; + volant ${m.fab ? `à partir de x ${m.fab.gauche}` : 'non trouvé'} (E35 : l’étiquette cède au +, la réserve est de la rangée)`;
     },
-    attendu: [fn(async p => { const m = p.reserve; return { ok: !!m && !m.absent && (!m.fab || m.droite <= m.fab.gauche + 1 || m.bas < m.fab.haut || m.gauche >= m.fab.bas), dit: m ? (m.absent ? 'absente' : `fin de l’étiquette x ${m.droite}, + volant ${m.fab ? `x ${m.fab.gauche}` : 'non trouvé'} (aucun recouvrement)`) : 'non mesuré' }; }, 'l’étiquette ne recouvre pas le + volant (la place à sa droite est la réserve du +, E35/D-135)')] }
+    attendu: [fn(async p => { const m = p.reserve; return { ok: !!m && !m.absent && (!m.fab || m.droite <= m.fab.gauche + 1 || m.bas < m.fab.haut || m.gauche >= m.fab.bas), dit: m ? (m.absent ? 'absente' : `fin de l’étiquette x ${m.droite}, + volant ${m.fab ? `x ${m.fab.gauche}` : 'non trouvé'} (aucun recouvrement)`) : 'non mesuré' }; }, 'l’étiquette ne recouvre pas le + volant (la place à sa droite est la réserve du +, E35/D-135)')] },
+  /* PC-153 : Papiers en 6 semaines : la pastille dit un montant (« −800 probable »), plus « 2 choses » sans somme */
+  { n: 'V2e', nom: 'papiers-montant-probable', cave: true, repos: true, geste: '6 semaines ; lire la pastille de la rangée Papiers (montant probable dit, jamais « n choses » sans somme)',
+    jouer: async p => {
+      if (!/^6 sem/.test(await periodeLue(p))) { await menuPeriode(p, /^6 sem/); await attendre(900); }
+      await p.evaluate(() => { const e = document.querySelector('[data-pastille="papiers"]'); if (e) e.scrollIntoView({ block: 'center' }); });
+      await attendre(500);
+      p.papiersPastille = await p.evaluate(() => {
+        const e = document.querySelector('[data-pastille="papiers"]');
+        if (!e) return { absent: true };
+        return { texte: (e.querySelector('.cal-pastille-t')?.textContent || '').trim(), mot: (e.querySelector('.cal-conf')?.textContent || '').trim(), lecture: e.getAttribute('aria-label') || '', estime: !!e.querySelector('.cal-pastille-estime') };
+      });
+      const m = p.papiersPastille;
+      p.noteEtat = m.absent ? 'pastille Papiers absente (rangée masquée ou sans chose)' : 'pastille « ' + m.texte + ' », mot « ' + m.mot + ' », forme ' + (m.estime ? 'estimée (pointillé)' : 'pleine');
+    },
+    attendu: [fn(async p => { const m = p.papiersPastille; return { ok: !!m && !m.absent && !/^\d+ choses?$/.test(m.texte) && /\d/.test(m.texte), dit: m ? (m.absent ? 'Papiers absent' : 'pastille « ' + m.texte + ' »') : 'non mesuré' }; }, 'la pastille de Papiers porte un montant, pas « n choses » seul'),
+      fn(async p => { const m = p.papiersPastille; return { ok: !!m && !m.absent && (!/probable/.test(m.texte) || (m.estime && !/^confirmé/.test(m.mot))), dit: m ? 'mot « ' + m.mot + ' », forme ' + (m.estime ? 'estimée' : 'pleine') : 'non mesuré' }; }, 'un montant probable n’est pas dit « confirmé » (forme estimée)')] },
+  /* PC-156 : le détail de la Hotte à 390 : « Libre de la semaine » sur une ligne, les valeurs sur la même ordonnée */
+  { n: 'V2f', nom: 'detail-libre-semaine', cave: true, repos: true, geste: '6 semaines ; toucher la Hotte ; lire Semaine, Date et Libre de la semaine (une ligne chacun, valeurs alignées)',
+    jouer: async p => {
+      if (!/^6 sem/.test(await periodeLue(p))) { await menuPeriode(p, /^6 sem/); await attendre(700); }
+      await toucher(p, { titre: 'Hotte' }); await attendre(1500);
+      p.detailEt = await p.evaluate(() => {
+        const g = document.querySelector('.cal-det-et:not(.cal-det-etapes)');
+        if (!g) return { absent: true };
+        const cases = [...g.children].map(d => ({ lib: (d.querySelector('span')?.textContent || '').trim(), h: Math.round(d.querySelector('span')?.getBoundingClientRect().height || 0), y: Math.round((d.querySelector('b')?.getBoundingClientRect().top || 0) * 10) / 10, deborde: d.getBoundingClientRect().right > g.getBoundingClientRect().right + 1 }));
+        return { cases, largeur: Math.round(g.getBoundingClientRect().width) };
+      });
+      const m = p.detailEt;
+      p.noteEtat = m.absent ? 'grille du détail absente' : m.cases.map(c => c.lib + ' h' + c.h + ' y' + c.y).join(' ; ');
+    },
+    attendu: [fn(async p => { const m = p.detailEt; const libre = m && !m.absent ? m.cases.find(c => /Libre/.test(c.lib)) : null; return { ok: !!libre && libre.h <= 24, dit: libre ? 'libellé « ' + libre.lib + ' » haut de ' + libre.h + ' px' : (m && m.absent ? 'grille absente' : 'Libre de la semaine absent') }; }, '« Libre de la semaine » tient sur une ligne (24 px au plus)'),
+      fn(async p => { const m = p.detailEt; const ys = m && !m.absent ? m.cases.map(c => c.y) : []; return { ok: ys.length >= 2 && Math.max(...ys) - Math.min(...ys) <= 1 && !m.cases.some(c => c.deborde), dit: ys.length ? 'ordonnées ' + ys.join(', ') : 'non mesuré' }; }, 'les valeurs Semaine, Date et Libre sont à la même ordonnée (1 px), sans débord')] },
+  /* PC-158 : 1280, Ventes : la pastille « lié à » laisse 3 px d'air sous le texte de l'étiquette sur deux lignes */
+  { n: 'V2g', nom: 'lie-air-etiquette', cave: true, repos: true, geste: '6 semaines ; lire l’étiquette « 3 fûts La Cigogne » : texte puis pastille « lié à », air entre les deux',
+    jouer: async p => {
+      if (!/^6 sem/.test(await periodeLue(p))) { await menuPeriode(p, /^6 sem/); await attendre(900); }
+      await p.evaluate(() => { const l = [...document.querySelectorAll('.cal-lbl')].find(e => /Cigogne/.test(e.textContent || '')); if (l) l.scrollIntoView({ block: 'center' }); });
+      await attendre(500);
+      p.lieAir = await p.evaluate(() => {
+        const l = [...document.querySelectorAll('.cal-lbl')].find(e => /Cigogne/.test(e.textContent || ''));
+        if (!l) return { absent: true };
+        const lie = l.querySelector('.cal-lie'), t = l.querySelector(':scope > .cal-lbl-l1, :scope > .cal-lbl-t');
+        if (!lie || !t) return { sansPastille: !lie };
+        const a = t.getBoundingClientRect(), b = lie.getBoundingClientRect(), c = l.getBoundingClientRect();
+        return { memeLigne: b.top < a.bottom - 2, air: Math.round((b.top - a.bottom) * 10) / 10, dedans: b.bottom <= c.bottom + 0.5 && a.top >= c.top - 0.5, hCadre: Math.round(c.height) };
+      });
+      const m = p.lieAir;
+      p.noteEtat = m.absent ? 'étiquette absente' : m.sansPastille ? 'pastille retirée (lien au nom lu)' : (m.memeLigne ? 'pastille sur la ligne du nom (pas de deuxième ligne), ' : '') + 'air texte/pastille ' + m.air + ' px, dans le cadre ' + (m.dedans ? 'oui' : 'non') + ' (cadre ' + m.hCadre + ' px)';
+    },
+    attendu: [fn(async p => { const m = p.lieAir; return { ok: !!m && !m.absent && (m.sansPastille || m.memeLigne || (m.air >= 3 && m.dedans)), dit: m ? (m.absent ? 'étiquette absente' : m.sansPastille ? 'pastille retirée' : 'air ' + m.air + ' px, dans le cadre ' + m.dedans) : 'non mesuré' }; }, 'la pastille « lié à » est à 3 px du texte au-dessus, dans le cadre de l’étiquette')] }
 ];
 /* ---------- CRITIQUE-10 : dates du banc (posé par rapport au jour) et lectures ---------- */
 /** Le lundi de la semaine en cours (UTC), comme le banc (`lundiDe(aujourdhui)`). */
@@ -2398,7 +2448,7 @@ async function chronometrer() {
 /* ------------------------------------------------------------------ tout jouer */
 
 /* groupes (CRITIQUE-12) : `msg` = M1 à M7 ; `et-per` ou `finances` = 33 (le parcours /?dev-local, jamais une capture du banc) ; `budget-app` = app (D-71) */
-const GROUPES = { v1: n => /^V1[a-f]$/.test(n), v2: n => /^V2[a-d]$/.test(n), msg: n => /^M\d$/.test(n), 'et-per': n => n === '33', finances: n => n === '33', 'budget-app': n => n === 'app' };
+const GROUPES = { v1: n => /^V1[a-f]$/.test(n), v2: n => /^V2[a-g]$/.test(n), msg: n => /^M\d$/.test(n), 'et-per': n => n === '33', finances: n => n === '33', 'budget-app': n => n === 'app' };
 const garde = n => !choixEtats || choixEtats.has(n) || [...choixEtats].some(g => GROUPES[g] && GROUPES[g](n));
 try {
   for (const cfgNom of choixConfigs) {

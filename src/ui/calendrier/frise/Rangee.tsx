@@ -486,7 +486,12 @@ export function pastille(rangee: IdRangee, choses: readonly ChoseCalendrier[], c
   const solde = chiffrees.length ? chiffrees.reduce((s, c) => s + (c.centimes as number), 0) : null;
   const estime = estimees.length ? estimees.reduce((s, c) => s + (c.centimes as number), 0) : null;
   /* seule l'estimation porte l'argent de la rangée : le mot « confirmé » part ; une rangée sans argent (Activités en jours) le garde */
-  const confirme = !(solde === null && estime !== null && !aVenir.length);
+  /* PC-153 : quand le seul argent connu est probable (loyer, TVA proposés), la pastille dit son montant (« −800 probable »), jamais « n choses »,
+     et ne le dit pas confirmé (E47 c) */
+  const probChiffres = dedans.filter(c => (c.probable || c.proposition) && c.centimes !== undefined);
+  const probSeul = rangee !== 'activites' && solde === null && estime === null && !aVenir.length && probChiffres.length > 0;
+  const probable = probSeul ? probChiffres.reduce((s, c) => s + (c.centimes as number), 0) : null;
+  const confirme = !(solde === null && estime !== null && !aVenir.length) && !probSeul;
   const premier = colonnes[0]?.etiquette ?? '', dernier = colonnes[colonnes.length - 1]?.etiquette ?? '';
   const n = fermes.length;
   const nChoses = (k: number) => `${k} chose${k > 1 ? 's' : ''}`;
@@ -499,15 +504,15 @@ export function pastille(rangee: IdRangee, choses: readonly ChoseCalendrier[], c
   if (aVenir.length) morceaux.push('coût à venir');
   if (sansMontant && solde !== null) morceaux.push(`${sansMontant} sans montant`);
   if (estime !== null) morceaux.push(`${estime < 0 ? 'coût' : 'recette'} estimée ${francsSignes(estime)}, hors courbe (pas dans Finances)`);
-  if (probables) morceaux.push(`${probables} probable${probables > 1 ? 's' : ''}`);
+  if (probables) morceaux.push(`${probables} probable${probables > 1 ? 's' : ''}${probable !== null ? ` ${francsSignes(probable)}` : ''}`);
   /* le nombre dit ce qu'on voit : toutes les choses de la fenêtre, probables comprises (une étiquette « 4 » devant 5 barres se contredit) ;
      jamais un chiffre seul (« 1 ») : « 1 chose », ou « coût à venir » quand c'est le coût qui manque */
   const nbVu = dedans.length;
   const enMots = aVenir.length ? 'coût à venir' : nbVu ? nChoses(nbVu) : '';
   const texte = rangee === 'activites' ? (jours ? `${jours} j` : nbVu ? nChoses(nbVu) : '')
     : solde !== null ? `${francsSignes(solde)}${aVenir.length ? ' + coût à venir' : ''}`
-      : estime !== null && !aVenir.length ? `${francsSignes(estime)} estimé` : enMots;
-  return { texte, lecture: morceaux.join(', '), part: Math.abs(solde ?? (aVenir.length ? 0 : estime ?? 0)), solde, estime, confirme, debut: premier, fin: dernier };
+      : estime !== null && !aVenir.length ? `${francsSignes(estime)} estimé` : probable !== null ? `${francsSignes(probable)} probable` : enMots;
+  return { texte, lecture: morceaux.join(', '), part: Math.abs(solde ?? (aVenir.length ? 0 : estime ?? probable ?? 0)), solde, estime, confirme, debut: premier, fin: dernier };
 }
 
 export interface DragEtat { id: string; mode: 'glisse' | 'bord'; k: number; jours: number }
@@ -747,7 +752,7 @@ export const Rangee: React.FC<RangeeProps> = props => {
             </span>
             {/* CRITIQUE-12 n° 2 : une estimation hors courbe n'est jamais « confirmé » : seule, elle se dit « hors courbe » ; à côté d'un solde
                 compté, « confirmé S47–S52 · +200 estimé » */}
-            <span className="cal-conf">{p.confirme ? `confirmé ${p.debut}–${p.fin}${p.estime !== null ? ` · ${francsSignes(p.estime)} estimé` : ''}` : 'hors courbe'}</span>
+            <span className="cal-conf">{p.confirme ? `confirmé ${p.debut}–${p.fin}${p.estime !== null ? ` · ${francsSignes(p.estime)} estimé` : ''}` : p.estime !== null ? 'hors courbe' : 'pas confirmé'}</span>
           </span>
         )}
       </header>
