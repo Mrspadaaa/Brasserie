@@ -7,7 +7,9 @@ import { avance, bornes, enPeriode, etiquetteCourte, pas, titre, type Periode, t
 import './periode.css';
 
 /** « 12.10 » : le jour et le mois, comme dans les champs de la plage. */
-const jj = (iso: string | null) => (iso ? `${iso.slice(8)}.${iso.slice(5, 7)}` : '');
+const jj = (iso: string | null, avecAn = false) => (iso ? `${iso.slice(8)}.${iso.slice(5, 7)}${avecAn ? `.${iso.slice(2, 4)}` : ''}` : '');
+/* CAL-PASSE (21.11, n° 11) : une plage hors de l'année en cours dit son année (« 05.07.27–14.11.27 »), sinon « 05.07–14.11 » se lit comme juillet de cette année. */
+const horsAnneeEnCours = (du: string | null, au: string | null) => { const an = String(new Date().getFullYear()); return (!!du && du.slice(0, 4) !== an) || (!!au && au.slice(0, 4) !== an); };
 
 interface Props {
   periode: PeriodeEntree;
@@ -33,7 +35,7 @@ export const PastillePeriode: React.FC<Props> = ({ periode, onChoisir, transacti
           <ChevronLeft size={18} aria-hidden="true" />
         </button>
         <button type="button" className="pr-ce" aria-haspopup="dialog" aria-label={`Période : ${titre(p).replace(/\.$/, '')}. Choisir la plage`} onClick={() => setOuverte(true)}>
-          {p.genre === 'dates' ? <><span className="pr-long">{etiquetteCourte(p)}</span><span className="pr-court">{jj(bornes(p).du)}–{jj(bornes(p).au)}</span></> : etiquetteCourte(p)}
+          {p.genre === 'dates' ? <><span className="pr-long">{etiquetteCourte(p)}</span><span className="pr-court">{jj(bornes(p).du, horsAnneeEnCours(bornes(p).du, bornes(p).au))}–{jj(bornes(p).au, horsAnneeEnCours(bornes(p).du, bornes(p).au))}</span></> : etiquetteCourte(p)}
         </button>
         <button type="button" className="pr-fl" disabled={!ok} aria-label="Période suivante" onClick={() => choisir(pas(p, 1))}>
           <ChevronRight size={18} aria-hidden="true" />
