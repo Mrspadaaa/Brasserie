@@ -53,6 +53,8 @@ import { RecompterStock } from '../../ui/stock/RecompterStock';
 /* Carnet d'idées (R01 à R08) : chargé à l'ouverture du segment Carnets seulement. */
 const CarnetsVue = lazy(() => import('../../ui/carnets/CarnetsVue').then(({ CarnetsVue }) => ({ default: CarnetsVue })));
 const MurStock = lazy(() => import('../../ui/stock/MurStock').then(({ MurStock }) => ({ default: MurStock })));
+import { tracesDesArticles } from '../../domain/consommation/gestes';
+
 const HopIndexPanel = lazy(() =>
   import('../../ui/hopIndex/HopIndexWorkspace').then(({ HopIndexWorkspace }) => ({
     default: HopIndexWorkspace,
@@ -138,6 +140,8 @@ const GROUP_ORDER = [
   'Consommable'
 ];
 
+const lireTraces = () => tracesDesArticles(StorageService.getMouvementsGestes());
+
 export const StocksTab: React.FC<StocksTabProps> = ({
   stocks,
   batches,
@@ -179,6 +183,8 @@ export const StocksTab: React.FC<StocksTabProps> = ({
   // « Dernier prix » de la fiche : la dernière ligne d'achat de chaque article (cx, ST-T24).
   const transactions = useStorageValue(readTransactions);
   const achats = useMemo(() => latestBrewPrices(transactions), [transactions]);
+  // pe3 : la trace du dernier geste sur chaque ligne de stock, en un passage.
+  const traces = useStorageValue(lireTraces);
   const recipes = useMemo(() => savedRecipes
     .filter(recipe => !recipe.archivedAt)
     .sort((a, b) => a.name.localeCompare(b.name, 'fr')),
@@ -669,6 +675,7 @@ export const StocksTab: React.FC<StocksTabProps> = ({
               item={item}
               info={infos.get(item.ref)}
               cmd={aCommanderParRef.get(item.ref)}
+              trace={traces.get(item.ref)}
               batches={batches}
               mouvementDit={mouvementDit(item)}
               onOpen={setSelected}

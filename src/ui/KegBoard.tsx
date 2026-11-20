@@ -18,6 +18,8 @@ import './equipment-compact.css';
 import './keg-fiche.css';
 import './keg-liste.css';
 import { nombreFr } from '../domain/nombreAffiche';
+import { annulerGesteDepuisTrace } from './BandeauEffets';
+import { gesteIdDe, type Geste } from '../domain/consommation/gestes';
 import {
   ORDRE_JAUGE, ORDRE_SECTIONS, aReprendre, basculerFiltre, comptesParEtat, couleurPastille, etatFut, futsARetablir, ligneDate, libelleSegment,
   marquerTousPropres, phraseFiltre, phraseMarques, phrasesResume, rangerParSections, resumeParc, titreConfirmation, type EtatFut
@@ -72,6 +74,24 @@ export const KegBoard: React.FC<KegBoardProps> = ({
   const banc = Boolean(onSaveKeg || onRemoveKeg);
   const jour = today ?? swissToday();
   const save = onSaveKeg ?? ((keg: KegItem) => StorageService.updateKeg(keg));
+  /** L9 : laver des fûts use ce que la table du geste « lavage-fut » contient (PBW, désinfectant…), une dose par fût lavé. Le banc écrit en mémoire : aucun décompte. */
+  const decompterLavage = (futs: KegItem[]): string | null => {
+    if (banc || !futs.length) return null;
+    const lavages = StorageService.getMouvementsGestes().filter(m => m.geste === 'lavage-fut');
+    const geste: Geste = futs.length === 1
+      ? { type: 'lavage-fut', objet: futs[0].id, cycle: new Set(lavages.filter(m => m.objet === futs[0].id).map(m => m.gesteId)).size + 1, libelle: `Fût ${futs[0].id} lavé`, quantites: { unites: 1 } }
+      : { type: 'lavage-fut', objet: `lot-${Date.now()}`, cycle: 1, libelle: `${futs.length} fûts lavés`, quantites: { unites: futs.length } };
+    StorageService.enregistrerGeste(geste);
+    return gesteIdDe(geste);
+  };
+  /** Le geste du dernier « Tout marquer propre », pour que son Annuler rende aussi le stock. */
+  const gesteDuLot = useRef<string | null>(null);
+  /** La fiche : « Marquer propre » écrit le fût, puis décompte le lavage. */
+  const saveDepuisFiche = (keg: KegItem) => {
+    const avant = tousLesFuts.find(k => k.id === keg.id);
+    save(keg);
+    if (avant?.state === 'lavage' && keg.state === 'propre') decompterLavage([keg]);
+  };
   const addMany = onAddKegs ?? ((list: KegItem[]) => list.forEach((keg) => StorageService.addKeg(keg)));
   const remove = onRemoveKeg ?? ((id: string) => StorageService.deleteKeg(id));
   const listId = useId();
@@ -110,13 +130,18 @@ export const KegBoard: React.FC<KegBoardProps> = ({
   const marquerPropres = () => {
     const geste = marquerTousPropres(kegs, jour);
     geste.apres.forEach(k => save(k));
+    gesteDuLot.current = decompterLavage(geste.apres);
     setConfirmeLavage(false);
     setFiltre([]);
     setMarquage(geste);
   };
   const annulerMarquage = () => {
     if (!marquage) return;
-    futsARetablir(marquage.avant, marquage.apres, kegs).forEach(k => save(k));
+    const rendus = futsARetablir(marquage.avant, marquage.apres, kegs);
+    rendus.forEach(k => save(k));
+    // Seulement si tous les fûts du lot sont rendus : un lavage compté pour N fûts ne se rend pas en partie.
+    if (gesteDuLot.current && rendus.length === marquage.apres.length) annulerGesteDepuisTrace(gesteDuLot.current);
+    gesteDuLot.current = null;
     setMarquage(null);
   };
 
@@ -242,7 +267,7 @@ export const KegBoard: React.FC<KegBoardProps> = ({
       {selected && !selectedUnknown && !fill && (
         <KegFiche
           key={selected.id} keg={selected} batches={batches} clients={clients} today={jour}
-          onClose={close} onSave={save}
+          onClose={close} onSave={saveDepuisFiche}
           onFill={(kegId) => { setSelected(null); setFill({ kegId }); }}
           onRemove={() => setConfirmDelete(true)}/>
       )}

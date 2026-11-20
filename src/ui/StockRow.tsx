@@ -9,6 +9,7 @@ import { libellesSources } from '../domain/stock/disponibilite';
 import { todayISO } from '../domain/finance/ledger';
 import { FavoriteToggle } from './EntityList';
 import { LevelGauge, stockLevelLabel } from './LevelGauge';
+import { annulerGesteDepuisTrace } from './BandeauEffets';
 
 interface StockRowProps {
   item: StockItem;
@@ -26,6 +27,8 @@ interface StockRowProps {
   cmd?: ArticleACommander;
   /** Le dernier mouvement de l'article, dit (colonne du tableau à partir de 900 px). */
   mouvementDit?: string;
+  /** pe3 : le dernier geste qui a bougé l'article ; ↺ l'annule. */
+  trace?: { texte: string; gesteId: string };
 }
 
 const quantity = (value: number | null, unit: string | null) =>
@@ -70,7 +73,7 @@ function RecipeComparison({ comparison }: { comparison: RecipeStockComparison })
 }
 
 /** Nom et quantité, puis niveau : même lecture compacte au téléphone et au bureau. */
-export const StockRow: React.FC<StockRowProps> = ({ item, batches, stockItems, onOpen, onToggleFavorite, comparison, info, cmd, mouvementDit }) => {
+export const StockRow: React.FC<StockRowProps> = ({ item, batches, stockItems, onOpen, onToggleFavorite, comparison, info, cmd, mouvementDit, trace }) => {
   const descriptionId = useId();
   const durabilite = libelleDurabilite(item.yeastLot?.expiresOn, todayISO());
   const level = computeStockLevel(item, batches, stockItems);
@@ -88,7 +91,8 @@ export const StockRow: React.FC<StockRowProps> = ({ item, batches, stockItems, o
     return <LigneStock item={item} info={ligne} cmd={cmd} level={level} niveauDit={stockLevelLabel(level)} aujourdhui={aujourdhui}
       description={`${Units.format(item.currentStock, item.unit)} · ${stockLevelLabel(level)}${pendingDescription ? ` · ${pendingDescription}` : ''}`}
       reserve={pendingDescription ? { texte: pendingDescription, connue: pending.known } : undefined}
-      durabilite={durabilite} mouvementDit={mouvementDit} onOpen={onOpen} onToggleFavorite={onToggleFavorite} />;
+      durabilite={durabilite} mouvementDit={mouvementDit}
+      trace={trace ? { ...trace, annuler: () => annulerGesteDepuisTrace(trace.gesteId) } : undefined} onOpen={onOpen} onToggleFavorite={onToggleFavorite} />;
   }
   return (
     <article className="flex items-start rounded-control border border-cave-800 bg-cave-900">

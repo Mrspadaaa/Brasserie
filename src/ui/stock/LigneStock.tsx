@@ -24,6 +24,8 @@ interface LigneStockProps {
   aujourdhui: string;
   /** Le dernier mouvement de l'article, dit (colonne visible à partir de 900 px) ; absent = « — ». */
   mouvementDit?: string;
+  /** pe3 (règle « chaque geste décompte ce qu'il use ») : la trace du dernier geste, ↺ l'annule. */
+  trace?: { texte: string; gesteId: string; annuler: () => void };
   onOpen: (item: StockItem) => void;
   onToggleFavorite: (item: StockItem) => void;
 }
@@ -33,7 +35,7 @@ interface LigneStockProps {
  * quantité à droite ; pour les trois rayons, une barre derrière la ligne à deux régimes (à l'échelle jusqu'au coude, resserrée au-delà,
  * coupure « ⫽ » et trait du coude), teintée de la famille (c3b) avec son liseré à gauche.
  */
-export const LigneStock: React.FC<LigneStockProps> = ({ item, info, cmd, level, niveauDit, description, reserve, durabilite, aujourdhui, mouvementDit, onOpen, onToggleFavorite }) => {
+export const LigneStock: React.FC<LigneStockProps> = ({ item, info, cmd, level, niveauDit, description, reserve, durabilite, aujourdhui, mouvementDit, trace, onOpen, onToggleFavorite }) => {
   const descriptionId = useId();
   const fam = familleTeinte(item);
   const rayon = rayonDuMur(item);
@@ -83,8 +85,9 @@ export const LigneStock: React.FC<LigneStockProps> = ({ item, info, cmd, level, 
         <span className="l1-c-fo">{item.supplier?.trim() || '—'}</span>
       </button>
       {/* la DDM qui compte est déjà dite, avec ses jours, au deuxième rang de la ligne (etatDit) : pas de seconde phrase dessous */}
-      {(reserve || (durabilite && !info.etats.includes('ddm'))) && <div className="l1-plus">
+      {(reserve || trace || (durabilite && !info.etats.includes('ddm'))) && <div className="l1-plus">
         {reserve && <p className={reserve.connue ? 'l1-plus-r' : 'l1-plus-r l1-plus-w'}>{reserve.texte}</p>}
+        {trace && <p data-stock-trace><button type="button" className="l1-trace" onClick={trace.annuler} aria-label={`Annuler : ${trace.texte}`}><span>{trace.texte}</span><span aria-hidden="true">↺</span></button></p>}
         {durabilite && !info.etats.includes('ddm') && <p data-stock-durabilite className={durabilite.perime ? 'l1-plus-a' : 'l1-plus-w'}>{durabilite.texte}</p>}
       </div>}
       <span id={descriptionId} className="sr-only">{description}</span>

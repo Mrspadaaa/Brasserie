@@ -2,6 +2,8 @@ import { transactionAmount, transactionKind, paidForTransaction, validateFinance
 import type { FinancialPayment } from '../domain/finance/types';
 import { apprendreSurFicheRetenue } from './enrichissementRecette';
 import { prepareBrewStockConsumption } from '../domain/finance/brewStockConsumption';
+import { planifierAnnulation, planifierConsommation, tableDuGeste, type Geste, type MouvementConsommation, type PlanConsommation, type RegleConsommation } from '../domain/consommation/gestes';
+import { EffetsGeste } from './effetsGeste';
 import {
   Transaction,
   StockItem,
@@ -1060,7 +1062,60 @@ export const StorageService = {
     const reviewIssues = proposal.status === 'already-applied' ? (live?.stockReviewIssues ?? [])
       : stage === 'remaining' ? [...new Set([...(live?.stockReviewIssues ?? []), ...proposal.reviewIssues])] : proposal.reviewIssues;
     this.updateBatch({ ...proposal.batch, stockAccountingVersion: 1, stockReviewIssues: reviewIssues }, { previous: live?.stockConsumption });
+    // L9 : brasser use aussi ce que la table du geste « brassage » contient (nettoyants…), en plus des ingrédients.
+    if (proposal.status === 'ready' && stage === 'brewday') this.enregistrerGeste({ type: 'brassage', objet: batch.id, cycle: 'brassage', libelle: `${batch.name || batch.id} brassé` });
     return { success: true, issues: reviewIssues };
+  },
+
+  // RÈGLE DE L'APP « CHAQUE GESTE DÉCOMPTE CE QU'IL USE » (L9, pe1 · pe3 · pe4). Table rangée en config, synchronisée et hors ligne.
+  getReglesConsommation(): RegleConsommation[] {
+    const doc = FirestoreRepo.all<any>('config').find(d => d.__docId === 'consommation');
+    return Array.isArray(doc?.regles) ? doc.regles : [];
+  },
+
+  /** La dose donnée une fois (pe4). 0 = « pas utilisé pour ce geste » : la ligne reste, inactive, et ne se redemande plus. */
+  retenirDose(regle: RegleConsommation, quantite: number) {
+    if (!Number.isFinite(quantite) || quantite < 0) return;
+    const autres = this.getReglesConsommation().filter(r => r.id !== regle.id);
+    FirestoreRepo.put('config', 'consommation', { regles: [...autres, { ...regle, quantite, active: quantite > 0 }] });
+    this.logAction('Modification', 'Configuration', regle.id, `Dose retenue : ${regle.stockItemRef} ${quantite > 0 ? `${nombreFr(quantite)} ${regle.unite}` : 'pas utilisé'} par ${regle.par} (${regle.geste})`);
+  },
+
+  getMouvementsGestes(): MouvementConsommation[] {
+    return FirestoreRepo.all<any>('movements').filter(m => m.type === 'consommation' || m.type === 'consommation-annulee');
+  },
+
+  /** Décompte un geste réel selon sa table ; rejouer le même geste ne décompte rien de plus. Le bandeau du bas montre l'effet. */
+  enregistrerGeste(geste: Geste): PlanConsommation {
+    const stocks = this.getStocks(), all = [...stocks.rawMaterials, ...stocks.cleaning];
+    const plan = planifierConsommation(geste, tableDuGeste(geste.type, this.getReglesConsommation(), all), all, this.getMouvementsGestes());
+    for (const m of plan.mouvements) {
+      const item = all.find(s => s.ref === m.itemRef);
+      FirestoreRepo.adjustNumber('stockItems', m.itemRef, 'currentStock', m.delta, item ? { reorder: m.newStock <= item.minStock } : {});
+      FirestoreRepo.put('movements', m.id, m);
+    }
+    if (plan.mouvements.length) this.logAction('Consommation', 'Stocks', plan.gesteId, `${geste.libelle} : ${plan.mouvements.map(m => `${all.find(s => s.ref === m.itemRef)?.name ?? m.itemRef} −${Units.format(-m.delta, m.unit)}`).join(', ')}`, plan.alertes.join(' ') || undefined);
+    if (plan.effets.length || plan.manquantes.length || plan.alertes.length)
+      EffetsGeste.annoncer({ geste, gesteId: plan.gesteId, effets: plan.effets, manquantes: plan.manquantes, alertes: plan.alertes });
+    return plan;
+  },
+
+  /** Annuler : les mouvements inverses de tout le geste ; refus motivé si l'article a été compté depuis. */
+  annulerGeste(gesteId: string): { success: boolean; message: string } {
+    const stocks = this.getStocks(), all = [...stocks.rawMaterials, ...stocks.cleaning];
+    const comptes = this.getAuditLogs()
+      .filter(l => l.category === 'Stocks' && /^Inventaire /.test(l.summary ?? ''))
+      .map(l => ({ stockItemRef: l.entityId, at: Number(/^LOG-(\d{14})/.exec(l.id ?? '')?.[1] ?? 0) }));
+    const { mouvements, refus } = planifierAnnulation(gesteId, this.getMouvementsGestes(), all, comptes);
+    if (refus) return { success: false, message: refus };
+    if (!mouvements.length) return { success: true, message: 'Déjà annulé ; rien à rendre.' };
+    for (const m of mouvements) {
+      const item = all.find(s => s.ref === m.itemRef);
+      FirestoreRepo.adjustNumber('stockItems', m.itemRef, 'currentStock', m.delta, item ? { reorder: m.newStock <= item.minStock } : {});
+      FirestoreRepo.put('movements', m.id, m);
+    }
+    this.logAction('Annulation', 'Stocks', gesteId, `Annulé : ${mouvements[0].libelle}`, 'Mouvements inverses écrits ; la trace du geste est conservée.');
+    return { success: true, message: 'Annulé : le stock est rendu.' };
   },
 
   /**

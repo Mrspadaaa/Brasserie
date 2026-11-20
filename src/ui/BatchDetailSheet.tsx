@@ -218,6 +218,9 @@ export const BatchDetailSheet: React.FC<BatchDetailSheetProps> = ({
   const stockBannerHere = section === 'measurements' || stockIssues.length > 0;
   const synchronizeStock = (updated: Batch, stage: 'brewday' | 'remaining' | 'historical-already' | 'historical-unconsumed', confirmHistorical = false) => {
     const result = StorageService.completeBrewStock(updated, stage, confirmHistorical);
+    // L9 : conditionner use ce que la table du geste contient (bouteilles, capsules…), au litre conditionné.
+    if (result.success && updated.status === 'conditionne')
+      StorageService.enregistrerGeste({ type: 'conditionnement', objet: updated.id, cycle: 'conditionnement', libelle: `${updated.name || updated.id} conditionné`, quantites: { litres: updated.volumePackagedL } });
     const saved = StorageService.getBatches().find(b => b.id === updated.id);
     // Déstockage refusé : l'étape ne change pas, ni à l'écran ni dans le stockage.
     const keptStatus = result.success ? updated.status : (saved?.status ?? draft.status);

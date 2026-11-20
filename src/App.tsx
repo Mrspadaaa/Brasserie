@@ -12,6 +12,7 @@ import { motsCleEcriture } from './services/search';
 import { BrewerActivity } from './ui/BrewerActivity';
 import { brewerAppScreen } from '../functions/src/brewerAppScreens';
 import { BottomNav, TabType } from './components/BottomNav';
+import { BandeauEffets } from './ui/BandeauEffets';
 import { FloatingActions } from './ui/FloatingActions';
 import { ModalOpenerContext } from './ui/ModalShell';
 
@@ -1397,6 +1398,7 @@ export const App: React.FC = () => {
         </LazySurface>
         </div>
       </main>
+      <BandeauEffets />
 
       {/* Bottom Navigation Bar, et la case réservée au bouton d'action à sa droite :
           sur les onglets, le bouton ne flotte pas au-dessus du contenu défilant. */}

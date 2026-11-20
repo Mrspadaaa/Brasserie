@@ -57,6 +57,8 @@ html[data-theme="cave"] .stock-liste .l1-sw{box-shadow:0 0 0 1.5px var(--l1-lise
 .stock-liste .l1-plus-a{color:var(--l1-alertt);font-weight:600}
 .stock-liste .l1-plus-w{color:var(--l1-t0)}
 .stock-liste .l1-plus-r{color:var(--l1-t1)}
+.stock-liste .l1-trace{display:inline-flex;max-width:100%;align-items:center;gap:4px;padding:2px 6px;border:1px solid var(--l1-t2);border-radius:6px;background:none;color:var(--l1-t1);font:inherit;font-size:11px;cursor:pointer}
+.stock-liste .l1-trace span:first-child{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 
 /* l'en-tête d'un rayon, la règle dite sur elle-même */
 .stock-liste.l1-eh-bloc{background:var(--l1-page);border-top:3px solid var(--l1-panel);border-bottom:1px solid var(--l1-border)}
