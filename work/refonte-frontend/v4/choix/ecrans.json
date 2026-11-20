@@ -195,6 +195,16 @@
       "page": "https://claude.ai/artifact/9FrNPBUDv7ABeo5CsSFW7g"
     },
     {
+      "ecran": "ma-levure",
+      "route": "levure",
+      "statut": "choisi",
+      "choix": "repos et cas limite : r3 v05 ; après le geste : r4 v02",
+      "mots": "Au repos, en une vue : 1 r3 v05 / Après le geste : 2 v02 / Cas limite : à choisir : 2 r3 v05 / Implemnte",
+      "capture": "work/missions/2026-11-19-ma-levure-maquettes/r3/cap/v05b-ecran-390.png",
+      "page": "https://claude.ai/artifact/9aTEJGvrmYzBgumGmBwePi",
+      "note": "Carte Ma levure (étape Levure 4/7). Maquettes : r3/v05.html (repos, cas limite), r4/v02.html (après − / +). Page r3 : https://claude.ai/artifact/DKAJe8ESeMR4igtdE5WaJf"
+    },
+    {
       "ecran": "destinations-menu-plus",
       "route": "reglages",
       "statut": "choisi",

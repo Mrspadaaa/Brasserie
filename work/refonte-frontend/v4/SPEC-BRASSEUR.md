@@ -2309,3 +2309,12 @@ Classement de la page r3 de Ma levure (https://claude.ai/artifact/DKAJe8ESeMR4ig
 > Cas limite : à choisir : 2 v04, v05 · 3 v03 (v03 : Normalement la forme est de base défini )
 
 (lu : aucun rang 1, aucune version ne convient telle quelle ; greffe r4 : repos de v03 et v05, la part « 117 % lager » de v04, le geste de v01, v03, v08 rendu lisible, le cas limite de v04 et v05 ; la forme de la levure est connue d'office, jamais « à choisir ».)
+
+> Ma levure r4, quelle levure et combien, classement par écran (19.11)
+> Au repos, en une vue : 1 r3 v05
+> Après le geste : 2 v02
+> Cas limite : à choisir : 2 r3 v05
+>
+> Implemnte
+
+(lu, 20.11 : choix fait. Au repos et cas limite : r3 v05 telle quelle ; après le geste : r4 v02, le meilleur rang donné. À porter dans l'app, avec la dose écrite au choix d'une levure.)
