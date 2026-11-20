@@ -17,3 +17,11 @@ DEMANDE EXECUTANT :
 
 CONNAISSANCE : une correction « défaut par défaut » (TL-27) doit se poser à l'entrée d'un composant, pas à chaque appel de calcul : le 19.11 elle ne couvrait qu'un des deux appels. 
 LEÇON PROPOSÉE : aucune
+
+## Tour 2 (k2, 20.11)
+- T3B-6 | corrigé | ee7160cdc | prouvé : onglet « Simuler » trouvé (rôle tab) aux 4 captures, « durée d'ébullition » absente ; il vit dans « Potentiel aromatique » (captures/EXECUTANT.md).
+- k2 n° 12, 13, 14 (marqueur), 15 | corrigé | f80595f5b | redites, densité « 1,062 », « FIN DE RECETTE », barre sur la colonne de 540 px ; tests `bugs-f1-k2` (rouges avant : 8 sur 12).
+- k2 n° 10, 11, 14 (« AVANT ») | ouvert | — | hors voie : Dessins.tsx, YeastRecipeWorkbench.tsx / YeastPitchingPanel.tsx, hopStage.ts ; changements exacts dans voies/k2/CORRECTIONS-f1.md (« Fait »).
+- ABV 6,5 % | écarté | — | `abvTarget` de la fixture (6,49), non la formule (ASBC : 6,28 %).
+- Lactose | test | f80595f5b | OG oui, atténuation non ; limite : donnée sans ogTarget avec lactose parmi les houblons.
+Tests : 14 fichiers, 99 passés, 0 échoué (tests.txt). Hors voie : `fix114` (Finances) échoue sur son menu, sans lien avec la fiche.

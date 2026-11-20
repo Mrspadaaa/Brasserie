@@ -21,7 +21,7 @@ const NOMS_DU_STOCK = ['Maris Otter', 'Röstgerste (orge torréfiée)', 'Caramü
 const base = yeastFlowRecipe() as Recipe & { boilMin?: number };
 delete base.boilMin;
 const recette = {
-  ...base, id: 'rec-ms', name: 'Milk Stout', style: 'Milk Stout', volumeL: 30, ogTarget: 1.062, batchRef: 'LOT-001', adjuncts: [],
+  ...base, id: 'rec-ms', name: 'Milk Stout', style: 'Milk Stout', volumeL: 30, ogTarget: 1.062, fgTarget: 1.015, abvTarget: 6.3 /* ASBC Beer-4 pour 1,062 → 1,015 : 6,28 % (la fixture de base portait 6,49 : k2, ABV 6,5 % incohérent) */, batchRef: 'LOT-001', adjuncts: [],
   fermentables: [
     { name: 'Maris Otter', weightKg: 5.5, kind: 'grain', use: 'empatage', potentialPpg: 37, colorEbc: 5 },
     { name: 'Rstgerste (orge torrfie)', weightKg: 0.4, kind: 'grain', use: 'empatage', potentialPpg: 30, colorEbc: 1100 },

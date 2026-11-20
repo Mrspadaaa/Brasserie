@@ -1,0 +1,10 @@
+Serveur 1/1 : npx vite --port 3108 --strictPort  (journal : C:\Users\mrspa\AppData\Local\Temp\with-server-bLDjh9\serveur-1-3108.log)
+Attente du port 3108…
+Serveur prêt sur le port 3108
+
+Tous les serveurs sont prêts. Lancement : node work/missions/2026-11-19-bugs-ecrans/voies/f1/banc/capturer.mjs 390-clair
+
+390 clair (conteneur, 5 pas, positions 0:0 1:700 2:1400 3:2100 4:2276) : erreurs 0 ; IBU 35 ; aucun brassin false ; Rstgerste false ; Lactose sous Houblons false
+Largeurs 390 clair : colonne 374 px (x 8) ; barre 374 px (x 8)
+Simuler 390 clair : onglet trouvé true (rôle tab, dans « Potentiel aromatique ») ; « durée d'ébullition » absente ; erreurs 0
+  Viser des IBU : Viser des IBU Déplacer un ajout Remplacer un houblon Dose à cru Ajout Nouvel ajout 1. Target · Ébullition 2. East Kent Goldings · Ébullition Alpha du lot à simuler % Minutes avant la fin min Cible totale à chaud IBU Repères : 20 IBU 30 IBU 40 IBU Réinitialiser Simulation locale. Pour conserver un changement, ouvre la modification de recette.
