@@ -1373,7 +1373,49 @@ const ETATS = [
       const m = p.lieAir;
       p.noteEtat = m.absent ? 'étiquette absente' : m.sansPastille ? 'pastille retirée (lien au nom lu)' : (m.memeLigne ? 'pastille sur la ligne du nom (pas de deuxième ligne), ' : '') + 'air texte/pastille ' + m.air + ' px, dans le cadre ' + (m.dedans ? 'oui' : 'non') + ' (cadre ' + m.hCadre + ' px)';
     },
-    attendu: [fn(async p => { const m = p.lieAir; return { ok: !!m && !m.absent && (m.sansPastille || m.memeLigne || (m.air >= 3 && m.dedans)), dit: m ? (m.absent ? 'étiquette absente' : m.sansPastille ? 'pastille retirée' : 'air ' + m.air + ' px, dans le cadre ' + m.dedans) : 'non mesuré' }; }, 'la pastille « lié à » est à 3 px du texte au-dessus, dans le cadre de l’étiquette')] }
+    attendu: [fn(async p => { const m = p.lieAir; return { ok: !!m && !m.absent && (m.sansPastille || m.memeLigne || (m.air >= 3 && m.dedans)), dit: m ? (m.absent ? 'étiquette absente' : m.sansPastille ? 'pastille retirée' : 'air ' + m.air + ' px, dans le cadre ' + m.dedans) : 'non mesuré' }; }, 'la pastille « lié à » est à 3 px du texte au-dessus, dans le cadre de l’étiquette')] },
+  /* Voie 4 (20.11) PC-126 : la Foire touchée allume le fil de la tireuse (Achats) ; ce fil ne passe sous aucun nom, jalon non lié, icône ni
+     pastille (il peut effleurer la marge de 2 px que le masque lui laisse, pas entrer dans la boîte), et la fiche ouverte de la Foire coupe le fil
+     (trou du masque : le fil ne se voit pas à travers elle). Le contrôle mesure le tracé réel (getPointAtLength), pas sa description. */
+  { n: 'V4a', nom: 'fil-tireuse-foire', cave: true, repos: true, geste: 'toucher la Foire (fête qui dure) : le fil de la tireuse s’allume ; mesurer le tracé contre chaque nom, icône, jalon non lié, pastille et la fiche ouverte',
+    jouer: async p => {
+      await toucher(p, { titre: 'Foire' }); await attendre(1600);
+      p.filTireuse = await p.evaluate(() => {
+        const f = document.querySelector('path[data-fil]');
+        if (!f) return { absent: true };
+        const svg = f.closest('svg'), m = svg.getScreenCTM(), L = f.getTotalLength();
+        const pts = [];
+        for (let s = 0; s <= L; s += 1) { const q = f.getPointAtLength(s); pts.push([q.x * m.a + m.e, q.y * m.d + m.f]); }
+        const jalon = document.querySelector(`[data-chose="${f.getAttribute('data-fil')}"]`);
+        const barre = [...document.querySelectorAll('[data-chose]')].find(x => x.getAttribute('data-chose') === jalon?.getAttribute('data-lie-a') && !x.hasAttribute('data-marque'));
+        const fz = document.querySelector('[data-frise]').getBoundingClientRect();
+        const SEL = ['.cal-lbl-t', '.cal-lbl-m', '.cal-lbl-j', '.cal-lie', '.cal-nom', '.cal-conf', '.cal-pastille-p', '.cal-oeil', '.cal-duree', '.cal-renvoi', '.cal-caddie', '.cal-badges', '.cal-etoile', '.cal-marque', '.cal-barre'];
+        const dedans = [];
+        for (const sel of SEL) for (const e of document.querySelectorAll(sel)) {
+          const r = e.getBoundingClientRect();
+          if (!r.width || !r.height || (r.width >= fz.width && r.height >= fz.height)) continue;
+          if (jalon && (jalon === e || jalon.contains(e) || e.contains(jalon))) continue;
+          if (barre && (barre === e || barre.contains(e) || e.contains(barre))) continue;
+          /* « sous l'info » : le tracé entre de plus de 2 px dans la boîte (la marge de 2 px du masque est le bord, pas l'info) */
+          if (pts.some(([x, y]) => x > r.left + 2 && x < r.right - 2 && y > r.top + 2 && y < r.bottom - 2)) dedans.push(`${sel} « ${(e.getAttribute('data-titre') || e.getAttribute('aria-label') || e.textContent || '').replace(/\s+/g, ' ').slice(0, 24)} »`);
+        }
+        const fiche = [...document.querySelectorAll('.cal-det')].find(e => e.getBoundingClientRect().height > 0);
+        let fiche_coupee = null;
+        if (fiche) {
+          const r = fiche.getBoundingClientRect();
+          const traverse = pts.some(([x, y]) => x > r.left + 1 && x < r.right - 1 && y > r.top + 1 && y < r.bottom - 1);
+          const mm = svg.querySelector('mask[data-masque-fil]');
+          const trous = mm ? [...mm.querySelectorAll('rect[data-trou]')].map(t => ({ l: Number(t.getAttribute('x')) + m.e, t: Number(t.getAttribute('y')) + m.f, w: Number(t.getAttribute('width')), h: Number(t.getAttribute('height')) })) : [];
+          const couvre = trous.some(t => t.l <= r.left + 1.5 && t.t <= r.top + 1.5 && t.l + t.w >= r.right - 1.5 && t.t + t.h >= r.bottom - 1.5);
+          fiche_coupee = { traverse, couvre };
+        }
+        return { dedans, fiche: fiche_coupee, long: Math.round(L), d: f.getAttribute('d') };
+      });
+      const m = p.filTireuse;
+      p.noteEtat = m.absent ? 'fil absent' : `fil ${m.long} px, ${m.dedans.length} info(s) traversée(s)${m.dedans.length ? ' : ' + m.dedans.join(' ; ') : ''} ; fiche ${m.fiche ? (m.fiche.traverse ? (m.fiche.couvre ? 'traversée mais coupée par le masque' : 'traversée et visible') : 'évitée') : 'fermée'}`;
+    },
+    attendu: [fn(async p => { const m = p.filTireuse; return { ok: !!m && !m.absent && m.dedans.length === 0, dit: m ? (m.absent ? 'aucun fil allumé' : m.dedans.length + ' info(s) sous le fil' + (m.dedans.length ? ' : ' + m.dedans.slice(0, 4).join(' ; ') : '')) : 'non mesuré' }; }, 'le fil ne passe sous aucun nom, icône, jalon non lié ni pastille'),
+      fn(async p => { const m = p.filTireuse; return { ok: !!m && !m.absent && (!m.fiche || !m.fiche.traverse || m.fiche.couvre), dit: m && m.fiche ? (m.fiche.traverse ? (m.fiche.couvre ? 'traverse la fiche, trou du masque en place' : 'traverse la fiche, sans trou') : 'évite la fiche') : 'fiche fermée' }; }, 'la fiche ouverte de la Foire coupe le fil (il ne se voit pas à travers elle)')] }
 ];
 /* ---------- CRITIQUE-10 : dates du banc (posé par rapport au jour) et lectures ---------- */
 /** Le lundi de la semaine en cours (UTC), comme le banc (`lundiDe(aujourdhui)`). */

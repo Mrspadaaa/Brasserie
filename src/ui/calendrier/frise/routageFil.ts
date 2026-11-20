@@ -74,7 +74,10 @@ export function routerFil(jalon: BoiteRoute, barre: BoiteRoute, obstacles: reado
   /* la grille : une colonne passe par le centre du jalon ; les rangs vont du bord du jalon au bord de la barre */
   const ox = cx - Math.floor(cx / PAS) * PAS;
   const nx = Math.max(1, Math.floor((Math.max(largeur, cx) - ox) / PAS) + 1);
-  const haut = Math.min(y0, y1), bas = Math.max(y0, y1);
+  /* PC-126 (20.11) : la grille descend jusqu'au CENTRE du jalon, pas à son bord. Le fil peut ainsi sortir par le côté du jalon quand la rangée
+     voisine (icône et nom à 1 px au-dessus) bouche le haut ; la part tracée dans le jalon est cachée par son trou du masque, et le départ reste
+     au bord (premier point) quand le fil sort tout droit. */
+  const haut = Math.min(y1, cyJ), bas = Math.max(y1, cyJ);
   const ny = Math.max(1, Math.floor((bas - haut) / PAS));
   const oy = haut + ((bas - haut) - (ny - 1) * PAS) / 2;
   const X = (i: number) => ox + i * PAS, Y = (j: number) => oy + j * PAS;
