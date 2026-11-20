@@ -19,6 +19,7 @@ import './keg-fiche.css';
 import './keg-liste.css';
 import { nombreFr } from '../domain/nombreAffiche';
 import { annulerGesteDepuisTrace } from './BandeauEffets';
+import { EffetsGeste, useEffetsGeste } from '../services/effetsGeste';
 import { gesteIdDe, type Geste } from '../domain/consommation/gestes';
 import {
   ORDRE_JAUGE, ORDRE_SECTIONS, aReprendre, basculerFiltre, comptesParEtat, couleurPastille, etatFut, futsARetablir, ligneDate, libelleSegment,
@@ -40,7 +41,7 @@ const LIBELLE_PLURIEL = (e: EtatFut) => (e === 'unknown' ? UNKNOWN_STATE.label :
 /** Le bandeau « marqués propres » laisse ce temps pour annuler. */
 const BANDEAU_MS = 15_000;
 
-interface Marquage { avant: KegItem[]; apres: KegItem[] }
+interface Marquage { avant: KegItem[]; apres: KegItem[]; /** Le geste de lavage décompté pour ce lot, s'il y en a un (jamais sur le banc). */ gesteId?: string | null }
 
 interface KegBoardProps {
   kegs: KegItem[];
@@ -84,13 +85,25 @@ export const KegBoard: React.FC<KegBoardProps> = ({
     StorageService.enregistrerGeste(geste);
     return gesteIdDe(geste);
   };
-  /** Le geste du dernier « Tout marquer propre », pour que son Annuler rende aussi le stock. */
-  const gesteDuLot = useRef<string | null>(null);
+  /** Les fûts du moment : le défaire d'un geste lit l'état d'alors, pas celui du rendu où il a été accroché. */
+  const futsCourants = useRef(tousLesFuts);
+  futsCourants.current = tousLesFuts;
+  /**
+   * Un geste, un seul Annuler (L9) : celui du bandeau du bas rend le stock ET remet ces fûts à laver ; refus entier si l'un a bougé depuis.
+   */
+  const accrocherDefaire = (gesteId: string | null, avant: KegItem[], apres: KegItem[]) => {
+    if (!gesteId) return;
+    EffetsGeste.surAnnulation(gesteId, {
+      dit: avant.length > 1 ? 'les fûts sont remis à laver' : 'le fût est remis à laver',
+      refus: () => futsARetablir(avant, apres, futsCourants.current).length === avant.length ? null : 'Annulation impossible : un fût a bougé depuis, rien n’est rendu.',
+      defaire: () => futsARetablir(avant, apres, futsCourants.current).forEach(k => save(k))
+    });
+  };
   /** La fiche : « Marquer propre » écrit le fût, puis décompte le lavage. */
   const saveDepuisFiche = (keg: KegItem) => {
     const avant = tousLesFuts.find(k => k.id === keg.id);
     save(keg);
-    if (avant?.state === 'lavage' && keg.state === 'propre') decompterLavage([keg]);
+    if (avant?.state === 'lavage' && keg.state === 'propre') accrocherDefaire(decompterLavage([keg]), [avant], [keg]);
   };
   const addMany = onAddKegs ?? ((list: KegItem[]) => list.forEach((keg) => StorageService.addKeg(keg)));
   const remove = onRemoveKeg ?? ((id: string) => StorageService.deleteKeg(id));
@@ -120,6 +133,11 @@ export const KegBoard: React.FC<KegBoardProps> = ({
   // La confirmation et le bandeau suivent le parc : plus rien à laver, plus de geste groupé.
   useEffect(() => { if (confirmeLavage && counts.lavage === 0) setConfirmeLavage(false); }, [confirmeLavage, counts.lavage]);
   useEffect(() => { if (confirmeLavage) confirmeRef.current?.focus(); }, [confirmeLavage]);
+  /** Le bandeau du bas porte l'Annuler du geste (stock et fûts) : la bande du tableau garde la phrase seule, et s'éteint si le geste est annulé. */
+  const bas = useEffetsGeste();
+  const basDuLot = Boolean(marquage?.gesteId && bas && (bas.gesteId === marquage.gesteId || bas.gesteId === `${marquage.gesteId}-annule`));
+  const basAnnuleLeLot = basDuLot && Boolean(bas?.annule);
+  const basPorteAnnuler = basDuLot && !bas?.annule && (bas?.effets.length ?? 0) > 0;
   useEffect(() => {
     if (!marquage) return;
     const delai = setTimeout(() => setMarquage(null), BANDEAU_MS);
@@ -130,18 +148,17 @@ export const KegBoard: React.FC<KegBoardProps> = ({
   const marquerPropres = () => {
     const geste = marquerTousPropres(kegs, jour);
     geste.apres.forEach(k => save(k));
-    gesteDuLot.current = decompterLavage(geste.apres);
+    const gesteId = decompterLavage(geste.apres);
+    accrocherDefaire(gesteId, geste.avant, geste.apres);
     setConfirmeLavage(false);
     setFiltre([]);
-    setMarquage(geste);
+    setMarquage({ ...geste, gesteId });
   };
   const annulerMarquage = () => {
     if (!marquage) return;
-    const rendus = futsARetablir(marquage.avant, marquage.apres, kegs);
-    rendus.forEach(k => save(k));
-    // Seulement si tous les fûts du lot sont rendus : un lavage compté pour N fûts ne se rend pas en partie.
-    if (gesteDuLot.current && rendus.length === marquage.apres.length) annulerGesteDepuisTrace(gesteDuLot.current);
-    gesteDuLot.current = null;
+    // Un lavage compté au stock s'annule d'un bloc avec ses fûts (même chemin que le bandeau du bas) ; sans décompte, les fûts seuls.
+    if (marquage.gesteId && StorageService.getMouvementsGestes().some(m => m.gesteId === marquage.gesteId)) annulerGesteDepuisTrace(marquage.gesteId);
+    else futsARetablir(marquage.avant, marquage.apres, kegs).forEach(k => save(k));
     setMarquage(null);
   };
 
@@ -211,10 +228,10 @@ export const KegBoard: React.FC<KegBoardProps> = ({
                 </div>
               </div>
             )}
-            {marquage && (
+            {marquage && !basAnnuleLeLot && (
               <div role="status" className="keg-bandeau">
                 <span>{phraseMarques(marquage.apres.length)}</span>
-                <button type="button" onClick={annulerMarquage}>Annuler</button>
+                {!basPorteAnnuler && <button type="button" onClick={annulerMarquage}>Annuler</button>}
               </div>
             )}
           </div>

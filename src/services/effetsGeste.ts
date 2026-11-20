@@ -16,7 +16,20 @@ export interface EffetsDuGeste {
   annule?: boolean;
 }
 
+/**
+ * Ce que le geste a écrit hors du stock (l'état d'un fût…) et que son Annuler doit défaire avec lui : un geste, un seul Annuler.
+ * Un seul geste à la fois, comme le bandeau : le suivant remplace celui-ci.
+ */
+export interface DefaireDuGeste {
+  /** Motif de refus si ce qu'il faudrait défaire a bougé depuis ; rien n'est alors rendu, ni ici ni au stock. */
+  refus?: () => string | null;
+  defaire: () => void;
+  /** Ce que l'annulation rend en plus du stock, dit au brasseur (« le fût est remis à laver »). */
+  dit: string;
+}
+
 let courant: EffetsDuGeste | null = null;
+let aDefaire: { gesteId: string; d: DefaireDuGeste } | null = null;
 const abonnes = new Set<() => void>();
 const prevenir = () => abonnes.forEach(f => f());
 
@@ -30,6 +43,11 @@ export const EffetsGeste = {
     } else courant = suivant;
     prevenir();
   },
+  surAnnulation(gesteId: string, d: DefaireDuGeste) { aDefaire = { gesteId, d }; },
+  /** Le défaire accroché à ce geste, s'il y en a un. */
+  defaireDe: (gesteId: string): DefaireDuGeste | null => (aDefaire?.gesteId === gesteId ? aDefaire.d : null),
+  /** Rendu une seule fois : le geste défait, son défaire s'efface. */
+  oublierDefaire(gesteId: string) { if (aDefaire?.gesteId === gesteId) aDefaire = null; },
   modifier(partiel: Partial<EffetsDuGeste>) { if (courant) { courant = { ...courant, ...partiel }; prevenir(); } },
   fermer() { courant = null; prevenir(); },
   abonner(f: () => void) { abonnes.add(f); return () => { abonnes.delete(f); }; }

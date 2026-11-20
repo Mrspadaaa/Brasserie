@@ -13,9 +13,23 @@ import { GESTES_CONNUS, type ParBase, type RegleConsommation } from '../domain/c
 const curseur = (unite: string, par: ParBase) =>
   par === 'litre' ? { max: 10, step: 0.1 } : /^(g|ml)$/i.test(unite) ? { max: 500, step: 5 } : { max: 20, step: 1 };
 
+/**
+ * L'Annuler d'un geste, le seul : le stock rendu ET ce que le geste avait écrit ailleurs (le fût remis à laver).
+ * Refus entier, rien de rendu, si l'un des deux a bougé depuis (article compté, fût touché).
+ */
+export function annulerToutLeGeste(gesteId: string): { success: boolean; message: string } {
+  const aussi = EffetsGeste.defaireDe(gesteId);
+  const refus = aussi?.refus?.();
+  if (refus) return { success: false, message: refus };
+  const r = StorageService.annulerGeste(gesteId);
+  if (!r.success) return r;
+  if (aussi) { aussi.defaire(); EffetsGeste.oublierDefaire(gesteId); return { success: true, message: `Annulé : le stock est rendu et ${aussi.dit}.` }; }
+  return r;
+}
+
 export function annulerGesteDepuisTrace(gesteId: string) {
   const libelle = StorageService.getMouvementsGestes().find(m => m.gesteId === gesteId)?.libelle ?? 'Geste';
-  const r = StorageService.annulerGeste(gesteId);
+  const r = annulerToutLeGeste(gesteId);
   EffetsGeste.annoncer({ geste: { type: '', objet: '', cycle: '', libelle }, gesteId: `${gesteId}-annule`, effets: [], manquantes: [], alertes: [], issue: r.message, annule: r.success });
 }
 
@@ -55,7 +69,7 @@ export function BandeauEffets() {
     EffetsGeste.modifier({ manquantes: plan.manquantes });
   };
   const annuler = () => {
-    const r = StorageService.annulerGeste(etat.gesteId);
+    const r = annulerToutLeGeste(etat.gesteId);
     EffetsGeste.modifier({ issue: r.message, annule: r.success });
   };
   return <div role="status" data-bandeau-effets
