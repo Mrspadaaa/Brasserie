@@ -99,7 +99,7 @@ describe('n° 4 : le bandeau du glissé dit l’effet vrai sur le chiffre clé',
     const courbe = courbeCaisse({ depart: -66000, lundi0: L, mouvements: [{ id: 'm', jour: plan.date, centimes: -1200, nom: plan.title, choseId: chose.id }] })!;
     const r = deplacer(chose, 2, { aujourdhui: JOUR, batches: [], plans: [plan], courbe });
     if (!r.ok) throw new Error(r.raison);
-    expect(r.message.texte).toBe('À dépenser −672 : creux S48 → S50');
+    expect(r.message.texte).toBe('ZZ TEST — achat calendrier · À dépenser −672 : creux S48 → S50'); /* PC-155 : le message nomme la chose */
     expect(r.message.texte).not.toContain('−660');
   });
 });

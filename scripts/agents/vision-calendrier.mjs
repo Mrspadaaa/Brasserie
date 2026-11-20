@@ -74,7 +74,9 @@ const CONFIGS = {
   paysage: { w: 844, h: 390, tactile: true },
   /* CRITIQUE-12 : la critique nomme le paysage « p844 » ; même écran que `paysage` */
   p844: { w: 844, h: 390, tactile: true },
-  d1280: { w: 1280, h: 800, tactile: false }
+  d1280: { w: 1280, h: 800, tactile: false },
+  /* voie 3 (20.11, PC-161) : le très grand écran, où le message d'un glissé se posait en haut à gauche de la page */
+  d2560: { w: 2560, h: 1440, tactile: false }
 };
 const choixConfigs = (opt('configs') || 'm390,p844,d1280').split(',').filter(c => CONFIGS[c]);
 const inconnues = (opt('configs') || '').split(',').filter(c => c && !CONFIGS[c]);
@@ -1030,8 +1032,8 @@ const ETATS = [
     ['M2', 'message-f2a', 'tirer le bord ([data-bord]) de la Blonde d’une colonne (3 mois si elle finit au bord de la fenêtre)', async p => { await gesteF2a(p); }],
     ['M3', 'message-f6b', 'glisser la Blonde de 2 colonnes (promesse La Cigogne : alerte)', async p => { await glisserChose(p, 'Blonde d’automne', 2); }],
     ['M4', 'message-livrer', 'glisser la Blonde de 2 colonnes, puis « Livrer le … »', async p => { await glisserChose(p, 'Blonde d’automne', 2); await toucher(p, { texte: /^Livrer le/ }); }],
-    ['M5', 'message-lier', 'appui long sur la Hotte, Lier, Blonde d’automne', async p => { await appuiLong(p, { titre: 'Hotte' }); await toucher(p, { dans: { role: 'menu' }, texte: /^Lier/ }); await toucher(p, { dans: { role: 'menu' }, texte: /^Blonde d’automne$/ }); }],
-    ['M6', 'message-retirer', 'appui long sur le Marché de Noël, Retirer', async p => { await appuiLong(p, { titre: 'Marché de Noël' }); await toucher(p, { dans: { role: 'menu' }, texte: /^(Retirer|Ranger sans date|Annuler l|Annuler la|Annuler le)/ }); }],
+    ['M5', 'message-lier', 'appui long sur la Hotte, Lier, Blonde d’automne', async p => { if (p.cfg.tactile && p.cfg.w > p.cfg.h) { await menuPeriode(p, /^6 sem/); await attendre(500); } /* E27 : en 3 mois paysage, l'appui long d'une marque ouvre les 6 semaines, pas le menu */ await appuiLong(p, { titre: 'Hotte' }); await toucher(p, { dans: { role: 'menu' }, texte: /^Lier/ }); await toucher(p, { dans: { role: 'menu' }, texte: /^Blonde d’automne$/ }); }],
+    ['M6', 'message-retirer', 'appui long sur le Marché de Noël, Retirer', async p => { if (p.cfg.tactile && p.cfg.w > p.cfg.h) { await menuPeriode(p, /^6 sem/); await attendre(500); } /* E27 : en 3 mois paysage, l'appui long d'une marque ouvre les 6 semaines, pas le menu */ await appuiLong(p, { titre: 'Marché de Noël' }); await toucher(p, { dans: { role: 'menu' }, texte: /^(Retirer|Ranger sans date|Annuler l|Annuler la|Annuler le)/ }); }],
     ['M7', 'message-refus-jalon', 'tirer le jalon dry hop de la Blonde (intermédiaire) : refus', async p => {
       if (!(await existe(p, { titre: 'Blonde d’automne', sous: '[data-jalon="dry-hop"]' }))) throw new Absent('jalon [data-jalon="dry-hop"] de la Blonde introuvable');
       await glisserChose(p, 'Blonde d’automne', 1, { sous: '[data-jalon="dry-hop"]' });
@@ -1065,6 +1067,27 @@ const ETATS = [
   { n: '08m', nom: 'f1a-message-place', geste: 'glisser la Hotte de 2 colonnes, lâcher ; lire la place du message et de son Annuler', mesure: p => choseLue(p, 'Hotte'),
     jouer: async p => { await glisserChose(p, 'Hotte', 2); await attendre(300); p.message = await messageLu(p); p.noteEtat = `message « ${p.message.slice(0, 80)} »`; },
     attendu: [/Annuler/, fn(messageSansNom, 'le message ne couvre aucun nom'), fn(annulerTouchable, 'Annuler touchable : elementFromPoint en son centre = Annuler')] },
+  /* voie 3, PC-161 (rejeu en ligne tour3 : « 2560, message mesuré en haut à gauche, x 8–392, y 0–56 ») : la PREMIÈRE image du message est déjà dans la colonne de la
+     frise (une transition de 0,01 ms sur left/top le laissait une image en haut à gauche), et le message ne porte aucune transition */
+  { n: 'P161', nom: 'message-premiere-image', geste: 'glisser la Saison, lâcher ; mesurer le message à chaque image pendant 400 ms (rAF)', mesure: p => choseLue(p, 'Saison de ferme'),
+    jouer: async p => {
+      /* le relevé tourne depuis AVANT le lâcher : il voit la première image du message */
+      await p.evaluate(() => {
+        window.__serieMsg = []; const t0 = performance.now();
+        const relever = () => {
+          const m = document.querySelector('[data-message]'); const fr = document.querySelector('[data-frise]')?.getBoundingClientRect();
+          if (m && fr) { const r = m.getBoundingClientRect(); window.__serieMsg.push({ t: Math.round(performance.now() - t0), x: Math.round(r.left), y: Math.round(r.top), dedans: (r.left >= fr.left - 1 && r.right <= fr.right + 1) || window.innerWidth < 1024, trans: getComputedStyle(m).transitionDuration }); }
+          if (performance.now() - t0 < 6000) requestAnimationFrame(relever);
+        };
+        relever();
+      });
+      await glisserChose(p, 'Saison de ferme', 1);
+      await attendre(500);
+      p.serieMsg = await p.evaluate(() => window.__serieMsg || []);
+      p.noteEtat = p.serieMsg.length ? `${p.serieMsg.length} images, première (${p.serieMsg[0].x}, ${p.serieMsg[0].y}), transition ${p.serieMsg[0].trans}` : 'aucun message';
+    },
+    attendu: [fn(async p => ({ ok: p.serieMsg.length > 0 && p.serieMsg.every(m => m.trans === '0s'), dit: p.serieMsg.length ? `transition du message : ${[...new Set(p.serieMsg.map(m => m.trans))].join(', ')}` : 'aucun message' }), 'le message ne glisse jamais vers sa place (transition 0 s)'),
+      fn(async p => { const lasts = p.serieMsg.filter(m => m.dedans); return { ok: p.serieMsg.length > 0 && lasts.length === p.serieMsg.length, dit: `${lasts.length}/${p.serieMsg.length} images dans la colonne de la frise ; première (${p.serieMsg[0]?.x}, ${p.serieMsg[0]?.y})` }; }, 'dès la première image, le message est dans la colonne de la frise (grand écran)')] },
   { n: '12m', nom: 'retirer-message-place', geste: 'appui long sur le Marché de Noël, Retirer ; lire la place du message et de son Annuler', mesure: p => fetesLues(p),
     jouer: async p => { await appuiLong(p, { titre: 'Marché de Noël' }); await toucher(p, { dans: { role: 'menu' }, texte: /^(Retirer|Ranger sans date|Annuler l|Annuler la|Annuler le)/ }); await attendre(300); p.message = await messageLu(p); p.noteEtat = `message « ${p.message.slice(0, 80)} »`; },
     attendu: [/Retirée? de S\d+/, fn(messageSansNom, 'le message ne couvre aucun nom'), fn(annulerTouchable, 'Annuler touchable : elementFromPoint en son centre = Annuler')] },

@@ -78,7 +78,7 @@ describe('D385, variante D : l’échelle au menu de la période', () => {
     const { appels } = monter();
     choisirEchelle('mois');
     const msg = screen.getByRole('status');
-    expect(msg.textContent).toMatch(/Mois : période 6 sem\. → 6 mois, Finances aussi/);
+    expect(msg.textContent).toMatch(/^Échelle Mois : période 6 sem\. → 6 mois, Finances aussi/);
     fireEvent.click(within(msg).getByRole('button', { name: /Annuler/ }));
     expect(echelle()).toBe('semaine');
     expect(boutonPeriode().textContent).toBe('6 sem.');

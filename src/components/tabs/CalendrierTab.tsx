@@ -24,14 +24,14 @@ import {
   RANGEES, ajouterJours, barreLiee, dateDeSemaine, ecartJours, estPonctuel, etiquetteS, jourLisible, lundiDe, nomRangee, nomSeules, preparerChoses,
   type CibleOuverture, type ChoseCalendrier, type ModeleCalendrier, type Rangee as IdRangee
 } from '../../domain/calendrier';
-import { courbeDecalee, courbeAvec, effetCaisse } from '../../domain/calendrierCaisse';
+import { courbeAvec, effetCaisse, type CourbeCaisse } from '../../domain/calendrierCaisse';
 import {
   brouillonDepuisChose, brouillonDepuisProposition, brouillonVide, versEnregistrement, versModification, enregistrementIdee, jourPose,
   type BrouillonAjout, type ContexteAjout
 } from '../../domain/calendrierAjout';
 import {
   accepterVente, alignerCourbe, allonger, deplacer, deplacerJours, dupliquer, dureeAllongee, fait, lier, delier, livrer, mettreDeCote, retirer, noterIdee, supprimerSansDate,
-  type ContexteGestes, type Ecriture, type Message as MessageGeste, type Promesse, type Resolution
+  courbeDuGlisse, raisonNommee, type ContexteGestes, type Ecriture, type Message as MessageGeste, type Promesse, type Resolution
 } from '../../domain/calendrierGestes';
 
 /**
@@ -238,7 +238,7 @@ export function CalendrierTab(props: CalendrierTabProps) {
   const [fluxForce, setFluxForce] = useState<number | null>(null);
   const [drag, setDrag] = useState<DragEtat | null>(null);
   const [ici, setIci] = useState<string | null>(null);
-  const [apercuLundi, setApercu] = useState<{ courbe: ReturnType<typeof courbeDecalee>; lache: string } | null>(null);
+  const [apercuLundi, setApercu] = useState<{ courbe: CourbeCaisse; lache: string } | null>(null);
   /* D387 (interrupteur : courbe alignée sur la frise) et D389 (courbe cachée) : des choix gardés par appareil */
   const [courbeAlignee, setCourbeAlignee] = useEtatGarde<boolean>('calendrier_courbe_alignee', false);
   const [courbeCachee, setCourbeCachee] = useEtatGarde<boolean>('calendrier_courbe_cachee', false);
@@ -365,7 +365,7 @@ export function CalendrierTab(props: CalendrierTabProps) {
     const cible: CibleOuverture = jalon ? { ecran: 'brassin', id: chose.source.genre === 'batch' ? chose.source.id : undefined } : chose.ouvre;
     const texte = LIBELLE_LIEN[cible.ecran];
     setDetailFerme();
-    montrer({ role: 'status', texte: raison, ancre: chose.id, ...(texte ? { lien: { texte, agir: () => ouvrir(cible) } } : {}) });
+    montrer({ role: 'status', texte: jalon ? raisonNommee(chose.titre, raison) : raison, ancre: chose.id, ...(texte ? { lien: { texte, agir: () => ouvrir(cible) } } : {}) });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [montrer, ouvrir]);
 
@@ -405,6 +405,12 @@ export function CalendrierTab(props: CalendrierTabProps) {
     const ancre = chose.debut > cols[0].debut ? chose.debut : cols[0].debut;
     return cibleDuGlisse(cols, pos.a, k, ancre);
   };
+  /* PC-145 : l'aperçu montre la courbe que le geste écrira (`courbeDuGlisse` = la résolution du geste), jamais un décalage en bloc */
+  const apercuDe = (chose: ChoseCalendrier, ecart: number, auJour: boolean, lache: string, k: number) => {
+    if (k === 0) return null;
+    const courbe = courbeDuGlisse(chose, ecart, ctxRef.current, auJour);
+    return courbe ? { courbe, lache } : null;
+  };
   const surGlisse = useCallback((chose: ChoseCalendrier, k: number) => {
     setDrag({ id: chose.id, mode: 'glisse', k, jours: 0 });
     /* paquet E n° 3 : sur un axe en mois (Mois, An), une colonne est un mois ; le glisser va de `k` mois, au même jour du mois si possible */
@@ -412,7 +418,7 @@ export function CalendrierTab(props: CalendrierTabProps) {
       const cible = ajouterMois(chose.debut, k);
       const jours = ecartJours(chose.debut, cible);
       setIci(k === 0 ? null : `${jourLisible(cible)} · lâcher ici`);
-      setApercu(k !== 0 && modele.courbe ? { courbe: courbeDecalee(modele.courbe, chose.id, jours), lache: cible } : null);
+      setApercu(apercuDe(chose, jours, true, cible, k));
       setMessage(null); setMenu(null); setSelectionId(null);
       return;
     }
@@ -420,7 +426,7 @@ export function CalendrierTab(props: CalendrierTabProps) {
     const r = auJour ? cibleJour(chose, k) : null;
     if (auJour) {
       setIci(k === 0 || !r || r.jours === 0 ? null : `${jourLisible(r.cible)} · lâcher ici`);
-      setApercu(k !== 0 && r && r.jours !== 0 && modele.courbe ? { courbe: courbeDecalee(modele.courbe, chose.id, r.jours), lache: r.cible } : null);
+      setApercu(r ? apercuDe(chose, r.jours, true, r.cible, k) : null);
       setMessage(null); setMenu(null); setSelectionId(null);
       return;
     }
@@ -428,15 +434,16 @@ export function CalendrierTab(props: CalendrierTabProps) {
     if (estPonctuel(chose)) {
       const jour = ajouterJours(chose.debut, k * 7);
       setIci(k === 0 ? null : `${etiquetteS(jour)} · ${jourLisible(jour)} · lâcher ici`);
-      setApercu(k !== 0 && modele.courbe ? { courbe: courbeDecalee(modele.courbe, chose.id, k * 7), lache: jour } : null);
+      setApercu(apercuDe(chose, k * 7, true, jour, k));
       setMessage(null); setMenu(null); setSelectionId(null);
       return;
     }
     const cible = lundiDe(ajouterJours(chose.debut, k * 7));
     setIci(k === 0 ? null : `${etiquetteS(cible)} · ${jourLisible(cible)} · lâcher ici`);
-    setApercu(k !== 0 && modele.courbe ? { courbe: courbeDecalee(modele.courbe, chose.id, k * 7), lache: cible } : null);
+    setApercu(apercuDe(chose, k, false, cible, k));
     /* un glisser commencé ferme le menu ouvert et le détail (CRITIQUE-2 n° 1 a) */
     setMessage(null); setMenu(null); setSelectionId(null);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [modele.courbe]);
   const finGeste = useCallback(() => { setDrag(null); setIci(null); setApercu(null); setDuree(null); }, []);
   /*
@@ -543,7 +550,7 @@ export function CalendrierTab(props: CalendrierTabProps) {
     if (avant.annee || avant.fenetre.semaines !== fen.semaines) {
       const nom = ECHELLES.find(x => x.id === e)?.nom ?? e;
       montrer({
-        role: 'status', texte: `${nom} : période ${libelleDuree(avant.fenetre.semaines, avant.annee)} → ${libelleDuree(fen.semaines, false)}, Finances aussi`,
+        role: 'status', texte: `Échelle ${nom} : période ${libelleDuree(avant.fenetre.semaines, avant.annee)} → ${libelleDuree(fen.semaines, false)}, Finances aussi`,
         annuler: () => {
           setMessage(null); setEchelleVoulue(avant.echelle); setDeplie(null);
           setVueEtat(avant.annee ? 'annee' : 'semaines'); setFenetre(avant.fenetre);

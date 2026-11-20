@@ -104,8 +104,8 @@ describe('A6 : l’effet sur la caisse dit la première semaine qui change, une 
     const { courbe, chose, p } = courbeMalt();
     const r = bien(deplacer(chose, -1, ctx({ plans: [p], courbe })));
     expect(r.effet).toMatchObject({ numero: 51, avant: 506400, apres: 452400, texte: 'S51 : 5 064 → 4 524' });
-    expect(r.message.texte).toBe('À dépenser 4 524 : creux S52 → S51');
-    expect(r.message.lecture).toBe('À dépenser 4 524 : creux S52 → S51 · Annuler');
+    expect(r.message.texte).toBe('Malt · À dépenser 4 524 : creux S52 → S51');
+    expect(r.message.lecture).toBe('Malt · À dépenser 4 524 : creux S52 → S51 · Annuler');
     expect(r.message.lecture.match(/S\d+/g)).toEqual(['S52', 'S51']);
     expect(r.courbeApres!.semaines[4].libre).toBe(452400);
   });
@@ -159,7 +159,7 @@ describe('A9 (D-103) : le brassin planifié, ses jalons et le jalon de fin', () 
       expect('ecritures' in r).toBe(false);
     }
     const r = deplacer(chose, 1, ctx({ batches: [b] }), 'dry-hop');
-    expect(!r.ok && r.message.lecture).toBe('Le dry hop suit la recette du brassin · Ouvrir le brassin ›');
+    expect(!r.ok && r.message.lecture).toBe('Blonde d’automne : le dry hop suit la recette du brassin · Ouvrir le brassin ›');
   });
   it('un brassin en cuve : le jour de brassage ne bouge pas (refus « en cuve »), seul le jalon de fin se glisse', () => {
     const b = blonde({ status: 'fermentation', brewDate: '30.11.2026', plannedBrewDate: '28.11.2026' });
@@ -443,8 +443,8 @@ describe('CRITIQUE-9 n° 6 et n° 8 : glisser et dupliquer un brassin disent leu
     const courbe = sorties(chose, [['achats', '2026-11-16', -9200], ['emballage', '2026-12-07', -4500]]);
     const r = bien(deplacer(chose, 4, ctx({ batches: [saison], courbe })));
     expect(r.effet?.texte).toMatch(effetSeul);
-    expect(r.message.texte).not.toMatch(/Saison de ferme|S47 → S51/);
-    expect(r.message.texte).toBe('À dépenser 4 927 : creux S50 → S1');
+    expect(r.message.texte).not.toMatch(/S47 → S51/);
+    expect(r.message.texte).toBe('Saison de ferme · À dépenser 4 927 : creux S50 → S1');
     expect(r.effet).toMatchObject({ numero: 47, avant: 497200, apres: 506400 });
     /*
      * CRITIQUE-10 n° 1 : la barre est affichée en S47 (aujourd'hui) ; 4 colonnes plus loin, c'est le lundi de S51, 14 déc. (jamais 10 nov. + 28 j =

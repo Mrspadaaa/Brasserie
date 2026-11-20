@@ -12,6 +12,10 @@
   pointer-events: none;
 }
 .cal-msg[data-message] button { pointer-events: auto; }
+/* PC-161 (rejeu en ligne tour3, 20.11 : « 2560 : message mesuré en haut à gauche de la page, x 8–392, y 0–56 ») : la place se pose par left puis top, en deux temps dans la même image (8 px / 0, mesure, puis la vraie place). Une
+   règle globale (transition-duration: 0.01ms, index.css) en faisait une transition d'une image : la première image se voyait et se mesurait en haut à
+   gauche, le plus loin de la chose à 2560. Le message ne glisse jamais vers sa place. */
+.cal-msg[data-message] { transition: none !important; animation: none !important; }
 /* CRITIQUE-5 n° 5 (E31, E33, D-114) : le texte, puis les boutons (lien court « Finances › », Annuler). S'ils ne tiennent pas sur sa ligne, les
    boutons passent entiers à la seconde : le lien n'est jamais coupé, deux lignes pour « Annulé · S49 : 1 088 → 1 988 » à 390. */
 .cal-msg[data-message]:not(.cal-msg-alerte) { flex-wrap: wrap; row-gap: 2px; }

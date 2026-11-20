@@ -90,7 +90,14 @@ const SEMAINE = 7;
  * une seule fois (« À dépenser −672 : creux S48 → S50 »). `null` : courbe inconnue, ou rien ne bouge dans la caisse (le message garde alors le
  * nom et le trajet).
  */
-export function texteEffetCreux(avant: CourbeCaisse | null, apres: CourbeCaisse | null, effet: EffetCaisse | null): string | null {
+export function texteEffetCreux(avant: CourbeCaisse | null, apres: CourbeCaisse | null, effet: EffetCaisse | null, titre?: string): string | null {
+  const dit = texteEffetCreuxSansNom(avant, apres, effet, !!titre);
+  /* PC-155 (critique 19.11 c1 n° 17, c3 n° 8) : « à dépenser reste −6 417 · S49 : 1 113 → 2 013 » ne disait pas QUELLE chose avait bougé ; le nom
+     passe en tête, il cède le premier (points de suite) et l'effet chiffré reste entier (`separerEffet`). */
+  return dit !== null && titre ? `${titre} · ${dit}` : dit;
+}
+
+function texteEffetCreuxSansNom(avant: CourbeCaisse | null, apres: CourbeCaisse | null, effet: EffetCaisse | null, nomme: boolean): string | null {
   if (!avant || !apres || !effet) return null;
   const a = creuxDepuis(avant, 0), b = creuxDepuis(apres, 0);
   if (!a || !b) return null;
@@ -98,10 +105,33 @@ export function texteEffetCreux(avant: CourbeCaisse | null, apres: CourbeCaisse 
   /* le chiffre clé ne bouge pas : la semaine qui change (la forme de f1-a, as-gestes.js), et le chiffre clé AVEC sa valeur, qui reste.
      Test en ligne du paquet E : « à dépenser inchangé · S50 : −660 → −659 » se lisait comme un chiffre clé qui bouge. « à dépenser reste −660 »
      nomme le chiffre qui ne bouge pas, à côté du solde de la semaine qui, lui, bouge ; court, il tient à 390 (le nom du message cède le premier). */
-  if (va === vb && sa === sb) return `${effet.texte} · à dépenser reste ${va}`;
+  /* PC-155 : nommé, le message n'a plus besoin de « à dépenser reste −6 417 » (le chiffre clé de l'en-tête, qui ne bouge pas, prenait la place du nom
+     et se coupait en « reste −… » à 390) : « Hotte · S49 : 1 113 → 2 013 » ne se lit pas comme un chiffre clé qui bouge */
+  if (va === vb && sa === sb) return nomme ? effet.texte : `${effet.texte} · à dépenser reste ${va}`;
   if (va === vb) return `À dépenser ${va} : creux ${sa} → ${sb}`;
   if (sa === sb) return `À dépenser : ${va} → ${vb} · ${sa}`;
   return `À dépenser : ${va} · ${sa} → ${vb} · ${sb}`;
+}
+
+/**
+ * PC-155 (critique 19.11 c3 n° 8) : « Le dry hop suit la recette du brassin » ne disait pas de quel brassin. Le refus d'un jalon nomme sa chose :
+ * « Blonde d'automne : le dry hop suit la recette du brassin » (déjà nommée, la raison reste telle quelle).
+ */
+export function raisonNommee(titre: string, raison: string): string {
+  if (!titre || raison.includes(titre)) return raison;
+  return `${titre} : ${raison.charAt(0).toLowerCase()}${raison.slice(1)}`;
+}
+
+/**
+ * PC-145 (critique 19.11 c1 n° 1) : la courbe que montre l'aperçu d'un glissé est celle que le geste écrira, la même fonction. L'aperçu rebâtissait
+ * `courbeDecalee` (toutes les sorties de la Saison décalées du même écart : « S47 3 268 → 3 361 », +92) quand le geste, lui, replace chaque sortie
+ * à SA date et rien avant aujourd'hui (`courbeBrassin` : « 3 268 → 3 292 », +24). `semaines` ou `jours` : `auJour` dit lequel. `null` quand le
+ * geste serait refusé (rien à annoncer) ou que la courbe est inconnue.
+ */
+export function courbeDuGlisse(chose: ChoseCalendrier, ecart: number, ctx: ContexteGestes, auJour: boolean): CourbeCaisse | null {
+  if (!ctx.courbe || ecart === 0) return null;
+  const res = auJour ? deplacerJours(chose, ecart, ctx) : deplacer(chose, ecart, ctx);
+  return res.ok ? res.courbeApres : null;
 }
 
 /** E28 : peut-on déplacer cette chose ? Sinon, la raison nomme l'écran où la régler. */
@@ -198,7 +228,7 @@ function deplacerDe(chose: ChoseCalendrier, jours: number, ctx: ContexteGestes, 
   if (jalon) {
     const j = chose.jalons?.find(x => x.id === jalon);
     if (!j) return refus('Ce jalon n’existe pas sur ce brassin.', chose.ouvre);
-    if (j.glissable === false) return refus(j.raison ?? j.libelle, chose.ouvre, { texte: 'Ouvrir le brassin ›', ancre: 'brassin', cible: chose.ouvre });
+    if (j.glissable === false) return refus(raisonNommee(chose.titre, j.raison ?? j.libelle), chose.ouvre,{ texte: 'Ouvrir le brassin ›', ancre: 'brassin', cible: chose.ouvre });
     if (j.glissable === 'fin') return allongerBrassin(chose, jours, ctx, true);
   }
   if (source.genre === 'batch') {
@@ -235,13 +265,13 @@ function deplacerDe(chose: ChoseCalendrier, jours: number, ctx: ContexteGestes, 
     /* le trajet part de la semaine AFFICHÉE (S47 → S48), jamais du jour prévu passé (S46) */
     return {
       ok: true, ecritures: [{ op: 'patch', collection: 'batches', id: batch.id, patch }], effet, promesse, courbeApres,
-      message: annuler(texteEffetCreux(ctx.courbe, courbeApres, effet) ?? `${chose.titre} : ${reperes(depart)} → ${reperes(nouveau)}`)
+      message: annuler(texteEffetCreux(ctx.courbe, courbeApres, effet, chose.titre) ??`${chose.titre} : ${reperes(depart)} → ${reperes(nouveau)}`)
     };
   }
   if (chose.deplacable !== true) return refus(chose.deplacable.raison, chose.ouvre);
   const avant = ctx.courbe, apres = avant ? courbeDecalee(avant, chose.id, jours) : null;
   const effet = effetCaisse(avant, apres);
-  const message = annuler(texteEffetCreux(avant, apres, effet) ?? `${chose.titre} : ${reperes(chose.debut)} → ${reperes(decale(chose.debut, jours))}`);
+  const message = annuler(texteEffetCreux(avant, apres, effet, chose.titre) ??`${chose.titre} : ${reperes(chose.debut)} → ${reperes(decale(chose.debut, jours))}`);
   if (source.genre === 'creative') {
     const item = { date: decale(chose.debut, jours) };
     return { ok: true, ecritures: [{ op: 'patch', collection: 'creativeItems', id: source.id, patch: { ...item, ...(chose.fenetre ? { fenetre: fenetreDecalee(chose.fenetre, jours) } : {}) } }], effet, promesse: null, courbeApres: apres, message };
@@ -346,7 +376,7 @@ export function allonger(chose: ChoseCalendrier, jours: number, ctx: ContexteGes
     courbeApres = courbeAvecMise(courbeApres, miseDe(chose, fenetre), chose.id);
   }
   const effet = effetCaisse(ctx.courbe, courbeApres);
-  const message = annuler(effet ? effet.texte : `${chose.titre} : ${etiquetteS(chose.debut)} → ${etiquetteS(au)}`);
+  const message = annuler(effet ? `${chose.titre} · ${effet.texte}` : `${chose.titre} : ${etiquetteS(chose.debut)} → ${etiquetteS(au)}`);
   if (source.genre === 'creative') return { ok: true, ecritures: [{ op: 'patch', collection: 'creativeItems', id: source.id, patch: { fenetre } }], effet, promesse: null, courbeApres, message };
   const plan = planDe(chose, ctx);
   if (!plan) return refus('Cette prévision n’existe plus.', { ecran: 'finances' });
