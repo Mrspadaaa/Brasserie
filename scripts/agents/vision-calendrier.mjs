@@ -1415,7 +1415,32 @@ const ETATS = [
       p.noteEtat = m.absent ? 'fil absent' : `fil ${m.long} px, ${m.dedans.length} info(s) traversée(s)${m.dedans.length ? ' : ' + m.dedans.join(' ; ') : ''} ; fiche ${m.fiche ? (m.fiche.traverse ? (m.fiche.couvre ? 'traversée mais coupée par le masque' : 'traversée et visible') : 'évitée') : 'fermée'}`;
     },
     attendu: [fn(async p => { const m = p.filTireuse; return { ok: !!m && !m.absent && m.dedans.length === 0, dit: m ? (m.absent ? 'aucun fil allumé' : m.dedans.length + ' info(s) sous le fil' + (m.dedans.length ? ' : ' + m.dedans.slice(0, 4).join(' ; ') : '')) : 'non mesuré' }; }, 'le fil ne passe sous aucun nom, icône, jalon non lié ni pastille'),
-      fn(async p => { const m = p.filTireuse; return { ok: !!m && !m.absent && (!m.fiche || !m.fiche.traverse || m.fiche.couvre), dit: m && m.fiche ? (m.fiche.traverse ? (m.fiche.couvre ? 'traverse la fiche, trou du masque en place' : 'traverse la fiche, sans trou') : 'évite la fiche') : 'fiche fermée' }; }, 'la fiche ouverte de la Foire coupe le fil (il ne se voit pas à travers elle)')] }
+      fn(async p => { const m = p.filTireuse; return { ok: !!m && !m.absent && (!m.fiche || !m.fiche.traverse || m.fiche.couvre), dit: m && m.fiche ? (m.fiche.traverse ? (m.fiche.couvre ? 'traverse la fiche, trou du masque en place' : 'traverse la fiche, sans trou') : 'évite la fiche') : 'fiche fermée' }; }, 'la fiche ouverte de la Foire coupe le fil (il ne se voit pas à travers elle)')] },
+  /* Voie 4 (20.11) PC-NOTE-21 : « en cave à 844, glisser la Saison, choisir Mois ou toucher Lier restent sans effet ». Les trois gestes se jouent
+     dans les deux thèmes, sur la même mesure : ce qu'ils écrivent à l'écran. Un écart clair/cave ferait un défaut de l'app ou du banc. */
+  { n: 'V4b', nom: 'cave-glisser-saison', cave: true, repos: true, geste: 'glisser la Saison d’une colonne, lâcher ; lire le message et la chose sous le doigt au départ',
+    jouer: async p => {
+      const r = await trouver(p, { titre: 'Saison de ferme' });
+      p.dessousDepart = await p.evaluate(({ x, y }) => { const e = document.elementFromPoint(x, y); return `${e?.tagName.toLowerCase()}.${String(e?.className?.baseVal ?? e?.className ?? '').slice(0, 30)}`; }, { x: r.x, y: r.y });
+      await glisserChose(p, 'Saison de ferme', 1); await attendre(700);
+      p.message = await messageLu(p); p.noteEtat = `sous le doigt : ${p.dessousDepart} ; message « ${(p.message || '').slice(0, 80)} »`;
+    },
+    attendu: [fn(async p => ({ ok: /Saison/.test(p.message || ''), dit: `message « ${(p.message || 'aucun').slice(0, 90)} »` }), 'le glissé de la Saison écrit son message (il nomme la Saison)')] },
+  { n: 'V4c', nom: 'cave-echelle-mois', cave: true, repos: true, geste: 'menu de période, échelle Mois ; lire le sélecteur et le message',
+    jouer: async p => {
+      await toucher(p, { data: 'data-ent-periode' }); await attendre(400);
+      await toucher(p, { data: 'data-echelle="mois"' }); await attendre(1200);
+      p.message = await messageLu(p); p.periode = await periodeLue(p); p.noteEtat = `sélecteur « ${p.periode} » ; message « ${(p.message || '').slice(0, 80)} »`;
+    },
+    attendu: [fn(async p => ({ ok: /6 mois/.test(p.periode || '') && /Échelle Mois/.test(p.message || ''), dit: `sélecteur « ${p.periode} », message « ${(p.message || 'aucun').slice(0, 70)} »` }), 'l’échelle Mois est appliquée (6 mois) et le message le dit')] },
+  { n: 'V4d', nom: 'cave-lier-foire', cave: true, repos: true, geste: 'toucher la Foire, puis Lier dans sa fiche ; lire la liste des brassins à lier',
+    jouer: async p => {
+      await toucher(p, { titre: 'Foire' }); await attendre(1400);
+      await toucher(p, { dans: { sel: '.cal-det' }, texte: /^Lier$/ }); await attendre(900);
+      p.liste = await p.evaluate(() => [...document.querySelectorAll('.cal-det button')].map(b => (b.textContent || '').trim()).filter(t => /Blonde|Porter|Saison|Stout|IPA|Ambrée/.test(t)).join(' | '));
+      p.noteEtat = `liste de liaison : ${p.liste || 'absente'}`;
+    },
+    attendu: [fn(async p => ({ ok: /Blonde d’automne/.test(p.liste || ''), dit: `liste « ${(p.liste || 'absente').slice(0, 90)} »` }), 'Lier ouvre la liste des brassins à lier')] }
 ];
 /* ---------- CRITIQUE-10 : dates du banc (posé par rapport au jour) et lectures ---------- */
 /** Le lundi de la semaine en cours (UTC), comme le banc (`lundiDe(aujourdhui)`). */
