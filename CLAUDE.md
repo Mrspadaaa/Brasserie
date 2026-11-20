@@ -100,7 +100,7 @@ Système complet : `docs/agents/systeme.md`.
   « REPRISE : <fichier> » ; un fichier inchangé ne se relit pas ; un agent générique nomme son modèle ; le pilote relance dans un agent neuf (10.11 : 82 % des 3,8 Md relus venaient d'agents > 250 k). Mesure : `node scripts/agents/jetons.mjs`.
   Appliqué par hooks utilisateur (`~/.claude/hooks/`, source `.claude/hooks/economie.mjs` et `rc-sessions.mjs`) :
   pas de relance d’un échec, allers-retours comptés, messages ≤ 700 car., aucun rapport de progrès,
-  un seul récapitulatif à la fin ; toute session lancée passe en /rc on.
+  un seul récapitulatif à la fin ; toute session lancée passe en /rc on. Une session lancée lance ses agents au premier plan et ne clôt son tour qu’au récap ou sur un blocage (chaque fin de tour réveille la parente) ; un critique fait ses captures en un script groupé (20.11).
 - Arrêter la recherche quand les preuves permettent la décision. Grouper les
   lectures indépendantes ; garder les longs journaux en fichiers et remonter
   résultats, erreurs utiles et références. Les tests déjà verts se rejouent pour
