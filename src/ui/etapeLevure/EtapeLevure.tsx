@@ -177,7 +177,9 @@ export function EtapeLevure(p: PropsEtapeLevure) {
   const primaire = (recipe.fermentation ?? []).find(f => f.kind === 'primaire') ?? (recipe.fermentation ?? [])[0];
   const style = inferYeastRecipeStyle(recipe);
   const tPrimaire = Number.isFinite(primaire?.tempC) ? primaire!.tempC : undefined;
-  const reperes = useMemo(() => ({ temperatureC: tPrimaire, volumeL: recipe.volumeL, abvVise, ogVisee: recipe.ogTarget ?? undefined, styleId: style === 'unknown' ? undefined : style }),
+  // Un repère sans valeur (volume saisi « r », OG vide : NaN) n'est pas transmis : les vues afficheraient « NaN L » (monkey, graine 3, 20.11).
+  const fini = (n: number | null | undefined) => (typeof n === 'number' && Number.isFinite(n) ? n : undefined);
+  const reperes = useMemo(() => ({ temperatureC: tPrimaire, volumeL: fini(recipe.volumeL), abvVise: fini(abvVise), ogVisee: fini(recipe.ogTarget), styleId: style === 'unknown' ? undefined : style }),
     [tPrimaire, recipe.volumeL, abvVise, recipe.ogTarget, style]);
   const props: PropsVue = {
     base: levure,
