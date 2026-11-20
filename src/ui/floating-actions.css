@@ -143,3 +143,16 @@ body[data-has-fab] [data-floating-actions-gap="true"] {
     padding-right: 4.75rem;
   }
 }
+
+/* k2, points 19 et 20 (20.11, critique) : AU REPOS, le + (64 px, 12 px du bord) recouvrait le texte d'un plan d'eau incompatible sur l'écran NOLO (390), et il touchait presque
+   « Suivant — Houblons » (11 px d'écart) : au pouce, un bouton pour l'autre. Même gouttière de 76 px que T3-10 et k1 : les textes de l'écran NOLO la gardent à leur droite ;
+   la rangée « Suivant » prend 88 px (24 px d'air entre les deux boutons). Sous 1024 px et seulement quand le + flotte. Le sélecteur de la rangée répète l'attribut : il passe devant la règle de page-shell.css. */
+@media (max-width: 1023px) {
+  :root body[data-has-fab-floating] .nolo-simulator :is(p, ul) {
+    padding-right: 4.75rem;
+  }
+
+  :root body[data-has-fab-floating] .page-shell [data-page-end-actions][data-page-end-actions] {
+    padding-right: 5.5rem;
+  }
+}

@@ -151,7 +151,7 @@ describe('BR-19 — la bascule de famille dit où l’on est parmi les cinq', ()
   it('cinq noms, une seule famille marquée ; elle avance à chaque toucher', async () => {
     const u = userEvent.setup();
     render(<Banc5 />);
-    const pos = () => [...document.querySelectorAll('[data-role="fam-noms"] button')].map((p) => p.getAttribute('aria-current') === 'true');
+    const pos = () => [...document.querySelectorAll('[data-role="fam-noms"] .fer-nom')].map((p) => p.getAttribute('aria-current') === 'true');
     expect(pos()).toEqual([true, false, false, false, false]);
     await u.click(document.querySelector('[data-role="fam"]')!);
     expect(pos()).toEqual([false, true, false, false, false]);

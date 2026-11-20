@@ -16,7 +16,7 @@
 
 /* N3 (banc d'actionneurs) : un nom très long passe à la ligne, dans la ligne comme dans le plateau, au lieu de filer sous « kg » et hors de l'écran. */
 .recipe-wizard .fer .fer-nm b { white-space: normal; overflow-wrap: anywhere; }
-.recipe-wizard .fer button.fer-nom { height: auto; min-height: 24px; text-align: left; }
+.recipe-wizard .fer span.fer-nom { height: auto; min-height: 24px; text-align: left; }
 .recipe-wizard .fer .fer-bh b { white-space: normal; flex-shrink: 1; min-width: 0; overflow-wrap: anywhere; }
 
 /* n° 6 : plusieurs retraits en attente d'annulation : « 1 de plus » sous le nom barré, sans pousser « Annuler ». */
@@ -48,8 +48,8 @@
 .fer button.fer-pl { min-width: 24px; justify-content: center; }
 /* T3B-9 (BR-19, 2e passe) : les cinq familles de l'ajout nommées sous le champ ; la courante en plein, les autres en gris secondaire (≥ 4,5:1 sur le fond du plateau). */
 .fer .fer-noms { display: flex; flex-wrap: wrap; align-items: center; gap: 2px 4px; margin: 4px 0 2px; }
-.fer button.fer-nom { height: 24px; padding: 0 7px; border-radius: 10px; border: 1px solid transparent; background: transparent; font-size: 12px; color: var(--f-t1); white-space: nowrap; }
-.fer button.fer-nom[aria-current='true'] { color: var(--f-t0); font-weight: 600; border-color: var(--f-bordm); background: var(--f-panel); }
+.fer span.fer-nom { display: inline-flex; align-items: center; height: 24px; padding: 0 7px; border-radius: 10px; border: 1px solid transparent; background: transparent; font-size: 12px; color: var(--f-t1); white-space: nowrap; }
+.fer span.fer-nom[aria-current='true'] { color: var(--f-t0); font-weight: 600; border-color: var(--f-bordm); background: var(--f-panel); }
 
 /* k1 point 13 : une pastille de malt très sombre (≥ 60 EBC) était noire sur le fond noir de la cave : liseré clair, même taille (la bordure remplace la bordure sombre). */
 .fer button.fer-pas.fer-sombre, .fer .fer-bpas.fer-sombre { border: 1.5px solid var(--f-t1); }

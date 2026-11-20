@@ -761,7 +761,7 @@ describe('Recipe data entry regressions', () => {
     step(/^Malts.sucres$/);
     // D226 : à cette étape, la fiche technique du malt (couleur, PPG) est la ligne « PPG — · fiche › » du plateau, plus le résumé « Base · 4 EBC · modifier » sous la ligne.
     // Mêmes valeurs saisies (9,5 EBC) et même recette vérifiée à l'enregistrement ; le récapitulatif garde `MaltDetails` (« Base · 9.5 EBC »).
-    fireEvent.click(screen.getByRole('button', { name: /^Fiche technique de Pilsner : PPG/ }));
+    fireEvent.click(screen.getByRole('button', { name: /^Fiche technique de Pilsner : potentiel d’extrait/ }));
     change(screen.getByLabelText('Couleur de Pilsner en EBC'), '9,5');
     step(/^Récapitulatif$/);
     fireEvent.click(screen.getByText(/Base · 9.5 EBC/));

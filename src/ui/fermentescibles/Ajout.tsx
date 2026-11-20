@@ -248,12 +248,13 @@ export const Ajout: React.FC<AjoutProps> = ({ famille, familles, defs, onFamille
           )}
         </span>
       </label>
-      {/* T3B-9 (BR-19, 2e passe) : cinq points ne nomment rien. Les cinq familles se lisent au repos, la courante est marquée ; un nom la choisit d'un toucher (la bascule garde son tour). */}
+      {/* T3B-9 (BR-19, 2e passe) : cinq points ne nomment rien. Les cinq familles se lisent au repos, la courante est marquée. k2 point 21 : c'est une LÉGENDE, pas une seconde commande :
+          la bascule « Grain ⇄ » de sa maquette s1 (règle n° 1) reste le seul geste de choix (lecture étroite ; une rangée de noms qui choisit aussi doublait la commande). Le lecteur d'écran
+          a déjà la bascule (« Famille de l'ajout : Grain. Toucher : Sucre ») : la légende lui est cachée. */}
       {familles.length > 2 && (
-        <div className="fer-noms" role="group" aria-label="Famille de l’ajout" data-role="fam-noms">
+        <div className="fer-noms" aria-hidden="true" data-role="fam-noms">
           {familles.map((k) => (
-            <button key={k} type="button" className="fer-nom" aria-current={k === famille ? 'true' : undefined} aria-pressed={k === famille}
-              onMouseDown={(e) => e.preventDefault()} onClick={(e) => { e.preventDefault(); if (k !== famille) { onFamille(k); reinit(); } }}>{defs[k].label}</button>
+            <span key={k} className="fer-nom" aria-current={k === famille ? 'true' : undefined}>{defs[k].label}</span>
           ))}
         </div>
       )}

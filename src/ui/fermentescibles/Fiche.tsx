@@ -63,9 +63,10 @@ export const Fiche: React.FC<{
   const ppg = malt.potentialPpg != null ? formatDecimal(malt.potentialPpg) : '—';
   return (
     <div className="fer-fi" data-role="fiche-zone">
-      <button type="button" className="fer-fi-bt" data-role="fiche" aria-expanded={ouverte} aria-label={`Fiche technique de ${malt.name} : PPG ${ppg}`}
+      <button type="button" className="fer-fi-bt" data-role="fiche" aria-expanded={ouverte} aria-label={`Fiche technique de ${malt.name} : potentiel d’extrait ${ppg}`}
         onClick={() => setOuverte((o) => !o)}>
-        <span>PPG <b>{ppg}</b> · fiche</span><i aria-hidden="true">›</i>
+        {/* k2 point 17 : « PPG » est une unité de calculette ; le pied de carte dit « potentiel » (l'unité reste dans la fiche, au champ). */}
+        <span>potentiel <b>{ppg}</b> · fiche</span><i aria-hidden="true">›</i>
       </button>
       {ouverte && (
         <div className="fer-fi-corps">

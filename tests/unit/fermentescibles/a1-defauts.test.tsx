@@ -103,7 +103,7 @@ describe('MV-11 — un PPG hors bornes ne laisse pas son préfixe', () => {
     render(<Banc depart={[pale, fruit]} />);
     await u.click(document.querySelectorAll<HTMLElement>('[data-role="nom"]')[1]);
     const bouton = document.querySelector<HTMLElement>('[data-role="fiche"]')!;
-    expect(bouton.textContent).toMatch(/PPG\s*—/);
+    expect(bouton.textContent).toMatch(/potentiel\s*—/); // k2 point 17 : « PPG » devient « potentiel » au pied de carte
     await u.click(bouton);
     await u.type(screen.getByLabelText(/Potentiel de Mangue en PPG/), '9');
     expect(courant[1].potentialPpg).toBe(9);

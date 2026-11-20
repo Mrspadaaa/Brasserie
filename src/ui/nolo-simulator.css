@@ -1,6 +1,6 @@
 .nolo-simulator { min-width: 0; display: grid; gap: 8px; font-size: 12px; line-height: 1.35; }
 .nolo-simulator p { margin: 0; }
-.nolo-simulator select, .nolo-simulator .nolo-number { width: 100%; min-width: 0; height: 28px; min-height: 28px; padding: 2px 6px; border: 1px solid var(--border-color, rgb(var(--c-4d4138))); border-radius: 6px; background: rgb(var(--c-231e19)); color: rgb(var(--ct-ede9e1)); font-size: 16px; line-height: 20px; }
+.nolo-simulator select, .nolo-simulator .nolo-number { width: 100%; min-width: 0; height: 28px; min-height: 28px; padding: 2px 6px; border: 1px solid var(--border-color, rgb(var(--c-4d4138))); border-radius: 6px; background: rgb(var(--cave-950)); color: rgb(var(--cave-50)); font-size: 16px; line-height: 20px; }
 .nolo-simulator :is(select, input, button, summary):focus-visible { outline: 2px solid rgb(var(--c-8fbfd5)); outline-offset: 2px; }
 .nolo-solver-goal { display: grid; grid-template-columns: minmax(0, 1.65fr) minmax(92px, 1fr); gap: 8px; align-items: end; }
 .nolo-solver-goal label, .nolo-solver-yeast { display: grid; gap: 3px; min-width: 0; color: rgb(var(--ct-cbbcaf)); }
@@ -45,3 +45,8 @@
 .nolo-solver-details p, .nolo-solver-details li { color: rgb(var(--ct-b4a294)); }
 .nolo-solver-notice { color: rgb(var(--ct-b9d0a7)); }
 @media (min-width: 640px) { .nolo-solver-knobs { grid-template-columns: repeat(3, minmax(0, 1fr)); } .nolo-range-setting { grid-column: span 2; } }
+
+/* k2 point 23 : les champs étaient en texte brun sur fond gris (jeton « teinte » sur fond de carte) : ils se lisaient désactivés alors qu'on les saisit. Fond et encre de champ
+   comme les autres champs de l'app (blanc et encre sombre en clair, fond sombre et encre claire en cave). */
+/* k2 point 18 : « 8–25 % » ne se coupe pas : le % ne reste jamais seul sur la ligne suivante. */
+.nolo-sans-coupure { white-space: nowrap; }

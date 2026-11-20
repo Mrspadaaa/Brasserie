@@ -60,6 +60,11 @@ function RangeSetting({ label, value, unit, onChange, min = 0, max = 100, digits
 /** k1 point 6 : un manque qui tient au moteur (souche ou procédé sans relation) n'est pas une donnée que le brasseur peut saisir ; on ne le renvoie pas à « compléter ». */
 const manqueDuMoteur = (manque?: string) => !!manque && /absente? pour cette souche|absent de cette édition/i.test(manque);
 
+/** T3B-7 (k2 point 17) : « PPG » (points par livre et par gallon) est une unité de calculette, pas un mot de brasseur. Le moteur garde sa phrase ; l'écran dit « potentiel d'extrait ». */
+export const enMotsDeBrasseur = (message: string) => message
+  .replace(/les potentiels PPG/gi, 'le potentiel d’extrait')
+  .replace(/(p)otentiels? PPG/gi, (_tout, p: string) => `${p}otentiel d’extrait`);
+
 /** A bounded interval on an honest shared scale; the goal is a limit, not a mean. */
 function SimulationRange({ bound, target, current, manque }: { bound: NoloBound; target: number; current: NoloBound | null; manque?: string }) {
   const limit = Math.max(.6, Math.ceil(Math.max(bound.max ?? target, target) * 10) / 10 + .1);
@@ -82,7 +87,7 @@ function SimulationRange({ bound, target, current, manque }: { bound: NoloBound;
     {/* TE-14 : « Données manquantes » seul ne disait pas lesquelles ; on nomme la prochaine donnée à compléter (celle que le moteur demande). */}
     <p className="text-cave-400">Recette actuelle : {current && (current.max !== null || current.min > 0) ? noloDisplayRangeLabel(current)
       : manqueDuMoteur(manque) ? 'projection indisponible pour cette souche et ce procédé.'
-      : `à compléter${manque ? ` — ${manque.charAt(0).toLowerCase()}${manque.slice(1)}` : ' (données de la recette manquantes)'}`}</p>
+      : `à compléter${manque ? ` — ${enMotsDeBrasseur(manque.charAt(0).toLowerCase() + manque.slice(1))}` : ' (données de la recette manquantes)'}`}</p>
     <p className="sr-only" aria-live="polite" aria-atomic="true">Estimation : {noloDisplayRangeLabel(bound)} ; cible au maximum {number(target)} % vol.{bound.max != null && bound.max > target ? ' Dépassement de la cible.' : ''}</p>
   </figure>;
 }
@@ -131,6 +136,10 @@ export function NoloRecipeSimulator({ recipe, onChange, science, saved = emptyKn
       acidPlanned: !!plan.acid };
   })();
   const waterBlocked = proposedWater?.fit?.planningStatus === 'invalid' || proposedWater?.fit?.planningStatus === 'impossible';
+  // k2 point 16 : le dépliant s'ouvre seul quand une saisie est invalide, ou quand le plan d'eau est LE SEUL motif du bouton grisé (sinon la liste d'alertes du premier plan
+  // dit déjà le blocage — « Volume avant ébullition supérieur… » — et le détail reste replié : la capture du 20.11 le montrait ouvert, donc un cockpit).
+  const motifEauSeul = waterBlocked && (proposal?.blocking.length ?? 0) === 0;
+  const alerteEau = waterBlocked ? <p role="alert" className="text-alert-strong">Plan d’eau incompatible avec le matériel : {proposedWater!.fit!.issues.join(' ')}</p> : null;
   const evalCourante = useMemo(() => { try { return evaluateNoloRecipe(sourceRecipe, saved) ?? null; } catch { return null; } }, [sourceRecipe, saved]);
   const current = evalCourante?.projection ?? null;
   const choose = () => { setEdited(null); setError(''); setNotice(''); };
@@ -170,15 +179,15 @@ export function NoloRecipeSimulator({ recipe, onChange, science, saved = emptyKn
     {invalidFields.length > 0 && <p role="alert" className="nolo-error">Saisie à corriger : {invalidFields.join(', ')}. Entrer un nombre dans les limites du champ.</p>}
     {proposal && s && <>
       <SimulationRange bound={!invalidFields.length && proposal.result?.projection || { min: 0, max: null, kind: 'unknown', confidence: 'low' }} target={target} current={current} manque={evalCourante?.nextAction}/>
-      {proposal.blocking.length > 0 && <ul role="alert" className="nolo-solver-errors">{proposal.blocking.map((message, index) => <li key={index}>{message}</li>)}</ul>}
+      {proposal.blocking.length > 0 && <ul role="alert" className="nolo-solver-errors">{proposal.blocking.map((message, index) => <li key={index}>{enMotsDeBrasseur(message)}</li>)}</ul>}
       <div className="nolo-solver-actions">
         <button type="button" className="nolo-solver-apply" disabled={stale || !!error || invalidFields.length > 0 || proposal.blocking.length > 0 || waterBlocked} onClick={apply}><Sparkles size={14} aria-hidden="true"/>Appliquer à la {variant ? 'variante' : 'recette'}</button>
         <button type="button" className="nolo-solver-reset" onClick={() => { choose(); setResetKey(key => key + 1); }} title="Revenir aux réglages préremplis depuis la recette et la consigne"><RotateCcw size={13} aria-hidden="true"/>Réinitialiser</button>
       </div>
       {/* TE-15, T3B-7 (lecture étroite, 2e passe) : au premier plan, le procédé, la consigne, la levure, la plage et « Appliquer » ; TOUT le reste (réglages préremplis, programme, champs,
           hypothèses, outils, catalogue, bilan : 7 dépliants le 20.11) tient derrière un seul dépliant, ouvert seul si une saisie est invalide ou l'eau bloquée. Réversible : défaire le `<details>`. */}
-      <details className="nolo-solver-details nolo-solver-hypotheses" open={invalidFields.length > 0 || waterBlocked || undefined}>
-      <summary>Réglages et détails du calcul · densité {number(s.ogSg, 3)} · atténuation {number(s.attenuationPct.min, 1)}–{number(s.attenuationPct.max, 1)} %</summary>
+      <details className="nolo-solver-details nolo-solver-hypotheses" open={invalidFields.length > 0 || motifEauSeul || undefined}>
+      <summary>Réglages et détails du calcul · densité {number(s.ogSg, 3)} · atténuation <span className="nolo-sans-coupure">{number(s.attenuationPct.min, 1)}–{number(s.attenuationPct.max, 1)}&nbsp;%</span></summary>
       <div className="nolo-solver-knobs" aria-label="Réglages préremplis de la simulation">
         <Setting label="Densité initiale visée" value={s.ogSg} min={1} max={1.3} digits={3} slider={{ min: 1, max: Math.max(1.025, s.ogSg * 1.02), step: .001 }} onChange={ogSg => adjust({ ogSg })}/>
         {process !== 'secondRunnings' && <Setting label="Charge de grain" value={baseGrainKg * s.grainScale} unit="kg" max={100000} digits={3} onChange={value => { if (baseGrainKg > 0) adjust({ grainScale: value / baseGrainKg }); }}/ >}
@@ -204,7 +213,7 @@ export function NoloRecipeSimulator({ recipe, onChange, science, saved = emptyKn
         {proposedWater.ratio !== null && <p>Ratio atteint <strong className="reading text-cave-50">{number(proposedWater.ratio)} L/kg</strong>{Math.abs(proposedWater.ratio - s.mashRatioLKg) > 0.05 && <> · consigne {number(s.mashRatioLKg)} L/kg adaptée par le matériel</>}.</p>}
         {proposedWater.modelIssue && <p className="text-ebc-amber">{proposedWater.modelIssue} {proposedWater.acidPlanned ? 'Vérifier la dose d’acide retenue par mesure.' : 'Aucune dose d’acide calculée ; mesurer ou titrer avant de doser.'}</p>}
         {!proposedWater.fit && !proposal.recipe.brewhouse?.equipment && <p className="text-ebc-amber">Matériel non figé : vérifier la capacité de cette répartition avant le brassin.</p>}
-        {waterBlocked && <p role="alert" className="text-alert-strong">Plan d’eau incompatible avec le matériel : {proposedWater.fit!.issues.join(' ')}</p>}
+        {alerteEau}
         {proposedWater.fit?.planningStatus === 'exception' && <p className="text-ebc-amber">{proposedWater.fit.issues.join(' ')}</p>}
       </div>}
       <details className="nolo-solver-details"><summary>Programme prérempli · {number(s.yeastQty)} {s.yeastUnit} · {number(s.fermentationDays)} j</summary>

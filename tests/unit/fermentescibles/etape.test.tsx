@@ -277,12 +277,13 @@ describe('l\'étape Malts/sucres (s1)', () => {
     expect(masse(0).getAttribute('inputmode')).toBe('decimal');
   });
 
-  it('la fiche technique est une ligne du plateau : « PPG — · fiche › », un toucher l’ouvre, le PPG se tape depuis la recette', async () => {
+  it('la fiche technique est une ligne du plateau : « potentiel — · fiche › », un toucher l’ouvre, le PPG se tape depuis la recette', async () => {
     const u = userEvent.setup();
     render(<Banc />);
     const bal = document.querySelector<HTMLElement>('[data-role="bal"]')!;
-    const bt = within(bal).getByRole('button', { name: /Fiche technique de Pilsner Malz : PPG —/ });
-    expect(bt.textContent).toContain('PPG');
+    const bt = within(bal).getByRole('button', { name: /Fiche technique de Pilsner Malz : potentiel d’extrait —/ });
+    expect(bt.textContent).toContain('potentiel');
+    expect(bt.textContent).not.toContain('PPG');
     expect(bt.textContent).toContain('fiche');
     expect(document.body.textContent).not.toContain('Données de fiche à compléter');
     expect(screen.queryByRole('textbox', { name: /Potentiel de Pilsner Malz/ })).toBeNull();

@@ -237,7 +237,10 @@ export const EtapeFermentescibles: React.FC<EtapeFermentesciblesProps> = ({
     if (kg != null) requestAnimationFrame(versAjout);
   };
   const creer = (nom: string, kg: number | null, fam: FermentableKind = famille) => {
-    const cree = onCreateStockItem(nom, defs[fam].newCat, 'kg');
+    // k2 point 22 (MV-8) : une épice (coriandre, zeste…) n'est pas un malt. Elle entre au stock dans la catégorie « Additif » (existante : rayon « Sels et additifs »), jamais dans le
+    // rayon Malt de la famille courante, qui lui donnerait un potentiel et une couleur de malt. Son unité reste le kg de la ligne (la masse de la recette est en kg).
+    const categorie = estEpice(nom) ? 'Additif' : defs[fam].newCat;
+    const cree = onCreateStockItem(nom, categorie, 'kg');
     ajouterLigne(cree.name, cree, kg, fam);
     if (kg != null) requestAnimationFrame(versAjout);
   };
