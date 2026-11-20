@@ -220,6 +220,14 @@ button.ops-pile:focus-visible { outline:2px solid var(--finance-accent,rgb(var(-
   .ops > .ops-bande { grid-column:1; grid-row:1 / span 12; position:sticky; top:0; }
 }
 
+/* T3-9 (19.11) : un téléphone couché (844×340) n'a que ~215 px de hauteur utile ; le graphe, la frise et la légende empilés la remplissaient, aucune opération sans défiler.
+   Même disposition que l'ordinateur (graphe à gauche, liste à droite), plus basse et sans coller : la bande, plus haute que l'écran, défile avec la page. */
+@media (min-width:600px) and (max-width:899px) and (max-height:520px) {
+  .ops { --ops-haut: 56px; display:grid; grid-template-columns:minmax(300px,44%) minmax(0,1fr); gap:0 16px; align-items:start; }
+  .ops > * { grid-column:2; }
+  .ops > .ops-bande { grid-column:1; grid-row:1 / span 12; }
+}
+
 /* « Pas de graph ? » (10.11) : la bande vide le dit. */
 .ops-vide[data-piles] { min-height:calc(var(--ops-haut) + 34px); display:flex; align-items:center; justify-content:center; box-sizing:border-box; }
 .ops-vide { margin: 8px 0 0; padding: 12px; border: 1px dashed rgb(var(--ligne, 200 200 200)); border-radius: 8px; text-align: center; color: rgb(var(--texte-doux, 90 100 110)); font-size: 13px; background: repeating-linear-gradient(135deg, transparent 0 6px, rgb(0 0 0 / .04) 6px 8px); }
