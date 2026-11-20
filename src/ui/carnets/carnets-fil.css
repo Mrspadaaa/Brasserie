@@ -9,6 +9,16 @@
 @media (min-width: 900px) {
   [data-carnets] > .cn-champ-zone { max-width: 760px; margin-left: auto; margin-right: auto; padding-right: 12px; }
 }
+/* f13 tour 3 (critique n° 4, g5:v04-4) : à 390, le champ part du bord de la liste, pas 12 px plus à droite */
+@media (max-width: 899px) {
+  /* la liste garde son retrait (ses cartes sont à 24 px du bord, le champ aussi) ; carnet et fiche commencent au bord de la colonne */
+  [data-carnets]:not([data-vue=liste]) > .cn-champ-zone { padding-left: 0; }
+  /* le texte de sa maquette tient entier à 390 (« Écrire, ou coller un lien… », 172 px) : pictos resserrés comme g5:v04-4 */
+  [data-carnets]:not([data-vue=liste]) .cn-champ { gap: 4px; padding-left: 12px; }
+}
+/* f13 tour 3 (critique n° 5) : clavier ouvert, la zone qui défile garde de la place en bas, pour que le défilement automatique puisse
+   cacher entière la ligne que son bord haut trancherait (ChampCarnet, sansLigneCoupee) */
+[data-carnets]:has(> .cn-champ-zone[data-clavier]) > .cn-defile { padding-bottom: 56px; }
 
 /* P37 : clavier ouvert, la bulle G8 et « Coller » sur une seule ligne ; chacune se tronque plutôt que de prendre deux lignes. */
 .cnf-aides { display: flex; flex-direction: column; gap: 8px; align-items: stretch; }

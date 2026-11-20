@@ -85,7 +85,7 @@ describe('PCN-27 (R11, g5:v04-4) : Créer · après, porté de sa maquette', () 
     expect([...enc.children].map(texte)).toEqual(['Idée · 17 nov.', "Ensuite : l'IA cherche les façons"]);
     const ordre = [...c.querySelectorAll('.cn-titre-ligne, .cn-encadre-idee, .cn-bandeau')].map(x => x.className.split(' ')[0]);
     expect(ordre).toEqual(['cn-titre-ligne', 'cn-encadre-idee', 'cn-bandeau']);
-    expect(css('carnets.css')).toMatch(/\.cn-encadre-idee\s*\{[^}]*background:\s*var\(--c-attbg\)/);
+    expect(css('carnets.css')).toMatch(/\.cn-encadre-idee\s*\{[^}]*background:[^;]*var\(--c-attbg\)/); /* f13 tour 3 (n° 2) : la teinte posée sur le fond de la page */
   });
 
   it('les rubriques de la maquette, Photos · aucune comprise', () => {

@@ -24,6 +24,9 @@ export interface ChampCarnetProps {
   onEnvoyer: () => void;
   /** Titre du carnet ouvert : le champ dit où ça va (G7). Absent : on est sur la liste. */
   titreCarnet?: string;
+  /** f13 tour 3 (critique n° 4, g5:v04-4) : le texte du champ vide, quand la vue en veut un autre que « Ajouter à … » (carnet tout juste créé :
+   *  « Écrire, ou coller un lien… »). Le libellé lu dit toujours où ça va. */
+  invite?: string;
   /** « Enregistrer » pendant une modification de note (R20), « Renommer » ne passe pas ici (R21 a son cadre). */
   libelleEnvoi?: string;
   onPhoto?: (fichier: File) => void;
@@ -238,6 +241,37 @@ function useChampPublie(zone: React.RefObject<HTMLDivElement | null>, inset: num
  * champ (12 px d'air : elle se lit entière, rien n'est tranché au bord de la zone). L'app fait défiler la zone voisine, pas le doigt ; on
  * attend que le clavier ait fini de s'ouvrir (le retrait change en s'ouvrant). Sans note, rien ne bouge.
  */
+/**
+ * f13 tour 3 (critique n° 5) : de combien défiler en plus pour que le bord haut de la zone qui défile (« bord », en coordonnées d'avant le
+ * défilement) ne tranche aucune ligne : lignes de texte et petites boîtes (pictos, puces, ≤ 48 px). La ligne coupée passe entière au-dessus
+ * du bord ; au-delà de 56 px, ou plus loin que la page ne défile (« reste »), rien (0) : la dernière note reste juste au-dessus du champ.
+ */
+export function sansLigneCoupee(d: Element, bord: number, reste: number): number {
+  const lignes: { top: number; bottom: number }[] = [];
+  for (const e of d.querySelectorAll('*')) {
+    const b = e.getBoundingClientRect();
+    if (b.height > 0 && b.height <= 48) lignes.push(b);
+  }
+  const r = typeof document.createRange === 'function' ? document.createRange() : null;
+  if (r && typeof r.getClientRects === 'function') {
+    const w = document.createTreeWalker(d, NodeFilter.SHOW_TEXT);
+    for (let n = w.nextNode(); n; n = w.nextNode()) {
+      if (!n.textContent?.trim()) continue;
+      r.selectNodeContents(n);
+      for (const b of r.getClientRects()) if (b.height > 0) lignes.push(b);
+    }
+  }
+  let e = bord, plus = 0;
+  for (let i = 0; i < 8; i++) {
+    const coupees = lignes.filter(l => l.top < e - 0.5 && l.bottom > e + 0.5);
+    if (!coupees.length) return Math.round(plus);
+    const bas = Math.max(...coupees.map(l => l.bottom));
+    plus += bas - e; e = bas;
+    if (plus > 56 || plus > reste) return 0;
+  }
+  return 0;
+}
+
 function useDerniereNoteAuDessus(zone: React.RefObject<HTMLDivElement | null>, actif: boolean, inset: number) {
   useEffect(() => {
     if (!actif) return;
@@ -250,7 +284,10 @@ function useDerniereNoteAuDessus(zone: React.RefObject<HTMLDivElement | null>, a
       const d = defileurDe(el);
       if (!derniere || !d) return;
       const delta = Math.round(derniere.getBoundingClientRect().bottom - (el.getBoundingClientRect().top - 12));
-      if (Math.abs(delta) > 1) d.scrollBy?.({ top: delta });
+      /* f13 tour 3 (critique n° 5) : le haut de la zone ne tranche aucune ligne : on défile encore de quoi la cacher entière */
+      const reste = d.scrollHeight - d.clientHeight - d.scrollTop - delta;
+      const total = delta + sansLigneCoupee(d, d.getBoundingClientRect().top + delta, reste);
+      if (Math.abs(total) > 1) d.scrollBy?.({ top: total });
     }, 40);
     return () => window.clearTimeout(t);
   }, [zone, actif, inset]);
@@ -279,7 +316,9 @@ export function ChampCarnet(p: ChampCarnetProps) {
   }, []);
   const mesurer = placeTexte > 0 ? mesureurDe(zoneTexte.current) : null;
   const titreVu = p.titreCarnet ? (mesurer ? titreQuiTient(titreAffiche(p.titreCarnet), placeTexte - 2, mesurer) : large ? titreAffiche(p.titreCarnet) : titreCourt(titreAffiche(p.titreCarnet))) : '';
-  const placeholder = ecoute ? 'J’écoute…' : dansCarnet ? (mesurer ? placeholderCarnet(titreAffiche(p.titreCarnet!), placeTexte - 2, mesurer) : `Ajouter à ${titreVu}${titreVu.endsWith('…') ? '' : '…'}`) : 'Une idée, un besoin…';
+  /* f13 tour 3 (n° 4) : le texte voulu par la vue, s'il tient (mesuré) ; sinon sans sa virgule (« Écrire ou coller un lien… ») */
+  const invite = p.invite && dansCarnet ? ([p.invite, p.invite.replace(', ou ', ' ou ')].find(t => !mesurer || mesurer(t) <= placeTexte - 2) ?? p.invite.replace(', ou ', ' ou ')) : null;
+  const placeholder = ecoute ? 'J’écoute…' : invite ? invite : dansCarnet ? (mesurer ? placeholderCarnet(titreAffiche(p.titreCarnet!), placeTexte - 2, mesurer) : `Ajouter à ${titreVu}${titreVu.endsWith('…') ? '' : '…'}`) : 'Une idée, un besoin…';
   const libelle = dansCarnet ? `Ajouter à ${titreAffiche(p.titreCarnet!)}…` : 'Une idée, un besoin…';
   /* Critique 5, n° 42 : un seul habit d'envoi partout, le bouton vert à mot des maquettes du champ qui tape (g5:v02-10, v03-7, v07-10,
      v01-15 sur la liste) : « Ajouter », et « Enregistrer » ou « Renommer » quand le champ modifie. */

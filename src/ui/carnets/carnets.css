@@ -259,7 +259,8 @@
 .cn-renommer { gap: 8px; }
 
 /* Champ (R24, R27) */
-.cn-champ-zone { position: sticky; z-index: 5; display: flex; flex-direction: column; gap: 8px; padding: 8px 76px 8px 12px; background: var(--c-bg); border-top: 1px solid var(--c-line); }
+.cn-champ-zone { position: sticky; z-index: 5; display: flex; flex-direction: column; gap: 8px; padding: 8px 76px 8px 12px; background: var(--c-bg); }
+/* f13 tour 3 : plus de filet gris au-dessus du champ (absent de g5:v04-4, règle n° 1) */
 .cn-champ-zone[aria-disabled=true] { opacity: .45; }
 .cn-champ { display: flex; align-items: flex-end; gap: 8px; min-height: 52px; padding: 4px 4px 4px 14px; border: 1.5px solid var(--c-line2); border-radius: 16px; background: var(--c-bg); }
 .cn-champ-focus { border-color: var(--c-zone); box-shadow: 0 0 0 3px rgb(var(--area-stocks) / .2); }
@@ -383,11 +384,17 @@
    d'un bord à l'autre, fermée par un filet. */
 .cn-bande { display: flex; flex-direction: column; gap: inherit; margin: -2px -12px 0; padding: 2px 12px 12px; background: rgb(var(--area-stocks) / .08); border-bottom: 1px solid var(--c-line); }
 @media (min-width: 900px) { .cn-bande { margin-top: -8px; padding-top: 8px; } }
+/* f13 tour 3 (critique n° 1, g5:v04-4) : à 390, la zone qui défile (.cn-defile, bloc 899 plus bas) s'élargit aux bords de l'écran sous la bande (le contenu garde sa place) :
+   la bande va d'un bord à l'autre, chevron, titre et encadré en retrait ; le chevron rentre de l'air de son picto, aligné sur le titre. */
+.cn-bande .cn-retour { margin-left: -5px; }
+/* f13 tour 3 (critique n° 3) : « Embouteillage », le premier mot lu, au poids de sa maquette */
+.cn-ouvert .cn-bande .cn-titre { font-size: 26px; font-weight: 800; line-height: 1.15; }
 /* f13 tour 2 (n° 7, g5:v04-4) : le cadre vert n'entoure que « ✓ Carnet créé · ↺ Annuler » ; la phrase citée dessous, en italique libre */
 .cn-bandeau[data-sorte=cree] { border: 0; border-radius: 0; background: transparent; overflow: visible; gap: 6px; }
 .cn-bandeau[data-sorte=cree] > .cn-bandeau-tete { border: 1.5px solid var(--c-zone); border-radius: 12px; }
 .cn-bandeau[data-sorte=cree] > .cn-cite { padding: 0 2px; }
-.cn-encadre-idee { display: flex; flex-direction: column; gap: 2px; padding: 12px 16px; border-radius: 14px; background: var(--c-attbg); border: 1px solid rgb(var(--attention) / .35); font-size: 17px; }
+.cn-encadre-idee { display: flex; flex-direction: column; gap: 2px; padding: 12px 16px; border-radius: 14px; background: linear-gradient(var(--c-attbg), var(--c-attbg)), var(--c-bg); border: 1px solid rgb(var(--attention) / .35); font-size: 17px; }
+/* f13 tour 3 (critique n° 2) : sur la bande teintée, la teinte ambre se pose sur le fond de la page : crème clair, pas beige grisâtre (g5:v04-4) */
 .cn-rubrique-ligne { padding: 6px 0; border-bottom: 1px solid var(--c-line); }
 /* P5, P38 : tableau du carnet (h05-3) */
 .cn-tab { display: flex; flex-direction: column; gap: 12px; }
@@ -561,6 +568,8 @@
   .cn-page.cn-ouvert, .cn-page.cn-fiche { padding-left: 0; padding-right: 0; gap: 8px; }
   .cn-page.cn-ouvert, .cn-page.cn-fiche { padding-top: 2px; }
   .cn-page.cn-ouvert { gap: 6px; }
+  /* f13 tour 3 (critique n° 1) : la bande du carnet tout juste créé, d'un bord à l'autre de l'écran (voir .cn-bande) */
+  .cn-defile:has(> .cn-ouvert > .cn-bande) { margin: 0 -12px; padding: 0 12px; }
   .cn-ouvert .cn-tete, .cn-fiche .cn-tete { min-height: 34px; }
   .cn-ouvert .cn-titre { font-size: 21px; line-height: 1.12; }
   .cn-ouvert .cn-ligne-etat { margin-top: -4px; font-size: 15px; }

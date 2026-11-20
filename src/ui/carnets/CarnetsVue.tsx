@@ -1190,6 +1190,7 @@ export function CarnetsVue(p: CarnetsVueProps) {
       onEnvoyer={() => void envoyer()}
       vaDansCarnet={vaDansCarnet}
       {...(ouvert && vue.sorte !== 'liste' ? { titreCarnet: ouvert.title, libelleEnvoi: edition ? 'Enregistrer' : 'Ajouter' } : {})}
+      {...(/* f13 tour 3 (critique n° 4, g5:v04-4) : le carnet tout juste créé, son champ dit le texte de sa maquette */ ouvert && vue.sorte === 'carnet' && !edition && vientDEtreCree === ouvert.id && ouvert.status === 'idea' ? { invite: 'Écrire, ou coller un lien…' } : {})}
       onBlurChamp={plierApresToucher}
       onPhoto={f => void photo(f)}
       jointe={jointe ? { lecture: !jointe.jpeg, ...(jointe.jpeg ? { apercu: jointe.jpeg } : {}) } : null}
@@ -1322,7 +1323,8 @@ export function CarnetsVue(p: CarnetsVueProps) {
 
   return (
     <div className={`cn ${p.className ?? ''}`} data-carnets data-vue={vue.sorte} style={{ display: 'flex', flexDirection: 'column', minHeight: 0 }}>
-      <div style={{ flex: 1, minHeight: 0, overflowY: 'auto' }}>{ecran}</div>
+      {/* f13 tour 3 (critique n° 1) : nommée pour que, sous la bande du carnet tout juste créé, elle s'élargisse aux bords de l'écran (carnets.css) */}
+      <div className="cn-defile" style={{ flex: 1, minHeight: 0, overflowY: 'auto' }}>{ecran}</div>
       {champ}
     </div>
   );
