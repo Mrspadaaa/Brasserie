@@ -29,10 +29,16 @@ export function NoloRecipeOverview({ recipe, saved = emptyKnowledge }: { recipe:
       <h3 className="text-sm font-semibold text-cave-50">{noloProcessLabels[config.process]}</h3>
       <span className="text-attention">Cible ≤ {noloDecimal(config.targetAbvPct)} % vol.</span>
     </div>
-    {result ? <BoundGraph compact bound={result.projection} target={config.targetAbvPct}
+    {/* k3 n° 2 : une projection inconnue ne s'écrit plus « Données manquantes » en gras mono (jargon) : « pas encore estimé », en mots du brasseur. */}
+    {result && result.projection.max === null && result.projection.min <= 0
+      ? <figure aria-label="Projection au conditionnement" className="space-y-1" data-nolo-max="unknown">
+        <p className="text-xs text-cave-400">Projection au conditionnement</p>
+        <p className="reading text-base">pas encore estimée</p>
+      </figure>
+      : result ? <BoundGraph compact bound={result.projection} target={config.targetAbvPct}
       label={result.projection.kind === 'measurement' ? result.measuredPackaged ? 'Alcool analysé · bière conditionnée' : 'Alcool analysé · avant conditionnement' : 'Projection au conditionnement'}/>
       : <p role="alert" className="nolo-error">{error || 'Références NOLO à compléter pour calculer la projection.'}</p>}
-    <p className={`text-xs ${needsAttention ? 'text-alert-strong' : 'text-cave-200'}`}>{status}</p>
+    {!(result && result.projection.max === null && result.projection.min <= 0) && <p className={`text-xs ${needsAttention ? 'text-alert-strong' : 'text-cave-200'}`}>{status}</p>}
     {simulation && <p className="text-xs text-cave-200">OG visée : <span className="font-mono text-cave-50">{simulation.wortSg.min.toLocaleString('fr-FR', {minimumFractionDigits:4,maximumFractionDigits:4})}–{simulation.wortSg.max.toLocaleString('fr-FR', {minimumFractionDigits:4,maximumFractionDigits:4})} SG</span></p>}
     {simulation && <p className="text-xs text-cave-200">Atténuation {noloDecimal(simulation.settings.attenuationPct.min)}–{noloDecimal(simulation.settings.attenuationPct.max)} % · extrait ±{noloDecimal(simulation.settings.extractTolerancePct)} % · hypothèses de pilote.</p>}
     {config.planning?.simulation && !simulation && <p className="text-xs text-attention">Simulation à recalculer : la recette ou le procédé ont changé.</p>}

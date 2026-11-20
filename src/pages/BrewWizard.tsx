@@ -2521,7 +2521,7 @@ const BrewWizardEditor: React.FC<BrewWizardProps & {
       </div>}
       {visibleIssues.length > 0 && <div id="wz-validation" role="alert" tabIndex={-1} className="border border-alert-strong/50 rounded-control p-2 text-sm text-alert-strong focus-visible:outline focus-visible:outline-2 focus-visible:outline-ebc-straw">
         <p className="font-semibold">{visibleIssues.length === 1 ? 'Une valeur à corriger' : `${visibleIssues.length} valeurs à corriger`}</p>
-        <ul>{visibleIssues.map(issue => <li key={issue.field}><button type="button" className="text-left underline underline-offset-2" onClick={() => requestCorrection([issue])}>{issue.message}</button></li>)}</ul>
+        <ul>{visibleIssues.map(issue => <li key={`${issue.field}|${issue.message}`}><button type="button" className="text-left underline underline-offset-2" onClick={() => requestCorrection([issue])}>{issue.message}</button></li>)}</ul>
       </div>}
       {writeMessage && <div ref={writeAlert} role="alert" tabIndex={-1} className="flex items-start gap-2 border border-alert-strong/50 rounded-control p-2 text-sm text-alert-strong focus-visible:outline focus-visible:outline-2 focus-visible:outline-ebc-straw">
         <p className="flex-1 whitespace-pre-line">{writeMessage}</p>
@@ -3182,16 +3182,20 @@ const BrewWizardEditor: React.FC<BrewWizardProps & {
             />
         );
         // Le mode NOLO garde l'ancienne étape dans sa section ; sinon la coque des quatre vues se pose sans cadre (maquettes l5b, s7a).
-        if (noloNeedsEquipmentAdoption || details.nolo?.enabled) return (
+        if (details.nolo?.enabled && !noloNeedsEquipmentAdoption) return (
           <Section title="Levure">
-            {/* k3 n° 1 : sans matériel figé, l'étape garde le choix de la souche ; l'invite d'adoption n'est qu'à l'Identité, ici un renvoi d'une ligne. */}
-            {noloNeedsEquipmentAdoption && <p data-role="nolo-materiel-renvoi" className="text-xs text-cave-400">
-              Matériel non figé : le plan d’eau NOLO se règle à l’<button type="button" className="underline underline-offset-2 text-cave-200" onClick={() => setStep('identite')}>Identité</button>.
-            </p>}
             <Suspense fallback={<p role="status" className="py-3 text-sm text-cave-400">Chargement du comparatif de levures…</p>}>{ancienne()}</Suspense>
           </Section>
         );
+        // k3 n° 1 : NOLO actif sans matériel figé, l'étape garde le choix de la souche (la coque ordinaire) ; le simulateur NOLO attend l'adoption du matériel,
+        // dite ici en une ligne (l'invite longue est à l'Identité).
+        const renvoiMateriel = noloNeedsEquipmentAdoption && <p data-role="nolo-materiel-renvoi" className="text-xs text-cave-400">
+          Matériel non figé : le réglage NOLO l’attend. <button type="button" className="underline underline-offset-2 text-cave-200" onClick={() => resizeForEquipment(configuredBrewhouse, volumeL, step)}>Adapter à mon matériel actuel · {configuredBrewhouse!.name}</button>
+          {equipmentNotice && <span role="alert" className="block text-ebc-amber">{equipmentNotice}</span>}
+        </p>;
         return (
+          <>
+          {renvoiMateriel}
           <Suspense fallback={<p role="status" className="py-3 text-sm text-cave-400">Chargement de l’étape Levure…</p>}>
             <EtapeLevure recipe={build()} vue={vueLevure} onVue={setVueLevure}
               comparees={levuresComparees} onComparees={setLevuresComparees}
@@ -3218,6 +3222,7 @@ const BrewWizardEditor: React.FC<BrewWizardProps & {
               doseInvalide={!!fieldError('wz-yeast-qty')} atelier={ancienne}
               onRetenir={fait => { try { return (updateSelectedYeastDocumentation({ ...yeast, technicalFacts: [...(yeast.technicalFacts ?? []), fait] }, 'documentary') as { accepted: boolean }).accepted !== false; } catch { return false; } }} />
           </Suspense>
+          </>
         );
       })()}
 

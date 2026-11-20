@@ -69,8 +69,8 @@ describe('aperçu NOLO du plan enregistré', () => {
   it('ne remplace pas une projection inconnue d’extraction froide par un plafond physique', () => {
     const recipe = fixture(); recipe.nolo!.process = 'coldExtraction'; recipe.nolo!.planning = undefined;
     render(<NoloRecipeOverview recipe={recipe}/>);
-    expect(screen.getByText('Projection à compléter')).toBeVisible();
-    expect(screen.getByText('Données manquantes')).toBeVisible();
+    expect(screen.getByText('pas encore estimée')).toBeVisible(); // k3 n° 2 : plus « Données manquantes » ni « Projection à compléter » au premier plan
+    expect(screen.queryByText('Données manquantes')).not.toBeInTheDocument();
     expect(screen.queryByRole('img', { name: 'Échelle d’alcool et cible' })).not.toBeInTheDocument();
   });
 

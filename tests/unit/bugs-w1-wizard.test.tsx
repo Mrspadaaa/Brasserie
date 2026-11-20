@@ -109,7 +109,9 @@ describe('k3 n° 1 : Levure sans matériel figé garde le choix de souche', () =
     await attendre(600);
     const prompt = document.querySelector('aside[aria-label="Matériel requis pour le scénario NOLO"]');
     expect(prompt, 'plus d’invite répétée à Levure').toBeNull();
-    expect(document.querySelector('[data-role="nolo-materiel-renvoi"]'), 'un renvoi d’une ligne vers l’Identité').toBeTruthy();
+    const renvoi = document.querySelector('[data-role="nolo-materiel-renvoi"]');
+    expect(renvoi, 'une ligne de renvoi, avec le geste d’adoption').toBeTruthy();
+    expect(within(renvoi as HTMLElement).getByRole('button', { name: /Adapter à mon matériel actuel/ })).toBeTruthy();
     expect(screen.queryByText(/Cette recette n’a pas de matériel figé/), 'la phrase de l’Identité n’est pas répétée').toBeNull();
     expect(document.body.textContent, 'le choix de levure est à l’écran').toMatch(/levure|souche/i);
   }, 30000);
