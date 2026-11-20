@@ -257,7 +257,9 @@ export const Barre: React.FC<BarreProps> = props => {
   })();
   /* f2-a (E29, CRITIQUE-5 n° 1) : pendant le geste, « J0 / 35 · prête 21 déc. » ou « pas brassée · prête le 24 nov. » se lit en entier : dans la
      barre s'il y tient, sinon juste à sa droite */
-  const dureeHors = !!etiquetteDuree && Math.ceil(largeurTexte(etiquetteDuree, 600)) + 16 > w;
+  /* CAL-PASSE e (20.11, capture 2 : « J0 / 55 · prête 13 févr. » posée sur la barre et son nom) : pendant le geste, la durée tirée se pose TOUJOURS à
+     côté de la barre (jamais dedans, même quand elle y tient) : elle ne recouvre ni la barre glissée ni son nom, qui reste visible. */
+  const dureeHors = !!etiquetteDuree;
   /* CRITIQUE-7 n° 2 (E29) : la durée écrite à côté du nom suit le doigt, elle aussi : jamais l'ancienne « prête le … » à côté de la nouvelle */
   const dureeRepos = props.deuxLignes === 'duree' ? duree : props.dureeACote;
   const dureeEtiquette = dureeRepos && etiquetteDuree ? etiquetteDuree : dureeRepos;

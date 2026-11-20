@@ -49,7 +49,10 @@
   .ops-champs input { height:28px; padding:0 8px; border-radius:10px; border:1px solid var(--ops-bord); background:rgb(var(--cave-950)); color:var(--ops-t1); font-size:13px; font-family:inherit; color-scheme:light; min-width:0; }
   :root[data-theme='cave'] .ops-champs input { color-scheme:dark; }
 }
-.ops-frise { margin:6px 12px 0; position:relative; }
+/* CAL-PASSE a2 (20.11, « Toujours très compliqué de reculer le graph.... », « Pareil pour l'agrandir vers le futur... ») : la zone de prise d'une poignée
+   fait 44 px, centrée sur le bord de la piste. À 12 px de marge, celle de début sortait de l'écran (x −2 à 390) et collée au bord, un doigt y déclenche le
+   geste « retour » du système. 26 px de marge : zone de 44 px entière dans l'écran, poignée à 34 px du bord (feuille Période et Finances). */
+.ops-frise { margin:6px 26px 0; position:relative; }
 .ops-fr-rd { display:flex; align-items:center; gap:6px; height:18px; font-size:12px; line-height:18px; color:var(--ops-t2); }
 .ops-fr-rd b { font-size:13px; color:var(--ops-t1); }
 .ops-fr-x { margin-left:auto; height:18px; padding:0 8px; border-radius:12px; border:1px solid var(--ops-bord); font-size:12px; line-height:16px; color:var(--ops-t2); background:rgb(var(--cave-950)); }

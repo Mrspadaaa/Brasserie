@@ -60,6 +60,10 @@ export function hautDesOnglets(): number {
 
 type Place = { top: number; left?: number; right?: number; maxHeight: number };
 
+/** La position gauche du menu, jamais hors de l'écran : `voulue` (px), bornée à [MARGE, largeurEcran − largeur − MARGE]. */
+export const gaucheMenu = (voulue: number, largeur: number, largeurEcran: number): number =>
+  Math.max(MARGE, Math.min(voulue, largeurEcran - largeur - MARGE));
+
 export function MenuPeriode({ plage, semaines, annee, liste, sansDate, onChoisir, onListe, onCalendrier, onSansDate, onTrier, onFiltrer, onFermer, ancre, paysage = false, echelle, onEchelle }: MenuPeriodeProps) {
   const ref = useRef<HTMLDivElement>(null);
   const [place, setPlace] = useState<Place | null>(null);
@@ -75,8 +79,9 @@ export function MenuPeriode({ plage, semaines, annee, liste, sansDate, onChoisir
       // Sous le bouton ; s'il déborde, il remonte jusqu'à tenir (jamais plus haut que le bord), puis défile.
       const top = Math.max(MARGE, Math.min(a.bottom + 6, bas - hauteur));
       const p: Place = { top, maxHeight: Math.max(120, bas - top) };
-      if (paysage) p.left = Math.max(MARGE, Math.min(a.left, window.innerWidth - largeur - MARGE));
-      else p.right = Math.max(MARGE, window.innerWidth - a.right);
+      /* CAL-PASSE d (20.11, mesuré en ligne : left −30 à 390) : le menu, large de 300 px pour les cinq durées (CT4A-15, gardé), était calé sur le bord DROIT
+         du bouton ; à 270 px du bord il sortait à gauche. Désormais `left`, bornée à l'écran (`gaucheMenu`), en portrait comme en paysage. */
+      p.left = gaucheMenu(paysage ? a.left : a.right - largeur, largeur, window.innerWidth);
       setPlace(p);
     };
     poser();

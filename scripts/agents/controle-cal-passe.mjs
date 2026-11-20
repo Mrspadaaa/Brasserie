@@ -1,0 +1,293 @@
+// Contrôle CAL-PASSE (20.11, tour 5) : le passé du Calendrier et de la période se modifie, au doigt, sur un vrai rendu Chrome à 390 tactile.
+// Ses mots : « il est vraiment très compliqué voir impossible de modifier les graph dans le passé pareil pour le diagramme de temps en haut, je peux pas
+// le reculer ??? » ; « il y a un point ?? Qui pose problème qui prend le dessus » ; « C'est en fait pas le bonne version du calendrier » ;
+// « Toujours très compliqué de reculer le graph.... » ; « Pareil pour l'agrandir vers le futur... ».
+//
+// node scripts/agents/controle-cal-passe.mjs <url de base> <dossier de captures>      → CAL-PASSE OK | CAL-PASSE ECHEC (code ≠ 0)
+//   <url de base> : `http://localhost:5625` (le banc `/?preview=calendrier`, données simulées, et l'app `/?dev-local&finance-demo`).
+// Critères (390 × 844, isMobile + hasTouch, gestes CDP `Input.dispatchTouchEvent`, jamais element.click ; clair puis cave) :
+//   a   glisser la poignée de début de la fenêtre de la frise du haut de 4 semaines vers le passé : l'étiquette « Fenêtre : S47 – S52 » recule de 3 à 8 semaines
+//   a2  frise de période (feuille « Période », Calendrier ET Finances) : les deux poignées ont leur zone de prise de 44 px ENTIÈRE dans l'écran,
+//       tenir la poignée de début au bord recule la période d'un mois au moins, tenir celle de fin l'agrandit vers le futur
+//   b   glisser une barre de brassin de 4 semaines vers le passé : sa semaine recule de 3 à 8, puis « Annuler » la remet
+//   c   le curseur de lecture (rond pointillé) n'est jamais sous le doigt au départ du glisser de la fenêtre et ne reste pas après le toucher d'une poignée
+//   d   le menu de période est entier dans l'écran à 390, 844 × 340 et 1280, et les durées ne se chevauchent pas (CT4A-15)
+//   e   pendant et après le glisser d'une barre, l'étiquette de durée ne recouvre ni la barre glissée ni son nom
+//   f   aucune ligne en double dans une rangée (même libellé deux fois)
+// Les critères d'une autre voie restent rouges tant qu'elle n'a pas commité : le pilote rejoue le contrôle à la fin.
+import { createRequire } from 'node:module';
+import { mkdirSync } from 'node:fs';
+
+const req = createRequire(new URL('../../package.json', import.meta.url));
+const puppeteer = req('puppeteer-core');
+const BASE = (process.argv[2] ?? 'http://localhost:5625').replace(/\/$/, '');
+const OUT = process.argv[3] ?? '.';
+mkdirSync(OUT, { recursive: true });
+const CHROME = process.env.CHROME ?? 'C:/Program Files/Google/Chrome/Application/chrome.exe';
+const z = ms => new Promise(r => setTimeout(r, ms));
+
+/** Regex du contrôle : exercées par `--test-regex` (jamais une barre inverse perdue en silence). */
+export const RE = {
+  fenetre: /Fenêtre\s*:\s*S(\d+)\s*[–-]\s*S(\d+)/,
+  semaine: /^S(\d+)$/,
+};
+if (process.argv.includes('--test-regex')) {
+  const ok = [
+    RE.fenetre.exec('Fenêtre : S47 – S52')?.slice(1).join(',') === '47,52',
+    RE.fenetre.exec('Fenêtre : S47 – S13 2027')?.slice(1).join(',') === '47,13',
+    RE.semaine.exec('S51')?.[1] === '51', !RE.semaine.test('S51 · 14 déc.'),
+  ];
+  console.log(ok.every(Boolean) ? `REGEX OK ${ok.length}/${ok.length}` : `REGEX ECHEC ${ok.join(',')}`);
+  process.exit(ok.every(Boolean) ? 0 : 1);
+}
+
+const echecs = [], lignes = [];
+const verdict = (nom, theme, ok, mesure) => {
+  const l = `${ok ? 'OK    ' : 'ECHEC '} ${nom} (${theme}) : ${mesure}`;
+  lignes.push(l); if (!ok) echecs.push(l); console.log(l);
+};
+const modulo = n => ((n % 53) + 53) % 53;
+const inter = (a, b) => Math.max(0, Math.min(a.right, b.right) - Math.max(a.left, b.left)) * Math.max(0, Math.min(a.bottom, b.bottom) - Math.max(a.top, b.top));
+
+const navigateur = await puppeteer.launch({ executablePath: CHROME, headless: 'new', args: ['--lang=fr-CH'] });
+const CFG = { m390: { w: 390, h: 844, tactile: true }, p844: { w: 844, h: 340, tactile: true }, d1280: { w: 1280, h: 800, tactile: false } };
+
+async function page(cfgNom, theme, url, attente) {
+  const c = CFG[cfgNom], p = await navigateur.newPage();
+  await p.setViewport({ width: c.w, height: c.h, isMobile: c.tactile, hasTouch: c.tactile, deviceScaleFactor: 1 });
+  await p.evaluateOnNewDocument(t => { try { localStorage.setItem('laffinee.theme', t); } catch { /* sans stockage */ } }, theme);
+  await p.emulateMediaFeatures([{ name: 'prefers-color-scheme', value: theme === 'cave' ? 'dark' : 'light' }]);
+  p.cdp = await p.createCDPSession(); p.cfg = c;
+  p.recharger = async () => { await p.goto(url, { waitUntil: 'domcontentloaded', timeout: 180000 }); await p.waitForSelector(attente, { timeout: 120000 }); await z(1500); };
+  await p.recharger();
+  return p;
+}
+/* Gestes : touchStart, touchMove, touchEnd par CDP (un vrai doigt, pas element.click). */
+const doigt = (p, type, x, y) => p.cdp.send('Input.dispatchTouchEvent', { type, touchPoints: type === 'touchEnd' ? [] : [{ x, y, id: 1, radiusX: 4, radiusY: 4, force: 1 }] });
+async function taper(p, x, y) { await doigt(p, 'touchStart', x, y); await z(70); await doigt(p, 'touchEnd'); await z(500); }
+/** Glisse de (dx, dy) ; `tenir` ms au bout, doigt posé ; `lever:false` laisse le doigt posé (état « pendant »). */
+async function glisser(p, x, y, dx, dy = 0, { tenir = 0, lever = true } = {}) {
+  await doigt(p, 'touchStart', x, y); await z(180);
+  for (let i = 1; i <= 12; i++) { await doigt(p, 'touchMove', x + (dx * i) / 12, y + (dy * i) / 12); await z(25); }
+  if (tenir) await z(tenir);
+  if (lever) { await doigt(p, 'touchEnd'); await z(600); }
+}
+const rect = (p, sel) => p.evaluate(s => { const e = document.querySelector(s); if (!e) return null; const b = e.getBoundingClientRect(); return { left: b.left, right: b.right, top: b.top, bottom: b.bottom, width: b.width, height: b.height }; }, sel);
+const attendreCalme = async p => { await z(600); };
+const photo = async (p, nom) => { try { await p.screenshot({ path: `${OUT}/${nom}.png` }); } catch { /* la capture ne bloque pas */ } };
+const fenetreSemaines = p => p.evaluate(src => {
+  const g = document.querySelector('.ent-cadre[role="group"]'); const m = g && new RegExp(src).exec(g.getAttribute('aria-label') || '');
+  return m ? { d: Number(m[1]), f: Number(m[2]), w: g.getBoundingClientRect().width } : null;
+}, RE.fenetre.source);
+const centreVisible = r => ({ x: (Math.max(r.left, 0) + Math.min(r.right, 390)) / 2, y: (r.top + r.bottom) / 2 });
+const entree = (p, sel) => p.evaluate(s => { const e = document.querySelector(s); e?.scrollIntoView({ block: 'center' }); }, sel);
+
+for (const theme of ['clair', 'cave']) {
+  const banc = await page('m390', theme, `${BASE}/?preview=calendrier`, '[data-ent-periode]');
+  const sel = { poignee: '[data-poignee="debut"]' };
+
+  /* a : la fenêtre de la frise recule de 4 semaines */
+  try {
+    await banc.evaluate(() => window.scrollTo(0, 0)); await z(300);
+    const avant = await fenetreSemaines(banc), pg = await rect(banc, sel.poignee);
+    if (!avant || !pg) verdict('a', theme, false, 'fenêtre ou poignée de début introuvable');
+    else {
+      const unite = avant.w / (modulo(avant.f - avant.d) + 1), c = centreVisible(pg);
+      await glisser(banc, c.x, c.y, -4 * unite);
+      const apres = await fenetreSemaines(banc), recul = apres ? modulo(avant.d - apres.d) : -1;
+      await photo(banc, `a-${theme}-apres`);
+      verdict('a', theme, recul >= 3 && recul <= 8, `S${avant.d} → ${apres ? `S${apres.d}` : 'absente'} : recul ${recul} sem. (3 à 8 attendues), poignée x ${Math.round(pg.left)}–${Math.round(pg.right)}`);
+    }
+  } catch (e) { verdict('a', theme, false, `erreur : ${e.message}`); }
+
+  /* c : le rond pointillé (curseur de lecture) ne prend pas le doigt de la fenêtre et ne reste pas après le toucher d'une poignée */
+  try {
+    await banc.recharger();
+    const pg = await rect(banc, sel.poignee);
+    const cadre = await rect(banc, '.ent-cadre[role="group"]');
+    if (!cadre || !pg) verdict('c', theme, false, 'cadre ou poignée introuvable');
+    else {
+      /* un toucher de la courbe, hors de la fenêtre : il ouvre la lecture (le rond pointillé) */
+      const cible = { x: (Math.min(cadre.right, 300) + 380) / 2, y: (cadre.top + cadre.bottom) / 2 - 10 };
+      await taper(banc, cible.x, cible.y);
+      const ouvert = await banc.evaluate(() => !!document.querySelector('.ent-curseur, [data-curseur]'));
+      const c = centreVisible(pg);
+      const sur = await banc.evaluate((x, y) => { const e = document.elementFromPoint(x, y); return { dans: !!e?.closest('.ent-curseur, [data-curseur]'), nom: e ? `${e.tagName}.${String(e.className?.baseVal ?? e.className).slice(0, 30)}` : null }; }, c.x, c.y);
+      await glisser(banc, c.x, c.y, 8);
+      const reste = await banc.evaluate(() => { const e = document.querySelector('.ent-curseur, [data-curseur]'); if (!e) return null; const b = e.getBoundingClientRect(); return b.width > 0 ? { x: b.left, y: b.top, w: b.width } : null; });
+      await photo(banc, `c-${theme}-apres`);
+      verdict('c', theme, !sur.dans && !reste, `curseur ${ouvert ? 'ouvert' : 'non ouvert'} par le toucher ; sous le doigt de départ : ${sur.nom}${sur.dans ? ' (CURSEUR)' : ''} ; après la poignée : ${reste ? `reste à x ${Math.round(reste.x)}` : 'fermé'}`);
+    }
+  } catch (e) { verdict('c', theme, false, `erreur : ${e.message}`); }
+
+  /* b et e : glisser une barre de brassin de 4 semaines vers le passé */
+  try {
+    await banc.recharger();
+    const info = await banc.evaluate(() => {
+      const barres = [...document.querySelectorAll('[data-frise] [data-chose][data-rangee="brassins"]')];
+      /* la barre la plus à droite : c'est elle qui a la place de reculer de 4 semaines sans quitter l'écran */
+      const b = [...barres].sort((p, q) => q.getBoundingClientRect().right - p.getBoundingClientRect().right)[0];
+      if (!b) return null;
+      b.scrollIntoView({ block: 'center' });
+      const r = b.getBoundingClientRect(), y = r.top + r.height / 2;
+      let x = null;
+      for (let t = r.right - 8; t >= r.left + 12; t -= 3) {
+        const e = document.elementFromPoint(t, y);
+        if (e && e.closest('[data-barre]') === b && !e.closest('[data-jalon], [data-bord], [data-grip]')) { x = t; break; }
+      }
+      const f = document.querySelector('[data-frise]');
+      return { id: b.getAttribute('data-chose'), titre: b.getAttribute('data-titre'), sem: b.getAttribute('data-semaine'), x, y, lc: parseFloat(f?.getAttribute('data-largeur-colonne')) || 390 / 7, gauche: r.left, droite: r.right };
+    });
+    if (!info || info.x === null) verdict('b', theme, false, `barre de brassin introuvable ou sans prise (${JSON.stringify(info)})`);
+    else {
+      await z(300);
+      const semaineDe = () => banc.evaluate(id => document.querySelector(`[data-chose="${id}"]`)?.getAttribute('data-semaine') ?? null, info.id);
+      const num = s => { const m = RE.semaine.exec(s ?? ''); return m ? Number(m[1]) : null; };
+      const dx = -Math.min(4 * info.lc, info.x - 4);
+      await glisser(banc, info.x, info.y, dx);
+      await photo(banc, `b-${theme}-apres`);
+      const apres = await semaineDe(), recul = apres === null ? -1 : modulo(num(info.sem) - num(apres));
+      /* « Annuler » remet la semaine */
+      const annule = await banc.evaluate(() => { const b = [...document.querySelectorAll('button')].find(x => /^Annuler$/.test((x.textContent || '').trim())); if (!b) return null; const q = b.getBoundingClientRect(); return { x: q.left + q.width / 2, y: q.top + q.height / 2 }; });
+      let retour = null;
+      if (annule) { await taper(banc, annule.x, annule.y); await z(500); retour = await semaineDe(); }
+      verdict('b', theme, recul >= 3 && recul <= 8 && retour === info.sem, `${info.titre} ${info.sem} → ${apres} : recul ${recul} sem. (3 à 8) ; Annuler ${annule ? `→ ${retour}` : 'ABSENT'}`);
+    }
+  } catch (e) { verdict('b', theme, false, `erreur : ${e.message}`); }
+
+  /* e : le doigt tient une barre (une colonne vers le futur, ce geste existe déjà) : l'étiquette de durée ne recouvre ni la barre ni son nom, pendant et après */
+  try {
+    await banc.recharger();
+    const mesure = id => banc.evaluate(i => {
+      const barre = document.querySelector(`[data-chose="${i}"]`); if (!barre) return null;
+      const r = b => { const q = b.getBoundingClientRect(); return { left: q.left, right: q.right, top: q.top, bottom: q.bottom }; };
+      const d = barre.querySelector('[data-duree]'), lbl = barre.nextElementSibling, nom = lbl?.querySelector('.cal-lbl-t');
+      const sous = document.querySelector(`[data-phrase-sous="${i}"]`);
+      return { barre: r(barre), haute: barre.classList.contains('cal-barre-2l'), duree: d ? r(d) : null, texte: (d ?? sous)?.textContent?.trim() ?? null, sous: sous ? r(sous) : null,
+        nom: nom ? r(nom) : null, nomVisible: lbl ? getComputedStyle(lbl).visibility !== 'hidden' : null, cote: [...(lbl?.classList ?? [])].find(c => /^cal-lbl-(dedans|droite|gauche)$/.test(c)) ?? null };
+    }, id);
+    const ch = await banc.evaluate(() => {
+      const barres = [...document.querySelectorAll('[data-frise] [data-chose][data-rangee="brassins"]')];
+      /* une barre d'une ligne dont le nom est DANS la barre (la plainte, capture 2), sinon la première qui a de la place à droite */
+      const dedans = barres.find(b => !b.classList.contains('cal-barre-2l') && b.nextElementSibling?.classList.contains('cal-lbl-dedans'));
+      const b = dedans ?? barres.find(x => x.getBoundingClientRect().right < 300) ?? barres[0];
+      if (!b) return null;
+      b.scrollIntoView({ block: 'center' });
+      const r = b.getBoundingClientRect(), y = r.top + r.height / 2;
+      let x = null;
+      for (let t = r.left + 14; t <= r.right - 8; t += 3) {
+        const e = document.elementFromPoint(t, y);
+        if (e && e.closest('[data-barre]') === b && !e.closest('[data-jalon], [data-bord], [data-grip]')) { x = t; break; }
+      }
+      return { id: b.getAttribute('data-chose'), titre: b.getAttribute('data-titre'), x, y, lc: parseFloat(document.querySelector('[data-frise]')?.getAttribute('data-largeur-colonne')) || 390 / 7, dedans: !!dedans };
+    });
+    if (!ch || ch.x === null) verdict('e', theme, false, `barre introuvable ou sans prise (${JSON.stringify(ch)})`);
+    else {
+      await z(300);
+      await glisser(banc, ch.x, ch.y, ch.lc, 0, { lever: false });
+      await z(300);
+      const pend = await mesure(ch.id);
+      await photo(banc, `e-${theme}-pendant`);
+      await doigt(banc, 'touchEnd'); await z(700);
+      await photo(banc, `e-${theme}-apres`);
+      const apr = await mesure(ch.id);
+      const sur = m => !m ? null : { barre: (m.duree && !m.haute) || m.sous ? Math.round(inter(m.duree ?? m.sous, m.barre)) : 0, nom: m.nom && m.nomVisible && (m.duree ?? m.sous) ? Math.round(inter(m.duree ?? m.sous, m.nom)) : 0, masque: m.nomVisible === false && !!m.duree };
+      const sp = sur(pend), sa = sur(apr);
+      const ok = !!pend?.texte && sp.barre === 0 && sp.nom === 0 && !sp.masque && sa.nom === 0; /* au repos, la phrase vit dans la barre haute (CRITIQUE-9 n° 3, choisi) : seul le nom compte après */
+      verdict('e', theme, ok, pend?.texte ? `${ch.titre} (nom ${ch.dedans ? 'dans la barre' : pend.cote}) pendant « ${pend.texte} » : ∩ barre ${sp.barre} px², ∩ nom ${sp.nom} px², nom ${sp.masque ? 'MASQUÉ par la durée' : 'visible'} ; après : ∩ barre ${sa.barre} px², ∩ nom ${sa.nom} px²` : 'étiquette de durée absente pendant le glisser');
+    }
+  } catch (e) { verdict('e', theme, false, `erreur : ${e.message}`); }
+
+  /* f : aucune ligne en double dans une rangée, en 6 semaines puis en 20 */
+  try {
+    for (const vue of ['6 sem.', '20 sem.']) {
+      await banc.recharger();
+      if (vue !== '6 sem.') {
+        const b = await rect(banc, '[data-ent-periode]'); await taper(banc, b.left + b.width / 2, b.top + b.height / 2);
+        const cible = await banc.evaluate(t => { const e = [...document.querySelectorAll('[data-menu-periode] button')].find(x => (x.textContent || '').trim().startsWith(t)); if (!e) return null; const q = e.getBoundingClientRect(); return { x: q.left + q.width / 2, y: q.top + q.height / 2 }; }, '20');
+        if (cible) { await taper(banc, cible.x, cible.y); await z(900); }
+      }
+      const doubles = await banc.evaluate(() => {
+        const lu = new Map();
+        for (const b of document.querySelectorAll('[data-frise] [data-chose]')) {
+          const l = b.nextElementSibling?.classList?.contains('cal-lbl') ? b.nextElementSibling.textContent.replace(/\s+/g, ' ').trim() : '';
+          if (!l) continue;
+          const cle = `${b.getAttribute('data-rangee')}|${l}`;
+          lu.set(cle, (lu.get(cle) ?? 0) + 1);
+        }
+        return [...lu].filter(([, n]) => n > 1).map(([k, n]) => `${k} ×${n}`);
+      });
+      verdict('f', theme, doubles.length === 0, `${vue} : ${doubles.length ? `lignes en double ${doubles.join(' ; ')}` : 'aucune ligne en double'}`);
+    }
+  } catch (e) { verdict('f', theme, false, `erreur : ${e.message}`); }
+
+  /* d : le menu de période dans l'écran (390, 844 × 340, 1280), durées sans chevauchement */
+  for (const [nom, c] of Object.entries(CFG)) {
+    let p = null;
+    try {
+      p = nom === 'm390' ? banc : await page(nom, theme, `${BASE}/?preview=calendrier`, '[data-ent-periode]');
+      await p.recharger();
+      const b = await rect(p, '[data-ent-periode]');
+      if (c.tactile) await taper(p, b.left + b.width / 2, b.top + b.height / 2); else { await p.mouse.click(b.left + b.width / 2, b.top + b.height / 2); await z(500); }
+      await z(500);
+      const m = await p.evaluate(() => {
+        const e = document.querySelector('[data-menu-periode]'); if (!e) return null;
+        const q = e.getBoundingClientRect();
+        const seg = [...e.querySelectorAll('.ent-seg')].map(s => [...s.querySelectorAll('button')].map(x => { const r = x.getBoundingClientRect(); return { left: r.left, right: r.right, top: r.top, bottom: r.bottom, t: (x.textContent || '').trim() }; }));
+        return { left: q.left, right: q.right, W: innerWidth, seg };
+      });
+      await photo(p, `d-${theme}-${nom}`);
+      if (!m) verdict('d', `${theme} ${nom}`, false, 'menu absent');
+      else {
+        let chevauche = [];
+        for (const g of m.seg) for (let i = 0; i < g.length; i++) for (let j = i + 1; j < g.length; j++) if (inter(g[i], g[j]) > 1) chevauche.push(`${g[i].t}/${g[j].t}`);
+        verdict('d', `${theme} ${nom}`, m.left >= 0 && m.right <= m.W && chevauche.length === 0, `menu x ${m.left.toFixed(0)}–${m.right.toFixed(0)} sur ${m.W} ; chevauchements : ${chevauche.join(', ') || 'aucun'}`);
+      }
+    } catch (e) { verdict('d', `${theme} ${nom}`, false, `erreur : ${e.message}`); }
+    if (nom !== 'm390' && p) await p.close();
+  }
+  await banc.close();
+
+  /* a2 : la frise de période, feuille « Période » du Calendrier ET de Finances */
+  for (const ecran of ['Calendrier', 'Finances']) {
+    /* une page neuve par écran : la période est une seule pour toute l'app et se garde au rechargement, le geste d'un écran ne doit pas fausser l'autre */
+    const app = await page('m390', theme, `${BASE}/?dev-local&finance-demo`, '[data-periode-pastille]');
+    try {
+      await app.recharger();
+      await app.evaluate(t => [...document.querySelectorAll('button')].find(b => (b.getAttribute('aria-label') || b.textContent).trim().startsWith(t))?.click(), ecran);
+      await z(2500);
+      /* Finances montre sa propre frise quand une plage est posée ; la feuille de la pastille porte la même `Frise` dans les deux écrans */
+      if (ecran === 'Finances') { await app.evaluate(() => [...document.querySelectorAll('[role="tab"], button')].find(b => (b.textContent || '').trim() === 'Opérations')?.click()); await z(2500); }
+      const enLigne = await app.evaluate(() => [...document.querySelectorAll('.ops-h')].map(h => { const q = h.getBoundingClientRect(); return { left: q.left, right: q.right }; }));
+      const propre = enLigne.length;
+      const horsEcran = enLigne.filter(h => h.left < 0 || h.right > 390);
+      const bouton = await rect(app, '.pr-ce');
+      await taper(app, bouton.left + bouton.width / 2, bouton.top + bouton.height / 2); await z(1200);
+      const poignees = await app.evaluate(() => [...document.querySelectorAll('[role="dialog"] .ops-h')].map(h => { const q = h.getBoundingClientRect(); return { q: h.getAttribute('aria-label'), left: q.left, right: q.right, top: q.top, bottom: q.bottom, v: Number(h.getAttribute('aria-valuenow')) }; }));
+      const du = poignees.find(h => h.q === 'Début'), au = poignees.find(h => h.q === 'Fin');
+      if (!du || !au) { verdict('a2', `${theme} ${ecran}`, false, 'poignées de la frise de période introuvables'); continue; }
+      const dedans = h => h.right - h.left >= 44 - 0.5 && h.left >= 0 && h.right <= 390;
+      const valeur = async q => app.evaluate(l => Number(document.querySelector(`[role="dialog"] .ops-h[aria-label="${l}"]`)?.getAttribute('aria-valuenow')), q);
+      const cDu = { x: (du.left + du.right) / 2, y: (du.top + du.bottom) / 2 }, cAu = { x: (au.left + au.right) / 2, y: (au.top + au.bottom) / 2 };
+      const v0 = du.v, f0 = au.v;
+      await glisser(app, cDu.x, cDu.y, -14, 0, { tenir: 1700 });
+      const v1 = await valeur('Début');
+      await photo(app, `a2-${theme}-${ecran}-debut`);
+      await app.recharger();
+      await app.evaluate(t => [...document.querySelectorAll('button')].find(b => (b.getAttribute('aria-label') || b.textContent).trim().startsWith(t))?.click(), ecran); await z(2500);
+      const b2 = await rect(app, '.pr-ce'); await taper(app, b2.left + b2.width / 2, b2.top + b2.height / 2); await z(2200);
+      const au2 = await rect(app, '[role="dialog"] .ops-h[aria-label="Fin"]');
+      await glisser(app, au2 ? (au2.left + au2.right) / 2 : cAu.x, au2 ? (au2.top + au2.bottom) / 2 : cAu.y, 14, 0, { tenir: 1700 });
+      const f1 = await valeur('Fin');
+      await photo(app, `a2-${theme}-${ecran}-fin`);
+      const recule = v0 - v1, avance = f1 - f0;
+      verdict('a2', `${theme} ${ecran}`, dedans(du) && dedans(au) && recule >= 15 && avance >= 15 && horsEcran.length === 0,
+        `poignée début x ${du.left.toFixed(0)}–${du.right.toFixed(0)}, fin x ${au.left.toFixed(0)}–${au.right.toFixed(0)} (44 px entiers dans 0–390 attendus) ; tenue 1,7 s : début recule de ${recule} j, fin avance de ${avance} j (15 j au moins) ; frise propre à l'écran : ${propre ? `oui, ${propre} poignées, ${horsEcran.length} hors écran` : 'non, par la feuille de la pastille'}`);
+    } catch (e) { verdict('a2', `${theme} ${ecran}`, false, `erreur : ${e.message}`); }
+    await app.close();
+  }
+}
+
+await navigateur.close();
+console.log(echecs.length === 0 ? 'CAL-PASSE OK' : `CAL-PASSE ECHEC : ${echecs.length} critère(s) en échec sur ${lignes.length}`);
+process.exit(echecs.length === 0 ? 0 : 1);
