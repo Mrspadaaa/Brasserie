@@ -100,33 +100,40 @@ for (const theme of ['clair', 'cave']) {
     }
   } catch (e) { verdict('a', theme, false, `erreur : ${e.message}`); }
 
-  /* c : le rond pointillé (curseur de lecture) ne prend pas le doigt de la fenêtre et ne reste pas après le toucher d'une poignée */
+  /* c : le rond pointillé (curseur de lecture) est VRAIMENT ouvert (un glisser de lecture, posé sur la poignée de début), puis il n'est jamais sous le doigt au
+     départ du glisser de la fenêtre (elementFromPoint sur les deux poignées), et il se ferme dès que la poignée est touchée */
   try {
     await banc.recharger();
-    const pg = await rect(banc, sel.poignee);
-    const cadre = await rect(banc, '.ent-cadre[role="group"]');
-    if (!cadre || !pg) verdict('c', theme, false, 'cadre ou poignée introuvable');
+    const pg = await rect(banc, sel.poignee), pf = await rect(banc, '[data-poignee="fin"]'), cb = await rect(banc, '.ent-cb');
+    if (!pg || !pf || !cb) verdict('c', theme, false, 'courbe ou poignées introuvables');
     else {
-      /* un toucher de la courbe, hors de la fenêtre : il ouvre la lecture (le rond pointillé) */
-      const cible = { x: (Math.min(cadre.right, 300) + 380) / 2, y: (cadre.top + cadre.bottom) / 2 - 10 };
-      await taper(banc, cible.x, cible.y);
-      const ouvert = await banc.evaluate(() => !!document.querySelector('.ent-curseur, [data-curseur]'));
-      const c = centreVisible(pg);
-      const sur = await banc.evaluate((x, y) => { const e = document.elementFromPoint(x, y); return { dans: !!e?.closest('.ent-curseur, [data-curseur]'), nom: e ? `${e.tagName}.${String(e.className?.baseVal ?? e.className).slice(0, 30)}` : null }; }, c.x, c.y);
-      await glisser(banc, c.x, c.y, 8);
+      const yc = (cb.top + cb.bottom) / 2, cd = centreVisible(pg), cf = centreVisible(pf);
+      /* départ loin des deux zones de prise (une prise tire la fenêtre au lieu de lire), arrivée sur la poignée de début : le rond s'y pose */
+      const libre = [60, 120, 250, 300, 340].find(x => x < pg.left - 6 || x > pf.right + 6 || (x > pg.right + 6 && x < pf.left - 6));
+      const lu = () => banc.evaluate(() => !!document.querySelector('.ent-curseur, [data-curseur]'));
+      await glisser(banc, libre ?? 340, yc, cd.x - (libre ?? 340), 0);
+      let ouvert = await lu();
+      if (!ouvert) { await z(800); await glisser(banc, 340, yc, cd.x - 340, 0); ouvert = await lu(); }
+      const sous = (x, y) => banc.evaluate((px, py) => { const e = document.elementFromPoint(px, py); return { dans: !!e?.closest('.ent-curseur, [data-curseur]'), nom: e ? `${e.tagName}.${String(e.className?.baseVal ?? e.className).slice(0, 30)}` : null }; }, x, y);
+      const sd = await sous(cd.x, cd.y), sf = await sous(cf.x, cf.y);
+      await photo(banc, `c-${theme}-ouvert`);
+      await glisser(banc, cd.x, cd.y, 8);
       const reste = await banc.evaluate(() => { const e = document.querySelector('.ent-curseur, [data-curseur]'); if (!e) return null; const b = e.getBoundingClientRect(); return b.width > 0 ? { x: b.left, y: b.top, w: b.width } : null; });
       await photo(banc, `c-${theme}-apres`);
-      verdict('c', theme, !sur.dans && !reste, `curseur ${ouvert ? 'ouvert' : 'non ouvert'} par le toucher ; sous le doigt de départ : ${sur.nom}${sur.dans ? ' (CURSEUR)' : ''} ; après la poignée : ${reste ? `reste à x ${Math.round(reste.x)}` : 'fermé'}`);
+      verdict('c', theme, ouvert && !sd.dans && !sf.dans && !reste, `curseur ${ouvert ? 'ouvert' : 'NON OUVERT (rien de mesuré)'} par le glisser de lecture ; sous le doigt de départ : poignée début ${sd.nom}${sd.dans ? ' (CURSEUR)' : ''}, poignée fin ${sf.nom}${sf.dans ? ' (CURSEUR)' : ''} ; après la poignée : ${reste ? `reste à x ${Math.round(reste.x)}` : 'fermé'}`);
     }
   } catch (e) { verdict('c', theme, false, `erreur : ${e.message}`); }
 
   /* b et e : glisser une barre de brassin de 4 semaines vers le passé */
   try {
     await banc.recharger();
+    /* la frise ne montre que sa fenêtre : pour reculer une barre de 4 semaines, le brasseur recule d'abord la fenêtre (le passé est visible), puis glisse */
+    await banc.evaluate(() => window.scrollTo(0, 0)); await z(300);
+    { const av = await fenetreSemaines(banc), pg0 = await rect(banc, sel.poignee); if (av && pg0) { const c0 = centreVisible(pg0); await glisser(banc, c0.x, c0.y, -4 * (av.w / (modulo(av.f - av.d) + 1))); } }
     const info = await banc.evaluate(() => {
-      const barres = [...document.querySelectorAll('[data-frise] [data-chose][data-rangee="brassins"]')];
-      /* la barre la plus à droite : c'est elle qui a la place de reculer de 4 semaines sans quitter l'écran */
-      const b = [...barres].sort((p, q) => q.getBoundingClientRect().right - p.getBoundingClientRect().right)[0];
+      const barres = [...document.querySelectorAll('[data-frise] [data-chose][data-rangee="brassins"]')].filter(x => x.querySelector('[data-bord]') && x.getBoundingClientRect().left > 4);
+      /* la barre déplaçable qui commence le plus à droite : c'est elle qui a la place de reculer de 4 semaines sans quitter l'écran */
+      const b = [...barres].sort((p, q) => q.getBoundingClientRect().left - p.getBoundingClientRect().left)[0];
       if (!b) return null;
       b.scrollIntoView({ block: 'center' });
       const r = b.getBoundingClientRect(), y = r.top + r.height / 2;
@@ -155,48 +162,56 @@ for (const theme of ['clair', 'cave']) {
     }
   } catch (e) { verdict('b', theme, false, `erreur : ${e.message}`); }
 
-  /* e : le doigt tient une barre (une colonne vers le futur, ce geste existe déjà) : l'étiquette de durée ne recouvre ni la barre ni son nom, pendant et après */
-  try {
-    await banc.recharger();
-    const mesure = id => banc.evaluate(i => {
-      const barre = document.querySelector(`[data-chose="${i}"]`); if (!barre) return null;
-      const r = b => { const q = b.getBoundingClientRect(); return { left: q.left, right: q.right, top: q.top, bottom: q.bottom }; };
-      const d = barre.querySelector('[data-duree]'), lbl = barre.nextElementSibling, nom = lbl?.querySelector('.cal-lbl-t');
-      const sous = document.querySelector(`[data-phrase-sous="${i}"]`);
-      return { barre: r(barre), haute: barre.classList.contains('cal-barre-2l'), duree: d ? r(d) : null, texte: (d ?? sous)?.textContent?.trim() ?? null, sous: sous ? r(sous) : null,
-        nom: nom ? r(nom) : null, nomVisible: lbl ? getComputedStyle(lbl).visibility !== 'hidden' : null, cote: [...(lbl?.classList ?? [])].find(c => /^cal-lbl-(dedans|droite|gauche)$/.test(c)) ?? null };
-    }, id);
-    const ch = await banc.evaluate(() => {
-      const barres = [...document.querySelectorAll('[data-frise] [data-chose][data-rangee="brassins"]')];
-      /* une barre d'une ligne dont le nom est DANS la barre (la plainte, capture 2), sinon la première qui a de la place à droite */
-      const dedans = barres.find(b => !b.classList.contains('cal-barre-2l') && b.nextElementSibling?.classList.contains('cal-lbl-dedans'));
-      const b = dedans ?? barres.find(x => x.getBoundingClientRect().right < 300) ?? barres[0];
-      if (!b) return null;
-      b.scrollIntoView({ block: 'center' });
-      const r = b.getBoundingClientRect(), y = r.top + r.height / 2;
-      let x = null;
-      for (let t = r.left + 14; t <= r.right - 8; t += 3) {
-        const e = document.elementFromPoint(t, y);
-        if (e && e.closest('[data-barre]') === b && !e.closest('[data-jalon], [data-bord], [data-grip]')) { x = t; break; }
-      }
-      return { id: b.getAttribute('data-chose'), titre: b.getAttribute('data-titre'), x, y, lc: parseFloat(document.querySelector('[data-frise]')?.getAttribute('data-largeur-colonne')) || 390 / 7, dedans: !!dedans };
-    });
-    if (!ch || ch.x === null) verdict('e', theme, false, `barre introuvable ou sans prise (${JSON.stringify(ch)})`);
-    else {
+  /* e : le BORD d'une barre tiré au doigt (la plainte, capture 2-etiquette-sur-barre : « J0 / 55 · prête 13 févr. » posée sur la barre et son nom), puis le corps d'une barre :
+     pendant et après, la durée tirée ne recouvre ni la barre ni son nom, et tient dans l'écran */
+  for (const geste of ['bord', 'barre']) {
+    try {
+      await banc.recharger();
+      const mesure = id => banc.evaluate(i => {
+        const barre = document.querySelector(`[data-chose="${i}"]`); if (!barre) return null;
+        const r = b => { const q = b.getBoundingClientRect(); return { left: q.left, right: q.right, top: q.top, bottom: q.bottom }; };
+        const d = barre.querySelector('[data-duree]'), lbl = barre.nextElementSibling, nom = lbl?.querySelector('.cal-lbl-t');
+        const sous = document.querySelector(`[data-phrase-sous="${i}"]`);
+        return { barre: r(barre), haute: barre.classList.contains('cal-barre-2l'), duree: d ? r(d) : null, dureeIn: !!d && (d.classList.contains('cal-duree-in') || d.getAttribute('data-place') === 'dedans'), place: d?.getAttribute('data-place') ?? null, texte: (d ?? sous)?.textContent?.trim() ?? null, sous: sous ? r(sous) : null, W: innerWidth,
+          nom: nom ? r(nom) : null, nomVisible: lbl ? getComputedStyle(lbl).visibility !== 'hidden' : null, cote: [...(lbl?.classList ?? [])].find(c => /^cal-lbl-(dedans|droite|gauche)$/.test(c)) ?? null };
+      }, id);
+      const ch = await banc.evaluate(g => {
+        const barres = [...document.querySelectorAll('[data-frise] [data-chose][data-rangee="brassins"]')].filter(b => b.querySelector('[data-bord]'));
+        /* une barre d'une ligne dont le nom est DANS la barre (la plainte, capture 2), sinon la première déplaçable qui a de la place */
+        const dedans = barres.find(b => !b.classList.contains('cal-barre-2l') && b.nextElementSibling?.classList.contains('cal-lbl-dedans'));
+        const b = dedans ?? barres[0];
+        if (!b) return null;
+        b.scrollIntoView({ block: 'center' });
+        const r = b.getBoundingClientRect(), y = r.top + r.height / 2;
+        let x = null;
+        if (g === 'bord') { const bd = b.querySelector('[data-bord]').getBoundingClientRect(); x = bd.left + bd.width / 2; }
+        else for (let t = r.left + 14; t <= r.right - 8; t += 3) {
+          const e = document.elementFromPoint(t, y);
+          if (e && e.closest('[data-barre]') === b && !e.closest('[data-jalon], [data-bord], [data-grip]')) { x = t; break; }
+        }
+        const touche = x === null ? null : document.elementFromPoint(x, y);
+        return { id: b.getAttribute('data-chose'), titre: b.getAttribute('data-titre'), x, y, droite: r.right, lc: parseFloat(document.querySelector('[data-frise]')?.getAttribute('data-largeur-colonne')) || 390 / 7, dedans: !!dedans,
+          prise: touche ? `${touche.tagName}.${String(touche.className?.baseVal ?? touche.className).slice(0, 24)}` : null };
+      }, geste);
+      if (!ch || ch.x === null) { verdict(`e ${geste}`, theme, false, `barre introuvable ou sans prise (${JSON.stringify(ch)})`); continue; }
       await z(300);
-      await glisser(banc, ch.x, ch.y, ch.lc, 0, { lever: false });
+      /* une colonne vers le futur si elle tient dans l'écran, sinon vers le passé */
+      const dx = ch.droite + ch.lc <= 380 ? ch.lc : -ch.lc;
+      await glisser(banc, ch.x, ch.y, dx, 0, { lever: false });
       await z(300);
       const pend = await mesure(ch.id);
-      await photo(banc, `e-${theme}-pendant`);
+      await photo(banc, `e-${geste}-${theme}-pendant`);
       await doigt(banc, 'touchEnd'); await z(700);
-      await photo(banc, `e-${theme}-apres`);
+      await photo(banc, `e-${geste}-${theme}-apres`);
       const apr = await mesure(ch.id);
-      const sur = m => !m ? null : { barre: (m.duree && !m.haute) || m.sous ? Math.round(inter(m.duree ?? m.sous, m.barre)) : 0, nom: m.nom && m.nomVisible && (m.duree ?? m.sous) ? Math.round(inter(m.duree ?? m.sous, m.nom)) : 0, masque: m.nomVisible === false && !!m.duree };
+      /* la phrase du repos vit dans la barre haute (CRITIQUE-9 n° 3, choisi) : seul le nom compte alors ; une durée tirée en dehors de la barre ne la recouvre jamais */
+      const sur = m => !m ? null : { barre: (m.duree && !m.haute && !m.dureeIn) || m.sous ? Math.round(inter(m.duree ?? m.sous, m.barre)) : 0, nom: m.nom && m.nomVisible && (m.duree ?? m.sous) ? Math.round(inter(m.duree ?? m.sous, m.nom)) : 0,
+        ecran: m.duree ? m.duree.left >= 0 && m.duree.right <= m.W : true };
       const sp = sur(pend), sa = sur(apr);
-      const ok = !!pend?.texte && sp.barre === 0 && sp.nom === 0 && !sp.masque && sa.nom === 0; /* au repos, la phrase vit dans la barre haute (CRITIQUE-9 n° 3, choisi) : seul le nom compte après */
-      verdict('e', theme, ok, pend?.texte ? `${ch.titre} (nom ${ch.dedans ? 'dans la barre' : pend.cote}) pendant « ${pend.texte} » : ∩ barre ${sp.barre} px², ∩ nom ${sp.nom} px², nom ${sp.masque ? 'MASQUÉ par la durée' : 'visible'} ; après : ∩ barre ${sa.barre} px², ∩ nom ${sa.nom} px²` : 'étiquette de durée absente pendant le glisser');
-    }
-  } catch (e) { verdict('e', theme, false, `erreur : ${e.message}`); }
+      const ok = !!pend?.texte && sp.barre === 0 && sp.nom === 0 && sp.ecran && sa.nom === 0 && sa.ecran;
+      verdict(`e ${geste}`, theme, ok, pend?.texte ? `${ch.titre} (prise ${ch.prise}, nom ${ch.dedans ? 'dans la barre' : pend.cote}) pendant « ${pend.texte} » (posée ${pend.place ?? 'au repos, dans la barre'}) : ∩ barre ${sp.barre} px², ∩ nom ${sp.nom} px², dans l'écran ${sp.ecran ? 'oui' : 'NON'} ; après : ∩ barre ${sa.barre} px², ∩ nom ${sa.nom} px²` : 'étiquette de durée absente pendant le glisser');
+    } catch (err) { verdict(`e ${geste}`, theme, false, `erreur : ${err.message}`); }
+  }
 
   /* f : aucune ligne en double dans une rangée, en 6 semaines puis en 20 */
   try {

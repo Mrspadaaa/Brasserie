@@ -17,6 +17,8 @@ export interface BandeSemainesProps {
   /** La courbe entière et l'index de la première colonne dans cette courbe : pour la variation de chaque semaine. */
   courbe: readonly SoldeSemaine[] | null;
   decalage: number;
+  /** CAL-PASSE : le lundi de la semaine en cours (la courbe commence avant aujourd'hui : l'index 0 n'est plus « maintenant »). */
+  lundiCourant?: string;
   mouvements: boolean;
   /** Lundis ISO qui portent une idée datée, et lundis qui portent un retard. */
   idees: ReadonlySet<string>;
@@ -90,7 +92,7 @@ export function etiquettesBande(semaines: readonly SemaineBande[], pas: PasEtiqu
   return res;
 }
 
-export function BandeSemaines({ semaines, courbe, decalage, mouvements, idees, retards, onDate, onIdeeSemaine, largeurColonne = 0, onDeplier }: BandeSemainesProps) {
+export function BandeSemaines({ semaines, courbe, decalage, mouvements, idees, retards, onDate, onIdeeSemaine, largeurColonne = 0, onDeplier, lundiCourant }: BandeSemainesProps) {
   const appui = useRef<{ id: number; x: number; y: number; timer: ReturnType<typeof setTimeout>; long: boolean } | null>(null);
   const annule = () => { if (appui.current) { clearTimeout(appui.current.timer); appui.current = null; } };
   const wEtiquette = largeurEtiquetteMax();
@@ -113,7 +115,7 @@ export function BandeSemaines({ semaines, courbe, decalage, mouvements, idees, r
         const v = courbe ? variation(courbe, decalage + k) : null;
         const idee = idees.has(s.debut), retard = retards.has(s.debut);
         return (
-          <button key={s.debut} type="button" className="ent-bd-c" data-semaine={s.numero} data-lundi={s.debut} data-courant={decalage + k === 0 ? 'oui' : undefined}
+          <button key={s.debut} type="button" className="ent-bd-c" data-semaine={s.numero} data-lundi={s.debut} data-courant={(lundiCourant ? s.debut === lundiCourant : decalage + k === 0) ? 'oui' : undefined}
             aria-label={`${dateDeSemaine(s.debut)}${mouvements && v !== null ? ` ; mouvement ${sg(v)}` : ''}${mouvements && idee ? ' ; idée du carnet' : ''}${mouvements && retard ? ' ; en retard' : ''}`}
             onPointerDown={e => {
               if (e.button > 0 || !onIdeeSemaine) return;

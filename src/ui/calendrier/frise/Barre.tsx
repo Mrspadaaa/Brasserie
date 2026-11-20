@@ -170,9 +170,45 @@ export function posPiste(p: number): string {
   return `(var(--cal-bg) + (100% - var(--cal-bg) - var(--cal-bd)) * ${Number((p / 100).toFixed(4))})`;
 }
 
+/**
+ * CAL-PASSE e (20.11, capture 2) : la durée tirée (« J0 / 55 · prête 13 févr. ») se pose où elle ne couvre ni la barre ni le nom et reste dans l'écran.
+ * Ordre : à droite de la barre (le geste de toujours), à sa gauche, dans la barre contre son bord droit (le nom, à gauche, reste lisible), enfin
+ * juste au-dessus d'elle. Mesuré au rendu (avant la peinture) : une barre qui court jusqu'au bord droit n'a pas de place à droite.
+ */
+const PLACES_DUREE: ReadonlyArray<Record<'left' | 'right' | 'top', string>> = [
+  { left: '', right: '', top: '' },
+  { left: 'auto', right: 'calc(100% + 6px)', top: '' },
+  { left: 'auto', right: '8px', top: '' },
+  { left: '0px', right: 'auto', top: '-20px' }
+];
+export function placerDuree(d: HTMLElement, barre: HTMLElement): number {
+  const lbl = barre.nextElementSibling, nom = lbl?.querySelector('.cal-lbl-t'), nomVu = !!nom && !!lbl && getComputedStyle(lbl).visibility !== 'hidden';
+  const frise = d.closest('[data-frise]')?.getBoundingClientRect();
+  const g = Math.max(0, frise?.left ?? 0), dr = Math.min(window.innerWidth, frise?.right ?? window.innerWidth);
+  const br = barre.getBoundingClientRect();
+  /* la transition globale (« all 0,01 ms ») ferait lire la mise en page de l'essai d'avant : sans elle, chaque essai se mesure tout de suite */
+  d.style.transition = 'none';
+  let choisie = PLACES_DUREE.length - 1;
+  for (let i = 0; i < PLACES_DUREE.length; i++) {
+    const p = PLACES_DUREE[i];
+    d.style.left = p.left; d.style.right = p.right; d.style.top = p.top;
+    const q = d.getBoundingClientRect();
+    const dansEcran = q.left >= g - 0.5 && q.right <= dr + 0.5;
+    const surBarre = i !== 2 && Math.min(q.right, br.right) - Math.max(q.left, br.left) > 1 && Math.min(q.bottom, br.bottom) - Math.max(q.top, br.top) > 1;
+    const n = nomVu ? nom!.getBoundingClientRect() : null;
+    const surNom = !!n && Math.min(q.right, n.right) - Math.max(q.left, n.left) > 1 && Math.min(q.bottom, n.bottom) - Math.max(q.top, n.top) > 1;
+    if (dansEcran && !surBarre && !surNom) { choisie = i; break; }
+  }
+  const p = PLACES_DUREE[choisie];
+  d.style.left = p.left; d.style.right = p.right; d.style.top = p.top;
+  d.setAttribute('data-place', ['droite', 'gauche', 'dedans', 'dessus'][choisie]);
+  return choisie;
+}
+
 export const Barre: React.FC<BarreProps> = props => {
   const { chose, gauche, largeur, haut, hauteur, cote, placeEtiquette, largeurColonne, bornes, epinglee, etoilee, selectionnee, menuOuvert, decalage = 0, allongement = 0, etiquetteDuree } = props;
   const el = React.useRef<HTMLDivElement | null>(null);
+  const dureeEl = React.useRef<HTMLElement | null>(null);
   const proposee = !!(chose.proposition || chose.probable);
   const brassin = chose.source.genre === 'batch';
   const nbJours = Math.max(1, ecartJours(chose.debut, chose.fin) + 1);
@@ -290,6 +326,10 @@ export const Barre: React.FC<BarreProps> = props => {
   const lienIcone = props.sansLie && chose.lie ? chose.lie : null;
   const zoneBarre = zoneToucher(w, hauteur);
   const nomTouchable = cote !== 'dedans' && !cede;
+  React.useLayoutEffect(() => {
+    const d = dureeEl.current, b = el.current;
+    if (d && b && etiquetteDuree && dureeHors && !bas) placerDuree(d, b);
+  });
 
   return (
     <>
@@ -365,7 +405,7 @@ export const Barre: React.FC<BarreProps> = props => {
             {Array.from({ length: n }, (_, i) => <i key={i} data-point style={{ left: pointsGroupes ? `${4 + i * 10}px` : `${((i + 0.5) / n) * 100}%` }} />)}
           </span>
         )}
-        {etiquetteDuree && bas?.ou !== 'dessous' && <em className={`cal-duree${dureeHors && !bas ? ' cal-duree-hors' : ''}${bas ? ' cal-duree-in' : ''}`} data-duree><DureeTexte texte={etiquetteDuree} /></em>}
+        {etiquetteDuree && bas?.ou !== 'dessous' && <em ref={dureeEl} className={`cal-duree${dureeHors && !bas ? ' cal-duree-hors' : ''}${bas ? ' cal-duree-in' : ''}`} data-duree><DureeTexte texte={etiquetteDuree} /></em>}
         {/* au repos, « J7 / 28 · prête 14 déc. » vit dans la barre du brassin (as/p-repos), quand il n'est pas déjà à côté du nom */}
         {!etiquetteDuree && dureeDedans && <em className="cal-duree cal-duree-in" data-duree><DureeTexte texte={dureeDedans.texte} /></em>}
         {peutBord && <span data-bord data-grip className="cal-grip" aria-hidden="true" />}

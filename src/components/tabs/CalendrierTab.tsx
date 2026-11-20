@@ -1016,7 +1016,8 @@ export function CalendrierTab(props: CalendrierTabProps) {
           mode={feuille.mode}
           initial={feuille.initial}
           contexte={ctxAjout}
-          semaines={modele.semaines}
+          /* CAL-PASSE : ajouter, c'est à partir de la semaine courante ; modifier une chose du passé garde le passé (sa date y est) */
+          semaines={feuille.mode === 'modifier' ? modele.semaines : modele.semaines.slice(modele.passe ?? 0)}
           sansPlusDeDetails={feuille.sansPlusDeDetails || feuille.mode === 'modifier'}
           evenements={evenementsLiables.filter(e => !(feuille.chose?.source.genre === 'creative' && feuille.chose.source.id === e.id))}
           onPlusDeDetails={plusDeDetails}

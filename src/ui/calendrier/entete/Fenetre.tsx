@@ -92,6 +92,8 @@ export interface CadreProps {
   prise?: React.MutableRefObject<PriseCadre | null>;
   /** Dans l'année, l'étiquette dit les mois (« nov. – oct. »), jamais « S47 – S45 » (c1-d). */
   etiquetteAnnee?: string;
+  /** CAL-PASSE : la courbe commence avant aujourd'hui ; la prise de la poignée de début reste dans l'écran même à la première semaine. */
+  debutRamenee?: boolean;
 }
 
 /** L'année ISO d'une semaine : celle de son jeudi. */
@@ -121,9 +123,12 @@ const PRISE_DEDANS = 10;
  * - Début : 34 px dehors à gauche, 10 px dedans ; jamais ramenée : quand la fenêtre commence à la première semaine, seul son bord dépasse, et le
  *   doigt qui part de « maintenant » lit la courbe (le geste c2-b du jouable) au lieu de pousser la fenêtre.
  */
-export function zonesPoignees(gauche: number, droite: number, largeur: number): { debut: { l: number; w: number }; fin: { l: number; w: number } } {
+export function zonesPoignees(gauche: number, droite: number, largeur: number, debutRamenee = false): { debut: { l: number; w: number }; fin: { l: number; w: number } } {
   const finL = Math.max(0, Math.min(droite - PRISE_DEDANS, largeur - PRISE_POIGNEE));
-  return { debut: { l: gauche - (PRISE_POIGNEE - PRISE_DEDANS), w: PRISE_POIGNEE }, fin: { l: finL, w: PRISE_POIGNEE } };
+  // CAL-PASSE (20.11) : quand la courbe commence AVANT aujourd'hui, l'index 0 n'est plus « maintenant » : le doigt qui part du bord gauche ne lit
+  // plus la courbe, il recule la fenêtre. La prise du début reste donc entière dans l'écran (44 px) au lieu de sortir de 34 px.
+  const debutL = gauche - (PRISE_POIGNEE - PRISE_DEDANS);
+  return { debut: { l: debutRamenee ? Math.max(0, debutL) : debutL, w: PRISE_POIGNEE }, fin: { l: finL, w: PRISE_POIGNEE } };
 }
 
 /** L'étiquette qui suit le doigt pendant le tirage : au-dessus du cadre (en haut de la courbe), bornée à la courbe. Hauteur 22 px. */
@@ -139,7 +144,7 @@ export interface PriseCadre {
   tirer: (genre: 'debut' | 'fin', e: React.PointerEvent<Element>) => void;
 }
 
-export function Cadre({ numeros, lundis, index, nombre, largeur, annee, onChange, onAnnee, onRevient, onTropCourt, onTirage, etiquetteAnnee, prise }: CadreProps) {
+export function Cadre({ numeros, lundis, index, nombre, largeur, annee, onChange, onAnnee, onRevient, onTropCourt, onTirage, etiquetteAnnee, prise, debutRamenee }: CadreProps) {
   const total = numeros.length;
   const unit = largeur / Math.max(1, total);
   const [drag, setDrag] = useState<{ index: number; nombre: number; bord: number } | null>(null);
@@ -150,7 +155,7 @@ export function Cadre({ numeros, lundis, index, nombre, largeur, annee, onChange
   const place = placeEtiquette(etiquette, gauche, cur.nombre * unit, largeur);
   const lignes = place.lignes;
   const styleL = place.dehors ? { left: place.l - gauche, transform: 'none', alignItems: 'flex-start' } : undefined;
-  const zones = zonesPoignees(gauche, droite, largeur);
+  const zones = zonesPoignees(gauche, droite, largeur, debutRamenee);
   // Pendant le tirage, l'étiquette quitte le bas du cadre (où elle couvrait « 1 740 mis de côté », n° 24) : elle suit le doigt, en haut.
   const tirage = drag ? boiteTirage(etiquette, drag.bord, largeur) : null;
   const onTirageRef = useRef(onTirage);

@@ -32,7 +32,7 @@ import './entete.css';
 export type VueCalendrier = 'semaines' | 'annee' | 'graph' | 'liste';
 
 /** Ce que l'en-tête lit du modèle : `ModeleCalendrier` en entier convient. */
-export type ModeleEnTete = Pick<ModeleCalendrier, 'semaines' | 'courbe' | 'creux' | 'retards' | 'sansDate' | 'icones'> & Partial<Pick<ModeleCalendrier, 'mois' | 'choses' | 'hypotheses'>>;
+export type ModeleEnTete = Pick<ModeleCalendrier, 'semaines' | 'courbe' | 'creux' | 'retards' | 'sansDate' | 'icones'> & Partial<Pick<ModeleCalendrier, 'mois' | 'choses' | 'hypotheses' | 'passe'>>;
 
 /** La courbe recalculée pendant un geste de la frise (E02) : une `CourbeCaisse` (`courbeDecalee`, `courbeSans`…). */
 export type ApercuCourbe = CourbeCaisse | { courbe: CourbeCaisse; /** D388 : le jour où la chose tomberait si on lâchait (« si tu lâches en S51 »). */ lache?: string };
@@ -599,7 +599,7 @@ export function EnTeteCalendrier(props: EnTeteCalendrierProps) {
   // CRITIQUE-5 n° 2 : la semaine du creux porte son année quand elle n'est pas celle d'aujourd'hui ; CRITIQUE-6 n° 1, en forme courte
   // (« S44 ’27 »). Rien ne se rogne jamais (D-114, E33) : quand la ligne ne tient pas (« −6 397 », un creux l'an prochain, l'An en paysage),
   // la semaine passe sous « CHF à dépenser », à droite du chiffre, sur la même hauteur de rangée (E43 : l'en-tête ne grandit pas).
-  const semaineCreux = creux ? semaineCourte(creux.lundi, semainesTot[0]?.debut ?? creux.lundi) : '';
+  const semaineCreux = creux ? semaineCourte(creux.lundi, (semainesTot[modele.passe ?? 0] ?? semainesTot[0])?.debut ?? creux.lundi) : '';
   const refCle = useRef<HTMLButtonElement>(null);
   const [empile, setEmpile] = useState(false);
   const [serre, setSerre] = useState(false);
@@ -720,7 +720,7 @@ export function EnTeteCalendrier(props: EnTeteCalendrierProps) {
             ) : (
               <Cadre numeros={semainesTot.map(s => s.numero)} lundis={lundis} index={index} nombre={nombre} largeur={largeur} annee={annee}
                 onChange={c => ecrire({ du: semainesTot[c.index].debut, semaines: c.nombre })} onAnnee={versAnnee} onRevient={quitterAnnee}
-                onTropCourt={() => dire({ genre: 'annee', texte: MESSAGE_ANNEE })} onTirage={setTirage} etiquetteAnnee={etiquetteAnnee} prise={prise} />
+                onTropCourt={() => dire({ genre: 'annee', texte: MESSAGE_ANNEE })} onTirage={setTirage} etiquetteAnnee={etiquetteAnnee} prise={prise} debutRamenee={(modele.passe ?? 0) > 0} />
             )}
           </Courbe>
         ) : base === null ? (
@@ -742,7 +742,7 @@ export function EnTeteCalendrier(props: EnTeteCalendrierProps) {
               onJour={(jour, colonne, n) => touche(jour, colonne, `${jourEntier(jour)} · ${etiquetteS(jour)}`, n)}
               onSemaine={(lundi, colonne, n) => touche(lundi, colonne, dateDeSemaine(lundi), n)} />
           ) : (
-            <BandeSemaines semaines={visibles} courbe={courbe} decalage={index} mouvements={mouvements} idees={idees} retards={semainesRetard} onDate={touche} onIdeeSemaine={onIdeeSemaine}
+            <BandeSemaines semaines={visibles} courbe={courbe} decalage={index} lundiCourant={modele.semaines[modele.passe ?? 0]?.debut} mouvements={mouvements} idees={idees} retards={semainesRetard} onDate={touche} onIdeeSemaine={onIdeeSemaine}
               {...(props.onDeplier && vue === 'semaines' ? { onDeplier: props.onDeplier } : {})}
               largeurColonne={largeurColonne > 0 ? largeurColonne : largeur / Math.max(1, nombre)} />
           )}
