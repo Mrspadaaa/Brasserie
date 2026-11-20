@@ -2,6 +2,8 @@ import React, { useCallback, useMemo, useRef, useState } from 'react';
 import type { Batch, Client, CreativeItem, Recipe, StockItem, Transaction } from '../types';
 import type { FinancialPayment, FinancialPlan, FinancialProfile, FinanceTransaction } from '../domain/finance/types';
 import { todayISO } from '../domain/finance/ledger';
+import PLANNING_PORTE from '../../scripts/planning-vers-carnet/fixture-planning.json';
+import { planMigration, type TachePlanning } from '../../scripts/planning-vers-carnet/correspondance';
 import { REGLAGES_VIDES, type ReglagesFournisseurs } from '../domain/fournisseurs';
 import { indiceSemaine, type LigneHorizon } from '../domain/stock/horizon';
 import { plusMenuFor } from '../domain/plusEcran';
@@ -404,8 +406,11 @@ export const BancCalendrier: React.FC<BancProps> = ({ aujourdhui: jour, etat, so
 /** Le banc servi (`?preview=calendrier`) : la fixture, plus la tendance de Finances simulée (E01) ; les tests gardent `etatBanc` seul. */
 export const CalendrierPreview: React.FC = () => {
   const aujourdhui = todayISO();
-  const brasseur = typeof window !== 'undefined' && new URLSearchParams(window.location.search).get('jeu') === 'brasseur';
-  const [etat] = useState(() => (brasseur ? etatBrasseur(aujourdhui) : avecTendance(etatBanc(aujourdhui), aujourdhui)));
+  const jeu = typeof window !== 'undefined' ? new URLSearchParams(window.location.search).get('jeu') : null;
+  /* `&jeu=planning` (20.11) : le jeu brasseur et les 19 étapes de son Planning portées dans le Carnet (scripts/planning-vers-carnet) */
+  const brasseur = jeu === 'brasseur' || jeu === 'planning';
+  const [etat] = useState(() => (jeu === 'planning' ? { ...etatBrasseur(aujourdhui), items: planMigration(PLANNING_PORTE as TachePlanning[], new Set(), '2026-11-20T12:00:00.000Z').aEcrire.flatMap(c => c.docs) }
+    : brasseur ? etatBrasseur(aujourdhui) : avecTendance(etatBanc(aujourdhui), aujourdhui)));
   /* Paquet G n° 7 : le vrai en-tête de l'app (48 px au téléphone), collé ; il publie sa hauteur, la zone du calendrier se colle dessous */
   const [periode, setPeriode] = useState<Periode>({ genre: 'tout' });
   const enTeteApp = <Header globalTimeFilter={periode} onChangeGlobalTimeFilter={setPeriode} hidePeriod onGoHome={() => undefined} onOpenSearch={() => undefined} onOpenPlus={() => undefined} />;

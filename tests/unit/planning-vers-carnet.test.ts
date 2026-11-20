@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import taches from '../../scripts/planning-vers-carnet/fixture-planning.json';
 import { carnetDeTache, dateDuPlanning, idCarnetPlanning, idMessagePlanning, planMigration, type TachePlanning } from '../../scripts/planning-vers-carnet/correspondance';
+import { iconesIdees } from '../../src/domain/calendrier';
 import { filDe, lireCarnet, lireCarnets, lireMessage } from '../../src/domain/carnets/modele';
 
 const LE = '2026-11-20T12:00:00.000Z';
@@ -41,15 +42,26 @@ describe('Planning → Carnet (20.11)', () => {
     expect(budgets.reduce((s, b) => s + Number(b.replace(/[^\d]/g, '')), 0)).toBe(12380);
     const sol = lireCarnet(plan.aEcrire.find(c => c.tacheId === 'T-6')!.docs.find(d => d.type === 'carnet'))!;
     expect(sol.title).toBe('Sol, murs & évacuation (béton, revêtement, peinture food-safe)');
-    expect(sol.carnet.criteres.map(k => k.texte)).toEqual(['Budget prévu : 3 500 CHF']);
+    expect(sol.carnet.criteres.map(k => k.texte)).toEqual(['Budget du Planning : 3 500 CHF']);
     expect(sol.carnet.notes).toEqual([expect.objectContaining({ texte: 'À faire du 08.12.2025 au 21.12.2025 (Planning, Structure)', genre: 'a-faire' })]);
     expect(sol.date).toBe('2025-12-08');
   });
 
-  it('lit la date mal formée de « Frigo + congel » et pose l’idée au lundi de son début', () => {
+  it('lit la date mal formée de « Frigo + congel » ; en cours le 20.11, son idée prend la semaine courante (critique n° 1)', () => {
     const frigo = carnetDeTache(fixture.find(t => t.id === 'T-13')!, LE);
     expect(frigo.dates).toBe('À faire du 01.08.2026 au 01.05.2027 (Planning, Équipements)');
-    expect(frigo.date).toBe('2026-07-27');
+    expect(frigo.date).toBe('2026-11-16');
+    expect(carnetDeTache(fixture.find(t => t.id === 'T-19')!, LE).date).toBe('2026-11-16');
+    expect(carnetDeTache(fixture.find(t => t.id === 'T-20')!, LE).date).toBe('2027-04-26');
+    expect(carnetDeTache(fixture.find(t => t.id === 'T-6')!, LE).date).toBe('2025-12-08');
+  });
+
+  it('range les idées dans l’ordre du Planning (ids à deux chiffres, n° 4) et date la création de l’étape, pas la migration (n° 9)', () => {
+    const docs = planMigration(fixture.map(t => ({ ...t, creeLe: '2026-09-03T11:40:33.460190Z' })), new Set(), LE).aEcrire.flatMap(c => c.docs);
+    const ids = lireCarnets(docs).map(c => c.id).sort();
+    expect(ids[0]).toBe('CARNET-PLANNING-T-06');
+    expect(ids.slice(-2)).toEqual(['CARNET-PLANNING-T-23', 'CARNET-PLANNING-T-24']);
+    expect(lireCarnets(docs).every(c => c.carnet.creeLe === '2026-09-03T11:40:33.460190Z')).toBe(true);
   });
 
   it('porte les deux jalons sans date ni budget', () => {
@@ -59,7 +71,7 @@ describe('Planning → Carnet (20.11)', () => {
       const c = lireCarnet(j.docs.find(d => d.type === 'carnet'))!;
       expect(c.date).toBeUndefined();
       expect(c.carnet.criteres).toEqual([]);
-      expect(c.carnet.notes.map(n => n.texte)).toEqual(['Jalon du Planning, sans date prévue']);
+      expect(c.carnet.notes.map(n => [n.texte, n.genre])).toEqual([['Jalon du Planning, sans date', 'note']]);
     }
   });
 
@@ -76,5 +88,15 @@ describe('Planning → Carnet (20.11)', () => {
     const moitie = planMigration(fixture.slice(0, 1), new Set([idCarnetPlanning('T-6')]), LE);
     expect(moitie.conflits).toEqual(['T-6']);
     expect(moitie.aEcrire).toEqual([]);
+  });
+
+  it('pose au Calendrier les 17 étapes datées, chacune à la semaine de son début, par le lien existant du Carnet (R48)', () => {
+    const docs = planMigration(fixture, new Set(), LE).aEcrire.flatMap(c => c.docs);
+    const icones = iconesIdees(docs);
+    expect(icones).toHaveLength(17);
+    expect(icones.every(i => i.genre === 'idee' && i.ouvre?.ecran === 'carnets')).toBe(true);
+    expect(icones.find(i => i.titre === 'Frigo + congel')?.lundi).toBe('2026-11-16');
+    expect(icones.find(i => i.titre.startsWith('Embouteillage'))?.lundi).toBe('2027-04-26');
+    expect(icones.some(i => i.titre.startsWith('Jalon'))).toBe(false);
   });
 });

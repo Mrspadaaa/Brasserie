@@ -38,7 +38,7 @@ async function req(url: string, corps?: unknown) {
   if (!r.ok) throw Error(`Firestore HTTP ${r.status} ${await r.text()}`);
   return r.json();
 }
-type DocRest = { name: string; fields?: Record<string, unknown>; updateTime: string };
+type DocRest = { name: string; fields?: Record<string, unknown>; updateTime: string; createTime?: string };
 async function tous(collection: string, masque?: string): Promise<DocRest[]> {
   const sortie: DocRest[] = []; let curseur: string | undefined;
   do {
@@ -67,7 +67,7 @@ const sauvegarde = join(tmpdir(), `affinee-planning-${emulateur ? 'emulateur' : 
 writeFileSync(sauvegarde, JSON.stringify({ projet, emulateur: emulateur ?? null, le: stamp, planning, creativeItemsIds: items.map(idDe) }, null, 2));
 console.log(`SAUVEGARDE ${sauvegarde} (${planning.length} étapes, ${items.length} creativeItems)`);
 
-const taches = planning.map(d => ({ ...lu(d), id: idDe(d) }) as TachePlanning);
+const taches = planning.map(d => ({ ...lu(d), id: idDe(d), ...(d.createTime ? { creeLe: d.createTime } : {}) }) as TachePlanning);
 const le = new Date().toISOString();
 const plan = planMigration(taches, new Set(items.map(idDe)), le);
 for (const c of plan.aEcrire) console.log(`  + ${c.tacheId.padEnd(5)} ${c.titre} | ${c.budget ?? '—'} | ${c.dates}${c.date ? ` | semaine du ${c.date}` : ''}${c.fait ? ' | archivé (fait)' : ''}`);
