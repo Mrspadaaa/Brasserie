@@ -6,7 +6,6 @@ import {
   initialProduction,
   initialRecipes,
   initialClients,
-  initialPlanning,
   initialTarifs,
   initialBudgetLines,
   initialBrewhouses
@@ -35,7 +34,6 @@ const LEGACY_KEYS = {
   PRODUCTION: 'laffinee_production',
   RECIPES: 'laffinee_recipes',
   CLIENTS: 'laffinee_clients',
-  PLANNING: 'laffinee_planning',
   CONFIG: 'laffinee_config',
   TARIFS: 'laffinee_tarifs',
   BUDGET: 'laffinee_budget',
@@ -137,10 +135,6 @@ function buildEntries(): {
   // --- Clients ---
   const clients = readLocal<typeof initialClients>(LEGACY_KEYS.CLIENTS) || initialClients;
   clients.forEach((c) => add('clients', c.id, c));
-
-  // --- Planning ---
-  const planning = readLocal<typeof initialPlanning>(LEGACY_KEYS.PLANNING) || initialPlanning;
-  planning.forEach((p) => add('planning', p.id, p));
 
   // --- Budget : pas d'identifiant naturel, on utilise le numéro de ligne. ---
   const budget = readLocal<typeof initialBudgetLines>(LEGACY_KEYS.BUDGET) || initialBudgetLines;

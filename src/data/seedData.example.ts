@@ -6,7 +6,6 @@ import {
   Recipe,
   Batch,
   Client,
-  GanttTask,
   PricingItem,
   BudgetLine,
   AppConfig
@@ -69,7 +68,6 @@ export const initialStocks: {
 export const initialProduction: Batch[] = [];
 export const initialRecipes: Recipe[] = [];
 export const initialClients: Client[] = [];
-export const initialPlanning: GanttTask[] = [];
 export const initialTarifs: PricingItem[] = [];
 export const initialBudgetLines: BudgetLine[] = [];
 

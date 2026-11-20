@@ -44,7 +44,7 @@ const stock = (id: string, name: string, currentStock: number, minStock: number)
 function mount(overrides: Partial<React.ComponentProps<typeof DashboardTab>> = {}) {
   const props: React.ComponentProps<typeof DashboardTab> = {
     batches: [porter], transactions: [], stocks: { rawMaterials: [], cleaning: [] },
-    planning: [], config: { fiscal: { isTvaRegistered: false } } as AppConfig,
+    config: { fiscal: { isTvaRegistered: false } } as AppConfig,
     globalTimeFilter: 'this-month', onOpenBatch: vi.fn(), onNavigateTab: vi.fn(),
     onNavigateToCreativeLab: vi.fn(),
     ...overrides

@@ -195,26 +195,14 @@ describe('Tarifs', () => {
   });
 });
 
-describe('Planning', () => {
-  const task = {
-    id: 'T-1',
-    category: 'Travaux',
-    description: 'Poser le carrelage',
-    cost: 1200,
-    startDate: '01.03.2026',
-    endDate: '15.03.2026',
-    isMilestone: false
-  };
-
-  it('⚠️ se modifie et se supprime — une tâche terminée restait ouverte', () => {
-    StorageService.updatePlanningTask(task);
-    expect(StorageService.getPlanning()).toHaveLength(1);
-
-    StorageService.updatePlanningTask({ ...task, completed: true });
-    expect(StorageService.getPlanning()[0].completed).toBe(true);
-
-    StorageService.deletePlanningTask('T-1');
-    expect(StorageService.getPlanning()).toHaveLength(0);
+// Planning (GanttTask) retiré le 20.11 (BT-2, décision du brasseur : le Calendrier fait ce travail). Une collection `planning` déjà
+// stockée se charge sans erreur : aucune lecture ne la demande plus, elle reste intacte.
+describe('Planning retiré : ancienne collection ignorée', () => {
+  it('une collection `planning` stockée ne gêne aucune lecture et reste intacte', () => {
+    store.set('planning', new Map([['T-1', { id: 'T-1', category: 'Travaux', description: 'Poser le carrelage', cost: 1200, startDate: '01.03.2026', endDate: '15.03.2026', isMilestone: false }]]));
+    expect(() => { StorageService.getTarifs(); StorageService.getBatches(); StorageService.getRecipes(); }).not.toThrow();
+    expect((StorageService as Record<string, unknown>).getPlanning).toBeUndefined();
+    expect(store.get('planning')?.size).toBe(1);
   });
 });
 

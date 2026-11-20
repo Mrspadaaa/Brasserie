@@ -36,7 +36,6 @@ vi.mock('../../src/services/storage', () => {
       getBatches: empty,
       getRecipes: empty,
       getClients: empty,
-      getPlanning: empty,
       getBudgetLines: empty,
       getTarifs: empty,
       getConfig: () => config,

@@ -62,7 +62,6 @@ import {
   WaterSource,
 
   Client, 
-  GanttTask, 
   BudgetLine, 
   PricingItem, 
   AuditLog,
@@ -438,7 +437,6 @@ export const App: React.FC = () => {
   const [recipes, setRecipes] = useState<Recipe[]>([]);
   const openWizardRef = useRef<((seed?: WizardSeed, duplicateOf?: string) => void) | undefined>(undefined);
   const [clients, setClients] = useState<Client[]>([]);
-  const [planning, setPlanning] = useState<GanttTask[]>([]);
   const [budgetLines, setBudgetLines] = useState<BudgetLine[]>([]);
   const [tarifs, setTarifs] = useState<PricingItem[]>([]);
   const [config, setConfig] = useState<AppConfig>(defaultConfig);
@@ -488,7 +486,6 @@ export const App: React.FC = () => {
       setBatches([...StorageService.getBatches()]);
       setRecipes([...StorageService.getRecipes()]);
       setClients([...StorageService.getClients()]);
-      setPlanning([...StorageService.getPlanning()]);
       setBudgetLines([...StorageService.getBudgetLines()]);
       setTarifs([...StorageService.getTarifs()]);
       setConfig({ ...StorageService.getConfig() });
@@ -501,7 +498,6 @@ export const App: React.FC = () => {
       setBatches([]);
       setRecipes([]);
       setClients([]);
-      setPlanning([]);
       setBudgetLines([]);
       setTarifs([]);
       setAuditLogs([]);
@@ -533,7 +529,6 @@ export const App: React.FC = () => {
       setBatches([...StorageService.getBatches()]);
       setRecipes([...StorageService.getRecipes()]);
       setClients([...StorageService.getClients()]);
-      setPlanning([...StorageService.getPlanning()]);
       setBudgetLines([...StorageService.getBudgetLines()]);
       setTarifs([...StorageService.getTarifs()]);
       setConfig({ ...StorageService.getConfig() });
@@ -1030,7 +1025,6 @@ export const App: React.FC = () => {
     setBatches([]);
     setRecipes([]);
     setClients([]);
-    setPlanning([]);
     setBudgetLines([]);
     setTarifs([]);
     setConfig(defaultConfig);
@@ -1245,7 +1239,6 @@ export const App: React.FC = () => {
             transactions={transactions}
             batches={batches}
             stocks={stocks}
-            planning={planning}
             config={config}
             globalTimeFilter={globalTimeFilter}
             onNavigateTab={(tab) => { if(tab==='production') setProductionSubTab('batches'); setActiveTab(tab); }}

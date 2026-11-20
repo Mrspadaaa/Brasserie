@@ -46,7 +46,7 @@ describe('AM-56 : levures à date de durabilité dépassée ou proche', () => {
 describe('AM-56 : le Bord signale la levure périmée', () => {
   afterEach(cleanup);
   const mount = (rawMaterials: StockItem[], onNavigateTab = vi.fn()) => render(<DashboardTab batches={[]} transactions={[]}
-    stocks={{ rawMaterials, cleaning: [] }} planning={[]} config={{ fiscal: { isTvaRegistered: false } } as AppConfig} globalTimeFilter="this-month"
+    stocks={{ rawMaterials, cleaning: [] }} config={{ fiscal: { isTvaRegistered: false } } as AppConfig} globalTimeFilter="this-month"
     onOpenBatch={vi.fn()} onNavigateTab={onNavigateTab} onNavigateToCreativeLab={vi.fn()} />);
 
   it('une levure périmée en stock : alerte avec son nom, sa date, et un toucher qui ouvre Stocks', () => {

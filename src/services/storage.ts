@@ -12,7 +12,6 @@ import {
   Recipe,
   Batch,
   Client,
-  GanttTask,
   PricingItem,
   BudgetLine,
   AppConfig,
@@ -1265,15 +1264,6 @@ export const StorageService = {
     }
   },
 
-  // 6. PLANNING
-  getPlanning(): GanttTask[] {
-    return clean<GanttTask>(FirestoreRepo.all('planning'));
-  },
-
-  savePlanning(planning: GanttTask[]) {
-    syncCollection('planning', planning, (p) => p.id);
-  },
-
   // 7. BUDGET
   getBudgetLines(): BudgetLine[] {
     return clean<BudgetLine>(FirestoreRepo.all('budgetLines'));
@@ -1289,14 +1279,13 @@ export const StorageService = {
   },
 
   /*
-   * Tarifs et planning.
+   * Tarifs.
    *
    * ⚠️ Ils s'affichaient mais ne se modifiaient pas : aucune méthode d'écriture
-   * ligne à ligne n'existait. Un prix devenu faux restait affiché, une tâche
-   * terminée restait ouverte.
+   * ligne à ligne n'existait. Un prix devenu faux restait affiché.
    *
-   * Ni l'un ni l'autre ne porte d'identifiant : on adresse donc par le libellé
-   * (`product`, `description`), qui est ce que Gaëtan lit à l'écran.
+   * Un tarif ne porte pas d'identifiant : on l'adresse par le libellé
+   * (`product`), qui est ce que Gaëtan lit à l'écran.
    */
 
   updateTarif(tarif: PricingItem) {
@@ -1317,26 +1306,6 @@ export const StorageService = {
     this.saveTarifs(this.getTarifs().filter((t) => t.product !== product));
     if (target) {
       this.logAction('Suppression', 'Clients', product, `Tarif supprimé : ${product}`);
-    }
-  },
-
-  updatePlanningTask(task: GanttTask) {
-    const all = this.getPlanning();
-    const i = all.findIndex((t) => t.id === task.id);
-    this.savePlanning(i >= 0 ? all.map((t, j) => (j === i ? task : t)) : [...all, task]);
-    this.logAction(
-      i >= 0 ? 'Modification' : 'Création',
-      'Configuration',
-      task.id,
-      `Tâche ${task.description}${task.completed ? ' — terminée' : ''}`
-    );
-  },
-
-  deletePlanningTask(id: string) {
-    const target = this.getPlanning().find((t) => t.id === id);
-    this.savePlanning(this.getPlanning().filter((t) => t.id !== id));
-    if (target) {
-      this.logAction('Suppression', 'Configuration', id, `Tâche supprimée : ${target.description}`);
     }
   },
 

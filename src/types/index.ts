@@ -809,17 +809,6 @@ export interface ClientStats {
   status: ClientStatus;
 }
 
-export interface GanttTask {
-  id: string;
-  category: string;
-  description: string;
-  cost: number;
-  startDate: string;
-  endDate: string;
-  isMilestone: boolean;
-  completed?: boolean;
-}
-
 /** Format d'un tarif (ids de la caisse : formatsVente.ts). Le tarif porte son format : plus de regex sur le libellé quand il est renseigné (ue, 09.11). */
 export interface FormatTarif { id: '33cl' | '75cl' | 'fut'; volumeL: number }
 export interface PricingItem {
