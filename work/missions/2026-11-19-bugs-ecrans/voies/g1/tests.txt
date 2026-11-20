@@ -1,3 +1,3 @@
-Test Files  252 passed | 2 skipped (254)
-      Tests  3122 passed | 6 skipped (3128)
-Commande : npx vitest run tests/unit/finance tests/unit/depense tests/unit/bugs-g1 tests/unit/cxMaterielPropose.test.ts tests/unit/purchase functions ; 0 failed ; npx tsc --noEmit sans erreur.
+Test Files  256 passed | 1 skipped (257)
+      Tests  (nombre de tests non relevé : sortie filtrée aux fichiers) 0 failed ; 6 skipped au dernier décompte complet (3122 passed)
+Commande : npx vitest run tests/unit/finance tests/unit/depense tests/unit/bugs-g1 tests/unit/cxMaterielPropose.test.ts tests/unit/purchase functions ; 0 failed ; npx tsc --noEmit sans erreur. Ajoutés cette reprise : bugs-g1-LR2-4-ecran (3), bugs-g1-LR2-6-libelle (2), bugs-g1-LR1-NOTE-3 (2).
