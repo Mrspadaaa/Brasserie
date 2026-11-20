@@ -84,6 +84,8 @@ import { chargerBibliothequeLevures } from './domain/yeastLibraryLoader';
 import { HopV55SemanticAdviceCapabilityContext, qualifyHopV55SemanticAdviceCapabilityV3 } from './ui/hopV55/assistedAdviceUiContracts';
 import { montantChf } from './domain/finance/ledger';
 import { memoriserDefilement, restaurerDefilement } from './ui/calendrier/retourDefilement';
+import { useRetourEcran } from './ui/calendrier/useRetour';
+import { EVENEMENT_CALENDRIER, NOM_SECTION, lireSection, type SectionCalendrier } from './ui/calendrier/LienSection';
 
 const QuickActionModal = lazy(() => import('./components/QuickActionModal').then(module => ({ default: module.QuickActionModal })));
 const SettingsModal = lazy(() => import('./components/SettingsModal').then(module => ({ default: module.SettingsModal })));
@@ -292,6 +294,21 @@ export const App: React.FC = () => {
     window.addEventListener('affinee:ouvrir-carnet', ouvrir);
     return () => window.removeEventListener('affinee:ouvrir-carnet', ouvrir);
   }, [ouvrirCarnet]);
+  /* CT4A-12 : un renvoi du Calendrier (fête, événement, idée) ou de sa section se referme sur l'écran d'où il est parti. */
+  const poserRetour = useRetourEcran<TabType>(activeTab, setActiveTab);
+  /** E44 : le calendrier d'une section (Argent, Brassins, Matériel, Stocks, Agenda) ; `undefined` : le général. Il se règle depuis la section, jamais gardé. */
+  const [calendrierSection, setCalendrierSection] = useState<SectionCalendrier | undefined>(undefined);
+  const ouvrirCalendrierSection = React.useCallback((section: SectionCalendrier) => {
+    poserRetour(activeTab);
+    setCalendrierSection(section);
+    setActiveTab('calendrier');
+  }, [poserRetour, activeTab]);
+  useEffect(() => {
+    const ouvrir = (event: Event) => { const s = lireSection(event); if (s) ouvrirCalendrierSection(s); };
+    window.addEventListener(EVENEMENT_CALENDRIER, ouvrir);
+    return () => window.removeEventListener(EVENEMENT_CALENDRIER, ouvrir);
+  }, [ouvrirCalendrierSection]);
+  useEffect(() => { if (activeTab !== 'calendrier') setCalendrierSection(undefined); }, [activeTab]);
   const [labSectionRequest, setLabSectionRequest] = useState<CreativeLabSectionRequest | null>(null);
   /** Calendrier, « Prévoir une dépense » : la feuille de prévision (écriture prévue, non payée), datée de la semaine touchée. */
   const [prevoirDepense, setPrevoirDepense] = useState<{ date: string; categorie?: FinanceCategory; saisie?: { titre?: string; centimes?: number; direction?: 'in' | 'out' } } | null>(null);
@@ -1260,7 +1277,7 @@ export const App: React.FC = () => {
               setActiveTab('production');
             }}
             /* h1 (audit des vues n° 3) : l'agenda (tâches datées) vit au Calendrier, sa vue choisie ; plus dans l'ancien carnet. */
-            onNavigateToCreativeLab={() => setActiveTab('calendrier')}
+            onNavigateToCreativeLab={() => ouvrirCalendrierSection('agenda')}
           />
         )}
 
@@ -1289,8 +1306,15 @@ export const App: React.FC = () => {
           />
         )}
 
-        {activeTab === 'calendrier' && (
+        {activeTab === 'calendrier' && (<>
+          {calendrierSection && (
+            <div className="mb-2 flex min-h-11 items-center gap-2 rounded-panel border border-cave-800 px-3 text-sm" data-calendrier-section={calendrierSection}>
+              <span className="min-w-0 flex-1 truncate font-semibold text-cave-100">Calendrier · {NOM_SECTION[calendrierSection]}</span>
+              <button type="button" data-calendrier-general onClick={() => setCalendrierSection(undefined)} className="min-h-11 shrink-0 px-2 font-semibold text-cave-200">Tout le calendrier ›</button>
+            </div>
+          )}
           <CalendrierTab
+            {...(calendrierSection ? { section: calendrierSection } : {})}
             transactions={transactions}
             batches={batches}
             stockItems={[...stocks.rawMaterials, ...stocks.cleaning]}
@@ -1319,6 +1343,7 @@ export const App: React.FC = () => {
             onPoserBrassin={(recetteId) => { setBrewRecipeId(recetteId); setQuickAction('brew-batch', actionLauncherRef.current); }}
             onPoserFete={(lundi, saisie) => {
               /* h1 (audit n° 4) : ce qui est tapé arrive dans le champ du Carnet (CarnetsVue), rien ne se perd ; correctif propre au Calendrier : ouvert. */
+              poserRetour('calendrier');
               navigateToCreativeLab({ section: 'event', at: Date.now(), date: lundi, ...(saisie ? { saisie } : {}) });
             }}
             onPoserDepense={(lundi, _rangee, categorie, saisie) => {
@@ -1330,10 +1355,10 @@ export const App: React.FC = () => {
             onPeriode={(p) => setGlobalTimeFilter(p)}
             onOuvrirBudget={(batchId) => setBudgetBrassinId(batchId)}
             onOpenPiece={(id) => { memoriserDefilement(); setActiveTab('finances'); setFinanceOpenRequest({ id, at: Date.now(), retour: 'calendrier' }); }}
-            onOpenAgenda={() => navigateToCreativeLab({ section: 'event', at: Date.now() })}
-            onOpenCarnet={ouvrirCarnet}
+            onOpenAgenda={() => { poserRetour('calendrier'); navigateToCreativeLab({ section: 'event', at: Date.now() }); }}
+            onOpenCarnet={(id) => { poserRetour('calendrier'); ouvrirCarnet(id); }}
           />
-        )}
+        </>)}
 
         {activeTab === 'production' && (
           <ProductionTab
@@ -1411,6 +1436,7 @@ export const App: React.FC = () => {
           onChangeTab={(tab) => {
             // Le sous-onglet de chaque onglet est gardé (BX-4) : rien à vider.
             setFournisseursOuvert(false);
+            if (tab === 'calendrier') setCalendrierSection(undefined); // la barre du bas ouvre toujours le calendrier général
             setActiveTab(tab);
           }}
           criticalStockCount={criticalStockCount}

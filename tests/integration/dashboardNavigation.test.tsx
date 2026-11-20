@@ -121,27 +121,16 @@ describe('Dashboard agenda navigation', () => {
 
     const agenda = await screen.findByRole('region', { name: 'Agenda', exact: true });
     fireEvent.click(within(agenda).getByRole('button', { name: 'Gérer', exact: true }));
-    expect(await screen.findByRole('button', { name: 'À faire', exact: true })).toHaveAttribute('aria-pressed', 'true');
-    expect(screen.getByText('Préparer le marché')).toBeInTheDocument();
-    // kd4 : une tâche faite monte dans « Faites » (repliée) ; on l'ouvre pour la lire.
-    fireEvent.click(screen.getByRole('button', { name: /^Faites/ }));
-    expect(screen.getByText('Rincer les fûts')).toBeInTheDocument();
-    expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
+    /* CAL-PASSE (R, audit des vues n° 3, E44) : « Gérer » ouvre le calendrier de la section Agenda (CalendrierTab section=agenda), plus l'ancien Atelier ; « Tout le calendrier » le rend général. */
+    expect(await screen.findByText('Calendrier · Agenda', {}, { timeout: 15000 })).toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: 'À faire', exact: true })).not.toBeInTheDocument();
+    fireEvent.click(screen.getByRole('button', { name: /Tout le calendrier/ }));
+    expect(screen.queryByText('Calendrier · Agenda')).not.toBeInTheDocument();
 
-    fireEvent.click(screen.getByRole('button', { name: 'Bières', exact: true }));
-    expect(screen.getByRole('heading', { name: 'Essai de saison' })).toBeInTheDocument();
-    fireEvent.click(screen.getByRole('button', { name: 'Retour au tableau de bord' }));
-    fireEvent.click(within(screen.getByRole('region', { name: 'Agenda', exact: true })).getByRole('button', { name: 'Gérer', exact: true }));
-    expect(screen.getByRole('button', { name: 'À faire', exact: true })).toHaveAttribute('aria-pressed', 'true');
-    expect(screen.getByText('Préparer le marché')).toBeInTheDocument();
-
-    fireEvent.click(screen.getByRole('button', { name: 'Retour au tableau de bord' }));
-    /* m3 : le menu ⋮ n'existe plus ; l'Atelier R&D est un outil de la page Plus, ouverte par le duo d'avatars. */
     fireEvent.click(screen.getByRole('button', { name: /^Plus : saisie au nom de/ }));
     fireEvent.click(screen.getByRole('button', { name: /^Atelier R&D/ }));
-    expect(screen.getByRole('button', { name: 'Matériel', exact: true })).toHaveAttribute('aria-pressed', 'true');
-    // ks4 (15.11) : À faire est un filtre du Carnet, absent quand Matériel est ouvert.
-    expect(screen.getByRole('button', { name: 'Carnet', exact: true })).toHaveAttribute('aria-pressed', 'false');
+    /* h1 (CPL-1) : la porte de l'Atelier mène au Carnet (CarnetsVue) ; À faire n'existe plus. */
+    expect(await screen.findByRole('button', { name: 'Carnet', exact: true }, { timeout: 15000 })).toHaveAttribute('aria-pressed', 'true');
     expect(screen.queryByRole('button', { name: 'À faire', exact: true })).not.toBeInTheDocument();
     expect(create).not.toHaveBeenCalled();
     expect(update).not.toHaveBeenCalled();

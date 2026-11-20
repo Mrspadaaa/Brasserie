@@ -30,6 +30,7 @@ import { EditTransactionModal } from '../EditTransactionModal';
 import '../../ui/finance/finance.css';
 import { installerModeClavier } from '../../ui/finance/modeClavier';
 import { ChoixBrassin } from '../../ui/finance/budget/ChoixBrassin';
+import { LienSection } from '../../ui/calendrier/LienSection';
 
 installerModeClavier();
 
@@ -142,6 +143,7 @@ export function FinancesTab({transactions,config,globalTimeFilter,onChangeGlobal
     <nav className="finance-nav" role="tablist" aria-label="Finances">{views.map(([key,label])=><button type="button" key={key} id={`finance-tab-${key}`} role="tab" tabIndex={view===key?0:-1} aria-selected={view===key} aria-controls={`finance-${key}`} onClick={()=>selectView(key)} onKeyDown={e=>{if(!['ArrowLeft','ArrowRight','Home','End'].includes(e.key))return;e.preventDefault();const index=views.findIndex(v=>v[0]===key);const next=e.key==='Home'?0:e.key==='End'?views.length-1:(index+(e.key==='ArrowRight'?1:views.length-1))%views.length;selectView(views[next][0]);(e.currentTarget.parentElement?.querySelectorAll('button')[next] as HTMLButtonElement|undefined)?.focus();}}>{label}</button>)}</nav>
     {/* Titre, sous-vue et réglages sur une seule rangée : trois barres empilées
         mangeaient un tiers de l'écran avant la première donnée. */}
+    {(view==='overview'||view==='forecast')&&<LienSection section="finances" className="mb-2"/>}
     {notice&&<div className="finance-notice" role="status"><span>{notice}</span>{' '}<button className="finance-link" style={{marginInlineStart:'0.5rem'}} onClick={()=>setNotice('')}>Fermer</button></div>}
     {mentionMois&&view==='overview'&&<p className="finance-muted" data-finance-arrondi style={{margin:'0 0 0.5rem'}}>{mentionMois}</p>}
     <section role="tabpanel" id={`finance-${view}`} aria-labelledby={`finance-tab-${view}`}>

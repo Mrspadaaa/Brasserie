@@ -203,6 +203,7 @@ export const DetailChose: React.FC<DetailChoseProps> = props => {
     return () => { if (raf !== null) window.cancelAnimationFrame?.(raf); ro?.disconnect(); if (minuterie) clearTimeout(minuterie); };
   }, [chose.id]);
   const brassin = chose.source.genre === 'batch';
+  const sansEcranPropre = chose.ouvre.ecran === 'agenda' || chose.ouvre.ecran === 'atelier';
   const [lierOuvert, setLierOuvert] = React.useState(false);
   React.useEffect(() => setLierOuvert(false), [chose.id]);
   const lierPossible = !!(props.onLier && props.liens);
@@ -323,7 +324,10 @@ export const DetailChose: React.FC<DetailChoseProps> = props => {
         {props.onAccepter && <button type="button" className="cal-b cal-b-pri" onClick={props.onAccepter}>{proposition ? 'Accepter' : 'Vente confirmée'}</button>}
         {props.onPoser && <button type="button" className="cal-b cal-b-pri" onClick={props.onPoser}>Poser</button>}
         {props.onFacturer && <button type="button" className="cal-b cal-b-pri" onClick={props.onFacturer}>Facturer<ChevronRight size={16} aria-hidden="true" /></button>}
-        {!props.onPoser && !props.onAccepter && !props.onFacturer && <button type="button" className="cal-b cal-b-pri" onClick={props.onOuvrir}>{LIBELLE_OUVRIR[chose.ouvre.ecran]}<ChevronRight size={16} aria-hidden="true" /></button>}
+        {/* CAL-PASSE (R, audit des vues n° 5) : une fête ou une activité du Calendrier n'a pas d'autre écran que sa feuille (Modifier) ; « Ouvrir dans l'agenda / l'atelier » l'envoyait dans le Carnet, qui ne la montre pas. La feuille de l'objet est la vue choisie. */}
+        {!props.onPoser && !props.onAccepter && !props.onFacturer && (sansEcranPropre && props.onModifier
+          ? <button type="button" className="cal-b cal-b-pri" data-ouvrir-feuille onClick={props.onModifier}>Modifier<ChevronRight size={16} aria-hidden="true" /></button>
+          : <button type="button" className="cal-b cal-b-pri" onClick={props.onOuvrir}>{LIBELLE_OUVRIR[chose.ouvre.ecran]}<ChevronRight size={16} aria-hidden="true" /></button>)}
         {/* CRITIQUE-4 n° 1 (D-191, E30) : « Commander » dès que le brassin a des courses ou un manque, jamais seulement sur un manque */}
         {brassin && props.onCommander && (commander || chose.courses) && <button type="button" className="cal-b" onClick={props.onCommander}><ShoppingCart size={16} aria-hidden="true" />Commander</button>}
         {brassin && props.onBudget && <button type="button" className="cal-b" onClick={props.onBudget}>Budget ›</button>}
@@ -331,7 +335,7 @@ export const DetailChose: React.FC<DetailChoseProps> = props => {
         {peutMiseDeCote && props.onMettreDeCote && (
           <button type="button" className="cal-b" aria-pressed={!!chose.miseDeCote} onClick={() => props.onMettreDeCote?.(!chose.miseDeCote)}>Mettre de côté</button>
         )}
-        {props.onModifier && <button type="button" className="cal-b" onClick={props.onModifier}>Modifier</button>}
+        {props.onModifier && !(sansEcranPropre && !props.onPoser && !props.onAccepter && !props.onFacturer) && <button type="button" className="cal-b" onClick={props.onModifier}>Modifier</button>}
         {lierPossible && <button type="button" className="cal-b" aria-expanded={lierOuvert} onClick={() => setLierOuvert(o => !o)}><Link2 size={16} aria-hidden="true" />Lier</button>}
         {props.onDelier && chose.liens && lieeA.length > 0 && (
           <button type="button" className="cal-b" aria-label={`Délier de ${lieeA.join(' et ')}`} data-delier onClick={() => props.onDelier?.(lieeA.join(' et '))}><Unlink size={16} aria-hidden="true" />Délier</button>

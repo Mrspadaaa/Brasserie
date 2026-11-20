@@ -15,6 +15,7 @@ import { SegmentsCoque } from '../../ui/production/volumes/Coque';
 import { AdapterVolumes } from '../../ui/production/volumes/AdapterVolumes';
 import { batchesVisiblesSousPeriode } from '../../ui/production/volumes/periode';
 import { loadRecipePage } from '../../pages/recipePageLoader';
+import { LienSection } from '../../ui/calendrier/LienSection';
 
 // l2 (10.11) : la fiche d'un brassin (graphiques, chat, procédé…) ne se télécharge plus avec l'accueil : elle part à la première ouverture,
 // et se précharge à l'inactivité (voir precharge dans App). Même motif que Previsions, PrixEcran et ImpotAnnee.
@@ -208,6 +209,8 @@ export const ProductionTab: React.FC<ProductionTabProps> = ({
         {value:'recipes',label:`Recettes (${currentRecipes.length})`,court:'Recettes',compteur:currentRecipes.length},
         {value:'lab',label:'Atelier R&D',court:'Atelier'}, {value:'scaler',label:'Adapter les volumes',court:'Volumes'}
       ]}/>
+
+      {subTab === 'batches' && <LienSection section="brassins" />}
 
       {(subTab === 'batches' || subTab === 'recipes') && <>
         {subTab === 'batches' ? (bilanOuvert ? <h2 className="sr-only">Le bilan des brassins</h2> : null) /* e6a : la liste porte sa propre phrase */ : <h2 className="sr-only">Le carnet de recettes</h2>}
