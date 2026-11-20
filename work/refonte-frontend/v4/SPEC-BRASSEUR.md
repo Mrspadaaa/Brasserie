@@ -2353,3 +2353,8 @@ Classement de la page r3 de Ma levure (https://claude.ai/artifact/DKAJe8ESeMR4ig
 > Mais pareil pour plein d'autres trucs, tout ce qui aide le workflow, réduit les actions et autres est bon à prendre
 
 (lu, 20.11 : de ses 11 choix « simplicité » du 16.11 (pa1 · pa2 · pe1 · pe3 · pe4 · pb1 · pb2 · pb3 · pm1 · pl1 · pl2), seule la règle L9 (pe3/pe4) est en ligne ; les 10 autres sont à porter. Nouvelle passe « moins de gestes » sur tout l'app, son exemple en tête : choisir un style (IPA) → ingrédients proposés, posés d'un clic avec quantité et moment justes.)
+
+> éviter les aller retour inutile, garder les token pour la qualité et c'est tout. Pas de message sauf si bloqué ou problème
+> Pareil pour TOUTES les autres sessions, agent, tâches ECT...
+
+(lu, 20.11 : déjà imposé à toutes les sessions et à tous les agents par le hook PAROLE, ~/.claude/hooks ; aucun envoi de plus.)
