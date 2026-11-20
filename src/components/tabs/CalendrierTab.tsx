@@ -539,18 +539,20 @@ export function CalendrierTab(props: CalendrierTabProps) {
     setVueEtat('semaines'); setFenetre(fen); onPeriode(periodeDeFenetre(fen));
     /* PC-144 (paquet F n° 2) : l'échelle règle la période de toute l'app (D385, ses crans) ; quand elle la change, le message le dit, avec
        Finances qui suit, et Annuler remet l'échelle et la période d'avant */
-    const avant = { fenetre, annee: vue === 'annee', echelle: echelleVoulue };
+    const avant = { fenetre, annee: vue === 'annee', echelle: echelleVoulue, periode: periodeLocale };
     if (avant.annee || avant.fenetre.semaines !== fen.semaines) {
       const nom = ECHELLES.find(x => x.id === e)?.nom ?? e;
       montrer({
         role: 'status', texte: `${nom} : période ${libelleDuree(avant.fenetre.semaines, avant.annee)} → ${libelleDuree(fen.semaines, false)}, Finances aussi`,
         annuler: () => {
           setMessage(null); setEchelleVoulue(avant.echelle); setDeplie(null);
-          setVueEtat(avant.annee ? 'annee' : 'semaines'); setFenetre(avant.fenetre); onPeriode(periodeDeFenetre(avant.fenetre));
+          setVueEtat(avant.annee ? 'annee' : 'semaines'); setFenetre(avant.fenetre);
+          /* rejeu en ligne (20.11) : Finances retrouve sa période d'avant (« Tout l'historique » compris), pas la fenêtre du calendrier */
+          onPeriode(avant.periode ?? periodeDeFenetre(avant.fenetre));
         }
       });
     }
-  }, [modele.semaines, fenetre, vue, echelleVoulue, premierLundi, onPeriode, montrer]);
+  }, [modele.semaines, fenetre, vue, echelleVoulue, periodeLocale, premierLundi, onPeriode, montrer]);
   /* D385 (variante B) : écarter les doigts ouvre l'échelle plus fine, les pincer la plus large ; un cran par geste, autour du jour visé */
   const surPincer = useCallback((sens: SensPincement, x: number) => {
     const suivante = echelleApres(echelleRef.current, sens);

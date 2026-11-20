@@ -1,6 +1,7 @@
 import React from 'react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { act, cleanup, fireEvent, render, screen, waitFor, within } from '@testing-library/react';
+import type { Periode } from '../../src/components/periode/periode';
 import { BancCalendrier } from '../../src/design/CalendrierPreview';
 import { StorageService } from '../../src/services/storage';
 
@@ -82,6 +83,16 @@ describe('D385, variante D : l’échelle au menu de la période', () => {
     expect(echelle()).toBe('semaine');
     expect(boutonPeriode().textContent).toBe('6 sem.');
     expect(appels.length).toBeGreaterThanOrEqual(0);
+  });
+
+  it('PC-144, rejeu en ligne (20.11) : Annuler rend à Finances sa période d’avant (« Tout l’historique »), pas la fenêtre du calendrier', () => {
+    const vues: Periode[] = [];
+    render(<BancCalendrier aujourdhui={JOUR} sansChrome callbacks={{ periode: { genre: 'tout' }, onPeriode: p => vues.push(p) }} />);
+    choisirEchelle('mois');
+    expect(vues.at(-1)?.genre).not.toBe('tout');
+    fireEvent.click(within(screen.getByRole('status')).getByRole('button', { name: /Annuler/ }));
+    expect(vues.at(-1)).toEqual({ genre: 'tout' });
+    expect(echelle()).toBe('semaine');
   });
 
   it('« 2 sem. » des durées ouvre la vue Jour ; « 3 mois » choisi en Jour repasse l’axe en semaines', () => {
