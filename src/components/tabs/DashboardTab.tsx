@@ -16,6 +16,7 @@ import { duneSemaine, evenementsAgenda, evenementsBrassins, semainesDe } from '.
 import { isCurrent } from '../../domain/catalogOrganization';
 import { statusOfBatch } from '../../domain/batchStatus';
 import { articlesACommander } from '../../domain/stockLevel';
+import { levuresADateProche } from '../../domain/stock/durabilite';
 import { fermentationReadings } from '../../domain/fermentationReadings';
 import { joursDepuisBrassage } from '../../domain/productionInsights';
 
@@ -149,6 +150,8 @@ export const DashboardTab: React.FC<DashboardTabProps> = ({
   const aCommander = useMemo(() => articlesACommander([...stocks.rawMaterials, ...stocks.cleaning], batches, recettes)
     .sort((a, b) => Number(b.rupture) - Number(a.rupture)), [stocks, batches, recettes]);
   const itemsToOrder = useMemo(() => aCommander.map(({ item, missing }) => ({ ...item, missing })), [aCommander]);
+  // AM-56 : une levure périmée (ou à moins de 30 jours de l'être) se voit ici, avant de brasser.
+  const levuresDatees = useMemo(() => levuresADateProche(stocks.rawMaterials, todayISO()), [stocks.rawMaterials]);
   const ruptures = aCommander.filter(a => a.rupture).length;
   const events = useMemo(() => creativeItems.filter(item => item.type === 'event')
     .sort((a, b) => Number(a.status === 'done') - Number(b.status === 'done') ||
@@ -251,6 +254,16 @@ export const DashboardTab: React.FC<DashboardTabProps> = ({
             <h2 id="dashboard-stocks" className="flex-1 font-semibold text-area-stocks">Stocks</h2>
             <button type="button" onClick={() => onNavigateTab('stocks')} className={`${smallAction} text-area-stocks`}>Voir<ChevronRight size={12} aria-hidden="true" /></button>
           </div>
+          {levuresDatees.length > 0 && <div className="divide-y divide-cave-800 border-b border-cave-800">
+            {levuresDatees.slice(0, 2).map(({ item, statut, texte }) => <button type="button" key={item.id || item.ref}
+              onClick={() => onNavigateTab('stocks')} className={rowAction}>
+              <AlertTriangle size={14} className={`shrink-0 ${statut === 'perime' ? 'text-alert-strong' : 'text-attention'}`} aria-hidden="true" />
+              <span className="min-w-0 flex-1 break-words font-semibold leading-4 text-cave-50">{item.name}</span>
+              <span className={`shrink-0 text-right text-xs ${statut === 'perime' ? 'text-alert-strong' : 'text-attention'}`}>{texte}</span>
+            </button>)}
+            {levuresDatees.length > 2 && <button type="button" onClick={() => onNavigateTab('stocks')}
+              className={`${smallAction} text-area-stocks`}>{compte(levuresDatees.length - 2, 'autre levure', 'autres levures')} à date proche<ChevronRight size={14} aria-hidden="true" /></button>}
+          </div>}
           {itemsToOrder.length === 0
             ? <p className="flex items-center gap-2 px-2 py-2 text-2xs text-cave-200"><Check size={14} className="text-area-stocks" aria-hidden="true" />Stocks suffisants</p>
             : <>
