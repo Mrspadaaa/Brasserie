@@ -94,6 +94,10 @@
 
 /* Juste après − / + (r4 v02) : la part du besoin en grand, le besoin en trait noir au-dessus, les grammes dessous */
 .ml-carte .ml-verdict { display: flex; align-items: center; gap: 8px; min-height: 36px; white-space: nowrap; }
+/* 390 px (20.11) : « 100 % du besoin couvre [manque 22 g] » sortait de la carte ; « du besoin » cède (ellipse), la puce reste entière, dans le bord. */
+.ml-carte .ml-verdict { min-width: 0; }
+.ml-carte .ml-verdict .ml-manque, .ml-carte .ml-verdict .ml-remede { flex-shrink: 0; }
+.ml-carte .ml-verdict .ml-ty { flex-shrink: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; }
 .ml-carte .ml-pc { font-size: 24px; font-weight: 700; letter-spacing: -.01em; font-variant-numeric: tabular-nums; color: var(--ml-t0); }
 .ml-carte .ml-pc[data-sous] { color: var(--ml-alerte-t); }
 .ml-carte .ml-ty { font-size: 15px; color: var(--ml-t1); }

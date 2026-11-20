@@ -357,10 +357,12 @@ export function FermentationTemperatureChart({ steps, referenceSteps = [], bands
         {reference.length > 0 && <path data-reference-path="true" d={reference.map((step, i) => `${i && reference[i - 1].end === step.start ? `V${y(step.tempC!).toFixed(1)}` : `M${x(step.start!).toFixed(1)} ${y(step.tempC!).toFixed(1)}`}H${x(step.end!).toFixed(1)}`).join('')}
           fill="none" stroke="currentColor" strokeWidth="2.5" strokeDasharray="5 4" strokeLinejoin="round" className="text-cave-400" />}
         {referenceEnd !== null && referenceEnd !== total && (() => {
-          const last = reference.at(-1), ex = x(referenceEnd), ey = last ? y(last.tempC!) : top + 10, droite = ex + 110 <= right;
+          // 390 px (20.11) : le nom se pose au-dessus du dernier palier du brouillon, calé à GAUCHE de sa marche — à son bout, il heurtait les paliers tirés, et à droite les bords des zones de palier le coupaient (« brou llon »).
+          const last = reference.at(-1), ex = x(referenceEnd), ey = last ? y(last.tempC!) : top + 10;
+          const gauche = last ? x(last.start!) - 6 : -1, avant = gauche - 110 >= left, droite = !avant && ex + 110 <= right, ly = ey - 16 > top ? ey - 7 : ey + 15;
           return <g data-reference-programme-end-day={referenceEnd}>
             <line x1={ex} x2={ex} y1={top} y2={top + 6} stroke="currentColor" strokeWidth="1.5" className="text-cave-400" />
-            <text data-reference-label="true" x={droite ? ex + 5 : ex - 5} y={ey + 4} textAnchor={droite ? 'start' : 'end'} fill="currentColor" className="text-cave-200" fontSize="10"
+            <text data-reference-label="true" x={avant ? gauche : droite ? ex + 5 : ex - 5} y={ly} textAnchor={droite ? 'start' : 'end'} fill="currentColor" className="text-cave-200" fontSize="10"
               style={{ paintOrder: 'stroke', stroke: 'rgb(var(--cave-900))', strokeWidth: 4, strokeLinejoin: 'round' }}>brouillon · fin J{number(referenceEnd)}</text>
           </g>;
         })()}

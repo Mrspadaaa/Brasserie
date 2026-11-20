@@ -164,6 +164,8 @@ export function BandeDose({ etat, qty, unite, besoin, seul, stock, onPas, onEcri
           <span className="ml-grad" aria-hidden="true">{Array.from({ length: maxA / pas + 1 }, (_, i) => {
             const v = i * pas, sel = entier(qty) && v === qty;
             const cls = i === 0 ? 'd' : v === maxA ? 'f' : 'm';
+            // 390 px (20.11) : en grammes, l'avant-dernier chiffre cède la place à « 120 g » (« 10120 g » se chevauchaient).
+            if (enG && maxA / pas >= 6 && v === maxA - pas && !sel) return null;
             return <span key={i} className={`${cls}${sel ? ' sel' : ''}`} style={{ left: pc(v, maxA) }}>{sel && !enG ? `${dec(v)}${grammesTexte ? ` · ${grammesTexte}` : ''}` : enG && v === maxA ? `${dec(v)} g` : dec(v)}</span>;
           })}</span>
         </span>
