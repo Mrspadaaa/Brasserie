@@ -1,0 +1,14 @@
+cave 390 étape 2 largeur : [366]
+cave 390 étape 3 largeur : [366]
+cave 390 étape 4 largeur : [366]
+cave 390 étape 5 largeur : [366]
+cave 390 étape 6 largeur : [366]
+cave 390 étape 7 largeur : [366]
+cave 844 étape 2 largeur : [820]
+cave 844 étape 3 largeur : [820]
+cave 844 étape 4 largeur : [820]
+cave 844 étape 5 largeur : [820]
+cave 844 étape 6 largeur : [820]
+cave 844 étape 7 largeur : [820]
+toucher introuvable : /^Suivant/
+étape 2 : Suivant introuvable

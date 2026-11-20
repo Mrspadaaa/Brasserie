@@ -31,6 +31,8 @@ reporté au registre, `controle-bugs.mjs` → BUGS OK ; les commits envoyés à 
 | s1 | 12 défauts Stocks, Houblons, Bord | jugement | auteur | sonnet | 120 | voir voies/s1/VOIE.md | — | verdicts.mjs s1 ; --tests | pilote | — |
 | c1 | 7 défauts Clients et Ventes | jugement | auteur | sonnet | 120 | voir voies/c1/VOIE.md | — | verdicts.mjs c1 ; --tests | pilote | — |
 | k1 | test d'écran des écrans touchés, 390 tactile et 1280, deux thèmes | jugement | critique | opus | 30 | voies/k1/ | t1, r1, a1, a2, b1, s1, c1 | « combien et quels problèmes ? » | pilote | — |
+| ct4a | critique tour 4 B, n° 1, 2, 3, 7, 8, 9, 10, 11 | jugement | auteur | sonnet | 120 | voir voies/ct4a/VOIE.md | — | verdicts.mjs ct4a ; --tests | pilote | — |
+| ct4b | critique tour 4 B, n° 4, 5, 6, 12, 13, 14, 15 | jugement | auteur | sonnet | 120 | voir voies/ct4b/VOIE.md | — | verdicts.mjs ct4b ; --tests | pilote | — |
 | w1 | TL-7, TL-19, TL-16, T3-11, BK2-5, TE-27 (reprise de tous les ouverts) | jugement | auteur | sonnet | 120 | voir voies/w1/VOIE.md | — | verdicts.mjs w1 ; --tests | pilote | — |
 | r2 | BK2-1, BK2-2, BK2-3, BK2-4, BK2-6, BR-100, BE-53, RJ-14, TE-53, TE-54, GE-NOTE-5 (reprise de tous les ouverts) | jugement | auteur | sonnet | 120 | voir voies/r2/VOIE.md | — | verdicts.mjs r2 ; --tests | pilote | — |
 | s2 | AM-56, BT-2, TL-10, GE-NOTE-1 (reprise de tous les ouverts) | jugement | auteur | sonnet | 120 | voir voies/s2/VOIE.md | — | verdicts.mjs s2 ; --tests | pilote | — |
@@ -64,3 +66,21 @@ Voies : t1 15, r1 17, a1 13, a2 8, b1 16, s1 12, c1 7, x1 3, y1 3 (+6 revus), z1
 Transmis : TE-35, TE-36, BE-23, BE-26, BE-27, BR-27 à t3-carnet (faits, versés par eux) ; B1-NOTE-3, BR-91/BE-15, TE-13 à t3-corrections ; TL-7, TL-19, T3-11 à t3-corrections (note partagée, relances épuisées) ; PC-NOTE-3, 7, 16 à t3-calendrier.
 Accord requis : SU-NOTE-4, TE-NOTE-7, LR3-NOTE-3, SU-NOTE-1, LR3-NOTE-1 (données réelles, sécurité) ; goûts TL-10, TL-16, MV-9, TE-17, GE-NOTE-1, BT-2, TE-27, TE-53, TE-54. Hors zone Levure : BR-100/BE-53, AM-56 (brasser), BR-5 (projection).
 Build : échoue sur src/ui/calendrier/frise/MenuAppuiLong.tsx (travail en cours de t3-calendrier), pas sur nos fichiers ; tsc vert. Non rejoué en ligne : attend la mise en ligne par t3-corrections.
+
+## État de l'art — al1
+Voie al1 (LR1-8, LR2-9 : le rapprochement des lignes de deux lectures d'un même justificatif, `alignLines` de `functions/src/invoiceVisionReview.ts`). Date : 20.11.
+- Problème type : alignement de deux séquences ordonnées (Needleman-Wunsch 1970, programmation dynamique, O(n·m)) quand chaque paire possible a une ressemblance ;
+  sous-problème : ressemblance de deux libellés mal lus (distance d'édition, coefficient de Dice sur bigrammes). Variante sans ordre : appariement biparti pondéré (algorithme hongrois, O(n³)).
+- Constat : la version actuelle rapproche par niveaux (référence + nom, référence seule, nom seul, puis chiffres). Sur doc25 les deux lectures rattachent l'EAN à la ligne voisine : le niveau « référence seule »
+  pose AFFRET 4,25 sur « AFFRET / DEBOUCREOR » 7,50 et tout se décale d'un rang ; la référence, preuve forte quand elle est juste, trompe quand l'OCR la glisse.
+- Examiné (npm, 20.11) : `sequence-alignment` 0.0.8 (MIT, 135 ko, dernière publication 05.2022) et `seqalign` 1.0.6 (MIT, 35 ko, 05.2022) : alignement de chaînes de caractères / biologie, matrice de score fixe, pas de
+  score par paire d'objets (nom, montant, référence) ; `bioseq` 0.2.0 (Apache-2.0, 196 ko, 11.2026) : alphabets biologiques ; `needleman-wunsch` : retiré de npm ; `munkres-js` 1.2.2 (Apache-2.0 / BSD, 2022) et
+  `hungarian-algorithm` (paquet de sécurité vide) : appariement sans ordre, donc qui oublie l'ordre des lignes d'un ticket ; `fastest-levenshtein` 1.0.16 (MIT, 21 ko, 2022) : distance d'édition, sans dépendance, mais n'apporte
+  rien que `editDistanceAtMost1` et le coefficient de Dice (10 lignes) ne fassent déjà. Aucune n'est dans `functions/package.json` : en ajouter une change la liste des dépendances déployées (verrou, paquet), pour du code
+  qu'aucune ne fournit (le score propre au justificatif).
+- Décision : Needleman-Wunsch écrit en 15 lignes (la récurrence est celle du manuel ; ce n'est pas une rustine sur un module : c'est la méthode standard à la place des niveaux), score par paire = nom (Dice, OCR tolérant,
+  nom contenu dans une ligne fondue) + montant égal (un montant inconnu n'est jamais égal) + référence égale (preuve) ; une paire n'existe qu'au-dessus d'un seuil (aucune paire par la position seule, par la référence seule
+  ni par le montant seul) ; l'ordre des lignes est respecté ; l'ensemble des paires maximise la somme des scores. Aucune dépendance ajoutée. Tests : doc25 (vraies réponses enregistrées, sans appel) et cas courts
+  (`tests/unit/bugs-al1-alignement.test.ts`, `bugs-g1-LR1-8.test.ts`) ; chaque changement rejoue `tests/unit/depense`, `tests/unit/finance`, `tests/unit/invoice*` et les tests de `functions`.
+- Limite dite : un ticket relu dans un autre ordre (deux colonnes) ne se rapproche plus par position ; le rapprochement reste par ressemblance mais dans l'ordre. Si un cas réel l'exige, l'appariement hongrois
+  (sans ordre) est la suite, pas une deuxième rustine.

@@ -1,0 +1,6 @@
+clair 1280 étape 2 largeur : [424]
+clair 1280 étape 3 largeur : [424]
+clair 1280 étape 4 largeur : [424]
+clair 1280 étape 5 largeur : [424]
+clair 1280 étape 6 largeur : [424]
+clair 1280 étape 7 largeur : [424]

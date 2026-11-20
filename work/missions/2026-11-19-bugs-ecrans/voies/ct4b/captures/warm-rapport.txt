@@ -1,0 +1,6 @@
+clair 390 étape 2 largeur : [366]
+clair 390 étape 3 largeur : [366]
+clair 390 étape 4 largeur : [366]
+clair 390 étape 5 largeur : []
+toucher introuvable : /^Suivant/
+étape 6 : Suivant introuvable

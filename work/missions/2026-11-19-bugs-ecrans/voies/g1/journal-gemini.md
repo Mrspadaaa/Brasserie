@@ -76,3 +76,6 @@ durée, jetons entrée, jetons sortie, coût CHF, cumul CHF de CE journal (0 au 
 | 2026-11-20 11:47:26 | doc25 | 2 | Csv8 | 1 | gemini-3.5-flash-lite | 6513 ms | 3617 | 3198 | 0.011351 | 0.583334 | STOP |
 | 2026-11-20 11:47:26 | doc25 | 2 | Csv8 | 2 | gemini-3.5-flash-lite | 6974 ms | 3638 | 3318 | 0.011733 | 0.595067 | STOP |
 | 2026-11-20 11:48:11 | doc25 | 2 | Csv8 | 3 | gemini-3.8-flash | 45002 ms | ? | ? | 0.088050 | 0.683117 | délai (coût inconnu : réserve comptée) |
+| 2026-11-20 12:39:41 | doc15 | 1 | NomsFr | 1 | gemini-3.8-flash | 4350 ms | 889 | 262 | 0.004124 | 0.687241 | STOP |
+| 2026-11-20 12:39:53 | doc24 | 1 | NomsFr | 1 | gemini-3.8-flash | 11909 ms | 1202 | 502 | 0.006960 | 0.694201 | STOP |
+| 2026-11-20 12:39:57 | doc25 | 1 | NomsFr | 1 | gemini-3.8-flash | 4155 ms | 1024 | 379 | 0.005474 | 0.699675 | STOP |
