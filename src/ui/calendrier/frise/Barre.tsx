@@ -1,7 +1,7 @@
 import React from 'react';
 import { Link2, Pin, Star } from 'lucide-react';
 import { ecartJours, etiquetteS, francsSignes, jourLisible, type ChoseCalendrier, type JalonBrassin } from '../../../domain/calendrier';
-import { CLASSE_TEINTE, ContenuEtiquette, PastilleLie, dureeVue, largeurTexte, nomAccessible, type ModeDeuxLignes } from './Marque';
+import { CLASSE_TEINTE, ContenuEtiquette, DureeTexte, PastilleLie, dureeVue, largeurTexte, nomAccessible, type ModeDeuxLignes } from './Marque';
 import { usePointeur } from './usePointeur';
 import { useToucherNom, zoneToucher } from './zoneToucher';
 import { ETAPE_BRASSIN, couleurEtape, encreEtape, estEtape, type EtapeBrassin } from './etapes';
@@ -118,7 +118,9 @@ export function formesDuree(d: string): string[] {
      entière et sa tête (« J0 / 28 », « pas brassée »), la date prête garde sa place : « pas brassée · prête 24 nov. », puis « prête 21 déc. » */
   const fin = morceaux.slice(1).join(' · ');
   const prete = fin.startsWith('prête le ') ? `prête ${fin.slice('prête le '.length)}` : fin;
-  const formes = [d, `${morceaux[0]} · ${prete}`, prete, morceaux[0]];
+  /* PC-151 (20.11) : « pas brassée » est la marque du retard ; la date « prête … » seule ne la remplace jamais (à 390, la barre disait « prête 18 déc. »
+     sans dire que le brassage prévu était passé) : la dernière forme est « pas brassée », la date reste dans la phrase entière et le détail */
+  const formes = morceaux[0] === 'pas brassée' ? [d, `${morceaux[0]} · ${prete}`, morceaux[0]] : [d, `${morceaux[0]} · ${prete}`, prete, morceaux[0]];
   return formes.filter((f, i) => formes.indexOf(f) === i);
 }
 
@@ -360,9 +362,9 @@ export const Barre: React.FC<BarreProps> = props => {
             {Array.from({ length: n }, (_, i) => <i key={i} data-point style={{ left: pointsGroupes ? `${4 + i * 10}px` : `${((i + 0.5) / n) * 100}%` }} />)}
           </span>
         )}
-        {etiquetteDuree && bas?.ou !== 'dessous' && <em className={`cal-duree${dureeHors && !bas ? ' cal-duree-hors' : ''}${bas ? ' cal-duree-in' : ''}`} data-duree>{etiquetteDuree}</em>}
+        {etiquetteDuree && bas?.ou !== 'dessous' && <em className={`cal-duree${dureeHors && !bas ? ' cal-duree-hors' : ''}${bas ? ' cal-duree-in' : ''}`} data-duree><DureeTexte texte={etiquetteDuree} /></em>}
         {/* au repos, « J7 / 28 · prête 14 déc. » vit dans la barre du brassin (as/p-repos), quand il n'est pas déjà à côté du nom */}
-        {!etiquetteDuree && dureeDedans && <em className="cal-duree cal-duree-in" data-duree>{dureeDedans.texte}</em>}
+        {!etiquetteDuree && dureeDedans && <em className="cal-duree cal-duree-in" data-duree><DureeTexte texte={dureeDedans.texte} /></em>}
         {peutBord && <span data-bord data-grip className="cal-grip" aria-hidden="true" />}
         {(epinglee || etoilee || chose.liens || lienIcone) && (
           <span className="cal-badges" aria-hidden="true">
@@ -382,7 +384,7 @@ export const Barre: React.FC<BarreProps> = props => {
         <span
           className={`cal-lbl cal-lbl-sous ${CLASSE_TEINTE[chose.rangee]}`} data-phrase-sous={chose.id} aria-hidden="true"
           style={{ left: bas.x + decalage, top: haut + bas.dy, height: hauteur }}
-        ><small className="cal-lbl-j">{phraseDessous}</small></span>
+        ><small className="cal-lbl-j"><DureeTexte texte={phraseDessous} /></small></span>
       )}
       {lienIcone && (
         <span className={`cal-lie-coin ${CLASSE_TEINTE[chose.rangee]}`} style={{ left: gauche + w + decalage - 16, top: haut - 10 }}>

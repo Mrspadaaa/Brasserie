@@ -65,6 +65,13 @@ function insecables(texte: string): React.ReactNode {
   ));
 }
 
+/**
+ * PC-160 (20.11, « En retard » : Hopfen répétait « en retard » sous le titre de sa section) : la ligne dit ce qui manque, pas le mot de sa section. Seules
+ * les factures dont l'échéance est passée sont `enRetard` : une facture de vente est de l'argent « pas reçu », une facture à payer « pas payé » ;
+ * sans montant renseigné, « pas réglé » (jamais un sens inventé).
+ */
+const manque = (c: ChoseCalendrier): string => (c.centimes === undefined ? 'pas réglé' : c.centimes > 0 ? 'pas reçu' : 'pas payé');
+
 /** La ligne grise sous le nom : la rangée, puis une seule date. */
 function sousTitre(c: ChoseCalendrier): React.ReactNode {
   const jour = dateDe(c);
@@ -78,7 +85,7 @@ function sousTitre(c: ChoseCalendrier): React.ReactNode {
   return (
     <>
       {nomRangee(c.rangee)}{jour ? <> · {insecables(etiquetteListe(jour))}</> : ''}{duree ? <> · {insecables(duree)}</> : ''}
-      {enRetard(c) && <> · <span className="cal-li-retard cal-nowrap">en retard</span></>}
+      {enRetard(c) && <> · <span className="cal-li-retard cal-nowrap">{manque(c)}</span></>}
     </>
   );
 }

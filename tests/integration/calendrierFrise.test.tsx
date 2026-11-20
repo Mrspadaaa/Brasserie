@@ -9,7 +9,7 @@ import { construireModele } from '../../src/ui/calendrier/useDonneesCalendrier';
 import { MESURES_PORTRAIT, Rangee, clientDe, disposer, largeurEtiquette, pastille, seriesEnBarres, texteCaddie, texteRenvoi, type Colonne } from '../../src/ui/calendrier/frise/Rangee';
 import { Barre, dureeDansBarre, formesDuree, largeurDuree, montantBarre } from '../../src/ui/calendrier/frise/Barre';
 import { MenuAppuiLong } from '../../src/ui/calendrier/frise/MenuAppuiLong';
-import { couperNom, dureeVue, largeurTexte, lieMontre, nomAccessible } from '../../src/ui/calendrier/frise/Marque';
+import { champ, couperNom, dureeVue, largeurTexte, lieMontre, nomAccessible } from '../../src/ui/calendrier/frise/Marque';
 import { Frise } from '../../src/ui/calendrier/frise/Frise';
 import { DetailChose } from '../../src/ui/calendrier/frise/DetailChose';
 import { VueListe } from '../../src/ui/calendrier/frise/VueListe';
@@ -607,7 +607,7 @@ describe('CRITIQUE-5 (lot2-frise-rangees) : noms entiers, durée, pastille, éch
     /* CAL-BARRE-HAUTE et CRITIQUE-9 n° 3 : sur la ligne unique de la barre, la date prête cède en dernier ; « J0 / 28 » seul est la forme ultime */
     expect(formesDuree('J0 / 28 · prête 21 déc.')).toEqual(['J0 / 28 · prête 21 déc.', 'prête 21 déc.', 'J0 / 28']);
     expect(formesDuree('J8 / 28 · prête 7 déc.')).toEqual(['J8 / 28 · prête 7 déc.', 'prête 7 déc.', 'J8 / 28']);
-    expect(formesDuree('pas brassée · prête le 24 nov.')).toEqual(['pas brassée · prête le 24 nov.', 'pas brassée · prête 24 nov.', 'prête 24 nov.', 'pas brassée']);
+    expect(formesDuree('pas brassée · prête le 24 nov.')).toEqual(['pas brassée · prête le 24 nov.', 'pas brassée · prête 24 nov.', 'pas brassée']);
     expect(formesDuree('prête 7 déc.')).toEqual(['prête 7 déc.']);
     monter();
     const durees = [...document.querySelectorAll('[data-duree], .cal-lbl-j')].map(e => e.textContent ?? '').filter(t => /^J\d/.test(t));
@@ -991,7 +991,7 @@ describe('CRITIQUE-9 (lot corr9-C-frise) : « prête le … » jamais perdue, ic
     expect(dureeDansBarre(blonde, 301, true)).toMatch(PRETE);
     render(<Frise choses={choses} colonnes={semainesDe(6)} paysage={false} ordre={[]} masquees={[]} filtre={null} epingles={[]} etoiles={[]} drag={null} largeurRepli={366} reserveDroite={76} onAjouter={rien} onBasculerMasque={rien} barre={gestes} />);
     const rangeeB = document.querySelector('section[data-rangee="brassins"]')!;
-    let vus = 0, avecPrete = 0;
+    let vus = 0, avecPrete = 0, pasBrasseeVue = 0;
     for (const c of brassins) {
       const barre = rangeeB.querySelector<HTMLElement>(`[data-chose="${c.id}"]`);
       if (!barre) continue;
@@ -999,16 +999,19 @@ describe('CRITIQUE-9 (lot corr9-C-frise) : « prête le … » jamais perdue, ic
       const lu = [barre.textContent, barre.nextElementSibling?.textContent, rangeeB.querySelector(`[data-phrase-sous="${c.id}"]`)?.textContent].join(' | ');
       /* CAL-BARRE-HAUTE : une seule ligne. La date prête se lit dès que « prête … » tient à côté du nom dans la barre ; sinon (la barre est
          trop courte pour le nom et la date, ici l'IPA entamée avant la vue), elle reste au nom accessible et au détail, jamais à moitié */
-      const formePrete = formesDuree(dureeVue(c)!).find(f => /^prête /.test(f))!;
+      /* PC-151 : une bière pas brassée n'a pas de forme « prête … » seule (« pas brassée » passe avant) ; sa plus courte forme avec la date est « pas brassée · prête 24 nov. » */
+      const formePrete = formesDuree(dureeVue(c)!).find(f => /^(pas brassée · )?prête /.test(f))!;
       const nomEntier = largeurTexte(c.titre, 600) + (montantBarre(c) ? largeurTexte(montantBarre(c)!, 700) + 6 : 0) + 12;
       if (parseFloat(barre.style.width) - 16 - nomEntier >= largeurDuree(formePrete)) expect(lu, c.titre).toMatch(PRETE);
       expect(barre.getAttribute('aria-label'), c.titre).toMatch(PRETE);
       if (PRETE.test(lu)) avecPrete++;
+      /* PC-151 : la bière pas brassée dit « pas brassée » (la date prête reste à son nom accessible et au détail) quand « · prête … » n'y tient pas */
+      else if (champ(c, 'pasBrassee') === true) { expect(lu, c.titre).toMatch(/pas brassée/); pasBrasseeVue++; }
       /* jamais coupée */
       expect(lu, c.titre).not.toMatch(/…/);
     }
     expect(vus).toBeGreaterThanOrEqual(5);
-    expect(avecPrete, 'la Blonde, la Saison, la Stout, la Porter, l’Ambrée').toBeGreaterThanOrEqual(4);
+    expect(avecPrete + pasBrasseeVue, 'la Blonde, la Saison, la Stout, la Porter, l’Ambrée').toBeGreaterThanOrEqual(4);
     /* CAL-BARRE-HAUTE (18.11) : la Blonde et la Saison au format de Stout maison : ni barre haute (nom en haut, phrase en bas), ni phrase sous la barre */
     for (const n of ['Blonde', 'Saison', 'Stout']) {
       const id = brassins.find(c => c.titre.startsWith(n))!.id;

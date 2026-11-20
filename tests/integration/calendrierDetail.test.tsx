@@ -76,13 +76,14 @@ describe('CRITIQUE-5 n° 4, 21, 22 : la vue Liste (E40, D-19, D-204, E47 c)', ()
   const marche = chose({ id: 'fete', titre: 'Marché de Noël', debut: '2026-11-20', fin: '2026-11-20', centimes: 118000 });
   const blonde = chose({ id: 'blonde', rangee: 'brassins', titre: 'Blonde d’automne', debut: '2026-11-09', fin: '2026-12-07', source: { genre: 'batch', id: 'B' }, ouvre: { ecran: 'brassin', id: 'B' } });
 
-  it('n° 4 : une facture due le 10 nov., vue le 17 nov., garde « 10 nov. » (jamais « 17 nov. »), dit « en retard » et passe en tête de « En cours »', () => {
+  it('n° 4 : une facture due le 10 nov., vue le 17 nov., garde « 10 nov. » (jamais « 17 nov. »), dit « pas payé » (PC-160) et passe en tête de « En cours »', () => {
     liste([marche, blonde, facture]);
     const l = lignes();
     const f = l.find(x => x.id === 'facture-hopfen')!;
     expect(f.texte).toContain('10 nov. · S46');
     expect(f.texte).not.toContain('17 nov.');
-    expect(f.texte).toMatch(/en retard/);
+    expect(f.texte).toMatch(/pas payé/);
+    expect(f.texte).not.toMatch(/en retard/);
     expect(l[0].id).toBe('facture-hopfen');
     /* PC-112 (CRITIQUE-13 n° 6) : ce qui attend un geste a sa section, « En retard », avant « En cours » ; « En cours » garde ce qui court */
     const enRetard = screen.getByRole('region', { name: 'En retard' });

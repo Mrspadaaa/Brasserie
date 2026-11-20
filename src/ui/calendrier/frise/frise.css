@@ -306,6 +306,12 @@ button.cal-lie::before { content: ''; position: absolute; inset: -6px -2px; }
 .cal-marque.cal-ponctuel-allume { box-shadow: 0 0 0 2px rgb(var(--cave-50)); }
 .cal-marque.cal-ponctuel-pale, .cal-lbl.cal-ponctuel-pale { opacity: 0.35; }
 /* D390 : au repos, le jalon lié porte un point de la couleur de sa barre (le fil ne vient qu'au toucher) */
+/* PC-151 (20.11) : le retard se lit sur la frise comme sous « En retard » de la Liste : « pas brassée » en alerte (gras), et un point d'alerte en
+   haut à gauche d'une facture dont l'échéance est passée (Hopfen). Dans une barre (fond de couleur), le mot est sur une pastille du fond de page,
+   sans élargir sa mesure (le fond déborde par une ombre, pas par un padding). */
+.cal-retard-t { font-weight: 700; color: rgb(var(--alert-strong-texte, var(--alert-strong))); }
+.cal-duree.cal-duree-in .cal-retard-t { color: rgb(var(--alert-strong-texte, var(--alert-strong))); background: rgb(var(--cave-900)); border-radius: 3px; box-shadow: 0 0 0 2px rgb(var(--cave-900)); }
+.cal-point-retard { position: absolute; left: -3px; top: -3px; width: 10px; height: 10px; border-radius: 50%; background: rgb(var(--alert-strong)); box-shadow: 0 0 0 1.5px rgb(var(--cave-900)); pointer-events: none; }
 .cal-point-lie { position: absolute; right: -3px; bottom: -3px; width: 10px; height: 10px; border-radius: 50%; background: var(--c); box-shadow: 0 0 0 1.5px rgb(var(--cave-900)); pointer-events: none; }
 
 /* T3B-1 (rejeu en ligne tour 3, 844 × 340 : « Vente » et « Fête » du menu + coupés en haut, haut à −25 px, sans défilement) : le menu du calendrier (8 gestes

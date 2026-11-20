@@ -1233,6 +1233,74 @@ const ETATS = [
     },
     attendu: [fn(async p => { const m = p.papiersBord; return { ok: !!m && !m.absent && m.n >= 2 && m.coupees.length === 0, dit: m ? (m.absent ? 'Papiers absent' : `${m.n} icônes, ${m.coupees.length} coupée(s)${m.coupees.length ? ` : ${m.coupees.map(c => `${c.t} (gauche ${c.g}, droite ${c.d})`).join(' ; ')}` : ''}`) : 'non mesuré' }; }, 'aucune icône de Papiers n’est coupée par le bord de la piste'),
       fn(async p => { const m = p.papiersBord; return { ok: !!m && !m.absent && (m.air === null || m.air >= 2), dit: m ? `air sous la pastille : ${m.air === null ? 'aucune barre dessous' : `${m.air} px`}` : 'non mesuré' }; }, 'la pastille de la rangée laisse 2 px d’air au moins avant la barre dessous')] }
+,
+  /* ---------- Voie 2 des défauts Calendrier (20.11) : frise, Liste. Groupe `--etats v2`. ---------- */
+  /* PC-150 (390, 3 mois : « 3 fûts L… +900 » : le nom écrasé sous le +) : la vente liée garde son nom ENTIER, sur une ou deux lignes, jamais coupé par « … » ni par la boîte */
+  { n: 'V2a', nom: 'vente-liee-nom-entier', cave: true, repos: true, geste: '3 mois ; lire l’étiquette « 3 fûts La Cigogne » : nom entier, aucune coupe (…), ni débordement de sa boîte',
+    jouer: async p => {
+      if (!/^3 mois/.test(await periodeLue(p))) { await menuPeriode(p, /^3 mois/); await attendre(900); }
+      await p.evaluate(() => { const l = [...document.querySelectorAll('.cal-lbl')].find(e => /Cigogne/.test(e.textContent || '')); if (l) l.scrollIntoView({ block: 'center' }); });
+      await attendre(500);
+      p.cigogne = await p.evaluate(() => {
+        const l = [...document.querySelectorAll('.cal-lbl')].find(e => /Cigogne/.test(e.textContent || ''));
+        if (!l) return { absent: true };
+        const r = l.getBoundingClientRect();
+        const textes = [...l.querySelectorAll('.cal-lbl-t')].map(e => ({ t: (e.textContent || '').trim(), coupe: e.scrollWidth > e.clientWidth + 1, ellipse: /…/.test(e.textContent || '') }));
+        const bouton = document.querySelector('[data-marque][data-titre*="Cigogne"]');
+        return { nom: textes.map(t => t.t).join(' '), coupes: textes.filter(t => t.coupe || t.ellipse).length, lignes: l.querySelectorAll('.cal-lbl-l1, .cal-lbl-l2').length, lie: !!l.querySelector('.cal-lie'), debordeEcran: r.left < 0 || r.right > innerWidth + 0.5, aria: bouton?.getAttribute('aria-label') || '' };
+      });
+      const c = p.cigogne;
+      p.noteEtat = c.absent ? 'étiquette Cigogne absente' : `« ${c.nom} », ${c.lignes} ligne(s), pastille « lié à » ${c.lie ? 'posée' : 'retirée (lien au nom lu)'}, ${c.coupes} coupe(s)`;
+    },
+    attendu: [fn(async p => { const c = p.cigogne; return { ok: !!c && !c.absent && c.nom.replace(/\s+/g, ' ') === '3 fûts La Cigogne' && c.coupes === 0 && !c.debordeEcran, dit: c ? (c.absent ? 'étiquette absente' : `nom lu « ${c.nom} », ${c.coupes} coupe(s), débord écran ${c.debordeEcran}`) : 'non mesuré' }; }, 'le nom « 3 fûts La Cigogne » est entier (sur une ou deux lignes), sans « … » ni coupe'),
+      fn(async p => { const c = p.cigogne; return { ok: !!c && !c.absent && (c.lie || /lié à/.test(c.aria)), dit: c ? `pastille ${c.lie ? 'posée' : 'retirée'}, lien au lecteur d’écran : ${/lié à/.test(c.aria) ? 'oui' : 'non'}` : 'non mesuré' }; }, 'le lien « lié à … » reste dit : pastille posée, ou nom lu par le lecteur d’écran')] },
+  /* PC-151 : la bière pas brassée dit « pas brassée » dans sa barre à toute largeur (390 : la barre disait « prête 18 déc. » seule), le mot en alerte ; Hopfen (en retard) porte un point d'alerte */
+  { n: 'V2b', nom: 'retard-frise', cave: true, repos: true, geste: '6 semaines ; lire la barre de la Saison de ferme (« pas brassée » en alerte) et la marque de la facture Hopfen (point d’alerte)',
+    jouer: async p => {
+      if (!/^6 sem/.test(await periodeLue(p))) { await menuPeriode(p, /^6 sem/); await attendre(900); }
+      await p.evaluate(() => { const b = document.querySelector('[data-barre][data-titre="Saison de ferme"]'); if (b) b.scrollIntoView({ block: 'center' }); });
+      await attendre(500);
+      p.retard = await p.evaluate(() => {
+        const b = document.querySelector('[data-barre][data-titre="Saison de ferme"]');
+        const lu = [b?.textContent, b?.nextElementSibling?.textContent].join(' | ');
+        const mot = [...document.querySelectorAll('[data-barre][data-titre="Saison de ferme"] .cal-retard-t, .cal-lbl .cal-retard-t')].find(e => /pas brassée/.test(e.textContent || ''));
+        const couleur = mot ? getComputedStyle(mot).color : '';
+        const hopfen = document.querySelector('[data-marque][data-titre^="Hopfen"]');
+        return { barre: !!b, lu, mot: !!mot, couleur, hopfen: !!hopfen, point: !!hopfen?.querySelector('[data-point-retard]'), aria: hopfen?.getAttribute('aria-label') || '' };
+      });
+      const r = p.retard;
+      p.noteEtat = `Saison : « ${r.lu.slice(0, 60)} », mot en alerte ${r.mot ? r.couleur : 'absent'} ; Hopfen ${r.hopfen ? (r.point ? 'point d’alerte posé' : 'sans point') : 'absente (rangée repliée ou hors vue)'}`;
+    },
+    attendu: [fn(async p => ({ ok: !!p.retard?.barre && /pas brassée/.test(p.retard.lu) && p.retard.mot, dit: p.retard ? `barre ${p.retard.barre ? `« ${p.retard.lu.slice(0, 70)} »` : 'absente'}, mot en alerte ${p.retard.mot ? 'oui' : 'non'}` : 'non mesuré' }), 'la barre de la Saison dit « pas brassée », le mot en couleur d’alerte (et pas « prête … » seule)'),
+      fn(async p => ({ ok: !!p.retard?.hopfen && p.retard.point && /en retard/.test(p.retard.aria), dit: p.retard ? `Hopfen ${p.retard.hopfen ? `point ${p.retard.point ? 'posé' : 'absent'}, nom lu « ${p.retard.aria.slice(-40)} »` : 'absente'}` : 'non mesuré' }), 'la facture Hopfen en retard a son point d’alerte et « en retard » au nom lu')] },
+  /* PC-160 : sous « En retard » de la Liste, Hopfen dit ce qui manque (« pas payé »), plus « en retard » */
+  { n: 'V2c', nom: 'liste-retard-precision', cave: true, repos: true, geste: 'ouvrir la Liste ; lire la ligne Hopfen sous « En retard »',
+    jouer: async p => {
+      for (let essai = 0; essai < 3 && !(await p.$('[data-vue-liste]')); essai++) { await attendre(700); try { await menuPeriode(p, /^Liste/); } catch { /* nouvel essai */ } await attendre(600); }
+      if (!(await p.$('[data-vue-liste]'))) throw new Absent('la Liste ne s’ouvre pas');
+      await p.evaluate(() => { const l = [...document.querySelectorAll('[data-liste-chose]')].find(e => /Hopfen/.test(e.textContent || '')); if (l) l.scrollIntoView({ block: 'center' }); });
+      await attendre(400);
+      p.hopfenListe = await p.evaluate(() => { const l = [...document.querySelectorAll('[data-liste-chose]')].find(e => /Hopfen/.test(e.textContent || '')); return l ? { texte: (l.textContent || '').replace(/\s+/g, ' ').trim(), retard: (l.querySelector('.cal-li-retard')?.textContent || '').trim(), section: l.closest('section')?.getAttribute('aria-label') || '' } : null; });
+      p.noteEtat = p.hopfenListe ? `Hopfen : « ${p.hopfenListe.texte.slice(0, 90)} », mot d’alerte « ${p.hopfenListe.retard} » (${p.hopfenListe.section})` : 'ligne Hopfen absente';
+    },
+    attendu: [fn(async p => ({ ok: !!p.hopfenListe && /^pas (payé|reçu)$/.test(p.hopfenListe.retard) && !/en retard/.test(p.hopfenListe.texte), dit: p.hopfenListe ? `mot d’alerte « ${p.hopfenListe.retard} », « en retard » ${/en retard/.test(p.hopfenListe.texte) ? 'répété' : 'absent de la ligne'}` : 'ligne Hopfen absente' }), 'la ligne Hopfen sous « En retard » dit « pas payé » (ou « pas reçu »), sans répéter « en retard »')] },
+  /* T3B-3 : mesure de la place libre à droite de l'étiquette (390, 3 mois) : c'est la réserve du + volant (E35, D-135) ; état de mesure, jamais un rejet */
+  { n: 'V2d', nom: 'etiquette-droite-reserve-plus', cave: false, repos: true, geste: '3 mois ; mesurer la fin de l’étiquette « 3 fûts La Cigogne » contre le bord de la fenêtre et le + volant',
+    jouer: async p => {
+      if (!/^3 mois/.test(await periodeLue(p))) { await menuPeriode(p, /^3 mois/); await attendre(900); }
+      p.reserve = await p.evaluate(() => {
+        const l = [...document.querySelectorAll('.cal-lbl')].find(e => /Cigogne/.test(e.textContent || ''));
+        if (!l) return { absent: true };
+        l.scrollIntoView({ block: 'center' });
+        const r = l.getBoundingClientRect();
+        const fab = document.querySelector('[aria-label^="Actions rapides"]');
+        const f = fab?.getBoundingClientRect();
+        return { bas: Math.round(r.bottom), droite: Math.round(r.right), gauche: Math.round(r.left), fenetre: innerWidth, fab: f ? { gauche: Math.round(f.left), haut: Math.round(f.top), bas: Math.round(f.bottom) } : null };
+      });
+      const m = p.reserve;
+      p.noteEtat = m.absent ? 'étiquette absente' : `étiquette x ${m.gauche}–${m.droite} sur ${m.fenetre} px ; + volant ${m.fab ? `à partir de x ${m.fab.gauche}` : 'non trouvé'} (E35 : l’étiquette cède au +, la réserve est de la rangée)`;
+    },
+    attendu: [fn(async p => { const m = p.reserve; return { ok: !!m && !m.absent && (!m.fab || m.droite <= m.fab.gauche + 1 || m.bas < m.fab.haut || m.gauche >= m.fab.bas), dit: m ? (m.absent ? 'absente' : `fin de l’étiquette x ${m.droite}, + volant ${m.fab ? `x ${m.fab.gauche}` : 'non trouvé'} (aucun recouvrement)`) : 'non mesuré' }; }, 'l’étiquette ne recouvre pas le + volant (la place à sa droite est la réserve du +, E35/D-135)')] }
 ];
 /* ---------- CRITIQUE-10 : dates du banc (posé par rapport au jour) et lectures ---------- */
 /** Le lundi de la semaine en cours (UTC), comme le banc (`lundiDe(aujourdhui)`). */
@@ -2330,7 +2398,7 @@ async function chronometrer() {
 /* ------------------------------------------------------------------ tout jouer */
 
 /* groupes (CRITIQUE-12) : `msg` = M1 à M7 ; `et-per` ou `finances` = 33 (le parcours /?dev-local, jamais une capture du banc) ; `budget-app` = app (D-71) */
-const GROUPES = { v1: n => /^V1[a-f]$/.test(n), msg: n => /^M\d$/.test(n), 'et-per': n => n === '33', finances: n => n === '33', 'budget-app': n => n === 'app' };
+const GROUPES = { v1: n => /^V1[a-f]$/.test(n), v2: n => /^V2[a-d]$/.test(n), msg: n => /^M\d$/.test(n), 'et-per': n => n === '33', finances: n => n === '33', 'budget-app': n => n === 'app' };
 const garde = n => !choixEtats || choixEtats.has(n) || [...choixEtats].some(g => GROUPES[g] && GROUPES[g](n));
 try {
   for (const cfgNom of choixConfigs) {

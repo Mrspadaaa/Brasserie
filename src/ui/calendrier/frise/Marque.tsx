@@ -146,6 +146,16 @@ export function nomAccessible(chose: ChoseCalendrier): string {
 /** « J0 / 28 · prête 14 déc. » : vit dans le domaine (jamais « J0 / 0 »), réexporté pour les vues. */
 export { texteDuree };
 
+/**
+ * PC-151 (20.11) : « pas brassée » est un retard (la date de brassage prévue est passée) ; la Liste le dit en alerte sous « En retard », la frise
+ * aussi : le mot prend la couleur d'alerte (gras, comme `.cal-li-retard`), le reste de la phrase (« · prête 24 nov. ») garde la sienne.
+ */
+export function DureeTexte({ texte }: { texte: string }) {
+  const mot = 'pas brassée';
+  if (!texte.startsWith(mot)) return <>{texte}</>;
+  return <><span className="cal-retard-t">{mot}</span>{texte.slice(mot.length)}</>;
+}
+
 /** Un champ que le lot A ajoute (`duree`, `pasBrassee`, `frais`) : lu en optionnel, sans supposer son type. */
 export const champ = (c: object, k: string): unknown => (c as Record<string, unknown>)[k];
 
@@ -181,8 +191,8 @@ export function ContenuEtiquette({ chose, nom, montant, duree, deux, lieCourt, s
   if (deux === 'nom') return <><span className="cal-lbl-l1">{t}{m}</span>{lie && <span className="cal-lbl-l2">{lie}</span>}</>;
   if (deux === 'nomSeul') return <>{t}<span className="cal-lbl-l2">{m}{lie}</span></>;
   /* un brassin (as/cap/p-repos : « Blonde d'automne −148 » puis « J0 / 28 ») : le nom et son montant, puis sa durée entière dessous */
-  if (deux === 'duree') return <><span className="cal-lbl-l1">{t}{m}{lie}</span>{duree && <span className="cal-lbl-l2"><small aria-hidden="true" className="cal-lbl-j">{duree}</small></span>}</>;
-  return <>{t}{m}{duree && <small aria-hidden="true" className="cal-lbl-j">{duree}</small>}{lie}</>;
+  if (deux === 'duree') return <><span className="cal-lbl-l1">{t}{m}{lie}</span>{duree && <span className="cal-lbl-l2"><small aria-hidden="true" className="cal-lbl-j"><DureeTexte texte={duree} /></small></span>}</>;
+  return <>{t}{m}{duree && <small aria-hidden="true" className="cal-lbl-j"><DureeTexte texte={duree} /></small>}{lie}</>;
 }
 
 /** Le nom et le montant à côté d'une marque ; `texte` remplace le nom court (le caddie d'un brassin en 6 semaines). */
@@ -251,6 +261,8 @@ export const Marque: React.FC<MarqueProps> = props => {
   /* T2-2 : le nom posé à côté de la vignette s'ouvre au toucher comme elle */
   const toucheNom = useToucherNom(() => { if (cible.current) props.onToucher(chose, cible.current); });
   const proposee = !!(chose.proposition || chose.probable);
+  /* PC-151 : une facture dont l'échéance est passée (Hopfen) porte sa marque de retard sur la frise, comme « En retard » de la Liste */
+  const enRetard = champ(chose, 'enRetard') === true;
   const montant = montantDe(chose);
   const style: React.CSSProperties = { left: centre - hauteur / 2, top: haut, width: hauteur, height: hauteur, transform: decalage ? `translateX(${decalage}px)` : undefined };
   const lbl: React.CSSProperties | undefined = libelle
@@ -276,7 +288,7 @@ export const Marque: React.FC<MarqueProps> = props => {
         {...(props.ton ? { 'data-ton': props.ton } : {})}
         {...(chose.proposition ? { 'data-proposition': chose.proposition } : {})}
         {...(proposee ? { 'data-probable': '' } : {})}
-        aria-label={`${nomAccessible(chose)}${montant ? `, ${montant}` : ''}${props.jalon && chose.lie ? `, ${chose.lie.texte}` : ''}`}
+        aria-label={`${nomAccessible(chose)}${montant ? `, ${montant}` : ''}${(props.jalon || libelle?.sansLie) && chose.lie ? `, ${chose.lie.texte}` : ''}${enRetard ? ', en retard' : ''}`}
         aria-pressed={selectionnee || undefined}
         aria-haspopup={avecMenu ? 'menu' : undefined}
         aria-expanded={menuOuvert || undefined}
@@ -287,6 +299,7 @@ export const Marque: React.FC<MarqueProps> = props => {
       >
         <Icone size={16} aria-hidden="true" />
         {etoilee && <span className="cal-etoile" aria-hidden="true">★</span>}
+        {enRetard && <i className="cal-point-retard" data-point-retard aria-hidden="true" />}
         {props.pointLie && <i className={`cal-point-lie ${CLASSE_TEINTE[props.pointLie]}`} data-point-lie={props.pointLie} aria-hidden="true" />}
       </button>
       {libelle && lbl && (

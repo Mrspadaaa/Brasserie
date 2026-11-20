@@ -334,8 +334,8 @@ export function disposer(choses: readonly ChoseCalendrier[], colonnes: readonly 
       const deuxDuree: Candidat[] = [];
       /* CRITIQUE-6 n° 6 : « Commande groupée » puis « de malt −540 » quand le nom et son montant n'ont la place d'aucun côté sur une ligne
          (hors paysage : une ligne de 20 px ne porte pas deux lignes de texte) ; le nom n'est raccourci que si même ainsi la place manque */
-      const cp = !paysage && !lie && !formes.length ? couperNom(texteVu(c), montantBarre(c)) : null;
-      const coupe = cp && cp.largeur + 8 < labNom ? aCote(o0, o1, cp.largeur + 8, 'coupe') : [];
+      const cp = !paysage && !formes.length ? couperNom(texteVu(c), montantBarre(c)) : null;
+      const coupe = cp && !lie && cp.largeur + 8 < labNom ? aCote(o0, o1, cp.largeur + 8, 'coupe') : [];
       /* la coupe ne passe jamais devant une ligne entière : tant qu'un côté a la place du nom sur une ligne, une ligne neuve la porte */
       /* sans aucune place pour la phrase entière : l'ordre d'avant, la durée courte dans la barre d'abord */
       /* en paysage (une ligne de 20 px), une barre à points garde son nom à côté d'abord : la barre n'a pas de seconde ligne pour les points */
@@ -345,6 +345,13 @@ export function disposer(choses: readonly ChoseCalendrier[], colonnes: readonly 
          l'écran. Le nom et le montant restent entiers ; le lien se lit au badge de la barre, au message « Liée à … » et au détail */
       const labSansLie = lie ? Math.ceil(largeurTexte(texteVu(c), 600) + (montantBarre(c) ? largeurTexte(montantBarre(c) as string, 700) + 6 : 0)) + 6 : 0;
       const sansPastille = lie && !uneLigne ? aCote(o0, o1, labSansLie).map(k => ({ ...k, sansLie: true })) : [];
+      /* PC-150 / T3B-3 (20.11, 390, 3 mois : « 3 fûts L… +900 », nom écrasé à 63 px sous le +, 133 px de piste) : la chose liée qui n'a la place
+         d'aucun côté ni pour nom + montant + pastille (deux lignes), ni pour nom + montant sur une ligne, garde son NOM ENTIER : coupé entre deux
+         mots, montant au bout de la deuxième ligne, la pastille cède (`sansLie` : le lien reste au détail, au lecteur d'écran et au badge de la
+         barre). Un nom raccourci (« 3 fûts L… ») n'est que le dernier recours, après cette coupe. */
+      const coupeSansLie = lie && cp && !uneLigne && !sansPastille.length && cp.largeur + 8 < labSansLie
+        ? aCote(o0, o1, cp.largeur + 8, 'coupe').map(k => ({ ...k, sansLie: true })) : [];
+      const coupeFin = [...coupe, ...coupeSansLie];
       /* Tour 2 n° 3 (19.11, verdict n° 4 : « IPA de printemps » poussé à droite de sa barre par « coût à venir », « Porter d'hiver · coût à
          venir » à gauche de la sienne) : le nom d'un brassin reste DANS sa barre dès qu'il y tient. La phrase entière cède d'abord (forme courte,
          puis rien : elle reste au détail), puis « · coût à venir » (le titre seul entre ; la rangée et le détail le disent encore). À côté
@@ -358,11 +365,11 @@ export function disposer(choses: readonly ChoseCalendrier[], colonnes: readonly 
       else {
         const pleins = [premier, deuxDuree, nomsPlein];
         const aPlein = !!phrase && pleins.some(x => x.length > 0);
-        const paliers = aPlein ? pleins : uneLigne ? [premierCourt, deuxDuree, courts, noms, dedansEntier, deux] : sansPastille.length ? [sansPastille] : [coupe];
+        const paliers = aPlein ? pleins : uneLigne ? [premierCourt, deuxDuree, courts, noms, dedansEntier, deux] : sansPastille.length ? [sansPastille] : [coupeFin];
         /* aucune ligne ouverte n'a la place : une ligne libre au-dessous, où le nom tient entier ; sinon (la piste est trop étroite) au plus large */
         const neuve = aPlein
           ? (premier[0] ?? deuxDuree[0] ?? nomsPlein[0]) as Candidat
-          : premierCourt[0] ?? deuxDuree[0] ?? courts[0] ?? noms[0] ?? dedansEntier[0] ?? deux[0] ?? sansPastille[0] ?? coupe[0] ?? auPlusLarge(o0, o1, labNom, min);
+          : premierCourt[0] ?? deuxDuree[0] ?? courts[0] ?? noms[0] ?? dedansEntier[0] ?? deux[0] ?? sansPastille[0] ?? coupeFin[0] ?? auPlusLarge(o0, o1, labNom, min);
         choix = poser(paliers, neuve);
       }
     }
