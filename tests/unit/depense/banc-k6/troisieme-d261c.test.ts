@@ -92,19 +92,18 @@ describe('D261c — ce qui appelle la 3.8 sur une pièce de cette forme', () => 
     expect(needs(lecture(), b)).toBe(true);
   });
 
-  it.skip('EN ATTENTE D261c — kind ET nom divergent sans référence imprimée : les lignes ne sont pas « sans vis-à-vis » (l’ancre par les chiffres ne devrait pas exiger le même kind)', () => {
+  it('D261c rallumé par al1 (20.11) — kind ET nom divergent sans référence imprimée : les lignes ne sont pas « sans vis-à-vis » (l’alignement par ressemblance ne dépend plus ni du kind ni de la référence)', () => {
     const sansRef = (list: any[]) => list.map(l => ({ ...l, reference: '' }));
     const a = lecture({}, sansRef(items()));
     const b = lecture({}, sansRef(items([{}, {}, { kind: 'other', name: 'Hopfensack fictif fein, Mischung: Einzelprodukt' }])));
     expect(trouve(points(a, b), 'lignes-non-rapprochees')).toEqual([]);
   });
 
-  it('AUJOURD’HUI (cause ; à retirer une fois le correctif posé) — ce couple kind + nom sans référence laisse DEUX lignes sans vis-à-vis, un point qui pèse', () => {
+  // al1 (20.11) : le test « AUJOURD’HUI » qui décrivait ce défaut (deux lignes sans vis-à-vis, un point qui pèse) est retiré, comme il le demandait : l'alignement par ressemblance rapproche ces lignes.
+  it('al1 : ce couple kind + nom sans référence se rapproche (nom contenu + même montant) ; le relevé du banc ne dit plus « lignes-non-rapprochees »', () => {
     const sansRef = (list: any[]) => list.map(l => ({ ...l, reference: '' }));
     const a = lecture({}, sansRef(items()));
     const b = lecture({}, sansRef(items([{}, {}, { kind: 'other', name: 'Hopfensack fictif fein, Mischung: Einzelprodukt' }])));
-    const [p] = trouve(points(a, b), 'lignes-non-rapprochees');
-    expect(p).toMatchObject({ pese: true, lignes: [3, 3] });
-    expect(releveDivergences(...paire(a, b)).map(d => d.code)).toContain('lignes-non-rapprochees');
+    expect(releveDivergences(...paire(a, b)).map(d => d.code)).not.toContain('lignes-non-rapprochees');
   });
 });

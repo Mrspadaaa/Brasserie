@@ -128,32 +128,91 @@ const score = (a: Item, b: Item) => FIVE.filter(f => comparisonKey(f, (a as any)
 const sameFive = (a: Item, b: Item) => score(a, b) === 5;
 interface Pairing { match: Map<number, number>; orphansBase: number[]; orphansOther: number[] }
 
+/**
+ * al1 (LR1-8, LR2-9) : alignement de deux séquences de lignes, Needleman-Wunsch (programmation dynamique, « ## État de l'art — al1 » de la mission).
+ * Chaque paire possible reçoit une ressemblance faite de preuves : le nom (OCR tolérant), le montant, la référence (EAN). Une paire ne compte qu'au-dessus d'un seuil, et l'ensemble des paires
+ * retenues garde l'ordre des lignes des deux lectures et maximise la somme des ressemblances. Aucune paire sans preuve : ni la position seule, ni la référence seule (une lecture qui rattache l'EAN
+ * à la ligne voisine décale tout), ni le montant seul ; un montant inconnu (null) n'est jamais un montant égal. Les lignes restées seules après l'alignement (deux colonnes lues dans un autre ordre)
+ * se rapprochent ensuite hors ordre, sur une double preuve et sans rival. Poids et seuils : les constantes ci-dessous ; réglés sur doc25 (tests/unit/bugs-al1-alignement.test.ts) et sur le jeu des 20 paires de LE1.
+ */
+const POIDS_NOM = 1, POIDS_MONTANT = 0.8, POIDS_REF = 0.6, POIDS_REF_PROCHE = 0.3, SEUIL_PAIRE = 0.9, SEUIL_HORS_ORDRE = 1.3, NOM_MINIMUM = 0.5;
+const motsDe = (s: string) => s.split(/[^a-z0-9]+/).filter(Boolean);
+function bigrammes(s: string): Map<string, number> {
+  const t = s.replace(/\s+/g, ' '), out = new Map<string, number>();
+  for (let i = 0; i < t.length - 1; i++) out.set(t.slice(i, i + 2), (out.get(t.slice(i, i + 2)) ?? 0) + 1);
+  return out;
+}
+/** Coefficient de Dice sur les bigrammes de caractères : 1 = identiques, 0 = rien en commun. Robuste aux coquilles d'OCR. */
+function dice(a: string, b: string): number {
+  const x = bigrammes(a), y = bigrammes(b);
+  let commun = 0, total = 0;
+  x.forEach((n, k) => { commun += Math.min(n, y.get(k) ?? 0); total += n; });
+  y.forEach(n => { total += n; });
+  return total ? (2 * commun) / total : 0;
+}
+/** Ressemblance des noms, 0 à 1 (0 sous NOM_MINIMUM : un hasard de lettres n'est pas une preuve). Une lecture qui fond deux lignes en une (« A / B ») garde ses mots : le nom le plus court y est contenu. */
+function ressemblanceNom(a: Item, b: Item): number {
+  const x = canonicalText(a.name), y = canonicalText(b.name);
+  if (!x || !y) return 0;
+  if (x === y) return 1;
+  const [mx, my] = [motsDe(x), motsDe(y)], [petit, grand] = mx.length <= my.length ? [mx, my] : [my, mx];
+  const contenu = petit.length < grand.length && petit.join('').length >= 4 && petit.every(m => grand.some(g => g === m || (m.length >= 4 && editDistanceAtMost1(g, m))));
+  // Des nombres différents (« 100 g » / « 1000 g ») disent un autre conditionnement : pas la même ligne, même à une lettre près (P4). Seuls comptent les mots tout en chiffres (l'OCR y lit parfois un O pour un 0).
+  const nombres = (mots: string[]) => mots.filter(t => /^[0-9o]+$/.test(t) && /\d/.test(t)).map(t => t.replace(/o/g, '0')).join(',');
+  // Un nom contenu dans l'autre (ligne fondue, ou variante collée) ne suffit pas seul : il ne dépasse pas SEUIL_PAIRE et attend le montant ou la référence.
+  const d = Math.max(contenu ? 0.85 : 0, nombres(mx) === nombres(my) ? Math.max(sameName(x, y) ? 0.95 : 0, dice(x, y)) : 0);
+  return d >= NOM_MINIMUM ? d : 0;
+}
+/** Une référence imprimée sans l'étiquette que l'OCR lit devant (« EAN: 4005… », « NOO: 4024… » → 4005…), sans espace ni tiret. */
+const jetonReference = (r: string | null | undefined) => canonicalText(r ?? '').replace(/^[a-z]{3}\s*:\s*/, '').replace(/[^a-z0-9]/g, '');
+function ressemblanceRef(a: Item, b: Item): number {
+  const x = jetonReference(a.reference), y = jetonReference(b.reference);
+  if (x.length < 3 || y.length < 3) return 0;
+  if (x === y) return POIDS_REF;
+  return x.length >= 8 && editDistanceAtMost1(x, y) ? POIDS_REF_PROCHE : 0; // un EAN lu à un chiffre près ; un code article court (ABC-1 / ABC-2) est un autre article
+}
+const egaux = (champ: string, a: unknown, b: unknown) => a !== null && a !== undefined && b !== null && b !== undefined && comparisonKey(champ, a) === comparisonKey(champ, b); // un inconnu n'est jamais égal
+/**
+ * Un libellé répété dans une lecture (« Fermenteur » deux fois) ne dit pas laquelle de ses lignes est visée : il ne prouve rien quand la quantité, lue des deux côtés, diffère (P4).
+ * Une quantité inconnue (null) ne départage pas : l'ordre et le montant décident alors.
+ */
+const ressemblanceLigne = (a: Item, b: Item, repete: boolean): number =>
+  (repete && a.quantity !== null && b.quantity !== null && !egaux('quantity', a.quantity, b.quantity) ? 0 : POIDS_NOM * ressemblanceNom(a, b))
+  + (egaux('amountTTC', a.amountTTC, b.amountTTC) ? POIDS_MONTANT : 0)
+  + ressemblanceRef(a, b);
+
 function alignLines(base: Item[], other: Item[]): Pairing {
+  const n = base.length, m = other.length;
+  const compte = (items: Item[]) => items.reduce((c, it) => c.set(canonicalText(it.name), (c.get(canonicalText(it.name)) ?? 0) + 1), new Map<string, number>());
+  const cb = compte(base), co = compte(other);
+  const s = base.map(a => other.map(b => ressemblanceLigne(a, b, (cb.get(canonicalText(a.name)) ?? 0) > 1 || (co.get(canonicalText(b.name)) ?? 0) > 1)));
+  const diag = (i: number, j: number, best: number[][]) => (s[i - 1][j - 1] >= SEUIL_PAIRE ? best[i - 1][j - 1] + s[i - 1][j - 1] : -Infinity);
+  const best = Array.from({ length: n + 1 }, () => new Array<number>(m + 1).fill(0));
+  for (let i = 1; i <= n; i++) for (let j = 1; j <= m; j++) best[i][j] = Math.max(best[i - 1][j], best[i][j - 1], diag(i, j, best));
   const match = new Map<number, number>(), taken = new Set<number>();
-  const name = (item: Item) => canonicalText(item.name), ref = (item: Item) => canonicalText(item.reference ?? '');
-  const tiers: Array<(a: Item, b: Item) => boolean> = [
-    (a, b) => ref(a) !== '' && ref(a) === ref(b) && name(a) === name(b),
-    (a, b) => ref(a) !== '' && ref(a) === ref(b),
-    (a, b) => name(a) !== '' && name(a) === name(b),
-  ];
-  for (const same of tiers) {
-    base.forEach((line, bi) => {
-      if (match.has(bi)) return;
-      const candidates = other.flatMap((candidate, oi) => !taken.has(oi) && same(line, candidate) ? [{ oi, s: score(line, candidate) }] : []);
-      if (!candidates.length) return;
-      const top = Math.max(...candidates.map(c => c.s)), best = candidates.filter(c => c.s === top);
-      // À égalité, la première ne vaut que si les candidates sont identiques sur les cinq champs ; sinon la ligne reste non rapprochée.
-      if (best.length > 1 && !best.every(c => sameFive(other[c.oi], other[best[0].oi]))) return;
-      match.set(bi, best[0].oi); taken.add(best[0].oi);
-    });
+  for (let i = n, j = m; i > 0 && j > 0;) { // retour en arrière : à valeur égale, la paire l'emporte
+    if (best[i][j] === diag(i, j, best)) { match.set(i - 1, j - 1); taken.add(j - 1); i--; j--; }
+    else if (best[i][j] === best[i - 1][j]) i--;
+    else j--;
   }
-  // Ancre par les chiffres : mêmes quantité, unité, montant et nature, seule candidate des deux côtés.
-  const cle = (item: Item) => [comparisonKey('quantity', item.quantity), comparisonKey('unit', item.unit), comparisonKey('amountTTC', item.amountTTC), comparisonKey('kind', item.kind)].join('|');
-  const libresBase = base.flatMap((_, bi) => (match.has(bi) ? [] : [bi])), libresOther = other.flatMap((_, oi) => (taken.has(oi) ? [] : [oi]));
-  for (const bi of libresBase) {
-    const k = cle(base[bi]);
-    const cb = libresBase.filter(i => cle(base[i]) === k), co = libresOther.filter(i => cle(other[i]) === k);
-    if (cb.length === 1 && co.length === 1) { match.set(bi, co[0]); taken.add(co[0]); }
+  // Deux lectures qui listent les mêmes lignes dans un autre ordre (deux colonnes) : les lignes restées seules se rapprochent hors ordre, mais sur une double preuve et sans rival.
+  // Un rival à égalité n'empêche la paire que si les lignes rivales diffèrent entre elles (deux lignes identiques : la première).
+  for (let progres = true; progres;) {
+    progres = false;
+    const libresB = base.flatMap((_, i) => (match.has(i) ? [] : [i])), libresO = other.flatMap((_, j) => (taken.has(j) ? [] : [j]));
+    const meilleure = (cands: number[], valeur: (c: number) => number, pareil: (x: number, y: number) => boolean): number | null => {
+      const top = Math.max(-Infinity, ...cands.map(valeur));
+      if (top < SEUIL_HORS_ORDRE) return null;
+      const ex = cands.filter(c => valeur(c) === top);
+      return ex.every(c => pareil(c, ex[0])) ? ex[0] : null;
+    };
+    for (const i of libresB) {
+      const j = meilleure(libresO.filter(x => !taken.has(x)), x => s[i][x], (x, y) => sameFive(other[x], other[y]));
+      if (j === null || match.has(i)) continue;
+      const retour = meilleure(libresB.filter(x => !match.has(x)), x => s[x][j], (x, y) => sameFive(base[x], base[y]));
+      if (retour === null || (retour !== i && !sameFive(base[retour], base[i]))) continue;
+      match.set(i, j); taken.add(j); progres = true;
+    }
   }
   return { match, orphansBase: base.flatMap((_, bi) => (match.has(bi) ? [] : [bi])), orphansOther: other.flatMap((_, oi) => (taken.has(oi) ? [] : [oi])) };
 }

@@ -177,7 +177,8 @@ describe('Deux visions indépendantes et correction par majorité', () => {
     const result = reconcileInvoiceVision([first, read(), read()]);
     expect(result.result.items[0].name).toBe('Cascade 100 g');
     expect(result.result.items[0].quantity).toBe(2);
-    expect(result.review.correctedFields).toContain('items');
+    // al1 (20.11) : « Cascadc » et « Cascade » (même montant) sont rapprochées par ressemblance : la correction se fait champ par champ, plus en jetant toute la structure de la lecture fautive
+    expect(result.review.correctedFields).toEqual(expect.arrayContaining(['items.0.name', 'items.0.quantity']));
     expect(result.review.status).toBe('corrected');
   });
 
