@@ -4,7 +4,7 @@
 // Le besoin vient du moteur (`besoinDeLaLevure` : taux × volume × °P) ; rien n'est inventé : sans sachet connu, la piste reste en pointillé.
 import { useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { Box, Minus, Plus } from 'lucide-react';
-import type { BesoinLevure } from './dose';
+import type { BesoinLevure, DoseFabricant } from './dose';
 
 const dec = (n: number, d = 0) => n.toLocaleString('fr-FR', { minimumFractionDigits: d, maximumFractionDigits: d });
 /** 1,5 → « 1,5 » ; 0,75 → « 0,75 » ; 2 → « 2 ». */
@@ -38,11 +38,13 @@ function PuceStock({ qty, stock, apres, onOffre }: { qty?: number; stock: StockD
   return <span className="ml-enstock" data-lv="stock" data-stock={etat} role="img" aria-label={stock.n > 0 ? `${dec(stock.n)} en stock` : 'pas en stock'}><Box size={17} aria-hidden="true" /></span>;
 }
 
-export function BandeDose({ etat, qty, unite, besoin, stock, onPas, onEcrire, onOffre }: {
+export function BandeDose({ etat, qty, unite, besoin, seul, stock, onPas, onEcrire, onOffre }: {
   etat: EtatDose;
   /** La quantité écrite dans la recette (dans `unite`), absente : « à choisir ». */
   qty?: number; unite: string;
   besoin?: BesoinLevure;
+  /** T4-2 : sans densité de moût (pas de besoin), la dose du fabricant et le sachet quand même (le volume et la fiche suffisent). */
+  seul?: DoseFabricant;
   stock: StockDose;
   /** − / + : la quantité suivante (jamais sous 1). */
   onPas: (next: number) => void;
@@ -52,10 +54,10 @@ export function BandeDose({ etat, qty, unite, besoin, stock, onPas, onEcrire, on
   onDose?: () => void;
   onOffre: () => void;
 }) {
-  const sachet = besoin?.sachet;
-  const fab = besoin?.fabricant;
+  const sachet = besoin?.sachet ?? seul?.sachet;
+  const fab = besoin?.fabricant ?? seul?.fabricant;
   const conseilSachets = fab && sachet?.grammes ? fab.min / sachet.grammes : undefined;
-  const auChoix = besoin?.sachets !== undefined ? Math.max(1, Math.ceil(besoin.sachets - 1e-9)) : besoin?.sachetsFabricant;
+  const auChoix = besoin?.sachets !== undefined ? Math.max(1, Math.ceil(besoin.sachets - 1e-9)) : (besoin ?? seul)?.sachetsFabricant;
   const max = Math.max(4, Math.ceil(Math.max(qty ?? 0, besoin?.sachets ?? 0, conseilSachets ?? 0) - 1e-9) + 1);
   const unitePl = motUnite(unite, 2);
   const libreGeste = etat === 'libre';

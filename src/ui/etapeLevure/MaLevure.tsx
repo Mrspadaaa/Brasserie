@@ -22,7 +22,7 @@ import { Input } from '../Input';
 import { YeastRecipePlan } from '../YeastRecipePlan';
 import { CelluleRecherche, useEtatRecherche } from './useRechercheDonnee';
 import { apiLevure } from './domaine';
-import { besoinDeLaLevure } from './dose';
+import { besoinDeLaLevure, doseDuFabricantSeule } from './dose';
 import { BandeDose, LigneConduite, motUnite, type EtatDose, type StockDose } from './CarteDose';
 import './maLevure.css';
 import { AXES_EFFETS, NIVEAUX, couleurDeLAxe, lignesEffets, ligneFloculation, type LigneEffet } from './effets';
@@ -362,10 +362,12 @@ function MaLevureVue({ recipe, refs, supply, levure, classement, onConduite, onC
 
   // La dose (20.11, r3 v05 / r4 v02) : la quantité écrite, le besoin de la recette (moteur : taux × volume × °P) et le stock, sur la carte.
   const besoin = useMemo(() => besoinDeLaLevure(recipe, supply, evaluation.projection.og, levure), [recipe, supply, evaluation, levure]);
+  // T4-2 : sans densité de moût, pas de besoin ; la dose du fabricant et le sachet se disent quand même.
+  const seul = useMemo(() => besoin ? undefined : doseDuFabricantSeule(recipe, supply, evaluation.projection.og, levure), [besoin, recipe, supply, evaluation, levure]);
   const prevu = Number.isFinite(recipe.yeast.qty) && (recipe.yeast.qty ?? 0) > 0 ? recipe.yeast : undefined;
   const uniteEcrite = prevu?.unit?.toLocaleLowerCase('fr');
-  const compte = uniteEcrite ? /^(sachet|pack)s?$/.test(uniteEcrite) : !!besoin?.sachet;
-  const unite = compte ? (uniteEcrite?.replace(/s$/, '') ?? besoin?.sachet?.unite ?? 'sachet') : (uniteEcrite ?? 'g');
+  const compte = uniteEcrite ? /^(sachet|pack)s?$/.test(uniteEcrite) : !!(besoin?.sachet ?? seul?.sachet);
+  const unite = compte ? (uniteEcrite?.replace(/s$/, '') ?? besoin?.sachet?.unite ?? seul?.sachet?.unite ?? 'sachet') : (uniteEcrite ?? 'g');
   const qty = prevu?.qty;
   const [touche, setTouche] = useState(false);
   useEffect(() => { setTouche(false); }, [recipe.yeast.name]);
@@ -373,11 +375,11 @@ function MaLevureVue({ recipe, refs, supply, levure, classement, onConduite, onC
   // Le stock de cette levure : l'article de la recette, ou ceux reliés à sa fiche ; compté en sachets (un stock en grammes, au poids du sachet).
   const stockDose = useMemo<StockDose>(() => {
     const articles = stock.filter(i => i.category.toLocaleLowerCase('fr') === 'levure' && (i.ref === recipe.yeast.stockItemRef || (!!levure && fiches.get(i.ref) === levure.id)));
-    const g = besoin?.sachet?.grammes;
+    const g = (besoin?.sachet ?? seul?.sachet)?.grammes;
     const n = articles.reduce((s, i) => { const u = (i.unit ?? '').toLocaleLowerCase('fr');
       return s + (/^(sachet|pack|unit|pi[eè]ce|pc)/.test(u) ? i.currentStock : u === 'g' && g ? Math.floor(i.currentStock / g + 1e-9) : u === 'kg' && g ? Math.floor(i.currentStock * 1000 / g + 1e-9) : 0); }, 0);
     return { n, trouve: articles.length > 0 };
-  }, [stock, recipe.yeast.stockItemRef, levure, fiches, besoin]);
+  }, [stock, recipe.yeast.stockItemRef, levure, fiches, besoin, seul]);
   const ecrireDose = (n: number, apres: boolean) => { setTouche(apres); onDoseChange?.(n, unite); };
   const doseTitre = qty !== undefined ? `${dec(qty, Number.isInteger(qty) ? 0 : 1)} ${motUnite(unite, qty)} : régler la dose, l’ensemencement et le starter` : 'Dose à choisir : régler la dose, l’ensemencement et le starter';
   // La conduite hors de la plage de la levure (19.11 : fiche 9–11 °C, conduite 19 °C) : un toucher cale la fermentation principale sur le bord le plus proche
@@ -418,7 +420,7 @@ function MaLevureVue({ recipe, refs, supply, levure, classement, onConduite, onC
         <button type="button" className="lv-x" aria-label={`Retirer ${recipe.yeast.name} de la recette`} onClick={onRetirer}><X size={18} aria-hidden="true" /></button>
         <span className="lv-sub"><span className="lv-sub-t">{(ident.vendeur ? `${ident.marque} · vendue par ${ident.vendeur}` : ident.marque ?? (labo && fabricantCourt(labo))) || (levure ? 'laboratoire ?' : 'Hors catalogue · saisie libre')}</span></span>
       </div>
-      <BandeDose etat={etatDose} qty={qty} unite={unite} besoin={besoin} stock={stockDose}
+      <BandeDose etat={etatDose} qty={qty} unite={unite} besoin={besoin} seul={seul} stock={stockDose}
         onPas={n => ecrireDose(n, true)} onEcrire={n => ecrireDose(n, etatDose === 'apres')} onDose={onDose} onOffre={() => onVolet?.('produit')} />
       <div className="lv-bande ml-cases">
         <div className="lv-cel" data-cel="fg">

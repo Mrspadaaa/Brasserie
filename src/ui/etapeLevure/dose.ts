@@ -116,6 +116,16 @@ export function besoinDeLaLevure(recipe: TrialRecipe, supply: YeastSupply, og?: 
   const aTaux = typeof tauxRecette === 'number' && tauxRecette > 0;
   const taux = aTaux ? tauxRecette : moteur.rate;
   const cellules = taux * volumeL * plato;
+  const { sachet, fabricant, sachetsFabricant } = doseFabricantDe(yeast, conseil, volumeL, levure);
+  return { regime, taux, tauxDuMoteur: !aTaux, volumeL, sg, plato, cellules,
+    sachet, sachets: sachet ? cellules / sachet.cellules : undefined, fabricant, sachetsFabricant };
+}
+
+/** Ce que la levure dit sans densité de moût : son sachet et la dose du fabricant (ni taux, ni cellules, ni besoin). */
+export type DoseFabricant = Pick<BesoinLevure, 'sachet' | 'fabricant' | 'sachetsFabricant'>;
+
+/** Le sachet du produit, la dose du fabricant au volume et le nombre de sachets qui l'atteint : le volume seul les donne, pas la densité du moût. */
+function doseFabricantDe(yeast: YeastSpec, conseil: YeastPitchingAdvice, volumeL: number, levure?: YeastReference): DoseFabricant {
   const produit = yeast.pitching?.product;
   const forme = yeast.form ?? produit?.form ?? levure?.form;
   let sachet: BesoinLevure['sachet'];
@@ -133,12 +143,24 @@ export function besoinDeLaLevure(recipe: TrialRecipe, supply: YeastSupply, og?: 
     : conseil.unit === 'g' && conseil.bound && conseil.bound.operator.startsWith('>') ? { min: conseil.bound.value, borne: true }
     : f ? { min: f.min, max: f.max, borne: f.max === undefined } : undefined;
   const sachetsFabricant = fabricant && sachet?.grammes ? Math.max(1, Math.ceil(fabricant.min / sachet.grammes - 1e-9)) : conseil.packs?.min;
-  return { regime, taux, tauxDuMoteur: !aTaux, volumeL, sg, plato, cellules,
-    sachet, sachets: sachet ? cellules / sachet.cellules : undefined, fabricant, sachetsFabricant };
+  return { sachet, fabricant, sachetsFabricant };
+}
+
+/**
+ * T4-2 : la dose du fabricant quand la densité du moût manque (recette sans DI visée ni potentiels de malt : `besoinDeLaLevure` rend alors `undefined`).
+ * Elle ne dépend que du volume et de la fiche : la carte la dit au lieu de « pas de conseil · fiche absente ». Sans volume ni fiche, rien (jamais 0).
+ */
+export function doseDuFabricantSeule(recipe: TrialRecipe, supply: YeastSupply, og?: number | null, levure?: YeastReference): DoseFabricant | undefined {
+  const { yeast, conseil } = doseDeLaLevure(recipe, supply, og);
+  const volumeL = yeast.pitching?.wort?.volumeL ?? recipe.volumeL;
+  if (!(typeof volumeL === 'number' && volumeL > 0)) return undefined;
+  const dose = doseFabricantDe(yeast, conseil, volumeL, levure);
+  // Sans dose du fabricant, rien : un sachet supposé seul ne fait pas une dose (la saisie libre garde « pas de conseil »).
+  return dose.fabricant ? dose : undefined;
 }
 
 /** La dose écrite au choix d'une levure : le plus petit nombre de sachets qui couvre le besoin, sinon celui qui atteint la dose du fabricant. */
-export function sachetsAuChoix(besoin: BesoinLevure | undefined): number | undefined {
+export function sachetsAuChoix(besoin: Pick<BesoinLevure, 'sachetsFabricant'> & Partial<Pick<BesoinLevure, 'sachets'>> | undefined): number | undefined {
   if (!besoin) return undefined;
   if (besoin.sachets !== undefined && Number.isFinite(besoin.sachets)) return Math.max(1, Math.ceil(besoin.sachets - 1e-9));
   return besoin.sachetsFabricant;
@@ -157,7 +179,9 @@ export function doseApresChoix(recipe: TrialRecipe, avant: YeastSpec, supply: Ye
   const mesure = avant.pitching?.wort && avant.pitching.wort.basis !== 'recipe-estimate' ? avant.pitching.wort : undefined;
   const prepared = mesure && yeast.pitching?.product ? preparer(nue, supply, { version: 1, wort: mesure }, og) : yeast;
   const ogMout = og ?? estimatePitchingWort(nue).wort?.sg;
-  const n = sachetsAuChoix(besoinDeLaLevure({ ...nue, yeast: prepared }, supply, ogMout, levure));
+  const avecMout = { ...nue, yeast: prepared };
+  // Sans densité de moût (T4-2), la dose du fabricant au volume de la recette reste proposée.
+  const n = sachetsAuChoix(besoinDeLaLevure(avecMout, supply, ogMout, levure) ?? doseDuFabricantSeule(avecMout, supply, ogMout, levure));
   if (n === undefined) return { ...nue, yeast: prepared };
   const unite = (prepared.form ?? prepared.pitching?.product?.form ?? levure?.form) === 'sèche' ? 'sachet' : 'pack';
   return { ...nue, yeast: { ...prepared, qty: n, unit: unite } };
