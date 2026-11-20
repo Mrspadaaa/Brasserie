@@ -20,7 +20,8 @@ export function MoisParMois({ c, onClose }: { c: Ctx; onClose: () => void }) {
   const aClasserCents = React.useMemo(() => piecesAClasser(c.transactions, c.assets, c.year).reduce((n, p) => n + p.chargeCents, 0), [c.transactions, c.assets, c.year]);
   const valeur = (m: typeof mois[number]) => vue === 'entre' ? m.entreCents : vue === 'depense' ? m.depenseCents : m.gainCents;
   return <Sheet open title={`Mois par mois · ${c.year}`} onClose={onClose} className="finance-sheet">
-    <div className="ann-mm">
+    {/* CT4-A-10 : la feuille est portée hors de `.ann` ; sans cette classe, ni les variables (--ann-bord…) ni le segment « Résultat · Entré · Dépensé » ne se dessinaient : trois titres flottants au-dessus de mois sans cadre. */}
+    <div className="ann ann-mm">
       <div className="ann-seg ann-seg-l" role="group" aria-label="Ce que montrent les mois">{([['resultat', 'Résultat'], ['entre', 'Entré'], ['depense', 'Dépensé']] as const).map(([k, l]) => <button type="button" key={k} aria-pressed={vue === k} className={vue === k ? 'on' : ''} onClick={() => setVue(k)}>{l}</button>)}</div>
       <div className="ann-mois ann-mois4">{mois.map(m => m.etat === 'notes'
         ? <div key={m.mois} className={`ann-mo${vue === 'resultat' ? (m.gainCents < 0 ? ' neg' : ' pos') : ''}${choisi?.mois === m.mois ? ' cur' : ''}`}><small>{MOIS[m.mois - 1]}</small><span className="ann-m">{vue === 'resultat' && valeur(m) > 0 ? '+' : ''}{montant(valeur(m))}</span></div>

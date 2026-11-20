@@ -1,6 +1,6 @@
 import React, { useEffect, useId, useMemo, useState } from 'react';
 import type { ForecastItem } from '../../../domain/finance/forecast';
-import { graduations, groupesRecurrents, joursEntre, motEtiquette, type Escalier as EscalierDonnees, type GroupeRecurrent } from './escalier';
+import { graduations, groupesRecurrents, joursEntre, motEtiquette, nomProjet, type Escalier as EscalierDonnees, type GroupeRecurrent } from './escalier';
 import { mesurerTexte, obstaclesDeCourbe, oublierMesures, placerEtiquettes, pointDAccroche, type Demande, type Mesure, type Rect } from './placement';
 import { jourCourt, montant, montantCourt, montantEntier, montantSigne, moisCourt } from './format';
 
@@ -107,6 +107,13 @@ export function EscalierSvg({ e, fantome, nomFantome, largeur, testeId, sousLign
     let yPrec = y(depart);
     for (const m of e.marches) { const xm = x(m.date), ym = y(val(m)); points.push({ x: xm, y: yPrec }, { x: xm, y: ym }); yPrec = ym; }
     points.push({ x: xFin, y: yPrec });
+    // le pointillé de l'autre scénario : obstacle du nom qui le porte (CT4-A-8, « un pointillé traverse sans Fermenteur »)
+    const pointsFantome: Array<{ x: number; y: number }> = [];
+    if (fantome) {
+      let yp = y(fantome.departCents === null ? 0 : fantome.departCents); pointsFantome.push({ x: G, y: yp });
+      for (const m of fantome.marches) { const xm = x(m.date), ym = y(fantome.departCents === null ? m.ecartCents : m.soldeApresCents!); pointsFantome.push({ x: xm, y: yp }, { x: xm, y: ym }); yp = ym; }
+      pointsFantome.push({ x: xFin, y: yp });
+    }
     // soldes sur les marches assez longues (p5b : 664,18) ; le dernier est le solde final, écrit au bout
     const soldes: Array<{ x: number; y: number; texte: string; neg: boolean; rect: Rect }> = [];
     if (connu) e.marches.forEach((m, k) => {
@@ -133,7 +140,12 @@ export function EscalierSvg({ e, fantome, nomFantome, largeur, testeId, sousLign
         if (dansLot.has(item.id)) continue;
         const groupe = groupes.get(item.id);
         if (groupe && groupe.premierId !== item.id) continue; // une seule étiquette pour une récurrence regroupée
-        const style = styleDe(item, testeId), l1 = texteEtiquette(item, groupe), l2 = style === 'projet' ? sousLignes[item.id] : undefined;
+        const style = styleDe(item, testeId);
+        // CT4-A-8 : le nom d'un projet de matériel se lit en entier (« Fermenteur su… » n'était pas lisible) : au-delà de 14 signes il tient la première ligne seul,
+        // le montant, le jour et l'usure passent sur la seconde.
+        const nomEntier = item.source === 'equipment' && !groupe ? nomProjet(item.label, 40) : null, nomLong14 = nomEntier !== null && [...nomEntier].length > 14;
+        const l1 = nomLong14 ? nomEntier! : texteEtiquette(item, groupe);
+        const l2 = nomLong14 ? [`${montantEtiquette(item)}, ${item.label.includes('date estimée') ? '~' : ''}${jourCourt(item.date)}`, style === 'projet' ? sousLignes[item.id] : ''].filter(Boolean).join(' · ') : style === 'projet' ? sousLignes[item.id] : undefined;
         const w = Math.max(lt(l1, style === 'projet' ? 15 : 13, false, style === 'projet' ? 700 : 600), l2 ? lt(l2, 12) : 0) + 16, h = l2 ? 38 : 20;
         const poids = Math.min(99, Math.round(item.amountCents / 1000));
         demandes.push({ id: item.id, priorite: style === 'projet' ? 100 : style === 'brassin' ? 80 : style === 'entree' ? 60 : 10, poids, ordre: ordre++, w, h, ancre: { x: x(m.date), y: (y(avant) + y(apres)) / 2 } });
@@ -149,16 +161,35 @@ export function EscalierSvg({ e, fantome, nomFantome, largeur, testeId, sousLign
     const rectFin: Rect = { x: xFin - wFin, y: y(xFinal) + (dessous ? 4 : -26), w: wFin, h: 24 };
     const fixes: Rect[] = [{ x: 0, y: 0, w: G - 2, h: HT }, { x: 0, y: haut, w: W, h: B }, { x: G, y: 0, w: wAuj, h: H + 2 }, rectFin];
     // le nom du pointillé, posé au bout de la ligne (p5b : « sans frigo 2 107,34 »), du côté où il n'écrase pas le solde final
-    let nomGhost: { x: number; y: number; nom: string; valeur: string; rect: Rect } | null = null;
+    let nomGhost: { x: number; y: number; nom: string; valeur: string; rect: Rect; deux: boolean } | null = null;
     if (fantome && connu && nomFantome && fantome.soldeFinCents != null) {
-      const yg = y(fantome.soldeFinCents), valeur = montant(fantome.soldeFinCents), w = lt(`${nomFantome} `, 13, false, 600) + lt(valeur, 13, true) + 4;
-      const essais = (yg < y(xFinal) ? [yg - 11, yg + 20] : [yg + 20, yg - 11]).map(by => ({ by, rect: { x: xFin - w, y: by - 12, w, h: 16 } }));
-      const choix = essais.find(c => c.rect.y >= 0 && c.rect.y + c.rect.h <= haut && !seCoupent(c.rect, rectFin)) ?? essais[0];
-      nomGhost = { x: xFin, y: choix.by, nom: nomFantome, valeur, rect: choix.rect };
+      // CT4-A-8 : le nom entier (« sans Fermenteur supplémentaire ») ne se coupe plus par « … » et ne se pose ni sur le pointillé ni sur la courbe : on cherche, au plus près du bout
+      // du pointillé, une place libre (une ligne d'abord, puis nom et valeur sur deux lignes), calée à droite puis décalée vers la gauche.
+      const yg = y(fantome.soldeFinCents), valeur = montant(fantome.soldeFinCents), wVal = lt(valeur, 13, true);
+      const gObstacles: Rect[] = [...fixes, ...obstaclesDeCourbe(points), ...obstaclesDeCourbe(pointsFantome)];
+      // le nom entier d'abord ; faute de place près du pointillé, « sans ce projet » (le nom entier est sur les cartes Avec / Sans au-dessus) ; faute de mieux, le nom entier plus loin.
+      const courts = `${nomFantome.split(' ')[0]} ce projet`;
+      const variante = (nom: string, deux: boolean, maxDy: number) => { const wNom = lt(`${nom} `, 13, false, 600); return { nom, deux, maxDy, w: (deux ? Math.max(wNom, wVal) : wNom + wVal) + 4, h: deux ? 32 : 16 }; };
+      const tiers = [[variante(nomFantome, false, 45), variante(nomFantome, true, 45)], [variante(courts, false, 45), variante(courts, true, 45)], [variante(nomFantome, false, 110), variante(nomFantome, true, 110)], [variante(courts, false, 110), variante(courts, true, 110)]];
+      type Choix = { cout: number; v: ReturnType<typeof variante>; rect: Rect };
+      let trouve: Choix | null = null;
+      for (const groupe of tiers) {
+        let meilleur: Choix | null = null;
+        groupe.forEach((v, vi) => { for (let dy = -v.maxDy; dy <= v.maxDy; dy += 6) for (const dx of [0, 20, 40, 60, 80, 100]) {
+          const rect: Rect = { x: xFin - v.w - dx, y: yg + dy - v.h / 2, w: v.w, h: v.h };
+          if (rect.y < 0 || rect.y + rect.h > haut || rect.x < G + 2) continue;
+          if (gObstacles.some(o => seCoupent(rect, { x: o.x - 2, y: o.y - 2, w: o.w + 4, h: o.h + 4 }))) continue;
+          const cout = Math.abs(dy) + dx * 0.6 + vi * 30;
+          if (!meilleur || cout < meilleur.cout) meilleur = { cout, v, rect };
+        } });
+        if (meilleur) { trouve = meilleur; break; }
+      }
+      const repli = tiers[2][1], rect: Rect = trouve?.rect ?? { x: xFin - repli.w, y: Math.min(Math.max(yg + 6, 0), haut - repli.h), w: repli.w, h: repli.h }, v = trouve?.v ?? repli;
+      nomGhost = { x: rect.x + rect.w, y: rect.y + 12, nom: v.nom, valeur, rect, deux: v.deux };
     }
     if (nomGhost) fixes.push(nomGhost.rect);
     const soldesGardes = soldes.filter(s => !fixes.some(f => seCoupent(s.rect, f)));
-    const obstacles: Rect[] = [...fixes, ...obstaclesDeCourbe(points), ...soldesGardes.map(s => s.rect)];
+    const obstacles: Rect[] = [...fixes, ...obstaclesDeCourbe(points), ...obstaclesDeCourbe(pointsFantome), ...soldesGardes.map(s => s.rect)];
     const { placees, reste } = placerEtiquettes(demandes, { w: W, h: HT }, obstacles, { distanceMax: 230, xMin: G, xMax: W - D });
     return { W, g, y, x, xFin, haut, chemin, mois, placees, reste, infos, y0: y(0), connu, depart, libFin, wAuj, xFinal, bas, dessous, soldes: soldesGardes, nomGhost };
   }, [e, fantome, nomFantome, largeur, testeId, sousLignes, HT, lt]);
@@ -180,7 +211,8 @@ export function EscalierSvg({ e, fantome, nomFantome, largeur, testeId, sousLign
     <line className="prv-ici" x1={G} x2={G} y1={H} y2={y(depart)} />
     <text className="prv-et" x={G + 4} y={H - 3}>aujourd’hui{connu && <> <tspan className="prv-mt">{montant(depart)}</tspan></>}</text>
     {soldes.map(s => <text key={`${s.x}`} className={`prv-solde${s.neg ? ' prv-rt' : ''}`} x={s.x} y={s.y}>{s.texte}</text>)}
-    {nomGhost && <text className="prv-nom-ghost" x={nomGhost.x} y={nomGhost.y} textAnchor="end">{nomGhost.nom} <tspan className="prv-mt">{nomGhost.valeur}</tspan></text>}
+    {nomGhost && !nomGhost.deux && <text className="prv-nom-ghost" x={nomGhost.x} y={nomGhost.y} textAnchor="end">{nomGhost.nom} <tspan className="prv-mt">{nomGhost.valeur}</tspan></text>}
+    {nomGhost && nomGhost.deux && <><text className="prv-nom-ghost" x={nomGhost.x} y={nomGhost.y} textAnchor="end">{nomGhost.nom}</text><text className="prv-nom-ghost prv-mt" x={nomGhost.x} y={nomGhost.y + 16} textAnchor="end">{nomGhost.valeur}</text></>}
     {placees.map(p => {
       const info = infos.get(p.id)!, a = pointDAccroche(p.rect, p.ancre), hit = Math.max(0, (32 - p.rect.h) / 2);
       const ouvrir = () => (info.lot && onLot ? onLot(info.lot) : onEtiquette(info.item));

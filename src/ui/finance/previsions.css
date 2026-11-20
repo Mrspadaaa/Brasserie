@@ -97,10 +97,12 @@
 .prv-pastille.prv-facture { background:var(--prv-alerte); border-color:var(--prv-alerte); } .prv-pastille.prv-prevu { border-color:var(--prv-fin); } .prv-pastille.prv-brassin { background:var(--prv-brassin); border-color:var(--prv-brassin); } .prv-pastille.prv-projet { background:var(--prv-projet); border-color:var(--prv-projet); } .prv-pastille.prv-entree { background:var(--prv-entree); border-color:var(--prv-entree); }
 .prv-nom { flex:1; min-width:0; } .prv-nom small { display:block; color:var(--prv-t2); font-size:12px; }
 .prv-apres { font-size:12px; color:var(--prv-t2); font-family:ui-monospace,monospace; } .prv-apres.prv-rt { color:var(--prv-alerte); }
-.prv-lim { font-size:13px; } .prv-lim ul { margin:4px 0 0; padding-left:16px; } .prv-plan { display:flex; align-items:center; gap:8px; width:100%; min-height:36px; text-align:left; } .prv-plan span { flex:1; } .prv-plan small { display:block; color:var(--prv-t2); }
+.prv-lim { font-size:13px; } .prv-lim-t { display:flex; align-items:center; gap:4px; min-height:32px; padding:0; text-align:left; font:inherit; color:inherit; background:none; border:0; cursor:pointer; } .prv-lim ul { margin:4px 0 0; padding-left:16px; } .prv-plan { display:flex; align-items:center; gap:8px; width:100%; min-height:36px; text-align:left; } .prv-plan span { flex:1; } .prv-plan small { display:block; color:var(--prv-t2); }
 .prv-sans { margin:0; padding-left:16px; font-size:13px; } .prv h4, .prv-fiche h4 { font-size:13px; font-weight:600; margin:6px 0 2px; }
 @media (min-width:640px) { .prv { max-width:560px; margin:0 auto; width:100%; } }
 /* t3, bloquant 2 : à 390, « Sans fermenteur supplémentaire » (nom long) ne se coupe plus ; le nom passe à la ligne, le montant reste entier à droite. */
 .prv-sw button { white-space:normal; padding-top:6px; padding-bottom:6px; align-items:center; }
-.prv-sw button > span { min-width:0; overflow-wrap:anywhere; }
+.prv-sw button > span { min-width:0; overflow-wrap:break-word; }
 .prv-sw button > b { flex:none; white-space:nowrap; }
+/* CT4-A-7 : à 390 la carte fait 180 px dont 75 pour le montant ; le nom d'un projet (« Fermenteur supplémentaire ») se coupait au milieu du mot, un mot par ligne. Étroit, le montant passe SOUS le nom : le nom a la largeur de la carte, un mot ne se coupe plus. */
+@media (max-width:480px) { .prv-sw button { flex-direction:column; align-items:stretch; justify-content:center; gap:2px; } .prv-sw button > b { align-self:flex-start; } }

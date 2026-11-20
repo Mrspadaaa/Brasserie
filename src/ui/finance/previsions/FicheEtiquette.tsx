@@ -35,6 +35,7 @@ export function FicheProjet({ plan, mesure, titreFin, prix, onPrix, onClose, onO
   const [deplace, setDeplace] = useState(false), [mois, setMois] = useState(plan.date.slice(0, 7));
   /* v1 (21) : « Supprimer » demande d'abord (même brique que la feuille de la prévision et celle du projet) ; un refus du service s'écrit dans la question. */
   const [demande, setDemande] = useState(false), [refus, setRefus] = useState('');
+  const [limites, setLimites] = useState(false);
   const supprimer = () => { try { supprimerPlan(plan.id); onClose(); } catch (e) { setRefus(e instanceof Error ? e.message : 'Suppression impossible.'); } };
   const prixC = centimesDeSaisie(prix);
   const duree = detail.usefulLifeYears;
@@ -62,7 +63,10 @@ export function FicheProjet({ plan, mesure, titreFin, prix, onPrix, onClose, onO
         {mesure.bouteillesPourPayer != null && <small>Pour payer le matériel (sur la marge) : {mesure.bouteillesPourPayer} bouteilles</small>}
       </div>
     </div>
-    {mesure.avertissements.length > 0 && <div className="prv-lim"><b>Limites ({mesure.avertissements.length})</b><ul>{mesure.avertissements.map(a => <li key={a}>{a}</li>)}</ul></div>}
+    {mesure.avertissements.length > 0 && <div className="prv-lim">
+      {/* CT4-A-11 : une quinzaine de lignes de limites au premier plan « pour rien » ; repliées, à un toucher. Les phrases restent entières. */}
+      <button type="button" className="prv-lim-t" aria-expanded={limites} onClick={() => setLimites(o => !o)}><b>Limites ({mesure.avertissements.length})</b><ChevronRight size={14} aria-hidden="true" style={limites ? { transform: 'rotate(90deg)' } : undefined} /></button>
+      {limites && <ul>{mesure.avertissements.map(a => <li key={a}>{a}</li>)}</ul>}</div>}
     {deplace && <div className="prv-row"><label>Payer en <input type="month" value={mois} onChange={e => setMois(e.target.value)} /></label>
       <button type="button" className="prv-prim" disabled={occupe || !/^\d{4}-\d{2}$/.test(mois)} onClick={() => void ecrire({ ...plan, date: `${mois}-01`, upgrade: { ...detail, datePrecision: 'month' } }, () => setDeplace(false))}>Valider</button></div>}
     {etat && <p className={`prv-etat prv-${etat.kind}`} role="status">{etat.texte}</p>}
