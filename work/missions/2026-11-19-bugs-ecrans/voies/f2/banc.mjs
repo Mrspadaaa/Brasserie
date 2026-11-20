@@ -33,6 +33,19 @@ for (const mode of MODES) {
     // Une opération visible sans défiler : sa ligne commence au-dessus du bas de l'écran.
     const visible = m.ligneHaut !== null && m.ligneHaut < m.h - 24;
     if (mode.id === '844x340' && !visible) ko++;
+    // k3 n° 13 : au repos, le + flottant ne couvre ni un montant ni un bouton de la colonne de droite (« +720,00 », « + pièce »). On mesure la borne droite du texte et des boutons de la liste contre le bord gauche du +.
+    if (mode.id === '844x340') {
+      const fab = await page.evaluate(() => {
+        const b = document.querySelector('button[aria-label="Actions rapides"]'); const r = b?.getBoundingClientRect();
+        const liste = [...document.querySelectorAll('.ops > :not(.ops-bande) *')].filter((e) => e.offsetParent && !e.children.length && e.textContent.trim());
+        const droite = Math.max(0, ...liste.map((e) => Math.round(e.getBoundingClientRect().right)));
+        const boutons = [...document.querySelectorAll('.ops > :not(.ops-bande) button')].filter((e) => e.offsetParent).map((e) => Math.round(e.getBoundingClientRect().right));
+        return { fabGauche: r ? Math.round(r.left) : null, droiteListe: droite, droiteBoutons: Math.max(0, ...boutons) };
+      });
+      const libre = fab.fabGauche !== null && fab.droiteListe <= fab.fabGauche && fab.droiteBoutons <= fab.fabGauche;
+      if (!libre) ko++;
+      sortie.push(`${mode.id} ${theme} : + à x=${fab.fabGauche} ; liste jusqu'à x=${fab.droiteListe}, boutons jusqu'à x=${fab.droiteBoutons} -> le + ne couvre rien : ${libre}`);
+    }
     sortie.push(`${mode.id} ${theme} : ${JSON.stringify(m)} -> opération visible sans défiler : ${visible}`);
     await page.screenshot({ path: path.join(SORTIE, `operations-${mode.id}-${theme}-${SUFFIXE}.png`) });
     if (journal.erreurs.length) sortie.push(`  erreurs : ${journal.erreurs.slice(0, 2).join(' | ')}`);

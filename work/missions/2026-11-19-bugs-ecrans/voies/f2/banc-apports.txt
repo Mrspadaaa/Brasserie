@@ -1,0 +1,15 @@
+Serveur 1/1 : npm run dev -- --port 3106 --strictPort  (journal : C:\Users\mrspa\AppData\Local\Temp\with-server-OuJbZa\serveur-1-3106.log)
+Attente du port 3106…
+Serveur prêt sur le port 3106
+
+Tous les serveurs sont prêts. Lancement : node work/missions/2026-11-19-bugs-ecrans/voies/f2/banc-apports.mjs
+
+390 clair : {"barre":"Apports +8290,00 dans le graphe","section":["Apports et prélèvements+8 290,00ZZ TEST apport 1Paiement à confirmersans pièceÀ "],"total":2} -> +8 290,00 lu : true
+390 cave : {"barre":"Apports +8290,00 dans le graphe","section":["Apports et prélèvements+8 290,00ZZ TEST apport 1Paiement à confirmersans pièceÀ "],"total":2} -> +8 290,00 lu : true
+1280 clair : {"barre":"Apports +8290,00 dans le graphe","section":["Apports et prélèvements+8 290,00ZZ TEST apport 1Paiement à confirmersans pièceÀ "],"total":2} -> +8 290,00 lu : true
+1280 cave : {"barre":"Apports +8290,00 dans le graphe","section":["Apports et prélèvements+8 290,00ZZ TEST apport 1Paiement à confirmersans pièceÀ "],"total":2} -> +8 290,00 lu : true
+APPORTS OK
+
+Commande terminée, code 0.
+
+Arrêt de 1 serveur(s)…

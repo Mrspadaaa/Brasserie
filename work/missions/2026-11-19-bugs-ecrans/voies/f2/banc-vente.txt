@@ -1,17 +1,27 @@
-Serveur 1/1 : npm run dev -- --port 3106 --strictPort  (journal : C:\Users\mrspa\AppData\Local\Temp\with-server-bxV41D\serveur-1-3106.log)
+Serveur 1/1 : npm run dev -- --port 3106 --strictPort  (journal : C:\Users\mrspa\AppData\Local\Temp\with-server-IAdnr5\serveur-1-3106.log)
 Attente du port 3106…
 Serveur prêt sur le port 3106
 
 Tous les serveurs sont prêts. Lancement : node work/missions/2026-11-19-bugs-ecrans/voies/f2/banc-vente.mjs
 
+390 clair champ après frappe : « 569,50 »
+390 clair libre : {"h":844,"barre":[771,832],"scroll":null,"chaine":["cs-right[684,1232] ov=visible pb=0px","cs-app[100,1244] ov=visible pb=12px","cs[100,1244] ov=visible pb=0px","flex-1 min-h-0 overflow-y-auto[88,844] ov=auto pb=12px","w-full sm:max-w-lg lg:max-w-[m[51,844] ov=hidden pb=0px","fixed inset-0 z-50 flex justif[0,844] ov=visible pb=0px","min-h-screen bg-cave-950 text-[0,844] ov=visible pb=0px","min-h-full flex flex-col[0,844] ov=visible pb=0px"]}
+390 clair mesures : {"encaisserDisabled":true,"libelle":"Encaisser 569,50 CHF","couleur":"rgb(255, 255, 255) sur rgb(17, 17, 17) opacité 0.4","barre":{"haut":554,"bas":615},"ticket":{"haut":295,"bas":542},"h":844,"scrollBas":844}
+390 cave champ après frappe : « 569,50 »
+390 cave libre : {"h":844,"barre":[771,832],"scroll":null,"chaine":["cs-right[684,1232] ov=visible pb=0px","cs-app[100,1244] ov=visible pb=12px","cs[100,1244] ov=visible pb=0px","flex-1 min-h-0 overflow-y-auto[88,844] ov=auto pb=12px","w-full sm:max-w-lg lg:max-w-[m[51,844] ov=hidden pb=0px","fixed inset-0 z-50 flex justif[0,844] ov=visible pb=0px","min-h-screen bg-cave-950 text-[0,844] ov=visible pb=0px","min-h-full flex flex-col[0,844] ov=visible pb=0px"]}
+390 cave mesures : {"encaisserDisabled":true,"libelle":"Encaisser 569,50 CHF","couleur":"rgb(18, 16, 14) sur rgb(245, 240, 234) opacité 0.4","barre":{"haut":554,"bas":615},"ticket":{"haut":295,"bas":542},"h":844,"scrollBas":844}
 1280 clair champ après frappe : « 569,50 »
+1280 clair libre : {"h":800,"barre":[340,401],"scroll":null,"chaine":["cs-right[133,691] ov=visible pb=0px","cs-app[133,703] ov=visible pb=12px","cs[133,703] ov=visible pb=0px","flex-1 min-h-0 overflow-y-auto[121,715] ov=auto pb=12px","w-full sm:max-w-lg lg:max-w-[m[84,716] ov=hidden pb=0px","fixed inset-0 z-50 flex justif[0,800] ov=visible pb=16px","min-h-screen bg-cave-950 text-[0,800] ov=visible pb=0px","min-h-full flex flex-col[0,800] ov=visible pb=0px"]}
+1280 clair mesures : {"encaisserDisabled":true,"libelle":"Encaisser 569,50 CHF","couleur":"rgb(255, 255, 255) sur rgb(17, 17, 17) opacité 0.4","barre":{"haut":363,"bas":424},"ticket":{"haut":120,"bas":351},"h":800,"scrollBas":738}
 1280 cave champ après frappe : « 569,50 »
-390 clair : fab/vendre=true ; tuile=75 cl, tarif à corriger, prix à indiquer ; alerte libre=null ; ticket=null
-390 cave : fab/vendre=true ; tuile=75 cl, tarif à corriger, prix à indiquer ; alerte libre=null ; ticket=null
+1280 cave libre : {"h":800,"barre":[340,401],"scroll":null,"chaine":["cs-right[133,691] ov=visible pb=0px","cs-app[133,703] ov=visible pb=12px","cs[133,703] ov=visible pb=0px","flex-1 min-h-0 overflow-y-auto[121,715] ov=auto pb=12px","w-full sm:max-w-lg lg:max-w-[m[84,716] ov=hidden pb=0px","fixed inset-0 z-50 flex justif[0,800] ov=visible pb=16px","min-h-screen bg-cave-950 text-[0,800] ov=visible pb=0px","min-h-full flex flex-col[0,800] ov=visible pb=0px"]}
+1280 cave mesures : {"encaisserDisabled":true,"libelle":"Encaisser 569,50 CHF","couleur":"rgb(18, 16, 14) sur rgb(245, 240, 234) opacité 0.4","barre":{"haut":363,"bas":424},"ticket":{"haut":120,"bas":351},"h":800,"scrollBas":738}
+390 clair : fab/vendre=true ; tuile=75 cl, tarif à corriger, prix à indiquer ; alerte libre=569,50 CHF l’unité, soit 759,33 CHF le litre : hors de l’ordinaire. Vérifie le prix. ; ticket=à vérifier : 569,50 CHF l’unité, soit 759,33 CHF le litre : hors de l’ordinaire. Vérifie le prix.
+390 cave : fab/vendre=true ; tuile=75 cl, tarif à corriger, prix à indiquer ; alerte libre=569,50 CHF l’unité, soit 759,33 CHF le litre : hors de l’ordinaire. Vérifie le prix. ; ticket=à vérifier : 569,50 CHF l’unité, soit 759,33 CHF le litre : hors de l’ordinaire. Vérifie le prix.
 1280 clair : fab/vendre=true ; tuile=75 cl, tarif à corriger, prix à indiquer ; alerte libre=569,50 CHF l’unité, soit 759,33 CHF le litre : hors de l’ordinaire. Vérifie le prix. ; ticket=à vérifier : 569,50 CHF l’unité, soit 759,33 CHF le litre : hors de l’ordinaire. Vérifie le prix.
 1280 cave : fab/vendre=true ; tuile=75 cl, tarif à corriger, prix à indiquer ; alerte libre=569,50 CHF l’unité, soit 759,33 CHF le litre : hors de l’ordinaire. Vérifie le prix. ; ticket=à vérifier : 569,50 CHF l’unité, soit 759,33 CHF le litre : hors de l’ordinaire. Vérifie le prix.
-VENTE KO (2)
+VENTE OK
 
-Commande terminée, code 1.
+Commande terminée, code 0.
 
 Arrêt de 1 serveur(s)…
