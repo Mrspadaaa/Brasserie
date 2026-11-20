@@ -1,7 +1,7 @@
-import React, { useEffect, useId, useMemo } from 'react';
+import React, { useEffect, useId, useMemo, useState } from 'react';
 import type { ForecastItem } from '../../../domain/finance/forecast';
 import { graduations, groupesRecurrents, joursEntre, motEtiquette, type Escalier as EscalierDonnees, type GroupeRecurrent } from './escalier';
-import { largeurTexte, obstaclesDeCourbe, placerEtiquettes, pointDAccroche, type Demande, type Rect } from './placement';
+import { mesurerTexte, obstaclesDeCourbe, oublierMesures, placerEtiquettes, pointDAccroche, type Demande, type Mesure, type Rect } from './placement';
 import { jourCourt, montant, montantCourt, montantEntier, montantSigne, moisCourt } from './format';
 
 /** Style d'une étiquette, par source (D8) : seule la facture est neutre pleine ; plan, récurrent, tendance, projet non testé = pointillé bleu « Prévu ». */
@@ -52,10 +52,23 @@ export const sortiesDuLot = (items: ForecastItem[], testeId: string | null | und
 interface Props { e: EscalierDonnees; fantome?: EscalierDonnees | null; nomFantome?: string; largeur: number; testeId?: string | null; sousLignes?: Record<string, string>; asOf: string;
   onEtiquette: (item: ForecastItem) => void; onRestes: (ids: string[]) => void;
   /** Toucher l'étiquette d'un lot de sorties du même jour : la liste des sorties (chaque sortie y a sa ligne). Sans lui : la première sortie du lot. */
-  onLot?: (items: ForecastItem[]) => void }
+  onLot?: (items: ForecastItem[]) => void;
+  /** Mesure de texte du placement (largeur en px) ; par défaut, celle du navigateur. Les tests en passent une plus large pour jouer une autre police. */
+  mesure?: Mesure }
 
-export function EscalierSvg({ e, fantome, nomFantome, largeur, testeId, sousLignes = {}, asOf, onEtiquette, onRestes, onLot }: Props) {
+export function EscalierSvg({ e, fantome, nomFantome, largeur, testeId, sousLignes = {}, asOf, onEtiquette, onRestes, onLot, mesure }: Props) {
   const uid = useId().replace(/:/g, '');
+  // Largeur des textes : mesurée par le navigateur avec la police de l'app (T3B-10) ; une police web qui arrive après coup relance le placement.
+  const [policeVue, setPoliceVue] = useState(0);
+  useEffect(() => {
+    const f = typeof document !== 'undefined' ? document.fonts : undefined;
+    if (!f || f.status === 'loaded') return;
+    let vivant = true;
+    f.ready.then(() => { if (vivant) { oublierMesures(); setPoliceVue(v => v + 1); } }).catch(() => {});
+    return () => { vivant = false; };
+  }, []);
+  const pileSans = (typeof document !== 'undefined' && getComputedStyle(document.body).fontFamily) || 'sans-serif';
+  const lt: Mesure = useMemo(() => mesure ?? ((t, c, m, g) => mesurerTexte(t, c, m, g, pileSans)), [mesure, pileSans, policeVue]); // eslint-disable-line react-hooks/exhaustive-deps
   const HT = hauteurEscalier(Math.max(e.marches.length, fantome?.marches.length ?? 0));
   const vue = useMemo(() => {
     const W = Math.max(280, Math.round(largeur)), connu = e.departCents !== null;
@@ -90,7 +103,7 @@ export function EscalierSvg({ e, fantome, nomFantome, largeur, testeId, sousLign
     const soldes: Array<{ x: number; y: number; texte: string; neg: boolean; rect: Rect }> = [];
     if (connu) e.marches.forEach((m, k) => {
       if (k === e.marches.length - 1) return;
-      const x0 = x(m.date), longueur = x(e.marches[k + 1].date) - x0, texte = montant(m.soldeApresCents!), w = largeurTexte(texte, 12, true);
+      const x0 = x(m.date), longueur = x(e.marches[k + 1].date) - x0, texte = montant(m.soldeApresCents!), w = lt(texte, 12, true, 600);
       if (longueur < Math.max(70, w + 14)) return;
       const yy = y(m.soldeApresCents!) - 5;
       soldes.push({ x: x0 + 6, y: yy, texte, neg: m.soldeApresCents! < 0, rect: { x: x0 + 6, y: yy - 11, w, h: 14 } });
@@ -105,7 +118,7 @@ export function EscalierSvg({ e, fantome, nomFantome, largeur, testeId, sousLign
       if (lot.length) {
         const styles = [...new Set(lot.map(i => styleDe(i, testeId)))], style: StyleEtiquette = styles.length === 1 ? styles[0] : lot.some(i => styleDe(i, testeId) === 'brassin') ? 'brassin' : 'prevu';
         const l1 = texteLot(lot), id = `lot:${m.date}`, total = lot.reduce((s, i) => s + i.amountCents, 0);
-        demandes.push({ id, priorite: style === 'brassin' ? 80 : 10, poids: Math.min(99, Math.round(total / 1000)), ordre: ordre++, w: largeurTexte(l1, 13) + 16, h: 20, ancre: { x: x(m.date), y: (y(avant) + y(apres)) / 2 } });
+        demandes.push({ id, priorite: style === 'brassin' ? 80 : 10, poids: Math.min(99, Math.round(total / 1000)), ordre: ordre++, w: lt(l1, 13, false, 600) + 16, h: 20, ancre: { x: x(m.date), y: (y(avant) + y(apres)) / 2 } });
         infos.set(id, { item: lot[0], style, l1, lot, partiel: lot.some(i => i.partial?.length), aria: `${lot.length} sorties le ${jourCourt(m.date)} : ${lot.map(i => `${nomLong(i)} ${i.partial?.length ? 'au moins ' : ''}${montant(-i.amountCents)}`).join(', ')}` });
       }
       for (const item of m.items) {
@@ -113,7 +126,7 @@ export function EscalierSvg({ e, fantome, nomFantome, largeur, testeId, sousLign
         const groupe = groupes.get(item.id);
         if (groupe && groupe.premierId !== item.id) continue; // une seule étiquette pour une récurrence regroupée
         const style = styleDe(item, testeId), l1 = texteEtiquette(item, groupe), l2 = style === 'projet' ? sousLignes[item.id] : undefined;
-        const w = Math.max(largeurTexte(l1, style === 'projet' ? 15 : 13), l2 ? largeurTexte(l2, 12) : 0) + 16, h = l2 ? 38 : 20;
+        const w = Math.max(lt(l1, style === 'projet' ? 15 : 13, false, style === 'projet' ? 700 : 600), l2 ? lt(l2, 12) : 0) + 16, h = l2 ? 38 : 20;
         const poids = Math.min(99, Math.round(item.amountCents / 1000));
         demandes.push({ id: item.id, priorite: style === 'projet' ? 100 : style === 'brassin' ? 80 : style === 'entree' ? 60 : 10, poids, ordre: ordre++, w, h, ancre: { x: x(m.date), y: (y(avant) + y(apres)) / 2 } });
         infos.set(item.id, { item, style, l1, l2, partiel: !!item.partial?.length, aria: `${libelleLong(item)}${groupe ? ` ; ${groupe.n} fois` : ''}${item.partial?.length ? ` ; partiel : ${item.partial.join(', ')}` : ''}${l2 ? ` ; ${l2}` : ''}` });
@@ -122,7 +135,7 @@ export function EscalierSvg({ e, fantome, nomFantome, largeur, testeId, sousLign
     }
     const xFinal = e.marches.length ? val(e.marches[e.marches.length - 1]) : depart;
     const libFin = connu ? montant(e.soldeFinCents!) : `${montantSigne(e.ecartFinCents)} depuis aujourd’hui`;
-    const wAuj = largeurTexte(connu ? `aujourd’hui ${montant(depart)}` : 'aujourd’hui', 13) + 10, wFin = largeurTexte(libFin, 16, true) + 8;
+    const wAuj = lt('aujourd’hui', 13) + (connu ? lt(` ${montant(depart)}`, 13, true, 600) : 0) + 10, wFin = lt(libFin, 16, true, 700) + 8;
     // le solde final se pose sous le point quand il y a la place avant les noms de mois, sinon au-dessus (jamais sur « févr. »)
     const dessous = xFinal < 0 && y(xFinal) + 28 < haut;
     const rectFin: Rect = { x: xFin - wFin, y: y(xFinal) + (dessous ? 4 : -26), w: wFin, h: 24 };
@@ -130,7 +143,7 @@ export function EscalierSvg({ e, fantome, nomFantome, largeur, testeId, sousLign
     // le nom du pointillé, posé au bout de la ligne (p5b : « sans frigo 2 107,34 »), du côté où il n'écrase pas le solde final
     let nomGhost: { x: number; y: number; nom: string; valeur: string; rect: Rect } | null = null;
     if (fantome && connu && nomFantome && fantome.soldeFinCents != null) {
-      const yg = y(fantome.soldeFinCents), valeur = montant(fantome.soldeFinCents), w = largeurTexte(`${nomFantome} ${valeur}`, 13) + 4;
+      const yg = y(fantome.soldeFinCents), valeur = montant(fantome.soldeFinCents), w = lt(`${nomFantome} `, 13, false, 600) + lt(valeur, 13, true) + 4;
       const essais = (yg < y(xFinal) ? [yg - 11, yg + 20] : [yg + 20, yg - 11]).map(by => ({ by, rect: { x: xFin - w, y: by - 12, w, h: 16 } }));
       const choix = essais.find(c => c.rect.y >= 0 && c.rect.y + c.rect.h <= haut && !seCoupent(c.rect, rectFin)) ?? essais[0];
       nomGhost = { x: xFin, y: choix.by, nom: nomFantome, valeur, rect: choix.rect };
@@ -140,7 +153,7 @@ export function EscalierSvg({ e, fantome, nomFantome, largeur, testeId, sousLign
     const obstacles: Rect[] = [...fixes, ...obstaclesDeCourbe(points), ...soldesGardes.map(s => s.rect)];
     const { placees, reste } = placerEtiquettes(demandes, { w: W, h: HT }, obstacles, { distanceMax: 230, xMin: G, xMax: W - D });
     return { W, g, y, x, xFin, haut, chemin, mois, placees, reste, infos, y0: y(0), connu, depart, libFin, wAuj, xFinal, bas, dessous, soldes: soldesGardes, nomGhost };
-  }, [e, fantome, nomFantome, largeur, testeId, sousLignes, HT]);
+  }, [e, fantome, nomFantome, largeur, testeId, sousLignes, HT, lt]);
   const { W, g, y, xFin, haut, chemin, mois, placees, reste, infos, y0, connu, depart, libFin, xFinal, dessous, soldes, nomGhost } = vue;
   const restesCle = reste.join('|');
   useEffect(() => { onRestes(restesCle ? restesCle.split('|') : []); }, [restesCle]); // eslint-disable-line react-hooks/exhaustive-deps

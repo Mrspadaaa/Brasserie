@@ -17,8 +17,34 @@ export interface OptionsPlacement {
   /** Distance maximale (|dx| + 1,4 |dy| entre le centre de l'étiquette et son ancre) ; au-delà : « + N ». Aucune limite par défaut. */ distanceMax?: number;
   /** Bornes du tracé (hors graduations et marges) : une étiquette qui les dépasse est calée contre elles avant d'être abandonnée. Par défaut : le cadre. */ xMin?: number; xMax?: number }
 
-/** Largeur estimée d'un texte : corps × coefficient par caractère (sans : 0,56 ; mono : 0,6). La même mesure en test et dans l'app : déterministe. */
+/** Largeur estimée d'un texte : corps × coefficient par caractère (sans : 0,56 ; mono : 0,6). Déterministe : repli quand le navigateur ne mesure pas (tests, jsdom). */
 export const largeurTexte = (texte: string, corps: number, mono = false) => Math.ceil([...texte].length * corps * (mono ? 0.6 : 0.56));
+
+/** Une mesure de texte : (texte, corps en px, mono, graisse) → largeur en px. L'escalier en prend une ; les tests en passent une plus large pour jouer une autre police. */
+export type Mesure = (texte: string, corps: number, mono?: boolean, graisse?: number) => number;
+
+const PILE_MONO = 'ui-monospace, "IBM Plex Mono", monospace';
+const cacheMesure = new Map<string, number>();
+let toile: { font: string; measureText: (t: string) => { width: number } } | null | undefined;
+
+/**
+ * La largeur RÉELLE d'un texte, mesurée par le navigateur (canvas `measureText`, la méthode standard de tout étiqueteur de carte : d3-labeler, Mapbox),
+ * avec la police et la graisse que le graphique dessine. T3B-10 (test en ligne du 20.11) : l'estimation « corps × 0,56 » ignorait la police du téléphone et la
+ * graisse ; une bulle posée « à la place libre » recouvrait alors le solde final. Sans canvas (jsdom, rendu serveur) : l'estimation `largeurTexte`.
+ * `pileSans` : la police de l'application (lue sur l'élément qui porte le graphique).
+ */
+export function mesurerTexte(texte: string, corps: number, mono = false, graisse = 400, pileSans = 'sans-serif'): number {
+  if (toile === undefined) {
+    try { toile = typeof OffscreenCanvas !== 'undefined' ? (new OffscreenCanvas(1, 1).getContext('2d') as unknown as NonNullable<typeof toile>) : null; } catch { toile = null; }
+  }
+  if (!toile) return largeurTexte(texte, corps, mono);
+  const font = `${graisse} ${corps}px ${mono ? PILE_MONO : pileSans}`, cle = `${font}|${texte}`;
+  let w = cacheMesure.get(cle);
+  if (w === undefined) { toile.font = font; w = Math.ceil(toile.measureText(texte).width) + 1; if (cacheMesure.size > 800) cacheMesure.clear(); cacheMesure.set(cle, w); }
+  return w;
+}
+/** Vide la mémoire des mesures : à appeler quand une police vient d'être chargée. */
+export const oublierMesures = () => cacheMesure.clear();
 
 const ECART = 2;
 export const seRecouvrent = (a: Rect, b: Rect, marge = ECART) => a.x < b.x + b.w + marge && b.x < a.x + a.w + marge && a.y < b.y + b.h + marge && b.y < a.y + a.h + marge;
