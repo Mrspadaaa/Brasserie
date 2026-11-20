@@ -1,0 +1,44 @@
+{
+ "clair": {
+  "hauteur": 8643,
+  "total": 8643,
+  "tranches": 8,
+  "boutons": [
+   "Ajouter l’étude Cascade documentée",
+   "Ajouter les fiches Hopsteiner manquantes",
+   "Ajouter la base communautaire",
+   "Ajouter la liste de variétés libre",
+   "Ajouter les fiches Beer Maverick",
+   "Ajouter les analyses de lots publiées",
+   "Ajouter les notes de recherche",
+   "Ajouter les levures documentées",
+   "Ajouter les guides de fermentation",
+   "Lire la synthèse de recherche sur la fermentation",
+   "Reproduire le point de validation publié",
+   "Ajouter les styles étendus et NOLO",
+   "Ajouter le modèle d’essai",
+   "Ajouter les programmes et notes techniques"
+  ]
+ },
+ "cave": {
+  "hauteur": 8643,
+  "total": 8643,
+  "tranches": 8,
+  "boutons": [
+   "Ajouter l’étude Cascade documentée",
+   "Ajouter les fiches Hopsteiner manquantes",
+   "Ajouter la base communautaire",
+   "Ajouter la liste de variétés libre",
+   "Ajouter les fiches Beer Maverick",
+   "Ajouter les analyses de lots publiées",
+   "Ajouter les notes de recherche",
+   "Ajouter les levures documentées",
+   "Ajouter les guides de fermentation",
+   "Lire la synthèse de recherche sur la fermentation",
+   "Reproduire le point de validation publié",
+   "Ajouter les styles étendus et NOLO",
+   "Ajouter le modèle d’essai",
+   "Ajouter les programmes et notes techniques"
+  ]
+ }
+}

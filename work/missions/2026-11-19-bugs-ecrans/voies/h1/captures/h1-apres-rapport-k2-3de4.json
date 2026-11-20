@@ -1,0 +1,1237 @@
+{
+ "m390-clair": {
+  "fiche": "Nelson Sauvin\n\nRéférence documentaire et analyses des lots\n\nHopsteiner\nModifier la variété\n\nArômes : Fruité, Agrumes, Épicé.\n\nMots de la fiche : vin blanc, fruité, raisin, groseille à maquereau.\n\nTeneur en thiols : forte\n\nHopsteiner, 2025 — houblon brut\n\nLot à consulter\nSans lot\nAjouter un lot\nValeurs de la variété\nFiabilité faible\nAcides alpha\n12–14 % du houblon\nAcides bêta\n4,5–6 % du houblon\nHuiles totales\n1,1–1,5 mL/100 g\nLinalol\n0,4–0,7 % de l’huile\nFiche complète de Nelson Sauvin sur Beer Maverick\nComprendre les transformations\nThiols\nTerpènes\nEsters et lactones\nPhénols et polyphénols\nVoies des thiols\nThiols libres, précurseurs et acétates\nTempérature et souche : davantage de thiols ne garantit pas davantage de fruit\nLe malt contribue aussi au réservoir de précurseurs\nATF1 contribue à l’acétate de thiol sans tout expliquer",
+  "mesure": {
+   "dialogueLargeur": 390,
+   "modifierX": 382,
+   "aromesX": 8,
+   "lignes": [
+    {
+     "t": "Arômes : Fruité, Agrumes, Épicé.",
+     "px": "16px"
+    },
+    {
+     "t": "Mots de la fiche : vin blanc, fr",
+     "px": "16px"
+    },
+    {
+     "t": "Teneur en thiols : forte",
+     "px": "16px"
+    },
+    {
+     "t": "Elle concerne les thiols libres ",
+     "px": "14px"
+    },
+    {
+     "t": "Hopsteiner, 2025 — houblon brut",
+     "px": "14px"
+    },
+    {
+     "t": "Acides alpha",
+     "px": "16px"
+    },
+    {
+     "t": "12–14 % du houblon",
+     "px": "16px"
+    },
+    {
+     "t": "",
+     "px": "16px"
+    },
+    {
+     "t": "",
+     "px": "16px"
+    },
+    {
+     "t": "",
+     "px": "16px"
+    },
+    {
+     "t": "Forme du produit inconnue ou dif",
+     "px": "14px"
+    },
+    {
+     "t": "Base de mesure inconnue.",
+     "px": "14px"
+    },
+    {
+     "t": "Plage ou valeur de variété ; le ",
+     "px": "14px"
+    },
+    {
+     "t": "Valeur variétale, pas analyse du",
+     "px": "14px"
+    },
+    {
+     "t": "Hopsteiner — Fiche variétale Nel",
+     "px": "14px"
+    },
+    {
+     "t": "Consulter la source Mise à jour ",
+     "px": "14px"
+    },
+    {
+     "t": "Acides bêta",
+     "px": "16px"
+    },
+    {
+     "t": "4,5–6 % du houblon",
+     "px": "16px"
+    },
+    {
+     "t": "",
+     "px": "16px"
+    },
+    {
+     "t": "",
+     "px": "16px"
+    },
+    {
+     "t": "",
+     "px": "16px"
+    },
+    {
+     "t": "Forme du produit inconnue ou dif",
+     "px": "14px"
+    },
+    {
+     "t": "Base de mesure inconnue.",
+     "px": "14px"
+    },
+    {
+     "t": "Plage ou valeur de variété ; le ",
+     "px": "14px"
+    },
+    {
+     "t": "Valeur variétale, pas analyse du",
+     "px": "14px"
+    },
+    {
+     "t": "Hopsteiner — Fiche variétale Nel",
+     "px": "14px"
+    },
+    {
+     "t": "Consulter la source Mise à jour ",
+     "px": "14px"
+    },
+    {
+     "t": "Huiles totales",
+     "px": "16px"
+    },
+    {
+     "t": "1,1–1,5 mL/100 g",
+     "px": "16px"
+    },
+    {
+     "t": "",
+     "px": "16px"
+    },
+    {
+     "t": "",
+     "px": "16px"
+    },
+    {
+     "t": "",
+     "px": "16px"
+    },
+    {
+     "t": "Forme du produit inconnue ou dif",
+     "px": "14px"
+    },
+    {
+     "t": "Base de mesure inconnue.",
+     "px": "14px"
+    },
+    {
+     "t": "Plage ou valeur de variété ; le ",
+     "px": "14px"
+    },
+    {
+     "t": "Valeur variétale, pas analyse du",
+     "px": "14px"
+    },
+    {
+     "t": "Hopsteiner — Fiche variétale Nel",
+     "px": "14px"
+    },
+    {
+     "t": "Consulter la source Mise à jour ",
+     "px": "14px"
+    },
+    {
+     "t": "Linalol",
+     "px": "16px"
+    },
+    {
+     "t": "0,4–0,7 % de l’huile",
+     "px": "16px"
+    },
+    {
+     "t": "",
+     "px": "16px"
+    },
+    {
+     "t": "",
+     "px": "16px"
+    },
+    {
+     "t": "",
+     "px": "16px"
+    },
+    {
+     "t": "Forme du produit inconnue ou dif",
+     "px": "14px"
+    },
+    {
+     "t": "Plage ou valeur de variété ; le ",
+     "px": "14px"
+    },
+    {
+     "t": "Valeur variétale, pas analyse du",
+     "px": "14px"
+    },
+    {
+     "t": "Hopsteiner — Fiche variétale Nel",
+     "px": "14px"
+    },
+    {
+     "t": "Consulter la source Mise à jour ",
+     "px": "14px"
+    },
+    {
+     "t": "3SH et 3MH désignent le même alc",
+     "px": "14px"
+    },
+    {
+     "t": "Une voie identifiée ne fournit p",
+     "px": "12px"
+    },
+    {
+     "t": "Des essais Cascade sans dry-hop ",
+     "px": "14px"
+    },
+    {
+     "t": "Compte rendu expérimental de deu",
+     "px": "12px"
+    },
+    {
+     "t": "L’étude de malts identifie plusi",
+     "px": "14px"
+    },
+    {
+     "t": "Ne pas supposer nul le fond non ",
+     "px": "12px"
+    },
+    {
+     "t": "La surexpression d’ATF1 augmente",
+     "px": "14px"
+    },
+    {
+     "t": "Résumé primaire, levures de vin ",
+     "px": "12px"
+    }
+   ]
+  },
+  "sources": {
+   "repos": [],
+   "ouvert": [
+    "Ajouter les repères de base",
+    "Ajouter une levure",
+    "Ajouter un modèle",
+    "Ajouter les amertumes du houblon cru"
+   ],
+   "toutDeplie": 32,
+   "tout": [
+    "AB Biotek / Maurivin · AWRI 350Forme non documentée · 2 caractéristique(s)Caractéristiques à compléter",
+    "AB Biotek / Maurivin · AWRI 796Forme non documentée · 2 caractéristique(s)Caractéristiques à compléter",
+    "AB Biotek / Maurivin · AWRI CelebrateForme non documentée · 2 caractéristique(s)Caractéristiques à compléter",
+    "AB Biotek / Maurivin · AWRI FusionForme non documentée · 2 caractéristique(s)Caractéristiques à compléter",
+    "AB Biotek / Maurivin · AWRI ParagonForme non documentée · 2 caractéristique(s)Caractéristiques à compléter",
+    "AB Biotek / Maurivin · AWRI R2Forme non documentée · 2 caractéristique(s)Caractéristiques à compléter",
+    "AB Biotek / Maurivin · AWRI RosaForme non documentée · 2 caractéristique(s)Caractéristiques à compléter",
+    "AB Biotek / Maurivin · AWRI UVAmaXForme non documentée · 2 caractéristique(s)Caractéristiques à compléter",
+    "AB Biotek / Maurivin · AWRI ZeviiForme non documentée · 2 caractéristique(s)Caractéristiques à compléter",
+    "AB Biotek / Maurivin · BP 725Forme non documentée · 2 caractéristique(s)Caractéristiques à compléter",
+    "AB Biotek / Maurivin · Cru-BlancForme non documentée · 2 caractéristique(s)Caractéristiques à compléter",
+    "AB Biotek / Maurivin · EleganceForme non documentée · 2 caractéristique(s)Caractéristiques à compléter",
+    "Précédentes",
+    "Suivantes",
+    "Ajouter les repères de base",
+    "Ajouter une levure",
+    "Ajouter un modèle",
+    "Ajouter les amertumes du houblon cru",
+    "Ajouter l’étude Cascade documentée",
+    "Ajouter les fiches Hopsteiner manquantes",
+    "Ajouter la base communautaire",
+    "Ajouter la liste de variétés libre",
+    "Ajouter les fiches Beer Maverick",
+    "Ajouter les analyses de lots publiées",
+    "Ajouter les notes de recherche",
+    "Ajouter les levures documentées",
+    "Ajouter les guides de fermentation",
+    "Lire la synthèse de recherche sur la fermentation",
+    "Reproduire le point de validation publié",
+    "Ajouter les styles étendus et NOLO",
+    "Ajouter le modèle d’essai",
+    "Ajouter les programmes et notes techniques"
+   ],
+   "contraste": {
+    "mesures": 16,
+    "faibles": []
+   },
+   "habillage": [
+    {
+     "titre": "Catalogue complet des levures · fiches e",
+     "couleur": "rgb(17, 17, 17)",
+     "fond": "rgba(0, 0, 0, 0)",
+     "taille": "16px",
+     "bordure": "1px"
+    },
+    {
+     "titre": "Gérer les sources et les modèles",
+     "couleur": "rgb(17, 17, 17)",
+     "fond": "rgba(0, 0, 0, 0)",
+     "taille": "16px",
+     "bordure": "1px"
+    },
+    {
+     "titre": "Ajouter des références, des études et de",
+     "couleur": "rgb(17, 17, 17)",
+     "fond": "rgba(0, 0, 0, 0)",
+     "taille": "16px",
+     "bordure": "1px"
+    },
+    {
+     "titre": "Modifier une fiche enregistrée",
+     "couleur": "rgb(17, 17, 17)",
+     "fond": "rgba(0, 0, 0, 0)",
+     "taille": "16px",
+     "bordure": "1px"
+    }
+   ],
+   "ajouts": [
+    "Ajouter l’étude Cascade documentée",
+    "Ajouter les fiches Hopsteiner manquantes",
+    "Ajouter la base communautaire",
+    "Ajouter la liste de variétés libre",
+    "Ajouter les fiches Beer Maverick",
+    "Ajouter les analyses de lots publiées",
+    "Ajouter les notes de recherche",
+    "Ajouter les levures documentées",
+    "Ajouter les guides de fermentation",
+    "Lire la synthèse de recherche sur la fermentation",
+    "Reproduire le point de validation publié",
+    "Ajouter les styles étendus et NOLO",
+    "Ajouter le modèle d’essai",
+    "Ajouter les programmes et notes techniques"
+   ]
+  }
+ },
+ "m390-cave": {
+  "fiche": "Nelson Sauvin\n\nRéférence documentaire et analyses des lots\n\nHopsteiner\nModifier la variété\n\nArômes : Fruité, Agrumes, Épicé.\n\nMots de la fiche : vin blanc, fruité, raisin, groseille à maquereau.\n\nTeneur en thiols : forte\n\nHopsteiner, 2025 — houblon brut\n\nLot à consulter\nSans lot\nAjouter un lot\nValeurs de la variété\nFiabilité faible\nAcides alpha\n12–14 % du houblon\nAcides bêta\n4,5–6 % du houblon\nHuiles totales\n1,1–1,5 mL/100 g\nLinalol\n0,4–0,7 % de l’huile\nFiche complète de Nelson Sauvin sur Beer Maverick\nComprendre les transformations\nThiols\nTerpènes\nEsters et lactones\nPhénols et polyphénols\nVoies des thiols\nThiols libres, précurseurs et acétates\nTempérature et souche : davantage de thiols ne garantit pas davantage de fruit\nLe malt contribue aussi au réservoir de précurseurs\nATF1 contribue à l’acétate de thiol sans tout expliquer",
+  "mesure": {
+   "dialogueLargeur": 390,
+   "modifierX": 382,
+   "aromesX": 8,
+   "lignes": [
+    {
+     "t": "Arômes : Fruité, Agrumes, Épicé.",
+     "px": "16px"
+    },
+    {
+     "t": "Mots de la fiche : vin blanc, fr",
+     "px": "16px"
+    },
+    {
+     "t": "Teneur en thiols : forte",
+     "px": "16px"
+    },
+    {
+     "t": "Elle concerne les thiols libres ",
+     "px": "14px"
+    },
+    {
+     "t": "Hopsteiner, 2025 — houblon brut",
+     "px": "14px"
+    },
+    {
+     "t": "Acides alpha",
+     "px": "16px"
+    },
+    {
+     "t": "12–14 % du houblon",
+     "px": "16px"
+    },
+    {
+     "t": "",
+     "px": "16px"
+    },
+    {
+     "t": "",
+     "px": "16px"
+    },
+    {
+     "t": "",
+     "px": "16px"
+    },
+    {
+     "t": "Forme du produit inconnue ou dif",
+     "px": "14px"
+    },
+    {
+     "t": "Base de mesure inconnue.",
+     "px": "14px"
+    },
+    {
+     "t": "Plage ou valeur de variété ; le ",
+     "px": "14px"
+    },
+    {
+     "t": "Valeur variétale, pas analyse du",
+     "px": "14px"
+    },
+    {
+     "t": "Hopsteiner — Fiche variétale Nel",
+     "px": "14px"
+    },
+    {
+     "t": "Consulter la source Mise à jour ",
+     "px": "14px"
+    },
+    {
+     "t": "Acides bêta",
+     "px": "16px"
+    },
+    {
+     "t": "4,5–6 % du houblon",
+     "px": "16px"
+    },
+    {
+     "t": "",
+     "px": "16px"
+    },
+    {
+     "t": "",
+     "px": "16px"
+    },
+    {
+     "t": "",
+     "px": "16px"
+    },
+    {
+     "t": "Forme du produit inconnue ou dif",
+     "px": "14px"
+    },
+    {
+     "t": "Base de mesure inconnue.",
+     "px": "14px"
+    },
+    {
+     "t": "Plage ou valeur de variété ; le ",
+     "px": "14px"
+    },
+    {
+     "t": "Valeur variétale, pas analyse du",
+     "px": "14px"
+    },
+    {
+     "t": "Hopsteiner — Fiche variétale Nel",
+     "px": "14px"
+    },
+    {
+     "t": "Consulter la source Mise à jour ",
+     "px": "14px"
+    },
+    {
+     "t": "Huiles totales",
+     "px": "16px"
+    },
+    {
+     "t": "1,1–1,5 mL/100 g",
+     "px": "16px"
+    },
+    {
+     "t": "",
+     "px": "16px"
+    },
+    {
+     "t": "",
+     "px": "16px"
+    },
+    {
+     "t": "",
+     "px": "16px"
+    },
+    {
+     "t": "Forme du produit inconnue ou dif",
+     "px": "14px"
+    },
+    {
+     "t": "Base de mesure inconnue.",
+     "px": "14px"
+    },
+    {
+     "t": "Plage ou valeur de variété ; le ",
+     "px": "14px"
+    },
+    {
+     "t": "Valeur variétale, pas analyse du",
+     "px": "14px"
+    },
+    {
+     "t": "Hopsteiner — Fiche variétale Nel",
+     "px": "14px"
+    },
+    {
+     "t": "Consulter la source Mise à jour ",
+     "px": "14px"
+    },
+    {
+     "t": "Linalol",
+     "px": "16px"
+    },
+    {
+     "t": "0,4–0,7 % de l’huile",
+     "px": "16px"
+    },
+    {
+     "t": "",
+     "px": "16px"
+    },
+    {
+     "t": "",
+     "px": "16px"
+    },
+    {
+     "t": "",
+     "px": "16px"
+    },
+    {
+     "t": "Forme du produit inconnue ou dif",
+     "px": "14px"
+    },
+    {
+     "t": "Plage ou valeur de variété ; le ",
+     "px": "14px"
+    },
+    {
+     "t": "Valeur variétale, pas analyse du",
+     "px": "14px"
+    },
+    {
+     "t": "Hopsteiner — Fiche variétale Nel",
+     "px": "14px"
+    },
+    {
+     "t": "Consulter la source Mise à jour ",
+     "px": "14px"
+    },
+    {
+     "t": "3SH et 3MH désignent le même alc",
+     "px": "14px"
+    },
+    {
+     "t": "Une voie identifiée ne fournit p",
+     "px": "12px"
+    },
+    {
+     "t": "Des essais Cascade sans dry-hop ",
+     "px": "14px"
+    },
+    {
+     "t": "Compte rendu expérimental de deu",
+     "px": "12px"
+    },
+    {
+     "t": "L’étude de malts identifie plusi",
+     "px": "14px"
+    },
+    {
+     "t": "Ne pas supposer nul le fond non ",
+     "px": "12px"
+    },
+    {
+     "t": "La surexpression d’ATF1 augmente",
+     "px": "14px"
+    },
+    {
+     "t": "Résumé primaire, levures de vin ",
+     "px": "12px"
+    }
+   ]
+  },
+  "sources": {
+   "repos": [],
+   "ouvert": [
+    "Ajouter les repères de base",
+    "Ajouter une levure",
+    "Ajouter un modèle",
+    "Ajouter les amertumes du houblon cru"
+   ],
+   "toutDeplie": 32,
+   "tout": [
+    "AB Biotek / Maurivin · AWRI 350Forme non documentée · 2 caractéristique(s)Caractéristiques à compléter",
+    "AB Biotek / Maurivin · AWRI 796Forme non documentée · 2 caractéristique(s)Caractéristiques à compléter",
+    "AB Biotek / Maurivin · AWRI CelebrateForme non documentée · 2 caractéristique(s)Caractéristiques à compléter",
+    "AB Biotek / Maurivin · AWRI FusionForme non documentée · 2 caractéristique(s)Caractéristiques à compléter",
+    "AB Biotek / Maurivin · AWRI ParagonForme non documentée · 2 caractéristique(s)Caractéristiques à compléter",
+    "AB Biotek / Maurivin · AWRI R2Forme non documentée · 2 caractéristique(s)Caractéristiques à compléter",
+    "AB Biotek / Maurivin · AWRI RosaForme non documentée · 2 caractéristique(s)Caractéristiques à compléter",
+    "AB Biotek / Maurivin · AWRI UVAmaXForme non documentée · 2 caractéristique(s)Caractéristiques à compléter",
+    "AB Biotek / Maurivin · AWRI ZeviiForme non documentée · 2 caractéristique(s)Caractéristiques à compléter",
+    "AB Biotek / Maurivin · BP 725Forme non documentée · 2 caractéristique(s)Caractéristiques à compléter",
+    "AB Biotek / Maurivin · Cru-BlancForme non documentée · 2 caractéristique(s)Caractéristiques à compléter",
+    "AB Biotek / Maurivin · EleganceForme non documentée · 2 caractéristique(s)Caractéristiques à compléter",
+    "Précédentes",
+    "Suivantes",
+    "Ajouter les repères de base",
+    "Ajouter une levure",
+    "Ajouter un modèle",
+    "Ajouter les amertumes du houblon cru",
+    "Ajouter l’étude Cascade documentée",
+    "Ajouter les fiches Hopsteiner manquantes",
+    "Ajouter la base communautaire",
+    "Ajouter la liste de variétés libre",
+    "Ajouter les fiches Beer Maverick",
+    "Ajouter les analyses de lots publiées",
+    "Ajouter les notes de recherche",
+    "Ajouter les levures documentées",
+    "Ajouter les guides de fermentation",
+    "Lire la synthèse de recherche sur la fermentation",
+    "Reproduire le point de validation publié",
+    "Ajouter les styles étendus et NOLO",
+    "Ajouter le modèle d’essai",
+    "Ajouter les programmes et notes techniques"
+   ],
+   "contraste": {
+    "mesures": 16,
+    "faibles": []
+   },
+   "habillage": [
+    {
+     "titre": "Catalogue complet des levures · fiches e",
+     "couleur": "rgb(242, 193, 78)",
+     "fond": "rgba(0, 0, 0, 0)",
+     "taille": "16px",
+     "bordure": "1px"
+    },
+    {
+     "titre": "Gérer les sources et les modèles",
+     "couleur": "rgb(242, 193, 78)",
+     "fond": "rgba(0, 0, 0, 0)",
+     "taille": "16px",
+     "bordure": "1px"
+    },
+    {
+     "titre": "Ajouter des références, des études et de",
+     "couleur": "rgb(242, 193, 78)",
+     "fond": "rgba(0, 0, 0, 0)",
+     "taille": "16px",
+     "bordure": "1px"
+    },
+    {
+     "titre": "Modifier une fiche enregistrée",
+     "couleur": "rgb(242, 193, 78)",
+     "fond": "rgba(0, 0, 0, 0)",
+     "taille": "16px",
+     "bordure": "1px"
+    }
+   ],
+   "ajouts": [
+    "Ajouter l’étude Cascade documentée",
+    "Ajouter les fiches Hopsteiner manquantes",
+    "Ajouter la base communautaire",
+    "Ajouter la liste de variétés libre",
+    "Ajouter les fiches Beer Maverick",
+    "Ajouter les analyses de lots publiées",
+    "Ajouter les notes de recherche",
+    "Ajouter les levures documentées",
+    "Ajouter les guides de fermentation",
+    "Lire la synthèse de recherche sur la fermentation",
+    "Reproduire le point de validation publié",
+    "Ajouter les styles étendus et NOLO",
+    "Ajouter le modèle d’essai",
+    "Ajouter les programmes et notes techniques"
+   ]
+  }
+ },
+ "d1280-clair": {
+  "fiche": "Nelson Sauvin\n\nRéférence documentaire et analyses des lots\n\nHopsteiner\nModifier la variété\n\nArômes : Fruité, Agrumes, Épicé.\n\nMots de la fiche : vin blanc, fruité, raisin, groseille à maquereau.\n\nTeneur en thiols : forte\n\nHopsteiner, 2025 — houblon brut\n\nLot à consulter\nSans lot\nAjouter un lot\nValeurs de la variété\nFiabilité faible\nAcides alpha\n12–14 % du houblon\nAcides bêta\n4,5–6 % du houblon\nHuiles totales\n1,1–1,5 mL/100 g\nLinalol\n0,4–0,7 % de l’huile\nFiche complète de Nelson Sauvin sur Beer Maverick\nComprendre les transformations\nThiols\nTerpènes\nEsters et lactones\nPhénols et polyphénols\nVoies des thiols\nThiols libres, précurseurs et acétates\nTempérature et souche : davantage de thiols ne garantit pas davantage de fruit\nLe malt contribue aussi au réservoir de précurseurs\nATF1 contribue à l’acétate de thiol sans tout expliquer",
+  "mesure": {
+   "dialogueLargeur": 672,
+   "modifierX": 968,
+   "aromesX": 312,
+   "lignes": [
+    {
+     "t": "Arômes : Fruité, Agrumes, Épicé.",
+     "px": "16px"
+    },
+    {
+     "t": "Mots de la fiche : vin blanc, fr",
+     "px": "16px"
+    },
+    {
+     "t": "Teneur en thiols : forte",
+     "px": "16px"
+    },
+    {
+     "t": "Elle concerne les thiols libres ",
+     "px": "14px"
+    },
+    {
+     "t": "Hopsteiner, 2025 — houblon brut",
+     "px": "14px"
+    },
+    {
+     "t": "Acides alpha",
+     "px": "16px"
+    },
+    {
+     "t": "12–14 % du houblon",
+     "px": "16px"
+    },
+    {
+     "t": "",
+     "px": "16px"
+    },
+    {
+     "t": "",
+     "px": "16px"
+    },
+    {
+     "t": "",
+     "px": "16px"
+    },
+    {
+     "t": "Forme du produit inconnue ou dif",
+     "px": "14px"
+    },
+    {
+     "t": "Base de mesure inconnue.",
+     "px": "14px"
+    },
+    {
+     "t": "Plage ou valeur de variété ; le ",
+     "px": "14px"
+    },
+    {
+     "t": "Valeur variétale, pas analyse du",
+     "px": "14px"
+    },
+    {
+     "t": "Hopsteiner — Fiche variétale Nel",
+     "px": "14px"
+    },
+    {
+     "t": "Consulter la source Mise à jour ",
+     "px": "14px"
+    },
+    {
+     "t": "Acides bêta",
+     "px": "16px"
+    },
+    {
+     "t": "4,5–6 % du houblon",
+     "px": "16px"
+    },
+    {
+     "t": "",
+     "px": "16px"
+    },
+    {
+     "t": "",
+     "px": "16px"
+    },
+    {
+     "t": "",
+     "px": "16px"
+    },
+    {
+     "t": "Forme du produit inconnue ou dif",
+     "px": "14px"
+    },
+    {
+     "t": "Base de mesure inconnue.",
+     "px": "14px"
+    },
+    {
+     "t": "Plage ou valeur de variété ; le ",
+     "px": "14px"
+    },
+    {
+     "t": "Valeur variétale, pas analyse du",
+     "px": "14px"
+    },
+    {
+     "t": "Hopsteiner — Fiche variétale Nel",
+     "px": "14px"
+    },
+    {
+     "t": "Consulter la source Mise à jour ",
+     "px": "14px"
+    },
+    {
+     "t": "Huiles totales",
+     "px": "16px"
+    },
+    {
+     "t": "1,1–1,5 mL/100 g",
+     "px": "16px"
+    },
+    {
+     "t": "",
+     "px": "16px"
+    },
+    {
+     "t": "",
+     "px": "16px"
+    },
+    {
+     "t": "",
+     "px": "16px"
+    },
+    {
+     "t": "Forme du produit inconnue ou dif",
+     "px": "14px"
+    },
+    {
+     "t": "Base de mesure inconnue.",
+     "px": "14px"
+    },
+    {
+     "t": "Plage ou valeur de variété ; le ",
+     "px": "14px"
+    },
+    {
+     "t": "Valeur variétale, pas analyse du",
+     "px": "14px"
+    },
+    {
+     "t": "Hopsteiner — Fiche variétale Nel",
+     "px": "14px"
+    },
+    {
+     "t": "Consulter la source Mise à jour ",
+     "px": "14px"
+    },
+    {
+     "t": "Linalol",
+     "px": "16px"
+    },
+    {
+     "t": "0,4–0,7 % de l’huile",
+     "px": "16px"
+    },
+    {
+     "t": "",
+     "px": "16px"
+    },
+    {
+     "t": "",
+     "px": "16px"
+    },
+    {
+     "t": "",
+     "px": "16px"
+    },
+    {
+     "t": "Forme du produit inconnue ou dif",
+     "px": "14px"
+    },
+    {
+     "t": "Plage ou valeur de variété ; le ",
+     "px": "14px"
+    },
+    {
+     "t": "Valeur variétale, pas analyse du",
+     "px": "14px"
+    },
+    {
+     "t": "Hopsteiner — Fiche variétale Nel",
+     "px": "14px"
+    },
+    {
+     "t": "Consulter la source Mise à jour ",
+     "px": "14px"
+    },
+    {
+     "t": "3SH et 3MH désignent le même alc",
+     "px": "14px"
+    },
+    {
+     "t": "Une voie identifiée ne fournit p",
+     "px": "12px"
+    },
+    {
+     "t": "Des essais Cascade sans dry-hop ",
+     "px": "14px"
+    },
+    {
+     "t": "Compte rendu expérimental de deu",
+     "px": "12px"
+    },
+    {
+     "t": "L’étude de malts identifie plusi",
+     "px": "14px"
+    },
+    {
+     "t": "Ne pas supposer nul le fond non ",
+     "px": "12px"
+    },
+    {
+     "t": "La surexpression d’ATF1 augmente",
+     "px": "14px"
+    },
+    {
+     "t": "Résumé primaire, levures de vin ",
+     "px": "12px"
+    }
+   ]
+  },
+  "sources": {
+   "repos": [],
+   "ouvert": [
+    "Ajouter les repères de base",
+    "Ajouter une levure",
+    "Ajouter un modèle",
+    "Ajouter les amertumes du houblon cru"
+   ],
+   "toutDeplie": 32,
+   "tout": [
+    "AB Biotek / Maurivin · AWRI 350Forme non documentée · 2 caractéristique(s)Caractéristiques à compléter",
+    "AB Biotek / Maurivin · AWRI 796Forme non documentée · 2 caractéristique(s)Caractéristiques à compléter",
+    "AB Biotek / Maurivin · AWRI CelebrateForme non documentée · 2 caractéristique(s)Caractéristiques à compléter",
+    "AB Biotek / Maurivin · AWRI FusionForme non documentée · 2 caractéristique(s)Caractéristiques à compléter",
+    "AB Biotek / Maurivin · AWRI ParagonForme non documentée · 2 caractéristique(s)Caractéristiques à compléter",
+    "AB Biotek / Maurivin · AWRI R2Forme non documentée · 2 caractéristique(s)Caractéristiques à compléter",
+    "AB Biotek / Maurivin · AWRI RosaForme non documentée · 2 caractéristique(s)Caractéristiques à compléter",
+    "AB Biotek / Maurivin · AWRI UVAmaXForme non documentée · 2 caractéristique(s)Caractéristiques à compléter",
+    "AB Biotek / Maurivin · AWRI ZeviiForme non documentée · 2 caractéristique(s)Caractéristiques à compléter",
+    "AB Biotek / Maurivin · BP 725Forme non documentée · 2 caractéristique(s)Caractéristiques à compléter",
+    "AB Biotek / Maurivin · Cru-BlancForme non documentée · 2 caractéristique(s)Caractéristiques à compléter",
+    "AB Biotek / Maurivin · EleganceForme non documentée · 2 caractéristique(s)Caractéristiques à compléter",
+    "Précédentes",
+    "Suivantes",
+    "Ajouter les repères de base",
+    "Ajouter une levure",
+    "Ajouter un modèle",
+    "Ajouter les amertumes du houblon cru",
+    "Ajouter l’étude Cascade documentée",
+    "Ajouter les fiches Hopsteiner manquantes",
+    "Ajouter la base communautaire",
+    "Ajouter la liste de variétés libre",
+    "Ajouter les fiches Beer Maverick",
+    "Ajouter les analyses de lots publiées",
+    "Ajouter les notes de recherche",
+    "Ajouter les levures documentées",
+    "Ajouter les guides de fermentation",
+    "Lire la synthèse de recherche sur la fermentation",
+    "Reproduire le point de validation publié",
+    "Ajouter les styles étendus et NOLO",
+    "Ajouter le modèle d’essai",
+    "Ajouter les programmes et notes techniques"
+   ],
+   "contraste": {
+    "mesures": 16,
+    "faibles": []
+   },
+   "habillage": [
+    {
+     "titre": "Catalogue complet des levures · fiches e",
+     "couleur": "rgb(17, 17, 17)",
+     "fond": "rgba(0, 0, 0, 0)",
+     "taille": "16px",
+     "bordure": "1px"
+    },
+    {
+     "titre": "Gérer les sources et les modèles",
+     "couleur": "rgb(17, 17, 17)",
+     "fond": "rgba(0, 0, 0, 0)",
+     "taille": "16px",
+     "bordure": "1px"
+    },
+    {
+     "titre": "Ajouter des références, des études et de",
+     "couleur": "rgb(17, 17, 17)",
+     "fond": "rgba(0, 0, 0, 0)",
+     "taille": "16px",
+     "bordure": "1px"
+    },
+    {
+     "titre": "Modifier une fiche enregistrée",
+     "couleur": "rgb(17, 17, 17)",
+     "fond": "rgba(0, 0, 0, 0)",
+     "taille": "16px",
+     "bordure": "1px"
+    }
+   ],
+   "ajouts": [
+    "Ajouter l’étude Cascade documentée",
+    "Ajouter les fiches Hopsteiner manquantes",
+    "Ajouter la base communautaire",
+    "Ajouter la liste de variétés libre",
+    "Ajouter les fiches Beer Maverick",
+    "Ajouter les analyses de lots publiées",
+    "Ajouter les notes de recherche",
+    "Ajouter les levures documentées",
+    "Ajouter les guides de fermentation",
+    "Lire la synthèse de recherche sur la fermentation",
+    "Reproduire le point de validation publié",
+    "Ajouter les styles étendus et NOLO",
+    "Ajouter le modèle d’essai",
+    "Ajouter les programmes et notes techniques"
+   ]
+  }
+ },
+ "d1280-cave": {
+  "fiche": "Nelson Sauvin\n\nRéférence documentaire et analyses des lots\n\nHopsteiner\nModifier la variété\n\nArômes : Fruité, Agrumes, Épicé.\n\nMots de la fiche : vin blanc, fruité, raisin, groseille à maquereau.\n\nTeneur en thiols : forte\n\nHopsteiner, 2025 — houblon brut\n\nLot à consulter\nSans lot\nAjouter un lot\nValeurs de la variété\nFiabilité faible\nAcides alpha\n12–14 % du houblon\nAcides bêta\n4,5–6 % du houblon\nHuiles totales\n1,1–1,5 mL/100 g\nLinalol\n0,4–0,7 % de l’huile\nFiche complète de Nelson Sauvin sur Beer Maverick\nComprendre les transformations\nThiols\nTerpènes\nEsters et lactones\nPhénols et polyphénols\nVoies des thiols\nThiols libres, précurseurs et acétates\nTempérature et souche : davantage de thiols ne garantit pas davantage de fruit\nLe malt contribue aussi au réservoir de précurseurs\nATF1 contribue à l’acétate de thiol sans tout expliquer",
+  "mesure": {
+   "dialogueLargeur": 672,
+   "modifierX": 968,
+   "aromesX": 312,
+   "lignes": [
+    {
+     "t": "Arômes : Fruité, Agrumes, Épicé.",
+     "px": "16px"
+    },
+    {
+     "t": "Mots de la fiche : vin blanc, fr",
+     "px": "16px"
+    },
+    {
+     "t": "Teneur en thiols : forte",
+     "px": "16px"
+    },
+    {
+     "t": "Elle concerne les thiols libres ",
+     "px": "14px"
+    },
+    {
+     "t": "Hopsteiner, 2025 — houblon brut",
+     "px": "14px"
+    },
+    {
+     "t": "Acides alpha",
+     "px": "16px"
+    },
+    {
+     "t": "12–14 % du houblon",
+     "px": "16px"
+    },
+    {
+     "t": "",
+     "px": "16px"
+    },
+    {
+     "t": "",
+     "px": "16px"
+    },
+    {
+     "t": "",
+     "px": "16px"
+    },
+    {
+     "t": "Forme du produit inconnue ou dif",
+     "px": "14px"
+    },
+    {
+     "t": "Base de mesure inconnue.",
+     "px": "14px"
+    },
+    {
+     "t": "Plage ou valeur de variété ; le ",
+     "px": "14px"
+    },
+    {
+     "t": "Valeur variétale, pas analyse du",
+     "px": "14px"
+    },
+    {
+     "t": "Hopsteiner — Fiche variétale Nel",
+     "px": "14px"
+    },
+    {
+     "t": "Consulter la source Mise à jour ",
+     "px": "14px"
+    },
+    {
+     "t": "Acides bêta",
+     "px": "16px"
+    },
+    {
+     "t": "4,5–6 % du houblon",
+     "px": "16px"
+    },
+    {
+     "t": "",
+     "px": "16px"
+    },
+    {
+     "t": "",
+     "px": "16px"
+    },
+    {
+     "t": "",
+     "px": "16px"
+    },
+    {
+     "t": "Forme du produit inconnue ou dif",
+     "px": "14px"
+    },
+    {
+     "t": "Base de mesure inconnue.",
+     "px": "14px"
+    },
+    {
+     "t": "Plage ou valeur de variété ; le ",
+     "px": "14px"
+    },
+    {
+     "t": "Valeur variétale, pas analyse du",
+     "px": "14px"
+    },
+    {
+     "t": "Hopsteiner — Fiche variétale Nel",
+     "px": "14px"
+    },
+    {
+     "t": "Consulter la source Mise à jour ",
+     "px": "14px"
+    },
+    {
+     "t": "Huiles totales",
+     "px": "16px"
+    },
+    {
+     "t": "1,1–1,5 mL/100 g",
+     "px": "16px"
+    },
+    {
+     "t": "",
+     "px": "16px"
+    },
+    {
+     "t": "",
+     "px": "16px"
+    },
+    {
+     "t": "",
+     "px": "16px"
+    },
+    {
+     "t": "Forme du produit inconnue ou dif",
+     "px": "14px"
+    },
+    {
+     "t": "Base de mesure inconnue.",
+     "px": "14px"
+    },
+    {
+     "t": "Plage ou valeur de variété ; le ",
+     "px": "14px"
+    },
+    {
+     "t": "Valeur variétale, pas analyse du",
+     "px": "14px"
+    },
+    {
+     "t": "Hopsteiner — Fiche variétale Nel",
+     "px": "14px"
+    },
+    {
+     "t": "Consulter la source Mise à jour ",
+     "px": "14px"
+    },
+    {
+     "t": "Linalol",
+     "px": "16px"
+    },
+    {
+     "t": "0,4–0,7 % de l’huile",
+     "px": "16px"
+    },
+    {
+     "t": "",
+     "px": "16px"
+    },
+    {
+     "t": "",
+     "px": "16px"
+    },
+    {
+     "t": "",
+     "px": "16px"
+    },
+    {
+     "t": "Forme du produit inconnue ou dif",
+     "px": "14px"
+    },
+    {
+     "t": "Plage ou valeur de variété ; le ",
+     "px": "14px"
+    },
+    {
+     "t": "Valeur variétale, pas analyse du",
+     "px": "14px"
+    },
+    {
+     "t": "Hopsteiner — Fiche variétale Nel",
+     "px": "14px"
+    },
+    {
+     "t": "Consulter la source Mise à jour ",
+     "px": "14px"
+    },
+    {
+     "t": "3SH et 3MH désignent le même alc",
+     "px": "14px"
+    },
+    {
+     "t": "Une voie identifiée ne fournit p",
+     "px": "12px"
+    },
+    {
+     "t": "Des essais Cascade sans dry-hop ",
+     "px": "14px"
+    },
+    {
+     "t": "Compte rendu expérimental de deu",
+     "px": "12px"
+    },
+    {
+     "t": "L’étude de malts identifie plusi",
+     "px": "14px"
+    },
+    {
+     "t": "Ne pas supposer nul le fond non ",
+     "px": "12px"
+    },
+    {
+     "t": "La surexpression d’ATF1 augmente",
+     "px": "14px"
+    },
+    {
+     "t": "Résumé primaire, levures de vin ",
+     "px": "12px"
+    }
+   ]
+  },
+  "sources": {
+   "repos": [],
+   "ouvert": [
+    "Ajouter les repères de base",
+    "Ajouter une levure",
+    "Ajouter un modèle",
+    "Ajouter les amertumes du houblon cru"
+   ],
+   "toutDeplie": 0,
+   "tout": [],
+   "contraste": {
+    "mesures": 0,
+    "faibles": []
+   },
+   "habillage": [],
+   "ajouts": []
+  }
+ }
+}
