@@ -34,3 +34,24 @@ Données de test : `?dev-local` ou banc `?preview=carnets` ; aucun appel Gemini 
 - Commit par chemins dans port-carnet (jamais `git add -A`), message « Carnet tour 3 (f13) : PCN-37, PCN-27 … » terminé par
   « Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com> ». Puis `git status --short` : seuls tes fichiers.
 - Plafond 100 tours ; à 200 k : écrire REPRISE.md et rendre « REPRISE : voies/f13/REPRISE.md ». Réponse finale : une ligne.
+
+## Tour 2 (critique Opus, `CRITIQUE.md`, 9 problèmes)
+Agent neuf : lire VOIE.md (règles et Preuves ci-dessus, inchangées), RESULTAT.md (état du tour 1, commit 175c511f5) et CRITIQUE.md.
+Corriger les n° 1, 2, 3, 4, 5, 6, 7 et 9, chacun avec un test qui échoue avant dans `tests/unit/carnetsTour3F13b.test.tsx` :
+- n° 1 (CARNET-CLAV) : à l'ouverture du clavier, la dernière note du carnet se place d'elle-même juste au-dessus du champ (défilement
+  fait par l'app, pas par le doigt) ; mesuré à 390×844 et 390×660 avec clavier simulé 300 px ;
+- n° 3 : la bulle G8 ne doit pas couper le sens au milieu d'un mot ; garder deux lignes serrées plutôt qu'une ligne tronquée, tant que le
+  carnet visible reste ≥ 60 % à 390×844 ;
+- n° 4 : titre affiché avec sa majuscule initiale (« Embouteillage »), sa phrase gardée telle quelle dans « « embouteillage » · votre
+  phrase en titre » ; affichage seulement (src/domain/carnets/modele.ts ou le composant), données inchangées ;
+- n° 5, 6, 7 : porter de g5:v04-4 la bande grise et son filet, la couleur des pictos, le bandeau tel quel (règle n° 1) ;
+- n° 2, 9 : coupures nettes → « … » ou ligne entière.
+n° 8 (crayon près du titre) : écarté, R03/R12 de sa maquette le veulent (✎ près du titre, g5:v03-6). Captures et tests dans les
+mêmes dossiers, suffixe `-t2`. Commit « Carnet tour 3 (f13, tour 2) : … ». Ajouter une section « Tour 2 » à RESULTAT.md.
+
+## Tour 3, dernier (critique Opus, `CRITIQUE-T2.md`, 5 m)
+Agent neuf : lire VOIE.md (règles, Preuves), la section « Tour 2 » de RESULTAT.md (commit 96abe35fe) et CRITIQUE-T2.md.
+Corriger les n° 1 à 5 de CRITIQUE-T2.md, et retirer le filet gris au-dessus du champ (absent de g5:v04-4, règle n° 1), chacun avec un
+test qui échoue avant dans `tests/unit/carnetsTour3F13c.test.tsx` ; n° 4 : le champ reprend le texte de la maquette (« Écrire, ou coller
+un lien… ») et s'aligne sur la liste. Ne rien casser de ce que le tour 2 a réglé (tests F13 et F13b verts). Captures suffixe `-t3`,
+section « Tour 3 » dans RESULTAT.md, commit « Carnet tour 3 (f13, tour 3) : … ».
