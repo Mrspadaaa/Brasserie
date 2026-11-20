@@ -96,15 +96,20 @@ export function NoloPanel({recipe,onChange,allowEnable=false,measurementOnly=fal
   if(!c?.enabled&&!allowEnable)return null;
   if(workshop&&onChange)return <section className="space-y-3"><Button onClick={()=>setWorkshop(false)}>Revenir au bilan NOLO</Button><NoloFermentationWorkshop recipe={recipe} onChange={onChange} variant={variantMode}/></section>;
   if(variant)return <section ref={variantStart} className="space-y-3"><Button onClick={()=>setVariant(undefined)}>Fermer la variante NOLO</Button><p className="text-xs text-cave-400">Variante locale · aucune écriture</p><NoloPanel recipe={variant} onChange={setVariant} variantMode/></section>;
-  const preparation=editable&&!measurementOnly&&c?.enabled&&science&&<>
-    <NoloRecipeSimulator recipe={recipe} onChange={onChange!} science={c.scienceSnapshot??science} saved={saved} variant={variantMode}/>
+  // T3B-7 : en préparation, le simulateur garde au premier plan le procédé, la consigne, la levure, la plage et « Appliquer » ; ses réglages, les outils, le catalogue et le bilan
+  // tiennent derrière son seul dépliant (7 dépliants à plat le 20.11). Sans préparation (fiche, atelier de mesures), le bilan se montre comme avant.
+  const preparation=!!(editable&&!measurementOnly&&c?.enabled&&science);
+  const outils=preparation&&<>
     <details><summary className="cursor-pointer">Outils complémentaires · ajouts, dilution et essais</summary>
-      <NoloBrewTools recipe={recipe} onChange={onChange!} science={c.scienceSnapshot??science} result={result} saved={saved}/>
+      <NoloBrewTools recipe={recipe} onChange={onChange!} science={c!.scienceSnapshot??science!} result={result} saved={saved}/>
     </details>
     {!hideStrainPicker&&<details><summary className="cursor-pointer">Catalogue et profil aromatique des levures</summary>
       <Button onClick={()=>onChooseYeast?onChooseYeast():setWorkshop(true)}>Ouvrir l’atelier de fermentation</Button>
     </details>}
   </>;
+  const sousSimulateur=(contenu:React.ReactNode)=>preparation
+    ?<NoloRecipeSimulator recipe={recipe} onChange={onChange!} science={c!.scienceSnapshot??science!} saved={saved} variant={variantMode}>{contenu}</NoloRecipeSimulator>
+    :contenu;
   return <section aria-label="Objectif NOLO" className={`nolo-panel min-w-0 ${showOverview?'rounded-panel border border-cave-700 bg-cave-900':'nolo-panel-embedded'}`}>
     {researchOpen&&<FermentationResearchSheet onClose={()=>setResearchOpen(false)}/>}
     <div className="flex flex-wrap items-center justify-between gap-2">
@@ -115,7 +120,8 @@ export function NoloPanel({recipe,onChange,allowEnable=false,measurementOnly=fal
       {!editable&&showOverview&&<NoloRecipeOverview recipe={recipe} saved={saved}/>}
       {measurementOnly&&<div className="nolo-summary"><span>{noloProcessLabels[c.process]}</span><span>Cible ≤ {decimal(c.targetAbvPct)} % vol.</span></div>}
       {result?.projectionStatus==='exceeds'&&<p className="nolo-error">La projection actuelle dépasse la cible. Compare les réglages avant de préparer le pilote.</p>}
-      {preparation}
+      {sousSimulateur(<>
+      {outils}
       <details open={measurementOnly?true:undefined}><summary className="cursor-pointer">Bilan détaillé · mesures et suivi</summary><div className="nolo-legacy">
       {editable&&measurementOnly&&<label className="block text-xs text-cave-200">Procédé<select className={inputClass} value={c.process} onChange={e=>onChange?.({...recipe,nolo:changeNoloProcess(c,e.target.value as NoloProcess)})}>{science?.processes.map(p=><option key={p.id} value={p.id}>{noloProcessLabels[p.id]}</option>)}</select></label>}
       {c.process==='secondRunnings'&&<div className="space-y-3" aria-label="Moût de seconde extraction">
@@ -218,6 +224,7 @@ export function NoloPanel({recipe,onChange,allowEnable=false,measurementOnly=fal
         {editable&&c.scienceSnapshot&&<Button onClick={()=>update({scienceSnapshot:undefined})}>Utiliser les références actuelles dans ce scénario</Button>}
       </div></details>
       </div></details>
+      </>)}
     </>}
   </section>;
 }

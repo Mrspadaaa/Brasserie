@@ -29,7 +29,7 @@ describe('k1 point 7 : premier plan léger', () => {
   it('« Plage de simulation » et « Eau proposée » sont repliées avec les hypothèses', () => {
     const avecEau = { ...structuredClone(fullRecipe), nolo: { ...newNoloConfig(), enabled: true, process: 'restricted' } } as never; // plan d'eau présent : l'encadré Eau apparaît
     render(<NoloRecipeSimulator recipe={avecEau} onChange={() => undefined} science={science} />);
-    const hypotheses = [...document.querySelectorAll('details')].find((d) => /^Hypothèses du calcul/.test(d.querySelector('summary')?.textContent ?? ''))!;
+    const hypotheses = [...document.querySelectorAll('details')].find((d) => /^Réglages et détails du calcul/.test(d.querySelector('summary')?.textContent ?? ''))!;
     expect(hypotheses).toBeTruthy();
     expect(hypotheses.hasAttribute('open')).toBe(false);
     const plage = [...document.querySelectorAll('p')].find((p) => /Plage de simulation/.test(p.textContent ?? ''))!;

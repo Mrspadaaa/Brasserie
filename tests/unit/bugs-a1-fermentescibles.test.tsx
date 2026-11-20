@@ -147,10 +147,11 @@ describe('BR-19 — la bascule de famille dit où l’on est parmi les cinq', ()
         onCreateStockItem={() => ({}) as StockItem} onLearnIngredient={() => {}} nolo={false} og={null} teinteBiere={null} rendementPct={75} rendementDeclare={false} erreur={() => undefined} />
     );
   }
-  it('cinq points, un seul plein ; il avance à chaque toucher', async () => {
+  // T3B-9 (e1, 20.11) : les cinq points ne nommaient rien en ligne ; les cinq noms sont lisibles, la courante marquée, et elle avance à chaque toucher de la bascule.
+  it('cinq noms, une seule famille marquée ; elle avance à chaque toucher', async () => {
     const u = userEvent.setup();
     render(<Banc5 />);
-    const pos = () => [...document.querySelectorAll('[data-role="fam-pos"] i')].map((p) => p.classList.contains('fer-pt-on'));
+    const pos = () => [...document.querySelectorAll('[data-role="fam-noms"] button')].map((p) => p.getAttribute('aria-current') === 'true');
     expect(pos()).toEqual([true, false, false, false, false]);
     await u.click(document.querySelector('[data-role="fam"]')!);
     expect(pos()).toEqual([false, true, false, false, false]);

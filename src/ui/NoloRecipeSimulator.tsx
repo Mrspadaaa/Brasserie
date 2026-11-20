@@ -87,8 +87,9 @@ function SimulationRange({ bound, target, current, manque }: { bound: NoloBound;
   </figure>;
 }
 
-export function NoloRecipeSimulator({ recipe, onChange, science, saved = emptyKnowledge, variant = false }: {
-  recipe: TrialRecipe; onChange: (next: TrialRecipe) => void; science: NoloScience; saved?: HopKnowledge[]; variant?: boolean;
+/** `children` : le reste de l'écran NOLO (outils, catalogue, bilan), rangé avec les réglages derrière le seul dépliant du premier plan (T3B-7). */
+export function NoloRecipeSimulator({ recipe, onChange, science, saved = emptyKnowledge, variant = false, children }: {
+  recipe: TrialRecipe; onChange: (next: TrialRecipe) => void; science: NoloScience; saved?: HopKnowledge[]; variant?: boolean; children?: React.ReactNode;
 }) {
   const [process, setProcess] = useState<NoloProcess>(recipe.nolo?.process ?? 'restricted');
   const [target, setTarget] = useState(recipe.nolo?.targetAbvPct ?? .5);
@@ -169,9 +170,15 @@ export function NoloRecipeSimulator({ recipe, onChange, science, saved = emptyKn
     {invalidFields.length > 0 && <p role="alert" className="nolo-error">Saisie à corriger : {invalidFields.join(', ')}. Entrer un nombre dans les limites du champ.</p>}
     {proposal && s && <>
       <SimulationRange bound={!invalidFields.length && proposal.result?.projection || { min: 0, max: null, kind: 'unknown', confidence: 'low' }} target={target} current={current} manque={evalCourante?.nextAction}/>
-      {/* TE-15 (lecture étroite) : au premier plan, le procédé, la consigne, la levure et la plage ; les réglages préremplis (densité, grain, atténuation…) se déplient. */}
+      {proposal.blocking.length > 0 && <ul role="alert" className="nolo-solver-errors">{proposal.blocking.map((message, index) => <li key={index}>{message}</li>)}</ul>}
+      <div className="nolo-solver-actions">
+        <button type="button" className="nolo-solver-apply" disabled={stale || !!error || invalidFields.length > 0 || proposal.blocking.length > 0 || waterBlocked} onClick={apply}><Sparkles size={14} aria-hidden="true"/>Appliquer à la {variant ? 'variante' : 'recette'}</button>
+        <button type="button" className="nolo-solver-reset" onClick={() => { choose(); setResetKey(key => key + 1); }} title="Revenir aux réglages préremplis depuis la recette et la consigne"><RotateCcw size={13} aria-hidden="true"/>Réinitialiser</button>
+      </div>
+      {/* TE-15, T3B-7 (lecture étroite, 2e passe) : au premier plan, le procédé, la consigne, la levure, la plage et « Appliquer » ; TOUT le reste (réglages préremplis, programme, champs,
+          hypothèses, outils, catalogue, bilan : 7 dépliants le 20.11) tient derrière un seul dépliant, ouvert seul si une saisie est invalide ou l'eau bloquée. Réversible : défaire le `<details>`. */}
       <details className="nolo-solver-details nolo-solver-hypotheses" open={invalidFields.length > 0 || waterBlocked || undefined}>
-      <summary>Hypothèses du calcul · densité {number(s.ogSg, 3)} · atténuation {number(s.attenuationPct.min, 1)}–{number(s.attenuationPct.max, 1)} %</summary>
+      <summary>Réglages et détails du calcul · densité {number(s.ogSg, 3)} · atténuation {number(s.attenuationPct.min, 1)}–{number(s.attenuationPct.max, 1)} %</summary>
       <div className="nolo-solver-knobs" aria-label="Réglages préremplis de la simulation">
         <Setting label="Densité initiale visée" value={s.ogSg} min={1} max={1.3} digits={3} slider={{ min: 1, max: Math.max(1.025, s.ogSg * 1.02), step: .001 }} onChange={ogSg => adjust({ ogSg })}/>
         {process !== 'secondRunnings' && <Setting label="Charge de grain" value={baseGrainKg * s.grainScale} unit="kg" max={100000} digits={3} onChange={value => { if (baseGrainKg > 0) adjust({ grainScale: value / baseGrainKg }); }}/ >}
@@ -200,12 +207,6 @@ export function NoloRecipeSimulator({ recipe, onChange, science, saved = emptyKn
         {waterBlocked && <p role="alert" className="text-alert-strong">Plan d’eau incompatible avec le matériel : {proposedWater.fit!.issues.join(' ')}</p>}
         {proposedWater.fit?.planningStatus === 'exception' && <p className="text-ebc-amber">{proposedWater.fit.issues.join(' ')}</p>}
       </div>}
-      </details>
-      {proposal.blocking.length > 0 && <ul role="alert" className="nolo-solver-errors">{proposal.blocking.map((message, index) => <li key={index}>{message}</li>)}</ul>}
-      <div className="nolo-solver-actions">
-        <button type="button" className="nolo-solver-apply" disabled={stale || !!error || invalidFields.length > 0 || proposal.blocking.length > 0 || waterBlocked} onClick={apply}><Sparkles size={14} aria-hidden="true"/>Appliquer à la {variant ? 'variante' : 'recette'}</button>
-        <button type="button" className="nolo-solver-reset" onClick={() => { choose(); setResetKey(key => key + 1); }} title="Revenir aux réglages préremplis depuis la recette et la consigne"><RotateCcw size={13} aria-hidden="true"/>Réinitialiser</button>
-      </div>
       <details className="nolo-solver-details"><summary>Programme prérempli · {number(s.yeastQty)} {s.yeastUnit} · {number(s.fermentationDays)} j</summary>
         <div className="nolo-solver-knobs">
           <Setting label="Quantité de levure" value={s.yeastQty} unit={s.yeastUnit} max={100000} onChange={yeastQty => adjust({ yeastQty })}/>
@@ -231,7 +232,10 @@ export function NoloRecipeSimulator({ recipe, onChange, science, saved = emptyKn
         <p>Intervalle de simulation, sans probabilité statistique attribuée. Un pilote mesuré permet de resserrer les hypothèses ; l’analyse d’alcool vérifie le produit final.</p>
         {proposal.sources.map((source, index) => <HopSourceLink key={index} source={source}/>)}
       </details>
+      {children}
+      </details>
     </>}
+    {!(proposal && s) && children}
     {notice && <p role="status" className="nolo-solver-notice">{notice}</p>}
   </section></DraftValidity.Provider>;
 }

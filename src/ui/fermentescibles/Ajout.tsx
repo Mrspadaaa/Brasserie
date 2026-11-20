@@ -4,7 +4,7 @@ import { Units } from '../../services/units';
 import { proposerFermentables } from '../../domain/fermentables/proposition';
 import { Bascule, Entree, Etoile, Plus, Sac } from './icones';
 import { Input } from '../Input';
-import { chercher, chercherAilleurs, decouper, familleDevinee, kgTxt, lireAjout, memeArticle, nomPossible, nu, qteTxt, teinte, texteSurTeinte, type Candidat } from './modele';
+import { chercher, chercherAilleurs, decouper, estEpice, familleDevinee, kgTxt, lireAjout, memeArticle, nomPossible, nu, qteTxt, teinte, texteSurTeinte, type Candidat } from './modele';
 import { chargerTypicite } from '../../domain/fermentables/typicite';
 import { refAffichable } from '../../domain/stock/regles';
 
@@ -213,12 +213,6 @@ export const Ajout: React.FC<AjoutProps> = ({ famille, familles, defs, onFamille
           title={`${def.hint ? `${def.hint} ` : ''}Toucher : ${defs[suivante].label}`} onMouseDown={(e) => e.preventDefault()}
           onClick={(e) => { e.preventDefault(); onFamille(suivante); reinit(); }}>
           {def.label} <Bascule />
-          {/* BR-19 : cinq familles se parcourent d'un toucher ; les points disent où l'on est et combien il en reste, sans mot de plus. */}
-          {familles.length > 2 && (
-            <span className="fer-pts" data-role="fam-pos" aria-hidden="true">
-              {familles.map((k) => <i key={k} className={k === famille ? 'fer-pt-on' : undefined} />)}
-            </span>
-          )}
         </button>
         <Input
           ref={champ}
@@ -254,6 +248,15 @@ export const Ajout: React.FC<AjoutProps> = ({ famille, familles, defs, onFamille
           )}
         </span>
       </label>
+      {/* T3B-9 (BR-19, 2e passe) : cinq points ne nomment rien. Les cinq familles se lisent au repos, la courante est marquée ; un nom la choisit d'un toucher (la bascule garde son tour). */}
+      {familles.length > 2 && (
+        <div className="fer-noms" role="group" aria-label="Famille de l’ajout" data-role="fam-noms">
+          {familles.map((k) => (
+            <button key={k} type="button" className="fer-nom" aria-current={k === famille ? 'true' : undefined} aria-pressed={k === famille}
+              onMouseDown={(e) => e.preventDefault()} onClick={(e) => { e.preventDefault(); if (k !== famille) { onFamille(k); reinit(); } }}>{defs[k].label}</button>
+          ))}
+        </div>
+      )}
       <div ref={rangee} className={`fer-puces${on ? ' fer-tuiles' : ''}`} id="fer-resultats" role={on ? 'listbox' : undefined} aria-label={on ? 'Résultats de la recherche' : undefined} data-role="puces" data-booster="sacs-habituels"
         onPointerDown={(e) => e.preventDefault()} onMouseDown={(e) => e.preventDefault()}>
         {!on && prete && propositions.slice(0, 5).map((p) => (
@@ -292,7 +295,8 @@ export const Ajout: React.FC<AjoutProps> = ({ famille, familles, defs, onFamille
         {on && creer && (
           <button type="button" role="option" aria-selected className="fer-tu fer-large fer-cree fer-prem" data-role="creer" data-cree="1" onClick={() => { const now = Date.now(); if (now - dernierClic.current < 400) return; dernierClic.current = now; reinit(); onCreer(t, s.kg, famCreee); }}>
             <span className="fer-l1"><Plus /><span className="fer-nm2">Créer « {t} »{s.kg != null && <> · <b>{kgTxt(s.kg)}</b> kg</>} (stock à zéro)</span></span>
-            <span className="fer-l2">{defCreee.label.toLowerCase()} : {QUAND[defCreee.use]}</span><i className="fer-ent" aria-hidden="true"><Entree /></i>
+            {/* T3B-8 : une épice (coriandre, zeste…) n'est pas un fermentescible ; la ligne ne dit plus « grain : à l'empâtage » mais ce qu'elle sera : hors du grain, de la couleur et du décompte. */}
+            <span className="fer-l2" data-epice={estEpice(t) ? '1' : undefined}>{estEpice(t) ? 'épice : ni sucre ni couleur, hors du décompte du grain' : `${defCreee.label.toLowerCase()} : ${QUAND[defCreee.use]}`}</span><i className="fer-ent" aria-hidden="true"><Entree /></i>
           </button>
         )}
         {on && !t && prete && !liste.length && <p className="fer-rien">Rien en stock pour {def.label.toLowerCase()}</p>}

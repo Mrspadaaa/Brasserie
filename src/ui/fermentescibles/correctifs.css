@@ -46,10 +46,10 @@
 .fer .fer-li[aria-current='true'] .fer-mo:not(.fer-mo-hors), .fer .fer-li[aria-current='true'] .fer-pc:not(.fer-pc-hors) { color: var(--f-t0); }
 /* BR-14 : la bascule des repères faisait 16 × 24 px. */
 .fer button.fer-pl { min-width: 24px; justify-content: center; }
-/* BR-19 : la position de la famille de l'ajout dans la bascule (une rangée de points, le plein est la famille courante). */
-.fer .fer-pts { display: inline-flex; gap: 3px; align-items: center; margin-left: 2px; }
-.fer .fer-pts i { width: 4px; height: 4px; border-radius: 50%; background: var(--f-t2); opacity: .55; }
-.fer .fer-pts i.fer-pt-on { background: var(--f-t0); opacity: 1; }
+/* T3B-9 (BR-19, 2e passe) : les cinq familles de l'ajout nommées sous le champ ; la courante en plein, les autres en gris secondaire (≥ 4,5:1 sur le fond du plateau). */
+.fer .fer-noms { display: flex; flex-wrap: wrap; align-items: center; gap: 2px 4px; margin: 4px 0 2px; }
+.fer button.fer-nom { height: 24px; padding: 0 7px; border-radius: 10px; border: 1px solid transparent; background: transparent; font-size: 12px; color: var(--f-t1); white-space: nowrap; }
+.fer button.fer-nom[aria-current='true'] { color: var(--f-t0); font-weight: 600; border-color: var(--f-bordm); background: var(--f-panel); }
 
 /* k1 point 13 : une pastille de malt très sombre (≥ 60 EBC) était noire sur le fond noir de la cave : liseré clair, même taille (la bordure remplace la bordure sombre). */
 .fer button.fer-pas.fer-sombre, .fer .fer-bpas.fer-sombre { border: 1.5px solid var(--f-t1); }
