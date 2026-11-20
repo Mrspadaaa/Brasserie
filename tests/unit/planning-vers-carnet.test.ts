@@ -2,6 +2,8 @@ import { describe, expect, it } from 'vitest';
 import taches from '../../scripts/planning-vers-carnet/fixture-planning.json';
 import { carnetDeTache, dateDuPlanning, idCarnetPlanning, idMessagePlanning, planMigration, type TachePlanning } from '../../scripts/planning-vers-carnet/correspondance';
 import { iconesIdees } from '../../src/domain/calendrier';
+import { appliquerEcritures } from '../../src/domain/carnets/operations';
+import { planEtats } from '../../scripts/planning-vers-carnet/etats';
 import { filDe, lireCarnet, lireCarnets, lireMessage } from '../../src/domain/carnets/modele';
 
 const LE = '2026-11-20T12:00:00.000Z';
@@ -88,6 +90,24 @@ describe('Planning → Carnet (20.11)', () => {
     const moitie = planMigration(fixture.slice(0, 1), new Set([idCarnetPlanning('T-6')]), LE);
     expect(moitie.conflits).toEqual(['T-6']);
     expect(moitie.aEcrire).toEqual([]);
+  });
+
+  it('pose ses états du 20.11 : 1 à 5 archivées, 6 en cours, 7 à 11 pas encore faites ; dates inchangées ; relancé, rien', () => {
+    const docs = planMigration(fixture, new Set(), LE).aEcrire.flatMap(c => c.docs);
+    const plan = planEtats(docs, LE);
+    expect(plan.absents).toEqual([]);
+    const apres = appliquerEcritures(docs, plan.ecritures);
+    const c = (t: string) => lireCarnet(apres.find(d => d.id === idCarnetPlanning(t)))!;
+    expect(['T-6', 'T-7', 'T-8', 'T-9', 'T-10'].every(t => c(t).carnet.archive?.raison === 'Fait (réponse du brasseur, 20.11)')).toBe(true);
+    expect(c('T-11').carnet.archive).toBeUndefined();
+    expect(c('T-11').carnet.notes.map(n => n.texte)).toContain('En cours au 20.11.2026');
+    expect(['T-12', 'T-14', 'T-16', 'T-17', 'T-18'].every(t => c(t).carnet.notes.some(n => n.texte === 'Pas encore fait au 20.11.2026'))).toBe(true);
+    expect(c('T-13').carnet.notes).toHaveLength(1);
+    for (const t of fixture) expect(c(t.id).date, t.id).toBe(lireCarnet(docs.find(d => d.id === idCarnetPlanning(t.id)))!.date);
+    expect(lireCarnets(apres)).toHaveLength(14);
+    const relance = planEtats(apres, LE);
+    expect(relance.ecritures).toEqual([]);
+    expect(relance.dejaFait).toHaveLength(11);
   });
 
   it('pose au Calendrier les 17 étapes datées, chacune à la semaine de son début, par le lien existant du Carnet (R48)', () => {
