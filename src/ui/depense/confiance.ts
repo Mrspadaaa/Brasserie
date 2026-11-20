@@ -40,6 +40,8 @@ export interface LigneConfiance {
   stockCategory?: string; sourceReference?: string; stockAction?: 'none' | 'new' | 'existing'; stockRef?: string;
   /** Voie n1-nom-fr : le nom français et le nom imprimé lu de la ligne, pour que la confiance lise le même rapprochement que l'écran et l'enregistrement. */
   nameFr?: string; nomLu?: string;
+  /** LR2-6 : le montant 0,00 est déduit par le serveur (les autres lignes font déjà le total) : « repris », jamais « sûr ». */
+  montantDeduit?: true;
 }
 export interface ContexteConfiance {
   /** Toutes les lignes de la pièce (les autres lignes de la même famille éclairent l'unité). */
@@ -408,6 +410,7 @@ export function confianceLigne(l: LigneConfiance, c: ContexteConfiance): Confian
     if (corrobore) montant = { ...montant, raison: 'quantité × prix ≠ montant, mais le total des lignes tombe juste' };
   } else if (calcul === 'lot') prix = baisser(prix, [cible('prix', 'repris', 'prix probablement par 100 g ou par kg')]);
   quantite = baisser(quantite, de('quantite')); prix = baisser(prix, de('prix')); montant = baisser(montant, de('montant'));
+  if (l.montantDeduit && a === 0) montant = { niveau: 'repris', valeur: 0, raison: 'montant déduit : les autres lignes font déjà le total' };
 
   const famille = familleDeLigne(l, c);
   /* dp (10.11, « Pas flaggé ??? » : un médicament de pharmacie) : une ligne « Autres » lue « divers » (kind other/unknown) dans une dépense « divers » : rien ne dit que c'est un achat de brasserie.

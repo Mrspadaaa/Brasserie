@@ -340,6 +340,13 @@ export function apercuDepense(etat: string): ApercuDepense {
     Object.assign(result, { tvaAmount: null, tvaRate: null, vat: [{ code: 'TVA', rate: 0.026, base: 19.2, amount: 0.5 }, { code: 'TVA', rate: 0.081, base: 61.73, amount: 5 }] });
     result.controls = { ...result.controls!, vat: { statut: 'ok', base: 'HT' } };
   }
+  if (etat === 'montant-deduit') {
+    // LR2-6 (g1, 20.11), SIMULÉ (noms et montants inventés, de la forme de doc2) : « Sédation » sans montant imprimé ; les trois autres lignes font déjà le total : 0,00 déduit par le serveur (`montantDeduit`), jaune « à contrôler ».
+    const ligne = (n: number, name: string, amountTTC: number, extra: Record<string, unknown> = {}) => ({ id: `line-${n}`, name, kind: 'other' as const, quantity: null, unit: '', price: null, amountTTC, stockCategory: '', reference: '', variant: '', evidence: name, ambiguity: '', vatCode: '', ...extra });
+    Object.assign(result as unknown as Record<string, unknown>, { vendor: 'Cabinet Vétérinaire Test', date: '10.11.2026', invoiceNumber: 'SIM-2', description: 'Soins', category: 'divers', subcategory: '', amountHT: null, tvaRate: null, tvaAmount: null, vat: [], amountTTC: 768.55, points: [], fieldWarnings: [], issues: [],
+      paymentEvidence: 'unknown', printedLineCount: 4, review: { status: 'checked', findings: [], readers: 3 }, items: [ligne(1, 'Sédation', 0, { montantDeduit: true }), ligne(2, 'Chirurgie', 711.7), ligne(3, 'Antibiotique', 41.15), ligne(4, 'Pansement', 15.7)],
+      controls: { ...result.controls!, sum: { statut: 'ok', base: 'TTC' }, lines: { checked: 4, failed: 0, skipped: 0, skippedIds: [] } } });
+  }
   if (etat === 'port' || etat === 'port-sans-montant' || etat === 'tout-port') {
     // p3c-port (P21, D249) : états du port, SIMULÉS, dérivés ici (le JSON épinglé de `fixture.test.ts` ne change pas). Une ligne « Port » `shipping` :
     // 8,50 (état `port`, total 95,00), sans montant (`port-sans-montant`, la rangée reste visible : l'inconnu n'est jamais 0), ou seule (`tout-port`, 12,50 : une rangée).

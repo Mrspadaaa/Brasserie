@@ -27,7 +27,7 @@ export const optionsDe = (line: Pick<PurchaseLineDraft, 'imprime' | 'unit'>): Op
 export const ligneConfianceDe = (line: PurchaseLineDraft): LigneConfiance => ({
   id: line.id, description: line.imprime ? [line.imprime.nom, line.imprime.variante].filter(Boolean).join(' · ') : line.description, kind: line.kind,
   quantity: line.quantity ?? null, unit: line.unit, unitPrice: line.unitPrice ?? null, amount: line.amount ?? null, stockCategory: line.stockCategory,
-  sourceReference: line.sourceReference, stockAction: line.stockAction, stockRef: line.stockRef, nameFr: line.nameFr, nomLu: line.nomLu,
+  sourceReference: line.sourceReference, stockAction: line.stockAction, stockRef: line.stockRef, nameFr: line.nameFr, nomLu: line.nomLu, montantDeduit: line.montantDeduit,
 });
 
 /** D306 : `category` (« Pour quoi ? ») est lue avec les lignes : l'unité déduite et la bande lisent la même famille. */

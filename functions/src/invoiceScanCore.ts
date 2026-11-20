@@ -229,6 +229,8 @@ type CoreItem = {
   reference: string; variant: string; stockCategory: string; evidence: string; ambiguity: string; vatCode: string; alphaPct: number | null; alphaPctLu: number | null;
   /** D381 : lecture d'un morceau seulement : la ligne n'est que la suite d'un article commencé sur la partie précédente. */
   suite?: true;
+  /** LR2-6 : le montant n'est pas imprimé ; 0,00 DÉDUIT parce que les autres lignes font déjà le total imprimé (`montantDeduitDeLaSomme`). */
+  montantDeduit?: true;
 };
 
 type VatKey = { code: string; rate: number | null };
@@ -364,6 +366,20 @@ export function quantiteDeTicket(quantity: number | null, documentType: unknown,
   return entier >= 1 && lus.includes(imprime) && !estCodeTva(entier, vatCode, codesTva) ? entier : quantity;
 }
 
+/**
+ * LR2-6 (g1, 20.11, doc2 lu en réel) : une ligne dont le montant n'est pas lisible alors que TOUTES les autres ont le leur et que leur somme égale déjà le total TTC imprimé (au centime) :
+ * le montant de cette ligne est 0,00, forcé par le total, et marqué `montantDeduit` (jamais un 0 lu). Une seule ligne sans montant, un total imprimé, aucune ligne perdue ; sinon rien ne change.
+ * Renvoie le rang (base 0) de la ligne, ou null.
+ */
+export function rangMontantDeduit(items: Array<{ amountTTC: number | null }>, totalTTC: number | null, lignesPerdues: number): number | null {
+  const total = toCents(totalTTC);
+  if (total === null || lignesPerdues > 0 || items.length < 2) return null;
+  const sans = items.flatMap((item, rang) => (toCents(item.amountTTC) === null ? [rang] : []));
+  if (sans.length !== 1) return null;
+  const somme = items.reduce((cumul, item) => cumul + (toCents(item.amountTTC) ?? 0), 0);
+  return somme === total ? sans[0] : null;
+}
+
 /** Pure transcription checks. Original totals/rates survive discrepancies. */
 export function normalizeInvoiceScan(raw: any) {
   const issues: string[] = [];
@@ -473,6 +489,8 @@ export function normalizeInvoiceScan(raw: any) {
 
   // C2 / P2 — somme des lignes ; lignes perdues.
   let linesLost = lostCertain;
+  const deduit = rangMontantDeduit(items, result.amountTTC, linesLost);
+  if (deduit !== null) { items[deduit].amountTTC = 0; items[deduit].montantDeduit = true; }
   let summed = sumCheck(items, result.amountTTC, result.amountHT, linesLost);
   if (announcedGap > 0) {
     if (summed.sum.statut === 'ok') {

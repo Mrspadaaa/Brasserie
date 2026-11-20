@@ -57,6 +57,8 @@ export interface PurchaseLineDraft {
    * Lue par la validation, le mouvement de stock et l'article neuf (`uniteEffective`) ; le prix unitaire n'est jamais gardé sur elle.
    */
   uniteDeduite?:{unite:string;niveau:'sur'|'repris';regle:string;raison:string};
+  /** LR2-6 : le montant (0,00) n'est pas imprimé : déduit par le serveur parce que les autres lignes font déjà le total ; jaune « à contrôler » tant que le montant reste 0. */
+  montantDeduit?:true;
 }
 /** L'unité que le stock lit pour une ligne : l'imprimée (ou tapée) si elle est lisible, sinon l'unité déduite (D277), sinon l'imprimée telle quelle (illisible : refusée). */
 export const uniteEffective=(line:Pick<PurchaseLineDraft,'unit'|'uniteDeduite'>):string=>isReadableUnit(line.unit)?line.unit:line.uniteDeduite&&isReadableUnit(line.uniteDeduite.unite)?line.uniteDeduite.unite:line.unit;

@@ -22,7 +22,7 @@ export interface ScannedInvoiceResult {
   provisoireJeton?:string;
   /** p2 : ce que la 3.8 a retiré aux deux premières lectures (lignes, total et TVA d'avant), écrit par le serveur dans le résultat lui-même, donc aussi servi du cache. Absent : rien n'a été retiré (ou ancien serveur). */
   retirees?:{ lignes:Array<{ rang:number; ligne:ScannedInvoiceResult['items'][number] }>; amountTTC?:number|null; tvaAmount?:number|null };
-  items:Array<{ id:string; name:string; kind:ScannedLineKind; reference?:string; variant?:string; quantity:number|null; unit:string; price?:number|null; amountTTC?:number|null; stockCategory?:string; evidence?:string; ambiguity?:string; vatCode?:string; alphaPct?:number|null; alphaPctLu?:number|null;
+  items:Array<{ id:string; name:string; kind:ScannedLineKind; reference?:string; variant?:string; quantity:number|null; unit:string; price?:number|null; amountTTC?:number|null; stockCategory?:string; evidence?:string; ambiguity?:string; vatCode?:string; alphaPct?:number|null; alphaPctLu?:number|null; montantDeduit?:true;
     /** Lenteur D : le rang de la ligne provisoire d'où vient cette ligne finale ; `null` = ajoutée par la 3.8 ; absent = le serveur ne le dit pas (jamais fabriqué). */
     rangProvisoire?:number|null;
     /** D275, voie f5 : la désignation en français (marque et nom propre tels quels, sans option ni unité), seulement si la lecture la rend ; jamais exigée. */
@@ -222,6 +222,7 @@ export const GeminiScannerService = {
       ...(typeof raw?.provisoireJeton==='string'&&raw.provisoireJeton?{provisoireJeton:text(raw.provisoireJeton,80)}:{}),
       items:(Array.isArray(raw?.items)?raw.items:[]).map((item:any,index:number)=>({ id:`line-${index+1}`,name:text(item?.name),kind:kinds.includes(item?.kind)?item.kind:'unknown',reference:text(item?.reference,70),variant:text(item?.variant,80),quantity:number(item?.quantity),unit:text(item?.unit,30),price:number(item?.price),amountTTC:number(item?.amountTTC),stockCategory:text(item?.stockCategory,60),evidence:text(item?.evidence),ambiguity:text(item?.ambiguity),
         ...(typeof item?.vatCode==='string'?{vatCode:text(item.vatCode,10)}:{}),
+        ...(item?.montantDeduit===true?{montantDeduit:true as const}:{}),
         ...('alphaPct' in (item??{})?{alphaPct:number(item.alphaPct)}:{}), ...('alphaPctLu' in (item??{})?{alphaPctLu:number(item.alphaPctLu)}:{}),
         // Lenteur D : un rang entier, ou null (ligne ajoutée par la 3.8). Une valeur invalide n'est pas lue comme « ajoutée » : la clé est omise.
         ...(item?.rangProvisoire===null?{rangProvisoire:null}:int(item?.rangProvisoire)!==null?{rangProvisoire:int(item.rangProvisoire)!}:{}) })),
