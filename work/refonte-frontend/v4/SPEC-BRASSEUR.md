@@ -2384,3 +2384,7 @@ Classement de la page r3 de Ma levure (https://claude.ai/artifact/DKAJe8ESeMR4ig
 > Pareil pour l'agrandir vers le futur...
 
 (20.11 : la frise de période ne s'étire pas non plus vers le futur au doigt. CAL-PASSE.)
+
+> Peut être faire une ou deux maquettes interactive de juste la frize qui bouge et s'agrandit, ont là à plein d'endroits c'est très pratique mais ça marche pour le moment assez mal, on l'a aussi par exemple pour le malt et autres.
+>
+> Juste l'actionnable au doigt
