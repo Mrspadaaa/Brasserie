@@ -20,6 +20,7 @@
 import { canonicalStockCategory, STOCK_CATEGORIES } from '../../services/stockLineMatching';
 import { hasHopWord } from '../../services/ingredientIdentity';
 import { NOMS_HOUBLONS_COMPOSES, NOMS_HOUBLONS_SIMPLES } from './nomsHoublons';
+import { ressemblanceNoms } from './ressemblanceNoms';
 
 export type FamilleCle = 'malt' | 'houblon' | 'levure' | 'sucre' | 'additif' | 'materiel' | 'emballage' | 'nettoyage' | 'consommable' | 'renovation' | 'service' | 'autres';
 
@@ -437,17 +438,88 @@ export function sousFamilleDe(famille: FamilleCle, e: EntreeFamille): string | u
  * boutique : au moins 3 lignes aux mots SANS ÉQUIVOQUE des travaux (peinture, cheville, carrelage…), au moins une sur dix, et AUCUNE ligne de brassage (ingrédient, ou matériel précis comme une cuve) : la dépense est de `renovation`.
  * Une catégorie déjà hors brassage (`renovation`, `chargesFixes`, `divers`) ou absente n'est jamais changée ; un ticket de brasserie n'a pas de mots de peinture. Rend la catégorie à utiliser.
  */
-export function categorieDeLaPiece(categorie: string | undefined | null, noms: readonly (string | undefined | null)[]): string | undefined {
+export function categorieDeLaPiece(categorie: string | undefined | null, noms: readonly (string | undefined | null)[], montants?: readonly (number | null | undefined)[]): string | undefined {
+  return classerLaPiece(categorie, noms, montants).categorie;
+}
+
+/**
+ * d3b (LR1-4, LR2-8, LR3-2 ; « ## État de l'art — d3b » de MISSION.md) : le classement de la PIÈCE par le vote de toutes ses lignes.
+ * Problème d'école : agréger les classes des parties d'un document en une étiquette (vote majoritaire pondéré), robuste au bruit de lecture. La même photo BAUHAUS lue « materiel » (mots déformés par
+ * la tache : « BAC A PEIRSURE », « COMBINAIBON JETABLE ») ou « renovation » ne doit pas se ranger en deux familles : la règle des 3 mots SANS équivoque (ci-dessus) n'en trouvait qu'un sur la lecture tachée.
+ *  - une pièce qui porte une ligne d'ingrédient ou de matériel précis (cuve, fermenteur…) garde sa catégorie lue, comme avant (acquis p3) : le vote ne juge que les pièces sans brassage ;
+ *  - chaque ligne vote : mot sans équivoque des travaux +1, mot ambigu (brosse, seau, gants…) +0,5, matériel précis ou ingrédient de brassage −1, le reste 0 ; un mot déformé qui rejoint un mot de la liste
+ *    à une ou deux lettres près (distance de Levenshtein, `ressemblanceNoms`, même première lettre, mot d'au moins 5 lettres) compte pour 0,75 de son vote ;
+ *  - poids d'une ligne = son montant (une ligne sans montant lu : la médiane des montants lus ; jamais 0 : l'inconnu n'est pas nul) ;
+ *  - la catégorie lue (brassage, matériel) compte pour UNE voix de brassage, du poids moyen d'une ligne ;
+ *  - la pièce passe en `renovation` quand la part des voix des travaux atteint `PART_TRAVAUX` ET qu'au moins `QUORUM_TRAVAUX` lignes votent pour les travaux. Sinon elle garde la catégorie lue, et la raison le dit
+ *    (`raison` : « vote faible », « égalité » ; l'écran peut l'afficher, jamais silencieux).
+ * Réglage : `PART_TRAVAUX` et `QUORUM_TRAVAUX` sont réglés sur doc25-provisoire-t2 et doc25-ticket-t1 ; la preuve est sur les AUTRES réponses enregistrées (tests/unit/depense/g1/brut), L20.
+ */
+export const PART_TRAVAUX = 0.15;
+export const QUORUM_TRAVAUX = 8;
+export interface ClassementPiece {
+  categorie: string | undefined;
+  /** Comment la catégorie a été tranchée : `lue` (rien à changer), `regle-sure` (3 mots sans équivoque), `vote` (vote des lignes), `vote-faible` (la catégorie lue reste, vote sous le seuil), `egalite`. */
+  raison: 'lue' | 'regle-sure' | 'brassage' | 'vote' | 'vote-faible' | 'egalite';
+  /** Part des voix pour les travaux (−1 à 1), et lignes qui votent pour eux ; absentes quand la catégorie lue ne se discute pas. */
+  part?: number;
+  lignesTravaux?: number;
+}
+
+const FLOU = 0.75;
+let motsDeTravaux: { sur: string[]; ambigu: string[] } | undefined;
+const listesDeTravaux = () => (motsDeTravaux ??= {
+  sur: (Object.values(TRAVAUX_SUR) as Mots[]).flatMap(x => x.tous).filter(w => w.length >= 5),
+  ambigu: (Object.values(TRAVAUX_AMBIGUS) as Mots[]).flatMap(x => x.tous).filter(w => w.length >= 5),
+});
+const rejoint = (j: string, w: string): boolean => {
+  if (j[0] !== w[0] || Math.abs(j.length - w.length) > 2) return false;
+  const longueur = Math.max(j.length, w.length);
+  return Math.round((1 - ressemblanceNoms(j, w)) * longueur) <= (longueur >= 8 ? 2 : 1);
+};
+/** Un jeton (déformé ou non) qui rejoint un mot de la liste à la distance bornée près ; l'égalité exacte est déjà lue par `lit`. */
+const jetonFlou = (t: readonly string[], mots: readonly string[]): boolean => t.some(j => j.length >= 5 && !/\d/.test(j) && mots.some(w => rejoint(j, w)));
+
+/** Le vote d'une ligne : +1 / +0,5 pour les travaux, −1 pour le brassage, 0 sinon. */
+export function voteDeLigne(nom: string): number {
+  const t = jetons(nom), joint = ` ${t.join(' ')} `;
+  if (!t.length) return 0;
+  if (estMaterielPrecis(t)) return -1;
+  if (['malt', 'houblon', 'levure', 'sucre', 'additif'].includes(familleDe({ nom, categorie: 'brassage' }))) return -1;
+  if (estDetartrant(t, joint) || estNettoyage(t, joint)) return 0;
+  if (estTravauxSur(t, joint)) return 1;
+  if (estTravauxAmbigu(t, joint)) return 0.5;
+  const { sur, ambigu } = listesDeTravaux();
+  if (jetonFlou(t, sur)) return FLOU;
+  if (jetonFlou(t, ambigu)) return 0.5 * FLOU;
+  return 0;
+}
+
+export function classerLaPiece(categorie: string | undefined | null, noms: readonly (string | undefined | null)[], montants?: readonly (number | null | undefined)[]): ClassementPiece {
   const lue = typeof categorie === 'string' ? categorie : undefined;
-  if (!lue || depenseHorsBrassage(lue)) return lue;
-  const lignes = noms.map(n => (typeof n === 'string' ? n : '')).filter(n => n.trim());
-  if (lignes.length < 3) return lue;
-  let travaux = 0;
-  for (const nom of lignes) {
+  if (!lue || depenseHorsBrassage(lue)) return { categorie: lue, raison: 'lue' };
+  const lignes = noms.map((n, i) => ({ nom: typeof n === 'string' ? n : '', montant: montants?.[i] })).filter(l => l.nom.trim());
+  if (lignes.length < 3) return { categorie: lue, raison: 'lue' };
+  // 1. La règle d'avant (p3), inchangée : 3 mots sans équivoque, une ligne sur dix au moins, aucune ligne de brassage.
+  let travaux = 0, brassage = false;
+  for (const { nom } of lignes) {
     const t = jetons(nom), joint = ` ${t.join(' ')} `;
-    if (estMaterielPrecis(t)) return lue;
-    if (['malt', 'houblon', 'levure', 'sucre', 'additif'].includes(familleDe({ nom, categorie: 'brassage' }))) return lue;
+    if (estMaterielPrecis(t) || ['malt', 'houblon', 'levure', 'sucre', 'additif'].includes(familleDe({ nom, categorie: 'brassage' }))) { brassage = true; break; }
     if (estTravauxSur(t, joint)) travaux++;
   }
-  return travaux >= 3 && travaux * 10 >= lignes.length ? 'renovation' : lue;
+  if (brassage) return { categorie: lue, raison: 'brassage' }; // une pièce qui porte une ligne de brassage garde sa catégorie lue (acquis p3) : le vote ne juge que les pièces sans brassage
+  if (travaux >= 3 && travaux * 10 >= lignes.length) return { categorie: 'renovation', raison: 'regle-sure' };
+  // 2. Le vote de toutes les lignes, pondéré par le montant.
+  const connus = lignes.map(l => Math.abs(Number(l.montant))).filter(x => Number.isFinite(x) && x > 0).sort((a, b) => a - b);
+  const mediane = connus.length ? connus[Math.floor(connus.length / 2)] : 1;
+  const poids = lignes.map(l => { const x = Math.abs(Number(l.montant)); return Number.isFinite(x) && x > 0 ? x : mediane; });
+  const moyen = poids.reduce((a, b) => a + b, 0) / poids.length;
+  const votes = lignes.map(l => voteDeLigne(l.nom));
+  const pour = votes.reduce((s, v, i) => s + v * poids[i], 0);
+  const total = poids.reduce((a, b) => a + b, 0) + moyen;
+  const part = (pour - moyen) / total; // la catégorie lue : une voix de brassage
+  const lignesTravaux = votes.filter(v => v > 0).length;
+  if (part === 0) return { categorie: lue, raison: 'egalite', part, lignesTravaux };
+  if (part >= PART_TRAVAUX && lignesTravaux >= QUORUM_TRAVAUX) return { categorie: 'renovation', raison: 'vote', part, lignesTravaux };
+  return { categorie: lue, raison: lignesTravaux ? 'vote-faible' : 'lue', part, lignesTravaux };
 }

@@ -138,6 +138,29 @@ function apercuFamilles(): ApercuDepense {
 }
 
 /**
+ * `hors-stock` (voie d3b, M9-1) : un ticket SIMULÉ (« Brauhaus Fictif ») dont la ligne « Citra » a DEUX articles voisins au stock (« Citra 12.5% » et « Citra 13.0% ») : la ligne reste « hors stock », rien n'est relié.
+ * « Confirmer et enregistrer » doit refuser avec l'alerte « Citra : ingrédient hors stock… » ; « Ajouter au stock » (ou relier) la fait entrer. Aucune valeur d'une vraie pièce, aucune écriture.
+ */
+function apercuHorsStock(): ApercuDepense {
+  const result = clone(lecture) as unknown as ScannedInvoiceResult;
+  const items = [{ id: 'line-1', name: 'Citra', kind: 'stock', quantity: 100, unit: 'g', price: null, amountTTC: 9, reference: '', variant: '', stockCategory: 'hop', evidence: 'Citra (page 1)', ambiguity: '', vatCode: 'N', alphaPct: null, alphaPctLu: null }];
+  result.items = items as unknown as ScannedInvoiceResult['items'];
+  Object.assign(result, {
+    proForma: false, vendor: 'Brauhaus Fictif', date: '21.10.2026', invoiceNumber: 'F-9001', orderNumber: '', amountHT: null, tvaRate: null, tvaAmount: null, vat: [], category: 'brassage',
+    amountTTC: 9, printedLineCount: 1, linesLost: 0, points: [], fieldWarnings: [], issues: [], remarques: [], description: 'Houblon (SIMULÉ)',
+    controls: { lines: { checked: 1, failed: 0, skipped: 0, skippedIds: [] }, sum: { statut: 'ok', base: 'TTC' }, vat: { statut: 'non-verifiable', base: 'TTC' }, totals: { statut: 'non-verifiable' } },
+    review: { status: 'checked', findings: [], readers: 2 },
+  });
+  const art = (nom: string) => ({ id: nom, ref: `MP-${nom}`, name: nom, unit: 'g', category: 'Houblon', currentStock: 10, minStock: 0, reorder: false });
+  const fichier = { name: 'capture-hors-stock.jpg', size: 41000, type: 'application/pdf' };
+  return {
+    outcome: { ok: true, result, proofDataUrl: '', fileName: fichier.name, mimeType: fichier.type, model: 'simule', cached: false }, fichier,
+    stocks: { rawMaterials: [art('Citra 12.5%'), art('Citra 13.0%')], cleaning: [], equipment: [], kegs: [] }, transactions: [], etat: 'hors-stock', drive: 'ok', reseau: true,
+    enregistrer: async () => { await pause(600); return { driveFileId: 'simule', fileName: '2026-10-21 Brauhaus Fictif F-9001.pdf', bytes: 41000, sha256: '0'.repeat(64), verified: true, folder: 'L’Affinée / Justificatifs / 2026', webViewLink: 'https://drive.google.com/file/d/simule/view' }; },
+  };
+}
+
+/**
  * `renovation` (voie r1-renovation, D306) : une pièce de bricolage SIMULÉE (« Brico Fictif SA »), « Pour quoi ? » lu `renovation` (Local). Désignations inventées en français,
  * allemand, anglais et italien, lues `stock`, `other`, `equipment` ou `cleaning` comme la lecture le fait : peinture et sols, outillage, quincaillerie, électricité, plomberie,
  * protection (un EPI lu en catégorie de stock), deux termes ambigus (un seau, une brosse), un détartrant (Nettoyage), une ligne sans mot reconnu (Divers travaux), un port.
@@ -309,6 +332,7 @@ export function apercuDepense(etat: string): ApercuDepense {
   if (etat === 'commande') return apercuCommande();
   if (etat === 'familles') return apercuFamilles();
   if (etat === 'renovation') return apercuRenovation();
+  if (etat === 'hors-stock') return apercuHorsStock();
   if (etat === 's6') return apercuS6();
   if (etat.startsWith('qr-')) return apercuQr(etat);
   const result = clone(lecture) as unknown as ScannedInvoiceResult;

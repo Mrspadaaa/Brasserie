@@ -90,7 +90,7 @@ function lienParLeNom(line: PurchaseLineDraft, unit: string, regle: ReturnType<t
  */
 export function lignesDeLecture(result: ScannedInvoiceResult, stockItems: readonly StockItem[], submissionId: string): { lines: PurchaseLineDraft[]; propositions: Propositions } {
   const propositions = propositionsVides();
-  const categorie = categorieDeLaPiece(result.category, result.items.map(i => i.name)); // p3 : la catégorie de la PIÈCE (familles.ts), pas le seul choix de la lecture
+  const categorie = categorieDeLaPiece(result.category, result.items.map(i => i.name), result.items.map(i => (i.kind === 'shipping' || i.kind === 'discount' ? undefined : i.amountTTC))); // p3 : la catégorie de la PIÈCE (familles.ts), pas le seul choix de la lecture
   const total = invoiceTotalProposal(result);
   const lues0: PurchaseLineDraft[] = result.items.map(item => {
     /* d2, bloquant 1 (critique) : une remise n'a ni quantité ni unité ni prix unitaire (« 1 pièce × −0,68 » comptait 2 pièces de plus) ; elle reste un montant négatif. */
@@ -162,7 +162,7 @@ export function lignesDeLecture(result: ScannedInvoiceResult, stockItems: readon
 /** Ce que la lecture propose pour l'en-tête (sans les lignes) : le patch que `applyOutcome` passe à `patchPurchaseDraft`. */
 export function enteteDeLecture(previous: PurchaseDraft, result: ScannedInvoiceResult, today: string): Partial<PurchaseDraft> {
   const total = invoiceTotalProposal(result), proposed = applyScannedDescription(previous, result);
-  return { vendor: result.vendor, date: result.date, ...applyScannedPayment(previous, result, today), invoiceNumber: result.invoiceNumber, ...proposed, category: categorieDeLaPiece(result.category, result.items.map(i => i.name)) as ScannedInvoiceResult["category"], amount: total.amount, sourceCurrency: result.currency, sourceAmount: result.amountTTC ?? undefined, sourceDocumentType: result.documentType, sourceOrderNumber: result.orderNumber, sourceTotalBasis: total.calculated ? 'line_sum' : result.amountTTC !== null ? 'printed' : undefined, sourceNetAmount: result.amountHT ?? undefined, sourceVatRate: result.tvaRate ?? undefined, sourceVatAmount: tvaImprimee(result)?.montant };
+  return { vendor: result.vendor, date: result.date, ...applyScannedPayment(previous, result, today), invoiceNumber: result.invoiceNumber, ...proposed, category: categorieDeLaPiece(result.category, result.items.map(i => i.name), result.items.map(i => (i.kind === 'shipping' || i.kind === 'discount' ? undefined : i.amountTTC))) as ScannedInvoiceResult["category"], amount: total.amount, sourceCurrency: result.currency, sourceAmount: result.amountTTC ?? undefined, sourceDocumentType: result.documentType, sourceOrderNumber: result.orderNumber, sourceTotalBasis: total.calculated ? 'line_sum' : result.amountTTC !== null ? 'printed' : undefined, sourceNetAmount: result.amountHT ?? undefined, sourceVatRate: result.tvaRate ?? undefined, sourceVatAmount: tvaImprimee(result)?.montant };
 }
 
 export interface OptionsLecture { stockItems: readonly StockItem[]; today: string; model?: string; documentHash?: string; ligneVide: () => PurchaseLineDraft }
