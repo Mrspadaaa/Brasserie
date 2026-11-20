@@ -1290,7 +1290,7 @@ export function ExpenseSheet({onClose,onSaved,initialIntent='expense',existingEq
       nom={isMouture?'mouture':sansAlphaDoublon(line.nameFr&&!article&&!estRabais?nomAffiche(line.nameFr):line.stockAction==='new'&&neuf?.derive?(nomRefuse?neuf.nomPropose:neuf.name):nomAffiche(line.description,article),alphaLu)} lien={lien} sansStock={depenseHorsBrassage(draft.category)} rabais={line.kind==='discount'} groupe={groupeDeLigne(index)}
       alpha={alphaLu} ebc={ebcLu} conversion={article?conversionDe({...line,unit:unite},article):undefined}
       qte={{texte:qteRangee}} niveaux={prixRangee?.deduit||prixCalcule?{...niveaux,prix:'repris' as Niveau}:niveaux}
-      prix={prixRangee?prixImprime(prixRangee.valeur):'—'} prixDeduit={prixRangee?.deduit||prixCalcule?formulePrix:undefined} montant={line.amount===undefined?'—':fr2c(Math.round(line.amount*100))}
+      prix={prixRangee?prixImprime(prixRangee.valeur):'—'} prixDeduit={prixRangee?.deduit||prixCalcule?formulePrix:undefined} montantDeduit={line.montantDeduit===true&&line.amount===0&&niveaux.montant==='repris'} montant={line.amount===undefined?'—':fr2c(Math.round(line.amount*100))}
       prixKg={pk?{texte:`✓ ${pk}`,aria:`${pk} avec mouture`}:undefined} pastilleMouture={pastilleMouture} etat={etat}
       boutonMouture={isMouture&&parent?{liee:parentIdx>=0,parent:nomParent,onBascule:()=>basculeMouture(line.id,parentIdx>=0),attr:ordre==='papier'||!cestMoutureEnPastille}:undefined}
       douteux={douteux} filtree={Boolean(visibles&&visibles.has(line.id)&&!isMouture)} garde={garde.includes(line.id)} masquee={Boolean(visibles&&!visibles.has(line.id)&&!(isMouture&&ordre==='cat'))} ouverte={ouverte}

@@ -33,6 +33,8 @@ export interface LigneP3cProps {
   filtree?: boolean;
   /** d2 (critique, bloquant 1) : un rabais est une sous-ligne de l'article du dessus : ni picto d'article, ni quantité, ni prix unitaire ; seulement son montant négatif. */
   rabais?: boolean;
+  /** LR2-6 : le montant (0,00) n'est pas imprimé, le serveur l'a déduit (les autres lignes font déjà le total) : dit en toutes lettres sur la ligne, tant que le brasseur n'a pas tapé le sien. */
+  montantDeduit?: boolean;
 }
 
 const stop = (e: React.MouseEvent) => { e.preventDefault(); e.stopPropagation(); };
@@ -79,6 +81,8 @@ export function LigneP3c(p: LigneP3cProps) {
       </summary>
       <div data-dp-corps className="space-y-2 border-t border-cave-800 bg-cave-900/60 py-2 pl-8 pr-2.5">{p.plateau}{p.moutureArticles}</div>
     </details>
+    {/* Hors du `details` : visible rangée fermée, comme la barre « fix » ; jamais un simple `title`. */}
+    {p.montantDeduit ? <p data-dp-montant-deduit className="pb-0.5 pl-9 pr-2.5 text-xs leading-[14px] text-attention">montant déduit (somme = total) : à contrôler</p> : null}
     {p.fix ? <div data-dp-barre {...niveau(p.fixNiveau ?? 'repris')} className="dp-p3c-fix flex flex-wrap items-center gap-1.5 pb-1 pl-9 pr-2.5">{p.fix}</div> : null}
   </article>;
 }
