@@ -61,3 +61,9 @@ Tous ces points sont tenus :
 
 - Le bandeau de pe1 et la trace de pe3 se dessinent depuis sa page choisie (https://claude.ai/artifact/Phf2ArFjBguzQNsAZGkqkf). Aucune forme neuve.
 - L9 parle d'une table « pré-remplie » et pe4 dit « jamais inventée ». Je lis : articles pré-remplis, doses demandées. Lecture étroite et réversible (L01).
+
+## Port sur claude/port-carnet-1711 (20.11, commit da2e52035)
+
+- Même plan pur, même bandeau, mêmes mouvements. Écart : le lavage compte « par fût lavé » (`par: unite`), pour que « Tout marquer propre » soit un seul geste (un bandeau, un Annuler) ; la fiche d'un fût écrit un geste d'un fût.
+- Branchements : `KegBoard` (fiche « Marquer propre » et lot), `completeBrewStock` (brassage), `BatchDetailSheet` (conditionnement). Trace pe3 : `LigneStock` (ligne choisie sy/fA), sous la ligne, sans changer son dessin.
+- Banc des fûts (`onSaveKeg`) : aucun décompte. Le parcours `parcours-geste.cjs` est à rejouer sur ce port (non fait).
