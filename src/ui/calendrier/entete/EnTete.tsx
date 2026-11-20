@@ -2,7 +2,7 @@ import React, { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useSta
 import { ChartLine, ChevronDown, Clock, EyeOff, Maximize2, Minimize2, Ruler } from 'lucide-react';
 import { alignerSemaines, colonnesDeSemaines, semaineSous } from './alignement';
 import type { Periode } from '../../../components/periode/periode';
-import { dateDeSemaine, etiquetteS, lundiDe, type ModeleCalendrier, type Retard } from '../../../domain/calendrier';
+import { anneeEnMois, dateDeSemaine, etiquetteS, lundiDe, type ModeleCalendrier, type Retard } from '../../../domain/calendrier';
 import { creuxDepuis, miseDeCoteVisible, type CourbeCaisse, type MouvementNomme } from '../../../domain/calendrierCaisse';
 import type { Orientation } from '../useOrientation';
 import { demanderPleinEcran, estPleinEcran, poserPleinCalendrier, sortirPleinEcran } from '../pleinEcran';
@@ -176,9 +176,12 @@ export function EnTeteCalendrier(props: EnTeteCalendrierProps) {
   const anneeListe = liste && total > 0 && fenetre.semaines >= Math.min(SEMAINES_ANNEE, total);
   const annee = vue === 'annee' || anneeListe;
   const premier = Math.max(0, semainesTot.findIndex(s => s.debut >= fenetre.du));
-  const nombre = annee ? Math.max(1, total) : clamp(fenetre.semaines, 1, Math.max(1, total - premier));
-  const index = annee ? 0 : premier;
+  // CAL-PASSE (décision du pilote, 20.11) : l'An = douze mois à partir du début de la fenêtre, jamais tout le passé ajouté et l'avenir.
+  const nombre = annee ? clamp(Math.min(SEMAINES_ANNEE, Math.max(1, total)), 1, Math.max(1, total - premier)) : clamp(fenetre.semaines, 1, Math.max(1, total - premier));
+  const index = premier;
   const visibles = semainesTot.slice(index, index + nombre);
+  const debutVisible = visibles[0]?.debut ?? null;
+  const moisDeLAn = useMemo(() => (annee && debutVisible ? anneeEnMois(debutVisible, nombre) : modele.mois), [annee, debutVisible, nombre, modele.mois]);
 
   // La largeur : mesurée, sinon la colonne de la frise × le nombre de colonnes, sinon 390.
   const zone = useRef<HTMLDivElement>(null);
@@ -484,7 +487,9 @@ export function EnTeteCalendrier(props: EnTeteCalendrierProps) {
     taire('annee');
     // En Liste, la période change et la Liste reste : l'An s'y lit par sa fenêtre (anneeListe).
     if (!liste) onVue('annee');
-    ecrire({ du: semainesTot[0].debut, semaines: Math.min(SEMAINES_ANNEE, total) });
+    // l'An part du début de la fenêtre (aujourd'hui par défaut, plus tôt si on a reculé), calé pour que les 52 semaines tiennent dans le modèle
+    const i0 = Math.max(0, semainesTot.findIndex(s => s.debut >= fenetre.du));
+    ecrire({ du: semainesTot[Math.min(i0, Math.max(0, total - SEMAINES_ANNEE))].debut, semaines: Math.min(SEMAINES_ANNEE, total) });
   };
   const quitterAnnee = () => {
     const f = fenAvantAnnee.current ?? { du: semainesTot[0]?.debut ?? fenetre.du, semaines: 6 };
@@ -737,7 +742,7 @@ export function EnTeteCalendrier(props: EnTeteCalendrierProps) {
 
       {!graph && (
         <div className="ent-bz">
-          {annee && courbe ? <BandeAnnee courbe={courbe} mois={modele.mois} creux={creux} /> : vue === 'semaines' && props.colonnes && props.echelle && (props.echelle !== 'semaine' || props.deplie) ? (
+          {annee && courbe ? <BandeAnnee courbe={courbe} mois={moisDeLAn} creux={creux} /> : vue === 'semaines' && props.colonnes && props.echelle && (props.echelle !== 'semaine' || props.deplie) ? (
             <BandeColonnes colonnes={props.colonnes} echelle={props.echelle} aujourdhui={props.aujourdhui} deplie={props.deplie ?? null} onDeplier={props.onDeplier} onIdeeSemaine={onIdeeSemaine}
               onJour={(jour, colonne, n) => touche(jour, colonne, `${jourEntier(jour)} · ${etiquetteS(jour)}`, n)}
               onSemaine={(lundi, colonne, n) => touche(lundi, colonne, dateDeSemaine(lundi), n)} />

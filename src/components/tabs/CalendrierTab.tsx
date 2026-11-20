@@ -12,6 +12,7 @@ import { EnTeteCalendrier, type MessageEnTete, type VueCalendrier } from '../../
 import { fenetreDePeriode, libelleDuree, periodeDeFenetre, SEMAINES_ANNEE, type FenetreSemaines } from '../../ui/calendrier/entete/Fenetre';
 import { Frise, ordreComplet } from '../../ui/calendrier/frise/Frise';
 import type { SaisieRapide } from '../../ui/finance/prevision/PlanSheetC';
+import { isoDate } from '../../domain/finance/ledger';
 import { Message, type MessageCal } from '../../ui/calendrier/frise/Message';
 import { MenuAppuiLong, type LiensPossibles } from '../../ui/calendrier/frise/MenuAppuiLong';
 import { DetailChose } from '../../ui/calendrier/frise/DetailChose';
@@ -21,7 +22,7 @@ import { CLASSE_TEINTE } from '../../ui/calendrier/frise/Marque';
 import { positionDans, type Colonne, type DragEtat } from '../../ui/calendrier/frise/Rangee';
 import { aDesJours, ajouterMois, cibleDuGlisse, colonnesDeLAxe, ECHELLES, enMois, echelleApres, echelleEffective, peutDeplier, PERIODE_DE_L_ECHELLE, type Echelle, type SensPincement } from '../../ui/calendrier/echelle';
 import {
-  RANGEES, ajouterJours, barreLiee, dateDeSemaine, ecartJours, estPonctuel, etiquetteS, jourLisible, lundiDe, nomRangee, nomSeules, preparerChoses,
+  RANGEES, anneeEnMois, ajouterJours, barreLiee, dateDeSemaine, ecartJours, estPonctuel, etiquetteS, jourLisible, lundiDe, nomRangee, nomSeules, preparerChoses,
   type CibleOuverture, type ChoseCalendrier, type ModeleCalendrier, type Rangee as IdRangee
 } from '../../domain/calendrier';
 import { courbeAvec, effetCaisse, type CourbeCaisse } from '../../domain/calendrierCaisse';
@@ -30,7 +31,7 @@ import {
   type BrouillonAjout, type ContexteAjout
 } from '../../domain/calendrierAjout';
 import {
-  accepterVente, alignerCourbe, allonger, deplacer, deplacerJours, dupliquer, dureeAllongee, fait, lier, delier, livrer, mettreDeCote, retirer, noterIdee, supprimerSansDate,
+  accepterVente, alignerCourbe, allonger, deplacer, deplacerJours, dupliquer, dureeAllongee, fait, lier, delier, livrer, mettreDeCote, modifierIdee, retirer, noterIdee, supprimerSansDate,
   courbeDuGlisse, raisonNommee, type ContexteGestes, type Ecriture, type Message as MessageGeste, type Promesse, type Resolution
 } from '../../domain/calendrierGestes';
 
@@ -227,7 +228,8 @@ export function CalendrierTab(props: CalendrierTabProps) {
   const [etoiles, setEtoiles] = useEtatGarde<string[]>('calendrier_etoiles', []);
   const [masquees, setMasquees] = useEtatGarde<IdRangee[]>('calendrier_masquees', []);
   const [ordreBrut, setOrdre] = useEtatGarde<IdRangee[]>('calendrier_ordre', RANGEES.map(r => r.id));
-  const ordre = useMemo(() => ordreComplet(ordreBrut), [ordreBrut]);
+  /* E44 : un calendrier de section ne montre que ses rangées (CAL-PASSE : `section` ne filtrait que les choses, les rangées vides restaient) */
+  const ordre = useMemo(() => { const o = ordreComplet(ordreBrut); return section ? o.filter(r => RANGEES_SECTION[section].includes(r)) : o; }, [ordreBrut, section]);
   /* le filtre dure le temps de la visite : il n'est pas gardé (E39) */
   const [filtre, setFiltre] = useState<IdRangee | null>(null);
   const [panneau, setPanneau] = useState<Panneau>(null);
@@ -235,6 +237,8 @@ export function CalendrierTab(props: CalendrierTabProps) {
   const [menu, setMenu] = useState<{ id: string; ancre: HTMLElement } | null>(null);
   const [feuille, setFeuille] = useState<FeuilleEtat | null>(null);
   const [idee, setIdee] = useState<string | null>(null);
+  /* CAL-PASSE : une idée hors carnet touchée au Calendrier s'ouvre dans sa feuille, sur place (« Modifier », comme une fête) */
+  const [ideeModif, setIdeeModif] = useState<{ id: string; titre: string; lundi: string; jour: string | null } | null>(null);
   const [message, setMessage] = useState<MessageCal | null>(null);
   /** L'id du message posé dans le flux faute de place libre (PC-109). */
   const [fluxForce, setFluxForce] = useState<number | null>(null);
@@ -271,10 +275,13 @@ export function CalendrierTab(props: CalendrierTabProps) {
      Semaine, si ses jours gardent 16 px au moins et si elle est dans la fenêtre */
   const echelle = echelleEffective(echelleVoulue, fenetre.semaines, annee);
   const deplieVu = !annee && echelle === 'semaine' && deplie && peutDeplier(mesure.largeur || 360, fenetre.semaines) && deplie >= fenetre.du && deplie < ajouterJours(fenetre.du, fenetre.semaines * 7) ? deplie : null;
+  /* CAL-PASSE (décision du pilote, 20.11) : l'An, ce sont douze mois à partir du début de la fenêtre (aujourd'hui par défaut, plus tôt si l'on a
+     reculé), jamais tout le passé ajouté plus l'avenir (23 colonnes) */
+  const moisAn = useMemo(() => anneeEnMois(fenetre.du, Math.min(SEMAINES_ANNEE, Math.max(1, fenetre.semaines))), [fenetre.du, fenetre.semaines]);
   const colonnes: Colonne[] = useMemo(() => {
-    if (annee) return modele.mois.map(m => ({ debut: m.debut, fin: m.fin, etiquette: m.court }));
+    if (annee) return moisAn.map(m => ({ debut: m.debut, fin: m.fin, etiquette: m.court }));
     return colonnesDeLAxe({ echelle, semaines: modele.semaines, mois: modele.mois, du: fenetre.du, nombre: fenetre.semaines, deplie: deplieVu });
-  }, [annee, echelle, deplieVu, modele.mois, modele.semaines, fenetre]);
+  }, [annee, echelle, deplieVu, moisAn, modele.mois, modele.semaines, fenetre]);
   const colonnesRef = useRef(colonnes);
   colonnesRef.current = colonnes;
   const echelleRef = useRef(echelle);
@@ -344,7 +351,13 @@ export function CalendrierTab(props: CalendrierTabProps) {
   }, [montrer]);
 
   const ouvrir = useCallback((cible: CibleOuverture) => {
-    if (cible.ecran === 'brassin' && cible.id) onOpenBatch(cible.id);
+    const ideeHorsCarnet = cible.ecran === 'atelier' && cible.id ? don.items.find(i => i.id === cible.id && i.type === 'recipe-idea') : undefined;
+    if (ideeHorsCarnet) {
+      const jour = isoDate(ideeHorsCarnet.date) ?? null;
+      setMessage(null); setMenu(null);
+      setIdeeModif({ id: ideeHorsCarnet.id, titre: ideeHorsCarnet.title, lundi: lundiDe(jour ?? lundiAuj), jour });
+    }
+    else if (cible.ecran === 'brassin' && cible.id) onOpenBatch(cible.id);
     else if ((cible.ecran === 'piece') && cible.id && onOpenPiece) onOpenPiece(cible.id);
     else if (cible.ecran === 'carnets' && cible.id && onOpenCarnet) onOpenCarnet(cible.id);
     else if (cible.ecran === 'agenda' || cible.ecran === 'atelier' || cible.ecran === 'carnets') onOpenAgenda();
@@ -353,7 +366,7 @@ export function CalendrierTab(props: CalendrierTabProps) {
        Finances › Prévisions ; l'app ouvre ce sous-onglet (`affinee:ouvrir-finances`, CP-13). Personne ne répond (banc) : Finances seul. */
     else if (cible.ecran === 'plan' && !window.dispatchEvent(new CustomEvent('affinee:ouvrir-finances', { cancelable: true, detail: { onglet: 'previsions' } }))) return;
     else onOpenFinances();
-  }, [onOpenBatch, onOpenPiece, onOpenCarnet, onOpenAgenda, onOpenCourses, onOpenFinances]);
+  }, [don.items, lundiAuj, onOpenBatch, onOpenPiece, onOpenCarnet, onOpenAgenda, onOpenCourses, onOpenFinances]);
 
   const lienDe = useCallback((lien: MessageGeste['lien']): MessageCal['lien'] => {
     if (!lien) return undefined;
@@ -586,7 +599,8 @@ export function CalendrierTab(props: CalendrierTabProps) {
     const n = DUREES_MENU.find(d => d >= besoin) ?? SEMAINES_ANNEE;
     setMessage(null); setMenu(null); setSelectionId(null); setAncreListe(undefined);
     if (n >= SEMAINES_ANNEE || n >= total) {
-      const fen: FenetreSemaines = { du: lundis[0] ?? premierLundi, semaines: Math.min(SEMAINES_ANNEE, total) };
+      const iAn = Math.min(Math.max(0, lundis.findIndex(l => l >= depart)), Math.max(0, total - SEMAINES_ANNEE));
+      const fen: FenetreSemaines = { du: lundis[iAn] ?? premierLundi, semaines: Math.min(SEMAINES_ANNEE, total) };
       setVueEtat('annee'); setFenetre(fen); onPeriode(periodeDeFenetre(fen));
       return;
     }
@@ -718,6 +732,15 @@ export function CalendrierTab(props: CalendrierTabProps) {
     else if (tape) onPoserDepense(lundi, b.rangee, CATEGORIE_DE_RANGEE[b.rangee], saisie);
     else onPoserDepense(lundi, b.rangee, CATEGORIE_DE_RANGEE[b.rangee]);
   }, [lundiAuj, onPoserBrassin, onPoserFete, onPoserDepense]);
+
+  const idee_modifier = useCallback(async (titre: string, lundi: string): Promise<string | null> => {
+    if (!ideeModif) return null;
+    const r = modifierIdee(ideeModif.id, titre, lundi, ideeModif.jour);
+    if (r.ok === false) return r.raison;
+    const ok = await ecrire(r);
+    if (ok) setIdeeModif(null);
+    return ok ? null : 'Écriture impossible. Rien n’a changé.';
+  }, [ecrire, ideeModif]);
 
   const idee_ecrire = useCallback(async (titre: string, lundi: string): Promise<string | null> => {
     const r = noterIdee(titre, lundi, {});
@@ -924,6 +947,7 @@ export function CalendrierTab(props: CalendrierTabProps) {
           colonnes={colonnes}
           paysage={paysage}
           ordre={ordre}
+          seulement={section ? RANGEES_SECTION[section] : undefined}
           masquees={masquees}
           filtre={filtre}
           epingles={epingles}
@@ -1026,6 +1050,7 @@ export function CalendrierTab(props: CalendrierTabProps) {
         />
       )}
 
+      {ideeModif && <FeuilleIdee modifier titreInitial={ideeModif.titre} lundi={ideeModif.lundi} semaines={modele.semaines} onNoter={idee_modifier} onFermer={() => setIdeeModif(null)} />}
       {idee !== null && <FeuilleIdee lundi={idee} semaines={modele.semaines} onNoter={idee_ecrire} onFermer={() => setIdee(null)} />}
 
       {panneau === 'filtre' && (
@@ -1071,8 +1096,8 @@ export const ICONE_PLUS: Record<IdRangee, React.FC<PictoProps>> = {
 };
 
 /** « Noter une idée » (E36, L1 a et b) : une idée datée, envoyée au carnet par le service existant. Elle n'a ni rangée ni case. */
-function FeuilleIdee({ lundi, semaines, onNoter, onFermer }: { lundi: string; semaines: ReadonlyArray<{ debut: string; numero: number }>; onNoter: (titre: string, lundi: string) => Promise<string | null>; onFermer: () => void }) {
-  const [titre, setTitre] = useState('');
+function FeuilleIdee({ lundi, semaines, onNoter, onFermer, modifier, titreInitial }: { modifier?: boolean; titreInitial?: string; lundi: string; semaines: ReadonlyArray<{ debut: string; numero: number }>; onNoter: (titre: string, lundi: string) => Promise<string | null>; onFermer: () => void }) {
+  const [titre, setTitre] = useState(titreInitial ?? '');
   const [semaine, setSemaine] = useState(lundiDe(lundi));
   const [refus, setRefus] = useState<string | null>(null);
   void enregistrementIdee;
@@ -1080,9 +1105,9 @@ function FeuilleIdee({ lundi, semaines, onNoter, onFermer }: { lundi: string; se
     <Sheet
       open
       onClose={onFermer}
-      title="Noter une idée"
+      title={modifier ? 'Modifier l’idée' : 'Noter une idée'}
       subtitle={`en ${etiquetteS(semaine)}`}
-      footer={<button type="button" className="cal-cta min-h-11 w-full rounded-control px-4 text-base font-bold" onClick={async () => setRefus(await onNoter(titre, semaine))}>Noter</button>}
+      footer={<button type="button" className="cal-cta min-h-11 w-full rounded-control px-4 text-base font-bold" onClick={async () => setRefus(await onNoter(titre, semaine))}>{modifier ? 'Enregistrer' : 'Noter'}</button>}
     >
       <div className="space-y-3 px-3 pb-3 text-sm">
         <label className="block">
@@ -1097,7 +1122,7 @@ function FeuilleIdee({ lundi, semaines, onNoter, onFermer }: { lundi: string; se
             </button>
           ))}
         </div>
-        <p className="text-sm text-cave-200">{phraseSemaine(semaine, 'Elle arrive dans le carnet.')}</p>
+        <p className="text-sm text-cave-200">{phraseSemaine(semaine, modifier ? 'Elle reste là où elle est notée.' : 'Elle arrive dans le carnet.')}</p>
         {refus && <p className="text-sm text-alert-strong">{refus}</p>}
       </div>
     </Sheet>

@@ -5,7 +5,6 @@ import { Barre, dureeDansBarre, formesDuree, largeurDuree, montantBarre, type Ba
 import { CLASSE_TEINTE, Marque, couperNom, dureeVue, largeurPastilleLie, largeurTexte, lieMontre, type ModeDeuxLignes } from './Marque';
 import { appuiCommenceSur } from './usePointeur';
 import { aDesJours } from '../echelle';
-import { todayISO } from '../../../domain/finance/ledger';
 
 /**
  * Une rangée de la frise (E20 à E23) : son titre à gauche, juste au-dessus de ses barres, le carré de couleur qui porte le + blanc (E21),
@@ -722,8 +721,6 @@ export const Rangee: React.FC<RangeeProps> = props => {
     () => seriesEnBarres(choses).filter(c => positionDans(colonnes, c) && (!masquee || epingles.includes(c.id))),
     [choses, colonnes, masquee, epingles]
   );
-  /* CAL-PASSE (V-16) : la colonne de la semaine en cours, teintée sur la hauteur de la rangée (r2-c `.col.now`) */
-  const courante = colonneCourante(colonnes, props.aujourdhui ?? todayISO());
   const cachees = masquee ? dedans.length - montrees.length : 0;
   const p = pastille(id, masquee ? [] : dedans, colonnes);
   const vide = dedans.length === 0;
@@ -777,7 +774,6 @@ export const Rangee: React.FC<RangeeProps> = props => {
       aria-label={nom}
       style={{ ['--cw' as string]: `${largeurColonne}px`, ...(paysage ? { minHeight: mesures.ligne + 2 } : {}) }}
     >
-      {courante && <i className="cal-col-now" aria-hidden="true" data-col-now style={{ left: courante.debut * largeurColonne, width: courante.n * largeurColonne }} />}
       <header className="cal-rh" style={{ height: paysage ? mesures.ligne : mesures.titre }}>
         <button type="button" className="cal-plus" data-plus={id} aria-label={`Ajouter dans ${nom}`} onClick={() => props.onAjouter(id)}>
           <Plus size={16} strokeWidth={3} aria-hidden="true" />

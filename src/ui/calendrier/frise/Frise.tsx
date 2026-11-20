@@ -1,6 +1,7 @@
 import React from 'react';
 import { RANGEES, barreLiee, ecartJours, estPonctuel, type ChoseCalendrier, type Rangee as IdRangee } from '../../../domain/calendrier';
-import { MESURES_PAYSAGE, MESURES_PAYSAGE_BRASSINS, MESURES_PORTRAIT, Rangee, pastille, positionDans, texteRenvoi, type Colonne, type DragEtat, type Renvoi, type RangeeProps } from './Rangee';
+import { colonneCourante, MESURES_PAYSAGE, MESURES_PAYSAGE_BRASSINS, MESURES_PORTRAIT, Rangee, pastille, positionDans, texteRenvoi, type Colonne, type DragEtat, type Renvoi, type RangeeProps } from './Rangee';
+import { todayISO } from '../../../domain/finance/ledger';
 import { GrilleJours } from './GrilleJours';
 import { usePincement } from './usePincement';
 import { cheminDePoints, routerFil } from './routageFil';
@@ -77,6 +78,8 @@ export interface FriseProps extends Pick<RangeeProps, 'drag' | 'ici' | 'etiquett
   echelle?: string;
   /** Aujourd'hui (ISO) : son trait sur la grille des jours. */
   aujourdhui?: string;
+  /** E44 : un calendrier de section ne montre que ces rangées. */
+  seulement?: readonly IdRangee[];
 }
 
 interface Trait { id: string; d: string; fil?: 'repos' | 'allume' | 'pale'; auj?: boolean }
@@ -346,12 +349,16 @@ export const Frise: React.FC<FriseProps> = props => {
   usePincement(zone, props.onPincer);
   const avecJours = aDesJours(colonnes);
   const largeurColonne = largeur / n;
+  /* CAL-PASSE (V-16, r2-c `.col.now`) : la semaine en cours, teintée d'UN bloc sur toute la hauteur de la frise (une teinte par rangée sortait
+     de l'écran dans les lignes de rangées vides, plus étroites que la frise : scrollWidth 505 à 390) */
+  const courante = colonneCourante(colonnes, props.aujourdhui ?? todayISO());
   const mesures = paysage ? MESURES_PAYSAGE : MESURES_PORTRAIT;
   const onMesureRef = React.useRef(onMesure);
   onMesureRef.current = onMesure;
   React.useEffect(() => { onMesureRef.current?.({ largeur, largeurColonne }); }, [largeur, largeurColonne]);
 
-  const rangees = ordreComplet(ordre);
+  /* CAL-PASSE : `ordreComplet` rend les rangées absentes de l'ordre gardé ; un calendrier de section (E44) n'en montre que les siennes */
+  const rangees = ordreComplet(ordre).filter(r => !props.seulement || props.seulement.includes(r));
   const parRangee = (r: IdRangee) => choses.filter(c => c.rangee === r);
   const pastilles = rangees.map(r => Math.abs(pastille(r, parRangee(r), colonnes).part));
   const partMax = Math.max(0, ...pastilles);
@@ -408,6 +415,7 @@ export const Frise: React.FC<FriseProps> = props => {
           </g>
         </svg>
       )}
+      {courante && <i className="cal-col-now" aria-hidden="true" data-col-now style={{ left: courante.debut * largeurColonne, width: courante.n * largeurColonne }} />}
       {props.tete}
       {grouperVides(rangees.map(r => {
         const dedans = parRangee(r);

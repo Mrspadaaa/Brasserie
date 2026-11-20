@@ -42,12 +42,11 @@ describe('V-16 : la colonne de la semaine en cours', () => {
     expect(colonneCourante([{ debut: '2026-11-01', fin: '2026-11-30', etiquette: 'nov.' }, { debut: '2026-12-01', fin: '2026-12-31', etiquette: 'déc.' }], JOUR)).toEqual({ debut: 0, n: 1 });
     expect(colonneCourante([sem(3), sem(4)], JOUR)).toBeNull();
   });
-  it('au banc, chaque rangée porte la colonne teintée de la semaine en cours, à toutes les échelles', () => {
+  it('au banc, la colonne teintée de la semaine en cours est UN seul bloc, dans la frise et jamais plus large que la frise (scrollWidth 505 à 390 avant)', () => {
     render(<BancCalendrier aujourdhui={JOUR} sansChrome />);
-    const rangees = document.querySelectorAll('section[data-rangee]');
-    expect(rangees.length).toBe(7);
-    const avec = [...rangees].filter(r => r.querySelector('[data-col-now]'));
-    expect(avec.length).toBe(7);
+    const blocs = document.querySelectorAll('[data-col-now]');
+    expect(blocs.length).toBe(1);
+    expect(blocs[0].parentElement?.hasAttribute('data-frise')).toBe(true);
   });
 });
 

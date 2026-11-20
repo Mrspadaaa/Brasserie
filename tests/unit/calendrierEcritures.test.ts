@@ -113,7 +113,7 @@ describe('A10 : la mise de côté n’écrit aucun plan', () => {
     expect(m.appels).toEqual(['patch creativeItems']);
     const apres = modeleDe(m);
     expect(apres.courbe!.semaines.map(s => s.caisse)).toEqual(avant.courbe!.semaines.map(s => s.caisse));
-    const i = 20;
+    const i = 20 + (avant.courbe!.passe ?? 0); /* CAL-PASSE : la semaine d'aujourd'hui est `semaines[passe]` */
     expect(apres.courbe!.semaines[i].libre).toBeLessThan(avant.courbe!.semaines[i].libre);
     await faite.annuler();
     expect(m.tout('creativeItems')).toEqual([frigo]);

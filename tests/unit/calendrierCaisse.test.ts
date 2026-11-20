@@ -46,8 +46,10 @@ describe('A2 : vérité croisée avec buildForecast', () => {
       const dimanche = new Date(Date.parse(`${s.lundi}T00:00:00Z`) + 6 * 86400000).toISOString().slice(0, 10);
       expect(s.caisse).toBe(soldeAuJour(modele.courbe!, dimanche));
     }
-    expect(modele.courbe!.semaines).toHaveLength(52);
-    expect(modele.courbe!.semaines[0].lundi).toBe('2026-11-16');
+    /* CAL-PASSE (20.11) : la courbe commence `passe` semaines avant la semaine courante ; la semaine d'aujourd'hui est `semaines[passe]`, 52 semaines d'avenir */
+    const passe = modele.courbe!.passe ?? 0;
+    expect(modele.courbe!.semaines).toHaveLength(52 + passe);
+    expect(modele.courbe!.semaines[passe].lundi).toBe('2026-11-16');
   });
   it('sans solde de départ la courbe vaut null, jamais 0 ; ni creux, ni « à dépenser »', () => {
     const modele = construireModele(entrees(null));
@@ -109,8 +111,10 @@ describe('A10 : la mise de côté ne crée aucun plan et ne touche pas la caisse
     expect(plans).toHaveLength(1);
     expect(avant.courbe!.semaines.map(s => s.caisse)).toEqual(apres.courbe!.semaines.map(s => s.caisse));
     expect(avant.courbe!.semaines.map(s => s.libre)).toEqual(avant.courbe!.semaines.map(s => s.caisse));
-    expect(apres.courbe!.semaines[14].libre).toBe(apres.courbe!.semaines[14].caisse - 90000);
-    expect(apres.courbe!.semaines[29].libre).toBe(apres.courbe!.semaines[29].caisse);
+    /* CAL-PASSE : les index se comptent depuis la semaine d'aujourd'hui (`passe` semaines de passé avant elle) */
+    const p = apres.courbe!.passe ?? 0;
+    expect(apres.courbe!.semaines[14 + p].libre).toBe(apres.courbe!.semaines[14 + p].caisse - 90000);
+    expect(apres.courbe!.semaines[29 + p].libre).toBe(apres.courbe!.semaines[29 + p].caisse);
     // la caisse ne baisse qu'une fois, à la date du paiement
     const baisses = apres.courbe!.semaines.filter((s, i, t) => i > 0 && s.caisse < t[i - 1].caisse);
     expect(baisses.map(s => s.numero)).toEqual([35]);
@@ -388,8 +392,10 @@ describe('CRITIQUE-12, doute : tendance et loyers comptés deux fois ? Une fête
     expect(mois.length).toBeGreaterThanOrEqual(11);
     for (const m of mois) expect([m.month, soldeFinDeMois(modele.courbe!, m.month)]).toEqual([m.month, m.balanceCents]);
     /* chaque ligne de Finances une fois dans la courbe, ni plus ni moins */
-    expect(modele.courbe!.mouvements.length).toBe(prevision.items.length);
-    expect(new Set(modele.courbe!.mouvements.map(x => x.id)).size).toBe(prevision.items.length);
+    /* CAL-PASSE : les paiements réels du passé (`paiement-…`) s'ajoutent aux lignes de la prévision, qui ne comptent que l'avenir */
+    const lignes = modele.courbe!.mouvements.filter(x => !x.id.startsWith('paiement-'));
+    expect(lignes.length).toBe(prevision.items.length);
+    expect(new Set(lignes.map(x => x.id)).size).toBe(prevision.items.length);
     const marche = modele.choses.find(c => c.titre === 'Marché de Noël');
     expect(marche?.horsCourbe).toBe(true);
     expect(modele.courbe!.mouvements.some(x => x.choseId === marche!.id || /Marché de Noël/.test(x.nom))).toBe(false);

@@ -632,6 +632,18 @@ export function noterIdee(titre: string, lundi: string, ctx: Pick<ContexteGestes
   return { ok: true, ecritures: [{ op: 'creer', collection: e.collection, document: e.document as unknown as { id: string } & Record<string, unknown> }], effet: null, promesse: null, courbeApres: null, message: annuler(`Idée notée en ${etiquetteS(lundi)}`) };
 }
 
+/**
+ * CAL-PASSE (décision du pilote, 20.11) : une idée de bière hors carnet (`recipe-idea` datée, icône de sa semaine) se modifie sur place, dans sa
+ * feuille, comme une fête ; son icône n'envoie plus dans le Carnet général, qui ne la montre pas. Le titre et la semaine s'écrivent ; le jour
+ * déjà posé dans la semaine choisie est gardé. Annuler remet l'idée d'avant.
+ */
+export function modifierIdee(id: string, titre: string, lundi: string, jourActuel: string | null | undefined): Resolution {
+  const t = titre.trim();
+  if (!t) return refus('Dis l’idée en quelques mots.');
+  const garde = jourActuel && lundiDe(jourActuel) === lundiDe(lundi) ? jourActuel : lundiDe(lundi);
+  return { ok: true, ecritures: [{ op: 'patch', collection: 'creativeItems', id, patch: { title: t, date: garde } }], effet: null, promesse: null, courbeApres: null, message: annuler(`Idée modifiée · ${etiquetteS(lundi)}`) };
+}
+
 /** Ce que le doigt demande : un seul vocabulaire pour la frise, le menu d'appui long, l'alerte de promesse et le + volant. */
 export type Intention =
   | { genre: 'deplacer'; chose: ChoseCalendrier; semaines: number; jalon?: JalonId }

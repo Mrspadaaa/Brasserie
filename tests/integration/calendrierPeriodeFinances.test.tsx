@@ -23,6 +23,9 @@ import { titreJours } from '../../src/ui/finance/operations/plage';
 
 const JOUR = todayISO();
 const LUNDI = lundiDe(JOUR);
+/* CAL-PASSE (décision du pilote, 20.11) : le passé est visible. Un mois suivi se lit en entier, depuis le lundi de son premier jour (le mois en cours
+   commençait aujourd'hui) ; « 6 sem. » choisi depuis lui garde ce départ au lieu de revenir à aujourd'hui. */
+const DEBUT_MOIS = lundiDe(`${JOUR.slice(0, 8)}01`);
 const suisse = (iso: string) => `${iso.slice(8, 10)}.${iso.slice(5, 7)}.${iso.slice(0, 4)}`;
 const operation = (id: string, iso: string, description: string): Transaction => ({
   id, date: suisse(iso), description, amountHT: 120, tvaRate: 0, tvaAmount: 0, amountTTC: 120, category: 'divers', subcategory: ''
@@ -88,7 +91,7 @@ describe('ET-PER : calendrier → Finances', () => {
     /* au départ (le mois en cours, réglé par Finances) : la fenêtre du calendrier ne suit pas un mois, elle garde ses 6 semaines */
     fireEvent.click(calendrier().querySelector('[data-ent-periode]')!);
     fireEvent.click(within(screen.getByRole('dialog', { name: 'Période et vue' })).getByRole('button', { name: /^6 sem/ }));
-    const plage = { genre: 'dates', du: LUNDI, au: ajouterJours(LUNDI, 6 * 7 - 1) };
+    const plage = { genre: 'dates', du: DEBUT_MOIS, au: ajouterJours(DEBUT_MOIS, 6 * 7 - 1) };
     expect(journal).toHaveBeenLastCalledWith(plage);
     const titre = titreJours({ du: plage.du, au: plage.au }, JOUR);
     await waitFor(() => expect(finances().getByLabelText(`Plage du ${titre}`)).toBeInTheDocument());
@@ -129,7 +132,7 @@ describe('CRITIQUE-6 n° 11 (E07 ET-PER, D-12, D-13) : à 390, la barre de l’a
   /* la fin du mois en cours, et son lundi : les semaines du mois dans l'horizon (de ce lundi au lundi de la dernière semaine du mois) */
   const finMois = (() => { const d = new Date(Date.UTC(MOIS.genre === 'mois' ? MOIS.annee : 0, MOIS.genre === 'mois' ? MOIS.mois : 0, 0)); return d.toISOString().slice(0, 10); })();
   /* décision pilote (c), CRITIQUE-7 : 4 semaines au moins dès aujourd'hui ; si le mois finit avant, la fenêtre déborde sur le suivant */
-  const semainesDuMois = Math.max(4, Math.round((Date.parse(lundiDe(finMois)) - Date.parse(LUNDI)) / (7 * 86_400_000)) + 1);
+  const semainesDuMois = Math.max(4, Math.round((Date.parse(lundiDe(finMois)) - Date.parse(DEBUT_MOIS)) / (7 * 86_400_000)) + 1);
 
   it('l’app sur le mois en cours : le calendrier montre les semaines de ce mois et son bouton dit le même libellé que la barre', async () => {
     const journal = vi.fn();
@@ -146,7 +149,7 @@ describe('CRITIQUE-6 n° 11 (E07 ET-PER, D-12, D-13) : à 390, la barre de l’a
     render(<App2 initiale={MOIS} journal={journal} />);
     fireEvent.click(calendrier().querySelector('[data-ent-periode]')!);
     fireEvent.click(within(screen.getByRole('dialog', { name: 'Période et vue' })).getByRole('button', { name: /^6 sem/ }));
-    const plage: Periode = { genre: 'dates', du: LUNDI, au: ajouterJours(LUNDI, 6 * 7 - 1) };
+    const plage: Periode = { genre: 'dates', du: DEBUT_MOIS, au: ajouterJours(DEBUT_MOIS, 6 * 7 - 1) };
     expect(journal).toHaveBeenLastCalledWith(plage);
     await waitFor(() => expect(calendrier().querySelector('[data-frise]')!.getAttribute('data-nb-colonnes')).toBe('6'));
     expect((calendrier().querySelector('[data-ent-periode]') as HTMLElement).textContent).toMatch(/6 sem\./);

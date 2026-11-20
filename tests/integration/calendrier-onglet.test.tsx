@@ -79,12 +79,17 @@ describe('E07, ET-PER : la période de l’onglet est la période de l’app', (
     render(<CalendrierTab {...props()} aujourdhui="2026-11-16" periode={{ genre: 'mois', annee: 2026, mois: 11 }} onPeriode={onPeriode} />);
     /* CRITIQUE-6 n° 11 (ET-PER) : le mois de l'app règle la fenêtre et le bouton dit « Nov. », comme la barre ; lire n'écrit rien.
        Décision (c) du pilote, 18.11 (lot B) : un mois suivi montre au moins 4 semaines dès aujourd'hui : S47 à S50 (16 nov. → 13 déc.), plus 3. */
-    expect(document.querySelector('[data-frise]')!.getAttribute('data-nb-colonnes')).toBe('4');
+    /* CAL-PASSE (20.11) : le passé est visible, le mois se lit en entier depuis le lundi de son premier jour (nov. 2026 : S44 à S49, 6 semaines) */
+    const debutMois = lundiDe(`${'2026-11-16'.slice(0, 8)}01`);
+    const finMois = lundiDe('2026-11-30');
+    const semainesMois = Math.max(4, Math.round((Date.parse(finMois) - Date.parse(debutMois)) / (7 * 86_400_000)) + 1);
+    expect(document.querySelector('[data-frise]')!.getAttribute('data-nb-colonnes')).toBe(String(semainesMois));
     expect(document.querySelector('[data-ent-periode]')!.textContent).toMatch(/Nov\./);
     expect(onPeriode).not.toHaveBeenCalled();
     fireEvent.click(document.querySelector('[data-ent-periode]')!);
     fireEvent.click(within(screen.getByRole('dialog', { name: 'Période et vue' })).getByRole('button', { name: /^3 mois/ }));
-    expect(onPeriode).toHaveBeenCalledWith({ genre: 'dates', du: lundi, au: ajouterJours(lundi, 13 * 7 - 1) });
+    /* « 3 mois » garde le départ de la fenêtre (le lundi du 1er du mois) : le passé est visible */
+    expect(onPeriode).toHaveBeenCalledWith({ genre: 'dates', du: debutMois, au: ajouterJours(debutMois, 13 * 7 - 1) });
     expect(document.querySelector('[data-frise]')!.getAttribute('data-nb-colonnes')).toBe('13');
   });
 
@@ -349,7 +354,8 @@ describe('C19 (D-71) : le bloc calendrier de l’App ouvre le budget du brassin'
        suivant. Le brasseur règle « 6 sem. », comme au banc : la barre de l'app reçoit la même plage. */
     await waitFor(() => expect(document.querySelector('[data-ent-periode]')).not.toBeNull(), { timeout: 10000 });
     fireEvent.click(document.querySelector('[data-ent-periode]')!);
-    fireEvent.click(within(screen.getByRole('dialog', { name: 'Période et vue' })).getByRole('button', { name: /^6 sem/ }));
+    /* CAL-PASSE : « 6 sem. » depuis le mois garde le départ du mois (le passé est visible) ; « 3 mois » couvre S+3 quel que soit le jour du mois */
+    fireEvent.click(within(screen.getByRole('dialog', { name: 'Période et vue' })).getByRole('button', { name: /^3 mois/ }));
     const barre = await screen.findByRole('button', { name: /^ZZ TEST — Porter lointain/ }, { timeout: 10000 });
     fireEvent.pointerDown(barre, { clientX: 10, clientY: 10, pointerId: 1, button: 0 });
     fireEvent.pointerUp(barre, { clientX: 10, clientY: 10, pointerId: 1, button: 0 });

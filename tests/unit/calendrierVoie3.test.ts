@@ -34,8 +34,14 @@ describe('PC-145 : l’aperçu d’un glissé montre la courbe que le geste écr
     expect(res.ok).toBe(true);
     expect(libres(courbeDuGlisse(chose, 10, ctx(), true)!)).toEqual(libres((res as { courbeApres: CourbeCaisse }).courbeApres));
   });
-  it('un geste refusé (dans le passé) n’annonce rien ; sans courbe ou sans écart, rien', () => {
-    expect(courbeDuGlisse(chose, -3, ctx(), false)).toBeNull();
+  /* CAL-PASSE (décision du pilote, 20.11) : le passé est modifiable. Un glissé vers le passé n'est plus refusé : il écrit la date et l'annonce
+     (il se taisait « refusé » avant). Seuls restent muets : sans courbe, ou sans écart. */
+  it('un geste au passé annonce sa date ; sans courbe ou sans écart, rien', () => {
+    const res = deplacer(chose, -3, ctx());
+    expect(res.ok).toBe(true);
+    expect(res.ok && res.message.texte).toMatch(/Saison de ferme/);
+    expect(res.ok && res.message.texte).toMatch(/S\d+ → S\d+/);
+    expect(courbeDuGlisse(chose, -3, ctx(), false)).not.toBeNull();
     expect(courbeDuGlisse(chose, 4, ctx(null), false)).toBeNull();
     expect(courbeDuGlisse(chose, 0, ctx(), false)).toBeNull();
   });
