@@ -2406,3 +2406,9 @@ Classement de la page r3 de Ma levure (https://claude.ai/artifact/DKAJe8ESeMR4ig
 > Oui
 
 (20.11, réponse à « On gèle et on passe à un écran à la fois ? ». Gel : plus de nouvelle fonction ni de passe de défauts dispersée. Un écran à la fois, une session par écran : fidélité à sa maquette, puis parcours automatique bloquant sur des données comme les siennes, puis rejeu de ses parcours dans son Chrome, puis écran suivant. Ordre : Calendrier, Carnet, Recette, Brassins, Stocks, Finances.)
+
+> Je pense aussi que le bug fixing a trop focus sur le code et pas assez sur du vrai bug, problème ECT..
+>
+> Ce qui est test de vision, test de workflow, test d'intégration ECT... Bug d'intéraction, bug de visuel ECT ça c'est des problèmes qui valent la peine d'être réglé
+
+(lu, 20.11 : chaque écran se juge d'abord sur ce qu'il vit : vision au doigt, workflow de bout en bout, intégration entre écrans (achat → stock → finances → calendrier), bugs d'interaction et de visuel. Le test unitaire sert la correction, il ne la prouve pas.)
