@@ -1,0 +1,24 @@
+# Voie s2
+- AM-56 | corrigé | d3df5b29b | Le Bord (carte Stocks) signale toute levure en stock périmée ou à moins de 30 j de sa DDM : nom + « Périmé depuis N j » / « Périme dans N j », toucher = Stocks (`levuresADateProche`, src/domain/stock/durabilite.ts, règles de regles.ts). Le champ DDM et « Périmé depuis N j » dans la fiche et la ligne datent de 8c1490eb2. Reste hors voie : l'alerte au moment de brasser (YeastPitchingPanel, src/ui/etapeLevure/**, BrewWizard : zone Levure/Conduite), `levuresADateProche` / `statutDurabilite` sont prêts à réemployer.
+- BT-2 | ouvert | — | accord requis : Planning (GanttTask) sans écran ni saisie, le Calendrier a pris sa place. Option (b) préparée en lecture étroite, commit cb027d551 : tâches non faites du Planning lues dans l'Agenda du Bord (3 au plus, date, lecture seule, rien si vide). Recommandé par la note : (c) Calendrier (zone interdite) puis (a) retirer l'état mort (src/App.tsx : `planning`/`setPlanning`, prop de DashboardTab : hors voie). Si (a) ou (c) est choisi, revenir sur cb027d551.
+- TL-10 | ouvert | — | hors voie : la table sourcée est faite (80631294e : src/data/malts/weyermann.json, 30 malts, plages EBC + extrait + humidité du catalogue Weyermann « Brewery » récolte 2026, source citée ; src/domain/fermentables/fichesMalts.ts `fichePubliee`, `valeursDeCatalogueMalt` ; la ligne du Stock montre « EBC 2,5–4,5 » au lieu de « EBC non connu » quand l'EBC n'est pas saisi). Le « OG — / EBC — » de la recette ne disparaît qu'avec deux branchements hors voie : (1) src/services/enrichissementCatalogues.ts : pour une famille Malt, renvoyer `valeursDeCatalogueMalt(nom)` (même forme que `ValeursTrouvees`, remplit colorEbc et potentialPpg dans `patchDeTrous`, par « catalogue ») ; (2) src/ui/fermentescibles/Ajout.tsx : l'EBC de la tuile = `a.colorEbc ?? fichePubliee(a.name)?.colorEbc`. Castle, Viking, Muntons : aucune table (non saisie : « non connu » reste).
+- GE-NOTE-1 | ouvert | — | accord requis : règle déjà en place et verrouillée par tests/unit/articlesACommander.test.ts (seuil exact ⇒ « À commander », « Seuil atteint », quantité « à définir » ; sans seuil renseigné ⇒ absent) ; seul le brasseur confirme que c'est la règle voulue.
+
+ACCORD : BT-2 — Planning : (a) retirer l'état mort, (b) le lire dans l'Agenda du Bord (préparé, cb027d551), (c) le poser au Calendrier ? Recommandé (c) puis (a).
+ACCORD : TL-10 — branchement de `valeursDeCatalogueMalt` dans l'enrichissement des malts (services) et dans la tuile d'Ajout (ui/fermentescibles) : fichiers hors voie, à confier à une voie qui les possède.
+ACCORD : GE-NOTE-1 — un article pile au seuil est-il « à commander » (quantité à définir) et un article sans seuil n'y figure-t-il pas ?
+
+Tests : npx vitest run tests/unit/bugs-s2-TL-10.test.ts tests/unit/bugs-s2-AM-56.test.tsx tests/unit/bugs-s2-BT-2.test.tsx tests/unit/stock tests/integration/dashboard.test.tsx tests/unit/articlesACommander.test.ts → 34 fichiers passés (1 ignoré), 415 tests passés, 0 échoué (tests.txt). Chaque test neuf a d'abord échoué (module absent, ou `data-testid` introuvable). `tsc --noEmit` sans erreur.
+Captures : NON PRISES (plafond de contexte de la voie) — voir DEMANDE EXECUTANT.
+
+Honnêteté des données (TL-10) : valeurs lues dans le PDF du fabricant (pdftotext), 30 fiches contrôlées une à une ; PPG déduit par la règle du dépôt (extrait × 0,46 × (1 − humidité), CF-4) : Pilsner 35,2. « Münchner Malz » générique, fumé, chocolat, noir, ambré, brun : absents (ambigus ou non publiés par Weyermann), donc « non connu ». Un malt d'un autre malteur au même nom courant reçoit la référence Weyermann, dite au survol de la pastille. Script de relevé : voies/s2/extraire-weyermann.mjs (lecture seule ; le PDF de 19 Mo n'est pas versé).
+
+DEMANDE EXECUTANT :
+1. Depuis la racine du dépôt, lancer le serveur de dev sur le port 3105 (skill webapp-testing, `scripts/with_server.mjs`), ouvrir `?dev-local`.
+2. Préparer dans dev-local (fixtures, jamais Firestore) : une levure en stock avec DDM dépassée (fiche Levure, « À utiliser avant (DDM) » = 01.10.2026), une seconde à +10 j ; un malt « Pilsner Malz » sans EBC.
+3. Captures dans `work/missions/2026-11-19-bugs-ecrans/voies/s2/captures/`, clair et cave, 390 tactile (en défilant) et 1280 : `bord-*` (carte Stocks avec les lignes de levure datée), `stocks-malts-*` (ligne Pilsner Malz « EBC 2,5–4,5 »).
+4. Ouvrir chaque image (Read) et décrire ce qu'on y voit dans RESULTAT.md ; sorties attendues : 8 fichiers png, aucun recouvrement du texte des lignes à 390.
+5. Rejouer : `node work/missions/2026-11-19-bugs-ecrans/verdicts.mjs s2` → VERDICTS OK ; `... --tests` → TESTS OK.
+
+CONNAISSANCE : le catalogue « Brewery » de Weyermann (PDF public, weyermann.de/en-gb/products/brewery/) donne couleur, extrait et humidité de ~60 malts ; le texte s'extrait par `pdftotext -layout` et se relit par script (les pages de pilsners spéciaux sont brouillées par les cadres : ignorées).
+LEÇON PROPOSÉE : aucune
