@@ -235,6 +235,10 @@ export const DetailChose: React.FC<DetailChoseProps> = props => {
   const frais = texteFrais(chose);
   const duree = brassin ? dureeVue(chose) : null;
   const pasBrassee = champ(chose, 'pasBrassee') === true;
+  /* T3-2 : le jour prévu du brassage est passé et il n'est pas fait : « en retard », et les étapes suivantes se comptent depuis aujourd'hui (jamais en silence). */
+  const maintenant = new Date();
+  const aujourdhuiIso = `${maintenant.getFullYear()}-${String(maintenant.getMonth() + 1).padStart(2, '0')}-${String(maintenant.getDate()).padStart(2, '0')}`;
+  const brassageEnRetard = brassin && pasBrassee && !!chose.debut && chose.debut < aujourdhuiIso;
   /* des jours actifs moins nombreux que les jours de sa fenêtre : la date ne s'écrit pas comme une plage pleine */
   const joursDansFenetre = !brassin && !!chose.joursActifs && !!chose.debut && !!chose.fin && ecartJours(chose.debut, chose.fin) + 1 > chose.joursActifs;
   /* CRITIQUE-5 n° 31 : la date se lit une fois. Hors d'un brassin, « Date 10 déc. » est déjà dans la grille : le morceau « le 10 déc. » du
@@ -261,10 +265,11 @@ export const DetailChose: React.FC<DetailChoseProps> = props => {
             {etapes(chose).map(e => (
               <div key={e.id} data-etape={e.id}>
                 <span>{e.icone}{e.libelle}</span>
-                <b>{e.jour ? <time className="cal-nowrap" dateTime={e.jour}>{date(e.jour)}</time> : 'à préciser'}{e.id === 'brassage' && pasBrassee ? ' · pas brassée' : ''}</b>
+                <b>{e.jour ? <time className="cal-nowrap" dateTime={e.jour}>{date(e.jour)}</time> : 'à préciser'}{e.id === 'brassage' && pasBrassee ? (brassageEnRetard ? ' · pas brassée, en retard' : ' · pas brassée') : ''}</b>
               </div>
             ))}
           </div>
+          {brassageEnRetard && <p className="cal-det-d" data-etapes-recalees>Étapes comptées depuis aujourd’hui : le brassage n’est pas fait.</p>}
         </>
       ) : (
         <div className="cal-det-et">
