@@ -486,9 +486,9 @@ export interface OptionsAnalyse {
  * prise pour la table, un coin de la pièce hors de la région claire : leur texte continue celui du papier et reste dans le cadre (pièges du 03.11 : 15
  * à 45 lignes perdues). La texture d'un tissu ou d'une table, clairsemée, reste dehors (ses tickets du 03.11, posés sur un tissu sombre).
  */
-export function recadrageSur(papier: Papier | null, ink: Uint8Array, width: number, height: number, pas: number | null = null, coupe: Uint8Array = ink): Rect {
+export function recadrageSur(papier: Papier | null, ink: Uint8Array, width: number, height: number, pas: number | null = null, coupe: Uint8Array = ink, gris?: Uint8Array): Rect {
   if (!papier) return { x: 0, y: 0, w: width, h: height };
-  return recadrageDe({ ...papier, boite: boiteGrandie(papier, ink, width, height, pas, coupe) }, width, height);
+  return recadrageDe({ ...papier, boite: boiteGrandie(papier, ink, width, height, pas, coupe, gris) }, width, height);
 }
 
 /** La boîte du papier grandie, côté par côté, des bandes voisines d'encre dense comme un texte (voir `recadrageSur`), sans marge. */
@@ -518,8 +518,47 @@ function densiteDuPapier(papier: Papier, densite: (ax: number, ay: number, bx: n
   return aire ? encre / aire : 0;
 }
 
-export function boiteGrandie(papier: Papier, ink: Uint8Array, width: number, height: number, pas: number | null = null, coupe: Uint8Array = ink): Rect {
+/**
+ * Du TEXTE dans des rangées, même sous le contraste d'encre (flou, ombre : 15 à 20 niveaux, sous le plancher de 25) ? Méthode d'école, la projection des rangées :
+ * le profil horizontal (gris moyen de chaque rangée) sur des colonnes de TEXTE (8 à 36 % de la largeur du papier) et sur des colonnes VIDES du même papier (45 à 73 %,
+ * la marge entre désignations et montants), tendance retirée (moyenne glissante de 3 pas). Du texte fait osciller le premier et pas le second ; un grain, un tissu,
+ * un bois rayé, un dégradé touchent les deux pareil. Oui si l'écart-type du premier atteint 1 niveau et 4 fois celui du second (mesuré sur les pièces du banc :
+ * 1,5 à 5 contre 0,06 à 0,6 sur du texte pâli, jamais sous 1 contre plus d'un quart ailleurs). Faux si le papier n'a pas de colonnes vides (tableau pleine largeur).
+ */
+function texteSurVide(gris: Uint8Array, width: number, height: number, boite: Rect, pas: number): (ay: number, by: number, haut: boolean) => boolean {
+  const colonnes = (a: number, b: number): [number, number] => [boite.x + Math.round(a * boite.w), boite.x + Math.round(b * boite.w)];
+  const carres = (xa: number, xb: number): Float64Array => {
+    const xs = clamp(xa, 0, width), xe = clamp(xb, 0, width), profil = new Float64Array(height), prefixe = new Float64Array(height + 1), cumul = new Float64Array(height + 1);
+    for (let y = 0; y < height; y++) { let s = 0; for (let x = xs, i = y * width + xs; x < xe; x++, i++) s += gris[i]; profil[y] = xe > xs ? s / (xe - xs) : 0; cumul[y + 1] = cumul[y] + profil[y]; }
+    const demi = Math.max(2, Math.round(1.5 * pas));
+    for (let y = 0; y < height; y++) {
+      const a = Math.max(0, y - demi), b = Math.min(height, y + demi + 1), d = profil[y] - (cumul[b] - cumul[a]) / (b - a);
+      prefixe[y + 1] = prefixe[y] + d * d;
+    }
+    return prefixe;
+  };
+  const [ta, tb] = colonnes(0.08, 0.36), [va, vb] = colonnes(0.45, 0.73);
+  const texte = carres(ta, tb), vide = carres(va, vb);
+  // Un bloc d'un pas de haut est « texte » s'il passe le test ; une tache de café sur les colonnes vides (jusqu'à 2 pas) en fait échouer quelques-uns : la rangée
+  // continue donc si un bloc de la bande est du texte, OU si 3 des 4 blocs qui la suivent vers l'extérieur le sont : la boîte saute une tache et ne dépasse la
+  // dernière ligne que d'un bloc (le recadrage ajoute de toute façon sa marge).
+  const bloc = Math.max(8, Math.round(pas)), nb = Math.ceil(height / bloc), oui = new Int32Array(nb + 1);
+  for (let k = 0; k < nb; k++) {
+    const a = k * bloc, b = Math.min(height, a + bloc), m = b - a, et = Math.sqrt((texte[b] - texte[a]) / m), ev = Math.sqrt((vide[b] - vide[a]) / m);
+    oui[k + 1] = oui[k] + (m >= 4 && et >= 1 && et >= 4 * ev ? 1 : 0);
+  }
+  return (ay, by, haut) => {
+    const a = clamp(Math.floor(ay / bloc), 0, nb), b = clamp(Math.ceil(by / bloc), 0, nb);
+    if (oui[b] - oui[a] >= 1) return true;
+    const c = haut ? clamp(a - 4, 0, nb) : b, d = haut ? a : clamp(b + 4, 0, nb);
+    return d - c >= 3 && oui[d] - oui[c] >= 3;
+  };
+}
+
+/** `gris` (même image que `ink`) : sans lui, la croissance ne regarde que la densité d'encre ; avec lui, elle suit aussi un texte pâli (`texteSurVide`). */
+export function boiteGrandie(papier: Papier, ink: Uint8Array, width: number, height: number, pas: number | null = null, coupe: Uint8Array = ink, gris?: Uint8Array): Rect {
   const nette = densites(ink, width, height), sensible = coupe === ink ? nette : densites(coupe, width, height);
+  const pale = gris ? texteSurVide(gris, width, height, papier.boite, pas ?? Math.max(width, height) / 60) : null;
   // Le profil des rangées [ay, by) de l'encre SENSIBLE sur les colonnes [ax, bx) : une ombre baisse le contraste sous le seuil net, pas sa forme.
   const profil = (ax: number, ay: number, bx: number, by: number) => {
     ax = clamp(Math.round(ax), 0, width); bx = clamp(Math.round(bx), 0, width); ay = clamp(Math.round(ay), 0, height); by = clamp(Math.round(by), 0, height);
@@ -553,7 +592,7 @@ export function boiteGrandie(papier: Papier, ink: Uint8Array, width: number, hei
   const lateral = (dehors: [number, number], dedans: [number, number]) =>
     nette(dehors[0], y0, dehors[1], y1) >= seuilNet
     || (sensible(dehors[0], y0, dehors[1], y1) >= seuilSensible && correlation(profil(dehors[0], y0, dehors[1], y1), profil(dedans[0], y0, dedans[1], y1)) >= 0.5);
-  const vertical = (ay: number, by: number) => nette(x0, ay, x1, by) >= seuilNet || (sensible(x0, ay, x1, by) >= seuilSensible && desLignes(profil(x0, ay, x1, by)));
+  const vertical = (ay: number, by: number) => nette(x0, ay, x1, by) >= seuilNet || (sensible(x0, ay, x1, by) >= seuilSensible && desLignes(profil(x0, ay, x1, by))) || (pale !== null && pale(ay, by, by <= y0));
   for (let tour = 0; tour < 400; tour++) {
     let grandi = false;
     if (x0 > 0 && lateral([x0 - d, x0], [x0, x0 + d])) { x0 = Math.max(0, x0 - d); grandi = true; }
@@ -600,7 +639,7 @@ export function analyser(bitmap: Bitmap, options: OptionsAnalyse = {}): Analyse 
   const papier = options.papier === false ? null : trouverPapier(bitmap), clair = papier !== null || options.papier === true;
   const vue = (c: Rect, angle: number): Bitmap => ({ width: c.w, height: c.h, gray: normaliser(bitmap.gray, W, H, { crop: c, angle }) });
   const entiere = encreDetaillee(bitmap, papier, 0, 0, clair);
-  let crop = options.recadrer === false ? { x: 0, y: 0, w: W, h: H } : recadrageSur(papier, entiere.ink, W, H, entiere.pas, entiere.coupe);
+  let crop = options.recadrer === false ? { x: 0, y: 0, w: W, h: H } : recadrageSur(papier, entiere.ink, W, H, entiere.pas, entiere.coupe, bitmap.gray);
   let encre = crop.w === W && crop.h === H ? entiere : encreDetaillee(vue(crop, 0), papier, crop.x, crop.y, clair), angle = 0;
   if (options.redresser !== false) {
     angle = estimerAngle(encre.ink, crop.w, crop.h, papier?.angle ?? null);
@@ -613,7 +652,7 @@ export function analyser(bitmap: Bitmap, options: OptionsAnalyse = {}): Analyse 
       const droite = vue(crop, angle), papierDroit = papier ? trouverPapier(droite) : null;
       encre = encreDetaillee(droite, papierDroit, 0, 0, clair);
       if (papierDroit && options.recadrer !== false) {
-        const sous = recadrageSur(papierDroit, encre.ink, crop.w, crop.h, encre.pas, encre.coupe);
+        const sous = recadrageSur(papierDroit, encre.ink, crop.w, crop.h, encre.pas, encre.coupe, droite.gray);
         if (sous.w < crop.w || sous.h < crop.h) {
           crop = sousCadre(crop, angle, sous);
           encre = encreDetaillee(vue(crop, angle), papierDroit, sous.x, sous.y, clair);
@@ -629,7 +668,7 @@ export function analyser(bitmap: Bitmap, options: OptionsAnalyse = {}): Analyse 
   if (papier && options.recadrer === false) {
     // Toute la largeur de la boîte grandie, bord retiré : jamais l'intervalle du papier rangée par rangée, qui laisse dehors le texte à l'ombre (le
     // papier y est trop sombre pour la région claire : pièges h0016, h0062… coupés en silence).
-    const b = boiteGrandie(papier, encre.ink, crop.w, crop.h, encre.pas, encre.coupe), retrait = papier.f + 2;
+    const b = boiteGrandie(papier, encre.ink, crop.w, crop.h, encre.pas, encre.coupe, bitmap.gray), retrait = papier.f + 2;
     const x0 = Math.max(0, b.x + retrait), x1 = Math.min(crop.w, b.x + b.w - retrait);
     if (x1 - x0 >= 0.2 * crop.w) {
       rangees = partParRangee(encre.coupe, crop.w, crop.h, x0, x1); colonnes = [x0, x1];
