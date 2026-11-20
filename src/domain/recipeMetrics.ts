@@ -12,6 +12,7 @@
  *    quand le calcul est impossible (alpha inconnu) ;
  *  - format : virgule, trois décimales pour une densité (« 1,085 »), jamais « 1.085 ».
  */
+import { separerAjoutsDesHoublons } from './recipeIngredientsAbimes';
 import type { HopIngredient, Recipe } from '../types';
 import { hotBitterness, type HotBitterness } from './hopBitterness';
 import { ogHorsBornes } from './bornesMetier';
@@ -54,7 +55,8 @@ export function fgRecette(recipe: Pick<Recipe, 'fgTarget'>, projetee: number | n
 
 /** Amertume à chaud d'une recette : la même fonction pour la liste et la fiche. `og` imposé = NOLO ou OG déjà résolue. */
 export function amertumeRecette(recipe: Recipe, efficiencyPct: number, options: { og?: number | null; nolo?: boolean } = {}): HotBitterness {
-  const hops: HopIngredient[] = (recipe.hops ?? []).map(normalizeHop);
+  // T3B-12 : lactose, Whirlfloc… rangés parmi les houblons ne sont pas des houblons (sans α, ils rendaient l'IBU inconnu).
+  const hops: HopIngredient[] = separerAjoutsDesHoublons((recipe.hops ?? []).map(normalizeHop)).houblons;
   const og = options.og !== undefined ? options.og : ogRecette(recipe, efficiencyPct);
   const boilOg = options.nolo ? og : yeastRecipeBoilOg({ ...recipe, efficiencyPct }, { og }).og;
   return hotBitterness(hops, recipe.volumeL, boilOg, recipe.boilMin ?? 60);
@@ -68,7 +70,7 @@ export function ibuListe(recipe: Recipe, efficiencyPct: number): number | undefi
   // Un IBU annoncé à 0 n'est pas une cible (TE-33 : « Amertume 0 IBU » pour un houblon sans dose) : l'inconnu n'est jamais 0.
   const annonce = typeof recipe.ibuTarget === 'number' && Number.isFinite(recipe.ibuTarget) && recipe.ibuTarget > 0 ? recipe.ibuTarget : undefined;
   if (recipe.nolo?.enabled) return annonce;
-  const chauds = (recipe.hops ?? []).map(normalizeHop).filter(h => h.stage !== 'dryHop' && h.weightG > 0);
+  const chauds = separerAjoutsDesHoublons((recipe.hops ?? []).map(normalizeHop)).houblons.filter(h => h.stage !== 'dryHop' && h.weightG > 0);
   if (!chauds.length) return annonce;
   const total = amertumeRecette(recipe, efficiencyPct).total;
   return total == null ? annonce : Math.round(total);

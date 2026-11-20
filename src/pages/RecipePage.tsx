@@ -1,5 +1,7 @@
 import { batchDisplayDate } from '../domain/batchSchedule';
 import { ibuDeLAjout } from '../domain/hopBitterness';
+import { recetteLue } from '../domain/recipeIngredientsAbimes';
+import { brassinsDeLaRecette } from '../domain/recipeBrassins';
 import { amertumeRecette, fgRecette, formatDensite, formatLitres, nombreAccorde, ogRecette } from '../domain/recipeMetrics';
 import { formatDecimal } from '../ui/numericInput';
 import { HopBitternessPanel } from '../ui/HopBitternessPanel';
@@ -99,8 +101,12 @@ import { RecipeThermalPlan } from '../ui/RecipeThermalPlan';
 import { measuredWortYield } from '../domain/brewSystemInsights';
 import { partsEntieres, resumeAjouts, uniteAccordee } from '../domain/fermentables/parts';
 
+/* T3B-11, T3B-12 : ce que la fiche lit du stock et des recettes enregistrées (des chaînes, pour qu'une relecture identique ne rende pas deux fois). */
+const lireNomsDuStock = (): string => { try { return StorageService.getStocks().rawMaterials.map((i) => i.name).join('\n'); } catch { return ''; } };
+const lireLignees = (): string => { try { return JSON.stringify(StorageService.getRecipes().map((r) => ({ id: r.id, batchRef: r.batchRef, parentRecipeId: r.parentRecipeId }))); } catch { return '[]'; } };
+
 export const RecipePage: React.FC<RecipePageProps> = ({
-  recipe,
+  recipe: recipeEnregistree,
   batches,
   config,
   onClose,
@@ -110,6 +116,10 @@ export const RecipePage: React.FC<RecipePageProps> = ({
   onBrew,
   onOpenBatch
 }) => {
+  // T3B-12 : la recette telle qu'on la lit (lactose et Whirlfloc hors des houblons, accents rendus par le nom du stock) ; la donnée enregistrée n'est jamais modifiée.
+  const nomsDuStock = useStorageValue(lireNomsDuStock);
+  const recipe = useMemo(() => recetteLue(recipeEnregistree, nomsDuStock ? nomsDuStock.split('\n') : []), [recipeEnregistree, nomsDuStock]);
+  const lignees = useStorageValue(lireLignees);
   const [confirmDelete, setConfirmDelete] = useState(false);
   // Matin 16.11 (b1r : « celle de l'écran actuel sont plus mis en avant ») : le menu du « + » de la page porte ses actions, contre le + d'abord :
   // préparer un brassin, modifier, dupliquer, exporter ; « Supprimer la recette » en dernier, le plus loin du + (la plus rare, la seule qui détruit),
@@ -224,9 +234,8 @@ export const RecipePage: React.FC<RecipePageProps> = ({
     return [...parRaison].map(([raison, noms]) => `${noms.join(', ')} : ${raison}`);
   })();
 
-  const relatedBatches = batches.filter(
-    (b) => b.recipeRef === recipe.id || b.recipeSnapshot?.sourceRecipeId === recipe.id
-  );
+  // T3B-11 : la règle de la feuille des recettes (lien `batchRef` compris, lignée des versions comprise).
+  const relatedBatches = useMemo(() => brassinsDeLaRecette(recipe, batches, JSON.parse(lignees) as Array<Pick<Recipe, 'id' | 'batchRef' | 'parentRecipeId'>>), [recipe, batches, lignees]);
 
   const dryHopTotal = hops
     .filter((h) => h.stage === 'dryHop')
