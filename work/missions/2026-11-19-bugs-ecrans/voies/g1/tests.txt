@@ -1,0 +1,3 @@
+Test Files  252 passed | 2 skipped (254)
+      Tests  3122 passed | 6 skipped (3128)
+Commande : npx vitest run tests/unit/finance tests/unit/depense tests/unit/bugs-g1 tests/unit/cxMaterielPropose.test.ts tests/unit/purchase functions ; 0 failed ; npx tsc --noEmit sans erreur.
