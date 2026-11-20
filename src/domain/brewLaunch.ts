@@ -240,7 +240,7 @@ export interface ManqueLancement {
   /** Ce que demande le lancement à ce volume (somme de ses moments), dans l'unité de la recette. */
   dose: number;
   unite: string;
-  /** Le stock indiqué, converti dans la même unité ; `null` : aucune ligne de stock à ce nom (« pas au stock »). */
+  /** Le stock indiqué, converti dans la même unité ; `null` : aucune ligne de stock à ce nom (dit « non relié » : l'app ne sait pas, comme l'aperçu du Carnet, CT4-B-4 ; BK4-2). */
   enStock: number | null;
   manque: number;
 }
@@ -251,7 +251,7 @@ export interface LigneStock { name: string; currentStock: number; unit: string }
 /**
  * Ce qui manque pour ce volume : les ingrédients de la frise (malts, houblons, levure) dont le stock indiqué est sous la dose.
  * Même lecture que `BrewIngredients.tsx` : l'ingrédient se retrouve par son nom (casse et espaces ignorés), le stock se convertit dans l'unité
- * de la dose. Un ingrédient sans aucune ligne de stock est listé « pas au stock » (`enStock: null`, toute la dose manque : on ne
+ * de la dose. Un ingrédient sans aucune ligne de stock est listé « non relié » (`enStock: null`, toute la dose manque : on ne
  * peut pas arriver au brassage sans lui, verdict 050d2ccd n° 1) ; une ligne d'une unité qui ne se convertit pas n'est pas comptée.
  * La dose d'une même matière sur plusieurs moments se cumule. Aucune écriture, aucun calcul de stock neuf.
  */

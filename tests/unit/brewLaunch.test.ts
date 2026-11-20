@@ -249,7 +249,7 @@ describe('brewLaunch — ce qui manque pour N L (passe 3)', () => {
     expect(manquesLancement(etapes(), [{ name: 'Citra', currentStock: 0.1, unit: 'kg' }])[0].enStock).toBeCloseTo(100, 6);
   });
 
-  it('sans aucune ligne de stock : « pas au stock », toute la dose manque, après les manques chiffrés (verdict 050d2ccd n° 1)', () => {
+  it('sans aucune ligne de stock : « non relié » (BK4-2), toute la dose manque, après les manques chiffrés (verdict 050d2ccd n° 1)', () => {
     const tout = manquesLancement(etapes(), []);
     expect(tout.length).toBeGreaterThan(0);
     expect(tout.every((x) => x.enStock == null && Math.abs(x.manque - x.dose) < 1e-9)).toBe(true);
