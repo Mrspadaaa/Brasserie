@@ -1,6 +1,6 @@
 import type { Transaction } from '../../../types';
 import type { FinancialPayment } from '../../../domain/finance/types';
-import { formatCHF, isActiveTransaction, isoDate, paymentState, transactionAmount, validPayment } from '../../../domain/finance/ledger';
+import { formatCHF, isActiveTransaction, isoDate, paymentState, transactionAmount, transactionDirection, transactionKind, validPayment } from '../../../domain/finance/ledger';
 import { amountOnly, shortDate } from '../financeFormat';
 
 /**
@@ -160,4 +160,22 @@ export function moisCourt(mois: string, today: string): string {
   const date = new Date(`${mois}-01T12:00:00`);
   if (mois.slice(0, 4) === today.slice(0, 4)) return date.toLocaleDateString('fr-CH', { month: 'long' });
   return date.toLocaleDateString('fr-CH', { month: 'short', year: 'numeric' });
+}
+
+/**
+ * T3-8 : apports (+) et prélèvements (−) d'une période, comme la section « Apports et prélèvements » de la liste : une écriture de catégorie
+ * `apports` (même ancienne, sans bloc finance) ou de nature apport/prélèvement compte, signée par son sens. Annulée ou sans date : ignorée.
+ * Aucune écriture : null (inconnu, jamais 0).
+ */
+export function apportsDePeriode(lignes: ReadonlyArray<{ transaction: Transaction; date: string | null | undefined }>, du: string | null, au: string | null): number | null {
+  const toutes = lignes.map(l => l.transaction);
+  let cents = 0, n = 0;
+  for (const { transaction: tx, date } of lignes) {
+    if (!isActiveTransaction(tx) || !date) continue;
+    const k = transactionKind(tx);
+    if (k !== 'contribution' && k !== 'withdrawal' && tx.category !== 'apports') continue;
+    if ((du !== null && date < du) || (au !== null && date > au)) continue;
+    cents += (transactionDirection(tx, toutes) === 'in' ? 1 : -1) * transactionAmount(tx); n++;
+  }
+  return n ? cents : null;
 }

@@ -13,7 +13,7 @@ import { compte } from '../../services/plural';
 import { Bande, type Actif } from './operations/Bande';
 import { donneesFriseDe } from './operations/donneesFrise';
 import { dansJours, finDuMois, jourMaxi, joursDeCompte, lirePlage, periodeSurJours, plageDuMois, redater, titreJours } from './operations/plage';
-import { enRetard, retardTotal } from './operations/calculs';
+import { apportsDePeriode, enRetard, retardTotal } from './operations/calculs';
 import { questionPoste } from './operations/assistant';
 import { moisDit } from './compagnon/vue';
 import { PaireDoublons, type GroupeDoublon } from './operations/PaireDoublons';
@@ -300,15 +300,7 @@ export function TransactionJournal({ transactions, payments, archives, request, 
     if (followingUp) return null;
     const sources = scope === 'archives' ? classified.filter(e => e.archived) : scope === 'current' ? classified.filter(e => !e.archived || e.open) : classified;
     const [du, au] = scope === 'archives' ? [null, null] : [debut, fin];
-    let cents = 0, n = 0;
-    for (const { transaction: tx, date } of sources) {
-      if (!isActiveTransaction(tx) || !date) continue;
-      const k = tx.finance?.kind;
-      if (k !== 'contribution' && k !== 'withdrawal') continue;
-      if (!dansJours(date, du, au)) continue;
-      cents += (k === 'contribution' ? 1 : -1) * transactionAmount(tx); n++;
-    }
-    return n ? cents : null;
+    return apportsDePeriode(sources, du, au);
   }, [followingUp, scope, classified, debut, fin]);
   /** Point 3 du test d'écran : les archives disent ce qu'elles contiennent, jamais « sur tout l'historique » quand l'historique a des opérations. */
   const videTexte = scope === 'archives'
