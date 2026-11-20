@@ -69,6 +69,8 @@ export function legendesEmpatage(segments: SegmentEmpatage[]): string[] {
   });
 }
 
+/** Repli générique : sans lui, une police pas encore chargée tombe sur les empattements du navigateur (BK2-1). */
+const MONO = "'IBM Plex Mono', ui-monospace, monospace", SANS = "'Source Sans 3', system-ui, sans-serif";
 const L = 350, H = 120, GAUCHE = 26, DROITE = 340, HAUT = 12, BAS = 104, DEPART = 14;
 /** Géométrie de la courbe (SVG 350×120) : l'axe va du plancher (3 °C sous la dizaine qui suit le palier le plus froid) à la dizaine au-dessus du plus chaud. */
 export function geometrieEmpatage(segments: SegmentEmpatage[]) {
@@ -96,17 +98,23 @@ export function CourbeEmpatage({ segments }: { segments: SegmentEmpatage[] }) {
   if (!segments.length) return null;
   const { courbe, graduations, paliers, plancher } = geometrieEmpatage(segments), legendes = legendesEmpatage(segments);
   const centre = (p: { x0: number; x1: number }) => (p.x0 + p.x1) / 2;
+  const etiquettes = paliers.map((p) => {
+    const texte = `${nombreFr(p.s.tempC, 1)} °C · ${p.s.durationMin}′`, x = Math.min(Math.max(centre(p), GAUCHE + 48), L - 48), w = texte.length * 8.6 + 8;
+    return { texte, x, y: p.y - 6, fond: { x: x - w / 2, y: p.y - 19, width: w, height: 16 } };
+  });
   return <svg viewBox={`0 0 ${L} ${H}`} style={{ width: '100%', maxWidth: 480, height: 'auto', aspectRatio: `${L} / ${H}` }} role="img" data-booster="courbe-empatage"
     aria-label={segments.map((s) => `${s.nom} ${nombreFr(s.tempC, 1)} °C pendant ${s.durationMin} minutes`).join(', ')}>
-    <g fontFamily="IBM Plex Mono" fontSize="12" fill="rgb(var(--cave-texte-400))">{graduations.map((g) => <text key={g.t} x="0" y={g.y + 4}>{g.t}</text>)}</g>
+    <g fontFamily={MONO} fontSize="12" fill="rgb(var(--cave-texte-400))">{graduations.map((g) => <text key={g.t} x="0" y={g.y + 4}>{g.t}</text>)}</g>
     <path d={graduations.map((g) => `M${GAUCHE} ${g.y}H${L}`).join('')} stroke="rgb(var(--cave-700))" strokeWidth="1" />
     <path d={`M${GAUCHE} ${plancher}H${L}`} stroke="rgb(var(--cave-600))" strokeWidth="1" />
+    {/* BK2-1 : un fond plein sous chaque étiquette coupe la graduation qui la traversait ; tracé avant l'aplat et la courbe, qui passent dessus. */}
+    {etiquettes.map((e, i) => <rect key={i} data-role="fond-etiquette" {...e.fond} fill="rgb(var(--cave-950))" />)}
     {paliers.map((p, i) => <path key={i} data-role="aplat" d={`M${p.x0} ${p.y}H${p.x1}V${plancher}H${p.x0}Z`} fill="rgb(232 141 104)" opacity={paliers.length > 1 && i === paliers.length - 1 ? 0.28 : 0.16} />)}
     <path d={courbe} fill="none" stroke="rgb(var(--ebc-copper-texte))" strokeWidth="3" strokeLinejoin="round" strokeLinecap="round" />
-    <g fontFamily="IBM Plex Mono" fontSize="14" fontWeight="600" fill="rgb(var(--cave-texte-50))" stroke="rgb(var(--cave-950))" strokeWidth="3" paintOrder="stroke" strokeLinejoin="round">
-      {paliers.map((p, i) => <text key={i} x={Math.min(Math.max(centre(p), GAUCHE + 48), L - 48)} y={p.y - 6} textAnchor="middle">{nombreFr(p.s.tempC, 1)} °C · {p.s.durationMin}′</text>)}
+    <g fontFamily={MONO} fontSize="14" fontWeight="600" fill="rgb(var(--cave-texte-50))" stroke="rgb(var(--cave-950))" strokeWidth="3" paintOrder="stroke" strokeLinejoin="round">
+      {etiquettes.map((e, i) => <text key={i} x={e.x} y={e.y} textAnchor="middle">{e.texte}</text>)}
     </g>
-    <g fontFamily="Source Sans 3" fontSize="12" fill="rgb(var(--cave-texte-400))">
+    <g fontFamily={SANS} fontSize="12" fill="rgb(var(--cave-texte-400))">
       {paliers.map((p, i) => <text key={i} x={Math.min(Math.max(centre(p), GAUCHE + 28), L - 28)} y={H - 2} textAnchor="middle">{legendes[i]}</text>)}
     </g>
   </svg>;
