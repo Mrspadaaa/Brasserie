@@ -36,7 +36,7 @@ function selectBeerStyle(name: string) {
 describe('Mon super stout — recipe profile, manual acid and Doser', () => {
   it('RO stout: explains the real bicarbonate objective consistently in the workshop and recap', () => {
     const save = mount(monSuperStoutRo);
-    allerEtape('Eau et sels');
+    allerEtape('Eau');
     expect(screen.getByText(/Alcalinité résiduelle — repère pour les malts/)).toHaveTextContent('≈ -18 ppm');
     expect(screen.queryByText(/Alcalinité résiduelle — repère 110 à 166/)).not.toBeInTheDocument();
     const explanation = screen.getByLabelText('Objectif du bicarbonate');
@@ -56,13 +56,13 @@ describe('Mon super stout — recipe profile, manual acid and Doser', () => {
     expect(copied.waterPlan.wortIons).toEqual(saved.waterPlan.wortIons);
     cleanup();
     mount(copied);
-    allerEtape('Eau et sels');
+    allerEtape('Eau');
     expect(radar().getAttribute('aria-label')).toBe(graphBefore);
   });
 
   it('RO stout: manual acid updates the estimated mash pH without moving the style zone or the alkali objective', () => {
     mount(monSuperStoutRo);
-    allerEtape('Eau et sels');
+    allerEtape('Eau');
     const ph = () => screen.getByText(/^pH estimé — cible/).parentElement!;
     const zone = () => radar().querySelector('[data-ion-target="hco3"]')!.getAttribute('d');
     const zoneBefore = zone();
@@ -86,7 +86,7 @@ describe('Mon super stout — recipe profile, manual acid and Doser', () => {
 
   it('preserves the saved choices and exposes the two causes before making a correction', () => {
     mount();
-    allerEtape('Eau et sels');
+    allerEtape('Eau');
     expect(waterProfile()).toHaveValue('Équilibré (sans style)');
     expect(acid()).toHaveValue('7,5');
     expect(screen.getByRole('status', { name: 'Acide manuel à l’empâtage' })).toHaveTextContent('Acide empâtage manuel : 7,5 mL ; calcul : 13,3 mL.');
@@ -97,7 +97,7 @@ describe('Mon super stout — recipe profile, manual acid and Doser', () => {
 
   it('adopts the profile, preserves manual acid through Doser, then explicitly resets and saves', () => {
     const save = mount();
-    allerEtape('Eau et sels');
+    allerEtape('Eau');
     click('Utiliser Imperial Stout');
     expect(waterProfile()).toHaveValue('20C — Imperial Stout');
     expect(acid()).toHaveValue('7,5'); // Profile selection never erases a manual dose.
@@ -134,14 +134,14 @@ describe('Mon super stout — recipe profile, manual acid and Doser', () => {
     expect(copied.waterPlan.wortIons).toEqual(saved.waterPlan.wortIons);
     cleanup();
     mount(saved);
-    allerEtape('Eau et sels');
+    allerEtape('Eau');
     expect(radar().getAttribute('aria-label')).toBe(first);
     expect(acid()).toHaveValue('6');
   });
 
   it('can reset just the acid while keeping the weighed salts and chosen profile', () => {
     const save = mount();
-    allerEtape('Eau et sels');
+    allerEtape('Eau');
     click('Revenir aux doses d’acide calculées');
     expect(acid()).toHaveValue('13,3');
     // No positive profile floor here: actual grist alkalinity guides the acid.
@@ -157,15 +157,15 @@ describe('Mon super stout — recipe profile, manual acid and Doser', () => {
   it('follows changes to beer style until the brewer chooses another water profile', () => {
     mount({ ...monSuperStout, style: '', waterPlan: undefined });
     selectBeerStyle('Imperial stout');
-    allerEtape('Eau et sels');
+    allerEtape('Eau');
     expect(waterProfile()).toHaveValue('20C — Imperial Stout');
     selectBeerStyle('Hazy IPA');
-    allerEtape('Eau et sels');
+    allerEtape('Eau');
     expect(waterProfile()).toHaveValue('21C — Hazy IPA · NEIPA');
     fireEvent.click(waterProfile());
     fireEvent.click(screen.getByRole('option', { name: /Équilibré \(sans style\)/ }));
     selectBeerStyle('Saison');
-    allerEtape('Eau et sels');
+    allerEtape('Eau');
     expect(waterProfile()).toHaveValue('Équilibré (sans style)');
   });
 
@@ -175,7 +175,7 @@ describe('Mon super stout — recipe profile, manual acid and Doser', () => {
       ...monSuperStout.waterPlan, targetIons, targetName: 'Mon eau ronde'
     } });
     selectBeerStyle('Hazy IPA');
-    allerEtape('Eau et sels');
+    allerEtape('Eau');
     expect(screen.queryByRole('button', { name: /^Utiliser / })).not.toBeInTheDocument();
     allerEtape('Récapitulatif');
     click('Enregistrer la recette');

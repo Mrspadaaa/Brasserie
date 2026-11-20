@@ -81,7 +81,7 @@ describe('application NOLO du Wizard avec une ancienne recette sans plan d’eau
     expect(first.save).not.toHaveBeenCalled();
     fireEvent.click(screen.getByRole('button', { name: 'Appliquer à la recette' }));
     expect(first.save).not.toHaveBeenCalled();
-    allerEtape(/^Eau et sels$/);
+    allerEtape(/^Eau$/);
     expect(screen.getByRole('status', { name: 'Acidification à mesurer' })).toHaveTextContent(/dose d’acide non calculée/);
     expect(screen.queryByText('rien à corriger')).not.toBeInTheDocument();
     expect(screen.getByText('Additifs retenus à préparer')).toBeInTheDocument();
@@ -217,7 +217,7 @@ describe('application NOLO du Wizard avec une ancienne recette sans plan d’eau
     writeRecipeDraft('qa-nolo-wizard-lona', serializeRecipeDraft(draft));
 
     const resumed = mount(saved);
-    allerEtape(/^Eau et sels$/);
+    allerEtape(/^Eau$/);
     const acidity = screen.getByRole('status', { name: 'Acidification à mesurer' });
     expect(acidity).toHaveTextContent(/Empâtage · dose d’acide non calculée/);
     expect(acidity).toHaveTextContent(/Rinçage · dose manuelle retenue : 1 mL/);
@@ -248,7 +248,7 @@ describe('application NOLO du Wizard avec une ancienne recette sans plan d’eau
     zeroDraft.water.acidOverride = { mash: 0, sparge: 1 };
     writeRecipeDraft('qa-nolo-wizard-lona', serializeRecipeDraft(zeroDraft));
     const zeroResumed = mount(corrected);
-    allerEtape(/^Eau et sels$/);
+    allerEtape(/^Eau$/);
     expect(screen.getByRole('status', { name: 'Acidification à mesurer' }))
       .toHaveTextContent(/Empâtage · dose manuelle retenue : 0 mL/);
     expect(screen.getByRole('region', { name: 'Bilan du bicarbonate des eaux', hidden: true }))

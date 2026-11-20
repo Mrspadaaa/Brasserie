@@ -479,7 +479,7 @@ const STEPS: Array<{ id: StepId; label: string; shortLabel?: string }> = [
   { id: 'houblons', label: 'Houblons' },
   { id: 'levure', label: 'Levure' },
   { id: 'paliers', label: 'Paliers' },
-  { id: 'eau', label: 'Eau et sels', shortLabel: 'Eau' },
+  { id: 'eau', label: 'Eau', shortLabel: 'Eau' },
   { id: 'recap', label: 'Récapitulatif', shortLabel: 'Récap.' }
 ];
 
@@ -1022,9 +1022,11 @@ const BrewWizardEditor: React.FC<BrewWizardProps & {
   const ogRetenue = keepOgTarget && typeof details.ogTarget === 'number' && details.ogTarget > 1 ? details.ogTarget : null;
   // BR-22 : sans aucun fermentescible, la cible retenue s'affichait comme une OG calculée (« Grain 0 kg · OG 1,066 ») : l'écran dit qu'elle est retenue, pas calculée.
   const ecartOg = ogRetenue != null && ogPredicted != null && formatDensite(ogRetenue) !== formatDensite(ogPredicted)
-    ? `OG retenue ${formatDensite(ogRetenue)} · calculée ${formatDensite(ogPredicted)}`
+    ? `OG visée ${formatDensite(ogRetenue)} · calculée ${formatDensite(ogPredicted)} avec tes malts`
     : ogRetenue != null && ogPredicted == null && !(totalGrist > 0)
-      ? `OG retenue ${formatDensite(ogRetenue)} · aucun fermentescible pour la calculer` : null;
+      ? `OG visée ${formatDensite(ogRetenue)} · aucun fermentescible pour la calculer` : null;
+  // TE-13 : « visée » (le mot du brasseur) ; le toucher explique l'écart, la ligne s'efface d'elle-même dès qu'on touche un malt (la cible tombe, le calcul la remplace).
+  const ecartOgTitre = 'La cible saisie ; le calcul diffère car les malts ou le rendement ont changé';
 
   const boilOg = useMemo(() => details.nolo?.enabled ? og || null : yeastRecipeBoilOg({ fermentables, volumeL, efficiencyPct: efficiency } as Recipe, { og: og || null }).og,
     [details.nolo?.enabled, og, fermentables, volumeL, efficiency]);
@@ -2264,7 +2266,8 @@ const BrewWizardEditor: React.FC<BrewWizardProps & {
 
   // « Abandonner » le brouillon : dans l'en-tête, compact, à côté de l'import et du thème (25.10). La confirmation, elle, reste
   // sous l'en-tête (« Supprimer ce brouillon ? »). Sur ordinateur, le bouton passe par `actions` de la coquille.
-  const abandonner = draftKey && (draftNotice || draftError) && !draftAside && !discarding && !draftReadOnly ? (
+  // B1-NOTE-3 : présent dès l'ouverture, avant le premier geste (plus conditionné au message du brouillon).
+  const abandonner = draftKey && !draftAside && !discarding && !draftReadOnly ? (
     // Dans un <span> : la règle `.recipe-titlebar > button` du wizard fixe 28 × 28 px aux boutons-icônes de la rangée.
     <span className="shrink-0">
       <button type="button" aria-label="Abandonner le brouillon" data-role="abandonner-brouillon" onClick={() => setDiscarding(true)}
@@ -2509,7 +2512,7 @@ const BrewWizardEditor: React.FC<BrewWizardProps & {
       </section> : <fieldset disabled={saving} aria-busy={saving} className="contents space-y-3">
       {/* « Brouillon repris sur cet appareil. » ne s'écrit plus à l'écran (25.10) : il reste annoncé aux lecteurs d'écran. Les autres
           messages (erreur, programme appliqué, version enregistrée ouverte) et la confirmation d'abandon restent visibles. */}
-      {draftKey && (draftNotice || draftError) && (draftError || discarding || !messageDeBase || repriseVisible) && <div className={`recipe-draft-status flex flex-wrap items-center justify-between gap-x-2 gap-y-1 ${repriseVisible && !draftError ? 'rounded-control border border-cave-700 bg-cave-900 px-2 py-1.5 text-sm text-cave-200' : 'text-xs text-cave-400'}`} data-reprise={repriseVisible && !draftError ? 'true' : undefined}>
+      {draftKey && (draftNotice || draftError || discarding) && (draftError || discarding || !messageDeBase || repriseVisible) && <div className={`recipe-draft-status flex flex-wrap items-center justify-between gap-x-2 gap-y-1 ${repriseVisible && !draftError ? 'rounded-control border border-cave-700 bg-cave-900 px-2 py-1.5 text-sm text-cave-200' : 'text-xs text-cave-400'}`} data-reprise={repriseVisible && !draftError ? 'true' : undefined}>
         {(draftError || (draftNotice && (!messageDeBase || repriseVisible))) && <span role={draftError ? 'alert' : 'status'}>{draftError || draftNotice}</span>}
         {repriseVisible && !draftError && !discarding && !draftReadOnly && <button type="button" data-role="repartir-vierge" className="min-h-touch px-1 text-sm underline underline-offset-2 text-cave-50" onClick={() => setDiscarding(true)}>Repartir d’une recette vierge</button>}
         {discarding && <span className="flex items-center gap-2"><span className="text-attention">Supprimer ce brouillon ?</span><button type="button" autoFocus onClick={() => setDiscarding(false)}>Garder</button><button type="button" onClick={discardDraft} className="text-alert-strong">Abandonner</button></span>}
@@ -2577,7 +2580,7 @@ const BrewWizardEditor: React.FC<BrewWizardProps & {
           </div>
         </div>
       )}
-      {hasMetrics && ecartOg && step !== 'eau' && <p data-role="ecart-og" className="px-2.5 -mt-1 text-xs text-cave-400">{ecartOg}</p>}
+      {hasMetrics && ecartOg && step !== 'eau' && <p data-role="ecart-og" title={ecartOgTitre} className="px-2.5 -mt-1 text-xs text-cave-400">{ecartOg}</p>}
 
       {!localOnly && <BrewerChat hideLauncher scope={{kind:'draft',id:draftRecipeId}} label={name || 'Nouvelle recette'} phase={STEPS[stepIndex].label} draft={build()}
         onDraftApply={value => {

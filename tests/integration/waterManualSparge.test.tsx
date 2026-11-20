@@ -41,7 +41,7 @@ describe('Manual sparge acid through the complete recipe workflow', () => {
         acidOverride: { mash: 0, sparge: 0 }, startIons: undefined, wortIons: undefined }
     };
     const view = mount(recipe);
-    allerEtape('Eau et sels');
+    allerEtape('Eau');
     changeAcid('2');
     expect(spargeAcid()).toHaveValue('2');
     // 250 mg/L − 2 mL × 600 mg/mL / 10 L, independent of mash salts.
@@ -72,7 +72,7 @@ describe('Manual sparge acid through the complete recipe workflow', () => {
     view.unmount();
 
     const reopened = mount(exported);
-    allerEtape('Eau et sels');
+    allerEtape('Eau');
     expect(spargeAcid()).toHaveValue('2');
     expect(screen.getByLabelText('HCO₃ après acide — rinçage')).toHaveTextContent('130');
     expect(radar()).toBe(finalGraph);

@@ -144,7 +144,7 @@ const hold = async (button: HTMLElement) => {
   fireEvent.click(button);
   await wait(0);
 };
-const allSteps = [/Malts.sucres/, /Houblons/, /Levure/, /^Paliers/, /Eau et sels/, /Récapitulatif/, /Identité/];
+const allSteps = [/Malts.sucres/, /Houblons/, /Levure/, /^Paliers/, /^Eau$/, /Récapitulatif/, /Identité/];
 
 beforeAll(() => {
   // jsdom n'a pas la capture du pointeur ; le navigateur l'a.
@@ -190,7 +190,7 @@ describe('#97 V3 n°1 — tout geste réel du brasseur crée le brouillon (B1)',
 
   it('appui long sur « Ajouter 0,5 g » d’un sel (useHoldRepeat de numericInput) : brouillon écrit', async () => {
     const view = wizard(saved());
-    allerEtape(/Eau et sels/);
+    allerEtape(/^Eau$/);
     const plus = (await screen.findAllByRole('button', { name: /^Ajouter 0,5 g de / }))[0];
     const field = screen.getByLabelText(plus.getAttribute('aria-label')!.replace(/^Ajouter 0,5 g de (.*)$/, 'Dose de $1 en grammes')) as HTMLInputElement;
     const before = field.value;
@@ -219,7 +219,7 @@ describe('#97 V3 n°1 — tout geste réel du brasseur crée le brouillon (B1)',
 
   it('appui sur la piste SO₄ ⇄ Cl (RatioSlider) : brouillon écrit', async () => {
     const view = wizard(saved());
-    allerEtape(/Eau et sels/);
+    allerEtape(/^Eau$/);
     await wait(50);
     const track = document.querySelector('.ratio-track') as HTMLElement;
     expect(track).toBeTruthy();
@@ -446,7 +446,7 @@ describe('#97 revue ciblée — Entrée sur un bouton de contenu qui n’écrit 
   for (const heldMs of [0, 80]) {
     it(`« Retour à la fiche de brassage » par Entrée (appui ${heldMs} ms) : Récapitulatif, aucun brouillon`, async () => {
       const view = wizard(saved());
-      allerEtape(/Eau et sels/);
+      allerEtape(/^Eau$/);
       await enterOn(await screen.findByRole('button', { name: /Retour à la fiche de brassage/ }), heldMs);
       expect(screen.queryByRole('button', { name: 'Enregistrer la recette' })).toBeTruthy();
       view.unmount();
@@ -460,7 +460,7 @@ describe('#97 revue ciblée — Entrée sur un bouton de contenu qui n’écrit 
     const kept = raw();
     const view = wizard(saved());
     fireEvent.click(await screen.findByRole('button', { name: 'Ouvrir la version enregistrée' }));
-    allerEtape(/Eau et sels/);
+    allerEtape(/^Eau$/);
     await enterOn(await screen.findByRole('button', { name: /Retour à la fiche de brassage/ }), 80);
     view.unmount();
     expect(raw()).toBe(kept);

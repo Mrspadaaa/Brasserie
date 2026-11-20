@@ -49,7 +49,7 @@ function mount(seed?: Recipe) {
 describe('Comprendre et ajuster le partage d’eau sans changer de matériel en silence', () => {
   it('explique le cas signalé et ne change les volumes qu’après une action du brasseur', () => {
     const save = mount(recipe);
-    allerEtape('Eau et sels');
+    allerEtape('Eau');
     expect(mashInput()).toHaveValue('10,5');
     expect(spargeInput()).toHaveValue('23,5');
     const explanation = screen.getByText('Comprendre').closest('details')!;
@@ -82,7 +82,7 @@ describe('Comprendre et ajuster le partage d’eau sans changer de matériel en 
     fireEvent.change(screen.getByRole('textbox', { name: 'Texte de la recette' }), { target: { value: writeRecipeText(recipe) } });
     fireEvent.click(screen.getByRole('button', { name: 'Lire la recette', exact: true }));
     fireEvent.click(screen.getByRole('button', { name: 'Reprendre', exact: true }));
-    allerEtape('Eau et sels');
+    allerEtape('Eau');
     expect(screen.getByText('Comprendre').closest('details')).toHaveTextContent('115 min : 5,5 L évaporés');
     allerEtape('Identité');
     fireEvent.click(screen.getByRole('button', { name: 'Adapter à mon matériel actuel · Autre installation', exact: true }));
@@ -91,7 +91,7 @@ describe('Comprendre et ajuster le partage d’eau sans changer de matériel en 
     expect(screen.getByRole('button', { name: /^Matériel\s*Royal Catering/ })).toBeInTheDocument();
     // The preserved imported split requires 24.2 L hot, above the new 24 L
     // maximum. Resolve that choice explicitly before retrying the adaptation.
-    allerEtape('Eau et sels');
+    allerEtape('Eau');
     fireEvent.change(screen.getByRole('slider', { name: 'Épaisseur de maische' }), { target: { value: '6' } });
     allerEtape('Identité');
     fireEvent.click(screen.getByRole('button', { name: 'Adapter à mon matériel actuel · Autre installation', exact: true }));
@@ -108,7 +108,7 @@ describe('Comprendre et ajuster le partage d’eau sans changer de matériel en 
 
   it('signale que le plein volume ne tient pas et restaure le rinçage sans perdre de litres', () => {
     mount(recipe);
-    allerEtape('Eau et sels');
+    allerEtape('Eau');
     fireEvent.click(screen.getByRole('switch', { name: /Eau de rinçage/ }));
     expect(mashInput()).toHaveValue('34');
     expect(screen.queryByRole('textbox', { name: 'Volume d’eau de rinçage, en litres' })).not.toBeInTheDocument();

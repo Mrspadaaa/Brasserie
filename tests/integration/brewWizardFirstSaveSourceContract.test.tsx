@@ -270,10 +270,14 @@ describe('premier enregistrement — cibles de l’auteur et levure', () => {
   });
 });
 
+// 20.11 (r4 v02) : les volets de l'étape Levure ne sont plus empilés au repos ; l'atelier (où vit le sélecteur d'articles) s'ouvre par « Atelier » de la carte.
+const ouvrirAtelier = () => fireEvent.click(document.querySelector('[data-lv="act-atelier"]')!);
+
 describe('premier enregistrement — renommage documentaire du même lot (vrai chemin selectYeast)', () => {
   it('le même article de stock renommé garde les cibles et les paramètres ensemencés', () => {
     const { save } = mount(json(sourceRecipe({ yeast: LOT_YEAST })), { stockItems: [RENAMED_LOT, OTHER_LOT] });
     allerEtape(/^Levure$/);
+    ouvrirAtelier();
     fireEvent.click(screen.getByRole('button', { name: `Associer l’article ${RENAMED_LOT.ref}` }));
     const saved = saveFromRecap(save);
     expect(saved.yeast).toMatchObject({ name: RENAMED_LOT.name, stockItemRef: LOT_YEAST.stockItemRef, qty: 1, unit: 'sachet', form: 'sèche' });
@@ -283,6 +287,7 @@ describe('premier enregistrement — renommage documentaire du même lot (vrai c
   it('un autre article de stock reste une vraie souche remplacée : les cibles deviennent périmées', () => {
     const { view } = mount(json(sourceRecipe({ yeast: LOT_YEAST })), { draftKey: DRAFT_KEY, stockItems: [RENAMED_LOT, OTHER_LOT] });
     allerEtape(/^Levure$/);
+    ouvrirAtelier();
     fireEvent.click(screen.getByRole('button', { name: `Associer l’article ${OTHER_LOT.ref}` }));
     view.unmount();
     const built = readRecipeDraft(DRAFT_KEY)!.recipe;
@@ -345,7 +350,7 @@ describe('premier enregistrement — provenance du mode du profil d’eau', () =
     auto.view.unmount();
 
     const manual = mount(json(seed));
-    allerEtape(/^Eau et sels$/);
+    allerEtape(/^Eau$/);
     fireEvent.click(screen.getByRole('button', { name: `Choisir le profil ${otherProfile([firstCode, secondCode])}` }));
     fireEvent.click(screen.getByRole('button', { name: `Choisir le profil ${firstCode}` }));
     const manualSaved = json(saveFromRecap(manual.save));
@@ -673,7 +678,7 @@ describe('premier enregistrement — garder le profil suggéré par un geste exp
   it('pilote : engager le profil en cours sans changer sa valeur enregistre un choix que le style ne déplace plus', async () => {
     const { first, firstCode, second } = stylesWithDistinctSuggestions();
     const { save, view } = mount(json(sourceRecipe({ style: first })));
-    allerEtape(/^Eau et sels$/);
+    allerEtape(/^Eau$/);
     fireEvent.click(screen.getByRole('button', { name: 'Garder le profil en cours' }));
     const saved = json(saveFromRecap(save));
     expect(saved.waterPlan).toMatchObject({ targetProfileId: firstCode, targetProfileOrigin: 'choice' });
@@ -684,7 +689,7 @@ describe('premier enregistrement — garder le profil suggéré par un geste exp
   it('pilote, témoin : un autre réglage d’eau ne devient pas un choix de profil', async () => {
     const { first, firstCode, second, secondCode } = stylesWithDistinctSuggestions();
     const { save, view } = mount(json(sourceRecipe({ style: first })));
-    allerEtape(/^Eau et sels$/);
+    allerEtape(/^Eau$/);
     fireEvent.click(screen.getByRole('button', { name: 'Modifier une dose' }));
     const saved = json(saveFromRecap(save));
     expect(saved.waterPlan).toMatchObject({ targetProfileId: firstCode, targetProfileOrigin: 'style' });
@@ -696,7 +701,7 @@ describe('premier enregistrement — garder le profil suggéré par un geste exp
     workshop.real = true;
     const { first, firstCode, second } = stylesWithDistinctSuggestions();
     const { save, view } = mount(json(sourceRecipe({ style: first })));
-    allerEtape(/^Eau et sels$/);
+    allerEtape(/^Eau$/);
     selectCheckedProfile(firstCode);
     const saved = json(saveFromRecap(save));
     expect(saved.waterPlan).toMatchObject({ targetProfileId: firstCode, targetProfileOrigin: 'choice' });
@@ -708,7 +713,7 @@ describe('premier enregistrement — garder le profil suggéré par un geste exp
     workshop.real = true;
     const { first, firstCode, second, secondCode } = stylesWithDistinctSuggestions();
     const { save, view } = mount(json(sourceRecipe({ style: first })));
-    allerEtape(/^Eau et sels$/);
+    allerEtape(/^Eau$/);
     const { input } = openProfileList();
     fireEvent.keyDown(input, { key: 'Escape' });
     expect(document.getElementById('w-style-list')).toBeNull();
@@ -722,7 +727,7 @@ describe('premier enregistrement — garder le profil suggéré par un geste exp
     workshop.real = true;
     const { first, firstCode } = stylesWithDistinctSuggestions();
     mount(json(sourceRecipe({ style: first })));
-    allerEtape(/^Eau et sels$/);
+    allerEtape(/^Eau$/);
     const mode = () => document.querySelector('[data-water-profile-mode]');
     expect(mode()?.getAttribute('data-water-profile-mode')).toBe('style');
     selectCheckedProfile(firstCode);

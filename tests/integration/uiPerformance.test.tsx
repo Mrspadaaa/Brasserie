@@ -30,7 +30,7 @@ describe('Interactive performance without stale calculations', () => {
       mash: { gypse: 1.12, cacl2: 0.0123456789 }, sparge: { gypse: .58 } };
     render(<BrewWizard seed={{ recipe }} stockItems={[]} config={defaultConfig} knownStyles={[]}
       onClose={() => {}} onSave={() => {}} onCreateStockItem={() => {}} onSaveWaterSource={() => {}} />);
-    fireEvent.click(screen.getAllByRole('button', { name: 'Eau et sels', exact: true })[0]);
+    fireEvent.click(screen.getAllByRole('button', { name: 'Eau', exact: true })[0]);
     fireEvent.click(screen.getByRole('button', { name: /^2\. Sels/ }));
     expect(screen.getByRole('textbox', { name: 'Dose de Gypse en grammes', exact: true })).toHaveValue('1,7');
     expect(screen.getByRole('textbox', { name: 'Dose de Chlorure de calcium en grammes', exact: true })).toHaveValue('0,0123456789');
