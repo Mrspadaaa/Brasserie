@@ -17,7 +17,12 @@
 .lv-seg-bt:focus-visible, .lv-champ:focus-visible, .lv-puce:focus-visible, .lv-plus:focus-visible, .lv-moins:focus-visible, .lv-ch:focus-visible, .lv-x:focus-visible, .lv-lien:focus-visible,
 .lv-cond-tete:focus-visible { outline: 2px solid theme('colors.ebc.straw'); outline-offset: 2px; }
 .lv-seg-n { font-family: 'IBM Plex Mono', monospace; }
-.lv-annule { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 4px 10px; padding: 4px 10px; border-radius: 12px; background: theme('colors.cave.850'); font-size: .8125rem; color: theme('colors.cave.200'); }
+/* La barre de r3 v05 (e4) : noire pleine largeur en clair, encre inversée en cave ; l'ancienne levure à droite, en gris. */
+.lv-barre-annuler { display: flex; align-items: center; gap: 8px; width: 100%; min-height: 44px; margin: 0 0 8px; padding: 0 12px; border-radius: 12px;
+  background: theme('colors.cave.50'); color: theme('colors.cave.950'); font-size: 15px; text-align: left; }
+.lv-barre-annuler b { font-weight: 600; white-space: nowrap; }
+.lv-barre-annuler .lv-barre-nom { flex: 1; min-width: 0; text-align: right; font-size: 14px; opacity: .75; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.lv-barre-annuler:focus-visible { outline: 2px solid theme('colors.ebc.straw'); outline-offset: 2px; }
 
 /* La carte de la levure */
 .lv-bloc { border: 2px solid theme('colors.cave.50'); border-radius: 16px; overflow: hidden; position: relative; background: theme('colors.cave.900'); }

@@ -64,10 +64,10 @@ describe('LEV-1 · le nom ne mêle plus deux marques', () => {
 });
 
 describe('LEV-2 · le bandeau du changement nomme la levure remplacée, sans se lire comme une troisième', () => {
-  it('« Avant : Andechs Lager », pas « Depuis Brewing Science Institute · Andechs Lager »', () => {
+  it('« Annuler le changement · Andechs Lager », pas « Depuis Brewing Science Institute · Andechs Lager »', () => {
     render(<Banc avecChangement />);
     const bandeau = document.querySelector('[data-lv="annuler"]')!.textContent!;
-    expect(bandeau).toMatch(/Avant : Andechs Lager · non enregistré/);
+    expect(bandeau).toMatch(/Annuler le changement\s*Andechs Lager/);   // critique du 20.11, n° 2 : la barre de r3 v05 (e4)
     expect(bandeau).not.toMatch(/Depuis|Brewing Science Institute ·/);
   });
 });

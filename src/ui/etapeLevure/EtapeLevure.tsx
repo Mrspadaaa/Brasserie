@@ -226,10 +226,13 @@ export function EtapeLevure(p: PropsEtapeLevure) {
       {VUES.map(v => <button key={v.id} type="button" role="tab" id={`lv-tab-${v.id}`} aria-selected={vue === v.id} aria-controls={`lv-vue-${v.id}`}
         data-vue-id={v.id} className="lv-seg-bt" onClick={() => onVue(v.id)}>{v.libelle}{v.id === 'comparer' && p.comparees.length > 0 && <span className="lv-seg-n"> ({p.comparees.length})</span>}</button>)}
     </div>
-    {annulable && !ouverts.atelier && <p className="lv-annule" role="status" data-lv="annuler">
-      {/* 19.11 : « Depuis Brewing Science Institute · Andechs Lager » se lisait comme une troisième levure : la levure remplacée, par son nom court. */}
-      <span title={change!.from.yeast.name || undefined}>{change!.source === 'undo' ? `${change!.to!.yeast.name ? nomCourtLevure(change!.to!.yeast.name, change!.to!.yeast.lab) : 'Brouillon sans levure'} rétablie` : change!.from.yeast.name ? `Avant : ${nomCourtLevure(change!.from.yeast.name, change!.from.yeast.lab)}` : 'Levure choisie'} · non enregistré</span>
-      <button type="button" className="lv-lien" onClick={annuler}><Undo2 size={13} aria-hidden="true" /> {change!.source === 'undo' ? `Rétablir ${change!.from.yeast.name ? nomCourtLevure(change!.from.yeast.name, change!.from.yeast.lab) : 'sans levure'}` : 'Annuler le changement'}</button></p>}
+    {/* « Annuler le changement » : la barre noire pleine largeur de r3 v05 (e4), l'ancienne levure à droite (critique du 20.11, n° 2). */}
+    {annulable && !ouverts.atelier && (() => {
+      const avant = change!.from.yeast.name ? nomCourtLevure(change!.from.yeast.name, change!.from.yeast.lab) : 'sans levure';
+      const titre = change!.source === 'undo' ? 'Rétablir le changement' : 'Annuler le changement';
+      return <button type="button" className="lv-barre-annuler" data-lv="annuler" onClick={annuler} title={change!.from.yeast.name || undefined} aria-label={`${titre} : revenir à ${avant}`}>
+        <Undo2 size={18} strokeWidth={2.2} aria-hidden="true" /><b>{titre}</b><span className="lv-barre-nom">{avant}</span></button>;
+    })()}
 
     <div role="tabpanel" id={`lv-vue-${vue}`} aria-labelledby={`lv-tab-${vue}`}>
       {/* T2B-3 (19.11) : Ma levure reste montée et se masque ; un retour d'onglet ne la remonte plus (≈ 70 ms à chaque retour). */}

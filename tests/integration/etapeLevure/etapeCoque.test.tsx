@@ -85,7 +85,7 @@ describe('Ma levure (l5b)', () => {
     // ML-DOSE (D-n, 20.11) : au repos, le repère et le mot disent le besoin de la recette ; le fabricant passe en second, sous la barre.
     expect(bande().querySelector('.ml-bornes .c')!.textContent).toMatch(/^besoin \d+,\d sachets?$/);
     expect(bande().querySelector('.ml-partmot')!.textContent).toBe('couvre le besoin');
-    expect(bande().querySelector('[data-lv="reperes"]')!.textContent).toMatch(/^(fabricant [^·]+ g · )?taux ale 0,75 M\/mL\/°P · 30 L/);
+    expect(bande().querySelector('[data-lv="reperes"]')!.textContent).toMatch(/^((au-dessus du )?fabricant [^·]+ · )?taux ale 0,75 M\/mL\/°P · 30 L/);
     fireEvent.click(document.querySelector('[data-lv="plus"]')!);
     expect(nombre()).toBe(n + 1);
     expect(bande().getAttribute('data-etat')).toBe('apres');

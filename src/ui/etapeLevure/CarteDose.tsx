@@ -2,6 +2,7 @@
 // (forme r3 v05 : quantité et son mot, piste en sachets, trait du besoin de la recette, stock à droite ; le fabricant en second, sous la barre) ; juste après − / +, r4 v02 (« 151 % du besoin »,
 // le besoin de la recette en trait noir au-dessus de la piste, l'excédent en vert, le manque hachuré en rouge, le remède « → N sachets »).
 // Le besoin vient du moteur (`besoinDeLaLevure` : taux × volume × °P) ; rien n'est inventé : sans sachet connu, la piste reste en pointillé.
+import { useEffect, useRef, useState } from 'react';
 import { Box, Minus, Plus } from 'lucide-react';
 import type { BesoinLevure } from './dose';
 
@@ -18,6 +19,13 @@ export interface StockDose { n: number; trouve: boolean }
 /** Le conseil du fabricant en mots : « ≥ 15 g », « 15–24 g ». */
 export const conseilTexte = (f: NonNullable<BesoinLevure['fabricant']>) =>
   f.borne || f.max === undefined || f.max === f.min ? `${f.borne ? '≥ ' : ''}${dec(f.min)} g` : `${dec(f.min)}–${dec(f.max)} g`;
+/** Le repère du fabricant sous la barre. Au-dessus de son haut, la carte dit lequel compte (critique du 20.11, n° 6) : le besoin de la recette quand
+ * l'OG en demande plus (« au-dessus du fabricant 15–24 g : l'OG 1,066 en demande plus »), sinon la dose dépasse les deux. */
+export function ligneFabricant(fab: NonNullable<BesoinLevure['fabricant']>, grammes?: number, besoinG?: number, sg?: number) {
+  if (fab.borne || fab.max === undefined || grammes === undefined || grammes <= fab.max + 1e-9) return `fabricant ${conseilTexte(fab)}`;
+  return besoinG !== undefined && besoinG > fab.max + 1e-9 && sg !== undefined
+    ? `au-dessus du fabricant ${conseilTexte(fab)} : l’OG ${dec(sg, 3)} en demande plus` : `au-dessus du fabricant ${conseilTexte(fab)} et du besoin`;
+}
 /** « sachet » / « sachets », « pack » / « packs ». */
 export const motUnite = (unite: string, n: number) => (unite === 'sachet' || unite === 'pack') && n >= 2 ? `${unite}s` : unite;
 
@@ -30,7 +38,7 @@ function PuceStock({ qty, stock, apres, onOffre }: { qty?: number; stock: StockD
   return <span className="ml-enstock" data-lv="stock" data-stock={etat} role="img" aria-label={stock.n > 0 ? `${dec(stock.n)} en stock` : 'pas en stock'}><Box size={17} aria-hidden="true" /></span>;
 }
 
-export function BandeDose({ etat, qty, unite, besoin, stock, onPas, onEcrire, onDose, onOffre }: {
+export function BandeDose({ etat, qty, unite, besoin, stock, onPas, onEcrire, onOffre }: {
   etat: EtatDose;
   /** La quantité écrite dans la recette (dans `unite`), absente : « à choisir ». */
   qty?: number; unite: string;
@@ -40,7 +48,7 @@ export function BandeDose({ etat, qty, unite, besoin, stock, onPas, onEcrire, on
   onPas: (next: number) => void;
   /** « Mettre N sachets », « → N sachets » : écrit N. */
   onEcrire: (n: number) => void;
-  /** Le volet « Dose, ensemencement et starter » (saisie en grammes, ensemencement, starter). */
+  /** Le volet « Dose, ensemencement et starter » ; sans conseil (état libre), − / + ouvrent le champ grammes dans la carte (critique du 20.11, n° 3). */
   onDose?: () => void;
   onOffre: () => void;
 }) {
@@ -51,21 +59,38 @@ export function BandeDose({ etat, qty, unite, besoin, stock, onPas, onEcrire, on
   const max = Math.max(4, Math.ceil(Math.max(qty ?? 0, besoin?.sachets ?? 0, conseilSachets ?? 0) - 1e-9) + 1);
   const unitePl = motUnite(unite, 2);
   const libreGeste = etat === 'libre';
-  const moins = <button type="button" className="ml-pas" data-lv="moins" onClick={() => libreGeste ? onDose?.() : qty !== undefined && qty > 1 && onPas(qty - 1)}
+  // Sans conseil (fiche absente, sachet inconnu), − / + ouvrent le champ de la dose dans la carte, prérempli ; ouvert, ils le montent ou le descendent
+  // d'une unité. Jamais un geste sans effet (critique du 20.11, n° 3).
+  const [champ, setChamp] = useState<string>();
+  const champRef = useRef<HTMLInputElement>(null);
+  const ouvert = libreGeste && champ !== undefined;
+  useEffect(() => { if (ouvert) champRef.current?.focus(); }, [ouvert]);
+  const lu = (t: string) => { const v = Number.parseFloat(t.replace(',', '.').trim()); return Number.isFinite(v) && v > 0 ? v : undefined; };
+  const pasLibre = (sens: 1 | -1) => {
+    if (champ === undefined) { setChamp(qty !== undefined ? souple(qty) : ''); return; }
+    const v = lu(champ);
+    setChamp(souple(v === undefined ? (fab ? fab.min : 1) : Math.max(1, Math.round(v) + sens)));
+  };
+  const valider = () => { const v = lu(champ ?? ''); if (v === undefined) return; onEcrire(v); setChamp(undefined); };
+  const motLibre = unite === 'g' ? 'grammes' : unite;
+  const pasMot = unite === 'g' ? 'gramme' : unite;
+  const moins = <button type="button" className="ml-pas" data-lv="moins" onClick={() => libreGeste ? pasLibre(-1) : qty !== undefined && qty > 1 && onPas(qty - 1)}
     disabled={!libreGeste && (qty === undefined || qty <= 1)}
-    aria-label={libreGeste ? 'Régler la dose en grammes' : qty !== undefined && qty > 1 ? `Descendre à ${dec(qty - 1)} ${motUnite(unite, qty - 1)}` : 'Dose au plus bas'}><Minus size={22} strokeWidth={2.4} aria-hidden="true" /></button>;
+    aria-label={libreGeste ? (ouvert ? `Descendre d’un ${pasMot}` : `Saisir la dose en ${motLibre}`) : qty !== undefined && qty > 1 ? `Descendre à ${dec(qty - 1)} ${motUnite(unite, qty - 1)}` : 'Dose au plus bas'}><Minus size={22} strokeWidth={2.4} aria-hidden="true" /></button>;
   const suivant = qty !== undefined ? Math.floor(qty + 1e-9) + 1 : 1;
-  const plus = <button type="button" className="ml-pas" data-lv="plus" onClick={() => libreGeste ? onDose?.() : onPas(suivant)}
-    aria-label={libreGeste ? 'Régler la dose en grammes' : `Monter à ${dec(suivant)} ${motUnite(unite, suivant)}`}><Plus size={22} strokeWidth={2.4} aria-hidden="true" /></button>;
+  const plus = <button type="button" className="ml-pas" data-lv="plus" onClick={() => libreGeste ? pasLibre(1) : onPas(suivant)}
+    aria-label={libreGeste ? (ouvert ? `Monter d’un ${pasMot}` : `Saisir la dose en ${motLibre}`) : `Monter à ${dec(suivant)} ${motUnite(unite, suivant)}`}><Plus size={22} strokeWidth={2.4} aria-hidden="true" /></button>;
   const grammes = qty !== undefined ? (unite === 'g' ? qty : sachet?.grammes !== undefined ? qty * sachet.grammes : undefined) : undefined;
   const grammesTexte = grammes !== undefined ? `${dec(grammes, entier(grammes) ? 0 : 1)} g` : undefined;
   const crans = Array.from({ length: max - 1 }, (_, i) => i + 1);
+  const besoinG = besoin?.sachets !== undefined && sachet?.grammes !== undefined ? besoin.sachets * sachet.grammes : undefined;
+  const fabTexte = fab && ligneFabricant(fab, grammes, besoinG, besoin?.sg);
 
   if (etat === 'apres' && qty !== undefined && besoin?.sachets !== undefined) {
     const part = Math.round(qty / besoin.sachets * 100);
     const mot = part < 100 ? 'sous' : part > 200 ? 'sur-dosé' : 'couvre';
     const b = besoin.sachets;
-    const reperes = [fab && `fabricant ${conseilTexte(fab)}`, `taux ${besoin.regime} ${souple(besoin.taux)} M/mL/°P`, `${dec(besoin.volumeL, entier(besoin.volumeL) ? 0 : 1)} L`,
+    const reperes = [fabTexte, `taux ${besoin.regime} ${souple(besoin.taux)} M/mL/°P`, `${dec(besoin.volumeL, entier(besoin.volumeL) ? 0 : 1)} L`,
       sachet?.poidsAConfirmer && sachet.grammes !== undefined && `sachet ${dec(sachet.grammes, 1)} g à confirmer`].filter(Boolean).join(' · ');
     return <div className="ml-dose" data-lv="bande-dose" data-etat="apres">
       <div className="ml-verdict">
@@ -103,18 +128,17 @@ export function BandeDose({ etat, qty, unite, besoin, stock, onPas, onEcrire, on
   // recette ») ; le conseil du fabricant passe en second, dans le petit texte sous la barre (comme r4 v02). Sans besoin calculable, le repère
   // retombe sur le fabricant, dit comme tel.
   const b = besoin?.sachets;
-  const besoinG = b !== undefined && sachet?.grammes !== undefined ? b * sachet.grammes : undefined;
   const repere = b !== undefined && unite !== 'g' ? { pos: b, txt: `besoin ${dec(b, 1)} ${motUnite(unite, b)}` }
     : fab && conseilSachets !== undefined ? { pos: conseilSachets, txt: `fabricant ${conseilTexte(fab)}` } : undefined;
   let mot: { txt: string; ok: boolean } | undefined;
   if (qty !== undefined && unite !== 'g' && b !== undefined) {
     const ecart = b - qty;
-    mot = ecart <= 1e-9 ? { txt: 'couvre le besoin', ok: true } : { txt: `manque ${dec(ecart, 1)} ${motUnite(unite, ecart)}`, ok: false };
+    mot = ecart <= 1e-9 ? { txt: 'couvre le besoin', ok: true } : { txt: `sous le besoin, +${dec(ecart, 1)} ${motUnite(unite, ecart)}`, ok: false };
   } else if (grammes !== undefined && besoinG !== undefined) {
     const ecart = besoinG - grammes;
-    mot = ecart <= 1e-9 ? { txt: 'couvre le besoin', ok: true } : { txt: `manque ${dec(ecart, entier(ecart) ? 0 : 1)} g`, ok: false };
+    mot = ecart <= 1e-9 ? { txt: 'couvre le besoin', ok: true } : { txt: `sous le besoin, +${dec(ecart, entier(ecart) ? 0 : 1)} g`, ok: false };
   } else if (grammes !== undefined && fab) mot = grammes + 1e-9 >= fab.min ? { txt: 'couvre le fabricant', ok: true } : { txt: 'sous le fabricant', ok: false };
-  const reperes = b !== undefined && besoin ? [fab && `fabricant ${conseilTexte(fab)}`, `taux ${besoin.regime} ${souple(besoin.taux)} M/mL/°P`,
+  const reperes = b !== undefined && besoin ? [fabTexte, `taux ${besoin.regime} ${souple(besoin.taux)} M/mL/°P`,
     `${dec(besoin.volumeL, entier(besoin.volumeL) ? 0 : 1)} L`, sachet?.poidsAConfirmer && sachet.grammes !== undefined && `sachet ${dec(sachet.grammes, 1)} g à confirmer`]
     .filter(Boolean).join(' · ') : undefined;
   const vide = etat !== 'repos';
@@ -133,7 +157,13 @@ export function BandeDose({ etat, qty, unite, besoin, stock, onPas, onEcrire, on
     </div>
     <div className="ml-regle">
       {moins}
-      <span className="ml-pistebloc">
+      {ouvert ? <form className="ml-champg" data-lv="champ-grammes" onSubmit={e => { e.preventDefault(); valider(); }}>
+        <input ref={champRef} type="text" data-lv="grammes" inputMode="decimal" enterKeyHint="done" autoComplete="off" className="ml-m" value={champ}
+          aria-label={`Dose en ${motLibre}`} aria-invalid={(champ !== '' && lu(champ!) === undefined) || undefined} placeholder={fab ? `≥ ${dec(fab.min)}` : motLibre}
+          onChange={e => setChamp(e.target.value)} onKeyDown={e => { if (e.key === 'Escape') setChamp(undefined); }} />
+        <span className="ml-g">{unite}</span>
+        <button type="submit" className="ml-ok" disabled={lu(champ!) === undefined}>OK</button>
+      </form> : <span className="ml-pistebloc">
         <span className={`ml-piste${vide ? ' ml-vide' : ''}`} role="img"
           aria-label={etat === 'repos' && qty !== undefined ? `${dec(qty)} ${motUnite(unite, qty)} sur une échelle de 0 à ${max}` : etat === 'libre' ? 'aucun repère en sachets' : `aucune dose écrite, échelle de 0 à ${max} ${unitePl}`}>
           {etat === 'repos' && qty !== undefined && <i className="ml-rempli" style={{ width: pc(qty, max) }} />}
@@ -143,12 +173,12 @@ export function BandeDose({ etat, qty, unite, besoin, stock, onPas, onEcrire, on
         </span>
         <span className="ml-bornes" aria-hidden="true">
           {etat === 'libre'
-            ? <><span className="d">grammes, à saisir</span><span className="f">pas de repère</span></>
+            ? <><span className="d">{qty !== undefined ? `${motLibre}, saisis` : `${motLibre}, à saisir`}</span><span className="f">pas de repère</span></>
             : <><span className="d ml-m">0</span>
               {repere && <span className="c" style={{ left: `${borne(repere.pos / max * 100, 30, 70)}%` }}>{repere.txt}</span>}
               <span className="f ml-m">{max} ›</span></>}
         </span>
-      </span>
+      </span>}
       {plus}
     </div>
     {etat !== 'libre' && reperes && <div className="ml-reperes" data-lv="reperes">{reperes}</div>}

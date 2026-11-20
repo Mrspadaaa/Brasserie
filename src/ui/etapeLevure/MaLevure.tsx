@@ -165,8 +165,18 @@ function ChampLevure({ choisie, classement, stock, stockIds, fiches, enStock, pr
     let total = 0;
     // Ce qui correspond au texte (nom, fabricant, code, arôme : l'index du domaine), le meilleur score devant (une levure désignée en tête), puis l'ordre
     // du domaine. 19.11 : `chercher` du domaine refaisait ses 18 facettes sur tout le catalogue à chaque lettre (2 s au téléphone) ; elles ne servent pas ici.
-    const notees = classement.map((l, i) => ({ l, i, s: scoreDe(l, t) })).filter(x => x.s > 0 && !dejaVues.has(x.l.id));
-    notees.sort((a, b) => b.s - a.s || a.i - b.i);
+    // Critique du 20.11 (n° 4) : un code tapé (« W-34/70 ») ne garde que les levures qui le portent dans leur nom, leur code ou un alias (score
+    // d'identité ≥ 400 ; un code lu seulement dans le texte descriptif d'une autre fiche, « Banana Split », est coupé) ; le code écrit tel quel,
+    // tiret compris, passe devant, puis la fiche documentée devant l'homonyme sans fiche.
+    const code = /\d/.test(t);
+    // Tirets typographiques (« SafLager™ W‑34/70 » s'écrit avec U+2011) et marques ™ ® ramenés au clavier du téléphone.
+    const clavier = (n: string) => n.toLocaleLowerCase('fr').replace(/[‐-―−]/g, '-').replace(/[™®]/g, '').replace(/\s+/g, ' ');
+    const brut = clavier(t);
+    const notees = classement.map((l, i) => ({ l, i, s: scoreDe(l, t),
+      exact: code && [l.name, l.catalogue?.productCode ?? ''].some(n => clavier(n).includes(brut)),
+      doc: (l.catalogue?.facts?.length ?? 0) > 0 }))
+      .filter(x => x.s >= (code ? 400 : 1) && !dejaVues.has(x.l.id));
+    notees.sort((a, b) => Number(b.exact) - Number(a.exact) || b.s - a.s || Number(b.doc) - Number(a.doc) || a.i - b.i);
     catalogue = notees.map(x => x.l);
     total = catalogue.length + duStock.length;
     // Les levures de mon stock devant, l'ordre de l'API derrière (tri stable).

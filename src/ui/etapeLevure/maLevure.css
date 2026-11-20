@@ -47,7 +47,6 @@
 .ml-carte .lv-dose.ml-qte { align-self: center; align-items: baseline; gap: 4px; padding: 0 2px 1px; border-bottom: 2px dotted var(--ml-trait); border-radius: 0; white-space: nowrap; }
 .ml-carte .ml-qte b { font-family: inherit; font-size: 28px; font-weight: 700; line-height: 1; letter-spacing: -.01em; color: var(--ml-t0); }
 .ml-carte .ml-qte > span { font-size: 15px; color: var(--ml-t2); }
-.ml-carte .ml-qte[data-touche] { background: linear-gradient(transparent 60%, rgb(242 193 78 / .6) 60%); }
 .ml-carte .ml-qte[data-dose='a-choisir'] { border-bottom: 0; padding: 0; }
 .ml-carte .ml-qte > .ml-achoisir { display: inline-flex; align-items: center; height: 34px; padding: 0 10px; border: 1.5px dashed var(--ml-trait); border-radius: 10px;
   background: var(--ml-page); font-size: 16px; font-weight: 600; color: var(--ml-t1); }
@@ -58,7 +57,8 @@
 .ml-carte .ml-dose { background: var(--ml-page); border-top: 1px solid var(--ml-bord2); padding: 5px 10px 3px; }
 .ml-carte .ml-part { display: flex; align-items: center; gap: 8px; min-height: 32px; font-size: 15px; white-space: nowrap; }
 .ml-carte .ml-partmot { font-weight: 600; color: var(--ml-stock-t); }
-.ml-carte .ml-partmot[data-ok='false'] { color: var(--ml-alerte-t); }
+/* Sous le besoin de la recette : or, jamais le rouge de « manque N » (le stock) ; critique du 20.11, n° 1. */
+.ml-carte .ml-partmot[data-ok='false'] { color: var(--ml-or); }
 .ml-carte .ml-manque { display: inline-flex; align-items: center; gap: 5px; height: 30px; padding: 0 8px 0 6px; border: 1.5px solid var(--ml-alerte-bord); border-radius: 9px;
   background: var(--ml-alerte-fond); color: var(--ml-alerte-t); font-size: 15px; font-weight: 600; cursor: pointer; }
 .ml-carte .ml-manque svg { color: var(--ml-alerte); }
@@ -186,5 +186,13 @@
 }
 
 /* Vision 20.11 : en cave, le surlignage or à 60 % mangeait « sachets » ; la ligne conduite de l'état après tient à 390 sans le mot. */
-:root[data-theme='cave'] .ml-carte .ml-qte[data-touche] { background: linear-gradient(transparent 62%, rgb(242 193 78 / .3) 62%); }
 @media (max-width: 400px) { .ml-carte .ml-cmot { display: none; } }
+
+/* Sans conseil : le champ de la dose dans la carte, ouvert par − / + (critique du 20.11, n° 3). Jamais type="number". */
+.ml-carte .ml-champg { flex: 1; min-width: 0; display: flex; align-items: center; gap: 8px; }
+.ml-carte .ml-champg input { flex: 1; min-width: 0; height: 44px; padding: 0 12px; border: 1.5px solid var(--ml-encre); border-radius: 12px; background: var(--ml-page); color: var(--ml-t0); font-size: 18px; }
+.ml-carte .ml-champg input::placeholder { color: var(--ml-t2); }
+.ml-carte .ml-champg input[aria-invalid='true'] { border-color: var(--ml-alerte); }
+.ml-carte .ml-champg .ml-g { font-size: 16px; }
+.ml-carte .ml-ok { height: 44px; min-width: 52px; padding: 0 12px; border-radius: 12px; background: var(--ml-encre); color: var(--ml-panneau); font-size: 16px; font-weight: 600; }
+.ml-carte .ml-ok:disabled { opacity: .4; }
