@@ -321,6 +321,20 @@ export const Frise: React.FC<FriseProps> = props => {
     if (ajout.length || nouvelle > reserve) setSousFab({ cle, ids: [...ids, ...ajout], reserve: nouvelle });
   }, [reserveDroite]);
   React.useLayoutEffect(() => { mesurerSousFab(); });
+  /* CAL-PASSE Q n° 8 (21.11, « −420 » de Brouwland sous le + après l'étirement à 390) : la mise en page d'une rangée change sans nouveau rendu de
+     la frise (une rangée du dessus grandit, la hauteur se pose après la mesure) et la page ne défile pas : la mesure se refait donc aussi quand
+     la frise ou une de ses rangées change de taille */
+  const veilleur = React.useRef<ResizeObserver | null>(null);
+  React.useLayoutEffect(() => {
+    const el = zone.current;
+    if (!reserveDroite || !el || typeof ResizeObserver === 'undefined') return undefined;
+    veilleur.current ??= new ResizeObserver(() => mesurerSousFab());
+    veilleur.current.disconnect();
+    veilleur.current.observe(el);
+    el.querySelectorAll('section[data-rangee]').forEach(s => veilleur.current?.observe(s));
+    return undefined;
+  });
+  React.useEffect(() => () => { veilleur.current?.disconnect(); veilleur.current = null; }, []);
   React.useEffect(() => {
     if (!reserveDroite || typeof window === 'undefined') return undefined;
     let t: ReturnType<typeof setTimeout> | null = null;

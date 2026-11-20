@@ -1,7 +1,7 @@
 import React from 'react';
 import { ChevronRight, Eye, EyeOff, Plus, ShoppingCart } from 'lucide-react';
 import { ajouterJours, barreLiee, ecartJours, estMarque, estPonctuel, etiquetteS, francsSignes, jourLisible, nomRangee, type ChoseCalendrier, type JalonBrassin, type Rangee as IdRangee } from '../../../domain/calendrier';
-import { Barre, dureeDansBarre, formesDuree, largeurDuree, montantBarre, type BarreProps, type CoteEtiquette } from './Barre';
+import { Barre, rectVolant, dureeDansBarre, formesDuree, largeurDuree, montantBarre, type BarreProps, type CoteEtiquette } from './Barre';
 import { CLASSE_TEINTE, Marque, couperNom, dureeVue, largeurPastilleLie, largeurTexte, lieMontre, type ModeDeuxLignes } from './Marque';
 import { appuiCommenceSur } from './usePointeur';
 import { aDesJours } from '../echelle';
@@ -78,6 +78,8 @@ export interface Disposition {
   jalon?: boolean;
   /** Tour 2 n° 3 : le brassin porte son titre seul dans sa barre (« Porter d'hiver ») ; « · coût à venir » n'y tenait pas avec lui. */
   titreSeul?: boolean;
+  /** CAL-PASSE Q n° 8 : la part de la barre, en px à son bout droit, qui passe sous le + volant : le texte écrit dans la barre s'arrête avant. */
+  reserveDedans?: number;
 }
 
 /** Le caddie d'un brassin (son jalon « commander »), posé sans chevauchement, avec son nom en 6 semaines (n° 19, n° 22). */
@@ -265,7 +267,7 @@ export function disposer(choses: readonly ChoseCalendrier[], colonnes: readonly 
   const lignes: Array<Array<[number, number]>> = [];
   if (options.zoneTitre && options.zoneTitre > 0) lignes.push([[-1000, options.zoneTitre]]);
   const items: Disposition[] = [];
-  const emprises = new Map<string, { emprise: [number, number]; o0: number; o1: number; lab: number; labCourt: number; labNom: number; w: number; marque: boolean; dureeMin: number; formes: string[] }>();
+  const emprises = new Map<string, { emprise: [number, number]; o0: number; o1: number; lab: number; labCourt: number; labNom: number; w: number; wTxt: number; marque: boolean; dureeMin: number; formes: string[] }>();
   /* l'année (colonnes d'un mois) : la chose garde sa vraie durée, au jour près ; en semaines, elle prend ses colonnes entières. D385 : un axe qui
      porte des jours (vue Jour, semaine dépliée) pose aussi chaque chose au jour près, sur ses colonnes d'un jour */
   const auJour = (colonnes.length > 0 && ecartJours(colonnes[0].debut, colonnes[0].fin) >= 14) || aDesJours(colonnes);
@@ -351,19 +353,23 @@ export function disposer(choses: readonly ChoseCalendrier[], colonnes: readonly 
       gauche = centre - 14;
       o0 = gauche; o1 = centre + 14;
     }
+    /* CAL-PASSE Q n° 8 (21.11) : la part de la barre qui passe sous le + volant (au-delà de `bord`) ne porte aucun texte : nom, montant et durée
+       écrits dans la barre tiennent entre son début et `bord` (`wTxt`) ; sinon ils se posent à côté, du côté libre */
+    const wTxt = marque ? w : Math.max(0, Math.min(o1, bord) - o0);
+    const reserveDedans = marque ? 0 : Math.max(0, o1 - Math.max(o0, bord));
     const objet: Candidat = { cote: 'dedans', place: 0, x0: o0, x1: o1 };
     /* CRITIQUE-10 n° 2 (E24, D-9, option a) : les jours actifs (« 5 j ») sont des points sur leur propre ligne de la piste, sous le nom : posé
        dans la barre, le nom prend la ligne du haut et la barre devient haute (la ligne au-dessous lui est réservée, comme la phrase d'un
        brassin) ; le nom ne couvre jamais un point. Hors de la barre, il est à côté, du côté libre (E24), et les points gardent toute la barre. */
     const points = !marque && !brassin && (c.joursActifs ?? 0) > 0;
     const dedans = (ok: boolean): Candidat[] => (!marque && ok
-      ? [{ cote: 'dedans', place: w - 16, x0: o0, x1: o1, ...(points && !paysage ? { bas: { ou: 'barre' as const, x0: o0, x1: o1 } } : {}) }]
+      ? [{ cote: 'dedans', place: wTxt - 16, x0: o0, x1: o1, ...(points && !paysage ? { bas: { ou: 'barre' as const, x0: o0, x1: o1 } } : {}) }]
       : []);
     let choix: { ligne: number; c: Candidat };
     if (marque && !avecLibelle) choix = poser([[objet]], objet);
     else {
-      const dedansDuree = dedans(w - 16 >= labNom + dureeMin);
-      const dedansEntier = dedans(w - 16 >= labNom);
+      const dedansDuree = dedans(wTxt - 16 >= labNom + dureeMin);
+      const dedansEntier = dedans(wTxt - 16 >= labNom);
       const entiers = aCote(o0, o1, lab), courts = labCourt < lab ? aCote(o0, o1, labCourt) : [], noms = labNom < labCourt ? aCote(o0, o1, labNom) : [];
       /* n° 26 : nom et montant ensemble d'abord ; le nom seul en tête (montant dessous) seulement si ensemble ils seraient coupés */
       const deux = deuxNom > 0 && deuxNom < labNom ? aCote(o0, o1, deuxNom, 'nom') : [];
@@ -372,10 +378,10 @@ export function disposer(choses: readonly ChoseCalendrier[], colonnes: readonly 
          du nom, ou à côté de la barre, ou sur deux lignes à côté, ou seule dans la barre (le nom à côté) ; hors paysage, la barre haute la porte
          en bas (as/cap/p-repos), sinon la ligne sous la barre. Tant qu'une de ces places existe, « J0 / 28 » seul n'est jamais choisi. */
       const phrase = !marque && formes.length > 1 ? formes[0] : null;
-      const pleinDedans = phrase ? dedans(dureeDansBarre(c, w, true) === phrase) : dedansDuree;
+      const pleinDedans = phrase ? dedans(dureeDansBarre(c, wTxt, true) === phrase) : dedansDuree;
       /* une proposition garde son nom à côté (pointillé lisible) ; un brassin garde le sien dedans, avec sa durée (as/p-repos) */
       const premier = c.proposition ? [...entiers, ...pleinDedans] : [...pleinDedans, ...entiers];
-      const nomsPlein = phrase && dureeDansBarre(c, w, false) === phrase ? aCote(o0, o1, labNom) : [];
+      const nomsPlein = phrase && dureeDansBarre(c, wTxt, false) === phrase ? aCote(o0, o1, labNom) : [];
       /* CAL-BARRE-HAUTE (18.11, « Pas besoin d'avoir autant de place, la stout maison est au bon format, juste un mini espace entre les
          évènements(brassin) ») : un brassin n'a plus de barre haute (nom en haut, phrase en bas, vide entre) ni de phrase sur la ligne sous sa
          barre. Toute barre de brassin est au format de Stout maison : une ligne de texte (nom, montant, phrase) puis le pied d'étapes ; quand la
@@ -411,7 +417,7 @@ export function disposer(choses: readonly ChoseCalendrier[], colonnes: readonly 
          seulement quand même le titre seul ne tient pas dans la barre. */
       const nomDansBarre = brassin && !c.proposition;
       const titreSeul = nomDansBarre && !dedansEntier.length && !!c.etiquette && c.etiquette !== c.titre && !c.brassinLie
-        && w - 16 >= largeurEtiquette({ ...c, etiquette: undefined }, false, lieCourt)
+        && wTxt - 16 >= largeurEtiquette({ ...c, etiquette: undefined }, false, lieCourt)
         ? dedans(true).map(k => ({ ...k, titreSeul: true })) : [];
       const dansBarre = nomDansBarre && dedansEntier.length ? [phrase ? pleinDedans : [], dedansDuree, dedansEntier] : titreSeul.length ? [titreSeul] : null;
       if (dansBarre) choix = poser(dansBarre, (dansBarre.find(x => x.length > 0) as Candidat[])[0]);
@@ -431,10 +437,10 @@ export function disposer(choses: readonly ChoseCalendrier[], colonnes: readonly 
     (lignes[ligne] ||= []).push(emprise);
     (jalon ? lignesJalon : lignesAutres).add(ligne);
     if (k.bas) (lignes[ligne + 1] ||= []).push([k.bas.x0, k.bas.x1]);
-    emprises.set(c.id, { emprise, o0, o1, lab, labCourt, labNom, w, marque, dureeMin, formes });
+    emprises.set(c.id, { emprise, o0, o1, lab, labCourt, labNom, w, wTxt, marque, dureeMin, formes });
     const leCote = marque && !avecLibelle ? 'dedans' : k.cote;
     const phraseBas = k.bas ? (k.bas.ou === 'barre' ? { ou: 'barre' as const } : { ou: 'dessous' as const, x0: k.bas.x0, x1: k.bas.x1 }) : undefined;
-    items.push({ chose: c, a: p.a, b: p.b, gauche, largeur: marque ? 28 : w, ligne, marque, petite: marque && vueLarge, avecLibelle, duree: null, cote: leCote, place: k.place, deuxLignes: k.deux ?? false, ...(k.sansLie ? { sansLie: true } : {}), ...(phraseBas ? { phraseBas } : {}), ...(k.cote === 'gauche' && k.retrait ? { retrait: k.retrait } : {}), ...(jalon ? { jalon: true } : {}), ...(k.titreSeul ? { titreSeul: true } : {}) });
+    items.push({ chose: c, a: p.a, b: p.b, gauche, largeur: marque ? 28 : w, ligne, marque, petite: marque && vueLarge, avecLibelle, duree: null, cote: leCote, place: k.place, deuxLignes: k.deux ?? false, ...(k.sansLie ? { sansLie: true } : {}), ...(phraseBas ? { phraseBas } : {}), ...(k.cote === 'gauche' && k.retrait ? { retrait: k.retrait } : {}), ...(jalon ? { jalon: true } : {}), ...(k.titreSeul ? { titreSeul: true } : {}), ...(reserveDedans > 0 && k.cote === 'dedans' ? { reserveDedans } : {}) });
   }
   jalonCourant = null;
 
@@ -458,12 +464,34 @@ export function disposer(choses: readonly ChoseCalendrier[], colonnes: readonly 
       }
     }
   }
+  /* CAL-PASSE Q n° 8 (21.11, « le + cache le −420 de Brouwland ») : une étiquette posée à droite finit avant la zone du + ; le dernier recours
+     (`auPlusLarge`, plancher `min`) et la largeur estimée sous la largeur rendue la laissaient dessous. Elle se raccourcit à la place libre de son
+     côté ; si l'autre côté, libre sur la ligne, en a plus, elle y passe. Une étiquette plus étroite que sa place n'est pas touchée. */
+  if (reserve > 0) {
+    for (const d of items) {
+      const e = emprises.get(d.chose.id);
+      if (!e || d.cote !== 'droite' || e.o1 + 6 + d.place <= bord + 0.5) continue;
+      const libreD = Math.max(0, Math.floor(bord - e.o1 - 6));
+      const finG = finGauche(e.o0), retrait = e.o0 - 6 - finG;
+      const placeG = Math.max(0, Math.floor(finG - 2));
+      const autres = (lignes[d.ligne] ?? []).filter(x => x !== e.emprise);
+      const gaucheLibre = placeG > libreD && !autres.some(([a, b]) => finG - Math.min(d.place, placeG) < b + 6 && e.o1 > a - 6);
+      if (gaucheLibre) {
+        d.cote = 'gauche'; d.place = Math.min(d.place, placeG);
+        if (retrait > 0) d.retrait = retrait;
+        e.emprise[0] = finG - d.place; e.emprise[1] = e.o1;
+      } else {
+        d.place = Math.min(d.place, libreD);
+        e.emprise[1] = e.o1 + 6 + d.place;
+      }
+    }
+  }
   /* « J7 / 28 · prête 7 déc. » à côté du nom s'il tient entier, sinon « J7 / 28 » ; jamais coupé (n° 30) ; sinon il vit dans la barre */
   for (const d of items) {
     const e = emprises.get(d.chose.id);
     if (!e || e.marque || !e.formes.length || d.cote === 'dedans' || d.deuxLignes) continue;
     /* CRITIQUE-9 n° 3 : la forme courte à côté seulement si la barre ne porte pas la phrase entière (elle y reste alors, dedans) */
-    const barrePleine = e.formes.length > 1 && dureeDansBarre(d.chose, e.w, false) === e.formes[0];
+    const barrePleine = e.formes.length > 1 && dureeDansBarre(d.chose, e.wTxt, false) === e.formes[0];
     d.duree = d.place >= e.lab - 4 ? e.formes[0] : e.formes.length > 1 && !barrePleine && d.place >= e.labCourt - 4 ? e.formes[e.formes.length - 1] : null;
   }
 
@@ -715,7 +743,7 @@ function BulleIci({ texte, x, haut, bas, largeur, choseId }: { texte: string; x:
     ];
     /* seuls comptent les obstacles à la hauteur de la piste (et de la barre tenue, si la piste est trop basse) */
     const bande = (r: Boite) => !(p.height > 0) || (r.bottom > p.top + Math.min(0, haut - h - 4) && r.top < p.top + Math.max(p.height, bas + h + 4));
-    const place = placerBulle({ w, h, x, haut, bas, largeur, piste: { left: p.left, top: p.top, height: p.height }, murs: boites(MURS_BULLE), obstacles: obstacles.filter(bande) });
+    const place = placerBulle({ w, h, x, haut, bas, largeur, piste: { left: p.left, top: p.top, height: p.height }, murs: [...boites(MURS_BULLE), ...(rectVolant() ? [rectVolant() as DOMRect] : [])], obstacles: obstacles.filter(bande) });
     b.style.left = `${place.left}px`;
     b.style.top = `${place.top}px`;
   }, [texte, x, haut, bas, largeur, choseId]);
@@ -887,7 +915,7 @@ export const Rangee: React.FC<RangeeProps> = props => {
             return (
               <Barre
                 key={c.id} chose={c} gauche={d.gauche} largeur={d.largeur} coupe={coupe} haut={top} hauteur={d.phraseBas?.ou === 'barre' ? mesures.barre + mesures.ligne : mesures.barre} cote={d.cote}
-                phraseBas={d.phraseBas ? (d.phraseBas.ou === 'barre' ? { ou: 'barre' } : { ou: 'dessous', x: d.phraseBas.x0, dy: mesures.ligne }) : null} placeEtiquette={d.place} retrait={d.retrait} dureeACote={d.duree} deuxLignes={d.deuxLignes} sansLie={d.sansLie} titreSeul={d.titreSeul}
+                phraseBas={d.phraseBas ? (d.phraseBas.ou === 'barre' ? { ou: 'barre' } : { ou: 'dessous', x: d.phraseBas.x0, dy: mesures.ligne }) : null} placeEtiquette={d.place} retrait={d.retrait} reserveDedans={d.reserveDedans} dureeACote={d.duree} deuxLignes={d.deuxLignes} sansLie={d.sansLie} titreSeul={d.titreSeul}
                 largeurColonne={largeurColonne} bornes={[-d.a, colonnes.length - 1 - d.a]}
                 {...(props.barre.marge ? { marge: props.barre.marge } : {})} {...(props.barre.defile ? { defile: props.barre.defile } : {})}
                 epinglee={epingles.includes(c.id)} etoilee={etoiles.includes(c.id)} selectionnee={selectionId === c.id} menuOuvert={menuId === c.id} lieCourt={lieCourt}

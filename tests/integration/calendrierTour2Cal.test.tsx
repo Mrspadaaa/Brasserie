@@ -120,7 +120,9 @@ describe('tour 2 n° 3 — le nom d’un brassin reste dans SA barre (verdict n�
     source: { genre: 'batch', id, statut: 'planifie' }, ouvre: { ecran: 'brassin', id }, deplacable: true
   } as unknown as ChoseCalendrier);
   const ipa = brassin('IPA', 'IPA de printemps', 0, 3, 'J10 / 28 · prête 7 déc.');
-  const porter = brassin('POR', 'Porter d’hiver', 3, 5, 'J0 / 35 · prête 11 janv.');
+  /* 179 px tous deux ; `porter` finit avant le + (bord = 366 − 76 = 290 px), `porterSousPlus` finit sous lui */
+  const porter = brassin('POR', 'Porter d’hiver', 0, 2, 'J0 / 35 · prête 11 janv.');
+  const porterSousPlus = brassin('POS', 'Porter d’hiver', 3, 5, 'J0 / 35 · prête 11 janv.');
   const poser = (c: ChoseCalendrier) => disposer([c], COLS, 61, 366, { reserveDroite: 76 }).items[0];
 
   it('IPA de printemps (barre de 240 px) : le nom est dans la barre, la phrase entière cède', () => {
@@ -128,20 +130,35 @@ describe('tour 2 n° 3 — le nom d’un brassin reste dans SA barre (verdict n�
     expect(d.largeur).toBeGreaterThan(200);
     expect(d.cote).toBe('dedans');
   });
-  it('Porter d’hiver (barre de 179 px) : le titre seul entre dans la barre ; « coût à venir » cède, pas le nom', () => {
-    const d = poser(porter);
-    expect(d.cote).toBe('dedans');
-    expect(d.titreSeul).toBe(true);
+  /*
+   * CAL-PASSE Q n° 8 (21.11, arbitrage du pilote « rien sous le + ; quand le bout d'une barre passe sous le +, le nom passe à côté ») : avant, ces
+   * deux tests gardaient le nom de Porter d'hiver DANS sa barre même quand la barre finissait sous le + volant (le + cachait « d'hiver »). Vu au
+   * doigt sur Porter d'hiver à 390 : la barre passe sous le +, le nom lit « Porter d'hiver · coût à venir » à sa gauche, entier. Le nom reste dans
+   * sa barre tant que la barre finit avant le +.
+   */
+  it('CAL-PASSE Q n° 8 : Porter d’hiver, barre de 179 px qui finit avant le + : le nom est dans la barre ; sous le +, il passe à côté, jamais dessous', () => {
+    const avant = poser(porter);
+    expect(avant.cote).toBe('dedans');
+    const sous = poser(porterSousPlus);
+    expect(sous.cote).toBe('gauche');
+    expect(sous.titreSeul).toBeFalsy();
   });
-  it('rendu : chaque nom est dans une étiquette « dedans », Porter sans « coût à venir »', () => {
+  it('rendu : IPA a son nom dans la barre ; Porter, dont la barre passe sous le +, a le sien à côté (« gauche »), entier', () => {
     const rien = () => undefined;
     const gestes = { onToucher: rien, onAppuiLong: rien, onGlisse: rien, onLacheGlisse: rien, onBord: rien, onLacheBord: rien, onRefus: rien };
-    const { container } = render(<Rangee id="brassins" choses={[ipa, porter]} colonnes={COLS} largeurColonne={61} largeur={366} mesures={MESURES_PORTRAIT} vueLarge={false} reserveDroite={76}
+    const { container } = render(<Rangee id="brassins" choses={[ipa, porterSousPlus]} colonnes={COLS} largeurColonne={61} largeur={366} mesures={MESURES_PORTRAIT} vueLarge={false} reserveDroite={76}
       masquee={false} cause={null} epingles={[]} etoiles={[]} partMax={0} drag={null} onAjouter={rien} onBasculerMasque={rien} barre={gestes} />);
     const dedans = [...container.querySelectorAll('.cal-lbl-dedans')].map(e => e.textContent ?? '');
     expect(dedans.some(t => t.startsWith('IPA de printemps'))).toBe(true);
-    expect(dedans.some(t => t.startsWith('Porter d’hiver'))).toBe(true);
-    expect(container.querySelectorAll('.cal-lbl-gauche, .cal-lbl-droite')).toHaveLength(0);
+    expect(dedans.some(t => t.startsWith('Porter d’hiver'))).toBe(false);
+    const cote = [...container.querySelectorAll('.cal-lbl-gauche')].map(e => e.textContent ?? '');
+    expect(cote.some(t => t.startsWith('Porter d’hiver'))).toBe(true);
+    expect(container.querySelectorAll('.cal-lbl-droite')).toHaveLength(0);
+  });
+  it('Porter d’hiver, barre qui finit avant le + : le titre seul entre dans la barre ; « coût à venir » cède, pas le nom', () => {
+    const d = poser(porter);
+    expect(d.cote).toBe('dedans');
+    expect(d.titreSeul).toBe(true);
   });
   it('une barre trop courte pour le titre garde le nom contre elle (à côté), jamais coupé', () => {
     const court = brassin('AMB', 'Ambrée maison', 5, 5, 'J0 / 28 · prête 18 janv.');

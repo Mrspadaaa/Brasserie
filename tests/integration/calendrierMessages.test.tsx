@@ -394,7 +394,7 @@ describe('CRITIQUE-11 et 12 : le message ne déplace rien ; au grand écran et p
  * cache aucun texte, sinon en bas, au-dessus des onglets, à gauche du + volant ; jamais sous l'en-tête.
  * Écran simulé : en-tête collé, titres de rangée, barres avec leur nom et leur montant, le + volant, les onglets (barre basse, ou rail à 1280).
  */
-describe('CRITIQUE-12 n° 1 : le message se pose près de la chose ou en bas à gauche du +, jamais sur un titre, un nom ni le +', () => {
+describe('CRITIQUE-12 n° 1 (réaligné sur CRIT-5, 21.11) : le message tient sa place, en bas à gauche du + (l’alerte f6-b : près de la chose ou en bas), jamais sur un titre, un nom ni le +', () => {
   type R = { top: number; left: number; width: number; height: number };
   type Chose = { id: string; rangee: number; bar: R; nom: R; montant?: R };
   /* `detail` : la place du détail de la Hotte ouvert après Lier (sous elle au téléphone, à côté en paysage) ; `alerte` : la hauteur de l'alerte f6-b
@@ -527,7 +527,10 @@ describe('CRITIQUE-12 n° 1 : le message se pose près de la chose ou en bas à 
         const m = document.querySelector<HTMLElement>('[data-message]')!;
         expect(document.querySelector('[data-msg-bande]')).toBeNull();
         expect(m.closest('[data-entete-zone]')).toBeNull();
-        expect(['pres', 'bas']).toContain(m.dataset.place);
+        /* CRIT-5 (21.11, voie N1 n° 5) : un bandeau « … → … · Annuler » a UNE place, en bas, au-dessus des onglets et à gauche du + (« fixe ») : il
+           n'est plus près de sa chose (il couvrait ses voisines). Seule l'alerte f6-b, qui attend une décision, garde « près de la chose ou en bas ». */
+        expect(s.msg.role === 'alert' ? ['pres', 'bas'] : ['fixe']).toContain(m.dataset.place);
+        if (s.msg.annuler) expect([...m.querySelectorAll('button')].some(b => /^Annuler$/.test((b.textContent ?? '').trim()))).toBe(true);
         const b = m.getBoundingClientRect();
         const couverts = [...document.querySelectorAll(NOMS_MESSAGE)].filter(n => croise(b, n.getBoundingClientRect())).map(n => n.textContent);
         expect(couverts).toEqual([]);
@@ -552,16 +555,18 @@ describe('CRITIQUE-12 n° 1 : le message se pose près de la chose ou en bas à 
     expect(m.getBoundingClientRect().top).toBeLessThan(560);
   });
 
-  it('390 × 844 : f1-a de la Saison sans place libre près d’elle : une bande libre plus loin, à gauche du + (PC-109 : jamais sur un nom), au-dessus des onglets', () => {
+  it('390 × 844 : f1-a de la Saison, même large (500 px voulus) : la place unique, en bas à gauche du +, au-dessus des onglets, Annuler présent, aucun nom couvert', () => {
     monterEcran(PORTRAIT, { w: 500, h: 46 });
     render(<Message message={SEPT[0].msg} onFermer={() => undefined} />);
     const m = document.querySelector<HTMLElement>('[data-message]')!;
     const b = m.getBoundingClientRect();
-    /* PC-109 (CRITIQUE-13 n° 3) : avant le bas, la bande la plus proche qui ne couvre aucun nom ; le bas reste le dernier recours */
-    expect(m.dataset.place).toBe('pres');
+    /* CRIT-5 (21.11) : ce test cherchait « une bande libre plus loin » (PC-109, CRITIQUE-13 n° 3) ; la règle nouvelle est une place unique (« fixe »),
+       sans recherche de bande ; PC-109 reste tenu : aucun nom couvert. */
+    expect(m.dataset.place).toBe('fixe');
     expect([...document.querySelectorAll(NOMS_MESSAGE)].filter(n => croise(b, n.getBoundingClientRect())).map(n => n.textContent)).toEqual([]);
     expect(b.left).toBe(8);
     expect(b.right).toBeLessThanOrEqual(PORTRAIT.fab.left - 8);
     expect(b.bottom).toBeLessThanOrEqual(PORTRAIT.nav.top - 8 + 1);
+    expect([...m.querySelectorAll('button')].some(x => /^Annuler$/.test((x.textContent ?? '').trim()))).toBe(true);
   });
 });

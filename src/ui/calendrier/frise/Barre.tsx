@@ -51,6 +51,8 @@ export interface BarreProps {
   placeEtiquette: number;
   /** CRITIQUE-12 n° 4 : à gauche, l'étiquette finit avant la zone du + volant, à `retrait` px de plus de sa barre (absent : collée). */
   retrait?: number;
+  /** CAL-PASSE Q n° 8 : la part de la barre, en px à son bout droit, qui passe sous le + volant ; le texte posé dedans (nom, durée) s'arrête avant. */
+  reserveDedans?: number;
   /**
    * CRITIQUE-12, doute Porter glissé : la barre est coupée au bord de la fenêtre. `du` : le premier jour montré (coupée à gauche) ; `au` : le
    * dernier (coupée à droite). Ses jalons et ses phases se placent sur les jours montrés ; un jalon hors de la fenêtre est rogné, jamais décalé.
@@ -185,6 +187,17 @@ const PLACES_DUREE: ReadonlyArray<Record<'left' | 'right' | 'top', string>> = [
   { left: 'auto', right: '8px', top: '' },
   { left: '0px', right: 'auto', top: '-20px' }
 ];
+/**
+ * CAL-PASSE Q n° 8 (21.11) : le + volant est fixe, hors de la frise ; ce qui se pose au rendu (durée tirée, bulle « lâcher ici ») le prend pour un
+ * mur. `null` : pas de + à l'écran (ou jsdom, sans mise en page).
+ */
+export function rectVolant(): DOMRect | null {
+  if (typeof document === 'undefined') return null;
+  const fab = [...document.querySelectorAll<HTMLElement>('button[aria-label]')].find(b => /^Actions rapides/.test(b.getAttribute('aria-label') ?? ''));
+  const r = fab?.getBoundingClientRect();
+  return r && r.width > 0 && r.height > 0 ? r : null;
+}
+
 export function placerDuree(d: HTMLElement, barre: HTMLElement): number {
   const lbl = barre.nextElementSibling, nom = lbl?.querySelector('.cal-lbl-t'), nomVu = !!nom && !!lbl && getComputedStyle(lbl).visibility !== 'hidden';
   const frise = d.closest('[data-frise]')?.getBoundingClientRect();
@@ -193,6 +206,9 @@ export function placerDuree(d: HTMLElement, barre: HTMLElement): number {
   const racine = d.closest('[data-frise]');
   const voisins = racine ? [...racine.querySelectorAll<HTMLElement>('.cal-barre, .cal-marque, .cal-lbl-t')]
     .filter(e => !barre.contains(e) && !lbl?.contains(e) && e !== barre && !d.contains(e)).map(e => e.getBoundingClientRect()).filter(r => r.width > 0 && r.height > 0) : [];
+  /* CAL-PASSE Q n° 8 : jamais sous le + volant (Annuler et les montants se lisent) */
+  const plus = rectVolant();
+  if (plus) voisins.push(plus);
   /* la transition globale (« all 0,01 ms ») ferait lire la mise en page de l'essai d'avant : sans elle, chaque essai se mesure tout de suite */
   d.style.transition = 'none';
   let choisie = PLACES_DUREE.length - 1;
@@ -288,6 +304,10 @@ export const Barre: React.FC<BarreProps> = props => {
   const jalonVu = (ecart: number): number | null => (ecart < o || ecart > f ? null : f > o ? Math.min(100, ((ecart - o) / (f - o)) * 100) : 0);
   const montant = montantDe(chose);
   const w = Math.max(10, largeur + allongement);
+  /* CAL-PASSE Q n° 8 : la largeur où le texte de la barre peut s'écrire (la part sous le + volant en est retirée) */
+  const rd = Math.max(0, props.reserveDedans ?? 0);
+  const wTexte = Math.max(10, w - rd);
+  const dureeInStyle: React.CSSProperties | undefined = rd > 0 ? { right: 8 + rd, maxWidth: `calc(100% - ${16 + rd}px)` } : undefined;
   const etapesVues = brassin ? iconesQuiTiennent(chose.jalons ?? [], jalonVu, w) : [];
   const duree = dureeVue(chose);
   const nom = props.titreSeul ? chose.titre : chose.etiquette ?? chose.titre;
@@ -299,7 +319,7 @@ export const Barre: React.FC<BarreProps> = props => {
   const dureeDedans = ((): { texte: string; largeur: number } | null => {
     if (!duree || props.dureeACote || props.deuxLignes === 'duree' || bas?.ou === 'dessous') return null;
     if (bas?.ou === 'barre' && formeEntiere) return { texte: formeEntiere, largeur: largeurDuree(formeEntiere) };
-    const t = dureeDansBarre(chose, w, cote === 'dedans', nom);
+    const t = dureeDansBarre(chose, wTexte, cote === 'dedans', nom);
     return t ? { texte: t, largeur: largeurDuree(t) } : null;
   })();
   /* f2-a (E29, CRITIQUE-5 n° 1) : pendant le geste, « J0 / 35 · prête 21 déc. » ou « pas brassée · prête le 24 nov. » se lit en entier : dans la
@@ -328,7 +348,7 @@ export const Barre: React.FC<BarreProps> = props => {
   /* PC-158 : 34 px au moins, centrée sur la barre (14 + 3 d'air + 16 de pastille « lié à ») */
   const lblHaut = props.deuxLignes ? { top: haut - (Math.max(hauteur + 6, 34) - hauteur) / 2, height: Math.max(hauteur + 6, 34) } : { top: haut, height: hautNom };
   const dureeMemeLigne = dureeDedans && bas?.ou !== 'barre' ? dureeDedans.largeur + 4 : 0;
-  const lblPlace = { ...lblStyle, ...lblHaut, maxWidth: cote === 'dedans' ? Math.max(0, w - 12 - dureeMemeLigne) : Math.max(40, placeEtiquette) };
+  const lblPlace = { ...lblStyle, ...lblHaut, maxWidth: cote === 'dedans' ? Math.max(0, wTexte - 12 - dureeMemeLigne) : Math.max(16, placeEtiquette) };
   /* pendant f2-a, la durée tirée remplace le nom d'une barre simple ; la barre haute et la phrase du dessous gardent le nom (elles ont leur ligne) */
   const cede = !!etiquetteDuree && !bas && (dureeHors ? cote !== 'dedans' : cote === 'dedans');
   /* CRITIQUE-9 n° 10 (D-113, D-126) : la pastille « lié à » n'a pas la place à côté du nom : l'icône lien du badge de la barre se touche et
@@ -416,9 +436,9 @@ export const Barre: React.FC<BarreProps> = props => {
             {Array.from({ length: n }, (_, i) => <i key={i} data-point style={{ left: pointsGroupes ? `${4 + i * 10}px` : `${((i + 0.5) / n) * 100}%` }} />)}
           </span>
         )}
-        {etiquetteDuree && bas?.ou !== 'dessous' && <em ref={dureeEl} className={`cal-duree${dureeHors && !bas ? ' cal-duree-hors' : ''}${bas ? ' cal-duree-in' : ''}`} data-duree><DureeTexte texte={etiquetteDuree} /></em>}
+        {etiquetteDuree && bas?.ou !== 'dessous' && <em ref={dureeEl} className={`cal-duree${dureeHors && !bas ? ' cal-duree-hors' : ''}${bas ? ' cal-duree-in' : ''}`} data-duree {...(bas && dureeInStyle ? { style: dureeInStyle } : {})}><DureeTexte texte={etiquetteDuree} /></em>}
         {/* au repos, « J7 / 28 · prête 14 déc. » vit dans la barre du brassin (as/p-repos), quand il n'est pas déjà à côté du nom */}
-        {!etiquetteDuree && dureeDedans && <em className="cal-duree cal-duree-in" data-duree><DureeTexte texte={dureeDedans.texte} /></em>}
+        {!etiquetteDuree && dureeDedans && <em className="cal-duree cal-duree-in" data-duree {...(dureeInStyle ? { style: dureeInStyle } : {})}><DureeTexte texte={dureeDedans.texte} /></em>}
         {peutBord && <span data-bord data-grip className="cal-grip" aria-hidden="true" />}
         {(epinglee || etoilee || chose.liens || lienIcone) && (
           <span className="cal-badges" aria-hidden="true">
