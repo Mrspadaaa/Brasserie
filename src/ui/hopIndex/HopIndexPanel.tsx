@@ -18,6 +18,7 @@ import { MobileDetails } from '../ViewNavigation';
 import { useMobileLayout } from '../useViewport';
 import { resumeIndexHoublon } from '../../domain/stock/regles';
 import { nomPourNouvelleVariete } from './nomNouvelleVariete';
+import { versFr } from './fiche/traduction';
 
 type Editor = { kind: 'variety'; value: HopVariety } | { kind: 'lot'; value: HopLot };
 const newVariety = (name = ''): HopVariety => ({ id: crypto.randomUUID(), name, aliases: [], form: 'unknown', descriptions: [], analysis: [] });
@@ -51,17 +52,30 @@ export function texteDeFiche(texte: string): string {
   const familles = FAMILLES_FICHE.exec(texte);
   if (familles) return `Arômes : ${familles[1]}`;
   const mots = MOTS_FICHE.exec(texte);
-  if (mots) return `Mots de la fiche : ${mots[1]}`;
+  // k2, point 1 : les mots du fournisseur sont en anglais ; le brasseur les lit en français (table de la matrice, D97), « vin blanc », « groseille à maquereau ».
+  // Un mot que la table ne connaît pas reste tel quel (jamais inventé). La donnée stockée garde sa langue source.
+  if (mots) return `Mots de la fiche : ${mots[1].replace(/\.$/u, '').split(',').map(m => versFr(m)).filter(Boolean).join(', ')}.`;
   return texte;
 }
-function DescriptionFiche({ d }: { d: HopDescription }) {
-  const source = <span className="block text-sm text-cave-400">{d.source.author}, {d.source.year ?? 'année inconnue'} — {CONTEXTES_DESCRIPTION[d.context]}</span>;
+const ligneSource = (d: HopDescription) => <span className="block text-sm text-cave-400">{d.source.author}, {d.source.year ?? 'année inconnue'} — {CONTEXTES_DESCRIPTION[d.context]}</span>;
+function DescriptionFiche({ d, sansSource }: { d: HopDescription; sansSource?: boolean }) {
+  const source = sansSource ? null : ligneSource(d);
   const thiol = CLASSE_THIOL.exec(d.text);
   if (!thiol) return <p className="text-cave-200">{texteDeFiche(d.text)}{source}</p>;
+  // k2, point 2 : « thiols » est un pluriel, « Thiols : forte » ne s'accordait pas ; on dit la teneur.
   return <details data-role="classe-thiols" className="text-cave-200">
-    <summary className="cursor-pointer min-h-touch flex items-center justify-between gap-2"><span>Thiols : {thiol[1]}</span><ChevronDown size={16} className="shrink-0 text-cave-400" aria-hidden="true" /></summary>
+    <summary className="cursor-pointer min-h-touch flex items-center justify-between gap-2"><span>Teneur en thiols : {thiol[1]}</span><ChevronDown size={16} className="shrink-0 text-cave-400" aria-hidden="true" /></summary>
     <div className="pb-1 text-sm">{thiol[2] && <p>{thiol[2]}</p>}{source}</div>
   </details>;
+}
+/** k2, point 3 : quand toutes les descriptions viennent de la même source, la même année, dans le même contexte, la source se dit une fois, sous la dernière. */
+export function DescriptionsFiche({ descriptions }: { descriptions: HopDescription[] }) {
+  const cle = (d: HopDescription) => `${d.source.author}|${d.source.year ?? ''}|${d.context}`;
+  const commune = descriptions.length > 1 && descriptions.every(d => cle(d) === cle(descriptions[0]));
+  return <div className="space-y-4">
+    {descriptions.map((d, i) => <DescriptionFiche key={i} d={d} sansSource={commune} />)}
+    {commune && <p className="text-sm text-cave-400">{descriptions[0].source.author}, {descriptions[0].source.year ?? 'année inconnue'} — {CONTEXTES_DESCRIPTION[descriptions[0].context]}</p>}
+  </div>;
 }
 
 export function HopFactsView({ lot, variety }: { lot?: HopLot; variety?: HopVariety }) {
@@ -250,13 +264,13 @@ export function HopIndexPanel({ createRequest, onNotice }: { createRequest?: { k
         {!matches.length && <p className="py-5 text-cave-400">{loading ? 'Chargement du catalogue…' : catalogueError || 'Aucune variété correspondante. Ajoute une fiche ou recherche une source publiée.'}</p>}
     </div>
     {matches.length > limit && <Button onClick={() => setLimit(n => n + 20)}>Afficher les fiches suivantes</Button>}
-    <Sheet open={!!variety && !editor} onClose={() => { setSelected(undefined); setLotId(undefined); }} title={variety?.name ?? 'Variété'} subtitle="Référence documentaire et analyses des lots">
+    <Sheet open={!!variety && !editor} onClose={() => { setSelected(undefined); setLotId(undefined); }} title={variety?.name ?? 'Variété'} subtitle="Référence documentaire et analyses des lots" className="md:max-w-2xl md:mx-auto">
       {variety && <article className="space-y-4 pb-6">
         <div className="flex justify-between items-center gap-2 flex-wrap"><div className="flex flex-wrap gap-2">{variety.form !== 'unknown' && <BrewTag tone="info">{HOP_FORM_LABELS[variety.form]}</BrewTag>}<BrewTag>{hopReferenceSource(variety)}</BrewTag></div>
           <Button onClick={() => { setEditor({ kind: 'variety', value: structuredClone(variety) }); setError(''); }}>Modifier la variété</Button></div>
-        {variety.descriptions.map((d, i) => <DescriptionFiche key={i} d={d} />)}
+        <DescriptionsFiche descriptions={variety.descriptions} />
         <div className="flex flex-wrap gap-2 items-end"><Field label="Lot à consulter" className="flex-1 min-w-40"><select className={inputClass} value={lotId ?? ''} onChange={e => setLotId(e.target.value || undefined)}>
-          <option value="">Valeurs de la variété</option>{lots.filter(l => l.varietyId === variety.id).map(l => <option key={l.id} value={l.id}>{l.name}{l.archived ? ' (archivé)' : ''}</option>)}
+          <option value="">Sans lot</option>{lots.filter(l => l.varietyId === variety.id).map(l => <option key={l.id} value={l.id}>{l.name}{l.archived ? ' (archivé)' : ''}</option>)}
         </select></Field><Button onClick={openLot}>Ajouter un lot</Button>
           {lot && <Button onClick={() => { setEditor({ kind: 'lot', value: structuredClone(lot) }); setError(''); }}>Modifier le lot</Button>}
         </div>

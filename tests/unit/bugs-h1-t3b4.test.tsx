@@ -41,7 +41,7 @@ describe('T3B-4 — Sources et modèles : peu de gestes au repos, des mots de br
     render(<HopKnowledgePanel />);
     ouvrir(/Gérer les sources et les modèles/);
     ouvrir(/Ajouter des références, des études et des modèles/);
-    for (const s of ['Étude disponible', 'Catalogue fabricant', 'Autres référentiels', 'Analyses de lots', 'Bibliothèque scientifique', 'Levures et conduites', 'Styles étendus', 'Modèle expérimental', 'Programmes de l’atelier']) ouvrir(new RegExp(s));
+    for (const s of ['Étude disponible', 'Catalogue fabricant', 'Autres bases', 'Analyses de lots', 'Bibliothèque scientifique', 'Levures et conduites', 'Styles étendus', 'Modèle expérimental', 'Programmes de l’atelier']) ouvrir(new RegExp(s));
     const t = boutons().join(' | ');
     for (const mot of [/HopDatabase/, /hops-json/, /modèle expérimental modifiable/i, /^Enregistrer/m]) expect(t).not.toMatch(mot);
     expect(boutons()).toEqual(expect.arrayContaining(['Ajouter la base communautaire', 'Ajouter la liste de variétés libre', 'Ajouter les fiches Beer Maverick', 'Ajouter le modèle d’essai']));
@@ -50,18 +50,50 @@ describe('T3B-4 — Sources et modèles : peu de gestes au repos, des mots de br
     render(<HopKnowledgePanel />);
     ouvrir(/Gérer les sources et les modèles/);
     ouvrir(/Ajouter des références, des études et des modèles/);
-    for (const s of ['Autres référentiels', 'Analyses de lots', 'Bibliothèque scientifique', 'Modèle expérimental', 'Programmes de l’atelier']) ouvrir(new RegExp(s));
+    for (const s of ['Autres bases', 'Analyses de lots', 'Bibliothèque scientifique', 'Modèle expérimental', 'Programmes de l’atelier']) ouvrir(new RegExp(s));
     expect(document.body.textContent).not.toMatch(/JSON|\bCOA\b|\bHSI\b|DM303/);
   });
-  it('à 1280, les quatre gestes du haut restent à plat', () => {
+  it('à 1280 aussi (k2, point 5), les quatre gestes du haut sont sous « Gérer », pas à plat', () => {
     state.mobile = false;
     render(<HopKnowledgePanel />);
+    expect(boutons().filter(t => /^Ajouter/.test(t))).toEqual([]);
+    expect(document.body.textContent).not.toMatch(/Attributions et licences|Ce que l’appli sait des houblons/);
+    ouvrir(/Gérer les sources et les modèles/);
     for (const nom of ['Ajouter les repères de base', 'Ajouter une levure', 'Ajouter un modèle', 'Ajouter les amertumes du houblon cru']) expect(screen.getByRole('button', { name: nom })).toBeInTheDocument();
+  });
+  it('« Gérer les sources et les modèles » a l’habillage des autres replis (k2, point 6), aux deux largeurs', () => {
+    for (const mobile of [true, false]) {
+      state.mobile = mobile; render(<HopKnowledgePanel />);
+      const resumes = [...document.querySelectorAll('section > details > summary')] as HTMLElement[];
+      const gerer = resumes.find(s => /Gérer les sources/.test(s.textContent ?? ''))!;
+      expect(resumes.length).toBeGreaterThanOrEqual(4);
+      for (const s of resumes) {
+        expect(s.className, s.textContent ?? '').toMatch(/text-ebc-straw/);
+        expect((s.parentElement as HTMLElement).className).toBe((gerer.parentElement as HTMLElement).className);
+        expect(s.className).toBe(gerer.className);
+      }
+      cleanup();
+    }
+  });
+  it('pas de jargon de dépôt ni de réglage interne, replis ouverts (k2, point 7)', () => {
+    render(<HopKnowledgePanel />);
+    ouvrir(/Gérer les sources et les modèles/);
+    ouvrir(/Ajouter des références, des études et des modèles/);
+    for (const s of ['Autres bases', 'Analyses de lots', 'Bibliothèque scientifique', 'Modèle expérimental', 'Programmes de l’atelier', 'Styles étendus']) ouvrir(new RegExp(s));
+    expect(document.body.textContent).not.toMatch(/référentiel|GitHub|Les axes pèsent/i);
+    expect(document.body.textContent).toMatch(/Sources et licences des bases/);
+  });
+  it('les phrases d’aide de « Gérer » sont lisibles en cave : pas en cave-400 (k2, point 9)', () => {
+    render(<HopKnowledgePanel />);
+    ouvrir(/Gérer les sources et les modèles/);
+    const phrases = [...document.querySelectorAll('section > details')].find(d => /Gérer/.test(d.textContent ?? ''))!.querySelectorAll('p, a');
+    expect(phrases.length).toBeGreaterThanOrEqual(3);
+    for (const p of phrases) expect(p.className, p.textContent ?? '').not.toMatch(/text-cave-400/);
   });
   it('un ajout dit toujours ce qu’il a fait (BE-78)', async () => {
     render(<HopKnowledgePanel />);
     ouvrir(/Ajouter des références, des études et des modèles/);
-    ouvrir(/Autres référentiels/);
+    ouvrir(/Autres bases/);
     fireEvent.click(screen.getByRole('button', { name: 'Ajouter la base communautaire' }));
     expect(await screen.findByText(/7 fiche\(s\) ajoutée\(s\)/)).toBeInTheDocument();
   });

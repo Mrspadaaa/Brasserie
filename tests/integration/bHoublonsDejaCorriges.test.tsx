@@ -44,7 +44,7 @@ describe('BE-78 — un ajout de référentiel dit ce qu’il a fait', () => {
   const ouvrirRepli = (titre: RegExp) => { const d = ([...document.querySelectorAll('summary')].find(s => titre.test(s.textContent ?? ''))!).parentElement as HTMLDetailsElement; d.open = true; fireEvent(d, new Event('toggle')); };
   it.each(['Ajouter la liste de variétés libre', 'Ajouter la base communautaire', 'Ajouter les amertumes du houblon cru'])('« %s » annonce le nombre de fiches ajoutées', async nom => {
     render(<HopKnowledgePanel />);
-    ouvrirRepli(/Ajouter des références, des études et des modèles/); ouvrirRepli(/Autres référentiels/);
+    ouvrirRepli(/Gérer les sources et les modèles/); ouvrirRepli(/Ajouter des références, des études et des modèles/); ouvrirRepli(/Autres bases/);
     fireEvent.click(screen.getByRole('button', { name: nom }));
     await waitFor(() => expect(screen.getAllByRole('status').map(n => n.textContent).join('|')).toMatch(/7 fiche\(s\) ajoutée\(s\)/));
     expect(state.imported).toHaveBeenCalledOnce();
@@ -52,7 +52,7 @@ describe('BE-78 — un ajout de référentiel dit ce qu’il a fait', () => {
   it('quand rien n’était à ajouter, il le dit aussi', async () => {
     state.imported.mockResolvedValueOnce(0);
     render(<HopKnowledgePanel />);
-    ouvrirRepli(/Ajouter des références, des études et des modèles/); ouvrirRepli(/Autres référentiels/);
+    ouvrirRepli(/Gérer les sources et les modèles/); ouvrirRepli(/Ajouter des références, des études et des modèles/); ouvrirRepli(/Autres bases/);
     fireEvent.click(screen.getByRole('button', { name: 'Ajouter la liste de variétés libre' }));
     await waitFor(() => expect(screen.getAllByRole('status').map(n => n.textContent).join('|')).toMatch(/Rien à ajouter/));
   });

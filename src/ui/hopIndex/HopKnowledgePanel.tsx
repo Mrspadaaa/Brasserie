@@ -1,8 +1,6 @@
 import { Input, Textarea } from '../Input';
 import bitternessPack from '../../data/hopBitternessBootstrap.json';
 import React, { lazy, Suspense, useState } from 'react';
-import { ChevronDown } from 'lucide-react';
-import { useMobileLayout } from '../useViewport';
 import { HopKnowledge, HopModel, assertHopKnowledge } from '../../../functions/src/hopPredictionSchema';
 import { HopSource } from '../../../functions/src/hopIndexSchema';
 import bootstrap from '../../data/hopKnowledgeBootstrap.json';
@@ -63,15 +61,9 @@ function Repli({ titre, children, className = 'border border-cave-700 rounded-co
     {ouvert && (corpsClass ? <div className={corpsClass}>{children}</div> : children)}
   </details>;
 }
-/** « Gérer les sources et les modèles » : le repli de la vue étroite (même dessin que MobileDetails), contenu monté à l'ouverture ; à plat sur grand écran. */
-function GererRepli({ titre, children }: { titre: string; children: React.ReactNode }) {
-  const mobile = useMobileLayout();
-  if (!mobile) return <>{children}</>;
-  return <Repli titre={<><span className="min-w-0 flex-1 text-sm font-medium text-cave-200">{titre}</span><ChevronDown className="h-4 w-4 shrink-0 text-cave-400 group-open/view:rotate-180" aria-hidden="true" /></>}
-    className="group/view rounded-control border border-cave-800 bg-cave-900/50"
-    titreClass="list-none min-h-touch px-3 flex items-center gap-2 cursor-pointer rounded-control focus-visible:outline focus-visible:outline-2 focus-visible:outline-water"
-    corpsClass="px-3 pb-3 space-y-3 min-w-0">{children}</Repli>;
-}
+/** Les quatre replis de la page (catalogue des levures, gérer, ajouter, modifier) : un seul habillage, à toutes les largeurs (T3B-4, k2 points 5 et 6). */
+const REPLI_PAGE = 'border border-cave-700 rounded-control p-3 space-y-3';
+const TITRE_PAGE = 'cursor-pointer min-h-touch text-ebc-straw';
 export function HopKnowledgePanel() {
   const knowledge = useStorageValue(StorageService.getHopKnowledge), varieties = useStorageValue(StorageService.getHopVarieties);
   const [draft, setDraft] = useState<HopKnowledge | null>(null), [json, setJson] = useState<string | null>(null), [error, setError] = useState(''), [notice, setNotice] = useState('');
@@ -126,18 +118,18 @@ export function HopKnowledgePanel() {
   const edit = (value: HopKnowledge, raw = false) => { setDraft(structuredClone(value)); setJson(raw ? JSON.stringify(value, null, 2) : null); setError(''); };
   return <section className="space-y-4" aria-label="Connaissances du houblon">
     <h2 className="text-lg text-cave-50 font-semibold">Sources et modèles</h2>
-    <details className="border border-cave-700 rounded-control p-3" onToggle={event => setCatalogueOpen(event.currentTarget.open)}><summary className="cursor-pointer min-h-touch text-ebc-straw">Catalogue complet des levures · fiches et sources</summary><div className="pt-3">{catalogueOpen && <Suspense fallback={<p role="status" className="text-sm text-cave-400">Chargement du catalogue des levures…</p>}><YeastCataloguePanel/></Suspense>}</div></details>
-    <GererRepli titre="Gérer les sources et les modèles">
-    <p className="text-cave-200">Ce que l’appli sait des houblons et des levures, à compléter ici. Un changement joue au prochain calcul ; les calculs déjà faits restent lisibles.</p>
+    <details className={REPLI_PAGE} onToggle={event => setCatalogueOpen(event.currentTarget.open)}><summary className={TITRE_PAGE}>Catalogue complet des levures · fiches et sources</summary><div className="pt-3">{catalogueOpen && <Suspense fallback={<p role="status" className="text-sm text-cave-400">Chargement du catalogue des levures…</p>}><YeastCataloguePanel/></Suspense>}</div></details>
+    <Repli titre="Gérer les sources et les modèles" className={REPLI_PAGE} titreClass={TITRE_PAGE}>
+    <p className="text-sm text-cave-200">Ce que l’appli sait des houblons et des levures, à compléter ici. Un changement joue au prochain calcul ; les calculs déjà faits restent lisibles.</p>
     <div className="flex flex-wrap gap-2">
       <Button disabled={installing || loadingCatalogue} onClick={install}>Ajouter les repères de base</Button>
       <Button onClick={() => edit({ id: crypto.randomUUID(), kind: 'yeast', name: '', betaLyase: 'unknown', source: localSource() })}>Ajouter une levure</Button>
       <Button onClick={() => edit(newModel())}>Ajouter un modèle</Button>
       <Button disabled={installing} onClick={() => installPack({hopKnowledge:bitternessPack})}>Ajouter les amertumes du houblon cru</Button>
     </div>
-    <p className="text-sm text-cave-400">Les repères de base : 12 familles d’arômes et des points de vigilance, sans rendement ni profil sensoriel inventés. Les axes pèsent autant les uns que les autres.</p>
-    <a className="inline-block text-sm text-cave-400 underline" href={catalogueLicenses} download="licences-referentiels-houblon.txt">Attributions et licences des référentiels GitHub</a>
-    </GererRepli>
+    <p className="text-sm text-cave-200">Les repères de base : 12 familles d’arômes et des points de vigilance, sans rendement ni profil sensoriel inventés.</p>
+    <a className="inline-block text-sm text-cave-200 underline" href={catalogueLicenses} download="licences-referentiels-houblon.txt">Sources et licences des bases de données</a>
+    </Repli>
     {installing && <p role="status" className="text-cave-200">Import en cours…</p>}
     {notice && <p role="status" className="text-cave-200">{notice}</p>}
     {usable.errors.length > 0 && <p className="text-ebc-straw">{usable.errors.length} connaissance(s) incomplète(s) : ignorées par le calcul, corrigeables dans l’édition avancée.</p>}
@@ -153,7 +145,7 @@ export function HopKnowledgePanel() {
       <p className="text-sm text-cave-200">Fiches publiques avec leur date de mise à jour : plages analytiques et mots du houblon à cru. La forme commerciale reste non précisée. Ces données ne donnent aucun score d’arôme en bière.</p>
       <Button disabled={loadingCatalogue || installing} onClick={installCatalogue}>{loadingCatalogue ? 'Chargement…' : 'Ajouter les fiches Hopsteiner manquantes'}</Button>
     </Repli>
-    <Repli titre="Autres référentiels · comparer les sources" titreClass="cursor-pointer text-cave-50"><p className="text-sm text-cave-200">Les références communautaires restent séparées. Une même variété peut avoir plusieurs fiches ; les unités ou années absentes ne sont pas devinées. Base communautaire : HopDatabase. Liste de variétés libre : hops-json. Beer Maverick : le site de référence.</p><div className="flex flex-wrap gap-2"><Button disabled={installing || loadingCatalogue} onClick={() => installCommunity('database')}>Ajouter la base communautaire</Button><Button disabled={installing || loadingCatalogue} onClick={() => installCommunity('legacy')}>Ajouter la liste de variétés libre</Button><Button disabled={installing || loadingCatalogue} onClick={() => installCommunity('maverick')}>Ajouter les fiches Beer Maverick</Button></div></Repli>
+    <Repli titre="Autres bases · comparer les sources" titreClass="cursor-pointer text-cave-50"><p className="text-sm text-cave-200">Les références communautaires restent séparées. Une même variété peut avoir plusieurs fiches ; les unités ou années absentes ne sont pas devinées. Base communautaire : HopDatabase. Liste de variétés libre : hops-json. Beer Maverick : le site de référence.</p><div className="flex flex-wrap gap-2"><Button disabled={installing || loadingCatalogue} onClick={() => installCommunity('database')}>Ajouter la base communautaire</Button><Button disabled={installing || loadingCatalogue} onClick={() => installCommunity('legacy')}>Ajouter la liste de variétés libre</Button><Button disabled={installing || loadingCatalogue} onClick={() => installCommunity('maverick')}>Ajouter les fiches Beer Maverick</Button></div></Repli>
     <Repli titre="Analyses de lots publiées · comparer les récoltes" titreClass="cursor-pointer text-cave-50"><p className="text-sm text-cave-200">Neuf certificats d’analyse publics et un échantillon de recherche : valeurs mesurées, indice de stockage, unités et origines documentées. Ces échantillons restent des références de comparaison ; ils ne deviennent pas des lots disponibles à la brasserie.</p><Button disabled={installing || loadingCatalogue} onClick={async () => { setLoadingCatalogue(true); try { await installPack((await import('../../data/hopPublicLotBootstrap.json')).default); } catch (e) { setError((e as Error).message); } finally { setLoadingCatalogue(false); } }}>Ajouter les analyses de lots publiées</Button></Repli>
     <Repli titre="Bibliothèque scientifique · comprendre les limites" titreClass="cursor-pointer text-cave-50"><p className="text-sm text-cave-200">Thiols, esters, lactones, levures, perception et stockage. Articles, ouvrages, documents fabricants et retours de brasseurs gardent leur provenance et leurs limites. Le compagnon peut les consulter ; aucune note ne crée de coefficient.</p><Button disabled={installing || loadingCatalogue} onClick={() => installPack({ hopKnowledge: researchNotes })}>Ajouter les notes de recherche</Button><p className="text-sm text-cave-400">Cinq souches LalBrew étudiées en fermentation et la fiche fabricant SafAle US-05 peuvent aussi être référencées. Ces six références n’établissent pas de rendement générique par souche.</p><Button disabled={installing || loadingCatalogue} onClick={() => installPack({ hopKnowledge: studiedYeasts })}>Ajouter les levures documentées</Button></Repli>
     <Repli titre="Levures et conduites de fermentation" className="border border-ebc-straw/30 rounded-control p-3 space-y-3" titreClass="cursor-pointer min-h-touch text-ebc-straw">
@@ -171,11 +163,11 @@ export function HopKnowledgePanel() {
       }}>Ajouter les guides de fermentation</Button>
       <FermentationScienceLibrary science={localGuideFermentationScience(knowledge)[0]} />
     </Repli>
-    <Repli titre="Styles étendus et NOLO" titreClass="min-h-touch cursor-pointer text-water" className="border border-cave-700 rounded-control p-3"><p className="text-sm text-cave-400">Référentiels datés et procédés modifiables. Les corrections personnelles sont conservées.</p><Button disabled={installing} onClick={()=>installPack({hopKnowledge:[...stylePack,...noloPack]})}>Ajouter les styles étendus et NOLO</Button></Repli>
+    <Repli titre="Styles étendus et NOLO" titreClass="min-h-touch cursor-pointer text-water" className="border border-cave-700 rounded-control p-3"><p className="text-sm text-cave-400">Styles et procédés datés, modifiables. Les corrections personnelles sont conservées.</p><Button disabled={installing} onClick={()=>installPack({hopKnowledge:[...stylePack,...noloPack]})}>Ajouter les styles étendus et NOLO</Button></Repli>
     <Repli titre="Modèle expérimental · combinaisons libres" className="border border-hop/30 rounded-control p-3 space-y-3" titreClass="cursor-pointer min-h-touch text-hop"><p className="text-sm text-cave-400">Les mots d’arôme, la dose, le moment d’ajout et le profil de fermentation donnent un indice d’essai avec des plages d’hypothèses. Tous les paramètres sont des jugements datés, distincts des résultats publiés. Aucune couverture statistique n’est encore validée.</p><Button disabled={installing} onClick={() => installPack({ hopKnowledge: [...bootstrap, ...studiedYeasts, ...extrapolationPack] })}>Ajouter le modèle d’essai</Button><p className="text-xs text-cave-400">Tu pourras ensuite le modifier dans « Modifier une fiche enregistrée » et changer sa version. Le désactiver arrête aussitôt l’extrapolation. Les prédictions déjà conservées gardent leurs paramètres.</p></Repli>
     <Repli titre="Programmes de l’atelier et informations techniques" titreClass="cursor-pointer min-h-touch text-cave-50"><p className="text-sm text-cave-400">Les programmes sont consultables immédiatement dans l’atelier. Les enregistrer permet de les réviser ici, avec leurs conditions, résultats et sources. Un essai ne devient pas un modèle de prédiction.</p><Button disabled={installing} onClick={() => installPack({ hopVarieties: trialPack.hopVarieties, hopKnowledge: [...trialPack.hopKnowledge, ...technicalNotes] })}>Ajouter les programmes et notes techniques</Button></Repli>
     </Repli>
-    <Repli titre="Modifier une fiche enregistrée" titreClass="cursor-pointer min-h-touch text-cave-50">
+    <Repli titre="Modifier une fiche enregistrée" className={REPLI_PAGE} titreClass={TITRE_PAGE}>
     <label className="block text-sm text-cave-200">Rechercher une fiche à modifier<Input className={`${inputClass} mt-1`} value={recordQuery} onChange={e=>setRecordQuery(e.target.value)} placeholder="Nom ou identifiant de la connaissance"/></label>
     <p className="text-xs text-cave-400">Les fiches du catalogue se consultent ci-dessus. Recherche leur nom pour modifier leurs données ; 50 fiches affichées au maximum.</p>
     <div className="divide-y divide-cave-700">{knowledge.filter(k=>recordQuery ? `${k.name} ${k.id}`.toLowerCase().includes(recordQuery.toLowerCase()) : k.kind!=='yeast'||!k.catalogue).slice(0,50).map(k => <div key={k.id} className="py-3 flex items-start justify-between gap-3"><div className="min-w-0 space-y-2"><p className="text-cave-50 font-semibold">{k.name || 'Fiche incomplète'}</p><p className="text-sm text-cave-400">{({ axis: 'Axe', yeast: 'Levure', model: 'Modèle', risk: 'Vigilance', confidence: 'Fiabilité', note: 'Note documentaire', trial: 'Essai de brassage', extrapolation: 'Modèle expérimental', solver: 'Guide de formulation', fermentation: 'Guide de fermentation', fermentationScience: 'Science de fermentation', styleGuide:'Styles de bière', noloScience:'Procédés NOLO', bitternessScience:'Amertume à cru' })[k.kind]} · {k.source?.author || 'Source manquante'}, {k.source?.year ?? 'année inconnue'}{k.kind === 'model' ? ` · ${k.enabled ? 'actif' : 'désactivé'} · version ${k.version}` : ''}</p>{k.kind === 'note' && <details><summary className="cursor-pointer min-h-touch flex items-center text-sm text-water">Lire les résultats et leurs limites</summary><div className="space-y-2"><div className="flex flex-wrap gap-2">{k.topics.map(t => <BrewTag tone="info" key={t}>{t}</BrewTag>)}</div><p className="text-cave-200 text-sm">{k.summary}</p><p className="text-cave-400 text-sm">{k.limitation}</p><a className="text-sm underline text-water break-words" href={/^https?:\/\//i.test(k.source.reference) ? k.source.reference : undefined} target="_blank" rel="noreferrer">Consulter la publication</a></div></details>}</div>
