@@ -6,6 +6,7 @@ import type { CatalogEntry } from '../../../domain/productionCatalog';
 import { compareRecipeWithStock, pendingStockQuantity, type RecipeStockComparison } from '../../../domain/stockLevel';
 import { isArchived } from '../../../domain/catalogOrganization';
 import { Units } from '../../../services/units';
+import { reparerNomAbime } from '../../../domain/recipeIngredientsAbimes';
 import { retardDe } from '../volumes/phrase';
 
 export type EtatStock = 'pret' | 'presque' | 'loin' | 'inconnu';
@@ -76,6 +77,7 @@ function estJuge(c: RecipeStockComparison, adjuvants: Set<string>, coeur: Set<st
 
 /** Les lignes de besoin d'une recette face au stock : chaque ingrédient est « en stock », « manque » ou « à vérifier ». */
 export function besoinsDe(recipe: Recipe, batches: Batch[], stock: StockItem[], recipes: Recipe[] = []): LigneBesoin[] {
+  const nomsDuStock = stock.map((s) => s.name);
   const adjuvants = new Set((recipe.adjuncts ?? []).map((l) => norm(l.name)));
   const coeur = new Set([
     ...(recipe.fermentables ?? recipe.malts ?? []).map((l) => norm(l.name)),
@@ -83,7 +85,9 @@ export function besoinsDe(recipe: Recipe, batches: Batch[], stock: StockItem[], 
     ...(recipe.yeast?.name ? [norm(recipe.yeast.name)] : [])
   ]);
   return compareRecipeWithStock(recipe, batches, stock, recipes).filter((c) => estJuge(c, adjuvants, coeur)).map((c): LigneBesoin => {
-    const dit = lier(c.label, quantite(c), c.unit);
+    // T4-4 : le nom DIT (liste, « manque ») rend ses accents perdus (le même nom que la fiche : recipeIngredientsAbimes) ; `article` reste la clé de la recette.
+    const label = reparerNomAbime(c.label, nomsDuStock);
+    const dit = lier(label, quantite(c), c.unit);
     if (c.match !== 'linked' || c.shortage === null || !c.stockItem) {
       // Un stock négatif est une donnée fausse : jamais un manque gonflé, signalé à part (point 37).
       const negatif = c.match === 'linked' && !!c.stockItem && Number.isFinite(c.stockItem.currentStock) && c.stockItem.currentStock < 0;
@@ -103,8 +107,8 @@ export function besoinsDe(recipe: Recipe, batches: Batch[], stock: StockItem[], 
         texte: dit,
         etat: 'manque',
         droite: `manque ${dire(manque, unite)}`,
-        manque: lier(c.label, dire(manque, unite), unite),
-        manqueGras: estMesure(unite) ? lier(c.label, dire(manque, unite), unite) : c.label,
+        manque: lier(label, dire(manque, unite), unite),
+        manqueGras: estMesure(unite) ? lier(label, dire(manque, unite), unite) : label,
         ...(physique > 0 && (c.available ?? 0) === 0 && lots.length ? { reservePar: { lots, stock: dire(physique, unite) } } : {})
       };
     }

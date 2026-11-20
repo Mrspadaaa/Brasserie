@@ -11,6 +11,7 @@
  */
 import type { AdjunctIngredient, HopIngredient, Recipe } from '../types';
 import { fichePubliee } from './fermentables/fichesMalts';
+import { NOMS } from './fermentables/noms';
 
 /** Ce qui n'est jamais un houblon : sucres, lactose, clarifiants, sels, épices, fruits. Le houblon, lui, a un α : seul un ajout sans α entre ici. */
 const NOM_NON_HOUBLON =
@@ -50,9 +51,40 @@ export function reparerNomAbime(nom: string, nomsDuStock: readonly string[]): st
   if (nomsDuStock.some(n => n.trim().toLowerCase() === cle)) return nom;
   const sq = squelette(nom);
   if (!sq) return nom;
-  const candidats = [...new Set(nomsDuStock.filter(n => accentue(n) && squelette(n) === sq).map(n => n.normalize('NFC')))];
-  return candidats.length === 1 ? candidats[0] : nom;
+  const duStock = candidatsDeSquelette(sq, nomsDuStock);
+  // Le stock d'abord : un seul nom, celui-là ; plusieurs, le nom reste (jamais deviné).
+  if (duStock.length) return duStock.length === 1 ? duStock[0] : nom;
+  // T4-4 : le stock n'a rien (la levure, le malt abîmé n'y sont pas) → le catalogue des noms de malts, d'abord le nom entier, puis mot par mot
+  // (« Rstgerste (orge torrfie) » : « Rstgerste » → Röstgerste, « orge torrfie » → orge torréfiée), chaque morceau seulement s'il est unique.
+  const duCatalogue = candidatsDeSquelette(sq, NOMS_ACCENTUES);
+  if (duCatalogue.length) return duCatalogue.length === 1 ? casseDe(nom, duCatalogue[0]) : nom;
+  let change = false;
+  const refait = nom.split(/(\([^)]*\))/).map(morceau => {
+    const parenthese = morceau.startsWith('(') && morceau.endsWith(')');
+    const texte = (parenthese ? morceau.slice(1, -1) : morceau).trim();
+    const s = squelette(texte);
+    if (!s) return morceau;
+    const c = candidatsDeSquelette(s, NOMS_ACCENTUES);
+    if (c.length !== 1) return morceau;
+    change = true;
+    const juste = casseDe(texte, c[0]);
+    return parenthese ? `(${juste})` : morceau.replace(texte, () => juste);
+  }).join('');
+  return change ? refait : nom;
 }
+
+/** Les noms accentués (sans doublon) dont le squelette est exactement celui-ci. */
+const candidatsDeSquelette = (sq: string, noms: readonly string[]): string[] =>
+  [...new Set(noms.filter(n => accentue(n) && squelette(n) === sq).map(n => n.normalize('NFC')))];
+
+/** Le nom du catalogue prend la majuscule initiale du nom abîmé (« Rstgerste » → « Röstgerste », « orge torrfie » → « orge torréfiée »). */
+const casseDe = (abime: string, juste: string): string => {
+  const premiere = abime.trim().charAt(0);
+  return premiere && premiere === premiere.toUpperCase() && premiere !== premiere.toLowerCase() ? juste.charAt(0).toUpperCase() + juste.slice(1) : juste;
+};
+
+/** Les noms accentués du catalogue des malts (nom du stock, nom courant et écritures voisines) : ce que la donnée abîmée désigne quand le stock n'a rien. */
+const NOMS_ACCENTUES: readonly string[] = [...new Set(NOMS.flatMap(n => [n.canonique, n.ba, ...n.alias]).filter(accentue))];
 
 /**
  * La recette telle que la fiche et la liste la lisent : ajouts sortis des houblons, noms rendus. Les mêmes références quand rien ne change

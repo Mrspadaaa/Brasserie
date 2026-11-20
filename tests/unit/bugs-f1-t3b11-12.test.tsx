@@ -77,7 +77,8 @@ describe('T3B-12 : les noms aux accents perdus', () => {
     expect(reparerNomAbime('Caramnch Typ 2', NOMS_DU_STOCK)).toBe('Caramünch Typ 2');
   });
   it('jamais deviné : sans correspondance, plusieurs correspondances, ou nom déjà juste, le nom reste', () => {
-    expect(reparerNomAbime('Rstgerste (orge torrfie)', [])).toBe('Rstgerste (orge torrfie)');
+    // T4-4 (r3) : sans le stock, le catalogue des noms de malts rend « Röstgerste (orge torréfiée) » ; un nom que ni l'un ni l'autre ne connaît reste.
+    expect(reparerNomAbime('Xyzstgerste (abc)', [])).toBe('Xyzstgerste (abc)');
     expect(reparerNomAbime('Caramnch', ['Caramünch', 'Caramônch'])).toBe('Caramnch');
     expect(reparerNomAbime('Pilsner Malz', ['Pilsner Malz'])).toBe('Pilsner Malz');
     expect(reparerNomAbime('Röstgerste', NOMS_DU_STOCK)).toBe('Röstgerste');
