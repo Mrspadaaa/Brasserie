@@ -78,12 +78,13 @@ describe('n° 2 et 3 : Courses ne dit pas « Rien à commander » quand des arti
     const manque = await screen.findByRole('button', { name: /^manque/ });
     expect(manque).toHaveTextContent('3');
     fireEvent.click(screen.getByRole('button', { name: 'Courses' }));
-    const ligne = await screen.findByRole('button', { name: /à commander/, expanded: false });
-    expect(ligne).toHaveTextContent(/^0 à commander avant S\d+ · 3 manquent$/);
+    // CT4C-1 (tour 4) : plus de « 0 à commander … · 3 manquent », qui se contredisait : le manque d'abord, puis « rien » pour l'horizon.
+    const ligne = await screen.findByRole('button', { name: /manquent/, expanded: false });
+    expect(ligne).toHaveTextContent(/^3 manquent · rien avant S\d+$/);
     const courses = screen.getByTestId('commande-repliee').parentElement!;
     expect(within(courses).queryByText(/Rien à commander/)).toBeNull();
-    // Une seule phrase de compte : « à commander » et « avant S.. » ne reviennent pas sous la ligne repliée.
-    expect(courses.textContent!.match(/à commander/g)).toHaveLength(1);
+    // Une seule phrase de compte : « avant S.. » ne revient pas sous la ligne repliée.
+    expect(courses.textContent!.match(/à commander/g)).toBeNull();
     expect(courses.textContent!.match(/avant S\d+/g)).toHaveLength(1);
     // Tout voir reste à un toucher, et rend les 3.
     fireEvent.click(within(courses).getByRole('button', { name: 'Tout voir' }));

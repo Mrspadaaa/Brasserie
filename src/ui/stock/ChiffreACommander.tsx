@@ -82,6 +82,9 @@ export function phraseRepliee(vue: VueHorizon, r: Reglage, manquent?: number): s
   // Les mots et le compte de la pastille « manque » d'Étagère ; les articles pile au seuil (retenus, mais « bas » en Étagère) à part.
   const total = [m > 0 ? `${m} ${m > 1 ? 'manquent' : 'manque'}` : '', auSeuil > 0 ? `${auSeuil} au seuil` : ''].filter(Boolean).join(' · ');
   const n = lignesDeReglage(vue, r).length;
+  // CT4C-1 (critique tour 4) : « 0 à commander cette semaine · 8 manquent » se contredisait. Rien dans l'horizon : le manque d'abord, puis
+  // « rien » pour l'horizon (« 8 manquent · rien cette semaine »).
+  if (n === 0) return `${total} · rien ${horizonCourt(vue, r)}`;
   return n === tout ? total : `${n} à commander ${horizonCourt(vue, r)} · ${total}`;
 }
 

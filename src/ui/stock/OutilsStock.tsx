@@ -7,6 +7,7 @@ import { ETATS, TRIS, phraseTri } from '../../domain/stock/liste';
 import { motArticles, type FiltreListe, type TexteFiltre } from '../../domain/stock/listeFiltres';
 import './jetons-outils.css';
 import './outils.css';
+import './paysageBas.css';
 
 export type VueStock = 'etagere' | 'recompter';
 

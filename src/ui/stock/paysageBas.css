@@ -1,0 +1,17 @@
+/* CT4C-4 (critique tour 4) : au téléphone couché (844×340), l'en-tête du Stock (sous-onglets, « Comparer une recette », Étagère/Recompter,
+   recherche, pastilles) prenait environ 190 px sur 340 : aucun article de l'étagère au premier écran. En paysage bas, la bascule, la recherche
+   et les pastilles tiennent sur une seule ligne ; « Ajouter un article » garde son icône seule (son nom reste dans aria-label) ; la ligne de
+   filtre, quand elle paraît, passe dessous. Rien ne change en portrait ni au bureau. */
+@media (orientation:landscape) and (max-height:480px){
+  .stock-outils{display:flex;align-items:center;gap:8px}
+  .stock-outils>.sz-seg{flex:0 0 200px;height:40px}
+  .stock-outils>.sz-pan-h{flex:1 1 0;min-width:0;margin-top:0;display:flex;flex-wrap:wrap;align-items:center;gap:0 8px}
+  .stock-outils>.sz-pan-h>:first-child{flex:1 1 160px;min-width:140px}
+  .stock-outils>.sz-pan-h>.sz-puces{flex:0 1 auto;min-width:0;margin-top:0;flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none}
+  .stock-outils>.sz-pan-h>.sz-puces::-webkit-scrollbar{display:none}
+  .stock-outils>.sz-pan-h>.sz-fli{flex:1 0 100%}
+  .stock-outils .sz-pan-h button[aria-label="Ajouter un article"] span{display:none}
+  /* les onglets Ingrédients / Autres stocks du mur : 36 px au lieu de 40 (cible encore tenue par la bande de 42 px) */
+  .stock-mur .sv-tab{min-height:36px}
+  .stock-mur .sw-top{margin-bottom:4px}
+}

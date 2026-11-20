@@ -42,6 +42,23 @@
   .sx-pl small,.sx-nm0,.sx-et0{font-size:12px}
   .l1e-b.sx-p.l1e-lq>b.l1e-fv{width:10px}
 }
+/* CT4C-2 (critique tour 4, BLOQUANT) : au téléphone (mur étroit, 390), les pastilles « rien en stock » (Torréfiés, Fumé, Sucres, Hazy, W. Coast,
+   Belge/Blé, Anglaise…) faisaient 10 px et la lettre de souche des sachets 10 px : illisibles. Aucun texte du mur sous 12 px, à toute largeur :
+   les règles du mur large (ci-dessus) valent aussi pour le mur étroit. La colonne des pastilles se mesure au rendu (murMiseEnPage) : elle
+   passe sous la planche quand elle ne tient plus à droite. */
+.stock-mur .sx-vd{font-size:12px;line-height:14px}
+.stock-mur .sx-v{gap:3px}
+.stock-mur .sx-gl,.stock-mur .sx-it,.stock-mur .sx-g0{font-size:12px;line-height:12px}
+.stock-mur .sx-g3 .l1e-s1{width:16px}
+.stock-mur .sx-g3 .l1e-s1.sx-g{width:16px!important;min-width:16px;padding:0;height:14px;font:700 12px/14px var(--l1-sans,inherit)}
+.stock-mur .sx-pl small,.stock-mur .sx-nm,.stock-mur .sx-et,.stock-mur .sx-nm0,.stock-mur .sx-et0{font-size:12px}
+.stock-mur .l1e-b.sx-p.l1e-lq>b.l1e-fv{width:10px}
+.stock-mur .l1e-n span[data-compte]{font-size:12px}
+
+/* CT4C-3 : le « ? » rond de la rangée Levures était une icône muette (refus connu) : il dit « Légende » et ouvre les trois légendes,
+   qui nomment la brique (sachet), la fiole et la lettre (la souche). Pastille de 28 px, cible élargie à 40 px par ::before. */
+.stock-mur .l1e-c1 .sx-q{width:auto;padding:0 6px;border-radius:14px;font:600 12px/25px var(--l1-sans,inherit);letter-spacing:0}
+
 /* une île, pas une bande de 850 px : les colonnes restent groupées, la pastille « rien en stock » au bout */
 @container mur (min-width:700px){
   .l1e-r .l1e-pl{max-width:640px}

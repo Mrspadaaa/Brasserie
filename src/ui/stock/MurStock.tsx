@@ -245,7 +245,7 @@ function Mur({ m, parRef, onOpen, onFiltre, filtre, retenus, ouvertLegende, onLe
               <div className="l1e-c1">
                 <button type="button" className="l1e-n" data-filtre={r.nom} data-f={r.id} aria-pressed={filtre === r.nom} aria-label={`${r.nom} : ${retenus ? compteRayon(r, retenus).long : r.total} article${r.total > 1 ? 's' : ''}, ${r.sousTitre} ; filtrer la liste`} onClick={() => onFiltre?.(filtre === r.nom ? null : r.nom)}><b>{r.nom}</b><span data-compte={retenus ? compteRayon(r, retenus).long : undefined}>{retenus ? compteRayon(r, retenus).court : r.total}</span></button>
                 {r.echelle && <span className="l1e-cl" aria-hidden="true">{r.echelle}</span>}
-                {r.id === 'f2' && <button type="button" className="sv-i sx-q" aria-expanded={ouvertLegende} aria-controls="sv-leg-f0 sv-leg-f1 sv-leg-f2" aria-label="Légende" onClick={onLegende}>?</button>}
+                {r.id === 'f2' && <button type="button" className="sv-i sx-q" aria-expanded={ouvertLegende} aria-controls="sv-leg-f0 sv-leg-f1 sv-leg-f2" aria-label="Légende" onClick={onLegende}>Légende</button>}
               </div>
               <div className="l1e-pl">
                 {r.groupes.map((g) => <Groupe key={g.id} g={g} r={r} />)}
