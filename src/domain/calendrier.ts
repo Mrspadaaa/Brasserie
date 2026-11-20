@@ -920,6 +920,12 @@ export function fournisseurDePiece(tx: { description?: string; finance?: { vendo
   return cleNom(tx.finance?.vendor || (tx.description ?? '').split(' · ')[0]);
 }
 
+/** Une pièce d'impôt : son nom (ou son émetteur) commence par « Impôt », « Impôts », ou c'est l'OFDF / la douane. Un papier, pas un achat. */
+export function estPieceFiscale(tx: { description?: string; finance?: { vendor?: string } }): boolean {
+  const nom = (tx.description ?? '').trim(), emetteur = (tx.finance?.vendor ?? '').trim();
+  return /^imp[oô]ts?\b/i.test(nom) || /^imp[oô]ts?\b/i.test(emetteur) || /\b(ofdf|bazg|douane)\b/i.test(emetteur);
+}
+
 /**
  * CRITIQUE-6 n° 7 (E20, E38) : une facture fournisseur est une facture de matières quand ses lignes le disent (`FinanceLine.kind` `ingredient`, ou
  * `FinanceLine.category` `brassage` : `src/domain/finance/types.ts`), quand elle a fait entrer des matières en stock (`stockImpact` `rawMaterials`,
@@ -931,6 +937,8 @@ export function estFactureDeMatieres(
   stock: ReadonlyArray<{ category?: string; supplier?: string }> = []
 ): boolean {
   if (tx.finance?.kind === 'income') return false;
+  /* CAL-PASSE (21.11, n° 10) : « Impôt sur la bière » est un papier (déclaration, OFDF), jamais un achat de matières, même rangé en `brassage` dans Finances */
+  if (estPieceFiscale(tx)) return false;
   const lignes = (tx.finance?.lines ?? []).filter(l => l.kind && l.kind !== 'discount' && l.kind !== 'shipping');
   if (lignes.some(l => l.kind === 'ingredient' || l.category === CATEGORIE_MATIERES)) return true;
   if ((tx.stockImpact ?? []).some(s => s.itemType === 'rawMaterials')) return true;

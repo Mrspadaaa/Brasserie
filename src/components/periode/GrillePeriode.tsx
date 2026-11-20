@@ -40,15 +40,19 @@ export const GrillePeriode: React.FC<GrilleProps> = ({ periode, onChoisir, dates
   ];
 
   /* Dates libres : deux jours « jj.mm » (l'année est celle de la période affichée), appliqués quand les deux se lisent. */
+  /* CAL-PASSE (21.11, n° 3) : à cheval sur deux années, chaque jour se lit dans son année et s'écrit avec elle (sinon « La fin vient avant le début. » à tort) */
+  const croise = p.genre === 'dates' && p.du.slice(0, 4) !== p.au.slice(0, 4);
+  const anneeDu = p.genre === 'dates' ? Number(p.du.slice(0, 4)) : annee, anneeAu = p.genre === 'dates' ? Number(p.au.slice(0, 4)) : annee;
+  const ecrit = (iso: string) => (croise ? `${jj(iso)}.${iso.slice(0, 4)}` : jj(iso));
   const [du, setDu] = useState(''), [au, setAu] = useState('');
   useEffect(() => {
-    if (p.genre === 'dates') { setDu(jj(p.du)); setAu(jj(p.au)); } else { setDu(''); setAu(''); }
-  }, [p.genre === 'dates' ? p.du : '', p.genre === 'dates' ? p.au : '', p.genre]);
-  const jourDu = du ? jourSaisi(du, annee) : null, jourAu = au ? jourSaisi(au, annee) : null;
+    if (p.genre === 'dates') { setDu(ecrit(p.du)); setAu(ecrit(p.au)); } else { setDu(''); setAu(''); }
+  }, [p.genre === 'dates' ? p.du : '', p.genre === 'dates' ? p.au : '', p.genre, croise]);
+  const jourDu = du ? jourSaisi(du, anneeDu) : null, jourAu = au ? jourSaisi(au, anneeAu) : null;
   const inverse = !!jourDu && !!jourAu && jourDu > jourAu;
   const invalide = (du !== '' && !jourDu) || (au !== '' && !jourAu) || inverse;
   const appliquer = (a: string, b: string) => {
-    const x = jourSaisi(a, annee), y = jourSaisi(b, annee);
+    const x = jourSaisi(a, anneeDu), y = jourSaisi(b, anneeAu);
     if (x && y && x <= y) onChoisir({ genre: 'dates', du: x, au: y });
   };
 
@@ -87,7 +91,7 @@ export const GrillePeriode: React.FC<GrilleProps> = ({ periode, onChoisir, dates
           );
         })}
       </div>
-      <div className="pr-lib">
+      <div className={`pr-lib${croise ? ' pr-croise' : ''}`}>
         <span className="pr-lbl"><CalendarDays size={18} aria-hidden="true" />Dates libres</span>
         <input aria-label="Du (jj.mm)" inputMode="numeric" autoComplete="off" placeholder="jj.mm" value={du} aria-invalid={invalide && !jourDu && du !== '' ? true : undefined}
           onChange={e => { setDu(e.target.value); appliquer(e.target.value, au); }} />

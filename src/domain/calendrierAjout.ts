@@ -48,6 +48,8 @@ export interface BrouillonAjout {
    * de la semaine, mais ici le doigt choisit une semaine).
    */
   jour?: string;
+  /** Le jour a été choisi au doigt (rangée des jours) : il s'écrit tel quel, même dans la semaine en cours. Sinon, une autre semaine garde le rang du jour (mardi → mardi). */
+  jourChoisi?: boolean;
   /**
    * CAL-PASSE : le brouillon vient d'une chose qui existe déjà (Modifier, Poser depuis « Sans date »). Le PREMIER toucher d'une semaine la DÉPLACE
    * (sa longueur reste, comme au glisser) ; il n'étend pas une fenêtre : « modifier un évènement ne l'update pas à la bonne date » (toucher
@@ -235,6 +237,25 @@ export function appliquerPuce(b: BrouillonAjout, puce: Puce): BrouillonAjout {
  * remplissent) ; toucher le début, ou une semaine avant lui, repart d'une seule semaine. Ventes, Papiers et Brassins : une date seule.
  */
 export function toucherSemaine(b: BrouillonAjout, lundi: string): BrouillonAjout {
+  const r = toucherSemaineBrut(b, lundi);
+  return b.jour && r.debut !== null && lundiDe(b.jour) !== r.debut ? { ...r, jour: ajouterJours(r.debut, rangDuJour(b.jour)), jourChoisi: undefined } : r;
+}
+
+/** Le rang du jour dans sa semaine : 0 le lundi, 6 le dimanche. */
+export const rangDuJour = (iso: string): number => Math.round((Date.parse(`${iso}T00:00:00Z`) - Date.parse(`${lundiDe(iso)}T00:00:00Z`)) / 86_400_000);
+
+/**
+ * CAL-PASSE (21.11, n° 2) : le doigt choisit le JOUR d'une chose rouverte, dans la semaine choisie (petite rangée sous les semaines). Une chose à
+ * date seule (vente, achat, papier, fête, travaux, idée) ; une fenêtre de plusieurs semaines n'a pas de jour. Le jour choisi s'écrit tel quel.
+ */
+export function choisirJour(b: BrouillonAjout, jour: string): BrouillonAjout {
+  return { ...b, jour, jourChoisi: true, debut: lundiDe(jour), debutChoisi: true };
+}
+
+/** La feuille propose la rangée des jours : une chose rouverte sur un jour précis, qui n'est pas posée sur plusieurs semaines. */
+export const peutChoisirJour = (b: BrouillonAjout): boolean => !!b.jour && !!b.debut && !b.fin && b.rangee !== 'brassins' && !b.joursActifs;
+
+function toucherSemaineBrut(b: BrouillonAjout, lundi: string): BrouillonAjout {
   const l = lundiDe(lundi);
   /* CAL-PASSE : une chose rouverte (Modifier) : le premier toucher d'une AUTRE semaine la déplace, sa longueur gardée (ventes, papiers : une date) */
   if (b.rouvert) {
@@ -244,7 +265,7 @@ export function toucherSemaine(b: BrouillonAjout, lundi: string): BrouillonAjout
       const longueur = b.fin && aUneFenetre(b.rangee) ? ecartSemaines(b.debut, b.fin) : 0;
       return { ...reste, debut: l, fin: longueur > 0 ? lundiDe(ajouterJours(l, longueur * 7)) : null, debutChoisi: true };
     }
-    return toucherSemaine(reste, lundi);
+    return toucherSemaineBrut(reste, lundi);
   }
   if (!aUneFenetre(b.rangee)) return { ...b, debut: l, fin: null, debutChoisi: true };
   if (!b.debutChoisi || b.debut === null || l <= b.debut) return { ...b, debut: l, fin: null, debutChoisi: true, joursActifs: undefined };
@@ -415,7 +436,12 @@ export function versModification(b: BrouillonAjout, chose: ChoseCalendrier, aujo
      dans la semaine en cours (comme « Ajouter » : une chose posée cette semaine n'est jamais déjà passée) */
   const memeSemaine = !!chose.debut && lundiDe(chose.debut) === debut;
   if (fenetre && chose.fenetre && memeSemaine && (b.fin ?? debut) === lundiDe(chose.fenetre.au)) fenetre = { ...fenetre, du: chose.fenetre.du, au: chose.fenetre.au };
-  const jour = memeSemaine ? chose.debut : aujourdhui ? jourPose(lundiDe(debut), aujourdhui) : lundiDe(debut);
+  /* CAL-PASSE (21.11, n° 2, « mardi 22 déc. → S51 : mardi 15, pas le 14 ») : le jour du brouillon (celui d'origine, ou celui d'une autre semaine au même rang, ou
+     celui que le doigt a choisi) s'écrit tel quel ; dans la semaine en cours, un jour déduit (non choisi) déjà passé devient aujourd'hui */
+  const jourBrouillon = b.jour && lundiDe(b.jour) === debut ? b.jour : undefined;
+  const jour = jourBrouillon
+    ? (!b.jourChoisi && !memeSemaine && aujourdhui && jourBrouillon < aujourdhui && lundiDe(aujourdhui) === debut ? aujourdhui : jourBrouillon)
+    : memeSemaine ? chose.debut : aujourdhui ? jourPose(lundiDe(debut), aujourdhui) : lundiDe(debut);
   /* lot A du test en ligne (18.11, n° 2, D386) : le lien à une fête, changé dans Modifier, s'écrit ; défait, il part (undefined). Inchangé :
      rien n'est écrit. Un plan le porte en `evenementId`, une chose du carnet dans `liens`. */
   const evenementChange = (b.liens?.evenementId ?? undefined) !== (chose.liens?.evenementId ?? undefined);

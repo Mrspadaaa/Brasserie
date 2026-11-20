@@ -3,10 +3,10 @@ import { Sheet } from '../../Sheet';
 import { Input } from '../../Input';
 import { ChampMontant } from '../../finance/ChampMontant';
 import {
-  appliquerPuce, aDesJoursActifs, aUneFenetre, aUnMontant, brouillonVide, choisirJours, jourPose, libelleMontant, peutMettreDeCote, preteLe, puceJours, puces, resumeFenetre, toucherSemaine,
+  appliquerPuce, aDesJoursActifs, aUneFenetre, aUnMontant, brouillonVide, choisirJour, choisirJours, peutChoisirJour, jourPose, libelleMontant, peutMettreDeCote, preteLe, puceJours, puces, resumeFenetre, toucherSemaine,
   type BrouillonAjout, type Confirmation, type ContexteAjout, type Puce
 } from '../../../domain/calendrierAjout';
-import { RANGEES, etiquetteS, francs, jourLisible, nomRangee, type Rangee, type SemaineCalendrier } from '../../../domain/calendrier';
+import { RANGEES, ajouterJours, etiquetteS, francs, jourLisible, lundiDe, nomRangee, type Rangee, type SemaineCalendrier } from '../../../domain/calendrier';
 import { CLASSE_TEINTE } from './Marque';
 import './feuille.css';
 
@@ -39,6 +39,8 @@ export interface FeuilleAjoutProps {
   evenements?: ReadonlyArray<{ id: string; nom: string }>;
 }
 
+const JOURS_INITIALES = ['L', 'M', 'M', 'J', 'V', 'S', 'D'] as const;
+const NOMS_JOURS = ['lundi', 'mardi', 'mercredi', 'jeudi', 'vendredi', 'samedi', 'dimanche'] as const;
 const RANGEES_AVEC_DETAILS: readonly Rangee[] = ['brassins', 'fetes', 'achats', 'travaux', 'papiers'];
 
 /** Le brouillon lié à cette fête (ou à aucune) ; les autres liens (brassin, client) restent ; plus aucun lien : `liens` part. */
@@ -94,7 +96,7 @@ export const FeuilleAjout: React.FC<FeuilleAjoutProps> = ({ mode, initial, conte
   /* CRITIQUE-7 n° 4 : « prête le » se compte depuis le jour de pose (brassé au plus tôt aujourd'hui, jamais un lundi passé) ; la date dite
      est celle que « Ajouter » écrit (`jourPose`), sauf une fenêtre, qui part du lundi */
   const prete = preteLe(b, contexte.aujourdhui);
-  const jourDit = b.debut ? (fenetre && (b.fin || (aDesJoursActifs(b.rangee) && b.joursActifs)) ? b.debut : jourPose(b.debut, contexte.aujourdhui)) : null;
+  const jourDit = b.debut && b.jour && lundiDe(b.jour) === b.debut ? b.jour : b.debut ? (fenetre && (b.fin || (aDesJoursActifs(b.rangee) && b.joursActifs)) ? b.debut : jourPose(b.debut, contexte.aujourdhui)) : null;
 
   /* E34, CRITIQUE-3 n° 28 : 13 semaines à l'écran, à 390 aussi (cases de 24 px au moins, la ligne entière se touche), et la rangée défile
      sur les 52 semaines de la courbe. La largeur se mesure ; sans mesure (jsdom), celle de la fenêtre moins les marges de la feuille. */
@@ -266,6 +268,22 @@ export const FeuilleAjout: React.FC<FeuilleAjoutProps> = ({ mode, initial, conte
               );
             })}
           </div>
+          {/* CAL-PASSE (21.11, n° 2) : le JOUR de la semaine choisie, pour une chose à date seule rouverte (mardi reste mardi ; un autre jour se touche) */}
+          {peutChoisirJour(b) && (
+            <div role="group" aria-label="Jour" data-feuille-jours className="mt-1 flex gap-1" data-vaul-no-drag>
+              {JOURS_INITIALES.map((nom, i) => {
+                const iso = ajouterJours(b.debut as string, i);
+                return (
+                  <button key={iso} type="button" data-jour={iso} aria-pressed={iso === b.jour} aria-label={`${NOMS_JOURS[i]} ${jourLisible(iso)}`}
+                    onClick={() => regler(choisirJour(b, iso))}
+                    className="cal-f-jour flex min-h-11 min-w-0 flex-1 flex-col items-center justify-center rounded-control border border-cave-700 text-cave-50 aria-pressed:border-cave-50 aria-pressed:bg-cave-850 aria-pressed:font-bold">
+                    <b className="text-xs font-semibold">{nom}</b>
+                    <small className="text-xs text-cave-200">{Number(iso.slice(8))}</small>
+                  </button>
+                );
+              })}
+            </div>
+          )}
         </div>
 
         {aDesJoursActifs(b.rangee) && (

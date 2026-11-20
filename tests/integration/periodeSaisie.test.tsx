@@ -43,3 +43,24 @@ describe('ChoixPlage : saisie des jours', () => {
     expect((screen.getByLabelText('Du (jj.mm)') as HTMLInputElement).value).toBe('12.1');
   });
 });
+
+// CAL-PASSE (21.11, n° 3) : une période à cheval sur deux années ne dit pas « La fin vient avant le début. » (26.10.2026 → 24.01.2027) :
+// chaque jour est lu dans son année (comparaison avec l'année de la frise pour les deux : « 24.01 » tombait avant « 26.10 »).
+describe('ChoixPlage : une période sur deux années', () => {
+  afterEach(() => cleanup());
+
+  it('26.10.2026 → 24.01.2027 : aucun message d’erreur, les champs écrivent l’année', () => {
+    render(<ChoixPlage periode={{ genre: 'dates', du: '2026-10-26', au: '2027-01-24' }} onChoisir={() => undefined} maintenant={new Date(2026, 10, 15)} />);
+    expect(screen.queryByRole('alert')).toBeNull();
+    expect((screen.getByLabelText('Du (jj.mm)') as HTMLInputElement).value).toBe('26.10.2026');
+    expect((screen.getByLabelText('Au (jj.mm)') as HTMLInputElement).value).toBe('24.01.2027');
+  });
+
+  it('une vraie inversion (fin avant début dans la même année) garde son message', async () => {
+    const user = userEvent.setup();
+    render(<Hote sortie={{ dernier: null }} />);
+    await user.click(screen.getByLabelText('Au (jj.mm)'));
+    await user.keyboard('01.06');
+    expect(screen.getByRole('alert')).toHaveTextContent('La fin vient avant le début.');
+  });
+});

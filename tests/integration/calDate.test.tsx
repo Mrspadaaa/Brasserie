@@ -86,10 +86,10 @@ describe.each(GENRES)('CAL-PASSE-date : $nom — la date écrite est celle que l
     expect(apres.debut).toBe('2026-12-09');
   });
 
-  it('Modifier vers une autre semaine à venir : la chose relue est dans cette semaine (le lundi choisi)', async () => {
+  it('Modifier vers une autre semaine à venir : le jour de la semaine est gardé (un mercredi 9 déc. → le mercredi 13 janv.), relu après rechargement (CAL-PASSE 21.11, n° 2)', async () => {
     const id = g.poser('2026-12-09');
     await modifierParLaFeuille(choseDe(g.genre, id)!, '2027-01-11');
-    expect(choseDe(g.genre, id)!.debut).toBe('2027-01-11');
+    expect(choseDe(g.genre, id)!.debut).toBe('2027-01-13');
   });
 
   /* Le passé : ce qui est ÉCRIT (le document de la couche locale), pas ce que le modèle montre — le modèle part de la semaine en cours (52 semaines),
@@ -97,7 +97,7 @@ describe.each(GENRES)('CAL-PASSE-date : $nom — la date écrite est celle que l
   it('Modifier vers une semaine PASSÉE : la date écrite dans la source est ce jour passé, sans retomber à aujourd’hui', async () => {
     const id = g.poser('2026-12-09');
     await modifierParLaFeuille(choseDe(g.genre, id)!, '2026-10-26');
-    expect(ecrite(g.genre, id)).toBe('2026-10-26');
+    expect(ecrite(g.genre, id)).toBe('2026-10-28'); /* le mercredi de cette semaine passée (le jour d'origine est un mercredi) */
   });
 
   it('Modifier vers la semaine en cours : le jour est dans la semaine en cours', async () => {

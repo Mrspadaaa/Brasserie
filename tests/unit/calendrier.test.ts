@@ -627,6 +627,9 @@ describe('CRITIQUE-6 (18.11) : prête au plus tôt, factures de matières dans A
     expect(estFactureDeMatieres(tx({ description: 'Assurance RC', finance: { kind: 'expense', lines: [{ kind: 'service' }] } }), [{ category: 'Houblon', supplier: 'Hopfen' }])).toBe(false);
     expect(estFactureDeMatieres(tx({ category: 'brassage', finance: { kind: 'expense', lines: [{ kind: 'service' }] } }))).toBe(false);
     expect(estFactureDeMatieres(tx({ category: 'brassage', finance: { kind: 'income', lines: [] } }))).toBe(false);
+    /* CAL-PASSE n° 10 : l'impôt sur la bière, même rangé en `brassage` dans Finances, est un papier, jamais un achat (« Un impôt n'est pas un achat ») */
+    expect(estFactureDeMatieres(tx({ description: 'Impôt sur la bière · 4 brassins', category: 'brassage', finance: { kind: 'expense', lines: [] } }))).toBe(false);
+    expect(estFactureDeMatieres(tx({ description: 'Déclaration trimestrielle', category: 'brassage', finance: { kind: 'expense', vendor: 'OFDF', lines: [] } }))).toBe(false);
     expect(fournisseurDePiece({ description: 'Brouwland · malt' })).toBe('brouwland');
     expect(fournisseurDePiece({ description: 'x', finance: { vendor: ' Weyermann ' } })).toBe('weyermann');
     const facture = (id: string, label: string, category: string): ForecastItem => ({ id: `invoice:${id}`, date: '2026-12-02', label, amountCents: 42000, direction: 'out', source: 'invoice', category });

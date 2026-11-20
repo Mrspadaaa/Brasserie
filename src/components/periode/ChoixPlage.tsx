@@ -42,6 +42,12 @@ export const ChoixPlage: React.FC<Props> = ({ periode, onChoisir, transactions =
   const nTout = p.genre === 'tout' ? nombre(null, null) : 0;
   const jjAaaa = (iso: string) => `${iso.slice(8)}.${iso.slice(5, 7)}.${iso.slice(0, 4)}`;
 
+  /* CAL-PASSE (21.11, n° 3) : une période à cheval sur deux années (26.10.2026 → 24.01.2027) : chaque jour se lit dans SON année ; avec l'année de la frise
+     pour les deux, « 24.01 » tombait avant « 26.10 » et la feuille disait « La fin vient avant le début. » à tort. Les champs écrivent alors l'année. */
+  const croise = !!debut && !!fin && debut.slice(0, 4) !== fin.slice(0, 4);
+  const anneeDu = debut ? Number(debut.slice(0, 4)) : annee, anneeAu = fin ? Number(fin.slice(0, 4)) : annee;
+  const ecrit = (iso: string) => (croise ? jjAaaa(iso) : jj(iso));
+
   const courant = moisDe(maintenant);
   const raccourcis: Array<{ cle: string; texte: string; valeur: Periode }> = [
     { cle: 'ce', texte: 'Ce mois', valeur: courant },
@@ -56,16 +62,16 @@ export const ChoixPlage: React.FC<Props> = ({ periode, onChoisir, transactions =
   const enSaisie = useRef(false);
   useEffect(() => {
     if (enSaisie.current) return;
-    if (p.genre === 'dates' || p.genre === 'trimestre' || p.genre === 'annee') { setDu(jj(debut as string)); setAu(jj(fin as string)); } else { setDu(''); setAu(''); }
-  }, [debut, fin, p.genre]);
-  const jourDu = du ? jourSaisi(du, annee) : null, jourAu = au ? jourSaisi(au, annee) : null;
+    if (p.genre === 'dates' || p.genre === 'trimestre' || p.genre === 'annee') { setDu(ecrit(debut as string)); setAu(ecrit(fin as string)); } else { setDu(''); setAu(''); }
+  }, [debut, fin, p.genre, croise]);
+  const jourDu = du ? jourSaisi(du, anneeDu) : null, jourAu = au ? jourSaisi(au, anneeAu) : null;
   const inverse = !!jourDu && !!jourAu && jourDu > jourAu;
   const invalide = (du !== '' && !jourDu) || (au !== '' && !jourAu) || inverse;
   /* Un jour se pose dès que son mois a deux chiffres (« 12.10 ») ; « 12.1 » attend de quitter le champ. */
   const complet = (t: string) => /^\s*\d{1,2}[./\-\s]\d{2}([./\-\s]\d{4})?\s*$/.test(t);
   const appliquer = (a: string, b: string, force = false) => {
     if (!force && !(complet(a) && complet(b))) return;
-    const x = jourSaisi(a, annee), y = jourSaisi(b, annee);
+    const x = jourSaisi(a, anneeDu), y = jourSaisi(b, anneeAu);
     if (x && y && x <= y) onChoisir(depuisJours(x, y));
   };
   const evSaisie = { onFocus: (e: React.FocusEvent<HTMLInputElement>) => { enSaisie.current = true; e.target.select(); }, onBlur: () => { enSaisie.current = false; appliquer(du, au, true); } };
@@ -80,7 +86,7 @@ export const ChoixPlage: React.FC<Props> = ({ periode, onChoisir, transactions =
       <Frise key={p.genre === 'tout' ? 'tout' : 'jours'} mois={mois} plage={plage} aujourdhui={aujourdhui} jourMax={jourMaxi(aujourdhui)} nbOperations={nombre(montree.du, montree.au)} donnees={donnees}
         resume={p.genre === 'tout' ? <span>Tout l’historique · {nTout === 0 ? 'aucune opération' : <><b className="ops-m">{nTout}</b> opération{nTout > 1 ? 's' : ''}</>}</span> : undefined}
         onPlage={(a, b) => onChoisir(depuisJours(a, b))} onMois={() => onChoisir({ genre: 'mois', annee, mois: Number(mois.slice(5, 7)) })} />
-      <div className={`pr-lib${p.genre === 'tout' && etendue ? ' pr-tout' : ''}`}>
+      <div className={`pr-lib${p.genre === 'tout' && etendue ? ' pr-tout' : ''}${croise ? ' pr-croise' : ''}`}>
         <span className="pr-lbl"><CalendarDays size={18} aria-hidden="true" />Du … au</span>
         <input aria-label="Du (jj.mm)" inputMode="numeric" autoComplete="off" placeholder={p.genre === 'tout' && etendue ? jjAaaa(etendue.du) : 'jj.mm'} value={du} aria-invalid={invalide && !jourDu && du !== '' ? true : undefined} {...evSaisie}
           onChange={e => { setDu(e.target.value); appliquer(e.target.value, au); }} />
