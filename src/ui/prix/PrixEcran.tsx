@@ -165,7 +165,7 @@ export function PrixEcran({ config, tarifs: tarifsProp, batches: batchesProp, ba
       <div className="prx-col prx-col-graphe">
         <div className="prx-prod">
           <label className="prx-biere">
-            <span className="sr-only">Bière</span>
+            <span className="sr-only">Bière </span>
             {bieres.length > 1 ? <><select value={biere ?? ''} onChange={e => setBiere(e.target.value)} aria-label="Bière">{bieres.map(b => <option key={b}>{b}</option>)}</select><ChevronDown size={16} aria-hidden="true" /></> : <b>{biere ?? 'Aucune bière'}</b>}
           </label>
         </div>

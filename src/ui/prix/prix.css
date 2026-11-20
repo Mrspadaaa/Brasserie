@@ -14,13 +14,15 @@
 .prx .prx-m { font-family: "IBM Plex Mono", ui-monospace, SFMono-Regular, monospace; font-variant-numeric: tabular-nums; }
 .prx-col { display: flex; flex-direction: column; }
 .prx-prod { display: flex; align-items: center; min-height: 40px; }
-.prx-biere { display: flex; align-items: center; gap: 2px; position: relative; font-size: 17px; font-weight: 600; color: rgb(var(--cave-50)); }
+.prx-biere { display: flex; align-items: center; gap: 6px; position: relative; font-size: 17px; font-weight: 600; color: rgb(var(--cave-50)); }
 .prx-biere select { appearance: none; background: transparent; border: 0; color: inherit; font: inherit; padding: 6px 20px 6px 0; min-height: 36px; cursor: pointer; }
 .prx-biere svg { position: absolute; right: 0; pointer-events: none; }
 .prx-fmt { display: flex; gap: 6px; margin-top: 2px; }
 .prx-fmt button { flex: 1; min-width: 0; padding: 0 4px; white-space: nowrap; min-height: 40px; border-radius: 10px; border: 1.5px solid rgb(var(--cave-700)); display: flex; align-items: center; justify-content: center; gap: 6px; font-size: 14px; color: rgb(var(--cave-200)); background: transparent; }
 .prx-fmt button[aria-pressed="true"] { border-color: rgb(var(--cave-50)); background: rgb(var(--cave-50)); color: rgb(var(--cave-950)); font-weight: 600; }
-.prx-fmt button[data-absent], .prx-tuile[data-absent] { opacity: .55; }
+/* CT4C n° 7 : un format absent du brassin ne s'éteint plus par l'opacité du texte (« prix ? » et « ≤ ? » tombaient à ~2,7:1 en cave) : bordure pointillée, icône atténuée, texte plein. */
+.prx-fmt button[data-absent], .prx-tuile[data-absent] { border-style: dashed; }
+.prx-fmt button[data-absent] svg, .prx-tuile[data-absent] > svg { opacity: .55; }
 
 .prx-ans { display: flex; align-items: baseline; gap: 8px; padding-top: 10px; flex-wrap: wrap; }
 .prx-ans small { font-size: 15px; font-weight: 600; color: rgb(var(--cave-200)); }
@@ -96,6 +98,8 @@
 /* CT4C-6 : coût du brassin inconnu, le premier écran est ce qui débloque (la liste « Il manque ces données »), puis un graphe de « ? » réduit (il ne montre rien encore). */
 .prx-col-manque { margin-bottom: 10px; }
 @media (max-width: 999px) {
+  /* Tour 2 : coût connu, « coût ≥ 2,18 » du graphe (en bas à gauche) finit vers 42 % ; le bouton du litre passe à 46 % pour ne plus le recouvrir. */
+  .prx-cout { left: 46%; }
   .prx[data-inconnu] .prx-g { max-width: 260px; }
   .prx[data-inconnu] .prx-col-svg { align-items: center; }
   .prx[data-inconnu] .prx-cout-q { position: static; align-self: center; margin-top: 2px; min-height: 32px; height: auto; line-height: 1.2; }
