@@ -128,6 +128,9 @@ function FermentationPreview({ recipe, guide, yeast, goal, science, onChange, on
   </section>;
 }
 
+/** BR-100, BE-53 : le choix en cours se lit d'un coup d'œil (filet et teinte paille, comme les souches plus bas) ; `!` l'emporte sur l'intention « secondary » du Button. */
+const CHOIX_ACTIF = '!border-ebc-straw !bg-ebc-straw/10 font-semibold';
+
 export function FermentationWorkshop({ recipe, onChange, onBusyChange, simulationOnly = false, currentRecipeOnly = false }: { recipe: TrialRecipe; onChange: (next: TrialRecipe) => void; onBusyChange?: (busy: boolean) => void; simulationOnly?: boolean; currentRecipeOnly?: boolean }) {
   const saved = useStorageValue(StorageService.getHopKnowledge);
   const guides = useMemo(() => guideFermentations(saved), [saved]), yeasts = useMemo(() => guideYeasts(saved), [saved]);
@@ -154,8 +157,8 @@ export function FermentationWorkshop({ recipe, onChange, onBusyChange, simulatio
       {simulationOnly && <p className="text-sm text-cave-400 mt-1">Variante locale · recette enregistrée inchangée</p>}
     </div></div>
     {!currentRecipeOnly && <div className="flex flex-wrap gap-2" role="group" aria-label="Parcours de fermentation">
-      <Button className={mode === 'current' ? 'border-cave-400 bg-cave-800' : ''} disabled={busy} aria-pressed={mode === 'current'} onClick={() => setMode('current')}>Évaluer ma recette</Button>
-      <Button className={mode === 'choose' ? 'border-cave-400 bg-cave-800' : ''} disabled={busy} aria-pressed={mode === 'choose'} onClick={() => setMode('choose')}>Trouver une conduite</Button>
+      <Button className={mode === 'current' ? CHOIX_ACTIF : ''} disabled={busy} aria-pressed={mode === 'current'} onClick={() => setMode('current')}>Évaluer ma recette</Button>
+      <Button className={mode === 'choose' ? CHOIX_ACTIF : ''} disabled={busy} aria-pressed={mode === 'choose'} onClick={() => setMode('choose')}>Trouver une conduite</Button>
     </div>}
     {currentRecipeOnly || mode === 'current' ? <FermentationScenarioPanel recipe={recipe} yeasts={yeasts} guides={guides} science={science} goal={goal} onChange={onChange} programOnly={currentRecipeOnly}/> : <>
     <p className="text-sm text-cave-400">Proposition à comparer. La souche et les paliers de la recette changent uniquement après application.</p>
