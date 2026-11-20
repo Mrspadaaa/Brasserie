@@ -21,7 +21,7 @@ describe('k1 point 6 : « Recette actuelle » sans renvoi vers une donnée que l
     render(<NoloRecipeSimulator recipe={recette()} onChange={() => undefined} science={science} />);
     const ligne = [...document.querySelectorAll('p')].find((p) => /^Recette actuelle/.test(p.textContent ?? ''))!;
     expect(ligne.textContent).not.toMatch(/compléter/i);
-    expect(ligne.textContent).toMatch(/projection indisponible pour cette souche/i);
+    expect(ligne.textContent).toMatch(/pas de projection pour cette levure/i);
   });
 });
 

@@ -30,7 +30,7 @@
 .nolo-solver-actions { display: flex; flex-wrap: wrap; gap: 6px; }
 .nolo-solver-actions button { min-height: 28px; display: inline-flex; align-items: center; justify-content: center; gap: 4px; border-radius: 6px; padding: 3px 7px; font-size: 12px; }
 .nolo-solver-apply { background: rgb(var(--ebc-straw)); color: rgb(var(--ct-211b15)); font-weight: 650; }
-.nolo-solver-apply:hover { background: rgb(var(--c-e0af3c)); }
+.nolo-solver-apply:hover { background: rgb(var(--ebc-straw)); filter: brightness(1.18); } /* k3 point 9 : l'ocre au survol faisait 3,6:1 sous le texte blanc du thème clair */
 .nolo-solver-apply:disabled { opacity: .45; cursor: not-allowed; }
 .nolo-solver-reset { border: 1px solid rgb(var(--c-665548)); color: rgb(var(--ct-d1c2b5)); }
 .nolo-solver-reset:hover { background: rgb(var(--c-302820)); }

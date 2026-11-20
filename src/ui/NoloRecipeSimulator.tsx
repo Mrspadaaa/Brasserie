@@ -82,11 +82,11 @@ function SimulationRange({ bound, target, current, manque }: { bound: NoloBound;
     </>}
     <p className={bound.min > target || crosses ? 'text-attention' : 'text-cave-200'}>
       <span className="nolo-target-legend">Cible ≤ {number(target)} %</span> ·{' '}
-      {bound.max == null ? 'Compléter les points signalés pour calculer la plage.' : bound.min > target ? 'Toute la plage dépasse la consigne.' : crosses ? 'La borne haute dépasse la consigne.' : 'Plage sous la consigne, avec ces hypothèses.'}
+      {bound.max == null ? 'Compléter les points signalés pour calculer la plage.' : bound.min > target ? 'Toute la plage dépasse la consigne.' : crosses ? 'La borne haute dépasse la consigne.' : 'Sous la consigne avec ces réglages.'}
     </p>
     {/* TE-14 : « Données manquantes » seul ne disait pas lesquelles ; on nomme la prochaine donnée à compléter (celle que le moteur demande). */}
     <p className="text-cave-400">Recette actuelle : {current && (current.max !== null || current.min > 0) ? noloDisplayRangeLabel(current)
-      : manqueDuMoteur(manque) ? 'projection indisponible pour cette souche et ce procédé.'
+      : manqueDuMoteur(manque) ? 'pas de projection pour cette levure et ce procédé.'
       : `à compléter${manque ? ` — ${enMotsDeBrasseur(manque.charAt(0).toLowerCase() + manque.slice(1))}` : ' (données de la recette manquantes)'}`}</p>
     <p className="sr-only" aria-live="polite" aria-atomic="true">Estimation : {noloDisplayRangeLabel(bound)} ; cible au maximum {number(target)} % vol.{bound.max != null && bound.max > target ? ' Dépassement de la cible.' : ''}</p>
   </figure>;
