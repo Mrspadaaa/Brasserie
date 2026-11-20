@@ -56,22 +56,33 @@ function borner<T>(p: Promise<T>, ms: number): Promise<T | 'delai'> {
  * l'écran n'a pas tourné dans la seconde (verrou pris sans effet, ou qui ne répond jamais).
  */
 export async function entrerPleinEcran(cible?: HTMLElement | null): Promise<ResultatPleinEcran> {
+  return (await demanderPleinEcran(cible)).resultat;
+}
+
+/**
+ * Comme `entrerPleinEcran`, et dit si le navigateur a REFUSÉ le plein écran (T3-4) : l'API est absente (iPhone Safari) ou la demande est rejetée
+ * (page dans un cadre sans `allow="fullscreen"`). Le refus se lit sur la demande, jamais sur `fullscreenElement` : une demande acceptée n'est pas
+ * encore forcément posée au retour de la promesse. Un délai dépassé n'est pas un refus.
+ */
+export async function demanderPleinEcran(cible?: HTMLElement | null): Promise<{ resultat: ResultatPleinEcran; refuse: boolean }> {
   const el = (cible ?? document.documentElement) as unknown as Cible;
+  let refuse = false;
   try {
     const demande = typeof el.requestFullscreen === 'function' ? el.requestFullscreen() : typeof el.webkitRequestFullscreen === 'function' ? el.webkitRequestFullscreen() : undefined;
-    if (demande) await borner(Promise.resolve(demande), DELAI_ROTATION_MS);
-  } catch { /* refusé (iPhone, iframe) : on tente quand même le verrou, puis on invite */ }
+    if (!demande) refuse = typeof el.requestFullscreen !== 'function' && typeof el.webkitRequestFullscreen !== 'function';
+    else await borner(Promise.resolve(demande), DELAI_ROTATION_MS);
+  } catch { refuse = true; /* refusé (iPhone, iframe) : on tente quand même le verrou, puis on invite */ }
   let verrou: Promise<void>;
   try {
     const orientation = (typeof screen !== 'undefined' ? screen.orientation : undefined) as unknown as Verrou | undefined;
-    if (!orientation || typeof orientation.lock !== 'function') return 'invite';
+    if (!orientation || typeof orientation.lock !== 'function') return { resultat: 'invite', refuse };
     verrou = Promise.resolve(orientation.lock('landscape'));
   } catch {
-    return 'invite';
+    return { resultat: 'invite', refuse };
   }
   // Refusé : l'invitation sans attendre. Pris ou muet : seul compte l'écran tourné dans la seconde.
   const refus = verrou.then(() => new Promise<never>(() => undefined), () => false as const);
-  return (await Promise.race([attendrePaysage(), refus])) ? 'verrouille' : 'invite';
+  return { resultat: (await Promise.race([attendrePaysage(), refus])) ? 'verrouille' : 'invite', refuse };
 }
 
 /*

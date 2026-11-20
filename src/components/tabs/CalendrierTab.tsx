@@ -8,7 +8,7 @@ import { usePlusPage } from '../../ui/plusPage';
 import { useDonneesCalendrier, type DonneesCalendrier } from '../../ui/calendrier/useDonneesCalendrier';
 import { appliquer, portParDefaut, type EcritureFaite, type PortEcritures } from '../../ui/calendrier/ecritures';
 import { useOrientation } from '../../ui/calendrier/useOrientation';
-import { EnTeteCalendrier, type VueCalendrier } from '../../ui/calendrier/entete/EnTete';
+import { EnTeteCalendrier, type MessageEnTete, type VueCalendrier } from '../../ui/calendrier/entete/EnTete';
 import { fenetreDePeriode, libelleDuree, periodeDeFenetre, SEMAINES_ANNEE, type FenetreSemaines } from '../../ui/calendrier/entete/Fenetre';
 import { Frise, ordreComplet } from '../../ui/calendrier/frise/Frise';
 import type { SaisieRapide } from '../../ui/finance/prevision/PlanSheetC';
@@ -336,7 +336,7 @@ export function CalendrierTab(props: CalendrierTabProps) {
     return () => { window.removeEventListener('scroll', surDefilement, true); document.removeEventListener('pointerdown', surToucher, true); };
   }, [idMessage]);
   /* l'en-tête (« Tire jusqu'au bout : l'année », « Tourne le téléphone : 13 semaines ») parle par ce canal ; son retrait ne chasse que lui */
-  const surMessageEnTete = useCallback((m: { genre: 'annee' | 'invite'; texte: string } | null) => {
+  const surMessageEnTete = useCallback((m: MessageEnTete | null) => {
     if (m) montrer({ role: 'status', texte: m.texte, origine: 'entete' });
     else setMessage(cur => (cur?.origine === 'entete' ? null : cur));
   }, [montrer]);

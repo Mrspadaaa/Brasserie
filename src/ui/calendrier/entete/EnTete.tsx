@@ -5,7 +5,7 @@ import type { Periode } from '../../../components/periode/periode';
 import { dateDeSemaine, etiquetteS, lundiDe, type ModeleCalendrier, type Retard } from '../../../domain/calendrier';
 import { creuxDepuis, miseDeCoteVisible, type CourbeCaisse, type MouvementNomme } from '../../../domain/calendrierCaisse';
 import type { Orientation } from '../useOrientation';
-import { entrerPleinEcran, estPleinEcran, poserPleinCalendrier, sortirPleinEcran } from '../pleinEcran';
+import { demanderPleinEcran, estPleinEcran, poserPleinCalendrier, sortirPleinEcran } from '../pleinEcran';
 import { usePointeurCourbe } from '../usePointeurCourbe';
 import { Courbe, CourbeZoom, HAUTEUR_MOIS, MOIS_MIN, ajouterJours, chf, courbePlate, jourCourt, moisDeSemaine, semaineCourte, type Boite, type EtoileCourbe } from './Courbe';
 import { Cadre, etiquetteCadre, fenetreDePeriode, libelleDuree, libellePeriode, periodeDeFenetre, SEMAINES_ANNEE, type FenetreSemaines, type PriseCadre } from './Fenetre';
@@ -98,7 +98,7 @@ export interface EnTeteCalendrierProps {
   onCourbeCachee?: (cachee: boolean) => void;
 }
 
-export interface MessageEnTete { genre: 'annee' | 'invite'; texte: string }
+export interface MessageEnTete { genre: 'annee' | 'invite' | 'refus'; texte: string }
 
 const clamp = (v: number, a: number, b: number) => Math.max(a, Math.min(b, v));
 /** Largeur de la colonne du chiffre clé et des boutons en paysage (w3s). */
@@ -134,6 +134,8 @@ const plageDe = (du: string, au: string): string => {
 };
 const MESSAGE_ANNEE = 'Tire jusqu’au bout : l’année';
 const INVITATION = 'Tourne le téléphone : 13 semaines';
+/** T3-4 : le navigateur refuse le plein écran (iPhone Safari, page dans un cadre) : jamais un bouton muet. */
+const REFUS_PLEIN = 'Plein écran refusé par ce navigateur';
 
 /** La largeur d'un élément, mesurée ; 0 tant qu'elle est inconnue (jsdom, premier rendu). */
 function useMesure(ref: React.RefObject<HTMLElement | null>): number {
@@ -320,7 +322,7 @@ export function EnTeteCalendrier(props: EnTeteCalendrierProps) {
   const dire = useCallback((m: MessageEnTete) => {
     const canal = onMessageRef.current;
     if (canal) { emis.current = m.genre; canal(m); return; }
-    montrer({ genre: m.genre === 'annee' ? 'message' : 'invite', texte: m.texte }, m.genre === 'annee' ? 4000 : null);
+    montrer({ genre: m.genre === 'invite' ? 'invite' : 'message', texte: m.texte }, m.genre === 'invite' ? null : 4000);
   }, [montrer]);
   /** Retire le message de l'en-tête (`genre` donné : seulement celui-là). */
   const taire = useCallback((genre?: MessageEnTete['genre']) => {
@@ -329,7 +331,7 @@ export function EnTeteCalendrier(props: EnTeteCalendrierProps) {
       if (emis.current && (!genre || emis.current === genre)) { emis.current = null; canal(null); }
       return;
     }
-    setInfo(i => (i && i.genre !== 'date' && (!genre || (genre === 'annee' ? i.genre === 'message' : i.genre === 'invite')) ? null : i));
+    setInfo(i => (i && i.genre !== 'date' && (!genre || (genre === 'invite' ? i.genre === 'invite' : i.genre === 'message')) ? null : i));
   }, []);
 
   // ---- La période de l'app et la fenêtre sont la même chose (E07, ET-PER, les deux sens) ----
@@ -379,9 +381,11 @@ export function EnTeteCalendrier(props: EnTeteCalendrierProps) {
     // L'invitation est pour le téléphone tenu droit (CRITIQUE-4 n° 19) ; un écran large n'a rien à tourner. La largeur se lit AVANT le plein
     // écran : une fois en plein écran, la fenêtre peut avoir changé de taille sans que le téléphone ait tourné (CRITIQUE-7, doute E09).
     const telephoneDroit = !paysage && window.innerWidth < LARGE_PX;
-    const r = await entrerPleinEcran(document.documentElement);
+    const { resultat: r, refuse } = await demanderPleinEcran(document.documentElement);
     setPlein(estPleinEcran());
     if (r === 'invite' && telephoneDroit) dire({ genre: 'invite', texte: INVITATION });
+    // Hors téléphone droit (paysage, écran large), l'invitation n'a pas lieu : un refus se dit, le bouton ne reste pas muet (T3-4).
+    else if (refuse && !telephoneDroit) dire({ genre: 'refus', texte: REFUS_PLEIN });
   };
 
   // ---- Le doigt sur la courbe : lire (c2-b), appui long (c3-a) ----
