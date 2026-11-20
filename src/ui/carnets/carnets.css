@@ -379,6 +379,14 @@
 .cn-etapes > span:not(.cn-lien-texte) { width: 8px; height: 8px; border-radius: 999px; background: var(--c-line2); }
 .cn-etapes > span.cn-etape-on { background: var(--c-lien); }
 .cn-lien-texte { color: var(--c-lien); font-weight: 600; margin-left: 4px; }
+/* f13 tour 2 (n° 5, g5:v04-4) : tout juste créé, en-tête, titre et encadré sur la bande teintée de la maquette (8 % du vert de Stocks),
+   d'un bord à l'autre, fermée par un filet. */
+.cn-bande { display: flex; flex-direction: column; gap: inherit; margin: -2px -12px 0; padding: 2px 12px 12px; background: rgb(var(--area-stocks) / .08); border-bottom: 1px solid var(--c-line); }
+@media (min-width: 900px) { .cn-bande { margin-top: -8px; padding-top: 8px; } }
+/* f13 tour 2 (n° 7, g5:v04-4) : le cadre vert n'entoure que « ✓ Carnet créé · ↺ Annuler » ; la phrase citée dessous, en italique libre */
+.cn-bandeau[data-sorte=cree] { border: 0; border-radius: 0; background: transparent; overflow: visible; gap: 6px; }
+.cn-bandeau[data-sorte=cree] > .cn-bandeau-tete { border: 1.5px solid var(--c-zone); border-radius: 12px; }
+.cn-bandeau[data-sorte=cree] > .cn-cite { padding: 0 2px; }
 .cn-encadre-idee { display: flex; flex-direction: column; gap: 2px; padding: 12px 16px; border-radius: 14px; background: var(--c-attbg); border: 1px solid rgb(var(--attention) / .35); font-size: 17px; }
 .cn-rubrique-ligne { padding: 6px 0; border-bottom: 1px solid var(--c-line); }
 /* P5, P38 : tableau du carnet (h05-3) */
@@ -524,8 +532,9 @@
 .cn-carac dd { display: flex; flex-wrap: wrap; align-items: baseline; gap: 2px 4px; }
 .cn-prix-mono .cn-prix { font-weight: 600; }
 /* v04-4 : « Ce qui compte · rien encore : l'IA le proposera » sur la ligne de son titre */
-.cn-rubrique-ligne .cn-rubrique-tete { flex-wrap: nowrap; align-items: baseline; }
-.cn-rubrique-ligne .cn-rubrique-tete > svg { flex: none; align-self: center; }
+/* f13 tour 2 (n° 6, g5:v04-4) : picto vert de la zone, 20 px, centré sur son libellé (il tombait de 6 px sous la ligne) */
+.cn-rubrique-ligne .cn-rubrique-tete { flex-wrap: nowrap; align-items: center; }
+.cn-rubrique-ligne .cn-rubrique-tete > svg { flex: none; color: var(--c-zonet); }
 .cn-rubrique-ligne .cn-rubrique-tete > b { flex: none; }
 .cn-rubrique-ligne .cn-rubrique-tete > .cn-mut, .cn-rubrique-ligne .cn-rubrique-tete > .cn-cqc-texte { min-width: 0; }
 

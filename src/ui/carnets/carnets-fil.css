@@ -26,10 +26,10 @@
    « Coller » à côté ; le texte entier reste dans son title. Clavier fermé, tout revient (deux lignes, PCN-103). */
 .cn-champ-zone[data-clavier] { padding-right: 12px; }
 .cn-champ-zone[data-clavier] > .cn-vadans { margin-right: 0; }
-.cn-champ-zone[data-clavier] .cnf-aides-ligne { flex-wrap: nowrap; }
-.cn-champ-zone[data-clavier] .cnf-aides-ligne > .cn-bulle { flex: 1 1 0; min-height: 36px; padding-top: 4px; padding-bottom: 4px; }
-.cn-champ-zone[data-clavier] .cn-bulle > span:last-child { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; overflow-wrap: normal; }
-.cn-champ-zone[data-clavier] .cnf-aides-ligne > .cn-coller { flex: 0 1 auto; max-width: 45%; }
+/* f13 tour 2 (n° 3) : la bulle G8 garde deux lignes serrées plutôt qu'une ligne tronquée (« Hotte in… » ne disait plus entre quoi) ; la
+   forme qui y tient est choisie par ChampCarnet (`formesBulle`), jamais coupée au milieu d'un mot. « Coller » passe dessous au besoin. */
+.cn-champ-zone[data-clavier] .cnf-aides-ligne > .cn-bulle { min-height: 36px; padding-top: 4px; padding-bottom: 4px; }
+.cn-champ-zone[data-clavier] .cn-bulle > span:last-child { line-height: 1.2; overflow-wrap: break-word; }
 
 /* P28 (R09, g5:v03-2) : Créer · avant */
 .cnf-avant { display: flex; flex-direction: column; gap: 10px; }
@@ -79,6 +79,9 @@
 .cn-ouvert:has(> .cnf-renommer) > .cn-menu { order: -2; }
 .cn-ouvert > .cnf-renommer { order: -1; margin-bottom: 8px; }
 .cn-ouvert:has(> .cnf-renommer) > .cn-titre-ligne { display: none; }
+/* f13 tour 2 (n° 5) : tout juste créé, l'en-tête et le titre sont dans la bande ; renommer la garde en tête, sans le titre */
+.cn-ouvert:has(> .cnf-renommer) > .cn-bande { order: -2; }
+.cn-ouvert:has(> .cnf-renommer) > .cn-bande > .cn-titre-ligne { display: none; }
 .cnf-renommer-tete { display: inline-flex; align-items: center; gap: 6px; }
 .cnf-renommer-tete > svg { flex: none; }
 .cnf-renommer-titre { font-size: 24px; line-height: 30px; font-weight: 800; color: var(--c-ink); margin: 4px 0 0; overflow-wrap: anywhere; }

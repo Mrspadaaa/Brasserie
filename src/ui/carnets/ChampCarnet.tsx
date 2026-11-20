@@ -12,6 +12,7 @@ import React, { useEffect, useId, useLayoutEffect, useRef, useState } from 'reac
 import { Camera, Mic, X } from 'lucide-react';
 import { useDictee } from '../atelier/dictee';
 import { useKeyboardInset } from '../useViewport';
+import { titreAffiche } from './titre';
 import { PictoLocal } from './EtatIA';
 
 export interface SuggestionCritere { critere: string; a: string; b: string }
@@ -93,6 +94,44 @@ export function titreQuiTient(titre: string, place: number, mesurer: (s: string)
     if (mesurer(`${avant}${c}`) <= place) return c;
   }
   return `${mots[0]}…`;
+}
+
+/**
+ * f13 tour 2 (critique n° 9) : le placeholder du champ d'un carnet tient toujours dans la place mesurée : « Ajouter à <titre coupé sur un
+ * mot>… » ; si même le premier mot ne tient pas (« Ajouter à embouteilla » coupé net à 390), « Ajouter ici… » : le carnet est celui qui
+ * est ouvert, juste au-dessus. Jamais un mot coupé (critique 6, n° 26), jamais une coupure nette.
+ */
+export function placeholderCarnet(titre: string, place: number, mesurer: (s: string) => number): string {
+  const t = titreQuiTient(titre, place, mesurer);
+  const ph = `Ajouter à ${t}${t.endsWith('…') ? '' : '…'}`;
+  return mesurer(ph) <= place ? ph : 'Ajouter ici…';
+}
+
+/** Un nom raccourci au mot (jamais un petit mot, « + » ni un tiret en dernier), « … » s'il est coupé ; un premier mot trop long reste entier. */
+function nomCourt(t: string, max: number): string {
+  if (t.length <= max) return t;
+  const mots = t.split(/\s+/);
+  const garde: string[] = [];
+  for (const m of mots) {
+    if ([...garde, m].join(' ').length > max) break;
+    garde.push(m);
+  }
+  while (garde.length > 1 && (MOTS_VIDES.has(garde[garde.length - 1].toLowerCase()) || /^[+&—–-]$/.test(garde[garde.length - 1]))) garde.pop();
+  return garde.length ? `${garde.join(' ')}…` : mots[0];
+}
+
+/**
+ * f13 tour 2 (critique n° 3) : les formes de la bulle G8, de la plus longue à la plus courte. Chacune dit entre quoi et quoi (les deux
+ * noms, entiers ou coupés sur un mot avec « … ») ; clavier ouvert, la bulle prend la plus longue qui tient en deux lignes.
+ */
+export function formesBulle(s: SuggestionCritere): string[] {
+  const c = `« ${s.critere} »`;
+  const formes = [`${c} tranche entre ${s.a} et ${s.b}`, `${c} : ${s.a} ou ${s.b}`];
+  const courte = `${c} : ${nomCourt(s.a, 16)} ou ${nomCourt(s.b, 16)}`;
+  if (courte.length < formes[1].length) formes.push(courte);
+  const breve = `${c} : ${nomCourt(s.a, 8)} ou ${nomCourt(s.b, 8)}`;
+  if (breve.length < formes[formes.length - 1].length) formes.push(breve);
+  return formes;
 }
 function mesureurDe(el: HTMLElement | null): ((s: string) => number) | null {
   if (!el || typeof navigator === 'undefined' || /jsdom/i.test(navigator.userAgent)) return null;
@@ -194,6 +233,29 @@ function useChampPublie(zone: React.RefObject<HTMLDivElement | null>, inset: num
   }, [zone, bulle]);
 }
 
+/**
+ * f13 tour 2 (critique n° 1 et 2, CARNET-CLAV) : clavier ouvert dans un carnet, la dernière note se place d'elle-même juste au-dessus du
+ * champ (12 px d'air : elle se lit entière, rien n'est tranché au bord de la zone). L'app fait défiler la zone voisine, pas le doigt ; on
+ * attend que le clavier ait fini de s'ouvrir (le retrait change en s'ouvrant). Sans note, rien ne bouge.
+ */
+function useDerniereNoteAuDessus(zone: React.RefObject<HTMLDivElement | null>, actif: boolean, inset: number) {
+  useEffect(() => {
+    if (!actif) return;
+    const t = window.setTimeout(() => {
+      const el = zone.current;
+      if (!el) return;
+      const racine = el.closest('[data-carnets]') ?? el.parentElement;
+      const notes = [...(racine?.querySelectorAll<HTMLElement>('.cn-note') ?? [])].filter(n => !el.contains(n) && n.getBoundingClientRect().height > 0);
+      const derniere = notes[notes.length - 1];
+      const d = defileurDe(el);
+      if (!derniere || !d) return;
+      const delta = Math.round(derniere.getBoundingClientRect().bottom - (el.getBoundingClientRect().top - 12));
+      if (Math.abs(delta) > 1) d.scrollBy?.({ top: delta });
+    }, 40);
+    return () => window.clearTimeout(t);
+  }, [zone, actif, inset]);
+}
+
 export function ChampCarnet(p: ChampCarnetProps) {
   const inset = useKeyboardInset();
   const [focus, setFocus] = useState(false);
@@ -216,9 +278,9 @@ export function ChampCarnet(p: ChampCarnetProps) {
     return () => ro.disconnect();
   }, []);
   const mesurer = placeTexte > 0 ? mesureurDe(zoneTexte.current) : null;
-  const titreVu = p.titreCarnet ? (mesurer ? titreQuiTient(p.titreCarnet, placeTexte - 2, mesurer) : large ? p.titreCarnet : titreCourt(p.titreCarnet)) : '';
-  const placeholder = ecoute ? 'J’écoute…' : dansCarnet ? `Ajouter à ${titreVu}${titreVu.endsWith('…') ? '' : '…'}` : 'Une idée, un besoin…';
-  const libelle = dansCarnet ? `Ajouter à ${p.titreCarnet}…` : 'Une idée, un besoin…';
+  const titreVu = p.titreCarnet ? (mesurer ? titreQuiTient(titreAffiche(p.titreCarnet), placeTexte - 2, mesurer) : large ? titreAffiche(p.titreCarnet) : titreCourt(titreAffiche(p.titreCarnet))) : '';
+  const placeholder = ecoute ? 'J’écoute…' : dansCarnet ? (mesurer ? placeholderCarnet(titreAffiche(p.titreCarnet!), placeTexte - 2, mesurer) : `Ajouter à ${titreVu}${titreVu.endsWith('…') ? '' : '…'}`) : 'Une idée, un besoin…';
+  const libelle = dansCarnet ? `Ajouter à ${titreAffiche(p.titreCarnet!)}…` : 'Une idée, un besoin…';
   /* Critique 5, n° 42 : un seul habit d'envoi partout, le bouton vert à mot des maquettes du champ qui tape (g5:v02-10, v03-7, v07-10,
      v01-15 sur la liste) : « Ajouter », et « Enregistrer » ou « Renommer » quand le champ modifie. */
   const envoi = p.libelleEnvoi ?? 'Ajouter';
@@ -239,6 +301,19 @@ export function ChampCarnet(p: ChampCarnetProps) {
   }, [inset]);
   const retrait = Math.max(0, inset - dejaEnBas);
   useDebordVaDans(zone);
+  useDerniereNoteAuDessus(zone, inset > 0 && focus && dansCarnet && (p.libelleEnvoi ?? 'Ajouter') === 'Ajouter', inset);
+  /* f13 tour 2 (n° 3) : clavier ouvert, la bulle prend la plus longue de ses formes qui tient en deux lignes (mesurée) ; au repos, la longue */
+  const formes = React.useMemo(() => (p.suggestion ? formesBulle(p.suggestion) : []), [p.suggestion]);
+  const cleBulle = `${inset}|${formes.join('|')}`;
+  const [choixBulle, setChoixBulle] = useState({ cle: '', i: 0 });
+  const iBulle = inset > 0 && choixBulle.cle === cleBulle ? choixBulle.i : 0;
+  const texteBulle = useRef<HTMLSpanElement>(null);
+  useLayoutEffect(() => {
+    const el = texteBulle.current;
+    if (!inset || !el || iBulle >= formes.length - 1) return;
+    const ligne = parseFloat(getComputedStyle(el).lineHeight) || 19;
+    if (el.scrollHeight > 2 * ligne + 2) setChoixBulle({ cle: cleBulle, i: iBulle + 1 });
+  });
 
   return (
     <div ref={zone} className="cn-champ-zone" style={{ bottom: inset, marginBottom: retrait }} aria-disabled={p.desactive || undefined} data-clavier={inset || undefined}>
@@ -257,8 +332,8 @@ export function ChampCarnet(p: ChampCarnetProps) {
               title={`Le critère « ${p.suggestion.critere} » tranche entre ${p.suggestion.a} et ${p.suggestion.b}`}
             >
               <PictoLocal />
-              {/* tour 3, PCN-103 : dit entre quoi, en deux lignes au plus (carnets-fil.css) */}
-              <span>« {p.suggestion.critere} » tranche entre {p.suggestion.a} et {p.suggestion.b}</span>
+              {/* tour 3, PCN-103 : dit entre quoi ; f13 tour 2 (n° 3) : clavier ouvert, deux lignes serrées, la forme qui y tient */}
+              <span ref={texteBulle}>{formes[iBulle]}</span>
             </button>
           )}
           {p.coller && !plein && (

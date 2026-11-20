@@ -14,6 +14,7 @@
 import React from 'react';
 import { ArrowDown, CalendarCheck, ChevronRight, Eye, Link2 } from 'lucide-react';
 import { Bandeau } from './Bandeau';
+import { titreAffiche } from './titre';
 import { normaliser } from '../../domain/carnets/analyseLocale';
 import { tableau as calculerTableau, prixTexte } from '../../domain/carnets/comparer';
 import { titreDePhrase } from '../../domain/carnets/modele';
@@ -179,7 +180,7 @@ function CarteCarnet({ c, ajouts, onOuvrir, onCollerLien, onVoirAVenir }: { c: C
         <button type="button" className="cn-carnet-corps" onClick={() => onOuvrir(c.id)}>
           <Vignette c={c} />
           <span className="cn-carnet-tx">
-            <b className="cn-carnet-titre">{c.title}</b>
+            <b className="cn-carnet-titre">{titreAffiche(c.title)}</b>
             {choisi ? (
               <>
                 {k.choix?.pourquoi && <span className="cn-encre-2">{k.choix.pourquoi}</span>}

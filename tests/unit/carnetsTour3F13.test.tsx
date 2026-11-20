@@ -46,13 +46,10 @@ describe('PCN-37 (CARNET-CLAV) : clavier ouvert, bulle G8, puce et champ compact
     expect(z.style.marginBottom).toBe('0px');
   });
 
-  it('clavier ouvert : la bulle G8 tient sur une ligne, avec la puce « Coller » à côté ; le texte entier reste au survol et au lecteur', () => {
+  /* f13 tour 2 (critique n° 3) : la ligne tronquée « Hotte in… » est retirée ; deux lignes serrées (carnetsTour3F13b.test.tsx, n° 3) */
+  it('clavier ouvert : la bulle G8 garde le texte entier au survol et au lecteur', () => {
     const z = monter(300);
-    const b = z.querySelector('.cn-bulle')!;
-    expect(b.getAttribute('title')).toContain('tranche entre Hotte inox + extracteur et Extracteur mural seul');
-    expect(regle('carnets-fil.css', /\.cn-champ-zone\[data-clavier\]\s+\.cnf-aides-ligne\b/, /flex-wrap:\s*nowrap/)).toBe(true);
-    expect(regle('carnets-fil.css', /\.cn-champ-zone\[data-clavier\]\s+\.cn-bulle\s*>\s*span:last-child/, /white-space:\s*nowrap/)).toBe(true);
-    expect(regle('carnets-fil.css', /\.cn-champ-zone\[data-clavier\]\s+\.cn-bulle\s*>\s*span:last-child/, /text-overflow:\s*ellipsis/)).toBe(true);
+    expect(z.querySelector('.cn-bulle')!.getAttribute('title')).toContain('tranche entre Hotte inox + extracteur et Extracteur mural seul');
   });
 
   it('clavier ouvert : le + volant est sous le clavier, la zone reprend sa colonne (padding droit 12 px, « Va dans » sans marge négative)', () => {

@@ -30,6 +30,7 @@ import { dateCourte, GENRE_LIBELLE, montant, Provenance, STATUT_LIBELLE, texteSo
 import { LigneRangee } from './LigneRangee';
 import { phraseEnTitre } from './ListeCarnets';
 import { Photos } from './Photos';
+import { titreAffiche } from './titre';
 import { VignetteObjet } from './pictos';
 
 /** Lien « lié à » (R47), calculé par `liensDe` (lot A) : jamais de montant. */
@@ -191,6 +192,11 @@ function pastilleFacon(k: ContenuCarnetV, f: FaconV, sep: Separation | null): { 
 
 /* ---------- le carnet ---------- */
 
+/** f13 tour 2 (n° 5) : la bande de l'en-tête du carnet tout juste créé (g5:v04-4) ; inactive, ses enfants seuls. */
+function Bande({ active, children }: { active: boolean; children: React.ReactNode }) {
+  return active ? <div className="cn-bande">{children}</div> : <>{children}</>;
+}
+
 export function CarnetOuvert(p: CarnetOuvertProps) {
   const c = p.carnet, k = c.carnet;
   /* tour 3, PCN-109 : la pastille R47 dit le lien vers À venir ; la ligne de sortie sous le choix ne le redit pas */
@@ -325,8 +331,14 @@ export function CarnetOuvert(p: CarnetOuvertProps) {
     ? { texte: p.separe.texte, retenir: p.separe.retenir, onRetenir: p.separe.onRetenir, ia: true }
     : sep ? { texte: sep.texte, retenir: sep.retenir, onRetenir: () => (p.onRetenirFacon ? p.onRetenirFacon(sep.retenue.id) : p.onComparer()), ia: false } : null;
 
+  /* f13 tour 2 (n° 6, g5:v04-4) : les rubriques à filet du carnet neuf portent des pictos de 20 px, verts et centrés (carnets.css) */
+  const picto = neuf ? 20 : 18;
+
   return (
-    <article className={`cn-page cn-ouvert${p.grise ? ' cn-grise' : ''}`} aria-label={c.title}>
+    <article className={`cn-page cn-ouvert${p.grise ? ' cn-grise' : ''}`} aria-label={titreAffiche(c.title)}>
+      {/* Tour 3, f13 tour 2 (critique n° 5, g5:v04-4) : tout juste créé, en-tête, titre et encadré sur la bande teintée de sa maquette,
+          fermée par un filet ; ailleurs, rien ne les enveloppe. */}
+      <Bande active={neuf}>
       <div className="cn-tete">
         <button type="button" className="cn-retour" onClick={p.onRetour}><ChevronLeft size={20} aria-hidden /> Carnets</button>
         <span className="cn-sp" />
@@ -348,7 +360,8 @@ export function CarnetOuvert(p: CarnetOuvertProps) {
         )}
       </div>
       <div className="cn-titre-ligne">
-        <h2 className="cn-titre">{c.title}</h2>
+        {/* f13 tour 2 (n° 4) : « Embouteillage », sa majuscule ; le titre stocké ne change pas */}
+        <h2 className="cn-titre">{titreAffiche(c.title)}</h2>
         <button type="button" className="cn-ico" aria-label="Renommer" onClick={() => { setMenu(false); p.onRenommer(); }}><Pencil size={20} aria-hidden /></button>
       </div>
       {/* Tour 3, f13 (PCN-27, R11, règle n° 1) : tout juste créé, sa maquette g5:v04-4 telle quelle : l'encadré « Idée · 17 nov. / Ensuite :
@@ -361,6 +374,7 @@ export function CarnetOuvert(p: CarnetOuvertProps) {
           {!enAttente && <b>Ensuite : {ia && k.facons.length === 0 ? "l'IA cherche les façons" : k.articles.length === 0 ? 'collez un lien' : ia ? "l'IA compare" : 'comparez les articles'}</b>}
         </div>
       )}
+      </Bande>
       {/* P9 (vision 1) : la confirmation, le bandeau et le cadre du geste restent juste sous le titre, avant la ligne d'état et le tableau :
           à 390 ils doivent être à l'écran quand on les touche */}
       {p.bandeau}
@@ -415,7 +429,7 @@ export function CarnetOuvert(p: CarnetOuvertProps) {
       {!enAttente && (neuf || criteres.length === 0) && (
         <section className={`cn-rubrique${neuf ? ' cn-rubrique-ligne' : ''}`} aria-label="Ce qui compte">
           {criteres.length === 0
-            ? <p className="cn-rubrique-tete"><Target size={18} aria-hidden /> <b>Ce qui compte</b> <span className="cn-mut">· rien encore{ia ? " : l'IA le proposera" : ''}</span></p>
+            ? <p className="cn-rubrique-tete"><Target size={picto} aria-hidden /> <b>Ce qui compte</b> <span className="cn-mut">· rien encore{ia ? " : l'IA le proposera" : ''}</span></p>
             : <>
               <p className="cn-rubrique-tete cn-cqc-ligne"><Target size={18} aria-hidden /> <b>Ce qui compte</b> {tete.length > 0 && <span className="cn-cqc-texte">· {texteTete}</span>}</p>
               {rangeeCritere}
@@ -427,7 +441,7 @@ export function CarnetOuvert(p: CarnetOuvertProps) {
       {!enAttente && (!p.tableau || k.facons.length === 0) && (
         <section className={`cn-rubrique${neuf ? ' cn-rubrique-ligne' : ''}`} aria-label="Façons">
           {k.facons.length === 0 ? (
-            <p className="cn-rubrique-tete"><GitFork size={18} aria-hidden /> <b>Façons</b> <span className="cn-mut">· aucune{ia ? " : l'IA les cherche" : ''}</span></p>
+            <p className="cn-rubrique-tete"><GitFork size={picto} aria-hidden /> <b>Façons</b> <span className="cn-mut">· aucune{ia ? " : l'IA les cherche" : ''}</span></p>
           ) : (
             <>
               <h3 className="cn-rubrique-tete">{question ?? <><GitFork size={18} aria-hidden /> Façons</>}{/* tour 3, f5c n° 5 : une seule façon, sa carte est juste dessous : le compte la redirait */}{k.facons.length >= 2 && <> <span className="cn-mut cn-nowrap">{pluriel(k.facons.length, 'façon')}</span></>}</h3>
@@ -455,7 +469,7 @@ export function CarnetOuvert(p: CarnetOuvertProps) {
 
       {!enAttente && <section className={`cn-rubrique${neuf ? ' cn-rubrique-ligne' : ''}`} aria-label="Articles">
         {k.articles.length === 0 ? (
-          <p className="cn-rubrique-tete"><Tag size={18} aria-hidden /> <b>Articles</b> <span className="cn-mut">· aucun : collez un lien</span></p>
+          <p className="cn-rubrique-tete"><Tag size={picto} aria-hidden /> <b>Articles</b> <span className="cn-mut">· aucun : collez un lien</span></p>
         ) : (
           <>
             {/* Critique 6, n° 8 (R03, D-99, h05-3) : une seule ligne, « Articles 6 ⌄ · Comparer › ». Le compte est le total de
@@ -521,12 +535,12 @@ export function CarnetOuvert(p: CarnetOuvertProps) {
       {p.tableau && !phraseEnTitre(c.title, k.phrase ?? '') && phraseCitee}
 
       {enAttente ? null : neuf && k.photos.length === 0
-        ? <section className="cn-rubrique cn-rubrique-ligne" aria-label="Photos"><p className="cn-rubrique-tete"><ImageIcon size={18} aria-hidden /> <b>Photos</b> <span className="cn-mut">· aucune</span></p></section>
+        ? <section className="cn-rubrique cn-rubrique-ligne" aria-label="Photos"><p className="cn-rubrique-tete"><ImageIcon size={20} aria-hidden /> <b>Photos</b> <span className="cn-mut">· aucune</span></p></section>
         : <Photos photos={k.photos} />}
 
       {!enAttente && <section className={`cn-rubrique${neuf ? ' cn-rubrique-ligne' : ''}`} aria-label="Notes">
         {k.notes.length === 0 && !p.noteSupprimee ? (
-          <p className="cn-rubrique-tete"><FileText size={18} aria-hidden /> <b>Notes</b> <span className="cn-mut">· aucune</span></p>
+          <p className="cn-rubrique-tete"><FileText size={picto} aria-hidden /> <b>Notes</b> <span className="cn-mut">· aucune</span></p>
         ) : (
           <>
             <h3 className="cn-rubrique-tete"><FileText size={18} aria-hidden /> Notes <span className="cn-mut cn-mono">{k.notes.length}</span></h3>
