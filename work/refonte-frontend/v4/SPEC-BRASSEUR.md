@@ -2416,3 +2416,25 @@ Classement de la page r3 de Ma levure (https://claude.ai/artifact/DKAJe8ESeMR4ig
 > Les problèmes de code sont pas à négliger, mais un unit test n'est pas un vrai test
 
 (lu, 20.11 : les défauts de code (calcul, données, régression) se corrigent aussi ; leur preuve reste le parcours réel et la vision, le test unitaire n'en est que le filet.)
+
+> Moins de gestes · 20.11
+> v01 : — (Non)
+> v02 : 3 (Non mais les avoir en suggestions comme le caramunch 2)
+> v03 : 1 (Pareil pour les suggestions, en fonction du style et tout)
+> v04 : — (Non mais l'ajout du malt suggère ajoute une quantité qui fait sens)
+> v05 : 4 (On quand dans la suggestion comme Pomona versant ipa)
+> v06 : 2
+> v07 : 2
+> v08 : — (C'est encore pire ???)
+> v09 : 3 (L'idée est bonne mais mal réalisé)
+> v10 : 3
+> v11 : 2
+> v12 : — (Non)
+> v13 : — (Non)
+> v14 : 2 (Mais pas vraiment pas bone vue du calendrier ?)
+
+(lu, 20.11 : v03 rang 1, des suggestions selon le style ; un malt suggéré s'ajoute avec une quantité qui fait sens ; à porter au passage de l'écran Recette, gel oblige. Page : https://claude.ai/artifact/9sEz1JwrPvYrBurab7FAdm)
+
+> Frise au doigt : B mais il y a plusieurs petits soucis, et surtout sur la frize du temps, l'échelle doit changer pour toujours voir les 2 bouts
+
+(20.11, capture work/missions/2026-11-20-frise/retour-B.jpg : B choisie ; la plage S9–S18 2027 sort à droite et le bouton › couvre la fin. L'échelle du temps se règle pour montrer toujours les deux bouts de la plage.)
