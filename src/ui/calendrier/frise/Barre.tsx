@@ -69,6 +69,10 @@ export interface BarreProps {
   largeurJour?: number;
   /** Pas permis pour le glisser : `[min, max]` en semaines. */
   bornes: [number, number];
+  /** CAL-PASSE N1 n° 1 : les colonnes hors fenêtre où la barre peut se poser (`[avant, après]`) ; absent : aucune. */
+  marge?: [number, number];
+  /** CAL-PASSE N1 n° 1 : décale la fenêtre d'une colonne vers le passé (-1) ou le futur (1) quand le doigt tient le bord ; `false` : elle ne peut plus. */
+  defile?: (sens: -1 | 1) => boolean;
   epinglee?: boolean;
   etoilee?: boolean;
   selectionnee?: boolean;
@@ -186,6 +190,9 @@ export function placerDuree(d: HTMLElement, barre: HTMLElement): number {
   const frise = d.closest('[data-frise]')?.getBoundingClientRect();
   const g = Math.max(0, frise?.left ?? 0), dr = Math.min(window.innerWidth, frise?.right ?? window.innerWidth);
   const br = barre.getBoundingClientRect();
+  const racine = d.closest('[data-frise]');
+  const voisins = racine ? [...racine.querySelectorAll<HTMLElement>('.cal-barre, .cal-marque, .cal-lbl-t')]
+    .filter(e => !barre.contains(e) && !lbl?.contains(e) && e !== barre && !d.contains(e)).map(e => e.getBoundingClientRect()).filter(r => r.width > 0 && r.height > 0) : [];
   /* la transition globale (« all 0,01 ms ») ferait lire la mise en page de l'essai d'avant : sans elle, chaque essai se mesure tout de suite */
   d.style.transition = 'none';
   let choisie = PLACES_DUREE.length - 1;
@@ -197,7 +204,9 @@ export function placerDuree(d: HTMLElement, barre: HTMLElement): number {
     const surBarre = i !== 2 && Math.min(q.right, br.right) - Math.max(q.left, br.left) > 1 && Math.min(q.bottom, br.bottom) - Math.max(q.top, br.top) > 1;
     const n = nomVu ? nom!.getBoundingClientRect() : null;
     const surNom = !!n && Math.min(q.right, n.right) - Math.max(q.left, n.left) > 1 && Math.min(q.bottom, n.bottom) - Math.max(q.top, n.top) > 1;
-    if (dansEcran && !surBarre && !surNom) { choisie = i; break; }
+    /* CAL-PASSE N1 n° 4 (20.11, « pas brassée · prête le 20 nov. » posée sur la barre Ttt de la même ligne) : ni sur une barre voisine, ni sur un nom voisin */
+    const surVoisin = voisins.some(v => Math.min(q.right, v.right) - Math.max(q.left, v.left) > 1 && Math.min(q.bottom, v.bottom) - Math.max(q.top, v.top) > 1);
+    if (dansEcran && !surBarre && !surNom && !surVoisin) { choisie = i; break; }
   }
   const p = PLACES_DUREE[choisie];
   d.style.left = p.left; d.style.right = p.right; d.style.top = p.top;
@@ -238,6 +247,8 @@ export const Barre: React.FC<BarreProps> = props => {
     largeurColonne,
     ...(props.largeurJour ? { largeurJour: props.largeurJour } : {}),
     borne: () => bornes,
+    ...(props.marge ? { marge: props.marge } : {}),
+    ...(props.defile ? { defile: props.defile } : {}),
     /* doute f2-a (E29, D-47) : un doigt posé à 12 px du bord, dedans ou dehors, tire le bord, même sur une rangée de 18 px */
     zoneBord: peutBord ? ZONE_BORD_PX : 0,
     refuseGlisse: cible => {

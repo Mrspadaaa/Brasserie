@@ -131,7 +131,7 @@ function chose(ancre: string | undefined): Element | null {
  * La place du message (CRITIQUE-12 n° 1), portée de `toast` (`as-gestes.js` l. 133-150). Pose `left`, `top`, `max-width` (et `width` pour
  * l'alerte au téléphone en hauteur, qui prend la largeur) ; rend « pres » (près de la chose) ou « bas ».
  */
-export function placerMessage(el: HTMLElement, ancre: string | undefined): 'pres' | 'bas' | null {
+export function placerMessage(el: HTMLElement, ancre: string | undefined): 'pres' | 'bas' | 'fixe' | null {
   const vw = window.innerWidth, vh = window.innerHeight;
   /* le + volant, et les onglets : en barre basse (téléphone), ou en rail à gauche (grand écran) */
   const fabEl = document.querySelector('.floating-actions button');
@@ -177,6 +177,14 @@ export function placerMessage(el: HTMLElement, ancre: string | undefined): 'pres
   const m = el.getBoundingClientRect();
   const w = m.width, h = m.height;
   if (h === 0) return null;
+  /* CAL-PASSE N1 n° 5 (20.11, « le bandeau Annuler n'a pas de place fixe et couvre la frise ») : un bandeau (« … → … · Annuler ») a UNE place, en bas,
+     au-dessus de la barre d'onglets et à gauche du + : jamais près de sa chose (il couvrait ses voisines), jamais en tête de la frise. Seule l'alerte
+     f6-b (qui attend une décision) garde sa place dans le flux, sous sa vente. */
+  if (!alerte) {
+    el.style.left = `${Math.round(gauche)}px`;
+    el.style.top = `${Math.round(Math.max(8, bas - h))}px`;
+    return 'fixe';
+  }
   /* jamais plus haut que la première rangée visible : sous l'en-tête collé (courbe et bande des semaines) */
   const entete = document.querySelector('[data-entete-zone]')?.getBoundingClientRect();
   let haut = entete && entete.height > 0 ? Math.max(8, entete.bottom + 6) : 8;

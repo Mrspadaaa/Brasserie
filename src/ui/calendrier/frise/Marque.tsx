@@ -233,6 +233,9 @@ export interface MarqueProps {
   decalage?: number;
   /** Pas permis pour le glisser, en semaines ; présent : la pastille se glisse et s'ouvre en menu comme une barre. */
   bornes?: [number, number];
+  /** CAL-PASSE N1 n° 1 : colonnes hors fenêtre où elle peut se poser, et défilement de la fenêtre au bord (voir Barre). */
+  marge?: [number, number];
+  defile?: (sens: -1 | 1) => boolean;
   onToucher: (chose: ChoseCalendrier, cible: HTMLElement) => void;
   /** Appui long d'une marque en 3 mois, 6 mois ou An : la vue 6 semaines centrée sur cette chose (E27, D-199). Absent : rien. */
   onSixSemaines?: (chose: ChoseCalendrier) => void;
@@ -263,6 +266,8 @@ export const Marque: React.FC<MarqueProps> = props => {
   const gestes = usePointeur({
     largeurColonne,
     borne: () => bornes ?? [0, 0],
+    ...(glissable && props.marge ? { marge: props.marge } : {}),
+    ...(glissable && props.defile ? { defile: props.defile } : {}),
     refuseGlisse: () => (glissable && chose.deplacable !== true ? chose.deplacable.raison : glissable ? null : 'marque'),
     onRefus: raison => { if (glissable) props.onRefus?.(chose, raison); },
     onToucher: () => cible.current && props.onToucher(chose, cible.current),

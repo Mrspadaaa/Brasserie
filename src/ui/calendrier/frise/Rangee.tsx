@@ -204,7 +204,19 @@ export function colonneCourante(colonnes: readonly Colonne[], aujourdhui: string
   return idx.length ? { debut: idx[0], n: idx.length } : null;
 }
 
+/** CAL-PASSE N1 n° 6 : le rang gardé de deux choses (une chose déjà vue passe avant une neuve ; deux neuves : 0, la position décide). */
+function rangDe(rang: ReadonlyMap<string, number> | undefined, a: string, b: string): number {
+  if (!rang) return 0;
+  const ra = rang.get(a), rb = rang.get(b);
+  if (ra === undefined && rb === undefined) return 0;
+  if (ra === undefined) return 1;
+  if (rb === undefined) return -1;
+  return ra - rb;
+}
+
 export interface OptionsDisposer {
+  /** CAL-PASSE N1 n° 6 : l'ordre d'origine des choses de la rangée, tenu par la rangée pour toute la session de la vue (écrit par `disposer`). */
+  rang?: Map<string, number>;
   /** Largeur, à droite, où aucun nom ne se pose (le + volant, D-135). */
   reserveDroite?: number;
   /** Paysage : la largeur que le titre occupe sur la première ligne, à gauche. */
@@ -245,7 +257,9 @@ export function disposer(choses: readonly ChoseCalendrier[], colonnes: readonly 
   const places = choses.flatMap(c => { const p = positionDans(colonnes, c); return p ? [{ c, p }] : []; })
     .map(o => ({ ...o, j: estPonctuel(o.c) }))
     /* D386 : les barres d'abord, puis les jalons, sur leurs lignes à eux (jamais sur une ligne qui porte une barre) */
-    .sort((x, y) => Number(x.j) - Number(y.j) || x.p.a - y.p.a || (y.p.b - y.p.a) - (x.p.b - x.p.a) || x.c.id.localeCompare(y.c.id));
+    .sort((x, y) => Number(x.j) - Number(y.j) || rangDe(options.rang, x.c.id, y.c.id) || x.p.a - y.p.a || (y.p.b - y.p.a) - (x.p.b - x.p.a) || x.c.id.localeCompare(y.c.id));
+  /* CAL-PASSE N1 n° 6 : l'ordre d'origine se garde (les choses vues y gardent leur rang, les nouvelles se rangent après) */
+  if (options.rang) for (const o of places) if (!options.rang.has(o.c.id)) options.rang.set(o.c.id, options.rang.size);
   const lignesJalon = new Set<number>(), lignesAutres = new Set<number>();
   let jalonCourant: boolean | null = null;
   const lignes: Array<Array<[number, number]>> = [];
@@ -593,7 +607,7 @@ export interface RangeeProps {
   onRenvoi?: (chose: ChoseCalendrier) => void;
   onAjouter: (r: IdRangee) => void;
   onBasculerMasque: (r: IdRangee) => void;
-  barre: Pick<BarreProps, 'onToucher' | 'onAppuiLong' | 'onGlisse' | 'onLacheGlisse' | 'onBord' | 'onLacheBord' | 'onRefus'>;
+  barre: Pick<BarreProps, 'onToucher' | 'onAppuiLong' | 'onGlisse' | 'onLacheGlisse' | 'onBord' | 'onLacheBord' | 'onRefus' | 'defile' | 'marge'>;
   /** Appui long sur une marque en 3 mois, 6 mois ou An : la vue 6 semaines centrée sur elle (E27, D-199). Absent : rien. */
   onSixSemaines?: (chose: ChoseCalendrier) => void;
   /** Le détail de la chose choisie de cette rangée, posé sous ses barres (f4-b). */
@@ -733,11 +747,16 @@ export const Rangee: React.FC<RangeeProps> = props => {
   /* PC-110 (CRITIQUE-13 n° 4, E43, E47 c) : une série mensuelle (3 occurrences au moins) est une barre « / mois » à toute échelle, pas seulement
      dans l'An : en 3 et 6 mois, six « Loyer du local −400 » en escalier prenaient 150 px ; en 6 semaines (deux loyers au plus), rien ne change */
   const auJourVue = colonnes.length > 0 && ecartJours(colonnes[0].debut, colonnes[0].fin) >= 14;
+  /* CAL-PASSE N1 n° 6 : l'ordre des lignes d'origine tient tant que la vue ne change pas d'échelle (le nombre et la largeur des colonnes) */
+  const rangs = React.useRef<Map<string, number>>(new Map());
+  const cleRangs = React.useRef('');
+  const cleVue = `${colonnes.length}:${colonnes.length ? ecartJours(colonnes[0].debut, colonnes[0].fin) : 0}`;
+  if (cleRangs.current !== cleVue) { cleRangs.current = cleVue; rangs.current = new Map(); }
   const { items, lignes, caddies, renvois: posRenvois } = React.useMemo(
     /* en An, une série mensuelle se pose en une barre (doute Papiers en An, CRITIQUE-12) */
     () => disposer(montreesEnSeries, colonnes, largeurColonne, largeur, {
       /* CRITIQUE-5 n° 14 : partout (téléphone, paysage, 1280), un nom reste entier tant que la place existe, quitte à ouvrir une ligne */
-      reserveDroite, zoneTitre, vueLarge, renvois: largeursRenvois, paysage, lieCourt
+      reserveDroite, zoneTitre, vueLarge, renvois: largeursRenvois, paysage, lieCourt, rang: rangs.current
     }),
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [montreesEnSeries, colonnes, largeurColonne, largeur, reserveDroite, zoneTitre, paysage, vueLarge, cleRenvois, lieCourt, auJourVue]
@@ -853,6 +872,7 @@ export const Rangee: React.FC<RangeeProps> = props => {
                   libelle={d.avecLibelle ? { cote: d.cote === 'gauche' ? 'gauche' : 'droite', place: d.place, deux: d.deuxLignes, ...(c.brassinLie ? { texte: c.titre } : {}), ...(d.sansLie ? { sansLie: true } : {}), ...(d.retrait ? { retrait: d.retrait } : {}) } : undefined}
                   decalage={surDrag && drag.mode === 'glisse' ? drag.k * pas : 0}
                   bornes={[-d.a, colonnes.length - 1 - d.a]}
+                  {...(props.barre.marge ? { marge: props.barre.marge } : {})} {...(props.barre.defile ? { defile: props.barre.defile } : {})}
                   onToucher={props.barre.onToucher} onSixSemaines={props.onSixSemaines}
                   onGlisse={props.barre.onGlisse} onLacheGlisse={props.barre.onLacheGlisse} onRefus={(ch: ChoseCalendrier, raison: string) => props.barre.onRefus(ch, raison)}
                   /* test en ligne du paquet E : la petite marque (Mois, 3 mois, An) se glisse comme une barre ; son appui long garde les 6 semaines (E27) */
@@ -869,6 +889,7 @@ export const Rangee: React.FC<RangeeProps> = props => {
                 key={c.id} chose={c} gauche={d.gauche} largeur={d.largeur} coupe={coupe} haut={top} hauteur={d.phraseBas?.ou === 'barre' ? mesures.barre + mesures.ligne : mesures.barre} cote={d.cote}
                 phraseBas={d.phraseBas ? (d.phraseBas.ou === 'barre' ? { ou: 'barre' } : { ou: 'dessous', x: d.phraseBas.x0, dy: mesures.ligne }) : null} placeEtiquette={d.place} retrait={d.retrait} dureeACote={d.duree} deuxLignes={d.deuxLignes} sansLie={d.sansLie} titreSeul={d.titreSeul}
                 largeurColonne={largeurColonne} bornes={[-d.a, colonnes.length - 1 - d.a]}
+                {...(props.barre.marge ? { marge: props.barre.marge } : {})} {...(props.barre.defile ? { defile: props.barre.defile } : {})}
                 epinglee={epingles.includes(c.id)} etoilee={etoiles.includes(c.id)} selectionnee={selectionId === c.id} menuOuvert={menuId === c.id} lieCourt={lieCourt}
                 decalage={surDrag && drag.mode === 'glisse' ? drag.k * largeurColonne : 0}
                 largeurJour={largeurJourA(pos)}

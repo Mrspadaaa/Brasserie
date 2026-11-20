@@ -43,6 +43,30 @@ export interface OptionsPointeur {
    * d'une rangée de 18 px (paysage) tire le bord, au lieu de déplacer la barre ; jamais plus d'un tiers de la barre, dont le corps se glisse.
    */
   zoneBord?: number;
+  /**
+   * CAL-PASSE N1 n° 1 (20.11, « impossible de modifier dans le passé ») : la méthode standard du glisser-déposer dans une zone qui défile, le
+   * défilement automatique au bord. Un doigt qui tient une barre près du bord de la frise, en allant vers lui, décale la fenêtre d'une colonne à
+   * chaque pas (`defile(-1)` : vers le passé, `defile(1)` : vers le futur ; elle rend `false` quand la fenêtre ne peut plus aller de ce côté) ; la
+   * barre reste sous le doigt et la cible lue est celle de la colonne sous le doigt.
+   */
+  defile?: (sens: -1 | 1) => boolean;
+  /**
+   * Les colonnes hors de la fenêtre où la barre peut encore se poser (`[avant, après]`) : un glisser de 4 semaines vers la gauche d'une barre au
+   * bord gauche de la fenêtre vise la semaine d'avant, même si la fenêtre ne l'affiche pas (le fantôme et la bulle disent la date).
+   */
+  marge?: [number, number];
+}
+
+/** Zone du bord de la frise où le doigt fait défiler la fenêtre, et rythme du défilement (un doigt tient le bord sans le survoler). */
+export const ZONE_DEFILE_PX = 36;
+export const DELAI_DEFILE_MS = 300;
+export const PAS_DEFILE_MS = 380;
+
+/** Le sens où le doigt tire la fenêtre : `-1` bord gauche (le passé), `1` bord droit (le futur), `0` ailleurs. Le doigt doit aller VERS ce bord. */
+export function sensDefilement(x: number, dx: number, cadre: { left: number; right: number }): -1 | 0 | 1 {
+  if (dx < -SEUIL_MOUVEMENT_PX && x < cadre.left + ZONE_DEFILE_PX) return -1;
+  if (dx > SEUIL_MOUVEMENT_PX && x > cadre.right - ZONE_DEFILE_PX) return 1;
+  return 0;
 }
 
 /** Le doigt est-il sur la zone du bord droit de `el` ? Lu sur la boîte de la barre (une boîte vide, jsdom : non). */
@@ -62,9 +86,17 @@ interface Etat {
   mode: ModeGeste;
   k: number;
   minuterie: ReturnType<typeof setTimeout> | null;
+  /** Le déplacement du doigt depuis l'appui, et le nombre de colonnes dont la fenêtre a reculé (>0) ou avancé (<0) depuis le début du geste. */
+  dx: number;
+  recul: number;
+  /** Le défilement automatique en cours (sens, minuterie). */
+  sens: -1 | 0 | 1;
+  defileur: ReturnType<typeof setTimeout> | null;
 }
 
 const bornes = (k: number, b?: [number, number]) => (b ? Math.max(b[0], Math.min(b[1], k)) : k);
+/** La plage de pas permise, élargie des colonnes hors fenêtre (`marge`). */
+const plage = (b: [number, number] | undefined, marge: [number, number] | undefined): [number, number] | undefined => (b ? [b[0] - (marge?.[0] ?? 0), b[1] + (marge?.[1] ?? 0)] : undefined);
 
 /*
  * CRITIQUE-11 n° 2 a (E29 « tirer le bord l'allonge et rien d'autre », E22 « l'œil ne masque que sur un toucher voulu »). En 6 mois à 390, une
@@ -127,11 +159,24 @@ export function usePointeur(options: OptionsPointeur) {
   const inscrit = useRef<(() => void) | null>(null);
   useEffect(() => { installerGarde(); }, []);
 
+  const stopDefile = (e: Etat | null) => {
+    if (e?.defileur) { clearTimeout(e.defileur); e.defileur = null; }
+    if (e) e.sens = 0;
+  };
   const stopMinuterie = () => {
     const e = etat.current;
     if (e?.minuterie) { clearTimeout(e.minuterie); e.minuterie = null; }
   };
-  useEffect(() => () => { stopMinuterie(); etat.current = null; }, []);
+  useEffect(() => () => { stopMinuterie(); stopDefile(etat.current); etat.current = null; }, []);
+  /* la cible lue : le pas du doigt, moins les colonnes dont la fenêtre a bougé sous lui (la colonne sous le doigt est celle de la fenêtre d'ORIGINE moins le recul) */
+  const pasDe = (s: Etat): number => bornes(Math.round(s.dx / (opts.current.largeurColonne || 1)) - s.recul, plage(opts.current.borne?.(), opts.current.marge));
+  /* après chaque rendu de la barre (la fenêtre a pu bouger sous le doigt) : le pas est relu, la bulle et le fantôme suivent */
+  useEffect(() => {
+    const s = etat.current;
+    if (!s || s.mode !== 'glisse' || !(opts.current.largeurColonne > 0)) return;
+    const k = pasDe(s);
+    if (k !== s.k) { s.k = k; opts.current.onGlisse?.(k, s.dx); }
+  });
 
   const capturer = (cible: Element, id: number) => {
     try { (cible as HTMLElement).setPointerCapture?.(id); } catch { /* jsdom, ou pointeur déjà relâché */ }
@@ -141,11 +186,12 @@ export function usePointeur(options: OptionsPointeur) {
     if (e.button > 0) return;
     stopMinuterie();
     const bord = (e.target as HTMLElement | null)?.closest?.('[data-bord]') || surLeBord(e.currentTarget, e.clientX, opts.current.zoneBord ?? 0);
-    const s: Etat = { id: e.pointerId, cible: e.target instanceof Element ? e.target : null, x0: e.clientX, y0: e.clientY, t0: Date.now(), mode: bord ? 'bord' : 'appui', k: 0, minuterie: null };
+    const s: Etat = { id: e.pointerId, cible: e.target instanceof Element ? e.target : null, x0: e.clientX, y0: e.clientY, t0: Date.now(), mode: bord ? 'bord' : 'appui', k: 0, minuterie: null, dx: 0, recul: 0, sens: 0, defileur: null };
     etat.current = s;
     const annuler = () => {
       if (etat.current !== s) return;
       if (s.minuterie) { clearTimeout(s.minuterie); s.minuterie = null; }
+      stopDefile(s);
       etat.current = null;
       if (s.mode === 'glisse') opts.current.onLacheGlisse?.(s.k, true);
       else if (s.mode === 'bord') opts.current.onLacheBord?.(s.k, true);
@@ -169,6 +215,33 @@ export function usePointeur(options: OptionsPointeur) {
     }, APPUI_LONG_MS);
   }, []);
 
+  /* le défilement automatique : au bord de la frise, en allant vers lui, une colonne par pas (DELAI puis PAS) tant que la barre reste dans la fenêtre */
+  const majDefile = (s: Etat, x: number, el: HTMLElement) => {
+    if (!opts.current.defile) return;
+    const cadre = el.closest('[data-frise]')?.getBoundingClientRect();
+    const vue = typeof window !== 'undefined' ? window.innerWidth : 0;
+    const gauche = Math.max(0, cadre?.left ?? 0), droite = Math.min(vue || Infinity, cadre && cadre.width > 0 ? cadre.right : Infinity);
+    const sens = sensDefilement(x, s.dx, { left: gauche, right: droite });
+    if (sens === s.sens) return;
+    stopDefile(s);
+    s.sens = sens;
+    if (!sens) return;
+    const pas = (delai: number) => {
+      s.defileur = setTimeout(() => {
+        s.defileur = null;
+        if (etat.current !== s || s.mode !== 'glisse' || s.sens !== sens) return;
+        const oo = opts.current;
+        const dansLaVue = oo.borne?.();
+        /* la barre sortirait de la fenêtre : on attend (jamais une barre tenue qui disparaît sous le doigt) */
+        if (dansLaVue && (sens < 0 ? dansLaVue[1] < 1 : dansLaVue[0] > -1)) { pas(PAS_DEFILE_MS); return; }
+        if (!oo.defile?.(sens)) return;
+        s.recul += sens < 0 ? 1 : -1;
+        pas(PAS_DEFILE_MS);
+      }, delai);
+    };
+    pas(DELAI_DEFILE_MS);
+  };
+
   const onPointerMove = useCallback((e: React.PointerEvent<HTMLElement>) => {
     const s = etat.current;
     if (!s || e.pointerId !== s.id) return;
@@ -189,8 +262,10 @@ export function usePointeur(options: OptionsPointeur) {
       }
     }
     if (s.mode === 'glisse' && o.largeurColonne > 0) {
-      s.k = bornes(Math.round(dx / o.largeurColonne), o.borne?.());
+      s.dx = dx;
+      s.k = pasDe(s);
       o.onGlisse?.(s.k, dx);
+      majDefile(s, e.clientX, e.currentTarget);
     } else if (s.mode === 'bord' && o.largeurColonne > 0) {
       /* le bord se tire au jour : une semaine = 7 jours, le pas du bord est 1/7 de colonne (E29) */
       s.k = Math.round(dx / (o.largeurJour && o.largeurJour > 0 ? o.largeurJour : o.largeurColonne / 7));
@@ -205,6 +280,7 @@ export function usePointeur(options: OptionsPointeur) {
     const s = etat.current;
     if (!s || e.pointerId !== s.id) return;
     stopMinuterie();
+    stopDefile(s);
     etat.current = null;
     if (inscrit.current) { gestesEnCours.delete(inscrit.current); inscrit.current = null; }
     const o = opts.current;

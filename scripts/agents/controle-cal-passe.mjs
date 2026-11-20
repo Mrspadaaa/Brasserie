@@ -162,6 +162,44 @@ for (const theme of ['clair', 'cave']) {
     }
   } catch (e) { verdict('b', theme, false, `erreur : ${e.message}`); }
 
+  /* b0 (CAL-PASSE N1 n° 1, 21.11) : le geste EXACT du brasseur, SANS reculer la fenêtre avant. Une barre de brassin du début de la vue par défaut est tenue puis
+     tirée jusqu'au bord gauche de la frise et y reste : la fenêtre recule d'elle-même (défilement automatique), la bulle « lâcher ici » dit la semaine visée ;
+     lâcher quand elle a reculé de 4 semaines ou plus : la semaine de la barre recule d'autant ; Annuler la remet. */
+  try {
+    await banc.recharger();
+    await banc.evaluate(() => window.scrollTo(0, 0)); await z(300);
+    const info = await banc.evaluate(() => {
+      const barres = [...document.querySelectorAll('[data-frise] [data-chose][data-rangee="brassins"]')].filter(x => x.querySelector('[data-bord]') && x.getBoundingClientRect().width > 0);
+      const b = [...barres].sort((p, q) => p.getBoundingClientRect().left - q.getBoundingClientRect().left)[0];
+      if (!b) return null;
+      b.scrollIntoView({ block: 'center' });
+      const r = b.getBoundingClientRect(), y = r.top + r.height / 2;
+      let x = null;
+      for (let t = r.left + 6; t <= r.right - 8; t += 2) { const e = document.elementFromPoint(t, y); if (e && e.closest('[data-barre]') === b && !e.closest('[data-jalon], [data-bord], [data-grip]')) { x = t; break; } }
+      return { id: b.getAttribute('data-chose'), titre: b.getAttribute('data-titre'), sem: b.getAttribute('data-semaine'), x, y, gauche: r.left };
+    });
+    if (!info || info.x === null) verdict('b0', theme, false, `barre du début de la vue introuvable ou sans prise (${JSON.stringify(info)})`);
+    else {
+      const num = s => { const m = RE.semaine.exec(s ?? ''); return m ? Number(m[1]) : null; };
+      const ici = () => banc.evaluate(() => document.querySelector('[data-ici]')?.textContent ?? null);
+      await z(300);
+      await doigt(banc, 'touchStart', info.x, info.y); await z(180);
+      for (let i = 1; i <= 10; i++) { await doigt(banc, 'touchMove', info.x + ((6 - info.x) * i) / 10, info.y); await z(25); }
+      let visee = null, recul = 0;
+      for (let t = 0; t < 40 && recul < 4; t++) { await z(300); visee = await ici(); const n = num((/S(\d+)/.exec(visee ?? '') ?? [])[0]); if (n !== null && num(info.sem) !== null) recul = modulo(num(info.sem) - n); }
+      await photo(banc, `b0-${theme}-pendant`);
+      await doigt(banc, 'touchEnd'); await z(900);
+      await photo(banc, `b0-${theme}-apres`);
+      const apres = await banc.evaluate(id => document.querySelector(`[data-chose="${id}"]`)?.getAttribute('data-semaine') ?? null, info.id);
+      const sem = apres === null ? -1 : modulo(num(info.sem) - num(apres));
+      const annule = await banc.evaluate(() => { const b = [...document.querySelectorAll('button')].find(x => /^Annuler$/.test((x.textContent || '').trim())); if (!b) return null; const q = b.getBoundingClientRect(); return { x: q.left + q.width / 2, y: q.top + q.height / 2 }; });
+      let retour = null;
+      if (annule) { await taper(banc, annule.x, annule.y); await z(600); retour = await banc.evaluate(id => document.querySelector(`[data-chose="${id}"]`)?.getAttribute('data-semaine') ?? null, info.id); }
+      verdict('b0', theme, !!visee && recul >= 4 && (sem >= 4 || apres === null) && !!annule && retour === info.sem,
+        `${info.titre} ${info.sem} tenue au bord gauche : bulle « ${visee} » (recul visé ${recul} sem., 4 au moins) ; après le lâcher ${apres ?? 'hors de la vue (fenêtre reculée moins que la cible)'} (recul ${sem}) ; Annuler ${annule ? `→ ${retour}` : 'ABSENT'}`);
+    }
+  } catch (e) { verdict('b0', theme, false, `erreur : ${e.message}`); }
+
   /* e : le BORD d'une barre tiré au doigt (la plainte, capture 2-etiquette-sur-barre : « J0 / 55 · prête 13 févr. » posée sur la barre et son nom), puis le corps d'une barre :
      pendant et après, la durée tirée ne recouvre ni la barre ni son nom, et tient dans l'écran */
   for (const geste of ['bord', 'barre']) {

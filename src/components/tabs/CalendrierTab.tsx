@@ -835,6 +835,28 @@ export function CalendrierTab(props: CalendrierTabProps) {
   const largeurSemaine = !annee && (echelle !== 'semaine' || deplieVu) && mesure.largeur > 0 ? mesure.largeur / Math.max(1, fenetre.semaines) : largeurColonne;
   /* au téléphone, aucun nom ni montant ne passe sous le + volant : sa zone, à droite, est réservée (D-135, passe10/p-clair-ferme) */
   const reserveDroite = paysage || (mesure.largeur > 0 && mesure.largeur < 700) ? 76 : 0;
+  /*
+   * CAL-PASSE N1 n° 1 (20.11, « impossible de modifier dans le passé ») : le défilement automatique au bord. Une barre tenue au bord gauche de la
+   * frise, sans que la fenêtre la montre plus tôt, recule : la fenêtre se décale d'une colonne à chaque pas (le même geste que l'en-tête : la
+   * période de l'app la suit) et le geste vise toute la semaine sous le doigt, même hors de la fenêtre (`marge`, en semaines). Seulement sur l'axe
+   * en semaines : un axe en jours ou en mois garde ses bornes.
+   */
+  const defilable = !annee && echelle === 'semaine' && !deplieVu && modele.semaines.length > 0;
+  const derniereSemaine = modele.semaines[modele.semaines.length - 1]?.debut ?? premierLundi;
+  const finFenetre = ajouterJours(fenetre.du, (fenetre.semaines - 1) * 7);
+  const marge: [number, number] = defilable ? [Math.max(0, ecartJours(premierLundi, fenetre.du) / 7), Math.max(0, ecartJours(finFenetre, derniereSemaine) / 7)] : [0, 0];
+  const fenetreRef = useRef(fenetre);
+  fenetreRef.current = fenetre;
+  const defilerFenetre = useCallback((sens: -1 | 1): boolean => {
+    const f = fenetreRef.current;
+    const du = ajouterJours(f.du, sens * 7);
+    if (du < premierLundi || ajouterJours(du, (f.semaines - 1) * 7) > derniereSemaine) return false;
+    const fen: FenetreSemaines = { du, semaines: f.semaines };
+    fenetreRef.current = fen;
+    setFenetre(fen);
+    onPeriode(periodeDeFenetre(fen));
+    return true;
+  }, [premierLundi, derniereSemaine, onPeriode]);
   /* E32 : « Livraison La Cigogne · S1 › » mène à la vente hors de la vue */
   const surRenvoi = (c: ChoseCalendrier) => {
     const n = Math.max(2, fenetre.semaines);
@@ -969,7 +991,7 @@ export function CalendrierTab(props: CalendrierTabProps) {
           onPincer={surPincer}
           echelle={deplieVu ? 'semaine-depliee' : echelle}
           aujourdhui={aujourdhui}
-          barre={{ onToucher: surToucher, onAppuiLong: surAppuiLong, onGlisse: surGlisse, onLacheGlisse: surLacheGlisse, onBord: surBord, onLacheBord: surLacheBord, onRefus: surRefus }}
+          barre={{ onToucher: surToucher, onAppuiLong: surAppuiLong, onGlisse: surGlisse, onLacheGlisse: surLacheGlisse, onBord: surBord, onLacheBord: surLacheBord, onRefus: surRefus, ...(defilable ? { defile: defilerFenetre, marge } : {}) }}
         />
       )}
 
