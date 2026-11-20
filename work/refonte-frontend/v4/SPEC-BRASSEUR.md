@@ -2438,3 +2438,33 @@ Classement de la page r3 de Ma levure (https://claude.ai/artifact/DKAJe8ESeMR4ig
 > Frise au doigt : B mais il y a plusieurs petits soucis, et surtout sur la frize du temps, l'échelle doit changer pour toujours voir les 2 bouts
 
 (20.11, capture work/missions/2026-11-20-frise/retour-B.jpg : B choisie ; la plage S9–S18 2027 sort à droite et le bouton › couvre la fin. L'échelle du temps se règle pour montrer toujours les deux bouts de la plage.)
+
+> J'ai l'impression que la session workflow simplicité a aussi mal optimisé certains points ou pas du tout analysé.
+>
+> Par exemple, création d'une idée projet, c'est assez long et facétieux. Une fois que le projet est créé, peut importe si il a un budget ou pas, petit bouton ajouter calendrier, ça l'ajout à la date du jour, ça nous transférer sur le calendrier pour que on puisse le déplacer facilement, et on peut aussi lui donner ou estimer directement un prix... En 1 bouton on a 3 action super précise, efficace et rapide qui aide vraiment, améliore vraiment le workflow. Ce genre de chose.
+>
+> Aussi on a une vente, ça l'ajout au calendrier automatiquement.
+>
+> On commence notre brassin, on a tout qui de met à jour sans rien faire...
+>
+> On crée une recette, par exemple pour une bière pour Noël. Dans sa création, premier écran on lui donne une date, ou pas, et à la fin de la création dans l'overview on peut aussi lui associer une date. Et quand je dis on lui donne une date c'est souvent plus une vague idée donc pas besoin d'avoir un date Picker ultra précis, juste, aujourd'hui, dans 1 mois, dans 3 mois. Ou plus... Et plus reporté à dans 6m 1 ans... Ce genre de workflow
+>
+> C'est des cas pratiques, le critique et brasseur, et expert UX,UI doivent pouvoir aider....
+>
+> Aussi il y a des actions super pratique sûr mobile comme étirer les graph avec l'échelle qui suit et tout. Ce que l'on est entrain de consevoir et d'autres action type date Picker ultra précis vraiment pas terribles. Ou des entrée de text pas pratique...
+>
+> Aussi tout ce qui est feedback à l'utilisateur type, modifier le houblon de temps dans l'ébullition change l'ibu, ça c'est du grand art. Mais il y a certaines actions qui pourrait avoir un feedback utilisateur direct de ce genre.
+>
+> À voir aussi si comme le graph de temps certains actionneurs "haut niveau" encore pas développé ou déja présente dans l'app aurait bénéficie à être plus poussée et améliorer ou fine tuné ou juste développée comme on le fait...
+>
+> Et il y a aussi des problèmes où certains écran ont juste trop d'informations ou trop de champs ou des champs visible de base ou pas dans le bonne ordre.
+>
+> Je suis aussi pas très fan du texte en dur comme sur certain écran même si c'est parfois nécessaire, je suis super fan des visuels bien fait comme par exemple la vue sur le stock type épicerie, ça c'est du grand art. Mais c'est une vue qui est ultra spécifique.
+>
+> Les vue ultra spécialisé pour une action spécifique, avec un visuel super, actionnable top, ultra compréhensible, ça c'est extraordinaire.
+>
+> J'ai donné des grandes lignes et des exemples très précis, attention à bien prendre la chose dans son ensemble et pas ultra spécifié certaines autres choses, pas prend ces exemples à la lettre, mais bien généralisé pour chaque cas...
+> Attention on peut aussi faire des mini maquettes ce ça, mais peu être moins détaillé, et je veux pas avoir le problème que on implement le visuel plutôt que le workflow, donc on doit bien être au clair que c'est des actions, workflow et autres que on modélise mais pas le "visuel"
+> Re contextualise, retravaille mes messages et tout pour pas avoir d'overfitting, d'autres problèmes ou autre Bias ou divergence  ou problème d'alignement
+
+(lu, 20.11 : la passe simplicité doit raisonner par chaînes d'actions et non par écrans. Ses cas sont des exemples d'une règle. Une mini maquette modélise un workflow et ne fixe aucun visuel. Cadrage : `work/missions/2026-11-20-workflows/CADRAGE.md`.)
