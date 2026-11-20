@@ -229,8 +229,6 @@ type CoreItem = {
   reference: string; variant: string; stockCategory: string; evidence: string; ambiguity: string; vatCode: string; alphaPct: number | null; alphaPctLu: number | null;
   /** D381 : lecture d'un morceau seulement : la ligne n'est que la suite d'un article commencé sur la partie précédente. */
   suite?: true;
-  /** LR3-1 : la quantité (1) et le prix ne sont pas imprimés : déduits d'une ligne de ticket qui n'a qu'un montant (`quantiteUnDeTicket`). */
-  quantityDeduced?: true;
 };
 
 type VatKey = { code: string; rate: number | null };
@@ -366,19 +364,6 @@ export function quantiteDeTicket(quantity: number | null, documentType: unknown,
   return entier >= 1 && lus.includes(imprime) && !estCodeTva(entier, vatCode, codesTva) ? entier : quantity;
 }
 
-/**
- * LR3-1 (g1, 20.11, ticket BAUHAUS doc25 lu en réel) : un ticket qui n'imprime que le MONTANT de chaque ligne. Le « 1 » imprimé après le montant est le code de TVA (B1), jamais une quantité :
- * la quantité restait nulle sur toutes les lignes, une lecture rendait un prix égal au montant et l'autre pas (24 désaccords), et le contrôle sautait les 22 lignes. Une ligne de TICKET qui n'a qu'un montant
- * (prix absent ou égal au montant, aucune quantité, aucune marque de multiplication « 2 x », « 3 * » dans l'extrait, ni remise) vaut une unité : `1`. L'appelant pose alors aussi `price = montant` et
- * `quantityDeduced`. Jamais sur une facture, jamais une quantité lue réécrite, jamais sans montant (l'inconnu n'est pas 1).
- */
-export function quantiteUnDeTicket(quantity: number | null, documentType: unknown, evidence: string, price: number | null, amountTTC: number | null, kind: string): number | null {
-  if (quantity !== null || documentType !== 'receipt' || kind === 'discount' || amountTTC === null || !(amountTTC > 0)) return quantity;
-  const montant = toCents(amountTTC), prix = price === null ? null : toCents(price);
-  if (montant === null || (price !== null && prix !== montant)) return quantity;
-  return /\d\s*[x×*]\s*\d/i.test(evidence) ? quantity : 1;
-}
-
 /** Pure transcription checks. Original totals/rates survive discrepancies. */
 export function normalizeInvoiceScan(raw: any) {
   const issues: string[] = [];
@@ -396,18 +381,14 @@ export function normalizeInvoiceScan(raw: any) {
     const code = text(item?.vatCode, 60);
     if (code.length > 10) reject('vatCode', index + 1, code, 'code de TVA coupé à 10 caractères');
     const price = number(item?.price), evidenceLue = text(item?.evidence, 250);
-    const lue = quantiteDeTicket(quantiteSansCodeTva(number(item?.quantity), evidenceLue, code, codesTva), raw?.documentType, evidenceLue, price, number(item?.amountTTC), code, codesTva);
-    const kind = SCAN_KINDS.includes(item?.kind) ? item.kind as typeof SCAN_KINDS[number] : 'unknown' as const;
-    const montant = montantDeLigne(number(item?.amountTTC), price, lue);
-    const quantity = quantiteUnDeTicket(lue, raw?.documentType, evidenceLue, price, montant, kind), deduite = lue === null && quantity === 1;
+    const quantity = quantiteDeTicket(quantiteSansCodeTva(number(item?.quantity), evidenceLue, code, codesTva), raw?.documentType, evidenceLue, price, number(item?.amountTTC), code, codesTva);
     return {
-      id: `line-${index + 1}`, name: text(item?.name), kind,
-      quantity, unit: text(item?.unit, 30), price: deduite ? montant : price, amountTTC: montant,
+      id: `line-${index + 1}`, name: text(item?.name), kind: SCAN_KINDS.includes(item?.kind) ? item.kind as typeof SCAN_KINDS[number] : 'unknown' as const,
+      quantity, unit: text(item?.unit, 30), price, amountTTC: montantDeLigne(number(item?.amountTTC), price, quantity),
       reference: text(item?.reference, 70), variant: text(item?.variant, 80),
       stockCategory: text(item?.stockCategory, 60), evidence: text(item?.evidence, 250), ambiguity: text(item?.ambiguity, 200),
       vatCode: code.slice(0, 10), alphaPct, alphaPctLu: alphaRead,
       ...(item?.suite === true ? { suite: true as const } : {}),
-      ...(deduite ? { quantityDeduced: true as const } : {}),
     };
   });
   const documentType: DocumentType = DOCUMENT_TYPES.includes(raw?.documentType) ? raw.documentType as DocumentType : 'other';
