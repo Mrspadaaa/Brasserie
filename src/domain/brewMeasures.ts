@@ -2,6 +2,7 @@ import type { BrewDayReading, BrewDayState, BrewDayStep, RecipeSnapshot } from '
 import { cibleMesure, defaultReading, isFinalWort, isMash, sg, volumeTarget, type ReadingKind } from './brewDay';
 import { nombreFr } from './nombreAffiche';
 import { boilMinutes, isBoilStep } from './brewCompanion';
+import { PH_APRES_MIN } from './appelMesure';
 
 /**
  * Les mesures qu'une étape attend (VB-1, 10.11 : « Ça invite pas aux mesures »). Elles viennent toutes de règles que le code porte déjà :
@@ -148,7 +149,7 @@ export function mesuresAttendues(
     });
     // Le pH se prend 10 à 15 min après l'empâtage, sur un échantillon refroidi ; pas au mashout (≥ 75 °C).
     if (step.tempC != null && step.tempC >= 75) return [temperature];
-    const phDes = lance ? step.startedAt! + 10 * MIN : undefined;
+    const phDes = lance ? step.startedAt! + PH_APRES_MIN * MIN : undefined;
     const phDu = phDes != null && now >= phDes;
     return [
       temperature,
@@ -158,7 +159,7 @@ export function mesuresAttendues(
         court: 'pH',
         cible: '5,2–5,5',
         due: phDu,
-        quand: phDu ? 'maintenant' : phDes != null ? `dès ${heure(phDes)}` : 'dès 10 min de palier'
+        quand: phDu ? 'maintenant' : phDes != null ? `dès ${heure(phDes)}` : `dès ${PH_APRES_MIN} min de palier`
       })
     ];
   }

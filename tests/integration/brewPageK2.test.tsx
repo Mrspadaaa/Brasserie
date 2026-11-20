@@ -40,21 +40,27 @@ function monterAvantEbullition(releves: Partial<BrewDayReading>[]) {
   return render(<BrewDayPage batch={batch} config={defaultConfig} onClose={vi.fn()} onSave={vi.fn()} onFinish={vi.fn()} />);
 }
 
-describe('port p2c K2 n° 5 : les bandes « Et donc » restent après Enregistrer', () => {
-  it('la bande lue s’allume, avant comme après Enregistrer', () => {
+// pm1 remplace la carte « Maintenant » (trois bandes sous · dans · sur) par la carte d'appel du palier. Ce que K2 n° 5 protège — le conseil
+// « Et donc » de la bande lue (l'eau à ajouter par °C quand le palier est hors cible) — reste, en une ligne sous la valeur, avant comme
+// après « Relever ». Dans la cible, la carte dit « dans la cible » et n'ajoute rien (l'ancienne bande « rien : l'horloge tourne »).
+describe('port p2c K2 n° 5 : le « Et donc » de la valeur lue reste après Relever (carte d’appel pm1)', () => {
+  it('hors cible, la ligne « Et donc » est dite avant comme après « Relever » ; dans la cible, aucune ligne en plus', () => {
     monterPalier();
-    let carte = document.querySelector('.bm-now') as HTMLElement;
-    fireEvent.click(within(carte).getByRole('button', { name: 'plus 0,1' }));
-    carte = document.querySelector('.bm-now') as HTMLElement;
-    expect(carte.querySelectorAll('.bm-b[data-borne]').length).toBe(3);
-    const allumeeAvant = carte.querySelector('.bm-b[aria-current="true"]')?.getAttribute('data-borne');
-    expect(allumeeAvant).toBeTruthy();
-    fireEvent.click(within(carte).getByRole('button', { name: 'Enregistrer' }));
-    carte = document.querySelector('.bm-now') as HTMLElement;
-    expect(within(carte).getByText(/Enregistré · /)).toBeTruthy();
-    expect(within(carte).getByText(/Et donc, selon ce que tu lis/)).toBeTruthy();
-    expect(carte.querySelectorAll('.bm-b[data-borne]').length).toBe(3);
-    expect(carte.querySelector('.bm-b[aria-current="true"]')?.getAttribute('data-borne')).toBe(allumeeAvant);
+    let carte = document.querySelector('[data-appel="ouvert"]') as HTMLElement;
+    const [temp] = within(carte).getAllByRole('slider');
+    fireEvent.change(temp, { target: { value: '67.1' } });
+    expect(within(carte).getByText(/dans la cible 66 à 68/)).toBeTruthy();
+    expect(carte.querySelector('[data-etdonc]')).toBeNull();
+    fireEvent.change(temp, { target: { value: '65' } });
+    carte = document.querySelector('[data-appel="ouvert"]') as HTMLElement;
+    const avant = carte.querySelector('[data-etdonc]');
+    expect(avant).toBeTruthy();
+    expect(avant!.textContent).toMatch(/^Et donc : ≈ .* L d’eau bouillante par °C, remuer$/);
+    fireEvent.click(within(carte).getByRole('button', { name: 'Relever' }));
+    // la température est relevée, le pH reste à relever : la carte de la température garde sa ligne.
+    carte = document.querySelector('[data-appel="ouvert"]') as HTMLElement;
+    const apres = carte.querySelector('[data-carte="temperature"] [data-etdonc]');
+    expect(apres?.textContent).toBe(avant!.textContent);
   });
 });
 
@@ -132,5 +138,36 @@ describe('port p2c K2 : un écart n’est dit qu’une fois', () => {
     render(<BrewDayPage batch={{ id: 'LOT-K2', name: r.name, recipeSnapshot: r, brewDay: state } as Batch} config={defaultConfig} onClose={vi.fn()} onSave={vi.fn()} onFinish={vi.fn()} />);
     expect(document.querySelector('.bz-avis-releve')).toBeNull();
     expect(document.body.textContent).not.toMatch(/au-dessus de la cible \d/);
+  });
+});
+
+// La ligne « ✓ Relevé » (tout est relevé) garde, elle aussi, le « Et donc » d'une température relevée hors cible ; sans consigne, rien n'est dit.
+import { AppelMesure, etDoncDe } from '../../src/ui/brassage/AppelMesure';
+import { appelPalier } from '../../src/domain/appelMesure';
+import type { Zone } from '../../src/domain/brewDayCalculs';
+
+describe('port p2c K2 n° 5 : « Et donc » dans la ligne « ✓ Relevé » (pm1)', () => {
+  const T0 = 1_700_000_000_000;
+  const palier = { id: 'mash-1', label: 'Saccharification', durationMin: 60, tempC: 67, startedAt: T0 };
+  const zones: Zone[] = [
+    { borne: 'sous', libelle: 'sous 66', etDonc: '≈ 0,4 L d’eau bouillante par °C, remuer' },
+    { borne: 'dans', libelle: '66–68', etDonc: 'rien : l’horloge tourne' },
+    { borne: 'sur', libelle: 'sur 68', etDonc: null }
+  ];
+  const lecture = (id: string, kind: 'temperature' | 'ph', value: number, at: number) => ({ id, at, stepId: 'mash-1', kind, value, unit: kind === 'ph' ? '' : '°C' }) as BrewDayReading;
+  const etat = (readings: BrewDayReading[]) => ({ steps: [palier], currentIndex: 0, readings }) as never;
+
+  it('température relevée sous la cible : la ligne verte dit le conseil ; dans la cible ou sans consigne : rien en plus', () => {
+    const sous = appelPalier(palier, etat([lecture('a', 'temperature', 64.5, T0 + 3e5), lecture('b', 'ph', 5.3, T0 + 16 * 6e4)]), undefined, T0 + 17 * 6e4)!;
+    render(<AppelMesure appel={sous} onReleve={vi.fn()} zones={{ temperature: zones }} />);
+    expect(screen.getByText(/Et donc : ≈ 0,4 L d’eau bouillante par °C, remuer/)).toBeTruthy();
+    cleanup();
+    const dans = appelPalier(palier, etat([lecture('a', 'temperature', 67.2, T0 + 3e5), lecture('b', 'ph', 5.3, T0 + 16 * 6e4)]), undefined, T0 + 17 * 6e4)!;
+    render(<AppelMesure appel={dans} onReleve={vi.fn()} zones={{ temperature: zones }} />);
+    expect(document.querySelector('[data-etdonc]')).toBeNull();
+    // au-dessus, la bande « sur » n'a pas de consigne : rien n'est inventé.
+    expect(etDoncDe(dans.temperature, 70, zones)).toBeNull();
+    expect(etDoncDe(dans.temperature, 67.2, zones)).toBeNull();
+    expect(etDoncDe(dans.temperature, 64.5, undefined)).toBeNull();
   });
 });

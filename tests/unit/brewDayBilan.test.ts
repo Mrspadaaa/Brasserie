@@ -107,7 +107,7 @@ describe('relevés du jour : le scénario p2c', () => {
     const r = Object.fromEntries(relevesDuJour(E1(), recette, h(13, 5)).map((x) => [x.id, x]));
     expect(r['maische']).toMatchObject({ etat: 'du', quand: 'maintenant', cible: '67 °C' });
     expect(r['ph']).toMatchObject({ etat: 'afaire', cible: '5,2–5,5' });
-    expect(r['ph'].quand).toBe('dès 13 h 15');
+    expect(r['ph'].quand).toBe('dès 13 h 20');
     expect(r['eau-temp']).toMatchObject({ etat: 'manque', quand: 'température non relevée' });
     expect(r['avant-volume'].cible).toBe('28,5 L');
     expect(r['avant-densite'].cible).toBe('1,052');
@@ -116,8 +116,8 @@ describe('relevés du jour : le scénario p2c', () => {
     expect(r['ensemencement-temp'].cible).toBe('18 °C');
   });
 
-  it('le pH devient dû 10 min après le départ du palier', () => {
-    const r = relevesDuJour(E1(), recette, h(13, 15)).find((x) => x.id === 'ph')!;
+  it('le pH devient dû 15 min après le départ du palier', () => {
+    const r = relevesDuJour(E1(), recette, h(13, 20)).find((x) => x.id === 'ph')!;
     expect(r).toMatchObject({ etat: 'du', quand: 'maintenant' });
   });
 
@@ -247,7 +247,7 @@ describe('tuiles, tri, frise', () => {
     const t = tuilesDuJour(relevesDuJour(E1(), recette, h(13, 5)), recette);
     expect(t.map((x) => x.id)).toEqual(['eau', 'empatage', 'avant', 'coupure', 'og', 'fermenteur', 'ensemencement']);
     expect(t[0]).toMatchObject({ nom: 'Eau d’empâtage', complement: '18,5 L', valeur: '?', etat: 'manque', quand: 'température non relevée' });
-    expect(t[1]).toMatchObject({ kind: 'paire', cible: 'cible 67 °C · pH 5,2–5,5', quand: 'maintenant · pH 13 h 15', etat: 'du' });
+    expect(t[1]).toMatchObject({ kind: 'paire', cible: 'cible 67 °C · pH 5,2–5,5', quand: 'maintenant · pH 13 h 20', etat: 'du' });
     expect(t[1].parties).toHaveLength(2);
     expect(t[2]).toMatchObject({ nom: 'Avant ébullition', cible: 'cible 28,5 L · 1,052', kind: 'paire' });
     expect(t[3]).toMatchObject({ nom: 'Densité à la coupure', cible: 'pour agir avant le refroidissement' });

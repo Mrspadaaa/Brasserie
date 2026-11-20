@@ -10,7 +10,7 @@ const state = (readings: BrewDayReading[] = [], step = palier): BrewDayState => 
 const recette = { ogTarget: 1.062, volumeL: 24 } as unknown as RecipeSnapshot;
 
 describe('mesures attendues par étape (VB-1 : « ça invite pas aux mesures »)', () => {
-  it('au palier d’empâtage : la température maintenant, le pH dès 10 min, chacune à vide (« ? », jamais 0)', () => {
+  it('au palier d’empâtage : la température maintenant, le pH dès 15 min, chacune à vide (« ? », jamais 0)', () => {
     const a = mesuresAttendues(palier, state(), recette, T0 + 2 * MIN);
     expect(a.map((m) => m.kind)).toEqual(['temperature', 'ph']);
     expect(a[0]).toMatchObject({ nom: 'Maische', cible: '67 °C', due: true, quand: 'maintenant' });
@@ -18,8 +18,9 @@ describe('mesures attendues par étape (VB-1 : « ça invite pas aux mesures »)
     expect(a[1]).toMatchObject({ nom: 'pH d’empâtage', cible: '5,2–5,5', due: false });
     expect(a[1].quand).toMatch(/^dès \d{1,2} h \d{2}$/);
   });
-  it('le pH devient dû 10 min après le départ du palier', () => {
-    const a = mesuresAttendues(palier, state(), recette, T0 + 10 * MIN);
+  it('le pH devient dû 15 min après le départ du palier (une seule heure : PH_APRES_MIN)', () => {
+    expect(mesuresAttendues(palier, state(), recette, T0 + 14 * MIN)[1].due).toBe(false);
+    const a = mesuresAttendues(palier, state(), recette, T0 + 15 * MIN);
     expect(a[1]).toMatchObject({ kind: 'ph', due: true, quand: 'maintenant' });
   });
   it('un relevé rangé à l’étape remplit sa case (valeur, heure), l’autre reste vide', () => {

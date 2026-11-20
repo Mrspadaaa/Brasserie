@@ -12,9 +12,11 @@ import { nombreFr } from '../domain/nombreAffiche';
 const fmt = (n: number) => n.toLocaleString('fr-CH', { maximumFractionDigits: 1 });
 const time = (at: number) => new Date(at).toLocaleTimeString('fr-CH', { hour: '2-digit', minute: '2-digit' });
 
-export function BrewThermalControl({ recipe, state, step, now, update, onMeasure }: {
+export function BrewThermalControl({ recipe, state, step, now, update, onMeasure, releveParAppel = false }: {
   recipe: RecipeSnapshot; state: BrewDayState; step: BrewDayStep; now: number; update: BrewUpdate;
   onMeasure: (kind: 'temperature') => void;
+  /** pm1 : au palier, la carte « Le palier appelle » relève déjà la température (curseur posé sur la cible) : elle remplace ce petit bouton tant qu'elle est ouverte. */
+  releveParAppel?: boolean;
 }) {
   const heating = /^mash/.test(step.id) || step.id === 'sparge';
   const cooling = ['refroidissement', 'ensemencement', 'whirlpool'].includes(step.id);
@@ -106,7 +108,7 @@ export function BrewThermalControl({ recipe, state, step, now, update, onMeasure
     {/* n° 18 : un temps que les relevés ne permettent pas de dire n'est pas écrit (pas de « inconnue », pas de leçon sur la montée) */}
     {heating && rampMin != null && (exposure.minutes != null || step.pausedAt != null) && <p className="brew-thermal-note">{exposure.minutes != null ? `≈ ${fmt(exposure.minutes)} min entre 58 et 72 °C sur ${fmt(exposure.coveredMin)} min suivies. ` : ''}{step.pausedAt != null ? 'La pause arrête le minuteur, pas l’évolution réelle de la cuve.' : ''}</p>}
     <div className="brew-thermal-actions">
-      <button type="button" onClick={() => onMeasure('temperature')}>{step.id === 'sparge' ? 'Relever l’eau' : 'Relever le moût'}</button>
+      {!releveParAppel && <button type="button" onClick={() => onMeasure('temperature')}>{step.id === 'sparge' ? 'Relever l’eau' : 'Relever le moût'}</button>}
       {target != null && !holding && <button type="button" onClick={() => { update(s => startThermalSegment(s, step, method, target, brewNow(), { ...(method === 'immersion' && state.coolingWaterC != null ? { coolantC: state.coolingWaterC } : {}), note: segment ? 'Conditions changées : puissance, débit ou circulation' : 'Début du suivi' })); onMeasure('temperature'); }}>{segment ? 'Conditions changées' : cooling ? 'Démarrer le suivi' : 'Suivre la chauffe'}</button>}
     </div>
     {target != null && !holding && <details><summary>Volume {heating ? 'chauffé' : 'refroidi'} · {segment?.volumeL == null ? 'à saisir' : `${fmt(segment.volumeL)} L`}</summary>

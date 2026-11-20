@@ -33,28 +33,42 @@ function monterEbullition(minutesRestantes = 4) {
   return render(<BrewDayPage batch={batch} config={defaultConfig} onClose={vi.fn()} onSave={vi.fn()} onFinish={vi.fn()} />);
 }
 
-describe('port p2c I1b : Maintenant (E1)', () => {
-  it('un palier lancé : la carte « Maintenant · relevé dû » est en tête, la grande valeur est « ? », Enregistrer attend la pose', () => {
+// pm1 (mission port-simplicité, 20.11) remplace la carte « Maintenant » d'une seule mesure par la carte d'appel du palier :
+// la température et le pH au curseur, « Relever » et « Plus tard ». L'intention de I1b reste : le relevé dû est en tête de la conduite,
+// rien n'est noté sans le toucher du brasseur, aucun champ numérique natif, et un relevé fait se lit « ✓ ».
+describe('port p2c I1b : le relevé dû au palier (E1, repris par pm1)', () => {
+  it('un palier lancé : la carte d’appel est en tête, la température est « à relever » (proposée, à confirmer), rien n’est noté avant « Relever »', () => {
     monterPalier();
-    const carte = document.querySelector('.bm-now') as HTMLElement;
+    const carte = document.querySelector('[data-appel="ouvert"]') as HTMLElement;
     expect(carte).toBeTruthy();
-    expect(within(carte).getByText(/Maintenant · relevé dû/)).toBeTruthy();
-    expect(within(carte).getByText('?')).toBeTruthy();
-    expect(within(carte).getByRole('button', { name: 'Enregistrer' })).toBeDisabled();
-    // aucun champ numérique natif : le curseur et les pas portent le geste.
-    expect(carte.querySelector('input[type="number"]')).toBeNull();
+    expect(document.querySelector('.bm-now')).toBeNull();
+    const temperature = carte.querySelector('[data-carte="temperature"]') as HTMLElement;
+    expect(within(temperature).getByText(/à relever/)).toBeTruthy();
+    expect(within(temperature).getByText('proposé, à confirmer')).toBeTruthy();
+    expect(within(carte).getByRole('button', { name: 'Relever' })).toBeEnabled();
+    expect(within(carte).getByRole('button', { name: 'Plus tard' })).toBeTruthy();
+    // « Plus tard » n'écrit rien : la carte se replie et « reste à relever ».
+    fireEvent.click(within(carte).getByRole('button', { name: 'Plus tard' }));
+    const replie = document.querySelector('[data-appel="replie"]') as HTMLElement;
+    expect(replie.textContent).toMatch(/à relever/);
+    expect(screen.queryByText(/✓ Relevé/)).toBeNull();
+    // aucun champ numérique natif : le curseur porte le geste.
+    expect(document.querySelector('[data-appel] input[type="number"]')).toBeNull();
   });
 
-  it('poser par ±0,1 puis Enregistrer : le relevé entre, la carte devient « ✓ … relevé à … » et dit le prochain relevé', () => {
+  it('poser les curseurs puis « Relever » : les relevés entrent, la carte devient la ligne « ✓ Relevé » avec leurs valeurs', () => {
     monterPalier();
-    const carte = document.querySelector('.bm-now') as HTMLElement;
-    fireEvent.click(within(carte).getByRole('button', { name: 'plus 0,1' }));
-    const enregistrer = within(carte).getByRole('button', { name: 'Enregistrer' });
-    expect(enregistrer).toBeEnabled();
-    fireEvent.click(enregistrer);
-    expect(screen.getByText(/✓ .* relevée? à \d+ h \d{2}/)).toBeTruthy();
-    expect(screen.getByText(/Enregistré · /)).toBeTruthy();
-    expect(within(document.querySelector('.bm-now') as HTMLElement).queryByRole('button', { name: 'Enregistrer' })).toBeNull();
+    const carte = document.querySelector('[data-appel="ouvert"]') as HTMLElement;
+    const [temp, ph] = within(carte).getAllByRole('slider');
+    fireEvent.change(temp, { target: { value: '67.4' } });
+    fireEvent.change(ph, { target: { value: '5.32' } });
+    fireEvent.click(within(carte).getByRole('button', { name: 'Relever' }));
+    const fait = document.querySelector('[data-appel="fait"]') as HTMLElement;
+    expect(fait).toBeTruthy();
+    expect(fait.textContent).toMatch(/✓ Relevé/);
+    expect(within(fait).getByText(/67,4/)).toBeTruthy();
+    expect(within(fait).getByText(/5,32/)).toBeTruthy();
+    expect(within(fait).queryByRole('button')).toBeNull();
   });
 });
 

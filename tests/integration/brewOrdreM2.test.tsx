@@ -33,8 +33,9 @@ const avant = (a: Element, b: Element) => !!(a.compareDocumentPosition(b) & Node
 describe('m2 : l’ordre des blocs de l’étape (DOM)', () => {
   it('« Relevés du jour » vient avant Grains', () => {
     monter();
-    // p2c (I1b) : la carte « Maintenant » prend la place des cases « Relevés du jour » dans la conduite.
-    const releves = document.querySelector('.bm-now') as HTMLElement;
+    // p2c (I1b), puis pm1 : au palier, la carte d'appel (température et pH au curseur) prend la place des cases « Relevés du jour »
+    // et de l'ancienne carte « Maintenant » dans la conduite. L'intention de m2 est la même : ce qui est dû passe avant Grains.
+    const releves = document.querySelector('[data-appel]') as HTMLElement;
     expect(releves).toBeTruthy();
     const grains = screen.getByRole('region', { name: 'Ingrédients à ajouter' });
     expect(avant(releves, grains)).toBe(true);

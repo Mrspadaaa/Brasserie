@@ -114,6 +114,8 @@ import { boilScenario, lastWortPair } from '../domain/brewAssist';
 import { correctionsAvantEbullition, infusionPourMaische, paireSansCible, zonesDeCible } from '../domain/brewDayCalculs';
 import type { OptionCorrection } from '../domain/brewDayCalculs';
 import { BrewMaintenant } from '../ui/BrewMaintenant';
+import { AppelMesure } from '../ui/brassage/AppelMesure';
+import { appelPalier, ecrireReleves, PH_APRES_MIN, type KindAppel } from '../domain/appelMesure';
 import type { MaintenantProps } from '../ui/BrewMaintenant';
 import { BrewAppel, BrewAppelPlein } from '../ui/BrewAppel';
 import type { BrewAppelAjout, BrewAppelProps, BrewAppelSuivant } from '../ui/BrewAppel';
@@ -857,7 +859,12 @@ export function BrewDayPage({ batch, config, stockItems = [], onClose, onSave, o
   const [maintBrouillon, setMaintBrouillon] = useState<{ cle: string; valeur: number | null } | null>(null);
   const [maintFait, setMaintFait] = useState<{ stepId: string; at: number; kind: ReadingKind; value: number; titre: string; sousTitre?: string; unite: string; entete: string; verdict: string } | null>(null);
   // À l'avant-ébullition, la paire volume + densité se relève par la feuille Mesurer (paire à froid, case « refroidi ») : pas de carte à une grandeur.
-  const aFaireCarte = isConsulting || current.id === 'preboil' ? [] : attendues.filter((m) => m.due && !m.reading);
+  // pm1 : au palier d'empâtage, la température et le pH se relèvent par la carte « Le palier appelle » (deux curseurs posés sur la cible) ;
+  // elle prend la place de la carte « Maintenant » d'une seule mesure et du petit bouton « Relever le moût » du suivi thermique.
+  const appelMesurePalier = isConsulting ? null : appelPalier(measuredStep, state, actualRecipe, now);
+  const releverParAppel = (valeurs: { kind: KindAppel; value: number }[]) =>
+    update((s) => ecrireReleves(s, measuredStep, valeurs, brewNow(), () => crypto.randomUUID()));
+  const aFaireCarte = isConsulting || current.id === 'preboil' || appelMesurePalier ? [] : attendues.filter((m) => m.due && !m.reading);
   const mesureCarte: MesureAttendue | undefined =
     aFaireCarte.find((m) => m.kind === mesureDue(measuredStep, state, actualRecipe, now)) ?? aFaireCarte[0];
   const unitePourCarte = (kind: ReadingKind) => (kind === 'densite' ? '' : READING[kind].unit);
@@ -941,7 +948,7 @@ export function BrewDayPage({ batch, config, stockItems = [], onClose, onSave, o
     const cible = cibleMesure(kind, measuredStep, actualRecipe);
     const maische = isMash(measuredStep.id);
     const infusion = cible && kind === 'temperature' && maische ? infusionPourMaische(actualRecipe, state, cible) : null;
-    const phDes = maische && measuredStep.startedAt != null ? heureFr(measuredStep.startedAt + 10 * 60000) : undefined;
+    const phDes = maische && measuredStep.startedAt != null ? heureFr(measuredStep.startedAt + PH_APRES_MIN * 60000) : undefined;
     return {
       infusion,
       zones: cible ? zonesDeCible(kind, cible, { contexte: maische ? 'maische' : undefined, infusion, phA: phDes }) : undefined,
@@ -1547,7 +1554,7 @@ export function BrewDayPage({ batch, config, stockItems = [], onClose, onSave, o
     const pl = etapesPlan[current.id];
     const debutP = current.startedAt ?? pl?.tenue ?? null;
     const phLu = (state.readings ?? []).some((r) => r.kind === 'ph' && r.stepId === current.id);
-    const heurePh = debutP != null && duration > 10 ? debutP + 10 * 60000 : null;
+    const heurePh = debutP != null && duration > PH_APRES_MIN ? debutP + PH_APRES_MIN * 60000 : null;
     const rinc = cote('rinçage')?.heure ?? null;
     const rdv: RendezVous[] = [
       {
@@ -1800,7 +1807,7 @@ export function BrewDayPage({ batch, config, stockItems = [], onClose, onSave, o
         <span>Suivi thermique</span>
         <ChevronDown size={14} aria-hidden="true" />
       </summary>
-      <BrewThermalControl recipe={recipe} state={state} step={measuredStep} now={now} update={update} onMeasure={requestMeasure} />
+      <BrewThermalControl recipe={recipe} state={state} step={measuredStep} now={now} update={update} onMeasure={requestMeasure} releveParAppel={appelMesurePalier != null && appelMesurePalier.temperature.releve == null} />
     </details>
   ) : null;
   const aideOptions = (
@@ -2503,6 +2510,7 @@ export function BrewDayPage({ batch, config, stockItems = [], onClose, onSave, o
                     )}
                   </>
                 )}
+                {appelMesurePalier && <AppelMesure key={measuredStep.id} appel={appelMesurePalier} onReleve={releverParAppel} zones={{ temperature: bandesDe('temperature').zones }} />}
                 {maintenant && <BrewMaintenant {...maintenant} />}
                 {appelCourant && !appelPlein && <BrewAppel {...appelCourant} />}
                 {clotureFaite && (

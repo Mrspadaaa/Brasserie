@@ -3,6 +3,7 @@ import { cibleMesure, densiteAvantEbullition, ecartHorsCible, isMash, sg, volume
 import { actualAmount, boilMinutes, brewIngredients, isBoilStep } from './brewCompanion';
 import { classerReleves, estEtapeCoupure, heureCoupure, heureFr, IDS_RELEVES, type IdReleve } from './brewMeasures';
 import { nombreFr } from './nombreAffiche';
+import { PH_APRES_MIN } from './appelMesure';
 
 /**
  * « Relevés du jour · bilan visé » (p2c, port A1) : les relevés de TOUTE la journée, pas ceux de l'étape. Ce module est du calcul pur :
@@ -147,10 +148,10 @@ export function relevesDuJour(
         const refStep = (r && etape(r.stepId ?? '')) || mashs.find((s) => s.doneAt == null) || mashs.at(-1);
         if (refStep) stepRef = refStep;
         const depart = mashs.find((s) => s.startedAt != null)?.startedAt;
-        const des = depart != null ? depart + 10 * MIN : undefined;
+        const des = depart != null ? depart + PH_APRES_MIN * MIN : undefined;
         manque = fini || (mashs.length > 0 && mashs.every((s) => s.doneAt != null));
         du = !manque && des != null && now >= des;
-        quandAFaire = du ? 'maintenant' : des != null ? `dès ${heureFr(des)}` : 'dès 10 min de palier';
+        quandAFaire = du ? 'maintenant' : des != null ? `dès ${heureFr(des)}` : `dès ${PH_APRES_MIN} min de palier`;
         heurePrevue = heurePrevue ?? des ?? null;
         cibleTexte = '5,2–5,5';
         break;
