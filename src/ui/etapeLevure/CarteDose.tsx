@@ -144,7 +144,9 @@ export function BandeDose({ etat, qty, unite, besoin, stock, onPas, onEcrire, on
 
 /** La conduite en une ligne (r3 v05) : un mini graphe en marches (chaud orange, froid bleu), « 19 °C · 7 j → 4 °C · 8 j », « fin J15 ». */
 export function LigneConduite({ paliers, mot, onToucher }: { paliers: ReadonlyArray<{ tempC: number; days: number }>; mot: boolean; onToucher: () => void }) {
-  const ok = paliers.filter(p => Number.isFinite(p.tempC) && Number.isFinite(p.days) && p.days > 0);
+  // Deux paliers de suite à la même température se lisent en un (r3 v05 : « 19 °C · 7 j → 4 °C · 8 j ») : la ligne tient à 390.
+  const ok = paliers.filter(p => Number.isFinite(p.tempC) && Number.isFinite(p.days) && p.days > 0)
+    .reduce<{ tempC: number; days: number }[]>((acc, p) => { const d = acc[acc.length - 1]; if (d && d.tempC === p.tempC) d.days += p.days; else acc.push({ tempC: p.tempC, days: p.days }); return acc; }, []);
   if (!ok.length) return null;
   const total = ok.reduce((s, p) => s + p.days, 0);
   const tMin = Math.min(0, ...ok.map(p => p.tempC)), tMax = Math.max(24, ...ok.map(p => p.tempC));

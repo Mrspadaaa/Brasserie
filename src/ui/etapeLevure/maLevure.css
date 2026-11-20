@@ -184,3 +184,7 @@
   .ml-carte .ml-qte b { font-size: 24px; }
   .ml-carte .ml-tch { padding: 0 5px; font-size: 14px; }
 }
+
+/* Vision 20.11 : en cave, le surlignage or à 60 % mangeait « sachets » ; la ligne conduite de l'état après tient à 390 sans le mot. */
+:root[data-theme='cave'] .ml-carte .ml-qte[data-touche] { background: linear-gradient(transparent 62%, rgb(242 193 78 / .3) 62%); }
+@media (max-width: 400px) { .ml-carte .ml-cmot { display: none; } }
