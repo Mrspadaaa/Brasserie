@@ -25,7 +25,8 @@ describe('TL-10 : la fiche publiée d\'un malt courant', () => {
   });
   it('un malt hors table, ou ambigu, reste inconnu : jamais deviné, jamais 0', () => {
     expect(fichePubliee('Castle Chateau Pilsen')).toBeNull();
-    expect(fichePubliee('Münchner Malz')).toBeNull(); // type 1 ou type 2 : la fiche ne tranche pas
+    // T4-5 : type 1 ou type 2, la fiche ne tranche pas : la plage couvre les deux (12–25 EBC) et le dit ; le nom n'est plus « inconnu », mais la valeur n'est qu'un repère.
+    expect(fichePubliee('Münchner Malz')).toMatchObject({ ebcMin: 12, ebcMax: 25, ambigu: expect.stringMatching(/type 1 ou 2/) });
     expect(fichePubliee('Cascade')).toBeNull();
     expect(fichePubliee('')).toBeNull();
   });

@@ -5,7 +5,7 @@ import { proposerFermentables } from '../../domain/fermentables/proposition';
 import { Bascule, Entree, Etoile, Plus, Sac } from './icones';
 import { Input } from '../Input';
 import { chercher, chercherAilleurs, decouper, estEpice, familleDevinee, kgTxt, lireAjout, memeArticle, nomPossible, nu, qteTxt, teinte, texteSurTeinte, type Candidat } from './modele';
-import { fichePubliee } from '../../domain/fermentables/fichesMalts';
+import { fichePubliee, plageEbc } from '../../domain/fermentables/fichesMalts';
 import { chargerTypicite } from '../../domain/fermentables/typicite';
 import { refAffichable } from '../../domain/stock/regles';
 
@@ -130,6 +130,8 @@ export const Ajout: React.FC<AjoutProps> = ({ famille, familles, defs, onFamille
   const s = famCreee !== famille ? lireAjout(valeur, connu, true, exact) : sGrain;
   const defCreee = defs[famCreee];
   const t = s.nom;
+  // T4-5 (rouvre TL-10) : un malt de la table du malteur qu'on crée dit déjà sa couleur et son potentiel (plage publiée) ; hors table, rien (jamais 0).
+  const ficheCree = famCreee === 'grain' && t ? fichePubliee(t) : null;
   const on = ouvert || !!t;
   // Les autres rayons comptent : « dext » en Grain propose Dextrose (rayon Sucre), qui s'ajoute dans sa famille. Les noms de la famille du champ restent devant
   // (le brasseur a choisi sa famille) ; un rang 4 (faute d'une lettre) ne passe jamais devant un nom trouvé ailleurs (critique B1 n° 4).
@@ -297,9 +299,10 @@ export const Ajout: React.FC<AjoutProps> = ({ famille, familles, defs, onFamille
         })}
         {on && creer && (
           <button type="button" role="option" aria-selected className="fer-tu fer-large fer-cree fer-prem" data-role="creer" data-cree="1" onClick={() => { const now = Date.now(); if (now - dernierClic.current < 400) return; dernierClic.current = now; reinit(); onCreer(t, s.kg, famCreee); }}>
-            <span className="fer-l1"><Plus /><span className="fer-nm2">Créer « {t} »{s.kg != null && <> · <b>{kgTxt(s.kg)}</b> kg</>} (stock à zéro)</span></span>
+            <span className="fer-l1"><Plus /><span className="fer-nm2">Créer « {t} »{s.kg != null && <> · <b>{kgTxt(s.kg)}</b> kg</>} (stock à zéro)</span>
+              {ficheCree && <i className="fer-ebcp" style={{ background: teinte(ficheCree.colorEbc), color: texteSurTeinte(ficheCree.colorEbc) }}>{qteTxt(ficheCree.colorEbc)}</i>}</span>
             {/* T3B-8 : une épice (coriandre, zeste…) n'est pas un fermentescible ; la ligne ne dit plus « grain : à l'empâtage » mais ce qu'elle sera : hors du grain, de la couleur et du décompte. */}
-            <span className="fer-l2" data-epice={estEpice(t) ? '1' : undefined}>{estEpice(t) ? 'épice : ni sucre ni couleur, hors du décompte du grain' : `${defCreee.label.toLowerCase()} : ${QUAND[defCreee.use]}`}</span><i className="fer-ent" aria-hidden="true"><Entree /></i>
+            <span className="fer-l2" data-epice={estEpice(t) ? '1' : undefined}>{estEpice(t) ? 'épice : ni sucre ni couleur, hors du décompte du grain' : `${defCreee.label.toLowerCase()} : ${QUAND[defCreee.use]}`}{ficheCree && <> · {plageEbc(ficheCree)} EBC{ficheCree.potentialPpg !== undefined && <> · PPG {qteTxt(ficheCree.potentialPpg)}</>} · fiche Weyermann{ficheCree.ambigu && <>, {ficheCree.ambigu}</>}</>}</span><i className="fer-ent" aria-hidden="true"><Entree /></i>
           </button>
         )}
         {on && !t && prete && !liste.length && <p className="fer-rien">Rien en stock pour {def.label.toLowerCase()}</p>}

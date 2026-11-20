@@ -23,8 +23,8 @@ export const NOMS: readonly EntreeNom[] = [
   e('Pilsner Malz', 'pilsner-malt', 'Pilsner Malt', 'pils', 'pilsner', 'pilsener', 'pilsner malt', 'pilsnermalz'),
   e('Pale Ale Malz', 'pale-ale-malt', 'Pale Ale Malt', 'pale', 'pale ale', 'pale malt', 'pale ale malt'),
   e('Münchner Malz', 'munich-malt', 'Munich Malt', 'munich', 'munich malt', 'münchner', 'muenchner malz'),
-  e('Münchner Malz hell', 'munich-light-malt', 'Munich Light Malt', 'munich hell', 'munich light', 'münchner malz typ i'),
-  e('Münchner Malz dunkel', 'munich-dark-malt', 'Munich Dark Malt', 'munich dunkel', 'munich dark', 'münchner malz typ ii'),
+  e('Münchner Malz hell', 'munich-light-malt', 'Munich Light Malt', 'munich hell', 'munich light', 'münchner malz typ i', 'munich i', 'munich malt i'),
+  e('Münchner Malz dunkel', 'munich-dark-malt', 'Munich Dark Malt', 'munich dunkel', 'munich dark', 'münchner malz typ ii', 'munich ii', 'munich malt ii'),
   e('Wiener Malz', 'vienna-malt', 'Vienna Malt', 'vienna', 'vienne', 'viennois', 'vienna malt'),
   e('Weizenmalz hell', 'wheat-malt', 'Wheat Malt', 'weizen', 'wheat', 'blé', 'ble', 'froment', 'wheat malt', 'weizenmalz'),
   e('Weizenmalz dunkel', 'dark-wheat-malt', 'Dark Wheat Malt', 'dark wheat', 'blé foncé', 'weizen dunkel'),
@@ -118,16 +118,30 @@ export const NOMS: readonly EntreeNom[] = [
 export const normaliser = (s: string): string =>
   s.normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase().replace(/[^a-z0-9]+/g, ' ').trim();
 
+/**
+ * T4-5 : la clé qui rapproche l'écriture du malteur de celle du stock : « Caramünch® Typ 2 », « Caramunich Type II » et « Caramünch II » ont la même clé.
+ * Les mots « typ », « type » et « weyermann » tombent, 1 / 2 / 3 deviennent i / ii / iii, « spezial » devient « special ». Dernier recours, après le nom exact et
+ * l'alias : une clé qui désigne deux entrées différentes ne désigne personne (le nom reste inconnu, jamais deviné).
+ */
+const CHIFFRES: Record<string, string> = { '1': 'i', '2': 'ii', '3': 'iii' };
+export const cleMalt = (s: string): string => normaliser(s).split(' ')
+  .filter(m => m !== 'typ' && m !== 'type' && m !== 'weyermann')
+  .map(m => CHIFFRES[m] ?? (m === 'spezial' ? 'special' : m)).join(' ');
+
 const parNom: Map<string, EntreeNom> = new Map();
 const parAlias: Map<string, EntreeNom> = new Map();
+const parCle: Map<string, EntreeNom | null> = new Map();
+const poserCle = (texte: string, n: EntreeNom) => { const k = cleMalt(texte); const d = parCle.get(k); parCle.set(k, d === undefined || d === n ? n : null); };
 for (const n of NOMS) {
   parNom.set(normaliser(n.canonique), n);
   parNom.set(normaliser(n.ba), n);
   for (const a of n.alias) if (!parAlias.has(normaliser(a))) parAlias.set(normaliser(a), n);
+  poserCle(n.canonique, n); poserCle(n.ba, n);
+  for (const a of n.alias) poserCle(a, n);
 }
 const entree = (saisie: string): EntreeNom | null => {
   const k = normaliser(saisie ?? '');
-  return k ? parNom.get(k) ?? parAlias.get(k) ?? null : null;
+  return k ? parNom.get(k) ?? parAlias.get(k) ?? parCle.get(cleMalt(saisie)) ?? null : null;
 };
 
 /**

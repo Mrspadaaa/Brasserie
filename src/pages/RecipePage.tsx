@@ -185,6 +185,8 @@ export const RecipePage: React.FC<RecipePageProps> = ({
   // TL-17 : parts entières qui font 100 % (plus forts restes), pas chaque part arrondie seule.
   const partsGrain = useMemo(() => partsEntieres(grains.map((g) => g.weightKg)), [grains]);
   const colorMissing = useMemo(() => missingColorData(grains), [grains]);
+  // T4-5 : des couleurs lues sur la fiche publiée du malteur (la recette enregistrée n'en porte pas) : la pastille EBC le dit.
+  const couleurDeFiche = useMemo(() => fermentables.some((f, i) => Number.isFinite(f.colorEbc) && !Number.isFinite(recipeEnregistree.fermentables?.[i]?.colorEbc)), [fermentables, recipeEnregistree.fermentables]);
 
   const points = useMemo(
     () =>
@@ -340,7 +342,8 @@ export const RecipePage: React.FC<RecipePageProps> = ({
           >
             {ibuTotal !== null && <Piste valeur={ibuTotal} plage={plage('ibu')} etiquette="IBU" />}
           </Rep>
-          <Rep label="EBC" value={color ? formatDecimal(color.ebc) : null} hint={measuredExtraction ? 'extraction à caractériser' : 'renseigne la couleur des malts'} swatch={color?.swatch} />
+          <Rep label="EBC" value={color ? formatDecimal(color.ebc) : null} hint={measuredExtraction ? 'extraction à caractériser' : 'renseigne la couleur des malts'} swatch={color?.swatch}
+            note={color && couleurDeFiche ? 'fiche du malteur' : undefined} />
         </div>
         <div className="rc-rang" data-element="r1-style">
           {/* Le nom du catalogue des styles (BJCP) quand le style se résout (« NEIPA » → « Hazy IPA 21C »), le nom saisi sinon. */}

@@ -10,6 +10,7 @@
  *    du stock donne, une fois ses lettres non ASCII retirées, exactement le nom abîmé. Sans correspondance unique, le nom reste tel quel.
  */
 import type { AdjunctIngredient, HopIngredient, Recipe } from '../types';
+import { fichePubliee } from './fermentables/fichesMalts';
 
 /** Ce qui n'est jamais un houblon : sucres, lactose, clarifiants, sels, épices, fruits. Le houblon, lui, a un α : seul un ajout sans α entre ici. */
 const NOM_NON_HOUBLON =
@@ -60,7 +61,13 @@ export function reparerNomAbime(nom: string, nomsDuStock: readonly string[]): st
 export function recetteLue(recipe: Recipe, nomsDuStock: readonly string[] = []): Recipe {
   const { houblons, ajouts } = separerAjoutsDesHoublons(recipe.hops);
   const nom = <T extends { name: string }>(l: T): T => { const n = reparerNomAbime(l.name, nomsDuStock); return n === l.name ? l : { ...l, name: n }; };
-  const fermentables = recipe.fermentables?.map(nom);
+  // T4-5 : un grain sans couleur saisie prend la couleur (milieu de la plage) de la fiche publiée du malteur quand son nom y est ; sinon rien (jamais 0).
+  const couleur = <T extends { name: string; kind?: string; colorEbc?: number | null }>(l: T): T => {
+    if (l.kind !== 'grain' || Number.isFinite(l.colorEbc)) return l;
+    const f = fichePubliee(l.name);
+    return f ? { ...l, colorEbc: f.colorEbc } : l;
+  };
+  const fermentables = recipe.fermentables?.map(l => couleur(nom(l)));
   const hopsLus = houblons.map(nom);
   const changeFerm = !!fermentables && fermentables.some((f, i) => f !== recipe.fermentables![i]);
   const changeHops = ajouts.length > 0 || hopsLus.some((h, i) => h !== houblons[i]);
