@@ -68,10 +68,11 @@
 .ops-v { position:absolute; z-index:2; bottom:-4px; left:50%; width:8px; height:8px; margin-left:-4px; border-radius:50%; background:rgb(var(--c-56d27b)); border:1.5px solid var(--ops-fond); }
 .ops-lu { position:absolute; z-index:1; bottom:-5px; width:1.5px; height:5px; margin-left:-.75px; background:var(--ops-t1); }
 .ops-mois-1 { position:absolute; z-index:1; top:-4px; bottom:0; width:0; border-left:1.5px dashed var(--ops-t3); }
-.ops-h { position:absolute; z-index:3; top:-2px; bottom:-8px; width:44px; margin-left:-22px; touch-action:none; cursor:grab; outline:none; }
-.ops-h::before { content:''; position:absolute; top:2px; bottom:3px; left:21px; width:2px; border-radius:1px; background:var(--ops-acc); }
+/* CAL-PASSE P2 (20.11) : zone de prise de 44 px de haut aussi (piste de 22,5 px + 7 au-dessus + 15 dessous = 44,5), le dessin ne bouge pas (+5 px sur le trait et le rond). */
+.ops-h { position:absolute; z-index:3; top:-7px; bottom:-15px; width:44px; margin-left:-22px; touch-action:none; cursor:grab; outline:none; }
+.ops-h::before { content:''; position:absolute; top:7px; bottom:10px; left:21px; width:2px; border-radius:1px; background:var(--ops-acc); }
 /* Test d'écran 14.11 (4) : le fond de la poignée laisse voir la barre du jour qu'elle borde (à « 1er → 14 nov. », la seule barre était cachée dessous). */
-.ops-gp { position:absolute; left:10px; top:2px; width:24px; height:24px; box-sizing:border-box; border-radius:50%; border:3px solid var(--ops-acc); background:rgb(var(--cave-950) / .28); box-shadow:0 1px 3px rgb(0 0 0 / .25); }
+.ops-gp { position:absolute; left:10px; top:7px; width:24px; height:24px; box-sizing:border-box; border-radius:50%; border:3px solid var(--ops-acc); background:rgb(var(--cave-950) / .28); box-shadow:0 1px 3px rgb(0 0 0 / .25); }
 .ops-h[data-tenue] .ops-gp { transform:scale(1.15); box-shadow:0 0 0 6px rgb(var(--area-finances) / .22); }
 .ops-h:focus-visible .ops-gp { outline:2px solid rgb(var(--ebc-straw)); outline-offset:2px; }
 .ops-bulle { position:absolute; z-index:4; top:-30px; transform:translateX(-50%); max-width:100%; padding:4px 8px; border-radius:8px; background:var(--ops-t1); color:rgb(var(--cave-950)); font-size:12px; line-height:16px; white-space:nowrap; pointer-events:none; }
