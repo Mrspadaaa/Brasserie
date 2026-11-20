@@ -1,0 +1,72 @@
+Serveur 1/1 : npm run dev  (journal : C:\Users\mrspa\AppData\Local\Temp\with-server-fMe313\serveur-1-3110.log)
+Attente du port 3110…
+Serveur prêt sur le port 3110
+
+Tous les serveurs sont prêts. Lancement : node work/missions/2026-11-19-bugs-ecrans/voies/k4/banc/capturer-k4.mjs
+
+jourj-ensemencement-390-clair tuile : null
+jourj-ensemencement-390-clair : ok
+jourj-sortir-390-clair ligne : À anticiper 0/3 Aligner les doses de houblon dans l’ordre des ajouts Désinfecter le refroidisseur pendant l’ébullition · ~18 h 07 Sortir la levure SafAle US-05 · besoin 1,4 sachet · à écrire Pour 19 L
+jourj-sortir-390-clair : ok
+mesures-clair-390 : ok
+mesures-auj-clair-390 : ok
+saisie-clair-390 : ok
+conduite-replie-390-clair : Conduite · température × jours 2 paliers · fin J17 Brouillon 1 point à vérifier
+conduite-replie-390-clair interdits visibles au repos : []
+conduite-replie-390-clair : ok
+conduite-deplie-390-clair : 2 pli(s) ouvert(s)
+conduite-deplie-390-clair : ok
+jourj-ensemencement-844-clair tuile : null
+jourj-ensemencement-844-clair : ok
+jourj-sortir-844-clair ligne : À anticiper 0/3 Aligner les doses de houblon dans l’ordre des ajouts Désinfecter le refroidisseur pendant l’ébullition · ~18 h 08 Sortir la levure SafAle US-05 · besoin 1,4 sachet · à écrire Pour 19 L
+jourj-sortir-844-clair : ok
+mesures-844-clair : ok
+mesures-auj-clair-844 : ok
+saisie-844-clair : ok
+jourj-ensemencement-1280-clair tuile : null
+jourj-ensemencement-1280-clair : ok
+jourj-sortir-1280-clair ligne : À anticiper 0/3 Aligner les doses de houblon dans l’ordre des ajouts Désinfecter le refroidisseur pendant l’ébullition · ~18 h 08 Sortir la levure SafAle US-05 · besoin 1,4 sachet · à écrire Pour 19 L
+jourj-sortir-1280-clair : ok
+mesures-clair-1280 : ok
+mesures-auj-clair-1280 : ok
+saisie-clair-1280 : ok
+conduite-replie-1280-clair : Conduite · température × jours 2 paliers · fin J17 Brouillon 1 point à vérifier
+conduite-replie-1280-clair interdits visibles au repos : []
+conduite-replie-1280-clair : ok
+conduite-deplie-1280-clair : 2 pli(s) ouvert(s)
+conduite-deplie-1280-clair : ok
+jourj-ensemencement-390-cave tuile : null
+jourj-ensemencement-390-cave : ok
+jourj-sortir-390-cave ligne : À anticiper 0/3 Aligner les doses de houblon dans l’ordre des ajouts Désinfecter le refroidisseur pendant l’ébullition · ~18 h 09 Sortir la levure SafAle US-05 · besoin 1,4 sachet · à écrire Pour 19 L
+jourj-sortir-390-cave : ok
+mesures-cave-390 : ok
+mesures-auj-cave-390 : ok
+saisie-cave-390 : ok
+conduite-replie-390-cave : Conduite · température × jours 2 paliers · fin J17 Brouillon 1 point à vérifier
+conduite-replie-390-cave interdits visibles au repos : []
+conduite-replie-390-cave : ok
+conduite-deplie-390-cave : 2 pli(s) ouvert(s)
+conduite-deplie-390-cave : ok
+jourj-ensemencement-844-cave tuile : null
+jourj-ensemencement-844-cave : ok
+jourj-sortir-844-cave ligne : À anticiper 0/3 Aligner les doses de houblon dans l’ordre des ajouts Désinfecter le refroidisseur pendant l’ébullition · ~18 h 10 Sortir la levure SafAle US-05 · besoin 1,4 sachet · à écrire Pour 19 L
+jourj-sortir-844-cave : ok
+mesures-844-cave : ok
+mesures-auj-cave-844 : ok
+saisie-844-cave : ok
+jourj-ensemencement-1280-cave tuile : null
+jourj-ensemencement-1280-cave : ok
+jourj-sortir-1280-cave ligne : À anticiper 0/3 Aligner les doses de houblon dans l’ordre des ajouts Désinfecter le refroidisseur pendant l’ébullition · ~18 h 10 Sortir la levure SafAle US-05 · besoin 1,4 sachet · à écrire Pour 19 L
+jourj-sortir-1280-cave : ok
+mesures-cave-1280 : ok
+mesures-auj-cave-1280 : ok
+saisie-cave-1280 : ok
+conduite-replie-1280-cave : Conduite · température × jours 2 paliers · fin J17 Brouillon 1 point à vérifier
+conduite-replie-1280-cave interdits visibles au repos : []
+conduite-replie-1280-cave : ok
+conduite-deplie-1280-cave : 2 pli(s) ouvert(s)
+conduite-deplie-1280-cave : ok
+
+Commande terminée, code 0.
+
+Arrêt de 1 serveur(s)…

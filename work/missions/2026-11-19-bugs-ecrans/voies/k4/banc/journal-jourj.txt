@@ -1,0 +1,34 @@
+Serveur 1/1 : npm run dev  (journal : C:\Users\mrspa\AppData\Local\Temp\with-server-KGsg8I\serveur-1-3110.log)
+Attente du port 3110…
+Serveur prêt sur le port 3110
+
+Tous les serveurs sont prêts. Lancement : node work/missions/2026-11-19-bugs-ecrans/voies/k4/banc/capturer-k4.mjs jourj
+
+jourj-ensemencement-390-clair tuile : cible 18 °C · be oin 1,4  achet · à écrire
+jourj-ensemencement-390-clair : ok
+jourj-sortir-390-clair ligne : À anticiper 0/3 Aligner les doses de houblon dans l’ordre des ajouts Désinfecter le refroidisseur pendant l’ébullition · ~18 h 12 Sortir la levure SafAle US-05 · besoin 1,4 sachet · à écrire Pour 19 L
+jourj-sortir-390-clair : ok
+jourj-ensemencement-844-clair tuile : cible 18 °C · be oin 1,4  achet · à écrire
+jourj-ensemencement-844-clair : ok
+jourj-sortir-844-clair ligne : À anticiper 0/3 Aligner les doses de houblon dans l’ordre des ajouts Désinfecter le refroidisseur pendant l’ébullition · ~18 h 13 Sortir la levure SafAle US-05 · besoin 1,4 sachet · à écrire Pour 19 L
+jourj-sortir-844-clair : ok
+jourj-ensemencement-1280-clair tuile : cible 18 °C · be oin 1,4  achet · à écrire
+jourj-ensemencement-1280-clair : ok
+jourj-sortir-1280-clair ligne : À anticiper 0/3 Aligner les doses de houblon dans l’ordre des ajouts Désinfecter le refroidisseur pendant l’ébullition · ~18 h 13 Sortir la levure SafAle US-05 · besoin 1,4 sachet · à écrire Pour 19 L
+jourj-sortir-1280-clair : ok
+jourj-ensemencement-390-cave tuile : cible 18 °C · be oin 1,4  achet · à écrire
+jourj-ensemencement-390-cave : ok
+jourj-sortir-390-cave ligne : À anticiper 0/3 Aligner les doses de houblon dans l’ordre des ajouts Désinfecter le refroidisseur pendant l’ébullition · ~18 h 13 Sortir la levure SafAle US-05 · besoin 1,4 sachet · à écrire Pour 19 L
+jourj-sortir-390-cave : ok
+jourj-ensemencement-844-cave tuile : cible 18 °C · be oin 1,4  achet · à écrire
+jourj-ensemencement-844-cave : ok
+jourj-sortir-844-cave ligne : À anticiper 0/3 Aligner les doses de houblon dans l’ordre des ajouts Désinfecter le refroidisseur pendant l’ébullition · ~18 h 13 Sortir la levure SafAle US-05 · besoin 1,4 sachet · à écrire Pour 19 L
+jourj-sortir-844-cave : ok
+jourj-ensemencement-1280-cave tuile : cible 18 °C · be oin 1,4  achet · à écrire
+jourj-ensemencement-1280-cave : ok
+jourj-sortir-1280-cave ligne : À anticiper 0/3 Aligner les doses de houblon dans l’ordre des ajouts Désinfecter le refroidisseur pendant l’ébullition · ~18 h 14 Sortir la levure SafAle US-05 · besoin 1,4 sachet · à écrire Pour 19 L
+jourj-sortir-1280-cave : ok
+
+Commande terminée, code 0.
+
+Arrêt de 1 serveur(s)…

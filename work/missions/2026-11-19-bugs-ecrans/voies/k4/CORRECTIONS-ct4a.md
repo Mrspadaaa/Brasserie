@@ -41,3 +41,12 @@ Liste figée (L18) : chaque point corrigé et prouvé seul (test si règle ; cap
 
 ## Rendre
 En bas de ce fichier, « ## Fait » : une ligne par point « n° | corrigé <sha> / écarté <raison> | capture ». Mettre à jour voies/ct4a/RESULTAT.md (verdict CT4-B-n changé si besoin), tests.txt ; `node work/missions/2026-11-19-bugs-ecrans/verdicts.mjs ct4a` et `--tests` OK. Réponse : une ligne.
+
+## Fait
+- 1 | corrigé a82d1b99a (CT4-B-1) | voies/k4/captures/jourj-ensemencement-{390,844,1280}-{clair,cave}.png, jourj-sortir-… : « cible 18 °C · besoin 1,4 sachet · à écrire » (même fonction que l'étape Levure) ; fiche liée « 2–3 sachets · à écrire » prouvée par test (pas de banc avec hopIndexId)
+- 2 | corrigé a82d1b99a (CT4-B-8) | voies/k4/captures/mesures-auj-clair-1280.png : « 1,012 » centré au-dessus du point, hors pointillé
+- 3 | corrigé a82d1b99a (CT4-B-8) | voies/k4/captures/mesures-{clair,cave}-390.png, mesures-auj-clair-390.png, saisie-clair-390.png : « consigne » passe à la légende « °C cuve · tirets : consigne » ; « Fermenter 19 °C » seul
+- 9 | corrigé a82d1b99a (CT4-B-9) | voies/k4/captures/mesures-auj-clair-1280.png : « alc. 7,0 % » ; la formule de la fiche donne 6,96 % (pas 6,8 %), seule la décimale « ,0 » se perdait
+- B-7 | prouvé | voies/k4/captures/conduite-{replie,deplie}-{390,1280}-{clair,cave}.png : repos sans les trois textes techniques, plis lisibles dépliés
+- 844×340 | pris | voies/k4/captures/{mesures,saisie}-844-{clair,cave}.png (+ mesures-auj-…-844)
+- en plus | corrigé a82d1b99a | BatchDetailSheet : hook après retour anticipé (« Rendered fewer hooks » à la fermeture), cache WeakMap ; test bugs-ct4a-t2-hooks
