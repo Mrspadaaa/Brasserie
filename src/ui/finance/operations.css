@@ -235,8 +235,3 @@ button.ops-pile:focus-visible { outline:2px solid var(--finance-accent,rgb(var(-
 /* Test d'écran 14.11 (11) : la bande dit déjà « Ni vente ni dépense » ; la carte de la liste n'en fait pas une seconde, elle garde ses liens (titre et phrase restent pour le lecteur d'écran). */
 .ops-vide[data-nu] { margin:6px 0 0; padding:0 12px; border:0; background:none; text-align:left; }
 .ops-vide[data-nu] h3, .ops-vide[data-nu] p { position:absolute; width:1px; height:1px; margin:-1px; padding:0; overflow:hidden; clip:rect(0 0 0 0); white-space:nowrap; border:0; }
-/* T4-1 (en ligne, passe 5) : Opérations, téléphone debout. Au repos, le + flottant (56 px, 12 px du bord) cachait « À confirmer », « 4 000,00 », « 1 500,00 » de la liste. Même gouttière de 76 px
-   (56 + 12 + 8 d'air) que la disposition couchée (f2 k3, floating-actions.css) : montants et boutons restent à gauche du +. La bande (graphe et plage) ne bouge pas. Quand le + flotte. */
-@media (max-width: 599px) {
-  :root body[data-has-fab-floating] .ops > :not(.ops-bande) { padding-right:4.75rem; }
-}

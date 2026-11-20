@@ -1,4 +1,5 @@
 /**
+ * CT4C tour 3 (g3) : Opérations est retirée de cette liste (la gouttière rognait « à payer · 25 … » ; marge basse seule).
  * T4-1 (en ligne, passe 5) : au repos, le + flottant cachait des montants et des noms dans Finances (Opérations, Synthèse, Prévisions, Annuel).
  * La mesure géométrique vit au banc (voies/t4a/sous-le-plus.mjs : le + contre chaque texte, à chaque pas de défilement, 390, 844×340, 1280) ;
  * ce test garde la réserve de 76 px (56 + 12 + 8 d'air) dans le CSS de chaque écran, comme `.syn-caisse` (CT4C-7), pas dans floating-actions.css.
@@ -15,7 +16,6 @@ const regle = (texte: string, sel: string) => {
 
 describe('T4-1 : gouttière du + au repos, par écran', () => {
   const cas: Array<[string, string, string]> = [
-    ['operations.css', '.ops > :not(.ops-bande)', 'max-width: 599px'],
     ['synthese.css', '.syn-wrap :is(.syn-row', 'max-width: 1023px'],
     ['previsions.css', '.prv :is(.prv-pied', 'max-width: 1023px'],
     ['annuel.css', '.ann-wrap :is(.ann-pile', 'max-width: 1023px'],
