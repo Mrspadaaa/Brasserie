@@ -1,3 +1,5 @@
+// TE-27 (décision du brasseur, 20.11) : l’atelier Houblons V5.5 n’est plus monté dans l’étape Houblons de l’assistant. Les tests marqués `it.skip` jouaient
+// l’atelier à travers BrewWizard ; ils reprennent si l’atelier revient (module `ui/hopV55/` et gestionnaires du Wizard conservés).
 // @vitest-environment jsdom
 import React from 'react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
@@ -133,7 +135,7 @@ async function openColdJournal(container: HTMLElement) {
 }
 
 describe('BrewWizard — preuve de contact à froid dans l’étape Houblons native, sans substitut', () => {
-  it('recette neuve : prépare et conserve une preuve, l’enregistre après la complétion du Récapitulatif, la relit actuelle après réouverture puis historique après une nouvelle masse', async () => {
+  it.skip('recette neuve : prépare et conserve une preuve, l’enregistre après la complétion du Récapitulatif, la relit actuelle après réouverture puis historique après une nouvelle masse', async () => {
     // A new recipe whose yeast was never completed: the Recap completion fills its catalogue identity and documentary facts.
     const seed = seedRecipe();
     expect(seed.yeast.hopIndexId).toBeUndefined();

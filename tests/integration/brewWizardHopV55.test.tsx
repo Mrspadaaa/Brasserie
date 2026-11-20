@@ -1,3 +1,5 @@
+// TE-27 (décision du brasseur, 20.11) : l’atelier Houblons V5.5 n’est plus monté dans l’étape Houblons de l’assistant. Les tests marqués `it.skip` jouaient
+// l’atelier à travers BrewWizard ; ils reprennent si l’atelier revient (module `ui/hopV55/` et gestionnaires du Wizard conservés).
 // @vitest-environment jsdom
 import React from 'react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
@@ -224,7 +226,7 @@ async function previewFixtureProgram(host: HTMLElement) {
 }
 
 describe('BrewWizard — étape Houblons V5.5 native', () => {
-  it('reprend le même identifiant après un refus de stockage puis relit une seule trace avant l’enregistrement', async () => {
+  it.skip('reprend le même identifiant après un refus de stockage puis relit une seule trace avant l’enregistrement', async () => {
     const seed = savedRecipe();
     const getRecipes = vi.spyOn(StorageService, 'getRecipes').mockReturnValue([{ ...seed, name: 'Version enregistrée du même ID',
       hops: [{ name: 'Ancien houblon', alpha: 5, weightG: 10, stage: 'boil', timeMin: 60 }] }] as never);
@@ -365,7 +367,7 @@ describe('BrewWizard — étape Houblons V5.5 native', () => {
     expect(read.record.hopsReference).not.toBe(hopV55RecipeApplicationValueReference('hops', saved.hops));
   });
 
-  it('transmet les valeurs manquantes telles quelles : ni zéro ni valeur par défaut', async () => {
+  it.skip('transmet les valeurs manquantes telles quelles : ni zéro ni valeur par défaut', async () => {
     const seed = { ...savedRecipe(), hops: [{ name: 'Citra', alpha: 0, weightG: 40, stage: 'dryHop' as const }] };
     mount(seed, { ownerKey: OWNER });
     const boil = document.getElementById('wz-boil') as HTMLInputElement;
@@ -400,7 +402,7 @@ describe('BrewWizard — étape Houblons V5.5 native', () => {
     expect(lines.open).toBe(true);
   });
 
-  it('sans profil explicite, l’atelier reste fermé et les lignes de houblon restent corrigibles', async () => {
+  it.skip('sans profil explicite, l’atelier reste fermé et les lignes de houblon restent corrigibles', async () => {
     mount(savedRecipe(), {});
     allerEtape(/^Houblons$/);
     expect(await screen.findByText(/Le profil propriétaire de ce brouillon n’est pas fourni explicitement/)).toBeInTheDocument();
@@ -409,7 +411,7 @@ describe('BrewWizard — étape Houblons V5.5 native', () => {
     expect(screen.getByText(/Mes ajouts de houblons · 0/)).toBeInTheDocument();
   });
 
-  it('#28 : en création, monte l’atelier sur le brouillon inédit et incomplet, propriétaire explicite, rien d’enregistré', async () => {
+  it.skip('#28 : en création, monte l’atelier sur le brouillon inédit et incomplet, propriétaire explicite, rien d’enregistré', async () => {
     const brewhouse = savedRecipe().brewhouse!;
     const save = vi.fn();
     const getRecipes = vi.spyOn(StorageService, 'getRecipes').mockReturnValue([]);
@@ -443,7 +445,7 @@ describe('BrewWizard — étape Houblons V5.5 native', () => {
     expect(save).not.toHaveBeenCalled();
   });
 
-  it('#32 : garde brutes les traces V5.5 futures à travers l’autosave, la reprise et l’enregistrement', async () => {
+  it.skip('#32 : garde brutes les traces V5.5 futures à travers l’autosave, la reprise et l’enregistrement', async () => {
     const futureApplication = { format: 'hop-v55-recipe-draft-application-v9', id: 'application:futur', payload: { nested: [{ a: 1 }, { b: [2, 3] }] } };
     const futureCold = { format: 'hop-v55-recipe-cold-evidence-association-v9', id: 'cold:futur', opaque: { unknownField: true } };
     const seed: Recipe = { ...savedRecipe(), hops: [{ name: 'Citra', alpha: 0, weightG: 40, stage: 'boil', timeMin: 10 }],

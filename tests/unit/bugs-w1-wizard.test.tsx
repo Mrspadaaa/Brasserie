@@ -48,19 +48,7 @@ describe('TL-7 : un seul « Objectif NOLO » à l’écran', () => {
   }, 30000);
 });
 
-describe('TE-27 : l’étape Houblons n’étale plus l’atelier V5.5', () => {
-  it('l’atelier (variétés « unknown », ID, COA) reste derrière un dépliant fermé', async () => {
-    render(<BrewWizard {...props({ ownerKey: 'ZZ-w1', draftKey: 'ZZ-w1:REC-TE27', seed: { recipe: recetteApercuIdentite(), step: 'houblons' } })} />);
-    await attendre(500);
-    const atelier = document.querySelector('[data-role="atelier-houblons-v55"]') as HTMLDetailsElement | null;
-    expect(atelier, 'l’atelier V5.5 a son dépliant').toBeTruthy();
-    expect(atelier!.open, 'fermé au repos').toBe(false);
-    const feuilles = [...document.querySelectorAll('*')].filter(n => n.children.length === 0 && /\bCOA\b|\bunknown\b/.test(n.textContent ?? ''));
-    const etalees = feuilles.filter(n => !n.closest('details:not([open])'));
-    expect(etalees.map(n => (n.textContent ?? '').slice(0, 60)), 'rien de l’atelier hors dépliant fermé').toEqual([]);
-    expect(screen.getByText(/Mes ajouts de houblons/), 'les lignes de houblon restent en tête').toBeTruthy();
-  }, 30000);
-});
+// TE-27 : le dépliant de l’atelier V5.5 a été retiré de l’étape Houblons (décision du brasseur, 20.11) ; voir tests/unit/bugs-d20-te27.test.tsx.
 
 describe('BK2-5 : section Additifs de l’assistant', () => {
   const avecCoriandre = (): Recipe => {

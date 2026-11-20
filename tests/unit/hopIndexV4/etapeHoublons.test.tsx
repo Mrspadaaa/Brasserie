@@ -68,10 +68,10 @@ describe('étape Houblons v4 (T12)', () => {
 describe('wizard (T12) : drapeau et une seule copie', () => {
   const racine = path.resolve(__dirname, '../../..');
   const wizard = fs.readFileSync(path.join(racine, 'src/pages/BrewWizard.tsx'), 'utf8');
-  it('l\'étape 3 rend l\'écran v4 drapeau allumé et garde l\'atelier V5.5 drapeau éteint', () => {
+  it('l\'étape 3 rend l\'écran v4 drapeau allumé ; l\'atelier V5.5 n\'y est plus monté (TE-27, décision 20.11)', () => {
     expect(wizard).toMatch(/step === 'houblons' && hopV4Actif && \(/);
     expect(wizard).toMatch(/step === 'houblons' && !hopV4Actif && \(/);
-    expect(wizard).toMatch(/<HopV55RecipeStep /);
+    expect(wizard).not.toMatch(/<HopV55RecipeStep /);
     expect(wizard).toMatch(/onChange=\{applyHopV4Change\}/);
   });
   it('l\'écran n\'a plus de copie dans la maquette', () => {

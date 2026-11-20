@@ -1,3 +1,5 @@
+// TE-27 (décision du brasseur, 20.11) : l’atelier Houblons V5.5 n’est plus monté dans l’étape Houblons de l’assistant. Les tests marqués `it.skip` jouaient
+// l’atelier à travers BrewWizard ; ils reprennent si l’atelier revient (module `ui/hopV55/` et gestionnaires du Wizard conservés).
 // @vitest-environment jsdom
 import React from 'react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
@@ -278,7 +280,7 @@ function wizardFixture() {
 }
 
 describe('BrewWizard — brouillon déclaré JSON avant le ticket Wizard', () => {
-  it('ne déclare aucune propriété propre undefined pour une Recipe sans version, parent ni optionnels, sentinelles comprises', async () => {
+  it.skip('ne déclare aucune propriété propre undefined pour une Recipe sans version, parent ni optionnels, sentinelles comprises', async () => {
     const seed = savedRecipe();
     for (const key of BASE_ONLY_OPTIONALS) expect(hasOwn(seed, key), `${key} absent de la Recipe de départ`).toBe(false);
     const before = structuredClone(seed);
@@ -302,7 +304,7 @@ describe('BrewWizard — brouillon déclaré JSON avant le ticket Wizard', () =>
     expect(seed).toStrictEqual(before);
   }, 60000);
 
-  it('omet une version ou un parent propres undefined sans muter la Recipe source', async () => {
+  it.skip('omet une version ou un parent propres undefined sans muter la Recipe source', async () => {
     const seed = { ...savedRecipe(), version: undefined, parentRecipeId: undefined, favorite: undefined, archivedAt: undefined } as Recipe;
     const before = structuredClone(seed);
     const declared = await declaredStepRecipe(seed);
@@ -314,7 +316,7 @@ describe('BrewWizard — brouillon déclaré JSON avant le ticket Wizard', () =>
     for (const key of BASE_ONLY_OPTIONALS) expect(hasOwn(seed, key), `${key} reste une propriété de la source`).toBe(true);
   }, 60000);
 
-  it('garde exactement version 0, une version définie, les valeurs 0, false, null, chaîne vide et l’ordre des listes', async () => {
+  it.skip('garde exactement version 0, une version définie, les valeurs 0, false, null, chaîne vide et l’ordre des listes', async () => {
     const base = savedRecipe();
     const hops = [
       { name: 'Zeta amérisant', alpha: 0, weightG: 12, stage: 'boil', timeMin: 60 },
@@ -339,7 +341,7 @@ describe('BrewWizard — brouillon déclaré JSON avant le ticket Wizard', () =>
     expect(ticketJsonGuard(wireDraftOf(declaredVersion))).toMatch(STRUCTURE_AFTER_JSON);
   }, 60000);
 
-  it('laisse les valeurs étrangères visibles, refusées par le premier lecteur strict : Date, élément undefined, trou, fonction, instance, infini', async () => {
+  it.skip('laisse les valeurs étrangères visibles, refusées par le premier lecteur strict : Date, élément undefined, trou, fonction, instance, infini', async () => {
     const base = savedRecipe();
     const withForeign = (values: Record<string, unknown>) =>
       ({ ...base, installation: { ...base.installation!, ...values } }) as unknown as Recipe;
@@ -385,7 +387,7 @@ describe('BrewWizard — brouillon déclaré JSON avant le ticket Wizard', () =>
     }
   }, 90000);
 
-  it('scelle le ticket Wizard durable du vrai brouillon déclaré puis n’émet qu’une fois sous ce ticket', async () => {
+  it.skip('scelle le ticket Wizard durable du vrai brouillon déclaré puis n’émet qu’une fois sous ce ticket', async () => {
     const { server, capability } = wizardFixture();
     const seed = savedRecipe();
     const before = structuredClone(seed);

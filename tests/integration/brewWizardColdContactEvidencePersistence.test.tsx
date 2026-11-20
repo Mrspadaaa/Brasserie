@@ -1,3 +1,5 @@
+// TE-27 (décision du brasseur, 20.11) : l’atelier Houblons V5.5 n’est plus monté dans l’étape Houblons de l’assistant. Les tests marqués `it.skip` jouaient
+// l’atelier à travers BrewWizard ; ils reprennent si l’atelier revient (module `ui/hopV55/` et gestionnaires du Wizard conservés).
 // @vitest-environment jsdom
 import React from 'react';
 import '@testing-library/jest-dom/vitest';
@@ -162,7 +164,7 @@ function captureStorageFixtures() {
 }
 
 describe('preuve froide V5.5 conservée avec la recette du Wizard', () => {
-  it('appende la fermeture exacte, garde la recette intacte et relit known+future sans requalifier la preuve', async () => {
+  it.skip('appende la fermeture exacte, garde la recette intacte et relit known+future sans requalifier la preuve', async () => {
     captureStorageFixtures();
     const future = { format: 'hop-v55-recipe-cold-evidence-association-v99', id: 'future-cold-entry',
       nested: { bytes: ['opaque', 7, null] } };
@@ -213,7 +215,7 @@ describe('preuve froide V5.5 conservée avec la recette du Wizard', () => {
     expect(onSave).not.toHaveBeenCalled();
   });
 
-  it('ne publie pas la mutation React si localStorage refuse, puis réessaie sans doublon', async () => {
+  it.skip('ne publie pas la mutation React si localStorage refuse, puis réessaie sans doublon', async () => {
     captureStorageFixtures();
     const future = { format: 'hop-v55-recipe-cold-evidence-association-v99', id: 'future-cold-before-write',
       nested: { retained: true } };
@@ -247,7 +249,7 @@ describe('preuve froide V5.5 conservée avec la recette du Wizard', () => {
     expect(saved.recipe.hopV55ColdEvidenceAssociations?.[1]).toEqual(coldDriver.change && (coldDriver.change as HopV55RecipeColdContactChange).association);
   });
 
-  it('refuse une source physique modifiée sous le même Recipe ID et garde l’archive A historique', async () => {
+  it.skip('refuse une source physique modifiée sous le même Recipe ID et garde l’archive A historique', async () => {
     captureStorageFixtures();
     const future = { format: 'hop-v55-recipe-cold-evidence-association-v99', id: 'future-cold-stale',
       nested: { retained: 'yes' } };

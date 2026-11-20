@@ -147,7 +147,7 @@ import { evaluateNoloRecipe, newNoloConfig } from '../domain/nolo';
 import { admitImportedWaterSnapshot, declaredWaterSourceId, frozenWaterSource, hasUsableWaterIdentity, isBlankWaterSourceId, mergeImportedWaterPlan,
   retainedWaterCache, sameYeastForTargets, waterCacheBelongsToReference, waterProfileModeOf, waterProfileOrigin, withoutImportedAnalysis,
   type WaterProfileMode } from '../domain/wizardSourceValues';
-import { Trash2, Plus, AlertTriangle, ClipboardPaste, ClipboardList, ChevronLeft, ChevronDown } from 'lucide-react';
+import { Trash2, Plus, AlertTriangle, ClipboardPaste, ClipboardList, ChevronLeft } from 'lucide-react';
 import { AvisRetrait, useRetraitAnnulable } from '../ui/useRetraitAnnulable';
 import { ThemeToggle } from '../theme/ThemeToggle';
 
@@ -193,7 +193,6 @@ import { libelleIbu } from '../domain/hopIndex/v4/recipeConversion';
 import { kettleHopGrammesBornes, ogAffichable } from '../domain/hopIndex/v4/bornesV4';
 import { nombreFr } from '../domain/nombreAffiche';
 const MesuresWizardV4 = lazy(() => import('../ui/hopIndex/maBiere/MesuresWizard'));
-const HopV55RecipeStep = lazy(() => import('../ui/hopV55/RecipeStep').then(({ HopV55RecipeStep: Panel }) => ({ default: Panel })));
 const HopRecipeGuide = syncWizardPanels ? SyncHopRecipeGuide : lazy(() => import('../ui/hopIndex/HopRecipeGuide').then(({ HopRecipeGuide: Panel }) => ({ default: Panel })));
 const FermentationWorkshop = syncWizardPanels ? SyncFermentationWorkshop : lazy(() => import('../ui/FermentationWorkshop').then(({ FermentationWorkshop: Panel }) => ({ default: Panel })));
 const YeastRecipeChoice = syncWizardPanels ? SyncYeastRecipeChoice : lazy(() => import('../ui/YeastRecipeChoice').then(({ YeastRecipeChoice: Panel }) => ({ default: Panel })));
@@ -3111,31 +3110,8 @@ const BrewWizardEditor: React.FC<BrewWizardProps & {
             </details>
               </div>
             </details>
-            {/*
-              L'atelier Houblons V5.5 est le parcours principal de cette étape.
-              Il lit le brouillon exact en cours d'écriture — valeurs non
-              enregistrées ou manquantes comprises —, garde ses études,
-              prévisions et essais dans son dossier local, et ne change la
-              recette qu'après « Appliquer au brouillon ». L'enregistrement
-              reste celui du récapitulatif.
-            */}
-            {/* TE-27 (« un cockpit », 08.11) : l'atelier entier (150 variétés, ID, COA) ne s'étale plus sous les lignes : il reste à un toucher,
-                fermé. Lecture étroite et réversible : rien n'est retiré, seul le repli est ajouté. */}
-            <details data-role="atelier-houblons-v55" className="recipe-disclosure group/recipe panel p-0 min-w-0">
-              <summary className="list-none cursor-pointer min-h-touch px-2 py-1 flex items-center gap-2 focus-visible:outline focus-visible:outline-2 focus-visible:outline-water rounded-control">
-                <span className="min-w-0 flex-1 flex flex-wrap items-baseline gap-x-2 gap-y-0.5">
-                  <span className="text-sm font-semibold text-cave-50">Atelier houblons avancé</span>
-                  <span className="text-xs text-cave-400">études, prévisions et essais</span>
-                </span>
-                <ChevronDown className="w-4 h-4 shrink-0 text-cave-400 group-open/recipe:rotate-180" aria-hidden="true" />
-              </summary>
-              <div className="mt-1 px-2 pb-2 min-w-0 space-y-2">
-                <Suspense fallback={<p role="status" className="text-sm text-cave-400">Ouverture de l’atelier Houblons V5.5…</p>}>
-                  <HopV55RecipeStep ownerKey={ownerKey} recipe={build()} localOnly={localOnly} onApply={applyHopV55Change}
-                    onConserveColdEvidence={conserveHopV55ColdEvidence} onCorrectContext={setStep} />
-                </Suspense>
-              </div>
-            </details>
+            {/* TE-27 (décision du brasseur, 20.11) : l'atelier Houblons V5.5 n'est plus monté dans cette étape. Le module `ui/hopV55/` et ses
+                données restent intacts ; applyHopV55Change et conserveHopV55ColdEvidence (plus haut) attendent un éventuel retour. */}
             <Suspense fallback={<p role="status" className="text-sm text-cave-400">Chargement des repères levure…</p>}>
 
             </Suspense>
