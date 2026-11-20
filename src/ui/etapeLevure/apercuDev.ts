@@ -44,6 +44,20 @@ export function recetteApercuAncienne(): Recipe {
   } as unknown as Recipe;
 }
 
+/**
+ * La recette de la plainte du 20.11 (capture 3 et 4) : 29 L, OG 1,026, « White Labs Munich Lager Yeast 500g » (brique sèche, fiche du catalogue)
+ * à 112 g, conduite d'ale 19 °C · 10 j → 4 °C · 5 j. Fixture du banc (`&recette=munich`), jamais une donnée du brasseur.
+ */
+export function recetteApercuMunich(): Recipe {
+  return {
+    id: 'apercu-etape-levure-munich', name: 'Lager légère', style: '4A', volumeL: 29, boilMin: 60, ogTarget: 1.026, efficiencyPct: 75, colorEbc: 6,
+    fermentables: [{ name: 'Pilsner', weightKg: 3, kind: 'grain', use: 'empatage', colorEbc: 4 }],
+    hops: [{ name: 'Hallertau Mittelfrüh', alpha: 4, weightG: 40, stage: 'boil', timeMin: 60 }],
+    yeast: { name: 'Lallemand Brewing · White Labs Munich Lager Yeast 500g', hopIndexId: 'yeast-lallemand-brewing-18635-06-13', lab: 'Lallemand Brewing', qty: 112, unit: 'g' },
+    fermentation: [{ name: 'Fermentation principale', kind: 'primaire', tempC: 19, days: 10 }, { name: 'Garde froide', kind: 'garde', tempC: 4, days: 5 }],
+  } as unknown as Recipe;
+}
+
 /** La même recette, sans levure ni palier : l'état « recette sans levure » (`&recette=vide`). */
 export function recetteApercuSansLevure(): Recipe {
   const { yeast: _levure, fermentation: _paliers, ...reste } = recetteApercuEtapeLevure() as unknown as Record<string, unknown>;

@@ -369,18 +369,26 @@ function MaLevureVue({ recipe, refs, supply, levure, classement, onConduite, onC
   const compte = uniteEcrite ? /^(sachet|pack)s?$/.test(uniteEcrite) : !!(besoin?.sachet ?? seul?.sachet);
   const unite = compte ? (uniteEcrite?.replace(/s$/, '') ?? besoin?.sachet?.unite ?? seul?.sachet?.unite ?? 'sachet') : (uniteEcrite ?? 'g');
   const qty = prevu?.qty;
+  // Plainte du 20.11 : une sèche écrite en grammes (brique 500 g) se règle contre le besoin en grammes ; une liquide écrite en grammes se compte en packs.
+  const forme = besoin?.forme ?? seul?.forme;
+  const enGrammes = !compte && unite === 'g' && forme === 'sèche' && besoin?.grammes !== undefined;
+  const liquideEnGrammes = !compte && unite === 'g' && qty !== undefined && forme === 'liquide' && besoin?.sachets !== undefined;
+  const uniteBande = liquideEnGrammes ? 'pack' : unite;
   const [touche, setTouche] = useState(false);
   useEffect(() => { setTouche(false); }, [recipe.yeast.name]);
-  const etatDose: EtatDose = !compte ? 'libre' : qty === undefined ? 'a-choisir' : touche && besoin?.sachets !== undefined ? 'apres' : 'repos';
+  const etatDose: EtatDose = liquideEnGrammes ? 'a-choisir' : !compte && !enGrammes ? 'libre' : qty === undefined ? 'a-choisir'
+    : touche && (enGrammes || besoin?.sachets !== undefined) ? 'apres' : 'repos';
   // Le stock de cette levure : l'article de la recette, ou ceux reliés à sa fiche ; compté en sachets (un stock en grammes, au poids du sachet).
   const stockDose = useMemo<StockDose>(() => {
     const articles = stock.filter(i => i.category.toLocaleLowerCase('fr') === 'levure' && (i.ref === recipe.yeast.stockItemRef || (!!levure && fiches.get(i.ref) === levure.id)));
     const g = (besoin?.sachet ?? seul?.sachet)?.grammes;
+    // En grammes (brique sèche), le stock se compte en grammes.
     const n = articles.reduce((s, i) => { const u = (i.unit ?? '').toLocaleLowerCase('fr');
+      if (enGrammes) return s + (u === 'g' ? i.currentStock : u === 'kg' ? i.currentStock * 1000 : 0);
       return s + (/^(sachet|pack|unit|pi[eè]ce|pc)/.test(u) ? i.currentStock : u === 'g' && g ? Math.floor(i.currentStock / g + 1e-9) : u === 'kg' && g ? Math.floor(i.currentStock * 1000 / g + 1e-9) : 0); }, 0);
     return { n, trouve: articles.length > 0 };
-  }, [stock, recipe.yeast.stockItemRef, levure, fiches, besoin, seul]);
-  const ecrireDose = (n: number, apres: boolean) => { setTouche(apres); onDoseChange?.(n, unite); };
+  }, [stock, recipe.yeast.stockItemRef, levure, fiches, besoin, seul, enGrammes]);
+  const ecrireDose = (n: number, apres: boolean) => { setTouche(apres); onDoseChange?.(n, uniteBande); };
   const doseTitre = qty !== undefined ? `${dec(qty, Number.isInteger(qty) ? 0 : 1)} ${motUnite(unite, qty)} : régler la dose, l’ensemencement et le starter` : 'Dose à choisir : régler la dose, l’ensemencement et le starter';
   // La conduite hors de la plage de la levure (19.11 : fiche 9–11 °C, conduite 19 °C) : un toucher cale la fermentation principale sur le bord le plus proche
   // de la plage ; « Rétablir » rend les paliers d'avant. Les autres paliers (repos, garde) gardent leur consigne.
@@ -420,7 +428,7 @@ function MaLevureVue({ recipe, refs, supply, levure, classement, onConduite, onC
         <button type="button" className="lv-x" aria-label={`Retirer ${recipe.yeast.name} de la recette`} onClick={onRetirer}><X size={18} aria-hidden="true" /></button>
         <span className="lv-sub"><span className="lv-sub-t">{(ident.vendeur ? `${ident.marque} · vendue par ${ident.vendeur}` : ident.marque ?? (labo && fabricantCourt(labo))) || (levure ? 'laboratoire ?' : 'Hors catalogue · saisie libre')}</span></span>
       </div>
-      <BandeDose etat={etatDose} qty={qty} unite={unite} besoin={besoin} seul={seul} stock={stockDose}
+      <BandeDose etat={etatDose} qty={liquideEnGrammes ? undefined : qty} unite={uniteBande} ecritsG={liquideEnGrammes ? qty : undefined} besoin={besoin} seul={seul} stock={stockDose}
         onPas={n => ecrireDose(n, true)} onEcrire={n => ecrireDose(n, etatDose === 'apres')} onDose={onDose} onOffre={() => onVolet?.('produit')} />
       <div className="lv-bande ml-cases">
         <div className="lv-cel" data-cel="fg">

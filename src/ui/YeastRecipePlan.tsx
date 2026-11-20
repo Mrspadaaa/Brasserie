@@ -157,8 +157,10 @@ function ProgrammeSpark({ steps }: { steps: readonly FermentationTimelineStep[] 
   const temps = steps.map(step => step.tempC).filter(finite);
   if (!steps.length || end == null || end <= 0 || !temps.length) return null;
   const low = Math.min(...temps), span = Math.max(...temps) - low || 1, w = 56, h = 18;
-  const path = positions.filter(p => finite(p.tempC) && p.start !== null && p.end !== null)
-    .map(p => `M${(p.start! / end * w).toFixed(1)} ${(h - 3 - (p.tempC! - low) / span * (h - 6)).toFixed(1)}H${Math.max(p.start! / end * w + 1, p.end! / end * w).toFixed(1)}`).join('');
+  // Plainte du 20.11 : les paliers se relient (V) — une marche, pas « ▬ _ ».
+  const drawn = positions.filter(p => finite(p.tempC) && p.start !== null && p.end !== null);
+  const yOf = (t: number) => (h - 3 - (t - low) / span * (h - 6)).toFixed(1);
+  const path = drawn.map((p, i) => `${i && drawn[i - 1].end === p.start ? `V${yOf(p.tempC!)}` : `M${(p.start! / end * w).toFixed(1)} ${yOf(p.tempC!)}`}H${Math.max(p.start! / end * w + 1, p.end! / end * w).toFixed(1)}`).join('');
   return <svg className="yc-spark" width={w} height={h} viewBox={`0 0 ${w} ${h}`} aria-hidden="true"><path d={path} stroke="currentColor" strokeWidth="2.5" fill="none" /></svg>;
 }
 
@@ -181,7 +183,7 @@ export function yeastWarningsForReading(result: YeastRecipeEvaluation): string[]
   const processExplained = !result.abv.range && result.abv.reasons.some(reason => /acid|culture/i.test(reason));
   const temperatureExplained = result.warnings.some(text => /hors de la plage de conduite/.test(text));
   const wineHypothesisExplained = result.warnings.some(text => text.startsWith('Usage vin/cidre/conditionnement :'));
-  return [...new Set([...result.warnings,
+  return [...new Set([...result.warnings.map(text => text.replace(/(\d)\.(\d+)(?=\s*°C)/g, '$1,$2')),
     ...result.effects.filter(effect => effect.state === 'warning' && !(effect.id === 'temperature' && temperatureExplained)).map(effect => effect.id === 'dose' ? `Quantité prévue hors du repère fabricant : ${effect.impact}.` : effect.impact)
   ])].filter(text => !text.startsWith('Souche non identifiée') && !text.startsWith('Fenêtre de température absente') && !text.startsWith('Usage non documenté pour cette famille') &&
     !(wineHypothesisExplained && text.startsWith('Usage vin, cidre')) &&
@@ -640,7 +642,8 @@ export function YeastRecipePlan({ recipe, refs, onChange, onCompare, onGoal, ini
     <span className="yc-chip" data-tone={edited ? 'trial' : undefined}>{edited ? `Essai · ${plural(realChangeCount, 'changement')}` : 'Brouillon'}</span>
     {issues.length > 0 ? <span className="yc-chip" data-tone="error">À compléter · {issues[0].text}{issues.length > 1 ? ` (+${issues.length - 1})` : ''}</span>
       : blocking && <span className="yc-chip" data-tone="error">À corriger</span>}
-    {warnings.length > 0 && <span className="yc-chip" data-tone="warning">{plural(warnings.length, 'point')} à vérifier</span>}
+    {/* Plainte du 20.11 (n° 11) : la puce dit lequel, comme « À compléter » voisine. */}
+    {warnings.length > 0 && <span className="yc-chip" data-tone="warning" style={{ display: 'inline-block', maxWidth: '100%', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }} title={warnings.join('\n')}>À vérifier · {(warnings.find(text => /hors de la plage/.test(text)) ?? warnings[0]).replace(/\.$/, '')}{warnings.length > 1 ? ` (+${warnings.length - 1})` : ''}</span>}
   </>;
 
   return <section className="yc-plan" data-trial={edited} aria-label="Préparer une conduite de fermentation">

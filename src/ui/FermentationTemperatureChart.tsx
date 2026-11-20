@@ -235,6 +235,9 @@ export function FermentationTemperatureChart({ steps, referenceSteps = [], bands
   /** Setpoint value: above the ↕ handle of the selected phase (below it near the top), never under it. */
   const setpointLabelY = (index: number, tempC: number) => tempHandle && drawnPhase?.index === index
     ? (tempHandle.y - 26 >= top + 11 ? tempHandle.y - 26 : tempHandle.y + 34) : setpointLabelBaseline(y(tempC), top, bottom, temperatureTicks.map(y));
+  /** Plainte du 20.11 (n° 11) : une consigne hors de la plage de sa levure se dit sur le graphe (trait et valeur en couleur attention). */
+  const horsPlage = (step: (typeof known)[number]): 'sous' | 'au-dessus' | undefined => !step.band || step.band.max <= step.band.min || !finite(step.tempC) ? undefined
+    : step.tempC! < step.band.min ? 'sous' : step.tempC! > step.band.max ? 'au-dessus' : undefined;
   /** The editable chart folds its legend, so a range band names itself inside, clear of the setpoint, its label and the ↕ handle; none without room. */
   const bandLabelY = (step: (typeof known)[number]) => {
     const band = step.band, startX = x(step.start!), width = x(step.end!) - startX;
@@ -346,30 +349,34 @@ export function FermentationTemperatureChart({ steps, referenceSteps = [], bands
         data-scale-end-day={editable ? axisEnd : undefined} data-scale-min={editable ? min : undefined} data-scale-max={editable ? max : undefined}>
         <title>Calendrier de consignes, à ajuster à la densité et à la dégustation</title>
         {temperatureTicks.map(t => <g key={t}><line x1={left} x2={right} y1={y(t)} y2={y(t)} stroke="currentColor" className="text-cave-700" /><text x={left - 6} y={y(t) + 4} textAnchor="end" fill="currentColor" className="text-cave-400" fontSize="12">{number(t)}</text></g>)}
-        {shiftedReferenceTransitions.map((transition, index) => <g key={`reference-transition-${transition.phaseIndex}`} data-reference-transition-day={transition.day}>
-          <line x1={x(transition.day!)} x2={x(transition.day!)} y1={top} y2={bottom} stroke="currentColor" strokeDasharray="2 3" className="text-cave-200" />
-          {(() => { const nextDay = shiftedReferenceTransitions[index + 1]?.day ?? referenceEnd;
-            return nextDay === null || x(nextDay) - x(transition.day!) > 70; })()
-            && <text x={x(transition.day!)} y={top - 7} textAnchor="end" fill="currentColor" className="text-cave-200" fontSize="10">brouillon J{number(transition.day!)}</text>}
+        {/* Plainte du 20.11 (n° 8) : le brouillon est un seul trait fin en marches, nommé à son bout ; ses bascules ne sont plus que de petits crans en haut. */}
+        {shiftedReferenceTransitions.map(transition => <g key={`reference-transition-${transition.phaseIndex}`} data-reference-transition-day={transition.day}>
+          <line x1={x(transition.day!)} x2={x(transition.day!)} y1={top} y2={top + 6} stroke="currentColor" strokeWidth="1.5" className="text-cave-400" />
           <title>Brouillon : passage à {referenceTimeline.phases[transition.phaseIndex].name} à J{number(transition.day!)}</title>
         </g>)}
-        {referenceEnd !== null && referenceEnd !== total && <g data-reference-programme-end-day={referenceEnd}>
-          <line x1={x(referenceEnd)} x2={x(referenceEnd)} y1={top} y2={bottom} stroke="currentColor" strokeDasharray="2 3" className="text-cave-200" />
-          <text x={Math.min(right, x(referenceEnd))} y={top - 7} textAnchor="end" fill="currentColor" className="text-cave-200" fontSize="10">brouillon fin J{number(referenceEnd)}</text>
-        </g>}
-        {reference.map(step => <line key={`reference-${step.index}`} data-reference-step={step.index} x1={x(step.start!)} x2={x(step.end!)} y1={y(step.tempC!)} y2={y(step.tempC!)} stroke="currentColor" strokeWidth="6" strokeDasharray="4 4" className="text-cave-200" />)}
+        {reference.length > 0 && <path data-reference-path="true" d={reference.map((step, i) => `${i && reference[i - 1].end === step.start ? `V${y(step.tempC!).toFixed(1)}` : `M${x(step.start!).toFixed(1)} ${y(step.tempC!).toFixed(1)}`}H${x(step.end!).toFixed(1)}`).join('')}
+          fill="none" stroke="currentColor" strokeWidth="2.5" strokeDasharray="5 4" strokeLinejoin="round" className="text-cave-400" />}
+        {referenceEnd !== null && referenceEnd !== total && (() => {
+          const last = reference.at(-1), ex = x(referenceEnd), ey = last ? y(last.tempC!) : top + 10, droite = ex + 110 <= right;
+          return <g data-reference-programme-end-day={referenceEnd}>
+            <line x1={ex} x2={ex} y1={top} y2={top + 6} stroke="currentColor" strokeWidth="1.5" className="text-cave-400" />
+            <text data-reference-label="true" x={droite ? ex + 5 : ex - 5} y={ey + 4} textAnchor={droite ? 'start' : 'end'} fill="currentColor" className="text-cave-200" fontSize="10"
+              style={{ paintOrder: 'stroke', stroke: 'rgb(var(--cave-900))', strokeWidth: 4, strokeLinejoin: 'round' }}>brouillon · fin J{number(referenceEnd)}</text>
+          </g>;
+        })()}
         {selectable && placed.filter(step => step.index === selectedStepIndex).map(step => <rect key={`selected-${step.index}`} x={x(step.start!)} y={top} width={Math.max(0, x(step.end!) - x(step.start!))} height={bottom - top} fill="currentColor" fillOpacity="0.12" stroke="currentColor" strokeDasharray="3 3" className="text-area-production" />)}
-        {known.map(step => <g key={step.index} data-step={step.index} data-start={step.start} data-end={step.end} data-temp={step.tempC}>
+        {known.map(step => { const hors = horsPlage(step); return <g key={step.index} data-step={step.index} data-start={step.start} data-end={step.end} data-temp={step.tempC}>
           {step.band && (step.band.max === step.band.min ? <line x1={x(step.start!)} x2={x(step.end!)} y1={y(step.band.min)} y2={y(step.band.max)} className="text-ebc-straw/40" stroke="currentColor" /> : <rect data-band="temperature" x={x(step.start!)} width={x(step.end!) - x(step.start!)} y={y(step.band.max)} height={y(step.band.min) - y(step.band.max)} fill="currentColor" className="text-ebc-straw/20" />)}
           {step.band && inconnuDessine && step.band.max > step.band.min && [step.band.min, step.band.max].map(value => <line key={value} data-band-edge={value} x1={x(step.start!)} x2={x(step.end!)} y1={y(value)} y2={y(value)} stroke="#B8901E" strokeDasharray="4 3" strokeWidth="1.2" />)}
-          {step.band && !inconnuDessine && bandLabelY(step) !== undefined && <text data-band-label={step.index} x={x(step.start!) + 4} y={bandLabelY(step)} textAnchor="start" fill="currentColor" className="text-cave-200" fontSize="10">plage levure {number(step.band.min)}–{number(step.band.max)} °C</text>}
+          {step.band && !inconnuDessine && bandLabelY(step) !== undefined && <text data-band-label={step.index} x={x(step.start!) + 4} y={bandLabelY(step)} textAnchor="start" fill="currentColor" className="text-cave-200" fontSize="10"
+            style={{ paintOrder: 'stroke', stroke: 'rgb(var(--cave-900))', strokeWidth: 4, strokeLinejoin: 'round' }}>plage levure {number(step.band.min)}–{number(step.band.max)} °C</text>}
           {step.index > 0 && Number.isFinite(segments[step.index - 1].tempC) && <line x1={x(step.start!)} x2={x(step.start!)} y1={y(segments[step.index - 1].tempC!)} y2={y(step.tempC!)} stroke="currentColor" className="text-ebc-straw" strokeWidth="2" />}
-          <line data-setpoint="true" x1={x(step.start!)} x2={x(step.end!)} y1={y(step.tempC!)} y2={y(step.tempC!)} stroke="currentColor" className="text-ebc-straw" strokeWidth="3" />
+          <line data-setpoint="true" data-hors-plage={hors} x1={x(step.start!)} x2={x(step.end!)} y1={y(step.tempC!)} y2={y(step.tempC!)} stroke="currentColor" className={hors ? 'text-attention' : 'text-ebc-straw'} strokeWidth="3" />
           {x(step.end!) - x(step.start!) > 42 && !(drag?.axis === 'temperature' && drag.index === step.index) && <text x={(x(step.start!) + x(step.end!)) / 2} y={setpointLabelY(step.index, step.tempC!)}
-            textAnchor="middle" fill="currentColor" className="text-cave-50" fontSize="11" fontWeight="600" data-setpoint-label={step.index}
+            textAnchor="middle" fill="currentColor" className={hors ? 'text-attention' : 'text-cave-50'} fontSize="11" fontWeight="600" data-setpoint-label={step.index}
             // BR-61 (08.11) : « 20,5 °C » posée sur le trait de 20 °C, barrée. Un liseré de la couleur du fond la détache des traits de la grille.
-            style={{ paintOrder: 'stroke', stroke: 'rgb(var(--cave-900))', strokeWidth: 4, strokeLinejoin: 'round' }}>{number(step.tempC!)} °C</text>}
-        </g>)}
+            style={{ paintOrder: 'stroke', stroke: 'rgb(var(--cave-900))', strokeWidth: 4, strokeLinejoin: 'round' }}>{number(step.tempC!)} °C{hors && x(step.end!) - x(step.start!) > 150 ? ` · ${hors === 'sous' ? 'sous' : 'au-dessus de'} la plage` : ''}</text>}
+        </g>; })}
         {inconnuDessine && placed.filter(step => !finite(step.tempC) || unknownDays.has(step.index)).map(step => {
           const left0 = x(step.start!), width0 = Math.max(0, x(step.end!) - x(step.start!)), mid = (top + bottom) / 2;
           const lines = [finite(step.tempC) ? `${number(step.tempC)} °C` : '? °C', ...(unknownDays.has(step.index) ? ['? j'] : [])];
@@ -395,7 +402,11 @@ export function FermentationTemperatureChart({ steps, referenceSteps = [], bands
           ? <circle key={contact.index} data-contact-start-day={contact.start} cx={x(contact.start!)} cy={bottom + 10 + index * 9} r="3" fill="currentColor" className="text-cave-200"><title>{contactContext(contact)} · fin inconnue</title></circle>
           : <rect key={contact.index} data-contact={contact.index} data-contact-start-day={contact.start} data-day={contact.start} data-hours={contact.contactHours} x={x(contact.start!)} y={bottom + 8 + index * 9} width={Math.max(2, x(contact.end) - x(contact.start!))} height="5" fill="currentColor" className="text-cave-200"><title>{contactContext(contact)} · J{number(contact.start!)} à J{number(contact.end)}</title></rect>)}
         {/* The duration handle stays tied to the phase end it moves. */}
-        {durationHandle && <line data-duration-guide={drawnPhase!.index} x1={durationHandle.x} x2={durationHandle.x} y1={tempHandle ? tempHandle.y : top} y2={laneY - 11} stroke="currentColor" strokeDasharray="2 3" className="text-area-production" />}
+        {/* Plainte du 20.11 (n° 9) : le guide ↔ s'arrête au bas du graphe, il ne barre plus les étiquettes de jours (« J34,5 », « fin J39,5 »). */}
+        {durationHandle && <g data-duration-guide={drawnPhase!.index}>
+          <line x1={durationHandle.x} x2={durationHandle.x} y1={tempHandle ? tempHandle.y : top} y2={bottom} stroke="currentColor" strokeDasharray="2 3" className="text-area-production" />
+          {laneY - 11 > axisY + 34 && <line x1={durationHandle.x} x2={durationHandle.x} y1={axisY + 32} y2={laneY - 11} stroke="currentColor" strokeDasharray="2 3" className="text-area-production" />}
+        </g>}
         {editable && <line x1={left} x2={right} y1={laneY} y2={laneY} stroke="currentColor" className="text-cave-800" strokeWidth="2" strokeLinecap="round" />}
         {drag?.axis === 'duration' && originPhase?.end != null && <line data-gesture-origin-day={originPhase.end} x1={x(originPhase.end)} x2={x(originPhase.end)} y1={top} y2={laneY} stroke="currentColor" strokeDasharray="1 3" className="text-cave-400" />}
         {drag?.axis === 'duration' && durationHandle && <g data-gesture-day={previewPhase?.end ?? undefined}>

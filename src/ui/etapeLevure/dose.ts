@@ -6,7 +6,7 @@
 //  - la dose écrite au choix est le plus petit nombre de sachets qui couvre le besoin (taux × volume × °P), sinon le plancher du fabricant (20.11) ;
 //  - l'inconnu n'est jamais 0 : sans produit documenté, ni dose ni zéro.
 import type { YeastSpec } from '../../types';
-import type { YeastReference } from '../../domain/yeastReferences';
+import { yeastReferences, type YeastReference } from '../../domain/yeastReferences';
 import { BrewingMath } from '../../services/brewingMath';
 import { inferYeastRecipeStyle } from '../../domain/yeastRecipeDesign';
 import type { YeastPitchingWort, YeastSupply } from '../../../functions/src/yeastSupplySchema';
@@ -76,7 +76,32 @@ export function doseDuFabricant(levure: YeastReference | undefined, volumeL: num
  * Un sachet dont le poids n'est pas documenté est pris à 11,5 g, et le dit (« sachet 11,5 g à confirmer »).
  */
 export const SACHET_SEC_G = 11.5;
-const CELLULES_PAR_G_SEC = 150 / SACHET_SEC_G;
+export const CELLULES_PAR_G_SEC = 150 / SACHET_SEC_G;
+/** Un pack ou une fiole liquide sans cellules documentées : ≈ 100 milliards à la production (Wyeast Activator, fiole White Labs), estimé. */
+export const PACK_LIQUIDE_MD = 100;
+
+/**
+ * La forme d'une levure du catalogue quand ni la recette ni le produit ne la donnent (plainte du 20.11 : « White Labs Munich Lager Yeast 500g »,
+ * une brique sèche) : un conditionnement en g ou kg dans le nom ou ses alias, ou une dose en g/hL du fabricant → sèche ; un labo de liquides
+ * (White Labs, Wyeast, Imperial, Omega, Escarpment) sans poids → liquide ; sinon rien (jamais deviné).
+ */
+/** Le conditionnement écrit dans le nom ou les alias de la fiche (« 500g », « 0,5 kg »), en grammes ; sinon rien. */
+export function poidsDuCatalogue(levure?: YeastReference): number | undefined {
+  if (!levure) return undefined;
+  const noms = [levure.name, ...((levure as { aliases?: string[] }).aliases ?? [])].join(' ');
+  const m = /\b(\d+(?:[.,]\d+)?)\s*(g|kg)\b/i.exec(noms);
+  return m ? Number(m[1].replace(',', '.')) * (m[2].toLowerCase() === 'kg' ? 1000 : 1) : undefined;
+}
+
+export function formeDuCatalogue(levure?: YeastReference): 'sèche' | 'liquide' | undefined {
+  if (!levure) return undefined;
+  if (levure.form === 'sèche' || levure.form === 'liquide') return levure.form;
+  const noms = [levure.name, ...((levure as { aliases?: string[] }).aliases ?? [])].join(' ');
+  if (/\b\d+(?:[.,]\d+)?\s*(?:g|kg)\b/i.test(noms)) return 'sèche';
+  if ((levure.catalogue?.facts ?? []).some(f => f.key === 'pitchRate' && /g\s*(?:\/|per)\s*hl\b|g\s+for up to/i.test(f.reported))) return 'sèche';
+  if (/white\s*labs|wyeast|imperial|omega|escarpment/i.test(`${noms} ${levure.catalogue?.manufacturer ?? ''}`)) return 'liquide';
+  return undefined;
+}
 
 /** Le besoin de la recette en levure (taux × volume × °P) et ce qu'apporte un sachet ; l'inconnu reste absent, jamais 0. */
 export interface BesoinLevure {
@@ -90,6 +115,10 @@ export interface BesoinLevure {
   sachet?: { grammes?: number; poidsAConfirmer: boolean; cellules: number; estime: boolean; unite: 'sachet' | 'pack' };
   /** Le besoin en sachets, non arrondi (« besoin lager 1,7 »). */
   sachets?: number;
+  /** La forme retenue (recette, produit, fiche, sinon le catalogue lu par `formeDuCatalogue`). */
+  forme?: 'sèche' | 'liquide';
+  /** Le besoin en grammes d'une levure sèche (cellules ÷ ≈ 13 Md/g, calage du moteur, à confirmer) ; absent pour une liquide. */
+  grammes?: number;
   /** La dose du fabricant au volume de la recette, en grammes (`min` : le plancher, `borne` : « ≥ ») ; et le nombre de sachets qui l'atteint. */
   fabricant?: { min: number; max?: number; borne: boolean };
   sachetsFabricant?: number;
@@ -116,34 +145,40 @@ export function besoinDeLaLevure(recipe: TrialRecipe, supply: YeastSupply, og?: 
   const aTaux = typeof tauxRecette === 'number' && tauxRecette > 0;
   const taux = aTaux ? tauxRecette : moteur.rate;
   const cellules = taux * volumeL * plato;
-  const { sachet, fabricant, sachetsFabricant } = doseFabricantDe(yeast, conseil, volumeL, levure);
+  const { sachet, fabricant, sachetsFabricant, forme } = doseFabricantDe(yeast, conseil, volumeL, levure);
   return { regime, taux, tauxDuMoteur: !aTaux, volumeL, sg, plato, cellules,
-    sachet, sachets: sachet ? cellules / sachet.cellules : undefined, fabricant, sachetsFabricant };
+    sachet, sachets: sachet ? cellules / sachet.cellules : undefined, forme, grammes: forme === 'sèche' ? cellules / CELLULES_PAR_G_SEC : undefined, fabricant, sachetsFabricant };
 }
 
 /** Ce que la levure dit sans densité de moût : son sachet et la dose du fabricant (ni taux, ni cellules, ni besoin). */
-export type DoseFabricant = Pick<BesoinLevure, 'sachet' | 'fabricant' | 'sachetsFabricant'>;
+export type DoseFabricant = Pick<BesoinLevure, 'sachet' | 'fabricant' | 'sachetsFabricant' | 'forme'>;
 
 /** Le sachet du produit, la dose du fabricant au volume et le nombre de sachets qui l'atteint : le volume seul les donne, pas la densité du moût. */
 function doseFabricantDe(yeast: YeastSpec, conseil: YeastPitchingAdvice, volumeL: number, levure?: YeastReference): DoseFabricant {
   const produit = yeast.pitching?.product;
-  const forme = yeast.form ?? produit?.form ?? levure?.form;
+  const lue = yeast.form ?? produit?.form ?? levure?.form ?? formeDuCatalogue(levure);
+  const forme = lue === 'sèche' || lue === 'liquide' ? lue : undefined;
   let sachet: BesoinLevure['sachet'];
   const cellsPack = produit?.cellsPerPack;
-  const grammesProduit = produit?.format?.unit === 'g' ? produit.format.amount : undefined;
+  // Le poids écrit dans le nom ne sert qu'à reconnaître une brique (> 100 g) : un sachet garde le calage du moteur (11,5 g, à confirmer).
+  const poidsNom = poidsDuCatalogue(levure);
+  const grammesProduit = produit?.format?.unit === 'g' ? produit.format.amount : poidsNom !== undefined && poidsNom > 100 ? poidsNom : undefined;
   if (cellsPack?.kind === 'viable' && ['point', 'range'].includes(cellsPack.qualifier) && cellsPack.range.min > 0) {
     sachet = { grammes: grammesProduit, poidsAConfirmer: false, cellules: cellsPack.range.min, estime: false, unite: forme === 'sèche' ? 'sachet' : 'pack' };
   } else if (forme === 'sèche' && (grammesProduit === undefined || grammesProduit <= 100)) {
     // Une brique (500 g) n'est pas un sachet : son poids ne donne pas d'unité à compter.
     const grammes = grammesProduit ?? SACHET_SEC_G;
     sachet = { grammes, poidsAConfirmer: grammesProduit === undefined, cellules: grammes * CELLULES_PAR_G_SEC, estime: true, unite: 'sachet' };
+  } else if (forme === 'liquide' && grammesProduit === undefined) {
+    // Plainte du 20.11 : une liquide sans cellules documentées se compte quand même en packs (≈ 100 Md, dit « à confirmer »).
+    sachet = { poidsAConfirmer: false, cellules: PACK_LIQUIDE_MD, estime: true, unite: 'pack' };
   }
   const f = doseDuFabricant(levure, volumeL);
   const fabricant: BesoinLevure['fabricant'] = conseil.unit === 'g' && conseil.range ? { min: conseil.range.min, max: conseil.range.max, borne: false }
     : conseil.unit === 'g' && conseil.bound && conseil.bound.operator.startsWith('>') ? { min: conseil.bound.value, borne: true }
     : f ? { min: f.min, max: f.max, borne: f.max === undefined } : undefined;
   const sachetsFabricant = fabricant && sachet?.grammes ? Math.max(1, Math.ceil(fabricant.min / sachet.grammes - 1e-9)) : conseil.packs?.min;
-  return { sachet, fabricant, sachetsFabricant };
+  return { sachet, fabricant, sachetsFabricant, forme };
 }
 
 /**
@@ -172,7 +207,14 @@ export function sachetsAuChoix(besoin: Pick<BesoinLevure, 'sachetsFabricant'> & 
  * sinon le plancher du fabricant ; sans l'un ni l'autre, la dose reste à saisir (jamais 0). `avant` est la levure remplacée : on n'en
  * reprend que la mesure du moût, jamais sa dose ni son produit.
  */
-export function doseApresChoix(recipe: TrialRecipe, avant: YeastSpec, supply: YeastSupply, og?: number | null, levure?: YeastReference): TrialRecipe {
+/** La fiche du catalogue d'une levure de recette, quand l'appelant ne la donne pas (le wizard) : par son identifiant, sinon rien. */
+let catalogue: Map<string, YeastReference> | undefined;
+const ficheDe = (yeast: YeastSpec) => yeast.hopIndexId ? (catalogue ??= new Map(yeastReferences([]).map(r => [r.id, r]))).get(yeast.hopIndexId) : undefined;
+/** Le besoin en grammes écrit au choix : arrondi au gramme, sans monter d'un gramme pour un reste de calcul (22,01 g → 22 g). */
+export const grammesAuChoix = (g: number) => Math.max(1, Math.ceil(g - 0.05));
+
+export function doseApresChoix(recipe: TrialRecipe, avant: YeastSpec, supply: YeastSupply, og?: number | null, levureDonnee?: YeastReference): TrialRecipe {
+  const levure = levureDonnee ?? ficheDe(recipe.yeast);
   const { qty: _qty, unit: _unit, ...sansDose } = recipe.yeast;
   const nue: TrialRecipe = { ...recipe, yeast: sansDose };
   const { yeast } = doseDeLaLevure(nue, supply, og);
@@ -181,8 +223,14 @@ export function doseApresChoix(recipe: TrialRecipe, avant: YeastSpec, supply: Ye
   const ogMout = og ?? estimatePitchingWort(nue).wort?.sg;
   const avecMout = { ...nue, yeast: prepared };
   // Sans densité de moût (T4-2), la dose du fabricant au volume de la recette reste proposée.
-  const n = sachetsAuChoix(besoinDeLaLevure(avecMout, supply, ogMout, levure) ?? doseDuFabricantSeule(avecMout, supply, ogMout, levure));
+  const besoin = besoinDeLaLevure(avecMout, supply, ogMout, levure);
+  // Une brique sèche (500 g) n'a pas de sachet à compter : le besoin s'écrit en grammes (plainte du 20.11).
+  if (besoin && !besoin.sachet && besoin.grammes !== undefined && Number.isFinite(besoin.grammes))
+    return { ...nue, yeast: { ...prepared, qty: grammesAuChoix(besoin.grammes), unit: 'g' } };
+  // Une liquide sans cellules documentées : les packs (≈ 100 Md) sont une estimation ; la carte les propose (« Mettre N packs »), le choix n'en écrit pas.
+  if (besoin?.sachet?.unite === 'pack' && besoin.sachet.estime) return { ...nue, yeast: prepared };
+  const n = sachetsAuChoix(besoin ?? doseDuFabricantSeule(avecMout, supply, ogMout, levure));
   if (n === undefined) return { ...nue, yeast: prepared };
-  const unite = (prepared.form ?? prepared.pitching?.product?.form ?? levure?.form) === 'sèche' ? 'sachet' : 'pack';
+  const unite = (prepared.form ?? prepared.pitching?.product?.form ?? levure?.form ?? formeDuCatalogue(levure)) === 'sèche' ? 'sachet' : 'pack';
   return { ...nue, yeast: { ...prepared, qty: n, unit: unite } };
 }

@@ -121,9 +121,13 @@ describe('LEV-6 · la dose se lit sur la fiche du fabricant et se touche', () =>
   it('« 500g for up to 10 hL » à 25 L : « ≥ 13 g », pas « ? dose à saisir » ; toucher la dose ouvre son volet', async () => {
     render(<Banc />);
     const dose = document.querySelector('[data-lv="dose"]') as HTMLButtonElement;
-    // 20.11 (r3 v05) : une brique de 500 g n'est pas un sachet ; l'en-tête dit « à choisir », la bande le conseil du fabricant.
+    // 20.11 (r3 v05) : une brique de 500 g n'est pas un sachet ; l'en-tête dit « à choisir ». Plainte du 20.11 : la bande dit le besoin en grammes
+    // (« besoin lager N g », « Mettre N g ») et le conseil du fabricant en second (« fabricant ≥ 13 g »).
     expect(dose.textContent).toBe('à choisir');
-    expect(document.querySelector('[data-lv="bande-dose"]')!.textContent).toContain('fabricant ≥ 13 g · sachet inconnu');
+    const bande = document.querySelector('[data-lv="bande-dose"]')!.textContent!;
+    expect(bande).toMatch(/besoin lager \d+ g/);
+    expect(bande).toMatch(/Mettre \d+ g/);
+    expect(bande).toContain('fabricant ≥ 13 g');
     fireEvent.click(dose);
     expect(await screen.findByText('éditeur dose (test)')).toBeTruthy();
   });

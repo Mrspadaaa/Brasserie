@@ -81,12 +81,15 @@ describe('dose au choix de la levure (#132)', () => {
     expect(suivante.yeast).toMatchObject({ qty: 2, unit: 'sachet' });
   });
 
-  it('une levure liquide sans cellules par pack ni dose du fabricant : rien n’est écrit (jamais 0)', () => {
+  it('une levure liquide sans cellules par pack ni dose du fabricant : rien n’est écrit, des packs estimés sont proposés (jamais 0)', () => {
     const avant = recette();
     const liquide = refs.find(r => !supply.products.some(p => p.referenceId === r.id) && r.form === 'liquide' && !r.catalogue?.facts?.some(f => f.key === 'pitchRate'))!;
     const suivante = doseApresChoix(applyCatalogueYeast(avant, liquide, liquide.form), avant.yeast, supply);
     expect(suivante.yeast.qty).toBeUndefined();
-    expect(sachetsAuChoix(besoinDeLaLevure(suivante, supply, undefined, liquide))).toBeUndefined();
+    // Plainte du 20.11 : la carte propose des packs estimés (≈ 100 Md chacun), jamais écrits au choix ni à 0.
+    const b = besoinDeLaLevure(suivante, supply, undefined, liquide)!;
+    expect(b.sachet).toMatchObject({ unite: 'pack', estime: true });
+    expect(sachetsAuChoix(b)).toBeGreaterThan(0);
   });
 
   // Défaut trouvé en ligne (09.11), recette « ZZ TEST — Recette » : Ma levure disait « dose à saisir » au lieu de la plage de sachets.
