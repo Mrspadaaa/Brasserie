@@ -181,7 +181,7 @@ export function NoloRecipeSimulator({ recipe, onChange, science, saved = emptyKn
       <SimulationRange bound={!invalidFields.length && proposal.result?.projection || { min: 0, max: null, kind: 'unknown', confidence: 'low' }} target={target} current={current} manque={evalCourante?.nextAction}/>
       {proposal.blocking.length > 0 && <ul role="alert" className="nolo-solver-errors">{proposal.blocking.map((message, index) => <li key={index}>{enMotsDeBrasseur(message)}</li>)}</ul>}
       <div className="nolo-solver-actions">
-        <button type="button" className="nolo-solver-apply !text-cave-950" disabled={stale || !!error || invalidFields.length > 0 || proposal.blocking.length > 0 || waterBlocked} onClick={apply}><Sparkles size={14} aria-hidden="true"/>Appliquer à la {variant ? 'variante' : 'recette'}</button>
+        <button type="button" className="nolo-solver-apply bg-ebc-straw" disabled={stale || !!error || invalidFields.length > 0 || proposal.blocking.length > 0 || waterBlocked} onClick={apply}><Sparkles size={14} aria-hidden="true"/>Appliquer à la {variant ? 'variante' : 'recette'}</button>
         <button type="button" className="nolo-solver-reset" onClick={() => { choose(); setResetKey(key => key + 1); }} title="Revenir aux réglages préremplis depuis la recette et la consigne"><RotateCcw size={13} aria-hidden="true"/>Réinitialiser</button>
       </div>
       {/* TE-15, T3B-7 (lecture étroite, 2e passe) : au premier plan, le procédé, la consigne, la levure, la plage et « Appliquer » ; TOUT le reste (réglages préremplis, programme, champs,
