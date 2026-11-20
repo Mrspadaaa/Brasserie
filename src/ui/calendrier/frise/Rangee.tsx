@@ -39,6 +39,11 @@ export interface Mesures { ligne: number; barre: number; titre: number }
 export const MESURES_PORTRAIT: Mesures = { ligne: 30, barre: 26, titre: 24 };
 /* CRITIQUE-4 n° 11 (reçu de q1) : le paysage se compacte sur les rangées, pas sur la courbe : une ligne de 20 px, une barre de 18 px. */
 export const MESURES_PAYSAGE: Mesures = { ligne: 20, barre: 18, titre: 20 };
+/* PC-147 et PC-146 (critique des corrections PC, 19.11, 844 × 390 ; 18.11 : « un mini espace entre les évènements (brassin) ») : une ligne de 20 px pour une
+   barre de 18 ne laissait que 2 px entre deux brassins ; les jalons (5,5 px sous la barre) et la zone de toucher de 24 px de la barre du dessous
+   couvraient ceux du dessus, et le doigt posé sur le bord ou le jalon de la Blonde tombait sur le Stout. 8 px d'espace entre deux barres de brassin :
+   le pied et les jalons restent dans leur ligne. Les autres rangées (sans pied ni jalons) gardent leurs 20 px. */
+export const MESURES_PAYSAGE_BRASSINS: Mesures = { ligne: 26, barre: 18, titre: 20 };
 
 export interface Disposition {
   chose: ChoseCalendrier;

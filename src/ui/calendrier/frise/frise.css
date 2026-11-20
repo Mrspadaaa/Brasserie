@@ -304,3 +304,10 @@ button.cal-lie::before { content: ''; position: absolute; inset: -6px -2px; }
 .cal-marque.cal-ponctuel-pale, .cal-lbl.cal-ponctuel-pale { opacity: 0.35; }
 /* D390 : au repos, le jalon lié porte un point de la couleur de sa barre (le fil ne vient qu'au toucher) */
 .cal-point-lie { position: absolute; right: -3px; bottom: -3px; width: 10px; height: 10px; border-radius: 50%; background: var(--c); box-shadow: 0 0 0 1.5px rgb(var(--cave-900)); pointer-events: none; }
+
+/* T3B-1 (rejeu en ligne tour 3, 844 × 340 : « Vente » et « Fête » du menu + coupés en haut, haut à −25 px, sans défilement) : le menu du calendrier (8 gestes
+   + « Partout », deux blocs côte à côte, 279 px) ne tient pas au-dessus du + quand la hauteur est courte. Il se pose à GAUCHE du +, son bas à l'aplomb du bas du
+   +, donc 56 px de plus de hauteur ; ses deux blocs et leur ordre ne changent pas (le geste de l'écran reste contre le +). */
+@media (orientation: landscape) and (max-height: 520px) {
+  .floating-actions .plus-pile[data-plus-ecran='calendrier'][data-plus-disposition='deux-blocs'] { bottom: 0; right: calc(100% + 8px); margin-bottom: 0; }
+}

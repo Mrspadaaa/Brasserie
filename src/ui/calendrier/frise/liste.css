@@ -7,3 +7,12 @@
 .cal-liste .cal-nowrap { white-space: nowrap; }
 /* n° 27 : la réserve du + volant (sa hauteur mesurée) est posée en `padding-bottom` par VueListe : la dernière ligne garde son montant
    lisible au-dessus du + */
+/* T3B-2 et PC-153 (rejeu en ligne tour 3, 844 × 340 : « −5 » de Hefe caché, « −13 » mordu ; critique PC : « −137 », « −900 ») : le + volant (56 px, 12 px du
+   bord) couvrait, au repos, le montant de la ligne qui passait dessous. Le montant s'arrête avant la bande du + (76 px, comme la frise : `reserveDroite`),
+   à toute position de défilement ; hors téléphone et paysage (1280), le + est dans le coin du contenu, rien ne change. */
+@media (max-width: 699px), (orientation: landscape) and (max-height: 520px) {
+  .cal-liste .cal-li-b { padding-right: 76px; }
+}
+/* PC-152 (critique PC, 844 × 340 : « deux lignes seulement visibles sous l'en-tête ») : en paysage, la Liste n'a plus d'en-tête collé (courbe, semaines et
+   boutons restent en haut de la page, au défilement ils partent) : toute la hauteur va aux lignes ; le portrait garde son en-tête collé. */
+.cal-tab-paysage[data-vue='liste'] .cal-entete-zone { position: static; }

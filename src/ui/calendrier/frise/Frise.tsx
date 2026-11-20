@@ -1,6 +1,6 @@
 import React from 'react';
 import { RANGEES, barreLiee, ecartJours, estPonctuel, type ChoseCalendrier, type Rangee as IdRangee } from '../../../domain/calendrier';
-import { MESURES_PAYSAGE, MESURES_PORTRAIT, Rangee, pastille, positionDans, texteRenvoi, type Colonne, type DragEtat, type Renvoi, type RangeeProps } from './Rangee';
+import { MESURES_PAYSAGE, MESURES_PAYSAGE_BRASSINS, MESURES_PORTRAIT, Rangee, pastille, positionDans, texteRenvoi, type Colonne, type DragEtat, type Renvoi, type RangeeProps } from './Rangee';
 import { GrilleJours } from './GrilleJours';
 import { usePincement } from './usePincement';
 import { cheminDePoints, routerFil } from './routageFil';
@@ -427,7 +427,7 @@ export const Frise: React.FC<FriseProps> = props => {
             colonnes={colonnes}
             largeurColonne={largeurColonne}
             largeur={largeur}
-            mesures={mesures}
+            mesures={paysage && r === 'brassins' ? MESURES_PAYSAGE_BRASSINS : mesures}
             paysage={paysage}
             reserveDroite={paysage ? reserveDroite : idsSousFab.includes(r) ? reserveSousFab : 0}
             vueLarge={vueLarge}

@@ -69,6 +69,8 @@ mkdirSync(DOSSIER, { recursive: true });
 
 const CONFIGS = {
   m390: { w: 390, h: 844, tactile: true },
+  /* voie 1 (20.11) : le paysage le plus bas, 844 × 340 (menu +, Liste, rangées) */
+  p340: { w: 844, h: 340, tactile: true },
   paysage: { w: 844, h: 390, tactile: true },
   /* CRITIQUE-12 : la critique nomme le paysage « p844 » ; même écran que `paysage` */
   p844: { w: 844, h: 390, tactile: true },
@@ -1098,6 +1100,73 @@ const ETATS = [
     },
     attendu: [fn(async p => ({ ok: !!p.inviteAvant, dit: p.inviteAvant ? 'invite vue' : 'invite jamais vue' }), 'l’invite « Tourne le téléphone » est montrée par ⛶'),
       fn(async p => (/Tourne le téléphone/.test(p.messageApres || '') ? messageSansNom(p) : { ok: true, dit: 'invite partie au défilement' }), 'après 30 px, l’invite est partie ou ne couvre aucun nom')] }
+,
+  /* ---------- Voie 1 des défauts Calendrier (20.11) : paysage et le +. Groupe `--etats v1`, configs p340 (844 × 340) et p844 (844 × 390). ---------- */
+  /* T3B-1 (rejeu en ligne tour 3) : le menu du + n'est coupé ni en haut ni en bas à 844 × 340 et 844 × 390 : toutes ses lignes, entières, dans la fenêtre */
+  { n: 'V1a', nom: 'menu-plus-paysage', cave: true, geste: 'toucher le + volant ; mesurer le haut et le bas de chaque ligne du menu',
+    sansObjet: cfg => (cfg.tactile && cfg.w > cfg.h ? null : 'le menu en deux blocs ne se pose qu’en paysage (téléphone couché)'),
+    jouer: async p => { await toucher(p, FAB); await attendre(500); },
+    attendu: [fn(async p => p.evaluate(() => {
+      const m = document.querySelector('[role="menu"][aria-label="Actions rapides"]');
+      if (!m) return { ok: false, dit: 'menu absent' };
+      const lignes = [...m.querySelectorAll('button')].map(b => { const r = b.getBoundingClientRect(); return { t: (b.textContent || '').trim().slice(0, 16), h: Math.round(r.top), b: Math.round(r.bottom) }; });
+      const coupees = lignes.filter(l => l.h < 0 || l.b > innerHeight);
+      return { ok: lignes.length >= 12 && coupees.length === 0, dit: `${lignes.length} lignes, haut mini ${Math.min(...lignes.map(l => l.h))} px, bas maxi ${Math.max(...lignes.map(l => l.b))} px sur ${innerHeight}${coupees.length ? `, coupées : ${coupees.map(l => l.t).join(', ')}` : ''}` };
+    }), 'toutes les lignes du menu + sont entières dans la fenêtre (haut ≥ 0, bas ≤ hauteur)')] },
+  /* T3B-2 et PC-153 (reg. PC-154) : la Liste, à toute position de défilement, ne laisse aucun montant sous le + ; PC-152 : en paysage, 4 lignes entières au moins sous le haut de page (2 avant) */
+  { n: 'V1b', nom: 'liste-plus-montants', cave: true, repos: true, sansObjet: cfg => (cfg.tactile ? null : 'la Liste se mesure au téléphone ; à 1280 le + est dans le coin du contenu'), geste: 'ouvrir la Liste ; défiler 0, 200, 600, 1200 px et au bout ; lire les montants sous le + et les lignes entières vues',
+    jouer: async p => {
+      /* le menu de la période peut refuser le premier toucher (page encore en chargement) : trois essais, sinon l'état est ABSENT, jamais mesuré sur la frise */
+      for (let essai = 0; essai < 3 && !(await p.$('[data-vue-liste]')); essai++) { await attendre(700); try { await menuPeriode(p, /^Liste/); } catch { /* nouvel essai */ } await attendre(600); }
+      if (!(await p.$('[data-vue-liste]'))) throw new Absent('la Liste ne s’ouvre pas par le menu de la période');
+      const vus = [];
+      for (const y of [0, 200, 600, 1200, 99999]) {
+        await p.evaluate(v => window.scrollTo(0, v), y); await attendre(900);
+        vus.push(await p.evaluate(() => {
+          const f = document.querySelector('button[aria-label^="Actions rapides"]').getBoundingClientRect();
+          const ent = document.querySelector('[data-entete-zone]');
+          const haut = getComputedStyle(ent).position === 'sticky' ? ent.getBoundingClientRect().bottom : 0;
+          const nav = document.querySelector('nav')?.getBoundingClientRect();
+          const bas = nav ? nav.top : innerHeight;
+          const lignes = [...document.querySelectorAll('[data-liste-chose]')].filter(e => { const r = e.getBoundingClientRect(); return r.top >= haut - 1 && r.bottom <= bas + 1; }).length;
+          const caches = [...document.querySelectorAll('.cal-li-m')].filter(e => { const r = e.getBoundingClientRect(); return r.left < f.right && r.right > f.left && r.top < f.bottom && r.bottom > f.top; }).map(e => (e.textContent || '').trim());
+          return { y: Math.round(scrollY), lignes, caches };
+        }));
+        if (y === 200) await p.screenshot({ path: join(DOSSIER, `${p.cfgNom}-${p.theme}-V1b-liste-plus-y200.png`) });
+      }
+      p.listeVue = vus;
+      p.noteEtat = vus.map(v => `y${v.y} : ${v.lignes} lignes entières, ${v.caches.length ? `sous le + : ${v.caches.join(' / ')}` : 'rien sous le +'}`).join(' ; ');
+    },
+    attendu: [fn(async p => ({ ok: (p.listeVue || []).length === 5 && p.listeVue.every(v => v.caches.length === 0), dit: (p.listeVue || []).map(v => v.caches.join('/') || 'rien').join(' ; ') }), 'aucun montant de la Liste sous le + (haut, 200, 600, 1200 px, bout)'),
+      fn(async p => { const t = (p.listeVue || []).filter(v => v.y < 1300); const portrait = p.cfg.h > p.cfg.w; const mini = Math.max(...t.map(v => v.lignes), 0); return { ok: portrait || mini >= 4, dit: `jusqu’à ${mini} lignes entières vues${portrait ? ' (portrait : non exigé)' : ''}` }; }, 'en paysage, 4 lignes entières de la Liste au moins sous le haut de page (PC-152)')] },
+  /* PC-147 puis PC-146 : en paysage, le doigt posé au centre du bord ou d'un jalon d'une barre de brassin touche CETTE barre, jamais celle du dessous ;
+     et 8 px d'espace entre deux barres de brassin */
+  { n: 'V1c', nom: 'brassins-doigt-voisin', cave: true, repos: true, geste: 'au repos : pour chaque brassin, ce que reçoit le doigt au centre de son bord et de ses jalons ; espace entre deux barres',
+    sansObjet: cfg => (cfg.tactile && cfg.w > cfg.h ? null : 'le défaut est celui du paysage (rangées de 20 px)'),
+    jouer: async p => {
+      p.voisins = await p.evaluate(() => {
+        const titre = e => (e?.closest('[data-barre]')?.getAttribute('data-titre') || e?.closest('[data-barre]')?.getAttribute('aria-label') || 'rien');
+        const barres = [...document.querySelectorAll('section[data-rangee="brassins"] [data-barre]')];
+        const faux = [];
+        /* un point hors de la fenêtre, ou sous la barre d'onglets, n'est pas touchable : il ne se juge pas */
+        const basVu = document.querySelector('nav')?.getBoundingClientRect().top ?? innerHeight;
+        for (const b of barres) {
+          const mien = b.getAttribute('data-titre') || b.getAttribute('aria-label') || '';
+          for (const j of b.querySelectorAll('[data-jalon], [data-bord]')) {
+            const k = j.getBoundingClientRect();
+            if (k.top + k.height / 2 >= basVu - 2) continue;
+            const e = document.elementFromPoint(k.left + k.width / 2, k.top + k.height / 2);
+            if (titre(e) !== mien) faux.push(`${mien.slice(0, 14)} (${j.getAttribute('data-jalon') || 'bord'}) → ${titre(e).slice(0, 14)}`);
+          }
+        }
+        const rects = barres.map(b => b.getBoundingClientRect()).sort((a, b) => a.top - b.top);
+        const espaces = rects.slice(1).map((r, i) => r.top - rects[i].bottom).filter(e => e > -1 && e < 40);
+        return { n: barres.length, faux, espaceMini: espaces.length ? Math.round(Math.min(...espaces) * 10) / 10 : null };
+      });
+      p.noteEtat = `${p.voisins.n} barres de brassin ; espace mini ${p.voisins.espaceMini} px ; doigts sur le voisin : ${p.voisins.faux.length ? p.voisins.faux.join(' ; ') : 'aucun'}`;
+    },
+    attendu: [fn(async p => ({ ok: !!p.voisins && p.voisins.n >= 4 && p.voisins.faux.length === 0, dit: p.voisins ? `${p.voisins.faux.length} jalon(s) ou bord qui reçoivent le doigt d’un voisin${p.voisins.faux.length ? ` : ${p.voisins.faux.slice(0, 4).join(' ; ')}` : ''}` : 'non mesuré' }), 'le centre du bord et de chaque jalon d’une barre de brassin touche cette barre'),
+      fn(async p => ({ ok: !!p.voisins && p.voisins.espaceMini !== null && p.voisins.espaceMini >= 8, dit: `espace mini entre deux barres de brassin : ${p.voisins?.espaceMini} px` }), '8 px d’espace au moins entre deux barres de brassin (18.11)')] }
 ];
 /* ---------- CRITIQUE-10 : dates du banc (posé par rapport au jour) et lectures ---------- */
 /** Le lundi de la semaine en cours (UTC), comme le banc (`lundiDe(aujourdhui)`). */
@@ -2195,7 +2264,7 @@ async function chronometrer() {
 /* ------------------------------------------------------------------ tout jouer */
 
 /* groupes (CRITIQUE-12) : `msg` = M1 à M7 ; `et-per` ou `finances` = 33 (le parcours /?dev-local, jamais une capture du banc) ; `budget-app` = app (D-71) */
-const GROUPES = { msg: n => /^M\d$/.test(n), 'et-per': n => n === '33', finances: n => n === '33', 'budget-app': n => n === 'app' };
+const GROUPES = { v1: n => /^V1[a-c]$/.test(n), msg: n => /^M\d$/.test(n), 'et-per': n => n === '33', finances: n => n === '33', 'budget-app': n => n === 'app' };
 const garde = n => !choixEtats || choixEtats.has(n) || [...choixEtats].some(g => GROUPES[g] && GROUPES[g](n));
 try {
   for (const cfgNom of choixConfigs) {
