@@ -872,7 +872,7 @@ export const yeastPitchingChoiceChanged = (before: YeastSpec, after: YeastSpec) 
 /** One line for closed summaries: exact product, retained offer, preparation. */
 export function yeastPitchingSummary(yeast: YeastSpec): string {
   const plan = yeast.pitching;
-  if (!plan?.product) return 'Produit exact non choisi';
+  if (!plan?.product) return 'Conditionnement et vendeur à choisir';
   return [plan.product.label, plan.offer ? `offre ${plan.offer.seller}` : '', plan.preparation && plan.preparation.status !== 'cancelled'
     ? `préparation dès ${dateTimeText(plan.preparation.startAt)}` : ''].filter(Boolean).join(' · ');
 }
