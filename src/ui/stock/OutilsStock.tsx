@@ -1,6 +1,6 @@
 // Barre d'outils du Stock, reprise de la maquette choisie sy/fA : bascule Étagère | Recompter, recherche, pastilles d'état,
 // ligne de filtre « Filtre Houblons : 19 articles · Tout voir », ligne « Trié par … ▾ ». Les règles sont dans domain/stock.
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Search, X, Rows3, ClipboardCheck } from 'lucide-react';
 import type { ComptesEtats, TriListe } from '../../domain/stock/liste';
 import { ETATS, TRIS, phraseTri } from '../../domain/stock/liste';
@@ -21,14 +21,33 @@ export function BasculeVue({ vue, onVue }: { vue: VueStock; onVue: (v: VueStock)
   );
 }
 
+/** Téléphone couché (même seuil que paysageBas.css) : la barre n'a de place que pour un mot. */
+const PAYSAGE_BAS = '(orientation: landscape) and (max-height: 480px)';
+export const PLACEHOLDER_RECHERCHE = 'Rechercher : nom, fournisseur, souche…';
+export const PLACEHOLDER_RECHERCHE_COURT = 'Rechercher…';
+function usePaysageBas(): boolean {
+  const lire = () => typeof window !== 'undefined' && typeof window.matchMedia === 'function' && window.matchMedia(PAYSAGE_BAS).matches;
+  const [bas, setBas] = useState(lire);
+  useEffect(() => {
+    if (typeof window.matchMedia !== 'function') return;
+    const m = window.matchMedia(PAYSAGE_BAS);
+    const suivre = () => setBas(m.matches);
+    suivre();
+    m.addEventListener('change', suivre);
+    return () => m.removeEventListener('change', suivre);
+  }, []);
+  return bas;
+}
+
 /** La recherche : un champ de texte (jamais type="number"), l'action d'ajout à sa droite. */
 export function Recherche({ q, onQ, action }: { q: string; onQ: (q: string) => void; action?: React.ReactNode }) {
+  const bas = usePaysageBas();
   return (
     <div className="flex items-center gap-2">
       <label className="sz-ch min-w-0 flex-1">
         <Search size={18} aria-hidden="true" />
         <input type="search" inputMode="search" name="stock_recherche" autoComplete="off" autoCorrect="off" spellCheck={false} data-form-type="other" data-lpignore="true"
-          value={q} onChange={(e) => onQ(e.target.value)} onKeyDown={(e) => { if (e.key === 'Enter') { e.preventDefault(); e.currentTarget.blur(); } }} aria-label="Rechercher dans le stock" placeholder="Rechercher : nom, fournisseur, souche…" />
+          value={q} onChange={(e) => onQ(e.target.value)} onKeyDown={(e) => { if (e.key === 'Enter') { e.preventDefault(); e.currentTarget.blur(); } }} aria-label="Rechercher dans le stock" placeholder={bas ? PLACEHOLDER_RECHERCHE_COURT : PLACEHOLDER_RECHERCHE} />
         {q && <button type="button" className="sz-xc" aria-label="Effacer la recherche" onClick={() => onQ('')}><X size={16} aria-hidden="true" /></button>}
       </label>
       {action}

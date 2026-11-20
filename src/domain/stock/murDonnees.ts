@@ -50,7 +50,7 @@ export interface MarqueMur {
   hauteur: number; trace: string; fill: string; hachure: string | null;
   cereale?: string; forme?: FormeCereale; sommet?: SommetHoublon; teinte?: string; alpha?: number | null; parDefaut?: boolean;
   /** Levures : n briques (sachets) ou fioles, initiale de la souche, atténuation, forme, rang de bord. */
-  n?: number; liquide?: boolean; ini?: string; att?: number | null; bord?: number; ddmDepassee?: boolean; inconnue?: boolean; /** Style lu dans le nom d'une levure en Autres (Saison…) ; absent = type non connu. */ style?: string;
+  n?: number; liquide?: boolean; ini?: string; /** Nom court de la souche (US-05, S-04), écrit sous la colonne (CT4C g1 tour 2). */ souche?: string | null; att?: number | null; bord?: number; ddmDepassee?: boolean; inconnue?: boolean; /** Style lu dans le nom d'une levure en Autres (Saison…) ; absent = type non connu. */ style?: string;
 }
 export interface GroupeMur {
   id: string; mot: string; court?: string; titre: string; ink: string; fill: string; total: string; marques: MarqueMur[]; socle: Record<string, string> | null;
@@ -168,6 +168,12 @@ export function initialeSouche(nom: string): string {
   return (m.match(/[A-Za-zÀ-ÿ]/)?.[0] ?? '?').toUpperCase();
 }
 
+/** Le nom court de la souche, sans la marque du labo : « SafAle S-04 » S-04, « Nottingham » Nottingham. Rien lu : null, jamais inventé. */
+export function nomCourtSouche(nom: string): string | null {
+  const mots = nom.replace(/[™®]/g, '').split(/[\s·]+/).filter((m) => m && !MOTS_LABO.test(m));
+  return mots[0] ?? null;
+}
+
 // ---------- la construction ----------
 /** ST-T33 : la forme écrite de l'article ; à défaut, lue de son nom (un Wyeast ancien, sans forme, n'est pas « sèche »). Rien lu : inconnue, jamais sèche par défaut. */
 const formeDe = (i: StockItem): 'sèche' | 'liquide' | 'levain' | undefined => i.yeastForm ?? formeLevureLue(`${i.name} ${i.yeastStrain ?? ''} ${i.yeastLab ?? ''}`);
@@ -271,7 +277,7 @@ export function construireMur(items: StockItem[], src: SourcesMur, equipements: 
         const depassee = !!ddm && !Number.isNaN(Date.parse(ddm)) && Date.parse(ddm) < aujourdhui.getTime();
         const unite = liquide ? (n > 1 ? 'fioles' : 'fiole') : n > 1 ? 'sachets' : 'sachet';
         return {
-          ref: i.ref, nom: i.name, rayon: 'Levures', k: i.ref, etat: inconnu ? 'compter' : n === 0 ? 'epuise' : null, hauteur: 0, trace: '', fill, hachure: null, n, liquide, ini: initialeSouche(i.yeastStrain ?? i.name), att, bord: rang++ % 3, ddmDepassee: depassee, inconnue: g.id === 'autres', style: g.id === 'autres' ? styleLevureConnu(i) ?? undefined : undefined,
+          ref: i.ref, nom: i.name, rayon: 'Levures', k: i.ref, etat: inconnu ? 'compter' : n === 0 ? 'epuise' : null, hauteur: 0, trace: '', fill, hachure: null, n, liquide, ini: initialeSouche(i.yeastStrain ?? i.name), souche: nomCourtSouche(i.yeastStrain ?? i.name), att, bord: rang++ % 3, ddmDepassee: depassee, inconnue: g.id === 'autres', style: g.id === 'autres' ? styleLevureConnu(i) ?? undefined : undefined,
           titre: [i.name, inconnu ? 'à compter' : n === 0 ? 'épuisé' : `${n} ${unite}`, liquide ? 'liquide' : forme === 'sèche' ? 'sèche' : 'forme non connue', ...(g.id === 'autres' ? [styleLevureConnu(i) ? `style ${styleLevureConnu(i)}` : 'type non connu'] : []), ddm ? `DDM ${ddm}${depassee ? ' dépassée' : ''}` : 'DDM non connue'].join(' · '),
         };
       });

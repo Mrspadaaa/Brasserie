@@ -1,17 +1,31 @@
-/* CT4C-4 (critique tour 4) : au téléphone couché (844×340), l'en-tête du Stock (sous-onglets, « Comparer une recette », Étagère/Recompter,
+/* CT4C-4 (critique de vision, tour 4) : au téléphone couché (844×340), l'en-tête du Stock (sous-onglets, « Comparer une recette », Étagère/Recompter,
    recherche, pastilles) prenait environ 190 px sur 340 : aucun article de l'étagère au premier écran. En paysage bas, la bascule, la recherche
-   et les pastilles tiennent sur une seule ligne ; « Ajouter un article » garde son icône seule (son nom reste dans aria-label) ; la ligne de
-   filtre, quand elle paraît, passe dessous. Rien ne change en portrait ni au bureau. */
+   et les pastilles tiennent sur une seule ligne ; la ligne de filtre, quand elle paraît, passe dessous. Rien ne change en portrait ni au bureau.
+   Tour 2 (critique n° 2 et 3) : (2) l'en-tête perd encore ~27 px (ligne « Comparer une recette » sans marge, outils à 32 px, onglets Ingrédients /
+   Autres stocks à 28 px) : la rangée Houblons tient entière au premier écran avec Malts ; (3) la recherche ne se tronque plus (placeholder court,
+   posé par OutilsStock) et « Ajouter un article » garde un mot, « Article », à côté de son « + » (le nom complet reste dans aria-label). */
 @media (orientation:landscape) and (max-height:480px){
   .stock-outils{display:flex;align-items:center;gap:8px}
-  .stock-outils>.sz-seg{flex:0 0 200px;height:40px}
+  .stock-outils.pt-1{padding-top:0}
+  .stock-outils>.sz-seg{flex:0 0 200px;height:32px;margin-left:0}
   .stock-outils>.sz-pan-h{flex:1 1 0;min-width:0;margin-top:0;display:flex;flex-wrap:wrap;align-items:center;gap:0 8px}
   .stock-outils>.sz-pan-h>:first-child{flex:1 1 160px;min-width:140px}
+  .stock-outils .sz-ch{height:32px}
+  .stock-outils .sz-ch input{height:30px}
   .stock-outils>.sz-pan-h>.sz-puces{flex:0 1 auto;min-width:0;margin-top:0;flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none}
   .stock-outils>.sz-pan-h>.sz-puces::-webkit-scrollbar{display:none}
+  .stock-outils .sz-pu{height:30px}
   .stock-outils>.sz-pan-h>.sz-fli{flex:1 0 100%}
+  /* « Ajouter un article » : le mot long sort de la ligne, « Article » reste à côté du « + » (nom complet gardé par aria-label) */
+  .stock-outils .sz-pan-h button[aria-label="Ajouter un article"]{min-height:32px;padding:0 8px}
   .stock-outils .sz-pan-h button[aria-label="Ajouter un article"] span{display:none}
-  /* les onglets Ingrédients / Autres stocks du mur : 36 px au lieu de 40 (cible encore tenue par la bande de 42 px) */
-  .stock-mur .sv-tab{min-height:36px}
-  .stock-mur .sw-top{margin-bottom:4px}
+  .stock-outils .sz-pan-h button[aria-label="Ajouter un article"]::after{content:"Article";font-size:13px;font-weight:600}
+  /* « Comparer une recette » : une ligne de 28 px (la cible tactile du projet), sans marge au-dessus ni au-dessous */
+  details.shrink-0>summary{padding-top:0;padding-bottom:0;min-height:28px}
+  /* les onglets Ingrédients / Autres stocks du mur : 28 px (la cible tactile du projet) au lieu de 40, et la marge de 4 px au-dessus des rangées retirée */
+  .stock-mur .sv-tab{min-height:28px}
+  .stock-mur .l1e-mur{margin-top:0!important}
+  .stock-mur .sw-top{margin-bottom:0}
+  /* les rangées Malts / Houblons / Levures : 4 px de moins chacune (marge haute et basse), pour que deux rangées entières tiennent au premier écran */
+  .stock-mur .l1e-r{padding-top:1px!important;padding-bottom:0!important}
 }

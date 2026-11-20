@@ -80,8 +80,11 @@ function Levure({ a, ink, attrs }: { a: MarqueMur; ink: string; attrs: Record<st
 function TotalLevure({ g }: { g: GroupeMur }) {
   const s = g.sachets ?? 0; const f = g.fioles ?? 0;
   const lab = [s ? `${s} sachet${s > 1 ? 's' : ''}` : '', f ? `${f} fiole${f > 1 ? 's' : ''}` : ''].filter(Boolean).join(', ') || '0';
+  // CT4C (g1, tour 2) n° 4 : la lettre de la brique ne dit pas la souche ; son nom court s'écrit à côté du compte (deux au plus, puis « +n »).
+  const noms = [...new Set(g.marques.map((m) => m.souche).filter((x): x is string => !!x))];
+  const nomsLus = noms.length > 2 ? `${noms.slice(0, 2).join(' · ')} +${noms.length - 2}` : noms.join(' · ');
   return (
-    <span className="l1e-t"><span className="sx-tk" aria-label={lab} title={lab}><span aria-hidden="true">
+    <span className="l1e-t">{nomsLus && <span className="sx-sn">{nomsLus}</span>}<span className="sx-tk" aria-label={lab} title={lab}><span aria-hidden="true">
       {s ? <>{s}<i className="sx-ks" /></> : null}{s && f ? <i className="sx-kp"> · </i> : null}{f ? <>{f}<i className="sx-kf" /></> : null}
     </span></span></span>
   );
