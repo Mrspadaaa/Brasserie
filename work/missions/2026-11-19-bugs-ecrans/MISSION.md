@@ -31,6 +31,10 @@ reporté au registre, `controle-bugs.mjs` → BUGS OK ; les commits envoyés à 
 | s1 | 12 défauts Stocks, Houblons, Bord | jugement | auteur | sonnet | 120 | voir voies/s1/VOIE.md | — | verdicts.mjs s1 ; --tests | pilote | — |
 | c1 | 7 défauts Clients et Ventes | jugement | auteur | sonnet | 120 | voir voies/c1/VOIE.md | — | verdicts.mjs c1 ; --tests | pilote | — |
 | k1 | test d'écran des écrans touchés, 390 tactile et 1280, deux thèmes | jugement | critique | opus | 30 | voies/k1/ | t1, r1, a1, a2, b1, s1, c1 | « combien et quels problèmes ? » | pilote | — |
+| h1 | T3B-4, T3B-5 (en ligne passe 4) | jugement | auteur | sonnet | 120 | voir voies/h1/VOIE.md | — | verdicts.mjs h1 ; --tests | pilote | — |
+| f1 | T3B-6, T3B-11, T3B-12 (en ligne passe 4) | jugement | auteur | sonnet | 120 | voir voies/f1/VOIE.md | — | verdicts.mjs f1 ; --tests | pilote | — |
+| e1 | T3B-7, T3B-8, T3B-9 (en ligne passe 4) | jugement | auteur | sonnet | 120 | voir voies/e1/VOIE.md | — | verdicts.mjs e1 ; --tests | pilote | — |
+| v1 | T3B-10, T3B-13 (en ligne passe 4) | jugement | auteur | sonnet | 120 | voir voies/v1/VOIE.md | — | verdicts.mjs v1 ; --tests | pilote | — |
 
 ## Agents
 Notés au lancement.

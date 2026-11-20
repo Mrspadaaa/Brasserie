@@ -1,0 +1,23 @@
+Serveur 1/1 : npm run dev  (journal : C:\Users\mrspa\AppData\Local\Temp\with-server-NIgMNz\serveur-1-3110.log)
+Attente du port 3110…
+Serveur prêt sur le port 3110
+
+Tous les serveurs sont prêts. Lancement : node work/missions/2026-11-19-bugs-ecrans/voies/v1/capturer-vendre.mjs
+
+390 clair tuiles ["33 cl3,00 CHF","75 cl · à vérifierprix ?","fût 20 L · à vérifierprix ?","Autreconsigne, verres…"]
+390 clair clic 75 cl {"ligne":true,"prix":null,"total":"—CHF"}
+390 clair erreurs []
+390 cave tuiles ["33 cl3,00 CHF","75 cl · à vérifierprix ?","fût 20 L · à vérifierprix ?","Autreconsigne, verres…"]
+390 cave clic 75 cl {"ligne":true,"prix":null,"total":"—CHF"}
+390 cave erreurs []
+1280 clair tuiles ["33 cl3,00 CHF","75 cl · à vérifierprix ?","fût 20 L · à vérifierprix ?","Autreconsigne, verres…"]
+1280 clair clic 75 cl {"ligne":true,"prix":"","total":"—CHF"}
+1280 clair erreurs []
+1280 cave tuiles ["33 cl3,00 CHF","75 cl · à vérifierprix ?","fût 20 L · à vérifierprix ?","Autreconsigne, verres…"]
+1280 cave clic 75 cl {"ligne":true,"prix":"","total":"—CHF"}
+1280 cave erreurs []
+
+Commande terminée, code 0.
+
+Arrêt de 1 serveur(s)…
+FINI

@@ -1,0 +1,25 @@
+Serveur 1/1 : npm run dev  (journal : C:\Users\mrspa\AppData\Local\Temp\with-server-A3SbWH\serveur-1-3112.log)
+Attente du port 3112…
+Serveur prêt sur le port 3112
+
+Tous les serveurs sont prêts. Lancement : node work/missions/2026-11-19-bugs-ecrans/voies/v1/ecart-mesure.mjs 3112
+
+.prv-tx « 2 sorties −124,26, 20.11 » estimé 175 réel 135 (×0.77) "Source Sans 3", system-ui, -apple-syste 600
+.prv-tx « loyer −400, 25.11 » estimé 124 réel 99 (×0.80) "Source Sans 3", system-ui, -apple-syste 600
+.prv-tx « loyer −400 ×11, le 25 » estimé 153 réel 122 (×0.80) "Source Sans 3", system-ui, -apple-syste 600
+.prv-tx « Fermenteur su… −750, 01.01 » estimé 190 réel 203 (×1.07) "Source Sans 3", system-ui, -apple-syste 700
+.prv-fin « −1 492,66 » estimé 87 réel 79 (×0.91) ui-monospace, monospace 700
+.prv-et « aujourd’hui 4 181,60 » estimé 146 réel 126 (×0.86) "Source Sans 3", system-ui, -apple-syste 400
+.prv-ax « −2 000 » estimé 44 réel 40 (×0.91) ui-monospace, monospace 400
+.prv-ax « −1 000 » estimé 44 réel 40 (×0.91) ui-monospace, monospace 400
+.prv-ax « 0 » estimé 8 réel 7 (×0.88) ui-monospace, monospace 600
+.prv-ax « 1 000 » estimé 36 réel 33 (×0.92) ui-monospace, monospace 400
+.prv-ax « 2 000 » estimé 36 réel 33 (×0.92) ui-monospace, monospace 400
+.prv-ax « 3 000 » estimé 36 réel 33 (×0.92) ui-monospace, monospace 400
+.prv-ax « 4 000 » estimé 36 réel 33 (×0.92) ui-monospace, monospace 400
+.prv-nom-ghost « sans Fermenteur supplé… −742,66 » estimé 226 réel 204 (×0.90) "Source Sans 3", system-ui, -apple-syste 600
+
+Commande terminée, code 0.
+
+Arrêt de 1 serveur(s)…
+FINI

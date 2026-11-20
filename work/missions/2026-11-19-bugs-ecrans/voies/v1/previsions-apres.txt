@@ -1,0 +1,26 @@
+Serveur 1/1 : npm run dev  (journal : C:\Users\mrspa\AppData\Local\Temp\with-server-wzeW07\serveur-1-3113.log)
+Attente du port 3113…
+Serveur prêt sur le port 3113
+
+Tous les serveurs sont prêts. Lancement : node work/missions/2026-11-19-bugs-ecrans/voies/v1/mesurer-previsions.mjs 3113 capturer
+
+390 clair 30 jours : {"svg":true,"chips":1,"conflits":[]}
+390 clair 90 jours : {"svg":true,"chips":1,"conflits":[]}
+390 clair 12 mois : {"svg":true,"chips":1,"conflits":[]}
+erreurs 390 clair: 
+390 cave 30 jours : {"svg":true,"chips":1,"conflits":[]}
+390 cave 90 jours : {"svg":true,"chips":1,"conflits":[]}
+390 cave 12 mois : {"svg":true,"chips":1,"conflits":[]}
+erreurs 390 cave: 
+1280 clair 30 jours : {"svg":true,"chips":1,"conflits":[]}
+1280 clair 90 jours : {"svg":true,"chips":1,"conflits":[]}
+1280 clair 12 mois : {"svg":true,"chips":1,"conflits":[]}
+erreurs 1280 clair: 
+1280 cave 30 jours : {"svg":true,"chips":1,"conflits":[]}
+1280 cave 90 jours : {"svg":true,"chips":1,"conflits":[]}
+1280 cave 12 mois : {"svg":true,"chips":1,"conflits":[]}
+erreurs 1280 cave: 
+
+Commande terminée, code 0.
+
+Arrêt de 1 serveur(s)…

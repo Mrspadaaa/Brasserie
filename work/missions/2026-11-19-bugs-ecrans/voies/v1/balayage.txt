@@ -1,0 +1,47 @@
+Serveur 1/1 : npm run dev  (journal : C:\Users\mrspa\AppData\Local\Temp\with-server-RyZqV1\serveur-1-3110.log)
+Attente du port 3110…
+Serveur prêt sur le port 3110
+
+Tous les serveurs sont prêts. Lancement : node work/missions/2026-11-19-bugs-ecrans/voies/v1/balayer-previsions.mjs 3110 capturer
+
+gros 10000 · ZZ 2026-12-21 · 90 jours : {"svg":true,"chips":["2 sorties −124,26, 20.11","loyer −400, 25.11","loyer −400, 25.12","Fermenteur su… −750, 01.01"],"fin":"−7 901,66","conflits":[]}
+gros 10000 · ZZ 2026-12-21 · 12 mois : {"svg":true,"chips":["2 sorties −124,26, 20.11","loyer −400, 25.11","ZZ TEST — grosse sortie −10 000, 02.12","loyer −400 ×11, le 25","Fermenteur su… −750, 01.01"],"fin":"−11 501,66","conflits":[]}
+gros 10000 · ZZ 2026-12-25 · 90 jours : {"svg":true,"chips":["2 sorties −124,26, 20.11","loyer −400, 25.11","ZZ TEST — grosse sortie −10 000, 02.12","loyer −400 ×11, le 25","Fermenteur su… −750, 01.01"],"fin":"−11 501,66","conflits":[]}
+gros 10000 · ZZ 2026-12-25 · 12 mois : {"svg":true,"chips":["2 sorties −124,26, 20.11","loyer −400, 25.11","ZZ TEST — grosse sortie −10 000, 02.12","loyer −400 ×11, le 25","Fermenteur su… −750, 01.01"],"fin":"−11 501,66","conflits":[]}
+gros 10000 · ZZ 2026-12-28 · 90 jours : {"svg":true,"chips":["2 sorties −124,26, 20.11","loyer −400, 25.11","ZZ TEST — grosse sortie −10 000, 02.12","loyer −400 ×11, le 25","Fermenteur su… −750, 01.01"],"fin":"−11 501,66","conflits":[]}
+gros 10000 · ZZ 2026-12-28 · 12 mois : {"svg":true,"chips":["2 sorties −124,26, 20.11","loyer −400, 25.11","ZZ TEST — grosse sortie −10 000, 02.12","loyer −400 ×11, le 25","Fermenteur su… −750, 01.01"],"fin":"−11 501,66","conflits":[]}
+gros 10000 · ZZ 2027-01-04 · 90 jours : {"svg":true,"chips":["2 sorties −124,26, 20.11","loyer −400, 25.11","ZZ TEST — grosse sortie −10 000, 02.12","loyer −400 ×11, le 25","Fermenteur su… −750, 01.01"],"fin":"−11 501,66","conflits":[]}
+gros 10000 · ZZ 2027-01-04 · 12 mois : {"svg":true,"chips":["2 sorties −124,26, 20.11","loyer −400, 25.11","ZZ TEST — grosse sortie −10 000, 02.12","loyer −400 ×11, le 25","Fermenteur su… −750, 01.01"],"fin":"−11 501,66","conflits":[]}
+gros 10000 · ZZ 2027-01-20 · 90 jours : {"svg":true,"chips":["2 sorties −124,26, 20.11","loyer −400, 25.11","ZZ TEST — grosse sortie −10 000, 02.12","loyer −400 ×11, le 25","Fermenteur su… −750, 01.01"],"fin":"−11 501,66","conflits":[]}
+gros 10000 · ZZ 2027-01-20 · 12 mois : {"svg":true,"chips":["2 sorties −124,26, 20.11","loyer −400, 25.11","ZZ TEST — grosse sortie −10 000, 02.12","loyer −400 ×11, le 25","Fermenteur su… −750, 01.01"],"fin":"−11 501,66","conflits":[]}
+gros 10000 · ZZ 2027-02-10 · 90 jours : {"svg":true,"chips":["2 sorties −124,26, 20.11","loyer −400, 25.11","ZZ TEST — grosse sortie −10 000, 02.12","loyer −400 ×11, le 25","Fermenteur su… −750, 01.01"],"fin":"−11 501,66","conflits":[]}
+gros 10000 · ZZ 2027-02-10 · 12 mois : {"svg":true,"chips":["2 sorties −124,26, 20.11","loyer −400, 25.11","ZZ TEST — grosse sortie −10 000, 02.12","loyer −400 ×11, le 25","Fermenteur su… −750, 01.01"],"fin":"−11 501,66","conflits":[]}
+gros 13000 · ZZ 2026-12-21 · 90 jours : {"svg":true,"chips":["2 sorties −124,26, 20.11","loyer −400, 25.11","ZZ TEST — grosse sortie −13 000, 02.12","loyer −400 ×11, le 25","Fermenteur su… −750, 01.01"],"fin":"−14 501,66","conflits":[]}
+gros 13000 · ZZ 2026-12-21 · 12 mois : {"svg":true,"chips":["2 sorties −124,26, 20.11","loyer −400, 25.11","ZZ TEST — grosse sortie −13 000, 02.12","loyer −400 ×11, le 25","Fermenteur su… −750, 01.01"],"fin":"−14 501,66","conflits":[]}
+gros 13000 · ZZ 2026-12-25 · 90 jours : {"svg":true,"chips":["2 sorties −124,26, 20.11","loyer −400, 25.11","ZZ TEST — grosse sortie −13 000, 02.12","loyer −400 ×11, le 25","Fermenteur su… −750, 01.01"],"fin":"−14 501,66","conflits":[]}
+gros 13000 · ZZ 2026-12-25 · 12 mois : {"svg":true,"chips":["2 sorties −124,26, 20.11","loyer −400, 25.11","ZZ TEST — grosse sortie −13 000, 02.12","loyer −400 ×11, le 25","Fermenteur su… −750, 01.01"],"fin":"−14 501,66","conflits":[]}
+gros 13000 · ZZ 2026-12-28 · 90 jours : {"svg":true,"chips":["2 sorties −124,26, 20.11","loyer −400, 25.11","ZZ TEST — grosse sortie −13 000, 02.12","loyer −400 ×11, le 25","Fermenteur su… −750, 01.01"],"fin":"−14 501,66","conflits":[]}
+gros 13000 · ZZ 2026-12-28 · 12 mois : {"svg":true,"chips":["2 sorties −124,26, 20.11","loyer −400, 25.11","ZZ TEST — grosse sortie −13 000, 02.12","loyer −400 ×11, le 25","Fermenteur su… −750, 01.01"],"fin":"−14 501,66","conflits":[]}
+gros 13000 · ZZ 2027-01-04 · 90 jours : {"svg":true,"chips":["2 sorties −124,26, 20.11","loyer −400, 25.11","ZZ TEST — grosse sortie −13 000, 02.12","loyer −400 ×11, le 25","Fermenteur su… −750, 01.01"],"fin":"−14 501,66","conflits":[]}
+gros 13000 · ZZ 2027-01-04 · 12 mois : {"svg":true,"chips":["2 sorties −124,26, 20.11","loyer −400, 25.11","ZZ TEST — grosse sortie −13 000, 02.12","loyer −400 ×11, le 25","Fermenteur su… −750, 01.01"],"fin":"−14 501,66","conflits":[]}
+gros 13000 · ZZ 2027-01-20 · 90 jours : {"svg":true,"chips":["2 sorties −124,26, 20.11","loyer −400, 25.11","ZZ TEST — grosse sortie −13 000, 02.12","loyer −400 ×11, le 25","Fermenteur su… −750, 01.01"],"fin":"−14 501,66","conflits":[]}
+gros 13000 · ZZ 2027-01-20 · 12 mois : {"svg":true,"chips":["2 sorties −124,26, 20.11","loyer −400, 25.11","ZZ TEST — grosse sortie −13 000, 02.12","loyer −400 ×11, le 25","Fermenteur su… −750, 01.01"],"fin":"−14 501,66","conflits":[]}
+gros 13000 · ZZ 2027-02-10 · 90 jours : {"svg":true,"chips":["2 sorties −124,26, 20.11","loyer −400, 25.11","ZZ TEST — grosse sortie −13 000, 02.12","loyer −400 ×11, le 25","Fermenteur su… −750, 01.01"],"fin":"−14 501,66","conflits":[]}
+gros 13000 · ZZ 2027-02-10 · 12 mois : {"svg":true,"chips":["2 sorties −124,26, 20.11","loyer −400, 25.11","ZZ TEST — grosse sortie −13 000, 02.12","loyer −400 ×11, le 25","Fermenteur su… −750, 01.01"],"fin":"−14 501,66","conflits":[]}
+gros 16000 · ZZ 2026-12-21 · 90 jours : {"svg":true,"chips":["2 sorties −124,26, 20.11","loyer −400, 25.11","ZZ TEST — grosse sortie −16 000, 02.12","loyer −400 ×11, le 25","Fermenteur su… −750, 01.01"],"fin":"−17 501,66","conflits":[]}
+gros 16000 · ZZ 2026-12-21 · 12 mois : {"svg":true,"chips":["2 sorties −124,26, 20.11","loyer −400, 25.11","ZZ TEST — grosse sortie −16 000, 02.12","loyer −400 ×11, le 25","Fermenteur su… −750, 01.01"],"fin":"−17 501,66","conflits":[]}
+gros 16000 · ZZ 2026-12-25 · 90 jours : {"svg":true,"chips":["2 sorties −124,26, 20.11","loyer −400, 25.11","ZZ TEST — grosse sortie −16 000, 02.12","loyer −400 ×11, le 25","Fermenteur su… −750, 01.01"],"fin":"−17 501,66","conflits":[]}
+gros 16000 · ZZ 2026-12-25 · 12 mois : {"svg":true,"chips":["2 sorties −124,26, 20.11","loyer −400, 25.11","ZZ TEST — grosse sortie −16 000, 02.12","loyer −400 ×11, le 25","Fermenteur su… −750, 01.01"],"fin":"−17 501,66","conflits":[]}
+gros 16000 · ZZ 2026-12-28 · 90 jours : {"svg":true,"chips":["2 sorties −124,26, 20.11","loyer −400, 25.11","ZZ TEST — grosse sortie −16 000, 02.12","loyer −400 ×11, le 25","Fermenteur su… −750, 01.01"],"fin":"−17 501,66","conflits":[]}
+gros 16000 · ZZ 2026-12-28 · 12 mois : {"svg":true,"chips":["2 sorties −124,26, 20.11","loyer −400, 25.11","ZZ TEST — grosse sortie −16 000, 02.12","loyer −400 ×11, le 25","Fermenteur su… −750, 01.01"],"fin":"−17 501,66","conflits":[]}
+gros 16000 · ZZ 2027-01-04 · 90 jours : {"svg":true,"chips":["2 sorties −124,26, 20.11","loyer −400, 25.11","ZZ TEST — grosse sortie −16 000, 02.12","loyer −400 ×11, le 25","Fermenteur su… −750, 01.01"],"fin":"−17 501,66","conflits":[]}
+gros 16000 · ZZ 2027-01-04 · 12 mois : {"svg":true,"chips":["2 sorties −124,26, 20.11","loyer −400, 25.11","ZZ TEST — grosse sortie −16 000, 02.12","loyer −400 ×11, le 25","Fermenteur su… −750, 01.01"],"fin":"−17 501,66","conflits":[]}
+gros 16000 · ZZ 2027-01-20 · 90 jours : {"svg":true,"chips":["2 sorties −124,26, 20.11","loyer −400, 25.11","ZZ TEST — grosse sortie −16 000, 02.12","loyer −400 ×11, le 25","Fermenteur su… −750, 01.01"],"fin":"−17 501,66","conflits":[]}
+gros 16000 · ZZ 2027-01-20 · 12 mois : {"svg":true,"chips":["2 sorties −124,26, 20.11","loyer −400, 25.11","ZZ TEST — grosse sortie −16 000, 02.12","loyer −400 ×11, le 25","Fermenteur su… −750, 01.01"],"fin":"−17 501,66","conflits":[]}
+gros 16000 · ZZ 2027-02-10 · 90 jours : {"svg":true,"chips":["2 sorties −124,26, 20.11","loyer −400, 25.11","ZZ TEST — grosse sortie −16 000, 02.12","loyer −400 ×11, le 25","Fermenteur su… −750, 01.01"],"fin":"−17 501,66","conflits":[]}
+gros 16000 · ZZ 2027-02-10 · 12 mois : {"svg":true,"chips":["2 sorties −124,26, 20.11","loyer −400, 25.11","ZZ TEST — grosse sortie −16 000, 02.12","loyer −400 ×11, le 25","Fermenteur su… −750, 01.01"],"fin":"−17 501,66","conflits":[]}
+erreurs: 
+
+Commande terminée, code 0.
+
+Arrêt de 1 serveur(s)…
