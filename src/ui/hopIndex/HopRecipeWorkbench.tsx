@@ -37,7 +37,7 @@ function Detail({ title, children }: { title: React.ReactNode; children: React.R
 }
 
 /** Brewing decisions first. Local previews do not save references or touch the recipe. */
-export function HopRecipeWorkbench({ recipe, onChange, onNavigate, onPlanYeast, onBusyChange, session, focusRequest, onFocusHandled }: {
+export function HopRecipeWorkbench({ recipe: recipeSaisie, onChange, onNavigate, onPlanYeast, onBusyChange, session, focusRequest, onFocusHandled }: {
   recipe: TrialRecipe; onChange?: (recipe: TrialRecipe) => void;
   onNavigate?: (step: 'identite' | 'levure' | 'paliers' | 'eau') => void;
   onPlanYeast?: (goal: YeastRecipeGoal, yeastId?: string) => void; onBusyChange?: (busy: boolean) => void;
@@ -49,8 +49,11 @@ export function HopRecipeWorkbench({ recipe, onChange, onNavigate, onPlanYeast, 
 }) {
   const uid = useId(), { varieties, loading, error: catalogueError } = useHopCatalogue();
   const knowledge = useStorageValue(StorageService.getHopKnowledge);
-  // TL-27 : une recette sans durée d'ébullition enregistrée bout 60 min, comme sur la fiche (`recipe.boilMin ?? 60`) ; sans ce défaut, « Calcul incomplet : durée d'ébullition » s'écrivait pour toute la recette.
-  const analysis = analyseHopRecipe({ ...recipe, boilMin: recipe.boilMin ?? 60 }), key = hopRecipeKey(recipe);
+  // TL-27, T3B-6 : une recette sans durée d'ébullition enregistrée bout 60 min, comme sur la fiche (`recipe.boilMin ?? 60`). Le défaut se pose UNE fois, en tête,
+  // pour tout l'atelier : le Bilan (`analyseHopRecipe`), l'onglet Simuler (`evaluateHopRecipeAdjustment`), la borne d'un ajout et la reprise dans la recette lisent la même durée.
+  // (Le 19.11 il ne couvrait que le Bilan : « Viser des IBU » écrivait encore « durée d'ébullition de la recette » en ligne, 20.11.)
+  const recipe = useMemo<TrialRecipe>(() => ({ ...recipeSaisie, boilMin: recipeSaisie.boilMin ?? 60 }), [recipeSaisie]);
+  const analysis = analyseHopRecipe(recipe), key = hopRecipeKey(recipe);
   const [view, setView] = useState<'balance' | 'adjust' | 'flavor'>(() => session?.current?.view ?? 'balance');
   const [local, setLocal] = useState(() => session?.current?.local ?? ({ key, draft: createHopRecipeAdjustment(recipe) }));
   const [goal, setGoal] = useState<SensoryGoal>(() => session?.current?.goal ?? 'balanced'), [allVarieties, setAllVarieties] = useState(() => session?.current?.allVarieties ?? false);
