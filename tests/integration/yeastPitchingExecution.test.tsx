@@ -224,9 +224,10 @@ describe('Quantité de levure réellement ajoutée au jour J', () => {
     expect(saved.brewDay).toMatchObject({ pitchQuantityConfirmation: 'measured', additions: { yeast: { amount: 5.5, unit: 'g' } } });
     view.unmount();
     render(<BrewDayPage batch={saved} config={defaultConfig} onSave={vi.fn()} onFinish={vi.fn()} onClose={vi.fn()} />);
-    const reopenedGuide = screen.getByText(/^Levure ·/).closest('details')!;
-    if (!reopenedGuide.open) fireEvent.click(reopenedGuide.querySelector('summary')!);
-    expect(within(reopenedGuide).getByText(/Ensemencement consigné · Réel mesuré : 5,5 g · prévu/)).toBeInTheDocument();
+    // p2c E4 (maquette choisie) : un brassin ensemencé rouvre sur la clôture ; le bloc « Levure » dit le réel mesuré, sans dose prévue (aucune : plan nul).
+    const levure = screen.getByRole('region', { name: 'Levure' });
+    expect(levure.textContent).toMatch(/Culture sans dose prévue · 5,5 g · ajoutée \d+ h \d{2}/);
+    expect(levure.textContent).not.toMatch(/· 0 g|quantité non mesurée/);
   });
 
   it('consigne sans mesure et ne reporte ni zéro ni dose prévue dans le brassin', async () => {
@@ -253,19 +254,18 @@ describe('Quantité de levure réellement ajoutée au jour J', () => {
     expect(levure.textContent).not.toMatch(/12 g|0 g/);
   });
 
-  it('laisse un historique sans quantité inchangé au montage puis trace une déclaration explicite', async () => {
+  it('laisse un historique sans quantité inchangé au montage : la clôture le dit « non mesurée », sans dose prévue ni zéro', async () => {
     const yeast = { name: 'Culture historique', form: 'liquide' as const, qty: 12, unit: 'mL' };
     const saved = vi.fn();
     const state: BrewDayState = { currentIndex: 0, startedAt: 1, pitchedAt: 2, finishedAt: 2,
       steps: [{ id: 'ensemencement', label: 'Ensemencement', durationMin: 0, doneAt: 2 }], readings: [] };
     const view = render(<BrewDayPage batch={brewDayBatch(yeast, state)} config={defaultConfig} onSave={saved} onFinish={vi.fn()} onClose={vi.fn()} />);
-    await screen.findByText(/^Levure ·/); // p3 / 2C : les Aides de l'ensemencement sont ouvertes, l'étiquette « À vérifier » ne sert que repliées
+    // p2c E4 (maquette choisie) : un brassin ensemencé s'ouvre sur la clôture ; le guide Levure (et sa déclaration explicite) n'y est plus : le geste se joue AVANT l'ajout.
+    const levure = await screen.findByRole('region', { name: 'Levure' });
     expect(saved).not.toHaveBeenCalled();
-    const guide = screen.getByText(/^Levure ·/).closest('details')!;
-    if (!guide.open) fireEvent.click(guide.querySelector('summary')!);
-    expect(within(guide).getAllByText(/Quantité réelle non renseignée · prévu 12 mL/).length).toBeGreaterThan(0);
-    fireEvent.click(within(guide).getByRole('radio', { name: 'Ajout confirmé, quantité non mesurée' }));
-    expect(saved).toHaveBeenCalledWith(expect.objectContaining({ brewDay: expect.objectContaining({ pitchQuantityConfirmation: 'unmeasured', additions: expect.not.objectContaining({ yeast: expect.anything() }) }) }));
+    expect(levure.textContent).toMatch(/Culture historique · quantité non mesurée · ajoutée/);
+    expect(levure.textContent).not.toMatch(/12 mL|0 mL/);
+    expect(screen.queryByRole('radio', { name: 'Ajout confirmé, quantité non mesurée' })).not.toBeInTheDocument();
     view.unmount();
   });
 
