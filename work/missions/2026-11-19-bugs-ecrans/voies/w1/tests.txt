@@ -1,0 +1,417 @@
+[1m[43m DEPRECATED [49m[22m [33m"environmentMatchGlobs" is deprecated. Use `test.projects` to define different configurations instead.[39m
+
+[1m[46m RUN [49m[22m [36mv3.2.7 [39m[90mC:/Users/mrspa/.codex/worktrees/openai-clean-start/port-carnet[39m
+
+[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[90mstderr[2m | tests/unit/bugs-w1-wizard.test.tsx[2m > [22m[2mTL-7 : un seul « Objectif NOLO » à l’écran[2m > [22m[2mle bloc complet n’est monté qu’à l’Identité ; Levure et Récap ne le répètent pas
+[22m[39mAn update to Aromes inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() => {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+
+[90mstderr[2m | tests/unit/bugs-w1-wizard.test.tsx[2m > [22m[2mTL-7 : un seul « Objectif NOLO » à l’écran[2m > [22m[2mle bloc complet n’est monté qu’à l’Identité ; Levure et Récap ne le répètent pas
+[22m[39mAn update to Aromes inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() => {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+
+[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[90mstderr[2m | tests/unit/bugs-w1-wizard.test.tsx[2m > [22m[2mBK2-5 : section Additifs de l’assistant[2m > [22m[2mune épice se note en additif, en grammes, et quitte les fermentescibles
+[22m[39mA suspended resource finished loading inside a test, but the event was not wrapped in act(...).
+
+When testing, code that resolves suspended data should be wrapped into act(...):
+
+act(() => {
+  /* finish loading suspended data */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+A suspended resource finished loading inside a test, but the event was not wrapped in act(...).
+
+When testing, code that resolves suspended data should be wrapped into act(...):
+
+act(() => {
+  /* finish loading suspended data */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+
+[33m[39m[32m·[39m[90mstderr[2m | tests/unit/bugs-w1-wizard.test.tsx[2m > [22m[2mBK2-5 : section Additifs de l’assistant[2m > [22m[2mune épice se note en additif, en grammes, et quitte les fermentescibles
+[22m[39mAn update to Ajout inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() => {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+
+[90mstderr[2m | tests/unit/bugs-w1-wizard.test.tsx[2m > [22m[2mBK2-5 : section Additifs de l’assistant[2m > [22m[2mune épice se note en additif, en grammes, et quitte les fermentescibles
+[22m[39mAn update to Ajout inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() => {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+
+[33m[39m[32m·[39m[33m[39m[32m·[39m[90mstderr[2m | tests/unit/fermentescibles/etape.test.tsx[2m > [22m[2ml'étape Malts/sucres (s1)[2m > [22m[2mle curseur de la barre : ← → d'un cran
+[22m[39mAn update to EtapeFermentescibles inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() => {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+
+[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[90mstderr[2m | tests/unit/bugs-w1-wizard.test.tsx[2m > [22m[2mBK2-5 : section Additifs de l’assistant[2m > [22m[2mune épice se note en additif, en grammes, et quitte les fermentescibles
+[22m[39mAn update to EtapeFermentescibles inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() => {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+
+[33m[39m[32m·[39m[33m[39m[32m·[39m[90mstderr[2m | tests/unit/fermentescibles/etape.test.tsx[2m > [22m[2ml'étape Malts/sucres (s1)[2m > [22m[2mau toucher, la masse est un champ protégé d'une ligne (textarea), jamais type="number"
+[22m[39mAn update to Ajout inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() => {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+
+[90mstderr[2m | tests/unit/fermentescibles/etape.test.tsx[2m > [22m[2ml'étape Malts/sucres (s1)[2m > [22m[2mau toucher, la masse est un champ protégé d'une ligne (textarea), jamais type="number"
+[22m[39mAn update to Ajout inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() => {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+
+[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[90mstderr[2m | tests/unit/fermentescibles/etape.test.tsx[2m > [22m[2ml'étape Malts/sucres (s1)[2m > [22m[2ml’avertissement du lactose est la phrase de la maquette, mot pour mot
+[22m[39mAn update to Ajout inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() => {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+
+[90mstderr[2m | tests/unit/fermentescibles/etape.test.tsx[2m > [22m[2ml'étape Malts/sucres (s1)[2m > [22m[2ml’avertissement du lactose est la phrase de la maquette, mot pour mot
+[22m[39mAn update to Ajout inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() => {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+
+[90mstderr[2m | tests/unit/fermentescibles/etape.test.tsx[2m > [22m[2ml'étape Malts/sucres (s1)[2m > [22m[2mune recette vide : « Rien encore. », pas de plateau, pas de repères
+[22m[39mAn update to Ajout inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() => {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+
+[90mstderr[2m | tests/unit/fermentescibles/etape.test.tsx[2m > [22m[2ml'étape Malts/sucres (s1)[2m > [22m[2mune recette vide : « Rien encore. », pas de plateau, pas de repères
+[22m[39mAn update to Ajout inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() => {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+
+[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[90mstderr[2m | tests/unit/bugs-w1-wizard.test.tsx[2m > [22m[2mBK2-5 : section Additifs de l’assistant[2m > [22m[2mun additif se saisit à la main : nom, quantité à virgule, unité, moment
+[22m[39mAn update to Ajout inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() => {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+
+[90mstderr[2m | tests/unit/bugs-w1-wizard.test.tsx[2m > [22m[2mBK2-5 : section Additifs de l’assistant[2m > [22m[2mun additif se saisit à la main : nom, quantité à virgule, unité, moment
+[22m[39mAn update to Ajout inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() => {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+
+[33m[39m[32m·[39m[90mstderr[2m | tests/unit/bugs-w1-wizard.test.tsx[2m > [22m[2mBK2-5 : section Additifs de l’assistant[2m > [22m[2mun additif se saisit à la main : nom, quantité à virgule, unité, moment
+[22m[39mAn update to EtapeFermentescibles inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() => {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+
+[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[90mstderr[2m | tests/unit/bugs-w1-wizard.test.tsx[2m > [22m[2mk3 n° 7 : la ligne d’additif a trois parts lisibles[2m > [22m[2mquantité, unité et moment sont dans une grille ; le moment garde sa place (7 rem au moins)
+[22m[39mAn update to Ajout inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() => {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+
+[90mstderr[2m | tests/unit/bugs-w1-wizard.test.tsx[2m > [22m[2mk3 n° 7 : la ligne d’additif a trois parts lisibles[2m > [22m[2mquantité, unité et moment sont dans une grille ; le moment garde sa place (7 rem au moins)
+[22m[39mAn update to Ajout inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() => {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+
+[33m[39m[32m·[39m[90mstderr[2m | tests/unit/bugs-w1-wizard.test.tsx[2m > [22m[2mk3 n° 7 : la ligne d’additif a trois parts lisibles[2m > [22m[2mquantité, unité et moment sont dans une grille ; le moment garde sa place (7 rem au moins)
+[22m[39mAn update to EtapeFermentescibles inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() => {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+
+[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[90mstderr[2m | tests/unit/fermentescibles/a1-defauts.test.tsx[2m > [22m[2mBR-12, BR-15 — la ligne touchée se choisit ; le cran du moins s’éteint à 0 kg[2m > [22m[2m« Retirer un cran » est désactivé à 0 kg
+[22m[39mAn update to Ajout inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() => {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+
+[90mstderr[2m | tests/unit/fermentescibles/a1-defauts.test.tsx[2m > [22m[2mBR-12, BR-15 — la ligne touchée se choisit ; le cran du moins s’éteint à 0 kg[2m > [22m[2m« Retirer un cran » est désactivé à 0 kg
+[22m[39mAn update to Ajout inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() => {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+
+[90mstderr[2m | tests/unit/fermentescibles/a1-defauts.test.tsx[2m > [22m[2mAM-8 — une maische sans malt de base est dite[2m > [22m[2ml’étape le dit, et la validation le range parmi ce qui reste à corriger avant de brasser
+[22m[39mAn update to Ajout inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() => {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+
+[90mstderr[2m | tests/unit/fermentescibles/a1-defauts.test.tsx[2m > [22m[2mAM-8 — une maische sans malt de base est dite[2m > [22m[2ml’étape le dit, et la validation le range parmi ce qui reste à corriger avant de brasser
+[22m[39mAn update to Ajout inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() => {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+
+[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[90mstderr[2m | tests/unit/bugs-w1-wizard.test.tsx[2m > [22m[2mk3 n° 8 : TL-19, brouillon repris[2m > [22m[2mla phrase disparaît (reste annoncée aux lecteurs d’écran) quand l’étape change
+[22m[39mAn update to Ajout inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() => {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+
+[90mstderr[2m | tests/unit/bugs-w1-wizard.test.tsx[2m > [22m[2mk3 n° 8 : TL-19, brouillon repris[2m > [22m[2mla phrase disparaît (reste annoncée aux lecteurs d’écran) quand l’étape change
+[22m[39mAn update to Ajout inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() => {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+
+[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[90mstderr[2m | tests/unit/fermentescibles/b-assistant-0911.test.tsx[2m > [22m[2mPI-2 : la barre de composition ne compte pas un grain hors de l’empâtage[2m > [22m[2mle grain mal placé (ébullition) a une part nulle
+[22m[39mAn update to Ajout inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() => {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+
+[90mstderr[2m | tests/unit/fermentescibles/b-assistant-0911.test.tsx[2m > [22m[2mPI-2 : la barre de composition ne compte pas un grain hors de l’empâtage[2m > [22m[2mle grain mal placé (ébullition) a une part nulle
+[22m[39mAn update to Ajout inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() => {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+
+[90mstderr[2m | tests/unit/fermentescibles/b-assistant-0911.test.tsx[2m > [22m[2mAM-11 : une teinte hors de l’échelle 0–40 EBC le dit[2m > [22m[2m« 63,3 EBC › » au bord, au lieu d’un repère collé sans un mot
+[22m[39mAn update to Ajout inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() => {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+
+[90mstderr[2m | tests/unit/fermentescibles/b-assistant-0911.test.tsx[2m > [22m[2mAM-11 : une teinte hors de l’échelle 0–40 EBC le dit[2m > [22m[2m« 63,3 EBC › » au bord, au lieu d’un repère collé sans un mot
+[22m[39mAn update to Ajout inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() => {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+
+[90mstderr[2m | tests/unit/fermentescibles/b-assistant-0911.test.tsx[2m > [22m[2mAM-11 : une teinte hors de l’échelle 0–40 EBC le dit[2m > [22m[2mle repère « hors » ne recouvre pas l’étiquette « style 59–79 » (Chrome 1280 cave : les deux se chevauchaient) et celle-ci reste dans l’échelle
+[22m[39mAn update to Ajout inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() => {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+
+[90mstderr[2m | tests/unit/fermentescibles/b-assistant-0911.test.tsx[2m > [22m[2mAM-11 : une teinte hors de l’échelle 0–40 EBC le dit[2m > [22m[2mle repère « hors » ne recouvre pas l’étiquette « style 59–79 » (Chrome 1280 cave : les deux se chevauchaient) et celle-ci reste dans l’échelle
+[22m[39mAn update to Ajout inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() => {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+
+[90mstderr[2m | tests/unit/fermentescibles/b-assistant-0911.test.tsx[2m > [22m[2mAM-11 : une teinte hors de l’échelle 0–40 EBC le dit[2m > [22m[2mdans l’échelle : aucun repère « hors »
+[22m[39mAn update to Ajout inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() => {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+
+[90mstderr[2m | tests/unit/fermentescibles/b-assistant-0911.test.tsx[2m > [22m[2mAM-11 : une teinte hors de l’échelle 0–40 EBC le dit[2m > [22m[2mdans l’échelle : aucun repère « hors »
+[22m[39mAn update to Ajout inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() => {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+
+[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m
+
+[2m Test Files [22m [1m[32m18 passed[39m[22m[90m (18)[39m
+[2m      Tests [22m [1m[32m130 passed[39m[22m[90m (130)[39m
+[2m   Start at [22m 11:55:40
+[2m   Duration [22m 40.06s[2m (transform 14.08s, setup 4.63s, collect 38.64s, tests 77.98s, environment 13.83s, prepare 1.64s)[22m
+

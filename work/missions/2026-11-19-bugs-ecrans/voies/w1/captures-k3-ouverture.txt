@@ -1,0 +1,15 @@
+Serveur 1/1 : npm run dev  (journal : C:\Users\mrspa\AppData\Local\Temp\with-server-6b98LF\serveur-1-3123.log)
+Attente du port 3123…
+Serveur prêt sur le port 3123
+
+Tous les serveurs sont prêts. Lancement : node work/missions/2026-11-19-bugs-ecrans/voies/w1/capturer-k3.mjs ouverture
+
+1280-clair ouverture eau Eau et sels | {"msg":null,"bord":null,"rouge":[]} erreurs []
+1280-cave ouverture eau Eau et sels | {"msg":null,"bord":null,"rouge":[]} erreurs []
+390-clair ouverture eau Eau et sels | {"msg":null,"bord":null,"rouge":[]} erreurs []
+390-cave ouverture eau Eau et sels | {"msg":null,"bord":null,"rouge":[]} erreurs []
+FIN
+
+Commande terminée, code 0.
+
+Arrêt de 1 serveur(s)…

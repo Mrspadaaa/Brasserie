@@ -1,0 +1,47 @@
+Serveur 1/1 : npm run dev  (journal : C:\Users\mrspa\AppData\Local\Temp\with-server-XYQjy3\serveur-1-3103.log)
+Attente du port 3103…
+Serveur prêt sur le port 3103
+
+Tous les serveurs sont prêts. Lancement : node work/missions/2026-11-19-bugs-ecrans/voies/w1/capturer-k3.mjs banc
+
+1280-clair levure : renvoi true invite false
+1280-clair recap : phrase jargon false
+1280-clair epice à noter 1 épice à y noter
+1280-clair additif {
+  texte: 'gkgmLLpastillesachetgoussepièceEmpâtageÉbullitionWhirlpoolFermenteurGardeEmboute',
+  largeurs: [ 80, 72, 562 ]
+}
+1280-clair eau {"msg":"Il manque 13,7 L d’eau. Avec 16,9 L et 5,9 L retenus par le grain, tu ne collect","bord":"rgb(156, 112, 32)"}
+1280-clair erreurs []
+1280-cave levure : renvoi true invite false
+1280-cave recap : phrase jargon false
+1280-cave epice à noter 1 épice à y noter
+1280-cave additif {
+  texte: 'gkgmLLpastillesachetgoussepièceEmpâtageÉbullitionWhirlpoolFermenteurGardeEmboute',
+  largeurs: [ 80, 72, 562 ]
+}
+1280-cave eau {"msg":"Il manque 13,7 L d’eau. Avec 16,9 L et 5,9 L retenus par le grain, tu ne collect","bord":"rgb(227, 181, 93)"}
+1280-cave erreurs []
+390-clair levure : renvoi true invite false
+390-clair recap : phrase jargon false
+390-clair epice à noter null
+390-clair additif {
+  texte: 'Coriandre12,5gkgmLLpastillesachetgoussepièceEmpâtageÉbullitionWhirlpoolFermenteu',
+  largeurs: [ 80, 72, 192 ]
+}
+390-clair eau {"msg":"Il manque 13,7 L d’eau. Avec 16,9 L et 5,9 L retenus par le grain, tu ne collect","bord":"rgb(156, 112, 32)"}
+390-clair erreurs []
+390-cave levure : renvoi true invite false
+390-cave recap : phrase jargon false
+390-cave epice à noter null
+390-cave additif {
+  texte: 'Coriandre12,5gkgmLLpastillesachetgoussepièceEmpâtageÉbullitionWhirlpoolFermenteu',
+  largeurs: [ 80, 72, 192 ]
+}
+390-cave eau {"msg":"Il manque 13,7 L d’eau. Avec 16,9 L et 5,9 L retenus par le grain, tu ne collect","bord":"rgb(227, 181, 93)"}
+390-cave erreurs []
+FIN
+
+Commande terminée, code 0.
+
+Arrêt de 1 serveur(s)…

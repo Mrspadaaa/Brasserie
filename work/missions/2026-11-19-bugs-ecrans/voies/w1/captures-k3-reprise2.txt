@@ -1,0 +1,14 @@
+Serveur 1/1 : npm run dev  (journal : C:\Users\mrspa\AppData\Local\Temp\with-server-cfBqHp\serveur-1-3123.log)
+Attente du port 3123…
+Serveur prêt sur le port 3123
+
+Tous les serveurs sont prêts. Lancement : node work/missions/2026-11-19-bugs-ecrans/voies/w1/capturer-k3.mjs reprise 390
+
+390-clair reprise {"nav":"Brassins","onglet":"Recettes (0)"} | nouvelle Nouvelle recette | retour Retour au tableau de bord | {"nav":"Brassins","onglet":"Recettes (0)"} | nouvelle 2 Nouvelle recette | reprise {"texte":"Brouillon repris sur cet appareil.Repartir d’une recette vierge","taille":"14px","bord":"1px"} erreurs []
+390-cave reprise {"nav":"Brassins","onglet":"Recettes (0)"} | nouvelle Nouvelle recette | retour Retour au tableau de bord | {"nav":"Brassins","onglet":"Recettes (0)"} | nouvelle 2 Nouvelle recette | reprise {"texte":"Brouillon repris sur cet appareil.Repartir d’une recette vierge","taille":"14px","bord":"1px"} erreurs []
+FIN
+
+Commande terminée, code 0.
+
+Arrêt de 1 serveur(s)…
+FINI

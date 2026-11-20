@@ -1,0 +1,68 @@
+Serveur 1/1 : npm run dev  (journal : C:\Users\mrspa\AppData\Local\Temp\with-server-I7yQ2A\serveur-1-3103.log)
+Attente du port 3103…
+Serveur prêt sur le port 3103
+
+Tous les serveurs sont prêts. Lancement : node work/missions/2026-11-19-bugs-ecrans/voies/w1/capturer.mjs
+
+1280-clair atelier fermé true
+1280-clair sections Objectif NOLO Identité 0
+1280-clair sections Objectif NOLO Levure 0
+1280-clair sections Objectif NOLO Récap 0
+1280-clair additif gkgmLLpastillesachetgoussepièceEmpâtageÉbullitionWhirlpoolFermenteurGardeEmboute
+1280-clair eau {"msg":"Il manque 13,7 L d’eau. Avec 16,9 L et 5,9 L retenus par le grain, tu ne collectes que 11 ","style":{"bord":"rgb(156, 112, 32)","fond":"rgba(156, 112, 32, 0.12)"},"recaler":"Le calcul donne 25,6 / 4,9 Lrecaler","styleRecaler":{"bord":"rgb(156, 112, 32)","fond":"rgba(156, 112, 32, 0.12)"}}
+1280-clair erreurs []
+1280 clair reprise essai 1 échec : Waiting for selector `#wz-title` failed
+1280 clair reprise essai 2 échec : Waiting for selector `#wz-title` failed
+1280 clair reprise essai 3 échec : Waiting for selector `#wz-title` failed
+1280-cave atelier fermé true
+1280-cave sections Objectif NOLO Identité 0
+1280-cave sections Objectif NOLO Levure 0
+1280-cave sections Objectif NOLO Récap 0
+1280-cave additif gkgmLLpastillesachetgoussepièceEmpâtageÉbullitionWhirlpoolFermenteurGardeEmboute
+1280-cave eau {"msg":"Il manque 13,7 L d’eau. Avec 16,9 L et 5,9 L retenus par le grain, tu ne collectes que 11 ","style":{"bord":"rgb(227, 181, 93)","fond":"rgba(227, 181, 93, 0.12)"},"recaler":"Le calcul donne 25,6 / 4,9 Lrecaler","styleRecaler":{"bord":"rgb(227, 181, 93)","fond":"rgba(227, 181, 93, 0.12)"}}
+1280-cave erreurs []
+1280 cave reprise essai 1 échec : Waiting for selector `#wz-title` failed
+1280 cave reprise essai 2 échec : Waiting for selector `#wz-title` failed
+1280 cave reprise essai 3 échec : Waiting for selector `#wz-title` failed
+390-clair atelier fermé true
+390-clair sections Objectif NOLO Identité 0
+390-clair sections Objectif NOLO Levure 0
+390-clair sections Objectif NOLO Récap 0
+390 clair une essai 1 échec : Illegal invocation
+390-clair atelier fermé true
+390-clair sections Objectif NOLO Identité 0
+390-clair sections Objectif NOLO Levure 0
+390-clair sections Objectif NOLO Récap 0
+390 clair une essai 2 échec : Illegal invocation
+390-clair atelier fermé true
+390-clair sections Objectif NOLO Identité 0
+390-clair sections Objectif NOLO Levure 0
+390-clair sections Objectif NOLO Récap 0
+390 clair une essai 3 échec : Illegal invocation
+390 clair reprise essai 1 échec : Waiting for selector `#wz-title` failed
+390 clair reprise essai 2 échec : Waiting for selector `#wz-title` failed
+390 clair reprise essai 3 échec : Waiting for selector `#wz-title` failed
+390-cave atelier fermé true
+390-cave sections Objectif NOLO Identité 0
+390-cave sections Objectif NOLO Levure 0
+390-cave sections Objectif NOLO Récap 0
+390 cave une essai 1 échec : Illegal invocation
+390-cave atelier fermé true
+390-cave sections Objectif NOLO Identité 0
+390-cave sections Objectif NOLO Levure 0
+390-cave sections Objectif NOLO Récap 0
+390 cave une essai 2 échec : Illegal invocation
+390-cave atelier fermé true
+390-cave sections Objectif NOLO Identité 0
+390-cave sections Objectif NOLO Levure 0
+390-cave sections Objectif NOLO Récap 0
+390-cave additif undefined
+390-cave eau {"style":null,"styleRecaler":null}
+390-cave erreurs []
+390 cave reprise essai 1 échec : Waiting for selector `#wz-title` failed
+390 cave reprise essai 2 échec : Waiting for selector `#wz-title` failed
+390 cave reprise essai 3 échec : Waiting for selector `#wz-title` failed
+
+Commande terminée, code 143.
+
+Arrêt de 1 serveur(s)…

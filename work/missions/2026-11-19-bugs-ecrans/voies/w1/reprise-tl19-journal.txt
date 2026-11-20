@@ -1,0 +1,14 @@
+Serveur 1/1 : npm run dev  (journal : C:\Users\mrspa\AppData\Local\Temp\with-server-CFMXeY\serveur-1-3103.log)
+Attente du port 3103…
+Serveur prêt sur le port 3103
+
+Tous les serveurs sont prêts. Lancement : node work/missions/2026-11-19-bugs-ecrans/voies/w1/reprise-tl19.mjs
+
+390-clair accueil ok | plus: true | nouvelle: false | wz-title: false | ERREUR: No element found for selector: #wz-title
+390-clair erreurs page []
+1280-clair accueil ok | plus: true | nouvelle: false | wz-title: false | ERREUR: No element found for selector: #wz-title
+1280-clair erreurs page []
+
+Commande terminée, code 0.
+
+Arrêt de 1 serveur(s)…
