@@ -2343,3 +2343,13 @@ Classement de la page r3 de Ma levure (https://claude.ai/artifact/DKAJe8ESeMR4ig
 > Portage dans le carnet et le calendrier*
 
 (lu, 20.11 : le reste de la Milk Stout n'est pas touché ; le Planning se porte dans le Carnet ET le Calendrier.)
+
+> Et les partie qui facilite le workflow et tout, ça a bien été mis en lignes ? Est-ce que ça vaut le coup de refaire une passe ?
+>
+> Tout ce qui m'economise des gestes ou autre est bon à prendre au c'est pas au détriment de la qualité.
+>
+> Par exemple des propositions où en un click tout de met ( exemple je choisis une ipa) suggestions des ingrédients correspond, et quand je clique dessus il y a déjà la bonne quantité bon endroit et tout....
+>
+> Mais pareil pour plein d'autres trucs, tout ce qui aide le workflow, réduit les actions et autres est bon à prendre
+
+(lu, 20.11 : de ses 11 choix « simplicité » du 16.11 (pa1 · pa2 · pe1 · pe3 · pe4 · pb1 · pb2 · pb3 · pm1 · pl1 · pl2), seule la règle L9 (pe3/pe4) est en ligne ; les 10 autres sont à porter. Nouvelle passe « moins de gestes » sur tout l'app, son exemple en tête : choisir un style (IPA) → ingrédients proposés, posés d'un clic avec quantité et moment justes.)
