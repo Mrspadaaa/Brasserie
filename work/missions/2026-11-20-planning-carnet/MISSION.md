@@ -42,6 +42,6 @@ Total des budgets : 12 380 CHF (17 étapes) ; 2 jalons.
 
 ## Reste
 
-- Question au brasseur : les 11 étapes finies avant le 20.11 (T-6 à T-12, T-14, T-16 à T-18) sont-elles faites ? Si oui, archiver leur idée.
+- États du 20.11 (sa réponse : « 6 en cours / Et jusqu'à 11 non pas fait encore ») : T-6 à T-10 archivées (faites), T-11 note « En cours au 20.11.2026 », T-12, T-14, T-16 à T-18 note « Pas encore fait au 20.11.2026 » ; dates inchangées ; 17 documents écrits et relus en ligne (port-carnet etats.ts). Le Carnet compte 14 idées.
 - Ouverts au registre (dessin du Carnet et du Calendrier) : PNC-2, 5 à 8, 10, 12 à 14.
 - Contrôles impossibles en ligne : 390 et 844×340 (le Chrome du brasseur ne se redimensionne pas ; captures figées) ; faits au banc.
