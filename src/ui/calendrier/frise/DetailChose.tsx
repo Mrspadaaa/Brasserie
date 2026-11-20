@@ -91,6 +91,21 @@ export function datesInsecables(texte: string): React.ReactNode {
   return morceaux.length === 1 && typeof morceaux[0] === 'string' ? morceaux[0] : <>{morceaux}</>;
 }
 
+/**
+ * CT4-A-14 : la ligne d'un détail (« pas brassée · brassage prévu le 10 nov. · prête le 18 déc. au plus tôt ») se coupe ENTRE les groupes séparés
+ * par « · », jamais au milieu d'un groupe. Chaque groupe est un bloc insécable (`.cal-grp`, inline-block) ; le « · » suit le groupe qui le précède.
+ * Un seul groupe : le texte comme avant. Posé dans un seul `span` par l'appelant (un `<p>` flex en faisait des colonnes déchirées à 390).
+ */
+export function groupesInsecables(texte: string): React.ReactNode {
+  const groupes = texte.split(' · ').map(g => g.trim()).filter(Boolean);
+  if (groupes.length < 2) return datesInsecables(texte);
+  return <>{groupes.map((g, i) => (
+    <React.Fragment key={i}>
+      <span className="cal-grp" data-groupe>{datesInsecables(g)}{i < groupes.length - 1 ? ' ·' : ''}</span>{i < groupes.length - 1 ? ' ' : ''}
+    </React.Fragment>
+  ))}</>;
+}
+
 /** Les étapes datées d'un brassin, une par jalon de la recette figée ; sans jalon : brassage et prête (ou « durée inconnue »). */
 function etapes(chose: ChoseCalendrier): Array<{ id: string; libelle: string; jour: string; icone: React.ReactNode }> {
   const jalons = (chose.jalons ?? []).filter((j): j is JalonBrassin & { id: Exclude<JalonId, 'commander'> } => j.id !== 'commander' && j.id in ETAPE)
@@ -268,7 +283,7 @@ export const DetailChose: React.FC<DetailChoseProps> = props => {
         </div>
       )}
 
-      {detailSansDate && <p className="cal-det-p">{datesInsecables(detailSansDate)}</p>}
+      {detailSansDate && <p className="cal-det-p"><span data-detail-texte>{groupesInsecables(detailSansDate)}</span></p>}
       {brassin && commander && (
         <p className="cal-det-p" data-manque>
           <ShoppingCart size={16} aria-hidden="true" />

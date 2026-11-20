@@ -267,7 +267,7 @@ export const App: React.FC = () => {
   }, [quickAction]);
   const [brewRecipeId, setBrewRecipeId] = useState<string>();
   const [isPaletteOpen, setIsPaletteOpen] = useState(false);
-  const [financeOpenRequest, setFinanceOpenRequest] = useState<{ id: string; at: number } | null>(null);
+  const [financeOpenRequest, setFinanceOpenRequest] = useState<{ id: string; at: number; retour?: 'calendrier' } | null>(null);
   const [batchOpenRequest, setBatchOpenRequest] = useState<{ id: string; at: number } | null>(null);
   const [batchCree, setBatchCree] = useState<{ id: string; at: number } | null>(null);
   /** Renvoi depuis une écriture financière vers l'article qu'elle a acheté. */
@@ -1258,6 +1258,7 @@ export const App: React.FC = () => {
           <FinancesTab
             transactions={transactions}
             openTransactionRequest={financeOpenRequest}
+            onRetour={() => setActiveTab('calendrier')}
             ongletRequest={financeTabRequest}
             recipes={recipes}
             batches={batches}
@@ -1318,7 +1319,7 @@ export const App: React.FC = () => {
             periode={globalTimeFilter}
             onPeriode={(p) => setGlobalTimeFilter(p)}
             onOuvrirBudget={(batchId) => setBudgetBrassinId(batchId)}
-            onOpenPiece={(id) => { setActiveTab('finances'); setFinanceOpenRequest({ id, at: Date.now() }); }}
+            onOpenPiece={(id) => { setActiveTab('finances'); setFinanceOpenRequest({ id, at: Date.now(), retour: 'calendrier' }); }}
             onOpenAgenda={() => {
               setLabSectionRequest({ section: 'event', at: Date.now() });
               navigateToCreativeLab();

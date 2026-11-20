@@ -136,7 +136,9 @@ export function BrewerActivity({ context = brewerAppScreen('dashboard'), hideAct
     : pending.length ? `${pending.length} ${pending.length > 1 ? 'questions en cours' : 'question en cours'}`
     : 'Mes conversations';
   if (localOnly)
-    return <p role="status" className="pointer-events-none fixed bottom-[4.25rem] left-1/2 z-30 -translate-x-1/2 whitespace-nowrap rounded-control bg-cave-850 px-2 py-0.5 text-2xs text-cave-400">Compagnon hors connexion · mode local</p>;
+    /* CT4-A-17 : la pastille ne flotte plus au milieu du contenu (elle couvrait « Fournisseurs, matériel », la barre « Charges fixes », les Papiers) :
+       posée sur la barre d'onglets, au coin bas gauche, courte ; le texte entier reste dit au lecteur d'écran et au survol. */
+    return <p role="status" title="Compagnon hors connexion · mode local" data-compagnon-local className="pointer-events-none fixed bottom-[calc(var(--main-navigation-height,2.5rem)+2px)] left-2 z-30 whitespace-nowrap rounded-control bg-cave-850/90 px-1.5 py-0 text-2xs leading-4 text-cave-400"><span aria-hidden="true">Hors connexion</span><span className="sr-only">Compagnon hors connexion · mode local</span></p>;
   const remove = async () => {
     if (!removal || deleting) return;
     setDeleting(true);

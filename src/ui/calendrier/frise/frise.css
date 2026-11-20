@@ -263,6 +263,8 @@ button.cal-lie::before { content: ''; position: absolute; inset: -6px -2px; }
 /* CRITIQUE-12 n° 3 : chaque date du détail (« prête 21 déc. ») est d'un bloc ; la ligne se coupe entre les morceaux « · » */
 .cal-det .cal-nowrap { white-space: nowrap; }
 .cal-det-p { display: flex; align-items: flex-start; gap: 8px; margin: 0 0 10px; }
+/* CT4-A-14 : un groupe du détail (« prête le 18 déc. au plus tôt ») reste d'un bloc ; la ligne se coupe entre les groupes */
+.cal-det .cal-grp { display: inline-block; max-width: 100%; }
 /* CRITIQUE-10 n° 7 : la pastille « lié à … » du détail, la même que sur la frise, sur la ligne de son aperçu */
 .cal-det-lie .cal-lie { min-height: 20px; white-space: nowrap; }
 .cal-det-bt { display: flex; flex-wrap: wrap; gap: 8px; }

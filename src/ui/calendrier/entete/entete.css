@@ -247,6 +247,10 @@
 .ent-ech-seg button { flex: 1; display: grid; place-items: center; padding: 0 3px; font-size: 14px; font-weight: 700; color: rgb(var(--cave-50)); }
 .ent-ech-seg button[aria-pressed='true'] { background: rgb(var(--cave-50)); color: rgb(var(--cave-950)); }
 .ent-seg.ent-seg--5 { grid-template-columns: repeat(5, minmax(0, 1fr)); }
+/* CT4-A-15 : cinq durées (« 2 sem. 6 sem. 3 mois 6 mois An ») dans 260 px : « 3 mois » en gras mordait sur « 6 mois ». Le menu à cinq durées est plus large
+   (300 px, borné à l'écran) et ses boutons n'ont plus de marge propre : chaque libellé tient dans sa colonne. */
+.ent-menu.ent-menu--fixe.ent-menu--5 { width: min(300px, calc(100vw - 16px)); }
+.ent-seg.ent-seg--5 button { padding: 0; }
 /* D385 : la bande d'un axe en jours (B : « S47 » puis lettre et numéro), dépliée (C) ou en mois ; une colonne par colonne de la frise */
 .ent-bj { display: grid; grid-template-columns: repeat(var(--n), minmax(0, 1fr)); grid-template-rows: 18px 28px; height: 46px; border-bottom: 1px solid rgb(var(--cave-800)); }
 .ent-bj--deplie { grid-template-rows: 18px 30px; height: 48px; }

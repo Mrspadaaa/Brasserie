@@ -106,7 +106,7 @@ export function MenuPeriode({ plage, semaines, annee, liste, sansDate, onChoisir
     ? { top: place.top, left: place.left, right: place.right, maxHeight: place.maxHeight }
     : undefined;
   const menu = (
-    <div ref={ref} className={`ent-port ent-menu${ancre ? ' ent-menu--fixe' : ''}${paysage ? ' ent-menu--paysage' : ''}`} role="dialog" aria-label="Période et vue" data-menu-periode style={style}>
+    <div ref={ref} className={`ent-port ent-menu${ancre ? ' ent-menu--fixe' : ''}${paysage ? ' ent-menu--paysage' : ''}${onEchelle ? ' ent-menu--5' : ''}`} role="dialog" aria-label="Période et vue" data-menu-periode style={style}>
       <p className="ent-menu-plage">{plage}</p>
       {onEchelle && (
         <div className="ent-ech" data-menu-echelle>

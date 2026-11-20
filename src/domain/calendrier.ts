@@ -226,6 +226,8 @@ export const ecartSemaines = (de: string, a: string): number => Math.round((utc(
 export const etiquetteS = (iso: string): string => `S${numeroSemaine(iso)}`;
 /** « 14 déc. » */
 export const jourLisible = (iso: string): string => `${Number(iso.slice(8, 10))} ${MOIS_COURTS[Number(iso.slice(5, 7)) - 1]}`;
+/** CT4-A-13 : « 20 déc. 2025 » quand l'année n'est pas celle d'`aujourdhui` ; « 3 nov. » dans l'année (jamais l'année partout). */
+export const jourAvecAnnee = (iso: string, aujourdhui: string): string => `${jourLisible(iso)}${iso.slice(0, 4) !== aujourdhui.slice(0, 4) ? ` ${iso.slice(0, 4)}` : ''}`;
 /** E04, i3 : « S50, 7 – 13 déc. » */
 export function dateDeSemaine(jour: string): string {
   /* CRITIQUE-4 n° 14 : les vraies bornes lundi – dimanche de la semaine ISO, quel que soit le jour reçu (jamais 7 jours comptés depuis la date) */
@@ -1126,38 +1128,40 @@ export interface EntreeRetards {
 export function retardsDe(e: EntreeRetards): Retard[] {
   const sortie: Retard[] = [];
   const passe = (jour: string | null | undefined): jour is string => !!jour && jour < e.aujourdhui;
+  /* CT4-A-13 : un retard de l'année passée dit son année (« 20 déc. 2025 »), sinon il se lit comme une échéance à venir */
+  const jl = (jour: string) => jourAvecAnnee(jour, e.aujourdhui);
   for (const r of e.restes) {
     const echeance = isoDate(r.echeance ?? undefined);
     if (!r.enRetard || !passe(echeance)) continue;
-    sortie.push({ id: `reste-${r.id}`, genre: 'facture', titre: r.libelle || 'Pièce sans nom', detail: `échéance le ${jourLisible(echeance)} · ${francs(r.cents)} CHF`, jour: echeance, ouvre: { ecran: 'piece', id: r.id } });
+    sortie.push({ id: `reste-${r.id}`, genre: 'facture', titre: r.libelle || 'Pièce sans nom', detail: `échéance le ${jl(echeance)} · ${francs(r.cents)} CHF`, jour: echeance, ouvre: { ecran: 'piece', id: r.id } });
   }
   for (const b of e.batches) {
     if (b.archivedAt || b.status !== 'planifie') continue;
     const prevu = isoDate(plannedBrewDate(b));
     if (!passe(prevu) || !plannedDateIsPast(b, Date.parse(`${e.aujourdhui}T12:00:00Z`))) continue;
-    sortie.push({ id: `brassin-${b.id}`, genre: 'brassin', titre: b.name || b.id, detail: `pas brassée · brassage prévu le ${jourLisible(prevu)}`, jour: prevu, ouvre: { ecran: 'brassin', id: b.id } });
+    sortie.push({ id: `brassin-${b.id}`, genre: 'brassin', titre: b.name || b.id, detail: `pas brassée · brassage prévu le ${jl(prevu)}`, jour: prevu, ouvre: { ecran: 'brassin', id: b.id } });
   }
   for (const t of e.items) {
     if (t.type !== 'event' || t.status === 'done' || (t as { archivedAt?: string | null }).archivedAt) continue;
     const jour = isoDate(t.date);
     const fin = fenetreLue(t.fenetre)?.au ?? jour;
     if (!jour || !passe(fin) || !t.title?.trim()) continue;
-    sortie.push({ id: `tache-${t.id}`, genre: 'tache', titre: t.title, detail: fin !== jour ? `prévue du ${jourLisible(jour)} au ${jourLisible(fin)}` : `prévue le ${jourLisible(jour)}`, jour: fin, ouvre: { ecran: 'agenda', id: t.id } });
+    sortie.push({ id: `tache-${t.id}`, genre: 'tache', titre: t.title, detail: fin !== jour ? `prévue du ${jl(jour)} au ${jl(fin)}` : `prévue le ${jl(jour)}`, jour: fin, ouvre: { ecran: 'agenda', id: t.id } });
   }
   for (const b of e.sansDensite ?? []) {
     const brasse = isoDate(actualBrewDate(b));
     if (!passe(brasse)) continue;
-    sortie.push({ id: `densite-${b.id}`, genre: 'densite', titre: `Mesurer la densité : ${b.name || b.id}`, detail: `brassé le ${jourLisible(brasse)} · aucune densité relevée`, jour: brasse, ouvre: { ecran: 'brassin', id: b.id } });
+    sortie.push({ id: `densite-${b.id}`, genre: 'densite', titre: `Mesurer la densité : ${b.name || b.id}`, detail: `brassé le ${jl(brasse)} · aucune densité relevée`, jour: brasse, ouvre: { ecran: 'brassin', id: b.id } });
   }
   for (const c of e.commandes ?? []) {
     const avant = isoDate(c.avantLe);
     if (!passe(avant)) continue;
     const quoi = c.articles?.length ? ` · ${c.articles.join(', ')}` : '';
-    sortie.push({ id: `courses-${c.batchId}`, genre: 'courses', titre: `Commander pour ${c.nom}`, detail: `à commander avant le ${jourLisible(avant)}${quoi}`, jour: avant, ouvre: { ecran: 'courses' } });
+    sortie.push({ id: `courses-${c.batchId}`, genre: 'courses', titre: `Commander pour ${c.nom}`, detail: `à commander avant le ${jl(avant)}${quoi}`, jour: avant, ouvre: { ecran: 'courses' } });
   }
   const avantLe = isoDate(e.courses?.avantLe);
   if (e.courses && e.courses.nombre > 0 && passe(avantLe) && !sortie.some(r => r.genre === 'courses')) {
-    sortie.push({ id: 'courses', genre: 'courses', titre: `Commander pour ${e.courses.nom}`, detail: `${e.courses.nombre} article${e.courses.nombre > 1 ? 's' : ''} à commander avant le ${jourLisible(avantLe)}`, jour: avantLe, ouvre: { ecran: 'courses' } });
+    sortie.push({ id: 'courses', genre: 'courses', titre: `Commander pour ${e.courses.nom}`, detail: `${e.courses.nombre} article${e.courses.nombre > 1 ? 's' : ''} à commander avant le ${jl(avantLe)}`, jour: avantLe, ouvre: { ecran: 'courses' } });
   }
   // Du plus ancien au plus récent ; à jour égal, l'ordre des ids.
   return sortie.sort((a, b) => (a.jour ?? '9999').localeCompare(b.jour ?? '9999') || a.id.localeCompare(b.id));

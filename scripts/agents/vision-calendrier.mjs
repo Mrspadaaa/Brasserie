@@ -358,7 +358,7 @@ const ETATS = [
   { n: '06', nom: 'semaine-date', geste: 'toucher une semaine de la bande', mesure: lireTexte, jouer: async p => { await toucher(p, { dans: { aria: /^Semaines/ }, texte: /^S\d+$/, index: 2 }); },
     attendu: [/S\d+, \d{1,2} ?[–-] ?\d{1,2} \p{L}+/u] },
 
-  { n: '07', nom: 'f1a-pendant', geste: 'glisser la Hotte de 2 colonnes, doigt tenu', jouer: async p => { await glisserChose(p, 'Hotte', 2, { tenu: true }); }, attendu: [/lâcher ici/], fin: lacher },
+  { n: '07', nom: 'f1a-pendant', cave: true, geste: 'glisser la Hotte de 2 colonnes, doigt tenu', jouer: async p => { await glisserChose(p, 'Hotte', 2, { tenu: true }); }, attendu: [/lâcher ici/], fin: lacher },
   /* en ligne 1, n° 4 (18.11) : le bandeau du glissé dit l'effet sur le chiffre clé (« À dépenser −672 : creux S48 → S50 », ou « S50 : a → b ·
      à dépenser inchangé »), plus « S48 : −672 → −660 » seul, qui faisait croire à un gain */
   { n: '08', nom: 'f1a-apres', geste: 'glisser la Hotte de 2 colonnes, lâcher', jouer: async p => { await glisserChose(p, 'Hotte', 2); }, attendu: [/À dépenser [−\d\s’']+ : creux S\d+ → S\d+|À dépenser : [−\d\s’']+ → [−\d\s’']+ · S\d+|À dépenser : [−\d\s’']+ · S\d+ → [−\d\s’']+ · S\d+|S\d+ : [−\d\s’']+ → [−\d\s’']+ · à dépenser inchangé|à dépenser inchangé[\s·]*S\d+ : [−\d\s’']+ → [−\d\s’']+/, /Annuler/] },
@@ -2045,6 +2045,9 @@ async function jouerEtat(cfgNom, theme, etat) {
         if (etat.chiffre) { const cleApres = await chiffreCle(p); p.noteEtat = `${p.noteEtat ? `${p.noteEtat} ; ` : ''}chiffre clé : « ${cleAvant} » → « ${cleApres} »`; }
       }
       const { manques, interdits } = await jugerAttendu(p, etat);
+      /* CT4-A-18 (critique tour 4) : aucune page ne déborde à l'horizontale, pendant le geste (doigt tenu) comme au repos, dans tous les états */
+      const largeur = await p.evaluate(() => ({ sw: document.documentElement.scrollWidth, iw: innerWidth }));
+      if (largeur.sw > largeur.iw) manques.push(`pas de débordement horizontal (scrollWidth ${largeur.sw} > largeur ${largeur.iw}, CT4-A-18)`);
       if (manques.length) { statut = statut === 'OK' ? 'ABSENT' : `${statut} + ABSENT`; dit += `${dit ? ' ; ' : ''}attendu non trouvé : ${manques.join(', ')}`; }
       if (interdits.length) { statut = statut === 'OK' ? 'INTERDIT' : `${statut} + INTERDIT`; dit += `${dit ? ' ; ' : ''}texte refusé présent : ${interdits.join(', ')}`; }
       if (!dit) dit = `attendu trouvé : ${(etat.attendu || []).map(a => (a instanceof RegExp ? `« ${a.source} »` : a.dit)).join(', ')}`;
