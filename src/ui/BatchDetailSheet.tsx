@@ -99,6 +99,17 @@ interface BatchDetailSheetProps {
   focus?: 'densite' | 'volume';
 }
 
+/**
+ * CT4-B-2 : le volume sous le mot « cuve » est celui qui y est (le brassé, comme la liste), jamais le volume visé donné pour tel ;
+ * sans volume brassé, le visé se dit « visé ». Ni l'un ni l'autre : rien (l'inconnu n'est jamais 0).
+ */
+export function volumeEnCuveLibelle(b: { volumeL?: number | null; volumeBrewedL?: number | null }): string | null {
+  const brasse = Number(b.volumeBrewedL);
+  if (b.volumeBrewedL != null && Number.isFinite(brasse) && brasse > 0) return formatLitres(brasse);
+  const vise = Number(b.volumeL);
+  return b.volumeL != null && Number.isFinite(vise) && vise > 0 ? `visé ${formatLitres(vise)}` : null;
+}
+
 export const BatchDetailSheet: React.FC<BatchDetailSheetProps> = ({
   batch,
   onClose,
@@ -402,7 +413,7 @@ export const BatchDetailSheet: React.FC<BatchDetailSheetProps> = ({
         onClose={onClose}
         title={fermentation ? `${draft.name} en fermentation` : draft.name}
         subtitle={fermentation
-          ? [draft.id, 'cuve', section === 'measurements' ? formatLitres(draft.volumeL) : draft.brewDay?.pitchedAt != null ? `levuré le ${breweryDay(draft.brewDay.pitchedAt).slice(0, 5)}` : null].filter(Boolean).join(' · ')
+          ? [draft.id, 'cuve', section === 'measurements' ? volumeEnCuveLibelle(draft) : draft.brewDay?.pitchedAt != null ? `levuré le ${breweryDay(draft.brewDay.pitchedAt).slice(0, 5)}` : null].filter(Boolean).join(' · ')
           : `${draft.id} · ${draft.style} · ${formatLitres(draft.volumeL)}${planned ? '' : ''}${planned || post ? '' : ' visés'}`}
         className={ficheM ? 'md:max-w-2xl md:mx-auto lg:!max-w-6xl' : 'md:max-w-2xl md:mx-auto h-[88dvh]'}
         footer={fermentation && section === 'tasting' ? <CarnetPied c={carnet} /> : rappel ? <DossierPied batch={draft} now={nowMs} ajoute={() => setConfirmStock('remaining')} /> : ficheM ? (
