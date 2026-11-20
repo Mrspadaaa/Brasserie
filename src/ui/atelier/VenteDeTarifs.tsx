@@ -29,7 +29,7 @@ export function VenteDeTarifs({ id, onClose }: { id: string; onClose: () => void
     {tx && !edition && !paiement && mouvement === undefined && <TransactionDetails transaction={tx} transactions={transactions} payments={data.payments} plans={data.plans}
       onClose={onClose} onEdit={() => setEdition(tx)} onPay={() => setPaiement(tx)} onRefund={() => setMouvement(tx)} onOpenTransaction={(t) => setCourante(t.id)} />}
     {edition && <EditTransactionModal isOpen transaction={vivante(edition)} onClose={() => setEdition(null)} onSave={() => { setEdition(null); onClose(); }} />}
-    {paiement && <PaymentSheet transaction={vivante(paiement)} payments={data.payments} transactions={transactions} onClose={() => setPaiement(null)} />}
+    {paiement && <PaymentSheet transaction={vivante(paiement)} payments={data.payments} transactions={transactions} seule onClose={() => setPaiement(null)} />}
     {mouvement !== undefined && <MovementSheet original={mouvement ?? undefined} onClose={() => setMouvement(undefined)} onSaved={() => setMouvement(undefined)} />}
   </>;
 }

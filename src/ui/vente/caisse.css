@@ -140,3 +140,12 @@
   .cs-app { max-width: 1100px; display: grid; grid-template-columns: 1fr 1fr; gap: 0 20px; align-items: start; }
   .cs-left { grid-column: 1; } .cs-right { grid-column: 2; }
 }
+
+/* CT4C-9 (critique tour 4, 844×340) : couché sur un téléphone, la feuille Vendre tenait dans 512 px de large et 283 de haut ; le panier, « Payé ici » / « Facture QR »
+   et « Facturer » (la barre collante du bas, posée après tout le côté gauche) restaient 700 px plus bas. En paysage bas, la feuille s'élargit (96 % de l'écran) et
+   passe sur deux colonnes, comme à 1280 : à gauche à qui et quoi, à droite le panier, le moyen de payer et « Facturer » collé au bas de la feuille. */
+@media (orientation: landscape) and (max-height: 480px) {
+  [role='dialog']:has(.cs-app) { max-width: min(96vw, 1100px); }
+  .cs-app { max-width: none; display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 0 12px; align-items: start; }
+  .cs-left { grid-column: 1; } .cs-right { grid-column: 2; }
+}

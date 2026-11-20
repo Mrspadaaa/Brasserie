@@ -56,6 +56,8 @@
 .syn-confirmer { border:1px dotted var(--syn-t2); }
 /* caisse */
 .syn-caisse { margin-top:10px; padding:8px; background:var(--syn-panel); border-radius:10px; }
+/* CT4C-7 (critique tour 4, 390) : le + flottant (56 px, à 12 px du bord droit) passait sur « 4 181,60 CHF » et « à payer 460,00 » de la carte quand elle arrive dans le bas de l'écran. Sur téléphone la carte garde sa colonne de droite libre : 5 rem, la largeur du + et son air. */
+@media (max-width: 899px) { .syn-caisse { padding-right:5rem; } }
 .syn-ct { display:flex; justify-content:space-between; align-items:baseline; width:100%; font-size:12px; color:var(--syn-t2); }
 .syn-ct .syn-m { font-size:14px; color:var(--syn-txt); }
 .syn-ct .syn-f { font-weight:600; }
