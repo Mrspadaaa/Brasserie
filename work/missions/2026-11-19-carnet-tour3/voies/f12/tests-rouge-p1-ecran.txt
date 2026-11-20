@@ -1,0 +1,73 @@
+[1m[43m DEPRECATED [49m[22m [33m"environmentMatchGlobs" is deprecated. Use `test.projects` to define different configurations instead.[39m
+
+[1m[46m RUN [49m[22m [36mv3.2.7 [39m[90mC:/Users/mrspa/.codex/worktrees/openai-clean-start/port-carnet[39m
+
+[33m[39m[31mx[39m[33m[39m[31mx[39m[33m[39m[2m[90m-[39m[22m[33m[39m[2m[90m-[39m[22m[33m[39m[2m[90m-[39m[22m[33m[39m[2m[90m-[39m[22m
+
+[31m⎯⎯⎯⎯⎯⎯⎯[39m[1m[41m Failed Tests 2 [49m[22m[31m⎯⎯⎯⎯⎯⎯⎯[39m
+
+[41m[1m FAIL [22m[49m tests/unit/depense/f12-tour3.test.tsx[2m > [22mP-1 : un acte rangé sous « Services » a la nature Service, à l’écran et à l’enregistrement[2m > [22mle choix de nature allume « Service » sur les actes ; la collerette garde « Matériel »
+[31m[1mAssertionError[22m: expected [ 'Matériel', 'Matériel', …(2) ] to deeply equal [ 'Service', 'Service', …(2) ][39m
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[2m  [[22m
+[32m-   "Service",[39m
+[32m-   "Service",[39m
+[32m-   "Service",[39m
+[31m+   "Matériel",[39m
+[31m+   "Matériel",[39m
+[31m+   "Matériel",[39m
+[2m    "Matériel",[22m
+[2m  ][22m
+
+[36m [2m❯[22m tests/unit/depense/f12-tour3.test.tsx:[2m65:66[22m[39m
+
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/2]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m tests/unit/depense/f12-tour3.test.tsx[2m > [22mP-1 : un acte rangé sous « Services » a la nature Service, à l’écran et à l’enregistrement[2m > [22m« Confirmer » enregistre `kind: service` pour les actes, `equipment` pour la collerette
+[31m[1mAssertionError[22m: expected [ [ 'Sedation IM,', 'other' ], …(3) ] to deeply equal [ [ 'Sedation IM,', 'service' ], …(3) ][39m
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[33m@@ -1,17 +1,17 @@[39m
+[2m  [[22m
+[2m    [[22m
+[2m      "Sedation IM,",[22m
+[32m-     "service",[39m
+[31m+     "other",[39m
+[2m    ],[22m
+[2m    [[22m
+[2m      "Sterilisatio",[22m
+[32m-     "service",[39m
+[31m+     "equipment",[39m
+[2m    ],[22m
+[2m    [[22m
+[2m      "Injection so",[22m
+[32m-     "service",[39m
+[31m+     "other",[39m
+[2m    ],[22m
+[2m    [[22m
+[2m      "Collerette R",[22m
+[2m      "equipment",[22m
+[2m    ],[22m
+
+[36m [2m❯[22m tests/unit/depense/f12-tour3.test.tsx:[2m72:19[22m[39m
+    [90m 70| [39m    [35mawait[39m [34mwaitFor[39m(() [33m=>[39m [34mexpect[39m(state[33m.[39msaved)[33m.[39m[34mtoHaveBeenCalled[39m())[33m;[39m
+    [90m 71| [39m    const kinds = state.saved.mock.calls[0][0].lines.map((l: any) => […
+    [90m 72| [39m    expect(kinds).toEqual([['Sedation IM,', 'service'], ['Sterilisatio…
+    [90m   | [39m                  [31m^[39m
+    [90m 73| [39m  })[33m;[39m
+    [90m 74| [39m})[33m;[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/2]⎯[22m[39m
+
+
+[2m Test Files [22m [1m[31m1 failed[39m[22m[90m (1)[39m
+[2m      Tests [22m [1m[31m2 failed[39m[22m[2m | [22m[33m4 skipped[39m[90m (6)[39m
+[2m   Start at [22m 00:22:15
+[2m   Duration [22m 4.23s[2m (transform 1.17s, setup 286ms, collect 1.80s, tests 1.24s, environment 664ms, prepare 75ms)[22m
+

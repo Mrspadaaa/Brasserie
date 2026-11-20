@@ -1,0 +1,27 @@
+LR1-7 390 prix vidé : ["Quantité ligne 1=1","Prix ligne 1=13,40","Montant ligne 1=13,40"]
+  champs : ["Quantité ligne 1=1","Prix ligne 1=13,40","Montant ligne 1=13,40"]
+  déduit : aucun
+  rangée : MEFENACIDE cpr pell 500 mg sécables 30 pce ¦ 1 pièce ¦ × ¦ 13,40 ¦ 13,40 ¦ + Ajouter une ligne ¦ −13,40 ¦ Catégorie ¦ Papier ¦ Confirmer
+  lr17-deduit-390-clair.png
+M9-3 390 : cliqué BUTTON 290,988 90x28 vis=visible
+  après : 22 ¦  lignes · Somme ≠ imprimé ¦ 84,10 / 86,50−2,40 ¦ Ajouter la ligne manquante ›  · undefined
+  m93-retrait-390-clair.png
+T3-6 390 après Enregistrer : dialog=false · Compagnon hors connexion · mode local ¦ Achat enregistré. ¦ 🍺 ¦ L'Affinée ¦ Nov. ¦ A ¦ G ¦ À la brasserie ¦ Brassins ¦ 0 en cuve ¦ Tous ¦ Aucun brassin en cuve. ¦ Stocks ¦ Voir ¦ Stocks suffisants ¦ Finances ¦ Novembre 2026 ¦ Charges ¦ 1,00 CHF ¦ Agenda ¦ 1 à faire ¦ Gérer ¦ Cette semaine au calendrier ¦ rien de posé · voir les six semaines ¦ Marché d'Automne de Villars-sur-Glâne ¦ 10.10.2026 ¦ É
+  t36-apres-390-clair.png
+  Finances : Compagnon hors connexion · mode local ¦ 🍺 ¦ L'Affinée ¦ Nov. ¦ A ¦ G ¦ Synthèse ¦ Opérations ¦ Prévisions ¦ Annuel ¦ Novembre ¦ sept. ¦ oct. ¦ nov. ¦ tout ¦ … ¦ Entré ¦ 0,00 ¦ Dépensé ¦ 1,00 ¦ ZZ TEST — v3 dépense 1,00 ¦ à payer échéance à préciser ¦ −1,00 ¦ Perdu · CHF ¦ ✦ Pourquoi ? ¦ à payer ¦ Revoir le mois ¦ Caisse jour par jour, sources, budgets, 12 mois ¦ En caisse ¦ À compléter ¦ Solde de 
+  t36-finances-390-clair.png
+LR1-7 1280 prix vidé : ["Quantité ligne 1=1","Prix ligne 1=13,40","Montant ligne 1=13,40"]
+  champs : ["Quantité ligne 1=1","Prix ligne 1=13,40","Montant ligne 1=13,40"]
+  déduit : aucun
+  rangée : MEFENACIDE cpr pell 500 mg sécables 30 pce ¦ 1 pièce ¦ × ¦ 13,40 ¦ 13,40 ¦ + Ajouter une ligne ¦ Mon mois ¦ −13,40 ¦ Catégorie ¦ Papier ¦ Confirmer
+  lr17-deduit-1280-cave.png
+M9-3 1280 : cliqué BUTTON 907,566 90x28 vis=visible
+  après : 22 ¦  lignes · Somme ≠ imprimé ¦ 84,10 / 86,50−2,40 ¦ Ajouter la ligne manquante ›  · undefined
+  m93-retrait-1280-cave.png
+T3-6 1280 après Enregistrer : dialog=false · Compagnon hors connexion · mode local ¦ Achat enregistré. ¦ 🍺 ¦ L'Affinée ¦ Nov. ¦ A ¦ G ¦ Synthèse ¦ Opérations ¦ Prévisions ¦ Annuel ¦ Novembre ¦ sept. ¦ oct. ¦ nov. ¦ tout ¦ … ¦ Entré ¦ 0,00 ¦ Dépensé ¦ 1,00 ¦ ZZ TEST — v3 dépense 1,00 ¦ à payer échéance à préciser ¦ −1,00 ¦ Perdu · CHF ¦ ✦ Pourquoi ? ¦ à payer ¦ Revoir le mois ¦ Caisse jour par jour, sources, budgets, 12 mois ¦ En caisse ¦ À 
+  t36-apres-1280-cave.png
+  Finances : Compagnon hors connexion · mode local ¦ 🍺 ¦ L'Affinée ¦ Nov. ¦ A ¦ G ¦ Synthèse ¦ Opérations ¦ Prévisions ¦ Annuel ¦ Novembre ¦ sept. ¦ oct. ¦ nov. ¦ tout ¦ … ¦ Entré ¦ 0,00 ¦ Dépensé ¦ 1,00 ¦ ZZ TEST — v3 dépense 1,00 ¦ à payer échéance à préciser ¦ −1,00 ¦ Perdu · CHF ¦ ✦ Pourquoi ? ¦ à payer ¦ Revoir le mois ¦ Caisse jour par jour, sources, budgets, 12 mois ¦ En caisse ¦ À compléter ¦ Solde de 
+  t36-finances-1280-cave.png
+nouvel article : Ce que tu achètes ¦ Type d’achat ¦ Ingrédients ¦ Emballages ¦ Nettoyage ¦ Matériel durable ¦ Entretien / réparation ¦ Service ¦ Livraison ¦ Remise ¦ Autre ¦ Réception en stock ¦ Aucun mouvement de stock ¦ Ajouter à un article existant ¦ Nouvel article ¦ Quantité reçue ¦ Unité lue / reçue ¦ Ajouter une ligne ¦ Pour quoi ? ¦ Date de l’achat ¦ 19.11.2026 · aujourd’hui, par défaut ¦ Fournisseur et catégorie ¦ Fournisseur facultatif · Brassage ¦ Lier à une dépense prévue ¦ facultatif ¦ Référence et TVA du document ¦ — ¦ Sans justificatif, c’est normal ¦ Mon mois ¦ Enregistrer
+  labels : ["Nature ligne 1","Stock ligne 1","Quantité ligne 1","Unité ligne 1"]
+recon-nouvel-1280-clair.png

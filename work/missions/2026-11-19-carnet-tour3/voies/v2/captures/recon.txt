@@ -1,0 +1,148 @@
+capture recon-liste-1280.png
+BOUTONS liste: ["À venir 1","Carnets 6","Réalisés 0","ZZ TEST — Ventilation de la salle de bra","ZZ TEST — Évier inox « 2 bacs pour laver","Coller un lien","ZZ TEST — Extracteur pour la salle de fe","Coller un lien","ZZ TEST — Densimètre de paillasse stable","ZZ TEST — Embouteillage oxygène le plus ","ZZ TEST — Frigo de garde pour fûts tient","Dans À venir depuis le 16 nov. Voir","Isobarique 4 becs pré-évacuation 2 offre","Hotte murale 100 cm 1 450 CHF dans ZZ TE"," [Photo]"," [Dicter]","Bord","Finances","Calendrier","Brassins","Stocks","Clients","Compagnon [Compagnon brasseur]"," [Actions rapides]"]
+TEXTE liste: Banc — données simulées · Stocks › Matériel
+
+À venir
+1
+Carnets
+6
+Réalisés
+0
+À comparer
+1
+ZZ TEST — Ventilation de la salle de brassage
+Ensuite : attendre l’avis du ferblantier
+2 façons · 6 articles · 1 en veille
+dès
+420
+CHF
+Idée
+2
+pas encore d'article
+ZZ TEST — Évier inox
+« 2 bacs pour laver les fûts »
+Coller un lien
+ZZ TEST — Extracteur pour la salle de fermentation
+« sortir le CO₂ de la salle de fermentation avec un extracteur mural »
+Coller un lien
+Choisi
+3
+fournisseurs et prix : exemple
+ZZ TEST — Densimètre de paillasse
+stable sur une heure, au dix-millième
+le 10 nov. · Mesure Exemple
+2 100
+CHF
+ZZ TEST — Embouteillage
+oxygène le plus bas, SAV suisse
+le 14 nov. · Brassage Romandie
+11 700
+CHF
+ZZ TEST — Frigo de garde pour fûts
+tient 2 °C en été, 6 fûts
+le 10 oct. · Froid Léman
+4 900
+CHF
+Dans À venir depuis le 16 nov.
+Voir
+En veille
+2
+demandée · pas encore relevée
+Isobarique 4 becs pré-évacuation
+2 offres · 11 200 à 11 700 CHF
+dans ZZ TEST — Embouteillage
+Hotte murale 100 cm
+1 450 CHF
+dans ZZ TEST — Ventilation de la salle de brassage
+Une idée, un besoin…
+Bord
+Finances
+Calendrier
+Brassins
+Stocks
+Clients
+Compagnon
+CHAMPS: ["TEXTAREA textarea ph=Une idée, un besoin… vis=true","INPUT file ph= vis=false"]
+capture recon-ventil-1280.png
+BOUTONS ventil: ["À venir 1","Carnets 6","Réalisés 0","Carnets"," [Plus]"," [Renommer]","1 critère sans valeur à comparer","Articles 6","Comparer","1 Hotte inox 120 cm + moteur CH · en sto","2 Hotte murale 100 cm DE · délai 4 sem. ","3 Extracteur mural hélicoïde CH · en sto","4 Extracteur centrifuge en ligne FR · en","Ouvrir","Retenir la hotte","– Ventilateur de plafond 130 cm écarté :"," [Note : attendre l’avis du ferblantier, actions]"," [Note : surtout la buée de la cuve pendant l’ébullition, pas tant la salle, actions]"," [Note : il faudrait au moins 1 500 m³/h, actions]"," [Photo]"," [Dicter]","Bord","Finances","Calendrier","Brassins","Stocks","Clients","Compagnon [Compagnon brasseur]"," [Actions rapides]"]
+TEXTE ventil: Banc — données simulées · Stocks › Matériel
+
+À venir
+1
+Carnets
+6
+Réalisés
+0
+Carnets
+ZZ TEST — Ventilation de la salle de brassage
+
+2 façons à comparer · attendre l’avis du ferblantier
+
+Critère : tient 80 °C, puis le débit · proposé par l'IA · 1 critère sans valeur à comparer
+
+Articles
+6
+·
+Comparer
+Hotte inox + extracteur
+1 450 à 2 600 CHF
+tient 80 °C
+rang · article
+m³/h
+CHF
+1
+Hotte inox 120 cm + moteur
+CH · en stock
+1 800
+2 600
+2
+Hotte murale 100 cm
+DE · délai 4 sem. · veille
+1 200
+1 450
+Extracteur mural seul
+420 à 690 CHF
+ne tient pas 80 °C
+3
+Extracteur mural hélicoïde
+CH · en stock
+1 500
+420
+4
+Extracteur centrifuge en ligne
+FR · en stock · moins bien que la 3e sur tout
+1 100
+690
+?
+Lien sans aperçu
+exemple.invalid/v5 · à relire
+Ouvrir
+ Le critère sépare les deux façons : seule la hotte tient 80 °C.
+Retenir la hotte
+Ventilateur de plafond
+180 CHF
+brasse la buée sans la sortir
+–
+Ventilateur de plafond 130 cm
+écarté : brasse la buée sans la sortir
+–
+180
+
+votre phrase : « buées au-dessus de la cuve »
+
+Notes
+3
+attendre l’avis du ferblantier
+à faire
+surtout la buée de la cuve pendant l’ébullition, pas tant la salle
+note
+il faudrait au moins 1 500 m³/h
+note
+Ajouter à ZZ TEST — Ventilation de la salle de brassage…
+Bord
+Finances
+Calendrier
+Brassins
+Stocks
+Clients
+Compagnon

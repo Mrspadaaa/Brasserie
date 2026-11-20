@@ -1,0 +1,33 @@
+=== app
+introuvable : Carnets
+[app 390] carnets : Compagnon hors connexion · mode local /  / 🍺 / L'Affinée / Nov. / A / G / Articles / Courses / Fûts / Matériel / Houblons / Parc / À venir / 2 / Carnets / 0 / Réalisés / 0 / Tout / 0 / À traiter / 0 / Achat / aujourd'hui / 19.11 / déc. / janv. / févr. / mars / Aucun matériel / Enregistrer un achat / Matériel déjà possédé / Projets d'équipement / Bord / Finances / Calen
+champ introuvable pour « Moulin à malt 2 cylindres, 150 kg/h »
+suivi [app creer 390] -|- ; roue+bandeau simultanés : 0 relevés
+[app 390] créé : (absent : Ce qui compte) ; placeholders []
+champ introuvable pour « https://exemple.invalid/pompe-inox »
+suivi [app pompe1 390] -|- ; roue+bandeau simultanés : 0 relevés
+champ introuvable pour « https://exemple.invalid/pompe-magnetique »
+suivi [app pompe2 390] -|- ; roue+bandeau simultanés : 0 relevés
+[app 390] après pompes : Compagnon hors connexion · mode local /  / 🍺 / L'Affinée / Nov. / A / G / Articles / Courses / Fûts / Matériel / Houblons / Parc / À venir / 2 / Carnets / 0 / Réalisés / 0 / Tout / 0 / À traiter / 0 / Achat / aujourd'hui / 19.11 / déc. / janv. / févr. / mars / Aucun matériel / Enregistrer un achat / Matériel déjà possédé / Projets d'équipement / Bord / Finances / Calendrier / Brassins / Stocks / Clients
+introuvable : Carnets
+[app 1280] carnets : Compagnon hors connexion · mode local /  / 🍺 / L'Affinée / Nov. / A / G / Articles / Courses / Fûts / Matériel / Houblons / Parc / À venir / 2 / Carnets / 0 / Réalisés / 0 / Tout / 0 / À traiter / 0 / Enregistrer un achat / aujourd'hui / 19.11 / déc. / janv. / févr. / mars / Aucun matériel / Enregistrer un achat / Matériel déjà possédé / Projets d'équipement / Bord
+champ introuvable pour « Moulin à malt 2 cylindres, 150 kg/h »
+suivi [app creer 1280] -|- ; roue+bandeau simultanés : 0 relevés
+[app 1280] créé : (absent : Ce qui compte) ; placeholders []
+champ introuvable pour « https://exemple.invalid/pompe-inox »
+suivi [app pompe1 1280] -|- ; roue+bandeau simultanés : 0 relevés
+champ introuvable pour « https://exemple.invalid/pompe-magnetique »
+suivi [app pompe2 1280] -|- ; roue+bandeau simultanés : 0 relevés
+[app 1280] après pompes : Compagnon hors connexion · mode local /  / 🍺 / L'Affinée / Nov. / A / G / Articles / Courses / Fûts / Matériel / Houblons / Parc / À venir / 2 / Carnets / 0 / Réalisés / 0 / Tout / 0 / À traiter / 0 / Enregistrer un achat / aujourd'hui / 19.11 / déc. / janv. / févr. / mars / Aucun matériel / Enregistrer un achat / Matériel déjà possédé / Projets d'équipement / Bord / Finances / Calendrier / Brassins / Stocks / Clients / Compagnon / hors connexion
+=== depense
+[M9-3 390] avant : (absent : Somme) | pied : (absent : Lignes \d)
+[M9-3 390] retiré : false | Somme : (absent : Somme) | pied : (absent : Lignes \d)
+[M9-3 1280] avant : (absent : Somme) | pied : (absent : Lignes \d)
+[M9-3 1280] retiré : false | Somme : (absent : Somme) | pied : (absent : Lignes \d)
+[LR1-9 sonde 3] désaccord : false ; Voir le désaccord : false
+[LR1-9 sonde deux-taux] désaccord : false ; Voir le désaccord : false
+[LR1-9 sonde s6] désaccord : false ; Voir le désaccord : false
+[LR1-9 sonde commande] désaccord : false ; Voir le désaccord : false
+[LR1-9 sonde vaccins] désaccord : false ; Voir le désaccord : false
+[LR1-9 sonde renovation] désaccord : false ; Voir le désaccord : false
+ÉCHEC depense : net::ERR_CONNECTION_REFUSED at http://localhost:5181/?dev-local&depense=familles

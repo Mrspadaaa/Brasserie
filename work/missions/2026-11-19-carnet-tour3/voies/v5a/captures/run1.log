@@ -1,0 +1,103 @@
+=== n1 390 clair
+n1-frappe 390 clair : Notes
+capture n1-390-clair-a-frappe.png
+n1-apres 390 clair : Notes
+capture n1-390-clair-b-apres.png
+introuvable : Frigo
+=== n1 390 sombre
+n1-frappe 390 sombre : va dans / Notes : un frigo de garde pour 20 fûts / Notes / Ce qui compte / Note
+capture n1-390-sombre-a-frappe.png
+n1-apres 390 sombre : Rangé dans ZZ TEST — Frigo de garde pour fûts, à l'instant / Annuler / Notes
+capture n1-390-sombre-b-apres.png
+introuvable : Frigo
+=== n1 1280 clair
+n1-frappe 1280 clair : va dans / Notes : un frigo de garde pour 20 fûts / Notes / Ce qui compte / Note
+capture n1-1280-clair-a-frappe.png
+n1-apres 1280 clair : Rangé dans ZZ TEST — Frigo de garde pour fûts, à l'instant / Annuler / Notes
+capture n1-1280-clair-b-apres.png
+introuvable : Frigo
+=== n1 1280 sombre
+n1-frappe 1280 sombre : va dans / Notes : un frigo de garde pour 20 fûts / Notes / Ce qui compte / Note
+capture n1-1280-sombre-a-frappe.png
+n1-apres 1280 sombre : Rangé dans ZZ TEST — Frigo de garde pour fûts, à l'instant / Annuler / Notes
+capture n1-1280-sombre-b-apres.png
+introuvable : Frigo
+=== g8 390 clair
+g8-haut 390 clair : {"titre":["ZZ TEST — Ventilation de la salle de brassage",122]}
+capture g8-390-clair-haut.png
+capture g8-390-clair-bas.png
+=== g8 390 sombre
+g8-haut 390 sombre : {"titre":["ZZ TEST — Ventilation de la salle de brassage",122]}
+capture g8-390-sombre-haut.png
+capture g8-390-sombre-bas.png
+=== g8 1280 clair
+g8-haut 1280 clair : {"titre":["ZZ TEST — Ventilation de la salle de brassage",143]}
+capture g8-1280-clair-haut.png
+capture g8-1280-clair-bas.png
+=== g8 1280 sombre
+g8-haut 1280 sombre : {"titre":["ZZ TEST — Ventilation de la salle de brassage",143]}
+capture g8-1280-sombre-haut.png
+capture g8-1280-sombre-bas.png
+=== g8coller 390 clair
+g8coller 390 clair : Coller :
+capture g8coller-390-clair.png
+=== g8coller 390 sombre
+g8coller 390 sombre : Coller :
+capture g8coller-390-sombre.png
+=== g8coller 1280 clair
+g8coller 1280 clair : Coller :
+capture g8coller-1280-clair.png
+=== g8coller 1280 sombre
+g8coller 1280 sombre : Coller :
+capture g8coller-1280-sombre.png
+=== n3 390 clair
+n3 390 clair : ✻ Déjà un carnet proche : ZZ TEST — Ventilation de la salle de brassage / Ouvrir ce carnet / 2 façons · 6 articles · 1 en veille
+capture n3-390-clair-a.png
+texte n3-ouvert-390 : Banc — données simulées · Stocks › Matériel ¦ À venir ¦ 1 ¦ Carnets ¦ 6 ¦ Réalisés ¦ 0 ¦ Carnets ¦ ZZ TEST — Ventilation de la salle de brassage ¦ 2 façons à comparer · attendre l’avis du ferblantier ¦ Critère : tient 80 °C, puis le débit · proposé par l'IA · 1 critère sans valeur à comparer ¦ Articles ¦ 6 ¦ · ¦ Comparer ¦ Hotte inox + extracteur ¦ 1 450 à 2 600 CHF ¦ tient 80 °C ¦ rang · article ¦ m³/h ¦ CHF ¦ 1 ¦ Hotte inox 120 cm + m
+capture n3-390-clair-b-ouvert.png
+=== n3 390 sombre
+n3 390 sombre : ✻ Déjà un carnet proche : ZZ TEST — Ventilation de la salle de brassage / Ouvrir ce carnet / 2 façons · 6 articles · 1 en veille
+capture n3-390-sombre-a.png
+texte n3-ouvert-390 : Banc — données simulées · Stocks › Matériel ¦ À venir ¦ 1 ¦ Carnets ¦ 6 ¦ Réalisés ¦ 0 ¦ Carnets ¦ ZZ TEST — Ventilation de la salle de brassage ¦ 2 façons à comparer · attendre l’avis du ferblantier ¦ Critère : tient 80 °C, puis le débit · proposé par l'IA · 1 critère sans valeur à comparer ¦ Articles ¦ 6 ¦ · ¦ Comparer ¦ Hotte inox + extracteur ¦ 1 450 à 2 600 CHF ¦ tient 80 °C ¦ rang · article ¦ m³/h ¦ CHF ¦ 1 ¦ Hotte inox 120 cm + m
+capture n3-390-sombre-b-ouvert.png
+=== n3 1280 clair
+n3 1280 clair : ✻ Déjà un carnet proche : ZZ TEST — Ventilation de la salle de brassage / Ouvrir ce carnet / 2 façons · 6 articles · 1 en veille
+capture n3-1280-clair-a.png
+texte n3-ouvert-1280 : Banc — données simulées · Stocks › Matériel ¦ À venir ¦ 1 ¦ Carnets ¦ 6 ¦ Réalisés ¦ 0 ¦ Carnets ¦ ZZ TEST — Ventilation de la salle de brassage ¦ 2 façons à comparer · attendre l’avis du ferblantier ¦ Critère : tient 80 °C, puis le débit · proposé par l'IA · 1 critère sans valeur à comparer ¦ Articles ¦ 6 ¦ · ¦ Comparer ¦ Hotte inox + extracteur ¦ 1 450 à 2 600 CHF ¦ tient 80 °C ¦ rang · article ¦ m³/h ¦ CHF ¦ 1 ¦ Hotte inox 120 cm + m
+capture n3-1280-clair-b-ouvert.png
+=== n3 1280 sombre
+n3 1280 sombre : 2 façons · 6 articles · 1 en veille
+capture n3-1280-sombre-a.png
+introuvable : Ouvrir ce carnet
+=== coller 390 clair
+coller-a 390 clair : presse=true {"t":"Coller un lien","sw":132,"cw":132}
+capture coller-390-clair-a.png
+coller-b 390 clair : Articles / exemple.invalid/hotte-…
+capture coller-390-clair-b.png
+=== coller 390 sombre
+coller-a 390 sombre : presse=true {"t":"Coller un lien","sw":132,"cw":132}
+capture coller-390-sombre-a.png
+coller-b 390 sombre : Articles / exemple.invalid/hotte-…
+capture coller-390-sombre-b.png
+=== coller 1280 clair
+coller-a 1280 clair : presse=true {"t":"Coller un lien","sw":132,"cw":132}
+capture coller-1280-clair-a.png
+coller-b 1280 clair : Articles / exemple.invalid/hotte-…
+capture coller-1280-clair-b.png
+=== coller 1280 sombre
+coller-a 1280 sombre : presse=true {"t":"Coller un lien","sw":132,"cw":132}
+capture coller-1280-sombre-a.png
+coller-b 1280 sombre : Articles / exemple.invalid/hotte-…
+capture coller-1280-sombre-b.png
+=== moulin 390 clair
+texte moulin-390 : Banc — données simulées · Stocks › Matériel ¦ À venir ¦ 1 ¦ Carnets ¦ 7 ¦ Réalisés ¦ 0 ¦ Carnets ¦ Idée · 19 nov. ¦ Moulin à malt 2 cylindres, 150 kg/h ¦ ✓ ¦ Carnet créé, en tête des Carnets ¦ Annuler ¦ « Moulin à malt 2 cylindres, 150 kg/h » · votre phrase en titre ¦ Ce qui compte ¦ · Débit : 150 kg/h au moins · de votre phrase ¦ Façons ¦ 2 cylindres ¦ aucun article encore ¦ à chercher ¦ Articles ¦ · aucun : collez un lien ¦ Photos ¦ · aucune ¦ Notes ¦ · aucune ¦ Le champ en bas range tout ici : une phrase, un lien collé, une photo. ¦ Ajouter à Moulin à malt 2 cylindres, 150 kg/h… ¦ Bord ¦ Finances ¦ Calendrier ¦ Brassins ¦ Stocks ¦ Clients
+capture moulin-390-clair.png
+=== moulin 390 sombre
+texte moulin-390 : Banc — données simulées · Stocks › Matériel ¦ À venir ¦ 1 ¦ Carnets ¦ 7 ¦ Réalisés ¦ 0 ¦ Carnets ¦ Idée · 19 nov. ¦ Moulin à malt 2 cylindres, 150 kg/h ¦ ✓ ¦ Carnet créé, en tête des Carnets ¦ Annuler ¦ « Moulin à malt 2 cylindres, 150 kg/h » · votre phrase en titre ¦ Ce qui compte ¦ · Débit : 150 kg/h au moins · de votre phrase ¦ Façons ¦ 2 cylindres ¦ aucun article encore ¦ à chercher ¦ Articles ¦ · aucun : collez un lien ¦ Photos ¦ · aucune ¦ Notes ¦ · aucune ¦ Le champ en bas range tout ici : une phrase, un lien collé, une photo. ¦ Ajouter à Moulin à malt 2 cylindres, 150 kg/h… ¦ Bord ¦ Finances ¦ Calendrier ¦ Brassins ¦ Stocks ¦ Clients
+capture moulin-390-sombre.png
+=== moulin 1280 clair
+texte moulin-1280 : Banc — données simulées · Stocks › Matériel ¦ À venir ¦ 1 ¦ Carnets ¦ 7 ¦ Réalisés ¦ 0 ¦ Carnets ¦ Idée · 19 nov. ¦ Moulin à malt 2 cylindres, 150 kg/h ¦ ✓ ¦ Carnet créé, en tête des Carnets ¦ Annuler ¦ « Moulin à malt 2 cylindres, 150 kg/h » · votre phrase en titre ¦ Ce qui compte ¦ · Débit : 150 kg/h au moins · de votre phrase ¦ Façons ¦ 2 cylindres ¦ aucun article encore ¦ à chercher ¦ Articles ¦ · aucun : collez un lien ¦ Photos ¦ · aucune ¦ Notes ¦ · aucune ¦ Le champ en bas range tout ici : une phrase, un lien collé, une photo. ¦ Ajouter à Moulin à malt 2 cylindres, 150 kg/h… ¦ Bord ¦ Finances ¦ Calendrier ¦ Brassins ¦ Stocks ¦ Clients ¦ Compagn
+capture moulin-1280-clair.png
+=== moulin 1280 sombre
+texte moulin-1280 : Banc — données simulées · Stocks › Matériel ¦ À venir ¦ 1 ¦ Carnets ¦ 7 ¦ Réalisés ¦ 0 ¦ Carnets ¦ Idée · 19 nov. ¦ Moulin à malt 2 cylindres, 150 kg/h ¦ ✓ ¦ Carnet créé, en tête des Carnets ¦ Annuler ¦ « Moulin à malt 2 cylindres, 150 kg/h » · votre phrase en titre ¦ Ce qui compte ¦ · Débit : 150 kg/h au moins · de votre phrase ¦ Façons ¦ 2 cylindres ¦ aucun article encore ¦ à chercher ¦ Articles ¦ · aucun : collez un lien ¦ Photos ¦ · aucune ¦ Notes ¦ · aucune ¦ Le champ en bas range tout ici : une phrase, un lien collé, une photo. ¦ Ajouter à Moulin à malt 2 cylindres, 150 kg/h… ¦ Bord ¦ Finances ¦ Calendrier ¦ Brassins ¦ Stocks ¦ Clients ¦ Compagn
+capture moulin-1280-sombre.png

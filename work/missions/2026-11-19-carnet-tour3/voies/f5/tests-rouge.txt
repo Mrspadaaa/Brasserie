@@ -1,0 +1,73 @@
+[1m[43m DEPRECATED [49m[22m [33m"environmentMatchGlobs" is deprecated. Use `test.projects` to define different configurations instead.[39m
+
+[1m[46m RUN [49m[22m [36mv3.2.7 [39m[90mC:/Users/mrspa/.codex/worktrees/openai-clean-start/port-carnet[39m
+
+[33m[39m[31mx[39m[33m[39m[31mx[39m[33m[39m[31mx[39m
+
+[31m⎯⎯⎯⎯⎯⎯⎯[39m[1m[41m Failed Tests 3 [49m[22m[31m⎯⎯⎯⎯⎯⎯⎯[39m
+
+[41m[1m FAIL [22m[49m tests/unit/carnetsTour3F5.test.tsx[2m > [22mf5 n° 1 : la phrase de renvoi n’est jamais un critère[2m > [22msansAutreSujet retire la tête de renvoi, et seulement elle
+[31m[1mAssertionError[22m: expected null to be 'un frigo de garde pour 20 fûts' // Object.is equality[39m
+
+[32m- Expected:[39m 
+"un frigo de garde pour 20 fûts"
+
+[31m+ Received:[39m 
+null
+
+[36m [2m❯[22m tests/unit/carnetsTour3F5.test.tsx:[2m37:36[22m[39m
+    [90m 35| [39mdescribe('f5 n° 1 : la phrase de renvoi n’est jamais un critère', () =…
+    [90m 36| [39m  it('sansAutreSujet retire la tête de renvoi, et seulement elle', () …
+    [90m 37| [39m    expect(sansAutreSujet(PHRASE)).toBe('un frigo de garde pour 20 fût…
+    [90m   | [39m                                   [31m^[39m
+    [90m 38| [39m    expect(sansAutreSujet('ZZ TEST — rien à voir : évier 2 bacs')).toB…
+    [90m 39| [39m    [34mexpect[39m([34msansAutreSujet[39m([32m'tient 80 °C'[39m))[33m.[39m[34mtoBeNull[39m()[33m;[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/3]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m tests/unit/carnetsTour3F5.test.tsx[2m > [22mf5 n° 1 : la phrase de renvoi n’est jamais un critère[2m > [22mVentilation : le cadre annonce une note du Frigo, sans « autre projet » ; l’envoi y range une note, aucun critère
+[31m[1mAssertionError[22m: expected ' va dans ZZ TEST — Frigo de garde pou…' not to match /autre projet/[39m
+
+[32m- Expected:[39m 
+/autre projet/
+
+[31m+ Received:[39m 
+" va dans ZZ TEST — Frigo de garde pour fûts tiré de votre phraseCe qui compte : autre projet, sans rapport : un frigo de garde pour 20 fûts"
+
+[36m [2m❯[22m tests/unit/carnetsTour3F5.test.tsx:[2m51:23[22m[39m
+    [90m 49| [39m    const cadre = document.querySelector('.cn-cadre')?.textContent ?? …
+    [90m 50| [39m    [34mexpect[39m(cadre)[33m.[39m[34mtoMatch[39m([36m/Frigo/[39m)[33m;[39m
+    [90m 51| [39m    [34mexpect[39m(cadre)[33m.[39mnot[33m.[39m[34mtoMatch[39m([36m/autre projet/[39m)[33m;[39m
+    [90m   | [39m                      [31m^[39m
+    [90m 52| [39m    [34mexpect[39m(cadre)[33m.[39mnot[33m.[39m[34mtoMatch[39m([36m/Ce qui compte/[39m)[33m;[39m
+    [90m 53| [39m    const avant = lireCarnets(magasin.lire()).find(c => c.id === ID_FR…
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/3]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m tests/unit/carnetsTour3F5.test.tsx[2m > [22mf5 n° 2 : la bulle G8 dit les deux façons entières[2m > [22maucune coupe en « … » sur la bulle (ni line-clamp ni ellipsis)
+[31m[1mAssertionError[22m: expected '\n/* tour 3, PCN-103 : la bulle dit e…' not to match /line-clamp|ellipsis|nowrap/[39m
+
+[32m- Expected:[39m 
+/line-clamp|ellipsis|nowrap/
+
+[31m+ Received:[39m 
+"
+/* tour 3, PCN-103 : la bulle dit entre quoi ; deux lignes au plus, jamais coupée par « … » sur une seule */
+.cnf-aides-ligne > .cn-bulle > span:last-child { min-width: 0; overflow: hidden; display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; line-height: 1.25; text-align: left; "
+
+[36m [2m❯[22m tests/unit/carnetsTour3F5.test.tsx:[2m70:23[22m[39m
+    [90m 68| [39m    const regle = css.split('}').find(r => r.includes('.cnf-aides-lign…
+    [90m 69| [39m    [34mexpect[39m(regle)[33m.[39mnot[33m.[39m[34mtoBe[39m([32m''[39m)[33m;[39m
+    [90m 70| [39m    [34mexpect[39m(regle)[33m.[39mnot[33m.[39m[34mtoMatch[39m([36m/line-clamp|ellipsis|nowrap/[39m)[33m;[39m
+    [90m   | [39m                      [31m^[39m
+    [90m 71| [39m  })[33m;[39m
+    [90m 72| [39m})[33m;[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/3]⎯[22m[39m
+
+
+[2m Test Files [22m [1m[31m1 failed[39m[22m[90m (1)[39m
+[2m      Tests [22m [1m[31m3 failed[39m[22m[90m (3)[39m
+[2m   Start at [22m 19:43:21
+[2m   Duration [22m 4.65s[2m (transform 1.82s, setup 340ms, collect 2.62s, tests 447ms, environment 992ms, prepare 85ms)[22m
+

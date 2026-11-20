@@ -1,0 +1,15 @@
+sol 1280 cartes Résine|Prochain|sol : [{"tag":"BUTTON","groupe":"Idée 4","texte":"Prochain brassin\n« acheter 2 sachets de levure »\n+1 · à acheter","cite":{"txt":"« acheter 2 sachets de levure »","ws":"normal","h":20},"top":638}]
+capture t2-sol-1280-brassin.png
+levure 1280 cartes Résine|Prochain|sol : [{"tag":"BUTTON","groupe":"Idée 3","texte":"Prochain brassin\n« Sachets de levure x2. Prochain brassage mardi. »\n+1 · à acheter","cite":{"txt":"« Sachets de levure x2. Prochain brassage mardi. »","ws":"normal","h":20},"top":638}]
+capture t2-levure-1280-brassin.png
+levure-eteint 1280 cartes Résine|Prochain|sol : [{"tag":"BUTTON","groupe":"Idée 3","texte":"Prochain brassin\n« Sachets de levure x2. Prochain brassage mardi. »\n+1 · à acheter","cite":{"txt":"« Sachets de levure x2. Prochain brassage mardi. »","ws":"normal","h":20},"top":647}]
+capture t2-levure-eteint-1280-brassin.png
+sol 390 cartes Résine|Prochain|sol : [{"tag":"BUTTON","groupe":"Idée 4","texte":"Prochain brassin\n« acheter 2 sachets de levure »\n+1 · à acheter","cite":{"txt":"« acheter 2 sachets de levure »","ws":"normal","h":39},"top":680}]
+capture t2-sol-390-brassin.png
+levure 390 cartes Résine|Prochain|sol : [{"tag":"BUTTON","groupe":"Idée 3","texte":"Prochain brassin\n« Sachets de levure x2. Prochain brassage mardi. »\n+1 · à acheter","cite":{"txt":"« Sachets de levure x2. Prochain brassage mardi. »","ws":"normal","h":39},"top":680}]
+capture t2-levure-390-brassin.png
+levure-eteint 390 cartes Résine|Prochain|sol : [{"tag":"BUTTON","groupe":"Idée 3","texte":"Prochain brassin\n« Sachets de levure x2. Prochain brassage mardi. »\n+1 · à acheter","cite":{"txt":"« Sachets de levure x2. Prochain brassage mardi. »","ws":"normal","h":39},"top":689}]
+capture t2-levure-eteint-390-brassin.png
+planche pl-app-390
+planche pl-app-1280
+planche pl-banc-sombre

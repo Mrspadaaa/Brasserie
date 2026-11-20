@@ -1,0 +1,91 @@
+[1m[43m DEPRECATED [49m[22m [33m"environmentMatchGlobs" is deprecated. Use `test.projects` to define different configurations instead.[39m
+
+[1m[46m RUN [49m[22m [36mv3.2.7 [39m[90mC:/Users/mrspa/.codex/worktrees/openai-clean-start/port-carnet[39m
+
+[33m[39m[31mx[39m[33m[39m[32m·[39m[33m[39m[31mx[39m[33m[39m[32m·[39m[33m[39m[31mx[39m[33m[39m[32m·[39m[33m[39m[31mx[39m
+
+[31m⎯⎯⎯⎯⎯⎯⎯[39m[1m[41m Failed Tests 4 [49m[22m[31m⎯⎯⎯⎯⎯⎯⎯[39m
+
+[41m[1m FAIL [22m[49m tests/unit/carnetsTour3F5d.test.tsx[2m > [22mf5d n° 4 : la bulle G8 ne pousse pas le titre sous la barre quand la page est en haut[2m > [22mpage en haut : aucun défilement (le titre reste sous les yeux)
+[31m[1mAssertionError[22m: expected "spy" to not be called at all, but actually been called 1 times[90m
+
+Received: 
+
+[1m  1st spy call:
+
+[22m    Array [
+      Object {
+        "top": 52,
+      },
+    ]
+[31m[90m
+
+Number of calls: [1m1[22m
+[31m[39m
+[36m [2m❯[22m tests/unit/carnetsTour3F5d.test.tsx:[2m56:26[22m[39m
+    [90m 54| [39m    [35mconst[39m scrollBy [33m=[39m [34mpage[39m([34m0[39m)[33m;[39m
+    [90m 55| [39m    [34mfocaliser[39m()[33m;[39m
+    [90m 56| [39m    [34mexpect[39m(scrollBy)[33m.[39mnot[33m.[39m[34mtoHaveBeenCalled[39m()[33m;[39m
+    [90m   | [39m                         [31m^[39m
+    [90m 57| [39m  })[33m;[39m
+    [90m 58| [39m  it('page en bas : elle défile de la bulle et de son écart, la derniè…
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/4]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m tests/unit/carnetsTour3F5d.test.tsx[2m > [22mf5d n° 10 : la 2e pompe, meilleur débit, n’est pas « moins bien que la 1re sur tout » à l’écran[2m > [22mle domaine fait foi : ni rang du dominant ni texte, au tableau du carnet comme dans Comparer
+[31m[1mAssertionError[22m: expected 1 to be null[39m
+
+[32m- Expected:[39m 
+null
+
+[31m+ Received:[39m 
+1
+
+[36m [2m❯[22m tests/unit/carnetsTour3F5d.test.tsx:[2m79:52[22m[39m
+    [90m 77| [39m    expect(t.colonnes.map((k: Colonne) => k.nom)).toEqual(['températur…
+    [90m 78| [39m    [35mconst[39m l [33m=[39m t[33m.[39mlignes[33m.[39m[34mfind[39m(x [33m=>[39m x[33m.[39marticleId [33m===[39m inox[33m.[39mid)[33m![39m[33m;[39m
+    [90m 79| [39m    [34mexpect[39m([34mmoinsBienQueDe[39m(t [35mas[39m never[33m,[39m l [35mas[39m never))[33m.[39m[34mtoBeNull[39m()[33m;[39m
+    [90m   | [39m                                                   [31m^[39m
+    [90m 80| [39m    [34mexpect[39m([34mtexteMoinsBien[39m(t [35mas[39m never[33m,[39m l [35mas[39m never))[33m.[39m[34mtoBeNull[39m()[33m;[39m
+    [90m 81| [39m  })[33m;[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/4]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m tests/unit/carnetsTour3F5d.test.tsx[2m > [22mf5d n° 11 : un lien collé seul se cite « votre lien », jamais « votre phrase »[2m > [22mligne rangée (Article rangé ici)
+[31m[1mAssertionError[22m: expected '✓ Article rangé ici, à l\'instant Ann…' to contain 'votre lien : « https://exemple.invali…'[39m
+
+Expected: [32m"[7mvotre lien[27m : « https://exemple.invalid/pompe-magnetique »"[39m
+Received: [31m"[7m✓ Article rangé ici, à l'instant Annulercartevotre phrase[27m : « https://exemple.invalid/pompe-magnetique »"[39m
+
+[36m [2m❯[22m tests/unit/carnetsTour3F5d.test.tsx:[2m94:30[22m[39m
+    [90m 92| [39m  [34mit[39m([32m'ligne rangée (Article rangé ici)'[39m[33m,[39m () [33m=>[39m {
+    [90m 93| [39m    const { container } = render(<LigneRangee sorte="article" phrase={…
+    [90m 94| [39m    [34mexpect[39m([34mtexte[39m(container))[33m.[39m[34mtoContain[39m([32m`votre lien : « [39m[36m${[39m[33mURL[39m[36m}[39m[32m »`[39m)[33m;[39m
+    [90m   | [39m                             [31m^[39m
+    [90m 95| [39m    [34mexpect[39m([34mtexte[39m(container))[33m.[39mnot[33m.[39m[34mtoContain[39m([32m'votre phrase'[39m)[33m;[39m
+    [90m 96| [39m  })[33m;[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/4]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m tests/unit/carnetsTour3F5d.test.tsx[2m > [22mf5d n° 11 : un lien collé seul se cite « votre lien », jamais « votre phrase »[2m > [22mcarnet ouvert dont la phrase est un lien
+[31m[1mAssertionError[22m: expected ' CarnetsIdée · 15 nov.ZZ TEST — Pompe…' to contain 'votre lien : « https://exemple.invali…'[39m
+
+Expected: [32m"votre lien : « https://exemple.invalid/pompe-magnetique »"[39m
+Received: [31m" CarnetsIdée · 15 nov.ZZ TEST — Pompe de transfertvotre phrase : « https://exemple.invalid/pompe-magnetique » Ce qui compte · rien encore : l'IA le proposera Façons · aucune : l'IA les cherche Articles · aucun : collez un lien Notes · aucune"[39m
+
+[36m [2m❯[22m tests/unit/carnetsTour3F5d.test.tsx:[2m106:30[22m[39m
+    [90m104| [39m    const { container } = render(<CarnetOuvert carnet={c} aides={AIDES…
+    [90m105| [39m      onSupprimer={rien} onNote={rien} onOuvrirArticle={rien} onCompar…
+    [90m106| [39m    [34mexpect[39m([34mtexte[39m(container))[33m.[39m[34mtoContain[39m([32m`votre lien : « [39m[36m${[39m[33mURL[39m[36m}[39m[32m »`[39m)[33m;[39m
+    [90m   | [39m                             [31m^[39m
+    [90m107| [39m    [34mexpect[39m([34mtexte[39m(container))[33m.[39mnot[33m.[39m[34mtoContain[39m([32m'votre phrase'[39m)[33m;[39m
+    [90m108| [39m  })[33m;[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/4]⎯[22m[39m
+
+
+[2m Test Files [22m [1m[31m1 failed[39m[22m[90m (1)[39m
+[2m      Tests [22m [1m[31m4 failed[39m[22m[2m | [22m[1m[32m3 passed[39m[22m[90m (7)[39m
+[2m   Start at [22m 20:02:14
+[2m   Duration [22m 1.83s[2m (transform 410ms, setup 290ms, collect 462ms, tests 98ms, environment 698ms, prepare 71ms)[22m
+

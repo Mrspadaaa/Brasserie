@@ -1,0 +1,1 @@
+Aucun correctif dans les possessions de la voie r : aucun test rouge a produire. Les tests ajoutes sont verts sur le code actuel (voir tests-vert.txt).

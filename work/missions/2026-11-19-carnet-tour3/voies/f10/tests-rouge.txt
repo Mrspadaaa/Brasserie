@@ -1,0 +1,287 @@
+[1m[43m DEPRECATED [49m[22m [33m"environmentMatchGlobs" is deprecated. Use `test.projects` to define different configurations instead.[39m
+
+[1m[46m RUN [49m[22m [36mv3.2.7 [39m[90mC:/Users/mrspa/.codex/worktrees/openai-clean-start/port-carnet[39m
+
+[33m[39m[31mx[39m[33m[39m[31mx[39m[33m[39m[31mx[39m[33m[39m[31mx[39m[33m[39m[32m·[39m[33m[39m[31mx[39m[33m[39m[32m·[39m
+
+[31m⎯⎯⎯⎯⎯⎯⎯[39m[1m[41m Failed Tests 5 [49m[22m[31m⎯⎯⎯⎯⎯⎯⎯[39m
+
+[41m[1m FAIL [22m[49m tests/unit/depense/f10-tour3.test.tsx[2m > [22mv3-5 suite : à 390, le pied dit en entier ce qu’on attend (« 3e lecture en c… » coupé)[2m > [22mle bouton principal rétrécit et passe à la ligne (jamais coupé, jamais hors de l’écran) ; son texte est entier
+[31m[1mAssertionError[22m: expected 'ml-auto inline-flex min-h-9 shrink-0 …' not to match /\bshrink-0\b|\bwhitespace-nowrap\b|\b…/[39m
+
+[32m- Expected:[39m 
+/\bshrink-0\b|\bwhitespace-nowrap\b|\btruncate\b/
+
+[31m+ Received:[39m 
+"ml-auto inline-flex min-h-9 shrink-0 items-center justify-center gap-1.5 rounded-control border border-ebc-straw bg-ebc-straw px-3.5 text-sm font-semibold text-cave-950 disabled:opacity-40"
+
+[36m [2m❯[22m tests/unit/depense/f10-tour3.test.tsx:[2m65:29[22m[39m
+    [90m 63| [39m    [34mexpect[39m(b[33m.[39mtextContent)[33m.[39m[34mtoContain[39m([32m'3e lecture en cours…'[39m)[33m;[39m
+    [90m 64| [39m    // shrink-0 + nowrap : le bouton gardait sa largeur d’une ligne et…
+    [90m 65| [39m    expect(b.className).not.toMatch(/\bshrink-0\b|\bwhitespace-nowrap\…
+    [90m   | [39m                            [31m^[39m
+    [90m 66| [39m    [35mconst[39m t [33m=[39m b[33m.[39mquerySelector[33m<[39m[33mHTMLElement[39m[33m>[39m([32m'[data-dp="pied-texte"]'[39m)[33m;[39m
+    [90m 67| [39m    [34mexpect[39m(t)[33m.[39mnot[33m.[39m[34mtoBeNull[39m()[33m;[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/5]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m tests/unit/depense/f10-tour3.test.tsx[2m > [22mdoc2 : trois lectures du même cabinet (variantes d’un même nom) ne sont pas un désaccord[2m > [22mpointsAMontrer tait la variante de fournisseur, garde un vrai désaccord de fournisseur
+[31m[1mAssertionError[22m: expected [ { …(19) } ] to deeply equal [][39m
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[32m- [][39m
+[31m+ [[39m
+[31m+   {[39m
+[31m+     "bloque": false,[39m
+[31m+     "calcule": null,[39m
+[31m+     "champ": "vendor",[39m
+[31m+     "champs": [[39m
+[31m+       "vendor",[39m
+[31m+     ],[39m
+[31m+     "cle": "lectures-divergentes:-:vendor",[39m
+[31m+     "code": "lectures-divergentes",[39m
+[31m+     "ecart": null,[39m
+[31m+     "enjeu": "info",[39m
+[31m+     "gravite": "ecart",[39m
+[31m+     "ligne": null,[39m
+[31m+     "lu": null,[39m
+[31m+     "luTexte": "Drs H. et I. Gauderon-Comment Sàrl",[39m
+[31m+     "message": "Fournisseur : lectures divergentes (Drs H. et I. Gauderon-Comment Sàrl / Cabinet Vétérinaire Drs H. et I. Gauderon-Comment Sàrl / Drs H. et I. Gauderon-Comment Sàrl - Médecins vétérinaires), vérifier le justificatif.",[39m
+[31m+     "origine": "lecture",[39m
+[31m+     "pese": true,[39m
+[31m+     "regle": "les lectures indépendantes lisent la même valeur",[39m
+[31m+     "source": "désaccord",[39m
+[31m+     "unite": "texte",[39m
+[31m+     "valeurs": [[39m
+[31m+       {[39m
+[31m+         "lecture": 1,[39m
+[31m+         "retenue": true,[39m
+[31m+         "valeur": "Drs H. et I. Gauderon-Comment Sàrl",[39m
+[31m+       },[39m
+[31m+       {[39m
+[31m+         "lecture": 2,[39m
+[31m+         "retenue": false,[39m
+[31m+         "valeur": "Cabinet Vétérinaire Drs H. et I. Gauderon-Comment Sàrl",[39m
+[31m+       },[39m
+[31m+       {[39m
+[31m+         "lecture": 3,[39m
+[31m+         "retenue": false,[39m
+[31m+         "valeur": "Drs H. et I. Gauderon-Comment Sàrl - Médecins vétérinaires",[39m
+[31m+       },[39m
+[31m+     ],[39m
+[31m+   },[39m
+[31m+ ][39m
+
+[36m [2m❯[22m tests/unit/depense/f10-tour3.test.tsx:[2m82:50[22m[39m
+    [90m 80| [39mdescribe('doc2 : trois lectures du même cabinet (variantes d’un même n…
+    [90m 81| [39m  it('pointsAMontrer tait la variante de fournisseur, garde un vrai dé…
+    [90m 82| [39m    [34mexpect[39m([34mpointsAMontrer[39m([[33mVENDOR_DOC2[39m [35mas[39m any]))[33m.[39m[34mtoEqual[39m([])[33m;[39m
+    [90m   | [39m                                                 [31m^[39m
+    [90m 83| [39m    [34mexpect[39m([34mpointsAMontrer[39m([[33mVENDOR_AUTRE[39m [35mas[39m any]))[33m.[39m[34mtoHaveLength[39m([34m1[39m)[33m;[39m
+    [90m 84| [39m  })[33m;[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/5]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m tests/unit/depense/f10-tour3.test.tsx[2m > [22mdoc2 : trois lectures du même cabinet (variantes d’un même nom) ne sont pas un désaccord[2m > [22ml’en-tête : le fournisseur variante reste sûr ; un vrai désaccord le baisse
+[31m[1mAssertionError[22m: expected 'repris' to be 'sur' // Object.is equality[39m
+
+Expected: [32m"sur"[39m
+Received: [31m"repris"[39m
+
+[36m [2m❯[22m tests/unit/depense/f10-tour3.test.tsx:[2m87:92[22m[39m
+    [90m 85| [39m  it('l’en-tête : le fournisseur variante reste sûr ; un vrai désaccor…
+    [90m 86| [39m    const b = { vendor: 'Drs H. et I. Gauderon-Comment Sàrl', date: '2…
+    [90m 87| [39m    expect(confianceEntete({ points: [VENDOR_DOC2 as any] } as any, b)…
+    [90m   | [39m                                                                                           [31m^[39m
+    [90m 88| [39m    expect(confianceEntete({ points: [VENDOR_AUTRE as any] } as any, {…
+    [90m 89| [39m  })[33m;[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/5]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m tests/unit/depense/f10-tour3.test.tsx[2m > [22mdoc2 : trois lectures du même cabinet (variantes d’un même nom) ne sont pas un désaccord[2m > [22mà l’écran (3 lectures) : « Lectures 3/3 d’accord », aucun « 1 valeur en désaccord », aucun « À confirmer » au fournisseur
+[31m[1mAssertionError[22m[39m: expected 'Nouvelle dépensePliéDépliéOuvrir le P…' to match /3\/3 d'accord/3 d'accord
+
+Ignored nodes: comments, script, style
+[36m<html>[39m
+  [36m<head />[39m
+  [36m<body[39m
+    [33mstyle[39m=[32m"overflow: hidden;"[39m
+  [36m>[39m
+    [36m<div>[39m
+      [36m<div[39m
+        [33mclass[39m=[32m"fixed inset-0 z-50 flex justify-center bg-cave-950/80 backdrop-blur-sm
+                  animate-in fade-in
+                  items-stretch"[39m
+      [36m>[39m
+        [36m<div[39m
+          [33maria-labelledby[39m=[32m"_r_0_"[39m
+          [33maria-modal[39m=[32m"true"[39m
+          [33mclass[39m=[32m"w-full max-w-none h-full rounded-none border-0 flex flex-col overflow-hidden
+                    bg-cave-900 border-cave-800 shadow-2xl
+                    "[39m
+          [33mrole[39m=[32m"dialog"[39m
+          [33mtabindex[39m=[32m"-1"[39m
+        [36m>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"flex min-h-0 w-full flex-1 flex-col lg:mx-auto lg:max-w-[1220px] lg:border-x lg:border-cave-700"[39m
+            [33mdata-dp[39m=[32m"colonne"[39m
+          [36m>[39m
+            [36m<header[39m
+              [33mclass[39m=[32m"flex h-10 shrink-0 items-center gap-1 border-b border-cave-800 bg-cave-950 pl-1 pr-1"[39m
+            [36m>[39m
+              [36m<button[39m
+                [33maria-label[39m=[32m"Fermer"[39m
+                [33mclass[39m=[32m"flex size-8 items-center justify-center rounded-control text-cave-200 disabled:opacity-40"[39m
+                [33mtype[39m=[32m"button"[39m
+              [36m>[39m
+                [36m<svg[39m
+                  [33maria-hidden[39m=[32m"true"[39m
+                  [33mclass[39m=[32m"lucide lucide-x"[39m
+                  [33mfill[39m=[32m"none"[39m
+                  [33mheight[39m=[32m"20"[39m
+                  [33mstroke[39m=[32m"currentColor"[39m
+                  [33mstroke-linecap[39m=[32m"round"[39m
+                  [33mstroke-linejoin[39m=[32m"round"[39m
+                  [33mstroke-width[39m=[32m"2"[39m
+                  [33mviewBox[39m=[32m"0 0 24 24"[39m
+                  [33mwidth[39m=[32m"20"[39m
+                  [33mxmlns[39m=[32m"http://www.w3.org/2000/svg"[39m
+                [36m>[39m
+                  [36m<path[39m
+                    [33md[39m=[32m"M18 6 6 18"[39m
+                  [36m/>[39m
+                  [36m<path[39m
+                    [33md[39m=[32m"m6 6 12 12"[39m
+                  [36m/>[39m
+                [36m</svg>[39m
+              [36m</button>[39m
+              [36m<h2[39m
+                [33mclass[39m=[32m"min-w-0 flex-1 truncate text-base font-semibold text-cave-50"[39m
+                [33mid[39m=[32m"_r_0_"[39m
+              [36m>[39m
+                [0mNouvelle dépense[0m
+              [36m</h2>[39m
+              [36m<div[39m
+                [33maria-label[39m=[32m"Sous-groupes"[39m
+                [33mclass[39m=[32m"inline-flex shrink-0 overflow-hidden rounded-control border border-cave-600"[39m
+                [33mdata-dp-plier[39m=[32m"true"[39m
+                [33mrole[39m=[32m"group"[39m
+              [36m>[39m
+                [36m<button[39m
+                  [33maria-pressed[39m=[32m"false"[39m
+                  [33mclass[39m=[32m"dp-p3c-seg min-h-7 px-2 text-sm text-cave-200"[39m
+                  [33mdata-dp-plier-bouton[39m=[32m"plie"[39m
+                  [33mtype[39m=[32m"button"[39m
+                [36m>[39m
+                  [0mPlié[0m
+                [36m</button>[39m
+                [36m<button[39m
+                  [33maria-pressed[39m=[32m"true"[39m
+                  [33mclass[39m=[32m"dp-p3c-seg min-h-7 px-2 text-sm bg-ebc-straw text-cave-950"[39m
+                  [33mdata-dp-plier-bouton[39m=[32m"deplie"[39m
+                  [33mtype[39m=[32m"button"[39m
+                [36m>[39m
+                  [0mDéplié[0m
+                [36m</button>[39m
+              [36m</div>[39m
+              [36m<button[39m
+                [33maria-expanded[39m=[32m"false"[39m
+                [33maria-label[39m=[32m"Justificatif : voir l’original, changer"[39m
+                [33mclass[39m=[32m"flex size-8 items-center justify-center rounded-control text-cave-200"[39m
+                [33mtype[39m=[32m"button"[39m
+              [36m>[39m
+                [36m<svg[39m
+                  [33maria-hidden[39m=[32m"true"[39m
+                  [33mclass[39m=[32m"lucide lucide-file-text"[39m
+                  [33mfill[39m=[32m"none"[39m
+                  [33mheight[39m=[32m"20"[39m
+                  [33mstroke[39m=[32m"currentColor"[39m
+                  [33mstroke-linecap[39m=[32m"round"[39m
+                  [33mstroke-linejoin[39m=[32m"round"[39m
+                  [33mstroke-width[39m=[32m"2"[39m
+                  [33mviewBox[39m=[32m"0 0 24 24"[39m
+                  [33mwidth[39m=[32m"20"[39m
+                  [33mxmlns[39m=[32m"http://www.w3.org/2000/svg"[39m
+                [36m>[39m
+                  [36m<path[39m
+                    [33md[39m=[32m"M6 22a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h8a2.4 2.4 0 0 1 1.704.706l3.588 3.588A2.4 2.4 0 0 1 20 8v12a2 2 0 0 1-2 2z"[39m
+                  [36m/>[39m
+                  [36m<path[39m
+                    [33md[39m=[32m"M14 2v5a1 1 0 0 0 1 1h5"[39m
+                  [36m/>[39m
+                  [36m<path[39m
+                    [33md[39m=[32m"M10 9H8"[39m
+                  [36m/>[39m
+                  [36m<path[39m
+                    [33md[39m=[32m"M16 13H8"[39m
+                  [36m/>[39m
+                  [36m<path[39m
+                    [33md[39m=[32m"M16 17H8"[39m
+                  [36m/>[39m
+                [36m</svg>[39m
+              [36m</button>[39m
+            [36m</header>[39m
+            [36m<div[39m
+              [33mclass[39m=[32m"dp-p3c-corps flex-1 min-h-0 overflow-y-auto overscroll-contain scroll-pt-10 lg:scroll-pt-0 [&_input:not([type=checkbox])]:min-h-8 [&_input]:py-0.5 [&_select]:min-h-8 [&_select]:py-0.5 [&_[role=textbox]]:min-h-8 [&_[role=textbox]]:py-0.5 [&_label]:text-xs [&_summary]:text-[13px]"[39m
+            [36m>[39m
+              [36m<div[39m
+                [33mclass[39m=[32m""[39m
+              [36m>[39m
+                [36m<div[39m
+                  [33mclass[39m=[32m"hidden space-y-1.5 rounded-panel border border-cave-800 bg-cave-900/60 p-2"[39m
+                  [33mdata-dp[39m=[32m"justificatif"[39m
+                [36m>[39m
+                  [36m<div[39m
+                    [33mclass[39m=[32m"flex flex-wrap items-center gap-1.5"[39m
+                  [36m>[39m
+                    [36m<a[39m
+                      [33mclass[39m=[32m"inline-flex min-h-7 items-center rounded-control border border-cave-600 px-2.5 text-sm text-ebc-straw"[39m
+                      [33mdownload[39m=[32m"facture.pdf"[39m
+                      [33mhref[39m=[32m"data:app...
+
+[32m- Expected:[39m 
+/3\/3 d'accord/
+
+[31m+ Received:[39m 
+"Nouvelle dépensePliéDépliéOuvrir le PDF originalChangerBrauhaus Ouest21.10.2026CHF7 lignesÀ vérifier · 1 valeur en désaccord·Articles lus7annoncé par la lectureSomme = imprimé46,40·Payé—Qté × prix7/7 justes!Lectures3/3 · 1 valeur en désaccordVoir le désaccord ›7 nouveaux2 à contrôlerUn doute ? Relire plus finementTVA—1Règlementdate supposéePayé le 21.10.2026sans TVA—— HT non imprimé. Aucune valeur n’est déduite.payé le · supposée21.10facture21.10Date de paiement non imprimée · paiement lu sur le document.Déjà payéÀ payerMoyen · Compte bancaire / carteC’est la dateAutre dateMoyen de paiementCompte bancaire / carteEspècesTWINTAutrePour quoi ?Brauhaus Ouest · F-4410 · malts, houblons, levures, sucres · proposéDate de l’achat21.10.2026Date de l’achatChanger le mois, garder le jour←janvierfévriermarsavrilmaijuinjuilletaoûtseptembreoctobrenovembredécembre2022202320242025202620272028→Aujourd’huiMois passéMois suivantFournisseur et catégorieBrauhaus Ouest · BrassageCatégorieBrassageMatérielNettoyageCharges fixesLocalAutreFournisseurRéférence et TVA du documentF-4410N° de factureTVA source (CHF)Taux source (%)Le justificatif sera rangé dans ton Drive privé à l’enregistrement.Malts310 Kg24,10Malt Pilsner5 Kg×2,9014,50imprimé « Malt Pilsner »piècegKg×=IngrédientServiceMatériel0 → 5 Kgarticle «» · nouvel articleSuivantplussupprimerMalt de Munich4 Kg×1,807,20imprimé « Malt de Munich »piècegKg×=IngrédientServiceMatériel0 → 4 Kgarticle «» · nouvel articleSuivantplussupprimerCarapils1 Kg×2,402,40imprimé « Carapils »piècegKg×=IngrédientServiceMatériel0 → 1 Kgarticle «» · nouvel articlefiche CarapilsSuivantplussupprimerHoublons280 g6,60Sabroα 13,430 g×0,0702,10imprimé « Sabro 13.4% »piècegKg×=IngrédientServiceMatériel0 → 30 garticle «» · nouvel articleα 13,4fiche Sabro USSuivantplussupprimerCitraα 12,550 g×0,0904,50imprimé « Citra 12.5% »piècegKg×=IngrédientServiceMatériel0 → 50 garticle «» · nouvel articleα 12,5fiche Citra USSuivantplussupprimerLevures12 sachets9,80Levure Ale sèche2 sachets×4,909,80imprimé « Levure Ale sèche »piècegsachets×=IngrédientServiceMatériel0 → 2 sachetsarticle «» · nouvel articleSuivantplussupprimerSucres11 pièce5,90Sucre candi1 pièce×5,905,90imprimé « Sucre candi »piècegKg×=IngrédientServiceMatériel0 → 1 piècearticle «» · nouvel articlefiche Sucre candiSuivantplussupprimer+ Ajouter une ligneLignes = total 46,40·Regrouper en une dépenseFournisseur : lectures divergentes (Drs H. et I. Gauderon-Comment Sàrl / Cabinet Vétérinaire Drs H. et I. Gauderon-Comment Sàrl / Drs H. et I. Gauderon-Comment Sàrl - Médecins vétérinaires), vérifier le justificatif. désaccordGarderVoirMon mois−46,40CatégoriePapier Confirmer"
+
+[36m [2m❯[22m tests/unit/depense/f10-tour3.test.tsx:[2m92:60[22m[39m
+    [90m 90| [39m  it('à l’écran (3 lectures) : « Lectures 3/3 d’accord », aucun « 1 va…
+    [90m 91| [39m    const view = await lire(f => { f.points = [VENDOR_DOC2]; f.review …
+    [90m 92| [39m    await waitFor(() => expect(view.container.textContent).toMatch(/3\…
+    [90m   | [39m                                                           [31m^[39m
+    [90m 93| [39m    expect(view.container.textContent).not.toMatch(/valeurs? en désacc…
+    [90m 94| [39m    expect(view.container.querySelector('[data-dp-renvoi="lectures"]')…
+[90m [2m❯[22m runWithExpensiveErrorDiagnosticsDisabled ../ports-nuit/node_modules/@testing-library/dom/dist/config.js:[2m47:12[22m[39m
+[90m [2m❯[22m checkCallback ../ports-nuit/node_modules/@testing-library/dom/dist/wait-for.js:[2m124:77[22m[39m
+[90m [2m❯[22m Timeout.checkRealTimersCallback ../ports-nuit/node_modules/@testing-library/dom/dist/wait-for.js:[2m118:16[22m[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/5]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m tests/unit/depense/f10-tour3.test.tsx[2m > [22mLR1-7 : le prix déduit se dit en mots (title et texte accessible « déduit : 50,00 ÷ 2 »), pas seulement par la couleur[2m > [22mprix vidé : la rangée dit « prix déduit : 50,00 ÷ 2 » (title et texte lu) ; quantité 4 : le champ écrit par le trio le dit aussi (title, aria-describedby)
+[31m[1mAssertionError[22m: expected 'prix déduit : montant ÷ quantité, non…' to match /déduit : 50,00 ÷ 2/[39m
+
+[32m- Expected:[39m 
+/déduit : 50,00 ÷ 2/
+
+[31m+ Received:[39m 
+"prix déduit : montant ÷ quantité, non imprimé"
+
+[36m [2m❯[22m tests/unit/depense/f10-tour3.test.tsx:[2m111:40[22m[39m
+    [90m109| [39m    await waitFor(() => expect(l1().querySelector('[data-dp-prix]')!.t…
+    [90m110| [39m    [35mconst[39m prix [33m=[39m [34ml1[39m()[33m.[39mquerySelector[33m<[39m[33mHTMLElement[39m[33m>[39m([32m'[data-dp-prix]'[39m)[33m![39m[33m;[39m
+    [90m111| [39m    [34mexpect[39m(prix[33m.[39m[34mgetAttribute[39m([32m'title'[39m))[33m.[39m[34mtoMatch[39m([36m/déduit : 50,00 ÷ 2/[39m)[33m;[39m
+    [90m   | [39m                                       [31m^[39m
+    [90m112| [39m    [35mconst[39m lu [33m=[39m [34ml1[39m()[33m.[39mquerySelector[33m<[39m[33mHTMLElement[39m[33m>[39m([32m'[data-dp-prix-dit]'[39m)[33m;[39m
+    [90m113| [39m    [34mexpect[39m(lu)[33m.[39mnot[33m.[39m[34mtoBeNull[39m()[33m;[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[5/5]⎯[22m[39m
+
+
+[2m Test Files [22m [1m[31m1 failed[39m[22m[90m (1)[39m
+[2m      Tests [22m [1m[31m5 failed[39m[22m[2m | [22m[1m[32m2 passed[39m[22m[90m (7)[39m
+[2m   Start at [22m 23:59:22
+[2m   Duration [22m 6.13s[2m (transform 1.35s, setup 289ms, collect 1.96s, tests 3.00s, environment 653ms, prepare 73ms)[22m
+

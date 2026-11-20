@@ -1,0 +1,243 @@
+[1m[43m DEPRECATED [49m[22m [33m"environmentMatchGlobs" is deprecated. Use `test.projects` to define different configurations instead.[39m
+
+[1m[46m RUN [49m[22m [36mv3.2.7 [39m[90mC:/Users/mrspa/.codex/worktrees/openai-clean-start/port-carnet[39m
+
+[33m[39m[31mx[39m
+
+[31m⎯⎯⎯⎯⎯⎯⎯[39m[1m[41m Failed Tests 1 [49m[22m[31m⎯⎯⎯⎯⎯⎯⎯[39m
+
+[41m[1m FAIL [22m[49m tests/unit/depense/f6b-tour3.test.tsx[2m > [22mLR1-9 : « Voir le désaccord » ouvre la ligne en désaccord et y montre les deux lectures[2m > [22mdoc2 (forme) : 1er toucher → ligne 2 ouverte, rangée « les lectures diffèrent · variante : « — » / « ROUGE 25cm » » ; 2e → le règlement
+[31m[1mAssertionError[22m: expected false to be true // Object.is equality[39m
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[32m- true[39m
+[31m+ false[39m
+
+[36m [2m❯[22m tests/unit/depense/f6b-tour3.test.tsx:[2m61:47[22m[39m
+    [90m 59| [39m    [35mawait[39m [34mact[39m([35masync[39m () [33m=>[39m { fireEvent[33m.[39m[34mclick[39m(voir)[33m;[39m })[33m;[39m
+    [90m 60| [39m    [35mconst[39m l2 [33m=[39m [34mrangees[39m(view)[[34m1[39m][33m;[39m
+    [90m 61| [39m    [34mexpect[39m(l2[33m.[39m[34mquerySelector[39m([32m'details'[39m)[33m![39m[33m.[39mopen)[33m.[39m[34mtoBe[39m([35mtrue[39m)[33m;[39m
+    [90m   | [39m                                              [31m^[39m
+    [90m 62| [39m    const marque = l2.querySelector<HTMLElement>('[data-dp-desaccord-l…
+    [90m 63| [39m    [34mexpect[39m(marque)[33m.[39mnot[33m.[39m[34mtoBeNull[39m()[33m;[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯[22m[39m
+
+
+[2m Test Files [22m [1m[31m1 failed[39m[22m[90m (1)[39m
+[2m      Tests [22m [1m[31m1 failed[39m[22m[90m (1)[39m
+[2m   Start at [22m 20:03:56
+[2m   Duration [22m 3.55s[2m (transform 1.16s, setup 298ms, collect 1.75s, tests 554ms, environment 710ms, prepare 75ms)[22m
+
+[1m[43m DEPRECATED [49m[22m [33m"environmentMatchGlobs" is deprecated. Use `test.projects` to define different configurations instead.[39m
+
+[1m[46m RUN [49m[22m [36mv3.2.7 [39m[90mC:/Users/mrspa/.codex/worktrees/openai-clean-start/port-carnet[39m
+
+[33m[39m[2m[90m-[39m[22m[33m[39m[31mx[39m
+
+[31m⎯⎯⎯⎯⎯⎯⎯[39m[1m[41m Failed Tests 1 [49m[22m[31m⎯⎯⎯⎯⎯⎯⎯[39m
+
+[41m[1m FAIL [22m[49m tests/unit/depense/f6b-tour3.test.tsx[2m > [22mv3-1 : à 1280, la colonne d’une lecture tient la preuve (420) ET la liste (760), pas 760 en tout[2m > [22msans lecture : colonne 760 (saisie à la main, u1 n° 18) ; avec lecture : 1220 = 420 + 16 + 760 + 24
+[31m[1mAssertionError[22m: expected 'flex min-h-0 w-full flex-1 flex-col l…' to match /lg:max-w-\[1220px\]/[39m
+
+[32m- Expected:[39m 
+/lg:max-w-\[1220px\]/
+
+[31m+ Received:[39m 
+"flex min-h-0 w-full flex-1 flex-col lg:mx-auto lg:max-w-[760px] lg:border-x lg:border-cave-700"
+
+[36m [2m❯[22m tests/unit/depense/f6b-tour3.test.tsx:[2m78:31[22m[39m
+    [90m 76| [39m    [35mconst[39m view [33m=[39m [35mawait[39m [34mlire[39m()[33m;[39m
+    [90m 77| [39m    const colonne = view.container.querySelector('[data-dp="colonne"]'…
+    [90m 78| [39m    [34mexpect[39m(colonne[33m.[39mclassName)[33m.[39m[34mtoMatch[39m([36m/lg:max-w-\[1220px\]/[39m)[33m;[39m
+    [90m   | [39m                              [31m^[39m
+    [90m 79| [39m    [34mexpect[39m(colonne[33m.[39mclassName)[33m.[39mnot[33m.[39m[34mtoMatch[39m([36m/lg:max-w-\[760px\]/[39m)[33m;[39m
+    [90m 80| [39m  })[33m;[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯[22m[39m
+
+
+[2m Test Files [22m [1m[31m1 failed[39m[22m[90m (1)[39m
+[2m      Tests [22m [1m[31m1 failed[39m[22m[2m | [22m[33m1 skipped[39m[90m (2)[39m
+[2m   Start at [22m 20:07:26
+[2m   Duration [22m 5.24s[2m (transform 1.81s, setup 379ms, collect 2.78s, tests 533ms, environment 1.27s, prepare 79ms)[22m
+
+[1m[43m DEPRECATED [49m[22m [33m"environmentMatchGlobs" is deprecated. Use `test.projects` to define different configurations instead.[39m
+
+[1m[46m RUN [49m[22m [36mv3.2.7 [39m[90mC:/Users/mrspa/.codex/worktrees/openai-clean-start/port-carnet[39m
+
+[33m[39m[2m[90m-[39m[22m[33m[39m[2m[90m-[39m[22m[33m[39m[31mx[39m
+
+[31m⎯⎯⎯⎯⎯⎯⎯[39m[1m[41m Failed Tests 1 [49m[22m[31m⎯⎯⎯⎯⎯⎯⎯[39m
+
+[41m[1m FAIL [22m[49m tests/unit/depense/f6b-tour3.test.tsx[2m > [22mLR1-6 réserve : pendant la 3e lecture, le total n’est pas souligné de tirets rouges[2m > [22mprovisoire (somme ≠ total de 100) : total-niveau sans « inconnu » ; la 3.8 finie (somme = total) : rien non plus
+[31m[1mAssertionError[22m: expected 'inconnu' not to be 'inconnu' // Object.is equality[39m
+[36m [2m❯[22m tests/unit/depense/f6b-tour3.test.tsx:[2m106:57[22m[39m
+    [90m104| [39m    [35mawait[39m [34mwaitFor[39m(() [33m=>[39m [34mexpect[39m([34mniveau[39m())[33m.[39mnot[33m.[39m[34mtoBeNull[39m())[33m;[39m
+    [90m105| [39m    expect(view.container.querySelector('[data-dp="fil"]')).not.toBeNu…
+    [90m106| [39m    expect(niveau().getAttribute('data-dp-niveau')).not.toBe('inconnu'…
+    [90m   | [39m                                                        [31m^[39m
+    [90m107| [39m    [34mexpect[39m([34mniveau[39m()[33m.[39mclassName)[33m.[39mnot[33m.[39m[34mtoMatch[39m([36m/border-dashed/[39m)[33m;[39m
+    [90m108| [39m    [35mawait[39m [34mouvrir[39m()[33m;[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯[22m[39m
+
+
+[2m Test Files [22m [1m[31m1 failed[39m[22m[90m (1)[39m
+[2m      Tests [22m [1m[31m1 failed[39m[22m[2m | [22m[33m2 skipped[39m[90m (3)[39m
+[2m   Start at [22m 20:09:33
+[2m   Duration [22m 6.22s[2m (transform 2.28s, setup 360ms, collect 4.04s, tests 786ms, environment 693ms, prepare 72ms)[22m
+
+[1m[43m DEPRECATED [49m[22m [33m"environmentMatchGlobs" is deprecated. Use `test.projects` to define different configurations instead.[39m
+
+[1m[46m RUN [49m[22m [36mv3.2.7 [39m[90mC:/Users/mrspa/.codex/worktrees/openai-clean-start/port-carnet[39m
+
+[33m[39m[2m[90m-[39m[22m[33m[39m[2m[90m-[39m[22m[33m[39m[2m[90m-[39m[22m[33m[39m[31mx[39m
+
+[31m⎯⎯⎯⎯⎯⎯⎯[39m[1m[41m Failed Tests 1 [49m[22m[31m⎯⎯⎯⎯⎯⎯⎯[39m
+
+[41m[1m FAIL [22m[49m tests/unit/depense/f6b-tour3.test.tsx[2m > [22mv3-5 : pendant la 3e lecture, le bouton dit ce qu’on attend (pas « Confirmer » gris à roue)[2m > [22mattente : « 3e lecture en cours… », désactivé ; la 3.8 finie : « Confirmer »
+[31m[1mAssertionError[22m: expected ' Confirmer' to match /3e lecture en cours…/[39m
+
+[32m- Expected:[39m 
+/3e lecture en cours…/
+
+[31m+ Received:[39m 
+" Confirmer"
+
+[36m [2m❯[22m tests/unit/depense/f6b-tour3.test.tsx:[2m117:32[22m[39m
+    [90m115| [39m    [35mconst[39m { view[33m,[39m ouvrir } [33m=[39m [35mawait[39m [34mlireEnFlux[39m()[33m;[39m
+    [90m116| [39m    const bouton = screen.getByRole('button', { name: 'Vérification en…
+    [90m117| [39m    [34mexpect[39m(bouton[33m.[39mtextContent)[33m.[39m[34mtoMatch[39m([36m/3e lecture en cours…/[39m)[33m;[39m
+    [90m   | [39m                               [31m^[39m
+    [90m118| [39m    [34mexpect[39m(bouton[33m.[39mtextContent)[33m.[39mnot[33m.[39m[34mtoMatch[39m([36m/Confirmer/[39m)[33m;[39m
+    [90m119| [39m    [34mexpect[39m((bouton [35mas[39m [33mHTMLButtonElement[39m)[33m.[39mdisabled)[33m.[39m[34mtoBe[39m([35mtrue[39m)[33m;[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯[22m[39m
+
+
+[2m Test Files [22m [1m[31m1 failed[39m[22m[90m (1)[39m
+[2m      Tests [22m [1m[31m1 failed[39m[22m[2m | [22m[33m3 skipped[39m[90m (4)[39m
+[2m   Start at [22m 20:13:05
+[2m   Duration [22m 5.98s[2m (transform 1.85s, setup 371ms, collect 2.91s, tests 1.35s, environment 1.06s, prepare 101ms)[22m
+
+[1m[43m DEPRECATED [49m[22m [33m"environmentMatchGlobs" is deprecated. Use `test.projects` to define different configurations instead.[39m
+
+[1m[46m RUN [49m[22m [36mv3.2.7 [39m[90mC:/Users/mrspa/.codex/worktrees/openai-clean-start/port-carnet[39m
+
+[33m[39m[2m[90m-[39m[22m[33m[39m[2m[90m-[39m[22m[33m[39m[2m[90m-[39m[22m[33m[39m[2m[90m-[39m[22m[33m[39m[31mx[39m
+
+[31m⎯⎯⎯⎯⎯⎯⎯[39m[1m[41m Failed Tests 1 [49m[22m[31m⎯⎯⎯⎯⎯⎯⎯[39m
+
+[41m[1m FAIL [22m[49m tests/unit/depense/f6b-tour3.test.tsx[2m > [22mLR1-7 réserve : un prix que le trio écrit (prix vidé, 2 × ? = 50) est marqué « déduit », dans le champ et sur la rangée[2m > [22mligne 1 lue 2 × 25,00 = 50,00 ; le prix vidé : le champ porte 25,00 marqué déduit (jaune, title), la rangée aussi ; un prix tapé efface la marque
+[31m[1mAssertionError[22m: expected null not to be null[39m
+[36m [2m❯[22m tests/unit/depense/f6b-tour3.test.tsx:[2m135:24[22m[39m
+    [90m133| [39m    expect(l1().querySelector('[data-dp-prix]')!.getAttribute('data-dp…
+    [90m134| [39m    const marque = champ().closest<HTMLElement>('[data-dp-prix-deduit]…
+    [90m135| [39m    [34mexpect[39m(marque)[33m.[39mnot[33m.[39m[34mtoBeNull[39m()[33m;[39m
+    [90m   | [39m                       [31m^[39m
+    [90m136| [39m    expect(marque!.getAttribute('title')).toMatch(/prix déduit : monta…
+    [90m137| [39m    await act(async () => { fireEvent.focus(champ()); fireEvent.change…
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯[22m[39m
+
+
+[2m Test Files [22m [1m[31m1 failed[39m[22m[90m (1)[39m
+[2m      Tests [22m [1m[31m1 failed[39m[22m[2m | [22m[33m4 skipped[39m[90m (5)[39m
+[2m   Start at [22m 20:17:41
+[2m   Duration [22m 5.23s[2m (transform 1.87s, setup 283ms, collect 2.82s, tests 654ms, environment 1.20s, prepare 78ms)[22m
+
+[1m[43m DEPRECATED [49m[22m [33m"environmentMatchGlobs" is deprecated. Use `test.projects` to define different configurations instead.[39m
+
+[1m[46m RUN [49m[22m [36mv3.2.7 [39m[90mC:/Users/mrspa/.codex/worktrees/openai-clean-start/port-carnet[39m
+
+[33m[39m[2m[90m-[39m[22m[33m[39m[2m[90m-[39m[22m[33m[39m[2m[90m-[39m[22m[33m[39m[2m[90m-[39m[22m[33m[39m[31mx[39m
+
+[31m⎯⎯⎯⎯⎯⎯⎯[39m[1m[41m Failed Tests 1 [49m[22m[31m⎯⎯⎯⎯⎯⎯⎯[39m
+
+[41m[1m FAIL [22m[49m tests/unit/depense/f6b-tour3.test.tsx[2m > [22mLR1-7 réserve : un prix que le trio écrit (prix vidé, 2 × ? = 50) est marqué « déduit », dans le champ et sur la rangée[2m > [22mligne 1 lue 2 × 25,00 = 50,00 ; prix vidé (rangée 25,00 déduit) puis quantité 4 : le champ porte 12,50 écrit par le trio, marqué déduit (jaune, title), la rangée aussi ; un prix tapé efface la marque
+[31m[1mAssertionError[22m: expected null not to be null[39m
+[36m [2m❯[22m tests/unit/depense/f6b-tour3.test.tsx:[2m139:24[22m[39m
+    [90m137| [39m    [35mawait[39m [34mwaitFor[39m(() [33m=>[39m [34mexpect[39m([34mchamp[39m()[33m.[39mvalue)[33m.[39m[34mtoBe[39m([32m'12,50'[39m))[33m;[39m
+    [90m138| [39m    const marque = champ().closest<HTMLElement>('[data-dp-prix-deduit]…
+    [90m139| [39m    [34mexpect[39m(marque)[33m.[39mnot[33m.[39m[34mtoBeNull[39m()[33m;[39m
+    [90m   | [39m                       [31m^[39m
+    [90m140| [39m    expect(marque!.getAttribute('title')).toMatch(/prix déduit : monta…
+    [90m141| [39m    await act(async () => { fireEvent.focus(champ()); fireEvent.change…
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯[22m[39m
+
+
+[2m Test Files [22m [1m[31m1 failed[39m[22m[90m (1)[39m
+[2m      Tests [22m [1m[31m1 failed[39m[22m[2m | [22m[33m4 skipped[39m[90m (5)[39m
+[2m   Start at [22m 20:20:16
+[2m   Duration [22m 3.33s[2m (transform 1.07s, setup 270ms, collect 1.63s, tests 351ms, environment 626ms, prepare 69ms)[22m
+
+[1m[43m DEPRECATED [49m[22m [33m"environmentMatchGlobs" is deprecated. Use `test.projects` to define different configurations instead.[39m
+
+[1m[46m RUN [49m[22m [36mv3.2.7 [39m[90mC:/Users/mrspa/.codex/worktrees/openai-clean-start/port-carnet[39m
+
+[33m[39m[2m[90m-[39m[22m[33m[39m[2m[90m-[39m[22m[33m[39m[2m[90m-[39m[22m[33m[39m[2m[90m-[39m[22m[33m[39m[2m[90m-[39m[22m[33m[39m[31mx[39m
+
+[31m⎯⎯⎯⎯⎯⎯⎯[39m[1m[41m Failed Tests 1 [49m[22m[31m⎯⎯⎯⎯⎯⎯⎯[39m
+
+[41m[1m FAIL [22m[49m tests/unit/depense/f6b-tour3.test.tsx[2m > [22mv3-2 : l’en-tête de bande cède la place au montant, jamais l’inverse (doc25, bande Rénovation qui débordait)[2m > [22mnom et quantité rétrécissent (min-w-0, tronqués, le texte entier en title) ; le montant ne rétrécit jamais
+[31m[1mAssertionError[22m: expected 'font-semibold text-cave-50' to match /\bmin-w-0\b/[39m
+
+[32m- Expected:[39m 
+/\bmin-w-0\b/
+
+[31m+ Received:[39m 
+"font-semibold text-cave-50"
+
+[36m [2m❯[22m tests/unit/depense/f6b-tour3.test.tsx:[2m153:27[22m[39m
+    [90m151| [39m    [35mconst[39m tete [33m=[39m qte[33m.[39mparentElement[33m![39m[33m;[39m
+    [90m152| [39m    [35mconst[39m nom [33m=[39m tete[33m.[39mquerySelector[33m<[39m[33mHTMLElement[39m[33m>[39m([32m'strong'[39m)[33m![39m[33m;[39m
+    [90m153| [39m    expect(nom.className).toMatch(/\bmin-w-0\b/); expect(nom.className…
+    [90m   | [39m                          [31m^[39m
+    [90m154| [39m    [34mexpect[39m(nom[33m.[39m[34mgetAttribute[39m([32m'title'[39m))[33m.[39m[34mtoBe[39m(nom[33m.[39mtextContent)[33m;[39m
+    [90m155| [39m    expect(qte.className).toMatch(/\bmin-w-0\b/); expect(qte.className…
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯[22m[39m
+
+
+[2m Test Files [22m [1m[31m1 failed[39m[22m[90m (1)[39m
+[2m      Tests [22m [1m[31m1 failed[39m[22m[2m | [22m[33m5 skipped[39m[90m (6)[39m
+[2m   Start at [22m 20:21:56
+[2m   Duration [22m 5.37s[2m (transform 1.94s, setup 456ms, collect 3.08s, tests 500ms, environment 1.01s, prepare 85ms)[22m
+
+[1m[43m DEPRECATED [49m[22m [33m"environmentMatchGlobs" is deprecated. Use `test.projects` to define different configurations instead.[39m
+
+[1m[46m RUN [49m[22m [36mv3.2.7 [39m[90mC:/Users/mrspa/.codex/worktrees/openai-clean-start/port-carnet[39m
+
+[33m[39m[2m[90m-[39m[22m[33m[39m[2m[90m-[39m[22m[33m[39m[2m[90m-[39m[22m[33m[39m[2m[90m-[39m[22m[33m[39m[2m[90m-[39m[22m[33m[39m[2m[90m-[39m[22m[33m[39m[2m[90m-[39m[22m[33m[39m[31mx[39m
+
+[31m⎯⎯⎯⎯⎯⎯⎯[39m[1m[41m Failed Tests 1 [49m[22m[31m⎯⎯⎯⎯⎯⎯⎯[39m
+
+[41m[1m FAIL [22m[49m tests/unit/depense/f6b-tour3.test.tsx[2m > [22mLR2-3 (DEMANDE de f6a) : la rangée « Lectures » du bloc compte des valeurs, par rangDesLectures[2m > [22mdoc2 (forme), 2 lectures, 2 valeurs en désaccord : « 2/2 · 2 valeurs en désaccord » et « Voir le désaccord »
+[31m[1mAssertionError[22m: expected '!Lectures2/2 · 2 désaccordsVoir le dé…' to match /2\/2 · 2 va…/2 · 2 valeurs en désaccord[39m
+
+[32m- Expected:[39m 
+/2\/2 · 2 valeurs en désaccord/
+
+[31m+ Received:[39m 
+"!Lectures2/2 · 2 désaccordsVoir le désaccord ›"
+
+[36m [2m❯[22m tests/unit/depense/f6b-tour3.test.tsx:[2m182:30[22m[39m
+    [90m180| [39m    const view = await lire(f => { f.points = POINTS_DOC2; f.review = …
+    [90m181| [39m    const rang = await waitFor(() => { const b = view.container.queryS…
+    [90m182| [39m    [34mexpect[39m(rang[33m.[39mtextContent)[33m.[39m[34mtoMatch[39m([36m/2\/2 · 2 valeurs en désaccord/[39m)[33m;[39m
+    [90m   | [39m                             [31m^[39m
+    [90m183| [39m    [34mexpect[39m(rang[33m.[39mtextContent)[33m.[39m[34mtoMatch[39m([36m/Voir le désaccord/[39m)[33m;[39m
+    [90m184| [39m  })[33m;[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯[22m[39m
+
+
+[2m Test Files [22m [1m[31m1 failed[39m[22m[90m (1)[39m
+[2m      Tests [22m [1m[31m1 failed[39m[22m[2m | [22m[33m7 skipped[39m[90m (8)[39m
+[2m   Start at [22m 20:24:42
+[2m   Duration [22m 3.83s[2m (transform 1.32s, setup 325ms, collect 1.97s, tests 543ms, environment 750ms, prepare 74ms)[22m
+

@@ -1,0 +1,109 @@
+E1-2 390 rangées au départ : []
+  Ajouter une ligne masqué au point (195,742) par « Joindre des documents
+Total TTC en CHF
+R » : non touché
+  champ introuvable [aria-label="Libellé ligne 1"]
+  champ introuvable [aria-label="Quantité ligne 1"]
+  champ introuvable [aria-label="Montant ligne 1"]
+E1-2 390 ligne 1 cases : []
+  introuvable : pièce (case) ligne 1
+  ligne 1 : —
+  Ajouter une ligne masqué au point (195,742) par « Joindre des documents
+Total TTC en CHF
+R » : non touché
+  champ introuvable [aria-label="Libellé ligne 2"]
+  champ introuvable [aria-label="Quantité ligne 2"]
+  champ introuvable [aria-label="Montant ligne 2"]
+E1-2 390 ligne 2 cases : []
+  introuvable : kg (case)
+  ligne 2 après kg : pas d’« Unité ligne 2 »
+  introuvable : menu Unité ligne 2
+  menu : ["SELECT:Ingrédients/Emballages/Nettoyage/Matériel durable/Entretien / réparation/Service","SELECT:Aucun mouvement de stock/Ajouter à un article existant/Nouvel article","SELECT:janvier/février/mars/avril/mai/juin/juillet/août/septembre/octobre/novembre/déce","SELECT:2022/2023/2024/2025/2026/2027/2028","SELECT:Brassage/Matériel/Nettoyage/Charges fixes/Local/Autre","SELECT:Aucune prévision liée/Système d'embouteillage 4 becs inox/Chambre chaude régulée"]
+  introuvable : pièce (menu)
+  « pièce » du menu non touché
+  ligne 2 : —
+  Ajouter une ligne masqué au point (195,742) par « Joindre des documents
+Total TTC en CHF
+R » : non touché
+  champ introuvable [aria-label="Libellé ligne 3"]
+  champ introuvable [aria-label="Quantité ligne 3"]
+  champ introuvable [aria-label="Montant ligne 3"]
+E1-2 390 ligne 3 cases : []
+  introuvable : pièce (case) ligne 3
+  ligne 3 : —
+  rangées : []
+  e12c-saisie-390-clair.png
+E1-2 390 après Enregistrer : dialog=false · Compagnon hors connexion · mode local ¦ Achat enregistré. ¦ 🍺 ¦ L'Affinée ¦ Nov. ¦ A ¦ G ¦ À la brasserie ¦ Brassins ¦ 0 en cuve ¦ Tous ¦ Aucun brassin en cuve. ¦ Stocks ¦ Voir ¦ Stocks suffisants ¦ Finances ¦ Novembre 2026 ¦ Charges ¦ 3,00 CHF ¦ Agenda ¦ 1 à faire ¦ Gérer ¦ Cette semaine au calendrier ¦ rien de posé · voir les six semaines ¦ Marché d'Automne de Villars-sur-Glâne ¦ 10.10.2026 ¦ É
+  e12c-apres-390-clair.png
+  Finances (extrait) : Compagnon hors connexion · mode local ¦ 🍺 ¦ L'Affinée ¦ Nov. ¦ A ¦ G ¦ Synthèse ¦ Opérations ¦ Prévisions ¦ Annuel ¦ Novembre ¦ sept. ¦ oct. ¦ nov. ¦ tout ¦ … ¦ Entré ¦ 0,00 ¦ Dépensé ¦ 3,00 ¦ Brassage ¦ 3,00 ¦ −3,00 ¦ Perdu · CHF ¦ ✦ Pourquoi ? ¦ payé ¦ Revoir le mois ¦ Caisse jour par jour, sources, budgets, 12 mois ¦ En caisse ¦ À compléter ¦ Solde de départ à renseigner ¦ Origine et limites des montants ¦ Estimer un brassin ¦ pour connaître son coût du litre ¦ Fournisseurs, matériel ¦ Comprendre mes dépenses ¦ Compagnon brasseur ¦ Bord ¦ Finances ¦ Calendrier ¦ Brassins ¦ Stocks ¦ Clients
+  introuvable : Mois
+  introuvable : Dépenses
+  introuvable : Journal
+  trouvée sous « Opérations »
+  rouvert=true : ZZ TEST e12 saisie à la main ¦ Brassage · 19 nov. 2026 ¦ 3,00 ¦ CHF ¦ ✓ payé aujourd’hui · banque ¦ Sans justificatif ¦ c’est normal ¦ Dans la facture ¦ 1 ligne ¦ ZZ TEST e12 saisie à la main ¦ 3,00 ¦ Modifier ¦ Avoir ou remboursement ¦ Échéance et prévision ¦ Paiements ¦ 1 ¦ 19 nov. 2026 · banque ¦ −3,00 ¦ Corriger ce paiement saisi par erreur ¦ Corriger une erreur de saisie
+  unités rouvertes : [] · rangées []
+  e12c-rouvert-390-clair.png
+E1-2 1280 rangées au départ : []
+  Ajouter une ligne masqué au point (640,742) par « Joindre des documents
+Total TTC en CHF
+R » : non touché
+  champ introuvable [aria-label="Libellé ligne 1"]
+  champ introuvable [aria-label="Quantité ligne 1"]
+  champ introuvable [aria-label="Montant ligne 1"]
+E1-2 1280 ligne 1 cases : []
+  introuvable : pièce (case) ligne 1
+  ligne 1 : —
+  Ajouter une ligne masqué au point (640,742) par « Joindre des documents
+Total TTC en CHF
+R » : non touché
+  champ introuvable [aria-label="Libellé ligne 2"]
+  champ introuvable [aria-label="Quantité ligne 2"]
+  champ introuvable [aria-label="Montant ligne 2"]
+E1-2 1280 ligne 2 cases : []
+  introuvable : kg (case)
+  ligne 2 après kg : pas d’« Unité ligne 2 »
+  introuvable : menu Unité ligne 2
+  menu : ["SELECT:Ingrédients/Emballages/Nettoyage/Matériel durable/Entretien / réparation/Service","SELECT:Aucun mouvement de stock/Ajouter à un article existant/Nouvel article","SELECT:janvier/février/mars/avril/mai/juin/juillet/août/septembre/octobre/novembre/déce","SELECT:2022/2023/2024/2025/2026/2027/2028","SELECT:Brassage/Matériel/Nettoyage/Charges fixes/Local/Autre","SELECT:Aucune prévision liée/Système d'embouteillage 4 becs inox/Chambre chaude régulée"]
+  introuvable : pièce (menu)
+  « pièce » du menu non touché
+  ligne 2 : —
+  Ajouter une ligne masqué au point (640,742) par « Joindre des documents
+Total TTC en CHF
+R » : non touché
+  champ introuvable [aria-label="Libellé ligne 3"]
+  champ introuvable [aria-label="Quantité ligne 3"]
+  champ introuvable [aria-label="Montant ligne 3"]
+E1-2 1280 ligne 3 cases : []
+  introuvable : pièce (case) ligne 3
+  ligne 3 : —
+  rangées : []
+  e12c-saisie-1280-cave.png
+E1-2 1280 après Enregistrer : dialog=false · Compagnon hors connexion · mode local ¦ Achat enregistré. ¦ 🍺 ¦ L'Affinée ¦ Nov. ¦ A ¦ G ¦ Synthèse ¦ Opérations ¦ Prévisions ¦ Annuel ¦ novembre ¦ du ¦ au ¦ 3,00 ¦ Brassage ¦ 30 jours · 1 opération ¦ 1er ¦ 30 ¦ auj. 19 ¦ payé ¦ 3,00 ¦ à payer ¦ 0,00 ¦ dépensé ¦ 3,00 ¦ Brassage ¦ 3,00 ¦ ZZ TEST e12 saisie à la main ¦ ✓ payé aujourd’hui · banque ¦ sans pièce ¦ + pièce ¦ 3,00 ¦ Pourquoi le brassage
+  e12c-apres-1280-cave.png
+  rouvert=true : ZZ TEST e12 saisie à la main ¦ Brassage · 19 nov. 2026 ¦ 3,00 ¦ CHF ¦ ✓ payé aujourd’hui · banque ¦ Sans justificatif ¦ c’est normal ¦ Dans la facture ¦ 1 ligne ¦ ZZ TEST e12 saisie à la main ¦ 3,00 ¦ Modifier ¦ Avoir ou remboursement ¦ Échéance et prévision ¦ Paiements ¦ 1 ¦ 19 nov. 2026 · banque ¦ −3,00 ¦ Corriger ce paiement saisi par erreur ¦ Corriger une erreur de saisie
+  unités rouvertes : [] · rangées []
+  e12c-rouvert-1280-cave.png
+LR1-14 1280 avant : Clôture 2026 0 / 9 prêtes | —
+  feuille fermée=true
+LR1-14 1280 après : Clôture 2026 0 / 9 prêtes | —
+  lr114c-apres-1280-cave.png
+LR1-14 390 avant : Clôture 2026 0 / 9 prêtes | —
+  feuille fermée=true
+LR1-14 390 après : Clôture 2026 0 / 9 prêtes | —
+  lr114c-apres-390-clair.png
+TE-35 390 champs : ["Matériel ou aménagement=ZZ TEST — Frigo de garde pour fûts","=Froid Léman"]
+  te35c-devis-390-clair.png
+  champ livraison absent
+  champ prix|achat|estim absent
+  champ installation|pose absent
+  total : —
+TE-35 1280 champs : ["Matériel ou aménagement=ZZ TEST — Frigo de garde pour fûts","=Froid Léman"]
+  te35c-devis-1280-cave.png
+  champ livraison absent
+  champ prix|achat|estim absent
+  champ installation|pose absent
+  total : —
+titre reel-doc14 390 : À vérifier · 29,99 CHF manquants
+titre reel-doc14 1280 : À vérifier · 29,99 CHF manquants
+titre reel-doc25 390 : À vérifier · 215,40 CHF manquants
+titre reel-doc25 1280 : À vérifier · 215,40 CHF manquants

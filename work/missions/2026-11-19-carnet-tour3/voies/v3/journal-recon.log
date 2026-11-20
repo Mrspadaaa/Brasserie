@@ -1,0 +1,14 @@
+  introuvable : Entrer une facture
+  apercu medicament non signalé
+== medicament texte : Compagnon hors connexion · mode local ¦ 🍺 ¦ L'Affinée ¦ Nov. ¦ A ¦ G ¦ À la brasserie ¦ Brassins ¦ 0 en cuve ¦ Tous ¦ Aucun brassin en cuve. ¦ Stocks ¦ Voir ¦ Stocks suffisants ¦ Finances ¦ Novembre 2026 ¦ Charges ¦ 0,00 CHF ¦ Agenda ¦ 1 à faire ¦ Gérer ¦ Cette semaine au calendrier ¦ rien de posé · voir les six semaines ¦ Marché d'Automne de Villars-sur-Glâne ¦ 10.10.2026 ¦ Échéances et démarches ¦ 6 points à suivre · Fribourg / OFDF ¦ Bord ¦ Finances ¦ Calendrier ¦ Brassins ¦ Stocks ¦ Clients ¦ Compagnon ¦ hors connexion
+boutons : ["Retour au tableau de bord","Période précédente","Période : Novembre 2026. Choisir la plage","Période suivante","Rechercher (⌘K)","Plus : saisie au nom de Gaëtan","Tous","Voir","Finances\nNovembre 2026\nCharges\n0,00 CHF","Gérer","Cette semaine au calendrier","Échéances et démarches\n6 points à suivre · Fribour","Bord","Finances","Calendrier","Brassins","Stocks","Clients","Compagnon brasseur, hors connexion","Actions rapides"]
+champs : ["=on","=on","=on","=on","=on","=on","=on"]
+erreurs : []
+capture recon-medicament-1280-clair.png
+  introuvable : Entrer une facture
+  apercu reel-doc25 non signalé
+== reel-doc25 texte : Compagnon hors connexion · mode local ¦ 🍺 ¦ L'Affinée ¦ Nov. ¦ A ¦ G ¦ À la brasserie ¦ Brassins ¦ 0 en cuve ¦ Tous ¦ Aucun brassin en cuve. ¦ Stocks ¦ Voir ¦ Stocks suffisants ¦ Finances ¦ Novembre 2026 ¦ Charges ¦ 0,00 CHF ¦ Agenda ¦ 1 à faire ¦ Gérer ¦ Cette semaine au calendrier ¦ rien de posé · voir les six semaines ¦ Marché d'Automne de Villars-sur-Glâne ¦ 10.10.2026 ¦ Échéances et démarches ¦ 6 points à suivre · Fribourg / OFDF ¦ Bord ¦ Finances ¦ Calendrier ¦ Brassins ¦ Stocks ¦ Clients ¦ Compagnon ¦ hors connexion ¦ Nouvelle écriture ¦ facture ou à la main ¦ N ¦ Courses ¦ L ¦ Sur ¦ Bord ¦ Écriture ¦ ↑ ¦ E ¦ Facture ¦ F ¦ Vente ¦ V ¦ Recette ¦ R ¦ Brassin ¦ B ¦ Compagnon ¦ hors connexion ¦ C ¦ Partout
+boutons : ["Retour au tableau de bord","Période précédente","Période : Novembre 2026. Choisir la plage","Période suivante","Rechercher (⌘K)","Plus : saisie au nom de Gaëtan","Tous","Voir","Finances\nNovembre 2026\nCharges\n0,00 CHF","Gérer","Cette semaine au calendrier","Échéances et démarches\n6 points à suivre · Fribour","Bord","Finances","Calendrier","Brassins","Stocks","Clients","Compagnon brasseur, hors connexion","Nouvelle écriture\nfacture ou à la main\nN","Courses\nL","Écriture, à la main, aussi en tête de la pile","Facture, photo ou PDF","Vente","Recette","Brassin, sera LOT-001","Compagnon brasseur, hors connexion · Tableau de bo","Actions rapides"]
+champs : ["=on","=on","=on","=on","=on","=on","=on"]
+erreurs : []
+capture recon-reel-doc25-1280-clair.png

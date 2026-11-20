@@ -1,0 +1,1801 @@
+[1m[43m DEPRECATED [49m[22m [33m"environmentMatchGlobs" is deprecated. Use `test.projects` to define different configurations instead.[39m
+
+[1m[46m RUN [49m[22m [36mv3.2.7 [39m[90mC:/Users/mrspa/.codex/worktrees/openai-clean-start/port-carnet[39m
+
+[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[31mx[39m[33m[39m[31mx[39m[33m[39m[31mx[39m[33m[39m[31mx[39m
+
+[31m⎯⎯⎯⎯⎯⎯⎯[39m[1m[41m Failed Tests 4 [49m[22m[31m⎯⎯⎯⎯⎯⎯⎯[39m
+
+[41m[1m FAIL [22m[49m tests/integration/carnetTour3F3.test.tsx[2m > [22mBR-27 : un coût négatif du budget se dit au champ, jamais avalé[2m > [22ménergie « −1 » : message sous le poste, champ marqué, 8 gardé
+[31m[1mTestingLibraryElementError[22m[39m: Unable to find an accessible element with the role "alert"
+
+Here are the accessible roles:
+
+  dialog:
+
+  Name "Pale Ale de septembre":
+  [36m<div[39m
+    [33maria-describedby[39m=[32m"radix-_r_k_"[39m
+    [33maria-labelledby[39m=[32m"radix-_r_j_"[39m
+    [33mclass[39m=[32m"fixed inset-x-0 bottom-0 z-50 flex flex-col
+                     max-h-[94dvh] rounded-t-sheet bg-cave-900 border-t border-cave-700 shadow-sheet
+                     focus:outline-none md:max-w-xl md:mx-auto"[39m
+    [33mdata-state[39m=[32m"open"[39m
+    [33mdata-vaul-animate[39m=[32m"true"[39m
+    [33mdata-vaul-custom-container[39m=[32m"false"[39m
+    [33mdata-vaul-delayed-snap-points[39m=[32m"false"[39m
+    [33mdata-vaul-drawer[39m=[32m""[39m
+    [33mdata-vaul-drawer-direction[39m=[32m"bottom"[39m
+    [33mdata-vaul-snap-points[39m=[32m"false"[39m
+    [33mid[39m=[32m"radix-_r_i_"[39m
+    [33mrole[39m=[32m"dialog"[39m
+    [33mstyle[39m=[32m"pointer-events: auto;"[39m
+    [33mtabindex[39m=[32m"-1"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  banner:
+
+  Name "":
+  [36m<header[39m
+    [33mclass[39m=[32m"shrink-0 flex items-center gap-2 border-b border-cave-800 min-h-9 px-2 py-1"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  heading:
+
+  Name "Pale Ale de septembre":
+  [36m<h2[39m
+    [33mclass[39m=[32m"text-sm font-semibold text-cave-50 leading-tight break-words"[39m
+    [33mid[39m=[32m"radix-_r_j_"[39m
+  [36m/>[39m
+
+  Name "Frais du brassin":
+  [36m<h3 />[39m
+
+  --------------------------------------------------
+  paragraph:
+
+  Name "":
+  [36m<p[39m
+    [33mclass[39m=[32m"text-xs text-cave-400 leading-tight break-words"[39m
+    [33mid[39m=[32m"radix-_r_k_"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<p[39m
+    [33mclass[39m=[32m"brew-budget-hint"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  button:
+
+  Name "Fermer":
+  [36m<button[39m
+    [33maria-label[39m=[32m"Fermer"[39m
+    [33mclass[39m=[32m"min-w-touch-sm min-h-touch-sm rounded-control text-cave-400
+                         hover:text-cave-50 hover:bg-cave-850 flex items-center justify-center transition-colors shrink-0"[39m
+  [36m/>[39m
+
+  Name "Retour au détail du litre":
+  [36m<button[39m
+    [33mclass[39m=[32m"cbf-retour"[39m
+    [33mtype[39m=[32m"button"[39m
+  [36m/>[39m
+
+  Name "Explication":
+  [36m<button[39m
+    [33maria-expanded[39m=[32m"false"[39m
+    [33maria-label[39m=[32m"Explication"[39m
+    [33mtype[39m=[32m"button"[39m
+  [36m/>[39m
+
+  Name "Retour":
+  [36m<button[39m
+    [33mclass[39m=[32m"cbf-sec"[39m
+    [33mtype[39m=[32m"button"[39m
+  [36m/>[39m
+
+  Name "Enregistrer":
+  [36m<button[39m
+    [33mclass[39m=[32m"cbf-pri"[39m
+    [33mtype[39m=[32m"button"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  checkbox:
+
+  Name "Énergie":
+  [36m<input[39m
+    [33mchecked[39m=[32m""[39m
+    [33mtype[39m=[32m"checkbox"[39m
+  [36m/>[39m
+
+  Name "Déjà prévu dans les charges récurrentes":
+  [36m<input[39m
+    [33mtype[39m=[32m"checkbox"[39m
+  [36m/>[39m
+
+  Name "Nettoyage":
+  [36m<input[39m
+    [33mchecked[39m=[32m""[39m
+    [33mtype[39m=[32m"checkbox"[39m
+  [36m/>[39m
+
+  Name "Déjà prévu dans les charges récurrentes":
+  [36m<input[39m
+    [33mtype[39m=[32m"checkbox"[39m
+  [36m/>[39m
+
+  Name "Emballage":
+  [36m<input[39m
+    [33mchecked[39m=[32m""[39m
+    [33mtype[39m=[32m"checkbox"[39m
+  [36m/>[39m
+
+  Name "Déjà prévu dans les charges récurrentes":
+  [36m<input[39m
+    [33mtype[39m=[32m"checkbox"[39m
+  [36m/>[39m
+
+  Name "Impôt bière":
+  [36m<input[39m
+    [33mchecked[39m=[32m""[39m
+    [33mtype[39m=[32m"checkbox"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  textbox:
+
+  Name "Énergie en CHF":
+  [36m<input[39m
+    [33maria-label[39m=[32m"Énergie en CHF"[39m
+    [33mautocapitalize[39m=[32m"none"[39m
+    [33mautocomplete[39m=[32m"off"[39m
+    [33mautocorrect[39m=[32m"off"[39m
+    [33mclass[39m=[32m"w-full min-h-touch-lg px-2 py-0.5 rounded-control bg-cave-950 border border-cave-700 text-cave-50 text-base placeholder-cave-400 focus:outline-none focus:border-ebc-straw focus:ring-1 focus:ring-ebc-straw/40 transition-colors disabled:opacity-50"[39m
+    [33mdata-1p-ignore[39m=[32m"true"[39m
+    [33mdata-bwignore[39m=[32m"true"[39m
+    [33mdata-form-type[39m=[32m"other"[39m
+    [33mdata-lpignore[39m=[32m"true"[39m
+    [33menterkeyhint[39m=[32m"next"[39m
+    [33minputmode[39m=[32m"decimal"[39m
+    [33mplaceholder[39m=[32m"À estimer"[39m
+    [33mspellcheck[39m=[32m"false"[39m
+    [33mtype[39m=[32m"text"[39m
+    [33mvalue[39m=[32m"8"[39m
+  [36m/>[39m
+
+  Name "Nettoyage en CHF":
+  [36m<input[39m
+    [33maria-label[39m=[32m"Nettoyage en CHF"[39m
+    [33mautocapitalize[39m=[32m"none"[39m
+    [33mautocomplete[39m=[32m"off"[39m
+    [33mautocorrect[39m=[32m"off"[39m
+    [33mclass[39m=[32m"w-full min-h-touch-lg px-2 py-0.5 rounded-control bg-cave-950 border border-cave-700 text-cave-50 text-base placeholder-cave-400 focus:outline-none focus:border-ebc-straw focus:ring-1 focus:ring-ebc-straw/40 transition-colors disabled:opacity-50"[39m
+    [33mdata-1p-ignore[39m=[32m"true"[39m
+    [33mdata-bwignore[39m=[32m"true"[39m
+    [33mdata-form-type[39m=[32m"other"[39m
+    [33mdata-lpignore[39m=[32m"true"[39m
+    [33menterkeyhint[39m=[32m"next"[39m
+    [33minputmode[39m=[32m"decimal"[39m
+    [33mplaceholder[39m=[32m"À estimer"[39m
+    [33mspellcheck[39m=[32m"false"[39m
+    [33mtype[39m=[32m"text"[39m
+    [33mvalue[39m=[32m"3"[39m
+  [36m/>[39m
+
+  Name "Emballage en CHF":
+  [36m<input[39m
+    [33maria-label[39m=[32m"Emballage en CHF"[39m
+    [33mautocapitalize[39m=[32m"none"[39m
+    [33mautocomplete[39m=[32m"off"[39m
+    [33mautocorrect[39m=[32m"off"[39m
+    [33mclass[39m=[32m"w-full min-h-touch-lg px-2 py-0.5 rounded-control bg-cave-950 border border-cave-700 text-cave-50 text-base placeholder-cave-400 focus:outline-none focus:border-ebc-straw focus:ring-1 focus:ring-ebc-straw/40 transition-colors disabled:opacity-50"[39m
+    [33mdata-1p-ignore[39m=[32m"true"[39m
+    [33mdata-bwignore[39m=[32m"true"[39m
+    [33mdata-form-type[39m=[32m"other"[39m
+    [33mdata-lpignore[39m=[32m"true"[39m
+    [33menterkeyhint[39m=[32m"next"[39m
+    [33minputmode[39m=[32m"decimal"[39m
+    [33mplaceholder[39m=[32m"À estimer"[39m
+    [33mspellcheck[39m=[32m"false"[39m
+    [33mtype[39m=[32m"text"[39m
+    [33mvalue[39m=[32m"24"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  strong:
+
+  Name "Impôt bière calculé":
+  [36m<strong[39m
+    [33maria-label[39m=[32m"Impôt bière calculé"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+
+Ignored nodes: comments, script, style
+[36m<body[39m
+  [33mdata-scroll-locked[39m=[32m"1"[39m
+  [33mstyle[39m=[32m"pointer-events: none;"[39m
+[36m>[39m
+  [36m<span[39m
+    [33maria-hidden[39m=[32m"true"[39m
+    [33mdata-aria-hidden[39m=[32m"true"[39m
+    [33mdata-radix-focus-guard[39m=[32m""[39m
+    [33mstyle[39m=[32m"outline: none; opacity: 0; position: fixed; pointer-events: none;"[39m
+    [33mtabindex[39m=[32m"0"[39m
+  [36m/>[39m
+  [36m<div[39m
+    [33maria-hidden[39m=[32m"true"[39m
+    [33mdata-aria-hidden[39m=[32m"true"[39m
+  [36m/>[39m
+  [36m<div[39m
+    [33maria-hidden[39m=[32m"true"[39m
+    [33mclass[39m=[32m"fixed inset-0 z-50 bg-cave-950/70 backdrop-blur-sm"[39m
+    [33mdata-aria-hidden[39m=[32m"true"[39m
+    [33mdata-state[39m=[32m"open"[39m
+    [33mdata-vaul-animate[39m=[32m"true"[39m
+    [33mdata-vaul-overlay[39m=[32m""[39m
+    [33mdata-vaul-snap-points[39m=[32m"false"[39m
+    [33mdata-vaul-snap-points-overlay[39m=[32m"true"[39m
+    [33mstyle[39m=[32m"pointer-events: auto;"[39m
+  [36m/>[39m
+  [36m<div[39m
+    [33maria-describedby[39m=[32m"radix-_r_k_"[39m
+    [33maria-labelledby[39m=[32m"radix-_r_j_"[39m
+    [33mclass[39m=[32m"fixed inset-x-0 bottom-0 z-50 flex flex-col
+                   max-h-[94dvh] rounded-t-sheet bg-cave-900 border-t border-cave-700 shadow-sheet
+                   focus:outline-none md:max-w-xl md:mx-auto"[39m
+    [33mdata-state[39m=[32m"open"[39m
+    [33mdata-vaul-animate[39m=[32m"true"[39m
+    [33mdata-vaul-custom-container[39m=[32m"false"[39m
+    [33mdata-vaul-delayed-snap-points[39m=[32m"false"[39m
+    [33mdata-vaul-drawer[39m=[32m""[39m
+    [33mdata-vaul-drawer-direction[39m=[32m"bottom"[39m
+    [33mdata-vaul-snap-points[39m=[32m"false"[39m
+    [33mid[39m=[32m"radix-_r_i_"[39m
+    [33mrole[39m=[32m"dialog"[39m
+    [33mstyle[39m=[32m"pointer-events: auto;"[39m
+    [33mtabindex[39m=[32m"-1"[39m
+  [36m>[39m
+    [36m<div[39m
+      [33mclass[39m=[32m"shrink-0 flex justify-center cursor-grab active:cursor-grabbing pt-1 pb-0.5"[39m
+    [36m>[39m
+      [36m<div[39m
+        [33maria-hidden[39m=[32m"true"[39m
+        [33mclass[39m=[32m"w-8 h-1 rounded-full bg-cave-700"[39m
+      [36m/>[39m
+    [36m</div>[39m
+    [36m<header[39m
+      [33mclass[39m=[32m"shrink-0 flex items-center gap-2 border-b border-cave-800 min-h-9 px-2 py-1"[39m
+    [36m>[39m
+      [36m<div[39m
+        [33mclass[39m=[32m"min-w-0 flex-1"[39m
+      [36m>[39m
+        [36m<h2[39m
+          [33mclass[39m=[32m"text-sm font-semibold text-cave-50 leading-tight break-words"[39m
+          [33mid[39m=[32m"radix-_r_j_"[39m
+        [36m>[39m
+          [0mPale Ale de septembre[0m
+        [36m</h2>[39m
+        [36m<p[39m
+          [33mclass[39m=[32m"text-xs text-cave-400 leading-tight break-words"[39m
+          [33mid[39m=[32m"radix-_r_k_"[39m
+        [36m>[39m
+          [0mCoût du brassin · Frais[0m
+        [36m</p>[39m
+      [36m</div>[39m
+      [36m<button[39m
+        [33maria-label[39m=[32m"Fermer"[39m
+        [33mclass[39m=[32m"min-w-touch-sm min-h-touch-sm rounded-control text-cave-400
+                       hover:text-cave-50 hover:bg-cave-850 flex items-center justify-center transition-colors shrink-0"[39m
+      [36m>[39m
+        [36m<svg[39m
+          [33maria-hidden[39m=[32m"true"[39m
+          [33mclass[39m=[32m"lucide lucide-x w-4 h-4"[39m
+          [33mfill[39m=[32m"none"[39m
+          [33mheight[39m=[32m"24"[39m
+          [33mstroke[39m=[32m"currentColor"[39m
+          [33mstroke-linecap[39m=[32m"round"[39m
+          [33mstroke-linejoin[39m=[32m"round"[39m
+          [33mstroke-width[39m=[32m"2"[39m
+          [33mviewBox[39m=[32m"0 0 24 24"[39m
+          [33mwidth[39m=[32m"24"[39m
+          [33mxmlns[39m=[32m"http://www.w3.org/2000/svg"[39m
+        [36m>[39m
+          [36m<path[39m
+            [33md[39m=[32m"M18 6 6 18"[39m
+          [36m/>[39m
+          [36m<path[39m
+            [33md[39m=[32m"m6 6 12 12"[39m
+          [36m/>[39m
+        [36m</svg>[39m
+      [36m</button>[39m
+    [36m</header>[39m
+    [36m<div[39m
+      [33mclass[39m=[32m"flex-1 overflow-y-auto overscroll-contain scroll-pb-20 p-2 space-y-2"[39m
+    [36m>[39m
+      [36m<div[39m
+        [33mclass[39m=[32m"brew-budget cbf-noeud"[39m
+      [36m>[39m
+        [36m<button[39m
+          [33mclass[39m=[32m"cbf-retour"[39m
+          [33mtype[39m=[32m"button"[39m
+        [36m>[39m
+          [36m<svg[39m
+            [33maria-hidden[39m=[32m"true"[39m
+            [33mclass[39m=[32m"lucide lucide-chevron-left"[39m
+            [33mfill[39m=[32m"none"[39m
+            [33mheight[39m=[32m"16"[39m
+            [33mstroke[39m=[32m"currentColor"[39m
+            [33mstroke-linecap[39m=[32m"round"[39m
+            [33mstroke-linejoin[39m=[32m"round"[39m
+            [33mstroke-width[39m=[32m"2"[39m
+            [33mviewBox[39m=[32m"0 0 24 24"[39m
+            [33mwidth[39m=[32m"16"[39m
+            [33mxmlns[39m=[32m"http://www.w3.org/2000/svg"[39m
+          [36m>[39m
+            [36m<path[39m
+              [33md[39m=[32m"m15 18-6-6 6-6"[39m
+            [36m/>[39m
+          [36m</svg>[39m
+          [0mRetour au détail du litre[0m
+        [36m</button>[39m
+        [36m<section[39m
+          [33mclass[39m=[32m"brew-budget-section"[39m
+        [36m>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"cbf-tete"[39m
+          [36m>[39m
+            [36m<h3>[39m
+              [0mFrais du brassin[0m
+            [36m</h3>[39m
+            [36m<div[39m
+              [33mclass[39m=[32m"cbf-aide"[39m
+            [36m>[39m
+              [36m<button[39m
+                [33maria-expanded[39m=[32m"false"[39m
+                [33maria-label[39m=[32m"Explication"[39m
+                [33mtype[39m=[32m"button"[39m
+              [36m>[39m
+                [0m?[0m
+              [36m</button>[39m
+            [36m</div>[39m
+          [36m</div>[39m
+          [36m<div[39m
+            [33mdata-poste-actif[39m=[32m"true"[39m
+          [36m>[39m
+            [36m<div[39m
+              [33mclass[39m=[32m"brew-budget-cost-row"[39m
+            [36m>[39m
+              [36m<label>[39m
+                [36m<input[39m
+                  [33mchecked[39m=[32m""[39m
+                  [33mtype[39m=[32m"checkbox"[39m
+                [36m/>[39m
+                [36m<span>[39m
+                  [0mÉnergie[0m
+                [36m</span>[39m
+              [36m</label>[39m
+              [36m<div>[39m
+                [36m<input[39m
+                  [33maria-label[39m=[32m"Énergie en CHF"[39m
+                  [33mautocapitalize[39m=[32m"none"[39m
+                  [33mautocomplete[39m=[32m"off"[39m
+                  [33mautocorrect[39m=[32m"off"[39m
+                  [33mclass[39m=[32m"w-full min-h-touch-lg px-2 py-0.5 rounded-control bg-cave-950 border border-cave-700 text-cave-50 text-base placeholder-cave-400 focus:outline-none focus:border-ebc-straw focus:ring-1 focus:ring-ebc-straw/40 transition-colors disabled:opacity-50"[39m
+                  [33mdata-1p-ignore[39m=[32m"true"[39m
+                  [33mdata-bwignore[39m=[32m"true"[39m
+                  [33mdata-form-type[39m=[32m"other"[39m
+                  [33mdata-lpignore[39m=[32m"true"[39m
+                  [33menterkeyhint[39m=[32m"next"[39m
+                  [33minputmode[39m=[32m"decimal"[39m
+                  [33mplaceholder[39m=[32m"À estimer"[39m
+                  [33mspellcheck[39m=[32m"false"[39m
+                  [33mtype[39m=[32m"text"[39m
+                  [33mvalue[39m=[32m"8"[39m
+                [36m/>[39m
+                [36m<span>[39m
+                  [0mCHF[0m
+                [36m</span>[39m
+              [36m</div>[39m
+            [36m</div>[39m
+            [36m<label[39m
+              [33mclass[39m=[32m"brew-budget-recurring"[39m
+            [36m>[39m
+              [36m<input[39m
+                [33mtype[39m=[32m"checkbox"[39m
+              [36m/>[39m
+              [36m<span>[39m
+                [0mDéjà prévu dans les charges récurrentes[0m
+              [36m</span>[39m
+            [36m</label>[39m
+          [36m</div>[39m
+          [36m<div>[39m
+            [36m<div[39m
+              [33mclass[39m=[32m"brew-budget-cost-row"[39m
+            [36m>[39m
+              [36m<label>[39m
+                [36m<input[39m
+                  [33mchecked[39m=[32m""[39m
+                  [33mtype[39m=[32m"checkbox"[39m
+                [36m/>[39m
+                [36m<span>[39m
+                  [0mNettoyage[0m
+                [36m</span>[39m
+              [36m</label>[39m
+              [36m<div>[39m
+                [36m<input[39m
+                  [33maria-label[39m=[32m"Nettoyage en CHF"[39m
+                  [33mautocapitalize[39m=[32m"none"[39m
+                  [33mautocomplete[39m=[32m"off"[39m
+                  [33mautocorrect[39m=[32m"off"[39m
+                  [33mclass[39m=[32m"w-full min-h-touch-lg px-2 py-0.5 rounded-control bg-cave-950 border border-cave-700 text-cave-50 text-base placeholder-cave-400 focus:outline-none focus:border-ebc-straw focus:ring-1 focus:ring-ebc-straw/40 transition-colors disabled:opacity-50"[39m
+                  [33mdata-1p-ignore[39m=[32m"true"[39m
+                  [33mdata-bwignore[39m=[32m"true"[39m
+                  [33mdata-form-type[39m=[32m"other"[39m
+                  [33mdata-lpignore[39m=[32m"true"[39m
+                  [33menterkeyhint[39m=[32m"next"[39m
+                  [33minputmode[39m=[32m"decimal"[39m
+                  [33mplaceholder[39m=[32m"À estimer"[39m
+                  [33mspellcheck[39m=[32m"false"[39m
+                  [33mtype[39m=[32m"text"[39m
+                  [33mvalue[39m=[32m"3"[39m
+                [36m/>[39m
+                [36m<span>[39m
+                  [0mCHF[0m
+                [36m</span>[39m
+              [36m</div>[39m
+            [36m</div>[39m
+            [36m<label[39m
+              [33mclass[39m=[32m"brew-budget-recurring"[39m
+            [36m>[39m
+              [36m<input[39m
+                [33mtype[39m=[32m"checkbox"[39m
+              [36m/>[39m
+              [36m<span>[39m
+                [0mDéjà prévu dans les charges récurrentes[0m
+              [36m</span>[39m
+            [36m</label>[39m
+          [36m</div>[39m
+          [36m<div>[39m
+            [36m<div[39m
+              [33mclass[39m=[32m"brew-budget-cost-row"[39m
+            [36m>[39m
+              [36m<label>[39m
+                [36m<input[39m
+                  [33mchecked[39m=[32m""[39m
+                  [33mtype[39m=[32m"checkbox"[39m
+                [36m/>[39m
+                [36m<span>[39m
+                  [0mEmballage[0m
+                [36m</span>[39m
+              [36m</label>[39m
+              [36m<div>[39m
+                [36m<input[39m
+                  [33maria-label[39m=[32m"Emballage en CHF"[39m
+                  [33mautocapitalize[39m=[32m"none"[39m
+                  [33mautocomplete[39m=[32m"off"[39m
+                  [33mautocorrect[39m=[32m"off"[39m
+                  [33mclass[39m=[32m"w-full min-h-touch-lg px-2 py-0.5 rounded-control bg-cave-950 border border-cave-700 text-cave-50 text-base placeholder-cave-400 focus:outline-none focus:border-ebc-straw focus:ring-1 focus:ring-ebc-straw/40 transition-colors disabled:opacity-50"[39m
+                  [33mdata-1p-ignore[39m=[32m"true"[39m
+                  [33mdata-bwignore[39m=[32m"true"[39m
+                  [33mdata-form-type[39m=[32m"other"[39m
+                  [33mdata-lpignore[39m=[32m"true"[39m
+                  [33menterkeyhint[39m=[32m"next"[39m
+                  [33minputmode[39m=[32m"decimal"[39m
+                  [33mplaceholder[39m=[32m"À estimer"[39m
+                  [33mspellcheck[39m=[32m"false"[39m
+                  [33mtype[39m=[32m"text"[39m
+                  [33mvalue[39m=[32m"24"[39m
+                [36m/>[39m
+                [36m<span>[39m
+                  [0mCHF[0m
+                [36m</span>[39m
+              [36m</div>[39m
+            [36m</div>[39m
+            [36m<label[39m
+              [33mclass[39m=[32m"brew-budget-recurring"[39m
+            [36m>[39m
+              [36m<input[39m
+                [33mtype[39m=[32m"checkbox"[39m
+              [36m/>[39m
+              [36m<span>[39m
+                [0mDéjà prévu dans les charges récurrentes[0m
+              [36m</span>[39m
+            [36m</label>[39m
+          [36m</div>[39m
+          [36m<div>[39m
+            [36m<div[39m
+              [33mclass[39m=[32m"brew-budget-cost-row"[39m
+            [36m>[39m
+              [36m<label>[39m
+                [36m<input[39m
+                  [33mchecked[39m=[32m""[39m
+                  [33mtype[39m=[32m"checkbox"[39m
+                [36m/>[39m
+                [36m<span>[39m
+                  [0mImpôt bière[0m
+                [36m</span>[39m
+              [36m</label>[39m
+              [36m<div>[39m
+                [36m<strong[39m
+                  [33maria-label[39m=[32m"Impôt bière calculé"[39m
+                [36m>[39m
+                  [0m6,84[0m
+                [36m</strong>[39m
+                [36m<span>[39m
+                  [0mCHF · calculé[0m
+                [36m</span>[39m
+              [36m</div>[39m
+            [36m</div>[39m
+            [36m<p[39m
+              [33mclass[39m=[32m"brew-budget-hint"[39m
+            [36m>[39m
+              [0m27 L[0m
+              [0m nets · densité [0m
+              [0mvisée (estimé)[0m
+              [0m [0m
+              [0m1,048[0m
+              [0m · [0m
+              [0mtaux plein[0m
+            [36m</p>[39m
+          [36m</div>[39m
+        [36m</section>[39m
+      [36m</div>[39m
+    [36m</div>[39m
+    [36m<div[39m
+      [33mclass[39m=[32m"shrink-0 border-t border-cave-800 bg-cave-900 px-2 py-0.5"[39m
+      [33mstyle[39m=[32m"padding-bottom: calc(0.125rem + env(safe-area-inset-bottom, 0px));"[39m
+    [36m>[39m
+      [36m<div[39m
+        [33mclass[39m=[32m"ops bbx-pied"[39m
+      [36m>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"cbf-act"[39m
+        [36m>[39m
+          [36m<button[39m
+            [33mclass[39m=[32m"cbf-sec"[39m
+            [33mtype[39m=[32m"button"[39m
+          [36m>[39m
+            [36m<svg[39m
+              [33maria-hidden[39m=[32m"true"[39m
+              [33mclass[39m=[32m"lucide lucide-chevron-left"[39m
+              [33mfill[39m=[32m"none"[39m
+              [33mheight[39m=[32m"17"[39m
+              [33mstroke[39m=[32m"currentColor"[39m
+              [33mstroke-linecap[39m=[32m"round"[39m
+              [33mstroke-linejoin[39m=[32m"round"[39m
+              [33mstroke-width[39m=[32m"2"[39m
+              [33mviewBox[39m=[32m"0 0 24 24"[39m
+              [33mwidth[39m=[32m"17"[39m
+              [33mxmlns[39m=[32m"http://www.w3.org/2000/svg"[39m
+            [36m>[39m
+              [36m<path[39m
+                [33md[39m=[32m"m15 18-6-6 6-6"[39m
+              [36m/>[39m
+            [36m</svg>[39m
+            [0mRetour[0m
+          [36m</button>[39m
+          [36m<button[39m
+            [33mclass[39m=[32m"cbf-pri"[39m
+            [33mtype[39m=[32m"button"[39m
+          [36m>[39m
+            [36m<svg[39m
+              [33maria-hidden[39m=[32m"true"[39m
+              [33mclass[39m=[32m"lucide lucide-save"[39m
+              [33mfill[39m=[32m"none"[39m
+              [33mheight[39m=[32m"17"[39m
+              [33mstroke[39m=[32m"currentColor"[39m
+              [33mstroke-linecap[39m=[32m"round"[39m
+              [33mstroke-linejoin[39m=[32m"round"[39m
+              [33mstroke-width[39m=[32m"2"[39m
+              [33mviewBox[39m=[32m"0 0 24 24"[39m
+              [33mwidth[39m=[32m"17"[39m
+              [33mxmlns[39m=[32m"http://www.w3.org/2000/svg"[39m
+            [36m>[39m
+              [36m<path[39m
+                [33md[39m=[32m"M15.2 3a2 2 0 0 1 1.4.6l3.8 3.8a2 2 0 0 1 .6 1.4V19a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2z"[39m
+              [36m/>[39m
+              [36m<path[39m
+                [33md[39m=[32m"M17 21v-7a1 1 0 0 0-1-1H8a1 1 0 0 0-1 1v7"[39m
+              [36m/>[39m
+              [36m<path[39m
+                [33md[39m=[32m"M7 3v4a1 1 0 0 0 1 1h7"[39m
+              [36m/>[39m
+            [36m</svg>[39m
+            [0mEnregistrer[0m
+          [36m</button>[39m
+        [36m</div>[39m
+      [36m</div>[39m
+    [36m</div>[39m
+  [36m</div>[39m
+  [36m<span[39m
+    [33maria-hidden[39m=[32m"true"[39m
+    [33mdata-aria-hidden[39m=[32m"true"[39m
+    [33mdata-radix-focus-guard[39m=[32m""[39m
+    [33mstyle[39m=[32m"outline: none; opacity: 0; position: fixed; pointer-events: none;"[39m
+    [33mtabindex[39m=[32m"0"[39m
+  [36m/>[39m
+[36m</body>[39m
+[90m [2m❯[22m Object.getElementError ../ports-nuit/node_modules/@testing-library/dom/dist/config.js:[2m37:19[22m[39m
+[90m [2m❯[22m ../ports-nuit/node_modules/@testing-library/dom/dist/query-helpers.js:[2m76:38[22m[39m
+[90m [2m❯[22m ../ports-nuit/node_modules/@testing-library/dom/dist/query-helpers.js:[2m52:17[22m[39m
+[90m [2m❯[22m ../ports-nuit/node_modules/@testing-library/dom/dist/query-helpers.js:[2m95:19[22m[39m
+[36m [2m❯[22m tests/integration/carnetTour3F3.test.tsx:[2m77:27[22m[39m
+    [90m 75| [39m    [35mconst[39m energie [33m=[39m screen[33m.[39m[34mgetByLabelText[39m([32m'Énergie en CHF'[39m)[33m;[39m
+    [90m 76| [39m    [34mtaper[39m(energie[33m,[39m [32m'−1'[39m)[33m;[39m
+    [90m 77| [39m    [35mconst[39m alerte [33m=[39m screen[33m.[39m[34mgetByRole[39m([32m'alert'[39m)[33m;[39m
+    [90m   | [39m                          [31m^[39m
+    [90m 78| [39m    expect(alerte).toHaveTextContent('« −1 » : une valeur négative n’e…
+    [90m 79| [39m    [34mexpect[39m(energie)[33m.[39m[34mtoHaveAttribute[39m([32m'aria-invalid'[39m[33m,[39m [32m'true'[39m)[33m;[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/4]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m tests/integration/carnetTour3F3.test.tsx[2m > [22mBR-27 : un coût négatif du budget se dit au champ, jamais avalé[2m > [22mnettoyage, emballage et impôt saisi à la main : chacun son message, à son poste
+[31m[1mTypeError[22m: Expected container to be an Element, a Document or a DocumentFragment but got null.[39m
+[90m [2m❯[22m checkContainerType ../ports-nuit/node_modules/@testing-library/dom/dist/helpers.js:[2m61:11[22m[39m
+[90m [2m❯[22m queryAllByRole ../ports-nuit/node_modules/@testing-library/dom/dist/queries/role.js:[2m34:35[22m[39m
+[90m [2m❯[22m ../ports-nuit/node_modules/@testing-library/dom/dist/query-helpers.js:[2m74:17[22m[39m
+[90m [2m❯[22m ../ports-nuit/node_modules/@testing-library/dom/dist/query-helpers.js:[2m52:17[22m[39m
+[90m [2m❯[22m ../ports-nuit/node_modules/@testing-library/dom/dist/query-helpers.js:[2m95:19[22m[39m
+[36m [2m❯[22m tests/integration/carnetTour3F3.test.tsx:[2m92:28[22m[39m
+    [90m 90| [39m      [34mtaper[39m(screen[33m.[39m[34mgetByLabelText[39m([32m`[39m[36m${[39mposte[36m}[39m[32m en CHF`[39m)[33m,[39m [32m'-1'[39m)[33m;[39m
+    [90m 91| [39m      const ligne = screen.getByLabelText(`${poste} en CHF`).closest('…
+    [90m 92| [39m      expect(within(ligne).getByRole('alert')).toHaveTextContent('vale…
+    [90m   | [39m                           [31m^[39m
+    [90m 93| [39m    }
+    [90m 94| [39m  })[33m;[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/4]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m tests/integration/carnetTour3F3.test.tsx[2m > [22mBR-27 : un coût négatif du budget se dit au champ, jamais avalé[2m > [22mcharges fixes et usure « −1 » : même refus
+[31m[1mTestingLibraryElementError[22m[39m: Found multiple elements with the text of: Charges fixes annuelles
+
+Here are the matching elements:
+
+Ignored nodes: comments, script, style
+[36m<input[39m
+  [33maria-label[39m=[32m"Inclure charges fixes annuelles"[39m
+  [33mchecked[39m=[32m""[39m
+  [33mtype[39m=[32m"checkbox"[39m
+[36m/>[39m
+
+Ignored nodes: comments, script, style
+[36m<input[39m
+  [33maria-label[39m=[32m"Charges fixes annuelles"[39m
+  [33mautocapitalize[39m=[32m"none"[39m
+  [33mautocomplete[39m=[32m"off"[39m
+  [33mautocorrect[39m=[32m"off"[39m
+  [33mclass[39m=[32m"w-full min-h-touch-lg px-2 py-0.5 rounded-control bg-cave-950 border border-cave-700 text-cave-50 text-base placeholder-cave-400 focus:outline-none focus:border-ebc-straw focus:ring-1 focus:ring-ebc-straw/40 transition-colors disabled:opacity-50"[39m
+  [33mdata-1p-ignore[39m=[32m"true"[39m
+  [33mdata-bwignore[39m=[32m"true"[39m
+  [33mdata-form-type[39m=[32m"other"[39m
+  [33mdata-lpignore[39m=[32m"true"[39m
+  [33menterkeyhint[39m=[32m"next"[39m
+  [33minputmode[39m=[32m"decimal"[39m
+  [33mplaceholder[39m=[32m"À estimer"[39m
+  [33mspellcheck[39m=[32m"false"[39m
+  [33mtype[39m=[32m"text"[39m
+  [33mvalue[39m=[32m"4800"[39m
+[36m/>[39m
+
+(If this is intentional, then use the `*AllBy*` variant of the query (like `queryAllByText`, `getAllByText`, or `findAllByText`)).
+
+Ignored nodes: comments, script, style
+[36m<body[39m
+  [33mdata-scroll-locked[39m=[32m"1"[39m
+  [33mstyle[39m=[32m"pointer-events: none;"[39m
+[36m>[39m
+  [36m<span[39m
+    [33maria-hidden[39m=[32m"true"[39m
+    [33mdata-aria-hidden[39m=[32m"true"[39m
+    [33mdata-radix-focus-guard[39m=[32m""[39m
+    [33mstyle[39m=[32m"outline: none; opacity: 0; position: fixed; pointer-events: none;"[39m
+    [33mtabindex[39m=[32m"0"[39m
+  [36m/>[39m
+  [36m<div[39m
+    [33maria-hidden[39m=[32m"true"[39m
+    [33mdata-aria-hidden[39m=[32m"true"[39m
+  [36m/>[39m
+  [36m<div[39m
+    [33maria-hidden[39m=[32m"true"[39m
+    [33mclass[39m=[32m"fixed inset-0 z-50 bg-cave-950/70 backdrop-blur-sm"[39m
+    [33mdata-aria-hidden[39m=[32m"true"[39m
+    [33mdata-state[39m=[32m"open"[39m
+    [33mdata-vaul-animate[39m=[32m"true"[39m
+    [33mdata-vaul-overlay[39m=[32m""[39m
+    [33mdata-vaul-snap-points[39m=[32m"false"[39m
+    [33mdata-vaul-snap-points-overlay[39m=[32m"true"[39m
+    [33mstyle[39m=[32m"pointer-events: auto;"[39m
+  [36m/>[39m
+  [36m<div[39m
+    [33maria-describedby[39m=[32m"radix-_r_q_"[39m
+    [33maria-labelledby[39m=[32m"radix-_r_p_"[39m
+    [33mclass[39m=[32m"fixed inset-x-0 bottom-0 z-50 flex flex-col
+                   max-h-[94dvh] rounded-t-sheet bg-cave-900 border-t border-cave-700 shadow-sheet
+                   focus:outline-none md:max-w-xl md:mx-auto"[39m
+    [33mdata-state[39m=[32m"open"[39m
+    [33mdata-vaul-animate[39m=[32m"true"[39m
+    [33mdata-vaul-custom-container[39m=[32m"false"[39m
+    [33mdata-vaul-delayed-snap-points[39m=[32m"false"[39m
+    [33mdata-vaul-drawer[39m=[32m""[39m
+    [33mdata-vaul-drawer-direction[39m=[32m"bottom"[39m
+    [33mdata-vaul-snap-points[39m=[32m"false"[39m
+    [33mid[39m=[32m"radix-_r_o_"[39m
+    [33mrole[39m=[32m"dialog"[39m
+    [33mstyle[39m=[32m"pointer-events: auto;"[39m
+    [33mtabindex[39m=[32m"-1"[39m
+  [36m>[39m
+    [36m<div[39m
+      [33mclass[39m=[32m"shrink-0 flex justify-center cursor-grab active:cursor-grabbing pt-1 pb-0.5"[39m
+    [36m>[39m
+      [36m<div[39m
+        [33maria-hidden[39m=[32m"true"[39m
+        [33mclass[39m=[32m"w-8 h-1 rounded-full bg-cave-700"[39m
+      [36m/>[39m
+    [36m</div>[39m
+    [36m<header[39m
+      [33mclass[39m=[32m"shrink-0 flex items-center gap-2 border-b border-cave-800 min-h-9 px-2 py-1"[39m
+    [36m>[39m
+      [36m<div[39m
+        [33mclass[39m=[32m"min-w-0 flex-1"[39m
+      [36m>[39m
+        [36m<h2[39m
+          [33mclass[39m=[32m"text-sm font-semibold text-cave-50 leading-tight break-words"[39m
+          [33mid[39m=[32m"radix-_r_p_"[39m
+        [36m>[39m
+          [0mPale Ale de septembre[0m
+        [36m</h2>[39m
+        [36m<p[39m
+          [33mclass[39m=[32m"text-xs text-cave-400 leading-tight break-words"[39m
+          [33mid[39m=[32m"radix-_r_q_"[39m
+        [36m>[39m
+          [0mCoût du brassin · Charges fixes et usure[0m
+        [36m</p>[39m
+      [36m</div>[39m
+      [36m<button[39m
+        [33maria-label[39m=[32m"Fermer"[39m
+        [33mclass[39m=[32m"min-w-touch-sm min-h-touch-sm rounded-control text-cave-400
+                       hover:text-cave-50 hover:bg-cave-850 flex items-center justify-center transition-colors shrink-0"[39m
+      [36m>[39m
+        [36m<svg[39m
+          [33maria-hidden[39m=[32m"true"[39m
+          [33mclass[39m=[32m"lucide lucide-x w-4 h-4"[39m
+          [33mfill[39m=[32m"none"[39m
+          [33mheight[39m=[32m"24"[39m
+          [33mstroke[39m=[32m"currentColor"[39m
+          [33mstroke-linecap[39m=[32m"round"[39m
+          [33mstroke-linejoin[39m=[32m"round"[39m
+          [33mstroke-width[39m=[32m"2"[39m
+          [33mviewBox[39m=[32m"0 0 24 24"[39m
+          [33mwidth[39m=[32m"24"[39m
+          [33mxmlns[39m=[32m"http://www.w3.org/2000/svg"[39m
+        [36m>[39m
+          [36m<path[39m
+            [33md[39m=[32m"M18 6 6 18"[39m
+          [36m/>[39m
+          [36m<path[39m
+            [33md[39m=[32m"m6 6 12 12"[39m
+          [36m/>[39m
+        [36m</svg>[39m
+      [36m</button>[39m
+    [36m</header>[39m
+    [36m<div[39m
+      [33mclass[39m=[32m"flex-1 overflow-y-auto overscroll-contain scroll-pb-20 p-2 space-y-2"[39m
+    [36m>[39m
+      [36m<div[39m
+        [33mclass[39m=[32m"brew-budget cbf-noeud"[39m
+      [36m>[39m
+        [36m<button[39m
+          [33mclass[39m=[32m"cbf-retour"[39m
+          [33mtype[39m=[32m"button"[39m
+        [36m>[39m
+          [36m<svg[39m
+            [33maria-hidden[39m=[32m"true"[39m
+            [33mclass[39m=[32m"lucide lucide-chevron-left"[39m
+            [33mfill[39m=[32m"none"[39m
+            [33mheight[39m=[32m"16"[39m
+            [33mstroke[39m=[32m"currentColor"[39m
+            [33mstroke-linecap[39m=[32m"round"[39m
+            [33mstroke-linejoin[39m=[32m"round"[39m
+            [33mstroke-width[39m=[32m"2"[39m
+            [33mviewBox[39m=[32m"0 0 24 24"[39m
+            [33mwidth[39m=[32m"16"[39m
+            [33mxmlns[39m=[32m"http://www.w3.org/2000/svg"[39m
+          [36m>[39m
+            [36m<path[39m
+              [33md[39m=[32m"m15 18-6-6 6-6"[39m
+            [36m/>[39m
+          [36m</svg>[39m
+          [0mRetour au détail du litre[0m
+        [36m</button>[39m
+        [36m<section[39m
+          [33mclass[39m=[32m"brew-budget-section"[39m
+        [36m>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"cbf-tete"[39m
+          [36m>[39m
+            [36m<h3>[39m
+              [0mCharges fixes et usure[0m
+            [36m</h3>[39m
+            [36m<div[39m
+              [33mclass[39m=[32m"cbf-aide"[39m
+            [36m>[39m
+              [36m<button[39m
+                [33maria-expanded[39m=[32m"false"[39m
+                [33maria-label[39m=[32m"Explication"[39m
+                [33mtype[39m=[32m"button"[39m
+              [36m>[39m
+                [0m?[0m
+              [36m</button>[39m
+            [36m</div>[39m
+          [36m</div>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"space-y-1 "[39m
+          [36m>[39m
+            [36m<label[39m
+              [33mclass[39m=[32m"block text-xs text-cave-400 font-medium"[39m
+            [36m>[39m
+              [0mProduction annuelle prévue[0m
+            [36m</label>[39m
+            [36m<input[39m
+              [33maria-label[39m=[32m"Production annuelle prévue"[39m
+              [33mautocapitalize[39m=[32m"none"[39m
+              [33mautocomplete[39m=[32m"off"[39m
+              [33mautocorrect[39m=[32m"off"[39m
+              [33mclass[39m=[32m"w-full min-h-touch-lg px-2 py-0.5 rounded-control bg-cave-950 border border-cave-700 text-cave-50 text-base placeholder-cave-400 focus:outline-none focus:border-ebc-straw focus:ring-1 focus:ring-ebc-straw/40 transition-colors disabled:opacity-50"[39m
+              [33mdata-1p-ignore[39m=[32m"true"[39m
+              [33mdata-bwignore[39m=[32m"true"[39m
+              [33mdata-form-type[39m=[32m"other"[39m
+              [33mdata-lpignore[39m=[32m"true"[39m
+              [33menterkeyhint[39m=[32m"next"[39m
+              [33minputmode[39m=[32m"decimal"[39m
+              [33mspellcheck[39m=[32m"false"[39m
+              [33mtype[39m=[32m"text"[39m
+              [33mvalue[39m=[32m"1200"[39m
+            [36m/>[39m
+            [36m<p[39m
+              [33mclass[39m=[32m"text-xs text-cave-400 leading-snug"[39m
+            [36m>[39m
+              [0mL de bière conditionnée[0m
+            [36m</p>[39m
+          [36m</div>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"brew-budget-cost-row"[39m
+            [33mdata-poste-actif[39m=[32m"true"[39m
+          [36m>[39m
+            [36m<label>[39m
+              [36m<input[39m
+                [33maria-label[39m=[32m"Inclure charges fixes annuelles"[39m
+                [33mchecked[39m=[32m""[39m
+                [33mtype[39m=[32m"checkbox"[39m
+              [36m/>[39m
+              [36m<span>[39m
+                [0mCharges fixes annuelles[0m
+              [36m</span>[39m
+            [36m</label>[39m
+            [36m<div>[39m
+              [36m<input[39m
+                [33maria-label[39m=[32m"Charges fixes annuelles"[39m
+                [33mautocapitalize[39m=[32m"none"[39m
+                [33mautocomplete[39m=[32m"off"[39m
+                [33mautocorrect[39m=[32m"off"[39m
+                [33mclass[39m=[32m"w-full min-h-touch-lg px-2 py-0.5 rounded-control bg-cave-950 border border-cave-700 text-cave-50 text-base placeholder-cave-400 focus:outline-none focus:border-ebc-straw focus:ring-1 focus:ring-ebc-straw/40 transition-colors disabled:opacity-50"[39m
+                [33mdata-1p-ignore[39m=[32m"true"[39m
+                [33mdata-bwignore[39m=[32m"true"[39m
+                [33mdata-form-type[39m=[32m"other"[39m
+                [33mdata-lpignore[39m=[32m"true"[39m
+                [33menterkeyhint[39m=[32m"next"[39m
+                [33minputmode[39m=[32m"decimal"[39m
+                [33mplaceholder[39m=[32m"À estimer"[39m
+                [33mspellcheck[39m=[32m"false"[39m
+                [33mtype[39m=[32m"text"[39m
+                [33mvalue[39m=[32m"4800"[39m
+              [36m/>[39m
+              [36m<span>[39m
+                [0mCHF[0m
+              [36m</span>[39m
+            [36m</div>[39m
+          [36m</div>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"brew-budget-cost-row"[39m
+          [36m>[39m
+            [36m<label>[39m
+              [36m<input[39m
+                [33maria-label[39m=[32m"Inclure usure annuelle du matériel"[39m
+                [33mchecked[39m=[32m""[39m
+                [33mtype[39m=[32m"checkbox"[39m
+              [36m/>[39m
+              [36m<span>[39m
+                [0mUsure annuelle du matériel[0m
+              [36m</span>[39m
+            [36m</label>[39m
+            [36m<div>[39m
+              [36m<input[39m
+                [33maria-label[39m=[32m"Usure annuelle du matériel"[39m
+                [33mautocapitalize[39m=[32m"none"[39m
+                [33mautocomplete[39m=[32m"off"[39m
+                [33mautocorrect[39m=[32m"off"[39m
+                [33mclass[39m=[32m"w-full min-h-touch-lg px-2 py-0.5 rounded-control bg-cave-950 border border-cave-700 text-cave-50 text-base placeholder-cave-400 focus:outline-none focus:border-ebc-straw focus:ring-1 focus:ring-ebc-straw/40 transition-colors disabled:opacity-50"[39m
+                [33mdata-1p-ignore[39m=[32m"true"[39m
+                [33mdata-bwignore[39m=[32m"true"[39m
+                [33mdata-form-type[39m=[32m"other"[39m
+                [33mdata-lpignore[39m=[32m"true"[39m
+                [33menterkeyhint[39m=[32m"next"[39m
+                [33minputmode[39m=[32m"decimal"[39m
+                [33mplaceholder[39m=[32m"À estimer"[39m
+                [33mspellcheck[39m=[32m"false"[39m
+                [33mtype[39m=[32m"text"[39m
+                [33mvalue[39m=[32m"360"[39m
+              [36m/>[39m
+              [36m<span>[39m
+                [0mCHF[0m
+              [36m</span>[39m
+            [36m</div>[39m
+          [36m</div>[39m
+        [36m</section>[39m
+      [36m</div>[39m
+    [36m</div>[39m
+    [36m<div[39m
+      [33mclass[39m=[32m"shrink-0 border-t border-cave-800 bg-cave-900 px-2 py-0.5"[39m
+      [33mstyle[39m=[32m"padding-bottom: calc(0.125rem + env(safe-area-inset-bottom, 0px));"[39m
+    [36m>[39m
+      [36m<div[39m
+        [33mclass[39m=[32m"ops bbx-pied"[39m
+      [36m>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"cbf-act"[39m
+        [36m>[39m
+          [36m<button[39m
+            [33mclass[39m=[32m"cbf-sec"[39m
+            [33mtype[39m=[32m"button"[39m
+          [36m>[39m
+            [36m<svg[39m
+              [33maria-hidden[39m=[32m"true"[39m
+              [33mclass[39m=[32m"lucide lucide-chevron-left"[39m
+              [33mfill[39m=[32m"none"[39m
+              [33mheight[39m=[32m"17"[39m
+              [33mstroke[39m=[32m"currentColor"[39m
+              [33mstroke-linecap[39m=[32m"round"[39m
+              [33mstroke-linejoin[39m=[32m"round"[39m
+              [33mstroke-width[39m=[32m"2"[39m
+              [33mviewBox[39m=[32m"0 0 24 24"[39m
+              [33mwidth[39m=[32m"17"[39m
+              [33mxmlns[39m=[32m"http://www.w3.org/2000/svg"[39m
+            [36m>[39m
+              [36m<path[39m
+                [33md[39m=[32m"m15 18-6-6 6-6"[39m
+              [36m/>[39m
+            [36m</svg>[39m
+            [0mRetour[0m
+          [36m</button>[39m
+          [36m<button[39m
+            [33mclass[39m=[32m"cbf-pri"[39m
+            [33mtype[39m=[32m"button"[39m
+          [36m>[39m
+            [36m<svg[39m
+              [33maria-hidden[39m=[32m"true"[39m
+              [33mclass[39m=[32m"lucide lucide-save"[39m
+              [33mfill[39m=[32m"none"[39m
+              [33mheight[39m=[32m"17"[39m
+              [33mstroke[39m=[32m"currentColor"[39m
+              [33mstroke-linecap[39m=[32m"round"[39m
+              [33mstroke-linejoin[39m=[32m"round"[39m
+              [33mstroke-width[39m=[32m"2"[39m
+              [33mviewBox[39m=[32m"0 0 24 24"[39m
+              [33mwidth[39m=[32m"17"[39m
+              [33mxmlns[39m=[32m"http://www.w3.org/2000/svg"[39m
+            [36m>[39m
+              [36m<path[39m
+                [33md[39m=[32m"M15.2 3a2 2 0 0 1 1.4.6l3.8 3.8a2 2 0 0 1 .6 1.4V19a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2z"[39m
+              [36m/>[39m
+              [36m<path[39m
+                [33md[39m=[32m"M17 21v-7a1 1 0 0 0-1-1H8a1 1 0 0 0-1 1v7"[39m
+              [36m/>[39m
+              [36m<path[39m
+                [33md[39m=[32m"M7 3v4a1 1 0 0 0 1 1h7"[39m
+              [36m/>[39m
+            [36m</svg>[39m
+            [0mEnregistrer[0m
+          [36m</button>[39m
+        [36m</div>[39m
+      [36m</div>[39m
+    [36m</div>[39m
+  [36m</div>[39m
+  [36m<span[39m
+    [33maria-hidden[39m=[32m"true"[39m
+    [33mdata-aria-hidden[39m=[32m"true"[39m
+    [33mdata-radix-focus-guard[39m=[32m""[39m
+    [33mstyle[39m=[32m"outline: none; opacity: 0; position: fixed; pointer-events: none;"[39m
+    [33mtabindex[39m=[32m"0"[39m
+  [36m/>[39m
+[36m</body>[39m
+[90m [2m❯[22m Object.getElementError ../ports-nuit/node_modules/@testing-library/dom/dist/config.js:[2m37:19[22m[39m
+[90m [2m❯[22m getElementError ../ports-nuit/node_modules/@testing-library/dom/dist/query-helpers.js:[2m20:35[22m[39m
+[90m [2m❯[22m getMultipleElementsFoundError ../ports-nuit/node_modules/@testing-library/dom/dist/query-helpers.js:[2m23:10[22m[39m
+[90m [2m❯[22m ../ports-nuit/node_modules/@testing-library/dom/dist/query-helpers.js:[2m55:13[22m[39m
+[90m [2m❯[22m ../ports-nuit/node_modules/@testing-library/dom/dist/query-helpers.js:[2m95:19[22m[39m
+[36m [2m❯[22m tests/integration/carnetTour3F3.test.tsx:[2m97:18[22m[39m
+    [90m 95| [39m  [34mit[39m([32m'charges fixes et usure « −1 » : même refus'[39m[33m,[39m () [33m=>[39m {
+    [90m 96| [39m    [34mouvrir[39m()[33m;[39m [34mnoeud[39m([32m'Charges fixes'[39m)[33m;[39m
+    [90m 97| [39m    [34mtaper[39m(screen[33m.[39m[34mgetByLabelText[39m([32m'Charges fixes annuelles'[39m)[33m,[39m [32m'-1'[39m)[33m;[39m
+    [90m   | [39m                 [31m^[39m
+    [90m 98| [39m    expect(screen.getByRole('alert')).toHaveTextContent('« -1 » : une …
+    [90m 99| [39m    expect(screen.getByLabelText('Charges fixes annuelles')).toHaveVal…
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/4]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m tests/integration/carnetTour3F3.test.tsx[2m > [22mBR-27 : un coût négatif du budget se dit au champ, jamais avalé[2m > [22mprix d’un ingrédient « −4 » : refusé en le disant
+[31m[1mTestingLibraryElementError[22m[39m: Unable to find an accessible element with the role "alert"
+
+Here are the accessible roles:
+
+  dialog:
+
+  Name "Pale Ale de septembre":
+  [36m<div[39m
+    [33maria-describedby[39m=[32m"radix-_r_t_"[39m
+    [33maria-labelledby[39m=[32m"radix-_r_s_"[39m
+    [33mclass[39m=[32m"fixed inset-x-0 bottom-0 z-50 flex flex-col
+                     max-h-[94dvh] rounded-t-sheet bg-cave-900 border-t border-cave-700 shadow-sheet
+                     focus:outline-none md:max-w-xl md:mx-auto"[39m
+    [33mdata-state[39m=[32m"open"[39m
+    [33mdata-vaul-animate[39m=[32m"true"[39m
+    [33mdata-vaul-custom-container[39m=[32m"false"[39m
+    [33mdata-vaul-delayed-snap-points[39m=[32m"false"[39m
+    [33mdata-vaul-drawer[39m=[32m""[39m
+    [33mdata-vaul-drawer-direction[39m=[32m"bottom"[39m
+    [33mdata-vaul-snap-points[39m=[32m"false"[39m
+    [33mid[39m=[32m"radix-_r_r_"[39m
+    [33mrole[39m=[32m"dialog"[39m
+    [33mstyle[39m=[32m"pointer-events: auto;"[39m
+    [33mtabindex[39m=[32m"-1"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  banner:
+
+  Name "":
+  [36m<header[39m
+    [33mclass[39m=[32m"shrink-0 flex items-center gap-2 border-b border-cave-800 min-h-9 px-2 py-1"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  heading:
+
+  Name "Pale Ale de septembre":
+  [36m<h2[39m
+    [33mclass[39m=[32m"text-sm font-semibold text-cave-50 leading-tight break-words"[39m
+    [33mid[39m=[32m"radix-_r_s_"[39m
+  [36m/>[39m
+
+  Name "Malt":
+  [36m<h3 />[39m
+
+  --------------------------------------------------
+  paragraph:
+
+  Name "":
+  [36m<p[39m
+    [33mclass[39m=[32m"text-xs text-cave-400 leading-tight break-words"[39m
+    [33mid[39m=[32m"radix-_r_t_"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<p[39m
+    [33mclass[39m=[32m"text-xs text-cave-400 leading-snug"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<p[39m
+    [33mclass[39m=[32m"text-xs text-cave-400 leading-snug"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<p[39m
+    [33mclass[39m=[32m"text-xs text-cave-400 leading-snug"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<p[39m
+    [33mclass[39m=[32m"brew-budget-hint"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<p[39m
+    [33mclass[39m=[32m"brew-budget-hint"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<p[39m
+    [33mclass[39m=[32m"text-xs text-cave-400 leading-snug"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<p[39m
+    [33mclass[39m=[32m"text-xs text-cave-400 leading-snug"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<p[39m
+    [33mclass[39m=[32m"text-xs text-cave-400 leading-snug"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<p[39m
+    [33mclass[39m=[32m"brew-budget-hint"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<p[39m
+    [33mclass[39m=[32m"brew-budget-hint"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  button:
+
+  Name "Fermer":
+  [36m<button[39m
+    [33maria-label[39m=[32m"Fermer"[39m
+    [33mclass[39m=[32m"min-w-touch-sm min-h-touch-sm rounded-control text-cave-400
+                         hover:text-cave-50 hover:bg-cave-850 flex items-center justify-center transition-colors shrink-0"[39m
+  [36m/>[39m
+
+  Name "Retour au détail du litre":
+  [36m<button[39m
+    [33mclass[39m=[32m"cbf-retour"[39m
+    [33mtype[39m=[32m"button"[39m
+  [36m/>[39m
+
+  Name "Tous 2":
+  [36m<button[39m
+    [33maria-pressed[39m=[32m"true"[39m
+    [33mtype[39m=[32m"button"[39m
+  [36m/>[39m
+
+  Name "À acheter 1":
+  [36m<button[39m
+    [33maria-pressed[39m=[32m"false"[39m
+    [33mtype[39m=[32m"button"[39m
+  [36m/>[39m
+
+  Name "À compléter 0":
+  [36m<button[39m
+    [33maria-pressed[39m=[32m"false"[39m
+    [33mtype[39m=[32m"button"[39m
+  [36m/>[39m
+
+  Name "Retour":
+  [36m<button[39m
+    [33mclass[39m=[32m"cbf-sec"[39m
+    [33mtype[39m=[32m"button"[39m
+  [36m/>[39m
+
+  Name "Enregistrer":
+  [36m<button[39m
+    [33mclass[39m=[32m"cbf-pri"[39m
+    [33mtype[39m=[32m"button"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  group:
+
+  Name "Filtrer les ingrédients":
+  [36m<div[39m
+    [33maria-label[39m=[32m"Filtrer les ingrédients"[39m
+    [33mclass[39m=[32m"brew-budget-filters"[39m
+    [33mrole[39m=[32m"group"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<details[39m
+    [33mclass[39m=[32m"brew-budget-line"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<details[39m
+    [33mclass[39m=[32m"brew-budget-advanced"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<details[39m
+    [33mclass[39m=[32m"brew-budget-line"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<details[39m
+    [33mclass[39m=[32m"brew-budget-advanced"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  combobox:
+
+  Name "Article de stock pour Pilsner":
+  [36m<select[39m
+    [33maria-label[39m=[32m"Article de stock pour Pilsner"[39m
+    [33mclass[39m=[32m"w-full min-h-touch-lg px-2 py-0.5 rounded-control bg-cave-950 border border-cave-700 text-cave-50 text-base placeholder-cave-400 focus:outline-none focus:border-ebc-straw focus:ring-1 focus:ring-ebc-straw/40 transition-colors disabled:opacity-50"[39m
+  [36m/>[39m
+
+  Name "Unité du prix de Pilsner":
+  [36m<select[39m
+    [33maria-label[39m=[32m"Unité du prix de Pilsner"[39m
+    [33mclass[39m=[32m"w-full min-h-touch-lg px-2 py-0.5 rounded-control bg-cave-950 border border-cave-700 text-cave-50 text-base placeholder-cave-400 focus:outline-none focus:border-ebc-straw focus:ring-1 focus:ring-ebc-straw/40 transition-colors disabled:opacity-50"[39m
+  [36m/>[39m
+
+  Name "Base du prix de Pilsner":
+  [36m<select[39m
+    [33maria-label[39m=[32m"Base du prix de Pilsner"[39m
+    [33mclass[39m=[32m"w-full min-h-touch-lg px-2 py-0.5 rounded-control bg-cave-950 border border-cave-700 text-cave-50 text-base placeholder-cave-400 focus:outline-none focus:border-ebc-straw focus:ring-1 focus:ring-ebc-straw/40 transition-colors disabled:opacity-50"[39m
+  [36m/>[39m
+
+  Name "Origine du prix de Pilsner":
+  [36m<select[39m
+    [33maria-label[39m=[32m"Origine du prix de Pilsner"[39m
+    [33mclass[39m=[32m"w-full min-h-touch-lg px-2 py-0.5 rounded-control bg-cave-950 border border-cave-700 text-cave-50 text-base placeholder-cave-400 focus:outline-none focus:border-ebc-straw focus:ring-1 focus:ring-ebc-straw/40 transition-colors disabled:opacity-50"[39m
+  [36m/>[39m
+
+  Name "Article de stock pour Pale":
+  [36m<select[39m
+    [33maria-label[39m=[32m"Article de stock pour Pale"[39m
+    [33mclass[39m=[32m"w-full min-h-touch-lg px-2 py-0.5 rounded-control bg-cave-950 border border-cave-700 text-cave-50 text-base placeholder-cave-400 focus:outline-none focus:border-ebc-straw focus:ring-1 focus:ring-ebc-straw/40 transition-colors disabled:opacity-50"[39m
+  [36m/>[39m
+
+  Name "Unité du prix de Pale":
+  [36m<select[39m
+    [33maria-label[39m=[32m"Unité du prix de Pale"[39m
+    [33mclass[39m=[32m"w-full min-h-touch-lg px-2 py-0.5 rounded-control bg-cave-950 border border-cave-700 text-cave-50 text-base placeholder-cave-400 focus:outline-none focus:border-ebc-straw focus:ring-1 focus:ring-ebc-straw/40 transition-colors disabled:opacity-50"[39m
+  [36m/>[39m
+
+  Name "Base du prix de Pale":
+  [36m<select[39m
+    [33maria-label[39m=[32m"Base du prix de Pale"[39m
+    [33mclass[39m=[32m"w-full min-h-touch-lg px-2 py-0.5 rounded-control bg-cave-950 border border-cave-700 text-cave-50 text-base placeholder-cave-400 focus:outline-none focus:border-ebc-straw focus:ring-1 focus:ring-ebc-straw/40 transition-colors disabled:opacity-50"[39m
+  [36m/>[39m
+
+  Name "Origine du prix de Pale":
+  [36m<select[39m
+    [33maria-label[39m=[32m"Origine du prix de Pale"[39m
+    [33mclass[39m=[32m"w-full min-h-touch-lg px-2 py-0.5 rounded-control bg-cave-950 border border-cave-700 text-cave-50 text-base placeholder-cave-400 focus:outline-none focus:border-ebc-straw focus:ring-1 focus:ring-ebc-straw/40 transition-colors disabled:opacity-50"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  option:
+
+  Name "Aucun article associé":
+  [36m<option[39m
+    [33mvalue[39m=[32m""[39m
+  [36m/>[39m
+
+  Name "Pilsner · MP-1 · kg":
+  [36m<option[39m
+    [33mvalue[39m=[32m"MP-1"[39m
+  [36m/>[39m
+
+  Name "Pale · MP-2 · kg":
+  [36m<option[39m
+    [33mvalue[39m=[32m"MP-2"[39m
+  [36m/>[39m
+
+  Name "kg":
+  [36m<option[39m
+    [33mvalue[39m=[32m"kg"[39m
+  [36m/>[39m
+
+  Name "g":
+  [36m<option[39m
+    [33mvalue[39m=[32m"g"[39m
+  [36m/>[39m
+
+  Name "L":
+  [36m<option[39m
+    [33mvalue[39m=[32m"L"[39m
+  [36m/>[39m
+
+  Name "mL":
+  [36m<option[39m
+    [33mvalue[39m=[32m"mL"[39m
+  [36m/>[39m
+
+  Name "sachet":
+  [36m<option[39m
+    [33mvalue[39m=[32m"sachet"[39m
+  [36m/>[39m
+
+  Name "pièce":
+  [36m<option[39m
+    [33mvalue[39m=[32m"pièce"[39m
+  [36m/>[39m
+
+  Name "TTC · TVA comprise":
+  [36m<option[39m
+    [33mvalue[39m=[32m"TTC"[39m
+  [36m/>[39m
+
+  Name "HT · TVA à ajouter":
+  [36m<option[39m
+    [33mvalue[39m=[32m"HT"[39m
+  [36m/>[39m
+
+  Name "Estimation personnelle":
+  [36m<option[39m
+    [33mvalue[39m=[32m"manual"[39m
+  [36m/>[39m
+
+  Name "Facture fournisseur":
+  [36m<option[39m
+    [33mvalue[39m=[32m"invoice"[39m
+  [36m/>[39m
+
+  Name "Devis fournisseur":
+  [36m<option[39m
+    [33mvalue[39m=[32m"quote"[39m
+  [36m/>[39m
+
+  Name "Aucun article associé":
+  [36m<option[39m
+    [33mvalue[39m=[32m""[39m
+  [36m/>[39m
+
+  Name "Pilsner · MP-1 · kg":
+  [36m<option[39m
+    [33mvalue[39m=[32m"MP-1"[39m
+  [36m/>[39m
+
+  Name "Pale · MP-2 · kg":
+  [36m<option[39m
+    [33mvalue[39m=[32m"MP-2"[39m
+  [36m/>[39m
+
+  Name "kg":
+  [36m<option[39m
+    [33mvalue[39m=[32m"kg"[39m
+  [36m/>[39m
+
+  Name "g":
+  [36m<option[39m
+    [33mvalue[39m=[32m"g"[39m
+  [36m/>[39m
+
+  Name "L":
+  [36m<option[39m
+    [33mvalue[39m=[32m"L"[39m
+  [36m/>[39m
+
+  Name "mL":
+  [36m<option[39m
+    [33mvalue[39m=[32m"mL"[39m
+  [36m/>[39m
+
+  Name "sachet":
+  [36m<option[39m
+    [33mvalue[39m=[32m"sachet"[39m
+  [36m/>[39m
+
+  Name "pièce":
+  [36m<option[39m
+    [33mvalue[39m=[32m"pièce"[39m
+  [36m/>[39m
+
+  Name "TTC · TVA comprise":
+  [36m<option[39m
+    [33mvalue[39m=[32m"TTC"[39m
+  [36m/>[39m
+
+  Name "HT · TVA à ajouter":
+  [36m<option[39m
+    [33mvalue[39m=[32m"HT"[39m
+  [36m/>[39m
+
+  Name "Estimation personnelle":
+  [36m<option[39m
+    [33mvalue[39m=[32m"manual"[39m
+  [36m/>[39m
+
+  Name "Facture fournisseur":
+  [36m<option[39m
+    [33mvalue[39m=[32m"invoice"[39m
+  [36m/>[39m
+
+  Name "Devis fournisseur":
+  [36m<option[39m
+    [33mvalue[39m=[32m"quote"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  checkbox:
+
+  Name "Déjà compris dans une facture récurrenteGarder le coût de revient, sans ajouter une seconde dépense prévue.":
+  [36m<input[39m
+    [33mtype[39m=[32m"checkbox"[39m
+  [36m/>[39m
+
+  Name "Déjà compris dans une facture récurrenteGarder le coût de revient, sans ajouter une seconde dépense prévue.":
+  [36m<input[39m
+    [33mtype[39m=[32m"checkbox"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  textbox:
+
+  Name "Prix de Pilsner":
+  [36m<input[39m
+    [33maria-label[39m=[32m"Prix de Pilsner"[39m
+    [33mautocapitalize[39m=[32m"none"[39m
+    [33mautocomplete[39m=[32m"off"[39m
+    [33mautocorrect[39m=[32m"off"[39m
+    [33mclass[39m=[32m"w-full min-h-touch-lg px-2 py-0.5 rounded-control bg-cave-950 border border-cave-700 text-cave-50 text-base placeholder-cave-400 focus:outline-none focus:border-ebc-straw focus:ring-1 focus:ring-ebc-straw/40 transition-colors disabled:opacity-50"[39m
+    [33mdata-1p-ignore[39m=[32m"true"[39m
+    [33mdata-bwignore[39m=[32m"true"[39m
+    [33mdata-form-type[39m=[32m"other"[39m
+    [33mdata-lpignore[39m=[32m"true"[39m
+    [33menterkeyhint[39m=[32m"next"[39m
+    [33minputmode[39m=[32m"decimal"[39m
+    [33mplaceholder[39m=[32m"À renseigner"[39m
+    [33mspellcheck[39m=[32m"false"[39m
+    [33mtype[39m=[32m"text"[39m
+    [33mvalue[39m=[32m"0"[39m
+  [36m/>[39m
+
+  Name "Quantité du prix de Pilsner":
+  [36m<input[39m
+    [33maria-label[39m=[32m"Quantité du prix de Pilsner"[39m
+    [33mautocapitalize[39m=[32m"none"[39m
+    [33mautocomplete[39m=[32m"off"[39m
+    [33mautocorrect[39m=[32m"off"[39m
+    [33mclass[39m=[32m"w-full min-h-touch-lg px-2 py-0.5 rounded-control bg-cave-950 border border-cave-700 text-cave-50 text-base placeholder-cave-400 focus:outline-none focus:border-ebc-straw focus:ring-1 focus:ring-ebc-straw/40 transition-colors disabled:opacity-50"[39m
+    [33mdata-1p-ignore[39m=[32m"true"[39m
+    [33mdata-bwignore[39m=[32m"true"[39m
+    [33mdata-form-type[39m=[32m"other"[39m
+    [33mdata-lpignore[39m=[32m"true"[39m
+    [33menterkeyhint[39m=[32m"next"[39m
+    [33minputmode[39m=[32m"decimal"[39m
+    [33mspellcheck[39m=[32m"false"[39m
+    [33mtype[39m=[32m"text"[39m
+    [33mvalue[39m=[32m"1"[39m
+  [36m/>[39m
+
+  Name "Lot minimum de Pilsner":
+  [36m<input[39m
+    [33maria-label[39m=[32m"Lot minimum de Pilsner"[39m
+    [33mautocapitalize[39m=[32m"none"[39m
+    [33mautocomplete[39m=[32m"off"[39m
+    [33mautocorrect[39m=[32m"off"[39m
+    [33mclass[39m=[32m"w-full min-h-touch-lg px-2 py-0.5 rounded-control bg-cave-950 border border-cave-700 text-cave-50 text-base placeholder-cave-400 focus:outline-none focus:border-ebc-straw focus:ring-1 focus:ring-ebc-straw/40 transition-colors disabled:opacity-50"[39m
+    [33mdata-1p-ignore[39m=[32m"true"[39m
+    [33mdata-bwignore[39m=[32m"true"[39m
+    [33mdata-form-type[39m=[32m"other"[39m
+    [33mdata-lpignore[39m=[32m"true"[39m
+    [33menterkeyhint[39m=[32m"next"[39m
+    [33minputmode[39m=[32m"decimal"[39m
+    [33mplaceholder[39m=[32m"Au détail"[39m
+    [33mspellcheck[39m=[32m"false"[39m
+    [33mtype[39m=[32m"text"[39m
+    [33mvalue[39m=[32m""[39m
+  [36m/>[39m
+
+  Name "TVA de Pilsner":
+  [36m<input[39m
+    [33maria-label[39m=[32m"TVA de Pilsner"[39m
+    [33mautocapitalize[39m=[32m"none"[39m
+    [33mautocomplete[39m=[32m"off"[39m
+    [33mautocorrect[39m=[32m"off"[39m
+    [33mclass[39m=[32m"w-full min-h-touch-lg px-2 py-0.5 rounded-control bg-cave-950 border border-cave-700 text-cave-50 text-base placeholder-cave-400 focus:outline-none focus:border-ebc-straw focus:ring-1 focus:ring-ebc-straw/40 transition-colors disabled:opacity-50"[39m
+    [33mdata-1p-ignore[39m=[32m"true"[39m
+    [33mdata-bwignore[39m=[32m"true"[39m
+    [33mdata-form-type[39m=[32m"other"[39m
+    [33mdata-lpignore[39m=[32m"true"[39m
+    [33menterkeyhint[39m=[32m"next"[39m
+    [33minputmode[39m=[32m"decimal"[39m
+    [33mspellcheck[39m=[32m"false"[39m
+    [33mtype[39m=[32m"text"[39m
+    [33mvalue[39m=[32m"0"[39m
+  [36m/>[39m
+
+  Name "Référence du prix de Pilsner":
+  [36m<input[39m
+    [33maria-label[39m=[32m"Référence du prix de Pilsner"[39m
+    [33mautocapitalize[39m=[32m"none"[39m
+    [33mautocomplete[39m=[32m"off"[39m
+    [33mautocorrect[39m=[32m"off"[39m
+    [33mclass[39m=[32m"w-full min-h-touch-lg px-2 py-0.5 rounded-control bg-cave-950 border border-cave-700 text-cave-50 text-base placeholder-cave-400 focus:outline-none focus:border-ebc-straw focus:ring-1 focus:ring-ebc-straw/40 transition-colors disabled:opacity-50"[39m
+    [33mdata-1p-ignore[39m=[32m"true"[39m
+    [33mdata-bwignore[39m=[32m"true"[39m
+    [33mdata-form-type[39m=[32m"other"[39m
+    [33mdata-lpignore[39m=[32m"true"[39m
+    [33minputmode[39m=[32m"text"[39m
+    [33mplaceholder[39m=[32m"Facultatif"[39m
+    [33mspellcheck[39m=[32m"false"[39m
+    [33mtype[39m=[32m"text"[39m
+    [33mvalue[39m=[32m""[39m
+  [36m/>[39m
+
+  Name "Prix de Pale":
+  [36m<input[39m
+    [33maria-label[39m=[32m"Prix de Pale"[39m
+    [33mautocapitalize[39m=[32m"none"[39m
+    [33mautocomplete[39m=[32m"off"[39m
+    [33mautocorrect[39m=[32m"off"[39m
+    [33mclass[39m=[32m"w-full min-h-touch-lg px-2 py-0.5 rounded-control bg-cave-950 border border-cave-700 text-cave-50 text-base placeholder-cave-400 focus:outline-none focus:border-ebc-straw focus:ring-1 focus:ring-ebc-straw/40 transition-colors disabled:opacity-50"[39m
+    [33mdata-1p-ignore[39m=[32m"true"[39m
+    [33mdata-bwignore[39m=[32m"true"[39m
+    [33mdata-form-type[39m=[32m"other"[39m
+    [33mdata-lpignore[39m=[32m"true"[39m
+    [33menterkeyhint[39m=[32m"next"[39m
+    [33minputmode[39m=[32m"decimal"[39m
+    [33mplaceholder[39m=[32m"À renseigner"[39m
+    [33mspellcheck[39m=[32m"false"[39m
+    [33mtype[39m=[32m"text"[39m
+    [33mvalue[39m=[32m"4"[39m
+  [36m/>[39m
+
+  Name "Quantité du prix de Pale":
+  [36m<input[39m
+    [33maria-label[39m=[32m"Quantité du prix de Pale"[39m
+    [33mautocapitalize[39m=[32m"none"[39m
+    [33mautocomplete[39m=[32m"off"[39m
+    [33mautocorrect[39m=[32m"off"[39m
+    [33mclass[39m=[32m"w-full min-h-touch-lg px-2 py-0.5 rounded-control bg-cave-950 border border-cave-700 text-cave-50 text-base placeholder-cave-400 focus:outline-none focus:border-ebc-straw focus:ring-1 focus:ring-ebc-straw/40 transition-colors disabled:opacity-50"[39m
+    [33mdata-1p-ignore[39m=[32m"true"[39m
+    [33mdata-bwignore[39m=[32m"true"[39m
+    [33mdata-form-type[39m=[32m"other"[39m
+    [33mdata-lpignore[39m=[32m"true"[39m
+    [33menterkeyhint[39m=[32m"next"[39m
+    [33minputmode[39m=[32m"decimal"[39m
+    [33mspellcheck[39m=[32m"false"[39m
+    [33mtype[39m=[32m"text"[39m
+    [33mvalue[39m=[32m"1"[39m
+  [36m/>[39m
+
+  Name "Lot minimum de Pale":
+  [36m<input[39m
+    [33maria-label[39m=[32m"Lot minimum de Pale"[39m
+    [33mautocapitalize[39m=[32m"none"[39m
+    [33mautocomplete[39m=[32m"off"[39m
+    [33mautocorrect[39m=[32m"off"[39m
+    [33mclass[39m=[32m"w-full min-h-touch-lg px-2 py-0.5 rounded-control bg-cave-950 border border-cave-700 text-cave-50 text-base placeholder-cave-400 focus:outline-none focus:border-ebc-straw focus:ring-1 focus:ring-ebc-straw/40 transition-colors disabled:opacity-50"[39m
+    [33mdata-1p-ignore[39m=[32m"true"[39m
+    [33mdata-bwignore[39m=[32m"true"[39m
+    [33mdata-form-type[39m=[32m"other"[39m
+    [33mdata-lpignore[39m=[32m"true"[39m
+    [33menterkeyhint[39m=[32m"next"[39m
+    [33minputmode[39m=[32m"decimal"[39m
+    [33mplaceholder[39m=[32m"Au détail"[39m
+    [33mspellcheck[39m=[32m"false"[39m
+    [33mtype[39m=[32m"text"[39m
+    [33mvalue[39m=[32m""[39m
+  [36m/>[39m
+
+  Name "TVA de Pale":
+  [36m<input[39m
+    [33maria-label[39m=[32m"TVA de Pale"[39m
+    [33mautocapitalize[39m=[32m"none"[39m
+    [33mautocomplete[39m=[32m"off"[39m
+    [33mautocorrect[39m=[32m"off"[39m
+    [33mclass[39m=[32m"w-full min-h-touch-lg px-2 py-0.5 rounded-control bg-cave-950 border border-cave-700 text-cave-50 text-base placeholder-cave-400 focus:outline-none focus:border-ebc-straw focus:ring-1 focus:ring-ebc-straw/40 transition-colors disabled:opacity-50"[39m
+    [33mdata-1p-ignore[39m=[32m"true"[39m
+    [33mdata-bwignore[39m=[32m"true"[39m
+    [33mdata-form-type[39m=[32m"other"[39m
+    [33mdata-lpignore[39m=[32m"true"[39m
+    [33menterkeyhint[39m=[32m"next"[39m
+    [33minputmode[39m=[32m"decimal"[39m
+    [33mspellcheck[39m=[32m"false"[39m
+    [33mtype[39m=[32m"text"[39m
+    [33mvalue[39m=[32m"0"[39m
+  [36m/>[39m
+
+  Name "Référence du prix de Pale":
+  [36m<input[39m
+    [33maria-label[39m=[32m"Référence du prix de Pale"[39m
+    [33mautocapitalize[39m=[32m"none"[39m
+    [33mautocomplete[39m=[32m"off"[39m
+    [33mautocorrect[39m=[32m"off"[39m
+    [33mclass[39m=[32m"w-full min-h-touch-lg px-2 py-0.5 rounded-control bg-cave-950 border border-cave-700 text-cave-50 text-base placeholder-cave-400 focus:outline-none focus:border-ebc-straw focus:ring-1 focus:ring-ebc-straw/40 transition-colors disabled:opacity-50"[39m
+    [33mdata-1p-ignore[39m=[32m"true"[39m
+    [33mdata-bwignore[39m=[32m"true"[39m
+    [33mdata-form-type[39m=[32m"other"[39m
+    [33mdata-lpignore[39m=[32m"true"[39m
+    [33minputmode[39m=[32m"text"[39m
+    [33mplaceholder[39m=[32m"Facultatif"[39m
+    [33mspellcheck[39m=[32m"false"[39m
+    [33mtype[39m=[32m"text"[39m
+    [33mvalue[39m=[32m""[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+
+Ignored nodes: comments, script, style
+[36m<body[39m
+  [33mdata-scroll-locked[39m=[32m"1"[39m
+  [33mstyle[39m=[32m"pointer-events: none;"[39m
+[36m>[39m
+  [36m<span[39m
+    [33maria-hidden[39m=[32m"true"[39m
+    [33mdata-aria-hidden[39m=[32m"true"[39m
+    [33mdata-radix-focus-guard[39m=[32m""[39m
+    [33mstyle[39m=[32m"outline: none; opacity: 0; position: fixed; pointer-events: none;"[39m
+    [33mtabindex[39m=[32m"0"[39m
+  [36m/>[39m
+  [36m<div[39m
+    [33maria-hidden[39m=[32m"true"[39m
+    [33mdata-aria-hidden[39m=[32m"true"[39m
+  [36m/>[39m
+  [36m<div[39m
+    [33maria-hidden[39m=[32m"true"[39m
+    [33mclass[39m=[32m"fixed inset-0 z-50 bg-cave-950/70 backdrop-blur-sm"[39m
+    [33mdata-aria-hidden[39m=[32m"true"[39m
+    [33mdata-state[39m=[32m"open"[39m
+    [33mdata-vaul-animate[39m=[32m"true"[39m
+    [33mdata-vaul-overlay[39m=[32m""[39m
+    [33mdata-vaul-snap-points[39m=[32m"false"[39m
+    [33mdata-vaul-snap-points-overlay[39m=[32m"true"[39m
+    [33mstyle[39m=[32m"pointer-events: auto;"[39m
+  [36m/>[39m
+  [36m<div[39m
+    [33maria-describedby[39m=[32m"radix-_r_t_"[39m
+    [33maria-labelledby[39m=[32m"radix-_r_s_"[39m
+    [33mclass[39m=[32m"fixed inset-x-0 bottom-0 z-50 flex flex-col
+                   max-h-[94dvh] rounded-t-sheet bg-cave-900 border-t border-cave-700 shadow-sheet
+                   focus:outline-none md:max-w-xl md:mx-auto"[39m
+    [33mdata-state[39m=[32m"open"[39m
+    [33mdata-vaul-animate[39m=[32m"true"[39m
+    [33mdata-vaul-custom-container[39m=[32m"false"[39m
+    [33mdata-vaul-delayed-snap-points[39m=[32m"false"[39m
+    [33mdata-vaul-drawer[39m=[32m""[39m
+    [33mdata-vaul-drawer-direction[39m=[32m"bottom"[39m
+    [33mdata-vaul-snap-points[39m=[32m"false"[39m
+    [33mid[39m=[32m"radix-_r_r_"[39m
+    [33mrole[39m=[32m"dialog"[39m
+    [33mstyle[39m=[32m"pointer-events: auto;"[39m
+    [33mtabindex[39m=[32m"-1"[39m
+  [36m>[39m
+    [36m<div[39m
+      [33mclass[39m=[32m"shrink-0 flex justify-center cursor-grab active:cursor-grabbing pt-1 pb-0.5"[39m
+    [36m>[39m
+      [36m<div[39m
+        [33maria-hidden[39m=[32m"true"[39m
+        [33mclass[39m=[32m"w-8 h-1 rounded-full bg-cave-700"[39m
+      [36m/>[39m
+    [36m</div>[39m
+    [36m<header[39m
+      [33mclass[39m=[32m"shrink-0 flex items-center gap-2 border-b border-cave-800 min-h-9 px-2 py-1"[39m
+    [36m>[39m
+      [36m<div[39m
+        [33mclass[39m=[32m"min-w-0 flex-1"[39m
+      [36m>[39m
+        [36m<h2[39m
+          [33mclass[39m=[32m"text-sm font-semibold text-cave-50 leading-tight break-words"[39m
+          [33mid[39m=[32m"radix-_r_s_"[39m
+        [36m>[39m
+          [0mPale Ale de septembre[0m
+        [36m</h2>[39m
+        [36m<p[39m
+          [33mclass[39m=[32m"text-xs text-cave-400 leading-tight break-words"[39m
+          [33mid[39m=[32m"radix-_r_t_"[39m
+        [36m>[39m
+          [0mCoût du brassin · Malt[0m
+        [36m</p>[39m
+      [36m</div>[39m
+      [36m<button[39m
+        [33maria-label[39m=[32m"Fermer"[39m
+        [33mclass[39m=[32m"min-w-touch-sm min-h-touch-sm rounded-control text-cave-400
+                       hover:text-cave-50 hover:bg-cave-850 flex items-center justify-center transition-colors shrink-0"[39m
+      [36m>[39m
+        [36m<svg[39m
+          [33maria-hidden[39m=[32m"true"[39m
+          [33mclass[39m=[32m"lucide lucide-x w-4 h-4"[39m
+          [33mfill[39m=[32m"none"[39m
+          [33mheight[39m=[32m"24"[39m
+          [33mstroke[39m=[32m"currentColor"[39m
+          [33mstroke-linecap[39m=[32m"round"[39m
+          [33mstroke-linejoin[39m=[32m"round"[39m
+          [33mstroke-width[39m=[32m"2"[39m
+          [33mviewBox[39m=[32m"0 0 24 24"[39m
+          [33mwidth[39m=[32m"24"[39m
+          [33mxmlns[39m=[32m"http://www.w3.org/2000/svg"[39m
+        [36m>[39m
+          [36m<path[39m
+            [33md[39m=[32m"M18 6 6 18"[39m
+          [36m/>[39m
+          [36m<path[39m
+            [33md[39m=[32m"m6 6 12 12"[39m
+          [36m/>[39m
+        [36m</svg>[39m
+      [36m</button>[39m
+    [36m</header>[39m
+    [36m<div[39m
+      [33mclass[39m=[32m"flex-1 overflow-y-auto overscroll-contain scroll-pb-20 p-2 space-y-2"[39m
+    [36m>[39m
+      [36m<div[39m
+        [33mclass[39m=[32m"brew-budget cbf-noeud"[39m
+      [36m>[39m
+        [36m<button[39m
+          [33mclass[39m=[32m"cbf-retour"[39m
+          [33mtype[39m=[32m"button"[39m
+        [36m>[39m
+          [36m<svg[39m
+            [33maria-hidden[39m=[32m"true"[39m
+            [33mclass[39m=[32m"lucide lucide-chevron-left"[39m
+            [33mfill[39m=[32m"none"[39m
+            [33mheight[39m=[32m"16"[39m
+            [33mstroke[39m=[32m"currentColor"[39m
+            [33mstroke-linecap[39m=[32m"round"[39m
+            [33mstroke-linejoin[39m=[32m"round"[39m
+            [33mstroke-width[39m=[32m"2"[39m
+            [33mviewBox[39m=[32m"0 0 24 24"[39m
+            [33mwidth[39m=[32m"16"[39m
+            [33mxmlns[39m=[32m"http://www.w3.org/2000/svg"[39m
+          [36m>[39m
+            [36m<path[39m
+              [33md[39m=[32m"m15 18-6-6 6-6"[39m
+            [36m/>[39m
+          [36m</svg>[39m
+          [0mRetour au détail du litre[0m
+        [36m</button>[39m
+        [36m<section[39m
+          [33mclass[39m=[32m"brew-budget-section"[39m
+        [36m>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"brew-budget-section-heading"[39m
+          [36m>[39m
+            [36m<h3>[39m
+              [0mMalt[0m
+            [36m</h3>[39m
+            [36m<span>[39m
+              [0m2[0m
+              [0m/[0m
+              [0m2[0m
+              [0m prix connus[0m
+            [36m</span>[39m
+          [36m</div>[39m
+          [36m<div[39m
+            [33maria-label[39m=[32m"Filtrer les ingrédients"[39m
+            [33mclass[39m=[32m"brew-budget-filters"[39m
+            [33mrole[39m=[32m"group"[39m
+          [36m>[39m
+            [36m<button[39m
+              [33maria-pressed[39m=[32m"true"[39m
+              [33mtype[39m=[32m"button"[39m
+            [36m>[39m
+              [0mTous[0m
+              [0m [0m
+              [36m<span>[39m
+                [0m2[0m
+              [36m</span>[39m
+            [36m</button>[39m
+            [36m<button[39m
+              [33maria-pressed[39m=[32m"false"[39m
+              [33mtype[39m=[32m"button"[39m
+            [36m>[39m
+              [0mÀ acheter[0m
+              [0m [0m
+              [36m<span>[39m
+                [0m1[0m
+              [36m</span>[39m
+            [36m</button>[39m
+            [36m<button[39m
+              [33maria-pressed[39m=[32m"false"[39m
+              [33mtype[39m=[32m"button"[39m
+            [36m>[39m
+              [0mÀ compl...
+[90m [2m❯[22m Object.getElementError ../ports-nuit/node_modules/@testing-library/dom/dist/config.js:[2m37:19[22m[39m
+[90m [2m❯[22m ../ports-nuit/node_modules/@testing-library/dom/dist/query-helpers.js:[2m76:38[22m[39m
+[90m [2m❯[22m ../ports-nuit/node_modules/@testing-library/dom/dist/query-helpers.js:[2m52:17[22m[39m
+[90m [2m❯[22m ../ports-nuit/node_modules/@testing-library/dom/dist/query-helpers.js:[2m95:19[22m[39m
+[36m [2m❯[22m tests/integration/carnetTour3F3.test.tsx:[2m105:19[22m[39m
+    [90m103| [39m    [35mconst[39m prix [33m=[39m screen[33m.[39m[34mgetByLabelText[39m([32m'Prix de Pilsner'[39m)[33m;[39m
+    [90m104| [39m    [34mtaper[39m(prix[33m,[39m [32m'-4'[39m)[33m;[39m
+    [90m105| [39m    expect(screen.getByRole('alert')).toHaveTextContent('valeur négati…
+    [90m   | [39m                  [31m^[39m
+    [90m106| [39m    [34mexpect[39m(prix)[33m.[39m[34mtoHaveValue[39m([32m'4'[39m)[33m;[39m
+    [90m107| [39m  })[33m;[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/4]⎯[22m[39m
+
+
+[2m Test Files [22m [1m[31m1 failed[39m[22m[90m (1)[39m
+[2m      Tests [22m [1m[31m4 failed[39m[22m[2m | [22m[1m[32m3 passed[39m[22m[90m (7)[39m
+[2m   Start at [22m 18:46:53
+[2m   Duration [22m 2.90s[2m (transform 608ms, setup 284ms, collect 1.01s, tests 617ms, environment 698ms, prepare 77ms)[22m
+

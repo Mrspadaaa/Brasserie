@@ -1,0 +1,73 @@
+[1m[43m DEPRECATED [49m[22m [33m"environmentMatchGlobs" is deprecated. Use `test.projects` to define different configurations instead.[39m
+
+[1m[46m RUN [49m[22m [36mv3.2.7 [39m[90mC:/Users/mrspa/.codex/worktrees/openai-clean-start/port-carnet[39m
+
+[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[31mx[39m[33m[39m[31mx[39m[33m[39m[31mx[39m[33m[39m[31mx[39m[33m[39m[32m·[39m[33m[39m[32m·[39m
+
+[31m⎯⎯⎯⎯⎯⎯⎯[39m[1m[41m Failed Tests 4 [49m[22m[31m⎯⎯⎯⎯⎯⎯⎯[39m
+
+[41m[1m FAIL [22m[49m tests/unit/carnetsTour3F4c.test.tsx[2m > [22mPCN-126 = v2-neuf 3 : ce que le cadre annonce ailleurs ne devient pas un critère du carnet ouvert[2m > [22mVentilation ouverte, « tuyau silicone 8 mm, 5 m » annoncé « Nouveau carnet Tuyau silicone » ; l’IA le rend à Ventilation : il reste dans le carnet neuf
+[31m[1mAssertionError[22m: aucun critère de tuyau dans Ventilation: expected [ …(4) ] to not include 'tuyau silicone 8 mm, 5 m'[39m
+[36m [2m❯[22m tests/unit/carnetsTour3F4c.test.tsx:[2m55:96[22m[39m
+    [90m 53| [39m    [35mawait[39m [34mattendre[39m([34m80[39m)[33m;[39m
+    [90m 54| [39m    [35mconst[39m v [33m=[39m [34mcarnets[39m()[33m.[39m[34mfind[39m(c [33m=>[39m c[33m.[39mid [33m===[39m [33mID_VENTILATION[39m)[33m![39m[33m;[39m
+    [90m 55| [39m    expect(v.carnet.criteres.map(k => k.texte), 'aucun critère de tuya…
+    [90m   | [39m                                                                                               [31m^[39m
+    [90m 56| [39m    [34mexpect[39m(v[33m.[39mcarnet[33m.[39mcriteres[33m.[39mlength)[33m.[39m[34mtoBe[39m(v0[33m.[39mcarnet[33m.[39mcriteres[33m.[39mlength)[33m;[39m
+    [90m 57| [39m    const effets = lireMessages(magasin.lire()).find(m => m.carnetMess…
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/4]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m tests/unit/carnetsTour3F4c.test.tsx[2m > [22mPCN-126 = v2-neuf 3 : ce que le cadre annonce ailleurs ne devient pas un critère du carnet ouvert[2m > [22m« autre projet, sans rapport : un frigo de garde pour 20 fûts » dans Ventilation : jamais « ici »
+[31m[1mAssertionError[22m: expected 'ZZ-CARNET-VENTILATION' to be 'NOUVEAU-CARNET' // Object.is equality[39m
+
+Expected: [32m"NOUVEAU-CARNET"[39m
+Received: [31m"ZZ-CARNET-VENTILATION"[39m
+
+[36m [2m❯[22m tests/unit/carnetsTour3F4c.test.tsx:[2m69:27[22m[39m
+    [90m 67| [39m    [35mconst[39m sans [33m=[39m cs[33m.[39m[34mfilter[39m(c [33m=>[39m c[33m.[39mid [33m!==[39m [33mID_FRIGO[39m)[33m;[39m
+    [90m 68| [39m    const neuf = destinationDans('autre projet, sans rapport : un frig…
+    [90m 69| [39m    [34mexpect[39m(neuf[33m.[39mcarnetId)[33m.[39m[34mtoBe[39m([33mCARNET_NEUF[39m)[33m;[39m
+    [90m   | [39m                          [31m^[39m
+    [90m 70| [39m    [34mexpect[39m(neuf[33m.[39mtitre)[33m.[39m[34mtoMatch[39m([36m/^Frigo de garde/[39m)[33m;[39m
+    [90m 71| [39m    [90m/* une exigence d'ici reste ici */[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/4]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m tests/unit/carnetsTour3F4c.test.tsx[2m > [22mPCN-20 : `&g35=1` montre G35 (un carnet du même besoin reçoit les articles en veille)[2m > [22mVentilation de la salle de brassage a un carnet proche du même besoin ; jamais la cave de garde ni l’extracteur CO₂
+[31m[1mAssertionError[22m: expected null not to be null[39m
+[36m [2m❯[22m tests/unit/carnetsTour3F4c.test.tsx:[2m80:19[22m[39m
+    [90m 78| [39m    [35mconst[39m cs [33m=[39m [34mlireCarnets[39m([34mfixtureCarnets[39m({ g35[33m:[39m [35mtrue[39m }))[33m;[39m
+    [90m 79| [39m    [35mconst[39m p [33m=[39m [34mcarnetProche[39m(cs[33m.[39m[34mfind[39m(c [33m=>[39m c[33m.[39mid [33m===[39m [33mID_VENTILATION[39m)[33m![39m[33m,[39m cs)[33m;[39m
+    [90m 80| [39m    [34mexpect[39m(p)[33m.[39mnot[33m.[39m[34mtoBeNull[39m()[33m;[39m
+    [90m   | [39m                  [31m^[39m
+    [90m 81| [39m    expect([ID_VENTILATION_CAVE, ID_EXTRACTION]).not.toContain(p!.carn…
+    [90m 82| [39m    [34mexpect[39m(p[33m![39m[33m.[39mtitre)[33m.[39m[34mtoMatch[39m([36m/Ventilation de la salle/[39m)[33m;[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/4]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m tests/unit/carnetsTour3F4c.test.tsx[2m > [22mPCN-42 : pendant la suppression, la pastille du lien ne double pas la carte[2m > [22mFrigo grisé derrière la carte « Supprimer » : aucune pastille « À venir · … » ; au repos, elle est là
+[31m[1mAssertionError[22m: expected <button type="button" …(2)></button> to have a length of +0 but got 1[39m
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[32m- 0[39m
+[31m+ 1[39m
+
+[36m [2m❯[22m tests/unit/carnetsTour3F4c.test.tsx:[2m96:63[22m[39m
+    [90m 94| [39m    [34mcleanup[39m()[33m;[39m
+    [90m 95| [39m    [35mconst[39m b [33m=[39m [34mrender[39m([33m<[39m[33mCarnetOuvert[39m [33m{[39m[33m...[39mprops[33m}[39m [33mgrise[39m [33m/[39m[33m>[39m)[33m;[39m
+    [90m 96| [39m    expect(b.container.querySelectorAll('.cn-pastille-lien')).toHaveLe…
+    [90m   | [39m                                                              [31m^[39m
+    [90m 97| [39m  })[33m;[39m
+    [90m 98| [39m})[33m;[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/4]⎯[22m[39m
+
+
+[2m Test Files [22m [1m[31m1 failed[39m[22m[2m | [22m[1m[32m1 passed[39m[22m[90m (2)[39m
+[2m      Tests [22m [1m[31m4 failed[39m[22m[2m | [22m[1m[32m5 passed[39m[22m[90m (9)[39m
+[2m   Start at [22m 19:22:27
+[2m   Duration [22m 4.97s[2m (transform 2.67s, setup 710ms, collect 4.23s, tests 490ms, environment 1.32s, prepare 227ms)[22m
+
