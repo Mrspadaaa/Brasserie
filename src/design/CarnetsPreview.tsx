@@ -40,6 +40,8 @@ import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import type { CreativeItem } from '../types';
 import type { FinanceTransaction, FinancialPlan } from '../domain/finance/types';
 import { magasinMemoire, type MagasinCarnets } from '../services/carnetsStore';
+import PLANNING_PORTE from '../../scripts/planning-vers-carnet/fixture-planning.json';
+import { planMigration, type TachePlanning } from '../../scripts/planning-vers-carnet/correspondance';
 import { fixtureCarnets, fixturePlanRealise, fixturePlans, NOTE_EN_VRAC_BANC, ID_DENSIMETRE, ID_EMBOUTEILLAGE, ID_EVIER, ID_EXTRACTION, ID_FRIGO, ID_VENTILATION } from '../domain/carnets/fixture';
 import { DELAI_LECTURE_BANC, lireLienSimule } from '../domain/carnets/iaSimulee';
 import { aidesCarnet, comportementSimule, type AidesCarnet, type ComportementSimule, type ModeCarnetIA } from '../config/carnetIA';
@@ -80,6 +82,8 @@ export interface ParametresBanc {
   segment: SegmentBanc;
   /** `&texte=…` : le champ arrive rempli (un état « pendant » atteint par l'adresse). */
   texte?: string;
+  /** `&jeu=planning` (20.11) : les 19 étapes de son Planning portées dans le Carnet (scripts/planning-vers-carnet), sans aucune fixture ZZ. */
+  items?: CreativeItem[];
 }
 
 /** `&ouvrir=<nom>` : le carnet de la fixture ouvert d'entrée. */
@@ -143,6 +147,7 @@ export function lireParametresBanc(search: string): ParametresBanc {
     ...(q.get('g35') === '1' ? { g35: true } : {}),
     ...(ouvrir ? { ouvrir } : {}),
     ...(texte ? { texte } : {}),
+    ...(q.get('jeu') === 'planning' ? { items: planMigration(PLANNING_PORTE as TachePlanning[], new Set(), '2026-11-20T12:00:00.000Z').aEcrire.flatMap(c => c.docs) } : {}),
     segment: q.get('realise') === '1' && !ouvrir ? 'realises' : 'carnets'
   };
 }
