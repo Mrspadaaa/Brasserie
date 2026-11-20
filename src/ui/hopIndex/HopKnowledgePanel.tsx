@@ -1,7 +1,8 @@
 import { Input, Textarea } from '../Input';
 import bitternessPack from '../../data/hopBitternessBootstrap.json';
 import React, { lazy, Suspense, useState } from 'react';
-import { MobileDetails } from '../ViewNavigation';
+import { ChevronDown } from 'lucide-react';
+import { useMobileLayout } from '../useViewport';
 import { HopKnowledge, HopModel, assertHopKnowledge } from '../../../functions/src/hopPredictionSchema';
 import { HopSource } from '../../../functions/src/hopIndexSchema';
 import bootstrap from '../../data/hopKnowledgeBootstrap.json';
@@ -50,6 +51,26 @@ function RangeFields({ label, value, onChange }: { label: string; value: { min: 
     <HopField label={`${label} — minimum`}><NumberInput className={inputClass} value={value?.min} emptyValue={undefined} onValue={min => onChange({ ...value, min })} /></HopField>
     <HopField label={`${label} — maximum`}><NumberInput className={inputClass} value={value?.max} emptyValue={undefined} onValue={max => onChange({ ...value, max })} /></HopField>
   </fieldset>;
+}
+/** Un repli dont le contenu n'est monté qu'ouvert (T3B-4, 20.11, en ligne : 17 boutons « à plat » au 390, tous dans l'arbre d'accessibilité bien que repliés).
+ *  Fermé, il ne montre que son titre ; les gestes qu'il range n'existent pas tant qu'on ne l'a pas ouvert. */
+function Repli({ titre, children, className = 'border border-cave-700 rounded-control p-3 space-y-3', titreClass = 'cursor-pointer min-h-touch text-cave-50', corpsClass }: {
+  titre: React.ReactNode; children: React.ReactNode; className?: string; titreClass?: string; corpsClass?: string;
+}) {
+  const [ouvert, setOuvert] = useState(false);
+  return <details className={className} onToggle={event => setOuvert(event.currentTarget.open)}>
+    <summary className={titreClass}>{titre}</summary>
+    {ouvert && (corpsClass ? <div className={corpsClass}>{children}</div> : children)}
+  </details>;
+}
+/** « Gérer les sources et les modèles » : le repli de la vue étroite (même dessin que MobileDetails), contenu monté à l'ouverture ; à plat sur grand écran. */
+function GererRepli({ titre, children }: { titre: string; children: React.ReactNode }) {
+  const mobile = useMobileLayout();
+  if (!mobile) return <>{children}</>;
+  return <Repli titre={<><span className="min-w-0 flex-1 text-sm font-medium text-cave-200">{titre}</span><ChevronDown className="h-4 w-4 shrink-0 text-cave-400 group-open/view:rotate-180" aria-hidden="true" /></>}
+    className="group/view rounded-control border border-cave-800 bg-cave-900/50"
+    titreClass="list-none min-h-touch px-3 flex items-center gap-2 cursor-pointer rounded-control focus-visible:outline focus-visible:outline-2 focus-visible:outline-water"
+    corpsClass="px-3 pb-3 space-y-3 min-w-0">{children}</Repli>;
 }
 export function HopKnowledgePanel() {
   const knowledge = useStorageValue(StorageService.getHopKnowledge), varieties = useStorageValue(StorageService.getHopVarieties);
@@ -106,7 +127,7 @@ export function HopKnowledgePanel() {
   return <section className="space-y-4" aria-label="Connaissances du houblon">
     <h2 className="text-lg text-cave-50 font-semibold">Sources et modèles</h2>
     <details className="border border-cave-700 rounded-control p-3" onToggle={event => setCatalogueOpen(event.currentTarget.open)}><summary className="cursor-pointer min-h-touch text-ebc-straw">Catalogue complet des levures · fiches et sources</summary><div className="pt-3">{catalogueOpen && <Suspense fallback={<p role="status" className="text-sm text-cave-400">Chargement du catalogue des levures…</p>}><YeastCataloguePanel/></Suspense>}</div></details>
-    <MobileDetails title="Gérer les sources et les modèles">
+    <GererRepli titre="Gérer les sources et les modèles">
     <p className="text-cave-200">Ce que l’appli sait des houblons et des levures, à compléter ici. Un changement joue au prochain calcul ; les calculs déjà faits restent lisibles.</p>
     <div className="flex flex-wrap gap-2">
       <Button disabled={installing || loadingCatalogue} onClick={install}>Ajouter les repères de base</Button>
@@ -116,21 +137,27 @@ export function HopKnowledgePanel() {
     </div>
     <p className="text-sm text-cave-400">Les repères de base : 12 familles d’arômes et des points de vigilance, sans rendement ni profil sensoriel inventés. Les axes pèsent autant les uns que les autres.</p>
     <a className="inline-block text-sm text-cave-400 underline" href={catalogueLicenses} download="licences-referentiels-houblon.txt">Attributions et licences des référentiels GitHub</a>
-    </MobileDetails>
-    <details className="border border-cave-700 rounded-control p-3 space-y-3"><summary className="cursor-pointer text-cave-50">Étude disponible · Cascade × Wyeast 1728</summary>
+    </GererRepli>
+    {installing && <p role="status" className="text-cave-200">Import en cours…</p>}
+    {notice && <p role="status" className="text-cave-200">{notice}</p>}
+    {usable.errors.length > 0 && <p className="text-ebc-straw">{usable.errors.length} connaissance(s) incomplète(s) : ignorées par le calcul, corrigeables dans l’édition avancée.</p>}
+    {error && !draft && <p role="alert" className="text-alert">{error}</p>}
+    {/* T3B-4 (20.11, en ligne) : les neuf replis d'ajout (chacun avec son bouton) étaient au premier plan de la page. Un seul repli les range, et chacun ne monte son contenu qu'ouvert. */}
+    <Repli titre="Ajouter des références, des études et des modèles" titreClass="cursor-pointer min-h-touch text-ebc-straw">
+    <Repli titre="Étude disponible · Cascade × Wyeast 1728" titreClass="cursor-pointer text-cave-50">
       <p className="text-sm text-cave-200">29 lots publiés par Lafontaine et al. (2018), cônes après fermentation en bière clarifiée. Régression reconstruite, incertitude empirique et confiance faible. Elle décrit l’axe Agrumes du panel de cette étude ; son transfert à un nouveau lot reste exploratoire.</p>
       <p className="text-sm text-cave-400">Le protocole et ses limites seront visibles dans la recherche. Le lexique et les vigilances initiales sont inclus ; les fiches déjà présentes sont conservées.</p>
       <Button disabled={installing || loadingCatalogue} onClick={() => installPack({ ...studyPack, hopKnowledge: [...bootstrap, ...studyPack.hopKnowledge] })}>Ajouter l’étude Cascade documentée</Button>
-    </details>
-    <details className="border border-cave-700 rounded-control p-3 space-y-3"><summary className="cursor-pointer text-cave-50">Catalogue fabricant · Hopsteiner</summary>
-      <p className="text-sm text-cave-200">Fiches publiques avec leur date de mise à jour : plages analytiques et descripteurs du houblon brut. La forme commerciale reste non précisée. Ces données documentaires ne donnent aucun score aromatique en bière.</p>
+    </Repli>
+    <Repli titre="Catalogue fabricant · Hopsteiner" titreClass="cursor-pointer text-cave-50">
+      <p className="text-sm text-cave-200">Fiches publiques avec leur date de mise à jour : plages analytiques et mots du houblon à cru. La forme commerciale reste non précisée. Ces données ne donnent aucun score d’arôme en bière.</p>
       <Button disabled={loadingCatalogue || installing} onClick={installCatalogue}>{loadingCatalogue ? 'Chargement…' : 'Ajouter les fiches Hopsteiner manquantes'}</Button>
-    </details>
-    <details className="border border-cave-700 rounded-control p-3 space-y-3"><summary className="cursor-pointer text-cave-50">Autres référentiels · comparer les sources</summary><p className="text-sm text-cave-200">Les références communautaires restent séparées. Une même variété peut avoir plusieurs fiches ; les unités ou années absentes ne sont pas devinées.</p><div className="flex flex-wrap gap-2"><Button disabled={installing || loadingCatalogue} onClick={() => installCommunity('database')}>Ajouter HopDatabase</Button><Button disabled={installing || loadingCatalogue} onClick={() => installCommunity('legacy')}>Ajouter hops-json</Button><Button disabled={installing || loadingCatalogue} onClick={() => installCommunity('maverick')}>Ajouter Beer Maverick</Button></div></details>
-    <details className="border border-cave-700 rounded-control p-3 space-y-3"><summary className="cursor-pointer text-cave-50">Analyses de lots publiées · comparer les récoltes</summary><p className="text-sm text-cave-200">Neuf COA publics et un échantillon de recherche : valeurs mesurées, HSI, unités et origines documentées. Ces échantillons restent des références de comparaison ; ils ne deviennent pas des lots disponibles à la brasserie.</p><Button disabled={installing || loadingCatalogue} onClick={async () => { setLoadingCatalogue(true); try { await installPack((await import('../../data/hopPublicLotBootstrap.json')).default); } catch (e) { setError((e as Error).message); } finally { setLoadingCatalogue(false); } }}>Ajouter les analyses de lots publiées</Button></details>
-    <details className="border border-cave-700 rounded-control p-3 space-y-3"><summary className="cursor-pointer text-cave-50">Bibliothèque scientifique · comprendre les limites</summary><p className="text-sm text-cave-200">Thiols, esters, lactones, levures, perception et stockage. Articles, ouvrages, documents fabricants et retours de brasseurs gardent leur provenance et leurs limites. Le compagnon peut les consulter ; aucune note ne crée de coefficient.</p><Button disabled={installing || loadingCatalogue} onClick={() => installPack({ hopKnowledge: researchNotes })}>Ajouter les notes sourcées</Button><p className="text-sm text-cave-400">Cinq souches LalBrew étudiées en fermentation et la fiche fabricant SafAle US-05 peuvent aussi être référencées. Ces six références n’établissent pas de rendement générique par souche.</p><Button disabled={installing || loadingCatalogue} onClick={() => installPack({ hopKnowledge: studiedYeasts })}>Ajouter les levures documentées</Button></details>
-    <details className="border border-ebc-straw/30 rounded-control p-3 space-y-3"><summary className="cursor-pointer min-h-touch text-ebc-straw">Levures et conduites de fermentation</summary>
-      <p className="text-sm text-cave-200">Banane, fruits, profil net, phénols et thiols. Fenêtres fabricant, paliers proposés et modèle local DM303 ; chaque connaissance garde ses sources et ses limites.</p>
+    </Repli>
+    <Repli titre="Autres référentiels · comparer les sources" titreClass="cursor-pointer text-cave-50"><p className="text-sm text-cave-200">Les références communautaires restent séparées. Une même variété peut avoir plusieurs fiches ; les unités ou années absentes ne sont pas devinées. Base communautaire : HopDatabase. Liste de variétés libre : hops-json. Beer Maverick : le site de référence.</p><div className="flex flex-wrap gap-2"><Button disabled={installing || loadingCatalogue} onClick={() => installCommunity('database')}>Ajouter la base communautaire</Button><Button disabled={installing || loadingCatalogue} onClick={() => installCommunity('legacy')}>Ajouter la liste de variétés libre</Button><Button disabled={installing || loadingCatalogue} onClick={() => installCommunity('maverick')}>Ajouter les fiches Beer Maverick</Button></div></Repli>
+    <Repli titre="Analyses de lots publiées · comparer les récoltes" titreClass="cursor-pointer text-cave-50"><p className="text-sm text-cave-200">Neuf certificats d’analyse publics et un échantillon de recherche : valeurs mesurées, indice de stockage, unités et origines documentées. Ces échantillons restent des références de comparaison ; ils ne deviennent pas des lots disponibles à la brasserie.</p><Button disabled={installing || loadingCatalogue} onClick={async () => { setLoadingCatalogue(true); try { await installPack((await import('../../data/hopPublicLotBootstrap.json')).default); } catch (e) { setError((e as Error).message); } finally { setLoadingCatalogue(false); } }}>Ajouter les analyses de lots publiées</Button></Repli>
+    <Repli titre="Bibliothèque scientifique · comprendre les limites" titreClass="cursor-pointer text-cave-50"><p className="text-sm text-cave-200">Thiols, esters, lactones, levures, perception et stockage. Articles, ouvrages, documents fabricants et retours de brasseurs gardent leur provenance et leurs limites. Le compagnon peut les consulter ; aucune note ne crée de coefficient.</p><Button disabled={installing || loadingCatalogue} onClick={() => installPack({ hopKnowledge: researchNotes })}>Ajouter les notes de recherche</Button><p className="text-sm text-cave-400">Cinq souches LalBrew étudiées en fermentation et la fiche fabricant SafAle US-05 peuvent aussi être référencées. Ces six références n’établissent pas de rendement générique par souche.</p><Button disabled={installing || loadingCatalogue} onClick={() => installPack({ hopKnowledge: studiedYeasts })}>Ajouter les levures documentées</Button></Repli>
+    <Repli titre="Levures et conduites de fermentation" className="border border-ebc-straw/30 rounded-control p-3 space-y-3" titreClass="cursor-pointer min-h-touch text-ebc-straw">
+      <p className="text-sm text-cave-200">Banane, fruits, profil net, phénols et thiols. Fenêtres du fabricant, paliers proposés et modèle local de la levure ; chaque connaissance garde ses sources et ses limites.</p>
       <Button disabled={installing} onClick={async () => {
         setInstalling(true); setError('');
         try {
@@ -141,20 +168,19 @@ export function HopKnowledgePanel() {
           await ensureGuideReferences({ knowledge: [...pack as HopKnowledge[], ...yeasts] });
           setNotice('Guides de fermentation enregistrés. Les révisions déjà présentes sont conservées.');
         } catch (e) { setError((e as Error).message); } finally { setInstalling(false); }
-      }}>Enregistrer les guides de fermentation modifiables</Button>
+      }}>Ajouter les guides de fermentation</Button>
       <FermentationScienceLibrary science={localGuideFermentationScience(knowledge)[0]} />
-    </details>
-    <details className="border border-cave-700 rounded-control p-3"><summary className="min-h-touch cursor-pointer text-water">Styles étendus et NOLO</summary><p className="text-sm text-cave-400">Référentiels datés et procédés modifiables. Les corrections personnelles sont conservées.</p><Button disabled={installing} onClick={()=>installPack({hopKnowledge:[...stylePack,...noloPack]})}>Enregistrer les références styles et NOLO</Button></details>
-    {installing && <p role="status" className="text-cave-200">Import en cours…</p>}
-    {notice && <p role="status" className="text-cave-200">{notice}</p>}
-    {usable.errors.length > 0 && <p className="text-ebc-straw">{usable.errors.length} connaissance(s) incomplète(s) : ignorées par le calcul, corrigeables dans l’édition avancée.</p>}
-    <details className="border border-hop/30 rounded-control p-3 space-y-3"><summary className="cursor-pointer min-h-touch text-hop">Modèle expérimental · combinaisons libres</summary><p className="text-sm text-cave-400">Descripteurs, dose, timing et profil fermentaire alimentent un indice exploratoire avec des plages d’hypothèses. Tous les paramètres sont des jugements datés, distincts des résultats publiés. Aucune couverture statistique n’est encore validée.</p><Button disabled={installing} onClick={() => installPack({ hopKnowledge: [...bootstrap, ...studiedYeasts, ...extrapolationPack] })}>Enregistrer le modèle expérimental modifiable</Button><p className="text-xs text-cave-400">Édite ensuite sa fiche JSON et change sa version. Désactiver la fiche désactive immédiatement l’extrapolation. Les prédictions déjà conservées gardent leurs paramètres.</p></details>
-    {error && !draft && <p role="alert" className="text-alert">{error}</p>}
-    <details className="border border-cave-700 rounded-control p-3 space-y-3"><summary className="cursor-pointer min-h-touch text-cave-50">Programmes de l’atelier et informations techniques</summary><p className="text-sm text-cave-400">Les programmes sont consultables immédiatement dans l’atelier. Les enregistrer permet de les réviser ici, avec leurs conditions, résultats et sources. Un essai ne devient pas un modèle de prédiction.</p><Button disabled={installing} onClick={() => installPack({ hopVarieties: trialPack.hopVarieties, hopKnowledge: [...trialPack.hopKnowledge, ...technicalNotes] })}>Enregistrer les programmes et notes techniques</Button></details>
+    </Repli>
+    <Repli titre="Styles étendus et NOLO" titreClass="min-h-touch cursor-pointer text-water" className="border border-cave-700 rounded-control p-3"><p className="text-sm text-cave-400">Référentiels datés et procédés modifiables. Les corrections personnelles sont conservées.</p><Button disabled={installing} onClick={()=>installPack({hopKnowledge:[...stylePack,...noloPack]})}>Ajouter les styles étendus et NOLO</Button></Repli>
+    <Repli titre="Modèle expérimental · combinaisons libres" className="border border-hop/30 rounded-control p-3 space-y-3" titreClass="cursor-pointer min-h-touch text-hop"><p className="text-sm text-cave-400">Les mots d’arôme, la dose, le moment d’ajout et le profil de fermentation donnent un indice d’essai avec des plages d’hypothèses. Tous les paramètres sont des jugements datés, distincts des résultats publiés. Aucune couverture statistique n’est encore validée.</p><Button disabled={installing} onClick={() => installPack({ hopKnowledge: [...bootstrap, ...studiedYeasts, ...extrapolationPack] })}>Ajouter le modèle d’essai</Button><p className="text-xs text-cave-400">Tu pourras ensuite le modifier dans « Modifier une fiche enregistrée » et changer sa version. Le désactiver arrête aussitôt l’extrapolation. Les prédictions déjà conservées gardent leurs paramètres.</p></Repli>
+    <Repli titre="Programmes de l’atelier et informations techniques" titreClass="cursor-pointer min-h-touch text-cave-50"><p className="text-sm text-cave-400">Les programmes sont consultables immédiatement dans l’atelier. Les enregistrer permet de les réviser ici, avec leurs conditions, résultats et sources. Un essai ne devient pas un modèle de prédiction.</p><Button disabled={installing} onClick={() => installPack({ hopVarieties: trialPack.hopVarieties, hopKnowledge: [...trialPack.hopKnowledge, ...technicalNotes] })}>Ajouter les programmes et notes techniques</Button></Repli>
+    </Repli>
+    <Repli titre="Modifier une fiche enregistrée" titreClass="cursor-pointer min-h-touch text-cave-50">
     <label className="block text-sm text-cave-200">Rechercher une fiche à modifier<Input className={`${inputClass} mt-1`} value={recordQuery} onChange={e=>setRecordQuery(e.target.value)} placeholder="Nom ou identifiant de la connaissance"/></label>
     <p className="text-xs text-cave-400">Les fiches du catalogue se consultent ci-dessus. Recherche leur nom pour modifier leurs données ; 50 fiches affichées au maximum.</p>
     <div className="divide-y divide-cave-700">{knowledge.filter(k=>recordQuery ? `${k.name} ${k.id}`.toLowerCase().includes(recordQuery.toLowerCase()) : k.kind!=='yeast'||!k.catalogue).slice(0,50).map(k => <div key={k.id} className="py-3 flex items-start justify-between gap-3"><div className="min-w-0 space-y-2"><p className="text-cave-50 font-semibold">{k.name || 'Fiche incomplète'}</p><p className="text-sm text-cave-400">{({ axis: 'Axe', yeast: 'Levure', model: 'Modèle', risk: 'Vigilance', confidence: 'Fiabilité', note: 'Note documentaire', trial: 'Essai de brassage', extrapolation: 'Modèle expérimental', solver: 'Guide de formulation', fermentation: 'Guide de fermentation', fermentationScience: 'Science de fermentation', styleGuide:'Styles de bière', noloScience:'Procédés NOLO', bitternessScience:'Amertume à cru' })[k.kind]} · {k.source?.author || 'Source manquante'}, {k.source?.year ?? 'année inconnue'}{k.kind === 'model' ? ` · ${k.enabled ? 'actif' : 'désactivé'} · version ${k.version}` : ''}</p>{k.kind === 'note' && <details><summary className="cursor-pointer min-h-touch flex items-center text-sm text-water">Lire les résultats et leurs limites</summary><div className="space-y-2"><div className="flex flex-wrap gap-2">{k.topics.map(t => <BrewTag tone="info" key={t}>{t}</BrewTag>)}</div><p className="text-cave-200 text-sm">{k.summary}</p><p className="text-cave-400 text-sm">{k.limitation}</p><a className="text-sm underline text-water break-words" href={/^https?:\/\//i.test(k.source.reference) ? k.source.reference : undefined} target="_blank" rel="noreferrer">Consulter la publication</a></div></details>}</div>
       <Button onClick={() => edit(k, !usable.valid.includes(k) || !['yeast', 'model'].includes(k.kind) || (k.kind === 'yeast' && !!k.catalogue))}>Modifier</Button></div>)}</div>
+    </Repli>
     <Sheet open={!!draft} onClose={() => { setDraft(null); setJson(null); setError(''); }} title={draft?.kind === 'yeast' ? 'Levure documentée' : draft?.kind === 'model' ? 'Modèle aromatique documenté' : 'Réviser une connaissance'} footer={<Button full intent="primary" onClick={save}>Enregistrer la connaissance</Button>}>
       {draft && <div className="space-y-4 pb-4">
         {error && <p role="alert" className="text-alert">{error}</p>}
