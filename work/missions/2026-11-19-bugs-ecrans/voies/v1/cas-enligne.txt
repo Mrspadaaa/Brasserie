@@ -1,0 +1,16 @@
+Serveur 1/1 : npm run dev  (journal : C:\Users\mrspa\AppData\Local\Temp\with-server-9KOOTU\serveur-1-3129.log)
+Attente du port 3129…
+Serveur prêt sur le port 3129
+
+Tous les serveurs sont prêts. Lancement : node work/missions/2026-11-19-bugs-ecrans/voies/v1/cas-enligne.mjs 3129
+
+390 clair 90 jours (solde avant ajustement -75.4) : {"svg":true,"bulles":["achats (2 fois) au moins 66,40, 20.11","ZZ TEST — ajustement −628,28, 02.12","ZZ TEST — achat −9, 25.12"],"fin":"−703,68 depuis aujourd’hui","conflits":[],"proches":["achats (2 fois) au moins 66,40, 20.11 / « −703,68 depuis aujourd’hui » : 331 px","ZZ TEST — ajustement −628,28, 02.12 / « −703,68 depuis aujourd’hui » : 158 px","ZZ TEST — achat −9, 25.12 / « −703,68 depuis aujourd’hui » : 12 px"],"moisNommes":4,"moisQuiSeTouchent":0}
+390 clair 12 mois : {"svg":true,"bulles":["achats (2 fois) au moins 66,40, 20.11","ZZ TEST — ajustement −628,28, 02.12","ZZ TEST — achat −9, 25.12"],"fin":"−703,68 depuis aujourd’hui","conflits":[],"proches":["achats (2 fois) au moins 66,40, 20.11 / « −703,68 depuis aujourd’hui » : 331 px","ZZ TEST — ajustement −628,28, 02.12 / « −703,68 depuis aujourd’hui » : 158 px","ZZ TEST — achat −9, 25.12 / « −703,68 depuis aujourd’hui » : 12 px"],"moisNommes":6,"moisQuiSeTouchent":0}
+erreurs clair: 
+390 cave 90 jours (solde avant ajustement -75.4) : {"svg":true,"bulles":["achats (2 fois) au moins 66,40, 20.11","ZZ TEST — ajustement −628,28, 02.12","ZZ TEST — achat −9, 25.12"],"fin":"−703,68 depuis aujourd’hui","conflits":[],"proches":["achats (2 fois) au moins 66,40, 20.11 / « −703,68 depuis aujourd’hui » : 331 px","ZZ TEST — ajustement −628,28, 02.12 / « −703,68 depuis aujourd’hui » : 158 px","ZZ TEST — achat −9, 25.12 / « −703,68 depuis aujourd’hui » : 12 px"],"moisNommes":4,"moisQuiSeTouchent":0}
+390 cave 12 mois : {"svg":true,"bulles":["achats (2 fois) au moins 66,40, 20.11","ZZ TEST — ajustement −628,28, 02.12","ZZ TEST — achat −9, 25.12"],"fin":"−703,68 depuis aujourd’hui","conflits":[],"proches":["achats (2 fois) au moins 66,40, 20.11 / « −703,68 depuis aujourd’hui » : 331 px","ZZ TEST — ajustement −628,28, 02.12 / « −703,68 depuis aujourd’hui » : 158 px","ZZ TEST — achat −9, 25.12 / « −703,68 depuis aujourd’hui » : 12 px"],"moisNommes":6,"moisQuiSeTouchent":0}
+erreurs cave: 
+
+Commande terminée, code 0.
+
+Arrêt de 1 serveur(s)…

@@ -39,8 +39,8 @@ describe('Prévisions p5b, états de la vraie app', () => {
   it('deux achats du même jour : un seul lot, une étiquette, un total « au moins »', () => {
     const a = item({ id: 'a', partial: ['houblon'] }), b = item({ id: 'b', amountCents: 6400, partial: ['malt'] });
     expect(sortiesDuLot([a, b], null, groupesRecurrents([]))).toHaveLength(2);
-    expect(texteLot([a, b])).toBe('achats ≥ 66,40 ×2, 09.11');
-    expect(texteLot([a, item({ id: 'c', label: 'Loyer', source: 'recurring', amountCents: 40_000 })])).toBe('2 sorties ≥ 402,40, 09.11');
+    expect(texteLot([a, b])).toBe('achats (2 fois) au moins 66,40, 09.11');
+    expect(texteLot([a, item({ id: 'c', label: 'Loyer', source: 'recurring', amountCents: 40_000 })])).toBe('2 sorties au moins 402,40, 09.11');
     expect(sortiesDuLot([a], null, groupesRecurrents([]))).toEqual([]);
   });
   it('la hauteur du dessin suit le nombre de marches (500 px à partir de 4)', () => {
@@ -58,7 +58,7 @@ describe('Prévisions p5b, états de la vraie app', () => {
     const etiquettes = screen.getAllByRole('button').filter(b => /achats/i.test(b.getAttribute('aria-label') ?? ''));
     expect(etiquettes).toHaveLength(1);
     expect(etiquettes[0].getAttribute('aria-label')).toMatch(/2 sorties le \d\d\.\d\d : .*au moins/);
-    expect(etiquettes[0].textContent).toMatch(/≥ [\d ,]+ ×2/);
+    expect(etiquettes[0].textContent).toMatch(/\(2 fois\) au moins [\d ,]+/);
     expect(etiquettes[0].textContent).not.toMatch(/\+,/);
     const svg = document.querySelector('svg.prv-svg')!;
     expect(Number(svg.getAttribute('height'))).toBeLessThan(500);

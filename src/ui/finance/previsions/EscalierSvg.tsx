@@ -23,25 +23,26 @@ export const libelleLong = (item: ForecastItem) => `${nomLong(item)} ${item.dire
 /**
  * Texte dessiné (test d'écran P5B, constat 1) : mot-clé + montant entier + jour, une ligne, comme p5b (« loyer −400, 25.11 »).
  * « ~ » devant le jour : date estimée ; « ≥ » devant le montant : montant partiel, AU MOINS ce montant (le « ≥ » de Prix et d'Argent ; revue du 10.11 : le « + » final n'était pas compris ; le détail est dans la fiche).
- * Une récurrence regroupée : « loyer −400 ×9, le 25 ».
+ * Une récurrence regroupée : « loyer −400 (9 fois), le 25 ».
  */
 export const montantEtiquette = (item: ForecastItem) => item.partial?.length
   ? `≥ ${montantCourt(item.amountCents)}` : item.direction === 'out' ? montantCourt(-item.amountCents) : `+${montantCourt(item.amountCents)}`;
 export const texteEtiquette = (item: ForecastItem, groupe?: GroupeRecurrent) => {
   const mot = motEtiquette(item);
   const m = montantEtiquette(item);
-  if (groupe) return `${mot} ${m} ×${groupe.n}${groupe.jour ? `, le ${groupe.jour}` : ''}`;
+  if (groupe) return `${mot} ${m} (${groupe.n} fois)${groupe.jour ? `, le ${groupe.jour}` : ''}`;
   return `${mot} ${m}, ${item.label.includes('date estimée') ? '~' : ''}${jourCourt(item.date)}`;
 };
 /**
  * Plusieurs sorties le MÊME jour sont une seule marche : une seule étiquette (p5b ; revue du 10.11, « deux sorties du même jour = une marche, une étiquette »).
- * Même mot : « achats ≥ 67 ×2, 10.11 » ; mots différents : « 3 sorties −5 765, 10.11 ». Le total est la somme ; il est un « au moins » dès qu'une sortie est partielle.
+ * Même mot : « achats (2 fois) au moins 67, 10.11 » ; mots différents : « 3 sorties −5 765, 10.11 ». Le total est la somme ; il est un « au moins » dès qu'une sortie est partielle.
+ * En mots, sans « ×2 » ni « ≥ » (critique k2, 20.11, point 28) : le lot est une bulle à part, elle se lit à voix haute ; le « ≥ » d'une sortie seule reste (acquis de la revue du 10.11).
  */
 export const texteLot = (items: ForecastItem[]) => {
   const total = items.reduce((s, i) => s + i.amountCents, 0), partiel = items.some(i => i.partial?.length);
   const mots = [...new Set(items.map(motEtiquette))];
-  const m = partiel ? `≥ ${montantCourt(total)}` : montantCourt(-total);
-  return mots.length === 1 ? `${mots[0]} ${m} ×${items.length}, ${jourCourt(items[0].date)}` : `${items.length} sorties ${m}, ${jourCourt(items[0].date)}`;
+  const m = partiel ? `au moins ${montantCourt(total)}` : montantCourt(-total);
+  return mots.length === 1 ? `${mots[0]} (${items.length} fois) ${m}, ${jourCourt(items[0].date)}` : `${items.length} sorties ${m}, ${jourCourt(items[0].date)}`;
 };
 /** Les sorties d'une marche qui partagent son étiquette : au moins deux, hors projet testé (qui garde sa fiche) et hors récurrence déjà regroupée. */
 export const sortiesDuLot = (items: ForecastItem[], testeId: string | null | undefined, groupes: Map<string, GroupeRecurrent>): ForecastItem[] => {
@@ -91,8 +92,15 @@ export function EscalierSvg({ e, fantome, nomFantome, largeur, testeId, sousLign
     while (courant <= e.fin) {
       const d = new Date(`${courant.slice(0, 7)}-01T12:00:00Z`); d.setUTCMonth(d.getUTCMonth() + 1); prochain = d.toISOString().slice(0, 10);
       const finMois = prochain <= e.fin ? prochain : null, x0 = x(courant), x1 = finMois ? x(finMois) : xFin;
-      if (x1 - x0 > 26) mois.push({ x: (x0 + x1) / 2, nom: moisCourt(courant), sep: finMois ? x1 : null }); else if (finMois) mois.push({ x: -1, nom: '', sep: x1 });
+      if (x1 - x0 > 8) mois.push({ x: (x0 + x1) / 2, nom: moisCourt(courant), sep: finMois ? x1 : null }); else if (finMois) mois.push({ x: -1, nom: '', sep: x1 });
       courant = prochain;
+    }
+    // un nom de mois n'est dessiné que s'il tient dans la place laissée par le précédent (largeur mesurée, 6 px d'air) : « déc. janv. » ne se touchent plus (critique k2, point 27)
+    let bord = -Infinity;
+    for (const m of mois) {
+      if (!m.nom) continue;
+      const w = lt(m.nom, 12, false, 600);
+      if (m.x - w / 2 < bord + 6 || m.x - w / 2 < G - 4 || m.x + w / 2 > W) m.nom = ''; else bord = m.x + w / 2;
     }
     // la courbe elle-même : obstacle des étiquettes (elles ne la recouvrent plus)
     const points: Array<{ x: number; y: number }> = [{ x: G, y: y(depart) }];

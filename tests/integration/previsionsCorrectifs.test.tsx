@@ -74,7 +74,7 @@ describe('constat 10 : au-delà de 10 sorties, les récurrences se regroupent', 
     const g = groupesRecurrents(e.marches);
     expect(g.size).toBe(9);
     expect(g.get('loyer:0')).toMatchObject({ n: 9, premierId: 'loyer:0', jour: '25' });
-    expect(texteEtiquette(mois(1)[0], g.get('loyer:0'))).toBe('loyer −400 ×9, le 25');
+    expect(texteEtiquette(mois(1)[0], g.get('loyer:0'))).toBe('loyer −400 (9 fois), le 25');
   });
   it('à 10 sorties ou moins : rien ne se regroupe (la maquette dessine chaque loyer)', () => {
     const e = construireEscalier({ departCents: 1_000_000, items: mois(4), debut: '2026-11-09', fin: '2027-11-08' });

@@ -1,0 +1,30 @@
+Serveur 1/1 : npm run dev  (journal : C:\Users\mrspa\AppData\Local\Temp\with-server-YU9LiU\serveur-1-3128.log)
+Attente du port 3128…
+Serveur prêt sur le port 3128
+
+Tous les serveurs sont prêts. Lancement : node work/missions/2026-11-19-bugs-ecrans/voies/v1/capturer-vendre.mjs
+
+390 clair tuiles ["33 cl3,00 CHF","75 cl · tarif à corrigerprix ?759,33 CHF le litre","fût 20 L · capacité supposéeprix ?aucun fût lié","Autreconsigne, verres…"]
+390 clair clic 75 cl {"ligne":true,"prix":null,"total":"—CHF"}
+390 clair raison affichée sans infobulle {"texte":"Le tarif de 569,50 CHF fait 759,33 CHF le litre : à corriger dans Atelier › Tarifs. Indique le prix de cette vente ci-dessous.","visible":true,"titreInfobulle":null}
+390 clair champ de la ligne libre {"fond":"rgb(255, 255, 255)","texte":"rgb(17, 17, 17)","bord":"rgb(191, 191, 191) 1px","contraste":18.88}
+390 clair erreurs []
+390 cave tuiles ["33 cl3,00 CHF","75 cl · tarif à corrigerprix ?759,33 CHF le litre","fût 20 L · capacité supposéeprix ?aucun fût lié","Autreconsigne, verres…"]
+390 cave clic 75 cl {"ligne":true,"prix":null,"total":"—CHF"}
+390 cave raison affichée sans infobulle {"texte":"Le tarif de 569,50 CHF fait 759,33 CHF le litre : à corriger dans Atelier › Tarifs. Indique le prix de cette vente ci-dessous.","visible":true,"titreInfobulle":null}
+390 cave champ de la ligne libre {"fond":"rgb(18, 16, 14)","texte":"rgb(245, 240, 234)","bord":"rgb(61, 52, 46) 1px","contraste":16.76}
+390 cave erreurs []
+1280 clair tuiles ["33 cl3,00 CHF","75 cl · tarif à corrigerprix ?759,33 CHF le litre","fût 20 L · capacité supposéeprix ?aucun fût lié","Autreconsigne, verres…"]
+1280 clair clic 75 cl {"ligne":true,"prix":"","total":"—CHF"}
+1280 clair raison affichée sans infobulle {"texte":"Le tarif de 569,50 CHF fait 759,33 CHF le litre : à corriger dans Atelier › Tarifs. Indique le prix de cette vente ci-dessous.","visible":true,"titreInfobulle":null}
+1280 clair champ de la ligne libre {"fond":"rgb(255, 255, 255)","texte":"rgb(17, 17, 17)","bord":"rgb(191, 191, 191) 1px","contraste":18.88}
+1280 clair erreurs []
+1280 cave tuiles ["33 cl3,00 CHF","75 cl · tarif à corrigerprix ?759,33 CHF le litre","fût 20 L · capacité supposéeprix ?aucun fût lié","Autreconsigne, verres…"]
+1280 cave clic 75 cl {"ligne":true,"prix":"","total":"—CHF"}
+1280 cave raison affichée sans infobulle {"texte":"Le tarif de 569,50 CHF fait 759,33 CHF le litre : à corriger dans Atelier › Tarifs. Indique le prix de cette vente ci-dessous.","visible":true,"titreInfobulle":null}
+1280 cave champ de la ligne libre {"fond":"rgb(18, 16, 14)","texte":"rgb(245, 240, 234)","bord":"rgb(61, 52, 46) 1px","contraste":16.76}
+1280 cave erreurs []
+
+Commande terminée, code 0.
+
+Arrêt de 1 serveur(s)…

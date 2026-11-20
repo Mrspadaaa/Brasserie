@@ -20,7 +20,7 @@ import { nextClientId } from '../../services/refs';
 import { preparerQrFacture, problemesAdresse, QrFactureInvalide } from '../../services/swissQrBill';
 import { brassinsVendables, jaugeBrassin, litresVendus } from './brassinsVendables';
 import { formatsDuBrassin, tarifDuFormat } from './formatsVente';
-import { prixDeTuile } from '../../domain/tarifs/tuileVente';
+import { noteDeTuile, prixDeTuile } from '../../domain/tarifs/tuileVente';
 import { arrondiEspeces, messageBornes, PRIX_UNITAIRE_MAX, problemePanier, QUANTITE_MAX, totauxPanier, versArticles, type LignePanier } from './panier';
 import { debiteurDe, preparerVente, type Echeance, type ModeVente, type VentePreparee } from './enregistrerVente';
 import { effacerBrouillon, garderBrouillon, lireBrouillon } from './brouillon';
@@ -75,7 +75,7 @@ interface ContenuProps {
   fermetureRef?: React.MutableRefObject<(() => boolean) | null>;
 }
 
-type Libre = { designation: string; quantite: number | undefined; prix: number | undefined; formatId: string; batchId?: string; litres: number };
+type Libre = { designation: string; quantite: number | undefined; prix: number | undefined; formatId: string; batchId?: string; litres: number; note?: string };
 /** `envoi` : `file` = le PDF attend dans la file locale (l'état se lit en direct) ; `drive` = confirmé dans Drive ; `local` = gardé sur l'appareil seulement. */
 interface Resultat { numero: string; totalCents: number; mode: ModeVente; pdf: VentePreparee['pdf']; txId: string; envoi: 'file' | 'drive' | 'local' }
 
@@ -208,11 +208,11 @@ export function CaisseContenu({ clientIdInitial, onClose, onSaved, onBusy, ferme
   };
 
   const cle = (batchId: string | undefined, formatId: string) => `${batchId ?? '-'}:${formatId}`;
-  const ajouter = (formatId: string, label: string, litres: number, prix: number | null) => {
+  const ajouter = (formatId: string, label: string, litres: number, prix: number | null, note?: string) => {
     if (enAttente) return;
     const k = cle(actifId, formatId);
     const designation = `${actif ? actif.name : 'Bière'} · ${label}`.trim();
-    if (prix === null) { setLibre({ designation, quantite: 1, prix: undefined, formatId, batchId: actifId, litres }); return; }
+    if (prix === null) { setLibre({ designation, quantite: 1, prix: undefined, formatId, batchId: actifId, litres, note }); return; }
     setLignes(ls => ls.some(l => l.cle === k)
       ? ls.map(l => l.cle === k ? { ...l, quantite: Math.min(QUANTITE_MAX, l.quantite + 1) } : l)
       : [...ls, { cle: k, batchId: actifId, formatId, designation, litresUnite: litres, quantite: 1, prixHT: prix }]);
@@ -338,14 +338,14 @@ export function CaisseContenu({ clientIdInitial, onClose, onSaved, onBusy, ferme
           <div className="cs-tiles" data-mots="lignes">
             {formats.map(({ format, present, aVerifier }, i) => {
               const tarif = tarifDuFormat(tarifs, format.id, actif?.name);
-              const { prix, suspect } = prixDeTuile(tarif?.priceHT, format.volumeL), aVerif = aVerifier || suspect;
+              const { prix, suspect } = prixDeTuile(tarif?.priceHT, format.volumeL), note = noteDeTuile({ suspect, prixTarif: tarif?.priceHT, volumeL: format.volumeL, capaciteSupposee: aVerifier });
               const ligne = lignes.find(l => l.cle === cle(actifId, format.id));
               return (
                 <button key={format.id} ref={i === 0 ? premiereTuile : undefined} type="button" className={`cs-t${ligne ? ' cs-has' : ''}${present ? '' : ' cs-off'}`} disabled={fieldsetOff}
-                  aria-label={`${format.label}${prix !== null ? `, ${montantChf(prix)} CHF` : ', prix à indiquer'}`} onClick={() => ajouter(format.id, format.label, format.volumeL, prix)}>
+                  aria-label={`${format.label}${note ? `, ${note.mot}` : ''}${prix !== null ? `, ${montantChf(prix)} CHF` : ', prix à indiquer'}`} onClick={() => ajouter(format.id, format.label, format.volumeL, prix, suspect ? note?.raison : undefined)}>
                   {ligne && <span className="cs-n cs-m">{ligne.quantite}</span>}
                   {format.id === 'fut' ? <Fut /> : <Bouteille grande={format.id === '75cl'} />}
-                  <div><b>{format.label}</b>{aVerif && <small title={suspect && tarif ? `Le tarif de ${montantChf(tarif.priceHT)} CHF fait ${montantChf(tarif.priceHT / format.volumeL)} CHF le litre : à corriger dans Atelier › Tarifs` : undefined}> · à vérifier</small>}<div className="cs-p">{prix !== null ? <><span className="cs-m">{montantChf(prix)}</span> CHF</> : 'prix ?'}</div></div>
+                  <div><b>{format.label}</b>{note && <small> · {note.mot}</small>}<div className="cs-p">{prix !== null ? <><span className="cs-m">{montantChf(prix)}</span> CHF</> : 'prix ?'}</div>{note && <div className="cs-p cs-nc">{note.court}</div>}</div>
                   {ligne && <span className="cs-minus" role="button" tabIndex={0} aria-label={`Retirer un ${format.label}`} onClick={e => { e.stopPropagation(); retirer(ligne.cle); }} onKeyDown={e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); e.stopPropagation(); retirer(ligne.cle); } }}>−</span>}
                 </button>
               );
@@ -357,6 +357,7 @@ export function CaisseContenu({ clientIdInitial, onClose, onSaved, onBusy, ferme
 
           {libre && (
             <div className="cs-libre" role="group" aria-label="Ligne libre">
+              {libre.note && <p className="cs-libre-note" role="note">{libre.note}</p>}
               <label>Désignation<Input value={libre.designation} onChange={e => setLibre({ ...libre, designation: e.target.value })} placeholder="Consigne, verres…" /></label>
               <div className="cs-libre-nb">
                 <label>Quantité<ChampNombre aria-label="Quantité" value={libre.quantite} onValue={v => setLibre({ ...libre, quantite: v })} max={QUANTITE_MAX} /></label>
