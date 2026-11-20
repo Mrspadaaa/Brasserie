@@ -2368,3 +2368,7 @@ Classement de la page r3 de Ma levure (https://claude.ai/artifact/DKAJe8ESeMR4ig
 > C'est en fait pas le bonne version du calendrier, c'est pas possible ???
 
 (20.11, 4 captures en ligne à 390 : work/missions/2026-11-20-calendrier-plainte/. Lu : la frise du haut ne recule pas dans le passé ; une barre ne se glisse pas vers le passé ; un point (rond pointillé) se pose par-dessus la frise ; le menu de période sort de l'écran à gauche ; l'étiquette « J0 / 55 · prête 13 févr. » se pose sur la barre glissée ; « Emballage · Jhhh » en double. Doute : l'écran en ligne n'est pas sa version choisie (base gi2/r2-c, en-tête r6b, maquettes.json) : à prouver côte à côte.)
+
+> Et modifier, un évènement ne l'update pas à la bonne date, bref c'est une catastrophe
+
+(20.11 : modifier un événement du Calendrier ne le pose pas à la bonne date. Ajouté à CAL-PASSE.)
