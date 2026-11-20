@@ -110,10 +110,11 @@ export function NoloPanel({recipe,onChange,allowEnable=false,measurementOnly=fal
   const sousSimulateur=(contenu:React.ReactNode)=>preparation
     ?<NoloRecipeSimulator recipe={recipe} onChange={onChange!} science={c!.scienceSnapshot??science!} saved={saved} variant={variantMode}>{contenu}</NoloRecipeSimulator>
     :contenu;
-  return <section aria-label="Objectif NOLO" className={`nolo-panel min-w-0 ${showOverview?'rounded-panel border border-cave-700 bg-cave-900':'nolo-panel-embedded'}`}>
+  // TL-7 : l'objectif se règle une fois (Identité). Le bilan de mesures, monté à l'étape Levure, ne reprend pas son titre.
+  return <section aria-label={measurementOnly?'Suivi NOLO':'Objectif NOLO'} className={`nolo-panel min-w-0 ${showOverview?'rounded-panel border border-cave-700 bg-cave-900':'nolo-panel-embedded'}`}>
     {researchOpen&&<FermentationResearchSheet onClose={()=>setResearchOpen(false)}/>}
     <div className="flex flex-wrap items-center justify-between gap-2">
-      {allowEnable&&editable?<label className="flex min-h-touch items-center gap-2 font-semibold text-cave-50"><input name="nolo-enabled" aria-label="Objectif NOLO · ≤ 0,5 %" type="checkbox" className="accent-hop" checked={!!c?.enabled} onChange={e=>onChange?.({...recipe,nolo:{...(c??newNoloConfig()),enabled:e.target.checked}})}/>Objectif NOLO · ≤ 0,5 %</label>:(editable||measurementOnly)&&<h3 className="font-semibold text-sm text-cave-50">Objectif NOLO</h3>}
+      {allowEnable&&editable?<label className="flex min-h-touch items-center gap-2 font-semibold text-cave-50"><input name="nolo-enabled" aria-label="Objectif NOLO · ≤ 0,5 %" type="checkbox" className="accent-hop" checked={!!c?.enabled} onChange={e=>onChange?.({...recipe,nolo:{...(c??newNoloConfig()),enabled:e.target.checked}})}/>Objectif NOLO · ≤ 0,5 %</label>:(editable||measurementOnly)&&<h3 className="font-semibold text-sm text-cave-50">{measurementOnly?'Mesures et suivi NOLO':'Objectif NOLO'}</h3>}
       {c&&!editable&&<span ref={variantTrigger}><Button onClick={()=>setVariant(structuredClone(recipe))}>Simuler une variante NOLO</Button></span>}
     </div>
     {c?.enabled&&<>

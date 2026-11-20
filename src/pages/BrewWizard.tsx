@@ -116,6 +116,7 @@ import { QuantityStepper } from '../ui/QuantityStepper';
 import { CycleTag } from '../ui/CycleTag';
 import { PresetChips } from '../ui/PresetChips';
 import { EtapeFermentescibles } from '../ui/fermentescibles/EtapeFermentescibles';
+import { EtapeAdditifs } from '../ui/wizard/EtapeAdditifs';
 import { plageEbc } from '../ui/identite/plages';
 import { teinte as teinteEbc } from '../ui/fermentescibles/modele';
 import { applyCatalogueYeast } from '../domain/yeastCatalogue';
@@ -146,7 +147,7 @@ import { evaluateNoloRecipe, newNoloConfig } from '../domain/nolo';
 import { admitImportedWaterSnapshot, declaredWaterSourceId, frozenWaterSource, hasUsableWaterIdentity, isBlankWaterSourceId, mergeImportedWaterPlan,
   retainedWaterCache, sameYeastForTargets, waterCacheBelongsToReference, waterProfileModeOf, waterProfileOrigin, withoutImportedAnalysis,
   type WaterProfileMode } from '../domain/wizardSourceValues';
-import { Trash2, Plus, AlertTriangle, ClipboardPaste, ClipboardList, ChevronLeft } from 'lucide-react';
+import { Trash2, Plus, AlertTriangle, ClipboardPaste, ClipboardList, ChevronLeft, ChevronDown } from 'lucide-react';
 import { AvisRetrait, useRetraitAnnulable } from '../ui/useRetraitAnnulable';
 import { ThemeToggle } from '../theme/ThemeToggle';
 
@@ -692,6 +693,14 @@ const BrewWizardEditor: React.FC<BrewWizardProps & {
   const [saving, setSaving] = useState(false);
   const [draftNotice, setDraftNotice] = useState(restoredDraft ? 'Brouillon repris sur cet appareil.'
     : draftSetAside ? 'Version enregistrée ouverte. Le brouillon reste sur cet appareil jusqu’à ta première modification.' : '');
+  // TL-19 : « Nouvelle recette » peut rouvrir un brouillon : la reprise se dit à l'écran quelques secondes (puis reste annoncée aux lecteurs
+  // d'écran seulement, 25.10 : elle ne garde pas sa ligne). Lecture étroite : ni bandeau fixe, ni autre place.
+  const [repriseDite, setRepriseDite] = useState(!!restoredDraft);
+  useEffect(() => {
+    if (!repriseDite) return;
+    const t = setTimeout(() => setRepriseDite(false), 8000);
+    return () => clearTimeout(t);
+  }, [repriseDite]);
   const [draftAside, setDraftAside] = useState(draftSetAside);
   const [draftError, setDraftError] = useState('');
   const [discarding, setDiscarding] = useState(false);
@@ -1924,6 +1933,7 @@ const BrewWizardEditor: React.FC<BrewWizardProps & {
   const stepIndex = STEPS.findIndex((s) => s.id === step);
   /** Le message de reprise ou de conservation du brouillon : ni erreur ni événement, il ne prend plus de ligne. */
   const messageDeBase = /^(Brouillon (repris|conservé) sur cet appareil|Changement appliqué et brouillon conservé sur cet appareil).$/.test(draftNotice);
+  const repriseVisible = repriseDite && draftNotice === 'Brouillon repris sur cet appareil.';
   const resizeForEquipment=(profile=brewhouse, targetL=defaultBrewVolume(profile), destination: StepId = 'identite')=>{
     try {
       if(!profile)return;
@@ -2499,11 +2509,11 @@ const BrewWizardEditor: React.FC<BrewWizardProps & {
       </section> : <fieldset disabled={saving} aria-busy={saving} className="contents space-y-3">
       {/* « Brouillon repris sur cet appareil. » ne s'écrit plus à l'écran (25.10) : il reste annoncé aux lecteurs d'écran. Les autres
           messages (erreur, programme appliqué, version enregistrée ouverte) et la confirmation d'abandon restent visibles. */}
-      {draftKey && (draftNotice || draftError) && (draftError || discarding || !messageDeBase) && <div className="recipe-draft-status flex flex-wrap items-center justify-between gap-x-2 gap-y-1 text-xs text-cave-400">
-        {(draftError || (draftNotice && !messageDeBase)) && <span role={draftError ? 'alert' : 'status'}>{draftError || draftNotice}</span>}
+      {draftKey && (draftNotice || draftError) && (draftError || discarding || !messageDeBase || repriseVisible) && <div className="recipe-draft-status flex flex-wrap items-center justify-between gap-x-2 gap-y-1 text-xs text-cave-400">
+        {(draftError || (draftNotice && (!messageDeBase || repriseVisible))) && <span role={draftError ? 'alert' : 'status'}>{draftError || draftNotice}</span>}
         {discarding && <span className="flex items-center gap-2"><span className="text-attention">Supprimer ce brouillon ?</span><button type="button" autoFocus onClick={() => setDiscarding(false)}>Garder</button><button type="button" onClick={discardDraft} className="text-alert-strong">Abandonner</button></span>}
       </div>}
-      {draftKey && messageDeBase && !draftError && !discarding && <span role="status" className="sr-only">{draftNotice}</span>}
+      {draftKey && messageDeBase && !repriseVisible && !draftError && !discarding && <span role="status" className="sr-only">{draftNotice}</span>}
       {/* « Exporter la recette » du « + » : le même toast que celui de l'App (bas de l'écran, à gauche du « + »), sans quitter l'étape. */}
       {messageExport && <div role={messageExport.echec ? 'alert' : 'status'} data-toast="export" className="pointer-events-none fixed z-50 left-2 right-[4.75rem] bottom-[calc(var(--main-navigation-height,2.5rem)+0.75rem)] min-h-[34px] rounded-[10px] bg-cave-850 border border-cave-700 text-cave-50 px-2.5 py-1.5 shadow-lift text-sm flex items-center gap-2 animate-in fade-in min-[1024px]:left-[calc(var(--rail-width,88px)+0.5rem)] min-[1024px]:right-auto min-[1024px]:mx-0 min-[1024px]:bottom-4 min-[1024px]:w-[360px]">
         <span>{messageExport.texte}</span>
@@ -2747,7 +2757,7 @@ const BrewWizardEditor: React.FC<BrewWizardProps & {
       {step === 'fermentescibles' && (() => {
         const styleRepere = resolveBrewingStyle(style, details.styleRef, styles);
         const ebcPlage = plageEbc(styleRepere?.stats.srm);
-        return (
+        return (<>
           <EtapeFermentescibles
             fermentables={fermentables}
             onFermentables={setFermentables}
@@ -2772,7 +2782,13 @@ const BrewWizardEditor: React.FC<BrewWizardProps & {
             alerteDensite={og > 1 ? BrewingMath.efficiencyAtGravity(efficiency, og, styleRepere?.stats.og?.max).note : null}
             erreur={fieldError}
           />
-        );
+          {/* BK2-5 : les additifs (épices, clarifiants) se saisissent ici, en grammes, sous l'écran choisi ; une épice rangée parmi les
+              fermentescibles s'y note en un geste. Un dépliant fermé : l'écran de l'étape n'est pas touché. */}
+          <div className="mt-2">
+            <EtapeAdditifs adjuncts={details.adjuncts ?? []} fermentables={fermentables} onFermentables={setFermentables} stockItems={stockItems}
+              onAdjuncts={next => setDetails(d => ({ ...d, adjuncts: next.length > 0 ? next : undefined }))} erreur={fieldError} />
+          </div>
+        </>);
       })()}
 
       {/* ---------------------------------------------------- ÉTAPE 3 */}
@@ -3102,10 +3118,23 @@ const BrewWizardEditor: React.FC<BrewWizardProps & {
               recette qu'après « Appliquer au brouillon ». L'enregistrement
               reste celui du récapitulatif.
             */}
-            <Suspense fallback={<p role="status" className="text-sm text-cave-400">Ouverture de l’atelier Houblons V5.5…</p>}>
-              <HopV55RecipeStep ownerKey={ownerKey} recipe={build()} localOnly={localOnly} onApply={applyHopV55Change}
-                onConserveColdEvidence={conserveHopV55ColdEvidence} onCorrectContext={setStep} />
-            </Suspense>
+            {/* TE-27 (« un cockpit », 08.11) : l'atelier entier (150 variétés, ID, COA) ne s'étale plus sous les lignes : il reste à un toucher,
+                fermé. Lecture étroite et réversible : rien n'est retiré, seul le repli est ajouté. */}
+            <details data-role="atelier-houblons-v55" className="recipe-disclosure group/recipe panel p-0 min-w-0">
+              <summary className="list-none cursor-pointer min-h-touch px-2 py-1 flex items-center gap-2 focus-visible:outline focus-visible:outline-2 focus-visible:outline-water rounded-control">
+                <span className="min-w-0 flex-1 flex flex-wrap items-baseline gap-x-2 gap-y-0.5">
+                  <span className="text-sm font-semibold text-cave-50">Atelier houblons avancé</span>
+                  <span className="text-xs text-cave-400">études, prévisions et essais</span>
+                </span>
+                <ChevronDown className="w-4 h-4 shrink-0 text-cave-400 group-open/recipe:rotate-180" aria-hidden="true" />
+              </summary>
+              <div className="mt-1 px-2 pb-2 min-w-0 space-y-2">
+                <Suspense fallback={<p role="status" className="text-sm text-cave-400">Ouverture de l’atelier Houblons V5.5…</p>}>
+                  <HopV55RecipeStep ownerKey={ownerKey} recipe={build()} localOnly={localOnly} onApply={applyHopV55Change}
+                    onConserveColdEvidence={conserveHopV55ColdEvidence} onCorrectContext={setStep} />
+                </Suspense>
+              </div>
+            </details>
             <Suspense fallback={<p role="status" className="text-sm text-cave-400">Chargement des repères levure…</p>}>
 
             </Suspense>
@@ -3345,7 +3374,7 @@ const BrewWizardEditor: React.FC<BrewWizardProps & {
               {noloWaterUnverified && details.nolo?.process !== 'secondRunnings' && <p role="status" className="text-sm text-ebc-amber">{noloWaterIssue} {water.acidOverride ? 'Seules les doses d’acide saisies manuellement sont retenues.' : 'Aucune dose d’acide calculée pour ce plan.'}</p>}
             </>}
           </>}
-          atelierNolo={details.nolo?.enabled ? <RecipeDisclosure title="Atelier NOLO" summary="Procédés, ajouts et mesures">{noloNeedsEquipmentAdoption ? noloEquipmentPrompt() : <Suspense fallback={<p role="status" className="text-sm text-cave-400">Chargement de l’objectif NOLO…</p>}><NoloPanel recipe={build()} showOverview={false} onChooseYeast={()=>setStep('levure')} onChange={next=>applyFermentationRecipe(next)}/></Suspense>}</RecipeDisclosure> : undefined}
+          atelierNolo={details.nolo?.enabled ? <button type="button" data-role="regler-nolo" onClick={() => setStep('identite')}>Régler le NOLO</button> : undefined}
           name={name}
           onName={setName}
           style={style}
