@@ -68,7 +68,12 @@ export const GrapheTemps: React.FC<{ m: ModeleFiche; g: Geometrie }> = ({ m, g }
       // Deux relevés voisins presque à la même hauteur : l'étiquette du dernier passe au-dessus à droite pour ne pas couvrir celle de l'avant-dernier.
       const veille = i > 0 ? pts[i - 1] : null, serre = dernier && !!veille && p.jour - veille.jour <= 1 && Math.abs(y(veille.sg) - yy) < 22;
       e.push(<circle key={`pt${i}`} cx={x} cy={yy} r={dernier ? 7 : p.og ? 4 : 5} fill={C.t0} />);
-      e.push(<text key={`pl${i}`} x={x + (serre ? 12 : dernier ? -14 : 9)} y={yy + (serre ? -12 : dernier ? 5 : p.og ? -9 : -4)} textAnchor={dernier && !serre ? 'end' : 'start'} className={mono} fontWeight={600} fontSize={dernier ? 14 : 12} fill={C.t0} wordSpacing={-4}>{p.og ? `DO ${lab}` : lab}</text>);
+      // CT4-B-8 : la valeur ne se pose jamais sur la courbe qui arrive au point ni sous le pointillé « auj. » : le dernier relevé la met au-dessus de son point
+      // (à droite, ou à gauche s'il n'y a plus la place), et chaque valeur porte un halo de la couleur du fond qui la détache de ce qui passe dessous.
+      const droite = dernier && !serre && x + 52 <= W;
+      const posX = x + (serre ? 12 : dernier ? (droite ? 11 : -11) : 9), posY = yy + (serre || dernier ? -12 : p.og ? -9 : -4);
+      e.push(<text key={`pl${i}`} x={posX} y={posY} textAnchor={dernier && !serre && !droite ? 'end' : 'start'} className={mono} fontWeight={600} fontSize={dernier ? 14 : 12} fill={C.t0} wordSpacing={-4}
+        stroke={C.page} strokeWidth={4} strokeLinejoin="round" paintOrder="stroke">{p.og ? `DO ${lab}` : lab}</text>);
     });
   }
   // °C de la cuve (pas celui de l'échantillon : gfc n° 5), face à la consigne de la recette

@@ -193,7 +193,7 @@ export const FicheFermentation: React.FC<FicheFermentationProps> = ({ m, verbe, 
         </span>
       </div>
       <div ref={pend} className="relative" data-pend>
-        <div className="lg:grid lg:items-start lg:gap-x-16" style={large ? { gridTemplateColumns: 'minmax(0,1fr) 23rem' } : undefined}>
+        <div className="lg:grid lg:items-start lg:gap-x-16" style={large ? { gridTemplateColumns: houblons.length > 0 ? 'minmax(0,1fr) 23rem' : 'minmax(0,1fr)' } : undefined}>
           <div ref={graf} className="relative lg:col-start-1 lg:row-start-1" data-graphe>
             {g && <GrapheTemps m={m} g={g} />}
           </div>
@@ -284,7 +284,13 @@ const ChampTemp: React.FC<{ titre: string; label: string; valeur: string; depart
   const courant = Math.max(0, Math.min(300, lu ?? Math.round(depart * 10)));
   const btn = "relative min-h-9 px-2 text-sm text-ebc-straw underline underline-offset-2 after:absolute after:inset-x-0 after:top-1/2 after:h-11 after:-translate-y-1/2 after:content-['']";
   return (
-    <div className="space-y-0.5" data-temp={label}>
+    // CT4-B-10 : « non relevée » ne pose pas de pouce (il disait 15 °C au milieu de la piste) ; il paraît au premier geste. Un toucher qui ne bouge pas
+    // le curseur (même position que le départ) ne lance aucun changement : on lit alors la valeur du curseur au lever du doigt et on la pose.
+    <div className={`space-y-0.5${lu === null && !taper ? ' [&_[data-curseur]_span.pointer-events-none]:hidden' : ''}`} data-temp={label} {...(lu === null ? { 'data-sans-valeur': '' } : {})}
+      onPointerUp={lu === null && !taper ? e => {
+        const piste = (e.target as HTMLElement).closest('[data-curseur]')?.querySelector<HTMLInputElement>('input[type="range"]');
+        if (piste && piste.value !== '') onChange(texte(Number(piste.value)));
+      } : undefined}>
       <div className="flex items-baseline justify-between gap-2">
         <h4 className="text-sm font-semibold text-cave-50">{titre}</h4>
         <span className="flex items-baseline gap-1">
@@ -305,9 +311,10 @@ const ChampTemp: React.FC<{ titre: string; label: string; valeur: string; depart
 };
 
 /** Le geste « Mesurer » (m2) : curseur de densité sur la bande FG, « Taper » au clavier, °C de l'échantillon et °C de la cuve, chacun au curseur et facultatif. Jamais `type="number"`. */
-export const PanneauMesure: React.FC<{ m: ModeleFiche; etat: EtatMesure; onChange: (e: EtatMesure) => void }> = ({ m, etat, onChange }) => {
+export const PanneauMesure: React.FC<{ m: ModeleFiche; etat: EtatMesure; onChange: (e: EtatMesure) => void; /** CT4-B-11 : sans FG visée dans la recette, la plage de la levure (même calcul que la fiche recette). */ fgPlage?: [number, number] | null }> = ({ m, etat, onChange, fgPlage }) => {
   const [min, max] = bornesMesure(m);
-  const cible: [number, number] | null = m.fg ? [Math.round(m.fg[0] * 1000), Math.round(m.fg[1] * 1000)] : null;
+  const bande = m.fg ?? fgPlage ?? null;
+  const cible: [number, number] | null = bande ? [Math.round(bande[0] * 1000), Math.round(bande[1] * 1000)] : null;
   const sg = (v: number) => (v / 1000).toFixed(3).replace('.', ',');
   // Les bornes seules : la bande visée est dessinée sur la piste et dite dessous (ses deux graduations se chevauchaient).
   const grads = [{ at: min, text: sg(min) }, { at: max, text: sg(max) }];
@@ -329,7 +336,7 @@ export const PanneauMesure: React.FC<{ m: ModeleFiche; etat: EtatMesure; onChang
               onChange={v => onChange({ ...etat, milli: v, erreur: '' })} />
             <div className="flex items-center justify-between gap-2 text-sm text-cave-400">
               <Cible aria-label="Un millième de moins" onClick={() => onChange({ ...etat, milli: Math.max(min, etat.milli - 1), erreur: '' })} className="w-12 px-0 text-lg">−</Cible>
-              <span>{cible ? `bande visée ${sg(cible[0])}–${sg(cible[1])}` : 'pas de FG visée dans la recette'}</span>
+              <span>{cible ? (m.fg ? `bande visée ${sg(cible[0])}–${sg(cible[1])}` : `FG ${sg(cible[0])}–${sg(cible[1])} · plage de la levure`) : 'pas de FG visée dans la recette'}</span>
               <Cible aria-label="Un millième de plus" onClick={() => onChange({ ...etat, milli: Math.min(max, etat.milli + 1), erreur: '' })} className="w-12 px-0 text-lg">+</Cible>
             </div>
           </>}

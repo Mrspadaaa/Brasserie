@@ -1,6 +1,10 @@
 import type { Batch, FermentationStep, HopIngredient, StockItem } from '../../../types';
+import type { HopKnowledge } from '../../../../functions/src/hopPredictionSchema';
 import { breweryDay } from '../../../domain/batchSchedule';
 import { abvFromGravities } from '../../../domain/gravityBounds';
+import { projectYeastRecipe } from '../../../domain/yeastProjection';
+import { resolveFermentationYeast } from '../../../domain/fermentationScenario';
+import { yeastReferences } from '../../../domain/yeastReferences';
 import { parseDecimal } from '../../numericInput';
 import { describeFamilies, engineVarieties } from '../../../domain/hopIndex/v4/hops';
 import { hopRef } from '../../../domain/hopIndex/v4/data';
@@ -270,6 +274,22 @@ export interface EtatMesure { milli: number; temp: string; cuve?: string; taper:
 export function mesureInitiale(m: ModeleFiche, fgCible?: number): EtatMesure {
   const dep = m.dernier?.sg ?? fgCible ?? 1.01;
   return { milli: Math.round(dep * 1000), temp: '', cuve: '', taper: false, saisie: '', erreur: '' };
+}
+
+/**
+ * CT4-B-11 : la plage de FG que la levure de la recette donne (« FG 1,012–1,015 plage » de la fiche recette), pour la saisie d'un relevé quand la
+ * recette n'écrit pas de FG. Même calcul que `RecipePage` : `projectYeastRecipe` sur la recette du brassin et la référence de sa levure. Sans levure,
+ * sans référence ou sans plage : `null` (l'inconnu n'est jamais inventé).
+ */
+export function plageFgDeLaLevure(batch: Batch, saved?: HopKnowledge[]): [number, number] | null {
+  const recette = batch.recipeSnapshot;
+  if (!recette?.yeast?.name) return null;
+  try {
+    const projection = projectYeastRecipe({ ...recette, efficiencyPct: recette.efficiencyPct ?? 75 } as never,
+      { og: recette.ogTarget, reference: resolveFermentationYeast(recette as never, yeastReferences(saved)) });
+    const plage = projection.fg.range;
+    return plage && Number.isFinite(plage.min) && Number.isFinite(plage.max) && plage.min > 1 ? [plage.min, plage.max] : null;
+  } catch { return null; }
 }
 
 /** Bornes du curseur : du plancher physique de la FG à la densité de départ, arrondie à la dizaine au-dessus. */

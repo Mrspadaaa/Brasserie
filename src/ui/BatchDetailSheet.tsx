@@ -1,5 +1,5 @@
 import { Input, Textarea } from './Input';
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { Trash2, ArrowRight, AlertTriangle, PackageCheck, X, Sparkles } from 'lucide-react';
 import { Batch, StockItem } from '../types';
 import { BATCH_STATUS, statusOfBatch } from '../domain/batchStatus';
@@ -47,7 +47,7 @@ import { useCarnet } from './production/carnet/useCarnet';
 import { CarnetFil, CarnetPied } from './production/carnet/CarnetFil';
 import { DossierFil, DossierPied, rappelDryHop } from './production/carnet/DossierFil';
 import { FicheFermentation, PanneauMesure, PiedFermentation } from './production/fermentation/FicheFermentation';
-import { avecTacheFaite, mesureInitiale, modeleFiche, releveDepuisEtat, sansTacheFaite, type ContexteStock, type EtatMesure, type Houblon } from './production/fermentation/modele';
+import { avecTacheFaite, mesureInitiale, modeleFiche, plageFgDeLaLevure, releveDepuisEtat, sansTacheFaite, type ContexteStock, type EtatMesure, type Houblon } from './production/fermentation/modele';
 import { planDestockageHoublon } from './production/fermentation/destockage';
 import { FirestoreRepo } from '../services/firestoreRepo';
 
@@ -303,6 +303,8 @@ export const BatchDetailSheet: React.FC<BatchDetailSheetProps> = ({
     } catch { return undefined; }
   })();
   const ficheM = draft.status === 'fermentation' && section === 'measurements' ? modeleFiche(draft, Date.now(), stockCtx) : null;
+  // CT4-B-11 : sans FG visée dans la recette, le repère de la saisie est la plage de la levure (même calcul que la fiche recette).
+  const fgPlage = useMemo(() => (ficheM && !ficheM.fg ? plageFgDeLaLevure(draft, StorageService.getHopKnowledge()) : null), [ficheM?.fg, draft.recipeSnapshot, draft.status, section]); // eslint-disable-line react-hooks/exhaustive-deps
   // gfc n° 10 : les mesures de dossier se rangent sous le Dossier d'un brassin en fermentation, plus sous la fiche.
   const mesuresDansDossier = draft.status === 'fermentation' && section === 'overview';
   const Enveloppe: React.ElementType = post || ficheM || mesuresDansDossier ? 'details' : React.Fragment;
@@ -418,7 +420,7 @@ export const BatchDetailSheet: React.FC<BatchDetailSheetProps> = ({
         className={ficheM ? 'md:max-w-2xl md:mx-auto lg:!max-w-6xl' : 'md:max-w-2xl md:mx-auto h-[88dvh]'}
         footer={fermentation && section === 'tasting' ? <CarnetPied c={carnet} /> : rappel ? <DossierPied batch={draft} now={nowMs} ajoute={() => setConfirmStock('remaining')} /> : ficheM ? (
           <div className="space-y-2">
-            {mesure && <div className="max-h-[55dvh] overflow-y-auto"><PanneauMesure m={ficheM} etat={mesure} onChange={setMesure} /></div>}
+            {mesure && <div className="max-h-[55dvh] overflow-y-auto"><PanneauMesure m={ficheM} etat={mesure} onChange={setMesure} fgPlage={fgPlage} /></div>}
             <PiedFermentation ouvert={mesure !== null} ouvrir={() => setMesure(mesureInitiale(ficheM, draft.recipeSnapshot?.fgTarget))}
               annuler={() => setMesure(null)} enregistrer={enregistrerReleve} />
           </div>
