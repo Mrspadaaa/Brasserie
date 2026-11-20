@@ -1,5 +1,5 @@
 // La bande de dose de la carte Ma levure, telle que le brasseur l'a choisie (20.11) : au repos et au cas limite, r3 v05
-// (« 23 g · couvre le conseil », piste en sachets, trait du conseil, stock à droite) ; juste après − / +, r4 v02 (« 151 % du besoin »,
+// (forme r3 v05 : quantité et son mot, piste en sachets, trait du besoin de la recette, stock à droite ; le fabricant en second, sous la barre) ; juste après − / +, r4 v02 (« 151 % du besoin »,
 // le besoin de la recette en trait noir au-dessus de la piste, l'excédent en vert, le manque hachuré en rouge, le remède « → N sachets »).
 // Le besoin vient du moteur (`besoinDeLaLevure` : taux × volume × °P) ; rien n'est inventé : sans sachet connu, la piste reste en pointillé.
 import { Box, Minus, Plus } from 'lucide-react';
@@ -99,12 +99,24 @@ export function BandeDose({ etat, qty, unite, besoin, stock, onPas, onEcrire, on
     </div>;
   }
 
-  // Repos, à choisir, libre : r3 v05.
-  const repere = fab ? (conseilSachets !== undefined ? { pos: conseilSachets, txt: `${conseilTexte(fab)} conseillé` } : undefined)
-    : besoin?.sachets !== undefined ? { pos: besoin.sachets, txt: `besoin ${dec(besoin.sachets, 1)}` } : undefined;
+  // Repos, à choisir, libre : la forme de r3 v05. Le repère dit le besoin de la recette (ML-DOSE, D-n du 20.11 : « combien j'ai besoin pour ma
+  // recette ») ; le conseil du fabricant passe en second, dans le petit texte sous la barre (comme r4 v02). Sans besoin calculable, le repère
+  // retombe sur le fabricant, dit comme tel.
+  const b = besoin?.sachets;
+  const besoinG = b !== undefined && sachet?.grammes !== undefined ? b * sachet.grammes : undefined;
+  const repere = b !== undefined && unite !== 'g' ? { pos: b, txt: `besoin ${dec(b, 1)} ${motUnite(unite, b)}` }
+    : fab && conseilSachets !== undefined ? { pos: conseilSachets, txt: `fabricant ${conseilTexte(fab)}` } : undefined;
   let mot: { txt: string; ok: boolean } | undefined;
-  if (qty !== undefined && grammes !== undefined && fab) mot = grammes + 1e-9 >= fab.min ? { txt: 'couvre le conseil', ok: true } : { txt: 'sous le conseil', ok: false };
-  else if (qty !== undefined && unite !== 'g' && besoin?.sachets !== undefined) mot = qty + 1e-9 >= besoin.sachets ? { txt: 'couvre le besoin', ok: true } : { txt: 'sous le besoin', ok: false };
+  if (qty !== undefined && unite !== 'g' && b !== undefined) {
+    const ecart = b - qty;
+    mot = ecart <= 1e-9 ? { txt: 'couvre le besoin', ok: true } : { txt: `manque ${dec(ecart, 1)} ${motUnite(unite, ecart)}`, ok: false };
+  } else if (grammes !== undefined && besoinG !== undefined) {
+    const ecart = besoinG - grammes;
+    mot = ecart <= 1e-9 ? { txt: 'couvre le besoin', ok: true } : { txt: `manque ${dec(ecart, entier(ecart) ? 0 : 1)} g`, ok: false };
+  } else if (grammes !== undefined && fab) mot = grammes + 1e-9 >= fab.min ? { txt: 'couvre le fabricant', ok: true } : { txt: 'sous le fabricant', ok: false };
+  const reperes = b !== undefined && besoin ? [fab && `fabricant ${conseilTexte(fab)}`, `taux ${besoin.regime} ${souple(besoin.taux)} M/mL/°P`,
+    `${dec(besoin.volumeL, entier(besoin.volumeL) ? 0 : 1)} L`, sachet?.poidsAConfirmer && sachet.grammes !== undefined && `sachet ${dec(sachet.grammes, 1)} g à confirmer`]
+    .filter(Boolean).join(' · ') : undefined;
   const vide = etat !== 'repos';
 
   return <div className="ml-dose" data-lv="bande-dose" data-etat={etat}>
@@ -114,7 +126,7 @@ export function BandeDose({ etat, qty, unite, besoin, stock, onPas, onEcrire, on
       {etat === 'a-choisir' && <span className="ml-g">aucune dose écrite</span>}
       {etat === 'libre' && (qty !== undefined && grammesTexte
         ? <><span className="ml-g ml-m">{grammesTexte}</span>{mot && <><span className="ml-g">·</span><span className="ml-partmot" data-ok={mot.ok}>{mot.txt}</span></>}</>
-        : <span className="ml-g">{fab ? `${conseilTexte(fab)} conseillé · sachet inconnu` : 'pas de conseil · fiche absente'}</span>)}
+        : <span className="ml-g">{fab ? `fabricant ${conseilTexte(fab)} · sachet inconnu` : 'pas de conseil · fiche absente'}</span>)}
       <span className="ml-esp" />
       {etat === 'a-choisir' && auChoix !== undefined && <button type="button" className="ml-mettre" data-lv="mettre" onClick={() => onEcrire(auChoix)}>Mettre {dec(auChoix)} {motUnite(unite, auChoix)}</button>}
       <PuceStock qty={etat === 'repos' ? qty : undefined} stock={stock} apres={false} onOffre={onOffre} />
@@ -139,6 +151,7 @@ export function BandeDose({ etat, qty, unite, besoin, stock, onPas, onEcrire, on
       </span>
       {plus}
     </div>
+    {etat !== 'libre' && reperes && <div className="ml-reperes" data-lv="reperes">{reperes}</div>}
   </div>;
 }
 
