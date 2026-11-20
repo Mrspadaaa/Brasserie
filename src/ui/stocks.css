@@ -20,3 +20,9 @@
 @media (max-height: 480px) {
   .stocks-screen { height: max(15rem, calc(100dvh - 6rem)); }
 }
+/* T4-1 (en ligne, passe 5) : Courses à 1280. T3-10 (floating-actions.css) ne garde la gouttière du + que sous 1024 px, « au rail le + est dans le coin du contenu large » ; or la liste
+   des courses s'étend sur toute la largeur et ses quantités (« 2 L », « 3 sachets », « 1050 pièces ») et « Copier » vivent au bord droit : le + (64 px, 12 px du bord) les cachait à chaque ligne qui
+   passait dessous. Dès 1024 px, même gouttière de 76 px (56 + 12 + 8 d'air) ; sous 1024 px, celle de floating-actions.css. Seulement quand le + flotte. */
+@media (min-width: 1024px) {
+  :root body[data-has-fab-floating] .stocks-screen > :has(> [data-testid="commande-repliee"]) { padding-right: 4.75rem; }
+}
