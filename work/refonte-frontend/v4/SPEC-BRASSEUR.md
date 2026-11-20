@@ -2376,3 +2376,7 @@ Classement de la page r3 de Ma levure (https://claude.ai/artifact/DKAJe8ESeMR4ig
 > D'ailleurs je suis en négatif et on le voit même pas sûr le graph de prix...
 
 (20.11 : en-tête « −683 CHF à dépenser », mais la courbe du solde en haut du Calendrier ne montre aucun passage sous zéro. Ajouté à CAL-PASSE.)
+
+> Toujours très compliqué de reculer le graph....
+
+(20.11, capture 5-reculer-frise.jpg : frise de période « 1er févr. 2026 → 22 août 2027 », la poignée gauche collée au bord, à moitié hors écran, ne se saisit pas pour reculer. CAL-PASSE.)
