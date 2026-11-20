@@ -12,3 +12,10 @@
 :root body[data-has-fab-floating] .page-shell [data-page-end-actions] {
   padding-right: 4.875rem;
 }
+
+/* BK3-3 : la rangée de fin (Retour · Suivant) vit hors de la zone qui défile (`data-page-end-dock`, sœur de <main>). Les règles de l'atelier de l'eau la visaient comme enfant
+   direct du contenu ; elles la visent aussi à sa nouvelle place (gouttière du + : 4,75 rem, puis 4 rem dès 640 px où le + suit le bord du cadre). */
+[data-page-shell]:has([data-water-step="eau"]) [data-page-end-dock] [data-page-end-actions] { padding-right: 4.75rem; }
+@media (min-width: 640px) {
+  [data-page-shell]:has([data-water-step="eau"]) [data-page-end-dock] [data-page-end-actions] { padding-right: 4rem; }
+}

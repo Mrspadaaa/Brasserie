@@ -2,7 +2,7 @@
    Une seule largeur de cadre à toutes les étapes : avant, `PageShell` donnait 768 px aux étapes ordinaires et 1152 px aux
    étapes Houblons et Levure, et l'en-tête, le bandeau Grain/OG et le contenu sautaient d'une étape à l'autre à 1280.
    56 rem = 896 px : la colonne de l'étape Levure (880 px) s'y loge telle quelle ; Houblons s'y resserre ; le reste s'y élargit un peu. */
-.recipe-wizard > :is(header, footer) :is(.max-w-3xl, .max-w-6xl),
+.recipe-wizard > :is(header, footer, [data-page-end-dock]) :is(.max-w-3xl, .max-w-6xl),
 .recipe-wizard > main > :is(.max-w-3xl, .max-w-6xl) {
   max-width: 56rem;
 }

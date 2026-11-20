@@ -382,6 +382,15 @@ export const PageShell: React.FC<PageShellProps> = ({
     mq.addEventListener?.('change', maj);
     return () => mq.removeEventListener?.('change', maj);
   }, []);
+  // BK3-3 : sous 481 px de haut (téléphone couché), la rangée suit le contenu au lieu de prendre 44 px de la hauteur.
+  const [assezHaut, setAssezHaut] = useState(() => typeof window === 'undefined' || !window.matchMedia || window.matchMedia('(min-height: 481px)').matches);
+  useEffect(() => {
+    const mq = window.matchMedia?.('(min-height: 481px)');
+    if (!mq) return;
+    const maj = () => setAssezHaut(mq.matches);
+    mq.addEventListener?.('change', maj);
+    return () => mq.removeEventListener?.('change', maj);
+  }, []);
   const [dockPriority] = useState(nextActionDockPriority);
   const headerRef = useRef<HTMLElement>(null);
   /*
@@ -572,6 +581,16 @@ export const PageShell: React.FC<PageShellProps> = ({
     };
   }, [footerShown]);
 
+  // Au-dessus de 640 px (écran d'ordinateur, 800 px de haut), la rangée Retour / Suivant reste en bas de la page, hors de la zone qui défile (B1 n° 15 : sortie de
+  // l'écran dès qu'une étape dépassait la page). Au téléphone elle suit le contenu (T12b : 56 px confisqués sinon), sauf si l'hôte la veut fixe (`endActionsCollant`, Levure).
+  const barreHorsDefilement = !!endActions && (!!endActionsCollant || largeur) && assezHaut;
+  const rangeeFin = endActions ? (
+    <div data-page-end-actions className={`pb-safe ${launcherPresent && !dockInHeader ? 'pr-16' : ''}`}
+      style={launcherPresent && !dockInHeader && !largeur ? { marginBottom: '0.5rem', ...(endActionsCollant ? { paddingRight: '4.75rem' } : {}) } : undefined}>
+      {endActions}
+    </div>
+  ) : null;
+
   return (
     <div
       ref={pageRef}
@@ -706,16 +725,17 @@ export const PageShell: React.FC<PageShellProps> = ({
           {children}
           {/* `marginBottom` 0,5 rem (en ligne : `mb-2` n'est pas généré par la feuille Tailwind du projet) : avec une rangée de fin, la réserve de 4,5 rem (48 px de bouton, 16 de décalage, 8 d'air ; floating-actions.css) n'est plus posée par la fin du
               contenu. Rangée (44 px) + marge de la page (12) + espace entre blocs (8) ne faisaient que 64 px : le dernier bloc touchait le bouton (critique B1 n° 7, en bas de page). */}
-          {endActions && (
-            // Au-dessus de 640 px (écran d'ordinateur, 800 px de haut), la rangée Retour / Suivant reste collée en bas de la zone qui défile : sortie de l'écran dès
-            // qu'une étape dépassait la page (B1 n° 15 : 911 / 800 au champ ouvert, 926 / 800 à huit lignes). Au téléphone elle suit le contenu (T12b : 56 px confisqués sinon).
-            <div data-page-end-actions className={`pb-safe ${endActionsCollant ? 'sticky bottom-0 z-10 bg-cave-950' : 'sm:sticky sm:bottom-0 sm:z-10 sm:bg-cave-950'} ${launcherPresent && !dockInHeader ? 'pr-16' : ''}`}
-              style={launcherPresent && !dockInHeader && !largeur ? { marginBottom: '0.5rem', ...(endActionsCollant ? { paddingRight: '4.75rem' } : {}) } : undefined}>
-              {endActions}
-            </div>
-          )}
+          {!barreHorsDefilement && rangeeFin}
         </div>
       </main>
+
+      {barreHorsDefilement && (
+        // BK3-3 : la rangée Retour / Suivant est HORS de la zone qui défile. C'est la réserve de place : la zone finit là où la rangée commence, la rangée ne passe sur
+        // aucun bloc. Téléphone couché (< 481 px de haut) et téléphone debout (hors étape Levure) : elle suit le contenu, comme avant.
+        <div data-page-end-dock className="shrink-0 bg-cave-950">
+          <div className={`${frame} mx-auto px-2 pt-1`}>{rangeeFin}</div>
+        </div>
+      )}
 
       {footerShown && (
         <footer
