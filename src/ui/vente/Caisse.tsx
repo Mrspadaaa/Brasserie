@@ -20,6 +20,7 @@ import { nextClientId } from '../../services/refs';
 import { preparerQrFacture, problemesAdresse, QrFactureInvalide } from '../../services/swissQrBill';
 import { brassinsVendables, jaugeBrassin, litresVendus } from './brassinsVendables';
 import { formatsDuBrassin, tarifDuFormat } from './formatsVente';
+import { prixDeTuile } from '../../domain/tarifs/tuileVente';
 import { arrondiEspeces, messageBornes, PRIX_UNITAIRE_MAX, problemePanier, QUANTITE_MAX, totauxPanier, versArticles, type LignePanier } from './panier';
 import { debiteurDe, preparerVente, type Echeance, type ModeVente, type VentePreparee } from './enregistrerVente';
 import { effacerBrouillon, garderBrouillon, lireBrouillon } from './brouillon';
@@ -337,14 +338,14 @@ export function CaisseContenu({ clientIdInitial, onClose, onSaved, onBusy, ferme
           <div className="cs-tiles" data-mots="lignes">
             {formats.map(({ format, present, aVerifier }, i) => {
               const tarif = tarifDuFormat(tarifs, format.id, actif?.name);
-              const prix = tarif?.priceHT ?? null;
+              const { prix, suspect } = prixDeTuile(tarif?.priceHT, format.volumeL), aVerif = aVerifier || suspect;
               const ligne = lignes.find(l => l.cle === cle(actifId, format.id));
               return (
                 <button key={format.id} ref={i === 0 ? premiereTuile : undefined} type="button" className={`cs-t${ligne ? ' cs-has' : ''}${present ? '' : ' cs-off'}`} disabled={fieldsetOff}
                   aria-label={`${format.label}${prix !== null ? `, ${montantChf(prix)} CHF` : ', prix à indiquer'}`} onClick={() => ajouter(format.id, format.label, format.volumeL, prix)}>
                   {ligne && <span className="cs-n cs-m">{ligne.quantite}</span>}
                   {format.id === 'fut' ? <Fut /> : <Bouteille grande={format.id === '75cl'} />}
-                  <div><b>{format.label}</b>{aVerifier && <small> · à vérifier</small>}<div className="cs-p">{prix !== null ? <><span className="cs-m">{montantChf(prix)}</span> CHF</> : 'prix ?'}</div></div>
+                  <div><b>{format.label}</b>{aVerif && <small title={suspect && tarif ? `Le tarif de ${montantChf(tarif.priceHT)} CHF fait ${montantChf(tarif.priceHT / format.volumeL)} CHF le litre : à corriger dans Atelier › Tarifs` : undefined}> · à vérifier</small>}<div className="cs-p">{prix !== null ? <><span className="cs-m">{montantChf(prix)}</span> CHF</> : 'prix ?'}</div></div>
                   {ligne && <span className="cs-minus" role="button" tabIndex={0} aria-label={`Retirer un ${format.label}`} onClick={e => { e.stopPropagation(); retirer(ligne.cle); }} onKeyDown={e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); e.stopPropagation(); retirer(ligne.cle); } }}>−</span>}
                 </button>
               );
