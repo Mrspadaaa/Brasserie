@@ -2372,3 +2372,7 @@ Classement de la page r3 de Ma levure (https://claude.ai/artifact/DKAJe8ESeMR4ig
 > Et modifier, un évènement ne l'update pas à la bonne date, bref c'est une catastrophe
 
 (20.11 : modifier un événement du Calendrier ne le pose pas à la bonne date. Ajouté à CAL-PASSE.)
+
+> D'ailleurs je suis en négatif et on le voit même pas sûr le graph de prix...
+
+(20.11 : en-tête « −683 CHF à dépenser », mais la courbe du solde en haut du Calendrier ne montre aucun passage sous zéro. Ajouté à CAL-PASSE.)
