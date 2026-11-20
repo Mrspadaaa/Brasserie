@@ -1,0 +1,59 @@
+{
+ "t390-clair": {
+  "erreur": "Waiting failed: 60000ms exceeded"
+ },
+ "t390-cave": {
+  "repos": "Brau- und Rauchshop GmbH 27.04 86,50CHF Pour ZZ TEST Commande de printemps trouvé pour délier ✓ 15 lignes sûres repliées Doute 1 sur 8 · Houblons · 7 lignes 20,05 Target 11.3% 40 g Hallertauer Blanc 9.5% CH 30 g Comme la dernière fois (12.03) 2 → Houblons de ton stock Relier les 2 comme avant Voir un par un Puis : TVA 8,1 % 2 / 8",
+  "boutonsPleins": 1,
+  "apresRelier": "Doute 4 sur 8 · TVA 8,1 %",
+  "tva": "Brau- und Rauchshop GmbH 27.04 86,50CHF Pour ZZ TEST Commande de printemps trouvé pour délier ✓ 17 lignes sûres repliées Doute 4 sur 8 · TVA 8,1 % Imprimé 1,95 · recalculé 0,84 Garder 1,95 Prendre 0,84 Puis : TVA 2,6 % 5 / 8",
+  "tva2": "Doute 5 sur 8 · TVA 2,6 %",
+  "moutures": "Doute 5 sur 8 · 5 moutures · Zuschlag",
+  "delie": "Brau- und Rauchshop GmbH 27.04 86,50CHF Lier à un besoin › ✓ 17 lignes sûres repliées Doute 5 sur 8 · 5 moutures · Zuschlag Montant 1,50 · proposé avec leur malt Laisser en service Rattacher les 5 Puis : Goldings · article à choisir 6 / 8",
+  "lierOuvert": "purchase-plan",
+  "terminer": "Terminé · 4 doutes à revoir",
+  "apresTermine": {
+   "feuille": false,
+   "erreur": null
+  },
+  "console": [
+   "Failed to load resource: net::ERR_BLOCKED_BY_CLIENT.Inspector"
+  ]
+ },
+ "pc1280-clair": {
+  "repos": "Brau- und Rauchshop GmbH 27.04 86,50CHF Pour ZZ TEST Commande de printemps trouvé pour délier ✓ 15 lignes sûres repliées Doute 1 sur 8 · Houblons · 7 lignes 20,05 Target 11.3% 40 g Hallertauer Blanc 9.5% CH 30 g Comme la dernière fois (12.03) 2 → Houblons de ton stock Relier les 2 comme avant Voir un par un Puis : TVA 8,1 % 2 / 8",
+  "boutonsPleins": 1,
+  "apresRelier": "Doute 4 sur 8 · TVA 8,1 %",
+  "tva": "Brau- und Rauchshop GmbH 27.04 86,50CHF Pour ZZ TEST Commande de printemps trouvé pour délier ✓ 17 lignes sûres repliées Doute 4 sur 8 · TVA 8,1 % Imprimé 1,95 · recalculé 0,84 Garder 1,95 Prendre 0,84 Puis : TVA 2,6 % 5 / 8",
+  "tva2": "Doute 5 sur 8 · TVA 2,6 %",
+  "moutures": "Doute 5 sur 8 · 5 moutures · Zuschlag",
+  "delie": "Brau- und Rauchshop GmbH 27.04 86,50CHF Lier à un besoin › ✓ 17 lignes sûres repliées Doute 5 sur 8 · 5 moutures · Zuschlag Montant 1,50 · proposé avec leur malt Laisser en service Rattacher les 5 Puis : Goldings · article à choisir 6 / 8",
+  "lierOuvert": "purchase-plan",
+  "terminer": "Terminé · 4 doutes à revoir",
+  "apresTermine": {
+   "feuille": false,
+   "erreur": null
+  },
+  "console": [
+   "Failed to load resource: net::ERR_BLOCKED_BY_CLIENT.Inspector"
+  ]
+ },
+ "pc1280-cave": {
+  "repos": "Brau- und Rauchshop GmbH 27.04 86,50CHF Pour ZZ TEST Commande de printemps trouvé pour délier ✓ 15 lignes sûres repliées Doute 1 sur 8 · Houblons · 7 lignes 20,05 Target 11.3% 40 g Hallertauer Blanc 9.5% CH 30 g Comme la dernière fois (12.03) 2 → Houblons de ton stock Relier les 2 comme avant Voir un par un Puis : TVA 8,1 % 2 / 8",
+  "boutonsPleins": 1,
+  "apresRelier": "Doute 4 sur 8 · TVA 8,1 %",
+  "tva": "Brau- und Rauchshop GmbH 27.04 86,50CHF Pour ZZ TEST Commande de printemps trouvé pour délier ✓ 17 lignes sûres repliées Doute 4 sur 8 · TVA 8,1 % Imprimé 1,95 · recalculé 0,84 Garder 1,95 Prendre 0,84 Puis : TVA 2,6 % 5 / 8",
+  "tva2": "Doute 5 sur 8 · TVA 2,6 %",
+  "moutures": "Doute 5 sur 8 · 5 moutures · Zuschlag",
+  "delie": "Brau- und Rauchshop GmbH 27.04 86,50CHF Lier à un besoin › ✓ 17 lignes sûres repliées Doute 5 sur 8 · 5 moutures · Zuschlag Montant 1,50 · proposé avec leur malt Laisser en service Rattacher les 5 Puis : Goldings · article à choisir 6 / 8",
+  "lierOuvert": "purchase-plan",
+  "terminer": "Terminé · 4 doutes à revoir",
+  "apresTermine": {
+   "feuille": false,
+   "erreur": null
+  },
+  "console": [
+   "Failed to load resource: net::ERR_BLOCKED_BY_CLIENT.Inspector"
+  ]
+ }
+}

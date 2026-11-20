@@ -963,6 +963,35 @@ Rapport annoncé mais sans fichier au 08.11 : `%TEMP%/affinee-metier-vision/RAPP
 | LEV-10 | captures du brasseur 19.11 07:42 | Recette › Levure › Ma levure | « Brouillon » dit deux fois dans la conduite (en-tête et titre du graphe). | basse | corrigé | 580cffdcd | work/missions/2026-11-19-ma-levure/LISTE.md |
 | LEV-11 | captures du brasseur 19.11 07:42 | Recette › Levure › Ma levure | Après une recherche, les cellules « à confirmer · Retenir · Écarter » passent sur deux lignes à 390 (cellule partagée). | basse | ouvert |  | work/missions/2026-11-19-ma-levure/LISTE.md |
 
+| SIMP-A1 | critique opus 20.11 (port simplicité) | pa1 | TVA « recalculé » = somme des TVA imprimées, pas un recalcul | haute | en cours |  | work/missions/2026-11-20-port-simplicite/critique/RESULTAT-A.md |
+| SIMP-A2 | critique opus 20.11 (port simplicité) | pa1 | un seul doute TVA pour deux taux | moyenne | en cours |  | work/missions/2026-11-20-port-simplicite/critique/RESULTAT-A.md |
+| SIMP-A3 | critique opus 20.11 (port simplicité) | pa2 | « N à relier » et « Relier les N comme avant » désignent des lignes différentes | haute | en cours |  | work/missions/2026-11-20-port-simplicite/critique/RESULTAT-A.md |
+| SIMP-A4 | critique opus 20.11 (port simplicité) | pa1+pa2+pl1 | au repos, pile au-dessus du doute courant | moyenne | en cours |  | work/missions/2026-11-20-port-simplicite/critique/RESULTAT-A.md |
+| SIMP-A5 | critique opus 20.11 (port simplicité) | pa1 | « Terminé » demande un second toucher | moyenne | en cours |  | work/missions/2026-11-20-port-simplicite/critique/RESULTAT-A.md |
+| SIMP-A6 | critique opus 20.11 (port simplicité) | pa1 | 5 moutures = 5 doutes identiques | moyenne | en cours |  | work/missions/2026-11-20-port-simplicite/critique/RESULTAT-A.md |
+| SIMP-A7 | critique opus 20.11 (port simplicité) | pa1 | mots en chasse fixe | basse | en cours |  | work/missions/2026-11-20-port-simplicite/critique/RESULTAT-A.md |
+| SIMP-A8 | critique opus 20.11 (port simplicité) | pl1 | pastille « trouvé » peu contrastée | basse | en cours |  | work/missions/2026-11-20-port-simplicite/critique/RESULTAT-A.md |
+| SIMP-A9 | critique opus 20.11 (port simplicité) | pl1 | après délier, plus de lien au repos | basse | en cours |  | work/missions/2026-11-20-port-simplicite/critique/RESULTAT-A.md |
+| SIMP-A10 | critique opus 20.11 (port simplicité) | pl2 | étiquette « Fermenteur −750 » sur la marche d'un autre projet | moyenne | en cours |  | work/missions/2026-11-20-port-simplicite/critique/RESULTAT-A.md |
+| SIMP-A11 | critique opus 20.11 (port simplicité) | pl2 | titre court « brassage » ambigu | moyenne | en cours |  | work/missions/2026-11-20-port-simplicite/critique/RESULTAT-A.md |
+| SIMP-A12 | critique opus 20.11 (port simplicité) | pl2 | courbe écrasée à 390 | basse | en cours |  | work/missions/2026-11-20-port-simplicite/critique/RESULTAT-A.md |
+| SIMP-A13 | critique opus 20.11 (port simplicité) | pe1 | lignes qui ne bougent pas affichées | moyenne | en cours |  | work/missions/2026-11-20-port-simplicite/critique/RESULTAT-A.md |
+| SIMP-B1 | critique opus 20.11 (port simplicité) | pb1 | jour posé d'office sur une cuve pleine | moyenne | en cours |  | work/missions/2026-11-20-port-simplicite/critique/RESULTAT-B.md |
+| SIMP-B2 | critique opus 20.11 (port simplicité) | pb1 | puces « À définir · Aujourd'hui · Autre date » absentes | moyenne | en cours |  | work/missions/2026-11-20-port-simplicite/critique/RESULTAT-B.md |
+| SIMP-B3 | critique opus 20.11 (port simplicité) | pb1 | « 27.5 L » à point | basse | en cours |  | work/missions/2026-11-20-port-simplicite/critique/RESULTAT-B.md |
+| SIMP-B4 | critique opus 20.11 (port simplicité) | pb1 | « Créer à 27 L » moins gras que le secondaire | basse | en cours |  | work/missions/2026-11-20-port-simplicite/critique/RESULTAT-B.md |
+| SIMP-B5 | critique opus 20.11 (port simplicité) | pb3 | carte sans volume | moyenne | en cours |  | work/missions/2026-11-20-port-simplicite/critique/RESULTAT-B.md |
+| SIMP-B6 | critique opus 20.11 (port simplicité) | pb3 | cas non figé : trois chemins | moyenne | en cours |  | work/missions/2026-11-20-port-simplicite/critique/RESULTAT-B.md |
+| SIMP-B7 | critique opus 20.11 (port simplicité) | pb2 | brassin rebrassé caché par le filtre | moyenne | en cours |  | work/missions/2026-11-20-port-simplicite/critique/RESULTAT-B.md |
+| SIMP-B8 | critique opus 20.11 (port simplicité) | pb2 | ↻ absent des terminés précédents | moyenne | en cours |  | work/missions/2026-11-20-port-simplicite/critique/RESULTAT-B.md |
+| SIMP-B9 | critique opus 20.11 (port simplicité) | pb2 | ligne « créé » au milieu de l'écran | basse | en cours |  | work/missions/2026-11-20-port-simplicite/critique/RESULTAT-B.md |
+| SIMP-B10 | critique opus 20.11 (port simplicité) | pm1 | écart lu depuis une tolérance non affichée | haute | corrigé | eb61d9675 | work/missions/2026-11-20-port-simplicite/critique/RESULTAT-B.md |
+| SIMP-B11 | critique opus 20.11 (port simplicité) | pm1 | pH sur la visée : Relever grisé | moyenne | corrigé | eb61d9675 | work/missions/2026-11-20-port-simplicite/critique/RESULTAT-B.md |
+| SIMP-B12 | critique opus 20.11 (port simplicité) | pe3 | pastille de trace illisible, ↺ minuscule | moyenne | en cours |  | work/missions/2026-11-20-port-simplicite/critique/RESULTAT-B.md |
+| SIMP-B13 | critique opus 20.11 (port simplicité) | pe3 | pastille et colonne « Dernier mouvement » redisent la même chose à 1280 | basse | ouvert |  | work/missions/2026-11-20-port-simplicite/critique/RESULTAT-B.md |
+| SIMP-B14 | critique opus 20.11 (port simplicité) | pe4 | Retenir inactif paraît actif | basse | en cours |  | work/missions/2026-11-20-port-simplicite/critique/RESULTAT-B.md |
+| SIMP-B15 | critique opus 20.11 (port simplicité) | pe4 | « OK » en plus sous la question | basse | en cours |  | work/missions/2026-11-20-port-simplicite/critique/RESULTAT-B.md |
+
 ## Perdus (constats sans correctif, sans décision et sans suite écrite)
 
 Retrouvés dans les rapports le 08.11 ; chacun est maintenant une ligne ouverte ci-dessus.
