@@ -12,7 +12,7 @@
  * Le segment « À venir · Carnets · Réalisés » et le + volant appartiennent au conteneur (lot D) ; le champ est ChampCarnet.
  */
 import React from 'react';
-import { ArrowDown, CalendarCheck, ChevronRight, Eye, Link2 } from 'lucide-react';
+import { ArrowDown, CalendarCheck, CheckCircle2, ChevronRight, Eye, Link2 } from 'lucide-react';
 import { Bandeau } from './Bandeau';
 import { titreAffiche } from './titre';
 import { normaliser } from '../../domain/carnets/analyseLocale';
@@ -21,6 +21,8 @@ import { titreDePhrase } from '../../domain/carnets/modele';
 import { comptesCarnet, texteComptes } from '../../domain/carnets/comptes';
 import { dateCourte, GENRE_LIBELLE, montant, Provenance, STATUT_LIBELLE, texteSortie, type ArticleV, type CarnetV, type GenreNote, type StatutCarnet } from './EtatIA';
 import { VignetteObjet } from './pictos';
+import { AnciennesNotes } from './AnciennesNotes';
+import type { AncienneNote } from '../../domain/carnets/anciens';
 
 export interface EclaireV { carnetId: string; quoi: string; tireDe: string; onDeplacer: () => void; onAnnuler: () => void }
 
@@ -43,6 +45,10 @@ export interface ListeCarnetsProps {
   onVoirAVenir?: (id: string) => void;
   /** G1 : un toucher sur un exemple remplit le champ. */
   onExemple?: (texte: string) => void;
+  /** h1, tour 2 (D3) : les projets du Planning archivés (faits), groupe « Faits » en fin de liste. */
+  faits?: CarnetV[];
+  /** h1, tour 2 (D2) : les anciennes notes de l'Atelier, en repli fermé tout en bas. */
+  anciennes?: readonly AncienneNote[];
 }
 
 const EXEMPLES = ['Frigo de garde', 'Ventilation de la salle', 'Évier pour les fûts'];
@@ -225,7 +231,9 @@ function CarteCarnet({ c, ajouts, onOuvrir, onCollerLien, onVoirAVenir }: { c: C
 
 export function ListeCarnets(p: ListeCarnetsProps) {
   const visibles = p.carnets.filter(c => !c.carnet.archive);
-  if (!visibles.length && !p.supprime) return <ListeVide enHaut={p.enHaut} onExemple={p.onExemple} />;
+  const faits = p.faits ?? [];
+  const anciennes = p.anciennes ?? [];
+  if (!visibles.length && !p.supprime && !faits.length) return <ListeVide enHaut={p.enHaut} onExemple={p.onExemple} pied={<AnciennesNotes notes={anciennes} />} />;
 
   const ajouts = p.ajouts ?? ajoutsDuMessage(visibles, p.messageRecent);
   /* n° 30 et R11 : le carnet tout juste créé reste dans le groupe de son état (une idée dans « Idée »), en tête de ce groupe, et ce
@@ -297,6 +305,17 @@ export function ListeCarnets(p: ListeCarnetsProps) {
           </div>
         </section>
       )}
+      {faits.length > 0 && (
+        <section className="cn-groupe-bloc" aria-label="Faits">
+          <div className="cn-entete-groupe">
+            <span className="cn-groupe cn-groupe-faits"><CheckCircle2 size={16} aria-hidden /> Faits <span className="cn-mono">{faits.length}</span></span>
+            <span className="cn-sp" /><span className="cn-mut">du Planning</span>
+          </div>
+          {/* un projet fait ne demande pas de lien : la carte s'ouvre, sans « Coller un lien » */}
+          <div className="cn-cartes">{faits.map(c => <CarteCarnet key={c.id} c={c} onOuvrir={p.onOuvrir} onVoirAVenir={p.onVoirAVenir} />)}</div>
+        </section>
+      )}
+      <AnciennesNotes notes={anciennes} />
     </div>
   );
 }
@@ -307,7 +326,7 @@ export function ListeCarnets(p: ListeCarnetsProps) {
  * « Une note en vrac marche aussi. » (G2). Aucune flèche ni bulle vers le champ (D-108 la refuse). Pendant la frappe, le cadre du
  * geste (`enHaut`) prend la place de la carte exemple.
  */
-function ListeVide({ enHaut, onExemple }: { enHaut?: React.ReactNode; onExemple?: (t: string) => void }) {
+function ListeVide({ enHaut, onExemple, pied }: { enHaut?: React.ReactNode; onExemple?: (t: string) => void; pied?: React.ReactNode }) {
   const cadreGeste = React.isValidElement(enHaut) ? hasContenu(enHaut) : Boolean(enHaut);
   return (
     <div className="cn-page cn-liste cn-vide-page">
@@ -330,6 +349,7 @@ function ListeVide({ enHaut, onExemple }: { enHaut?: React.ReactNode; onExemple?
         {EXEMPLES.map(e => <button key={e} type="button" className="cn-puce cn-puce-exemple" onClick={() => onExemple?.(e)}>{e}</button>)}
       </div>
       <p className="cn-mut">Une note en vrac marche aussi.</p>
+      {pied}
     </div>
   );
 }

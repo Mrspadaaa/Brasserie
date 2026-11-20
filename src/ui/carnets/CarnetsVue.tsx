@@ -9,6 +9,7 @@ import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import type { FinanceTransaction, FinancialPayment, FinancialPlan } from '../../domain/finance/types';
 import { FinanceService } from '../../services/financeService';
 import { StorageService } from '../../services/storage';
+import type { CreativeItem } from '../../types';
 import { useStorageValue } from '../../hooks/useLiveData';
 import { magasinFirestore, type MagasinCarnets } from '../../services/carnetsStore';
 import { estLienSeul, lireCarnets, lireMessages, nomArticle, nouvelIdCarnet, titreDePhrase, type CarnetDoc } from '../../domain/carnets/modele';
@@ -25,6 +26,7 @@ import { liensDuTexte, nombresDe, type CarnetPourIA, type LigneCarnet } from '..
 import { aidesCourantes, comportementSimule, modeCarnet, type AidesCarnet, type ModeCarnetIA } from '../../config/carnetIA';
 import { appelsSimules, creerRangement, planVrac, prixEcrits, retourDuRangement, versLignesAnnoncees, type AppelsIA, type EtatRangement, type PlanVrac, type Rangement as Envoi } from './rangement';
 import { ListeCarnets } from './ListeCarnets';
+import { anciennesNotes, faitsDuPlanning } from '../../domain/carnets/anciens';
 import { CarnetOuvert, type LienV, type RangeeV } from './CarnetOuvert';
 import { ChampCarnet } from './ChampCarnet';
 import { CadreArrivee, type CadreV } from './CadreArrivee';
@@ -67,6 +69,8 @@ export interface CarnetsVueProps {
   onVoirRealises?: () => void;
   onMessage?: (texte: string) => void;
   maintenant?: () => Date;
+  /** h1, tour 2 (D2) : tous les éléments de l'ancien carnet (le magasin ne lit que les idées) ; défaut : ceux de l'app, sauf avec un magasin passé (banc, tests). */
+  anciens?: readonly CreativeItem[];
   /** Banc seulement (`&texte=…`) : le champ arrive rempli, pour atteindre un état « pendant » par une adresse (D-131). */
   texteInitial?: string;
 }
@@ -268,6 +272,8 @@ export function autreObjet(texte: string, ouvert: CarnetDoc): string | null {
 const lireFinances = (): FinancesCarnet => ({
   plans: FinanceService.getPlans(), transactions: StorageService.getTransactions() as unknown as FinanceTransaction[], payments: FinanceService.getPayments()
 });
+/** h1, tour 2 (D2) : l'ancien carnet de l'Atelier, lu en entier (lecture seule). */
+const lireCreatifs = (): CreativeItem[] => StorageService.getCreativeItems();
 const versV = (c: CarnetDoc): CarnetV => c as unknown as CarnetV;
 /** G14 : le lien que tient le presse-papier, seulement si c'est un lien seul ; sans permission ou sans API, rien (refus silencieux). */
 async function lirePresse(): Promise<string | undefined> {
@@ -435,6 +441,11 @@ export function CarnetsVue(p: CarnetsVueProps) {
   const carnets = useMemo(() => lireCarnets(items), [items]);
   const tous = useMemo(() => lireCarnets(items, { archives: true }), [items]);
   const messages = useMemo(() => lireMessages(items), [items]);
+  /* h1, tour 2 : D3 les projets du Planning faits restent dans Tout ; D2 les anciennes notes de l'Atelier, en repli (lecture seule) */
+  const faitsPlanning = useMemo(() => faitsDuPlanning(tous), [tous]);
+  const creatifsApp = useStorageValue(lireCreatifs);
+  const sourceAnciens = p.anciens ?? (p.magasin ? null : creatifsApp);
+  const anciennes = useMemo(() => anciennesNotes(sourceAnciens ?? []), [sourceAnciens]);
   const [vue, setVue] = useState<Vue>({ sorte: 'liste' });
   const idOuvert = vue.sorte === 'liste' ? null : vue.id;
   const ouvert = idOuvert ? tous.find(c => c.id === idOuvert) ?? null : null;
@@ -1211,7 +1222,7 @@ export function CarnetsVue(p: CarnetsVueProps) {
   /* ---------- écrans ---------- */
   let ecran: React.ReactNode;
   if (!ouvert || vue.sorte === 'liste') {
-    ecran = <ListeCarnets carnets={carnets.map(enV)}enTete={enTete} messageRecent={retour?.bandeau.sorte === 'vrac' ? (retour.messageId ?? null) : null}
+    ecran = <ListeCarnets carnets={carnets.map(enV)} faits={faitsPlanning.map(enV)} anciennes={anciennes} enTete={enTete} messageRecent={retour?.bandeau.sorte === 'vrac' ? (retour.messageId ?? null) : null}
       supprime={supprime ? { titre: supprime.titre, statut: supprime.statut, onAnnuler: () => { annuler(supprime.inverse); setSupprime(null); } } : null}
       enHaut={<>{repriseNode}{bandeauNode}{cadre()}</>}
       onOuvrir={id => { setVue({ sorte: 'carnet', id }); setRetour(null); }}
