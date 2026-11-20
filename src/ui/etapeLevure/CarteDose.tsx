@@ -2,7 +2,7 @@
 // (forme r3 v05 : quantité et son mot, piste en sachets, trait du besoin de la recette, stock à droite ; le fabricant en second, sous la barre) ; juste après − / +, r4 v02 (« 151 % du besoin »,
 // le besoin de la recette en trait noir au-dessus de la piste, l'excédent en vert, le manque hachuré en rouge, le remède « → N sachets »).
 // Le besoin vient du moteur (`besoinDeLaLevure` : taux × volume × °P) ; rien n'est inventé : sans sachet connu, la piste reste en pointillé.
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { Box, Minus, Plus } from 'lucide-react';
 import type { BesoinLevure } from './dose';
 
@@ -71,6 +71,26 @@ export function BandeDose({ etat, qty, unite, besoin, stock, onPas, onEcrire, on
     const v = lu(champ);
     setChamp(souple(v === undefined ? (fab ? fab.min : 1) : Math.max(1, Math.round(v) + sens)));
   };
+  // L'étiquette du repère (« besoin 4,8 sachets ») : ancrée au trait à la même fraction que lui (au trait à 80 %, 80 % du texte à sa gauche), elle
+  // reste dans la piste ; si elle recouvre encore la borne 0 ou la borne de fin (piste étroite), cette borne se masque (critique-2 du 20.11, n° 2).
+  const bornesRef = useRef<HTMLSpanElement>(null);
+  useLayoutEffect(() => {
+    const r = bornesRef.current;
+    if (!r) return;
+    const mesurer = () => {
+      const cr = r.querySelector<HTMLElement>(':scope > .c')?.getBoundingClientRect();
+      for (const b of r.querySelectorAll<HTMLElement>(':scope > .d, :scope > .f')) {
+        const br = b.getBoundingClientRect();
+        const couvre = !!cr && cr.width > 0 && br.width > 0 && cr.left < br.right + 4 && cr.right > br.left - 4;
+        if (couvre) b.setAttribute('data-couvert', ''); else b.removeAttribute('data-couvert');
+      }
+    };
+    mesurer();
+    if (typeof ResizeObserver === 'undefined') return;
+    const ro = new ResizeObserver(mesurer);
+    ro.observe(r);
+    return () => ro.disconnect();
+  });
   const valider = () => { const v = lu(champ ?? ''); if (v === undefined) return; onEcrire(v); setChamp(undefined); };
   const motLibre = unite === 'g' ? 'grammes' : unite;
   const pasMot = unite === 'g' ? 'gramme' : unite;
@@ -171,11 +191,11 @@ export function BandeDose({ etat, qty, unite, besoin, stock, onPas, onEcrire, on
           {etat !== 'libre' && repere && <i className="ml-conseilmark" style={{ left: pc(repere.pos, max) }} />}
           {etat === 'repos' && qty !== undefined && <i className="ml-poignee" style={{ left: pc(qty, max) }} />}
         </span>
-        <span className="ml-bornes" aria-hidden="true">
+        <span className="ml-bornes" aria-hidden="true" ref={bornesRef}>
           {etat === 'libre'
             ? <><span className="d">{qty !== undefined ? `${motLibre}, saisis` : `${motLibre}, à saisir`}</span><span className="f">pas de repère</span></>
             : <><span className="d ml-m">0</span>
-              {repere && <span className="c" style={{ left: `${borne(repere.pos / max * 100, 30, 70)}%` }}>{repere.txt}</span>}
+              {repere && <span className="c" style={{ left: pc(repere.pos, max), transform: `translateX(-${pc(repere.pos, max)})` }}>{repere.txt}</span>}
               <span className="f ml-m">{max} ›</span></>}
         </span>
       </span>}

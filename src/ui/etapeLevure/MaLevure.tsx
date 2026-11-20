@@ -129,13 +129,13 @@ type Tuile =
  * stock d'abord. Flèches, Entrée choisit, Échap vide (comme le champ d'ajout de Malts/sucres). Rien ne renvoie ailleurs : la recherche avancée est
  * l'onglet « Chercher » du segment. Sans résultat, « Mon stock ou saisie libre » s'offre avec le texte tapé.
  */
-function ChampLevure({ choisie, classement, stock, stockIds, fiches, enStock, proposees, precedente, onPrecedente, onProposee, onStock, onHorsCatalogue, libre }: {
+function ChampLevure({ choisie, classement, stock, stockIds, fiches, enStock, proposees, precedente, precedenteId, onPrecedente, onProposee, onStock, onHorsCatalogue, libre }: {
   choisie: boolean; stock: StockItem[]; stockIds: ReadonlySet<string>; enStock: StockItem[];
   /** Le catalogue dans l'ordre du domaine pour cette recette (vendue ici, puis Europe, puis rare), calculé une fois hors de la frappe. */
   classement: readonly YeastReference[];
   /** La fiche du catalogue de chaque article du stock (par sa référence) : celle de l'article, sinon celle à laquelle son nom se relie de façon sûre. Une levure, une tuile. */
   fiches: ReadonlyMap<string, string>;
-  proposees: YeastReference[]; precedente?: string; onPrecedente?: () => void;
+  proposees: YeastReference[]; precedente?: string; precedenteId?: string; onPrecedente?: () => void;
   onProposee?: (levure: YeastReference) => void; onStock: (item: StockItem) => void; onHorsCatalogue: (texte?: string) => void;
   /** La saisie libre ouverte (« Mon stock ou saisie libre »), posée juste sous le champ : le geste n° 1 du 09.11 aboutit sous les yeux. */
   libre?: ReactNode;
@@ -217,6 +217,14 @@ function ChampLevure({ choisie, classement, stock, stockIds, fiches, enStock, pr
     return () => ro.disconnect();
   }, [enSaisie, proposees.map(l => l.id).join('|'), enStock.map(i => i.ref).join('|'), precedente]); // eslint-disable-line react-hooks/exhaustive-deps
 
+  // Une seule puce par levure (critique-2 du 20.11, n° 3 : US-05 en cube et en ↺) : quand la levure d'avant a sa puce ↺, la récente l'emporte sur
+  // celle du stock ou des proposées (même fiche, ou même nom court : « SafAle US-05 » = « SafAle US-05 (Fermentis) »).
+  const cleNom = (n: string) => nu(nomCourt(n)).replace(/[^a-z0-9]/g, '');
+  const avant = precedente && onPrecedente ? { id: precedenteId, cle: cleNom(precedente) } : undefined;
+  const estAvant = (id: string | undefined, nom: string) => !!avant && ((!!id && id === avant.id) || (!!avant.cle && cleNom(nom) === avant.cle));
+  const pucesProposees = proposees.filter(l => !estAvant(l.id, l.name));
+  const pucesStock = enStock.filter(item => !pucesProposees.some(l => l.id === fiches.get(item.ref)) && !estAvant(fiches.get(item.ref), item.name));
+
   const reinit = () => { setValeur(''); setCible(0); setFlechee(false); };
   const choisir = (tu: Tuile) => {
     if (tu.genre === 'stock') onStock(tu.item);
@@ -253,8 +261,8 @@ function ChampLevure({ choisie, classement, stock, stockIds, fiches, enStock, pr
 
     {!enSaisie && <div className="lv-puces" ref={rangee} data-role="puces">
       <div className="lv-puces-l">
-        {proposees.map(l => <button key={l.id} type="button" className="lv-puce" data-propose={l.id} onClick={() => onProposee?.(l)}><Package size={14} aria-hidden="true" /><span>{nomCourt(l.name)}</span></button>)}
-        {enStock.filter(item => !proposees.some(l => l.id === fiches.get(item.ref))).map(item => <button key={item.ref} type="button" className="lv-puce" onClick={() => onStock(item)}><Package size={14} aria-hidden="true" /><span>{item.name}</span></button>)}
+        {pucesProposees.map(l => <button key={l.id} type="button" className="lv-puce" data-propose={l.id} onClick={() => onProposee?.(l)}><Package size={14} aria-hidden="true" /><span>{nomCourt(l.name)}</span></button>)}
+        {pucesStock.map(item => <button key={item.ref} type="button" className="lv-puce" onClick={() => onStock(item)}><Package size={14} aria-hidden="true" /><span>{item.name}</span></button>)}
         {precedente && onPrecedente && <button type="button" className="lv-puce lv-hab" title={precedente} onClick={onPrecedente}><History size={14} aria-hidden="true" /><span>{nomCourtLevure(precedente)}</span></button>}
       </div>
       <button type="button" className="lv-puce lv-hc" onClick={() => onHorsCatalogue()}>Hors catalogue</button>
@@ -298,7 +306,7 @@ function EffetsDeLaLevure({ lignes, levureId, onChercher }: { lignes: LigneEffet
   </div>;
 }
 
-function MaLevureVue({ recipe, refs, supply, levure, classement, onConduite, onChercherDonnee, onRetirer, stock, onStock, onHorsCatalogue, libre, precedente, onPrecedente, proposees = [], onProposee,
+function MaLevureVue({ recipe, refs, supply, levure, classement, onConduite, onChercherDonnee, onRetirer, stock, onStock, onHorsCatalogue, libre, precedente, precedenteId, onPrecedente, proposees = [], onProposee,
   stockIds, conduiteCachee, onComparer, onFiche, onObjectifs, onNavigate, onDose, onDoseChange, onVolet }: {
   /** − / +, « Mettre N sachets », « → N sachets » : écrit la quantité (et son unité) dans la recette, sans ouvrir de volet. */
   onDoseChange?: (qty: number, unit: string) => void;
@@ -309,7 +317,7 @@ function MaLevureVue({ recipe, refs, supply, levure, classement, onConduite, onC
   /** Levures proposées (vendues en CH · FR · DE, API de d1, la plus proche de la recette d'abord) : puces « ⬚ Nottingham » de la maquette. */
   proposees?: YeastReference[]; onProposee?: (levure: YeastReference) => void;
   /** La levure d'avant le dernier changement (puce ↺ : la précédente), quand il y en a une. */
-  precedente?: string; onPrecedente?: () => void;
+  precedente?: string; precedenteId?: string; onPrecedente?: () => void;
   recipe: TrialRecipe; refs: YeastReference[]; supply: YeastSupply;
   /** La fiche du catalogue de la levure de la recette ; absente pour une levure du stock ou une saisie libre. */
   levure?: YeastReference;
@@ -458,7 +466,7 @@ function MaLevureVue({ recipe, refs, supply, levure, classement, onConduite, onC
       <p className="lv-note">Aucune levure dans la recette : cherche-la par son nom, son code, son fabricant ou son arôme, ou prends-en une de ton stock.</p>
     </div>}
 
-    <ChampLevure choisie={choisie} classement={classement ?? refs} stock={stock} stockIds={idsStock} fiches={fiches} enStock={enStock} proposees={proposees} precedente={precedente} onPrecedente={onPrecedente}
+    <ChampLevure choisie={choisie} classement={classement ?? refs} stock={stock} stockIds={idsStock} fiches={fiches} enStock={enStock} proposees={proposees} precedente={precedente} precedenteId={precedenteId} onPrecedente={onPrecedente}
       onProposee={onProposee} onStock={onStock} onHorsCatalogue={onHorsCatalogue} libre={libre} />
 
     {avecConduite && <div className="yeast-workbench yeast-choice lv-base" data-lv="conduite-base" ref={conduite} hidden={conduiteCachee}>

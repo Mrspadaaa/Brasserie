@@ -241,7 +241,7 @@ export function EtapeLevure(p: PropsEtapeLevure) {
       <div hidden={vue !== 'ma-levure'} data-lv="vue-ma-levure">
         <MaLevure recipe={recipeVue} refs={refs} supply={supply} levure={levure} {...gestes} onNavigate={p.onNavigate ? gestes.onNavigate : undefined}
           stock={p.stockItems} libre={ouverts.stock && libreSous ? repliStock : undefined} proposees={proposees}
-          reperes={reperes} classement={classement} stockIds={stockIds} conduiteCachee={!!ouverts.atelier} precedente={precedente} onPrecedente={precedente ? gestes.onPrecedente : undefined} />
+          reperes={reperes} classement={classement} stockIds={stockIds} conduiteCachee={!!ouverts.atelier} precedente={precedente} precedenteId={precedente ? change?.from.yeast.hopIndexId : undefined} onPrecedente={precedente ? gestes.onPrecedente : undefined} />
         <div className="lv-replis" data-lv="replis">
           {choisie && <Repli id="dose" titre="Dose, ensemencement et starter" resume="quantité prévue, moût à ensemencer, préparation" ouvert={!!ouverts.dose} onOuvre={o => ouvre('dose', o)}>
             <YeastPitchingPanel part="pitching" recipe={recipe} onChange={next => p.onChange(next, 'pitching')} quantityEditor={p.quantityEditor} /></Repli>}

@@ -88,7 +88,8 @@
 .ml-carte .ml-bornes { position: absolute; left: 0; right: 0; top: 25px; height: 18px; font-size: 14px; line-height: 18px; color: var(--ml-t2); white-space: nowrap; }
 .ml-carte .ml-bornes > span { position: absolute; top: 0; }
 .ml-carte .ml-bornes .d { left: 0; }
-.ml-carte .ml-bornes .c { transform: translateX(-50%); color: var(--ml-or); }
+.ml-carte .ml-bornes .c { color: var(--ml-or); }
+.ml-carte .ml-bornes [data-couvert] { visibility: hidden; }
 .ml-carte .ml-bornes .f { right: 0; }
 
 /* Juste après − / + (r4 v02) : la part du besoin en grand, le besoin en trait noir au-dessus, les grammes dessous */
