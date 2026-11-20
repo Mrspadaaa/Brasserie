@@ -2394,3 +2394,11 @@ Classement de la page r3 de Ma levure (https://claude.ai/artifact/DKAJe8ESeMR4ig
 > C'est malheureusement à jour ??? C'est une catastrophe ??? C'est quoi ce bordel ??
 
 (20.11, tour 6 rechargé, capture 6-carnet-vide.jpg : Brassins › Atelier › Carnet › Tout, période 01.09–30.09, 3 éléments seulement. Les 19 projets du Planning sont bien en base (creativeItems CARNET-PLANNING-T-06 à T-24, type « carnet ») mais aucun ne s'affiche. Défaut CARNET-PLANNING.)
+
+> Mais surtout ça correspond pas du tout à ce que j'ai choisi ???
+
+(20.11, même capture 6-carnet-vide.jpg : Brassins › Atelier › Carnet monte l'ancien carnet CreativeLabTab (filtres Tout/Bières/Contacts/À faire, « Réfléchir à mes projets »), pas son choix ra+p5f (CarnetsVue, monté seulement dans Stocks › Matériel). CARNET-PLANNING.)
+
+> Des problèmes aussi avec la levure...
+
+(20.11, tour 6, 4 captures : work/missions/2026-11-19-ma-levure-maquettes/port/plainte-20-11/. Lu : Munich Lager Yeast (liquide) en grammes, « couvre le fabricant » et « pas de repère » en même temps, barre vide, + ouvre un champ « 113 g OK » alors que l'en-tête dit 112 g, aucun besoin lager ; Conduite : graphe chargé (pointillés, « brouillon fin J15 » contre « fin J39,5 », J34,5 barré), palier à 14,5 °C sous la plage 18–26 °C.)
