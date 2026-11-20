@@ -1319,6 +1319,7 @@ export const App: React.FC = () => {
             batches={batches}
             stockItems={[...stocks.rawMaterials, ...stocks.cleaning]}
             onOpenBatch={(batchId) => {
+              poserRetour('calendrier'); /* CAL-PASSE : le retour du téléphone ramène au Calendrier (CT4A-12), comme une fête ou une idée */
               setProductionSubTab('batches');
               setBatchOpenRequest({ id: batchId, at: Date.now() });
               setActiveTab('production');
