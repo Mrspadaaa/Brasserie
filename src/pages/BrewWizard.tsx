@@ -693,14 +693,14 @@ const BrewWizardEditor: React.FC<BrewWizardProps & {
   const [saving, setSaving] = useState(false);
   const [draftNotice, setDraftNotice] = useState(restoredDraft ? 'Brouillon repris sur cet appareil.'
     : draftSetAside ? 'Version enregistrée ouverte. Le brouillon reste sur cet appareil jusqu’à ta première modification.' : '');
-  // TL-19 : « Nouvelle recette » peut rouvrir un brouillon : la reprise se dit à l'écran quelques secondes (puis reste annoncée aux lecteurs
-  // d'écran seulement, 25.10 : elle ne garde pas sa ligne). Lecture étroite : ni bandeau fixe, ni autre place.
+  // TL-19 : « Nouvelle recette » peut rouvrir un brouillon. La reprise se dit à l'écran, lisible et cadrée, tant que l'étape n'a pas changé
+  // (k3 : 8 s en petit gris ne se voyaient pas) ; elle offre « Repartir d'une recette vierge » (jette le brouillon après confirmation), puis
+  // reste annoncée aux lecteurs d'écran seulement (25.10 : elle ne garde pas sa ligne).
   const [repriseDite, setRepriseDite] = useState(!!restoredDraft);
+  const etapeDeReprise = useRef(step);
   useEffect(() => {
-    if (!repriseDite) return;
-    const t = setTimeout(() => setRepriseDite(false), 8000);
-    return () => clearTimeout(t);
-  }, [repriseDite]);
+    if (repriseDite && step !== etapeDeReprise.current) setRepriseDite(false);
+  }, [repriseDite, step]);
   const [draftAside, setDraftAside] = useState(draftSetAside);
   const [draftError, setDraftError] = useState('');
   const [discarding, setDiscarding] = useState(false);
@@ -2509,8 +2509,9 @@ const BrewWizardEditor: React.FC<BrewWizardProps & {
       </section> : <fieldset disabled={saving} aria-busy={saving} className="contents space-y-3">
       {/* « Brouillon repris sur cet appareil. » ne s'écrit plus à l'écran (25.10) : il reste annoncé aux lecteurs d'écran. Les autres
           messages (erreur, programme appliqué, version enregistrée ouverte) et la confirmation d'abandon restent visibles. */}
-      {draftKey && (draftNotice || draftError) && (draftError || discarding || !messageDeBase || repriseVisible) && <div className="recipe-draft-status flex flex-wrap items-center justify-between gap-x-2 gap-y-1 text-xs text-cave-400">
+      {draftKey && (draftNotice || draftError) && (draftError || discarding || !messageDeBase || repriseVisible) && <div className={`recipe-draft-status flex flex-wrap items-center justify-between gap-x-2 gap-y-1 ${repriseVisible && !draftError ? 'rounded-control border border-cave-700 bg-cave-900 px-2 py-1.5 text-sm text-cave-200' : 'text-xs text-cave-400'}`} data-reprise={repriseVisible && !draftError ? 'true' : undefined}>
         {(draftError || (draftNotice && (!messageDeBase || repriseVisible))) && <span role={draftError ? 'alert' : 'status'}>{draftError || draftNotice}</span>}
+        {repriseVisible && !draftError && !discarding && !draftReadOnly && <button type="button" data-role="repartir-vierge" className="min-h-touch px-1 text-sm underline underline-offset-2 text-cave-50" onClick={() => setDiscarding(true)}>Repartir d’une recette vierge</button>}
         {discarding && <span className="flex items-center gap-2"><span className="text-attention">Supprimer ce brouillon ?</span><button type="button" autoFocus onClick={() => setDiscarding(false)}>Garder</button><button type="button" onClick={discardDraft} className="text-alert-strong">Abandonner</button></span>}
       </div>}
       {draftKey && messageDeBase && !repriseVisible && !draftError && !discarding && <span role="status" className="sr-only">{draftNotice}</span>}
@@ -3183,8 +3184,11 @@ const BrewWizardEditor: React.FC<BrewWizardProps & {
         // Le mode NOLO garde l'ancienne étape dans sa section ; sinon la coque des quatre vues se pose sans cadre (maquettes l5b, s7a).
         if (noloNeedsEquipmentAdoption || details.nolo?.enabled) return (
           <Section title="Levure">
-            {noloNeedsEquipmentAdoption ? noloEquipmentPrompt() :
-            <Suspense fallback={<p role="status" className="py-3 text-sm text-cave-400">Chargement du comparatif de levures…</p>}>{ancienne()}</Suspense>}
+            {/* k3 n° 1 : sans matériel figé, l'étape garde le choix de la souche ; l'invite d'adoption n'est qu'à l'Identité, ici un renvoi d'une ligne. */}
+            {noloNeedsEquipmentAdoption && <p data-role="nolo-materiel-renvoi" className="text-xs text-cave-400">
+              Matériel non figé : le plan d’eau NOLO se règle à l’<button type="button" className="underline underline-offset-2 text-cave-200" onClick={() => setStep('identite')}>Identité</button>.
+            </p>}
+            <Suspense fallback={<p role="status" className="py-3 text-sm text-cave-400">Chargement du comparatif de levures…</p>}>{ancienne()}</Suspense>
           </Section>
         );
         return (

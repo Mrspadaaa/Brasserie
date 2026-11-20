@@ -40,7 +40,11 @@ export function NoloRecipeOverview({ recipe, saved = emptyKnowledge }: { recipe:
       <div><dt className="text-cave-400">{config.process === 'secondRunnings' ? simulation ? 'Récupération visée' : 'Moût récupéré' : 'Volume de base'}</dt><dd className="reading text-sm">{baseVolume > 0 ? litresNolo(baseVolume) + ' L' : 'À mesurer'}</dd></div>
       <div><dt className="text-cave-400">Après opérations</dt><dd className="reading text-sm">{result?.volumeL != null ? litresNolo(result.volumeL) + ' L' : 'À compléter'}</dd></div>
     </dl>
-    {result && <p className="text-xs text-cave-200 leading-snug">{result.nextAction}</p>}
+    {/* k3 n° 2 : la phrase du moteur (« Relation de fermentation limitée absente… ») est un message de développeur ; sans projection on dit
+        au brasseur ce qu'il peut faire. */}
+    {result && <p className="text-xs text-cave-200 leading-snug">{result.nextAction.startsWith('Relation de fermentation limitée absente')
+      ? 'L’alcool final n’est pas encore estimé : cette levure n’a pas de données de fermentation pour ce procédé. Choisis une autre souche à l’étape Levure, ou saisis une analyse d’alcool.'
+      : result.nextAction}</p>}
     {!!result?.activeOperations.length && <details>
       <summary className="min-h-touch cursor-pointer text-xs text-cave-200">{result.activeOperations.length} {result.activeOperations.length === 1 ? 'opération prévue' : 'opérations prévues'} · doses et ordre</summary>
       <NoloOperationList operations={result.activeOperations} recipe={recipe}/>

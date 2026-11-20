@@ -156,3 +156,24 @@ body[data-has-fab] [data-floating-actions-gap="true"] {
     padding-right: 5.5rem;
   }
 }
+
+/* w1 k3, points 3 et 4 (20.11) : au repos, le + (64 px, 12 px du bord) recouvrait le chevron de « Texte complet et fichier .txt » dans le menu « Plus » du Récap,
+   et mordait le cadre de l'invite de matériel de l'Identité en collant son bouton. Même gouttière de 76 px : le bloc d'export du menu la garde à sa droite ; le cadre
+   de l'invite s'arrête avant le + (marge, pas remplissage : un remplissage laisserait le cadre sous le +). Sous 1024 px, quand le + flotte. */
+@media (max-width: 1023px) {
+  :root body[data-has-fab-floating] .rc2-plus .rc2-plus-ex {
+    padding-right: 4.75rem;
+  }
+
+  :root body[data-has-fab-floating] aside[aria-label="Matériel requis pour le scénario NOLO"] {
+    margin-right: 4.75rem;
+  }
+}
+
+/* w1 k3, point 5 (20.11) : au repos, la barre « Retour · Suivant » collante coupait le bas des cartes de l'Identité (« Espace libre », « Matériel ») sans un trait :
+   la coupe se lisait comme un défaut de carte. Un filet fin marque le bord de la barre ; la carte passe dessous, comme sous toute barre collante. */
+@media (min-width: 640px) {
+  .page-shell [data-page-end-actions] {
+    box-shadow: 0 -1px 0 rgb(var(--cave-700));
+  }
+}

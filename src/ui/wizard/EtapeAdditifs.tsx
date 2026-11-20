@@ -74,14 +74,16 @@ export function EtapeAdditifs({ adjuncts, onAdjuncts, fermentables, onFermentabl
                     <button type="button" aria-label={`Retirer ${nom}`} className="shrink-0 w-8 h-8 flex items-center justify-center text-cave-400 hover:text-cave-50"
                       onClick={() => onAdjuncts(adjuncts.filter((_, j) => j !== i))}><Trash2 className="w-4 h-4" aria-hidden="true" /></button>
                   </div>
-                  <div className="flex items-center gap-1.5">
+                  {/* k3 n° 6 et 7 : `inputClass` porte `w-full` ; avec `w-20` à côté, les trois champs se disputaient la largeur et le moment tombait
+                      à une flèche de 16 px. Une grille donne les parts : quantité 5 rem, unité 4,5 rem, moment le reste (jamais moins de 7 rem). */}
+                  <div className="grid grid-cols-[5rem_4.5rem_minmax(7rem,1fr)] items-center gap-1.5" data-role="additif-ligne">
                     {/* Une quantité à 0 se lit « à renseigner » : le champ reste vide, l'inconnu n'est pas écrit 0 à l'écran. */}
-                    <NumberInput id={`wz-adjunct-${i}`} pad aria-label={`Quantité de ${nom}`} className={`${inputClass} w-20`} value={a.amount > 0 ? a.amount : undefined}
+                    <NumberInput id={`wz-adjunct-${i}`} pad aria-label={`Quantité de ${nom}`} className={`${inputClass} min-w-0`} value={a.amount > 0 ? a.amount : undefined}
                       emptyValue={0} min={0} placeholder="0" aria-invalid={!!message || undefined} onValue={(n: number) => patch(i, { amount: n })} />
-                    <select aria-label={`Unité de ${nom}`} className={`${inputClass} w-24`} value={a.unit} onChange={event => patch(i, { unit: event.target.value })}>
+                    <select aria-label={`Unité de ${nom}`} className={`${inputClass} min-w-0`} value={a.unit} onChange={event => patch(i, { unit: event.target.value })}>
                       {[...new Set([...ADDITIF_UNITES, a.unit])].map(u => <option key={u} value={u}>{u}</option>)}
                     </select>
-                    <select aria-label={`Moment de ${nom}`} className={`${inputClass} min-w-0 flex-1`} value={a.step} onChange={event => patch(i, { step: event.target.value })}>
+                    <select aria-label={`Moment de ${nom}`} className={`${inputClass} min-w-0`} value={a.step} onChange={event => patch(i, { step: event.target.value })}>
                       {[...new Set([...ADDITIF_MOMENTS, a.step])].map(m => <option key={m} value={m}>{m}</option>)}
                     </select>
                   </div>
