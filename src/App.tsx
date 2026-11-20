@@ -83,6 +83,7 @@ import { prechargerVuesAuRepos } from './services/prechargeVues';
 import { chargerBibliothequeLevures } from './domain/yeastLibraryLoader';
 import { HopV55SemanticAdviceCapabilityContext, qualifyHopV55SemanticAdviceCapabilityV3 } from './ui/hopV55/assistedAdviceUiContracts';
 import { montantChf } from './domain/finance/ledger';
+import { memoriserDefilement, restaurerDefilement } from './ui/calendrier/retourDefilement';
 
 const QuickActionModal = lazy(() => import('./components/QuickActionModal').then(module => ({ default: module.QuickActionModal })));
 const SettingsModal = lazy(() => import('./components/SettingsModal').then(module => ({ default: module.SettingsModal })));
@@ -1258,7 +1259,7 @@ export const App: React.FC = () => {
           <FinancesTab
             transactions={transactions}
             openTransactionRequest={financeOpenRequest}
-            onRetour={() => setActiveTab('calendrier')}
+            onRetour={() => { setActiveTab('calendrier'); restaurerDefilement(); }}
             ongletRequest={financeTabRequest}
             recipes={recipes}
             batches={batches}
@@ -1319,7 +1320,7 @@ export const App: React.FC = () => {
             periode={globalTimeFilter}
             onPeriode={(p) => setGlobalTimeFilter(p)}
             onOuvrirBudget={(batchId) => setBudgetBrassinId(batchId)}
-            onOpenPiece={(id) => { setActiveTab('finances'); setFinanceOpenRequest({ id, at: Date.now(), retour: 'calendrier' }); }}
+            onOpenPiece={(id) => { memoriserDefilement(); setActiveTab('finances'); setFinanceOpenRequest({ id, at: Date.now(), retour: 'calendrier' }); }}
             onOpenAgenda={() => {
               setLabSectionRequest({ section: 'event', at: Date.now() });
               navigateToCreativeLab();
