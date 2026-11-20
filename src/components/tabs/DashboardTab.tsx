@@ -16,6 +16,7 @@ import { duneSemaine, evenementsAgenda, evenementsBrassins, semainesDe } from '.
 import { isCurrent } from '../../domain/catalogOrganization';
 import { statusOfBatch } from '../../domain/batchStatus';
 import { articlesACommander } from '../../domain/stockLevel';
+import { libellesSources } from '../../domain/stock/disponibilite';
 import { levuresADateProche } from '../../domain/stock/durabilite';
 import { fermentationReadings } from '../../domain/fermentationReadings';
 import { joursDepuisBrassage } from '../../domain/productionInsights';
@@ -148,7 +149,7 @@ export const DashboardTab: React.FC<DashboardTabProps> = ({
   const recettes = useStorageValue(readRecipes);
   const aCommander = useMemo(() => articlesACommander([...stocks.rawMaterials, ...stocks.cleaning], batches, recettes)
     .sort((a, b) => Number(b.rupture) - Number(a.rupture)), [stocks, batches, recettes]);
-  const itemsToOrder = useMemo(() => aCommander.map(({ item, missing }) => ({ ...item, missing })), [aCommander]);
+  const itemsToOrder = useMemo(() => aCommander.map(({ item, missing, sources }) => ({ ...item, missing, sources })), [aCommander]);
   // AM-56 : une levure périmée (ou à moins de 30 jours de l'être) se voit ici, avant de brasser.
   const levuresDatees = useMemo(() => levuresADateProche(stocks.rawMaterials, todayISO()), [stocks.rawMaterials]);
   const ruptures = aCommander.filter(a => a.rupture).length;
@@ -169,6 +170,9 @@ export const DashboardTab: React.FC<DashboardTabProps> = ({
   const periodLedger = useMemo(() => summarizeLedger(periodTxs, financePayments, financeProfile),
     [periodTxs, financePayments, financeProfile]);
   const periodNet = periodLedger.incomeCents - periodLedger.expenseCents;
+  /* CT4-A-5 : la Synthèse de Finances lit « Dépensé » sans le matériel et les travaux (un investissement, « à part ») ; les Charges du Bord les comptent. Le Bord le dit au lieu d'afficher deux chiffres muets pour le même mois. */
+  const materielCents = useMemo(() => summarizeLedger(periodTxs.filter(tx => tx.category === 'materiel' || tx.category === 'renovation'), financePayments, financeProfile).expenseCents,
+    [periodTxs, financePayments, financeProfile]);
   const periodLabel = titrePeriode(enPeriode(globalTimeFilter));
   const reminders = administrativeReminders(config);
   const remainingReminders = reminders.filter(item => !completedDeadlines[item.id]).length;
@@ -279,6 +283,8 @@ export const DashboardTab: React.FC<DashboardTabProps> = ({
                       <StockThreshold item={item} />
                       <span>Stock {quantity.format(item.currentStock)} / seuil {quantity.format(item.minStock)} {item.unit}</span>
                     </span>
+                    {/* CT4-A-6 : le manque vient d'un brassin ou d'une recette qui prévoit plus que le stock, pas du seuil : le Bord le dit, comme Stocks. */}
+                    {item.missing > 0 && item.sources.length > 0 && <span data-bord-raison className="block break-words text-xs text-cave-400">manque {quantity.format(item.missing)} {item.unit} pour {libellesSources(item.sources).join(' · ')}</span>}
                   </span>
                   <span className={`shrink-0 text-right text-xs ${item.currentStock <= 0 ? 'text-alert-strong' : 'text-attention'}`}>
                     <span className="block">{item.currentStock <= 0 ? 'Rupture' : item.missing > 0 ? 'À compléter' : 'Seuil atteint'}</span>
@@ -313,6 +319,7 @@ export const DashboardTab: React.FC<DashboardTabProps> = ({
                   <span className="text-cave-200">Charges</span>
                   <span className="font-mono text-cave-50">{formatCHF(periodLedger.expenseCents)}</span>
                 </span>
+                {materielCents > 0 && <span data-charges-materiel className="mt-0.5 block text-2xs text-cave-400">dont matériel {formatCHF(materielCents)}, à part dans Finances</span>}
               </span>
               <ChevronDown size={14} className="shrink-0 text-area-finances group-open/finance:rotate-180" aria-hidden="true" />
             </summary>
