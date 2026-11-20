@@ -170,7 +170,7 @@ const ecartTexte = (cents: number) => `${signe(cents)}${montant(cents)}`;
 
 export function controlesCroises(e: EntreeControles): ControlesCroises {
   const ecartCents = e.totalCents === null ? null : e.lignesCents - e.totalCents;
-  const nRabais = e.nRabais ?? 0, nLignesLues = e.nLignes - e.nAjoutes, nLus = nLignesLues - nRabais;
+  const nRabais = e.nRabais ?? 0, nLignesLues = e.nLignes - e.nAjoutes;
   const independant = e.attendusIndependant ?? null;
   /* Les deux comptages (colonne des montants, annonce) comptent des LIGNES, remises comprises : ils se comparent aux lignes lues ; l'affichage dit les articles et les rabais. */
   const reference = independant ?? e.attendus;
@@ -179,6 +179,9 @@ export function controlesCroises(e: EntreeControles): ControlesCroises {
   const horsComptage = independant !== null ? (e.nSansMontant ?? 0) : (e.nPort ?? 0);
   const nCompares = reference !== null && horsComptage > 0 && nLignesLues !== reference && nLignesLues - horsComptage === reference ? reference : nLignesLues;
   const ecartArticles = reference === null ? null : nCompares - reference;
+  /* LR2-4 (g1, doc14 lu en réel : 17 lignes dont le port, 16 annoncées) : le port se dit à part (« dont port » du bandeau) ; la rangée ne le compte pas, sinon « 16 lignes · dont port » et « Articles 17 lus » se contredisent.
+     Comptage annoncé : le nombre comparé (sans le port quand c'est lui qui égale l'annonce) ; non imprimé : les lignes lues moins le port. */
+  const nLusAff = (reference === null ? nLignesLues - Math.min(e.nPort ?? 0, nLignesLues) : nCompares) - nRabais;
   const rabais = nRabais ? ` · ${nRabais} rabais` : '';
   const ajoutExplique = ecartCents !== null && ecartCents > 0 && e.ajoutsCents > 0 && ecartCents === e.ajoutsCents;
   const rangs: RangControle[] = [];
@@ -199,12 +202,12 @@ export function controlesCroises(e: EntreeControles): ControlesCroises {
 
   /* 1. Articles : trouvés contre attendus. Un nombre non imprimé n'est jamais deviné. */
   /* Pas de vert sans comptage indépendant concordant (P2, banc b1) : l'annonce du modèle qui transcrit ne prouve rien quand elle égale ce qu'il a transcrit. */
-  if (ecartArticles === null) rangs.push({ cle: 'articles', verdict: 'inconnu', texte: 'Articles', valeurs: `${nLus} lus${rabais} · non imprimé` });
-  else if (ecartArticles !== null && ecartArticles > 0 && (e.gardees ?? 0) >= ecartArticles) rangs.push({ cle: 'articles', verdict: 'inconnu', texte: 'Articles lus', valeurs: `${nLus}${rabais} · dont ${e.gardees} gardée${(e.gardees ?? 0) > 1 ? 's' : ''}` });
-  else if (articlesRetires) rangs.push({ cle: 'articles', verdict: 'inconnu', texte: 'Articles lus', valeurs: `${nLus}${rabais} · ${-ecartArticles!} retirée${-ecartArticles! > 1 ? 's' : ''}` });
-  else if (ecartArticles === 0 && independant !== null && enAttente) rangs.push({ cle: 'articles', verdict: 'inconnu', texte: 'Articles lus', valeurs: `${nLus}${rabais}` });
-  else if (ecartArticles === 0 && independant !== null) rangs.push({ cle: 'articles', verdict: 'ok', texte: 'Articles lus = comptés', valeurs: `${nLus}${rabais}` });
-  else if (ecartArticles === 0) rangs.push({ cle: 'articles', verdict: 'inconnu', texte: 'Articles lus', valeurs: `${nLus}${rabais}`, note: 'annoncé par la lecture' }); /* p1 : la valeur reste courte (« 5 · 2 rabais »), jamais sur le libellé à 390 ; « annoncé » est la note sous la rangée. */
+  if (ecartArticles === null) rangs.push({ cle: 'articles', verdict: 'inconnu', texte: 'Articles', valeurs: `${nLusAff} lus${rabais} · non imprimé` });
+  else if (ecartArticles !== null && ecartArticles > 0 && (e.gardees ?? 0) >= ecartArticles) rangs.push({ cle: 'articles', verdict: 'inconnu', texte: 'Articles lus', valeurs: `${nLusAff}${rabais} · dont ${e.gardees} gardée${(e.gardees ?? 0) > 1 ? 's' : ''}` });
+  else if (articlesRetires) rangs.push({ cle: 'articles', verdict: 'inconnu', texte: 'Articles lus', valeurs: `${nLusAff}${rabais} · ${-ecartArticles!} retirée${-ecartArticles! > 1 ? 's' : ''}` });
+  else if (ecartArticles === 0 && independant !== null && enAttente) rangs.push({ cle: 'articles', verdict: 'inconnu', texte: 'Articles lus', valeurs: `${nLusAff}${rabais}` });
+  else if (ecartArticles === 0 && independant !== null) rangs.push({ cle: 'articles', verdict: 'ok', texte: 'Articles lus = comptés', valeurs: `${nLusAff}${rabais}` });
+  else if (ecartArticles === 0) rangs.push({ cle: 'articles', verdict: 'inconnu', texte: 'Articles lus', valeurs: `${nLusAff}${rabais}`, note: 'annoncé par la lecture' }); /* p1 : la valeur reste courte (« 5 · 2 rabais »), jamais sur le libellé à 390 ; « annoncé » est la note sous la rangée. */
   else rangs.push({ cle: 'articles', verdict: 'ecart', texte: independant !== null ? 'Articles lus ≠ comptés' : 'Articles lus ≠ annoncés', valeurs: `${nCompares} / ${reference}`, ecart: `${signe(ecartArticles)}${Math.abs(ecartArticles)}`,
     ...(ecartArticles < 0 ? gesteManque() : { geste: 'Voir la ligne en trop', renvoi: 'fausse' as const }) });
 
