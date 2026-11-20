@@ -2388,3 +2388,9 @@ Classement de la page r3 de Ma levure (https://claude.ai/artifact/DKAJe8ESeMR4ig
 > Peut être faire une ou deux maquettes interactive de juste la frize qui bouge et s'agrandit, ont là à plein d'endroits c'est très pratique mais ça marche pour le moment assez mal, on l'a aussi par exemple pour le malt et autres.
 >
 > Juste l'actionnable au doigt
+
+> Mais et le carnet ???
+>
+> C'est malheureusement à jour ??? C'est une catastrophe ??? C'est quoi ce bordel ??
+
+(20.11, tour 6 rechargé, capture 6-carnet-vide.jpg : Brassins › Atelier › Carnet › Tout, période 01.09–30.09, 3 éléments seulement. Les 19 projets du Planning sont bien en base (creativeItems CARNET-PLANNING-T-06 à T-24, type « carnet ») mais aucun ne s'affiche. Défaut CARNET-PLANNING.)
