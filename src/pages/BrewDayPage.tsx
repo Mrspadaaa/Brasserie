@@ -82,6 +82,7 @@ import { echelleMaxG, fourchetteG, grammesDuChoix, gParHl, sachetDeLaLevure, sta
 import type { Sachet } from '../domain/levure/sachet';
 import { BrewClotureReleves, CLOTURE_VIDE, cloturePartirDe, type ClotureReleves } from '../ui/BrewClotureReleves';
 import yeastSupplyBootstrap from '../data/yeastSupplyBootstrap.json';
+import { doseConseillee } from '../ui/YeastRecipeHeading';
 import { BrewJournal, phraseCorrection } from '../ui/BrewJournal';
 import { BrewCapturePanel } from '../ui/BrewCapturePanel';
 import { BrewChoice } from '../ui/BrewChoice';
@@ -175,11 +176,17 @@ export function heuresPrevuesDuPlan(plan: PlanJournee | null, state: BrewDayStat
 }
 
 /**
- * K4 n° 25 : la dose de levure prévue. Celle de la recette ; sinon « 1 sachet » d'une levure sèche au poids connu ; sinon rien (l'inconnu n'est jamais 0).
+ * K4 n° 25 / CT4-B-1 : la dose de levure prévue est celle que la recette écrit. Sans dose écrite, jamais « 1 sachet » par défaut (tour 4 : 30 L à 1,066
+ * ensemencés avec 41 % du besoin) : l'inconnu n'est ni 0 ni 1, il se dit par `textePriseLevure` (le besoin de la fiche, « à écrire »).
  */
-export function dosePrevueLevure(recipe: RecipeSnapshot, sachet: Sachet | null): { amount: number; unit: string } | undefined {
+export function dosePrevueLevure(recipe: RecipeSnapshot): { amount: number; unit: string } | undefined {
   if (typeof recipe.yeast?.qty === 'number' && recipe.yeast.qty > 0 && recipe.yeast.unit) return { amount: recipe.yeast.qty, unit: recipe.yeast.unit };
-  return recipe.yeast?.form === 'sèche' && sachet ? { amount: 1, unit: 'sachet' } : undefined;
+  return undefined;
+}
+/** Sans dose écrite : le besoin que la fiche de la recette donne (« 2–3 sachets · à écrire », même calcul que l'étape Levure), sinon « dose à écrire ». */
+export function textePriseLevure(recipe: RecipeSnapshot): string {
+  const besoin = doseConseillee(recipe as never);
+  return besoin ? `${besoin} · à écrire` : 'dose à écrire';
 }
 /** « 1 sachet », « 2 sachets », « 11,5 g » : la dose dite comme la ligne Levure de p2c. */
 export function texteDoseLevure(dose: { amount: number; unit: string }): string {
@@ -228,9 +235,8 @@ export function tuilesDuBilan(releves: ReleveDuJour[], recipe: RecipeSnapshot, s
     // K4 n° 25 (p2c) : « cible 18 °C · 1 sachet » : la dose prévue de levure se lit sur la tuile Ensemencement.
     .map((t) => {
       if (t.id !== 'ensemencement' || !recipe.yeast?.name) return t;
-      const dose = dosePrevueLevure(recipe, sachetDeLaLevure(recipe.yeast, yeastSupplyBootstrap.products));
-      if (!dose) return t;
-      const texte = texteDoseLevure(dose);
+      const dose = dosePrevueLevure(recipe);
+      const texte = dose ? texteDoseLevure(dose) : textePriseLevure(recipe);
       return { ...t, cible: t.cible ? `${t.cible} · ${texte}` : texte };
     });
 }
@@ -764,11 +770,11 @@ export function BrewDayPage({ batch, config, stockItems = [], onClose, onSave, o
   // p2c / 1C (test c6 n° 6) : la ligne figure dans chaque phase avant l'ensemencement (où le groupe Levure prend le relais) : « Sortir la levure · SafAle US-05 ·
   // 1 sachet · 11,5 g » et la jauge de la dose sur la plage du fabricant, pour le volume prévu. La dose est celle de la recette, sinon « 1 sachet » d'une
   // levure sèche au poids connu ; sans dose sûre, le nom seul et pas de jauge (l'inconnu n'est jamais 0).
-  const doseRappel = dosePrevueLevure(recipe, sachetRappel);
+  const doseRappel = dosePrevueLevure(recipe);
   const gRappel = grammesDuChoix(doseRappel, sachetRappel);
   const sousRappel = doseRappel
     ? [recipe.yeast?.name, doseRappel.unit === 'sachet' ? `${String(doseRappel.amount).replace('.', ',')} sachet${doseRappel.amount >= 2 ? 's' : ''}` : doseRappel.unit === 'g' ? null : `${doseFr(doseRappel.amount, doseRappel.unit)} ${doseRappel.unit}`, gRappel != null ? `${frNb(gRappel)} g` : null].filter(Boolean).join(' · ')
-    : recipe.yeast?.name;
+    : [recipe.yeast?.name, recipe.yeast?.name ? textePriseLevure(recipe) : null].filter(Boolean).join(' · ');
   const rappelLevure: { id: string; label: string; area: string; sous?: string; jauge?: React.ReactNode }[] = recipe.yeast?.name && state.pitchedAt == null && !enseme ? [{
     id: 'levure-sortir',
     label: 'Sortir la levure',

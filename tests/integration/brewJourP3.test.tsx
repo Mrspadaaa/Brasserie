@@ -143,14 +143,14 @@ describe('1C : la dose de la levure dite en grammes et en g/hL, avec la source d
 describe('4C : « Sortir la levure … » dans À anticiper, à l’ébullition (là où la maquette z1 la place), avec le poids seulement s’il vient du catalogue', () => {
   const EBU: BrewDayStep = { id: 'boil-0', label: 'Ébullition', durationMin: 60, boilElapsedMin: 0 };
   const surEbullition = (yeast: YeastSpec) => monter(lot(yeast, 0, { steps: [EBU, ...ETAPES].map((s) => ({ ...s })) }));
-  it('US-05 : « Sortir la levure · SafAle US-05 · 1 sachet · 11,5 g » et la jauge 1C sous la ligne (pour 19 L prévus, plage du fabricant), cochable', () => {
+  it('US-05 sans dose écrite : « Sortir la levure · SafAle US-05 · dose à écrire » (jamais « 1 sachet » par défaut, CT4-B-1) et la jauge 1C sous la ligne (pour 19 L prévus, plage du fabricant), cochable', () => {
     surEbullition(SECHE_SANS_QUANTITE);
     const anticiper = within(screen.getByRole('region', { name: 'Préparations' }));
     expect(anticiper.getByText('Sortir la levure')).toBeInTheDocument();
-    expect(anticiper.getByText('SafAle US-05 · 1 sachet · 11,5 g')).toBeInTheDocument();
+    expect(anticiper.getByText('SafAle US-05 · dose à écrire')).toBeInTheDocument();
     const jauge = anticiper.getByRole('group', { name: 'Dose de la levure pour le volume' });
     expect(jauge).toHaveTextContent('Pour 19 L prévus');
-    expect(jauge).toHaveTextContent('11,5 g');
+    expect(jauge).toHaveTextContent('à choisir');
     expect(jauge).toHaveTextContent('9,5');
     expect(jauge).toHaveTextContent('15,2');
     const case_ = anticiper.getByRole('checkbox', { name: /Sortir la levure/ });
@@ -161,13 +161,13 @@ describe('4C : « Sortir la levure … » dans À anticiper, à l’ébullition 
     monter(lot(SECHE_SANS_QUANTITE, 0, { steps: [{ id: 'mash-0', label: 'Empâtage', durationMin: 60, tempC: 67 }, ...ETAPES].map((s) => ({ ...s })) }));
     const anticiper = within(screen.getByRole('region', { name: 'Préparations' }));
     expect(anticiper.getByText('Sortir la levure')).toBeInTheDocument();
-    expect(anticiper.getByRole('group', { name: 'Dose de la levure pour le volume' })).toHaveTextContent('11,5 g');
+    expect(anticiper.getByRole('group', { name: 'Dose de la levure pour le volume' })).toHaveTextContent('à choisir');
   });
   it('une levure sans produit sûr : le nom seul, aucun poids et aucune jauge', () => {
     surEbullition({ name: 'Levure maison', form: 'sèche' });
     const anticiper = within(screen.getByRole('region', { name: 'Préparations' }));
     expect(anticiper.getByText('Sortir la levure')).toBeInTheDocument();
-    expect(anticiper.getByText('Levure maison')).toBeInTheDocument();
+    expect(anticiper.getByText('Levure maison · dose à écrire')).toBeInTheDocument();
     expect(anticiper.queryByText(/sachet/)).not.toBeInTheDocument();
     expect(anticiper.queryByRole('group', { name: 'Dose de la levure pour le volume' })).not.toBeInTheDocument();
   });

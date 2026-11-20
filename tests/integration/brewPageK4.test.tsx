@@ -22,12 +22,11 @@ const lecture = (x: Partial<BrewDayReading>): BrewDayReading => ({ id: String(Ma
 
 describe('n° 25 : la dose de levure prévue sur la tuile Ensemencement', () => {
   const sachet = { produitId: 'x', grammes: 11.5 };
-  it('la dose de la recette, sinon « 1 sachet » d’une sèche au poids connu, sinon rien', () => {
-    expect(dosePrevueLevure(recipe(), null)).toEqual({ amount: 1, unit: 'sachet' });
+  it('la dose écrite de la recette, sinon rien (jamais « 1 sachet » par défaut, CT4-B-1)', () => {
+    expect(dosePrevueLevure(recipe())).toEqual({ amount: 1, unit: 'sachet' });
     const sansDose = { ...recipe(), yeast: { name: 'US-05', form: 'sèche' as const } };
-    expect(dosePrevueLevure(sansDose, sachet as never)).toEqual({ amount: 1, unit: 'sachet' });
-    expect(dosePrevueLevure(sansDose, null)).toBeUndefined();
-    expect(dosePrevueLevure({ ...sansDose, yeast: { name: 'WLP001', form: 'liquide' as never } }, sachet as never)).toBeUndefined();
+    expect(dosePrevueLevure(sansDose)).toBeUndefined();
+    expect(dosePrevueLevure({ ...sansDose, yeast: { name: 'WLP001', form: 'liquide' as never } })).toBeUndefined();
   });
   it('la dite : « 1 sachet », « 2 sachets », « 11,5 g »', () => {
     expect(texteDoseLevure({ amount: 1, unit: 'sachet' })).toBe('1 sachet');
