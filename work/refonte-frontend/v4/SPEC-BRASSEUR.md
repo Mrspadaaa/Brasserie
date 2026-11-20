@@ -2412,3 +2412,7 @@ Classement de la page r3 de Ma levure (https://claude.ai/artifact/DKAJe8ESeMR4ig
 > Ce qui est test de vision, test de workflow, test d'intégration ECT... Bug d'intéraction, bug de visuel ECT ça c'est des problèmes qui valent la peine d'être réglé
 
 (lu, 20.11 : chaque écran se juge d'abord sur ce qu'il vit : vision au doigt, workflow de bout en bout, intégration entre écrans (achat → stock → finances → calendrier), bugs d'interaction et de visuel. Le test unitaire sert la correction, il ne la prouve pas.)
+
+> Les problèmes de code sont pas à négliger, mais un unit test n'est pas un vrai test
+
+(lu, 20.11 : les défauts de code (calcul, données, régression) se corrigent aussi ; leur preuve reste le parcours réel et la vision, le test unitaire n'en est que le filet.)
