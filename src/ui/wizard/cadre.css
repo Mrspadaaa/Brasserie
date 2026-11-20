@@ -1,0 +1,16 @@
+/* Éditeur de recette (CT4-B-13 et CT4-B-15, critique du tour 4).
+   Une seule largeur de cadre à toutes les étapes : avant, `PageShell` donnait 768 px aux étapes ordinaires et 1152 px aux
+   étapes Houblons et Levure, et l'en-tête, le bandeau Grain/OG et le contenu sautaient d'une étape à l'autre à 1280.
+   56 rem = 896 px : la colonne de l'étape Levure (880 px) s'y loge telle quelle ; Houblons s'y resserre ; le reste s'y élargit un peu. */
+.recipe-wizard > :is(header, footer) :is(.max-w-3xl, .max-w-6xl),
+.recipe-wizard > main > :is(.max-w-3xl, .max-w-6xl) {
+  max-width: 56rem;
+}
+
+/* Paysage de téléphone (844 × 340) : en-tête (66 px) et rangée Retour / Suivant collée (44 px) prenaient près de la moitié
+   de la hauteur. Comme au téléphone en portrait, la rangée suit alors le contenu au lieu de rester collée au bas de l'écran. */
+@media (max-height: 480px) {
+  .recipe-wizard [data-page-end-actions] {
+    position: static;
+  }
+}
