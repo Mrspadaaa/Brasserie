@@ -1,4 +1,4 @@
-OK — ct4b : 5 corrigés, 2 écartés prouvés ; reste à faire par le pilote : tests.txt et arrêt du serveur Vite du port 3141 (contexte plein)
+OK — ct4b tour 2 : points 4, 5, 6, 7, 8, 10 corrigés (b77c925b9), preuve 1280 cave faite ; tour 1 : 5 corrigés, 2 écartés
 
 # Voie ct4b
 - CT4-B-4 | corrigé | d1f41f251 | lecture étroite : plus de grand bandeau « Le stock de … est à vérifier : il n'est pas relié… » (qui contredisait « pas au stock ») ; un repère court « Stock à vérifier » (.rcp-averifier), les lignes disent pourquoi. L'ordre de la feuille r2a (stock d'abord, puis OG · IBU › en bas) est gardé : c'est sa maquette choisie. À 844×340 le bandeau de 2 lignes a disparu, la ligne OG · IBU remonte (apres-02-apercu-390-clair.png ouverte). Test bugs-ct4b-4.test.tsx rouge avant, vert après.
@@ -9,7 +9,8 @@ OK — ct4b : 5 corrigés, 2 écartés prouvés ; reste à faire par le pilote :
 - CT4-B-14 | corrigé | d1f41f251 | à 1280, Recettes en une colonne centrée de 720 px (recherche au-dessus, liste dessous, même alignement) au lieu de deux colonnes dont la gauche vide (mesure.mjs 14 : KO avant, OK après). Capture apres-01-liste-1280-clair ouverte.
 - CT4-B-15 | corrigé | de73eed17 | un seul cadre de 896 px à toutes les étapes (src/ui/wizard/cadre.css, surcharge des max-w-3xl / max-w-6xl de PageShell dans .recipe-wizard) : mesure.mjs 15 donnait 768, 768, 1152, 1152, 768, 768, 768 avant ; constant après. Lecture étroite : la colonne intérieure de Levure (880 px, etapeLevure.css) et la liste du Récap (560 px, src/ui/recap/recap.css) sont hors de ma zone et gardent leur propre largeur centrée dans le cadre ; si le brasseur les veut aussi égales : hors voie : src/ui/recap/recap.css, max-width 560px → 100 %. Capture apres-12-wiz-3-1280-clair ouverte (Houblons à 896 px).
 
-Tests : tests.txt NON produit (le hook de contexte à 200 k a coupé le Bash avant). Dernier passage vert avant les commits : bugs-ct4b-4, bugs-ct4b-5, port-s1-recettes, recetteR1, recetteSupprimerPartout, recettes/, brassins-sans-titre-1911 → 7 fichiers, 74 tests passés, 0 échoué.
+Tour 2 (k4, 20.11) : voir « ## Fait » de voies/k4/CORRECTIONS-ct4b.md. CT4-B-4, -5 (suite), -15 (liste du Récap) et -12 (rouvert : gouttière du +, mesurée à chaque défilement, 390, 844 × 340, 1280) corrigés par b77c925b9 ; BT-2 / BK3-2 : voir Fait, point 8.
+Tests : tests.txt, 125 fichiers, 1121 passés, 0 échoué (tour 2).
 Captures : voies/ct4b/captures/ — avant-* (dev sans drapeau, clair), v4-* (drapeau VITE_HOP_V4=on, clair, avant correctif), apres-* (clair et cave, 390, 844, 1280 : liste, aperçu, fiche, houblons de la fiche, 7 étapes de l'éditeur et leur bas ; la cave 1280 des étapes 2 à 7 a échoué au toucher « Suivant » dans un essai, le clair est complet ; ouvertes : apres-02-apercu-390-clair, apres-04-fiche-houblons-390-clair, apres-04-fiche-houblons-1280-cave, apres-01-liste-1280-clair, apres-10-wiz-1-844-clair, apres-12-wiz-3-1280-clair).
 
 ## REPRISE (pour le pilote)

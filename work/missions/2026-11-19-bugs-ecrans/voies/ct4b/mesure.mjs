@@ -157,14 +157,14 @@ try {
           const dedans = (q) => q.width > 0 && q.height > 0 && !(q.right <= f.left + 1 || q.left >= f.right - 1 || q.bottom <= f.top + 1 || q.top >= f.bottom - 1);
           const sortie = new Set(); const marche = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT);
           for (let n = marche.nextNode(); n; n = marche.nextNode()) {
-            const t = (n.textContent || '').trim(); if (!t) continue; const el = n.parentElement; if (!el || el.closest('.floating-actions') || el.closest('script,style')) continue;
+            const t = (n.textContent || '').trim(); if (!t) continue; const el = n.parentElement; if (!el || el.closest('.floating-actions') || el.closest('script,style,.sr-only')) continue;
             if (getComputedStyle(el).visibility === 'hidden' || !el.getClientRects().length) continue;
             const r = document.createRange(); r.selectNodeContents(n);
             if ([...r.getClientRects()].some((q) => dedans(q) && visible(el, q))) { const c = el.closest('[hidden]'); if (!c) sortie.add(`${el.tagName.toLowerCase()}.${String(el.className).split(' ')[0]} « ${t.slice(0, 32)} »`); }
           }
           for (const el of document.querySelectorAll('button,input,select,textarea,summary,a[href]')) {
             if (el.closest('.floating-actions') || !el.getClientRects().length) continue;
-            const q = el.getBoundingClientRect(); if (dedans(q) && visible(el, q) && getComputedStyle(el).visibility !== 'hidden') sortie.add(`${el.tagName.toLowerCase()}[cadre] « ${(el.getAttribute('aria-label') || el.textContent || el.getAttribute('type') || '').trim().slice(0, 28)} »`);
+            const q = el.getBoundingClientRect(); if (dedans(q) && visible(el, q) && getComputedStyle(el).visibility !== 'hidden') sortie.add(`${el.tagName.toLowerCase()}.${String(el.className).split(' ')[0]}<${String(el.parentElement?.className).split(' ')[0]}[cadre] « ${(el.getAttribute('aria-label') || el.textContent || el.getAttribute('type') || '').trim().slice(0, 28)} » @${Math.round(q.left)},${Math.round(q.top)},${Math.round(q.right)},${Math.round(q.bottom)} + @${Math.round(f.left)},${Math.round(f.top)},${Math.round(f.right)},${Math.round(f.bottom)}`);
           }
           return [...sortie];
         });
