@@ -36,6 +36,14 @@ export interface SoldeSemaine {
   mouvements: MouvementNomme[];
   /** La tendance de Finances de cette semaine, à part : une hypothèse, pas un événement. */
   tendance: number;
+  /** CAL-PASSE : la semaine est avant la semaine courante (solde reconstruit des paiements réels). `courbe[0]` n'est donc plus aujourd'hui : `indexAujourdhui`. */
+  passee?: true;
+}
+
+/** L'index d'aujourd'hui dans une courbe qui peut commencer au passé : la première semaine qui n'est pas `passee` (0 quand rien n'est passé). */
+export function indexAujourdhui(semaines: ReadonlyArray<{ passee?: true }>): number {
+  const i = semaines.findIndex(s => !s.passee);
+  return i < 0 ? 0 : i;
 }
 
 export interface CourbeCaisse {
@@ -83,7 +91,7 @@ export function courbeCaisse(entree: EntreeCourbe): CourbeCaisse | null {
     const reserve = reserveA(index);
     const nommes = lignes.filter(m => !m.tendance).map<MouvementNomme>(m => ({ id: m.id, nom: m.nom, centimes: m.centimes, jour: m.jour, ...(m.choseId ? { choseId: m.choseId } : {}), libelle: libelleMouvement(m.nom, m.centimes) }))
       .sort((a, b) => Math.abs(b.centimes) - Math.abs(a.centimes) || a.id.localeCompare(b.id));
-    return { index, lundi, numero: numeroSemaine(lundi), caisse, libre: caisse - reserve, reserve, variation, mouvements: nommes, tendance: lignes.filter(m => m.tendance).reduce((s, m) => s + m.centimes, 0) };
+    return { index, lundi, numero: numeroSemaine(lundi), caisse, libre: caisse - reserve, reserve, variation, mouvements: nommes, tendance: lignes.filter(m => m.tendance).reduce((s, m) => s + m.centimes, 0), ...(index < (entree.passe ?? 0) ? { passee: true as const } : {}) };
   });
   return { depart: entree.depart, base, lundi0, ...(entree.passe ? { passe: entree.passe } : {}), semaines, mouvements: [...entree.mouvements], mises };
 }

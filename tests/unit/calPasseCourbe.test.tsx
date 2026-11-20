@@ -63,3 +63,58 @@ describe('Courbe : la ligne zéro et la zone sous zéro', () => {
     expect(container.querySelector('.ent-zero')).not.toBeNull();
   });
 });
+
+/* ---------- la courbe qui commence au passé (voie K, 20.11) : `courbe[0]` n'est plus aujourd'hui ---------- */
+import { courbeCaisse, indexAujourdhui } from '../../src/domain/calendrierCaisse';
+import { aujourdhuiDe, causesDuCreux, creuxDe } from '../../src/ui/calendrier/entete/Courbe';
+
+describe('courbe au passé : tout se lit à partir d’aujourd’hui', () => {
+  const c = courbeCaisse({ depart: 100_000, lundi0: '2026-09-21', nbSemaines: 10, passe: 4, mouvements: [
+    { id: 'p1', jour: '2026-09-23', centimes: -150_000, nom: 'Vieille facture' },  // passé : le solde tombe à −500
+    { id: 'v1', jour: '2026-10-21', centimes: 80_000, nom: 'Vente' },
+    { id: 'f1', jour: '2026-11-25', centimes: -30_000, nom: 'Frigo' }              // futur : creux d’aujourd’hui
+  ] })!;
+
+  it('le domaine marque les semaines passées ; aujourd’hui est la première qui ne l’est pas', () => {
+    expect(c.semaines.slice(0, 4).every(s => s.passee === true)).toBe(true);
+    expect(c.semaines.slice(4).some(s => s.passee)).toBe(false);
+    expect(indexAujourdhui(c.semaines)).toBe(4);
+    expect(aujourdhuiDe(c.semaines)).toBe(4);
+    expect(indexAujourdhui([{}, {}])).toBe(0);
+  });
+
+  it('« à dépenser » : le plus bas dès aujourd’hui, jamais un solde plus bas du passé', () => {
+    expect(Math.min(...c.semaines.slice(0, 4).map(s => s.libre))).toBe(-50_000);
+    const creux = creuxDe(c.semaines)!;
+    expect(creux.index).toBeGreaterThanOrEqual(4);
+    expect(creux.lundi).toBe('2026-11-23');
+    expect(creux.centimes).toBe(0);
+  });
+
+  it('les causes du creux ne remontent pas dans le passé', () => {
+    const { debut, causes } = causesDuCreux(c.semaines, creuxDe(c.semaines)!.index);
+    expect(debut).toBeGreaterThanOrEqual(4);
+    expect(causes.every(x => x.index >= 4)).toBe(true);
+    expect(causes.map(x => x.nom)).toEqual(['Frigo']);
+  });
+
+  it('sans passé, rien ne change : aujourd’hui est l’index 0', () => {
+    const s = courbeCaisse({ depart: 5_000, lundi0: '2026-11-16', nbSemaines: 3, mouvements: [] })!;
+    expect(s.semaines.some(x => x.passee)).toBe(false);
+    expect(creuxDe(s.semaines)!.index).toBe(0);
+  });
+});
+
+describe('curseur de lecture sur une courbe plate : pas de rond qui déborde (capture 3-point-frise)', () => {
+  const plate = [semaine(0, -68_300), semaine(1, -68_300), semaine(2, -68_300)];
+  it('plate : le point seul, aucun anneau pointillé de 24 px', () => {
+    const { container } = render(<Courbe courbe={plate} largeur={366} hauteur={44} curseur={1} plate />);
+    expect(container.querySelector('[data-curseur]')).toBeTruthy();
+    expect(container.querySelector('[data-curseur-anneau]')).toBeNull();
+    expect(container.querySelector('.ent-cur-pt')).toBeTruthy();
+  });
+  it('courbe qui varie : l’anneau reste', () => {
+    const { container } = render(<Courbe courbe={[semaine(0, 100_000), semaine(1, 50_000), semaine(2, 80_000)]} largeur={366} hauteur={88} curseur={1} />);
+    expect(container.querySelector('[data-curseur-anneau]')).toBeTruthy();
+  });
+});

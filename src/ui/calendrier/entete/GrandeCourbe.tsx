@@ -1,7 +1,7 @@
 import React from 'react';
 import { X } from 'lucide-react';
 import type { CourbeCaisse, MouvementNomme } from '../../../domain/calendrierCaisse';
-import { chf, classeRangee, creuxDe, escalier, largeurTexte, MOIS_MIN, moisDeSemaine, semaineCourte, type Boite, type Geo, type SoldeSemaine } from './Courbe';
+import { aujourdhuiDe, chf, classeRangee, creuxDe, escalier, largeurTexte, MOIS_MIN, moisDeSemaine, semaineCourte, type Boite, type Geo, type SoldeSemaine } from './Courbe';
 import { LectureDetail } from './LectureCourbe';
 
 /**
@@ -182,7 +182,7 @@ export function GrandeCourbe({ courbe: courbeC, rangeeDe, largeur, hauteur, pays
   });
   const yCreux = creux ? g.y(creux.centimes) : 0;
   // CRITIQUE-6 n° 18 : la semaine du creux dite comme l'en-tête (« creux S44 ’27 · −6 397 »).
-  const texteCreux = creux ? `creux ${semaineCourte(creux.lundi, courbe[0]?.lundi ?? creux.lundi)} · ` : '';
+  const texteCreux = creux ? `creux ${semaineCourte(creux.lundi, courbe[aujourdhuiDe(courbe)]?.lundi ?? creux.lundi)} · ` : '';
   const etCreux = creux ? placeEtiquetteCreux(courbe, g, largSvg, creux.index, creux.centimes, largeurTexte(texteCreux) + largeurTexte(chf(creux.centimes), true)) : null;
   // La légende, une fois (E12, analyse g4b) : la caisse, les seules couleurs de rangée présentes sur le tracé, puis le neutre s'il y est.
   // CRITIQUE-12 n° 5 : en portrait, sa dernière ligne finit à gauche du + volant (réserve `ent-leg--plus`), les termes restent entiers.

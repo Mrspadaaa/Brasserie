@@ -1,6 +1,6 @@
 import React, { useEffect, useId, useState } from 'react';
 import { ajouterJours, francs, francsSignes, jourLisible, semaineAvecAn } from '../../../domain/calendrier';
-import type { SoldeSemaine } from '../../../domain/calendrierCaisse';
+import { indexAujourdhui, type SoldeSemaine } from '../../../domain/calendrierCaisse';
 
 /**
  * La courbe de l'en-tête (E02, z2s/w3s) : libre et caisse sur 52 semaines, un point par semaine, les mouvements nommés avec leur montant,
@@ -36,17 +36,25 @@ export function variation(courbe: readonly SoldeSemaine[], i: number): number | 
   return s && s.variation !== 0 ? s.variation : null;
 }
 
-/** « À dépenser sans passer sous 0 » : le plus bas de la courbe libre, de la première semaine à la dernière, avec sa semaine (le creux). */
+/** CAL-PASSE : l'index d'aujourd'hui dans la courbe (le passé la précède : `courbe[0]` n'est plus aujourd'hui). */
+export const aujourdhuiDe = (courbe: readonly SoldeSemaine[]): number => indexAujourdhui(courbe);
+
+/**
+ * « À dépenser sans passer sous 0 » : le plus bas de la courbe libre, d'AUJOURD'HUI à la dernière semaine, avec sa semaine (le creux). Le passé
+ * (solde reconstruit des paiements réels) se lit sur la courbe mais n'est jamais « ce qu'on peut dépenser » : un solde plus bas il y a six mois
+ * ne dit rien de l'argent libre aujourd'hui.
+ */
 export function creuxDe(courbe: readonly SoldeSemaine[]): { index: number; numero: number; lundi: string; centimes: number } | null {
   if (!courbe.length) return null;
-  let m = 0;
-  for (let i = 1; i < courbe.length; i++) if (courbe[i].libre < courbe[m].libre) m = i;
+  const a = aujourdhuiDe(courbe);
+  let m = a;
+  for (let i = a + 1; i < courbe.length; i++) if (courbe[i].libre < courbe[m].libre) m = i;
   return { index: m, numero: courbe[m].numero, lundi: courbe[m].lundi, centimes: courbe[m].libre };
 }
 
 /**
- * La semaine dite comme l'en-tête la dit (CRITIQUE-6 n° 1 et 18) : « S44 » dans l'année de `reference` (la première semaine de la courbe :
- * aujourd'hui), « S44 ’27 » sinon. L'année est celle du jeudi de la semaine (ISO), comme `semaineAvecAn` du domaine, en forme courte.
+ * La semaine dite comme l'en-tête la dit (CRITIQUE-6 n° 1 et 18) : « S44 » dans l'année de `reference` (la semaine d'aujourd'hui de la courbe,
+ * `aujourdhuiDe` ; pas `courbe[0]`, qui peut être au passé), « S44 ’27 » sinon. L'année est celle du jeudi de la semaine (ISO), comme `semaineAvecAn` du domaine, en forme courte.
  */
 export function semaineCourte(lundi: string, reference: string): string {
   return semaineAvecAn(lundi, reference).replace(/ \d{2}(\d{2})$/, (_tout: string, an: string) => ` ’${an}`);
@@ -63,9 +71,11 @@ export const RECUL_MAX = 13;
  * eux-mêmes juste avant le creux : sur une courbe qui ne fait que descendre, le « sommet » est la semaine 0, d'où le défaut corrigé.
  */
 export function causesDuCreux(courbe: readonly SoldeSemaine[], creux: number): { debut: number; causes: CauseCreux[] } {
+  // CAL-PASSE : les causes se cherchent à partir d'aujourd'hui ; le sommet de la semaine 0 d'avant (le passé) n'est pas un point de départ.
+  const a = aujourdhuiDe(courbe);
   let sommet = -1;
-  for (let i = 0; i < creux; i++) if (sommet < 0 || courbe[i].libre >= courbe[sommet].libre) sommet = i;
-  const borne = Math.max(0, sommet + 1, creux - RECUL_MAX + 1);
+  for (let i = a; i < creux; i++) if (sommet < 0 || courbe[i].libre >= courbe[sommet].libre) sommet = i;
+  const borne = Math.max(a, sommet + 1, creux - RECUL_MAX + 1);
   const causes: CauseCreux[] = [];
   for (let i = creux; i >= borne; i--) {
     const s = courbe[i];
@@ -548,8 +558,10 @@ export function Courbe({ courbe, largeur, hauteur, curseur = null, reference, ge
               <rect x={0} y={0} width={largeur} height={hauteur} fill="white" />
               {noms.filter(e => !cache(e)).map(e => <rect key={`${e.i}-${e.nom}`} data-curseur-trou x={e.boite.l - 2} y={e.boite.t - 2} width={e.boite.r - e.boite.l + 4} height={e.boite.b - e.boite.t + 4} fill="black" />)}
             </mask>
-            <circle cx={g.x(curseur) + g.unit / 2} cy={g.y(libres[curseur])} r={12} className="ent-cur-anneau" data-curseur-anneau mask={`url(#cm${uid})`} />
-            <circle cx={g.x(curseur) + g.unit / 2} cy={g.y(libres[curseur])} r={5.5} className="ent-cur-pt" />
+            {/* CAL-PASSE (« un point qui pose problème, qui prend le dessus », capture 3-point-frise) : sur une courbe plate l'en-tête ne fait que
+                44 px ; l'anneau de 24 px débordait du tracé sur le cadre et les mois. Plate : le point seul (plus petit), sans anneau. */}
+            {!plate && <circle cx={g.x(curseur) + g.unit / 2} cy={g.y(libres[curseur])} r={12} className="ent-cur-anneau" data-curseur-anneau mask={`url(#cm${uid})`} />}
+            <circle cx={g.x(curseur) + g.unit / 2} cy={g.y(libres[curseur])} r={plate ? 4 : 5.5} className="ent-cur-pt" />
           </g>
         )}
         {/* Les points restent dans la zone de tracé (CRITIQUE-4 n° 25) : rien ne déborde du dessin. */}

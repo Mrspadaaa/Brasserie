@@ -1,7 +1,7 @@
 import React, { useEffect, useRef } from 'react';
 import type { HypotheseCaisse } from '../../../domain/calendrier';
 import { paliersApres } from '../../../domain/calendrierCaisse';
-import { ajouterJours, causesDuCreux, chf, jourCourt, semaineCourte, sg, type SoldeSemaine } from './Courbe';
+import { ajouterJours, aujourdhuiDe, causesDuCreux, chf, jourCourt, semaineCourte, sg, type SoldeSemaine } from './Courbe';
 
 /**
  * Le creux et ses causes (E01, q5/z2s) : un toucher sur le chiffre clé déplie « Le creux de S24 : ses causes ». Les sorties qui font le creux,
@@ -35,8 +35,8 @@ export function DetailCreux({ courbe, index, hypotheses, onOuvrirFinances, onFer
   const s = courbe[index];
   const { debut, causes } = causesDuCreux(courbe, index);
   const mis = s.reserve;
-  // La semaine de référence est la première de la courbe : celle d'aujourd'hui.
-  const reference = courbe[0]?.lundi ?? s.lundi;
+  // La semaine de référence est celle d'aujourd'hui (CAL-PASSE : la courbe peut commencer au passé, `courbe[0]` n'est plus aujourd'hui).
+  const reference = courbe[aujourdhuiDe(courbe)]?.lundi ?? s.lundi;
   const sem = (lundi: string) => semaineCourte(lundi, reference);
   const paliers = paliersApres({ semaines: courbe }, index);
   // La fin de l'horizon : le dimanche de la dernière semaine de la courbe, avec son année si elle n'est pas celle d'aujourd'hui.
