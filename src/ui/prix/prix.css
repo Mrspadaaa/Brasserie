@@ -42,7 +42,7 @@
 .prx-g { display: block; width: 100%; height: auto; max-width: 480px; margin: 0 auto; background: var(--pg-fond); border-radius: 12px; }
 .prx-g text { font-family: "Source Sans 3", system-ui, sans-serif; }
 .prx-g text.prx-m { font-family: "IBM Plex Mono", ui-monospace, monospace; }
-.prx-cout { min-height: 20px; height: 20px; line-height: 20px; padding: 0 4px; font-size: 13px; color: rgb(var(--area-finances-texte)); background: transparent; border: 0; position: absolute; left: 37%; bottom: 0; }
+.prx-cout { min-height: 20px; height: 20px; line-height: 20px; padding: 0 4px; font-size: 13px; color: rgb(var(--area-finances-texte)); background: transparent; border: 0; position: absolute; left: 46%; bottom: calc(5.9% - 10px); } /* Tour 3 : le « coût ≥ 2,18 » du graphe finit vers 42 % de la largeur à toute taille (le graphe est un SVG à l'échelle) : le bouton commence à 46 % aussi à 1280. Verticalement, le centre du bouton suit le centre du texte « coût » du SVG (y 299,3 sur 318, soit 5,9 % du bas) à toute échelle : 20 px de haut, donc bottom = 5,9 % − 10 px. */
 .prx-cout-q { color: rgb(var(--attention-texte)); font-weight: 600; }
 .prx-br-q svg { width: 92px; }
 .prx-tuile b.prx-q { color: rgb(var(--cave-400)); font-weight: 400; }
@@ -89,6 +89,8 @@
   .prx-col-manque { grid-column: 2; grid-row: 3; }
   .prx-col-bas { grid-column: 2; grid-row: 4; }
   .prx-g { max-width: 700px; }
+  /* Tour 3 : le graphe grandit (le « coût ≥ 2,18 » passe de 13 à ≈ 15 px) ; le bouton du litre suit pour ne pas paraître minuscule à côté. */
+  .prx-cout { font-size: 15px; }
   .prx-ans b { font-size: 56px; }
   /* fz : dans la colonne étroite de 1280, les deux tuiles de format s'empilent (elles se chevauchaient) et les actions passent l'une sous l'autre si besoin. */
   .prx-fo { flex-direction: column; }
@@ -98,8 +100,6 @@
 /* CT4C-6 : coût du brassin inconnu, le premier écran est ce qui débloque (la liste « Il manque ces données »), puis un graphe de « ? » réduit (il ne montre rien encore). */
 .prx-col-manque { margin-bottom: 10px; }
 @media (max-width: 999px) {
-  /* Tour 2 : coût connu, « coût ≥ 2,18 » du graphe (en bas à gauche) finit vers 42 % ; le bouton du litre passe à 46 % pour ne plus le recouvrir. */
-  .prx-cout { left: 46%; }
   .prx[data-inconnu] .prx-g { max-width: 260px; }
   .prx[data-inconnu] .prx-col-svg { align-items: center; }
   .prx[data-inconnu] .prx-cout-q { position: static; align-self: center; margin-top: 2px; min-height: 32px; height: auto; line-height: 1.2; }

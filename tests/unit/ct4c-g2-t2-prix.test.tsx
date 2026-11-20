@@ -78,7 +78,8 @@ describe('CT4C n° 7 : tuiles de format absentes lisibles en cave', () => {
 
 describe('CT4C tour 2 (vu au doute 1) : « 7,51 CHF/L › » ne recouvre plus « coût ≥ 2,18 » à 390', () => {
   it('sous 1000 px le bouton du coût du litre commence à 44 % de la largeur ou plus (le « coût » du graphe finit vers 42 %)', () => {
-    const m = css.match(/@media \(max-width: 999px\)\s*\{[\s\S]*?\.prx-cout\s*\{[^}]*\bleft:\s*(\d+)%/);
+    // Tour 3 : le décalage est posé sur la règle de base (toutes largeurs), non plus dans le media < 1000 px ; voir ct4c-g2-t3-prix.
+    const m = css.match(/\.prx-cout\s*\{[^}]*\bleft:\s*(\d+)%/);
     expect(m).not.toBeNull();
     expect(Number(m![1])).toBeGreaterThanOrEqual(44);
   });
