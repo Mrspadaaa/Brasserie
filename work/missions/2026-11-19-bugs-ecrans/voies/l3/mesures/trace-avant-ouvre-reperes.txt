@@ -1,0 +1,13 @@
+geste ouvre-reperes, CPU x4
+RunTask              n= 814  total    585 ms  max    42 ms  éléments≤0
+FunctionCall         n= 156  total    112 ms  max    35 ms  éléments≤0
+UpdateLayoutTree     n=  14  total     17 ms  max     7 ms  éléments≤92
+Layout               n=   2  total     29 ms  max    18 ms  éléments≤887
+PrePaint             n=  24  total     10 ms  max     4 ms  éléments≤0
+Paint                n=  16  total     40 ms  max    10 ms  éléments≤0
+Commit               n=  12  total      9 ms  max     4 ms  éléments≤0
+Layerize             n=  12  total     18 ms  max     7 ms  éléments≤0
+HitTest              n=   8  total      1 ms  max     1 ms  éléments≤0
+EventDispatch        n=  68  total     75 ms  max    36 ms  éléments≤0
+TimerFire            n=   5  total      5 ms  max     3 ms  éléments≤0
+FireAnimationFrame   n=   2  total     12 ms  max    12 ms  éléments≤0

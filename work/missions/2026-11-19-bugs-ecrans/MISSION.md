@@ -31,6 +31,11 @@ reporté au registre, `controle-bugs.mjs` → BUGS OK ; les commits envoyés à 
 | s1 | 12 défauts Stocks, Houblons, Bord | jugement | auteur | sonnet | 120 | voir voies/s1/VOIE.md | — | verdicts.mjs s1 ; --tests | pilote | — |
 | c1 | 7 défauts Clients et Ventes | jugement | auteur | sonnet | 120 | voir voies/c1/VOIE.md | — | verdicts.mjs c1 ; --tests | pilote | — |
 | k1 | test d'écran des écrans touchés, 390 tactile et 1280, deux thèmes | jugement | critique | opus | 30 | voies/k1/ | t1, r1, a1, a2, b1, s1, c1 | « combien et quels problèmes ? » | pilote | — |
+| dc1 | relance 21.11 : DC-1 | jugement | auteur | sonnet | 120 | voir voies/dc1/VOIE.md | — | verdicts.mjs dc1 ; --tests | pilote | — |
+| d3 | relance 21.11 : M9-1, LR1-4, LR2-8, LR3-2, LT-6 | jugement | auteur | sonnet | 120 | voir voies/d3/VOIE.md | — | verdicts.mjs d3 ; --tests | pilote | — |
+| r3 | relance 21.11 : TE-13, BR-91, BE-15, B1-NOTE-3, BK4-3, T3B-12, T4-4, TL-10, BK3-3 | jugement | auteur | sonnet | 120 | voir voies/r3/VOIE.md | — | verdicts.mjs r3 ; --tests | pilote | — |
+| l3 | relance 21.11 : BK4-1, BK4-2, LEV-8, LEV-11, T2B-3 | jugement | auteur | sonnet | 120 | voir voies/l3/VOIE.md | — | verdicts.mjs l3 ; --tests | pilote | — |
+| v3 | relance 21.11 : BK3-1, BK3-3, T3-1, T3-2, T3-3, T3-4, T3B-10, CT3-51 | jugement | auteur | sonnet | 120 | voir voies/v3/VOIE.md | — | verdicts.mjs v3 ; --tests | pilote | — |
 | ct4a | critique tour 4 B, n° 1, 2, 3, 7, 8, 9, 10, 11 | jugement | auteur | sonnet | 120 | voir voies/ct4a/VOIE.md | — | verdicts.mjs ct4a ; --tests | pilote | — |
 | ct4b | critique tour 4 B, n° 4, 5, 6, 12, 13, 14, 15 | jugement | auteur | sonnet | 120 | voir voies/ct4b/VOIE.md | — | verdicts.mjs ct4b ; --tests | pilote | — |
 | w1 | TL-7, TL-19, TL-16, T3-11, BK2-5, TE-27 (reprise de tous les ouverts) | jugement | auteur | sonnet | 120 | voir voies/w1/VOIE.md | — | verdicts.mjs w1 ; --tests | pilote | — |
@@ -84,3 +89,15 @@ Voie al1 (LR1-8, LR2-9 : le rapprochement des lignes de deux lectures d'un même
   (`tests/unit/bugs-al1-alignement.test.ts`, `bugs-g1-LR1-8.test.ts`) ; chaque changement rejoue `tests/unit/depense`, `tests/unit/finance`, `tests/unit/invoice*` et les tests de `functions`.
 - Limite dite : un ticket relu dans un autre ordre (deux colonnes) ne se rapproche plus par position ; le rapprochement reste par ressemblance mais dans l'ordre. Si un cas réel l'exige, l'appariement hongrois
   (sans ordre) est la suite, pas une deuxième rustine.
+
+## État de l'art — dc1
+
+- Problème type : estimation de l'inclinaison d'un document (deskew) et segmentation en lignes de texte d'une photo de ticket, pour couper entre deux lignes sans en traverser une.
+- Examiné : la méthode en place (src/services/decoupe.ts : binarisation d'Otsu avec plancher de contraste, profil de projection horizontal, angle grossier puis affiné ±0,4° par 0,05°) est la méthode d'école (profil de projection, Postl 1986) ; alternatives : transformée de Hough ou rectangle d'aire minimale (opencv.js, ≈ 8 Mo, trop lourd pour le téléphone hors ligne), binarisation locale de Sauvola (standard pour l'encre pâle et l'ombre, quelques dizaines de lignes, sans dépendance).
+- Décision : garder le profil de projection ; remesurer d'abord sur les graines 1 et 2 ; si les pertes viennent de lignes pâles ou d'ombre, binarisation locale de Sauvola (méthode standard, pas une rustine) ; si elles viennent de l'angle, élargir l'affinage, réglé sur une moitié des pièces et jugé sur l'autre (L20). Toute coupe douteuse dit sa ligne traversée (jamais silencieuse).
+
+## État de l'art — d3b
+
+- Problème type : classer un document à partir des classes de ses parties (agrégation de prédictions de lignes en une étiquette de document : vote majoritaire pondéré, « bag of labels »), robuste au bruit OCR.
+- Examiné : categorieDeLaPiece (src/ui/depense/familles.ts) exige 3 mots de travaux sans équivoque ; sur une lecture tachée il n'en voit qu'un, et la catégorie lue par le modèle tranche seule ; deux tirages de la même photo donnent Rénovation ou Matériel de brassage (doc25-provisoire-t2 contre doc25-ticket-t1). Méthodes standard : vote majoritaire des lignes, pondéré par le montant ; correspondance approximative des mots (distance de Levenshtein normalisée, déjà présente ou bibliothèque légère type fastest-levenshtein) pour les mots déformés ; la catégorie lue par le modèle n'est qu'une voix.
+- Décision : la pièce est classée par le vote de toutes ses lignes (chaque ligne vote pour sa famille par ses mots, mots déformés rapprochés par distance d'édition bornée, poids = montant), la catégorie lue compte pour une voix ; égalité ou vote faible → la pièce garde la catégorie lue et le dit (jamais silencieux). Réglé sur doc25-provisoire-t2 et doc25-ticket-t1, jugé sur les autres réponses enregistrées de tests/unit/depense/g1/brut (L20) : aucune pièce déjà juste ne change.

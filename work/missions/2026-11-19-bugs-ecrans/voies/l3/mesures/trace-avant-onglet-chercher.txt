@@ -1,0 +1,13 @@
+geste onglet-chercher, CPU x4
+RunTask              n=1565  total   1886 ms  max   582 ms  éléments≤0
+FunctionCall         n= 189  total    596 ms  max   518 ms  éléments≤0
+UpdateLayoutTree     n=   9  total    146 ms  max   130 ms  éléments≤676
+Layout               n=   3  total    269 ms  max   157 ms  éléments≤804
+PrePaint             n=  19  total     30 ms  max    24 ms  éléments≤0
+Paint                n=   9  total     17 ms  max     6 ms  éléments≤0
+Commit               n=   6  total      7 ms  max     3 ms  éléments≤0
+Layerize             n=   6  total     11 ms  max     7 ms  éléments≤0
+HitTest              n=  10  total      5 ms  max     2 ms  éléments≤0
+EventDispatch        n=  75  total    575 ms  max   529 ms  éléments≤0
+TimerFire            n=   6  total     11 ms  max     4 ms  éléments≤0
+FireAnimationFrame   n=   1  total      0 ms  max     0 ms  éléments≤0

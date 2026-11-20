@@ -1,0 +1,34 @@
+Serveur 1/1 : npm run dev  (journal : C:\Users\mrspa\AppData\Local\Temp\with-server-0yhqsZ\serveur-1-3122.log)
+Attente du port 3122…
+Serveur prêt sur le port 3122
+
+Tous les serveurs sont prêts. Lancement : sh -c node work/missions/2026-11-19-bugs-ecrans/voies/r3/banc-barre.mjs 1280 clair avant; node work/missions/2026-11-19-bugs-ecrans/voies/r3/banc-barre.mjs 390 clair avant; node work/missions/2026-11-19-bugs-ecrans/voies/r3/banc-barre.mjs 1280 clair avant Malts; node work/missions/2026-11-19-bugs-ecrans/voies/r3/banc-barre.mjs 390 clair avant Levure
+
+file:///C:/Users/mrspa/.codex/worktrees/openai-clean-start/ports-nuit/node_modules/puppeteer-core/lib/puppeteer/cdp/LifecycleWatcher.js:33
+    #error = new Error('LifecycleWatcher terminated');
+             ^
+
+Error: Navigating frame was detached
+    at <instance_members_initializer> (file:///C:/Users/mrspa/.codex/worktrees/openai-clean-start/ports-nuit/node_modules/puppeteer-core/lib/puppeteer/cdp/LifecycleWatcher.js:33:14)
+    at new LifecycleWatcher (file:///C:/Users/mrspa/.codex/worktrees/openai-clean-start/ports-nuit/node_modules/puppeteer-core/lib/puppeteer/cdp/LifecycleWatcher.js:37:16)
+    at CdpFrame.goto (file:///C:/Users/mrspa/.codex/worktrees/openai-clean-start/ports-nuit/node_modules/puppeteer-core/lib/puppeteer/cdp/Frame.js:152:29)
+    at CdpFrame.<anonymous> (file:///C:/Users/mrspa/.codex/worktrees/openai-clean-start/ports-nuit/node_modules/puppeteer-core/lib/puppeteer/util/decorators.js:101:27)
+    at CdpPage.goto (file:///C:/Users/mrspa/.codex/worktrees/openai-clean-start/ports-nuit/node_modules/puppeteer-core/lib/puppeteer/api/Page.js:582:43)
+    at file:///C:/Users/mrspa/.codex/worktrees/openai-clean-start/port-carnet/work/missions/2026-11-19-bugs-ecrans/voies/r3/banc-barre.mjs:17:12 {
+  cause: Error: LifecycleWatcher disposed
+      at LifecycleWatcher.dispose (file:///C:/Users/mrspa/.codex/worktrees/openai-clean-start/ports-nuit/node_modules/puppeteer-core/lib/puppeteer/cdp/LifecycleWatcher.js:170:29)
+      at CdpFrame.goto (file:///C:/Users/mrspa/.codex/worktrees/openai-clean-start/ports-nuit/node_modules/puppeteer-core/lib/puppeteer/cdp/Frame.js:172:25)
+      at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+      at async CdpPage.goto (file:///C:/Users/mrspa/.codex/worktrees/openai-clean-start/ports-nuit/node_modules/puppeteer-core/lib/puppeteer/api/Page.js:582:20)
+      at async file:///C:/Users/mrspa/.codex/worktrees/openai-clean-start/port-carnet/work/missions/2026-11-19-bugs-ecrans/voies/r3/banc-barre.mjs:17:1
+}
+
+Node.js v24.19.0
+barre-390-clair-avant {"sticky":"static","barre":[8,790,374,44],"main":[66,844],"defilable":true,"reste":11,"coupes":[]}
+étape introuvable Malts
+assistant-malts-1280-clair-avant {"abandonner":true,"ecartOg":"OG visée 1,066 · calculée 1,068 avec tes malts | title=La cible saisie ; le calcul diffère car les malts ou le rendement ont changé","titre":["3/7","Houblons 3/7"],"position":"sticky","barre":[546,44],"mainBas":800,"defilable":false,"reste":0,"coupes":[]}
+assistant-levure-390-clair-avant {"abandonner":true,"ecartOg":"OG visée 1,066 · calculée 1,068 avec tes malts | title=La cible saisie ; le calcul diffère car les malts ou le rendement ont changé","titre":["4/7","Levure 4/7"],"position":"sticky","barre":[800,44],"mainBas":844,"defilable":false,"reste":0,"coupes":[]}
+
+Commande terminée, code 0.
+
+Arrêt de 1 serveur(s)…

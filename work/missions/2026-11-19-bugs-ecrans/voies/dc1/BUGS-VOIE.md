@@ -1,0 +1,3 @@
+| id | source | écran | constat | gravité | état | commit | note |
+|---|---|---|---|---|---|---|---|
+| DC-1 | DC 08.11 | Dépense, découpe des longues pièces (voie F en ligne) | Perd 82 lignes sur la graine 1 (h0065, h0101), 24 coupes silencieuses sur la graine 2 : angle mal vu (1,2 à 1,75°), ligne pâle ou dans l'ombre | B | en cours — revu au tag en-ligne/2026-11-16-finances, 16.11 : 365e5f16 (photo ≤ 35 lignes lue entière) en ligne ; pertes de lignes sur les photos hautes non rejouées (src/services/decoupe.ts) | 365e5f16 | agent Opus : ne couper que si nécessaire (c), puis bande de contrôle (a) ; (c) déployé en 365e5f16 : photo ≤ 35 lignes lue entière, seule une photo haute et longue est coupée ; à remesurer sur les graines |

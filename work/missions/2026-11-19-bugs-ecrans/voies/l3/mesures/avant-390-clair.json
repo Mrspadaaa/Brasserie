@@ -1,0 +1,129 @@
+{
+ "largeur": 390,
+ "theme": "clair",
+ "cpu": 4,
+ "mesures": [
+  {
+   "geste": "frappe:Andechs",
+   "pireMs": 112,
+   "evt": "keyup",
+   "nbEvt": 62,
+   "tachesLongues": 5,
+   "pireTacheMs": 145
+  },
+  {
+   "geste": "choix:Andechs",
+   "pireMs": 168,
+   "evt": "pointerout",
+   "nbEvt": 46,
+   "tachesLongues": 3,
+   "pireTacheMs": 154
+  },
+  {
+   "geste": "frappe:Munich Lager",
+   "pireMs": 64,
+   "evt": "keydown",
+   "nbEvt": 66,
+   "tachesLongues": 2,
+   "pireTacheMs": 105
+  },
+  {
+   "geste": "choix:Munich Lager",
+   "pireMs": 568,
+   "evt": "pointerout",
+   "nbEvt": 24,
+   "tachesLongues": 4,
+   "pireTacheMs": 538
+  },
+  {
+   "geste": "caler",
+   "pireMs": 136,
+   "evt": "pointerout",
+   "nbEvt": 21,
+   "tachesLongues": 1,
+   "pireTacheMs": 119
+  },
+  {
+   "geste": "retablir",
+   "pireMs": 48,
+   "evt": "pointerout",
+   "nbEvt": 10,
+   "tachesLongues": 1,
+   "pireTacheMs": 53
+  },
+  {
+   "geste": "ouvre:dose",
+   "pireMs": 48,
+   "evt": "pointerout",
+   "nbEvt": 50,
+   "tachesLongues": 1,
+   "pireTacheMs": 118
+  },
+  {
+   "geste": "ferme:dose",
+   "pireMs": 16,
+   "evt": "pointerout",
+   "nbEvt": 23,
+   "tachesLongues": 0,
+   "pireTacheMs": 0
+  },
+  {
+   "geste": "ouvre:plus (Repères)",
+   "pireMs": 240,
+   "evt": "pointerout",
+   "nbEvt": 26,
+   "tachesLongues": 3,
+   "pireTacheMs": 211
+  },
+  {
+   "geste": "ferme:plus",
+   "pireMs": 56,
+   "evt": "pointerdown",
+   "nbEvt": 22,
+   "tachesLongues": 0,
+   "pireTacheMs": 0
+  },
+  {
+   "geste": "glisse:temperature",
+   "pireMs": 96,
+   "evt": "pointerdown",
+   "nbEvt": 21,
+   "tachesLongues": 2,
+   "pireTacheMs": 87
+  },
+  {
+   "geste": "glisse:duration",
+   "pireMs": 152,
+   "evt": "pointerup",
+   "nbEvt": 20,
+   "tachesLongues": 5,
+   "pireTacheMs": 148
+  },
+  {
+   "geste": "retour:Paliers→Levure",
+   "pireMs": 232,
+   "evt": "pointerout",
+   "nbEvt": 13,
+   "tachesLongues": 1,
+   "pireTacheMs": 181
+  },
+  {
+   "geste": "onglet:Chercher",
+   "pireMs": 224,
+   "evt": "pointerout",
+   "nbEvt": 23,
+   "tachesLongues": 1,
+   "pireTacheMs": 180
+  },
+  {
+   "geste": "onglet:Ma levure (retour)",
+   "pireMs": 40,
+   "evt": "pointerout",
+   "nbEvt": 11,
+   "tachesLongues": 0,
+   "pireTacheMs": 0
+  }
+ ],
+ "retour": null,
+ "erreurs": []
+}

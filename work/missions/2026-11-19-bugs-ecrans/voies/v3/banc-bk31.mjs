@@ -11,8 +11,8 @@ const QUAND = process.argv[2] ?? 'apres';
 const SORTIE = path.join(import.meta.dirname, 'captures');
 mkdirSync(SORTIE, { recursive: true });
 const MODES = [{ id: '360', l: 360, h: 780, mobile: true, echelle: 2 }, { id: '390', l: 390, h: 844, mobile: true, echelle: 2 }, { id: '1280', l: 1280, h: 800, mobile: false, echelle: 1 }];
-let ko = 0;
-for (const mode of MODES) {
+let ko = 0; const SEULS = (process.env.MODES ?? '').split(',').filter(Boolean);
+for (const mode of MODES.filter((m) => !SEULS.length || SEULS.includes(m.id))) {
   for (const theme of ['clair', 'cave']) {
     const { browser, page, journal } = await ouvrir({ largeur: mode.l, hauteur: mode.h, mobile: mode.mobile, echelle: mode.echelle });
     await page.goto(`http://localhost:${PORT}/?dev-local&finance-demo`, { waitUntil: 'domcontentloaded' }); await calme(page, 1500);

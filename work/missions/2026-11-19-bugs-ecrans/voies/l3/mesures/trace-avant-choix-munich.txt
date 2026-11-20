@@ -1,0 +1,12 @@
+geste choix-munich, CPU x4
+RunTask              n=2068  total   1826 ms  max   283 ms  éléments≤0
+FunctionCall         n= 319  total    598 ms  max   259 ms  éléments≤0
+UpdateLayoutTree     n=  21  total    233 ms  max   192 ms  éléments≤726
+Layout               n=  10  total    161 ms  max   109 ms  éléments≤956
+PrePaint             n=  42  total     11 ms  max     6 ms  éléments≤0
+Paint                n=  19  total     31 ms  max     8 ms  éléments≤0
+Commit               n=  21  total     19 ms  max     5 ms  éléments≤0
+Layerize             n=  21  total     10 ms  max     6 ms  éléments≤0
+HitTest              n=  15  total      8 ms  max     3 ms  éléments≤0
+EventDispatch        n= 135  total    293 ms  max   261 ms  éléments≤0
+TimerFire            n=   6  total      4 ms  max     2 ms  éléments≤0
