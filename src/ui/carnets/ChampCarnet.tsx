@@ -228,10 +228,20 @@ export function ChampCarnet(p: ChampCarnetProps) {
   const pret = (plein || (!!jointe && !jointe.lecture)) && !jointe?.lecture;
   const montrerBulle = !!p.suggestion && focus && !plein;
   useChampPublie(zone, inset, montrerBulle);
+  /* tour 3, f13 (PCN-37, CARNET-CLAV) : clavier ouvert, la barre d'onglets (fixe, en bas de la page) est sous le clavier. La zone ne lui
+     garde pas sa place : son retrait est le clavier moins ce que le conteneur laisse déjà en bas (la barre). Clavier fermé : 0. */
+  const [dejaEnBas, setDejaEnBas] = useState(0);
+  useLayoutEffect(() => {
+    const hote = zone.current?.parentElement;
+    if (!inset || !hote) { setDejaEnBas(0); return; }
+    const bas = Math.round(window.innerHeight - hote.getBoundingClientRect().bottom);
+    setDejaEnBas(Math.max(0, Math.min(inset, bas)));
+  }, [inset]);
+  const retrait = Math.max(0, inset - dejaEnBas);
   useDebordVaDans(zone);
 
   return (
-    <div ref={zone} className="cn-champ-zone" style={{ bottom: inset, marginBottom: inset }} aria-disabled={p.desactive || undefined} data-clavier={inset || undefined}>
+    <div ref={zone} className="cn-champ-zone" style={{ bottom: inset, marginBottom: retrait }} aria-disabled={p.desactive || undefined} data-clavier={inset || undefined}>
       {/* P37 (R27, CARNET-CLAV) : clavier ouvert, la bulle G8 et la puce « Coller » tiennent ensemble sur une ligne (`.cnf-aides-ligne`),
           pour laisser au carnet le plus de hauteur ; clavier fermé, chacune sa ligne. */}
       {/* Critique 5, n° 5 et 21 ; tour 3, PCN-103 : la bulle G8 tient en deux lignes au plus, clavier ouvert ou non */}

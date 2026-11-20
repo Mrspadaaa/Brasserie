@@ -79,17 +79,20 @@ describe('critique 6 · figés carnet ouvert, liste, article (lot C)', () => {
     expect(texte(supp.container)).toContain('6 articles, 2 façons, 1 façon écartée');
   });
 
-  it('4 · n° 16 (R11, g5:v04-4) : créé · après, le bandeau du lot A seul ; ni encadré beige « Idée · Ensuite… » ni points ●○○○', () => {
+  /* tour 3, f13 (PCN-27, règle n° 1) : sa maquette g5:v04-4 telle quelle, « ●○○○ idée » et l'encadré « Idée · 17 nov. / Ensuite… » ; la critique 6 (n° 16, 32) les avait retirés contre elle */
+  it('4 · R11, g5:v04-4 : créé · après, l’encadré « Idée · Ensuite… », les points ●○○○ et le bandeau du lot A', () => {
     const { container } = ouvrir(neuf({}, 'ZZ TEST — Embouteillage'), { tableau: null, vientDEtreCree: true, bandeau: <div className="cn-bandeau">✓ Carnet créé · Annuler</div> });
-    expect(container.querySelector('.cn-encadre-idee')).toBeNull();
-    expect(container.querySelector('.cn-etapes')).toBeNull();
-    expect(texte(container)).not.toContain('Ensuite :');
+    expect(container.querySelector('.cn-encadre-idee')).not.toBeNull();
+    expect(container.querySelector('.cn-etapes')).not.toBeNull();
+    expect(texte(container)).toContain('Ensuite :');
     expect(texte(container)).toContain('✓ Carnet créé');
   });
 
   it('5 · n° 32 : l’état n’a qu’une forme, la pastille (g05-1) ; « 2 façons à comparer » la remplace sur h05-3', () => {
+    /* tour 3, f13 (PCN-27, règle n° 1) : sa maquette g5:v04-4 telle quelle, « ●○○○ idée » et l'encadré « Idée · 17 nov. / Ensuite… » ; la critique 6 (n° 16, 32) les avait retirés contre elle */
     const a = ouvrir(neuf(), { tableau: null, vientDEtreCree: true });
-    expect([...a.container.querySelectorAll('.cn-tete .cn-pastille')].map(texte)).toEqual(['Idée · 15 nov.']);
+    expect(a.container.querySelector('.cn-tete .cn-pastille')).toBeNull();
+    expect(texte(a.container.querySelector('.cn-encadre-idee .cn-att')!)).toBe('Idée · 15 nov.');
     cleanup();
     const b = ouvrir(neuf(), { tableau: null });
     expect([...b.container.querySelectorAll('.cn-tete .cn-pastille')].map(texte)).toEqual(['Idée · 15 nov.']);

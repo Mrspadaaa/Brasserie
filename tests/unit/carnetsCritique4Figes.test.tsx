@@ -213,11 +213,12 @@ describe('P5, P6, P38 · tableau du carnet ouvert (h05-3)', () => {
 describe('P27 · en-tête du carnet créé (g5:v04-4), Photos', () => {
   const neuf: CarnetV = { id: 'n', title: 'Embouteillage', status: 'idea', carnet: { creeLe: '2026-11-17T08:00:00.000Z', phrase: 'embouteillage', criteres: [], facons: [], articles: [], notes: [], photos: [] } };
   const monter = (vient: boolean) => render(<CarnetOuvert carnet={neuf} aides={AIDES_ETEINTES} liens={[]} tableau={null} vientDEtreCree={vient} onRetour={rien} onRenommer={rien} onSupprimer={rien} onNote={rien} onOuvrirArticle={rien} onComparer={rien} />);
-  it('tout juste créé (critique 6, n° 16 et 32) : l’état en une forme, la pastille « Idée · 17 nov. » ; ni encadré ni points ; « Photos · aucune »', () => {
+  /* tour 3, f13 (PCN-27, règle n° 1) : sa maquette g5:v04-4 telle quelle, « ●○○○ idée » et l'encadré « Idée · 17 nov. / Ensuite… » (la critique 6 les avait retirés) */
+  it('tout juste créé (g5:v04-4) : « ●○○○ idée » en tête, l’encadré « Idée · 17 nov. » ; « Photos · aucune »', () => {
     const { container } = monter(true);
-    expect(container.querySelector('.cn-encadre-idee')).toBeNull();
-    expect(container.querySelector('.cn-etapes')).toBeNull();
-    expect(texte(container.querySelector('.cn-tete .cn-pastille')!)).toBe('Idée · 17 nov.');
+    expect(container.querySelector('.cn-encadre-idee')).not.toBeNull();
+    expect(container.querySelector('.cn-tete .cn-etapes')).not.toBeNull();
+    expect(texte(container.querySelector('.cn-encadre-idee .cn-att')!)).toBe('Idée · 17 nov.');
     expect(texte(container)).toContain("Façons · aucune : l'IA les cherche");
     expect(texte(container)).toContain('Photos · aucune');
   });

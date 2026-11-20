@@ -330,9 +330,12 @@ export function CarnetOuvert(p: CarnetOuvertProps) {
       <div className="cn-tete">
         <button type="button" className="cn-retour" onClick={p.onRetour}><ChevronLeft size={20} aria-hidden /> Carnets</button>
         <span className="cn-sp" />
-        {/* critique 6, n° 32 : l'état n'a qu'une forme, la pastille (g05-1 « Idée », h05-3 : la ligne d'état la remplace quand elle
-            dit « 2 façons à comparer ») ; jamais de points ●○○○ en plus (n° 16). */}
-        {!(etatTete && c.status === 'research') && <span className={`cn-pastille cn-statut-${c.status}`}>{etiquetteStatut(c)}</span>}
+        {/* critique 6, n° 32 : ailleurs, l'état n'a qu'une forme, la pastille (g05-1 « Idée », h05-3 : la ligne d'état la remplace quand elle
+            dit « 2 façons à comparer »). Tour 3, f13 (PCN-27, R11, règle n° 1) : tout juste créé, l'en-tête de sa maquette g5:v04-4,
+            « ●○○○ idée » ; la date est dans l'encadré dessous, pas en pastille. */}
+        {neuf
+          ? <span className="cn-etapes" aria-label="Étape : idée"><span className="cn-etape-on" /><span /><span /><span /><span className="cn-lien-texte">idée</span></span>
+          : !(etatTete && c.status === 'research') && <span className={`cn-pastille cn-statut-${c.status}`}>{etiquetteStatut(c)}</span>}
         <button type="button" className="cn-ico" aria-label="Plus" aria-expanded={menu} onClick={() => setMenu(m => !m)}><Ellipsis size={22} aria-hidden /></button>
         {/* tour 3, PCN-154 : le menu flotte sous ···, hors du flux (le titre ne descend plus) */}
         {menu && (
@@ -348,9 +351,16 @@ export function CarnetOuvert(p: CarnetOuvertProps) {
         <h2 className="cn-titre">{c.title}</h2>
         <button type="button" className="cn-ico" aria-label="Renommer" onClick={() => { setMenu(false); p.onRenommer(); }}><Pencil size={20} aria-hidden /></button>
       </div>
-      {/* Critique 6, n° 16 (R11, g5:v04-4) : tout juste créé, une seule nouvelle : le bandeau « ✓ Carnet créé · ↺ Annuler » et « votre
-          phrase en titre » (lot A). Ni l'encadré « Idée · Ensuite… » ni les points ●○○○ en plus : l'état est la pastille « Idée · 17 nov. »
-          en tête, et chaque rubrique dit qui agit (« Façons · aucune : l'IA les cherche » ; sans IA, rien n'est promis, n° 24). */}
+      {/* Tour 3, f13 (PCN-27, R11, règle n° 1) : tout juste créé, sa maquette g5:v04-4 telle quelle : l'encadré « Idée · 17 nov. / Ensuite :
+          l'IA cherche les façons » entre le titre et le bandeau « ✓ Carnet créé · ↺ Annuler » (la critique 6, n° 16, l'avait retiré contre
+          la maquette). Sans IA, la suite ne promet rien d'elle (n° 24) : « Ensuite : collez un lien » ; hors ligne, la ligne « au retour du
+          réseau » dit déjà la suite : l'encadré ne garde que l'état. */}
+      {neuf && (
+        <div className="cn-encadre-idee">
+          <b className="cn-att">{etiquetteStatut(c)}</b>
+          {!enAttente && <b>Ensuite : {ia && k.facons.length === 0 ? "l'IA cherche les façons" : k.articles.length === 0 ? 'collez un lien' : ia ? "l'IA compare" : 'comparez les articles'}</b>}
+        </div>
+      )}
       {/* P9 (vision 1) : la confirmation, le bandeau et le cadre du geste restent juste sous le titre, avant la ligne d'état et le tableau :
           à 390 ils doivent être à l'écran quand on les touche */}
       {p.bandeau}
