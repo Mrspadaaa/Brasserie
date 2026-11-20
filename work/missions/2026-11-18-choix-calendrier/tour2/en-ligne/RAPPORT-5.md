@@ -57,3 +57,20 @@ Vérifiés justes (47) : PC-4, PC-62, PC-149, PC-151, PC-152, PC-153, PC-154, PC
 - Brouillon « ZZ TEST — Nuage Banane — Hefeweisse passe 4 » (resté sur l'appareil depuis la passe 4) : levure hors catalogue « ZZ TEST — levure passe 5 », puis « Abandonner » › « Supprimer ce brouillon ? » › Abandonner ; plus aucun brouillon ZZ dans le stockage local.
 - Ouverts puis fermés sans geste : feuilles « test nolo2 », « Milk Stout », Vendre (panier vide). Échelle du calendrier essayée (« Mois »), revenue à 6 sem. Thème laissé à « clair ».
 - Aucune donnée réelle modifiée, aucun envoi à l'IA, aucune suppression hors ZZ.
+
+## Nettoyage accordé (20.11, accord du brasseur dans cette session : « Oui et vérifie SI tout fonctionne bien »)
+
+Par les écrans de l'app en ligne, page directe, sans aucune écriture directe dans Firestore. Les captures avant et après n'ont pas été possibles : `Page.captureScreenshot` expire encore. L'état avant et après a été relevé dans la page.
+
+| Geste demandé | Avant | Fait | Après |
+|---|---|---|---|
+| (8) Milk Stout : noms de malts abîmés | Éditeur › Malts : « Rstgerste (orge torrfie) » 0,50 kg, « Caramnch Typ 2 » 0,40 kg | **Rien touché (doute)** : l'éditeur n'a pas de geste pour renommer une ligne (code du tag : aucun « renommer »). La seule voie est de retirer la ligne puis d'en créer une autre. Cela crée un article de stock (« Créer … (stock à zéro) ») ou relie la ligne au « Röstgerste » du stock, donc change plus que le nom | Éditeur fermé sans enregistrer, aucun brouillon Milk Stout ; recette inchangée. À faire par le code (correction des noms dans la donnée) ou par un geste « renommer » à ajouter |
+| (9) Vente « 10 × Bière · 75 cl — Restaurant du Lac » +5 695,00 du 10.11 | Déjà dans Opérations › Filtres › Écritures annulées : « Annulé · +5 695,00 » ; Restaurant du Lac « Aucune vente » ; Synthèse « Aucune vente notée » | Rien : déjà retirée des comptes. Une écriture annulée n'a aucun geste de suppression | Inchangé |
+| (10) Client « ZZ TEST » | Clients › Carnet : 5 clients, aucun ZZ | Rien : absent | — |
+| (10) Recette « ZZ TEST » | Recettes : 23, aucune ZZ | Rien : absente | — |
+| (10) Brouillon laissé sur « neipa v3 » | Stockage local : brouillon `REC-MTYT8FX0` « neipa v3 » (« Brouillon repris sur cet appareil », étape Houblons) | neipa v3 › Modifier › Abandonner › « Supprimer ce brouillon ? » › Abandonner | Brouillon supprimé ; recette neipa v3 présente, Recettes 23. Reste le brouillon « test nolo2 » (`REC-MTYMCG2C`), non demandé, laissé |
+| (10) Écritures ZZ annulées et justificatifs Drive | « Écritures annulées » : 18 lignes ZZ TEST (e1, e3, passe 5, opération à payer, pièces A/B, apports, parcours r2 et 10.11, enrichissement 10.11, Hopfenhandel…) et « TEST pilote Services Sàrl » ; la fiche dit « Écriture annulée. Justificatif et historique conservés. », sans geste de suppression | **Rien touché** : aucun écran ne supprime une écriture annulée ni son justificatif Drive | Inchangé. À faire par une écriture directe ou un script, à décider par le pilote, avec un nouvel accord |
+| (10) Mes ZZ (passe 5) | Dépense, fût F-005, article nettoyant, brouillon de la passe 4 | Déjà retirés pendant la passe ; la dépense reste parmi les annulées (voir la ligne précédente) | — |
+| Planning (GanttTask) | Aucun écran (« le Planning n'a plus d'écran ») | **Rien touché** : pas de geste à l'écran, et l'écriture directe est exclue par le contrat | À faire par la session qui retire le code du Planning |
+
+Vérifié après : Bord (brassins, stocks, Finances) s'affiche ; Recettes 23, neipa v3 et Milk Stout présentes ; Finances › Opérations : payé 265,40, à payer 0,00 (inchangé) ; un seul brouillon local (test nolo2).

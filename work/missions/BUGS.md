@@ -53,7 +53,7 @@ Lire :
 
 | chemin | préfixe | constats | notes | empreinte |
 |---|---|---|---|---|
-| work/missions/2026-11-18-choix-calendrier/tour2/en-ligne/RAPPORT-5.md | T4 | 7 | 1 | 3eed2a444507 |
+| work/missions/2026-11-18-choix-calendrier/tour2/en-ligne/RAPPORT-5.md | T4 | 7 | 1 | d59ca8f31585 |
 | work/missions/2026-11-18-choix-calendrier/tour2/en-ligne/RAPPORT-4.md | T3B | 13 | 1 | a5f31f216f81 |
 | work/missions/2026-11-19-carnet-tour3/RAPPORT.md | CT3 | 54 | 0 | 6099acdd8c53 |
 | work/missions/2026-11-20-critique-tour4/c-stocks-carnet-vendre.md | CT4C | 9 | 0 | 91d1da9164e1 |
