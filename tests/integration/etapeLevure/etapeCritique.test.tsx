@@ -67,13 +67,15 @@ describe('Ma levure : la saisie libre aboutit sous les yeux', () => {
     expect(saisie.closest('[data-lv="ajout"]')).not.toBeNull();
   });
 
-  it('fermée, la saisie retourne dans la liste des replis', async () => {
+  it('fermée, la saisie s’efface (aucun volet empilé, 20.11) ; « Hors catalogue » la rouvre', async () => {
     render(<Banc depart={recetteApercuEtapeLevure() as unknown as TrialRecipe} />);
     fireEvent.click(screen.getByRole('button', { name: 'Hors catalogue' }));
     await screen.findByLabelText('Nom de la levure personnelle');
     const repli = document.querySelector('[data-repli="stock"]') as HTMLDetailsElement;
     repli.open = false; fireEvent(repli, new Event('toggle'));
-    await waitFor(() => expect(document.querySelector('[data-lv="replis"] [data-repli="stock"]')).not.toBeNull());
+    await waitFor(() => expect(document.querySelector('[data-repli="stock"]')).toBeNull());
+    fireEvent.click(screen.getByRole('button', { name: 'Hors catalogue' }));
+    expect(await screen.findByLabelText('Nom de la levure personnelle')).toBeTruthy();
   });
 });
 

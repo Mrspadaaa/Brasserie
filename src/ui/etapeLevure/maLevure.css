@@ -1,0 +1,186 @@
+/* La carte Ma levure telle que le brasseur l'a choisie (20.11) : r3 v05 au repos et au cas limite, r4 v02 juste après − / +.
+   Règles reprises de r4/v02.html (g2-) et r3/v05.html (c5-), couleurs par jetons de thème (clair et cave) ; aucun texte sous 14 px.
+   Les règles lv- de etapeLevure.css sont reprises sous `.ml-carte` (spécificité plus forte, fichier importé après). */
+
+.ml-carte {
+  --ml-page: rgb(var(--cave-950));
+  --ml-panneau: rgb(var(--cave-900));
+  --ml-sur: rgb(var(--cave-850));
+  --ml-bord: rgb(var(--cave-800));
+  --ml-bord2: rgb(var(--cave-700));
+  --ml-trait: rgb(var(--cave-600));
+  --ml-t2: rgb(var(--cave-texte-400));
+  --ml-t1: rgb(var(--cave-texte-200));
+  --ml-t0: rgb(var(--cave-texte-50));
+  --ml-encre: rgb(var(--cave-50));
+  --ml-or: rgb(var(--ebc-gold-texte));
+  --ml-or-aplat: #F2C14E;
+  --ml-sur-or: #111111;
+  --ml-or-clair: rgb(242 193 78 / .28);
+  --ml-or-fond: rgb(242 193 78 / .14);
+  --ml-att: rgb(var(--attention));
+  --ml-alerte: rgb(var(--alert));
+  --ml-alerte-t: rgb(var(--alert-texte));
+  --ml-alerte-fond: rgb(var(--alert) / .1);
+  --ml-alerte-bord: rgb(var(--alert) / .4);
+  --ml-stock: rgb(var(--hop));
+  --ml-stock-t: rgb(var(--hop-texte));
+  --ml-stock-fond: rgb(var(--hop) / .12);
+  --ml-eau: rgb(var(--water));
+  --ml-eau-fond: rgb(var(--water) / .1);
+  --ml-eau-bord: rgb(var(--water) / .45);
+  background: var(--ml-panneau);
+}
+
+.ml-carte .ml-m { font-family: 'IBM Plex Mono', ui-monospace, Consolas, monospace; font-variant-numeric: tabular-nums; letter-spacing: -.01em; }
+.ml-carte .ml-g { color: var(--ml-t2); }
+.ml-carte .ml-esp { flex: 1; }
+.ml-carte button { font: inherit; color: inherit; -webkit-tap-highlight-color: transparent; }
+.ml-carte button:focus-visible { outline: 2px solid rgb(var(--ebc-straw)); outline-offset: 2px; }
+
+/* En-tête : pastille, nom, le nombre choisi à droite (comme « 1,7 kg » sur la ligne d'un malt), marque dessous */
+.ml-carte .lv-row.ml-hd { grid-template-columns: 40px minmax(0, 1fr) auto 28px; column-gap: 8px; padding: 8px 4px 6px 10px; }
+.ml-carte .lv-pic.ml-pastille { width: 40px; height: 40px; border-radius: 50%; background: var(--ml-or-clair); border: 2px solid var(--ml-or-aplat); color: var(--ml-or); }
+.ml-carte .lv-pic.ml-pastille[data-hors-catalogue] { background: var(--ml-page); border-style: dashed; border-color: var(--ml-trait); color: var(--ml-t2); }
+.ml-carte .lv-nom { font-size: 20px; letter-spacing: -.015em; color: var(--ml-t0); }
+.ml-carte .lv-nom.lv-long { font-size: 17px; }
+.ml-carte .lv-dose.ml-qte { align-self: center; align-items: baseline; gap: 4px; padding: 0 2px 1px; border-bottom: 2px dotted var(--ml-trait); border-radius: 0; white-space: nowrap; }
+.ml-carte .ml-qte b { font-family: inherit; font-size: 28px; font-weight: 700; line-height: 1; letter-spacing: -.01em; color: var(--ml-t0); }
+.ml-carte .ml-qte > span { font-size: 15px; color: var(--ml-t2); }
+.ml-carte .ml-qte[data-touche] { background: linear-gradient(transparent 60%, rgb(242 193 78 / .6) 60%); }
+.ml-carte .ml-qte[data-dose='a-choisir'] { border-bottom: 0; padding: 0; }
+.ml-carte .ml-qte > .ml-achoisir { display: inline-flex; align-items: center; height: 34px; padding: 0 10px; border: 1.5px dashed var(--ml-trait); border-radius: 10px;
+  background: var(--ml-page); font-size: 16px; font-weight: 600; color: var(--ml-t1); }
+.ml-carte .lv-x { color: var(--ml-t1); width: 28px; height: 32px; }
+.ml-carte .lv-sub { font-size: 14px; color: var(--ml-t2); margin-top: 2px; }
+
+/* Bande de dose (r3 v05 au repos) : la part, puis une piste en sachets entre − et + */
+.ml-carte .ml-dose { background: var(--ml-page); border-top: 1px solid var(--ml-bord2); padding: 5px 10px 3px; }
+.ml-carte .ml-part { display: flex; align-items: center; gap: 8px; min-height: 32px; font-size: 15px; white-space: nowrap; }
+.ml-carte .ml-partmot { font-weight: 600; color: var(--ml-stock-t); }
+.ml-carte .ml-partmot[data-ok='false'] { color: var(--ml-alerte-t); }
+.ml-carte .ml-manque { display: inline-flex; align-items: center; gap: 5px; height: 30px; padding: 0 8px 0 6px; border: 1.5px solid var(--ml-alerte-bord); border-radius: 9px;
+  background: var(--ml-alerte-fond); color: var(--ml-alerte-t); font-size: 15px; font-weight: 600; cursor: pointer; }
+.ml-carte .ml-manque svg { color: var(--ml-alerte); }
+.ml-carte .ml-manque.ml-achat { border-color: var(--ml-att); background: var(--ml-or-fond); color: var(--ml-or); }
+.ml-carte .ml-manque.ml-achat svg { color: var(--ml-or); }
+.ml-carte .ml-enstock { flex: none; display: grid; place-items: center; width: 30px; height: 28px; border-radius: 9px; color: var(--ml-stock); background: var(--ml-stock-fond); border: 1.5px solid var(--ml-stock); }
+.ml-carte .ml-enstock[data-stock='neutre'] { color: var(--ml-eau); background: var(--ml-eau-fond); border-color: var(--ml-eau-bord); }
+.ml-carte .ml-enstock[data-stock='vide'] { color: var(--ml-trait); background: var(--ml-page); border: 1.5px dashed var(--ml-bord2); }
+.ml-carte .ml-dose[data-etat='apres'] .ml-enstock { border-color: var(--ml-att); }
+.ml-carte .ml-mettre { display: inline-flex; align-items: center; gap: 4px; height: 36px; padding: 0 12px; border: 1.5px solid var(--ml-att); border-radius: 10px;
+  background: var(--ml-or-aplat); color: var(--ml-sur-or); font-size: 15px; font-weight: 700; cursor: pointer; }
+
+.ml-carte .ml-regle { display: flex; align-items: center; gap: 10px; margin-top: 3px; }
+.ml-carte .ml-pas { flex: none; width: 44px; height: 44px; border-radius: 50%; border: 1.5px solid var(--ml-bord2); background: var(--ml-page); display: grid; place-items: center;
+  color: var(--ml-t0); cursor: pointer; touch-action: manipulation; }
+.ml-carte .ml-pas:active:not(:disabled) { background: var(--ml-sur); }
+.ml-carte .ml-pas:disabled { color: var(--ml-bord2); border-color: var(--ml-bord); background: var(--ml-panneau); cursor: default; }
+.ml-carte .ml-pistebloc { position: relative; flex: 1; min-width: 0; height: 44px; }
+.ml-carte .ml-piste { position: absolute; left: 0; right: 0; top: 9px; height: 10px; border-radius: 5px; background: var(--ml-sur); }
+.ml-carte .ml-piste.ml-vide { background: transparent; border: 1.5px dashed var(--ml-bord2); }
+.ml-carte .ml-rempli { position: absolute; left: 0; top: 0; bottom: 0; border-radius: 5px; background: var(--ml-or-aplat); }
+.ml-carte .ml-cran { position: absolute; top: 0; bottom: 0; width: 3px; margin-left: -1.5px; background: var(--ml-page); }
+.ml-carte .ml-piste.ml-vide .ml-cran { top: -1px; bottom: -1px; width: 2px; background: var(--ml-bord2); }
+.ml-carte .ml-conseilmark { position: absolute; top: -6px; width: 0; height: 22px; border-left: 2px dashed var(--ml-att); }
+.ml-carte .ml-poignee { position: absolute; top: 50%; width: 22px; height: 22px; margin: -11px 0 0 -11px; border-radius: 50%; background: var(--ml-encre);
+  border: 3px solid var(--ml-page); box-shadow: 0 1px 3px rgb(0 0 0 / .35); }
+.ml-carte .ml-bornes { position: absolute; left: 0; right: 0; top: 25px; height: 18px; font-size: 14px; line-height: 18px; color: var(--ml-t2); white-space: nowrap; }
+.ml-carte .ml-bornes > span { position: absolute; top: 0; }
+.ml-carte .ml-bornes .d { left: 0; }
+.ml-carte .ml-bornes .c { transform: translateX(-50%); color: var(--ml-or); }
+.ml-carte .ml-bornes .f { right: 0; }
+
+/* Juste après − / + (r4 v02) : la part du besoin en grand, le besoin en trait noir au-dessus, les grammes dessous */
+.ml-carte .ml-verdict { display: flex; align-items: center; gap: 8px; min-height: 36px; white-space: nowrap; }
+.ml-carte .ml-pc { font-size: 24px; font-weight: 700; letter-spacing: -.01em; font-variant-numeric: tabular-nums; color: var(--ml-t0); }
+.ml-carte .ml-pc[data-sous] { color: var(--ml-alerte-t); }
+.ml-carte .ml-ty { font-size: 15px; color: var(--ml-t1); }
+.ml-carte .ml-mot { display: inline-flex; align-items: center; height: 26px; padding: 0 10px; border-radius: 999px; font-size: 15px; font-weight: 700;
+  background: var(--ml-stock-fond); color: var(--ml-stock-t); border: 1.5px solid var(--ml-stock); }
+.ml-carte .ml-mot[data-mot='sous'] { background: var(--ml-alerte-fond); color: var(--ml-alerte-t); border-color: var(--ml-alerte); }
+.ml-carte .ml-mot[data-mot='sur-dosé'] { background: var(--ml-or-fond); color: var(--ml-or); border-color: var(--ml-att); }
+.ml-carte .ml-remede { display: inline-flex; align-items: center; height: 36px; padding: 0 12px; border: 1.5px solid var(--ml-att); border-radius: 10px;
+  background: var(--ml-or-aplat); color: var(--ml-sur-or); font-size: 15px; font-weight: 700; cursor: pointer; }
+.ml-carte .ml-regle-apres { gap: 8px; margin-top: 2px; }
+.ml-carte .ml-dose[data-etat='apres'] .ml-pas { width: 48px; height: 48px; }
+.ml-carte .ml-pistebloc.ml-pb-apres { height: 62px; }
+.ml-carte .ml-blab { position: absolute; top: 0; transform: translateX(-50%); font-size: 14px; line-height: 16px; font-weight: 600; color: var(--ml-t0); white-space: nowrap; }
+.ml-carte .ml-piste3 { position: absolute; left: 0; right: 0; top: 22px; height: 14px; border-radius: 7px; background: var(--ml-page); border: 1.5px solid var(--ml-bord2); }
+.ml-carte .ml-piste3 > .ml-r-or, .ml-carte .ml-piste3 > .ml-r-plus, .ml-carte .ml-piste3 > .ml-r-manque { position: absolute; top: -1.5px; bottom: -1.5px; }
+.ml-carte .ml-r-or { background: var(--ml-or-aplat); border-radius: 7px 0 0 7px; }
+.ml-carte .ml-r-plus { background: rgb(var(--hop) / .55); }
+.ml-carte .ml-r-manque { background: repeating-linear-gradient(135deg, rgb(var(--alert) / .65) 0 3px, var(--ml-alerte-fond) 3px 7px); border: 1.5px dashed var(--ml-alerte); border-left: 0; }
+.ml-carte .ml-besoin { position: absolute; top: -8px; height: 28px; width: 3px; margin-left: -1.5px; border-radius: 2px; background: var(--ml-encre); }
+.ml-carte .ml-piste3 > .ml-poignee { width: 24px; height: 24px; margin: -12px 0 0 -12px; }
+.ml-carte .ml-ticks { position: absolute; left: 0; right: 0; top: 39px; height: 5px; }
+.ml-carte .ml-ticks > i { position: absolute; top: 0; width: 2px; height: 5px; margin-left: -1px; background: var(--ml-trait); }
+.ml-carte .ml-grad { position: absolute; left: 0; right: 0; top: 44px; height: 18px; font-size: 14px; line-height: 18px; color: var(--ml-t2); white-space: nowrap;
+  font-family: 'IBM Plex Mono', ui-monospace, Consolas, monospace; }
+.ml-carte .ml-grad > span { position: absolute; top: 0; }
+.ml-carte .ml-grad .m { transform: translateX(-50%); }
+.ml-carte .ml-grad .f { transform: translateX(-100%); }
+.ml-carte .ml-grad .sel { color: var(--ml-t0); font-weight: 700; font-size: 15px; font-family: 'Source Sans 3', system-ui, sans-serif; }
+.ml-carte .ml-grad .d.sel { transform: none; }
+.ml-carte .ml-reperes { font-size: 14px; line-height: 1.25; color: var(--ml-t2); padding: 0 0 5px; }
+
+/* Cases FG · fiche · conduite · floculation */
+.ml-carte .lv-bande.ml-cases { grid-template-columns: 1fr 1.18fr .86fr; background: transparent; border-top: 1px solid var(--ml-bord2); }
+.ml-carte .ml-cases .lv-cel { padding: 6px 8px; gap: 2px; }
+.ml-carte .ml-cases .lv-cel + .lv-cel { border-left: 1px solid var(--ml-bord2); }
+.ml-carte .ml-cases .lv-ct, .ml-carte .ml-cases .lv-ab { font-size: 14px; line-height: 1.25; min-height: 0; color: var(--ml-t2); white-space: nowrap; }
+.ml-carte .ml-cases .lv-cv { font-size: 16px; line-height: 1.3; min-height: 0; color: var(--ml-t0); }
+.ml-carte .ml-cases .lv-cv[data-inconnu] { font-weight: 400; color: var(--ml-t2); }
+.ml-carte .ml-cases .lv-cv.ml-fin { font-family: inherit; font-weight: 400; color: var(--ml-t1); }
+.ml-carte .ml-jauge { position: relative; align-self: stretch; height: 10px; margin-top: 6px; border-radius: 4px; background: var(--ml-sur); }
+.ml-carte .ml-jauge > i { position: absolute; top: -3px; bottom: -3px; min-width: 7px; border-radius: 4px; border: 1.5px solid var(--ml-or); background: var(--ml-or-aplat); }
+.ml-carte .ml-jauge.ml-vide { background: transparent; border: 1.5px dashed var(--ml-bord2); }
+.ml-carte .ml-ech { align-self: stretch; display: flex; justify-content: space-between; font-size: 14px; color: var(--ml-t2); margin-top: 3px; }
+.ml-carte .ml-tc[data-hors] { color: var(--ml-alerte-t); }
+.ml-carte .ml-plage { position: relative; align-self: stretch; height: 8px; margin-top: 7px; border-radius: 4px; background: linear-gradient(90deg, #4F7E9B, #A9C6D8 30%, #F2C14E 62%, #D6453D); }
+.ml-carte .ml-fiche { position: absolute; top: -3px; bottom: -3px; border: 2px solid var(--ml-encre); border-radius: 3px; background: rgb(255 255 255 / .35); }
+.ml-carte .ml-ici { position: absolute; top: -5px; bottom: -5px; width: 3px; margin-left: -1.5px; border-radius: 2px; background: var(--ml-encre); }
+.ml-carte .ml-ici[data-hors] { background: var(--ml-alerte); }
+.ml-carte .lv-caler.ml-caler { display: inline-flex; align-items: center; gap: 5px; margin-top: 6px; height: 32px; padding: 0 9px; border: 1.5px solid var(--ml-att); border-radius: 10px;
+  background: var(--ml-page); color: var(--ml-or); font-size: 14px; font-weight: 600; white-space: nowrap; cursor: pointer; }
+.ml-carte .ml-cases .lv-retablir { font-size: 14px; min-height: 32px; }
+.ml-carte .ml-cases .lv-jo { align-self: stretch; grid-template-columns: repeat(3, 1fr); gap: 3px; margin-top: 8px; }
+.ml-carte .ml-cases .lv-jo b { height: 8px; border-radius: 3px; background: var(--ml-bord2); }
+.ml-carte .ml-floc-inc { display: flex; flex-direction: column; align-items: stretch; align-self: stretch; gap: 2px; padding: 0; border: 0; background: transparent; text-align: left; cursor: pointer; min-height: 44px; }
+.ml-carte .ml-crans-vides { display: flex; gap: 3px; margin-top: 8px; }
+.ml-carte .ml-crans-vides > i { flex: 1; height: 8px; border-radius: 3px; border: 1.5px dashed var(--ml-bord2); }
+
+/* Ligne conduite : mini graphe en marches, paliers, fin */
+.ml-carte .ml-conduite { display: flex; align-items: center; gap: 7px; width: 100%; min-height: 36px; padding: 0 10px; border: 0; border-bottom: 1px solid var(--ml-bord2);
+  background: transparent; color: var(--ml-t0); font-size: 15px; white-space: nowrap; text-align: left; cursor: pointer; }
+.ml-carte .ml-conduite svg { flex: none; }
+.ml-carte .ml-ctx { font-size: 14px; font-weight: 600; min-width: 0; overflow: hidden; text-overflow: ellipsis; }
+.ml-carte .ml-ctx .ml-g { font-weight: 400; }
+.ml-carte .ml-cmot { font-size: 14px; color: var(--ml-t2); }
+.ml-carte .ml-conduite > .ml-g { font-size: 14px; }
+
+/* Effets en trois colonnes : point et nom dessus, crans et mot dessous */
+.ml-carte .lv-eff2.ml-traits { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); column-gap: 0; row-gap: 4px; padding: 5px 4px; border-top: 0; align-items: start; }
+.ml-carte .ml-trait { display: flex; flex-direction: column; gap: 3px; min-width: 0; padding: 2px 6px; }
+.ml-carte .ml-trait:not(:nth-child(3n + 1)) { border-left: 1px solid var(--ml-bord); }
+.ml-carte .ml-trait .lv-el { font-size: 14px; color: var(--ml-t1); min-height: 0; overflow: hidden; text-overflow: ellipsis; }
+.ml-carte .ml-trait .lv-ev { justify-content: flex-start; text-align: left; gap: 6px; font-size: 15px; color: var(--ml-t0); }
+.ml-carte .ml-trait .lv-ev b { font-weight: 600; }
+.ml-carte .ml-trait .lv-ev em { font-size: 14px; }
+.ml-carte .ml-trait .lv-jo { flex: none; grid-template-columns: repeat(3, 1fr); gap: 2px; width: 36px; }
+.ml-carte .ml-trait .lv-jo b { height: 8px; border-radius: 2px; background: var(--ml-bord); }
+.ml-carte .ml-traits .lv-ch { font-size: 14px; }
+.ml-carte .ml-traits .lv-groupe { grid-column: 1 / -1; padding: 2px 6px; }
+.ml-carte .ml-traits .lv-groupe .lv-el, .ml-carte .ml-traits .lv-groupe .lv-ev, .ml-carte .ml-traits .lv-groupe em { font-size: 14px; }
+
+/* Le reste de l'étape à un toucher : une rangée */
+.ml-carte .ml-toucher { display: flex; gap: 5px; padding: 6px 7px 7px; border-top: 1px solid var(--ml-bord2); background: var(--ml-page); }
+.ml-carte .ml-tch { flex: 1 1 auto; display: inline-flex; align-items: center; justify-content: center; gap: 4px; height: 40px; padding: 0 7px; border: 1.5px solid var(--ml-bord2);
+  border-radius: 11px; background: var(--ml-page); font-size: 15px; white-space: nowrap; color: var(--ml-t1); cursor: pointer; }
+.ml-carte .ml-tch.ml-ia { border: 1.5px dashed var(--ml-att); background: var(--ml-or-fond); color: var(--ml-or); font-weight: 600; }
+
+@media (max-width: 380px) {
+  .ml-carte .lv-nom { font-size: 18px; }
+  .ml-carte .ml-qte b { font-size: 24px; }
+  .ml-carte .ml-tch { padding: 0 5px; font-size: 14px; }
+}

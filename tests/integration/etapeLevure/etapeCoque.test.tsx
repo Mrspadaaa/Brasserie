@@ -46,7 +46,9 @@ describe('Ma levure (l5b)', () => {
   it('la ligne de la levure, sa dose en plage de sachets, les effets là où la source les donne', () => {
     render(<Banc />);
     expect(screen.getByText('SafAle US-05')).toBeTruthy();
-    expect(document.querySelector('[data-lv="dose"]')?.textContent).toBe('2–3sachets');           // 15–24 g de la plage fabricant, sachets de 11,5 g
+    // 20.11 (r3 v05 e3) : rien d'écrit dans la recette, l'en-tête dit « à choisir » et la bande propose un seul geste, « Mettre N sachets ».
+    expect(document.querySelector('[data-lv="dose"]')?.textContent).toBe('à choisir');
+    expect(document.querySelector('[data-lv="mettre"]')?.textContent).toMatch(/^Mettre [1-9]\d* sachets?$/);
     const esters = document.querySelector('[data-axe="esters"]')!;
     expect(esters.getAttribute('data-genre')).toBe('jauge');                                       // « Low » de la fiche Fermentis : un niveau publié
     expect(esters.textContent).toContain('faible');
@@ -60,14 +62,40 @@ describe('Ma levure (l5b)', () => {
   });
 
   // Défaut en ligne (09.11, « ZZ TEST — Recette ») : « ? dose à saisir » au lieu de la plage de sachets ; qty 0 enregistrée = inconnue, jamais 0.
-  it('ancienne recette (sans forme, qty 0, sans pitching) : Ma levure montre la plage de sachets et de grammes, pas « 0 » ni « dose à saisir »', () => {
+  it('ancienne recette (sans forme, qty 0, sans pitching) : « à choisir » et « Mettre N sachets », pas « 0 » ni « dose à saisir »', () => {
     render(<Banc depart={recetteApercuAncienne() as unknown as TrialRecipe} />);
+    // 20.11 (r3 v05) : qty 0 = inconnue ; l'en-tête dit « à choisir », la bande « Mettre N sachets » ; la marque sans forme ni grammes.
     const dose = document.querySelector('[data-lv="dose"]')!.textContent!;
-    expect(dose).toMatch(/^2/);
-    expect(dose).toContain('sachets');
-    expect(dose).not.toContain('saisir');
+    expect(dose).toBe('à choisir');
     expect(dose).not.toMatch(/^0/);
-    expect(document.querySelector('.lv-sub')!.textContent).toMatch(/sèche\s*·\s*Fermentis\s*12–19\s*g/);
+    expect(document.querySelector('[data-lv="mettre"]')?.textContent).toMatch(/^Mettre [1-9]\d* sachets?$/);
+    expect(document.querySelector('.lv-sub')!.textContent).toMatch(/Fermentis/);
+    expect(document.querySelector('.lv-sub')!.textContent).not.toMatch(/sèche|\d\s*g\b/);
+  });
+
+  // 20.11 (r4 v02) : − / + écrivent la quantité sur place ; juste après, la part du besoin ; sous 100 %, le remède « → N sachets ».
+  it('− / + écrivent la dose sans volet, la bande passe en « % du besoin » ; sous le besoin, « → N sachets » la remonte', () => {
+    render(<Banc />);
+    const nombre = () => Number(document.querySelector('[data-lv="dose"] b')!.textContent);
+    const bande = () => document.querySelector('[data-lv="bande-dose"]')!;
+    fireEvent.click(document.querySelector('[data-lv="mettre"]')!);
+    const n = nombre();
+    expect(n).toBeGreaterThan(0);
+    expect(bande().getAttribute('data-etat')).toBe('repos');
+    fireEvent.click(document.querySelector('[data-lv="plus"]')!);
+    expect(nombre()).toBe(n + 1);
+    expect(bande().getAttribute('data-etat')).toBe('apres');
+    expect(bande().textContent).toMatch(/\d+ %du besoin/);
+    expect(document.querySelectorAll('[data-repli]')).toHaveLength(0);                             // aucun volet ouvert
+    while (nombre() > 1) fireEvent.click(document.querySelector('[data-lv="moins"]')!);
+    expect(Number.parseInt(document.querySelector('.ml-pc')!.textContent!, 10)).toBeLessThan(100);
+    expect(document.querySelector('[data-mot="sous"]')).not.toBeNull();
+    const remede = document.querySelector('[data-lv="remede"]')!;
+    expect(remede.textContent).toBe(`→ ${n} sachets`);
+    fireEvent.click(remede);
+    expect(nombre()).toBe(n);
+    expect(document.querySelector('[data-mot="couvre"]')).not.toBeNull();
+    expect(document.querySelectorAll('[data-repli]')).toHaveLength(0);
   });
 
   it('recette sans levure : « Levure · choisir », le champ de recherche, aucune carte', () => {
@@ -253,18 +281,20 @@ describe('le segment et les trois autres vues', () => {
 describe('rien ne se perd : chaque fonction de l’ancienne étape a son repli', () => {
   it('stock et saisie libre, produit exact et offres, fiche, dose et starter, objectifs, sources, atelier complet', async () => {
     render(<Banc />);
-    // 19.11 : sous la conduite, la dose puis « Plus », qui range les six autres (rien n'est perdu, un toucher de plus).
-    expect([...document.querySelectorAll('[data-repli]')].map(d => d.getAttribute('data-repli'))).toEqual(['dose', 'plus']);
-    const ouvre = (id: string) => { const d = document.querySelector(`[data-repli="${id}"]`) as HTMLDetailsElement; d.open = true; fireEvent(d, new Event('toggle')); };
-    ouvre('plus');
-    expect([...document.querySelectorAll('[data-repli]')].map(d => d.getAttribute('data-repli'))).toEqual(['dose', 'plus', 'stock', 'produit', 'fiche', 'objectifs', 'sources', 'atelier']);
-    ouvre('stock');
+    // 20.11 (r4 v02) : aucun volet empilé au repos ; la carte ouvre chacun (dose, Compléter · IA, Offres, Repères, Atelier), « Hors catalogue » le stock.
+    expect(document.querySelectorAll('[data-repli]')).toHaveLength(0);
+    const touche = (sel: string) => fireEvent.click(document.querySelector(sel)!);
+    touche('[data-lv="act-offres"]');
+    expect(document.querySelector('[data-repli="produit"]')).not.toBeNull();
+    fireEvent.click(screen.getByRole('button', { name: 'Hors catalogue' }));
     expect(await screen.findByText('éditeur stock (test)')).toBeTruthy();
-    ouvre('fiche');
+    touche('[data-lv="act-ia"]');
     expect(await screen.findByText('éditeur fiche (test)')).toBeTruthy();
-    ouvre('dose');
+    touche('[data-lv="act-reperes"]');
+    expect(document.querySelector('[data-repli="sources"]')).not.toBeNull();
+    touche('[data-lv="dose"]');
     expect(await screen.findByText('éditeur dose (test)')).toBeTruthy();
-    ouvre('atelier');
+    touche('[data-lv="act-atelier"]');
     expect(await screen.findByText(/ancien atelier \(test\) sans cible/)).toBeTruthy();                   // l'essai de conduite et le reste vivent ici, inchangés
   });
 });

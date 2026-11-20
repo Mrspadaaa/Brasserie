@@ -47,9 +47,7 @@ const VUES: ReadonlyArray<{ id: VueLevure; libelle: string }> = [
   { id: 'ma-levure', libelle: 'Ma levure' }, { id: 'chercher', libelle: 'Chercher' },
   { id: 'comparer', libelle: 'Comparer' }, { id: 'suggerer', libelle: 'Suggérer' },
 ];
-type RepliId = 'stock' | 'produit' | 'fiche' | 'dose' | 'objectifs' | 'sources' | 'atelier' | 'plus';
-/** Les volets rangés sous « Plus » (19.11 : huit volets sous la conduite, « trop d'actions ») : la dose reste dehors, le reste à un toucher de plus. */
-const DANS_PLUS: readonly RepliId[] = ['stock', 'produit', 'fiche', 'objectifs', 'sources', 'atelier'];
+type RepliId = 'stock' | 'produit' | 'fiche' | 'dose' | 'objectifs' | 'sources' | 'atelier';
 /** Des gestes au nom stable (la carte mémorisée ne se refait pas pour une nouvelle flèche à chaque rendu), qui appellent toujours la dernière version. */
 function useGestes<T extends Record<string, (...a: never[]) => unknown>>(gestes: T): T {
   const ref = useRef(gestes);
@@ -68,6 +66,8 @@ function Repli({ id, titre, resume, ouvert, onOuvre, children }: {
 }) {
   // 19.11, fluidité : le volet s'ouvre tout de suite, son contenu (lourd) se monte juste après, en différé.
   const monte = useDeferredValue(ouvert);
+  // 20.11 (r4 v02) : fermé, un volet ne s’empile plus sous la carte ; la rangée d’actions de la carte l’ouvre.
+  if (!ouvert) return null;
   return <details className="lv-repli" data-repli={id} open={ouvert} onToggle={e => onOuvre(e.currentTarget.open)}>
     <summary><span><b>{titre}</b>{resume && <small>{resume}</small>}</span><ChevronDown size={14} aria-hidden="true" /></summary>
     {ouvert && <div className="lv-repli-corps">{monte ? children : <p role="status" className="lv-note">…</p>}</div>}
@@ -124,7 +124,7 @@ export function EtapeLevure(p: PropsEtapeLevure) {
   const recipeVue = useMemo<TrialRecipe>(() => reliee ? { ...recipe, yeast: { ...recipe.yeast, hopIndexId: reliee.id } } : recipe, [recipe, reliee]);
   const choisie = !!recipe.yeast.name?.trim();
   const [ouverts, setOuverts] = useState<Partial<Record<RepliId, boolean>>>({});
-  const ouvre = (id: RepliId, o = true) => setOuverts(s => ({ ...s, [id]: o, ...(o && DANS_PLUS.includes(id) ? { plus: true } : {}) }));
+  const ouvre = (id: RepliId, o = true) => setOuverts(s => ({ ...s, [id]: o }));
   // Le texte tapé sans résultat : « Mon stock ou saisie libre » s'ouvre sur la saisie hors catalogue, ce nom dedans.
   // `libreN` change à chaque geste : la saisie se remonte, ouverte, le champ pris par le focus.
   const [nomLibre, setNomLibre] = useState<string>();
@@ -216,6 +216,8 @@ export function EtapeLevure(p: PropsEtapeLevure) {
     onHorsCatalogue: (texte?: string) => { setNomLibre(texte?.trim() ?? ''); setLibreN(n => n + 1); setLibreSous(true); ouvre('stock'); },
     onProposee: (l: YeastReference) => props.onChoisir(l),
     onComparer: () => onVue('comparer'), onFiche: () => vaAu('fiche'), onObjectifs: () => vaAu('objectifs'), onDose: () => vaAu('dose'),
+    onDoseChange: (qty: number, unit: string) => { p.onChange({ ...p.recipe, yeast: { ...p.recipe.yeast, qty, unit } }, 'pitching'); },
+    onVolet: (id: 'fiche' | 'produit' | 'sources' | 'atelier') => vaAu(id),
     onNavigate: (d: Parameters<NonNullable<PropsEtapeLevure['onNavigate']>>[0]) => p.onNavigate?.(d),
     onPrecedente: () => { const avant = refs.find(r => r.id === change?.from.yeast.hopIndexId); if (avant) props.onChoisir!(avant); },
   });
@@ -238,8 +240,6 @@ export function EtapeLevure(p: PropsEtapeLevure) {
         <div className="lv-replis" data-lv="replis">
           {choisie && <Repli id="dose" titre="Dose, ensemencement et starter" resume="quantité prévue, moût à ensemencer, préparation" ouvert={!!ouverts.dose} onOuvre={o => ouvre('dose', o)}>
             <YeastPitchingPanel part="pitching" recipe={recipe} onChange={next => p.onChange(next, 'pitching')} quantityEditor={p.quantityEditor} /></Repli>}
-          <Repli id="plus" titre="Plus" resume={choisie ? 'stock, produit et offres, fiche, objectifs, sources, atelier' : 'stock et saisie libre, atelier'} ouvert={!!ouverts.plus} onOuvre={o => ouvre('plus', o)}>
-          <div className="lv-replis lv-replis-plus">
           {!(ouverts.stock && libreSous) && repliStock}
           {choisie && <Repli id="produit" titre="Produit exact et offres" resume="facultatif · vendeurs, « Corriger la fiche produit »" ouvert={!!ouverts.produit} onOuvre={o => ouvre('produit', o)}>
             <YeastPitchingPanel part="supply" recipe={recipe} onChange={next => p.onChange(next, 'pitching')} /></Repli>}
@@ -251,7 +251,6 @@ export function EtapeLevure(p: PropsEtapeLevure) {
             <YeastStrainDetails information={yeastStrainInformation(levure, recipe.yeast.form)} /></Repli>}
           <Repli id="atelier" titre="Atelier complet" resume="essai de conduite, profil, comparaison des offres, fiche partagée" ouvert={!!ouverts.atelier} onOuvre={o => ouvre('atelier', o)}>
             <Suspense fallback={<p role="status" className="lv-note">Chargement de l’atelier…</p>}>{p.atelier(cible)}</Suspense></Repli>
-          </div></Repli>
         </div>
       </div>
       {vue === 'chercher' && <Chercher {...props} stockIds={stockIds} />}

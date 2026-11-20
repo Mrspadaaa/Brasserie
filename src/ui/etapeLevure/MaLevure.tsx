@@ -8,7 +8,7 @@
 // avancée reste l'onglet « Chercher », que le brasseur ouvre lui-même ; (2) « la conduite de palier fonctionne infiniment mieux sur celle
 // de base » : la nouvelle conduite (`Conduite.tsx`, non montée, conservée) cède la place à la station de l'app.
 import { memo, useDeferredValue, useEffect, useLayoutEffect, useMemo, useRef, useState, type ReactNode } from 'react';
-import { FlaskConical, History, Package, Search, Undo2, X } from 'lucide-react';
+import { FlaskConical, History, Package, Search, Sparkles, Undo2, X } from 'lucide-react';
 import type { StockItem } from '../../types';
 import type { YeastSupply } from '../../../functions/src/yeastSupplySchema';
 import type { TrialRecipe } from '../../domain/hopIndex/trials';
@@ -22,7 +22,9 @@ import { Input } from '../Input';
 import { YeastRecipePlan } from '../YeastRecipePlan';
 import { CelluleRecherche, useEtatRecherche } from './useRechercheDonnee';
 import { apiLevure } from './domaine';
-import { doseDeLaLevure } from './dose';
+import { besoinDeLaLevure } from './dose';
+import { BandeDose, LigneConduite, motUnite, type EtatDose, type StockDose } from './CarteDose';
+import './maLevure.css';
 import { AXES_EFFETS, NIVEAUX, couleurDeLAxe, lignesEffets, ligneFloculation, type LigneEffet } from './effets';
 import '../yeast-choice.css';
 import './etapeLevure.css';
@@ -89,24 +91,8 @@ const inactif = globalThis as unknown as { requestIdleCallback?: (fn: () => void
 const ric = (fn: () => void): number => inactif.requestIdleCallback ? inactif.requestIdleCallback(fn, { timeout: 2000 }) : setTimeout(fn, 30) as unknown as number;
 const cic = (id: number) => { if (inactif.cancelIdleCallback) inactif.cancelIdleCallback(id); else clearTimeout(id); };
 
-/**
- * La dose du fabricant au volume de la recette, quand sa fiche la donne en grammes par hectolitre (« 50-80 g/hL », « 500g for up to 10 hL ») :
- * une plage reste une plage, « pour au plus 10 hL » est un minimum (« ≥ »). Lue, jamais écrite dans la recette ; sans volume ni fiche, rien.
- */
-export function doseDuFabricant(levure: YeastReference | undefined, volumeL: number | undefined): { min: number; max?: number; source: string } | undefined {
-  if (!levure || !(typeof volumeL === 'number' && volumeL > 0)) return undefined;
-  const n = (t: string) => Number(t.replace(',', '.'));
-  for (const f of (levure.catalogue?.facts ?? []).filter(x => x.key === 'pitchRate')) {
-    const t = f.reported;
-    const plageGhl = /(\d+(?:[.,]\d+)?)\s*(?:-|–|to|à)\s*(\d+(?:[.,]\d+)?)\s*g\s*(?:\/|per)\s*hl\b/i.exec(t);
-    if (plageGhl) { const a = n(plageGhl[1]) * volumeL / 100, b = n(plageGhl[2]) * volumeL / 100; return { min: Math.round(a), max: Math.round(b), source: t }; }
-    const auPlus = /(\d+(?:[.,]\d+)?)\s*g\s+for up to\s+(\d+(?:[.,]\d+)?)\s*hl\b/i.exec(t);
-    if (auPlus && n(auPlus[2]) > 0) return { min: Math.ceil(n(auPlus[1]) / n(auPlus[2]) * volumeL / 100), source: t };
-    const seul = /(\d+(?:[.,]\d+)?)\s*g\s*(?:\/|per)\s*hl\b/i.exec(t);
-    if (seul) { const a = Math.round(n(seul[1]) * volumeL / 100); return { min: a, max: a, source: t }; }
-  }
-  return undefined;
-}
+/** La dose du fabricant au volume de la recette (lue sur sa fiche) : dans dose.ts, gardée ici pour ses lecteurs. */
+export { doseDuFabricant } from './dose';
 /** Combien de tuiles au plus sous le champ (un téléphone ne fait pas défiler mille levures) ; le total est dit. */
 const MAX_TUILES = 8;
 
@@ -118,17 +104,18 @@ function Jauge({ niveau, couleur }: { niveau: 'faible' | 'moyen' | 'eleve'; coul
 
 function Effet({ ligne, levureId, onChercher }: { ligne: LigneEffet; levureId: string; onChercher: (axe: string | string[]) => void }) {
   const { etat } = useEtatRecherche(levureId, ligne.id);
-  return <>
+  // r3 v05 : une colonne par effet, le point et le nom dessus, les crans et le mot dessous.
+  return <div className="ml-trait">
     <span className="lv-el"><i style={{ background: ligne.couleur }} aria-hidden="true" />{ligne.libelle}</span>
     <span className="lv-ev" data-genre={ligne.genre} data-axe={ligne.id}>
-      {ligne.genre === 'jauge' && <><Jauge niveau={ligne.niveau} couleur={ligne.couleur} /><em title={ligne.source}>{NIVEAUX.find(n => n.id === ligne.niveau)!.mot}</em></>}
+      {ligne.genre === 'jauge' && <><Jauge niveau={ligne.niveau} couleur={ligne.couleur} /><b title={ligne.source}>{NIVEAUX.find(n => n.id === ligne.niveau)!.mot}</b></>}
       {ligne.genre === 'mot' && <span title={ligne.source}>{ligne.texte}{ligne.estime && <em> · estimé</em>}</span>}
       {ligne.genre === 'nombre' && <span title={ligne.source}><b className="lv-m">{ligne.texte}</b> <em>· {ligne.nature}</em></span>}
       {etat && ligne.genre === 'inconnu' && <CelluleRecherche levureId={levureId} axe={ligne.id} />}
       {!etat && ligne.genre === 'inconnu' && <button type="button" className="lv-ch" onClick={() => onChercher(ligne.id)}
         aria-label={`${ligne.libelle} non documenté : chercher la donnée`}><Search size={12} aria-hidden="true" /> non documenté</button>}
     </span>
-  </>;
+  </div>;
 }
 
 /** Une tuile de résultat : une levure du stock (article) ou du catalogue, ou la saisie libre quand rien ne correspond. */
@@ -295,14 +282,18 @@ function EffetsDeLaLevure({ lignes, levureId, onChercher }: { lignes: LigneEffet
   const { crochet } = useEtatRecherche(levureId, '');
   const libres = lignes.filter(l => l.genre === 'inconnu' && !crochet?.etat(levureId, l.id));
   const groupe = libres.length >= 2 ? new Set(libres.map(l => l.id)) : new Set<string>();
-  return <div className="lv-eff2" aria-label="Effets de fermentation">
+  return <div className="lv-eff2 ml-traits" aria-label="Effets de fermentation">
     {lignes.filter(l => !groupe.has(l.id)).map(l => <Effet key={l.id} ligne={l} levureId={levureId} onChercher={onChercher} />)}
     {groupe.size > 0 && <EffetsInconnus lignes={libres} levureId={levureId} onChercher={onChercher} />}
   </div>;
 }
 
 function MaLevureVue({ recipe, refs, supply, levure, classement, onConduite, onChercherDonnee, onRetirer, stock, onStock, onHorsCatalogue, libre, precedente, onPrecedente, proposees = [], onProposee,
-  stockIds, conduiteCachee, onComparer, onFiche, onObjectifs, onNavigate, onDose }: {
+  stockIds, conduiteCachee, onComparer, onFiche, onObjectifs, onNavigate, onDose, onDoseChange, onVolet }: {
+  /** − / +, « Mettre N sachets », « → N sachets » : écrit la quantité (et son unité) dans la recette, sans ouvrir de volet. */
+  onDoseChange?: (qty: number, unit: string) => void;
+  /** La rangée d’actions de la carte : un volet de l’étape s’ouvre et vient dans l’écran. */
+  onVolet?: (id: 'fiche' | 'produit' | 'sources' | 'atelier') => void;
   /** Toucher la dose : le volet « Dose, ensemencement et starter » s'ouvre (19.11 : « ? dose à saisir » ne menait nulle part). */
   onDose?: () => void;
   /** Levures proposées (vendues en CH · FR · DE, API de d1, la plus proche de la recette d'abord) : puces « ⬚ Nottingham » de la maquette. */
@@ -336,7 +327,6 @@ function MaLevureVue({ recipe, refs, supply, levure, classement, onConduite, onC
   const choisie = !!recipe.yeast.name?.trim();
   const draft = useMemo(() => createYeastRecipeDraft(recipe, refs), [recipe, refs]);
   const evaluation = useMemo(() => evaluateYeastRecipeDesign(recipe, draft, refs), [recipe, draft, refs]);
-  const { conseil, yeast: yeastPrete } = useMemo(() => doseDeLaLevure(recipe, supply, evaluation.projection.og), [recipe, supply, evaluation]);
   const effets = useMemo(() => levure ? lignesEffets(levure) : [], [levure]);
   const floc = levure ? ligneFloculation(levure) : undefined;
   const { etat: floculationEtat } = useEtatRecherche(levure?.id ?? 'recette', 'clarte');
@@ -352,18 +342,26 @@ function MaLevureVue({ recipe, refs, supply, levure, classement, onConduite, onC
   const fiches = useMemo(() => new Map(stock.filter(i => i.category.toLocaleLowerCase('fr') === 'levure')
     .flatMap((i): [string, string][] => { const id = i.fiche?.id ?? relierAuCatalogue({ name: i.name, lab: i.yeastLab, strain: i.yeastStrain }, refs)?.id; return id ? [[i.ref, id]] : []; })), [stock, refs]);
 
-  // La dose : celle qui est prévue, sinon la plage de sachets du fabricant au volume de la recette (jamais son milieu, jamais 0).
+  // La dose (20.11, r3 v05 / r4 v02) : la quantité écrite, le besoin de la recette (moteur : taux × volume × °P) et le stock, sur la carte.
+  const besoin = useMemo(() => besoinDeLaLevure(recipe, supply, evaluation.projection.og, levure), [recipe, supply, evaluation, levure]);
   const prevu = Number.isFinite(recipe.yeast.qty) && (recipe.yeast.qty ?? 0) > 0 ? recipe.yeast : undefined;
-  const sachets = conseil.packs;
-  const grammes = conseil.range && conseil.unit === 'g' ? `${plage(conseil.range, 0)} g` : undefined;
-  // Sans sachet ni conseil (une brique de 500 g, 19.11) : la dose de la fiche du fabricant, au volume de la recette.
-  const fabricant = !prevu && !sachets && !grammes ? doseDuFabricant(levure, recipe.volumeL) : undefined;
-  const doseTexte = prevu ? `${dec(prevu.qty!, 1)}` : sachets ? plage(sachets, 0)! : fabricant ? (fabricant.max === undefined ? `≥ ${fabricant.min}` : plage({ min: fabricant.min, max: fabricant.max }, 0)!) : '?';
-  const doseUnite = prevu ? prevu.unit ?? 'unité ?' : sachets ? (sachets.max > 1 ? 'sachets' : 'sachet') : fabricant ? 'g' : 'dose à saisir';
-  const doseTitre = prevu ? 'Quantité prévue · régler la dose'
-    : sachets ? 'Plage fabricant au volume de la recette, à choisir dans « Dose, ensemencement et starter »'
-    : fabricant ? `Fabricant : ${fabricant.source} · au volume de la recette (${dec(recipe.volumeL ?? 0)} L), à confirmer dans « Dose, ensemencement et starter »`
-    : 'Dose inconnue : la saisir dans « Dose, ensemencement et starter »';
+  const uniteEcrite = prevu?.unit?.toLocaleLowerCase('fr');
+  const compte = uniteEcrite ? /^(sachet|pack)s?$/.test(uniteEcrite) : !!besoin?.sachet;
+  const unite = compte ? (uniteEcrite?.replace(/s$/, '') ?? besoin?.sachet?.unite ?? 'sachet') : (uniteEcrite ?? 'g');
+  const qty = prevu?.qty;
+  const [touche, setTouche] = useState(false);
+  useEffect(() => { setTouche(false); }, [recipe.yeast.name]);
+  const etatDose: EtatDose = !compte ? 'libre' : qty === undefined ? 'a-choisir' : touche && besoin?.sachets !== undefined ? 'apres' : 'repos';
+  // Le stock de cette levure : l'article de la recette, ou ceux reliés à sa fiche ; compté en sachets (un stock en grammes, au poids du sachet).
+  const stockDose = useMemo<StockDose>(() => {
+    const articles = stock.filter(i => i.category.toLocaleLowerCase('fr') === 'levure' && (i.ref === recipe.yeast.stockItemRef || (!!levure && fiches.get(i.ref) === levure.id)));
+    const g = besoin?.sachet?.grammes;
+    const n = articles.reduce((s, i) => { const u = (i.unit ?? '').toLocaleLowerCase('fr');
+      return s + (/^(sachet|pack|unit|pi[eè]ce|pc)/.test(u) ? i.currentStock : u === 'g' && g ? Math.floor(i.currentStock / g + 1e-9) : u === 'kg' && g ? Math.floor(i.currentStock * 1000 / g + 1e-9) : 0); }, 0);
+    return { n, trouve: articles.length > 0 };
+  }, [stock, recipe.yeast.stockItemRef, levure, fiches, besoin]);
+  const ecrireDose = (n: number, apres: boolean) => { setTouche(apres); onDoseChange?.(n, unite); };
+  const doseTitre = qty !== undefined ? `${dec(qty, Number.isInteger(qty) ? 0 : 1)} ${motUnite(unite, qty)} : régler la dose, l’ensemencement et le starter` : 'Dose à choisir : régler la dose, l’ensemencement et le starter';
   // La conduite hors de la plage de la levure (19.11 : fiche 9–11 °C, conduite 19 °C) : un toucher cale la fermentation principale sur le bord le plus proche
   // de la plage ; « Rétablir » rend les paliers d'avant. Les autres paliers (repos, garde) gardent leur consigne.
   const horsPlage = tFiche && tConduite !== undefined && (tConduite < tFiche.min || tConduite > tFiche.max) ? (tConduite > tFiche.max ? tFiche.max : tFiche.min) : undefined;
@@ -393,51 +391,56 @@ function MaLevureVue({ recipe, refs, supply, levure, classement, onConduite, onC
   const clePlan = `${recetteConduite.yeast.hopIndexId || recetteConduite.yeast.name}||`;
 
   return <div className="lv-ma" data-lv="ma-levure" data-yeast-state={choisie ? 'chosen' : 'empty'}>
-    {choisie && <div className="lv-bloc" data-booster="ligne-levure">
-      <div className="lv-row">
-        <span className="lv-pic" aria-hidden="true"><FlaskConical size={20} /></span>
+    {choisie && <div className="lv-bloc ml-carte" data-booster="ligne-levure">
+      <div className="lv-row ml-hd">
+        <span className="lv-pic ml-pastille" data-hors-catalogue={!levure || undefined} aria-hidden="true"><FlaskConical size={22} /></span>
         <span className={`lv-nom${nomAffiche.length > 22 ? ' lv-long' : ''}`} title={nomAffiche !== recipe.yeast.name ? recipe.yeast.name : undefined}>{nomAffiche}</span>
-        <button type="button" className="lv-dose" data-lv="dose" data-dose={prevu ? 'prevue' : sachets ? 'sachets' : fabricant ? 'fabricant' : 'inconnue'} title={doseTitre}
-          aria-label={`Dose ${doseTexte} ${doseUnite} : régler la dose, l’ensemencement et le starter`} onClick={onDose}>
-          <b>{doseTexte}</b><span>{doseUnite}</span></button>
-        <button type="button" className="lv-x" aria-label={`Retirer ${recipe.yeast.name} de la recette`} onClick={onRetirer}><X size={16} aria-hidden="true" /></button>
-        <span className="lv-sub">
-          <span className="lv-sub-t">{[recipe.yeast.form ?? yeastPrete.form, ident.vendeur ? `${ident.marque} · vendue par ${ident.vendeur}` : ident.marque ?? (labo && fabricantCourt(labo))].filter(Boolean).join(' · ') || 'forme et laboratoire ?'}</span>
-          {(grammes || sachets) && <span className="lv-sub-d">
-            {grammes && <span className="lv-m">{grammes}</span>}
-            {sachets && <span className="lv-mini" aria-hidden="true"><i style={{ left: '8%', right: '8%' }} /></span>}
-          </span>}
-        </span>
+        <button type="button" className="lv-dose ml-qte" data-lv="dose" data-dose={qty !== undefined ? 'prevue' : 'a-choisir'} data-touche={touche || undefined} title={doseTitre} aria-label={doseTitre} onClick={onDose}>
+          {qty !== undefined ? <><b>{dec(qty, Number.isInteger(qty) ? 0 : 1)}</b><span>{motUnite(unite, qty)}</span></> : <span className="ml-achoisir">à choisir</span>}</button>
+        <button type="button" className="lv-x" aria-label={`Retirer ${recipe.yeast.name} de la recette`} onClick={onRetirer}><X size={18} aria-hidden="true" /></button>
+        <span className="lv-sub"><span className="lv-sub-t">{(ident.vendeur ? `${ident.marque} · vendue par ${ident.vendeur}` : ident.marque ?? (labo && fabricantCourt(labo))) || (levure ? 'laboratoire ?' : 'Hors catalogue · saisie libre')}</span></span>
       </div>
-      <div className="lv-bande">
+      <BandeDose etat={etatDose} qty={qty} unite={unite} besoin={besoin} stock={stockDose}
+        onPas={n => ecrireDose(n, true)} onEcrire={n => ecrireDose(n, etatDose === 'apres')} onDose={onDose} onOffre={() => onVolet?.('produit')} />
+      <div className="lv-bande ml-cases">
         <div className="lv-cel" data-cel="fg">
           <span className="lv-ct">FG</span>
-          <span className="lv-cv">{plage(fg, 3) ?? '?'}</span>
-          <span className="lv-ab">{abv ? `≈ ${plage(abv, 1)} % vol` : ' '}</span>
-          {fg && <span className="lv-tr" aria-hidden="true"><i className="lv-hach" style={{ left: `${pct(fg.min, 1.004, 1.026)}%`, width: `${Math.max(4, pct(fg.max, 1.004, 1.026) - pct(fg.min, 1.004, 1.026))}%` }} /></span>}
+          <span className="lv-cv" data-inconnu={!fg || undefined}>{plage(fg, 3) ?? 'à saisir'}</span>
+          <span className="lv-ab">{abv ? `≈ ${plage(abv, 1)} % vol` : 'atténuation ?'}</span>
+          <span className={`ml-jauge${fg ? '' : ' ml-vide'}`} role={fg ? 'img' : undefined} aria-label={fg ? `FG ${plage(fg, 3)} sur une échelle de 1,000 à 1,030` : undefined}>
+            {fg && <i style={{ left: `${pct(fg.min, 1, 1.03)}%`, width: `${Math.max(2, pct(fg.max, 1, 1.03) - pct(fg.min, 1, 1.03))}%` }} />}</span>
+          {fg && <span className="ml-ech lv-m" aria-hidden="true"><span>1,000</span><span>1,030</span></span>}
         </div>
         <div className="lv-cel" data-cel="temperature" data-hors-plage={horsPlage !== undefined || undefined}>
           <span className="lv-ct">fiche · conduite</span>
-          <span className="lv-cv">{tFiche ? plage(tFiche, 0) : '?'}{tConduite !== undefined && <small className="lv-tc"> · {dec(tConduite)} °C</small>}</span>
-          {horsPlage !== undefined ? <button type="button" className="lv-caler" data-lv="caler" onClick={caler}
-            aria-label={`Conduite à ${dec(tConduite!)} °C, hors de la plage de la levure : caler la fermentation principale à ${dec(horsPlage)} °C`}>→ {dec(horsPlage)} °C</button>
-            : avantCalage ? <button type="button" className="lv-lien lv-retablir" data-lv="retablir" onClick={retablir}><Undo2 size={12} aria-hidden="true" /> {dec(avantCalage.t)} °C</button>
-            : <span className="lv-ab"> </span>}
-          <span className="lv-tr lv-tgr" aria-hidden="true">
-            {tFiche && <i className="lv-hach" style={{ left: `${pct(tFiche.min, 5, 35)}%`, width: `${pct(tFiche.max, 5, 35) - pct(tFiche.min, 5, 35)}%` }} />}
-            {tConduite !== undefined && <u className="lv-tk" style={{ left: `${pct(tConduite, 5, 35)}%` }} />}
+          <span className="lv-cv">{tFiche ? plage(tFiche, 0) : '?'}{tConduite !== undefined && <> · <span className="ml-tc" data-hors={horsPlage !== undefined || undefined}>{dec(tConduite)} °C</span></>}</span>
+          <span className="ml-plage" role="img" aria-label={`${tFiche ? `Plage de la fiche ${plage(tFiche, 0)} °C` : 'Plage inconnue'}${tConduite !== undefined ? `, conduite ${dec(tConduite)} °C${horsPlage !== undefined ? ' hors plage' : ''}` : ''}`}>
+            {tFiche && <i className="ml-fiche" style={{ left: `${pct(tFiche.min, 0, 25)}%`, width: `${Math.max(3, pct(tFiche.max, 0, 25) - pct(tFiche.min, 0, 25))}%` }} />}
+            {tConduite !== undefined && <i className="ml-ici" data-hors={horsPlage !== undefined || undefined} style={{ left: `${pct(tConduite, 0, 25)}%` }} />}
           </span>
+          {horsPlage !== undefined ? <button type="button" className="lv-caler ml-caler" data-lv="caler" onClick={caler}
+            aria-label={`Conduite à ${dec(tConduite!)} °C, hors de la plage de la levure : caler la fermentation principale à ${dec(horsPlage)} °C`}>→ Caler à {dec(horsPlage)} °C</button>
+            : avantCalage ? <button type="button" className="lv-lien lv-retablir" data-lv="retablir" onClick={retablir}><Undo2 size={12} aria-hidden="true" /> {dec(avantCalage.t)} °C</button>
+            : !tFiche ? <span className="lv-ab">plage inconnue</span> : null}
         </div>
         <div className="lv-cel" data-cel="floculation">
           <span className="lv-ct">floculation</span>
-          {floc?.genre === 'jauge' && <><span className="lv-cv"><small>{NIVEAUX.find(n => n.id === floc.niveau)!.mot}</small></span><span className="lv-ab"> </span><Jauge niveau={floc.niveau} couleur="#8C8C8C" /></>}
-          {floc?.genre === 'mot' && <span className="lv-cv"><small>{floc.texte}</small></span>}
-          {(!floc || floc.genre === 'inconnu') && !floculationEtat && <button type="button" className="lv-ch" onClick={() => onChercherDonnee('clarte')}
-            aria-label="Floculation non documentée : chercher la donnée"><Search size={12} aria-hidden="true" /> à chercher</button>}
+          {floc?.genre === 'jauge' && <><span className="lv-cv ml-fin">{NIVEAUX.find(n => n.id === floc.niveau)!.mot}</span><Jauge niveau={floc.niveau} couleur="#8C8C8C" /></>}
+          {floc?.genre === 'mot' && <span className="lv-cv ml-fin">{floc.texte}</span>}
+          {(!floc || floc.genre === 'inconnu') && !floculationEtat && <button type="button" className="ml-floc-inc" onClick={() => onChercherDonnee('clarte')}
+            aria-label="Floculation non documentée : chercher la donnée"><span className="lv-cv ml-fin">inconnue</span><span className="ml-crans-vides" aria-hidden="true"><i /><i /><i /></span></button>}
         </div>
       </div>
       {(!floc || floc.genre === 'inconnu') && floculationEtat && <div className="lv-cel-pleine" data-cel="floculation-recherche"><CelluleRecherche levureId={levure?.id ?? 'recette'} axe="clarte" libelle="floculation" /></div>}
+      <LigneConduite paliers={(recipe.fermentation ?? []).filter(f => f.kind !== 'ajout')} mot={etatDose === 'apres'}
+        onToucher={() => conduite.current?.scrollIntoView?.({ block: 'start', behavior: 'smooth' })} />
       <EffetsDeLaLevure lignes={effets.length ? effets : EFFETS_INCONNUS} levureId={levure?.id ?? 'recette'} onChercher={onChercherDonnee} />
+      <div className="ml-toucher" data-lv="actions" aria-label="Le reste de l’étape, à un toucher">
+        <button type="button" className="ml-tch ml-ia" data-lv="act-ia" onClick={() => onVolet?.('fiche')} aria-label="Compléter la fiche avec l’IA"><Sparkles size={18} aria-hidden="true" />Compléter · IA</button>
+        <button type="button" className="ml-tch" data-lv="act-offres" onClick={() => onVolet?.('produit')}>Offres</button>
+        <button type="button" className="ml-tch" data-lv="act-reperes" onClick={() => onVolet?.('sources')}>Repères</button>
+        <button type="button" className="ml-tch" data-lv="act-atelier" onClick={() => onVolet?.('atelier')}>Atelier</button>
+      </div>
     </div>}
 
     {!choisie && <div className="lv-vide" data-lv="sans-levure">

@@ -52,7 +52,7 @@ describe('Ma levure : un article du stock relié à sa fiche du catalogue', () =
 
   it('un article sans correspondance sûre garde sa carte honnête : « ? » et « non documenté », jamais une fiche approchée', () => {
     render(<Banc depart={recetteDuStock(maison)} stockItems={[maison]} />);
-    expect(valeurFg()).toBe('?');
+    expect(valeurFg()).toBe('à saisir');                                                          // 20.11 (r3 v05 e4) : FG inconnue « à saisir »
     expect(carte().querySelectorAll('[data-axe-inconnu]').length).toBe(5);                        // 19.11 : en une rangée, une seule recherche
   });
 

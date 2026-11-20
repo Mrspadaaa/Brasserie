@@ -121,8 +121,9 @@ describe('LEV-6 · la dose se lit sur la fiche du fabricant et se touche', () =>
   it('« 500g for up to 10 hL » à 25 L : « ≥ 13 g », pas « ? dose à saisir » ; toucher la dose ouvre son volet', async () => {
     render(<Banc />);
     const dose = document.querySelector('[data-lv="dose"]') as HTMLButtonElement;
-    expect(dose.textContent).toBe('≥ 13g');
-    expect(dose.textContent).not.toMatch(/saisir/);
+    // 20.11 (r3 v05) : une brique de 500 g n'est pas un sachet ; l'en-tête dit « à choisir », la bande le conseil du fabricant.
+    expect(dose.textContent).toBe('à choisir');
+    expect(document.querySelector('[data-lv="bande-dose"]')!.textContent).toContain('≥ 13 g conseillé · sachet inconnu');
     fireEvent.click(dose);
     expect(await screen.findByText('éditeur dose (test)')).toBeTruthy();
   });
@@ -135,12 +136,11 @@ describe('LEV-6 · la dose se lit sur la fiche du fabricant et se touche', () =>
   });
 });
 
-describe('LEV-7 · sous la conduite, deux volets au lieu de huit', () => {
-  it('la dose, puis « Plus » qui range le reste ; « Corriger la fiche » ouvre « Plus » et la fiche', async () => {
+describe('LEV-7 · aucun volet empilé sous la carte (20.11, r4 v02)', () => {
+  it('au repos, aucun volet ; « Offres » de la carte ouvre le produit et lui seul', async () => {
     render(<Banc />);
-    expect([...document.querySelectorAll('[data-lv="replis"] > [data-repli]')].map(d => d.getAttribute('data-repli'))).toEqual(['dose', 'plus']);
-    const plus = document.querySelector('[data-repli="plus"]') as HTMLDetailsElement;
-    plus.open = true; fireEvent(plus, new Event('toggle'));
-    expect([...plus.querySelectorAll('[data-repli]')].map(d => d.getAttribute('data-repli'))).toEqual(['stock', 'produit', 'fiche', 'objectifs', 'sources', 'atelier']);
+    expect(document.querySelectorAll('[data-repli]')).toHaveLength(0);
+    fireEvent.click(document.querySelector('[data-lv="act-offres"]')!);
+    expect([...document.querySelectorAll('[data-repli]')].map(d => d.getAttribute('data-repli'))).toEqual(['produit']);
   });
 });
