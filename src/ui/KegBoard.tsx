@@ -138,6 +138,8 @@ export const KegBoard: React.FC<KegBoardProps> = ({
   const basDuLot = Boolean(marquage?.gesteId && bas && (bas.gesteId === marquage.gesteId || bas.gesteId === `${marquage.gesteId}-annule`));
   const basAnnuleLeLot = basDuLot && Boolean(bas?.annule);
   const basPorteAnnuler = basDuLot && !bas?.annule && (bas?.effets.length ?? 0) > 0;
+  /** Geste annulé (bandeau ou trace ↺) : la bande du tableau est périmée pour de bon, elle ne revient pas quand le bandeau du bas se ferme. */
+  useEffect(() => { if (basAnnuleLeLot) setMarquage(null); }, [basAnnuleLeLot]);
   useEffect(() => {
     if (!marquage) return;
     const delai = setTimeout(() => setMarquage(null), BANDEAU_MS);

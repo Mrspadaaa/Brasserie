@@ -93,6 +93,17 @@ describe('L9 — un seul Annuler pour un geste, qui défait tout le geste', () =
     expect(document.querySelector('[data-bandeau-effets]')?.textContent).toMatch(/stock est rendu.*fût.*à laver/);
   });
 
+  it('critique 2, bloquant : le lot annulé par le bandeau, puis OK — la bande « fûts marqués propres · Annuler » ne revient pas', () => {
+    render(<Parc />);
+    fireEvent.click(screen.getByRole('button', { name: 'Tout marquer propre' }));
+    fireEvent.click(screen.getByRole('button', { name: 'Marquer propres' }));
+    fireEvent.click(annuler()[0]);
+    fireEvent.click(screen.getByRole('button', { name: 'OK' }));
+    expect(screen.queryByText('2 fûts marqués propres')).toBeNull();
+    expect(screen.queryByRole('button', { name: /^Annuler/ })).toBeNull();
+    expect(screen.getByRole('button', { name: 'À laver 2' })).toBeVisible();
+  });
+
   it('un fût touché depuis le geste : refus entier, rien n’est rendu (ni stock, ni fût)', () => {
     render(<Parc />);
     fireEvent.click(screen.getByRole('button', { name: 'Ouvrir le fût ZZ-F7' }));
