@@ -28,4 +28,22 @@
   .stock-mur .sw-top{margin-bottom:0}
   /* les rangées Malts / Houblons / Levures : 4 px de moins chacune (marge haute et basse), pour que deux rangées entières tiennent au premier écran */
   .stock-mur .l1e-r{padding-top:1px!important;padding-bottom:0!important}
+  /* Tour 3 (critique n° 4) : la rangée Levures entière au premier écran (il manquait 56 px : elle finissait à 356 pour une barre du bas à 300).
+     (a) les sous-onglets du Stock (Articles, Courses, Fûts…) et « Comparer une recette » partagent une ligne : −33 px ; ouvert, le détail reprend toute
+     la largeur ; l'aide « Besoin prévu face au stock » s'efface (le titre reste, le chevron dit qu'on peut ouvrir) ;
+     (b) les planches Malts et Houblons passent de 28 à 20 px (le repère de 11 à 8 px, même proportion, comme --hm l'est déjà à 1280) : −8 px par rangée ;
+     (c) la rangée Levures finit à 56 px au lieu de 63, sa « Légende » (28 px) descend de 4 px sous le compte pour tenir dedans ;
+     (d) les onglets Ingrédients / Autres stocks perdent le remplissage du cadre : −4 px. Aucun texte ne passe sous 12 px. */
+  .stocks-screen{flex-direction:row;flex-wrap:wrap;align-items:center;align-content:flex-start;column-gap:8px;row-gap:2px}
+  .stocks-screen>.min-w-0.shrink-0:first-child{flex:1 1 0;min-width:0}
+  .stocks-screen>details.shrink-0{flex:0 0 auto;border-bottom:0}
+  .stocks-screen>details.shrink-0>summary{flex-wrap:nowrap;white-space:nowrap}
+  .stocks-screen>details.shrink-0>summary>span+span{display:none}
+  .stocks-screen>details[open]{flex:1 0 100%}
+  .stocks-screen>details[open]>summary>span+span{display:inline}
+  .stocks-screen>:not(:first-child):not(details){flex:1 0 100%}
+  .stock-mur .sv-tabs{padding:1px}
+  .stock-mur .l1e-r[data-f=f0],.stock-mur .l1e-r[data-f=f1]{--hm:20px!important;--hc:8px!important}
+  .stock-mur .l1e-r[data-f=f2]{min-height:56px!important}
+  .stock-mur .l1e-c1 .sx-q{top:26px!important}
 }
