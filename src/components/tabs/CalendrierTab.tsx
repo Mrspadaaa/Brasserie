@@ -662,7 +662,7 @@ export function CalendrierTab(props: CalendrierTabProps) {
   const ajouterDepuisFeuille = useCallback(async (b: BrouillonAjout): Promise<ResultatAjout> => {
     const etat = feuille;
     if (etat?.mode === 'modifier' && etat.chose) {
-      const m = versModification(b, etat.chose);
+      const m = versModification(b, etat.chose, ctxAjout.aujourdhui);
       if (m.ok === false) return { ok: false, raison: m.raison };
       const ok = await ecrire({ ok: true, ecritures: m.ecritures, message: { texte: `${b.titre.trim() || etat.chose.titre} : ${etiquetteS(b.debut as string)}`, action: 'Annuler', lecture: '' }, effet: null, promesse: null, courbeApres: null });
       if (ok) { setFeuille(null); if (etat.chose.sansDate) setVueEtat('semaines'); }

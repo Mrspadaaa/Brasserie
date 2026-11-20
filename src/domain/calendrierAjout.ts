@@ -41,6 +41,19 @@ export interface BrouillonAjout {
   confirmeGrosseSomme?: boolean;
   /** La vente probable choisie par sa puce : « Ajouter » l'ACCEPTE (même id, brouillon → confirmée), il n'en crée pas une autre (CRITIQUE-3 n° 8). */
   planProbableId?: string;
+  /**
+   * CAL-PASSE (20.11, « modifier un évènement ne l'update pas à la bonne date ») : le JOUR d'origine d'une chose rouverte par Modifier. La feuille
+   * raisonne en semaines (lundis) ; sans ce jour, « Enregistrer » sans toucher à la semaine réécrivait le lundi (un mercredi 9 déc. devenait le 7).
+   * Tant que la semaine est celle d'origine, c'est ce jour qui s'écrit ; une autre semaine s'écrit au lundi (comme le glisser, qui garde le jour
+   * de la semaine, mais ici le doigt choisit une semaine).
+   */
+  jour?: string;
+  /**
+   * CAL-PASSE : le brouillon vient d'une chose qui existe déjà (Modifier, Poser depuis « Sans date »). Le PREMIER toucher d'une semaine la DÉPLACE
+   * (sa longueur reste, comme au glisser) ; il n'étend pas une fenêtre : « modifier un évènement ne l'update pas à la bonne date » (toucher
+   * une semaine plus tard n'écrivait que la fin, la date de début restait où elle était). Les touchers suivants règlent la fin, comme à l'ajout.
+   */
+  rouvert?: boolean;
 }
 
 /**
@@ -105,7 +118,8 @@ export function brouillonDepuisChose(chose: ChoseCalendrier): BrouillonAjout {
     rangee: chose.rangee, titre: chose.titre, debut: chose.debut ? lundiDe(chose.debut) : null, fin: fenetre && chose.rangee !== 'brassins' ? lundiDe(fenetre.au) : null, debutChoisi: true,
     signe: chose.centimes !== undefined && chose.centimes > 0 ? '+' : chose.rangee === 'ventes' || chose.rangee === 'fetes' ? '+' : '-',
     ...(chose.centimes !== undefined ? { centimes: Math.abs(chose.centimes) } : {}),
-    ...(chose.joursActifs ? { joursActifs: chose.joursActifs } : {}), ...(chose.miseDeCote ? { miseDeCote: true } : {}), ...(chose.liens ? { liens: chose.liens } : {})
+    ...(chose.joursActifs ? { joursActifs: chose.joursActifs } : {}), ...(chose.miseDeCote ? { miseDeCote: true } : {}), ...(chose.liens ? { liens: chose.liens } : {}),
+    rouvert: true, ...(isoDate(chose.debut) ? { jour: chose.debut } : {})
   };
 }
 
@@ -222,6 +236,16 @@ export function appliquerPuce(b: BrouillonAjout, puce: Puce): BrouillonAjout {
  */
 export function toucherSemaine(b: BrouillonAjout, lundi: string): BrouillonAjout {
   const l = lundiDe(lundi);
+  /* CAL-PASSE : une chose rouverte (Modifier) : le premier toucher d'une AUTRE semaine la déplace, sa longueur gardée (ventes, papiers : une date) */
+  if (b.rouvert) {
+    const { rouvert: _r, ...reste } = b;
+    void _r;
+    if (b.debut !== null && l !== b.debut) {
+      const longueur = b.fin && aUneFenetre(b.rangee) ? ecartSemaines(b.debut, b.fin) : 0;
+      return { ...reste, debut: l, fin: longueur > 0 ? lundiDe(ajouterJours(l, longueur * 7)) : null, debutChoisi: true };
+    }
+    return toucherSemaine(reste, lundi);
+  }
   if (!aUneFenetre(b.rangee)) return { ...b, debut: l, fin: null, debutChoisi: true };
   if (!b.debutChoisi || b.debut === null || l <= b.debut) return { ...b, debut: l, fin: null, debutChoisi: true, joursActifs: undefined };
   return { ...b, fin: l };
@@ -381,18 +405,24 @@ export function enregistrementIdee(titre: string, jour: string, ctx: Pick<Contex
 }
 
 /** Modifier (E30) : le brouillon rouvert écrit ses changements dans la source existante, sans en créer une autre. Un brassin se rouvre par sa fiche. */
-export function versModification(b: BrouillonAjout, chose: ChoseCalendrier): { ok: true; ecritures: Ecriture[] } | { ok: false; raison: string } {
+export function versModification(b: BrouillonAjout, chose: ChoseCalendrier, aujourdhui?: string): { ok: true; ecritures: Ecriture[] } | { ok: false; raison: string } {
   const v = valider(b);
   if ('raison' in v) return v;
-  const fenetre = fenetreDuBrouillon(b);
   const debut = b.debut as string;
+  let fenetre = fenetreDuBrouillon(b);
+  /* CAL-PASSE : la semaine de début (et de fin) n'a pas bougé : la fenêtre d'origine reste telle qu'elle était écrite, jamais réalignée sur des lundis ;
+     et le JOUR d'une chose sans fenêtre est celui d'avant (un mercredi reste ce mercredi), sinon le lundi de la semaine choisie, ou aujourd'hui
+     dans la semaine en cours (comme « Ajouter » : une chose posée cette semaine n'est jamais déjà passée) */
+  const memeSemaine = !!chose.debut && lundiDe(chose.debut) === debut;
+  if (fenetre && chose.fenetre && memeSemaine && (b.fin ?? debut) === lundiDe(chose.fenetre.au)) fenetre = { ...fenetre, du: chose.fenetre.du, au: chose.fenetre.au };
+  const jour = memeSemaine ? chose.debut : aujourdhui ? jourPose(lundiDe(debut), aujourdhui) : lundiDe(debut);
   /* lot A du test en ligne (18.11, n° 2, D386) : le lien à une fête, changé dans Modifier, s'écrit ; défait, il part (undefined). Inchangé :
      rien n'est écrit. Un plan le porte en `evenementId`, une chose du carnet dans `liens`. */
   const evenementChange = (b.liens?.evenementId ?? undefined) !== (chose.liens?.evenementId ?? undefined);
   if (chose.source.genre === 'creative') {
     const liens = b.liens && Object.keys(b.liens).length ? b.liens : undefined;
     return { ok: true, ecritures: [{ op: 'patch', collection: 'creativeItems', id: chose.source.id, patch: {
-      title: b.titre.trim(), date: fenetre?.du ?? lundiDe(debut), fenetre: fenetre ?? undefined, ...(evenementChange ? { liens } : {}),
+      title: b.titre.trim(), date: fenetre?.du ?? jour, fenetre: fenetre ?? undefined, ...(evenementChange ? { liens } : {}),
       ...(chose.rangee === 'fetes'
         ? (b.signe === '+' ? { estimatedRevenue: b.centimes ? b.centimes / 100 : undefined, estimatedCost: undefined } : { estimatedCost: b.centimes ? b.centimes / 100 : undefined, estimatedRevenue: undefined })
         : { estimatedCost: b.centimes ? b.centimes / 100 : undefined })
@@ -401,7 +431,7 @@ export function versModification(b: BrouillonAjout, chose: ChoseCalendrier): { o
   if (chose.source.genre === 'plan' && chose.source.origine === 'manual') {
     if (!b.centimes || b.centimes <= 0) return { ok: false, raison: 'Indique un montant : un montant inconnu n’est pas 0.' };
     return { ok: true, ecritures: [{ op: 'patch', collection: 'financialPlans', id: chose.source.id, patch: {
-      title: b.titre.trim(), date: fenetre?.miseDeCote ? fenetre.au : fenetre?.du ?? lundiDe(debut), amountCents: Math.round(b.centimes), direction: b.signe === '+' ? 'in' : 'out', fenetre: fenetre ?? undefined,
+      title: b.titre.trim(), date: fenetre?.miseDeCote ? fenetre.au : fenetre?.du ?? jour, amountCents: Math.round(b.centimes), direction: b.signe === '+' ? 'in' : 'out', fenetre: fenetre ?? undefined,
       ...(evenementChange ? { evenementId: b.liens?.evenementId } : {})
     } }] };
   }

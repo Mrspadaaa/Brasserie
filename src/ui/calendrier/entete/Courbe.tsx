@@ -102,9 +102,13 @@ export interface Geo {
 }
 /** Échelle partagée par la courbe et ses surcouches : x par semaine (largeur / n), y par montant, 0 inclus. */
 export function geometrie(valeurs: readonly number[], n: number, largeur: number, hauteur: number, haut: number, bas: number): Geo {
-  const lo = Math.min(0, ...valeurs);
+  const plusBas = Math.min(0, ...valeurs);
   let hi = Math.max(1, ...valeurs);
-  hi = hi + (hi - lo) * 0.04;
+  hi = hi + (hi - plusBas) * 0.04;
+  /* CAL-PASSE (20.11, « je suis en négatif et on le voit même pas sur le graph ») : un solde négatif se tracerait collé au bord bas du dessin (y = bas) et
+     la ligne zéro au bord haut : une bande bleue sans rien qui dise « sous zéro ». Sous zéro, le domaine garde de l'air sous la valeur la plus
+     basse (6 % de la hauteur), comme il en garde au-dessus (4 %) : le tracé ne touche plus le bord, la zone sous zéro se dessine. */
+  const lo = plusBas < 0 ? plusBas - (hi - plusBas) * 0.06 : plusBas;
   const unit = largeur / Math.max(1, n);
   return { largeur, hauteur, haut, bas, unit, lo, hi, x: i => i * unit, y: v => bas - ((v - lo) / (hi - lo)) * (bas - haut) };
 }
@@ -498,6 +502,8 @@ export function Courbe({ courbe, largeur, hauteur, curseur = null, reference, ge
   // Un nom peut se poser dans la rangée des mois, entre deux mois (z2s « Six fûts inox −1 080 », w3s « Festival +2 450 »).
   const noms = placerNoms(courbe, g, maxNoms(largeur), [...obstaclesCourbe(g, cadre, creux), ...boitesMois, ...reservesHaut], mise, etoiles, [yMois]);
   const y0 = g.y(0);
+  /* le solde passe sous zéro quelque part : la ligne zéro se lit et la zone en dessous se teinte */
+  const sousZero = g.lo < 0;
   const marques = courbe.map((s, i) => ({ i, d: variation(courbe, i), nomme: s.mouvements.length > 0 })).filter(m => m.nomme && m.d !== null && m.d !== 0 && m.i > 0);
   const cache = (e: Etiquette) => !!masque && boitesSeCroisent(e.boite, masque);
   // La ★ d'une chose étoilée dont le nom n'a pas trouvé de place : au milieu de sa semaine, juste au-dessus de sa marche (dans le dessin).
@@ -511,11 +517,21 @@ export function Courbe({ courbe, largeur, hauteur, curseur = null, reference, ge
         <defs>
           <pattern id={`h${uid}`} patternUnits="userSpaceOnUse" width="6" height="6" patternTransform="rotate(45)"><rect width="2.4" height="6" className="ent-hach" /></pattern>
           <clipPath id={`z${uid}`}><rect x={0} y={0} width={largeur} height={hauteur} /></clipPath>
+          {sousZero && <clipPath id={`zn${uid}`}><rect x={0} y={y0} width={largeur} height={Math.max(0, hauteur - y0)} /></clipPath>}
+          {sousZero && <clipPath id={`zp${uid}`}><rect x={0} y={0} width={largeur} height={Math.max(0, y0)} /></clipPath>}
         </defs>
+        {/* CAL-PASSE : sous zéro, la zone en dessous de la ligne zéro est teintée (comme la zone du creux de r6b) et l'aire sous zéro est rouge */}
+        {sousZero && <rect className="ent-neg-zone" data-sous-zero="zone" x={0} y={y0} width={largeur} height={Math.max(0, g.bas - y0)} />}
         {causes && creux && causes.causes.length > 0 && <rect className="ent-creux-zone" x={g.x(causes.debut)} y={g.haut} width={g.x(creux.index + 1) - g.x(causes.debut)} height={g.bas - g.haut} />}
-        <path className="ent-aire" d={`${escalier(libres, g)}V${y0.toFixed(1)}H${g.x(0).toFixed(1)}Z`} />
+        {sousZero
+          ? <>
+            <path className="ent-aire" clipPath={`url(#zp${uid})`} d={`${escalier(libres, g)}V${y0.toFixed(1)}H${g.x(0).toFixed(1)}Z`} />
+            <path className="ent-aire ent-aire-neg" data-sous-zero="aire" clipPath={`url(#zn${uid})`} d={`${escalier(libres, g)}V${y0.toFixed(1)}H${g.x(0).toFixed(1)}Z`} />
+          </>
+          : <path className="ent-aire" d={`${escalier(libres, g)}V${y0.toFixed(1)}H${g.x(0).toFixed(1)}Z`} />}
         {misDeCote && <path className="ent-miscote" data-mise-de-cote="zone" d={zoneEscalier(caisses, libres, g)} fill={`url(#h${uid})`} />}
-        <line className="ent-zero" x1={0} x2={largeur} y1={y0} y2={y0} />
+        <line className={sousZero ? 'ent-zero ent-zero-neg' : 'ent-zero'} data-ligne-zero={sousZero ? 'visible' : undefined} x1={0} x2={largeur} y1={y0} y2={y0} />
+        {sousZero && <text className="ent-zero-l" data-sous-zero="repere" x={largeur - 3} y={y0 - 3} textAnchor="end" aria-hidden="true">0</text>}
         <path className="ent-caisse" d={escalier(caisses, g)} />
         <path className="ent-libre" d={escalier(libres, g)} />
         {marques.map(m => (
