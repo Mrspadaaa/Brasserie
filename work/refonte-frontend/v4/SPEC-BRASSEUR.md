@@ -2338,3 +2338,8 @@ Classement de la page r3 de Ma levure (https://claude.ai/artifact/DKAJe8ESeMR4ig
 > Porte le avec un. Sous session et critique sur le planning et des les projets du carnet ça fait un bon test. Et tu pourras le supprimer
 
 (lu, 20.11 : le Planning (19 étapes du plan de projet, coûts, jalons) se porte dans les projets du Carnet par une sous-session ; critique sur ces projets dans le Carnet ; ensuite seulement, le Planning (données et code) est supprimé.)
+
+> Je répare aussi les accents perdus du reste de la Milk Stout ? Non
+> Portage dans le carnet et le calendrier*
+
+(lu, 20.11 : le reste de la Milk Stout n'est pas touché ; le Planning se porte dans le Carnet ET le Calendrier.)
