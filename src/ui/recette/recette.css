@@ -72,6 +72,7 @@
 .rc-ar { display:inline-flex; gap:2px; }
 .rc-ar i { width:10px; height:10px; border-radius:50%; display:block; }
 .rc-g { font-family:"IBM Plex Mono",ui-monospace,monospace; font-variant-numeric:tabular-nums; font-size:.875rem; color:rgb(var(--cave-texte-50)); text-align:right; border-top:1px solid rgb(var(--cave-700)); align-self:stretch; display:flex; align-items:center; justify-content:flex-end; }
+.rc-gu { margin-left:.125rem; font-size:.6875rem; color:rgb(var(--cave-texte-400)); }
 .rc-dh { background:rgba(224,160,46,.22); border-radius:.625rem; padding:0 .25rem; }
 .rc-total { border:0; font-weight:600; padding-top:.25rem; color:rgb(var(--ebc-amber-texte)); }
 /* Levure au premier plan */

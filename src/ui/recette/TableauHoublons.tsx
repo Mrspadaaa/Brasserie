@@ -81,7 +81,9 @@ export function TableauHoublons({ hops, actions, onNom }: { hops: readonly HopIn
             {tableau.colonnes.map((c) => {
               const g = l.doses[c.key];
               const cellule = g == null ? null : nombreFr(g, g % 1 ? 1 : 0);
-              return <span key={c.key} role="cell" className="rc-g">{cellule && (c.key === 'dh' ? <span className="rc-dh">{cellule}</span> : cellule)}</span>;
+              // CT4-B-5 : la dose dit son unité (« 60 g » sous « 20′ »), en discret ; la cellule sans dose reste vide, jamais « 0 g ».
+              const unite = <span className="rc-gu"> g</span>;
+              return <span key={c.key} role="cell" className="rc-g">{cellule && (c.key === 'dh' ? <span className="rc-dh">{cellule}{unite}</span> : <>{cellule}{unite}</>)}</span>;
             })}
           </React.Fragment>
         );
