@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { StorageService } from '../services/storage';
 import { EffetsGeste, useEffetsGeste } from '../services/effetsGeste';
 import { Units } from '../services/units';
@@ -21,9 +21,14 @@ export function annulerToutLeGeste(gesteId: string): { success: boolean; message
   const aussi = EffetsGeste.defaireDe(gesteId);
   const refus = aussi?.refus?.();
   if (refus) return { success: false, message: refus };
+  const decompte = StorageService.getMouvementsGestes().some(m => m.gesteId === gesteId && m.type !== 'consommation-annulee');
   const r = StorageService.annulerGeste(gesteId);
   if (!r.success) return r;
-  if (aussi) { aussi.defaire(); EffetsGeste.oublierDefaire(gesteId); return { success: true, message: `Annulé : le stock est rendu et ${aussi.dit}.` }; }
+  if (aussi) {
+    aussi.defaire(); EffetsGeste.oublierDefaire(gesteId);
+    // Un lavage sans dose n'a rien décompté (T4-7) : l'Annuler remet seulement le fût à laver, il ne parle pas d'un stock rendu.
+    return { success: true, message: decompte ? `Annulé : le stock est rendu et ${aussi.dit}.` : `Annulé : ${aussi.dit}.` };
+  }
   return r;
 }
 
@@ -33,40 +38,62 @@ export function annulerGesteDepuisTrace(gesteId: string) {
   EffetsGeste.annoncer({ geste: { type: '', objet: '', cycle: '', libelle }, gesteId: `${gesteId}-annule`, effets: [], manquantes: [], alertes: [], issue: r.message, annule: r.success });
 }
 
-function Question({ regle, type, onFini }: { regle: RegleConsommation; type: string; onFini: (dose: number | null) => void }) {
-  const [valeur, setValeur] = useState<number | null>(null);
-  useEffect(() => setValeur(null), [regle.id]);
-  const nom = [...StorageService.getStocks().rawMaterials, ...StorageService.getStocks().cleaning].find(s => s.ref === regle.stockItemRef)?.name ?? regle.stockItemRef;
-  const { max, step } = curseur(regle.unite, regle.par);
-  const pos = valeur == null ? 0 : valeur;
+/**
+ * T4-7 : UNE feuille pour tout le geste, au lieu d'une question par produit (cinq au lavage d'un fût : « Soude, Acide phosphorique, Désinfectant, Star San, PBW »).
+ * Chaque produit a son curseur ; on donne la dose de ceux qu'on a utilisés, « Retenir » écrit celles-là et reporte les autres. « Pas maintenant » reporte tout.
+ * Le report est retenu (jamais redemandé tant qu'on n'a pas touché « Régler les doses ») ; une dose non donnée reste inconnue, jamais 0.
+ */
+function FeuilleDoses({ regles, type, onRetenir, onReporter }: { regles: RegleConsommation[]; type: string; onRetenir: (doses: Map<string, number>) => void; onReporter: () => void }) {
+  const [valeurs, setValeurs] = useState<Record<string, number>>({});
+  const stocks = StorageService.getStocks();
+  const nomDe = (r: RegleConsommation) => [...stocks.rawMaterials, ...stocks.cleaning].find(s => s.ref === r.stockItemRef)?.name ?? r.stockItemRef;
+  const donnees = regles.filter(r => valeurs[r.id] != null);
   return <div data-effet-question className="rounded-control border border-attention/50 bg-cave-950 px-2 py-1.5">
-    <p className="text-sm text-cave-50"><b>{nom}</b> : combien {GESTES_CONNUS[type]?.question ?? 'par geste'}, d'habitude ?</p>
-    <input type="range" min={0} max={max} step={step} value={pos} aria-label={`Dose de ${nom} en ${regle.unite}`}
-      onChange={e => setValeur(Number(e.target.value))} className="mt-1.5 w-full accent-ebc-straw" />
-    <div className="flex items-center justify-between gap-2">
-      <span className="font-mono text-sm tabular-nums text-cave-50">{valeur == null ? '—' : valeur === 0 ? '0 · pas utilisé' : nombreFr(valeur)} {valeur ? regle.unite : valeur == null ? regle.unite : ''}</span>
-      <span className="flex gap-1.5">
-        <button type="button" onClick={() => onFini(null)} className="rounded-control px-2 py-1 text-xs text-cave-400 hover:bg-cave-850">Pas maintenant</button>
-        <button type="button" disabled={valeur == null} onClick={() => valeur != null && onFini(valeur)}
+    <p className="text-sm text-cave-50">Combien {GESTES_CONNUS[type]?.question ?? 'par geste'}, d'habitude ?</p>
+    <ul className="mt-1 max-h-[34vh] space-y-1.5 overflow-y-auto overscroll-contain pr-0.5">
+      {regles.map(r => {
+        const nom = nomDe(r), { max, step } = curseur(r.unite, r.par), v = valeurs[r.id];
+        return <li key={r.id} data-dose-ligne className="min-w-0">
+          <div className="flex items-baseline justify-between gap-2">
+            <span className="min-w-0 truncate text-sm font-semibold text-cave-50">{nom}</span>
+            <span className="shrink-0 font-mono text-sm tabular-nums text-cave-50">{v == null ? '—' : v === 0 ? '0 · pas utilisé' : `${nombreFr(v)} ${r.unite}`}</span>
+          </div>
+          <input type="range" min={0} max={max} step={step} value={v ?? 0} aria-label={`Dose de ${nom} en ${r.unite}`}
+            onChange={e => setValeurs(o => ({ ...o, [r.id]: Number(e.target.value) }))} className="block w-full accent-ebc-straw" />
+        </li>;
+      })}
+    </ul>
+    <div className="mt-1 flex items-center justify-between gap-2">
+      <span className="text-2xs text-cave-400">Une seule fois. Ensuite, décompté seul.</span>
+      <span className="flex shrink-0 gap-1.5">
+        <button type="button" onClick={onReporter} className="rounded-control px-2 py-1 text-xs text-cave-400 hover:bg-cave-850">Pas maintenant</button>
+        <button type="button" disabled={!donnees.length} onClick={() => onRetenir(new Map(donnees.map(r => [r.id, valeurs[r.id]])))}
           className="rounded-control bg-ebc-straw px-2.5 py-1 text-xs font-semibold text-cave-950 disabled:opacity-40">Retenir</button>
       </span>
     </div>
-    <p className="text-2xs text-cave-400">Une seule fois. Ensuite, décompté seul.</p>
   </div>;
 }
 
 export function BandeauEffets() {
   const etat = useEffetsGeste();
-  const [passees, setPassees] = useState<string[]>([]);
-  useEffect(() => setPassees([]), [etat?.gesteId]);
   if (!etat) return null;
-  const question = etat.annule ? undefined : etat.manquantes.find(r => !passees.includes(r.id));
-  const fini = (dose: number | null) => {
-    if (!question) return;
-    if (dose == null) { setPassees(p => [...p, question.id]); return; }
-    StorageService.retenirDose(question, dose);
+  // Les doses inconnues : celles qu'on n'a pas reportées se demandent (une feuille) ; les reportées ne se redemandent pas, un lien les rouvre.
+  const aDemander = etat.annule ? [] : etat.manquantes.filter(r => !r.reportee);
+  const reportees = etat.annule ? [] : etat.manquantes.filter(r => r.reportee);
+  const retenir = (doses: Map<string, number>) => {
+    for (const r of aDemander) if (doses.has(r.id)) StorageService.retenirDose(r, doses.get(r.id)!);
+    const autres = aDemander.filter(r => !doses.has(r.id));
+    if (autres.length) StorageService.reporterDoses(autres);
     const plan = StorageService.enregistrerGeste(etat.geste);
-    EffetsGeste.modifier({ manquantes: plan.manquantes });
+    EffetsGeste.modifier({ manquantes: plan.manquantes.map(r => (autres.some(a => a.id === r.id) ? { ...r, reportee: true } : r)) });
+  };
+  const reporter = () => {
+    StorageService.reporterDoses(aDemander);
+    EffetsGeste.modifier({ manquantes: etat.manquantes.map(r => ({ ...r, reportee: true })) });
+  };
+  const rouvrir = () => {
+    StorageService.rouvrirDoses(reportees);
+    EffetsGeste.modifier({ manquantes: etat.manquantes.map(r => ({ ...r, reportee: false })) });
   };
   const annuler = () => {
     const r = annulerToutLeGeste(etat.gesteId);
@@ -86,10 +113,11 @@ export function BandeauEffets() {
       </li>)}
     </ul>}
     {etat.alertes.map(a => <p key={a} className="text-xs text-attention">{a}</p>)}
-    {question && <Question regle={question} type={etat.geste.type} onFini={fini} />}
+    {aDemander.length > 0 && <FeuilleDoses key={aDemander.map(r => r.id).join('|')} regles={aDemander} type={etat.geste.type} onRetenir={retenir} onReporter={reporter} />}
+    {aDemander.length === 0 && reportees.length > 0 && <p data-doses-reportees className="text-xs text-cave-400">Doses non réglées : rien n'est décompté. <button type="button" onClick={rouvrir} className="underline underline-offset-2 text-cave-200">Régler les doses</button></p>}
     {etat.issue && <p className="text-xs text-water">{etat.issue}</p>}
     <div className="flex justify-end gap-1.5">
-      {etat.effets.length > 0 && !etat.annule && <button type="button" onClick={annuler} className="rounded-control border border-cave-600 px-3 py-1 text-xs text-cave-50 hover:bg-cave-850">Annuler</button>}
+      {(etat.effets.length > 0 || EffetsGeste.defaireDe(etat.gesteId)) && !etat.annule && <button type="button" onClick={annuler} className="rounded-control border border-cave-600 px-3 py-1 text-xs text-cave-50 hover:bg-cave-850">Annuler</button>}
       <button type="button" onClick={() => EffetsGeste.fermer()} className="rounded-control bg-ebc-straw px-3 py-1 text-xs font-semibold text-cave-950">OK</button>
     </div>
   </div>;

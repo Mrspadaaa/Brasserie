@@ -1076,8 +1076,20 @@ export const StorageService = {
   retenirDose(regle: RegleConsommation, quantite: number) {
     if (!Number.isFinite(quantite) || quantite < 0) return;
     const autres = this.getReglesConsommation().filter(r => r.id !== regle.id);
-    FirestoreRepo.put('config', 'consommation', { regles: [...autres, { ...regle, quantite, active: quantite > 0 }] });
+    FirestoreRepo.put('config', 'consommation', { regles: [...autres, { ...regle, quantite, active: quantite > 0, reportee: false }] });
     this.logAction('Modification', 'Configuration', regle.id, `Dose retenue : ${regle.stockItemRef} ${quantite > 0 ? `${nombreFr(quantite)} ${regle.unite}` : 'pas utilisé'} par ${regle.par} (${regle.geste})`);
+  },
+
+  /** T4-7 : « Pas maintenant » sur la feuille de doses. Les lignes gardent leur dose inconnue (rien décompté, jamais 0) et ne sont plus redemandées, ce lavage et les suivants. */
+  reporterDoses(regles: RegleConsommation[]) { this.marquerReportees(regles, true); },
+  /** T4-7 : « Régler les doses » : ces lignes se redemandent. */
+  rouvrirDoses(regles: RegleConsommation[]) { this.marquerReportees(regles, false); },
+  marquerReportees(regles: RegleConsommation[], reportee: boolean) {
+    if (!regles.length) return;
+    const ids = new Set(regles.map(r => r.id));
+    const autres = this.getReglesConsommation().filter(r => !ids.has(r.id));
+    FirestoreRepo.put('config', 'consommation', { regles: [...autres, ...regles.map(r => ({ ...r, reportee }))] });
+    this.logAction('Modification', 'Configuration', regles[0].id, `Doses ${reportee ? 'reportées' : 'rouvertes'} : ${regles.map(r => r.stockItemRef).join(', ')} (${regles[0].geste})`);
   },
 
   getMouvementsGestes(): MouvementConsommation[] {

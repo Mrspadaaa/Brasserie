@@ -31,6 +31,8 @@ export interface RegleConsommation {
   unite: string;
   par: ParBase;
   active: boolean;
+  /** T4-7 : « Pas maintenant » retenu. La dose reste inconnue (rien décompté) mais n'est plus redemandée ; « Régler les doses » la rouvre. */
+  reportee?: boolean;
 }
 
 export interface MouvementConsommation {

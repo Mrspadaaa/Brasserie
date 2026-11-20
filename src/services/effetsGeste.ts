@@ -43,7 +43,11 @@ export const EffetsGeste = {
     } else courant = suivant;
     prevenir();
   },
-  surAnnulation(gesteId: string, d: DefaireDuGeste) { aDefaire = { gesteId, d }; },
+  /** Accroché après l'annonce du geste (le fût s'écrit avant son décompte) : le bandeau se redessine pour offrir l'Annuler, même sans aucun stock décompté (T4-7). */
+  surAnnulation(gesteId: string, d: DefaireDuGeste) {
+    aDefaire = { gesteId, d };
+    if (courant && courant.gesteId === gesteId) { courant = { ...courant }; prevenir(); }
+  },
   /** Le défaire accroché à ce geste, s'il y en a un. */
   defaireDe: (gesteId: string): DefaireDuGeste | null => (aDefaire?.gesteId === gesteId ? aDefaire.d : null),
   /** Rendu une seule fois : le geste défait, son défaire s'efface. */
