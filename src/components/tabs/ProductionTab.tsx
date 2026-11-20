@@ -19,11 +19,8 @@ import { loadRecipePage } from '../../pages/recipePageLoader';
 // l2 (10.11) : la fiche d'un brassin (graphiques, chat, procédé…) ne se télécharge plus avec l'accueil : elle part à la première ouverture,
 // et se précharge à l'inactivité (voir precharge dans App). Même motif que Previsions, PrixEcran et ImpotAnnee.
 const BatchDetailSheet = lazy(() => import('../../ui/BatchDetailSheet').then(m => ({ default: m.BatchDetailSheet })));
-const CreativeLabTab = lazy(() =>
-  import('../CreativeLabTab').then(({ CreativeLabTab: CreativeLab }) => ({
-    default: CreativeLab,
-  })),
-);
+/* h1 (20.11, CPL-1) : l'Atelier passe par une seule porte ; son Carnet est CarnetsVue (choix ra+p5f), jamais l'ancien carnet. */
+const AtelierPorte = lazy(() => import('../../ui/carnets/AtelierPorte').then(({ AtelierPorte }) => ({ default: AtelierPorte })));
 
 interface ProductionTabProps {
   /** The catalogue remains mounted behind a full-screen page. */
@@ -62,6 +59,8 @@ interface ProductionTabProps {
   onSuccessMessage?: (msg: string) => void;
   /** e2a : « Rebrasser cette <style> » ouvre le brassin de la recette d'origine. */
   onRebrewRecipe?: (recipeId: string) => void;
+  /** h1 : « À venir » / « Réalisés » d'un carnet de l'Atelier mènent à Stocks › Matériel. */
+  onVoirMateriel?: (seg: 'avenir' | 'realises') => void;
 }
 
 const lireArticles = () => { try { return StorageService.getStocks().rawMaterials ?? []; } catch { return []; } };
@@ -91,7 +90,8 @@ export const ProductionTab: React.FC<ProductionTabProps> = ({
   onRebrewRecipe,
   onOpenBrewDay,
   onDraftRecipe,
-  onSuccessMessage
+  onSuccessMessage,
+  onVoirMateriel
 }) => {
   // Persistent sub-navigation
   const [subTab, setSubTab] = useState<'batches' | 'recipes' | 'lab' | 'scaler'>(() =>
@@ -229,14 +229,15 @@ export const ProductionTab: React.FC<ProductionTabProps> = ({
       {/* 4. SUBTAB: CREATIVE LAB (ATELIER R&D DE LA BRASSERIE) */}
       {subTab === 'lab' && (
         <Suspense fallback={<div role="status" className="py-3 text-sm text-cave-400">Chargement de l’atelier R&amp;D…</div>}>
-          <CreativeLabTab
+          <AtelierPorte
             onSuccessMessage={onSuccessMessage}
             onDraftRecipe={onDraftRecipe}
             onOpenRecipe={(id) => { const r = recipes.find((x) => x.id === id); if (r) onOpenRecipe(r); }}
             createRequest={createRequest}
             onCreateRequestHandled={onCreateRequestHandled}
-            openSectionRequest={openLabSectionRequest}
-            onOpenSectionRequestHandled={onOpenLabSectionRequestHandled}
+            demande={openLabSectionRequest}
+            onDemandeTraitee={onOpenLabSectionRequestHandled}
+            onVoirMateriel={onVoirMateriel}
           />
         </Suspense>
       )}

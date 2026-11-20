@@ -588,9 +588,18 @@ export const App: React.FC = () => {
     (i) => i.type === 'event' && i.status !== 'done'
   ).length;
 
-  const navigateToCreativeLab = () => {
+  /* h1 (20.11, CPL-1) : toute porte de l'Atelier mène à son Carnet choisi (CarnetsVue, ra+p5f), sauf demande d'une autre rubrique. */
+  const navigateToCreativeLab = (demande: CreativeLabSectionRequest = { section: 'carnet', at: Date.now() }) => {
+    setLabSectionRequest(demande);
     setProductionSubTab('lab');
     setActiveTab('production');
+  };
+  /** « À venir » / « Réalisés » d'un carnet monté dans l'Atelier : leur place réelle, Stocks › Matériel. */
+  const voirMateriel = (seg: 'avenir' | 'realises') => {
+    StorageService.setUiState('stocks_subtab', 'materiel');
+    StorageService.setUiState('stocks_materiel', seg);
+    setNavNonce(n => n + 1);
+    setActiveTab('stocks');
   };
 
   const navigateToBrewAssistant = () => {
@@ -730,7 +739,7 @@ export const App: React.FC = () => {
       case 'vente': setQuickAction('quick-sale', actionLauncherRef.current); break;
       case 'brassin': setQuickAction('brew-batch', actionLauncherRef.current); break;
       case 'recette': openWizard(); break;
-      case 'idee': setProductionSubTab('lab'); vers('production', null, null, 'newIdea'); break;
+      case 'idee': setLabSectionRequest({ section: 'carnet', at: Date.now() }); setProductionSubTab('lab'); vers('production', null, null, 'newIdea'); break;
       case 'courses': vers('stocks', 'stocks_subtab', 'courses'); break;
       case 'estimer': window.dispatchEvent(new CustomEvent('finances-estimer')); break;
       // Le geste « Mesure » de la recherche : la fiche du brassin s'ouvre à la section Mesures.
@@ -758,6 +767,8 @@ export const App: React.FC = () => {
       case 'newIdea':
         // Sur Carnets, l'écran prend la demande lui-même : le champ du bas reçoit le focus, rien ne s'ouvre ailleurs.
         if (surCarnets) { setCreateRequest({ kind: 'newIdea', at: Date.now() }); break; }
+        /* h1 : déjà sur l'Atelier, la rubrique ouverte prend la demande (Carnet : le champ ; Matériel : un besoin ; Tarifs : une idée de prix). */
+        if (!(activeTab === 'production' && productionSubTab === 'lab')) setLabSectionRequest({ section: 'carnet', at: Date.now() });
         setProductionSubTab('lab');
         setActiveTab('production');
         setCreateRequest({ kind: 'newIdea', at: Date.now() });
@@ -919,7 +930,7 @@ export const App: React.FC = () => {
       case 'calendrier': setActiveTab('calendrier'); break;
       case 'brassins': production('batches'); break;
       case 'recettes': production('recipes'); break;
-      case 'atelier': production('lab'); break;
+      case 'atelier': navigateToCreativeLab(); break;
       case 'volumes': production('scaler'); break;
       case 'stock': stocksVers('stock'); break;
       case 'courses': stocksVers('courses'); break;
@@ -1248,10 +1259,8 @@ export const App: React.FC = () => {
               setBatchOpenRequest({ id: batchId, at: Date.now() });
               setActiveTab('production');
             }}
-            onNavigateToCreativeLab={() => {
-              setLabSectionRequest({ section: 'event', at: Date.now() });
-              navigateToCreativeLab();
-            }}
+            /* h1 (audit des vues n° 3) : l'agenda (tâches datées) vit au Calendrier, sa vue choisie ; plus dans l'ancien carnet. */
+            onNavigateToCreativeLab={() => setActiveTab('calendrier')}
           />
         )}
 
@@ -1309,8 +1318,8 @@ export const App: React.FC = () => {
             }}
             onPoserBrassin={(recetteId) => { setBrewRecipeId(recetteId); setQuickAction('brew-batch', actionLauncherRef.current); }}
             onPoserFete={(lundi, saisie) => {
-              setLabSectionRequest({ section: 'event', at: Date.now(), date: lundi, ...(saisie ? { saisie } : {}) });
-              navigateToCreativeLab();
+              /* h1 (audit n° 4) : ce qui est tapé arrive dans le champ du Carnet (CarnetsVue), rien ne se perd ; correctif propre au Calendrier : ouvert. */
+              navigateToCreativeLab({ section: 'event', at: Date.now(), date: lundi, ...(saisie ? { saisie } : {}) });
             }}
             onPoserDepense={(lundi, _rangee, categorie, saisie) => {
               /* CRITIQUE-6 n° 3 (D-68, E34) : la catégorie vient de la rangée d'où l'on part (`CATEGORIE_DE_RANGEE` du calendrier) ; un achat
@@ -1321,10 +1330,7 @@ export const App: React.FC = () => {
             onPeriode={(p) => setGlobalTimeFilter(p)}
             onOuvrirBudget={(batchId) => setBudgetBrassinId(batchId)}
             onOpenPiece={(id) => { memoriserDefilement(); setActiveTab('finances'); setFinanceOpenRequest({ id, at: Date.now(), retour: 'calendrier' }); }}
-            onOpenAgenda={() => {
-              setLabSectionRequest({ section: 'event', at: Date.now() });
-              navigateToCreativeLab();
-            }}
+            onOpenAgenda={() => navigateToCreativeLab({ section: 'event', at: Date.now() })}
             onOpenCarnet={ouvrirCarnet}
           />
         )}
@@ -1354,6 +1360,7 @@ export const App: React.FC = () => {
             openLabSectionRequest={labSectionRequest}
             onOpenLabSectionRequestHandled={() => setLabSectionRequest(null)}
             onDraftRecipe={(seed) => openWizard(seed)}
+            onVoirMateriel={voirMateriel}
             onCreateRequestHandled={() => setCreateRequest(null)}
             onSuccessMessage={showToast}
           />

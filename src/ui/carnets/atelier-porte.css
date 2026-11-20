@@ -1,0 +1,5 @@
+/* h1 (20.11) : Brassins › Atelier. Une seule rangée Matériel · Carnet · Tarifs : celle de l'Atelier (AtelierPorte). Sous Tarifs, la rangée
+   et le titre propres à CreativeLabTab sont masqués (sa rubrique Carnet, l'ancien carnet, n'a plus de porte). Classes préfixées atp- (L26). */
+.atp-tarifs > div > .nc-seg,
+.atp-tarifs > div > .finance-heading { display: none; }
+.atp-carnets { min-height: 0; }
