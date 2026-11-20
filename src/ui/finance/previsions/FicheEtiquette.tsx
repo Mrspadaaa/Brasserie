@@ -8,7 +8,7 @@ import { Feuille } from './Feuille';
 import { Confirmation } from '../prevision/base';
 import { supprimerPlan } from '../prevision/supprimerPlan';
 import type { MesureProjet } from './mesureProjet';
-import { centimesDeSaisie, jourCourt, litreFr, montant } from './format';
+import { centimesDeSaisie, jourCourt, litreFr, moisCourt, montant } from './format';
 
 const DUREES = [3, 5, 8] as const;
 type Etat = { kind: 'ok' | 'attente' | 'erreur'; texte: string } | null;
@@ -52,8 +52,11 @@ export function FicheProjet({ plan, mesure, titreFin, prix, onPrix, onClose, onO
       <div className="prv-k"><span>{titreFin}</span><b className={fin != null && fin < 0 ? 'prv-rt' : ''}>{fin == null ? 'à compléter' : montant(fin)}</b></div>
       <div className="prv-k"><span>Plus bas</span><b className={bas && bas.soldeCents < 0 ? 'prv-rt' : ''}>{bas ? montant(bas.soldeCents) : 'à compléter'}{bas && <small> le {jourCourt(bas.date)}</small>}</b></div>
       <div className="prv-k prv-l"><span>Pour rester à zéro</span>
-        {bas && bas.soldeCents >= 0 ? <b>Tu restes au-dessus de zéro</b> : <>
+        {/* CT4-A-1 : le verdict lit tout l'horizon (mesure.sousZero), pas la vue : « au-dessus de zéro » sur 90 j alors que le 25.07 est à −1 492,66 était faux. */}
+        {bas && bas.soldeCents >= 0 && !mesure.sousZero ? <><b>Tu restes au-dessus de zéro</b>{mesure.finHorizon && <small>jusqu’à fin {moisCourt(mesure.finHorizon)} {mesure.finHorizon.slice(0, 4)}</small>}</> : <>
           <b>{mesure.bouteillesPourZero == null ? 'à compléter' : `${mesure.bouteillesPourZero} bouteilles 33 cl${prixC ? ` à ${montant(prixC)}` : ''}`}</b>
+          {mesure.sousZero && (!bas || bas.soldeCents >= 0) && <small className="prv-rt">sous zéro le {jourCourt(mesure.sousZero.date)}.{mesure.sousZero.date.slice(2, 4)}, plus bas {montant(mesure.sousZero.soldeCents)} le {jourCourt(mesure.sousZero.dateBas)}.{mesure.sousZero.dateBas.slice(2, 4)}</small>}
+          {mesure.sousZero && bas && bas.soldeCents < 0 && mesure.sousZero.soldeCents < bas.soldeCents && <small className="prv-rt">{titreFin.toLowerCase()} ; au-delà, plus bas {montant(mesure.sousZero.soldeCents)} le {jourCourt(mesure.sousZero.dateBas)}.{mesure.sousZero.dateBas.slice(2, 4)}</small>}
           <small>en trésorerie, avant coût de production</small></>}
         <label className="prv-prix">Prix d’une bouteille 33 cl (CHF)<input inputMode="decimal" value={prix} onChange={e => onPrix(e.target.value)} placeholder="5,00" autoComplete="off" /></label>
         {mesure.bouteillesPourPayer != null && <small>Pour payer le matériel (sur la marge) : {mesure.bouteillesPourPayer} bouteilles</small>}

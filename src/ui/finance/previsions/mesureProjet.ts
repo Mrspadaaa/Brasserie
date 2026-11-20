@@ -4,7 +4,7 @@ import { estimerBrassinsPlanifies } from '../../../domain/finance/brewForecast';
 import { mesurerAchat } from '../../../domain/finance/materielFutur';
 import { upgradeBudget, upgradeDetails } from '../../../domain/finance/upgrades';
 import type { FinanceTransaction, FinancialAsset, FinancialPlan, FinancialProfile } from '../../../domain/finance/types';
-import type { Escalier } from './escalier';
+import { construireEscalier, regrouperTendance, type Escalier } from './escalier';
 import { moisCourt } from './format';
 
 /** Fiche d'un projet de matériel : usure, litre avant → après, plus bas, bouteilles. Assemble `mesurerAchat` (d3) et l'escalier quotidien (pas les soldes de fin de mois). */
@@ -16,6 +16,10 @@ export interface MesureProjet {
   litreManque: 'aucun-brassin' | 'brassin-partiel' | null;
   pointBas: Escalier['pointBas'];
   soldeFinCents: number | null;
+  /** CT4-A-1 : sur tout l'horizon du domaine (13 mois), pas seulement la vue : premier jour sous zéro et plus bas. `null` = jamais sous zéro (ou caisse inconnue). */
+  sousZero: { date: string; soldeCents: number; dateBas: string; finHorizon: string } | null;
+  /** Dernier jour regardé par le verdict « Pour rester à zéro ». */
+  finHorizon: string | null;
   /** « Pour rester à zéro » : bouteilles à vendre pour combler le plus bas, en trésorerie, avant coût de production. `null` = prix manquant ; 0 = aucun creux. */
   bouteillesPourZero: number | null;
   /** « Pour payer le matériel » : sur la marge après tous les coûts du litre (`mesurerAchat().ventes`). */
@@ -41,9 +45,19 @@ export function mesureDuProjet(input: { plan: FinancialPlan; plans: FinancialPla
     assujettiTva: !!profile.vatRegistered, productionAnnuelleL: profile.annualProductionL, coutLitreCents: litre ? litre.complet * 100 : null,
     format: prix && prix > 0 ? { label: 'bouteille 33 cl', volumeL: 0.33, prixCents: prix } : undefined, prevision: input.forecast, ignorerPlanId: plan.id });
   const apres = mesure.coutLitreAvecCents;
+  // CT4-A-1 : le verdict « Pour rester à zéro » lit tout l'horizon (même escalier quotidien, mêmes sorties que la vue), sinon il contredit les limites et la vue 12 mois.
+  const dernierMois = input.forecast.months[input.forecast.months.length - 1]?.month;
+  const finHorizon = dernierMois ? new Date(Date.UTC(Number(dernierMois.slice(0, 4)), Number(dernierMois.slice(5, 7)), 0)).toISOString().slice(0, 10) : null;
+  const long = finHorizon && finHorizon > input.fin && input.escalier.departCents !== null
+    ? construireEscalier({ departCents: input.escalier.departCents, items: regrouperTendance(input.forecast.items.filter(i => i.amountCents > 0)), debut: input.asOf, fin: finHorizon })
+    : input.escalier;
+  const basVue = input.escalier.pointBas, basLong = long.pointBas;
+  const bas = basVue && basLong ? (basLong.soldeCents < basVue.soldeCents ? basLong : basVue) : basVue ?? basLong;
+  const sousZero = bas && bas.soldeCents < 0 && long.premierJourSousZero ? { date: long.premierJourSousZero, soldeCents: bas.soldeCents, dateBas: bas.date, finHorizon: long.fin } : null;
   return { usureParAnCents: mesure.usureParAnCents, litreAvant: litre ? litre.affiche.complet : null, litreApres: apres == null ? null : Math.round(apres) / 100,
     litreManque: litre ? null : brassins.length ? 'brassin-partiel' : 'aucun-brassin',
-    pointBas: input.escalier.pointBas, soldeFinCents: input.escalier.soldeFinCents, bouteillesPourZero: bouteillesPourZero(input.escalier.pointBas?.soldeCents, prix),
+    pointBas: input.escalier.pointBas, soldeFinCents: input.escalier.soldeFinCents, sousZero, finHorizon: long === input.escalier ? input.fin : long.fin, // la vue déjà sous zéro garde son compte (p5b, à côté de « Plus bas ») ; une vue au-dessus de zéro compte le creux de l'horizon
+    bouteillesPourZero: bouteillesPourZero(basVue && basVue.soldeCents < 0 ? basVue.soldeCents : bas?.soldeCents, prix),
     bouteillesPourPayer: mesure.ventes?.bouteilles ?? null, avertissements: mesure.avertissements.map(a => direHorizon(a, input.forecast, input.fin)) };
 }
 
