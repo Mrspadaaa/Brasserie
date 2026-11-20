@@ -1,5 +1,5 @@
 /**
- * Porte le Planning dans Brassins › Atelier › Carnet et Matériel › À venir (atelier.ts). La collection `planning` est supprimée : les étapes
+ * Porte les achats du Planning dans Matériel › À venir, liés à leur idée du Carnet (atelier.ts). La collection `planning` est supprimée : les étapes
  * viennent de sa sauvegarde (`--sauvegarde=<json de migrer.ts>`), comparée à la fixture. Simulation par défaut ; --apply écrit, préconditionné
  * (`exists: false` pour un neuf, `updateTime` pour une idée qui change), puis relit. Sauvegarde de `creativeItems` et `financialPlans` avant tout.
  *   npx vite-node scripts/planning-vers-carnet/appliquer-atelier.ts -- --project=brasserie-l-affinee --sauvegarde=<fichier> [--apply]
@@ -53,12 +53,11 @@ console.log(`SAUVEGARDE ${copie} (${items.length} creativeItems, ${plans.length}
 const majs = new Map(items.map(d => [idDe(d), d.updateTime]));
 const plan = planAtelier(taches, items.map(d => lu(d) as unknown as CreativeItem), new Set([...items, ...plans].map(idDe)), new Date().toISOString());
 plan.lignes.forEach(l => console.log(`  ${l}`));
-console.log(`PLAN ${plan.atelier.length} À faire de l'Atelier, ${plan.plans.length} achats À venir, ${plan.carnet.length} idées du Carnet mises à jour`);
+console.log(`PLAN ${plan.plans.length} achats À venir, ${plan.carnet.length} idées du Carnet mises à jour`);
 
 if (apply) {
   const champs = (v: unknown) => (encode(v) as { mapValue: { fields: unknown } }).mapValue.fields;
   const writes = [
-    ...plan.atelier.map(i => ({ update: { name: `${parent}/creativeItems/${i.id}`, fields: champs(i) }, currentDocument: { exists: false } })),
     ...plan.plans.map(p => ({ update: { name: `${parent}/financialPlans/${p.id}`, fields: champs(p) }, currentDocument: { exists: false } })),
     ...plan.carnet.map(w => {
       if (w.op !== 'put') throw Error('suppression inattendue');
@@ -70,7 +69,7 @@ if (apply) {
   if (writes.length) await req(`${base}:commit`, { writes });
   const apresI = new Map((await tous('creativeItems')).map(d => [idDe(d), d])), apresP = new Map((await tous('financialPlans')).map(d => [idDe(d), d]));
   const pareil = (d: DocRest | undefined, v: object) => !!d && JSON.stringify(lu(d), Object.keys(v).sort()) === JSON.stringify(v, Object.keys(v).sort());
-  const faux = [...plan.atelier.filter(i => !pareil(apresI.get(i.id), i)).map(i => i.id), ...plan.plans.filter(p => !pareil(apresP.get(p.id), p)).map(p => p.id),
+  const faux = [...plan.plans.filter(p => !pareil(apresP.get(p.id), p)).map(p => p.id),
     ...plan.carnet.filter(w => w.op === 'put' && !pareil(apresI.get(w.doc.id), w.doc)).map(w => (w as { doc: CreativeItem }).doc.id)];
   const ecrits = new Set(writes.map(w => w.update.name.split('/').at(-1)));
   const touches = [...items.filter(d => !ecrits.has(idDe(d)) && apresI.get(idDe(d))?.updateTime !== d.updateTime), ...plans.filter(d => !ecrits.has(idDe(d)) && apresP.get(idDe(d))?.updateTime !== d.updateTime)].map(idDe);
