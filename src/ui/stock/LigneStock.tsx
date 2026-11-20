@@ -66,7 +66,7 @@ export const LigneStock: React.FC<LigneStockProps> = ({ item, info, cmd, level, 
           <span className={`l1-n2 l1-s-${dit.classe}`}>{dit.texte}</span>
         </span>
         {repere
-          ? <span className={`l1-rp${repere.inconnu ? ' l1-rp-q' : ''}${repere.alerte ? ' l1-rp-w' : ''}`}>
+          ? <span title={repere.titre} className={`l1-rp${repere.inconnu ? ' l1-rp-q' : ''}${repere.alerte ? ' l1-rp-w' : ''}`}>
               {repere.couleur && <i className="l1-sw" style={{ background: repere.couleur }} />}{repere.texte}
             </span>
           : <span />}

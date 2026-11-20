@@ -4,6 +4,7 @@ import type { StockItem } from '../../types';
 import type { ArticleACommander } from '../stockLevel';
 import { ECHELLES, coupeBarre, quantiteBarre, xBarre, type ClasseLigne, type InfoLigne, type TriListe } from './liste';
 import { rayonDuMur, type RayonMurNom } from './murRayon';
+import { fichePubliee, plageEbc } from '../fermentables/fichesMalts';
 import { statutDurabilite } from './regles';
 import { nombreFr } from '../nombreAffiche';
 import { Units } from '../../services/units';
@@ -112,13 +113,18 @@ export function etatDit(item: StockItem, info: InfoLigne, cmd: ArticleACommander
   return { texte, classe };
 }
 
-export interface RepereLigne { texte: string; couleur: string | null; inconnu: boolean; alerte: boolean }
+export interface RepereLigne { texte: string; couleur: string | null; inconnu: boolean; alerte: boolean; /** D'où vient la valeur quand ce n'est pas la saisie du brasseur (survol). */ titre?: string }
 /** La pastille de repère : EBC (malts), α (houblons), DDM (levures) ; null pour les autres rayons. L'inconnu se dit « non connu ». */
 export function repereLigne(item: StockItem, info: InfoLigne, couleurMalt: (ebc: number) => string): RepereLigne | null {
   const rayon = rayonDuMur(item);
   if (rayon === 'Malts') {
     const e = item.colorEbc;
-    if (typeof e !== 'number' || !Number.isFinite(e)) return { texte: 'EBC non connu', couleur: null, inconnu: true, alerte: false };
+    if (typeof e !== 'number' || !Number.isFinite(e)) {
+      // TL-10 : sans EBC saisi, la fiche publiée du malteur pour ce nom courant (plage) ; hors table, le malt reste « non connu ».
+      const f = fichePubliee(item.name);
+      if (f) return { texte: `EBC ${plageEbc(f)}`, couleur: couleurMalt(f.colorEbc), inconnu: false, alerte: false, titre: `Plage publiée par le malteur (${f.produit}, fiche Weyermann) : à remplacer par la valeur de votre sac` };
+      return { texte: 'EBC non connu', couleur: null, inconnu: true, alerte: false };
+    }
     return { texte: `EBC ${nombreFr(e, 1).replace(/\B(?=(\d{3})+(?!\d))/g, ' ')}`, couleur: couleurMalt(e), inconnu: false, alerte: false };
   }
   if (rayon === 'Houblons') {
