@@ -181,7 +181,8 @@ export function controlesCroises(e: EntreeControles): ControlesCroises {
   const ecartArticles = reference === null ? null : nCompares - reference;
   /* LR2-4 (g1, doc14 lu en réel : 17 lignes dont le port, 16 annoncées) : le port se dit à part (« dont port » du bandeau) ; la rangée ne le compte pas, sinon « 16 lignes · dont port » et « Articles 17 lus » se contredisent.
      Comptage annoncé : le nombre comparé (sans le port quand c'est lui qui égale l'annonce) ; non imprimé : les lignes lues moins le port. */
-  const nLusAff = (reference === null ? nLignesLues - Math.min(e.nPort ?? 0, nLignesLues) : nCompares) - nRabais;
+  /* Un modèle qui compte le port dans son annonce (p3c D12 : 24 pour 24 lignes dont le port) : la comparaison reste juste (24 = 24), mais l'affichage retire aussi le port, comme l'en-tête (« 23 lignes · dont port ») : un seul nombre. */
+  const nLusAff = (nCompares === nLignesLues ? nLignesLues - Math.min(e.nPort ?? 0, nLignesLues) : nCompares) - nRabais;
   const rabais = nRabais ? ` · ${nRabais} rabais` : '';
   const ajoutExplique = ecartCents !== null && ecartCents > 0 && e.ajoutsCents > 0 && ecartCents === e.ajoutsCents;
   const rangs: RangControle[] = [];

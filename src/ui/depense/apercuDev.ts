@@ -352,7 +352,9 @@ export function apercuDepense(etat: string): ApercuDepense {
     // 8,50 (état `port`, total 95,00), sans montant (`port-sans-montant`, la rangée reste visible : l'inconnu n'est jamais 0), ou seule (`tout-port`, 12,50 : une rangée).
     const base = (montant: number | null) => ({ id: 'line-24', name: 'Versand / Port', kind: 'shipping' as const, quantity: 1, unit: '', price: montant, amountTTC: montant, stockCategory: '', reference: 'VERSAND', evidence: '', ambiguity: '' }) as unknown as ScannedInvoiceResult['items'][number];
     const ajuste = (items: ScannedInvoiceResult['items'], total: number) => {
-      Object.assign(result, { items, amountTTC: total, printedLineCount: items.length, controls: { ...result.controls!, lines: { ...result.controls!.lines, checked: items.length } } });
+      // LR2-4 (g1, 20.11) : une vraie lecture annonce les lignes d'articles, port exclu (doc14 : 17 lignes dont le port, 16 annoncées ; prompts.ts « lignes d'articles seulement »). Une pièce réduite à son port annonce sa seule ligne.
+      const articles = items.filter(i => i.kind !== 'shipping').length;
+      Object.assign(result, { items, amountTTC: total, printedLineCount: articles || items.length, controls: { ...result.controls!, lines: { ...result.controls!.lines, checked: items.length } } });
     };
     if (etat === 'port') { ajuste([...result.items, base(8.5)], 95); }
     else if (etat === 'port-sans-montant') { ajuste([...result.items, base(null)], 86.5); }
