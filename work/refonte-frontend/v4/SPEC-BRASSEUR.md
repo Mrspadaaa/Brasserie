@@ -2326,3 +2326,11 @@ Classement de la page r3 de Ma levure (https://claude.ai/artifact/DKAJe8ESeMR4ig
 > SI non tu as déjà tout répondu et oui pour les test de 5 chf à 7chf Max budget ia
 
 (lu, 20.11 : il ne connaît pas le « Planning » (GanttTask : étapes avec catégorie, coût, dates, jalons, venues des données de départ) ; mes recommandations valent réponse pour les décisions 1, 2, 4 à 7 ; tests Gemini réels accordés, budget IA porté de 5 à 7 CHF au plus. Données réelles (8 à 10) : sans réponse explicite, rien n'est touché.)
+
+> le Calendrier fait ce travail. Je ne le remets pas, oui et tu peux le supprimer .
+>
+> 8 oui
+> 9 test
+> 10 oui
+
+(lu, 20.11 : Planning (GanttTask) supprimé, code et données ; 8 : réparer les noms de malts abîmés de la Milk Stout ; 9 : la vente 10 × 75 cl à 5 695 CHF (Restaurant du Lac, 10.11) est un test, à retirer ; 10 : retirer en ligne les données ZZ TEST listées.)
