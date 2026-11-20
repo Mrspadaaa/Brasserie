@@ -5,6 +5,7 @@ import { Barre, dureeDansBarre, formesDuree, largeurDuree, montantBarre, type Ba
 import { CLASSE_TEINTE, Marque, couperNom, dureeVue, largeurPastilleLie, largeurTexte, lieMontre, type ModeDeuxLignes } from './Marque';
 import { appuiCommenceSur } from './usePointeur';
 import { aDesJours } from '../echelle';
+import { todayISO } from '../../../domain/finance/ledger';
 
 /**
  * Une rangée de la frise (E20 à E23) : son titre à gauche, juste au-dessus de ses barres, le carré de couleur qui porte le + blanc (E21),
@@ -163,6 +164,45 @@ export function seriesEnBarres(choses: readonly ChoseCalendrier[]): ChoseCalendr
     for (const c of tri.slice(1)) suivants.add(c.id);
   }
   return choses.flatMap(c => (suivants.has(c.id) ? [] : [premiers.get(c.id) ?? c]));
+}
+
+/**
+ * CAL-PASSE (f, « Emballage · Jhhh » deux fois) : deux brassins homonymes (hors de la frise, donc sans barre) laissent deux caddies de même titre,
+ * deux achats réels qui se lisent comme un doublon. Chacun garde son id et son ouverture ; son titre dit ce qui le distingue : le jour de son achat
+ * (« Emballage · Jhhh · 21 déc. »), et à jour égal, son rang (« … (1/2) »). Jamais deux lignes identiques, jamais deux achats fondus en un.
+ */
+export function distinguerHomonymes(choses: readonly ChoseCalendrier[]): readonly ChoseCalendrier[] {
+  const groupes = new Map<string, ChoseCalendrier[]>();
+  for (const c of choses) if (c.brassinLie) groupes.set(c.titre, [...(groupes.get(c.titre) ?? []), c]);
+  const doubles = [...groupes.values()].filter(g => g.length > 1);
+  if (!doubles.length) return choses;
+  const nouveau = new Map<string, string>();
+  for (const g of doubles) {
+    const avecJour = g.map(c => ({ c, titre: c.debut ? `${c.titre} · ${jourLisible(c.debut)}` : c.titre }));
+    const reste = new Map<string, number>();
+    for (const x of avecJour) reste.set(x.titre, (reste.get(x.titre) ?? 0) + 1);
+    const rang = new Map<string, number>();
+    for (const x of avecJour) {
+      const n = reste.get(x.titre) ?? 1;
+      const i = (rang.get(x.titre) ?? 0) + 1;
+      rang.set(x.titre, i);
+      nouveau.set(x.c.id, n > 1 ? `${x.titre} (${i}/${n})` : x.titre);
+    }
+  }
+  return choses.map(c => (nouveau.has(c.id) ? { ...c, titre: nouveau.get(c.id) as string } : c));
+}
+
+/**
+ * CAL-PASSE (V-16, r2-c `.col.now`) : les colonnes de la semaine en cours. Une colonne de semaine (ou de jour : les sept jours de la semaine) ;
+ * une colonne de mois : celle qui contient le jour. `null` : aujourd'hui est hors de la vue.
+ */
+export function colonneCourante(colonnes: readonly Colonne[], aujourdhui: string): { debut: number; n: number } | null {
+  if (!colonnes.length || !aujourdhui) return null;
+  const lundi = ajouterJours(aujourdhui, -((new Date(`${aujourdhui}T00:00:00Z`).getUTCDay() + 6) % 7));
+  const dimanche = ajouterJours(lundi, 6);
+  const enJours = colonnes.every(c => c.debut === c.fin);
+  const idx = colonnes.flatMap((c, i) => ((enJours ? c.fin >= lundi && c.debut <= dimanche : aujourdhui >= c.debut && aujourdhui <= c.fin) ? [i] : []));
+  return idx.length ? { debut: idx[0], n: idx.length } : null;
 }
 
 export interface OptionsDisposer {
@@ -524,6 +564,8 @@ export interface RangeeProps {
   id: IdRangee;
   /** Toutes les choses de cette rangée (la rangée filtre ce qu'elle montre). */
   choses: readonly ChoseCalendrier[];
+  /** CAL-PASSE (V-16) : le jour d'aujourd'hui, pour teinter la colonne de la semaine en cours ; absent : la date du poste. */
+  aujourdhui?: string;
   colonnes: readonly Colonne[];
   largeurColonne: number;
   largeur: number;
@@ -668,10 +710,20 @@ function BulleIci({ texte, x, haut, bas, largeur, choseId }: { texte: string; x:
 }
 
 export const Rangee: React.FC<RangeeProps> = props => {
-  const { id, choses, colonnes, largeurColonne, largeur, mesures, paysage = false, vueLarge = false, reserveDroite = 0, masquee, cause, epingles, etoiles, partMax, selectionId, menuId, drag, ici, etiquetteDuree, renvois = [] } = props;
+  const { id, colonnes, largeurColonne, largeur, mesures, paysage = false, vueLarge = false, reserveDroite = 0, masquee, cause, epingles, etoiles, partMax, selectionId, menuId, drag, ici, etiquetteDuree, renvois = [] } = props;
+  /* CAL-PASSE (f) : deux caddies de même titre (deux brassins homonymes) ne se lisent jamais comme une ligne en double */
+  const choses = React.useMemo(() => distinguerHomonymes(props.choses), [props.choses]);
   const nom = nomRangee(id);
   const dedans = choses.filter(c => positionDans(colonnes, c));
   const montrees = masquee ? dedans.filter(c => epingles.includes(c.id)) : dedans;
+  /* CAL-PASSE (V-21) : la série mensuelle se lit sur TOUTE la rangée, pas sur la seule fenêtre : en 6 semaines, un loyer ou deux dans la vue
+     sont déjà la barre « −400 / mois » de la maquette (r2-c), jamais deux cases pointillées. La pastille compte toujours chaque occurrence. */
+  const montreesEnSeries = React.useMemo(
+    () => seriesEnBarres(choses).filter(c => positionDans(colonnes, c) && (!masquee || epingles.includes(c.id))),
+    [choses, colonnes, masquee, epingles]
+  );
+  /* CAL-PASSE (V-16) : la colonne de la semaine en cours, teintée sur la hauteur de la rangée (r2-c `.col.now`) */
+  const courante = colonneCourante(colonnes, props.aujourdhui ?? todayISO());
   const cachees = masquee ? dedans.length - montrees.length : 0;
   const p = pastille(id, masquee ? [] : dedans, colonnes);
   const vide = dedans.length === 0;
@@ -686,12 +738,12 @@ export const Rangee: React.FC<RangeeProps> = props => {
   const auJourVue = colonnes.length > 0 && ecartJours(colonnes[0].debut, colonnes[0].fin) >= 14;
   const { items, lignes, caddies, renvois: posRenvois } = React.useMemo(
     /* en An, une série mensuelle se pose en une barre (doute Papiers en An, CRITIQUE-12) */
-    () => disposer(seriesEnBarres(montrees), colonnes, largeurColonne, largeur, {
+    () => disposer(montreesEnSeries, colonnes, largeurColonne, largeur, {
       /* CRITIQUE-5 n° 14 : partout (téléphone, paysage, 1280), un nom reste entier tant que la place existe, quitte à ouvrir une ligne */
       reserveDroite, zoneTitre, vueLarge, renvois: largeursRenvois, paysage, lieCourt
     }),
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [montrees, colonnes, largeurColonne, largeur, reserveDroite, zoneTitre, paysage, vueLarge, cleRenvois, lieCourt, auJourVue]
+    [montreesEnSeries, colonnes, largeurColonne, largeur, reserveDroite, zoneTitre, paysage, vueLarge, cleRenvois, lieCourt, auJourVue]
   );
   const hauteurLane = lignes === 0 ? 0 : lignes * mesures.ligne + 2;
   /*
@@ -725,6 +777,7 @@ export const Rangee: React.FC<RangeeProps> = props => {
       aria-label={nom}
       style={{ ['--cw' as string]: `${largeurColonne}px`, ...(paysage ? { minHeight: mesures.ligne + 2 } : {}) }}
     >
+      {courante && <i className="cal-col-now" aria-hidden="true" data-col-now style={{ left: courante.debut * largeurColonne, width: courante.n * largeurColonne }} />}
       <header className="cal-rh" style={{ height: paysage ? mesures.ligne : mesures.titre }}>
         <button type="button" className="cal-plus" data-plus={id} aria-label={`Ajouter dans ${nom}`} onClick={() => props.onAjouter(id)}>
           <Plus size={16} strokeWidth={3} aria-hidden="true" />

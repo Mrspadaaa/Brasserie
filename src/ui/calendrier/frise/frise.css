@@ -140,6 +140,9 @@ button.cal-lie::before { content: ''; position: absolute; inset: -6px -2px; }
 /* D385 : la grille des jours (variantes B et C) ; le pincer laisse le défilement vertical au navigateur */
 .cal-frise { touch-action: pan-y; }
 .cal-lane.cal-lane-jours { background-image: none; }
+/* CAL-PASSE (V-16, r2-c `.col.now`) : la colonne de la semaine en cours, teintée (~6 %) sur toute la hauteur de la rangée, sous tout le reste
+   (frise isolée : z-index −1 passe sous les textes et les barres, au-dessus du fond) */
+.cal-col-now { position: absolute; top: 0; bottom: 0; z-index: -1; pointer-events: none; background: rgb(var(--area-finances) / 0.07); }
 .cal-grille { position: absolute; inset: 0; pointer-events: none; z-index: 0; }
 .cal-grille i { position: absolute; top: 0; bottom: 0; }
 .cal-g-we { background: rgb(var(--cave-50) / 0.045); }

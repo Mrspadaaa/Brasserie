@@ -1,5 +1,5 @@
 import React from 'react';
-import { Beer, FileText, Hammer, Link2, ListChecks, PartyPopper, ShoppingCart, TrendingUp } from 'lucide-react';
+import { Barrel, Beer, BottleWine, FileText, Hammer, Link2, ListChecks, PartyPopper, Repeat, ShoppingCart, TrendingUp } from 'lucide-react';
 import { etiquetteS, francsSignes, jourLisible, texteDuree, type ChoseCalendrier, type Rangee } from '../../../domain/calendrier';
 import { usePointeur } from './usePointeur';
 import { useToucherNom } from './zoneToucher';
@@ -128,6 +128,21 @@ export const ICONE_RANGEE: Record<Rangee, typeof Beer> = {
   brassins: Beer, fetes: PartyPopper, ventes: TrendingUp, achats: ShoppingCart, travaux: Hammer, activites: ListChecks, papiers: FileText
 };
 
+/**
+ * CAL-PASSE (V-15 ; sa maquette r2-c : une vente dit son format par une icône, bouteille, fût, consigne ; le nom reste à côté, choix du 18.11).
+ * Le format n'est écrit nulle part en champ : il se lit dans le titre de la vente (« 1 fût », « 2 cartons »), et seulement là. Une vente dont le
+ * titre ne dit rien du format garde la flèche générique : jamais un format deviné. La consigne (ou une vente d'un plan récurrent) prend les flèches
+ * en boucle, comme la maquette.
+ */
+export function iconeChose(c: Pick<ChoseCalendrier, 'rangee' | 'titre' | 'source' | 'brassinLie'>): typeof Beer {
+  if (c.brassinLie) return ShoppingCart;
+  if (c.rangee !== 'ventes') return ICONE_RANGEE[c.rangee];
+  if (/\bf[uû]ts?\b/i.test(c.titre)) return Barrel;
+  if (/\b(bouteilles?|cartons?|caisses?|packs?)\b/i.test(c.titre)) return BottleWine;
+  if (/\bconsignes?\b/i.test(c.titre) || (c.source.genre === 'plan' && c.source.origine === 'recurring')) return Repeat;
+  return ICONE_RANGEE.ventes;
+}
+
 /** Les couleurs de zone de l'app, une classe par rangée (`frise.css` pose `--c`). */
 export const CLASSE_TEINTE: Record<Rangee, string> = {
   brassins: 'cal-t-brassins', fetes: 'cal-t-fetes', ventes: 'cal-t-ventes', achats: 'cal-t-achats', travaux: 'cal-t-travaux', activites: 'cal-t-activites', papiers: 'cal-t-papiers'
@@ -240,7 +255,7 @@ const montantDe = (c: ChoseCalendrier): string | null => (c.centimes === undefin
 export const Marque: React.FC<MarqueProps> = props => {
   const { chose, centre, haut, hauteur = 28, largeurColonne, epinglee, etoilee, selectionnee, menuOuvert, libelle, decalage = 0, bornes } = props;
   const cible = React.useRef<HTMLButtonElement | null>(null);
-  const Icone = chose.brassinLie ? ShoppingCart : ICONE_RANGEE[chose.rangee];
+  const Icone = iconeChose(chose);
   /* test en ligne du paquet E (bloquant) : en Mois, une vente ou un achat d'un jour est une petite marque ; elle se glisse aussi (d'un mois par
      colonne), son appui long ouvrant toujours les 6 semaines (E27). `bornes` dit qu'elle se glisse ; `onAppuiLong`, qu'elle ouvre le menu. */
   const glissable = !!bornes;

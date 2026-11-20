@@ -1,6 +1,6 @@
 import React from 'react';
 import { etiquetteListe, francsSignes, jourLisible, nomRangee, type ChoseCalendrier } from '../../../domain/calendrier';
-import { CLASSE_TEINTE, ICONE_RANGEE, champ, dureeVue } from './Marque';
+import { CLASSE_TEINTE, champ, dureeVue, iconeChose } from './Marque';
 import './feuille.css';
 import './liste.css';
 
@@ -97,7 +97,7 @@ function nomMois(cle: string): string {
 }
 
 function Ligne({ c, selectionId, onChose, detail }: { c: ChoseCalendrier } & Pick<VueListeProps, 'selectionId' | 'onChose' | 'detail'>) {
-  const Icone = ICONE_RANGEE[c.rangee];
+  const Icone = iconeChose(c);
   const montant = montantDe(c);
   const marque = marqueProposee(c);
   return (
