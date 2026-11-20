@@ -2380,3 +2380,7 @@ Classement de la page r3 de Ma levure (https://claude.ai/artifact/DKAJe8ESeMR4ig
 > Toujours très compliqué de reculer le graph....
 
 (20.11, capture 5-reculer-frise.jpg : frise de période « 1er févr. 2026 → 22 août 2027 », la poignée gauche collée au bord, à moitié hors écran, ne se saisit pas pour reculer. CAL-PASSE.)
+
+> Pareil pour l'agrandir vers le futur...
+
+(20.11 : la frise de période ne s'étire pas non plus vers le futur au doigt. CAL-PASSE.)
