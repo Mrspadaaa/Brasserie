@@ -1,5 +1,5 @@
 /* k1, critique du 19.11 (points 14, 15, 16) — Stocks › Houblons, l'index et la fiche d'une variété.
-   14 : « Référence variété · Confiance faible » dit UNE fois (pas une fois par ligne), et l'α une seule fois (pas dans la liste puis dans « Composition »).
+   14 : « Valeurs de la variété · Fiabilité faible » dit UNE fois (pas une fois par ligne), et l'α une seule fois (pas dans la liste puis dans « Composition »).
    15 : la classe « Thiol impact » tient en une ligne courte au premier plan ; son explication longue est à un toucher (repli).
    16 : le titre ne répète pas l'onglet « Houblons » juste au-dessus (il reste pour la lecture d'écran) ; un seul compte, sans « (s) ». */
 import React from 'react';
@@ -36,11 +36,11 @@ const texte = () => (document.body.textContent ?? '').replace(/\s+/g, ' ');
 const nb = (re: RegExp) => (texte().match(re) ?? []).length;
 
 describe('k1 — la fiche d’un houblon (points 14, 15, 16)', () => {
-  it('14 : « Confiance faible » une seule fois dans la fiche, « Référence variété » une seule fois comme pastille', () => {
+  it('14 : « Fiabilité faible » une seule fois dans la fiche, « Valeurs de la variété » une seule fois comme pastille', () => {
     ouvrir();
-    expect(nb(/Confiance faible/g)).toBe(1);
-    expect(nb(/confiance faible/gi)).toBe(1);
-    expect(screen.getAllByText('Référence variété', { selector: 'span' })).toHaveLength(1);
+    expect(nb(/Fiabilité faible/g)).toBe(1);
+    expect(nb(/fiabilité faible/gi)).toBe(1);
+    expect(screen.getAllByText('Valeurs de la variété', { selector: 'span' })).toHaveLength(1);
   });
   it('14 : l’α (et β, huiles) ne se lisent qu’une fois : pas de seconde « Composition » qui les répète', () => {
     ouvrir();

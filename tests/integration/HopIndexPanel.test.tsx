@@ -39,7 +39,7 @@ describe('Parcours index houblon sans appel IA réel', () => {
     fireEvent.click(screen.getByRole('button', { name: /Variété témoin/ }));
     fireEvent.change(screen.getByLabelText('Lot à consulter'), { target: { value: 'test-lot' } });
     expect(screen.getByText('COA du lot')).toBeInTheDocument();
-    expect(screen.getByText('Référence variété', { selector: 'span' })).toBeInTheDocument();
+    expect(screen.getByText('Valeurs de la variété', { selector: 'span' })).toBeInTheDocument();
     /* TE-49 : un thiol sans valeur ne fait plus une ligne « Inconnu · Confiance faible » ; la fiche ne montre que ce qui est connu (α, huile totale même inconnus). */
     expect(screen.queryByText('3MH cystéinylé')).toBeNull();
   });

@@ -30,9 +30,11 @@ function HopAliasesEditor({ value, onChange }: { value: string[]; onChange: (v: 
 }
 
 /** Les deux pastilles d'une valeur : d'où elle vient, et la confiance qu'on lui prête (une valeur inconnue n'a pas de confiance : TE-49). */
+/* T3B-5 (20.11, en ligne) : « Référence variété · Confiance faible » est du jargon de fiche. En mots de brasseur : les valeurs sont celles de la variété
+   (ou de l'analyse du lot), et leur fiabilité se dit comme telle. Le sens est le même, la donnée aussi. */
 function Pastilles({ origin, confidence }: { origin: 'lot' | 'variety' | 'unknown'; confidence: 'low' | 'medium' | 'high' }) {
-  return <span className="flex flex-wrap gap-2"><BrewTag tone={origin === 'lot' ? 'done' : origin === 'variety' ? 'info' : 'neutral'}>{origin === 'lot' ? 'COA du lot' : origin === 'variety' ? 'Référence variété' : 'Inconnu'}</BrewTag>
-    {origin !== 'unknown' && <BrewTag tone={confidence === 'high' ? 'done' : 'neutral'}>Confiance {({ low: 'faible', medium: 'moyenne', high: 'élevée' })[confidence]}</BrewTag>}</span>;
+  return <span className="flex flex-wrap gap-2"><BrewTag tone={origin === 'lot' ? 'done' : origin === 'variety' ? 'info' : 'neutral'}>{origin === 'lot' ? 'COA du lot' : origin === 'variety' ? 'Valeurs de la variété' : 'Inconnu'}</BrewTag>
+    {origin !== 'unknown' && <BrewTag tone={confidence === 'high' ? 'done' : 'neutral'}>Fiabilité {({ low: 'faible', medium: 'moyenne', high: 'élevée' })[confidence]}</BrewTag>}</span>;
 }
 
 const CONTEXTES_DESCRIPTION = { rawHop: 'houblon brut', infusion: 'infusion', beer: 'bière d’essai', unspecified: 'contexte non précisé' } as const;
@@ -40,12 +42,24 @@ const CONTEXTES_DESCRIPTION = { rawHop: 'houblon brut', infusion: 'infusion', be
    (« Classe thiols Hopsteiner : faible ») ; la précaution (thiols libres du houblon, ni rendement de levure ni intensité en bière) et la source sont à un toucher.
    La phrase vient de src/data/hopManufacturerBootstrap.json et n'est pas modifiée : on la coupe à l'affichage. */
 const CLASSE_THIOL = /^Classe fabricant « Thiol impact » : ([^.]+)\.\s*(.*)$/u;
+/* T3B-5 (20.11, en ligne) : les phrases des fiches sources sont écrites pour la donnée, pas pour le brasseur. On les dit à l'affichage seulement (le texte stocké,
+   que d'autres lecteurs analysent, ne change pas) : « Familles déclarées sur houblon brut » → « Arômes » (le contexte est déjà dans la ligne de source),
+   « Descripteurs de la fiche (langue source) » → « Mots de la fiche » (ce sont les mots de la source, non traduits). */
+const FAMILLES_FICHE = /^Familles déclarées sur houblon brut : (.+)$/u;
+const MOTS_FICHE = /^Descripteurs de la fiche(?: \(langue source\))? : (.+)$/u;
+export function texteDeFiche(texte: string): string {
+  const familles = FAMILLES_FICHE.exec(texte);
+  if (familles) return `Arômes : ${familles[1]}`;
+  const mots = MOTS_FICHE.exec(texte);
+  if (mots) return `Mots de la fiche : ${mots[1]}`;
+  return texte;
+}
 function DescriptionFiche({ d }: { d: HopDescription }) {
   const source = <span className="block text-sm text-cave-400">{d.source.author}, {d.source.year ?? 'année inconnue'} — {CONTEXTES_DESCRIPTION[d.context]}</span>;
   const thiol = CLASSE_THIOL.exec(d.text);
-  if (!thiol) return <p className="text-cave-200">{d.text}{source}</p>;
+  if (!thiol) return <p className="text-cave-200">{texteDeFiche(d.text)}{source}</p>;
   return <details data-role="classe-thiols" className="text-cave-200">
-    <summary className="cursor-pointer min-h-touch flex items-center justify-between gap-2"><span>Classe thiols {d.source.author} : {thiol[1]}</span><ChevronDown size={16} className="shrink-0 text-cave-400" aria-hidden="true" /></summary>
+    <summary className="cursor-pointer min-h-touch flex items-center justify-between gap-2"><span>Thiols : {thiol[1]}</span><ChevronDown size={16} className="shrink-0 text-cave-400" aria-hidden="true" /></summary>
     <div className="pb-1 text-sm">{thiol[2] && <p>{thiol[2]}</p>}{source}</div>
   </details>;
 }
@@ -242,7 +256,7 @@ export function HopIndexPanel({ createRequest, onNotice }: { createRequest?: { k
           <Button onClick={() => { setEditor({ kind: 'variety', value: structuredClone(variety) }); setError(''); }}>Modifier la variété</Button></div>
         {variety.descriptions.map((d, i) => <DescriptionFiche key={i} d={d} />)}
         <div className="flex flex-wrap gap-2 items-end"><Field label="Lot à consulter" className="flex-1 min-w-40"><select className={inputClass} value={lotId ?? ''} onChange={e => setLotId(e.target.value || undefined)}>
-          <option value="">Référence variété</option>{lots.filter(l => l.varietyId === variety.id).map(l => <option key={l.id} value={l.id}>{l.name}{l.archived ? ' (archivé)' : ''}</option>)}
+          <option value="">Valeurs de la variété</option>{lots.filter(l => l.varietyId === variety.id).map(l => <option key={l.id} value={l.id}>{l.name}{l.archived ? ' (archivé)' : ''}</option>)}
         </select></Field><Button onClick={openLot}>Ajouter un lot</Button>
           {lot && <Button onClick={() => { setEditor({ kind: 'lot', value: structuredClone(lot) }); setError(''); }}>Modifier le lot</Button>}
         </div>
