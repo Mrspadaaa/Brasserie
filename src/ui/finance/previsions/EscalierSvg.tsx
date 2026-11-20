@@ -125,6 +125,8 @@ export function EscalierSvg({ e, fantome, nomFantome, largeur, testeId, sousLign
     });
     // étiquettes
     const groupes = groupesRecurrents(e.marches);
+    // CT4-A-8 (suite) : une étiquette de projet sur deux lignes qui ne trouve pas de place repasse à sa forme d'une ligne plutôt que de disparaître (régression vue par equipmentProjects)
+    const compacts = new Map<string, { w: number; h: number; l1: string; l2?: string }>();
     const demandes: Demande[] = [], infos = new Map<string, { item: ForecastItem; style: StyleEtiquette; l1: string; l2?: string; aria: string; lot?: ForecastItem[]; partiel?: boolean }>();
     let ordre = 0, avant = depart;
     for (const m of e.marches) {
@@ -148,6 +150,8 @@ export function EscalierSvg({ e, fantome, nomFantome, largeur, testeId, sousLign
         const l2 = nomLong14 ? [`${montantEtiquette(item)}, ${item.label.includes('date estimée') ? '~' : ''}${jourCourt(item.date)}`, style === 'projet' ? sousLignes[item.id] : ''].filter(Boolean).join(' · ') : style === 'projet' ? sousLignes[item.id] : undefined;
         const w = Math.max(lt(l1, style === 'projet' ? 15 : 13, false, style === 'projet' ? 700 : 600), l2 ? lt(l2, 12) : 0) + 16, h = l2 ? 38 : 20;
         const poids = Math.min(99, Math.round(item.amountCents / 1000));
+        if (nomLong14) { const c1 = texteEtiquette(item, groupe), c2 = style === 'projet' ? sousLignes[item.id] : undefined;
+          compacts.set(item.id, { l1: c1, l2: c2, w: Math.max(lt(c1, style === 'projet' ? 15 : 13, false, style === 'projet' ? 700 : 600), c2 ? lt(c2, 12) : 0) + 16, h: c2 ? 38 : 20 }); }
         demandes.push({ id: item.id, priorite: style === 'projet' ? 100 : style === 'brassin' ? 80 : style === 'entree' ? 60 : 10, poids, ordre: ordre++, w, h, ancre: { x: x(m.date), y: (y(avant) + y(apres)) / 2 } });
         infos.set(item.id, { item, style, l1, l2, partiel: !!item.partial?.length, aria: `${libelleLong(item)}${groupe ? ` ; ${groupe.n} fois` : ''}${item.partial?.length ? ` ; partiel : ${item.partial.join(', ')}` : ''}${l2 ? ` ; ${l2}` : ''}` });
       }
@@ -160,13 +164,23 @@ export function EscalierSvg({ e, fantome, nomFantome, largeur, testeId, sousLign
     const dessous = xFinal < 0 && y(xFinal) + 28 < haut;
     const rectFin: Rect = { x: xFin - wFin, y: y(xFinal) + (dessous ? 4 : -26), w: wFin, h: 24 };
     const fixes: Rect[] = [{ x: 0, y: 0, w: G - 2, h: HT }, { x: 0, y: haut, w: W, h: B }, { x: G, y: 0, w: wAuj, h: H + 2 }, rectFin];
+    const soldesGardes = soldes.filter(s => !fixes.some(f => seCoupent(s.rect, f)));
+    const obstacles: Rect[] = [...fixes, ...obstaclesDeCourbe(points), ...obstaclesDeCourbe(pointsFantome), ...soldesGardes.map(s => s.rect)];
+    let { placees, reste } = placerEtiquettes(demandes, { w: W, h: HT }, obstacles, { distanceMax: 230, xMin: G, xMax: W - D });
+    const aCompacter = reste.filter(id => compacts.has(id));
+    if (aCompacter.length) {
+      const d2 = demandes.map(d => { const c = aCompacter.includes(d.id) ? compacts.get(d.id)! : null; return c ? { ...d, w: c.w, h: c.h } : d; });
+      ({ placees, reste } = placerEtiquettes(d2, { w: W, h: HT }, obstacles, { distanceMax: 230, xMin: G, xMax: W - D }));
+      for (const id of aCompacter) { const c = compacts.get(id)!, i = infos.get(id)!; infos.set(id, { ...i, l1: c.l1, l2: c.l2 }); }
+    }
+    // CT4-A-8 (suite) : le nom du pointillé se pose APRÈS les étiquettes des sorties (priorité au projet testé) : posé avant, il prenait la seule place de l'étiquette, qui disparaissait.
     // le nom du pointillé, posé au bout de la ligne (p5b : « sans frigo 2 107,34 »), du côté où il n'écrase pas le solde final
     let nomGhost: { x: number; y: number; nom: string; valeur: string; rect: Rect; deux: boolean } | null = null;
     if (fantome && connu && nomFantome && fantome.soldeFinCents != null) {
       // CT4-A-8 : le nom entier (« sans Fermenteur supplémentaire ») ne se coupe plus par « … » et ne se pose ni sur le pointillé ni sur la courbe : on cherche, au plus près du bout
       // du pointillé, une place libre (une ligne d'abord, puis nom et valeur sur deux lignes), calée à droite puis décalée vers la gauche.
       const yg = y(fantome.soldeFinCents), valeur = montant(fantome.soldeFinCents), wVal = lt(valeur, 13, true);
-      const gObstacles: Rect[] = [...fixes, ...obstaclesDeCourbe(points), ...obstaclesDeCourbe(pointsFantome)];
+      const gObstacles: Rect[] = [...fixes, ...obstaclesDeCourbe(points), ...obstaclesDeCourbe(pointsFantome), ...placees.map(p => p.rect)];
       // le nom entier d'abord ; faute de place près du pointillé, « sans ce projet » (le nom entier est sur les cartes Avec / Sans au-dessus) ; faute de mieux, le nom entier plus loin.
       const courts = `${nomFantome.split(' ')[0]} ce projet`;
       const variante = (nom: string, deux: boolean, maxDy: number) => { const wNom = lt(`${nom} `, 13, false, 600); return { nom, deux, maxDy, w: (deux ? Math.max(wNom, wVal) : wNom + wVal) + 4, h: deux ? 32 : 16 }; };
@@ -187,11 +201,8 @@ export function EscalierSvg({ e, fantome, nomFantome, largeur, testeId, sousLign
       const repli = tiers[2][1], rect: Rect = trouve?.rect ?? { x: xFin - repli.w, y: Math.min(Math.max(yg + 6, 0), haut - repli.h), w: repli.w, h: repli.h }, v = trouve?.v ?? repli;
       nomGhost = { x: rect.x + rect.w, y: rect.y + 12, nom: v.nom, valeur, rect, deux: v.deux };
     }
-    if (nomGhost) fixes.push(nomGhost.rect);
-    const soldesGardes = soldes.filter(s => !fixes.some(f => seCoupent(s.rect, f)));
-    const obstacles: Rect[] = [...fixes, ...obstaclesDeCourbe(points), ...obstaclesDeCourbe(pointsFantome), ...soldesGardes.map(s => s.rect)];
-    const { placees, reste } = placerEtiquettes(demandes, { w: W, h: HT }, obstacles, { distanceMax: 230, xMin: G, xMax: W - D });
-    return { W, g, y, x, xFin, haut, chemin, mois, placees, reste, infos, y0: y(0), connu, depart, libFin, wAuj, xFinal, bas, dessous, soldes: soldesGardes, nomGhost };
+    const soldesFinal = nomGhost ? soldesGardes.filter(s => !seCoupent(s.rect, nomGhost!.rect)) : soldesGardes;
+    return { W, g, y, x, xFin, haut, chemin, mois, placees, reste, infos, y0: y(0), connu, depart, libFin, wAuj, xFinal, bas, dessous, soldes: soldesFinal, nomGhost };
   }, [e, fantome, nomFantome, largeur, testeId, sousLignes, HT, lt]);
   const { W, g, y, xFin, haut, chemin, mois, placees, reste, infos, y0, connu, depart, libFin, xFinal, dessous, soldes, nomGhost } = vue;
   const restesCle = reste.join('|');
