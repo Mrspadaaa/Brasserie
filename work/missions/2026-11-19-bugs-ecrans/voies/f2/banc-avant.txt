@@ -1,0 +1,17 @@
+Serveur 1/1 : npm run dev -- --port 3106 --strictPort  (journal : C:\Users\mrspa\AppData\Local\Temp\with-server-jhOjS2\serveur-1-3106.log)
+Attente du port 3106…
+Serveur prêt sur le port 3106
+
+Tous les serveurs sont prêts. Lancement : node work/missions/2026-11-19-bugs-ecrans/voies/f2/banc.mjs avant
+
+390 clair : {"h":844,"pilesBas":250,"pilesHaut":128,"ligneHaut":372,"ligneBas":419} -> opération visible sans défiler : true
+390 cave : {"h":844,"pilesBas":250,"pilesHaut":128,"ligneHaut":372,"ligneBas":419} -> opération visible sans défiler : true
+844x340 clair : {"h":340,"pilesBas":250,"pilesHaut":128,"ligneHaut":372,"ligneBas":419} -> opération visible sans défiler : false
+844x340 cave : {"h":340,"pilesBas":250,"pilesHaut":128,"ligneHaut":372,"ligneBas":419} -> opération visible sans défiler : false
+1280 clair : {"h":800,"pilesBas":372,"pilesHaut":162,"ligneHaut":110,"ligneBas":157} -> opération visible sans défiler : true
+1280 cave : {"h":800,"pilesBas":372,"pilesHaut":162,"ligneHaut":110,"ligneBas":157} -> opération visible sans défiler : true
+T3-9 KO (2)
+
+Commande terminée, code 1.
+
+Arrêt de 1 serveur(s)…

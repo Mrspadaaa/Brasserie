@@ -1,0 +1,17 @@
+Serveur 1/1 : npm run dev -- --port 3106 --strictPort  (journal : C:\Users\mrspa\AppData\Local\Temp\with-server-bxV41D\serveur-1-3106.log)
+Attente du port 3106…
+Serveur prêt sur le port 3106
+
+Tous les serveurs sont prêts. Lancement : node work/missions/2026-11-19-bugs-ecrans/voies/f2/banc-vente.mjs
+
+1280 clair champ après frappe : « 569,50 »
+1280 cave champ après frappe : « 569,50 »
+390 clair : fab/vendre=true ; tuile=75 cl, tarif à corriger, prix à indiquer ; alerte libre=null ; ticket=null
+390 cave : fab/vendre=true ; tuile=75 cl, tarif à corriger, prix à indiquer ; alerte libre=null ; ticket=null
+1280 clair : fab/vendre=true ; tuile=75 cl, tarif à corriger, prix à indiquer ; alerte libre=569,50 CHF l’unité, soit 759,33 CHF le litre : hors de l’ordinaire. Vérifie le prix. ; ticket=à vérifier : 569,50 CHF l’unité, soit 759,33 CHF le litre : hors de l’ordinaire. Vérifie le prix.
+1280 cave : fab/vendre=true ; tuile=75 cl, tarif à corriger, prix à indiquer ; alerte libre=569,50 CHF l’unité, soit 759,33 CHF le litre : hors de l’ordinaire. Vérifie le prix. ; ticket=à vérifier : 569,50 CHF l’unité, soit 759,33 CHF le litre : hors de l’ordinaire. Vérifie le prix.
+VENTE KO (2)
+
+Commande terminée, code 1.
+
+Arrêt de 1 serveur(s)…
