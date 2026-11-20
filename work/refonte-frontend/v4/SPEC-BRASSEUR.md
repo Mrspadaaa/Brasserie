@@ -2358,3 +2358,13 @@ Classement de la page r3 de Ma levure (https://claude.ai/artifact/DKAJe8ESeMR4ig
 > Pareil pour TOUTES les autres sessions, agent, tâches ECT...
 
 (lu, 20.11 : déjà imposé à toutes les sessions et à tous les agents par le hook PAROLE, ~/.claude/hooks ; aucun envoi de plus.)
+
+> Il y a énormément de problème sur le calendrier encre ???
+>
+> D'ailleurs il est vraiment très compliqué voir impossible de modifier les graph dans le passé pareil pour le diagramme de temps en haut, je peux pas le reculer ???
+>
+> Et il y a un point ?? Qui pose problème qui prend le dessus.
+>
+> C'est en fait pas le bonne version du calendrier, c'est pas possible ???
+
+(20.11, 4 captures en ligne à 390 : work/missions/2026-11-20-calendrier-plainte/. Lu : la frise du haut ne recule pas dans le passé ; une barre ne se glisse pas vers le passé ; un point (rond pointillé) se pose par-dessus la frise ; le menu de période sort de l'écran à gauche ; l'étiquette « J0 / 55 · prête 13 févr. » se pose sur la barre glissée ; « Emballage · Jhhh » en double. Doute : l'écran en ligne n'est pas sa version choisie (base gi2/r2-c, en-tête r6b, maquettes.json) : à prouver côte à côte.)
