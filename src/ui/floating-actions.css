@@ -177,3 +177,12 @@ body[data-has-fab] [data-floating-actions-gap="true"] {
     box-shadow: 0 -1px 0 rgb(var(--cave-700));
   }
 }
+
+/* f2 k3, point 13 (20.11) : Opérations à 844 × 340 (téléphone couché) range la liste dans la colonne de droite (operations.css, T3-9), et le + au repos (64 px, 12 px du bord)
+   recouvrait « +720,00 » et « + pièce » de « Vente au marché ». Même gouttière de 76 px (56 + 12 + 8 d'air) à droite de la colonne : les montants et les boutons restent à
+   gauche du +. Même borne que la disposition en deux colonnes ; seulement quand le + flotte. */
+@media (min-width: 600px) and (max-width: 899px) and (max-height: 520px) {
+  :root body[data-has-fab-floating] .ops > :not(.ops-bande) {
+    padding-right: 4.75rem;
+  }
+}
