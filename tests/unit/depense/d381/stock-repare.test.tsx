@@ -172,13 +172,12 @@ describe('Cas B : même nom qu’un article du stock (« Malt Pilsner », en kg)
 });
 
 describe('Cas C : une ligne restée hors stock (stockAction « none »)', () => {
-  it('C0 : plusieurs articles « Citra » : un seul état (p5 : la vue FACTURE | STOCK, jamais « hors stock » à côté d’un picto de stock) ; rien n’est relié ; « Confirmer » l’enregistre SANS stock, sans alerte', async () => {
+  it('C0 : plusieurs articles « Citra » : un seul état (p5 : la vue FACTURE | STOCK, jamais « hors stock » à côté d’un picto de stock) ; rien n’est relié ; « Confirmer » REFUSE avec une alerte (M9-1) : un ingrédient ne s’enregistre plus hors stock en silence', async () => {
     const v = await lire(CITRA2(), [CITRA]);
     expect(texte(v)).not.toMatch(/hors stock/); expect(texte(v)).toMatch(/2 articles « Citra »/); expect(ligne(v).querySelectorAll('[data-dp-sortie^="relie-"]')).toHaveLength(2);
     const r = await confirmer(v);
-    expect(r.alerte).toBe('');
-    expect(r.depot.lignes[0].stockAction).toBe('none');
-    expect(r.depot.neufs).toEqual([]); expect(r.depot.ajouts).toEqual([]);
+    expect(r.depot).toBeUndefined(); // M9-1 : rien n’est écrit sans stock ni alerte
+    expect(r.alerte).toMatch(/Citra : ingrédient hors stock\. Ajoute-le au stock/);
   });
   it('C1 : ⇄ « Choisir un autre article », puis l’article dans « Article » : relié ; « Confirmer » fait entrer 100 g', async () => {
     const v = await lire(CITRA2(), [CITRA]);
@@ -200,7 +199,7 @@ describe('Cas C : une ligne restée hors stock (stockAction « none »)', () => 
     expect(r.depot.neufs).toEqual([{ ligne: 'line-1', nom: 'Citra', unite: 'g', stock: 100 }]); // un « Citra » de plus à côté de « Citra 12.5% » et « Citra 13.0% » : le stock se double, rien ne le signale à la confirmation
     expect(r.depot.ajouts).toEqual([]);
   });
-  it('C3 : une ligne lue « autre » (hors stock) : « Ingrédient » seul ne la fait PAS entrer au stock ; « Ajouter au stock » (second geste) la crée avec 1 kg', async () => {
+  it('C3 : une ligne lue « autre » (hors stock) : « Ingrédient » seul ne la fait PAS entrer au stock et « Confirmer » le dit (M9-1) ; « Ajouter au stock » (second geste) la crée avec 1 kg', async () => {
     const SUCRE_AUTRE: Ligne = { nom: 'Sucre candi', q: 1, u: 'kg', prix: null, montant: 5.9, cat: 'sugar', kind: 'other' };
     const touche = (v: ReturnType<typeof render>) => fireEvent.click([...ligne(v).querySelectorAll<HTMLElement>('[data-dp-nature] button')].find(b => b.textContent === 'Ingrédient')!);
     const seul = await lire([], [SUCRE_AUTRE]);
@@ -208,7 +207,8 @@ describe('Cas C : une ligne restée hors stock (stockAction « none »)', () => 
     touche(seul);
     expect(texte(seul)).toMatch(/Ajouter au stock/); expect(texte(seul)).not.toMatch(/nouvel article/);
     const r1 = await confirmer(seul);
-    expect(r1.depot.lignes[0].stockAction).toBe('none'); expect(r1.depot.neufs).toEqual([]);
+    expect(r1.depot).toBeUndefined(); // M9-1 : « Ingrédient » seul, sans « Ajouter au stock » : alerte à « Confirmer », rien d’écrit
+    expect(r1.alerte).toMatch(/Sucre candi : ingrédient hors stock/);
     cleanup(); state.scanned.mockReset();
     const deux = await lire([], [SUCRE_AUTRE]);
     touche(deux); fireEvent.click(ligne(deux).querySelector<HTMLElement>('[data-dp-suivre]')!);

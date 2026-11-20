@@ -17,6 +17,7 @@ import { contexteDe } from './stockLineMatching';
 import type { Catalogues } from '../domain/stock/fiche';
 import { isReadableUnit, pieceUnitsEquivalent, readProductLabel, weightKey } from './ingredientIdentity';
 import { isMillingSurcharge } from './purchasePrefill';
+import { depenseHorsBrassage, familleDe } from '../ui/depense/familles';
 
 /** D379 : « Pas de plafond » : une dépense porte toutes ses lignes ; garde-fou seulement contre une saisie folle (la limite d'un document Firestore, 1 Mio, vient bien après). */
 export const LIGNES_MAX = 10000;
@@ -481,6 +482,14 @@ function ligneArrondi(draft:PurchaseDraft):FinanceLine[] {
   return [{id,description:'Arrondi à 5 centimes',kind:ecart<0?'discount':'other',amountCents:ecart}];
 }
 
+const FAMILLES_INGREDIENT_BRASSAGE:ReadonlySet<string>=new Set(['malt','houblon','levure','sucre','additif']);
+/**
+ * M9-1 : une ligne LUE sur un justificatif (`nomLu` ou `imprime` posés par la lecture), de nature « ingrédient », hors stock, d'une dépense de brassage, dont le nom est un ingrédient reconnu
+ * (la rénovation et les dépenses diverses n'ont jamais de stock). Une ligne tapée à la main (sans lecture) reste libre : un achat de malt noté sans suivi de stock est un choix.
+ */
+const ingredientHorsStock=(line:PurchaseLineDraft,category:string|undefined):boolean=>
+  line.stockAction==='none' && line.kind==='ingredient' && !!line.description.trim() && (line.nomLu!==undefined||line.imprime!==undefined) && !depenseHorsBrassage(category)
+  && FAMILLES_INGREDIENT_BRASSAGE.has(familleDe({nom:line.description,kind:line.kind,categorie:category,stockCategory:line.stockCategory}));
 /** Checks every mutation first. No stock/equipment is created during matching. */
 export function validatePurchase(draft:PurchaseDraft,stocks:ReturnType<typeof StorageService.getStocks>,transactions:FinanceTransaction[]=[]):string[] {
   const errors:string[]=[];
@@ -525,6 +534,8 @@ export function validatePurchase(draft:PurchaseDraft,stocks:ReturnType<typeof St
         virtuels.push({nom:article.name});
       }
     }
+    // M9-1 : un ingrédient du brassage (malt, houblon, levure, sucre, additif) resté « hors stock » ne s'enregistre pas en silence : il faut l'ajouter au stock, le relier, ou changer sa nature.
+    else if (ingredientHorsStock(line,draft.category)) errors.push(`${line.description.trim()} : ingrédient hors stock. Ajoute-le au stock (« Ajouter au stock »), relie-le à un article, ou change sa nature (Service, Autre) : sinon rien n’y entre.`);
     if (line.equipmentAction!=='none' && line.kind!=='equipment' && line.kind!=='maintenance') errors.push(`${line.description} : sélectionne matériel ou entretien pour lier un équipement.`);
     if (line.equipmentAction==='new' && line.kind!=='equipment') errors.push(`${line.description} : un entretien ne crée pas de nouveau matériel.`);
     if (line.equipmentAction==='existing' && !stocks.equipment.some(item=>item.ref===line.equipmentRef)) errors.push(`${line.description} : sélectionne le matériel existant.`);
