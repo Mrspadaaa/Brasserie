@@ -163,6 +163,12 @@
 .lv-rech-ico { flex: none; }
 .lv-cel-pleine { grid-column: 1 / -1; padding: 6px 8px 7px; border-top: 1px solid theme('colors.cave.700'); display: flex; align-items: center; min-width: 0; }
 .lv-cel-pleine .lv-rech { width: 100%; }
+/* LEV-11 (19.11) : « valeur · à confirmer · Retenir · Écarter » tient sur une ligne à 390 (la vue 4 colonnes de Ma levure n'a que ~350 px) : écarts et gouttières resserrés,
+   la valeur seule peut passer à la ligne s'il le faut (jamais un mot coupé), pas les deux gestes. */
+.lv-cel-pleine .lv-trouve { justify-content: flex-start; gap: 2px 5px; font-size: .75rem; }
+.lv-cel-pleine .lv-trouve .lv-conf { padding: 0 5px; font-size: .6875rem; }
+.lv-cel-pleine .lv-trouve .lv-lien { padding: 0 1px; gap: 0; font-size: .75rem; white-space: nowrap; }
+.lv-cel-pleine .lv-trouve .lv-rech-nom { font-size: .75rem; }
 
 /* Jamais de mot coupé (verdict final L-a) : on passe à la ligne entre les mots ; un mot plus long que la ligne seulement peut se casser. */
 .lv-rech { overflow-wrap: break-word; word-break: normal; hyphens: none; }
