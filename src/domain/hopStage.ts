@@ -40,7 +40,7 @@ export const HOP_STAGE: Record<HopStage, StageStyle> = {
   },
   boil: {
     label: 'Ébullition',
-    hint: 'Compté en minutes AVANT la fin de l’ébullition.',
+    hint: 'Compté en minutes avant la fin de l’ébullition.',
     order: 1,
     bitters: true,
     ask: 'time',
