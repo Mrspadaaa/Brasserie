@@ -45,3 +45,10 @@ Total des budgets : 12 380 CHF (17 étapes) ; 2 jalons.
 - États du 20.11 (sa réponse : « 6 en cours / Et jusqu'à 11 non pas fait encore ») : T-6 à T-10 archivées (faites), T-11 note « En cours au 20.11.2026 », T-12, T-14, T-16 à T-18 note « Pas encore fait au 20.11.2026 » ; dates inchangées ; 17 documents écrits et relus en ligne (port-carnet etats.ts). Le Carnet compte 14 idées.
 - Ouverts au registre (dessin du Carnet et du Calendrier) : PNC-2, 5 à 8, 10, 12 à 14.
 - Contrôles impossibles en ligne : 390 et 844×340 (le Chrome du brasseur ne se redimensionne pas ; captures figées) ; faits au banc.
+
+## 20.11 soir : « Mais et le carnet ??? »
+
+- Il cherchait ses projets dans Brassins › Atelier › Carnet, qui ouvre l'ancien carnet (CreativeLabTab). Celui-ci exclut les idées du Carnet (type `carnet`). « Vérifié en ligne » ne l'était que par Stocks › Matériel › Carnets (L11 resserrée).
+- Détour 96e4b5e22 (11 « À faire » dans l'ancien carnet, 6 idées archivées), défait par la décision (a) relayée : le Carnet choisi est CarnetsVue ; l'entrée unique est faite par une autre session (tests/integration/carnetEntreeUnique.test.tsx).
+- État en ligne (8a2c1d80e, relu) : CarnetsVue garde 14 projets ; les 5 faits sont archivés. Les 8 achats sont en Matériel › À venir (`PLAN-PLANNING-T-*`), liés à leur idée par `sortie` ; ampoules du Calendrier aux dates d'origine. BUGS PNC-15.
+- Reste : preuve visuelle en ligne par Stocks › Matériel › Carnets, puis par Brassins › Atelier une fois rebranché. Claude in Chrome était déconnecté au moment du contrôle.

@@ -1937,3 +1937,10 @@ Verdict : 5/6 corrigés, 4 problèmes (0 bloquant), 6 envois IA (cumul ≈ 32 su
 | PNC-12 | critique planning n° 12 | Carnet, fiche | 11 étapes à période finie restent « à faire » sans signe | m | ouvert — question au brasseur : faites ou non |  | rien d'inventé |
 | PNC-13 | critique planning n° 13 | Carnet, fiche de jalon | Note « à faire » et rubriques d'achat sur un jalon | m | ouvert |  | note simple corrigée (755f77d11) ; rubriques : dessin du Carnet |
 | PNC-14 | critique planning n° 14 | Carnet, champ | Taper « évier » ne propose qu'un carnet sur trois | m | ouvert |  | rattacher |
+
+## Plainte du brasseur, 20.11 : Atelier › Carnet monte l'ancien carnet (DEFAUTS CARNET-PLANNING ; source work/refonte-frontend/v4/SPEC-BRASSEUR.md, capture work/missions/2026-11-20-calendrier-plainte/6-carnet-vide.jpg)
+
+| id | source | écran | constat | gravité | état | commit | note |
+|---|---|---|---|---|---|---|---|
+| CPL-1 | brasseur 20.11 | Brassins › Atelier › Carnet | « Mais surtout ça correspond pas du tout à ce que j'ai choisi ??? » : l'entrée monte CreativeLabTab (ProductionTab.tsx:232 ; filtres Tout/Bières/Contacts/À faire, « Réfléchir à mes projets »), pas CarnetsVue (ra+p5f), monté seulement dans StocksTab.tsx:762 ; les 19 projets du Planning n'y paraissent pas. | G | en cours | | DEFAUTS CARNET-PLANNING ; voie h1 (mission 2026-11-19-carnet-tour3) |
+| PNC-15 | brasseur 20.11 « Mais et le carnet ??? » (DEFAUTS CARNET-PLANNING) | Brassins › Atelier › Carnet | Les 19 projets portés (type « carnet ») ne paraissent pas dans Atelier › Carnet › Tout : cette entrée ouvre l'ancien carnet (CreativeLabTab), qui exclut les idées du Carnet ; « vérifié en ligne » l'avait été par Stocks › Matériel › Carnets | B | corrigé (données ; entrée unique : autre session, tests/integration/carnetEntreeUnique.test.tsx) | 8a2c1d80e | détour 96e4b5e22 (11 À faire dans l'ancien carnet, 6 idées archivées) défait par la décision (a) : CarnetsVue garde 14 projets (5 faits archivés), 8 achats en À venir liés (sortie) |
