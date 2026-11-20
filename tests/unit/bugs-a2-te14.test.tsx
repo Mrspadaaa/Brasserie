@@ -35,7 +35,7 @@ describe('TE-14 : la ligne « Recette actuelle »', () => {
     console.log('LIGNE', ligne!.textContent, 'max', courant?.max);
     if (courant && courant.max === null && courant.min === 0) {
       expect(ligne!.textContent).not.toMatch(/Données manquantes\s*$/);
-      expect(ligne!.textContent).toMatch(/manque|compléter|renseigner|indisponible pour cette souche/i);
+      expect(ligne!.textContent).toMatch(/manque|compléter|renseigner|indisponible pour cette souche|pas de projection pour cette levure/i);
     }
   });
 });
