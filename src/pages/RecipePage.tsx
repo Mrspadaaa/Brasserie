@@ -2,6 +2,7 @@ import { batchDisplayDate } from '../domain/batchSchedule';
 import { ibuDeLAjout } from '../domain/hopBitterness';
 import { recetteLue } from '../domain/recipeIngredientsAbimes';
 import { brassinsDeLaRecette } from '../domain/recipeBrassins';
+import { instructionsAffichees } from '../domain/recipeInstructions';
 import { amertumeRecette, fgRecette, formatDensite, formatLitres, nombreAccorde, ogRecette } from '../domain/recipeMetrics';
 import { formatDecimal } from '../ui/numericInput';
 import { HopBitternessPanel } from '../ui/HopBitternessPanel';
@@ -103,7 +104,15 @@ import { partsEntieres, resumeAjouts, uniteAccordee } from '../domain/fermentabl
 
 /* T3B-11, T3B-12 : ce que la fiche lit du stock et des recettes enregistrées (des chaînes, pour qu'une relecture identique ne rende pas deux fois). */
 const lireNomsDuStock = (): string => { try { return StorageService.getStocks().rawMaterials.map((i) => i.name).join('\n'); } catch { return ''; } };
-const lireLignees = (): string => { try { return JSON.stringify(StorageService.getRecipes().map((r) => ({ id: r.id, batchRef: r.batchRef, parentRecipeId: r.parentRecipeId }))); } catch { return '[]'; } };
+/** Sans accent ni casse : « Primaire » et « primaire » sont le même mot (k2 n° 12). */
+const sansAccent = (t: string): string => t.normalize('NFD').replace(/\p{M}/gu, '').trim().toLowerCase();
+/** La densité mesurée d'un brassin à la française (« 1.062 » → « 1,062 », k2 n° 13) ; illisible ou absente : le texte tel quel, jamais 0, « — » si rien. */
+const densiteLue = (og: string | undefined | null): string => {
+  if (og == null || String(og).trim() === '') return '—';
+  const n = Number(String(og).trim().replace(',', '.'));
+  return formatDensite(n) || String(og);
+};
+const lireLignees =(): string => { try { return JSON.stringify(StorageService.getRecipes().map((r) => ({ id: r.id, batchRef: r.batchRef, parentRecipeId: r.parentRecipeId }))); } catch { return '[]'; } };
 
 export const RecipePage: React.FC<RecipePageProps> = ({
   recipe: recipeEnregistree,
@@ -267,7 +276,8 @@ export const RecipePage: React.FC<RecipePageProps> = ({
     fermentables, totalGristKg: totalGrist, hops, hopIbu: (h) => ibuOf(h),
     yeast: recipe.yeast, mashSteps: recipe.mash?.steps ?? [], fermentation: recipe.fermentation ?? []
   });
-  const conduiteDansFermentation = !recipe.nolo?.enabled && !readYeastRecipeDesign(recipe);
+  const deroule = instructionsAffichees(recipe.instructions);
+  const conduiteDansFermentation =!recipe.nolo?.enabled && !readYeastRecipeDesign(recipe);
   const grainTitre = recipe.nolo?.enabled && recipe.nolo.process === 'secondRunnings' ? 'Drêches d’origine' : 'Grain';
 
   return (
@@ -280,7 +290,8 @@ export const RecipePage: React.FC<RecipePageProps> = ({
       titleLabel={`${recipe.name} ${formatLitres(recipe.volumeL)}`}
       onClose={onClose}
       footer={!simulatingNolo &&
-        <div className="flex items-center gap-2">
+        // k2 n° 15 : à 700 px et plus, la barre tient la même colonne de 540 px que la fiche (rc-colonne), pas toute la largeur de la page.
+        <div className="flex items-center gap-2 min-[700px]:max-w-[540px] min-[700px]:mx-auto">
         <button
           type="button"
           onClick={onBrew}
@@ -623,7 +634,8 @@ export const RecipePage: React.FC<RecipePageProps> = ({
 
       {/* --- Ébullition ---------------------------------------------------- */}
       <FicheSection title="Ébullition" dataElement="r1-ebullition" resume={<span className="rc-m">{recipe.boilMin ?? 60}′</span>}>
-        <p className="rc-note">Ébullition de {recipe.boilMin ?? 60} min{debutEbullition ? ` · densité en début d’ébullition ${formatDensite(debutEbullition)}` : ''}.</p>
+        {/* k2 n° 12 : la durée est déjà dans l'en-tête (« Ébullition 60′ ») ; seule la densité de début d'ébullition s'ajoute, quand elle est connue. */}
+        {debutEbullition ? <p className="rc-note">Densité en début d’ébullition {formatDensite(debutEbullition)}.</p> : null}
         {recipe.adjuncts && recipe.adjuncts.length > 0 && (
           <div className="space-y-1">
             <h3 className="rc-sub-t text-cave-200">Additifs</h3>
@@ -870,26 +882,26 @@ export const RecipePage: React.FC<RecipePageProps> = ({
             <LazySurface resetKey={`yeast:${recipe.id}`} fallback={<div role="status">Préparation de la conduite de levure…</div>}><FermentationRecipeSummary recipe={recipe} onEdit={onEdit} /></LazySurface>
           </div>}
         >
-                <h3 className="text-sm text-cave-400 mb-1.5">Fermentation</h3>
                 <ul className="divide-y divide-cave-850">
                   {(recipe.fermentation ?? []).map((s, i) => {
                     // Le type de phase se lit d'un coup : repos diacétyle et
-                    // garde ne sont pas de la fermentation primaire.
+                    // garde ne sont pas de la fermentation primaire. k2 n° 12 : la pastille qui redit le nom de la ligne (« Primaire », « Garde ») n'est pas écrite.
                     const phase = PHASE_LABEL[s.kind ?? 'primaire'];
+                    const memeMot = sansAccent(phase.label) === sansAccent(s.name ?? '');
                     return (
                       <li key={i} className="py-1.5 flex items-baseline gap-2">
                         <span className="min-w-0 flex-1">
                           <span className="block text-sm text-cave-50 break-words">{s.name}</span>
-                          <span className="flex items-center gap-2 mt-0.5">
-                            <span
+                          {(!memeMot || s.note) && <span className="flex items-center gap-2 mt-0.5">
+                            {!memeMot && <span
                               className={`text-sm px-2 py-0.5 rounded-full border ${phase.tone}`}
                             >
                               {phase.label}
-                            </span>
+                            </span>}
                             {s.note && (
                               <span className="text-sm text-cave-400 truncate">{s.note}</span>
                             )}
-                          </span>
+                          </span>}
                         </span>
                         <span className="reading text-sm text-water shrink-0">{nombreFr(s.tempC, 1)} °C</span>
                         <span className="reading text-sm text-cave-400 w-16 text-right shrink-0">
@@ -903,9 +915,9 @@ export const RecipePage: React.FC<RecipePageProps> = ({
       )}
 
       {/* --- Déroulé (cas hors maquette : seulement s'il existe) ------------------ */}
-      {recipe.instructions && (
+      {deroule && (
         <FicheSection title="Déroulé" resume="Tel qu’il figure sur la recette d’origine.">
-          <p className="text-base text-cave-200 leading-relaxed whitespace-pre-line">{recipe.instructions}</p>
+          <p className="text-base text-cave-200 leading-relaxed whitespace-pre-line">{deroule}</p>
         </FicheSection>
       )}
 
@@ -940,7 +952,7 @@ export const RecipePage: React.FC<RecipePageProps> = ({
                       </span>
                     </span>
                     <span className="text-right shrink-0">
-                      <span className="block reading text-sm">{b.og ?? '—'}</span>
+                      <span className="block reading text-sm">{densiteLue(b.og)}</span>
                       {gap && (
                         <span
                           className={`block reading text-sm ${

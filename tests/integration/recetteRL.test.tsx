@@ -70,7 +70,7 @@ describe('Page de la recette r1', () => {
     const GRAIN = [{ ...yeastFlowRecipe().fermentables[0], weightKg: 4.32, potentialPpg: 37, kind: 'grain' }] as Recipe['fermentables']; // ≈ 1,050 pour 20 L à 75 %
     const { container } = page({ fermentables: GRAIN, efficiencyPct: 75, preBoilL: 31.7, preBoilHotL: 33, boilMin: 60, brewhouse: { ...defaultConfig.brewhouses[0], equipment: equipement } } as unknown as Partial<Recipe>);
     const note = (container.querySelector('[data-element="r1-ebullition"]') as HTMLElement).textContent ?? '';
-    const m = /densité en début d’ébullition (\d[.,]\d{3})/.exec(note);
+    const m = /densité en début d’ébullition (\d[.,]\d{3})/i.exec(note);
     expect(m, note).not.toBeNull();
     const debut = Number(m![1].replace(',', '.'));
     cleanup();
