@@ -146,11 +146,22 @@ export function PrixEcran({ config, tarifs: tarifsProp, batches: batchesProp, ba
   })();
   const autre = reste && resteAn !== null ? (lectureAn ? `${chf(reste.valeur)}` : `${chf(resteAn)}`) : null;
 
+  /** CT4C-6 : tant que le coût du litre est inconnu, le graphe ne montre que des « ? » : la liste de ce qui débloque passe avant lui (et à 390 il se réduit). */
+  const manqueAvant = !lecture.cout;
+  const blocManque = (manques.length > 0 || completer.length > 0) ? <section id="prx-manque" className="prx-manque" aria-label="Données à compléter">
+    <p className="prx-manque-t">Il manque ces données pour savoir ce qu’il te reste :</p>
+    {manques.length > 0 && <ul>{manques.map(m => <li key={m.cle}><button type="button" className="prx-tache" onClick={() => ouvrirManque(m)} data-manque={m.cle}><span><b>{m.titre}</b><small>{m.effet}</small></span><i aria-hidden="true">›</i></button></li>)}</ul>}
+    {completer.length > 0 && <>
+      <p className="prx-manque-e">Anciens tarifs sans format. Sans format, ce prix n’entre pas dans le calcul : choisis 33 cl, 75 cl ou fût.</p>
+      <div className="prx-completer" role="group" aria-label="Tarifs à compléter">{completer.map(t => <button key={t.product} type="button" onClick={() => ouvrir(t)} title={t.product}><span className="prx-nom">{libelleTarif(t.product)}</span> · <span className="prx-m">{prixConnu(t.priceHT) ? chf(t.priceHT) : '?'}</span> ›</button>)}</div>
+    </>}
+  </section> : null;
+
   const nbCases = ligneBrassin ? Math.min(ligneBrassin.n, 200) : 0;
   const cases = ligneBrassin ? (ligneBrassin.paient / ligneBrassin.n) * 92 : 0;
 
   return (
-    <div className="prx" data-lecture={lectureAn ? 'an' : 'bouteille'}>
+    <div className="prx" data-lecture={lectureAn ? 'an' : 'bouteille'} data-inconnu={manqueAvant ? '' : undefined}>
       <div className="prx-col prx-col-graphe">
         <div className="prx-prod">
           <label className="prx-biere">
@@ -170,6 +181,7 @@ export function PrixEcran({ config, tarifs: tarifsProp, batches: batchesProp, ba
           {unites === null && reste && <i className="prx-hyp">volume annuel à renseigner</i>}
         </div>
       </div>
+      {manqueAvant && blocManque && <div className="prx-col prx-col-manque">{blocManque}</div>}
       <div className="prx-col prx-col-graphe prx-col-svg">
         {lecture.cout ? <GraphePrix cout={lecture.cout.affiche} coutExact={lecture.cout.exact} prix={prix} unites={unites} an={lectureAn} reels={reels} libelleUnite={unite(formatId)} />
           : <GrapheInconnu prix={prix} libelleUnite={unite(formatId)} an={lectureAn} />}
@@ -178,10 +190,10 @@ export function PrixEcran({ config, tarifs: tarifsProp, batches: batchesProp, ba
       </div>
       <div className="prx-col prx-col-bas">
         {ligneBrassin ? <div className="prx-br" data-booster="bouteilles-brassin"><span><b className="prx-m">{nombreFr(chiffrage!.litres, 1)} L</b> nets</span>
-          <svg viewBox="0 0 92 14" preserveAspectRatio="none" aria-hidden="true"><rect x="0" y="0" width={Math.max(0, cases)} height="14" rx="3" fill="#111" /><rect x={cases + 1} y="0" width={Math.max(0, 92 - cases - 1)} height="14" rx="3" fill="#2F8A55" />{nbCases > 10 && Array.from({ length: Math.floor((nbCases - 1) / 10) }, (_, i) => <rect key={i} x={((i + 1) * 10 / nbCases) * 92} y="0" width="1" height="14" fill="#fff" />)}</svg>
+          <svg viewBox="0 0 92 14" preserveAspectRatio="none" aria-hidden="true"><rect x="0" y="0" width={Math.max(0, cases)} height="14" rx="3" fill="var(--pg-encre)" /><rect x={cases + 1} y="0" width={Math.max(0, 92 - cases - 1)} height="14" rx="3" fill="var(--pg-vert)" />{nbCases > 10 && Array.from({ length: Math.floor((nbCases - 1) / 10) }, (_, i) => <rect key={i} x={((i + 1) * 10 / nbCases) * 92} y="0" width="1" height="14" fill="var(--pg-fond)" />)}</svg>
           <span><b className="prx-m">{ligneBrassin.paient}</b> paient le brassin</span><span className="prx-v"><b className="prx-m">{ligneBrassin.pourToi}</b> pour toi</span></div>
           : chiffrage ? <button type="button" className="prx-br prx-br-q" data-booster="bouteilles-brassin" data-inconnu="" onClick={allerAuxManques} aria-label="Litres nets du brassin inconnus : voir ce qui manque"><span><b className="prx-m">{chiffrage.litres === null ? '? L' : `${nombreFr(chiffrage.litres, 1)} L`}</b> nets</span>
-            <svg viewBox="0 0 92 14" preserveAspectRatio="none" aria-hidden="true"><rect x="0" y="0" width="92" height="14" rx="3" fill="url(#prx-hach-br)" stroke="#BBB" strokeDasharray="3 2" /><defs><pattern id="prx-hach-br" width="6" height="6" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><rect width="6" height="6" fill="#fff" /><rect width="2" height="6" fill="#DDD" /></pattern></defs></svg>
+            <svg viewBox="0 0 92 14" preserveAspectRatio="none" aria-hidden="true"><rect x="0" y="0" width="92" height="14" rx="3" fill="url(#prx-hach-br)" stroke="var(--pg-trait)" strokeDasharray="3 2" /><defs><pattern id="prx-hach-br" width="6" height="6" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><rect width="6" height="6" fill="var(--pg-fond)" /><rect width="2" height="6" fill="var(--pg-hach)" /></pattern></defs></svg>
             <span><b className="prx-m">?</b> paient le brassin</span><span className="prx-v"><b className="prx-m">?</b> pour toi</span></button> : null}
         <div className="prx-fo">
           {formats.filter(f => f.format.id !== formatId).map(f => {
@@ -192,14 +204,7 @@ export function PrixEcran({ config, tarifs: tarifsProp, batches: batchesProp, ba
               {v !== null ? <b className={`prx-m${r!.valeur < 0 ? ' prx-neg' : ''}`}>{r!.borne ? '≤ ' : ''}{chf(v)}</b> : <b className="prx-m prx-q">≤ ?</b>}</button>;
           })}
         </div>
-        {(manques.length > 0 || completer.length > 0) && <section id="prx-manque" className="prx-manque" aria-label="Données à compléter">
-          <p className="prx-manque-t">Il manque ces données pour savoir ce qu’il te reste :</p>
-          {manques.length > 0 && <ul>{manques.map(m => <li key={m.cle}><button type="button" className="prx-tache" onClick={() => ouvrirManque(m)} data-manque={m.cle}><span><b>{m.titre}</b><small>{m.effet}</small></span><i aria-hidden="true">›</i></button></li>)}</ul>}
-          {completer.length > 0 && <>
-            <p className="prx-manque-e">Anciens tarifs sans format. Sans format, ce prix n’entre pas dans le calcul : choisis 33 cl, 75 cl ou fût.</p>
-            <div className="prx-completer" role="group" aria-label="Tarifs à compléter">{completer.map(t => <button key={t.product} type="button" onClick={() => ouvrir(t)} title={t.product}><span className="prx-nom">{libelleTarif(t.product)}</span> · <span className="prx-m">{prixConnu(t.priceHT) ? chf(t.priceHT) : '?'}</span> ›</button>)}</div>
-          </>}
-        </section>}
+        {!manqueAvant && blocManque}
         <div className="prx-act">
           <button type="button" className="prx-ia" onClick={() => setQuestion(question1())} data-booster="ia-proposer"><Sparkles size={18} aria-hidden="true" />Proposer</button>
           <button type="button" className="prx-pri" onClick={() => ouvrir(cur.tarif ?? undefined)}><Pencil size={18} aria-hidden="true" />{cur.tarif ? 'Changer le prix' : 'Fixer le prix'}</button>
