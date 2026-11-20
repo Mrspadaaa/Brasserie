@@ -2402,3 +2402,7 @@ Classement de la page r3 de Ma levure (https://claude.ai/artifact/DKAJe8ESeMR4ig
 > Des problèmes aussi avec la levure...
 
 (20.11, tour 6, 4 captures : work/missions/2026-11-19-ma-levure-maquettes/port/plainte-20-11/. Lu : Munich Lager Yeast (liquide) en grammes, « couvre le fabricant » et « pas de repère » en même temps, barre vide, + ouvre un champ « 113 g OK » alors que l'en-tête dit 112 g, aucun besoin lager ; Conduite : graphe chargé (pointillés, « brouillon fin J15 » contre « fin J39,5 », J34,5 barré), palier à 14,5 °C sous la plage 18–26 °C.)
+
+> Oui
+
+(20.11, réponse à « On gèle et on passe à un écran à la fois ? ». Gel : plus de nouvelle fonction ni de passe de défauts dispersée. Un écran à la fois, une session par écran : fidélité à sa maquette, puis parcours automatique bloquant sur des données comme les siennes, puis rejeu de ses parcours dans son Chrome, puis écran suivant. Ordre : Calendrier, Carnet, Recette, Brassins, Stocks, Finances.)
