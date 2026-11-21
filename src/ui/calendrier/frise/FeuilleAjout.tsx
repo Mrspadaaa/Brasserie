@@ -334,7 +334,9 @@ export const FeuilleAjout: React.FC<FeuilleAjoutProps> = ({ mode, initial, conte
           <label className="block">
             <span className="mb-0.5 block text-sm text-cave-200">{puces1.length > 0 ? 'Autre nom' : 'Nom'}</span>
             <Input
-              type="text" value={b.titre} onChange={e => regler({ ...b, titre: e.target.value })} enterKeyHint="done"
+              type="text" value={b.titre} onChange={e => regler({ ...b, titre: e.target.value })}
+              /* F-ENTREE (PI-2) : Entrée valide comme le bouton du pied (même confirmation d'une grosse somme), puis ferme le clavier */
+              onEntree={() => { void ajouter(confirmation ? { ...b, confirmeGrosseSomme: true } : b); }}
               className="min-h-10 w-full rounded-control border border-cave-700 bg-cave-950 px-2 text-base text-cave-50"
             />
           </label>

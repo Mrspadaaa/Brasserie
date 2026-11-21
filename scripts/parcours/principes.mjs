@@ -361,7 +361,8 @@ const ENTREES = [
   { id: 'entree-client', aller: [['Clients', { dans: 'nav button' }], ['Actions rapides'], ['Nouveau client']], saisie: 'ZZ TEST Nom', motif: /ZZ TEST Nom/, texte: 'ZZ TEST Nom' },
   { id: 'entree-tarif', aller: [['Clients', { dans: 'nav button' }], ['Actions rapides'], ['Nouveau tarif']], rang: 1, saisie: '12', motif: /"priceHT":\s*12\b/ },
   { id: 'entree-fournisseur', aller: [['Bord', { dans: 'nav button' }], ['Plus : saisie', { p: 1 }], ['Fournisseurs'], ['Actions rapides'], ['Nouveau fournisseur', { p: 1 }]], saisie: 'ZZ TEST Nom', motif: /ZZ TEST Nom/, texte: 'ZZ TEST Nom' },
-  { id: 'entree-tache', aller: [['Calendrier', { dans: 'nav button' }], ['Ajouter dans Travaux']], saisie: 'ZZ TEST Nom', motif: /ZZ TEST Nom/ }
+  /* une tâche vit dans Activités (montant facultatif) ; Travaux exige un montant (« un montant inconnu n'est pas 0 ») : Entrée y refuse à bon droit */
+  { id: 'entree-tache', aller: [['Calendrier', { dans: 'nav button' }], ['Ajouter dans Activités']], saisie: 'ZZ TEST Nom', motif: /ZZ TEST Nom/ }
 ];
 const ENTREES_MAX = 2; // Entrée peut prendre le champ suivant une fois ; la création doit être faite à la deuxième au plus
 /** Le point d'un champ de la feuille ouverte (rang n parmi ses champs de texte) ; sans rang : le champ de nom de `champNom`. */
