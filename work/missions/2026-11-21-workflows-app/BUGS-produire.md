@@ -19,7 +19,8 @@ Statut : « vu » = observé au doigt sur ce banc ; « code » = cause lue dans 
 | WFR-7 | mineur | interaction | Échap dans le menu « Plus » du récap ferme tout l'assistant |
 | WFR-8 | à mesurer | performance | Tâches longues de 560 à 810 ms aux étapes clés de l'assistant |
 | WFR-9 | bloquant | donnée / intégration | Feuille Brasser : « Écran indisponible » dès qu'une levure a un nom (fixture ZZ TEST, build de test) |
-| WFR-10 | à confirmer | workflow | Feuille Brasser d'un brassin prévu le 01.12 : « Commencer aujourd'hui » offert le jour même |
+| WFR-10 | écarté (21.11) | workflow | « Commencer aujourd'hui » sur un brassin prévu le 01.12 : la date réelle est notée, la prévue reste visible |
+| WFR-11 | bloquant | écran | Calendrier : « Impossible de charger cet écran », sans geste de brassage (fixture ZZ TEST) |
 
 ## WFR-1 — « Enregistrer et préparer un brassin » refuse une recette neuve (vu)
 
@@ -114,7 +115,7 @@ Ces mesures viennent d'un serveur Vite de dev (React de dev), qui majore les tem
 
 ## WFR-11 — Calendrier : écran indisponible, sans démarrage de brassin (vu, 21.11)
 
-**Constat.** Bord → Calendrier : « Impossible de charger cet écran · Recharger l'application ». Capture `captures/cal/01-calendrier-direct.png`. Même résultat après ajout de prévisionnels et d'une dépense ZZ TEST à la fixture.
+**Constat.** Bord → Calendrier : « Impossible de charger cet écran · Recharger l'application ». Capture `captures/cal/01-01-calendrier-direct.png`. Même résultat après ajout de prévisionnels et d'une dépense ZZ TEST à la fixture.
 
 **Pile (build de test).** `TypeError: Cannot read properties of undefined (reading 'trim')` : `r` → `Js` (chunk useLiveData) → `at` (forecast) → `gt` (forecast) → `n` et `Bc` (CalendrierTab). L'erreur vient donc du calcul prévisionnel du Calendrier, non de la feuille Brasser.
 

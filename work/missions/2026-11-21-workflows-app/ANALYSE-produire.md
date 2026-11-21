@@ -114,6 +114,28 @@ Déjà porté par la mission moins-de-gestes (v03, rang 1 ; v04 « une quantité
 - **Une vue « toute ta chaîne ».** Il l'a refusée (pe5) ; la règle R1 parle du mécanisme, pas d'une vue.
 - **Un sélecteur de date au jour près dans la recette.** Il l'a refusé dans ses mots du 20.11 ; c'est R2.
 
+## 5. Passe 2 (21.11, sur fixture ZZ TEST, build de test sans seed)
+
+**Mesuré (CPU ×1 puis ×4, CDP `Emulation.setCPUThrottlingRate`, 390 tactile).**
+
+| Geste | Touchers | ×1 | ×4 |
+|---|---|---|---|
+| Brassins (depuis Bord) | 1 | 403 à 415 ms | 488 ms (tâche longue 384 ms) |
+| Brasser · B-ZZ-PLAN (feuille) | 1 | 437 à 667 ms | 1 193 ms (calme 1 109 ms) |
+| Commencer aujourd'hui | 1 | 353 ms | non mesuré |
+| Calendrier (écran) | 1 | 368 à 396 ms, puis écran indisponible | non mesuré |
+| INP (interactions du pas) | — | max 40 à 88 ms | max 120 ms |
+
+Ouverture de l'app sur le build de test : 437 à 467 ms.
+
+**Chaînes.**
+- C2 (date → feuille Brasser) : jouée, 2 touchers depuis la liste. WFR-9 (écran indisponible si la levure a un nom) contourné dans la fixture, à corriger dans l'app.
+- C3 (jour de brassage) : démarrée, 4 touchers depuis la liste ; « Commencé le 21.11 · initialement prévu le 01.12 ».
+- C4 (Calendrier) : **bloquée**, WFR-11, écran indisponible sans démarrage de brassin.
+- C5 à C8 : non jouées. Finances s'ouvre (capture jamais analysée au coût de brassin).
+
+**Gains P1 à P5 : non révisés.** La passe 2 ne mesure aucune chaîne qui les concerne. P1 (WFR-1) n'a pas été rejoué : le wizard de recette neuve n'a pas été joué. P2 dépend de C4, bloquée. P3, P4 et P5 ne sont pas touchés. Les chiffres du 20.11 restent des estimations, à confirmer.
+
 ## Non joué : voir REPRISE-produire.md
 
-Les chaînes C4 à C8, de la date du brassin au coût dans Finances.
+Les chaînes C5 à C8 (déstockage, densités, conditionnement, coût dans Finances), et WFR-1. Le Calendrier (C4) est bloqué par WFR-11.
