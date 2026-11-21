@@ -17,13 +17,15 @@ export interface HorizonsProps {
   classePuce?: string;
   /** « Plus tard » seulement quand une date est posée (sinon il ne changerait rien). Défaut : vrai. */
   plusTardSiDate?: boolean;
+  /** Sans « Plus tard » (V-CAL : une chose posée au Calendrier a toujours une semaine ; « Sans date » est ailleurs). Défaut : faux. */
+  sansPlusTard?: boolean;
   etiquette?: string;
   className?: string;
 }
 
-export function Horizons({ date, aujourdhui, onChoisir, classePuce, plusTardSiDate = true, etiquette = 'Quand', className }: HorizonsProps) {
+export function Horizons({ date, aujourdhui, onChoisir, classePuce, plusTardSiDate = true, sansPlusTard = false, etiquette = 'Quand', className }: HorizonsProps) {
   const choisi = horizonDe(date, aujourdhui);
-  const liste = HORIZONS.filter(h => h.cle !== 'plus-tard' || !plusTardSiDate || !!date);
+  const liste = HORIZONS.filter(h => h.cle !== 'plus-tard' || (!sansPlusTard && (!plusTardSiDate || !!date)));
   return (
     <div role="group" aria-label={etiquette} className={className} style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
       {liste.map(h => (

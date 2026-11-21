@@ -854,6 +854,12 @@ export function fenetreLue(f: FenetreCalendrier | undefined): { du: string; au: 
 /** Carnet d'idées (R48) : une idée ou un message du fil ne sont jamais une rangée ni la poche « Sans date » ; l'idée datée est une icône (`iconesIdees`). */
 const estDuCarnet = (item: CreativeItem): boolean => item.type === 'carnet' || item.type === 'carnet-message';
 
+/** La rangée d'une chose du carnet : Travaux sans montant (D401, `travaux`), Activités (`activite`, ou pas un `event`), sinon Fêtes. */
+export function rangeeCreative(item: Pick<CreativeItem, 'type' | 'activite' | 'travaux'>): 'travaux' | 'activites' | 'fetes' {
+  if (item.travaux === true) return 'travaux';
+  return item.type !== 'event' || item.activite === true ? 'activites' : 'fetes';
+}
+
 /**
  * Fêtes (CreativeItem `event` daté, pas fait) et Activités (daté, pas un `event` ou marqué `activite`, pas fait). Une idée de recette est une
  * icône de la bande (`iconesIdees`), un projet de matériel arrive par son plan (Travaux). Sans date : `null`, jamais posée.
@@ -863,14 +869,14 @@ export function choseCreative(item: CreativeItem): ChoseCalendrier | null {
   const jour = isoDate(item.date);
   if (!jour) return null;
   const f = fenetreLue(item.fenetre);
-  const activite = item.type !== 'event' || item.activite === true;
+  const activite = item.type !== 'event' || item.activite === true || item.travaux === true;
   /* un montant écrit sur la chose : une dépense estimée (−), ou pour une fête la rentrée estimée (+) ; sinon inconnu, jamais 0 */
   const cout = activite
     ? (typeof item.estimatedCost === 'number' && item.estimatedCost > 0 ? -Math.round(item.estimatedCost * 100) : undefined)
     : typeof item.estimatedRevenue === 'number' && item.estimatedRevenue > 0 ? Math.round(item.estimatedRevenue * 100)
       : typeof item.estimatedCost === 'number' && item.estimatedCost > 0 ? -Math.round(item.estimatedCost * 100) : undefined;
   return {
-    id: `creatif-${item.id}`, rangee: activite ? 'activites' : 'fetes', titre: item.title, debut: f?.du ?? jour, fin: f?.au ?? jour,
+    id: `creatif-${item.id}`, rangee: rangeeCreative(item), titre: item.title, debut: f?.du ?? jour, fin: f?.au ?? jour,
     ...(cout !== undefined ? { centimes: cout } : {}), ...(f?.joursActifs ? { joursActifs: f.joursActifs } : {}), ...(f?.miseDeCote ? { miseDeCote: true } : {}),
     ...(f ? { fenetre: item.fenetre } : {}), ...(item.liens ? { liens: item.liens } : {}),
     source: { genre: 'creative', id: item.id, type: item.type }, ouvre: item.type === 'event' ? { ecran: 'agenda', id: item.id } : { ecran: 'atelier', id: item.id },
@@ -881,9 +887,8 @@ export function choseCreative(item: CreativeItem): ChoseCalendrier | null {
 /** Poche « Sans date » (E46) : un `CreativeItem` sans date, ni idée de recette ni fait. Aucune position. */
 export function choseSansDate(item: CreativeItem): ChoseCalendrier | null {
   if (item.type === 'recipe-idea' || estDuCarnet(item) || item.status === 'done' || isoDate(item.date)) return null;
-  const activite = item.type !== 'event' || item.activite === true;
   return {
-    id: `creatif-${item.id}`, rangee: activite ? 'activites' : 'fetes', titre: item.title, debut: '', fin: '', sansDate: true,
+    id: `creatif-${item.id}`, rangee: rangeeCreative(item), titre: item.title, debut: '', fin: '', sansDate: true,
     source: { genre: 'creative', id: item.id, type: item.type }, ouvre: item.type === 'event' ? { ecran: 'agenda', id: item.id } : { ecran: 'atelier', id: item.id },
     deplacable: true
   };

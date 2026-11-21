@@ -27,7 +27,7 @@ import {
 } from '../../domain/calendrier';
 import { courbeAvec, effetCaisse, type CourbeCaisse } from '../../domain/calendrierCaisse';
 import {
-  brouillonDepuisChose, brouillonDepuisProposition, brouillonVide, versEnregistrement, versModification, enregistrementIdee, jourPose,
+  achatsPasses, brouillonDepuisChose, brouillonDepuisProposition, brouillonVide, versEnregistrement, versModification, enregistrementIdee, jourPose,
   type BrouillonAjout, type ContexteAjout
 } from '../../domain/calendrierAjout';
 import {
@@ -272,7 +272,8 @@ export function CalendrierTab(props: CalendrierTabProps) {
   modeleRef.current = modele;
   const ctxClients = useRef(don.clients);
   ctxClients.current = don.clients;
-  const ctxAjout: ContexteAjout = useMemo(() => ({ aujourdhui, recettes: don.recettes, clients: don.clients, plans: don.plans, choses: modele.choses }), [aujourdhui, don.recettes, don.clients, don.plans, modele.choses]);
+  const achats = useMemo(() => achatsPasses(transactions), [transactions]);
+  const ctxAjout: ContexteAjout = useMemo(() => ({ aujourdhui, recettes: don.recettes, clients: don.clients, plans: don.plans, choses: modele.choses, achats }), [aujourdhui, don.recettes, don.clients, don.plans, modele.choses, achats]);
 
   /* ---------- les colonnes de la frise : des semaines, ou les douze mois de l'année ---------- */
   const annee = vue === 'annee';

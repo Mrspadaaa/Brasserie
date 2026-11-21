@@ -3,9 +3,11 @@ import { Sheet } from '../../Sheet';
 import { Input } from '../../Input';
 import { ChampMontant } from '../../finance/ChampMontant';
 import {
-  appliquerPuce, aDesJoursActifs, aUneFenetre, aUnMontant, brouillonVide, choisirJour, choisirJours, peutChoisirJour, jourPose, libelleMontant, peutMettreDeCote, preteLe, puceJours, puces, resumeFenetre, toucherSemaine,
+  appliquerPuce, aDesJoursActifs, aUneFenetre, aUnMontant, avecNomPose, brouillonVide, choisirJour, choisirJours, peutChoisirJour, jourPose, libelleMontant, peutMettreDeCote, preteLe, puceJours, puces, resumeFenetre, toucherSemaine,
   type BrouillonAjout, type Confirmation, type ContexteAjout, type Puce
 } from '../../../domain/calendrierAjout';
+import { prixSemblable, texteIntention } from '../../../domain/horizons';
+import { Horizons } from '../../saisie/Horizons';
 import { RANGEES, ajouterJours, etiquetteS, francs, jourLisible, lundiDe, nomRangee, type Rangee, type SemaineCalendrier } from '../../../domain/calendrier';
 import { CLASSE_TEINTE } from './Marque';
 import './feuille.css';
@@ -81,8 +83,16 @@ function PuceNom({ p, choisie, onChoisir }: { p: Puce; choisie: boolean; onChois
 
 export const FeuilleAjout: React.FC<FeuilleAjoutProps> = ({ mode, initial, contexte, semaines, sansPlusDeDetails, onPlusDeDetails, onAjouter, onFermer, evenements }) => {
   /* un brassin se pose avec son temps en cuve déjà choisi (28 j) : « prête le … » se lit d'emblée (D-22, D-39) */
-  const avecDefauts = (x: BrouillonAjout): BrouillonAjout => (mode === 'ajouter' && x.rangee === 'brassins' && !x.tempsEnCuve ? { ...x, tempsEnCuve: 28 } : x);
+  /* G3, NOM-OBLIGE (D396) : à l'ajout, Travaux, Activités et Papiers ont leur nom posé (« Travaux · S48 »), qui suit la semaine tant qu'il
+     n'est ni tapé ni choisi ; Ajouter se valide sans clavier */
+  const avecDefauts = (x: BrouillonAjout): BrouillonAjout => {
+    if (mode !== 'ajouter') return x;
+    const y = x.rangee === 'brassins' && !x.tempsEnCuve ? { ...x, tempsEnCuve: 28 } : x;
+    return avecNomPose(y, contexte.choses);
+  };
   const [b, setB] = useState<BrouillonAjout>(() => avecDefauts(initial));
+  /** D2 : le prix gardé d'un achat semblable (« ZZ TEST Pompe 2026 »), dit « estimé » tant que le montant est le sien. */
+  const [prixGarde, setPrixGarde] = useState<{ centimes: number; source: string } | null>(null);
   const [confirmation, setConfirmation] = useState<Confirmation | null>(null);
   const [refus, setRefus] = useState<string | null>(null);
   const [enCours, setEnCours] = useState(false);
@@ -138,7 +148,14 @@ export const FeuilleAjout: React.FC<FeuilleAjoutProps> = ({ mode, initial, conte
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [b.rangee, caseSemaine, pasSemaine, largeurVue]);
 
-  const regler = (suite: BrouillonAjout) => { setConfirmation(null); setRefus(null); setB(suite); };
+  const regler = (suite: BrouillonAjout) => { setConfirmation(null); setRefus(null); setB(mode === 'ajouter' ? avecNomPose(suite, contexte.choses) : suite); };
+  /* C1 (D393, K1) : à l'ajout, la date se pose en horizons (aujourd'hui, 1 mois, 3 mois…) ; la semaine exacte se règle ensuite au glisser sur
+     la frise. Le carrousel des semaines ne reste qu'à Modifier (la chose est déjà posée, sa semaine se lit et se touche). */
+  const horizons = mode === 'ajouter';
+  const intention = horizons && b.debut ? texteIntention(b.debut, contexte.aujourdhui) : null;
+  /* D2 (D393) : le dernier achat semblable au nom tapé, montant non encore donné ; rien de semblable : aucune puce (jamais 0) */
+  const prixPropose = argent && (b.rangee === 'travaux' || b.rangee === 'achats') && b.centimes === undefined && !b.nomPose && b.titre.trim().length >= 3 && contexte.achats?.length
+    ? prixSemblable({ nom: b.titre }, contexte.achats) : null;
   const choisirRangee = (r: Rangee) => { if (r !== b.rangee) regler(avecDefauts(brouillonVide(r, b.debut))); };
   const choisirPuce = (p: Puce) => regler(appliquerPuce(b, p));
   const puceChoisie = (p: Puce): boolean => {
@@ -236,6 +253,15 @@ export const FeuilleAjout: React.FC<FeuilleAjoutProps> = ({ mode, initial, conte
               max={10_000_000} maxDecimales={2} aria-label="Montant en CHF" placeholder="CHF"
               className="cal-f-chf min-h-10 w-28 rounded-control border border-cave-700 bg-cave-950 px-2 text-right text-base text-cave-50"
             />
+            {/* D2 : « ZZ TEST Pompe de brassage 2026 : 420 · Garder » ; un toucher pose le montant, dit « estimé » ensuite (la facture le remplace) */}
+            {prixPropose && (
+              <button type="button" data-prix-semblable aria-label={`Garder ${francs(prixPropose.centimes)} CHF, prix estimé d’après ${prixPropose.source}`}
+                onClick={() => { setPrixGarde({ centimes: prixPropose.centimes, source: prixPropose.source }); regler({ ...b, centimes: prixPropose.centimes, signe: '-' }); }}
+                className={`${PUCE} border-dashed`}>
+                <span className="cal-f-m text-alert-strong">{francs(prixPropose.centimes)}</span><span className="text-cave-200">{prixPropose.source}</span><b className="font-semibold">Garder</b>
+              </button>
+            )}
+            {prixGarde && b.centimes === prixGarde.centimes && <span data-prix-estime className="text-xs text-cave-200">estimé · {prixGarde.source}</span>}
           </div>
         )}
 
@@ -252,9 +278,14 @@ export const FeuilleAjout: React.FC<FeuilleAjoutProps> = ({ mode, initial, conte
 
         <div>
           <div className="mb-1 flex items-baseline gap-2">
-            <span className="text-sm text-cave-200">{fenetre ? 'Semaines' : 'Semaine'}</span>
+            <span className="text-sm text-cave-200">{horizons ? 'Quand' : fenetre ? 'Semaines' : 'Semaine'}</span>
+            {intention && <b className="text-sm font-semibold text-cave-50" data-intention>{intention}</b>}
             {b.debut &&<span className="text-sm text-cave-50">{etiquetteS(b.debut)}, {jourLisible(jourDit ?? b.debut)}</span>}
           </div>
+          {horizons ? (
+            <Horizons date={b.debut ?? undefined} aujourdhui={contexte.aujourdhui} classePuce={PUCE} sansPlusTard etiquette="Quand" className="cal-f-horizons"
+              onChoisir={(_, lundi) => { if (!lundi) return; const { jour: _j, jourChoisi: _c, ...reste } = b; void _j; void _c; regler({ ...reste, debut: lundi, fin: null, debutChoisi: true, parHorizon: true }); }} />
+          ) : (
           <div
             ref={rangeeSemaines} role="group" aria-label="Semaine" data-vaul-no-drag data-visibles={semainesVisibles}
             className={`cal-f-semaines relative flex overflow-x-auto pb-1${casesEtroites ? ' cal-f-etroit' : ''}`} style={{ touchAction: 'pan-x', gap: 0 }}
@@ -279,6 +310,7 @@ export const FeuilleAjout: React.FC<FeuilleAjoutProps> = ({ mode, initial, conte
               );
             })}
           </div>
+          )}
           {/* CAL-PASSE (21.11, n° 2) : le JOUR de la semaine choisie, pour une chose à date seule rouverte (mardi reste mardi ; un autre jour se touche) */}
           {peutChoisirJour(b) && (
             <div role="group" aria-label="Jour" data-feuille-jours className="mt-1 flex gap-1" data-vaul-no-drag>
@@ -334,7 +366,9 @@ export const FeuilleAjout: React.FC<FeuilleAjoutProps> = ({ mode, initial, conte
           <label className="block">
             <span className="mb-0.5 block text-sm text-cave-200">{puces1.length > 0 ? 'Autre nom' : 'Nom'}</span>
             <Input
-              type="text" value={b.titre} onChange={e => regler({ ...b, titre: e.target.value })}
+              type="text" value={b.titre} onChange={e => regler({ ...b, titre: e.target.value, nomPose: false })} data-feuille-nom
+              /* le nom posé se remplace d'un coup : le toucher le sélectionne */
+              onFocus={e => { if (b.nomPose) e.currentTarget.select(); }}
               /* F-ENTREE (PI-2) : Entrée valide comme le bouton du pied (même confirmation d'une grosse somme), puis ferme le clavier */
               onEntree={() => { void ajouter(confirmation ? { ...b, confirmeGrosseSomme: true } : b); }}
               className="min-h-10 w-full rounded-control border border-cave-700 bg-cave-950 px-2 text-base text-cave-50"

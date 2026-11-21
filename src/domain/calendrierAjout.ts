@@ -1,10 +1,12 @@
 import { carnetDepuisPhrase } from './carnets/modele';
 import type { Batch, Client, CreativeItem, FenetreCalendrier, Recipe } from '../types';
-import type { FinancialPlan } from './finance/types';
+import type { FinanceTransaction, FinancialPlan } from './finance/types';
+import type { AchatPasse } from './horizons';
 import type { FinanceCategory } from '../types';
 import { isoDate } from './finance/ledger';
-import { ajouterJours, dimancheDe, ecartSemaines, etiquetteS, francs, jourLisible, lundiDe, type ChoseCalendrier, type Rangee } from './calendrier';
+import { ajouterJours, dimancheDe, ecartSemaines, etiquetteS, francs, jourLisible, lundiDe, nomRangee, numeroSemaine, type ChoseCalendrier, type Rangee } from './calendrier';
 import type { Ecriture } from './calendrierGestes';
+import { nomParDefaut } from './nomParDefaut';
 
 /**
  * La feuille d'ajout du calendrier (E34, E45) : un brouillon par rangée, des puces proposées (jamais inventées), la garde ×10, et la
@@ -56,6 +58,10 @@ export interface BrouillonAjout {
    * une semaine plus tard n'écrivait que la fin, la date de début restait où elle était). Les touchers suivants règlent la fin, comme à l'ajout.
    */
   rouvert?: boolean;
+  /** G3 : le nom est celui posé (« Travaux · S48 ») ; il suit la semaine tant qu'il n'est ni tapé ni choisi. */
+  nomPose?: boolean;
+  /** C1 : la date vient d'un horizon (« 3 mois ») ; posée hors de la fenêtre affichée, la frise va la montrer pour la régler au glisser. */
+  parHorizon?: boolean;
 }
 
 /**
@@ -80,11 +86,20 @@ export interface ContexteAjout {
   plans: readonly FinancialPlan[];
   /** Les choses déjà posées : noms récents, plus grosse somme de chaque rangée. */
   choses: readonly ChoseCalendrier[];
+  /** D2 : les achats payés (lignes de dépense) : le prix du dernier achat semblable se propose, marqué « estimé ». */
+  achats?: readonly AchatPasse[];
   /** Identifiants (injectés pour les tests). */
   nouvelId?: (prefixe: string) => string;
   idBrassin?: () => string;
   /** Horodatage ISO complet de la création. */
   maintenant?: string;
+}
+
+/** D2 : les lignes de dépense des pièces passées (rentrées exclues, montant > 0), comme la feuille d'achat (ExpenseSheet). */
+export function achatsPasses(transactions: readonly unknown[]): AchatPasse[] {
+  return (transactions as readonly FinanceTransaction[]).flatMap(t => t.finance?.kind === 'income' ? [] : (t.finance?.lines ?? [])
+    .filter(l => l.amountCents > 0)
+    .map(l => ({ libelle: l.description, centimes: l.amountCents, date: String(t.date).slice(0, 10), categorie: t.category, ref: (l as { stockItemRef?: string }).stockItemRef })));
 }
 
 const idPar = (ctx: ContexteAjout, prefixe: string) => (ctx.nouvelId ?? ((p: string) => `${p}-${globalThis.crypto.randomUUID()}`))(prefixe);
@@ -227,7 +242,7 @@ export function appliquerPuce(b: BrouillonAjout, puce: Puce): BrouillonAjout {
     case 'temps': return { ...b, tempsEnCuve: b.tempsEnCuve === puce.jours ? undefined : puce.jours };
     case 'client': return { ...sansProbable(b), clientId: puce.clientId, titre: puce.titreHabituel ?? puce.libelle, signe: '+', ...(puce.centimes ? { centimes: puce.centimes } : {}) };
     case 'vente-probable': return { ...b, titre: puce.libelle, signe: '+', planProbableId: puce.planId, ...(puce.centimes ? { centimes: puce.centimes } : {}), ...(puce.clientId ? { clientId: puce.clientId } : {}) };
-    case 'nom': return { ...sansProbable(b), titre: puce.libelle, ...(puce.centimes ? { centimes: puce.centimes, signe: puce.signe ?? b.signe } : {}) };
+    case 'nom': return { ...sansProbable(b), titre: puce.libelle, nomPose: false, ...(puce.centimes ? { centimes: puce.centimes, signe: puce.signe ?? b.signe } : {}) };
     case 'montant': return { ...b, centimes: puce.centimes, signe: puce.signe };
   }
 }
@@ -372,14 +387,17 @@ export function versEnregistrement(b: BrouillonAjout, ctx: ContexteAjout): Conve
     };
     return { ok: true, enregistrement: { cible: 'batch', collection: 'batches', document, recetteId: recette.id }, resume: `${recette.name} · ${etiquetteS(debut)}${b.tempsEnCuve ? ` · prête le ${jourLisible(ajouterJours(jour, b.tempsEnCuve))}` : ''}` };
   }
-  if (b.rangee === 'fetes' || b.rangee === 'activites') {
+  /* D401 (21.11) : des Travaux SANS montant sont une activité marquée `travaux` (rangée Travaux), jamais un plan à 0 CHF ; avec un montant,
+     ils restent un plan financier (plus bas) */
+  const travauxSansMontant = b.rangee === 'travaux' && !b.centimes;
+  if (b.rangee === 'fetes' || b.rangee === 'activites' || travauxSansMontant) {
     const document: CreativeItem = {
       id: idPar(ctx, 'CR'), type: 'event', title: b.titre.trim(), status: 'todo', date: fenetre ? lundiDe(debut) : jourPose(lundiDe(debut), ctx.aujourdhui),
-      ...(b.rangee === 'activites' ? { activite: true as const } : {}),
+      ...(b.rangee === 'activites' ? { activite: true as const } : {}), ...(travauxSansMontant ? { travaux: true as const } : {}),
       ...(b.centimes ? (b.rangee === 'fetes' && b.signe === '+' ? { estimatedRevenue: b.centimes / 100 } : { estimatedCost: b.centimes / 100 }) : {}),
       ...(fenetre ? { fenetre } : {}), ...(b.liens ? { liens: b.liens } : {})
     };
-    return { ok: true, enregistrement: { cible: 'creative', collection: 'creativeItems', document }, resume: `${document.title} · ${etiquetteS(debut)}` };
+    return { ok: true, enregistrement: { cible: 'creative', collection: 'creativeItems', document }, resume: resumeAjout(document.title, debut) };
   }
   if (!b.centimes || b.centimes <= 0) return { ok: false, raison: 'Indique un montant : un montant inconnu n’est pas 0.' };
   const du = fenetre?.du ?? jourPose(lundiDe(debut), ctx.aujourdhui);
@@ -401,7 +419,32 @@ export function versEnregistrement(b: BrouillonAjout, ctx: ContexteAjout): Conve
     category: CATEGORIE[b.rangee] ?? 'divers', source: 'manual', status: 'active', createdAt: ctx.maintenant ?? `${ctx.aujourdhui}T12:00:00.000Z`,
     ...(fenetre ? { fenetre } : {}), ...(b.clientId ? { clientId: b.clientId } : {}), ...(b.liens?.batchId ? { batchId: b.liens.batchId } : {}), ...(b.liens?.evenementId ? { evenementId: b.liens.evenementId } : {})
   };
-  return { ok: true, enregistrement: { cible: 'plan', collection: 'financialPlans', document }, resume: `${document.title} · ${etiquetteS(document.date)}` };
+  return { ok: true, enregistrement: { cible: 'plan', collection: 'financialPlans', document }, resume: resumeAjout(document.title, document.date) };
+}
+
+/** « Rénovation · S48 » ; un nom posé qui dit déjà sa semaine (« Travaux · S48 », G3) ne la répète pas. */
+function resumeAjout(titre: string, jour: string): string {
+  const s = etiquetteS(jour);
+  return titre.endsWith(` · ${s}`) || titre.endsWith(` ${s}`) ? titre : `${titre} · ${s}`;
+}
+
+/**
+ * G3 et NOM-OBLIGE (D396, P2) : le nom posé d'une chose neuve des rangées qui n'ont pas de puce obligatoire : « Travaux · S48 », « Activités · S48 »,
+ * « Papiers · S48 », suivi de « · 2 » si ce nom existe déjà (`nomParDefaut`). Brassins (une recette), Ventes (un client), Fêtes et Achats (leur
+ * nom est la chose) : `null`, rien n'est posé.
+ */
+export const RANGEES_NOM_POSE: readonly Rangee[] = ['travaux', 'activites', 'papiers'];
+export function nomPose(rangee: Rangee, lundi: string | null, choses: ReadonlyArray<Pick<ChoseCalendrier, 'titre'>>): string | null {
+  if (!lundi || !RANGEES_NOM_POSE.includes(rangee)) return null;
+  return nomParDefaut({ genre: 'evenement', rangee: nomRangee(rangee), semaine: numeroSemaine(lundiDe(lundi)) }, choses.map(c => c.titre));
+}
+
+/** Le brouillon dont le nom est encore celui posé suit sa semaine (« Travaux · S48 » devient « Travaux · S61 ») ; un nom tapé ou choisi reste. */
+export function avecNomPose(b: BrouillonAjout, choses: ReadonlyArray<Pick<ChoseCalendrier, 'titre'>>): BrouillonAjout {
+  if (b.titre.trim() && !b.nomPose) return b;
+  const nom = nomPose(b.rangee, b.debut, choses);
+  if (!nom) { const { nomPose: _n, ...reste } = b; void _n; return b.nomPose ? { ...reste, titre: '' } : b; }
+  return { ...b, titre: nom, nomPose: true };
 }
 
 /** L'écriture de création d'un enregistrement (« Ajouter ») ; son inverse, fourni par `ecritures.ts`, retire ce qui vient d'être posé (Annuler). */

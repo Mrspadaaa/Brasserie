@@ -981,6 +981,11 @@ export interface CreativeItem {
   liens?: { batchId?: string; clientId?: string; evenementId?: string };
   /** Calendrier : une activité (comptée en jours, sans CHF obligatoire), rangée Activités plutôt que Fêtes. */
   activite?: boolean;
+  /**
+   * Calendrier (D401, 21.11) : des Travaux posés SANS montant, rangée Travaux. Une activité marquée `travaux` (un `event`, comme `activite`),
+   * jamais un plan financier à 0 CHF (l'inconnu n'est pas 0). Avec un montant, des Travaux restent un `FinancialPlan`. Optionnel, sans migration.
+   */
+  travaux?: boolean;
   /** Carnet d'idées : le contenu d'une idée (`type: 'carnet'`), lu par `lireCarnet` (src/domain/carnets/modele.ts). Optionnel. */
   carnet?: DonneesCarnet;
   /** Carnet d'idées : un message du fil (`type: 'carnet-message'`), lu par `lireMessage`. Optionnel. */

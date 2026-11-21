@@ -495,7 +495,7 @@ export function dupliquer(chose: ChoseCalendrier, versLundi: string, ctx: Contex
   const effetMots = effet ? undefined : effetEnMots(chose, ctx);
   const message = annuler(effet ? `Dupliquée · ${effet.texte}` : `Dupliquée en ${etiquetteS(cible)}`);
   if (source.genre === 'creative') {
-    const document = { id: nouvelId(ctx, 'CR'), type: source.type, title: chose.titre, status: 'todo', date: decale(chose.debut, delta), ...(chose.rangee === 'activites' && source.type === 'event' ? { activite: true } : {}), ...(chose.fenetre ? { fenetre: fenetreDecalee(chose.fenetre, delta) } : {}), ...(chose.liens ? { liens: chose.liens } : {}) };
+    const document = { id: nouvelId(ctx, 'CR'), type: source.type, title: chose.titre, status: 'todo', date: decale(chose.debut, delta), ...(chose.rangee === 'activites' && source.type === 'event' ? { activite: true } : {}), ...(chose.rangee === 'travaux' && source.type === 'event' ? { travaux: true } : {}),...(chose.fenetre ? { fenetre: fenetreDecalee(chose.fenetre, delta) } : {}), ...(chose.liens ? { liens: chose.liens } : {}) };
     return { ok: true, ecritures: [{ op: 'creer', collection: 'creativeItems', document }], effet, ...(effetMots ? { effetMots } : {}), promesse: null, courbeApres: apres, message };
   }
   const plan = planDe(chose, ctx);

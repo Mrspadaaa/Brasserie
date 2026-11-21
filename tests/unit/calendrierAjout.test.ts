@@ -1,9 +1,9 @@
 import { describe, expect, it } from 'vitest';
 import type { Batch } from '../../src/types';
 import type { FinancialPlan, FinancialProfile } from '../../src/domain/finance/types';
-import type { ChoseCalendrier } from '../../src/domain/calendrier';
+import { rangeeCreative, type ChoseCalendrier } from '../../src/domain/calendrier';
 import {
-  appliquerPuce, brouillonDepuisChose, brouillonDepuisProposition, brouillonVide, choisirJours, demandeConfirmation, ecritureDeAjout, enregistrementIdee, nbSemaines, peutMettreDeCote,
+  achatsPasses, avecNomPose, nomPose, appliquerPuce, brouillonDepuisChose, brouillonDepuisProposition, brouillonVide, choisirJours, demandeConfirmation, ecritureDeAjout, enregistrementIdee, nbSemaines, peutMettreDeCote,
   preteLe, puceJours, puces, resumeFenetre, toucherSemaine, valider, versEnregistrement, versModification, type BrouillonAjout, type ContexteAjout, type Enregistrement
 } from '../../src/domain/calendrierAjout';
 import { brassinsHabituels } from '../../src/domain/calendrierPropositions';
@@ -313,5 +313,41 @@ describe('CRITIQUE-7 n° 4 et décision (a) : un brassin posé cette semaine est
   it('décision (a) : un achat posé par la feuille est un FinancialPlan manuel de catégorie `brassage` (la rangée Achats le relit)', () => {
     const b: BrouillonAjout = { ...brouillonVide('achats', '2026-11-30'), titre: 'ZZ TEST — houblon Citra', signe: '-', centimes: 24000, debutChoisi: true };
     expect(plan(reussi(b, c))).toMatchObject({ category: 'brassage', source: 'manual', direction: 'out', amountCents: 24000, date: '2026-11-30' });
+  });
+});
+
+describe('V-CAL (21.11) : D401 Travaux sans montant, nom posé (G3), achats passés (D2)', () => {
+  it('D401 : des Travaux sans montant sont une activité marquée `travaux`, rangée Travaux, sans aucun montant (jamais 0) ; avec un montant, un plan', () => {
+    const b = { ...toucherSemaine(brouillonVide('travaux', S20), S20), titre: 'Repeindre la cave' };
+    const e = reussi(b);
+    expect(e.cible).toBe('creative');
+    if (e.cible !== 'creative') return;
+    expect(e.document).toMatchObject({ type: 'event', title: 'Repeindre la cave', travaux: true });
+    expect(e.document).not.toHaveProperty('amountCents');
+    expect(e.document).not.toHaveProperty('activite');
+    expect(rangeeCreative({ type: 'event', travaux: true })).toBe('travaux');
+    expect(rangeeCreative({ type: 'event', activite: true })).toBe('activites');
+    expect(plan(reussi({ ...b, centimes: 30000 }))).toMatchObject({ amountCents: 30000, category: 'renovation' });
+  });
+  it('G3 : nom posé « Travaux · S20 » (puis « · 2 » s’il existe), il suit la semaine tant qu’il n’est pas tapé ; rien pour Brassins ni Ventes', () => {
+    expect(nomPose('travaux', S20, [])).toBe('Travaux · S20');
+    expect(nomPose('activites', S20, [{ titre: 'Activités · S20' }])).toBe('Activités · S20 · 2');
+    expect(nomPose('brassins', S20, [])).toBeNull();
+    expect(nomPose('ventes', S20, [])).toBeNull();
+    const pose = avecNomPose(brouillonVide('travaux', S20), []);
+    expect(pose).toMatchObject({ titre: 'Travaux · S20', nomPose: true });
+    expect(avecNomPose({ ...pose, debut: S40 }, []).titre).toBe('Travaux · S40');
+    expect(avecNomPose({ ...pose, titre: 'Sols', nomPose: false, debut: S40 }, []).titre).toBe('Sols');
+  });
+  it('le résumé d’un nom posé ne répète pas sa semaine', () => {
+    const r = versEnregistrement({ ...avecNomPose(brouillonVide('activites', S20), []), debutChoisi: true }, ctx());
+    expect('resume' in r && r.resume).toBe('Activités · S20');
+  });
+  it('D2 : les achats passés sont les lignes de dépense > 0 ; une rentrée et une ligne à 0 n’en sont pas', () => {
+    const t = [
+      { date: '2025-01-20', category: 'equipment', finance: { kind: 'expense', lines: [{ description: 'Pompe de brassage', amountCents: 42000 }, { description: 'Port', amountCents: 0 }] } },
+      { date: '2025-02-01', category: 'sales', finance: { kind: 'income', lines: [{ description: 'Vente', amountCents: 9000 }] } },
+    ];
+    expect(achatsPasses(t)).toEqual([{ libelle: 'Pompe de brassage', centimes: 42000, date: '2025-01-20', categorie: 'equipment', ref: undefined }]);
   });
 });
