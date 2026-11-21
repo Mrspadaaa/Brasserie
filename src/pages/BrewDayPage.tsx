@@ -8,6 +8,7 @@ import {
   Sun,
   Sparkles,
   Check,
+  Undo2,
   ChevronRight,
   ChevronDown,
   Clock3,
@@ -111,7 +112,8 @@ import { estEtapeCoupure, heureFr, mesureDue, mesuresAttendues } from '../domain
 import type { MesureAttendue } from '../domain/brewMeasures';
 import { cibleMesure, ecartHorsCible, refroidiParDefaut, volumeTarget } from '../domain/brewDay';
 import { boilScenario, lastWortPair } from '../domain/brewAssist';
-import { correctionsAvantEbullition, infusionPourMaische, paireSansCible, zonesDeCible } from '../domain/brewDayCalculs';
+import { correctionsAvantEbullition, eauEmpatageVisee, infusionPourMaische, paireSansCible, zonesDeCible } from '../domain/brewDayCalculs';
+import { lignesPesee } from '../domain/brewLaunch';
 import type { OptionCorrection } from '../domain/brewDayCalculs';
 import { BrewMaintenant } from '../ui/BrewMaintenant';
 import { AppelMesure } from '../ui/brassage/AppelMesure';
@@ -397,6 +399,8 @@ export function BrewDayPage({ batch, config, stockItems = [], onClose, onSave, o
     areaOf(state.steps[state.currentIndex]?.id ?? 'eau')
   );
   const [now, setNow] = useState(brewNow);
+  // N2 (v09 n° 3) : ce que « Tout pesé » a trouvé avant son toucher ; « Annuler » le rend.
+  const [peseeAvant, setPeseeAvant] = useState<Record<string, boolean> | null>(null);
   // p3 : le choix du son se garde d'une session à l'autre (préférence locale du brasseur) ; couper le son reste un geste explicite.
   const [sound, setSoundState] = useState(readSoundPreference);
   const setSound = (on: boolean) => {
@@ -893,6 +897,7 @@ export function BrewDayPage({ batch, config, stockItems = [], onClose, onSave, o
       ...(kind === 'volume' && roomTemp ? { volumeBasis: 'cold' as const } : {}),
       ...(kind === 'volume' && measuredStep.id === 'refroidissement' ? { measurementStage: 'fermenter' as const } : {})
     };
+    commencerAuGeste();
     update((s) => ({ ...s, readings: [...(s.readings ?? []), reading] }));
     const suite = attendues.find((a) => a !== m && !a.reading);
     const nom = titreCarte(m);
@@ -960,21 +965,29 @@ export function BrewDayPage({ batch, config, stockItems = [], onClose, onSave, o
     const m = mesureCarte;
     const cle = `${measuredStep.id}|${m.kind}`;
     const valeur = maintBrouillon?.cle === cle ? maintBrouillon.valeur : null;
-    const scale = measureScale(m.kind, measuredStep, actualRecipe, valeur);
+    const echelle = measureScale(m.kind, measuredStep, actualRecipe, valeur);
+    // N2 (v09 n° 2) : l'eau d'empâtage n'a pas de cible de relevé, mais une visée calculée (Palmer) pour le premier palier : le pouce attend
+    // sur elle, au lieu du milieu de la piste (55 °C). C'est toujours un relevé : « ? °C » et Enregistrer grisé jusqu'au toucher.
+    const visee = m.kind === 'temperature' && measuredStep.id === 'eau' && !echelle.cible ? eauEmpatageVisee(actualRecipe, state) : null;
+    const scale = visee
+      ? { ...echelle, milieu: visee.eauC, bandMin: visee.eauC, bandMax: visee.eauC, ticks: [echelle.min, visee.eauC, echelle.max], fmt: (n: number) => nombreFr(n, 1) }
+      : echelle;
     const { zones, note: noteBandes } = bandesDe(m.kind);
     maintenant = {
       variante: 'mesure',
       kind: m.kind,
       scale,
       titre: titreCarte(m),
-      sousTitre: sousTitreCarte(m),
+      sousTitre: visee ? `visée ≈ ${nombreFr(visee.eauC, 1)} °C pour empâter à ${nombreFr(visee.cibleC, 0)} °C` : sousTitreCarte(m),
       unite: unitePourCarte(m.kind),
       valeur,
       depart: departCurseur(m.kind, scale, null),
       onPose: (v) => setMaintBrouillon({ cle, valeur: v }),
       onEnregistrer: (v) => enregistrerMaintenant(m, v),
       zones,
-      note: noteBandes,
+      note: visee
+        ? `≈ calculé par l’app (Palmer) : ${nombreFr(visee.eauL, 1)} L${visee.rapportInstallation != null ? ` (${nombreFr(visee.rapportInstallation, 1)} L/kg de l’installation)` : ''} sur ${nombreFr(visee.grainKg, 1)} kg de grain${visee.grainHypothese ? ` à ${nombreFr(visee.grainC, 0)} °C supposés` : ''}`
+        : noteBandes,
       enregistre: null
     };
   } else if (paireCarte && (corrections || correctionEcrite || sansCible)) {
@@ -1384,7 +1397,10 @@ export function BrewDayPage({ batch, config, stockItems = [], onClose, onSave, o
       ...(canTransferStarter ? [{ mode: 'starter-transferred' as const, label: 'Starter transféré' }] : [])
     ]
   } : undefined;
-  const primaryLabel = !brewingStarted && !isConsulting ? 'Commencer aujourd’hui' : isConsulting
+  // N2 (v09 n° 1) : le brassin du jour commence d'office. Plus de « Commencer aujourd'hui » : le premier vrai geste (le bouton principal,
+  // un relevé) pose le début ; la simple ouverture ne pose rien, la date prévue reste jusque-là.
+  const commencerAuGeste = () => { if (!brewingStarted && !isConsulting) update((s) => (s.startedAt != null ? s : { ...s, startedAt: brewNow() })); };
+  const primaryLabel = isConsulting
     ? 'Revenir au brassage'
     : lastStep
       ? state.pitchedAt != null ? 'Synchroniser et clôturer' : 'J’ai ajouté la levure'
@@ -1404,8 +1420,8 @@ export function BrewDayPage({ batch, config, stockItems = [], onClose, onSave, o
               ? 'Terminer le palier'
               : 'Terminer et continuer';
   const primaryAction = () => {
+    commencerAuGeste();
     if (isConsulting) navigate(areaOf(current.id));
-    else if (!brewingStarted) update(s => ({ ...s, startedAt: brewNow() }));
     else if (lastStep) {
       if (!pitchChoiceValid) {
         // La quantité réellement ajoutée reste un choix explicite : on ouvre l'éditeur de la ligne Levure, à l'écran, avec ses choix.
@@ -1529,6 +1545,26 @@ export function BrewDayPage({ batch, config, stockItems = [], onClose, onSave, o
   // p2c N10 / A10 : « Chauffer l'eau de rinçage 76 °C · dès 13 h 50 · prête pour 14 h 15 » ; « Désinfecter le refroidisseur · pendant l'ébullition · ~16 h 00 ».
   const cote = (id: string) => planJ?.aCote.find((c) => c.id === id);
   const sparge = state.steps.find((st) => st.id === 'sparge');
+  // N2 (v09 n° 3) : la pesée du jour sous « Vérifier la balance et peser les ajouts », une ligne par malt et par houblon de la journée.
+  // « Tout pesé » coche d'un toucher les lignes que le stock couvre ; les autres restent au brasseur ; chaque ligne se décoche.
+  const pesee = phasePreps.some((p) => p.id === 'balance') ? lignesPesee(actualRecipe, stockItems) : [];
+  const clePesee = (cle: string) => `pese-${cle.toLowerCase().replace(/[^a-z0-9|-]+/g, '_')}`;
+  const pesees = pesee.filter((l) => state.preparations?.[clePesee(l.cle)]).length;
+  const aPeserParStock = pesee.filter((l) => l.couvert === true && !state.preparations?.[clePesee(l.cle)]);
+  const toutPeser = () => {
+    const avant = Object.fromEntries(pesee.map((l) => [clePesee(l.cle), !!state.preparations?.[clePesee(l.cle)]]));
+    avant.balance = !!state.preparations?.balance;
+    setPeseeAvant(avant);
+    update((s) => {
+      const prep = { ...s.preparations, ...Object.fromEntries(aPeserParStock.map((l) => [clePesee(l.cle), true])) };
+      return { ...s, preparations: pesee.every((l) => prep[clePesee(l.cle)]) ? { ...prep, balance: true } : prep };
+    });
+  };
+  const annulerPesee = () => {
+    if (!peseeAvant) return;
+    update((s) => ({ ...s, preparations: { ...s.preparations, ...peseeAvant } }));
+    setPeseeAvant(null);
+  };
   const phasePrepsDites = phasePreps.map((p) => {
     if (p.id === 'rinçage') {
       const dès = heureDit(cote('rinçage')?.heure, true);
@@ -2644,7 +2680,8 @@ export function BrewDayPage({ batch, config, stockItems = [], onClose, onSave, o
                   </span>
                 </header>
                 {phasePrepsDites.map((p) => (
-                  <label key={p.id} className={`bz-anticiper-ligne ${state.preparations?.[p.id] ? 'is-complete' : ''}`}>
+                  <React.Fragment key={p.id}>
+                  <label className={`bz-anticiper-ligne ${state.preparations?.[p.id] ? 'is-complete' : ''}`}>
                     <span>{p.label}{p.sous && <small className="bz-anticiper-sous">{p.sous}</small>}{p.jauge}</span>
                     <input
                       type="checkbox"
@@ -2665,6 +2702,67 @@ export function BrewDayPage({ batch, config, stockItems = [], onClose, onSave, o
                       {state.preparations?.[p.id] && <Check size={16} strokeWidth={3} />}
                     </span>
                   </label>
+                  {p.id === 'balance' && pesee.length > 0 && (
+                    <div className="bz-pesee" aria-label="Pesée du jour">
+                      <div style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '4px 6px 4px 10px', borderTop: '1px dashed var(--bz-border2)' }}>
+                        <button
+                          type="button"
+                          className="bz-maintenant"
+                          style={{ marginTop: 0, height: 44, minHeight: 44, display: 'inline-flex', alignItems: 'center', gap: 6, color: 'var(--bz-hop)', fontWeight: 600 }}
+                          disabled={!session.canStart || !aPeserParStock.length}
+                          onClick={toutPeser}
+                        >
+                          <Check size={16} strokeWidth={3} aria-hidden="true" />
+                          Tout pesé
+                        </button>
+                        <span className="bz-anticiper-sous" style={{ margin: 0, flex: '1 1 auto', fontSize: 14 }}>
+                          {pesees} sur {pesee.length}{pesee.length - pesees > 0 ? `, ${pesee.length - pesees} ${pesee.length - pesees > 1 ? 'restent' : 'reste'} à toi` : ' · tout est pesé'}
+                        </span>
+                        {peseeAvant && (
+                          <button type="button" className="bz-maintenant" style={{ marginTop: 0, height: 44, minHeight: 44, display: 'inline-flex', alignItems: 'center', gap: 6 }} onClick={annulerPesee}>
+                            <Undo2 size={16} aria-hidden="true" />
+                            Annuler
+                          </button>
+                        )}
+                      </div>
+                      {pesee.map((l) => {
+                        const cle = clePesee(l.cle);
+                        const fait = !!state.preparations?.[cle];
+                        const sous = [l.alpha != null ? `α ${nombreFr(l.alpha, 1)}` : null, l.moment.toLowerCase()].filter(Boolean).join(' · ');
+                        return (
+                          <label key={cle} className={`bz-anticiper-ligne ${fait ? 'is-complete' : ''}`} style={{ paddingLeft: 22 }}>
+                            <span style={{ display: 'flex', alignItems: 'baseline', gap: 8 }}>
+                              <span style={{ flex: '1 1 auto', minWidth: 0 }}>
+                                {l.nom}
+                                {l.couvert !== true && (
+                                  <span className="bz-stock-ico" role="img" aria-label={l.couvert === null ? 'pas au stock' : `stock ${Units.format(l.enStock ?? 0, l.unite)}, il en manque`} title={l.couvert === null ? 'pas au stock' : `stock ${Units.format(l.enStock ?? 0, l.unite)}`}>
+                                    <TriangleAlert size={14} aria-hidden="true" />
+                                  </span>
+                                )}
+                                <small className="bz-anticiper-sous">{sous}</small>
+                              </span>
+                              <strong className="bz-m" style={{ flex: 'none', whiteSpace: 'nowrap', color: 'var(--bz-t0)' }}>{Units.format(l.quantite, l.unite)}</strong>
+                            </span>
+                            <input
+                              type="checkbox"
+                              data-booster="peser"
+                              aria-label={`${l.nom} pesé`}
+                              disabled={!session.canStart}
+                              checked={fait}
+                              onChange={(e) => {
+                                const checked = e.target.checked;
+                                update((s) => ({ ...s, preparations: { ...s.preparations, [cle]: checked } }));
+                              }}
+                            />
+                            <span className="bz-case-boite" aria-hidden="true">
+                              {fait && <Check size={16} strokeWidth={3} />}
+                            </span>
+                          </label>
+                        );
+                      })}
+                    </div>
+                  )}
+                  </React.Fragment>
                 ))}
               </section>
             )}

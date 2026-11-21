@@ -77,7 +77,7 @@ export function detailMoment(timeMin: number | undefined, tempC: number | undefi
  * Les étapes de la journée, dans l'ordre du brasseur. Une étape sans ingrédient dans la recette n'existe pas.
  * `recette` est la recette ADAPTÉE au volume choisi.
  */
-export function etapesLancement(recette: Recipe, eau?: { empatageL?: number; rincageL?: number }): EtapeLancement[] {
+export function etapesLancement(recette: Pick<Recipe, 'fermentables' | 'hops' | 'waterPlan' | 'yeast'>, eau?: { empatageL?: number; rincageL?: number }): EtapeLancement[] {
   const etapes: EtapeLancement[] = [];
   const fermentables = recette.fermentables ?? [];
   const hops = (recette.hops ?? []).map((h, i) => ({ h, i })).filter(({ h }) => dose(h));
@@ -282,4 +282,50 @@ export function manquesLancement(
     if (enStock < d.dose - 0.0005) manques.push({ nom: d.nom, dose: d.dose, unite: d.unite, enStock, manque: d.dose - enStock });
   }
   return [...manques, ...absents];
+}
+
+export interface LignePesee {
+  cle: string;
+  nom: string;
+  quantite: number;
+  unite: 'kg' | 'g';
+  /** Acide alpha en %, absent si inconnu. */
+  alpha?: number;
+  /** Le moment de la journée (« Empâtage », « Ébullition · 60 min », « Whirlpool »…), repris de `etapesLancement`. */
+  moment: string;
+  /** Le stock indiqué couvre la dose (cumulée sur la journée) ; `null` : aucune ligne de stock à ce nom (non relié). */
+  couvert: boolean | null;
+  /** Le stock indiqué, dans l'unité de la dose ; absent si non relié. */
+  enStock?: number;
+}
+
+/**
+ * La pesée du jour J (N2, v09) : chaque malt et chaque houblon de la journée de brassage (empâtage, premier moût, ébullition, whirlpool),
+ * une ligne par moment, dans l'ordre de la frise. Le dry hop et les ajouts de fermentation ne se pèsent pas ce jour-là.
+ * `couvert` suit `manquesLancement` (même lecture du stock, dose cumulée par nom) : « Tout pesé » ne coche que ces lignes ; le reste reste au brasseur.
+ */
+export function lignesPesee(recette: Pick<Recipe, 'fermentables' | 'hops' | 'waterPlan' | 'yeast'>, stock: LigneStock[]): LignePesee[] {
+  const etapes = etapesLancement(recette).filter((e) => e.groupe === 'brassage' && e.pastilles.length);
+  const manques = manquesLancement(etapes.map((e) => ({ ...e, levure: undefined })), stock);
+  const cleNom = (nom: string, unite: string) => `${nom.trim().toLowerCase()}|${unite}`;
+  const parNom = new Map(manques.map((m) => [cleNom(m.nom, m.unite), m]));
+  const enStockDe = (nom: string, unite: string) => {
+    const ligne = stock.find((s) => s.name.trim().toLowerCase() === nom.trim().toLowerCase() && Units.convert(1, s.unit, unite) != null);
+    const v = ligne ? Units.convert(ligne.currentStock, ligne.unit, unite) : null;
+    return v != null && fini(v) ? v : undefined;
+  };
+  return etapes.flatMap((e) => e.pastilles.map((p) => {
+    const m = parNom.get(cleNom(p.nom, p.unite));
+    const enStock = enStockDe(p.nom, p.unite);
+    return {
+      cle: `${e.id}|${p.cle}`,
+      nom: p.nom,
+      quantite: p.quantite,
+      unite: p.unite,
+      ...(p.alpha != null ? { alpha: p.alpha } : {}),
+      moment: e.detail ? `${e.titre} · ${e.detail}` : e.titre,
+      couvert: m ? (m.enStock == null ? null : false) : enStock != null ? true : null,
+      ...(enStock != null ? { enStock } : {})
+    };
+  }));
 }

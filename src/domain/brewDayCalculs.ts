@@ -85,6 +85,58 @@ export function massesMaische(recipe: RecipeSnapshot, state: BrewDayState): { ea
   return fini(eauL) && eauL > 0 && fini(grainKg) && grainKg > 0 ? { eauL, grainKg } : null;
 }
 
+/** Grain à la température de la pièce quand rien ne la relève (Palmer prend 70 °F ≈ 21 °C) : hypothèse, dite dans le texte. */
+export const GRAIN_HYPOTHESE_C = 20;
+
+/**
+ * Eau de frappe (N2, v09) — Palmer, How to Brew, « Infusion Mash Calculations », première infusion : `Tw = (0,41 / r)(T2 − T1) + T2`,
+ * r le rapport eau/grain en L/kg, T1 le grain, T2 la maische visée. Sans la masse de la cuve (aucun champ, comme chez Palmer).
+ * `null` si une donnée manque ou si la maische visée n'est pas plus chaude que le grain : aucune température devinée.
+ */
+export function temperatureEauFrappe(a: { eauL?: number | null; grainKg?: number | null; cibleC?: number | null; grainC?: number | null }): number | null {
+  if (!fini(a.eauL) || a.eauL <= 0 || !fini(a.grainKg) || a.grainKg <= 0 || !fini(a.cibleC) || !fini(a.grainC) || a.cibleC <= a.grainC) return null;
+  const r = a.eauL / a.grainKg;
+  const eau = (CHALEUR_GRAIN / r) * (a.cibleC - a.grainC) + a.cibleC;
+  return eau < EAU_BOUILLANTE_C ? arrondi(eau, 0.1) : null;
+}
+
+export interface EauEmpatageVisee {
+  /** L'eau à verser, au dixième. */
+  eauC: number;
+  /** Le premier palier de la journée (la maische visée). */
+  cibleC: number;
+  grainC: number;
+  /** Vrai : le grain n'est pas relevé, `GRAIN_HYPOTHESE_C` est supposé (le texte le dit). */
+  grainHypothese: boolean;
+  eauL: number;
+  grainKg: number;
+  /** Le rapport de l'installation (L/kg) quand ni le plan d'eau ni la journée ne donnent l'eau d'empâtage ; absent sinon. */
+  rapportInstallation?: number;
+}
+
+/** L'eau d'empâtage visée pour le premier palier de la journée (le 67 °C de la recette), sur l'eau et le grain du jour. */
+export function eauEmpatageVisee(recipe: RecipeSnapshot, state: BrewDayState): EauEmpatageVisee | null {
+  const palier = state.steps.find((s) => /^mash/.test(s.id) && fini(s.tempC));
+  if (!palier) return null;
+  let m: { eauL: number; grainKg: number } | null = massesMaische(recipe, state);
+  let rapportInstallation: number | undefined;
+  // Sans plan d'eau : l'eau au rapport eau/grain de l'installation (ce que la journée sait), dit dans le texte.
+  if (!m) {
+    const rapport = recipe.brewhouse?.mashRatioLPerKg;
+    const grainKg = state.mashContext?.gristKg ?? effectiveFermentables(recipe, state)
+      .filter((f) => f.kind === 'grain' && (f.use ?? 'empatage') === 'empatage')
+      .reduce((sum, f) => sum + f.weightKg, 0);
+    if (!fini(rapport) || rapport <= 0 || !fini(grainKg) || grainKg <= 0) return null;
+    m = { eauL: rapport * grainKg, grainKg };
+    rapportInstallation = rapport;
+  }
+  const eauC = temperatureEauFrappe({ eauL: m.eauL, grainKg: m.grainKg, cibleC: palier.tempC, grainC: GRAIN_HYPOTHESE_C });
+  return eauC == null ? null : {
+    eauC, cibleC: palier.tempC!, grainC: GRAIN_HYPOTHESE_C, grainHypothese: true, eauL: m.eauL, grainKg: m.grainKg,
+    ...(rapportInstallation != null ? { rapportInstallation } : {})
+  };
+}
+
 /** `infusionParDegre` sur la maische du jour. `eauAjouteeL` : l'eau déjà versée en correction, qui s'ajoute à la masse. */
 export function infusionPourMaische(
   recipe: RecipeSnapshot,
