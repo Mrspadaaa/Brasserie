@@ -12,6 +12,12 @@
 //              posé) : les décalages des éléments qui étaient sous le haut du contenu ajouté (MutationObserver) sortent du CLS ; le
 //              premier bloc et l'élément touché restent suivis. Une action marquée `exception` (règle n° 1 : sa maquette choisie fait
 //              ce mouvement) est mesurée et dite « exception », jamais comptée en échec ni dans la session.
+//   VUE-FOND   (21.11 : « beaucoup de vues peuvent descendre beaucoup plus bas que le contenu… » puis « le bouton+ disparaît quand on interagit avec la
+//              vue… même pas besoin de descendre + bas ») : chaque onglet, sous-vue et feuille longue, à 390 tactile et à 1280, défilé tout en bas ;
+//              KO si l'espace sous le dernier contenu visible dépasse 24 px (jusqu'à la barre d'onglets au 390, au bord de la fenêtre au 1280,
+//              au bord de la zone qui défile ou au pied collé pour une feuille), sans réserve pour le +, ou si du contenu reste sous la barre.
+//              Une vue qui tient sans défiler n'est pas jugée. Mesures : principes.json (`fond`), captures fond-<vue>-<largeur>.png.
+//              Doit échouer sur en-ligne/2026-11-21-tour7 et tour8.
 //   NOM-OBLIGE (21.11 : « Taper un nom pour valider, ensuite sortir du mode clavier … C'est des actions en plus ») : chaque
 //              création est ouverte deux fois. 1) sans rien taper : le nom a-t-il une valeur par défaut, « valider » est-il permis ?
 //              2) nom tapé puis Entrée : la création est-elle confirmée (ou le champ suivant pris) ? On relève `enterkeyhint`.
@@ -46,10 +52,10 @@ const args = process.argv.slice(2);
 const opt = (n) => { const i = args.indexOf(`--${n}`); return i >= 0 ? args[i + 1] : null; };
 const sortie = path.resolve(args.find((a, i) => !a.startsWith('--') && !['--build', '--ref', '--controle', '--seul'].includes(args[i - 1])) ?? path.join(os.tmpdir(), 'parcours-principes'));
 fs.mkdirSync(sortie, { recursive: true });
-const controles = (opt('controle') ?? 'VUE-SAUTE,NOM-OBLIGE,ENTREE,RENOMMER,HORIZON').split(',');
+const controles = (opt('controle') ?? 'VUE-SAUTE,VUE-FOND,NOM-OBLIGE,ENTREE,RENOMMER,HORIZON').split(',');
 const seuls = opt('seul') ? opt('seul').split(',') : null;
 const SEUIL_PX = 1; const SEUIL_CLS = 0.02;
-const echecs = []; const mesures = { vue: [], nom: [], texte: [] };
+const echecs = []; const mesures = { vue: [], nom: [], texte: [], fond: [] };
 const echec = (c, m) => { echecs.push(`${c} : ${m}`); console.log(`  KO  ${c} : ${m}`); };
 const ok = (c, m) => console.log(`  ok  ${c}${m ? ` : ${m}` : ''}`);
 
@@ -230,8 +236,8 @@ const CREATIONS = [
   { id: 'cal-activites', aller: [['Calendrier', { dans: 'nav button' }], ['Ajouter dans Activités']] },
   { id: 'cal-papiers', aller: [['Calendrier', { dans: 'nav button' }], ['Ajouter dans Papiers']] },
   { id: 'idee-atelier', contenu: true, aller: [['Brassins', { dans: 'nav button' }], ['Atelier R&D']], champ: 'textarea[placeholder^="Une idée"], textarea[aria-label^="Une idée"]' },
-  { id: 'client', contenu: true, aller: [['Clients', { dans: 'nav button' }], ['Actions rapides'], ['Nouveau client']] },
-  { id: 'tarif', aller: [['Clients', { dans: 'nav button' }], ['Actions rapides'], ['Nouveau tarif']] },
+  { id: 'client', contenu: true, aller: [['Clients', { dans: 'nav button' }], ['Actions rapides'], ['Nouveau client', { c: 1 }]] },
+  { id: 'tarif', aller: [['Clients', { dans: 'nav button' }], ['Actions rapides'], ['Nouveau tarif', { c: 1 }]] },
   { id: 'materiel', aller: [['Stocks', { dans: 'nav button' }], ['Matériel'], ['Achat']] },
   { id: 'fournisseur', aller: [['Bord', { dans: 'nav button' }], ['Plus : saisie', { p: 1 }], ['Fournisseurs'], ['Plus']] },
   { id: 'brassin', aller: [['Bord', { dans: 'nav button' }], ['Actions rapides'], ['Brassin, sera', { p: 1 }]] }
@@ -602,10 +608,137 @@ async function horizon(banc, aujourdhui) {
   await s.fermer().catch(() => {});
 }
 
+// ───────────── VUE-FOND (21.11) ─────────────
+/* « beaucoup de vues peuvent descendre beaucoup plus bas que le contenu » ; puis : « le bouton+ disparaît quand on interagit avec la vue… même pas besoin
+   de descendre + bas » (le + se masque au défilement : `useMasqueAuDefilement`). Règle : sous le dernier contenu, 24 px au plus, sans réserve pour le +.
+   Chaque vue (onglets, sous-vues, feuilles longues) est défilée tout en bas, à 390 tactile et à 1280 (rail) ; on mesure, du bas du dernier contenu
+   visible, l'espace jusqu'au haut de la barre d'onglets (390) ou du bord de la fenêtre (1280, feuille : bord de la zone qui défile ou haut du pied collé).
+   Une vue qui tient sans défiler n'est pas jugée (rien à descendre). Un contenu qui reste sous la barre (écart < -1 px) est un défaut aussi. */
+const FOND_MAX_PX = 24;
+const FOND_VUES = [
+  { id: 'bord', aller: [['Bord', { dans: 'nav button' }]] },
+  { id: 'finances', aller: [['Finances', { dans: 'nav button' }]] },
+  { id: 'finances-tout', aller: [['Finances', { dans: 'nav button' }], ['tout']] },
+  { id: 'calendrier', aller: [['Calendrier', { dans: 'nav button' }]] },
+  { id: 'brassins', aller: [['Brassins', { dans: 'nav button' }]] },
+  { id: 'brassins-recettes', aller: [['Brassins', { dans: 'nav button' }], ['Recettes', { p: 1 }]] },
+  { id: 'atelier', aller: [['Brassins', { dans: 'nav button' }], ['Atelier', { p: 1 }]] },
+  { id: 'brassins-carnet', aller: [['Brassins', { dans: 'nav button' }], ['Atelier', { p: 1 }], ['Carnet']] },
+  { id: 'stocks', aller: [['Stocks', { dans: 'nav button', p: 1 }]] },
+  { id: 'stocks-courses', aller: [['Stocks', { dans: 'nav button', p: 1 }], ['Courses']] },
+  { id: 'stocks-futs', aller: [['Stocks', { dans: 'nav button', p: 1 }], ['Fûts']] },
+  { id: 'stocks-materiel', aller: [['Stocks', { dans: 'nav button', p: 1 }], ['Matériel']] },
+  { id: 'stocks-houblons', aller: [['Stocks', { dans: 'nav button', p: 1 }], ['Houblons']] },
+  { id: 'stocks-articles', aller: [['Stocks', { dans: 'nav button', p: 1 }], ['Articles']] },
+  { id: 'clients', aller: [['Clients', { dans: 'nav button' }]] },
+  { id: 'clients-prix', aller: [['Clients', { dans: 'nav button' }], ['Prix']] },
+  { id: 'clients-impot', aller: [['Clients', { dans: 'nav button' }], ['Impôt bière']] },
+  { id: 'clients-carnet', aller: [['Clients', { dans: 'nav button' }], ['Carnet']] },
+  // feuilles et pages longues
+  { id: 'feuille-recette', aller: [['Bord', { dans: 'nav button' }], ['Actions rapides'], ['Recette']] },
+  { id: 'feuille-cal-travaux', aller: [['Calendrier', { dans: 'nav button' }], ['Ajouter dans Travaux']] },
+  { id: 'feuille-cal-fiche', aller: [['Calendrier', { dans: 'nav button' }], ['ZZ TEST Commande de malt', { p: 1 }]] },
+  { id: 'feuille-client', aller: [['Clients', { dans: 'nav button' }], ['Actions rapides'], ['Nouveau client', { c: 1 }]] },
+  { id: 'feuille-tarif', aller: [['Clients', { dans: 'nav button' }], ['Actions rapides'], ['Nouveau tarif', { c: 1 }]] },
+  { id: 'feuille-achat', aller: [['Stocks', { dans: 'nav button', p: 1 }], ['Matériel'], ['Achat', { c: 1 }]], seulement: '390' }, // au 1280 le bouton « Achat » de la tuile Matériel n'est pas atteint par ce chemin : limite connue, dite
+  { id: 'feuille-plus', aller: [['Bord', { dans: 'nav button' }], ['Actions rapides']] }
+];
+const FOND_LARGEURS = [{ nom: '390', width: 390, height: 844, isMobile: true }, { nom: '1280', width: 1280, height: 800, isMobile: false }];
+
+/** Dans la page : défile tout en bas, puis mesure l'espace sous le dernier contenu visible de la zone qui défile. */
+function mesurerFond() {
+  const style = (e) => getComputedStyle(e);
+  const dlg = [...document.querySelectorAll('[role=dialog]')].filter((d) => { const r = d.getBoundingClientRect(); return r.width > 0 && r.height > 0; }).at(-1) || null;
+  const sousNav = (e) => !!e.closest('nav');
+  const defilants = [...(dlg ? dlg.querySelectorAll('*') : document.querySelectorAll('body *'))].concat(dlg ? [dlg] : [])
+    .filter((e) => /(auto|scroll)/.test(style(e).overflowY) && e.scrollHeight > e.clientHeight + 2 && e.clientHeight > 40 && !sousNav(e) && !e.closest('.floating-actions'));
+  const doc = document.scrollingElement;
+  const plage = (e) => (e === doc ? doc.scrollHeight - innerHeight : e.scrollHeight - e.clientHeight);
+  for (let k = 0; k < 2; k++) { for (const e of defilants) e.scrollTop = e.scrollHeight; if (!dlg) doc.scrollTop = doc.scrollHeight; }
+  const candidats = (dlg ? [] : [doc]).concat(defilants);
+  let principal = null;
+  for (const e of candidats) if (plage(e) > 2 && (!principal || plage(e) > plage(principal))) principal = e;
+  const bilan = { dialog: !!dlg, defile: !!principal, hauteurFenetre: innerHeight };
+  if (!principal) return { ...bilan, tient: true };
+  const racine = principal === doc ? (dlg || document.querySelector('main') || document.body) : principal;
+  const zone = principal === doc ? { top: 0, bottom: innerHeight, left: 0, right: innerWidth } : principal.getBoundingClientRect();
+  // pieds collés : fixes ou collants, dans la moitié basse de la zone, qui la recouvrent à moitié au moins en largeur
+  let limite = Math.min(zone.bottom, innerHeight); let limiteNom = principal === doc ? 'fenêtre' : 'zone qui défile';
+  const colles = [];
+  for (const e of document.querySelectorAll('body *')) {
+    const c = style(e); if (c.position !== 'fixed' && c.position !== 'sticky') continue;
+    if (c.pointerEvents === 'none') continue; // un message qui ne prend pas le toucher ne borne pas la zone
+    if (e.matches('[data-toast], .floating-actions, .plus-voile') || e.closest('.floating-actions, [data-toast]')) continue;
+    const r = e.getBoundingClientRect(); if (!(r.width > 0 && r.height > 0)) continue;
+    if (e.contains(racine)) continue; // la feuille elle-même est fixe : son contenu compte
+    colles.push(e);
+    if (r.top > zone.top + (limite - zone.top) / 2 && Math.min(r.right, zone.right) - Math.max(r.left, zone.left) >= Math.min(r.width, zone.right - zone.left) / 2 && r.top < limite) {
+      limite = r.top; limiteNom = (e.tagName + '.' + String(e.className).split(' ')[0]).slice(0, 40);
+    }
+  }
+  const fondPage = style(document.body).backgroundColor;
+  const alpha = (col) => { const m = col.match(/rgba?\(([^)]*)\)/); if (!m) return 0; const p = m[1].split(/[ ,/]+/).filter(Boolean); return p.length > 3 ? Number(p[3]) : 1; };
+  const visible = (e) => { const c = style(e); return c.display !== 'none' && c.visibility !== 'hidden' && Number(c.opacity) > 0.02; };
+  let bas = -1e9; let qui = '';
+  const note = (e, b) => {
+    // rogné par un ancêtre qui masque ou défile (sous la racine)
+    for (let a = e.parentElement; a && a !== racine && a !== document.body; a = a.parentElement) { const o = style(a); if (o.overflowY !== 'visible') b = Math.min(b, a.getBoundingClientRect().bottom); }
+    if (b > bas) { bas = b; qui = (e.tagName + (e.className && typeof e.className === 'string' ? '.' + e.className.split(' ')[0] : '') + ' « ' + (e.innerText || e.getAttribute('aria-label') || '').replace(/\s+/g, ' ').slice(0, 30) + ' »').slice(0, 90); }
+  };
+  const pris = (e) => !e.closest('.sr-only, [aria-hidden=true], [hidden], nav, .floating-actions, [data-toast], .plus-voile') && !colles.some((c) => c.contains(e)) && !(dlg && principal === doc);
+  const parcours = (e) => {
+    if (!pris(e) || !visible(e)) return;
+    const c = style(e); const r = e.getBoundingClientRect();
+    if (r.width > 0 && r.height > 0) {
+      const tag = e.tagName;
+      if (/^(IMG|CANVAS|VIDEO|SELECT|TEXTAREA)$/.test(tag) || (tag === 'INPUT' && e.type !== 'hidden') || (tag === 'svg' && !e.parentElement.closest('svg'))) note(e, r.bottom);
+      else if (parseFloat(c.borderBottomWidth) > 0 && alpha(c.borderBottomColor) > 0.05 && c.borderBottomStyle !== 'none') note(e, r.bottom);
+      else if (alpha(c.backgroundColor) > 0.05 && c.backgroundColor !== fondPage && !e.contains(racine) && !e.matches('main, #root, [data-page-shell]') && r.height < innerHeight * 0.95) note(e, r.bottom);
+    }
+    for (const n of e.childNodes) {
+      if (n.nodeType === 3 && n.textContent.trim()) { const g = document.createRange(); g.selectNodeContents(n); for (const q of g.getClientRects()) if (q.height > 1.5 && q.width > 1.5) note(e, q.bottom); }
+      else if (n.nodeType === 1) parcours(n);
+    }
+  };
+  parcours(racine);
+  if (bas < -1e8) return { ...bilan, tient: false, aucunContenu: true };
+  return { ...bilan, tient: false, bas: Math.round(bas), limite: Math.round(limite), limiteNom, ecart: Math.round(limite - bas), dernier: qui, vide: Math.round(plage(principal)) };
+}
+
+async function vueFond(banc, aujourdhui) {
+  for (const larg of FOND_LARGEURS) {
+    for (const vue of FOND_VUES) {
+      const id = `${vue.id}@${larg.nom}`;
+      if (vue.seulement && vue.seulement !== larg.nom) continue;
+      if (seuls && !seuls.includes(vue.id) && !seuls.includes(id) && !seuls.includes('VUE-FOND')) continue;
+      console.log(`VUE-FOND ${id}`);
+      const s = await pageP(banc, aujourdhui); // la fixture des étapes neuves : le Calendrier du tag tour7 s'ouvre (sans le brassin du jour)
+      try {
+        await s.p.setViewport({ width: larg.width, height: larg.height, isMobile: larg.isMobile, hasTouch: true, deviceScaleFactor: 1 });
+        await s.demarrer();
+        await aller(s, vue.aller); await sleep(1100);
+        const m = await s.p.evaluate(mesurerFond); await sleep(900);
+        await s.cap(`fond-${vue.id}-${larg.nom}`);
+        mesures.fond.push({ vue: vue.id, largeur: larg.nom, ...m });
+        const f = [];
+        if (m.aucunContenu) f.push('aucun contenu repéré dans la zone qui défile : mesure impossible');
+        else if (!m.tient) {
+          if (m.ecart > FOND_MAX_PX) f.push(`${m.ecart} px de vide sous le dernier contenu (> ${FOND_MAX_PX}), défilable de ${m.vide} px, dernier contenu ${m.dernier}, jusqu'à ${m.limiteNom}`);
+          if (m.ecart < -1) f.push(`le dernier contenu reste ${-m.ecart} px sous ${m.limiteNom} (masqué), ${m.dernier}`);
+        }
+        const d = m.tient ? 'tient sans défiler' : m.aucunContenu ? 'aucun contenu repéré' : `${m.ecart} px sous le dernier contenu (${m.dernier}) jusqu'à ${m.limiteNom}`;
+        verdict('VUE-FOND', id, f, d);
+      } catch (err) { await s.cap(`fond-${vue.id}-${larg.nom}-erreur`).catch(() => {}); verdict('VUE-FOND', id, [`non joué : ${String(err.message ?? err).slice(0, 160)}`], 'vue non atteinte'); }
+      await s.fermer().catch(() => {});
+    }
+  }
+}
+
 async function jouer(dir) {
   const banc = await lancerBanc(dir);
   const aujourdhui = new Date().toISOString().slice(0, 10);
   try {
+    if (controles.includes('VUE-FOND')) await vueFond(banc, aujourdhui);
     if (controles.includes('VUE-SAUTE')) await vueSaute(banc, aujourdhui);
     if (controles.includes('NOM-OBLIGE')) { await nomOblige(banc, aujourdhui); await nomsPoses(banc, aujourdhui); }
     if (controles.includes('ENTREE')) await entrees(banc, aujourdhui);
