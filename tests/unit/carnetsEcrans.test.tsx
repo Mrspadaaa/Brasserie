@@ -524,14 +524,14 @@ describe('C6 · G8, G29, pastilles, G30, G32', () => {
     const onOuvrirLien = vi.fn();
     const r2 = ouvert({ liens, onOuvrirLien });
     const zone = r2.container.querySelector('.cn-liens') as HTMLElement;
-    expect(zone.querySelectorAll('button.cn-pastille-lien').length).toBe(3);
-    expect(zone.textContent).toContain('+1');
-    expect(zone.textContent).toContain('À venir · supprimé');
+    // CRN-9 (g05-1) : une ligne par lien, « Dans À venir depuis le 16 nov. · <plan> · Voir › », sans aperçu à déplier
+    expect(zone.querySelectorAll('button.cn-lien-ligne').length).toBe(2);
+    expect(zone.querySelectorAll('.cn-lien-ligne').length).toBe(3);
+    expect(zone.textContent).toContain('+1 autres');
+    expect(zone.textContent).toContain('Supprimé côté À venir');
+    expect(zone.textContent).toContain('Dans À venir depuis le 16 nov. · Hotte inox 120 cm');
     fireEvent.click(within(zone).getByRole('button', { name: /Hotte inox 120 cm/ }));
-    const apercu = within(zone).getByRole('region', { name: 'Aperçu du lien' });
-    expect(apercu.textContent).toContain('dans À venir · depuis le 16 nov.');
-    expect(apercu.textContent).not.toMatch(/CHF|€|Fr\.|\d[  ']\d{3}/);
-    fireEvent.click(within(apercu).getByRole('button', { name: 'Ouvrir dans À venir' }));
+    expect(zone.textContent).not.toMatch(/CHF|€|Fr\.|\d[  ']\d{3}/);
     expect(onOuvrirLien).toHaveBeenCalledWith(liens[0]);
   });
   it('G30 « ✓ Renommé · avant : <titre> · Annuler » et G32 « Note supprimée · Annuler » à la place de la note, sans boîte', () => {

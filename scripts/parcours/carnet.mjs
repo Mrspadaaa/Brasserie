@@ -364,11 +364,26 @@ async function jouer(dir) {
     });
 
     // 4. les liens du Carnet vers les autres écrans
+    // CRN-9 (g05-1, i06-1) : le lien tient en une ligne « Dans À venir depuis le 16 nov. · Voir › », le titre du carnet n'y est pas redit,
+    // et sa hauteur reste sous 60 px (la tête : pastille + carte « Ouvrir dans À venir », ~150 px).
+    const lienMateriel = async (n, ou) => {
+      const r = await p.evaluate((ou) => {
+        const titre = document.querySelector('h1, h2')?.textContent?.trim() ?? '';
+        const lignes = [...document.querySelectorAll('button, p')].filter((e) => (e.textContent ?? '').trim().startsWith(`Dans ${ou}`));
+        const zone = lignes[0]?.parentElement;
+        const h = zone ? Math.round(zone.getBoundingClientRect().height) : 0;
+        return { n: lignes.length, h, redit: zone ? (zone.textContent ?? '').includes(titre.slice(0, 20)) : false, texte: zone?.textContent?.trim() ?? '' };
+      }, ou);
+      if (r.n !== 1) return echec(`CRN-9 lien ${n} en une ligne`, `${r.n} ligne(s) « Dans ${ou} … »`);
+      if (r.redit || r.h > 60) return echec(`CRN-9 lien ${n} en une ligne`, `« ${r.texte} » : ${r.h} px${r.redit ? ', titre redit' : ''}`);
+      ok(`CRN-9 lien ${n} en une ligne`, `« ${r.texte} », ${r.h} px`);
+    };
     await etape('20 lien vers Matériel › À venir', async () => {
       await demarrer(); await versAtelier(); await attendreListe();
       await ouvrirCarnetDeListe('ZZ TEST — Frigo de garde'); await cap('20a-frigo-a-venir');
       await verifier('20 carnet du Frigo', { contient: [/À venir/], carnets: true });
-      await toucher('À venir · ZZ TEST');
+      await lienMateriel('20', 'À venir');
+      await toucher('Dans À venir');
       await sleep(800); await cap('20b-materiel-a-venir');
       await verifier('20 lien vers À venir', { contient: [/Frigo de garde/], absent: [] });
     });
@@ -377,7 +392,8 @@ async function jouer(dir) {
       await ouvrirCarnetDeListe('ZZ TEST — Embouteillage');
       await cap('21a-embouteillage');
       await verifier('21 carnet réalisé', { contient: [/[Rr]éalis|payé|Embouteillage/], carnets: true });
-      await toucher('Réalisés · ZZ TEST');
+      await lienMateriel('21', 'Réalisés');
+      await toucher('Dans Réalisés');
       await sleep(800); await cap('21b-materiel-realises');
       await verifier('21 lien vers Réalisés', { contient: [/Embouteillage/] });
     });

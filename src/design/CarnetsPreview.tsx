@@ -120,7 +120,7 @@ export const ETATS_BANC: readonly { d: string; capture: string; adresse: string;
   { d: 'D-139, D-140', capture: '22 et 23', adresse: '?preview=carnets',
     gestes: [`taper la note en vrac « ${NOTE_EN_VRAC_BANC.replace(/\n/g, ' / ')} » · Ajouter`] },
   { d: 'D-46', capture: '55', adresse: '?preview=carnets&lien-retient=a-venir',
-    gestes: ['le Frigo ouvert : pastille « À venir · … » sous le titre', 'la toucher : l’aperçu « dans À venir · depuis le … » et « Ouvrir dans À venir »'] }
+    gestes: ['le Frigo ouvert : ligne « Dans À venir depuis le … · Voir › » sous le titre (CRN-9)', 'la toucher : Matériel › À venir'] }
 ];
 
 /** Lit l'adresse du banc (voir l'en-tête) : quel jeu de données, quel carnet ouvert, quel segment. */

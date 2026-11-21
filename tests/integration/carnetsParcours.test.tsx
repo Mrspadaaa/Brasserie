@@ -106,10 +106,10 @@ function monterSur(magasin: ReturnType<typeof magasinMemoire>) {
 }
 
 describe('D3 et D7 : sortie vers À venir, liens, Suppression v2', () => {
-  it('pastille « À venir · … » sur le Frigo envoyé (R47), et un seul plan par idée (clé idempotente)', async () => {
+  it('ligne « Dans À venir depuis … · Voir » sur le Frigo envoyé (R47, CRN-9), et un seul plan par idée (clé idempotente)', async () => {
     const m = monter(fixtureCarnets(), { plans: fixturePlans(), transactions: [], payments: [] });
     const vue = render(<CarnetsVue {...m.props} ouvrir={{ id: ID_FRIGO, at: 1 }} />);
-    expect(within(vue.container).getAllByText(/À venir · /).length).toBeGreaterThan(0);
+    expect(within(vue.container).getAllByText(/^Dans À venir/).length).toBeGreaterThan(0);
   });
 
   it('Suppression v2 : « 1 lien le retient », « Garder le plan sans ce carnet », puis Supprimer s’allume ; le plan n’est jamais écrit', async () => {

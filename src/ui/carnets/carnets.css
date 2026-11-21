@@ -70,7 +70,6 @@
 .cn-pastille-plein { background: var(--c-zone); color: rgb(var(--cave-950)); }
 .cn-pastille-att { background: var(--c-attbg); color: var(--c-att); }
 .cn-pastille-ajout { background: var(--c-iabg); color: var(--c-ia); font-weight: 600; align-self: flex-start; }
-.cn-pastille-lien { min-height: 44px; border: 1px solid var(--c-line2); }
 /* tour 3, v1-neuf 5 : « À comparer » a une couleur, celle de la liste (g05-1) et de Comparer (g01-8) */
 .cn-statut-research { background: var(--c-zonebg); color: var(--c-zonet); }
 .cn-statut-idea { background: var(--c-s2); color: var(--c-ink2); }
@@ -118,8 +117,9 @@
 .cn-facon-ecartee { background: var(--c-s1); }
 .cn-encart { display: flex; align-items: center; gap: 10px; padding: 10px 12px; border-radius: 12px; background: var(--c-s1); border: 1px solid var(--c-line); }
 .cn-liens { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
-.cn-apercu { flex-basis: 100%; display: flex; flex-direction: column; gap: 4px; padding: 10px 12px; border: 1px solid var(--c-line2); border-radius: 12px; background: var(--c-s1); }
-.cn-apercu .cn-second { align-self: flex-start; }
+/* CRN-9 (g05-1) : une ligne « Dans À venir depuis le 16 nov. · Voir › », sans cadre, comme la ligne de sortie */
+.cn-lien-ligne { flex-basis: 100%; display: flex; align-items: center; gap: 8px; min-height: 44px; margin: 0; padding: 0; border: 0; background: none; color: var(--c-zonet); font: inherit; font-weight: 600; text-align: left; }
+.cn-lien-ligne.cn-mut { font-weight: 400; }
 .cn-choisi-resume { display: flex; flex-direction: column; gap: 8px; }
 .cn-choisi-ligne { display: flex; align-items: center; gap: 8px; padding: 10px 12px; min-height: 56px; }
 .cn-choisi-ligne .cn-sp { display: flex; flex-direction: column; }

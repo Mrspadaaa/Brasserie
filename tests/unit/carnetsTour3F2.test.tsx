@@ -122,8 +122,10 @@ describe('PCN-151, PCN-109, PCN-154 : carnet ouvert', () => {
   it('109 : le lien À venir dit une fois (la pastille R47), pas aussi en ligne de sortie', () => {
     const c = avec(FRIGO, { sortie: { planId: 'P1', le: '2026-11-16' } });
     const { container } = ouvrir(c, { liens: [{ sorte: 'a-venir', id: 'P1', libelle: 'Frigo de garde', etat: 'present', le: '2026-11-16' }] });
-    expect(container.querySelectorAll('.cn-pastille-lien')).toHaveLength(1);
-    expect(container.textContent).not.toContain('Dans À venir depuis');
+    // CRN-9 : le lien est une ligne « Dans À venir depuis le 16 nov. · Voir », dite une fois (la ligne de sortie ne le redit pas)
+    expect(container.querySelectorAll('.cn-lien-ligne')).toHaveLength(1);
+    expect(container.querySelector('.cn-lien-ligne')!.textContent).toMatch(/^Dans À venir depuis le 16 nov\.(Voir)?$/);
+    expect(container.textContent).not.toContain('Frigo de garde · ');
     expect((container.textContent!.match(/À venir/g) ?? []).length).toBe(1);
   });
   it('154 : le menu ··· flotte dans la tête, le titre ne bouge pas', () => {

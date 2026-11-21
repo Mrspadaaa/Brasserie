@@ -67,16 +67,16 @@ describe('PCN-20 : `&g35=1` montre G35 (un carnet du même besoin reçoit les ar
 });
 
 describe('PCN-42 : pendant la suppression, la pastille du lien ne double pas la carte', () => {
-  it('Frigo grisé derrière la carte « Supprimer » : aucune pastille « À venir · … » ; au repos, elle est là', () => {
+  it('Frigo grisé derrière la carte « Supprimer » : aucune ligne « Dans À venir … » ; au repos, elle est là', () => {
     const f = lireCarnets(fixtureCarnets()).find(c => c.id === ID_FRIGO)! as CarnetDoc;
     const liens = [{ sorte: 'a-venir' as const, id: 'P1', libelle: 'ZZ TEST — Frigo de garde pour fûts', etat: 'present' as const, le: '2026-11-16' }];
     const rien = () => {};
     const props = { carnet: f as never, aides: AIDES_ETEINTES, liens, tableau: null, onRetour: rien, onRenommer: rien, onSupprimer: rien, onNote: rien, onOuvrirArticle: rien, onComparer: rien };
     const a = render(<CarnetOuvert {...props} />);
-    expect(a.container.querySelectorAll('.cn-pastille-lien')).toHaveLength(1);
+    expect(a.container.querySelectorAll('.cn-lien-ligne')).toHaveLength(1);
     cleanup();
     const b = render(<CarnetOuvert {...props} grise />);
-    expect(b.container.querySelectorAll('.cn-pastille-lien')).toHaveLength(0);
+    expect(b.container.querySelectorAll('.cn-lien-ligne')).toHaveLength(0);
   });
 });
 

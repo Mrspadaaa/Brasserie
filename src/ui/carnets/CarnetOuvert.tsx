@@ -246,7 +246,6 @@ export function CarnetOuvert(p: CarnetOuvertProps) {
     return () => { window.removeEventListener('keydown', touche); window.removeEventListener('pointerdown', ailleurs); };
   }, [menu]);
   const [cartes, setCartes] = useState(false);
-  const [apercu, setApercu] = useState<string | null>(null);
   const [voirCriteres, setVoirCriteres] = useState(false);
   const r = p.rangee;
   const critere = k.criteres.find(x => x.caracteristique) ?? k.criteres[0];
@@ -419,25 +418,25 @@ export function CarnetOuvert(p: CarnetOuvertProps) {
       {!p.tableau && phraseCitee}
 
       {/* tour 3, f4c (PCN-42) : grisé derrière la carte de suppression, le lien est dit par la carte ; la pastille ne le double pas */}
+      {/* CRN-9 (g05-1, i06-1) : le lien vers Matériel tient en une ligne, « Dans À venir depuis le 16 nov. · Voir › » ; le titre du
+          carnet n'y est pas redit (un seul lien) ; avec plusieurs liens, chacun dit son plan. */}
       {p.liens.length > 0 && !p.grise && (
         <div className="cn-liens">
-          {p.liens.slice(0, 3).map(l => (
-            <button key={`${l.sorte}:${l.id}`} type="button" className="cn-pastille cn-pastille-lien" aria-expanded={apercu === l.id} onClick={() => setApercu(a => (a === l.id ? null : l.id))}>
-              {l.sorte === 'a-venir' ? 'À venir' : 'Réalisés'} · {l.etat === 'supprime' ? 'supprimé' : l.libelle}
-            </button>
-          ))}
-          {p.liens.length > 3 && <span className="cn-pastille">+{p.liens.length - 3}</span>}
-          {apercu && (() => {
-            const l = p.liens.find(x => x.id === apercu);
-            if (!l) return null;
-            return (
-              <div className="cn-apercu" role="region" aria-label="Aperçu du lien">
-                <b>{l.libelle}</b>
-                <span className="cn-mut">{l.etat === 'supprime' ? 'supprimé côté À venir' : l.sorte === 'a-venir' ? 'dans À venir' : 'réalisé'}{dateCourte(l.le) ? ` · depuis le ${dateCourte(l.le)}` : ''}</span>
-                {l.etat === 'present' && p.onOuvrirLien && <button type="button" className="cn-second" onClick={() => p.onOuvrirLien!(l)}>Ouvrir dans {l.sorte === 'a-venir' ? 'À venir' : 'Réalisés'}</button>}
-              </div>
-            );
-          })()}
+          {p.liens.slice(0, 3).map(l => {
+            const ou = l.sorte === 'a-venir' ? 'À venir' : 'Réalisés';
+            const quoi = p.liens.length > 1 ? ` · ${l.libelle}` : '';
+            const depuis = dateCourte(l.le) ? ` depuis le ${dateCourte(l.le)}` : '';
+            const texte = l.etat === 'supprime' ? `Supprimé côté ${ou}${quoi}` : `Dans ${ou}${depuis}${quoi}`;
+            return l.etat === 'present' && p.onOuvrirLien
+              ? (
+                <button key={`${l.sorte}:${l.id}`} type="button" className="cn-lien-ligne" onClick={() => p.onOuvrirLien!(l)}>
+                  <CalendarCheck size={18} aria-hidden /><span className="cn-sp">{texte}</span>
+                  <span className="cn-lien">Voir <ChevronRight size={16} aria-hidden /></span>
+                </button>
+              )
+              : <p key={`${l.sorte}:${l.id}`} className="cn-lien-ligne cn-mut"><CalendarCheck size={18} aria-hidden /><span className="cn-sp">{texte}</span></p>;
+          })}
+          {p.liens.length > 3 && <span className="cn-mut">+{p.liens.length - 3} autres</span>}
         </div>
       )}
 
