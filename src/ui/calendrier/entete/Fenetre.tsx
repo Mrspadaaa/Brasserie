@@ -2,6 +2,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import { bornes, etiquetteCourte, type Periode } from '../../../components/periode/periode';
 import { lundiDe } from '../../../domain/calendrier';
 import { ajouterJours, largeurTexte, placeEtiquette, type Boite } from './Courbe';
+import { aBouge } from '../../geste';
 
 /**
  * La fenêtre (E06, c1-d) : le cadre posé sur la courbe, ses deux poignées, l'étiquette « S47 – S52 » qui suit le doigt ; et le lien avec la
@@ -176,7 +177,9 @@ export function Cadre({ numeros, lundis, index, nombre, largeur, annee, onChange
     const suit = (ev: PointerEvent) => {
       if (ev.pointerId !== id) return;
       const dx = ev.clientX - x0;
-      if (Math.abs(dx) > 4) bouge = true;
+      // Frise B, R1 : rien ne bouge avant 6 px ; un toucher ne change rien
+      if (!bouge && !aBouge(dx)) return;
+      bouge = true;
       if (annee) return;
       if (genre === 'fin') {
         /* CAL-PERIODE-LIBRE (18.11) : la fin se pose au doigt, plus courte ou plus longue, une semaine au moins */
@@ -188,8 +191,10 @@ export function Cadre({ numeros, lundis, index, nombre, largeur, annee, onChange
         setDrag({ index: dernier, nombre, bord: dernier * unit });
       }
     };
-    const nettoie = () => { window.removeEventListener('pointermove', suit); window.removeEventListener('pointerup', fin); window.removeEventListener('pointercancel', annule); };
+    const nettoie = () => { window.removeEventListener('pointermove', suit); window.removeEventListener('pointerup', fin); window.removeEventListener('pointercancel', annule); window.removeEventListener('keydown', echap, true); };
     const annule = (ev: PointerEvent) => { if (ev.pointerId !== id) return; nettoie(); setDrag(null); };
+    // Frise B, R10 : Échap pendant le tirage rend la fenêtre d'avant (rien n'est posé)
+    const echap = (ev: KeyboardEvent) => { if (ev.key !== 'Escape') return; ev.preventDefault(); ev.stopPropagation(); nettoie(); setDrag(null); };
     const fin = (ev: PointerEvent) => {
       if (ev.pointerId !== id) return;
       nettoie();
@@ -207,6 +212,7 @@ export function Cadre({ numeros, lundis, index, nombre, largeur, annee, onChange
     window.addEventListener('pointermove', suit);
     window.addEventListener('pointerup', fin);
     window.addEventListener('pointercancel', annule);
+    window.addEventListener('keydown', echap, true);
   };
 
   // La courbe décide du doigt par la géométrie (EnTete) : les boutons des poignées ne reçoivent pas le toucher (`pointer-events: none`), sans
