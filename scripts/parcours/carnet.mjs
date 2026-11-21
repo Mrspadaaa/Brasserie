@@ -29,7 +29,7 @@ const { fixtureCarnet } = await import(pathToFileURL(path.join(ICI, 'fixtures', 
 const CHROME = process.env.CHROME_PATH || 'C:/Program Files/Google/Chrome/Application/chrome.exe';
 const args = process.argv.slice(2);
 const opt = (n) => { const i = args.indexOf(`--${n}`); return i >= 0 ? args[i + 1] : null; };
-const sortie = path.resolve(args.find((a, i) => !a.startsWith('--') && !['--build', '--ref'].includes(args[i - 1])) ?? path.join(os.tmpdir(), 'parcours-carnet'));
+const sortie = path.resolve(args.find((a, i) => !a.startsWith('--') && !['--build', '--ref', '--seulement'].includes(args[i - 1])) ?? path.join(os.tmpdir(), 'parcours-carnet'));
 fs.mkdirSync(sortie, { recursive: true });
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 const echecs = []; const notes = [];
@@ -176,9 +176,12 @@ async function jouer(dir) {
       if (carnets !== null && (v.carnets > 0) !== carnets) return echec(etape, carnets ? 'aucun écran du Carnet (CarnetsVue, [data-carnets]) monté' : 'le Carnet est monté là où il ne devrait pas');
       ok(etape, `${contient.length} texte(s) attendu(s), aucun texte < 12 px, aucune ancienne vue`);
     }
-    async function etape(nom, fn) {
+    async function etapeJouee(nom, fn) {
       try { await fn(); } catch (e) { echec(nom, String(e.message ?? e).slice(0, 300)); await cap(`KO-${nom.replace(/[^a-z0-9]+/gi, '-').slice(0, 40)}`).catch(() => {}); }
     }
+    /** `--seulement <motif>` : seules les étapes des fichiers de carnet-etapes/ dont le nom contient le motif sont jouées (un banc court par voie). */
+    const seulement = opt('seulement');
+    const etape = (nom, fn) => (seulement ? Promise.resolve() : etapeJouee(nom, fn));
     /** Page neuve : le magasin recopié (`parcours-carnet:cache`) est vidé, chaque étape repart de la fixture ; `garder` : il est relu (rechargement). */
     const demarrer = async (garder = false) => {
       if (!garder) await p.evaluate(() => { try { localStorage.removeItem('parcours-carnet:cache'); } catch { /* page vierge */ } }).catch(() => {});
@@ -254,8 +257,9 @@ async function jouer(dir) {
     });
     await etape('06 porte Stocks › Matériel › Carnets', async () => {
       await demarrer(); await toucher('Stocks', { exact: true, sel: 'nav button' }).catch(() => toucher('Stocks'));
-      await toucher('Matériel', { exact: true }); await toucher('Carnets 20'); await attendreListe(); await cap('06-porte-stocks');
-      await verifier('06 porte Stocks › Matériel › Carnets', { contient: [...contenuListe, /Carnets\s*20/], carnets: true });
+      await toucher('Matériel', { exact: true }); await toucher('Carnets 2'); await attendreListe(); await cap('06-porte-stocks');
+      /* 21 depuis la « ZZ TEST — Chambre froide » (V0, 21.11) : le compte suit la fixture, pas un nombre écrit ici */
+      await verifier('06 porte Stocks › Matériel › Carnets', { contient: [...contenuListe, /Carnets\s*2\d/], carnets: true });
     });
     await etape('07 porte Calendrier (ampoule d\'une semaine)', async () => {
       await demarrer(); await toucher('Calendrier', { exact: true, sel: 'nav button' }).catch(() => toucher('Calendrier'));
@@ -581,6 +585,24 @@ async function jouer(dir) {
       ok('CRN-21', `carnet neuf : note jusqu'à ${a.bas}, champ ${a.champ} ; note ajoutée : jusqu'à ${b.bas}, champ ${b.champ}`);
     });
     // CRN-suite
+
+    // ══════════ les étapes des voies de correction (Chasse Carnet, 21.11) : un fichier par voie dans carnet-etapes/ ══════════
+    // Un fichier `<nom>.mjs` exporte `default async (ctx)` ; ceux qui commencent par `_` sont des aides partagées, jamais chargés seuls.
+    // Les étapes s'y jouent par `ctx.etape(nom, fn)` ; `ctx.p` est la page courante (elle change avec `ouvrirPage`).
+    const ctx = {
+      get p() { return p; }, get tactile() { return tactile; }, get passe() { return nomPasse; }, fx, ref: opt('ref'), sortie,
+      etape: etapeJouee, ok, echec, verifier, toucher, toucherSel, trouver, present, texte, taper, entree, focaliserChamp, champActif,
+      demarrer, versAtelier, attendreListe, ouvrirCarnetDeListe, surListe, cap, sleep, ouvrirPage, nbBoutons, visibleTel
+    };
+    const dossierEtapes = path.join(ICI, 'carnet-etapes');
+    const fichiersEtapes = fs.existsSync(dossierEtapes)
+      ? fs.readdirSync(dossierEtapes).filter((n) => n.endsWith('.mjs') && !n.startsWith('_') && (!seulement || n.includes(seulement))).sort() : [];
+    if (seulement && !fichiersEtapes.length) echec('--seulement', `aucun fichier de carnet-etapes/ ne contient « ${seulement} »`);
+    for (const f of fichiersEtapes) {
+      const m = await import(pathToFileURL(path.join(dossierEtapes, f)).href);
+      if (typeof m.default !== 'function') { echec(`etapes ${f}`, 'le fichier n\'exporte pas de fonction par défaut'); continue; }
+      await m.default(ctx);
+    }
 
     // ══════════ thèmes et grand écran ══════════
     const theme = async (nom) => { await toucher('Plus : saisie'); await toucher(nom, { exact: true }); await sleep(500); };

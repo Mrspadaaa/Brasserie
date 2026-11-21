@@ -30,8 +30,36 @@ const ASSISTANT = (racine, sortie, aujourdhui) => {
     `const taches = planning.map((t: any) => (faits.includes(t.id) ? { ...t, completed: true } : t));`,
     `const planningDocs = planMigration(taches, new Set(), '${aujourdhui}T12:00:00.000Z').aEcrire.flatMap((c: any) => c.docs);`,
     `const r = fixturePlanRealise();`,
+    // la Chambre froide : le doc d'un carnet « à comparer » du banc (Ventilation), vidé, avec les deux articles sans prix
+    `const base: any = fixtureCarnets().find((d: any) => /Ventilation/.test(d.title));`,
+    `const chambre = { ...base, id: ${JSON.stringify(CHAMBRE_FROIDE.id)}, title: ${JSON.stringify(CHAMBRE_FROIDE.titre)}, carnet: { ...base.carnet, creeLe: '2026-11-20T08:00:00.000Z', phrase: 'chambre froide pour les fûts', criteres: [], facons: [], notes: [], photos: [], messages: [], articles: ${JSON.stringify(CHAMBRE_FROIDE.articles)} } };`,
+    `r.items.push(chambre);`,
     `writeFileSync('${sortie.replace(/\\/g, '/')}', JSON.stringify({ planning: planningDocs, generiques: r.items, plans: r.plans, transactions: r.transactions, payments: r.payments, nbGeneriques: fixtureCarnets().length }));`
   ].join('\n');
+};
+
+// ───────────── « ZZ TEST — Chambre froide » : le carnet des captures 02 à 04 du brasseur (21.11) ─────────────
+// Deux articles « en stock » SANS prix, dix caractéristiques lues en TEXTE (pas de nombre ni d'unité), dont « Épaisseur de l&apos;isolation »
+// (l'entité brute lue dans le JSON-LD du vendeur, CRP-2) et « Couleur : » (deux-points recopiés, CRB-4) ; les noms portent le préfixe
+// « Chambre froide - » du carnet (CRB-9). Ni critère, ni façon, ni note : « rien encore » au premier plan (CRB-7). Données simulées :
+// valeurs d'exemple, domaine `exemple.invalid` ; rien n'est lu sur un vrai site.
+export const CHAMBRE_FROIDE = {
+  id: 'ZZ-CARNET-CHAMBRE-FROIDE',
+  titre: 'ZZ TEST — Chambre froide',
+  /** Le prix d'une page de vendeur tel que le JSON-LD l'écrit : « 4'890.00 » (apostrophe suisse), jamais un nombre. Voir tests/unit/carnetsLireLien.test.ts. */
+  prixPublie: "4'890.00",
+  articles: [
+    { id: 'ZZ-CF-A1', nom: 'Chambre froide - 1800 x 1500 mm - 4,06 m³ - groupe frigorifique inclus', dims: '1800 x 1500 x 2100 mm', interieur: '1700 x 1400 x 2000 mm', volume: '4,06 m³' },
+    { id: 'ZZ-CF-A2', nom: 'Chambre froide - 1500 x 1200 mm - 2,6 m³ - groupe frigorifique inclus', dims: '1500 x 1200 x 2100 mm', interieur: '1400 x 1100 x 2000 mm', volume: '2,6 m³' }
+  ].map((a, i) => ({
+    id: a.id, url: `https://exemple.invalid/zz-test-chambre-froide-${i + 1}`, domaine: 'exemple.invalid', nom: a.nom,
+    vendeur: 'Froid Exemple', pays: 'CH', dispo: 'en stock', lecture: 'lue', origine: 'exemple',
+    valeurs: Object.fromEntries([
+      ['Dimensions du produit', a.dims], ['Dimensions intérieures (L x P x H)', a.interieur], ['Exécution/équipement', 'groupe frigorifique inclus'],
+      ['Couleur :', 'blanc RAL 9010'], ['Performance', 'A+'], ['Épaisseur du matériel', '80 mm'], ['Largeur de la porte', '800 mm'],
+      ['Hauteur de la porte', '1900 mm'], ["Épaisseur de l&apos;isolation", '80 mm PIR'], ['Volume utile', a.volume]
+    ].map(([nom, valeur]) => [nom, { valeur, origine: 'exemple', luLe: '2026-11-21T08:00:00.000Z' }]))
+  }))
 };
 
 /** `racine` : le dossier du code (l'arbre de travail) dont on lit le modèle ; `aujourdhui` : ISO du jour. */
@@ -72,6 +100,7 @@ export function fixtureCarnet(racine, aujourdhui) {
       titresGeneriques: titres(lu.generiques),
       nbCarnetsPlanning: lu.planning.filter((d) => d.type === 'carnet').length,
       nbCarnetsGeneriques: lu.generiques.filter((d) => d.type === 'carnet').length,
+      chambreFroide: CHAMBRE_FROIDE.titre,
       brassin: 'B-FRUTY', depense: 'F-BROUWLAND'
     }
   };
