@@ -343,7 +343,7 @@ export function ecartCible(scale: MeasureScale, value: number): number | null {
 }
 
 /**
- * Le geste (m2, 10.11) : le pouce sur l'échelle cible. Un <input ref={refCurseurNatif} type="range"> natif, transparent, couvre l'échelle (44 px de haut) : il porte
+ * Le geste (m2, 10.11) : le pouce sur l'échelle cible. Un <input type="range"> (geste : src/ui/geste) natif, transparent, couvre l'échelle (44 px de haut) : il porte
  * le glisser, le toucher de piste, les flèches et le lecteur d'écran. Le pouce dessiné suit ; en pointillé tant qu'aucune valeur n'est posée.
  */
 export function MeasureSlider({ scale, kind, value, depart, label, onPose }: {

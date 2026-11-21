@@ -11,7 +11,7 @@ import { refCurseurNatif } from '../geste';
  * (warn, « à relever ») et le pH d'empâtage (« à 15′ ») —, chacune avec un curseur posé sur sa cible et son repère vert, puis
  * « Relever » et « Plus tard ». Rien n'est noté sans toucher : « Plus tard » n'écrit rien et laisse « à relever ».
  * Les chiffres arrivent calculés par `domain/appelMesure.ts` ; la carte n'en calcule aucun. Une valeur inconnue s'écrit « — ».
- * Jetons de la conduite (`--bz-*`), clair et cave ; le curseur est un <input ref={refCurseurNatif} type="range"> natif transparent (clavier, lecteur d'écran).
+ * Jetons de la conduite (`--bz-*`), clair et cave ; le curseur est un <input type="range"> (geste : src/ui/geste) natif transparent (clavier, lecteur d'écran).
  */
 export interface AppelMesureProps {
   appel: AppelPalier;

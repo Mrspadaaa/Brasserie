@@ -65,7 +65,7 @@ export function reperesVisibles(labels: GradueLabel[], min: number, max: number,
 
 /**
  * Curseur gradué de la maquette w1b : piste remplie, zone du matériel hachurée, graduation et repères chiffrés.
- * Le geste reste celui d'un `<input ref={refCurseurNatif} type="range">` natif (clavier compris) ; les repères sont posés à leur valeur réelle.
+ * Le geste reste celui d'un `<input type="range"> (geste : src/ui/geste)` natif pour le clavier (le doigt : frise B, src/ui/geste ; clavier compris) ; les repères sont posés à leur valeur réelle.
  */
 export function GradueSlider({
   value, min, max, step, onChange, ariaLabel, id, disabled, zoneFrom, major, minor, labels, marker, children,
