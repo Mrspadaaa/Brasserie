@@ -2582,3 +2582,7 @@ Classement de la page r3 de Ma levure (https://claude.ai/artifact/DKAJe8ESeMR4ig
 > Pareil, la modification est horrible
 
 (21.11, tour 8, capture-18 : la feuille « Modifier » garde l'ancien carrousel de semaines S36…S4x ; la feuille d'ajout (horizons + frise Durée) lui plaît.)
+
+> Quels petit bug, mais dans l'ensemble ça fonctionne plutôt bien, bien bien mieux que le calendrier alors que les deux devrait avoir le même fonctionnement...
+
+(21.11, tour 8, captures 19 à 21 : la frise de Finances › Opérations (portée sur src/ui/geste) marche bien mieux que celle du Calendrier ; les deux doivent avoir le même fonctionnement, donc le même module.)
