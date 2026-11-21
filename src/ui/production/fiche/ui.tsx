@@ -1,4 +1,5 @@
 import React from 'react';
+import { refCurseurNatif } from '../../geste';
 
 /** Pièces communes de la fiche portée (e1a, e2a, e4c) : la trousse de la maquette en Tailwind aux jetons de l'app. */
 
@@ -83,7 +84,7 @@ export const Curseur: React.FC<{
           <i className="absolute left-1/2 -top-3 h-3 w-0.5 -translate-x-1/2 bg-hop" />
           <b className="block h-6 w-6 rounded-full border-2 border-cave-950 bg-hop ring-2 ring-hop/60" />
         </span>
-        <input type="range" min={min} max={max} step={step} value={value} aria-label={label}
+        <input ref={refCurseurNatif} type="range" min={min} max={max} step={step} value={value} aria-label={label}
           aria-valuetext={format ? format(value) : undefined}
           onChange={e => onChange(Number(e.target.value))}
           className="absolute inset-0 h-11 w-full cursor-pointer opacity-0" />
