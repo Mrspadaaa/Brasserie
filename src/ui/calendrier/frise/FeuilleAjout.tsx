@@ -3,13 +3,14 @@ import { Sheet } from '../../Sheet';
 import { Input } from '../../Input';
 import { ChampMontant } from '../../finance/ChampMontant';
 import {
-  appliquerPuce, aDesJoursActifs, aUneFenetre, aUnMontant, avecNomPose, brouillonVide, choisirJour, choisirJours, peutChoisirJour, jourPose, libelleMontant, peutMettreDeCote, preteLe, puceJours, puces, resumeFenetre, toucherSemaine,
+  appliquerPuce, aDesJoursActifs, aUneFenetre, aUnMontant, avecNomPose, brouillonVide, choisirJour, etirerFin, poserHorizon, choisirJours, peutChoisirJour, jourPose, libelleMontant, peutMettreDeCote, preteLe, puceJours, puces, resumeFenetre, toucherSemaine,
   type BrouillonAjout, type Confirmation, type ContexteAjout, type Puce
 } from '../../../domain/calendrierAjout';
 import { prixSemblable, texteIntention } from '../../../domain/horizons';
 import { Horizons } from '../../saisie/Horizons';
 import { RANGEES, ajouterJours, etiquetteS, francs, jourLisible, lundiDe, nomRangee, type Rangee, type SemaineCalendrier } from '../../../domain/calendrier';
 import { CLASSE_TEINTE } from './Marque';
+import { DureeFenetre } from './DureeFenetre';
 import './feuille.css';
 
 /**
@@ -97,6 +98,8 @@ export const FeuilleAjout: React.FC<FeuilleAjoutProps> = ({ mode, initial, conte
   const [refus, setRefus] = useState<string | null>(null);
   const [enCours, setEnCours] = useState(false);
   const rangeeSemaines = useRef<HTMLDivElement | null>(null);
+  const idJours = useId();
+  const [joursOuverts, setJoursOuverts] = useState(() => !!initial.joursActifs);
 
   const lesPuces = useMemo(() => puces(b.rangee, contexte), [b.rangee, contexte]);
   const fenetre = aUneFenetre(b.rangee);
@@ -280,11 +283,11 @@ export const FeuilleAjout: React.FC<FeuilleAjoutProps> = ({ mode, initial, conte
           <div className="mb-1 flex items-baseline gap-2">
             <span className="text-sm text-cave-200">{horizons ? 'Quand' : fenetre ? 'Semaines' : 'Semaine'}</span>
             {intention && <b className="text-sm font-semibold text-cave-50" data-intention>{intention}</b>}
-            {b.debut &&<span className="text-sm text-cave-50">{etiquetteS(b.debut)}, {jourLisible(jourDit ?? b.debut)}</span>}
+            {b.debut &&<span className="text-sm text-cave-50" data-feuille-semaine={b.debut}>{etiquetteS(b.debut)}, {jourLisible(jourDit ?? b.debut)}</span>}
           </div>
           {horizons ? (
             <Horizons date={b.debut ?? undefined} aujourdhui={contexte.aujourdhui} classePuce={PUCE} sansPlusTard etiquette="Quand" className="cal-f-horizons"
-              onChoisir={(_, lundi) => { if (!lundi) return; const { jour: _j, jourChoisi: _c, ...reste } = b; void _j; void _c; regler({ ...reste, debut: lundi, fin: null, debutChoisi: true, parHorizon: true }); }} />
+              onChoisir={(_, lundi) => { if (lundi) regler(poserHorizon(b, lundi)); }} />
           ) : (
           <div
             ref={rangeeSemaines} role="group" aria-label="Semaine" data-vaul-no-drag data-visibles={semainesVisibles}
@@ -327,15 +330,30 @@ export const FeuilleAjout: React.FC<FeuilleAjoutProps> = ({ mode, initial, conte
               })}
             </div>
           )}
+          {/* D404 : l'horizon pose le début ; la durée s'étire au geste de la frise B (fêtes, achats, travaux, activités) */}
+          {horizons && fenetre && b.debut && (
+            <div className="mt-2">
+              <DureeFenetre rangee={b.rangee} debut={b.debut} fin={b.fin} onFin={f => regler(etirerFin(b, f))} />
+            </div>
+          )}
         </div>
 
+        {/* D404 : les jours actifs restent, repliés sous le choix de période ; ouverts d'emblée quand un nombre est choisi */}
         {aDesJoursActifs(b.rangee) && (
-          <div role="group" aria-label="Jours actifs" className="flex flex-wrap items-center gap-1.5">
-            <span className="text-sm text-cave-200">Jours actifs</span>
-            {puceJours(b).map(p => (
-              <button key={p.jours} type="button" aria-pressed={p.choisie} disabled={p.grisee} onClick={() => regler(choisirJours(b, p.jours))}
-                className="cal-jour-puce min-h-9 rounded-full border border-cave-700 px-3 text-sm text-cave-50 aria-pressed:border-cave-50 aria-pressed:bg-cave-850 aria-pressed:font-bold disabled:opacity-40">{p.jours} j</button>
-            ))}
+          <div>
+            <button type="button" aria-expanded={joursOuverts} aria-controls={idJours} onClick={() => setJoursOuverts(o => !o)} data-jours-actifs-pli
+              className="inline-flex min-h-9 items-center gap-1.5 text-sm text-cave-200">
+              Jours actifs{b.joursActifs ? <b className="font-semibold text-cave-50">· {b.joursActifs} j</b> : <span>· tous</span>}
+              <span aria-hidden="true" className={`inline-block transition-transform${joursOuverts ? ' rotate-90' : ''}`}>›</span>
+            </button>
+            {joursOuverts && (
+              <div id={idJours} role="group" aria-label="Jours actifs" className="flex flex-wrap items-center gap-1.5">
+                {puceJours(b).map(p => (
+                  <button key={p.jours} type="button" aria-pressed={p.choisie} disabled={p.grisee} onClick={() => regler(choisirJours(b, p.jours))}
+                    className="cal-jour-puce min-h-9 rounded-full border border-cave-700 px-3 text-sm text-cave-50 aria-pressed:border-cave-50 aria-pressed:bg-cave-850 aria-pressed:font-bold disabled:opacity-40">{p.jours} j</button>
+                ))}
+              </div>
+            )}
           </div>
         )}
 

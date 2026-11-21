@@ -610,14 +610,16 @@ export function CalendrierTab(props: CalendrierTabProps) {
   /* CRITIQUE-10 n° 2 (E34, E45, D-200, « J'ajoute et je vois rien ») : une chose posée hors de la fenêtre se montre par « Voir S20 › ». Le
      toucher règle LA période de l'app (même chemin que le menu période, ET-PER) sur la plus petite durée du menu (6 sem., 3 mois, 6 mois, An)
      qui contient la chose entière, une semaine avant son début. Nouveau, à valider. */
-  const voirEtendue = useCallback((du: string, au: string) => {
+  const voirEtendue = useCallback((du: string, au: string, garderMessage = false) => {
     const total = modele.semaines.length || SEMAINES_ANNEE;
     const lundis = modele.semaines.map(s => s.debut);
     const voulu = lundiDe(ajouterJours(du, -7));
     const depart = voulu < premierLundi ? premierLundi : voulu;
     const besoin = Math.round((Date.parse(`${lundiDe(au)}T00:00:00Z`) - Date.parse(`${depart}T00:00:00Z`)) / (7 * 86400000)) + 1;
     const n = DUREES_MENU.find(d => d >= besoin) ?? SEMAINES_ANNEE;
-    setMessage(null); setMenu(null); setSelectionId(null); setAncreListe(undefined);
+    /* D404 : posée par un horizon, la chose se montre d'office ET son message (Annuler) reste */
+    if (!garderMessage) setMessage(null);
+    setMenu(null); setSelectionId(null); setAncreListe(undefined);
     if (n >= SEMAINES_ANNEE || n >= total) {
       const iAn = Math.min(Math.max(0, lundis.findIndex(l => l >= depart)), Math.max(0, total - SEMAINES_ANNEE));
       const fen: FenetreSemaines = { du: lundis[iAn] ?? premierLundi, semaines: Math.min(SEMAINES_ANNEE, total) };
@@ -733,7 +735,7 @@ export function CalendrierTab(props: CalendrierTabProps) {
       const premiere = colonnes[0]?.debut, derniere = colonnes[colonnes.length - 1]?.fin;
       if (etendue && premiere && derniere && (etendue.au < premiere || etendue.du > derniere)) {
         /* C1 (D396) : posée par un horizon (« 3 mois »), la chose se montre d'office : sa semaine se règle au glisser, sur la frise */
-        if (b.parHorizon) { voirEtendue(etendue.du, etendue.au); return { ok: true }; }
+        if (b.parHorizon) { voirEtendue(etendue.du, etendue.au, true); return { ok: true }; }
         const lien = { texte: `Voir ${etiquetteS(etendue.du)} ›`, agir: () => voirEtendue(etendue.du, etendue.au) };
         setMessage(m => (m && !m.lien ? { ...m, lien } : m));
       }

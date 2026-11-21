@@ -1,4 +1,5 @@
 import React from 'react';
+import { etirerDuree, joursActifs, poserHorizon } from '../helpers/dureeFeuille';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { act, cleanup, fireEvent, render, screen, waitFor, within } from '@testing-library/react';
 import type { Batch, StockItem } from '../../src/types';
@@ -123,14 +124,16 @@ describe('C15 (n° 36, E45, E03) : feuille Travaux, fenêtre S20 → S40, 5 j, �
     const savePlan = vi.spyOn(FinanceService, 'savePlan');
     const appels = monterBanc({ callbacks: { periode: { genre: 'dates', du: JOUR, au: '2027-11-14' } } });
     fireEvent.click(document.querySelector('button[data-plus="travaux"]')!);
-    const d = within(screen.getByRole('dialog', { name: 'Travaux' }));
-    expect(d.getByRole('group', { name: 'Semaine' }).querySelectorAll('button[data-semaine]')).toHaveLength(52);
+    const dlg = screen.getByRole('dialog', { name: 'Travaux' });
+    const d = within(dlg);
+    /* D404 : plus de carrousel de semaines à l'ajout ; l'horizon pose le début, la durée s'étire au geste de la frise B */
+    expect(dlg.querySelector('.cal-f-semaines')).toBeNull();
     fireEvent.click(d.getByRole('button', { name: 'Sols : colle et joints' }));
-    const semaines = within(d.getByRole('group', { name: 'Semaine' }));
-    fireEvent.click(semaines.getByRole('button', { name: /^S20/ }));
-    expect(d.getByRole('button', { name: '10 j' })).toBeDisabled();
-    fireEvent.click(semaines.getByRole('button', { name: /^S40/ }));
-    expect(d.getByText('S20 → S40 · 21 sem.')).toBeInTheDocument();
+    poserHorizon('6 mois');
+    expect(d.getByText(/^S19, /)).toBeInTheDocument();
+    expect(joursActifs().getByRole('button', { name: '10 j' })).toBeDisabled();
+    expect(etirerDuree(22)).toBe(22);
+    expect(d.getByText('S19 → S40 · 22 sem.')).toBeInTheDocument();
     expect(d.getByRole('button', { name: '10 j' })).toBeEnabled();
     fireEvent.click(d.getByRole('button', { name: '5 j' }));
     const mise = d.getByRole('button', { name: /Mettre de côté/ });
@@ -140,22 +143,34 @@ describe('C15 (n° 36, E45, E03) : feuille Travaux, fenêtre S20 → S40, 5 j, �
     await waitFor(() => expect(appels.filter(a => a.op === 'creer')).toHaveLength(1));
     /* une seule écriture : la chose elle-même (un plan manuel de travaux), qui porte le drapeau ; aucun plan récurrent de mise de côté (P7) */
     expect(appels).toHaveLength(1);
-    expect(appels[0]).toMatchObject({ collection: 'financialPlans', patch: { title: 'Sols : colle et joints', amountCents: 32000, date: '2027-10-10', fenetre: { du: '2027-05-17', au: '2027-10-10', joursActifs: 5, miseDeCote: true } } });
+    expect(appels[0]).toMatchObject({ collection: 'financialPlans', patch: { title: 'Sols : colle et joints', amountCents: 32000, date: '2027-10-10', fenetre: { du: '2027-05-10', au: '2027-10-10', joursActifs: 5, miseDeCote: true } } });
     expect(savePlan).not.toHaveBeenCalled();
   });
 
-  it('toucher le début, ou une semaine avant lui, repart d’une seule semaine', () => {
+  it('ramener la fin sur le début, ou avant lui, repart d’une seule semaine ; un autre horizon garde la durée', () => {
     monterBanc();
     fireEvent.click(document.querySelector('button[data-plus="travaux"]')!);
-    const d = within(screen.getByRole('dialog', { name: 'Travaux' }));
-    const semaines = within(d.getByRole('group', { name: 'Semaine' }));
-    fireEvent.click(semaines.getByRole('button', { name: /^S20/ }));
-    fireEvent.click(semaines.getByRole('button', { name: /^S40/ }));
-    fireEvent.click(semaines.getByRole('button', { name: /^S20/ }));
+    const dlg = screen.getByRole('dialog', { name: 'Travaux' });
+    const d = within(dlg);
+    poserHorizon('6 mois');
+    etirerDuree(22);
+    expect(d.getByText('S19 → S40 · 22 sem.')).toBeInTheDocument();
+    /* un toucher sans glisser ne change rien (R1) */
+    const piste = dlg.querySelector('.cal-f-duree-piste') as HTMLElement;
+    fireEvent.pointerDown(piste, { pointerId: 3, button: 0, clientX: Number(piste.dataset.xFin) });
+    fireEvent.pointerUp(piste, { pointerId: 3, button: 0, clientX: Number(piste.dataset.xFin) });
+    expect(d.getByText('S19 → S40 · 22 sem.')).toBeInTheDocument();
+    expect(etirerDuree(1)).toBe(1);
     expect(d.queryByText(/→/)).toBeNull();
-    fireEvent.click(semaines.getByRole('button', { name: /^S40/ }));
-    fireEvent.click(semaines.getByRole('button', { name: /^S12/ }));
+    etirerDuree(22);
+    /* au-delà du début : la fin s'arrête sur lui */
+    expect(etirerDuree(-8)).toBe(1);
     expect(d.queryByText(/→/)).toBeNull();
+    /* D404 : un autre horizon déplace le début et garde la durée */
+    etirerDuree(4);
+    poserHorizon('1 an');
+    expect(dlg.querySelector('[data-feuille-semaine]')!.getAttribute('data-feuille-semaine')).toBe('2027-11-15');
+    expect(d.getByText(/→ .* · 4 sem\.$/)).toBeInTheDocument();
   });
 });
 
@@ -231,8 +246,8 @@ describe('C18 (n° 38, E47 b) : la feuille ouverte depuis un brassin habituel es
     toucher(boutonDe('[data-proposition="brassin-habituel"]'));
     const d = within(screen.getByRole('dialog', { name: 'Brassins' }));
     expect(d.getByRole('button', { name: recette })).toHaveAttribute('aria-pressed', 'true');
-    const choisie = d.getByRole('group', { name: 'Semaine' }).querySelector('button[aria-pressed="true"]') as HTMLElement;
-    const lundi = choisie.getAttribute('data-semaine')!;
+    /* D404 : la semaine proposée est dite au-dessus des horizons (plus de carrousel à l'ajout) */
+    const lundi = screen.getByRole('dialog', { name: 'Brassins' }).querySelector('[data-feuille-semaine]')!.getAttribute('data-feuille-semaine')!;
     expect(lundiDe(lundi)).toBe(lundi);
     expect(lundi > lundiDe(JOUR)).toBe(true);
     expect(d.queryByRole('button', { name: 'Plus de détails ›' })).toBeNull();

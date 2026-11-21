@@ -287,6 +287,33 @@ function toucherSemaineBrut(b: BrouillonAjout, lundi: string): BrouillonAjout {
   return { ...b, fin: l };
 }
 
+/** Les jours actifs qui tiennent encore dans la fenêtre (7 par semaine) ; au-delà, ils partent : l'inconnu n'est pas 0. */
+function joursQuiTiennent(b: BrouillonAjout): BrouillonAjout {
+  if (b.joursActifs === undefined || b.joursActifs <= 7 * (nbSemaines(b) ?? 1)) return b;
+  const { joursActifs: _j, ...reste } = b;
+  void _j;
+  return reste;
+}
+
+/**
+ * D404 : un horizon (« 6 mois ») pose le début ; une fenêtre déjà étirée garde sa durée (elle glisse avec lui). Le jour d'une chose rouverte
+ * part (la semaine change).
+ */
+export function poserHorizon(b: BrouillonAjout, lundi: string): BrouillonAjout {
+  const { jour: _j, jourChoisi: _c, ...reste } = b;
+  void _j; void _c;
+  const debut = lundiDe(lundi);
+  const longueur = b.debut && b.fin && aUneFenetre(b.rangee) ? ecartSemaines(b.debut, b.fin) : 0;
+  return { ...reste, debut, fin: longueur > 0 ? lundiDe(ajouterJours(debut, longueur * 7)) : null, debutChoisi: true, parHorizon: true };
+}
+
+/** D404 : la fin étirée au geste de la frise B (lundi de la dernière semaine ; `null` : une seule semaine). Jamais avant le début. */
+export function etirerFin(b: BrouillonAjout, fin: string | null): BrouillonAjout {
+  if (!b.debut || !aUneFenetre(b.rangee)) return b;
+  const f = fin && lundiDe(fin) > b.debut ? lundiDe(fin) : null;
+  return joursQuiTiennent({ ...b, fin: f, debutChoisi: true });
+}
+
 /** Le nombre de semaines de la fenêtre (1 pour une seule semaine) ; `null` sans début. */
 export function nbSemaines(b: BrouillonAjout): number | null {
   if (!b.debut) return null;
