@@ -651,3 +651,17 @@
 
 /* CRN-15 : « Entrée = renommer » est une aide de clavier ; au doigt (pas de souris), elle ne dit rien */
 @media (hover: none) and (pointer: coarse) { .cn-aide-clavier { display: none; } }
+
+/* CRN-LISTE (21.11) : ligne de carnet compacte, 48 px au plus (titre sur une ligne, état ou compte dessous), une rangée recherche + filtre */
+.cn-liste .cn-carnet { padding-right: 8px; }
+.cn-liste .cn-carnet-corps { min-height: 48px; padding: 5px 10px; gap: 10px; }
+.cn-liste .cn-vignette, .cn-liste .cn-vignette-vide { width: 32px; height: 32px; border-radius: 8px; }
+.cn-liste .cn-carnet-tx { gap: 0; }
+.cn-liste .cn-carnet-titre { font-size: 15px; line-height: 18px; -webkit-line-clamp: 1; }
+.cn-liste .cn-carnet-tx > span { font-size: 12px; line-height: 15px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.cn-liste .cn-carnet-tx > span ~ span:not(.cn-pastille):not(.cn-compte-ligne) { display: none; }
+.cn-liste .cn-carnet-tx:has(> .cn-compte-ligne) > span:not(.cn-compte-ligne):not(.cn-pastille) { display: none; }
+.cn-liste .cn-cite.cn-deux-lignes { display: block; -webkit-line-clamp: unset; }
+.cn-filtre { display: flex; align-items: center; gap: 6px; overflow-x: auto; scrollbar-width: none; }
+.cn-recherche { flex: 1 0 120px; min-width: 0; height: 32px; padding: 0 10px; border-radius: 999px; border: 1px solid var(--c-line2); background: var(--c-bg); color: var(--c-ink); font: inherit; font-size: 14px; }
+.cn-puce.cn-puce-filtre { min-height: 32px; padding: 0 10px; font-size: 13px; flex: none; }

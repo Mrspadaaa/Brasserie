@@ -134,7 +134,7 @@ describe('C1 · écrans figés', () => {
     expect(screen.getByText('Ventilation de la salle de brassage')).toBeTruthy();
     expect(container.textContent).toContain('Ensuite : avis du ferblantier');
     expect(container.textContent).toContain('« 2 bacs pour laver les fûts »');
-    expect(screen.getByRole('button', { name: /Coller un lien/ })).toBeTruthy();
+    expect(screen.queryByRole('button', { name: /Coller un lien/ })).toBeNull(); // CRN-LISTE : le champ du bas accepte le lien collé
     expect(container.textContent).toContain('Dans À venir depuis le 16 nov.');
     expect(container.textContent).toContain('demandée · pas encore relevée');
     expect(container.textContent).not.toMatch(/baisse|relue|revu le/);
@@ -754,7 +754,7 @@ describe('Corr. 2 (L2) : phrase en titre, Comparer, Choisi, cadre visible', () =
     expect(compte(t.toLowerCase(), longue.toLowerCase())).toBe(1);
     /* sur la liste, rien sous le titre : le carnet ouvert dit « votre phrase en titre », une fois */
     expect(compte(t, 'votre phrase en titre')).toBe(0);
-    expect(container.querySelectorAll('.cn-coller-lien').length).toBe(2);
+    expect(container.querySelectorAll('.cn-coller-lien').length).toBe(0); /* CRN-LISTE : plus de « Coller un lien » par carte */
     /* une phrase différente du titre reste citée (Évier inox, p2:g05-1) */
     expect(t).toContain('« 2 bacs pour laver les fûts »');
     expect(phraseEnTitre('Évier inox', '2 bacs pour laver les fûts')).toBe(false);

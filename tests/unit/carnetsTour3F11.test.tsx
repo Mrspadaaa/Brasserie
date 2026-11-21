@@ -93,23 +93,3 @@ describe('v7-2 : un carnet né d’une note de travaux reçoit un objet dessiné
   });
 });
 
-describe('v7-3 : à 390, une citation longue passe le bouton « Coller un lien » sous le texte', () => {
-  const idee = (title: string, phrase: string): CarnetV => {
-    const c = carnets().find(x => x.id === ID_EVIER)!;
-    return { ...c, id: `ZZ-${title}`, title, carnet: { ...c.carnet, phrase, articles: [] } } as CarnetV;
-  };
-  it('« Prochain brassin » + « Sachets de levure x2. Prochain brassage mardi. » : cn-carnet-long', () => {
-    const { container } = render(<ListeCarnets carnets={[idee('Prochain brassin', 'Sachets de levure x2. Prochain brassage mardi.')]} onOuvrir={rien} onCollerLien={rien} />);
-    const carte = container.querySelector('.cn-carnet-coller')!;
-    expect(carte).not.toBeNull();
-    expect(carte.classList.contains('cn-carnet-long')).toBe(true);
-  });
-  it('« Prochain brassin » + « acheter 2 sachets de levure » (27 signes, coupée à 390 en capture) : cn-carnet-long', () => {
-    const { container } = render(<ListeCarnets carnets={[idee('Prochain brassin', 'acheter 2 sachets de levure')]} onOuvrir={rien} onCollerLien={rien} />);
-    expect(container.querySelector('.cn-carnet-coller')!.classList.contains('cn-carnet-long')).toBe(true);
-  });
-  it('« Évier inox » + « 2 bacs pour laver les fûts » (deux lignes à côté du bouton) : inchangé', () => {
-    const { container } = render(<ListeCarnets carnets={[idee('Évier inox', '2 bacs pour laver les fûts')]} onOuvrir={rien} onCollerLien={rien} />);
-    expect(container.querySelector('.cn-carnet-coller')!.classList.contains('cn-carnet-long')).toBe(false);
-  });
-});

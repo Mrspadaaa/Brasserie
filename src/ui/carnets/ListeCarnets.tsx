@@ -11,8 +11,8 @@
  * genre des notes rangées (`ajouts`, ou `messageRecent` : les notes nées de ce message).
  * Le segment « À venir · Carnets · Réalisés » et le + volant appartiennent au conteneur (lot D) ; le champ est ChampCarnet.
  */
-import React from 'react';
-import { ArrowDown, CalendarCheck, CheckCircle2, ChevronRight, Eye, Link2 } from 'lucide-react';
+import React, { useState } from 'react';
+import { ArrowDown, CalendarCheck, CheckCircle2, ChevronRight, Eye } from 'lucide-react';
 import { Bandeau } from './Bandeau';
 import { titreAffiche } from './titre';
 import { normaliser } from '../../domain/carnets/analyseLocale';
@@ -171,7 +171,7 @@ function Vignette({ c }: { c: CarnetV }) {
   return <VignetteObjet photo={photo} mots={[c.title, k.phrase, choisi?.nom, ...k.facons.map(f => f.nom), ...k.articles.map(a => a.nom)]} />;
 }
 
-function CarteCarnet({ c, ajouts, range, onOuvrir, onCollerLien, onVoirAVenir }: { c: CarnetV; ajouts?: GenreNote[]; range?: boolean } & Pick<ListeCarnetsProps, 'onOuvrir' | 'onCollerLien' | 'onVoirAVenir'>) {
+function CarteCarnet({ c, ajouts, range, onOuvrir, onVoirAVenir }: { c: CarnetV; ajouts?: GenreNote[]; range?: boolean } & Pick<ListeCarnetsProps, 'onOuvrir' | 'onVoirAVenir'>) {
   const k = c.carnet;
   const prix = prixDe(c);
   const { parts, veilles } = compte(c);
@@ -180,11 +180,9 @@ function CarteCarnet({ c, ajouts, range, onOuvrir, onCollerLien, onVoirAVenir }:
   const vide = c.status === 'idea' && k.articles.length === 0;
   /* tour 3, f11 (v7-3) : à 390, une citation de plus de 26 signes ne tient pas (mesuré : « 2 bacs pour laver les fûts », 26, tient ; « acheter 2 sachets de levure », 27, coupée) en deux lignes à côté de « Coller un lien » : le bouton
      passe dessous (comme un titre long) et la citation prend la largeur */
-  const citee = vide && !phraseEnTitre(c.title, k.phrase) ? (k.phrase ?? '') : '';
-  const long = c.title.length > 24 || citee.length > 26;
   return (
     <div className="cn-carnet-bloc">
-      <div className={`cn-carnet${vide && onCollerLien ? ` cn-carnet-coller${long ? ' cn-carnet-long' : ''}` : ''}`}>
+      <div className="cn-carnet">
         <button type="button" className="cn-carnet-corps" onClick={() => onOuvrir(c.id)}>
           <Vignette c={c} />
           <span className="cn-carnet-tx">
@@ -218,9 +216,6 @@ function CarteCarnet({ c, ajouts, range, onOuvrir, onCollerLien, onVoirAVenir }:
             </span>
           )}
         </button>
-        {vide && onCollerLien && (
-          <button type="button" className="cn-second cn-coller-lien" onClick={() => onCollerLien(c.id)}><Link2 size={18} aria-hidden /> Coller un lien</button>
-        )}
       </div>
       {k.sortie && (
         <button type="button" className="cn-avenir" onClick={() => onVoirAVenir?.(c.id)}>
@@ -232,10 +227,16 @@ function CarteCarnet({ c, ajouts, range, onOuvrir, onCollerLien, onVoirAVenir }:
 }
 
 export function ListeCarnets(p: ListeCarnetsProps) {
-  const visibles = p.carnets.filter(c => !c.carnet.archive);
+  /* CRN-LISTE : une rangée, recherche par un mot du titre + puces d'état (bascule) ; rien ne se perd, tout revient en les relâchant */
+  const [q, setQ] = useState('');
+  const [etats, setEtats] = useState<StatutCarnet[]>([]);
+  const tous = p.carnets.filter(c => !c.carnet.archive);
+  const mot = normaliser(q.trim());
+  const filtre = !!mot || etats.length > 0;
+  const visibles = tous.filter(c => (!mot || normaliser(c.title).includes(mot)) && (!etats.length || etats.includes(c.status)));
   const faits = p.faits ?? [];
   const anciennes = p.anciennes ?? [];
-  if (!visibles.length && !p.supprime && !faits.length) return <ListeVide enHaut={p.enHaut} onExemple={p.onExemple} pied={<AnciennesNotes notes={anciennes} />} />;
+  if (!tous.length && !p.supprime && !faits.length) return <ListeVide enHaut={p.enHaut} onExemple={p.onExemple} pied={<AnciennesNotes notes={anciennes} />} />;
 
   const ajouts = p.ajouts ?? ajoutsDuMessage(visibles, p.messageRecent);
   /* n° 30 et R11 : le carnet tout juste créé reste dans le groupe de son état (une idée dans « Idée »), en tête de ce groupe, et ce
@@ -243,11 +244,11 @@ export function ListeCarnets(p: ListeCarnetsProps) {
   const enTete = p.enTete ? visibles.find(c => c.id === p.enTete) : undefined;
   const ordre = enTete ? [enTete.status, ...ORDRE.filter(s => s !== enTete.status)] : ORDRE;
   const groupes = ordre.map(s => ({ s, carnets: [...(enTete?.status === s ? [enTete] : []), ...visibles.filter(c => c.status === s && c.id !== enTete?.id)] }));
-  const enVeille = offresEnVeille(visibles);
+  const enVeille = filtre ? [] : offresEnVeille(visibles);
   const exemple = visibles.some(c => c.carnet.articles.some(a => a.origine === 'exemple'));
 
   const rendre = (c: CarnetV) => {
-    const carte = <CarteCarnet key={c.id} c={c} range={p.rangeEnCours === c.id} ajouts={ajouts[c.id]} onOuvrir={p.onOuvrir} onCollerLien={p.onCollerLien} onVoirAVenir={p.onVoirAVenir} />;
+    const carte = <CarteCarnet key={c.id} c={c} range={p.rangeEnCours === c.id} ajouts={ajouts[c.id]} onOuvrir={p.onOuvrir} onVoirAVenir={p.onVoirAVenir} />;
     if (p.eclaire?.carnetId !== c.id) return carte;
     const e = p.eclaire;
     return (
@@ -265,6 +266,13 @@ export function ListeCarnets(p: ListeCarnetsProps) {
   return (
     <div className="cn-page cn-liste">
       {p.enHaut}
+      <div className="cn-filtre" role="search">
+        <input type="search" className="cn-recherche" placeholder="Chercher un carnet" aria-label="Chercher un carnet" value={q} onChange={e => setQ(e.target.value)} />
+        {ORDRE.map(s => (
+          <button key={s} type="button" className="cn-puce cn-puce-filtre" data-filtre={s} aria-pressed={etats.includes(s)} onClick={() => setEtats(x => (x.includes(s) ? x.filter(y => y !== s) : [...x, s]))}>{STATUT_LIBELLE[s]}</button>
+        ))}
+      </div>
+      {filtre && visibles.length === 0 && <p className="cn-mut">Aucun carnet ne correspond.</p>}
       {groupes.map(({ s, carnets }) => {
         const supp = p.supprime?.statut === s ? p.supprime : null;
         if (!carnets.length && !supp) return null;
@@ -307,7 +315,7 @@ export function ListeCarnets(p: ListeCarnetsProps) {
           </div>
         </section>
       )}
-      {faits.length > 0 && (
+      {!filtre && faits.length > 0 && (
         <section className="cn-groupe-bloc" aria-label="Faits">
           <div className="cn-entete-groupe">
             <span className="cn-groupe cn-groupe-faits"><CheckCircle2 size={16} aria-hidden /> Faits <span className="cn-mono">{faits.length}</span></span>
