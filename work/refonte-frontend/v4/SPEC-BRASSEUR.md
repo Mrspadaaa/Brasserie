@@ -2594,3 +2594,7 @@ Classement de la page r3 de Ma levure (https://claude.ai/artifact/DKAJe8ESeMR4ig
 > Et pourquoi à certains événements je peux pas leur donner un jour précis... ?
 
 (21.11, tour 8, captures 23 et 24 : la fête « vi » se tire par semaine (« Rien ne change : tire jusqu'à une autre semaine. ») ; les graduations « S43S44S45… » se chevauchent en 17 semaines.)
+
+> Et pareil au je tire un évènement en dehors ça doit agrandir l'échelle mais aussi du je tire un évènement à un endroit, ça doit d'ajuster pour de vrai
+
+(21.11, tour 8, captures 25 et 26 : tirer « vi » au-delà de la fenêtre n'agrandit pas l'échelle ; lâché, la barre ne prend pas la place montrée (« S42 → S7 » affiché, barre inchangée).)
