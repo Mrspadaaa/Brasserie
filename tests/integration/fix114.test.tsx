@@ -131,15 +131,21 @@ describe('#114 · le + du tableau de bord et de Finances ouvre la nouvelle écri
       expect(items[0]).toHaveTextContent(/^Nouvelle écriture/);
       expect(items[0]).toHaveTextContent('facture ou à la main');
       const labels = items.map(item => item.textContent ?? '');
-      // b1s-a : « Sur cet écran » = Nouvelle écriture (+ Facture et Vente sur Finances, Courses au Bord) ; « Partout » garde les
-      // gestes communs à cases fixes. Une action en tête n'est pas répétée dans « Partout » : chaque geste apparaît une seule fois,
-      // sous son libellé plein s'il est en tête (Finances : « Entrer une facture »), sous son libellé court sinon.
-      const attendues: Array<[string, string]> = tab === 'dashboard'
-        ? [['Facture', 'Entrer une facture'], ['Vente', 'Encaisser une vente'], ['Recette', 'Créer une recette'], ['Brassin', 'Lancer un brassin'], ['Courses', 'Courses']]
-        : [['Facture', 'Entrer une facture'], ['Vente', 'Encaisser une vente'], ['Recette', 'Créer une recette'], ['Brassin', 'Lancer un brassin']];
-      for (const [court, plein] of attendues) {
-        const trouves = labels.filter(label => label.startsWith(court) || label.startsWith(plein));
-        expect(trouves, `${court} : une seule fois dans le menu`).toHaveLength(1);
+      // « Partout » est identique sur tous les écrans (BUGS 34, 16.11, règle du pilote : « certaines actions doivent toujours être possible »).
+      // Un geste commun monté « Sur cet écran » (Finances : Facture et Vente) garde donc sa case en « Partout », en libellé court marqué du
+      // renvoi ↑ (`plus-commun-identique.test.ts`) : deux lignes, l'une sous son libellé plein en tête, l'autre ↑. Un geste non monté : une fois.
+      const attendues: Array<[string, string, boolean]> = tab === 'dashboard'
+        ? [['Facture', 'Entrer une facture', false], ['Vente', 'Encaisser une vente', false], ['Recette', 'Créer une recette', false], ['Brassin', 'Lancer un brassin', false], ['Courses', 'Courses', false]]
+        : [['Facture', 'Entrer une facture', true], ['Vente', 'Encaisser une vente', true], ['Recette', 'Créer une recette', false], ['Brassin', 'Lancer un brassin', false]];
+      for (const [court, plein, monte] of attendues) {
+        // Un geste de l'écran qui n'a pas de libellé court (Courses) : une seule ligne, en tête.
+        if (plein === court) { expect(labels.filter(label => label.startsWith(court)), `${court} : une seule fois`).toHaveLength(1); continue; }
+        const enTete = labels.filter(label => label.startsWith(plein) && plein !== court);
+        const partout = labels.filter(label => label.startsWith(court) && !label.startsWith(plein));
+        const renvois = items.filter(item => item.textContent?.startsWith(court) && item.textContent.includes('↑'));
+        expect(enTete, `${court} : en tête, sous son libellé plein`).toHaveLength(monte ? 1 : 0);
+        expect(partout, `${court} : sa case de « Partout »`).toHaveLength(1);
+        expect(renvois, `${court} : le renvoi ↑ seulement s'il est monté en tête`).toHaveLength(monte ? 1 : 0);
       }
       expect(labels.filter(label => label.startsWith('Nouvelle écriture'))).toHaveLength(1);
       if (tab === 'finances') {
