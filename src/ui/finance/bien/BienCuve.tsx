@@ -13,6 +13,7 @@ import { FinanceService } from '../../../services/financeService';
 import { montant, montantEntier } from '../previsions/format';
 import { Field, FormSheet, idFor } from '../prevision/base';
 import './bien.css';
+import { refCurseurNatif } from '../../geste';
 
 /**
  * Bien amorti = m3im-c (choix du 15.11) : la cuve année par année, la manière dont elle s'use sous le doigt.
@@ -95,7 +96,7 @@ export function BienCuve({ asset, initial, onClose }: { asset?: FinancialAsset; 
         {calcul.usure == null && calcul.manque && <p className="bic-note" role="note">{calcul.manque}</p>}
       </div>
       <div className="bic-cur" data-booster="part-pro"><label htmlFor={`${idPart}-pro`}>Part pro</label>
-        <input id={`${idPart}-pro`} type="range" className="bic-range" min={0} max={100} step={1} value={draft.businessUsePct} aria-label="Part professionnelle (%)" aria-valuetext={`${draft.businessUsePct} %`}
+        <input ref={refCurseurNatif} id={`${idPart}-pro`} type="range" className="bic-range" min={0} max={100} step={1} value={draft.businessUsePct} aria-label="Part professionnelle (%)" aria-valuetext={`${draft.businessUsePct} %`}
           style={{ ['--pos' as string]: `${draft.businessUsePct}%` }} onChange={e => field('businessUsePct', Number(e.target.value))} /><b className="bic-m">{draft.businessUsePct} %</b></div>
       <div className="bic-g3">
         <label className="bic-cell"><span>Prix d’achat</span><ChampMontant fractionDigits={2} aria-label="Valeur d’acquisition TTC (CHF)" className="bic-in bic-m" value={draft.acquisitionCents ? draft.acquisitionCents / 100 : undefined} onValue={v => field('acquisitionCents', v == null ? 0 : Math.round(v * 100))} max={BORNES_FINANCE.operationCents.valeur / 100} maxDecimales={2} dire placeholder="0,00" /></label>
