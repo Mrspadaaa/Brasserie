@@ -11,6 +11,7 @@ import { Sheet } from '../Sheet';
 import { Confirmation, idFor } from './prevision/base';
 import { supprimerPlan } from './prevision/supprimerPlan';
 import { ProjetPiste } from './projet/ProjetPiste';
+import { demandeRealiseSansAchat, realiseSansAchat } from '../../domain/finance/realiseSansAchat';
 import { etatPiste, type StationId } from './projet/piste';
 import './upgrade-plan.css';
 
@@ -37,7 +38,7 @@ export function UpgradeSheet({ plan, onClose, onSaved, onOpenTransaction }: { pl
   });
   const [error, setError] = useState(''), [busy, setBusy] = useState(false), [achat, setAchat] = useState(false);
   /* u2 (27) : « Archiver » et « Supprimer » demandent d'abord ; un refus du service s'écrit dans la question. */
-  const [demande, setDemande] = useState<'archiver' | 'supprimer' | null>(null), [refus, setRefus] = useState('');
+  const [demande, setDemande] = useState<'archiver' | 'supprimer' | 'realise' | null>(null), [refus, setRefus] = useState('');
   const invoices = purchases.transactions.filter(tx => isActiveTransaction(tx) && transactionKind(tx) === 'expense' && tx.finance?.planId === draft.id);
   const [ouvert, setOuvert] = useState<StationId | null>(() => etatPiste(draft, invoices.length, todayISO().slice(0, 7)).actuelle);
   const locked = useRef(false), erreurRef = useRef<HTMLParagraphElement>(null);
@@ -76,6 +77,8 @@ export function UpgradeSheet({ plan, onClose, onSaved, onOpenTransaction }: { pl
     <Sheet open title={plan ? 'Mon projet de matériel' : 'Prévoir du matériel'} subtitle="Du besoin à l’achat" className="finance-sheet pjd-sheet" dismissible={!busy} onClose={onClose}
       footer={demande === 'supprimer'
         ? <Confirmation question={`Supprimer « ${draft.title.trim() || 'ce projet'} » ?`} detail={SUPPRIMER_DETAIL} oui="Oui, supprimer" onOui={() => void supprimer()} onGarder={() => { setDemande(null); setRefus(''); }} busy={busy} erreur={refus} />
+        : demande === 'realise'
+        ? <Confirmation {...demandeRealiseSansAchat(draft)} onOui={() => void save('completed')} onGarder={() => setDemande(null)} busy={busy} danger={false} />
         : demande === 'archiver'
         ? <Confirmation question={`Archiver « ${draft.title.trim() || 'ce projet'} » ?`} detail="Il sort de tes prévisions et reste dans Archives, où « Reprendre ce projet » le remet." oui="Oui, archiver" onOui={() => void archiver()} onGarder={() => setDemande(null)} busy={busy} danger={false} />
         : <div className="pjd-pied fm-pied">
@@ -87,7 +90,7 @@ export function UpgradeSheet({ plan, onClose, onSaved, onOpenTransaction }: { pl
         <button type="button" className="pjd-btn pjd-pri" disabled={busy} onClick={() => void save()}>{busy ? 'Enregistrement…' : 'Enregistrer le projet'}</button>
       </div>}>
       <ProjetPiste draft={draft} plan={plan} setDraft={setDraft} patch={patch} setMonth={setMonth} ouvert={ouvert} setOuvert={setOuvert} progress={progress} invoices={invoices} missing={missing}
-        busy={busy} error={error} erreurRef={erreurRef} onClose={onClose} onRealise={() => void save('completed')} onNoterAchat={plan ? () => setAchat(true) : undefined} onOpenTransaction={onOpenTransaction} />
+        busy={busy} error={error} erreurRef={erreurRef} onClose={onClose} onRealise={() => (realiseSansAchat(draft, progress.invoiceCount) ? setDemande('realise') : void save('completed'))} onNoterAchat={plan ? () => setAchat(true) : undefined} onOpenTransaction={onOpenTransaction} />
     </Sheet>
     {achat && plan && <Suspense fallback={null}><ExpenseSheet initialIntent="equipment" initialPlanId={plan.id} onSaved={() => {}} onClose={() => setAchat(false)} /></Suspense>}
   </>;

@@ -6,7 +6,7 @@ const iso = (d) => d.toISOString().slice(0, 10);
 export const ajouter = (j, n) => iso(new Date(Date.parse(`${j}T12:00:00Z`) + n * MS));
 const suisse = (j) => `${j.slice(8, 10)}.${j.slice(5, 7)}.${j.slice(0, 4)}`;
 
-export function fixtureChaines(aujourdhui) {
+export function fixtureChaines(aujourdhui, { sansJour = false } = {}) {
   const at = `${ajouter(aujourdhui, -30)}T08:00:00.000Z`;
   const entrees = [];
   const add = (name, id, data) => entrees.push({ name, id, data: { ...data, id } });
@@ -33,14 +33,14 @@ export function fixtureChaines(aujourdhui) {
   add('equipment', 'E-ZZ-FERM', { id: 'E-ZZ-FERM', name: 'ZZ TEST Fermenteur 120 L', category: 'Fermentation', status: 'ok', purchaseDate: ajouter(aujourdhui, -400), purchasePrice: 900 });
 
   // brassin DU JOUR (WF2-1) : planifié aujourd'hui, levure liée au stock SANS nom (stockItemRef), sels d'eau prévus, deux malts du stock
-  const rsJ = { name: 'ZZ TEST Saison', volumeL: 100, ogTarget: 1.050, brewhouse: BH,
+  if (!sansJour) { const rsJ = { name: 'ZZ TEST Saison', volumeL: 100, ogTarget: 1.050, brewhouse: BH,
     fermentables: [{ name: 'ZZ TEST Malt pilsner', weightKg: 18, kind: 'grain' }, { name: 'ZZ TEST Munich', weightKg: 2, kind: 'grain' }],
     hops: [{ name: 'ZZ TEST Citra', weightG: 150, stage: 'boil', time: 60 }, { name: 'ZZ TEST Citra', weightG: 100, stage: 'whirlpool', time: 15 }],
     yeast: { stockItemRef: 'ZZ-US05', qty: 2, unit: 'sachet' },
     fermentation: [{ kind: 'primaire', name: 'Primaire', tempC: 19, days: 12 }] };
   add('recipes', 'R-ZZ-SAISON', { id: 'R-ZZ-SAISON', name: 'ZZ TEST Saison', style: 'Saison', ingredients: [], ...rsJ });
   add('batches', 'B-ZZ-JOUR', { id: 'B-ZZ-JOUR', name: 'ZZ TEST Saison', style: 'Saison', volumeL: 100, brewDate: '', plannedBrewDate: suisse(aujourdhui), status: 'planifie', gravityLog: [], recipeRef: 'R-ZZ-SAISON',
-    stockAccountingVersion: 1, recipeSnapshot: rsJ, waterSalts: { gypseG: 12, cacl2G: 6, mgso4G: 0, acidLacticMl: 4, isApplied: false } });
+    stockAccountingVersion: 1, recipeSnapshot: rsJ, waterSalts: { gypseG: 12, cacl2G: 6, mgso4G: 0, acidLacticMl: 4, isApplied: false } }); }
   article('ZZ-GYPSE', 'ZZ TEST Gypse (CaSO4)', 'Sels', 'g', 500, { supplier: 'ZZ TEST', pricePerUnit: 0.02 });
   article('ZZ-CACL2', 'ZZ TEST Chlorure de calcium', 'Sels', 'g', 400, { supplier: 'ZZ TEST', pricePerUnit: 0.02 });
   article('ZZ-LACT', 'ZZ TEST Acide lactique 80 %', 'Sels', 'ml', 250, { supplier: 'ZZ TEST', pricePerUnit: 0.05 });
@@ -71,6 +71,7 @@ export function fixtureChaines(aujourdhui) {
   plan('P-VENTE-CIG', 'ZZ TEST La Cigogne, 2 fûts', ajouter(aujourdhui, 10), 28000, { direction: 'in', category: 'recettes', batchId: 'LOT-PA', clientId: 'CL-CIGOGNE' });
   plan('P-MALT', 'ZZ TEST Commande de malt', ajouter(aujourdhui, 5), 42000, { category: 'brassage', vendor: 'ZZ TEST' });
   plan('P-HOTTE', 'ZZ TEST Hotte', ajouter(aujourdhui, 18), 90000, { category: 'materiel' });
+  plan('P-POMPE', 'ZZ TEST Pompe de transfert', ajouter(aujourdhui, 8), 45000, { category: 'materiel', source: 'equipment', vendor: 'ZZ TEST Brewferm' }); // WFA-12 : matériel prévu, aucun achat lié
   add('transactions', 'T-ZZ-ANC', { id: 'T-ZZ-ANC', date: ajouter(aujourdhui, -40), description: 'ZZ TEST facture malt', vendor: 'ZZ TEST', category: 'brassage', subcategory: 'x', amountHT: 180, amountTTC: 180, tvaAmount: 0, tvaRate: 0,
     finance: { version: 1, kind: 'expense', amountCents: 18000, lines: [], paymentStatus: 'paid', paymentDate: ajouter(aujourdhui, -40), recordedAt: `${ajouter(aujourdhui, -40)}T09:00:00.000Z` } });
   add('financialProfiles', 'current', { id: 'current', canton: 'FR', legalForm: 'sole-proprietor', accounting: 'simplified', vatRegistered: false,

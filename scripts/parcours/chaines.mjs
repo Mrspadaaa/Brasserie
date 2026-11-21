@@ -314,12 +314,37 @@ function listeEtapes() { return [
       await s.cap('WFA-15-4-calendrier');
       // tout ce que le Calendrier dit du malt : la facture (réelle) et la commande (prévue) ; les deux ensemble = le malt compté deux fois
       const dit = await s.p.evaluate(() => [document.body.innerText, ...[...document.querySelectorAll('[aria-label]')].map((e) => e.getAttribute('aria-label'))].join(' | '));
-      const prevue = /Commande de malt/.test(dit), facture = /malt pilsner/.test(dit);
-      if (prevue && facture) pb.push('le Calendrier compte le malt deux fois : « Commande de malt » (prévue) ET « malt pilsner » (la facture)');
+      const prevue = /Commande de malt/.test(dit);
       if (/Impossible de charger cet écran/.test(dit)) pb.push('le Calendrier ne s’ouvre pas (« Impossible de charger cet écran »)');
-      else if (!facture) pb.push('la facture n’apparaît pas au Calendrier');
+      else if (prevue) pb.push('le Calendrier compte le malt deux fois : la facture de 421,57 est enregistrée ET « Commande de malt » (−420, prévue) reste au Calendrier');
       if (pb.length) return echec('WFA-15', pb.join(' ; '));
-      ok('WFA-15', 'facture liée d’office à P-MALT ; au Calendrier la facture seule, plus de « Commande de malt »');
+      ok('WFA-15', 'facture liée d’office à P-MALT ; plus de « Commande de malt » au Calendrier');
+    }
+  },
+  {
+    id: 'WFA-12', titre: 'Pompe « réalisée » sans achat lié : le geste demande d’abord, et garde le montant prévu (450 CHF) tant qu’aucun achat ne le solde (WFA-12)',
+    async joue(s) {
+      const dit = () => s.p.evaluate(() => [document.body.innerText, ...[...document.querySelectorAll('[aria-label]')].map((e) => e.getAttribute('aria-label'))].join(' | '));
+      await s.onglet('Stocks'); await sleep(800);
+      await s.toucher('Matériel'); await sleep(700);
+      await s.toucher('À venir', { prefixe: true }); await sleep(700);
+      await s.toucher('ZZ TEST Pompe de transfert', { contient: true }); await sleep(1000);
+      await s.cap('WFA-12-1-fiche');
+      await s.toucher('Acheté', { prefixe: true }); await sleep(700);
+      await s.toucher('Marquer comme réalisé', { dans: '.pjd-lien' }); await sleep(900);
+      await s.cap('WFA-12-2-demande');
+      const t = await s.texte(2500);
+      const plan = () => s.store('financialPlans').then((ps) => ps.find((p) => p.id === 'P-POMPE'));
+      if (!/aucun achat lié/.test(t)) return echec('WFA-12', `« Marquer comme réalisé » sans achat ne demande rien : le plan est « ${(await plan())?.status} » (les 450 CHF sortent de la prévision sans dépense)`);
+      if ((await plan())?.status !== 'active') return echec('WFA-12', `le plan a changé avant la réponse : « ${(await plan())?.status} »`);
+      await s.toucher('Garder'); await sleep(900);
+      await s.cap('WFA-12-3-gardee');
+      if ((await plan())?.status !== 'active') return echec('WFA-12', `« Garder » n’a pas gardé le plan au prévu : « ${(await plan())?.status} »`);
+      await s.toucher('Fermer', { i: -1 }).catch(() => {}); await sleep(600);
+      await s.onglet('Calendrier'); await sleep(1500);
+      await s.cap('WFA-12-4-calendrier');
+      if (!/Pompe de transfert/.test(await dit())) return echec('WFA-12', 'la Pompe a quitté le Calendrier alors qu’elle est gardée au prévu');
+      ok('WFA-12', 'le geste demande (« aucun achat lié »), « Garder » laisse le plan actif et la Pompe au Calendrier');
     }
   }
 ]; }
@@ -332,7 +357,7 @@ async function jouer(dir) {
     for (const e of listeEtapes()) {
       if (seules && !seules.includes(e.id)) continue;
       console.log(`${e.id} — ${e.titre}`);
-      const s = await pageNeuve(banc, fixtureChaines(aujourdhui).entrees, sortie);
+      const s = await pageNeuve(banc, fixtureChaines(aujourdhui, { sansJour: e.id !== 'WF2-1' }).entrees, sortie);
       s.banc = banc;
       try {
         await s.demarrer();

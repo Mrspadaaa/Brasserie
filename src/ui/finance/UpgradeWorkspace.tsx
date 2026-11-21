@@ -27,6 +27,7 @@ import { ExpenseSheet } from './ExpenseSheet';
 import { useMobileLayout } from '../useViewport';
 import { ViewNavigation } from '../ViewNavigation';
 import './finance.css';
+import { demandeRealiseSansAchat, realiseSansAchat } from '../../domain/finance/realiseSansAchat';
 import './upgrades.css';
 import './upgrade-plan.css';
 
@@ -89,7 +90,7 @@ function ProchainAchatCarnet({ plan, doc, lien, mois, ouvert, onDate, onPoser, o
         {u?.sourceCarnetId && present && onOuvrir && <button type="button" className="min-h-11 rounded-control border border-cave-700 px-3 font-semibold text-cave-50" onClick={() => onOuvrir(u.sourceCarnetId!)}>Ouvrir le carnet</button>}
       </div>
       {ouvert && <ChoixMois plan={plan} mois={mois} onChoisir={onPoser}/>}
-      <p className="mt-2 text-sm text-cave-400">Il passe seul dans Réalisés quand sa dépense liée est payée.</p>
+      <p className="mt-2 text-sm text-cave-400">Il passe seul dans Réalisés quand sa dépense liée est payée. Il n’entre au Parc que par une fiche matériel, créée avec l’achat.</p>
     </div>
   </section>;
 }
@@ -304,7 +305,7 @@ function Bandeau({ prevision, hero, effetHero, focus, effetFocus, sortie, onPrev
 }
 function FicheProjet({ plan, plans, prevision, transactions, payments, mois, busy, onClose, onEdit, onPoser, onInclusion, onStatut, onSupprimer, onPrevisions }: { plan: FinancialPlan; plans: FinancialPlan[]; prevision: FinanceForecast; transactions: FinanceTransaction[]; payments: FinancialPayment[]; mois: string[]; busy?: string;
   onClose: () => void; onEdit: () => void; onPoser: (m: string | null) => void; onInclusion: (inc: boolean) => void; onStatut: (s: 'completed' | 'cancelled') => void; /** u2 (27) : supprime le projet ; renvoie le refus du service ou null. */ onSupprimer: () => string | null; onPrevisions: () => void }) {
-  const [demande, setDemande] = useState<'archiver' | 'supprimer' | null>(null), [refus, setRefus] = useState('');
+  const [demande, setDemande] = useState<'archiver' | 'supprimer' | 'realise' | null>(null), [refus, setRefus] = useState('');
   const d = upgradeDetails(plan), pose = estPose(plan), effet = pose ? effetProjet(plan, plans, prevision.months, prevision.items) : null, progress = upgradeProgress(plan, transactions, payments);
   const lignes: Array<[string, number | undefined]> = [['Achat', d.purchaseCents], ['Livraison', d.deliveryCents], ['Installation', d.installationCents]], connus = lignes.filter(([, v]) => v != null);
   const etape = REPERES[repereDe(plan)];
@@ -332,9 +333,10 @@ function FicheProjet({ plan, plans, prevision, transactions, payments, mois, bus
       <button type="button" className="kh-cta kh-cta-fiche" onClick={onEdit}><PenLine size={18}/>Modifier</button>
       <details className="kh-fold"><summary>Après l’achat<ChevronDown size={18}/></summary><p>Ta facture se range dans Dépenses › Matériel, liée à ce projet ; la fiche d’usure se lit dans Annuel.</p></details>
       <details className="kh-fold"><summary>Usure et mise en service<ChevronDown size={18}/></summary><p>Durée d’usage : {d.usefulLifeYears != null ? `${String(d.usefulLifeYears).replace('.', ',')} ans` : 'à renseigner'} · Mise en service : {d.inServiceMonth ?? 'à renseigner'}</p></details>
-      {demande === 'archiver' ? <Confirmation question={`Archiver « ${plan.title} » ?`} detail="Il sort de tes prévisions ; Archives le garde et un geste l’annule." oui="Oui, archiver" danger={false} busy={!!busy} onGarder={() => setDemande(null)} onOui={() => { setDemande(null); onStatut('cancelled'); }}/>
+      {demande === 'realise' ? <Confirmation {...demandeRealiseSansAchat(plan)} busy={!!busy} danger={false} onGarder={() => setDemande(null)} onOui={() => { setDemande(null); onStatut('completed'); }}/>
+        : demande === 'archiver' ? <Confirmation question={`Archiver « ${plan.title} » ?`} detail="Il sort de tes prévisions ; Archives le garde et un geste l’annule." oui="Oui, archiver" danger={false} busy={!!busy} onGarder={() => setDemande(null)} onOui={() => { setDemande(null); onStatut('cancelled'); }}/>
         : demande === 'supprimer' ? <Confirmation question={`Supprimer « ${plan.title} » ?`} detail={SUPPRIMER_DETAIL} oui="Oui, supprimer" busy={!!busy} erreur={refus} onGarder={() => { setDemande(null); setRefus(''); }} onOui={() => { const r = onSupprimer(); if (r) setRefus(r); }}/>
-        : <div className="kh-ends"><button type="button" style={{ color: 'var(--kh-hop)', fontWeight: 600 }} disabled={!!busy} onClick={() => onStatut('completed')}><Check size={18}/>Marquer comme réalisé</button><button type="button" style={{ color: 'var(--kh-mut)' }} disabled={!!busy} onClick={() => setDemande('archiver')}><Archive size={18}/>Archiver</button>
+        : <div className="kh-ends"><button type="button" style={{ color: 'var(--kh-hop)', fontWeight: 600 }} disabled={!!busy} onClick={() => (realiseSansAchat(plan, progress.invoiceCount) ? setDemande('realise') : onStatut('completed'))}><Check size={18}/>Marquer comme réalisé</button><button type="button" style={{ color: 'var(--kh-mut)' }} disabled={!!busy} onClick={() => setDemande('archiver')}><Archive size={18}/>Archiver</button>
           <button type="button" className="fm-sup-f" disabled={!!busy} onClick={() => setDemande('supprimer')}><Trash2 size={18}/>Supprimer</button></div>}
     </div>
   </Sheet>;
