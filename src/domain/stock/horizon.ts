@@ -21,11 +21,17 @@ export const SEMAINES_FENETRE = 6;
 
 const MS_JOUR = 86_400_000;
 
-/** Un jour « AAAA-MM-JJ » (ou une date ISO complète) en jours UTC depuis 1970 ; `null` si illisible. */
+/**
+ * Un jour « AAAA-MM-JJ » (ou une date ISO complète), ou « JJ.MM.AAAA » (la date suisse que pose la feuille du brassin), en jours UTC
+ * depuis 1970 ; `null` si illisible. K3 (21.11) : sans la forme suisse, un brassin planifié ne datait rien, son manque tombait au
+ * « seuil » et Courses disait « rien cette semaine ».
+ */
 function jourUtc(date: string | null | undefined): number | null {
-  const m = date ? /^(\d{4})-(\d{2})-(\d{2})/.exec(date) : null;
+  const iso = date ? /^(\d{4})-(\d{2})-(\d{2})/.exec(date) : null;
+  const ch = !iso && date ? /^(\d{1,2})\.(\d{1,2})\.(\d{4})$/.exec(date.trim()) : null;
+  const m = iso ? [iso[1], iso[2], iso[3]] : ch ? [ch[3], ch[2], ch[1]] : null;
   if (!m) return null;
-  const t = Date.UTC(+m[1], +m[2] - 1, +m[3]);
+  const t = Date.UTC(+m[0], +m[1] - 1, +m[2]);
   return Number.isFinite(t) ? Math.floor(t / MS_JOUR) : null;
 }
 

@@ -624,7 +624,7 @@ function listeEtapes() { return [
   {
     id: 'K3-COURSES', titre: 'Courses : le manque d\'un brassin planifié (3 kg de Caramünch pour 0,6 au stock) est dit jusqu\'au prochain brassin, pas « rien cette semaine » (K3)', fixture: { sansJour: true, manques: true },
     async joue(s) {
-      await s.onglet('Stocks'); await sleep(800);
+      await s.toucher('Stocks', { dans: 'nav button', contient: true }); await sleep(800); // « 1 Stocks » : la pastille du manque précède le nom
       await s.toucher('Courses', { dans: 'button,[role=tab]' }); await sleep(1000);
       await s.cap('K3-1-courses');
       const t = await s.texte(5000);
