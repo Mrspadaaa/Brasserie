@@ -39,6 +39,36 @@ export interface FinanceForecast {
   months: ForecastMonth[]; items: ForecastItem[]; warnings: string[]; avertissements: AvertissementCible[]; cashComplete: boolean; trendMonths: string[]; openingCashCents: number | null;
   undated: UndatedForecastItem[]; undatedInCents: number; undatedOutCents: number;
 }
+/** Le point le plus bas à venir (K4) : le solde de fin de journée le plus bas, d'aujourd'hui à `fin` inclus, sur les mêmes sorties que Finances. */
+export interface PointBas {
+  date: string; soldeCents: number;
+  /** Une sortie estimée (brassin, tendance) est passée avant ce point : le chiffre est une estimation. */
+  estime: boolean;
+  /** Une part de brassin sans montant (« à compléter ») tombe avant ce point : le vrai point bas est au plus ce chiffre. */
+  partiel: boolean;
+}
+/**
+ * K4 (21.11) : une seule caisse. Le Bord lit ce point sur `buildForecast`, comme Finances › Prévisions (même départ : la caisse connue et
+ * complète, sinon `null` : l'inconnu n'est jamais 0) et les mêmes sorties (montant > 0, jour ≤ `fin`). Jour par jour : plusieurs mouvements
+ * d'un même jour font une seule marche.
+ */
+export function pointBasAVenir(forecast: Pick<FinanceForecast, 'items' | 'cashComplete' | 'openingCashCents'>, asOf: string, fin: string): PointBas | null {
+  if (!forecast.cashComplete || forecast.openingCashCents == null) return null;
+  const parJour = new Map<string, ForecastItem[]>();
+  for (const i of forecast.items) if (i.date <= fin && (i.amountCents > 0 || i.partial?.length)) parJour.set(i.date, [...(parJour.get(i.date) ?? []), i]);
+  let solde = forecast.openingCashCents, estime = false, partiel = false;
+  let bas: PointBas = { date: asOf, soldeCents: solde, estime, partiel };
+  for (const jour of [...parJour.keys()].sort()) {
+    for (const i of parJour.get(jour)!) {
+      solde += i.direction === 'in' ? i.amountCents : -i.amountCents;
+      if (i.source === 'brew' || i.source === 'trend') estime = true;
+      if (i.partial?.length && i.direction === 'out') partiel = true;
+    }
+    if (solde < bas.soldeCents) bas = { date: jour, soldeCents: solde, estime, partiel };
+  }
+  // une part sans montant, même après ce jour, peut creuser plus bas : le point reste « au plus »
+  return { ...bas, partiel };
+}
 /** Seules les catégories de dépenses récurrentes nourrissent la tendance : l'achat de malt, de houblon ou de levure est irrégulier. */
 export const TREND_CATEGORIES: readonly string[] = ['chargesFixes'];
 /** Les mêmes mots que `CATEGORY_LABELS` (FinanceForms), en phrase : « Achats de brassage non projetés », jamais la clé brute (`chargesFixes`, `renovation`). */

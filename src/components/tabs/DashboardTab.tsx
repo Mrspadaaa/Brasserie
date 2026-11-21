@@ -12,6 +12,8 @@ import { useStorageValue } from '../../hooks/useLiveData';
 import { DateUtils } from '../../services/dateUtils';
 import { FinanceService } from '../../services/financeService';
 import { formatCHF, summarizeLedger, todayISO } from '../../domain/finance/ledger';
+import { buildForecast, forecastHorizonEnd, pointBasAVenir } from '../../domain/finance/forecast';
+import { ajouterJours } from '../../domain/finance/brewForecast';
 import { duneSemaine, evenementsAgenda, evenementsBrassins, semainesDe } from '../../domain/calendrier';
 import { isCurrent } from '../../domain/catalogOrganization';
 import { statusOfBatch } from '../../domain/batchStatus';
@@ -133,6 +135,8 @@ export const DashboardTab: React.FC<DashboardTabProps> = ({
   const creativeItems = useStorageValue(StorageService.getCreativeItems);
   const financeProfile = useStorageValue(FinanceService.getProfile);
   const financePayments = useStorageValue(FinanceService.getPayments);
+  const financePlans = useStorageValue(FinanceService.getPlans);
+  const financeAssets = useStorageValue(FinanceService.getAssets);
   const [showAllBatches, setShowAllBatches] = useState(false);
   const [completedDeadlines, setCompletedDeadlines] = useState<Record<string, boolean>>(
     () => StorageService.getUiState('dashboard_completed_deadlines', {})
@@ -176,6 +180,14 @@ export const DashboardTab: React.FC<DashboardTabProps> = ({
   const periodLedger = useMemo(() => summarizeLedger(periodTxs, financePayments, financeProfile),
     [periodTxs, financePayments, financeProfile]);
   const periodNet = periodLedger.incomeCents - periodLedger.expenseCents;
+  /* K4 (21.11) : une seule caisse. Le point le plus bas à venir se lit sur le même calcul que Finances › Prévisions (buildForecast avec
+     brassins, stock et registre ; même horizon par défaut, 90 jours) ; solde inconnu : rien d'écrit, jamais 0. */
+  const pointBas = useMemo(() => {
+    const asOf = todayISO();
+    const prevision = buildForecast({ transactions, payments: financePayments, plans: financePlans, profile: financeProfile, assets: financeAssets, asOf, months: 13,
+      batches, stockItems: [...stocks.rawMaterials, ...stocks.cleaning] });
+    return pointBasAVenir(prevision, asOf, ajouterJours(forecastHorizonEnd(asOf, 90), -1));
+  }, [transactions, financePayments, financePlans, financeProfile, financeAssets, batches, stocks]);
   /* CT4-A-5 : la Synthèse de Finances lit « Dépensé » sans le matériel et les travaux (un investissement, « à part ») ; les Charges du Bord les comptent. Le Bord le dit au lieu d'afficher deux chiffres muets pour le même mois. */
   const materielCents = useMemo(() => summarizeLedger(periodTxs.filter(tx => tx.category === 'materiel' || tx.category === 'renovation'), financePayments, financeProfile).expenseCents,
     [periodTxs, financePayments, financeProfile]);
@@ -325,6 +337,10 @@ export const DashboardTab: React.FC<DashboardTabProps> = ({
                   <span className="text-cave-200">Charges</span>
                   <span className="font-mono text-cave-50">{formatCHF(periodLedger.expenseCents)}</span>
                 </span>
+                {pointBas && <span data-point-bas className="mt-0.5 flex flex-wrap justify-between gap-x-2 text-2xs">
+                  <span className="text-cave-200">Point le plus bas</span>
+                  <span className={`font-mono ${pointBas.soldeCents < 0 ? 'text-alert-strong' : 'text-cave-50'}`}>{pointBas.partiel ? 'au plus ' : pointBas.estime ? '≈ ' : ''}{formatCHF(pointBas.soldeCents)} · {pointBas.date.slice(8, 10)}.{pointBas.date.slice(5, 7)}</span>
+                </span>}
                 {materielCents > 0 && <span data-charges-materiel className="mt-0.5 block text-2xs text-cave-400">dont matériel {formatCHF(materielCents)}, à part dans Finances</span>}
               </span>
               <ChevronDown size={14} className="shrink-0 text-area-finances group-open/finance:rotate-180" aria-hidden="true" />
