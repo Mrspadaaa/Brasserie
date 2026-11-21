@@ -6,7 +6,7 @@
 //     sans option : construit l'arbre de travail dans un dossier temporaire (`vite build` avec scripts/parcours/vite.parcours.config.mjs) ;
 //     --build     : réutilise un build déjà fait par cette config ;
 //     --ref <tag> : construit ce tag dans une copie temporaire (git worktree dans os.tmpdir(), node_modules en jonction, retirée à la fin).
-//     --etape <a,b> : seules ces étapes V-CAL (G3, RENOMMER-EVT, C1-GLISSER, D2-CAL, K2, K3-SUITES, TRAVAUX-SANS-MONTANT), après la fixture.
+//     --etape <a,b> : seules ces étapes V-CAL (G3, RENOMMER-EVT, C1-GLISSER, D2-CAL, K2, K3-SUITES, TRAVAUX-SANS-MONTANT, CRN-11), après la fixture.
 //     G3_SEMAINE=<n> (variable d'environnement) : G3 ne cherche sa case vide que dans la semaine n (rejouer un cas vu, ex. S2 en 3 mois).
 //   Sortie : « PARCOURS CALENDRIER OK » (code 0) ou « PARCOURS CALENDRIER ECHEC » + la liste des échecs (code 1) ; captures dans le dossier.
 //
@@ -803,6 +803,44 @@ async function jouer(dir) {
         if (neuf) await annulerSiPossible();
         await fermer();
       } catch (e) { echec('TRAVAUX-SANS-MONTANT', `${nomR} : ${String(e.message).slice(0, 150)}`); }
+
+      // CRN-11 et CRN-20 (BUGS.md, critique Carnet du 21.11) : la période que le Calendrier « 3 mois » écrit dans l'app se lit dans la barre du
+      // haut des autres écrans. CRN-11 : à 390, sur le Carnet et Finances, la barre reste sur une ligne (nom, période, loupe et duo G A au même
+      // niveau, 52 px au plus, rien ne déborde) ; « 26.10.26–24.01.27 » chassait le duo sur une 2e ligne. CRN-20 : à 1280, la même période se dit
+      // avec les mêmes caractères en clair et en cave (« — » en clair contre « → » en cave), et le séparateur se dessine pareil.
+      const navOnglet = async (t, tactile = true) => {
+        const b0 = await p.evaluate((t) => { const b = [...document.querySelectorAll('nav button')].find((e) => (e.innerText ?? '').includes(t) && e.getBoundingClientRect().width > 0); if (!b) return null; const r = b.getBoundingClientRect(); return [r.x + r.width / 2, r.y + r.height / 2]; }, t);
+        if (!b0) throw new Error(`onglet « ${t} » introuvable`);
+        tactile ? await p.touchscreen.tap(b0[0], b0[1]) : await p.mouse.click(b0[0], b0[1]); await sleep(900);
+      };
+      const versCarnet = async (tactile = true) => {
+        await navOnglet('Brassins', tactile);
+        const a = await p.evaluate(() => { const b = [...document.querySelectorAll('button,[role=tab]')].find((e) => /^Atelier/.test((e.innerText ?? '').trim()) && e.getBoundingClientRect().width > 0); if (!b) return null; const r = b.getBoundingClientRect(); return [r.x + r.width / 2, r.y + r.height / 2]; });
+        if (!a) throw new Error('sous-onglet « Atelier » introuvable');
+        tactile ? await p.touchscreen.tap(a[0], a[1]) : await p.mouse.click(a[0], a[1]); await sleep(900);
+      };
+      const barreHaut = () => p.evaluate(() => {
+        window.scrollTo(0, 0);
+        const h = document.querySelector('header'); if (!h || !h.getBoundingClientRect().height) return null;
+        const vis = (e) => { if (!e) return null; const b = e.getBoundingClientRect(); return b.width > 0 && b.height > 0 ? { c: Math.round(b.top + b.height / 2), d: Math.round(b.right) } : null; };
+        const ce = h.querySelector('[data-periode-pastille] .pr-ce');
+        return { h: Math.round(h.getBoundingClientRect().height), W: innerWidth, nom: vis(h.querySelector('.app-brand-name')), periode: vis(h.querySelector('[data-periode-pastille]')), recherche: vis(h.querySelector('[aria-label^="Rechercher"]')), avatars: vis(h.querySelector('[data-plus-duo]')), deborde: h.scrollWidth > h.clientWidth + 1, texte: (ce?.innerText ?? '').replace(/\s+/g, ' ').trim() };
+      });
+      if (joue('CRN-11')) try {
+        await rechargerV();
+        const avant = await barreHaut();
+        for (const [ecran, aller] of [['Carnet', () => versCarnet()], ['Finances', () => navOnglet('Finances')]]) {
+          await aller();
+          const b = await barreHaut();
+          if (!b) { echec('CRN-11', `${ecran} : barre du haut introuvable`); continue; }
+          const parts = Object.entries({ nom: b.nom, periode: b.periode, recherche: b.recherche, avatars: b.avatars }).filter(([, v]) => v);
+          const centres = parts.map(([, v]) => v.c);
+          const uneLigne = b.periode && b.avatars && b.recherche && Math.max(...centres) - Math.min(...centres) <= 6 && b.h <= 52 && !b.deborde && Math.max(...parts.map(([, v]) => v.d)) <= b.W;
+          await cap(`crn11-${ecran.toLowerCase()}-390`);
+          uneLigne ? ok('CRN-11', `${ecran} après « 3 mois » (Calendrier « ${avant?.texte ?? '?'} ») : barre sur une ligne, ${b.h} px, période « ${b.texte} »`)
+            : echec('CRN-11', `${ecran} après « 3 mois » : barre du haut de ${b.h} px, ${parts.map(([k, v]) => `${k} y${v.c}`).join(', ')}${b.periode ? '' : ', période absente'}${b.deborde ? ', déborde' : ''} (période « ${b.texte} »)`);
+        }
+      } catch (e) { echec('CRN-11', String(e.message).slice(0, 200)); }
     }
 
     // 10. CAL-ENTETE (21.11, tour 7 : « Avec le point qui bouge toujours pas super fan » ; « Il y a vraiment un immense header » ; « il faudrait
