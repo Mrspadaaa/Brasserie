@@ -1,6 +1,7 @@
 import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
 import { fileURLToPath } from 'node:url';
+import { VitePWA } from 'vite-plugin-pwa';
 
 // https://vitejs.dev/config/
 export default defineConfig(({ command }) => ({
@@ -15,7 +16,29 @@ export default defineConfig(({ command }) => ({
       if (source !== './brewerTools.js' && !/[\\/]src[\\/]domain[\\/]brewerTools\.ts$/.test(source)) return null;
       return fileURLToPath(new URL('./src/domain/recipeSnapshot.ts', import.meta.url));
     }
-  }, {
+  }, ...VitePWA({
+    // CHN-7 (21.11, D413) : hors ligne par Workbox (`generateSW`), pas de worker écrit à la main (L29). Un seul `/sw.js`, qui importe
+    // `brew-alerts-sw.js` (une portée ne tient qu'un worker). Enregistré par `src/services/precacheHorsLigne.ts`, après le premier affichage.
+    registerType: 'prompt',      // ni `skipWaiting` ni `clientsClaim` : la nouvelle version se prend au prochain lancement
+    injectRegister: false,
+    manifest: false,
+    workbox: {
+      importScripts: ['brew-alerts-sw.js'],
+      globPatterns: ['**/*.{js,css,html,woff2,svg,png}'],
+      globIgnores: ['brew-alerts-sw.js'],
+      maximumFileSizeToCacheInBytes: 3 * 1024 * 1024, // le plus gros morceau (App) fait 2,5 Mo
+      cleanupOutdatedCaches: true,
+      navigateFallback: '/index.html',
+      navigateFallbackDenylist: [/^\/__\//], // gestionnaire d'authentification Firebase, réservé par l'hébergement
+      // pdf.worker (.mjs) et .wasm : pas dans le précache (hors CHN-7), gardés à l'usage. Aucun cache pour Firestore, Auth, fonctions.
+      runtimeCaching: [{
+        urlPattern: ({ url, sameOrigin }: { url: URL; sameOrigin: boolean }) => sameOrigin && /\.(?:wasm|mjs)$/.test(url.pathname),
+        handler: 'CacheFirst',
+        options: { cacheName: 'affinee-lourds', expiration: { maxEntries: 20 } }
+      }]
+    },
+    devOptions: { enabled: false }
+  }), {
     name: 'exclude-private-initial-data',
     apply: 'build',
     generateBundle(_options, bundle) {

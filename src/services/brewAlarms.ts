@@ -1,6 +1,7 @@
 import { httpsCallable } from 'firebase/functions';
 import { functions, auth } from './firebase';
 import type { BrewAlarm } from '../domain/brewCompanion';
+import { urlServiceWorker } from './precacheHorsLigne';
 
 /** Public key comes from the authenticated backend, independent of build-time flags. */
 export const remoteAlarmsConfigured = () => true;
@@ -19,7 +20,8 @@ export async function deviceSubscription() {
       )({});
       const base64 = res.data.publicKey.replace(/-/g, '+').replace(/_/g, '/');
       const key = Uint8Array.from(atob(base64), (c) => c.charCodeAt(0));
-      const registration = await navigator.serviceWorker.register('/brew-alerts-sw.js');
+      // Un seul worker par portée : `/sw.js` (précache hors ligne) importe `brew-alerts-sw.js` ; en développement, ce dernier seul.
+      const registration = await navigator.serviceWorker.register(urlServiceWorker());
       await navigator.serviceWorker.ready;
       let existing = await registration.pushManager.getSubscription();
       if (

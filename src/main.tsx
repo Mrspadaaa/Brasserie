@@ -2,9 +2,12 @@ import React from 'react';
 import ReactDOM from 'react-dom/client';
 import './index.css';
 import { initialiserTheme } from './theme/theme';
+import { precacherHorsLigne } from './services/precacheHorsLigne';
 
 // Le thème est posé par index.html avant le premier rendu ; ceci le relit et suit un changement venu d'un autre onglet.
 initialiserTheme();
+// CHN-7 : précache hors ligne (service worker `/sw.js`), posé après le premier affichage ; voir services/precacheHorsLigne.ts.
+precacherHorsLigne();
 
 type ReusableRoot = ReturnType<typeof ReactDOM.createRoot>;
 const rootHolder = window as Window & { __laffineeReactRoot__?: ReusableRoot };

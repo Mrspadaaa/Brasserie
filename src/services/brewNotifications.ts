@@ -7,6 +7,7 @@
  * Chrome n'affiche que 2 actions, Safari iOS aucune : « Ouvrir » est le toucher sur le corps.
  */
 import { phraseRetard } from './brewTimer';
+import { estServiceWorkerApp } from './precacheHorsLigne';
 
 // --- Identifier un ajout -----------------------------------------------------
 
@@ -197,7 +198,7 @@ async function registrationAlertes(): Promise<ServiceWorkerRegistration | null> 
   if (typeof Notification === 'undefined' || Notification.permission !== 'granted') return null;
   // `ready` ne se résout jamais sans service worker : on ne l'attend pas.
   const reg = await navigator.serviceWorker.getRegistration();
-  return reg?.active?.scriptURL.endsWith('/brew-alerts-sw.js') ? reg : null;
+  return reg?.active && estServiceWorkerApp(reg.active.scriptURL) ? reg : null;
 }
 /** `false` quand la page ne peut pas poser la notification (permission, service worker absent) : le son reste. */
 export async function afficherNotificationAjout(spec: NotificationAjout): Promise<boolean> {

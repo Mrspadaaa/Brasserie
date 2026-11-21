@@ -1,5 +1,6 @@
 /* Web Push natif : aucun setTimeout dans un worker éphémère. */
-self.addEventListener('install', () => self.skipWaiting());
+/* CHN-7 : ce script est importé par `/sw.js` (précache hors ligne, vite-plugin-pwa). Plus de `skipWaiting` à l'installation : une nouvelle
+ * version attend le prochain lancement, jamais en pleine saisie (D413). `clients.claim()` reste : la première installation prend la main. */
 self.addEventListener('activate', (event) => event.waitUntil(clients.claim()));
 
 /* --- Ajout en cuve : identifier l'ajout avant de proposer « Ajouté » (port-F1, G2) ----------------------
