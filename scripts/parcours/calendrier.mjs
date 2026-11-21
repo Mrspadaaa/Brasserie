@@ -442,6 +442,30 @@ async function jouer(dir) {
         v.length ? ok('B11 vente du jour', `rangée Ventes : « ${v[0].slice(0, 60)} »`) : echec('B11 vente du jour', '« Vente 6 × Pale Ale », encaissée aujourd\'hui, absente de la rangée Ventes');
       }
 
+      // TOUCHER-FANTOME (21.11, tour7) : toucher « La Cigogne, 3 fûts » a ANNULÉ la vente (« Vente annulée · S51 ») : le clic que le navigateur
+      // émet après le lâcher tombait sur « Annuler la vente » du détail ouvert sous le doigt. Un toucher qui ouvre un détail ne déclenche jamais
+      // ce qui y apparaît : le détail est ouvert, la vente est toujours là, aucun message.
+      await recharger(); await fermer();
+      {
+        const titre = 'La Cigogne, 3 fûts';
+        try {
+          await toucher(`${titre},`, { prefixe: true });
+          await sleep(300);
+          const lu = await p.evaluate((t) => ({
+            message: [...document.querySelectorAll('[role=status]')].map((e) => e.innerText.replace(/\s+/g, ' ').trim()).filter(Boolean).join(' | '),
+            detail: !!document.querySelector(`[aria-label="Détail : ${t}"]`),
+            present: [...document.querySelectorAll('[aria-label]')].some((e) => e.getAttribute('aria-label').startsWith(`${t},`))
+          }), titre);
+          await cap('09b-toucher-fantome');
+          const annulee = /annulée|retirée?|supprimée?/i.test(lu.message) || !lu.present;
+          if (annulee) {
+            echec('TOUCHER-FANTOME', `toucher « ${titre} » a déclenché un bouton du détail ouvert sous le doigt (message : « ${lu.message.slice(0, 70) || 'aucun'} » ; vente ${lu.present ? 'présente' : 'disparue'})`);
+            await toucher('Annuler').catch(() => {});
+          } else if (!lu.detail) echec('TOUCHER-FANTOME', `toucher « ${titre} » n'ouvre pas son détail (message : « ${lu.message.slice(0, 70) || 'aucun'} »)`);
+          else ok('TOUCHER-FANTOME', `détail ouvert, vente intacte${lu.message ? ` (message : « ${lu.message.slice(0, 50)} »)` : ''}`);
+        } catch (e) { echec('TOUCHER-FANTOME', String(e.message).slice(0, 120)); }
+      }
+
       // WFV-14 : « Facturer » sur une vente prévue ouvre la caisse, son client choisi (la caisse propose alors d'en solder la promesse, B5),
       // jamais la liste de Finances (« à encaisser 420,00 », aucune vente créée)
       await recharger(); await fermer();

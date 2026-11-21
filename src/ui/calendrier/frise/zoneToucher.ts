@@ -1,6 +1,7 @@
 import { useCallback, useRef } from 'react';
 import type React from 'react';
 import { APPUI_LONG_MS, SEUIL_MOUVEMENT_PX } from './usePointeur';
+import { avalerClicSuivant, DELAI_CLIC_AVALE } from '../usePointeurCourbe';
 
 /**
  * Tour 3 n° T2-2 (19.11, Calendrier 390 : « toucher la barre minuscule du brassin Ttt n'ouvre aucune fiche, vignette et nom touchés »).
@@ -56,6 +57,8 @@ export function useToucherNom(onToucher: () => void) {
     depart.current = null;
     if (!d || d.id !== e.pointerId) return;
     if (Math.hypot(e.clientX - d.x, e.clientY - d.y) > SEUIL_MOUVEMENT_PX || Date.now() - d.t >= APPUI_LONG_MS) return;
+    /* TOUCHER-FANTOME : comme la barre (usePointeur), le clic émis après ce lâcher ne déclenche pas ce que le détail ouvert pose sous le doigt */
+    avalerClicSuivant(DELAI_CLIC_AVALE, e.currentTarget);
     rappel.current();
   }, []);
   const onPointerCancel = useCallback(() => { depart.current = null; }, []);

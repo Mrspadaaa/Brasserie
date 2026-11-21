@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useRef } from 'react';
+import { avalerClicSuivant, DELAI_CLIC_AVALE } from '../usePointeurCourbe';
 import type React from 'react';
 
 /**
@@ -287,7 +288,13 @@ export function usePointeur(options: OptionsPointeur) {
     if (s.mode === 'long' || s.mode === 'glisse' || s.mode === 'bord') { avalerClic.current = Date.now(); poserGardeClic(); }
     if (s.mode === 'glisse') o.onLacheGlisse?.(s.k, annule);
     else if (s.mode === 'bord') o.onLacheBord?.(s.k, annule);
-    else if (s.mode === 'appui' && !annule && Date.now() - s.t0 < APPUI_LONG_MS) o.onToucher?.(s.cible);
+    else if (s.mode === 'appui' && !annule && Date.now() - s.t0 < APPUI_LONG_MS) {
+      /* TOUCHER-FANTOME (21.11, tour7 : toucher « La Cigogne, 3 fûts » a annulé la vente) : le toucher ouvre le détail au lâcher ; le `click`
+         que le navigateur émet ensuite au même point tombait sur « Annuler la vente », apparu sous le doigt. Ce clic est avalé s'il tombe hors de
+         la pièce touchée (la souris, dont le clic reste sur elle, et le clavier passent) ; un nouveau doigt posé lève la garde. */
+      avalerClicSuivant(DELAI_CLIC_AVALE, e.currentTarget);
+      o.onToucher?.(s.cible);
+    }
   }, []);
 
   const onPointerUp = useCallback((e: React.PointerEvent<HTMLElement>) => fin(e, false), [fin]);
