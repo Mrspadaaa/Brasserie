@@ -144,7 +144,9 @@ describe('Ma levure (l5b)', () => {
 
   it('floculation : la cellule pleine largeur dit de quelle donnée il s’agit, « floculation · recherche… 1/20 », puis « à confirmer »', async () => {
     const { lookup, rendre } = recherchePilotee();
-    render(<Banc recherche={lookup} />);
+    // US-05 a sa floculation depuis le 21.11 (page Fermentis) : une levure du catalogue qui n'en a pas.
+    const sansFloc = { ...recette(), yeast: { ...recette().yeast, name: 'LalBrew London', hopIndexId: 'lalbrew-london', lab: 'Lallemand' } } as TrialRecipe;
+    render(<Banc depart={sansFloc} recherche={lookup} />);
     fireEvent.click(screen.getByRole('button', { name: /Floculation non documentée/i }));
     const cellule = document.querySelector('[data-cel="floculation-recherche"]')!;
     expect(cellule.textContent).toMatch(/^floculation\s*·\s*recherche…\s*1\/20/);

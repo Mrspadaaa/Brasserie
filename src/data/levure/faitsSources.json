@@ -58,6 +58,23 @@
    }
   },
   {
+   "yeastId": "fermentis-us05",
+   "key": "flocculation",
+   "reported": "Sedimentation time: Medium",
+   "fr": "Sédimentation moyenne (page produit Fermentis ; la floculation n’y est pas chiffrée)",
+   "sourceKind": "manufacturer",
+   "source": {
+    "title": "Fermentis, SafAle US-05 (page produit)",
+    "auteur": "Fermentis",
+    "reference": "https://fermentis.com/en/product/safale-us-05/",
+    "checkedAt": "2026-11-21",
+    "libelle": "Fermentis · fiche"
+   },
+   "lecture": {
+    "niveau": "moyen"
+   }
+  },
+  {
    "yeastId": "yeast-fermentis-safale-s-e2-80-9104",
    "key": "esters",
    "reported": "Total esters: Low ; 37 ppm ; Produces balanced fruity and floral notes",

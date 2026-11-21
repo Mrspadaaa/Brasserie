@@ -34,8 +34,8 @@ describe('M6 : floculation de la 1056 et stock des offres', () => {
     expect(v.mots).toContain('faible à moyen');
     expect(v.source?.libelle).toMatch(/Wyeast/);
   });
-  it('US-05 : floculation non documentée, c’est juste (ni catalogue ni fait versé)', () => {
-    expect(levure.valeurAxe(us05(), 'clarte')).toBeNull();
+  it('US-05 : floculation moyenne, lue sur la page Fermentis (« Sedimentation time: Medium », fait versé le 21.11)', () => {
+    expect(levure.valeurAxe(us05(), 'clarte')).toMatchObject({ niveau: 'moyen', source: { libelle: 'Fermentis · fiche' } });
   });
   it('1007 : épuisée au relevé du 2026-09-27 (pas de date de rupture dans les offres) ; US-05 en stock', () => {
     const d = levure.disponibilite(levure.trouver('wyeast-1007')!);

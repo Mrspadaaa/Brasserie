@@ -197,8 +197,8 @@ describe('disponibilité', () => {
 });
 
 describe('faits sourcés', () => {
-  it('46 faits versés, chacun avec sa source (titre, auteur, URL)', () => {
-    expect(faits.faits.length).toBe(46);
+  it('47 faits versés, chacun avec sa source (titre, auteur, URL)', () => {
+    expect(faits.faits.length).toBe(47);
     for (const f of faits.faits) { expect(f.source.title).toBeTruthy(); expect(f.source.auteur).toBeTruthy(); expect(f.source.reference).toMatch(/^https?:/); }
   });
   it('3068 en + esters (banane, Wyeast) ; BE-256 : High retenu, les 20 ppm du TDS ancien notés', () => {
@@ -221,7 +221,7 @@ describe('faits sourcés', () => {
   });
   it('l’inconnu n’est jamais 0 : un axe sans donnée rend null', () => {
     expect(levure.valeurAxe(parId(levure, 'fermentis-us05'), 'soufre')).toBeNull();
-    expect(levure.valeurAxe(parId(levure, 'fermentis-us05'), 'clarte')).toBeNull();
+    expect(levure.valeurAxe(parId(levure, 'lalbrew-london'), 'clarte')).toBeNull();
   });
 });
 
@@ -277,7 +277,8 @@ describe('API ajoutée au contrat : documente, trouver, volumeL', () => {
   it('documente : la même règle que les « non documentées » des facettes', () => {
     const us05 = parId(levure, 'fermentis-us05');
     expect(levure.documente(us05, 'temperature')).toBe(true);
-    expect(levure.documente(us05, 'clarte')).toBe(false);
+    expect(levure.documente(us05, 'clarte')).toBe(true); // sédimentation moyenne, page Fermentis (21.11)
+    expect(levure.documente(parId(levure, 'lalbrew-london'), 'clarte')).toBe(false);
     expect(levure.documente(us05, 'sansSta1')).toBe(levure.contexte.fiche(us05).sta1 != null);
     // cohérence : le total des fiches qui documentent un filtre = total − non documentées
     const base = maquette.chercher('', {});

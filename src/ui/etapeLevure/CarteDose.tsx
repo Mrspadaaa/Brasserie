@@ -31,9 +31,12 @@ export interface StockDose { n: number; trouve: boolean }
 /** Le conseil du fabricant en mots : « ≥ 15 g », « 15–24 g ». */
 export const conseilTexte = (f: NonNullable<BesoinLevure['fabricant']>) =>
   f.borne || f.max === undefined || f.max === f.min ? `${f.borne ? '≥ ' : ''}${dec(f.min)} g` : `${dec(f.min)}–${dec(f.max)} g`;
-/** Le repère du fabricant sous la barre. Au-dessus de son haut, la carte dit lequel compte (critique du 20.11, n° 6) : le besoin de la recette quand
+/** Le repère du fabricant sous la barre. Hors de sa plage (au-dessus de son haut ou sous son bas), la carte dit lequel compte (critique du 20.11, n° 6) : le besoin de la recette quand
  * l'OG en demande plus (« au-dessus du fabricant 15–24 g : l'OG 1,066 en demande plus »), sinon la dose dépasse les deux. */
 export function ligneFabricant(fab: NonNullable<BesoinLevure['fabricant']>, grammes?: number, besoinG?: number, sg?: number) {
+  // Sous son bas (D391, plainte du 20.11 n° 6 : « 1 · 11,5 g », « couvre », « fabricant 15–23 g » sans un mot) : la carte dit aussi lequel compte.
+  if (grammes !== undefined && grammes + 1e-9 < fab.min) return besoinG !== undefined && besoinG + 1e-9 < fab.min && grammes + 1e-9 >= besoinG && sg !== undefined
+    ? `sous le fabricant ${conseilTexte(fab)} : l’OG ${dec(sg, 3)} en demande moins` : `sous le fabricant ${conseilTexte(fab)}`;
   if (fab.borne || fab.max === undefined || grammes === undefined || grammes <= fab.max + 1e-9) return `fabricant ${conseilTexte(fab)}`;
   return besoinG !== undefined && besoinG > fab.max + 1e-9 && sg !== undefined
     ? `au-dessus du fabricant ${conseilTexte(fab)} : l’OG ${dec(sg, 3)} en demande plus` : `au-dessus du fabricant ${conseilTexte(fab)} et du besoin`;

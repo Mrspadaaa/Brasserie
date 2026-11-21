@@ -323,7 +323,7 @@
      {
       "valeur": "moyen",
       "libelle": "moyen",
-      "n": 576
+      "n": 577
      },
      {
       "valeur": "eleve",
@@ -331,7 +331,7 @@
       "n": 110
      }
     ],
-    "nonDocumentees": 425
+    "nonDocumentees": 424
    },
    "forme": {
     "options": [
@@ -909,7 +909,7 @@
      {
       "valeur": "moyen",
       "libelle": "moyen",
-      "n": 576
+      "n": 577
      },
      {
       "valeur": "eleve",
@@ -917,7 +917,7 @@
       "n": 110
      }
     ],
-    "nonDocumentees": 425
+    "nonDocumentees": 424
    },
    "forme": {
     "options": [
@@ -1495,7 +1495,7 @@
      {
       "valeur": "moyen",
       "libelle": "moyen",
-      "n": 576
+      "n": 577
      },
      {
       "valeur": "eleve",
@@ -1503,7 +1503,7 @@
       "n": 110
      }
     ],
-    "nonDocumentees": 425
+    "nonDocumentees": 424
    },
    "forme": {
     "options": [
@@ -1770,26 +1770,26 @@
    "wyeast-1007",
    "yeast-fermentis-safbrew-la-02",
    "yeast-yeastflow-yf-205-holy-colibate",
-   "yeast-yeastflow-yf-501-kingster",
-   "yeast-fermentis-safbrew-la-01",
    "yeast-lallemand-brewing-18621-06-13",
    "yeast-lallemand-brewing-18621-93-13",
-   "yeast-yeastflow-yf-201-st-colibate",
-   "yeast-lallemand-brewing-10372-77-11",
-   "white-labs-wlp4000",
+   "yeast-fermentis-safbrew-la-01",
    "yeast-yeastflow-yf-112-vermonter",
-   "yeast-yeastflow-yf-203-father-tibi",
    "white-labs-wlp001",
    "yeast-yeastflow-yf-202-priest-dvel",
-   "white-labs-wlp090",
    "lalbrew-new-england",
-   "yeast-whc-10292056097107",
-   "yeast-yeastflow-yf-204-priest-dvill",
-   "white-labs-wlp073",
    "white-labs-wlp095",
-   "white-labs-wlp4040"
+   "white-labs-wlp4040",
+   "yeast-yeastflow-yf-207-witn-a-minute",
+   "yeast-whc-10292056097107",
+   "yeast-yeastflow-yf-114-crazy-hazy",
+   "yeast-yeastflow-yf-116-st-hedwig",
+   "yeast-fermentis-safale-s-e2-80-9104",
+   "white-labs-wlp003",
+   "yeast-yeastflow-yf-502-farmster",
+   "white-labs-wlp029",
+   "yeast-yeastflow-yf-110-kolschermeister"
   ],
-  "empreinte": "c84c933b",
+  "empreinte": "7a4b6f81",
   "comptes": {
    "boisson": {
     "options": [
@@ -2081,7 +2081,7 @@
      {
       "valeur": "moyen",
       "libelle": "moyen",
-      "n": 576
+      "n": 577
      },
      {
       "valeur": "eleve",
@@ -2089,7 +2089,7 @@
       "n": 110
      }
     ],
-    "nonDocumentees": 425
+    "nonDocumentees": 424
    },
    "forme": {
     "options": [
@@ -4986,7 +4986,7 @@
      {
       "valeur": "moyen",
       "libelle": "moyen",
-      "n": 4
+      "n": 5
      },
      {
       "valeur": "eleve",
@@ -4994,7 +4994,7 @@
       "n": 0
      }
     ],
-    "nonDocumentees": 1
+    "nonDocumentees": 0
    },
    "forme": {
     "options": [
@@ -5548,7 +5548,7 @@
      {
       "valeur": "moyen",
       "libelle": "moyen",
-      "n": 0
+      "n": 1
      },
      {
       "valeur": "eleve",
@@ -5556,7 +5556,7 @@
       "n": 0
      }
     ],
-    "nonDocumentees": 1
+    "nonDocumentees": 0
    },
    "forme": {
     "options": [
@@ -6691,7 +6691,7 @@
      {
       "valeur": "moyen",
       "libelle": "moyen",
-      "n": 3
+      "n": 4
      },
      {
       "valeur": "eleve",
@@ -6699,7 +6699,7 @@
       "n": 3
      }
     ],
-    "nonDocumentees": 5
+    "nonDocumentees": 4
    },
    "forme": {
     "options": [
