@@ -45,9 +45,9 @@ describe('n° 3 : les rangées vides consécutives sur une même ligne compacte'
     expect([...g.querySelectorAll('.cal-nom')].map(h => h.textContent)).toEqual(['Fêtes', 'Ventes', 'Achats']);
     expect([...g.querySelectorAll('button.cal-oeil')].map(b => b.getAttribute('aria-label'))).toEqual(['Masquer Fêtes', 'Masquer Ventes', 'Masquer Achats']);
     expect(g.querySelectorAll('.cal-vide')).toHaveLength(3);
-    /* « vide » se dit une fois pour le groupe (« vides », au bout) ; une rangée vide seule garde le sien, visible */
-    expect(g.classList.contains('cal-vides-n')).toBe(true);
-    expect([...g.querySelectorAll('[data-vides-mot]')].map(m => m.textContent)).toEqual(['vides']);
+    /* CAL-VIDES-EN-LIGNE (21.11) : chaque rangée dit son « vide », sur sa propre ligne ; plus de « vides » commun */
+    expect([...g.querySelectorAll('.cal-vide')].map(m => m.textContent)).toEqual(['vide', 'vide', 'vide']);
+    expect(g.querySelectorAll('[data-vides-mot]')).toHaveLength(0);
     /* rien n'est retiré : les sept rangées, dans leur ordre */
     expect([...document.querySelectorAll('section[data-rangee]')].map(s => s.getAttribute('data-rangee'))).toEqual(['brassins', 'fetes', 'ventes', 'achats', 'travaux', 'activites', 'papiers']);
     expect(document.querySelectorAll('.cal-vide')).toHaveLength(5);

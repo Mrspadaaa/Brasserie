@@ -513,9 +513,7 @@ export const Frise: React.FC<FriseProps> = props => {
         /* pas de zone gardée sous le + volant ici (D-135 vaut pour les noms posés dans une piste) : la zone, prise au défilement et gardée,
            renvoyait le groupe à la ligne en cours de route (24 → 54 px) et la suite sautait */
         return (
-          <div key={`vides-${groupe[0].r}`} className={`cal-vides${groupe.length > 1 ? ' cal-vides-n' : ''}`} data-rangees-vides={groupe.map(g => g.r).join(' ')}>
-            {/* en tête du groupe : posé au bout, « vides » renvoyait à la ligne six rangées qui tiennent sur deux */}
-            {groupe.length > 1 && <span className="cal-vides-mot" aria-hidden="true" data-vides-mot>vides</span>}
+          <div key={`vides-${groupe[0].r}`} className="cal-vides" data-rangees-vides={groupe.map(g => g.r).join(' ')}>
             {groupe.map(g => g.noeud)}
           </div>
         );
@@ -526,8 +524,9 @@ export const Frise: React.FC<FriseProps> = props => {
 
 /**
  * CAL-PLACE-GACHEE c (paquet G n° 3, 19.11) : Fêtes, Ventes, Achats « vide » prenaient chacune une rangée pleine. Les rangées vides
- * consécutives se rangent sur une même ligne compacte, dans l'ordre des rangées ; chacune garde son +, son nom, son œil et « vide ». Une
- * rangée non vide coupe le groupe ; au-delà de la largeur, la ligne revient à la ligne (frise.css, `.cal-vides`).
+ * consécutives se groupent, dans l'ordre des rangées ; chacune garde son +, son nom, son œil et « vide ». Une rangée non vide coupe le
+ * groupe. CAL-VIDES-EN-LIGNE (21.11, « les mettre en vertical pas les entassés à l'horizontal ») : dans le groupe, chaque rangée a sa propre
+ * ligne d'en-tête, l'une sous l'autre, sans piste vide sous elle (frise.css, `.cal-vides`).
  */
 export function grouperVides<T extends { r: IdRangee; vide: boolean; noeud: React.ReactNode }>(
   entrees: ReadonlyArray<T | null>, groupe: (g: T[]) => React.ReactNode

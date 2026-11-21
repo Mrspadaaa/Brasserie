@@ -22,13 +22,10 @@
 /* paysage (E10, D-174) : le titre se pose sur la première ligne, à gauche ; les barres prennent la place libre à côté */
 .cal-rangee-l .cal-rh { position: absolute; left: 0; top: 0; z-index: 5; padding-right: 6px; border-radius: 0 0 8px 0; background: rgb(var(--cave-950)); }
 .cal-rangee-l .cal-conf { display: none; }
-/* CAL-PLACE-GACHEE c (paquet G n° 3) : les rangées vides consécutives sur une même ligne compacte, dans leur ordre ; chacune garde son +, son
-   nom, son œil et « vide » ; au-delà de la largeur, retour à la ligne. En paysage, le titre y reprend sa place dans le flux. */
-.cal-vides { display: flex; flex-wrap: wrap; align-items: center; column-gap: 8px; row-gap: 6px; }
-/* trois rangées vides et plus sur une ligne de 390 : « vide » se dit une fois pour le groupe (« vides », au bout) ; chaque rangée garde le
-   sien pour le lecteur d'écran (« Fêtes … vide »), hors de la vue */
-.cal-vides-n .cal-rh .cal-vide { position: absolute; width: 1px; height: 1px; margin: -1px; padding: 0; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0; }
-.cal-vides-mot { font-size: 13px; color: rgb(var(--cave-400)); }
+/* CAL-PLACE-GACHEE c (paquet G n° 3) : les rangées vides consécutives, groupées dans leur ordre, sans piste ; chacune garde son +, son nom,
+   son œil et « vide ». CAL-VIDES-EN-LIGNE (21.11, « les mettre en vertical pas les entassés à l'horizontal ») : l'une sous l'autre, chacune sur
+   sa ligne. En paysage, le titre y reprend sa place dans le flux. */
+.cal-vides { display: flex; flex-direction: column; align-items: flex-start; row-gap: 2px; }
 .cal-vides > .cal-rangee { flex: none; min-width: 0; }
 .cal-vides .cal-rh { gap: 4px; }
 .cal-vides .cal-rangee-l .cal-rh { position: static; padding-right: 0; background: none; }
