@@ -24,6 +24,7 @@ const { etapesV1 } = await import(pathToFileURL(path.join(ICI, 'chaines-calendri
 const { etapesV12 } = await import(pathToFileURL(path.join(ICI, 'chaines-calendrier-v12.mjs')).href); // V12 chasse Calendrier : CH-N3 (+ CH-N3-PASTILLE), CH-N13, CH-N9
 const { etapesV9 } = await import(pathToFileURL(path.join(ICI, 'chaines-calendrier-v9.mjs')).href); // V9 chasse Calendrier : CH-V5, CH-N10, CH-D8, CH-MSG
 const { etapesV8 } = await import(pathToFileURL(path.join(ICI, 'chaines-calendrier-v8.mjs')).href); // V8 chasse Calendrier : CH-V4 (+ CH-D7), CH-N1, CH-G3, CH-G7
+const { etapesV13 } = await import(pathToFileURL(path.join(ICI, 'chaines-calendrier-v13.mjs')).href); // V13 chasse Calendrier : CH-E1, CH-V19
 const args = process.argv.slice(2);
 const opt = (n) => { const i = args.indexOf(`--${n}`); return i >= 0 ? args[i + 1] : null; };
 const sortie = path.resolve(args.find((a, i) => !a.startsWith('--') && !['--build', '--ref', '--etape'].includes(args[i - 1])) ?? path.join(os.tmpdir(), 'parcours-chaines'));
@@ -159,6 +160,7 @@ async function venteComptoir33(s, n) {
 function listeEtapes() { return [
   ...etapesV1({ echec, ok, sleep, pageNeuve, sortie }),
   ...etapesV8({ echec, ok, sleep }),
+  ...etapesV13({ echec, ok, sleep }),
   ...etapesV9({ echec, ok, sleep }),
   ...etapesV12({ echec, ok, sleep }),
   {

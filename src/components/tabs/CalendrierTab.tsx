@@ -649,7 +649,8 @@ export function CalendrierTab(props: CalendrierTabProps) {
     const voulu = lundiDe(ajouterJours(du, -7));
     const depart = voulu < premierLundi ? premierLundi : voulu;
     const besoin = Math.round((Date.parse(`${lundiDe(au)}T00:00:00Z`) - Date.parse(`${depart}T00:00:00Z`)) / (7 * 86400000)) + 1;
-    const n = DUREES_MENU.find(d => d >= besoin) ?? SEMAINES_ANNEE;
+    /* CHE-1 : posée par un horizon, la chose se montre sans changer l'échelle que le brasseur a choisie (« 3 mois » ne devient pas « 6 sem. ») */
+    const n = DUREES_MENU.find(d => d >= (garderMessage ? Math.max(besoin, fenetre.semaines) : besoin)) ?? SEMAINES_ANNEE;
     /* D404 : posée par un horizon, la chose se montre d'office ET son message (Annuler) reste */
     if (!garderMessage) setMessage(null);
     setMenu(null); setSelectionId(null); setAncreListe(undefined);
@@ -663,7 +664,7 @@ export function CalendrierTab(props: CalendrierTabProps) {
     const i = Math.min(i0, Math.max(0, total - n));
     const fen: FenetreSemaines = { du: lundis[i] ?? depart, semaines: n };
     setVueEtat('semaines'); setFenetre(fen); onPeriode(periodeDeFenetre(fen));
-  }, [modele.semaines, premierLundi, onPeriode]);
+  }, [modele.semaines, premierLundi, onPeriode, fenetre.semaines]);
 
   /* ---------- masquer, épingler, étoiler, filtrer, trier (E22, E31, E39) ---------- */
   const basculerMasque = useCallback((r: IdRangee) => setMasquees(masquees.includes(r) ? masquees.filter(x => x !== r) : [...masquees, r]), [masquees, setMasquees]);
@@ -798,6 +799,14 @@ export function CalendrierTab(props: CalendrierTabProps) {
       const etendue = etendueDuBrouillon(b);
       const premiere = colonnes[0]?.debut, derniere = colonnes[colonnes.length - 1]?.fin;
       if (etendue && premiere && derniere && (etendue.au < premiere || etendue.du > derniere)) {
+        /* CHE-1 : « 1 an » pose le lundi 52 semaines plus loin, au-delà des 52 semaines que le Calendrier sait montrer. Aller à côté
+           (S40–S45 d'une autre année, rien à l'écran) est faux : la vue ne bouge pas, le message dit où la chose est posée. */
+        const dernierLundi = modele.semaines[modele.semaines.length - 1]?.debut;
+        if (dernierLundi && etendue.du > dernierLundi) {
+          const mois = new Date(`${etendue.du}T12:00:00Z`).toLocaleDateString('fr-CH', { month: 'short', year: 'numeric', timeZone: 'UTC' });
+          setMessage(m => (m ? { ...m, texte: sansPointDouble(`${m.texte} · posée en ${mois}, au-delà de l’année affichée`) } : m));
+          return { ok: true };
+        }
         /* C1 (D396) : posée par un horizon (« 3 mois »), la chose se montre d'office : sa semaine se règle au glisser, sur la frise */
         if (b.parHorizon) { voirEtendue(etendue.du, etendue.au, true); return { ok: true }; }
         const lien = { texte: `Voir ${etiquetteS(etendue.du)} ›`, agir: () => voirEtendue(etendue.du, etendue.au) };
@@ -805,7 +814,7 @@ export function CalendrierTab(props: CalendrierTabProps) {
       }
     }
     return ok ? { ok: true } : { ok: false, raison: 'Écriture impossible. Rien n’a changé.' };
-  }, [feuille, ctxAjout, modele.courbe, ecrire, masquees, setMasquees, filtre, colonnes, voirEtendue]);
+  }, [feuille, ctxAjout, modele.courbe, modele.semaines, ecrire, masquees, setMasquees, filtre, colonnes, voirEtendue]);
 
   /* G3 (D396, PI-1) : un toucher sur le vide de la piste Travaux ou Activités crée « Travaux · S48 » d'emblée, sans feuille ; le message
      porte Annuler. Les autres rangées demandent une recette, un client ou un montant : leur feuille s'ouvre sur la semaine touchée. */
