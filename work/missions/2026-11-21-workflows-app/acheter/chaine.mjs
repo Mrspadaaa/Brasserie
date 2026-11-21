@@ -13,7 +13,7 @@ const log = (...a) => console.log(...a);
 const extrait = async (re, n = 400) => { const t = await b.texte(); const i = t.search(re); return i < 0 ? `(absent : ${re})` : t.slice(i, i + n).replace(/\n/g, ' | '); };
 const segments = [];
 const segment = async (nom, f) => { b.raz(); const t0 = Date.now(); try { await f(); } catch (e) { log(`ERR ${nom} : ${e.message}`); await b.cap(`erreur-${nom}`); } segments.push({ nom, gestes: b.gestes(), ms: Date.now() - t0, traces: [...b.traces] }); };
-const onglet = async (n) => { await b.toucher(n, { dans: 'nav button' }); await sleep(300); };
+const onglet = async (n) => { const dans = (await b.visible(n, { dans: 'nav button' })) ? 'nav button' : '[aria-label]'; await b.toucher(n, { dans }); await sleep(300); };
 async function etat(tag) {
   await onglet('Bord'); log(`[${tag}] Bord :`, await extrait(/\d+ articles? à commander|Stocks/, 160), '||', await extrait(/Finances\n/, 120));
   await onglet('Stocks'); await b.toucher('Courses'); await b.cap(`${tag}-courses`); log(`[${tag}] Courses :`, await extrait(/manque|rien|Tout voir|À commander/, 300));

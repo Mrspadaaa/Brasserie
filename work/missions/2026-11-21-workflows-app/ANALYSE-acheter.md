@@ -1,76 +1,68 @@
-# Chaîne ACHETER / DÉPENSER : analyse (21.11, partielle)
+# Chaîne ACHETER / DÉPENSER : analyse (21.11, chiffres mesurés)
 
 Portée : besoin (manque pour un brassin, seuil, matériel) → commande → facture photographiée → stock → Finances → Calendrier → brassin.
-Jeu : 390×844 tactile, build de test de port-carnet, fixture simulée (`acheter/fixture-achat.mjs` : brassin « IPA de Noël » à J+10 qui manque
-de 15 kg de pilsner, 250 g de Citra et 1 sachet d'US-05 ; soude sous son seuil ; besoin « Pompe de transfert » 450 CHF ; caisse de départ
-+300 CHF). Lecture de facture simulée (2,5 s imposées par le banc). Bugs : `BUGS-acheter.md`. Banc rejouable : `acheter/chaine.mjs`.
-REGLES.md n'existait pas à l'écriture : les règles citées sont celles du CADRAGE § 3 (R1 à R7).
-Fréquences : aucun usage réel mesuré ici. Estimation, source sa fixture du 20.11 (« Impôt sur la bière · 4 brassins ») et ses
-plaintes : un brassin ≈ une commande de matières et une facture ; quelques brassins par mois. Chaîne au moins mensuelle.
+Jeu : 390×844 tactile, build de test de `port-carnet` (HEAD d5a2f056c, build reconstruit le 21.11), `?dev-local`, fixture simulée
+(`acheter/fixture-achat.mjs`, TVA corrigée), lecture de facture simulée (banc : 2,5 s imposées, aucun appel Gemini). Bugs : `BUGS-acheter.md`.
+Banc : `acheter/chaine.mjs` (segments 1 à 3), `acheter/parcours.mjs <1|4>` (chaînes 1 à 4 et INP), `acheter/horsligne.mjs`, `acheter/stock-apres.mjs`.
+Captures : `acheter/captures/parcours-1x/`, `parcours-4x/`, `hors-ligne/`, `stock-apres/` (toutes ouvertes et regardées).
+
+Méthode des chiffres :
+- **Geste** : un toucher. **Temps** : toucher → DOM calme 250 ms (mesuré). Les attentes du script (1,5 s après Confirmer,
+  4 s après la photo hors ligne) sont retirées des temps d'app et dites ainsi.
+- **INP** (mesuré) : Chrome, CDP `Emulation.setCPUThrottlingRate` à 1× puis 4×, PerformanceObserver `event` (seuil 16 ms).
+  Moins de 50 interactions : INP = le maximum. Attribution au geste par horodatage (non vérifiée par trace).
+  Limite : le temps « toucher → calme » ne rend que 430 ms là où l'INP du OK compte 984 ms ; l'INP fait foi.
+- Fréquences : aucun usage réel mesuré. Estimation, source sa fixture du 20.11 et ses plaintes : un brassin ≈ une commande et une facture ;
+  quelques brassins par mois. Chaîne au moins mensuelle (estimé).
+- Chaîne B (commande) non jouée : aucun bouton « Commander » ; seul « Copier la liste ». Ses chiffres restent estimés.
 
 ## 1. Table des chaînes
 
-| Chaîne | Gestes aujourd'hui (joués) | Temps | Gestes visés | Frictions |
+| Chaîne | Gestes (mesuré) | Temps mesuré : ×1 / ×4 | Gestes visés | Frictions |
 |---|---|---|---|---|
-| A. Voir ce qui manque pour le prochain brassin | Bord : 0 (liste visible). Par Stocks : Stocks, Courses, **Tout voir** = 3 | 0,3 s/geste ; Stocks 1re fois : page « Chargement… » | 2 (Stocks, Courses) | WFA-1 liste vide par défaut ; WFA-2 NaN |
-| B. Passer la commande (liste au fournisseur + dépense prévue) | Copier = 1, puis achat prévu à la main au Calendrier : + Achats, titre tapé, montant tapé, date, fournisseur ≈ 8 à 10 (non joué : estimé d'après la feuille d'achat) ; total ≈ 12 | — | 4 : Stocks, Courses, « Commander chez Brouwland », (Annuler possible) | WFA-4 rien ne relie la liste, la commande et le brassin ; ressaisie du montant et du fournisseur |
-| C. Facture photographiée → dépense | +, Facture photo ou PDF, Photographier le ticket = 3 ; lecture 2,7 s (dont 2,5 s simulées) ; Ouvrir la ligne, Garder = 2 (lignes 2 et 3 perdues, WFA-8) ; Confirmer = 1. ≥ 6 gestes pour 3 lignes, sans compter les 2 lignes restées ouvertes | 4,4 s jusqu'à la lecture | 5 : +, Facture, photo, « Garder les 3 », Confirmer | pl1 marche : « Pour Commande de malt · trouvé » sans geste. WFA-6 g au lieu de kg, WFA-7 compteurs, WFA-9 bandeau Drive, WFA-10 refus muet |
-| D. Facture → stock → brassin couvert | non joué (REPRISE) ; la carte Stock promet « 5 → 30 Kg après réception » | — | 0 de plus : le manque du brassin se recalcule seul | à prouver : manque de l'IPA de Noël à 0 après Confirmer |
-| E. Facture → Finances → Calendrier | non joué (REPRISE) ; avant : trois récits de caisse (WFA-3) | — | 0 : un seul solde partout | WFA-3 ; WFA-5 le brassin « coût à venir » |
-| F. Besoin matériel → achat → Parc | non joué (REPRISE) ; Stocks › Matériel › À venir montre « Pompe de transfert » | — | — | à jouer |
+| A. Voir ce qui manque | Bord : 0 (« 4 articles à commander » visible). Stocks, Courses, Tout voir = 3 | 1,5 s / 2,8 s | 2 (G2) | WFA-1 : « 1 manque · rien cette semaine » sans « Tout voir » ; WFA-2 NaN |
+| B. Passer la commande | non joué (estimé : 12 gestes dont 2 champs tapés) | — | 4 (G1, estimé) | WFA-4 : rien ne relie la liste, la commande et le brassin |
+| C. Facture → stock | 9 gestes : Actions rapides, Facture, Photographier (3) ; Ouvrir la ligne, Garder (2, ligne 1 seule) ; Confirmer ; OK de la feuille ; Stocks, Articles (2). Lignes 2 et 3 jamais ouvertes, confirmées quand même | photo 4,0 s / 5,2 s, dont 2,5 s de lecture simulée ; Confirmer ≈ 0,5 s / 0,9 s ; OK 0,4 s / 0,4 s | 6 pour la même facture (G5 : 9 → 8, −11 %, rejeté) | WFA-14 (OK : INP 984 ms) ; WFA-6, WFA-7, WFA-8 |
+| C′. Stock après Confirmer (mesuré) | Malt pilsner 30 kg (+25 kg, facture 21.11) ; Citra 650 g (+500 g) ; US-05 : +6 sachets facturés ; Bord : « 1 article à commander : Soude caustique » (IPA de Noël « À brasser », prévu 01.12). Le manque du brassin est couvert | — | 0 de plus | Soude sous seuil : besoin de 1,5 kg encore affiché (vrai, pas une erreur) |
+| D. Facture → Finances → Calendrier | Finances : 1 geste, 0,7 s / 1,4 s ; facture visible « à payer 421,57 · Brouwland · BW-2026-1142 · Payer ». Calendrier : 1 geste, 1,5 s / 2,4 s | — | 0 de plus (une seule caisse) | WFA-3 : Bord « Charges 421,57 », Finances « à payer 421,57 », Calendrier « −570 CHF » : trois chiffres ; WFA-15 : « Commande de malt −420 » reste à côté de la facture 421,57 |
+| E. Matériel → Parc | Stocks, Matériel, À venir, Pompe de transfert (4) ; Marquer comme réalisé, Parc (2). Total 6 : 1,8 s / 2,5 s puis 0,8 s / 1,1 s | — | 6 (la voie facture de la Pompe non jouée : pas de fixture) | WFA-12 : le 450 CHF disparaît du Calendrier sans dépense ; WFA-13 : la pompe va en Réalisés, pas au Parc |
+| F. Hors ligne (photo) | Bord, Actions rapides, Facture, Photographier (4) ; Saisir à la main (1). Message « Service IA momentanément indisponible. » clair ; photo gardée (`01-courses.png`) ; saisie à la main proposée | message ≈ 0,3 s après le geste | — | WFA-9 reconfirmé : bandeau « Connecter Drive · La connexion Google ne peut pas être préparée » dans la même feuille |
 
-## 2. Quatre regards (sur ce qui a été joué)
+Doublon mesuré (positif) : re-photographier le même ticket après Confirmer affiche « Déjà enregistré · même fichier » et ne double pas la dépense.
 
-1. **Le brasseur** (PORTRAIT § 3, lisibilité d'abord) : il aime la proposition « Pour Commande de malt · trouvé » et la carte « 5 → 30 Kg
-   après réception » (retour immédiat, règle R4, « du grand art »). Il bute sur la liste vide (« Il me dit 4 à commander et la liste est vide
-   ??? »), sur NaN, sur 25000 g, et surtout sur la caisse : « Je suis en négatif et je le vois que sur le calendrier ? ».
-2. **Interaction** : cibles sous 44 px de haut dans la Dépense (Garder 65×32, Suivant 85×32, Ingrédient/Service/Matériel 32 px, « Photographier
-   le ticket » 356×28, onglets de Stocks 69×28) ; Confirmer refusé sans phrase (WFA-10) ; aucun Annuler après Copier (rien n'est posé, donc rien à défaire). Hors ligne non joué.
-3. **Intégration** : la donnée « à commander » vit dans Stocks, la « commande » dans Finances/Calendrier, le « coût du brassin » nulle part
-   (WFA-4, WFA-5) ; la caisse a trois valeurs (WFA-3). La facture, elle, retrouve le besoin (pl1) et l'article (proposé).
-4. **Performance perçue** : ouverture 0,46 à 0,77 s ; geste → calme 0,28 à 0,36 s, fenêtre de 250 ms comprise ; première ouverture de Stocks sur
-   page blanche « Chargement de l'écran… » ; lecture simulée : 0,2 s d'app autour des 2,5 s du banc (le vrai délai Gemini n'est pas mesuré ici).
+## 2. Regards (sur ce qui a été joué)
 
-## 3. Propositions qui passent le filtre de gain (GAIN.md)
+1. **Le brasseur** (PORTRAIT § 3, lisibilité d'abord) : il tient la carte « 5 → 30 Kg après réception » et le manque du brassin qui se recalcule (la commande du malt disparaît du Bord après la facture). Il bute sur les trois chiffres de la caisse et sur la pompe qui « disparaît » de son calendrier.
+2. **Interaction** : la feuille « Tes finances, avant → après » (Annuler / OK) reste ouverte sur Bord, Courses et Calendrier après Confirmer. Rien ne dit ce que OK valide (WFA-14). Lignes 2 et 3 jamais ouvertes ; compteurs contradictoires (WFA-7).
+3. **Intégration** : la facture alimente le stock et Finances, pas le Calendrier comme ligne propre ; le Matériel réalisé sort de la caisse prévue sans passer par une dépense (WFA-12).
+4. **Performance (CPU ×4)** : ouvertures d'onglet à 1,0 à 1,4 s (Stocks 1,4 s, Calendrier 1,2 s, Finances 1,0 s) contre 0,3 à 0,4 s à ×1. Le OK de la feuille : INP 984 ms à ×4 comme à ×1 (1008 ms). Un temps identique à 1× et à 4× ne ressemble pas à du calcul : probablement une attente fixe dans le gestionnaire ; à confirmer par trace Performance.
 
-Chaque proposition est une chaîne d'actions ; aucune ne fixe un visuel (le visuel reste celui de l'écran qu'il a choisi).
+## 3. Propositions après mesure (GAIN.md, cinq points)
 
-**G1 — « Commander chez <fournisseur> » pose l'achat prévu** (R1 une action pose ses suites ; R2 estimation dite comme telle).
-- Chaîne : Courses › fournisseur › Commander → l'achat prévu « Brouwland · 3 articles » est posé au Calendrier, avant le brassin qui en a besoin (jour
-  du brassin moins le délai connu du fournisseur, sinon J−7), au montant **estimé** Σ manque × prix du stock (≈ 15×1,6 + 250×0,09 + 4,5 = 51 CHF,
-  « estimé ») ; relié au brassin et aux articles ; la liste est copiée ; Annuler défait tout.
-- Avant ≈ 12 gestes (B, dont 2 champs tapés), après 4 : −67 %. Ressaisie supprimée : fournisseur et montant. Fréquence : par brassin.
-- Erreur rendue impossible : la courbe de caisse oublie la commande. Coût : un bouton par fournisseur dans Courses ; retire la création manuelle.
-- Ses mots : « En 1 bouton on a 3 action super précise » (cas du projet, même règle) ; « tout ce qui m'economise des gestes ».
+Chaque proposition est une chaîne d'actions ; aucune ne fixe un visuel.
 
-**G2 — Courses s'ouvre sur l'horizon du prochain brassin planifié** (R5 peu à la fois dans l'ordre de la décision ; R2 précision juste).
-- Avant : Stocks, Courses, Tout voir = 3 et un écran vide trompeur ; après : 2 ; −33 %. Erreur rendue impossible : croire qu'il n'y a rien à commander
-  (WFA-1). Coût : aucun ajout, le réglage « S49 · 6 sem. · Tout » reste.
+**G1 — « Commander chez <fournisseur> » pose l'achat prévu.** Non candidat pour l'instant : point 2 (chaîne jouée) non rempli, la chaîne B n'a pas été jouée. Chiffres : estimés (12 → 4 gestes, −67 %). À jouer avant toute maquette.
 
-**G3 — Une seule caisse partout** (R4 chaque réglage montre ce qu'il change ; règle n° 1 : la valeur, pas le dessin).
-- Le solde « au plus serré » du Calendrier (−570, S50) est le même chiffre au Bord et en tête de Finances, dit « estimé » tant qu'un paiement attend.
-- Gain : erreur rendue impossible (dépenser en se croyant au positif) ; 0 geste au lieu d'aller au Calendrier (2 gestes). Fréquence : chaque ouverture.
-  Coût : un chiffre au Bord ; retire « Charges 0,00 » qui ne répond à rien. Ses mots : « je suis en négatif et on le voit même pas ».
+**G2 — Courses s'ouvre sur l'horizon du prochain brassin.** Mesuré : Stocks, Courses, Tout voir = 3 gestes (1,5 s / 2,8 s) ; « 1 manque · rien cette semaine » cache la ligne du 01.12 tant qu'on ne touche pas Tout voir. Après : 2 gestes, −33 % (estimé pour l'après). Erreur rendue impossible : croire qu'il n'y a rien à commander (WFA-1). Coût : aucun ajout. **Candidat.**
 
-**G4 — Le brassin planifié porte son coût estimé** (R1, R4).
-- Le coût des ingrédients du brassin vient des prix du stock (ce qui manque au prix fournisseur) et entre dans la courbe, dit « estimé » ; la commande
-  G1 le remplace quand elle est posée (jamais compté deux fois). Gain : erreur rendue impossible (courbe qui ignore le coût du brassin, WFA-5).
-  Fréquence : par brassin. Coût : aucun geste ajouté. Recoupe la chaîne PRODUIRE : à confronter avec son analyse.
+**G3 — Une seule caisse partout.** Mesuré : trois chiffres pour une même situation. Bord « Charges 421,57 CHF » ; Finances « à payer 421,57 » ; Calendrier « −570 CHF à dépenser (S50) » qui ne bouge pas quand la facture est confirmée, puis « −120 CHF (S48) » quand la Pompe est marquée réalisée sans dépense (WFA-12). Le solde se lit en 1 geste (Calendrier, 1,5 s). Gain : erreur rendue impossible (dépenser en se croyant au positif, ou une dépense qui sort de la caisse sans paiement). **Candidat, renforcé.**
 
-**G5 — Facture : un geste garde toutes les lignes sûres** (R6 vue spécialisée ; R1).
-- Les lignes dont l'article est proposé avec son « avant → après » se gardent ensemble (« Garder les 3 ») ; seules les vraies divergences restent
-  en doute, une à la fois, avec Suivant (WFA-8). Avant : ≥ 3 × (Ouvrir/Suivant + Garder) = 6 pour 3 lignes ; après : 1 ; −83 %.
-  Erreur rendue impossible : une ligne reçue mais restée « proposée », donc absente du stock. Fréquence : par facture. Coût : un bouton ; retire le défilé ligne à ligne.
-  Garde-fou : à vérifier contre « Terminé · 3 doutes à revoir » et la règle D295 (lien sûr) avant toute maquette.
+**G4 — Le brassin planifié porte son coût estimé.** Mesuré : « IPA de Noël · coût à venir » après la facture, malgré un prix au stock pour chaque ingrédient (WFA-5 reconfirmé). Gain : erreur rendue impossible (courbe sans coût du brassin). Coût : aucun geste ajouté. À confronter à PRODUIRE. **Candidat, à confronter.**
+
+**G5 — Facture : un geste garde toutes les lignes sûres.** **Retiré.** Mesuré : Confirmer passe avec « 2 proposés · 3 à contrôler », et les trois lignes entrent au stock (Malt +25 kg, Citra +500 g, US-05 +6). Le cas « ligne reçue restée proposée, donc absente du stock » n'est pas reproduit. Gain réel : un geste (le « Garder » des lignes 2 et 3, si on le garde), soit 1 sur 9 gestes de la chaîne, −11 %, sous le seuil de 30 % (GAIN point 4). Le problème utile est WFA-7 (compteurs), pas un geste de plus.
 
 ## 4. Axes de goût (variantes, jamais des questions)
-- G1 : la date de l'achat prévu — veille du brassin, J−7, ou délai appris du fournisseur ; la page reste sur Courses ou bascule au Calendrier (axe déjà ouvert au CADRAGE § 6).
-- G1 : le prix estimé — dernier prix payé, prix de l'article, fourchette.
-- G3 : le chiffre au Bord — solde au plus serré, ou « à dépenser sans passer sous 0 ».
+
+- G2 : horizon du prochain brassin, ou liste « à commander cette semaine » avec « tout voir » en repli.
+- G3 : le chiffre au Bord : solde au plus serré, ou « à dépenser sans passer sous 0 ».
+- G3 : une pompe « réalisée » sans paiement : sortie de la caisse prévue, ou ligne « à payer » tant qu'aucune dépense ne la couvre (à trancher par le brasseur, règle n° 1).
+- G4 : coût du brassin : prix du stock, ou fourchette.
 
 ## Annexe — gimmicks écartés
+
 - Envoyer la commande au fournisseur par e-mail depuis l'app : geste externe, irréversible, et « Copier » suffit déjà.
 - Estimer le prix par l'IA : le prix est déjà au stock ; un appel facturé pour rien.
 - Une vue « toute la chaîne de l'achat » : refusée (pe5, CADRAGE § 4).
 - Scanner un code-barres à la réception : pas de gain mesuré, la facture porte déjà les lignes.
 - Animation du stock qui monte après Confirmer : rien de plus que « 5 → 30 Kg » déjà montré avant.
+- « Garder les 3 lignes » (ex-G5) : un geste sur neuf, et le risque de perte non reproduit (21.11).
