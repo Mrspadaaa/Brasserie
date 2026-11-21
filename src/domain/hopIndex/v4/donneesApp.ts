@@ -11,9 +11,13 @@
 import type { CatalogueHop, StockHop } from './data';
 
 /** Ce que la reliure lit d'un article de stock de l'app (sous-ensemble de StockItem). */
-export interface ArticleHoublon { name: string; currentStock?: number; unit?: string; alphaPct?: number; category?: string }
+export interface ArticleHoublon {
+  name: string; currentStock?: number; unit?: string; alphaPct?: number; category?: string;
+  /** La fiche du catalogue posée sur l'article (StockItem.fiche, D215) : son `id` désigne la variété, avant toute lecture du nom (D403). */
+  fiche?: { id: string };
+}
 
-export type LienStock = 'nom' | 'alias' | 'préfixe';
+export type LienStock = 'fiche' | 'nom' | 'alias' | 'préfixe';
 export interface ArticleRelie { article: string; cle: string; varietyId: string; variete: string; lien: LienStock }
 export interface ArticleNonRelie {
   /** `inconnu:<nom>` : la clé que l'on montre pour un article que le moteur ne connaît pas. */
@@ -52,13 +56,13 @@ export function alphaDuNom(article: string): number | null {
   return alphaValide(a) ? a : null;
 }
 
-type Index = { noms: Map<string, CatalogueHop[]>; alias: Map<string, CatalogueHop[]>; liste: { nom: string; h: CatalogueHop }[] };
+type Index = { ids: Map<string, CatalogueHop>; noms: Map<string, CatalogueHop[]>; alias: Map<string, CatalogueHop[]>; liste: { nom: string; h: CatalogueHop }[] };
 const indexes = new WeakMap<CatalogueHop[], Index>();
 function indexDe(catalogue: CatalogueHop[]): Index {
   let i = indexes.get(catalogue);
   if (i) return i;
   const ajouter = (m: Map<string, CatalogueHop[]>, k: string, h: CatalogueHop) => { const l = m.get(k); if (!l) m.set(k, [h]); else if (!l.includes(h)) l.push(h); };
-  i = { noms: new Map(), alias: new Map(), liste: catalogue.map((h) => ({ nom: plier(h.name), h })) };
+  i = { ids: new Map(catalogue.map((h) => [h.id, h])), noms: new Map(), alias: new Map(), liste: catalogue.map((h) => ({ nom: plier(h.name), h })) };
   for (const h of catalogue) {
     ajouter(i.noms, plier(h.name), h);
     for (const a of h.aliases ?? []) ajouter(i.alias, plier(a), h);
@@ -119,7 +123,9 @@ export function relierStock(articles: ArticleHoublon[], catalogue: CatalogueHop[
     const alphaFiche = alphaValide(a.alphaPct) ? a.alphaPct : null;
     const non = (raison: string, grams: number | null) => nonRelies.push({ cle: `inconnu:${a.name}`, nom: a.name, grams, alphaPct: alphaFiche ?? alphaDuNom(a.name), raison });
     const q = gramsDe(a);
-    const v = varieteDe(a.name, catalogue);
+    // L'association explicite (fiche posée sur l'article) prime ; sinon le nom.
+    const parFiche = a.fiche?.id ? indexDe(catalogue).ids.get(a.fiche.id) : undefined;
+    const v = parFiche ? { h: parFiche, lien: 'fiche' as const } : varieteDe(a.name, catalogue);
     if ('raison' in v) { non(v.raison, 'grams' in q ? q.grams : null); continue; }
     if ('raison' in q) { non(q.raison, null); continue; }
     const cryo = /cryo/i.test(a.name);

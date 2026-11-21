@@ -142,3 +142,19 @@ describe('« bis » : la variété de l\'article d\'un même produit', () => {
     expect(nomDeVariete('Bis Cascade')).toBe('bis cascade');
   });
 });
+
+describe('D403 : la fiche posée sur l\'article relie par son identifiant', () => {
+  it('un article « ZZ TEST Citra » avec fiche beermaverick-citra est vu par le moteur ; sans fiche, il reste non relié', () => {
+    const id = CATALOGUE.find((h) => h.name === 'Citra')!.id;
+    const avec = relierStock([{ name: 'ZZ TEST Citra', currentStock: 500, unit: 'g', alphaPct: 12.5, fiche: { id } }], CATALOGUE);
+    expect(avec.stock).toEqual([expect.objectContaining({ varietyId: id, grams: 500, alpha: 12.5 })]);
+    expect(avec.relies[0].lien).toBe('fiche');
+    const sans = relierStock([{ name: 'ZZ TEST Citra', currentStock: 500, unit: 'g' }], CATALOGUE);
+    expect(sans.stock).toEqual([]);
+    expect(sans.nonRelies).toHaveLength(1);
+  });
+  it('une fiche inconnue du catalogue retombe sur le nom', () => {
+    const r = relierStock([{ name: 'Citra', currentStock: 100, unit: 'g', fiche: { id: 'inconnu-xyz' } }], CATALOGUE);
+    expect(r.relies[0]?.lien).toBe('nom');
+  });
+});
