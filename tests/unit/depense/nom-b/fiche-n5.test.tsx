@@ -27,6 +27,8 @@ describe('N5 — « Sur la facture : … » sous « Nom »', () => {
   });
   it('« Enregistrer » garde le champ', () => {
     const onSave = ouvrir(art('A', 'Malt de Vienne', 'Malt', 'kg', { nomsFacture: ['Wiener Malz'] }));
+    // STM-5 : Enregistrer reste éteint sans changement ; on change donc le nom d'abord.
+    fireEvent.change(document.getElementById('stock-label') as HTMLInputElement, { target: { value: 'Malt de Vienne bis' } });
     fireEvent.click(screen.getByRole('button', { name: 'Enregistrer' }));
     // `onSave(article, base)` depuis la voie Stocks du 08.11 (la base sert aux règles d'inventaire) : l'article enregistré est le premier argument.
     expect(onSave).toHaveBeenCalledWith(expect.objectContaining({ nomsFacture: ['Wiener Malz'] }), expect.anything());

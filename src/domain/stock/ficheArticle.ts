@@ -98,8 +98,7 @@ export function nombreSuisse(v: number): string {
 /** La quantité dans l'unité de l'article, sans conversion (« 1 200 g », « 0,35 kg », « 2 sachets ») ; « ? » si inconnue, jamais 0. */
 export function quantiteArticle(v: number | null | undefined, unite: string): string {
   if (typeof v !== 'number' || !Number.isFinite(v)) return '?';
-  const u = unite === 'sachet' && Math.abs(v) > 1 ? 'sachets' : unite;
-  return `${nombreSuisse(v)} ${u}`.trim();
+  return `${nombreSuisse(v)} ${uniteAccordee(v, unite)}`.trim();
 }
 
 /** « +30 », « −110 », « ±0 » : la variation d'un mouvement. */
@@ -150,4 +149,47 @@ export async function remplacantDe(item: StockItem, tous: StockItem[]): Promise<
 export function phraseRemplacant(r: RemplacantFiche): { nom: string; reste: string } {
   const stock = r.etat === 'en stock' && r.libre !== null ? `en stock ${quantiteArticle(r.libre, 'g')}` : r.etat === 'épuisé' ? 'épuisé' : 'à acheter';
   return { nom: `ou ${r.nom}`, reste: ` · ${stock} · ${r.palier}` };
+}
+
+/** Le mot de l'unité accordé à la quantité (« pièce », « pièces », « sachets », « Pck ») : la règle de la liste (`Units.format`), le pluriel dès 2. */
+export function uniteAccordee(v: number, unite: string): string {
+  return Units.format(Math.abs(v) >= 2 ? 2 : 1, unite).replace(/^\S+\s*/, '');
+}
+
+/** STM-2 : les champs que le brasseur a changés dans la fiche, dans ses mots (« seuil », « nom »…) ; vide = rien à perdre. */
+const NOMS_CHAMPS: Partial<Record<string, string>> = {
+  name: 'nom', minStock: 'seuil', category: 'catégorie', unit: 'unité', supplier: 'fournisseur', alphaPct: 'acide alpha', colorEbc: 'couleur',
+  potentialPpg: 'potentiel', yeastLab: 'laboratoire', yeastStrain: 'souche', yeastLot: 'DDM', yeastAttenuationPct: 'atténuation',
+  yeastTempMinC: 'température mini', yeastTempMaxC: 'température maxi', currentStock: 'stock'
+};
+const SANS_EFFET: readonly string[] = ['favorite', 'reorder'];
+export function champsChanges(item: StockItem, draft: StockItem): string[] {
+  const lu = (o: StockItem, k: string) => { const v = (o as unknown as Record<string, unknown>)[k]; return v === undefined || v === null || v === '' ? null : typeof v === 'string' ? v.trim() : v; };
+  const cles = new Set([...Object.keys(item), ...Object.keys(draft)].filter(k => !SANS_EFFET.includes(k)));
+  const noms: string[] = [];
+  for (const k of cles) if (JSON.stringify(lu(item, k)) !== JSON.stringify(lu(draft, k))) noms.push(NOMS_CHAMPS[k] ?? 'fiche');
+  return [...new Set(noms)];
+}
+
+/** STM-9 : ce que dit la ligne sous le champ Seuil ; 0 est un seuil écrit, vide est « sans seuil ». */
+export function phraseSeuil(minStock: number | undefined): string {
+  return minStock === undefined ? 'sans seuil : aucune alerte inventée'
+    : minStock === 0 ? 'alerte seulement à l’épuisement' : 'alerte « bas » sous ce niveau';
+}
+
+/** STM-15 : le signe qui survit à la fermeture de la fiche, dit ce qui vient d'être écrit. */
+export function phraseEcrit(item: StockItem, draft: StockItem): string {
+  const nom = draft.name.trim();
+  if (nom && nom !== item.name.trim()) return `Enregistré · renommé en « ${nom} »`;
+  if ((item.minStock ?? null) !== (draft.minStock ?? null)) {
+    return `Enregistré · ${draft.minStock === undefined ? 'seuil retiré' : `seuil ${quantiteArticle(draft.minStock, draft.unit)}`}`;
+  }
+  return 'Enregistré · fiche mise à jour';
+}
+
+/** STM-13 : le refus d'une correction dit quoi choisir ; il est affiché près du bouton. */
+export function refusDit(refus: string): string {
+  return /supérieur au théorique/.test(refus)
+    ? 'Perte, casse ou don ne peuvent pas augmenter le stock. Choisis « Compté » ou, dans « Autre », « Erreur de saisie ».'
+    : refus;
 }

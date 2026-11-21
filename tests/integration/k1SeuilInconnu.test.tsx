@@ -39,16 +39,17 @@ describe('K11 / R3 — seuil inconnu', () => {
     expect(regles.verifierSeuil(0, 'kg')).toEqual({ ok: true });
   });
 
-  it('la fiche sans seuil s’ouvre sans message rouge, et Enregistrer est allumé', () => {
+  it('la fiche sans seuil s’ouvre sans message rouge, et Enregistrer reste éteint tant que rien ne change (STM-5)', () => {
     render(<StockDetailSheet {...props} item={sansSeuil()} onSave={vi.fn()} />);
     expect(screen.queryByText(/nombre positif/)).toBeNull();
-    expect(screen.getByRole('button', { name: 'Enregistrer' })).toBeEnabled();
+    expect(screen.getByRole('button', { name: 'Enregistrer' })).toBeDisabled();
     expect((document.getElementById('stock-min') as HTMLInputElement).value).toBe('');
   });
 
   it('changer le fournisseur d’une fiche sans seuil s’enregistre, et le seuil reste inconnu (absent, pas 0)', () => {
     const onSave = vi.fn();
     render(<StockDetailSheet {...props} item={sansSeuil()} onSave={onSave} />);
+    fireEvent.change(document.getElementById('stock-label') as HTMLInputElement, { target: { value: 'ZZ renommé' } });
     fireEvent.click(screen.getByRole('button', { name: 'Enregistrer' }));
     expect(onSave).toHaveBeenCalledTimes(1);
     const saisie = onSave.mock.calls[0][0] as StockItem;

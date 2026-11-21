@@ -184,3 +184,8 @@ export function geometrieEscalier(e: Escalier) {
   e.pts.forEach((v, i) => { d += ` H${xs[i + 1]}`; if (i + 1 < e.pts.length) d += ` V${y(e.pts[i + 1])}`; });
   return { top, y, xs, d, aire: `${d} V${yb} H${x0} Z` };
 }
+
+/** STC-6 : les dates sous les marches ; une date identique à la précédente n'est pas réécrite (null). */
+export function datesAffichees(dates: (string | null)[]): (string | null)[] {
+  return dates.map((d, i) => d !== null && i > 0 && dates[i - 1] === d ? null : d);
+}

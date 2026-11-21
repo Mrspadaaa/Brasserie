@@ -1,6 +1,6 @@
 import React, { useId, useMemo, useState } from 'react';
 import type { Batch } from '../types';
-import { escalierDe, geometrieEscalier, mouvementsDeFamille, ESC, type ArticleDeFamille, type MouvementArticle, type MouvementBrut } from '../domain/stock/mouvementsArticle';
+import { datesAffichees, escalierDe, geometrieEscalier, mouvementsDeFamille, ESC, type ArticleDeFamille, type MouvementArticle, type MouvementBrut } from '../domain/stock/mouvementsArticle';
 import { jourSemaine, nomDuMois, nombreSuisse, quantiteArticle, variation } from '../domain/stock/ficheArticle';
 
 /**
@@ -8,7 +8,7 @@ import { jourSemaine, nomDuMois, nombreSuisse, quantiteArticle, variation } from
  * (achat, brassage, inventaire, correction) de l'article et de ses lots, par le besoin de `disponibilites()` et par le seuil.
  * Le dessin est celui de B4 : escalier d'une marche par mouvement, besoin en rouge pointillé, seuil en ocre tireté,
  * hachures du manque, dates sous les marches, puis les mouvements « avant → après » et « Tout voir ».
- * Ce qui manque est dit (« seuil à fixer », « aucun besoin », « besoin inconnu »), jamais tracé à 0.
+ * Ce qui manque est dit sans bruit : seul « besoin inconnu » s'écrit sur le graphe ; « seuil à fixer » et « aucun besoin » restent dans l'étiquette lue, jamais tracés à 0.
  */
 export interface StockFicheBougeProps {
   /** Nom de l’article, pour la description de la courbe. */
@@ -61,8 +61,8 @@ function Escalier({ e, unite, nom }: { e: NonNullable<ReturnType<typeof escalier
     {e.manque && e.besoin !== null && <rect x={xs[dernier]} y={y(e.besoin)} width={x1 - xs[dernier]} height={y(fin) - y(e.besoin)} className="sfp-escm" style={{ fill: `url(#${motif})` }}/>}
     {e.besoinEtat === 'connu' && ligne(e.besoin, 'escb', `besoin ${quantiteArticle(e.besoin, unite)}`)}
     {e.pts.slice(1).map((v, i) => <circle key={i} cx={xs[i + 1]} cy={y(v)} r={3.2} className="sfp-escp"/>)}
-    {e.dates.map((d, i) => d && <text key={i} x={xs[i + 1]} y={H - 2} className="sfp-escd" textAnchor="middle">{d.slice(8, 10)}.{d.slice(5, 7)}</text>)}
-    {sansLigne.map(lab => <text key={lab} x={x1 + 4} y={yEtiquette(lab.startsWith('seuil'))} className="sfp-escn" data-manque={lab.startsWith('seuil') ? 'seuil' : 'besoin'}>{lab}</text>)}
+    {datesAffichees(e.dates).map((d, i) => d && <text key={i} x={xs[i + 1]} y={H - 2} className="sfp-escd" textAnchor="middle">{d.slice(8, 10)}.{d.slice(5, 7)}</text>)}
+    {sansLigne.filter(lab => lab === 'besoin inconnu').map(lab => <text key={lab} x={x1 + 4} y={yEtiquette(lab.startsWith('seuil'))} className="sfp-escn" data-manque={lab.startsWith('seuil') ? 'seuil' : 'besoin'}>{lab}</text>)}
   </svg>;
 }
 

@@ -21,7 +21,7 @@ import type { ChampEcrit } from '../services/enrichissementStore';
 import { AiAssist } from './AiAssist';
 import { factsForStock, type IngredientFacts, type IngredientKind } from '../domain/ingredientFacts';
 import { bandForEbc } from '../domain/beerColor';
-import { familleDe, jourCourt, lotsDe, nombreSuisse, phraseRemplacant, prixDernierAchat, prixLu, quantiteArticle, remplacantDe, variation, type Lot, type RemplacantFiche } from '../domain/stock/ficheArticle';
+import { champsChanges, familleDe, jourCourt, lotsDe, nombreSuisse, phraseEcrit, phraseRemplacant, phraseSeuil, prixDernierAchat, prixLu, quantiteArticle, refusDit, remplacantDe, uniteAccordee, variation, type Lot, type RemplacantFiche } from '../domain/stock/ficheArticle';
 import type { MouvementBrut } from '../domain/stock/mouvementsArticle';
 import type { BrewPrice } from '../domain/finance/brewBudget';
 import { StockFicheBouge } from './StockFicheBouge';
@@ -76,6 +76,17 @@ function pasDe(unite: string): number[] {
   return [...[...montee].reverse().map(v => -v), ...montee];
 }
 const arrondi = (v: number) => Math.round(v * 1e6) / 1e6;
+
+/** STM-15 : le signe d'écriture vit hors de la fiche (elle se ferme à l'enregistrement) : un petit état posé sur la page, retiré après 2,5 s. */
+function direEcrit(texte: string) {
+  if (typeof document === 'undefined') return;
+  const el = document.createElement('div');
+  el.className = 'sfp-ecrit'; el.setAttribute('role', 'status'); el.setAttribute('data-ecrit', ''); el.textContent = texte;
+  document.body.appendChild(el);
+  window.setTimeout(() => el.remove(), 2500);
+}
+/** STM-6 : Entrée dans un champ de nombre valide la saisie et ferme le clavier (le champ perd le focus, la valeur reste). */
+const entreeValide = (e: React.KeyboardEvent) => { if (e.key === 'Enter') { e.preventDefault(); (e.target as HTMLElement).blur(); } };
 
 /**
  * « Compléter avec l'IA » (IA-COMPLETER-ABSENT, 19.11) : ce qui manque à la fiche d'un article, dans les mots d'`ingredientGaps` (ce sont eux que `fillsGap` lit).
@@ -192,6 +203,11 @@ const FichePage: React.FC<StockDetailSheetProps & { item: StockItem }> = ({
   const verdict = valeur === undefined ? null : verifierCorrection(lotItem, valeur, motifCode);
   const correctionTouchee = compte !== null;
   const correctionOk = !correctionTouchee || (verdict !== null && verdict.ok);
+  // STM-5, STM-2 : Enregistrer n'agit que s'il y a quelque chose à écrire ; Retour, Échap, ✕ et Commander ne jettent pas une saisie sans la demander.
+  const modifs = champsChanges(item, draft);
+  const dirty = modifs.length > 0 || correctionTouchee;
+  const [aAbandonner, setAAbandonner] = useState<(() => void) | null>(null);
+  const demander = (action: () => void) => { if (dirty) setAAbandonner(() => action); else action(); };
   const pas = pasDe(lotItem.unit);
   const poser = (v: number) => setCompte(Math.max(0, arrondi(v)));
 
@@ -199,6 +215,7 @@ const FichePage: React.FC<StockDetailSheetProps & { item: StockItem }> = ({
     if (!canSave || !correctionOk) return;
     onSave({ ...draft, name: draft.name.trim(), favorite: item.favorite, reorder: draft.minStock !== undefined && draft.currentStock <= draft.minStock }, item);
     if (correctionTouchee && onCorrect && valeur !== undefined) onCorrect(lotItem, valeur, motifCode);
+    direEcrit(correctionTouchee && modifs.length === 0 ? 'Enregistré · stock corrigé' : phraseEcrit(item, draft));
     onClose();
   };
   // AM-55 : ce qui retient l'article (brassin qui le réserve, recette qui le cite).
@@ -242,7 +259,7 @@ const FichePage: React.FC<StockDetailSheetProps & { item: StockItem }> = ({
     ? (alphas.length === 0 ? 'α ?' : Math.min(...alphas) === Math.max(...alphas) ? `α ${nombreFr(alphas[0], 2)} %` : `α ${nombreFr(Math.min(...alphas), 2)} – ${nombreFr(Math.max(...alphas), 2)} %`)
     : malt ? (typeof item.colorEbc === 'number' ? `EBC ${nombreFr(item.colorEbc, 1)}` : 'EBC ?') : null;
   const nomAffiche = item.name.replace(/\s+bis\b.*$/i, '').trim() || item.name;
-  const uniteLue = unite === 'sachet' && (total ?? 0) > 1 ? 'sachets' : unite;
+  const uniteLue = uniteAccordee(total ?? 0, unite);
   const etat: { txt: string; ton: 'att' | 'rouge' | 'neutre' } | null =
     total === 0 ? { txt: 'épuisé', ton: 'rouge' }
       : manqueNet !== null && manqueNet > 0 ? { txt: `manque ${quantiteArticle(manqueNet, unite)}`, ton: 'att' }
@@ -263,7 +280,7 @@ const FichePage: React.FC<StockDetailSheetProps & { item: StockItem }> = ({
           {seuilFixe !== null && i === seuilFixe && <span className="sfp-stick" title="seuil"/>}</React.Fragment>)}
         <span className="sfp-saclab">{seuilFixe !== null ? <>seuil {quantiteArticle(seuilFixe, unite)}</> : 'sans seuil'}</span>
       </div>
-      : <>
+      : seuilFixe === null && !besoin && !plusieursLots ? null : <>
         <div className={`sfp-bar${plusieursLots ? ' sfp-blots' : ''}`} data-barre="stock" role="img" aria-label={ariaBarre}>
           {plusieursLots
             ? (() => { let x = 0; return lots.map((l, i) => { const debut = x; x += Number.isFinite(l.stock) ? l.stock : 0; return <React.Fragment key={l.ref}>
@@ -291,13 +308,13 @@ const FichePage: React.FC<StockDetailSheetProps & { item: StockItem }> = ({
 
   return <>
     <div ref={racine} role="dialog" aria-label={`Fiche ${nomAffiche}`} tabIndex={-1} className="sfp" data-fiche-page
-      onKeyDown={e => { if (e.key === 'Escape' && !e.defaultPrevented && !(e.target as HTMLElement).closest('[role="combobox"],[aria-expanded="true"]')) { e.stopPropagation(); onClose(); } }}>
+      onKeyDown={e => { if (e.key === 'Escape' && !e.defaultPrevented && !(e.target as HTMLElement).closest('[role="combobox"],[aria-expanded="true"]') && !aAbandonner && !confirmDelete) { e.stopPropagation(); demander(onClose); } }}>
       <header className="sfp-entete">
-        <button type="button" className="sfp-back" onClick={onClose} aria-label={`Retour au stock : ${retourLibelle}`}>
+        <button type="button" className="sfp-back" onClick={() => demander(onClose)} aria-label={`Retour au stock : ${retourLibelle}`}>
           <ArrowLeft size={20} aria-hidden="true"/><span className="sfp-rep"><Package size={18} aria-hidden="true"/></span>{retourLibelle}
         </button>
         <button type="button" className="sfp-ico sfp-plus" aria-label="Plus" aria-haspopup="menu" aria-expanded={menu} onClick={() => setMenu(m => !m)}><MoreHorizontal size={20} aria-hidden="true"/></button>
-        <button type="button" className="sfp-ico sfp-x" aria-label="Fermer la fiche" onClick={onClose}><X size={20} aria-hidden="true"/></button>
+        <button type="button" className="sfp-ico sfp-x" aria-label="Fermer la fiche" onClick={() => demander(onClose)}><X size={20} aria-hidden="true"/></button>
         {menu && <div className="sfp-menu" role="menu" aria-label="Plus">
           <button type="button" role="menuitem" aria-pressed={!!item.favorite} onClick={() => { onToggleFavorite(item); setMenu(false); }}>
             <Star size={16} aria-hidden="true" className={item.favorite ? 'fill-ebc-straw text-ebc-straw' : ''}/>{item.favorite ? 'Épinglé' : 'Épingler'}</button>
@@ -368,9 +385,9 @@ const FichePage: React.FC<StockDetailSheetProps & { item: StockItem }> = ({
               {plusieursLots && <div className="sfp-seg2" role="group" aria-label="Lot à corriger">{lots.map((l, i) => <button type="button" key={l.ref} aria-pressed={l.ref === lotRef}
                 onClick={() => { setLotRef(l.ref); setCompte(null); }}>{l.entree ? `Lot du ${jourCourt(l.entree, aujourdhui)}` : `Lot ${i + 1}`}</button>)}</div>}
               <div className="sfp-cpt" style={{ marginTop: plusieursLots ? 8 : 0 }}>
-                <label className="sfp-inp" data-invalide={verdict && !verdict.ok ? '' : undefined}>
+                <label className="sfp-inp" data-invalide={verdict && !verdict.ok ? '' : undefined} onKeyDown={entreeValide}>
                   <NumberInput id="stock-compte" aria-label="Il en reste" value={valeur} min={0} emptyValue={undefined} onValue={v => setCompte(v)} className=""/>
-                  <i>{lotItem.unit}</i></label>
+                  <i>{uniteAccordee(valeur ?? lotItem.currentStock, lotItem.unit)}</i></label>
                 <span className="sfp-delta" aria-live="polite">avant <b>{quantiteArticle(lotItem.currentStock, lotItem.unit)}</b> · <span data-delta>
                   {valeur === undefined ? 'à saisir' : arrondi(valeur - lotItem.currentStock) === 0 ? 'sans changement' : variation(arrondi(valeur - lotItem.currentStock))}</span></span>
               </div>
@@ -381,17 +398,16 @@ const FichePage: React.FC<StockDetailSheetProps & { item: StockItem }> = ({
               </div>
               {motif === 'autre' && <div className="sfp-seg2" role="group" aria-label="Autre motif" style={{ marginTop: 6 }}>
                 {AUTRES.map(a => <button type="button" key={a.code} aria-pressed={autre === a.code} onClick={() => setAutre(a.code)}>{a.label}</button>)}</div>}
-              {verdict && 'refus' in verdict && correctionTouchee && <p className="sfp-err" role="alert">{verdict.refus}</p>}
               <p className="sfp-note">{correctionTouchee ? 'Enregistre pour écrire le mouvement dans « Ce qui a bougé ».' : 'Aucune correction en cours.'}</p>
             </section></details></div>}
 
           <div className="sfp-card">
             <section className="sfp-sec" aria-label="Seuil">
               <h2 className="sfp-lab">Seuil · facultatif</h2>
-              <div className="sfp-seuil"><label className="sfp-inp" data-invalide={seuilErreur ? '' : undefined}>
+              <div className="sfp-seuil"><label className="sfp-inp" data-invalide={seuilErreur ? '' : undefined} onKeyDown={entreeValide}>
                 <NumberInput id="stock-min" aria-label={`Seuil minimum (${draft.unit})`} value={draft.minStock} min={0} emptyValue={undefined} placeholder="aucun" aria-invalid={!seuil.ok}
-                  onValue={minStock => setDraft({ ...draft, minStock })} className=""/><i>{draft.unit}</i></label>
-                <p>{seuilFixe !== null ? 'alerte « bas » sous ce niveau' : 'sans seuil : aucune alerte inventée'}</p></div>
+                  onValue={minStock => setDraft({ ...draft, minStock })} className=""/><i>{uniteAccordee(draft.minStock ?? 0, draft.unit)}</i></label>
+                <p>{phraseSeuil(draft.minStock)}</p></div>
               {seuilErreur && <p className="sfp-err" role="alert">{seuilErreur}</p>}
             </section>
             <section className="sfp-sec" aria-label="Fiche">
@@ -409,6 +425,7 @@ const FichePage: React.FC<StockDetailSheetProps & { item: StockItem }> = ({
 
           <div className="sfp-card"><details id="stock-edit" className="sfp-sec sfp-edit" open={edition} onToggle={e => setEdition((e.currentTarget as HTMLDetailsElement).open)}>
             <summary>Modifier la fiche<ChevronDown size={18} aria-hidden="true"/></summary>
+        <div onKeyDownCapture={e => { if (e.key === 'Enter' && (e.target as HTMLElement).id === 'stock-label') { e.preventDefault(); e.stopPropagation(); save(); } }}>
         <FormNav className="stock-form space-y-2" onSubmit={save}>
           <Field label="Nom" htmlFor="stock-label" error={draft.name.trim() ? undefined : 'Indiquez le nom de l’article.'}>
             <TextInput id="stock-label" name="stock_sheet_item_label" required aria-invalid={!draft.name.trim()} value={draft.name} onChange={name => setDraft({ ...draft, name })}/>
@@ -475,15 +492,22 @@ const FichePage: React.FC<StockDetailSheetProps & { item: StockItem }> = ({
             </div>
           </details>}
         </FormNav>
+        </div>
           </details></div>
         </div></div>
       </main></div>
 
+      {verdict && 'refus' in verdict && correctionTouchee && <p className="sfp-refus" role="alert">{refusDit(verdict.refus)}</p>}
       <div className="sfp-pied">
-        {onCommander && <button type="button" className="sfp-b2" onClick={onCommander}><ShoppingCart size={18} aria-hidden="true"/>Commander</button>}
-        <button type="button" className="sfp-b1" disabled={!canSave || !correctionOk} onClick={save}>Enregistrer</button>
+        {onCommander && <button type="button" className="sfp-b2" onClick={() => demander(onCommander)}><ShoppingCart size={18} aria-hidden="true"/>Commander</button>}
+        <button type="button" className="sfp-b1" disabled={!canSave || !correctionOk || !dirty} onClick={save}>Enregistrer</button>
       </div>
     </div>
+    <ConfirmSheet open={aAbandonner !== null} onClose={() => setAAbandonner(null)}
+      onConfirm={() => { const a = aAbandonner; setAAbandonner(null); a?.(); }} title="Abandonner les changements ?"
+      what={`Non enregistré : ${modifs.concat(correctionTouchee ? ['correction du stock'] : []).join(', ')}`}
+      consequence="Ce que tu as saisi dans la fiche sera perdu."
+      confirmLabel="Abandonner"/>
     <ConfirmSheet open={confirmDelete} onClose={() => setConfirmDelete(false)}
       onConfirm={() => { onDelete(item); setConfirmDelete(false); onClose(); }} title="Supprimer cet article ?"
       what={`${item.name} — ${quantiteArticle(item.currentStock, item.unit)} en stock`}

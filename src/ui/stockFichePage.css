@@ -117,6 +117,9 @@
 .sfp-inp { display: flex; align-items: center; gap: 6px; height: 44px; padding: 0 12px; border: 1px solid var(--sfp-strong); border-radius: 10px; background: var(--sfp-page); width: 132px; }
 .sfp-inp input { width: 100%; min-width: 0; border: 0; outline: 0; background: none; box-shadow: none; padding: 0; min-height: 0; height: auto; font-size: 16px; font-weight: 600; color: var(--sfp-t0); font-variant-numeric: tabular-nums; }
 .sfp-inp input::placeholder { color: var(--sfp-t2); font-weight: 400; }
+/* STM-12 : au pointeur grossier `Input` est un <textarea> : mêmes déclarations, sinon un pavé gris (fond du thème) apparaît derrière la valeur */
+.sfp-inp textarea { width: 100%; min-width: 0; border: 0; outline: 0; background: none; box-shadow: none; padding: 0; min-height: 0; height: auto; font-size: 16px; font-weight: 600; color: var(--sfp-t0); font-variant-numeric: tabular-nums; }
+.sfp-inp textarea::placeholder { color: var(--sfp-t2); font-weight: 400; }
 .sfp-inp i { font-style: normal; color: var(--sfp-t2); }
 .sfp-inp[data-invalide] { border-color: var(--sfp-alert); }
 .sfp-pasr { display: grid; grid-auto-flow: column; grid-auto-columns: 1fr; gap: 6px; margin-top: 8px; }
@@ -133,6 +136,9 @@
 .sfp-seuil { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
 .sfp-seuil .sfp-inp { width: 110px; }
 .sfp-seuil p { font-size: 14px; color: var(--sfp-t2); }
+.sfp-refus { flex: none; margin: 0; padding: 6px 12px 0; font-size: 12px; color: var(--sfp-alertt); background: var(--sfp-page); }
+/* STM-15 : le signe d'écriture, posé hors de la fiche (elle se ferme), au-dessus de la barre du bas */
+.sfp-ecrit { position: fixed; left: 50%; transform: translateX(-50%); bottom: calc(72px + env(safe-area-inset-bottom)); z-index: 90; padding: 8px 14px; border-radius: 999px; font-size: 13px; font-weight: 600; background: #2a2724; color: #f3efe8; border: 1px solid #4a443d; box-shadow: 0 4px 14px rgba(0,0,0,.35); max-width: calc(100vw - 32px); }
 .sfp-err { margin-top: 4px; font-size: 12px; color: var(--sfp-alertt); }
 .sfp-info { display: flex; align-items: center; gap: 8px; min-height: 40px; border-top: 1px solid var(--sfp-border); }
 .sfp-info:first-child { border-top: 0; }
