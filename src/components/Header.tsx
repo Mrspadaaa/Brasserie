@@ -82,6 +82,9 @@ export const Header: React.FC<HeaderProps> = ({
       /* APP-ENTETE-COLLE : l'en-tête ne colle plus ; une zone collée d'un onglet se colle donc au haut de l'écran. */
       const h = getComputedStyle(el).position === 'sticky' ? `${Math.round(el.getBoundingClientRect().height * 100) / 100}px` : '0px';
       if (root.style.getPropertyValue(propriete) !== h) root.style.setProperty(propriete, h);
+      /* VUE-FOND : la hauteur réelle de l'en-tête, collé ou non, pour qu'une vue de la hauteur de l'écran (Fûts, Matériel, Houblons) n'ajoute pas de course au défilement. */
+      const boite = `${Math.round(el.getBoundingClientRect().height * 100) / 100}px`;
+      if (root.style.getPropertyValue('--main-header-box') !== boite) root.style.setProperty('--main-header-box', boite);
     };
     publier();
     const observateur = typeof ResizeObserver !== 'undefined' ? new ResizeObserver(publier) : null;
@@ -90,6 +93,7 @@ export const Header: React.FC<HeaderProps> = ({
       observateur?.disconnect();
       if (avant) root.style.setProperty(propriete, avant);
       else root.style.removeProperty(propriete);
+      root.style.removeProperty('--main-header-box');
     };
   }, []);
 

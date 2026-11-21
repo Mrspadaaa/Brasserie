@@ -14,7 +14,7 @@ const WORKSPACE_VIEWS = [
 export function HopIndexWorkspace(props: React.ComponentProps<typeof HopIndexPanel>) {
   const [view, setView] = useState<'index' | 'tastings' | 'knowledge'>('index');
   useEffect(() => { if (props.createRequest?.kind === 'newHopVariety') setView('index'); }, [props.createRequest?.at]);
-  return <div data-hop-scroll className="flex-1 min-h-0 overflow-y-auto space-y-2 sm:space-y-5 pb-24">
+  return <div data-hop-scroll className="flex-1 min-h-0 overflow-y-auto space-y-2 sm:space-y-5 pb-2">
     <ViewNavigation<'index' | 'tastings' | 'knowledge'> label="Index du houblon" value={view} onChange={setView} options={WORKSPACE_VIEWS.map(({ id, name, shortLabel }) => ({ value: id, label: name, shortLabel }))}>
     <nav aria-label="Index houblon" className="grid grid-cols-1 sm:grid-cols-3 gap-2">
       {WORKSPACE_VIEWS.map(({ id, name, Icon }) => <button key={id} onClick={() => setView(id)}

@@ -78,6 +78,8 @@ interface CalendrierTabProps {
   section?: 'finances' | 'brassins' | 'materiel' | 'stocks' | 'agenda';
   /** E44 : lundi ISO sur lequel ouvrir la vue (« manque S49 » des Stocks). */
   centrerSur?: string;
+  /** CHN-5, CHN-12 : la chose à montrer à l'arrivée d'un saut (Carnet › « Au calendrier », loupe) : l'identifiant de sa source ; `at` distingue deux sauts. */
+  viser?: { id: string; at: number };
   /** Le port des écritures (les tests passent une mémoire ; l'app, ses services). */
   port?: PortEcritures;
   /** Le jour (les tests le fixent). */
@@ -215,9 +217,12 @@ export function CalendrierTab(props: CalendrierTabProps) {
     const du = centrerSur ? (lundiDe(ajouterJours(centrerSur, -14)) < premierLundi ? premierLundi : lundiDe(ajouterJours(centrerSur, -14))) : lundiAuj;
     return { du, semaines: 6 };
   });
-  const [periodeLocale, setPeriodeLocale] = useState<Periode | undefined>(props.periode);
+  /* CHN-6 : un saut vers une chose (centrerSur) ne change pas la période de l'app : la fenêtre se pose sur la chose, la période locale se lit
+     dans cette fenêtre, et celle de l'app (« Nov. ») reste ce qu'elle était, au retour aussi. Elle ne se rejoint qu'au premier changement venu d'ailleurs. */
+  const [periodeLocale, setPeriodeLocale] = useState<Periode | undefined>(centrerSur ? undefined : props.periode);
   const clePeriode = JSON.stringify(props.periode ?? null);
-  useEffect(() => { setPeriodeLocale(props.periode); // eslint-disable-next-line react-hooks/exhaustive-deps
+  const clePeriodeMontee = useRef(clePeriode);
+  useEffect(() => { if (centrerSur && clePeriode === clePeriodeMontee.current) return; setPeriodeLocale(props.periode); // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [clePeriode]);
   /* CRITIQUE-6 n° 11 (E07 ET-PER, D-12, D-13) : la période de l'app EST celle du calendrier, dans les deux sens. Une plage, un mois, un
      trimestre ou une année réglés dans la barre de l'app ou dans Finances règlent la fenêtre (l'en-tête la suit : « Nov. » dans la barre,
@@ -667,6 +672,28 @@ export function CalendrierTab(props: CalendrierTabProps) {
     setMessage(null); setMenu(null);
     ouvrir(icone.ouvre);
   }, [modele.icones, ouvrir]);
+
+  /**
+   * CHN-5, CHN-12 : le saut vers une chose la montre. Une fête, une dépense ou un brassin : sa fiche s'ouvre (la sélection). Une idée du
+   * carnet n'a ni barre ni fiche, seulement l'ampoule de sa semaine : elle s'affiche (le réglage ± se pose) et un message la nomme,
+   * avec « Ouvrir le carnet ». Une fois par saut ; la chose peut arriver après les données.
+   */
+  const viseTraitee = useRef<number | null>(null);
+  useEffect(() => {
+    const v = props.viser;
+    if (!v || viseTraitee.current === v.at || !modele.semaines.length) return;
+    const chose = modele.choses.find(c => !c.sansDate && (c.source as { id?: string }).id === v.id);
+    if (chose) {
+      viseTraitee.current = v.at; ouvertureParGeste.current = Date.now() + 1200;
+      setMessage(null); setMenu(null); setSelectionId(chose.id);
+      return;
+    }
+    const icone = modele.icones.find(i => i.genre === 'idee' && i.ouvre?.id === v.id);
+    if (!icone) return;
+    viseTraitee.current = v.at;
+    setMouvements(true);
+    montrer({ role: 'status', texte: `${icone.titre} · idée du carnet, S${icone.numero}`, lien: { texte: 'Ouvrir le carnet', agir: () => { if (icone.ouvre) ouvrir(icone.ouvre); } } });
+  }, [props.viser, modele.semaines, modele.choses, modele.icones, montrer, ouvrir]);
 
   /* passe 10 : une ligne par rangée, de la couleur et du picto de la rangée ; Poser un brassin en plein, avec sa semaine et « prête le … » (le + lui-même ne porte aucun « S47 », D-206) */
   const COULEUR_RANGEE: Record<IdRangee, string> = {
@@ -1138,7 +1165,7 @@ export function CalendrierTab(props: CalendrierTabProps) {
           quitte son parent qu'à la fin de son contenu ; avec la marge, l'en-tête du calendrier remontait sous celui de l'app en bas de page
           (844 × 390, défilé de 600 px : 13 px au lieu de 49). */}
       {caisse && <React.Suspense fallback={<p role="status">Ouverture de la caisse…</p>}><Caisse {...(caisse.clientId ? { clientIdInitial: caisse.clientId } : {})} onClose={() => setCaisse(null)} /></React.Suspense>}
-      <div aria-hidden="true" className="cal-tab-fin" style={{ height: 'calc(var(--main-navigation-height, 2.5rem) + 6.5rem)', marginTop: 0 }} />
+      <div aria-hidden="true" className="cal-tab-fin" style={{ height: '0.5rem', marginTop: 0 }} />
     </div>
   );
 }

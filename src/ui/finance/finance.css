@@ -1,7 +1,7 @@
 .finance, .finance-sheet { --finance-accent:rgb(var(--area-finances)); color:rgb(var(--cave-texte-50)); font-size:14px; }
 /* Le bouton d'action flottant mesure 64 px et se pose en bas à droite :
    sans cette réserve, il recouvre la dernière ligne de chaque liste. */
-.finance { padding:0 0 calc(56px + env(safe-area-inset-bottom, 0px)); }
+.finance { padding:0; } /* VUE-FOND (21.11) : la marge du bas des onglets est celle de navigation.css, 12 px sous le contenu */
 .finance *, .finance-sheet * { box-sizing:border-box; }
 .finance-nav { display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:2px; border-bottom:1px solid rgb(var(--cave-700)); margin-bottom:6px; }
 .finance-nav button { min-width:0; min-height:32px; padding:4px 2px; font-size:13px; color:rgb(var(--cave-texte-200)); border-bottom:2px solid transparent; }

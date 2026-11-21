@@ -547,7 +547,7 @@ export const StocksTab: React.FC<StocksTabProps> = ({
 
   return (
     // Articles et Courses défilent avec la fenêtre : l'en-tête de l'app part comme ailleurs (APP-ENTETE-COLLE, 19.11). Fûts, Matériel, Houblons gardent leur hauteur.
-    <div className={`stocks-screen flex flex-col ${subTab === 'stock' || subTab === 'courses' ? 'stocks-fenetre' : 'h-[calc(100dvh-8.5rem)]'} pt-1 gap-1`}>
+    <div className={`stocks-screen flex flex-col ${subTab === 'stock' || subTab === 'courses' ? 'stocks-fenetre' : 'h-[calc(100dvh-var(--main-header-box,2.5rem)-var(--main-navigation-height,2.5rem)-1rem)]'} pt-1 gap-1`}>
       <div className="min-w-0 shrink-0">
       <ViewNavigation<typeof subTab> label="Vue des stocks" value={subTab} onChange={setSubTab} options={tabs.map(tab => ({value:tab.id,label:tab.label+(tab.badge ? ` (${tab.badge})` : ''),shortLabel:tab.label}))}>
       <nav ref={tabsRef} className="shrink-0 flex gap-1 p-1 rounded-control bg-cave-900 border border-cave-800 overflow-x-auto">
@@ -644,7 +644,7 @@ export const StocksTab: React.FC<StocksTabProps> = ({
           ? <>
             {/* En Recompter, les outils restent sous le doigt : collés en haut de la fenêtre pendant que les tuiles défilent. */}
             <div className="sticky top-0 z-10 bg-cave-950">{blocOutils}</div>
-            <div className={`stock-outils ${mobile ? 'pb-16' : ''}`}>
+            <div className="stock-outils">
               <RecompterStock items={allItems} retenus={retenus} infos={infos} aCommander={aCommanderParRef} mouvements={movements} filtre={filtre} onFiltre={setFiltre} filtreActif={!!filtre || !!recherche} onOuvrir={setSelected} onCompterRayon={compterRayon} />
             </div>
           </>
@@ -659,7 +659,7 @@ export const StocksTab: React.FC<StocksTabProps> = ({
         </div>
         <EntityList
           key={ongletMur}
-          className={`${mobile ? 'pb-16' : 'pb-10'}${listeMesuree ? '' : ' invisible'}`}
+          className={listeMesuree ? undefined : 'invisible'}
           repartDuHaut={false}
           defileFenetre
           items={visibleItems}
@@ -704,7 +704,7 @@ export const StocksTab: React.FC<StocksTabProps> = ({
       )}
 
       {subTab === 'courses' && (
-        <div className={`space-y-2 ${mobile ? 'pb-20' : 'pb-4'}`}>
+        <div className="space-y-2">
           {/* Le chiffre clé, son horizon et son histogramme (Pastille C), repliés en une ligne discrète : un toucher les déplie (19.11). */}
           <CommandeRepliee vue={vueH} horizon={horizon} onHorizon={setHorizon} onOuvrir={setSelected} manquent={comptesEtats.manque + comptesEtats.manquePlus} />
           {/* Vision du 19.11, n° 2 et 3 : la ligne repliée dit seule le compte (horizon, puis total) ; ici, le seul geste « Tout voir ». */}

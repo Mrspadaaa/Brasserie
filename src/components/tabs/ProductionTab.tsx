@@ -202,7 +202,7 @@ export const ProductionTab: React.FC<ProductionTabProps> = ({
   const nbBrassins = useMemo(() => brassinsListe.filter(isCurrent).length, [brassinsListe]);
 
   return (
-    <div className="production-screen space-y-2 pb-12 pt-1">
+    <div className="production-screen space-y-2 pt-1">
       {/* e11a : la barre segmentée avec ses compteurs ; « Atelier Houblons V5.5 » n'est plus sur l'écran (menu du + : Outils houblons). */}
       <SegmentsCoque<typeof subTab> label="Vue de production" value={subTab} onChange={setSubTab} options={[
         {value:'batches',label:`Brassins (${nbBrassins})`,court:'Brassins',compteur:nbBrassins},

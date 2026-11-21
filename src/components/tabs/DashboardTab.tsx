@@ -225,7 +225,7 @@ export const DashboardTab: React.FC<DashboardTabProps> = ({
     StorageService.setUiState('dashboard_completed_deadlines', updated);
   }
 
-  return <div className="space-y-2 pt-1 pb-[calc(var(--main-navigation-height,2.5rem)+0.5rem)] text-sm">
+  return <div className="space-y-2 pt-1 pb-1 text-sm">
     {/*
       Le titre reste pour les lecteurs d'écran, pas à l'écran : « À la brasserie »
       ne disait rien que l'onglet actif ne dise déjà, et coûtait une rangée aux
