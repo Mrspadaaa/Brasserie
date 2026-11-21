@@ -1,5 +1,5 @@
 import React, { useMemo, useState } from 'react';
-import { Trash2 } from 'lucide-react';
+import { Check, Trash2 } from 'lucide-react';
 import type { Batch, Client, KegItem } from '../types';
 import { Sheet } from './Sheet';
 import { Button } from '../components/ui/Button';
@@ -7,7 +7,7 @@ import { Combobox } from './Combobox';
 import { Field, FormNav } from './FormNav';
 import { nombreFr } from '../domain/nombreAffiche';
 import {
-  couleurPastille, dateCourte, derniereDate, etapesRecentes, jaugeFut, libelleEtape, livrer, marquerPropre,
+  couleurPastille, dateCourte, derniereDate, etapesRecentes, futsDuClient, jaugeFut, libelleEtape, libelleRetourTous, livrer, marquerPropre,
   remettreALaver, etapeALaver, retourVide, revenuPlein, reperePourStyle
 } from '../domain/stock/futsFiche';
 import './equipment-compact.css';
@@ -24,6 +24,10 @@ interface KegFicheProps {
   /** « Remplir depuis un lot » : ouvre la feuille de remplissage avec ce fût coché. */
   onFill: (kegId: string) => void;
   onRemove: () => void;
+  /** Le parc (non archivé) : N4, les autres fûts du même client rentrent avec celui-ci. */
+  kegs?: KegItem[];
+  /** N4 : écrit les fûts rentrés ensemble (un seul message). Sans lui, chaque fût passe par `onSave`. */
+  onSaveMany?: (kegs: KegItem[]) => void;
 }
 
 /** Les clients de l'onglet Clients, favoris en tête (puis ordre alphabétique). */
@@ -39,10 +43,15 @@ const SOUS_TITRE = { lavage: 'à laver', propre: 'propre', plein: 'en cave' } as
  * F2 « La carte d'identité » (15.11) : la fiche raconte le fût — sa bière, son âge sur une jauge, les dernières étapes —,
  * le geste suivant est en bas. Une seule fiche pour les quatre états ; un état sans dessin propre reprend le gabarit.
  */
-export const KegFiche: React.FC<KegFicheProps> = ({ keg, batches, clients, today, onClose, onSave, onFill, onRemove }) => {
+export const KegFiche: React.FC<KegFicheProps> = ({ keg, batches, clients, today, onClose, onSave, onFill, onRemove, kegs = [], onSaveMany }) => {
   const [clientId, setClientId] = useState('');
   const [toutVoir, setToutVoir] = useState(false);
   const options = useMemo(() => optionsClients(clients), [clients]);
+  /** N4 : ses fûts chez le même client, tous cochés ; un fût absent se décoche. */
+  const chezLui = useMemo(() => futsDuClient(keg, kegs), [keg, kegs]);
+  const [rentres, setRentres] = useState<string[]>(() => chezLui.map((k) => k.id));
+  const cochesRentres = chezLui.filter((k) => rentres.includes(k.id));
+  const plusieurs = chezLui.length > 1;
   const client = clients.find((c) => c.id === clientId);
   const jauge = jaugeFut(keg, today);
   const etapes = etapesRecentes(keg, toutVoir ? undefined : 4);
@@ -57,7 +66,13 @@ export const KegFiche: React.FC<KegFicheProps> = ({ keg, batches, clients, today
   const livrerAuClient = () => { if (client) done(livrer(keg, { id: client.id, name: client.name }, today)); };
   const principal: Record<string, () => void> = {
     plein: livrerAuClient,
-    livre: () => done(retourVide(keg, today)),
+    livre: () => {
+      if (!plusieurs) { done(retourVide(keg, today)); return; }
+      if (!cochesRentres.length) return;
+      const vides = cochesRentres.map((k) => retourVide(k, today));
+      if (onSaveMany) onSaveMany(vides); else vides.forEach(onSave);
+      onClose();
+    },
     propre: () => { onFill(keg.id); },
     lavage: () => done(marquerPropre(keg, today))
   };
@@ -86,7 +101,7 @@ export const KegFiche: React.FC<KegFicheProps> = ({ keg, batches, clients, today
   }
 
   const pied = keg.state === 'livre'
-    ? <div className="equipment-footer keg-footer"><Button intent="secondary" onClick={() => done(revenuPlein(keg, today))}>Revenu plein</Button><Button intent="primary" onClick={act}>Retour vide</Button></div>
+    ? <div className="equipment-footer keg-footer"><Button intent="secondary" onClick={() => done(revenuPlein(keg, today))}>Revenu plein</Button><Button intent="primary" disabled={plusieurs && !cochesRentres.length} onClick={act}>{plusieurs ? libelleRetourTous(cochesRentres.length, cochesRentres[0]?.id) : 'Retour vide'}</Button></div>
     : <div className="equipment-footer keg-footer">
         <Button intent="secondary" onClick={onClose}>Annuler</Button>
         <Button intent="primary" disabled={keg.state === 'plein' && !client} onClick={act}>
@@ -108,6 +123,24 @@ export const KegFiche: React.FC<KegFicheProps> = ({ keg, batches, clients, today
           )}
           <span className="equipment-help">{aide}</span>
         </div>
+
+        {plusieurs && (
+          <Field label={`Chez ${keg.clientName || 'ce client'} · ${chezLui.length} fûts`}>
+            <div className="keg-chips" role="group" aria-label="Fûts revenus de chez ce client">
+              {chezLui.map((k) => {
+                const on = rentres.includes(k.id);
+                const j = jaugeFut(k, today)?.jours;
+                return (
+                  <button key={k.id} type="button" role="checkbox" aria-checked={on} className="keg-chip"
+                    onClick={() => setRentres((r) => (r.includes(k.id) ? r.filter((x) => x !== k.id) : [...r, k.id]))}>
+                    <span className="keg-cbox" aria-hidden="true">{on && <Check size={9} strokeWidth={4}/>}</span>
+                    {k.id}{j !== undefined ? ` · ${j} j` : ''}
+                  </button>
+                );
+              })}
+            </div>
+          </Field>
+        )}
 
         <div>
           <div className="keg-sec"><span>Historique</span>{plusDEtapes && <button type="button" aria-expanded={toutVoir} onClick={() => setToutVoir((v) => !v)}>{toutVoir ? 'Réduire' : 'Tout voir'}</button>}</div>

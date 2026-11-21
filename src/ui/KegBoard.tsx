@@ -286,7 +286,8 @@ export const KegBoard: React.FC<KegBoardProps> = ({
       {selected && !selectedUnknown && !fill && (
         <KegFiche
           key={selected.id} keg={selected} batches={batches} clients={clients} today={jour}
-          onClose={close} onSave={saveDepuisFiche}
+          onClose={close} onSave={saveDepuisFiche} kegs={kegs}
+          onSaveMany={(list) => { list.forEach(save); onMessage?.(`${list.length} fûts rentrés de chez ${selected.clientName || 'leur client'}, à laver : ${list.map(k => k.id).join(', ')}.`); }}
           onFill={(kegId) => { setSelected(null); setFill({ kegId }); }}
           onRemove={() => setConfirmDelete(true)}/>
       )}

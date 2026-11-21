@@ -143,6 +143,22 @@ export function retourVide(keg: KegItem, date: string): KegItem {
   return { ...sansCles(keg, ...CONTENU, ...CLIENT), state: 'lavage', historique: avecEtape(keg.historique, { date, quoi: 'retour-vide', detail: keg.clientName }) };
 }
 
+/** N4 : les fûts livrés au même client que ce fût (lui d'abord, puis par numéro). Sans client connu : le nom fait foi. */
+export function futsDuClient(keg: KegItem, kegs: KegItem[]): KegItem[] {
+  if (keg.state !== 'livre') return [keg];
+  const nom = (k: KegItem) => sansAccent(k.clientName ?? '').trim();
+  const meme = (k: KegItem) => k.state === 'livre' && (keg.clientId ? k.clientId === keg.clientId : !k.clientId && nom(k) !== '' && nom(k) === nom(keg));
+  const autres = kegs.filter((k) => k.id !== keg.id && meme(k)).sort((x, y) => nat.compare(x.id, y.id));
+  return [keg, ...autres];
+}
+
+/** N4 : « Ses 3 fûts sont revenus » ; un toucher rentre les fûts cochés, vides, à laver, à la date du jour. */
+export function libelleRetourTous(n: number, seul?: string): string {
+  if (n === 0) return 'Aucun fût coché';
+  if (n === 1) return seul ? `Retour vide · ${seul}` : 'Retour vide';
+  return `Ses ${n} fûts sont revenus`;
+}
+
 /** Remettre à laver (Gestion du fût) : un fût propre, neuf ou sali, repasse à laver ; rien d'autre ne change. */
 export function remettreALaver(keg: KegItem, date: string, detail?: string): KegItem {
   return { ...sansCles(keg, ...CONTENU, ...CLIENT), state: 'lavage', historique: avecEtape(keg.historique, { date, quoi: 'a-laver', ...(detail ? { detail } : {}) }) };
