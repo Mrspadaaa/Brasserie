@@ -736,7 +736,8 @@ async function jouer(dir) {
         if (!projet) throw new Error('fixture : projet CARNET-ZZ-K2 absent du cache');
         const nav = async (t) => { const b0 = await p.evaluate((t) => { const b = [...document.querySelectorAll('nav button')].find((e) => (e.innerText ?? '').includes(t) && e.getBoundingClientRect().width > 0); if (!b) return null; const r = b.getBoundingClientRect(); return [r.x + r.width / 2, r.y + r.height / 2]; }, t); if (!b0) throw new Error(`onglet ${t} introuvable`); await p.touchscreen.tap(b0[0], b0[1]); await sleep(900); };
         await nav('Brassins');
-        await toucher('Atelier R&D', { prefixe: true }); await sleep(600);
+        /* CRN-10 (01cd598c9) : l'onglet dit « Atelier » (« Atelier R&D » avant) ; le préfixe trouve les deux */
+        await toucher('Atelier', { prefixe: true }); await sleep(600);
         await toucher(projet.data.title, { prefixe: true, dans: 'button,[role=button],a,[data-carnet-id],li,article' }); await sleep(800);
         await toucher('Au calendrier', { prefixe: true }); await sleep(1200);
         const ouvert = await p.waitForSelector('[data-calendrier]', { timeout: 8000 }).then(() => true).catch(() => false);
