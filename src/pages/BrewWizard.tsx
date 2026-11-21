@@ -3349,6 +3349,7 @@ const BrewWizardEditor: React.FC<BrewWizardProps & {
           knowledge={knowledge}
           styleRepere={resolveBrewingStyle(style, details.styleRef, styles)}
           readiness={readiness}
+          installation={recipeInstallationIssues(build(), configuredBrewhouse)}
           etapeLabel={issue => STEPS.find(s => s.id === issue.step)?.label ?? issue.step}
           onCorriger={issue => requestCorrection([issue])}
           onAllerEtape={setStep}

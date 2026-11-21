@@ -244,6 +244,8 @@ export interface EtapeRecapProps extends Omit<BrewSheetProps, 'reviewData'> {
   knowledge: HopKnowledge[];
   styleRepere?: ListedStyle;
   readiness: RecipeReadiness;
+  /** WFR-4 : ce que le lancement refuserait (matériel, volume), lu par le même contrôle que lui. */
+  installation?: string[];
   etapeLabel: (issue: RecipeFieldIssue) => string;
   onCorriger: (issue: RecipeFieldIssue) => void;
   onAllerEtape: (id: 'identite' | 'fermentescibles' | 'houblons' | 'levure' | 'paliers' | 'eau') => void;
@@ -265,6 +267,7 @@ export const EtapeRecap: React.FC<EtapeRecapProps> = ({
   knowledge,
   styleRepere,
   readiness,
+  installation,
   etapeLabel,
   onCorriger,
   onAllerEtape,
@@ -493,7 +496,7 @@ export const EtapeRecap: React.FC<EtapeRecapProps> = ({
         </span>
         {readiness.missing.length > 0 && <span className="rc2-man" data-booster="compte-reperes"><b>{readiness.missing.length}</b> repère{readiness.missing.length > 1 ? 's' : ''}</span>}
       </div>
-      <div className={invalide ? 'rc2-corr' : 'rc2-sr'}><RecapEtat readiness={readiness} etape={etapeLabel} onCorriger={onCorriger} /></div>
+      <div className={invalide || readiness.missing.length > 0 || !!installation?.length ? 'rc2-corr' : 'rc2-sr'}><RecapEtat readiness={readiness} etape={etapeLabel} onCorriger={onCorriger} installation={installation} /></div>
       {sousVerdict}
 
       <div role="list" aria-label="Étapes de la recette" className="rc2-liste" data-element="m2-liste">

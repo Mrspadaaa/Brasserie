@@ -116,6 +116,21 @@ function listeEtapes() { return [
       if (!/ZZ TEST IPA/.test(t) || !/Commencer aujourd/.test(t)) return echec('B2', `la page du jour de brassage ne s'ouvre pas (écran : ${t.slice(0, 160)})`);
       ok('B2', 'la page du jour de brassage s\'ouvre (Conduite, « Commencer aujourd’hui »)');
     }
+  },
+  {
+    id: 'B4', titre: 'Récap : le malt du stock laissé à 0 kg est dit au récap, avec son bouton, avant « Enregistrer et préparer » (WFR-3, WFR-4)',
+    async joue(s) {
+      await recetteNeuve(s, { volume: 24, caramel: false });
+      await leveureCatalogue(s);
+      await versRecap(s);
+      await s.cap('B4-1-recap');
+      const t = await s.texte(9000);
+      if (!/Quantité de ZZ TEST Caramünch Typ 2 : à compléter/.test(t)) return echec('B4', 'le récap ne dit pas ce qui bloque le lancement (malt à 0 kg) : « Enregistrable » seul');
+      await s.toucher('Compléter · Malts/sucres', { prefixe: true }); await sleep(900);
+      await s.cap('B4-2-etape-malts');
+      if (!/Malts\/sucres — étape 2 sur 7/.test(await s.texte(1800))) return echec('B4', 'le bouton du récap n\'ouvre pas l\'étape Malts/sucres');
+      ok('B4', 'le récap nomme le malt à 0 kg et son bouton ouvre l\'étape Malts/sucres');
+    }
   }
 ]; }
 

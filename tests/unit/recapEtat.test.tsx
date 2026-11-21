@@ -25,9 +25,22 @@ describe('bandeau d’état du récapitulatif', () => {
     expect(screen.getByRole('status')).toHaveTextContent('2 valeurs à corriger');
     expect(screen.getAllByRole('button')).toHaveLength(2);
   });
-  it('incomplète ou prête : le texte d’avant, sans liste ni bouton', () => {
-    render(<RecapEtat readiness={lecture({ status: 'incomplete', missing: [issue] })} etape={() => 'Identité'} onCorriger={() => {}} />);
+  it('incomplète : chaque repère que le lancement refuserait est écrit, avec son bouton (WFR-4) ; prête : ni liste ni bouton', () => {
+    const onCorriger = vi.fn();
+    render(<RecapEtat readiness={lecture({ status: 'incomplete', missing: [issue] })} etape={() => 'Identité'} onCorriger={onCorriger} />);
     expect(screen.getByRole('status')).toHaveTextContent('À compléter · 1 repère avant brassin · enregistrement possible');
+    expect(screen.getByRole('status')).toHaveTextContent(issue.message);
+    fireEvent.click(screen.getByRole('button', { name: /Compléter · Identité/ }));
+    expect(onCorriger).toHaveBeenCalledWith(issue);
+    cleanup();
+    const refus = 'Le volume prévu atteint ou dépasse la capacité physique du fermenteur.';
+    render(<RecapEtat readiness={lecture({})} etape={() => ''} onCorriger={onCorriger} installation={[refus]} />);
+    expect(screen.getByRole('status')).toHaveTextContent(refus);
+    expect(screen.getByRole('status')).not.toHaveTextContent('Données prêtes pour le brassin');
+    fireEvent.click(screen.getByRole('button', { name: /Régler · Identité/ }));
+    expect(onCorriger).toHaveBeenLastCalledWith(expect.objectContaining({ step: 'identite', message: refus }));
+    cleanup();
+    render(<RecapEtat readiness={lecture({})} etape={() => ''} onCorriger={() => {}} />);
     expect(screen.queryByRole('button')).toBeNull();
     cleanup();
     render(<RecapEtat readiness={lecture({})} etape={() => ''} onCorriger={() => {}} />);

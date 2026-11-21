@@ -14,7 +14,9 @@ export const RecapEtat: React.FC<{
   etape: (issue: RecipeFieldIssue) => string;
   /** Mène au champ de la valeur à corriger. */
   onCorriger: (issue: RecipeFieldIssue) => void;
-}> = ({ readiness, etape, onCorriger }) => {
+  /** WFR-4 : les refus du lancement que le récap ne comptait pas (volume, cuve, matériel : recipeInstallationIssues). */
+  installation?: string[];
+}> = ({ readiness, etape, onCorriger, installation = [] }) => {
   const invalide = readiness.status === 'invalid';
   const incomplet = readiness.status === 'incomplete';
   return (
@@ -22,7 +24,24 @@ export const RecapEtat: React.FC<{
       className={`px-2 py-1 text-xs border rounded-control ${invalide ? 'border-alert-strong/50 text-alert-strong' : incomplet ? 'border-attention/50 text-attention' : 'border-hop/50 text-cave-200'}`}>
       {invalide ? `${readiness.invalid.length} valeur${readiness.invalid.length > 1 ? 's' : ''} à corriger avant enregistrement`
         : incomplet ? `À compléter · ${readiness.missing.length} repère${readiness.missing.length > 1 ? 's' : ''} avant brassin · enregistrement possible`
+        : installation.length ? `Prêt à enregistrer · ${installation.length} point${installation.length > 1 ? 's' : ''} à régler avant de lancer`
         : 'Données prêtes pour le brassin'}
+      {!invalide && (readiness.missing.length > 0 || installation.length > 0) && (
+        <ul data-role="avant-brassin" className="mt-1 space-y-0.5">
+          {readiness.missing.map(issue => (
+            <li key={`${issue.field}|${issue.message}`} className="flex flex-wrap items-baseline gap-x-2">
+              <span className="min-w-0 break-words">{issue.message || issue.field}</span>
+              <button type="button" onClick={() => onCorriger(issue)} className="shrink-0 min-h-touch-sm underline underline-offset-2">Compléter · {etape(issue)}</button>
+            </li>
+          ))}
+          {installation.map(message => (
+            <li key={message} className="flex flex-wrap items-baseline gap-x-2">
+              <span className="min-w-0 break-words">{message}</span>
+              <button type="button" onClick={() => onCorriger({ field: 'wz-volume', step: 'identite', message })} className="shrink-0 min-h-touch-sm underline underline-offset-2">Régler · Identité</button>
+            </li>
+          ))}
+        </ul>
+      )}
       {invalide && (
         <ul data-role="valeurs-a-corriger" className="mt-1 space-y-0.5">
           {readiness.invalid.map(issue => (
