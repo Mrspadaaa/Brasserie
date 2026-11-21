@@ -360,7 +360,7 @@ async function nomsPoses(banc, aujourdhui) {
 const ENTREES = [
   { id: 'entree-client', aller: [['Clients', { dans: 'nav button' }], ['Actions rapides'], ['Nouveau client']], saisie: 'ZZ TEST Nom', motif: /ZZ TEST Nom/, texte: 'ZZ TEST Nom' },
   { id: 'entree-tarif', aller: [['Clients', { dans: 'nav button' }], ['Actions rapides'], ['Nouveau tarif']], rang: 1, saisie: '12', motif: /"priceHT":\s*12\b/ },
-  { id: 'entree-fournisseur', aller: [['Bord', { dans: 'nav button' }], ['Plus : saisie', { p: 1 }], ['Fournisseurs'], ['Actions rapides'], ['Nouveau fournisseur', { p: 1 }]], saisie: 'ZZ TEST Nom', motif: /ZZ TEST Nom/ },
+  { id: 'entree-fournisseur', aller: [['Bord', { dans: 'nav button' }], ['Plus : saisie', { p: 1 }], ['Fournisseurs'], ['Actions rapides'], ['Nouveau fournisseur', { p: 1 }]], saisie: 'ZZ TEST Nom', motif: /ZZ TEST Nom/, texte: 'ZZ TEST Nom' },
   { id: 'entree-tache', aller: [['Calendrier', { dans: 'nav button' }], ['Ajouter dans Travaux']], saisie: 'ZZ TEST Nom', motif: /ZZ TEST Nom/ }
 ];
 const ENTREES_MAX = 2; // Entrée peut prendre le champ suivant une fois ; la création doit être faite à la deuxième au plus
