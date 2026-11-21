@@ -2547,3 +2547,7 @@ Classement de la page r3 de Ma levure (https://claude.ai/artifact/DKAJe8ESeMR4ig
 > Cette vue semble fixer l'échelle... Ce qui est vraiment pas ce que j'ai demandé. C'est juste ça met à cette échelle mais en aucun cas ça la fix..
 
 (21.11, tour 8, capture-10 : le menu de période (2 sem., 6 sem., 3 mois, 6 mois, An) pose une durée de départ ; le geste de la frise doit rester libre ensuite.)
+
+> Ça, ça fonctionne bien mais j'aimerais aussi pouvoir lui donner une date dans le passé
+
+(21.11, tour 8, capture-11 : la frise « Durée » de la feuille d'ajout (D404) lui plaît ; son début doit aussi se tirer vers le passé, comme les deux bords de la frise B.)
