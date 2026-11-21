@@ -75,6 +75,8 @@ import { FermentationRecipeAdvice as SyncFermentationRecipeAdvice } from '../ui/
 import { brewingStyles, matchBrewingStyles, resolveBrewingStyle } from '../domain/brewingStyles';
 import { styleNomme } from '../ui/recap/styleRecette';
 import { StorageService } from '../services/storage';
+import { nomParDefaut } from '../domain/nomParDefaut';
+import { completerMasseAjoutee } from '../domain/recette/propositions';
 import { noterArticleCree, oublierArticlesCrees, retirerArticlesDuBrouillon } from '../services/articlesDuBrouillon';
 import type { HopV55RecipeColdContactChange, HopV55RecipeDraftChange } from '../ui/hopV55/RecipeStep';
 import { assertHopV55RecipeDraftApplicationTarget } from '../services/hopV55/recipeDraftApplication';
@@ -742,7 +744,11 @@ const BrewWizardEditor: React.FC<BrewWizardProps & {
   const [importing, setImporting] = useState(false);
 
   // --- Étape 1 : identité ---------------------------------------------------
-  const [name, setNameRaw] = useState(base?.name ?? seed?.title ?? '');
+  // G1 (D396) : une recette neuve reçoit un nom posé (« IPA n° 3 », numéro libre suivant) ; tant qu'il n'est pas touché, il suit le style.
+  const [nomsRecettes] = useState<string[]>(() => { try { return StorageService.getRecipes().map((r) => r.name ?? ''); } catch { return []; } });
+  const recetteNeuve = !base && !seed?.title;
+  const nomPose = (st: string) => (recetteNeuve ? nomParDefaut({ genre: 'recette', style: st }, nomsRecettes) ?? '' : '');
+  const [name, setNameRaw] = useState(() => base?.name ?? seed?.title ?? nomPose(styleNomme(base?.style ?? '', styles)));
   // RC-2 : un style écrit en code seul (« 21A ») devient son nom, sinon ni l'eau ni la levure ne le reconnaissent (`styleRecette.ts`).
   const styleDeBase = useMemo(() => styleNomme(base?.style ?? '', styles), [base?.style, styles]);
   const [style, setStyleRaw] = useState(styleDeBase);
@@ -898,6 +904,7 @@ const BrewWizardEditor: React.FC<BrewWizardProps & {
     : waterProfileModeOf(base?.waterPlan));
   const waterProfileMode = useRef<WaterProfileMode>(initialWaterProfileMode);
   const changeStyle = (next: string) => {
+    if (recetteNeuve && (!name.trim() || name === nomPose(style))) setNameRaw(nomPose(next));
     setStyle(next);
     const resolved=resolveBrewingStyle(next,undefined,styles);
     setDetails(d=>({...d,styleRef:resolved?.ref}));
@@ -2338,7 +2345,7 @@ const BrewWizardEditor: React.FC<BrewWizardProps & {
     fieldset du contenu : `saving` les désactive lui-même.
   */
   const stepActions = !draftReadOnly && step !== 'recap' ? (
-    <nav className="recipe-step-actions flex justify-between gap-2 pt-1 pb-2">
+    <div role="group" aria-label="Étapes de la recette" className="recipe-step-actions flex justify-between gap-2 pt-1 pb-2">
       <button
         type="button"
         onClick={() => go(-1)}
@@ -2363,7 +2370,7 @@ const BrewWizardEditor: React.FC<BrewWizardProps & {
       >
         {`Suivant — ${STEPS[stepIndex + 1]?.label ?? ''}`}
       </button>
-    </nav>
+    </div>
   ) : undefined;
 
   // Ce que la recette sait déjà et que l'eau ignorait ; le même objet nourrit l'onglet Eau et son préchargement.
@@ -2766,7 +2773,12 @@ const BrewWizardEditor: React.FC<BrewWizardProps & {
         return (<>
           <EtapeFermentescibles
             fermentables={fermentables}
-            onFermentables={setFermentables}
+            onFermentables={(value) => setFermentables((avant) => {
+              // N1 (v04) : un malt ajouté d'un toucher entre avec une masse qui fait sens, jamais 0 kg (WFR-3).
+              const apres = typeof value === 'function' ? value(avant) : value;
+              const og = styleRepere?.stats.og;
+              return completerMasseAjoutee(avant, apres, { volumeL, rendementPct: efficiency, ogVisee: og ? (og.min + og.max) / 2 : null });
+            })}
             stockItems={stockPourEtape}
             famille={addKind}
             onFamille={setAddKind}
