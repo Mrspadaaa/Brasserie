@@ -11,6 +11,8 @@ import { ModalShell } from '../ModalShell';
 import { EditClientModal } from '../../components/EditClientModal';
 import { ChampNombre } from '../depense/ChampNombre';
 import { Input } from '../Input';
+import { TuilesQuantite } from '../depense/Plateau';
+import { useAppuiLong } from '../gestes/useAppuiLong';
 import { adresseBrasserie, uidValide, COMPANY_FALLBACK } from '../../domain/companyDefaults';
 import { doublonsNumeroFacture, echeanceFacture, prochainNumeroFacture } from '../../domain/finance/numeroFacture';
 import { messageDateHorsBornes } from '../../domain/finance/bornesFinance';
@@ -133,11 +135,17 @@ export function CaisseContenu({ clientIdInitial, onClose, onSaved, onBusy, ferme
   const busy = useRef(false), avert = useRef(false), avertPanier = useRef(false);
   const panierRef = useRef<{ n: number; fini: boolean }>({ n: 0, fini: false });
   const premiereTuile = useRef<HTMLButtonElement>(null);
+  /** D393 A2 (K5) : l'appui long sur la tuile 33 cl ouvre 6 · 12 · 24 en `TuilesQuantite` (un toucher pose la quantité) ; le toucher simple garde +1. */
+  const [quantiteDe, setQuantiteDe] = useState<{ id: string; poser: (n: number) => void; cible: HTMLElement; clavier: boolean } | null>(null);
+  const tuilesQuantite = useRef<HTMLDivElement>(null);
+  const lierAppui = useAppuiLong<{ id: string; poser: (n: number) => void }>({ onAppuiLong: (c, info) => setQuantiteDe({ ...c, ...info }) });
+  useEffect(() => { if (quantiteDe?.clavier) tuilesQuantite.current?.querySelector('button')?.focus(); }, [quantiteDe]);
 
   const vendables = useMemo(() => brassinsVendables(batches), [batches]);
   useEffect(() => { if (!selection.length && vendables.length) setSelection([vendables[0].id]); }, [vendables, selection.length]);
   const actifId = selection[0];
   const actif = vendables.find(b => b.id === actifId);
+  useEffect(() => { setQuantiteDe(null); }, [actifId]);
   /** LR3-NOTE-1 : un prix de ligne à plus de 10 fois le tarif de son format (ou, sans tarif sûr, hors plage au litre) se dit ; il ne se refuse pas. */
   const alerteDe = (l: { batchId?: string; formatId: string; litresUnite: number; prixHT: number | null | undefined }): string | null => {
     if (l.formatId === 'libre' || !(l.litresUnite > 0)) return null;
@@ -229,14 +237,16 @@ export function CaisseContenu({ clientIdInitial, onClose, onSaved, onBusy, ferme
   };
 
   const cle = (batchId: string | undefined, formatId: string) => `${batchId ?? '-'}:${formatId}`;
-  const ajouter = (formatId: string, label: string, litres: number, prix: number | null, note?: string) => {
+  /** Un toucher : +1. `poser` (A2, 6 · 12 · 24) : la quantité de la ligne devient `poser`, comme un toucher de `TuilesQuantite`. */
+  const ajouter = (formatId: string, label: string, litres: number, prix: number | null, note?: string, poser?: number) => {
     if (enAttente) return;
     const k = cle(actifId, formatId);
     const designation = `${actif ? actif.name : 'Bière'} · ${label}`.trim();
-    if (prix === null) { setLibre({ designation, quantite: 1, prix: undefined, formatId, batchId: actifId, litres, note }); return; }
+    const premiere = Math.min(QUANTITE_MAX, poser ?? 1);
+    if (prix === null) { setLibre({ designation, quantite: premiere, prix: undefined, formatId, batchId: actifId, litres, note }); return; }
     setLignes(ls => ls.some(l => l.cle === k)
-      ? ls.map(l => l.cle === k ? { ...l, quantite: Math.min(QUANTITE_MAX, l.quantite + 1) } : l)
-      : [...ls, { cle: k, batchId: actifId, formatId, designation, litresUnite: litres, quantite: 1, prixHT: prix }]);
+      ? ls.map(l => l.cle === k ? { ...l, quantite: Math.min(QUANTITE_MAX, poser ?? l.quantite + 1) } : l)
+      : [...ls, { cle: k, batchId: actifId, formatId, designation, litresUnite: litres, quantite: premiere, prixHT: prix }]);
   };
   const retirer = (k: string) => { if (!enAttente) setLignes(ls => ls.flatMap(l => l.cle !== k ? [l] : l.quantite > 1 ? [{ ...l, quantite: l.quantite - 1 }] : [])); };
   const poserLibre = () => {
@@ -378,9 +388,12 @@ export function CaisseContenu({ clientIdInitial, onClose, onSaved, onBusy, ferme
               const tarif = tarifDuFormat(tarifs, format.id, actif?.name);
               const { prix, suspect } = prixDeTuile(tarif?.priceHT, format.volumeL), note = noteDeTuile({ suspect, prixTarif: tarif?.priceHT, volumeL: format.volumeL, capaciteSupposee: aVerifier });
               const ligne = lignes.find(l => l.cle === cle(actifId, format.id));
+              const note1 = suspect ? note?.raison : undefined;
+              const toucher = () => { setQuantiteDe(null); ajouter(format.id, format.label, format.volumeL, prix, note1); };
+              const gestes = format.id === '33cl' ? lierAppui({ id: format.id, poser: n => ajouter(format.id, format.label, format.volumeL, prix, note1, n) }, toucher) : { onClick: toucher };
               return (
                 <button key={format.id} ref={i === 0 ? premiereTuile : undefined} type="button" className={`cs-t${ligne ? ' cs-has' : ''}${present ? '' : ' cs-off'}`} disabled={fieldsetOff}
-                  aria-label={`${format.label}${note ? `, ${note.mot}` : ''}${prix !== null ? `, ${montantChf(prix)} CHF` : ', prix à indiquer'}`} onClick={() => ajouter(format.id, format.label, format.volumeL, prix, suspect ? note?.raison : undefined)}>
+                  aria-label={`${format.label}${note ? `, ${note.mot}` : ''}${prix !== null ? `, ${montantChf(prix)} CHF` : ', prix à indiquer'}`} {...gestes}>
                   {ligne && <span className="cs-n cs-m">{ligne.quantite}</span>}
                   {format.id === 'fut' ? <Fut /> : <Bouteille grande={format.id === '75cl'} />}
                   <div><b>{format.label}</b>{note && <small> · {note.mot}</small>}{/* k3 n° 15 : un tarif hors plage n'est pas « prix ? » (inconnu) : la tuile dit le tarif et son prix au litre, une seule fois. */}
@@ -389,10 +402,17 @@ export function CaisseContenu({ clientIdInitial, onClose, onSaved, onBusy, ferme
                 </button>
               );
             })}
-            <button type="button" className="cs-t cs-free" disabled={fieldsetOff} onClick={() => setLibre({ designation: '', quantite: 1, prix: undefined, formatId: 'libre', litres: 0 })}>
+            <button type="button" className="cs-t cs-free" disabled={fieldsetOff} onClick={() => { setQuantiteDe(null); setLibre({ designation: '', quantite: 1, prix: undefined, formatId: 'libre', litres: 0 }); }}>
               <Feuille /><div><b>Autre</b><div className="cs-p">consigne, verres…</div></div>
             </button>
           </div>
+
+          {quantiteDe && !fieldsetOff && (
+            <div ref={tuilesQuantite} className="px-2.5 pt-2" onKeyDown={e => { if (e.key === 'Escape') { e.stopPropagation(); quantiteDe.cible.focus(); setQuantiteDe(null); } }}>
+              <TuilesQuantite index={1} nombres={[6, 12, 24]} valeur={lignes.find(l => l.cle === cle(actifId, quantiteDe.id))?.quantite} mot={() => ''}
+                onChoisir={n => { quantiteDe.poser(n); setQuantiteDe(null); }} />
+            </div>
+          )}
 
           {libre && (
             <div className="cs-libre" role="group" aria-label="Ligne libre">
