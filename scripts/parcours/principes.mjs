@@ -12,6 +12,16 @@
 //              création est ouverte deux fois. 1) sans rien taper : le nom a-t-il une valeur par défaut, « valider » est-il permis ?
 //              2) nom tapé puis Entrée : la création est-elle confirmée (ou le champ suivant pris) ? On relève `enterkeyhint`.
 //              KO si le champ de nom n'a pas d'enterkeyhint d'action, si Entrée ne fait rien, ou si la création exige un nom tapé.
+//   W0a (21.11, PORT « Voies ») : quatre contrôles neufs, rouges sur tour7, à verdir par les fondations. Fixture : fixtures/principes.mjs.
+//   NOM-OBLIGE étendu (ids `recette-pose`, `cal-travaux-pose`, `cal-activites-pose`, `cal-papiers-pose`, `materiel-pose`) : le nom est POSÉ
+//              (G1 « IPA n° 3 », G3 « Travaux · S47 »), la création se valide sans rien taper, et pour les rangées du Calendrier
+//              « Annuler » retire la chose créée. Les ids de NOM-OBLIGE ci-dessus (recette, cal-travaux…) restent inchangés.
+//   ENTREE     (une étape, ses quatre créations en détail : client, tarif, fournisseur, tâche = « Ajouter dans Travaux ») : un nom tapé puis
+//              Entrée (deux fois au plus : la première peut prendre le champ suivant) crée la chose et ferme le clavier.
+//              Sur tour7, client et tarif passent déjà : l'étape est rouge par fournisseur et tâche.
+//   RENOMMER   (`renommer-evenement`, `renommer-materiel`) : toucher le titre de la fiche donne un champ, on tape, Entrée enregistre (4 gestes).
+//   HORIZON    (`horizon-projet`) : dans un projet du Carnet ouvert, « 3 mois » d'un toucher (2 avec une amorce) et « vers <mois+3> » se lit.
+//   `--seul` accepte un id ou le nom d'un contrôle (ENTREE, RENOMMER, HORIZON) ; défaut : tous les contrôles.
 //   Le texte au premier écran (phrases de 6 mots ou plus) est relevé pour l'analyse « trop de texte » : relevé, jamais bloquant.
 //
 //   node scripts/parcours/principes.mjs <dossier> [--build <dossier>] [--ref <tag>] [--controle VUE-SAUTE|NOM-OBLIGE] [--seul <id,…>]
@@ -27,11 +37,12 @@ const ICI = path.dirname(fileURLToPath(import.meta.url));
 const RACINE = path.resolve(ICI, '..', '..');
 const { lancerBanc, pageNeuve, sleep } = await import(pathToFileURL(path.join(ICI, 'chaines-outils.mjs')).href);
 const { fixtureChaines } = await import(pathToFileURL(path.join(ICI, 'fixtures', 'chaines.mjs')).href);
+const { fixturePrincipes, NOM_EVENEMENT } = await import(pathToFileURL(path.join(ICI, 'fixtures', 'principes.mjs')).href);
 const args = process.argv.slice(2);
 const opt = (n) => { const i = args.indexOf(`--${n}`); return i >= 0 ? args[i + 1] : null; };
 const sortie = path.resolve(args.find((a, i) => !a.startsWith('--') && !['--build', '--ref', '--controle', '--seul'].includes(args[i - 1])) ?? path.join(os.tmpdir(), 'parcours-principes'));
 fs.mkdirSync(sortie, { recursive: true });
-const controles = (opt('controle') ?? 'VUE-SAUTE,NOM-OBLIGE').split(',');
+const controles = (opt('controle') ?? 'VUE-SAUTE,NOM-OBLIGE,ENTREE,RENOMMER,HORIZON').split(',');
 const seuls = opt('seul') ? opt('seul').split(',') : null;
 const SEUIL_PX = 1; const SEUIL_CLS = 0.02;
 const echecs = []; const mesures = { vue: [], nom: [], texte: [] };
@@ -269,12 +280,236 @@ async function nomOblige(banc, aujourdhui) {
   }
 }
 
+// ───────────── étapes neuves (W0a, 21.11) : NOM-OBLIGE étendu, ENTREE, RENOMMER, HORIZON ─────────────
+// Mêmes règles : au doigt, 390×844 tactile, fixture ZZ TEST (fixtures/principes.mjs : celle des chaînes sans le brassin du jour qui fait
+// tomber le Calendrier du tag tour7, plus une activité à renommer et deux recettes « IPA n° 1 / 2 »). Une page neuve par étape.
+const voulu = (id, ctl) => !seuls || seuls.includes(id) || seuls.includes(ctl);
+const pageP = (banc, aujourdhui) => pageNeuve(banc, fixturePrincipes(aujourdhui).entrees, sortie);
+const cache = (s) => s.p.evaluate(() => JSON.parse(localStorage.getItem('parcours-chaines:cache') || '[]'));
+const cleDe = (e) => `${e.name}:${e.data?.id ?? e.id}`;
+const nomDe = (e) => String(e.data?.name ?? e.data?.title ?? e.data?.titre ?? '');
+const resultats = [];
+/** Un verdict d'étape : `fautes` vide = ok. */
+function verdict(controle, id, fautes, detail, extra = {}) {
+  resultats.push({ controle, id, fautes, detail, ...extra });
+  if (fautes.length) echec(`${controle} ${id}`, `${fautes.join(' ; ')} — ${detail}`); else ok(`${controle} ${id}`, detail);
+}
+const clavierOuvert = () => document.activeElement && (/^(INPUT|TEXTAREA)$/.test(document.activeElement.tagName) || document.activeElement.isContentEditable);
+
+/* ── NOM-OBLIGE étendu : le nom est POSÉ (G1 et G3), la création se valide sans clavier, et un toucher de trop s'annule ── */
+const POSES = [
+  { id: 'recette-pose', de: 'recette', attendu: /n° ?\d+/, regle: '« … n° k »', suite: /IPA n° ?(\d+)/, k: 3 },
+  { id: 'cal-travaux-pose', de: 'cal-travaux', attendu: /^Travaux\b.*\bS\d{1,2}\b/, regle: '« Travaux · S47 »', annuler: true },
+  { id: 'cal-activites-pose', de: 'cal-activites', attendu: /^Activit[ée]s?\b.*\bS\d{1,2}\b/, regle: '« Activités · S47 »', annuler: true },
+  { id: 'cal-papiers-pose', de: 'cal-papiers', attendu: /^Papiers?\b.*\bS\d{1,2}\b/, regle: '« Papiers · S47 »', annuler: true },
+  { id: 'materiel-pose', de: 'materiel', attendu: /[A-Za-zÀ-ÿ]{3,}/, regle: 'nom du projet ou de la catégorie' }
+];
+async function nomsPoses(banc, aujourdhui) {
+  for (const po of POSES) {
+    if (!voulu(po.id, 'NOM-OBLIGE')) continue;
+    console.log(`NOM-OBLIGE ${po.id}`);
+    const cr = CREATIONS.find((c) => c.id === po.de);
+    const s = await pageP(banc, aujourdhui);
+    const fautes = []; let detail = '';
+    try {
+      await s.demarrer();
+      const avant = new Set((await cache(s)).map(cleDe));
+      const g0 = s.gestes(); await aller(s, cr.aller); await sleep(700);
+      const ouvrir = s.gestes() - g0;
+      const nouveaux = (await cache(s)).filter((e) => !avant.has(cleDe(e)));
+      const ch = await s.p.evaluate(champNom, cr.champ ?? null);
+      await s.cap(`pose-${po.id}-ouvert`);
+      const creeAuToucher = nouveaux.map(nomDe).find((n) => po.attendu.test(n));
+      let pose = creeAuToucher ?? ch?.valeur ?? '';
+      detail = `${ouvrir} gestes pour ouvrir · ${creeAuToucher ? `créé au toucher « ${creeAuToucher} »` : ch ? `champ « ${ch.label} » : « ${ch.valeur || ''} »` : 'ni champ ni création'}`;
+      if (!pose.trim()) fautes.push(`aucun nom posé (attendu ${po.regle})`);
+      else {
+        if (!po.attendu.test(pose)) fautes.push(`nom posé « ${pose} » : ${po.regle} attendu`);
+        const m = po.suite && pose.match(po.suite);
+        if (m && Number(m[1]) !== po.k) fautes.push(`numéro ${m[1]} au lieu de ${po.k} (la fixture a « IPA n° 1 » et « IPA n° 2 »)`);
+        if (!creeAuToucher) { // le nom est dans le champ : se valide sans rien taper
+          const bv = await s.p.evaluate(boutonValider, VALIDER);
+          if (!bv || bv.desactive) fautes.push(`validation impossible sans clavier (${bv ? 'bouton désactivé' : 'aucun bouton'})`);
+          else {
+            const e0 = await s.p.evaluate(etat);
+            await s.toucher(bv.texte, { prefixe: true, att: 1200 }).catch(() => {});
+            const e1 = await s.p.evaluate(etat);
+            if (e1.alerte) fautes.push(`refusé : ${e1.alerte}`);
+            else if (e1.champ && e1.feuilles >= e0.feuilles) fautes.push('le toucher sur le bouton ne valide rien');
+            await s.cap(`pose-${po.id}-valide`);
+          }
+        }
+        if (po.annuler && !fautes.length) { // « Un toucher de trop crée une chose : Annuler la retire »
+          const a = await s.trouver('Annuler', { prefixe: true }).catch(() => null);
+          if (!a) fautes.push('aucun « Annuler » après la création');
+          else {
+            await s.toucher('Annuler', { prefixe: true, att: 1000 }).catch(() => {});
+            const reste = (await cache(s)).filter((e) => !avant.has(cleDe(e)) && nomDe(e) === pose);
+            if (reste.length) fautes.push(`« Annuler » ne retire pas « ${pose} »`);
+            await s.cap(`pose-${po.id}-annule`);
+          }
+        }
+      }
+    } catch (err) { fautes.push(`non joué : ${String(err.message ?? err).slice(0, 160)}`); }
+    verdict('NOM-OBLIGE', po.id, fautes, detail);
+    await s.fermer().catch(() => {});
+  }
+}
+
+/* ── ENTREE : un nom tapé puis Entrée crée la chose et ferme le clavier (client, tarif, fournisseur, tâche) ── */
+const ENTREES = [
+  { id: 'entree-client', aller: [['Clients', { dans: 'nav button' }], ['Actions rapides'], ['Nouveau client']], saisie: 'ZZ TEST Nom', motif: /ZZ TEST Nom/, texte: 'ZZ TEST Nom' },
+  { id: 'entree-tarif', aller: [['Clients', { dans: 'nav button' }], ['Actions rapides'], ['Nouveau tarif']], rang: 1, saisie: '12', motif: /"priceHT":\s*12\b/ },
+  { id: 'entree-fournisseur', aller: [['Bord', { dans: 'nav button' }], ['Plus : saisie', { p: 1 }], ['Fournisseurs'], ['Actions rapides'], ['Nouveau fournisseur', { p: 1 }]], saisie: 'ZZ TEST Nom', motif: /ZZ TEST Nom/ },
+  { id: 'entree-tache', aller: [['Calendrier', { dans: 'nav button' }], ['Ajouter dans Travaux']], saisie: 'ZZ TEST Nom', motif: /ZZ TEST Nom/ }
+];
+const ENTREES_MAX = 2; // Entrée peut prendre le champ suivant une fois ; la création doit être faite à la deuxième au plus
+/** Le point d'un champ de la feuille ouverte (rang n parmi ses champs de texte) ; sans rang : le champ de nom de `champNom`. */
+function pointChamp(rang) {
+  const vis = (e) => { const r = e.getBoundingClientRect(); return r.width > 0 && r.height > 0 && getComputedStyle(e).visibility !== 'hidden'; };
+  const e = [...document.querySelectorAll('[role=dialog] input, [role=dialog] textarea')].filter((x) => vis(x) && !/^(checkbox|radio|hidden|file)$/.test(x.type))[rang];
+  if (!e) return null;
+  e.scrollIntoView({ block: 'center' }); const r = e.getBoundingClientRect();
+  return { x: r.x + r.width / 2, y: r.y + r.height / 2, valeur: e.value, hint: e.getAttribute('enterkeyhint') || '' };
+}
+async function entrees(banc, aujourdhui) {
+  const lignes = []; const fautes = [];
+  for (const en of ENTREES) {
+    if (!voulu(en.id, 'ENTREE')) continue;
+    console.log(`ENTREE ${en.id}`);
+    const s = await pageP(banc, aujourdhui); const f = [];
+    let d = '';
+    try {
+      await s.demarrer(); await aller(s, en.aller); await sleep(700);
+      const pt = en.rang != null ? await s.p.evaluate(pointChamp, en.rang) : await s.p.evaluate(champNom, null);
+      if (!pt) throw new Error('aucun champ à remplir');
+      await s.p.touchscreen.tap(pt.x, pt.y); await sleep(300);
+      if (pt.valeur) { await s.p.keyboard.down('Control'); await s.p.keyboard.press('KeyA'); await s.p.keyboard.up('Control'); await s.p.keyboard.press('Backspace'); }
+      await s.p.keyboard.type(en.saisie, { delay: 15 }); await sleep(400);
+      let cree = false; let n = 0; let e1 = null; const suivi = [];
+      while (n < ENTREES_MAX && !cree) {
+        await s.p.keyboard.press('Enter'); n++; await sleep(1200);
+        const j = JSON.stringify((await cache(s)).map((e) => e.data));
+        e1 = await s.p.evaluate((src) => ({ motifPage: new RegExp(src).test(document.body.innerText), champ: document.querySelectorAll('[role=dialog] input, [role=dialog] textarea, [data-principes-nom]').length, feuilles: document.querySelectorAll('[role=dialog]').length, clavier: !!(document.activeElement && (/^(INPUT|TEXTAREA)$/.test(document.activeElement.tagName) || document.activeElement.isContentEditable)) }), en.texte ?? '');
+        cree = en.motif.test(j) || (!!en.texte && e1.motifPage && e1.champ === 0);
+        suivi.push(`Entrée ${n} : ${cree ? 'créé' : e1.clavier ? 'champ suivant ou rien' : 'clavier fermé sans création'}`);
+      }
+      await s.cap(`entree-${en.id}`);
+      d = suivi.join(' ; ');
+      if (!cree) f.push(`Entrée ne crée rien en ${n} fois (${suivi.at(-1)})`);
+      else if (e1.clavier) f.push('créé mais le clavier reste ouvert');
+    } catch (err) { f.push(`non joué : ${String(err.message ?? err).slice(0, 160)}`); }
+    lignes.push({ id: en.id, fautes: f, detail: d });
+    if (f.length) fautes.push(`${en.id} : ${f.join(' ; ')}`);
+    await s.fermer().catch(() => {});
+  }
+  if (!lignes.length) return;
+  // une seule étape ENTREE, ses quatre créations en détail : elle est rouge si l'une échoue
+  for (const l of lignes) console.log(`  ${l.fautes.length ? 'KO ' : 'ok '} ${l.id} : ${l.fautes.length ? l.fautes.join(' ; ') : l.detail}`);
+  verdict('ENTREE', lignes.length === ENTREES.length ? 'ENTREE' : lignes.map((l) => l.id).join('+'), fautes, `${lignes.filter((l) => !l.fautes.length).length}/${lignes.length} créations validées par Entrée`, { lignes });
+}
+
+/* ── RENOMMER : le titre se touche, on tape, Entrée (matériel, événement) ── */
+const RENOMMERS = [
+  { id: 'renommer-evenement', aller: [['Calendrier', { dans: 'nav button' }], [NOM_EVENEMENT, { p: 1 }]], titre: NOM_EVENEMENT, ancres: ['Modifier', 'Fait', 'Lier', 'Ranger sans date'], collection: 'creativeItems' },
+  { id: 'renommer-materiel', aller: [['Stocks', { dans: 'nav button' }], ['Matériel'], ['ZZ TEST Fermenteur', { p: 1 }]], titre: 'ZZ TEST Fermenteur 120 L', ancres: ['Payer un entretien', 'Fait', 'Étalonner', 'Faire quand même'], collection: 'equipment' }
+];
+const NOUVEAU_TITRE = 'ZZ TEST Nom';
+/** Le titre de la fiche ouverte : une feuille de texte du même nom, la plus proche d'un bouton d'action de la fiche (jamais la ligne de la liste). */
+function pointTitre(nom, ancres) {
+  const vis = (e) => { const r = e.getBoundingClientRect(); return r.width > 0 && r.height > 0 && getComputedStyle(e).visibility !== 'hidden'; };
+  const norm = (s) => String(s ?? '').replace(/\s+/g, ' ').trim();
+  const ancre = [...document.querySelectorAll('button')].filter(vis).find((b) => ancres.some((a) => norm(b.innerText).startsWith(a)));
+  if (!ancre) return { absent: 'aucun bouton de la fiche vu' };
+  for (let a = ancre.parentElement; a && a !== document.body; a = a.parentElement) {
+    const feuille = [...a.querySelectorAll('*')].find((e) => vis(e) && !e.children.length && norm(e.innerText || e.textContent) === nom);
+    if (feuille) { feuille.scrollIntoView({ block: 'center' }); const r = feuille.getBoundingClientRect(); return { x: r.x + r.width / 2, y: r.y + r.height / 2, balise: feuille.tagName.toLowerCase(), bouton: !!feuille.closest('button, [role=button]') }; }
+  }
+  return { absent: `titre « ${nom} » introuvable dans la fiche` };
+}
+async function renommers(banc, aujourdhui) {
+  for (const rn of RENOMMERS) {
+    if (!voulu(rn.id, 'RENOMMER')) continue;
+    console.log(`RENOMMER ${rn.id}`);
+    const s = await pageP(banc, aujourdhui); const f = []; let d = '';
+    try {
+      await s.demarrer(); await aller(s, rn.aller); await sleep(800);
+      const t = await s.p.evaluate(pointTitre, rn.titre, rn.ancres);
+      await s.cap(`renommer-${rn.id}-fiche`);
+      if (t.absent) f.push(t.absent);
+      else {
+        const g0 = s.gestes();
+        await s.p.touchscreen.tap(t.x, t.y); await sleep(600);
+        const champ = await s.p.evaluate((nom) => { const a = document.activeElement; return a && /^(INPUT|TEXTAREA)$/.test(a.tagName) ? { valeur: a.value, tag: a.tagName.toLowerCase() } : null; }, rn.titre);
+        await s.cap(`renommer-${rn.id}-touche`);
+        if (!champ) f.push(`toucher le titre (${t.balise}${t.bouton ? ', bouton' : ', texte inerte'}) ne donne aucun champ focalisé`);
+        else if (!champ.valeur.includes(rn.titre)) f.push(`le champ ne porte pas le titre (« ${champ.valeur} »)`);
+        else {
+          await s.p.keyboard.down('Control'); await s.p.keyboard.press('KeyA'); await s.p.keyboard.up('Control');
+          await s.p.keyboard.type(NOUVEAU_TITRE, { delay: 15 }); await sleep(300);
+          await s.p.keyboard.press('Enter'); await sleep(1200);
+          const apres = await s.p.evaluate(pointTitre, NOUVEAU_TITRE, rn.ancres);
+          const stocke = (await cache(s)).some((e) => e.name === rn.collection && nomDe(e) === NOUVEAU_TITRE);
+          const clavier = await s.p.evaluate(clavierOuvert);
+          await s.cap(`renommer-${rn.id}-fait`);
+          d = `titre touché (${t.balise}) · taper · Entrée = 3 gestes + l'ouverture de la fiche : 4`;
+          if (apres.absent) f.push(`après Entrée la fiche ne montre pas « ${NOUVEAU_TITRE} »`);
+          if (!stocke) f.push(`« ${NOUVEAU_TITRE} » n'est pas enregistré (${rn.collection})`);
+          if (clavier) f.push('le clavier reste ouvert après Entrée');
+        }
+      }
+    } catch (err) { f.push(`non joué : ${String(err.message ?? err).slice(0, 160)}`); }
+    verdict('RENOMMER', rn.id, f, d || 'titre non renommé');
+    await s.fermer().catch(() => {});
+  }
+}
+
+/* ── HORIZON : la date d'un projet du Carnet à 3 mois, d'un toucher (« vers févr. ») ── */
+const MOIS_COURTS = ['janv.', 'févr.', 'mars', 'avr.', 'mai', 'juin', 'juil.', 'août', 'sept.', 'oct.', 'nov.', 'déc.'];
+/** Le mois de `aujourdhui` + n mois civils (le jour borné à la fin de mois : on ne lit ici que le mois). */
+const moisPlus = (aujourdhui, n) => { const m = (Number(aujourdhui.slice(5, 7)) - 1 + n) % 12; return MOIS_COURTS[m < 0 ? m + 12 : m]; };
+async function horizon(banc, aujourdhui) {
+  const id = 'horizon-projet';
+  if (!voulu(id, 'HORIZON')) return;
+  console.log(`HORIZON ${id}`);
+  const s = await pageP(banc, aujourdhui); const f = []; let d = '';
+  try {
+    await s.demarrer();
+    // un projet neuf, créé au doigt dans le Carnet (la fixture n'a que les exemples du banc)
+    await aller(s, [['Brassins', { dans: 'nav button' }], ['Atelier R&D'], ['Évier', { p: 1 }], ['Ajouter']]); await sleep(900);
+    await s.cap('horizon-projet-ouvert');
+    const attendu = moisPlus(aujourdhui, 3); const g0 = s.gestes();
+    let c = await s.trouver('3 mois', { contient: true }).catch(() => null);
+    let amorce = null;
+    if (!c) { // une amorce (« Au calendrier », « Quand ? ») est tolérée : un toucher de plus, pas deux
+      for (const a of ['Au calendrier', 'Quand', 'Date', 'Horizon', 'Échéance', 'Planifier']) { amorce = await s.trouver(a, { prefixe: true }).catch(() => null) ? a : null; if (amorce) break; }
+      if (amorce) { await s.toucher(amorce, { prefixe: true }); await sleep(500); c = await s.trouver('3 mois', { contient: true }).catch(() => null); }
+    }
+    if (!c) f.push(`aucun choix « 3 mois » dans le projet ouvert${amorce ? ` (même après « ${amorce} »)` : ''}`);
+    else {
+      await s.toucher('3 mois', { contient: true, att: 1000 });
+      await s.cap('horizon-projet-3-mois');
+      const gestes = s.gestes() - g0;
+      const texte = await s.texte(6000);
+      const lu = new RegExp(`vers\\s+${attendu.replace('.', '\\.')}`, 'i').test(texte);
+      d = `${gestes} geste${gestes > 1 ? 's' : ''} depuis le projet ouvert · lu « vers ${attendu} » : ${lu ? 'oui' : 'non'}`;
+      if (gestes > 2) f.push(`${gestes} gestes pour 3 mois (1 attendu, 2 avec une amorce)`);
+      if (!lu) f.push(`« vers ${attendu} » n'apparaît pas après le choix`);
+    }
+  } catch (err) { f.push(`non joué : ${String(err.message ?? err).slice(0, 160)}`); }
+  verdict('HORIZON', id, f, d || 'projet sans horizon');
+  await s.fermer().catch(() => {});
+}
+
 async function jouer(dir) {
   const banc = await lancerBanc(dir);
   const aujourdhui = new Date().toISOString().slice(0, 10);
   try {
     if (controles.includes('VUE-SAUTE')) await vueSaute(banc, aujourdhui);
-    if (controles.includes('NOM-OBLIGE')) await nomOblige(banc, aujourdhui);
+    if (controles.includes('NOM-OBLIGE')) { await nomOblige(banc, aujourdhui); await nomsPoses(banc, aujourdhui); }
+    if (controles.includes('ENTREE')) await entrees(banc, aujourdhui);
+    if (controles.includes('RENOMMER')) await renommers(banc, aujourdhui);
+    if (controles.includes('HORIZON')) await horizon(banc, aujourdhui);
   } finally { await banc.fermer(); }
 }
 
