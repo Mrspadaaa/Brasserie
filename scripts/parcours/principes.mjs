@@ -140,13 +140,17 @@ function phrases() {
    capture g2-fermenteur-pendant.png), toucher la puce « fermenteur » ouvre la tuile Matériel sur toute la largeur sous « Espace libre » et
    défile jusqu'au champ. La piste « champ sur place dans la puce » change ce rendu : r4-a est gardée. */
 const R4A_FERMENTEUR = 'r4-a : la puce ouvre Matériel pleine largeur et défile au champ (D407, règle n° 1)';
+/* D407, option A du pilote (21.11, V-STOCK) : la pastille « ★ épinglés » n'existe qu'avec un article épinglé (les pastilles d'état,
+   elles, restent à 0) ; au premier épinglé elle passe seule à la ligne. Les options B (« ★ épinglés 0 » toujours là, +38 px au
+   repos) et C (« ★ 1 », encore à la ligne sous 380 px) changeaient le repos : écartées. */
+const STOCK_EPINGLER = 'la pastille « ★ épinglés » naît au premier épinglé (D407, option A du pilote, 21.11)';
 /* Chaque écran : comment l'atteindre, puis ses actions principales (texte du bouton ; `p` : préfixe ; `nav` : l'action change d'écran). */
 const ECRANS = [
   { id: 'calendrier', aller: [['Calendrier', { dans: 'nav button' }]], actions: [['S47', { p: 1 }], ['S48', { p: 1 }], ['S49', { p: 1 }], ['Masquer Fêtes'], ['Cacher la courbe'], ['ZZ TEST Commande de malt', { p: 1 }], ['Fermer'], ['Ajouter dans Travaux'], ['Fermer'], ['Période suivante'], ['Période précédente']] },
   { id: 'bord', aller: [['Bord', { dans: 'nav button' }]], actions: [['Échéances et démarches', { p: 1 }], ['Tous'], ['Période précédente'], ['Période suivante'], ['Actions rapides'], ['Actions rapides']] },
   { id: 'finances', aller: [['Finances', { dans: 'nav button' }]], actions: [['sept.'], ['oct.'], ['tout'], ['nov.'], ['Solde et paramètres financiers', { p: 1 }]] },
   { id: 'brassins', aller: [['Brassins', { dans: 'nav button' }]], actions: [['En cuve', { p: 1 }], ['À brasser', { p: 1 }], ['Tous', { p: 1 }], ['Filtrer'], ['Filtrer'], ['Épingler le brassin B-ZZ-PLAN'], ['Recettes', { p: 1, nav: 1 }], ['Atelier R&D', { nav: 1 }], ['Carnet', { nav: 1 }], ['Brassins (', { p: 1, nav: 1 }]] },
-  { id: 'stocks', aller: [['Stocks', { dans: 'nav button', p: 1 }]], actions: [['Recompter'], ['Étagère'], ['Autres stocks'], ['Ingrédients'], ['Épingler ZZ TEST Munich'], ['Replier Malts'], ['Courses', { nav: 1 }], ['Fûts', { nav: 1 }], ['Pleins', { p: 1 }], ['Livré', { p: 1 }], ['Matériel', { nav: 1 }], ['Houblons', { nav: 1 }], ['Articles', { nav: 1 }]] },
+  { id: 'stocks', aller: [['Stocks', { dans: 'nav button', p: 1 }]], actions: [['Recompter'], ['Étagère'], ['Autres stocks'], ['Ingrédients'], ['Épingler ZZ TEST Munich', { exception: STOCK_EPINGLER }], ['Replier Malts'], ['Courses', { nav: 1 }], ['Fûts', { nav: 1 }], ['Pleins', { p: 1 }], ['Livré', { p: 1 }], ['Matériel', { nav: 1 }], ['Houblons', { nav: 1 }], ['Articles', { nav: 1 }]] },
   { id: 'clients', aller: [['Clients', { dans: 'nav button' }]], actions: [['Prix', { nav: 1 }], ['Impôt bière', { nav: 1 }], ['Carnet', { nav: 1 }], ['Modifier ZZ TEST La Cigogne']] },
   { id: 'assistant-recette', aller: [['Bord', { dans: 'nav button' }], ['Actions rapides'], ['Recette'], ['@', 'textarea[aria-label="Nom de la bière"]', 'ZZ TEST Brune']], actions: [['Changer de fermenteur', { exception: R4A_FERMENTEUR }], ['Suivant', { p: 1, nav: 1 }], ['ZZ TEST Caramünch', { c: 1, ajoute: 1 }], ['ZZ TEST Munich', { c: 1, ajoute: 1 }], ['Suivant', { p: 1, nav: 1 }], ['ZZ TEST Citra', { c: 1, ajoute: 1 }], ['Suivant', { p: 1, nav: 1 }]] }
 ];
