@@ -32,8 +32,8 @@ export function lireSection(event: Event): SectionCalendrier | null {
 export function LienSection({ section, className }: { section: SectionCalendrier; className?: string }) {
   return (
     <button type="button" data-lien-calendrier={section} onClick={() => ouvrirCalendrierSection(section)}
-      className={`flex min-h-11 w-full items-center gap-2 rounded-panel border border-cave-800 px-3 text-left text-sm font-semibold text-cave-100 hover:bg-cave-850 ${className ?? ''}`}>
-      <CalendarDays size={16} className="shrink-0 text-cave-300" aria-hidden="true" />
+      className={`flex min-h-11 w-full items-center gap-2 rounded-panel border border-cave-800 px-3 text-left text-sm font-semibold text-cave-200 hover:bg-cave-850 ${className ?? ''}`}>
+      <CalendarDays size={16} className="shrink-0 text-cave-400" aria-hidden="true" />
       <span className="min-w-0 flex-1 truncate">{LIBELLE[section]}</span>
       <ChevronRight size={16} className="shrink-0 text-cave-400" aria-hidden="true" />
     </button>
