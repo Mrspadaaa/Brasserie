@@ -65,11 +65,12 @@ describe('paquet E n° 1 (PC-136) : une vente ou un achat d’un jour se glisse,
 
   it('vue Jour : Dédé glissé d’un jour en arrière va au ven. 4 déc.', async () => {
     const { appels } = monter();
+    /* R6 (d5fae0f37) : la poignée de début n'avance plus la fenêtre, elle la réduit par l'avant (sa fin reste) : en Semaine, au clavier, elle la
+       ramène à S49, puis la vue Jour s'ouvre sur S49 */
+    const debut = () => screen.getByRole('button', { name: /^Poignée de début/ });
+    for (let i = 0; i < 12 && !/commence en S49/.test(debut().getAttribute('aria-label') ?? ''); i++) fireEvent.keyDown(debut(), { key: 'ArrowRight' });
+    expect(debut().getAttribute('aria-label')).toMatch(/commence en S49/);
     choisirEchelle('jour');
-    /* la vue Jour montre deux semaines (S47, S48) : la poignée de début, au clavier, amène la fenêtre sur S49 */
-    for (let i = 0; i < 3 && !screen.queryAllByRole('button', { name: /^Dédé, 1 fût/ }).length; i++) {
-      fireEvent.keyDown(screen.getByRole('button', { name: /^Poignée de début/ }), { key: 'ArrowRight' });
-    }
     expect(echelle()).toBe('jour');
     glisserSaut(chose(/^Dédé, 1 fût/), -largeurColonne());
     await waitFor(() => expect(dates(appels, 'P-DEDE')).toEqual(['2026-12-04']));

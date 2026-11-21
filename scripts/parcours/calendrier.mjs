@@ -194,12 +194,12 @@ async function jouer(dir) {
       if (avant === null || !poi || !frise) echec('frise du haut (reculer)', 'poignée de début introuvable');
       else {
         const vue = await p.evaluate(() => { const e = document.querySelector('[aria-label^="Poignée de début"]'); const r = e.getBoundingClientRect(); return { x: r.x, w: r.width, W: innerWidth }; });
-        await glisser([poi[0], poi[1]], [poi[0] - frise.w / 4, poi[1]]);
+        await glisser([poi[0], poi[1]], [poi[0] - frise.w / 2, poi[1]]); /* R6 (d5fae0f37) : le début s'étire seul, après 6 px de seuil : un demi-bandeau pour reculer d'au moins 3 semaines */
         const apres = await lireDebut(); await cap('03-frise-reculee');
         const recul = apres === null ? null : ((avant - apres) + 53) % 53;
         (recul !== null && recul >= 3 && recul <= 53 - 40) || (recul !== null && recul >= 3 && recul < 20)
           ? ok('frise du haut (reculer)', `S${avant} → S${apres} (poignée x ${Math.round(vue.x)}, ${Math.round(vue.w)} px)`)
-          : echec('frise du haut (reculer)', `glisser la poignée de début de ${Math.round(frise.w / 4)} px vers la gauche : S${avant} → S${apres} (recul ${recul}, 3 au moins attendu ; poignée x ${Math.round(vue.x)}, ${Math.round(vue.w)} px)`);
+          : echec('frise du haut (reculer)', `glisser la poignée de début de ${Math.round(frise.w / 2)} px vers la gauche : S${avant} → S${apres} (recul ${recul}, 3 au moins attendu ; poignée x ${Math.round(vue.x)}, ${Math.round(vue.w)} px)`);
       }
     }
 
@@ -244,23 +244,26 @@ async function jouer(dir) {
         await toucher(`${titre},`, { prefixe: true });
         if (!(await visibleParTexte('Modifier'))) { type === 'brassin' || type === 'idée' ? notes.push(`${type} : pas de bouton Modifier (date réglée par le glisser ${type === 'brassin' ? '(joué plus haut)' : ': aucun geste'})`) : echec(nom, 'pas de bouton Modifier'); continue; }
         await toucher('Modifier');
-        const cible = await p.evaluate(() => {
-          const puces = [...document.querySelectorAll('[role=dialog] button')].map((b) => ({ b, m: /^S(\d+)\s+(\d+)$/.exec(b.innerText.replace(/\s+/g, ' ').trim()) })).filter((x) => x.m);
-          const choisie = puces.findIndex((x) => ['aria-pressed', 'aria-checked', 'aria-selected', 'aria-current'].some((a) => x.b.getAttribute(a) === 'true' || x.b.getAttribute(a) === 'page'));
-          if (choisie < 1) return null;
-          const n = puces[choisie - 1]; n.b.scrollIntoView({ inline: 'center', block: 'nearest' }); const r = n.b.getBoundingClientRect();
-          return { x: r.x + r.width / 2, y: r.y + r.height / 2, sem: Number(n.m[1]), de: Number(puces[choisie].m[1]) };
-        });
-        if (!cible) { echec(nom, 'puce de la semaine précédente introuvable dans la feuille'); continue; }
+        /* feuille d'ajout à la frise (1bdd349db, 40fff908a, a9d6e79f6) : plus de puces de semaines ; la date se change par la rangée des jours
+           (« Jour » pour une date seule, « Jour du début » pour une fenêtre) : le geste du brasseur reste de toucher un autre jour, et Enregistrer */
+        const posJour = (voulu) => p.evaluate((v) => {
+          const g = document.querySelector('[role=dialog] [data-feuille-jours="debut"]') ?? document.querySelector('[role=dialog] [data-feuille-jours]'); if (!g) return null;
+          g.scrollIntoView({ block: 'center' });
+          const l = [...g.querySelectorAll('[data-jour]')], i = l.findIndex((x) => x.getAttribute('aria-pressed') === 'true'); if (i < 0) return null;
+          const n = v ? l.find((x) => x.getAttribute('data-jour') === v) : [l[i + 1], l[i - 1]].find((x) => x && !x.disabled); if (!n) return null;
+          const r = n.getBoundingClientRect(); return { x: r.x + r.width / 2, y: r.y + r.height / 2, jour: n.getAttribute('data-jour'), de: l[i].getAttribute('data-jour') };
+        }, voulu);
+        const cible = await posJour(null);
+        if (!cible) { echec(nom, 'rangée des jours de la feuille introuvable (ou aucun autre jour à toucher)'); continue; }
         await sleep(150);
-        const c2 = await p.evaluate((s) => { const b = [...document.querySelectorAll('[role=dialog] button')].find((x) => new RegExp(`^S${s}\\s+\\d+$`).test(x.innerText.replace(/\s+/g, ' ').trim()) && x.getBoundingClientRect().width > 0); const r = b.getBoundingClientRect(); return [r.x + r.width / 2, r.y + r.height / 2]; }, cible.sem);
-        await p.touchscreen.tap(c2[0], c2[1]); await sleep(400);
+        const c2 = await posJour(cible.jour);
+        await p.touchscreen.tap(c2.x, c2.y); await sleep(400);
         if (type === 'fête') await cap('06-feuille-modifier');
         await toucher('Enregistrer'); await sleep(900);
         const apres = await labelDe(`${titre},`);
-        if (semaineDe(apres) !== cible.sem) { const proches = await p.evaluate((t) => [...document.querySelectorAll('[aria-label]')].map((e) => e.getAttribute('aria-label')).filter((l) => l.includes(t)).slice(0, 3), titre.slice(0, 8)); await cap(`06-echec-${type}`); echec(nom, `semaine S${cible.de} → S${cible.sem} demandée, écran : « ${apres?.slice(0, 70) ?? 'absent'} » (avant « ${avant.slice(0, 40)} » ; libellés proches : ${JSON.stringify(proches).slice(0, 200)})`); continue; }
+        if (!apres || apres === avant) { await cap(`06-echec-${type}`); echec(nom, `jour ${cible.de} → ${cible.jour} demandé, l'élément n'a pas changé : « ${apres?.slice(0, 90) ?? 'absent'} »`); continue; }
         await recharger(); const relu = await labelDe(`${titre},`);
-        semaineDe(relu) === cible.sem && relu.split(',')[1] === apres.split(',')[1] ? ok(nom, `S${cible.de} → S${cible.sem}, relu : « ${relu.split(',').slice(0, 3).join(',')} »`) : echec(nom, `écrit « ${apres.split(',').slice(0, 3).join(',')} », relu après rechargement « ${relu?.split(',').slice(0, 3).join(',') ?? 'absent'} »`);
+        relu === apres ? ok(nom, `${cible.de} → ${cible.jour}, relu : « ${relu.split(',').slice(0, 3).join(',')} »`) : echec(nom, `écrit « ${apres.split(',').slice(0, 3).join(',')} », relu après rechargement « ${relu?.split(',').slice(0, 3).join(',') ?? 'absent'} »`);
       } catch (e) { echec(nom, String(e.message).slice(0, 200)); }
     }
 
