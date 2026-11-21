@@ -2493,3 +2493,7 @@ Classement de la page r3 de Ma levure (https://claude.ai/artifact/DKAJe8ESeMR4ig
 > Non mais c'est pas du tout que le calendrier mais l'app dans sa totalité vu que tout est lié, tout est dynamique ensemble ECT...
 
 (21.11, sur l'analyse des workflows et actions : portée = toute l'app, par chaînes qui traversent les écrans.)
+
+> Alors corrige pour pas perdre de temps et que le mini maquettes aille vraiment des vrais gain et pas juste des gimmick
+
+(21.11 : une proposition de workflow n'entre en mini maquette que si son gain est mesuré sur une chaîne réelle et fréquente.)
