@@ -106,7 +106,8 @@ export function ListeBrassins({
   const houblons = useMemo(() => houblonsDesBrassins(dossier), [dossier]);
   const periode = libellePeriode(criteres, appPeriode, t);
   const posees = criteres.avancement;
-  const ordrePuces = [...PUCES.filter((p) => posees.includes(p)), ...PUCES.filter((p) => !posees.includes(p))];
+  // VUE-SAUTE (21.11, « fait bouger toute la vue ») : chaque puce garde sa place, « Tous » en tête ; poser ou retirer ne déplace rien sous le doigt.
+  const ordrePuces = PUCES;
   const toutEffacer = () => {
     onCriteres({ ...CRITERES_VIDES, periode: criteres.periode });
     onFiltres({ ...filtres, search: '', volumeMin: '', volumeMax: '', ibuMin: '', ibuMax: '', colorMin: '', colorMax: '' });
@@ -133,9 +134,9 @@ export function ListeBrassins({
     <div className="lst-row">
       <SelectTri classe="lst-sel lst-grow" value={filtres.sort} onChange={(sort) => onFiltres({ ...filtres, sort })} />
       {poses.length > 0 ? (
-        <button type="button" className="lst-sel" onClick={toutEffacer}>Tout effacer<X aria-hidden /></button>
+        <button key="effacer" type="button" className="lst-sel" onClick={toutEffacer}>Tout effacer<X aria-hidden /></button>
       ) : (
-        <button type="button" className={`lst-sel${periode.actif ? ' lst-per' : ''}`} aria-label={`Période : ${periode.texte} ${periode.suite}`.trim()} onClick={() => setFeuille(true)}>
+        <button key="periode" type="button" className={`lst-sel${periode.actif ? ' lst-per' : ''}`} aria-label={`Période : ${periode.texte} ${periode.suite}`.trim()} onClick={() => setFeuille(true)}>
           <Calendar aria-hidden />{periode.texte}{periode.suite && <small>{periode.suite}</small>}
         </button>
       )}
@@ -168,17 +169,13 @@ export function ListeBrassins({
       </div>
 
       <div className="lst-puces" role="group" aria-label="Avancement">
-        {posees.length === 0 && (
-          <button type="button" className={`lst-puce${tousN === 0 ? ' lst-zero' : ''}`} aria-current="true" onClick={() => undefined}>Tous<b>{tousN}</b></button>
-        )}
-        {ordrePuces.map((a, i) => {
+        <button type="button" className={`lst-puce${tousN === 0 && posees.length === 0 ? ' lst-zero' : ''}`} {...(posees.length === 0 ? { 'aria-current': true } : { 'aria-pressed': false })}
+          onClick={() => posees.length && onCriteres({ ...criteres, avancement: [] })}>Tous<b>{tousN}</b></button>
+        {ordrePuces.map((a) => {
           const on = posees.includes(a);
           const def = AVANCEMENTS.find((x) => x.id === a)!;
           return (
             <React.Fragment key={a}>
-              {i === posees.length && posees.length > 0 && (
-                <button type="button" className="lst-puce" aria-pressed={false} onClick={() => onCriteres({ ...criteres, avancement: [] })}>Tous<b>{tousN}</b></button>
-              )}
               <button type="button" className={`lst-puce${comptes[a] === 0 && !on ? ' lst-zero' : ''}`} aria-pressed={on} aria-label={def.label} onClick={() => basculer(a)}>
                 {!on && POINT[a] && <i style={{ background: POINT[a] }} aria-hidden />}
                 {def.court}<b>{comptes[a]}</b>
@@ -192,7 +189,8 @@ export function ListeBrassins({
       {/* e6a (vide) : pas de ligne tri / période ; « Tout effacer » vit dans la carte du vide. */}
       {!vide && ligneEtat}
       {/* Le titre parti, le nombre de résultats d'un filtre se dit ici, petit, comme dans le carnet de recettes (rcp-resultat). */}
-      {!vide && poses.length > 0 && <p className="lst-resultat" role="status">{resultats.length} sur {dossier.length} {dossier.length > 1 ? 'brassins' : 'brassin'}</p>}
+      {/* VUE-SAUTE : la ligne reste en place sans filtre (vide, invisible), la liste ne saute pas quand on pose ou retire un critère. */}
+      {!vide && <p className="lst-resultat" role="status" style={poses.length ? undefined : { visibility: 'hidden' }}>{poses.length > 0 && `${resultats.length} sur ${dossier.length} ${dossier.length > 1 ? 'brassins' : 'brassin'}`}</p>}
 
       {!vide && (
         <div className="lst-liste">

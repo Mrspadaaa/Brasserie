@@ -20,7 +20,8 @@
 
 /* ---- Phrase de tête : partie le 19.11 (BRS-TITRE-INUTILE, LST-TITRE-COMPTEUR, « Ça c'est inutile ») ; la recherche ouvre la liste ---- */
 
-.lst-resultat { margin: -4px 2px 6px; font-size: 12px; color: rgb(var(--cave-texte-400)); }
+/* VUE-SAUTE (21.11) : la ligne garde sa hauteur, filtre posé ou non ; vide, elle est invisible (la liste ne saute pas). */
+.lst-resultat { margin: -4px 2px 6px; min-height: 16px; line-height: 16px; font-size: 12px; color: rgb(var(--cave-texte-400)); }
 
 /* ---- Recherche ---- */
 .lst-search { display: flex; gap: 8px; margin-top: 2px; }
