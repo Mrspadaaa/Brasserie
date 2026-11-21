@@ -2565,3 +2565,8 @@ Classement de la page r3 de Ma levure (https://claude.ai/artifact/DKAJe8ESeMR4ig
 > Aussi beaucoup de vues peuvent descendre beaucoup plus bas que le contenu, ça peut être pratique de descendre un tout petit peu au cas ou le bouton+ gênerai mais pas autant ??
 
 (21.11, capture-14 : environ 500 px vides sous le contenu, sur beaucoup de vues.)
+
+> Ah en fait le bouton+ disparaître quand on interagit avec la vue, ce qui est bien du coup même pas besoin de descendre+ bas
+> Mais c'est le cas sur plein de vue btw
+
+(21.11 : VUE-FOND précisé ; le + se cache pendant l'interaction, donc aucune réserve pour lui : petite marge seulement, sur toutes les vues.)
