@@ -9,7 +9,7 @@ Erreurs de méthode déjà commises, cause, remède. Chargé par CLAUDE.md : rel
 ### L01 — Reformuler la portée d'une décision avant de la propager
 - Erreur : 12.10, « seul 3.8 » partout. 01.11 : « sans clavier » lu « sans focus ». 21.11 : « l'app dans sa totalité ».
 - Cause : portée (tests seuls, un usage, toute l'app) non écrite avant d'agir.
-- Faire : écrire portée et écran visé en une ligne. Ambiguë : lecture étroite, réversible ; sa portée déjà dite prime. Mot mal tapé : terme du métier. Plainte visuelle : plus petit sens, capture zoomée. Ses exemples illustrent une règle : le brief nomme la règle, pas ses exemples (15.11 : « C'est juste des exemples… !!! »). ([[maquettes-16-11]])
+- Faire : écrire portée et écran visé en une ligne. Ambiguë : lecture étroite, réversible ; sa portée déjà dite prime. Mot mal tapé : terme du métier. Plainte visuelle : plus petit sens. Ses exemples illustrent une règle : le brief nomme la règle, pas ses exemples (15.11 : « C'est juste des exemples… !!! »). ([[maquettes-16-11]])
 - Rôles : pilote, conseil
 - Contrôle : aucun
 
@@ -120,7 +120,7 @@ Erreurs de méthode déjà commises, cause, remède. Chargé par CLAUDE.md : rel
 ### L24 — Un choix du brasseur se montre en variantes ; ni choix ni accord ne bloquent
 - Erreur : 22.10, questions fermées sans maquette. 02.11 : « ?? J'ai déjà donné mon avis ».
 - Cause : « au brasseur de trancher » lu en porte bloquante ([[le-brasseur-choisit]], [[fil-de-fer-d-abord]]).
-- Faire : mot ou détail mineur : sans maquette ([[micro-correctifs]]). Chaque choix ouvert : un axe de variantes, on lui montre, il choisit. Artefact privé, une page par choix, variantes et référence côte à côte (D126) ; sans page : « à dessiner ». Point ouvert : le lien et ce qu'on attend, sans code (D307). Cas rare : défaut A, lettre jamais réclamée (D315). Avant une demande d'accord, finir le non bloqué : preuve sur fixture simulée, build, commande prête. Répondu (silence et « tous » compris) : jamais redemandé ; l'ouvert seul, sur écran annoté (16.11). Écran refait : `maquettes` (19.11). ([[maquettes-16-11]])
+- Faire : mot ou détail mineur : sans maquette ([[micro-correctifs]]). Chaque choix ouvert : un axe de variantes, on lui montre, il choisit. Artefact privé, une page par choix, variantes et référence côte à côte (D126) ; sans page : « à dessiner ». Point ouvert : le lien et ce qu'on attend, sans code (D307). Cas rare : défaut A, lettre jamais réclamée (D315). Avant une demande d'accord, finir le non bloqué : preuve sur fixture simulée, build, commande prête. Répondu (silence et « tous » compris) : jamais redemandé ; l'ouvert seul, sur écran annoté (16.11). Écran refait : `maquettes` (19.11). Un port commence par l'écran de sa plainte (21.11). ([[maquettes-16-11]])
 - Rôles : pilote, conseil
 - Contrôle : `systeme.mjs mission` refuse une voie montrée au brasseur qui dépend de son choix ; `controle-page-choix.mjs` (D126)
 

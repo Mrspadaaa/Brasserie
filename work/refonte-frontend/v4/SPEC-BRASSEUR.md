@@ -2527,3 +2527,7 @@ Classement de la page r3 de Ma levure (https://claude.ai/artifact/DKAJe8ESeMR4ig
 > Il y a encore tout les problèmes cité ? Et la fize au doigt n'est pas porté ???
 
 (21.11, 14:13, en ligne = tour7, capture-7 : rien des corrections du jour n'est en ligne ; l'échelle de la frise du Calendrier (R4, R7) et ses barres glissées n'étaient pas encore portées.)
+
+> Du coup qu'à fait le portage ??? Pour les artefacts choisi ???
+
+(21.11 : le portage de la frise B a commencé par les curseurs (25 à 30 endroits sur 42) et a laissé pour la fin la frise du Calendrier, l'écran de sa plainte.)
