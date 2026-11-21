@@ -2586,3 +2586,7 @@ Classement de la page r3 de Ma levure (https://claude.ai/artifact/DKAJe8ESeMR4ig
 > Quels petit bug, mais dans l'ensemble ça fonctionne plutôt bien, bien bien mieux que le calendrier alors que les deux devrait avoir le même fonctionnement...
 
 (21.11, tour 8, captures 19 à 21 : la frise de Finances › Opérations (portée sur src/ui/geste) marche bien mieux que celle du Calendrier ; les deux doivent avoir le même fonctionnement, donc le même module.)
+
+> Le ... A un effet vraiment étrange... Et ça trigger pas la frise editavlble de l'autre vue
+
+(21.11, tour 8, capture-22 : Finances › Synthèse, « … » ouvre deux listes « du novembre 2026 au novembre 2026 » ; il attend la même frise au doigt que Finances › Opérations.)
