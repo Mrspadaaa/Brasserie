@@ -1,7 +1,7 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { Command } from 'cmdk';
 import {
-  Archive, Beer, BookOpen, Boxes, ChevronRight, CirclePlus, ClipboardCheck, Coins, FileText, Gauge, LayoutDashboard, MessageCircle,
+  Archive, Beer, BookOpen, CalendarDays, Boxes, ChevronRight, CirclePlus, ClipboardCheck, Coins, FileText, Gauge, LayoutDashboard, MessageCircle,
   Package, Play, Plus, Receipt, Search, ShoppingCart, Undo2, Users, Wallet, X
 } from 'lucide-react';
 import { Input } from './Input';
@@ -85,7 +85,8 @@ const TYPE_ICONE: Record<TypeResultat, { Icone: typeof Boxes; texte: string }> =
   recette: { Icone: BookOpen, texte: 'text-area-production' },
   brassin: { Icone: Beer, texte: 'text-area-production' },
   ecriture: { Icone: Receipt, texte: 'text-area-finances' },
-  client: { Icone: Users, texte: 'text-cave-200' }
+  client: { Icone: Users, texte: 'text-cave-200' },
+  chose: { Icone: CalendarDays, texte: 'text-area-finances' }
 };
 
 const GESTE_ICONE: Record<GesteId, typeof Boxes> = { courses: ShoppingCart, corriger: ClipboardCheck, brasser: Play, mesure: Gauge, piece: FileText };

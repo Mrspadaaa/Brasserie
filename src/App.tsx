@@ -2,7 +2,7 @@ import React, { useState, useEffect, useLayoutEffect, useMemo, useRef, useContex
 import { StorageService, defaultConfig } from './services/storage';
 import { Header } from './components/Header';
 import { PagePlus } from './components/plus/PagePlus';
-import { lire as lirePeriode, serialiser as serialiserPeriode, type Periode } from './components/periode/periode';
+import { dansPeriode, lire as lirePeriode, serialiser as serialiserPeriode, type Periode } from './components/periode/periode';
 import { PersistenceStatus } from './ui/PersistenceStatus';
 import { NouvelleVersion } from './ui/NouvelleVersion';
 import { ProofUploadNotice } from './ui/finance/ProofUploadNotice';
@@ -24,6 +24,7 @@ import { useHopPileDevHook } from './ui/hopIndex/devHook';
 import { CommandPalette, type CommandGroup } from './ui/CommandPalette';
 import { useStorageValue } from './hooks/useLiveData';
 import { FinancialArchiveService } from './services/financialArchiveService';
+import { FinanceService } from './services/financeService';
 import { FinancialLedgerLoading } from './ui/FinancialLedgerLoading';
 import { archiveIndex, isTransactionArchived } from './domain/finance/archive';
 import { isoDate } from './domain/finance/ledger';
@@ -45,7 +46,7 @@ import { formatLitres } from './domain/recipeMetrics';
 
 import { Units } from './services/units';
 import { saveRecipeConfirmed } from './services/recipeSave';
-import { Beaker, FlaskConical, Package, Users, Receipt } from 'lucide-react';
+import { Beaker, CalendarDays, FlaskConical, Package, Users, Receipt } from 'lucide-react';
 import { LoginPage } from './components/LoginPage';
 
 import type { CreativeLabSectionRequest } from './components/CreativeLabTab';
@@ -98,6 +99,8 @@ const DashboardTab = lazy(() => import('./components/tabs/DashboardTab').then(mo
 const PageFournisseurs = lazy(() => import('./ui/fournisseurs/PageFournisseurs').then(module => ({ default: module.PageFournisseurs })));
 const PlanSheet = lazy(() => import('./ui/finance/FinanceForms').then(module => ({ default: module.PlanSheet })));
 const BrewBudgetDialog = lazy(() => import('./ui/finance/BrewBudgetDialog').then(module => ({ default: module.BrewBudgetDialog })));
+/** Les prévisions du Calendrier, lues pour la recherche (lecteur à identité stable pour `useStorageValue`). */
+const lirePrevisions = () => FinanceService.getPlans();
 const CalendrierTab = lazy(() => import('./components/tabs/CalendrierTab').then(module => ({ default: module.CalendrierTab })));
 const FinancesTab = lazy(() => import('./components/tabs/FinancesTab').then(module => ({ default: module.FinancesTab })));
 const ProductionTab = lazy(() => import('./components/tabs/ProductionTab').then(module => ({ default: module.ProductionTab })));
@@ -276,6 +279,7 @@ export const App: React.FC = () => {
   /** Renvoi depuis une écriture financière vers l'article qu'elle a acheté. */
   const [stockOpenRequest, setStockOpenRequest] = useState<{ ref: string; at: number } | null>(null);
   /** Carnet d'idées à ouvrir (R08 « Ouvrir le carnet », R48 icône d'idée du calendrier) : Stocks › Matériel › Carnets, ce carnet ouvert. */
+  const [calendrierCentre, setCalendrierCentre] = useState<string | undefined>(undefined);
   const [carnetOpenRequest, setCarnetOpenRequest] = useState<{ id: string; at: number } | null>(null);
   const ouvrirCarnet = React.useCallback((id: string) => {
     StorageService.setUiState('stocks_subtab', 'materiel');
@@ -964,6 +968,15 @@ export const App: React.FC = () => {
   };
 
   const financialArchives = useStorageValue(FinancialArchiveService.getArchives);
+  /* B10 (WFR-9) : les choses du Calendrier (prévisions, fêtes) se cherchent à la loupe comme le reste ; le résultat ouvre le Calendrier sur leur semaine. */
+  const financialPlans = useStorageValue(lirePrevisions);
+  /** Le Calendrier suit la période de l'app : si la chose tombe hors de la période, la période devient son mois (sans quoi elle resterait hors de la frise). */
+  const ouvrirChoseCalendrier = (date?: string) => {
+    const jour = isoDate(date);
+    if (jour && !dansPeriode(jour, globalTimeFilter)) setGlobalTimeFilter({ genre: 'mois', annee: Number(jour.slice(0, 4)), mois: Number(jour.slice(5, 7)) });
+    setCalendrierCentre(jour ?? undefined);
+    setActiveTab('calendrier');
+  };
   const financialArchiveIndex = useMemo(() => archiveIndex(financialArchives), [financialArchives]);
   const commandGroups: CommandGroup[] = [
     {
@@ -1024,6 +1037,28 @@ export const App: React.FC = () => {
         keywords: [c.email, c.phone, c.type],
         onSelect: () => setActiveTab('clients')
       }))
+    },
+    {
+      heading: 'Calendrier',
+      items: [
+        ...financialPlans.filter((p) => p.status !== 'cancelled' && p.title).map((p) => ({
+          id: `cal-plan-${p.id}`,
+          label: p.title,
+          detail: ['Calendrier', dateCourte(p.date), p.direction === 'in' ? 'rentrée prévue' : 'dépense prévue'].filter(Boolean).join(' · '),
+          valeur: `${p.direction === 'in' ? '+' : '−'}${montantChf(p.amountCents / 100)} CHF`,
+          icon: <CalendarDays className="w-4 h-4" />,
+          keywords: [p.vendor ?? '', p.category, p.notes ?? ''],
+          onSelect: () => ouvrirChoseCalendrier(p.date)
+        })),
+        ...creativeItems.filter((c) => c.type === 'event' && c.title).map((c) => ({
+          id: `cal-fete-${c.id}`,
+          label: c.title,
+          detail: ['Calendrier', dateCourte(c.date ?? ''), c.activite ? 'activité' : 'fête'].filter(Boolean).join(' · '),
+          icon: <CalendarDays className="w-4 h-4" />,
+          keywords: [c.description ?? '', c.notes ?? ''],
+          onSelect: () => ouvrirChoseCalendrier(c.date)
+        }))
+      ]
     },
     {
       heading: 'Écritures',
@@ -1315,6 +1350,7 @@ export const App: React.FC = () => {
           )}
           <CalendrierTab
             {...(calendrierSection ? { section: calendrierSection } : {})}
+            {...(calendrierCentre ? { centrerSur: calendrierCentre } : {})}
             transactions={transactions}
             batches={batches}
             stockItems={[...stocks.rawMaterials, ...stocks.cleaning]}

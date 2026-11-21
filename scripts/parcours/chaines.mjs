@@ -198,6 +198,32 @@ function listeEtapes() { return [
       if (promis.length || plan?.status !== 'completed' || !tx || !propose) return echec('B5', `la vente réelle ne solde pas la promesse : plan « ${plan?.status} », facture liée ${tx ? 'oui' : 'non'}, proposée au panier ${propose ? 'oui' : 'non'}, au Calendrier : ${promis[0] ?? 'absente'}`);
       ok('B5', `plan soldé, facture liée, rangée Ventes : ${lignes.length} chose(s), plus de « La Cigogne, 2 fûts »`);
     }
+  },
+  {
+    id: 'B10', titre: 'La loupe trouve une chose du Calendrier (« Hotte ») et ouvre le Calendrier sur elle (WFR-9, B10)',
+    async joue(s) {
+      await s.toucher('Rechercher', { prefixe: true }); await sleep(900);
+      await s.ecrire('[cmdk-input]', 'Hotte'); await sleep(900);
+      await s.cap('B10-1-recherche');
+      const t = await s.texte(2000);
+      if (/Rien pour/.test(t) || !/ZZ TEST Hotte/.test(t)) return echec('B10', `la loupe ne trouve pas la chose « ZZ TEST Hotte » du Calendrier : ${t.match(/Rien pour[^.]{0,60}/)?.[0] ?? t.slice(0, 120)}`);
+      await s.toucher('ZZ TEST Hotte', { contient: true }); await sleep(1800);
+      await s.cap('B10-2-calendrier');
+      const lignes = await s.p.evaluate(() => [...document.querySelectorAll('[data-chose-id]')].map((e) => (e.getAttribute('aria-label') || e.innerText || '').replace(/s+/g, ' ').slice(0, 80)));
+      if (!lignes.some((l) => /Hotte/.test(l))) return echec('B10', `le résultat n'ouvre pas le Calendrier sur la chose (choses visibles : ${lignes.slice(0, 4).join(' | ') || 'aucune'})`);
+      ok('B10', 'la loupe trouve « ZZ TEST Hotte » et le Calendrier l\'affiche');
+    }
+  },
+  {
+    id: 'B11', titre: 'Brassins montre les bières que la caisse vend (conditionnée, terminée) malgré la période « Nov. + en cours » (WFV-5, B11)',
+    async joue(s) {
+      await s.onglet('Brassins'); await sleep(1000);
+      await s.cap('B11-1-liste');
+      const t = await s.texte(3000);
+      const manque = ['ZZ TEST Pale Ale', 'ZZ TEST NEIPA'].filter((n) => !t.includes(n));
+      if (manque.length) return echec('B11', `la liste des brassins cache ce que la caisse vend : ${manque.join(', ')} (écran : ${t.slice(0, 160)})`);
+      ok('B11', 'la Pale Ale (conditionnée) et la NEIPA (terminée) sont listées');
+    }
   }
 ]; }
 

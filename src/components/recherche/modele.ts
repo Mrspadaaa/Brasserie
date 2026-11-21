@@ -8,15 +8,16 @@ import type { EcranId, PlusCle, PlusMenu, PlusTon } from '../../domain/plusEcran
  * Aucune liste de gestes n'est refaite ici : « Ici » lit `plusMenuFor` (la table par écran du + de b1), la même que la feuille du +.
  */
 
-export type TypeResultat = 'article' | 'recette' | 'brassin' | 'ecriture' | 'client';
+export type TypeResultat = 'article' | 'recette' | 'brassin' | 'ecriture' | 'client' | 'chose';
 
-/** Le type d'un résultat, lu sur le préfixe de son identifiant (`stk-`, `rec-`, `bat-`, `tx-`, `cli-`). */
+/** Le type d'un résultat, lu sur le préfixe de son identifiant (`stk-`, `rec-`, `bat-`, `tx-`, `cli-`, `cal-` : une chose du Calendrier). */
 export function typeDeId(id: string): TypeResultat | undefined {
   if (id.startsWith('stk-')) return 'article';
   if (id.startsWith('rec-')) return 'recette';
   if (id.startsWith('bat-')) return 'brassin';
   if (id.startsWith('tx-')) return 'ecriture';
   if (id.startsWith('cli-')) return 'client';
+  if (id.startsWith('cal-')) return 'chose';
   return undefined;
 }
 
@@ -202,7 +203,7 @@ export function typePrioritaire(menu: PlusMenu | undefined): TypeResultat | unde
   return menu ? RUBRIQUE_TYPE[menu.chemin.split(' › ')[0]] : undefined;
 }
 
-const ORDRE_TYPES: TypeResultat[] = ['article', 'brassin', 'recette', 'ecriture', 'client'];
+const ORDRE_TYPES: TypeResultat[] = ['article', 'brassin', 'recette', 'ecriture', 'client', 'chose'];
 
 /**
  * Les résultats de tous les types en une liste, du meilleur au moins bon : rang du libellé, puis le type de l'écran d'ouverture,
