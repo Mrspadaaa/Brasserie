@@ -46,7 +46,13 @@ export function RenommerSurPlace({ valeur, onRenommer, as: Balise = 'h1', classN
   }, [edition === null]);
 
   // Le champ prend la hauteur de son texte : le titre long reste entier, à sa place.
-  useLayoutEffect(() => { const c = champ.current; if (c) { c.style.height = 'auto'; c.style.height = `${c.scrollHeight}px`; } }, [edition]);
+  // Hauteur ramenée à un nombre entier de lignes : un textarea compte quelques px de plus que ses lignes (3 px à 1280, VUE-SAUTE tolère 1 px).
+  useLayoutEffect(() => {
+    const c = champ.current; if (!c) return;
+    c.style.height = 'auto';
+    const lh = parseFloat(getComputedStyle(c).lineHeight);
+    c.style.height = `${Number.isFinite(lh) && lh > 0 ? Math.max(1, Math.round(c.scrollHeight / lh)) * lh : c.scrollHeight}px`;
+  }, [edition]);
 
   const ouvrir = () => { fini.current = false; largeur.current = titre.current?.getBoundingClientRect().width ?? 0; setEdition(valeur); };
   const fermer = (garder: boolean) => {
