@@ -72,6 +72,15 @@
     .pas li, .seul, .compte, .risque { font-size:15px; }
     .gain .vignette img { width:110px; }
   }
+
+  .opt{cursor:pointer;position:relative}
+  .opt[aria-pressed="true"]{outline:3px solid var(--fort);outline-offset:-1px}
+  .opt[aria-pressed="true"]::after{content:"✓ choisi";position:absolute;top:8px;right:10px;font-weight:700;font-size:13px;color:var(--fort)}
+  .opt:focus-visible{outline:3px dashed var(--fort)}
+  .ch-note{display:block;margin-top:10px;font-size:13px;color:var(--gris)}
+  .ch-note textarea{display:block;width:100%;box-sizing:border-box;min-height:64px;margin-top:4px;padding:8px;border:1px solid var(--trait);border-radius:6px;background:var(--carte);color:var(--encre);font:inherit;font-size:15px}
+  .ch-etat{font-size:12px;color:var(--gris);margin-top:4px;min-height:1em}
+  .ch-barre{position:sticky;bottom:0;background:var(--carte);border-top:1px solid var(--trait);padding:10px 12px;margin-top:16px;font-size:14px;color:var(--encre)}
 </style>
 </head>
 <body>
@@ -173,6 +182,8 @@
       </article>
     </div>
     <p class="commun">Dans les trois : « prévu » vient de la courbe du lot, ne s'enregistre jamais sans ton toucher, et le clavier reste en repli.</p>
+    <label class="ch-note">Ta note sur E (facultatif)<textarea data-note="E" placeholder="Ce qui te gêne, ce que tu changerais…"></textarea></label>
+    <div class="ch-etat" data-etat="E"></div>
   </section>
 
   <!-- F -->
@@ -222,6 +233,8 @@
       </article>
     </div>
     <p class="commun">Dans les trois : un article non confirmé reste « non compté », jamais 0. L'inventaire de clôture et le recompte du mois prennent le même geste.</p>
+    <label class="ch-note">Ta note sur F (facultatif)<textarea data-note="F" placeholder="Ce qui te gêne, ce que tu changerais…"></textarea></label>
+    <div class="ch-etat" data-etat="F"></div>
   </section>
 
   <!-- G -->
@@ -270,9 +283,27 @@
       </article>
     </div>
     <p class="commun">Dans les trois : recette « IPA n° 3 », achat de matériel au nom du projet du carnet. Un client ou une idée se tape : Entrée valide.</p>
+    <label class="ch-note">Ta note sur G (facultatif)<textarea data-note="G" placeholder="Ce qui te gêne, ce que tu changerais…"></textarea></label>
+    <div class="ch-etat" data-etat="G"></div>
   </section>
 
+  <section class="choix" id="general"><h2>Note générale</h2><label class="ch-note">Tout ce que tu veux ajouter<textarea data-note="general" placeholder="Une idée, un oubli, un gimmick…"></textarea></label><div class="ch-etat" data-etat="general"></div></section>
+  <div class="ch-barre" id="ch-barre">Touche une option pour la choisir. Tout s'enregistre seul.</div>
   <footer>Détail et chiffres : SYNTHESE.md § 7 et 8, ANALYSE-passe2.md, ANALYSE-principes2.md, même dossier.</footer>
 </main>
+<script>
+(function(){
+  var L=['E','F','G'],etat={},db=null,minuteurs={};
+  function barre(){var c=L.map(function(l){return l+(etat[l]&&etat[l].option?' '+etat[l].option:' —')}).join(' · ');document.getElementById('ch-barre').textContent='Tes choix : '+c+(db?' · enregistré pour Claude':' · gardé sur cet appareil');}
+  function montrer(l){var s=document.getElementById(l);if(!s)return;var o=etat[l]&&etat[l].option;s.querySelectorAll('.opt').forEach(function(a){var c=a.querySelector('.code');a.setAttribute('aria-pressed',c&&c.textContent.trim()===o?'true':'false');});var ta=document.querySelector('[data-note="'+l+'"]');if(ta&&document.activeElement!==ta)ta.value=(etat[l]&&etat[l].note)||'';}
+  function local(){try{localStorage.setItem('choix-wf2',JSON.stringify(etat))}catch(e){}}
+  function ecrire(l){var e=document.querySelector('[data-etat="'+l+'"]');local();if(!db){if(e)e.textContent='Gardé sur cet appareil';return;}if(e)e.textContent='Enregistrement…';db.doc('choix/'+l).set({option:(etat[l]&&etat[l].option)||'',note:(etat[l]&&etat[l].note)||'',le:new Date().toISOString()}).then(function(){if(e)e.textContent='Enregistré';}).catch(function(){if(e)e.textContent='Pas enregistré (droits ou réseau) ; gardé sur cet appareil';});}
+  try{var g=JSON.parse(localStorage.getItem('choix-wf2')||'{}');if(g&&typeof g==='object')etat=g;}catch(e){}
+  L.forEach(function(l){var s=document.getElementById(l);if(!s)return;s.querySelectorAll('.opt').forEach(function(a){a.tabIndex=0;a.setAttribute('role','button');function pick(){var c=a.querySelector('.code');if(!c)return;etat[l]=etat[l]||{};etat[l].option=etat[l].option===c.textContent.trim()?'':c.textContent.trim();montrer(l);barre();ecrire(l);}a.addEventListener('click',function(ev){if(ev.target.closest('a,textarea'))return;pick();});a.addEventListener('keydown',function(ev){if(ev.key==='Enter'||ev.key===' '){ev.preventDefault();pick();}});});montrer(l);});
+  L.concat(['general']).forEach(function(l){var ta=document.querySelector('[data-note="'+l+'"]');if(!ta)return;if(l==='general')ta.value=(etat.general&&etat.general.note)||'';ta.addEventListener('input',function(){etat[l]=etat[l]||{};etat[l].note=ta.value;clearTimeout(minuteurs[l]);minuteurs[l]=setTimeout(function(){ecrire(l)},700);});});
+  barre();
+  if(window.claude&&window.claude.use){window.claude.use('db').then(function(d){if(!d)return;db=d;L.concat(['general']).forEach(function(l){d.doc('choix/'+l).onSnapshot(function(s){if(!s.exists)return;var v=s.data()||{};etat[l]={option:v.option||'',note:v.note||''};montrer(l);if(l==='general'){var ta=document.querySelector('[data-note="general"]');if(ta&&document.activeElement!==ta)ta.value=v.note||'';}barre();},function(){});});barre();}).catch(function(){});}
+})();
+</script>
 </body>
 </html>
