@@ -41,7 +41,7 @@ const BIS_FINAL = /\s+bis(?:\s+\d+)?\s*$/i;
 /** Le nom d'un article sans le bruit de l'étiquette : « Houblon », « Cryo Hops », le pourcentage d'α et ce qui le suit, « bis » et « bis N » finals. */
 export function nomDeVariete(article: string): string {
   const n = plier(article.replace(/\s+\d+(?:[.,]\d+)?\s*%.*$/, '').replace(BIS_FINAL, ''))
-    .replace(/^zz test /, '').replace(/^houblon /, '').replace(/\bcryo hops\b ?/, '').replace(/\bcryo\b ?/, '').trim();
+    .replace(/^houblon /, '').replace(/\bcryo hops\b ?/, '').replace(/\bcryo\b ?/, '').trim();
   return ECRITURES_DU_STOCK[n] ?? n;
 }
 const alphaValide = (a: unknown): a is number => typeof a === 'number' && Number.isFinite(a) && a > 0 && a <= 100;
