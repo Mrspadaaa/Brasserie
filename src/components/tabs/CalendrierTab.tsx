@@ -31,7 +31,7 @@ import {
   type BrouillonAjout, type ContexteAjout
 } from '../../domain/calendrierAjout';
 import {
-  accepterVente, alignerCourbe, allonger, deplacer, deplacerJours, dupliquer, dureeAllongee, fait, lier, delier, livrer, mettreDeCote, modifierIdee, retirer, noterIdee, supprimerSansDate,
+  accepterVente, alignerCourbe, allonger, allongerDebut, deplacer, deplacerJours, dupliquer, dureeAllongee, fait, lier, delier, livrer, mettreDeCote, modifierIdee, retirer, noterIdee, supprimer, supprimerSansDate,
   courbeDuGlisse, jourDuGlisse, raisonNommee, type ContexteGestes, type Ecriture, type Message as MessageGeste, type Promesse, type Resolution
 } from '../../domain/calendrierGestes';
 
@@ -875,6 +875,21 @@ export function CalendrierTab(props: CalendrierTabProps) {
         {...(creative && chose.source.genre === 'creative' && chose.source.type !== 'recipe-idea' && (chose.rangee === 'activites' || sansDate) ? { onFait: () => { void ecrire(fait(chose)); } } : {})}
         {...(chose.rangee === 'ventes' && chose.source.genre === 'plan' && !chose.probable ? { onFacturer: () => {
           /* WFV-14 : la caisse, son client choisi ; elle propose de solder la vente promise de ce client (B5), au lieu de la liste de Finances */
+        {...(!chose.proposition && chose.source.genre === 'batch' ? {
+          /* CHE-5 (D412) : le brassin se renomme sur place (son nom) et sa date se règle sur sa pastille ; Annuler dans le message, la fiche reste */
+          onRenommer: (nom: string) => {
+            const texte = `Renommé : ${nom}`;
+            void ecrire({ ok: true, ecritures: [{ op: 'patch', collection: 'batches', id: chose.source.id, patch: { name: nom } }],
+              message: { texte, action: 'Annuler', lecture: `${texte} · Annuler` }, effet: null, promesse: null, courbeApres: null }, true, chose.id, true);
+          },
+          onDecalerDebut: (jours: number) => { void ecrire(deplacerJours(chose, jours, ctxRef.current), true, chose.id, true); },
+          onDecalerFin: (jours: number) => { void ecrire(allonger(chose, jours, ctxRef.current), true, chose.id, true); }
+        } : {})}
+        {...(editable && !sansDate ? {
+          /* D412 : l'action à la volée, la pastille de date réglée sur place ; une chose qui dure garde sa fin quand son début bouge */
+          onDecalerDebut: (jours: number) => { void ecrire(chose.fin && chose.fin !== chose.debut ? allongerDebut(chose, jours, ctxRef.current) : deplacerJours(chose, jours, ctxRef.current), true, chose.id, true); },
+          onDecalerFin: (jours: number) => { void ecrire(allonger(chose, jours, ctxRef.current), true, chose.id, true); }
+        } : {})}
           const id = (chose.source as { id: string }).id;
           const clientId = don.plans.find(p => p.id === id)?.clientId;
           setSelectionId(null); setCaisse(clientId ? { clientId } : {});
@@ -890,6 +905,7 @@ export function CalendrierTab(props: CalendrierTabProps) {
           onLier: (l: { batchId?: string; clientId?: string; evenementId?: string }, nom: string) => {
             void ecrire(lier(chose, l, ctxGestes, nom), true, chose.id, true).then(ok => { if (ok) { ouvertureParGeste.current = Date.now() + 1200; setSelectionId(chose.id); } });
           },
+        {...(/* CHE-2 (D412) : une chose créée datée se supprime aussi depuis sa fiche, avec Annuler */ editable && !sansDate ? { onSupprimer: () => { setSelectionId(null); void ecrire(supprimer(chose)); } } : {})}
           /* lot C (test en ligne, n° 5) : délier depuis la fiche, avec Annuler ; la fiche reste ouverte */
           onDelier: (nom: string) => {
             void ecrire(delier(chose, ctxGestes, nom), true, chose.id, true).then(ok => { if (ok) { ouvertureParGeste.current = Date.now() + 1200; setSelectionId(chose.id); } });

@@ -51,6 +51,7 @@ describe('paquet F n° 1 (PC-142) : Supprimer dans Sans date, avec Annuler, sans
     const { appels } = monter();
     const poche = await ouvrirSansDate();
     fireEvent.click(within(poche).getByRole('button', { name: /Appeler l’assurance/ }));
+    fireEvent.click(await within(fiche()).findByRole('button', { name: 'Plus d’actions' })); /* D412 : sous « Plus d’actions » */
     const b = await within(fiche()).findByRole('button', { name: 'Supprimer' });
     fireEvent.click(b);
     await waitFor(() => expect(appels.some(a => a.op === 'supprimer' && a.collection === 'creativeItems' && a.id === 'CR-SANS')).toBe(true));
@@ -69,6 +70,7 @@ describe('paquet F n° 2 (PC-138) : le libellé de Retirer dit ce qu’il fait',
     toucher(chose(/^Marché de Noël/));
     const f = fiche();
     expect(within(f).queryByRole('button', { name: 'Retirer' })).toBeNull();
+    fireEvent.click(within(f).getByRole('button', { name: 'Plus d’actions' }));
     fireEvent.click(within(f).getByRole('button', { name: 'Ranger sans date' }));
     const m = await screen.findByRole('status');
     expect(m.textContent).toMatch(/Rangée sans date/);
@@ -81,6 +83,7 @@ describe('paquet F n° 2 (PC-138) : le libellé de Retirer dit ce qu’il fait',
     toucher(chose(/^Dédé, 1 fût/));
     const f = fiche();
     expect(within(f).queryByRole('button', { name: 'Retirer' })).toBeNull();
+    fireEvent.click(within(f).getByRole('button', { name: 'Plus d’actions' }));
     fireEvent.click(within(f).getByRole('button', { name: 'Annuler la vente' }));
     await waitFor(() => expect(appels.some(a => a.id === 'P-DEDE' && a.patch?.status === 'cancelled')).toBe(true));
     const m = await screen.findByRole('status');
@@ -133,6 +136,7 @@ describe('paquet F n° 5 (PC-141) : la fiche d’une fête de 3 jours dit ses jo
   it('« 3 j » dans la ligne Date, jamais « 14 déc. → 20 déc. »', async () => {
     monter({ items: [FETE_3J] });
     toucher(chose(/^Fête trois jours/));
+    fireEvent.click(fiche().querySelector('[data-souche]')!); /* D412 : la ligne Date est dans le volet « dates » */
     const ligne = [...fiche().querySelectorAll('.cal-det-et > div')].find(d => d.querySelector('span')?.textContent === 'Date')!;
     expect(ligne.textContent).not.toMatch(/14 déc\.\s*→\s*20 déc\./);
     expect(ligne.textContent).toMatch(/3 j/);

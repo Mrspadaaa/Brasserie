@@ -5,7 +5,7 @@
  */
 import React from 'react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
-import { cleanup, render } from '@testing-library/react';
+import { cleanup, fireEvent, render } from '@testing-library/react';
 import { DetailChose } from '../../src/ui/calendrier/frise/DetailChose';
 import type { ChoseCalendrier } from '../../src/domain/calendrier';
 
@@ -17,7 +17,8 @@ const brassin = (debut: string): ChoseCalendrier => ({
   source: { genre: 'batch', id: 'LOT-T' }, ouvre: { ecran: 'brassin', id: 'LOT-T' }, deplacable: true,
   jalons: [{ id: 'brassage', jour: debut, ecart: 0 }, { id: 'fermentation', jour: '2026-11-20', ecart: 1 }]
 } as unknown as ChoseCalendrier);
-const rendre = (c: ChoseCalendrier) => render(<DetailChose chose={c} onFermer={() => {}} onOuvrir={() => {}} onCommander={() => {}} onBudget={() => {}} />);
+/* D412 : les étapes sont dans le volet « dates » : un toucher sur la souche */
+const rendre = (c: ChoseCalendrier) => { const r = render(<DetailChose chose={c} onFermer={() => {}} onOuvrir={() => {}} onCommander={() => {}} onBudget={() => {}} />); fireEvent.click(r.container.querySelector('[data-souche]')!); return r; };
 const texte = (e: Element | null) => (e?.textContent ?? '').replace(/\s+/g, ' ').trim();
 
 describe('T3-2 : brassage passé non fait', () => {

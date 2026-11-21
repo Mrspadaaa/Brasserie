@@ -1,18 +1,20 @@
 import React from 'react';
-import { Beer, Check, ChevronRight, Link2, Receipt, ShoppingCart, Trash2, Unlink, Wheat, X } from 'lucide-react';
-import { ETAPE_BRASSIN } from './etapes';
+import { Beer, CalendarCheck, CalendarDays, Check, ChevronRight, Ellipsis, Link2, Pencil, Receipt, ShoppingCart, Trash2, Unlink, Wallet, Wheat, X } from 'lucide-react';
+import { ETAPE_BRASSIN, couleurEtape, encreEtape, type EtapeBrassin } from './etapes';
 import { RenommerSurPlace } from '../../saisie/RenommerSurPlace';
 import { libelleRetirer } from '../../../domain/calendrierGestes';
-import { dateDeSemaine, ecartJours, etiquetteS, francsSignes, jourLisible, lundiDe, type ChoseCalendrier, type JalonBrassin, type JalonId } from '../../../domain/calendrier';
-import { CLASSE_TEINTE, apercuSansNom, champ, dureeVue, lieMontre, nomLie } from './Marque';
+import { ajouterJours, dateDeSemaine, ecartJours, etiquetteS, francsSignes, jourLisible, lundiDe, type ChoseCalendrier, type JalonBrassin, type JalonId } from '../../../domain/calendrier';
+import { CLASSE_TEINTE, ICONE_RANGEE, apercuSansNom, champ, dureeVue, lieMontre, nomLie } from './Marque';
 import type { LiensPossibles } from './MenuAppuiLong';
+import './fiche.css';
 
 /**
- * f4-b (E30) : toucher une chose ouvre son détail sous sa barre. Un brassin : ses étapes datées avec leurs icônes (brassage, fermentation,
- * dry hop, garde, conditionnement, lues dans les jalons de la recette figée, E25, D-191), les courses qui manquent, nommées (« Il manque malt,
- * houblon : à acheter avant le 22 nov. »), « Ouvrir le brassin », « Commander », « Budget › » (D-71, nouveau, à valider). Une autre chose :
- * sa semaine, sa date, le libre de la semaine, avec Modifier et Retirer, et « Fait » pour une activité (D-93). Dans la poche « Sans date »
- * (E46) : « Poser » et « Fait ». × fait 44 px. Jamais « en retard de N j » (D-19) : des dates. Jamais « 22 nov. . » (CRITIQUE-3 n° 37).
+ * La fiche d'une chose du Calendrier (D412, 21.11) : v02 « Pastilles chiffrées » avec ses modifications. Au repos, ≤ 120 px à 390 et pleine
+ * largeur : une souche colorée à gauche (v07 : picto d'état, J79, « en garde »), le nom renommable, le montant et ×, des pastilles icône + valeur
+ * (début, fin, CHF inconnu en pointillé, manque en rouge), puis les actions (Ouvrir › large, trois actions en icône + mot, ⋯). Action à la volée :
+ * une pastille de date touchée s'élargit en règle avec un pouce, la date bouge en direct et s'écrit au lâcher (Annuler dans le message). Un volet
+ * à la fois (v04) : la souche ouvre le fil des étapes datées (v09) et les notes, le manque ouvre les achats, Lier ses puces, ⋯ le reste
+ * (Mettre de côté, Ranger sans date, Délier, Supprimer : CHE-2). Jamais « en retard de N j » (D-19) : des dates.
  */
 
 export interface DetailChoseProps {
@@ -21,16 +23,15 @@ export interface DetailChoseProps {
   libreSemaine?: number | null;
   /** Une promesse liée à ce brassin (« 3 fûts promis le 15 déc. »). */
   promesse?: string | null;
-  /** « Semaine courante » pour Poser depuis la poche. */
   onFermer: () => void;
   onOuvrir: () => void;
   onCommander?: () => void;
   onBudget?: () => void;
   onModifier?: () => void;
-  /** RENOMMER-EVT (R1) : toucher le titre l'ouvre en champ sur place, Entrée renomme ; absent : le titre reste du texte. */
+  /** RENOMMER-EVT (R1), CHE-5 : toucher le nom l'ouvre en champ sur place, Entrée renomme ; absent : le nom reste du texte. */
   onRenommer?: (nom: string) => void;
   onRetirer?: () => void;
-  /** Paquet F n° 1 : une chose de la poche « Sans date » se supprime (effacée ; Annuler dans le message). */
+  /** CHE-2 : une chose créée se supprime (effacée ; Annuler dans le message). */
   onSupprimer?: () => void;
   onFait?: () => void;
   onPoser?: () => void;
@@ -43,6 +44,10 @@ export interface DetailChoseProps {
   onLier?: (liens: { batchId?: string; clientId?: string; evenementId?: string }, nom: string) => void;
   /** Lot C : retirer les liens de la chose (brassin, client, fête) ; `nom` : à quoi elle était liée, pour le message. */
   onDelier?: (nom: string) => void;
+  /** D412, CHE-5 : la pastille du début réglée à la volée, en jours (brassin : le jour du brassage, ses étapes suivent). */
+  onDecalerDebut?: (jours: number) => void;
+  /** D412 : la pastille de fin réglée à la volée, en jours (brassin : la fin prévue). */
+  onDecalerFin?: (jours: number) => void;
 }
 
 const LIBELLE_OUVRIR: Record<ChoseCalendrier['ouvre']['ecran'], string> = {
@@ -50,12 +55,12 @@ const LIBELLE_OUVRIR: Record<ChoseCalendrier['ouvre']['ecran'], string> = {
   atelier: 'Ouvrir dans l’atelier', materiel: 'Ouvrir dans le matériel', courses: 'Ouvrir les courses', fournisseur: 'Ouvrir le fournisseur', solde: 'Ouvrir Solde', carnets: 'Ouvrir dans les carnets'
 };
 
-/** Le nom d'une étape du brassin, celui que le brasseur emploie (E25). */
-/* le même picto que le point de l'étape sur la barre (CAL-POINTS-MUETS) */
 const ETAPE = ETAPE_BRASSIN;
-
 /** Une date sans point final doublé : « 22 nov. » se suit d'un deux-points, d'une virgule ou de rien, jamais de « . ». */
 const date = (iso: string): string => jourLisible(iso);
+/** Px de règle par jour : un glissé de 24 px fait 3 j. */
+export const PX_JOUR = 8;
+const BORNE_JOURS = 120;
 
 /** Le détail sans son morceau « le 10 déc. » quand c'est la date de la chose (déjà dite par « Date ») ; `undefined` s'il ne reste rien. */
 export function sansLaDate(detail: string | undefined, debut: string | undefined): string | undefined {
@@ -65,21 +70,14 @@ export function sansLaDate(detail: string | undefined, debut: string | undefined
   return reste || undefined;
 }
 
-/**
- * CRITIQUE-10 n° 4 : « S49, 30 nov. – 6 déc. » ne se coupe jamais au milieu de la plage (« 30 nov. – 6 » puis « déc. ») : la plage est
- * insécable ; faute de place, « S49, » reste seul sur sa ligne et la plage entière passe dessous (la colonne de la grille prend sa largeur).
- */
+/** CRITIQUE-10 n° 4 : « S49 » puis sa plage insécable sur sa propre ligne, jamais coupée au milieu. */
 function texteSemaine(semaine: string): React.ReactNode {
   const i = semaine.indexOf(', ');
   if (i < 0) return <span className="cal-nowrap" data-plage>{semaine}</span>;
-  /* paquet D n° 7 : « S50, » restait seul en fin de ligne avant « 7 – 13 déc. ». La semaine, puis sa plage sur sa propre ligne, sans virgule */
   return <><span className="cal-nowrap">{semaine.slice(0, i)}</span><span className="cal-nowrap block" data-plage>{semaine.slice(i + 2)}</span></>;
 }
 
-/**
- * CRITIQUE-12 n° 3 (critique 10 n° 4, critique 11 n° 7) : à 390, « brassage 23 nov. · prête 21 » puis « déc. ». Chaque date du détail (avec le mot
- * qui la précède : « prête 21 déc. », « le 20 nov. ») est un bloc insécable ; la ligne se coupe entre les morceaux « · ».
- */
+/** CRITIQUE-12 n° 3 : chaque date (avec le mot qui la précède : « prête 21 déc. ») est un bloc insécable. */
 const DATE_LISIBLE = /(?:[\p{L}’']+ )?\d{1,2} (?:janv\.|févr\.|mars|avr\.|mai|juin|juil\.|août|sept\.|oct\.|nov\.|déc\.)/gu;
 export function datesInsecables(texte: string): React.ReactNode {
   const morceaux: React.ReactNode[] = [];
@@ -94,11 +92,7 @@ export function datesInsecables(texte: string): React.ReactNode {
   return morceaux.length === 1 && typeof morceaux[0] === 'string' ? morceaux[0] : <>{morceaux}</>;
 }
 
-/**
- * CT4-A-14 : la ligne d'un détail (« pas brassée · brassage prévu le 10 nov. · prête le 18 déc. au plus tôt ») se coupe ENTRE les groupes séparés
- * par « · », jamais au milieu d'un groupe. Chaque groupe est un bloc insécable (`.cal-grp`, inline-block) ; le « · » suit le groupe qui le précède.
- * Un seul groupe : le texte comme avant. Posé dans un seul `span` par l'appelant (un `<p>` flex en faisait des colonnes déchirées à 390).
- */
+/** CT4-A-14 : la ligne se coupe ENTRE les groupes séparés par « · », jamais au milieu d'un groupe. */
 export function groupesInsecables(texte: string): React.ReactNode {
   const groupes = texte.split(' · ').map(g => g.trim()).filter(Boolean);
   if (groupes.length < 2) return datesInsecables(texte);
@@ -109,23 +103,31 @@ export function groupesInsecables(texte: string): React.ReactNode {
   ))}</>;
 }
 
-/** Les étapes datées d'un brassin, une par jalon de la recette figée ; sans jalon : brassage et prête (ou « durée inconnue »). */
-function etapes(chose: ChoseCalendrier): Array<{ id: string; libelle: string; jour: string; icone: React.ReactNode }> {
-  const jalons = (chose.jalons ?? []).filter((j): j is JalonBrassin & { id: Exclude<JalonId, 'commander'> } => j.id !== 'commander' && j.id in ETAPE)
+type Etape = { id: EtapeBrassin | 'prete'; libelle: string; jour: string };
+
+/** Les étapes datées d'un brassin, une par jalon de la recette figée ; sans jalon : brassage et prête (ou « à préciser »). */
+function etapes(chose: ChoseCalendrier): Etape[] {
+  const jalons = (chose.jalons ?? []).filter((j): j is JalonBrassin & { id: EtapeBrassin } => j.id !== 'commander' && j.id in ETAPE)
     .slice().sort((a, b) => a.ecart - b.ecart);
-  const lignes = jalons.map((j): { id: string; libelle: string; jour: string; icone: React.ReactNode } => {
-    const { libelle, Icone } = ETAPE[j.id];
-    return { id: j.id, libelle, jour: j.jour, icone: <Icone size={16} aria-hidden="true" /> };
-  });
-  if (!lignes.some(l => l.id === 'brassage') && chose.debut) lignes.unshift({ id: 'brassage', libelle: 'Brassage', jour: chose.debut, icone: <Wheat size={16} aria-hidden="true" /> });
+  const lignes: Etape[] = jalons.map(j => ({ id: j.id, libelle: ETAPE[j.id].libelle, jour: j.jour }));
+  if (!lignes.some(l => l.id === 'brassage') && chose.debut) lignes.unshift({ id: 'brassage', libelle: 'Brassage', jour: chose.debut });
   if (!lignes.some(l => l.id === 'conditionnement')) {
-    /* CRITIQUE-7 n° 2 : une bière pas brassée a sa date « prête » (au plus tôt, `pretePrevue`) : la grille la dit, comme sa durée, jamais
-       « à préciser » à côté de « prête le 16 déc. » */
+    /* CRITIQUE-7 n° 2 : une bière pas brassée a sa date « prête » au plus tôt (`pretePrevue`) */
     const prete = chose.finInconnue ? '' : chose.preteLe ?? chose.pretePrevue ?? '';
-    lignes.push({ id: 'prete', libelle: 'Prête', jour: prete, icone: <Check size={16} aria-hidden="true" /> });
+    lignes.push({ id: 'prete', libelle: 'Prête', jour: prete });
   }
   return lignes;
 }
+
+const IconeEtape: React.FC<{ id: Etape['id']; size?: number }> = ({ id, size = 16 }) => {
+  const I = id === 'prete' ? Check : ETAPE[id].Icone;
+  return <I size={size} aria-hidden="true" />;
+};
+
+/** Le mot de l'état d'un brassin, celui du brasseur (« en cuve », « en garde ») ; avant le brassage : « à brasser ». */
+const MOT_ETAT: Record<Etape['id'], string> = {
+  brassage: 'brassée', fermentation: 'en cuve', 'dry-hop': 'dry hop', garde: 'en garde', conditionnement: 'conditionnée', prete: 'prête'
+};
 
 /** « malt, houblon » : les articles qui manquent (lot A, `commander.articles`) ; vide s'ils ne sont pas connus. */
 function articlesManquants(j: JalonBrassin | undefined): string {
@@ -144,9 +146,8 @@ function texteFrais(c: ChoseCalendrier): string | null {
 }
 
 /**
- * CRITIQUE-10, doute m14 : ouvert près du bas, le détail passait sous le + volant (« à acheter avant le … » couvert). À l'ouverture, la page
- * défile juste assez pour que sa dernière ligne passe au-dessus du + (sa hauteur mesurée, lecture seule, + 8 px), sans que son haut passe
- * sous l'en-tête collé. Rien ne bouge si le + n'est pas là ou si le détail est déjà dégagé. Renvoie le défilement fait (px), pour les tests.
+ * CRITIQUE-10, doute m14 : ouvert près du bas, le détail passait sous le + volant. À l'ouverture, la page défile juste assez pour que sa dernière
+ * ligne passe au-dessus du + (+ 8 px), sans que la barre touchée passe sous l'en-tête collé. Renvoie le défilement fait (px), pour les tests.
  */
 export function degagerDuVolant(det: HTMLElement): number {
   if (typeof window === 'undefined' || typeof document === 'undefined' || typeof window.scrollBy !== 'function') return 0;
@@ -158,17 +159,14 @@ export function degagerDuVolant(det: HTMLElement): number {
   const bande = document.querySelector('[data-entete-zone] [data-msg-bande]')?.getBoundingClientRect();
   const bas = Math.max(entete && entete.height > 0 ? entete.bottom : 0, bande && bande.height > 0 ? bande.bottom : 0);
   const plafond = bas > 0 ? bas + 8 : 8;
-  /* CAL-FICHE-CACHE-BARRE (paquet G n° 4) : la fiche s'ouvre sous la barre touchée ; c'est la barre, pas la fiche, qui borne le défilement :
-     son haut reste 8 px sous l'en-tête collé (avant, la fiche montait sous l'en-tête et la barre passait dessous) */
+  /* CAL-FICHE-CACHE-BARRE (paquet G n° 4) : c'est la barre, pas la fiche, qui borne le défilement */
   const id = det.getAttribute('data-detail');
   const zone = det.closest('[data-frise]') ?? document;
   const barre = id ? [...zone.querySelectorAll<HTMLElement>('[data-chose]')]
     .filter(x => x.getAttribute('data-chose') === id && !det.contains(x))
     .map(x => x.getBoundingClientRect()).find(b => b.height > 0) : undefined;
   const haut = barre ? Math.min(barre.top, r.top) : r.top;
-  /* PC-149 (paysage, appui long qui amène du 3 mois aux 6 semaines, D-199) : la page garde son défilement d'avant, la chose et son détail se
-     retrouvent SOUS l'en-tête collé (« Hotte −900 », Semaine, Date, Libre cachés). Elle remonte alors juste assez pour que la chose revienne
-     à 8 px sous lui ; seulement si l'en-tête est collé (sticky ou fixe), sinon il part avec la page et rien ne le masque. */
+  /* PC-149 : l'en-tête collé cache la chose ; elle remonte juste assez pour revenir à 8 px sous lui */
   const collant = !!enteteEl && ['sticky', 'fixed'].includes(getComputedStyle(enteteEl).position);
   if (collant && bas > 0) {
     const trop = Math.ceil(plafond - haut);
@@ -183,6 +181,42 @@ export function degagerDuVolant(det: HTMLElement): number {
   return delta;
 }
 
+/**
+ * L'action à la volée (D412) : la pastille de date touchée devient une règle avec un pouce. Glisser bouge la date en direct (8 px par jour),
+ * lâcher l'écrit ; ← → d'un jour, Entrée écrit, Échap renonce. Les gestes ne remontent pas à la frise (pas de défilement ni de pincement).
+ */
+const Regle: React.FC<{ jour: string; mot: string; icone: React.ReactNode; onValider: (jours: number) => void; onAnnuler: () => void }> = ({ jour, mot, icone, onValider, onAnnuler }) => {
+  const [jours, setJours] = React.useState(0);
+  const depart = React.useRef<number | null>(null);
+  const ref = React.useRef<HTMLDivElement | null>(null);
+  React.useEffect(() => { ref.current?.focus({ preventScroll: true }); }, []);
+  const borne = (n: number) => Math.max(-BORNE_JOURS, Math.min(BORNE_JOURS, n));
+  const finir = (n: number) => { depart.current = null; if (n) onValider(n); else onAnnuler(); };
+  const valeur = ajouterJours(jour, jours);
+  return (
+    <div ref={ref} role="slider" tabIndex={0} className="cal-fi-regle" data-regle data-regle-valeur={valeur}
+      aria-label={`${mot} : glisser pour changer la date`} aria-valuemin={-BORNE_JOURS} aria-valuemax={BORNE_JOURS} aria-valuenow={jours} aria-valuetext={date(valeur)}
+      onPointerDown={e => { e.stopPropagation(); depart.current = e.clientX - jours * PX_JOUR; try { e.currentTarget.setPointerCapture?.(e.pointerId); } catch { /* jsdom */ } }}
+      onPointerMove={e => { e.stopPropagation(); if (depart.current !== null) setJours(borne(Math.round((e.clientX - depart.current) / PX_JOUR))); }}
+      onPointerUp={e => { e.stopPropagation(); if (depart.current !== null) finir(jours); }}
+      onPointerCancel={() => { depart.current = null; setJours(0); }}
+      onClick={e => e.stopPropagation()}
+      onKeyDown={e => {
+        if (e.key === 'ArrowRight' || e.key === 'ArrowUp') { e.preventDefault(); setJours(j => borne(j + 1)); }
+        else if (e.key === 'ArrowLeft' || e.key === 'ArrowDown') { e.preventDefault(); setJours(j => borne(j - 1)); }
+        else if (e.key === 'Enter') { e.preventDefault(); finir(jours); }
+        else if (e.key === 'Escape') { e.preventDefault(); onAnnuler(); }
+      }}>
+      <span className="cal-fi-rv">{icone}<time dateTime={valeur}>{date(valeur)}</time>{jours ? <small>{jours > 0 ? '+' : '−'}{Math.abs(jours)} j</small> : null}</span>
+      <span className="cal-fi-ru" aria-hidden="true" />
+      <span className="cal-fi-th" aria-hidden="true" style={{ left: `calc(50% + ${Math.max(-60, Math.min(60, jours * PX_JOUR))}px)` }} />
+    </div>
+  );
+};
+
+type Volet = 'dates' | 'achats' | 'lier' | 'plus';
+type Action = { cle: string; mot: string; aria?: string; icone: React.ReactNode; onClick: () => void; attrs?: Record<string, string | boolean>; classe?: string; presse?: boolean };
+
 export const DetailChose: React.FC<DetailChoseProps> = props => {
   const { chose, libreSemaine, promesse } = props;
   const racine = React.useRef<HTMLDivElement | null>(null);
@@ -192,9 +226,7 @@ export const DetailChose: React.FC<DetailChoseProps> = props => {
     if (!el || typeof window === 'undefined') return undefined;
     const planifie = (): number | null => (typeof window.requestAnimationFrame === 'function' ? window.requestAnimationFrame(() => degagerDuVolant(el)) : null);
     let raf = planifie();
-    /* PC-149 : ouvert par l'appui long qui change la période (D-199), le détail se pose avant que la frise ait fini sa mise en page (6 semaines :
-       rangées et hauteurs autres) ; la chose bouge ensuite sous l'en-tête. Pendant 800 ms, chaque changement de taille de la frise ou du détail
-       rejoue le dégagement (idempotent : rien ne bouge s'il est déjà dégagé) ; aucun effet sur un défilement du doigt, qui ne change aucune taille. */
+    /* PC-149 : pendant 800 ms, chaque changement de taille de la frise ou du détail rejoue le dégagement (idempotent) */
     const zone = el.closest('[data-frise]');
     let ro: ResizeObserver | null = null;
     let minuterie: ReturnType<typeof setTimeout> | null = null;
@@ -207,8 +239,10 @@ export const DetailChose: React.FC<DetailChoseProps> = props => {
   }, [chose.id]);
   const brassin = chose.source.genre === 'batch';
   const sansEcranPropre = chose.ouvre.ecran === 'agenda' || chose.ouvre.ecran === 'atelier';
-  const [lierOuvert, setLierOuvert] = React.useState(false);
-  React.useEffect(() => setLierOuvert(false), [chose.id]);
+  const [volet, setVolet] = React.useState<Volet | null>(null);
+  const [regle, setRegle] = React.useState<'debut' | 'fin' | null>(null);
+  React.useEffect(() => { setVolet(null); setRegle(null); }, [chose.id]);
+  const basculer = (v: Volet) => setVolet(o => (o === v ? null : v));
   const lierPossible = !!(props.onLier && props.liens);
   /* les mêmes groupes que l'appui long : un brassin ne se lie pas à lui-même (deux du même nom : un bouton), une fête non plus */
   const groupesLier = ((): Array<{ cle: 'brassins' | 'clients' | 'evenements'; titre: string; puces: ReadonlyArray<{ id: string; nom: string }> }> => {
@@ -220,12 +254,11 @@ export const DetailChose: React.FC<DetailChoseProps> = props => {
     const gB = { cle: 'brassins' as const, titre: 'Brassins', puces: brassins };
     const gF = { cle: 'evenements' as const, titre: 'Fêtes et activités', puces: evenements };
     const gC = { cle: 'clients' as const, titre: 'Clients', puces: l.clients };
-    /* lot C (test en ligne, n° 4) : un achat ou une vente se lie d'abord à une fête (on achète, on vend pour elle) ; un achat de matériel ne se
-       lie pas à un client. Ailleurs (pilote, 18.11) : Brassins, puis Fêtes et activités, puis Clients */
+    /* lot C (n° 4) : un achat ou une vente se lie d'abord à une fête ; un achat de matériel ne se lie pas à un client */
     const ordre = chose.rangee === 'achats' ? [gF, gB] : chose.rangee === 'ventes' ? [gF, gB, gC] : [gB, gF, gC];
     return ordre.filter(g => g.puces.length > 0);
   })();
-  /* lot C (test en ligne, n° 5) : la fiche dit à quoi la chose est liée ; une fête n'a pas d'aperçu (`chose.lie` dit brassin et client) */
+  /* lot C (n° 5) : la fiche dit à quoi la chose est liée ; une fête n'a pas d'aperçu (`chose.lie` dit brassin et client) */
   const nomFeteLiee = chose.liens?.evenementId
     ? (props.liens?.evenements?.find(e => e.id === chose.liens?.evenementId)?.nom ?? 'une fête')
     : null;
@@ -239,130 +272,208 @@ export const DetailChose: React.FC<DetailChoseProps> = props => {
   const frais = texteFrais(chose);
   const duree = brassin ? dureeVue(chose) : null;
   const pasBrassee = champ(chose, 'pasBrassee') === true;
-  /* T3-2 : le jour prévu du brassage est passé et il n'est pas fait : « en retard », et les étapes suivantes se comptent depuis aujourd'hui (jamais en silence). */
   const maintenant = new Date();
   const aujourdhuiIso = `${maintenant.getFullYear()}-${String(maintenant.getMonth() + 1).padStart(2, '0')}-${String(maintenant.getDate()).padStart(2, '0')}`;
+  /* T3-2 : le jour prévu du brassage est passé et il n'est pas fait : « en retard », les étapes se comptent depuis aujourd'hui */
   const brassageEnRetard = brassin && pasBrassee && !!chose.debut && chose.debut < aujourdhuiIso;
-  /* des jours actifs moins nombreux que les jours de sa fenêtre : la date ne s'écrit pas comme une plage pleine */
   const joursDansFenetre = !brassin && !!chose.joursActifs && !!chose.debut && !!chose.fin && ecartJours(chose.debut, chose.fin) + 1 > chose.joursActifs;
-  /* CRITIQUE-5 n° 31 : la date se lit une fois. Hors d'un brassin, « Date 10 déc. » est déjà dans la grille : le morceau « le 10 déc. » du
-     détail part (le reste du détail, une note ou « montant non renseigné », reste). */
+  /* CRITIQUE-5 n° 31 : la date se lit une fois */
   const detailSansDate = brassin ? chose.detail : sansLaDate(chose.detail, chose.debut);
   const apercuLien = ((): { texte: string | null; apercu: string } | null => {
     if (!chose.lie) return null;
-    /* CRITIQUE-7 n° 6 : « lié à Blonde d’automne · brassage 23 nov. · prête 21 déc. », jamais « … · Blonde d’automne · brassage … » */
     if (lieMontre(chose)) return { texte: chose.lie.texte, apercu: apercuSansNom(chose.lie) };
     const nom = nomLie(chose.lie).toLocaleLowerCase('fr');
     const reste = chose.lie.apercu.split(' ; ').map(x => x.trim()).filter(x => x && !x.toLocaleLowerCase('fr').startsWith(nom));
     return reste.length ? { texte: null, apercu: reste.join(' ; ') } : null;
   })();
 
-  return (
-    <div ref={racine} role="region" aria-label={`Détail : ${chose.titre}`} className={`cal-det ${CLASSE_TEINTE[chose.rangee]}`} data-detail={chose.id}>
-      <h4 className="cal-det-h">{props.onRenommer ? <RenommerSurPlace as="span" valeur={chose.titre} onRenommer={props.onRenommer} quoi="le nom" /> : chose.titre}{montant && <span className={chose.centimes !== undefined && chose.centimes < 0 ? 'cal-neg' : 'cal-pos'}>{chose.reste ? 'reste ' : ''}{montant}{chose.partiel ? ' + à venir' : ''}</span>}{chose.coutAVenir && <span>coût à venir</span>}</h4>
-      <button type="button" className="cal-det-x" aria-label="Fermer" onClick={props.onFermer}><X size={22} aria-hidden="true" /></button>
+  /* ---------- la souche (v07) : picto d'état, J79, mot d'état ; sa couleur est celle de l'étape en cours, ou de la rangée ---------- */
+  const lesEtapes = brassin ? etapes(chose) : [];
+  const enCours = brassin ? [...lesEtapes].reverse().find(e => !!e.jour && e.jour <= aujourdhuiIso) : undefined;
+  const avantBrassage = brassin && (pasBrassee || !enCours || (!!chose.debut && chose.debut > aujourdhuiIso));
+  const etapeSouche: EtapeBrassin | null = brassin ? (avantBrassage ? 'brassage' : enCours && enCours.id !== 'prete' ? enCours.id : 'conditionnement') : null;
+  const IconeRangee = ICONE_RANGEE[chose.rangee];
+  const ecartDebut = chose.debut ? ecartJours(chose.debut, aujourdhuiIso) : null;
+  const souche = brassin
+    ? {
+      icone: avantBrassage ? <Wheat size={18} aria-hidden="true" /> : <IconeEtape id={enCours?.id ?? 'conditionnement'} size={18} />,
+      chiffre: ecartDebut === null ? '?' : ecartDebut >= 0 ? `J${ecartDebut}` : `J−${-ecartDebut}`,
+      mot: avantBrassage ? (brassageEnRetard ? 'en retard' : 'à brasser') : MOT_ETAT[enCours?.id ?? 'prete'],
+      style: etapeSouche ? { background: couleurEtape(etapeSouche), color: encreEtape(etapeSouche) } : undefined
+    }
+    : {
+      icone: <IconeRangee size={18} aria-hidden="true" />,
+      chiffre: chose.debut ? etiquetteS(lundiDe(chose.debut)) : '—',
+      mot: !chose.debut ? 'sans date' : chose.joursActifs ? `${chose.joursActifs} j` : chose.fin && chose.fin !== chose.debut ? `${ecartJours(chose.debut, chose.fin) + 1} j` : '1 j',
+      style: undefined
+    };
 
-      {brassin ? (
-        <>
-          {duree && <p className="cal-det-d" data-duree-detail><Beer size={16} aria-hidden="true" />{duree}</p>}
-          <div className="cal-det-et cal-det-etapes" data-etapes>
-            {etapes(chose).map(e => (
-              <div key={e.id} data-etape={e.id}>
-                <span>{e.icone}{e.libelle}</span>
-                <b>{e.jour ? <time className="cal-nowrap" dateTime={e.jour}>{date(e.jour)}</time> : 'à préciser'}{e.id === 'brassage' && pasBrassee ? (brassageEnRetard ? ' · pas brassée, en retard' : ' · pas brassée') : ''}</b>
-              </div>
-            ))}
-          </div>
-          {brassageEnRetard && <p className="cal-det-d" data-etapes-recalees>Étapes comptées depuis aujourd’hui : le brassage n’est pas fait.</p>}
-        </>
-      ) : (
-        <div className="cal-det-et">
-          {/* PC-NOTE-4, PC-118 : une chose d'un jour ne dit pas deux dates (« S49, 30 nov. – 6 déc. » à côté de « Date 30 nov. ») : « S49 » seul */}
-          {semaine && (chose.fin && chose.fin !== chose.debut
-            ? <div><span>Semaine</span><b>{texteSemaine(semaine)}</b></div>
-            : <div><span>Semaine</span><b className="cal-nowrap" data-semaine-detail>{etiquetteS(lundiDe(chose.debut))}</b></div>)}
-          {chose.debut && !joursDansFenetre && <div><span>Date</span><b><time className="cal-nowrap" dateTime={chose.debut}>{date(chose.debut)}</time>{chose.fin && chose.fin !== chose.debut ? <> → <time className="cal-nowrap" dateTime={chose.fin}>{date(chose.fin)}</time></> : ''}</b></div>}
-          {/* paquet F n° 5 (PC-141) : une fête de 3 jours posée sur une semaine ne dure pas « 14 déc. → 20 déc. ». Ses jours ne sont pas écrits (la
-              feuille choisit des semaines) : la date dit ce qui est su, « 3 j entre le 14 déc. et le 20 déc. », sans jour inventé */}
-          {chose.debut && joursDansFenetre && <div data-date-jours><span>Date</span><b>{chose.joursActifs} j entre le <time className="cal-nowrap" dateTime={chose.debut}>{date(chose.debut)}</time> et le <time className="cal-nowrap" dateTime={chose.fin}>{date(chose.fin)}</time></b></div>}
-          {chose.fenetre && <div><span>Fenêtre</span><b>{etiquetteS(chose.fenetre.du)} → {etiquetteS(chose.fenetre.au)}</b></div>}
-          {chose.joursActifs && !joursDansFenetre ? <div><span>Jours actifs</span><b>{chose.joursActifs} j</b></div> : null}
-          {libreSemaine !== undefined && libreSemaine !== null && <div><span>Libre de la semaine</span><b>{francsSignes(libreSemaine).replace(/^\+/, '')}</b></div>}
-          {!semaine && <div><span>Date</span><b>Sans date</b></div>}
+  /* ---------- les pastilles (v02) : icône + valeur ; l'inconnu en pointillé ---------- */
+  const finJour = brassin ? (lesEtapes.find(e => e.id === 'conditionnement')?.jour || (chose.finInconnue ? '' : chose.preteLe ?? chose.pretePrevue ?? chose.fin ?? '')) : chose.fin && chose.fin !== chose.debut ? chose.fin : '';
+  const finMot = brassin ? (lesEtapes.some(e => e.id === 'conditionnement') ? 'Conditionnement' : 'Prête') : 'Fin';
+  const iconeFin = brassin ? (lesEtapes.some(e => e.id === 'conditionnement') ? <IconeEtape id="conditionnement" /> : <Check size={16} aria-hidden="true" />) : <CalendarCheck size={16} aria-hidden="true" />;
+  const iconeDebut = brassin ? <Wheat size={16} aria-hidden="true" /> : <CalendarDays size={16} aria-hidden="true" />;
+  const pastilleDate = (cle: 'debut' | 'fin', jour: string, mot: string, icone: React.ReactNode, regler?: (j: number) => void) => {
+    if (regle === cle && regler && jour) {
+      return <div key={cle} className="cal-fi-p cal-fi-p-regle"><Regle jour={jour} mot={mot} icone={icone} onAnnuler={() => setRegle(null)} onValider={j => { setRegle(null); regler(j); }} /></div>;
+    }
+    if (!jour) return <span key={cle} className="cal-fi-p cal-fi-q" data-pastille={cle} aria-label={`${mot} : à préciser`}>{icone}<b>?</b></span>;
+    return regler
+      ? <button key={cle} type="button" className="cal-fi-p" data-pastille={cle} aria-label={`${mot} ${date(jour)} : régler`} onClick={() => { setVolet(null); setRegle(cle); }}>{icone}<b><time dateTime={jour}>{date(jour)}</time></b></button>
+      : <span key={cle} className="cal-fi-p" data-pastille={cle} aria-label={`${mot} ${date(jour)}`}>{icone}<b><time dateTime={jour}>{date(jour)}</time></b></span>;
+  };
+  const pastilles: React.ReactNode[] = [];
+  if (chose.debut) pastilles.push(pastilleDate('debut', chose.debut, brassin ? 'Brassage' : 'Début', iconeDebut, props.onDecalerDebut));
+  if (brassin || finJour) pastilles.push(pastilleDate('fin', finJour, finMot, iconeFin, props.onDecalerFin));
+  if (brassin && chose.coutAVenir) {
+    pastilles.push(props.onBudget
+      ? <button key="chf" type="button" className="cal-fi-p cal-fi-q" data-pastille="chf" aria-label="Coût à venir : Budget" onClick={props.onBudget}><Receipt size={16} aria-hidden="true" /><b>CHF ?</b></button>
+      : <span key="chf" className="cal-fi-p cal-fi-q" data-pastille="chf" aria-label="Coût à venir"><Receipt size={16} aria-hidden="true" /><b>CHF ?</b></span>);
+  }
+  if (brassin && (commander || chose.courses)) {
+    pastilles.push(<button key="manque" type="button" className={`cal-fi-p${commander ? ' cal-fi-rouge' : ''}`} data-pastille="manque" aria-expanded={volet === 'achats'}
+      aria-label={commander ? `Il manque des courses, avant le ${date(commander.jour)}` : 'Courses'} onClick={() => basculer('achats')}>
+      <ShoppingCart size={16} aria-hidden="true" /><b>{commander ? <time dateTime={commander.jour}>{date(commander.jour)}</time> : 'courses'}</b></button>);
+  }
+  if (!chose.debut) pastilles.push(<span key="sans" className="cal-fi-p cal-fi-q" data-pastille="debut"><CalendarDays size={16} aria-hidden="true" /><b>Sans date</b></span>);
+
+  /* ---------- les actions : la principale large, trois en icône + mot, le reste sous ⋯ ---------- */
+  const principale: Action = props.onAccepter ? { cle: 'accepter', mot: proposition ? 'Accepter' : 'Vente confirmée', icone: <Check size={16} aria-hidden="true" />, onClick: props.onAccepter }
+    : props.onPoser ? { cle: 'poser', mot: 'Poser', icone: <CalendarDays size={16} aria-hidden="true" />, onClick: props.onPoser }
+    : props.onFacturer ? { cle: 'facturer', mot: 'Facturer', icone: <ChevronRight size={16} aria-hidden="true" />, onClick: props.onFacturer }
+    /* CAL-PASSE : une fête ou une activité n'a pas d'autre écran que sa feuille (Modifier) */
+    : sansEcranPropre && props.onModifier ? { cle: 'feuille', mot: 'Modifier', icone: <ChevronRight size={16} aria-hidden="true" />, onClick: props.onModifier, attrs: { 'data-ouvrir-feuille': true } }
+    : { cle: 'ouvrir', mot: 'Ouvrir', aria: LIBELLE_OUVRIR[chose.ouvre.ecran], icone: <ChevronRight size={16} aria-hidden="true" />, onClick: props.onOuvrir };
+  const secondaires: Action[] = [];
+  /* CRITIQUE-4 n° 1 : « Commander » dès que le brassin a des courses ou un manque */
+  if (brassin && props.onCommander && (commander || chose.courses)) secondaires.push({ cle: 'commander', mot: 'Commander', icone: <ShoppingCart size={16} aria-hidden="true" />, onClick: props.onCommander });
+  if (brassin && props.onBudget) secondaires.push({ cle: 'budget', mot: 'Budget', icone: <Wallet size={16} aria-hidden="true" />, onClick: props.onBudget });
+  if (props.onFait) secondaires.push({ cle: 'fait', mot: 'Fait', icone: <Check size={16} aria-hidden="true" />, onClick: props.onFait });
+  if (props.onModifier && principale.cle !== 'feuille') secondaires.push({ cle: 'modifier', mot: 'Modifier', icone: <Pencil size={16} aria-hidden="true" />, onClick: props.onModifier });
+  if (lierPossible) secondaires.push({ cle: 'lier', mot: 'Lier', icone: <Link2 size={16} aria-hidden="true" />, onClick: () => basculer('lier'), presse: volet === 'lier' });
+  const enPlus: Action[] = secondaires.splice(3);
+  if (peutMiseDeCote && props.onMettreDeCote) enPlus.push({ cle: 'cote', mot: 'Mettre de côté', icone: <Receipt size={16} aria-hidden="true" />, onClick: () => props.onMettreDeCote?.(!chose.miseDeCote), presse: !!chose.miseDeCote });
+  if (props.onDelier && chose.liens && lieeA.length > 0) enPlus.push({ cle: 'delier', mot: 'Délier', aria: `Délier de ${lieeA.join(' et ')}`, icone: <Unlink size={16} aria-hidden="true" />, onClick: () => props.onDelier?.(lieeA.join(' et ')), attrs: { 'data-delier': true } });
+  /* paquet F n° 2 : le libellé dit ce que fait le geste ; ranger se défait sans perte, pas en rouge */
+  if (props.onRetirer) enPlus.push({ cle: 'retirer', mot: libelleRetirer(chose), icone: <CalendarDays size={16} aria-hidden="true" />, onClick: props.onRetirer, attrs: { 'data-retirer': true }, ...(chose.source.genre === 'creative' ? {} : { classe: 'cal-fi-ret' }) });
+  if (props.onSupprimer) enPlus.push({ cle: 'supprimer', mot: 'Supprimer', icone: <Trash2 size={16} aria-hidden="true" />, onClick: props.onSupprimer, attrs: { 'data-supprimer': true }, classe: 'cal-fi-ret' });
+  const bouton = (a: Action, classe: string) => (
+    <button key={a.cle} type="button" className={`${classe}${a.classe ? ` ${a.classe}` : ''}`} onClick={a.onClick} {...(a.aria ? { 'aria-label': a.aria } : {})}
+      {...(a.presse !== undefined ? (a.cle === 'lier' ? { 'aria-expanded': a.presse } : { 'aria-pressed': a.presse }) : {})} {...a.attrs}>
+      {a.icone}<span>{a.mot}</span>
+    </button>
+  );
+
+  return (
+    <div ref={racine} role="region" aria-label={`Détail : ${chose.titre}`} className={`cal-det cal-fiche ${CLASSE_TEINTE[chose.rangee]}`} data-detail={chose.id}>
+      <button type="button" className="cal-fi-souche" data-souche style={souche.style} aria-expanded={volet === 'dates'}
+        aria-label={`${souche.mot}, ${souche.chiffre} : ${brassin ? 'les étapes datées' : 'les dates et notes'}`} onClick={() => basculer('dates')}>
+        {souche.icone}<b>{souche.chiffre}</b><span>{souche.mot}</span>
+      </button>
+      <div className="cal-fi-a">
+        <h4 className="cal-fi-nom">{props.onRenommer ? <RenommerSurPlace as="span" valeur={chose.titre} onRenommer={props.onRenommer} quoi="le nom" /> : chose.titre}</h4>
+        {montant && <span className={`cal-fi-m ${chose.centimes !== undefined && chose.centimes < 0 ? 'cal-neg' : 'cal-pos'}`} data-montant>{chose.reste ? 'reste ' : ''}{montant}{chose.partiel ? ' + à venir' : ''}</span>}
+        <button type="button" className="cal-fi-x" aria-label="Fermer" onClick={props.onFermer}><X size={20} aria-hidden="true" /></button>
+      </div>
+      <div className={`cal-fi-b${regle ? ' cal-fi-b-regle' : ''}`}>{pastilles}</div>
+      <div className="cal-fi-c">
+        {bouton(principale, 'cal-fi-pri')}
+        {secondaires.map(a => bouton(a, 'cal-fi-act'))}
+        {enPlus.length > 0 && (
+          <button type="button" className="cal-fi-act cal-fi-plus" data-plus aria-label="Plus d’actions" aria-expanded={volet === 'plus'} onClick={() => basculer('plus')}>
+            <Ellipsis size={18} aria-hidden="true" />
+          </button>
+        )}
+      </div>
+
+      {volet === 'dates' && (
+        <div className="cal-fi-volet" data-volet="dates">
+          {brassin ? (
+            <>
+              {duree && <p className="cal-det-d" data-duree-detail><Beer size={16} aria-hidden="true" />{duree}</p>}
+              <ol className="cal-fi-fil" data-etapes>
+                {lesEtapes.map(e => (
+                  <li key={e.id} data-etape={e.id} style={e.id !== 'prete' ? { ['--e' as string]: couleurEtape(e.id), ['--ee' as string]: encreEtape(e.id) } : undefined}>
+                    <span className="cal-fi-pt"><IconeEtape id={e.id} size={14} /></span>
+                    <span>{e.libelle}</span>
+                    <b>{e.jour ? <time className="cal-nowrap" dateTime={e.jour}>{date(e.jour)}</time> : 'à préciser'}{e.id === 'brassage' && pasBrassee ? (brassageEnRetard ? ' · pas brassée, en retard' : ' · pas brassée') : ''}</b>
+                  </li>
+                ))}
+              </ol>
+              {brassageEnRetard && <p className="cal-det-d" data-etapes-recalees>Étapes comptées depuis aujourd’hui : le brassage n’est pas fait.</p>}
+            </>
+          ) : (
+            <div className="cal-det-et">
+              {/* PC-NOTE-4, PC-118 : une chose d'un jour ne dit pas deux dates : « S49 » seul */}
+              {semaine && (chose.fin && chose.fin !== chose.debut
+                ? <div><span>Semaine</span><b>{texteSemaine(semaine)}</b></div>
+                : <div><span>Semaine</span><b className="cal-nowrap" data-semaine-detail>{etiquetteS(lundiDe(chose.debut))}</b></div>)}
+              {chose.debut && !joursDansFenetre && <div><span>Date</span><b><time className="cal-nowrap" dateTime={chose.debut}>{date(chose.debut)}</time>{chose.fin && chose.fin !== chose.debut ? <> → <time className="cal-nowrap" dateTime={chose.fin}>{date(chose.fin)}</time></> : ''}</b></div>}
+              {/* paquet F n° 5 (PC-141) : « 3 j entre le 14 déc. et le 20 déc. », sans jour inventé */}
+              {chose.debut && joursDansFenetre && <div data-date-jours><span>Date</span><b>{chose.joursActifs} j entre le <time className="cal-nowrap" dateTime={chose.debut}>{date(chose.debut)}</time> et le <time className="cal-nowrap" dateTime={chose.fin}>{date(chose.fin)}</time></b></div>}
+              {chose.fenetre && <div><span>Fenêtre</span><b>{etiquetteS(chose.fenetre.du)} → {etiquetteS(chose.fenetre.au)}</b></div>}
+              {chose.joursActifs && !joursDansFenetre ? <div><span>Jours actifs</span><b>{chose.joursActifs} j</b></div> : null}
+              {libreSemaine !== undefined && libreSemaine !== null && <div><span>Libre de la semaine</span><b>{francsSignes(libreSemaine).replace(/^\+/, '')}</b></div>}
+              {!semaine && <div><span>Date</span><b>Sans date</b></div>}
+            </div>
+          )}
+          {detailSansDate && <p className="cal-det-p"><span data-detail-texte>{groupesInsecables(detailSansDate)}</span></p>}
+          {brassin && chose.budgetRepris && <p className="cal-det-p" data-budget-repris><Receipt size={16} aria-hidden="true" /><span>{chose.budgetRepris} : à confirmer par Budget ›</span></p>}
+          {/* CHD-11 : `coutAVenir` dit qu'un montant manque (aucun budget, ou un emballage, des courses sans montant), pas qu'il n'y a aucun budget */}
+          {brassin && chose.coutAVenir && <p className="cal-det-p" data-cout-a-venir><Receipt size={16} aria-hidden="true" /><span>Coût à venir : un montant manque encore. Budget › le calcule.</span></p>}
+          {frais && <p className="cal-det-p" data-frais><Receipt size={16} aria-hidden="true" /><span>Frais : {datesInsecables(frais)}</span></p>}
+          {promesse && <p className="cal-det-p">{promesse}</p>}
+          {/* D-113, D-126, CRITIQUE-6 n° 15, CRITIQUE-10 n° 7 : l'aperçu sur place d'une chose liée, sans répéter le titre */}
+          {apercuLien && (
+            <p className="cal-det-p cal-det-lie" data-apercu-lien>
+              {apercuLien.texte
+                ? <><span className="cal-lie" data-lie data-lie-detail><Link2 size={14} aria-hidden="true" /><span>{apercuLien.texte}</span></span><span className="sr-only"> · </span></>
+                : <Link2 size={16} aria-hidden="true" />}
+              <span>{datesInsecables(apercuLien.apercu)}</span>
+            </p>
+          )}
+          {nomFeteLiee && (
+            <p className="cal-det-p cal-det-lie" data-lien-fete>
+              <span className="cal-lie" data-lie data-lie-detail><Link2 size={14} aria-hidden="true" /><span>lié à {nomFeteLiee}</span></span>
+            </p>
+          )}
         </div>
       )}
 
-      {detailSansDate && <p className="cal-det-p"><span data-detail-texte>{groupesInsecables(detailSansDate)}</span></p>}
-      {brassin && commander && (
-        <p className="cal-det-p" data-manque>
-          <ShoppingCart size={16} aria-hidden="true" />
-          <span>Il manque {articles ? <b>{articles}</b> : 'des courses'} : à acheter avant le <b className="cal-nowrap">{date(commander.jour)}</b></span>
-        </p>
-      )}
-      {brassin && chose.courses && <p className="cal-det-p" data-courses><ShoppingCart size={16} aria-hidden="true" /><span>Courses : {datesInsecables(chose.courses)}</span></p>}
-      {brassin && chose.budgetRepris && <p className="cal-det-p" data-budget-repris><Receipt size={16} aria-hidden="true" /><span>{chose.budgetRepris} : à confirmer par Budget ›</span></p>}
-      {brassin && chose.coutAVenir && <p className="cal-det-p" data-cout-a-venir><Receipt size={16} aria-hidden="true" /><span>Coût à venir : aucun budget pour cette recette. Budget › le calcule.</span></p>}
-      {frais && <p className="cal-det-p" data-frais><Receipt size={16} aria-hidden="true" /><span>Frais : {datesInsecables(frais)}</span></p>}
-      {promesse && <p className="cal-det-p">{promesse}</p>}
-      {/* l'aperçu sur place d'une chose liée (D-113, D-126) : « La Cigogne · client ; Blonde d'automne · brassage 23 nov. · prête 21 déc. » */}
-      {/* CRITIQUE-6 n° 15 : un lien qui répète le titre (« Épicerie du Bourg, 2 cartons » lié à « Épicerie du Bourg ») ne garde que ce qu'il
-          ajoute (le brassin promis) ; s'il n'ajoute rien, la ligne part */}
-      {/* CRITIQUE-10 n° 7 (E37, D-113, D-126) : un plan lié (la Hotte, liée à Blonde d'automne) porte dans son détail la pastille « lié à … »,
-          la même que sur la frise, et son aperçu à côté, sur place ; le détail est déjà l'aperçu ouvert, la pastille ne se re-touche pas */}
-      {apercuLien && (
-        <p className="cal-det-p cal-det-lie" data-apercu-lien>
-          {apercuLien.texte
-            ? <><span className="cal-lie" data-lie data-lie-detail><Link2 size={14} aria-hidden="true" /><span>{apercuLien.texte}</span></span><span className="sr-only"> · </span></>
-            : <Link2 size={16} aria-hidden="true" />}
-          <span>{datesInsecables(apercuLien.apercu)}</span>
-        </p>
-      )}
-      {nomFeteLiee && (
-        <p className="cal-det-p cal-det-lie" data-lien-fete>
-          <span className="cal-lie" data-lie data-lie-detail><Link2 size={14} aria-hidden="true" /><span>lié à {nomFeteLiee}</span></span>
-        </p>
+      {volet === 'achats' && (
+        <div className="cal-fi-volet" data-volet="achats">
+          {commander && (
+            <p className="cal-det-p" data-manque>
+              <ShoppingCart size={16} aria-hidden="true" />
+              <span>Il manque {articles ? <b>{articles}</b> : 'des courses'} : à acheter avant le <b className="cal-nowrap">{date(commander.jour)}</b></span>
+            </p>
+          )}
+          {chose.courses && <p className="cal-det-p" data-courses><ShoppingCart size={16} aria-hidden="true" /><span>Courses : {datesInsecables(chose.courses)}</span></p>}
+          {props.onCommander && <button type="button" className="cal-fi-pri cal-fi-volet-b" onClick={props.onCommander}><ShoppingCart size={16} aria-hidden="true" /><span>Commander</span></button>}
+        </div>
       )}
 
-      <div className="cal-det-bt">
-        {props.onAccepter && <button type="button" className="cal-b cal-b-pri" onClick={props.onAccepter}>{proposition ? 'Accepter' : 'Vente confirmée'}</button>}
-        {props.onPoser && <button type="button" className="cal-b cal-b-pri" onClick={props.onPoser}>Poser</button>}
-        {props.onFacturer && <button type="button" className="cal-b cal-b-pri" onClick={props.onFacturer}>Facturer<ChevronRight size={16} aria-hidden="true" /></button>}
-        {/* CAL-PASSE (R, audit des vues n° 5) : une fête ou une activité du Calendrier n'a pas d'autre écran que sa feuille (Modifier) ; « Ouvrir dans l'agenda / l'atelier » l'envoyait dans le Carnet, qui ne la montre pas. La feuille de l'objet est la vue choisie. */}
-        {!props.onPoser && !props.onAccepter && !props.onFacturer && (sansEcranPropre && props.onModifier
-          ? <button type="button" className="cal-b cal-b-pri" data-ouvrir-feuille onClick={props.onModifier}>Modifier<ChevronRight size={16} aria-hidden="true" /></button>
-          : <button type="button" className="cal-b cal-b-pri" onClick={props.onOuvrir}>{LIBELLE_OUVRIR[chose.ouvre.ecran]}<ChevronRight size={16} aria-hidden="true" /></button>)}
-        {/* CRITIQUE-4 n° 1 (D-191, E30) : « Commander » dès que le brassin a des courses ou un manque, jamais seulement sur un manque */}
-        {brassin && props.onCommander && (commander || chose.courses) && <button type="button" className="cal-b" onClick={props.onCommander}><ShoppingCart size={16} aria-hidden="true" />Commander</button>}
-        {brassin && props.onBudget && <button type="button" className="cal-b" onClick={props.onBudget}>Budget ›</button>}
-        {props.onFait && <button type="button" className="cal-b" onClick={props.onFait}><Check size={16} aria-hidden="true" />Fait</button>}
-        {peutMiseDeCote && props.onMettreDeCote && (
-          <button type="button" className="cal-b" aria-pressed={!!chose.miseDeCote} onClick={() => props.onMettreDeCote?.(!chose.miseDeCote)}>Mettre de côté</button>
-        )}
-        {props.onModifier && !(sansEcranPropre && !props.onPoser && !props.onAccepter && !props.onFacturer) && <button type="button" className="cal-b" onClick={props.onModifier}>Modifier</button>}
-        {lierPossible && <button type="button" className="cal-b" aria-expanded={lierOuvert} onClick={() => setLierOuvert(o => !o)}><Link2 size={16} aria-hidden="true" />Lier</button>}
-        {props.onDelier && chose.liens && lieeA.length > 0 && (
-          <button type="button" className="cal-b" aria-label={`Délier de ${lieeA.join(' et ')}`} data-delier onClick={() => props.onDelier?.(lieeA.join(' et '))}><Unlink size={16} aria-hidden="true" />Délier</button>
-        )}
-        {/* paquet F n° 2 : le libellé dit ce que fait le geste (« Ranger sans date », « Annuler la vente ») ; ranger se défait sans perte, pas en rouge */}
-        {props.onRetirer && <button type="button" className={chose.source.genre === 'creative' ? 'cal-b' : 'cal-b cal-b-ret'} data-retirer onClick={props.onRetirer}>{libelleRetirer(chose)}</button>}
-        {props.onSupprimer && <button type="button" className="cal-b cal-b-ret" data-supprimer onClick={props.onSupprimer}><Trash2 size={16} aria-hidden="true" />Supprimer</button>}
-      </div>
-      {/* lot A du test en ligne (18.11, n° 2, D386) : « Lier » déplie les puces de l'appui long, groupées ; un toucher pose le lien, la fiche
-          reste ouverte et montre « lié à … » */}
-      {lierPossible && lierOuvert && props.liens && (
-        <div className="cal-det-lier" data-det-lier>
+      {/* lot A (18.11, n° 2, D386) : « Lier » déplie les puces de l'appui long, groupées ; un toucher pose le lien, la fiche reste ouverte */}
+      {volet === 'lier' && lierPossible && props.liens && (
+        <div className="cal-fi-volet cal-det-lier" data-det-lier>
           {groupesLier.map(g => (
             <div key={g.cle} role="group" aria-label={g.titre} className="cal-lier-g" data-lier={g.cle}>
               <span className="cal-lier-t">{g.titre}</span>
               {g.puces.map(p => (
                 <button key={p.id} type="button" className="cal-lier-p" data-lier-id={p.id}
-                  onClick={() => { setLierOuvert(false); props.onLier?.(g.cle === 'brassins' ? { batchId: p.id } : g.cle === 'clients' ? { clientId: p.id } : { evenementId: p.id }, p.nom); }}>
+                  onClick={() => { setVolet(null); props.onLier?.(g.cle === 'brassins' ? { batchId: p.id } : g.cle === 'clients' ? { clientId: p.id } : { evenementId: p.id }, p.nom); }}>
                   <Link2 size={16} aria-hidden="true" /><span>{p.nom}</span>
                 </button>
               ))}
             </div>
           ))}
           {!groupesLier.length && <p className="cal-det-p">Aucun brassin, client ni fête à lier pour l’instant.</p>}
+        </div>
+      )}
+
+      {volet === 'plus' && (
+        <div className="cal-fi-volet cal-fi-volet-plus" data-volet="plus">
+          {enPlus.map(a => bouton(a, 'cal-fi-act cal-fi-act-l'))}
         </div>
       )}
     </div>

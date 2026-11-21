@@ -15,7 +15,7 @@ const fete = (): ChoseCalendrier => ({
   source: { genre: 'creative', id: 'F1', type: 'event' } as ChoseCalendrier['source'], ouvre: { ecran: 'agenda', id: 'F1' }, deplacable: true
 } as ChoseCalendrier);
 
-const noms = () => [...screen.getByRole('region').querySelectorAll('.cal-det-bt button')].map(b => b.textContent?.trim());
+const noms = () => [...screen.getByRole('region').querySelectorAll('.cal-fi-c button')].map(b => b.getAttribute('aria-label') ?? b.textContent?.trim());
 
 describe('une fête ou une activité : sa feuille, jamais « Ouvrir dans l’agenda »', () => {
   it('avec Modifier : le bouton principal ouvre la feuille de l’objet (onModifier), sans renvoi ni doublon', () => {

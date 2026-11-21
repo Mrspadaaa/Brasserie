@@ -413,6 +413,66 @@ export function allonger(chose: ChoseCalendrier, jours: number, ctx: ContexteGes
   return { ok: true, ecritures: [{ op: 'patch', collection: 'financialPlans', id: plan.id, patch: { fenetre, ...(fenetre.miseDeCote ? { date: au } : {}) } }], effet, promesse: null, courbeApres, message };
 }
 
+/** CHG-4 : le texte de l'aperçu quand le bord DÉBUT est tiré de `jours` jours : « 5 nov. → 12 déc. » (la fin reste). */
+export function dureeDebutTiree(chose: ChoseCalendrier, jours: number): string {
+  if (chose.source.genre !== 'batch') return `${jourLisible(decale(chose.fenetre?.du ?? chose.debut, jours))} → ${jourLisible(chose.fenetre?.au ?? chose.fin)}`;
+  return `${jourLisible(decale(chose.debut, jours))} → ${jourLisible(chose.preteLe ?? chose.fin)}`;
+}
+
+/**
+ * CHG-4 (21.11, « je tire le début d'une barre, c'est toute la barre qui part ») : tirer le bord DÉBUT de `jours` jours (négatif : plus tôt) ;
+ * la fin reste. Fête, activité : `fenetre.du` change, `au` est gardé, la date (le début) la suit. Plan manuel : idem ; mis de côté, sa date de
+ * paiement est sa fin (inchangée). Brassin planifié : `plannedBrewDate` bouge, `finPrevue` est écrite à la fin d'avant ; en cuve, le jour de
+ * brassage ne bouge pas. Jamais après la fin.
+ */
+export function allongerDebut(chose: ChoseCalendrier, jours: number, ctx: ContexteGestes): Resolution {
+  if (!Number.isInteger(jours) || jours === 0) return refus('Rien ne change : tire le bord plus loin.');
+  const source = chose.source;
+  if (source.genre === 'batch') {
+    const batch = batchDe(chose, ctx);
+    if (!batch) return refus('Ce brassin n’existe plus. Rouvre la liste des brassins.');
+    if (chose.deplacable !== true) return refus(chose.deplacable.raison, chose.ouvre);
+    const prevu = isoDate(plannedBrewDate(batch));
+    if (!prevu) return refus('Ce brassin n’a pas de date prévue : choisis-la dans sa fiche (Brassins).', chose.ouvre);
+    const fin = chose.preteLe ?? chose.pretePrevue ?? finDeBrassin(batch)?.jour;
+    if (!fin) return refus('Sa recette ne dit pas combien de jours il reste en cuve : sa fin se règle dans la fiche du brassin.', chose.ouvre, { texte: 'Ouvrir le brassin ›', ancre: 'brassin', cible: chose.ouvre });
+    const depart = departBrassin(chose, prevu, ctx, true);
+    const nouveau = decale(depart, jours);
+    if (ctx.debutHorizon && lundiDe(nouveau) < ctx.debutHorizon) return refus(`Avant ${etiquetteS(ctx.debutHorizon)}, la frise n’a pas de semaine : choisis ${etiquetteS(ctx.debutHorizon)} ou plus tard.`);
+    if (nouveau >= fin) return refus('Un brassin dure au moins un jour : tire moins loin.');
+    let patch: Record<string, unknown>;
+    try { patch = { ...rescheduleBatchPatch(batch, nouveau), finPrevue: fin }; } catch { return refus('Brassin en cuve : le jour de brassage ne bouge pas.', chose.ouvre); }
+    const deplace = { ...batch, ...patch } as Batch;
+    const apres = preteAuPlusTot(deplace, ctx.aujourdhui);
+    const promesse = promesseTouchee(ctx.plans, batch.id, apres);
+    const courbeApres = courbeBrassin(ctx.courbe, chose.id, batch, deplace, ctx.aujourdhui, ecartJours(finDeBrassin(batch)?.jour ?? fin, fin));
+    const effet = effetCaisse(ctx.courbe, courbeApres);
+    return {
+      ok: true, ecritures: [{ op: 'patch', collection: 'batches', id: batch.id, patch }], effet, promesse, courbeApres,
+      message: annuler(texteEffetCreux(ctx.courbe, courbeApres, effet, chose.titre) ?? `${chose.titre} : ${jourLisible(depart)} → ${jourLisible(nouveau)}`)
+    };
+  }
+  if (source.genre !== 'creative' && !(source.genre === 'plan' && source.origine === 'manual')) {
+    return refus(chose.deplacable === true ? 'Cette chose ne s’allonge pas d’ici.' : chose.deplacable.raison, chose.ouvre);
+  }
+  if (chose.deplacable !== true) return refus(chose.deplacable.raison, chose.ouvre);
+  const au = chose.fenetre?.au ?? chose.fin;
+  const du = decale(chose.fenetre?.du ?? chose.debut, jours);
+  if (du > au) return refus('Une chose dure au moins un jour : tire moins loin.');
+  const fenetre = { du, au, ...(chose.joursActifs ? { joursActifs: chose.joursActifs } : {}), ...(chose.miseDeCote ? { miseDeCote: true } : {}) };
+  const plan = source.genre === 'plan' ? planDe(chose, ctx) : null;
+  if (source.genre === 'plan' && !plan) return refus('Cette prévision n’existe plus.', { ecran: 'finances' });
+  let courbeApres = ctx.courbe;
+  if (courbeApres) {
+    if (fenetre.miseDeCote && chose.centimes) courbeApres = courbeAvecMise(courbeApres, miseDe(chose, fenetre), chose.id);
+    else if (plan) courbeApres = courbeDecalee(courbeApres, chose.id, ecartJours(isoDate(plan.date) ?? chose.debut, du));
+  }
+  const effet = effetCaisse(ctx.courbe, courbeApres);
+  const message = annuler(effet ? `${chose.titre} · ${effet.texte}` : `${chose.titre} : ${jourLisible(du)} → ${jourLisible(au)}`);
+  if (source.genre === 'creative') return { ok: true, ecritures: [{ op: 'patch', collection: 'creativeItems', id: source.id, patch: { date: du, fenetre } }], effet, promesse: null, courbeApres, message };
+  return { ok: true, ecritures: [{ op: 'patch', collection: 'financialPlans', id: (plan as { id: string }).id, patch: { fenetre, date: fenetre.miseDeCote ? au : du } }], effet, promesse: null, courbeApres, message };
+}
+
 /** « Livrer le 5 janv. » (E32) : la vente promise prend la nouvelle date. */
 export function livrer(promesse: Promesse, ctx: ContexteGestes): Resolution {
   const plan = ctx.plans.find(p => p.id === promesse.planId);
@@ -609,6 +669,19 @@ export function accepterVente(chose: ChoseCalendrier, ctx: ContexteGestes): Reso
 export function supprimerSansDate(chose: ChoseCalendrier): Resolution {
   if (!chose.sansDate || chose.source.genre !== 'creative') return refus('Seule une chose sans date se supprime d’ici.', chose.ouvre);
   return { ok: true, ecritures: [{ op: 'supprimer', collection: 'creativeItems', id: chose.source.id }], effet: null, promesse: null, courbeApres: null, message: annuler(`Supprimée : ${chose.titre}`) };
+}
+
+/**
+ * CHE-2 (21.11, D412) : la fiche d'une chose créée propose Supprimer, datée ou non. Le document de la source est effacé, sans dialogue ; le
+ * message dit « Supprimée : … · Annuler » et Annuler le recrée (inverse d'un `supprimer`, ecritures.ts). Une chose du carnet ou un plan manuel ;
+ * un brassin, une pièce, une proposition ne se suppriment pas d'ici.
+ */
+export function supprimer(chose: ChoseCalendrier): Resolution {
+  const s = chose.source;
+  if (chose.proposition) return refus('Une proposition ne se supprime pas : elle s’accepte ou s’ignore.', chose.ouvre);
+  const collection = s.genre === 'creative' ? 'creativeItems' as const : s.genre === 'plan' && s.origine === 'manual' ? 'financialPlans' as const : null;
+  if (!collection) return refus(s.genre === 'batch' ? 'Un brassin ne se supprime pas d’ici : il se gère dans Production.' : 'Cette chose ne se supprime pas d’ici.', chose.ouvre);
+  return { ok: true, ecritures: [{ op: 'supprimer', collection, id: s.id }], effet: null, promesse: null, courbeApres: null, message: annuler(`Supprimée : ${chose.titre}`) };
 }
 
 /** E30, E46 : « Fait » pour une activité ou une tâche : elle quitte la frise et la poche. */

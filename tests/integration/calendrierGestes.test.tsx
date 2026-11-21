@@ -366,7 +366,7 @@ describe('C19 (D-71) : « Budget › » d’un brassin', () => {
     toucher(barre(/^Blonde d’automne, 23 nov/));
     const d = within(screen.getByRole('region', { name: /Détail : Blonde d’automne/ }));
     expect(d.getByRole('button', { name: /Ouvrir le brassin/ })).toBeInTheDocument();
-    fireEvent.click(d.getByRole('button', { name: 'Budget ›' }));
+    fireEvent.click(d.getByRole('button', { name: 'Budget' }));
     expect(onOuvrirBudget).toHaveBeenCalledTimes(1);
     expect(onOuvrirBudget).toHaveBeenCalledWith('LOT-BLONDE');
   });

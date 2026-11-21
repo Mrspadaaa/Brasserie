@@ -357,6 +357,7 @@ describe('CRITIQUE-11 et 12 : le message ne déplace rien ; au grand écran et p
     fireEvent.click(within(screen.getByRole('menu')).getByRole('menuitem', { name: /Blonde d’automne/ }));
     await waitFor(() => expect(appels).toContainEqual(expect.objectContaining({ op: 'patch', collection: 'financialPlans', id: 'P-HOTTE', patch: { batchId: 'LOT-BLONDE' } })));
     const det = await screen.findByRole('region', { name: /^Détail : Hotte/ });
+    fireEvent.click(det.querySelector('[data-souche]')!); /* D412 : l’aperçu du lien est dans le volet « dates » */
     await waitFor(() => expect(det.querySelector('[data-apercu-lien]')?.textContent).toMatch(/lié à Blonde d’automne/));
     const m = screen.getByRole('status');
     /* PC-NOTE-7 (lot B-C) : un achat est « lié », une vente « liée » */ expect(m.textContent).toMatch(/^Lié à Blonde d’automne · Annuler$/);

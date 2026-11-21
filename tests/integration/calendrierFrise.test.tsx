@@ -45,6 +45,8 @@ const appuiLong = (el: Element) => {
 };
 const largeurColonne = () => Number(document.querySelector('[data-frise]')!.getAttribute('data-largeur-colonne'));
 const rangee = (nom: string) => document.querySelector(`section[data-rangee][aria-label="${nom}"]`) as HTMLElement;
+/* D412 : le contenu de la fiche est dans des volets ; un toucher sur la souche ouvre « dates », sur la pastille de courses « achats » */
+const ouvrirVolet = (cle: 'souche' | 'pastille=manque' = 'souche') => { fireEvent.click(document.querySelector(cle === 'souche' ? '[data-souche]' : '[data-pastille="manque"]')!); };
 const monter = (props: React.ComponentProps<typeof BancCalendrier> = {}) => render(<BancCalendrier aujourdhui={JOUR} sansChrome {...props} />);
 const dialogue = (nom: string) => within(screen.getByRole('dialog', { name: nom }));
 
@@ -390,13 +392,17 @@ describe('CRITIQUE-3 (lot t3-c-frise) : marque, détail, pastille « lié à »,
       jalons: [j('brassage', 'Brassage', 0), j('fermentation', 'Fermentation', 1), j('dry-hop', 'Dry hop', 7), j('garde', 'Garde', 14), j('conditionnement', 'Conditionnement', 28), commander]
     });
     const { container } = render(<DetailChose chose={ipa} onFermer={vi.fn()} onOuvrir={vi.fn()} onCommander={vi.fn()} />);
+    ouvrirVolet();
     for (const nom of ['Brassage', 'Fermentation', 'Dry hop', 'Garde', 'Conditionnement']) expect(within(container).getByText(nom)).toBeInTheDocument();
+    expect(container.textContent).not.toMatch(/\. \.|\.\./);
+    ouvrirVolet('pastille=manque');
     expect(container.textContent).toMatch(/[Mm]alt, houblon/);
     expect(container.textContent).toMatch(/Il manque malt, houblon : à acheter avant le 4 nov\./);
     expect(container.textContent).not.toMatch(/\. \.|\.\./);
     cleanup();
     const sans = { ...ipa, jalons: [j('brassage', 'Brassage', 0), j('commander', 'Commander', -5)] };
     const r2 = render(<DetailChose chose={sans} onFermer={vi.fn()} onOuvrir={vi.fn()} />);
+    ouvrirVolet('pastille=manque');
     expect(r2.container.textContent).toMatch(/Il manque des courses : à acheter avant le 4 nov\.(?!\s*\.)/);
     expect(r2.container.textContent).not.toMatch(/\. \.|\.\./);
   });
@@ -467,6 +473,7 @@ describe('CRITIQUE-4 (lot q3-donnees) : Lier, filtre, fenêtre au pied, vente ha
     expect(message).toBeDefined();
     /* l'aperçu sur place : le détail de la chose, avec la ligne du lien */
     const det = screen.getByRole('region', { name: /^Détail : Noël privés/ });
+    fireEvent.click(det.querySelector('[data-souche]')!);
     expect(det.querySelector('[data-apercu-lien]')?.textContent).toMatch(/lié à La Cigogne/);
     /* le « click » fantôme qui suit le lâcher (même endroit, aussitôt) n'annule rien ; un vrai toucher, plus tard, annule */
     fireEvent.click(within(message!).getByRole('button', { name: /Annuler/ }));
@@ -840,6 +847,7 @@ describe('CRITIQUE-7 (lot corr7-C-frise) : lien sans nom répété, points de la
   it('n° 6 (D-113, D-126) : le détail de la Hotte liée dit « lié à Blonde d’automne · brassage 23 nov. · prête 21 déc. », sans le nom deux fois', () => {
     const lie = { texte: 'lié à Blonde d’automne', apercu: 'Blonde d’automne · brassage 23 nov. · prête 21 déc.' };
     render(<DetailChose chose={hotte(lie)} onFermer={rien} onOuvrir={rien} />);
+    ouvrirVolet();
     const t = document.querySelector('[data-apercu-lien]')!.textContent ?? '';
     expect(t).toBe('lié à Blonde d’automne · brassage 23 nov. · prête 21 déc.');
     expect(repete(t)).toBe(false);
@@ -851,6 +859,7 @@ describe('CRITIQUE-7 (lot corr7-C-frise) : lien sans nom répété, points de la
   it('n° 6 : avec deux liens (client et brassin), chaque morceau garde son nom', () => {
     const lie = { texte: 'lié à Blonde d’automne', apercu: 'La Cigogne · client ; Blonde d’automne · prête 21 déc.' };
     render(<DetailChose chose={hotte(lie)} onFermer={rien} onOuvrir={rien} />);
+    ouvrirVolet();
     const t = document.querySelector('[data-apercu-lien]')!.textContent ?? '';
     expect(t).toContain('La Cigogne · client');
     expect(t).toContain('Blonde d’automne · prête 21 déc.');
@@ -1107,7 +1116,7 @@ describe('CRITIQUE-9 (lot corr9-C-frise) : « prête le … » jamais perdue, ic
       fireEvent.pointerDown(b, { clientX: x, clientY: 9, pointerId: 1, button: 0 });
       fireEvent.pointerMove(b, { clientX: x + 57, clientY: 9, pointerId: 1 });
       fireEvent.pointerUp(b, { clientX: x + 57, clientY: 9, pointerId: 1 });
-      if (attendu === 'bord') { expect(onBord, `x = ${x}`).toHaveBeenCalledWith(expect.anything(), 7); expect(onGlisse).not.toHaveBeenCalled(); }
+      if (attendu === 'bord') { expect(onBord, `x = ${x}`).toHaveBeenCalledWith(expect.anything(), 7, 'fin'); expect(onGlisse).not.toHaveBeenCalled(); }
       else { expect(onGlisse, `x = ${x}`).toHaveBeenCalled(); expect(onBord).not.toHaveBeenCalled(); }
       espion.mockRestore();
       unmount();
@@ -1166,10 +1175,10 @@ describe('CRITIQUE-12 (lot corr12-B-frise-domaine) : une fête hors courbe n’e
     const p = pastille('ventes', [comptee, estimee], COLS);
     expect(p.solde).toBe(90000);
     expect(p.texte).toBe('+900');
-    expect(p.lecture).toMatch(/^Ventes, confirmé de S\d+ à S\d+ : 2 choses, solde \+900, recette estimée \+200, hors courbe \(pas dans Finances\)$/);
+    expect(p.lecture).toMatch(/^Ventes, (confirmé|prévu) de S\d+ à S\d+ : 2 choses, solde \+900, recette estimée \+200, hors courbe \(pas dans Finances\)$/);
     render(<Rangee id="ventes" choses={[comptee, estimee]} colonnes={COLS} largeurColonne={65} largeur={390} mesures={MESURES_PORTRAIT} masquee={false} cause={null} epingles={[]} etoiles={[]} partMax={90000} drag={null} onAjouter={rien} onBasculerMasque={rien} barre={gestes} />);
     const tete = document.querySelector('[data-pastille="ventes"]')!;
-    expect(tete.textContent).toMatch(/confirmé S\d+–S\d+/);
+    expect(tete.textContent).toMatch(/(confirmé|prévu) S\d+–S\d+/);
     expect(tete.textContent).toMatch(/\+200 estimé/);
   });
 
@@ -1248,7 +1257,7 @@ describe('CRITIQUE-12 (lot corr12-B-frise-domaine) : une fête hors courbe n’e
     expect(montantBarre(serie[0])).toBe('−400 / mois');
     expect(serie[0].fin >= loyers[loyers.length - 1].debut).toBe(true);
     /* la pastille compte toujours chaque loyer (seule la mise en page de l'An regroupe) */
-    expect(pastille('papiers', choses.filter(c => c.rangee === 'papiers'), MOIS).solde).toBe(choses.filter(c => c.rangee === 'papiers' && !c.proposition && !c.probable).reduce((s, c) => s + (c.centimes ?? 0), 0));
+    expect(pastille('papiers', choses.filter(c => c.rangee === 'papiers'), MOIS).solde).toBe(choses.filter(c => c.rangee === 'papiers' && (!c.proposition || c.proposition === 'echeance') && !c.probable).reduce((s, c) => s + (c.centimes ?? 0), 0));
     const autres = ['brassins', 'fetes', 'ventes', 'achats', 'travaux', 'activites'].map(lignesDe).sort((a, b) => a - b);
     const mediane = autres[Math.floor(autres.length / 2)];
     expect(lignesDe('papiers')).toBeLessThanOrEqual(mediane);

@@ -15,6 +15,9 @@ import type { Batch } from '../../src/types';
 const JOUR = '2026-11-16';
 beforeEach(() => { localStorage.clear(); for (const cle of ['calendrier_epingles', 'calendrier_etoiles', 'calendrier_masquees', 'calendrier_ordre']) StorageService.setUiState(cle, []); });
 afterEach(() => cleanup());
+/* D412 : le contenu de la fiche est dans des volets ; un toucher sur la souche ouvre « dates », sur la pastille de courses « achats » */
+const ouvrirVolet = (cle: 'souche' | 'pastille=manque' = 'souche') => { fireEvent.click(document.querySelector(cle === 'souche' ? '[data-souche]' : '[data-pastille="manque"]')!); };
+const nomsActions = (racine: Element) => [...racine.querySelectorAll('.cal-fi-c button:not([data-plus])')].map(b => b.getAttribute('aria-label') ?? b.textContent?.trim());
 
 const brassin = (extra: Partial<ChoseCalendrier> = {}): ChoseCalendrier => ({
   id: 'brassin-LOT-STOUT', rangee: 'brassins', titre: 'Stout maison', debut: '2026-11-23', fin: '2026-12-21', centimes: -14200,
@@ -34,8 +37,7 @@ describe('n° 1 : « Commander » dans le détail d’un brassin (f4-b)', () => 
 
   it('l’ordre de f4-b : Ouvrir le brassin, Commander, Budget ›', () => {
     render(<DetailChose chose={brassin()} onFermer={() => {}} onOuvrir={() => {}} onCommander={() => {}} onBudget={() => {}} />);
-    const noms = [...screen.getByRole('region').querySelectorAll('.cal-det-bt button')].map(b => b.textContent?.trim());
-    expect(noms).toEqual(['Ouvrir le brassin', 'Commander', 'Budget ›']);
+    expect(nomsActions(screen.getByRole('region'))).toEqual(['Ouvrir le brassin', 'Commander', 'Budget']);
   });
 
   it('un brassin sans courses ni manque : pas de « Commander » (rien à commander)', () => {
@@ -50,10 +52,10 @@ describe('n° 1 : « Commander » dans le détail d’un brassin (f4-b)', () => 
     fireEvent.pointerDown(stout, { clientX: 10, clientY: 10, pointerId: 1, button: 0 });
     fireEvent.pointerUp(stout, { clientX: 10, clientY: 10, pointerId: 1 });
     const det = within(screen.getByRole('region', { name: /^Détail : Stout maison/ }));
+    expect(nomsActions(screen.getByRole('region', { name: /^Détail : Stout maison/ })).slice(0, 3)).toEqual(['Ouvrir le brassin', 'Commander', 'Budget']);
+    ouvrirVolet('pastille=manque');
     expect(det.getByText(/^Courses :/)).toBeInTheDocument();
-    const noms = [...screen.getByRole('region', { name: /^Détail : Stout maison/ }).querySelectorAll('.cal-det-bt button')].map(b => b.textContent?.trim());
-    expect(noms.slice(0, 3)).toEqual(['Ouvrir le brassin', 'Commander', 'Budget ›']);
-    fireEvent.click(det.getByRole('button', { name: /Commander/ }));
+    fireEvent.click(det.getAllByRole('button', { name: /Commander/ })[0]);
     expect(onOpenCourses).toHaveBeenCalledTimes(1);
   });
 });
@@ -119,8 +121,10 @@ describe('CRITIQUE-5 n° 31 : la fiche de vente dit sa date une fois', () => {
       source: { genre: 'plan', id: 'P-EPI', origine: 'manual' }, ouvre: { ecran: 'plan', id: 'P-EPI' }, detail: 'le 10 déc. · à livrer au magasin'
     });
     render(<DetailChose chose={vente} onFermer={() => {}} onOuvrir={() => {}} />);
+    ouvrirVolet();
     const det = screen.getByRole('region', { name: 'Détail : Épicerie du Bourg, 2 cartons' });
-    expect((det.textContent ?? '').split('10 déc.').length - 1).toBe(1);
+    const volet = det.querySelector('[data-volet="dates"]')!;
+    expect((volet.textContent ?? '').split('10 déc.').length - 1).toBe(1);
     expect(det.textContent).toContain('à livrer au magasin');
     expect(sansLaDate('le 10 déc.', '2026-12-10')).toBeUndefined();
   });
@@ -134,12 +138,14 @@ describe('CRITIQUE-6, doutes : la fiche d’une vente rouverte', () => {
 
   it('la date se lit une fois ; le lien qui répète le titre ne fait pas une ligne de plus ; un lien vers un brassin garde ce qu’il ajoute', () => {
     render(<DetailChose chose={vente({ lie: { texte: 'lié à Épicerie du Bourg', apercu: 'Épicerie du Bourg · client', client: 'Épicerie du Bourg' } })} onFermer={() => {}} onOuvrir={() => {}} />);
+    ouvrirVolet();
     const det = screen.getByRole('region', { name: 'Détail : Épicerie du Bourg, 2 cartons' });
-    expect((det.textContent ?? '').match(/10 déc\./g)).toHaveLength(1);
+    expect((det.querySelector('[data-volet="dates"]')!.textContent ?? '').match(/10 déc\./g)).toHaveLength(1);
     expect(det.querySelector('[data-apercu-lien]')).toBeNull();
     expect((det.textContent ?? '').match(/Épicerie du Bourg/g)).toHaveLength(1);
     cleanup();
     render(<DetailChose chose={vente({ titre: '3 fûts La Cigogne', lie: { texte: 'lié à Blonde d’automne', apercu: 'La Cigogne · client ; Blonde d’automne · prête 21 déc.' } })} onFermer={() => {}} onOuvrir={() => {}} />);
+    ouvrirVolet();
     const lien = screen.getByRole('region', { name: 'Détail : 3 fûts La Cigogne' }).querySelector('[data-apercu-lien]');
     expect(lien?.textContent).toContain('lié à Blonde d’automne');
     expect(lien?.textContent).toContain('prête 21 déc.');
@@ -155,6 +161,7 @@ describe('CRITIQUE-7 n° 2 : le détail d’une bière pas brassée dit sa date 
       source: { genre: 'batch', id: 'LOT-SAISON', statut: 'planifie' }, ouvre: { ecran: 'brassin', id: 'LOT-SAISON' }, deplacable: true
     } as unknown as ChoseCalendrier;
     render(<DetailChose chose={saison} onFermer={() => {}} onOuvrir={() => {}} />);
+    ouvrirVolet();
     const grille = document.querySelector('[data-etapes]')!;
     expect(grille.textContent).toMatch(/Prête16 déc\./);
     expect(grille.textContent).not.toMatch(/à préciser/);
@@ -182,6 +189,7 @@ describe('CRITIQUE-10 n° 3, 4, 7 : une date, une plage entière, un lien lisibl
         detail={x => <DetailChose chose={x} onFermer={() => {}} onOuvrir={() => {}} />}
       />
     );
+    ouvrirVolet();
     const det = screen.getByRole('region', { name: 'Détail : Saison de ferme' });
     expect(det.querySelector('[data-etape="brassage"]')?.textContent).toMatch(/Brassage10 nov\. · pas brassée/);
     expect(det.textContent).not.toMatch(/18 nov/);
@@ -192,11 +200,13 @@ describe('CRITIQUE-10 n° 3, 4, 7 : une date, une plage entière, un lien lisibl
     /* PC-NOTE-4 et PC-118 (en ligne) : une chose d'un jour (la Hotte, le 30 nov.) ne dit pas deux dates (« Semaine S49, 30 nov. – 6 déc. » à côté
        de « Date 30 nov. ») : sa semaine est « S49 », sur une ligne ; la plage reste pour ce qui dure (ci-dessous, une fête du 30 nov. au 2 déc.) */
     const { unmount } = render(<DetailChose chose={hotte} libreSemaine={113300} onFermer={() => {}} onOuvrir={() => {}} />);
+    ouvrirVolet();
     expect(document.querySelector('[data-plage]')).toBeNull();
     expect(document.querySelector('[data-semaine-detail]')?.textContent).toBe('S49');
     expect(document.querySelector('.cal-det-et')?.textContent).toMatch(/Date30 nov\./);
     unmount();
     render(<DetailChose chose={{ ...hotte, fin: '2026-12-02' }} libreSemaine={113300} onFermer={() => {}} onOuvrir={() => {}} />);
+    ouvrirVolet();
     const plage = document.querySelector<HTMLElement>('[data-plage]')!;
     expect(plage.textContent).toBe('30 nov. – 6 déc.');
     expect(plage).toHaveClass('cal-nowrap');
@@ -212,6 +222,7 @@ describe('CRITIQUE-10 n° 3, 4, 7 : une date, une plage entière, un lien lisibl
     const hotte = preparerChoses([blonde, hotteLiee], { brassins: new Map([['LOT-BLONDE', 'Blonde d’automne']]) }).find(c => c.id === 'P-HOTTE')!;
     expect(hotte.lie?.texte).toBe('lié à Blonde d’automne');
     render(<DetailChose chose={hotte} onFermer={() => {}} onOuvrir={() => {}} />);
+    ouvrirVolet();
     const det = screen.getByRole('region', { name: 'Détail : Hotte' });
     const pastille = det.querySelector<HTMLElement>('[data-lie]')!;
     expect(pastille).toHaveClass('cal-lie');
@@ -228,6 +239,7 @@ describe('CRITIQUE-10 n° 3, 4, 7 : une date, une plage entière, un lien lisibl
     const hotteLiee = { id: 'P-HOTTE', rangee: 'achats', titre: 'Hotte', debut: '2026-11-30', fin: '2026-11-30', centimes: -90000, liens: { batchId: 'LOT-BLONDE' }, source: { genre: 'plan', id: 'P-HOTTE', origine: 'manual', statut: 'active' }, ouvre: { ecran: 'plan', id: 'P-HOTTE' }, deplacable: true } as ChoseCalendrier;
     const hotte = preparerChoses([blonde, hotteLiee], { brassins: new Map([['LOT-BLONDE', 'Blonde d’automne']]) }).find(c => c.id === 'P-HOTTE')!;
     render(<DetailChose chose={hotte} onFermer={() => {}} onOuvrir={() => {}} />);
+    ouvrirVolet();
     const apercu = screen.getByRole('region', { name: 'Détail : Hotte' }).querySelector('[data-apercu-lien]')!;
     const dates = (apercu.textContent ?? '').match(/\d{1,2} [^\s·;]+/g) ?? [];
     expect(dates).toEqual(['23 nov.', '21 déc.']);

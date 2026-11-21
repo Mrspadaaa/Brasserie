@@ -129,8 +129,11 @@ describe('6. la fiche dit à quoi la chose est liée, et délie', () => {
     const { appels } = monter();
     toucher(bouton(/^Tireuse/));
     const f = within(await waitFor(() => fiche(/Détail : Tireuse/)));
+    /* D412 : le lien se lit dans le volet « dates » (souche), « Délier » est sous « Plus d’actions » */
+    fireEvent.click(document.querySelector('[data-souche]')!);
     expect(f.getByText(/lié à Foire du Valais/)).toBeTruthy();
-    fireEvent.click(f.getByRole('button', { name: /^Délier/ }));
+    fireEvent.click(fiche(/Détail : Tireuse/).querySelector('[data-plus]')!);
+    fireEvent.click(within(fiche(/Détail : Tireuse/)).getByRole('button', { name: /^Délier/ }));
     await waitFor(() => expect(appels.some(a => a.collection === 'financialPlans' && a.patch && 'evenementId' in a.patch)).toBe(true));
     const a = appels.find(x => x.collection === 'financialPlans' && x.patch && 'evenementId' in x.patch)!;
     expect(a.patch!.evenementId).toBeUndefined();
