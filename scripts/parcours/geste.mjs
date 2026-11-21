@@ -362,7 +362,73 @@ async function jouerCalendrier({ p, base, combo, tactile, glisser, pas }) {
     { const a = await etat(); await versCalendrier(); const b = await etat(); b?.cle === a.cle ? ok(`${F} rechargement`, a.cle) : echec(`${F} rechargement`, `${a.cle} → ${b?.cle}`); }
 
   };
+  const choisirPeriode = async (t) => {
+    const m = await p.evaluate(() => { const e = document.querySelector('[aria-label$="période, liste, tri et filtre"]'); if (!e) return null; e.scrollIntoView({ block: 'center' }); const r = e.getBoundingClientRect(); return [r.x + r.width / 2, r.y + r.height / 2]; });
+    if (!m) throw new Error('bouton du menu de période introuvable');
+    await toucherXY(m[0], m[1]); await toucherTexte(t); await sleep(700);
+  };
+  // ── capture-11 et capture-12 (21.11) : la frise de la feuille d'ajout. Durée : le début se tire vers le passé, la fin reste ; une chose à
+  //    une seule date (Ventes) : un repère seul, tiré dans le passé ──
+  const sectionFeuille = async () => {
+    const lireFeuille = () => p.evaluate(() => {
+      const s = document.querySelector('[data-feuille-semaine]')?.getAttribute('data-feuille-semaine') ?? null;
+      const fin = (document.querySelector('[data-fin-duree]')?.getAttribute('aria-valuetext') ?? '').split('jusqu’à ')[1] ?? null;
+      const n = Number(document.querySelector('[data-fin-duree]')?.getAttribute('aria-valuenow') ?? 1);
+      const pi = document.querySelector('.cal-f-duree-piste');
+      if (!pi) return { s, fin, n, piste: null };
+      pi.scrollIntoView({ block: 'center' });
+      const r = pi.getBoundingClientRect(), barre = pi.querySelector('.cal-f-duree-barre')?.getBoundingClientRect(), point = pi.querySelector('[data-date-point]')?.getBoundingClientRect();
+      return { s, fin, n, seule: !!document.querySelector('[data-date-seule]'), piste: { y: r.top + r.height / 2, xa: barre ? barre.left : null, xp: point ? point.left + point.width / 2 : null, px: Number(pi.getAttribute('data-px-semaine')) } };
+    });
+    for (const [rangee, seule] of [['activites', false], ['ventes', true]]) {
+      const nom = `feuille ${rangee} ${combo}`;
+      try {
+        const plus = await p.evaluate((r) => { const e = document.querySelector(`[data-plus="${r}"]`); if (!e) return null; e.scrollIntoView({ block: 'center' }); const b = e.getBoundingClientRect(); return [b.x + b.width / 2, b.y + b.height / 2]; }, rangee);
+        if (!plus) { echec(nom, 'le + de la rangée introuvable'); continue; }
+        await toucherXY(plus[0], plus[1]); await sleep(700);
+        const a = await lireFeuille();
+        if (!a.piste || (seule && !a.seule)) { await cap(`feuille-${rangee}-sans-frise`); echec(`${nom} ${seule ? 'date dans le passé' : 'début dans le passé'}`, seule ? 'aucune frise de date (un seul repère) dans la feuille' : 'frise de durée introuvable'); await echap(); continue; }
+        const x0 = seule ? a.piste.xp : a.piste.xa;
+        if (x0 == null) { echec(nom, 'repère introuvable'); await echap(); continue; }
+        await glisser(x0, a.piste.y, pas(x0, x0 - 2.2 * a.piste.px)); await sleep(500);
+        const b = await lireFeuille();
+        await cap(`feuille-${rangee}-passe`);
+        if (seule) (b.s && a.s && b.s < a.s) ? ok(`${nom} date dans le passé`, `${a.s} → ${b.s}`) : echec(`${nom} date dans le passé`, `${a.s} → ${b.s} (plus tôt attendu)`);
+        else (b.s && a.s && b.s < a.s && b.fin === a.fin && b.n > a.n) ? ok(`${nom} début dans le passé`, `${a.s} → ${b.s}, ${a.n} → ${b.n} sem., fin ${b.fin}`) : echec(`${nom} début dans le passé`, `${a.s} → ${b.s}, ${a.n} → ${b.n} sem., fin ${a.fin} → ${b.fin} (début plus tôt, même fin attendus)`);
+        await echap();
+      } catch (e) { echec(nom, String(e.message ?? e).slice(0, 160)); await echap(); }
+    }
+  };
+  // ── CAL-VIDE (21.11, « Il y a un espace vide énorme ici ??? ») et CAL-VIDES-EN-LIGNE (« les mettre en vertical pas les entassés à
+  //    l'horizontal ») : en 6 sem., 3 mois et An, une rangée prend la hauteur de ses lignes (écart ≤ 24 px jusqu'à l'en-tête suivant) ; les
+  //    rangées vides se posent l'une sous l'autre ──
+  const sectionRangees = async () => {
+    for (const per of ['6 sem.', '3 mois', 'An', '6 sem.']) {
+      const R = `rangées ${per} ${combo}`;
+      await choisirPeriode(per); await sleep(500);
+      const m = await p.evaluate(() => {
+        const secs = [...document.querySelectorAll('[data-frise] section[data-rangee]')].filter((s) => s.getBoundingClientRect().height > 0);
+        const ecarts = [];
+        for (let i = 0; i < secs.length - 1; i++) {
+          const s = secs[i]; if (s.closest('[data-rangees-vides]')) continue;
+          let bas = -1e9;
+          for (const e of s.querySelectorAll('*')) { if (e.closest('[aria-hidden="true"]') || e.closest('svg')) continue; const r = e.getBoundingClientRect(); if (r.width > 0 && r.height > 0 && (e.children.length === 0 || e.matches('button,[data-chose]'))) bas = Math.max(bas, r.bottom); }
+          const suiv = secs[i + 1].querySelector('.cal-rh') ?? secs[i + 1];
+          ecarts.push({ r: s.getAttribute('data-rangee'), ecart: Math.round(suiv.getBoundingClientRect().top - bas) });
+        }
+        const lignes = [...document.querySelectorAll('[data-rangees-vides]')].map((g) => { const tops = [...g.querySelectorAll(':scope > section')].map((s) => Math.round(s.getBoundingClientRect().top)); return { g: g.getAttribute('data-rangees-vides'), tops }; });
+        return { ecarts, lignes };
+      });
+      const trop = m.ecarts.filter((e) => e.ecart > 24);
+      trop.length ? echec(`${R} hauteur des rangées`, trop.map((e) => `${e.r} ${e.ecart} px`).join(', ') + ' de vide avant la rangée suivante (≤ 24 attendus)') : ok(`${R} hauteur des rangées`, m.ecarts.map((e) => `${e.r} ${e.ecart}`).join(', '));
+      const enLigne = m.lignes.filter((l) => l.tops.some((t, i) => i > 0 && t <= l.tops[i - 1] + 4));
+      enLigne.length ? echec(`${R} rangées vides`, enLigne.map((l) => `« ${l.g} » côte à côte (${l.tops.join(', ')})`).join(' ; ')) : ok(`${R} rangées vides`, m.lignes.map((l) => l.g).join(' | ') || 'aucune');
+      if (per === 'An') await cap('rangees-an');
+    }
+  };
   await sectionBarre();
   await sectionCadre();
+  await sectionFeuille();
+  await sectionRangees();
   await cap('fin');
 }
