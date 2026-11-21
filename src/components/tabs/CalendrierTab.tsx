@@ -810,6 +810,12 @@ export function CalendrierTab(props: CalendrierTabProps) {
           ...(onOuvrirBudget ? { onBudget: () => { const id = (chose.source as { id: string }).id; setSelectionId(null); onOuvrirBudget(id); } } : {})
         } : {})}
         {...(editable && !sansDate ? { onModifier: () => { setSelectionId(null); setFeuille({ mode: 'modifier', initial: brouillonDepuisChose(chose), chose, cle: ++compteur.current }); } } : {})}
+        {...(editable && (chose.source.genre === 'creative' || chose.source.genre === 'plan') ? { onRenommer: (nom: string) => {
+          /* RENOMMER-EVT (R1) : le titre touché devient un champ ; Entrée renomme la chose, le message porte Annuler */
+          const texte = `Renommé : ${nom}`;
+          void ecrire({ ok: true, ecritures: [{ op: 'patch', collection: creative ? 'creativeItems' : 'financialPlans', id: chose.source.id, patch: { title: nom } }],
+            message: { texte, action: 'Annuler', lecture: `${texte} · Annuler` }, effet: null, promesse: null, courbeApres: null });
+        } } : {})}
         {...(editable && !sansDate ? { onRetirer: () => { void ecrire(retirer(chose, ctxRef.current)); } } : {})}
         {...(creative && chose.source.genre === 'creative' && chose.source.type !== 'recipe-idea' && (chose.rangee === 'activites' || sansDate) ? { onFait: () => { void ecrire(fait(chose)); } } : {})}
         {...(chose.rangee === 'ventes' && chose.source.genre === 'plan' && !chose.probable ? { onFacturer: () => {

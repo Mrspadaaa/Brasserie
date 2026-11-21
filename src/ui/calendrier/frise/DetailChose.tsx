@@ -1,6 +1,7 @@
 import React from 'react';
 import { Beer, Check, ChevronRight, Link2, Receipt, ShoppingCart, Trash2, Unlink, Wheat, X } from 'lucide-react';
 import { ETAPE_BRASSIN } from './etapes';
+import { RenommerSurPlace } from '../../saisie/RenommerSurPlace';
 import { libelleRetirer } from '../../../domain/calendrierGestes';
 import { dateDeSemaine, ecartJours, etiquetteS, francsSignes, jourLisible, lundiDe, type ChoseCalendrier, type JalonBrassin, type JalonId } from '../../../domain/calendrier';
 import { CLASSE_TEINTE, apercuSansNom, champ, dureeVue, lieMontre, nomLie } from './Marque';
@@ -26,6 +27,8 @@ export interface DetailChoseProps {
   onCommander?: () => void;
   onBudget?: () => void;
   onModifier?: () => void;
+  /** RENOMMER-EVT (R1) : toucher le titre l'ouvre en champ sur place, Entrée renomme ; absent : le titre reste du texte. */
+  onRenommer?: (nom: string) => void;
   onRetirer?: () => void;
   /** Paquet F n° 1 : une chose de la poche « Sans date » se supprime (effacée ; Annuler dans le message). */
   onSupprimer?: () => void;
@@ -256,7 +259,7 @@ export const DetailChose: React.FC<DetailChoseProps> = props => {
 
   return (
     <div ref={racine} role="region" aria-label={`Détail : ${chose.titre}`} className={`cal-det ${CLASSE_TEINTE[chose.rangee]}`} data-detail={chose.id}>
-      <h4 className="cal-det-h">{chose.titre}{montant && <span className={chose.centimes !== undefined && chose.centimes < 0 ? 'cal-neg' : 'cal-pos'}>{chose.reste ? 'reste ' : ''}{montant}{chose.partiel ? ' +' : ''}</span>}{chose.coutAVenir && <span>coût à venir</span>}</h4>
+      <h4 className="cal-det-h">{props.onRenommer ? <RenommerSurPlace as="span" valeur={chose.titre} onRenommer={props.onRenommer} quoi="le nom" /> : chose.titre}{montant && <span className={chose.centimes !== undefined && chose.centimes < 0 ? 'cal-neg' : 'cal-pos'}>{chose.reste ? 'reste ' : ''}{montant}{chose.partiel ? ' +' : ''}</span>}{chose.coutAVenir && <span>coût à venir</span>}</h4>
       <button type="button" className="cal-det-x" aria-label="Fermer" onClick={props.onFermer}><X size={22} aria-hidden="true" /></button>
 
       {brassin ? (
