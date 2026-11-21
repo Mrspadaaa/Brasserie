@@ -3,7 +3,8 @@ import { assertBrewingStyleGuide, type BrewingStyleGuide, type BrewingStyle, typ
 import type { HopKnowledge } from '../../functions/src/hopPredictionSchema';
 
 export type ListedStyle = BrewingStyle & { ref: BrewingStyleRef; edition: string; historical?: boolean; selectable?: boolean };
-export const foldStyle = (s: string) => s.normalize('NFKD').replace(/\p{M}/gu, '').replace(/ß/g, 'ss').toLocaleLowerCase('fr').replace(/[’'-]/g,' ').replace(/\s+/g,' ').trim();
+/** WFR-9 : un brassin ancien peut garder un instantané de recette sans style (champ absent) : inconnu, jamais une erreur. */
+export const foldStyle = (s: string | undefined) => (s ?? '').normalize('NFKD').replace(/\p{M}/gu, '').replace(/ß/g, 'ss').toLocaleLowerCase('fr').replace(/[’'-]/g,' ').replace(/\s+/g,' ').trim();
 function allBrewingStyleGuides(saved: HopKnowledge[] = []): BrewingStyleGuide[] {
   return [...new Map([...pack, ...saved].map(r => [r.id, r])).values()].filter((r): r is BrewingStyleGuide => {
     if (r.kind !== 'styleGuide') return false;

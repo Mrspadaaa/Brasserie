@@ -103,6 +103,19 @@ function listeEtapes() { return [
       if (!/Planifier/.test(t)) return echec('B1', `la feuille Brasser ne s'ouvre pas (écran : ${t.slice(0, 160)})`);
       ok('B1', 'la feuille Brasser s\'ouvre');
     }
+  },
+  {
+    id: 'B2', titre: 'Brassins → « Brasser » sur un brassin planifié (levure nommée, instantané sans style) ouvre la feuille (WFR-9)',
+    async joue(s) {
+      await s.onglet('Brassins'); await sleep(800);
+      await s.cap('B2-1-liste');
+      await s.toucher('Brasser · B-ZZ-PLAN', { prefixe: true }); await sleep(1800);
+      await s.cap('B2-2-apres');
+      const t = await s.texte(8000);
+      if (/Écran indisponible/.test(t)) return echec('B2', `« Écran indisponible » (${s.erreurs[0] ?? 'sans erreur lue'})`);
+      if (!/ZZ TEST IPA/.test(t) || !/Commencer aujourd/.test(t)) return echec('B2', `la page du jour de brassage ne s'ouvre pas (écran : ${t.slice(0, 160)})`);
+      ok('B2', 'la page du jour de brassage s\'ouvre (Conduite, « Commencer aujourd’hui »)');
+    }
   }
 ]; }
 
