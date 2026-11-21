@@ -106,11 +106,23 @@ Ces mesures viennent d'un serveur Vite de dev (React de dev), qui majore les tem
 
 **Contournement de banc (fixture seulement).** `stockItemRef` au lieu du nom. Le défaut reste ouvert dans l'app.
 
-## WFR-10 — « Commencer aujourd'hui » sur un brassin prévu le 01.12 (à confirmer, 21.11)
+## WFR-10 — « Commencer aujourd'hui » sur un brassin prévu le 01.12 (écarté, 21.11)
 
-**Constat.** Capture `captures/c2-cpu4/02-02-feuille-brasser.png` : en-tête « Prévu le 01.12.2026 · Changer la date », et le bouton principal « Commencer aujourd'hui » est actif, sans demande de confirmation ni de date. Le brassin peut donc démarrer un autre jour que celui qui est prévu.
+**Constat initial.** Capture `captures/c2-cpu4/02-02-feuille-brasser.png` : « Prévu le 01.12.2026 » et « Commencer aujourd'hui » actif.
 
-**Pourquoi « à confirmer ».** Ce peut être voulu (brasser en avance). Son usage décide, pas la lecture seule. Ne pas corriger sans sa réponse ; c'est un choix de goût (L24).
+**Après démarrage.** Capture `captures/c4b/02-04-calendrier.png` (feuille encore ouverte) : « Commencé le 21.11.2026 · Initialement prévu le 01.12.2026 ». La date réelle est notée, la prévue reste visible. Le démarrage n'écrase pas la date prévue : pas de défaut.
+
+## WFR-11 — Calendrier : écran indisponible, sans démarrage de brassin (vu, 21.11)
+
+**Constat.** Bord → Calendrier : « Impossible de charger cet écran · Recharger l'application ». Capture `captures/cal/01-calendrier-direct.png`. Même résultat après ajout de prévisionnels et d'une dépense ZZ TEST à la fixture.
+
+**Pile (build de test).** `TypeError: Cannot read properties of undefined (reading 'trim')` : `r` → `Js` (chunk useLiveData) → `at` (forecast) → `gt` (forecast) → `n` et `Bc` (CalendrierTab). L'erreur vient donc du calcul prévisionnel du Calendrier, non de la feuille Brasser.
+
+**Cause.** Non trouvée. Un champ texte absent d'un élément de la fixture (brassin, recette figée, équipement ou fût) est l'hypothèse la plus probable. Elle reste à prouver : il faut la comparer avec la fixture du parcours Calendrier de port-carnet, qui s'affiche, puis retirer les éléments un à un.
+
+**Doit.** Le Calendrier s'ouvre sur toute donnée valide. Un élément incomplet ne doit pas faire tomber tout l'écran.
+
+**Note de banc.** Sur la feuille Brasser ouverte, un toucher sur « Calendrier » a ouvert la note « Eau et sels » : le menu du bas est masqué dans la feuille, le toucher du pas tombe sur un autre bouton. Le pas du banc est à corriger (fermer par « Fermer »/« Retour » d'abord).
 
 ## Non joué (REPRISE)
 

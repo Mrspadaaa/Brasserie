@@ -43,6 +43,12 @@ export function fixtureProduire(aujourdhui) {
       fermentation: [{ kind: 'primaire', name: 'Primaire', tempC: 19, days: 12 }] } });
   add('recipes', 'R-ZZ-BLONDE', { id: 'R-ZZ-BLONDE', name: 'ZZ TEST Blonde', style: 'Blonde', volumeL: 100, ingredients: [] });
 
+  // Prévisionnel et dépense datée, pour que le Calendrier et Finances aient leurs lignes (ZZ TEST seulement).
+  const plan = (id, title, date, amountCents, extra = {}) => add('financialPlans', id, { id, title, date, amountCents, direction: 'out', category: 'divers', source: 'manual', status: 'active', createdAt: at, ...extra });
+  plan('P-ZZ-MALT', 'ZZ TEST Commande de malt', ajouter(aujourdhui, 5), 42000, { category: 'brassage', vendor: 'ZZ TEST' });
+  plan('P-ZZ-VENTE', 'ZZ TEST Vente de 2 fûts', ajouter(aujourdhui, 25), 26000, { direction: 'in', category: 'recettes' });
+  add('transactions', 'T-ZZ-ANC', { id: 'T-ZZ-ANC', date: ajouter(aujourdhui, -40), description: 'ZZ TEST facture malt', vendor: 'ZZ TEST', category: 'brassage', subcategory: 'x', amountHT: 180, amountTTC: 180, tvaAmount: 0, tvaRate: 0,
+    finance: { version: 1, kind: 'expense', amountCents: 18000, lines: [], paymentStatus: 'paid', paymentDate: ajouter(aujourdhui, -40), recordedAt: `${ajouter(aujourdhui, -40)}T09:00:00.000Z` } });
   for (const n of [1, 2, 3]) add('kegs', `F-00${n}`, { id: `F-00${n}`, capacityL: 20, state: 'propre' });
   add('equipment', 'E-ZZ-FERM', { id: 'E-ZZ-FERM', name: 'ZZ TEST Fermenteur 120 L', category: 'Fermentation', status: 'ok', purchaseDate: ajouter(aujourdhui, -400), purchasePrice: 900 });
   add('financialProfiles', 'current', { id: 'current', canton: 'FR', legalForm: 'sole-proprietor', accounting: 'simplified', vatRegistered: false,
