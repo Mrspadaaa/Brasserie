@@ -6,7 +6,8 @@ import type React from 'react';
  *  - Pointer Events natifs ; une minuterie de `APPUI_LONG_MS` (≈ 450 ms, sous les 500 ms d'Android et d'iOS : la caisse va vite) ;
  *  - annulée si le doigt bouge de plus de `TOLERANCE_PX` (6 px), s'il se lève, ou si le navigateur reprend le geste (défilement : `pointercancel`) ;
  *  - le menu contextuel et la loupe de sélection sont coupés (`contextmenu` empêché, `-webkit-touch-callout` et `user-select` à none, rendus en `style`) ;
- *  - pas de clic fantôme : le `click` qu'un pointeur émet au lâcher d'un appui long est avalé (un clic du clavier, `detail` 0, passe toujours) ;
+ *  - pas de clic fantôme : le `click` qu'un pointeur émet au lâcher d'un appui long est avalé, comme celui d'un doigt qui a bougé de plus de
+ *    `TOLERANCE_PX` (Chrome tient un toucher jusqu'à ≈ 15 px : sans cela, un doigt qui hésite ajouterait 1) ; un clic du clavier, `detail` 0, passe toujours ;
  *  - équivalent clavier et souris : Maj+F10, la touche Menu et le clic droit (le geste standard du menu contextuel) déclenchent l'appui long.
  * Reprend la logique de `calendrier/frise/usePointeur.ts` (minuterie, tolérance, menu coupé), sans la modifier ; l'unification se fait dans V-CAL.
  *
@@ -50,6 +51,8 @@ interface Etat<K> {
   minuterie: ReturnType<typeof setTimeout> | null;
   /** L'appui long du geste en cours (ou du dernier) a été déclenché : le clic de pointeur qui suit est avalé. */
   declenche: boolean;
+  /** Le doigt du geste en cours (ou du dernier) a bougé de plus de la tolérance : ni appui long, ni toucher. */
+  bouge: boolean;
   /** Heure du dernier déclenchement au clavier : le `contextmenu` que la touche émet ensuite ne redéclenche pas. */
   clavierA: number;
 }
@@ -63,7 +66,7 @@ function surUnAutreActionneur(e: React.SyntheticEvent<HTMLElement>): boolean {
 }
 
 export function useAppuiLong<K>({ onAppuiLong, ms = APPUI_LONG_MS, tolerance = TOLERANCE_PX }: OptionsAppuiLong<K>): (cle: K, onToucher: (e: React.MouseEvent<HTMLElement>) => void) => GestesAppuiLong {
-  const etat = useRef<Etat<K>>({ id: null, x0: 0, y0: 0, minuterie: null, declenche: false, clavierA: 0 });
+  const etat = useRef<Etat<K>>({ id: null, x0: 0, y0: 0, minuterie: null, declenche: false, bouge: false, clavierA: 0 });
   const rappel = useRef(onAppuiLong);
   rappel.current = onAppuiLong;
 
@@ -77,7 +80,7 @@ export function useAppuiLong<K>({ onAppuiLong, ms = APPUI_LONG_MS, tolerance = T
   return useCallback((cle: K, onToucher: (e: React.MouseEvent<HTMLElement>) => void): GestesAppuiLong => ({
     onPointerDown: e => {
       const s = etat.current;
-      arreter(); s.declenche = false;
+      arreter(); s.declenche = false; s.bouge = false;
       if ((e.pointerType === 'mouse' && e.button !== 0) || surUnAutreActionneur(e)) return;
       const cible = e.currentTarget;
       s.id = e.pointerId; s.x0 = e.clientX; s.y0 = e.clientY;
@@ -90,7 +93,7 @@ export function useAppuiLong<K>({ onAppuiLong, ms = APPUI_LONG_MS, tolerance = T
     onPointerMove: e => {
       const s = etat.current;
       if (s.id !== e.pointerId || !s.minuterie) return;
-      if (Math.hypot(e.clientX - s.x0, e.clientY - s.y0) > tolerance) arreter();
+      if (Math.hypot(e.clientX - s.x0, e.clientY - s.y0) > tolerance) { s.bouge = true; arreter(); }
     },
     onPointerUp: () => arreter(),
     onPointerCancel: () => arreter(),
@@ -114,8 +117,8 @@ export function useAppuiLong<K>({ onAppuiLong, ms = APPUI_LONG_MS, tolerance = T
     },
     onClick: e => {
       const s = etat.current;
-      if (s.declenche && e.detail !== 0) { e.preventDefault(); e.stopPropagation(); s.declenche = false; return; }
-      s.declenche = false;
+      if ((s.declenche || s.bouge) && e.detail !== 0) { e.preventDefault(); e.stopPropagation(); s.declenche = false; s.bouge = false; return; }
+      s.declenche = false; s.bouge = false;
       onToucher(e);
     },
     'aria-keyshortcuts': RACCOURCI_APPUI_LONG,

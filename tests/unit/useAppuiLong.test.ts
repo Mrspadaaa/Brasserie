@@ -72,6 +72,8 @@ describe('useAppuiLong', () => {
     vi.advanceTimersByTime(1000);
     expect(onLong).not.toHaveBeenCalled();
     fireEvent.pointerUp(tuile(), doigt);
+    fireEvent.click(tuile(), { detail: 1 }); // Chrome compte encore un toucher sous ≈ 15 px : avalé, rien n'est ajouté
+    expect(onTap).not.toHaveBeenCalled();
 
     fireEvent.pointerDown(tuile(), doigt);
     fireEvent.pointerMove(tuile(), { ...doigt, clientX: 103, clientY: 104 });
