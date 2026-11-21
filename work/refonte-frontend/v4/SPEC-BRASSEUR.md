@@ -2578,3 +2578,7 @@ Classement de la page r3 de Ma levure (https://claude.ai/artifact/DKAJe8ESeMR4ig
 > L'édition, detail est franchement mal fait. Pas compact, pas visuel, vraiment à revoir complète
 
 (21.11, tour 8, captures 15 à 17 : la fiche de détail d'une chose du Calendrier (brassin, fête) ; à refaire en mini maquettes.)
+
+> Pareil, la modification est horrible
+
+(21.11, tour 8, capture-18 : la feuille « Modifier » garde l'ancien carrousel de semaines S36…S4x ; la feuille d'ajout (horizons + frise Durée) lui plaît.)
