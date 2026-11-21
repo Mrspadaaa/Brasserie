@@ -53,3 +53,14 @@ export function useCurseurNatif(autre?: Ref<HTMLInputElement>): (el: HTMLInputEl
     if (typeof a === 'function') a(el); else if (a) (a as MutableRefObject<HTMLInputElement | null>).current = el;
   }, []);
 }
+
+const branches = new WeakSet<HTMLInputElement>();
+/**
+ * La même chose sans hook, pour un curseur rendu dans une boucle : `<input type="range" ref={refCurseurNatif} … />`. Branché une fois par
+ * élément ; ses écouteurs partent avec lui (aucun écouteur global hors d'un geste en cours).
+ */
+export function refCurseurNatif(el: HTMLInputElement | null): void {
+  if (!el || branches.has(el)) return;
+  branches.add(el);
+  attacherCurseurNatif(el);
+}
