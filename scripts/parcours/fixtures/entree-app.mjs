@@ -3,7 +3,7 @@
 // Il remplace `src/dev/financeDemo.ts` (que `runMigrationIfNeeded` n'importe que sous `import.meta.env.DEV` ET `?dev-local`
 // ET `?finance-demo`) dans le BUILD DE TEST seulement : `scripts/parcours/vite.parcours.config.mjs` l'y branche par un
 // plugin ; ni `vite.config.ts` ni `src/` ne changent. Un build normal (`npm run build`) ne le voit pas, et son `DEV` est faux.
-// Il ne s'active que sur localhost et avec `?finance-demo=parcours-calendrier` ; ailleurs il rend la démo d'origine.
+// Il ne s'active que sur localhost et avec `?finance-demo=parcours-calendrier` ou `=parcours-carnet` ; ailleurs il rend la démo d'origine.
 //
 // Il lit la fixture dans localStorage (posée par le script avant le chargement), la verse dans le magasin mémoire de
 // dev-local, puis, à chaque changement, copie ce magasin dans localStorage : un rechargement relit donc ce qui a été écrit
@@ -11,20 +11,21 @@
 import { financeDemoEntries as demoOrigine } from '@parcours/financeDemo-origine';
 import { FirestoreRepo, ALL_COLLECTIONS } from '@parcours/firestoreRepo';
 
-const CLE_FIXTURE = 'parcours-calendrier:fixture';
-const CLE_CACHE = 'parcours-calendrier:cache';
-const JEU = 'parcours-calendrier';
+/* Les jeux de fixture connus : un par parcours (`?finance-demo=<jeu>` ; clés localStorage `<jeu>:fixture` et `<jeu>:cache`). */
+const JEUX = ['parcours-calendrier', 'parcours-carnet'];
 
 const surLocalhost = () => ['localhost', '127.0.0.1'].includes(location.hostname);
 
 export function financeDemoEntries(jeu) {
   const choisi = jeu ?? new URLSearchParams(location.search).get('finance-demo') ?? '';
-  if (choisi !== JEU || !surLocalhost()) return demoOrigine(jeu);
+  if (!JEUX.includes(choisi) || !surLocalhost()) return demoOrigine(jeu);
+  const CLE_FIXTURE = `${choisi}:fixture`;
+  const CLE_CACHE = `${choisi}:cache`;
   const demo = demoOrigine();
   const config = demo.entries.filter((e) => e.name === 'config');
   const memorise = localStorage.getItem(CLE_CACHE);
   const brut = memorise ?? localStorage.getItem(CLE_FIXTURE);
-  if (!brut) throw new Error('parcours-calendrier : aucune fixture dans localStorage (clé parcours-calendrier:fixture)');
+  if (!brut) throw new Error(`${choisi} : aucune fixture dans localStorage (clé ${CLE_FIXTURE})`);
   const lues = JSON.parse(brut);
   const entries = memorise ? lues : [...config, ...lues];
   // le magasin est rempli par `bulkWrite` juste après (synchrone en dev-local) : on s'abonne au tour suivant
