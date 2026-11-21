@@ -2489,3 +2489,7 @@ Classement de la page r3 de Ma levure (https://claude.ai/artifact/DKAJe8ESeMR4ig
 > Il y a beaucoup de lenteur sur les actions du calendrier...
 
 (21.11, en ligne tour 7, téléphone.)
+
+> Non mais c'est pas du tout que le calendrier mais l'app dans sa totalité vu que tout est lié, tout est dynamique ensemble ECT...
+
+(21.11, sur l'analyse des workflows et actions : portée = toute l'app, par chaînes qui traversent les écrans.)
