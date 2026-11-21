@@ -209,6 +209,11 @@ button.cal-lie::before { content: ''; position: absolute; inset: -6px -2px; }
 /* CRITIQUE-5 n° 11 : la poignée ne déborde pas en hauteur (elle prenait le jalon de fin de la barre du dessus) */
 /* Frise B, R3 : 22 px hors du trait (la poignée dépasse déjà de 3 px), 22 dedans au plus le tiers (--bord-in) */
 .cal-grip::before { content: ''; position: absolute; inset: -2px -19px -2px calc(5px - var(--bord-in, 22px)); }
+/* R3 (frise B) : le nom à droite d'une barre à poignée commence 6 px après la barre, dans la zone du bord (22 px dehors). Ses 16 premiers px
+   laissent passer le doigt vers la poignée ; le reste du nom se touche par ::after (un toucher sur un pseudo-élément vise son élément). */
+.cal-lbl[data-pres-bord] { pointer-events: none; }
+.cal-lbl[data-pres-bord]::after { content: ''; position: absolute; inset: 0 0 0 16px; pointer-events: auto; }
+.cal-lbl[data-pres-bord] button { pointer-events: auto; }
 .cal-grip::after { content: ''; position: absolute; top: 25%; bottom: 25%; left: 3px; width: 2px; border-radius: 1px; background: var(--c); }
 .cal-badges { position: absolute; top: -9px; right: -4px; display: flex; gap: 2px; padding: 1px 3px; border-radius: 9px; background: rgb(var(--cave-900)); box-shadow: 0 0 0 1.5px var(--c); color: var(--ct); pointer-events: none; }
 .cal-commander { position: absolute; z-index: 4; width: 18px; height: 18px; display: grid; place-items: center; border-radius: 50%; background: rgb(var(--cave-900)); box-shadow: 0 0 0 1.5px var(--c); color: var(--ct); }

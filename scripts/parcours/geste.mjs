@@ -8,13 +8,20 @@
 // Gestes, à 390 tactile (CDP Input.dispatchTouchEvent) et 1280 souris, clair et cave : toucher sans bouger (rien ne change, R1),
 // presser loin du pouce et bouger de 8 px (pas de saut, R2), avancer/étirer (+), reculer/réduire (−), Échap pendant le glisser (retour
 // exact, R10), et la valeur après rechargement.
+//
+//   --endroits recette,calendrier : les endroits joués (défaut : les deux).
+//   --ref <tag> : construit ce tag dans une copie temporaire (comme le parcours Calendrier) ; les étapes Calendrier y sont rouges sur
+//                 en-ligne/2026-11-21-tour7 (frise d'avant la frise B) et vertes sur l'arbre.
+// Calendrier (fixture `fixtures/calendrier.mjs`, données simulées, plus « ZZ TEST Geste », des travaux de deux semaines) : la frise du haut (le cadre de la
+// courbe : R4 au repos, toucher sans bouger, reculer et avancer le début, étirer et réduire la fin, Échap à 1280, valeur après rechargement)
+// et une barre (toucher sans bouger, glisser + et −, étirer la fin prise à 18 px DEHORS (R3), réduire, Échap à 1280, valeur après rechargement).
 import http from 'node:http';
 import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
 import { spawnSync } from 'node:child_process';
 import { createRequire } from 'node:module';
-import { fileURLToPath } from 'node:url';
+import { fileURLToPath, pathToFileURL } from 'node:url';
 
 const ICI = path.dirname(fileURLToPath(import.meta.url));
 const RACINE = path.resolve(ICI, '..', '..');
@@ -27,6 +34,9 @@ const sortie = path.resolve(args.find((a, i) => !a.startsWith('--') && !String(a
 fs.mkdirSync(sortie, { recursive: true });
 const LARGEURS = opt('largeurs', '390,1280').split(',').map(Number);
 const THEMES = opt('themes', 'clair,cave').split(',');
+const ENDROITS_JOUES = opt('endroits', 'recette,calendrier').split(',');
+const CLE_FIXTURE = 'parcours-calendrier:fixture', CLE_CACHE = 'parcours-calendrier:cache', ID_GESTE = 'P-ZZ-GESTE';
+const { fixtureCalendrier, ajouter, lundiDe } = await import(pathToFileURL(path.join(ICI, 'fixtures', 'calendrier.mjs')).href);
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 const echecs = [];
 const echec = (c, m) => { echecs.push(`${c} : ${m}`); console.log(`  KO  ${c} : ${m}`); };
@@ -62,17 +72,34 @@ const ENDROITS = [
   { nom: 'levure-recap', etape: ['Levure', uneLevure, ['Récap.', 'Récap', 'Récapitulatif'], rangeeLevure], tenu: 'input[aria-label="Curseur de quantité de levure"]' },
 ];
 
-function construire(dehors) {
+function construire(racine, dehors) {
   const r = spawnSync('npx', ['vite', 'build', '--config', path.join(ICI, 'vite.parcours.config.mjs'), '--outDir', dehors, '--emptyOutDir', '--logLevel', 'error'],
-    { cwd: RACINE, env: { ...process.env, PARCOURS_RACINE: RACINE }, encoding: 'utf8', shell: true, maxBuffer: 1 << 26 });
+    { cwd: racine, env: { ...process.env, PARCOURS_RACINE: racine }, encoding: 'utf8', shell: true, maxBuffer: 1 << 26 });
   if (r.status !== 0) throw new Error(`build en échec : ${(r.stdout + r.stderr).slice(-600)}`);
 }
 let dossier = opt('build', null); const tmp = !dossier;
+let copie = null;
 try {
-  if (!dossier) { dossier = fs.mkdtempSync(path.join(os.tmpdir(), 'parcours-geste-build-')); console.log('build …'); construire(dossier); }
+  if (!dossier) {
+    dossier = fs.mkdtempSync(path.join(os.tmpdir(), 'parcours-geste-build-'));
+    let racine = RACINE;
+    if (opt('ref', null)) {
+      // même copie que le parcours Calendrier : git worktree détaché dans os.tmpdir(), node_modules en jonction, .env repris
+      copie = path.join(os.tmpdir(), `parcours-geste-copie-${Date.now()}`);
+      const g = spawnSync('git', ['worktree', 'add', '--detach', copie, opt('ref', null)], { cwd: RACINE, encoding: 'utf8' });
+      if (g.status !== 0) throw new Error(`git worktree add : ${g.stderr}`);
+      fs.symlinkSync(path.join(RACINE, 'node_modules'), path.join(copie, 'node_modules'), 'junction');
+      for (const n of fs.readdirSync(RACINE)) if (/^.env(..+)?$/.test(n) && !/example/.test(n)) fs.copyFileSync(path.join(RACINE, n), path.join(copie, n));
+      racine = copie;
+    }
+    console.log(`build ${opt('ref', null) ? `du tag ${opt('ref', null)}` : 'de l\'arbre de travail'} …`); construire(racine, dossier);
+  }
   await jouer(path.resolve(dossier));
 } catch (e) { echec('parcours', String(e.message ?? e).slice(0, 400)); }
-finally { if (tmp && dossier && !process.env.PARCOURS_GARDER) fs.rmSync(dossier, { recursive: true, force: true }); }
+finally {
+  if (copie) { spawnSync('git', ['worktree', 'remove', '--force', copie], { cwd: RACINE }); fs.rmSync(copie, { recursive: true, force: true }); spawnSync('git', ['worktree', 'prune'], { cwd: RACINE }); }
+  if (tmp && dossier && !process.env.PARCOURS_GARDER) fs.rmSync(dossier, { recursive: true, force: true });
+}
 if (echecs.length) { console.log(`PARCOURS GESTE ECHEC (${echecs.length})`); for (const e of echecs) console.log(`  - ${e}`); process.exit(1); }
 console.log('PARCOURS GESTE OK');
 
@@ -137,7 +164,7 @@ async function jouer(dir) {
       }
       const pas = (a, b, n = 12) => Array.from({ length: n }, (_, k) => a + ((b - a) * (k + 1)) / n);
 
-      for (const E of ENDROITS) {
+      for (const E of ENDROITS_JOUES.includes('recette') ? ENDROITS : []) {
         const c = `${E.nom} ${combo}`;
         try {
           await ouvrir(E.etape);
@@ -178,8 +205,164 @@ async function jouer(dir) {
           v6 && v6.v === garde ? ok(`${c} rechargement`, `${garde}`) : echec(`${c} rechargement`, `${garde} → ${v6?.v}`);
         } catch (e) { echec(c, String(e.message ?? e).slice(0, 160)); await p.screenshot({ path: path.join(sortie, `${E.nom}-${combo}-erreur.png`) }).catch(() => {}); }
       }
+      if (ENDROITS_JOUES.includes('calendrier')) {
+        try { await jouerCalendrier({ p, base: url, combo, tactile, glisser, pas }); }
+        catch (e) { echec(`calendrier ${combo}`, String(e.message ?? e).slice(0, 200)); await p.screenshot({ path: path.join(sortie, `calendrier-${combo}-erreur.png`) }).catch(() => {}); }
+      }
       if (erreurs.length) echec(`erreurs de page ${combo}`, erreurs.slice(0, 2).join(' | '));
       await p.close();
     }
   } finally { await nav.close(); srv.close(); }
+}
+
+// ───────────── Calendrier : la frise du haut (cadre de la courbe) et une barre ─────────────
+// Données simulées : la fixture du parcours Calendrier, plus « ZZ TEST Geste » : des travaux de deux semaines (S+3 à S+4),
+// une barre à poignée comme « Sols : colle et joints » (une activité n'est qu'un picto, sans bord à tirer).
+// Chaque combinaison repart de la fixture (le cache du parcours est vidé) : rien d'une combinaison ne passe à la suivante.
+function fixtureGeste() {
+  const auj = new Date().toISOString().slice(0, 10), L = lundiDe(auj), s = (n, j = 0) => ajouter(L, n * 7 + j);
+  const fx = fixtureCalendrier(auj);
+  fx.entrees.push({ name: 'financialPlans', id: ID_GESTE, data: { id: ID_GESTE, title: 'ZZ TEST Geste', date: s(3), amountCents: 5000, direction: 'out', category: 'renovation', source: 'manual', status: 'active', createdAt: `${ajouter(auj, -30)}T08:00:00.000Z`, fenetre: { du: s(3), au: s(4, 6), joursActifs: 4 } } });
+  return JSON.stringify(fx.entrees);
+}
+
+async function jouerCalendrier({ p, base, combo, tactile, glisser, pas }) {
+  const url = `${base}&finance-demo=parcours-calendrier`;
+  const cap = (nom) => p.screenshot({ path: path.join(sortie, `calendrier-${combo}-${nom}.png`) });
+  const toucherXY = async (x, y) => { if (tactile) await p.touchscreen.tap(x, y); else await p.mouse.click(x, y); await sleep(650); };
+  const toucherTexte = async (t) => {
+    const c = await p.evaluate((t) => {
+      const e = [...document.querySelectorAll('button,a,[role=tab],[role=button],[role=menuitem],[role=option]')].find((e) => { const r = e.getBoundingClientRect(); return r.width > 0 && r.height > 0 && ((e.getAttribute('aria-label') ?? '').trim() === t || e.innerText.trim().replace(/\s+/g, ' ') === t); });
+      if (!e) return null; e.scrollIntoView({ block: 'center' }); const r = e.getBoundingClientRect(); return [r.x + r.width / 2, r.y + r.height / 2];
+    }, t);
+    if (!c) throw new Error(`« ${t} » introuvable`);
+    await toucherXY(c[0], c[1]);
+  };
+  const versCalendrier = async () => {
+    await p.goto(url, { waitUntil: 'load' }); await p.waitForSelector('nav button', { timeout: 90000 }); await sleep(1000);
+    if (!(await p.$('[data-calendrier]'))) await toucherTexte('Calendrier');
+    await p.waitForSelector('[data-calendrier]', { timeout: 30000 }); await sleep(700);
+  };
+  const echap = async () => { await p.keyboard.press('Escape'); await sleep(400); };
+
+  // la fixture neuve, puis « 3 mois » (la fenêtre de 13 semaines, cadre et barres lisibles à 390)
+  // posée avant le code de la page, une fois par combinaison (le rechargement garde ce que les gestes ont écrit)
+  await p.evaluateOnNewDocument((kf, kc, j, tag) => {
+    if (localStorage.getItem('geste:fixture-posee') === tag) return;
+    // tout le stockage remis à neuf (la fenêtre de la combinaison d'avant restait : S35 en 1280-cave, la barre hors champ), le thème gardé
+    const theme = localStorage.getItem('laffinee.theme'); localStorage.clear(); sessionStorage.clear(); if (theme) localStorage.setItem('laffinee.theme', theme);
+    localStorage.removeItem(kc); localStorage.setItem(kf, j); localStorage.setItem('geste:fixture-posee', tag);
+  }, CLE_FIXTURE, CLE_CACHE, fixtureGeste(), `${combo}-${Date.now()}`);
+  await versCalendrier();
+  const menu = await p.evaluate(() => { const e = document.querySelector('[aria-label$="période, liste, tri et filtre"]'); if (!e) return null; const r = e.getBoundingClientRect(); return [r.x + r.width / 2, r.y + r.height / 2]; });
+  if (!menu) throw new Error('bouton du menu de période introuvable');
+  await toucherXY(menu[0], menu[1]); await toucherTexte('3 mois'); await sleep(600);
+
+  // la barre d'abord : les gestes du cadre déplacent la fenêtre, la barre pourrait en sortir
+  const sectionBarre = async () => {
+    // ── une barre : « ZZ TEST Geste » ──
+    const B = `barre ${combo}`;
+    const valeur = () => p.evaluate((k, id) => { const e = JSON.parse(localStorage.getItem(k) ?? '[]').find((x) => x.id === id); if (!e) return null; const f = e.data.fenetre; return { du: f?.du ?? e.data.date, au: f?.au ?? e.data.date, cle: `${f?.du ?? e.data.date}→${f?.au ?? e.data.date}` }; }, CLE_CACHE, ID_GESTE);
+    const barre = () => p.evaluate(() => {
+      const e = document.querySelector('[aria-label^="ZZ TEST Geste,"]'); if (!e) return null;
+      e.scrollIntoView({ block: 'center', inline: 'center' }); const r = e.getBoundingClientRect();
+      const cols = [...document.querySelectorAll('[data-bande-semaines] [data-semaine]')].map((x) => x.getBoundingClientRect().x);
+      return { l: r.left, r: r.right, w: r.width, y: r.top + r.height / 2, col: cols.length > 1 ? (cols[cols.length - 1] - cols[0]) / (cols.length - 1) : 26 };
+    });
+    const v0 = await valeur(), b0 = await barre();
+    if (!v0 || !b0) { echec(B, `« ZZ TEST Geste » ${v0 ? 'absente de la frise' : 'absente du cache'}`); await cap('barre-introuvable'); return; }
+    // R1 : toucher sans bouger (corps, puis bord) : aucune date ne change (la fiche peut s'ouvrir : Échap la ferme)
+    // un geste sur une barre ne touche jamais au reste de l'écran : l'interrupteur d'alignement de la courbe reste comme il était
+    const aligne = () => p.evaluate(() => document.querySelector('[aria-label="Aligner la courbe sur la frise"]')?.getAttribute('aria-pressed') ?? null);
+    const memeAlignement = async (nom, avant) => { const apres = await aligne(); if (apres !== avant) echec(`${B} ${nom}`, `l'alignement de la courbe a basculé (${avant} → ${apres})`); };
+    for (const [nom, x] of [['corps', b0.l + b0.w / 2], ['bord', b0.r]]) {
+      const al = await aligne();
+      await glisser(x, b0.y, []); await echap();
+      await memeAlignement(`toucher ${nom}`, al);
+      const v = await valeur(); v.cle === v0.cle ? ok(`${B} toucher ${nom}`, `reste ${v0.cle}`) : echec(`${B} toucher ${nom}`, `${v0.cle} → ${v.cle}`);
+    }
+    const geste = async (nom, x0, dx, verifie, o = {}) => {
+      const a = await valeur(), bb = await barre(), al = await aligne(); const x = typeof x0 === 'function' ? x0(bb) : x0;
+      await glisser(x, bb.y, pas(x, x + dx), o); await sleep(500); await echap();
+      await memeAlignement(nom, al);
+      const b = await valeur(); const r = verifie(a, b);
+      r === true ? ok(`${B} ${nom}`, `${a.cle} → ${b.cle}`) : echec(`${B} ${nom}`, `${a.cle} → ${b.cle}${r ? ` (${r})` : ''}`);
+    };
+    const col = b0.col;
+    await geste('glisser +', (bb) => bb.l + bb.w / 2, 2 * col, (a, b) => (b.du > a.du && b.au > a.au) || 'plus tard attendu');
+    await geste('glisser −', (bb) => bb.l + bb.w / 2, -2 * col, (a, b) => (b.du < a.du && b.au < a.au) || 'plus tôt attendu');
+    // R3 : la fin se prend à 18 px DEHORS (zone de 22 px de chaque côté du trait)
+    await geste('étirer la fin prise à 18 px dehors (R3)', (bb) => bb.r + 18, 2 * col, (a, b) => (b.au > a.au && b.du === a.du) || 'fin plus tard, même début attendus');
+    await cap('barre-etiree');
+    await geste('réduire la fin', (bb) => bb.r - Math.min(8, bb.w / 4), -col, (a, b) => (b.au < a.au && b.du === a.du) || 'fin plus tôt, même début attendus');
+    if (!tactile) await geste('Échap pendant le glisser', (bb) => bb.l + bb.w / 2, 2 * col, (a, b) => b.cle === a.cle || 'dates d\'avant attendues', { echap: true });
+    { const a = await valeur(); await versCalendrier(); const b = await valeur(); const vu = await barre(); (b?.cle === a.cle && vu) ? ok(`${B} rechargement`, a.cle) : echec(`${B} rechargement`, `${a.cle} → ${b?.cle}${vu ? '' : ', barre absente'}`); }
+  };
+  const sectionCadre = async () => {
+    // ── la frise du haut : le cadre de la courbe ──
+    // l'état lu : la semaine du début (poignée de début) et la durée (texte du bouton de période), les boîtes du cadre et de la courbe
+    const etat = () => p.evaluate(() => {
+      const cb = document.querySelector('.ent-cbz .ent-cb') ?? document.querySelector('.ent-cb'), cadre = document.querySelector('.ent-cadre');
+      const deb = document.querySelector('[data-poignee=debut]'), per = document.querySelector('[aria-label$="période, liste, tri et filtre"]');
+      if (!cb || !cadre || !deb) return null;
+      cb.scrollIntoView({ block: 'center' });
+      const t = (per?.innerText ?? '').replace(/\s+/g, ' ');
+      const m = /(\d+) sem\./.exec(t), n = m ? Number(m[1]) : /3 mois/.test(t) ? 13 : /6 mois/.test(t) ? 26 : /\bAn\b/.test(t) ? 52 : null;
+      const s = /commence en S(\d+)/.exec(deb.getAttribute('aria-label') ?? '');
+      const a = cb.getBoundingClientRect(), c = cadre.getBoundingClientRect();
+      return { debut: s ? Number(s[1]) : null, n, cle: `S${s?.[1]}·${n}`, cb: { l: a.left, r: a.right, y: a.top + a.height / 2, h: a.height }, cadre: { l: c.left, r: c.right, w: c.width }, alignee: cb.hasAttribute('data-courbe-alignee') };
+    });
+    const e0 = await etat();
+    if (!e0) {
+      const vu = await p.evaluate(() => ({ courbe: !!document.querySelector('.ent-cb'), cadre: !!document.querySelector('.ent-cadre'), poignee: !!document.querySelector('[data-poignee=debut]'), aligne: document.querySelector('[data-ent-aligne]')?.getAttribute('aria-pressed') ?? null, cachee: document.querySelector('[data-ent-cacher]')?.getAttribute('aria-pressed') ?? null }));
+      await cap('cadre-introuvable');
+      throw new Error(`courbe ou cadre de la fenêtre introuvable (${JSON.stringify(vu)})`);
+    }
+    await cap('repos');
+    const F = `frise du haut ${combo}`;
+    // R4 : au repos, le début à 56 px du bord gauche de la courbe, la fin à 56 px du bord droit
+    const g0 = e0.cadre.l - e0.cb.l, d0 = e0.cb.r - e0.cadre.r;
+    if (e0.alignee) echec(`${F} R4`, 'la courbe est alignée sur la frise au départ (fixture : éteint attendu)');
+    else (Math.abs(g0 - 56) <= 4 && Math.abs(d0 - 56) <= 4) ? ok(`${F} R4`, `bouts à ${g0.toFixed(0)} et ${d0.toFixed(0)} px`) : echec(`${F} R4`, `bouts à ${g0.toFixed(0)} et ${d0.toFixed(0)} px des bords (56 attendus)`);
+    const unite = e0.n ? e0.cadre.w / e0.n : 20, y = e0.cb.y, d = Math.max(2 * unite, 24);
+    // R1 : toucher sans bouger, au milieu du cadre puis sur le début et sur la fin : rien ne change
+    // les points relus avant chaque toucher : la page défile entre deux (etat() recentre la courbe), un point de e0 tombait sur la règle
+    for (const [nom, ou] of [['milieu', (c) => (c.l + c.r) / 2], ['début', (c) => c.l + 1], ['fin', (c) => c.r - 1]]) {
+      const ei = await etat(); const x = ou(ei.cadre), y = ei.cb.y;
+      const sous = await p.evaluate((x, y) => { const e = document.elementFromPoint(x, y); return e ? `${e.tagName}.${String(e.className?.baseVal ?? e.className ?? '').slice(0, 30)}${e.closest('[data-poignee]') ? ` [poignée ${e.closest('[data-poignee]').getAttribute('data-poignee')}]` : ''}` : 'rien'; }, x, y);
+      await glisser(x, y, []);
+      const juste = await p.evaluate(() => ({ cadre: !!document.querySelector('.ent-cadre'), alignee: !!document.querySelector('[data-courbe-alignee]'), aligne: document.querySelector('[data-ent-aligne]')?.getAttribute('aria-pressed') ?? null, dialogue: [...document.querySelectorAll('[role=dialog]')].filter((d) => d.getBoundingClientRect().width > 0).length }));
+      await echap();
+      const e = await etat();
+      if (!e) { await cap(`toucher-${nom}-perdu`); echec(`${F} toucher ${nom}`, `cadre perdu après le toucher (sous le doigt : ${sous} ; juste après : ${JSON.stringify(juste)})`); continue; }
+      e.cle === e0.cle ? ok(`${F} toucher ${nom}`, `reste ${e0.cle}`) : echec(`${F} toucher ${nom}`, `${e0.cle} → ${e.cle} (sous le doigt : ${sous})`);
+    }
+    // reculer puis avancer le début (la fenêtre entière se déplace, R5), étirer puis réduire la fin (R6)
+    const tirer = async (nom, de, vers, verifie) => {
+      const a = await etat(); const x0 = de === 'debut' ? a.cadre.l + 1 : a.cadre.r - 1;
+      await glisser(x0, a.cb.y, pas(x0, x0 + vers)); await sleep(400);
+      const b = await etat(); const r = verifie(a, b);
+      r === true ? ok(`${F} ${nom}`, `${a.cle} → ${b.cle}`) : echec(`${F} ${nom}`, `${a.cle} → ${b.cle}${r ? ` (${r})` : ''}`);
+      return b;
+    };
+    await tirer('reculer le début', 'debut', -d, (a, b) => (b.debut !== null && a.debut !== null && b.debut !== a.debut && b.n === a.n && ((a.debut - b.debut + 53) % 53) <= 26) || 'début plus tôt, même durée attendus');
+    await tirer('avancer le début', 'debut', d, (a, b) => (b.debut !== null && b.debut !== a.debut && b.n === a.n && ((b.debut - a.debut + 53) % 53) <= 26) || 'début plus tard, même durée attendus');
+    await tirer('étirer la fin', 'fin', d, (a, b) => (b.n > a.n && b.debut === a.debut) || 'durée plus longue, même début attendus');
+    await cap('cadre-etire');
+    const er = await tirer('réduire la fin', 'fin', -d, (a, b) => (b.n < a.n && b.debut === a.debut) || 'durée plus courte, même début attendus');
+    // R4 après le lâcher (recalage 200 ms) : les deux bouts reviennent à 56 px
+    const g1 = er.cadre.l - er.cb.l, d1 = er.cb.r - er.cadre.r;
+    if (!er.alignee) (Math.abs(g1 - 56) <= 4 && Math.abs(d1 - 56) <= 4) ? ok(`${F} R4 après le geste`, `${g1.toFixed(0)} et ${d1.toFixed(0)} px`) : echec(`${F} R4 après le geste`, `bouts à ${g1.toFixed(0)} et ${d1.toFixed(0)} px`);
+    // R10 : Échap pendant le tirage rend la fenêtre d'avant (souris)
+    if (!tactile) {
+      const a = await etat(); await glisser(a.cadre.r - 1, a.cb.y, pas(a.cadre.r - 1, a.cadre.r - 1 + d), { echap: true });
+      const b = await etat(); b.cle === a.cle ? ok(`${F} Échap`, `reste ${a.cle}`) : echec(`${F} Échap`, `${a.cle} → ${b.cle}`);
+    }
+    // la valeur après rechargement
+    { const a = await etat(); await versCalendrier(); const b = await etat(); b?.cle === a.cle ? ok(`${F} rechargement`, a.cle) : echec(`${F} rechargement`, `${a.cle} → ${b?.cle}`); }
+
+  };
+  await sectionBarre();
+  await sectionCadre();
+  await cap('fin');
 }

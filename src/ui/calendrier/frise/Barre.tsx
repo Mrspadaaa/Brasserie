@@ -485,7 +485,9 @@ export const Barre: React.FC<BarreProps> = props => {
       {/* CRITIQUE-5 n° 26 : sur deux lignes, le nom et son montant restent ensemble ; la pastille « lié à » passe dessous */}
       {/* f2-a : la durée tirée, posée à droite de la barre, prend la place de l'étiquette le temps du geste (jamais l'une sur l'autre) */}
       <span className={`cal-lbl cal-lbl-${cote}${props.deuxLignes ? ' cal-lbl-2n' : ''}${cede ? ' cal-lbl-cede' : ''} ${CLASSE_TEINTE[chose.rangee]}`} style={lblPlace}
-        {...(nomTouchable ? { 'data-nom-touchable': '', ...toucheNom } : {})}>
+        {...(nomTouchable ? { 'data-nom-touchable': '', ...toucheNom } : {})}
+        /* Frise B, R3 : le bord se prend 22 px dehors ; le nom posé à 6 px à droite d'une barre à poignée laisse ses 16 premiers px au bord */
+        {...(nomTouchable && peutBord && cote === 'droite' ? { 'data-pres-bord': '' } : {})}>
         <ContenuEtiquette chose={chose} nom={nom} montant={montant} duree={dureeEtiquette} deux={props.deuxLignes} lieCourt={props.lieCourt} sansLie={props.sansLie} />
       </span>
       {bas?.ou === 'dessous' && phraseDessous && (
