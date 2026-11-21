@@ -30,6 +30,8 @@ const P = {
   boxes: '<path d="M7 16.5 2.5 14v5l4.5 2.5 5-2.5v-5zM17 16.5 12 14v5l5 2.5 4.5-2.5v-5zM12 8 7 5.5v5.5l5 3 5-3V5.5z"/>',
   users: '<path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/>',
   undo: '<path d="M9 14 4 9l5-5"/><path d="M4 9h10.5a5.5 5.5 0 0 1 0 11H11"/>',
+  door: '<path d="M6 21V4a1 1 0 0 1 1-1h10a1 1 0 0 1 1 1v17"/><path d="M3 21h18"/><path d="M14 12h.01"/>',
+  chevD: '<path d="m6 9 6 6 6-6"/>', chevU: '<path d="m18 15-6-6-6 6"/>',
 };
 const ic = (k, s = 20, cls = '') => `<svg class="ic ${cls}" width="${s}" height="${s}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${P[k]}</svg>`;
 const pinPlein = (s = 18) => `<svg class="ic" width="${s}" height="${s}" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round" aria-hidden="true">${P.pin}</svg>`;
@@ -43,17 +45,19 @@ function frigo(id, s = 52) {
 
 // ---------- données d'exemple : « Chambre froide », 3 articles ----------
 const BASE = {
-  a: { id: 'a', vol: '4,06', volN: 4.06, sol: '180×150', solL: 180, solP: 150, porte: 80, vendeur: 'Frigo-Plus', pays: 'CH', dispo: 'en stock', sem: 1, coul: '#E0A02E' },
-  b: { id: 'b', vol: '2,6', volN: 2.6, sol: '150×120', solL: 150, solP: 120, porte: 70, vendeur: 'Kälte Center', pays: 'CH', dispo: '3–4 sem.', sem: 4, coul: '#4F7E9B' },
-  c: { id: 'c', vol: '5,9', volN: 5.9, sol: '210×180', solL: 210, solP: 180, porte: 90, vendeur: 'Bösch Kälte', pays: 'CH', dispo: '6 sem.', sem: 6, coul: '#6A4FB0' },
+  a: { id: 'a', nom: 'Cellule 180', court: 'Frigo-Plus', rv: 2, vol: '4,06', volN: 4.06, sol: '180×150', solL: 180, solP: 150, porte: 80, vendeur: 'Frigo-Plus', pays: 'CH', dispo: 'en stock', sem: 1, d0: 0, d1: 0, coul: '#E0A02E' },
+  b: { id: 'b', nom: 'Compacte 150', court: 'Kälte', rv: 3, vol: '2,6', volN: 2.6, sol: '150×120', solL: 150, solP: 120, porte: 70, vendeur: 'Kälte Center', pays: 'CH', dispo: '3–4 sem.', sem: 4, d0: 3, d1: 4, coul: '#4F7E9B' },
+  c: { id: 'c', nom: 'Pro 210', court: 'Bösch', rv: 1, vol: '5,9', volN: 5.9, sol: '210×180', solL: 210, solP: 180, porte: 90, vendeur: 'Bösch Kälte', pays: 'CH', dispo: '6 sem.', sem: 6, d0: 6, d1: 6, coul: '#6A4FB0' },
 };
+// Forme d'étiquette (B3), réutilisée en A1 et C.
+const SH = (c = '') => `<svg class="sh ${c}" viewBox="0 0 104 56" preserveAspectRatio="none" aria-hidden="true"><path d="M17 1H96a7 7 0 0 1 7 7v40a7 7 0 0 1-7 7H17L1 28Z" vector-effect="non-scaling-stroke"/></svg>`;
 // Prix par état. chf = connu ; des = « dès » ; inconnu = lien sans prix ; devis = sur demande ; eur = boutique allemande.
 const ETATS = {
   repos: { a: { chf: 4900, src: 'lu' }, b: { chf: 3350, src: 'saisi' }, c: { des: 5400, src: 'lu' }, ordre: ['b', 'a', 'c'], par: 'prix' },
   sans: { a: { inconnu: true }, b: { inconnu: true }, c: { devis: true }, ordre: ['c', 'a', 'b'], par: 'volume' },
   eur: { a: { chf: 4900, src: 'lu' }, b: { eur: 2513, rendu: 3000, src: 'lu', vendeur: 'Kühlzellen24', pays: 'DE' }, c: { des: 5400, src: 'lu' }, ordre: ['b', 'a', 'c'], par: 'prix' },
 };
-const art = (etat, id) => ({ ...BASE[id], ...(ETATS[etat][id].vendeur ? { vendeur: ETATS[etat][id].vendeur, pays: ETATS[etat][id].pays } : {}), prix: ETATS[etat][id] });
+const art = (etat, id) => ({ ...BASE[id], ...(ETATS[etat][id].vendeur ? { vendeur: ETATS[etat][id].vendeur, court: ETATS[etat][id].vendeur, pays: ETATS[etat][id].pays } : {}), prix: ETATS[etat][id] });
 const valeur = (p) => p.chf ?? p.rendu ?? p.des ?? null;
 const dispoCls = (a) => (a.sem <= 1 ? 'vert' : 'brun');
 
@@ -120,8 +124,20 @@ function prixA(p, gros = 17) {
   return `<span class="mono" style="font-size:${gros}px;font-weight:600">${n(p.chf)}</span>`;
 }
 
+function prixA1(p) {
+  if (p.inconnu) return `<span class="hach">?</span>`;
+  if (p.devis) return `<span class="tgm">${SH('vide')}<span class="in">${ic('scan', 15)}Devis</span></span>`;
+  return prixA(p);
+}
+
 // ---- A1 : colonnes-cartes, épingle sur la ligne ----
 const A1_CSS = `
+.hach{width:64px;height:30px;border-radius:8px;border:2px dashed #a3a39e;background:repeating-linear-gradient(135deg,#ececea 0 5px,#fff 5px 10px);display:grid;place-items:center;font-weight:700;color:#777;font-size:17px}
+.tgm{position:relative;width:82px;height:34px;display:block}
+.tgm .sh{position:absolute;inset:0;width:100%;height:100%;overflow:visible}
+.tgm .sh path{fill:#fff;stroke:#a3a39e;stroke-width:2;stroke-dasharray:5 4}
+.tgm .in{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;gap:3px;padding-left:12px;font-size:15px;font-weight:700;color:var(--stk)}
+.plan{display:block;border:2px solid #6f8399;background:#eef2f6;border-radius:2px;margin-bottom:3px}
 .chaine{display:flex;align-items:center;gap:6px;font-size:15px;color:var(--mut);margin:0 0 8px;flex-wrap:wrap}
 .chaine b{display:inline-flex;align-items:center;gap:4px;padding:3px 10px;border-radius:999px;background:var(--s2);color:#222;font-weight:600}
 .chaine b.on{background:#1f1f1d;color:#fff}.chaine b.trou{background:#fff;border:2px dashed #aaa;color:#888}
@@ -154,16 +170,16 @@ function A1(etat) {
   const tete = `<div class="h"></div>` + cols.map((a, i) => cell(a, i, `${frigo(a.id, 50)}<span class="rang ${i === 0 ? 'r1' : ''}" style="width:26px;height:26px;font-size:15px;margin-top:-14px">${i + 1}</span><span class="nm mono">${a.vol}<small style="font-size:14px"> m³</small></span><span class="vd">${a.vendeur} · ${a.pays}</span>`, 'h')).join('');
   const meilleurPrix = parPrix ? E.ordre[0] : null;
   const vMax = Math.max(...cols.map((a) => a.volN));
-  const ligne = (lb, unite, f, ep = false, best = null, dern = false) => `<div class="lb${ep ? ' ep' : ''}${dern ? ' dern' : ''}">${ep ? pinPlein(17) : ic('pin', 17)}<span>${lb}${unite ? `<small>${unite}</small>` : ''}</span></div>` + cols.map((a, i) => cell(a, i, f(a), `${ep ? 'ep ' : ''}${best === a.id ? 'best ' : ''}${dern ? 'dern' : ''}`)).join('');
+  const ligne = (lb, unite, f, ep = false, best = null, dern = false) => `<div class="lb${ep ? ' ep' : ''}${dern ? ' dern' : ''}">${ep ? pinPlein(17) : ''}<span>${lb}${unite ? `<small>${unite}</small>` : ''}</span></div>` + cols.map((a, i) => cell(a, i, f(a), `${ep ? 'ep ' : ''}${best === a.id ? 'best ' : ''}${dern ? 'dern' : ''}`)).join('');
   const lignes = [
-    ligne('Prix', etat === 'eur' ? 'CHF rendu' : 'CHF', (a) => prixA(a.prix), parPrix, meilleurPrix),
+    ligne('Prix', etat === 'eur' ? 'CHF rendu' : 'CHF', (a) => prixA1(a.prix), parPrix, meilleurPrix),
     ligne('Volume', 'm³', (a) => `<span class="mono" style="font-size:16px">${a.vol}</span><div class="mini" style="width:${Math.round((a.volN / vMax) * 70)}px;${a.volN === vMax && !parPrix ? 'background:var(--stk)' : ''}"></div>`, !parPrix, parPrix ? null : 'c'),
-    ligne('Au sol', 'cm', (a) => `<span class="mono" style="font-size:15px">${a.sol}</span>`),
+    ligne('Au sol', 'cm', (a) => `<span class="plan" style="width:${Math.round(a.solL * 0.28)}px;height:${Math.round(a.solP * 0.28)}px"></span><span class="mono" style="font-size:14px">${a.sol}</span>`),
     ligne('Dispo', '', (a) => `<span class="${dispoCls(a)}" style="font-size:15px;font-weight:600">${a.dispo}</span>`, false, 'a'),
     ligne('Porte', 'cm', (a) => `<span class="mono" style="font-size:15px">${a.porte}</span>`, false, null, etat !== 'repos' && etat !== 'eur'),
-    ...(etat === 'sans' ? [] : [ligne('CHF/m³', '', (a) => { const v = valeur(a.prix); return `<span class="mono" style="font-size:15px">${a.prix.des ? '≤' : a.prix.eur ? '≈' : ''}${n(Math.round(v / a.volN))}</span>`; }, false, 'c', true)]),
+    ...(etat === 'sans' ? [] : [ligne('CHF/m³', '', (a) => { const v = valeur(a.prix); return `<span class="mono" style="font-size:15px">${a.prix.des ? '≥' : a.prix.eur ? '≈' : ''}${n(Math.round(v / a.volN))}</span>`; }, false, null, true)]),
   ].join('');
-  const pied = etat === 'eur' ? `<div class="pie"><span class="brun">≈ rendu chez toi : port, TVA 8,1 %, estimé</span> · exemple</div>` : etat === 'sans' ? `<div class="pie">Prix manquants : classé par le volume · exemple</div>` : `<div class="pie">Touche une ligne ${ic('pin', 15)} : elle classe · exemple</div>`;
+  const pied = etat === 'eur' ? `<div class="pie"><span class="brun">≈ rendu chez toi : port, TVA 8,1 %, estimé</span> · exemple</div>` : etat === 'sans' ? `<div class="pie">Prix manquants : classé par le volume · exemple</div>` : `<div class="pie">Vendeurs et prix : exemple</div>`;
   return { css: A1_CSS, corps: comparerTete() + `<div class="chaine">${chaine}</div><div class="tb">${tete}${lignes}</div>${pied}` };
 }
 
@@ -219,115 +235,126 @@ function A2(etat) {
   return { css: A2_CSS, corps: comparerTete() + `<div class="puces">${puces}</div>${lignes}${pied}<div class="autres"><span>Isolation, couleur, groupe… 6 lignes</span>${ic('chevR', 18)}</div>` };
 }
 
-// ---- A3 : bandes par attribut (barres, plan au sol à l'échelle, frise de dispo) ----
+// ---- A3 : bandes par attribut ; articles dans l'ordre du classement, nommés au bout de chaque barre ;
+//      plan au sol à l'échelle avec la porte ; dispo en segments depuis « auj. » ----
 const A3_CSS = `
-.leg{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px;margin-bottom:8px}
-.leg div{display:flex;align-items:center;gap:4px;border-radius:12px;padding:5px 6px;background:var(--s1);border-left:5px solid}
-.leg .nm{font-size:16px;font-weight:700;color:#111;line-height:1}
-.leg small{display:block;font-size:14px;color:var(--mut);font-weight:400}
-.bd{border-top:1px solid var(--line);padding:7px 0 6px}
-.bd h3{margin:0 0 5px;font-size:16px;display:flex;align-items:center;gap:6px;color:#222}
+.leg{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px;margin-bottom:6px}
+.leg div{display:flex;align-items:center;gap:5px;border-radius:12px;padding:5px 6px;background:var(--s1);border-left:5px solid;min-width:0}
+.leg .nm{font-size:16px;font-weight:700;color:#111;line-height:1.05;white-space:nowrap;min-width:0}
+.leg .nm i{font-style:normal;font-size:14px;font-weight:600;color:#555}
+.leg small{display:block;font-size:14px;color:var(--mut);font-weight:400;overflow:hidden;text-overflow:ellipsis}
+.bd{border-top:1px solid var(--line);padding:6px 0 5px}
+.bd h3{margin:0 0 3px;font-size:16px;display:flex;align-items:center;gap:6px;color:#222}
 .bd h3 .ic{color:#b5b5b0}
-.bd.ep{background:#f4f8ef;border-radius:12px;border:1.5px solid #cfdcbc;padding:7px 8px 6px;margin:0 -2px 4px}
+.bd.ep{background:#f4f8ef;border-radius:12px;border:1.5px solid #cfdcbc;padding:6px 8px 5px;margin:0 -2px 4px}
 .bd.ep h3{color:#1f3a10}.bd.ep h3 .ic{color:var(--stk)}
-.bd h3 em{font-style:normal;font-weight:400;color:var(--mut);font-size:14px;margin-left:auto}
-.br{display:flex;align-items:center;gap:8px;height:24px}
-.br .t{height:14px;border-radius:7px}
+.bd h3 em{font-style:normal;font-weight:400;color:var(--mut);font-size:14px}
+.br{display:flex;align-items:center;gap:7px;height:23px}
+.br .t{height:14px;border-radius:7px;flex:none}
 .br .v{font-size:15px;font-weight:600;color:#222;white-space:nowrap}
-.br .t.vide{border:2px dashed #aaa;background:repeating-linear-gradient(135deg,#f1f1f1 0 5px,#fff 5px 10px)}
-.br .seg{display:flex;height:14px;border-radius:7px;overflow:hidden}
-.sol{display:flex;align-items:flex-end;gap:14px;height:68px;padding-left:4px}
-.sol div{border:2.5px solid;border-radius:3px;display:grid;place-items:center;font-size:14px;font-weight:600;white-space:nowrap}
-.fr{position:relative;height:66px;margin:0 4px}
-.fr .ax{position:absolute;left:0;right:0;top:44px;border-top:1.5px solid #bbb}
-.fr .tk{position:absolute;top:47px;font-size:14px;line-height:18px;color:#777;transform:translateX(-50%);white-space:nowrap}
-.fr .tk.t0{transform:none}.fr .tk.t8{transform:translateX(-100%)}
-.fr .pt{position:absolute;width:16px;height:16px;border-radius:50%;transform:translateX(-50%)}
+.br .n{font-size:14px;font-weight:700;white-space:nowrap}
+.br .t.vide{border:2px dashed;background:repeating-linear-gradient(135deg,#ececea 0 5px,#fff 5px 10px)}
+.br .seg{display:flex;height:14px;border-radius:7px;overflow:hidden;flex:none}
+.br .seg b{display:block;height:100%}
+.br .zero{width:14px;height:14px;border-radius:50%;flex:none}
+.sol{display:flex;align-items:flex-start;gap:18px;padding:6px 0 0 10px}
+.sol .sc{display:flex;flex-direction:column;align-items:center;gap:2px}
+.sol .rect{border:2.5px solid;border-radius:3px;display:grid;place-items:center;font-size:14px;font-weight:600;white-space:nowrap;position:relative;color:#333}
+.sol .rect .rang{position:absolute;left:-11px;top:-11px;width:22px;height:22px;font-size:14px}
+.sol .po{display:flex;align-items:center;gap:2px;font-size:14px;color:#444}
+.ax8{position:relative;height:18px;border-top:1.5px solid #bbb;margin-top:1px}
+.ax8 span{position:absolute;top:0;font-size:14px;color:#777;transform:translateX(-50%);white-space:nowrap;line-height:17px}
+.ax8 span.t0{transform:none}.ax8 span.un{transform:none;color:#999}
 `;
 function A3(etat) {
   const E = ETATS[etat];
   const parPrix = E.par === 'prix';
-  const rang = Object.fromEntries(E.ordre.map((id, i) => [id, i + 1]));
-  const ids = ['a', 'b', 'c'];
-  const leg = ids.map((id) => { const a = art(etat, id); return `<div style="border-color:${a.coul}">${frigo(id, 28)}<span class="nm"><span class="rang ${rang[id] === 1 ? 'r1' : ''}" style="width:22px;height:22px;font-size:14px;display:inline-grid;vertical-align:-3px;margin-right:3px">${rang[id]}</span>${a.vol}<small>${a.vendeur}</small></span></div>`; }).join('');
-  const W = 220;
   const ordre = E.ordre.map((id) => art(etat, id));
+  const W = 176;
+  const nomB = (a) => `<span class="n" style="color:${a.coul}">${a.court}</span>`;
+  const leg = ordre.map((a, i) => `<div style="border-color:${a.coul}"><span class="rang ${i === 0 ? 'r1' : ''}" style="width:24px;height:24px;font-size:14px">${i + 1}</span><span class="nm">${a.vol} <i>m³</i><small>${a.court}</small></span></div>`).join('');
   const prixBd = ordre.map((a) => {
     const p = a.prix;
-    if (p.inconnu) return `<div class="br"><div class="t vide" style="width:${W}px;border-color:${a.coul}"></div><span class="v" style="color:#888">CHF ?</span></div>`;
-    if (p.devis) return `<div class="br"><div class="t vide" style="width:${W}px;border-color:${a.coul}"></div><span class="v" style="color:#888">${ic('scan', 15)} devis</span></div>`;
-    if (p.eur) { const k = W / 5400; return `<div class="br"><div class="seg" style="width:${Math.round(3000 * k)}px"><b style="width:79%;background:${a.coul}"></b><b style="width:12%;background:${a.coul};opacity:.6"></b><b style="width:9%;background:${a.coul};opacity:.35"></b></div><span class="v brun mono">≈${n(p.rendu)}</span><span style="font-size:14px;color:#888" class="mono">${n(p.eur)} €</span></div>`; }
+    if (p.inconnu) return `<div class="br"><div class="t vide" style="width:${W}px;border-color:${a.coul}"></div><span class="v" style="color:#888">?</span>${nomB(a)}</div>`;
+    if (p.devis) return `<div class="br"><div class="t vide" style="width:${W}px;border-color:${a.coul}"></div><span class="v" style="color:#888">sur demande</span>${nomB(a)}</div>`;
+    if (p.eur) return `<div class="br"><div class="seg" style="width:${Math.round((3000 / 5400) * W)}px"><b style="width:79%;background:${a.coul}"></b><b style="width:12%;background:${a.coul};opacity:.6"></b><b style="width:9%;background:${a.coul};opacity:.35"></b></div><span class="v brun mono">≈${n(p.rendu)}</span><span class="mono" style="font-size:14px;color:#888">${n(p.eur)} €</span>${nomB(a)}</div>`;
     const v = valeur(p);
-    return `<div class="br"><div class="t" style="width:${Math.round((v / 5400) * W)}px;background:${a.coul};${p.des ? `background:linear-gradient(90deg,${a.coul} 80%,#fff)` : ''}"></div><span class="v mono">${p.des ? '<span style="font-family:Source Sans 3;font-weight:400;color:#666">dès </span>' : ''}${n(v)}</span></div>`;
+    const des = p.des ? `<span style="font-family:'Source Sans 3',sans-serif;font-weight:400;color:#666">dès </span>` : '';
+    return `<div class="br"><div class="t" style="width:${Math.round((v / 5400) * W)}px;background:${p.des ? `linear-gradient(90deg,${a.coul} 72%,${a.coul}22)` : a.coul}"></div><span class="v mono">${des}${n(v)}</span>${nomB(a)}</div>`;
   }).join('');
-  const volOrd = etat === 'sans' ? ordre : [...ordre].sort((x, y) => y.volN - x.volN);
-  const volBd = volOrd.map((a) => `<div class="br"><div class="t" style="width:${Math.round((a.volN / 5.9) * W)}px;background:${a.coul}"></div><span class="v mono">${a.vol} m³</span></div>`).join('');
-  const k = 0.36; // px par cm
-  const sol = ids.map((id) => { const a = art(etat, id); return `<div style="width:${Math.round(a.solL * k)}px;height:${Math.round(a.solP * k)}px;border-color:${a.coul};background:${a.coul}22;color:#333"><span>${String(a.solL / 100).replace(".", ",")}×${String(a.solP / 100).replace(".", ",")}</span></div>`; }).join('') + `<span style="font-size:14px;color:#777;align-self:center">m, à l'échelle</span>`;
-  const X = (sem) => `${Math.round((sem / 8) * 100)}%`;
-  const fr = `<div class="fr"><div class="ax"></div>${[0, 2, 4, 6, 8].map((s) => `<span class="tk t${s}" style="left:${X(s)}">${s === 0 ? 'auj.' : s + ' sem'}</span>`).join('')}${ids.map((id, j) => { const a = art(etat, id); return `<span class="pt" style="left:${X(a.sem)};top:${2 + j * 13}px;background:${a.coul}"></span>`; }).join('')}</div>`;
-  const tPrix = parPrix ? `${pinPlein(17)}Prix <em>${etat === 'eur' ? 'CHF rendu' : 'CHF'} · moins = mieux</em>` : `${pinPlein(17)}Prix <em>3 manquent</em>`;
-  const bPrix = `<div class="bd ${parPrix ? 'ep' : ''}"><h3>${tPrix}</h3>${prixBd}</div>`;
-  const bVol = `<div class="bd ${parPrix ? '' : 'ep'}"><h3>${parPrix ? ic('pin', 17) : pinPlein(17)}Volume <em>${parPrix ? '' : 'classe en attendant · '}plus = mieux</em></h3>${volBd}</div>`;
-  const corps = comparerTete() + `<div class="leg">${leg}</div>` + (parPrix ? bPrix + bVol : bVol + bPrix) + `<div class="bd"><h3>${ic('pin', 17)}Au sol</h3><div class="sol">${sol}</div></div><div class="bd"><h3>${ic('pin', 17)}Dispo</h3>${fr}</div>`;
+  const volBd = ordre.map((a) => `<div class="br"><div class="t" style="width:${Math.round((a.volN / 5.9) * W)}px;background:${a.coul}"></div><span class="v mono">${a.vol}</span>${nomB(a)}</div>`).join('');
+  const k = 0.34; // px par cm
+  const m = (cm) => String(cm / 100).replace('.', ',');
+  const sol = ordre.map((a, i) => `<div class="sc"><div class="rect" style="width:${Math.round(a.solL * k)}px;height:${Math.round(a.solP * k)}px;border-color:${a.coul};background:${a.coul}22"><span class="rang ${i === 0 ? 'r1' : ''}">${i + 1}</span>${m(a.solL)}×${m(a.solP)}</div><span class="po">${ic('door', 16)}${a.porte}</span></div>`).join('');
+  const X = (s) => Math.round((s / 8) * W);
+  const dispoBd = ordre.map((a) => (a.d1 === 0
+    ? `<div class="br"><span class="zero" style="background:${a.coul}"></span><span class="v vert">en stock</span>${nomB(a)}</div>`
+    : `<div class="br"><div class="seg" style="width:${X(a.d1)}px"><b style="width:${(a.d0 / a.d1) * 100}%;background:${a.coul}"></b><b style="flex:1;background:repeating-linear-gradient(90deg,${a.coul} 0 4px,transparent 4px 7px)"></b></div><span class="v brun">${a.dispo}</span>${nomB(a)}</div>`)).join('')
+    + `<div class="ax8" style="width:${W}px">${[0, 2, 4, 6, 8].map((s) => `<span class="t${s}" style="left:${X(s)}px">${s === 0 ? 'auj.' : s}</span>`).join('')}<span class="un" style="left:${W + 9}px">sem.</span></div>`;
+  const bPrix = `<div class="bd ${parPrix ? 'ep' : ''}"><h3>${parPrix ? pinPlein(17) : ic('pin', 17)}Prix <em>${etat === 'eur' ? 'CHF rendu' : parPrix ? 'CHF' : 'CHF · 3 manquent'}</em></h3>${prixBd}</div>`;
+  const bVol = `<div class="bd ${parPrix ? '' : 'ep'}"><h3>${parPrix ? ic('pin', 17) : pinPlein(17)}Volume <em>m³${parPrix ? '' : ' · classe en attendant'}</em></h3>${volBd}</div>`;
+  const corps = comparerTete() + `<div class="leg">${leg}</div>` + (parPrix ? bPrix + bVol : bVol + bPrix) + `<div class="bd"><h3>${ic('pin', 17)}Au sol <em>m · porte en cm</em></h3><div class="sol">${sol}</div></div><div class="bd"><h3>${ic('pin', 17)}Dispo</h3>${dispoBd}</div>`;
   return { css: A3_CSS, corps };
 }
+
 
 // =====================================================================================
 // AXE B — prix de l'article (liste des articles du carnet, base h06-5)
 // =====================================================================================
 const B_CSS = `
-.cqc{display:flex;align-items:center;gap:6px;font-size:15px;color:var(--mut);margin:0 0 8px}
-.cqc b{color:#222}
-.cqc .ic{color:var(--stk)}
 .arts{border:1.5px solid var(--line);border-radius:16px;overflow:hidden}
-.ar{display:grid;grid-template-columns:60px 1fr auto;column-gap:10px;padding:10px 12px;border-bottom:1px solid var(--line);align-items:start}
+.ar{display:grid;grid-template-columns:52px minmax(0,1fr) auto;column-gap:10px;padding:10px 12px;border-bottom:1px solid var(--line);align-items:start}
 .ar:last-child{border-bottom:0}
 .ar .nm{font-size:18px;font-weight:700;color:#111;line-height:1.1}
-.ar .vd{font-size:14px;color:var(--mut);margin-top:2px}
+.ar .vd{font-size:14px;color:var(--mut);margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .ar .bas{grid-column:2/-1;display:flex;align-items:center;gap:8px;margin-top:6px;font-size:15px}
 .ar .bas .vl{margin-left:auto;display:flex;align-items:center;gap:6px;color:var(--stk)}
 .ar .bas .vl.off{color:#777}
-.cr{font-size:14px;padding:2px 9px;border-radius:999px;background:var(--vc);color:var(--ok);font-weight:600}
+.cr{font-size:14px;padding:2px 9px;border-radius:999px;background:var(--vc);color:var(--ok);font-weight:600;white-space:nowrap}
+.fg{position:relative;width:52px;height:52px}
+.fg .rang{position:absolute;left:-8px;top:-8px;width:24px;height:24px;font-size:14px;border-width:2px}
 .titreA{display:flex;align-items:center;justify-content:space-between;margin:2px 0 6px;font-size:18px;font-weight:700;color:#111}
 .titreA a{font-size:16px;color:#2f5e86;font-weight:600;text-decoration:none;display:flex;align-items:center}
 `;
 const carnetTete = () => `<div class="retour"><a href="#">${ic('chevL', 20)}Carnets</a><span class="etiq">on compare</span></div><h1>Chambre froide</h1><div class="sous">1 façon · 3 articles</div>`;
-function ligneB(a, prixHtml, apres = '', criteres = true) {
+// Base h06-5 : titre = le modèle ; puce verte = valeur du critère et son rang.
+// Le rang (rond sur le picto) suit partout le classement épinglé de Comparer (ETATS[etat].ordre) ; la puce verte ne dit que le volume.
+function ligneB(a, prixHtml, apres = '', criteres = true, rang = null) {
   const bas = `<div class="bas">${criteres ? `<span class="cr">${a.vol} m³</span>` : ''}<span class="vl ${a.id === 'c' ? 'off' : ''}">${ic('eye', 18)}veille<span class="toggle ${a.id === 'c' ? 'off' : ''}"></span></span></div>`;
-  return `<div class="ar">${frigo(a.id, 60)}<div><div class="nm">${a.vol} m³ <span style="font-weight:400;color:#666;font-size:15px" class="mono">${a.sol}</span></div><div class="vd">${a.vendeur} · ${a.pays} · <span class="${dispoCls(a)}">${a.dispo}</span></div></div>${prixHtml}${bas}${apres}</div>`;
+  const pic = `<div class="fg">${frigo(a.id, 52)}${rang ? `<span class="rang ${rang === 1 ? 'r1' : ''}">${rang}</span>` : ''}</div>`;
+  return `<div class="ar">${pic}<div><div class="nm">${a.nom}</div><div class="vd">${a.vendeur} · <span class="${dispoCls(a)}">${a.dispo}</span></div></div>${prixHtml}${bas}${apres}</div>`;
 }
-const listeB = (etat, prixFn, apresFn = () => '', titre = true) => {
-  const ids = ['a', 'b', 'c'];
-  return `${titre ? `<div class="titreA">Articles · 3<a href="#">Comparer${ic('chevR', 18)}</a></div>` : ''}<div class="arts">${ids.map((id) => { const a = art(etat, id); return ligneB(a, prixFn(a, etat), apresFn(a, etat)); }).join('')}</div>`;
-};
+const listeB = (etat, prixFn, apresFn = () => '', titre = true) => `${titre ? `<div class="titreA">Articles · 3<a href="#">Comparer${ic('chevR', 18)}</a></div>` : ''}<div class="arts">${ETATS[etat].ordre.map((id, i) => { const a = art(etat, id); return ligneB(a, prixFn(a, etat), apresFn(a, etat), true, i + 1); }).join('')}</div>`;
 
-// ---- B1 : pastille v02 (pleine si connue, pointillée « CHF ? ») ----
+
+// ---- B1 : pastille v02 (pleine si connue, pointillée « CHF ? ») ; en EUR, la décomposition s'ouvre au toucher, tout en CHF ----
 const B1_CSS = `
-.pt2{width:96px;min-height:64px;border-radius:14px;background:#f1f1ee;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px;position:relative}
+.pt2{width:96px;min-height:60px;border-radius:14px;background:#f1f1ee;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px;position:relative}
 .pt2 .mono{font-size:20px;font-weight:600;color:#111;line-height:1}
 .pt2 small{font-size:14px;color:var(--mut);line-height:1.1;display:flex;align-items:center;gap:3px}
 .pt2.pd{border:2.5px dashed #a3a39e;background:#fff}
 .pt2.pd b{font-size:19px;color:#777}
 .pt2.est{background:var(--bdgc);outline:2px dotted var(--bdg);outline-offset:-2px}
 .pt2.est .mono{color:var(--bdg)}
-.dec{grid-column:1/-1;display:flex;align-items:center;gap:4px;flex-wrap:wrap;margin-top:8px;font-size:14px;color:#555}
-.dec span{background:var(--s1);border-radius:8px;padding:2px 7px}
-.dec .tot{background:var(--bdgc);color:var(--bdg);font-weight:700}
+.pt2.est.on{outline:3px solid var(--bdg)}
+.dec{grid-column:1/-1;display:flex;align-items:center;gap:4px;flex-wrap:wrap;margin-top:8px;font-size:14px;color:#555;background:var(--bdgc);border-radius:12px;padding:6px 8px}
+.dec span{background:#fff;border-radius:8px;padding:2px 7px}
+.dec .tot{background:var(--bdg);color:#fff;font-weight:700}
+.dec small{flex-basis:100%;font-size:14px;color:var(--bdg)}
 `;
 function B1(etat) {
   const prix = (a) => {
     const p = a.prix;
     if (p.inconnu) return `<div class="pt2 pd"><b>CHF ?</b><small>${ic('pencil', 13)}saisir</small></div>`;
     if (p.devis) return `<div class="pt2 pd">${ic('scan', 22)}<small>devis</small></div>`;
-    if (p.eur) return `<div class="pt2 est"><span class="mono">≈${n(p.rendu)}</span><small class="brun">CHF rendu</small></div>`;
+    if (p.eur) return `<div class="pt2 est on"><span class="mono">≈${n(p.rendu)}</span><small class="brun">CHF rendu${ic('chevU', 14)}</small></div>`;
     if (p.des) return `<div class="pt2"><small>dès</small><span class="mono">${n(p.des)}</span><small>CHF ${ic('link', 13)}</small></div>`;
     return `<div class="pt2"><span class="mono">${n(p.chf)}</span><small>CHF ${p.src === 'saisi' ? ic('pencil', 13) : ic('link', 13)}</small></div>`;
   };
-  const apres = (a) => (a.prix.eur ? `<div class="dec"><span class="mono">2 513 €</span>+<span>port <span class="mono">380 €</span></span>+<span>TVA 8,1 %</span>+<span>frais <span class="mono">60</span></span>=<span class="tot mono">≈3 000 CHF</span></div>` : '');
-  const cqc = `<div class="cqc">${ic('target', 18)}Ce qui compte <b>prix</b> · <b>volume</b></div>`;
-  return { css: B_CSS + B1_CSS, corps: carnetTete() + cqc + listeB(etat, prix, apres) + `<div class="pie">${ic('link', 14)} lu sur la page · ${ic('pencil', 14)} saisi · exemple</div>` };
+  const apres = (a) => (a.prix.eur ? `<div class="dec"><span class="mono">2 362</span>+<span>port <span class="mono">357</span></span>+<span>TVA <span class="mono">220</span></span>+<span>frais <span class="mono">60</span></span>=<span class="tot mono">≈3 000</span><small>en CHF · de 2 513 € et port 380 €, à 0,94</small></div>` : '');
+  return { css: B_CSS + B1_CSS, corps: carnetTete() + listeB(etat, prix, apres) + `<div class="pie">Vendeurs et prix : exemple</div>` };
 }
+
 
 // ---- B2 : barre empilée à l'échelle commune (article, port, TVA) ----
 const B2_CSS = `
@@ -366,48 +393,62 @@ function B2(etat) {
   return { css: B_CSS + B2_CSS, corps: carnetTete() + `<div class="titreA">Articles · 3<a href="#">Comparer${ic('chevR', 18)}</a></div>` + `<div class="arts">${rows}</div><div class="pie">Une même règle en CHF pour les trois · exemple</div>` };
 }
 
-// ---- B3 : étiquette de prix accrochée ; saisie au pavé ----
+// ---- B3 : étiquette de prix accrochée ; vide : Saisir ou Devis ; en EUR, étiquette € au-dessus, décomposition au toucher ----
 const B3_CSS = `
 .tag{position:relative;width:104px;height:56px;margin-top:2px}
 .tag .sh{position:absolute;inset:0;width:100%;height:100%;overflow:visible}
 .tag .sh path{fill:#fff;stroke:#222;stroke-width:2}
 .tag .sh.vide path{fill:#fafafa;stroke:#999;stroke-dasharray:6 4;stroke-width:2.5}
 .tag .sh.est path{fill:var(--bdgc);stroke:var(--bdg)}
-.tag .sh.on path{stroke:var(--stk);stroke-width:4}
-.tag .dos .sh path{fill:#eceae4;stroke:#999}
-.tag.eu{margin-top:20px}
+.tag .sh.on path{stroke-width:4}
+.tag .sh.on:not(.est) path{stroke:var(--stk)}
 .tag .f{position:absolute;inset:0;display:flex;flex-direction:column;align-items:flex-end;justify-content:center;padding:0 10px 0 20px}
 .tag .f::before{content:"";position:absolute;left:9px;top:50%;width:8px;height:8px;margin-top:-4px;border-radius:50%;border:2px solid #222;background:#fff}
+.tag .f.vide::before{border-color:#999}
 .tag .mono{font-size:20px;font-weight:600;color:#111;line-height:1}
-.tag small{font-size:14px;color:var(--mut);line-height:1.1}
-.tag .f.vide b{font-size:24px;color:#888}
+.tag small{font-size:14px;color:var(--mut);line-height:1}
+.tag small .ic{vertical-align:-2px}
+.tag .f.vide{align-items:center;padding-left:18px}
+.tag .act{display:flex;align-items:center;gap:4px;font-size:17px;font-weight:700;color:var(--stk)}
 .tag .f.est .mono{color:var(--bdg)}
-.tag .dos{position:absolute;inset:0;transform:translate(-3px,-21px) rotate(-4deg);display:flex;align-items:flex-start;justify-content:flex-end;padding:1px 10px 0 0;font-size:14px;color:#444}
-.tag .dos .mono{position:relative;font-size:15px;font-weight:600;color:#444}
+.eu{display:flex;flex-direction:column;align-items:flex-end}
+.eu .dos{position:relative;width:88px;height:28px;margin:0 20px 2px 0;transform:rotate(-3deg)}
+.eu .dos .sh{position:absolute;inset:0;width:100%;height:100%;overflow:visible}
+.eu .dos .sh path{fill:#eceae4;stroke:#888;stroke-width:1.5}
+.eu .dos span{position:absolute;inset:0;display:flex;align-items:center;justify-content:flex-end;padding-right:9px;font-size:15px;font-weight:600;color:#444}
+.eu .tag{margin-top:0}
+.dc{grid-column:1/-1;margin-top:8px;background:var(--bdgc);border-radius:12px;padding:7px 9px}
+.dc .seg{display:flex;height:16px;border-radius:6px;overflow:hidden}
+.dc .seg b{display:block;height:100%}
+.dc .lg{display:flex;gap:10px;font-size:14px;color:#444;margin-top:5px;flex-wrap:wrap}
+.dc .lg i{display:inline-block;width:11px;height:11px;border-radius:3px;margin-right:3px;vertical-align:-1px}
 .pave{grid-column:1/-1;margin-top:8px;display:grid;grid-template-columns:repeat(6,1fr);gap:5px}
-.pave .ok{grid-column:span 3}
 .pave span{height:40px;border-radius:10px;background:var(--s1);display:grid;place-items:center;font-size:19px;font-weight:600;color:#222}
-.pave .ok{background:var(--stk);color:#fff;font-size:17px}
+.pave .ok{grid-column:span 3;background:var(--stk);color:#fff;font-size:17px}
 .pave .dv{font-size:15px;background:#fff;border:1.5px solid var(--line2)}
 .pave .dv b{background:#1f1f1d;color:#fff;border-radius:6px;padding:0 6px}
 `;
 function B3(etat) {
-  const SH = (c) => `<svg class="sh ${c}" viewBox="0 0 104 56" preserveAspectRatio="none" aria-hidden="true"><path d="M17 1H96a7 7 0 0 1 7 7v40a7 7 0 0 1-7 7H17L1 28Z"/></svg>`;
-  const forme = (h) => h.replace(/<div class="dos">/g, () => `<div class="dos">${SH("")}`).replace(/<div class="f( [a-z]+)?">/g, (m, c) => SH((c || "").trim()) + m);
-  const tag = (a) => forme(tag0(a));
-  const tag0 = (a) => {
+  const tg = (cls, inner) => `<div class="tag">${SH(cls)}<div class="f ${cls}">${inner}</div></div>`;
+  const tag = (a) => {
     const p = a.prix;
     const src = p.src === 'saisi' ? ic('pencil', 13) : ic('link', 13);
-    if (p.inconnu && a.id === 'b') return `<div class="tag"><div class="f on"><span class="mono">3 35<span style="border-right:2px solid #111;margin-left:1px"></span></span><small>CHF</small></div></div>`;
-    if (p.inconnu) return `<div class="tag"><div class="f vide"><b>?</b></div></div>`;
-    if (p.devis) return `<div class="tag"><div class="f vide">${ic('scan', 20)}<small>devis</small></div></div>`;
-    if (p.eur) return `<div class="tag eu"><div class="dos"><span class="mono">${n(p.eur)} €</span></div><div class="f est"><span class="mono">≈${n(p.rendu)}</span><small class="brun">CHF rendu</small></div></div>`;
-    if (p.des) return `<div class="tag"><div class="f"><small>dès</small><span class="mono">${n(p.des)}</span></div></div>`;
-    return `<div class="tag"><div class="f"><span class="mono">${n(p.chf)}</span><small>CHF ${src}</small></div></div>`;
+    if (p.inconnu && a.id === 'b') return tg('on', `<span class="mono">3 350<span style="border-right:2px solid #111;margin-left:1px"></span></span><small>CHF</small>`);
+    if (p.inconnu) return tg('vide', `<span class="act">${ic('pencil', 16)}Saisir</span>`);
+    if (p.devis) return tg('vide', `<span class="act">${ic('scan', 16)}Devis</span>`);
+    if (p.eur) return `<div class="eu"><div class="dos">${SH()}<span class="mono">${n(p.eur)} €</span></div>${tg('est on', `<span class="mono">≈${n(p.rendu)}</span><small class="brun">CHF rendu</small>`)}</div>`;
+    if (p.des) return tg('', `<small>dès</small><span class="mono">${n(p.des)}</span><small>CHF ${src}</small>`);
+    return tg('', `<span class="mono">${n(p.chf)}</span><small>CHF ${src}</small>`);
   };
-  const apres = (a, e) => (e === 'sans' && a.id === 'b' ? `<div class="pave">${['1', '2', '3', '4', '5', '<b>⌫</b>', '6', '7', '8', '9', '0', "'", 'CHF', '€', '00', 'OK'].map((k) => `<span class="${k === 'OK' ? 'ok' : k === 'CHF' || k === '€' ? 'dv' : ''}">${k === 'CHF' ? '<b>CHF</b>' : k}</span>`).join('')}</div>` : '');
-  return { css: B_CSS + B3_CSS, corps: carnetTete() + listeB(etat, tag, apres) + `<div class="pie">${etat === 'eur' ? '<span class="brun">Derrière, le prix en euros ; devant, rendu chez toi, estimé</span>' : 'Toucher l\'étiquette : saisir le prix · exemple'}</div>` };
+  const C =['#3d4a57', '#7f93a6', '#bccbd8'];
+  const apres = (a, e) => {
+    if (e === 'sans' && a.id === 'b') return `<div class="pave">${['1', '2', '3', '4', '5', '<b>⌫</b>', '6', '7', '8', '9', '0', ',', 'CHF', '€', '00', 'OK'].map((k) => `<span class="${k === 'OK' ? 'ok' : k === 'CHF' || k === '€' ? 'dv' : ''}">${k === 'CHF' ? '<b>CHF</b>' : k}</span>`).join('')}</div>`;
+    if (a.prix.eur) return `<div class="dc"><div class="seg"><b style="width:78.7%;background:${C[0]}"></b><b style="width:11.9%;background:${C[1]}"></b><b style="width:9.4%;background:${C[2]}"></b></div><div class="lg"><span><i style="background:${C[0]}"></i>article <span class="mono">2 362</span></span><span><i style="background:${C[1]}"></i>port <span class="mono">357</span></span><span><i style="background:${C[2]}"></i>TVA + frais <span class="mono">280</span></span></div></div>`;
+    return '';
+  };
+  return { css: B_CSS + B3_CSS, corps: carnetTete() + listeB(etat, tag, apres) + `<div class="pie">Vendeurs et prix : exemple</div>` };
 }
+
 
 // =====================================================================================
 // AXE C — choisir → achat prévu dans À venir (base g05-9 : l'article ouvert, « Choisir chez … »)
@@ -418,6 +459,7 @@ const C_CSS = `
 .ouv .hd .px{font-size:24px;font-weight:600;color:#111}
 .ouv .hd .vd{font-size:15px;color:#333;line-height:1.2;flex:1}
 .ouv .hd .vd small{display:block;color:var(--mut);font-size:14px}
+.ouv .hd .vd b.nmx{display:block;font-size:20px;font-weight:800;color:#111;line-height:1.1}
 .ouv .hd a{font-size:16px;color:#2f5e86;display:flex;align-items:center;gap:3px;font-weight:600;text-decoration:none}
 .ouv .vals{display:flex;gap:6px;margin:9px 0;flex-wrap:wrap}
 .ouv .vals span{font-size:14px;padding:3px 9px;border-radius:999px;background:var(--s1);color:#444}
@@ -426,15 +468,22 @@ const C_CSS = `
 .bts .ch{flex:1;height:50px;border-radius:14px;background:var(--stk);color:#fff;font-size:18px;font-weight:700;display:grid;place-items:center}
 .bts .ec{width:100px;height:50px;border-radius:14px;border:1.5px solid var(--line2);font-size:18px;display:grid;place-items:center;color:#222}
 .cp{border:1.5px solid var(--line);border-radius:16px;padding:9px 12px;display:flex;align-items:center;gap:10px;margin-bottom:7px}
-.cp .nm{font-size:17px;font-weight:700;color:#111;flex:1;line-height:1.1}
-.cp .nm small{display:block;font-size:14px;color:var(--mut);font-weight:400}
+.cp .nm{font-size:17px;font-weight:700;color:#111;flex:1;line-height:1.1;min-width:0}
+.cp .nm small{display:block;font-size:14px;color:var(--mut);font-weight:400;white-space:nowrap}
 .cp .mono{font-size:19px;font-weight:600}
-.px.pdx{border:2.5px dashed #a3a39e;border-radius:10px;padding:2px 8px;color:#777;font-size:20px!important;font-family:'Source Sans 3',sans-serif!important;letter-spacing:0!important;word-spacing:0;font-weight:700;white-space:nowrap}
+.cp .pr{text-align:right;line-height:1.1;flex:none}
+.cp .pr small{display:block;font-size:14px;color:var(--mut)}
+.cp .pr .px.pdx{margin-bottom:3px}
+.pxc{display:flex;flex-direction:column;align-items:flex-end;flex:none;line-height:1.1}
+.pxc small{font-size:14px;color:var(--mut)}
+.ouv .hd .vd b.nmx{white-space:nowrap}
+.px.pdx{display:inline-block;line-height:1.15;border:2.5px dashed #a3a39e;border-radius:10px;padding:2px 8px;color:#777;font-size:20px!important;font-family:'Source Sans 3',sans-serif!important;letter-spacing:0!important;word-spacing:0;font-weight:700;white-space:nowrap}
 `;
+// Le mois d'À venir est celui que le brasseur choisit (toucher la case bleue) ; aucun verdict de caisse ici (C4, K5).
 const C_DATA = {
-  repos: { id: 'a', livre: 'déc.', livreSem: 'en stock', paye: 'janv.', effet: 'juste' },
-  sans: { id: 'c', livre: 'janv.', livreSem: '6 sem.', paye: 'févr.', effet: 'inconnu' },
-  eur: { id: 'b', livre: 'mi-déc.', livreSem: '3–4 sem.', paye: 'déc.', effet: 'ok' },
+  repos: { id: 'a', livre: 'déc.', livreSem: 'en stock', paye: 'janv.' },
+  sans: { id: 'c', livre: 'janv.', livreSem: '6 sem.', paye: 'févr.' },
+  eur: { id: 'b', livre: 'mi-déc.', livreSem: '3–4 sem.', paye: 'déc.' },
 };
 function prixC(a) {
   const p = a.prix;
@@ -447,17 +496,31 @@ function carteOuverte(etat, zone, opts = {}) {
   const d = C_DATA[etat];
   const a = art(etat, d.id);
   const sousPrix = a.prix.eur ? `<small class="brun">CHF rendu · ${n(a.prix.eur)} €</small>` : a.prix.devis ? `<small>sur demande</small>` : '';
-  const hd = `<div class="hd">${opts.coche ? `<span class="rang" style="background:var(--ach);border-color:var(--ach);color:#fff">${ic('check', 18)}</span>` : frigo(a.id, 44)}${prixC(a)}<span class="vd">${a.vendeur} · ${a.pays}${sousPrix}</span><a href="#">Ouvrir${ic('ext', 16)}</a></div>`;
+  const r = ETATS[etat].ordre.indexOf(d.id) + 1;
+  const tete = opts.coche
+    // C3 : le modèle en titre, le prix à côté ; le coche dit « choisi »
+    ? `<span class="rang" style="background:var(--ach);border-color:var(--ach);color:#fff">${ic('check', 18)}</span><span class="vd"><b class="nmx">${a.nom}</b>${a.vendeur} · ${a.pays}</span><span class="pxc">${prixC(a)}${a.prix.eur ? `<small class="brun"><span class="mono">${n(a.prix.eur)}</span> €</small>` : ''}</span>`
+    : opts.nomTitre
+      // C1 : le rond de rang d'abord, comme les autres articles ; le prix est dans la 1re case
+      ? `<span class="rang ${r === 1 ? 'r1' : ''}">${r}</span>${frigo(a.id, 44)}<span class="vd"><b class="nmx">${a.nom}</b>${a.vendeur} · ${a.pays}</span>`
+      : `${frigo(a.id, 44)}${prixC(a)}<span class="vd">${a.vendeur} · ${a.pays}${sousPrix}</span>`;
+  const hd = `<div class="hd">${tete}<a href="#" ${opts.coche ? 'aria-label="Ouvrir"' : ''}>${opts.coche ? '' : 'Ouvrir'}${ic('ext', 16)}</a></div>`;
   const vals = `<div class="vals"><span class="k">${a.vol} m³</span><span class="${a.sem <= 1 ? 'k' : ''}">${a.dispo}</span><span>${a.sol} cm</span><span>porte ${a.porte}</span></div>`;
   const bts = opts.sansBoutons ? '' : `<div class="bts"><span class="ch">Choisir chez ${a.vendeur}</span><span class="ec">Écarter</span></div>`;
   return `<div class="ouv" ${opts.style ? `style="${opts.style}"` : ''}>${hd}${vals}${bts}${zone}</div>`;
 }
+// Base g05-9 : les autres articles gardent leur rond de rang.
 function autresC(etat) {
   const d = C_DATA[etat];
-  return ['a', 'b', 'c'].filter((id) => id !== d.id).slice(0, 2).map((id) => { const a = art(etat, id); return `<div class="cp" style="opacity:${etat === 'x' ? 1 : 0.9}">${frigo(id, 40)}<span class="nm">${a.vol} m³<small>${a.vendeur} · ${a.pays} · ${a.dispo}</small></span>${prixC(a).replace('class="px', 'class="mono px')}</div>`; }).join('');
+  const E = ETATS[etat];
+  return E.ordre.filter((id) => id !== d.id).map((id) => {
+    const a = art(etat, id);
+    const r = E.ordre.indexOf(id) + 1;
+    return `<div class="cp"><span class="rang ${r === 1 ? 'r1' : ''}">${r}</span>${frigo(id, 40)}<span class="nm">${a.nom}<small>${a.vendeur} · ${a.dispo}</small></span><span class="pr">${prixC(a).replace('class="px', 'class="mono px')}<small>${a.vol} m³</small></span></div>`;
+  }).join('');
 }
 
-// ---- C1 : trois pastilles prix → livré → payé, et une étiquette d'effet ----
+// ---- C1 : trois cases prix (étiquette B3) › livré › À venir ; sans verdict de caisse ----
 const C1_CSS = `
 .trio{display:grid;grid-template-columns:1fr 14px 1fr 14px 1fr;align-items:center;margin-top:12px}
 .trio .fl{color:#aaa;text-align:center;font-size:16px}
@@ -465,27 +528,31 @@ const C1_CSS = `
 .tt .ic{color:#555}
 .tt b{font-size:19px;color:#111;line-height:1}
 .tt small{font-size:14px;color:var(--mut);line-height:1.1;text-align:center}
-.tt.pd{border:2.5px dashed #a3a39e;background:#fff}
-.tt.pd b{color:#777}
-.tt.est{background:var(--bdgc)}.tt.est b{color:var(--bdg)}
+.tt.tg{background:none;position:relative;padding-left:14px}
+.tt.tg .sh{position:absolute;inset:0;width:100%;height:100%;overflow:visible}
+.tt.tg .sh path{fill:#fff;stroke:#222;stroke-width:2}
+.tt.tg .sh.vide path{fill:#fafafa;stroke:#999;stroke-dasharray:6 4;stroke-width:2.5}
+.tt.tg .sh.est path{fill:var(--bdgc);stroke:var(--bdg)}
+.tt.tg>*:not(.sh){position:relative}
+.tt.tg .act{display:flex;align-items:center;gap:4px;font-size:17px;font-weight:700;color:var(--stk)}
 .tt.ach{background:var(--achc);outline:2px solid var(--ach);outline-offset:-2px}.tt.ach b,.tt.ach .ic{color:var(--ach)}
-.eff{display:flex;gap:6px;margin-top:9px;flex-wrap:wrap}
-.eff span{display:inline-flex;align-items:center;gap:5px;font-size:15px;font-weight:700;padding:4px 10px;border-radius:999px}
-.eff .r{background:var(--rgec);color:var(--rge)}
-.eff .g{background:var(--vc);color:var(--ok)}
-.eff .q{border:2px dashed #aaa;color:#777;font-weight:600}
-.eff .dot{width:10px;height:10px;border-radius:50%;background:currentColor}
+.tt.ach.dft{outline-style:dashed;outline-width:2.5px;background:#fff}
+.tt.ach b{display:flex;align-items:center;gap:1px}
 `;
 function C1(etat) {
   const d = C_DATA[etat];
   const a = art(etat, d.id);
-  const t1 = a.prix.devis ? `<div class="tt pd">${ic('wallet', 20)}<b>CHF ?</b><small>devis</small></div>` : a.prix.eur ? `<div class="tt est">${ic('wallet', 20)}<b class="mono">≈${n(a.prix.rendu)}</b><small class="brun">estimé</small></div>` : `<div class="tt">${ic('wallet', 20)}<b class="mono">${n(a.prix.chf)}</b><small>CHF</small></div>`;
+  const t1 = a.prix.devis
+    ? `<div class="tt tg">${SH('vide')}<span class="act">${ic('scan', 17)}Devis</span><small>sur demande</small></div>`
+    : a.prix.eur
+      ? `<div class="tt tg">${SH('est')}<b class="mono brun">≈${n(a.prix.rendu)}</b><small class="brun">CHF rendu</small></div>`
+      : `<div class="tt tg">${SH()}<b class="mono">${n(a.prix.chf)}</b><small>CHF</small></div>`;
   const t2 = `<div class="tt">${ic('truck', 20)}<b>${d.livre}</b><small>${d.livreSem}</small></div>`;
-  const t3 = `<div class="tt ach ${etat === 'sans' ? '' : ''}">${ic('cal', 20)}<b>${d.paye}</b><small>${etat === 'sans' ? 'À venir, par défaut' : 'À venir'}</small></div>`;
-  const eff = d.effet === 'juste' ? `<span class="r"><i class="dot"></i>déc. trop juste</span><span class="g"><i class="dot"></i>janv. payable</span>` : d.effet === 'ok' ? `<span class="g"><i class="dot"></i>déc. payable</span>` : `<span class="q">Effet : dès le prix connu</span>`;
-  const zone = `<div class="trio">${t1}<span class="fl">›</span>${t2}<span class="fl">›</span>${t3}</div><div class="eff">${eff}</div>`;
-  return { css: C_CSS + C1_CSS, corps: carnetTete() + carteOuverte(etat, zone) + autresC(etat) };
+  const t3 = `<div class="tt ach ${etat === 'sans' ? 'dft' : ''}">${ic('cal', 20)}<b>${d.paye}${ic('chevD', 16)}</b><small>À venir</small></div>`;
+  const zone = `<div class="trio">${t1}<span class="fl">›</span>${t2}<span class="fl">›</span>${t3}</div>`;
+  return { css: C_CSS + C1_CSS, corps: carnetTete() + carteOuverte(etat, zone, { nomTitre: true }) + autresC(etat) };
 }
+
 
 // ---- C2 : frise des mois, commande → livraison → paiement, mois colorés ----
 const C2_CSS = `
@@ -523,46 +590,53 @@ function C2(etat) {
   return { css: C_CSS + C2_CSS, corps: carnetTete() + carteOuverte(etat, zone) + autresC(etat) };
 }
 
-// ---- C3 : après « Choisir » : la carte prend le bleu d'Achats, la rangée du Calendrier en aperçu ----
+// ---- C3 : après « Choisir » : la carte prend le bleu d'Achats ; l'achat posé en jalon au mois d'À venir, sans verdict ----
 const C3_CSS = `
 .prise{display:flex;align-items:center;gap:8px;margin:8px 0 6px}
 .prise .av{white-space:nowrap;flex:none;display:inline-flex;align-items:center;gap:6px;height:40px;padding:0 14px;border-radius:12px;background:var(--ach);color:#fff;font-size:17px;font-weight:700}
+.prise .av.dft{background:#fff;color:var(--ach);border:2.5px dashed var(--ach)}
 .prise .an{display:inline-flex;align-items:center;gap:5px;font-size:16px;color:#2f5e86;font-weight:600;margin-left:auto}
 .cal{border-top:1.5px solid #c9d8ec;margin-top:8px;padding-top:6px}
-.cal .ax{display:grid;grid-template-columns:repeat(6,1fr);font-size:14px;color:#666;text-align:center;position:relative}
-.cal .ax span{position:relative}
-.cal .ax .cr::after{content:"";position:absolute;left:50%;bottom:-6px;width:8px;height:8px;margin-left:-4px;border-radius:50%;background:var(--rge)}
-.cal .hd2{display:flex;align-items:center;gap:7px;color:var(--ach);font-weight:800;font-size:18px;margin-bottom:4px}
-.cal .hd2 .pl{width:26px;height:26px;border-radius:7px;background:var(--ach);color:#fff;display:grid;place-items:center}
+.cal .ax{display:grid;grid-template-columns:repeat(6,1fr);font-size:14px;color:#666;text-align:center}
+.cal .hd2{color:var(--ach);font-weight:800;font-size:18px;margin-bottom:4px}
 .cal .rw{position:relative;height:34px;background:repeating-linear-gradient(90deg,transparent 0 calc(100%/6 - 1px),#e3e9f1 calc(100%/6 - 1px) calc(100%/6))}
-.cal .bar{position:absolute;top:5px;height:24px;display:flex;align-items:center;gap:6px;white-space:nowrap;font-size:16px;color:#222}
-.cal .bar i{display:block;width:8px;height:24px;border-radius:4px;border:2px solid var(--ach);background:#fff}
-.cal .bar.neuf i{background:var(--ach);width:12px}
-.cal .bar.neuf{font-weight:700;background:#fff;padding-right:6px;border-radius:6px;box-shadow:0 0 0 3px #bcd2ee}
-.cal .bar.neuf.est i{background:repeating-linear-gradient(180deg,var(--ach) 0 4px,#9db7d8 4px 7px)}
+.cal .jl{position:absolute;top:4px;height:26px;display:flex;align-items:center;gap:5px;white-space:nowrap;font-size:16px;color:#222}
+.cal .jl.g{flex-direction:row-reverse}
+.cal .jl .pt{display:block;width:14px;height:14px;border-radius:50%;background:#fff;border:2.5px solid var(--ach);flex:none}
+.cal .jl.neuf .pt{background:var(--ach)}
+.cal .jl.est .pt{border-style:dashed;background:#fff}
+.cal .jl .lb{height:26px;display:flex;align-items:center;gap:6px;padding:0 9px 0 16px;background:var(--achc);clip-path:polygon(10px 0,100% 0,100% 100%,10px 100%,0 50%);font-weight:700}
+.cal .jl.g .lb{padding:0 16px 0 9px;clip-path:polygon(0 0,calc(100% - 10px) 0,100% 50%,calc(100% - 10px) 100%,0 100%)}
 .cal .lien{display:flex;align-items:center;justify-content:flex-end;font-size:15px;color:#2f5e86;font-weight:600;margin-top:4px}
 `;
 function C3(etat) {
   const d = C_DATA[etat];
   const a = art(etat, d.id);
-  const mont = a.prix.devis ? '<span class="pd" style="padding:0 6px;font-size:15px;height:24px;border-radius:7px">CHF ?</span>' : `<span class="mono ${a.prix.eur ? 'brun' : 'rouge'}">${a.prix.eur ? '≈' : ''}−${n(valeur(a.prix))}</span>`;
+  const mont = a.prix.devis ? '<span class="pd" style="padding:0 6px;font-size:15px;height:22px;border-radius:7px">CHF ?</span>' : `<span class="mono">${a.prix.eur ? '≈' : ''}${n(valeur(a.prix))}</span>`;
   const colP = { repos: 2, sans: 3, eur: 1 }[etat];
-  const crx = etat === 'repos' ? 1 : -1;
-  const zone = `<div class="prise"><span class="av">${ic('cal', 18)}À venir · ${d.paye}</span>${etat === 'sans' ? '<span class="brun" style="font-size:15px">date par défaut</span>' : ''}<span class="an">${ic('undo', 17)}Annuler</span></div>
-  <div class="cal"><div class="hd2"><span class="pl">${ic('plus', 16)}</span>Achats<span style="color:#999;margin-left:4px">${ic('eye', 18)}</span></div>
-  <div class="ax">${['N', 'D', 'J', 'F', 'M', 'A'].map((m, i) => `<span class="${i === crx ? 'cr' : ''}">${m}</span>`).join('')}</div>
-  <div class="rw" style="margin-top:6px"><span class="bar" style="left:${(1 / 6) * 100 + 2}%"><i></i>Malt groupé <span class="mono rouge">−540</span></span></div>
-  <div class="rw"><span class="bar neuf ${etat === 'sans' ? 'est' : ''}" style="left:${(colP / 6) * 100 + 1}%;${colP >= 3 ? 'left:auto;right:2px' : ''}"><i></i>Chambre froide ${mont}</span></div>
-  <div class="lien">${etat === 'repos' ? '<span class="rouge" style="margin-right:auto;font-size:15px">● déc. trop juste</span>' : ''}Calendrier${ic('chevR', 16)}</div></div>`;
+  const jalon = (col, html, cls = '') => {
+    const c = ((col + 0.5) / 6) * 100;
+    const g = col >= 3;
+    return `<span class="jl ${cls} ${g ? 'g' : ''}" style="${g ? `right:calc(${(100 - c).toFixed(2)}% - 7px)` : `left:calc(${c.toFixed(2)}% - 7px)`}"><i class="pt"></i>${html}</span>`;
+  };
+  const zone = `<div class="prise"><span class="av ${etat === 'sans' ? 'dft' : ''}">${ic('cal', 18)}À venir · ${d.paye}</span><span class="an">${ic('undo', 17)}Annuler</span></div>
+  <div class="cal"><div class="hd2">Achats</div>
+  <div class="ax">${['N', 'D', 'J', 'F', 'M', 'A'].map((m) => `<span>${m}</span>`).join('')}</div>
+  <div class="rw" style="margin-top:6px">${jalon(1, `<span>Malt groupé <span class="mono">540</span></span>`)}</div>
+  <div class="rw">${jalon(colP, `<span class="lb">Chambre froide ${mont}</span>`, `neuf ${etat === 'sans' ? 'est' : ''}`)}</div>
+  <div class="lien">Calendrier${ic('chevR', 16)}</div></div>`;
   return { css: C_CSS + C3_CSS, corps: carnetTete() + carteOuverte(etat, zone, { coche: true, sansBoutons: true, style: 'border:2.5px solid var(--ach);background:#f5f8fd' }) + autresC(etat) };
 }
 
 // ---------- écriture ----------
 export const VERSIONS = { a1: A1, a2: A2, a3: A3, b1: B1, b2: B2, b3: B3, c1: C1, c2: C2, c3: C3 };
 export const ETATS_NOMS = ['repos', 'sans', 'eur'];
+// Écartées au tour 1 (CRITIQUE-1) : leurs pages restent celles de la v0, non régénérées.
+const FIGEES = ['a2', 'b2', 'c2'];
 if (process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.meta.url)) {
   let k = 0;
   for (const [v, f] of Object.entries(VERSIONS)) {
+    if (FIGEES.includes(v)) continue;
     for (const e of ETATS_NOMS) {
       const { css, corps } = f(e);
       fs.writeFileSync(path.join(ICI, `cmp-${v}-${e}.html`), page(`Carnet · ${v} · ${e} · 21.11`, css, corps));

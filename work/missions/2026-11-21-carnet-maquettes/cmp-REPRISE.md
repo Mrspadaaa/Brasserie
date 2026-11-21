@@ -44,3 +44,39 @@ Arrêt à 160 k (consigne : rendre vers 150 k). Rien n'est commité.
   C3 sans : bouton sur une ligne. 27 captures ouvertes, 0 débord.
 - controle-base : DURES OK et STATIQUE OK ×27 ; BASE ECHEC partout sur C2 (Frigo, Ventil, Évier : garde de la liste des carnets, hors
   écran) et, sur A et B, C4 « À venir » (sortie de l'axe C, non truquée). choix-carnet-2.html : PAGE OK (34 images).
+
+## Tour 2 (21.11, CRITIQUE-1) — arrêt à 151 k, rien commité
+### Fait
+- `cmp-build.mjs` patché (A1, A3, B1, B3, C1, C3) ; a2, b2, c2 non régénérées (`FIGEES`) : leurs pages restent la v0.
+  - A1 : « ≥915 » (plus en vert, aucune meilleure CHF/m³) ; épingle pleine sur la ligne active seule, les autres sans épingle ;
+    phrase « Touche une ligne » retirée ; prix inconnu = barre hachurée « ? » ; devis = étiquette B3 pointillée « Devis » ;
+    plan au sol à l'échelle (0,28 px/cm) dans « Au sol ».
+  - A3 : ordre fixe = classement dans toutes les bandes, nom court au bout de chaque barre ; en-tête dans l'ordre, unité m³ ;
+    dispo en segments depuis « auj. » (3–4 sem. : plein puis pointillé), axe auj. 2 4 6 8 sem. ; porte (icône + cm) sous chaque
+    rectangle au sol, rang sur le rectangle ; légendes « mieux » et « à l'échelle » retirées.
+  - B commun : titre = modèle (Cellule 180, Compacte 150, Pro 210), puce « 4,06 m³ · 2e » (rang du volume), ordre c, a, b ;
+    ligne vendeur · dispo sans pays (plus de coupure) ; « Ce qui compte » et « lu · saisi » retirés ; « on compare » gardé (base h06-5).
+  - B1 : EUR : pastille touchée (chevron) et décomposition ouverte, tout en CHF : 2 362 + port 357 + TVA 220 + frais 60 = ≈3 000.
+  - B3 : phrases retirées ; étiquette € entière au-dessus ; au toucher, barre segmentée + légende en CHF (2 362 · 357 · 280) ;
+    vides : « Saisir » et « Devis / sur demande » sur l'étiquette ; pavé sans « ' » (touche « , »), saisie « 3 350 » formatée.
+  - C1 : puces de caisse retirées ; titre = modèle (prix une seule fois, dans la 1re case en étiquette B3) ; case bleue « janv. ⌄ »
+    (mois choisi par lui), en pointillé sans prix ; ronds de rang des autres articles (g05-9).
+  - C3 : « trop juste » et point rouge retirés ; achat en jalon (point + étiquette bleue) au mois d'À venir ; « + » et œil retirés ;
+    montants en encre normale ; sans prix : bouton À venir en pointillé bleu ; ronds de rang.
+- Captures refaites (18) : 0 débord, 0 texte < 14 px, bas max 698 (champ 714). AUCUNE ENCORE OUVERTE.
+
+### Reste, dans l'ordre
+1. Ouvrir les 18 captures `cmp-captures/cmp-{a1,a3,b1,b3,c1,c3}-{repos,sans,eur}.jpg` ; refaire ce qui ne se lit pas en 3 s.
+2. `for f in cmp-{a1,a3,b1,b3,c1,c3}-*.html; do node ../../../scripts/agents/controle-base.mjs carnet work/missions/2026-11-21-carnet-maquettes/$f --dures --statique; done`
+   (depuis la racine) : attendu DURES OK, STATIQUE OK ; BASE ECHEC connus (C2 liste des carnets hors écran ; C4 « À venir » hors axe C).
+   Vérifier qu'aucune page C ne contient « trop juste » ni « payable » : `grep -l "trop juste\|payable" cmp-c1-* cmp-c3-*` → rien.
+3. `choix-carnet-2.html` : retirer les sections `#a2`, `#b2`, `#c2` et leurs liens de `#a-choisir` ; à leur place, une ligne
+   « A2 écartée : la barre change de sens selon l'épingle, volume répété » ; « B2 écartée : trop haute pour un prix, doublonne Comparer » ;
+   « C2 écartée : la frise payable / trop juste est la caisse dans le carnet (C4) ». Ajouter en tête « Tour 2 : corrigées selon CRITIQUE-1 ».
+   Puis `node scripts/agents/verifier-page.mjs work/missions/2026-11-21-carnet-maquettes/choix-carnet-2.html --page-lot` → PAGE OK.
+4. Commit par chemins : `git add work/missions/2026-11-21-carnet-maquettes/{cmp-build.mjs,cmp-REPRISE.md,choix-carnet-2.html} work/missions/2026-11-21-carnet-maquettes/cmp-{a1,a3,b1,b3,c1,c3}-*.html work/missions/2026-11-21-carnet-maquettes/cmp-captures/cmp-{a1,a3,b1,b3,c1,c3}-*.jpg`, sans push.
+
+## Tour 3 (21.11, CRITIQUE-2) — fini, commité
+- Rang B suit ETATS[etat].ordre (rond sur le picto, puce verte = volume seul) ; A3 axe « 8 » au bout + « sem. » ; B3 « Devis » seul et CHF + lien sous « dès 5 400 » ; C1 rond de rang en tête, plus de chevauchement « CHF ? » ; C3 modèle en titre, « 2 513 € » espacé.
+- Non fait (doute) : C3 sans, étiquette du jalon à gauche du point (place manquante à droite).
+- 18 captures refaites et ouvertes ; choix-carnet-2.html : PAGE OK (25 images), A2/B2/C2 en lignes « écartée ».
