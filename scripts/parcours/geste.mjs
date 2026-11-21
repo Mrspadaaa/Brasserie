@@ -696,6 +696,42 @@ async function jouerCalendrier({ p, base, combo, tactile, glisser, pas }) {
     } catch (e) { echec(C5, String(e.message ?? e).slice(0, 160)); try { await cdp.send('Input.dispatchTouchEvent', { type: 'touchCancel', touchPoints: [] }); } catch { /* geste déjà clos */ } await echap(); }
     await choisirPeriode('3 mois'); await sleep(400);
   };
+  // ── CHG-6 (21.11, « poser la fin d'un brassin en cuve ») : 3 mois, 390. Le bord droit de « NEIPA Test » (en cuve, sans fin) tiré de 6 jours pose sa
+  //    fin à aujourd'hui + 6 j ; un brassin en cuve sans fin glissé par le corps ne parle plus de « jalon de fin » ──
+  const sectionChg6 = async () => {
+    const C6 = `fin d’un brassin en cuve ${combo}`;
+    const auj = new Date().toISOString().slice(0, 10);
+    try {
+      /* « NEIPA Test » (en cuve depuis 78 j, sans fin, déjà dans la fixture) est hors de la fenêtre de 3 mois : la période est reculée jusqu'à le voir */
+      await versCalendrier(); await choisirPeriode('3 mois'); await sleep(500);
+      for (let k = 0; k < 3 && !(await p.evaluate(() => !!document.querySelector('[aria-label^="NEIPA Test,"]:not([data-probable])'))); k++) { const f = await p.evaluate(() => { const e = document.querySelector('[aria-label="Période précédente"]'); if (!e) return null; const r = e.getBoundingClientRect(); return [r.x + r.width / 2, r.y + r.height / 2]; }); if (!f) break; await toucherXY(f[0], f[1]); await sleep(700); }
+      const boite = (nom) => p.evaluate((n) => { const e = document.querySelector(`[aria-label^="${n},"]:not([data-probable])`); if (!e) return null; e.scrollIntoView({ block: 'center', inline: 'center' }); const r = e.getBoundingClientRect(); return { l: r.left, r: r.right, w: r.width, y: r.top + r.height / 2 }; }, nom);
+      const col = await p.evaluate(() => { const cols = [...document.querySelectorAll('[data-bande-semaines] [data-semaine]')].map((x) => x.getBoundingClientRect().x); return cols.length > 1 ? (cols[cols.length - 1] - cols[0]) / (cols.length - 1) : 26; });
+      const fin = () => p.evaluate((k) => { const e = JSON.parse(localStorage.getItem(k) ?? '[]').find((x) => x.id === 'B-NEIPA-TEST'); return e?.finPrevue ?? e?.data?.finPrevue ?? null; }, CLE_CACHE);
+      const iso = (v) => { if (!v) return null; const m = /^(\d{1,2})\.(\d{1,2})\.(\d{4})$/.exec(String(v)); return m ? `${m[3]}-${m[2].padStart(2, '0')}-${m[1].padStart(2, '0')}` : String(v).slice(0, 10); };
+      const b = await boite('NEIPA Test');
+      if (!b) { echec(C6, '« NEIPA Test » introuvable : ' + await p.evaluate(() => [...document.querySelectorAll('[data-chose]')].map((e) => (e.getAttribute('aria-label') ?? e.getAttribute('data-chose')).slice(0, 22) + '@' + Math.round(e.getBoundingClientRect().left)).join(' | '))); return; }
+      const mi = await boite('NEIPA Test');
+      if (!mi) { echec(`${C6} message`, '« NEIPA Test » introuvable'); }
+      else {
+        const x = mi.l + mi.w / 2, lire = () => p.evaluate(() => document.querySelector('[data-message]')?.textContent ?? '');
+        let msg = '';
+        await glisser(x, mi.y, pas(x, x + 2 * col, 10), { pendant: async () => { await sleep(300); msg = await lire(); } });
+        await sleep(300); if (!msg) msg = await lire();
+        (msg && !/jalon de fin/.test(msg)) ? ok(`${C6} message du corps`, msg.slice(0, 90)) : echec(`${C6} message du corps`, msg ? `« ${msg.slice(0, 120)} »` : 'aucun message');
+        await echap();
+      }
+      const f0 = await fin();
+      const x0 = b.r - Math.min(8, b.w / 4);
+      /* hors de la bande de 40 px du cadre (le cadre défile sous le doigt) : 0,9 colonne, soit 6 jours */
+      await glisser(x0, b.y, pas(x0, x0 + 0.9 * col, 12)); await sleep(700);
+      const f1 = iso(await fin()), ecart = f1 ? Math.round((new Date(f1) - new Date(auj)) / 864e5) : null;
+      (f1 && ecart >= 5 && ecart <= 7) ? ok(`${C6} fin posée`, `${f0 ?? 'aucune'} → ${f1} (aujourd’hui + ${ecart} j)`) : echec(`${C6} fin posée`, `finPrevue ${f0 ?? 'aucune'} → ${f1 ?? 'aucune'} (attendu aujourd’hui + 5 à 7 j ; barre ${JSON.stringify(b)}, col ${col}, cadre ${JSON.stringify(await p.evaluate(() => { const r = document.querySelector('[data-frise]').getBoundingClientRect(); return [Math.round(r.left), Math.round(r.right)]; }))}, durée ${await p.evaluate(() => document.querySelector('[data-duree]')?.textContent ?? '-')}, cache ${await p.evaluate((k) => JSON.stringify(JSON.parse(localStorage.getItem(k) ?? '[]').find((x) => x.id === 'B-NEIPA-TEST')?.data ?? null).slice(0, 400), CLE_CACHE)})`);
+      await echap();
+      await p.evaluate((kf, kc) => { for (const k of [kf, kc]) localStorage.setItem(k, JSON.stringify(JSON.parse(localStorage.getItem(k) ?? '[]').map((x) => (x.id === 'B-NEIPA-TEST' ? { ...x, finPrevue: null, ...(x.data ? { data: { ...x.data, finPrevue: null } } : {}) } : x)))); }, CLE_FIXTURE, CLE_CACHE);
+    } catch (e) { echec(C6, String(e.message ?? e).slice(0, 160)); await echap(); }
+    await choisirPeriode('3 mois'); await sleep(400);
+  };
   // ── CAL-VIDE (21.11, « Il y a un espace vide énorme ici ??? ») et CAL-VIDES-EN-LIGNE (« les mettre en vertical pas les entassés à
   //    l'horizontal ») : en 6 sem., 3 mois et An, une rangée prend la hauteur de ses lignes (écart ≤ 24 px jusqu'à l'en-tête suivant) ; les
   //    rangées vides se posent l'une sous l'autre ──
@@ -734,6 +770,7 @@ async function jouerCalendrier({ p, base, combo, tactile, glisser, pas }) {
   await sectionBarreBord();
   await sectionChg4();
   await sectionChg5();
+  await sectionChg6();
   await cap('fin');
 }
 

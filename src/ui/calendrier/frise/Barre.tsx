@@ -305,7 +305,10 @@ export const Barre: React.FC<BarreProps> = props => {
   const brassin = chose.source.genre === 'batch';
   const nbJours = Math.max(1, ecartJours(chose.debut, chose.fin) + 1);
   const total = chose.jalons?.length ? Math.max(...chose.jalons.map(j => j.ecart), nbJours - 1) : 0;
-  const peutBord = chose.deplacable === true && (chose.source.genre === 'batch' || chose.source.genre === 'creative' || (chose.source.genre === 'plan' && chose.source.origine === 'manual')) && !proposee;
+  /* CHG-6 : un brassin en cuve sans fin connue (il ne se déplace pas) tire quand même son bord droit pour poser sa fin */
+  const peutBord = ((chose.deplacable === true && (chose.source.genre === 'batch' || chose.source.genre === 'creative' || (chose.source.genre === 'plan' && chose.source.origine === 'manual'))) || (brassin && !!chose.finInconnue)) && !proposee;
+  /* CHG-4 : le bord gauche d'une chose qui se déplace (le brassin en cuve : non, son jour de brassage ne bouge pas) */
+  const peutBordDebut = peutBord && chose.deplacable === true;
   /* le point d'étape touché (CAL-POINTS-MUETS) : sa bulle reste jusqu'au toucher suivant ailleurs */
   const [pointVu, setPointVu] = React.useState<string | null>(null);
   const bullePoint = React.useRef<HTMLSpanElement | null>(null);

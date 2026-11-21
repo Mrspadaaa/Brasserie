@@ -869,7 +869,8 @@ export function choseBrassin(batch: Batch, aujourdhui: string, options: { comman
   return {
     ...base, debut: j0, fin: fin?.jour ?? (aujourdhui > j0 ? aujourdhui : j0), ...(fin ? { preteLe: fin.jour } : { finInconnue: true as const }), ...(duree ? { duree } : {}),
     detail: batch.status === 'garde' ? 'en garde' : 'en cuve', jalons: jalonsBrassin(batch, options),
-    deplacable: { raison: 'Brassin en cuve : le jour de brassage ne bouge pas. Seul le jalon de fin se glisse.' }
+    /* CHG-6 : sans fin connue, son bord droit se tire pour la poser (`finPrevue`) */
+    deplacable: { raison: fin ? 'Brassin en cuve : le jour de brassage ne bouge pas. Seul le jalon de fin se glisse.' : 'Brassin en cuve : le jour de brassage ne bouge pas. Tire son bord droit pour poser sa fin.' }
   };
 }
 
