@@ -74,7 +74,9 @@ export function BandeDose({ etat, qty, unite, besoin, seul, stock, onPas, onEcri
   const conseilSachets = fab && sachet?.grammes ? fab.min / sachet.grammes : undefined;
   const auChoix = unite === 'g' && besoin?.grammes !== undefined && etat !== 'libre' ? grammesAuChoix(besoin.grammes)
     : besoin?.sachets !== undefined ? Math.max(1, Math.ceil(besoin.sachets - 1e-9)) : (besoin ?? seul)?.sachetsFabricant;
-  const max = Math.max(4, Math.ceil(Math.max(qty ?? 0, besoin?.sachets ?? 0, conseilSachets ?? 0) - 1e-9) + 1);
+  // Une dose saisie NaN, infinie ou démesurée ne casse pas la bande : la graduation reste bornée (fuzz de l’assistant, 21.11).
+  const fini = (v?: number) => v !== undefined && Number.isFinite(v) && v > 0 ? Math.min(v, 98) : 0;
+  const max = Math.max(4, Math.ceil(Math.max(fini(qty), fini(besoin?.sachets), fini(conseilSachets)) - 1e-9) + 1);
   const unitePl = motUnite(unite, 2);
   // Une levure sèche sans sachet (brique 500 g) : tout se dit en grammes, contre le besoin de la recette en grammes (plainte du 20.11).
   const enG = unite === 'g' && etat !== 'libre' && besoin?.grammes !== undefined;
