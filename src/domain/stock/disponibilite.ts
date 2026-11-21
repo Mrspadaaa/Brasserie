@@ -22,7 +22,7 @@ import { ingredientsOf, normalizeRecipe } from '../recipeSnapshot';
  * « inconnu » (`null`), jamais 0. La somme des lignes lisibles reste donnée (`besoinConnu`, `manqueAuMoins`) pour dire « au moins ».
  */
 
-export type GenreSource = 'brassin' | 'ajouts-restants' | 'recette';
+export type GenreSource = 'brassin' | 'ajouts-restants' | 'recette' | 'courses';
 
 export interface SourceBesoin {
   genre: GenreSource;
@@ -118,6 +118,7 @@ export function libelleSource(s: Pick<SourceBesoin, 'genre' | 'nom' | 'date'>): 
   const jour = jourMois(s.date);
   if (s.genre === 'recette') return `${s.nom} écrite${jour ? ` le ${jour}` : ''}`;
   if (s.genre === 'ajouts-restants') return `${s.nom} : ajouts restants`;
+  if (s.genre === 'courses') return `${s.nom} à rebrasser`;
   return `${s.nom} prévu${jour ? ` le ${jour}` : ''}`;
 }
 
@@ -153,6 +154,28 @@ function recetteJamaisBrassee(recipe: Recipe, batches: Batch[]): boolean {
   if (batches.some(b => b.recipeRef === recipe.id || b.recipeSnapshot?.sourceRecipeId === recipe.id)) return false;
   if (recipe.batchRef && batches.some(b => b.id === recipe.batchRef)) return false;
   return true;
+}
+
+const jourIso = (d?: string | null): string | null => {
+  const iso = d ? /^(\d{4})-(\d{2})-(\d{2})/.exec(d) : null;
+  if (iso) return `${iso[1]}-${iso[2]}-${iso[3]}`;
+  const ch = d ? /^(\d{1,2})\.(\d{1,2})\.(\d{4})/.exec(d) : null;
+  return ch ? `${ch[3]}-${ch[2].padStart(2, '0')}-${ch[1].padStart(2, '0')}` : null;
+};
+
+/**
+ * « Ajouter aux courses » (v07) : une recette déjà brassée, posée sur Courses le `coursesLe`, y reste tant qu'aucun brassin ne la cite
+ * depuis (planifié, ou brassé ce jour-là ou après) : ce brassin porte alors le besoin, jamais compté deux fois.
+ */
+export function recetteAuxCourses(recipe: Recipe, batches: Batch[]): boolean {
+  if (!recipe.coursesLe || recipe.archivedAt) return false;
+  return !batches.some(b => brassinCite(b, recipe.id) && b.status !== 'annule'
+    && (b.status === 'planifie' || (jourIso(b.brewDate || b.plannedBrewDate) ?? '') >= recipe.coursesLe!));
+}
+
+/** Où en est la recette dans Courses : comptée d'office (jamais brassée), demandée (« Ajouter aux courses »), ou absente. */
+export function recetteDansCourses(recipe: Recipe, batches: Batch[]): 'jamais-brassee' | 'demandee' | null {
+  return recetteJamaisBrassee(recipe, batches) ? 'jamais-brassee' : recetteAuxCourses(recipe, batches) ? 'demandee' : null;
 }
 
 function brassinCite(batch: Batch, recetteId: string): boolean {
@@ -240,11 +263,12 @@ export function disponibilites(
 
   for (const recipe of recipes) {
     if (recipe.id === sauf) continue;
-    if (!recetteJamaisBrassee(recipe, batches)) continue;
+    const jamais = recetteJamaisBrassee(recipe, batches);
+    if (!jamais && !recetteAuxCourses(recipe, batches)) continue;
     const n = normalizeRecipe(recipe);
-    for (const ligne of lignesDeRecette(n.fermentables ?? [], n.hops ?? [], n.adjuncts, n.yeast)) {
-      poser({ genre: 'recette', id: recipe.id, nom: recipe.name || recipe.id, date: dateDepuisIdRecette(recipe.id) }, ligne);
-    }
+    const nom = recipe.name || recipe.id;
+    const source = jamais ? { genre: 'recette' as const, id: recipe.id, nom, date: dateDepuisIdRecette(recipe.id) } : { genre: 'courses' as const, id: recipe.id, nom, date: recipe.coursesLe ?? null };
+    for (const ligne of lignesDeRecette(n.fermentables ?? [], n.hops ?? [], n.adjuncts, n.yeast)) poser(source, ligne);
   }
 
   const parArticle = new Map<string, Disponibilite>();

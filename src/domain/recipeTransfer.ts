@@ -252,7 +252,7 @@ export const recipeFields = {
   parentRecipeId: t('Recette d’origine')
 } satisfies Record<
   // Index IDs and local axis definitions travel with a database backup, not a standalone recipe.
-  Exclude<keyof Recipe, 'id' | 'batchRef' | 'favorite' | 'archivedAt' | 'malts' | 'water' | 'hopMatrixId' | 'hopAromaTarget' | 'hopPredictionIds' | 'hopTrialId' | 'hopSolverIntent' | 'yeastGuide' | 'hopV55Applications' | 'hopV55ColdEvidenceAssociations'>,
+  Exclude<keyof Recipe, 'id' | 'batchRef' | 'favorite' | 'archivedAt' | 'coursesLe' | 'malts' | 'water' | 'hopMatrixId' | 'hopAromaTarget' | 'hopPredictionIds' | 'hopTrialId' | 'hopSolverIntent' | 'yeastGuide' | 'hopV55Applications' | 'hopV55ColdEvidenceAssociations'>,
   Field
 >;
 
@@ -281,7 +281,7 @@ const estimates = o('Estimations au moment de la copie', {
 });
 const transferArchive = o('Archives V5.5 non réattribuées', { coldContactEvidenceSummary: t('Index lisible de preuves de contact à froid') });
 const root = o('', { ...recipeFields, transferArchive, estimates });
-export type RecipeContent = Omit<Recipe, 'id' | 'batchRef' | 'favorite' | 'archivedAt' | 'malts' | 'water' | 'hopMatrixId' | 'hopAromaTarget' | 'hopPredictionIds' | 'hopTrialId' | 'hopSolverIntent' | 'yeastGuide' | 'hopV55ColdEvidenceAssociations'>;
+export type RecipeContent = Omit<Recipe, 'id' | 'batchRef' | 'favorite' | 'archivedAt' | 'coursesLe' | 'malts' | 'water' | 'hopMatrixId' | 'hopAromaTarget' | 'hopPredictionIds' | 'hopTrialId' | 'hopSolverIntent' | 'yeastGuide' | 'hopV55ColdEvidenceAssociations'>;
 type RecipeTextInput = RecipeContent & Pick<Partial<Recipe>, 'hopV55ColdEvidenceAssociations'>;
 export const RECIPE_TEXT_HEADER = 'L’AFFINÉE — RECETTE v1';
 export const RECIPE_TEXT_HEADER_V2 = 'L’AFFINÉE — RECETTE v2';

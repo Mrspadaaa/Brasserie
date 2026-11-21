@@ -79,6 +79,13 @@
 .rcp-alerte p { font-size: 15px; color: rgb(var(--cave-texte-50)); }
 .rcp-alerte p b { font-weight: 600; }
 .rcp-alerte small { font-size: 13px; color: rgb(var(--cave-texte-200)); }
+/* « Ajouter aux courses » (v07) : une rangée au pied de l'alerte, le panier et le compte à gauche, le bouton à droite. */
+.rcp-courses { display: flex; align-items: center; gap: 8px; min-height: 40px; }
+.rcp-courses-dit { display: inline-flex; align-items: center; gap: 6px; font-size: 15px; color: rgb(var(--cave-texte-50)); }
+.rcp-courses svg { width: 18px; height: 18px; flex: none; }
+.rcp-courses-btn { margin-left: auto; display: inline-flex; align-items: center; gap: 6px; min-height: 40px; padding: 0 12px; border-radius: 8px; border: 1px solid rgb(var(--cave-texte-50) / 0.25); background: rgb(var(--cave-950)); color: rgb(var(--cave-texte-50)); font-size: 15px; font-weight: 600; }
+.rcp-courses-annuler { margin-left: auto; min-height: 40px; padding: 0 6px; color: rgb(var(--cave-texte-50)); font-size: 15px; font-weight: 600; text-decoration: underline; text-underline-offset: 3px; }
+.rcp-courses-annuler + .rcp-courses-btn { margin-left: 0; }
 .rcp-prete { display: flex; align-items: center; gap: 8px; padding: 10px 12px; border-radius: 10px; background: rgb(var(--hop) / 0.12); border: 1px solid rgb(var(--hop) / 0.4); font-size: 15px; color: rgb(var(--cave-texte-50)); }
 .rcp-averifier { display: flex; align-items: center; gap: 6px; font-size: 13px; color: rgb(var(--cave-texte-200)); }
 .rcp-averifier svg { width: 15px; height: 15px; color: rgb(var(--attention)); flex: none; }

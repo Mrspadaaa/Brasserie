@@ -148,6 +148,9 @@ export function fixtureChaines(aujourdhui, { sansJour = false, cuve = false, gar
     add('recipes', 'R-ZZ-PA-V1', { id: 'R-ZZ-PA-V1', name: 'ZZ TEST Blonde de juillet', style: 'Pale Ale', volumeL: 100, ogTarget: 1.052, brewhouse: bh, ingredients: [],
       fermentables: [{ name: 'ZZ TEST Malt pilsner', weightKg: 20, kind: 'grain' }, { name: 'ZZ TEST Munich', weightKg: 4, kind: 'grain' }],
       hops: [{ name: 'ZZ TEST Citra', weightG: 300, stage: 'boil', time: 60, alpha: 9 }], yeast: { name: 'ZZ TEST US-05', qty: 2, unit: 'sachet' }, fermentation: [{ kind: 'primaire', name: 'Primaire', tempC: 19, days: 12 }] });
+    // brassée une fois, il y a 120 jours : ses manques ne sont pas dans Courses tant qu'on ne les y pose pas (« Ajouter aux courses », v07)
+    const jB = ajouter(aujourdhui, -120);
+    add('batches', 'B-ZZ-PA-V1', { id: 'B-ZZ-PA-V1', name: 'ZZ TEST Blonde de juillet', style: 'Pale Ale', volumeL: 100, brewDate: suisse(jB), actualBrewDate: suisse(jB), plannedBrewDate: suisse(jB), status: 'termine', gravityLog: [], recipeRef: 'R-ZZ-PA-V1', stockAccountingVersion: 1 });
   }
   if (reprise) {
     // D405 : « ZZ TEST Pale » a un budget estimé (brassin d'il y a 60 j : énergie 18, nettoyage 6, emballage 45) ; son nouveau brassin, posé sans

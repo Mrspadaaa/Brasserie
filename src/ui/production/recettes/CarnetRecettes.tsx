@@ -2,7 +2,7 @@
 // Aucune donnée inventée : « prête » vient du stock et des réservations (recettesModel). Un stock inconnu est « à vérifier ».
 // Ce que r2a n'a pas est retiré de l'écran (Comparer, bilan, favori, Ranger) ; leur code reste dans ProductionCatalog.
 import React, { useEffect, useMemo, useState } from 'react';
-import { Boxes, Check, ChevronRight, Link2, Plus, Search, SlidersHorizontal, Trash2, TriangleAlert, X } from 'lucide-react';
+import { Boxes, Check, ChevronRight, Link2, Plus, Search, ShoppingCart, SlidersHorizontal, Trash2, TriangleAlert, X } from 'lucide-react';
 import { ConfirmerSuppressionRecette } from '../../recette/ConfirmerSuppressionRecette';
 import type { Batch, Recipe, StockItem } from '../../../types';
 import { StorageService } from '../../../services/storage';
@@ -13,6 +13,8 @@ import { isArchived, isCurrent } from '../../../domain/catalogOrganization';
 import { changementsDepuis, dateCourte, dire, grouper, lignees, versionPrecedente, type Lignee, type LigneBesoin } from './recettesModel';
 import { delier, relierAuStock, type Lien } from '../../../domain/recette/relierAuStock';
 import { memeNom } from '../../../services/stockLineMatching';
+import { recetteDansCourses } from '../../../domain/stock/disponibilite';
+import { aujourdhuiLocal } from '../../stock/useHorizonStock';
 import './recettes.css';
 
 const lireStock = (): StockItem[] => {
@@ -258,6 +260,11 @@ export function CarnetRecettes({ recipes, batches, onOpenRecipe, onEditRecipe, o
     const lienDe = (b: LigneBesoin) => reliee?.liens.find((x) => memeNom(x.nom, b.article) || (!!x.article && memeNom(x.article.name, b.article)));
     const nbReliees = reliee ? reliee.liens.filter((x) => x.article).length : 0;
     const nbProches = reliee ? reliee.liens.filter((x) => x.article && x.correspondance === 'proche').length : 0;
+    // « Ajouter aux courses » (v07) : ses manques vont sur Courses de Stocks d'un toucher ; une recette jamais brassée y est déjà.
+    const dansCourses = recette ? recetteDansCourses(recette, batches) : null;
+    const ajouterAuxCourses = () => { if (recette) StorageService.updateRecipe({ ...recette, coursesLe: aujourdhuiLocal() }); };
+    const retirerDesCourses = () => { if (!recette) return; const { coursesLe: _c, ...reste } = recette; StorageService.updateRecipe(reste); };
+    const voirCourses = () => { setOuverte(null); window.dispatchEvent(new CustomEvent('affinee:ouvrir-stocks', { cancelable: true })); };
     const sousTitre = l ? [l.entree.style, l.entree.volumeL ? `${String(l.entree.volumeL).replace('.', ',')} L` : '', fois(l.brassees)].filter(Boolean).join(' · ') : undefined;
     return (
       <>
@@ -287,6 +294,20 @@ export function CarnetRecettes({ recipes, batches, onOpenRecipe, onEditRecipe, o
                   <p>Pour la rebrasser, il manque {l.manques.map((m, i) => <React.Fragment key={m.cle}>{i > 0 && ', '}{manqueDit(m)}</React.Fragment>)}.</p>
                   {reserve?.reservePar && <small>Le stock a {reserve.reservePar.stock} de {reserve.article}, tous réservés au {reserve.reservePar.lots.join(', ')} : il n’en reste aucun de libre.</small>}
                   {l.inconnus.length > 0 && <small>Le stock de <b>{nomsDe(l.inconnus)}</b> est aussi à vérifier.</small>}
+                  <div className="rcp-courses">
+                    {dansCourses ? (
+                      <>
+                        <span className="rcp-courses-dit"><Check aria-hidden="true" />{dansCourses === 'demandee' ? 'Dans tes courses' : 'Déjà dans tes courses'}</span>
+                        {dansCourses === 'demandee' && <button type="button" className="rcp-courses-annuler" onClick={retirerDesCourses}>Annuler</button>}
+                        <button type="button" className="rcp-courses-btn" onClick={voirCourses}>Voir<ChevronRight aria-hidden="true" /></button>
+                      </>
+                    ) : (
+                      <>
+                        <span className="rcp-courses-dit"><ShoppingCart aria-hidden="true" />{l.manques.length} à acheter</span>
+                        <button type="button" className="rcp-courses-btn" onClick={ajouterAuxCourses}><Plus aria-hidden="true" />Ajouter aux courses</button>
+                      </>
+                    )}
+                  </div>
                 </div>
               ) : l.inconnus.length > 0 ? (
                 // CT4-B-4 : un petit repère, pas un bandeau de trois lignes ; ce qui n'est pas relié se lit sur chaque ligne (« non relié »).

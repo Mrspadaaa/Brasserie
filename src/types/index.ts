@@ -507,6 +507,8 @@ export interface Recipe {
   id: string;
   /** Organisation du carnet uniquement ; l'historique de production reste conservé. */
   archivedAt?: string | null;
+  /** « Ajouter aux courses » (v07, rebrasser) : jour ISO où ses manques ont été posés sur Courses ; un brassin qui la cite depuis les reprend. */
+  coursesLe?: string;
   version?: number;
   parentRecipeId?: string;
   batchRef?: string;
@@ -587,7 +589,7 @@ export interface Recipe {
  * Volontairement sans `id` ni `favorite` : ce n'est plus une recette qu'on
  * range, c'est le contenu réel d'une cuve à une date donnée.
  */
-export type RecipeSnapshot = Omit<Recipe, 'id' | 'favorite' | 'batchRef' | 'archivedAt'> & {
+export type RecipeSnapshot = Omit<Recipe, 'id' | 'favorite' | 'batchRef' | 'archivedAt' | 'coursesLe'> & {
   /** Recette d'origine, et sa date de copie. */
   sourceRecipeId?: string;
   capturedAt: string; // ISO

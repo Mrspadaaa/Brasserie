@@ -556,6 +556,24 @@ function listeEtapes() { return [
     }
   },
   {
+    id: 'N3-COURSES', titre: 'Rebrasser : « Ajouter aux courses » pose d\'un toucher les manques d\'une recette déjà brassée sur Courses de Stocks (N3, v07)', fixture: { sansJour: true, rebrasser: true },
+    async joue(s) {
+      await s.onglet('Brassins'); await sleep(800);
+      await s.toucher('Recettes', { prefixe: true }); await sleep(1000);
+      await s.toucher('ZZ TEST Blonde de juillet', { contient: true }); await sleep(1000);
+      await s.cap('N3C-1-recette');
+      if (!(await s.visible('Ajouter aux courses', { contient: true }))) return echec('N3-COURSES', `la recette brassée « ZZ TEST Blonde de juillet » ne propose pas « Ajouter aux courses » : ${(await s.texte(900)).match(/il manque[^|]{0,120}/)?.[0] ?? 'aucun manque dit'}`);
+      await s.toucher('Ajouter aux courses', { contient: true, att: 1200 });
+      await s.cap('N3C-2-ajoutee');
+      if (!/Dans tes courses/.test(await s.texte(5000))) return echec('N3-COURSES', 'après « Ajouter aux courses », la fiche ne dit pas « Dans tes courses »');
+      await s.toucher('Voir', { att: 1500 });
+      await s.cap('N3C-3-courses');
+      const t = await s.texte(8000);
+      if (!/ZZ TEST Citra/.test(t) || !/Blonde de juillet/.test(t)) return echec('N3-COURSES', `Courses ne porte pas le Citra de « ZZ TEST Blonde de juillet » : ${t.slice(0, 220)}`);
+      ok('N3-COURSES', '« Ajouter aux courses » → « Dans tes courses », Courses cite ZZ TEST Citra pour ZZ TEST Blonde de juillet');
+    }
+  },
+  {
     id: 'N4', titre: 'Fût livré : « Ses 3 fûts sont revenus » rentre d\'un toucher tous les fûts du client, à la date du jour (N4, v11)', fixture: { sansJour: true, retours: true },
     async joue(s) {
       await s.onglet('Stocks'); await sleep(800);
