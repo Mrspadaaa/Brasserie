@@ -2590,3 +2590,7 @@ Classement de la page r3 de Ma levure (https://claude.ai/artifact/DKAJe8ESeMR4ig
 > Le ... A un effet vraiment étrange... Et ça trigger pas la frise editavlble de l'autre vue
 
 (21.11, tour 8, capture-22 : Finances › Synthèse, « … » ouvre deux listes « du novembre 2026 au novembre 2026 » ; il attend la même frise au doigt que Finances › Opérations.)
+
+> Et pourquoi à certains événements je peux pas leur donner un jour précis... ?
+
+(21.11, tour 8, captures 23 et 24 : la fête « vi » se tire par semaine (« Rien ne change : tire jusqu'à une autre semaine. ») ; les graduations « S43S44S45… » se chevauchent en 17 semaines.)
