@@ -304,6 +304,10 @@
 .cn-ecoute-mot { font-size: 14px; font-weight: 700; white-space: nowrap; }
 /* d1280-18 : amené en vue à son arrivée, ni sous la barre du haut ni sous le champ et le clavier. */
 .cn-bandeau, .cn-etat { scroll-margin-top: var(--cn-haut, 88px); scroll-margin-bottom: calc(var(--cn-champ-h, 0px) + var(--cn-clavier, 0px) + 12px); }
+/* CRN-21 : la note qui arrive vient au-dessus du champ du bas (CarnetOuvert, scrollIntoView 'nearest') */
+.cn-notes > * { scroll-margin-top: var(--cn-haut, 88px); scroll-margin-bottom: calc(var(--cn-champ-h, 0px) + var(--cn-clavier, 0px) + 12px); }
+/* dans le fil, le champ est hors de la zone qui défile (.cn-defile) : sa hauteur ne se recompte pas, sinon le titre du carnet neuf sort de l'écran */
+[data-carnets] > .cn-defile .cn-notes > * { scroll-margin-bottom: 12px; }
 
 /* P11 : plusieurs critères, « Ce qui compte » une fois en tête, puis une ligne courte par critère, alignée sous le texte. */
 .cn-criteres { display: flex; flex-direction: column; gap: 6px; padding-left: 26px; }

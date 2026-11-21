@@ -254,6 +254,20 @@ export function CarnetOuvert(p: CarnetOuvertProps) {
   const enDouble = new Set(p.aides.doublon ? p.doublons ?? [] : []);
   const question = k.facons.length === 2 ? `${k.facons[0].nom} ou ${k.facons[1].nom} ?` : null;
   const neuf = !!p.vientDEtreCree && c.status === 'idea';
+  /* CRN-21 (critique carnet 21.11) : la note qui arrive (carnet neuf, ou note ajoutée) vient au-dessus du champ du bas ; sinon
+     « Notes 1 » touche le champ et la note est dessous. 'nearest' : un défilement minimal, rien si elle se voit déjà ;
+     scroll-margin (carnets.css, `.cn-notes > *`) lit --cn-champ-h et --cn-clavier, comme le bandeau. */
+  const notesRef = useRef<HTMLDivElement>(null);
+  const nbNotes = useRef(neuf ? 0 : k.notes.length);
+  useEffect(() => {
+    const avant = nbNotes.current; nbNotes.current = k.notes.length;
+    if (k.notes.length <= avant) return;
+    const el = notesRef.current?.lastElementChild as HTMLElement | null | undefined;
+    if (!el) return;
+    if (typeof requestAnimationFrame !== 'function') { el.scrollIntoView?.({ block: 'nearest' }); return; }
+    const id = requestAnimationFrame(() => el.scrollIntoView?.({ block: 'nearest' }));
+    return () => cancelAnimationFrame(id);
+  }, [k.notes.length]);
 
   /* P6 : les liens non lus, jamais classés ; le contrat de comparer.ts (`aRelire`), sinon lus sur le carnet */
   const aRelire: ArticleV[] = p.tableau
@@ -575,7 +589,7 @@ export function CarnetOuvert(p: CarnetOuvertProps) {
         ) : (
           <>
             <h3 className="cn-rubrique-tete"><FileText size={18} aria-hidden /> Notes <span className="cn-mut cn-mono">{k.notes.length}</span></h3>
-            <div className="cn-notes">
+            <div className="cn-notes" ref={notesRef}>
               {k.notes.map((n, i) => (
                 <React.Fragment key={n.id}>
                   {p.noteSupprimee && i === 0 && !p.noteSupprimee.apres && <Bandeau enLigne bandeau={{ sorte: 'note-supprimee' }} onAnnuler={p.noteSupprimee.onAnnuler} />}

@@ -558,6 +558,28 @@ async function jouer(dir) {
       if (pts.length) throw new Error(`point coloré sans mot en bas à gauche : ${pts.join(' | ')}`);
       ok('CRN-19', 'coin bas gauche vide');
     });
+    await etape('CRN-21 la note rangée se voit au-dessus du champ, sans défiler', async () => {
+      // sans défiler : la note rangée (dernière ligne de .cn-notes) est entière dans l'écran, au-dessus du champ du bas
+      const vue = () => p.evaluate(() => {
+        const z = document.querySelector('.cn-champ-zone')?.getBoundingClientRect();
+        const ns = [...document.querySelectorAll('.cn-notes > *')].filter((e) => e.getBoundingClientRect().height > 0);
+        const n = ns[ns.length - 1]?.getBoundingClientRect();
+        return z && n ? { haut: Math.round(n.top), bas: Math.round(n.bottom), champ: Math.round(z.top) } : null;
+      });
+      const fautes = [];
+      await demarrer(); await versAtelier(); await attendreListe();
+      await focaliserChamp(); await taper('ZZ TEST — acheter un réfractomètre numérique'); await entree(); await sleep(800); await cap('crn21a-carnet-neuf');
+      const a = await vue();
+      if (!a) fautes.push('carnet neuf : aucune note ou aucun champ');
+      else if (a.bas > a.champ + 1 || a.haut < 0) fautes.push(`carnet neuf : note y ${a.haut}–${a.bas}, champ à ${a.champ}`);
+      await demarrer(); await versAtelier(); await attendreListe(); await ouvrirCarnetDeListe('Frigo + congel');
+      await focaliserChamp(); await taper('mesurer la porte du local'); await entree(); await sleep(800); await cap('crn21b-note-ajoutee');
+      const b = await vue();
+      if (!b) fautes.push('note ajoutée : aucune note ou aucun champ');
+      else if (b.bas > b.champ + 1 || b.haut < 0) fautes.push(`note ajoutée : note y ${b.haut}–${b.bas}, champ à ${b.champ}`);
+      if (fautes.length) throw new Error(fautes.join(' ; '));
+      ok('CRN-21', `carnet neuf : note jusqu'à ${a.bas}, champ ${a.champ} ; note ajoutée : jusqu'à ${b.bas}, champ ${b.champ}`);
+    });
     // CRN-suite
 
     // ══════════ thèmes et grand écran ══════════
