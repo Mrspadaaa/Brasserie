@@ -18,6 +18,7 @@ import { BORNES_PROCEDE } from '../domain/bornesProcede';
 import { noloDisplayRangeLabel } from './NoloAlcoholChart';
 import { HopSourceLink } from './hopIndex/HopTechnicalPanel';
 import './nolo-simulator.css';
+import { refCurseurNatif } from './geste';
 
 const number = (value: number, digits = 2) => value.toLocaleString('fr-FR', { maximumFractionDigits: digits });
 const emptyKnowledge: HopKnowledge[] = [];
@@ -41,7 +42,7 @@ function Setting({ label, value, unit, onChange, min = 0, max, digits = 3, slide
       required placeholder="À préciser" className="nolo-number" onFocus={event => event.currentTarget.select()}
       onChange={event => push(event.target.value)} onBlur={() => { if (!invalid) settle({ min, max }); }}/>
     {unit && <span id={id + '-unit'}>{unit}</span>}
-  </span>{slider && value != null && <input type="range" name="nolo_simulation_range" autoComplete="off" data-form-type="other" data-lpignore="true" data-1p-ignore="true" data-bwignore="true"
+  </span>{slider && value != null && <input ref={refCurseurNatif} type="range" name="nolo_simulation_range" autoComplete="off" data-form-type="other" data-lpignore="true" data-1p-ignore="true" data-bwignore="true"
     aria-label={label + ' — curseur'} className="nolo-knob-slider" value={value} min={slider.min} max={Math.max(slider.max, value)} step={slider.step}
     onChange={event => onChange(Number(event.target.value))}/>}</div>;
 }
