@@ -66,11 +66,13 @@ export function BandeAnnee({ courbe, mois: moisModele, creux: creuxEnTete }: Ban
       {mois.map((m, k) => (
         // Les initiales sur une même ligne de base, en haut (as c1-d : « N D J F… ») ; dessous, la barre posée au sol ; le creux est cerclé, son
         // montant juste au-dessus du cercle (jamais collé au mois voisin).
-        <div key={`${m.annee}-${m.mois}`} className={k === creux ? 'ent-an-m ent-an-creux' : 'ent-an-m'} data-mois={`${m.annee}-${String(m.mois + 1).padStart(2, '0')}`}
+        <div key={`${m.annee}-${m.mois}`} className={`ent-an-m${k === creux ? ' ent-an-creux' : ''}${m.mois === 0 ? ' ent-an-janv' : ''}`} data-mois={`${m.annee}-${String(m.mois + 1).padStart(2, '0')}`}
           title={`${MOIS_MIN[m.mois]}${anneeDe(m)} : au plus bas ${chf(k === creux ? montantCreux : m.plusBas)} CHF`}>
           {/* CAL-ENTETE (21.11, « l'info ont l'a déjà sur le graph ») : la rangée des barres et du montant du creux, sous les initiales, redisait
               la courbe ; retirée. Le creux reste dans le titre du mois et l'aria-label. */}
           <span className="ent-an-l" aria-hidden="true">{INITIALES[m.mois]}</span>
+          {/* CHV-13 : « N D J F M… » portait deux O, deux J, deux M sans dire où l'année change. Chaque janvier écrit son année (’27) à côté de sa lettre. */}
+          {m.mois === 0 && <span className="ent-an-a" aria-hidden="true">{`’${String(m.annee).slice(-2)}`}</span>}
         </div>
       ))}
     </div>

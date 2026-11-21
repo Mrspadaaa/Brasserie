@@ -68,6 +68,21 @@ export function largeurEtiquetteMax(): number {
 const moisDuJeudi = (lundi: string): number => new Date(Date.parse(`${lundi}T00:00:00Z`) + 3 * 86400000).getUTCMonth();
 
 /**
+ * Les repères d'un pas de 2 ou 4 (CHV-13) : un repère toutes les `pas` colonnes, sans trou ni écart double. L'ancre est la première semaine de
+ * l'année quand la fenêtre passe le nouvel an (S52, S53 puis S1 : « S50 S52 S2 » sautait S53 et S1 et faisait un écart de 3) ; sans nouvel an,
+ * la première semaine dont le numéro est un multiple du pas (S44, S46…). Les colonnes se comptent, pas les numéros : une année à 53 semaines
+ * ou à 52 garde le même rythme.
+ */
+export function reperesReguliers(semaines: readonly SemaineBande[], pas: 1 | 2 | 4): Array<[number, string]> {
+  const an = semaines.findIndex((s, k) => k > 0 && s.numero < semaines[k - 1].numero);
+  const ancre = an >= 0 ? an : semaines.findIndex(s => s.numero % pas === 0);
+  if (ancre < 0) return [];
+  const sortie: Array<[number, string]> = [];
+  for (let k = ancre % pas; k < semaines.length; k += pas) sortie.push([k, `S${semaines[k].numero}`]);
+  return sortie;
+}
+
+/**
  * Les étiquettes visibles de la bande : l'index de la colonne et son texte. Avec un pas de 2 ou 4, les semaines dont le numéro en est un multiple ;
  * en mois, l'initiale du mois à la première semaine de chaque mois (celle de son jeudi). Garde-fou : une étiquette trop près de la précédente
  * (fin et début d'année, mois entamé à la première colonne) n'est pas posée ; aucune n'en chevauche une autre.
@@ -76,7 +91,7 @@ export function etiquettesBande(semaines: readonly SemaineBande[], pas: PasEtiqu
   const res = new Map<number, string>();
   const candidates: Array<[number, string]> = pas === 'mois'
     ? semaines.flatMap((s, k) => (k === 0 || moisDuJeudi(s.debut) !== moisDuJeudi(semaines[k - 1].debut) ? [[k, INITIALES[moisDuJeudi(s.debut)]] as [number, string]] : []))
-    : semaines.flatMap((s, k) => (s.numero % pas === 0 ? [[k, `S${s.numero}`] as [number, string]] : []));
+    : reperesReguliers(semaines, pas);
   if (!(largeurColonne > 0)) { candidates.forEach(([k, t]) => res.set(k, t)); return res; }
   const largeur = (t: string) => (t.length === 1 ? Math.ceil(largeurEtiquette / 2) : largeurEtiquette);
   let derniere: [number, string] | null = null;

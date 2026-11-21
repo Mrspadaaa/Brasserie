@@ -1469,10 +1469,12 @@ describe('CRITIQUE-6 (lot B-entete) : le chiffre clé entier, le creux et ses ca
       const visibles = Array.from(container.querySelectorAll('.ent-sem'));
       expect(visibles.length).toBeGreaterThan(0);
       expect(visibles.length).toBeLessThanOrEqual(13);
-      for (const v of visibles) expect(Number(v.textContent!.slice(1)) % 4).toBe(0);
       const cols = Array.from(container.querySelectorAll('[data-bande-semaines] > button'));
       expect(cols).toHaveLength(26);
       const idx = visibles.map(v => cols.indexOf(v.closest('button')!));
+      // CHV-13 : un pas de 4 colonnes régulier, qui passe le nouvel an (S52, S53, S1…) et pose S1 ; plus de semaines « rondes » à tout prix.
+      expect(new Set(idx.slice(1).map((k, i) => k - idx[i]))).toEqual(new Set([4]));
+      expect(visibles.map(v => v.textContent)).toContain('S1');
       for (let k = 1; k < idx.length; k++) expect((idx[k] - idx[k - 1]) * 11).toBeGreaterThanOrEqual(S53 + 4);
       // Toutes touchables, chacune avec sa date (« S50, 7 – 13 déc. »).
       expect(screen.getByRole('button', { name: 'S50, 7 – 13 déc.' })).toBeInTheDocument();
@@ -1483,7 +1485,7 @@ describe('CRITIQUE-6 (lot B-entete) : le chiffre clé entier, le creux et ses ca
       const { container } = rendreBande(14.4);
       const textes = Array.from(container.querySelectorAll('.ent-sem')).map(v => v.textContent);
       expect(textes.length).toBeLessThanOrEqual(13);
-      expect(textes.slice(0, 5)).toEqual(['S48', 'S50', 'S52', 'S2', 'S4']);
+      expect(textes.slice(0, 5)).toEqual(['S48', 'S50', 'S52', 'S1', 'S3']); // CHV-13 : S53 et S1 comptés, pas d'écart de 3 colonnes
       expect(container.querySelector('[data-bande-semaines]')!.getAttribute('data-pas')).toBe('2');
     });
 

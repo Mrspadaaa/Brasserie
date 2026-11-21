@@ -108,7 +108,7 @@ export function BandeColonnes({ colonnes, echelle, aujourdhui, deplie = null, on
             <React.Fragment key={rang}>
               <button type="button" className="ent-bj-t ent-bj-replier" data-replier={s.lundi} style={{ gridColumn: col, gridRow: '1' }}
                 aria-label={`${etiquetteS(s.lundi)}, ${plageSemaine(s.lundi)} : replier`} {...appui(s.lundi, () => onDeplier?.(null))}>
-                {etiquetteS(s.lundi)} <small>{plageSemaine(s.lundi)} · toucher pour replier</small>
+                {etiquetteS(s.lundi)} <small>{plageSemaine(s.lundi)}<span className="ent-bj-rep"> · toucher pour replier</span></small>
               </button>
               {colonnes.slice(s.de, s.a + 1).map((c, k) => jourBouton(c, s.de + k))}
             </React.Fragment>

@@ -219,6 +219,10 @@
 .ent-an { display: grid; grid-template-columns: repeat(var(--n, 12), minmax(0, 1fr)); align-items: stretch; border-bottom: 1px solid var(--ent-line); }
 .ent-an-m { display: flex; flex-direction: column; align-items: center; padding: 2px 0 3px; }
 .ent-an-l { height: 18px; font-size: 14px; font-weight: 600; line-height: 18px; color: var(--ent-mut); }
+/* CHV-13 : chaque janvier écrit son année à côté de sa lettre (« J’27 ») et ouvre l'année d'un trait fin à sa gauche. */
+.ent-an-janv { flex-direction: row; justify-content: center; white-space: nowrap; box-shadow: inset 1px 0 0 var(--ent-line2); }
+.ent-an-janv .ent-an-l { color: var(--ent-ink); }
+.ent-an-a { height: 18px; font-size: 14px; font-weight: 600; line-height: 18px; color: var(--ent-mut); }
 
 /* ---- ce qui se pose sur l'en-tête : détail du creux, menu, lecture, message ---- */
 .ent-pop, .ent-menu { position: absolute; z-index: 45; box-sizing: border-box; background: rgb(var(--cave-850)); color: var(--ent-ink); border: 1.5px solid var(--ent-line2); border-radius: 12px; box-shadow: var(--ombre-lift); padding: 8px 10px; font-size: 14px; line-height: 20px; }
@@ -261,8 +265,11 @@
 /* D406 (21.11, « il faudrait des tailles fix car SI non ça fait bouger le calendrier ») : la semaine dépliée tient dans la hauteur de la
    bande des semaines (29 px, comme .ent-bd) : rien ne bouge dessous. Titre « replier » sur 12 px, jours en chiffres (la lettre reste dans
    l'aria-label, jourEntier), les semaines voisines centrées. */
-.ent-bj--deplie { grid-template-rows: 12px 16px; height: 29px; }
-.ent-bj--deplie .ent-bj-t, .ent-bj--deplie .ent-bj-t small { font-size: 11px; line-height: 12px; }
+.ent-bj--deplie { grid-template-rows: 14px 15px; height: 29px; }
+/* CHV-14 : la légende de la semaine dépliée est un libellé compact (12 px, DESIGN.md), plus 11 px pâles ; elle reste dans sa case et ne touche
+   aucune voisine (S46, S48) : trop étroite pour « · toucher pour replier », elle ne garde que « S47 16–22 nov. » (conteneur ci-dessous). */
+.ent-bj--deplie .ent-bj-t, .ent-bj--deplie .ent-bj-t small { font-size: 12px; line-height: 14px; }
+.ent-bj--deplie .ent-bj-t small { font-weight: 500; color: rgb(var(--cave-300)); }
 .ent-bj--deplie .ent-bj-j { justify-content: center; font-size: 12.5px; }
 .ent-bj--deplie .ent-bj-j small { display: none; }
 .ent-bj--deplie .ent-bj-s { padding-top: 0 !important; align-self: center; }
@@ -273,7 +280,8 @@
 .ent-bj--deplie .ent-bj-t { border-left: 0 !important; padding-left: 5px !important; }
 /* Comme la maquette C (une étiquette libre sur 210 px) : « toucher pour replier » déborde d'un trait sur la semaine voisine plutôt que perdre sa fin
    (S49 « 30 nov.–6 déc. » est plus long que S47 « 16–22 nov. »). */
-.ent-bj-replier { overflow: visible; position: relative; z-index: 1; }
+.ent-bj-replier { overflow: hidden; text-overflow: ellipsis; container-type: inline-size; }
+@container (max-width: 199px) { .ent-bj-rep { display: none; } }
 .ent-bj-j { display: flex; flex-direction: column; align-items: center; justify-content: flex-start; font-size: 13px; font-weight: 600; line-height: 1; color: rgb(var(--cave-400)); }
 .ent-bj-j small { font-size: 10.5px; font-weight: 600; margin-bottom: 1px; }
 .ent-bj-j.ent-bj-auj { color: rgb(var(--alert-texte)); font-weight: 800; }
