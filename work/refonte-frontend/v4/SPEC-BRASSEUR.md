@@ -2503,3 +2503,9 @@ Classement de la page r3 de Ma levure (https://claude.ai/artifact/DKAJe8ESeMR4ig
 > Mais ça semble un peu maigre ??
 
 (21.11, page https://claude.ai/artifact/5hDwK9FYvFXbVh8AWqfUii : A2 quantité par appui long 6 · 12 · 24 ; B1 reste à vendre sur la carte du brassin ; C1 date en horizons au glisser ; D2 prix = dernier achat semblable. « Maigre » : 8 candidates et 4 choix ne couvrent pas assez ; une 2e passe de découverte suit.)
+
+> Et concernant Moins de gestes · 20.11 (classement v01–v14 redonné) … Ça va être porté et améliorer ??.
+>
+> Il y a quand même quelques bonne piste... Certaines sont gimmicky mais d'autres sont des vrais gain. C'est de ça que je parle...
+
+(21.11 : son classement de Moins de gestes entre dans la passe 2 des workflows ; chaque version classée devient une candidate mesurée et améliorée selon son mot.)
