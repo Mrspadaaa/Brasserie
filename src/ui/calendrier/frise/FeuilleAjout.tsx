@@ -3,7 +3,7 @@ import { Sheet } from '../../Sheet';
 import { Input } from '../../Input';
 import { ChampMontant } from '../../finance/ChampMontant';
 import {
-  appliquerPuce, aDesJoursActifs, aUneFenetre, aUnMontant, avecNomPose, brouillonVide, choisirJour, etirerFin, poserHorizon, choisirJours, peutChoisirJour, jourPose, libelleMontant, peutMettreDeCote, preteLe, puceJours, puces, resumeFenetre, toucherSemaine,
+  appliquerPuce, aDesJoursActifs, aUneFenetre, aUnMontant, avecNomPose, brouillonVide, choisirJour, etirerFin, etirerPlage, poserHorizon, choisirJours, peutChoisirJour, jourPose, libelleMontant, peutMettreDeCote, preteLe, puceJours, puces, resumeFenetre, toucherSemaine,
   type BrouillonAjout, type Confirmation, type ContexteAjout, type Puce
 } from '../../../domain/calendrierAjout';
 import { prixSemblable, texteIntention } from '../../../domain/horizons';
@@ -333,7 +333,7 @@ export const FeuilleAjout: React.FC<FeuilleAjoutProps> = ({ mode, initial, conte
           {/* D404 : l'horizon pose le début ; la durée s'étire au geste de la frise B (fêtes, achats, travaux, activités) */}
           {horizons && fenetre && b.debut && (
             <div className="mt-2">
-              <DureeFenetre rangee={b.rangee} debut={b.debut} fin={b.fin} onFin={f => regler(etirerFin(b, f))} />
+              <DureeFenetre rangee={b.rangee} debut={b.debut} fin={b.fin} onFin={f => regler(etirerFin(b, f))} onPlage={(d, f) => regler(etirerPlage(b, d, f))} />
             </div>
           )}
         </div>

@@ -314,6 +314,20 @@ export function etirerFin(b: BrouillonAjout, fin: string | null): BrouillonAjout
   return joursQuiTiennent({ ...b, fin: f, debutChoisi: true });
 }
 
+/**
+ * Capture-11 et capture-12 (21.11) : le début tiré au geste de la frise B, vers le passé aussi (« j'ai oublié de noter une vente »). Le début
+ * et la fin changent ensemble (le corps glissé) ou le début seul ; une chose à une seule date n'a pas de fin. Le jour d'une chose rouverte part
+ * (la semaine change).
+ */
+export function etirerPlage(b: BrouillonAjout, debut: string, fin: string | null): BrouillonAjout {
+  if (!b.debut) return b;
+  const { jour: _j, jourChoisi: _c, ...reste } = b;
+  void _j; void _c;
+  const d = lundiDe(debut);
+  const f = aUneFenetre(b.rangee) && fin && lundiDe(fin) > d ? lundiDe(fin) : null;
+  return joursQuiTiennent({ ...reste, debut: d, fin: f, debutChoisi: true });
+}
+
 /** Le nombre de semaines de la fenêtre (1 pour une seule semaine) ; `null` sans début. */
 export function nbSemaines(b: BrouillonAjout): number | null {
   if (!b.debut) return null;
