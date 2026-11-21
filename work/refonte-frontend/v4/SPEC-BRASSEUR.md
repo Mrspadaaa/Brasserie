@@ -2570,3 +2570,7 @@ Classement de la page r3 de Ma levure (https://claude.ai/artifact/DKAJe8ESeMR4ig
 > Mais c'est le cas sur plein de vue btw
 
 (21.11 : VUE-FOND précisé ; le + se cache pendant l'interaction, donc aucune réserve pour lui : petite marge seulement, sur toutes les vues.)
+
+> Et même du travail et activités sont vide, les mettre en vertical pas les entassés à l'horizontal
+
+(21.11, capture-14 : « vides + Travaux + Activités » sur une seule ligne ; une rangée vide garde sa ligne, comme les autres.)
