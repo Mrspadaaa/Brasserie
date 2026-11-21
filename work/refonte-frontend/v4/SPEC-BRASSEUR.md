@@ -2551,3 +2551,9 @@ Classement de la page r3 de Ma levure (https://claude.ai/artifact/DKAJe8ESeMR4ig
 > Ça, ça fonctionne bien mais j'aimerais aussi pouvoir lui donner une date dans le passé
 
 (21.11, tour 8, capture-11 : la frise « Durée » de la feuille d'ajout (D404) lui plaît ; son début doit aussi se tirer vers le passé, comme les deux bords de la frise B.)
+
+> J'ai l'impression que pour papier et vente il faudrait avoir un peu la même logique sauf que c'est pas une durée mais une date. SI par exemple j'ai oublié de noter une vente ou quoi...
+>
+> Après en théorie, tout ce qui est vente, papier et tout devrait être automatique quand j'entre un document...
+
+(21.11, capture-12 : une chose à une date (Ventes, Papiers…) prend la même frise au doigt avec un seul repère, passé compris ; règle générale : un document entré (facture, ticket, vente) pose seul sa chose au Calendrier.)
