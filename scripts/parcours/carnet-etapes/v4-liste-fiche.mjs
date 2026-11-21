@@ -16,21 +16,33 @@ export default async function (c) {
   await c.etape('V4-D417-creation-depuis-liste', async () => {
     await c.ouvrirPage(390, 844, true);
     await listeAtelier();
-    await c.focaliserChamp(); await c.taper('ZZ TEST — réfractomètre pour mesurer la densité');
+    /* Une phrase que NI la fixture NI une étape précédente (prix-plan-creation écrit « réfractomètre… », et la base persiste d'une étape à
+       l'autre) ne rattache à un carnet existant : sinon le geste ouvre ce carnet aussitôt, sans création ni attente de l'IA. */
+    await c.focaliserChamp(); await c.taper('ZZ TEST — pH-mètre de poche pour contrôler le moût');
+    /* Un observateur de page note chaque changement de vue et de « L'IA range… » avec son instant : la lecture ne dépend plus de la
+       vitesse d'un sondage (l'IA simulée répond en 600 ms). */
+    await c.p.evaluate(() => {
+      window.__d417 = [];
+      const t0 = performance.now();
+      const noter = () => {
+        const r = document.querySelector('[data-carnets]');
+        const e = [Math.round(performance.now() - t0), r?.getAttribute('data-vue') ?? null, /L.IA range/.test(r?.innerText ?? '')];
+        const d = window.__d417[window.__d417.length - 1];
+        if (!d || d[1] !== e[1] || d[2] !== e[2]) window.__d417.push(e);
+      };
+      new MutationObserver(noter).observe(document.body, { subtree: true, childList: true, attributes: true, characterData: true });
+      noter();
+    });
     await c.p.keyboard.press('Enter');
-    const suite = [];
-    let rangeVu = false;
-    for (let k = 0; k < 80; k++) {
-      const e = await c.p.evaluate(() => ({ vue: document.querySelector('[data-carnets]')?.getAttribute('data-vue') ?? null,
-        range: /L.IA range/.test(document.querySelector('[data-carnets]')?.innerText ?? '') }));
-      if (suite[suite.length - 1] !== e.vue) suite.push(e.vue);
-      if (e.vue === 'liste' && e.range) rangeVu = true;
-      if (k === 2) await c.cap('D417a-ia-range');
-      await c.sleep(100);
-    }
+    await c.sleep(300); await c.cap('D417a-ia-range');
+    await c.sleep(2200);
+    const trace = await c.p.evaluate(() => window.__d417);
+    const suite = trace.map((t) => t[1]).filter((v, i, l) => v !== l[i - 1]);
+    const rangeVu = trace.some((t) => t[1] === 'liste' && t[2]);
+    const rangeAvantOuverture = rangeVu && trace.findIndex((t) => t[1] === 'carnet') > trace.findIndex((t) => t[1] === 'liste' && t[2]);
     await c.cap('D417b-destination');
-    console.log(`  D417 : vues ${suite.join(' → ')} ; « L'IA range… » sur la liste : ${rangeVu}`);
-    if (suite[0] !== 'liste' || !rangeVu) throw new Error(`D417 : la liste doit d'abord montrer « L'IA range… » (vues ${suite.join(' → ')})`);
+    console.log(`  D417 : vues ${suite.join(' → ')} ; « L'IA range… » sur la liste : ${rangeVu} ; trace ${JSON.stringify(trace)}`);
+    if (suite[0] !== 'liste' || !rangeVu || !rangeAvantOuverture) throw new Error(`D417 : la liste doit d'abord montrer « L'IA range… » (vues ${suite.join(' → ')})`);
     if (suite.length !== 2 || suite[1] !== 'carnet') throw new Error(`D417 : la fiche de destination doit s'ouvrir seule, une fois (vues ${suite.join(' → ')})`);
   });
 
