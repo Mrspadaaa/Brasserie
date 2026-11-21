@@ -43,3 +43,23 @@ Les 4 rouges transverses (fix114, designTokens, invoiceScanCache-d273c, virgule-
   11,3 L pour 0,4 kg… Erreur de saisie probable » s'affiche en rouge sur toutes les étapes. Le plan d'eau par défaut ne suit pas une facture
   partielle : l'alerte devrait attendre une facture plausible ou un plan d'eau posé par le brasseur. À verser à BUGS.md.
 - fix114, designTokens, invoiceScanCache-d273c, virgule-transversale : voie transverse (D402).
+
+# Session 4 (21.11, arrêtée vers 175 k) — fait, commits par chemins (index temporaire)
+- `ebbe788f0` revert de edeb5fdaa (D403). `ee51d4717` relierStock lit `StockItem.fiche.id` avant le nom (lien 'fiche') ; fixture ZZ TEST Citra
+  porte `fiche: beermaverick-citra` ; test donneesApp (relié par fiche, non relié sans, fiche inconnue → nom). Le moteur voit le stock (N1 houblon ok).
+- `376be5c45` tsc propre (cases.ts:85, `!(b.stock.libre > 0)`). `21cc639a9` CarteDose : VIRGULE OK, designTokens vert.
+- VR-1 (bornesProcede) : versé à BUGS.md (Brasserie `900cd2072`, BUGS OK) ; `dd1e1e9e8` eauIssues attend `installation.manualWaterSplit !== false`
+  pour « trop d'eau » ; étape VR-1 de chaines.mjs : KO sur tour7 (build gardé `%TEMP%/chaines-build-YljAZX`), ok sur l'arbre.
+- `9331513c3` N1 levure v05 : `PoserDuStock` (MaLevure.tsx, classes lv-pz-, jetons ml- : `.ml-carte, .lv-pz {`), `doseProposee` (dose.ts),
+  `onStock(item, dose)` → `selectYeast(name, item, dose)` ; fixture US-05 `fiche: fermentis-us05`. Chaîne N1 complète : KO tour7, ok arbre
+  (captures `%TEMP%/vrecette/cap-n1b`). Capture 390 sombre ouverte : proche de v05 ; nom « SafAle US-05 » + « Fermentis · sèche » corrigé APRÈS
+  la capture (à revoir) ; pas d'échelle de besoin quand l'OG manque (honnête).
+
+## Reste, dans l'ordre
+1. Revoir N1-3 levure (nom/fabricant), puis « Poser » → carte après le geste (r4 v02) : dose posée ? Vision 390 tactile + 1280, deux thèmes.
+2. Ma levure, points de la voie (plainte-20-11/RESULTAT.md) : 1, 2, 3, 7 ; DÉCISIONS au pilote pour 4 (functions/src/fermentationContext.ts),
+   5 (D391), 6 (donnée floculation).
+3. « Suivant » à place fixe (`principes --seul assistant-recette` KO, VUE-SAUTE) : piste `endActionsCollant` pour toutes les étapes hors récap (PageShell l. 585).
+4. N3 (relierAuStock.ts), C1-RECETTE au récap, WFR-4 (B4).
+5. Preuves : chaines `--etape N1,N3,C1-RECETTE,B4,VR-1` (rouge `--ref en-ligne/2026-11-21-tour7`, vert arbre) ; principes `--seul recette,recette-pose,assistant-recette` ;
+   `controle-choix.mjs` ; vitest assistant + levure (`tests/integration/etapeLevure`) ; tsc ; `VITE_HOP_V4=on VITE_CARNET_IA=production npm run build`.
