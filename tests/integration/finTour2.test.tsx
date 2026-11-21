@@ -131,21 +131,47 @@ describe('FIN-FRISE-AGRANDIR : poignée tenue au bord', () => {
   };
   beforeEach(() => { vi.useRealTimers(); vi.useFakeTimers({ toFake: ['Date', 'setInterval', 'clearInterval', 'setTimeout', 'clearTimeout'] }); vi.setSystemTime(new Date('2026-11-19T10:00:00')); });
 
-  it('posée au bord de la piste (2 px dedans) : un mois par palier de 0,6 s, jamais d’années', () => {
+  it('R1 : un toucher sans glisser ne pose rien, ni sur un bord ni dans la piste', () => {
+    const { log, container } = poser();
+    const piste = container.querySelector('.ops-tr') as HTMLElement;
+    for (const x of [16, 200, 370]) { fireEvent.pointerDown(piste, { clientX: x, pointerId: 1 }); fireEvent.pointerMove(piste, { clientX: x + 4, pointerId: 1 }); fireEvent.pointerUp(piste, { clientX: x + 4, pointerId: 1 }); }
+    expect(log).not.toHaveBeenCalled();
+  });
+
+  it('R2 : saisi à 10 px du trait, le début suit le déplacement (36 px = 3 jours), sans saut à l’endroit touché', () => {
+    const { log } = poser();
+    const debut = screen.getByRole('slider', { name: 'Début' });
+    fireEvent.pointerDown(debut, { clientX: 26, pointerId: 1 });
+    fireEvent.pointerMove(debut, { clientX: 29, pointerId: 1 });
+    expect(log).not.toHaveBeenCalled();
+    fireEvent.pointerMove(debut, { clientX: 62, pointerId: 1 });
+    fireEvent.pointerUp(debut, { clientX: 62, pointerId: 1 });
+    expect(log).toHaveBeenLastCalledWith('2026-11-04', '2026-11-30');
+  });
+
+  it('R10 : Échap pendant le glisser rend la plage d’avant', () => {
     const { log } = poser();
     const debut = screen.getByRole('slider', { name: 'Début' });
     fireEvent.pointerDown(debut, { clientX: 16, pointerId: 1 });
-    fireEvent.pointerMove(debut, { clientX: 18, pointerId: 1 });
+    fireEvent.pointerMove(debut, { clientX: 120, pointerId: 1 });
+    expect(log.mock.calls.at(-1)?.[0]).not.toBe('2026-11-01');
+    fireEvent.keyDown(window, { key: 'Escape' });
+    expect(log).toHaveBeenLastCalledWith('2026-11-01', '2026-11-30');
+  });
+
+  it('R7 : le début tenu au bord gauche, en allant vers lui, l’échelle se resserre ; la fin reste ; des semaines, jamais des années', () => {
+    vi.useRealTimers(); vi.useFakeTimers({ toFake: ['Date', 'setTimeout', 'clearTimeout', 'requestAnimationFrame', 'cancelAnimationFrame', 'performance'] });
+    const { log } = poser();
+    const debut = screen.getByRole('slider', { name: 'Début' });
+    fireEvent.pointerDown(debut, { clientX: 30, pointerId: 1 });
+    fireEvent.pointerMove(debut, { clientX: 40, pointerId: 1 });
+    fireEvent.pointerMove(debut, { clientX: 22, pointerId: 1 });
     act(() => { vi.advanceTimersByTime(1000); });
-    expect(screen.getByRole('slider', { name: 'Début' }).getAttribute('aria-valuetext')).toMatch(/^1er oct\. 2026/);
-    act(() => { vi.advanceTimersByTime(600); });
-    const apres = screen.getByRole('slider', { name: 'Début' }).getAttribute('aria-valuetext') ?? '';
-    expect(apres).toMatch(/^1er sept\. 2026/);
-    // jamais avant août 2026 en 1,6 s
-    for (const [du] of log.mock.calls) expect(du >= '2026-08-01').toBe(true);
-    fireEvent.pointerUp(debut, { clientX: 18, pointerId: 1 });
-    act(() => { vi.advanceTimersByTime(3000); });
-    expect(screen.getByRole('slider', { name: 'Début' }).getAttribute('aria-valuetext')).toBe(apres);
+    fireEvent.pointerUp(debut, { clientX: 22, pointerId: 1 });
+    const [du, au] = log.mock.calls.at(-1)!;
+    expect(au).toBe('2026-11-30');
+    expect(du < '2026-10-25').toBe(true);
+    expect(du >= '2026-06-01').toBe(true);
   });
 
   it('poignée tenue : la bulle dit la plage, la ligne « n jours · n opérations » est vide (aucun chiffre sous la bulle)', () => {

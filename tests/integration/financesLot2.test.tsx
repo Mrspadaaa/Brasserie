@@ -64,15 +64,15 @@ describe('FIN-DEUX-PERIODES : un seul choix de période, la frise synchrone, bar
   });
 });
 
-describe('FIN-FRISE-AGRANDIR : au bord, la frise s’étend pas à pas, un mois par palier', () => {
+describe('FIN-FRISE-AGRANDIR : au bord, la frise s’étend (frise B, R7, 21.11)', () => {
   it('palierMois : au 1er du mois, recule d’un mois ; sinon au 1er ; vers l’avenir, au dernier jour', () => {
     expect(palierMois('2026-10-17', -1)).toBe('2026-10-01');
     expect(palierMois('2026-10-01', -1)).toBe('2026-09-01');
     expect(palierMois('2026-10-17', 1)).toBe('2026-10-31');
     expect(palierMois('2026-10-31', 1)).toBe('2026-11-30');
   });
-  it('tirer la poignée gauche au bord pendant 1 s recule de 1 à 3 mois, jamais d’années', () => {
-    vi.useFakeTimers();
+  it('tirer la poignée gauche au bord pendant 1 s recule de quelques semaines à 3 mois, jamais d’années', () => {
+    vi.useFakeTimers({ toFake: ['Date', 'setTimeout', 'clearTimeout', 'requestAnimationFrame', 'cancelAnimationFrame', 'performance'] });
     const poses: Array<[string, string]> = [];
     const Banc = () => {
       const [p, setP] = React.useState({ du: '2026-10-17', au: '2027-01-28' });
@@ -80,21 +80,25 @@ describe('FIN-FRISE-AGRANDIR : au bord, la frise s’étend pas à pas, un mois 
         donnees={{ periodeJour: () => ({ depenseCents: 0, materielCents: 0, entreCents: 0, postes: [] } as any), moisSaisi: () => true }}
         onPlage={(du, au) => { poses.push([du, au]); setP({ du, au }); }} onMois={() => {}}/>;
     };
-    render(<Banc/>);
+    const { container } = render(<Banc/>);
+    vi.spyOn(container.querySelector('.ops-tr') as HTMLElement, 'getBoundingClientRect').mockReturnValue({ left: 0, right: 358, width: 358, top: 0, bottom: 24, height: 24, x: 0, y: 0, toJSON: () => ({}) } as DOMRect);
     const debut = screen.getByRole('slider', { name: 'Début' });
     fireEvent.pointerDown(debut, { clientX: 0, clientY: 10, pointerId: 1, button: 0 });
-    fireEvent.pointerMove(debut, { clientX: -60, clientY: 10, pointerId: 1 });
+    fireEvent.pointerMove(debut, { clientX: 20, clientY: 10, pointerId: 1 });
+    fireEvent.pointerMove(debut, { clientX: 4, clientY: 10, pointerId: 1 });
     act(() => { vi.advanceTimersByTime(1000); });
-    fireEvent.pointerUp(debut, { clientX: -60, clientY: 10, pointerId: 1 });
+    fireEvent.pointerUp(debut, { clientX: 4, clientY: 10, pointerId: 1 });
     const [du, au] = poses[poses.length - 1];
     expect(au).toBe('2027-01-28');
     const recul = joursEntre0(du, '2026-10-17');
-    expect(recul).toBeGreaterThanOrEqual(28);
-    expect(recul).toBeLessThanOrEqual(92);
+    expect(recul).toBeGreaterThanOrEqual(14);
+    // R7 : la vitesse est en largeurs d’échelle par seconde ; sur une plage de 104 jours, 1 s au fond de la bande recule d’environ sa durée
+    expect(recul).toBeLessThanOrEqual(160);
   });
   it('poignée tenue : la ligne « n jours · n opération » s’efface sous la bulle', () => {
-    render(<Frise mois="2026-10" plage={{ du: '2026-10-17', au: '2026-11-10' }} aujourdhui="2026-11-19" jourMax="2027-11-20" nbOperations={0}
+    const { container } = render(<Frise mois="2026-10" plage={{ du: '2026-10-17', au: '2026-11-10' }} aujourdhui="2026-11-19" jourMax="2027-11-20" nbOperations={0}
       donnees={{ periodeJour: () => ({ depenseCents: 0, materielCents: 0, entreCents: 0, postes: [] } as any), moisSaisi: () => true }} onPlage={() => {}} onMois={() => {}}/>);
+    vi.spyOn(container.querySelector('.ops-tr') as HTMLElement, 'getBoundingClientRect').mockReturnValue({ left: 0, right: 358, width: 358, top: 0, bottom: 24, height: 24, x: 0, y: 0, toJSON: () => ({}) } as DOMRect);
     fireEvent.pointerDown(screen.getByRole('slider', { name: 'Début' }), { clientX: 0, clientY: 10, pointerId: 1, button: 0 });
     expect(screen.getByTestId('frise').hasAttribute('data-tenue')).toBe(true);
   });
