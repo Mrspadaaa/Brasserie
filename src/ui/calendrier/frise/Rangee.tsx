@@ -216,9 +216,24 @@ function rangDe(rang: ReadonlyMap<string, number> | undefined, a: string, b: str
   return ra - rb;
 }
 
+/** CRIT-6 : les choses touchées passent avant les autres, dans l'ordre où on les a touchées. */
+function ordreGarde(garde: ReadonlyMap<string, number> | undefined, a: string, b: string): number {
+  if (!garde?.size) return 0;
+  const ordre = [...garde.keys()], ia = ordre.indexOf(a), ib = ordre.indexOf(b);
+  if (ia < 0 && ib < 0) return 0;
+  if (ia < 0) return 1;
+  if (ib < 0) return -1;
+  return ia - ib;
+}
+
 export interface OptionsDisposer {
   /** CAL-PASSE N1 n° 6 : l'ordre d'origine des choses de la rangée, tenu par la rangée pour toute la session de la vue (écrit par `disposer`). */
   rang?: Map<string, number>;
+  /**
+   * CRIT-6 (21.11) : les choses touchées pendant la session (bord tiré, glissé), avec la ligne qu'elles tenaient avant le geste. Une chose touchée se
+   * pose d'abord, sur sa ligne (les lignes d'avant s'ouvrent vides) : c'est la voisine qu'elle chevauche qui s'écarte, jamais elle.
+   */
+  garde?: ReadonlyMap<string, number>;
   /** Largeur, à droite, où aucun nom ne se pose (le + volant, D-135). */
   reserveDroite?: number;
   /** Paysage : la largeur que le titre occupe sur la première ligne, à gauche. */
@@ -259,11 +274,13 @@ export function disposer(choses: readonly ChoseCalendrier[], colonnes: readonly 
   const places = choses.flatMap(c => { const p = positionDans(colonnes, c); return p ? [{ c, p }] : []; })
     .map(o => ({ ...o, j: estPonctuel(o.c) }))
     /* D386 : les barres d'abord, puis les jalons, sur leurs lignes à eux (jamais sur une ligne qui porte une barre) */
-    .sort((x, y) => Number(x.j) - Number(y.j) || rangDe(options.rang, x.c.id, y.c.id) || x.p.a - y.p.a || (y.p.b - y.p.a) - (x.p.b - x.p.a) || x.c.id.localeCompare(y.c.id));
+    .sort((x, y) => Number(x.j) - Number(y.j) || ordreGarde(options.garde, x.c.id, y.c.id) || rangDe(options.rang, x.c.id, y.c.id) || x.p.a - y.p.a || (y.p.b - y.p.a) - (x.p.b - x.p.a) || x.c.id.localeCompare(y.c.id));
   /* CAL-PASSE N1 n° 6 : l'ordre d'origine se garde (les choses vues y gardent leur rang, les nouvelles se rangent après) */
   if (options.rang) for (const o of places) if (!options.rang.has(o.c.id)) options.rang.set(o.c.id, options.rang.size);
   const lignesJalon = new Set<number>(), lignesAutres = new Set<number>();
   let jalonCourant: boolean | null = null;
+  /** CRIT-6 : la ligne que doit tenir la chose en cours de pose, si elle a été touchée (0 : aucune ancre). */
+  let ligneGardee = 0;
   const lignes: Array<Array<[number, number]>> = [];
   if (options.zoneTitre && options.zoneTitre > 0) lignes.push([[-1000, options.zoneTitre]]);
   const items: Disposition[] = [];
@@ -282,7 +299,9 @@ export function disposer(choses: readonly ChoseCalendrier[], colonnes: readonly 
   const genreOk = (l: number) => jalonCourant === null || (jalonCourant ? !lignesAutres.has(l) : !lignesJalon.has(l));
   const libreCandidat = (l: number, c: Candidat) => genreOk(l) && libre(l, c.x0, c.x1) && (!c.bas || libre(l + 1, c.bas.x0, c.bas.x1));
   /** Le premier (ligne, candidat) libre, palier par palier, en commençant à la ligne `depuis` ; sinon une ligne neuve. */
-  const poser = (paliers: Candidat[][], neuve: Candidat, depuis = 0): { ligne: number; c: Candidat } => {
+  const poser = (paliers: Candidat[][], neuve: Candidat, depuis = ligneGardee): { ligne: number; c: Candidat } => {
+    /* CRIT-6 : une chose touchée vise sa ligne d'avant ; les lignes plus hautes s'ouvrent vides (les autres choses les rempliront ensuite) */
+    if (ligneGardee > 0) while (lignes.length <= ligneGardee) lignes.push([]);
     const ordre = [...Array(lignes.length).keys()].map(i => (i + depuis) % Math.max(1, lignes.length));
     for (const palier of paliers) for (const l of ordre) for (const c of palier) if (libreCandidat(l, c)) return { ligne: l, c };
     return { ligne: lignes.length, c: neuve };
@@ -316,6 +335,7 @@ export function disposer(choses: readonly ChoseCalendrier[], colonnes: readonly 
 
   for (const { c, p, j: jalon } of places) {
     jalonCourant = jalon;
+    ligneGardee = options.garde?.get(c.id) ?? 0;
     let gauche = p.a * largeurColonne + 2;
     let w = Math.max(0, (p.b - p.a + 1) * largeurColonne - 4);
     if (auJour) {
@@ -443,6 +463,7 @@ export function disposer(choses: readonly ChoseCalendrier[], colonnes: readonly 
     items.push({ chose: c, a: p.a, b: p.b, gauche, largeur: marque ? 28 : w, ligne, marque, petite: marque && vueLarge, avecLibelle, duree: null, cote: leCote, place: k.place, deuxLignes: k.deux ?? false, ...(k.sansLie ? { sansLie: true } : {}), ...(phraseBas ? { phraseBas } : {}), ...(k.cote === 'gauche' && k.retrait ? { retrait: k.retrait } : {}), ...(jalon ? { jalon: true } : {}), ...(k.titreSeul ? { titreSeul: true } : {}), ...(reserveDedans > 0 && k.cote === 'dedans' ? { reserveDedans } : {}) });
   }
   jalonCourant = null;
+  ligneGardee = 0;
 
   /* chaque étiquette posée à côté s'allonge dans la place libre de sa ligne (jusqu'à l'objet suivant, jamais sous le + volant), d'abord celles
      de droite, puis celles de gauche : un nom raccourci y retrouve des lettres, un nom entier y gagne sa durée */
@@ -779,15 +800,25 @@ export const Rangee: React.FC<RangeeProps> = props => {
   const rangs = React.useRef<Map<string, number>>(new Map());
   const cleRangs = React.useRef('');
   const cleVue = `${colonnes.length}:${colonnes.length ? ecartJours(colonnes[0].debut, colonnes[0].fin) : 0}`;
-  if (cleRangs.current !== cleVue) { cleRangs.current = cleVue; rangs.current = new Map(); }
+  /* CRIT-6 (21.11) : la chose qu'on vient de toucher (bord tiré, glissé) garde sa ligne pendant la session de la vue ; les autres s'écartent. La ligne
+     est celle de la dernière disposition, lue à la première image du geste, avant que la chose ne change de place ou de longueur. */
+  const lignesVues = React.useRef<Map<string, number>>(new Map());
+  const gardes = React.useRef<Map<string, number>>(new Map());
+  if (cleRangs.current !== cleVue) { cleRangs.current = cleVue; rangs.current = new Map(); lignesVues.current = new Map(); gardes.current = new Map(); }
+  if (drag && !gardes.current.has(drag.id) && lignesVues.current.has(drag.id)) gardes.current.set(drag.id, lignesVues.current.get(drag.id) as number);
+  const cleGardes = [...gardes.current].join(',');
   const { items, lignes, caddies, renvois: posRenvois } = React.useMemo(
     /* en An, une série mensuelle se pose en une barre (doute Papiers en An, CRITIQUE-12) */
-    () => disposer(montreesEnSeries, colonnes, largeurColonne, largeur, {
-      /* CRITIQUE-5 n° 14 : partout (téléphone, paysage, 1280), un nom reste entier tant que la place existe, quitte à ouvrir une ligne */
-      reserveDroite, zoneTitre, vueLarge, renvois: largeursRenvois, paysage, lieCourt, rang: rangs.current
-    }),
+    () => {
+      const r = disposer(montreesEnSeries, colonnes, largeurColonne, largeur, {
+        /* CRITIQUE-5 n° 14 : partout (téléphone, paysage, 1280), un nom reste entier tant que la place existe, quitte à ouvrir une ligne */
+        reserveDroite, zoneTitre, vueLarge, renvois: largeursRenvois, paysage, lieCourt, rang: rangs.current, garde: gardes.current
+      });
+      lignesVues.current = new Map(r.items.map(i => [i.chose.id, i.ligne]));
+      return r;
+    },
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [montreesEnSeries, colonnes, largeurColonne, largeur, reserveDroite, zoneTitre, paysage, vueLarge, cleRenvois, lieCourt, auJourVue]
+    [montreesEnSeries, colonnes, largeurColonne, largeur, reserveDroite, zoneTitre, paysage, vueLarge, cleRenvois, lieCourt, auJourVue, cleGardes]
   );
   const hauteurLane = lignes === 0 ? 0 : lignes * mesures.ligne + 2;
   /*
