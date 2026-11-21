@@ -532,6 +532,14 @@ async function jouer(dir) {
       if (!(await present('Note : Prendre un modèle à 2 portes, classe A'))) throw new Error('la note modifiée perd sa majuscule (« prendre un modèle… »)');
       ok('CRN-14', '« Prendre un modèle à 2 portes, classe A »');
     });
+    await etape('CRN-17 un critère lu se dit sans « oui » en queue', async () => {
+      await demarrer(); await versAtelier(); await attendreListe();
+      await focaliserChamp(); await taper('https://exemple.invalid/v1'); await entree(); await sleep(1500); await cap('crn17-lien-lu');
+      const t = await texte();
+      const m = /\S+ \d+ °C oui\b/.exec(t);
+      if (m) throw new Error(`« ${m[0]} » : le « oui » en queue`);
+      ok('CRN-17', 'aucun « … °C oui »');
+    });
     // CRN-suite
 
     // ══════════ thèmes et grand écran ══════════

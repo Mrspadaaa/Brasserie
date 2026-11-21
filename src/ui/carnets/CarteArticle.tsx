@@ -70,6 +70,9 @@ export function valeursLues(valeurs: Record<string, ValeurV>, sauf?: string | nu
     const t = valeurTexte(n !== null ? { ...v, valeur: n } : v);
     if (t === null) return [];
     if (typeof v.valeur === 'boolean') return [`${nom} : ${t}`];
+    /* CRN-17 : un critère oui-non lu en texte se dit par son verbe (h05-3 « capte la buée ») : « tient 80 °C », jamais « tient 80 °C oui » */
+    if (!v.unite && /^oui$/i.test(t.trim())) return [nom];
+    if (!v.unite && /^non$/i.test(t.trim())) return [`pas : ${nom}`];
     return [v.unite ? `${t} ${v.unite}` : `${nom} ${t}`];
   });
 }
