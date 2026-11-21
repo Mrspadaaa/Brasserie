@@ -12,7 +12,7 @@ import { fermentationReadings } from '../../domain/fermentationReadings';
 import { articlesACommander } from '../../domain/stockLevel';
 import { etiquetteSemaine, vueHorizon, type LigneHorizon } from '../../domain/stock/horizon';
 import type { ReglagesFournisseurs } from '../../domain/fournisseurs';
-import { budgetsDeRecette, planBrewBatchId } from '../../domain/finance/brewForecast';
+import { planBrewBatchId, type BudgetRepris } from '../../domain/finance/brewForecast';
 import { brewBudgetDemands } from '../../domain/finance/brewBudget';
 import { hasBrewStarted } from '../../domain/batchSchedule';
 import {
@@ -107,11 +107,11 @@ export function construireModele(e: EntreesModele): ModeleCalendrier {
     transactions: e.transactions, payments: e.payments, plans, profile: e.profile, assets: e.assets, asOf: aujourdhui, months: 13,
     batches, stockItems: e.stockItems, includeEquipmentProjects: true
   });
-  let prevision = prevoir(e.plans, e.batches);
-  /* n° 2 (CRITIQUE-4) : un brassin sans budget chiffré reprend celui de sa recette ; la prévision est refaite, seulement s'il y en a un */
-  const chiffres = new Set(prevision.items.filter(i => i.source === 'brew' && i.batchId && i.amountCents > 0 && !i.id.endsWith(':impot')).map(i => i.batchId as string));
-  const reprise = budgetsDeRecette(e.batches, e.plans, chiffres);
-  if (reprise.repris.size) prevision = prevoir(reprise.plans, reprise.batches);
+  const prevision = prevoir(e.plans, e.batches);
+  /* n° 2 (CRITIQUE-4), D405 : un brassin sans budget chiffré reprend celui de sa recette ; buildForecast l'applique (une seule caisse) et
+     marque ses sorties `repriseRecette` : le calendrier lit cette marque, sans refaire le calcul */
+  const repris = new Map<string, BudgetRepris>();
+  for (const i of prevision.items) if (i.batchId && i.repriseRecette && !repris.has(i.batchId)) repris.set(i.batchId, i.repriseRecette);
   const passe = semainesPassees(aujourdhui, e.profile, prevision.openingCashCents !== null);
   const semaines = semainesDe(aujourdhui, NB_SEMAINES_COURBE + passe, passe);
   const lundi0 = semaines[0].debut;
@@ -168,14 +168,14 @@ export function construireModele(e: EntreesModele): ModeleCalendrier {
     const b = budgetBrassin(c.source.id, posees, estimations);
     /* CRITIQUE-4 n° 2 : sans budget, un brassin à venir dit « coût à venir » en mots, sans `centimes` (jamais 0) ; un brassin commencé n'a rien à dire */
     if (!b) return commence ? c : choseCoutAVenir(c);
-    const repris = reprise.repris.get(c.source.id);
+    const r = repris.get(c.source.id);
     return {
       ...c, centimes: b.centimes, ...(b.partiel ? { partiel: true as const } : {}),
       /* doute IPA −45 : en cuve, les courses sont faites ; le montant est ce qui RESTE à sortir (emballage), et la barre le dit */
       /* le mot « reste » est dit dans le détail et la Liste ; sur la barre, à côté du montant, par Barre.tsx (demandé au lot q2-frise) :
          ajouté au nom, il tronquait le nom à 390 (« IPA de … −45 », capture m390-blonde-posee) */
       ...(commence ? { reste: true as const } : {}),
-      ...(repris ? { budgetRepris: `budget de la recette, repris de ${repris.depuis}${repris.le ? ` (estimé le ${jourLisible(repris.le)})` : ''}` } : {})
+      ...(r ? { budgetRepris: `budget de la recette, repris de ${r.depuis}${r.le ? ` (estimé le ${jourLisible(r.le)})` : ''}` } : {})
     };
   });
 
@@ -205,10 +205,10 @@ export function construireModele(e: EntreesModele): ModeleCalendrier {
   /* n° 32, E01 : la tendance de Finances (lignes `trend` de la prévision), par mois, avec sa source ; sans tendance, rien */
   const tendance = new Map<string, number>();
   for (const i of prevision.items) if (i.source === 'trend') tendance.set(i.date.slice(0, 7), (tendance.get(i.date.slice(0, 7)) ?? 0) + (i.direction === 'in' ? i.amountCents : -i.amountCents));
-  for (const [id] of reprise.repris) {
+  for (const [id] of repris) {
     const c = choses.find(x => x.source.genre === 'batch' && x.source.id === id);
     if (c?.centimes === undefined) continue;
-    hypotheses.push({ id: `budget-repris-${id}`, texte: `${c.titre} : ${francsSignes(c.centimes)} CHF, budget repris de sa recette, pas encore dans Finances`, source: 'Budget › du brassin', ouvre: { ecran: 'brassin', id } });
+    hypotheses.push({ id: `budget-repris-${id}`, texte: `${c.titre} : ${francsSignes(c.centimes)} CHF, budget repris de sa recette, estimé`, source: 'Budget › du brassin', ouvre: { ecran: 'brassin', id } });
   }
   if (tendance.size) {
     const parMois = Math.round([...tendance.values()].reduce((s, n) => s + n, 0) / tendance.size);
