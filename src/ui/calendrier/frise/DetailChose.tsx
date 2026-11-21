@@ -317,6 +317,12 @@ export const DetailChose: React.FC<DetailChoseProps> = props => {
     if (regle === cle && regler && jour) {
       return <div key={cle} className="cal-fi-p cal-fi-p-regle"><Regle jour={jour} mot={mot} icone={icone} onAnnuler={() => setRegle(null)} onValider={j => { setRegle(null); regler(j); }} /></div>;
     }
+    /* CHE-5 : « Prête ? » (fin inconnue) se règle aussi depuis la fiche : la règle part d'aujourd'hui, le lâcher écrit la fin */
+    if (!jour && regler && cle === 'fin' && chose.finInconnue) {
+      const depart = chose.fin || chose.debut;
+      if (regle === cle && depart) return <div key={cle} className="cal-fi-p cal-fi-p-regle"><Regle jour={depart} mot={mot} icone={icone} onAnnuler={() => setRegle(null)} onValider={j => { setRegle(null); regler(j); }} /></div>;
+      return <button key={cle} type="button" className="cal-fi-p cal-fi-q" data-pastille={cle} aria-label={`${mot} : à préciser, régler`} onClick={() => { setVolet(null); setRegle(cle); }}>{icone}<b>?</b></button>;
+    }
     if (!jour) return <span key={cle} className="cal-fi-p cal-fi-q" data-pastille={cle} aria-label={`${mot} : à préciser`}>{icone}<b>?</b></span>;
     return regler
       ? <button key={cle} type="button" className="cal-fi-p" data-pastille={cle} aria-label={`${mot} ${date(jour)} : régler`} onClick={() => { setVolet(null); setRegle(cle); }}>{icone}<b><time dateTime={jour}>{date(jour)}</time></b></button>

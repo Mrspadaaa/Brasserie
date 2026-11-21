@@ -89,6 +89,8 @@ export function portParDefaut(): PortEcritures {
         // Une date de brassage s'écrit par le chemin qui protège un journal commencé sur un autre appareil (saveBatchSchedule).
         if ('plannedBrewDate' in patch) batch = await saveBatchSchedule(courant, String(patch.plannedBrewDate ?? plannedBrewDate(courant) ?? ''), b => StorageService.updateBatch(b));
         const reste: Document = { ...patch };
+        /* CAL-CUVE-DATE : la date RÉELLE d'un brassin en cuve (`brewDate` seul, sans date prévue) se corrige ici ; la date prévue garde son chemin ci-dessus */
+        if (!('plannedBrewDate' in patch) && typeof patch.brewDate === 'string' && patch.brewDate) { batch = { ...batch, brewDate: patch.brewDate } as Batch; StorageService.updateBatch(batch); }
         delete reste.plannedBrewDate; delete reste.brewDate;
         // `finPrevue` retirée s'écrit « vide » : une écriture fusionnée ne sait pas effacer un champ.
         if ('finPrevue' in reste && reste.finPrevue === undefined) reste.finPrevue = '';

@@ -1,7 +1,7 @@
 import type { Batch } from '../types';
 import type { FinancialPlan } from './finance/types';
 import { isoDate } from './finance/ledger';
-import { plannedBrewDate, rescheduleBatchPatch } from './batchSchedule';
+import { actualBrewDate, hasBrewStarted, normalizeBrewDate, plannedBrewDate, rescheduleBatchPatch } from './batchSchedule';
 import { datesSortiesBrassin } from './finance/brewForecast';
 import {
   EFFET_HORS_COURBE, ajouterJours, brassagePoseAuPasse, dimancheDe, dureeBrassin, dureePasBrassee, ecartJours, etiquetteS, finDeBrassin, francs, idChoseArgent, jalonsBrassin, jourLisible, lundiDe, preteAuPlusTot,
@@ -222,6 +222,28 @@ export function deplacer(chose: ChoseCalendrier, semaines: number, ctx: Contexte
 export function deplacerJours(chose: ChoseCalendrier, jours: number, ctx: ContexteGestes, jalon?: JalonId): Resolution {
   if (!Number.isInteger(jours) || jours === 0) return refus('Rien ne bouge : choisis un autre jour.');
   return deplacerDe(chose, jours, ctx, jalon, true);
+}
+
+/**
+ * CAL-CUVE-DATE (VISION-tour9 n° 3, D412 : « la date de brassage se règle sur sa pastille ») : un brassin en cuve ne glisse pas par sa barre (le jour de
+ * brassage ne bouge pas), mais sa pastille « Brassage » corrige la date RÉELLE : `brewDate` écrit (la date prévue reste), la fin gardée ; jamais après la fin.
+ * Un brassin pas brassé ou fixe ailleurs passe par `deplacerJours`.
+ */
+export function corrigerBrassage(chose: ChoseCalendrier, jours: number, ctx: ContexteGestes): Resolution {
+  const batch = chose.source.genre === 'batch' ? batchDe(chose, ctx) : null;
+  if (!batch || chose.deplacable === true || !hasBrewStarted(batch)) return deplacerJours(chose, jours, ctx);
+  if (!Number.isInteger(jours) || jours === 0) return refus('Rien ne bouge : choisis un autre jour.');
+  const reel = isoDate(actualBrewDate(batch)) ?? chose.debut;
+  const nouveau = decale(reel, jours);
+  const fin = chose.preteLe ?? '';
+  if (fin && nouveau >= fin) return refus('Un brassin dure au moins un jour : choisis un jour avant sa fin.');
+  if (nouveau > ctx.aujourdhui) return refus('Un brassin en cuve est déjà brassé : choisis aujourd’hui ou avant.');
+  const brewDate = normalizeBrewDate(nouveau);
+  if (!brewDate) return refus('Choisis une date valide.');
+  return {
+    ok: true, ecritures: [{ op: 'patch', collection: 'batches', id: batch.id, patch: { brewDate } }], effet: null, promesse: null, courbeApres: null,
+    message: annuler(`${chose.titre} : brassée le ${jourLisible(nouveau)}`)
+  };
 }
 
 /** Le jour d'où un brassin se déplace : son jour prévu ; pas brassé et prévu dans la semaine courante, son jour affiché (aujourd'hui) ou le lundi de sa colonne. */

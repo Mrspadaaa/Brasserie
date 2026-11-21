@@ -32,7 +32,7 @@ import {
   type BrouillonAjout, type ContexteAjout
 } from '../../domain/calendrierAjout';
 import {
-  accepterVente, alignerCourbe, allonger, allongerDebut, deplacer, deplacerJours, dupliquer, dureeAllongee, dureeDebutTiree, fait, lier, delier, livrer, mettreDeCote, modifierIdee, retirer, noterIdee, supprimer, supprimerSansDate,
+  accepterVente, alignerCourbe, allonger, allongerDebut, corrigerBrassage, deplacer, deplacerJours, dupliquer, dureeAllongee, dureeDebutTiree, fait, lier, delier, livrer, mettreDeCote, modifierIdee, retirer, noterIdee, supprimer, supprimerSansDate,
   courbeDuGlisse, jourDuGlisse, raisonNommee, type ContexteGestes, type Ecriture, type Message as MessageGeste, type Promesse, type Resolution
 } from '../../domain/calendrierGestes';
 
@@ -894,12 +894,12 @@ export function CalendrierTab(props: CalendrierTabProps) {
             void ecrire({ ok: true, ecritures: [{ op: 'patch', collection: 'batches', id: chose.source.id, patch: { name: nom } }],
               message: { texte, action: 'Annuler', lecture: `${texte} · Annuler` }, effet: null, promesse: null, courbeApres: null }, true, chose.id, true);
           },
-          onDecalerDebut: (jours: number) => { void ecrire(deplacerJours(chose, jours, ctxRef.current), true, chose.id, true); },
+          onDecalerDebut: (jours: number) => { void ecrire(corrigerBrassage(chose, jours, ctxRef.current), true, chose.id, true); },
           onDecalerFin: (jours: number) => { void ecrire(allonger(chose, jours, ctxRef.current), true, chose.id, true); }
         } : {})}
         {...(editable && !sansDate ? {
           /* D412 : l'action à la volée, la pastille de date réglée sur place ; une chose qui dure garde sa fin quand son début bouge */
-          onDecalerDebut: (jours: number) => { void ecrire(chose.fin && chose.fin !== chose.debut ? allongerDebut(chose, jours, ctxRef.current) : deplacerJours(chose, jours, ctxRef.current), true, chose.id, true); },
+          onDecalerDebut: (jours: number) => { void ecrire(chose.source.genre === 'batch' && chose.deplacable !== true ? corrigerBrassage(chose, jours, ctxRef.current) : chose.fin && chose.fin !== chose.debut ? allongerDebut(chose, jours, ctxRef.current) : deplacerJours(chose, jours, ctxRef.current), true, chose.id, true); },
           onDecalerFin: (jours: number) => { void ecrire(allonger(chose, jours, ctxRef.current), true, chose.id, true); }
         } : {})}
         {...(editable && (chose.source.genre === 'creative' || chose.source.genre === 'plan') ? { onRenommer: (nom: string) => {

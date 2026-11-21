@@ -804,6 +804,40 @@ async function jouerCalendrier({ p, base, combo, tactile, glisser, pas }) {
     } catch (e) { echec(C6, String(e.message ?? e).slice(0, 160)); await echap(); }
     await choisirPeriode('3 mois'); await sleep(400);
   };
+  // ── CAL-CUVE (VISION-tour9 n° 3, 21.11, brassin en cuve « NEIPA Test » J78) : (a) la date de BRASSAGE se règle depuis sa pastille (la règle lâchée écrit
+  //    `brewDate`, plus de refus « le jour de brassage ne bouge pas ») ; (b) « Prête ? » (fin inconnue) se règle depuis la fiche (écrit `finPrevue`). Rouge sur tour8 ──
+  const sectionCuve = async () => {
+    const CU = `brassin en cuve, fiche ${combo}`;
+    const lire = () => p.evaluate((k) => { const e = JSON.parse(localStorage.getItem(k) ?? '[]').find((x) => x.id === 'B-NEIPA-TEST'); const d = e?.data ?? e ?? {}; return { brew: d.brewDate ?? null, fin: d.finPrevue ?? null, vu: JSON.stringify(e ?? null).slice(0, 260) }; }, CLE_CACHE);
+    const regler = async (pastille, touches) => {
+      const ouvre = await p.evaluate(async (c) => { const pa = document.querySelector(`[data-detail] [data-pastille="${c}"]`); if (!(pa instanceof HTMLButtonElement)) return false; pa.click(); await new Promise((r) => setTimeout(r, 300)); return !!document.querySelector('[data-detail] [data-regle]'); }, pastille);
+      if (!ouvre) return false;
+      await p.evaluate(async (ks) => { const r = document.querySelector('[data-detail] [data-regle]'); for (const k of ks) { r.dispatchEvent(new KeyboardEvent('keydown', { key: k, bubbles: true })); await new Promise((x) => setTimeout(x, 40)); } }, touches);
+      await sleep(900); return true;
+    };
+    try {
+      await versCalendrier(); await choisirPeriode('3 mois'); await sleep(500);
+      for (let k = 0; k < 3 && !(await p.evaluate(() => !!document.querySelector('[aria-label^="NEIPA Test,"]:not([data-probable])'))); k++) { const f = await p.evaluate(() => { const e = document.querySelector('[aria-label="Période précédente"]'); if (!e) return null; const r = e.getBoundingClientRect(); return [r.x + r.width / 2, r.y + r.height / 2]; }); if (!f) break; await toucherXY(f[0], f[1]); await sleep(700); }
+      const ouvrirFiche = async () => {
+        const b = await p.evaluate(() => { const e = document.querySelector('[aria-label^="NEIPA Test,"]:not([data-probable])'); if (!e) return null; e.scrollIntoView({ block: 'center', inline: 'center' }); const r = e.getBoundingClientRect(), f = document.querySelector('[data-frise]').getBoundingClientRect(); const g = Math.max(r.left, f.left), d = Math.min(r.right, f.right); return [(g + d) / 2, r.top + r.height / 2]; });
+        if (!b) return false; await toucherXY(b[0], b[1]); await sleep(900); const q = await p.evaluate((x, y) => { const t = document.elementFromPoint(x, y); return { det: !!document.querySelector('[data-detail]'), at: t ? (t.getAttribute('aria-label') ?? t.className ?? t.tagName).toString().slice(0, 60) : null, x, y, w: innerWidth }; }, b[0], b[1]); console.log('  dbg', JSON.stringify(q)); return q.det;
+      };
+      if (!(await ouvrirFiche())) { echec(CU, '« NEIPA Test » ou sa fiche introuvable : ' + await p.evaluate(() => [...document.querySelectorAll('[data-chose]')].map((e) => (e.getAttribute('aria-label') ?? e.getAttribute('data-chose')).slice(0, 22)).join(' | ') + ' | detail ' + !!document.querySelector('[data-detail]'))); return; }
+      const l0 = await lire();
+      const okA = await regler('debut', ['ArrowLeft', 'ArrowLeft', 'ArrowLeft', 'Enter']);
+      const msg = await p.evaluate(() => document.querySelector('[data-message]')?.textContent ?? '');
+      const l1 = await lire();
+      (okA && l1.brew && l1.brew !== l0.brew && !/ne bouge pas/.test(msg)) ? ok(`${CU} date de brassage réglée`, `${l0.brew} → ${l1.brew}`) : echec(`${CU} date de brassage réglée`, `règle ${okA}, brewDate ${l0.brew} → ${l1.brew} (${l1.vu}), message « ${msg.slice(0, 120)} »`);
+      await echap(); await sleep(300);
+      if (!(await p.evaluate(() => !!document.querySelector('[data-detail]'))) && !(await ouvrirFiche())) { echec(`${CU} fin`, 'fiche fermée'); return; }
+      const okB = await regler('fin', ['ArrowRight', 'ArrowRight', 'ArrowRight', 'ArrowRight', 'ArrowRight', 'ArrowRight', 'Enter']);
+      const l2 = await lire();
+      (okB && l2.fin) ? ok(`${CU} fin « Prête » réglée`, `finPrevue ${l0.fin ?? 'aucune'} → ${l2.fin}`) : echec(`${CU} fin « Prête » réglée`, `règle ${okB}, finPrevue ${l0.fin ?? 'aucune'} → ${l2.fin ?? 'aucune'}`);
+      await cap('cuve-fiche'); await echap();
+      await p.evaluate((kf, kc) => { for (const k of [kf, kc]) localStorage.setItem(k, JSON.stringify(JSON.parse(localStorage.getItem(k) ?? '[]').map((x) => (x.id === 'B-NEIPA-TEST' ? { ...x, finPrevue: null, ...(x.data ? { data: { ...x.data, finPrevue: null } } : {}) } : x)))); }, CLE_FIXTURE, CLE_CACHE);
+    } catch (e) { echec(CU, String(e.message ?? e).slice(0, 160)); await echap(); }
+    await choisirPeriode('3 mois'); await sleep(400);
+  };
   // ── CAL-VIDE (21.11, « Il y a un espace vide énorme ici ??? ») et CAL-VIDES-EN-LIGNE (« les mettre en vertical pas les entassés à
   //    l'horizontal ») : en 6 sem., 3 mois et An, une rangée prend la hauteur de ses lignes (écart ≤ 24 px jusqu'à l'en-tête suivant) ; les
   //    rangées vides se posent l'une sous l'autre ──
@@ -860,7 +894,7 @@ async function jouerCalendrier({ p, base, combo, tactile, glisser, pas }) {
   };
   // --sections a,b : seulement ces sections du Calendrier (itération ; le défaut les joue toutes)
   const SECTIONS = opt('sections', null)?.split(',');
-  for (const [nom, f] of Object.entries({ sectionJourBord, sectionGlisseJour, sectionBarre, sectionCadre, sectionFeuille, sectionFeuilleJour, sectionModifier, sectionFiche, sectionRangees, sectionBarreBord, sectionChg4, sectionChg5, sectionChg6, sectionBarreHors })) if (!SECTIONS || SECTIONS.includes(nom)) await f();
+  for (const [nom, f] of Object.entries({ sectionJourBord, sectionGlisseJour, sectionBarre, sectionCadre, sectionFeuille, sectionFeuilleJour, sectionModifier, sectionFiche, sectionRangees, sectionBarreBord, sectionChg4, sectionChg5, sectionChg6, sectionBarreHors, sectionCuve })) if (!SECTIONS || SECTIONS.includes(nom)) await f();
   await cap('fin');
 }
 
