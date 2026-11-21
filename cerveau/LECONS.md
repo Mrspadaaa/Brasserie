@@ -16,7 +16,7 @@ Erreurs de méthode déjà commises, cause, remède. Chargé par CLAUDE.md : rel
 ### L02 — Expliquer une chose qui marche, ce n'est pas la refaire
 - Erreur : 19.10, lots 12 et 12b : il voulait une explication à l'appui long, les lots ont refait la carte. « Tu as pas du tout bien compris le besoin ».
 - Cause : l'appui long ouvrait déjà la fiche ; base non lue.
-- Faire : lire la base, garder l'actuel au repos, ajouter un petit élément. S'il demande de challenger, rendre l'analyse avant de construire.
+- Faire : lire la base, garder l'actuel au repos. S'il demande de challenger, rendre l'analyse avant de construire.
 - Rôles : pilote, auteur
 - Contrôle : `controle-appui.mjs` A6 à A8 (D70)
 
@@ -120,7 +120,7 @@ Erreurs de méthode déjà commises, cause, remède. Chargé par CLAUDE.md : rel
 ### L24 — Un choix du brasseur se montre en variantes ; ni choix ni accord ne bloquent
 - Erreur : 22.10, questions fermées sans maquette. 02.11 : « ?? J'ai déjà donné mon avis ».
 - Cause : « au brasseur de trancher » lu en porte bloquante ([[le-brasseur-choisit]], [[fil-de-fer-d-abord]]).
-- Faire : mot ou détail mineur : sans maquette ([[micro-correctifs]]). Chaque choix ouvert : un axe de variantes, on lui montre, il choisit. Artefact privé, une page par choix, variantes et référence côte à côte (D126) ; sans page : « à dessiner ». Point ouvert : le lien et ce qu'on attend, sans code (D307). Cas rare : défaut A, lettre jamais réclamée (D315). Avant une demande d'accord, finir le non bloqué : preuve sur fixture simulée, build, commande prête. Répondu (silence et « tous » compris) : jamais redemandé ; l'ouvert seul, sur écran annoté (16.11). Écran refait : `maquettes` (19.11). Un port commence par l'écran de sa plainte (21.11). ([[maquettes-16-11]])
+- Faire : mot ou détail mineur : sans maquette ([[micro-correctifs]]). Chaque choix ouvert : un axe de variantes, on lui montre, il choisit. Artefact privé, une page par choix, variantes et référence côte à côte (D126) ; sans page : « à dessiner ». Point ouvert : le lien et ce qu'on attend, sans code (D307). Cas rare : défaut A, lettre jamais réclamée (D315). Avant une demande d'accord, finir le non bloqué : preuve sur fixture simulée, build, commande prête. Répondu (silence et « tous » compris) : jamais redemandé ; l'ouvert seul, sur écran annoté (16.11). Écran refait : `maquettes` (19.11). Port : d'abord l'écran de sa plainte. ([[maquettes-16-11]])
 - Rôles : pilote, conseil
 - Contrôle : `systeme.mjs mission` refuse une voie montrée au brasseur qui dépend de son choix ; `controle-page-choix.mjs` (D126)
 
