@@ -8,6 +8,10 @@
 //              entrées après geste comprises : c'est justement le geste qui fait sauter la vue).
 //              KO si le premier bloc ou l'élément touché bouge de plus de 1 px (hors défilement voulu, hors changement d'écran),
 //              ou si le CLS de l'action dépasse 0,02 ; et KO d'écran si le CLS de sa session d'actions dépasse 0,02.
+//              D407 (21.11) : le contenu que le geste ajoute lui-même ne compte pas. Une action marquée `ajoute` (un malt, un houblon
+//              posé) : les décalages des éléments qui étaient sous le haut du contenu ajouté (MutationObserver) sortent du CLS ; le
+//              premier bloc et l'élément touché restent suivis. Une action marquée `exception` (règle n° 1 : sa maquette choisie fait
+//              ce mouvement) est mesurée et dite « exception », jamais comptée en échec ni dans la session.
 //   NOM-OBLIGE (21.11 : « Taper un nom pour valider, ensuite sortir du mode clavier … C'est des actions en plus ») : chaque
 //              création est ouverte deux fois. 1) sans rien taper : le nom a-t-il une valeur par défaut, « valider » est-il permis ?
 //              2) nom tapé puis Entrée : la création est-elle confirmée (ou le champ suivant pris) ? On relève `enterkeyhint`.
@@ -54,10 +58,10 @@ const ok = (c, m) => console.log(`  ok  ${c}${m ? ` : ${m}` : ''}`);
 
 // ───────────── mesures dans la page ─────────────
 /* Pose l'observateur de layout-shift (une fois) et repère le premier bloc de contenu sous l'en-tête et l'élément sous le doigt. */
-function armer(x, y) {
+function armer(x, y, ajoute) {
   if (!window.__pr) {
     window.__pr = { ls: [] };
-    new PerformanceObserver((l) => { for (const e of l.getEntries()) window.__pr.ls.push({ v: e.value, t: e.startTime, src: (e.sources || []).slice(0, 3).map((s) => (s.node && s.node.nodeType === 1 ? (s.node.getAttribute('aria-label') || s.node.className || s.node.tagName).toString().slice(0, 40) : '#')) }); }).observe({ type: 'layout-shift', buffered: false });
+    new PerformanceObserver((l) => { for (const e of l.getEntries()) window.__pr.ls.push({ v: e.value, t: e.startTime, haut: Math.min(...(e.sources || []).map((s) => (s.previousRect ? s.previousRect.top : -1e9)), 1e9), src: (e.sources || []).slice(0, 3).map((s) => (s.node && s.node.nodeType === 1 ? (s.node.getAttribute('aria-label') || s.node.className || s.node.tagName).toString().slice(0, 40) : '#')) }); }).observe({ type: 'layout-shift', buffered: false });
   }
   const vis = (e) => { const r = e.getBoundingClientRect(); const c = getComputedStyle(e); return r.width > 0 && r.height > 0 && c.visibility !== 'hidden' && c.opacity !== '0'; };
   // en-tête : le bas le plus bas des éléments fixes ou collants posés en haut de l'écran (barre du haut, sous-onglets collants)
@@ -82,6 +86,12 @@ function armer(x, y) {
   const t = (e) => (e && e.isConnected ? e.getBoundingClientRect().top : null);
   window.__pr.t0 = { bloc: t(bloc), doigt: t(doigt), haut };
   window.__pr.max = { bloc: 0, doigt: 0 }; window.__pr.suivre = true;
+  // D407 : les éléments que le geste insère (l'assistant vit dans une feuille : tout le document est suivi) ; leur haut se lit au relevé
+  window.__pr.ajouts = []; if (window.__pr.mo) window.__pr.mo.disconnect(); window.__pr.mo = null;
+  if (ajoute) {
+    window.__pr.mo = new MutationObserver((l) => { for (const m of l) for (const n of m.addedNodes) if (n.nodeType === 1) window.__pr.ajouts.push(n); });
+    window.__pr.mo.observe(document.body, { childList: true, subtree: true });
+  }
   const boucle = () => {
     if (!window.__pr.suivre) return;
     const b = t(window.__pr.bloc); const d = t(window.__pr.doigt);
@@ -95,8 +105,14 @@ function armer(x, y) {
 function relever() {
   const p = window.__pr; p.suivre = false;
   const t = (e) => (e && e.isConnected ? e.getBoundingClientRect().top : null);
-  const nouvelles = p.ls.slice(p.n0);
+  const toutes = p.ls.slice(p.n0); if (p.mo) p.mo.disconnect();
+  p.ajout = null;
+  for (const n of p.ajouts || []) { if (!n.isConnected) continue; const r = n.getBoundingClientRect(); if (r.height > 0 && r.width > 0 && r.bottom > 0 && r.top < innerHeight) p.ajout = Math.min(p.ajout ?? 1e9, r.top); }
+  // D407 : un décalage dont toutes les sources étaient sous le haut du contenu ajouté vient du geste lui-même
+  const duGeste = (e) => p.ajout != null && e.haut >= p.ajout - 1;
+  const nouvelles = toutes.filter((e) => !duGeste(e));
   return {
+    ajout: p.ajout == null ? null : Math.round(p.ajout), clsAjout: Math.round(toutes.filter(duGeste).reduce((a, e) => a + e.v, 0) * 1000) / 1000,
     bloc: { remplace: !(p.bloc && p.bloc.isConnected), max: Math.round(p.max.bloc * 10) / 10, fin: t(p.bloc) == null || p.t0.bloc == null ? null : Math.round((t(p.bloc) - p.t0.bloc) * 10) / 10 },
     doigt: { remplace: !(p.doigt && p.doigt.isConnected), max: Math.round(p.max.doigt * 10) / 10, fin: t(p.doigt) == null || p.t0.doigt == null ? null : Math.round((t(p.doigt) - p.t0.doigt) * 10) / 10 },
     cls: Math.round(nouvelles.reduce((a, e) => a + e.v, 0) * 1000) / 1000,
@@ -120,15 +136,19 @@ function phrases() {
 }
 
 // ───────────── VUE-SAUTE ─────────────
+/* D407, exception de la règle n° 1 : dans r4-a (Brasserie work/missions/2026-10-31-ecran-identite/v1/r4-a/etat.html, `ouvrirMat(true);fin.focus()`,
+   capture g2-fermenteur-pendant.png), toucher la puce « fermenteur » ouvre la tuile Matériel sur toute la largeur sous « Espace libre » et
+   défile jusqu'au champ. La piste « champ sur place dans la puce » change ce rendu : r4-a est gardée. */
+const R4A_FERMENTEUR = 'r4-a : la puce ouvre Matériel pleine largeur et défile au champ (D407, règle n° 1)';
 /* Chaque écran : comment l'atteindre, puis ses actions principales (texte du bouton ; `p` : préfixe ; `nav` : l'action change d'écran). */
 const ECRANS = [
   { id: 'calendrier', aller: [['Calendrier', { dans: 'nav button' }]], actions: [['S47', { p: 1 }], ['S48', { p: 1 }], ['S49', { p: 1 }], ['Masquer Fêtes'], ['Cacher la courbe'], ['ZZ TEST Commande de malt', { p: 1 }], ['Fermer'], ['Ajouter dans Travaux'], ['Fermer'], ['Période suivante'], ['Période précédente']] },
   { id: 'bord', aller: [['Bord', { dans: 'nav button' }]], actions: [['Échéances et démarches', { p: 1 }], ['Tous'], ['Période précédente'], ['Période suivante'], ['Actions rapides'], ['Actions rapides']] },
   { id: 'finances', aller: [['Finances', { dans: 'nav button' }]], actions: [['sept.'], ['oct.'], ['tout'], ['nov.'], ['Solde et paramètres financiers', { p: 1 }]] },
   { id: 'brassins', aller: [['Brassins', { dans: 'nav button' }]], actions: [['En cuve', { p: 1 }], ['À brasser', { p: 1 }], ['Tous', { p: 1 }], ['Filtrer'], ['Filtrer'], ['Épingler le brassin B-ZZ-PLAN'], ['Recettes', { p: 1, nav: 1 }], ['Atelier R&D', { nav: 1 }], ['Carnet', { nav: 1 }], ['Brassins (', { p: 1, nav: 1 }]] },
-  { id: 'stocks', aller: [['Stocks', { dans: 'nav button' }]], actions: [['Recompter'], ['Étagère'], ['Autres stocks'], ['Ingrédients'], ['Épingler ZZ TEST Munich'], ['Replier Malts'], ['Courses', { nav: 1 }], ['Fûts', { nav: 1 }], ['Pleins', { p: 1 }], ['Livré', { p: 1 }], ['Matériel', { nav: 1 }], ['Houblons', { nav: 1 }], ['Articles', { nav: 1 }]] },
+  { id: 'stocks', aller: [['Stocks', { dans: 'nav button', p: 1 }]], actions: [['Recompter'], ['Étagère'], ['Autres stocks'], ['Ingrédients'], ['Épingler ZZ TEST Munich'], ['Replier Malts'], ['Courses', { nav: 1 }], ['Fûts', { nav: 1 }], ['Pleins', { p: 1 }], ['Livré', { p: 1 }], ['Matériel', { nav: 1 }], ['Houblons', { nav: 1 }], ['Articles', { nav: 1 }]] },
   { id: 'clients', aller: [['Clients', { dans: 'nav button' }]], actions: [['Prix', { nav: 1 }], ['Impôt bière', { nav: 1 }], ['Carnet', { nav: 1 }], ['Modifier ZZ TEST La Cigogne']] },
-  { id: 'assistant-recette', aller: [['Bord', { dans: 'nav button' }], ['Actions rapides'], ['Recette'], ['@', 'textarea[aria-label="Nom de la bière"]', 'ZZ TEST Brune']], actions: [['Changer de fermenteur'], ['Suivant', { p: 1, nav: 1 }], ['ZZ TEST Caramünch', { c: 1 }], ['ZZ TEST Munich', { c: 1 }], ['Suivant', { p: 1, nav: 1 }], ['ZZ TEST Citra', { c: 1 }], ['Suivant', { p: 1, nav: 1 }]] }
+  { id: 'assistant-recette', aller: [['Bord', { dans: 'nav button' }], ['Actions rapides'], ['Recette'], ['@', 'textarea[aria-label="Nom de la bière"]', 'ZZ TEST Brune']], actions: [['Changer de fermenteur', { exception: R4A_FERMENTEUR }], ['Suivant', { p: 1, nav: 1 }], ['ZZ TEST Caramünch', { c: 1, ajoute: 1 }], ['ZZ TEST Munich', { c: 1, ajoute: 1 }], ['Suivant', { p: 1, nav: 1 }], ['ZZ TEST Citra', { c: 1, ajoute: 1 }], ['Suivant', { p: 1, nav: 1 }]] }
 ];
 
 /** Va à l'écran : touchers, ou ['@', sélecteur, texte] pour écrire au doigt. Rend le nombre de gestes. */
@@ -159,18 +179,20 @@ async function vueSaute(banc, aujourdhui) {
         const c = await s.trouver(t, { prefixe: !!o.p, contient: !!o.c }).catch(() => null);
         if (!c) { console.log(`  --  ${ecran.id} « ${t} » absent, non joué`); mesures.vue.push({ ecran: ecran.id, action: t, absent: true }); continue; }
         await sleep(350);
-        const avant = await s.p.evaluate(armer, c[0], c[1]);
+        const avant = await s.p.evaluate(armer, c[0], c[1], !!o.ajoute);
         await s.p.touchscreen.tap(c[0], c[1]);
         await sleep(1100);
         const m = await s.p.evaluate(relever);
-        session += m.cls;
+        if (!o.exception) session += m.cls;
         const nav = !!o.nav;
         const sautBloc = !m.bloc.remplace && !nav ? m.bloc.max : 0;
         const sautDoigt = !m.doigt.remplace && !m.feuille ? m.doigt.max : 0;
         const ligne = { ecran: ecran.id, action: t, ...avant, ...m, nav };
         mesures.vue.push(ligne);
-        const d = `bloc ${m.bloc.remplace ? 'remplacé' : `${m.bloc.max} px`} · doigt ${m.doigt.remplace ? 'remplacé' : `${m.doigt.max} px`} · CLS ${m.cls}${m.feuille ? ' · feuille' : ''}${m.sources.length ? ` · ${m.sources.join(', ')}` : ''}`;
-        if (sautBloc > SEUIL_PX || sautDoigt > SEUIL_PX || m.cls > SEUIL_CLS) { echec(`VUE-SAUTE ${ecran.id} « ${t} »`, d); await s.cap(`vue-${ecran.id}-${k}-saut`); }
+        const d = `bloc ${m.bloc.remplace ? 'remplacé' : `${m.bloc.max} px`} · doigt ${m.doigt.remplace ? 'remplacé' : `${m.doigt.max} px`} · CLS ${m.cls}${m.clsAjout ? ` · CLS du contenu ajouté ${m.clsAjout} (D407)` : ''}${m.feuille ? ' · feuille' : ''}${m.sources.length ? ` · ${m.sources.join(', ')}` : ''}`;
+        const saute = sautBloc > SEUIL_PX || sautDoigt > SEUIL_PX || m.cls > SEUIL_CLS;
+        if (saute && o.exception) { ligne.exception = o.exception; ok(`${ecran.id} « ${t} » exception`, `${d} · ${o.exception}`); }
+        else if (saute) { echec(`VUE-SAUTE ${ecran.id} « ${t} »`, d); await s.cap(`vue-${ecran.id}-${k}-saut`); }
         else ok(`${ecran.id} « ${t} »`, d);
       }
       session = Math.round(session * 1000) / 1000;
