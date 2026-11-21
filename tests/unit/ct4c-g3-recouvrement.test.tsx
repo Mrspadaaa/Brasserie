@@ -2,7 +2,8 @@
 /**
  * Critique tour 4 (c), voie g3.
  * CT4C-7 : Finances › Synthèse à 390 : le + flottant passait sur « 4 181,60 CHF » (carte En caisse) et la pastille « Compagnon hors connexion » sur une ligne
- *          de la carte. La carte garde sa colonne de droite libre (largeur du +) ; la pastille devient un point sans texte visible.
+ *          de la carte. La carte garde sa colonne de droite libre (largeur du +) ; la pastille devient un point sans texte visible,
+ *          puis (CRN-19, 21.11 : « il ne veut rien dire ») plus rien de visible.
  * CT4C-9 : Vendre à 844×340 : en paysage bas, la feuille s'élargit et passe sur deux colonnes (panier et « Facturer » à droite, visibles).
  * jsdom ne mesure pas la mise en page : les règles CSS se lisent dans les feuilles (même fichier que celui qui est chargé) ; la mesure réelle
  * (rectangles du + et des montants, 390/844/1280, clair et cave) est au banc `voies/g3/bench.mjs`, résultats dans RESULTAT.md.
@@ -41,15 +42,12 @@ describe('CT4C-7 : rien de couvert dans la carte En caisse (390)', () => {
     expect(m).not.toBeNull();
     expect(parseFloat(m![1])).toBeGreaterThanOrEqual(4.5);
   });
-  it('la pastille « mode local » ne porte aucun texte visible : un point, le sens reste dit au lecteur d’écran', () => {
+  it('la pastille « mode local » ne se voit pas : le sens reste dit au lecteur d’écran (CRN-19)', () => {
     window.history.replaceState({}, '', '/?dev-local');
     render(<BrewerActivity localOnly />);
     const pastille = screen.getByRole('status');
     expect(pastille).toHaveTextContent('Compagnon hors connexion · mode local');
-    const visible = [...pastille.childNodes].filter((n) => !(n instanceof HTMLElement) || (n.getAttribute('aria-hidden') !== 'true' && !n.classList.contains('sr-only')));
-    expect(visible.map((n) => n.textContent)).toEqual([]);
-    expect(pastille.className).toMatch(/\bh-2\.5\b/);
-    expect(pastille.className).toMatch(/\bw-2\.5\b/);
+    expect(pastille.className).toBe('sr-only');
   });
 });
 

@@ -139,7 +139,9 @@ export function BrewerActivity({ context = brewerAppScreen('dashboard'), hideAct
     /* CT4-A-17 : la pastille ne flotte plus au milieu du contenu (elle couvrait « Fournisseurs, matériel », la barre « Charges fixes », les Papiers) :
        posée sur la barre d'onglets, au coin bas gauche, courte ; le texte entier reste dit au lecteur d'écran et au survol. */
     /* CT4C-7 (critique tour 4) : même à 102 × 16 px, la pastille couvrait la ligne « libre 3 721,60 » de la carte En caisse. Elle devient un point de 10 px au coin bas gauche, sur la barre, hors de toute colonne de texte ; le sens reste dit au survol et au lecteur d'écran. */
-    return <p role="status" title="Compagnon hors connexion · mode local" data-compagnon-local className="pointer-events-none fixed bottom-[calc(var(--main-navigation-height,2.5rem)+2px)] left-1 z-30 whitespace-nowrap flex h-2.5 w-2.5 items-center justify-center rounded-full bg-cave-850/90"><span aria-hidden="true" className="h-1.5 w-1.5 rounded-full bg-attention" /><span className="sr-only">Compagnon hors connexion · mode local</span></p>;
+    /* CRN-19 (critique carnet 21.11) : ce point orange isolé au-dessus de « Bord » « ne veut rien dire » (3e plainte sur cette pastille). Il ne
+       paraît qu'en ?dev-local (jamais en production) : il devient invisible, le mode local reste dit au lecteur d'écran. */
+    return <p role="status" data-compagnon-local className="sr-only">Compagnon hors connexion · mode local</p>;
   const remove = async () => {
     if (!removal || deleting) return;
     setDeleting(true);

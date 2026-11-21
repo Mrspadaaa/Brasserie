@@ -547,6 +547,17 @@ async function jouer(dir) {
       if (v.length) throw new Error(`« veille » dans un carnet réalisé : ${v.join(' | ')}`);
       ok('CRN-18', 'aucune veille sur la machine achetée');
     });
+    await etape('CRN-19 aucun point coloré isolé au-dessus de « Bord »', async () => {
+      await demarrer(); await versAtelier(); await attendreListe(); await cap('crn19-coin');
+      const pts = await p.evaluate(() => [...document.querySelectorAll('body *')].filter((e) => {
+        const r = e.getBoundingClientRect(); if (!(r.width > 0 && r.height > 0) || r.width >= 12 || r.height >= 12) return false;
+        if (r.left > 48 || r.bottom < innerHeight - 140) return false;
+        const c = getComputedStyle(e); if (c.visibility === 'hidden' || +c.opacity === 0) return false;
+        return !/rgba\(0, 0, 0, 0\)|transparent/.test(c.backgroundColor) && !e.closest('nav');
+      }).map((e) => `${e.tagName.toLowerCase()}.${String(e.className).slice(0, 40)} (${e.closest('[title]')?.getAttribute('title') ?? ''})`));
+      if (pts.length) throw new Error(`point coloré sans mot en bas à gauche : ${pts.join(' | ')}`);
+      ok('CRN-19', 'coin bas gauche vide');
+    });
     // CRN-suite
 
     // ══════════ thèmes et grand écran ══════════

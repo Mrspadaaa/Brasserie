@@ -23,13 +23,12 @@ describe('En-tête de l’app : opaque, rien ne se voit à travers', () => {
 
   // La vraie cause du fantôme gris (dev-local) : la pastille « Compagnon hors connexion · mode local » est fixe à 4 px du haut, au même z-index que
   // l'en-tête mais montée avant lui : l'en-tête la recouvrait et seul son bas dépassait, gris, sous « L'Affinée ». Elle passe en bas de l'écran, au-dessus de la barre, sur une ligne : rien sous l'en-tête.
-  it('la pastille hors connexion ne se place plus sous l’en-tête : en bas, sur une ligne', () => {
+  // CRN-19 (21.11) : plus rien de visible, ni sous l'en-tête ni au-dessus de « Bord » ; le mode local reste dit au lecteur d'écran.
+  it('la pastille hors connexion ne se voit plus : lue au lecteur d’écran seulement', () => {
     window.history.replaceState({}, '', '/?dev-local');
     render(<BrewerActivity localOnly />);
     const pastille = screen.getByRole('status');
-    expect(pastille.className).toMatch(/bottom-/);
-    expect(pastille.className).not.toMatch(/top-/);
-    expect(pastille.className).not.toMatch(/z-40/);
-    expect(pastille.className).toMatch(/whitespace-nowrap/);
+    expect(pastille.className).toBe('sr-only');
+    expect(pastille).toHaveTextContent('Compagnon hors connexion · mode local');
   });
 });
