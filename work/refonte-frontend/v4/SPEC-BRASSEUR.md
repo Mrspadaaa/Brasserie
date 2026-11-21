@@ -2509,3 +2509,13 @@ Classement de la page r3 de Ma levure (https://claude.ai/artifact/DKAJe8ESeMR4ig
 > Il y a quand même quelques bonne piste... Certaines sont gimmicky mais d'autres sont des vrais gain. C'est de ça que je parle...
 
 (21.11 : son classement de Moins de gestes entre dans la passe 2 des workflows ; chaque version classée devient une candidate mesurée et améliorée selon son mot.)
+
+> Et proposer des actions instantané aussi, certains gest commun en demandant plusieurs.  Aussi par exemple pour le nom de qqch ou autre... Pour valider certains actions il faut un nom ou autre. Taper un nom pour valider, ensuite sortir du mode clavier ect... C'est des actions en plus, pas toujours utile... Ou facilement renommée qqch genre pour la création d'événements, activités, tâche, suggestions, bière et autres, facilité le renomage et un entré (retour à la ligne( du clavier sur mobile confirme)
+>
+> Ce genre de suggestions d'amélioration.
+>
+> Aussi des améliorations de UX, UI, frontend, il y a comme j'ai dit à certains endroits trop de text et pas assez de visuel...
+>
+> Aussi certaines actions comme avant le calendrier, fait bouger toute la vue, ce qui est assez désagréable
+
+(21.11 : grilles ajoutées à la passe 2 : actions instantanées, nom facultatif avec nom par défaut, renommer sur place, Entrée du clavier mobile confirme ; trop de texte ; décalage de vue après une action, partout.)
