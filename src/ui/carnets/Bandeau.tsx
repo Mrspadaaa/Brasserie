@@ -60,7 +60,9 @@ export type BandeauV =
   | { sorte: 'modifiee' }
   | { sorte: 'renomme'; avant: string }
   | { sorte: 'note-supprimee' }
-  | { sorte: 'carnet-supprime'; titre: string };
+  | { sorte: 'carnet-supprime'; titre: string }
+  /* CRN-4 (vision au doigt, 21.11) : un carnet archivé ne dit pas « Rangé ici » ; il dit lequel, et où reste son plan */
+  | { sorte: 'archive'; titre: string };
 
 /** G26 : ce que le changement fait à la comparaison (différence calculée par `comparer.ts`, jamais inventée). */
 export interface ConsequenceV { texte: string; onPasserCritere?: () => void }
@@ -79,6 +81,7 @@ export function texteBandeau(b: BandeauV): string {
     case 'renomme': return '✓ Renommé';
     case 'note-supprimee': return 'Note supprimée';
     case 'carnet-supprime': return 'Carnet supprimé';
+    case 'archive': return '✓ Carnet archivé';
   }
 }
 
@@ -131,12 +134,13 @@ export function Bandeau({ bandeau, onAnnuler, consequence, aideConsequence, enLi
           {avecCoche && <span className="cn-cache">✓ </span>}
           {texte}
           {b.sorte === 'renomme' && <span className="cn-mut"> · avant : {b.avant}</span>}
-          {b.sorte === 'carnet-supprime' && <span> · <b>{b.titre}</b></span>}
+          {(b.sorte === 'carnet-supprime' || b.sorte === 'archive') && <span> · <b>{b.titre}</b></span>}
         </span>
         <button type="button" className="cn-lien" onClick={onAnnuler}>
           {b.sorte === 'cree' && <Undo2 size={16} aria-hidden />} Annuler
         </button>
       </div>
+      {b.sorte === 'archive' && <p className="cn-mut">Son plan reste dans Matériel › Réalisés</p>}
       {b.sorte === 'cree' && <p className="cn-cite">« {b.phrase} » · {ORIGINE_TITRE[b.titreDe ?? 'phrase']}</p>}
       {b.sorte === 'lien' && (
         <p className="cnf-bandeau-lien">

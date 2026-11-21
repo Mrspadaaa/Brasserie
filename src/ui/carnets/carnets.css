@@ -476,6 +476,8 @@
 .cn-genre-note.cn-note-picto { background: var(--c-s2); color: var(--c-ink2); }
 .cn-picto-question { font-weight: 800; font-size: 18px; }
 .cn-genre-mot { font-weight: 600; color: var(--c-ink2); }
+/* CRN-16 (vision au doigt, 21.11) : « à faire », « à acheter » en pastille arrondie, jamais un fond collé au texte (une sélection) */
+.cn-genre-mot:is(.cn-genre-a-faire, .cn-genre-a-acheter) { display: inline-block; padding: 1px 8px; border-radius: 999px; line-height: 1.35; }
 /* P21 : photo rangée, « non lue » */
 .cn-photo-cadre { position: relative; display: block; }
 .cn-photo-etat { position: absolute; left: 6px; bottom: 6px; padding: 2px 8px; border-radius: 8px; background: var(--c-bg); font-size: 14px; color: var(--c-ink2); }

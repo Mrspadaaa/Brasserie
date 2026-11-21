@@ -40,15 +40,22 @@ export function cequiPart(c: ContenuCarnetV): string | null {
   const n = comptesCarnet(c);
   const parts = [
     compte(c.criteres?.length ?? 0, 'critère'), compte(n.articles, 'article'), compte(n.photos, 'photo'),
-    compte(n.facons, 'façon'), n.ecartees ? `${pluriel(n.ecartees, 'façon')} ${accord(n.ecartees, 'écartée')}` : null, compte(n.notes, 'note'),
+    /* CRN-5 : « 2 façons dont 1 écartée », pas « 1 façon, 1 façon écartée » */
+    n.ecartees ? `${pluriel(n.facons + n.ecartees, 'façon')} dont ${n.ecartees} ${accord(n.ecartees, 'écartée')}` : compte(n.facons, 'façon'), compte(n.notes, 'note'),
   ].filter(Boolean) as string[];
   if (!parts.length) return null;
   return parts.length > 1 ? `${parts.slice(0, -1).join(', ')} et ${parts[parts.length - 1]}` : parts[0];
 }
 
 export function SupprimerCarnet(p: SupprimerCarnetProps) {
-  const n = p.liens.length;
-  const realise = p.liens.some(l => l.reglage === 'archiver');
+  /* CRN-5 (vision au doigt, 21.11) : un plan réalisé ne se règle pas, il s'archive avec le carnet. La carte reprend v02-18 : le titre, une
+     phrase, une rangée [Archiver][Garder] ; le plan réalisé n'est pas un « lien qui le retient » (il porte souvent le titre du carnet), et
+     G35 se tait (on archive, on ne supprime pas). */
+  const archives = p.liens.filter(l => l.reglage === 'archiver');
+  const realise = archives.length > 0;
+  const liens = p.liens.filter(l => l.reglage !== 'archiver');
+  const n = liens.length;
+  const planNomme = archives.find(l => l.libelle.trim().toLocaleLowerCase('fr-CH') !== p.titre.trim().toLocaleLowerCase('fr-CH'))?.libelle;
   const part = cequiPart(p.contenu);
   const enVeille = comptesCarnet(p.contenu).veilles;
   /* P9 : la carte est à l'écran dès le geste, à 390 comme à 1280 ; le focus y va (le lecteur d'écran l'annonce, Tab mène à Garder). */
@@ -61,28 +68,29 @@ export function SupprimerCarnet(p: SupprimerCarnetProps) {
   }, []);
   return (
     <section ref={ref} tabIndex={-1} className="cn-supprimer" aria-label={`Supprimer le carnet ${p.titre}`}>
-      <h3 className="cn-sous">Supprimer le carnet {p.titre} ?</h3>
+      <h3 className="cn-sous">{realise ? 'Archiver' : 'Supprimer'} le carnet {p.titre} ?</h3>
       <p>
-        {part ? <>Il part avec <b>{part}</b>.</> : 'Il est vide.'}
+        {realise
+          ? <>Son plan{planNomme ? <> « {planNomme} »</> : null} est réalisé : le carnet s'archive{part ? <> avec <b>{part}</b></> : null}.</>
+          : part ? <>Il part avec <b>{part}</b>.</> : 'Il est vide.'}
         {enVeille ? ` La veille du prix, tous les 3 jours, s'arrête${enVeille > 1 ? ` pour les ${enVeille}` : ''}.` : ''}
       </p>
       {n > 0 && (
         <div className="cn-liens-retiennent">
           <p><b>{n} lien{n > 1 ? 's' : ''} le reti{n > 1 ? 'ennent' : 'ent'}</b></p>
           {/* P42 : le plan se nomme une fois, sur toute la largeur (2 lignes au plus à 390), son réglage dessous ; pas de « À venir · » en tête. */}
-          {p.liens.map(l => (
+          {liens.map(l => (
             <div key={`${l.sorte}:${l.planId}`} className="cn-lien-retient">
               <span className="cn-lien-retient-tx"><b>{l.libelle}</b><span className="cn-mut"> · plan {l.sorte === 'plan-a-venir' ? 'dans À venir' : 'réalisé'}</span></span>
               {l.reglage === 'detacher'
-                ? <button type="button" className="cn-second" onClick={() => p.onDetacher(l.planId)}>Garder le plan sans ce carnet</button>
-                : <button type="button" className="cn-second" onClick={() => p.onArchiver(l.planId)}><Archive size={16} aria-hidden /> Archiver</button>}
+                && <button type="button" className="cn-second" onClick={() => p.onDetacher(l.planId)}>Garder le plan sans ce carnet</button>}
             </div>
           ))}
         </div>
       )}
       {/* G35 (g5:v08-27) : proposé avant, sans bloquer ; calcul local (rattacher.ts), picto local en couleur neutre (n° 38, Q19 : le
           calcul local ne passe pas pour de l'IA, ni violet ni ✻). */}
-      {enVeille > 0 && p.proche && p.proche.memeCategorie !== false && (
+      {!realise && enVeille > 0 && p.proche && p.proche.memeCategorie !== false && (
         <div className="cn-g35" data-source="locale">
           <PictoLocal />
           {/* critique 6, n° 31 : « 1 article en veille : le déplacer », « 2 articles en veille : les déplacer » */}
@@ -90,8 +98,9 @@ export function SupprimerCarnet(p: SupprimerCarnetProps) {
           <button type="button" className="cn-puce cn-g35-bouton" onClick={p.proche.onDeplacer}><ArrowRightToLine size={18} aria-hidden /> Déplacer</button>
         </div>
       )}
-      {n === 0 && <p className="cn-mut cn-g36"><PictoLocal /> ni dans À venir, ni en commande</p>}
+      {n === 0 && !realise && <p className="cn-mut cn-g36"><PictoLocal /> ni dans À venir, ni en commande</p>}
       <div className="cn-rang-boutons">
+        {realise && <button type="button" className="cn-archiver-bouton cn-sp" onClick={() => p.onArchiver(archives[0].planId)}><Archive size={18} aria-hidden /> Archiver</button>}
         {!realise && (
           <button type="button" className="cn-supprimer-bouton cn-sp" disabled={n > 0} data-allume={n === 0 ? true : undefined}
             title={n > 0 ? `Réglez d'abord ${n > 1 ? `les ${n} liens` : 'le lien'}` : undefined} onClick={p.onSupprimer}><Trash2 size={18} aria-hidden /> Supprimer</button>

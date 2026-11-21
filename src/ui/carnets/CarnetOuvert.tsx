@@ -104,6 +104,9 @@ export interface CarnetOuvertProps {
 }
 
 function etiquetteStatut(c: CarnetV): string {
+  /* CRN-8 (vision au doigt, 21.11) : un projet fait au Planning n'est pas une « Idée » ; la date d'archivage est celle de la migration,
+     elle ne se dit pas comme la date du fait */
+  if (c.carnet.archive) return /planning/i.test(c.carnet.archive.raison) ? 'Fait au Planning' : `Archivé${dateCourte(c.carnet.archive.le) ? ` le ${dateCourte(c.carnet.archive.le)}` : ''}`;
   if (c.status === 'idea') { const d = dateCourte(c.carnet.creeLe); return d ? `Idée · ${d}` : 'Idée'; }
   /* tour 3, PCN-151 : réalisé (plan payé), la pastille le dit comme la ligne de sortie */
   if (c.status === 'validated' && c.carnet.sortie?.etat === 'realise') { const d = dateCourte(c.carnet.sortie.realiseLe); return d ? `Réalisé le ${d}` : 'Réalisé'; }
@@ -331,7 +334,10 @@ export function CarnetOuvert(p: CarnetOuvertProps) {
   );
   /* n° 19 (h05-3) : la ligne d'état sous le titre, « 2 façons à comparer · attendre l'avis du ferblantier » (le « à faire » du carnet, tel
      qu'il l'a écrit) ; rien d'inventé, rien à 0. */
-  const aFaire = k.notes.find(x => x.genre === 'a-faire')?.texte;
+  /* CRN-7 (vision au doigt, 21.11) : la note des dates d'un projet du Planning (« À faire du … au … (Planning, …) ») est déjà la note
+     du carnet ; elle n'est pas redite sous le titre. Archivé, rien n'est plus « à faire » (CRN-8). */
+  const notePlanning = (t: string) => duPlanning && /\(Planning[^)]*\)\s*$/.test(t);
+  const aFaire = c.carnet.archive ? undefined : k.notes.find(x => x.genre === 'a-faire' && !notePlanning(x.texte))?.texte;
   /* n° 15 et 28 : « 2 façons à comparer » (les façons en lice, comme la liste), sinon « 2 articles à comparer » ; accordés. */
   const etatTete = c.status === 'validated' || neuf ? null
     : p.tableau ? (n.facons >= 2 ? `${pluriel(n.facons, 'façon')} à comparer` : `${pluriel(n.articles, 'article')} à comparer`)
@@ -574,7 +580,7 @@ export function CarnetOuvert(p: CarnetOuvertProps) {
               {k.notes.map((n, i) => (
                 <React.Fragment key={n.id}>
                   {p.noteSupprimee && i === 0 && !p.noteSupprimee.apres && <Bandeau enLigne bandeau={{ sorte: 'note-supprimee' }} onAnnuler={p.noteSupprimee.onAnnuler} />}
-                  {encadre('note', n.id, <LigneNote note={n} doublon={enDouble.has(n.id)} onNote={p.onNote} />)}
+                  {encadre('note', n.id, <LigneNote note={n} doublon={enDouble.has(n.id)} onNote={p.onNote} fait={!!c.carnet.archive} />)}
                   {p.feuille?.noteId === n.id && p.feuille.contenu}
                   {p.noteSupprimee?.apres === n.id && <Bandeau enLigne bandeau={{ sorte: 'note-supprimee' }} onAnnuler={p.noteSupprimee.onAnnuler} />}
                 </React.Fragment>
@@ -644,15 +650,17 @@ const PICTO_GENRE: Record<GenreNote, React.ReactNode> = {
   note: <FileText size={18} />
 };
 
-function LigneNote({ note, doublon, onNote }: { note: NoteV; doublon: boolean; onNote: (id: string) => void }) {
+function LigneNote({ note, doublon, onNote, fait }: { note: NoteV; doublon: boolean; onNote: (id: string) => void; fait?: boolean }) {
   const d = dateCourte(note.modifieeLe ?? note.le);
+  /* CRN-8 : dans un carnet archivé, ce qui était « à faire » est fait */
+  const genreMot = fait && note.genre === 'a-faire' ? 'fait' : null;
   return (
     <div className="cn-note" data-genre={note.genre}>
       <span className={`cn-note-picto cn-genre-${note.genre}`} aria-hidden>{PICTO_GENRE[note.genre] ?? PICTO_GENRE.note}</span>
       <span className="cn-sp cn-note-tx">
         <span>{note.texte}</span>
         <span className="cn-mut">
-          <b className={`cn-genre-mot cn-genre-${note.genre}`}>{GENRE_LIBELLE[note.genre]}</b>{note.modifieeLe ? ' · modifiée' : ''}{d ? ` · ${d}` : ''}{note.groupe ? ` · ${note.groupe.libelle}` : ''}
+          <b className={`cn-genre-mot cn-genre-${genreMot ? 'fait' : note.genre}`}>{genreMot ?? GENRE_LIBELLE[note.genre]}</b>{note.modifieeLe ? ' · modifiée' : ''}{d ? ` · ${d}` : ''}{note.groupe ? ` · ${note.groupe.libelle}` : ''}
           {doublon && <span className="cn-doublon"> · <Provenance origine="ia" /> doublon ?</span>}
         </span>
       </span>

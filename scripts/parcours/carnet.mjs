@@ -195,8 +195,8 @@ async function jouer(dir) {
     const noteBouton = (t) => `Note : ${t}`;
     /** Visible tel quel, sans défiler : dans l'écran, au-dessus du champ du bas, et c'est lui qui reçoit le doigt (CRN). */
     const visibleTel = (txt, sel = 'button,[role=menuitem]') => p.evaluate((t, s) => {
-      const n = (x) => String(x).replace(/s+/g, ' ').trim();
-      const e = [...document.querySelectorAll(s)].find((x) => n(x.innerText) === t && x.getBoundingClientRect().width > 0);
+      const n = (x) => String(x).replace(/\s+/g, ' ').trim();
+      const e =[...document.querySelectorAll(s)].find((x) => n(x.innerText) === t && x.getBoundingClientRect().width > 0);
       if (!e) return { ok: false, pourquoi: 'absent' };
       const r = e.getBoundingClientRect(); const champ = document.querySelector('.cn-champ-zone')?.getBoundingClientRect();
       const bas = Math.min(innerHeight, champ ? champ.top : innerHeight);
@@ -204,7 +204,7 @@ async function jouer(dir) {
       const dessus = !!h && (h === e || e.contains(h));
       return { ok: r.bottom <= bas + 1 && r.top >= 0 && dessus, pourquoi: `y ${Math.round(r.top)}–${Math.round(r.bottom)}, champ du bas à ${Math.round(bas)}, au doigt : ${h ? h.tagName.toLowerCase() + '.' + String(h.className).slice(0, 24) : 'rien'}` };
     }, txt, sel);
-    const nbBoutons = (txt) => p.evaluate((t) => [...document.querySelectorAll('button')].filter((b) => b.innerText.replace(/s+/g, ' ').trim() === t && b.getBoundingClientRect().width > 0).length, txt);
+    const nbBoutons = (txt) => p.evaluate((t) => [...document.querySelectorAll('button')].filter((b) => b.innerText.replace(/\s+/g, ' ').trim() === t && b.getBoundingClientRect().width > 0).length, txt);
 
     // ══════════ 390 ══════════
     await ouvrirPage(390, 844, true);
@@ -343,9 +343,9 @@ async function jouer(dir) {
       await toucher('Plus', { exact: true }); await toucher('Supprimer l'); await cap('17a-carte-supprimer');
       if (!(await present('Archiver'))) throw new Error('un carnet dont le plan est réalisé ne propose pas « Archiver »');
       await toucher('Archiver'); await attendreListe(); await cap('17b-archive');
-      await verifier('17 ranger : archiver', { contient: ['Rangé ici'], carnets: true });
+      await verifier('17 ranger : archiver', { contient: ['Carnet archivé'], carnets: true });
       if (await present('ZZ TEST — Embouteillage', { sel: 'button' })) throw new Error('le carnet rangé est encore dans la liste');
-      await toucher('Annuler', { exact: true, parent: 'Rangé ici' }); await sleep(700); await cap('17c-rendu');
+      await toucher('Annuler', { exact: true, parent: 'Carnet archivé' }); await sleep(700); await cap('17c-rendu');
       if (!(await present('ZZ TEST — Embouteillage', { sel: 'button' }))) throw new Error('Annuler ne rend pas le carnet rangé');
     });
     await etape('18 supprimer un carnet puis Annuler', async () => {
@@ -397,20 +397,85 @@ async function jouer(dir) {
     });
 
     // ══════════ CRN : les défauts de la vision au doigt (critique carnet 21.11, BUGS.md CRN-1 à CRN-21) ══════════
-    await etape('CRN-1 menu d'une note entier, Supprimer visible', async () => {
+    await etape("CRN-1 menu d’une note entier, Supprimer visible", async () => {
       await demarrer(); await versAtelier(); await attendreListe(); await ouvrirCarnetDeListe('Frigo + congel');
       await focaliserChamp(); await taper('prendre un modèle à 2 portes'); await entree();
       await toucher('Note : Prendre un modèle à 2 portes'); await sleep(500); await cap('crn01-menu-note');
       for (const m of ['Modifier', 'Supprimer']) { const v = await visibleTel(m, '[role=menu] [role=menuitem]'); if (!v.ok) throw new Error(`« ${m} » du menu de la note n'est pas visible au doigt (${v.pourquoi})`); }
       ok('CRN-1', 'Modifier et Supprimer visibles, au-dessus du champ');
     });
-    await etape('CRN-3 un seul Annuler après la suppression d'une note', async () => {
+    await etape("CRN-3 un seul Annuler après la suppression d’une note", async () => {
       await demarrer(); await versAtelier(); await attendreListe(); await ouvrirCarnetDeListe('Frigo + congel');
       await focaliserChamp(); await taper('acheter des clayettes'); await entree();
       await toucher('Note : Acheter des clayettes'); await toucher('Supprimer', { exact: true, sel: '[role=menuitem]' }); await sleep(600); await cap('crn03-un-annuler');
       const n = await nbBoutons('Annuler');
       if (n !== 1) throw new Error(`${n} boutons « Annuler » visibles après la suppression d'une note`);
       ok('CRN-3', 'un seul Annuler, celui de « Note supprimée »');
+    });
+    /** Le genre rangé d'une note (`data-genre` de sa ligne), par le début de son texte. */
+    const genreNote = (debut) => p.evaluate((t) => [...document.querySelectorAll('.cn-note')].find((x) => x.innerText.replace(/\s+/g, ' ').trim().startsWith(t))?.getAttribute('data-genre') ?? null, debut);
+    await etape('CRN-2 « Va dans : Note » range une note, pas une tâche', async () => {
+      await demarrer(); await versAtelier(); await attendreListe(); await ouvrirCarnetDeListe('Frigo + congel');
+      await focaliserChamp(); await taper('prendre un modèle à 2 portes, 180 cm'); await sleep(400);
+      const coche = await p.evaluate(() => [...document.querySelectorAll('button')].find((b) => b.innerText.trim() === 'Note' && (b.getAttribute('aria-pressed') === 'true' || b.getAttribute('aria-checked') === 'true'))?.innerText ?? null);
+      if (coche !== 'Note') throw new Error('« Va dans : Note » n\'est pas coché pour une remarque d\'une ligne');
+      await entree(); await sleep(500); await cap('crn02-note-rangee');
+      const g = await genreNote('Prendre un modèle à 2 portes');
+      if (g !== 'note') throw new Error(`« Note » coché, la ligne est rangée en « ${g} »`);
+      ok('CRN-2', 'rangée en note, sans pastille « à faire »');
+    });
+    await etape('CRN-5 carte d’un carnet réalisé : une phrase, [Archiver][Garder]', async () => {
+      await demarrer(); await versAtelier(); await attendreListe(); await ouvrirCarnetDeListe('ZZ TEST — Embouteillage');
+      await toucher('Plus', { exact: true }); await toucher('Supprimer l'); await sleep(400); await cap('crn05-carte-archiver');
+      const c = await p.evaluate(() => { const s = document.querySelector('.cn-supprimer'); if (!s) return null; const b = (t) => [...s.querySelectorAll('button')].find((x) => x.innerText.trim().endsWith(t))?.getBoundingClientRect();
+        const a = b('Archiver'), g = b('Garder'); return { tx: s.innerText.replace(/\s+/g, ' '), rangee: !!a && !!g && Math.abs(a.top - g.top) < 4, nb: s.querySelectorAll('button').length }; });
+      if (!c) throw new Error('aucune carte de suppression');
+      const fautes = [];
+      if (/lien le retient/.test(c.tx)) fautes.push('« 1 lien le retient » renvoie au carnet lui-même');
+      if (/façon écartée/.test(c.tx)) fautes.push('« 1 façon, 1 façon écartée »');
+      if (/Déplacer/.test(c.tx)) fautes.push('« Déplacer » proposé alors qu’on archive');
+      if (!c.rangee) fautes.push('Archiver et Garder ne sont pas sur une même rangée');
+      if (c.nb !== 2) fautes.push(`${c.nb} boutons dans la carte (2 attendus : Archiver, Garder)`);
+      if (fautes.length) throw new Error(fautes.join(' ; '));
+      ok('CRN-5', c.tx.slice(0, 120));
+    });
+    await etape('CRN-4 archiver dit « archivé » et où va le plan', async () => {
+      await demarrer(); await versAtelier(); await attendreListe(); await ouvrirCarnetDeListe('ZZ TEST — Embouteillage');
+      await toucher('Plus', { exact: true }); await toucher('Supprimer l'); await toucher('Archiver'); await attendreListe(); await cap('crn04-archive');
+      const b = await p.evaluate(() => document.querySelector('.cn-bandeau')?.innerText.replace(/\s+/g, ' ') ?? '');
+      if (/Rangé ici/.test(b) || !/archivé/.test(b) || !/Réalisés/.test(b)) throw new Error(`bandeau après l'archivage : « ${b} »`);
+      ok('CRN-4', b);
+    });
+    await etape('CRN-6 un rappel écrit dans la liste va en note du carnet qui en parle', async () => {
+      await demarrer(); await versAtelier(); await attendreListe();
+      await focaliserChamp(); await taper('ZZ TEST — demander au ferblantier le diamètre de l’évier, jeudi'); await sleep(500); await cap('crn06a-cadre');
+      const cadre = await p.evaluate(() => document.querySelector('.cn-cadre')?.getAttribute('aria-label') ?? '');
+      if (!/Va dans .*vier/.test(cadre)) throw new Error(`le cadre n'annonce pas le carnet de l'évier (« ${cadre} »)`);
+      await entree(); await sleep(1200); await cap('crn06b-range');
+      if ((await surListe()) !== 'liste') throw new Error('un carnet neuf s’est ouvert');
+      if (await present('ZZ TEST — demander au ferblantier', { sel: 'button' })) throw new Error('un carnet titré de la phrase est dans la liste');
+      await ouvrirCarnetDeListe('ZZ TEST — Évier inox'); await cap('crn06c-evier');
+      if (!(await genreNote('Demander au ferblantier'))) throw new Error('la note n’est pas dans le carnet de l’évier');
+      ok('CRN-6', `cadre « ${cadre} », note dans l'évier`);
+    });
+    await etape('CRN-7 les dates du Planning ne sont pas redites sous le titre', async () => {
+      await demarrer(); await versAtelier(); await attendreListe(); await ouvrirCarnetDeListe('Frigo + congel'); await cap('crn07-planning');
+      const n = await p.evaluate(() => (document.querySelector('.cn-ouvert')?.innerText.match(/À faire du 01\.08\.2026/g) ?? []).length);
+      if (n !== 1) throw new Error(`« À faire du 01.08.2026 au 01.05.2027 » dit ${n} fois`);
+      ok('CRN-7', 'dit une fois, dans la note');
+    });
+    await etape('CRN-8 un projet fait du Planning se dit fait', async () => {
+      await demarrer(); await versAtelier(); await attendreListe(); await ouvrirCarnetDeListe('Sol, murs & évacuation'); await cap('crn08-fait');
+      const t = await p.evaluate(() => ({ pastille: document.querySelector('.cn-tete .cn-pastille')?.textContent ?? '', mots: [...document.querySelectorAll('.cn-genre-mot')].map((e) => e.textContent) }));
+      if (!/Fait/.test(t.pastille) || t.mots.includes('à faire')) throw new Error(`pastille « ${t.pastille} », notes : ${t.mots.join(', ')}`);
+      ok('CRN-8', `« ${t.pastille} », notes : ${t.mots.join(', ')}`);
+    });
+    await etape('CRN-16 la pastille « à faire » a sa marge et ses coins', async () => {
+      await demarrer(); await versAtelier(); await attendreListe(); await ouvrirCarnetDeListe('Frigo + congel');
+      const s = await p.evaluate(() => { const e = document.querySelector('.cn-genre-mot.cn-genre-a-faire'); if (!e) return null; const c = getComputedStyle(e); return { pad: parseFloat(c.paddingLeft), r: parseFloat(c.borderTopLeftRadius) }; });
+      if (!s) throw new Error('aucune pastille « à faire »');
+      if (s.pad < 6 || s.r < 6) throw new Error(`pastille collée au texte : marge ${s.pad} px, coins ${s.r} px`);
+      ok('CRN-16', `marge ${s.pad} px, coins ${s.r} px`);
     });
     // CRN-suite
 

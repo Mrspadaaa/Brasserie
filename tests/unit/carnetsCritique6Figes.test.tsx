@@ -74,9 +74,9 @@ describe('critique 6 · figés carnet ouvert, liste, article (lot C)', () => {
     expect(texte(ouvert.container.querySelector('.cn-ligne-etat')!)).toMatch(/^2 façons à comparer/);
     expect(texte(ouvert.container.querySelector('.cn-tete-articles .cn-compte')!)).toBe('6');
     cleanup();
-    expect(cequiPart(v.carnet)).toBe('3 critères, 6 articles, 2 façons, 1 façon écartée et 3 notes'); // paquet 1, PCN-165 : les critères partent aussi
+    expect(cequiPart(v.carnet)).toBe('3 critères, 6 articles, 3 façons dont 1 écartée et 3 notes'); // paquet 1, PCN-165 : les critères partent aussi
     const supp = render(<SupprimerCarnet titre={v.title} contenu={v.carnet} liens={[]} onDetacher={rien} onArchiver={rien} onSupprimer={rien} onGarder={rien} />);
-    expect(texte(supp.container)).toContain('6 articles, 2 façons, 1 façon écartée');
+    expect(texte(supp.container)).toContain('6 articles, 3 façons dont 1 écartée');
   });
 
   /* tour 3, f13 (PCN-27, règle n° 1) : sa maquette g5:v04-4 telle quelle, « ●○○○ idée » et l'encadré « Idée · 17 nov. / Ensuite… » ; la critique 6 (n° 16, 32) les avait retirés contre elle */

@@ -19,7 +19,7 @@ import {
   type Destination, type EcritureCarnet, type Journal, type LigneARanger, type Resultat
 } from '../../domain/carnets/operations';
 import { avecArticleTypo, consequenceApercu, critereQuiTranche, mentionValeurs, passe, placesDe, tableau as tableauDe } from '../../domain/carnets/comparer';
-import { analyserLigne, analyserTexte, decouper, genreLocal, jetons, normaliser, objetDe, PUCES_VA_DANS, vaDansDe, type LigneLocale, type RubriqueVaDans } from '../../domain/carnets/analyseLocale';
+import { analyserLigne, analyserTexte, decouper, genreDEtiquette, genreLocal, jetons, normaliser, objetDe, PUCES_VA_DANS, vaDansDe, type LigneLocale, type RubriqueVaDans } from '../../domain/carnets/analyseLocale';
 import { aucunCarnetNEnParle, carnetProche, nommeLeCarnet, rattacher } from '../../domain/carnets/rattacher';
 import { doublonsDe, notesEnDouble } from '../../domain/carnets/doublons';
 import { liensDuTexte, nombresDe, type CarnetPourIA, type LigneCarnet } from '../../domain/carnets/ia';
@@ -159,7 +159,7 @@ type Annonce =
   /* Critique 7, n° 3 : `rubrique` : la puce « Va dans » cochée d'avance à l'envoi (Ce qui compte, Note, Façon) ; l'IA met en forme, la
      rubrique annoncée tient */
   /* Test en ligne 2 : `choisi` : le carnet corrigé d'un toucher (« Ici », ou un autre) ; un choix du brasseur, l'IA ne le change pas */
-  | { sorte: 'ici'; carnetId: string; rubrique?: RubriqueVaDans; choisi?: true };
+  | { sorte: 'ici'; carnetId: string; rubrique?: RubriqueVaDans; choisi?: true; /** CRN-2 : « Va dans : Note » était coché */ noteChoisie?: true };
 const memeTexte = (x: string, y: string) => x.trim().localeCompare(y.trim(), 'fr', { sensitivity: 'base' }) === 0;
 
 /**
@@ -352,6 +352,28 @@ export function detailDe(etat: Parameters<typeof lireCarnets>[0], effets: readon
 }
 
 /** Une ligne de l'analyse locale, rangée vers sa destination (picto local, Q19). */
+/**
+ * CRN-2 (vision au doigt, 21.11) : « Va dans : Note » coché, d'avance ou d'un toucher, range une note. La tâche devinée d'un verbe en tête
+ * (« prendre un modèle à 2 portes ») cède à ce choix ; une étiquette qu'il a écrite (« À faire : … »), une question ou un achat restent.
+ */
+export function genreSousNote<L extends { sorte: string; genre?: GenreNote; texte: string }>(l: L, phrase = l.texte): L {
+  return l.sorte === 'note' && l.genre === 'a-faire' && !genreDEtiquette(phrase) ? { ...l, genre: 'note' } : l;
+}
+
+/**
+ * CRN-6 (vision au doigt, 21.11) : écrite dans la liste, une ligne seule qui est un rappel (verbe en tête : « demander au ferblantier le
+ * diamètre de l'évier, jeudi ») et dont un carnet parle déjà va en note de ce carnet ; elle n'en ouvre pas un neuf titré de toute la
+ * phrase. Même calcul que le cadre (`rattacher`) ; un objet, une question ou un lien gardent leur chemin (« Nouveau carnet » proposé).
+ */
+const VERBES_RAPPEL = /^(?:demander|redemander|appeler|rappeler|relancer|contacter|ecrire|envoyer|mesurer|verifier|controler|regarder|voir|tester|essayer|nettoyer|reparer|changer|remplacer|prendre|faire|chercher|comparer|attendre|poser|monter|installer|finir|planifier|reserver|prevoir|noter|penser|passer|aller|demonter|deplacer|vider|percer|fixer)\b/;
+
+export function rappelVers(texte: string, carnets: readonly CarnetDoc[]): { carnetId: string; titre: string } | null {
+  if (estLienSeul(texte) || decouper(texte).length !== 1 || genreLocal(texte) !== 'a-faire') return null;
+  /* le verbe en tête doit en être un : « chambre froide pour 6 fûts » finit en -re, c'est un objet, il garde son carnet neuf */
+  if (!VERBES_RAPPEL.test(normaliser(texte.replace(/^\s*ZZ TEST\s*[—–-]\s*/i, '')))) return null;
+  return rattacher(texte, carnets);
+}
+
 export function depuisLocale(l: LigneLocale, dest: Destination): LigneARanger {
   if (l.sorte === 'article') {
     return { ...dest, sorte: 'article', origine: 'locale', lecture: l.url ? 'a-lire' : 'lue',
@@ -644,7 +666,9 @@ export function CarnetsVue(p: CarnetsVueProps) {
       destEnvoi.current = null; titreNeufEnvoi.current = null;
       const rubrique = ici && !force ? vaDansDe(txt) : null;
       const choisi = carnetChoisi.current; carnetChoisi.current = false;
-      let annonce: Annonce | null = ici ? { sorte: 'ici', carnetId: ici, ...(rubrique ? { rubrique } : {}), ...(choisi ? { choisi: true as const } : {}) } : null;
+      const noteChoisie = !!depuis && (rubrique === 'note' || force === 'note');
+      let annonce: Annonce | null = ici ? { sorte: 'ici', carnetId: ici, ...(rubrique ? { rubrique } : {}), ...(choisi ? { choisi: true as const } : {}), ...(noteChoisie ? { noteChoisie: true as const } : {}) } : null;
+      if (noteChoisie) lignes = lignes.map(l => genreSousNote(l, l.phrase));
       if (ici && force && lignes.length === 1 && lignes[0].sorte !== 'article') {
         const l0 = lignes[0];
         const ligne: LigneARanger = force === 'critere' ? { carnetId: ici, sorte: 'critere', texte: l0.texte, origine: 'vous' }
@@ -777,7 +801,7 @@ export function CarnetsVue(p: CarnetsVueProps) {
            ouvre ce carnet ; elle n'est plus jetée, la phrase brute ne reste pas en note ici (D383). */
         const ideeNeuve = (l: LigneCarnet) => l.sorte === 'idee' && !an.choisi && !connu(l.carnetId) && !!(l.carnetNeuf ?? l.titre);
         aRanger = lignes.filter(l => l.sorte !== 'idee' || ideeNeuve(l))
-          .map(l => depuisIA(l, ideeNeuve(l) ? versNeufIA((l.carnetNeuf ?? l.titre)!) : dest(l)));
+          .map(l => depuisIA(an.noteChoisie ? genreSousNote(l, txt) : l, ideeNeuve(l) ? versNeufIA((l.carnetNeuf ?? l.titre)!) : dest(l)));
         const p2 = lignes.find(l => l.titrePropose && l.carnetId === an.carnetId);
         if (p2) propose = { carnetId: an.carnetId, titre: p2.titrePropose! };
         if (!aRanger.length) {
@@ -896,6 +920,9 @@ export function CarnetsVue(p: CarnetsVueProps) {
     if (horsSujet) { txt = horsSujet; aForcer.current = aForcer.current ?? 'note'; }
     titreNeufEnvoi.current = destEnvoi.current === CARNET_NEUF && dEnvoi ? dEnvoi.titre : null;
     carnetChoisi.current = !!dEnvoi && !!corrigeCarnet;
+    /* CRN-6 : le rappel va dans le carnet que le cadre a annoncé, et y reste (l'IA met en forme, elle ne le déplace pas) */
+    const rappel = !depuis ? rappelVers(txt, carnets) : null;
+    if (rappel) { destEnvoi.current = rappel.carnetId; carnetChoisi.current = true; }
     setCorrigeCarnet(null);
     setTexte('');
     envoiActif.current = { envoi: rangement, depuis };
@@ -1071,6 +1098,9 @@ export function CarnetsVue(p: CarnetsVueProps) {
         const plan = planVrac(lignesApercu, t => rattacher(t, carnets), prefixeDe(texte));
         return <NoteEnVrac etat="pendant" lignes={vuesVrac(plan)} texteOrigine={texte} origine="locale" nbCarnets={plan.carnets} onAnnuler={() => setTexte('')} />;
       }
+      /* CRN-6 : un rappel dont un carnet parle : le cadre annonce une note de ce carnet */
+      const rappel = rappelVers(texte, carnets);
+      if (rappel) return <CadreArrivee cadre={{ sorte: 'texte', rubrique: 'Notes', texte, origine: 'locale', vers: rappel.titre }} onAnnuler={() => setTexte('')} aides={aides} />;
       const pr = rattacher(texte, carnets);
       /* tour 3, f5b n° 12 : un lien seul collé depuis la liste, quand un carnet parle déjà de l'objet : l'article va dans ce carnet (même
          calcul qu'à l'envoi), jamais un carnet titré du domaine ni une façon */
@@ -1288,7 +1318,7 @@ export function CarnetsVue(p: CarnetsVueProps) {
       liens={liensQuiRetiennent(c, finance.plans, finance.transactions, finance.payments)}
       proche={proche ? { titre: proche.titre, onDeplacer: () => { appliquer(deplacerArticles(magasin.lire(), { depuis: c.id, vers: proche.carnetId, articleIds: enVeille })); } } : null}
       onDetacher={() => { appliquer(detacherPlan(magasin.lire(), { carnetId: c.id, ...finance })); }}
-      onArchiver={() => { const r = appliquer(archiverCarnet(magasin.lire(), { carnetId: c.id, le: maintenant().toISOString(), raison: 'plan réalisé' })); if (r) { setVue({ sorte: 'liste' }); setRetour({ bandeau: { sorte: 'range' }, inverse: r.inverse }); } }}
+      onArchiver={() => { const r = appliquer(archiverCarnet(magasin.lire(), { carnetId: c.id, le: maintenant().toISOString(), raison: 'plan réalisé' })); if (r) { setVue({ sorte: 'liste' }); setRetour({ bandeau: { sorte: 'archive', titre: c.title }, inverse: r.inverse }); } }}
       onSupprimer={() => { const r = appliquer(supprimerCarnet(magasin.lire(), { carnetId: c.id, ...finance })); if (r) { setSupprime({ titre: c.title, statut: c.status, inverse: r.inverse }); setVue({ sorte: 'liste' }); } }}
       onGarder={() => setVue({ sorte: 'carnet', id: c.id })} />;
     /* n° 26 : renommer garde l'en-tête et le contenu ; le cadre se pose à la place du titre (carnets-fil.css, `.cnf-renommer`) */
