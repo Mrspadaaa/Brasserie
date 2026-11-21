@@ -1,4 +1,5 @@
 import React from 'react';
+import { refCurseurNatif } from '../geste';
 
 /**
  * Curseur m2 de l'Atelier (e9na) : un rail, trois repères, quatre graduations, un pouce de 24 px.
@@ -27,7 +28,7 @@ export const CurseurPrix: React.FC<{
             <b className={`block h-6 w-6 rounded-full border-2 border-cave-950 ring-2 ${hors ? 'bg-attention ring-attention/60' : 'bg-hop ring-hop/60'}`} />
           </span>
         )}
-        <input
+        <input ref={refCurseurNatif}
           type="range" min={min} max={max} step={pas} value={valeur == null ? min : Math.min(valeur, max)} aria-label={label}
           onChange={e => onChange(Number(e.target.value))}
           onPointerUp={e => { if (valeur == null) onChange(Number(e.currentTarget.value)); }}
