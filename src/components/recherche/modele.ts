@@ -94,7 +94,7 @@ export function gestesIci(menu: PlusMenu): LigneIci[] {
 export type DestinationId = EcranId | 'assistant' | 'journal' | 'reglages';
 
 export const LIBELLE_DESTINATION: Record<DestinationId, string> = {
-  bord: 'Bord', finances: 'Finances', calendrier: 'Calendrier', brassins: 'Brassins', recettes: 'Recettes', atelier: 'Atelier R&D', volumes: 'Volumes',
+  bord: 'Bord', finances: 'Finances', calendrier: 'Calendrier', brassins: 'Brassins', recettes: 'Recettes', atelier: 'Atelier', volumes: 'Volumes',
   stock: 'Stock', courses: 'Courses', futs: 'Fûts', materiel: 'Matériel', houblons: 'Houblons',
   clients: 'Clients', impot: 'Impôt bière', tarifs: 'Prix', assistant: 'Assistant', journal: 'Journal', reglages: 'Réglages'
 };
@@ -133,14 +133,14 @@ export function destinationsAllerA(menu: PlusMenu, ici: LigneIci[]): Destination
  * on tape est un défaut (h1w : « atelier » ne rendait que deux écritures). Le libellé et ses mots se cherchent sans accents.
  */
 const MOTS_DESTINATION: Partial<Record<DestinationId, string[]>> = {
-  atelier: ['carnet', 'carnets', 'idée', 'idées', 'projet', 'projets', 'r&d'],
+  atelier: ['carnet', 'carnets', 'idée', 'idées', 'projet', 'projets', 'r&d', 'atelier r&d'],
   materiel: ['à venir', 'réalisés', 'équipement'],
   impot: ['impôt', 'taxe'],
   reglages: ['paramètres']
 };
 
 /** Le libellé d'une destination dans les résultats : l'Atelier se nomme par ce qu'on y trouve d'abord, le Carnet. */
-export const LIBELLE_DESTINATION_TROUVEE: Partial<Record<DestinationId, string>> = { atelier: 'Carnet · Atelier R&D' };
+export const LIBELLE_DESTINATION_TROUVEE: Partial<Record<DestinationId, string>> = { atelier: 'Carnet · Atelier' }; /* CRN-10 : le nom de l'onglet */
 
 export interface DestinationTrouvee { id: DestinationId; rang: number }
 

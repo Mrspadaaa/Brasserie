@@ -86,6 +86,7 @@ import { HopV55SemanticAdviceCapabilityContext, qualifyHopV55SemanticAdviceCapab
 import { montantChf } from './domain/finance/ledger';
 import { memoriserDefilement, restaurerDefilement } from './ui/calendrier/retourDefilement';
 import { useRetourEcran } from './ui/calendrier/useRetour';
+import { lireCarnets } from './domain/carnets/modele';
 import { EVENEMENT_CALENDRIER, NOM_SECTION, lireSection, type SectionCalendrier } from './ui/calendrier/LienSection';
 
 const QuickActionModal = lazy(() => import('./components/QuickActionModal').then(module => ({ default: module.QuickActionModal })));
@@ -612,6 +613,8 @@ export const App: React.FC = () => {
   const pendingTodosCount = creativeItems.filter(
     (i) => i.type === 'event' && i.status !== 'done'
   ).length;
+  /* CRN-10 : le menu Plus compte les carnets que le Carnet montre. */
+  const nbCarnets = useMemo(() => lireCarnets(creativeItems).length, [creativeItems]);
 
   /* h1 (20.11, CPL-1) : toute porte de l'Atelier mène à son Carnet choisi (CarnetsVue, ra+p5f), sauf demande d'une autre rubrique. */
   const navigateToCreativeLab = (demande: CreativeLabSectionRequest = { section: 'carnet', at: Date.now() }) => {
@@ -1274,6 +1277,7 @@ export const App: React.FC = () => {
             logs={auditLogs}
             batches={batches}
             pendingTodosCount={pendingTodosCount}
+            nbCarnets={nbCarnets}
             horsConnexion={horsConnexion}
             entreprise={config.company?.name}
             etatCloud={etatConnexions(

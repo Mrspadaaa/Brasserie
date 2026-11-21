@@ -144,7 +144,7 @@ describe('e11a · la coque', () => {
   it('quatre sous-onglets, compteurs en pastilles, plus de bouton « Atelier Houblons V5.5 »', () => {
     monter({ batches: [lot('A', 'fermentation', { brewDate: jour(-2) })], onOpenHopV55: vi.fn() });
     const groupe = screen.getByRole('group', { name: 'Vue de production' });
-    expect(within(groupe).getAllByRole('button').map(b => b.getAttribute('aria-label'))).toEqual(['Brassins (1)', 'Recettes (1)', 'Atelier R&D', 'Adapter les volumes']);
+    expect(within(groupe).getAllByRole('button').map(b => b.getAttribute('aria-label'))).toEqual(['Brassins (1)', 'Recettes (1)', 'Atelier', 'Adapter les volumes']);
     expect(groupe.querySelectorAll('.pv-n')).toHaveLength(2);
     expect(screen.queryByText(/V5\.5/)).toBeNull();
   });

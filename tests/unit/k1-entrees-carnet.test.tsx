@@ -40,7 +40,7 @@ describe('k1 · ⌘K propose le Carnet quand on tape', () => {
     const aller = vi.fn();
     render(<Harness onAllerA={aller} />);
     fireEvent.change(screen.getByRole('combobox'), { target: { value: 'atelier' } });
-    const dest = screen.getByRole('option', { name: /Aller à · Carnet · Atelier R&D/ });
+    const dest = screen.getByRole('option', { name: /Aller à · Carnet · Atelier/ });
     expect(screen.getByRole('option', { name: /Loyer de l’atelier/ })).toBeTruthy();
     fireEvent.click(dest);
     expect(aller).toHaveBeenCalledWith('atelier');
@@ -62,7 +62,7 @@ describe('k1 · ⌘K propose le Carnet quand on tape', () => {
     render(<Harness onAllerA={aller} />);
     const champ = screen.getByRole('combobox');
     fireEvent.change(champ, { target: { value: 'Atelier R&D' } });
-    const dest = screen.getByRole('option', { name: /Aller à · Carnet · Atelier R&D/ });
+    const dest = screen.getByRole('option', { name: /Aller à · Carnet · Atelier/ });
     expect(dest.getAttribute('aria-selected')).toBe('true');
     fireEvent.keyDown(champ, { key: 'Enter' });
     expect(aller).toHaveBeenCalledWith('atelier');

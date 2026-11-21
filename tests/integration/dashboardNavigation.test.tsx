@@ -128,7 +128,7 @@ describe('Dashboard agenda navigation', () => {
     expect(screen.queryByText('Calendrier · Agenda')).not.toBeInTheDocument();
 
     fireEvent.click(screen.getByRole('button', { name: /^Plus : saisie au nom de/ }));
-    fireEvent.click(screen.getByRole('button', { name: /^Atelier R&D/ }));
+    fireEvent.click(screen.getByRole('button', { name: /^Atelier\d* carnet|^AtelierAucun carnet/ }));
     /* h1 (CPL-1) : la porte de l'Atelier mène au Carnet (CarnetsVue) ; À faire n'existe plus. */
     expect(await screen.findByRole('button', { name: 'Carnet', exact: true }, { timeout: 15000 })).toHaveAttribute('aria-pressed', 'true');
     expect(screen.queryByRole('button', { name: 'À faire', exact: true })).not.toBeInTheDocument();

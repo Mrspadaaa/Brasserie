@@ -207,7 +207,7 @@ export const ProductionTab: React.FC<ProductionTabProps> = ({
       <SegmentsCoque<typeof subTab> label="Vue de production" value={subTab} onChange={setSubTab} options={[
         {value:'batches',label:`Brassins (${nbBrassins})`,court:'Brassins',compteur:nbBrassins},
         {value:'recipes',label:`Recettes (${currentRecipes.length})`,court:'Recettes',compteur:currentRecipes.length},
-        {value:'lab',label:'Atelier R&D',court:'Atelier'}, {value:'scaler',label:'Adapter les volumes',court:'Volumes'}
+        {value:'lab',label:'Atelier',court:'Atelier'}, {value:'scaler',label:'Adapter les volumes',court:'Volumes'}
       ]}/>
 
       {subTab === 'batches' && <LienSection section="brassins" />}

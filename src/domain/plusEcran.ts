@@ -138,7 +138,7 @@ const MENUS: Record<EcranId, Fiche> = {
   /* Décision du pilote (16.11) : la partie écran de la pile de Brassins = « Nouveau brassin », « Saisir une densité » (seulement si un brassin est en fermentation), « Créer une recette » ; pas de Courses. Écriture, facture, vente et Compagnon restent sous « Partout ». */
   brassins: { chemin: 'Brassins', ton: 'production', autres: ['densite', 'recette'], etat: enCuve },
   recettes: { chemin: 'Brassins › Recettes', ton: 'production', autres: ['brassin'] },
-  atelier: { chemin: 'Brassins › Atelier R&D', ton: 'production', autres: ['brassin'] },
+  atelier: { chemin: 'Brassins › Atelier', ton: 'production', autres: ['brassin'] },
   volumes: { chemin: 'Brassins › Volumes', ton: 'production', autres: ['brassin', 'courses'] },
   stock: { chemin: 'Stocks › Articles', ton: 'stocks', autres: ['courses'], etat: aCommander },
   courses: { chemin: 'Stocks › Courses', ton: 'stocks', autres: ['article'], etat: aCommander },

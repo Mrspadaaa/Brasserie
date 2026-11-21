@@ -22,6 +22,8 @@ interface Props {
   logs: AuditLog[];
   batches: Batch[];
   pendingTodosCount: number;
+  /** CRN-10 : les carnets ouverts, ceux que le Carnet montre (« Aucune idée nouvelle » contredisait ses 16 carnets). */
+  nbCarnets?: number;
   horsConnexion: boolean;
   /** Nom de la brasserie, tel que la configuration le dit. */
   entreprise?: string;
@@ -59,7 +61,7 @@ const Etat: React.FC<{ e?: EtatLigne | null }> = ({ e }) => e
  * Rien ne se perd du menu ⋮ d'avant : chaque ligne ouvre ce qu'elle ouvrait.
  */
 export const PagePlus: React.FC<Props> = ({
-  courant, onSigner, periode, onChoisirPeriode, transactions, logs, batches, pendingTodosCount, horsConnexion, entreprise, etatCloud, etatReglages,
+  courant, onSigner, periode, onChoisirPeriode, transactions, logs, batches, pendingTodosCount, nbCarnets = 0, horsConnexion, entreprise, etatCloud, etatReglages,
   onBack, onAssistant, onAtelier, onConversations, onJournal, onFournisseurs, onCloud, onReglages, onLogout
 }) => {
   const [theme, choisirTheme] = useTheme();
@@ -130,7 +132,7 @@ export const PagePlus: React.FC<Props> = ({
             </button>
             <button type="button" className="pl-ou" data-t="atelier" onClick={onAtelier}>
               <i aria-hidden="true"><Lightbulb size={20} /></i>
-              <span>Atelier R&amp;D<small>{pendingTodosCount > 0 ? `${pendingTodosCount} idée${pendingTodosCount > 1 ? 's' : ''} nouvelle${pendingTodosCount > 1 ? 's' : ''}` : 'Aucune idée nouvelle'}</small></span>
+              <span>Atelier<small>{nbCarnets > 0 ? `${nbCarnets} carnet${nbCarnets > 1 ? 's' : ''}` : 'Aucun carnet'}</small></span>
             </button>
           </div>
           <ul className="pl-liste">
