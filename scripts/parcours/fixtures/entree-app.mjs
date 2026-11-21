@@ -12,7 +12,7 @@ import { financeDemoEntries as demoOrigine } from '@parcours/financeDemo-origine
 import { FirestoreRepo, ALL_COLLECTIONS } from '@parcours/firestoreRepo';
 
 /* Les jeux de fixture connus : un par parcours (`?finance-demo=<jeu>` ; clés localStorage `<jeu>:fixture` et `<jeu>:cache`). */
-const JEUX = ['parcours-calendrier', 'parcours-carnet'];
+const JEUX = ['parcours-calendrier', 'parcours-carnet', 'parcours-chaines'];
 
 const surLocalhost = () => ['localhost', '127.0.0.1'].includes(location.hostname);
 
