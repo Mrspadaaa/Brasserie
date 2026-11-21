@@ -302,13 +302,15 @@ export const App: React.FC = () => {
   const poserRetour = useRetourEcran<TabType>(activeTab, setActiveTab);
   /** E44 : le calendrier d'une section (Argent, Brassins, Matériel, Stocks, Agenda) ; `undefined` : le général. Il se règle depuis la section, jamais gardé. */
   const [calendrierSection, setCalendrierSection] = useState<SectionCalendrier | undefined>(undefined);
+  const ouvrirDateRef = useRef<(date: string) => void>(() => {});
   const ouvrirCalendrierSection = React.useCallback((section: SectionCalendrier) => {
     poserRetour(activeTab);
     setCalendrierSection(section);
     setActiveTab('calendrier');
   }, [poserRetour, activeTab]);
   useEffect(() => {
-    const ouvrir = (event: Event) => { const s = lireSection(event); if (s) ouvrirCalendrierSection(s); };
+    /* K2 (F-HORIZON) : une date seule, sans section, centre le Calendrier général sur sa semaine */
+    const ouvrir = (event: Event) => { const s = lireSection(event); if (s) ouvrirCalendrierSection(s); else { const d = (event as CustomEvent<{ date?: string }>).detail?.date; if (d) ouvrirDateRef.current(d); } };
     window.addEventListener(EVENEMENT_CALENDRIER, ouvrir);
     return () => window.removeEventListener(EVENEMENT_CALENDRIER, ouvrir);
   }, [ouvrirCalendrierSection]);
@@ -971,6 +973,7 @@ export const App: React.FC = () => {
   /* B10 (WFR-9) : les choses du Calendrier (prévisions, fêtes) se cherchent à la loupe comme le reste ; le résultat ouvre le Calendrier sur leur semaine. */
   const financialPlans = useStorageValue(lirePrevisions);
   /** Le Calendrier suit la période de l'app : si la chose tombe hors de la période, la période devient son mois (sans quoi elle resterait hors de la frise). */
+  ouvrirDateRef.current = (date: string) => { poserRetour(activeTab); ouvrirChoseCalendrier(date); };
   const ouvrirChoseCalendrier = (date?: string) => {
     const jour = isoDate(date);
     if (jour && !dansPeriode(jour, globalTimeFilter)) setGlobalTimeFilter({ genre: 'mois', annee: Number(jour.slice(0, 4)), mois: Number(jour.slice(5, 7)) });

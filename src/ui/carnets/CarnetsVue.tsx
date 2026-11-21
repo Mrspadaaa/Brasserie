@@ -28,6 +28,8 @@ import { appelsSimules, creerRangement, planVrac, prixEcrits, retourDuRangement,
 import { ListeCarnets } from './ListeCarnets';
 import { anciennesNotes, faitsDuPlanning } from '../../domain/carnets/anciens';
 import { CarnetOuvert, type LienV, type RangeeV } from './CarnetOuvert';
+import { prixSemblable, type AchatPasse } from '../../domain/horizons';
+import { EVENEMENT_CALENDRIER } from '../calendrier/LienSection';
 import { ChampCarnet } from './ChampCarnet';
 import { CadreArrivee, type CadreV } from './CadreArrivee';
 import { Bandeau, origineDuTitre, type BandeauV, type TitreDe } from './Bandeau';
@@ -421,12 +423,19 @@ function pourIA(carnets: readonly CarnetDoc[]): CarnetPourIA[] {
   }));
 }
 
+const jourIso = (d: Date) => `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+const lundiIso = (iso: string) => { const d = new Date(`${iso}T00:00:00Z`); d.setUTCDate(d.getUTCDate() - ((d.getUTCDay() + 6) % 7)); return d.toISOString().slice(0, 10); };
+
 export function CarnetsVue(p: CarnetsVueProps) {
   const magasin = useMemo(() => p.magasin ?? magasinFirestore(), [p.magasin]);
   const [items, setItems] = useState(() => magasin.lire());
   useEffect(() => { setItems(magasin.lire()); return magasin.ecouter(() => setItems(magasin.lire())); }, [magasin]);
   const financesApp = useStorageValue(lireFinances);
   const finances = p.finances ?? financesApp;
+  /* D2 : les lignes des factures passées (sortie), pour le prix du dernier achat semblable */
+  const achatsPasses = useMemo<AchatPasse[]>(() => (finances.transactions ?? []).flatMap(t => (t.finance?.lines ?? [])
+    .filter(l => l.amountCents > 0 && t.finance?.kind !== 'income')
+    .map(l => ({ libelle: l.description, centimes: l.amountCents, date: String(t.date).slice(0, 10), ref: (l as { stockItemRef?: string }).stockItemRef }))), [finances.transactions]);
   const mode = p.mode ?? modeCarnet();
   const aides = p.aides ?? aidesCourantes();
   const maintenant = useCallback(() => (p.maintenant ? p.maintenant() : new Date()), [p.maintenant]);
@@ -1318,8 +1327,27 @@ export function CarnetsVue(p: CarnetsVueProps) {
         onVeille={articleId => { appliquer(basculerVeille(magasin.lire(), { carnetId: c.id, articleId, le: maintenant().toISOString() })); }}
         onVoirChoix={() => setVue({ sorte: 'choisir', id: c.id })}
         onEnvoyerAVenir={() => void envoyerAVenir(c)}
+        aujourdhui={jourIso(maintenant())}
+        onDater={lundi => dater(c, lundi)}
+        onAuCalendrier={() => auCalendrier(c)}
+        prix={{ centimes: typeof c.estimatedCost === 'number' && c.estimatedCost > 0 ? Math.round(c.estimatedCost * 100) : undefined, semblable: prixSemblable({ nom: c.title }, achatsPasses) }}
+        onPrix={x => { appliquer({ ok: true, ecritures: [{ op: 'put', doc: { ...c, estimatedCost: x / 100 } }], inverse: [{ op: 'put', doc: c }], avis: 'Prix estimé' }); }}
         onOuvrirLien={l => (l.sorte === 'realise' && p.onVoirRealises ? p.onVoirRealises() : p.onVoirAVenir?.())} />
     </>;
+  }
+
+  /** C1 (D393) : la date d'intention du carnet, un lundi (`null` = plus tard, sans date) ; son icône suit au Calendrier (`iconesIdees`). */
+  function dater(c: CarnetDoc, lundi: string | null) {
+    const { date: _d, ...reste } = c; void _d;
+    const doc = (lundi ? { ...reste, date: lundi } : reste) as CarnetDoc;
+    return appliquer({ ok: true, ecritures: [{ op: 'put', doc }], inverse: [{ op: 'put', doc: c }], avis: lundi ? 'Daté' : 'Sans date' });
+  }
+  /** K2 (« ça l'ajout à la date du jour, ça nous transférer sur le calendrier ») : daté à aujourd'hui s'il ne l'est pas, puis le Calendrier centré sur sa semaine. */
+  function auCalendrier(c: CarnetDoc) {
+    const jour = jourIso(maintenant());
+    const date = c.date && /^\d{4}-\d{2}-\d{2}/.test(c.date) ? c.date.slice(0, 10) : jour;
+    if (!c.date) dater(c, lundiIso(jour));
+    window.dispatchEvent(new CustomEvent(EVENEMENT_CALENDRIER, { detail: { date } }));
   }
 
   /** « Envoyer dans À venir » (R32) : un seul plan (clé `PLAN-CARNET-<id>`), puis le carnet le retient ; aucun montant ici. */
