@@ -2468,3 +2468,9 @@ Classement de la page r3 de Ma levure (https://claude.ai/artifact/DKAJe8ESeMR4ig
 > Re contextualise, retravaille mes messages et tout pour pas avoir d'overfitting, d'autres problèmes ou autre Bias ou divergence  ou problème d'alignement
 
 (lu, 20.11 : la passe simplicité doit raisonner par chaînes d'actions et non par écrans. Ses cas sont des exemples d'une règle. Une mini maquette modélise un workflow et ne fixe aucun visuel. Cadrage : `work/missions/2026-11-20-workflows/CADRAGE.md`.)
+
+> Très bien fait le portage du système, du mécanisme, pas du visuel...
+>
+> Fait le partout !!!
+
+(20.11 : frise B validée, https://claude.ai/artifact/CYworN1pL87XZtdvH7CaEC. Son comportement (règles R1 à R14 du fichier work/missions/2026-11-20-frise/frise-interactive.html) se porte dans toutes les frises et tous les curseurs de l'app, chaque écran gardant son visuel.)
