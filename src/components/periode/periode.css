@@ -52,3 +52,5 @@
 .pr-lib input:focus{outline:2px solid var(--act);outline-offset:1px;border-style:solid}
 .pr-lib>.pr-n{margin-left:auto;font-size:13px;color:var(--t2)}
 .pr-err{font-size:12px;color:var(--alt);font-weight:600}
+/* CAL-ENTETE (21.11) : à 390, la barre du haut tient sur une ligne ; les flèches de la pastille de l'en-tête passent à 34 px. */
+@media (max-width:429px){header .pr-pill>button.pr-fl{width:34px}}

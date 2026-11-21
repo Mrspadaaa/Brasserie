@@ -116,7 +116,9 @@
 /* Le fond de l'étiquette du creux dans la grande courbe : aucun tracé ne la barre (CRITIQUE-4 n° 27). */
 .ent-gc-fond { fill: rgb(var(--cave-950)); opacity: 0.92; pointer-events: none; }
 .ent-curseur line, .ent-curseur path { fill: none; stroke: rgb(var(--cave-50)); stroke-width: 1.5; }
-.ent-cur-anneau { fill: none; stroke: rgb(var(--cave-50)); stroke-width: 1.5; stroke-dasharray: 3 3; }
+/* CAL-ENTETE : la colonne de la semaine lue (teinte légère) et sa marche épaissie ; plus aucun rond (deuxième refus). */
+.ent-cur-col { fill: rgb(var(--cave-50)); opacity: 0.1; stroke: none; pointer-events: none; }
+.ent-curseur line.ent-cur-marche { stroke: rgb(var(--cave-50)); stroke-width: 4; stroke-linecap: round; }
 .ent-cur-pt { fill: rgb(var(--cave-50)); stroke: rgb(var(--cave-950)); stroke-width: 2; }
 .ent-cur-s { font-size: 14px; font-weight: 700; fill: rgb(var(--cave-50)); }
 .ent-inconnu { display: flex; align-items: center; min-height: 56px; margin: 0; padding: 8px 12px; font-weight: 600; color: var(--ent-ink); }
@@ -213,12 +215,6 @@
 .ent-an { display: grid; grid-template-columns: repeat(var(--n, 12), minmax(0, 1fr)); align-items: stretch; border-bottom: 1px solid var(--ent-line); }
 .ent-an-m { display: flex; flex-direction: column; align-items: center; padding: 2px 0 3px; }
 .ent-an-l { height: 18px; font-size: 14px; font-weight: 600; line-height: 18px; color: var(--ent-mut); }
-.ent-an-z { display: flex; flex-direction: column; align-items: center; justify-content: flex-end; height: 40px; width: 100%; }
-.ent-an-v { font-size: 14px; font-weight: 800; line-height: 16px; white-space: nowrap; color: var(--ent-bad); }
-.ent-an-b { display: flex; align-items: flex-end; justify-content: center; width: 70%; height: 24px; }
-.ent-an-b i { display: block; width: 100%; border-radius: 2px 2px 0 0; background: var(--ent-fin); opacity: 0.55; }
-.ent-an-creux .ent-an-b { width: 26px; height: 18px; align-items: center; border: 2px solid var(--ent-bad); border-radius: 999px; }
-.ent-an-creux .ent-an-b i { width: 14px; background: var(--ent-bad); opacity: 1; }
 
 /* ---- ce qui se pose sur l'en-tête : détail du creux, menu, lecture, message ---- */
 .ent-pop, .ent-menu { position: absolute; z-index: 45; box-sizing: border-box; background: rgb(var(--cave-850)); color: var(--ent-ink); border: 1.5px solid var(--ent-line2); border-radius: 12px; box-shadow: var(--ombre-lift); padding: 8px 10px; font-size: 14px; line-height: 20px; }
@@ -280,9 +276,12 @@
 .ent-menu-l:active, .ent-menu-l:hover { background: rgb(var(--cave-900)); }
 
 /* c2-b (CRITIQUE-5 n° 15) : le détail vit dans l'en-tête, qui s'étire pendant la lecture (as p-c2b-pendant) ; il ne recouvre plus la frise. */
-.ent-lu { position: static; padding: 4px 12px 6px; background: rgb(var(--cave-950)); border-bottom: 1px solid var(--ent-line); }
-.ent--paysage .ent-lu { grid-column: 1 / -1; }
-.ent-lu .ent-det-l { flex-direction: column; align-items: flex-start; }
+/* CAL-ENTETE (21.11 : « il faudrait des tailles fix car SI non ça fait bouger le calendrier ») : hauteur fixe (la date, puis les mouvements
+   sur une ligne), posé sous l'en-tête le temps de la lecture ; l'en-tête ne s'étire plus (avant : 53 à 93 px de saut de la frise). */
+.ent-lu { position: absolute; left: 0; right: 0; top: 100%; z-index: 45; box-sizing: border-box; height: 50px; overflow: hidden; padding: 4px 12px 5px; background: rgb(var(--cave-950)); border-bottom: 1px solid var(--ent-line); }
+.ent-lu .ent-det-l { flex-wrap: nowrap; overflow: hidden; }
+.ent-lu .ent-det-mv { flex: 0 1 auto; min-width: 0; overflow: hidden; text-overflow: ellipsis; }
+.ent-lu .ent-det-reste { flex: none; white-space: nowrap; }
 .ent-det-t .ent-det-s { white-space: nowrap; }
 .ent-ens { display: flex; flex-wrap: wrap; align-items: baseline; gap: 2px 10px; margin: 4px 0 0; color: var(--ent-mut); }
 .ent-ens i { font-style: normal; white-space: nowrap; color: var(--ent-ink); }

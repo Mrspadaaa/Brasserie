@@ -458,6 +458,8 @@ export function EnTeteCalendrier(props: EnTeteCalendrierProps) {
     } as unknown as React.PointerEvent<HTMLDivElement>);
   };
 
+  // CAL-ENTETE : la courbe cachée ferme la lecture (son détail se posait sous l'en-tête sans courbe à lire).
+  useEffect(() => { if (cachee) setLecture(null); }, [cachee]);
   const fermerLecture = () => { setLecture(null); if (vue === 'graph') onVue(vueAvant.current === 'graph' ? 'semaines' : vueAvant.current); };
   const fermerRef = useRef(fermerLecture);
   fermerRef.current = fermerLecture;

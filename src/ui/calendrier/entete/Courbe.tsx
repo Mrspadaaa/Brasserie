@@ -583,10 +583,10 @@ export function Courbe({ courbe, largeur, hauteur, curseur = null, reference, ge
               <rect x={0} y={0} width={largeur} height={hauteur} fill="white" />
               {noms.filter(e => !cache(e)).map(e => <rect key={`${e.i}-${e.nom}`} data-curseur-trou x={e.boite.l - 2} y={e.boite.t - 2} width={e.boite.r - e.boite.l + 4} height={e.boite.b - e.boite.t + 4} fill="black" />)}
             </mask>
-            {/* CAL-PASSE (« un point qui pose problème, qui prend le dessus », capture 3-point-frise) : sur une courbe plate l'en-tête ne fait que
-                44 px ; l'anneau de 24 px débordait du tracé sur le cadre et les mois. Plate : le point seul (plus petit), sans anneau. */}
-            {!plate && <circle cx={g.x(curseur) + g.unit / 2} cy={g.y(libres[curseur])} r={12} className="ent-cur-anneau" data-curseur-anneau mask={`url(#cm${uid})`} />}
-            <circle cx={g.x(curseur) + g.unit / 2} cy={g.y(libres[curseur])} r={plate ? 4 : 5.5} className="ent-cur-pt" />
+            {/* CAL-ENTETE (21.11, deuxième refus du rond : « Avec le point qui bouge toujours pas super fan ») : plus d'anneau ni de point. La
+                semaine lue se marque par sa colonne, à peine teintée, et sa marche de la courbe, épaissie : aucun rond, rien qui dépasse du tracé. */}
+            <rect className="ent-cur-col" data-curseur-colonne x={g.x(curseur)} y={g.haut} width={Math.max(2, g.unit)} height={Math.max(0, g.bas - g.haut)} mask={`url(#cm${uid})`} />
+            <line className="ent-cur-marche" data-curseur-marche x1={g.x(curseur) + 0.5} x2={g.x(curseur) + Math.max(3, g.unit) - 0.5} y1={g.y(libres[curseur])} y2={g.y(libres[curseur])} />
           </g>
         )}
         {/* Les points restent dans la zone de tracé (CRITIQUE-4 n° 25) : rien ne déborde du dessin. */}

@@ -97,10 +97,10 @@ export const Header: React.FC<HeaderProps> = ({
   /* APP-ENTETE-COLLE (19.11 : « le header n'a pas besoin d'être visible partout, en tout cas pas en mode "floatting" docked en haut ») : l'en-tête défile avec la page. */
   return (
     <header ref={enTete} className={`relative z-40 bg-cave-950 border-b border-cave-800 pt-safe${plein ? ' hidden' : ''}`} data-entete-app={paysage ? 'paysage' : undefined} hidden={plein || undefined}>
-      {/* La disposition compacte démarre à 36 px et grandit avec le texte. */}
+      {/* La disposition compacte : 36 px, une seule ligne (CAL-ENTETE, 21.11 : nom, période, recherche et avatars ne passent plus à la ligne). */}
       <div
         className={`app-titlebar max-w-4xl ${large ? 'min-[900px]:max-w-[1264px]' : ''} mx-auto px-2 flex items-center ${
-          compactLayout ? 'min-h-9 flex-wrap gap-1 py-0.5' : paysage ? 'h-10 gap-2' : compact || mobile ? 'h-12 gap-2' : 'h-16 gap-2'
+          compactLayout ? 'min-h-9 flex-nowrap gap-1 py-0.5' : paysage ? 'h-10 gap-2' : compact || mobile ? 'h-12 gap-2' : 'h-16 gap-2'
         }`}
       >
         {/* Identité — ramène à l'accueil. `min-w-0` : sans lui, un élément de flex refuse de descendre sous la largeur de son contenu

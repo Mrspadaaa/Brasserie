@@ -58,7 +58,6 @@ export function BandeAnnee({ courbe, mois: moisModele, creux: creuxEnTete }: Ban
   let creux = creuxEnTete ? mois.findIndex(m => m.lundis.includes(creuxEnTete.lundi)) : -1;
   if (creux < 0) { creux = 0; mois.forEach((m, k) => { if (m.plusBas < mois[creux].plusBas) creux = k; }); }
   const montantCreux = creuxEnTete && mois[creux].lundis.includes(creuxEnTete.lundi) ? creuxEnTete.centimes : mois[creux].plusBas;
-  const sommet = Math.max(1, ...mois.map(m => m.plusBas));
   const anneeDe = (m: MoisAnnee) => (m.annee !== mois[0].annee ? ` ${m.annee}` : '');
   return (
     <div className="ent-an" data-bande-annee role="img"
@@ -69,11 +68,9 @@ export function BandeAnnee({ courbe, mois: moisModele, creux: creuxEnTete }: Ban
         // montant juste au-dessus du cercle (jamais collé au mois voisin).
         <div key={`${m.annee}-${m.mois}`} className={k === creux ? 'ent-an-m ent-an-creux' : 'ent-an-m'} data-mois={`${m.annee}-${String(m.mois + 1).padStart(2, '0')}`}
           title={`${MOIS_MIN[m.mois]}${anneeDe(m)} : au plus bas ${chf(k === creux ? montantCreux : m.plusBas)} CHF`}>
+          {/* CAL-ENTETE (21.11, « l'info ont l'a déjà sur le graph ») : la rangée des barres et du montant du creux, sous les initiales, redisait
+              la courbe ; retirée. Le creux reste dans le titre du mois et l'aria-label. */}
           <span className="ent-an-l" aria-hidden="true">{INITIALES[m.mois]}</span>
-          <span className="ent-an-z">
-            {k === creux && <span className="ent-an-v">{chf(montantCreux)}</span>}
-            <span className="ent-an-b"><i style={{ height: k === creux ? 6 : Math.max(4, Math.round((Math.max(0, m.plusBas) / sommet) * 22)) }} /></span>
-          </span>
         </div>
       ))}
     </div>

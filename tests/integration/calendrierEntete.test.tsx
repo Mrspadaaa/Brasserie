@@ -278,7 +278,9 @@ describe('E06, E13 : la fenêtre et l’année', () => {
     const an = container.querySelector('[data-bande-annee]') as HTMLElement;
     expect(an.querySelectorAll('.ent-an-m')).toHaveLength(13);
     const cerclé = an.querySelector('.ent-an-creux') as HTMLElement;
-    expect(cerclé.querySelector('.ent-an-v')!.textContent).toBe(francs(creuxDepuis(courbe)!.centimes));
+    // CAL-ENTETE (21.11) : plus de montant sous les mois (il redisait la courbe) ; le creux reste dans le titre du mois
+    expect(an.querySelector('.ent-an-v')).toBeNull();
+    expect(cerclé.getAttribute('title')).toContain(francs(creuxDepuis(courbe)!.centimes));
     expect(container.querySelector('[data-bande-semaines]')).toBeNull();
     const [, fin] = screen.getAllByRole('button', { name: /Revenir à la fenêtre d’avant/ });
     fireEvent.pointerDown(fin, { pointerId: 1, clientX: 390, button: 0 });
@@ -1082,7 +1084,7 @@ describe('CRITIQUE-5 (lot 1) : le creux et son année, l’An, la lecture, la gr
     const cercle = an.querySelector('.ent-an-creux') as HTMLElement;
     expect(cercle.dataset.mois).toBe('2027-11');
     expect(cercle.getAttribute('title')).toMatch(/^nov\. 2027 : /);
-    expect(cercle.querySelector('.ent-an-v')!.textContent).toBe(francs(creux.centimes));
+    expect(cercle.getAttribute('title')).toContain(francs(creux.centimes));
     expect(an.getAttribute('aria-label')).toContain(`nov 2027, ${francs(creux.centimes)} CHF`);
   });
 
@@ -1105,13 +1107,20 @@ describe('CRITIQUE-5 (lot 1) : le creux et son année, l’An, la lecture, la gr
     expect(c2.querySelector('.ent-det-t')!.textContent).toMatch(/la semaine −400$/);
   });
 
-  it('n° 15 : le détail de la lecture vit dans l’en-tête (dans le flux), il ne se pose plus sur la frise', async () => {
+  it('n° 15 (D392) : le panneau de semaine, 50 px fixes, se superpose au haut du calendrier ; l’en-tête ne s’étire pas', async () => {
     const fs = await import('node:fs');
     const chemin = await import('node:path');
     const css = fs.readFileSync(chemin.resolve(process.cwd(), 'src/ui/calendrier/entete/entete.css'), 'utf8');
     const regle = css.match(/\n\.ent-lu \{([^}]*)\}/)![1];
-    expect(regle).toContain('position: static');
-    expect(regle).not.toMatch(/top: 100%|absolute/);
+    // Hors du flux, juste sous l'en-tête : « Brassins » ne bouge pas pendant la lecture (CAL-ENTETE ; D392 revient sur « dans le flux »).
+    expect(regle).toContain('position: absolute');
+    expect(regle).toContain('top: 100%');
+    // Hauteur fixe, sans débordement : un mouvement long ne l'agrandit pas.
+    expect(regle).toContain('height: 50px');
+    expect(regle).toContain('overflow: hidden');
+    expect(regle).not.toMatch(/min-height|max-height/);
+    // Les mouvements tiennent sur une ligne.
+    expect(css).toMatch(/\.ent-lu \.ent-det-l \{[^}]*flex-wrap: nowrap/);
   });
 
   it('n° 16 : la caisse a sa classe, sans couleur de rangée ni le gris de Papiers ; une semaine à tendance seule est neutre ; la légende ne liste que le présent', async () => {
@@ -1898,18 +1907,19 @@ describe('CRITIQUE-12 n° 5 (lot corr12-C) : en mode graph, la légende ne passe
     expect(hautLegende(804, 900)).toBe(hautLegende(804, null));
   });
 
-  it('doute c2-b (E11) : l’anneau du curseur passe sous chaque nom placé (masque à 2 px de sa boîte), le point de lecture reste entier', () => {
+  it('CAL-ENTETE (21.11, deuxième refus du rond) : le repère de semaine est une colonne et une marche, sans rond ; la colonne passe sous chaque nom', () => {
     const courbeC2b = courbeCaisse({ depart: 418000, lundi0: LUNDI0, mouvements })!;
     for (const i of [4, 12, 21, 34]) {
       const { container, unmount } = render(<Courbe courbe={courbeC2b.semaines} largeur={390} hauteur={110} curseur={i} />);
       const g = container.querySelector('[data-curseur]')!;
-      const anneau = g.querySelector('[data-curseur-anneau]')!;
+      expect(g.querySelectorAll('circle'), `S${i} : un rond au repère`).toHaveLength(0);
+      expect(g.querySelector('[data-curseur-marche]')).not.toBeNull();
+      const anneau = g.querySelector('[data-curseur-colonne]')!;
       const id = /url\(#(.+)\)/.exec(anneau.getAttribute('mask') ?? '')?.[1];
-      expect(id, `S${i} : l'anneau sans masque`).toBeTruthy();
+      expect(id, `S${i} : la colonne sans masque`).toBeTruthy();
       const masque = g.querySelector(`mask[id="${id}"]`)!;
       const visibles = Array.from(container.querySelectorAll('.ent-nom-g:not(.ent-nom-cache) [data-nom-courbe]'));
       expect(masque.querySelectorAll('[data-curseur-trou]').length).toBeGreaterThanOrEqual(visibles.length);
-      expect(g.querySelector('.ent-cur-pt')!.hasAttribute('mask')).toBe(false);
       unmount();
     }
   });
