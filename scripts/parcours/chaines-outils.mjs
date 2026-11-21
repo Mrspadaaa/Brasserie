@@ -57,7 +57,10 @@ export async function pageNeuve(banc, entrees, sortie) {
     });
     const e = i < 0 ? m.at(i) : m[i]; if (!e) return null;
     let r = e.getBoundingClientRect();
-    if (r.top < 56 || r.bottom > innerHeight - 64) { e.scrollIntoView({ block: 'center', inline: 'center' }); r = e.getBoundingClientRect(); }
+    /* F-HORIZON (21.11) : un élément rogné par une zone qui défile à l'intérieur (ex. .cn-defile du Carnet, au-dessus du champ) reste dans la fenêtre,
+       mais le doigt tomberait sur ce qui le couvre : un centre qui ne touche pas l'élément le fait défiler aussi (le geste réel : glisser, puis toucher). */
+    const couvert = () => { const h = document.elementFromPoint(r.x + r.width / 2, r.y + r.height / 2); return !h || !(e.contains(h) || h.contains(e)); };
+    if (r.top < 56 || r.bottom > innerHeight - 64 || couvert()) { e.scrollIntoView({ block: 'center', inline: 'center' }); r = e.getBoundingClientRect(); }
     return [r.x + r.width / 2, r.y + r.height / 2, Math.round(r.width), Math.round(r.height), n(e.innerText || e.getAttribute('aria-label')).slice(0, 60)];
   }, txt, prefixe, contient, dans, i, regex);
 
