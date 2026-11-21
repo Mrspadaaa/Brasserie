@@ -18,6 +18,8 @@ Statut : « vu » = observé au doigt sur ce banc ; « code » = cause lue dans 
 | WFR-6 | mineur | visuel | Le bouton flottant « + » reste par-dessus l'assistant plein écran |
 | WFR-7 | mineur | interaction | Échap dans le menu « Plus » du récap ferme tout l'assistant |
 | WFR-8 | à mesurer | performance | Tâches longues de 560 à 810 ms aux étapes clés de l'assistant |
+| WFR-9 | bloquant | donnée / intégration | Feuille Brasser : « Écran indisponible » dès qu'une levure a un nom (fixture ZZ TEST, build de test) |
+| WFR-10 | à confirmer | workflow | Feuille Brasser d'un brassin prévu le 01.12 : « Commencer aujourd'hui » offert le jour même |
 
 ## WFR-1 — « Enregistrer et préparer un brassin » refuse une recette neuve (vu)
 
@@ -90,11 +92,32 @@ Pour la brasser, il faut ensuite passer par Brassins → Recettes → fiche → 
 
 Ces mesures viennent d'un serveur Vite de dev (React de dev), qui majore les temps. Elles sont à remesurer sur le build de test (REPRISE). Ses mots du 21.11 : « Il y a beaucoup de lenteur sur les actions du calendrier... ».
 
+## WFR-9 — Feuille Brasser : écran indisponible dès qu'une levure a un nom (vu sur la fixture, 21.11)
+
+**Banc.** Build de test `distf` (config `produire/vite.produire.config.mjs`, seed redirigé vers `seedData.example.ts`), fixture « ZZ TEST » (`produire/fixture-produire.mjs`), 390 tactile. Brassin planifié « ZZ TEST IPA » : Brassins → « Brasser » → « Écran indisponible · Impossible de charger cet écran ».
+
+**Constat.** Reproduit à 5 reprises avec `yeast: { name: 'ZZ TEST US-05', … }` sur la recette figée. Sans `name` (et avec `stockItemRef`), la feuille s'ouvre, sans erreur console : `captures/c2-cpu4/02-02-feuille-brasser.png`.
+
+**Pile (build de test).** `TypeError: Cannot read properties of undefined (reading 'normalize')` à `yl` (chunk useLiveData), appelé par `Jp`, `ud`, puis `li` (BrewEquipmentSummary) ; `yl` = normalisation NFKD, donc un nom `undefined` passe dans la recherche de levure. Le chemin est `fermenterRecommendation` (`src/domain/fermenterPlanning.ts`, l.24-26) : `findRecipeYeastMatches(yeast.name, withDocumentedYeastNames(refs))`.
+
+**Cause.** Non prouvée au code exact. Ce qui est établi : la branche « nom de levure sans `hopIndexId` » lève l'erreur, et l'ajout d'un `brewhouse` figé ne la supprime pas. Probable : une entrée du catalogue de levures sans nom, lue par `withDocumentedYeastNames`. À vérifier avant correction.
+
+**Doit.** La feuille Brasser s'ouvre pour toute recette figée avec une levure nommée. Sinon, un message et un retour, non un écran vide.
+
+**Contournement de banc (fixture seulement).** `stockItemRef` au lieu du nom. Le défaut reste ouvert dans l'app.
+
+## WFR-10 — « Commencer aujourd'hui » sur un brassin prévu le 01.12 (à confirmer, 21.11)
+
+**Constat.** Capture `captures/c2-cpu4/02-02-feuille-brasser.png` : en-tête « Prévu le 01.12.2026 · Changer la date », et le bouton principal « Commencer aujourd'hui » est actif, sans demande de confirmation ni de date. Le brassin peut donc démarrer un autre jour que celui qui est prévu.
+
+**Pourquoi « à confirmer ».** Ce peut être voulu (brasser en avance). Son usage décide, pas la lecture seule. Ne pas corriger sans sa réponse ; c'est un choix de goût (L24).
+
 ## Non joué (REPRISE)
 
-- Date du brassin.
-- Calendrier.
-- Jour de brassage : déstockage, mesures.
-- Fermentation : densités.
-- Conditionnement : stock produit, fûts.
-- Coût dans Finances.
+- Date du brassin : joué sur le planifié (2 touchers, WFR-10 ci-dessus).
+- WFR-1 : **non rejoué dans cette passe** (le wizard de recette neuve, « + » → Recette, n'a pas été joué). Confirmé au 20.11, non confirmé ni infirmé sur la fixture.
+- Calendrier (C4) : non joué.
+- Jour de brassage (C5) : ouvert seulement (écran d'eau, relevé dû), pas d'étape jouée au-delà.
+- Fermentation : densités (C6), non joué.
+- Conditionnement : stock produit, fûts (C7), non joué.
+- Coût dans Finances (C8), non joué.
