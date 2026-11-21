@@ -4,13 +4,14 @@ import { ecartHorsCible } from '../../domain/brewDay';
 import type { Zone } from '../../domain/brewDayCalculs';
 import { heureFr } from '../../domain/brewMeasures';
 import { bornesCurseur, formatCurseur, pasCurseur, poserSurPas } from '../../domain/measureSlider';
+import { refCurseurNatif } from '../geste';
 
 /**
  * Le palier appelle la mesure (maquette pm1, choisie le 16.11 ; mission port-simplicité). Deux cartes — la température du palier
  * (warn, « à relever ») et le pH d'empâtage (« à 15′ ») —, chacune avec un curseur posé sur sa cible et son repère vert, puis
  * « Relever » et « Plus tard ». Rien n'est noté sans toucher : « Plus tard » n'écrit rien et laisse « à relever ».
  * Les chiffres arrivent calculés par `domain/appelMesure.ts` ; la carte n'en calcule aucun. Une valeur inconnue s'écrit « — ».
- * Jetons de la conduite (`--bz-*`), clair et cave ; le curseur est un <input type="range"> natif transparent (clavier, lecteur d'écran).
+ * Jetons de la conduite (`--bz-*`), clair et cave ; le curseur est un <input ref={refCurseurNatif} type="range"> natif transparent (clavier, lecteur d'écran).
  */
 export interface AppelMesureProps {
   appel: AppelPalier;
@@ -62,7 +63,7 @@ function Curseur({ carte, valeur, onPose }: { carte: CarteAppel; valeur: number 
   const nom = `${carte.nom}, curseur`;
   return (
     <div style={{ position: 'relative', height: 40, margin: '0 4px', touchAction: 'pan-y' }} data-curseur={kind}>
-      <input
+      <input ref={refCurseurNatif}
         type="range"
         className="peer"
         min={bornes.min}
