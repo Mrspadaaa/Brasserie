@@ -12,15 +12,14 @@ import { EntityList } from './EntityList';
 import { Field, FormNav } from './FormNav';
 import { swissToday } from './DateField';
 import { KegFiche } from './KegFiche';
-import { KegFillSheet } from './KegFillSheet';
+import { accrocherDefaireLavage, enregistrerLavage, KegFillSheet } from './KegFillSheet';
 import { KegAddSheet } from './KegAddSheet';
 import './equipment-compact.css';
 import './keg-fiche.css';
 import './keg-liste.css';
 import { nombreFr } from '../domain/nombreAffiche';
 import { annulerGesteDepuisTrace } from './BandeauEffets';
-import { EffetsGeste, useEffetsGeste } from '../services/effetsGeste';
-import { gesteIdDe, type Geste } from '../domain/consommation/gestes';
+import { useEffetsGeste } from '../services/effetsGeste';
 import {
   ORDRE_JAUGE, ORDRE_SECTIONS, aReprendre, basculerFiltre, comptesParEtat, couleurPastille, etatFut, futsARetablir, ligneDate, libelleSegment,
   marquerTousPropres, phraseFiltre, phraseMarques, phrasesResume, rangerParSections, resumeParc, titreConfirmation, type EtatFut
@@ -77,13 +76,8 @@ export const KegBoard: React.FC<KegBoardProps> = ({
   const save = onSaveKeg ?? ((keg: KegItem) => StorageService.updateKeg(keg));
   /** L9 : laver des fûts use ce que la table du geste « lavage-fut » contient (PBW, désinfectant…), une dose par fût lavé. Le banc écrit en mémoire : aucun décompte. */
   const decompterLavage = (futs: KegItem[]): string | null => {
-    if (banc || !futs.length) return null;
-    const lavages = StorageService.getMouvementsGestes().filter(m => m.geste === 'lavage-fut');
-    const geste: Geste = futs.length === 1
-      ? { type: 'lavage-fut', objet: futs[0].id, cycle: new Set(lavages.filter(m => m.objet === futs[0].id).map(m => m.gesteId)).size + 1, libelle: `Fût ${futs[0].id} lavé`, quantites: { unites: 1 } }
-      : { type: 'lavage-fut', objet: `lot-${Date.now()}`, cycle: 1, libelle: `${futs.length} fûts lavés`, quantites: { unites: futs.length } };
-    StorageService.enregistrerGeste(geste);
-    return gesteIdDe(geste);
+    if (banc) return null;
+    return enregistrerLavage(futs);
   };
   /** Les fûts du moment : le défaire d'un geste lit l'état d'alors, pas celui du rendu où il a été accroché. */
   const futsCourants = useRef(tousLesFuts);
@@ -92,12 +86,7 @@ export const KegBoard: React.FC<KegBoardProps> = ({
    * Un geste, un seul Annuler (L9) : celui du bandeau du bas rend le stock ET remet ces fûts à laver ; refus entier si l'un a bougé depuis.
    */
   const accrocherDefaire = (gesteId: string | null, avant: KegItem[], apres: KegItem[]) => {
-    if (!gesteId) return;
-    EffetsGeste.surAnnulation(gesteId, {
-      dit: avant.length > 1 ? 'les fûts sont remis à laver' : 'le fût est remis à laver',
-      refus: () => futsARetablir(avant, apres, futsCourants.current).length === avant.length ? null : 'Annulation impossible : un fût a bougé depuis, rien n’est rendu.',
-      defaire: () => futsARetablir(avant, apres, futsCourants.current).forEach(k => save(k))
-    });
+    accrocherDefaireLavage(gesteId, avant, apres, () => futsCourants.current, save);
   };
   /** La fiche : « Marquer propre » écrit le fût, puis décompte le lavage. */
   const saveDepuisFiche = (keg: KegItem) => {

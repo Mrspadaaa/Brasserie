@@ -7,6 +7,7 @@ import { packagingLimitL, validatePackaging } from '../../../domain/batchPackagi
 import { actualBrewDate, breweryDay } from '../../../domain/batchSchedule';
 import { todayISO } from '../../../domain/finance/ledger';
 import { nombreFr } from '../../../domain/nombreAffiche';
+import { futsQuiTiennent, marquerPropre, phraseALaver } from '../../../domain/stock/futsFiche';
 import { DateField, swissToday } from '../../DateField';
 import { Sheet } from '../../Sheet';
 import { Button } from '../../../components/ui/Button';
@@ -100,7 +101,9 @@ export const StageLadder: React.FC<{
   onConditionner: (valeurs: Conditionnement, fustsId: string[]) => void;
   onRetour: (cible: Batch['status']) => void;
   onAbandonner: () => void;
-}> = ({ batch, now, kegs, onClose, onAvancer, onConditionner, onRetour, onAbandonner }) => {
+  /** K7 : « 2 à laver · marquer propres » écrit ces fûts propres (le parent relit le parc). */
+  onMarquerPropres?: (laves: KegItem[]) => void;
+}> = ({ batch, now, kegs, onClose, onAvancer, onConditionner, onRetour, onAbandonner, onMarquerPropres }) => {
   const c = MARCHES.indexOf(batch.status as (typeof MARCHES)[number]);
   const options = statusOptions(batch);
   const retour = options.find(o => o.kind === 'back')?.status;
@@ -112,7 +115,15 @@ export const StageLadder: React.FC<{
   const [essai, setEssai] = useState(false);
   const cuveL = packagingLimitL(batch);
   const mesure = Number(batch.volumeBrewedL) > 0;
-  const libres = kegs.filter(k => k.state === 'propre' || k.batchRef === batch.id);
+  /** K7 : les fûts qui tiennent ce qui reste après les bouteilles, lavage compris ; ils passent en tête des fûts proposés. */
+  const proposition = futsQuiTiennent(cuveL === null ? undefined : Math.max(0, cuveL - bt * 0.33), kegs);
+  const rang = (k: KegItem) => { const i = proposition.futs.findIndex(f => f.id === k.id); return i < 0 ? proposition.futs.length : i; };
+  const libres = kegs.filter(k => k.state === 'propre' || k.batchRef === batch.id).sort((x, y) => rang(x) - rang(y));
+  const aLaver = onMarquerPropres ? proposition.aLaver : [];
+  const laverEtPrendre = () => {
+    onMarquerPropres?.(aLaver.map(k => marquerPropre(k, swissToday())));
+    setSel(s => [...s, ...proposition.futs.map(k => k.id).filter(id => !s.includes(id))]);
+  };
   const pris = kegs.find(k => k.state === 'plein' && k.batchRef !== batch.id);
   const futs = libres.filter(k => sel.includes(k.id));
   const futsL = cuveL === null ? 0 : Math.min(cuveL, futs.reduce((s, k) => s + k.capacityL, 0));
@@ -231,6 +242,11 @@ export const StageLadder: React.FC<{
                     <Mono>{k.id}</Mono><span className="font-normal text-cave-400"><Mono>{nombreFr(k.capacityL, 0)}</Mono> L</span></button>))}
                 {pris && <span className="flex min-h-10 items-center justify-center gap-1.5 rounded-control border border-dashed border-cave-700 bg-cave-900 text-sm font-semibold text-cave-400"><Mono>{pris.id}</Mono>{pris.beerName ?? 'pris'}</span>}
               </div>}
+              {aLaver.length > 0 && <button type="button" data-a-laver onClick={laverEtPrendre}
+                className="flex min-h-11 w-full flex-wrap items-baseline gap-x-2 gap-y-0.5 rounded-control border border-dashed border-cave-600 px-2.5 py-1.5 text-left focus-visible:outline focus-visible:outline-2 focus-visible:outline-ebc-straw">
+                <span className="text-sm font-semibold text-cave-50 underline underline-offset-2">{phraseALaver(aLaver.length)}</span>
+                <span className="font-mono text-xs text-cave-400">{aLaver.map(k => k.id).join(', ')}</span>
+              </button>}
               <div data-jauge className="flex h-7 overflow-hidden rounded-control bg-ebc-gold/25 text-xs font-semibold text-cave-950">
                 {rep && rep.bouteillesL > 0 && <i className="grid place-items-center bg-ebc-gold not-italic" style={{ width: `${(rep.bouteillesL / cuveL) * 100}%` }}>{Math.min(bt, maxBt)}</i>}
                 {rep?.futs.filter(f => f.litres > 0).map(f => <i key={f.id} className="grid place-items-center bg-ebc-amber not-italic" style={{ width: `${(f.litres / cuveL) * 100}%` }}>{f.id}</i>)}

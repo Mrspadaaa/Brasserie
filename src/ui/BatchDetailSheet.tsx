@@ -40,6 +40,7 @@ import { PlannedDate, PiedPlanifie, planDeStarter } from './production/fiche/Pla
 import { QuiARecuLot, type GesteFutLot } from './lot/QuiARecuLot';
 import { HeroEtat, CarteDensite, CurseurFg, TuilesFg, Contenants, LignesCuve, EtapesPills, VerdictPuces, LigneRepliee } from './production/fiche/PostFiche';
 import { StageLadder, type Conditionnement } from './production/fiche/StageLadder';
+import { accrocherDefaireLavage, enregistrerLavage } from './KegFillSheet';
 import { Cible, Mono, Panneau, Pastille } from './production/fiche/ui';
 import { MARCHES, releves, joursDuCurseur, planDecale, faisabilite, jourPropose } from './production/fiche/ficheModel';
 import { Ellipsis, ChevronRight, Package } from 'lucide-react';
@@ -787,6 +788,12 @@ export const BatchDetailSheet: React.FC<BatchDetailSheetProps> = ({
       </Sheet>
 
       {ladder && <StageLadder batch={draft} now={nowMs} kegs={kegList} onClose={() => setLadder(false)}
+        onMarquerPropres={laves => {
+          const avant = laves.map(l => kegList.find(k => k.id === l.id)).filter((k): k is import('../types').KegItem => !!k);
+          laves.forEach(k => StorageService.updateKeg(k));
+          accrocherDefaireLavage(enregistrerLavage(laves), avant, laves, () => StorageService.getStocks().kegs, k => StorageService.updateKeg(k));
+          setKegList(StorageService.getStocks().kegs);
+        }}
         onAvancer={s => { setLadder(false); changeStatus(s); }} onConditionner={conditionner}
         onRetour={s => { setLadder(false); applyStatus(s); }} onAbandonner={() => { setLadder(false); applyStatus('annule'); }} />}
       {/* Maquette suppression/v2 : ses fûts, ses bouteilles et ses écritures un par un ; sans lien (brassin planifié), suppression directe avec « Annuler ». */}

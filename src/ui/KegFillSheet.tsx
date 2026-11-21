@@ -7,10 +7,13 @@ import { Combobox } from './Combobox';
 import { Field, FormNav } from './FormNav';
 import { SegmentedControl } from './SegmentedControl';
 import { DateField, swissToday } from './DateField';
+import { StorageService } from '../services/storage';
+import { EffetsGeste } from '../services/effetsGeste';
+import { gesteIdDe, type Geste } from '../domain/consommation/gestes';
 import { isCurrent } from '../domain/catalogOrganization';
 import { nombreFr } from '../domain/nombreAffiche';
 import { brassinsAFuter, litresDansLesAutresFuts, volumeProduit } from '../domain/stock/futs';
-import { barreLitres, couleurPastille, futsQuiTiennent, marquerPropre, phraseALaver, phraseLitres, problemeRemplissageMultiple, remplirFut, statutLot } from '../domain/stock/futsFiche';
+import { barreLitres, couleurPastille, futsARetablir, futsQuiTiennent, marquerPropre, phraseALaver, phraseLitres, problemeRemplissageMultiple, remplirFut, statutLot } from '../domain/stock/futsFiche';
 import './equipment-compact.css';
 import './keg-fiche.css';
 
@@ -35,6 +38,30 @@ function veille(today: string): string {
   if (!m) return swissToday(-1);
   const d = new Date(Date.UTC(+m[3], +m[2] - 1, +m[1] - 1));
   return [String(d.getUTCDate()).padStart(2, '0'), String(d.getUTCMonth() + 1).padStart(2, '0'), d.getUTCFullYear()].join('.');
+}
+
+/**
+ * L9 : laver des fûts use ce que la table du geste « lavage-fut » contient (PBW, désinfectant…), une dose par fût lavé.
+ * Partagé par la page des fûts et la feuille « Conditionner » du brassin (K7). Rend l'identifiant du geste.
+ */
+export function enregistrerLavage(futs: KegItem[]): string | null {
+  if (!futs.length) return null;
+  const lavages = StorageService.getMouvementsGestes().filter(m => m.geste === 'lavage-fut');
+  const geste: Geste = futs.length === 1
+    ? { type: 'lavage-fut', objet: futs[0].id, cycle: new Set(lavages.filter(m => m.objet === futs[0].id).map(m => m.gesteId)).size + 1, libelle: `Fût ${futs[0].id} lavé`, quantites: { unites: 1 } }
+    : { type: 'lavage-fut', objet: `lot-${Date.now()}`, cycle: 1, libelle: `${futs.length} fûts lavés`, quantites: { unites: futs.length } };
+  StorageService.enregistrerGeste(geste);
+  return gesteIdDe(geste);
+}
+
+/** Un geste, un seul Annuler (L9) : il rend le stock ET remet ces fûts à laver ; refus entier si l'un a bougé depuis. */
+export function accrocherDefaireLavage(gesteId: string | null, avant: KegItem[], apres: KegItem[], courants: () => KegItem[], ecrireFut: (k: KegItem) => void) {
+  if (!gesteId) return;
+  EffetsGeste.surAnnulation(gesteId, {
+    dit: avant.length > 1 ? 'les fûts sont remis à laver' : 'le fût est remis à laver',
+    refus: () => futsARetablir(avant, apres, courants()).length === avant.length ? null : 'Annulation impossible : un fût a bougé depuis, rien n’est rendu.',
+    defaire: () => futsARetablir(avant, apres, courants()).forEach(k => ecrireFut(k))
+  });
 }
 
 /** K7 : les litres du lot qui restent à mettre en fût (produits moins ceux déjà dans ses fûts). */
@@ -123,7 +150,7 @@ export const KegFillSheet: React.FC<Props> = ({ kegs: parc, batches, today, init
             : !aLaver.length && <p className="equipment-help">Aucun fût propre. Marque un fût propre depuis sa fiche.</p>}
           {aCocher.length > 0 && (
             <button type="button" className="mt-1.5 flex min-h-11 w-full flex-wrap items-baseline gap-x-2 gap-y-0.5 rounded-control border border-dashed border-cave-600 px-2.5 py-1.5 text-left focus-visible:outline focus-visible:outline-2 focus-visible:outline-ebc-straw" onClick={prendre}>
-              <span className="text-[0.8125rem] font-semibold text-cave-50 underline underline-offset-2">{aLaver.length ? phraseALaver(aLaver.length) : `Prendre ${aCocher.length > 1 ? `les ${aCocher.length} fûts` : 'le fût'} qui tiennent le volume`}</span>
+              <span className="text-sm font-semibold text-cave-50 underline underline-offset-2">{aLaver.length ? phraseALaver(aLaver.length) : `Prendre ${aCocher.length > 1 ? `les ${aCocher.length} fûts` : 'le fût'} qui tiennent le volume`}</span>
               <span className="font-mono text-xs text-cave-400">{(aLaver.length ? aLaver : aCocher).map((k) => `${k.id} · ${nombreFr(k.capacityL, 1)} L`).join(', ')}{proposition && proposition.manque > 0 ? ` · ${nombreFr(proposition.manque, 1)} L sans fût` : ''}</span>
             </button>
           )}
