@@ -1,3 +1,175 @@
+# Session 11 — attente fin2, lecture W0c / V-CAL (21.11, agent arrêté à ~155 k par lecture ; RIEN ÉCRIT dans le code)
+
+## État
+- `fin2.sh` tournait encore à 12:25 (tsc 0 ; vitest entier en cours, sorties `f2-*` du scratchpad `<S>`). Aucun build ni rejeu lancé par moi :
+  ne rien lancer avant « == FIN » dans `<S>/f2.out` (lenteur.mjs mesure le temps). Ne pas éditer `src/` avant la ligne « build parcours code »
+  (vitest et les builds lisent l'arbre). `scripts/parcours/calendrier.mjs` et sa fixture se lisent au démarrage du rejeu : modifiables dès que
+  la ligne « build parcours code » est écrite.
+- Puis lire : `f2-vall.out` (`grep -aE "Test Files|Tests  |FAIL"`), `f2-build.out` (échec DRAPEAUX `VITE_CARNET_IA` attendu : rejouer avec
+  `VITE_HOP_V4=on VITE_CARNET_IA=production npm run build`), `f2-cal.out`, `f2-geste.out`, `f2-lent.out` ; captures 390/1280 de `<S>/f2-cal/`.
+  Corriger les échecs du Calendrier ; noter les autres sans y toucher.
+
+## Ce qu'il faut savoir pour W0c (lu, rien écrit)
+- `calendrier.mjs` n'a PAS d'option `--etape` : l'ajouter comme `chaines.mjs` (l. 24-26 : `seules = opt('etape')?.split(',')`, et
+  `'--etape'` dans la liste des options à valeur de la l. 30). Les étapes neuves vont après WFV-14, dans `bugsWorkflows()` ou une fonction sœur
+  (`recharger()` local remet la période par défaut).
+- Fixture `scripts/parcours/fixtures/calendrier.mjs` (stockée UNE fois : `parcours-calendrier:fixture`). Ajouter : (D2) une pièce payée passée
+  « ZZ TEST Pompe de brassage » 420 CHF (`facture(...)` avec `paymentStatus:'paid'`, date ≈ aujourd'hui −300 j) ; (K2) un projet du Carnet daté à
+  +3 mois (`creativeItems`, genre carnet, voir `carnetDepuisPhrase` et la fixture de `carnet.mjs`).
+- Modèles à reprendre (principes.mjs, W0a) : `POSES` l. 300-417 (nom posé, valider sans clavier, Annuler retire), `RENOMMERS` l. 474-526
+  (`pointTitre`, Entrée, relu dans le cache), `prixGarde` l. 313 (`[data-prix-semblable]`, « Garder … CHF »). Le cache du Calendrier :
+  `parcours-calendrier:cache` (entrées `{name, id, data}`).
+- Étapes à écrire (rouges sur `en-ligne/2026-11-21-tour7`) :
+  1. G3 : toucher la case vide de la semaine S+1 dans la piste Travaux (`[data-lane="travaux"]`, x = colonne de la semaine lue sur
+     `[data-bande-semaines] [data-semaine]`) crée « Travaux · S<n> » (cache `financialPlans`/`creativeItems`), message avec Annuler, Annuler le
+     retire. Aujourd'hui la piste n'a aucun toucher vide (Rangee.tsx `piste()`, l. ~897) : seul `cal-plus` « Ajouter dans … » ouvre la feuille.
+  2. RENOMMER-EVT : détail de « Ranger la réserve » (activité) : toucher le titre → champ, taper « ZZ TEST Nom », Entrée → relu dans le cache et
+     à l'écran, clavier fermé. Aujourd'hui `DetailChose.tsx` l. 328-338 renomme par Modifier.
+  3. C1-GLISSER : dans la feuille d'ajout, aucune rangée `.cal-f-semaines` (carrousel de 60 puces) ; à sa place `Horizons` (aujourd'hui, 1 mois,
+     3 mois…) ; « 3 mois » d'un toucher dit « vers <mois+3> » ; la semaine se règle au glisser sur la frise après création.
+  4. D2-CAL : feuille Travaux, nom « ZZ TEST Pompe » → puce `[data-prix-semblable]` « Pompe <année> : 420 » ; Garder → Ajouter → plan de 42000.
+  5. K2 : Carnet › projet daté › « Au calendrier » (`CarnetOuvert.tsx:632`, bouton `cn-second`) → Calendrier ouvert, la chose visible et
+     centrée (`centrerSur`, App.tsx l. 282/1356, CalendrierTab l. 215).
+  6. K3-SUITES : poser un brassin (+ volant › Poser un brassin, recette, Ajouter) → ses suites en « proposé » : cuve libre, fin, garde, mise en
+     fût (PORT T4) ; définir l'attendu sur l'écran de l'arbre avant d'écrire le contrôle (rien de tel aujourd'hui, à vérifier sur tour7).
+  7. SANS-MONTANT (demande du pilote) : « Ajouter dans Activités » et « Ajouter dans Travaux », nom posé, Ajouter SANS montant → créés.
+     Aujourd'hui : `calendrierAjout.ts` `valider` l. 333 refuse sans nom (« Choisis un nom. ») ; `versEnregistrement` l. 384 refuse Travaux,
+     Achats, Papiers, Ventes sans montant (FinancialPlan.amountCents est requis).
+- DÉCISION à prendre pour 7 (dépasse le code seul) : où vit un Travaux sans montant. Options : (a) `CreativeItem` `event` + drapeau
+  `travaux: true` (calque exact d'Activités `activite: true`, `estimatedCost` facultatif ; calendrier.ts l. 866 à étendre) ; (b) `FinancialPlan`
+  à `amountCents: 0` (précédent : `mergeUpgradePlans`, `budgetKnown:false`), mais Finances afficherait « 0,00 » (l'inconnu n'est jamais 0) ;
+  (c) plan `source:'equipment'` `budgetKnown:false` (déjà rangé en Travaux, l. 1037) mais il s'ouvre dans Matériel et ne se glisse pas.
+  Recommandation : (a), additif et réversible ; un montant donné garde le plan financier.
+
+## Reste (ordre)
+1. fin2 (ci-dessus). 2. W0c : les 7 étapes + `--etape`, rejeu `--ref en-ligne/2026-11-21-tour7 --etape …` (rouge) et sur l'arbre (le reste OK) ;
+   commit `scripts/parcours/calendrier.mjs scripts/parcours/fixtures/calendrier.mjs`. 3. V-CAL, un commit par élément (G3, RENOMMER-EVT, C1,
+   D2, K2, K3, VUE-SAUTE, précision semaine/mois de la date du carnet). 4. `juger` puis CAL-LENT, `ab.mjs` 7 tours, poste calme seulement.
+Fichiers d'autres voies à ne pas toucher : BrewWizard, etapeLevure, quickAdd, `src/domain/recette/` (V-RECETTE), `Caisse.tsx` (F-APPUI),
+`tests/helpers/wizard.ts`, `tests/integration/zz-debug-vrecette.test.tsx`, `tests/unit/recettePropositions.test.ts`. `EnTete.tsx` (juger) est à moi, non commité.
+
+# Session 10 — D398, WFV-14, TOUCHER-FANTOME, F-ENTREE (21.11)
+
+## Fait (commité)
+- `e690814a6` D398 : `choseBrassin`, jour prévu passé : une seule branche. Barre de `debut` (j0 si posé au passé, sinon aujourd'hui) à
+  « prête » ; jalons recalés sur aujourd'hui, écart compté depuis `debut` ; conditionnement = `pretePrevue`. `choseAllongee` : la branche
+  D397 retirée (plancher aujourd'hui). Tests réécrits (D398, D392, juger rAF, 7 de B9/D395, calendrierDetail n° 3, calendrier-onglet
+  CRITIQUE-10 n° 1) : 62 fichiers Calendrier, 879/879.
+- `63d6db6f1` WFV-14 (CalendrierTab + étape calendrier.mjs). `6bb0cc4fe` TOUCHER-FANTOME : `usePointeur` (mode appui) et `useToucherNom`
+  appellent `avalerClicSuivant(DELAI_CLIC_AVALE, e.currentTarget)` avant d'ouvrir ; étape calendrier.mjs rouge sur tour7 (« Vente annulée ·
+  S51 »), verte sur l'arbre avant ET après (le défaut dépend de la géométrie : détail en ligne, bouton sous le doigt ou non) ; test
+  `toucherFantome.test.tsx` (3). `6300acb90` F-ENTREE tâche : `FeuilleAjout` onEntree + `principes.mjs` entree-tache → Activités (Travaux
+  exige un montant) ; ENTREE 4/4 (`s9b-entree4.out`). La ligne de principes.mjs seule, le travail F-NOM (D399, achatPose) laissé dans l'arbre.
+- Parcours arbre avec correctif (`s9b-cal.out`) : PARCOURS CALENDRIER OK.
+
+## Reste
+0. ATTENTION : deux fin.sh tournaient en même temps (celui de la session 9, 11:21, et le mien) plus un vitest de 11:19 : sorties `fin-*`
+   mélangées, poste chargé (vitest entier 58 min). Tous arrêtés (kill). Lancé à la place `fin2.sh` (scratchpad, sorties `f2-*`, build
+   `build-s10-fin`) vers 12:17 : tsc 0 ; vitest entier en cours. Ne PAS relancer fin.sh ni lancer d'A/B tant que `f2.out` n'a pas « == FIN ».
+1. Lire `f2.out`, `f2-vall.out` (`Test Files|Tests |^ FAIL`), `f2-build.out` (échec DRAPEAUX `VITE_CARNET_IA` = environnement du
+   worktree), `f2-cal.out` (PARCOURS CALENDRIER OK attendu), `f2-geste.out`, `f2-lent.out` ; ouvrir captures 390 et 1280 de `f2-cal/`.
+2. `juger`/`flushSync` (EnTete.tsx, non commité) : ab.mjs 7 tours, deux builds à la suite. 3. CAL-LENT.
+- Limite : Travaux, Entrée sur le nom sans montant → refus « Indique un montant », clavier fermé (PI-2 voudrait le champ CHF ; ChampMontant n'a pas d'onEntree).
+
+# Session 9 — D397, fin.sh, WFV-14 (21.11)
+
+## Fait
+- **D397** commit `f63986ce8` : `preteAuPlusTot` ne fait plus d'exception pour le brassin posé au passé ; `choseBrassin` (posé au passé) : barre
+  j0 → j0 + cycle (D395), `pretePrevue`, durée et détail = max(j0, aujourd'hui) + cycle (« … au plus tôt ») ; `choseAllongee` (posé au passé) :
+  `fin` et `pretePrevue` décalés d'autant. Tests : calendrierGestes (méthode PREVU_SEMAINE_COURANTE gardée ; relues corrigées ; test D397 neuf),
+  calendrier.test t2 (+ cas semaine courante) et CRITIQUE-6 n° 2, Ecritures (banc), Voie3 (S53 : 2026 a 53 semaines ISO). Calendrier 278/278.
+- **WFV-14** (NON commité) : `CalendrierTab.tsx` « Facturer » ouvre `Caisse` (lazy, comme ClientsTab) avec `clientIdInitial` = `clientId`
+  du plan (`don.plans`) ; état `caisse`, rendu avant `.cal-tab-fin`. tsc OK. Étape `WFV-14 Facturer` dans `calendrier.mjs` (après B11 ;
+  capture `09b-wfv14-detail` puis `09b-wfv14-facturer`). Rouge tour7 (`wfv14-tour7b.out`, build `b-tour7`) MAIS pour une autre raison : sur
+  tour7, toucher « La Cigogne, 3 fûts » a ANNULÉ la vente (message « Vente annulée · S51 », capture `wfv14-tour7/09b-wfv14-detail.png`) :
+  clic fantôme probable sur « Annuler la vente » du détail ouvert sous le doigt. À voir sur l'arbre (sortie `fin-cal.out`, captures
+  `fin-cal/09b-wfv14-*`) : si le même clic fantôme existe, c'est un bug à corriger/verser à BUGS.md avant WFV-14.
+- **F-ENTREE** (demande du pilote, NON commité) : `FeuilleAjout.tsx` champ du nom : `enterKeyHint` retiré, `onEntree` = même appel que le
+  bouton (`ajouter(confirmation ? {...b, confirmeGrosseSomme:true} : b)`). Dépend de `onEntree` de `src/ui/Input.tsx`, modifié NON commité
+  par une autre voie (F-NOM/F-ENTREE) : commit à part, après le leur. tsc OK. Preuve lancée : `principes.mjs <S>/entree-arbre --seul ENTREE`
+  (build de l'arbre) → sortie `<S>/entree-arbre.out` FINIE, NON LUE (lire `grep -vE "^\s+ok "`).
+- **calPasseCourbe.test.tsx** (NON commité) : 2 tests réécrits selon D392 (ni anneau ni point ; colonne + marche).
+- **calendrierEntete.test.tsx** (NON commité) : helper `imageSuivante()` ; tests « n° 1 et 14 » et « paquet D n° 5 » attendent l'image
+  (juger en rAF). Restent 7 rouges, nés de B9/D395 (le doigt ne lit que la fenêtre) : lignes ~335, 695, 949, 1211 (×2), 1551, 1631 attendent
+  S15/S16/S27/2027-04-12… dans une courbe d'un an ; à réécrire avec les semaines de la fenêtre (comme D395). Non relancé après mes éditions.
+- `fin.sh` TERMINÉ (code 0 du script ; résultats de chaque étape NON LUS, l'agent était arrêté par le hook à 200 k) (lancé après le commit D397) : tsc 0, vitest Calendrier 0 ; vitest entier, build, calendrier, geste, lenteur : lire
+  `<S>/fin.out` puis `fin-vall.out` (`Test Files|Tests |^ FAIL`), `fin-build.out`, `fin-cal.out`, `fin-geste.out`, `fin-lent.out` ;
+  ouvrir captures 390/1280 de `fin-cal/`. NB : le build de fin.sh contient WFV-14 (édité pendant vitest) ; pas F-ENTREE (selon l'heure).
+
+## Reste (ordre)
+1. Lire `entree-arbre.out` : ENTREE vert → commit F-ENTREE seul (`FeuilleAjout.tsx`), si `Input.tsx` est commité par sa voie ; sinon le dire.
+2. Lire fin.sh ; WFV-14 sur l'arbre (`fin-cal.out`) ; si OK et tour7 rouge (clic fantôme à trancher) → commit `CalendrierTab.tsx` +
+   `calendrier.mjs`. 3. Réécrire les 7 tests calendrierEntete (D395) ; relancer ce fichier + calPasse* ; commit tests.
+4. Remède `juger`/`flushSync` (EnTete.tsx) : A/B `ab.mjs` 7 tours, A = EnTete de HEAD, B = arbre, deux builds à la suite (vite.parcours
+   config, `--outDir`), puis commit si rien ne perd (avec le test calendrierEntete adapté). 5. CAL-LENT si temps.
+`<S>` = scratchpad `C:/Users/mrspa/AppData/Local/Temp/claude/2574149e6fd34767/16fc09ec-4e69-48a9-9744-5912b6ef6552/scratchpad`.
+
+## DOUTE D397 (à remonter)
+- Posé au passé, le jalon « Conditionnement » reste au bout de la barre (j0 + cycle) alors que « prête le » dit aujourd'hui + cycle : deux dates
+  dans le pied par phases et la grille du détail. Lecture prise : « garde sa barre » = barre ET ses jalons.
+
+# Session 8 — bugs commités, CAL-LENT (21.11)
+
+## Fait
+- Commits par bug (par chemins ; parcours et test découpés par `stage.mjs` du scratchpad) : B3 `e33e2fc2d`, B11 `235825252`, B8 `252b8c3aa`,
+  B9 `b23d4e38b`. Test B11 ajouté (`bugsWorkflowsCalendrier.test.ts`, 4/4).
+- B9 : la lecture n'était pas fautive ; le parcours partait sur les poignées (zones de prise 44 px, cadre au milieu en 6 sem.). Étape refaite :
+  départs hors de l'union des deux prises, puis un départ SUR la poignée de fin doit tirer la fenêtre. B8 période : la fenêtre se lit sur
+  la bande des semaines (pendant le glisser, l'aperçu cache le cadre). `cal-s8b.out` : **PARCOURS CALENDRIER OK**.
+- CAL-LENT, A/B 7 tours (`ab-s8pe.out`), A = arbre `build-s8-A`, B = `.cal-tab { pointer-events: auto }` : Modifier 384 → 536, Enregistrer
+  288 → 456, semaine 400 → 504 : **REJETÉ**, retiré. (Un vitest lancé par erreur a chargé le poste ~3 min sur les premiers tours.)
+- `juger` (EnTete.tsx) lu en rAF + dépendance `!!courbe`. A/B non apparié (`ab-s8j.out`, J bâti 25 min après A, arbre changé par d'autres
+  sessions) : plus lent, CONFONDU. A/B apparié (`ab-s8j2.out`, A2 et J2 bâtis à la suite, 7 tours) : semaine 336 → 336, frise 416 → 312,
+  barre 232 → 184, courbe-lecture 16 → 16, cacher 104 → 112, ouvrir 144 → 128, Modifier 552 → 440, semaine (feuille) 40 → 32, Enregistrer
+  280 → 280. **GARDÉ** (non commité), plus `flushSync` dans le rAF (pas d'image décalée ; ajouté après la mesure). lenteur reste ECHEC (6 à 7).
+- BUGS.md de Brasserie : WFR-11, WFV-3, WFP-2, WFP-3, WFP-4 marqués « corrigé » + commit ; `controle-bugs.mjs` : BUGS OK (1529, 146 ouverts).
+
+## Session 8 : NON FINI — prochaine action
+1. **15 tests Calendrier rouges depuis B8 (D395)** : ils codaient « prévu le 10 nov. (S46), aujourd'hui 16-18 nov. → part d'aujourd'hui ».
+   Fichiers : calendrierGestes (fait en partie), calendrier.test.ts:461 et :608, calendrierEcritures:298, calendrierVoie3:53.
+   Méthode prise dans calendrierGestes : `PREVU_SEMAINE_COURANTE = '16.11.2026'` (le retard DANS la semaine courante, règle qui reste) ;
+   la ligne 269 garde le 10 nov. et attend D395 (« prête le 15 déc. »). Restent rouges dans calendrierGestes : 295, 345, 395 et ~410
+   (mes valeurs de `finPrevue` écrites devinées à +6 j sont fausses : relire ce que `allonger` écrit, la base n'est pas jour prévu + cycle).
+   Pour calendrier.test.ts / Ecritures / Voie3 : même choix (prévu 16 nov.) ou attendre la valeur D395, test par test.
+   DOUTE à remonter au pilote : D395 rend « prête le 8 déc. » (10 nov. + 28 j) pour un brassin PAS brassé le 16 nov. ; CRITIQUE-6 n° 2
+   disait « prête au plus tôt aujourd'hui + cycle ». Vrai pour le dessin (sa plainte), discutable pour « prête le » (L14).
+2. Puis `fin.sh` du scratchpad (série : tsc, vitest Calendrier, vitest entier, build, build parcours, calendrier.mjs, geste.mjs, lenteur.mjs ;
+   sorties `fin-*.out`), captures 390/1280 de `fin-cal/` à ouvrir. Commit `juger` + tests (par chemins). tsc OK avec `juger`.
+
+# Session 7 — bugs B3, B8, B9, B11 (21.11, agent arrêté à ~170 k ; RIEN COMMITÉ, tout dans l'arbre de travail)
+
+## Fait (non commité)
+- `scripts/parcours/calendrier.mjs` : étape « 9b » `bugsWorkflows()` (avant CAL-ENTETE) : B8 barre au passé, B8 période (glisser tenu au
+  bord droit, pastille `[data-periode-pastille]` avant/après/rechargement), B9 lecture de la courbe en 6 sem. (4 glissés, semaine lue ∈
+  `[data-bande-semaines] [data-semaine]`), B11 « Vente 6 × Pale Ale » dans `[data-rangee="ventes"]`, B3 (brassin « ZZ TEST levure sans nom »
+  injecté dans le cache `parcours-calendrier:cache`, puis cache remis). `periodeNeuve()` retire `app_global_time_filter` de l'état d'UI avant
+  chaque rechargement de l'étape (le 1er rejeu partait d'une période dérivée en 2027 : préalable B8 raté).
+- Fixture `fixtures/calendrier.mjs` : vente encaissée du jour `REC-ZZ-VENTE` + paiement `PAY-REC-ZZ-VENTE` (financialPayments).
+- Rouge sur tour7 (1er rejeu, `cal-tour7.out` du scratchpad) : B3 KO « Impossible de charger cet écran », B9 KO (S21, S7 lues en S36–S41),
+  B11 KO. B8 : préalables ratés (corrigé par periodeNeuve) : 2e rejeu `cal-tour7b.out`, puis arbre `cal-wt.out` (lancés ensemble).
+- Correctifs : B3 `brewBudget.ts` (nameKey/demandKey tolèrent un texte absent ; levure sans nom mais liée au stock = demande « Levure ») +
+  `calendrier.ts` `(l.label ?? '')`. B8 `calendrier.ts` `brassagePoseAuPasse` = `lundiDe(j0) < lundiDe(auj)` (semaine d'avant = passé) ;
+  `CalendrierTab.tsx` `defilerFenetre` ne fait plus `onPeriode` (période inchangée par le défilement au bord). B9 `EnTete.tsx` `indexSous` :
+  hors alignement, le doigt lit les semaines de la fenêtre (index…index+nombre) sur la largeur. B11 `useDonneesCalendrier.ts` : paiements
+  `in` de pièces `income` entre lundi0 et aujourd'hui → chose `paiement-<id>` rangée ventes (pas si la pièce est encore attendue en prévision) ;
+  `reels` portent `choseId`. tsc OK.
+
+## Rejeux finis (session 7)
+- tour7 (`cal-tour7b.out`) : B3, B8 (barre « lâchée en S46, dessinée en S47 » ; période « 26.10.26–24.01.27 » devenue « 07.12.26–07.03.27 »,
+  restée au rechargement), B9, B11 : les 4 KO. ECHEC (36).
+- arbre (`cal-wt.out`) : B3, B8 barre, B8 période, B11 OK. ECHEC (1), seul reste **B9 en partie** : 30→85 % et 10→20 % lisent dans
+  S44–S49, mais 50→60 % ne lit rien et 80→95 % lit « S6, 8 – 14 févr. ». Piste : ces glissés tombent dans une zone de prise du cadre
+  (`prise.current`, `gestesCourbe.onPointerDown`) et tirent la fenêtre, ou passent par la branche `graph`. Regarder les captures `cal-wt/09b-*`.
+  Note : `debut()` de l'étape B8 période rend null après le glisser (« Snull ») : lire la poignée autrement.
+
+## Session 8 : prochaine action
+1. Finir B9 (voir ci-dessus), rejouer `calendrier.mjs` sur l'arbre : PARCOURS CALENDRIER OK attendu.
+2. Tests unitaires : `tests/unit/bugsWorkflowsCalendrier.test.ts` ÉCRIT (B3, B8) : 3 fichiers verts avec `calPasse` et `bugs-v3-t32`
+   (11/11). Reste : B11 (construireModele avec un paiement du jour) ; puis tous les tests Calendrier et la suite entière.
+   Rejeux lancés en fond à la fin de la session 7 (scratchpad) : `cal-tour7b.out` puis `cal-wt.out` ; captures `cal-tour7b/`, `cal-wt/` (09b-*).
+3. Un commit par bug (étape + fixture + correctif), par chemins ; jamais source4-portable-bundle-manifest-01.json.
+4. Puis CAL-LENT (a) `.cal-tab { pointer-events: auto }`, (b) `juger` en rAF, `ab.mjs` à 7 tours ; puis BUGS.md de Brasserie + controle-bugs.
+
 # Session 6 — CAL-LENT suite (21.11, agent arrêté à ~170 k ; rien commité)
 
 ## Mesure : le poste est partagé, la médiane de 3 ne suffit plus
