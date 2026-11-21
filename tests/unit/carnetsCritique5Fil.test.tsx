@@ -117,7 +117,7 @@ describe('2 · n° 2 : créer · après, un seul bandeau (g5:v04-4)', () => {
     const neuf = lireCarnets(magasin.lire()).find(c => !avant.has(c.id))!;
     expect(neuf).toBeTruthy();
     expect(neuf.carnet.criteres.some(k => k.texte.trim().toLowerCase() === phrase.toLowerCase())).toBe(false);
-    const bandeaux = document.querySelectorAll('.cn-ouvert .cn-bandeau');
+    const bandeaux = document.querySelectorAll('[data-carnets] .cn-bandeau');
     expect(bandeaux.length).toBe(1);
     expect(bandeaux[0].textContent).toContain('Carnet créé');
     expect(document.querySelector('.cnf-proposees')).toBeNull();

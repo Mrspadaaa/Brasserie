@@ -38,6 +38,8 @@ export interface ListeCarnetsProps {
   ajouts?: Record<string, GenreNote[]>;
   /** R19 : sans `ajouts`, le message tout juste rangé ; ses notes, par carnet, donnent « +n · genres ». */
   messageRecent?: string | null;
+  /** D417 : le carnet que l'IA range en ce moment, depuis la liste : sa ligne le dit au lieu de la citation. */
+  rangeEnCours?: string | null;
   /** Contenu posé au-dessus des groupes : bandeau R19 (NoteEnVrac), cadre R10 ou R16 (CadreArrivee). */
   enHaut?: React.ReactNode;
   onOuvrir: (id: string) => void;
@@ -169,7 +171,7 @@ function Vignette({ c }: { c: CarnetV }) {
   return <VignetteObjet photo={photo} mots={[c.title, k.phrase, choisi?.nom, ...k.facons.map(f => f.nom), ...k.articles.map(a => a.nom)]} />;
 }
 
-function CarteCarnet({ c, ajouts, onOuvrir, onCollerLien, onVoirAVenir }: { c: CarnetV; ajouts?: GenreNote[] } & Pick<ListeCarnetsProps, 'onOuvrir' | 'onCollerLien' | 'onVoirAVenir'>) {
+function CarteCarnet({ c, ajouts, range, onOuvrir, onCollerLien, onVoirAVenir }: { c: CarnetV; ajouts?: GenreNote[]; range?: boolean } & Pick<ListeCarnetsProps, 'onOuvrir' | 'onCollerLien' | 'onVoirAVenir'>) {
   const k = c.carnet;
   const prix = prixDe(c);
   const { parts, veilles } = compte(c);
@@ -194,7 +196,7 @@ function CarteCarnet({ c, ajouts, onOuvrir, onCollerLien, onVoirAVenir }: { c: C
               </>
             ) : vide ? (
               /* L4-5 : le titre est sa phrase → rien dessous (le carnet ouvert le dit, une fois) ; sinon la phrase citée, 2 lignes au plus */
-              phraseEnTitre(c.title, k.phrase) ? null : <span className="cn-cite cn-deux-lignes">« {k.phrase} »</span>
+              range ? <span className="cn-cite" role="status">✻ L'IA range…</span> : phraseEnTitre(c.title, k.phrase) ? null : <span className="cn-cite cn-deux-lignes">« {k.phrase} »</span>
             ) : (
               <>
                 {ensuite && <span><b className="cn-vert">Ensuite :</b> {ensuite}</span>}
@@ -245,7 +247,7 @@ export function ListeCarnets(p: ListeCarnetsProps) {
   const exemple = visibles.some(c => c.carnet.articles.some(a => a.origine === 'exemple'));
 
   const rendre = (c: CarnetV) => {
-    const carte = <CarteCarnet key={c.id} c={c} ajouts={ajouts[c.id]} onOuvrir={p.onOuvrir} onCollerLien={p.onCollerLien} onVoirAVenir={p.onVoirAVenir} />;
+    const carte = <CarteCarnet key={c.id} c={c} range={p.rangeEnCours === c.id} ajouts={ajouts[c.id]} onOuvrir={p.onOuvrir} onCollerLien={p.onCollerLien} onVoirAVenir={p.onVoirAVenir} />;
     if (p.eclaire?.carnetId !== c.id) return carte;
     const e = p.eclaire;
     return (

@@ -1,4 +1,4 @@
-// Chasse Carnet V2 (21.11) : CRU-3a (le banc simulé ne range pas ailleurs : la fiche s'ouvre aussitôt, +1, titre tapé, stable 8 s)
+// Chasse Carnet V2 (21.11) : CRU-3a (le banc simulé ne range pas ailleurs : D417 : la fiche s'ouvre à la fin du rangement, +1, titre tapé, stable 8 s)
 // et CRN-ONGLET-RETOUR (l'onglet actif « Carnets » ramène à la liste, la saisie reste). Le rangement ailleurs se contrôle au vitest
 // tests/unit/carnetsChasseV2.test.tsx ; les prix et les noms, aussi.
 export default async function (c) {
@@ -14,7 +14,7 @@ export default async function (c) {
     await c.focaliserChamp(); await c.taper('ZZ TEST — réfractomètre pour mesurer la densité'); await c.entree();
     await c.sleep(1800); const b = await lire(); await c.sleep(6000); const d = await lire();
     console.log(`  CRU-3a : vue ${b.vue} → ${d.vue} ; compte ${a.compte} → ${b.compte} → ${d.compte}`);
-    if (b.vue !== 'carnet' || d.vue !== 'carnet' || b.compte !== a.compte + 1 || d.compte !== b.compte) throw new Error('CRU-3a : la fiche doit s\'ouvrir aussitôt et rester, compte +1 puis stable');
+    if (!['liste', 'carnet'].includes(b.vue) || d.vue !== 'carnet' || b.compte !== a.compte + 1 || d.compte !== b.compte) throw new Error('CRU-3a : la fiche doit s\'ouvrir aussitôt et rester, compte +1 puis stable');
   });
   await c.etape('V2-CRN-ONGLET-RETOUR', async () => {
     const av = await lire();

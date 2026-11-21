@@ -495,6 +495,11 @@ export function CarnetsVue(p: CarnetsVueProps) {
   const [texte, setTexte] = useState(p.texteInitial ?? '');
   const [etatR, setEtatR] = useState<EtatRangement<LigneLocale>>({ etape: 'repos' });
   const [retour, setRetourEtat] = useState<Retour | null>(null);
+  /* D417 : le carnet que l'IA range depuis la liste (aucune fiche provisoire) ; la ligne dit « L'IA range… » */
+  const [rangeEnCours, setRangeEnCours] = useState<string | null>(null);
+  const neDeListe = useRef<string | null>(null);
+  const vueRef = useRef<Vue>(vue);
+  vueRef.current = vue;
   /** Le retour tel qu'il est maintenant, lu par Annuler et par la fin de l'IA (une fermeture plus ancienne ne le perd pas). */
   const retourRef = useRef<Retour | null>(null);
   const prochainRetour = useRef(0);
@@ -657,6 +662,7 @@ export function CarnetsVue(p: CarnetsVueProps) {
         attente.current = null;
         annonces.current.delete(e.messageId);
         /* PCN-184 : sans réponse de l'IA, l'aperçu local fait foi : le carnet neuf tenu en réserve s'ouvre enfin */
+        setRangeEnCours(null);
         if (neuf) { setEnTete(neuf); setVientDEtreCree(neuf); setVue({ sorte: 'carnet', id: neuf }); }
         if (e.etape === 'echec') poserAvis(e.messageId, 'echec', montre ? null : local);
         else if (!montre) setRetour(local);
@@ -723,12 +729,16 @@ export function CarnetsVue(p: CarnetsVueProps) {
       /* Paquet 1, PCN-184 (test en ligne 3) : écrit dans un carnet ouvert, le carnet neuf n'est qu'une supposition locale tant que l'IA
          range : l'écran reste sur le carnet ouvert, rien n'est annoncé « créé » ; la réponse dit où c'est allé (D383). */
       const definitif = annonce?.sorte === 'cree' && !(depuis && iaAttendue);
-      if (iaAttendue) attente.current = { messageId: message.id, retour: local, montre: definitif, ...(neuf && !definitif ? { neuf } : {}) };
+      if (iaAttendue) attente.current = { messageId: message.id, retour: local, montre: definitif, ...(neuf && (!definitif || !depuis) ? { neuf } : {}) };
+      /* D417 : depuis la liste, la fiche du carnet neuf ne s'ouvre pas pendant que l'IA range ; elle s'ouvre une fois, à la fin */
+      if (!depuis) neDeListe.current = message.id;
+      if (neuf && !depuis && iaAttendue) setRangeEnCours(neuf);
       if (!iaAttendue || definitif) setRetour(local);
-      if (neuf && !(depuis && iaAttendue)) { setEnTete(neuf); setVientDEtreCree(neuf); setVue({ sorte: 'carnet', id: neuf }); }
+      if (neuf && !(depuis && iaAttendue)) { setEnTete(neuf); setVientDEtreCree(neuf); if (!iaAttendue) setVue({ sorte: 'carnet', id: neuf }); }
       return { messageId: message.id };
     },
     ecrireIA: (messageId, lignes, mode2) => {
+      setRangeEnCours(null);
       if (forcee.current === messageId) {
         /* sa correction « Va dans » est un choix : l'IA ne la défait pas ; le retour local, tenu en réserve, paraît */
         forcee.current = null;
@@ -886,12 +896,15 @@ export function CarnetsVue(p: CarnetsVueProps) {
       if (final.bandeau.sorte === 'cree' && final.carnetId) {
         setEnTete(final.carnetId); setVientDEtreCree(final.carnetId);
         /* PCN-183/184 : écrit dans un carnet, le carnet neuf que l'IA confirme s'ouvre : on voit où la phrase est allée */
-        if (!enAttente?.montre && final.carnetId !== depuis) setVue({ sorte: 'carnet', id: final.carnetId });
+        if ((!enAttente?.montre || (!depuis && enAttente?.neuf)) && final.carnetId !== depuis && (depuis || vueRef.current.sorte === 'liste')) setVue({ sorte: 'carnet', id: final.carnetId });
       } else if (final.bandeau.sorte === 'vrac') {
         /* la note en vrac reste sur la liste, avec ses lignes rangées (g5:v01-16) */
       } else if (!depuis) {
         /* rangé dans un carnet existant (ou en vrac) : le carnet local a disparu ; retour à la liste, sans carte « créée » en tête */
-        setEnTete(undefined); setVientDEtreCree(null); setVue({ sorte: 'liste' });
+        setEnTete(undefined); setVientDEtreCree(null);
+        /* D417 : née de la liste, la fiche où l'IA a rangé s'ouvre une fois ; sinon la liste reste */
+        if (enAttente?.neuf && final.carnetId && connu(final.carnetId) && vueRef.current.sorte === 'liste') setVue({ sorte: 'carnet', id: final.carnetId });
+        else setVue({ sorte: 'liste' });
       }
     }
   }), [mode, depuis, enLigne, magasin, appliquer, maintenant, p.appels, retourDe, setRetour, poserRetourEtat, poserAvis]);
@@ -1184,6 +1197,8 @@ export function CarnetsVue(p: CarnetsVueProps) {
     annuler(rt.inverse); setRetour(null);
     /* le carnet créé n'existe plus : retour à la liste (s'il était ouvert, l'effet « carnet disparu » le fait aussi) */
     if (rt.bandeau.sorte === 'cree') { setEnTete(undefined); setVientDEtreCree(null); if (!depuis || depuis === rt.carnetId) setVue({ sorte: 'liste' }); }
+    else if (rt.messageId && neDeListe.current === rt.messageId) setVue({ sorte: 'liste' });
+    setRangeEnCours(null);
   };
   /**
    * R19 (g5:v01-16) : la note en vrac, après. « ✓ n lignes rangées dans m carnets · Annuler », chaque ligne avec son type et son carnet,
@@ -1225,6 +1240,9 @@ export function CarnetsVue(p: CarnetsVueProps) {
       : <Bandeau key={retour.id} bandeau={retour.bandeau} onAnnuler={() => annulerRetour(retour)} aideConsequence={aides.consequence}
         {...(retour.avis ? { avis: retour.avis, ...(retour.detail ? { detail: retour.detail } : {}) } : {})} />
     : null;
+  /* D417 / P8 : le retour d'un envoi parti de la liste tient un emplacement stable (index 0 du défilement), que la liste ou la fiche de destination soit dessous : le bouton Annuler reste le même nœud */
+  const fixe = retour?.messageId && retour.messageId === neDeListe.current && retour.bandeau.sorte !== 'vrac' && (vue.sorte === 'liste' || vue.sorte === 'carnet') ? bandeauNode : null;
+  const bandeauIci = fixe ? null : bandeauNode;
   /* P23 (D-35) : les puces proposées par l'IA pour le carnet ouvert, sous le bandeau ; elles restent jusqu'au toucher ou au ✕ */
   const pucesProposees: Proposee[] = ouvert && vue.sorte === 'carnet'
     ? pucesDuCarnet(messages, ouvert, ecartees)
@@ -1275,9 +1293,9 @@ export function CarnetsVue(p: CarnetsVueProps) {
   /* ---------- écrans ---------- */
   let ecran: React.ReactNode;
   if (!ouvert || vue.sorte === 'liste') {
-    ecran = <ListeCarnets carnets={carnets.map(enV)} faits={faitsPlanning.map(enV)} anciennes={anciennes} enTete={enTete} messageRecent={retour?.bandeau.sorte === 'vrac' ? (retour.messageId ?? null) : null}
+    ecran = <ListeCarnets rangeEnCours={rangeEnCours} carnets={carnets.map(enV)} faits={faitsPlanning.map(enV)} anciennes={anciennes} enTete={enTete} messageRecent={retour?.bandeau.sorte === 'vrac' ? (retour.messageId ?? null) : null}
       supprime={supprime ? { titre: supprime.titre, statut: supprime.statut, onAnnuler: () => { annuler(supprime.inverse); setSupprime(null); } } : null}
-      enHaut={<>{repriseNode}{bandeauNode}{cadre()}</>}
+      enHaut={<>{repriseNode}{bandeauIci}{cadre()}</>}
       onOuvrir={id => { setVue({ sorte: 'carnet', id }); setRetour(null); }}
       onCollerLien={id => { setVue({ sorte: 'carnet', id }); setTimeout(() => champRef.current?.focus(), 0); }}
       onVoirAVenir={id => voirSortie(carnets.find(c => c.id === id))}
@@ -1347,7 +1365,7 @@ export function CarnetsVue(p: CarnetsVueProps) {
     const iaIndisponible = mode === 'eteint' ? 'eteinte' : !enLigne ? 'hors-ligne' : manque === 'eteint' ? 'eteinte' : manque ?? null;
         ecran = <>
       <CarnetOuvert carnet={enV(c)}aides={aides as never} liens={liens} tableau={tableauV} iaIndisponible={iaIndisponible}
-        bandeau={cadreRenommer ?? carteSupprimer ?? (repriseNode || bandeauNode || proposees ? <>{repriseNode}{bandeauNode}{proposees}</> : null)} rangee={carteSupprimer || cadreRenommer ? null : rangee} cadre={carteSupprimer || cadreRenommer ? null : cadre()}
+        bandeau={cadreRenommer ?? carteSupprimer ?? (repriseNode || bandeauIci || proposees ? <>{repriseNode}{bandeauIci}{proposees}</> : null)} rangee={carteSupprimer || cadreRenommer ? null : rangee} cadre={carteSupprimer || cadreRenommer ? null : cadre()}
         vientDEtreCree={vientDEtreCree === c.id} doublons={aides.doublon ? notesEnDouble(c).flat() : []}
         noteSupprimee={noteSupprimee ? { id: noteSupprimee.id, onAnnuler: () => annulerSuppressionNote(noteSupprimee) } : null}
         feuille={noteEditee ? { noteId: noteEditee.id, contenu: cadreModifier(noteEditee) } : note ? { noteId: note.id, contenu: <FeuilleNote note={note as never} aides={aides as never}
@@ -1408,7 +1426,7 @@ export function CarnetsVue(p: CarnetsVueProps) {
   return (
     <div className={`cn ${p.className ?? ''}`} data-carnets data-vue={vue.sorte} style={{ display: 'flex', flexDirection: 'column', minHeight: 0 }}>
       {/* f13 tour 3 (critique n° 1) : nommée pour que, sous la bande du carnet tout juste créé, elle s'élargisse aux bords de l'écran (carnets.css) */}
-      <div className="cn-defile" style={{ flex: 1, minHeight: 0, overflowY: 'auto' }}>{ecran}</div>
+      <div className="cn-defile" style={{ flex: 1, minHeight: 0, overflowY: 'auto' }}>{fixe}{ecran}</div>
       {champ}
     </div>
   );
