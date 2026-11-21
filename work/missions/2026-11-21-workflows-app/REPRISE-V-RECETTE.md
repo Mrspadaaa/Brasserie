@@ -63,3 +63,24 @@ Les 4 rouges transverses (fix114, designTokens, invoiceScanCache-d273c, virgule-
 4. N3 (relierAuStock.ts), C1-RECETTE au récap, WFR-4 (B4).
 5. Preuves : chaines `--etape N1,N3,C1-RECETTE,B4,VR-1` (rouge `--ref en-ligne/2026-11-21-tour7`, vert arbre) ; principes `--seul recette,recette-pose,assistant-recette` ;
    `controle-choix.mjs` ; vitest assistant + levure (`tests/integration/etapeLevure`) ; tsc ; `VITE_HOP_V4=on VITE_CARNET_IA=production npm run build`.
+
+# Session 5 (21.11, arrêtée vers 165 k) — fait, commits par chemins (index temporaire)
+- Accords du pilote : `donneesApp.ts` (fiche d'abord, puis nom) accepté ; Ma levure 5 et 6 dans `src/` permis ; **point 4
+  (`functions/src/fermentationContext.ts`, « 14.5 °C » corrigé à l'affichage seulement) REPORTÉ : aucune fonction ne part en ligne avec ce tour.**
+- `eb37ba387` N1 levure : la vision (build `%TEMP%/vrecette/build-arbre`, captures `%TEMP%/vrecette/cap-n1c`, 390 tactile + 1280, clair + cave,
+  avant/après « Poser » ; script `scratchpad/vision-n1.mjs` de la session) a trouvé : (a) « Poser » posait « ZZ TEST US-05 · Hors catalogue · saisie
+  libre » (selectYeast par le nom du stock) → `onStock(item, dose, fiche)` pose la fiche (applyCatalogueYeast + doseApresChoix) liée au lot
+  (`stockItemRef`) ; une puce du stock reliée à une fiche fait de même ; (b) regex de PoserDuStock sans barres inverses (piège `node -e`) réparées ;
+  (c) carte « US-05 (Fermentis) » → `nomDeCarte` retire la parenthèse d'un fabricant connu : « SafAle US-05 » / « Fermentis » ; (d) à 1280, la
+  levure choisie revenait en puce « ZZ TEST US-05 » → exclue (`enStock`). Captures ouvertes après correctif : 390 clair et 1280 cave OK.
+- `2db277681` Ma levure 5 (D391) : `ligneFabricant` dit aussi le dessous (« sous le fabricant 15–23 g : l’OG 1,026 en demande moins ») ;
+  6 : fait versé US-05 `flocculation` niveau moyen (page Fermentis lue le 21.11 : « Sedimentation time Medium ») ; cellule « floculation moyenne ».
+  Tests : `levureN1.test.ts` (nouveau), domaine (47 faits ; London pour l'inconnu), leviers-stock, etapeCoque (London), instantané
+  `rechercheAvancee-identite.json` régénéré (clarte : 1 documentée de plus, ordre des ex æquo). vitest `tests/integration/etapeLevure tests/unit/levure` :
+  26 fichiers, 224 verts ; tsc 0.
+- Non revu en vision : la ligne « sous le fabricant … » à 390 (longueur) sur une recette avec OG ; à faire avec la preuve finale.
+
+## Reste, dans l'ordre (agent neuf)
+1. « Suivant » à place fixe (`principes --seul assistant-recette` KO, VUE-SAUTE) : piste `endActionsCollant` pour toutes les étapes hors récap (PageShell l. 585).
+2. N3 (relierAuStock.ts), C1-RECETTE au récap (horizons existants), WFR-4 (B4) : chacun rouge sur `--ref en-ligne/2026-11-21-tour7`, vert sur l'arbre.
+3. Fin : `controle-choix.mjs` OK ; vitest assistant + levure ; `VITE_HOP_V4=on VITE_CARNET_IA=production npm run build` ; vision « sous le fabricant ».
