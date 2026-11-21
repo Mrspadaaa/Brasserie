@@ -222,7 +222,18 @@ function listeEtapes() { return [
       const t = await s.texte(3000);
       const manque = ['ZZ TEST Pale Ale', 'ZZ TEST NEIPA'].filter((n) => !t.includes(n));
       if (manque.length) return echec('B11', `la liste des brassins cache ce que la caisse vend : ${manque.join(', ')} (écran : ${t.slice(0, 160)})`);
-      ok('B11', 'la Pale Ale (conditionnée) et la NEIPA (terminée) sont listées');
+      // 390 : le libellé de période (« + en cours, en vente ») et la feuille Filtres ne débordent pas (largeur de la fenêtre, jamais plus)
+      const debord = await s.p.evaluate(() => [...document.querySelectorAll('.lst-fbtn, .lst-per, .lst-top button, .lst-segments button')].filter((e) => { const r = e.getBoundingClientRect(); return r.width > 0 && (r.right > innerWidth + 1 || r.left < -1); }).map((e) => (e.getAttribute('aria-label') || e.innerText || '').slice(0, 40)));
+      if (debord.length) return echec('B11', `déborde de l’écran à 390 : ${debord.join(', ')}`);
+      await s.toucher('Filtrer', { prefixe: true }); await sleep(900);
+      await s.cap('B11-2-filtres');
+      await s.p.evaluate(() => { for (const e of document.querySelectorAll('*')) if (e.scrollHeight > e.clientHeight + 40 && /auto|scroll/.test(getComputedStyle(e).overflowY)) e.scrollTop = e.scrollHeight; }); await sleep(500);
+      await s.cap('B11-3-filtres-periode');
+      const f = await s.texte(3000);
+      if (!/Les en cours et en vente, toujours/.test(f)) return echec('B11', `la feuille Filtres ne dit pas « Les en cours et en vente, toujours » (écran : ${f.slice(0, 160)})`);
+      const debordF = await s.p.evaluate(() => [...document.querySelectorAll('[role=dialog] *, .lst-segments *')].filter((e) => { const r = e.getBoundingClientRect(); return r.width > 0 && r.right > innerWidth + 1; }).map((e) => (e.className?.toString?.() || e.tagName).slice(0, 40)).slice(0, 4));
+      if (debordF.length) return echec('B11', `la feuille Filtres déborde à 390 : ${debordF.join(', ')}`);
+      ok('B11', 'la Pale Ale (conditionnée) et la NEIPA (terminée) sont listées ; libellé et feuille Filtres tiennent à 390');
     }
   },
   {
