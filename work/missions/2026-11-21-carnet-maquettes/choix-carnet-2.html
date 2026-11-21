@@ -1,0 +1,249 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Carnet · Comparer, prix, choisir · 9 versions · 21.11</title>
+<style>
+  :root { --fond:#f3f3f1; --carte:#fff; --trait:#b9b9b4; --pas:#e8e8e4; --encre:#2b2b29; --gris:#6a6a66; --fort:#1f1f1d; }
+  * { box-sizing:border-box; }
+  body { margin:0; background:var(--fond); color:var(--encre); font:16px/1.35 system-ui, -apple-system, "Segoe UI", sans-serif; }
+  main { max-width:1100px; margin:0 auto; padding:10px 8px 40px; }
+  h1 { font-size:22px; margin:4px 0 2px; }
+  .sous { color:var(--gris); margin:0 0 10px; font-size:15px; }
+  blockquote { margin:0 0 6px; padding:4px 0 4px 10px; border-left:3px solid var(--fort); font-style:italic; font-size:16px; }
+  blockquote.fort { font-size:18px; font-weight:700; }
+  #a-choisir { background:var(--carte); border:2px solid var(--fort); border-radius:10px; padding:10px; margin:10px 0 12px; }
+  #a-choisir h2 { font-size:17px; margin:0 0 6px; }
+  #a-choisir ol { list-style:none; margin:0; padding:0; display:grid; grid-template-columns:1fr 1fr; gap:6px; }
+  #a-choisir a { display:flex; gap:8px; align-items:baseline; color:inherit; text-decoration:none; min-height:44px; padding:6px 8px; border:1.5px solid var(--trait); border-radius:8px; background:var(--fond); font-size:15px; }
+  #a-choisir a b { font-size:18px; }
+  #a-choisir p { margin:8px 0 0; font-size:14px; color:var(--gris); }
+  section { background:var(--carte); border:1.5px solid var(--trait); border-radius:12px; padding:10px 8px; margin:0 0 14px; }
+  section h2 { font-size:19px; margin:0 0 4px; }
+  section h2 .code { display:inline-block; min-width:40px; text-align:center; background:var(--fort); color:#fff; border-radius:6px; margin-right:6px; padding:0 4px; }
+  .idee { margin:0 0 6px; font-size:16px; }
+  .chiffres { display:flex; flex-wrap:wrap; gap:6px; margin:0 0 8px; }
+  .chiffres span { background:var(--pas); border-radius:6px; padding:3px 7px; font-size:14px; }
+  .chiffres b { font-size:17px; }
+  .rang { display:flex; gap:8px; overflow-x:auto; padding-bottom:6px; scroll-snap-type:x mandatory; }
+  .rang figure { margin:0; flex:none; scroll-snap-align:start; }
+  .rang img { display:block; width:340px; height:auto; border:1px solid var(--trait); border-radius:8px; }
+  .rang img.large { width:620px; }
+  .rang figcaption { font-size:14px; color:var(--gris); margin-top:3px; }
+  .prendre { display:flex; align-items:center; justify-content:center; gap:8px; width:100%; min-height:48px; margin-top:8px; border:2px solid var(--fort); border-radius:10px; background:var(--carte); color:var(--fort); font:inherit; font-size:17px; font-weight:800; cursor:pointer; }
+  .prendre[aria-pressed="true"] { background:var(--fort); color:#fff; }
+  .prendre[aria-pressed="true"]::after { content:" ✓"; }
+  .ch-note { display:block; margin-top:8px; font-size:14px; color:var(--gris); }
+  .ch-note textarea { display:block; width:100%; min-height:56px; margin-top:4px; padding:8px; border:1px solid var(--trait); border-radius:6px; background:var(--carte); color:var(--encre); font:inherit; font-size:15px; }
+  .ch-etat { font-size:14px; color:var(--gris); margin-top:4px; min-height:1em; }
+  .ecartee { font-size:14px; color:var(--gris); }
+  .ch-barre { position:sticky; bottom:0; background:var(--carte); border-top:1px solid var(--trait); padding:10px 12px; margin-top:16px; font-size:15px; font-weight:700; }
+  h2.axe { font-size:21px; margin:18px 0 2px; }
+  @media (min-width:700px) { #a-choisir ol { grid-template-columns:repeat(4, 1fr); } }
+</style>
+</head>
+<body>
+<main>
+  <h1>Carnet · Comparer, le prix, Choisir · 21.11</h1>
+  <p class="sous">9 mini maquettes sur ta Chambre froide : trois articles, chacun au repos, sans prix et avec un prix en euros.</p>
+
+  <blockquote class="fort">« il ya même pas le prix de la chambre froide ?? »</blockquote>
+
+  <nav id="a-choisir">
+    <h2>À choisir : une version par axe (A, B, C), d'un toucher sur « Je prends »</h2>
+    <ol>
+      <li><a href="#a1"><b>A1</b>Colonnes-cartes</a></li>
+      <li><a href="#a2"><b>A2</b>Lignes et puces</a></li>
+      <li><a href="#a3"><b>A3</b>Bandes par attribut</a></li>
+      <li><a href="#b1"><b>B1</b>Pastille de prix</a></li>
+      <li><a href="#b2"><b>B2</b>Règle CHF commune</a></li>
+      <li><a href="#b3"><b>B3</b>Étiquette accrochée</a></li>
+      <li><a href="#c1"><b>C1</b>Prix › livré › payé</a></li>
+      <li><a href="#c2"><b>C2</b>Frise des mois</a></li>
+      <li><a href="#c3"><b>C3</b>Après Choisir</a></li>
+    </ol>
+    <p>Les trois axes se combinent : A pour Comparer, B pour le prix dans le carnet, C pour Choisir. Un mélange se dit dans la note.</p>
+  </nav>
+
+  <h2 class="axe" id="axe-a">A · Comparer</h2>
+  <p class="sous">Comment tes articles se comparent, et ce qui les classe. Une version par axe.</p>
+  <section id="ref-a">
+    <h2>Référence</h2>
+    <div class="rang">
+      <figure><img src="cmp-ref/04-comparer.jpg" alt="Comparer aujourd'hui"><figcaption>Comparer aujourd'hui</figcaption></figure>
+      <figure><img src="cmp-ref/g01-8.webp" alt="g01-8 (figé)"><figcaption>g01-8 (figé)</figcaption></figure>
+      <figure><img src="cmp-ref/h04-7.webp" alt="h04-7 (figé)"><figcaption>h04-7 (figé)</figcaption></figure>
+    </div>
+  </section>
+
+  <section id="a1">
+    <h2><span class="code">A1</span>Colonnes-cartes</h2>
+    <p class="idee">Tes trois articles en colonnes ; une épingle sur une ligne la fait classer, la chaîne dit l'ordre.</p>
+    <div class="chiffres"><span>Classé par Prix › Volume › Dispo</span><span>CHF/m³ en dernière ligne</span><span>Base : g01-8</span></div>
+    <div class="rang">
+      <figure><img src="cmp-captures/cmp-a1-repos.jpg" alt="A1 au repos"><figcaption>Au repos</figcaption></figure>
+      <figure><img src="cmp-captures/cmp-a1-sans.jpg" alt="A1 sans prix"><figcaption>Sans prix</figcaption></figure>
+      <figure><img src="cmp-captures/cmp-a1-eur.jpg" alt="A1 en euros"><figcaption>En euros</figcaption></figure>
+    </div>
+    <button class="prendre" data-v="a1" aria-pressed="false">Je prends A1</button>
+    <label class="ch-note">Note sur A1<textarea data-note="a1"></textarea></label>
+    <div class="ch-etat" data-etat="a1"></div>
+  </section>
+
+  <section id="a2">
+    <h2><span class="code">A2</span>Lignes et puces</h2>
+    <p class="idee">Une carte par article, triée ; les puces numérotées en haut donnent l'ordre de ta décision.</p>
+    <div class="chiffres"><span>1 Prix · 2 Volume · 3 Dispo</span><span>barre = la valeur qui classe</span><span>Base : h04-7 et h06-5</span></div>
+    <div class="rang">
+      <figure><img src="cmp-captures/cmp-a2-repos.jpg" alt="A2 au repos"><figcaption>Au repos</figcaption></figure>
+      <figure><img src="cmp-captures/cmp-a2-sans.jpg" alt="A2 sans prix"><figcaption>Sans prix</figcaption></figure>
+      <figure><img src="cmp-captures/cmp-a2-eur.jpg" alt="A2 en euros"><figcaption>En euros</figcaption></figure>
+    </div>
+    <button class="prendre" data-v="a2" aria-pressed="false">Je prends A2</button>
+    <label class="ch-note">Note sur A2<textarea data-note="a2"></textarea></label>
+    <div class="ch-etat" data-etat="a2"></div>
+  </section>
+
+  <section id="a3">
+    <h2><span class="code">A3</span>Bandes par attribut</h2>
+    <p class="idee">Une bande par critère : barres à la couleur de l'article, plan au sol à l'échelle, frise de dispo.</p>
+    <div class="chiffres"><span>Couleur = article</span><span>Au sol à l'échelle</span><span>Dispo en semaines</span></div>
+    <div class="rang">
+      <figure><img src="cmp-captures/cmp-a3-repos.jpg" alt="A3 au repos"><figcaption>Au repos</figcaption></figure>
+      <figure><img src="cmp-captures/cmp-a3-sans.jpg" alt="A3 sans prix"><figcaption>Sans prix</figcaption></figure>
+      <figure><img src="cmp-captures/cmp-a3-eur.jpg" alt="A3 en euros"><figcaption>En euros</figcaption></figure>
+    </div>
+    <button class="prendre" data-v="a3" aria-pressed="false">Je prends A3</button>
+    <label class="ch-note">Note sur A3<textarea data-note="a3"></textarea></label>
+    <div class="ch-etat" data-etat="a3"></div>
+  </section>
+
+  <h2 class="axe" id="axe-b">B · Le prix</h2>
+  <p class="sous">Où se lit le prix, et ce qu'il devient quand il manque ou qu'il est en euros. Une version par axe.</p>
+  <section id="ref-b">
+    <h2>Référence</h2>
+    <div class="rang">
+      <figure><img src="cmp-ref/03-chambre.jpg" alt="Chambre froide aujourd'hui"><figcaption>Chambre froide aujourd'hui</figcaption></figure>
+      <figure><img src="cmp-ref/h06-5.webp" alt="h06-5 (articles)"><figcaption>h06-5 (articles)</figcaption></figure>
+    </div>
+  </section>
+
+  <section id="b1">
+    <h2><span class="code">B1</span>Pastille de prix</h2>
+    <p class="idee">Le prix en pastille sur la ligne de l'article ; pointillée « CHF ? » s'il manque, brune si estimée.</p>
+    <div class="chiffres"><span>« CHF ? » : saisir d'un toucher</span><span>€ : décomposé en puces</span><span>Base : pastille v02</span></div>
+    <div class="rang">
+      <figure><img src="cmp-captures/cmp-b1-repos.jpg" alt="B1 au repos"><figcaption>Au repos</figcaption></figure>
+      <figure><img src="cmp-captures/cmp-b1-sans.jpg" alt="B1 sans prix"><figcaption>Sans prix</figcaption></figure>
+      <figure><img src="cmp-captures/cmp-b1-eur.jpg" alt="B1 en euros"><figcaption>En euros</figcaption></figure>
+    </div>
+    <button class="prendre" data-v="b1" aria-pressed="false">Je prends B1</button>
+    <label class="ch-note">Note sur B1<textarea data-note="b1"></textarea></label>
+    <div class="ch-etat" data-etat="b1"></div>
+  </section>
+
+  <section id="b2">
+    <h2><span class="code">B2</span>Règle CHF commune</h2>
+    <p class="idee">Chaque prix en barre sur la même règle CHF : on voit l'écart sans lire.</p>
+    <div class="chiffres"><span>Article · port · TVA + frais</span><span>« prix ? » en barre vide</span><span>Devis : « sur demande »</span></div>
+    <div class="rang">
+      <figure><img src="cmp-captures/cmp-b2-repos.jpg" alt="B2 au repos"><figcaption>Au repos</figcaption></figure>
+      <figure><img src="cmp-captures/cmp-b2-sans.jpg" alt="B2 sans prix"><figcaption>Sans prix</figcaption></figure>
+      <figure><img src="cmp-captures/cmp-b2-eur.jpg" alt="B2 en euros"><figcaption>En euros</figcaption></figure>
+    </div>
+    <button class="prendre" data-v="b2" aria-pressed="false">Je prends B2</button>
+    <label class="ch-note">Note sur B2<textarea data-note="b2"></textarea></label>
+    <div class="ch-etat" data-etat="b2"></div>
+  </section>
+
+  <section id="b3">
+    <h2><span class="code">B3</span>Étiquette accrochée</h2>
+    <p class="idee">Une étiquette de magasin pend à chaque article ; en euros, l'étiquette € derrière, le CHF rendu devant.</p>
+    <div class="chiffres"><span>Touché : pavé de saisie, pas de clavier système</span><span>« ? » en pointillé</span><span>€ derrière, CHF devant</span></div>
+    <div class="rang">
+      <figure><img src="cmp-captures/cmp-b3-repos.jpg" alt="B3 au repos"><figcaption>Au repos</figcaption></figure>
+      <figure><img src="cmp-captures/cmp-b3-sans.jpg" alt="B3 sans prix"><figcaption>Sans prix</figcaption></figure>
+      <figure><img src="cmp-captures/cmp-b3-eur.jpg" alt="B3 en euros"><figcaption>En euros</figcaption></figure>
+    </div>
+    <button class="prendre" data-v="b3" aria-pressed="false">Je prends B3</button>
+    <label class="ch-note">Note sur B3<textarea data-note="b3"></textarea></label>
+    <div class="ch-etat" data-etat="b3"></div>
+  </section>
+
+  <h2 class="axe" id="axe-c">C · Choisir → À venir</h2>
+  <p class="sous">Ce que fait Choisir : le mois où tu paies, puis l'achat dans À venir. Une version par axe.</p>
+  <section id="ref-c">
+    <h2>Référence</h2>
+    <div class="rang">
+      <figure><img src="cmp-ref/03-chambre.jpg" alt="Chambre froide aujourd'hui"><figcaption>Chambre froide aujourd'hui</figcaption></figure>
+      <figure><img src="cmp-ref/g05-9.webp" alt="g05-9 (choisi)"><figcaption>g05-9 (choisi)</figcaption></figure>
+    </div>
+  </section>
+
+  <section id="c1">
+    <h2><span class="code">C1</span>Prix › livré › payé</h2>
+    <p class="idee">Trois pastilles en chemin, du prix au mois où tu paies, et le mois qui passe ou non.</p>
+    <div class="chiffres"><span>Choisir chez… · Écarter</span><span>déc. trop juste / janv. payable</span><span>Sort vers À venir</span></div>
+    <div class="rang">
+      <figure><img src="cmp-captures/cmp-c1-repos.jpg" alt="C1 au repos"><figcaption>Au repos</figcaption></figure>
+      <figure><img src="cmp-captures/cmp-c1-sans.jpg" alt="C1 sans prix"><figcaption>Sans prix</figcaption></figure>
+      <figure><img src="cmp-captures/cmp-c1-eur.jpg" alt="C1 en euros"><figcaption>En euros</figcaption></figure>
+    </div>
+    <button class="prendre" data-v="c1" aria-pressed="false">Je prends C1</button>
+    <label class="ch-note">Note sur C1<textarea data-note="c1"></textarea></label>
+    <div class="ch-etat" data-etat="c1"></div>
+  </section>
+
+  <section id="c2">
+    <h2><span class="code">C2</span>Frise des mois</h2>
+    <p class="idee">Commande, livraison, paiement sur la frise des six mois ; chaque mois dit payable ou trop juste.</p>
+    <div class="chiffres"><span>Poignée de paiement</span><span>Mois : payable · trop juste · prix ?</span><span>Sort vers À venir</span></div>
+    <div class="rang">
+      <figure><img src="cmp-captures/cmp-c2-repos.jpg" alt="C2 au repos"><figcaption>Au repos</figcaption></figure>
+      <figure><img src="cmp-captures/cmp-c2-sans.jpg" alt="C2 sans prix"><figcaption>Sans prix</figcaption></figure>
+      <figure><img src="cmp-captures/cmp-c2-eur.jpg" alt="C2 en euros"><figcaption>En euros</figcaption></figure>
+    </div>
+    <button class="prendre" data-v="c2" aria-pressed="false">Je prends C2</button>
+    <label class="ch-note">Note sur C2<textarea data-note="c2"></textarea></label>
+    <div class="ch-etat" data-etat="c2"></div>
+  </section>
+
+  <section id="c3">
+    <h2><span class="code">C3</span>Après Choisir</h2>
+    <p class="idee">La carte passe au bleu d'Achats et montre la rangée Achats du Calendrier, avec Annuler.</p>
+    <div class="chiffres"><span>À venir · janv. · Annuler</span><span>Aperçu Calendrier</span><span>Aucune caisse dans le carnet</span></div>
+    <div class="rang">
+      <figure><img src="cmp-captures/cmp-c3-repos.jpg" alt="C3 au repos"><figcaption>Au repos</figcaption></figure>
+      <figure><img src="cmp-captures/cmp-c3-sans.jpg" alt="C3 sans prix"><figcaption>Sans prix</figcaption></figure>
+      <figure><img src="cmp-captures/cmp-c3-eur.jpg" alt="C3 en euros"><figcaption>En euros</figcaption></figure>
+    </div>
+    <button class="prendre" data-v="c3" aria-pressed="false">Je prends C3</button>
+    <label class="ch-note">Note sur C3<textarea data-note="c3"></textarea></label>
+    <div class="ch-etat" data-etat="c3"></div>
+  </section>
+
+  <section id="general">
+    <h2>Note générale</h2>
+    <label class="ch-note">Un mélange, une idée à garder d'une version…<textarea data-note="general"></textarea></label>
+    <div class="ch-etat" data-etat="general"></div>
+  </section>
+
+  <div class="ch-barre" id="ch-barre">Tes choix : aucun</div>
+</main>
+<script>
+(function(){
+  var L=['a1','a2','a3','b1','b2','b3','c1','c2','c3'],etat={},db=null,minuteurs={};
+  function barre(){var p=L.filter(function(v){return etat[v]&&etat[v].pris});document.getElementById('ch-barre').textContent='Tes choix : '+(p.length?p.join(', '):'aucun')+(db?' · enregistré pour Claude':' · gardé sur cet appareil');}
+  function montrer(v){var b=document.querySelector('[data-v="'+v+'"]');if(b)b.setAttribute('aria-pressed',etat[v]&&etat[v].pris?'true':'false');var ta=document.querySelector('[data-note="'+v+'"]');if(ta&&document.activeElement!==ta)ta.value=(etat[v]&&etat[v].note)||'';}
+  function local(){try{localStorage.setItem('choix-carnet-2',JSON.stringify(etat))}catch(e){}}
+  function ecrire(v){var e=document.querySelector('[data-etat="'+v+'"]');local();if(!db){if(e)e.textContent='Gardé sur cet appareil';return;}if(e)e.textContent='Enregistrement…';db.doc('choix/carnet2-'+v).set({pris:!!(etat[v]&&etat[v].pris),note:(etat[v]&&etat[v].note)||'',le:new Date().toISOString()}).then(function(){if(e)e.textContent='Enregistré';}).catch(function(){if(e)e.textContent='Pas enregistré (droits ou réseau) ; gardé sur cet appareil';});}
+  try{var g=JSON.parse(localStorage.getItem('choix-carnet-2')||'{}');if(g&&typeof g==='object')etat=g;}catch(e){}
+  L.forEach(function(v){var b=document.querySelector('[data-v="'+v+'"]');if(b)b.addEventListener('click',function(){etat[v]=etat[v]||{};etat[v].pris=!etat[v].pris;montrer(v);barre();ecrire(v);});montrer(v);});
+  L.concat(['general']).forEach(function(v){var ta=document.querySelector('[data-note="'+v+'"]');if(!ta)return;ta.value=(etat[v]&&etat[v].note)||'';ta.addEventListener('input',function(){etat[v]=etat[v]||{};etat[v].note=ta.value;clearTimeout(minuteurs[v]);minuteurs[v]=setTimeout(function(){ecrire(v)},700);});});
+  barre();
+  if(window.claude&&window.claude.use){window.claude.use('db').then(function(d){if(!d)return;db=d;L.concat(['general']).forEach(function(v){d.doc('choix/carnet2-'+v).onSnapshot(function(s){if(!s.exists)return;var x=s.data()||{};etat[v]={pris:!!x.pris,note:x.note||''};montrer(v);barre();},function(){});});barre();}).catch(function(){});}
+})();
+</script>
+</body>
+</html>
