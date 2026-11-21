@@ -523,6 +523,15 @@ async function jouer(dir) {
       if (vu) throw new Error('« Entrée = renommer » affiché à 390 tactile');
       ok('CRN-15', 'aide de clavier absente au doigt');
     });
+    await etape('CRN-14 une note modifiée garde sa majuscule', async () => {
+      await demarrer(); await versAtelier(); await attendreListe(); await ouvrirCarnetDeListe('Frigo + congel');
+      await focaliserChamp(); await taper('prendre un modèle à 2 portes'); await entree();
+      await toucher('Note : Prendre un modèle à 2 portes'); await toucher('Modifier', { sel: 'button' }); await sleep(500);
+      await p.keyboard.down('Control'); await p.keyboard.press('KeyA'); await p.keyboard.up('Control');
+      await taper('prendre un modèle à 2 portes, classe A'); await entree(); await cap('crn14-majuscule');
+      if (!(await present('Note : Prendre un modèle à 2 portes, classe A'))) throw new Error('la note modifiée perd sa majuscule (« prendre un modèle… »)');
+      ok('CRN-14', '« Prendre un modèle à 2 portes, classe A »');
+    });
     // CRN-suite
 
     // ══════════ thèmes et grand écran ══════════

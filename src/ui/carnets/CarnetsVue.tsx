@@ -906,7 +906,7 @@ export function CarnetsVue(p: CarnetsVueProps) {
     if (ph) { setJointe(null); rangerPhoto(ph); }
     if (!txt) return;
     if (edition && ouvert) {
-      const r = appliquer(modifierNote(magasin.lire(), { carnetId: ouvert.id, noteId: edition, texte: txt, le: maintenant().toISOString() }));
+      const r = appliquer(modifierNote(magasin.lire(), { carnetId: ouvert.id, noteId: edition, texte: majusculeFr(txt) /* CRN-14 : comme à l'ajout */, le: maintenant().toISOString() }));
       if (r) setRetour({ bandeau: { sorte: 'modifiee' }, inverse: r.inverse, carnetId: ouvert.id });
       setEdition(null); setTexte(''); return;
     }
