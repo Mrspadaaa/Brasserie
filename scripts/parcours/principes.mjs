@@ -302,12 +302,72 @@ const POSES = [
   { id: 'cal-travaux-pose', de: 'cal-travaux', attendu: /^Travaux\b.*\bS\d{1,2}\b/, regle: '« Travaux · S47 »', annuler: true },
   { id: 'cal-activites-pose', de: 'cal-activites', attendu: /^Activit[ée]s?\b.*\bS\d{1,2}\b/, regle: '« Activités · S47 »', annuler: true },
   { id: 'cal-papiers-pose', de: 'cal-papiers', attendu: /^Papiers?\b.*\bS\d{1,2}\b/, regle: '« Papiers · S47 »', annuler: true },
-  { id: 'materiel-pose', de: 'materiel', attendu: /[A-Za-zÀ-ÿ]{3,}/, regle: 'nom du projet ou de la catégorie' }
+  { id: 'materiel-pose', de: 'materiel', attendu: /[A-Za-zÀ-ÿ]{3,}/, regle: 'nom du projet ou de la catégorie', achat: true }
 ];
+
+/* ── materiel-pose (D399) : un achat exige un total vrai. Le nom est posé d'office (sans clavier) ; « Garder » reprend le prix du dernier
+   achat semblable (puce `data-prix-semblable`, D2) ; « Enregistrer » valide sans rien taper, et le total enregistré est ce prix gardé. ── */
+const CHAMP_ACHAT = '#purchase-description';
+const TOTAL_SAISI = 250; // CHF, tapé au clavier numérique quand aucun achat semblable ne propose de prix (D399)
+/** Le prix proposé par la puce « Garder » : son montant lu dans l'aria-label, en centimes ; `null` si la puce est absente. */
+const prixGarde = () => {
+  const b = document.querySelector('[data-prix-semblable]'); if (!b) return null;
+  const m = (b.getAttribute('aria-label') || '').match(/Garder\s+([\d\s.,’']+?)\s*CHF/);
+  if (!m) return { texte: '', centimes: NaN };
+  const s = m[1].replace(/[\s’']/g, '');
+  const v = s.includes(',') ? Number(s.replace(/\./g, '').replace(',', '.')) : Number(s);
+  return { texte: m[1].trim(), centimes: Math.round(v * 100) };
+};
+async function achatPose(po, banc, aujourdhui) {
+  const cr = CREATIONS.find((c) => c.id === po.de);
+  const s = await pageP(banc, aujourdhui);
+  const fautes = []; let detail = '';
+  try {
+    await s.demarrer();
+    const avant = new Set((await cache(s)).map(cleDe));
+    const g0 = s.gestes(); await aller(s, cr.aller); await sleep(700);
+    const ouvrir = s.gestes() - g0;
+    const ch = await s.p.evaluate(champNom, CHAMP_ACHAT);
+    await s.cap(`pose-${po.id}-ouvert`);
+    const pose = ch?.valeur ?? '';
+    const pr = await s.p.evaluate(prixGarde);
+    detail = `${ouvrir} gestes pour ouvrir · nom posé « ${pose} » · prix gardé ${pr?.texte ? `${pr.texte} CHF` : 'aucun'}`;
+    if (!pose.trim()) fautes.push(`aucun nom posé à l'ouverture (attendu ${po.regle})`);
+    else if (!po.attendu.test(pose)) fautes.push(`nom posé « ${pose} » : ${po.regle} attendu`);
+    // D399 (pilote, 21.11) : avec un achat semblable, le total se garde d'un toucher (« Garder ») ; sans, il se tape au clavier numérique
+    const garde = pr && Number.isFinite(pr.centimes) ? pr.centimes : null;
+    const cible = garde ?? Math.round(TOTAL_SAISI * 100);
+    if (!fautes.length) {
+      if (garde !== null) await s.toucher('Garder', { prefixe: true, dans: '[data-prix-semblable]', att: 1200 });
+      else {
+        const pt = await s.p.evaluate(() => { const e = document.querySelector('#purchase-total'); if (!e) return null; e.scrollIntoView({ block: 'center' }); const r = e.getBoundingClientRect(); return { x: r.x + r.width / 2, y: r.y + r.height / 2 }; });
+        if (!pt) throw new Error('champ du total (#purchase-total) introuvable');
+        await s.p.touchscreen.tap(pt.x, pt.y); await sleep(300);
+        await s.p.keyboard.down('Control'); await s.p.keyboard.press('KeyA'); await s.p.keyboard.up('Control');
+        await s.p.keyboard.type(String(TOTAL_SAISI), { delay: 15 }); await sleep(400);
+      }
+      await sleep(600); await s.cap(`pose-${po.id}-total`);
+      await s.toucher('Enregistrer', { prefixe: true, att: 3500 }); await sleep(1500);
+      const e1 = await s.p.evaluate(etat);
+      await s.cap(`pose-${po.id}-enregistre`);
+      const nouveaux = (await cache(s)).filter((e) => e.name === 'transactions' && !avant.has(cleDe(e)) && e.data?.description === pose);
+      if (e1.alerte) fautes.push(`refusé : ${e1.alerte}`);
+      if (!nouveaux.length) fautes.push(`« Enregistrer » n'enregistre pas l'achat « ${pose} » sans clavier${e1.feuilles ? ' (la feuille reste ouverte)' : ''}`);
+      else {
+        const c = nouveaux[0].data.finance?.amountCents;
+        detail += ` · enregistré ${Number.isFinite(c) ? `${c / 100} CHF` : 'sans montant'}`;
+        if (c !== cible) fautes.push(`le total enregistré (${c ?? 'aucun'} centimes) n'est pas le total ${garde !== null ? 'gardé' : 'saisi'} (${cible} centimes)`);
+      }
+    }
+  } catch (err) { fautes.push(`non joué : ${String(err.message ?? err).slice(0, 160)}`); }
+  verdict('NOM-OBLIGE', po.id, fautes, detail);
+  await s.fermer().catch(() => {});
+}
 async function nomsPoses(banc, aujourdhui) {
   for (const po of POSES) {
     if (!voulu(po.id, 'NOM-OBLIGE')) continue;
     console.log(`NOM-OBLIGE ${po.id}`);
+    if (po.achat) { await achatPose(po, banc, aujourdhui); continue; }
     const cr = CREATIONS.find((c) => c.id === po.de);
     const s = await pageP(banc, aujourdhui);
     const fautes = []; let detail = '';
