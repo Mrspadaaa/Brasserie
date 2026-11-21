@@ -65,7 +65,7 @@ describe('la carte du palier (maquette pm1)', () => {
     expect(onReleve).toHaveBeenCalledWith([{ kind: 'temperature', value: 68.6 }, { kind: 'ph', value: 5.28 }]);
   });
 
-  it('11 · pH dû, rien de posé, température déjà relevée : « Relever » est inactif et dit pourquoi ; un toucher sans déplacement l’active', () => {
+  it('11 · pH dû, rien de posé, température déjà relevée : « Relever » est inactif et dit pourquoi ; un toucher sans déplacement ne change rien (frise B, R1), Entrée l’active', () => {
     const t: BrewDayReading = { id: 'r1', at: T0 + 3 * MIN, stepId: 'mash-1', kind: 'temperature', value: 67, unit: '°C' };
     const { onReleve } = monter({ readings: [t], dans: 16 });
     const releve = screen.getByRole('button', { name: 'Relever' }) as HTMLButtonElement;
@@ -73,15 +73,19 @@ describe('la carte du palier (maquette pm1)', () => {
     expect(screen.getByText(/glisse le curseur de pH sur ta mesure/i)).toBeTruthy();
     const ph = screen.getByRole('slider');
     fireEvent.pointerUp(ph);
+    expect(releve.disabled).toBe(true);
+    fireEvent.keyDown(ph, { key: 'Enter' });
     expect(releve.disabled).toBe(false);
     expect(screen.queryByText(/glisse le curseur de pH sur ta mesure/i)).toBeNull();
     fireEvent.click(releve);
     expect(onReleve).toHaveBeenCalledWith([{ kind: 'ph', value: 5.3 }]);
   });
 
-  it('11 · un clic (lecteur d’écran, souris sans glisser) sur le curseur de pH compte aussi', () => {
+  it('11 · un clic de lecteur d’écran (sans pointeur, detail 0) sur le curseur de pH compte aussi ; celui d’une souris non (R1)', () => {
     const t: BrewDayReading = { id: 'r1', at: T0 + 3 * MIN, stepId: 'mash-1', kind: 'temperature', value: 67, unit: '°C' };
     monter({ readings: [t], dans: 16 });
+    fireEvent.click(screen.getByRole('slider'), { detail: 1 });
+    expect((screen.getByRole('button', { name: 'Relever' }) as HTMLButtonElement).disabled).toBe(true);
     fireEvent.click(screen.getByRole('slider'));
     expect((screen.getByRole('button', { name: 'Relever' }) as HTMLButtonElement).disabled).toBe(false);
   });

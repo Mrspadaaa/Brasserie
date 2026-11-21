@@ -73,8 +73,7 @@ function Curseur({ carte, valeur, onPose }: { carte: CarteAppel; valeur: number 
         aria-label={nom}
         aria-valuetext={pose ? `${formatCurseur(kind, valeur)}${unite(kind)}` : carte.propose != null ? `${formatCurseur(kind, carte.propose)}${unite(kind)} proposé, à confirmer` : 'aucune valeur'}
         onChange={(e) => poser(Number(e.target.value))}
-        onPointerUp={(e) => { if (!pose) poser(Number(e.currentTarget.value)); }}
-        onClick={(e) => { if (!pose) poser(Number(e.currentTarget.value)); }}
+        onClick={(e) => { if (!pose && e.detail === 0) poser(Number(e.currentTarget.value)); }}
         onKeyDown={(e) => { if (!pose && (e.key === 'Enter' || e.key === ' ')) { e.preventDefault(); poser(pos); } }}
         style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', margin: 0, opacity: 0, cursor: 'pointer' }}
       />
