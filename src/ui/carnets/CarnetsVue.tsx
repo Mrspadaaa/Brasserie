@@ -969,7 +969,7 @@ export function CarnetsVue(p: CarnetsVueProps) {
   const cadreModifier = (n: { id: string; texte: string }): React.ReactNode => {
     if (!ouvert) return null;
     const fermer = () => { setEdition(null); setTexte(''); };
-    return <CadreArrivee cadre={{ sorte: 'modifier', texte: n.texte, onSupprimer: () => { const r = appliquer(supprimerNote(magasin.lire(), { carnetId: ouvert.id, noteId: n.id })); if (r) setNoteSupprimee({ id: n.id, inverse: r.inverse }); fermer(); } }} onAnnuler={fermer} aides={aides} />;
+    return <CadreArrivee cadre={{ sorte: 'modifier', texte: n.texte, onSupprimer: () => { const r = appliquer(supprimerNote(magasin.lire(), { carnetId: ouvert.id, noteId: n.id })); if (r) { setRetour(null); setNoteSupprimee({ id: n.id, inverse: r.inverse }); } fermer(); } }} onAnnuler={fermer} aides={aides} />;
   };
   /** P23 : la puce proposée par l'IA, touchée : la ligne est rangée dans son carnet, sans `propose` (un message court la garde au fil). */
   const accepterProposee = (pr: Proposee) => {
@@ -1312,7 +1312,7 @@ export function CarnetsVue(p: CarnetsVueProps) {
           onModifier={() => { setEdition(note.id); setTexte(note.texte); setFeuille(null); setTimeout(() => champRef.current?.focus(), 0); }}
           onChangerEnFacon={() => { appliquer(changerSorte(magasin.lire(), { carnetId: c.id, cible: 'note', id: note.id, vers: 'facon' })); setFeuille(null); }}
           onChangerEnCritere={() => { appliquer(changerSorte(magasin.lire(), { carnetId: c.id, cible: 'note', id: note.id, vers: 'critere' })); setFeuille(null); }}
-          onSupprimer={() => { const r = appliquer(supprimerNote(magasin.lire(), { carnetId: c.id, noteId: note.id })); if (r) setNoteSupprimee({ id: note.id, inverse: r.inverse }); setFeuille(null); }}
+          onSupprimer={() => { const r = appliquer(supprimerNote(magasin.lire(), { carnetId: c.id, noteId: note.id })); if (r) { setRetour(null); setNoteSupprimee({ id: note.id, inverse: r.inverse }); } setFeuille(null); }}
           carnets={autresPour(c.id, note.texte)}
           onDeplacer={vers => { const titre = carnets.find(x => x.id === vers)?.title ?? 'un autre carnet'; const r = appliquer(deplacer(magasin.lire(), { cible: 'note', id: note.id, depuis: c.id, vers })); if (r) setRetour({ bandeau: { sorte: 'ailleurs', carnet: titre }, inverse: r.inverse, carnetId: c.id }); setFeuille(null); }}
           onFermer={() => setFeuille(null)} /> } : null}
