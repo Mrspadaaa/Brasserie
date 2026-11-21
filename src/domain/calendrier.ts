@@ -345,6 +345,9 @@ export interface JalonBrassin {
 /** Une ligne de prévision d'un brassin (`source: 'brew'`) : ses ingrédients (courses), ses frais (énergie, nettoyage, emballage) ou l'impôt. */
 export type PosteBrassin = 'courses' | 'frais' | 'impot';
 
+/** Une ligne de prévision d'un brassin : son jour, son montant signé (absent : « montant non renseigné », jamais 0). */
+export interface LigneBrassin { jour: string; centimes?: number; partiel?: true }
+
 export interface ChoseCalendrier {
   id: string; rangee: Rangee; titre: string;
   /** ISO, bornes comprises. Vides (`''`) pour une chose de la poche « Sans date ». */
@@ -429,6 +432,11 @@ export interface ChoseCalendrier {
    * estimation hors de la courbe et de Finances. La pastille de sa rangée la dit « estimé », jamais « confirmé », hors du solde.
    */
   horsCourbe?: true;
+  /**
+   * CHD-3 (21.11) : brassin, ses lignes datées de prévision (courses, frais ; l'impôt est dans Papiers) dont `centimes` est la somme. La pastille de
+   * la rangée compte ce qui tombe dans sa fenêtre, par date, pas le budget entier du brassin. Absent : le budget n'a aucune ligne datée.
+   */
+  lignes?: LigneBrassin[];
   /** CRITIQUE-12, doute Papiers en An : une série mensuelle posée en une barre (`seriesEnBarres`, Rangee.tsx) ; son montant se dit « / mois ». */
   parMois?: true;
 }
@@ -559,6 +567,13 @@ export function coutRestantInconnu(batchId: string, choses: readonly ChoseCalend
   return choses.some(c => c.source.genre === 'prevision-brassin' && c.posteBrassin !== 'impot' && c.centimes === undefined && (c.source.id === batchId || (c.ouvre.ecran === 'brassin' && c.ouvre.id === batchId)));
 }
 
+/** CHD-3 : les lignes datées du budget d'un brassin (les mêmes que `budgetBrassin`), pour que la pastille d'une rangée compte par date. */
+export function lignesBrassin(batchId: string, choses: readonly ChoseCalendrier[]): LigneBrassin[] {
+  return choses
+    .filter(c => c.source.genre === 'prevision-brassin' && c.posteBrassin !== 'impot' && !!c.debut && (c.source.id === batchId || (c.ouvre.ecran === 'brassin' && c.ouvre.id === batchId)))
+    .map(c => ({ jour: c.debut, ...(c.centimes !== undefined ? { centimes: c.centimes } : {}), ...(c.partiel ? { partiel: true as const } : {}) }));
+}
+
 /** Le mot d'un coût qu'on ne sait pas encore estimer (E23, D-22) : jamais rien, jamais 0. */
 export const COUT_A_VENIR = 'coût à venir';
 
@@ -678,6 +693,8 @@ export function preparerChoses(
     if (c.source.genre === 'batch' && !c.conditionne) {
       const b = budgetBrassin(c.source.id, choses, estimations);
       if (b) suivante = { ...suivante, centimes: b.centimes, ...(b.partiel ? { partiel: true as const } : {}) };
+      const lignes = lignesBrassin(c.source.id, choses);
+      if (lignes.length) suivante = { ...suivante, lignes };
     }
     if (c.source.genre === 'batch') {
       const k = coursesDe.get(c.source.id);

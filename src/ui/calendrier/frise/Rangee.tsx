@@ -568,42 +568,82 @@ export function disposer(choses: readonly ChoseCalendrier[], colonnes: readonly 
 }
 
 /**
- * `estime` (CRITIQUE-12 n° 2) : la somme des choses hors courbe (`horsCourbe`, une fête du carnet), jamais dans `solde` ; `confirme` : la
- * pastille garde « confirmé S47–S52 » (faux quand le seul argent de la rangée est estimé hors courbe).
+ * `estime` (CRITIQUE-12 n° 2) : la somme des choses hors courbe (`horsCourbe`, une fête du carnet), jamais dans `solde` ; `confirme` : la pastille
+ * est pleine et non pointillée (faux quand le seul argent de la rangée est estimé hors courbe ou probable).
+ * CHD-5 (21.11) : `mot` dit ce que vaut le chiffre, avec les mots de Finances. « confirmé » seulement quand tout ce qui est compté est encaissé ;
+ * sinon « à encaisser » / « à payer » (une facture attendue), et « prévu » dès qu'une prévision, un plan ou un coût à venir y entre. `conf` est
+ * le texte posé à côté de la pastille (« prévu S44–S49 »).
  */
-export interface Pastille { texte: string; lecture: string; part: number; solde: number | null; estime: number | null; confirme: boolean; debut: string; fin: string }
+export interface Pastille { texte: string; lecture: string; part: number; solde: number | null; estime: number | null; confirme: boolean; mot: string; conf: string; debut: string; fin: string }
+
+/** CHD-5 : ce que vaut l'argent d'une chose. `paiement-…` : encaissé ; une pièce attendue (facture) : à encaisser ou à payer ; le reste est une prévision. */
+function statutArgent(c: ChoseCalendrier): 'confirme' | 'du' | 'prevu' {
+  if (c.id.startsWith('paiement-')) return 'confirme';
+  return c.source.genre === 'facture' ? 'du' : 'prevu';
+}
+
 /** E23 : « Ventes, confirmé de S47 à S52 : 2 choses, solde +900 ». Ce qui n'est pas chiffré est dit en mots, jamais compté 0. */
 export function pastille(rangee: IdRangee, choses: readonly ChoseCalendrier[], colonnes: readonly Colonne[]): Pastille {
   /* le caddie d'un brassin répète une part de son budget : la pastille ne le recompte pas */
   const dedans = choses.filter(c => !c.brassinLie && positionDans(colonnes, c));
-  const fermes = dedans.filter(c => !c.probable && !c.proposition);
+  /* CHD-4 (21.11) : une échéance récurrente (le loyer, `proposition: 'echeance'`) est dans la courbe et dans Finances : elle compte, dite « prévu ».
+     Seule une vente probable ou un brassin proposé reste hors du solde (pas dans la courbe tant qu'on ne l'a pas accepté). */
+  const fermes = dedans.filter(c => !c.probable && (!c.proposition || c.proposition === 'echeance'));
   const probables = dedans.length - fermes.length;
   /* CRITIQUE-12 n° 2 (E23, D-165, A2) : une fête hors courbe (« Marché de Noël +1 180 ») n'est ni comptée au solde confirmé, ni dite
      « confirmé » : « +1 180 estimé », « recette estimée +1 180, hors courbe (pas dans Finances) » */
   const estimees = fermes.filter(c => c.horsCourbe && c.centimes !== undefined);
   const comptees = fermes.filter(c => !(c.horsCourbe && c.centimes !== undefined));
-  const chiffrees = comptees.filter(c => c.centimes !== undefined);
+  const premier = colonnes[0]?.etiquette ?? '', dernier = colonnes[colonnes.length - 1]?.etiquette ?? '';
+  const du = colonnes[0]?.debut ?? '', au = colonnes[colonnes.length - 1]?.fin ?? '';
+  /* CHD-3 (21.11) : un brassin porte son budget entier sur sa barre ; la pastille compte ce qui sort DANS la fenêtre, par date (ses lignes de
+     prévision). Un brassin dont aucune ligne ne tombe dans la fenêtre n'a pas de mouvement : ni « −90 », ni « solde non renseigné » */
+  const vues = comptees.map(c => {
+    if (c.lignes && !c.conditionne) {
+      const l = c.lignes.filter(x => x.jour >= du && x.jour <= au);
+      const chiffrees = l.filter(x => x.centimes !== undefined);
+      return { c, centimes: chiffrees.length ? chiffrees.reduce((s, x) => s + (x.centimes as number), 0) : undefined, aVenir: !!c.coutAVenir || l.some(x => x.centimes === undefined || x.partiel), sansMouvement: !l.length && !c.coutAVenir };
+    }
+    return { c, centimes: c.centimes, aVenir: !!(c.coutAVenir || c.partiel), sansMouvement: c.source.genre === 'batch' && c.centimes === undefined && !c.coutAVenir && !c.partiel };
+  });
+  const chiffrees = vues.filter(v => v.centimes !== undefined);
   /* CRITIQUE-5 n° 19 (E23) : un brassin posé sans budget (`coutAVenir`) ou au montant incomplet (`partiel`) a un coût à venir, dit en mots */
-  const aVenir = comptees.filter(c => c.coutAVenir || c.partiel);
-  const sansMontant = comptees.filter(c => c.centimes === undefined && !c.coutAVenir && !c.partiel).length;
-  const solde = chiffrees.length ? chiffrees.reduce((s, c) => s + (c.centimes as number), 0) : null;
+  const aVenir = vues.filter(v => v.aVenir);
+  const sansMouvement = vues.filter(v => v.sansMouvement && !v.aVenir).length;
+  const sansMontant = vues.filter(v => v.centimes === undefined && !v.aVenir && !v.sansMouvement).length;
+  const solde = chiffrees.length ? chiffrees.reduce((s, v) => s + (v.centimes as number), 0) : null;
   const estime = estimees.length ? estimees.reduce((s, c) => s + (c.centimes as number), 0) : null;
   /* seule l'estimation porte l'argent de la rangée : le mot « confirmé » part ; une rangée sans argent (Activités en jours) le garde */
-  /* PC-153 : quand le seul argent connu est probable (loyer, TVA proposés), la pastille dit son montant (« −800 probable »), jamais « n choses »,
+  /* PC-153 : quand le seul argent connu est probable (vente proposée), la pastille dit son montant (« +800 probable »), jamais « n choses »,
      et ne le dit pas confirmé (E47 c) */
-  const probChiffres = dedans.filter(c => (c.probable || c.proposition) && c.centimes !== undefined);
+  const probChiffres = dedans.filter(c => !fermes.includes(c) && c.centimes !== undefined);
   const probSeul = rangee !== 'activites' && solde === null && estime === null && !aVenir.length && probChiffres.length > 0;
   const probable = probSeul ? probChiffres.reduce((s, c) => s + (c.centimes as number), 0) : null;
   const confirme = !(solde === null && estime !== null && !aVenir.length) && !probSeul;
-  const premier = colonnes[0]?.etiquette ?? '', dernier = colonnes[colonnes.length - 1]?.etiquette ?? '';
   const n = fermes.length;
   const nChoses = (k: number) => `${k} chose${k > 1 ? 's' : ''}`;
-  const morceaux = [`${nomRangee(rangee)}, ${confirme ? 'confirmé ' : ''}de ${premier} à ${dernier} : ${nChoses(n)}`];
+  /* CHD-5 : le mot du chiffre, selon le plus faible de ce qui est compté */
+  const statuts = chiffrees.map(v => statutArgent(v.c));
+  const du1 = chiffrees.find(v => statutArgent(v.c) === 'du');
+  const motArgent = !chiffrees.length && !aVenir.length ? ''
+    : aVenir.length || statuts.includes('prevu') ? 'prévu'
+      : du1 ? ((du1.centimes as number) >= 0 ? 'à encaisser' : 'à payer') : 'confirmé';
+  const mot = rangee === 'activites' ? (confirme ? 'confirmé' : '') : motArgent;
+  const morceaux = [`${nomRangee(rangee)}, ${mot ? `${mot} ` : ''}de ${premier} à ${dernier} : ${nChoses(n)}`];
   const jours = fermes.reduce((s, c) => s + (c.joursActifs ?? 0), 0);
   if (rangee === 'activites') {
     if (jours) morceaux.push(`${jours} j`);
-  } else if (solde !== null) morceaux.push(`solde ${francsSignes(solde)}`);
-  else if (comptees.length && !aVenir.length) morceaux.push('solde non renseigné');
+  } else if (solde !== null) {
+    morceaux.push(`solde ${francsSignes(solde)}`);
+    /* le chiffre mêle des degrés de certitude : chacun se lit à part (aria-label), avec les mots de Finances */
+    const part = (k: 'confirme' | 'du' | 'prevu', texte: string) => {
+      const l = chiffrees.filter(v => statutArgent(v.c) === k);
+      return l.length ? [`${francsSignes(l.reduce((s, v) => s + (v.centimes as number), 0))} ${texte}`] : [];
+    };
+    const detail = [...part('confirme', 'encaissé'), ...part('du', solde >= 0 ? 'à encaisser' : 'à payer'), ...part('prevu', 'prévu')];
+    if (new Set(statuts).size > 1) morceaux.push(`dont ${detail.join(', ')}`);
+  } else if (sansMouvement && !sansMontant && !aVenir.length) morceaux.push('aucun mouvement d\'argent dans la période');
+  else if (vues.length && !aVenir.length) morceaux.push('solde non renseigné');
   if (aVenir.length) morceaux.push('coût à venir');
   if (sansMontant && solde !== null) morceaux.push(`${sansMontant} sans montant`);
   if (estime !== null) morceaux.push(`${estime < 0 ? 'coût' : 'recette'} estimée ${francsSignes(estime)}, hors courbe (pas dans Finances)`);
@@ -615,7 +655,12 @@ export function pastille(rangee: IdRangee, choses: readonly ChoseCalendrier[], c
   const texte = rangee === 'activites' ? (jours ? `${jours} j` : nbVu ? nChoses(nbVu) : '')
     : solde !== null ? `${francsSignes(solde)}${aVenir.length ? ' + coût à venir' : ''}`
       : estime !== null && !aVenir.length ? `${francsSignes(estime)} estimé` : probable !== null ? `${francsSignes(probable)} probable` : enMots;
-  return { texte, lecture: morceaux.join(', '), part: Math.abs(solde ?? (aVenir.length ? 0 : estime ?? probable ?? 0)), solde, estime, confirme, debut: premier, fin: dernier };
+  /* le mot posé à côté : « prévu S44–S49 » ; sans argent dans la fenêtre, il le dit (« aucun mouvement »), jamais « confirmé » */
+  const periode = `${premier}–${dernier}`;
+  const conf = mot ? `${mot} ${periode}${estime !== null ? ` · ${francsSignes(estime)} estimé` : ''}`
+    : estime !== null && !probSeul ? 'hors courbe'
+      : probSeul ? 'pas confirmé' : sansMouvement && !sansMontant ? 'aucun mouvement' : sansMontant ? 'sans montant' : 'pas confirmé';
+  return { texte, lecture: morceaux.join(', '), part: Math.abs(solde ?? (aVenir.length ? 0 : estime ?? probable ?? 0)), solde, estime, confirme, mot, conf, debut: premier, fin: dernier };
 }
 
 export interface DragEtat { id: string; mode: 'glisse' | 'bord'; k: number; jours: number }
@@ -659,7 +704,7 @@ export interface RangeeProps {
   /** G3 (D396, PI-1) : un toucher sur le vide de la piste, la colonne touchée (son premier jour) ; absent : rien. Rien quand une chose est choisie. */
   onToucherVide?: (r: IdRangee, debut: string) => void;
   onBasculerMasque: (r: IdRangee) => void;
-  barre: Pick<BarreProps, 'onToucher' | 'onAppuiLong' | 'onGlisse' | 'onLacheGlisse' | 'onBord' | 'onLacheBord' | 'onRefus' | 'defile' | 'marge'>;
+  barre: Pick<BarreProps, 'onToucher' | 'onAppuiLong' | 'onGlisse' | 'onLacheGlisse' | 'onBord' | 'onLacheBord' | 'onRefus' | 'defile' | 'marge' | 'parJour'>;
   /** Appui long sur une marque en 3 mois, 6 mois ou An : la vue 6 semaines centrée sur elle (E27, D-199). Absent : rien. */
   onSixSemaines?: (chose: ChoseCalendrier) => void;
   /** Le détail de la chose choisie de cette rangée, posé sous ses barres (f4-b). */
@@ -892,7 +937,7 @@ export const Rangee: React.FC<RangeeProps> = props => {
             </span>
             {/* CRITIQUE-12 n° 2 : une estimation hors courbe n'est jamais « confirmé » : seule, elle se dit « hors courbe » ; à côté d'un solde
                 compté, « confirmé S47–S52 · +200 estimé » */}
-            <span className="cal-conf">{p.confirme ? `confirmé ${p.debut}–${p.fin}${p.estime !== null ? ` · ${francsSignes(p.estime)} estimé` : ''}` : p.estime !== null ? 'hors courbe' : 'pas confirmé'}</span>
+            <span className="cal-conf">{p.conf}</span>
           </span>
         )}
       </header>
