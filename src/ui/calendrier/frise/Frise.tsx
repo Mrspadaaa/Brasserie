@@ -396,7 +396,13 @@ export const Frise: React.FC<FriseProps> = props => {
      pas un changement d'échelle */
   const echelleBase = React.useRef(props.echelle);
   if (props.echelle !== 'semaine-depliee') echelleBase.current = props.echelle;
-  const cleHauteurs = `${echelleBase.current ?? ''}:${paysage ? 'p' : ''}`;
+  /* CAL-VIDE (21.11, « Il y a un espace vide énorme ici ??? ») : la mémoire des lignes gardait, d'une période à l'autre, la place de lignes
+     absentes (400 px sous Brassins en An). Une rangée prend la hauteur de ses lignes réelles : la mémoire ne vaut que pour une même fenêtre ;
+     pendant le glisser d'une barre (la fenêtre défile au bord, la vue ne bouge pas sous le doigt), la fenêtre de la saisie reste la clé. */
+  const cleFenetre = colonnes.length ? `${colonnes[0].debut}>${colonnes[colonnes.length - 1].fin}` : '';
+  const cleFigee = React.useRef(cleFenetre);
+  if (!props.drag) cleFigee.current = cleFenetre;
+  const cleHauteurs = `${echelleBase.current ?? ''}:${paysage ? 'p' : ''}:${cleFigee.current}`;
   /* la mémoire vaut pour une largeur mesurée : rien n'est retenu au premier rendu (largeur de repli, avant mesure : 2 lignes posées à
      360 px gardaient une ligne vide de 30 px dans Travaux au repos) ; elle repart de zéro quand la largeur change vraiment (> 1 px,
      rotation, fenêtre), jamais quand la mesure repasse à 0 */
