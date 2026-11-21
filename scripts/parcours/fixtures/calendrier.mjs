@@ -107,6 +107,10 @@ export function fixtureCalendrier(aujourdhui) {
   facture('F-IMPOT', s(3, 4), 5500, 'expense', ajouter(aujourdhui, -12), 'Impôt sur la bière · 4 brassins');
   facture('F-BROUWLAND', s(2, 2), 42000, 'expense', ajouter(aujourdhui, -9), 'Brouwland · malt');
   facture('F-LAC', s(6, 1), 120000, 'income', ajouter(aujourdhui, -5), 'Facture Café du Lac');
+  // B11 (WFV-3) : une vente encaissée aujourd'hui à la caisse, comme `enregistrerVente` l'écrit : la pièce payée et son paiement
+  facture('REC-ZZ-VENTE', aujourdhui, 2700, 'income', aujourdhui, 'Vente 6 × Pale Ale — Comptoir', { subcategory: 'Vente directe' });
+  { const t = entrees.find((x) => x.id === 'REC-ZZ-VENTE'); t.data.finance = { ...t.data.finance, paymentStatus: 'paid', dueDate: undefined }; }
+  add('financialPayments', 'PAY-REC-ZZ-VENTE', { transactionId: 'REC-ZZ-VENTE', date: aujourdhui, amountCents: 2700, direction: 'in', method: 'twint', recordedAt: `${aujourdhui}T10:00:00.000Z` });
 
   add('clients', 'CL-CIGOGNE', { id: 'CL-CIGOGNE', name: 'La Cigogne', type: 'Pro', contact: '' });
   // solde de départ négatif (≈ −683 CHF) : le brasseur « est en négatif » (capture 3)

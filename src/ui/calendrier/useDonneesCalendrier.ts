@@ -198,7 +198,18 @@ export function construireModele(e: EntreesModele): ModeleCalendrier {
   const propositionsBrassin = brassinsHabituels(e.batches, aujourdhui);
   /* CRITIQUE-7 n° 8 : la facture d'un fournisseur se pose sur la livraison qu'elle règle (émise ou due dans le délai appris) : une chose dans Achats */
   const emises = new Map(e.transactions.flatMap(t => (t.date ? [[t.id, t.date] as [string, string]] : [])));
-  const posees = fusionnerFacturesLivraisons([...brassins, ...creatives, ...argent, ...probables, ...livraisonsAttendues(e.reglages), ...propositionsBrassin], fournisseurs, emises).filter(dansLaFenetre(semaines));
+  /* B11 (WFV-3, 21.11) : la vente encaissée (caisse : pièce de recette payée et son paiement) est une chose de la rangée Ventes, à son jour ;
+     la prévision n'a que l'à venir. Une pièce encore attendue dans la prévision (reste à encaisser) y est déjà : pas deux fois. */
+  const attendues = new Set(prevision.items.filter(i => i.source === 'invoice').map(i => i.id.replace(/^invoice:/, '')));
+  const pieces = new Map(e.transactions.map(t => [t.id, t] as const));
+  const encaissees = e.payments.flatMap((pay): ChoseCalendrier[] => {
+    const t = pay.transactionId ? pieces.get(pay.transactionId) : undefined;
+    const jour = isoDate(pay.date);
+    if (!t || !jour || pay.direction !== 'in' || t.finance?.kind !== 'income' || attendues.has(t.id) || !validPayment(pay) || jour < lundi0 || jour > aujourdhui) return [];
+    return [{ id: `paiement-${pay.id}`, rangee: 'ventes', titre: t.description || t.id, debut: jour, fin: jour, centimes: pay.amountCents, detail: `encaissée le ${jourLisible(jour)}`,
+      source: { genre: 'facture', id: t.id }, ouvre: { ecran: 'piece', id: t.id }, deplacable: { raison: 'Vente encaissée : sa date est un fait. Elle se corrige dans la pièce (Finances › Opérations).' } }];
+  });
+  const posees = fusionnerFacturesLivraisons([...brassins, ...creatives, ...argent, ...encaissees, ...probables, ...livraisonsAttendues(e.reglages), ...propositionsBrassin], fournisseurs, emises).filter(dansLaFenetre(semaines));
   /* n° 9 : chaque brassin porte son budget (courses et frais de la prévision ; à défaut, l'estimation enregistrée de BrewBudgetSheet) */
   const estimations = estimationsBudget(e.plans);
   const batchDe = new Map(e.batches.map(b => [b.id, b] as const));
@@ -227,7 +238,7 @@ export function construireModele(e: EntreesModele): ModeleCalendrier {
   }));
   const mises = misesDe(chosesBudget);
   /* le passé : le départ de la courbe est la caisse d'aujourd'hui moins les paiements réels d'entre-temps (même formule que le solde de Finances) */
-  const reels = passe ? mouvementsPasses(e.payments, e.transactions, lundi0, aujourdhui) : [];
+  const reels = (passe ? mouvementsPasses(e.payments, e.transactions, lundi0, aujourdhui) : []).map(m => (chosesBudget.some(c => c.id === m.id) ? { ...m, choseId: m.id } : m));
   const depart = prevision.openingCashCents === null ? null : prevision.openingCashCents - reels.reduce((s, m) => s + m.centimes, 0);
   const courbe = courbeCaisse({ depart, lundi0, nbSemaines: NB_SEMAINES_COURBE + passe, passe, mouvements: [...reels, ...mouvements], mises });
   /* CRITIQUE-12 n° 2 (E23, A2) : la règle de l'effet en mots (`effetEnMots`) posée sur la chose : une fête ou une activité chiffrée que la

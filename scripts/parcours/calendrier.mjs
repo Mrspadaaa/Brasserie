@@ -332,6 +332,14 @@ async function jouer(dir) {
       const periodeNeuve = () => p.evaluate(() => { for (const k of Object.keys(localStorage)) { try { const o = JSON.parse(localStorage.getItem(k)); if (o && typeof o === 'object' && 'app_global_time_filter' in o) { delete o.app_global_time_filter; localStorage.setItem(k, JSON.stringify(o)); } } catch { /* pas du JSON */ } } });
       const recharger = async () => { await periodeNeuve(); await p.goto(url, { waitUntil: 'load' }); await sleep(1200); await versCalendrier(); };
 
+      // B11 / WFV-3 : la vente encaissée aujourd'hui (caisse : pièce payée + paiement) est une chose de la rangée Ventes
+      await recharger(); await fermer();
+      {
+        const v = await p.evaluate(() => [...document.querySelectorAll('[data-rangee="ventes"] [aria-label], [data-rangee="ventes"][aria-label]')].filter((e) => e.getBoundingClientRect().width > 0).map((e) => e.getAttribute('aria-label')).filter((l) => l.startsWith('Vente 6 × Pale Ale')));
+        await cap('09b-b11-rangee-ventes');
+        v.length ? ok('B11 vente du jour', `rangée Ventes : « ${v[0].slice(0, 60)} »`) : echec('B11 vente du jour', '« Vente 6 × Pale Ale », encaissée aujourd\'hui, absente de la rangée Ventes');
+      }
+
       // B3 / WFR-11 : un brassin planifié dont la levure n'a pas de nom (recette figée avec la seule référence de stock, forme réelle) ne fait pas
       // tomber l'écran. Injecté dans le cache de la fixture le temps de l'étape, puis retiré.
       {
