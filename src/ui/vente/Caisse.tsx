@@ -135,7 +135,10 @@ export function CaisseContenu({ clientIdInitial, onClose, onSaved, onBusy, ferme
   const busy = useRef(false), avert = useRef(false), avertPanier = useRef(false);
   const panierRef = useRef<{ n: number; fini: boolean }>({ n: 0, fini: false });
   const premiereTuile = useRef<HTMLButtonElement>(null);
-  /** D393 A2 (K5) : l'appui long sur la tuile 33 cl ouvre 6 · 12 · 24 en `TuilesQuantite` (un toucher pose la quantité) ; le toucher simple garde +1. */
+  /**
+   * D393 A2 (K5) : l'appui long sur une tuile de bouteilles (33 cl, 75 cl : « généralisé pour chaque cas ») ouvre 6 · 12 · 24 en `TuilesQuantite`
+   * (un toucher pose la quantité) ; le toucher simple garde +1. Le fût n'en a pas : il se vend fût par fût (F-001…), un carton de 6 ou 24 fûts n'existe pas.
+   */
   const [quantiteDe, setQuantiteDe] = useState<{ id: string; poser: (n: number) => void; cible: HTMLElement; clavier: boolean } | null>(null);
   const tuilesQuantite = useRef<HTMLDivElement>(null);
   const lierAppui = useAppuiLong<{ id: string; poser: (n: number) => void }>({ onAppuiLong: (c, info) => setQuantiteDe({ ...c, ...info }) });
@@ -390,7 +393,7 @@ export function CaisseContenu({ clientIdInitial, onClose, onSaved, onBusy, ferme
               const ligne = lignes.find(l => l.cle === cle(actifId, format.id));
               const note1 = suspect ? note?.raison : undefined;
               const toucher = () => { setQuantiteDe(null); ajouter(format.id, format.label, format.volumeL, prix, note1); };
-              const gestes = format.id === '33cl' ? lierAppui({ id: format.id, poser: n => ajouter(format.id, format.label, format.volumeL, prix, note1, n) }, toucher) : { onClick: toucher };
+              const gestes = format.id !== 'fut' ? lierAppui({ id: format.id, poser: n => ajouter(format.id, format.label, format.volumeL, prix, note1, n) }, toucher) : { onClick: toucher };
               return (
                 <button key={format.id} ref={i === 0 ? premiereTuile : undefined} type="button" className={`cs-t${ligne ? ' cs-has' : ''}${present ? '' : ' cs-off'}`} disabled={fieldsetOff}
                   aria-label={`${format.label}${note ? `, ${note.mot}` : ''}${prix !== null ? `, ${montantChf(prix)} CHF` : ', prix à indiquer'}`} {...gestes}>

@@ -407,6 +407,32 @@ function listeEtapes() { return [
     }
   },
   {
+    id: 'A2-75', titre: 'Caisse : l\'appui long vaut aussi sur la tuile 75 cl (6 · 12 · 24, « généralisé pour chaque cas ») ; 12 pose 12 bouteilles, le toucher simple garde +1', fixture: { sansJour: true },
+    async joue(s) {
+      await s.toucher('Actions rapides'); await s.toucher('Vente'); await sleep(900);
+      await appuiLong(s, '75 cl', { contient: true });
+      await s.cap('A2-75-1-appui-long');
+      const dit = async (n) => s.visible(String(n), { dans: 'button,[role=menuitem],[role=option]' });
+      const manque = []; for (const n of [6, 12, 24]) if (!(await dit(n))) manque.push(n);
+      if (manque.length) return echec('A2-75', `l'appui long sur « 75 cl » ne propose pas ${manque.join(' · ')} (attendu 6 · 12 · 24)`);
+      await s.toucher('12', { dans: 'button,[role=menuitem],[role=option]', att: 600 });
+      await s.cap('A2-75-2-douze');
+      // Sans tarif, la tuile 75 cl ouvre la ligne à compléter (« prix ? ») : la quantité y est posée ; avec un tarif, le panier dit 12 × 75 cl.
+      const lue = async () => {
+        const champ = await s.p.evaluate(() => { const g = document.querySelector('[aria-label="Ligne libre"]'); return g?.querySelector('[aria-label="Quantité"]')?.value ?? null; /* Input rend un textarea d'une ligne */ });
+        return champ ?? ((await s.texte(2500)).match(/(\d+) × 75 cl/) ?? [])[1] ?? null;
+      };
+      const q = await lue();
+      if (q !== '12') return echec('A2-75', `le choix « 12 » ne pose pas 12 bouteilles de 75 cl (lu : ${q ?? 'rien'})`);
+      if (await s.visible('Annuler', {})) await s.toucher('Annuler', { att: 400 });
+      const avant = Number(((await s.texte(2500)).match(/(\d+) × 75 cl/) ?? [])[1] ?? 0);
+      await s.toucher('75 cl', { contient: true, att: 500 });
+      const pris = Number(await lue());
+      if (pris !== avant + 1) return echec('A2-75', `le toucher simple sur 75 cl ne garde pas +1 (avant ${avant}, lu ${pris})`);
+      ok('A2-75', '6 · 12 · 24 sur 75 cl ; 12 posé ; +1 au toucher simple');
+    }
+  },
+  {
     id: 'B1-CARTE', titre: 'Brassins : la carte du brassin dit le reste à vendre (« 120 × 33 cl · 2 fûts »), la vente le baisse (114), le toucher sur le reste ouvre la vente (D393 B1, K6)', fixture: { sansJour: true },
     async joue(s) {
       const carte = async () => { const t = await s.texte(6000); return t.match(/LOT-PA\s*—?\s*(\d+) × 33 cl · (\d+) fûts?/); };
