@@ -113,5 +113,6 @@ Lecture prédite en 3 s : quatre lettres, trois colonnes, un gros chiffre par op
 
 ## 6. Vérification
 
-→ **PAGE OK (4 images chargées, lisible à 390 et 1280 px, sans erreur)**. Captures ouvertes : ,
-, . Aucun code de l'app touché.
+`node scripts/agents/verifier-page.mjs work/missions/2026-11-21-workflows-app/choix-workflows.html --page-lot --captures work/missions/2026-11-21-workflows-app/choix-workflows-captures/cw`
+→ **PAGE OK (4 images chargées, lisible à 390 et 1280 px, sans erreur)**. Captures ouvertes : `choix-workflows-captures/cw-haut.png`,
+`cw-page.png`, `cw-ordinateur.png`. Aucun code de l'app touché.
