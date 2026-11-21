@@ -151,15 +151,18 @@ async function jouer(dir) {
       // la boîte de l'élément tenu, mise au centre ; et la valeur
       const boite = (sel, i) => p.evaluate((s, i) => { const e = [...document.querySelectorAll(s)].filter((e) => e.getBoundingClientRect().width > 0)[i ?? 0]; if (!e) return null; e.scrollIntoView({ block: 'center' }); const r = e.getBoundingClientRect(); return { x: r.x, y: r.y, w: r.width, h: r.height }; }, sel, i);
       const lire = (sel, i) => p.evaluate((s, i) => { const e = [...document.querySelectorAll(s)].filter((e) => e.getBoundingClientRect().width > 0 || e.type === 'range')[i ?? 0]; if (!e) return null; const v = e.getAttribute('aria-valuenow') ?? e.value; const n = Number(v); return { v: n, min: Number(e.min ?? e.getAttribute('aria-valuemin') ?? 0), max: Number(e.max || e.getAttribute('aria-valuemax') || 100) }; }, sel, i);
-      async function glisser(x0, y, xs, { echap = false } = {}) {
+      // tenir : ms d'appui immobile avant de bouger (appui long) ; pendant : lu avant de lever le doigt
+      async function glisser(x0, y, xs, { echap = false, tenir = 0, pendant = null } = {}) {
         if (tactile) {
           const pt = (x) => [{ x: Math.round(x), y: Math.round(y), id: 1 }];
-          await cdp.send('Input.dispatchTouchEvent', { type: 'touchStart', touchPoints: pt(x0) }); await sleep(50);
+          await cdp.send('Input.dispatchTouchEvent', { type: 'touchStart', touchPoints: pt(x0) }); await sleep(50 + tenir);
           for (const x of xs) { await cdp.send('Input.dispatchTouchEvent', { type: 'touchMove', touchPoints: pt(x) }); await sleep(16); }
+          if (pendant) await pendant();
           await sleep(60); await cdp.send('Input.dispatchTouchEvent', { type: 'touchEnd', touchPoints: [] });
         } else {
-          await p.mouse.move(x0, y); await p.mouse.down(); await sleep(40);
+          await p.mouse.move(x0, y); await p.mouse.down(); await sleep(40 + tenir);
           for (const x of xs) { await p.mouse.move(x, y); await sleep(16); }
+          if (pendant) await pendant();
           if (echap) { await p.keyboard.press('Escape'); await sleep(60); }
           await p.mouse.up();
         }
@@ -352,7 +355,7 @@ async function jouerCalendrier({ p, base, combo, tactile, glisser, pas }) {
       if (!e) { await cap(`toucher-${nom}-perdu`); echec(`${F} toucher ${nom}`, `cadre perdu après le toucher (sous le doigt : ${sous} ; juste après : ${JSON.stringify(juste)})`); continue; }
       e.cle === e0.cle ? ok(`${F} toucher ${nom}`, `reste ${e0.cle}`) : echec(`${F} toucher ${nom}`, `${e0.cle} → ${e.cle} (sous le doigt : ${sous})`);
     }
-    // reculer puis avancer le début (la fenêtre entière se déplace, R5), étirer puis réduire la fin (R6)
+    // reculer puis avancer le début (il s'étire seul, la fin reste, R6), étirer puis réduire la fin
     const tirer = async (nom, de, vers, verifie) => {
       const a = await etat(); const x0 = de === 'debut' ? a.cadre.l + 1 : a.cadre.r - 1;
       await glisser(x0, a.cb.y, pas(x0, x0 + vers)); await sleep(400);
@@ -360,14 +363,27 @@ async function jouerCalendrier({ p, base, combo, tactile, glisser, pas }) {
       r === true ? ok(`${F} ${nom}`, `${a.cle} → ${b.cle}`) : echec(`${F} ${nom}`, `${a.cle} → ${b.cle}${r ? ` (${r})` : ''}`);
       return b;
     };
-    await tirer('reculer le début', 'debut', -d, (a, b) => (b.debut !== null && a.debut !== null && b.debut !== a.debut && b.n === a.n && ((a.debut - b.debut + 53) % 53) <= 26) || 'début plus tôt, même durée attendus');
-    await tirer('avancer le début', 'debut', d, (a, b) => (b.debut !== null && b.debut !== a.debut && b.n === a.n && ((b.debut - a.debut + 53) % 53) <= 26) || 'début plus tard, même durée attendus');
+    // R6 (CAL-FRISE-PRIX) : le début s'étire seul, la fin reste où elle est ; la fenêtre ne se déplace plus d'un bloc
+    const finDe = (x) => (x.debut + x.n) % 53;
+    await tirer('reculer le début', 'debut', -d, (a, b) => (b.debut !== null && a.debut !== null && b.debut !== a.debut && b.n > a.n && finDe(b) === finDe(a) && ((a.debut - b.debut + 53) % 53) <= 26) || 'début plus tôt, fin inchangée, durée plus longue attendus (R6)');
+    await tirer('avancer le début', 'debut', d, (a, b) => (b.debut !== null && b.debut !== a.debut && b.n < a.n && finDe(b) === finDe(a) && ((b.debut - a.debut + 53) % 53) <= 26) || 'début plus tard, fin inchangée, durée plus courte attendus (R6)');
     await tirer('étirer la fin', 'fin', d, (a, b) => (b.n > a.n && b.debut === a.debut) || 'durée plus longue, même début attendus');
     await cap('cadre-etire');
     const er = await tirer('réduire la fin', 'fin', -d, (a, b) => (b.n < a.n && b.debut === a.debut) || 'durée plus courte, même début attendus');
     // R4 après le lâcher (recalage 200 ms) : les deux bouts reviennent à 56 px
     const g1 = er.cadre.l - er.cb.l, d1 = er.cb.r - er.cadre.r;
     if (!er.alignee) (Math.abs(g1 - 56) <= 4 && Math.abs(d1 - 56) <= 4) ? ok(`${F} R4 après le geste`, `${g1.toFixed(0)} et ${d1.toFixed(0)} px`) : echec(`${F} R4 après le geste`, `bouts à ${g1.toFixed(0)} et ${d1.toFixed(0)} px`);
+    // CAL-FRISE-PRIX (CFP-1) : le corps du cadre glissé déplace la fenêtre entière, même durée (R5) ; à tour8 il lisait la courbe
+    { const a = await etat(); const x = (a.cadre.l + a.cadre.r) / 2;
+      await glisser(x, a.cb.y, pas(x, x + d)); await sleep(400); await echap();
+      const b = await etat();
+      (b.debut !== null && b.debut !== a.debut && b.n === a.n && ((b.debut - a.debut + 53) % 53) <= 26) ? ok(`${F} glisser le corps`, `${a.cle} → ${b.cle}`) : echec(`${F} glisser le corps`, `${a.cle} → ${b.cle} (début plus tard, même durée attendus)`); }
+    // CAL-FRISE-PRIX (R8) : le corps tenu 450 ms sans bouger lit la courbe (la tête de lecture s'ouvre et suit le doigt), la fenêtre ne bouge pas
+    { const a = await etat(); const x = (a.cadre.l + a.cadre.r) / 2; let lu = null;
+      await glisser(x, a.cb.y, pas(x, x + unite, 3), { tenir: 700, pendant: async () => { lu = await p.evaluate(() => ({ lu: !!document.querySelector('.ent-lu'), curseur: !!document.querySelector('[data-curseur-trait]') })); } });
+      await sleep(300); const b = await etat();
+      (lu?.lu && b?.cle === a.cle) ? ok(`${F} appui long lit`, `lecture ouverte, reste ${a.cle}`) : echec(`${F} appui long lit`, `lecture ${JSON.stringify(lu)}, ${a.cle} → ${b?.cle ?? "cadre perdu"} (lecture ouverte, fenêtre inchangée attendues)`);
+      await echap(); if (!(await etat())) await versCalendrier(); }
     // R10 : Échap pendant le tirage rend la fenêtre d'avant (souris)
     if (!tactile) {
       const a = await etat(); await glisser(a.cadre.r - 1, a.cb.y, pas(a.cadre.r - 1, a.cadre.r - 1 + d), { echap: true });
@@ -375,6 +391,7 @@ async function jouerCalendrier({ p, base, combo, tactile, glisser, pas }) {
     }
     // la valeur après rechargement
     { const a = await etat(); await versCalendrier(); const b = await etat(); b?.cle === a.cle ? ok(`${F} rechargement`, a.cle) : echec(`${F} rechargement`, `${a.cle} → ${b?.cle}`); }
+
 
   };
   const choisirPeriode = async (t) => {
