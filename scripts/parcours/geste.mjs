@@ -759,6 +759,33 @@ async function jouerCalendrier({ p, base, combo, tactile, glisser, pas }) {
       if (per === 'An') await cap('rangees-an');
     }
   };
+  // ── CAL-FICHE (D412, 21.11, fiche v02 « Pastilles chiffrées ») : « ZZ TEST Geste » touchée ; la fiche ≤ 120 px de haut au repos à 390, pleine largeur
+  //    de la frise, une souche colorée, une pastille de date qui s'élargit en règle sur place, Supprimer sous « Plus d'actions » avec Annuler (rouge sur tour8) ──
+  const sectionFiche = async () => {
+    const F = `fiche ${combo}`;
+    try {
+      const b = await p.evaluate(() => { const e = document.querySelector('[aria-label^="ZZ TEST Geste,"]'); if (!e) return null; e.scrollIntoView({ block: 'center', inline: 'center' }); const r = e.getBoundingClientRect(); return [r.left + Math.min(r.width / 2, 20), r.top + r.height / 2]; });
+      if (!b) { echec(F, '« ZZ TEST Geste » introuvable'); return; }
+      await toucherXY(b[0], b[1]); await sleep(600);
+      const m = await p.evaluate(() => { const d = document.querySelector('[data-detail]'); const fr = document.querySelector('[data-frise]'); if (!d) return null; const r = d.getBoundingClientRect(); return { h: Math.round(r.height), w: Math.round(r.width), frise: fr ? Math.round(fr.getBoundingClientRect().width) : 0, souche: !!d.querySelector('[data-souche]'), vw: window.innerWidth }; });
+      await cap('fiche-repos');
+      if (!m) { echec(F, 'aucune fiche ouverte'); return; }
+      m.souche ? ok(`${F} souche colorée`) : echec(`${F} souche colorée`, 'aucune [data-souche] : la fiche texte de la version rejetée');
+      if (m.vw <= 430) (m.h <= 120 ? ok(`${F} ≤ 120 px au repos`, `${m.h} px`) : echec(`${F} ≤ 120 px au repos`, `${m.h} px de haut à 390 (120 au plus)`));
+      m.w >= m.frise - 8 ? ok(`${F} pleine largeur`, `${m.w}/${m.frise}`) : echec(`${F} pleine largeur`, `${m.w} px pour une frise de ${m.frise}`);
+      const regle = await p.evaluate(async () => { const pa = document.querySelector('[data-detail] [data-pastille="debut"]'); if (!(pa instanceof HTMLButtonElement)) return false; pa.click(); await new Promise(r => setTimeout(r, 300)); return !!document.querySelector('[data-detail] [data-regle]'); });
+      regle ? ok(`${F} date réglée sur place`) : echec(`${F} date réglée sur place`, 'la pastille touchée n\'ouvre aucune règle [data-regle]');
+      await p.evaluate(() => document.querySelector('[data-detail] [data-regle]')?.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape', bubbles: true })));
+      const plus = await p.evaluate(async () => { const pl = document.querySelector('[data-detail] [data-plus]'); if (!pl) return null; pl.click(); await new Promise(r => setTimeout(r, 300)); return !!document.querySelector('[data-detail] [data-supprimer]'); });
+      if (!plus) { echec(`${F} Supprimer`, plus === null ? 'aucun « Plus d\'actions » dans la fiche' : 'aucun [data-supprimer] sous Plus d\'actions'); await echap(); return; }
+      await p.evaluate(() => document.querySelector('[data-detail] [data-supprimer]').click()); await sleep(700);
+      const parti = await p.evaluate(() => !document.querySelector('[aria-label^="ZZ TEST Geste,"]'));
+      await cap('fiche-supprime');
+      await toucherTexte('Annuler'); await sleep(900);
+      const revenu = await p.evaluate(() => !!document.querySelector('[aria-label^="ZZ TEST Geste,"]'));
+      (parti && revenu) ? ok(`${F} Supprimer puis Annuler`) : echec(`${F} Supprimer puis Annuler`, `retirée ${parti}, rendue ${revenu}`);
+    } catch (e) { echec(F, String(e.message ?? e).slice(0, 160)); await echap(); }
+  };
   await sectionJourBord();
   await sectionGlisseJour();
   await sectionBarre();
@@ -766,6 +793,7 @@ async function jouerCalendrier({ p, base, combo, tactile, glisser, pas }) {
   await sectionFeuille();
   await sectionFeuilleJour();
   await sectionModifier();
+  await sectionFiche();
   await sectionRangees();
   await sectionBarreBord();
   await sectionChg4();

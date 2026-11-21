@@ -2,7 +2,7 @@
    largeur ; souche colorée (v07) sur les lignes A et B ; pastilles icône + valeur ; actions ; un volet à la fois. Jetons du thème seulement. */
 .cal-det.cal-fiche {
   display: grid; grid-template-columns: 58px minmax(0, 1fr); grid-template-areas: "s a" "s b" "c c" "v v";
-  column-gap: 6px; row-gap: 4px; margin: 4px 0 8px; padding: 4px; width: 100%; box-sizing: border-box;
+  column-gap: 6px; row-gap: 3px; margin: 4px 0 8px; padding: 4px; width: 100%; box-sizing: border-box;
   border-width: 1.5px; border-radius: 14px; line-height: 18px;
 }
 .cal-fi-souche {
@@ -17,7 +17,7 @@
 .cal-fi-nom > span { text-decoration: underline dotted color-mix(in srgb, var(--c) 80%, transparent); text-underline-offset: 3px; }
 .cal-fi-m { flex: none; font-size: 15px; font-weight: 800; font-variant-numeric: tabular-nums; white-space: nowrap; }
 .cal-fi-x { flex: none; display: grid; place-items: center; width: 40px; height: 40px; margin: -8px -4px -8px 0; padding: 0; border: 0; background: none; color: rgb(var(--cave-200)); cursor: pointer; }
-.cal-fi-b { grid-area: b; display: flex; gap: 4px; min-width: 0; height: 42px; }
+.cal-fi-b { grid-area: b; display: flex; gap: 4px; min-width: 0; height: 36px; }
 .cal-fi-p {
   flex: 1 1 0; min-width: 0; display: flex; align-items: center; justify-content: center; gap: 4px; padding: 0 4px; border-radius: 12px;
   border: 1.5px solid transparent; background: color-mix(in srgb, var(--c) 16%, rgb(var(--cave-900))); color: rgb(var(--cave-50)); font: inherit; cursor: pointer;

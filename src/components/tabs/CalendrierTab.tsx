@@ -917,6 +917,7 @@ export function CalendrierTab(props: CalendrierTabProps) {
           liens: liensDe(chose),
           onLier: (l: { batchId?: string; clientId?: string; evenementId?: string }, nom: string) => {
             void ecrire(lier(chose, l, ctxGestes, nom), true, chose.id, true).then(ok => { if (ok) { ouvertureParGeste.current = Date.now() + 1200; setSelectionId(chose.id); } });
+        {...(/* CHE-2 (D412) : une chose créée datée se supprime aussi depuis sa fiche, avec Annuler */ editable && !sansDate ? { onSupprimer: () => { setSelectionId(null); /* la fiche refermée raccourcit la page : ce défilement-là ne chasse pas « Annuler » (banc 390) */ absorberDefilement(); void ecrire(supprimer(chose)).then(absorberDefilement); } } : {})}
           },
         {...(/* CHE-2 (D412) : une chose créée datée se supprime aussi depuis sa fiche, avec Annuler */ editable && !sansDate ? { onSupprimer: () => { setSelectionId(null); void ecrire(supprimer(chose)); } } : {})}
           /* lot C (test en ligne, n° 5) : délier depuis la fiche, avec Annuler ; la fiche reste ouverte */
