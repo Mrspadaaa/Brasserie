@@ -2618,3 +2618,7 @@ Classement de la page r3 de Ma levure (https://claude.ai/artifact/DKAJe8ESeMR4ig
 > Faire passer plusieurs critique et autres agent pour voir tout les problèmes. Notamment l'autre vue de modification
 
 (21.11, en ligne tour 8, captures dans work/missions/2026-11-21-chasse-stock/ : 01, Stocks › Articles annotée : onglet « Houblons » barré d'une croix, flèche depuis « Recompter » entouré vers cet onglet ; bascule « Étagère » rayée ; un rond à droite des filtres (après « DDM 0 ») ; 02, fiche d'un article (Cryo Hops Citra) : Besoin, Ce qui a bougé, Corriger le stock, Seuil, Fiche, Modifier la fiche, Commander / Enregistrer.)
+
+> Plusieurs problèmes dans le carnet, il ya même pas le prix de la chambre froide ??
+
+(21.11, en ligne tour 8, Stocks › Matériel › Carnets, captures dans work/missions/2026-11-21-chasse-carnet/ : 01, liste des carnets (« À comparer 1 », « Idée 14 », cartes hautes, « Coller un lien ») ; 02, carnet « Chambre froide » annoté : « Ce qui compte · rien encore : l'IA le proposera » et « Façons · aucune : l'IA les cherche » entourés ; 03, même écran, articles sans prix, colonne « Dimensio » coupée ; 04, comparaison : colonne de gauche vide, valeurs absentes, « Épaisseur de l&apos;isolation ».)
