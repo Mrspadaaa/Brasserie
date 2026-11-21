@@ -6,6 +6,7 @@ import { Fiche } from './Fiche';
 import { CouleurChamp } from './CouleurChamp';
 import { Corbeille, Cube, Moins, Plus16, Croix, Remettre, Tour } from './icones';
 import { arrondiKg, cran, estSombre, fr, gesteMoment, graduationsPiste, kgTxt, momentPermis, momentTourne, MOT_MOMENT, pas, pmax, teinte } from './modele';
+import { refCurseurNatif } from '../geste';
 
 /**
  * Le plateau (D212 : toujours visible, clair) : le détail de la ligne choisie. Sa couleur, son moment, la corbeille ; la lecture de la
@@ -111,7 +112,7 @@ export const Plateau: React.FC<{
               <span className="fer-jl-lab" style={{ left: 0, transform: 'none' }}>J0</span>
               <span className="fer-jl-lab" style={{ left: '50%' }}>J7</span>
               <span className="fer-jl-lab" style={{ left: '100%', transform: 'translateX(-100%)' }}>J14</span>
-              <input className="fer-jr" type="range" min={0} max={14} step={1} value={Math.min(14, f.dayOffset ?? 0)} data-jr={i} data-booster="regle-jours"
+              <input ref={refCurseurNatif} className="fer-jr" type="range" min={0} max={14} step={1} value={Math.min(14, f.dayOffset ?? 0)} data-jr={i} data-booster="regle-jours"
                 aria-label={`Jour d’ajout de ${f.name}, au curseur`} onChange={(e) => setJour(i, Number(e.target.value))} />
             </div>
           </div>
