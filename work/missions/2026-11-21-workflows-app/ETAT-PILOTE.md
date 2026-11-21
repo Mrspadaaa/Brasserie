@@ -28,3 +28,4 @@ REPRISE-*.md dans ce dossier ; dans port-carnet, `work/missions/2026-11-20-frise
 - En cours au moment de la coupure : V-RECETTE reprise 4 (levure vision, Ma levure 5-6, Suivant fixe, N3, C1, WFR-4) ; Calendrier session 16 (K3-SUITES, VUE-SAUTE, précision, parcours complet) ; V-COUT reprise (commits K3/K4/N6, D405 une seule caisse). Lire leurs REPRISE-*.md et Session 16 avant de relancer.
 - Reste : V-STOCK (F2), CAL-LENT (ab.mjs, machine calme), défauts du graphe de la fiche (REPRISE-V-LOT), geste restant, puis vision complète et mise en ligne tour8 (deploy-tour4.sh, PARCOURS CALENDRIER OK).
 - Décisions D392 à D405.
+- V-COUT fini (une seule caisse : −533 au Bord, en Finances et au Calendrier). À faire par la voie Calendrier : rebrancher la barre et « budget repris de sa recette » sur item.repriseRecette, retirer « pas encore dans Finances ». À verser : « seuil NaN kg » au Bord (fixture manques) ; 2 erreurs de console à 1280.
