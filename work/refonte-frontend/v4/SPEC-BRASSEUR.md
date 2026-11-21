@@ -2523,3 +2523,7 @@ Classement de la page r3 de Ma levure (https://claude.ai/artifact/DKAJe8ESeMR4ig
 > J'ai choisi
 
 (21.11, page https://claude.ai/artifact/44Sg2rBcG5WLDqKYmfXnLJ, relevé en base : E2 « Comme prévu » d'un toucher ; F2 rayon par rayon ; G3 créé d'abord, nommé après, avec sa note : « J'aime bien g1 et g3 ».)
+
+> Il y a encore tout les problèmes cité ? Et la fize au doigt n'est pas porté ???
+
+(21.11, 14:13, en ligne = tour7, capture-7 : rien des corrections du jour n'est en ligne ; l'échelle de la frise du Calendrier (R4, R7) et ses barres glissées n'étaient pas encore portées.)
