@@ -6,7 +6,7 @@
 //     sans option : construit l'arbre de travail dans un dossier temporaire (`vite build` avec scripts/parcours/vite.parcours.config.mjs) ;
 //     --build     : réutilise un build déjà fait par cette config ;
 //     --ref <tag> : construit ce tag dans une copie temporaire (git worktree dans os.tmpdir(), node_modules en jonction, retirée à la fin).
-//     --etape <a,b> : seules ces étapes V-CAL (G3, RENOMMER-EVT, C1-GLISSER, D2-CAL, K2, K3-SUITES, TRAVAUX-SANS-MONTANT, CRN-11), après la fixture.
+//     --etape <a,b> : seules ces étapes V-CAL (G3, RENOMMER-EVT, C1-GLISSER, D2-CAL, K2, K3-SUITES, TRAVAUX-SANS-MONTANT, CRN-11, CRN-20), après la fixture.
 //     G3_SEMAINE=<n> (variable d'environnement) : G3 ne cherche sa case vide que dans la semaine n (rejouer un cas vu, ex. S2 en 3 mois).
 //   Sortie : « PARCOURS CALENDRIER OK » (code 0) ou « PARCOURS CALENDRIER ECHEC » + la liste des échecs (code 1) ; captures dans le dossier.
 //
@@ -841,6 +841,69 @@ async function jouer(dir) {
             : echec('CRN-11', `${ecran} après « 3 mois » : barre du haut de ${b.h} px, ${parts.map(([k, v]) => `${k} y${v.c}`).join(', ')}${b.periode ? '' : ', période absente'}${b.deborde ? ', déborde' : ''} (période « ${b.texte} »)`);
         }
       } catch (e) { echec('CRN-11', String(e.message).slice(0, 200)); }
+      if (joue('CRN-20')) try {
+        await rechargerV();
+        const themeAvant = await p.evaluate(() => localStorage.getItem('laffinee.theme'));
+        const lus = {};
+        try {
+          await p.setViewport({ width: 1280, height: 800, isMobile: false, hasTouch: false, deviceScaleFactor: 1 });
+          for (const theme of ['clair', 'cave']) {
+            await p.evaluate((t) => localStorage.setItem('laffinee.theme', t), theme);
+            await p.goto(url, { waitUntil: 'load' }); await sleep(1200);
+            await p.waitForSelector('nav button', { timeout: 90000 });
+            await versCarnet(false); await sleep(300);
+            const lu = await p.evaluate(() => {
+              const ce = document.querySelector('header [data-periode-pastille] .pr-ce');
+              const l = ce?.querySelector('.pr-long') ?? ce;
+              if (!l) return null;
+              /* le séparateur : un élément `.pr-sep` (dessin), sinon le caractère « → » du texte (sa boîte par un Range) */
+              let r = l.querySelector('.pr-sep')?.getBoundingClientRect() ?? null;
+              if (!r) {
+                const w = document.createTreeWalker(l, NodeFilter.SHOW_TEXT);
+                for (let n = w.nextNode(); n && !r; n = w.nextNode()) { const i = n.data.search(/[→—–]/); if (i >= 0) { const g = document.createRange(); g.setStart(n, i); g.setEnd(n, i + 1); r = g.getBoundingClientRect(); } }
+              }
+              const st = getComputedStyle(l);
+              return { texte: l.innerText.replace(/\s+/g, ' ').trim(), police: st.fontFamily.split(',')[0], couleur: st.color, sep: r ? { x: r.x, y: r.y, w: r.width, h: r.height } : null };
+            });
+            /* CRN-20 se voit, il ne se lit pas dans le texte (le même « → » des deux côtés) : en clair, la pointe de la flèche, gris clair sur
+               blanc à 14 px, s'efface et le trait se lit « — ». On compte les pixels encrés de la pointe (le tiers droit du séparateur) : un pixel
+               est encré s'il s'écarte du fond d'au moins la moitié de l'écart entre le fond et la couleur du texte. */
+            if (lu?.sep) {
+              const clip = { x: Math.floor(lu.sep.x), y: Math.floor(lu.sep.y), width: Math.ceil(lu.sep.w) + 1, height: Math.ceil(lu.sep.h) };
+              const b64 = await p.screenshot({ clip, encoding: 'base64' });
+              lu.encre = await p.evaluate(async (b64, couleur) => {
+                const img = new Image(); img.src = `data:image/png;base64,${b64}`; await img.decode();
+                const c = document.createElement('canvas'); c.width = img.width; c.height = img.height; const x = c.getContext('2d'); x.drawImage(img, 0, 0);
+                const d = x.getImageData(0, 0, c.width, c.height).data;
+                const L = (r, g, b) => 0.2126 * r + 0.7152 * g + 0.0722 * b;
+                const fond = L(d[0], d[1], d[2]); const [fr, fg, fb] = couleur.match(/\d+/g).map(Number); const texte = L(fr, fg, fb);
+                const seuil = Math.abs(texte - fond) / 2;
+                let pointe = 0, tout = 0; const lignes = new Set();
+                for (let j = 0; j < c.height; j++) for (let i = 0; i < c.width; i++) {
+                  const k = (j * c.width + i) * 4; if (Math.abs(L(d[k], d[k + 1], d[k + 2]) - fond) < seuil) continue;
+                  tout++; if (i >= c.width * 0.6) { pointe++; lignes.add(j); }
+                }
+                return { pointe, lignes: lignes.size, tout };
+              }, b64, lu.couleur);
+            }
+            lus[theme] = lu;
+            await cap(`crn20-carnet-1280-${theme}`);
+          }
+        } finally {
+          await p.evaluate((a) => { if (a === null) localStorage.removeItem('laffinee.theme'); else localStorage.setItem('laffinee.theme', a); }, themeAvant);
+          await p.setViewport({ width: 390, height: 844, isMobile: true, hasTouch: true, deviceScaleFactor: 1 });
+        }
+        const [a, b] = [lus.clair, lus.cave];
+        if (!a || !b) echec('CRN-20', `période introuvable dans la barre du haut (clair ${a ? 'lue' : 'absente'}, cave ${b ? 'lue' : 'absente'})`);
+        else if (a.texte !== b.texte) echec('CRN-20', `la période ne se dit pas pareil : clair « ${a.texte} », cave « ${b.texte} »`);
+        else if (!a.encre || !b.encre) echec('CRN-20', `séparateur introuvable dans « ${a.texte} » (clair ${a.encre ? 'lu' : 'absent'}, cave ${b.encre ? 'lu' : 'absent'})`);
+        else {
+          const dit = (e) => `pointe ${e.pointe} px sur ${e.lignes} lignes, ${e.tout} px en tout`;
+          const faute = [['clair', a.encre], ['cave', b.encre]].filter(([, e]) => e.pointe < 4 || e.lignes < 3).map(([t, e]) => `${t} : ${dit(e)}`);
+          faute.length ? echec('CRN-20', `« ${a.texte} » : la pointe de la flèche ne se voit pas, le séparateur se lit « — » (${faute.join(' ; ')})`)
+            : ok('CRN-20', `« ${a.texte} » en clair comme en cave, flèche entière (clair ${dit(a.encre)} ; cave ${dit(b.encre)})`);
+        }
+      } catch (e) { echec('CRN-20', String(e.message).slice(0, 200)); }
     }
 
     // 10. CAL-ENTETE (21.11, tour 7 : « Avec le point qui bouge toujours pas super fan » ; « Il y a vraiment un immense header » ; « il faudrait

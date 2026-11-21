@@ -11,6 +11,9 @@
 .pr-pill>button.pr-fl{width:44px}
 .pr-pill>button.pr-ce{min-width:52px;max-width:108px;padding:0 8px;border-inline:1px solid var(--bm);font-weight:600;font-size:14px;color:var(--t0);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .pr-ce .pr-court{display:none}
+/* CRN-20 : la flèche de la plage, dessinée (la pointe du « → » de la police s'effaçait en clair) ; le caractère reste dans le texte, non peint. */
+.pr-sep{position:relative;display:inline-block;margin:0 .3em;vertical-align:-2px;line-height:0}
+.pr-sep-t{position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%);white-space:pre}
 /* v2 (2) : « 18 oct. → 16 nov. » se lit entière à 1280 (108 px la rognait contre la flèche) ; la plage garde sa largeur, les flèches restent à 44 px. */
 .pr-pill>button.pr-ce:has(.pr-long){max-width:none;text-overflow:clip}
 /* Sous 430 px, une plage se dit en « 12.10–03.11 » : la pastille longue chassait le duo d'avatars sur une seconde ligne. */
