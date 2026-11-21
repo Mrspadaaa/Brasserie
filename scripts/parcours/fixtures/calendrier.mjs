@@ -112,6 +112,25 @@ export function fixtureCalendrier(aujourdhui) {
   { const t = entrees.find((x) => x.id === 'REC-ZZ-VENTE'); t.data.finance = { ...t.data.finance, paymentStatus: 'paid', dueDate: undefined }; }
   add('financialPayments', 'PAY-REC-ZZ-VENTE', { transactionId: 'REC-ZZ-VENTE', date: aujourdhui, amountCents: 2700, direction: 'in', method: 'twint', recordedAt: `${aujourdhui}T10:00:00.000Z` });
 
+  // D2-CAL (W0c) : un achat de matériel payé il y a ≈ 300 jours, « ZZ TEST Pompe de brassage » à 420 CHF : le dernier achat semblable
+  // que la feuille Travaux propose (« … Pompe … : 420 », estimé). Même forme que la fixture principes.mjs (ligne de facture `equipment`).
+  {
+    const d = ajouter(aujourdhui, -300);
+    add('transactions', 'T-ZZ-POMPE', {
+      id: 'T-ZZ-POMPE', date: d, description: 'ZZ TEST Pompe de brassage', vendor: 'ZZ TEST', category: 'materiel', subcategory: '', amountHT: 420, amountTTC: 420, tvaAmount: 0, tvaRate: 0,
+      finance: { version: 1, kind: 'expense', amountCents: 42000, lines: [{ id: 'L-ZZ-POMPE', description: 'ZZ TEST Pompe de brassage', kind: 'equipment', amountCents: 42000 }], paymentStatus: 'paid', paymentDate: d, recordedAt: `${d}T09:00:00.000Z` }
+    });
+  }
+  // K2 (W0c) : un projet du Carnet daté à +3 mois (son lundi), forme de `carnetDepuisPhrase` (src/domain/carnets/modele.ts) : il va
+  // « Au calendrier » depuis Brassins › Atelier R&D.
+  {
+    const lundi = lundiDe(ajouter(aujourdhui, 91));
+    add('creativeItems', 'CARNET-ZZ-K2', {
+      type: 'carnet', title: 'ZZ TEST Projet chambre froide', status: 'idea', date: lundi,
+      carnet: { version: 1, creeLe: at, phrase: 'ZZ TEST Projet chambre froide', criteres: [], facons: [], articles: [], notes: [], photos: [] }
+    });
+  }
+
   add('clients', 'CL-CIGOGNE', { id: 'CL-CIGOGNE', name: 'La Cigogne', type: 'Pro', contact: '' });
   // solde de départ négatif (≈ −683 CHF) : le brasseur « est en négatif » (capture 3)
   add('financialProfiles', 'current', {

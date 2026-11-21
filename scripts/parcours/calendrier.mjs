@@ -6,6 +6,7 @@
 //     sans option : construit l'arbre de travail dans un dossier temporaire (`vite build` avec scripts/parcours/vite.parcours.config.mjs) ;
 //     --build     : réutilise un build déjà fait par cette config ;
 //     --ref <tag> : construit ce tag dans une copie temporaire (git worktree dans os.tmpdir(), node_modules en jonction, retirée à la fin).
+//     --etape <a,b> : seules ces étapes V-CAL (G3, RENOMMER-EVT, C1-GLISSER, D2-CAL, K2, K3-SUITES, TRAVAUX-SANS-MONTANT), après la fixture.
 //   Sortie : « PARCOURS CALENDRIER OK » (code 0) ou « PARCOURS CALENDRIER ECHEC » + la liste des échecs (code 1) ; captures dans le dossier.
 //
 // Le build de test est un build avec `import.meta.env.DEV` vrai : c'est ce qui ouvre `?dev-local` ; la fixture entre par
@@ -27,7 +28,11 @@ const { fixtureCalendrier } = await import(pathToFileURL(path.join(ICI, 'fixture
 const CHROME = process.env.CHROME_PATH || 'C:/Program Files/Google/Chrome/Application/chrome.exe';
 const args = process.argv.slice(2);
 const opt = (n) => { const i = args.indexOf(`--${n}`); return i >= 0 ? args[i + 1] : null; };
-const sortie = path.resolve(args.find((a, i) => !a.startsWith('--') && !['--build', '--ref'].includes(args[i - 1])) ?? path.join(os.tmpdir(), 'parcours-calendrier'));
+const sortie = path.resolve(args.find((a, i) => !a.startsWith('--') && !['--build', '--ref', '--etape'].includes(args[i - 1])) ?? path.join(os.tmpdir(), 'parcours-calendrier'));
+/* `--etape G3,K2` : seules ces étapes V-CAL (21.11) se jouent, après le contrôle de la fixture ; sans option, tout le parcours, puis elles */
+const seules = opt('etape') ? opt('etape').split(',').map((x) => x.trim()).filter(Boolean) : null;
+const tout = !seules;
+const joue = (nom) => !seules || seules.includes(nom);
 fs.mkdirSync(sortie, { recursive: true });
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 const echecs = []; const notes = [];
@@ -128,7 +133,7 @@ async function jouer(dir) {
     for (const t of ['Fruty,', 'Marché de Noël,', 'lol,', 'Hotte,', 'Café du Pont,', 'Commande de malt,']) if (!presents.some((l) => l.startsWith(t))) echec('fixture', `« ${t} » absent de l'écran (3 mois)`);
 
     // 1. aucune ligne en double (le brasseur : « Emballage · Jhhh » deux fois) : hors Brassins, un même titre n'apparaît qu'une fois par rangée
-    {
+    if (tout) {
       const lignes = await p.evaluate(() => [...document.querySelectorAll('[data-rangee]')].map((r) => ({ rangee: r.getAttribute('data-rangee'), titres: [...r.querySelectorAll('[aria-label]')].filter((e) => e.getBoundingClientRect().width > 0 && /, (S\d+|\d+ \S+)/.test(e.getAttribute('aria-label'))).map((e) => e.getAttribute('aria-label')) })));
       const doubles = [];
       for (const r of lignes) {
@@ -143,14 +148,14 @@ async function jouer(dir) {
     }
 
     // 2. la courbe sous la ligne zéro (solde de départ négatif)
-    {
+    if (tout) {
       const m = await p.evaluate(() => ({ zero: document.querySelectorAll('[data-ligne-zero]').length, sous: document.querySelectorAll('[data-sous-zero]').length,
         solde: (document.querySelector('[data-calendrier-entete]')?.innerText ?? '').replace(/\s+/g, ' ').slice(0, 60) }));
       (m.zero > 0 && m.sous > 0) ? ok('courbe sous zéro', `ligne zéro ${m.zero}, zone sous zéro ${m.sous} (« ${m.solde} »)`) : echec('courbe sous zéro', `solde négatif (« ${m.solde} ») mais ligne zéro ${m.zero}, zone sous zéro ${m.sous}`);
     }
 
     // 3. le menu de période (dans l'écran)
-    {
+    if (tout) {
       { const m = await point('[aria-label$="période, liste, tri et filtre"]'); await p.touchscreen.tap(m[0], m[1]); await sleep(650); }
       const r = await p.evaluate(() => { const m = document.querySelector('[data-menu-periode]'); if (!m) return null; const b = m.getBoundingClientRect(); return { left: Math.round(b.left), right: Math.round(b.right), W: innerWidth }; });
       await cap('02-menu-periode');
@@ -160,7 +165,7 @@ async function jouer(dir) {
     }
 
     // 4. la frise du haut recule de 4 semaines au doigt (poignée de début saisissable, même au début de la frise)
-    {
+    if (tout) {
       const lireDebut = () => p.evaluate(() => { const e = [...document.querySelectorAll('[aria-label^="Poignée de début"]')][0]; const m = e && /commence en S(\d+)/.exec(e.getAttribute('aria-label')); return m ? Number(m[1]) : null; });
       const avant = await lireDebut();
       const poi = await point('[aria-label^="Poignée de début"]');
@@ -178,7 +183,7 @@ async function jouer(dir) {
     }
 
     // 5. glisser une barre de 4 semaines vers le passé, puis vers le futur ; Annuler ; relu après rechargement
-    {
+    if (tout) {
       const colonne = await p.evaluate(() => { const b = [...document.querySelectorAll('[data-bande-semaines] [data-semaine]')]; if (b.length > 1) return b[1].getBoundingClientRect().x - b[0].getBoundingClientRect().x; const f = document.querySelector('[data-frise]'); const n = Number(f?.getAttribute('data-nb-colonnes') ?? 13); return f ? f.getBoundingClientRect().width / n : 26; });
       async function essai(titre, semaines, nom) {
         const avant = await labelDe(`${titre},`); const sa = semaineDe(avant);
@@ -206,8 +211,8 @@ async function jouer(dir) {
     }
 
     // 6. la date de chaque type, changée par la feuille (Modifier › semaine précédente › Enregistrer), relue après rechargement
-    await recharger();
-    for (const [type, titre] of [['brassin', 'Fruty'], ['fête', 'Marché de Noël'], ['vente', 'Café du Pont'], ['achat', 'Commande de malt'], ['papier', 'lol'], ['travaux', 'Hotte'], ['idée', 'IPA brume']]) {
+    if (tout) await recharger();
+    if (tout) for (const [type, titre] of [['brassin', 'Fruty'], ['fête', 'Marché de Noël'], ['vente', 'Café du Pont'], ['achat', 'Commande de malt'], ['papier', 'lol'], ['travaux', 'Hotte'], ['idée', 'IPA brume']]) {
       const nom = `date ${type}`;
       try {
         await fermer();
@@ -237,7 +242,7 @@ async function jouer(dir) {
     }
 
     // 7. la frise de période (Header › « Période … Choisir la plage », au Calendrier puis à Finances : même composant, même CSS) : poignées entièrement visibles, de 44 px
-    for (const ecran of ['Calendrier', 'Finances']) try {
+    if (tout) for (const ecran of ['Calendrier', 'Finances']) try {
       await fermer(); if (ecran === 'Finances') { await toucher('Finances'); await sleep(900); } await toucher('Période :', { prefixe: true }); await sleep(500); await cap(ecran === 'Finances' ? '07-frise-periode-finances' : '07-frise-periode');
       const poignees = await p.evaluate(() => [...document.querySelectorAll('[role=dialog] [data-poignee], [role=dialog] [role=slider], [aria-label*="oignée"]')].filter((e) => e.getBoundingClientRect().width > 0 && !e.closest('[data-calendrier-entete]')).map((e) => { const r = e.getBoundingClientRect(); return { n: e.getAttribute('aria-label') ?? e.getAttribute('data-poignee'), x: Math.round(r.x), w: Math.round(r.width), h: Math.round(r.height), W: innerWidth }; }));
       if (poignees.length < 2) echec(`frise de période (${ecran})`, `${poignees.length} poignée(s) trouvée(s) (2 attendues)`);
@@ -246,7 +251,7 @@ async function jouer(dir) {
     } catch (e) { echec(`frise de période (${ecran})`, String(e.message).slice(0, 200)); }
 
     // 8. « Plus de détails » / ouvrir : jamais l'ancien Atelier (CreativeLabTab)
-    try {
+    if (tout) try {
       await versCalendrier(false); await fermer();
       for (const [titre, bouton] of [['Marché de Noël,', 'Ouvrir dans l’agenda'], ['Fruty,', 'Ouvrir le brassin']]) {
         await toucher(titre, { prefixe: true });
@@ -273,7 +278,7 @@ async function jouer(dir) {
     } catch (e) { echec('Plus de détails', String(e.message).slice(0, 200)); }
 
     // 9. l'écran contre sa maquette choisie (scripts/agents/controle-base.mjs de Brasserie, chantier « calendrier »)
-    try {
+    if (tout) try {
       await versCalendrier(); await fermer(); await sleep(400);
       // page vivante : le + volant (G7), la première barre (G8), les filtres de premier plan (G3), puis le menu (G4 : « Trier les rangées »)
       const live = {};
@@ -322,7 +327,9 @@ async function jouer(dir) {
     } catch (e) { echec('maquette choisie', String(e.message).slice(0, 200)); }
 
     // 9b. Bugs des workflows du 21.11 (Brasserie work/missions/2026-11-21-workflows-app/SYNTHESE.md § 1) : B8, B9, B11, puis B3.
-    try { await bugsWorkflows(); } catch (e) { echec('bugs workflows', String(e.message).slice(0, 200)); }
+    if (tout) try { await bugsWorkflows(); } catch (e) { echec('bugs workflows', String(e.message).slice(0, 200)); }
+    // 9c. V-CAL (21.11, W0c) : G3, RENOMMER-EVT, C1-GLISSER, D2-CAL, K2, K3-SUITES, TRAVAUX-SANS-MONTANT ; `--etape` les choisit
+    try { await etapesVcal(); } catch (e) { echec('V-CAL', String(e.message).slice(0, 200)); }
     async function bugsWorkflows() {
       const pastille = () => p.evaluate(() => (document.querySelector('[data-periode-pastille]')?.innerText ?? '').replace(/\s+/g, ' ').trim());
       const semainesVues = () => p.evaluate(() => [...document.querySelectorAll('[data-bande-semaines] [data-semaine]')].filter((e) => e.getBoundingClientRect().width > 0).map((e) => Number(e.getAttribute('data-semaine'))));
@@ -515,13 +522,249 @@ async function jouer(dir) {
       }
     }
 
+    // 9c. V-CAL (21.11) : les étapes du port (Brasserie work/missions/2026-11-21-workflows-app/PORT.md, W0c), rouges sur en-ligne/2026-11-21-tour7.
+    async function etapesVcal() {
+      const CLE = 'parcours-calendrier:cache';
+      const lireCache = () => p.evaluate((k) => JSON.parse(localStorage.getItem(k) ?? '[]'), CLE);
+      const nouveaux = (avant, apres, ...colls) => apres.filter((e) => colls.includes(e.name) && !avant.some((a) => a.name === e.name && a.id === e.id));
+      const periodeNeuve = () => p.evaluate(() => { for (const k of Object.keys(localStorage)) { try { const o = JSON.parse(localStorage.getItem(k)); if (o && typeof o === 'object' && 'app_global_time_filter' in o) { delete o.app_global_time_filter; localStorage.setItem(k, JSON.stringify(o)); } } catch { /* pas du JSON */ } } });
+      const rechargerV = async () => { await periodeNeuve(); await p.goto(url, { waitUntil: 'load' }); await sleep(1200); await versCalendrier(); await fermer(); };
+      const message = () => p.evaluate(() => [...document.querySelectorAll('[role=status]')].map((e) => e.innerText.replace(/\s+/g, ' ').trim()).filter(Boolean).join(' | '));
+      const feuille = () => p.evaluate(() => { const d = [...document.querySelectorAll('[role=dialog]')].find((e) => e.getBoundingClientRect().width > 0); return d ? d.innerText.replace(/\s+/g, ' ').trim() : null; });
+      const clavierOuvert = () => p.evaluate(() => { const a = document.activeElement; return !!a && (a.tagName === 'INPUT' || a.tagName === 'TEXTAREA' || a.isContentEditable); });
+      const taper = async (x, y, texte) => { await p.touchscreen.tap(x, y); await sleep(300); await p.evaluate(() => document.activeElement?.select?.()); await p.keyboard.type(texte, { delay: 15 }); await sleep(300); };
+      const toucherSel = async (sel) => { const c = await point(sel); if (!c) throw new Error(`introuvable : ${sel}`); await sleep(120); const c2 = await point(sel); await p.touchscreen.tap(c2[0], c2[1]); await sleep(800); };
+      const ouvrirFeuilleRangee = (id) => toucherSel(`[data-plus="${id}"]`);
+      /** Le champ du nom de la feuille d'ajout (« Nom » ou « Autre nom ») : marqué pour le retrouver, sa valeur et son centre. */
+      const champNom = async () => { for (let k = 0; k < 12; k++) { const r = await champNom0(); if (r) return r; await sleep(250); } return null; };
+      const champNom0 = () => p.evaluate(() => {
+        const ds = [...document.querySelectorAll('[role=dialog]')].filter((e) => e.getBoundingClientRect().width > 0); if (!ds.length) return null;
+        const d = { querySelectorAll: (s) => ds.flatMap((x) => [...x.querySelectorAll(s)]) };
+        /* au doigt, `Input` rend une ligne en <textarea data-single-line> (Input.tsx) : les deux balises comptent */
+        const i = [...d.querySelectorAll('input,textarea')].find((x) => /^(Autre nom|Nom)$/.test((x.closest('label')?.querySelector('span')?.textContent ?? '').trim()) || x.hasAttribute('data-feuille-nom'))
+          ?? [...d.querySelectorAll('input:not([type]),input[type=text],textarea[data-single-line]')].find((x) => x.getBoundingClientRect().width > 0 && x.getAttribute('inputmode') !== 'decimal');
+        if (!i) return null; i.scrollIntoView({ block: 'center' }); const r = i.getBoundingClientRect(); return { valeur: i.value, x: r.x + r.width / 2, y: r.y + r.height / 2 };
+      });
+      const annulerSiPossible = async () => { if (await visibleParTexte('Annuler').catch(() => null)) await toucher('Annuler').catch(() => {}); };
+      const MOIS = ['janv.', 'févr.', 'mars', 'avr.', 'mai', 'juin', 'juil.', 'août', 'sept.', 'oct.', 'nov.', 'déc.'];
+      const auj = new Date().toISOString().slice(0, 10);
+
+      // G3 (D396, PI-1) : toucher la case vide d'une semaine à venir dans la piste Travaux crée « Travaux · S<n> » d'emblée (nom posé, sans
+      // feuille ni clavier) ; un message propose Annuler, qui la retire.
+      if (joue('G3')) try {
+        await rechargerV();
+        const avant = await lireCache();
+        const cible = await p.evaluate(() => {
+          const vis = (e) => { const r = e.getBoundingClientRect(); return r.width > 0 && r.height > 0; };
+          const lane = [...document.querySelectorAll('[data-lane="travaux"]')].find(vis); if (!lane) return { err: 'piste Travaux introuvable ([data-lane="travaux"])' };
+          lane.scrollIntoView({ block: 'center' });
+          const L = lane.getBoundingClientRect(); const y = L.top + L.height / 2;
+          const b = [...document.querySelectorAll('[data-bande-semaines] [data-semaine]')].filter(vis);
+          const i = b.findIndex((e) => e.getAttribute('data-courant') === 'oui');
+          for (let k = Math.max(1, i + 1); k < b.length; k++) {
+            const r = b[k].getBoundingClientRect(); const x = r.left + r.width / 2;
+            if (x < L.left + 4 || x > L.right - 4) continue;
+            const sous = document.elementFromPoint(x, y);
+            if (!sous || sous.closest('[data-chose-id], .cal-rh, .cal-plus, .cal-pastille, .cal-oeil')) continue;
+            return { x, y, n: Number(b[k].getAttribute('data-semaine')) };
+          }
+          return { err: 'aucune case vide de Travaux dans les semaines vues' };
+        });
+        if (cible.err) throw new Error(cible.err);
+        await p.touchscreen.tap(cible.x, cible.y); await sleep(1000);
+        const voulu = `Travaux · S${cible.n}`;
+        const f = await feuille(); const msg = await message(); const apres = await lireCache();
+        const neuf = nouveaux(avant, apres, 'creativeItems', 'financialPlans').find((e) => (e.data.title ?? '').startsWith('Travaux · S'));
+        const ecran = await labelDe(`${voulu},`);
+        await cap('09c-g3-case-touchee');
+        if (!neuf) echec('G3', `toucher la case vide S${cible.n} de Travaux ne crée rien${f ? ` (une feuille s'ouvre : « ${f.slice(0, 60)} »)` : ''}`);
+        else if (neuf.data.title !== voulu || !ecran) echec('G3', `créé « ${neuf.data.title} » (${neuf.name}), « ${voulu} » attendu ${ecran ? '' : '(absent de la frise)'}`);
+        else if (!/Annuler/.test(msg) && !(await visibleParTexte('Annuler').catch(() => null))) echec('G3', `« ${voulu} » créé sans message Annuler (message : « ${msg.slice(0, 60)} »)`);
+        else {
+          await toucher('Annuler'); await sleep(600);
+          const reste = (await lireCache()).some((e) => e.id === neuf.id);
+          reste ? echec('G3', `Annuler ne retire pas « ${voulu} »`) : ok('G3', `« ${voulu} » créé d'un toucher (${neuf.name}), Annuler le retire`);
+        }
+      } catch (e) { echec('G3', String(e.message).slice(0, 160)); }
+
+      // RENOMMER-EVT (PI-5) : le détail de « Ranger la réserve » : toucher le titre ouvre un champ sur place, « ZZ TEST Nom » + Entrée renomme,
+      // relu dans le cache et sur la frise, clavier fermé.
+      if (joue('RENOMMER-EVT')) try {
+        await rechargerV();
+        await toucher('Ranger la réserve,', { prefixe: true }); await sleep(300);
+        const t = await p.evaluate(() => {
+          const d = document.querySelector('[aria-label="Détail : Ranger la réserve"]') ?? [...document.querySelectorAll('[aria-label^="Détail"]')].find((e) => e.getBoundingClientRect().width > 0);
+          if (!d) return null;
+          const e = [...d.querySelectorAll('*')].filter((x) => x.getBoundingClientRect().width > 0 && (x.innerText ?? '').trim() === 'Ranger la réserve').pop();
+          if (!e) return null; e.scrollIntoView({ block: 'center' }); const r = e.getBoundingClientRect(); return [r.x + r.width / 2, r.y + r.height / 2];
+        });
+        if (!t) throw new Error('détail ouvert sans titre « Ranger la réserve »');
+        await p.touchscreen.tap(t[0], t[1]); await sleep(500);
+        const champ = await p.evaluate(() => { const a = document.activeElement; return a && (a.tagName === 'INPUT' || a.tagName === 'TEXTAREA') ? a.value : null; });
+        await cap('09c-renommer-evt-champ');
+        if (champ !== 'Ranger la réserve') echec('RENOMMER-EVT', `toucher le titre n'ouvre pas de champ sur place (${champ === null ? 'aucun champ' : `champ « ${champ} »`})`);
+        else {
+          await p.evaluate(() => document.activeElement?.select?.()); await p.keyboard.type('ZZ TEST Nom', { delay: 15 }); await p.keyboard.press('Enter'); await sleep(900);
+          const ouvert = await clavierOuvert();
+          const doc = (await lireCache()).find((e) => e.id === 'CR-RANGER');
+          const ecran = await labelDe('ZZ TEST Nom,');
+          await cap('09c-renommer-evt-apres');
+          (!ouvert && doc?.data.title === 'ZZ TEST Nom' && ecran) ? ok('RENOMMER-EVT', 'titre touché, tapé, Entrée : relu dans le cache et sur la frise, clavier fermé')
+            : echec('RENOMMER-EVT', `après Entrée : cache « ${doc?.data.title} », frise ${ecran ? 'oui' : 'non'}, clavier ${ouvert ? 'ouvert' : 'fermé'}`);
+        }
+        await fermer();
+      } catch (e) { echec('RENOMMER-EVT', String(e.message).slice(0, 160)); }
+
+      // C1-GLISSER (D393, K1) : la feuille d'ajout n'a plus le carrousel des semaines ; à sa place les horizons. « 3 mois » d'un toucher dit
+      // « vers <mois+3> » ; Ajouter pose la chose dans ce mois ; sa semaine se règle ensuite au glisser sur la frise.
+      if (joue('C1-GLISSER')) try {
+        await rechargerV();
+        await ouvrirFeuilleRangee('activites');
+        const lu = await p.evaluate(() => { const d = [...document.querySelectorAll('[role=dialog]')].find((e) => e.getBoundingClientRect().width > 0); if (!d) return null; return { carrousel: d.querySelectorAll('.cal-f-semaines [data-semaine], .cal-f-semaines button').length, horizon: [...d.querySelectorAll('button')].some((b) => b.getBoundingClientRect().width > 0 && b.innerText.trim() === '3 mois') }; });
+        await cap('09c-c1-feuille');
+        if (!lu) throw new Error('« Ajouter dans Activités » n\'ouvre pas de feuille');
+        if (lu.carrousel) echec('C1-GLISSER', `la feuille d'ajout garde le carrousel des semaines (${lu.carrousel} puces)`);
+        if (!lu.horizon) echec('C1-GLISSER', 'aucun horizon « 3 mois » dans la feuille d\'ajout');
+        else {
+          const c = await p.evaluate(() => { const d = [...document.querySelectorAll('[role=dialog]')].find((e) => e.getBoundingClientRect().width > 0); const b = [...d.querySelectorAll('button')].find((x) => x.innerText.trim() === '3 mois'); b.scrollIntoView({ block: 'center' }); const r = b.getBoundingClientRect(); return [r.x + r.width / 2, r.y + r.height / 2]; });
+          await p.touchscreen.tap(c[0], c[1]); await sleep(500);
+          const m = MOIS[(Number(auj.slice(5, 7)) - 1 + 3) % 12];
+          const f = await feuille();
+          if (!new RegExp(`vers ${m.replace('.', '\\.')}`).test(f ?? '')) echec('C1-GLISSER', `« 3 mois » touché : « vers ${m} » absent de la feuille`);
+          const nom = await champNom();
+          if (nom) await taper(nom.x, nom.y, 'ZZ TEST Horizon');
+          const avant = await lireCache();
+          await toucherSel('[role=dialog] [data-ajouter]'); await sleep(600);
+          const neuf = nouveaux(avant, await lireCache(), 'creativeItems').find((e) => e.data.title === 'ZZ TEST Horizon');
+          if (!neuf) echec('C1-GLISSER', `Ajouter après « 3 mois » ne crée rien (refus : « ${(await feuille())?.slice(-60) ?? ''} »)`);
+          else {
+            const moisPose = MOIS[Number(String(neuf.data.date).slice(5, 7)) - 1];
+            if (moisPose !== m) echec('C1-GLISSER', `posée le ${neuf.data.date} (${moisPose}), ${m} attendu`);
+            const sa = semaineDe(await labelDe('ZZ TEST Horizon,'));
+            if (sa === null) echec('C1-GLISSER', `« ZZ TEST Horizon » posée le ${neuf.data.date} mais absente de la frise : sa semaine ne se règle pas au glisser`);
+            else {
+              const col = await p.evaluate(() => { const b = [...document.querySelectorAll('[data-bande-semaines] [data-semaine]')]; return b.length > 1 ? b[1].getBoundingClientRect().x - b[0].getBoundingClientRect().x : 26; });
+              await p.evaluate(() => document.querySelector('[aria-label^="ZZ TEST Horizon,"]')?.scrollIntoView({ block: 'center' }));
+              const b = await point('[aria-label^="ZZ TEST Horizon,"]');
+              const x0 = b[0] - Math.min(b[2] / 2 - 6, 10);
+              await glisser([x0, b[1]], [x0 - col, b[1]]);
+              const sb = semaineDe(await labelDe('ZZ TEST Horizon,'));
+              await cap('09c-c1-glisse');
+              (sb !== null && ((sa - sb + 53) % 53) === 1) ? ok('C1-GLISSER', `« 3 mois » → vers ${m}, posée S${sa}, glissée en S${sb}, sans carrousel`)
+                : echec('C1-GLISSER', `glissée d'une semaine vers la gauche : S${sa} → S${sb ?? '(absente)'}`);
+            }
+            await annulerSiPossible();
+          }
+        }
+        await fermer();
+      } catch (e) { echec('C1-GLISSER', String(e.message).slice(0, 160)); }
+
+      // D2-CAL (D393) : feuille Travaux, nom « ZZ TEST Pompe » → la puce « … Pompe … : 420 » (dernier achat semblable, estimé) ; Garder,
+      // Ajouter : un plan de 420 CHF.
+      if (joue('D2-CAL')) try {
+        await rechargerV();
+        await ouvrirFeuilleRangee('travaux');
+        const nom = await champNom(); if (!nom) { await cap('09c-d2-sans-nom'); const diag = await p.evaluate(() => `${document.querySelectorAll('[role=dialog]').length} dialog ; inputs : ${[...document.querySelectorAll('input')].map((x) => `${x.type}/${x.getBoundingClientRect().width | 0}/${x.closest('[role=dialog]') ? 'D' : '-'}/${(x.closest('label')?.innerText ?? '').slice(0, 12)}`).join(' ')}`); throw new Error(`champ du nom introuvable dans la feuille Travaux (${diag})`); }
+        await taper(nom.x, nom.y, 'ZZ TEST Pompe');
+        await p.keyboard.press('Tab').catch(() => {}); await sleep(400);
+        const puce = await p.evaluate(() => { const e = [...document.querySelectorAll('[role=dialog] [data-prix-semblable]')].find((x) => x.getBoundingClientRect().width > 0); if (!e) return null; e.scrollIntoView({ block: 'center' }); const r = e.getBoundingClientRect(); return { t: (e.getAttribute('aria-label') ?? '') + ' ' + e.innerText.replace(/\s+/g, ' '), x: r.x + r.width / 2, y: r.y + r.height / 2 }; });
+        await cap('09c-d2-puce');
+        if (!puce || !/Pompe/.test(puce.t) || !/420/.test(puce.t)) echec('D2-CAL', puce ? `puce « ${puce.t.slice(0, 70)} » sans « Pompe … 420 »` : 'aucune puce de prix semblable ([data-prix-semblable]) après « ZZ TEST Pompe »');
+        else {
+          await p.touchscreen.tap(puce.x, puce.y); await sleep(500);
+          const avant = await lireCache();
+          await toucherSel('[role=dialog] [data-ajouter]'); await sleep(600);
+          if (await feuille() && await visibleParTexte('Oui,', { prefixe: true }).catch(() => null)) { await toucher('Oui,', { prefixe: true }); await sleep(600); }
+          const neuf = nouveaux(avant, await lireCache(), 'financialPlans', 'creativeItems').find((e) => (e.data.title ?? '').startsWith('ZZ TEST Pompe'));
+          (neuf && neuf.data.amountCents === 42000) ? ok('D2-CAL', `« ${puce.t.trim().slice(0, 50)} » gardé : plan de 420 CHF`)
+            : echec('D2-CAL', neuf ? `créé ${neuf.name} à ${neuf.data.amountCents ?? neuf.data.estimatedCost} (42000 attendu)` : 'Garder puis Ajouter ne crée rien');
+          await annulerSiPossible();
+        }
+        await fermer();
+      } catch (e) { echec('D2-CAL', String(e.message).slice(0, 160)); }
+
+      // K2 (T4) : Carnet › projet daté › « Au calendrier » : le Calendrier s'ouvre, la semaine du projet visible et centrée.
+      if (joue('K2')) try {
+        await rechargerV();
+        const projet = (await lireCache()).find((e) => e.id === 'CARNET-ZZ-K2');
+        if (!projet) throw new Error('fixture : projet CARNET-ZZ-K2 absent du cache');
+        const nav = async (t) => { const b0 = await p.evaluate((t) => { const b = [...document.querySelectorAll('nav button')].find((e) => (e.innerText ?? '').includes(t) && e.getBoundingClientRect().width > 0); if (!b) return null; const r = b.getBoundingClientRect(); return [r.x + r.width / 2, r.y + r.height / 2]; }, t); if (!b0) throw new Error(`onglet ${t} introuvable`); await p.touchscreen.tap(b0[0], b0[1]); await sleep(900); };
+        await nav('Brassins');
+        await toucher('Atelier R&D', { prefixe: true }); await sleep(600);
+        await toucher(projet.data.title, { prefixe: true, dans: 'button,[role=button],a,[data-carnet-id],li,article' }); await sleep(800);
+        await toucher('Au calendrier', { prefixe: true }); await sleep(1200);
+        const ouvert = await p.waitForSelector('[data-calendrier]', { timeout: 8000 }).then(() => true).catch(() => false);
+        // semaine ISO : le jeudi de la semaine, compté depuis le jeudi de la semaine du 4 janvier
+        const j = new Date(`${projet.data.date}T12:00:00Z`); j.setUTCDate(j.getUTCDate() + 3 - ((j.getUTCDay() + 6) % 7));
+        const q = new Date(Date.UTC(j.getUTCFullYear(), 0, 4, 12)); q.setUTCDate(q.getUTCDate() + 3 - ((q.getUTCDay() + 6) % 7));
+        const n = 1 + Math.round((j - q) / (7 * 864e5));
+        const col = ouvert ? await p.evaluate((n) => { const e = [...document.querySelectorAll('[data-bande-semaines] [data-semaine]')].find((x) => Number(x.getAttribute('data-semaine')) === n && x.getBoundingClientRect().width > 0); const vues = [...document.querySelectorAll('[data-bande-semaines] [data-semaine]')].filter((x) => x.getBoundingClientRect().width > 0).map((x) => x.getAttribute('data-semaine')); if (!e) return { vues }; const r = e.getBoundingClientRect(); return { cx: r.x + r.width / 2, W: innerWidth, vues }; }, n) : null;
+        await cap('09c-k2-au-calendrier');
+        if (!ouvert) echec('K2', '« Au calendrier » n\'ouvre pas le Calendrier');
+        else if (!col.cx) echec('K2', `S${n} (projet du ${projet.data.date}) hors des semaines montrées (S${col.vues[0]}–S${col.vues[col.vues.length - 1]})`);
+        else (col.cx >= col.W * 0.2 && col.cx <= col.W * 0.8) ? ok('K2', `Calendrier ouvert, S${n} à x ${Math.round(col.cx)} sur ${col.W}`) : echec('K2', `S${n} visible mais au bord (x ${Math.round(col.cx)} sur ${col.W})`);
+      } catch (e) { echec('K2', String(e.message).slice(0, 160)); }
+
+      // K3-SUITES (T4, attendu du pilote) : un brassin posé (+ › Poser un brassin, une recette, Ajouter) montre son coût estimé et ses suites
+      // (fermentation, conditionnement) sans autre geste.
+      if (joue('K3-SUITES')) try {
+        await rechargerV();
+        const avant = await lireCache();
+        const fab = await p.evaluate(() => { const b = [...document.querySelectorAll('button')].filter((e) => { const r = e.getBoundingClientRect(); if (!(r.width > 0) || e.closest('nav')) return false; let x = e; while (x && x !== document.body) { if (getComputedStyle(x).position === 'fixed') return true; x = x.parentElement; } return false; }).find((e) => /^\+|ajout|ajouter|nouveau|cr[ée]er/i.test(`${e.innerText ?? ''} ${e.getAttribute('aria-label') ?? ''}`.trim())); if (!b) return null; const r = b.getBoundingClientRect(); return [r.x + r.width / 2, r.y + r.height / 2]; });
+        if (fab) { await p.touchscreen.tap(fab[0], fab[1]); await sleep(700); }
+        if (await p.$('[data-page-action="brassin"]')) await toucherSel('[data-page-action="brassin"]'); else await ouvrirFeuilleRangee('brassins');
+        const recette = await p.evaluate(() => { const b = [...document.querySelectorAll('[role=dialog] [data-puce="recette"]')].find((e) => e.getBoundingClientRect().width > 0); if (!b) return null; b.scrollIntoView({ block: 'center' }); const r = b.getBoundingClientRect(); return { nom: b.innerText.trim(), x: r.x + r.width / 2, y: r.y + r.height / 2 }; });
+        if (!recette) throw new Error('aucune puce de recette dans la feuille « Poser un brassin »');
+        await p.touchscreen.tap(recette.x, recette.y); await sleep(400);
+        await toucherSel('[role=dialog] [data-ajouter]'); await sleep(1200);
+        const neuf = nouveaux(avant, await lireCache(), 'batches')[0];
+        if (!neuf) throw new Error(`« ${recette.nom} » : Ajouter ne pose aucun brassin`);
+        const lu = await p.evaluate((id) => {
+          const bar = [...document.querySelectorAll('[data-chose-id]')].find((e) => (e.getAttribute('data-chose-id') ?? '').endsWith(id) && e.getBoundingClientRect().width > 0);
+          const messages = [...document.querySelectorAll('[role=status]')].map((e) => e.innerText.replace(/\s+/g, ' ').trim()).join(' | ');
+          return { bar: !!bar, phases: bar ? [...bar.querySelectorAll('[data-phase]')].map((e) => e.getAttribute('data-phase')) : [], label: bar?.getAttribute('aria-label') ?? '', texte: bar ? bar.innerText.replace(/\s+/g, ' ') : '', messages };
+        }, neuf.id);
+        await cap('09c-k3-brassin-pose');
+        const suites = ['fermentation', 'conditionnement'].filter((ph) => !lu.phases.includes(ph));
+        const dit = `${lu.label} ${lu.texte} ${lu.messages}`;
+        const cout = /co[uû]t estim[ée]+[^|]*?\d[\d'’ ]*(,\d+)?\s*CHF|co[uû]t à venir/i.exec(dit);
+        if (!lu.bar) echec('K3-SUITES', `« ${recette.nom} » posé (${neuf.id}) mais absent de la frise`);
+        else if (suites.length || !cout) echec('K3-SUITES', `« ${recette.nom} » posé : ${suites.length ? `sans ${suites.join(' ni ')} (phases : ${lu.phases.join(', ') || 'aucune'})` : ''}${!cout ? `${suites.length ? ' ; ' : ''}coût estimé non dit (« ${dit.slice(0, 90)} »)` : ''}`);
+        else ok('K3-SUITES', `« ${recette.nom} » posé : phases ${lu.phases.join(', ')} ; « ${cout[0].slice(0, 40)} »`);
+        await annulerSiPossible();
+      } catch (e) { echec('K3-SUITES', String(e.message).slice(0, 160)); }
+
+      // TRAVAUX-SANS-MONTANT (D401) : « Ajouter dans Activités » et « Ajouter dans Travaux », le nom posé, Ajouter SANS montant : créés.
+      // Des Travaux sans montant sont une activité marquée `travaux: true` (jamais un plan à 0 CHF).
+      if (joue('TRAVAUX-SANS-MONTANT')) for (const [id, nomR] of [['activites', 'Activités'], ['travaux', 'Travaux']]) try {
+        await rechargerV();
+        await ouvrirFeuilleRangee(id);
+        const nom = await champNom();
+        const avant = await lireCache();
+        await toucherSel('[role=dialog] [data-ajouter]'); await sleep(700);
+        const refus = await p.evaluate(() => document.querySelector('[role=dialog] [data-refus]')?.innerText ?? '');
+        const neufs = nouveaux(avant, await lireCache(), 'creativeItems', 'financialPlans');
+        await cap(`09c-sans-montant-${id}`);
+        const pose = nom?.valeur ?? '';
+        const neuf = neufs[0];
+        const zero = neufs.find((e) => e.name === 'financialPlans' && !e.data.amountCents);
+        if (!/· S\d+/.test(pose)) echec('TRAVAUX-SANS-MONTANT', `${nomR} : aucun nom posé dans la feuille (champ « ${pose} »)`);
+        if (!neuf) echec('TRAVAUX-SANS-MONTANT', `${nomR} : Ajouter sans montant ne crée rien (« ${refus.slice(0, 60)} »)`);
+        else if (zero) echec('TRAVAUX-SANS-MONTANT', `${nomR} : un plan à 0 CHF (${zero.id}) : l'inconnu n'est jamais 0`);
+        else if (id === 'travaux' && !(neuf.name === 'creativeItems' && neuf.data.travaux === true)) echec('TRAVAUX-SANS-MONTANT', `Travaux sans montant écrit en ${neuf.name} sans \`travaux: true\` (D401)`);
+        else ok('TRAVAUX-SANS-MONTANT', `${nomR} : « ${neuf.data.title} » créé sans montant (${neuf.name}${neuf.data.travaux ? ', travaux' : ''})`);
+        if (neuf) await annulerSiPossible();
+        await fermer();
+      } catch (e) { echec('TRAVAUX-SANS-MONTANT', `${nomR} : ${String(e.message).slice(0, 150)}`); }
+    }
+
     // 10. CAL-ENTETE (21.11, tour 7 : « Avec le point qui bouge toujours pas super fan » ; « Il y a vraiment un immense header » ; « il faudrait
     // des tailles fix car SI non ça fait bouger le calendrier » ; « beaucoup de place inutile, et l'info ont l'a déjà sur le graph »).
     // À 390 tactile, dans l'An (sa capture) puis en 3 mois : aucun rond pointillé ni rond de repère sur la courbe ; le haut de la première rangée
     // (Brassins) ne bouge pas de plus de 1 px entre le repos et 5 semaines lues au doigt, courbe visible puis cachée ; aucune rangée qui redit
     // un montant sous les mois ; en-tête ≤ 30 % de 844 (≤ 20 % courbe cachée) ; barre du haut sur une ligne à chaque onglet. Captures
     // 390 et 1280, clair et cave.
-    try { await calEntete(); } catch (e) { echec('CAL-ENTETE', String(e.message).slice(0, 200)); }
+    if (tout) try { await calEntete(); } catch (e) { echec('CAL-ENTETE', String(e.message).slice(0, 200)); }
     async function calEntete() {
       const C = 'CAL-ENTETE';
       const mesurer = () => p.evaluate(() => {
