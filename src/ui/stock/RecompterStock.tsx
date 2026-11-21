@@ -1,14 +1,15 @@
 // Recompter, repris de la maquette choisie sy/fA (q-a3s) : six tuiles de famille, ligne de tri, un rayon par famille avec « 6/15 comptés · 02.11 »,
-// bouton « Compter » (mode saisie : « il en reste », « Enregistrer N comptages »). Les règles sont dans domain/stock/listeFiltres.ts et liste.ts.
+// bouton « Compter » (mode saisie : « il en reste »). F2 (D396) : on ne tape que ce qui a bougé (chiffre, Entrée : ligne suivante),
+// « ✓ le reste du rayon » confirme d'un toucher tout le rayon comme prévu ; « Annuler » sort sans rien écrire ; l'inconnu reste non compté. Les règles sont dans domain/stock/listeFiltres.ts et liste.ts.
 import React, { useMemo, useState } from 'react';
-import { Wheat, Hop, FlaskConical, Droplets, Package, SprayCan, Check, ArrowUpDown } from 'lucide-react';
+import { Wheat, Hop, FlaskConical, Droplets, Package, SprayCan, Check, ArrowUpDown, X } from 'lucide-react';
 import type { StockItem } from '../../types';
 import type { ArticleACommander } from '../../domain/stockLevel';
 import { Units } from '../../services/units';
 import { FAMILLES_RECOMPTER, familleRecompter as familleDe, derniersComptages, jourCourt, type FamilleRecompter, type InfoLigne, type MouvementComptage } from '../../domain/stock/liste';
 // Les tuiles et titres de la maquette q-a3s disent « Additifs » et « Nettoyage » (la liste de l'Étagère garde le titre long).
 const COURT: Record<string, string> = { Malts: 'Malts', Houblons: 'Houblons', Levures: 'Levures', Additifs: 'Additifs', Emballage: 'Emballage', Nettoyage: 'Nettoyage' };
-import { LIBELLE_FAMILLE, comptesRecompter, lireQuantite, trierRecompter, type FiltreListe } from '../../domain/stock/listeFiltres';
+import { LIBELLE_FAMILLE, bilanRayon, comptesRecompter, lireQuantite, trierRecompter, type FiltreListe, type LigneComptee } from '../../domain/stock/listeFiltres';
 import './jetons-outils.css';
 import './recompter.css';
 
@@ -58,11 +59,11 @@ interface Props {
   onFiltre: (f: FiltreListe | null) => void;
   filtreActif: boolean;
   onOuvrir: (item: StockItem) => void;
-  /** Écrit un comptage ; rend false si l'écriture est refusée. */
-  onCompter: (item: StockItem, quantite: number) => boolean;
+  /** Écrit les comptages d'un rayon (un mouvement daté chacun) ; rend le nombre écrit. */
+  onCompterRayon: (rayon: string, lignes: ReadonlyArray<LigneComptee<StockItem>>) => number;
 }
 
-export function RecompterStock({ items, retenus, infos, aCommander, mouvements, filtre, onFiltre, filtreActif, onOuvrir, onCompter }: Props) {
+export function RecompterStock({ items, retenus, infos, aCommander, mouvements, filtre, onFiltre, filtreActif, onOuvrir, onCompterRayon }: Props) {
   const comptes = useMemo(() => comptesRecompter(items, mouvements), [items, mouvements]);
   const jours = useMemo(() => derniersComptages(mouvements), [mouvements]);
   // Sens du tri par nom (bouton ⇅ de la maquette q-a3s) : A → Z, ou Z → A ; les épuisés restent en fin de rayon dans les deux sens.
@@ -79,16 +80,22 @@ export function RecompterStock({ items, retenus, infos, aCommander, mouvements, 
   const [saisie, setSaisie] = useState<FamilleRecompter | null>(null);
   const [valeurs, setValeurs] = useState<Record<string, string>>({});
 
-  const enregistrer = (f: FamilleRecompter) => {
-    let n = 0;
-    for (const item of parFamille.get(f) ?? []) {
-      const q = lireQuantite(valeurs[item.ref] ?? '');
-      if (q !== null && onCompter(item, q)) n++;
-    }
-    setSaisie(null); setValeurs({});
-    return n;
+  // Le bilan du rayon en saisie : tapées (écarts), comme prévu (champ vide, quantité connue), non comptées (inconnue ou illisible).
+  const bilan = (f: FamilleRecompter) => bilanRayon(parFamille.get(f) ?? [], valeurs, (i) => quantiteConnue(i, infos.get(i.ref)));
+  const sortir = () => { setSaisie(null); setValeurs({}); };
+  const confirmer = (f: FamilleRecompter) => {
+    const b = bilan(f);
+    onCompterRayon(COURT[f], [...b.tapes, ...b.prevus]);
+    sortir();
   };
-  const nPrets = (f: FamilleRecompter) => (parFamille.get(f) ?? []).filter((i) => lireQuantite(valeurs[i.ref] ?? '') !== null).length;
+  // Entrée passe à la ligne suivante du rayon ; à la dernière, le clavier se ferme (jamais pendant une composition IME).
+  const entree = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key !== 'Enter' || e.nativeEvent.isComposing) return;
+    e.preventDefault();
+    const champs = [...(e.currentTarget.closest('section')?.querySelectorAll<HTMLInputElement>('input[data-compte]') ?? [])];
+    const suivant = champs[champs.indexOf(e.currentTarget) + 1];
+    if (suivant) suivant.focus(); else e.currentTarget.blur();
+  };
 
   return (
     <div className="stock-recompter sz-r-sc" data-testid="recompter">
@@ -126,7 +133,7 @@ export function RecompterStock({ items, retenus, infos, aCommander, mouvements, 
                   </p>
                 </div>
                 {enSaisie
-                  ? <button type="button" className="sz-r-fin" onClick={() => enregistrer(f)} disabled={nPrets(f) === 0}>Enregistrer {nPrets(f)} comptage{nPrets(f) > 1 ? 's' : ''}</button>
+                  ? <button type="button" className="sz-r-cb sz-r-an" onClick={sortir}><X size={16} aria-hidden="true" />Annuler</button>
                   : <button type="button" className="sz-r-cb" onClick={() => { setSaisie(f); setValeurs({}); }}><Check size={16} aria-hidden="true" />Compter</button>}
               </header>
               {!enSaisie && <div className="sz-r-th" aria-hidden="true"><span>Article</span><span>En stock</span><span>Fournisseur</span><span>Seuil</span><span>Compté</span></div>}
@@ -140,14 +147,16 @@ export function RecompterStock({ items, retenus, infos, aCommander, mouvements, 
                 if (enSaisie) {
                   const v = valeurs[item.ref] ?? '';
                   const lu = lireQuantite(v);
+                  const ecart = lu !== null && connue ? Math.round((lu - item.currentStock) * 1000) / 1000 : 0;
+                  const dernier = idx === lignes.length - 1;
                   return (
                     <React.Fragment key={item.ref}>
                       {epl}
                       <div className={`sz-r-row sz-r-cr${lu !== null ? ' sz-r-fait' : ''}`}>
                         <span className={`sz-r-ck${lu !== null ? ' sz-r-ok' : ''}`} aria-hidden="true">{lu !== null && <Check size={12} />}</span>
-                        <span className="sz-r-nm"><b>{item.name}</b><i>{connue ? <>en stock <span className="sz-r-m">{n} {u}</span></> : 'quantité inconnue'}</i></span>
+                        <span className="sz-r-nm"><b>{item.name}</b><i>{connue ? <>prévu <span className="sz-r-m">{n} {u}</span>{ecart !== 0 && <b className="sz-r-ec sz-r-m"> {ecart > 0 ? '+' : '−'}{nb(Math.abs(ecart))}</b>}</> : 'quantité inconnue · reste non compté'}</i></span>
                         <label className="sz-r-in"><span>il en reste</span>
-                          <input type="text" inputMode="decimal" autoComplete="off" aria-label={`Il en reste, ${item.name}`} value={v} onChange={(e) => setValeurs((p) => ({ ...p, [item.ref]: e.target.value }))} />
+                          <input type="text" inputMode="decimal" autoComplete="off" data-compte enterKeyHint={dernier ? 'done' : 'next'} placeholder={connue ? nb(item.currentStock) : '?'} aria-label={`Il en reste, ${item.name}`} value={v} onKeyDown={entree} onChange={(e) => setValeurs((p) => ({ ...p, [item.ref]: e.target.value }))} />
                           <small>{item.unit}</small></label>
                         <button type="button" className={`sz-r-ju${connue && v === nb(item.currentStock) ? ' sz-r-on' : ''}`} disabled={!connue} aria-label={`${item.name} : la quantité en stock est juste`}
                           onClick={() => setValeurs((p) => ({ ...p, [item.ref]: nb(item.currentStock) }))}><Check size={18} aria-hidden="true" /></button>
@@ -174,6 +183,24 @@ export function RecompterStock({ items, retenus, infos, aCommander, mouvements, 
                   </React.Fragment>
                 );
               })}
+              {enSaisie && (() => {
+                const b = bilan(f);
+                const n = b.tapes.length + b.prevus.length;
+                const morceaux = [
+                  b.ecarts > 0 && `${b.ecarts} écart${b.ecarts > 1 ? 's' : ''}`,
+                  b.prevus.length > 0 && `${b.prevus.length} comme prévu`,
+                  b.nonComptes.length > 0 && `${b.nonComptes.length} non compté${b.nonComptes.length > 1 ? 's' : ''}`,
+                ].filter(Boolean).join(' · ');
+                return (
+                  <div className="sz-r-pied">
+                    <p className="sz-r-bil" aria-live="polite">{morceaux || 'Rien à compter dans ce rayon'}</p>
+                    <button type="button" className="sz-r-fin sz-r-tout" disabled={n === 0} onClick={() => confirmer(f)}
+                      aria-label={b.prevus.length > 0 ? `Compter le reste du rayon comme prévu : ${n} article${n > 1 ? 's' : ''}` : undefined}>
+                      <Check size={18} aria-hidden="true" />{b.prevus.length > 0 ? <>Le reste du rayon comme prévu <span className="sz-r-m">· {n}</span></> : <>Enregistrer <span className="sz-r-m">{n}</span> comptage{n > 1 ? 's' : ''}</>}
+                    </button>
+                  </div>
+                );
+              })()}
             </section>
           );
         })}

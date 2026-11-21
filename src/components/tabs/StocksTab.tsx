@@ -446,11 +446,15 @@ export const StocksTab: React.FC<StocksTabProps> = ({
   const resumes = useMemo(() => { const m = new Map<string, string>(); GROUPES_LISTE.forEach(g => m.set(g, resumeRayon(visibleItems.filter(i => groupeListe(i) === g), infos))); return m; }, [visibleItems, infos]);
   const phraseFiltre = texteFiltre({ filtre, q }, retenus.length);
   const toutVoir = () => { setFiltre(null); setQ(''); };
-  // Un comptage de Recompter : le stock devient la quantité comptée, un mouvement « comptage » garde l'écart.
-  const compter = (item: StockItem, quantite: number): boolean => {
-    const r = StorageService.adjustInventory(typeOf(item), item.ref, quantite, 'comptage');
-    if (r) onSuccessMessage?.(`${item.name} compté : ${Units.format(quantite, item.unit)}.`);
-    return !!r;
+  // Un rayon recompté (F2, D396) : chaque ligne devient un comptage daté (l'écart tapé, ou « comme prévu » à la quantité connue), un seul message.
+  const compterRayon = (rayon: string, lignes: ReadonlyArray<{ item: StockItem; quantite: number }>): number => {
+    let n = 0; let ecarts = 0;
+    for (const { item, quantite } of lignes) {
+      const r = StorageService.adjustInventory(typeOf(item), item.ref, quantite, 'comptage');
+      if (r) { n++; if (r.delta !== 0) ecarts++; }
+    }
+    if (n) onSuccessMessage?.(`${rayon} : ${n} compté${n > 1 ? 's' : ''}${ecarts ? `, dont ${ecarts} écart${ecarts > 1 ? 's' : ''}` : ', comme prévu'}.`);
+    return n;
   };
 
   const copyList = (supplier: string, list: Array<{ item: StockItem; missing: number; auMoins: boolean }>) => {
@@ -630,7 +634,7 @@ export const StocksTab: React.FC<StocksTabProps> = ({
             {/* En Recompter, les outils restent sous le doigt : collés en haut de la fenêtre pendant que les tuiles défilent. */}
             <div className="sticky top-0 z-10 bg-cave-950">{blocOutils}</div>
             <div className={`stock-outils ${mobile ? 'pb-16' : ''}`}>
-              <RecompterStock items={allItems} retenus={retenus} infos={infos} aCommander={aCommanderParRef} mouvements={movements} filtre={filtre} onFiltre={setFiltre} filtreActif={!!filtre || !!recherche} onOuvrir={setSelected} onCompter={compter} />
+              <RecompterStock items={allItems} retenus={retenus} infos={infos} aCommander={aCommanderParRef} mouvements={movements} filtre={filtre} onFiltre={setFiltre} filtreActif={!!filtre || !!recherche} onOuvrir={setSelected} onCompterRayon={compterRayon} />
             </div>
           </>
           : <div data-testid="stock-defile">

@@ -84,3 +84,30 @@ export function lireQuantite(texte: string): number | null {
   const n = Number(t);
   return Number.isFinite(n) ? n : null;
 }
+
+export interface LigneComptee<T> { item: T; quantite: number }
+export interface BilanRayon<T> {
+  /** Les quantités tapées (l'écart, ou la même quantité confirmée). */
+  tapes: LigneComptee<T>[];
+  /** Champ vide et quantité connue : compté « comme prévu », à la quantité en stock. */
+  prevus: LigneComptee<T>[];
+  /** Quantité inconnue ou saisie illisible : reste « non compté », jamais 0. */
+  nonComptes: T[];
+  /** Parmi les tapées, celles qui changent le stock. */
+  ecarts: number;
+}
+/**
+ * F2 (D396, comptage tournant par rayon) : ce qu'un toucher sur « le reste du rayon » enregistre. On ne tape que ce qui a bougé ;
+ * le reste du rayon est confirmé à sa quantité connue ; ce qui n'a pas de quantité connue n'est jamais compté à 0.
+ */
+export function bilanRayon<T extends Pick<StockItem, 'ref' | 'currentStock'>>(lignes: ReadonlyArray<T>, valeurs: Readonly<Record<string, string>>, connue: (i: T) => boolean): BilanRayon<T> {
+  const r: BilanRayon<T> = { tapes: [], prevus: [], nonComptes: [], ecarts: 0 };
+  for (const item of lignes) {
+    const v = (valeurs[item.ref] ?? '').trim();
+    const q = lireQuantite(v);
+    if (q !== null) { r.tapes.push({ item, quantite: q }); if (q !== item.currentStock) r.ecarts++; }
+    else if (v === '' && connue(item)) r.prevus.push({ item, quantite: item.currentStock });
+    else r.nonComptes.push(item);
+  }
+  return r;
+}
