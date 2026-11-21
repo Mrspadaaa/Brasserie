@@ -1,3 +1,78 @@
+# Session 13 — W0c commité, V-CAL G3/RENOMMER/C1/D2/D401 commités ; 32 tests d'intégration rouges (21.11, arrêt à 160 k)
+
+## Fait (commité, branche claude/port-carnet-1711)
+- `30beb3125` W0c : rejoué sur `en-ligne/2026-11-21-tour7` : les 7 étapes rouges (11 KO). Correctif de banc : au doigt, `Input` rend un
+  `<textarea data-single-line>` (Input.tsx l. 113) ; `champNom` cherche `input,textarea` dans tous les dialogues visibles, et attend 3 s.
+- `85538391c` V-CAL : report du worktree `vc` (D401, nom posé, horizons à la place du carrousel, puce D2) + `achatsPasses(transactions)`
+  (calendrierAjout.ts) dans `ctxAjout` de CalendrierTab + 4 tests unitaires (calendrierAjout.test.ts, 29 verts).
+- `a50c28243` G3 (Rangee `onToucherVide`, Frise, CalendrierTab `toucherVide` : Travaux/Activités créés d'emblée, autres rangées : leur feuille).
+- `22d97b5a1` RENOMMER-EVT (DetailChose `onRenommer` → `RenommerSurPlace as="span"` ; CalendrierTab : patch `title`, Annuler).
+- `699882943` C1 (`b.parHorizon` hors fenêtre : `voirEtendue` d'office).
+- Worktree `vc` retiré (jonction node_modules enlevée d'abord par `rmdir`), branche `vcal-tmp` supprimée.
+- Parcours `--etape` sur l'arbre : G3, RENOMMER-EVT, C1-GLISSER, D2-CAL, K2, TRAVAUX-SANS-MONTANT verts. K3-SUITES rouge.
+
+## INCIDENT (à dire au pilote)
+L'index est PARTAGÉ avec la voie transverse (même worktree). Un `git commit --amend` a avalé ses 33 fichiers indexés (elle venait de faire
+`reset HEAD~2`). Réparé : commit G3 refait par index temporaire sur `02bdcffba`, `reset --soft` : son index est revenu tel quel (33 fichiers
+indexés). Désormais commit par `<S>/commit-chemins.sh <msg> <chemin>[=<source>]` (index temporaire, n'avance HEAD que s'il n'a pas bougé).
+
+## Rouge, à faire dans l'ordre
+1. **32 tests d'intégration rouges** (8 fichiers : calendrier-onglet 7, calendrierPlus 6, calendrierFrise 6, calendrierLotA 4, calendrierFeuille 3,
+   calendrierJalonsLies 3, calendrierGestes 2, calendrierLotC 1 ; journal `<S>/vt-cal.out`). Cause probable : ils jouent l'ancien carrousel
+   `.cal-f-semaines` (S20 puis S40, fenêtre, « Mettre de côté », « Plus de détails › » daté, « Voir S20 › »), retiré par C1. DÉCISION À PRENDRE :
+   la fenêtre S20 → S40 et les jours actifs ne se choisissent plus dans la feuille (seulement au glisser du bord ?). Vérifier que la feuille garde
+   une voie pour la fenêtre (Travaux sur 21 semaines) ; sinon réintroduire un réglage de fin, puis réécrire ces tests au nouveau contrat.
+2. **K3-SUITES** : le brassin posé (Blonde d'automne, S47) n'a ni jalon fermentation (recette sans `fermentation[]` chiffrée : `jalonsBrassin`
+   l. 759 ne pose « Fermentation » que si `total > 0`) ni « coût à venir » (barre sans montant ni étiquette ; à diagnostiquer :
+   `planRecipeBatch` pose-t-il `brewDate` → `pasCommence` faux, useDonneesCalendrier l. 222 ?). Piste : poser « Fermentation » à J+1 dès que le
+   cycle est connu ; coût par `estimateBrewBudget` (brewBudget.ts l. 318) ou « coût à venir ». Capture `<S>/v1/09c-k3-brassin-pose.png`.
+3. VUE-SAUTE, précision semaine/mois de la date du carnet (spécifications à relire dans BUGS.md).
+4. Parcours complet lancé en arrière-plan : `<S>/full.out` (« == FIN code n » à la fin), captures `<S>/full/`. Puis vision 390 et 1280, deux
+   thèmes ; build `VITE_HOP_V4=on VITE_CARNET_IA=production npm run build` (tsc a une erreur V-RECETTE : `src/domain/hopIndex/v4/cases.ts:85`).
+5. `EnTete.tsx` (juger) toujours non commité ; TRANSVERSE-RESTE.md (Calendrier) pas traité.
+`<S>` = `C:/Users/mrspa/AppData/Local/Temp/claude/2574149e6fd34767/16fc09ec-4e69-48a9-9744-5912b6ef6552/scratchpad`.
+
+# Session 12 — W0c écrit (non commité, non rejoué), V-CAL commencé dans un worktree temporaire (21.11, arrêt à 200 k)
+
+## État exact
+- fin2 tournait encore à 12:34 (`<S>/f2.out` : « tsc code 0 », vitest entier en cours). Un job d'attente (`until grep "build parcours code"`)
+  était lancé. RIEN n'a été édité dans `port-carnet/src/`. ATTENTION : la branche bouge sous nos pieds (F-APPUI a commité 7cfa3aa51 pendant la session).
+- W0c ÉCRIT dans port-carnet, NON COMMITÉ, NON REJOUÉ (`node --check` OK, fixture vérifiée) :
+  `scripts/parcours/calendrier.mjs` : `--etape` (`seules`, `tout`, `joue()`), sections 1 à 10 gardées par `if (tout)` ; nouvelle fonction
+  `etapesVcal()` (section 9c, appelée toujours, après bugsWorkflows) : G3, RENOMMER-EVT, C1-GLISSER, D2-CAL, K2, K3-SUITES, TRAVAUX-SANS-MONTANT.
+  `scripts/parcours/fixtures/calendrier.mjs` : `T-ZZ-POMPE` (« ZZ TEST Pompe de brassage », 420, payé, −300 j) et `CARNET-ZZ-K2`
+  (« ZZ TEST Projet chambre froide », carnet daté au lundi de +91 j).
+  Contrats choisis : G3 = toucher une case vide de la piste Travaux crée « Travaux · S<n> » sans feuille, message Annuler qui le retire.
+  RENOMMER-EVT = dans `[aria-label="Détail : Ranger la réserve"]`, toucher le titre donne un champ focalisé « Ranger la réserve », Entrée → cache
+  CR-RANGER « ZZ TEST Nom », frise, clavier fermé. C1 = feuille d'ajout Activités sans `.cal-f-semaines`, bouton « 3 mois » → « vers <mois+3> »,
+  Ajouter (nom tapé « ZZ TEST Horizon ») → date dans ce mois, visible sur la frise, glissée d'une colonne. D2 = feuille Travaux, nom tapé, puce
+  `[data-prix-semblable]` avec « Pompe » et « 420 », Garder, Ajouter → plan 42000. K2 = Brassins › Atelier R&D › projet › « Au calendrier » →
+  colonne de sa semaine ISO visible entre 20 et 80 % de la largeur. K3 = + volant › `[data-page-action="brassin"]` › 1re `[data-puce="recette"]`
+  › Ajouter → la barre du brassin neuf porte `[data-phase=fermentation]` et `[data-phase=conditionnement]`, et « coût estimé … CHF » ou « coût à
+  venir » dans son label, son texte ou le message. SANS-MONTANT = Activités et Travaux, champ nom posé `/· S\d+/`, Ajouter sans montant → créé ;
+  Travaux en `creativeItems` avec `travaux: true`, aucun plan à 0.
+- V-CAL EN COURS dans un worktree temporaire `C:/Users/mrspa/AppData/Local/Temp/vc` (branche `vcal-tmp` depuis 7cfa3aa51, node_modules en
+  jonction, `.env*` et `src/data/seedData.ts` copiés ; à reporter dans port-carnet par `git diff` puis retirer : `git worktree remove --force`,
+  `git branch -D vcal-tmp`). Édité, tsc OK avant les derniers changements de FeuilleAjout (non revérifié) :
+  `src/types/index.ts` (`travaux?: boolean`), `src/domain/calendrier.ts` (`rangeeCreative`), `src/domain/calendrierGestes.ts` (dupliquer garde
+  `travaux`), `src/domain/calendrierAjout.ts` (D401 dans `versEnregistrement`, `resumeAjout`, `RANGEES_NOM_POSE`, `nomPose`, `avecNomPose`,
+  champs `nomPose`/`parHorizon` du brouillon, puce nom → `nomPose: false`), `src/ui/saisie/Horizons.tsx` (prop `sansPlusTard`),
+  `src/ui/calendrier/frise/FeuilleAjout.tsx` (nom posé, Horizons en mode ajouter à la place du carrousel, « vers … » `data-intention`, puce D2
+  `data-prix-semblable` + « estimé », `data-feuille-nom`, sélection au focus).
+- MANQUE pour compiler : `achats?: readonly AchatPasse[]` dans `ContexteAjout` (import type depuis `./horizons`) ; le remplir dans
+  CalendrierTab `ctxAjout` (lignes de facture non-income > 0, comme ExpenseSheet l. 316).
+
+## Prochaine action, dans l'ordre
+1. Attendre « == FIN » de `<S>/f2.out` ; lire les échecs `f2-*` (grep) ; f2-cal comportera aussi les étapes 9c (rouges, normal).
+2. Rejouer W0c : `node scripts/parcours/calendrier.mjs <S>/w0c-t7 --ref en-ligne/2026-11-21-tour7 --etape G3,RENOMMER-EVT,C1-GLISSER,D2-CAL,K2,K3-SUITES,TRAVAUX-SANS-MONTANT`
+   (7 rouges attendus ; K2 peut être vert sur tour7 : alors lire pourquoi et durcir, ou le dire). Ajuster les sélecteurs si une étape casse
+   pour une raison de banc. Commit des deux fichiers.
+3. V-CAL : finir `achats`, tsc, tests (`tests/unit/calendrierAjout.test.ts` : D401, nom posé, résumé sans S doublée), puis le reste : G3
+   (Rangee `piste()` : clic sur la piste vide → `onToucherVide(rangee, lundi)` ; CalendrierTab crée Travaux/Activités par `versEnregistrement`
+   + `ecrire` avec Annuler), RENOMMER-EVT (DetailChose h4 : `RenommerSurPlace as="span"` si `onRenommer` ; CalendrierTab : patch `title`),
+   C1 (après Ajouter `parHorizon` hors fenêtre : `voirEtendue` d'office au lieu du lien), K3 (phases proposées d'un brassin pas brassé, D384 à
+   lever en « proposé »), K2 (selon le rejeu), VUE-SAUTE, précision semaine/mois. Un commit par élément dans port-carnet.
+
 # Session 11 — attente fin2, lecture W0c / V-CAL (21.11, agent arrêté à ~155 k par lecture ; RIEN ÉCRIT dans le code)
 
 ## État
