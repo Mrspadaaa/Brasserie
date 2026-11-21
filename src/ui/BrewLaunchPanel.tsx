@@ -4,6 +4,7 @@ import type { BrewhouseProfile, Recipe } from '../types';
 import { apercuLancement, contenanceCuveL, contenanceFermenteurL, echelleRegleL, facteurVolume, uniteAccordee, type EtapeLancement, type ManqueLancement, type PastilleLancement } from '../domain/brewLaunch';
 import { nombreFr } from '../domain/nombreAffiche';
 import './brew-launch.css';
+import { refCurseurNatif } from './geste';
 
 /* Le lancement d'un brassin (uv4, choisie le 14.11) : une règle de volume, puis la journée de brassage pesée pour ce volume.
    Aucun calcul ici : les quantités viennent de la recette adaptée (domain/brewLaunch.ts). Les ronds de la frise sont vides et ne se touchent pas. */
@@ -120,7 +121,7 @@ export const BrewLaunchPanel: React.FC<BrewLaunchPanelProps> = ({ recette, volum
           {eauL != null && (
             <b className="absolute tabular-nums text-2xs text-water" style={eauAGauche ? { top: 58, right: `calc(100% - ${x(eauL)})`, transform: 'none' } : { top: 73, left: `calc(${x(eauL)} + 7px)` }}>{L(eauL)} L</b>
           )}
-          <input type="range" aria-label="Volume du brassin" aria-valuetext={`${L(volumeL)} L`} min={0} max={maxL} step={0.5} value={Math.min(volumeL, maxL)} disabled={disabled} onChange={(e) => { const v = Number(e.target.value); if (Number.isFinite(v)) onVolume(Math.max(1, v)); }} className="bl-curseur peer" />
+          <input ref={refCurseurNatif} type="range" aria-label="Volume du brassin" aria-valuetext={`${L(volumeL)} L`} min={0} max={maxL} step={0.5} value={Math.min(volumeL, maxL)} disabled={disabled} onChange={(e) => { const v = Number(e.target.value); if (Number.isFinite(v)) onVolume(Math.max(1, v)); }} className="bl-curseur peer" />
           <span aria-hidden="true" className="bl-bulle tabular-nums" style={{ left: `clamp(28px, ${x(volumeL)}, calc(100% - 28px))` }}>{L(volumeL)} L</span>
           <span aria-hidden="true" className="bl-bouton peer-focus-visible:ring-2 ring-offset-2" style={{ left: x(volumeL) }} />
         </div>
