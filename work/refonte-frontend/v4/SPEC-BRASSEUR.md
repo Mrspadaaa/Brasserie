@@ -2612,3 +2612,9 @@ Classement de la page r3 de Ma levure (https://claude.ai/artifact/DKAJe8ESeMR4ig
 > Il y a toujours la bare inutile et l'échelle du passé fonctionne toujours pas
 
 (21.11, en ligne tour 8, captures 27 et 28 de work/missions/2026-11-21-calendrier-entete/ : 27, 6 sem. 03.08–13.09, un trait vertical noir, une colonne grise et une barre noire horizontale au milieu du cadre, en S35 (entourés) ; 28, 14 sem., le passé à gauche du cadre (S32–S33) est grisé, sans courbe lisible (entouré).)
+
+> Il y a beaucoup de choses très bien pour le stock, mais beaucoup de moins bon, déjà il y a des vues et de l'espace gâché.
+> La vue type étagère est incroyablement, mais il y a un ou deux souci, et dans autre stock, j'ai pas cette vue..
+> Faire passer plusieurs critique et autres agent pour voir tout les problèmes. Notamment l'autre vue de modification
+
+(21.11, en ligne tour 8, captures dans work/missions/2026-11-21-chasse-stock/ : 01, Stocks › Articles annotée : onglet « Houblons » barré d'une croix, flèche depuis « Recompter » entouré vers cet onglet ; bascule « Étagère » rayée ; un rond à droite des filtres (après « DDM 0 ») ; 02, fiche d'un article (Cryo Hops Citra) : Besoin, Ce qui a bougé, Corriger le stock, Seuil, Fiche, Modifier la fiche, Commander / Enregistrer.)
