@@ -2634,3 +2634,7 @@ Classement de la page r3 de Ma levure (https://claude.ai/artifact/DKAJe8ESeMR4ig
 > Que si on clic là ça renvoie même pas sûr le carnet ?
 
 (21.11, en ligne tour 8, capture 09 de work/missions/2026-11-21-chasse-carnet/ : dans le carnet « Sol — matières premières + outils », l'onglet actif « Carnet » (Brassins › Atelier) entouré ; le toucher ne ramène pas à la liste des carnets.)
+
+> Et la plupart des petites improvement sont aussi sans la nécessité de mini maquettes, parcontre peut être attendre un certain temps car SI ont choisi des mini maquettes qui remplace complément certains actions, vue où autre, ça vaut pas la peine de résoudre certains "faux" problème
+
+(21.11, sur le Carnet et le Stock.)
