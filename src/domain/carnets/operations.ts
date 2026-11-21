@@ -97,7 +97,7 @@ export type LigneARanger = Destination & (
   | { sorte: 'critere'; id?: string; texte: string; raison?: string; caracteristique?: Caracteristique; origine: Origine; propose?: true; source?: 'phrase' | 'ia' }
   | { sorte: 'facon'; id?: string; nom: string; etat?: EtatFacon; raison?: string; origine: Origine }
   | {
-    sorte: 'article'; id?: string; url?: string; domaine?: string; nom?: string; prixCentimes?: number; devise?: string; vendeur?: string; pays?: string;
+    sorte: 'article'; id?: string; url?: string; domaine?: string; nom?: string; prixCentimes?: number; prixDes?: true; devise?: string; vendeur?: string; pays?: string;
     dispo?: string; photo?: string; faconId?: string; valeurs?: Record<string, Valeur>; lecture?: Article['lecture']; origine?: Origine
   }
   | { sorte: 'note'; id?: string; texte: string; genre?: GenreNote }
@@ -154,6 +154,7 @@ function ajouterLigne(c: CarnetDoc, l: LigneARanger, messageId: string): EffetMe
       const a: Article = sansIndefinis({
         id: l.id ?? nouvelIdCarnet('ART'), url: l.url, domaine: l.domaine, nom: l.nom,
         prixCentimes: typeof l.prixCentimes === 'number' && Number.isFinite(l.prixCentimes) && l.prixCentimes >= 0 ? Math.round(l.prixCentimes) : undefined,
+        prixDes: l.prixDes === true && typeof l.prixCentimes === 'number' ? true : undefined,
         devise: l.devise, vendeur: l.vendeur, pays: l.pays, dispo: l.dispo, photo: l.photo,
         faconId: l.faconId && d.facons.some(f => f.id === l.faconId) ? l.faconId : undefined,
         valeurs: l.valeurs ? copie(l.valeurs) : {}, lecture: l.lecture ?? (l.url ? 'a-lire' : 'lue'), messageId
@@ -588,13 +589,21 @@ export const idPlanDuCarnet = (carnetId: string): string => `PLAN-CARNET-${carne
  * Le plan d'À venir tiré du choix (créé par le lot D avec le service des plans ; rien n'est écrit ici). Prix inconnu ou en autre devise :
  * budget inconnu (convention existante d'À venir, `budgetKnown: false`). `null` sans choix.
  */
+/** CRW-3 : sans prix ni date, le plan n'existait nulle part ; par défaut le 1er du mois, dans 3 mois (UTC), précision « mois ». */
+export function dansTroisMois(le: string): string {
+  const d = new Date(le);
+  const base = Number.isNaN(d.getTime()) ? new Date() : d;
+  const m = base.getUTCMonth() + 3;
+  return new Date(Date.UTC(base.getUTCFullYear() + Math.floor(m / 12), m % 12, 1)).toISOString().slice(0, 10);
+}
+
 export function planDepuisChoix(c: CarnetDoc, args: { le: string }): FinancialPlan | null {
   const choix = c.carnet.choix;
   const a = choix ? c.carnet.articles.find(x => x.id === choix.articleId) : undefined;
   if (!choix || !a) return null;
   const connu = a.prixCentimes !== undefined && (a.devise ?? 'CHF') === 'CHF';
   return {
-    id: idPlanDuCarnet(c.id), title: c.title, date: '', amountCents: connu ? a.prixCentimes! : 0, direction: 'out', category: 'materiel', source: 'equipment',
+    id: idPlanDuCarnet(c.id), title: c.title, date: dansTroisMois(args.le), amountCents: connu ? a.prixCentimes! : 0, direction: 'out', category: 'materiel', source: 'equipment',
     status: 'draft', createdAt: args.le, ...(a.vendeur ? { vendor: a.vendeur } : {}),
     upgrade: {
       version: 1, timing: 'soon', stage: connu ? 'ready' : 'research', budgetKnown: connu, datePrecision: 'month', estimateSource: 'estimate',

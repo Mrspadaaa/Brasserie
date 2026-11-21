@@ -37,6 +37,8 @@ export interface LigneCarnet {
   devise?: string;
   /** D'où vient le prix : écrit dans le message, ou lu sur la page du lien. */
   prixSource?: 'texte' | 'page';
+  /** « dès » : le prix est le plus bas d'une page à plusieurs prix. */
+  prixDes?: true;
   quantite?: number;
   unite?: string;
   vendeur?: string;
@@ -284,6 +286,15 @@ export function lireReponse(brut: unknown, ctx: ContexteGarde): LigneCarnet[] | 
         if (dev) ligne.devise = dev;
       }
     }
+    /* CRP-1, maillon 2 : le prix lu sur la page de CETTE ligne (lue, devise présente) arrive à l'article même si le modèle ne le rend pas ;
+       jamais 0, jamais la page d'une autre ligne. */
+    if (ligne.prixCentimes === undefined && ligne.page?.statut === 'lue') {
+      const pg = ligne.page;
+      if (typeof pg.prix === 'number' && Number.isFinite(pg.prix) && pg.prix > 0 && pg.devise) {
+        ligne.prixCentimes = Math.round(pg.prix * 100); ligne.devise = pg.devise; ligne.prixSource = 'page';
+      }
+    }
+    if (ligne.prixSource === 'page' && ligne.page?.prixDes === true && ligne.page.prix !== undefined && ligne.prixCentimes === Math.round(ligne.page.prix * 100)) ligne.prixDes = true;
     if (typeof r.quantite === 'number' && Number.isFinite(r.quantite) && r.quantite > 0) {
       const surPage = pagesDeLigne.some((p) => contient(nombresDe((p.valeurs ?? []).map((v) => v.valeur).join(' ')), r.quantite as number));
       if (contient(nombresTexte, r.quantite) || surPage) {

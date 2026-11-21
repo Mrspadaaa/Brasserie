@@ -66,6 +66,8 @@ export interface CarnetsVueProps {
   ouvrir?: { id: string; at: number } | null;
   /** + « Nouvelle idée » : le champ du bas prend le focus. */
   focusChamp?: number | null;
+  /** CRN-ONGLET-RETOUR : l'onglet actif « Carnet » touché ramène à la liste ; le texte du champ reste (une note en modification n'est pas défaite). */
+  racine?: number | null;
   onVoirAVenir?: () => void;
   /** « Voir » d'un carnet dont le plan est payé (critique 7, n° 5) : Réalisés ; sans lui, À venir. */
   onVoirRealises?: () => void;
@@ -435,7 +437,9 @@ export function depuisIA(l: LigneCarnet, dest: Destination): LigneARanger {
         ...dest, sorte: 'article', origine, lecture: l.url ? (lue ? 'lue' : 'illisible') : 'lue',
         ...(l.url ? { url: l.url } : {}), ...(p?.domaine ? { domaine: p.domaine } : {}),
         ...(p?.nom ?? l.titre ? { nom: p?.nom ?? l.titre } : !l.url ? { nom: l.texte } : {}),
-        ...(l.prixCentimes !== undefined ? { prixCentimes: l.prixCentimes, devise: l.devise ?? 'CHF' } : {}),
+        ...(l.prixCentimes !== undefined ? { prixCentimes: l.prixCentimes, devise: l.devise ?? 'CHF', ...(l.prixDes ? { prixDes: true } : {}) }
+          /* CRP-1, maillon 3 : le prix de la page lue de CETTE ligne, si ia.ts ne l'a pas posé */
+          : p?.statut === 'lue' && typeof p.prix === 'number' && p.prix > 0 && p.devise ? { prixCentimes: Math.round(p.prix * 100), devise: p.devise, ...(p.prixDes ? { prixDes: true } : {}) } : {}),
         ...(l.vendeur ? { vendeur: l.vendeur } : {}), ...(p?.photo ? { photo: p.photo } : {}),
         ...(p?.dispo ? { dispo: p.dispo === 'en-stock' ? 'en stock' : 'rupture' } : {}),
         ...(Object.keys(valeurs).length ? { valeurs } : {})
@@ -554,6 +558,7 @@ export function CarnetsVue(p: CarnetsVueProps) {
 
   useEffect(() => { if (p.ouvrir) { setVue({ sorte: 'carnet', id: p.ouvrir.id }); setRetour(null); } }, [p.ouvrir?.at]); // eslint-disable-line react-hooks/exhaustive-deps
   useEffect(() => { if (p.focusChamp) champRef.current?.focus(); }, [p.focusChamp]);
+  useEffect(() => { if (p.racine && !edition) setVue({ sorte: 'liste' }); }, [p.racine]); // eslint-disable-line react-hooks/exhaustive-deps
   // P12 : la note en modification a disparu (supprimée, ou autre vue) : le mode se referme et le texte qu'il avait mis dans le champ part.
   useEffect(() => {
     if (edition && !(ouvert && vue.sorte === 'carnet' && ouvert.carnet.notes.some(n => n.id === edition))) { setEdition(null); setTexte(''); }

@@ -169,6 +169,7 @@ export const StocksTab: React.FC<StocksTabProps> = ({
   /** Une demande d'ouverture (carnet précis) ou de focus du champ (+ « Nouvelle idée ») pour la vue Carnets. */
   const [carnetOuvert, setCarnetOuvert] = useState<{ id: string; at: number } | null>(null);
   const [focusChamp, setFocusChamp] = useState<number | null>(null);
+  const [racineCarnets, setRacineCarnets] = useState<number | null>(null);
   const tabsRef = useRef<HTMLElement>(null);
   useEffect(() => { tabsRef.current?.querySelector('[aria-current="page"]')?.scrollIntoView({ block: 'nearest', inline: 'nearest' }); }, [subTab]);
   const allItems = useMemo(
@@ -770,7 +771,7 @@ export const StocksTab: React.FC<StocksTabProps> = ({
             const libelle = seg === 'parc' ? 'Parc' : seg === 'avenir' ? 'À venir' : seg === 'carnets' ? 'Carnets' : 'Réalisés';
             const n = seg === 'avenir' ? segments.avenir : seg === 'carnets' ? segments.carnets : seg === 'realises' ? segments.realises : undefined;
             return (
-              <button key={seg} type="button" onClick={() => setSegMateriel(seg)} aria-current={segMateriel === seg ? 'page' : undefined}
+              <button key={seg} type="button" onClick={() => { if (seg === 'carnets' && segMateriel === 'carnets') setRacineCarnets(Date.now()); setSegMateriel(seg); }} aria-current={segMateriel === seg ? 'page' : undefined}
                 className={`flex-1 min-w-fit px-2 min-h-touch rounded-control flex items-center justify-center gap-1.5 text-sm font-medium transition-colors ${segMateriel === seg ? 'bg-ebc-straw text-cave-950' : 'text-cave-400 hover:text-cave-50'}`}>
                 <span>{libelle}</span>{n !== undefined && <span className="font-mono">{n}</span>}
               </button>
@@ -789,7 +790,7 @@ export const StocksTab: React.FC<StocksTabProps> = ({
 
       {subTab === 'materiel' && segMateriel === 'carnets' && (
         <Suspense fallback={<div role="status" className="py-3 text-sm text-cave-400">Chargement des carnets…</div>}>
-          <CarnetsVue className="min-h-0 flex-1" ouvrir={carnetOuvert} focusChamp={focusChamp}
+          <CarnetsVue className="min-h-0 flex-1" ouvrir={carnetOuvert} focusChamp={focusChamp} racine={racineCarnets}
             onVoirAVenir={() => setSegMateriel('avenir')} onVoirRealises={() => setSegMateriel('realises')} onMessage={onSuccessMessage} />
         </Suspense>
       )}

@@ -58,6 +58,8 @@ export interface Article {
   domaine?: string;
   nom?: string;
   prixCentimes?: number;
+  /** « dès » : la page publie plusieurs prix, `prixCentimes` est le plus bas (jamais présenté comme LE prix). */
+  prixDes?: true;
   devise?: string;
   vendeur?: string;
   pays?: string;
@@ -199,6 +201,38 @@ function lireVeille(v: unknown): Veille | undefined {
   return sansIndefinis({ active: v.active, depuis: v.depuis, releveLe: optTexte(v.releveLe) });
 }
 
+/**
+ * Décode les entités HTML (`&apos;`, `&#39;`, `&amp;`, `&nbsp;`…) : méthode standard du navigateur (DOMParser), aucune regex maison. Le `<` est
+ * protégé pour qu'un texte n'ouvre jamais une balise. Sans DOMParser (hors navigateur et jsdom) ou sans `&` : le texte tel quel.
+ */
+export function decoderEntites(s: string): string {
+  if (!s.includes('&') || typeof DOMParser === 'undefined') return s;
+  return new DOMParser().parseFromString(`<!doctype html><body>${s.replace(/</g, '&lt;')}`, 'text/html').body.textContent ?? s;
+}
+
+const sansAccentsBas = (s: string): string => s.normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase().replace(/\s+/g, ' ').trim();
+
+/** CRB-9 : « Chambre froide - Modèle 6 m³ » dans le carnet « Chambre froide » se lit « Modèle 6 m³ » ; un nom égal au titre ou autre : inchangé. */
+export function nomSansTitre(nom: string, titre: string): string {
+  const t = sansAccentsBas(titre);
+  if (!t) return nom;
+  const debut = nom.replace(/^\s+/, '');
+  if (!sansAccentsBas(debut).startsWith(t)) return nom;
+  const m = /^\s*[-–—:]\s+(\S[\s\S]*)$/.exec(debut.slice(titre.trim().length));
+  return m ? m[1].trim() : nom;
+}
+
+/** CRP-2, CRB-9 (à la lecture, rien n'est réécrit) : entités décodées, « Couleur : » sans ses deux-points, nom sans le titre du carnet. */
+function articleNet(a: Article, titre: string): Article {
+  const valeurs: Record<string, Valeur> = {};
+  for (const [nom, v] of Object.entries(a.valeurs)) {
+    const net = decoderEntites(nom).replace(/\s*[:：]\s*$/, '').trim() || nom;
+    valeurs[net] = { ...v, ...(typeof v.valeur === 'string' ? { valeur: decoderEntites(v.valeur) } : {}) };
+  }
+  const nom = a.nom !== undefined ? nomSansTitre(decoderEntites(a.nom), titre) : undefined;
+  return sansIndefinis({ ...a, nom, valeurs });
+}
+
 const LECTURES: readonly LectureArticle[] = ['a-lire', 'en-cours', 'lue', 'illisible'];
 
 function lireArticle(v: unknown): Article | null {
@@ -206,6 +240,7 @@ function lireArticle(v: unknown): Article | null {
   return sansIndefinis({
     id: v.id, url: optTexte(v.url), domaine: optTexte(v.domaine), nom: optTexte(v.nom),
     prixCentimes: nombreFini(v.prixCentimes) && v.prixCentimes >= 0 ? Math.round(v.prixCentimes) : undefined,
+    prixDes: v.prixDes === true && nombreFini(v.prixCentimes) ? true : undefined,
     devise: optTexte(v.devise), vendeur: optTexte(v.vendeur), pays: optTexte(v.pays), dispo: optTexte(v.dispo), photo: optTexte(v.photo),
     faconId: optTexte(v.faconId), valeurs: lireValeurs(v.valeurs), lecture: LECTURES.includes(v.lecture as LectureArticle) ? (v.lecture as LectureArticle) : 'a-lire',
     veille: lireVeille(v.veille), messageId: optTexte(v.messageId), origine: ORIGINES.includes(v.origine as Origine) ? (v.origine as Origine) : undefined
@@ -259,7 +294,7 @@ export function lireCarnet(item: CreativeItem | null | undefined): CarnetDoc | n
   const carnet = lireDonneesCarnet(item.carnet);
   if (!carnet) return null;
   const status: StatutCarnet = STATUTS.includes(item.status as StatutCarnet) ? (item.status as StatutCarnet) : statutDe(carnet);
-  return { ...item, type: 'carnet', status, carnet };
+  return { ...item, type: 'carnet', status, carnet: { ...carnet, articles: carnet.articles.map(a => articleNet(a, item.title)) } };
 }
 
 const RANGEMENTS: readonly Rangement[] = ['ia', 'locale', 'simulee', 'brut'];

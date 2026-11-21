@@ -69,6 +69,7 @@ export function AtelierPorte(p: AtelierPorteProps) {
   ongletRef.current = onglet;
   const [carnetOuvert, setCarnetOuvert] = useState<{ id: string; at: number } | null>(null);
   const [focusChamp, setFocusChamp] = useState<number | null>(null);
+  const [retourListe, setRetourListe] = useState<number | null>(null);
   const [texteDepart, setTexteDepart] = useState<{ texte: string; at: number } | null>(() => {
     const t = texteDeSaisie(p.demande);
     return t ? { texte: t, at: p.demande!.at } : null;
@@ -108,13 +109,13 @@ export function AtelierPorte(p: AtelierPorteProps) {
           La porte de l'Atelier est cet écran (a5032f1f7 l'avait retiré de CreativeLabTab seulement). */}
       <div className="nc-seg" role="group" aria-label="Mon atelier">
         {ONGLETS.map(([cle, nom, Icone]) => (
-          <button key={cle} type="button" aria-pressed={onglet === cle} onClick={() => setOnglet(cle)}><Icone size={18} aria-hidden="true" />{nom}</button>
+          <button key={cle} type="button" aria-pressed={onglet === cle} onClick={() => { if (cle === 'carnet' && onglet === 'carnet') setRetourListe(Date.now()); setOnglet(cle); }}><Icone size={18} aria-hidden="true" />{nom}</button>
         ))}
       </div>
 
       {onglet === 'carnet' && (
         <Suspense fallback={attente('Chargement du carnet…')}>
-          <CarnetsVue key={texteDepart?.at ?? 0} className="atp-carnets" ouvrir={carnetOuvert} focusChamp={focusChamp}
+          <CarnetsVue key={texteDepart?.at ?? 0} className="atp-carnets" ouvrir={carnetOuvert} focusChamp={focusChamp} racine={retourListe}
             {...(texteDepart ? { texteInitial: texteDepart.texte } : {})}
             onVoirAVenir={() => p.onVoirMateriel?.('avenir')} onVoirRealises={() => p.onVoirMateriel?.('realises')} onMessage={p.onSuccessMessage} />
         </Suspense>
