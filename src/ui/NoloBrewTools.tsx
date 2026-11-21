@@ -11,6 +11,7 @@ import { ToolNumber, ToolRange, ToolComparison, NoloSensitivityChart, noloNumber
 import { NoloProcessComparison } from './NoloProcessComparison';
 import { noloToolContext, keepObservationsBeforeNewAddition } from '../domain/noloToolContext';
 import './nolo-tools.css';
+import { refCurseurNatif } from './geste';
 
 const emptyTools: NoloBrewToolsConfig = { version: 1 };
 type Tool = 'process' | 'wort' | 'additions' | 'dilution' | 'bench';
@@ -36,7 +37,7 @@ function WortTool({ recipe, science, settings: s, update, onChange }: ToolProps)
     {plan.issue && <p className="nolo-note" role="status">{plan.issue}</p>}
     {value && <>
       <dl className="nolo-grid nolo-comparison"><div><dt>Budget du moût</dt><dd>{noloNumber(value.wortBudgetAbvPct, 3)} % vol.</dd></div><div><dt>OG limite sous hypothèses</dt><dd>≤ {noloNumber(Math.floor(value.maxSg * 100000) / 100000, 5)}</dd></div></dl>
-      {exploredSg != null && <label className="nolo-field">Explorer l’OG<input type="range" aria-label="Explorer l’OG" min={1} max={value.curve[value.curve.length - 1].sg} step={.00001} value={exploredSg} onChange={e => update({ simulationSg: Number(e.target.value) })}/></label>}
+      {exploredSg != null && <label className="nolo-field">Explorer l’OG<input ref={refCurseurNatif} type="range" aria-label="Explorer l’OG" min={1} max={value.curve[value.curve.length - 1].sg} step={.00001} value={exploredSg} onChange={e => update({ simulationSg: Number(e.target.value) })}/></label>}
       <NoloSensitivityChart points={value.curve.map(p => ({ x: p.sg, abvPct: p.abvPct }))} target={value.wortBudgetAbvPct} selectedX={exploredSg} label="Sensibilité de l’alcool à l’extrait du moût" xLabel="Densité initiale · SG" digits={4}/>
       <ToolComparison before={value.currentAbvPct} after={value.simulationAbvPct} target={value.wortBudgetAbvPct} beforeLabel="Moût actuel · hypothèse" afterLabel="Moût simulé · hypothèse" valuesOnly/>
       {value.currentIssue && <p className="nolo-note">{value.currentIssue}</p>}
@@ -120,7 +121,7 @@ function DilutionTool(props: BaseProps) {
     <ToolNumber label="Eau à ajouter" unit="L" value={s.waterL} onChange={waterL => update({ waterL })}/>
     <div className="nolo-action-row"><button type="button" className="nolo-action" onClick={() => update({ waterL: 0 })}>Partir sans dilution</button>{value?.requiredWaterL != null && <button type="button" className="nolo-action" onClick={() => update({ waterL: value.requiredWaterL })}>Essayer {noloNumber(value.requiredWaterL)} L pour la cible</button>}</div>
     {value && <>
-      <label className="nolo-field">Explorer la dilution<input type="range" aria-label="Explorer la dilution" min={0} max={Math.max(value.requiredWaterL ?? 0, s.waterL ?? 0, volumeL ?? 0, 1)} step={.1} value={s.waterL ?? 0} onChange={e => update({ waterL: Number(e.target.value) })}/></label>
+      <label className="nolo-field">Explorer la dilution<input ref={refCurseurNatif} type="range" aria-label="Explorer la dilution" min={0} max={Math.max(value.requiredWaterL ?? 0, s.waterL ?? 0, volumeL ?? 0, 1)} step={.1} value={s.waterL ?? 0} onChange={e => update({ waterL: Number(e.target.value) })}/></label>
       <ToolComparison before={baseAbv} after={value.abvPct} target={recipe.nolo!.targetAbvPct}/>
       <table className="nolo-table" aria-label="Effets de la dilution"><tbody><tr><th>Volume après dilution</th><td>{noloNumber(value.finalVolumeL)} L</td></tr><tr><th>Part de bière conservée</th><td>{noloNumber(value.beerFractionPct)} % du mélange</td></tr><tr><th>IBU après dilution</th><td>{value.ibu == null ? 'IBU de départ à renseigner' : noloNumber(value.ibu)}</td></tr></tbody></table>
       {value.capacityExceeded && <p className="nolo-error">Le volume dépasse la capacité utile renseignée. Répartis le lot ou revois la dilution.</p>}
