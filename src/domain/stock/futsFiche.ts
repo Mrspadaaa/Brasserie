@@ -228,6 +228,35 @@ export function problemeRemplissageMultiple(batch: VolumesLot, choisis: KegItem[
   return undefined;
 }
 
+/**
+ * K7 : les fûts qui tiennent le volume à mettre en fût, lavage compris. Propres d'abord, puis à laver ;
+ * on s'arrête dès que le volume est couvert (un seul fût, le dernier, peut rester en partie vide : même règle que
+ * `problemeRemplissageMultiple`). Les fûts à laver retenus sont ceux que la ligne « N à laver · marquer propres » lave.
+ */
+export interface PropositionFuts { futs: KegItem[]; aLaver: KegItem[]; litres: number; manque: number }
+export function futsQuiTiennent(volumeL: number | undefined, kegs: KegItem[]): PropositionFuts {
+  const cap = (k: KegItem) => (Number.isFinite(k.capacityL) && k.capacityL > 0 ? k.capacityL : 0);
+  const ordre = (x: KegItem, y: KegItem) => cap(y) - cap(x) || nat.compare(x.id, y.id);
+  const propres = kegs.filter((k) => k.state === 'propre' && !k.archivedAt && cap(k) > 0).sort(ordre);
+  const sales = kegs.filter((k) => k.state === 'lavage' && !k.archivedAt && cap(k) > 0).sort(ordre);
+  const futs: KegItem[] = [];
+  let litres = 0;
+  /** Tant que le volume n'est pas couvert : le plus petit fût qui couvre le reste, sinon le plus grand. */
+  const prendre = (pool: KegItem[], volume: number) => {
+    while (pool.length && litres < volume) {
+      const reste = volume - litres;
+      const couvre = pool.filter((k) => cap(k) >= reste);
+      const k = couvre.length ? couvre[couvre.length - 1] : pool[0];
+      pool.splice(pool.indexOf(k), 1); futs.push(k); litres += cap(k);
+    }
+  };
+  if (volumeL !== undefined && volumeL > 0) { prendre(propres, volumeL); prendre(sales, volumeL); }
+  return { futs, aLaver: futs.filter((k) => k.state === 'lavage'), litres, manque: volumeL === undefined ? 0 : Math.max(0, volumeL - litres) };
+}
+
+/** « 2 à laver · marquer propres » */
+export const phraseALaver = (n: number) => `${n} à laver · marquer ${n > 1 ? 'propres' : 'propre'}`;
+
 /* ── Ajouter des fûts ── */
 
 /** `n` numéros à la suite du parc, sans jamais réattribuer un numéro existant ou déjà donné. */

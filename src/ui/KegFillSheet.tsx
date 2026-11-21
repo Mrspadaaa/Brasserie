@@ -9,8 +9,8 @@ import { SegmentedControl } from './SegmentedControl';
 import { DateField, swissToday } from './DateField';
 import { isCurrent } from '../domain/catalogOrganization';
 import { nombreFr } from '../domain/nombreAffiche';
-import { brassinsAFuter } from '../domain/stock/futs';
-import { barreLitres, couleurPastille, phraseLitres, problemeRemplissageMultiple, remplirFut, statutLot } from '../domain/stock/futsFiche';
+import { brassinsAFuter, litresDansLesAutresFuts, volumeProduit } from '../domain/stock/futs';
+import { barreLitres, couleurPastille, futsQuiTiennent, marquerPropre, phraseALaver, phraseLitres, problemeRemplissageMultiple, remplirFut, statutLot } from '../domain/stock/futsFiche';
 import './equipment-compact.css';
 import './keg-fiche.css';
 
@@ -23,6 +23,8 @@ interface Props {
   initialKegId?: string;
   onClose: () => void;
   onFill: (filled: KegItem[], batch: Batch) => void;
+  /** K7 : « 2 à laver · marquer propres » lave les fûts à laver qu'il faut pour tenir le volume. */
+  onMarquerPropres?: (laves: KegItem[]) => void;
 }
 
 type Quand = 'auj' | 'hier' | 'autre';
@@ -35,18 +37,36 @@ function veille(today: string): string {
   return [String(d.getUTCDate()).padStart(2, '0'), String(d.getUTCMonth() + 1).padStart(2, '0'), d.getUTCFullYear()].join('.');
 }
 
+/** K7 : les litres du lot qui restent à mettre en fût (produits moins ceux déjà dans ses fûts). */
+const aFuter = (lot: Batch, kegs: KegItem[]) => {
+  const v = volumeProduit(lot);
+  return v === undefined ? undefined : Math.max(0, v - litresDansLesAutresFuts(lot.id, kegs, ''));
+};
+
 /**
  * R1 « Le lot d'abord » (15.11) : on choisit le lot, une barre montre les litres produits et choisis, puis on coche les fûts propres.
  * Même règle de contenance que la fiche d'un fût, généralisée à plusieurs fûts (`problemeRemplissageMultiple`).
  */
-export const KegFillSheet: React.FC<Props> = ({ kegs, batches, today, initialKegId, onClose, onFill }) => {
+export const KegFillSheet: React.FC<Props> = ({ kegs: parc, batches, today, initialKegId, onClose, onFill, onMarquerPropres }) => {
+  /** Les fûts lavés dans cette feuille sont propres tout de suite, même si le parc n'est pas encore relu. */
+  const [laves, setLaves] = useState<KegItem[]>([]);
+  const kegs = useMemo(() => parc.map((k) => laves.find((l) => l.id === k.id && k.state === 'lavage') ?? k), [parc, laves]);
+  const lots = useMemo(() => brassinsAFuter(batches.filter(isCurrent)), [batches]);
   const [lotId, setLotId] = useState('');
   const [coches, setCoches] = useState<string[]>(initialKegId ? [initialKegId] : []);
   const [quand, setQuand] = useState<Quand>('auj');
   const [autre, setAutre] = useState(today);
 
-  const lots = useMemo(() => brassinsAFuter(batches.filter(isCurrent)), [batches]);
   const lot = lots.find((b) => b.id === lotId);
+  const proposition = lot ? futsQuiTiennent(aFuter(lot, kegs), kegs) : undefined;
+  const aLaver = proposition?.aLaver ?? [];
+  /** K7 : un toucher prend les fûts qui tiennent le volume ; ceux à laver sont marqués propres au passage. */
+  const aCocher = (proposition?.futs ?? []).filter((k) => !coches.includes(k.id));
+  const prendre = () => {
+    const propres = aLaver.map((k) => marquerPropre(k, today));
+    if (propres.length) { setLaves((l) => [...l, ...propres]); onMarquerPropres?.(propres); }
+    setCoches((c) => [...c, ...(proposition?.futs ?? []).map((k) => k.id).filter((id) => !c.includes(id))]);
+  };
   const propres = kegs.filter((k) => k.state === 'propre');
   const choisis = propres.filter((k) => coches.includes(k.id));
   const barre = lot ? barreLitres(lot, kegs, choisis) : undefined;
@@ -100,7 +120,13 @@ export const KegFillSheet: React.FC<Props> = ({ kegs, batches, today, initialKeg
                   );
                 })}
               </div>
-            : <p className="equipment-help">Aucun fût propre. Marque un fût propre depuis sa fiche.</p>}
+            : !aLaver.length && <p className="equipment-help">Aucun fût propre. Marque un fût propre depuis sa fiche.</p>}
+          {aCocher.length > 0 && (
+            <button type="button" className="mt-1.5 flex min-h-11 w-full flex-wrap items-baseline gap-x-2 gap-y-0.5 rounded-control border border-dashed border-cave-600 px-2.5 py-1.5 text-left focus-visible:outline focus-visible:outline-2 focus-visible:outline-ebc-straw" onClick={prendre}>
+              <span className="text-[0.8125rem] font-semibold text-cave-50 underline underline-offset-2">{aLaver.length ? phraseALaver(aLaver.length) : `Prendre ${aCocher.length > 1 ? `les ${aCocher.length} fûts` : 'le fût'} qui tiennent le volume`}</span>
+              <span className="font-mono text-xs text-cave-400">{(aLaver.length ? aLaver : aCocher).map((k) => `${k.id} · ${nombreFr(k.capacityL, 1)} L`).join(', ')}{proposition && proposition.manque > 0 ? ` · ${nombreFr(proposition.manque, 1)} L sans fût` : ''}</span>
+            </button>
+          )}
         </Field>
 
         <Field label="Rempli">

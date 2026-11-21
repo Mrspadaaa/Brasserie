@@ -337,6 +337,12 @@ export const KegBoard: React.FC<KegBoardProps> = ({
       {fill && (
         <KegFillSheet
           kegs={kegs} batches={batches} today={jour} initialKegId={fill.kegId} onClose={() => setFill(null)}
+          onMarquerPropres={(laves) => {
+            const avant = laves.map((l) => kegs.find((k) => k.id === l.id)).filter((k): k is KegItem => Boolean(k));
+            laves.forEach((k) => save(k));
+            accrocherDefaire(decompterLavage(laves), avant, laves);
+            onMessage?.(`${phraseMarques(laves.length)} : ${laves.map((k) => k.id).join(', ')}.`);
+          }}
           onFill={(filled, batch) => {
             filled.forEach((keg) => save(keg));
             onMessage?.(`${filled.length > 1 ? `${filled.length} fûts remplis` : `Fût ${filled[0].id} rempli`} · ${batch.name} ${batch.id}.`);
