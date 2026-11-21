@@ -97,7 +97,9 @@
 .ent-mk-pos { stroke: rgb(var(--hop)); }
 .ent-creux-zone { fill: rgb(var(--alert) / 0.08); }
 .ent-creux-pt { fill: var(--ent-fin); stroke: rgb(var(--cave-950)); stroke-width: 2; }
-.ent-pt { fill: var(--ent-fin); opacity: 0.55; pointer-events: none; }
+/* CHV-16 (21.11, « des points gris sans légende ») : un point par semaine, tout près du tracé, se lisait comme une rangée « · · · » le long des marches de
+   l'An aligné. Ils ne se dessinent plus ; la semaine lue au doigt se marque par sa colonne (ent-cur-col). Les cercles restent des repères de position (tests). */
+.ent-pt { fill: none; stroke: none; pointer-events: none; }
 /* Les noms comme z2s : 14 px, nom en regular, montant en gras, halo de la couleur du fond (lisibles même posés sur la courbe). */
 .ent-nom { font-size: 14px; font-weight: 400; fill: rgb(var(--cave-50)); paint-order: stroke; stroke: rgb(var(--cave-950)); stroke-width: 4px; stroke-linejoin: round; pointer-events: none; white-space: pre; }
 .ent-nom .ent-m, .ent-nom .ent-p { font-weight: 700; }

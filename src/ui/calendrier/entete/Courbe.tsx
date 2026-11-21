@@ -118,7 +118,10 @@ export function geometrie(valeurs: readonly number[], n: number, largeur: number
   /* CAL-PASSE (20.11, « je suis en négatif et on le voit même pas sur le graph ») : un solde négatif se tracerait collé au bord bas du dessin (y = bas) et
      la ligne zéro au bord haut : une bande bleue sans rien qui dise « sous zéro ». Sous zéro, le domaine garde de l'air sous la valeur la plus
      basse (6 % de la hauteur), comme il en garde au-dessus (4 %) : le tracé ne touche plus le bord, la zone sous zéro se dessine. */
-  const lo = plusBas < 0 ? plusBas - (hi - plusBas) * 0.06 : plusBas;
+  /* CHV-17 (21.11, fenêtre de 2 semaines) : sur une petite hauteur, 6 % ne font que 4 px, et le trait du solde se collait au bord bas du cadre (invisible) :
+     l'air sous la valeur la plus basse fait au moins 7 px (en paysage, 60 px de courbe, le tracé garde 30 px d'étendue). */
+  const part = Math.max(0.06 / 1.06, 7 / Math.max(1, bas - haut)); // part de la hauteur du domaine laissée sous la valeur la plus basse (0,06 / 1,06 = les 6 % d'avant)
+  const lo = plusBas < 0 ? (plusBas - part * hi) / (1 - part) : plusBas;
   const unit = largeur / Math.max(1, n);
   return { largeur, hauteur, haut, bas, unit, lo, hi, x: i => i * unit, y: v => bas - ((v - lo) / (hi - lo)) * (bas - haut) };
 }
@@ -259,26 +262,34 @@ function toucheLeTrace(courbe: readonly SoldeSemaine[], g: Geo, b: Boite, marge 
  */
 export function placerNoms(courbe: readonly SoldeSemaine[], g: Geo, max: number, exclusions: readonly Boite[] = [], mise: MisePlacee | null = null, etoiles: readonly EtoileCourbe[] = [],
   lignesSous: readonly number[] = []): Etiquette[] {
-  type Article = { genre: 'mouvement' | 'mise'; i: number; nom: string; centimes: number | null; semaines: number[]; etoile: boolean };
+  type Article = { genre: 'mouvement' | 'mise'; i: number; nom: string; centimes: number | null; semaines: number[]; etoile: boolean; fois: number };
   const parNom = new Map<string, Article>();
   courbe.forEach((s, i) => s.mouvements.forEach(m => {
     // Un montant inconnu ou de moins d'un franc ne se nomme pas « 0 » (l'inconnu n'est jamais 0) : la frise le montre, sans chiffre.
     if (Math.round(Math.abs(m.centimes) / 100) === 0) return;
     const deja = parNom.get(m.nom);
-    if (deja) { if (!deja.semaines.includes(s.numero)) deja.semaines.push(s.numero); return; }
-    parNom.set(m.nom, { genre: 'mouvement', i, nom: m.nom, centimes: m.centimes, semaines: [s.numero], etoile: false });
+    if (deja) {
+      // CHD-2 : deux mouvements de même nom dans la semaine nommée (deux brassins « Jhhh », « Emballage · Jhhh » ×2) : une étiquette, leur SOMME, car la
+      // marche de la courbe vaut la somme (−90, pas −45). Un récurrent d'une autre semaine n'ajoute que sa semaine à la liste.
+      if (deja.i === i) { deja.centimes = (deja.centimes ?? 0) + m.centimes; deja.fois++; }
+      else if (!deja.semaines.includes(s.numero)) deja.semaines.push(s.numero);
+      return;
+    }
+    parNom.set(m.nom, { genre: 'mouvement', i, nom: m.nom, centimes: m.centimes, semaines: [s.numero], etoile: false, fois: 1 });
   }));
+  // Des mouvements opposés qui s'annulent (+45 et −45) ne font plus de marche à nommer.
+  for (const [nom, a] of parNom) if (a.centimes !== null && Math.round(Math.abs(a.centimes) / 100) === 0) parNom.delete(nom);
   // Une chose étoilée : son mouvement nommé, ou son titre seul à sa semaine (sans montant : rien n'est inventé).
   for (const e of etoiles) {
     const a = parNom.get(e.nom);
     if (a) a.etoile = true;
-    else if (courbe[e.i]) parNom.set(e.nom, { genre: 'mouvement', i: e.i, nom: e.nom, centimes: null, semaines: [courbe[e.i].numero], etoile: true });
+    else if (courbe[e.i]) parNom.set(e.nom, { genre: 'mouvement', i: e.i, nom: e.nom, centimes: null, semaines: [courbe[e.i].numero], etoile: true, fois: 1 });
   }
   const poids = (a: Article) => Math.abs(a.centimes ?? 0);
   const articles = [...parNom.values()].sort((a, b) => Number(b.etoile) - Number(a.etoile) || poids(b) - poids(a) || a.i - b.i);
   if (mise && mise.centimes > 0) {
     const etoilees = articles.filter(a => a.etoile).length;
-    articles.splice(Math.min(etoilees, articles.length), 0, { genre: 'mise', i: mise.i, nom: '', centimes: mise.centimes, semaines: [], etoile: false });
+    articles.splice(Math.min(etoilees, articles.length), 0, { genre: 'mise', i: mise.i, nom: '', centimes: mise.centimes, semaines: [], etoile: false, fois: 1 });
   }
 
   const pris: Boite[] = [...exclusions];
@@ -306,10 +317,12 @@ export function placerNoms(courbe: readonly SoldeSemaine[], g: Geo, max: number,
     const montant = mouvement && m.centimes !== null ? sg(m.centimes) : '';
     /* CAL-PASSE (21.11, n° 7) : un nom qui ne tient pas se raccourcit (avant « · », puis coupé avec « … »), le montant gardé, avant de se taire */
     const raccourcis = mouvement ? raccourcir(m.nom) : [];
+    // CHD-2 : « Emballage · Jhhh ×2 −90 » : le nombre de mouvements regroupés se lit à côté du nom, jamais coupé avec lui
+    const fois = (nom: string) => (m.fois > 1 ? `${nom} ×${m.fois}` : nom);
     const formes = mouvement
-      ? [{ nom: m.nom, montant, w: largeurNom(m.nom, montant, m.etoile) },
-        ...raccourcis.map(nom => ({ nom, montant, w: largeurNom(nom, montant, m.etoile) })),
-        ...(m.etoile && montant ? [{ nom: m.nom, montant: '', w: largeurNom(m.nom, '', true) }] : [])]
+      ? [{ nom: fois(m.nom), montant, w: largeurNom(fois(m.nom), montant, m.etoile) },
+        ...raccourcis.map(nom => ({ nom: fois(nom), montant, w: largeurNom(fois(nom), montant, m.etoile) })),
+        ...(m.etoile && montant ? [{ nom: fois(m.nom), montant: '', w: largeurNom(fois(m.nom), '', true) }] : [])]
       : textesMise({ i: m.i, centimes: m.centimes ?? 0, titres: mise?.titres ?? [] }).map(t => ({ nom: t, montant: '', w: CARRE_MISE + largeurTexte(t) }));
     // À droite de la marche, à gauche, ou centré au-dessus (ou au-dessous) d'elle : l'abscisse d'ancrage reste celle de sa semaine. La mise de
     // côté n'a pas de marche : elle se pose sur sa zone hachurée, à la semaine la plus proche de la sienne où elle tient.
@@ -342,7 +355,7 @@ export function placerNoms(courbe: readonly SoldeSemaine[], g: Geo, max: number,
         // CHV-3 : jamais plus de deux noms l'un au-dessus de l'autre (l'escalier de sept noms sur la zone rose) ; le reste se lit au doigt
         if (rendus.filter(p => p.l < rendu.r && rendu.l < p.r).length >= 2) continue;
         if (toucheLeTrace(courbe, g, bo)) continue;
-        pose = { genre: m.genre, i: m.i, nom: f.nom, montant: f.montant, x, y: c.y, ancre: c.ancre, neg: (m.centimes ?? 0) < 0, boite: bo, semaines: m.semaines, etoile: m.etoile, complet: m.nom };
+        pose = { genre: m.genre, i: m.i, nom: f.nom, montant: f.montant, x, y: c.y, ancre: c.ancre, neg: (m.centimes ?? 0) < 0, boite: bo, semaines: m.semaines, etoile: m.etoile, complet: fois(m.nom) };
         break;
       }
       if (pose) break;
@@ -350,6 +363,25 @@ export function placerNoms(courbe: readonly SoldeSemaine[], g: Geo, max: number,
     if (pose) { pris.push(pose.boite); rendus.push({ l: pose.boite.l, r: pose.boite.r, t: pose.y - HAUT_RENDU, b: pose.y + BAS_RENDU }); sortie.push(pose); }
   }
   return sortie;
+}
+
+/**
+ * CHV-17 : quand aucun mouvement n'est nommé dans ce que montre la courbe (2 semaines sans rien payer ni encaisser, solde plat), le cadre ne montrait
+ * rien : un trait nu, sans un mot. Le niveau du solde s'écrit alors une fois (« Solde −7 345 »), au-dessus du trait, à la place libre la plus proche
+ * du milieu du cadre. Jamais sur le tracé, ni sur une exclusion (ligne zéro, étiquette du cadre, mois). `null` si aucune place ne tient.
+ */
+export function placerNiveau(nom: string, montant: string, ty: number, g: Geo, exclusions: readonly Boite[], courbe: readonly SoldeSemaine[], xCentre: number): { x: number; y: number; boite: Boite } | null {
+  const w = largeurNom(nom, montant, false);
+  const xs: number[] = [];
+  for (let d = 0; d <= g.largeur; d += 8) for (const s of d === 0 ? [0] : [-d, d]) { const l = xCentre - w / 2 + s; if (l >= 2 && l + w <= g.largeur - 2) xs.push(l); }
+  for (let y = ty - 6; y - 11 >= g.haut; y -= 1) {
+    for (const l of xs) {
+      const bo: Boite = { l, r: l + w, t: y - 11, b: y + 3 };
+      if (exclusions.some(p => croise(p, bo)) || toucheLeTrace(courbe, g, bo)) continue;
+      return { x: l, y, boite: bo };
+    }
+  }
+  return null;
 }
 
 /** L'étiquette de la fenêtre (« S47 – S52 », « nov. – oct. ») : une ligne si elle tient dans le cadre, sinon deux (« S47 – » puis « S52 », z2s). */
@@ -553,7 +585,12 @@ export function Courbe({ courbe, largeur, hauteur, curseur = null, reference, ge
   const boitesMois = mois.map(m => ({ l: m.x - 8, r: m.x + largeurTexte(m.texte) + 8, t: yMois - HAUT_RENDU, b: yMois + BAS_RENDU + 2 }));
   // Un nom peut se poser dans la rangée des mois, entre deux mois (z2s « Six fûts inox −1 080 », w3s « Festival +2 450 »).
   const y0 = g.y(0);
-  const noms = placerNoms(courbe, g, maxNoms(largeur), [...obstaclesCourbe(g, cadre, creux), ...obstaclesZero(g, largeur), ...boitesMois, ...reservesHaut], mise, etoiles, [yMois]);
+  const exclusions = [...obstaclesCourbe(g, cadre, creux), ...obstaclesZero(g, largeur), ...boitesMois, ...reservesHaut];
+  const noms = placerNoms(courbe, g, maxNoms(largeur), exclusions, mise, etoiles, [yMois]);
+  // CHV-17 : rien de nommé à montrer : le niveau du solde, au milieu du cadre (la semaine du milieu de la fenêtre)
+  const iNiveau = Math.max(0, Math.min(n - 1, cadre ? cadre.index + Math.floor(cadre.nombre / 2) : n - 1));
+  const niveau = noms.length === 0 && n > 0 && !(etoiles && etoiles.length)
+    ? placerNiveau('Solde', chf(courbe[iNiveau].libre), g.y(courbe[iNiveau].libre), g, exclusions, courbe, cadre ? (g.x(cadre.index) + g.x(cadre.index + cadre.nombre)) / 2 : largeur / 2) : null;
   /* le solde passe sous zéro quelque part : la ligne zéro se lit et la zone en dessous se teinte */
   const sousZero = g.lo < 0;
   const marques = courbe.map((s, i) => ({ i, d: variation(courbe, i), nomme: s.mouvements.length > 0 })).filter(m => m.nomme && m.d !== null && m.d !== 0 && m.i > 0);
@@ -610,6 +647,12 @@ export function Courbe({ courbe, largeur, hauteur, curseur = null, reference, ge
         <g className="ent-pts" clipPath={`url(#z${uid})`}>
           {courbe.map((s, i) => <circle key={`p${s.lundi}`} className="ent-pt" data-point-semaine={s.numero} data-semaine={s.numero} cx={g.x(i) + g.unit / 2} cy={g.y(s.libre)} r={1.6} />)}
         </g>
+        {niveau && (
+          <text className="ent-nom ent-niveau" data-niveau-courbe x={niveau.x} y={niveau.y} textAnchor="start">
+            Solde <tspan className={courbe[iNiveau].libre < 0 ? 'ent-m' : 'ent-p'}>{chf(courbe[iNiveau].libre)}</tspan>
+            <title>{`Solde libre ${chf(courbe[iNiveau].libre)} CHF, S${courbe[iNiveau].numero}`}</title>
+          </text>
+        )}
         {noms.map(e => (e.genre === 'mise' ? (
           <g key="mise" data-mise-de-cote="etiquette" className={cache(e) ? 'ent-mdc ent-nom-cache' : 'ent-mdc'} aria-hidden={cache(e) || undefined}>
             <rect x={e.boite.l + 1} y={e.y - 11} width={12} height={12} fill={`url(#h${uid})`} className="ent-mdc-c" />
