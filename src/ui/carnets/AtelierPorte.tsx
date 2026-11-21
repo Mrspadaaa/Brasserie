@@ -104,7 +104,8 @@ export function AtelierPorte(p: AtelierPorteProps) {
 
   return (
     <div ref={racine} className="atp space-y-2 sm:space-y-4 text-sm" data-onglet={mobile ? onglet : undefined}>
-      {!mobile && <div className="finance-heading"><h2 className="text-2xl font-semibold">Atelier R&amp;D</h2></div>}
+      {/* CRN-13 : à 1280, « Atelier R&D » redisait l'onglet actif, collé à 6 px sous la barre ; absent à 390, absent ici aussi.
+          La porte de l'Atelier est cet écran (a5032f1f7 l'avait retiré de CreativeLabTab seulement). */}
       <div className="nc-seg" role="group" aria-label="Mon atelier">
         {ONGLETS.map(([cle, nom, Icone]) => (
           <button key={cle} type="button" aria-pressed={onglet === cle} onClick={() => setOnglet(cle)}><Icone size={18} aria-hidden="true" />{nom}</button>
