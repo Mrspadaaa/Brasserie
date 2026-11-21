@@ -716,7 +716,9 @@ export function finDeBrassin(batch: Batch): { jour: string; origine: 'finPrevue'
  * D'AVANT la semaine courante est posé à SA date, dans le passé : il ne se ramène plus à aujourd'hui (T3-2, CRITIQUE-7 n° 2 : ne vaut que pour
  * un jour prévu passé dans la semaine courante). Il se dit « pas brassée », et son « prête le » reste celui de sa date.
  */
-export const brassagePoseAuPasse = (j0: string, aujourdhui: string): boolean => lundiDe(j0) < ajouterJours(lundiDe(aujourdhui), -7);
+/* B8 (WFP-3, 21.11) : « S48 → S46 », la barre dessinée en S47. La semaine d'avant la courante est du passé comme les autres : la barre va
+   où le doigt la lâche. Seul un jour prévu passé DANS la semaine courante se dessine depuis aujourd'hui. */
+export const brassagePoseAuPasse = (j0: string, aujourdhui: string): boolean => lundiDe(j0) < lundiDe(aujourdhui);
 
 export function preteAuPlusTot(batch: Batch, aujourdhui: string): string | null {
   const fin = finDeBrassin(batch);

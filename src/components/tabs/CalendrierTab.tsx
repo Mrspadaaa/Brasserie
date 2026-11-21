@@ -867,10 +867,11 @@ export function CalendrierTab(props: CalendrierTabProps) {
     if (du < premierLundi || ajouterJours(du, (f.semaines - 1) * 7) > derniereSemaine) return false;
     const fen: FenetreSemaines = { du, semaines: f.semaines };
     fenetreRef.current = fen;
+    /* B8 (WFP-4, 21.11) : « Nov. » devenu « 16 nov. → 27 déc. » après un glisser, et resté au rechargement. Le défilement au bord est celui du
+       geste : la fenêtre suit la barre (elle reste où le doigt l'a lâchée), la période de l'app et de Finances ne bouge que par le brasseur. */
     setFenetre(fen);
-    onPeriode(periodeDeFenetre(fen));
     return true;
-  }, [premierLundi, derniereSemaine, onPeriode]);
+  }, [premierLundi, derniereSemaine]);
   /* E32 : « Livraison La Cigogne · S1 › » mène à la vente hors de la vue */
   const surRenvoi = (c: ChoseCalendrier) => {
     const n = Math.max(2, fenetre.semaines);

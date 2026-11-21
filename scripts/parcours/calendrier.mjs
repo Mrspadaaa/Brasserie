@@ -332,6 +332,62 @@ async function jouer(dir) {
       const periodeNeuve = () => p.evaluate(() => { for (const k of Object.keys(localStorage)) { try { const o = JSON.parse(localStorage.getItem(k)); if (o && typeof o === 'object' && 'app_global_time_filter' in o) { delete o.app_global_time_filter; localStorage.setItem(k, JSON.stringify(o)); } } catch { /* pas du JSON */ } } });
       const recharger = async () => { await periodeNeuve(); await p.goto(url, { waitUntil: 'load' }); await sleep(1200); await versCalendrier(); };
 
+      // B8 / WFP-3 : une barre lâchée une semaine avant la semaine courante se dessine là où le doigt l'a lâchée (pas sur aujourd'hui)
+      await recharger(); await fermer();
+      {
+        const poi = await point('[aria-label^="Poignée de début"]');
+        const frise = await p.evaluate(() => { const r = document.querySelector('[data-ent-periode]')?.getBoundingClientRect(); return r ? r.width : 0; });
+        if (poi && frise) await glisser([poi[0], poi[1]], [poi[0] - frise / 4, poi[1]]);
+        const vues = await semainesVues();
+        const titre = 'Blonde d’automne';
+        const avant = await labelDe(`${titre},`); const sa = semaineDe(avant);
+        const courante = await p.evaluate(() => Number(document.querySelector('[data-bande-semaines] [data-courant="oui"]')?.getAttribute('data-semaine') ?? NaN));
+        const cible = courante === 1 ? 52 : courante - 1;
+        if (sa === null || !vues.includes(cible)) echec('B8 barre au passé', `préalable : « ${titre} » ${avant ? `en S${sa}` : 'absente'}, S${cible} ${vues.includes(cible) ? 'visible' : `hors des semaines vues (${vues.join(',')})`}`);
+        else {
+          const ecart = ((cible - sa) - 53) % 53; // vers le passé, en semaines (négatif)
+          await p.evaluate((t) => { document.querySelector(`[aria-label^="${t},"]`)?.scrollIntoView({ block: 'center' }); }, titre);
+          const c = await point(`[aria-label^="${titre},"]`); const col = await colonne();
+          const x0 = c[0] - Math.min(c[2] / 2 - 6, 10);
+          await glisser([x0, c[1]], [x0 + ecart * col, c[1]]);
+          const apres = await labelDe(`${titre},`); const sb = semaineDe(apres);
+          await cap('09b-b8-barre-semaine-passee');
+          sb === cible ? ok('B8 barre au passé', `« ${titre} » S${sa} → S${sb}, dessinée où le doigt l'a lâchée`)
+            : echec('B8 barre au passé', `« ${titre} » lâchée en S${cible} (semaine avant la courante S${courante}), dessinée en S${sb ?? '(absente)'} : « ${apres?.slice(0, 70)} »`);
+          if (await visibleParTexte('Annuler').catch(() => null)) await toucher('Annuler');
+        }
+      }
+
+      // B8 / WFP-4 : un glisser tenu au bord fait défiler la fenêtre, mais la période de l'app ne bouge que par le brasseur (ni après le lâcher, ni au rechargement)
+      await recharger(); await fermer();
+      {
+        const p0 = await pastille();
+        const debut = () => p.evaluate(() => { const e = document.querySelector('[aria-label^="Poignée de début"]'); const m = e && /commence en S(\d+)/.exec(e.getAttribute('aria-label')); return m ? Number(m[1]) : null; });
+        const d0 = await debut();
+        const titre = 'Fruty';
+        await p.evaluate((t) => { document.querySelector(`[aria-label^="${t},"]`)?.scrollIntoView({ block: 'center' }); }, titre);
+        const c = await point(`[aria-label^="${titre},"]`);
+        const bord = await p.evaluate(() => { const r = document.querySelector('[data-frise]')?.getBoundingClientRect(); return r ? Math.min(innerWidth, r.right) - 4 : innerWidth - 4; });
+        if (!c) echec('B8 période', `« ${titre} » introuvable`);
+        else {
+          const pt = (x, y) => [{ x: Math.round(x), y: Math.round(y), id: 1 }];
+          const x0 = c[0] - Math.min(c[2] / 2 - 6, 10);
+          await cdp.send('Input.dispatchTouchEvent', { type: 'touchStart', touchPoints: pt(x0, c[1]) }); await sleep(60);
+          for (let k = 1; k <= 14; k++) { await cdp.send('Input.dispatchTouchEvent', { type: 'touchMove', touchPoints: pt(x0 + ((bord - x0) * k) / 14, c[1]) }); await sleep(16); }
+          for (let k = 0; k < 16; k++) { await cdp.send('Input.dispatchTouchEvent', { type: 'touchMove', touchPoints: pt(bord - (k % 2), c[1]) }); await sleep(180); }
+          const d1 = await debut();
+          await cdp.send('Input.dispatchTouchEvent', { type: 'touchEnd', touchPoints: [] }); await sleep(900);
+          const p1 = await pastille();
+          await cap('09b-b8-periode-apres-glisser');
+          if (await visibleParTexte('Annuler').catch(() => null)) await toucher('Annuler');
+          await p.goto(url, { waitUntil: 'load' }); await sleep(1200); await versCalendrier(false);
+          const p2 = await pastille();
+          if (d1 === d0) notes.push(`B8 période : la fenêtre n'a pas défilé au bord (S${d0} → S${d1}) : défilement non joué`);
+          (p1 === p0 && p2 === p0) ? ok('B8 période', `« ${p0} » après le glisser au bord (fenêtre S${d0} → S${d1}) et après rechargement`)
+            : echec('B8 période', `période « ${p0} » devenue « ${p1} » après un glisser au bord (fenêtre S${d0} → S${d1}), « ${p2} » après rechargement`);
+        }
+      }
+
       // B11 / WFV-3 : la vente encaissée aujourd'hui (caisse : pièce payée + paiement) est une chose de la rangée Ventes
       await recharger(); await fermer();
       {

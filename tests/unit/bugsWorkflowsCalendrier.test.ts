@@ -3,11 +3,12 @@
  * doigt par scripts/parcours/calendrier.mjs (étape 9b).
  */
 import { describe, expect, it } from 'vitest';
-import type { CreativeItem, StockItem, Transaction } from '../../src/types';
+import type { Batch, CreativeItem, StockItem, Transaction } from '../../src/types';
 import type { FinanceTransaction, FinancialPayment, FinancialProfile } from '../../src/domain/finance/types';
 import { REGLAGES_VIDES } from '../../src/domain/fournisseurs';
 import { construireModele, type EntreesModele } from '../../src/ui/calendrier/useDonneesCalendrier';
 import { brewBudgetDemands } from '../../src/domain/finance/brewBudget';
+import { brassagePoseAuPasse, choseBrassin } from '../../src/domain/calendrier';
 
 const AUJ = '2026-11-18'; // mercredi, lundi 2026-11-16 (S47)
 
@@ -18,6 +19,15 @@ describe('B3 (WFR-11) : une levure sans nom ne fait pas tomber le calcul', () =>
     expect(d.find(x => x.stockItemRef === 'ZZ-US05')).toMatchObject({ name: 'Levure', quantity: 2, unit: 'sachet' });
     const sansRef = brewBudgetDemands({ ...recette, yeast: { qty: 2, unit: 'sachet' } } as never);
     expect(sansRef.map(x => x.name)).toEqual(['Malt pilsner']);
+  });
+});
+
+describe('B8 (WFP-3) : la barre va où le doigt la lâche', () => {
+  it('un brassin pas brassé prévu la semaine d’avant la courante se dessine à SA date', () => {
+    expect(brassagePoseAuPasse('2026-11-10', AUJ)).toBe(true);
+    expect(brassagePoseAuPasse('2026-11-16', AUJ)).toBe(false); // la semaine courante : depuis aujourd'hui (T3-2)
+    const b = { id: 'LOT-B8', name: 'Blonde', style: 'Blonde', volumeL: 50, brewDate: '', plannedBrewDate: '10.11.2026', status: 'planifie', recipeSnapshot: { fermentation: [{ kind: 'primaire', name: 'Primaire', tempC: 19, days: 14 }] } } as unknown as Batch;
+    expect(choseBrassin(b, AUJ)).toMatchObject({ debut: '2026-11-10', pasBrassee: true });
   });
 });
 
