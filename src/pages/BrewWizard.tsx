@@ -2,7 +2,7 @@ import { RecipeDisclosure } from '../ui/RecipeDisclosure';
 import { WizardStepName, WizardStepRail } from '../ui/WizardStepBar';
 import './recipe-wizard.css';
 import '../ui/wizard/cadre.css';
-import React, { lazy, Suspense, useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState, type Dispatch, type SetStateAction } from 'react';
+import React, { lazy, startTransition, Suspense, useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState, type Dispatch, type SetStateAction } from 'react';
 import { NumberInput } from '../ui/NumberInput';
 import { BrewBudgetButton } from '../ui/finance/BrewBudgetDialog';
 import {
@@ -646,7 +646,10 @@ const BrewWizardEditor: React.FC<BrewWizardProps & {
     (['id', 'volumeL', 'efficiencyPct', 'boilOffRatePct', 'deadSpaceL', 'equipment', 'preferences'] as const)
       .some(key => JSON.stringify(details.brewhouse![key]) !== JSON.stringify(configuredBrewhouse[key]));
 
-  const [step, setStep] = useState<StepId>(restoredDraft?.step ?? seed?.step ?? 'identite');
+  const [step, setStepNow] = useState<StepId>(restoredDraft?.step ?? seed?.step ?? 'identite');
+  // Changer d'étape est une transition (VUE-SAUTE, 21.11) : une étape dont un panneau se charge encore (lazy) ne fait plus cacher tout l'assistant par le
+  // Suspense du dessus (la rangée Retour / Suivant disparaissait ~75 ms, puis revenait) ; l'étape quittée reste à l'écran jusqu'à ce que la suivante soit prête.
+  const setStep = useCallback((s: SetStateAction<StepId>) => startTransition(() => setStepNow(s)), []);
 
   // Banc local de l'étape Malts/sucres (p8-port) : `?malts=maquette` (développement seulement, éliminé du bundle de production) pose la recette et le
   // stock de la maquette s1, SIMULÉS (src/ui/fermentescibles/apercuDev.ts), et passe à l'étape ; `?malts=sucre` (ou fruit, huit, vide, couleurs)
@@ -2474,7 +2477,8 @@ const BrewWizardEditor: React.FC<BrewWizardProps & {
       onClose={onClose}
       mobileHeader={mobileHeader}
       endActions={stepActions}
-      endActionsCollant={step === 'levure' && !details.nolo?.enabled}
+      // « Suivant » à une place fixe (VUE-SAUTE, 21.11 : il sautait de 490 puis 655 px d'une étape à l'autre) : la rangée Retour / Suivant reste hors de la zone qui défile à toutes les étapes ; le récap n'en a pas.
+      endActionsCollant
       compactDock
       className="recipe-wizard"
       actions={abandonner && isDesktop ? abandonner : undefined}
