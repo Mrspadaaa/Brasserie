@@ -19,6 +19,8 @@ import { largeurTexte } from '../../src/ui/calendrier/entete/Courbe';
 import { Courbe, causesDuCreux, semaineCourte, RECUL_MAX } from '../../src/ui/calendrier/entete/Courbe';
 
 /** La largeur de la fenêtre (jsdom : 1024) : l'invitation à tourner est pour le téléphone tenu droit (< 700 px). */
+/* CAL-LENT (session 8) : la tête juge sa place (empilé, serré) dans l'image suivante, plus dans le commit : on la laisse passer */
+const imageSuivante = () => act(async () => { await new Promise(r => (typeof requestAnimationFrame === 'function' ? requestAnimationFrame(() => r(null)) : r(null))); });
 function largeurFenetre(px: number) { Object.defineProperty(window, 'innerWidth', { value: px, configurable: true, writable: true }); }
 afterEach(() => { largeurFenetre(1024); });
 
@@ -329,15 +331,16 @@ describe('E11, E12 : lire la courbe au doigt, et la courbe en grand', () => {
     const { container } = render(<Banc {...espions()} onLectureSemaine={onLectureSemaine} />);
     const svg = screen.getByRole('img', { name: /Libre et caisse sur 52 semaines/ });
     fireEvent.pointerDown(svg, { pointerId: 1, clientX: 100, clientY: 20, button: 0 });
-    fireEvent.pointerMove(window, { pointerId: 1, clientX: 160, clientY: 22 });
-    // 160 px sur 390 : la 22e semaine (index 21), le lundi 12 avril 2027, S15.
+    fireEvent.pointerMove(window, { pointerId: 1, clientX: 280, clientY: 22 });
+    // B9 (D395) : le doigt lit les semaines de la fenêtre (6 sem., S47 – S52, 65 px chacune sur 390) : 280 px, la 5e (index 4), le lundi
+    // 14 déc., S51, celle du Marché de Noël.
     // CRITIQUE-7 n° 5 : la forme la plus longue qui tient (as/cal.html) ; jsdom ne mesure rien : la longue, « CHF » et la date comprises.
-    expect(container.querySelector('.ent-lit')!.textContent).toContain('S15 · 12 avr.');
+    expect(container.querySelector('.ent-lit')!.textContent).toContain('S51 · 14 déc.');
     expect(container.querySelector('.ent-lit')!.textContent).toContain('CHF ·');
     expect(container.querySelector('.ent-lit')!.getAttribute('data-forme')).toBe('longue');
     expect(screen.queryByRole('button', { name: /à dépenser/ })).toBeNull();
-    expect(onLectureSemaine).toHaveBeenLastCalledWith(ajouterJours(LUNDI0, 21 * 7));
-    fireEvent.pointerUp(window, { pointerId: 1, clientX: 160 });
+    expect(onLectureSemaine).toHaveBeenLastCalledWith(ajouterJours(LUNDI0, 4 * 7));
+    fireEvent.pointerUp(window, { pointerId: 1, clientX: 280 });
     // Sous la bande, le détail : « la semaine » et son total.
     expect(container.querySelector('.ent-lu')!.textContent).toContain('la semaine');
     fireEvent.pointerDown(document.body);
@@ -690,15 +693,15 @@ describe('CRITIQUE-3 n° 6 (c2-b) et n° 25 (c3-a) : le doigt sur la courbe', ()
     const cb = container.querySelector('.ent-cb') as HTMLElement;
     fireEvent.pointerDown(cb, { pointerId: 1, clientX: 30, clientY: 50, button: 0 });
     fireEvent.pointerMove(window, { pointerId: 1, clientX: 90, clientY: 52 });
-    fireEvent.pointerMove(window, { pointerId: 1, clientX: 160, clientY: 52 });
-    // Pendant : la tête lit la semaine sous le doigt (160 px : S15), ses boutons restent, le cadre n'a pas bougé.
-    expect(container.querySelector('.ent-t')!.textContent).toMatch(/CHF · S15 · 12 avr\. [+−]/);
+    fireEvent.pointerMove(window, { pointerId: 1, clientX: 280, clientY: 52 });
+    // Pendant : la tête lit la semaine de la fenêtre sous le doigt (B9 : 280 px, S51), ses boutons restent, le cadre n'a pas bougé.
+    expect(container.querySelector('.ent-t')!.textContent).toMatch(/CHF · S51 · 14 déc\. [+−]/);
     expect(screen.getByRole('button', { name: '±' })).toBeInTheDocument();
     expect(screen.getByRole('button', { name: /6 sem/ })).toBeInTheDocument();
     expect(screen.getByLabelText('Fenêtre : S47 – S52')).toBeInTheDocument();
-    fireEvent.pointerUp(window, { pointerId: 1, clientX: 160 });
+    fireEvent.pointerUp(window, { pointerId: 1, clientX: 280 });
     expect(e.onFenetre).not.toHaveBeenCalled();
-    expect(container.querySelector('.ent-t')!.textContent).toContain('CHF · S15');
+    expect(container.querySelector('.ent-t')!.textContent).toContain('CHF · S51');
     expect(container.querySelector('.ent-lu')!.textContent).toContain('la semaine');
     expect(screen.getByLabelText('Fenêtre : S47 – S52')).toBeInTheDocument();
     // Le curseur est tracé avant les noms : leur halo le coupe, il passe dessous.
@@ -945,11 +948,12 @@ describe('CRITIQUE-4 (lot q1-entete) : le doigt à 390, le paysage, le menu, le 
     // Les zones de prise (cadre S47 – S52 de 0 à 45 px) : 300 px en est loin.
     fireEvent.pointerDown(cb, { pointerId: 4, clientX: 300, clientY: 50, button: 0 });
     fireEvent.pointerMove(window, { pointerId: 4, clientX: 320, clientY: 51 });
-    fireEvent.pointerMove(window, { pointerId: 4, clientX: 160, clientY: 51 });
-    expect(onLectureSemaine).toHaveBeenLastCalledWith(ajouterJours(LUNDI0, 21 * 7));
-    expect(container.querySelector('.ent-t')!.textContent).toMatch(/CHF · S15 · 12 avr\. [+−]\d/);
+    fireEvent.pointerMove(window, { pointerId: 4, clientX: 280, clientY: 51 });
+    // B9 (D395) : la semaine de la fenêtre sous le doigt, S51 (index 4)
+    expect(onLectureSemaine).toHaveBeenLastCalledWith(ajouterJours(LUNDI0, 4 * 7));
+    expect(container.querySelector('.ent-t')!.textContent).toMatch(/CHF · S51 · 14 déc\. [+−]\d/);
     expect(container.querySelector('.ent-lu')!.textContent).toContain('la semaine');
-    fireEvent.pointerUp(window, { pointerId: 4, clientX: 160 });
+    fireEvent.pointerUp(window, { pointerId: 4, clientX: 280 });
   });
 
   it('n° 26 : dans l’An, la plage du menu porte les deux années (« 16 nov. 2026 → … 2027 ») ; 6 semaines dans la même année, sans année', () => {
@@ -1207,7 +1211,9 @@ describe('CRITIQUE-5 n° 20 : la lecture au doigt et l’appui long marchent à 
       const x0 = larg * 0.6;
       fireEvent.pointerDown(cb, { pointerId: 1, pointerType: pointer, clientX: x0, clientY: 50, button: 0 });
       fireEvent.pointerMove(window, { pointerId: 1, pointerType: pointer, clientX: x0 + 30, clientY: 51 });
-      const attendu = Math.floor(((x0 + 30) / larg) * 52);
+      // B9 (D395) : le doigt lit les semaines de la frise, jamais l'année : en paysage, la courbe est alignée sur ses colonnes (D387, larg / 13
+      // chacune) ; tenu droit, les 6 semaines de la fenêtre sont réparties sur la largeur
+      const attendu = orientation === 'paysage' ? Math.floor((x0 + 30) / (larg / 13)) : Math.floor(((x0 + 30) / larg) * 6);
       expect(onLectureSemaine).toHaveBeenLastCalledWith(ajouterJours(LUNDI0, attendu * 7));
       expect(e.onFenetre).not.toHaveBeenCalledWith(expect.objectContaining({ du: ajouterJours(LUNDI0, attendu * 7) }));
       fireEvent.pointerUp(window, { pointerId: 1, clientX: x0 + 30 });
@@ -1260,12 +1266,13 @@ describe('CRITIQUE-6 (lot B-entete) : le chiffre clé entier, le creux et ses ca
     expect(regle).toContain('flex: none');
   });
 
-  it('n° 1 et 14 : quand la ligne ne tient pas (390, paysage), la semaine passe sous « CHF à dépenser » (data-empile), sans rien rogner', () => {
+  it('n° 1 et 14 : quand la ligne ne tient pas (390, paysage), la semaine passe sous « CHF à dépenser » (data-empile), sans rien rogner', async () => {
     vi.spyOn(HTMLElement.prototype, 'offsetWidth', 'get').mockImplementation(function (this: HTMLElement) {
       return this.tagName === 'B' ? 70 : this.classList.contains('ent-k-u') ? 104 : this.tagName === 'EM' ? 56 : 0;
     });
     const large = vi.spyOn(HTMLElement.prototype, 'clientWidth', 'get').mockImplementation(function (this: HTMLElement) { return this.hasAttribute('data-ent-cle') ? 190 : 0; });
     const { container, unmount } = render(<Banc {...espions()} modele={modele({ courbe: descente, creux: creuxDepuis(descente) })} />);
+    await imageSuivante();
     const cle = container.querySelector('[data-ent-cle]') as HTMLElement;
     expect(cle.hasAttribute('data-empile')).toBe(true);
     expect(cle.textContent).toContain('CHF à dépenser');
@@ -1273,21 +1280,24 @@ describe('CRITIQUE-6 (lot B-entete) : le chiffre clé entier, le creux et ses ca
     // Assez de place (z2s : « 113 CHF à dépenser · S24 ») : une ligne.
     large.mockImplementation(function (this: HTMLElement) { return this.hasAttribute('data-ent-cle') ? 260 : 0; });
     const { container: c2 } = render(<Banc {...espions()} modele={modele({ courbe: descente, creux: creuxDepuis(descente) })} orientation="paysage" />);
+    await imageSuivante();
     expect((c2.querySelector('[data-ent-cle]') as HTMLElement).hasAttribute('data-empile')).toBe(false);
   });
 
-  it('paquet D n° 5 : empilé sans 4 px de marge au ± (montant long, vue Jour à 390), le chiffre se resserre (data-serre) ; avec la marge, non', () => {
+  it('paquet D n° 5 : empilé sans 4 px de marge au ± (montant long, vue Jour à 390), le chiffre se resserre (data-serre) ; avec la marge, non', async () => {
     vi.spyOn(HTMLElement.prototype, 'offsetWidth', 'get').mockImplementation(function (this: HTMLElement) {
       return this.tagName === 'B' ? 70 : this.classList.contains('ent-k-u') ? 104 : this.tagName === 'EM' ? 56 : 0;
     });
     const large = vi.spyOn(HTMLElement.prototype, 'clientWidth', 'get').mockImplementation(function (this: HTMLElement) { return this.hasAttribute('data-ent-cle') ? 178 : 0; });
     const { container, unmount } = render(<Banc {...espions()} modele={modele({ courbe: descente, creux: creuxDepuis(descente) })} />);
+    await imageSuivante();
     const cle = container.querySelector('[data-ent-cle]') as HTMLElement;
     expect(cle.hasAttribute('data-empile')).toBe(true);
     expect(cle.hasAttribute('data-serre')).toBe(true);
     unmount();
     large.mockImplementation(function (this: HTMLElement) { return this.hasAttribute('data-ent-cle') ? 190 : 0; });
     const { container: c2 } = render(<Banc {...espions()} modele={modele({ courbe: descente, creux: creuxDepuis(descente) })} />);
+    await imageSuivante();
     expect((c2.querySelector('[data-ent-cle]') as HTMLElement).hasAttribute('data-serre')).toBe(false);
     const css = readFileSync(resolve(process.cwd(), 'src/ui/calendrier/entete/entete.css'), 'utf8');
     expect(css).toMatch(/\.ent-k\[data-serre\] b \{ font-size: 17px;/);
@@ -1536,13 +1546,13 @@ describe('CRITIQUE-9 (lot corr9-B) : le creux ancré sur son point, le glissé �
     const z = zonesPoignees(0, 45, 390);
     expect([Math.max(0, z.debut.l), z.debut.l + z.debut.w, z.fin.l, z.fin.l + z.fin.w]).toEqual([0, 10, 35, 79]);
     const cb = container.querySelector('.ent-cb') as HTMLElement;
-    // Départ à 30 % de la courbe (117 px), hors du cadre et de ses prises.
-    fireEvent.pointerDown(cb, { pointerId: 7, clientX: 117, clientY: 50, button: 0 });
-    fireEvent.pointerMove(window, { pointerId: 7, clientX: 124, clientY: 51 });
-    // 130 px : la semaine des six fûts inox (index 17), qui a un mouvement : le détail dit « la semaine ».
-    fireEvent.pointerMove(window, { pointerId: 7, clientX: 130, clientY: 52 });
+    // Départ à 69 % de la courbe (270 px), hors du cadre et de ses prises.
+    fireEvent.pointerDown(cb, { pointerId: 7, clientX: 270, clientY: 50, button: 0 });
+    fireEvent.pointerMove(window, { pointerId: 7, clientX: 277, clientY: 51 });
+    // B9 (D395) : 283 px lit la 5e semaine de la fenêtre (index 4, S51), celle du Marché de Noël : le détail dit « la semaine ».
+    fireEvent.pointerMove(window, { pointerId: 7, clientX: 283, clientY: 52 });
     expect(container.querySelector('.ent-t')!.textContent).toMatch(/CHF · S\d+ · \d+ \p{L}+/u);
-    fireEvent.pointerUp(window, { pointerId: 7, clientX: 130 });
+    fireEvent.pointerUp(window, { pointerId: 7, clientX: 283 });
     expect(onLectureSemaine).toHaveBeenCalled();
     expect(onLectureSemaine.mock.calls.at(-1)![0]).toMatch(/^\d{4}-\d{2}-\d{2}$/);
     expect(e.onFenetre).not.toHaveBeenCalled();
@@ -1605,13 +1615,14 @@ describe('CRITIQUE-9 (lot corr9-B) : le creux ancré sur son point, le glissé �
 });
 
 describe('CRITIQUE-10 (lot corr10-B) : c2-b au doigt à 390 ne touche jamais ±, le focus au clavier seul', () => {
-  /* La semaine d'index 22 (S17 ’27) a quatre mouvements : le détail dit le plus gros, « +3 autres » et « la semaine ». */
+  /* La semaine d'index 3 (S50, dans la fenêtre S47 – S52 : B9, le doigt ne lit qu'elle) a quatre mouvements : le détail dit le plus gros,
+     « +3 autres » et « la semaine ». */
   const courbeChargee = courbeCaisse({ depart: 418000, lundi0: LUNDI0, mises, mouvements: [
     ...mouvements,
-    { id: 'n1', jour: jour(22), centimes: -60000, nom: 'Houblons' },
-    { id: 'n2', jour: jour(22), centimes: -12000, nom: 'Étiquettes' },
-    { id: 'n3', jour: jour(22), centimes: -8000, nom: 'Capsules' },
-    { id: 'n4', jour: jour(22), centimes: 30000, nom: 'Ventes du marché' }
+    { id: 'n1', jour: jour(3), centimes: -60000, nom: 'Houblons' },
+    { id: 'n2', jour: jour(3), centimes: -12000, nom: 'Étiquettes' },
+    { id: 'n3', jour: jour(3), centimes: -8000, nom: 'Capsules' },
+    { id: 'n4', jour: jour(3), centimes: 30000, nom: 'Ventes du marché' }
   ] })!;
   const modeleCharge = (): ModeleEnTete => ({ ...modele(), courbe: courbeChargee, creux: creuxDepuis(courbeChargee) });
   const plusMoins = () => screen.getByTitle('Afficher les + et − et les icônes de chaque semaine');
@@ -1622,13 +1633,13 @@ describe('CRITIQUE-10 (lot corr10-B) : c2-b au doigt à 390 ne touche jamais ±,
     const { container } = render(<Banc {...e} modele={modeleCharge()} onMouvements={onMouvements} onLectureSemaine={vi.fn()} />);
     const cb = container.querySelector('.ent-cb') as HTMLElement;
     expect(plusMoins().getAttribute('aria-pressed')).toBe('false');
-    // 390 en 6 sem. : prises 0 à 10 et 35 à 79 px. Départ à 88 px (22,6 % de la courbe), hors du cadre ; 80 px à droite : 168 px, l'index 22.
-    fireEvent.pointerDown(cb, { pointerId: 21, pointerType: 'touch', clientX: 88, clientY: 30, button: 0 });
-    for (let x = 96; x <= 168; x += 8) fireEvent.pointerMove(window, { pointerId: 21, pointerType: 'touch', clientX: x, clientY: 31 });
+    // 390 en 6 sem. : prises 0 à 10 et 35 à 79 px. Départ à 128 px, hors du cadre ; 80 px à droite : 208 px, la 4e semaine de la fenêtre (index 3).
+    fireEvent.pointerDown(cb, { pointerId: 21, pointerType: 'touch', clientX: 128, clientY: 30, button: 0 });
+    for (let x = 136; x <= 208; x += 8) fireEvent.pointerMove(window, { pointerId: 21, pointerType: 'touch', clientX: x, clientY: 31 });
     // Doigt tenu : la tête de sa maquette (« 3 801 CHF · S12 · 22 mars −487 »), les boutons de tête restent, ± fermé.
     const tete = container.querySelector('.ent-t')!;
     expect(tete.textContent).toMatch(/CHF · S\d+ · \d+ \S+/);
-    expect(tete.querySelector('.ent-lit em')!.textContent).toBe(`S${courbeChargee.semaines[22].numero}`);
+    expect(tete.querySelector('.ent-lit em')!.textContent).toBe(`S${courbeChargee.semaines[3].numero}`);
     for (const s of ['.ent-mb', '.ent-per', '.ent-pl']) expect(tete.querySelector(s)).not.toBeNull();
     expect(plusMoins().getAttribute('aria-pressed')).toBe('false');
     // Au lâcher, le clic fabriqué tombe sur la courbe ; le détail de 3 lignes reste sous la bande.

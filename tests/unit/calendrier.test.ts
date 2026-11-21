@@ -462,14 +462,17 @@ describe('CRITIQUE-3 (17.11) : J réel, pas brassée, courses / frais / impôt, 
     expect(t).not.toMatch(/J\d/);
     expect(c.preteLe).toBeUndefined();
     expect(c.pretePrevue).toBe('2026-12-14');
-    /* D395 : prévue la semaine d'avant (S46), sa barre est posée à sa date, 10 nov. → 10 nov. + 28 j ; le jour prévu reste dit (Liste, détail) */
-    expect(c).toMatchObject({ debut: '2026-11-10', fin: '2026-12-08', brassagePrevu: '2026-11-10', deplacable: true });
+    /* D395 et D398 : prévue la semaine d'avant (S46), sa barre COMMENCE à sa date (10 nov.) et finit à « prête » (14 déc.) ; le jour prévu reste dit (Liste, détail) */
+    expect(c).toMatchObject({ debut: '2026-11-10', fin: '2026-12-14', brassagePrevu: '2026-11-10', deplacable: true });
     expect(c.detail).toBe('pas brassée · brassage prévu le 10 nov. · prête le 14 déc. au plus tôt');
-    /* ses étapes suivent la recette depuis son jour prévu, jusqu'au conditionnement au bout de la barre ; jamais hors d'elle */
+    /* D398 : ses étapes suivent la recette depuis aujourd'hui (brassée au plus tôt aujourd'hui), jusqu'au conditionnement à « prête » ; une seule
+       date par jalon, jamais hors de la barre ; leur écart se compte depuis le début de la barre (10 nov.) */
     const ids = c.jalons?.map(j => j.id) ?? [];
     expect(ids[0]).toBe('brassage');
-    expect(ids).toContain('fermentation');
-    expect(c.jalons?.[c.jalons.length - 1]).toMatchObject({ id: 'conditionnement', jour: '2026-12-08', ecart: 28, glissable: 'fin' });
+    expect(c.jalons?.[0]).toMatchObject({ id: 'brassage', jour: '2026-11-10', ecart: 0 });
+    expect(c.jalons?.find(j => j.id === 'fermentation')).toMatchObject({ jour: '2026-11-17', ecart: 7 });
+    expect(c.jalons?.[c.jalons.length - 1]).toMatchObject({ id: 'conditionnement', jour: '2026-12-14', ecart: 34, glissable: 'fin' });
+    expect(c.jalons?.filter(j => j.id === 'conditionnement').map(j => j.jour)).toEqual([c.pretePrevue]);
     expect(c.jalons?.filter(j => j.id !== 'brassage').every(j => j.jour >= c.debut && j.jour <= c.fin && j.jour === ajouterJours(c.debut, j.ecart))).toBe(true);
     /* sans cycle connu : son jour prévu seul, « prévue le 10 nov. », aucune fin inventée */
     const sansCycle = choseBrassin(lot({ id: 'LOT-S', name: 'Saison de ferme', status: 'planifie', brewDate: '', plannedBrewDate: '10.11.2026' }), '2026-11-16')!;
@@ -617,8 +620,9 @@ describe('CRITIQUE-6 (18.11) : prête au plus tôt, factures de matières dans A
     expect(c.detail).toContain('pas brassée');
     expect(c.detail).toContain('prête le 22 déc.');
     expect(`${c.detail} ${c.duree}`).not.toContain('15 déc.');
-    /* D395 et D397 : prévue la semaine d'avant, sa barre reste à sa date (10 nov. → 15 déc.) ; seule la date dite est au plus tôt */
-    expect(c).toMatchObject({ debut: '2026-11-10', fin: '2026-12-15' });
+    /* D395 et D398 : prévue la semaine d'avant, sa barre commence à sa date (10 nov.) et finit à « prête » au plus tôt (22 déc.) */
+    expect(c).toMatchObject({ debut: '2026-11-10', fin: '2026-12-22' });
+    expect(c.jalons?.find(j => j.id === 'conditionnement')?.jour).toBe('2026-12-22');
     expect(c.duree).toBe('pas brassée · prête le 22 déc.');
     /* prévue dans le futur : prévue + cycle (24 nov. + 35 j = 29 déc.) */
     const futur = lot({ ...saison, plannedBrewDate: '24.11.2026' });

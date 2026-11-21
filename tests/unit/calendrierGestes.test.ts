@@ -265,10 +265,10 @@ describe('CRITIQUE-3 n° 30 : après allonger, la durée garde « J / n · prêt
     expect(texteDuree(choseBrassin({ ...ipa, finPrevue: '2026-12-14' } as Batch, AUJOURDHUI)!)).toBe('J7 / 35 · prête 14 déc.');
     /* un brassin pas brassé s'allonge sans « J » (CRITIQUE-5 n° 1, test dédié plus bas) */
     const saison = choseBrassin({ ...ipa, id: 'LOT-S', status: 'planifie', brewDate: '', actualBrewDate: undefined, plannedBrewDate: '10.11.2026' } as unknown as Batch, AUJOURDHUI)!;
-    /* D395 : prévue le 10 nov. (S46, la semaine d'avant), sa barre est posée à sa date (10 nov. → 8 déc., tirée : 15 déc.) ; D397 : « prête le »
-       vaut au plus tôt aujourd'hui + cycle, 16 nov. + 28 j + 7 j = 21 déc. */
-    expect(saison).toMatchObject({ debut: '2026-11-10', fin: '2026-12-08', pretePrevue: '2026-12-14' });
-    expect(choseAllongee(saison, 7, AUJOURDHUI)).toMatchObject({ debut: '2026-11-10', fin: '2026-12-15', pretePrevue: '2026-12-21', duree: 'pas brassée · prête le 21 déc.' });
+    /* D395 : prévue le 10 nov. (S46, la semaine d'avant), sa barre commence à sa date ; D397 et D398 : elle finit à « prête le », au plus tôt
+       aujourd'hui + cycle (16 nov. + 28 j = 14 déc. ; tirée de 7 j : 21 déc.) */
+    expect(saison).toMatchObject({ debut: '2026-11-10', fin: '2026-12-14', pretePrevue: '2026-12-14' });
+    expect(choseAllongee(saison, 7, AUJOURDHUI)).toMatchObject({ debut: '2026-11-10', fin: '2026-12-21', pretePrevue: '2026-12-21', duree: 'pas brassée · prête le 21 déc.' });
   });
 
   it('D397 : prévue le 10 nov. (S46), tirée de 7 j le 16 nov. : finPrevue = 10 nov. + 28 + 7, le message dit « prête le 21 déc. » (au plus tôt), la barre reste à sa date', () => {
@@ -278,7 +278,9 @@ describe('CRITIQUE-3 n° 30 : après allonger, la durée garde « J / n · prêt
     const r = bien(allonger(chose, 7, ctx({ batches: [saisonBatch] })));
     expect(r.ecritures).toEqual([{ op: 'patch', collection: 'batches', id: 'LOT-S', patch: { finPrevue: '2026-12-15' } }]);
     expect(r.message.texte).toBe('Saison de ferme : pas brassée · prête le 21 déc.');
-    expect(choseBrassin({ ...saisonBatch, finPrevue: '2026-12-15' } as Batch, AUJOURDHUI)).toMatchObject({ debut: '2026-11-10', fin: '2026-12-15', pretePrevue: '2026-12-21', duree: 'pas brassée · prête le 21 déc.' });
+    /* D398 : la barre commence à sa date et finit à « prête le » ; la chose relue et l'aperçu disent la même fin */
+    expect(choseBrassin({ ...saisonBatch, finPrevue: '2026-12-15' } as Batch, AUJOURDHUI)).toMatchObject({ debut: '2026-11-10', fin: '2026-12-21', pretePrevue: '2026-12-21', duree: 'pas brassée · prête le 21 déc.' });
+    expect(choseAllongee(chose, 7, AUJOURDHUI)).toMatchObject({ fin: '2026-12-21', pretePrevue: '2026-12-21' });
     /* raccourcir sous le jour prévu : refus, comme tout brassin */
     expect(allonger(chose, -28, ctx({ batches: [saisonBatch] }))).toMatchObject({ ok: false });
     expect(choseAllongee(chose, -28, AUJOURDHUI)).toBe(chose);

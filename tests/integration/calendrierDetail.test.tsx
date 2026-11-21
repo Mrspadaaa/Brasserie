@@ -167,7 +167,8 @@ describe('CRITIQUE-10 n° 3, 4, 7 : une date, une plage entière, un lien lisibl
 
   it('n° 3 (E08, D-19, E40) : la Liste dit « prévue le 10 nov. · S46 », le jour prévu, jamais le 18 ; le détail ouvert depuis elle dit le même jour', () => {
     const c = saison();
-    expect(c).toMatchObject({ pasBrassee: true, brassagePrevu: '2026-11-10', debut: AUJ });
+    /* D395 (B8) : prévue la semaine d'avant (S46), sa barre commence à sa date, jamais au 18 */
+    expect(c).toMatchObject({ pasBrassee: true, brassagePrevu: '2026-11-10', debut: '2026-11-10' });
     const { rerender } = render(<VueListe choses={[c]} sansDate={[]} aujourdhui={AUJ} onChose={() => {}} />);
     const ligne = document.querySelector(`[data-liste-chose="${c.id}"]`)!;
     expect(ligne.textContent).toMatch(/pas brassée · prévue le 10 nov\. · S46/);

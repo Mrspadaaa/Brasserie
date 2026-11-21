@@ -714,7 +714,8 @@ export function finDeBrassin(batch: Batch): { jour: string; origine: 'finPrevue'
 /**
  * CAL-PASSE (20.11, décision du pilote : le passé est visible et modifiable) : un brassin pas brassé dont le jour prévu tombe plus d'une semaine avant la semaine courante (un retard d'une semaine se rattrape encore cette semaine, T3-2) 
  * D'AVANT la semaine courante est posé à SA date, dans le passé : il ne se ramène plus à aujourd'hui (T3-2, CRITIQUE-7 n° 2 : ne vaut que pour
- * un jour prévu passé dans la semaine courante). Il se dit « pas brassée », et son « prête le » reste celui de sa date.
+ * un jour prévu passé dans la semaine courante). Il se dit « pas brassée » ; son « prête le » et ses jalons prévus partent de max(jour prévu,
+ * aujourd'hui) (D397, D398) : seul le début de sa barre reste à sa date.
  */
 /* B8 (WFP-3, 21.11) : « S48 → S46 », la barre dessinée en S47. La semaine d'avant la courante est du passé comme les autres : la barre va
    où le doigt la lâche. Seul un jour prévu passé DANS la semaine courante se dessine depuis aujourd'hui. */
@@ -797,40 +798,35 @@ export function choseBrassin(batch: Batch, aujourdhui: string, options: { comman
      * CRITIQUE-5 n° 1 : son bord se tire. `finPrevue` écrite au-delà du cycle de la recette allonge sa barre d'autant (après aujourd'hui) et
      * sa durée dit « pas brassée · prête le … » ; sans `finPrevue`, « pas brassée · prévue le … ».
      */
-    if (brassagePoseAuPasse(j0, aujourdhui)) {
-      /* D397 : la barre reste à sa date (j0 → j0 + cycle) ; « prête le » dit au plus tôt aujourd'hui + cycle (`preteAuPlusTot`) */
-      const prete = preteAuPlusTot(batch, aujourdhui);
-      return {
-        ...base, debut: j0, fin: fin?.jour ?? j0, pasBrassee: true, brassagePrevu: j0, ...(prete ? { pretePrevue: prete } : {}),
-        duree: prete ? dureePasBrassee(prete) : `pas brassée · prévue le ${jourLisible(j0)}`,
-        detail: `pas brassée · brassage prévu le ${jourLisible(j0)}${prete ? ` · prête le ${jourLisible(prete)} au plus tôt` : ''}`, jalons: jalonsBrassin(batch, options), deplacable: true
-      };
-    }
     if (j0 < aujourdhui) {
       /* CRITIQUE-6 n° 2 : « prête le » se compte depuis aujourd'hui (brassée au plus tôt aujourd'hui), jamais depuis le jour prévu passé */
       const prete = preteAuPlusTot(batch, aujourdhui);
       /*
-       * D385 (variante C, son pied par phases) : brassée au plus tôt aujourd'hui, ses étapes suivent la recette depuis ce jour-là : fermentation,
-       * dry hop et garde recalés sur aujourd'hui (le même écart qu'à la recette), puis le conditionnement à « prête ». Ce sont des prévisions :
-       * elles ne se glissent pas (le brassage replanifie ; le conditionnement, comme le bord, règle « prête »). Sans cycle connu, le brassage seul, comme avant : aucune date inventée.
+       * Où commence la barre. Jour prévu passé DANS la semaine courante (CRITIQUE-7 n° 2, D-47, D-190, E29) : aujourd'hui, le temps qu'elle
+       * passera en cuve. Posé à sa date dans une semaine passée (D395, B8 : « S48 → S46 ») : à son jour prévu ; seul ce début reste à sa date (D398).
+       * Dans les deux cas, la barre finit à « prête » : tirer son bord déplace la date dite. Sans cycle connu : son début seul, « prévue le … »,
+       * et le bord refuse avec sa raison (`allongerBrassin`).
+       */
+      const debut = brassagePoseAuPasse(j0, aujourdhui) ? j0 : aujourdhui;
+      const avance = ecartJours(debut, aujourdhui);
+      /*
+       * D385 (variante C, son pied par phases) et D398 : brassée au plus tôt aujourd'hui, ses étapes suivent la recette depuis ce jour-là : fermentation,
+       * dry hop et garde recalés sur aujourd'hui (le même écart qu'à la recette), puis le conditionnement à « prête ». Une seule date par jalon :
+       * la grille et le pied disent celle de « prête le ». Ce sont des prévisions : elles ne se glissent pas (le brassage replanifie ; le
+       * conditionnement, comme le bord, règle « prête »). Leur écart se compte depuis le début de la barre. Sans cycle connu, le brassage seul.
        */
       const finRecalee = prete ? ecartJours(aujourdhui, prete) : null;
-      const brassage: JalonBrassin[] = jalonsBrassin(batch).flatMap((j): JalonBrassin[] => {
-        if (j.id === 'brassage') return [j];
-        if (finRecalee === null || j.id === 'commander' || j.id === 'conditionnement' || j.ecart >= finRecalee) return [];
-        return [{ id: j.id, libelle: j.libelle, jour: ajouterJours(aujourdhui, j.ecart), ecart: j.ecart, glissable: false, raison: 'Prévu d’après la recette' }];
+      const brassage: JalonBrassin[] = jalonsBrassin(batch, debut === j0 ? options : {}).flatMap((j): JalonBrassin[] => {
+        if (j.id === 'brassage' || j.id === 'commander') return [j];
+        if (finRecalee === null || j.id === 'conditionnement' || j.ecart >= finRecalee) return [];
+        return [{ id: j.id, libelle: j.libelle, jour: ajouterJours(aujourdhui, j.ecart), ecart: avance + j.ecart, glissable: false, raison: 'Prévu d’après la recette' }];
       });
-      if (prete && finRecalee !== null && finRecalee > 0) brassage.push({ id: 'conditionnement', libelle: 'Conditionnement', jour: prete, ecart: finRecalee, glissable: 'fin' });
-      /*
-       * CRITIQUE-7 n° 2 (D-47, D-190, E29) : la barre court de max(jour prévu, aujourd'hui) = aujourd'hui jusqu'à « prête » : le temps qu'elle
-       * passera en cuve, comme un brassin planifié (J0 → prête). Tirer son bord déplace donc la date dite. Sans cycle connu : aujourd'hui seul,
-       * « prévue le … », et le bord refuse avec sa raison (`allongerBrassin`).
-       */
+      if (prete && finRecalee !== null && finRecalee > 0) brassage.push({ id: 'conditionnement', libelle: 'Conditionnement', jour: prete, ecart: avance + finRecalee, glissable: 'fin' });
       return {
         /* sa durée dit « pas brassée · prête le … » : le titre n'a pas à le répéter (heurt t3-a / t3-c) */
-        ...base, debut: aujourdhui, fin: prete ?? aujourdhui, pasBrassee: true, brassagePrevu: j0, ...(prete ? { pretePrevue: prete } : {}),
+        ...base, debut, fin: prete ?? debut, pasBrassee: true, brassagePrevu: j0, ...(prete ? { pretePrevue: prete } : {}),
         duree: prete ? dureePasBrassee(prete) : `pas brassée · prévue le ${jourLisible(j0)}`,
-        detail: `pas brassée · brassage prévu le ${jourLisible(j0)}${prete ? ` · prête le ${jourLisible(prete)} au plus tôt` : ''}`, jalons: brassage, deplacable: true
+        detail: `pas brassée · brassage prévu le ${jourLisible(j0)}${prete ? ` · prête le ${jourLisible(prete)} au plus tôt` : ''}`, jalons: brassage.sort((a, b) => a.ecart - b.ecart), deplacable: true
       };
     }
     const duree = fin ? dureeBrassin(j0, fin.jour, aujourdhui, false) : null;

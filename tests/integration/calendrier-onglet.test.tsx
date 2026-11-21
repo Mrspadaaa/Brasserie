@@ -486,27 +486,30 @@ describe('CRITIQUE-10 n° 5 (E31) : « Dupliquer » d’un brassin dit son effet
 });
 
 describe('CRITIQUE-10 n° 1 (E28, D-46, D-189) : la Saison pas brassée va où on la lâche', () => {
-  it('prévue le 10 nov., aujourd’hui le 18 : glisser d’une colonne, la bulle dit « S48 · 23 nov. » et l’écriture porte le 23 nov.', async () => {
+  /* D395 (B8) : prévue le 10 nov. (S46, la semaine d'avant la courante), sa barre est posée à sa date ; une colonne plus loin, le 17 nov.
+     (son mardi gardé), dans la semaine courante ; D397 et D398 : brassée au plus tôt aujourd'hui, elle est prête au 18 nov. + 28 j = 16 déc. */
+  it('prévue le 10 nov., aujourd’hui le 18 : glisser d’une colonne, la bulle dit « S47 · 17 nov. » et l’écriture porte le 17 nov.', async () => {
     const appels = monterBanc({ aujourdhui: '2026-11-18' });
     const saison = screen.getByRole('button', { name: /^Saison de ferme/ });
-    expect(saison.getAttribute('data-semaine')).toBe('S47');
+    expect(saison.getAttribute('data-semaine')).toBe('S46');
     const largeur = Number(document.querySelector('[data-frise]')!.getAttribute('data-largeur-colonne'));
     fireEvent.pointerDown(saison, { clientX: 100, clientY: 10, pointerId: 1, button: 0 });
     fireEvent.pointerMove(saison, { clientX: 100 + largeur, clientY: 10, pointerId: 1 });
     const bulle = document.querySelector('[data-ici]');
-    expect(bulle?.textContent).toMatch(/^S48 · 23 nov\./);
+    expect(bulle?.textContent).toMatch(/^S47 · 17 nov\./);
     fireEvent.pointerUp(saison, { clientX: 100 + largeur, clientY: 10, pointerId: 1 });
     await waitFor(() => expect(appels.filter(a => a.op === 'patch' && a.collection === 'batches')).toHaveLength(1));
     const ecrit = appels.find(a => a.op === 'patch' && a.collection === 'batches')!;
-    /* l'app écrit `plannedBrewDate` à la suisse (« 23.11.2026 ») ; lu en ISO pour comparer */
+    /* l'app écrit `plannedBrewDate` à la suisse (« 17.11.2026 ») ; lu en ISO pour comparer */
     const ecrite = String(ecrit.patch!.plannedBrewDate);
     const iso = /^\d{2}\.\d{2}\.\d{4}$/.test(ecrite) ? `${ecrite.slice(6, 10)}-${ecrite.slice(3, 5)}-${ecrite.slice(0, 2)}` : ecrite;
-    expect(iso).toBe('2026-11-23');
+    expect(iso).toBe('2026-11-17');
     /* la bulle et l'écriture disent la même date */
     expect(bulle?.textContent).toContain(`${Number(iso.slice(8, 10))} nov.`);
     const apres = await screen.findByRole('button', { name: /^Saison de ferme/ });
-    await waitFor(() => expect(apres.getAttribute('data-semaine')).toBe('S48'));
-    expect(screen.getByRole('button', { name: /^Saison de ferme/ }).textContent).toMatch(/prête 21 déc\./);
+    await waitFor(() => expect(apres.getAttribute('data-semaine')).toBe('S47'));
+    /* la barre dit « pas brassée » ; son nom accessible porte la durée entière */
+    expect(screen.getByRole('button', { name: /^Saison de ferme/ }).getAttribute('aria-label')).toMatch(/pas brassée · prête le 16 déc\./);
   });
 });
 

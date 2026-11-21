@@ -111,10 +111,15 @@ describe('curseur de lecture sur une courbe plate : pas de rond qui déborde (ca
     const { container } = render(<Courbe courbe={plate} largeur={366} hauteur={44} curseur={1} plate />);
     expect(container.querySelector('[data-curseur]')).toBeTruthy();
     expect(container.querySelector('[data-curseur-anneau]')).toBeNull();
-    expect(container.querySelector('.ent-cur-pt')).toBeTruthy();
+    /* D392 (CAL-ENTETE, deuxième refus du rond) : plus de point non plus ; la semaine lue est sa colonne teintée et sa marche */
+    expect(container.querySelector('.ent-cur-pt')).toBeNull();
+    expect(container.querySelector('[data-curseur-colonne]')).toBeTruthy();
   });
-  it('courbe qui varie : l’anneau reste', () => {
+  it('courbe qui varie : ni anneau ni point (D392), la colonne et la marche épaissie de la semaine lue', () => {
     const { container } = render(<Courbe courbe={[semaine(0, 100_000), semaine(1, 50_000), semaine(2, 80_000)]} largeur={366} hauteur={88} curseur={1} />);
-    expect(container.querySelector('[data-curseur-anneau]')).toBeTruthy();
+    expect(container.querySelector('[data-curseur-anneau]')).toBeNull();
+    expect(container.querySelector('.ent-cur-pt')).toBeNull();
+    expect(container.querySelector('[data-curseur-colonne]')).toBeTruthy();
+    expect(container.querySelector('[data-curseur-marche]')).toBeTruthy();
   });
 });
