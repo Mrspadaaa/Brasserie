@@ -10,6 +10,7 @@ import { NumberInput } from '../NumberInput';
 import { DateField, swissToday, toSwissDate } from '../DateField';
 import { Units } from '../../services/units';
 import { scaleBrewBudgetRecipe } from '../../domain/finance/brewBudgetScaling';
+import { NOTE_PRIX_DU_STOCK, prixDuStockPropose } from '../../domain/finance/prixDuStock';
 import { Field, inputClass } from '../FormNav';
 import { brewBudgetDateKey, estimateBrewBudget, netVolumeSaisi, reductionImpotPourAnnee, type BrewBudgetLine, type BrewBudgetSettings, type BrewBudgetSnapshot, type BrewCostKey, type BrewPrice, type BrewCashTreatment } from '../../domain/finance/brewBudget';
 import { coutLitre, litresNets, troisNotions } from '../../domain/finance/chaineLitre';
@@ -189,6 +190,12 @@ function BrewBudgetDraft({ recipe, batch, stockItems, batches, config, savedEsti
   const notions = useMemo(() => troisNotions(estimate), [estimate]);
   const litre = useMemo(() => coutLitre({ notions, litres: netConnu }), [notions, netConnu]);
   const requiredPrices = estimate.lines.filter(l => l.issues.length > 0);
+  /* WF2-8 : les prix du stock (HT ou TTC non précisé) se reprennent d'un geste, estimés, corrigeables ligne par ligne ; jamais posés seuls. */
+  const prixDuStock = useMemo(() => prixDuStockPropose(estimate.lines, stockItems, swissToday()), [estimate.lines, stockItems]);
+  const nPrixDuStock = Object.keys(prixDuStock).length;
+  const [reprisDuStock, setReprisDuStock] = useState<string[]>([]);
+  const reprendrePrixDuStock = () => { setPrices(current => ({ ...prixDuStock, ...current })); setReprisDuStock(Object.keys(prixDuStock)); };
+  const annulerPrixDuStock = () => { setPrices(current => { const reste = { ...current }; for (const cle of reprisDuStock) if (reste[cle]?.note === NOTE_PRIX_DU_STOCK) delete reste[cle]; return reste; }); setReprisDuStock([]); };
   const estimes = useMemo(() => ({ ener: true, net: true, emb: true, imp: !(estimate.beerTaxSource === 'calcule' && ogMesuree), mat: !useRegisterDepreciation, fix: settings.annualFixedCHF !== defaultSettings?.annualFixedCHF }), [estimate.beerTaxSource, ogMesuree, useRegisterDepreciation, settings.annualFixedCHF, defaultSettings?.annualFixedCHF]);
   const changePrice = (line: BrewBudgetLine, patch: Partial<BrewPrice>) => setPrices(current => {
     const previous = current[line.key] ?? line.price;
@@ -301,6 +308,8 @@ function BrewBudgetDraft({ recipe, batch, stockItems, batches, config, savedEsti
       <button type="button" className="bbx-vol" onClick={aLitres} aria-label={netConnu ? `Volumes : ${frL(netConnu)} L nets` : 'Volumes : litres nets à renseigner'} data-inconnu={netConnu ? undefined : 'true'} data-booster="volumes">
         <b className="ops-m">{Number.isFinite(volume) ? frL(volume) : '?'} L</b> brassés · <b className="ops-m">{netConnu ? `${frL(netConnu)} L` : '? L'}</b> nets ›</button>
       <BudgetBande bande={bande} assujetti={config.fiscal.isTvaRegistered} onManque={manques[0]?.agir ?? aLitres} onVolumes={aLitres} onLitre={() => { setOrigine('flux'); setVue({ id: 'litre' }); }} />
+      {nPrixDuStock > 0 && <section aria-label="Prix du stock" data-booster="prix-du-stock"><ul className="bbx-taches"><li><button type="button" className="bbx-tache" data-manque="prix-du-stock" onClick={reprendrePrixDuStock}><i aria-hidden="true">✓</i><span><b>Reprendre {nPrixDuStock === 1 ? 'le prix' : `les ${nPrixDuStock} prix`} du stock</b><small>Estimés, TTC supposé : tu {nPrixDuStock === 1 ? 'le' : 'les'} corriges ensuite ligne par ligne.</small></span><em aria-hidden="true">›</em></button></li></ul></section>}
+      {reprisDuStock.length > 0 && <p className="brew-budget-hint" role="status" data-booster="prix-du-stock-repris">{reprisDuStock.length === 1 ? 'Prix du stock repris' : `${reprisDuStock.length} prix du stock repris`} (estimés, TTC supposé). <button type="button" className="cbf-lien-champ" onClick={annulerPrixDuStock}>Annuler</button></p>}
       {manques.length > 0 && <section aria-label="Données à compléter" data-booster="tache-filtrante"><p className="sr-only" role="status">{requiredPrices.length ? `${requiredPrices.length} ingrédient${requiredPrices.length > 1 ? 's' : ''} sans prix. ` : ''}Pour compléter ce coût :</p>
         <ul className="bbx-taches">{manques.map(m => <li key={m.cle}><button type="button" className="bbx-tache" data-manque={m.cle} onClick={m.agir}><i aria-hidden="true">?</i><span><b>{m.titre}</b><small>{m.effet}</small></span><em aria-hidden="true">›</em></button></li>)}</ul>
       </section>}

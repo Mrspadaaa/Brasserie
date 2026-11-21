@@ -209,7 +209,7 @@ function listeEtapes() { return [
       if (/Rien pour/.test(t) || !/ZZ TEST Hotte/.test(t)) return echec('B10', `la loupe ne trouve pas la chose « ZZ TEST Hotte » du Calendrier : ${t.match(/Rien pour[^.]{0,60}/)?.[0] ?? t.slice(0, 120)}`);
       await s.toucher('ZZ TEST Hotte', { contient: true }); await sleep(1800);
       await s.cap('B10-2-calendrier');
-      const lignes = await s.p.evaluate(() => [...document.querySelectorAll('[data-chose-id]')].map((e) => (e.getAttribute('aria-label') || e.innerText || '').replace(/s+/g, ' ').slice(0, 80)));
+      const lignes = await s.p.evaluate(() => [...document.querySelectorAll('[data-chose-id]')].map((e) => (e.getAttribute('aria-label') || e.innerText || '').replace(/\s+/g, ' ').slice(0, 80)));
       if (!lignes.some((l) => /Hotte/.test(l))) return echec('B10', `le résultat n'ouvre pas le Calendrier sur la chose (choses visibles : ${lignes.slice(0, 4).join(' | ') || 'aucune'})`);
       ok('B10', 'la loupe trouve « ZZ TEST Hotte » et le Calendrier l\'affiche');
     }
@@ -223,6 +223,33 @@ function listeEtapes() { return [
       const manque = ['ZZ TEST Pale Ale', 'ZZ TEST NEIPA'].filter((n) => !t.includes(n));
       if (manque.length) return echec('B11', `la liste des brassins cache ce que la caisse vend : ${manque.join(', ')} (écran : ${t.slice(0, 160)})`);
       ok('B11', 'la Pale Ale (conditionnée) et la NEIPA (terminée) sont listées');
+    }
+  },
+  {
+    id: 'WF2-8', titre: 'Budget d\'un brassin planifié : un geste reprend les prix du stock (estimés) et le coût du brassin n\'est plus « pas encore chiffré » (WF2-8)',
+    async joue(s) {
+      await s.onglet('Brassins'); await sleep(800);
+      await s.toucher('Ouvrir le brassin B-ZZ-PLAN'); await sleep(1200);
+      await s.toucher('Dossier'); await sleep(800);
+      await s.toucher('Estimer le budget de ce brassin'); await sleep(1500);
+      const avant = await s.texte(3000);
+      if (!/Pas encore chiffré/.test(avant)) return echec('WF2-8', `départ inattendu : la chaîne ne dit pas « Pas encore chiffré » (${avant.slice(0, 120)})`);
+      await s.toucher('Coût du brassin', { contient: true }); await sleep(1500);
+      await s.cap('WF2-8-1-budget');
+      if (!(await s.visible('Reprendre les', { contient: true }))) return echec('WF2-8', 'le budget ne propose pas de reprendre les prix du stock (pilsner 1,6 / Munich 1,9 / Citra 0,09 / US-05 4,5 sont au stock)');
+      await s.toucher('Reprendre les', { contient: true }); await sleep(900);
+      await s.cap('WF2-8-2-repris');
+      const repris = await s.texte(3000);
+      if (!/prix du stock repris/.test(repris) || !/estimés/.test(repris)) return echec('WF2-8', `les prix repris ne sont pas dits estimés (écran : ${repris.slice(0, 160)})`);
+      await s.toucher('Enregistrer', { att: 3000 }); await sleep(1500);
+      await s.cap('WF2-8-3-chaine');
+      const plans = await s.store('financialPlans');
+      const estim = plans.find((p) => p.brewEstimate?.batchId === 'B-ZZ-PLAN')?.brewEstimate;
+      const pils = estim && Object.values(estim.prices ?? {}).find((p) => p.amount === 1.6);
+      if (!pils || !/estim/.test(String(pils.note))) return echec('WF2-8', `l'estimation enregistrée ne porte pas le prix du stock du malt pilsner, marqué estimé (${estim ? JSON.stringify(Object.keys(estim.prices ?? {})) : 'aucune estimation'})`);
+      const apres = await s.texte(3000);
+      if (/Coût du brassin « ZZ TEST IPA »\s*Pas encore chiffré/.test(apres)) return echec('WF2-8', 'la chaîne dit encore « Pas encore chiffré » après l\'estimation enregistrée');
+      ok('WF2-8', 'un geste reprend les prix du stock, dits estimés ; l\'estimation enregistrée les porte et la chaîne ne dit plus « Pas encore chiffré »');
     }
   },
   {
