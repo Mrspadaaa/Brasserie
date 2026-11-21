@@ -211,6 +211,10 @@ export interface LigneTableau {
   cellules: Record<string, Valeur | undefined>;
   prixCentimes?: number;
   devise?: string;
+  /** Livraison (CRB-13) : ce que l'article porte déjà (dispo, vendeur, pays) ; absent = inconnu, jamais une valeur par défaut. */
+  dispo?: string;
+  vendeur?: string;
+  pays?: string;
   /** Vrai seulement s'il est dominé par CHACUN des autres articles en lice (critique 5, n° 23). */
   moinsBienPartout: boolean;
   /** Le rang de l'article en lice qui le domine sur toutes les colonnes connues des deux (`moinsBienQue`) ; absent sinon. */
@@ -423,6 +427,7 @@ export function tableau(c: CarnetDoc | Donnees): Tableau | null {
     return {
       articleId: a.id, nom: noms.get(a.id) ?? nomArticle(a), rang, cellules,
       ...(a.prixCentimes !== undefined ? { prixCentimes: a.prixCentimes } : {}), ...(a.devise ? { devise: a.devise } : {}),
+      ...(a.dispo ? { dispo: a.dispo } : {}), ...(a.vendeur ? { vendeur: a.vendeur } : {}), ...(a.pays ? { pays: a.pays } : {}),
       moinsBienPartout: rang !== null && moinsBienPartout(a, enLice, colonnes),
       ...(dominant !== null ? { moinsBienQue: dominant } : {}),
       ...(raison !== null ? { ecarte: { raison } } : {}),
@@ -434,6 +439,33 @@ export function tableau(c: CarnetDoc | Donnees): Tableau | null {
     ? cles.flatMap(k => (k.sorte === 'colonne' ? [avecArticle(k.colonne.nom, k.colonne.sens)] : []))
     : cles.length ? ['le prix'] : [];
   return { colonnes, lignes: [...enLice.map((a, i) => ligne(a, i + 1)), ...ecartes.map(a => ligne(a, null))], rangePar: rangeParCles(cles), aRelire, rangeParNoms };
+}
+
+/**
+ * CRB-5 : le rang qui se montre. Sans critère ni prix pour classer (`rangePar` nul), l'ordre des articles n'est que celui de leur arrivée :
+ * un « 1 » en pastille verte dirait « le meilleur » sans rien qui le justifie. Le rang de la ligne (`rang`, qui dit « en lice ») reste ;
+ * ce qui s'affiche vaut `null` tant que rien ne classe, et pour un écarté.
+ */
+export function rangVisible(t: Pick<Tableau, 'rangePar'>, l: Pick<LigneTableau, 'rang' | 'ecarte'>): number | null {
+  return t.rangePar !== null && l.rang !== null && !l.ecarte ? l.rang : null;
+}
+
+/**
+ * CRB-14 : l'ordre des lignes de Comparer, celui de sa décision. Le prix d'abord (0), ce qui classe (1), le volume (2), les dimensions
+ * extérieures puis intérieures (3), la porte (4), la livraison : dispo, vendeur, pays (5), le reste du groupe dans l'ordre de la page (6),
+ * la couleur en bas (7). Le tri est stable : deux lignes du même rang gardent l'ordre où le tableau les donne.
+ */
+export const LIGNE_PRIX = 0, LIGNE_CRITERE = 1, LIGNE_VOLUME = 2, LIGNE_DIMENSIONS = 3, LIGNE_PORTE = 4, LIGNE_LIVRAISON = 5, LIGNE_GROUPE = 6, LIGNE_COULEUR = 7;
+export function groupeDeLigne(nom: string, critere = false): number {
+  const n = normaliser(nom);
+  if (n === COLONNE_PRIX) return LIGNE_PRIX;
+  if (critere) return LIGNE_CRITERE;
+  if (/\b(couleur|coloris|teinte)\b/.test(n)) return LIGNE_COULEUR;
+  if (/\bporte\b/.test(n)) return LIGNE_PORTE;
+  if (/\b(volume|capacite|contenance)\b/.test(n)) return LIGNE_VOLUME;
+  if (/\b(dimensions?|largeur|profondeur|longueur|hauteur|encombrement)\b/.test(n)) return LIGNE_DIMENSIONS;
+  if (/\b(dispo|disponibilite|vendeur|pays|livraison|delai)\b/.test(n)) return LIGNE_LIVRAISON;
+  return LIGNE_GROUPE;
 }
 
 /* ---------- seuils écrits par lui : dans le critère, sinon dans une note (critique 6, doute D-122) ---------- */

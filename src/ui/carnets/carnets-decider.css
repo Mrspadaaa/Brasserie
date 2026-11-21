@@ -172,3 +172,26 @@
 }
 /* Une colonne sans photo ni picto garde la place de la vignette (ni fond ni cube) : rangs et noms alignés. */
 .cn-comparer .cn-cmp-vignette-place { display: block; background: none; border: 0; }
+
+/* ---------- Comparer, voie V3 de la Chasse Carnet (21.11) : CRB-2, CRB-3, CRB-5, CRB-13, CRB-14, CRU-5, CRU-6, CRU-11, CRU-13 ---------- */
+
+/* CRU-11 : l'échelle de DESIGN (titre 18, corps et données 14, libellés 12) ; avant : 13, 14, 15, 16 et 22 sur le même écran. */
+.cn-comparer { font-size: 14px; }
+.cn-comparer .cn-titre { font-size: 18px; }
+.cn-comparer .cn-retour { font-size: 14px; }
+.cn-comparer .cn-tableau, .cn-comparer .cn-ecartes, .cn-comparer .cn-groupe { font-size: 14px; }
+.cn-comparer .cn-suite-indice, .cn-comparer .cn-sans-apercu { font-size: 12px; }
+.cn-comparer .cn-tableau-comparer tbody th { font-size: 12px; }
+
+/* CRB-3 (la part sans carte) : la colonne des libellés se replie au lieu de garder 221 px sur 342 ; les valeurs passent à la ligne, la
+   colonne d'un article ne dépasse plus ses 85 px : les deux articles se voient à 390. */
+.cn-comparer .cn-tableau-comparer tbody th { white-space: normal; min-width: 72px; max-width: 104px; line-height: 1.25; overflow-wrap: break-word; }
+.cn-comparer .cn-tableau-comparer td { white-space: normal; vertical-align: top; }
+@media (min-width: 900px) { .cn-comparer .cn-tableau-comparer tbody th { max-width: 190px; } }
+
+/* CRU-6 : un mot en police du texte, à gauche, qui passe à la ligne ; une mesure en mono à droite, un terme par ligne (« 1800 × », « 1500 × », « 2100 mm »). */
+.cn-comparer .cn-tableau-comparer td.cn-cell-texte { text-align: left; }
+.cn-comparer .cn-valeur-texte { font-family: inherit; overflow-wrap: break-word; hyphens: auto; line-height: 1.3; }
+.cn-comparer .cn-terme { display: block; white-space: nowrap; }
+/* CRB-2 : « prix ? » quand le prix n'est pas connu (jamais 0), en police du texte */
+.cn-comparer .cn-prix-inconnu { font-family: inherit; font-style: italic; }

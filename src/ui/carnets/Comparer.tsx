@@ -11,7 +11,7 @@
 import React from 'react';
 import { ChevronLeft, ExternalLink, Scale } from 'lucide-react';
 import { sourceDuCritere } from '../../domain/carnets/modele';
-import { compromisDe, libelleCaracteristique, libelleEcarte, nombreDe, type Tableau } from '../../domain/carnets/comparer';
+import { compromisDe, groupeDeLigne, libelleCaracteristique, libelleEcarte, nombreDe, rangVisible, type Tableau } from '../../domain/carnets/comparer';
 import { montant, Provenance, rangTexte, STATUT_LIBELLE, valeurTexte, type ArticleV, type CritereV, type Sens, type StatutCarnet, type ValeurV } from './EtatIA';
 import { Photo } from './pictos';
 import './carnets-decider.css';
@@ -36,6 +36,22 @@ export function colonnesVue(t: Tableau): ColonneVue[] {
   return cols;
 }
 
+/** Les lignes de livraison (CRB-13) : ce que l'article porte déjà ; une ligne n'existe que si un article au moins la dit. */
+const LIVRAISON = [{ cle: '__dispo', nom: 'dispo', champ: 'dispo' }, { cle: '__vendeur', nom: 'vendeur', champ: 'vendeur' }, { cle: '__pays', nom: 'pays', champ: 'pays' }] as const;
+
+/**
+ * Les lignes de Comparer, dans l'ordre de sa décision (CRB-14, `groupeDeLigne`) : le prix TOUJOURS en tête (CRB-2 : une rangée absente ne
+ * dit rien, « prix ? » dit qu'on ne sait pas), ce qui classe, le volume, les dimensions, la porte, la livraison (dispo, vendeur, pays :
+ * CRB-13), le reste du groupe, la couleur en bas. `colonnesVue` reste celle du carnet (CarnetOuvert) : elle n'est pas touchée.
+ */
+export function colonnesComparer(t: Tableau): ColonneVue[] {
+  const deCritere = new Set(t.colonnes.filter(c => c.critereId).map(c => c.nom));
+  const prix: ColonneVue = { cle: '__prix', nom: 'prix', unite: t.lignes.find(l => l.devise)?.devise ?? 'CHF', sens: 'moins', critere: false };
+  const livraison: ColonneVue[] = LIVRAISON.filter(x => t.lignes.some(l => !!l[x.champ])).map(x => ({ cle: x.cle, nom: x.nom, sens: 'texte', critere: false }));
+  const toutes = [prix, ...colonnesVue(t).filter(c => c.cle !== '__prix'), ...livraison];
+  return toutes.map((c, i) => ({ c, i, g: groupeDeLigne(c.nom, deCritere.has(c.cle)) })).sort((a, b) => a.g - b.g || a.i - b.i).map(x => x.c);
+}
+
 function nombre(v?: ValeurV): number | null {
   if (!v) return null;
   if (typeof v.valeur === 'boolean') return v.valeur ? 1 : 0;
@@ -44,7 +60,29 @@ function nombre(v?: ValeurV): number | null {
 /** Texte d'une cellule ; `null` si inconnue (cellule vide, jamais 0). */
 export function texteCellule(l: LigneT, c: ColonneVue): string | null {
   if (c.cle === '__prix') return montant(l.prixCentimes);
+  const liv = LIVRAISON.find(x => x.cle === c.cle);
+  if (liv) return l[liv.champ] ?? null;
   return valeurTexte(l.cellules[c.cle]);
+}
+
+/**
+ * CRU-6 : une mesure (nombre, unité, « 1800 x 1500 x 2200 mm », « +2 à +8 °C ») se dit en mono, à droite ; un mot (« blanc »,
+ * « Panneaux sandwich, groupe frigorifique monobloc », « en stock ») se dit en police du texte, à gauche (DESIGN : un mot en mono qui
+ * n'est pas une mesure est une faute).
+ */
+/* \s dans les nombres : `montant` et `valeurTexte` groupent les milliers par une fine insécable (U+202F) */
+const MESURE = /^[<>≈~]?\s*[+−-]?\d[\d\s'’.,]*(?:\s*[x×]\s*[+−-]?\d[\d\s'’.,]*)*(?:\s*(?:à|–|-)\s*[+−-]?\d[\d\s'’.,]*)?\s*(?:[A-Za-zµ°%³²]+(?:\/[A-Za-z³²]+)?)?$/;
+export function estMesure(txt: string): boolean { return MESURE.test(txt.trim()); }
+/** Un nombre posé par la page (prix compris) est une mesure même sans unité ; sinon la forme du texte en décide. */
+export function genreCellule(c: ColonneVue, v: ValeurV | undefined, txt: string): 'mesure' | 'texte' {
+  if (c.cle === '__prix' || (v && typeof v.valeur === 'number')) return 'mesure';
+  return estMesure(txt) ? 'mesure' : 'texte';
+}
+/** Une mesure à plusieurs termes (« 1800 x 1500 x 2200 mm ») : un terme par ligne, jamais coupée au milieu d'un nombre. */
+function Mesure({ txt }: { txt: string }) {
+  const termes = txt.split(/\s*[x×]\s*/).filter(Boolean);
+  if (termes.length < 2) return <span className="cn-mono">{txt}</span>;
+  return <>{termes.map((s, i) => <span key={i} className="cn-mono cn-terme">{s}{i < termes.length - 1 ? ' ×' : ''}</span>)}</>;
 }
 /** Les articles en lice qui tiennent la meilleure valeur connue de la colonne (surlignés) ; aucun si moins de 2 valeurs connues. */
 export function meilleursDe(t: Tableau, c: ColonneVue): Set<string> {
@@ -146,7 +184,8 @@ function useSuiteADroite(): [React.RefObject<HTMLDivElement | null>, number] {
         const n = Math.max(1, Math.floor(dispo / LARGEUR_COLONNE));
         if (nCols > n && dispo > 0) el.style.setProperty('--cn-col', `${Math.floor(dispo / n)}px`); else el.style.removeProperty('--cn-col');
       }
-      if (el.scrollLeft + el.clientWidth >= el.scrollWidth - 1) { setSuite(0); return; }
+      /* CRU-13 : plus de suite à droite = plus d'ombre ; 2 px de tolérance (une position fractionnaire en fin de course, écran dense) */
+      if (el.scrollLeft + el.clientWidth >= el.scrollWidth - 2) { setSuite(0); return; }
       const bord = el.getBoundingClientRect().right;
       const tetes = [...el.querySelectorAll('thead th')].slice(1);
       setSuite(Math.max(1, tetes.filter(th => th.getBoundingClientRect().right > bord + 1).length));
@@ -265,7 +304,7 @@ export function Comparer(p: ComparerProps) {
   const actifs = t ? t.lignes.filter(l => !l.ecarte) : [];
   const ecartes = t ? t.lignes.filter(l => l.ecarte) : [];
   const ordre = [...actifs, ...ecartes];
-  const cols = t ? colonnesVue(t) : [];
+  const cols = t ? colonnesComparer(t) : [];
   const aRelire = t?.aRelire ?? [];
   const [zone, suite] = useSuiteADroite();
   const classe = critereQuiClasse(t, p.critere);
@@ -280,12 +319,13 @@ export function Comparer(p: ComparerProps) {
   /* n° 23 : la phrase dite sous le tableau, pas une pastille dans l'en-tête (elle creusait ~100 px de vide sous les noms, n° 9) */
   const domines = t ? actifs.map(l => ({ l, par: moinsBienQueDe(t, l) })).filter((x): x is { l: LigneT; par: number } => x.par !== null) : [];
   /* n° 17 : une caractéristique dont personne n'a la valeur n'a pas de ligne (une rangée de « – » ne compare rien) ; elle se nomme dessous */
-  const lignesVues = t ? cols.filter(c => c.cle === '__prix' || t.lignes.some(l => l.cellules[c.cle] !== undefined)) : [];
+  const lignesVues = t ? cols.filter(c => c.cle.startsWith('__') || t.lignes.some(l => l.cellules[c.cle] !== undefined)) : [];
   const sansValeurLue = t ? cols.filter(c => !lignesVues.includes(c)) : [];
   return (
     <article className="cn-page cn-comparer">
       <div className="cn-tete">
-        <button type="button" className="cn-retour" onClick={p.onRetour}><ChevronLeft size={20} aria-hidden /> {p.titre}</button>
+        {/* CRU-5 : le fil ne redit pas le titre posé dessous (comme CarnetOuvert et Choisir : « ‹ Carnets ») */}
+        <button type="button" className="cn-retour" onClick={p.onRetour}><ChevronLeft size={20} aria-hidden /> Carnets</button>
         <span className="cn-sp" />
         <span className={`cn-pastille cn-statut-${p.statut}`}>{STATUT_LIBELLE[p.statut]}</span>
       </div>
@@ -320,7 +360,8 @@ export function Comparer(p: ComparerProps) {
                       <th key={l.articleId} scope="col" className={l.ecarte ? 'cn-ecarte' : undefined} data-apercu={sa ? 'aucun' : undefined}>
                         <button type="button" className="cn-col-tete" onClick={() => p.onOuvrirArticle?.(l.articleId)} disabled={!p.onOuvrirArticle} title={sa ? undefined : l.nom}>
                           <Vignette photo={p.photos?.[l.articleId]} picto={p.pictos?.[l.articleId]} />
-                          <b>{l.ecarte ? 'écarté' : l.rang ? rangTexte(l.rang) : ''}</b>
+                          {/* CRB-5 : le rang ne se dit que si un critère ou le prix classe ; sinon aucune pastille */}
+                          {l.ecarte ? <b>écarté</b> : rangVisible(t, l) ? <b>{rangTexte(rangVisible(t, l)!)}</b> : null}
                           <span className="cn-cmp-nom">{sa ? sa.titre : l.nom}</span>
                           {sa && <span className="cn-mut cn-sans-apercu">{sa.sous}</span>}
                         </button>
@@ -339,13 +380,17 @@ export function Comparer(p: ComparerProps) {
                       <th scope="row" title={libelle !== c.nom ? c.nom : undefined}>{libelle}{c.unite ? <span className="cn-mut"> {c.unite}</span> : null}</th>
                       {ordre.map(l => {
                         const txt = texteCellule(l, c);
-                        const v = c.cle === '__prix' ? undefined : l.cellules[c.cle];
+                        const v = c.cle === '__prix' || c.cle.startsWith('__') ? undefined : l.cellules[c.cle];
+                        const genre = txt ? genreCellule(c, v, txt) : null;
                         /* n° 18 : « non » lu sur sa façon (« ne tient pas 80 °C ») ; doute D-122 : « sous votre minimum » */
                         const deFacon = v?.origine === 'locale' && typeof v.valeur === 'boolean';
                         const hors = l.horsSeuil?.[c.cle];
                         return (
-                          <td key={l.articleId} className={`${meilleurs.has(l.articleId) ? 'cn-meilleur' : ''}${l.ecarte ? ' cn-ecarte' : ''}`} title={deFacon ? 'd’après sa façon' : undefined}>
-                            {txt ? <span className="cn-mono">{txt}</span> : <span className="cn-inconnu" aria-label="inconnu">–</span>}
+                          <td key={l.articleId} className={`${meilleurs.has(l.articleId) ? 'cn-meilleur' : ''}${l.ecarte ? ' cn-ecarte' : ''}${genre === 'texte' ? ' cn-cell-texte' : ''}`} title={deFacon ? 'd’après sa façon' : undefined}>
+                            {txt ? (genre === 'mesure' ? <Mesure txt={txt} /> : <span className="cn-valeur-texte">{txt}</span>)
+                              /* CRB-2 : un prix inconnu se dit « prix ? », jamais 0 ni une case vide */
+                              : c.cle === '__prix' ? <span className="cn-inconnu cn-prix-inconnu" title="Prix non lu : relire la page de l'article">prix ?</span>
+                              : <span className="cn-inconnu" aria-label="inconnu">–</span>}
                             {hors && <span className="cn-hors-seuil" title={hors}><span aria-hidden>{horsSeuilCourt(hors)}</span><span className="cn-cache">{hors}</span></span>}
                           </td>
                         );
