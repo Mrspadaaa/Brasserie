@@ -679,6 +679,15 @@ export function CalendrierTab(props: CalendrierTabProps) {
    * avec « Ouvrir le carnet ». Une fois par saut ; la chose peut arriver après les données.
    */
   const viseTraitee = useRef<number | null>(null);
+  /* le saut vient du Calendrier lui-même (la loupe) : sa fenêtre se pose sur la chose ; au montage, l'état initial l'a déjà fait */
+  const centreMonte = useRef(`${centrerSur ?? ''}|${props.viser?.at ?? ''}`);
+  useEffect(() => {
+    const cle = `${centrerSur ?? ''}|${props.viser?.at ?? ''}`;
+    if (!centrerSur || cle === centreMonte.current) return;
+    centreMonte.current = cle;
+    const du = lundiDe(ajouterJours(centrerSur, -14));
+    setVueEtat('semaines'); setFenetre(f => ({ du: du < premierLundi ? premierLundi : du, semaines: f.semaines })); setPeriodeLocale(undefined);
+  }, [centrerSur, props.viser?.at, premierLundi]);
   useEffect(() => {
     const v = props.viser;
     if (!v || viseTraitee.current === v.at || !modele.semaines.length) return;

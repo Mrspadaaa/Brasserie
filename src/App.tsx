@@ -2,7 +2,7 @@ import React, { useState, useEffect, useLayoutEffect, useMemo, useRef, useContex
 import { StorageService, defaultConfig } from './services/storage';
 import { Header } from './components/Header';
 import { PagePlus } from './components/plus/PagePlus';
-import { dansPeriode, lire as lirePeriode, serialiser as serialiserPeriode, type Periode } from './components/periode/periode';
+import { lire as lirePeriode, serialiser as serialiserPeriode, type Periode } from './components/periode/periode';
 import { PersistenceStatus } from './ui/PersistenceStatus';
 import { NouvelleVersion } from './ui/NouvelleVersion';
 import { ProofUploadNotice } from './ui/finance/ProofUploadNotice';
@@ -277,12 +277,13 @@ export const App: React.FC = () => {
   const [brewSemaine, setBrewSemaine] = useState<string>();
   const [isPaletteOpen, setIsPaletteOpen] = useState(false);
   const [financeOpenRequest, setFinanceOpenRequest] = useState<{ id: string; at: number; retour?: 'calendrier' } | null>(null);
-  const [batchOpenRequest, setBatchOpenRequest] = useState<{ id: string; at: number } | null>(null);
+  const [batchOpenRequest, setBatchOpenRequest] = useState<{ id: string; at: number; retour?: boolean } | null>(null);
   const [batchCree, setBatchCree] = useState<{ id: string; at: number } | null>(null);
   /** Renvoi depuis une écriture financière vers l'article qu'elle a acheté. */
   const [stockOpenRequest, setStockOpenRequest] = useState<{ ref: string; at: number } | null>(null);
   /** Carnet d'idées à ouvrir (R08 « Ouvrir le carnet », R48 icône d'idée du calendrier) : Stocks › Matériel › Carnets, ce carnet ouvert. */
   const [calendrierCentre, setCalendrierCentre] = useState<string | undefined>(undefined);
+  const [calendrierViser, setCalendrierViser] = useState<{ id: string; at: number } | undefined>(undefined);
   const [carnetOpenRequest, setCarnetOpenRequest] = useState<{ id: string; at: number } | null>(null);
   const ouvrirCarnet = React.useCallback((id: string) => {
     StorageService.setUiState('stocks_subtab', 'materiel');
@@ -305,7 +306,7 @@ export const App: React.FC = () => {
   const poserRetour = useRetourEcran<TabType>(activeTab, setActiveTab);
   /** E44 : le calendrier d'une section (Argent, Brassins, Matériel, Stocks, Agenda) ; `undefined` : le général. Il se règle depuis la section, jamais gardé. */
   const [calendrierSection, setCalendrierSection] = useState<SectionCalendrier | undefined>(undefined);
-  const ouvrirDateRef = useRef<(date: string) => void>(() => {});
+  const ouvrirDateRef = useRef<(date: string, id?: string) => void>(() => {});
   const ouvrirCalendrierSection = React.useCallback((section: SectionCalendrier) => {
     poserRetour(activeTab);
     setCalendrierSection(section);
@@ -313,7 +314,7 @@ export const App: React.FC = () => {
   }, [poserRetour, activeTab]);
   useEffect(() => {
     /* K2 (F-HORIZON) : une date seule, sans section, centre le Calendrier général sur sa semaine */
-    const ouvrir = (event: Event) => { const s = lireSection(event); if (s) ouvrirCalendrierSection(s); else { const d = (event as CustomEvent<{ date?: string }>).detail?.date; if (d) ouvrirDateRef.current(d); } };
+    const ouvrir = (event: Event) => { const s = lireSection(event); if (s) ouvrirCalendrierSection(s); else { const detail = (event as CustomEvent<{ date?: string; id?: string }>).detail; if (detail?.date) ouvrirDateRef.current(detail.date, detail.id); } };
     window.addEventListener(EVENEMENT_CALENDRIER, ouvrir);
     return () => window.removeEventListener(EVENEMENT_CALENDRIER, ouvrir);
   }, [ouvrirCalendrierSection]);
@@ -978,12 +979,13 @@ export const App: React.FC = () => {
   const financialArchives = useStorageValue(FinancialArchiveService.getArchives);
   /* B10 (WFR-9) : les choses du Calendrier (prévisions, fêtes) se cherchent à la loupe comme le reste ; le résultat ouvre le Calendrier sur leur semaine. */
   const financialPlans = useStorageValue(lirePrevisions);
-  /** Le Calendrier suit la période de l'app : si la chose tombe hors de la période, la période devient son mois (sans quoi elle resterait hors de la frise). */
-  ouvrirDateRef.current = (date: string) => { poserRetour(activeTab); ouvrirChoseCalendrier(date); };
-  const ouvrirChoseCalendrier = (date?: string) => {
+  /** CHN-6 : un saut vers une chose ne change pas la période de l'app (un coup d'œil ne réécrit pas « Nov. » partout) : le Calendrier pose sa fenêtre sur la chose.
+      CHN-5, CHN-12 : `id` (l'identifiant de sa source) la fait montrer à l'arrivée. */
+  ouvrirDateRef.current = (date: string, id?: string) => { poserRetour(activeTab); ouvrirChoseCalendrier(date, id); };
+  const ouvrirChoseCalendrier = (date?: string, id?: string) => {
     const jour = isoDate(date);
-    if (jour && !dansPeriode(jour, globalTimeFilter)) setGlobalTimeFilter({ genre: 'mois', annee: Number(jour.slice(0, 4)), mois: Number(jour.slice(5, 7)) });
     setCalendrierCentre(jour ?? undefined);
+    setCalendrierViser(id ? { id, at: Date.now() } : undefined);
     setActiveTab('calendrier');
   };
   const financialArchiveIndex = useMemo(() => archiveIndex(financialArchives), [financialArchives]);
@@ -1057,7 +1059,7 @@ export const App: React.FC = () => {
           valeur: `${p.direction === 'in' ? '+' : '−'}${montantChf(p.amountCents / 100)} CHF`,
           icon: <CalendarDays className="w-4 h-4" />,
           keywords: [p.vendor ?? '', p.category, p.notes ?? ''],
-          onSelect: () => ouvrirChoseCalendrier(p.date)
+          onSelect: () => ouvrirChoseCalendrier(p.date, p.id)
         })),
         ...creativeItems.filter((c) => c.type === 'event' && c.title).map((c) => ({
           id: `cal-fete-${c.id}`,
@@ -1065,7 +1067,7 @@ export const App: React.FC = () => {
           detail: ['Calendrier', dateCourte(c.date ?? ''), c.activite ? 'activité' : 'fête'].filter(Boolean).join(' · '),
           icon: <CalendarDays className="w-4 h-4" />,
           keywords: [c.description ?? '', c.notes ?? ''],
-          onSelect: () => ouvrirChoseCalendrier(c.date)
+          onSelect: () => ouvrirChoseCalendrier(c.date, c.id)
         }))
       ]
     },
@@ -1253,6 +1255,7 @@ export const App: React.FC = () => {
       <Header
         compactLayout
         large={activeTab === 'stocks'}
+        colle={activeTab === 'calendrier'}
         globalTimeFilter={globalTimeFilter}
         onChangeGlobalTimeFilter={(p) => setGlobalTimeFilter(p)}
         transactions={transactions}
@@ -1361,13 +1364,14 @@ export const App: React.FC = () => {
           <CalendrierTab
             {...(calendrierSection ? { section: calendrierSection } : {})}
             {...(calendrierCentre ? { centrerSur: calendrierCentre } : {})}
+            {...(calendrierViser ? { viser: calendrierViser } : {})}
             transactions={transactions}
             batches={batches}
             stockItems={[...stocks.rawMaterials, ...stocks.cleaning]}
             onOpenBatch={(batchId) => {
               poserRetour('calendrier'); /* CAL-PASSE : le retour du téléphone ramène au Calendrier (CT4A-12), comme une fête ou une idée */
               setProductionSubTab('batches');
-              setBatchOpenRequest({ id: batchId, at: Date.now() });
+              setBatchOpenRequest({ id: batchId, at: Date.now(), retour: true }); /* CHN-8 : la croix de la fiche ramène au Calendrier */
               setActiveTab('production');
             }}
             onOpenFinances={() => setActiveTab('finances')}
@@ -1427,6 +1431,7 @@ export const App: React.FC = () => {
             createRequest={createRequest}
             openBatchRequest={batchOpenRequest}
             onOpenBatchRequestHandled={() => setBatchOpenRequest(null)}
+            onRetourEcran={() => { if ((window.history.state as Record<string, unknown> | null)?.['laffinee-retour']) window.history.back(); else setActiveTab('calendrier'); }}
             batchCree={batchCree}
             onBatchCreeHandled={() => setBatchCree(null)}
             openLabSectionRequest={labSectionRequest}

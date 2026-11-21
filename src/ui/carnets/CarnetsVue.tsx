@@ -1387,7 +1387,7 @@ export function CarnetsVue(p: CarnetsVueProps) {
     const jour = jourIso(maintenant());
     const date = c.date && /^\d{4}-\d{2}-\d{2}/.test(c.date) ? c.date.slice(0, 10) : jour;
     if (!c.date) dater(c, lundiIso(jour), 'semaine');
-    window.dispatchEvent(new CustomEvent(EVENEMENT_CALENDRIER, { detail: { date } }));
+    window.dispatchEvent(new CustomEvent(EVENEMENT_CALENDRIER, { detail: { date, id: c.id } }));
   }
 
   /** « Envoyer dans À venir » (R32) : un seul plan (clé `PLAN-CARNET-<id>`), puis le carnet le retient ; aucun montant ici. */

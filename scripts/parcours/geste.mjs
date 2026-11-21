@@ -14,6 +14,7 @@
 //   deux listes de mois ; le début tiré vers le passé change la période, relue après rechargement. Rouge sur en-ligne/2026-11-21-tour8.
 //   --ref <tag> : construit ce tag dans une copie temporaire (comme le parcours Calendrier) ; les étapes Calendrier y sont rouges sur
 //                 en-ligne/2026-11-21-tour7 (frise d'avant la frise B) et vertes sur l'arbre.
+//   navigation (V4, chasse Calendrier 21.11 : CH-N5, CH-N8, CH-N11, CH-N12 ; 390 tactile) : sauts vers une chose, retour, loupe, barre collée. Rouge sur tour8.
 // Calendrier (fixture `fixtures/calendrier.mjs`, données simulées, plus « ZZ TEST Geste », des travaux de deux semaines) : la frise du haut (le cadre de la
 // courbe : R4 au repos, toucher sans bouger, reculer et avancer le début, étirer et réduire la fin, Échap à 1280, valeur après rechargement)
 // et une barre (toucher sans bouger, glisser + et −, étirer la fin prise à 18 px DEHORS (R3), réduire, Échap à 1280, valeur après rechargement).
@@ -212,6 +213,7 @@ async function jouer(dir) {
         catch (e) { echec(`calendrier ${combo}`, String(e.message ?? e).slice(0, 200)); await p.screenshot({ path: path.join(sortie, `calendrier-${combo}-erreur.png`) }).catch(() => {}); }
       }
       if (ENDROITS_JOUES.includes('periode')) await jouerPeriode({ nav, base: url, L, theme });
+      if (ENDROITS_JOUES.includes('navigation')) await jouerNavigation({ nav, base: url, L, theme });
       if (erreurs.length) echec(`erreurs de page ${combo}`, erreurs.slice(0, 2).join(' | '));
       await p.close();
     }
@@ -608,6 +610,117 @@ async function jouerPeriode({ nav, base, L, theme }) {
         ? ok(`${N} rechargement`, `« ${c.titre} », début ${c.debut}`)
         : echec(`${N} rechargement`, `« ${b.titre} » / ${b.debut} → « ${c.titre} » / ${c.debut}`);
     } catch (e) { echec(N, String(e.message ?? e).slice(0, 200)); await p.screenshot({ path: path.join(sortie, `periode-${lieu.nom}-${combo}-erreur.png`) }).catch(() => {}); }
+    finally { if (erreurs.length) echec(`erreurs de page ${N}`, erreurs.slice(0, 2).join(' | ')); await p.close(); }
+  }
+}
+
+// ───────────── V4 : sauts vers une chose, retour, recherche (chasse Calendrier 21.11 : CHN-5, 6, 8, 11, 12) ─────────────
+// 390 tactile seulement. Fixture du Calendrier (Jhhh, Hefe en retard, « Marché de Noël », « ZZ TEST Projet chambre froide » du Carnet), une
+// page neuve par étape. Rouge sur en-ligne/2026-11-21-tour8 : Calendrier en février sans la chose, « Févr. » dans la barre de l'app, la croix
+// de la fiche d'un retard sur Brassins, ‹ › et la loupe partis au défilement, la fête de la loupe ni sélectionnée ni ouverte.
+function etapesNavigation() { return [
+  {
+    id: 'CH-N5',
+    jouer: async ({ s, N }) => {
+      const barre = () => s.p.evaluate(() => document.querySelector('[data-periode-pastille] .pr-ce')?.getAttribute('aria-label') ?? null);
+      await s.aller(); await sleep(600);
+      const avant = await barre();
+      await s.cliquer('nav button', 'Brassins'); await s.cliquer('button,a,[role=tab],[role=button]', 'Atelier', true);
+      await s.cliquer('button,[role=button],a,[data-carnet-id],li,article', 'ZZ TEST Projet chambre froide', true);
+      await s.cliquer('button,a,[role=button]', 'Au calendrier', true);
+      await s.p.waitForSelector('[data-calendrier]', { timeout: 8000 }); await sleep(1500); await s.cap('N5-au-calendrier');
+      const vu = await s.p.evaluate(() => {
+        const dansEcran = (e) => { const r = e.getBoundingClientRect(); return r.width > 0 && r.height > 0 && r.bottom > 0 && r.top < innerHeight && r.right > 0 && r.left < innerWidth; };
+        const texte = [...document.querySelectorAll('[data-calendrier] *')].filter((e) => e.children.length === 0 && /chambre froide/i.test(e.textContent ?? '') && dansEcran(e)).length;
+        const ampoule = [...document.querySelectorAll('[data-bande-semaines] svg.lucide-lightbulb')].filter(dansEcran).length;
+        return { texte, ampoule };
+      });
+      (vu.texte > 0 && vu.ampoule > 0) ? ok(`${N} N5 la chose est visible`, `texte ${vu.texte}, ampoule ${vu.ampoule}`)
+        : echec(`${N} N5 la chose est visible`, `« chambre froide » à l'écran : ${vu.texte} fois ; ampoule de sa semaine : ${vu.ampoule} (sans toucher ±)`);
+      const apres = await barre();
+      apres === avant ? ok(`${N} N6 barre de l'app au saut`, `« ${apres} »`) : echec(`${N} N6 barre de l'app au saut`, `« ${avant} » → « ${apres} »`);
+      await s.p.evaluate(() => history.back()); await sleep(1200); await s.cap('N6-retour');
+      const retour = await barre();
+      retour === avant ? ok(`${N} N6 barre de l'app au retour`, `« ${retour} »`) : echec(`${N} N6 barre de l'app au retour`, `« ${avant} » → « ${retour} »`);
+    }
+  },
+  {
+    id: 'CH-N8',
+    jouer: async ({ s, N }) => {
+      await s.aller(); await s.cliquer('nav button', 'Calendrier');
+      await s.p.waitForSelector('.ent-ret-b', { timeout: 15000 });
+      await s.cliquer('.ent-ret-b', ''); await sleep(500);
+      await s.cliquer('.ent-ret-l', 'Hefe'); await sleep(1500); await s.cap('N8-fiche');
+      await s.cliquer('button[aria-label="Fermer"]', ''); await sleep(1500); await s.cap('N8-apres-croix');
+      const ou = await s.p.evaluate(() => ({ calendrier: [...document.querySelectorAll('[data-calendrier]')].some((e) => e.getBoundingClientRect().width > 0), titre: document.querySelector('h1,h2')?.textContent?.trim().slice(0, 40) ?? null }));
+      ou.calendrier ? ok(`${N} N8 la croix ramène au Calendrier`) : echec(`${N} N8 la croix ramène au Calendrier`, `le Calendrier n'est plus là (écran : « ${ou.titre} »)`);
+    }
+  },
+  {
+    id: 'CH-N11',
+    jouer: async ({ s, N }) => {
+      await s.aller(); await s.cliquer('nav button', 'Calendrier'); await s.p.waitForSelector('[data-calendrier]', { timeout: 15000 }); await sleep(1000);
+      // la fixture est courte (58 px à défiler) : une cale sous la fin de page donne le défilement d'un vrai Calendrier chargé (268 px relevés), sans toucher à l'en-tête
+      await s.p.evaluate(() => { const cale = document.createElement('div'); cale.setAttribute('aria-hidden', 'true'); cale.style.height = '900px'; document.querySelector('[data-calendrier]').after(cale); });
+      await s.p.evaluate(() => window.scrollTo(0, 268)); await sleep(700); await s.cap('N11-defile');
+      const m = await s.p.evaluate(() => {
+        const y = Math.round(window.scrollY);
+        const boite = (sel) => { const e = [...document.querySelectorAll(sel)].find((x) => x.getBoundingClientRect().width > 0); if (!e) return null; const r = e.getBoundingClientRect(); return { top: Math.round(r.top), bas: Math.round(r.bottom) }; };
+        return { y, precedent: boite('button[aria-label="Période précédente"]'), suivant: boite('button[aria-label="Période suivante"]'), loupe: boite('button[aria-label^="Rechercher"]') };
+      });
+      if (m.y < 100) return echec(`${N} N11`, `la page ne défile que de ${m.y} px : rien à prouver`);
+      const dedans = (b) => b && b.top >= 0 && b.bas <= 844;
+      (dedans(m.precedent) && dedans(m.suivant) && dedans(m.loupe)) ? ok(`${N} N11 ‹ › et la loupe restent`, `défilé de ${m.y} px`)
+        : echec(`${N} N11 ‹ › et la loupe restent`, `défilé de ${m.y} px : ‹ ${JSON.stringify(m.precedent)}, › ${JSON.stringify(m.suivant)}, loupe ${JSON.stringify(m.loupe)}`);
+    }
+  },
+  {
+    id: 'CH-N12',
+    jouer: async ({ s, N }) => {
+      await s.aller(); await s.cliquer('button[aria-label^="Rechercher"]', ''); await sleep(600);
+      await s.p.keyboard.type('Marché', { delay: 40 }); await sleep(700); await s.cap('N12-palette');
+      await s.p.keyboard.press('Enter'); await sleep(1800); await s.cap('N12-apres-entree');
+      const f = await s.p.evaluate(() => { const e = [...document.querySelectorAll('[data-detail]')].find((x) => x.getBoundingClientRect().width > 0); return e ? e.getAttribute('aria-label') : null; });
+      /Marché/.test(f ?? '') ? ok(`${N} N12 la fête est ouverte`, `« ${f} »`) : echec(`${N} N12 la fête est ouverte`, `aucune fiche « Marché de Noël » (${f ?? 'aucune fiche'})`);
+    }
+  },
+]; }
+
+async function jouerNavigation({ nav, base, L, theme }) {
+  if (L >= 600) return;
+  const url = `${base}&finance-demo=parcours-calendrier`, combo = `${L}-${theme}`;
+  for (const etape of etapesNavigation()) {
+    const N = `${etape.id} ${combo}`;
+    const p = await nav.newPage();
+    const erreurs = []; p.on('pageerror', (e) => erreurs.push(String(e).slice(0, 160)));
+    try {
+      await p.setViewport({ width: L, height: 844, isMobile: true, hasTouch: true, deviceScaleFactor: 1 });
+      await p.evaluateOnNewDocument((kf, kc, j, tag, t) => {
+        if (localStorage.getItem('geste:fixture-posee') === tag) return;
+        localStorage.clear(); sessionStorage.clear(); localStorage.setItem('laffinee.theme', t);
+        localStorage.removeItem(kc); localStorage.setItem(kf, j); localStorage.setItem('geste:fixture-posee', tag);
+      }, CLE_FIXTURE, CLE_CACHE, JSON.stringify(fixtureCalendrier(new Date().toISOString().slice(0, 10)).entrees), `${etape.id}-${combo}-${Date.now()}`, theme);
+      const s = {
+        p,
+        cap: (n) => p.screenshot({ path: path.join(sortie, `navigation-${etape.id}-${combo}-${n}.png`) }),
+        aller: async () => { await p.goto(url, { waitUntil: 'load' }); await p.waitForSelector('nav button', { timeout: 90000 }); await sleep(1200); },
+        /** Touche au doigt le premier élément visible de `sel` dont le texte (ou l'aria-label) est `texte` (ou le commence : `debut`) ; `texte` vide : le premier. */
+        cliquer: async (sel, texte, debut = false) => {
+          const c = await p.evaluate((sel, texte, debut) => {
+            const e = [...document.querySelectorAll(sel)].find((x) => {
+              const r = x.getBoundingClientRect(); if (!(r.width > 0 && r.height > 0)) return false;
+              if (!texte) return true;
+              const t = [(x.getAttribute('aria-label') ?? '').trim(), (x.innerText ?? '').replace(/\s+/g, ' ').trim()];
+              return t.some((v) => (debut ? v.startsWith(texte) : v === texte || v.includes(texte)));
+            });
+            if (!e) return null; e.scrollIntoView({ block: 'center' }); const r = e.getBoundingClientRect(); return [r.x + r.width / 2, r.y + r.height / 2];
+          }, sel, texte, debut);
+          if (!c) throw new Error(`« ${texte || sel} » introuvable`);
+          await p.touchscreen.tap(c[0], c[1]); await sleep(800);
+        },
+      };
+      await etape.jouer({ s, N });
+    } catch (e) { echec(N, String(e.message ?? e).slice(0, 200)); await p.screenshot({ path: path.join(sortie, `navigation-${etape.id}-${combo}-erreur.png`) }).catch(() => {}); }
     finally { if (erreurs.length) echec(`erreurs de page ${N}`, erreurs.slice(0, 2).join(' | ')); await p.close(); }
   }
 }

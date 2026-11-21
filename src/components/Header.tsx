@@ -30,6 +30,8 @@ interface HeaderProps {
   /** Ouvre la recherche universelle (palette). */
   onOpenSearch: () => void;
   pendingTodosCount?: number;
+  /** CHN-11 : la barre (période, loupe) reste collée en haut de l'écran ; seul le Calendrier la demande, les autres écrans la laissent défiler (APP-ENTETE-COLLE). */
+  colle?: boolean;
   /** Anciens réglages du menu ⋮, passés aux aperçus (DesignPreview) : ils vivent maintenant dans la page Plus et sont ignorés ici. */
   config?: unknown;
   onOpenSettings?: () => void;
@@ -49,6 +51,7 @@ export const Header: React.FC<HeaderProps> = ({
   compactLayout = false,
   large = false,
   hidePeriod = false,
+  colle = false,
   globalTimeFilter,
   onChangeGlobalTimeFilter,
   transactions,
@@ -95,12 +98,12 @@ export const Header: React.FC<HeaderProps> = ({
       else root.style.removeProperty(propriete);
       root.style.removeProperty('--main-header-box');
     };
-  }, []);
+  }, [colle]);
 
   /* V-a : en-tête opaque. Un fond à 95 % et un flou laissaient voir à travers lui ce qui défile dessous (fantôme gris sous « L'Affinée » à 390). */
   /* APP-ENTETE-COLLE (19.11 : « le header n'a pas besoin d'être visible partout, en tout cas pas en mode "floatting" docked en haut ») : l'en-tête défile avec la page. */
   return (
-    <header ref={enTete} className={`relative z-40 bg-cave-950 border-b border-cave-800 pt-safe${plein ? ' hidden' : ''}`} data-entete-app={paysage ? 'paysage' : undefined} hidden={plein || undefined}>
+    <header ref={enTete} className={`${colle ? 'sticky top-0' : 'relative'} z-40 bg-cave-950 border-b border-cave-800 pt-safe${plein ? ' hidden' : ''}`} data-entete-app={paysage ? 'paysage' : undefined} hidden={plein || undefined}>
       {/* La disposition compacte : 36 px, une seule ligne (CAL-ENTETE, 21.11 : nom, période, recherche et avatars ne passent plus à la ligne). */}
       <div
         className={`app-titlebar max-w-4xl ${large ? 'min-[900px]:max-w-[1264px]' : ''} mx-auto px-2 flex items-center ${

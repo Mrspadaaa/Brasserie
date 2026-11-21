@@ -41,8 +41,10 @@ interface ProductionTabProps {
   createRequest?: { kind: string; at: number } | null;
   onCreateRequestHandled?: () => void;
   /** Ouvre un brassin précis, même hors de la période du catalogue. */
-  openBatchRequest?: { id: string; at: number } | null;
+  openBatchRequest?: { id: string; at: number; retour?: boolean } | null;
   onOpenBatchRequestHandled?: () => void;
+  /** CHN-8 : la fiche ouverte depuis le Calendrier (`retour`) se referme sur lui : la croix y ramène, comme le retour du téléphone. */
+  onRetourEcran?: () => void;
   /** c2a, état « après » : le brassin que « Planifier » vient de créer ; la liste le montre en tête avec ses effets. */
   batchCree?: { id: string; at: number } | null;
   onBatchCreeHandled?: () => void;
@@ -81,6 +83,7 @@ export const ProductionTab: React.FC<ProductionTabProps> = ({
   onCreateRequestHandled,
   openBatchRequest,
   onOpenBatchRequestHandled,
+  onRetourEcran,
   batchCree,
   onBatchCreeHandled,
   openLabSectionRequest,
@@ -146,6 +149,7 @@ export const ProductionTab: React.FC<ProductionTabProps> = ({
   const feuilleOuverte = React.useRef(false);
   if (detailBatch) feuilleOuverte.current = true;
   const handledOpenBatchRequest = React.useRef<{ id: string; at: number } | null>(null);
+  const fermerVersEcran = React.useRef(false);
 
   useEffect(() => {
     if (targetSubTab) {
@@ -187,6 +191,7 @@ export const ProductionTab: React.FC<ProductionTabProps> = ({
     const batch = batches.find((item) => item.id === openBatchRequest.id);
     if (!batch) return;
     handledOpenBatchRequest.current = openBatchRequest;
+    fermerVersEcran.current = openBatchRequest.retour === true;
     setSubTab('batches');
     setDetailSection('measurements');
     setDetailBatch(batch);
@@ -250,7 +255,7 @@ export const ProductionTab: React.FC<ProductionTabProps> = ({
       {/* l2 : monté à la première ouverture, puis gardé monté (la feuille se ferme d'elle-même quand batch est nul). */}
       {(detailBatch || feuilleOuverte.current) && (
         <Suspense fallback={null}>
-          <BatchDetailSheet batch={detailBatch} initialSection={detailSection} onOpenBrewDay={(b) => { setDetailBatch(null); onOpenBrewDay(b); }} onClose={() => setDetailBatch(null)}
+          <BatchDetailSheet batch={detailBatch} initialSection={detailSection} onOpenBrewDay={(b) => { fermerVersEcran.current = false; setDetailBatch(null); onOpenBrewDay(b); }} onClose={() => { setDetailBatch(null); if (fermerVersEcran.current) { fermerVersEcran.current = false; onRetourEcran?.(); } }}
             onRebrew={onRebrewRecipe && rebrewRecipeId ? () => { setDetailBatch(null); onRebrewRecipe(rebrewRecipeId); } : undefined} />
         </Suspense>
       )}
