@@ -551,39 +551,54 @@ async function jouer(dir) {
 
       // G3 (D396, PI-1) : toucher la case vide d'une semaine à venir dans la piste Travaux crée « Travaux · S<n> » d'emblée (nom posé, sans
       // feuille ni clavier) ; un message propose Annuler, qui la retire.
+      /* Indépendante de l'ordre (21.11) : après les sections 1 à 10, la piste peut porter d'autres choses, une chose rester choisie ou un
+         message couvrir le bas ; le nom posé peut être pris (« Travaux · S48 · 2 », nomParDefaut). D'où : état propre (rechargement, Échap,
+         aucun dialogue), une case dont le point touché EST la piste (le geste n'agit que sur son vide, Rangee `toucherVide`), et le nom libre. */
       if (joue('G3')) try {
         await rechargerV();
+        for (let k = 0; k < 3; k++) { await p.keyboard.press('Escape').catch(() => {}); await sleep(150); }
+        await fermer();
         const avant = await lireCache();
-        const cible = await p.evaluate(() => {
+        const chercher = () => p.evaluate(() => {
           const vis = (e) => { const r = e.getBoundingClientRect(); return r.width > 0 && r.height > 0; };
-          const lane = [...document.querySelectorAll('[data-lane="travaux"]')].find(vis); if (!lane) return { err: 'piste Travaux introuvable ([data-lane="travaux"])' };
-          lane.scrollIntoView({ block: 'center' });
-          const L = lane.getBoundingClientRect(); const y = L.top + L.height / 2;
+          const lanes = [...document.querySelectorAll('[data-lane="travaux"]')].filter((l) => vis(l) && !l.classList.contains('cal-lane-jours'));
+          if (!lanes.length) return { err: 'piste Travaux introuvable ([data-lane="travaux"], hors vue jours)' };
           const b = [...document.querySelectorAll('[data-bande-semaines] [data-semaine]')].filter(vis);
+          if (!b.length) return { err: 'bande des semaines introuvable (vue mois ?)' };
           const i = b.findIndex((e) => e.getAttribute('data-courant') === 'oui');
-          for (let k = Math.max(1, i + 1); k < b.length; k++) {
-            const r = b[k].getBoundingClientRect(); const x = r.left + r.width / 2;
-            if (x < L.left + 4 || x > L.right - 4) continue;
-            const sous = document.elementFromPoint(x, y);
-            if (!sous || sous.closest('[data-chose-id], .cal-rh, .cal-plus, .cal-pastille, .cal-oeil')) continue;
-            return { x, y, n: Number(b[k].getAttribute('data-semaine')) };
+          for (const lane of lanes) {
+            lane.scrollIntoView({ block: 'center' });
+            const L = lane.getBoundingClientRect();
+            /* plusieurs hauteurs : une ligne de la piste peut être prise, une autre libre */
+            for (const fy of [0.5, 0.25, 0.75]) {
+              const y = L.top + L.height * fy;
+              for (let k = Math.max(1, i + 1); k < b.length; k++) {
+                const r = b[k].getBoundingClientRect(); const x = r.left + r.width / 2;
+                if (x < L.left + 4 || x > L.right - 4) continue;
+                if (document.elementFromPoint(x, y) !== lane) continue;
+                return { x, y, n: Number(b[k].getAttribute('data-semaine')) };
+              }
+            }
           }
-          return { err: 'aucune case vide de Travaux dans les semaines vues' };
+          return { err: `aucune case vide de Travaux dans les semaines vues (${lanes.length} piste(s))` };
         });
+        let cible = await chercher();
+        if (cible.err) { await rechargerV(); cible = await chercher(); }
         if (cible.err) throw new Error(cible.err);
         await p.touchscreen.tap(cible.x, cible.y); await sleep(1000);
-        const voulu = `Travaux · S${cible.n}`;
+        const voulu = new RegExp(`^Travaux · S${cible.n}( · \\d+)?$`);
         const f = await feuille(); const msg = await message(); const apres = await lireCache();
-        const neuf = nouveaux(avant, apres, 'creativeItems', 'financialPlans').find((e) => (e.data.title ?? '').startsWith('Travaux · S'));
-        const ecran = await labelDe(`${voulu},`);
+        const neuf = nouveaux(avant, apres, 'creativeItems', 'financialPlans').find((e) => voulu.test(e.data.title ?? ''));
+        const titre = neuf?.data.title ?? `Travaux · S${cible.n}`;
+        const ecran = neuf ? await labelDe(`${titre},`) : null;
         await cap('09c-g3-case-touchee');
         if (!neuf) echec('G3', `toucher la case vide S${cible.n} de Travaux ne crée rien${f ? ` (une feuille s'ouvre : « ${f.slice(0, 60)} »)` : ''}`);
-        else if (neuf.data.title !== voulu || !ecran) echec('G3', `créé « ${neuf.data.title} » (${neuf.name}), « ${voulu} » attendu ${ecran ? '' : '(absent de la frise)'}`);
-        else if (!/Annuler/.test(msg) && !(await visibleParTexte('Annuler').catch(() => null))) echec('G3', `« ${voulu} » créé sans message Annuler (message : « ${msg.slice(0, 60)} »)`);
+        else if (!ecran) echec('G3', `créé « ${titre} » (${neuf.name}), absent de la frise`);
+        else if (!/Annuler/.test(msg) && !(await visibleParTexte('Annuler').catch(() => null))) echec('G3', `« ${titre} » créé sans message Annuler (message : « ${msg.slice(0, 60)} »)`);
         else {
           await toucher('Annuler'); await sleep(600);
           const reste = (await lireCache()).some((e) => e.id === neuf.id);
-          reste ? echec('G3', `Annuler ne retire pas « ${voulu} »`) : ok('G3', `« ${voulu} » créé d'un toucher (${neuf.name}), Annuler le retire`);
+          reste ? echec('G3', `Annuler ne retire pas « ${titre} »`) : ok('G3', `« ${titre} » créé d'un toucher (${neuf.name}), Annuler le retire`);
         }
       } catch (e) { echec('G3', String(e.message).slice(0, 160)); }
 
