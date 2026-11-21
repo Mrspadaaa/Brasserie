@@ -109,17 +109,17 @@ export function formeCereale(nom: string): FormeCereale {
 /** Tracé SVG d'une marque de houblon de hauteur h et de largeur w. */
 export function traceHoublon(s: SommetHoublon, h: number, w = 8): string {
   const k = Math.min(5, h - 1);
-  if (s === 'pointe') return `M0 ${h}V${k}L${w / 2} 0L${w} ${k}V${h}Z`;
+  if (s === 'pointe') return `M0 ${h}V${k}L${w / 2} 0L${w} ${k}V${h}Z`; // virgule-ok : chemin SVG (M, V, L), pas un affichage
   if (s === 'dome') return `M0 ${h}V${k}A${w / 2} ${k} 0 0 1 ${w} ${k}V${h}Z`;
-  if (s === 'creux') return `M0 ${h}V0L${w / 2} ${Math.min(4.5, h - 1.5)}L${w} 0V${h}Z`;
+  if (s === 'creux') return `M0 ${h}V0L${w / 2} ${Math.min(4.5, h - 1.5)}L${w} 0V${h}Z`; // virgule-ok : chemin SVG (M, V, L), pas un affichage
   return `M0 ${h}V0H${w}V${h}Z`;
 }
 export function traceCereale(f: FormeCereale, h: number, w = 8): string {
   const k = Math.min(5, h - 1);
-  if (f === 'pointe') return `M0 ${h}V${k}L${w / 2} 0L${w} ${k}V${h}Z`;
-  if (f === 'biseau') return `M0 ${h}V${k}L${w} 0V${h}Z`;
+  if (f === 'pointe') return `M0 ${h}V${k}L${w / 2} 0L${w} ${k}V${h}Z`; // virgule-ok : chemin SVG (M, V, L), pas un affichage
+  if (f === 'biseau') return `M0 ${h}V${k}L${w} 0V${h}Z`; // virgule-ok : chemin SVG (M, V, L), pas un affichage
   if (f === 'dome') return `M0 ${h}V${Math.min(4, h - 1)}A${w / 2} ${Math.min(4, h - 1)} 0 0 1 ${w} ${Math.min(4, h - 1)}V${h}Z`;
-  if (f === 'creux') return `M0 ${h}V0L${w / 2} ${Math.min(4, h - 1)}L${w} 0V${h}Z`;
+  if (f === 'creux') return `M0 ${h}V0L${w / 2} ${Math.min(4, h - 1)}L${w} 0V${h}Z`; // virgule-ok : chemin SVG (M, V, L), pas un affichage
   return `M0 ${h}V0H${w}V${h}Z`;
 }
 
