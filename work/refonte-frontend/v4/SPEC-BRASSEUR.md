@@ -2608,3 +2608,7 @@ Classement de la page r3 de Ma levure (https://claude.ai/artifact/DKAJe8ESeMR4ig
 > SI ça augmente la fluidité
 
 (21.11, accord pour vite-plugin-pwa, hors ligne V6 / CHN-7.)
+
+> Il y a toujours la bare inutile et l'échelle du passé fonctionne toujours pas
+
+(21.11, en ligne tour 8, captures 27 et 28 de work/missions/2026-11-21-calendrier-entete/ : 27, 6 sem. 03.08–13.09, un trait vertical noir, une colonne grise et une barre noire horizontale au milieu du cadre, en S35 (entourés) ; 28, 14 sem., le passé à gauche du cadre (S32–S33) est grisé, sans courbe lisible (entouré).)
