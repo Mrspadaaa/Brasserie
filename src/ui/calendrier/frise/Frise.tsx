@@ -43,7 +43,7 @@ export function renvoisHorsVue(choses: readonly ChoseCalendrier[], colonnes: rea
     .map(c => ({ chose: c, texte: texteRenvoi(c) }));
 }
 
-export interface FriseProps extends Pick<RangeeProps, 'drag' | 'ici' | 'etiquetteDuree' | 'barre' | 'onAjouter' | 'onBasculerMasque' | 'onSixSemaines' | 'onRenvoi'> {
+export interface FriseProps extends Pick<RangeeProps, 'drag' | 'ici' | 'etiquetteDuree' | 'barre' | 'onAjouter' | 'onToucherVide' | 'onBasculerMasque' | 'onSixSemaines' | 'onRenvoi'> {
   choses: readonly ChoseCalendrier[];
   colonnes: readonly Colonne[];
   paysage: boolean;
@@ -467,6 +467,7 @@ export const Frise: React.FC<FriseProps> = props => {
             renvois={r === 'ventes' && !masquee ? renvois : []}
             onRenvoi={props.onRenvoi}
             onAjouter={props.onAjouter}
+            {...(props.onToucherVide ? { onToucherVide: props.onToucherVide } : {})}
             onBasculerMasque={props.onBasculerMasque}
             barre={props.barre}
             onSixSemaines={props.onSixSemaines}

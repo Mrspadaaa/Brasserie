@@ -655,6 +655,8 @@ export interface RangeeProps {
   renvois?: readonly Renvoi[];
   onRenvoi?: (chose: ChoseCalendrier) => void;
   onAjouter: (r: IdRangee) => void;
+  /** G3 (D396, PI-1) : un toucher sur le vide de la piste, la colonne touchée (son premier jour) ; absent : rien. Rien quand une chose est choisie. */
+  onToucherVide?: (r: IdRangee, debut: string) => void;
   onBasculerMasque: (r: IdRangee) => void;
   barre: Pick<BarreProps, 'onToucher' | 'onAppuiLong' | 'onGlisse' | 'onLacheGlisse' | 'onBord' | 'onLacheBord' | 'onRefus' | 'defile' | 'marge'>;
   /** Appui long sur une marque en 3 mois, 6 mois ou An : la vue 6 semaines centrée sur elle (E27, D-199). Absent : rien. */
@@ -899,6 +901,14 @@ export const Rangee: React.FC<RangeeProps> = props => {
    * Une piste : les lignes `de` à `a` de la rangée, dans une boîte de hauteur `hauteur` ; chaque chose y garde sa place, remontée de `de`
    * lignes. Sans fiche ouverte, une seule piste porte toutes les lignes (comme avant) ; `suite` : la piste sous la fiche.
    */
+  /* G3 : le vide de la piste seul (pas une barre, une marque ni un nom), sans chose choisie ni menu ouvert (ce toucher-là les ferme) */
+  function toucherVide(e: React.MouseEvent<HTMLDivElement>) {
+    if (e.target !== e.currentTarget || selectionId || menuId || drag) return;
+    const i = Math.floor((e.clientX - e.currentTarget.getBoundingClientRect().left) / largeurColonne);
+    const col = colonnes[i];
+    if (col) props.onToucherVide?.(id, col.debut);
+  }
+
   function piste(de: number, a: number, hauteur: number, suite: boolean): React.ReactNode {
     const y = (ligne: number) => (ligne - de) * mesures.ligne + 2;
     const dedansPiste = (ligne: number) => ligne >= de && ligne <= a;
@@ -906,7 +916,8 @@ export const Rangee: React.FC<RangeeProps> = props => {
     const grille = props.grille && React.isValidElement<{ mot?: boolean }>(props.grille) && coupe >= 0 && !suite && a < lignes - 1
       ? React.cloneElement(props.grille, { mot: false }) : props.grille;
     return (
-        <div className={`cal-lane${props.grille ? ' cal-lane-jours' : ''}`} style={{ height: hauteur }} data-lane={id} {...(suite ? { 'data-lane-suite': '' } : {})}>
+        <div className={`cal-lane${props.grille ? ' cal-lane-jours' : ''}`} style={{ height: hauteur }} data-lane={id} {...(suite ? { 'data-lane-suite': '' } : {})}
+          onClick={props.onToucherVide && !props.grille ? toucherVide : undefined}>
           {grille}
           {fantome && !fantome.petite && dedansPiste(fantome.ligne) && (
             <i className="cal-fantome cal-pointille" aria-hidden="true" data-fantome style={{ left: fantome.gauche, width: fantome.largeur, top: y(fantome.ligne), height: mesures.barre }} />

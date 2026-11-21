@@ -27,7 +27,7 @@ import {
 } from '../../domain/calendrier';
 import { courbeAvec, effetCaisse, type CourbeCaisse } from '../../domain/calendrierCaisse';
 import {
-  achatsPasses, brouillonDepuisChose, brouillonDepuisProposition, brouillonVide, versEnregistrement, versModification, enregistrementIdee, jourPose,
+  achatsPasses, avecNomPose, brouillonDepuisChose, brouillonDepuisProposition, brouillonVide, versEnregistrement, versModification, enregistrementIdee, jourPose,
   type BrouillonAjout, type ContexteAjout
 } from '../../domain/calendrierAjout';
 import {
@@ -739,6 +739,17 @@ export function CalendrierTab(props: CalendrierTabProps) {
     return ok ? { ok: true } : { ok: false, raison: 'Écriture impossible. Rien n’a changé.' };
   }, [feuille, ctxAjout, modele.courbe, ecrire, masquees, setMasquees, filtre, colonnes, voirEtendue]);
 
+  /* G3 (D396, PI-1) : un toucher sur le vide de la piste Travaux ou Activités crée « Travaux · S48 » d'emblée, sans feuille ; le message
+     porte Annuler. Les autres rangées demandent une recette, un client ou un montant : leur feuille s'ouvre sur la semaine touchée. */
+  const toucherVide = useCallback((r: IdRangee, debut: string) => {
+    if (r !== 'travaux' && r !== 'activites') {
+      setMessage(null); setMenu(null);
+      setFeuille({ mode: 'ajouter', initial: { ...brouillonVide(r, debut), debutChoisi: true }, cle: ++compteur.current });
+      return;
+    }
+    void ajouterDepuisFeuille(avecNomPose({ ...brouillonVide(r, debut), debutChoisi: true }, modele.choses));
+  }, [ajouterDepuisFeuille, modele.choses]);
+
   const plusDeDetails = useCallback((b: BrouillonAjout) => {
     const lundi = b.debut ?? lundiAuj;
     setFeuille(null);
@@ -1012,6 +1023,7 @@ export function CalendrierTab(props: CalendrierTabProps) {
           reserveDroite={reserveDroite}
           onRenvoi={surRenvoi}
           onAjouter={ouvrirFeuille}
+          onToucherVide={toucherVide}
           onBasculerMasque={basculerMasque}
           onSixSemaines={surSixSemaines}
           onPincer={surPincer}
