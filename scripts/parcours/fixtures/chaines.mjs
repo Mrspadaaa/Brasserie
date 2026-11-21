@@ -31,7 +31,7 @@ export function fixtureChaines(aujourdhui, { sansJour = false, cuve = false, gar
   article('ZZ-MUNICH', 'ZZ TEST Munich', 'Malt', 'kg', 10, { supplier: 'ZZ TEST', pricePerUnit: 1.9 });
   article('ZZ-CARA', 'ZZ TEST Caramünch Typ 2', 'Malt', 'kg', 0.6, { supplier: 'ZZ TEST', pricePerUnit: 2.8 });
   article('ZZ-CITRA', 'ZZ TEST Citra', 'Houblon', 'g', 500, { supplier: 'ZZ TEST', pricePerUnit: 0.09, alphaPct: 12.5, fiche: { id: 'beermaverick-citra', approchee: false } }); // D403 : relié par son identifiant
-  article('ZZ-US05', 'ZZ TEST US-05', 'Levure', 'sachet', 4, { supplier: 'ZZ TEST', pricePerUnit: 4.5 });
+  article('ZZ-US05', 'ZZ TEST US-05', 'Levure', 'sachet', 4, { supplier: 'ZZ TEST', pricePerUnit: 4.5, fiche: { id: 'fermentis-us05', approchee: false } }); // D403 : reliée par son identifiant
 
   // installation figée dans la recette (BrewhouseProfile) : sans elle, WFR-9 ne se joue pas comme chez le brasseur
   const BH = { id: 'BH-ZZ', name: 'ZZ TEST Système 30 L', volumeL: 30, efficiencyPct: 72, boilOffRatePct: 10, deadSpaceL: 1, mashRatioLPerKg: 3, equipmentRefs: { fermenter: 'E-ZZ-FERM' } };

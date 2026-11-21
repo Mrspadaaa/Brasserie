@@ -2,7 +2,7 @@
    Règles reprises de r4/v02.html (g2-) et r3/v05.html (c5-), couleurs par jetons de thème (clair et cave) ; aucun texte sous 14 px.
    Les règles lv- de etapeLevure.css sont reprises sous `.ml-carte` (spécificité plus forte, fichier importé après). */
 
-.ml-carte {
+.ml-carte, .lv-pz {
   --ml-page: rgb(var(--cave-950));
   --ml-panneau: rgb(var(--cave-900));
   --ml-sur: rgb(var(--cave-850));
@@ -201,3 +201,38 @@
 .ml-carte .ml-champg .ml-g { font-size: 16px; }
 .ml-carte .ml-ok { height: 44px; min-width: 52px; padding: 0 12px; border-radius: 12px; background: var(--ml-encre); color: var(--ml-panneau); font-size: 16px; font-weight: 600; }
 .ml-carte .ml-ok:disabled { opacity: .4; }
+
+/* N1 levure (v05, 21.11) : « Pour <style> · ton stock d'abord », la levure du stock et sa dose, « Poser » d'un toucher. */
+.lv-pz { border: 2px solid var(--ml-encre); border-radius: 16px; overflow: hidden; margin-bottom: 10px; }
+.lv-pz-tete { display: flex; align-items: center; gap: 8px; padding: 10px 12px; color: var(--ml-t2); font-size: .9375rem; border-bottom: 1px solid var(--ml-bord); background: var(--ml-page); }
+.lv-pz-style { margin-left: auto; padding: 2px 10px; border: 1px solid var(--ml-or-clair); border-radius: 999px; background: var(--ml-or-fond); color: var(--ml-or); font-size: .875rem; white-space: nowrap; }
+.lv-pz-pour { margin: 0; padding: 10px 12px 6px; font-size: .9375rem; color: var(--ml-t2); }
+.lv-pz-pour b { color: var(--ml-t0); font-weight: 600; }
+.lv-pz-carte { margin: 0 8px; padding: 10px; border: 1px solid var(--ml-or-clair); border-bottom: 0; border-radius: 12px 12px 0 0; background: var(--ml-page); }
+.lv-pz-l1 { display: grid; grid-template-columns: auto minmax(0, 1fr) auto; gap: 10px; align-items: center; }
+.lv-pz-ic { display: grid; place-items: center; width: 40px; height: 40px; border-radius: 999px; background: var(--ml-or-fond); border: 2px solid var(--ml-or-clair); color: var(--ml-or); }
+.lv-pz-id { display: flex; flex-direction: column; min-width: 0; }
+.lv-pz-nom, .lv-pz-id b { font-size: 1.125rem; color: var(--ml-t0); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.lv-pz-sous { font-size: .875rem; color: var(--ml-t2); }
+.lv-pz-dr { display: flex; flex-direction: column; align-items: flex-end; gap: 4px; }
+.lv-pz-dose { font-size: .9375rem; color: var(--ml-t1); border-bottom: 2px dashed var(--ml-or); white-space: nowrap; }
+.lv-pz-dose b { font-family: 'IBM Plex Mono', ui-monospace, Consolas, monospace; font-size: 1.5rem; color: var(--ml-or); }
+.lv-pz-stock { display: inline-flex; align-items: center; gap: 4px; padding: 2px 8px; border: 1px solid var(--ml-stock); border-radius: 8px; background: var(--ml-stock-fond); color: var(--ml-stock-t); font-size: .8125rem; white-space: nowrap; }
+.lv-pz-echelle { position: relative; height: 54px; margin: 10px 8px 0; }
+.lv-pz-rail { position: absolute; left: 0; right: 0; top: 22px; height: 12px; border: 1px dashed var(--ml-trait); border-radius: 999px; }
+.lv-pz-besoin { position: absolute; top: 0; bottom: 18px; width: 0; border-left: 2px solid var(--ml-t0); }
+.lv-pz-besoin i { position: absolute; top: -2px; left: 4px; font-style: normal; font-size: .75rem; color: var(--ml-t1); white-space: nowrap; }
+.lv-pz-rond { position: absolute; top: 16px; width: 22px; height: 22px; margin-left: -11px; border: 2px dashed var(--ml-or); border-radius: 999px; background: var(--ml-or-fond); }
+.lv-pz-graduation i { position: absolute; bottom: 0; transform: translateX(-50%); font-style: normal; font-family: 'IBM Plex Mono', ui-monospace, Consolas, monospace; font-size: .75rem; color: var(--ml-t2); white-space: nowrap; }
+.lv-pz-graduation i:first-child { transform: none; }
+.lv-pz-graduation i:last-child { transform: translateX(-100%); }
+.lv-pz-poser { display: flex; align-items: center; gap: 10px; width: calc(100% - 8px); margin: 0 4px; min-height: 64px; padding: 8px 10px 8px 14px; border: 3px solid var(--ml-encre); border-radius: 14px; background: var(--ml-or-aplat); color: var(--ml-sur-or); text-align: left; }
+.lv-pz-pt { display: flex; flex-direction: column; gap: 4px; flex: 1; min-width: 0; }
+.lv-pz-pt b { font-size: 1.25rem; }
+.lv-pz-calc { display: flex; align-items: center; gap: 6px; font-size: .8125rem; }
+.lv-pz-pill { padding: 1px 8px; border: 1.5px solid var(--ml-sur-or); border-radius: 999px; font-family: 'IBM Plex Mono', ui-monospace, Consolas, monospace; font-weight: 600; }
+.lv-pz-fl { display: grid; place-items: center; width: 44px; height: 44px; border-radius: 999px; background: var(--ml-sur-or); color: var(--ml-or-aplat); flex-shrink: 0; }
+.lv-pz-aussi { display: grid; grid-template-columns: auto minmax(0, 1fr) auto; align-items: center; gap: 10px; padding: 10px 12px; }
+.lv-pz-ic2 { display: grid; place-items: center; width: 32px; height: 32px; border: 1px dashed var(--ml-trait); border-radius: 999px; color: var(--ml-t2); }
+.lv-pz-aussi .lv-pz-id b { font-size: 1rem; }
+.lv-pz-p2 { min-height: 44px; padding: 0 16px; border: 1px solid var(--ml-trait); border-radius: 12px; background: transparent; color: var(--ml-t0); font-size: .9375rem; }

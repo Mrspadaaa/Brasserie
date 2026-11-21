@@ -8,7 +8,8 @@
 // avancée reste l'onglet « Chercher », que le brasseur ouvre lui-même ; (2) « la conduite de palier fonctionne infiniment mieux sur celle
 // de base » : la nouvelle conduite (`Conduite.tsx`, non montée, conservée) cède la place à la station de l'app.
 import { memo, useDeferredValue, useEffect, useLayoutEffect, useMemo, useRef, useState, type ReactNode } from 'react';
-import { FlaskConical, History, Package, Search, Sparkles, Undo2, X } from 'lucide-react';
+import { ArrowRight, FlaskConical, History, Package, Search, Sparkles, Undo2, X } from 'lucide-react';
+import { nombreFr } from '../../domain/nombreAffiche';
 import type { StockItem } from '../../types';
 import type { YeastSupply } from '../../../functions/src/yeastSupplySchema';
 import type { TrialRecipe } from '../../domain/hopIndex/trials';
@@ -22,7 +23,7 @@ import { Input } from '../Input';
 import { YeastRecipePlan } from '../YeastRecipePlan';
 import { CelluleRecherche, useEtatRecherche } from './useRechercheDonnee';
 import { apiLevure } from './domaine';
-import { besoinDeLaLevure, doseDuFabricantSeule } from './dose';
+import { besoinDeLaLevure, doseDuFabricantSeule, doseProposee, formeDuCatalogue } from './dose';
 import { BandeDose, LigneConduite, motUnite, type EtatDose, type StockDose } from './CarteDose';
 import './maLevure.css';
 import { AXES_EFFETS, NIVEAUX, couleurDeLAxe, lignesEffets, ligneFloculation, type LigneEffet } from './effets';
@@ -306,6 +307,51 @@ function EffetsDeLaLevure({ lignes, levureId, onChercher }: { lignes: LigneEffet
   </div>;
 }
 
+/** N1 levure (v05, 21.11) : « Pour <style> · ton stock d'abord » — la levure du stock, la dose écrite, un toucher la pose ; une autre de la recette en dessous. */
+function PoserDuStock({ item, levure, dose, style, styleId, aussi, onPoser, onAussi }: {
+  item: StockItem; levure: YeastReference; dose?: { qty: number; unit: string; besoin?: number }; style?: string; styleId?: string;
+  aussi?: YeastReference; onPoser: () => void; onAussi?: () => void;
+}) {
+  // « SafAle US-05 (Fermentis) » : le nom, puis le fabricant écrit entre parenthèses dans le catalogue.
+  const par = levure.name.match(/^(.*?)s*(([^)]+))s*$/);
+  const id = par ? { nom: par[1], marque: par[2] } : identiteLevure(levure.name);
+  const forme = levure.form ?? formeDuCatalogue(levure);
+  const n = dose?.qty, mot = dose ? motUnite(dose.unit, dose.qty) : '';
+  const enStock = `${nombreFr(item.currentStock, 1)} en stock`;
+  // L'échelle de la dose : 0 à au moins 4, le besoin (trait) et la dose proposée (rond).
+  const haut = Math.max(4, Math.ceil(Math.max(dose?.besoin ?? 0, n ?? 0)) + 1);
+  const pc = (v: number) => `${Math.min(100, Math.max(0, (v / haut) * 100))}%`;
+  return <section className="lv-pz" data-lv="poser-stock" aria-label="Ton stock d’abord">
+    <div className="lv-pz-tete"><FlaskConical size={16} aria-hidden="true" /><span>Aucune levure encore</span>{styleId && /^d{1,2}[A-Z]$/.test(styleId) && <span className="lv-pz-style">style {styleId}</span>}</div>
+    <p className="lv-pz-pour"><b>Pour {style?.trim() || 'cette recette'}</b> · ton stock d’abord</p>
+    <div className="lv-pz-carte">
+      <div className="lv-pz-l1">
+        <span className="lv-pz-ic" aria-hidden="true"><FlaskConical size={20} /></span>
+        <span className="lv-pz-id"><b className="lv-pz-nom">{id.nom}</b><span className="lv-pz-sous">{[id.marque, forme].filter(Boolean).join(' · ')}</span></span>
+        <span className="lv-pz-dr">
+          {n !== undefined ? <span className="lv-pz-dose"><b>{nombreFr(n, 1)}</b> {mot}</span> : <span className="lv-pz-dose">dose à saisir</span>}
+          <span className="lv-pz-stock"><Package size={14} aria-hidden="true" />{enStock}</span>
+        </span>
+      </div>
+      {n !== undefined && dose?.besoin !== undefined && <div className="lv-pz-echelle" aria-hidden="true">
+        <span className="lv-pz-besoin" style={{ left: pc(dose.besoin) }}><i>besoin {nombreFr(dose.besoin, 1)}</i></span>
+        <span className="lv-pz-rail" /><span className="lv-pz-rond" style={{ left: pc(n) }} />
+        <span className="lv-pz-graduation">{Array.from({ length: haut + 1 }, (_, k) => <i key={k} style={{ left: pc(k) }}>{k === n ? `${k} proposé` : k}</i>)}</span>
+      </div>}
+    </div>
+    <button type="button" className="lv-pz-poser" data-lv="poser" onClick={onPoser} aria-label={`Poser ${id.nom}${n !== undefined ? `, ${nombreFr(n, 1)} ${mot}` : ''}`}>
+      <span className="lv-pz-pt"><b>Poser{n !== undefined ? ` · ${nombreFr(n, 1)} ${mot}` : ''}</b>
+        {n !== undefined && dose?.besoin !== undefined && <span className="lv-pz-calc"><span className="lv-pz-pill">{nombreFr(dose.besoin, 1)} → {nombreFr(n, 1)}</span>couvre le besoin</span>}</span>
+      <span className="lv-pz-fl" aria-hidden="true"><ArrowRight size={20} /></span>
+    </button>
+    {aussi && onAussi && <div className="lv-pz-aussi" data-lv="aussi">
+      <span className="lv-pz-ic2" aria-hidden="true"><FlaskConical size={16} /></span>
+      <span className="lv-pz-id"><b>{identiteLevure(aussi.name).nom}</b><span className="lv-pz-sous">aussi proche de la recette · à acheter</span></span>
+      <button type="button" className="lv-pz-p2" onClick={onAussi} aria-label={`Poser ${identiteLevure(aussi.name).nom}`}>Poser</button>
+    </div>}
+  </section>;
+}
+
 function MaLevureVue({ recipe, refs, supply, levure, classement, onConduite, onChercherDonnee, onRetirer, stock, onStock, onHorsCatalogue, libre, precedente, precedenteId, onPrecedente, proposees = [], onProposee,
   stockIds, conduiteCachee, onComparer, onFiche, onObjectifs, onNavigate, onDose, onDoseChange, onVolet }: {
   /** − / +, « Mettre N sachets », « → N sachets » : écrit la quantité (et son unité) dans la recette, sans ouvrir de volet. */
@@ -325,7 +371,7 @@ function MaLevureVue({ recipe, refs, supply, levure, classement, onConduite, onC
   onConduite: (next: TrialRecipe) => TrialRecipe | void;
   onChercherDonnee: (axe: string | string[]) => void;
   onRetirer: () => void;
-  stock: StockItem[]; onStock: (item: StockItem) => void;
+  stock: StockItem[]; onStock: (item: StockItem, dose?: { qty: number; unit: string }) => void;
   /** « Hors catalogue » ou une saisie sans résultat : ouvre « Mon stock ou saisie libre » (le texte tapé est donné quand il y en a un). */
   onHorsCatalogue: (texte?: string) => void;
   /** La saisie libre ouverte, rendue sous le champ de recherche. */
@@ -359,6 +405,19 @@ function MaLevureVue({ recipe, refs, supply, levure, classement, onConduite, onC
   // La fiche du catalogue de chaque levure du stock : sa fiche posée, sinon la correspondance unique et sûre de son nom (voie r4, 09.11).
   const fiches = useMemo(() => new Map(stock.filter(i => i.category.toLocaleLowerCase('fr') === 'levure')
     .flatMap((i): [string, string][] => { const id = i.fiche?.id ?? relierAuCatalogue({ name: i.name, lab: i.yeastLab, strain: i.yeastStrain }, refs)?.id; return id ? [[i.ref, id]] : []; })), [stock, refs]);
+  // N1 levure (v05, 21.11) : sans levure, celle de ton stock la mieux rangée pour la recette, avec la dose que « Poser » écrira (même règle que
+  // le choix d'une levure du catalogue). Une levure du stock sans fiche du catalogue n'est pas proposée : sa dose ne se calcule pas.
+  const ogProjetee = evaluation.projection.og;
+  const pose = useMemo(() => {
+    if (choisie) return undefined;
+    const rang = new Map((classement ?? refs).map((l, k) => [l.id, k]));
+    const parId = new Map(refs.map(r => [r.id, r]));
+    const c = stock.filter(i => i.category.toLocaleLowerCase('fr') === 'levure' && i.currentStock > 0)
+      .flatMap(item => { const ref = parId.get(fiches.get(item.ref) ?? ''); return ref ? [{ item, ref }] : []; })
+      .sort((a, b) => (rang.get(a.ref.id) ?? 1e9) - (rang.get(b.ref.id) ?? 1e9) || a.item.name.localeCompare(b.item.name, 'fr'))[0];
+    return c && { ...c, dose: doseProposee(recipe, supply, ogProjetee, c.ref) };
+  }, [choisie, classement, refs, stock, fiches, recipe, supply, ogProjetee]);
+  const aussi = pose ? proposees[0] : undefined;
 
   // La dose (20.11, r3 v05 / r4 v02) : la quantité écrite, le besoin de la recette (moteur : taux × volume × °P) et le stock, sur la carte.
   const besoin = useMemo(() => besoinDeLaLevure(recipe, supply, evaluation.projection.og, levure), [recipe, supply, evaluation, levure]);
@@ -471,12 +530,16 @@ function MaLevureVue({ recipe, refs, supply, levure, classement, onConduite, onC
       </div>
     </div>}
 
-    {!choisie && <div className="lv-vide" data-lv="sans-levure">
+    {!choisie && !pose && <div className="lv-vide" data-lv="sans-levure">
       <p><b>Levure · choisir</b></p>
       <p className="lv-note">Aucune levure dans la recette : cherche-la par son nom, son code, son fabricant ou son arôme, ou prends-en une de ton stock.</p>
     </div>}
 
-    <ChampLevure choisie={choisie} classement={classement ?? refs} stock={stock} stockIds={idsStock} fiches={fiches} enStock={enStock} proposees={proposees} precedente={precedente} precedenteId={precedenteId} onPrecedente={onPrecedente}
+    {pose && <PoserDuStock item={pose.item} levure={pose.ref} dose={pose.dose} style={recipe.style} styleId={(recipe as { styleRef?: { styleId?: string } }).styleRef?.styleId}
+      aussi={aussi} onPoser={() => onStock(pose.item, pose.dose && { qty: pose.dose.qty, unit: pose.dose.unit })} onAussi={aussi && onProposee ? () => onProposee(aussi) : undefined} />}
+
+    <ChampLevure choisie={choisie} classement={classement ?? refs} stock={stock} stockIds={idsStock} fiches={fiches}
+      enStock={pose ? enStock.filter(i => i.ref !== pose.item.ref) : enStock} proposees={aussi ? proposees.slice(1) : proposees} precedente={precedente} precedenteId={precedenteId} onPrecedente={onPrecedente}
       onProposee={onProposee} onStock={onStock} onHorsCatalogue={onHorsCatalogue} libre={libre} />
 
     {avecConduite && <div className="yeast-workbench yeast-choice lv-base" data-lv="conduite-base" ref={conduite} hidden={conduiteCachee}>

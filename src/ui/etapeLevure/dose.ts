@@ -234,3 +234,16 @@ export function doseApresChoix(recipe: TrialRecipe, avant: YeastSpec, supply: Ye
   const unite = (prepared.form ?? prepared.pitching?.product?.form ?? levure?.form ?? formeDuCatalogue(levure)) === 'sèche' ? 'sachet' : 'pack';
   return { ...nue, yeast: { ...prepared, qty: n, unit: unite } };
 }
+
+/**
+ * N1 levure (v05, 21.11) : la dose que « Poser » écrira pour une levure qui n'est pas encore dans la recette — la même règle que le choix d'une
+ * levure du catalogue (`doseApresChoix`) ; `besoin` : le besoin non arrondi en sachets (« 2,3 → 3 »), quand le moteur le chiffre.
+ */
+export function doseProposee(recipe: TrialRecipe, supply: YeastSupply, og: number | null | undefined, levure: YeastReference): { qty: number; unit: string; besoin?: number } | undefined {
+  const forme = levure.form ?? formeDuCatalogue(levure);
+  const avec: TrialRecipe = { ...recipe, yeast: { name: levure.name, form: forme, hopIndexId: levure.id } };
+  const y = doseApresChoix(avec, recipe.yeast, supply, og, levure).yeast;
+  if (!(Number.isFinite(y.qty) && (y.qty ?? 0) > 0)) return undefined;
+  const b = besoinDeLaLevure({ ...avec, yeast: y }, supply, og, levure);
+  return { qty: y.qty!, unit: y.unit ?? 'sachet', besoin: b?.sachets };
+}

@@ -1705,7 +1705,7 @@ const BrewWizardEditor: React.FC<BrewWizardProps & {
     setDraftError('');
     setDraftNotice(draftKey ? 'Preuve de contact à froid conservée dans le brouillon.' : 'Preuve de contact à froid conservée dans cette édition.');
   };
-  const selectYeast = (selectedName: string, item?: StockItem) => {
+  const selectYeast = (selectedName: string, item?: StockItem, dose?: { qty: number; unit: string }) => {
     const current = latestWizardDraft.current.recipe.yeast;
     const sameStock = !!item && current.stockItemRef === item.ref;
     if (sameStock) {
@@ -1719,7 +1719,7 @@ const BrewWizardEditor: React.FC<BrewWizardProps & {
 
     const next: YeastSpec = keepIndependentPitchingWort({
       name: selectedName, lab: item?.yeastLab, strain: item?.yeastStrain,
-      form: item?.yeastForm, unit: item?.unit, qty: undefined, stockItemRef: item?.ref,
+      form: item?.yeastForm, unit: dose?.unit ?? item?.unit, qty: dose?.qty, stockItemRef: item?.ref,
       attenuationPct: item?.yeastAttenuationPct, attenuationBasis: item?.yeastAttenuationPct != null ? 'declared' : undefined,
       fermTempMinC: item?.yeastTempMinC, fermTempMaxC: item?.yeastTempMaxC,
       fermentationFacts: item?.yeastFermentationFacts, technicalFacts: item?.yeastTechnicalFacts,
@@ -3195,7 +3195,7 @@ const BrewWizardEditor: React.FC<BrewWizardProps & {
               comparees={levuresComparees} onComparees={setLevuresComparees}
               onChoisir={choisirLevure} onChange={applyYeastChoice} onNavigate={setStep}
               stockItems={stockItems}
-              onStock={item => { setYeastChange(startYeastChoiceChange(build(), 'stock')); selectYeast(item.name, item); }}
+              onStock={(item, dose) => { setYeastChange(startYeastChoiceChange(build(), 'stock')); selectYeast(item.name, item, dose); }}
               onRetirer={() => { setYeastChange(startYeastChoiceChange(build(), 'free')); selectYeast(''); }}
               yeastChange={yeastChange} onYeastChange={setYeastChange}
               identityEditor={<Suspense fallback={<p role="status" className="text-sm text-cave-400">Chargement des articles de levure…</p>}><YeastIngredientPicker items={stockItems} yeast={yeast} onStock={(name, item) => {
