@@ -31,7 +31,7 @@ export const CurseurPrix: React.FC<{
         <input ref={refCurseurNatif}
           type="range" min={min} max={max} step={pas} value={valeur == null ? min : Math.min(valeur, max)} aria-label={label}
           onChange={e => onChange(Number(e.target.value))}
-          onPointerUp={e => { if (valeur == null) onChange(Number(e.currentTarget.value)); }}
+          onClick={e => { if (valeur == null && e.detail === 0) onChange(Number(e.currentTarget.value)); }}
           className="absolute inset-0 h-11 w-full cursor-pointer opacity-0"
         />
       </div>
