@@ -69,5 +69,5 @@ export function sansMotsBruts(message: string): string {
 function virguleSuisse(texte: string): string {
   return texte
     .replace(/(?<![\d.,])(\d+)\.(\d+)(?![.\d])/g, (_tout, entier: string, decimales: string) => `${entier},${decimales}`)
-    .replace(/(?<![\d.,])(\d+(?:,\d+)?)\s*%/g, (_tout, nombre: string) => `${nombre} %`);
+    .replace(/(?<![\d.,])(\d+(?:,\d+)?)\s*%/g, (_tout, nombre: string) => `${nombre} %`); // virgule-ok : nombre capturé dans le texte, déjà à virgule
 }

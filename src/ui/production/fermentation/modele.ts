@@ -1,3 +1,4 @@
+import { nombreFr } from '../../../domain/nombreAffiche';
 import type { Batch, FermentationStep, HopIngredient, StockItem } from '../../../types';
 import type { HopKnowledge } from '../../../../functions/src/hopPredictionSchema';
 import { breweryDay } from '../../../domain/batchSchedule';
@@ -309,7 +310,7 @@ export function construireReleve(milli: number, tempTexte: string, dateIso: stri
     if (!brut) return null;
     const t = parseDecimal(brut);
     if (t === null) return { erreur: `Saisis la température ${de}, ou laisse ce champ vide.` };
-    if (t < TEMP_MIN_C || t > TEMP_MAX_C) return { erreur: `Saisis une température entre ${TEMP_MIN_C} et ${TEMP_MAX_C} °C (${de}), ou laisse ce champ vide.` };
+    if (t < TEMP_MIN_C || t > TEMP_MAX_C) return { erreur: `Saisis une température entre ${nombreFr(TEMP_MIN_C, 0)} et ${nombreFr(TEMP_MAX_C, 0)} °C (${de}), ou laisse ce champ vide.` };
     return t;
   };
   const ech = lire(tempTexte, 'de l’échantillon'), cuve = lire(cuveTexte, 'de la cuve');

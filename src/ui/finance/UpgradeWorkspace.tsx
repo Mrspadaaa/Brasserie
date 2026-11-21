@@ -66,7 +66,7 @@ function ProchainAchatCarnet({ plan, doc, lien, mois, ouvert, onDate, onPoser, o
   const origine = u?.sourceCarnetId ? (present && (memeTexte(titreCarnet, plan.title) || !titreCarnet) ? 'depuis son carnet' : titreCarnet ? `du carnet ${titreCarnet}` : 'd’un carnet') + suffixeLien(lien) : '';
   /* « 4 900 CHF TTC » : espace avant les milliers, comme les prix du carnet (critique 5, n° 37) */
   const francs = String(Math.round(plan.amountCents / 100)).replace(/\B(?=(\d{3})+(?!\d))/g, ' ');
-  const prix = d.budgetKnown ? `${francs} CHF TTC${partsInconnues(plan) ? ', au moins' : ''}` : 'prix à estimer';
+  const prix = d.budgetKnown ? `${francs} CHF TTC${partsInconnues(plan) ? ', au moins' : ''}` : 'prix à estimer'; // virgule-ok : francs est un entier arrondi, espacé par milliers
   const vendeur = plan.vendor ?? art?.vendeur;
   const details = [vendeur, vendeur && art?.dispo ? art.dispo : null].filter(Boolean).join(' · ');
   return <section aria-label="Prochain achat" data-prochain-carnet>
@@ -284,7 +284,8 @@ function Bandeau({ prevision, hero, effetHero, focus, effetFocus, sortie, onPrev
   return <section className="kh-band" aria-label="Caisse fin de mois" ref={racine}>
     <div className="kh-bh">Caisse fin de mois<button type="button" onClick={onPrevisions}>Prévisions<ChevronRight size={16}/></button></div>
     {!connu ? <p className="kh-vide">Solde de départ à renseigner dans Prévisions : sans lui, la caisse reste inconnue (pas de courbe, jamais 0).</p>
-      : <svg viewBox={`0 0 ${X1} 68`} role="img" aria-label={`Caisse en fin de mois, de ${nomMois(mois[0].month, 'long')} à ${nomMois(mois[mois.length - 1].month, 'long')}${titreS ? ` ; ${titreS.replace(' −', ', sortie de ')} CHF` : ''}`}>
+      : <svg viewBox={`0 0 ${X1} 68`} role="img" aria-label={`Caisse en fin de mois, de ${nomMois(mois[0].month, 'long')} à ${nomMois(mois[mois.length - 1].month, 'long')}${titreS ? ` ; ${titreS.replace(' −', ', sortie de ')} CHF` : ''}`} // virgule-ok : titreS contient chf0() (Intl fr-CH)
+        >
         {iF >= 0 && <rect x={f(X0 + W * iF)} y={14} width={f(W)} height={38} style={{ fill: 'var(--kh-fin)', opacity: .12 }}/>}
         {iS >= 0 && <rect x={f(X0 + W * iS)} y={14} width={f(W)} height={38} style={{ fill: 'var(--kh-fin)', opacity: .12 }}/>}
         {[...ech.ticks].map(t => <g key={t}><line x1={X0} y1={f(y(t))} x2={X1} y2={f(y(t))} style={{ stroke: 'rgb(var(--cave-700))', opacity: t === 0 ? 1 : .55 }}/><text x={30} y={f(y(t)) + 4} fontSize={12} textAnchor="end" fill={mut}>{chf0(t)}</text></g>)}
@@ -362,7 +363,7 @@ function AVenir({ plans, transactions, payments, prevision, busy, onEdit, onPose
     {hero && !carnet && <section className="kh-hero" aria-label="Prochain achat">
       <div className="kh-ht"><span className="kh-kick">Prochain achat</span><span className="kh-pill">D’abord · {etapeHero(hero)}</span></div>
       <div className="kh-hm"><h2><button type="button" className="kh-hbtn" onClick={() => setFiche(hero.id)}>{hero.title}</button></h2>
-        {upgradeDetails(hero).budgetKnown ? <><b className="kh-big kh-m">{chf0(hero.amountCents)}</b><small>{partsInconnues(hero) ? 'au moins · ' : ''}CHF TTC</small></> : <b className="kh-big kh-bigu">à estimer</b>}</div>
+        {upgradeDetails(hero).budgetKnown ? <><b className="kh-big kh-m">{chf0(hero.amountCents)}</b><small>{partsInconnues(hero) ? 'au moins · CHF' : 'CHF'} TTC</small></> : <b className="kh-big kh-bigu">à estimer</b>}</div>
       <LigneCarnet plan={hero} lien={lienDuPlan(hero, carnetIds, carnetsLus)} onOuvrir={onOpenCarnet}/>
       {effetHero && <EffetCaisse plan={hero} effet={effetHero}/>}
       <div className="kh-acts"><button type="button" className="kh-mon" aria-expanded={picker === hero.id} aria-label={`Mois de ${hero.title} : ${moisDePlan(hero) ? nomMois(moisDePlan(hero)!, 'long') : 'à poser'}`} onClick={() => setPicker(picker === hero.id ? null : hero.id)}><Calendar size={18}/>{moisDePlan(hero) ? nomMois(moisDePlan(hero)!, 'short') : '+ mois'}<ChevronDown size={14}/></button>

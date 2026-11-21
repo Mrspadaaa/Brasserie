@@ -355,7 +355,7 @@ export function tuilesDuJour(releves: ReleveDuJour[], recipe?: RecipeSnapshot): 
       fusion('empatage', 'Empâtage', parties, {
         cible: cible || undefined,
         quand: lu.length === parties.length && parties.every((p) => p.etat === 'ok') ? '✓ dans la cible' : quand,
-        valeur: parties.map((p) => (p.id === 'ph' ? `pH ${p.valeur}` : `${p.valeur} °C`)).join(' · ')
+        valeur: parties.map((p) => (p.id === 'ph' ? `pH ${p.valeur}` : `${p.valeur} °C`)).join(' · ') // virgule-ok : p.valeur est déjà le texte à virgule (valeurFr)
       })
     );
   }
@@ -389,7 +389,7 @@ export function losangesFrise(releves: ReleveDuJour[]): ReleveDuJour[] {
   const par = (id: IdReleve) => releves.find((r) => r.id === id);
   const sortie: ReleveDuJour[] = [];
   const eau = par('eau-temp');
-  if (eau) sortie.push({ ...eau, nom: `Eau d’empâtage · ${eau.valeur} °C` });
+  if (eau) sortie.push({ ...eau, nom: `Eau d’empâtage · ${eau.valeur} °C` }); // virgule-ok : eau.valeur est déjà le texte à virgule (valeurFr)
   for (const id of ['maische', 'ph'] as const) {
     const r = par(id);
     if (r) sortie.push(r);

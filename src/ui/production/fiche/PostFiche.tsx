@@ -166,7 +166,7 @@ export const TuilesFg: React.FC<{ batch: Batch; onConditionner: () => void }> = 
           <div className="font-mono text-xs text-cave-400">{dernier ? `${jjmm(dernier.swiss)} · ` : ''}OG {og !== null ? sg3(og) : '—'}</div></Panneau>
         <Panneau className="p-2.5"><div className="text-sm font-semibold text-cave-50">Alcool</div>
           <div className="font-mono text-3xl font-semibold tabular-nums text-cave-50">{abv !== null ? `${nombreFr(abv, 1)} %` : '—'}</div>
-          <div className="text-xs text-cave-400">atténuation <Mono>{att !== null ? `${att} %` : '—'}</Mono></div></Panneau>
+          <div className="text-xs text-cave-400">atténuation <Mono>{att !== null ? `${nombreFr(att, 1)} %` : '—'}</Mono></div></Panneau>
       </div>
       <Cible ton="prim" plein onClick={onConditionner}>Conditionner · bouteilles et fût <ChevronRight size={16} aria-hidden="true" /></Cible>
     </>

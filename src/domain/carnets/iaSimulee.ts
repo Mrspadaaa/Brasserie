@@ -7,6 +7,7 @@
  * G27 et G29). Le code de l'app n'a aucun gabarit par objet (C2) : les caractéristiques viennent de la réponse, réelle ou simulée.
  * Les pages simulées portent des domaines fictifs, et leurs prix sont des exemples.
  */
+import { nombreFr } from '../nombreAffiche';
 import type { ContexteRangerCarnet, PageLue } from '../../../functions/src/carnetIA';
 import { liensDuTexte, sansAccents } from './ia';
 import { fixtureCarnets } from './fixture';
@@ -331,7 +332,7 @@ const CATEGORIES: Array<{ motif: RegExp; carnet: RegExp; neuf: string; criteres:
     critereLien: { texte: 'Un fût couché entre dans le bac', caracteristique: { nom: 'fond de bac', unite: 'cm', sens: 'plus' } },
     criteres: [{
       quand: /fut[^,;]*couche|couche[^,;]*fut|entre dans le bac/, valeur: 'entre-parentheses',
-      texte: (phrase) => { const l = /(\d+(?:[.,]\d+)?)\s?l\b/.exec(sansAccents(phrase)); return `Un fût${l ? ` de ${l[1]} L` : ''} couché entre dans le bac`; },
+      texte: (phrase) => { const l = /(\d+(?:[.,]\d+)?)\s?l\b/.exec(sansAccents(phrase)); return `Un fût${l ? ` de ${nombreFr(Number(l[1].replace(',', '.')), 2)} L` : ''} couché entre dans le bac`; },
       caracteristique: { nom: 'fond de bac', unite: 'cm', sens: 'plus' }
     }]
   },

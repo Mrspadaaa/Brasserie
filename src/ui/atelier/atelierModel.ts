@@ -188,11 +188,11 @@ const brut = (item: CreativeItem) => [item.title, item.description, item.notes].
 /** « la 33 cl », « le carton de 24 », « le fût de 20 L » : le format que le texte cite pour le prix. */
 export function formatVendu(texte: string): string | undefined {
   const cl = /(\d+)\s?cl(?!\p{L})/iu.exec(texte);
-  if (cl) return `la ${cl[1]} cl`;
+  if (cl) return `la ${cl[1]} cl`; // virgule-ok : entier capturé par (\d+)
   const carton = /carton(?:\s+de)?\s*(\d+)?/iu.exec(texte);
   if (carton) return carton[1] ? `le carton de ${carton[1]}` : 'le carton';
   const fut = /f[uû]t(?:\s+de)?\s*(\d+)?\s?l?(?!\p{L})/iu.exec(texte);
-  if (fut) return fut[1] ? `le fût de ${fut[1]} L` : 'le fût';
+  if (fut) return fut[1] ? `le fût de ${fut[1]} L` : 'le fût'; // virgule-ok : entier capturé par (\d+)
   return undefined;
 }
 

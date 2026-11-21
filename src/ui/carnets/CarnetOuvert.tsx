@@ -117,7 +117,7 @@ function etiquetteStatut(c: CarnetV): string {
 function etendue(centimes: number[]): string | null {
   if (!centimes.length) return null;
   const min = montant(Math.min(...centimes)), max = montant(Math.max(...centimes));
-  return min === max ? `${min} CHF` : `${min} à ${max} CHF`;
+  return min === max ? `${min} CHF` : `${min} à ${max} CHF`; // virgule-ok : min et max sortent de montant(), déjà formaté
 }
 
 /**

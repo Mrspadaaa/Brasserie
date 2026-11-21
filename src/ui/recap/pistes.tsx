@@ -110,7 +110,7 @@ export function MiniCourbe({ paliers }: { paliers: readonly TempStep[] }) {
     cur += montee; d.push(`L${x(cur).toFixed(1)} ${y(p.tempC).toFixed(1)}`);
     cur += dur[i]; d.push(`L${x(cur).toFixed(1)} ${y(p.tempC).toFixed(1)}`);
   });
-  const texte = pts.map((p) => `${p.name || 'palier'} ${p.tempC} °C`).join(', puis ');
+  const texte = pts.map((p) => `${p.name || 'palier'} ${fr(p.tempC, p.tempC % 1 ? 1 : 0)} °C`).join(', puis ');
   return (
     <svg role="img" aria-label={`courbe d'empâtage : ${texte}`} viewBox={`0 0 ${W} ${H}`} width="64" height="26" preserveAspectRatio="none">
       <path d={d.join(' ')} fill="none" stroke="currentColor" strokeWidth="2" strokeLinejoin="round" vectorEffect="non-scaling-stroke" />

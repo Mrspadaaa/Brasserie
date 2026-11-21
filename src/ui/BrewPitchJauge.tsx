@@ -1,3 +1,4 @@
+import { nombreFr } from '../domain/nombreAffiche';
 import React from 'react';
 import { Check } from 'lucide-react';
 import {
@@ -52,7 +53,7 @@ export function BrewPitchJauge({ info, choix }: { info: PitchJaugeInfo; choix?: 
         <span className="bz-m">0</span>
         {fourchette && <span className="bz-m bz-jauge-bord" style={{ left: pc(fourchette.min) }}>{fr(fourchette.min)}</span>}
         {fourchette && <span className="bz-m bz-jauge-bord" style={{ left: pc(fourchette.max) }}>{fr(fourchette.max)}</span>}
-        <span className="bz-m" style={{ left: '100%' }}>{max} g</span>
+        <span className="bz-m" style={{ left: '100%' }}>{nombreFr(max, 1)} g</span>
       </div>
       {fourchette && <p className="sr-only">Plage du fabricant pour ce volume : {fr(fourchette.min)} à {fr(fourchette.max)} g.</p>}
       {sachet && <p className="sr-only">Source du poids : {libelleSource(sachet)}</p>}

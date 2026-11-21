@@ -298,9 +298,9 @@ function brutRabais(l: LectureControlee): ControlePiece {
     ...base, ok: false, ecart: Math.abs(ecart) / 100, unite: 'CHF', sens: manque ? 'manque' : 'exces',
     ...(lignes?.length ? { lignes } : {}),
     geste: manque
-      ? { type: 'ajouter', libelle: `${chf(ecart)} CHF non retrouvés dans les lignes : chercher, ajouter la ligne manquante ou relire la photo` }
-      : lignes?.length ? { type: 'ouvrir-ligne', libelle: `${chf(-ecart)} CHF de trop : ouvrir la ligne en cause`, lignes }
-        : { type: 'ouvrir-ligne', libelle: `${chf(-ecart)} CHF de trop : une ligne en double ou de signe faux ?` },
+      ? { type: 'ajouter', libelle: `${chf(ecart)} CHF non retrouvés dans les lignes : chercher, ajouter la ligne manquante ou relire la photo` } // virgule-ok : chf() (functions/src/invoiceControls) écrit déjà la virgule
+      : lignes?.length ? { type: 'ouvrir-ligne', libelle: `${chf(-ecart)} CHF de trop : ouvrir la ligne en cause`, lignes } // virgule-ok : chf() écrit déjà la virgule
+        : { type: 'ouvrir-ligne', libelle: `${chf(-ecart)} CHF de trop : une ligne en double ou de signe faux ?` }, // virgule-ok : chf() écrit déjà la virgule
   };
 }
 
@@ -392,7 +392,7 @@ function paiement(l: LectureControlee, ctx: ContexteControles): ControlePiece {
   if (paye > total) {
     return {
       ...base, ok: false, ecart, unite: 'CHF' as const, sens: 'exces' as const, ...extra,
-      geste: { type: 'saisir-autre' as const, libelle: `${chf(paye - total)} CHF reçus de plus que le total : relire le total ou le montant reçu` },
+      geste: { type: 'saisir-autre' as const, libelle: `${chf(paye - total)} CHF reçus de plus que le total : relire le total ou le montant reçu` }, // virgule-ok : chf() écrit déjà la virgule
     };
   }
   return {

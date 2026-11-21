@@ -50,7 +50,7 @@ export function couleursPieces(bases: string[]): string[] {
   const variante = (base: string, rang: number): string => {
     if (rang === 0) return base;
     const [cible, part] = [['white', 58], ['black', 62], ['white', 34], ['black', 40]][(rang - 1) % 4] as [string, number];
-    return `color-mix(in srgb, ${base} ${part}%, ${cible})`;
+    return `color-mix(in srgb, ${base} ${part}%, ${cible})`; // virgule-ok : couleur CSS (color-mix), le point y est la syntaxe
   };
   return bases.map(base => {
     const n = vues.get(base) ?? 0;

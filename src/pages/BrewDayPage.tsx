@@ -333,7 +333,7 @@ function LevureCloture({ nom, detail, sachet, grammes, volumeReelL, reelNonQuali
               <div className="bz-jauge-grad" aria-hidden="true">
                 <span className="bz-m">0</span>
                 {fourchette && <span className="bz-m bz-jauge-bord" style={{ left: pc((fourchette.min + fourchette.max) / 2) }}>{frNb(fourchette.min)}–{frNb(fourchette.max)}</span>}
-                <span className="bz-m" style={{ left: '100%' }}>{max} g</span>
+                <span className="bz-m" style={{ left: '100%' }}>{nombreFr(max, 1)} g</span>
               </div>
             </div>
           )}
@@ -1642,7 +1642,7 @@ export function BrewDayPage({ batch, config, stockItems = [], onClose, onSave, o
   };
   const nextStepMeta = nextStep
     ? nextGrains
-      ? `${doseFr(nextStepIngredients.reduce((sum, i) => sum + (actualAmount(i, state) ?? i.planned), 0), 'kg')} kg`
+      ? `${doseFr(nextStepIngredients.reduce((sum, i) => sum + (actualAmount(i, state) ?? i.planned), 0), 'kg')} kg` // virgule-ok : doseFr écrit la virgule
       : [
           nextStep.tempC != null ? `${fr(nextStep.tempC)} °C` : nextStep.id === 'ensemencement' && recipe.yeast?.pitchTempC != null ? `${fr(recipe.yeast.pitchTempC)} °C` : '',
           isBoilStep(nextStep) ? `${boilMinutes(state, recipe)} min` : nextStep.durationMin > 0 ? `${nextStep.durationMin} min` : ''

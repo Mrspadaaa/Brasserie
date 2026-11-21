@@ -414,7 +414,7 @@ export const EtapeRecap: React.FC<EtapeRecapProps> = ({
     },
     houblons: {
       manques: manques('houblons'), vide: hops.length === 0, nom: 'Houblons',
-      texte: tete ? <>{tete.name}{finie(tete.alpha) && tete.alpha > 0 && <span className="rc2-m rc2-sp">{fr(tete.alpha, tete.alpha % 1 ? 1 : 0)} % α</span>}{finie(tete.weightG) && <span className="rc2-m rc2-sp">{tete.weightG} g</span>}{tempsTete && <span className="rc2-m rc2-sp">{tempsTete}</span>}{hops.length > 1 && <span className="rc2-sp">+{hops.length - 1}</span>}</> : 'aucun houblon',
+      texte: tete ? <>{tete.name}{finie(tete.alpha) && tete.alpha > 0 && <span className="rc2-m rc2-sp">{fr(tete.alpha, tete.alpha % 1 ? 1 : 0)} % α</span>}{finie(tete.weightG) && <span className="rc2-m rc2-sp">{fr(tete.weightG, tete.weightG % 1 ? 1 : 0)} g</span>}{tempsTete && <span className="rc2-m rc2-sp">{tempsTete}</span>}{hops.length > 1 && <span className="rc2-sp">+{hops.length - 1}</span>}</> : 'aucun houblon',
       pistes: pisteIbu,
       droite: <Aromes hops={hopsInOrder.map(x => x.h)} />
     },
@@ -446,7 +446,7 @@ export const EtapeRecap: React.FC<EtapeRecapProps> = ({
     },
     paliers: {
       manques: manques('paliers'), vide: mashSteps.length === 0, nom: 'Paliers',
-      texte: mashSteps.length ? <>{mashSteps.map((s, i) => <React.Fragment key={`${s.name}-${i}`}>{i > 0 && <span className="rc2-sp">{/mash/i.test(s.name) ? 'mash-out' : s.name}</span>}<span className={`rc2-m${i > 0 ? ' rc2-sp' : ''}`}>{finie(s.tempC) ? `${s.tempC} °C` : '— °C'}</span>{i === 0 && <span className="rc2-m rc2-sp">{finie(s.durationMin) ? `${s.durationMin}′` : '—′'}</span>}</React.Fragment>)}</> : 'aucun palier',
+      texte: mashSteps.length ? <>{mashSteps.map((s, i) => <React.Fragment key={`${s.name}-${i}`}>{i > 0 && <span className="rc2-sp">{/mash/i.test(s.name) ? 'mash-out' : s.name}</span>}<span className={`rc2-m${i > 0 ? ' rc2-sp' : ''}`}>{finie(s.tempC) ? `${fr(s.tempC, s.tempC % 1 ? 1 : 0)} °C` : '— °C'}</span>{i === 0 && <span className="rc2-m rc2-sp">{finie(s.durationMin) ? `${s.durationMin}′` : '—′'}</span>}</React.Fragment>)}</> : 'aucun palier',
       droite: <span className="rc2-courbe"><MiniCourbe paliers={mashSteps} /></span>
     },
     eau: {

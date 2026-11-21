@@ -266,7 +266,7 @@ export function lireAjout(v: string, connu?: (nom: string) => boolean, sucre = f
 export const EBC_NOIR_MAX = 79;
 export function messageTeinte(ebc: number | null | undefined): string | null {
   if (typeof ebc !== 'number' || !Number.isFinite(ebc) || ebc <= EBC_NOIR_MAX) return null;
-  return `Teinte ${fr(ebc, 1)} EBC : plus noire que les stouts les plus foncées (40 SRM ≈ ${EBC_NOIR_MAX} EBC, BJCP 2021). Vérifier les masses de malts colorés.`;
+  return `Teinte ${fr(ebc, 1)} EBC : plus noire que les stouts les plus foncées (40 SRM ≈ ${fr(EBC_NOIR_MAX, 0)} EBC, BJCP 2021). Vérifier les masses de malts colorés.`;
 }
 
 // MV-7, MV-9 : un nom neuf tapé dans la famille par défaut (Grain) qui dit sans ambiguïté un sucre ou un fruit va dans sa famille. Les mots sont lus sans accents.

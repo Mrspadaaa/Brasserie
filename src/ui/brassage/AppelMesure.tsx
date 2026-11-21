@@ -34,7 +34,7 @@ export function etDoncDe(carte: CarteAppel, valeur: number, zones?: Zone[]): str
 }
 
 const NBSP = ' ';
-const unite = (kind: KindAppel) => (kind === 'temperature' ? `${NBSP}°C` : '');
+const unite = (kind: KindAppel) => (kind === 'temperature' ? `${NBSP}°C` : ''); // virgule-ok : espace insécable puis unité, pas un nombre
 const GRAS = { fontWeight: 700, color: 'var(--bz-t0)' } as const;
 const MUET = { color: 'var(--bz-t2)' } as const;
 const CARTE = {

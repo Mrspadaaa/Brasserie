@@ -251,7 +251,7 @@ function Mur({ m, parRef, onOpen, onFiltre, filtre, retenus, ouvertLegende, onLe
                 {r.id === 'f2' && <button type="button" className="sv-i sx-q" aria-expanded={ouvertLegende} aria-controls="sv-leg-f0 sv-leg-f1 sv-leg-f2" aria-label="Légende" onClick={onLegende}>Légende</button>}
               </div>
               <div className="l1e-pl">
-                {r.groupes.map((g) => <Groupe key={g.id} g={g} r={r} />)}
+                {r.groupes.map((g) => <Groupe g={g} key={g.id} r={r} />)}
                 {r.vides.length > 0 && <span className="sx-vd" role="note" aria-label={`Aucun en stock : ${r.vides.join(', ')}`}>{r.vides.map((v) => <span key={v} className="sx-v"><i className="sx-o" />{v}</span>)}</span>}
                 {r.id === 'f0' && <i className="sw-rln" aria-hidden="true" />}
               </div>

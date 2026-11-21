@@ -7,7 +7,7 @@ import type { VueProps } from './Caisse';
 
 const Barre = ({ reel, prevu, an }: { reel: number; prevu: number | null; an: number | null }) => {
   const max = Math.max(1, reel, prevu ?? 0, an ?? 0) * 1.04;
-  const p = (v: number) => `${(v / max * 100).toFixed(2)}%`;
+  const p = (v: number) => `${(v / max * 100).toFixed(2)}%`; // virgule-ok : largeur CSS, le point y est la syntaxe
   const fin = prevu !== null ? Math.min(reel, prevu) : reel;
   return <span className="ana-piste ana-regle-piste" aria-hidden="true">
     <span className="ana-regle-fond"/>

@@ -6,6 +6,7 @@
  * dépendance nouvelle. Règle d'honnêteté : un nombre rendu figure dans la phrase ; une phrase sans prix n'a pas de `prixCentimes`.
  * Aucun gabarit par objet (C2) : aucun mot propre à une catégorie d'objet ici.
  */
+import { nombreFr } from '../nombreAffiche';
 import { parseDecimal } from '../../ui/numericInput';
 import type { GenreNote } from './modele';
 
@@ -396,7 +397,7 @@ export function extraireCriteres(texte: string): CriteresLus {
     if (!seg) continue;
     const bas = sansAccentsMin(seg);
     const tient = TIENT.exec(bas);
-    if (tient) { garder({ texte: `Tient ${tient[1]} °C`, caracteristique: { nom: `tient ${tient[1]} °C`, sens: 'oui-non' } }); continue; }
+    if (tient) { const degres = nombreFr(Number(tient[1].replace(',', '.')), 1); garder({ texte: `Tient ${degres} °C`, caracteristique: { nom: `tient ${degres} °C`, sens: 'oui-non' } }); continue; }
     const q = quantitesDe(seg)[0];
     if (!q) {
       if (/^\d+\s+\p{L}[\p{L}-]{2,}$/u.test(seg)) facons.push(seg);

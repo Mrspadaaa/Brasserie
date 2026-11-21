@@ -4,6 +4,7 @@
  * Echec {message, etape?, onRelancer?, onReformuler?, libelleRelancer?, busy?} ; HorsLigne {question?, message?, resume?,
  * onEnvoyer, onReformuler?, libelleEnvoi?, busy?} ; Plafond {question?, onLimits, onLater}. Aucune logique serveur.
  */
+import { nombreFr } from '../../domain/nombreAffiche';
 import { useRef } from 'react';
 import type { ReactNode } from 'react';
 import type { BrewerMode } from '../../../functions/src/companionTypes';
@@ -169,7 +170,7 @@ export function Calcule({
       <div className="cmp-carte cmp-calc">
         {jalons.length ? (
           <>
-            <div className="cmp-pile" role="img" aria-label={jalons.map((j) => `${j.nom} ${j.g} g à J+${j.jour}`).join(', ')}>
+            <div className="cmp-pile" role="img" aria-label={jalons.map((j) => `${j.nom} ${nombreFr(j.g, 1)} g à J+${j.jour}`).join(', ')}>
               {jalons.map((j) => (
                 <i key={`${j.nom}-${j.jour}`} style={{ flex: j.g }} />
               ))}

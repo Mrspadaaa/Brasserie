@@ -291,7 +291,7 @@ export const BatchDetailSheet: React.FC<BatchDetailSheetProps> = ({
     const pair = { og: field === 'og' ? value : other, fg: field === 'fg' ? value : other };
     // Les deux densités connues : l'alcool suit le couple. Hors bornes ou FG > OG, l'ancien alcool est effacé.
     const abvPatch: Partial<Batch> = nolo || pair.og === null || pair.fg === null ? {}
-      : { abv: abvFromGravities(pair.og, pair.fg) !== null ? `${abvFromGravities(pair.og, pair.fg)}%` : '' };
+      : { abv: abvFromGravities(pair.og, pair.fg) !== null ? `${abvFromGravities(pair.og, pair.fg)}%` : '' }; // virgule-ok : valeur stockée (champ abv du brassin), pas un affichage
     save({ [field]: text, ...abvPatch });
   };
   // k1 n° 1 : une densité refusée reste dans son champ, jamais dans les résumés ni la courbe : eux gardent la dernière valeur enregistrée.
@@ -392,7 +392,7 @@ export const BatchDetailSheet: React.FC<BatchDetailSheetProps> = ({
     setFgError('');
     setFgUndo({ fg: draft.fg ?? '', abv: draft.abv ?? '' });
     const found = nolo || og === null ? null : abvFromGravities(og, value);
-    save({ fg: formatDecimal(value, 3), ...(nolo || og === null ? {} : { abv: found !== null ? `${found}%` : '' }) });
+    save({ fg: formatDecimal(value, 3), ...(nolo || og === null ? {} : { abv: found !== null ? `${found}%` : '' }) }); // virgule-ok : valeur stockée (champ abv du brassin), pas un affichage
     setFgMilli(null);
   };
   const conditionner = (valeurs: Conditionnement, kegIds: string[]) => {

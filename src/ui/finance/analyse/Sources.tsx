@@ -64,7 +64,8 @@ export function SourcesVue({ c, finJour, duree, pourquoi, onJournal }: SourcesPr
         const cat = r.source === 'caisse' || r.source === 'gagne' || r.source === 'apports' || r.source === 'reste' ? undefined : categorieDeSource(r.source);
         const renvoi = r.source === 'apports' ? { category: 'apports' } : r.source === 'reste' ? (r.a > r.de ? { filter: 'payable' } : {}) : { category: cat };
         return r.cliquable
-          ? <button type="button" role="listitem" key={r.cle} className="ana-rang" aria-label={`${r.libelle} ${r.valeur} CHF${r.prevu !== null ? `, prévu ${chf(r.prevu)}` : ''}${r.depasse > 0 ? `, dépassé de ${chf(r.depasse)}` : ''}, voir ces opérations`} onClick={() => onJournal({ scope: 'all', allDates: true, ...renvoi })}>{contenu}</button>
+          ? <button type="button" role="listitem" key={r.cle} className="ana-rang" aria-label={`${r.libelle} ${r.valeur} CHF${r.prevu !== null ? `, prévu ${chf(r.prevu)}` : ''}${r.depasse > 0 ? `, dépassé de ${chf(r.depasse)}` : ''}, voir ces opérations`} // virgule-ok : r.valeur sort de chf(), déjà à virgule
+          onClick={() => onJournal({ scope: 'all', allDates: true, ...renvoi })}>{contenu}</button>
           : <div role="listitem" key={r.cle} className="ana-rang">{contenu}</div>;
       })}
       <div className="ana-echelle" aria-hidden="true"><span className="ana-lib"/><span className="ana-piste">{gr.valeurs.filter(v => v >= bas && v <= haut).map(v => <span key={v} className="ana-tic ana-m" style={{ left: pct(v) }}>{chf(v).replace(/[,.]00$/, '')}</span>)}</span><span className="ana-val"/></div>

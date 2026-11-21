@@ -690,7 +690,7 @@ export const QuickActionModal: React.FC<QuickActionModalProps> = ({
                   {/* d1b : le sous-titre de sa maquette, collé au titre, dans l'en-tête. */}
                   {recettePosee && recetteChoisie && (
                     <p className="text-xs leading-tight text-cave-400">
-                      {batchVolumeL} L{capaciteCuveL ? ` · cuve de ${capaciteCuveL} L` : ' · cuve : capacité non renseignée'} · le stock se réserve à la planification
+                      {nombreFr(batchVolumeL, 1)} L{capaciteCuveL ? ` · cuve de ${nombreFr(capaciteCuveL, 1)} L` : ' · cuve : capacité non renseignée'} · le stock se réserve à la planification
                     </p>
                   )}
                 </div>

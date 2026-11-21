@@ -186,10 +186,10 @@ export function AdapterVolumes({ recettes, brewhouses, activeBrewhouseId, onNouv
           </div>
           <div className="pv-curseur">
             <div className="pv-grads">
-              <span data-bout="g" style={{ left: 0 }}>{CURSEUR.min} L</span>
+              <span data-bout="g" style={{ left: 0 }}>{lit(CURSEUR.min, 1)} L</span>
               {recette.volumeL >= CURSEUR.min && recette.volumeL <= CURSEUR.max && <span style={{ left: `${pc(recette.volumeL)}%` }}>recette</span>}
               {cuveL !== undefined && cuveL <= CURSEUR.max && <span data-cible="" style={{ left: `${Math.min(pc(cuveL) + 5, 92)}%` }}>cuve {lit(cuveL, 0)}</span>}
-              <span data-bout="d" style={{ left: '100%' }}>{CURSEUR.max} L</span>
+              <span data-bout="d" style={{ left: '100%' }}>{lit(CURSEUR.max, 1)} L</span>
             </div>
             <div className="pv-zone">
               <div className="pv-rail-c" />

@@ -1,3 +1,4 @@
+import { nombreFr } from '../../domain/nombreAffiche';
 import React, { useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import { ChevronDown, ChevronRight, CircleHelp, Plus, Receipt, Store, Tag, TriangleAlert, X } from 'lucide-react';
 import { useStorageValue } from '../../hooks/useLiveData';
@@ -223,7 +224,7 @@ export function AVerifier({ ventes, onVoir, onOuvrir }: { ventes: readonly Vente
   if (ventes.length === 0) return null;
   return <div className="tf-verif" role="group" aria-label="Prix à vérifier">
     <h4><TriangleAlert size={16} aria-hidden="true" />À vérifier</h4>
-    <p className="tf-verif-n">Hors de {PLAGE_LITRE_PLAUSIBLE[0]} à {PLAGE_LITRE_PLAUSIBLE[1]} CHF le litre : pas tracé sur l’axe.</p>
+    <p className="tf-verif-n">Hors de {nombreFr(PLAGE_LITRE_PLAUSIBLE[0], 2)} à {nombreFr(PLAGE_LITRE_PLAUSIBLE[1], 2)} CHF le litre : pas tracé sur l’axe.</p>
     <ul className="tf-gl">{ventes.map((v) => <li key={v.cle} className="tf-vl">
       <button type="button" className="tf-gr" onClick={() => onVoir?.(v)}>
         <span className="tf-gi"><Genre genre={v.genre} /></span>

@@ -430,7 +430,8 @@ export function TransactionJournal({ transactions, payments, archives, request, 
         {groupe.hors.map(entry => {
           const verbe = entry.direction === 'in' ? 'à encaisser' : 'à payer', reste = amountOnly(entry.payment.remainingCents > 0 ? entry.payment.remainingCents : transactionAmount(entry.transaction));
           const quand = shortDate(isoDate(entry.transaction.finance?.dueDate) ?? entry.date ?? undefined);
-          return <div key={entry.transaction.id} className="ops-hors" role="note" aria-label={`Hors plage : ${entry.transaction.description}, ${verbe} ${quand}, ${reste} CHF`}>
+          return <div key={entry.transaction.id} className="ops-hors" role="note" aria-label={`Hors plage : ${entry.transaction.description}, ${verbe} ${quand}, ${reste} CHF`} // virgule-ok : reste sort de amountOnly (Intl fr-CH)
+          >
             <span className="ops-hp">hors plage</span><span className="ops-hors-nom">{entry.transaction.description} · {verbe} {quand}</span><b className="ops-m">{reste}</b>
           </div>;
         })}

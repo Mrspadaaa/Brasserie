@@ -352,7 +352,7 @@ export function correctionsAvantEbullition(
       const g = Math.max(10, arrondi((manquants / (ppg * PPL_PAR_PPG)) * 1000, 10));
       options.push({
         id: 'extrait',
-        titre: `Extrait sec ≈ ${g} g`,
+        titre: `Extrait sec ≈ ${nombreFr(g, 0)} g`,
         detail: `≈ ${lit(accepte.finalL)} L à ${sg(og)} · au premier bouillon`
       });
     }

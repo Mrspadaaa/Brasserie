@@ -189,14 +189,14 @@ export const FicheFermentation: React.FC<FicheFermentationProps> = ({ m, verbe, 
         <span className="font-semibold text-cave-200">Densité</span>
         <span>
           {m.alcool !== null ? <>alc. <span className="tabular-nums">{m.alcool.toLocaleString('fr-FR', { minimumFractionDigits: 1, maximumFractionDigits: 1 })} %</span></> : 'alc. non calculé'}
-          {' · '}{m.attenuation !== null ? <>att. <span className="tabular-nums">{m.attenuation} %</span></> : 'att. non calculée'}
+          {' · '}{m.attenuation !== null ? <>att. <span className="tabular-nums">{nombreFr(m.attenuation, 1)} %</span></> : 'att. non calculée'}
           {!m.fgConfirmee && ' · provisoires'}
         </span>
       </div>
       <div ref={pend} className="relative" data-pend>
         <div className="lg:grid lg:items-start lg:gap-x-16" style={large ? { gridTemplateColumns: houblons.length > 0 ? 'minmax(0,1fr) 23rem' : 'minmax(0,1fr)' } : undefined}>
           <div ref={graf} className="relative lg:col-start-1 lg:row-start-1" data-graphe>
-            {g && <GrapheTemps m={m} g={g} />}
+            {g && <GrapheTemps g={g} m={m} />}
           </div>
           <div className={`relative z-[1] mt-2.5 flex items-start justify-between gap-2 lg:contents`}>
             {houblons.length > 0 && (

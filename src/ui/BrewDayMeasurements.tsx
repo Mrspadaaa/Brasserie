@@ -351,7 +351,7 @@ export function MeasureSlider({ scale, kind, value, depart, label, onPose }: {
   scale: MeasureScale; kind: ReadingKind; value: number | null; depart: number; label: string; onPose: (v: number) => void;
 }) {
   const span = scale.max - scale.min;
-  const at = (n: number) => `${Math.max(0, Math.min(100, ((n - scale.min) / span) * 100))}%`;
+  const at = (n: number) => `${Math.max(0, Math.min(100, ((n - scale.min) / span) * 100))}%`; // virgule-ok : largeur CSS, le point y est la syntaxe
   const { pas } = pasCurseur(kind);
   const bornes = bornesCurseur(kind, scale.min, scale.max);
   const pose = value != null;
