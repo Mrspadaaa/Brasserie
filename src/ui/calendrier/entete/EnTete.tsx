@@ -405,7 +405,11 @@ export function EnTeteCalendrier(props: EnTeteCalendrierProps) {
       const x = (clientX - (r?.left ?? 0)) * (r && r.width ? largeur / r.width : 1);
       return clamp(alignement.debut + semaineSous(alignement, x), 0, n - 1);
     }
-    return clamp(Math.floor((((clientX - (r?.left ?? 0)) * (r && r.width ? largeur / r.width : 1)) / (largeur / n))), 0, n - 1);
+    /* B9 (WFP-2, 21.11) : en 6 semaines (S47–S52), un glissé à 30 % lisait « S31 · 2 août », hors de la fenêtre. La petite courbe montre
+       l'année et son cadre ; le doigt, lui, lit les semaines de la fenêtre, réparties sur la largeur comme les colonnes de la frise dessous. */
+    const debutFenetre = clamp(index, 0, n - 1), dansFenetre = Math.max(1, Math.min(nombre, n - debutFenetre));
+    const fraction = ((clientX - (r?.left ?? 0)) * (r && r.width ? largeur / r.width : 1)) / Math.max(1, largeur);
+    return clamp(debutFenetre + Math.floor(fraction * dansFenetre), debutFenetre, debutFenetre + dansFenetre - 1);
   };
   const { props: gestes, attacher } = usePointeurCourbe({
     indexSous,

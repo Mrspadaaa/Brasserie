@@ -362,7 +362,8 @@ async function jouer(dir) {
       await recharger(); await fermer();
       {
         const p0 = await pastille();
-        const debut = () => p.evaluate(() => { const e = document.querySelector('[aria-label^="Poignée de début"]'); const m = e && /commence en S(\d+)/.exec(e.getAttribute('aria-label')); return m ? Number(m[1]) : null; });
+        // pendant le glisser, la courbe montre l'aperçu (sans cadre ni poignée) : la fenêtre se lit à la première colonne de la bande des semaines
+        const debut = () => p.evaluate(() => { const e = [...document.querySelectorAll('[data-bande-semaines] [data-semaine]')].find((x) => x.getBoundingClientRect().width > 0); return e ? Number(e.getAttribute('data-semaine')) : null; });
         const d0 = await debut();
         const titre = 'Fruty';
         await p.evaluate((t) => { document.querySelector(`[aria-label^="${t},"]`)?.scrollIntoView({ block: 'center' }); }, titre);
@@ -386,6 +387,51 @@ async function jouer(dir) {
           (p1 === p0 && p2 === p0) ? ok('B8 période', `« ${p0} » après le glisser au bord (fenêtre S${d0} → S${d1}) et après rechargement`)
             : echec('B8 période', `période « ${p0} » devenue « ${p1} » après un glisser au bord (fenêtre S${d0} → S${d1}), « ${p2} » après rechargement`);
         }
+      }
+
+      // B9 / WFP-2 : en 6 semaines, la lecture de la courbe au doigt reste dans les semaines montrées
+      await recharger(); await fermer();
+      {
+        await menuDuree('6 sem.');
+        const b = await p.$('[data-ent-cacher]');
+        if (b && await b.evaluate((e) => e.getAttribute('aria-pressed') === 'true')) { const q = await point('[data-ent-cacher]'); await p.touchscreen.tap(q[0], q[1]); await sleep(700); }
+        const vues = await semainesVues();
+        const bc = await p.evaluate(() => { const s = document.querySelector('[data-calendrier-entete] .ent-cbz svg'); if (!s) return null; window.scrollTo(0, 0); const r = s.getBoundingClientRect(); return { x: r.x, y: r.y, w: r.width, h: r.height }; });
+        if (!bc) echec('B9 lecture de la courbe', 'courbe introuvable');
+        else {
+          // Hors des poignées (leurs zones de prise de 44 px), le doigt lit ; un départ qui tomberait sur une prise passe juste à côté (D395 :
+          // le doigt lit les semaines de la fenêtre sur toute la largeur ; seules les poignées tirent la fenêtre).
+          const prises = await p.evaluate(() => [...document.querySelectorAll('[data-calendrier-entete] [data-poignee]')].map((e) => { const r = e.getBoundingClientRect(); return { l: r.left, r: r.right, genre: e.getAttribute('data-poignee') }; }).filter((z) => z.r > z.l));
+          // les deux zones se touchent quand la fenêtre est étroite : on sort de leur union, du côté le plus proche qui reste dans la courbe
+          const union = prises.length ? { l: Math.min(...prises.map((z) => z.l)), r: Math.max(...prises.map((z) => z.r)) } : null;
+          const libre = (x) => (!union || x < union.l - 2 || x > union.r + 2 ? x : (x - union.l < union.r - x && union.l - 6 > bc.x) || union.r + 6 > bc.x + bc.w - 4 ? union.l - 6 : union.r + 6);
+          const lu = () => p.evaluate(() => (document.querySelector('[data-calendrier-entete] .ent-lu')?.innerText ?? '').replace(/\s+/g, ' ').trim());
+          const lus = [];
+          for (const [a, z] of [[0.3, 0.85], [0.1, 0.2], [0.5, 0.6], [0.8, 0.95]]) {
+            const x0 = libre(bc.x + bc.w * a), x1 = Math.min(bc.x + bc.w - 2, x0 + bc.w * (z - a));
+            await glisser([x0, bc.y + bc.h * 0.55], [x1, bc.y + bc.h * 0.55], 8);
+            const t = await lu();
+            const m = /S(\d+)/.exec(t); lus.push({ a, z, s: m ? Number(m[1]) : null, t: t.slice(0, 40), x0: Math.round(((x0 - bc.x) / bc.w) * 100) });
+            if (a === 0.3) await cap('09b-b9-lecture-courbe');
+          }
+          const fenetreApres = await semainesVues();
+          const dehors = lus.filter((l) => l.s === null || !vues.includes(l.s));
+          (dehors.length || fenetreApres.join() !== vues.join()) ? echec('B9 lecture de la courbe', `semaines montrées S${vues[0]}–S${vues[vues.length - 1]} (après : S${fenetreApres[0]}–S${fenetreApres[fenetreApres.length - 1]}) ; lu ${dehors.map((l) => `départ ${l.x0} % : « ${l.t} »`).join(' ; ')}`)
+            : ok('B9 lecture de la courbe', `semaines lues ${lus.map((l) => `S${l.s} (départ ${l.x0} %)`).join(', ')} dans S${vues[0]}–S${vues[vues.length - 1]}, hors des ${prises.length} poignées`);
+          // et la poignée de fin tire toujours la fenêtre : un départ sur elle ne lit pas, il allonge la fenêtre
+          const fin = prises.find((z) => z.genre === 'fin');
+          if (!fin) notes.push('B9 : poignée de fin absente (fenêtre en année ?)');
+          else {
+            await fermer();
+            const xf = (fin.l + fin.r) / 2;
+            await glisser([xf, bc.y + bc.h * 0.55], [Math.min(bc.x + bc.w - 2, xf + 40), bc.y + bc.h * 0.55], 8);
+            await sleep(500);
+            const tire = await semainesVues();
+            tire.join() !== vues.join() ? ok('B9 poignée de fin', `un départ sur la poignée tire la fenêtre : S${vues[0]}–S${vues[vues.length - 1]} → S${tire[0]}–S${tire[tire.length - 1]}`)
+              : echec('B9 poignée de fin', `départ sur la poignée de fin : fenêtre inchangée S${vues[0]}–S${vues[vues.length - 1]}`);
+          }
+        }
+        await fermer();
       }
 
       // B11 / WFV-3 : la vente encaissée aujourd'hui (caisse : pièce payée + paiement) est une chose de la rangée Ventes
