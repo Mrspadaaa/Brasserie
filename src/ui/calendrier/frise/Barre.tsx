@@ -1,4 +1,5 @@
 import React from 'react';
+import ReactDOM from 'react-dom';
 import { Link2, Pin, Star } from 'lucide-react';
 import { ecartJours, etiquetteS, francsSignes, jourLisible, type ChoseCalendrier, type JalonBrassin } from '../../../domain/calendrier';
 import { CLASSE_TEINTE, ContenuEtiquette, DureeTexte, PastilleLie, dureeVue, largeurTexte, nomAccessible, type ModeDeuxLignes } from './Marque';
@@ -198,8 +199,10 @@ export function rectVolant(): DOMRect | null {
   return r && r.width > 0 && r.height > 0 ? r : null;
 }
 
-export function placerDuree(d: HTMLElement, barre: HTMLElement): number {
-  const lbl = barre.nextElementSibling, nom = lbl?.querySelector('.cal-lbl-t'), nomVu = !!nom && !!lbl && getComputedStyle(lbl).visibility !== 'hidden';
+export function placerDuree(d: HTMLElement, barre: HTMLElement, nomCede = false): number {
+  /* `nomCede` : le nom posé hors de la barre laisse sa place à la durée (il est caché le temps du geste) ; mesuré comme s'il l'était déjà, la place
+     trouvée ne change pas quand la durée, sans place, le laisse revenir (CAL-PASSE voie S2, R2-2) */
+  const lbl = barre.nextElementSibling, nom = lbl?.querySelector('.cal-lbl-t'), nomVu = !nomCede && !!nom && !!lbl && getComputedStyle(lbl).visibility !== 'hidden';
   const frise = d.closest('[data-frise]')?.getBoundingClientRect();
   const g = Math.max(0, frise?.left ?? 0), dr = Math.min(window.innerWidth, frise?.right ?? window.innerWidth);
   const br = barre.getBoundingClientRect();
@@ -373,7 +376,9 @@ export const Barre: React.FC<BarreProps> = props => {
   const dureeMemeLigne = dureeDedans && bas?.ou !== 'barre' ? dureeDedans.largeur + 4 : 0;
   const lblPlace = { ...lblStyle, ...lblHaut, maxWidth: cote === 'dedans' ? Math.max(0, wTexte - 12 - dureeMemeLigne) : Math.max(16, placeEtiquette) };
   /* pendant f2-a, la durée tirée remplace le nom d'une barre simple ; la barre haute et la phrase du dessous gardent le nom (elles ont leur ligne) */
-  const cede = !!etiquetteDuree && !bas && (dureeHors ? cote !== 'dedans' : cote === 'dedans');
+  /* CAL-PASSE voie S2, R2-2 : sans place libre, la durée se lit dans la bande basse (`sansPlace`) et le nom reste où il est, lisible */
+  const [sansPlace, setSansPlace] = React.useState(false);
+  const cede = !!etiquetteDuree && !bas && !sansPlace && (dureeHors ? cote !== 'dedans' : cote === 'dedans');
   /* CRITIQUE-9 n° 10 (D-113, D-126) : la pastille « lié à » n'a pas la place à côté du nom : l'icône lien du badge de la barre se touche et
      ouvre l'aperçu. Le bouton, nommé « Hotte, liée à Blonde d'automne : aperçu », est posé sur l'icône, hors de la barre (jamais un bouton dans
      un bouton) ; l'icône reste dessinée par le badge (une seule à l'image) */
@@ -382,7 +387,8 @@ export const Barre: React.FC<BarreProps> = props => {
   const nomTouchable = cote !== 'dedans' && !cede;
   React.useLayoutEffect(() => {
     const d = dureeEl.current, b = el.current;
-    if (d && b && etiquetteDuree && dureeHors && !bas) placerDuree(d, b);
+    const sans = !!(d && b && etiquetteDuree && dureeHors && !bas) && placerDuree(d!, b!, cote !== 'dedans') < 0;
+    if (sans !== sansPlace) setSansPlace(sans);
   });
 
   return (
@@ -462,6 +468,8 @@ export const Barre: React.FC<BarreProps> = props => {
         )}
         {etiquetteDuree && bas?.ou !== 'dessous' && <em ref={dureeEl} className={`cal-duree${dureeHors && !bas ? ' cal-duree-hors' : ''}${bas ? ' cal-duree-in' : ''}`} data-duree {...(bas && dureeInStyle ? { style: dureeInStyle } : {})}><DureeTexte texte={etiquetteDuree} /></em>}
         {/* au repos, « J7 / 28 · prête 14 déc. » vit dans la barre du brassin (as/p-repos), quand il n'est pas déjà à côté du nom */}
+        {sansPlace && etiquetteDuree && typeof document !== 'undefined' && ReactDOM.createPortal(
+          <div className="cal-duree-bas" data-duree-bas role="status"><b>{chose.titre}</b> <DureeTexte texte={etiquetteDuree} /></div>, document.body)}
         {!etiquetteDuree && dureeDedans && <em className="cal-duree cal-duree-in" data-duree {...(dureeInStyle ? { style: dureeInStyle } : {})}><DureeTexte texte={dureeDedans.texte} /></em>}
         {peutBord && <span data-bord data-grip className="cal-grip" aria-hidden="true" />}
         {(epinglee || etoilee || chose.liens || lienIcone) && (

@@ -57,7 +57,9 @@ const CFG = { m390: { w: 390, h: 844, tactile: true }, p844: { w: 844, h: 340, t
 
 /** `fixture` : les entrées de `fixtureCalendrier` (la fixture du parcours : Hefe, Fruty, Ttt…), posées comme le fait le parcours (`?dev-local&finance-demo=parcours-calendrier`). */
 async function page(cfgNom, theme, url, attente, fixture = null) {
-  const c = CFG[cfgNom], p = await navigateur.newPage();
+  /* la fixture du parcours (b1, b2) se joue dans un profil NEUF : la période réglée par les critères d'avant (a2 recule le début de 110 jours) y fait sortir Hefe de la vue */
+  const ctx = fixture ? (navigateur.createBrowserContext ? await navigateur.createBrowserContext() : await navigateur.createIncognitoBrowserContext()) : navigateur;
+  const c = CFG[cfgNom], p = await ctx.newPage();
   await p.setViewport({ width: c.w, height: c.h, isMobile: c.tactile, hasTouch: c.tactile, deviceScaleFactor: 1 });
   await p.evaluateOnNewDocument(t => { try { localStorage.setItem('laffinee.theme', t); } catch { /* sans stockage */ } }, theme);
   if (fixture) await p.evaluateOnNewDocument(j => { try { if (!localStorage.getItem('parcours-calendrier:fixture')) localStorage.setItem('parcours-calendrier:fixture', j); } catch { /* sans stockage */ } }, JSON.stringify(fixture));
@@ -131,6 +133,69 @@ for (const theme of ['clair', 'cave']) {
     }
     await hefe.close();
   } catch (e) { verdict('b1', theme, false, `erreur : ${e.message}`); }
+  /* b2 (CAL-PASSE voie S2, R2-2, 21.11) : le geste EXACT de la critique (390, 3 mois, bord droit de Hefe tiré de 2 colonnes, doigt tenu) : la durée tirée
+     (« pas brassée · prête le … ») se lit en entier SANS couvrir le texte d'une autre ligne (« Jhhh −45 J34 / 34 »), et le nom de la barre tirée reste lisible.
+     Sans place libre dans la frise, elle se lit dans la bande basse (`[data-duree-bas]`). */
+  try {
+    const hb2 = await page('m390', theme, `${BASE}/?dev-local&finance-demo=parcours-calendrier`, 'nav button', fixtureCalendrier(new Date().toISOString().slice(0, 10)).entrees);
+    if (!(await hb2.$('[data-calendrier]'))) {
+      const nav = await hb2.evaluate(() => { const b = [...document.querySelectorAll('nav button')].find(x => /Calendrier/.test(x.innerText)); if (!b) return null; const r = b.getBoundingClientRect(); return { x: r.x + r.width / 2, y: r.y + r.height / 2 }; });
+      if (nav) await taper(hb2, nav.x, nav.y);
+    }
+    await hb2.waitForSelector('[data-calendrier]', { timeout: 60000 }); await z(900);
+    const menu = await rect(hb2, '[data-ent-periode]'); await taper(hb2, menu.left + menu.width / 2, menu.top + menu.height / 2);
+    const trois = await hb2.evaluate(() => { const e = [...document.querySelectorAll('[data-menu-periode] button')].find(x => (x.textContent || '').trim() === '3 mois'); if (!e) return null; const r = e.getBoundingClientRect(); return { x: r.x + r.width / 2, y: r.y + r.height / 2 }; });
+    if (trois) { await taper(hb2, trois.x, trois.y); await z(900); }
+    await hb2.evaluate(() => { document.querySelector('[data-barre][data-titre="Hefe"]')?.scrollIntoView({ block: 'center' }); }); await z(400);
+    const b = await rect(hb2, '[data-barre][data-titre="Hefe"]'), col = await hb2.evaluate(() => { const s = [...document.querySelectorAll('[data-bande-semaines] [data-semaine]')]; return s.length > 1 ? s[1].getBoundingClientRect().x - s[0].getBoundingClientRect().x : 28; });
+    if (!b) verdict('b2', theme, false, 'Hefe introuvable');
+    else {
+      const x0 = b.right - 3, y0 = (b.top + b.bottom) / 2;
+      /* les textes de la frise (hors la barre de Hefe) lus AVANT le geste : aucun ne doit disparaître ni être couvert pendant le geste */
+      const avantT = await hb2.evaluate(() => {
+        const o = []; const w = document.createTreeWalker(document.querySelector('[data-frise]'), NodeFilter.SHOW_TEXT); const hefe = document.querySelector('[data-barre][data-titre="Hefe"]');
+        for (let n = w.nextNode(); n; n = w.nextNode()) {
+          const p = n.parentElement, t = (n.textContent || '').replace(/\s+/g, ' ').trim(), s = p && getComputedStyle(p);
+          if (!t || !p || s.visibility === 'hidden' || s.display === 'none' || (hefe && hefe.contains(p))) continue;
+          const g = document.createRange(); g.selectNodeContents(n); const r = g.getBoundingClientRect(); if (r.width > 0 && r.height > 0) o.push(t);
+        }
+        return o;
+      });
+      await doigt(hb2, 'touchStart', x0, y0); await z(180);
+      for (let i = 1; i <= 12; i++) { await doigt(hb2, 'touchMove', x0 + (2 * col * i) / 12, y0); await z(25); }
+      await z(500);
+      const m = await hb2.evaluate((avantT) => {
+        const vu = e => { const s = getComputedStyle(e); return s.visibility !== 'hidden' && s.display !== 'none'; };
+        const texte = e => { const g = document.createRange(); g.selectNodeContents(e); return g.getBoundingClientRect(); };
+        const hefe = document.querySelector('[data-barre][data-titre="Hefe"]');
+        const duree = hefe && [...hefe.querySelectorAll('[data-duree]')].find(vu);
+        const bas = document.querySelector('[data-duree-bas]');
+        /* tout texte de la frise (un nœud de texte = une boîte rendue), hors la barre de Hefe et sa durée : noms, montants, jours, durées des autres lignes */
+        const autres = []; const marche = document.createTreeWalker(document.querySelector('[data-frise]'), NodeFilter.SHOW_TEXT);
+        for (let n = marche.nextNode(); n; n = marche.nextNode()) {
+          const t = (n.textContent || '').replace(/\s+/g, ' ').trim(), p = n.parentElement;
+          if (!t || !p || !vu(p) || (duree && duree.contains(p)) || (hefe && hefe.contains(p))) continue;
+          const g = document.createRange(); g.selectNodeContents(n); const r = g.getBoundingClientRect();
+          if (r.width > 0 && r.height > 0) autres.push({ t, r });
+        }
+        let couvre = null;
+        if (duree) { const r = duree.getBoundingClientRect(); for (const x of autres) if (Math.min(r.right, x.r.right) - Math.max(r.left, x.r.left) > 1 && Math.min(r.bottom, x.r.bottom) - Math.max(r.top, x.r.top) > 1) couvre = x.t.slice(0, 40); }
+        const hefeNom = [...document.querySelectorAll('[data-frise] .cal-lbl')].some(e => vu(e) && /^Hefe/.test((e.textContent || '').trim())) || (!!hefe && /Hefe/.test(hefe.textContent || ''));
+        const apres = autres.map(x => x.t), manquants = avantT.filter(t => { const i = apres.indexOf(t); if (i < 0) return true; apres.splice(i, 1); return false; });
+        const dureeLue = duree ? (duree.textContent || '').trim() : bas ? (bas.textContent || '').trim() : null;
+        const rb = bas?.getBoundingClientRect(); const barres = [...document.querySelectorAll('[data-frise] .cal-barre')].map(e => e.getBoundingClientRect());
+        const surFrise = rb ? barres.some(q => Math.min(rb.right, q.right) - Math.max(rb.left, q.left) > 1 && Math.min(rb.bottom, q.bottom) - Math.max(rb.top, q.top) > 1) : false;
+        return { dureeLue, dansFrise: !!duree, dansBas: !!bas, couvre, hefeNom, manquants, surFrise };
+      }, avantT);
+      await photo(hb2, `b2-${theme}-pendant`);
+      await doigt(hb2, 'touchEnd'); await z(700);
+      verdict('b2', theme, !!m.dureeLue && !m.couvre && m.hefeNom && m.manquants.length === 0 && !m.surFrise,
+        `Hefe : bord droit tiré de 2 colonnes (390, 3 mois) : durée « ${m.dureeLue} » lue ${m.dansFrise ? 'dans la frise' : m.dansBas ? 'dans la bande basse' : 'NULLE PART'} ; couvre ${m.couvre ? `« ${m.couvre} »` : 'aucune étiquette'} ; nom de Hefe ${m.hefeNom ? 'lisible' : 'ILLISIBLE'} ; textes des autres lignes (${avantT.length} avant le geste) ${m.manquants.length ? `DISPARUS : ${m.manquants.slice(0, 4).join(' | ')}` : 'tous présents'} ; bande basse ${m.surFrise ? 'sur une barre' : 'libre'}`);
+      const annule = await hb2.evaluate(() => { const e = [...document.querySelectorAll('button')].find(x => /^Annuler$/.test((x.textContent || '').trim())); if (!e) return null; const q = e.getBoundingClientRect(); return { x: q.left + q.width / 2, y: q.top + q.height / 2 }; });
+      if (annule) { await taper(hb2, annule.x, annule.y); await z(500); }
+    }
+    await hb2.close();
+  } catch (e) { verdict('b2', theme, false, `erreur : ${e.message}`); }
   if (SEUL.length) { await banc.close(); continue; }
 
 

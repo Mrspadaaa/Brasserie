@@ -126,6 +126,16 @@ button.cal-lie::before { content: ''; position: absolute; inset: -6px -2px; }
 .cal-lbl-2n .cal-lbl-j { margin-left: 0; line-height: 14px; }
 /* f2-a : le temps du geste, l'étiquette cède sa place à la durée tirée (Barre.tsx, `cal-duree-hors`) */
 .cal-lbl.cal-lbl-cede { visibility: hidden; }
+/* CAL-PASSE voie S2, R2-2 : la durée tirée qui n'a aucune place libre dans la frise se lit dans la bande basse (celle du message : au-dessus des onglets,
+   à gauche du +), sans rien couvrir de la frise. Portée dans le corps de la page : une barre tirée a un `transform`, qui ferait d'un `fixed` un « absolu ». */
+.cal-duree-bas {
+  position: fixed; z-index: 46; left: 8px; right: 84px; max-width: 560px; box-sizing: border-box;
+  bottom: calc(var(--main-navigation-height, 2.5rem) + 10px + env(safe-area-inset-bottom, 0px));
+  padding: 6px 12px; border-radius: 14px; border: 1px solid rgb(var(--cave-600)); background: rgb(var(--cave-900)); color: rgb(var(--cave-50));
+  font-size: 14px; line-height: 18px; font-weight: 600; pointer-events: none; transition: none !important;
+}
+.cal-duree-bas b { font-weight: 700; margin-right: 4px; }
+.cal-duree-bas b::after { content: " :"; }
 /* le nom du caddie d'un brassin, en 6 semaines (n° 19) */
 .cal-lbl-caddie { --c: rgb(var(--area-production)); --ct: rgb(var(--area-production-texte)); font-weight: 500; color: rgb(var(--cave-200)); }
 .cal-lbl-m.cal-neg { color: rgb(var(--alert-strong)); }
