@@ -139,9 +139,9 @@ Erreurs de méthode déjà commises, cause, remède. Chargé par CLAUDE.md : rel
 - Contrôle : `systeme.mjs etalonnage` (portrait v2 : 88 % et 75 %)
 
 ### L28 — Une lecture se juge sur ses vraies pièces, champ par champ
-- Erreur : 01.11, commande : noms doublés, 27 s. « en 10s, un seul test, j'ai trouvé tout ça ».
-- Cause : pièces fictives ou réduites, écran jamais jugé contre la pièce, réponse IA rejouée inventée.
-- Faire : une vraie pièce par genre dans l'app (photo d'origine), champ par champ et temps ; au banc le jour même, par l'entrée de l'app. Local = « non déployé ». Réponse IA rejouée : copie d'une vraie, anonymisée avant Git. ([[maquettes-16-11]])
+- Erreur : 01.11, commande : noms doublés, 27 s. « en 10s, un seul test, j'ai trouvé tout ça ». 21.11 : Carnet sans vrai lien, « 50 problème ».
+- Cause : pièces fictives ou réduites, jamais jugées contre l'écran.
+- Faire : une vraie pièce par genre dans l'app, champ par champ et temps ; au banc le jour même, par son entrée. Local = « non déployé ». Réponse IA rejouée : copie d'une vraie, anonymisée avant Git. Écran porté : chasseurs avant mise en ligne. ([[maquettes-16-11]])
 - Rôles : pilote, exécutant, relecteur
 - Contrôle : au banc (D261 à D263)
 
