@@ -60,6 +60,7 @@ Lire :
 | work/missions/2026-11-21-chasse-calendrier/CHASSE-navigation.md | CHN | 13 | 0 | 2e84976f32cd |
 | work/missions/2026-11-18-choix-calendrier/tour2/en-ligne/RAPPORT-5.md | T4 | 7 | 1 | d59ca8f31585 |
 | work/missions/2026-11-21-cal-frise-prix/RAPPORT.md | CFP | 8 | 0 | 234441c9f314 |
+| work/missions/2026-11-21-tour8-local/RAPPORT.md | T8 | 3 | 1 | 0f2cab58f609 |
 | work/missions/2026-11-18-choix-calendrier/tour2/en-ligne/RAPPORT-4.md | T3B | 13 | 1 | a5f31f216f81 |
 | work/missions/2026-11-19-carnet-tour3/RAPPORT.md | CT3 | 54 | 0 | 6099acdd8c53 |
 | work/missions/2026-11-20-critique-tour4/c-stocks-carnet-vendre.md | CT4C | 9 | 0 | 91d1da9164e1 |
@@ -2171,7 +2172,7 @@ Versé le 21.11. La colonne constats des Sources compte les lignes versées ici.
 | CHN-4 | CHASSE-navigation 21.11 | Calendrier, Boutons de l'en-tête (±, règle, Trier) | Toucher ±, la règle ou Trier déplace toute la frise (haut 210 → 222 → 232 px, le premier Brassins passe de 223 à 275) | G | doublon de WX2-1 | | ex CH-navigation-4 ; EnTete.tsx:698-730 |
 | CHN-5 | CHASSE-navigation 21.11 | Carnet, « Au calendrier » | Ouvrir un projet du Carnet puis « Au calendrier » : le Calendrier s'ouvre en février, le projet n'est montré nulle part | G | ouvert — présent | | ex CH-navigation-5 ; CarnetsVue.tsx:1386-1391 ; App.tsx:984-988 |
 | CHN-6 | CHASSE-navigation 21.11 | Calendrier, Saut vers une chose | Le saut vers une chose change la période de toute l'app (« Nov. » → « Févr. ») et elle y reste au retour | G | ouvert — présent | | ex CH-navigation-6 ; App.tsx:984-988 |
-| CHN-7 | CHASSE-navigation 21.11 | Calendrier, Hors ligne | Hors ligne, toucher un retard échoue (« Impossible de charger cet écran ») et recharger donne la page « dinosaure » | G | ouvert — présent (à rejouer en ligne) | | ex CH-navigation-7 ; banc sans cache HTTP, à confirmer sur l'hébergement ; src/services/brewAlarms.ts:22 |
+| CHN-7 | CHASSE-navigation 21.11 | Calendrier, Hors ligne | Hors ligne, toucher un retard échoue (« Impossible de charger cet écran ») et recharger donne la page « dinosaure » | G | ouvert — présent (à rejouer en ligne) | | ex CH-navigation-7 ; banc sans cache HTTP, à confirmer sur l'hébergement ; src/services/brewAlarms.ts:22 ; V6 21.11 : état de l'art écrit (VOIES-CORRECTION.md), code non écrit, attend l'accord : dépendance vite-plugin-pwa 2.0.0 (+ workbox-build/window 7.4.1), en-tête /sw.js no-cache |
 | CHN-8 | CHASSE-navigation 21.11 | Calendrier, Compteur de retards | La croix de la fiche d'un brassin ramène sur Brassins, pas au Calendrier (le retour du téléphone le rend) | D | ouvert — présent | | ex CH-navigation-8 ; src/ui/calendrier/entete/Retards.tsx ; EnTete.tsx:709 |
 | CHN-9 | CHASSE-navigation 21.11 | Calendrier, Réglage ± | Le réglage ± n'est pas gardé au rechargement, alors que période, courbe cachée et rangée masquée le sont | D | ouvert — présent | | ex CH-navigation-9 ; CalendrierTab.tsx:229 |
 | CHN-10 | CHASSE-navigation 21.11 | Calendrier, Plein écran en portrait | Plein écran : ‹ › et la loupe disparaissent, le bandeau « Tourne le téléphone » couvre « Loyer du local » | D | ouvert — présent | | ex CH-navigation-10 ; src/ui/calendrier/pleinEcran.ts ; EnTete.tsx:725 |
@@ -2200,3 +2201,12 @@ Versé le 21.11. La colonne constats des Sources compte les lignes versées ici.
 | WFD-7 | analyse documents 21.11 (WFD) | Calendrier (ventes) | Facture client : la vente du 21.11 n'est pas au Calendrier ce jour-là, seulement l'encaissement attendu au 21.12. À trancher. | basse | ouvert |  | work/missions/2026-11-21-workflows-app/ANALYSE-documents.md |
 | WFD-8 | analyse documents 21.11 (WFD) | Ventes (date) | Date d'une vente : sélecteur natif dans l'annexe de la quittance, sous le pli ; la feuille Ventes n'a pas de passé (PD-4). | basse | ouvert |  | work/missions/2026-11-21-workflows-app/ANALYSE-documents.md |
 | WFD-9 | analyse documents 21.11 (WFD) | Bord (entrée facture) | L'entrée « Facture, photo ou PDF » ouvre « Photographier le ticket ». WFA-2 (« seuil NaN g ») reconfirmé au Bord. | basse | ouvert |  | work/missions/2026-11-21-workflows-app/ANALYSE-documents.md |
+
+## Tour 8 au doigt, banc local, 21.11 (tag en-ligne/2026-11-21-tour8, fixtures ZZ TEST, 390 tactile ; Chrome du PC et session en ligne indisponibles ; parcours calendrier, carnet, chaines OK ; principes ECHEC ; source work/missions/2026-11-21-tour8-local/RAPPORT.md)
+
+| id | source | écran | constat | gravité | état | commit | note |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| T8-1 | tour 8 local, principes.mjs | Calendrier › Papiers, + Ajouter (390) | Dans « Autre nom », Entrée ferme seulement le clavier : rien n'est posé, le nom par défaut « Papiers · S47 » reste. | D | ouvert | | captures/nom-cal-papiers-entree.png |
+| T8-2 | tour 8 local, principes.mjs | Calendrier › Papiers, + Ajouter (390) | Le toucher sur le bouton de pose ne valide rien ; deux gestes pour ouvrir ; le nom reste « Papiers · S47 ». | D | ouvert | | captures/pose-cal-papiers-pose-valide.png |
+| T8-3 | tour 8 local, principes.mjs | Calendrier, renommer un événement (390) | Le renommage marche (toast « Renommé : ZZ TEST Nom »), mais la fiche se ferme à Entrée ; 4 gestes avec l'ouverture. | D | ouvert | | captures/renommer-renommer-evenement-fait.png |
+| T8-NOTE-1 | tour 8 local, principes.mjs | principes.mjs | Non joués : le banc ne trouve plus « Atelier R&D » ni « Stocks » depuis Brassins (nom obligé d'une idée et du matériel, horizon d'un projet) : banc à remettre aux noms actuels. | — | ouvert | | banc |
