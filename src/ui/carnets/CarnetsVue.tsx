@@ -1337,16 +1337,17 @@ export function CarnetsVue(p: CarnetsVueProps) {
   }
 
   /** C1 (D393) : la date d'intention du carnet, un lundi (`null` = plus tard, sans date) ; son icône suit au Calendrier (`iconesIdees`). */
-  function dater(c: CarnetDoc, lundi: string | null) {
-    const { date: _d, ...reste } = c; void _d;
-    const doc = (lundi ? { ...reste, date: lundi } : reste) as CarnetDoc;
+  function dater(c: CarnetDoc, lundi: string | null, precision: 'semaine' | 'mois' = 'mois') {
+    const { date: _d, precision: _p, ...reste } = c; void _d; void _p;
+    /* un horizon pose un mois (« vers févr. ») ; « Au calendrier › » pose sa semaine (« cette semaine », puis « S48 ») */
+    const doc = (lundi ? { ...reste, date: lundi, precision } : reste) as CarnetDoc;
     return appliquer({ ok: true, ecritures: [{ op: 'put', doc }], inverse: [{ op: 'put', doc: c }], avis: lundi ? 'Daté' : 'Sans date' });
   }
   /** K2 (« ça l'ajout à la date du jour, ça nous transférer sur le calendrier ») : daté à aujourd'hui s'il ne l'est pas, puis le Calendrier centré sur sa semaine. */
   function auCalendrier(c: CarnetDoc) {
     const jour = jourIso(maintenant());
     const date = c.date && /^\d{4}-\d{2}-\d{2}/.test(c.date) ? c.date.slice(0, 10) : jour;
-    if (!c.date) dater(c, lundiIso(jour));
+    if (!c.date) dater(c, lundiIso(jour), 'semaine');
     window.dispatchEvent(new CustomEvent(EVENEMENT_CALENDRIER, { detail: { date } }));
   }
 

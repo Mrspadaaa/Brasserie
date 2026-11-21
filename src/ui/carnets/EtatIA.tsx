@@ -43,7 +43,7 @@ export function texteSortie(s: SortieV): string {
   return `Dans À venir${d ? ` depuis le ${d}` : ''}`;
 }
 /** Le document Firestore tel quel (`title`, `status`, `date?`, `carnet`), ce que rend `lireCarnet`. */
-export interface CarnetV { id: string; title: string; status: StatutCarnet; date?: string; carnet: ContenuCarnetV }
+export interface CarnetV { id: string; title: string; status: StatutCarnet; date?: string; precision?: 'semaine' | 'mois'; carnet: ContenuCarnetV }
 export interface MessageV { id: string; texte: string; le: string; depuis: 'liste' | string; rangement: 'ia' | 'locale' | 'simulee' | 'brut' }
 
 /** Réglage des aides de l'IA (`aidesCarnet`, lot B), lu par `CarnetsVue.tsx` et passé tel quel. */

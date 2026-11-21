@@ -585,7 +585,7 @@ export function CarnetOuvert(p: CarnetOuvertProps) {
         )}
       </section>}
 
-      {!enAttente && p.onDater && <RubriqueQuand date={c.date} aujourdhui={p.aujourdhui ?? jourLocal()} neuf={neuf} picto={picto}
+      {!enAttente && p.onDater && <RubriqueQuand date={c.date} precision={c.precision} aujourdhui={p.aujourdhui ?? jourLocal()} neuf={neuf} picto={picto}
         onDater={p.onDater} onAuCalendrier={p.onAuCalendrier} prix={p.prix} onPrix={p.onPrix} />}
 
       {p.vientDEtreCree && <p className="cn-mut cn-g6">Le champ en bas range tout ici : une phrase, un lien collé, une photo.</p>}
@@ -607,9 +607,9 @@ const jourLocal = (d = new Date()) => `${d.getFullYear()}-${String(d.getMonth() 
  * état en gris, puces du carnet). Un toucher date le projet (« vers févr. »), un autre le reporte. Daté, le prix : le dernier achat
  * semblable à garder d'un toucher (« Pompe 2025 : 420 CHF »), sinon les ordres de grandeur ; posé, « estimé » jusqu'à la facture.
  */
-function RubriqueQuand(p: { date?: string; aujourdhui: string; neuf: boolean; picto: number; onDater: (lundi: string | null) => void; onAuCalendrier?: () => void;
+function RubriqueQuand(p: { date?: string; precision?: 'semaine' | 'mois'; aujourdhui: string; neuf: boolean; picto: number; onDater: (lundi: string | null) => void; onAuCalendrier?: () => void;
   prix?: CarnetOuvertProps['prix']; onPrix?: (centimes: number) => void }) {
-  const quand = texteIntention(p.date, p.aujourdhui);
+  const quand = texteIntention(p.date, p.aujourdhui, p.precision);
   const [changerPrix, setChangerPrix] = useState(false);
   const pose = p.prix?.centimes;
   const semblable = p.prix?.semblable;

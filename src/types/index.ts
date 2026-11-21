@@ -972,6 +972,9 @@ export interface CreativeItem {
   estimatedRevenue?: number;
   targetPrice?: number;
   date?: string;
+  /** Précision d'une date d'intention (PORT, état de l'art : lundi ISO + précision) : `mois` posée par un horizon (« vers févr. »), `semaine`
+   *  posée sur une semaine précise (« S48 »). Absente : lue comme `mois` (les dates d'avant n'ont pas ce champ). */
+  precision?: 'semaine' | 'mois';
   notes?: string;
   contactName?: string;
   contactPhone?: string;

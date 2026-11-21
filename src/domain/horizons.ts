@@ -88,7 +88,7 @@ export function horizonDe(date: string | undefined, aujourdhui: string): Horizon
  * Une date d'intention dite en clair : « cette semaine », « vers févr. », « vers nov. 2027 » (l'année quand le mois reviendrait dans
  * l'année en cours), « semaine passée » pour une date dépassée. Le mois est celui du jeudi de la semaine. Rien de lisible : `null`.
  */
-export function texteIntention(date: string | undefined, aujourdhui: string): string | null {
+export function texteIntention(date: string | undefined, aujourdhui: string, precision?: 'semaine' | 'mois'): string | null {
   const d = lireIso(date), jour = lireIso(aujourdhui);
   if (!d || !jour) return null;
   const lundi = lundiDe(d);
@@ -97,6 +97,8 @@ export function texteIntention(date: string | undefined, aujourdhui: string): st
   const jeudi = jeudiDe(lundi);
   const a = Number(jeudi.slice(0, 4)), m = Number(jeudi.slice(5, 7));
   const loin = (a - Number(jour.slice(0, 4))) * 12 + m - Number(jour.slice(5, 7)) >= 12;
+  /* la précision suit la connaissance (R2) : une semaine posée se dit « S48 », un horizon « vers févr. » ; l'année quand elle est loin */
+  if (precision === 'semaine') return `S${numeroSemaine(lundi)}${loin ? ` ${a}` : ''}`;
   return `vers ${MOIS_COURTS[m - 1]}${loin ? ` ${a}` : ''}`;
 }
 

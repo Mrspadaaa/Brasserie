@@ -34,6 +34,13 @@ describe('lundiDHorizon : un toucher, un lundi, jamais dans le passé', () => {
     expect(texteIntention(lundiDHorizon('6-mois', auj)!, auj)).toBe('vers mai');
   });
   it('passage d’année depuis décembre', () => expect(texteIntention(lundiDHorizon('3-mois', '2026-12-30')!, '2026-12-30')).toBe('vers mars'));
+  it('précision : une semaine posée se dit « S48 », un horizon « vers … » ; sans précision, le mois (dates d’avant)', () => {
+    const lundi = '2026-11-30';
+    expect(texteIntention(lundi, auj, 'semaine')).toBe('S49');
+    expect(texteIntention(lundi, auj, 'mois')).toBe(texteIntention(lundi, auj));
+    expect(texteIntention(lundiDHorizon('1-an', auj)!, auj, 'semaine')).toMatch(/^S\d+ 2027$/);
+    expect(texteIntention(auj, auj, 'semaine')).toBe('cette semaine');
+  });
   it('plus tard : aucune date', () => expect(lundiDHorizon('plus-tard', auj)).toBeNull());
   it('chaque horizon daté tombe le lundi, et jamais avant la semaine en cours', () => {
     for (const auj2 of ['2026-01-31', '2026-02-28', '2028-02-29', '2026-12-31', '2026-11-21']) {
