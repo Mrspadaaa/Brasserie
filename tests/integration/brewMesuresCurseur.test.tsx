@@ -37,9 +37,11 @@ describe('Mesurer : le curseur sur l’échelle cible, geste principal', () => {
     expect(container.querySelector('.bz-pouce[data-vide]')).not.toBeNull();
     expect(screen.getByRole('button', { name: 'Taper la valeur' })).toHaveTextContent('?');
   });
-  it('un toucher sur le pouce (sans le bouger) pose la cible 67,0 et active Enregistrer', () => {
+  it('un toucher sur le pouce (sans le bouger) ne pose rien (frise B, R1) ; Entrée pose la cible 67,0 et active Enregistrer', () => {
     const { container } = rendreTemp();
     fireEvent.pointerUp(curseur());
+    expect(enregistrer()).toBeDisabled();
+    fireEvent.keyDown(curseur(), { key: 'Enter' });
     expect(enregistrer()).toBeEnabled();
     expect(screen.getByRole('button', { name: 'Taper la valeur' })).toHaveTextContent('67,0');
     expect(container.querySelector('.bz-pouce[data-vide]')).toBeNull();
@@ -101,7 +103,7 @@ describe('Mesurer : le curseur sur l’échelle cible, geste principal', () => {
     fireEvent.click(screen.getByRole('button', { name: 'pH' }));
     const s = screen.getByRole('slider', { name: /pH/ }) as HTMLInputElement;
     expect(s.min).toBe('5'); expect(s.max).toBe('5.8'); expect(s.step).toBe('0.01');
-    fireEvent.pointerUp(s);
+    fireEvent.keyDown(s, { key: 'Enter' });
     expect(screen.getByRole('button', { name: 'Taper la valeur' })).toHaveTextContent('5,35');
   });
   it('sans cible documentée (pH hors empâtage), le curseur vient des bornes plausibles, sans bande (VB-3, c2)', () => {

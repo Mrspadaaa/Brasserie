@@ -88,12 +88,14 @@ describe('Mesurer sans cible : le curseur est là, à toute étape et pour toute
     expect(screen.queryByText(/cible/, { selector: '.bz-ecart' })).toBeNull();
     expect(screen.getByRole('button', { name: 'Enregistrer' })).toBeDisabled();
   });
-  it('toucher le pouce pose le milieu (96,0 °C à l’ébullition) ; rien ne part sans geste', () => {
+  it('toucher le pouce ne pose rien (frise B, R1) ; Entrée pose le milieu (96,0 °C à l’ébullition) ; rien ne part sans geste', () => {
     const onState = vi.fn();
     ouvrir(ebullition, 'Température', onState);
     fireEvent.click(screen.getByRole('button', { name: 'Enregistrer' }));
     expect(onState).not.toHaveBeenCalled();
     fireEvent.pointerUp(screen.getByRole('slider', { name: /Température/ }));
+    expect(screen.getByRole('button', { name: 'Enregistrer' })).toBeDisabled();
+    fireEvent.keyDown(screen.getByRole('slider', { name: /Température/ }), { key: 'Enter' });
     expect(valeur()).toHaveTextContent('96,0');
     expect(screen.getByRole('button', { name: 'Enregistrer' })).toBeEnabled();
     fireEvent.click(screen.getByRole('button', { name: 'Enregistrer' }));

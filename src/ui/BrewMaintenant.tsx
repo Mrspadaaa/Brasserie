@@ -33,7 +33,7 @@ export interface MaintenantMesure {
   unite: string;
   /** La valeur posée au curseur, `null` tant que rien n'est posé. */
   valeur: number | null;
-  /** Où le pouce attend (la cible, ou le dernier relevé) ; un toucher sur le pouce pose cette valeur. */
+  /** Où le pouce attend (la cible, ou le dernier relevé) ; glisser part de cette valeur, Entrée la pose ; un toucher ne change rien (frise B, R1). */
   depart: number;
   onPose: (v: number) => void;
   onEnregistrer: (v: number) => void;

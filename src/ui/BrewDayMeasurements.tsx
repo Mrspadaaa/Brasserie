@@ -344,7 +344,8 @@ export function ecartCible(scale: MeasureScale, value: number): number | null {
 
 /**
  * Le geste (m2, 10.11) : le pouce sur l'échelle cible. Un <input type="range"> (geste : src/ui/geste) natif, transparent, couvre l'échelle (44 px de haut) : il porte
- * le glisser, le toucher de piste, les flèches et le lecteur d'écran. Le pouce dessiné suit ; en pointillé tant qu'aucune valeur n'est posée.
+ * le glisser, les flèches et le lecteur d'écran. Le pouce dessiné suit ; en pointillé tant qu'aucune valeur n'est posée. Frise B, R1 (21.11) :
+ * un toucher ne change rien, même sans valeur ; glisser pose (en partant du départ), Entrée pose le départ.
  */
 export function MeasureSlider({ scale, kind, value, depart, label, onPose }: {
   scale: MeasureScale; kind: ReadingKind; value: number | null; depart: number; label: string; onPose: (v: number) => void;
@@ -377,9 +378,9 @@ export function MeasureSlider({ scale, kind, value, depart, label, onPose }: {
           step={pas}
           value={pos}
           aria-label={`${label}, curseur`}
-          aria-valuetext={pose ? `${formatCurseur(kind, value)}` : `aucune valeur ; un toucher pose ${formatCurseur(kind, depart)}`}
+          aria-valuetext={pose ? `${formatCurseur(kind, value)}` : `aucune valeur ; glisser ou Entrée pose ${formatCurseur(kind, depart)}`}
           onChange={(e) => poser(Number(e.target.value))}
-          onPointerUp={(e) => { if (!pose) poser(Number(e.currentTarget.value)); }}
+          onClick={(e) => { if (!pose && e.detail === 0) poser(Number(e.currentTarget.value)); }}
           onKeyDown={(e) => { if (!pose && (e.key === 'Enter' || e.key === ' ')) { e.preventDefault(); poser(depart); } }}
         />
       </div>
@@ -718,7 +719,7 @@ export function BrewDayMeasurements({
       )}
       </>}
       {!pairMode && scale && !last && value == null && !raw.trim() && (
-        <p className="bz-precedent"><span>Aucun relevé {isMash(step.id) ? 'ce palier' : 'cette étape'} · un toucher sur le pouce pose <span className="bz-m">{formatCurseur(kind, depart)}</span></span></p>
+        <p className="bz-precedent"><span>Aucun relevé {isMash(step.id) ? 'ce palier' : 'cette étape'} · glisser le pouce part de <span className="bz-m">{formatCurseur(kind, depart)}</span></span></p>
       )}
       {pairMode && <div className="bz-precedent"><button type="button" aria-pressed="true" onClick={() => setPairMode(false)}>Mesure seule</button></div>}
     </section>

@@ -54,9 +54,11 @@ describe('BrewMaintenant · relevé dû (E1)', () => {
     expect(screen.getByRole('button', { name: 'plus 0,1' })).toHaveTextContent('+0,1');
   });
 
-  it('un toucher sur le pouce (aucune valeur) pose la cible : 67,0, dans la cible, bande 66–68 allumée', () => {
+  it('un toucher sur le pouce (aucune valeur) ne pose rien (frise B, R1) ; Entrée pose la cible : 67,0, dans la cible, bande 66–68 allumée', () => {
     const { container } = render(<Banc />);
-    fireEvent.pointerUp(screen.getByRole('slider'), { target: { value: '67' } });
+    fireEvent.pointerUp(screen.getByRole('slider'));
+    expect(screen.getByRole('button', { name: 'Enregistrer' })).toBeDisabled();
+    fireEvent.keyDown(screen.getByRole('slider'), { key: 'Enter' });
     expect(screen.getByTestId('maintenant-valeur').textContent).toBe('67,0°C');
     expect(screen.getByText('✓ dans la cible · Enregistrer')).toBeVisible();
     const allumee = container.querySelectorAll('[aria-current="true"]');
