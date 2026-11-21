@@ -1,7 +1,9 @@
 import React, { useMemo } from 'react';
 import { ChevronRight } from 'lucide-react';
 import { fournisseursDe, graduations, serieFiltre, tuilesAnnee, type EntreeAnalyse, type PlageMois, type SourceCle, type SerieFiltre, type TuileMois } from '../../../domain/finance/analyse';
-import { PlageMois as ChampsPlage } from '../PlageMois';
+import { FrisePeriode } from '../../../components/periode/FrisePeriode';
+import { depuisPlageFinances, moisCouverts } from '../../../components/periode/periode';
+import { plageDuMois } from '../operations/plage';
 import { chf, categorieDeSource, moisCourt, moisLong, nomSource, plage as titrePlage, signe } from './format';
 import { Pourquoi, type TextePourquoi } from './Pourquoi';
 import type { VueProps } from './Caisse';
@@ -94,7 +96,9 @@ export function FiltrerVue({ e, annee, etat, onEtat, brassins, pourquoi, onJourn
     <div className="ana-tuiles" role="group" aria-label={`Mois de ${annee}`}>
       {tuiles.map(t => <Tuile key={t.mois} t={t} choisie={dansAnnee(t.mois)} maxAbs={maxAbs} onChoisir={() => choisir(t.mois)}/>)}
     </div>
-    {etat.mode === 'plage' && <ChampsPlage key={`${plage.du}-${plage.au}`} courant={courant} du={plage.du} au={plage.au} onPlage={(du, au) => onEtat({ ...etat, du, au, ancre: null })}/>}
+    {/* PERIODE-PARTOUT (21.11) : « Du … au » monte la frise d'Opérations, plus deux listes de mois ; l'analyse compte au mois, la plage tirée s'arrondit aux mois couverts. */}
+    {etat.mode === 'plage' && <FrisePeriode className="ana-frise" periode={depuisPlageFinances(plage.du, plage.au)} jourMax={plageDuMois(courant).au} transactions={e.transactions}
+      onChoisir={p => { const c = moisCouverts(p); if (c) onEtat({ ...etat, du: c.du, au: c.au > courant ? courant : c.au, ancre: null }); }}/>}
     <div className="ana-pastilles">
       <label className={`ana-chip${etat.source ? ' ana-chip-on' : ''}`}>
         {etat.source ? <><span className={`ana-pt ana-s-${etat.source}`}/>{nomSource(etat.source)} ✓</> : '+ source'}

@@ -482,6 +482,15 @@ function lieuxPeriode() { return [
     titre: () => document.querySelector('.syn h2')?.innerText.trim() ?? null,
     garde: () => { try { return JSON.parse(localStorage.getItem('laffinee_ui_state') ?? '{}').app_global_time_filter ?? null; } catch { return null; } },
   },
+  {
+    // Synthèse › Revoir le mois › Filtrer, mode « Du … au » : ses listes de source, fournisseur, brassin restent (ce ne sont pas des périodes).
+    // L'état de l'analyse est local à l'écran : rien à relire au rechargement (signalé).
+    nom: 'analyse', racine: '.ana', interdits: 'input[type=month], input[type=date]', recharge: false,
+    aller: async ({ toucherTexte }) => { await toucherTexte(['Finances']); await toucherTexte(['Synthèse'], false); await toucherTexte(['^Revoir le mois']); await toucherTexte(['Filtrer']); },
+    ouvrir: async ({ toucherTexte }) => toucherTexte(['Du … au']),
+    titre: () => document.querySelector('.ana .ana-dit')?.innerText.split(' : ')[0].trim() ?? null,
+    garde: () => null,
+  },
 ]; }
 
 async function jouerPeriode({ nav, base, L, theme }) {
@@ -503,7 +512,8 @@ async function jouerPeriode({ nav, base, L, theme }) {
       const toucherTexte = async (txts, exige = true) => {
         for (const t of [].concat(txts)) {
           const c = await p.evaluate((t) => {
-            const e = [...document.querySelectorAll('button,a,[role=tab],[role=button]')].find((e) => { const r = e.getBoundingClientRect(); return r.width > 0 && r.height > 0 && ((e.getAttribute('aria-label') ?? '').trim() === t || e.innerText.trim().replace(/\s+/g, ' ') === t); });
+            const debut = t.startsWith('^'), m = debut ? t.slice(1) : t, egal = (x) => (debut ? x.startsWith(m) : x === m);
+            const e = [...document.querySelectorAll('button,a,[role=tab],[role=button]')].find((e) => { const r = e.getBoundingClientRect(); return r.width > 0 && r.height > 0 && (egal((e.getAttribute('aria-label') ?? '').trim()) || egal(e.innerText.trim().replace(/\s+/g, ' '))); });
             if (!e) return null; e.scrollIntoView({ block: 'center' }); const r = e.getBoundingClientRect(); return [r.x + r.width / 2, r.y + r.height / 2];
           }, t);
           if (c) { await toucherXY(c[0], c[1]); return true; }
@@ -529,17 +539,17 @@ async function jouerPeriode({ nav, base, L, theme }) {
         await p.goto(url, { waitUntil: 'load' }); await p.waitForSelector('nav button', { timeout: 90000 }); await sleep(1000);
         await lieu.aller({ p, toucherTexte }); await p.waitForSelector(lieu.racine, { timeout: 30000 }); await sleep(600);
       };
-      const lire = () => p.evaluate((racine, titreSrc, gardeSrc) => {
+      const lire = () => p.evaluate((racine, titreSrc, gardeSrc, interdits) => {
         const R = document.querySelector(racine);
         const f = R?.querySelector('[data-frise-periode] [data-testid=frise]');
         const h = R?.querySelector('[data-frise-periode] [role=slider][aria-label="Début"]');
         let hb = null; if (h) { h.scrollIntoView({ block: 'center' }); const r = h.getBoundingClientRect(); hb = { x: r.left + r.width / 2, y: r.top + r.height / 2 }; }
         const fb = f?.getBoundingClientRect();
-        const anciens = R ? [...R.querySelectorAll('input[type=month], select')].filter((e) => e.getClientRects().length).length : 0;
+        const anciens = R ? [...R.querySelectorAll(interdits)].filter((e) => e.getClientRects().length && !e.closest('[data-frise-periode]')).length : 0;
         return { frise: !!f, anciens, debut: h?.getAttribute('aria-valuetext') ?? null, n: Number(h?.getAttribute('aria-valuenow') ?? NaN), hb, fw: fb?.width ?? 0,
           deborde: fb ? Math.round(Math.max(0, fb.right - document.documentElement.clientWidth, -fb.left)) : 0,
           titre: (0, eval)(`(${titreSrc})`)(), garde: (0, eval)(`(${gardeSrc})`)() };
-      }, lieu.racine, lieu.titre.toString(), lieu.garde.toString());
+      }, lieu.racine, lieu.titre.toString(), lieu.garde.toString(), lieu.interdits ?? 'input[type=month], input[type=date], select');
       await aller();
       await lieu.ouvrir({ p, toucherTexte }); await sleep(600);
       const a = await lire(); await cap('ouverte');
@@ -549,9 +559,10 @@ async function jouerPeriode({ nav, base, L, theme }) {
       if (!a.hb) { echec(`${N} poignée`, 'poignée « Début » introuvable'); continue; }
       await glisser(a.hb.x, a.hb.y, a.hb.x - Math.min(90, a.fw * 0.25));
       const b = await lire(); await cap('tiree');
-      (b.n < a.n && b.titre !== a.titre && JSON.stringify(b.garde) !== JSON.stringify(a.garde))
+      (b.n < a.n && b.titre !== a.titre && (lieu.recharge === false || JSON.stringify(b.garde) !== JSON.stringify(a.garde)))
         ? ok(`${N} début tiré vers le passé`, `${a.debut} → ${b.debut} ; « ${a.titre} » → « ${b.titre} »`)
         : echec(`${N} début tiré vers le passé`, `${a.debut} → ${b.debut} ; « ${a.titre} » → « ${b.titre} » ; gardé ${JSON.stringify(a.garde)} → ${JSON.stringify(b.garde)}`);
+      if (lieu.recharge === false) { ok(`${N} rechargement`, 'état local à l\'écran, non relu (signalé)'); continue; }
       await aller(); await lieu.ouvrir({ p, toucherTexte }); await sleep(600);
       const c = await lire();
       (c.titre === b.titre && c.debut === b.debut && JSON.stringify(c.garde) === JSON.stringify(b.garde))
