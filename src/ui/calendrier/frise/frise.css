@@ -1,4 +1,8 @@
 /* La frise du calendrier (E20 à E33). Jetons de l'app uniquement ; texte 14 px au moins. Les couleurs de rangée sont les couleurs de zone. */
+/* CAL-LENT (21.11) : l'écart vertical entre les blocs du Calendrier, sans « space-y » de Tailwind (son « ~ » recalculait le style de tout
+   l'écran à chaque feuille, message ou menu inséré) ; « :first-child » ne touche que le premier enfant. Mêmes valeurs : 8 px, 2 px en paysage. */
+.cal-pile > :not(:first-child):not([hidden]) { margin-top: 0.5rem; margin-bottom: 0; }
+.cal-pile-serre > :not(:first-child):not([hidden]) { margin-top: 0.125rem; margin-bottom: 0; }
 .cal-t-brassins { --c: rgb(var(--area-production)); --ct: rgb(var(--area-production-texte)); }
 .cal-t-fetes { --c: rgb(var(--area-agenda)); --ct: rgb(var(--area-agenda-texte)); }
 .cal-t-ventes { --c: rgb(var(--hop)); --ct: rgb(var(--hop-texte)); }
@@ -321,7 +325,8 @@ button.cal-lie::before { content: ''; position: absolute; inset: -6px -2px; }
 .cal-lie.cal-lie-icone::before { inset: -8px -2px -2px -8px; }
 .cal-lie.cal-lie-icone:focus-visible { outline: 2px solid var(--c); outline-offset: 1px; }
 /* CRITIQUE-10, doute m22 : après un toucher dans la frise, aucun cadre de focus (pastille, barre, marque, détail) ; au clavier, il revient */
-.cal-frise[data-doigt] :focus-visible, .cal-frise[data-doigt] .cal-lie.cal-lie-icone:focus-visible { outline: none; }
+/* CAL-LENT : la cible nommée (bouton, lien, tabindex) ; « [data-doigt] :focus-visible » seul invalidait le style de toute la frise */
+.cal-frise[data-doigt] :is(button, a, [tabindex]):focus-visible, .cal-frise[data-doigt] .cal-lie.cal-lie-icone:focus-visible { outline: none; }
 
 /* D386 : le fil discret d'un jalon à sa barre liée (autre rangée) ; au toucher de la barre, ses jalons liés s'allument, les autres pâlissent */
 /* lot A (18.11, n° 5) : `--cave-300` n'existe dans aucun thème (themes.css : 50, 200, 400, 600…) ; la couleur faite de ce jeton était invalide, le

@@ -190,8 +190,12 @@ describe('T2-5 — paysage 844 × 340 : la bande des semaines est serrée (la fr
   it('la bande des semaines colle à la courbe en paysage (0 px d’écart ; le cadre garde ses 2 px)', () => {
     expect(Number(/\.ent--paysage \.ent-bz\s*\{[^}]*margin-top:\s*(\d+)(?:px)?\s*;/.exec(css)?.[1])).toBe(0);
   });
-  it('l’écart entre la bande et la frise en paysage est de 2 px (space-y-0.5), non plus 4', () => {
+  it('l’écart entre la bande et la frise en paysage est de 2 px (cal-pile-serre, ex-space-y-0.5), non plus 4', () => {
     const tab = readFileSync(resolve(__dirname, '../../src/components/tabs/CalendrierTab.tsx'), 'utf8');
-    expect(tab).toContain("' cal-tab-paysage space-y-0.5'");
+    expect(tab).toContain("' cal-tab-paysage cal-pile-serre'");
+    // CAL-LENT : l'écart vient de frise.css, sans le « ~ » de space-y (qui recalculait tout l'écran à chaque insertion)
+    const frise = readFileSync(resolve(__dirname, '../../src/ui/calendrier/frise/frise.css'), 'utf8');
+    expect(frise).toContain('.cal-pile-serre > :not(:first-child):not([hidden]) { margin-top: 0.125rem; margin-bottom: 0; }');
+    expect(tab).not.toContain("' space-y-2 pt-1'");
   });
 });

@@ -400,8 +400,9 @@ export const Frise: React.FC<FriseProps> = props => {
       data-largeur={largeur}
       /* CRITIQUE-10, doute m22 : le cadre de focus (pastille « lié à », barres, marques) est pour le clavier seul ; après un toucher, aucun cadre
          (comme la bande des semaines, `data-doigt`). La touche suivante du clavier le rend. */
-      onPointerDownCapture={e => e.currentTarget.setAttribute('data-doigt', '')}
-      onKeyDownCapture={e => e.currentTarget.removeAttribute('data-doigt')}
+      /* CAL-LENT : posé une seule fois (le reposer à chaque toucher recalculait le style de toute la frise) */
+      onPointerDownCapture={e => { if (!e.currentTarget.hasAttribute('data-doigt')) e.currentTarget.setAttribute('data-doigt', ''); }}
+      onKeyDownCapture={e => { if (e.currentTarget.hasAttribute('data-doigt')) e.currentTarget.removeAttribute('data-doigt'); }}
     >
       {traits.length > 0 && (
         <svg className="cal-traits" aria-hidden="true" data-traits>

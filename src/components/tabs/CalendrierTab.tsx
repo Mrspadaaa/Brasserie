@@ -901,7 +901,7 @@ export function CalendrierTab(props: CalendrierTabProps) {
 
   return (
     /* Tour 2 n° 1 (paysage 844 × 340) : couché, 4 px entre l'en-tête et la frise, rien au-dessus ; chaque pixel va aux rangées. */
-    <div ref={racine} className={`cal-tab text-sm${paysage ? ' cal-tab-paysage space-y-0.5' : ' space-y-2 pt-1'}`} data-calendrier data-vue={vue} data-orientation={orientation}>
+    <div ref={racine} className={`cal-tab text-sm${paysage ? ' cal-tab-paysage cal-pile-serre' : ' cal-pile pt-1'}`} data-calendrier data-vue={vue} data-orientation={orientation}>
       <h1 className="sr-only">Calendrier</h1>
 
       {/* Paquet G n° 7 (CAL-ENTETE-CACHE) : collée SOUS l'en-tête de l'app (sa hauteur publiée par Header), jamais dessous. */}
