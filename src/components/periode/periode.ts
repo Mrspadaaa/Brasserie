@@ -118,8 +118,30 @@ export function titre(p: Periode): string {
   }
 }
 
-/** Le pas des flèches : un mois, un trimestre, une année, ou la durée d'une plage de jours. « Tout » ne s'avance pas. */
+/**
+ * Le pas des flèches : un mois, un trimestre, une année, ou la durée d'une plage de jours. « Tout » ne s'avance pas. CHN-1 : toutes les périodes
+ * butent aux mêmes bornes que les plages (du 1.1.2000 à aujourd'hui + 366 j) : au-delà, la période reste la même et la flèche s'éteint
+ * (`peutPasser`), au lieu d'avancer sans fin (« Septembre 2029 ») pendant que le Calendrier reste au bout de son horizon.
+ */
 export function pas(p: Periode, sens: -1 | 1): Periode {
+  const q = pasLibre(p, sens);
+  if (q === p || q.genre === 'dates') return q;
+  const { du, au } = bornes(q);
+  return (du && du > finHorizon(aujourdhuiISO())) || (au && au < PREMIER_JOUR) ? p : q;
+}
+
+/** Dernier jour que les flèches atteignent : la fin de la 52e semaine à partir de la semaine courante, l'horizon du Calendrier (CHN-1), jamais au-delà de `jourMaxi`. */
+function finHorizon(aujourdhui: string): string {
+  const d = new Date(`${aujourdhui}T00:00:00Z`);
+  d.setUTCDate(d.getUTCDate() - ((d.getUTCDay() + 6) % 7) + 52 * 7 - 1);
+  const fin = d.toISOString().slice(0, 10), max = jourMaxi(aujourdhui);
+  return fin < max ? fin : max;
+}
+
+/** La flèche mène-t-elle ailleurs ? Non au bout des bornes : elle s'éteint (CHN-1). */
+export const peutPasser = (p: Periode, sens: -1 | 1): boolean => JSON.stringify(pas(p, sens)) !== JSON.stringify(p);
+
+function pasLibre(p: Periode, sens: -1 | 1): Periode {
   switch (p.genre) {
     case 'tout': return p;
     case 'mois': {
@@ -132,7 +154,7 @@ export function pas(p: Periode, sens: -1 | 1): Periode {
     }
     case 'annee': return { genre: 'annee', annee: p.annee + sens };
     /* Une plage glisse de sa durée, comme les flèches de la bande de Finances (1er au 15 : quinze jours plus tôt). */
-    case 'dates': { const g = glisser(p, sens, PREMIER_JOUR, jourMaxi(aujourdhuiISO())); return { genre: 'dates', du: g.du, au: g.au }; }
+    case 'dates': { const g = glisser(p, sens, PREMIER_JOUR, finHorizon(aujourdhuiISO())); return { genre: 'dates', du: g.du, au: g.au }; }
   }
 }
 

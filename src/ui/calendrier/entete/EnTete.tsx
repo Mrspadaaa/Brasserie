@@ -351,6 +351,8 @@ export function EnTeteCalendrier(props: EnTeteCalendrierProps) {
     if (!d) return;
     const f = fenRef.current;
     if (d.du !== f.du || d.semaines !== f.semaines) onFenetre(d);
+    /* CHV-4 : une plage tirée avant le début de l'horizon est ramenée à la fenêtre réellement montrée : la barre de l'app dit la même période que le cadre. */
+    if (periode.genre === 'dates' && lundiDe(periode.du) < d.du) onPeriode(periodeDeFenetre(d));
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [clePeriode, total]);
 
@@ -579,11 +581,15 @@ export function EnTeteCalendrier(props: EnTeteCalendrierProps) {
   // Les douze mois de la bande de l'année (le premier, puis onze de plus : « nov. – oct. »), pas le treizième que touche la 52e semaine.
   // CRITIQUE-5 n° 2 : la bande couvre toutes les semaines (13 mois quand la dernière tombe dans un treizième) ; le cadre nomme le premier et le
   // dernier mois, chacun celui du jeudi de sa semaine, l'année du dernier quand elle change (« nov. – nov. 2027 »).
+  // CHV-4, CHD-7 : le cadre nomme SA fenêtre (de sa première à sa dernière semaine), pas tout l'horizon de la courbe ; deux années : chacune
+  // dite (« oct. 2026 – oct. 2027 »), comme le bouton de période et la frise.
   const etiquetteAnnee = total ? (() => {
     // `moisDeSemaine` lit le jeudi d'un lundi ; l'année se lit sur ce même jeudi.
-    const premier = semainesTot[0].debut, dernier = semainesTot[total - 1].debut;
+    const premier = semainesTot[Math.min(index, total - 1)].debut, dernier = semainesTot[Math.min(total - 1, index + nombre - 1)].debut;
     const an = (lundi: string) => ajouterJours(lundi, 3).slice(0, 4);
-    return `${MOIS_MIN[moisDeSemaine(premier)]} – ${MOIS_MIN[moisDeSemaine(dernier)]}${an(dernier) !== an(premier) ? ` ${an(dernier)}` : ''}`;
+    return an(dernier) !== an(premier)
+      ? `${MOIS_MIN[moisDeSemaine(premier)]} ${an(premier)} – ${MOIS_MIN[moisDeSemaine(dernier)]} ${an(dernier)}`
+      : `${MOIS_MIN[moisDeSemaine(premier)]} – ${MOIS_MIN[moisDeSemaine(dernier)]} ${an(dernier)}`;
   })() : undefined;
   const lundis = useMemo(() => semainesTot.map(s => s.debut), [semainesTot]);
 

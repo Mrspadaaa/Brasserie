@@ -82,7 +82,9 @@ button.cal-lie::before { content: ''; position: absolute; inset: -6px -2px; }
 /* PC-157 (844 × 340) : la pastille de 24 px débordait de sa ligne de 20 px (2 px en haut, 2 en bas) et touchait la barre de la ligne dessous (le loyer,
    0 px d'écart) ; en paysage elle fait la hauteur de sa ligne, 2 px d'air comme entre deux lignes */
 .cal-paysage .cal-pastille-p { height: 20px; border-radius: 10px; padding: 0 8px; }
-.cal-conf { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 14px; color: rgb(var(--cave-200)); }
+/* CHD-7 : « prévu oct. 26–oct. 27 » à côté d'une grosse pastille : deux lignes au plus en portrait, jamais coupé (en paysage la ligne est de 20 px : une seule) */
+.cal-conf { min-width: 0; overflow: hidden; display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; line-height: 16px; font-size: 14px; color: rgb(var(--cave-200)); }
+.cal-paysage .cal-conf { display: block; white-space: nowrap; text-overflow: ellipsis; }
 /* CRITIQUE-12 n° 2 (E23) : une estimation hors courbe (une fête du carnet) : la même pastille r2-c, en pointillé comme ce qui n'est pas ferme (E26) */
 .cal-pastille-estime { background: transparent; box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--c) 70%, transparent); }
 .cal-pastille-estime::after { content: ''; position: absolute; inset: 0; border: 1px dashed rgb(var(--cave-200)); border-radius: inherit; pointer-events: none; }

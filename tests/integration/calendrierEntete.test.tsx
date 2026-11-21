@@ -618,8 +618,8 @@ describe('CRITIQUE-2 n° 21, 22, 34 : le creux, la date d’une semaine, l’id�
   it('l’année : le cadre dit les mois (« nov. – oct. »), jamais « S47 – S45 » ; les mois en initiales sur une même ligne', () => {
     const { container } = render(<Banc {...espions()} vueInitiale="annee" />);
     const etiquette = container.querySelector('[data-cadre-etiquette]') as HTMLElement;
-    // CRITIQUE-5 n° 2 : la 52e semaine (S45 2027, jeudi 11 nov.) tombe dans un treizième mois ; le cadre le dit, avec son année.
-    expect(etiquette.textContent).toBe('nov. – nov. 2027');
+    // CRITIQUE-5 n° 2 : la 52e semaine (S45 2027, jeudi 11 nov.) tombe dans un treizième mois ; le cadre le dit ; deux années : chacune dite (CHV-4, CHD-7).
+    expect(etiquette.textContent).toBe('nov. 2026 – nov. 2027');
     expect(container.textContent).not.toMatch(/S47 – S45/);
     const lettres = Array.from(container.querySelectorAll('[data-bande-annee] .ent-an-l')).map(e => e.textContent);
     expect(lettres).toEqual(['N', 'D', 'J', 'F', 'M', 'A', 'M', 'J', 'J', 'A', 'S', 'O', 'N']);
@@ -1784,7 +1784,7 @@ describe('CRITIQUE-11 (lot corr11-C) : la Liste porte l’en-tête de la frise ;
   const menu = () => within(screen.getByRole('dialog', { name: 'Période et vue' }));
   const vu = (vue: VueCalendrier, semaines: number, e = espions()) => render(<Banc {...e} vueInitiale={vue} periodeInitiale={periodeDeFenetre(fen(semaines))} />);
 
-  it('n° 1 (E13, E40) : Liste en An = la bande de l’An (12 mois, creux cerclé), aucun « S\\d+ » dans la bande, cadre « nov. – nov. 2027 »', () => {
+  it('n° 1 (E13, E40) : Liste en An = la bande de l’An (12 mois, creux cerclé), aucun « S\\d+ » dans la bande, cadre « nov. 2026 – nov. 2027 »', () => {
     const an = vu('annee', 52);
     const bandeAn = zoneBande(an.container).textContent;
     const cadreAn = cadreDe(an.container);
@@ -1795,7 +1795,7 @@ describe('CRITIQUE-11 (lot corr11-C) : la Liste porte l’en-tête de la frise ;
     expect(li.container.querySelector('[data-bande-semaines]')).toBeNull();
     expect(zoneBande(li.container).textContent).toBe(bandeAn);
     expect(zoneBande(li.container).textContent).not.toMatch(/S\d+/);
-    expect(cadreAn).toBe('Fenêtre : nov. – nov. 2027');
+    expect(cadreAn).toBe('Fenêtre : nov. 2026 – nov. 2027');
     expect(cadreDe(li.container)).toBe(cadreAn);
     expect(li.container.querySelector('.ent-an-creux')).not.toBeNull();
     // Le menu le dit : « An » actif ; « Calendrier » ramène à la frise de l'An, jamais à 52 colonnes de semaines.

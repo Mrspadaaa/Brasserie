@@ -35,8 +35,11 @@ export function fenetreDePeriode(periode: Periode | undefined, premierLundi: str
   const { du, au } = bornes(periode);
   if (!du || !au) return null;
   let debut = lundiDe(du);
+  const voulu = debut;
   if (debut < premierLundi) debut = premierLundi;
-  const fin = lundiDe(au);
+  let fin = lundiDe(au);
+  /* CHV-4 : une plage tirée avant l'horizon garde sa durée (une année reste 52 semaines) : elle se pose au début de l'horizon, la barre dit ce que le cadre montre. */
+  if (periode.genre === 'dates' && voulu < debut && fin >= debut) fin = lundiDe(new Date(Date.parse(`${debut}T00:00:00Z`) + semainesEntre(voulu, fin) * 7 * 864e5).toISOString().slice(0, 10));
   if (fin < debut) return null;
   const decalage = semainesEntre(premierLundi, debut);
   if (decalage >= total) return null;
@@ -115,6 +118,8 @@ export function etiquetteCadre(numeros: readonly number[], index: number, nombre
   const total = numeros.length;
   const fin = Math.min(total - 1, index + nombre - 1);
   const an = lundis && lundis[0] && lundis[fin] && anneeIso(lundis[fin]) > anneeIso(lundis[0]) ? ` ${anneeIso(lundis[fin])}` : '';
+  // CHG-7 : une semaine se dit une fois (« S40 »), jamais « S40 – S40 »
+  if (fin <= index) return `S${numeros[index] ?? ''}${an}`;
   return `S${numeros[index] ?? ''} – S${numeros[fin] ?? ''}${an}`;
 }
 
@@ -138,10 +143,18 @@ export function zonesPoignees(gauche: number, droite: number, largeur: number, d
   return { debut: { l: debutRamenee ? Math.max(0, debutL) : debutL, w: PRISE_POIGNEE }, fin: { l: finL, w: PRISE_POIGNEE } };
 }
 
-/** L'étiquette qui suit le doigt pendant le tirage : au-dessus du cadre (en haut de la courbe), bornée à la courbe. Hauteur 22 px. */
-export function boiteTirage(texte: string, bord: number, largeur: number): Boite {
+/** Écart entre la bulle du tirage et le bout tiré : au-delà de la prise de la poignée posée dans le cadre (10 px). */
+const ECART_BULLE = 14;
+
+/**
+ * L'étiquette qui suit le doigt pendant le tirage : en haut de la courbe, bornée à la courbe. Hauteur 22 px. CHG-7 (R9 : jamais sur un bout) :
+ * un bout tiré garde sa bulle à côté de lui, dans le cadre (début : à droite ; fin : à gauche), ni sur son coin ni sur sa poignée ; le corps
+ * la centre.
+ */
+export function boiteTirage(texte: string, bord: number, largeur: number, cote: 'a' | 'b' | 'corps' = 'corps'): Boite {
   const w = largeurTexte(texte, true) + 12;
-  const l = clamp(bord - w / 2, 2, Math.max(2, largeur - 2 - w));
+  const voulu = cote === 'a' ? bord + ECART_BULLE : cote === 'b' ? bord - ECART_BULLE - w : bord - w / 2;
+  const l = clamp(voulu, 2, Math.max(2, largeur - 2 - w));
   return { l, r: l + w, t: 0, b: 22 };
 }
 
@@ -186,7 +199,7 @@ export function Cadre({ numeros, lundis, index, nombre, largeur, annee, onChange
   // R4 : une semaine fait `unit` px dans la vue ; la semaine i commence en (i − v0) × unit.
   const unit = largeur / Math.max(1e-6, vue.span);
   const xDe = (i: number) => (i - vue.v0) * unit;
-  const [drag, setDrag] = useState<{ index: number; nombre: number; bord: number } | null>(null);
+  const [drag, setDrag] = useState<{ index: number; nombre: number; bord: number; cote: 'a' | 'b' | 'corps' } | null>(null);
   const cur = drag ?? { index, nombre };
   const etiquette = etiquetteCadre(numeros, cur.index, cur.nombre, annee && !drag, etiquetteAnnee, lundis);
   const gauche = xDe(cur.index), droite = xDe(cur.index + cur.nombre);
@@ -196,7 +209,7 @@ export function Cadre({ numeros, lundis, index, nombre, largeur, annee, onChange
   const styleL = place.dehors ? { left: place.l - gauche, transform: 'none', alignItems: 'flex-start' } : undefined;
   const zones = zonesPoignees(gauche, droite, largeur, debutRamenee);
   // Pendant le tirage, l'étiquette quitte le bas du cadre (où elle couvrait « 1 740 mis de côté », n° 24) : elle suit le doigt, en haut.
-  const tirage = drag ? boiteTirage(etiquette, drag.bord, largeur) : null;
+  const tirage = drag ? boiteTirage(etiquette, drag.bord, largeur, drag.cote) : null;
   const onTirageRef = useRef(onTirage);
   onTirageRef.current = onTirage;
   const cleTirage = tirage ? `${Math.round(tirage.l)}-${Math.round(tirage.r)}` : '';
@@ -236,7 +249,7 @@ export function Cadre({ numeros, lundis, index, nombre, largeur, annee, onChange
   const coupe = (s: SaisieCadre) => { if (s.minuterie) { clearTimeout(s.minuterie); s.minuterie = null; } };
   const montrer = (s: SaisieCadre) => {
     const px = (u: number) => (u - s.v.v0) * largeur / s.v.span;
-    setDrag({ index: s.a, nombre: s.b - s.a, bord: s.role === 'a' ? px(s.a) : s.role === 'b' ? px(s.b) : (px(s.a) + px(s.b)) / 2 });
+    setDrag({ index: s.a, nombre: s.b - s.a, bord: s.role === 'a' ? px(s.a) : s.role === 'b' ? px(s.b) : (px(s.a) + px(s.b)) / 2, cote: s.role });
     onVueRef.current?.(s.v);
   };
   const glisse = useGlisse<SaisieCadre>({

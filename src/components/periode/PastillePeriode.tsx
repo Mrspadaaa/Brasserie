@@ -3,7 +3,7 @@ import { ArrowRight, ChevronLeft, ChevronRight } from 'lucide-react';
 import { Sheet } from '../../ui/Sheet';
 import type { Transaction } from '../../types';
 import { ChoixPlage } from './ChoixPlage';
-import { avance, bornes, enPeriode, etiquetteCourte, pas, titre, type Periode, type PeriodeEntree } from './periode';
+import { avance, bornes, enPeriode, etiquetteCourte, pas, peutPasser, titre, type Periode, type PeriodeEntree } from './periode';
 import './periode.css';
 
 /** « 12.10 » : le jour et le mois, comme dans les champs de la plage. */
@@ -38,13 +38,13 @@ export const PastillePeriode: React.FC<Props> = ({ periode, onChoisir, transacti
   return (
     <>
       <span className="pr pr-pill" role="group" aria-label="Période de l’application" data-periode-pastille>
-        <button type="button" className="pr-fl" disabled={!ok} aria-label="Période précédente" onClick={() => choisir(pas(p, -1))}>
+        <button type="button" className="pr-fl" disabled={!ok || !peutPasser(p, -1)} aria-label="Période précédente" onClick={() => choisir(pas(p, -1))}>
           <ChevronLeft size={18} aria-hidden="true" />
         </button>
         <button type="button" className="pr-ce" aria-haspopup="dialog" aria-label={`Période : ${titre(p).replace(/\.$/, '')}. Choisir la plage`} onClick={() => setOuverte(true)}>
           {p.genre === 'dates' ? <><span className="pr-long">{avecFleche(etiquetteCourte(p))}</span><span className="pr-court">{jj(bornes(p).du, horsAnneeEnCours(bornes(p).du, bornes(p).au))}–{jj(bornes(p).au, horsAnneeEnCours(bornes(p).du, bornes(p).au))}</span></> : etiquetteCourte(p)}
         </button>
-        <button type="button" className="pr-fl" disabled={!ok} aria-label="Période suivante" onClick={() => choisir(pas(p, 1))}>
+        <button type="button" className="pr-fl" disabled={!ok || !peutPasser(p, 1)} aria-label="Période suivante" onClick={() => choisir(pas(p, 1))}>
           <ChevronRight size={18} aria-hidden="true" />
         </button>
       </span>

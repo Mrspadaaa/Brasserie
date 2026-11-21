@@ -594,7 +594,10 @@ export function pastille(rangee: IdRangee, choses: readonly ChoseCalendrier[], c
      « confirmé » : « +1 180 estimé », « recette estimée +1 180, hors courbe (pas dans Finances) » */
   const estimees = fermes.filter(c => c.horsCourbe && c.centimes !== undefined);
   const comptees = fermes.filter(c => !(c.horsCourbe && c.centimes !== undefined));
-  const premier = colonnes[0]?.etiquette ?? '', dernier = colonnes[colonnes.length - 1]?.etiquette ?? '';
+  // CHD-7 : des mois sur deux années disent leur année (« oct. 2026–oct. 2027 »), jamais « oct.–oct. »
+  const c0 = colonnes[0], cN = colonnes[colonnes.length - 1];
+  const deuxAns = !!c0 && !!cN && !/^S\d/.test(c0.etiquette) && c0.debut.slice(0, 4) !== cN.fin.slice(0, 4);
+  const premier = (c0?.etiquette ?? '') + (deuxAns ? ` ${c0.debut.slice(2, 4)}` : ''), dernier = (cN?.etiquette ?? '') + (deuxAns ? ` ${cN.fin.slice(2, 4)}` : '');
   const du = colonnes[0]?.debut ?? '', au = colonnes[colonnes.length - 1]?.fin ?? '';
   /* CHD-3 (21.11) : un brassin porte son budget entier sur sa barre ; la pastille compte ce qui sort DANS la fenêtre, par date (ses lignes de
      prévision). Un brassin dont aucune ligne ne tombe dans la fenêtre n'a pas de mouvement : ni « −90 », ni « solde non renseigné » */
