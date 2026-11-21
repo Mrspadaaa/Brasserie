@@ -28,10 +28,10 @@ export function RelireFin(p: PropsRelireFin) {
     <Loader2 size={14} aria-hidden className="shrink-0 animate-spin text-hop"/>Relecture plus fine en cours… la lecture actuelle reste en place jusqu’au résultat.
   </div>;
   const erreur = p.erreur ? <p data-dp="relire-fin-erreur" role="alert" className="text-sm text-attention">{p.erreur}</p> : null;
-  const note = p.pasMieux ? <p data-dp="relire-fin-pas-mieux" role="status" className="text-sm text-cave-300">{MESSAGE_RELECTURE_PAS_MIEUX}</p> : null;
+  const note = p.pasMieux ? <p data-dp="relire-fin-pas-mieux" role="status" className="text-sm text-cave-400">{MESSAGE_RELECTURE_PAS_MIEUX}</p> : null;
   if (confirme && !bloque) return <div data-dp="relire-fin" data-dp-etat="confirmer" className="space-y-1">
     {erreur}
-    <p className="text-xs text-cave-300">La nouvelle lecture remplace celle-ci, tes retouches comprises.</p>
+    <p className="text-xs text-cave-400">La nouvelle lecture remplace celle-ci, tes retouches comprises.</p>
     <div className="flex flex-wrap items-center gap-1.5">
       <button type="button" data-dp-relire-oui onClick={() => { setConfirme(false); p.onRelire(); }} className="inline-flex min-h-7 items-center gap-1 rounded-control border border-ebc-straw bg-ebc-straw px-2.5 text-sm font-semibold text-cave-950"><RefreshCw size={14} aria-hidden/>Relire</button>
       <button type="button" data-dp-relire-non onClick={() => setConfirme(false)} className="min-h-7 rounded-control border border-cave-600 px-2.5 text-sm text-cave-200">Annuler</button>

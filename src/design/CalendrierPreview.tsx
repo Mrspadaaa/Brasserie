@@ -369,9 +369,9 @@ export const BancCalendrier: React.FC<BancProps> = ({ aujourdhui: jour, etat, so
       {enTeteApp}
       {renvoi && (
         <Sheet open title="banc — l’app ouvrirait" onClose={() => setRenvoi(null)}>
-          <div className="space-y-2 px-4 pb-4 text-sm text-cave-100" data-banc-renvoi data-banc-quitte={renvoi.quitte ? 'oui' : undefined}>
+          <div className="space-y-2 px-4 pb-4 text-sm text-cave-200" data-banc-renvoi data-banc-quitte={renvoi.quitte ? 'oui' : undefined}>
             <p className="text-base font-semibold text-cave-50">{renvoi.texte}</p>
-            <p className="text-cave-300">{renvoi.quitte ? 'Dans l’app, cet écran remplace le calendrier.' : 'Dans l’app, cette feuille s’ouvre par-dessus le calendrier.'} Le banc ne le monte pas : il s’ouvre pour de vrai dans /?dev-local.</p>
+            <p className="text-cave-400">{renvoi.quitte ? 'Dans l’app, cet écran remplace le calendrier.' : 'Dans l’app, cette feuille s’ouvre par-dessus le calendrier.'} Le banc ne le monte pas : il s’ouvre pour de vrai dans /?dev-local.</p>
           </div>
         </Sheet>
       )}

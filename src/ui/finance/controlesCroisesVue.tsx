@@ -32,12 +32,12 @@ function Rangee({ r, onRenvoi }: { r: RangControle; onRenvoi: (r: Renvoi, rang?:
   if (erreur && r.renvoi) return <button type="button" data-dp="controle" data-dp-controle-cle={r.cle} data-dp-verdict="ecart" data-dp-ton={rouge ? 'rouge' : 'ambre'} data-dp-renvoi={r.renvoi} aria-label={`${r.texte} ${r.valeurs}${r.ecart ? `, écart ${r.ecart}` : ''} : ${verdict}. ${r.geste ?? ''}`} onClick={() => onRenvoi(r.renvoi!, r)}
     className={`col-span-2 my-0.5 flex min-h-[34px] w-full min-w-0 flex-col justify-center gap-0 rounded-control border border-dashed px-1.5 text-left text-sm ${rouge ? 'border-alert/70 bg-alert/5' : 'border-attention/60 bg-attention/5'}`}>
     <span className="flex w-full min-w-0 flex-wrap items-center gap-x-1 gap-y-0">{corps}</span>
-    {r.detail ? <span data-dp="controle-detail" className="pl-[18px] text-xs leading-[14px] text-cave-300">{r.detail}</span> : null}
-    {r.note ? <span data-dp="controle-note" className="pl-[18px] text-xs leading-[14px] text-cave-300">{r.note}</span> : null}
+    {r.detail ? <span data-dp="controle-detail" className="pl-[18px] text-xs leading-[14px] text-cave-400">{r.detail}</span> : null}
+    {r.note ? <span data-dp="controle-note" className="pl-[18px] text-xs leading-[14px] text-cave-400">{r.note}</span> : null}
     {r.geste ? <span className={`pl-[18px] text-xs leading-[14px] ${ton}`}>{r.geste} ›</span> : null}
   </button>;
   const ligne = <button type="button" data-dp="controle" data-dp-controle-cle={r.cle} data-dp-verdict={r.verdict} aria-label={`${r.texte} ${r.valeurs} : ${verdict}${r.detail ? `. ${r.detail}` : ''}`} title={r.detail} onClick={() => onRenvoi('liste', r)} className="col-span-2 flex min-h-[26px] w-full min-w-0 flex-wrap items-center gap-x-1 gap-y-0 border-b border-cave-800 py-px text-left text-sm">{corps}</button>;
-  return r.note ? <><div className="col-span-2">{ligne}</div><p data-dp="controle-note" className="col-span-2 border-b border-cave-800 pb-0.5 pl-[18px] text-xs leading-[14px] text-cave-300">{r.note}</p></> : ligne;
+  return r.note ? <><div className="col-span-2">{ligne}</div><p data-dp="controle-note" className="col-span-2 border-b border-cave-800 pb-0.5 pl-[18px] text-xs leading-[14px] text-cave-400">{r.note}</p></> : ligne;
 }
 
 /** Le bloc « Somme ≠ imprimé · Qté × prix · Lectures » refait. `children` : les comptes de liens (inchangés). */
@@ -76,9 +76,9 @@ export function RechercheLignes(p: { valeur: string; onChange: (v: string) => vo
         onChange={e => p.onChange(e.target.value)} onFocus={p.onFocus}
         onKeyDown={e => { if (e.key === 'Escape' && p.valeur) { e.preventDefault(); e.stopPropagation(); e.nativeEvent.stopImmediatePropagation(); p.onChange(''); } }}
         className="h-8 min-w-0 flex-1 rounded-control border border-cave-700 bg-cave-950 pl-7 pr-8 text-sm text-cave-50 placeholder:text-cave-400"/>
-      {p.valeur ? <button type="button" aria-label="Vider la recherche" onClick={() => p.onChange('')} className="absolute right-0 flex size-8 items-center justify-center text-cave-300"><X size={14}/></button> : null}
+      {p.valeur ? <button type="button" aria-label="Vider la recherche" onClick={() => p.onChange('')} className="absolute right-0 flex size-8 items-center justify-center text-cave-400"><X size={14}/></button> : null}
     </label>
-    {saisie ? <p data-dp="recherche-etat" role="status" className={`px-0.5 text-xs ${p.nTrouvees ? 'text-cave-300' : 'font-medium text-attention'}`}>
+    {saisie ? <p data-dp="recherche-etat" role="status" className={`px-0.5 text-xs ${p.nTrouvees ? 'text-cave-400' : 'font-medium text-attention'}`}>
       {p.nTrouvees ? `${p.nTrouvees} ligne${p.nTrouvees > 1 ? 's' : ''} sur ${p.nTotal}` : `Aucune ligne ne contient « ${saisie} » : l’article manque dans les lignes lues`}</p> : null}
   </div>;
 }
@@ -86,7 +86,7 @@ export function RechercheLignes(p: { valeur: string; onChange: (v: string) => vo
 /** Ce qui manque et les gestes : rechercher, ajouter la ligne manquante, relire la photo. Une ligne, sans phrase longue. */
 export function BandeManque(p: { texte: string; causes: string; onChercher?: () => void; onAjouter: () => void; onPhoto?: () => void; ajouterOff?: boolean }) {
   return <div data-dp="manque" role="status" className="mx-2 mb-1 flex flex-wrap items-center gap-x-2 gap-y-1 rounded-control border border-dashed border-attention/60 bg-attention/5 px-2 py-1 text-xs text-cave-50">
-    <span className="flex min-w-0 items-center gap-1"><AlertCircle size={13} aria-hidden className="shrink-0 text-attention"/><span><strong className="font-semibold">{p.texte}</strong><span className="text-cave-300"> · {p.causes}</span></span></span>
+    <span className="flex min-w-0 items-center gap-1"><AlertCircle size={13} aria-hidden className="shrink-0 text-attention"/><span><strong className="font-semibold">{p.texte}</strong><span className="text-cave-400"> · {p.causes}</span></span></span>
     <span className="ml-auto flex items-center gap-1">
       {p.onChercher ? <button type="button" onClick={p.onChercher} className="inline-flex min-h-7 items-center gap-1 whitespace-nowrap rounded-control border border-cave-600 px-2 text-cave-50"><Search size={12} aria-hidden/>Chercher</button> : null}
       <button type="button" disabled={p.ajouterOff} onClick={p.onAjouter} className="inline-flex min-h-7 items-center gap-1 whitespace-nowrap rounded-control border border-cave-600 px-2 text-cave-50 disabled:opacity-50"><Plus size={12} aria-hidden/>Ajouter la ligne</button>

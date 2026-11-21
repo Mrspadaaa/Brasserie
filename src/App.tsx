@@ -1347,7 +1347,7 @@ export const App: React.FC = () => {
         {activeTab === 'calendrier' && (<>
           {calendrierSection && (
             <div className="mb-2 flex min-h-11 items-center gap-2 rounded-panel border border-cave-800 px-3 text-sm" data-calendrier-section={calendrierSection}>
-              <span className="min-w-0 flex-1 truncate font-semibold text-cave-100">Calendrier · {NOM_SECTION[calendrierSection]}</span>
+              <span className="min-w-0 flex-1 truncate font-semibold text-cave-200">Calendrier · {NOM_SECTION[calendrierSection]}</span>
               <button type="button" data-calendrier-general onClick={() => setCalendrierSection(undefined)} className="min-h-11 shrink-0 px-2 font-semibold text-cave-200">Tout le calendrier ›</button>
             </div>
           )}
