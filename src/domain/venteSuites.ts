@@ -24,6 +24,20 @@ export function planSoldeParVente(plans: readonly FinancialPlan[], v: { clientId
   return candidats[0] ?? null;
 }
 
+const nom = (s?: string) => (s ?? '').trim().toLocaleLowerCase('fr-CH');
+/**
+ * WFA-15 : la dépense prévue (un plan `out` manuel, actif, non récurrent) que cette facture solde : même fournisseur si le plan en a un, sinon même catégorie ;
+ * montant à ±10 %. Un seul candidat, sinon rien (jamais deux soldées d'un coup, jamais une devinette entre plusieurs). Le lien posé s'écrit `finance.planId` :
+ * la prévision retire alors le montant prévu et compte la facture (forecast.ts), le malt n'est plus compté deux fois.
+ */
+export function planSoldeParDepense(plans: readonly FinancialPlan[], d: { vendor?: string; category?: string; amountCents: number }): FinancialPlan | null {
+  if (!(d.amountCents > 0)) return null;
+  const candidats = plans.filter(p => p.direction === 'out' && p.status === 'active' && p.source === 'manual' && !p.recurrence && p.amountCents > 0
+    && Math.abs(p.amountCents - d.amountCents) <= p.amountCents * 0.1
+    && (p.vendor ? nom(p.vendor) === nom(d.vendor) : !!d.category && p.category === d.category));
+  return candidats.length === 1 ? candidats[0] : null;
+}
+
 /** Le plan soldé par la vente : `completed` s'il est couvert en entier, sinon il reste actif (le reste à venir se lit dans la prévision, par `finance.planId`). */
 export const planApresVente = (plan: FinancialPlan, totalCents: number, maintenant: string): FinancialPlan =>
   totalCents >= plan.amountCents ? { ...plan, status: 'completed', updatedAt: maintenant } : plan;

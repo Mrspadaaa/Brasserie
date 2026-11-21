@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { futsLivrables, futsProposes, livrerFuts, planApresVente, planSoldeParVente } from '../../src/domain/venteSuites';
+import { futsLivrables, futsProposes, livrerFuts, planApresVente, planSoldeParDepense, planSoldeParVente } from '../../src/domain/venteSuites';
 import type { KegItem } from '../../src/types';
 import type { FinancialPlan } from '../../src/domain/finance/types';
 
@@ -49,5 +49,22 @@ describe('B6 : la vente livre les fûts du brassin', () => {
     const livres = livrerFuts(kegs, ['F-001', 'F-004'], { id: 'C1', name: 'ZZ TEST La Cigogne' }, '2026-11-21');
     expect(livres.map(k => k.id)).toEqual(['F-001']);
     expect(livres[0]).toMatchObject({ state: 'livre', clientId: 'C1', clientName: 'ZZ TEST La Cigogne', deliveryDate: '21.11.2026' });
+  });
+});
+
+describe('WFA-15 : la facture solde la dépense prévue', () => {
+  const plan = (id: string, o: object = {}) => ({ id, title: 'Commande de malt', date: '2026-11-26', amountCents: 42000, direction: 'out', category: 'brassage', source: 'manual', status: 'active', vendor: 'ZZ TEST', createdAt: '2026-11-01', ...o }) as never;
+  it('même fournisseur, montant à ±10 % : le plan est lié (421,57 pour 420)', () => {
+    expect(planSoldeParDepense([plan('P-MALT')], { vendor: 'zz test', category: 'brassage', amountCents: 42157 })?.id).toBe('P-MALT');
+  });
+  it('autre fournisseur, montant éloigné, plan récurrent ou équipement : rien', () => {
+    expect(planSoldeParDepense([plan('P')], { vendor: 'Autre', category: 'brassage', amountCents: 42157 })).toBeNull();
+    expect(planSoldeParDepense([plan('P')], { vendor: 'ZZ TEST', amountCents: 60000 })).toBeNull();
+    expect(planSoldeParDepense([plan('P', { recurrence: { frequency: 'monthly' } })], { vendor: 'ZZ TEST', amountCents: 42000 })).toBeNull();
+    expect(planSoldeParDepense([plan('P', { source: 'equipment' })], { vendor: 'ZZ TEST', amountCents: 42000 })).toBeNull();
+  });
+  it('sans fournisseur au plan : la catégorie ; deux candidats : rien (jamais une devinette)', () => {
+    expect(planSoldeParDepense([plan('P', { vendor: undefined })], { category: 'brassage', amountCents: 41000 })?.id).toBe('P');
+    expect(planSoldeParDepense([plan('A'), plan('B')], { vendor: 'ZZ TEST', amountCents: 42000 })).toBeNull();
   });
 });
