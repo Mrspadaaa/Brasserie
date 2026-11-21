@@ -28,7 +28,8 @@ afterEach(() => { largeurFenetre(1024); });
  * L'en-tête du calendrier (lot B, E01 à E13). La courbe vient du domaine (`courbeCaisse`) : 52 semaines depuis le lundi 2026-11-16, des mouvements
  * nommés, une mise de côté pour le frigo. Aucune donnée réelle, aucun appel réseau.
  */
-afterEach(() => { cleanup(); vi.useRealTimers(); vi.restoreAllMocks(); });
+// un lâcher du Cadre arme « avale le clic suivant » ; sous minuteries simulées il ne se désarme pas seul : un pointerdown le retire (un test n'avale pas le clic du suivant)
+afterEach(() => { window.dispatchEvent(new Event('pointerdown')); cleanup(); vi.useRealTimers(); vi.restoreAllMocks(); });
 
 const LUNDI0 = '2026-11-16';
 const jour = (semaine: number) => ajouterJours(LUNDI0, semaine * 7 + 2);
@@ -87,14 +88,15 @@ const imagesSimulees = () => vi.useFakeTimers({ toFake: ['requestAnimationFrame'
  * l'échelle ; le début reste à sa place et la fin suit le doigt, jusqu'à l'année. `pendant` regarde l'écran avant le lâcher.
  */
 function tirerFinAuBout(fin: HTMLElement, pointerId: number, pendant?: () => void) {
+  const cb = fin.closest('.ent-cb') as HTMLElement;
   imagesSimulees();
   try {
     fireEvent.pointerDown(fin, { pointerId, clientX: 334, button: 0 });
-    fireEvent.pointerMove(window, { pointerId, clientX: 360 });
-    fireEvent.pointerMove(window, { pointerId, clientX: 385 });
+    fireEvent.pointerMove(cb, { pointerId, clientX: 360 });
+    fireEvent.pointerMove(cb, { pointerId, clientX: 385 });
     act(() => { vi.advanceTimersByTime(5000); });
     pendant?.();
-    fireEvent.pointerUp(window, { pointerId, clientX: 385 });
+    fireEvent.pointerUp(cb, { pointerId, clientX: 385 });
     act(() => { vi.advanceTimersByTime(300); });
   } finally { vi.useRealTimers(); }
 }
@@ -258,7 +260,7 @@ describe('E07 : la période, la même que celle de l’app (ET-PER)', () => {
 describe('E06, E13 : la fenêtre et l’année', () => {
   const poignee = () => screen.getByRole('button', { name: /Poignée de fin/ });
 
-  it('B5 (frise B, R7) : la fin tenue au bord droit resserre l’échelle jusqu’à l’année', () => {
+  it('B5 (frise B, R7, CHG-3) : la fin tenue au bord droit resserre l’échelle, le début reste ; sans passer seule dans l’An', () => {
     const e = espions();
     render(<Banc {...e} />);
     tirerFinAuBout(poignee(), 1, () => {
@@ -266,7 +268,10 @@ describe('E06, E13 : la fenêtre et l’année', () => {
     // Une semaine de l'année suivante porte son année (CRITIQUE-3 n° 24) : « S47 – S40 2027 ».
       expect(screen.getByLabelText(/^Fenêtre : S47 – S\d+ 2027$/).getAttribute('aria-label')).not.toBe('Fenêtre : S47 – S52');
     });
-    expect(e.onVue).toHaveBeenCalledWith('annee');
+    const dernier = e.onFenetre.mock.calls.at(-1)![0];
+    expect(dernier.du).toBe(LUNDI0);
+    expect(dernier.semaines).toBeGreaterThan(7);
+    expect(e.onVue).not.toHaveBeenCalledWith('annee');
   });
 
   it('CAL-PERIODE-LIBRE (18.11, « Je peux pas choisir une période donnée ») : lâchée avant 80 %, la fin posée au doigt devient la période ; plus courte aussi', () => {
@@ -276,8 +281,8 @@ describe('E06, E13 : la fenêtre et l’année', () => {
        53 semaines ISO). Le recalage (R10) se joue en images simulées. */
     imagesSimulees();
     fireEvent.pointerDown(poignee(), { pointerId: 1, clientX: 334, button: 0 });
-    fireEvent.pointerMove(window, { pointerId: 1, clientX: 370 });
-    fireEvent.pointerUp(window, { pointerId: 1, clientX: 370 });
+    fireEvent.pointerMove((document.querySelector('.ent-cb') as HTMLElement), { pointerId: 1, clientX: 370 });
+    fireEvent.pointerUp((document.querySelector('.ent-cb') as HTMLElement), { pointerId: 1, clientX: 370 });
     act(() => { vi.advanceTimersByTime(300); });
     expect(e.onVue).not.toHaveBeenCalled();
     expect(e.onFenetre).toHaveBeenLastCalledWith({ du: LUNDI0, semaines: 7 });
@@ -288,8 +293,8 @@ describe('E06, E13 : la fenêtre et l’année', () => {
     /* plus courte : la fin ramenée à 3 semaines. Sans mesure (jsdom), la courbe vaut 65 px × 7 colonnes = 455 px ; recalée (R4), la fin est à
        399 px, 49 px la semaine : ramenée à 205 px, 3 semaines */
     fireEvent.pointerDown(poignee(), { pointerId: 2, clientX: 399, button: 0 });
-    fireEvent.pointerMove(window, { pointerId: 2, clientX: 205 });
-    fireEvent.pointerUp(window, { pointerId: 2, clientX: 205 });
+    fireEvent.pointerMove((document.querySelector('.ent-cb') as HTMLElement), { pointerId: 2, clientX: 205 });
+    fireEvent.pointerUp((document.querySelector('.ent-cb') as HTMLElement), { pointerId: 2, clientX: 205 });
     act(() => { vi.advanceTimersByTime(300); });
     vi.useRealTimers();
     expect(e.onFenetre).toHaveBeenLastCalledWith({ du: LUNDI0, semaines: 3 });
@@ -306,23 +311,22 @@ describe('E06, E13 : la fenêtre et l’année', () => {
     expect(an.querySelector('.ent-an-v')).toBeNull();
     expect(cerclé.getAttribute('title')).toContain(francs(creuxDepuis(courbe)!.centimes));
     expect(container.querySelector('[data-bande-semaines]')).toBeNull();
-    const [, fin] = screen.getAllByRole('button', { name: /Revenir à la fenêtre d’avant/ });
-    fireEvent.pointerDown(fin, { pointerId: 1, clientX: 390, button: 0 });
-    fireEvent.pointerUp(window, { pointerId: 1, clientX: 390 });
+    // CHG-3 : dans l’An, un toucher sur la poignée ne ramène plus la fenêtre d’avant ; seul le clic clavier (detail 0) le fait
+    fireEvent.click(screen.getByRole('button', { name: /Revenir à la fenêtre d’avant/ }));
     expect(e.onVue).toHaveBeenLastCalledWith('semaines');
     expect(e.onFenetre).toHaveBeenLastCalledWith({ du: LUNDI0, semaines: 6 });
   });
 
-  it('la poignée de début glisse la fenêtre, et la période suit', () => {
+  it('la poignée de début étire la fenêtre, sa fin reste (R6), et la période suit', () => {
     const e = espions();
     render(<Banc {...e} />);
     const debut = screen.getByRole('button', { name: /Poignée de début/ });
     fireEvent.pointerDown(debut, { pointerId: 2, clientX: 56, button: 0 });
     // Frise B, R4 : 6 semaines entre 56 et 334 px, 46,3 px la semaine ; 185 px = 4 semaines (R2 : le déplacement, jamais la position).
-    fireEvent.pointerMove(window, { pointerId: 2, clientX: 241 });
-    fireEvent.pointerUp(window, { pointerId: 2, clientX: 241 });
-    expect(e.onFenetre).toHaveBeenCalledWith({ du: ajouterJours(LUNDI0, 28), semaines: 6 });
-    expect(e.onPeriode).toHaveBeenCalledWith({ genre: 'dates', du: ajouterJours(LUNDI0, 28), au: ajouterJours(LUNDI0, 28 + 41) });
+    fireEvent.pointerMove((document.querySelector('.ent-cb') as HTMLElement), { pointerId: 2, clientX: 241 });
+    fireEvent.pointerUp((document.querySelector('.ent-cb') as HTMLElement), { pointerId: 2, clientX: 241 });
+    expect(e.onFenetre).toHaveBeenCalledWith({ du: ajouterJours(LUNDI0, 28), semaines: 2 });
+    expect(e.onPeriode).toHaveBeenCalledWith({ genre: 'dates', du: ajouterJours(LUNDI0, 28), au: ajouterJours(LUNDI0, 41) });
   });
 });
 
@@ -352,7 +356,7 @@ describe('E11, E12 : lire la courbe au doigt, et la courbe en grand', () => {
     const onLectureSemaine = vi.fn();
     const { container } = render(<Banc {...espions()} onLectureSemaine={onLectureSemaine} />);
     const svg = screen.getByRole('img', { name: /Libre et caisse sur \d+ semaines/ });
-    fireEvent.pointerDown(svg, { pointerId: 1, clientX: 100, clientY: 20, button: 0 });
+    fireEvent.pointerDown(svg, { pointerId: 1, clientX: 20, clientY: 20, button: 0 });
     fireEvent.pointerMove(window, { pointerId: 1, clientX: 280, clientY: 22 });
     // B9 (D395) : le doigt lit les semaines de la fenêtre (6 sem., S47 – S52, 65 px chacune sur 390) : 280 px, la 5e (index 4), le lundi
     // 14 déc., S51, celle du Marché de Noël.
@@ -376,12 +380,12 @@ describe('E11, E12 : lire la courbe au doigt, et la courbe en grand', () => {
     const e = espions();
     const { container } = render(<Banc {...e} />);
     const svg = screen.getByRole('img', { name: /Libre et caisse sur \d+ semaines/ });
-    fireEvent.pointerDown(svg, { pointerId: 1, clientX: 100, clientY: 20, button: 0 });
+    fireEvent.pointerDown(svg, { pointerId: 1, clientX: 20, clientY: 20, button: 0 });
     act(() => { vi.advanceTimersByTime(499); });
     expect(e.onVue).not.toHaveBeenCalled();
     act(() => { vi.advanceTimersByTime(1); });
     expect(e.onVue).toHaveBeenCalledWith('graph');
-    fireEvent.pointerUp(window, { pointerId: 1, clientX: 100 });
+    fireEvent.pointerUp(window, { pointerId: 1, clientX: 20 });
     // Le clic fabriqué au relâcher est avalé 400 ms (CRITIQUE-4 n° 3) ; le × se touche après.
     act(() => { vi.advanceTimersByTime(DELAI_CLIC_AVALE); });
     // La grande courbe a pris la place : la courbe en grand, sa légende une fois, le creux marqué, aucune bande.
@@ -700,7 +704,8 @@ const courbeSvg = (c: HTMLElement) => c.querySelector('.ent-cb svg') as SVGSVGEl
 const nomsCourbe = (c: HTMLElement) => Array.from(courbeSvg(c).querySelectorAll('[data-nom-courbe]'));
 
 describe('CRITIQUE-3 n° 6 (c2-b) et n° 25 (c3-a) : le doigt sur la courbe', () => {
-  it('b1 : glisser le long de la courbe hors des poignées lit la semaine ; la fenêtre ne bouge pas ; seules les zones de 44 px tirent', () => {
+  it('b1 : le corps tenu 450 ms lit la semaine, le doigt suit ; la fenêtre ne bouge pas ; seules les zones de 44 px tirent', () => {
+    vi.useFakeTimers();
     const e = espions();
     const { container } = render(<Banc {...e} />);
     // 52 semaines sur 390 px : 7,5 px la semaine ; la fenêtre S47 – S52 va de 0 à 45 px. Le doigt de la critique s'est posé à x = 30, dans le
@@ -714,14 +719,20 @@ describe('CRITIQUE-3 n° 6 (c2-b) et n° 25 (c3-a) : le doigt sur la courbe', ()
     const cb = container.querySelector('.ent-cb') as HTMLElement;
     // Frise B, R4 : la fenêtre va de 56 à 334 px ; ses prises de 22 à 66 et de 324 à 368 px ; le doigt part du corps, à 100 px.
     fireEvent.pointerDown(cb, { pointerId: 1, clientX: 100, clientY: 50, button: 0 });
-    fireEvent.pointerMove(window, { pointerId: 1, clientX: 120, clientY: 52 });
-    fireEvent.pointerMove(window, { pointerId: 1, clientX: 280, clientY: 52 });
+    // R3 : dans le corps, avant 450 ms, rien ne se lit ; le corps tenu lit, et le doigt suit
+    act(() => { vi.advanceTimersByTime(449); });
+    expect(container.querySelector('.ent-lit')).toBeNull();
+    act(() => { vi.advanceTimersByTime(1); });
+    expect(container.querySelector('.ent-lit')).not.toBeNull();
+    fireEvent.pointerMove(cb, { pointerId: 1, clientX: 120, clientY: 52 });
+    fireEvent.pointerMove(cb, { pointerId: 1, clientX: 280, clientY: 52 });
     // Pendant : la tête lit la semaine de la fenêtre sous le doigt (B9 : 280 px, S51), ses boutons restent, le cadre n'a pas bougé.
     expect(container.querySelector('.ent-t')!.textContent).toMatch(/CHF · S51 · 14 déc\. [+−]/);
     expect(screen.getByRole('button', { name: '±' })).toBeInTheDocument();
     expect(screen.getByRole('button', { name: /6 sem/ })).toBeInTheDocument();
     expect(screen.getByLabelText('Fenêtre : S47 – S52')).toBeInTheDocument();
-    fireEvent.pointerUp(window, { pointerId: 1, clientX: 280 });
+    fireEvent.pointerUp(cb, { pointerId: 1, clientX: 280 });
+    vi.useRealTimers();
     expect(e.onFenetre).not.toHaveBeenCalled();
     expect(container.querySelector('.ent-t')!.textContent).toContain('CHF · S51');
     expect(container.querySelector('.ent-lu')!.textContent).toContain('la semaine');
@@ -738,11 +749,11 @@ describe('CRITIQUE-3 n° 6 (c2-b) et n° 25 (c3-a) : le doigt sur la courbe', ()
     const e = espions();
     const { container } = render(<Banc {...e} />);
     const cb = container.querySelector('.ent-cb') as HTMLElement;
-    fireEvent.pointerDown(cb, { pointerId: 1, clientX: 360, clientY: 50, button: 0 });
-    fireEvent.pointerMove(window, { pointerId: 1, clientX: 395, clientY: 50 });
+    fireEvent.pointerDown(cb, { pointerId: 1, clientX: 350, clientY: 50, button: 0 });
+    fireEvent.pointerMove(cb, { pointerId: 1, clientX: 385, clientY: 50 });
     expect(screen.getByLabelText('Fenêtre : S47 – S53')).toBeInTheDocument();
     expect(container.querySelector('.ent-lu')).toBeNull();
-    fireEvent.pointerUp(window, { pointerId: 1, clientX: 160 });
+    fireEvent.pointerUp(cb, { pointerId: 1, clientX: 385 });
   });
 
   it('b2 : la courbe en grand reste après le relâcher ; le doigt la relit ; × la ferme ; un toucher hors de la courbe aussi', () => {
@@ -750,9 +761,9 @@ describe('CRITIQUE-3 n° 6 (c2-b) et n° 25 (c3-a) : le doigt sur la courbe', ()
     const e = espions();
     const { container } = render(<Banc {...e} />);
     const appuiLong = () => {
-      fireEvent.pointerDown(container.querySelector('.ent-cb') as HTMLElement, { pointerId: 1, clientX: 200, clientY: 50, button: 0 });
+      fireEvent.pointerDown(container.querySelector('.ent-cb') as HTMLElement, { pointerId: 1, clientX: 20, clientY: 50, button: 0 });
       act(() => { vi.advanceTimersByTime(500); });
-      fireEvent.pointerUp(window, { pointerId: 1, clientX: 200 });
+      fireEvent.pointerUp(window, { pointerId: 1, clientX: 20 });
       act(() => { vi.advanceTimersByTime(1000); });
     };
     appuiLong();
@@ -792,24 +803,22 @@ describe('CRITIQUE-3 n° 11 et 33 : une seule échelle de mois dans l’An, des 
 });
 
 describe('CRITIQUE-3 n° 7 : les messages de l’en-tête passent par le canal unique, la date part au toucher suivant', () => {
-  it('b4 : « Tire jusqu’au bout » par onMessage, seulement au toucher sans glisser (CAL-PERIODE-LIBRE : lâchée avant 80 %, la fin est posée) ; jamais pendant le tirage ; jamais à 90 % ; retiré à l’arrivée dans l’An', () => {
+  it('b4 (CHG-3) : plus de « Tire jusqu’au bout » ni d’An d’office : toucher la fin ou la tirer au bord ne dit rien et ne passe pas dans l’An', () => {
     const e = espions();
     const onMessage = vi.fn();
     render(<Banc {...e} onMessage={onMessage} />);
     const fin = () => screen.getByRole('button', { name: /Poignée de fin/ });
-    fireEvent.pointerDown(fin(), { pointerId: 1, clientX: 45, button: 0 });
-    fireEvent.pointerMove(window, { pointerId: 1, clientX: 46 });
-    expect(onMessage).not.toHaveBeenCalled();
-    fireEvent.pointerUp(window, { pointerId: 1, clientX: 46 });
-    expect(onMessage).toHaveBeenCalledTimes(1);
-    expect(onMessage).toHaveBeenCalledWith({ genre: 'annee', texte: 'Tire jusqu’au bout : l’année' });
-    // Le canal l'affiche : l'en-tête ne le rend pas lui-même (un seul message à la fois).
-    expect(screen.queryByText('Tire jusqu’au bout : l’année')).toBeNull();
-    onMessage.mockClear();
-    tirerFinAuBout(fin(), 2, () => expect(onMessage).not.toHaveBeenCalled());
-    expect(e.onVue).toHaveBeenCalledWith('annee');
+    // un toucher sur la fin (334 → 336 px) : la fenêtre ne bouge pas, aucun message
+    fireEvent.pointerDown(fin(), { pointerId: 1, clientX: 334, button: 0 });
+    fireEvent.pointerMove((document.querySelector('.ent-cb') as HTMLElement), { pointerId: 1, clientX: 336 });
+    fireEvent.pointerUp((document.querySelector('.ent-cb') as HTMLElement), { pointerId: 1, clientX: 336 });
     expect(onMessage).not.toHaveBeenCalledWith(expect.objectContaining({ genre: 'annee' }));
-    expect(onMessage).toHaveBeenLastCalledWith(null);
+    expect(screen.queryByText(/Tire jusqu’au bout/)).toBeNull();
+    expect(e.onFenetre).not.toHaveBeenCalled();
+    // tirée au bord, la fin resserre l’échelle : ni message, ni An
+    tirerFinAuBout(fin(), 2, () => expect(onMessage).not.toHaveBeenCalledWith(expect.objectContaining({ genre: 'annee' })));
+    expect(e.onVue).not.toHaveBeenCalledWith('annee');
+    expect(onMessage).not.toHaveBeenCalledWith(expect.objectContaining({ genre: 'annee' }));
   });
 
   it('« Tourne le téléphone » passe aussi par onMessage', async () => {
@@ -884,14 +893,14 @@ describe('CRITIQUE-3 n° 17 et 24 : les noms sur leur marche, l’étiquette du 
 
   it('n° 24 : pendant le tirage, l’étiquette suit le doigt en haut de la courbe, avec l’année ; plus rien en bas du cadre', () => {
     const { container } = render(<Banc {...espions()} />);
-    fireEvent.pointerDown(screen.getByRole('button', { name: /Poignée de fin/ }), { pointerId: 1, clientX: 45, button: 0 });
-    fireEvent.pointerMove(window, { pointerId: 1, clientX: 300 });
-    const tir = container.querySelector('[data-cadre-tirage]') as HTMLElement;
-    expect(tir.textContent).toMatch(/^S47 – S\d+ 2027$/);
-    expect(container.querySelector('.ent-cadre [data-cadre-etiquette]')).toBeNull();
-    fireEvent.pointerUp(window, { pointerId: 1, clientX: 300 });
+    tirerFinAuBout(screen.getByRole('button', { name: /Poignée de fin/ }), 1, () => {
+      const tir = container.querySelector('[data-cadre-tirage]') as HTMLElement;
+      expect(tir.textContent).toMatch(/^S47 – S\d+ 2027$/);
+      expect(container.querySelector('.ent-cadre [data-cadre-etiquette]')).toBeNull();
+    });
     expect(container.querySelector('[data-cadre-tirage]')).toBeNull();
   });
+
 });
 
 describe('CRITIQUE-3 n° 23 et 34 : l’étoile sur la courbe, l’espace de « dans Finances »', () => {
@@ -926,10 +935,10 @@ describe('CRITIQUE-4 (lot q1-entete) : le doigt à 390, le paysage, le menu, le 
     vi.useFakeTimers();
     const e = espions();
     const { container } = render(<Banc {...e} />);
-    fireEvent.pointerDown(container.querySelector('.ent-cb') as HTMLElement, { pointerId: 1, clientX: 200, clientY: 50, button: 0, pointerType: 'touch' });
+    fireEvent.pointerDown(container.querySelector('.ent-cb') as HTMLElement, { pointerId: 1, clientX: 20, clientY: 50, button: 0, pointerType: 'touch' });
     act(() => { vi.advanceTimersByTime(500); });
     expect(e.onVue).toHaveBeenLastCalledWith('graph');
-    fireEvent.pointerUp(window, { pointerId: 1, clientX: 200, pointerType: 'touch' });
+    fireEvent.pointerUp(window, { pointerId: 1, clientX: 20, pointerType: 'touch' });
     // Le navigateur fabrique un clic au doigt levé ; l'ajustement tactile peut le poser sur le bouton de la période, juste au-dessus.
     const clic = fireEvent.click(container.querySelector('[data-ent-periode]') as HTMLElement);
     expect(clic).toBe(false);
@@ -950,10 +959,10 @@ describe('CRITIQUE-4 (lot q1-entete) : le doigt à 390, le paysage, le menu, le 
     const cb = container.querySelector('.ent-cb') as HTMLElement;
     const glisse = () => { const ev = new Event('touchmove', { bubbles: true, cancelable: true }); cb.dispatchEvent(ev); return ev.defaultPrevented; };
     expect(glisse()).toBe(false);
-    fireEvent.pointerDown(cb, { pointerId: 1, clientX: 200, clientY: 50, button: 0 });
+    fireEvent.pointerDown(cb, { pointerId: 1, clientX: 20, clientY: 50, button: 0 });
     act(() => { vi.advanceTimersByTime(500); });
     expect(glisse()).toBe(true);
-    fireEvent.pointerUp(window, { pointerId: 1, clientX: 200 });
+    fireEvent.pointerUp(window, { pointerId: 1, clientX: 20 });
     act(() => { vi.advanceTimersByTime(DELAI_CLIC_AVALE); });
     const w = container.querySelector('.ent-gc-w') as HTMLElement;
     const ev = new Event('touchmove', { bubbles: true, cancelable: true });
@@ -966,7 +975,7 @@ describe('CRITIQUE-4 (lot q1-entete) : le doigt à 390, le paysage, le menu, le 
     const { container } = render(<Banc {...espions()} onLectureSemaine={onLectureSemaine} />);
     const cb = container.querySelector('.ent-cb') as HTMLElement;
     // Les zones de prise (cadre S47 – S52 de 0 à 45 px) : 300 px en est loin.
-    fireEvent.pointerDown(cb, { pointerId: 4, clientX: 300, clientY: 50, button: 0 });
+    fireEvent.pointerDown(cb, { pointerId: 4, clientX: 370, clientY: 50, button: 0 });
     fireEvent.pointerMove(window, { pointerId: 4, clientX: 320, clientY: 51 });
     fireEvent.pointerMove(window, { pointerId: 4, clientX: 280, clientY: 51 });
     // B9 (D395) : la semaine de la fenêtre sous le doigt, S51 (index 4)
@@ -1228,15 +1237,15 @@ describe('CRITIQUE-5 n° 20 : la lecture au doigt et l’appui long marchent à 
       const cb = container.querySelector('.ent-cb') as HTMLElement;
       const pointer = tactile ? 'touch' : 'mouse';
       // À 60 % de la courbe : loin du cadre de la fenêtre (13 semaines au plus, 25 %) et de ses zones de prise.
-      const x0 = larg * 0.6;
+      const x0 = larg - 20;
       fireEvent.pointerDown(cb, { pointerId: 1, pointerType: pointer, clientX: x0, clientY: 50, button: 0 });
-      fireEvent.pointerMove(window, { pointerId: 1, pointerType: pointer, clientX: x0 + 30, clientY: 51 });
+      fireEvent.pointerMove(window, { pointerId: 1, pointerType: pointer, clientX: x0 - 20, clientY: 51 });
       // B9 (D395) : le doigt lit les semaines de la frise, jamais l'année : en paysage, la courbe est alignée sur ses colonnes (D387, larg / 13
       // chacune) ; tenu droit, les 6 semaines de la fenêtre sont réparties sur la largeur
-      const attendu = orientation === 'paysage' ? Math.floor((x0 + 30) / (larg / 13)) : Math.floor(((x0 + 30) / larg) * 6);
+      const attendu = orientation === 'paysage' ? Math.floor((x0 - 20) / (larg / 13)) : Math.floor(((x0 - 20) / larg) * 6);
       expect(onLectureSemaine).toHaveBeenLastCalledWith(ajouterJours(LUNDI0, attendu * 7));
       expect(e.onFenetre).not.toHaveBeenCalledWith(expect.objectContaining({ du: ajouterJours(LUNDI0, attendu * 7) }));
-      fireEvent.pointerUp(window, { pointerId: 1, clientX: x0 + 30 });
+      fireEvent.pointerUp(window, { pointerId: 1, clientX: x0 - 20 });
       expect(container.querySelector('.ent-lu')!.textContent).toMatch(/S\d+/);
       fireEvent.pointerDown(document.body);
       // Appui long de 500 ms : la courbe en grand.
@@ -1567,7 +1576,7 @@ describe('CRITIQUE-9 (lot corr9-B) : le creux ancré sur son point, le glissé �
     expect([Math.max(0, z.debut.l), z.debut.l + z.debut.w, z.fin.l, z.fin.l + z.fin.w]).toEqual([0, 10, 35, 79]);
     const cb = container.querySelector('.ent-cb') as HTMLElement;
     // Départ à 69 % de la courbe (270 px), hors du cadre et de ses prises.
-    fireEvent.pointerDown(cb, { pointerId: 7, clientX: 270, clientY: 50, button: 0 });
+    fireEvent.pointerDown(cb, { pointerId: 7, clientX: 370, clientY: 50, button: 0 });
     fireEvent.pointerMove(window, { pointerId: 7, clientX: 277, clientY: 51 });
     // B9 (D395) : 283 px lit la 5e semaine de la fenêtre (index 4, S51), celle du Marché de Noël : le détail dit « la semaine ».
     fireEvent.pointerMove(window, { pointerId: 7, clientX: 283, clientY: 52 });
@@ -1582,21 +1591,24 @@ describe('CRITIQUE-9 (lot corr9-B) : le creux ancré sur son point, le glissé �
     expect(container.querySelector('[data-cadre-tirage]')).toBeNull();
   });
 
-  it('n° 9 : un départ dans le corps du cadre, entre les poignées, lit aussi ; un départ sur la poignée de début tire la fenêtre', () => {
+  it('n° 9 (R5, R6) : un corps tiré fait glisser la fenêtre, sans lecture ; une prise de début tirée l’étire, sa fin reste', () => {
     const e = espions();
-    const { container } = render(<Banc {...e} onLectureSemaine={vi.fn()} />);
+    const { container, unmount } = render(<Banc {...e} onLectureSemaine={vi.fn()} />);
     const cb = container.querySelector('.ent-cb') as HTMLElement;
     fireEvent.pointerDown(cb, { pointerId: 8, clientX: 150, clientY: 50, button: 0 });
-    fireEvent.pointerMove(window, { pointerId: 8, clientX: 250, clientY: 50 });
-    fireEvent.pointerUp(window, { pointerId: 8, clientX: 250 });
-    expect(container.querySelector('.ent-t')!.textContent).toMatch(/CHF · S\d+ · \d+ \p{L}+/u);
-    expect(e.onFenetre).not.toHaveBeenCalled();
-    // La prise de début (R4 : 22 à 66 px) : la fenêtre glisse de 2 semaines.
-    fireEvent.pointerDown(cb, { pointerId: 9, clientX: 40, clientY: 50, button: 0 });
-    fireEvent.pointerMove(window, { pointerId: 9, clientX: 140, clientY: 50 });
-    fireEvent.pointerUp(window, { pointerId: 9, clientX: 140 });
-    expect(e.onFenetre).toHaveBeenCalled();
-    expect(e.onFenetre.mock.calls.at(-1)![0].du).not.toBe(LUNDI0);
+    fireEvent.pointerMove(cb, { pointerId: 8, clientX: 250, clientY: 50 });
+    expect(container.querySelector('.ent-lit')).toBeNull();
+    fireEvent.pointerUp(cb, { pointerId: 8, clientX: 250 });
+    expect(e.onFenetre.mock.calls.at(-1)![0]).toEqual({ du: ajouterJours(LUNDI0, 14), semaines: 6 });
+    unmount();
+    // La prise de début (R4 : 22 à 66 px) : le début avance de 2 semaines, la fin reste : 4 semaines.
+    const e2 = espions();
+    const r2 = render(<Banc {...e2} onLectureSemaine={vi.fn()} />);
+    const cb2 = r2.container.querySelector('.ent-cb') as HTMLElement;
+    fireEvent.pointerDown(cb2, { pointerId: 9, clientX: 40, clientY: 50, button: 0 });
+    fireEvent.pointerMove(cb2, { pointerId: 9, clientX: 140, clientY: 50 });
+    fireEvent.pointerUp(cb2, { pointerId: 9, clientX: 140 });
+    expect(e2.onFenetre.mock.calls.at(-1)![0]).toEqual({ du: ajouterJours(LUNDI0, 14), semaines: 4 });
   });
 
   it('doute « cadre noir sur S48 » : après un toucher, la bande se dit au doigt et son anneau de focus est retiré ; une touche du clavier le rend', async () => {
@@ -1647,15 +1659,15 @@ describe('CRITIQUE-10 (lot corr10-B) : c2-b au doigt à 390 ne touche jamais ±,
   const modeleCharge = (): ModeleEnTete => ({ ...modele(), courbe: courbeChargee, creux: creuxDepuis(courbeChargee) });
   const plusMoins = () => screen.getByTitle('Afficher les + et − et les icônes de chaque semaine');
 
-  it('n° 6 (E11, D-195) : un glissé tactile de 80 px parti de la courbe hors du cadre lit la semaine ; ± ne change pas ; au lâcher, 3 lignes', () => {
+  it('n° 6 (E11, D-195) : un glissé tactile parti de la courbe hors du cadre lit la semaine ; ± ne change pas ; au lâcher, 3 lignes', () => {
     const e = espions();
     const onMouvements = vi.fn();
     const { container } = render(<Banc {...e} modele={modeleCharge()} onMouvements={onMouvements} onLectureSemaine={vi.fn()} />);
     const cb = container.querySelector('.ent-cb') as HTMLElement;
     expect(plusMoins().getAttribute('aria-pressed')).toBe('false');
     // 390 en 6 sem. : prises 0 à 10 et 35 à 79 px. Départ à 128 px, hors du cadre ; 80 px à droite : 208 px, la 4e semaine de la fenêtre (index 3).
-    fireEvent.pointerDown(cb, { pointerId: 21, pointerType: 'touch', clientX: 128, clientY: 30, button: 0 });
-    for (let x = 136; x <= 208; x += 8) fireEvent.pointerMove(window, { pointerId: 21, pointerType: 'touch', clientX: x, clientY: 31 });
+    fireEvent.pointerDown(cb, { pointerId: 21, pointerType: 'touch', clientX: 20, clientY: 30, button: 0 });
+    for (let x = 28; x <= 208; x += 20) fireEvent.pointerMove(window, { pointerId: 21, pointerType: 'touch', clientX: x, clientY: 31 });
     // Doigt tenu : la tête de sa maquette (« 3 801 CHF · S12 · 22 mars −487 »), les boutons de tête restent, ± fermé.
     const tete = container.querySelector('.ent-t')!;
     expect(tete.textContent).toMatch(/CHF · S\d+ · \d+ \S+/);
@@ -1679,12 +1691,12 @@ describe('CRITIQUE-10 (lot corr10-B) : c2-b au doigt à 390 ne touche jamais ±,
     const cb = container.querySelector('.ent-cb') as HTMLElement;
     // Mesuré à 390 (mesures.txt, avant) : un doigt de 16 px posé 6 à 10 px sous ± le basculait ; pointerdown sur la courbe, clic sur ±.
     fireEvent.pointerDown(cb, { pointerId: 22, pointerType: 'touch', clientX: 229, clientY: 8, button: 0 });
-    fireEvent.pointerUp(window, { pointerId: 22, pointerType: 'touch', clientX: 229 });
+    fireEvent.pointerUp(cb, { pointerId: 22, pointerType: 'touch', clientX: 229 });
     fireEvent.click(plusMoins(), { detail: 1 });
     expect(plusMoins().getAttribute('aria-pressed')).toBe('false');
     // De même pour la période (son menu ne s'ouvre pas).
     fireEvent.pointerDown(cb, { pointerId: 23, pointerType: 'touch', clientX: 278, clientY: 8, button: 0 });
-    fireEvent.pointerUp(window, { pointerId: 23, pointerType: 'touch', clientX: 278 });
+    fireEvent.pointerUp(cb, { pointerId: 23, pointerType: 'touch', clientX: 278 });
     const per = container.querySelector('[data-ent-periode]') as HTMLElement;
     fireEvent.click(per, { detail: 1 });
     expect(per.getAttribute('aria-expanded')).toBe('false');
@@ -1805,9 +1817,8 @@ describe('CRITIQUE-11 (lot corr11-C) : la Liste porte l’en-tête de la frise ;
     fireEvent.click(menu().getByRole('button', { name: 'An' }));
     expect(e.onVue).not.toHaveBeenCalled();
     expect(li.container.querySelector('[data-bande-annee]')).not.toBeNull();
-    const [, fin] = screen.getAllByRole('button', { name: /Revenir à la fenêtre d’avant/ });
-    fireEvent.pointerDown(fin, { pointerId: 1, clientX: 390, button: 0 });
-    fireEvent.pointerUp(window, { pointerId: 1, clientX: 390 });
+    // CHG-3 : dans l’An, un toucher sur la poignée ne ramène plus la fenêtre d’avant ; seul le clic clavier (detail 0) le fait
+    fireEvent.click(screen.getByRole('button', { name: /Revenir à la fenêtre d’avant/ }));
     expect(e.onVue).not.toHaveBeenCalled();
     expect(e.onFenetre).toHaveBeenLastCalledWith({ du: LUNDI0, semaines: 26 });
   });

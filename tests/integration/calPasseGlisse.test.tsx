@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useRef } from 'react';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { cleanup, fireEvent, render } from '@testing-library/react';
 import { Cadre, vueDeFenetre } from '../../src/ui/calendrier/entete/Fenetre';
@@ -13,15 +13,24 @@ const numeros = Array.from({ length: TOTAL }, (_, i) => ((i + 43) % 52) + 1);
 /* Frise B, R4 : la fenêtre (19 semaines) posée entre 56 px et LARGEUR − 56 px ; la poignée suit le doigt à cette échelle */
 const unit = LARGEUR / vueDeFenetre(20, 19, LARGEUR).span;
 
+/* R6 : useGlisse écoute la surface de la courbe ; le Cadre la reçoit, et les moves et le lâcher se jouent sur elle */
+function Courbe(p: Omit<React.ComponentProps<typeof Cadre>, 'surface'>) {
+  const surface = useRef<HTMLDivElement>(null);
+  return <div ref={surface} data-surface><Cadre {...p} surface={surface} /></div>;
+}
+
 function tirer(genre: 'debut' | 'fin', dx: number, index = 20, nombre = 19) {
   const onChange = vi.fn(), onAnnee = vi.fn();
-  const { container } = render(<Cadre numeros={numeros} index={index} nombre={nombre} largeur={LARGEUR} annee={false} onChange={onChange} onAnnee={onAnnee} vue={vueDeFenetre(index, nombre, LARGEUR)} />);
+  const { container } = render(<Courbe numeros={numeros} index={index} nombre={nombre} largeur={LARGEUR} annee={false} onChange={onChange} onAnnee={onAnnee} vue={vueDeFenetre(index, nombre, LARGEUR)} />);
   const poignee = container.querySelector(`[data-poignee="${genre}"]`)!;
+  const surface = container.querySelector('[data-surface]')!;
+  const vue = vueDeFenetre(index, nombre, LARGEUR);
+  const x0 = ((genre === 'debut' ? index : index + nombre) - vue.v0) * LARGEUR / vue.span;
   /* jsdom n'a pas PointerEvent : un événement de souris où l'on pose pointerId */
   const evt = (type: string, x: number) => { const e = new MouseEvent(type, { clientX: x, clientY: 10, button: 0, bubbles: true }); Object.defineProperty(e, 'pointerId', { value: 1 }); return e; };
-  fireEvent(poignee, evt('pointerdown', 100));
-  fireEvent(window, evt('pointermove', 100 + dx));
-  fireEvent(window, evt('pointerup', 100 + dx));
+  fireEvent(poignee, evt('pointerdown', x0));
+  fireEvent(surface, evt('pointermove', x0 + dx));
+  fireEvent(surface, evt('pointerup', x0 + dx));
   return { onChange, onAnnee };
 }
 

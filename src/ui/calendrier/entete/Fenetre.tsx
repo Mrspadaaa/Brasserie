@@ -2,7 +2,9 @@ import React, { useEffect, useRef, useState } from 'react';
 import { bornes, etiquetteCourte, type Periode } from '../../../components/periode/periode';
 import { lundiDe } from '../../../domain/calendrier';
 import { ajouterJours, largeurTexte, placeEtiquette, type Boite } from './Courbe';
-import { aBouge, cadrerDeuxBouts, MARGE_BOUTS_PX, RECALAGE_MS, vitesseBord } from '../../geste';
+import { cadrerDeuxBouts, CIBLE_PX, MARGE_BOUTS_PX, poserPlage, RECALAGE_MS, roleSous, useGlisse } from '../../geste';
+import { APPUI_LONG_MS } from '../../gestes/useAppuiLong';
+import { avalerClicSuivant } from '../usePointeurCourbe';
 
 /**
  * La fenêtre (E06, c1-d) : le cadre posé sur la courbe, ses deux poignées, l'étiquette « S47 – S52 » qui suit le doigt ; et le lien avec la
@@ -79,18 +81,18 @@ export interface CadreProps {
   largeur: number;
   /** Vue de l'année : le cadre remplit la courbe. */
   annee: boolean;
-  /** La poignée de début a glissé la fenêtre à une autre semaine. */
+  /** Le geste a posé une autre fenêtre (début, fin ou les deux). */
   onChange: (f: { index: number; nombre: number }) => void;
-  /** La poignée de fin est lâchée au-delà de 80 % : l'année. */
+  /** Entrée au clavier sur la poignée de fin : l'année. */
   onAnnee: () => void;
   /** Un toucher sur la poignée, dans l'année : on revient à la fenêtre d'avant. */
   onRevient?: () => void;
-  /** Lâchée avant : la fenêtre revient et le message le dit. */
-  onTropCourt?: () => void;
   /** Pendant le tirage, la boîte de l'étiquette qui suit le doigt (les noms qu'elle couvrirait s'effacent) ; `null` au lâcher. */
   onTirage?: (boite: Boite | null) => void;
-  /** Rempli à chaque rendu : la courbe y lit les zones de prise et lance le tirage (voir `PriseCadre`). */
-  prise?: React.MutableRefObject<PriseCadre | null>;
+  /** Le nœud de la courbe : le geste s'y attache (le doigt posé à plus de 22 px du cadre lui reste, pour la lecture c2-b). */
+  surface: React.RefObject<HTMLElement | null>;
+  /** CAL-FRISE-PRIX : le corps du cadre tenu 450 ms sans bouger lit la semaine sous le doigt (`clientX`) ; `null` : la lecture se ferme. */
+  onLire?: (clientX: number | null) => void;
   /** Dans l'année, l'étiquette dit les mois (« nov. – oct. »), jamais « S47 – S45 » (c1-d). */
   etiquetteAnnee?: string;
   /** CAL-PASSE : la courbe commence avant aujourd'hui ; la prise de la poignée de début reste dans l'écran même à la première semaine. */
@@ -165,13 +167,21 @@ export function semainesDeVue(total: number, vue: VueCourbe, largeur: number): {
   return { debut, abscisses };
 }
 
-/** Ce que la courbe sait des poignées pour leur donner le doigt : leurs zones de prise, et le geste à lancer. */
-export interface PriseCadre {
-  zones: ReturnType<typeof zonesPoignees>;
-  tirer: (genre: 'debut' | 'fin', e: React.PointerEvent<Element>) => void;
+/** Le geste en cours sur le cadre (semaines, fin exclusive ; px de la courbe à l'écran). */
+interface SaisieCadre {
+  role: 'a' | 'b' | 'corps';
+  a0: number; b0: number; a: number; b: number;
+  /** Largeur et bord gauche de la courbe à l'écran (px). */
+  w: number; left: number;
+  vue0: VueCourbe; v: VueCourbe;
+  /** Écart du doigt au bout tenu (R2) ; défilement R7 du corps (semaines). */
+  off: number; pan: number;
+  /** Appui long sur le corps : le doigt lit la courbe au lieu de déplacer. */
+  lit: boolean;
+  minuterie: ReturnType<typeof setTimeout> | null;
 }
 
-export function Cadre({ numeros, lundis, index, nombre, largeur, annee, onChange, onAnnee, onRevient, onTropCourt, onTirage, etiquetteAnnee, prise, debutRamenee, vue, onVue }: CadreProps) {
+export function Cadre({ numeros, lundis, index, nombre, largeur, annee, onChange, onAnnee, onRevient, onTirage, etiquetteAnnee, surface, onLire, debutRamenee, vue, onVue }: CadreProps) {
   const total = numeros.length;
   // R4 : une semaine fait `unit` px dans la vue ; la semaine i commence en (i − v0) × unit.
   const unit = largeur / Math.max(1e-6, vue.span);
@@ -214,122 +224,91 @@ export function Cadre({ numeros, lundis, index, nombre, largeur, annee, onChange
   };
 
   /*
-   * Frise B sur la courbe (R1, R2, R4, R5, R6, R7, R10). Le début déplace la fenêtre entière (c1-d : sa durée reste) ; la fin l'étire ou la
-   * réduit, une semaine au moins. Rien ne bouge avant 6 px (R1) ; la valeur suit le DÉPLACEMENT du doigt (R2). Quand la fenêtre arrive à 56 px
-   * d'un bord, c'est la courbe qui défile sous elle (R5). Doigt à moins de 40 px d'un bord en allant vers lui (R7) : le début fait défiler la
-   * fenêtre et la courbe ; la fin tirée vers la droite resserre l'échelle, le début reste où il est à l'écran. Lâcher : la fenêtre reste, la vue
-   * se recale sur les deux bouts (R4, R10). Échap ou pointercancel : la fenêtre et la vue d'avant, exactement.
+   * CAL-FRISE-PRIX (D410) : le geste de Finances › Opérations, un seul pour l'app (src/ui/geste : useGlisse, roleSous, poserPlage), attaché à
+   * la courbe ; en semaines, fin exclusive. Un doigt posé à plus de 22 px du cadre n'est pas pour lui : la courbe le lit (c2-b). Début : il
+   * s'étire seul, la fin reste (R6) ; fin : pareil ; corps : la fenêtre entière se déplace (R5), la courbe défile sous elle à 56 px du bord.
+   * Corps tenu 450 ms sans bouger (R1) : lecture de la semaine sous le doigt, qui le suit. Au bord (R7) : le corps fait défiler ; un bout tiré
+   * dehors resserre l'échelle, l'autre bout reste à sa place à l'écran. Lâcher : la fenêtre posée, la vue se recale sur ses deux bouts (R4,
+   * R10). Échap ou pointercancel : la fenêtre et la vue d'avant. Dans l'An, le geste marche aussi et en sort (CAL-ECHELLE-FIGEE, EnTete).
    */
-  const demarrer = (genre: 'debut' | 'fin') => (e: React.PointerEvent<Element>) => {
-    if (e.button > 0 || total === 0) return;
-    e.stopPropagation();
-    if (recalage.current) { cancelAnimationFrame(recalage.current); recalage.current = 0; }
-    // Le doigt reste à la poignée même s'il sort du cadre (vrai toucher : Pointer Events, capture ; `touch-action: none` en CSS).
-    try { e.currentTarget.setPointerCapture?.(e.pointerId); } catch { /* jsdom, pointeur déjà levé */ }
-    const id = e.pointerId;
-    // px de la courbe : la boîte de l'élément tenu (la courbe) ; son échelle d'affichage peut différer de `largeur` (zoom CSS)
-    const r0 = e.currentTarget.getBoundingClientRect?.();
-    const kx = r0 && r0.width ? largeur / r0.width : 1, gauche0 = r0?.left ?? 0;
-    const xEcran = (cx: number) => (cx - gauche0) * kx;
-    let v: VueCourbe = { ...vue };
-    const ppu = () => largeur / v.span;
-    const px = (u: number) => (u - v.v0) * ppu();
-    const un = (x: number) => v.v0 + x / ppu();
-    const ppu0 = ppu();
-    const a0 = index, b0 = index + nombre;
-    const x0 = xEcran(e.clientX);
-    const off = (genre === 'debut' ? px(a0) : px(b0)) - x0;
-    let x = x0, arme = 0, bouge = false, pan = 0, a = a0, b = b0, raf = 0, tPrec = 0;
-    const M = Math.min(MARGE_BOUTS_PX, largeur / 3);
-
-    const poser = () => {
-      if (genre === 'debut') {
-        // R5 : la durée reste ; le déplacement se lit à l'échelle de la saisie, plus ce que R7 a fait défiler
-        const d = clamp(Math.round((x - x0) / ppu0 + pan), -a0, Math.max(0, total - b0));
-        a = a0 + d; b = b0 + d;
-        const q = ppu();
-        if (px(a) < M) v = { ...v, v0: a - M / q };
-        else if (px(b) > largeur - M) v = { ...v, v0: b - (largeur - M) / q };
-      } else {
-        // R6 : la fin seule, une semaine au moins, jamais au-delà de la courbe
-        b = clamp(Math.round(un(x + off)), a0 + 1, total);
-      }
-      setDrag({ index: a, nombre: b - a, bord: px(genre === 'debut' ? a : b) });
-      onVueRef.current?.(v);
-    };
-    const image = (t: number) => {
-      raf = 0;
-      if (!bouge) return;
-      const { sens, vitesse } = vitesseBord(x, largeur, arme);
-      if (!sens) { tPrec = 0; return; }
-      const dt = tPrec ? Math.min(0.05, (t - tPrec) / 1000) : 0;
-      tPrec = t;
-      if (dt > 0) {
-        if (genre === 'debut') pan += sens * vitesse * v.span * dt;
-        else if (sens > 0) {
-          // la fin tirée dehors : l'échelle se resserre autour du début, qui ne bouge pas à l'écran
-          const xa = px(a), span = Math.min(total * 1.3, v.span * (1 + vitesse * 0.6 * dt));
-          v = { span, v0: a - xa * span / largeur };
-        } else { tPrec = 0; return; }
-        poser();
-      }
-      raf = requestAnimationFrame(image);
-    };
-    const suit = (ev: PointerEvent) => {
-      if (ev.pointerId !== id) return;
-      const xn = xEcran(ev.clientX), d = xn - x;
-      x = xn;
-      // Frise B, R1 : rien ne bouge avant 6 px ; un toucher ne change rien
-      if (!bouge && !aBouge(x - x0)) return;
-      bouge = true;
-      if (annee) return;
-      if (d < -0.5) arme = -1; else if (d > 0.5) arme = 1;
-      poser();
-      if (!raf && vitesseBord(x, largeur, arme).sens && typeof requestAnimationFrame === 'function') raf = requestAnimationFrame(image);
-    };
-    const nettoie = () => {
-      if (raf) cancelAnimationFrame(raf);
-      raf = 0;
-      window.removeEventListener('pointermove', suit); window.removeEventListener('pointerup', fin); window.removeEventListener('pointercancel', annule); window.removeEventListener('keydown', echap, true);
-    };
-    // R10 : pointercancel ou Échap rend la fenêtre ET la vue d'avant, exactement (rien n'est posé)
-    const retour = () => { nettoie(); setDrag(null); onVueRef.current?.(null); };
-    const annule = (ev: PointerEvent) => { if (ev.pointerId === id) retour(); };
-    const echap = (ev: KeyboardEvent) => { if (ev.key !== 'Escape') return; ev.preventDefault(); ev.stopPropagation(); retour(); };
-    const fin = (ev: PointerEvent) => {
-      if (ev.pointerId !== id) return;
-      nettoie();
-      setDrag(null);
-      if (annee) { onVueRef.current?.(null); if (!bouge) onRevient?.(); return; }
-      if (!bouge) {
-        onVueRef.current?.(null);
-        /* un toucher sur la fin garde l'invite d'avant ; rien ne change */
-        if (genre === 'fin') onTropCourt?.();
-        return;
-      }
-      const n = b - a;
-      /* CAL-PERIODE-LIBRE (« Je peux pas choisir une période donnée ») : la fenêtre prend la plage posée ; tirée jusqu'à une année, l'An (c1-d). */
-      if (genre === 'fin' && n >= Math.min(SEMAINES_ANNEE, total)) onAnnee();
-      else if (a !== a0 || n !== nombre) onChange({ index: a, nombre: n });
-      // R10 : seule la vue se recale, en 200 ms, sur les deux bouts de la plage posée
-      recaler(v, vueDeFenetre(a, genre === 'fin' && n >= Math.min(SEMAINES_ANNEE, total) ? Math.min(SEMAINES_ANNEE, total - a) : n, largeur));
-    };
-    window.addEventListener('pointermove', suit);
-    window.addEventListener('pointerup', fin);
-    window.addEventListener('pointercancel', annule);
-    window.addEventListener('keydown', echap, true);
+  const onLireRef = useRef(onLire);
+  onLireRef.current = onLire;
+  const coupe = (s: SaisieCadre) => { if (s.minuterie) { clearTimeout(s.minuterie); s.minuterie = null; } };
+  const montrer = (s: SaisieCadre) => {
+    const px = (u: number) => (u - s.v.v0) * largeur / s.v.span;
+    setDrag({ index: s.a, nombre: s.b - s.a, bord: s.role === 'a' ? px(s.a) : s.role === 'b' ? px(s.b) : (px(s.a) + px(s.b)) / 2 });
+    onVueRef.current?.(s.v);
   };
+  const glisse = useGlisse<SaisieCadre>({
+    cadre: () => surface.current,
+    saisir: (x, e) => {
+      if (total === 0) return null;
+      const r = surface.current?.getBoundingClientRect();
+      const w = r && r.width ? r.width : largeur;
+      const v = { ...vue }, xa = ((index - v.v0) / v.span) * w, xb = ((index + nombre - v.v0) / v.span) * w;
+      if (x < xa - CIBLE_PX / 2 || x > xb + CIBLE_PX / 2) return null;
+      // le doigt est au cadre : la lecture de la courbe (onPointerDown React, délégué à la racine) ne le reçoit pas
+      e.stopPropagation();
+      if (recalage.current) { cancelAnimationFrame(recalage.current); recalage.current = 0; }
+      onLireRef.current?.(null);
+      const role = roleSous(x, xa, xb);
+      const s: SaisieCadre = { role, a0: index, b0: index + nombre, a: index, b: index + nombre, w, left: r?.left ?? 0, vue0: v, v, off: role === 'a' ? xa - x : role === 'b' ? xb - x : 0, pan: 0, lit: false, minuterie: null };
+      if (role === 'corps') s.minuterie = setTimeout(() => { s.minuterie = null; s.lit = true; onLireRef.current?.(s.left + x); }, APPUI_LONG_MS);
+      return s;
+    },
+    suivre: (dx, s, x) => {
+      if (s.lit) { onLireRef.current?.(s.left + x); return; }
+      coupe(s);
+      const o = { min: 0, max: total, minLarg: 1 }, parPx = s.v.span / s.w;
+      if (s.role === 'corps') {
+        const p = poserPlage('corps', s.a0, s.b0, Math.round(dx * (s.vue0.span / s.w) + s.pan), o);
+        // R5 : un bout arrivé à 56 px du bord, c'est la courbe qui défile sous la fenêtre (elle reste entière à l'écran)
+        const marge = Math.min(MARGE_BOUTS_PX, s.w / 3) * parPx;
+        if (p.a < s.v.v0 + marge) s.v = { ...s.v, v0: p.a - marge };
+        else if (p.b > s.v.v0 + s.v.span - marge) s.v = { ...s.v, v0: p.b - s.v.span + marge };
+        s.a = p.a; s.b = p.b;
+      } else {
+        // un bout garde son écart au doigt (R2) ; la semaine sous le doigt se lit dans la vue du moment (elle change au bord, R7)
+        const u = Math.round(s.v.v0 + (x + s.off) * parPx);
+        const p = poserPlage(s.role, s.a0, s.b0, s.role === 'a' ? u - s.a0 : u - s.b0, o);
+        // R4 pendant le geste : aucun bout ne sort de la courbe
+        if (p.a < s.v.v0) s.v = { ...s.v, v0: p.a };
+        if (p.b > s.v.v0 + s.v.span) s.v = { ...s.v, v0: p.b - s.v.span };
+        s.a = p.a; s.b = p.b;
+      }
+      montrer(s);
+    },
+    bord: (sens, vitesse, dt, s) => {
+      if (s.lit) return;
+      if (s.role === 'corps') { s.pan += sens * vitesse * s.v.span * dt; return; }
+      if ((s.role === 'b' && sens > 0) || (s.role === 'a' && sens < 0)) {
+        const ancre = s.role === 'b' ? s.a0 : s.b0, xAncre = (ancre - s.v.v0) / s.v.span;
+        const span = Math.min(total * 1.3, s.v.span * (1 + vitesse * 0.6 * dt));
+        s.v = { span, v0: ancre - xAncre * span };
+      }
+    },
+    lacher: (s, bouge) => {
+      coupe(s);
+      // le Cadre a pris le doigt : le clic fabriqué au doigt levé n'atteint ni ± ni la courbe (les poignées ne répondent qu'au clic clavier)
+      avalerClicSuivant();
+      if (s.lit) return;
+      setDrag(null);
+      if (!bouge) { onVueRef.current?.(null); return; }
+      const n = s.b - s.a;
+      if (s.a !== s.a0 || s.b !== s.b0) onChange({ index: s.a, nombre: n });
+      recaler(s.v, vueDeFenetre(s.a, n, largeur));
+    },
+    annuler: (s) => { coupe(s); setDrag(null); onVueRef.current?.(null); },
+  });
+  useEffect(() => { glisse(surface.current); return () => glisse(null); }, [glisse, surface]);
 
-  // La courbe décide du doigt par la géométrie (EnTete) : les boutons des poignées ne reçoivent pas le toucher (`pointer-events: none`), sans
-  // quoi l'ajustement tactile du navigateur y rabat un doigt posé à 2 px, dans le cadre (CRITIQUE-3 n° 6, constaté au banc le 17.11).
-  if (prise) prise.current = { zones, tirer: (genre, e) => demarrer(genre)(e) };
-
+  // R6 au clavier : la poignée de début étire ou réduit la fenêtre, sa fin reste
   const clavierDebut = (e: React.KeyboardEvent) => {
     const pas = e.key === 'ArrowRight' ? 1 : e.key === 'ArrowLeft' ? -1 : 0;
-    if (!pas || annee) return;
+    if (!pas) return;
     e.preventDefault();
-    const i = clamp(index + pas, 0, Math.max(0, total - nombre));
-    if (i !== index) onChange({ index: i, nombre });
+    const fin = index + nombre, a = clamp(index + pas, 0, fin - 1);
+    if (a !== index) onChange({ index: a, nombre: fin - a });
   };
 
   // Les poignées sont posées à côté du cadre, en px de la courbe : leur zone de prise (44 px) déborde dehors, la barre visible reste sur le bord.
@@ -341,11 +320,11 @@ export function Cadre({ numeros, lundis, index, nombre, largeur, annee, onChange
       </div>
       {tirage && <span className="ent-cadre-tir" data-cadre-etiquette data-cadre-tirage style={{ left: tirage.l, width: tirage.r - tirage.l }}>{etiquette}</span>}
       <button type="button" className="ent-poi ent-poi-debut" data-poignee="debut" style={{ left: zones.debut.l, width: zones.debut.w }}
-        aria-label={annee ? 'Revenir à la fenêtre d’avant' : `Poignée de début : déplacer la fenêtre, elle commence en S${numeros[cur.index]}`}
-        onPointerDown={demarrer('debut')} onKeyDown={clavierDebut}><i aria-hidden="true" style={{ left: gauche - zones.debut.l - 3 }} /></button>
+        aria-label={`Poignée de début : étirer la fenêtre, elle commence en S${numeros[cur.index]}`}
+        onKeyDown={clavierDebut}><i aria-hidden="true" style={{ left: gauche - zones.debut.l - 3 }} /></button>
       <button type="button" className="ent-poi ent-poi-fin" data-poignee="fin" style={{ left: zones.fin.l, width: zones.fin.w }}
-        aria-label={annee ? 'Revenir à la fenêtre d’avant' : 'Poignée de fin : tirer jusqu’au bout pour l’année'}
-        onPointerDown={demarrer('fin')} onClick={e => { if (e.detail === 0) (annee ? onRevient : onAnnee)?.(); }}><i aria-hidden="true" style={{ left: droite - zones.fin.l - 3 }} /></button>
+        aria-label={annee ? 'Revenir à la fenêtre d’avant' : 'Poignée de fin : étirer ou réduire la fenêtre (Entrée : l’année)'}
+        onClick={e => { if (e.detail === 0) (annee ? onRevient : onAnnee)?.(); }}><i aria-hidden="true" style={{ left: droite - zones.fin.l - 3 }} /></button>
     </>
   );
 }

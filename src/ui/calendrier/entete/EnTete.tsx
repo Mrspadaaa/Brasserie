@@ -9,7 +9,7 @@ import type { Orientation } from '../useOrientation';
 import { demanderPleinEcran, estPleinEcran, poserPleinCalendrier, sortirPleinEcran } from '../pleinEcran';
 import { usePointeurCourbe } from '../usePointeurCourbe';
 import { Courbe, CourbeZoom, HAUTEUR_MOIS, MOIS_MIN, ajouterJours, chf, courbePlate, jourCourt, moisDeSemaine, semaineCourte, type Boite, type EtoileCourbe } from './Courbe';
-import { Cadre, etiquetteCadre, fenetreDePeriode, libelleDuree, libellePeriode, periodeDeFenetre, semainesDeVue, SEMAINES_ANNEE, vueDeFenetre, type FenetreSemaines, type PriseCadre, type VueCourbe } from './Fenetre';
+import { Cadre, etiquetteCadre, fenetreDePeriode, libelleDuree, libellePeriode, periodeDeFenetre, semainesDeVue, SEMAINES_ANNEE, vueDeFenetre, type FenetreSemaines, type VueCourbe } from './Fenetre';
 import { BandeSemaines } from './BandeSemaines';
 import { BandeColonnes, jourEntier } from './BandeColonnes';
 import type { Echelle } from '../echelle';
@@ -133,7 +133,6 @@ const plageDe = (du: string, au: string): string => {
   const d = (j: string) => (autreAn ? `${jourCourt(j)} ${j.slice(0, 4)}` : jourCourt(j));
   return `${d(du)} → ${d(au)}`;
 };
-const MESSAGE_ANNEE = 'Tire jusqu’au bout : l’année';
 const INVITATION = 'Tourne le téléphone : 13 semaines';
 /** T3-4 : le navigateur refuse le plein écran (iPhone Safari, page dans un cadre) : jamais un bouton muet. */
 const REFUS_PLEIN = 'Plein écran refusé par ce navigateur';
@@ -432,24 +431,9 @@ export function EnTeteCalendrier(props: EnTeteCalendrierProps) {
   const refCourbe = useCallback((el: HTMLDivElement | null) => { cadreCourbe.current = el; attacher(el); }, [attacher]);
   const refGrande = useCallback((el: HTMLDivElement | null) => { cadreGrande.current = el; attacher(el); }, [attacher]);
   const gestesGrande = { ...gestes, onPointerDown: (e: React.PointerEvent<HTMLDivElement>) => { gestes.onPointerDown(e); setLecture(indexSous(e.clientX)); } };
-  // Sur la petite courbe, seules les deux zones de prise (44 px) tirent la fenêtre ; tout autre doigt lit la semaine (c2-b, CRITIQUE-3 n° 6).
-  // La décision se prend ici, par la géométrie, pas par la cible du toucher (l'ajustement tactile la rabat sur le bouton voisin).
-  const prise = useRef<PriseCadre | null>(null);
-  const gestesCourbe = {
-    ...gestes,
-    onPointerDown: (e: React.PointerEvent<HTMLDivElement>) => {
-      // Alignée (D387), la courbe n'a pas de cadre : aucune prise à tirer.
-      const z = alignement ? null : prise.current;
-      if (z && e.button <= 0) {
-        const r = cadreCourbe.current?.getBoundingClientRect();
-        const x = (e.clientX - (r?.left ?? 0)) * (r && r.width ? largeur / r.width : 1);
-        const dans = (zz: { l: number; w: number }) => x >= Math.max(0, zz.l) && x <= zz.l + zz.w;
-        const genre = dans(z.zones.fin) ? 'fin' : dans(z.zones.debut) ? 'debut' : null;
-        if (genre) { if (lecture !== null) setLecture(null); z.tirer(genre, e); return; }
-      }
-      gestes.onPointerDown(e);
-    }
-  };
+  // CAL-FRISE-PRIX : sur la petite courbe, le cadre prend lui-même le doigt posé à 22 px de lui au plus (useGlisse, natif, avant ce
+  // onPointerDown délégué) ; tout autre doigt lit la semaine (c2-b).
+  const gestesCourbe = gestes;
 
   // CRITIQUE-10 n° 6 (E11, D-195) : un doigt posé DANS la courbe, que Chrome rabat sur un bouton de tête voisin (ajustement tactile : à 390,
   // ⛶ prend un doigt de 16 px posé 2 à 4 px sous lui), reste un geste de la courbe. Le pointerdown garde ses coordonnées brutes : s'il tombe
@@ -457,10 +441,17 @@ export function EnTeteCalendrier(props: EnTeteCalendrierProps) {
   const versCourbe = (e: React.PointerEvent<HTMLDivElement>) => {
     const el = cadreCourbe.current;
     if (graph || apercuC || !courbe || !el || e.button > 0) return;
+    // posé dans la courbe : les gestes de la courbe (le cadre, puis la lecture) le reçoivent d'eux-mêmes
+    if (e.target instanceof Node && el.contains(e.target)) return;
     const r = el.getBoundingClientRect();
     if (!r.width || e.clientX < r.left || e.clientX > r.right || e.clientY < r.top || e.clientY > r.bottom) return;
     e.preventDefault();
     e.stopPropagation();
+    // rabattu sur un bouton voisin : le même toucher repart de la courbe, où le cadre (natif) puis la lecture (React) le prennent
+    if (typeof PointerEvent === 'function') {
+      el.dispatchEvent(new PointerEvent('pointerdown', { bubbles: true, cancelable: true, composed: true, clientX: e.clientX, clientY: e.clientY, pointerId: e.pointerId, pointerType: e.pointerType, button: 0, buttons: 1, isPrimary: true }));
+      return;
+    }
     gestesCourbe.onPointerDown({
       button: e.button, pointerId: e.pointerId, pointerType: e.pointerType, clientX: e.clientX, clientY: e.clientY, currentTarget: el, target: el,
       preventDefault: () => e.preventDefault(), stopPropagation: () => undefined
@@ -753,7 +744,7 @@ export function EnTeteCalendrier(props: EnTeteCalendrierProps) {
             ) : (
               <Cadre numeros={semainesTot.map(s => s.numero)} lundis={lundis} index={index} nombre={nombre} largeur={largeur} annee={annee}
                 onChange={c => ecrire({ du: semainesTot[c.index].debut, semaines: c.nombre })} onAnnee={versAnnee} onRevient={quitterAnnee}
-                onTropCourt={() => dire({ genre: 'annee', texte: MESSAGE_ANNEE })} onTirage={setTirage} etiquetteAnnee={etiquetteAnnee} prise={prise} debutRamenee={(modele.passe ?? 0) > 0}
+                onTirage={setTirage} etiquetteAnnee={etiquetteAnnee} surface={cadreCourbe} onLire={cx => setLecture(cx === null ? null : indexSous(cx))} debutRamenee={(modele.passe ?? 0) > 0}
                 vue={vueC} onVue={setVueTirage} />
             )}
           </Courbe>
