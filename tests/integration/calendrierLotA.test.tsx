@@ -182,8 +182,9 @@ describe('3. « Plus de détails › » garde le nom et le montant déjà tapés
     const fete = vi.fn();
     render(<BancCalendrier aujourdhui={JOUR} sansChrome callbacks={{ onPoserFete: fete }} />);
     const d = feuilleRapide('fetes', 'Fêtes', etiquetteS(S49), 'ZZ TEST — Fête', '2400');
-    fireEvent.click(d.getByRole('button', { name: 'Plus de détails ›' }));
-    expect(fete).toHaveBeenCalledWith(S49, { titre: 'ZZ TEST — Fête', centimes: 240000, direction: 'in' });
+    /* k1 (21.11) : une fête n'a pas d'autre écran que sa feuille ; la donnée d'agenda reste au Calendrier, plus de « Plus de détails › » */
+    expect(d.queryByRole('button', { name: 'Plus de détails ›' })).toBeNull();
+    expect(fete).not.toHaveBeenCalled();
     cleanup();
     render(<TodoTimeline items={[]} adding onAdding={() => undefined} onCreate={() => undefined} onToggle={() => undefined} onEdit={() => undefined} dateDepart={S49} titreDepart="ZZ TEST — Fête" montantDepart="+2 400 CHF" />);
     const pose = within(screen.getByRole('dialog', { name: 'Poser sur le fil' }));

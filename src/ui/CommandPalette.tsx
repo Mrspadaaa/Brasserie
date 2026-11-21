@@ -9,7 +9,7 @@ import { searchCommandGroups } from '../services/search';
 import { useKeyboardInset } from './useViewport';
 import type { PlusCle, PlusMenu, PlusTon } from '../domain/plusEcran';
 import {
-  CREER, LIBELLE_DESTINATION, LIBELLE_GESTE_LONG, TOUCHE_GESTE, classer, destinationsAllerA, gestesIci, lireRecents, noterRecent,
+  CREER, LIBELLE_DESTINATION, LIBELLE_DESTINATION_TROUVEE, LIBELLE_GESTE_LONG, TOUCHE_GESTE, classer, destinationsAllerA, destinationsPourRequete, gestesIci, lireRecents, noterRecent, rang,
   segmentsNombres, surligner, typeDeId, typePrioritaire, type DestinationId, type Geste, type GesteId, type TypeResultat
 } from '../components/recherche/modele';
 
@@ -185,8 +185,13 @@ export const CommandPalette: React.FC<CommandPaletteProps> = ({ open, onOpenChan
     return recents.map(id => parId.get(id)).filter((it): it is CommandItem => !!it);
   }, [groups, recents]);
 
+  /* k1 : taper « atelier » ou « carnet » propose aussi la destination ; elle passe devant si son libellé répond au moins aussi bien. */
+  const destinations = useMemo(() => (requete && onAllerA ? destinationsPourRequete(requete) : []), [requete, onAllerA]);
+  const destDevant = destinations.length > 0 && destinations[0].rang >= (resultats.items[0] ? rang(resultats.items[0].label, query) : 0);
+  const connue = courant.startsWith('go-') ? destinations.some(d => `go-${d.id}` === courant) : resultats.items.some(it => it.id === courant);
+  const valeur = connue ? courant : destDevant ? `go-${destinations[0].id}` : (resultats.items[0]?.id ?? courant);
   const rubrique = menu ? menu.chemin.split(' › ')[0] : '';
-  const actif = resultats.items.find(it => it.id === courant) ?? resultats.items[0];
+  const actif = valeur.startsWith('go-') ? undefined : resultats.items.find(it => it.id === valeur);
   const gestesActif = actif?.gestes ?? [];
 
   const fermer = () => onOpenChange(false);
@@ -226,9 +231,10 @@ export const CommandPalette: React.FC<CommandPaletteProps> = ({ open, onOpenChan
 
   if (!open) return null;
 
+  const total = resultats.total + destinations.length;
   const nombre = resultats.visible < resultats.total
-    ? `${resultats.visible} sur ${resultats.total.toLocaleString('fr-CH')} résultats · précise la recherche`
-    : `${resultats.total.toLocaleString('fr-CH')} résultat${resultats.total > 1 ? 's' : ''}`;
+    ? `${resultats.visible} sur ${total.toLocaleString('fr-CH')} résultats · précise la recherche`
+    : `${total.toLocaleString('fr-CH')} résultat${total > 1 ? 's' : ''}`;
 
   /** Retour arrière sur un champ vide : on sort du contexte (« hors de Stocks »). Tab bascule les archives au 1280. → entre dans les gestes. */
   const surTouche = (e: React.KeyboardEvent) => {
@@ -449,6 +455,20 @@ export const CommandPalette: React.FC<CommandPaletteProps> = ({ open, onOpenChan
     </div>
   );
 
+  /** Une destination trouvée en tapant : « Aller à · Carnet · Atelier R&D », comme la zone Aller à (k1). */
+  const ligneDestination = (id: DestinationId, telephone: boolean) => (
+    <Command.Item
+      key={`go-${id}`}
+      value={`go-${id}`}
+      onSelect={() => aller(id)}
+      className={telephone
+        ? `${optionClasse} min-h-[48px] px-1 border-b border-cave-800`
+        : 'min-h-11 px-2.5 rounded-lg flex items-center gap-2.5 cursor-pointer data-[selected=true]:bg-cave-850 data-[selected=true]:shadow-[inset_3px_0_0_rgb(var(--ebc-straw-rgb,17_17_17))]'}
+    >
+      <ChevronRight size={18} aria-hidden="true" className="shrink-0 text-cave-400" />
+      <span className="min-w-0 truncate text-sm text-cave-50">Aller à · <span className="font-semibold"><Marque t={LIBELLE_DESTINATION_TROUVEE[id] ?? LIBELLE_DESTINATION[id]} q={query} /></span></span>
+    </Command.Item>
+  );
   const phrase = <span className="sr-only" role="status">{requete ? nombre : ''}</span>;
 
   /* ------------------------------------------------------------ 1280 ------ */
@@ -466,7 +486,7 @@ export const CommandPalette: React.FC<CommandPaletteProps> = ({ open, onOpenChan
           label="Recherche universelle"
           shouldFilter={false}
           loop
-          value={actif?.id ?? courant}
+          value={valeur}
           onValueChange={setCourant}
           onKeyDownCapture={surTouche}
           className="w-[900px] max-w-[calc(100vw-32px)] panel shadow-lift overflow-hidden"
@@ -486,6 +506,7 @@ export const CommandPalette: React.FC<CommandPaletteProps> = ({ open, onOpenChan
               {requete ? (
                 <>
                   <Command.Empty className="px-3 py-6">{sorties}</Command.Empty>
+                  {destDevant && destinations.map(d => ligneDestination(d.id, false))}
                   {resultats.items.map(it => (
                     <Command.Item
                       key={it.id}
@@ -499,6 +520,7 @@ export const CommandPalette: React.FC<CommandPaletteProps> = ({ open, onOpenChan
                         : it.gestes?.[0] ? <span className="shrink-0 text-sm text-cave-200">{it.gestes[0].label}</span> : null}
                     </Command.Item>
                   ))}
+                  {!destDevant && destinations.map(d => ligneDestination(d.id, false))}
                   {puceArchives}
                 </>
               ) : (
@@ -615,7 +637,7 @@ export const CommandPalette: React.FC<CommandPaletteProps> = ({ open, onOpenChan
         label="Recherche universelle"
         shouldFilter={false}
         loop
-        value={actif?.id ?? courant}
+        value={valeur}
         onValueChange={setCourant}
         onKeyDownCapture={surTouche}
         style={{ bottom: clavier, maxHeight: `calc(100dvh - ${clavier}px - 48px)` }}
@@ -625,9 +647,11 @@ export const CommandPalette: React.FC<CommandPaletteProps> = ({ open, onOpenChan
         {phrase}
         <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain flex flex-col justify-end">
           {requete ? (
-            meilleurs.length === 0 ? sorties : (
+            meilleurs.length === 0 && destinations.length === 0 ? sorties : (
               <Command.List className="px-2.5 pb-1.5 [&_[cmdk-list-sizer]]:flex [&_[cmdk-list-sizer]]:flex-col-reverse">
+                {destDevant && destinations.map(d => ligneDestination(d.id, true))}
                 {meilleurs.map(ligneTelephone)}
+                {!destDevant && destinations.map(d => ligneDestination(d.id, true))}
                 {puceArchives}
               </Command.List>
             )
@@ -637,7 +661,7 @@ export const CommandPalette: React.FC<CommandPaletteProps> = ({ open, onOpenChan
           <div className="flex-1 min-w-0 h-[38px] flex items-center gap-1.5 pl-1 pr-2.5 rounded-[10px] bg-cave-850">
             {menu && contexte && <Pastille menu={menu} />}
             {champ}
-            {requete && <span aria-hidden="true" className="shrink-0 text-footnote text-cave-400"><Nb t={String(resultats.total)} /></span>}
+            {requete && <span aria-hidden="true" className="shrink-0 text-footnote text-cave-400"><Nb t={String(total)} /></span>}
           </div>
           {bascule}
           <button type="button" aria-label="Fermer la recherche" onClick={fermer} className={`${FOCUS} shrink-0 h-[38px] w-9 grid place-items-center rounded-[10px] text-cave-200`}>

@@ -127,6 +127,35 @@ export function destinationsAllerA(menu: PlusMenu, ici: LigneIci[]): Destination
   return sortie;
 }
 
+/**
+ * Les destinations trouvées en tapant (k1, 21.11) : « atelier », « carnet », « idée » proposent le Carnet ; une destination absente quand
+ * on tape est un défaut (h1w : « atelier » ne rendait que deux écritures). Le libellé et ses mots se cherchent sans accents.
+ */
+const MOTS_DESTINATION: Partial<Record<DestinationId, string[]>> = {
+  atelier: ['carnet', 'carnets', 'idée', 'idées', 'projet', 'projets', 'r&d'],
+  materiel: ['à venir', 'réalisés', 'équipement'],
+  impot: ['impôt', 'taxe'],
+  reglages: ['paramètres']
+};
+
+/** Le libellé d'une destination dans les résultats : l'Atelier se nomme par ce qu'on y trouve d'abord, le Carnet. */
+export const LIBELLE_DESTINATION_TROUVEE: Partial<Record<DestinationId, string>> = { atelier: 'Carnet · Atelier R&D' };
+
+export interface DestinationTrouvee { id: DestinationId; rang: number }
+
+/** Les destinations dont le libellé ou un mot répond à la requête (deux lettres au moins) : même libellé 4, début d'un mot 3. */
+export function destinationsPourRequete(requete: string): DestinationTrouvee[] {
+  const q = normalize(requete.trim());
+  if (q.length < 2) return [];
+  const sortie: (DestinationTrouvee & { ordre: number })[] = [];
+  (Object.keys(LIBELLE_DESTINATION) as DestinationId[]).forEach((id, ordre) => {
+    const mots = [LIBELLE_DESTINATION[id], ...(MOTS_DESTINATION[id] ?? [])].map(normalize);
+    const r = Math.max(0, ...mots.map(m => (m === q ? 4 : m.startsWith(q) || m.split(/[\s·&]+/).some(w => w.startsWith(q)) ? 3 : 0)));
+    if (r > 0) sortie.push({ id, rang: r, ordre });
+  });
+  return sortie.sort((a, b) => b.rang - a.rang || a.ordre - b.ordre).map(({ id, rang }) => ({ id, rang }));
+}
+
 /* ---------------------------------------------------------------- Récents -- */
 
 const CLE_RECENTS = 'laffinee-recherche-recents';

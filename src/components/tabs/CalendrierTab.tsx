@@ -350,6 +350,16 @@ export function CalendrierTab(props: CalendrierTabProps) {
     else setMessage(cur => (cur?.origine === 'entete' ? null : cur));
   }, [montrer]);
 
+  /** L'événement d'agenda `id` ouvert dans sa feuille du Calendrier ; faux s'il n'y est pas (la chose n'est pas au modèle). */
+  const agendaOuvert = useCallback((id: string): boolean => {
+    const chose = modele.choses.find(c => c.source.genre === 'creative' && (c.source as { id: string }).id === id);
+    if (!chose) return false;
+    setMessage(null); setMenu(null); setSelectionId(null);
+    const initial = chose.sansDate ? { ...brouillonDepuisChose(chose), debut: lundiAuj, debutChoisi: true } : brouillonDepuisChose(chose);
+    setFeuille({ mode: 'modifier', initial, chose, cle: ++compteur.current });
+    return true;
+  }, [modele.choses, lundiAuj]);
+
   const ouvrir = useCallback((cible: CibleOuverture) => {
     const ideeHorsCarnet = cible.ecran === 'atelier' && cible.id ? don.items.find(i => i.id === cible.id && i.type === 'recipe-idea') : undefined;
     if (ideeHorsCarnet) {
@@ -360,13 +370,16 @@ export function CalendrierTab(props: CalendrierTabProps) {
     else if (cible.ecran === 'brassin' && cible.id) onOpenBatch(cible.id);
     else if ((cible.ecran === 'piece') && cible.id && onOpenPiece) onOpenPiece(cible.id);
     else if (cible.ecran === 'carnets' && cible.id && onOpenCarnet) onOpenCarnet(cible.id);
+    /* k1 (21.11, audit des vues n° 5) : un événement d'agenda reste au Calendrier ; sa feuille (Modifier) est sa vue choisie, comme dans
+       sa fiche (DetailChose). Sans date : la feuille pour le poser. Seule une idée ou un projet part au Carnet (CarnetsVue). */
+    else if (cible.ecran === 'agenda' && cible.id && agendaOuvert(cible.id)) return;
     else if (cible.ecran === 'agenda' || cible.ecran === 'atelier' || cible.ecran === 'carnets') onOpenAgenda();
     else if (cible.ecran === 'courses' || cible.ecran === 'fournisseur') onOpenCourses();
     /* test en ligne 1, n° 2 (« Je demande mon achat, il me montre rien ») : un plan (achat prévu, vente prévue, charge) vit dans
        Finances › Prévisions ; l'app ouvre ce sous-onglet (`affinee:ouvrir-finances`, CP-13). Personne ne répond (banc) : Finances seul. */
     else if (cible.ecran === 'plan' && !window.dispatchEvent(new CustomEvent('affinee:ouvrir-finances', { cancelable: true, detail: { onglet: 'previsions' } }))) return;
     else onOpenFinances();
-  }, [don.items, lundiAuj, onOpenBatch, onOpenPiece, onOpenCarnet, onOpenAgenda, onOpenCourses, onOpenFinances]);
+  }, [don.items, lundiAuj, onOpenBatch, onOpenPiece, onOpenCarnet, onOpenAgenda, onOpenCourses, onOpenFinances, agendaOuvert]);
 
   const lienDe = useCallback((lien: MessageGeste['lien']): MessageCal['lien'] => {
     if (!lien) return undefined;
@@ -1065,7 +1078,8 @@ export function CalendrierTab(props: CalendrierTabProps) {
           contexte={ctxAjout}
           /* CAL-PASSE : ajouter, c'est à partir de la semaine courante ; modifier une chose du passé garde le passé (sa date y est) */
           semaines={feuille.mode === 'modifier' ? modele.semaines : modele.semaines.slice(modele.passe ?? 0)}
-          sansPlusDeDetails={feuille.sansPlusDeDetails || feuille.mode === 'modifier'}
+          /* k1 : une fête n'a pas d'autre écran que cette feuille (la donnée d'agenda reste au Calendrier) : pas de « Plus de détails › » */
+          sansPlusDeDetails={feuille.sansPlusDeDetails || feuille.mode === 'modifier' || feuille.initial.rangee === 'fetes'}
           evenements={evenementsLiables.filter(e => !(feuille.chose?.source.genre === 'creative' && feuille.chose.source.id === e.id))}
           onPlusDeDetails={plusDeDetails}
           onAjouter={ajouterDepuisFeuille}
