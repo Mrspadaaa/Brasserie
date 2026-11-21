@@ -2497,3 +2497,9 @@ Classement de la page r3 de Ma levure (https://claude.ai/artifact/DKAJe8ESeMR4ig
 > Alors corrige pour pas perdre de temps et que le mini maquettes aille vraiment des vrais gain et pas juste des gimmick
 
 (21.11 : une proposition de workflow n'entre en mini maquette que si son gain est mesuré sur une chaîne réelle et fréquente.)
+
+> A2 b1 c1 d2
+>
+> Mais ça semble un peu maigre ??
+
+(21.11, page https://claude.ai/artifact/5hDwK9FYvFXbVh8AWqfUii : A2 quantité par appui long 6 · 12 · 24 ; B1 reste à vendre sur la carte du brassin ; C1 date en horizons au glisser ; D2 prix = dernier achat semblable. « Maigre » : 8 candidates et 4 choix ne couvrent pas assez ; une 2e passe de découverte suit.)
