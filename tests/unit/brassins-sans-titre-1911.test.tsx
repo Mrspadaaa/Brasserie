@@ -15,6 +15,8 @@ vi.mock('../../src/hooks/useLiveData', () => ({ useStorageValue: <T,>(read: () =
 const stockCourant: { items: StockItem[] } = { items: [] };
 vi.mock('../../src/services/storage', () => ({
   StorageService: {
+    // V-LOT (B1) : la liste lit les ventes pour le reste à vendre.
+    getTransactions: () => [],
     getStocks: () => ({ rawMaterials: stockCourant.items, cleaning: [] }),
     getConfig: () => ({ brewhouses: [{ id: 'b', efficiencyPct: 75 }], activeBrewhouseId: 'b' }),
     getUiState: (_k: string, d: unknown) => d,

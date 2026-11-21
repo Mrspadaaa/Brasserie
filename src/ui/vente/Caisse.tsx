@@ -71,6 +71,8 @@ const PictoQr = () => <svg width="16" height="16" viewBox="0 0 16 16" fill="curr
 
 interface ContenuProps {
   clientIdInitial?: string;
+  /** B1 : la bière déjà choisie quand la caisse s'ouvre depuis le reste à vendre d'une carte de Brassins. */
+  batchIdInitial?: string;
   onClose: () => void;
   onSaved?: (message: string) => void;
   /** Dit à l'hôte qu'un enregistrement est en cours : il bloque × et Échap. */
@@ -95,7 +97,7 @@ function EtatEnvoi({ resultat }: { resultat: Resultat }) {
 }
 
 /** Le contenu de la caisse (v3a) : à qui, quoi, comment. L'hôte (`Caisse` ou `QuickActionModal`) fournit le dialogue. */
-export function CaisseContenu({ clientIdInitial, onClose, onSaved, onBusy, fermetureRef }: ContenuProps) {
+export function CaisseContenu({ clientIdInitial, batchIdInitial, onClose, onSaved, onBusy, fermetureRef }: ContenuProps) {
   const clients = useStorageValue(lireClients);
   const batches = useStorageValue(lireBatches);
   const tarifs = useStorageValue(lireTarifs);
@@ -145,7 +147,10 @@ export function CaisseContenu({ clientIdInitial, onClose, onSaved, onBusy, ferme
   useEffect(() => { if (quantiteDe?.clavier) tuilesQuantite.current?.querySelector('button')?.focus(); }, [quantiteDe]);
 
   const vendables = useMemo(() => brassinsVendables(batches), [batches]);
-  useEffect(() => { if (!selection.length && vendables.length) setSelection([vendables[0].id]); }, [vendables, selection.length]);
+  useEffect(() => {
+    if (selection.length || !vendables.length) return;
+    setSelection([vendables.find(b => b.id === batchIdInitial)?.id ?? vendables[0].id]);
+  }, [vendables, selection.length, batchIdInitial]);
   const actifId = selection[0];
   const actif = vendables.find(b => b.id === actifId);
   useEffect(() => { setQuantiteDe(null); }, [actifId]);
@@ -549,7 +554,7 @@ export function CaisseContenu({ clientIdInitial, onClose, onSaved, onBusy, ferme
 }
 
 /** La caisse en dialogue propre (Clients › fiche › Facturer). « + › Vendre » monte `CaisseContenu` dans le dialogue de `QuickActionModal` : un seul dialogue dans les deux cas. */
-export function Caisse({ clientIdInitial, onClose, onSaved }: { clientIdInitial?: string; onClose: () => void; onSaved?: (message: string) => void }) {
+export function Caisse({ clientIdInitial, batchIdInitial, onClose, onSaved }: { clientIdInitial?: string; batchIdInitial?: string; onClose: () => void; onSaved?: (message: string) => void }) {
   const [occupe, setOccupe] = useState(false);
   const fermeture = useRef<(() => boolean) | null>(null);
   const fermer = () => { if (fermeture.current && !fermeture.current()) return; onClose(); };
@@ -562,7 +567,7 @@ export function Caisse({ clientIdInitial, onClose, onSaved }: { clientIdInitial?
         </div>
         <button type="button" aria-label="Fermer" disabled={occupe} onClick={fermer} className="min-h-7 min-w-7 flex items-center justify-center text-cave-400 hover:text-cave-200 rounded-control transition"><X className="w-4 h-4" aria-hidden="true" /></button>
       </div>
-      <div className="cs-scroll"><CaisseContenu clientIdInitial={clientIdInitial} onClose={onClose} onSaved={onSaved} onBusy={setOccupe} fermetureRef={fermeture} /></div>
+      <div className="cs-scroll"><CaisseContenu clientIdInitial={clientIdInitial} batchIdInitial={batchIdInitial} onClose={onClose} onSaved={onSaved} onBusy={setOccupe} fermetureRef={fermeture} /></div>
     </ModalShell>
   );
 }

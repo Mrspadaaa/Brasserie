@@ -96,6 +96,9 @@
 .lst-mesure { display: flex; align-items: baseline; flex-wrap: wrap; column-gap: 4px; }
 .lst-key .lst-reading { font-size: 16px; line-height: 18px; }
 .lst-mesure .lst-unite { line-height: 14px; }
+/* B1 : le reste à vendre se touche pour vendre ; souligné pointillé, cible de 40 px de haut, au-dessus du bouton d'ouverture de la carte. */
+.lst-reste { position: relative; z-index: 1; text-decoration: underline dotted; text-underline-offset: 3px; text-align: left; }
+.lst-reste::after { content: ''; position: absolute; left: -4px; right: -4px; top: 50%; height: 40px; transform: translateY(-50%); }
 .lst-go { position: relative; z-index: 1; margin-left: auto; flex: none; min-height: 28px; padding: 0 6px 0 10px; gap: 2px; white-space: nowrap; }
 .lst-go::after { content: ''; position: absolute; left: 0; right: 0; top: 50%; height: 40px; transform: translateY(-50%); }
 .lst-side { position: relative; z-index: 1; display: flex; flex-direction: column; justify-content: space-between; align-items: center; width: 36px; padding: 2px 0; flex: none; }

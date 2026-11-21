@@ -8,6 +8,8 @@ import type { CatalogEntry, CatalogFilters } from '../../../domain/productionCat
 import { isArchived } from '../../../domain/catalogOrganization';
 import type { BatchDetailSection } from '../../../domain/productionInsights';
 import { DateUtils } from '../../../services/dateUtils';
+import { StorageService } from '../../../services/storage';
+import { useStorageValue } from '../../../hooks/useLiveData';
 import { CarteBrassin } from './CarteBrassin';
 import { FeuilleFiltres, SelectTri, COULEUR_TON } from './FeuilleFiltres';
 import {
@@ -28,6 +30,9 @@ const POINT: Partial<Record<Avancement, string>> = {
   cuve: 'rgb(var(--hop))', brasser: 'rgb(var(--attention))', conditionnes: 'rgb(var(--lst-cuivre))', favoris: 'rgb(var(--lst-or))', termines: 'rgb(var(--lst-fin))', notes: 'rgb(var(--lst-cuivre))'
 };
 const PUCES: Avancement[] = ['cuve', 'brasser', 'conditionnes', 'favoris', 'termines', 'mesures', 'notes'];
+/** B1 : toucher le reste à vendre d'une carte ouvre la caisse (chargée à la demande, comme au Calendrier et aux Clients). */
+const Caisse = React.lazy(() => import('../../vente/Caisse').then((m) => ({ default: m.Caisse })));
+const lireVentes = () => StorageService.getTransactions();
 
 /** Houblons réellement présents dans les brassins : nom, style du premier brassin qui l'emploie et sa dose (somme de ses ajouts). */
 function houblonsDesBrassins(entries: CatalogEntry[]): { nom: string; style: string; dose?: number; n: number }[] {
@@ -89,6 +94,8 @@ export function ListeBrassins({
 }) {
   const [feuille, setFeuille] = useState(false);
   const [pliOuvert, setPliOuvert] = useState(true);
+  const [vendre, setVendre] = useState<string | null>(null);
+  const ventes = useStorageValue(lireVentes);
   const [couleurs, setCouleurs] = useState<Record<string, string[]>>({});
   const t = now ?? Date.now();
   const ctx: Contexte = { entries, criteres, filtres, now: t, periode: appPeriode };
@@ -195,7 +202,7 @@ export function ListeBrassins({
       {!vide && (
         <div className="lst-liste">
           {resultats.map((e) => (
-            <CarteBrassin key={e.id} entry={e} now={t} kegs={kegs} onOpen={onOpenBatch} onBrew={onBrew} onFavorite={onFavorite} onArchive={onArchive} />
+            <CarteBrassin key={e.id} entry={e} now={t} kegs={kegs} transactions={ventes} onVendre={(b) => setVendre(b.id)} onOpen={onOpenBatch} onBrew={onBrew} onFavorite={onFavorite} onArchive={onArchive} />
           ))}
           {horsFiltre.length > 0 && (
             <>
@@ -279,6 +286,7 @@ export function ListeBrassins({
         onBilan={onBilan}
         onPeriode={onChoisirPeriode}
       />
+      {vendre && <React.Suspense fallback={<p role="status">Ouverture de la caisse…</p>}><Caisse batchIdInitial={vendre} onClose={() => setVendre(null)} /></React.Suspense>}
     </div>
   );
 }

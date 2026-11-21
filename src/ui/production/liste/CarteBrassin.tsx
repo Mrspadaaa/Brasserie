@@ -2,7 +2,7 @@
 // un seul bouton d'action ; rien de retiré, deux rangées au lieu de trois.
 import React from 'react';
 import { ChevronRight, Star } from 'lucide-react';
-import type { Batch, KegItem } from '../../../types';
+import type { Batch, KegItem, Transaction } from '../../../types';
 import type { CatalogEntry } from '../../../domain/productionCatalog';
 import type { BatchDetailSection } from '../../../domain/productionInsights';
 import { BeerStyleTag } from '../../BeerStyleTag';
@@ -15,6 +15,8 @@ export function CarteBrassin({
   entry,
   now,
   kegs,
+  transactions,
+  onVendre,
   onOpen,
   onBrew,
   onFavorite,
@@ -23,13 +25,17 @@ export function CarteBrassin({
   entry: CatalogEntry;
   now?: number;
   kegs?: KegItem[];
+  /** B1 : les ventes de la caisse, d'où se lit le reste à vendre. */
+  transactions?: Transaction[];
+  /** B1 : toucher le reste ouvre la vente. */
+  onVendre?: (b: Batch) => void;
   onOpen: (b: Batch, section?: BatchDetailSection) => void;
   onBrew: (b: Batch) => void;
   onFavorite: (e: CatalogEntry) => void;
   onArchive: (e: CatalogEntry, archived: boolean) => void;
 }) {
   const batch = entry.batch!;
-  const m = carteModel(entry, now, kegs);
+  const m = carteModel(entry, now, kegs, transactions);
   return (
     <article className="lst-card" aria-label={`Brassin ${entry.id}, ${entry.name}`}>
       <div className="lst-bar" data-ton={m.ton} aria-hidden />
@@ -54,7 +60,9 @@ export function CarteBrassin({
             </span>
             <span className="lst-mesure">
               <span className="lst-reading">{m.cle}</span>
-              {m.cleUnite && <span className="lst-unite">{m.cleUnite}</span>}
+              {m.reste?.vendable && onVendre
+                ? <button type="button" className="lst-unite lst-reste" aria-label={`Vendre ${entry.id} : reste ${m.reste.texte}`} onClick={() => onVendre(batch)}>{m.reste.texte}</button>
+                : m.cleUnite && <span className="lst-unite">{m.cleUnite}</span>}
             </span>
           </span>
           <button

@@ -117,7 +117,8 @@ async function appuiLong(s, txt, o = {}, ms = 700) {
 /** La vente de `n` fois la tuile « 33 cl » au comptoir, payée en espèces. */
 async function venteComptoir33(s, n) {
   await s.toucher('Actions rapides'); await s.toucher('Vente'); await sleep(900);
-  for (let i = 0; i < n; i++) await s.toucher('33 cl', { contient: true, att: 250 });
+  // la tuile de la caisse, pas le reste « 120 × 33 cl » de la carte de Brassins restée dessous (B1 : le doigt tombait sur la tuile fût)
+  for (let i = 0; i < n; i++) await s.toucher('33 cl', { dans: '.cs-tiles button', contient: true, att: 250 });
   await s.toucher('Espèces', { att: 500 });
   await s.toucher('^Encaisser', { regex: true, att: 3000 });
   for (const f of ['OK', 'Fermer']) { if (await s.visible(f, {})) await s.toucher(f, { i: -1, att: 900 }); }
@@ -448,12 +449,21 @@ function listeEtapes() { return [
       await s.onglet('Brassins'); await sleep(1000);
       await s.cap('B1-2-apres-vente');
       const b = await carte();
-      if (!b || Number(b[1]) !== 114) pb.push(`après 6 × 33 cl vendues, la carte ne dit pas 114 × 33 cl (lu : ${b ? `${b[1]} × 33 cl` : 'rien'})`);
+      // après vente : 114 × 33 cl, et les 2 fûts pleins restent (la vente de bouteilles ne livre aucun fût)
+      if (!b || Number(b[1]) !== 114 || Number(b[2]) !== 2) pb.push(`après 6 × 33 cl vendues, la carte ne dit pas « 114 × 33 cl · 2 fûts » (lu : « ${(await s.texte(6000)).match(/LOT-PA[^|]{0,40}/)?.[0] ?? 'carte absente'} »)`);
       if (pb.length) return echec('B1', pb.join(' ; '));
       await s.toucher('114 × 33 cl', { contient: true, att: 1200 });
       await s.cap('B1-3-reste-touche');
       if (!/Vendre/.test(await s.texte(3000)) || !(await s.visible('Encaisser', { prefixe: true }))) return echec('B1', 'toucher le reste n\'ouvre pas la vente');
-      ok('B1', 'reste lu sur la carte (120 → 114 × 33 cl · 2 fûts), le toucher ouvre la vente');
+      const choisie = await s.p.evaluate(() => document.querySelector('.cs-bc[aria-pressed="true"]')?.innerText.replace(/\s+/g, ' ').trim() ?? '');
+      if (!/Pale Ale/.test(choisie)) return echec('B1', `la caisse ne s'ouvre pas sur la bière de la carte (choisie : « ${choisie || 'aucune'} »)`);
+      // la NEIPA n'est pas la première bière de la caisse : son reste doit l'ouvrir sur elle, pas sur la Pale Ale
+      await s.toucher('Fermer', { i: -1, att: 900 });
+      await s.toucher('Vendre LOT-NE : reste', { prefixe: true, att: 1200 });
+      const choisie2 = await s.p.evaluate(() => document.querySelector('.cs-bc[aria-pressed="true"]')?.innerText.replace(/\s+/g, ' ').trim() ?? '');
+      await s.cap('B1-4-reste-neipa');
+      if (!/NEIPA/i.test(choisie2)) return echec('B1', `le reste de la NEIPA ouvre la caisse sur « ${choisie2 || 'aucune'} »`);
+      ok('B1', 'reste lu sur la carte (120 → 114 × 33 cl · 2 fûts), le toucher ouvre la vente sur la bière de la carte (Pale Ale, NEIPA)');
     }
   },
   {
@@ -645,6 +655,29 @@ function listeEtapes() { return [
       if (!/440/.test(await s.texte(6000))) pb.push('Finances › Prévisions ne dit pas le même point bas (−440)');
       if (pb.length) return echec('K4', pb.join(' ; '));
       ok('K4', 'Bord et Finances disent le même point le plus bas (−440)');
+    }
+  },
+  {
+    id: 'D405', titre: 'Une seule caisse : un brassin sans budget reprend l\'estimation de sa recette, et le Bord, Finances et le Calendrier disent le même point bas (D405)', fixture: { sansJour: true, caisseBasse: true, reprise: true },
+    async joue(s) {
+      const chf = (m) => (m ? -Math.abs(nombre(m[1])) : null); // les trois écrans disent un point bas sous zéro (−, ≈, « au plus » selon l'écran)
+      await s.onglet('Bord'); await sleep(1200);
+      await s.cap('D405-1-bord');
+      const bord = chf((await s.texte(6000)).match(/Point le plus bas[^\d]{0,30}([\d’' ]+(?:[.,]\d+)?)/));
+      await s.onglet('Finances'); await sleep(900);
+      await s.toucher('Prévisions', { prefixe: true }); await sleep(1500);
+      await s.cap('D405-2-previsions');
+      const tf = await s.texte(8000);
+      await s.onglet('Calendrier'); await sleep(1800);
+      await s.cap('D405-3-calendrier');
+      const tc = await s.texte(8000);
+      const fin = chf(tf.match(/Jusqu.au [^|]{0,40}?[−-]\s?([\d’' ]+[.,]\d{2})/));
+      const cal = chf(tc.match(/[−-]\s?([\d’' ]+)\s*CHF à dépenser/));
+      const vus = `Bord ${bord ?? '—'}, Finances ${fin ?? '—'}, Calendrier ${cal ?? '—'}`;
+      if ([bord, fin, cal].some((v) => v === null)) return echec('D405', `un écran ne dit pas son point bas (${vus})`);
+      if (Math.round(bord) !== Math.round(fin) || Math.round(fin) !== Math.round(cal)) return echec('D405', `trois chiffres pour une caisse : ${vus}`);
+      if (Math.round(fin) === -440) return echec('D405', `le budget repris de « ZZ TEST Pale » n'est compté nulle part (${vus})`);
+      ok('D405', `le même point bas partout, budget repris compris : ${vus}`);
     }
   },
   {

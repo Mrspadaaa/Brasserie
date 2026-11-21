@@ -2,7 +2,7 @@
 // Le modèle de filtre du catalogue (`CatalogFilters`) est mono-valeur ; la maquette pose plusieurs critères par groupe (OU dans un groupe,
 // ET entre groupes) et compte à facettes. Ces critères vivent donc ici, en état d'UI local, par-dessus `filterCatalog` (période, statut,
 // alcool et favoris du catalogue sont neutralisés : un seul juge par critère).
-import type { Batch, KegItem } from '../../../types';
+import type { Batch, KegItem, Transaction } from '../../../types';
 import {
   catalogText,
   filterCatalog,
@@ -21,7 +21,7 @@ import {
 } from '../../../domain/productionInsights';
 import { dryHopDans, fgAConfirmer, retardDe } from '../volumes/phrase';
 import { estEnCours } from '../volumes/periode';
-import { brassinsVendables } from '../../vente/brassinsVendables';
+import { brassinsVendables, resteAVendre } from '../../vente/brassinsVendables';
 import { dansPeriode as dansLaPeriodeCommune, enPeriode, type PeriodeEntree } from '../../../components/periode/periode';
 import { modeleFiche } from '../fermentation/modele';
 
@@ -318,6 +318,8 @@ export interface CarteModel {
   cle: string;
   cleUnite: string;
   action: ActionCarte;
+  /** D393 B1 (K6) : le reste à vendre d'un brassin conditionné ou terminé, lu à la place du conditionnement ; `vendable` : son toucher ouvre la vente. */
+  reste?: { texte: string; vendable: boolean };
 }
 /** Alcool à une décimale fixe (« 6,0 % ») : chiffres à la virgule. */
 export const abvFr = (v: number) => v.toLocaleString('fr-CH', { minimumFractionDigits: 1, maximumFractionDigits: 1 });
@@ -341,7 +343,7 @@ const futs = (ids: string[], kegs: KegItem[]): string => {
   return connues ? `${ids.length} fûts · ${nbFr((tailles as number[]).reduce((a, b) => a + b, 0))} L` : `${ids.length} fûts, taille non notée`;
 };
 
-export function carteModel(entry: CatalogEntry, now = Date.now(), kegs: KegItem[] = []): CarteModel {
+export function carteModel(entry: CatalogEntry, now = Date.now(), kegs: KegItem[] = [], transactions?: Transaction[]): CarteModel {
   const b = entry.batch!;
   const retard = retardDe(b, now);
   const statut = statusOfBatch(b);
@@ -351,7 +353,7 @@ export function carteModel(entry: CatalogEntry, now = Date.now(), kegs: KegItem[
   const actif = b.status === 'fermentation' || b.status === 'garde';
   const ton: TonCarte = retard !== undefined ? 'retard' : b.status === 'fermentation' ? 'cuve' : b.status === 'garde' ? 'garde' : b.status === 'planifie' ? 'brasser' : b.status === 'conditionne' ? 'cond' : b.status === 'termine' ? 'fin' : 'annule';
   const pastille = retard !== undefined ? `En retard · ${retard} j` : statut.label;
-  let ou = '', cle = '—', cleUnite = '', action: ActionCarte;
+  let ou = '', cle = '—', cleUnite = '', action: ActionCarte, reste: CarteModel['reste'];
   if (b.status === 'planifie') {
     const prevue = jjmm(b.plannedBrewDate);
     ou = prevue ? `prévue le ${prevue}` : 'date à définir';
@@ -380,6 +382,9 @@ export function carteModel(entry: CatalogEntry, now = Date.now(), kegs: KegItem[
       ? [p.bottles33 ? `${p.bottles33} × 33 cl` : '', p.bottles75 ? `${p.bottles75} × 75 cl` : '', p.kegIds?.length ? futs(p.kegIds, kegs) : ''].filter(Boolean).join(' · ')
       : b.volumePackagedL != null ? `${nbFr(b.volumePackagedL)} L conditionnés` : '';
     cleUnite = emb;
+    // B1 : avec les ventes connues, la carte dit ce qu'il reste (dérivé des ventes de la caisse et des fûts pleins), jamais le conditionné.
+    const r = transactions ? resteAVendre(b, transactions, kegs) : null;
+    if (r) { cleUnite = r.texte; reste = { texte: r.texte, vendable: !r.vide && !entry.archivedAt }; }
     const sansNote = !b.notesTasting?.trim();
     action = missingBatchMeasurements(b).length && b.status === 'conditionne'
       ? { label: 'Compléter les mesures', section: 'measurements' }
@@ -389,7 +394,7 @@ export function carteModel(entry: CatalogEntry, now = Date.now(), kegs: KegItem[
     cleUnite = 'abandonné';
     action = { label: 'Ouvrir', section: next.section ?? 'overview' };
   }
-  return { ton, pastille, lot: entry.id, ou, nom: entry.name, style: entry.style, cle, cleUnite, action };
+  return { ton, pastille, lot: entry.id, ou, nom: entry.name, style: entry.style, cle, cleUnite, action, ...(reste ? { reste } : {}) };
 }
 
 /** Une rangée mini (e6a, « hors du filtre ») : barre, nom, lot, phase. */
