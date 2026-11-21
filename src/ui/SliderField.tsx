@@ -1,6 +1,7 @@
 import React, { useId } from 'react';
 import { NumberInput } from './NumberInput';
 import { Field } from './FormNav';
+import { refCurseurNatif } from './geste';
 
 /**
  * Curseur couplé à un champ numérique.
@@ -110,7 +111,7 @@ export const SliderField: React.FC<SliderFieldProps> = ({
 
         {/* Piste fine, cible de 28 px dans sa propre rangée. */}
         <div className="relative">
-          <input
+          <input ref={refCurseurNatif}
             type="range"
             name="slider_field_range"
             autoComplete="off"
