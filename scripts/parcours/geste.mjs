@@ -230,6 +230,13 @@ async function jouer(dir) {
 function fixtureGeste() {
   const auj = new Date().toISOString().slice(0, 10), L = lundiDe(auj), s = (n, j = 0) => ajouter(L, n * 7 + j);
   const fx = fixtureCalendrier(auj);
+  // CAL-PASSE-ECHELLE : un passé de 14 semaines (caisse ouverte plus tôt, cinq paiements passés) : tirer le début a un passé à montrer
+  const PASSE = 14, pr = fx.entrees.find((e) => e.name === 'financialProfiles');
+  pr.data.openingCash.date = s(-PASSE); pr.data.historyCompleteFrom = s(-PASSE);
+  for (const [k, n, c, d] of [[1, -PASSE + 1, 30000, 'out'], [2, -PASSE + 3, 80000, 'in'], [3, -PASSE + 5, 45000, 'out'], [4, -3, 60000, 'in'], [5, -2, 25000, 'out']]) {
+    fx.entrees.push({ name: 'transactions', id: 'T-ZZ-P' + k, data: { id: 'T-ZZ-P' + k, description: 'ZZ passé ' + k, date: s(n, 1), amountCents: c, kind: d === 'in' ? 'sale' : 'purchase', status: 'paid' } });
+    fx.entrees.push({ name: 'financialPayments', id: 'PAY-ZZ-P' + k, data: { id: 'PAY-ZZ-P' + k, transactionId: 'T-ZZ-P' + k, date: s(n, 1), amountCents: c, direction: d, method: 'card', recordedAt: s(n, 1) + 'T10:00:00.000Z' } });
+  }
   fx.entrees.push({ name: 'financialPlans', id: ID_GESTE, data: { id: ID_GESTE, title: 'ZZ TEST Geste', date: s(3), amountCents: 5000, direction: 'out', category: 'renovation', source: 'manual', status: 'active', createdAt: `${ajouter(auj, -30)}T08:00:00.000Z`, fenetre: { du: s(3), au: s(4, 6), joursActifs: 4 } } });
   return JSON.stringify(fx.entrees);
 }
@@ -366,6 +373,23 @@ async function jouerCalendrier({ p, base, combo, tactile, glisser, pas }) {
     // R6 (CAL-FRISE-PRIX) : le début s'étire seul, la fin reste où elle est ; la fenêtre ne se déplace plus d'un bloc
     const finDe = (x) => (x.debut + x.n) % 53;
     await tirer('reculer le début', 'debut', -d, (a, b) => (b.debut !== null && a.debut !== null && b.debut !== a.debut && b.n > a.n && finDe(b) === finDe(a) && ((a.debut - b.debut + 53) % 53) <= 26) || 'début plus tôt, fin inchangée, durée plus longue attendus (R6)');
+    // CAL-PASSE-ECHELLE (21.11) : la part passée de la courbe se lit comme la part future : même fond de cadre (uniforme, sans voile grisé), mêmes points
+    // (opacité, couleur), et un tracé qui varie (une échelle écrasée par le passé l'aplatirait)
+    { const m = await p.evaluate(() => {
+        const cadre = document.querySelector('.ent-cadre'), cs = cadre ? getComputedStyle(cadre) : null;
+        const pts = [...document.querySelectorAll('.ent-cb [data-point-semaine]')].map((c) => ({ x: c.getBoundingClientRect().x, cy: Number(c.getAttribute('cy')), s: getComputedStyle(c), n: Number(c.getAttribute('data-point-semaine')) })).sort((a, b) => a.x - b.x);
+        const d = new Date(); const j = new Date(Date.UTC(d.getFullYear(), d.getMonth(), d.getDate())); const dow = (j.getUTCDay() + 6) % 7; j.setUTCDate(j.getUTCDate() - dow + 3);
+        const an = new Date(Date.UTC(j.getUTCFullYear(), 0, 4)); const nAuj = 1 + Math.round(((j - an) / 864e5 - 3 + ((an.getUTCDay() + 6) % 7)) / 7);
+        const iAuj = pts.findIndex((q) => q.n === nAuj), pas = pts.slice(0, Math.max(0, iAuj)), fut = pts.slice(iAuj);
+        const sig = (q) => q.s.opacity + "|" + q.s.fill, uni = (l) => new Set(l.map(sig));
+        const ptsCadre = cadre ? pts.filter((q) => q.x >= cadre.getBoundingClientRect().left - 1 && q.x <= cadre.getBoundingClientRect().right) : [];
+        const haut = (l) => l.length ? Math.max(...l.map((q) => q.cy)) - Math.min(...l.map((q) => q.cy)) : 0;
+        return { fond: cs?.backgroundColor ?? null, image: cs?.backgroundImage ?? null, opCadre: cs?.opacity ?? null, passes: pas.length, futurs: fut.length, sigPasse: [...uni(pas)], sigFutur: [...uni(fut)], ecartPasse: haut(pas), ecartCadre: haut(ptsCadre) };
+      });
+      const memeStyle = m.passes > 0 && m.futurs > 0 && m.sigPasse.length === 1 && m.sigFutur.length === 1 && m.sigPasse[0] === m.sigFutur[0];
+      const fondUnique = !!m.fond && m.image === 'none' && m.opCadre === '1';
+      const lisible = m.ecartPasse >= 2;
+      (memeStyle && fondUnique && lisible) ? ok(`${F} CAL-PASSE-ECHELLE`, `passé ${m.passes} pts, futur ${m.futurs} pts, même style ${m.sigPasse[0]}, fond ${m.fond}, relief passé ${m.ecartPasse.toFixed(1)} px`) : echec(`${F} CAL-PASSE-ECHELLE`, `${JSON.stringify(m)} (points passés et futurs de même style, fond du cadre uniforme, relief du passé ≥ 2 px attendus)`); }
     await tirer('avancer le début', 'debut', d, (a, b) => (b.debut !== null && b.debut !== a.debut && b.n < a.n && finDe(b) === finDe(a) && ((b.debut - a.debut + 53) % 53) <= 26) || 'début plus tard, fin inchangée, durée plus courte attendus (R6)');
     await tirer('étirer la fin', 'fin', d, (a, b) => (b.n > a.n && b.debut === a.debut) || 'durée plus longue, même début attendus');
     await cap('cadre-etire');
@@ -383,6 +407,10 @@ async function jouerCalendrier({ p, base, combo, tactile, glisser, pas }) {
       await glisser(x, a.cb.y, pas(x, x + unite, 3), { tenir: 700, pendant: async () => { lu = await p.evaluate(() => ({ lu: !!document.querySelector('.ent-lu'), curseur: !!document.querySelector('[data-curseur-trait]') })); } });
       await sleep(300); const b = await etat();
       (lu?.lu && b?.cle === a.cle) ? ok(`${F} appui long lit`, `lecture ouverte, reste ${a.cle}`) : echec(`${F} appui long lit`, `lecture ${JSON.stringify(lu)}, ${a.cle} → ${b?.cle ?? "cadre perdu"} (lecture ouverte, fenêtre inchangée attendues)`);
+      // CAL-BARRE-INUTILE (21.11, « barre inutile ») : le curseur de lecture (trait, colonne, barre) n'existe que pendant le geste ; doigt levé, il disparaît
+      // (le chiffre et le détail de la semaine restent)
+      const apres = await p.evaluate(() => ({ curseur: !!document.querySelector('[data-curseur]'), trait: !!document.querySelector('[data-curseur-trait]'), colonne: !!document.querySelector('[data-curseur-colonne]'), marche: !!document.querySelector('[data-curseur-marche]'), lu: !!document.querySelector('.ent-lu') }));
+      (lu?.curseur && !apres.curseur && !apres.trait && !apres.colonne && !apres.marche) ? ok(`${F} CAL-BARRE-INUTILE`, 'curseur pendant le geste, absent au doigt levé') : echec(`${F} CAL-BARRE-INUTILE`, `pendant : ${lu?.curseur ? 'présent' : 'absent'} ; doigt levé : ${JSON.stringify(apres)} (présent pendant, absent après attendus)`);
       await echap(); if (!(await etat())) await versCalendrier(); }
     // R10 : Échap pendant le tirage rend la fenêtre d'avant (souris)
     if (!tactile) {

@@ -732,18 +732,20 @@ describe('CRITIQUE-3 n° 6 (c2-b) et n° 25 (c3-a) : le doigt sur la courbe', ()
     expect(screen.getByRole('button', { name: '±' })).toBeInTheDocument();
     expect(screen.getByRole('button', { name: /6 sem/ })).toBeInTheDocument();
     expect(screen.getByLabelText('Fenêtre : S47 – S52')).toBeInTheDocument();
+    // Pendant le geste, le curseur est tracé avant les noms : leur halo le coupe, il passe dessous.
+    const enfants = Array.from(courbeSvg(container).children);
+    const iCurseur = enfants.findIndex(n => n.hasAttribute('data-curseur'));
+    const iNom = enfants.findIndex(n => !!n.querySelector('[data-nom-courbe]'));
+    expect(iCurseur).toBeGreaterThan(-1);
+    expect(iCurseur).toBeLessThan(iNom);
     fireEvent.pointerUp(cb, { pointerId: 1, clientX: 280 });
     vi.useRealTimers();
     expect(e.onFenetre).not.toHaveBeenCalled();
     expect(container.querySelector('.ent-t')!.textContent).toContain('CHF · S51');
     expect(container.querySelector('.ent-lu')!.textContent).toContain('la semaine');
     expect(screen.getByLabelText('Fenêtre : S47 – S52')).toBeInTheDocument();
-    // Le curseur est tracé avant les noms : leur halo le coupe, il passe dessous.
-    const enfants = Array.from(courbeSvg(container).children);
-    const iCurseur = enfants.findIndex(n => n.hasAttribute('data-curseur'));
-    const iNom = enfants.findIndex(n => !!n.querySelector('[data-nom-courbe]'));
-    expect(iCurseur).toBeGreaterThan(-1);
-    expect(iCurseur).toBeLessThan(iNom);
+    // CAL-BARRE-INUTILE : doigt levé, le curseur (trait, colonne, barre) a disparu ; le chiffre et le détail restent.
+    expect(container.querySelector('[data-curseur]')).toBeNull();
   });
 
   it('b1 bis : un doigt posé dans la zone de prise de la poignée de fin (hors du bouton) tire la fenêtre', () => {

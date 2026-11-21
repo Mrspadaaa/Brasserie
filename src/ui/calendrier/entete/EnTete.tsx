@@ -310,6 +310,15 @@ export function EnTeteCalendrier(props: EnTeteCalendrierProps) {
   const [menuOuvert, setMenuOuvert] = useState(false);
   const [retardsOuverts, setRetardsOuverts] = useState(false);
   const [lecture, setLecture] = useState<number | null>(null);
+  // CAL-BARRE-INUTILE : le curseur (trait, colonne, barre) ne se dessine que pendant le geste ; au doigt levé il disparaît, le chiffre et le détail restent.
+  const [enGesteLu, setEnGesteLu] = useState(false);
+  useEffect(() => {
+    if (lecture === null) { setEnGesteLu(false); return undefined; }
+    setEnGesteLu(true);
+    const leve = () => setEnGesteLu(false);
+    document.addEventListener('pointerup', leve, { capture: true, once: true }); document.addEventListener('pointercancel', leve, { capture: true, once: true });
+    return () => { document.removeEventListener('pointerup', leve, true); document.removeEventListener('pointercancel', leve, true); };
+  }, [lecture]);
   const [info, setInfo] = useState<Info | null>(null);
   const [plein, setPlein] = useState(() => estPleinEcran());
   // Doute m27 (CRITIQUE-10) : le cadre de focus des boutons de tête est pour le clavier seul. La dernière modalité de la page se lit sur
@@ -753,7 +762,7 @@ export function EnTeteCalendrier(props: EnTeteCalendrierProps) {
           <GrandeCourbe courbe={courbeC} rangeeDe={rangeeDe} largeur={largeur} hauteur={hauteurGrande} paysage={paysage} lecture={lecture} onFermer={fermerLecture} reference={refGrande} gestes={gestesGrande} />
         ) : courbe && base && cachee ? null : courbe && base && vueAl && alignement ? (
           <Courbe courbe={vueAl.sem} abscisses={alignement.abscisses} creuxIndex={vueAl.creuxIndex} largeur={largeur} hauteur={hauteur}
-            curseur={lecture !== null && !apercuC ? lecture - vueAl.d : null} reference={refCourbe} gestes={apercuC ? undefined : gestesCourbe}
+            curseur={enGesteLu && lecture !== null && !apercuC ? lecture - vueAl.d : null} reference={refCourbe} gestes={apercuC ? undefined : gestesCourbe}
             mise={vueAl.mise} mois={!!props.moisCourbeAlignee} moisEnHaut etoiles={vueAl.etoiles} {...(paysageAligne ? { rangeeHaute: { hauteur: RANGEE_CHIFFRE_PAYSAGE, reserves } } : {})}>
             {vueAl.ap && !zoomTout && (
               <div className="ent-zoom-c" data-zoom-aligne style={{ height: hauteur }}>
@@ -763,7 +772,7 @@ export function EnTeteCalendrier(props: EnTeteCalendrierProps) {
           </Courbe>
         ) : courbe && base ? (
           <Courbe courbe={vueR4 ? vueR4.sem : courbe} abscisses={echelleR4?.abscisses} alignee={false} creuxIndex={vueR4 ? vueR4.creuxIndex : undefined} largeur={largeur} hauteur={hauteur}
-            curseur={lecture !== null && vueR4 ? lecture - vueR4.d : lecture} reference={refCourbe} gestes={apercuC ? undefined : gestesCourbe} mise={vueR4 ? vueR4.mise : miseCourbe}
+            curseur={enGesteLu ? (lecture !== null && vueR4 ? lecture - vueR4.d : lecture) : null} reference={refCourbe} gestes={apercuC ? undefined : gestesCourbe} mise={vueR4 ? vueR4.mise : miseCourbe}
             mois={false} moisEnHaut plate={plate && !paysage} etoiles={vueR4 ? vueR4.etoiles : etoilesCourbe} masque={apercuC ? null : tirage}
             cadre={apercuC ? undefined : { index: index - (vueR4?.d ?? 0), nombre, etiquette: etiquetteCadre(semainesTot.map(s => s.numero), index, nombre, annee, etiquetteAnnee, lundis) }}>
             {apercuC ? (
