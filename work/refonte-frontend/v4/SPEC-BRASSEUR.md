@@ -2630,3 +2630,7 @@ Classement de la page r3 de Ma levure (https://claude.ai/artifact/DKAJe8ESeMR4ig
 > Et le fait qu'il y aille un trou, que on voie que 3 truc et que il y a pas de filtre, rien, personnes a vue ça ?
 
 (21.11, en ligne tour 8, Brassins › Atelier › Carnet, capture 08 de work/missions/2026-11-21-chasse-carnet/ : la liste entourée ne montre que 3 carnets (Chambre froide, Sol, Achat brasserie) ; un trou blanc entouré entre le champ « Une idée, un besoin… » et la barre d'onglets, à côté du « + » ; aucun filtre ni recherche.)
+
+> Que si on clic là ça renvoie même pas sûr le carnet ?
+
+(21.11, en ligne tour 8, capture 09 de work/missions/2026-11-21-chasse-carnet/ : dans le carnet « Sol — matières premières + outils », l'onglet actif « Carnet » (Brassins › Atelier) entouré ; le toucher ne ramène pas à la liste des carnets.)
