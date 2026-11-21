@@ -6,7 +6,8 @@ import type { CatalogEntry, CatalogFilters } from '../../../domain/productionCat
 import type { KegItem } from '../../../types';
 import { CATALOG_FOLDER_LABELS, inCatalogFolder, type CatalogFolder } from '../../../domain/catalogOrganization';
 import { Sheet } from '../../Sheet';
-import { bornes as bornesPeriode, depuisJours, enPeriode, moisDe, serialiser, type Periode } from '../../../components/periode/periode';
+import { enPeriode, moisDe, serialiser, type Periode } from '../../../components/periode/periode';
+import { FrisePeriode } from '../../../components/periode/FrisePeriode';
 import {
   AVANCEMENTS,
   appliquer,
@@ -163,20 +164,12 @@ export function FeuilleFiltres(p: FeuilleProps) {
     : periodeApp.genre === 'mois' && serialiser(periodeApp) === serialiser(moisDe(maintenant)) ? 'mois'
     : periodeApp.genre === 'annee' && periodeApp.annee === maintenant.getFullYear() ? 'annee' : 'dates';
   const [datesVoulues, setDatesVoulues] = useState(false);
-  const bornesApp = bornesPeriode(periodeApp);
-  const [du, setDu] = useState(bornesApp.du ?? ''), [au, setAu] = useState(bornesApp.au ?? '');
-  const cle = serialiser(periodeApp);
-  useEffect(() => { setDu(bornesApp.du ?? ''); setAu(bornesApp.au ?? ''); }, [cle]); // eslint-disable-line react-hooks/exhaustive-deps
   const segmentDates = modePeriode === 'dates' || datesVoulues;
   const poserPeriode = (mode: ModePeriode) => {
     setDatesVoulues(mode === 'dates');
     if (mode === 'mois') p.onPeriode?.(moisDe(maintenant));
     else if (mode === 'annee') p.onPeriode?.({ genre: 'annee', annee: maintenant.getFullYear() });
     else if (mode === 'toutes') p.onPeriode?.({ genre: 'tout' });
-  };
-  const poserDates = (nouveauDu: string, nouvelAu: string) => {
-    setDu(nouveauDu); setAu(nouvelAu);
-    if (nouveauDu && nouvelAu && nouveauDu <= nouvelAu) p.onPeriode?.(depuisJours(nouveauDu, nouvelAu));
   };
   const [lo, hi] = c.alcool ?? (alcool ? [alcool.min, alcool.max] : [0, 0]);
   // L'étiquette du milieu dit l'étendue des brassins (« 5,8 – 6,1 ») tant que rien n'est posé, puis la plage posée.
@@ -353,12 +346,8 @@ export function FeuilleFiltres(p: FeuilleProps) {
               <button key={s.id} type="button" aria-pressed={s.id === 'dates' ? segmentDates : !datesVoulues && modePeriode === s.id} onClick={() => poserPeriode(s.id)}>{s.label}</button>
             ))}
           </div>
-          {segmentDates && (
-            <div className="lst-dates">
-              <label>Du<input type="date" value={du} onChange={(e) => poserDates(e.target.value, au)} /></label>
-              <label>Au<input type="date" value={au} onChange={(e) => poserDates(du, e.target.value)} /></label>
-            </div>
-          )}
+          {/* PERIODE-PARTOUT (21.11) : « Dates… » monte la frise d'Opérations (la même pour toute l'app), plus deux champs de date. */}
+          {segmentDates && <FrisePeriode className="lst-frise" periode={periodeApp} maintenant={maintenant} onChoisir={(x) => p.onPeriode?.(x)} />}
           <button type="button" role="switch" aria-checked={c.periode.enCours} className="lst-panneau lst-tg" onClick={() => set({ periode: { ...c.periode, enCours: !c.periode.enCours } })}>
             <span className="lst-pt" aria-hidden />Les en cours et en vente, toujours<span className="lst-sw" aria-hidden />
           </button>

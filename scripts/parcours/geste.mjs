@@ -491,6 +491,14 @@ function lieuxPeriode() { return [
     titre: () => document.querySelector('.ana .ana-dit')?.innerText.split(' : ')[0].trim() ?? null,
     garde: () => null,
   },
+  {
+    // Brassins › Filtrer, segment « Dates… » : la période de l'app (« Même période que l'en-tête »), relue au rechargement. Le tri reste une liste.
+    nom: 'brassins', racine: '.lst-sheet', interdits: 'input[type=month], input[type=date]',
+    aller: async ({ toucherTexte }) => { await toucherTexte(['Brassins']); await toucherTexte(['^Filtrer']); },
+    ouvrir: async ({ toucherTexte }) => toucherTexte(['Dates…']),
+    titre: () => document.querySelector('button[aria-label^="Période :"]')?.getAttribute('aria-label') ?? null,
+    garde: () => { try { return JSON.parse(localStorage.getItem('laffinee_ui_state') ?? '{}').app_global_time_filter ?? null; } catch { return null; } },
+  },
 ]; }
 
 async function jouerPeriode({ nav, base, L, theme }) {
