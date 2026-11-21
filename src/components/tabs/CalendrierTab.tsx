@@ -887,16 +887,6 @@ export function CalendrierTab(props: CalendrierTabProps) {
           ...(onOuvrirBudget ? { onBudget: () => { const id = (chose.source as { id: string }).id; setSelectionId(null); onOuvrirBudget(id); } } : {})
         } : {})}
         {...(editable && !sansDate ? { onModifier: () => { setSelectionId(null); setFeuille({ mode: 'modifier', initial: brouillonDepuisChose(chose), chose, cle: ++compteur.current }); } } : {})}
-        {...(editable && (chose.source.genre === 'creative' || chose.source.genre === 'plan') ? { onRenommer: (nom: string) => {
-          /* RENOMMER-EVT (R1) : le titre touché devient un champ ; Entrée renomme la chose, le message porte Annuler */
-          const texte = `Renommé : ${nom}`;
-          void ecrire({ ok: true, ecritures: [{ op: 'patch', collection: creative ? 'creativeItems' : 'financialPlans', id: chose.source.id, patch: { title: nom } }],
-            message: { texte, action: 'Annuler', lecture: `${texte} · Annuler` }, effet: null, promesse: null, courbeApres: null });
-        } } : {})}
-        {...(editable && !sansDate ? { onRetirer: () => { void ecrire(retirer(chose, ctxRef.current)); } } : {})}
-        {...(creative && chose.source.genre === 'creative' && chose.source.type !== 'recipe-idea' && (chose.rangee === 'activites' || sansDate) ? { onFait: () => { void ecrire(fait(chose)); } } : {})}
-        {...(chose.rangee === 'ventes' && chose.source.genre === 'plan' && !chose.probable ? { onFacturer: () => {
-          /* WFV-14 : la caisse, son client choisi ; elle propose de solder la vente promise de ce client (B5), au lieu de la liste de Finances */
         {...(!chose.proposition && chose.source.genre === 'batch' ? {
           /* CHE-5 (D412) : le brassin se renomme sur place (son nom) et sa date se règle sur sa pastille ; Annuler dans le message, la fiche reste */
           onRenommer: (nom: string) => {
@@ -912,11 +902,22 @@ export function CalendrierTab(props: CalendrierTabProps) {
           onDecalerDebut: (jours: number) => { void ecrire(chose.fin && chose.fin !== chose.debut ? allongerDebut(chose, jours, ctxRef.current) : deplacerJours(chose, jours, ctxRef.current), true, chose.id, true); },
           onDecalerFin: (jours: number) => { void ecrire(allonger(chose, jours, ctxRef.current), true, chose.id, true); }
         } : {})}
+        {...(editable && (chose.source.genre === 'creative' || chose.source.genre === 'plan') ? { onRenommer: (nom: string) => {
+          /* RENOMMER-EVT (R1) : le titre touché devient un champ ; Entrée renomme la chose, le message porte Annuler */
+          const texte = `Renommé : ${nom}`;
+          void ecrire({ ok: true, ecritures: [{ op: 'patch', collection: creative ? 'creativeItems' : 'financialPlans', id: chose.source.id, patch: { title: nom } }],
+            message: { texte, action: 'Annuler', lecture: `${texte} · Annuler` }, effet: null, promesse: null, courbeApres: null });
+        } } : {})}
+        {...(editable && !sansDate ? { onRetirer: () => { void ecrire(retirer(chose, ctxRef.current)); } } : {})}
+        {...(creative && chose.source.genre === 'creative' && chose.source.type !== 'recipe-idea' && (chose.rangee === 'activites' || sansDate) ? { onFait: () => { void ecrire(fait(chose)); } } : {})}
+        {...(chose.rangee === 'ventes' && chose.source.genre === 'plan' && !chose.probable ? { onFacturer: () => {
+          /* WFV-14 : la caisse, son client choisi ; elle propose de solder la vente promise de ce client (B5), au lieu de la liste de Finances */
           const id = (chose.source as { id: string }).id;
           const clientId = don.plans.find(p => p.id === id)?.clientId;
           setSelectionId(null); setCaisse(clientId ? { clientId } : {});
         } } : {})}
         {...(/* paquet F n° 1 (PC-142) : toute chose de la poche se supprime, sans dialogue ; le message garde Annuler (7 s) */ sansDate && creative ? { onSupprimer: () => { setSelectionId(null); void ecrire(supprimerSansDate(chose)); } } : {})}
+        {...(/* CHE-2 (D412) : une chose créée datée se supprime aussi depuis sa fiche, avec Annuler */ editable && !sansDate ? { onSupprimer: () => { setSelectionId(null); /* la fiche refermée raccourcit la page : ce défilement-là ne chasse pas « Annuler » (banc 390) */ absorberDefilement(); void ecrire(supprimer(chose)).then(absorberDefilement); } } : {})}
         {...(sansDate ? { onPoser: () => { setSelectionId(null); setFeuille({ mode: 'modifier', initial: { ...brouillonDepuisChose(chose), debut: lundiAuj, debutChoisi: true }, chose, cle: ++compteur.current }); } } : {})}
         {...(chose.probable && chose.source.genre === 'plan' && !chose.proposition ? { onAccepter: () => { void ecrire(accepterVente(chose, ctxRef.current)); } } : {})}
         {...(editable ? { onMettreDeCote: (actif: boolean) => { void ecrire(mettreDeCote(chose, actif, ctxRef.current)); } } : {})}
@@ -926,9 +927,7 @@ export function CalendrierTab(props: CalendrierTabProps) {
           liens: liensDe(chose),
           onLier: (l: { batchId?: string; clientId?: string; evenementId?: string }, nom: string) => {
             void ecrire(lier(chose, l, ctxGestes, nom), true, chose.id, true).then(ok => { if (ok) { ouvertureParGeste.current = Date.now() + 1200; setSelectionId(chose.id); } });
-        {...(/* CHE-2 (D412) : une chose créée datée se supprime aussi depuis sa fiche, avec Annuler */ editable && !sansDate ? { onSupprimer: () => { setSelectionId(null); /* la fiche refermée raccourcit la page : ce défilement-là ne chasse pas « Annuler » (banc 390) */ absorberDefilement(); void ecrire(supprimer(chose)).then(absorberDefilement); } } : {})}
           },
-        {...(/* CHE-2 (D412) : une chose créée datée se supprime aussi depuis sa fiche, avec Annuler */ editable && !sansDate ? { onSupprimer: () => { setSelectionId(null); void ecrire(supprimer(chose)); } } : {})}
           /* lot C (test en ligne, n° 5) : délier depuis la fiche, avec Annuler ; la fiche reste ouverte */
           onDelier: (nom: string) => {
             void ecrire(delier(chose, ctxGestes, nom), true, chose.id, true).then(ok => { if (ok) { ouvertureParGeste.current = Date.now() + 1200; setSelectionId(chose.id); } });
