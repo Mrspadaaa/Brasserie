@@ -19,7 +19,7 @@
 //              vue… même pas besoin de descendre + bas ») : chaque onglet, sous-vue et feuille longue, à 390 tactile et à 1280, défilé tout en bas ;
 //              KO si l'espace sous le dernier contenu visible dépasse 24 px (jusqu'à la barre d'onglets au 390, au bord de la fenêtre au 1280,
 //              au bord de la zone qui défile ou au pied collé pour une feuille), sans réserve pour le +, ou si du contenu reste sous la barre.
-//              Une vue qui tient sans défiler n'est pas jugée. Mesures : principes.json (`fond`), captures fond-<vue>-<largeur>.png.
+//              Une vue qui tient sans défiler n'est pas jugée ; le vide est borné par la course du défilement (on ne descend pas plus bas que la page ne défile). Mesures : principes.json (`fond`), captures fond-<vue>-<largeur>.png.
 //              Doit échouer sur en-ligne/2026-11-21-tour7 et tour8.
 //   NOM-OBLIGE (21.11 : « Taper un nom pour valider, ensuite sortir du mode clavier … C'est des actions en plus ») : chaque
 //              création est ouverte deux fois. 1) sans rien taper : le nom a-t-il une valeur par défaut, « valider » est-il permis ?
@@ -672,6 +672,7 @@ function mesurerFond() {
   const colles = [];
   for (const e of document.querySelectorAll('body *')) {
     const c = style(e); if (c.position !== 'fixed' && c.position !== 'sticky') continue;
+    if (c.position === 'sticky' && c.bottom === 'auto') continue; // collé en haut (en-tête de rayon d'une liste) : il ne borne pas le bas de la zone
     if (c.pointerEvents === 'none') continue; // un message qui ne prend pas le toucher ne borne pas la zone
     if (e.matches('[data-toast], .floating-actions, .plus-voile') || e.closest('.floating-actions, [data-toast]')) continue;
     const r = e.getBoundingClientRect(); if (!(r.width > 0 && r.height > 0)) continue;
@@ -707,7 +708,9 @@ function mesurerFond() {
   };
   parcours(racine);
   if (bas < -1e8) return { ...bilan, tient: false, aucunContenu: true };
-  return { ...bilan, tient: false, bas: Math.round(bas), limite: Math.round(limite), limiteNom, ecart: Math.round(limite - bas), dernier: qui, vide: Math.round(plage(principal)) };
+  // ce qu'on peut descendre PAR-DELÀ le contenu : le vide sous lui, borné par la course du défilement (une vue plus courte que l'écran, dont la page ne
+  // défile que de quelques pixels, n'a pas de « fond » où l'on descende)
+  return { ...bilan, tient: false, bas: Math.round(bas), limite: Math.round(limite), limiteNom, ecartBrut: Math.round(limite - bas), ecart: Math.round(Math.min(limite - bas, plage(principal))), dernier: qui, vide: Math.round(plage(principal)) };
 }
 
 async function vueFond(banc, aujourdhui) {
@@ -722,7 +725,9 @@ async function vueFond(banc, aujourdhui) {
         await s.p.setViewport({ width: larg.width, height: larg.height, isMobile: larg.isMobile, hasTouch: true, deviceScaleFactor: 1 });
         await s.demarrer();
         await aller(s, vue.aller); await sleep(1100);
-        const m = await s.p.evaluate(mesurerFond); await sleep(900);
+        // une liste virtualisée (react-virtuoso) ne connaît sa vraie hauteur qu'en arrivant en bas : on redescend, pause entre chaque, jusqu'à ce que la course ne bouge plus
+        let m = null; let avant = null; for (let k = 0; k < 14; k++) { m = await s.p.evaluate(mesurerFond); await sleep(450); const cle = JSON.stringify([m.vide, m.bas, m.limite]); if (cle === avant) break; avant = cle; }
+        m = await s.p.evaluate(mesurerFond); await sleep(400);
         await s.cap(`fond-${vue.id}-${larg.nom}`);
         mesures.fond.push({ vue: vue.id, largeur: larg.nom, ...m });
         const f = [];
