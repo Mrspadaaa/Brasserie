@@ -70,7 +70,8 @@ const NM = nb(MALTS), NH = nb(HOPS), NY = nb(YEASTS);
 const ebcCoul = (e) => (e < 5 ? '#f3d27a' : e < 10 ? '#e7b04f' : e < 25 ? '#cf8a35' : e < 80 ? '#a5602a' : e < 400 ? '#6e3a1c' : '#2c1a10');
 const hopCoul = (a) => (a < 7 ? '#c7cdb0' : a < 11 ? '#a5ad86' : a < 13 ? '#7f8a5e' : '#5d6744');
 const fr = (x) => String(x).replace('.', ',');
-const kg = (q) => (q >= 1 ? `${fr(Math.round(q * 10) / 10)} kg` : `${Math.round(q * 1000)} g`);
+const NB = ' '; // espace fine insécable entre nombre et unité (tour 2, point 0.1)
+const kg = (q) => (q === 0 ? `0${NB}kg` : q >= 1 ? `${fr(Math.round(q * 10) / 10)}${NB}kg` : `${Math.round(q * 1000)}${NB}g`);
 
 // Hauteur d'une barre : linéaire jusqu'au repère, resserrée au-delà (comme l'app).
 const haut = (q, rep, max = 34, base = 22) => (q <= 0 ? 0 : q <= rep ? Math.max(3, (q / rep) * base) : Math.min(max, base + (Math.log10(q / rep) / Math.log10(40)) * (max - base) * 1.6));
@@ -84,23 +85,23 @@ function barre(a, sorte, opts = {}) {
   }
   if (!a.q) return `<span class="b" style="width:${w}px"><i class="ep"></i></span>`;
   const h = sorte === 'malt' ? haut(a.q, 5, bh - 1, base) : haut(a.q, 250, bh - 1, base);
-  const col = sorte === 'malt' ? ebcCoul(a.e) : hopCoul(a.a);
-  return `<span class="b${a.c ? ' cpt' : ''}${opts.sel === a.n ? ' sel' : ''}" style="width:${w}px"><i style="height:${a.c ? Math.round(base * 0.75) : h}px;background:${a.c ? 'transparent' : col}"></i></span>`;
+  const col = a.su ? '#e9cf7e' : sorte === 'malt' ? ebcCoul(a.e) : hopCoul(a.a);
+  return `<span class="b${a.c ? ' cpt' : ''}${a.su ? ' su' : ''}${opts.sel === a.n ? ' sel' : ''}" style="width:${w}px"><i style="height:${a.c ? Math.round(base * 0.75) : h}px;background:${a.c ? 'transparent' : col}"></i></span>`;
 }
-const total = (g, sorte) => (sorte === 'malt' ? kg(g.l.reduce((s, a) => s + a.q, 0)) : sorte === 'houblon' ? `${g.l.reduce((s, a) => s + a.q, 0)} g` : `${g.l.reduce((s, a) => s + a.q, 0)}`);
+const total = (g, sorte) => (sorte === 'malt' ? kg(g.l.reduce((s, a) => s + a.q, 0)) : sorte === 'houblon' ? `${g.l.reduce((s, a) => s + a.q, 0)}${NB}g` : `${g.l.reduce((s, a) => s + a.q, 0)}`);
 
 // Une rangée du mur. opts : mince (D2b), legende, sel (article touché), w (largeur de barre), lien (catalogue), actif.
 function rayon(nom, n, sorte, groupes, opts = {}) {
   const coul = { malt: '#a97b3c', houblon: '#6f9435', levure: '#8b7350' }[sorte];
   const vides = { malt: ['Fumé'], houblon: ['Lager', 'Stouts'], levure: ['Saison'] }[sorte];
   const rep = { malt: '5 kg', houblon: '250 g', levure: '' }[sorte];
-  const gs = groupes.map((g) => `<div class="g"><em>${g.g}</em><div class="bars">${g.l.map((a) => barre(a, sorte, opts)).join('')}</div>${opts.mince ? '' : `<span class="tot">${total(g, sorte)}</span>`}</div>`).join('');
+  const gs = groupes.map((g) => `<div class="g${g.su ? ' su' : ''}"><em>${g.g}</em><div class="bars">${g.l.map((a) => barre(a, sorte, opts)).join('')}</div>${opts.mince ? '' : `<span class="tot">${total(g, sorte)}</span>`}</div>`).join('');
   const lab = opts.mince
     ? `<div class="rl mi">${ic({ malt: 'grain', houblon: 'cone', levure: 'flask' }[sorte], 18)}<b>${n}</b></div>`
-    : `<div class="rl"><b>${nom}</b><span class="rl2"><small class="mono">${n}</small>${opts.lien ? `<a class="cat">${ic('book', 13)}136</a>` : ''}</span></div>`;
-  return `<div class="ray ${sorte}${opts.mince ? ' mince' : ''}${opts.actif ? ' actif' : ''}" style="--rc:${coul}">${lab}<div class="rg">${rep && !opts.mince ? `<span class="rep mono">${rep} –</span>` : ''}${gs}${opts.mince ? '' : `<span class="vides">${vides.map((v) => `<span>○ ${v}</span>`).join('')}${opts.legende ? '<span class="leg-b">Légende</span>' : ''}</span>`}</div></div>`;
+    : `<div class="rl"><b>${nom}</b><span class="rl2"><small class="mono">${n}</small>${opts.lien ? `<a class="cat">${ic('book', 13)}136</a>` : ''}${opts.legende === 'rond' ? `<span class="leg-q${opts.legOn ? ' on' : ''}" aria-label="Légende">?</span>` : ''}</span>${opts.legende === 'mot' ? '<span class="leg-b">Légende</span>' : ''}</div>`;
+  return `<div class="ray ${sorte}${opts.mince ? ' mince' : ''}${opts.actif ? ' actif' : ''}" style="--rc:${coul}">${lab}<div class="rg">${rep && !opts.mince ? `<span class="rep mono">${rep} –</span>` : ''}${gs}${opts.mince ? '' : `<span class="vides">${vides.map((v) => `<span>○ ${v}</span>`).join('')}</span>`}</div></div>`;
 }
-const mur = (o = {}) => { const b = { mince: o.mince, sel: o.sel, w: o.w, bh: o.bh }; return `<div class="mur${o.mince ? ' mince' : ''}${o.cls ? ' ' + o.cls : ''}">${o.avant ?? ''}${rayon('Malts', NM, 'malt', MALTS, { ...b, actif: o.actif === 'malt' })}${o.entre?.malt ?? ''}${rayon('Houblons', NH, 'houblon', HOPS, { ...b, actif: o.actif === 'houblon', lien: o.lien })}${o.entre?.houblon ?? ''}${rayon('Levures', NY, 'levure', YEASTS, { ...b, actif: o.actif === 'levure', legende: o.legende })}${o.apres ?? ''}</div>`; };
+const mur = (o = {}) => { const b = { mince: o.mince, sel: o.sel, w: o.w, bh: o.bh }; const ms = o.malts ?? MALTS; return `<div class="mur${o.mince ? ' mince' : ''}${o.cls ? ' ' + o.cls : ''}">${o.avant ?? ''}${rayon('Malts', nb(ms), 'malt', ms, { ...b, actif: o.actif === 'malt' })}${o.entre?.malt ?? ''}${rayon('Houblons', NH, 'houblon', HOPS, { ...b, actif: o.actif === 'houblon', lien: o.lien })}${o.entre?.houblon ?? ''}${rayon('Levures', NY, 'levure', YEASTS, { ...b, actif: o.actif === 'levure', legende: o.legende, legOn: o.legOn })}${o.apres ?? ''}</div>`; };
 
 // ---------- lignes de liste ----------
 function ligne(a, sorte, o = {}) {
@@ -156,12 +157,18 @@ header.app{height:50px;display:flex;align-items:center;gap:6px;padding:0 8px;bor
 .ray{display:flex;border-left:4px solid var(--rc);border-bottom:1px solid #e4e1d8;padding:2px 6px 2px 5px;position:relative}
 .ray:last-child{border-bottom:0}
 .ray.actif{background:#fff;box-shadow:inset 0 0 0 2px var(--rc)}
-.rl{width:58px;flex:none;display:flex;flex-direction:column;gap:2px;padding-top:2px}
+.rl{width:68px;flex:none;display:flex;flex-direction:column;gap:2px;padding-top:2px}
+.leg-q{position:relative;display:inline-grid;place-items:center;width:22px;height:22px;border-radius:50%;border:1.5px solid var(--line2);background:#fff;font:700 14px/1 "Source Sans 3",system-ui;color:#333}
+.leg-q::after{content:"";position:absolute;inset:-11px}
+.leg-q.on{background:#111;color:#fff;border-color:#111}
+.b.su i{background-image:radial-gradient(#fff 1px,transparent 1.3px);background-size:4px 4px}
+.malt .g.su em{color:#9c7020}
+.tabs>span{flex:1 1 auto;padding:0 7px;letter-spacing:-.1px}
 .rl2{display:flex;align-items:center;gap:4px;white-space:nowrap}
 .rl b{font-size:14px;color:var(--ink)}
 .rl small{font-size:13px;color:var(--mut)}
 .rl .cat{display:inline-flex;align-items:center;gap:1px;font-size:13px;color:var(--bleu);font-family:Consolas,monospace}
-.leg-b{margin-top:2px;font-size:13px;line-height:16px;color:#333;border:1.5px solid var(--line2);border-radius:999px;padding:1px 7px;background:#fff;text-align:center}
+.leg-b{margin-top:2px;font-size:13px;line-height:16px;color:#333;border:1.5px solid var(--line2);border-radius:999px;padding:1px 5px;align-self:flex-start;background:#fff;text-align:center}
 .rg{flex:1;display:flex;align-items:flex-end;gap:8px;position:relative;min-width:0}
 .rep{position:absolute;left:0;top:13px;font-size:12px;color:var(--mut);display:none}
 .g{display:flex;flex-direction:column;position:relative}
@@ -174,7 +181,7 @@ header.app{height:50px;display:flex;align-items:center;gap:6px;padding:0 8px;bor
 .b .ep{height:8px;border:1.5px solid var(--rouge);background:#fff;border-radius:1px}
 .b.cpt i{border:2px dotted #333;border-bottom:0}
 .b.sel i{outline:2.5px solid #111;outline-offset:1px}
-.tot{font-size:12px;line-height:13px;color:#444;font-family:Consolas,monospace;white-space:nowrap}
+.tot{font-size:13px;line-height:15px;color:#333;font-family:"IBM Plex Mono",Consolas,monospace;font-variant-numeric:tabular-nums;letter-spacing:-.3px;white-space:nowrap}
 .vides{display:flex;flex-direction:column;align-items:flex-end;align-self:flex-start;font-size:12px;line-height:14px;color:#999;margin-left:auto;gap:0;padding-top:2px}
 .lv{display:flex;flex-direction:column;justify-content:flex-end;height:100%;gap:1px}
 .lv .sa{display:block;height:3px;border-radius:2px 2px 1px 1px;background:#b59a6a}
@@ -210,21 +217,24 @@ header.app{height:50px;display:flex;align-items:center;gap:6px;padding:0 8px;bor
 .pil i{width:9px;height:9px;border-radius:50%;display:block}
 .qt{font-size:17px;color:#111;min-width:52px;text-align:right;white-space:nowrap}
 .et{width:36px;height:44px;display:grid;place-items:center;color:#777}
-.fab{position:absolute;right:10px;bottom:76px;width:54px;height:54px;border-radius:16px;background:#111;color:#fff;display:grid;place-items:center;box-shadow:0 4px 10px rgba(0,0,0,.25)}
+.fab{position:absolute;right:2px;bottom:68px;width:44px;height:44px;border-radius:14px;background:#111;color:#fff;display:grid;place-items:center;box-shadow:0 4px 10px rgba(0,0,0,.25)}
 nav.bas{position:absolute;left:0;right:0;bottom:0;height:62px;border-top:1px solid var(--line);background:#fafafa;display:grid;grid-template-columns:repeat(6,1fr);z-index:5}
 nav.bas span{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;font-size:13px;color:#444;position:relative}
 nav.bas span.on{background:#e8eddf;color:#111;font-weight:700}
 nav.bas .bd{position:absolute;top:5px;left:54%;min-width:18px;height:18px;border-radius:9px;background:#2b64a6;color:#fff;font-size:12px;display:grid;place-items:center;padding:0 4px}
 .bulle{position:absolute;z-index:4;background:#fff;border:1.5px solid #111;border-radius:12px;box-shadow:0 8px 22px rgba(0,0,0,.18);padding:8px 10px}
 `;
+const CHOPE = '<svg width="22" height="22" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 6h11v13a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2z" fill="#F2C14E"/><path d="M16 9h2a2 2 0 0 1 2 2v3a2 2 0 0 1-2 2h-2" fill="none" stroke="#F2C14E" stroke-width="2"/><path d="M5 6c0-2 2-3 5.5-3S16 4 16 6" fill="#fff"/></svg>';
+const FONTS = '<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@500;600&family=Source+Sans+3:wght@400;600;700;800&display=swap" rel="stylesheet">';
 const NAV = [['bord', 'Bord'], ['wallet', 'Finances'], ['cal', 'Calendrier'], ['mug', 'Brassins'], ['boxes', 'Stocks'], ['users', 'Clients']];
-const navBas = () => `<nav class="bas">${NAV.map(([k, t]) => `<span class="${t === 'Stocks' ? 'on' : ''}">${ic(k, 20)}${t}${t === 'Stocks' ? '<i class="bd">24</i>' : ''}</span>`).join('')}</nav>`;
-const tete = () => `<header class="app"><span class="logo">A</span><span class="marque">L'Affinée</span><span class="mois"><span>${ic('chevL', 18)}</span><span class="m">Nov.</span><span>${ic('chevR', 18)}</span></span><span class="rnd">${ic('search', 18)}</span><span class="av"><b>G</b><b>A</b></span></header>`;
+const NAVC = { Finances: '#2b64a6', Calendrier: '#d9822b', Brassins: '#b4532a', Stocks: '#3f6b2e' };
+const navBas = () => `<nav class="bas">${NAV.map(([k, t]) => `<span class="${t === 'Stocks' ? 'on' : ''}"><i style="color:${NAVC[t] ?? '#444'};display:grid">${ic(k, 20)}</i>${t}${t === 'Stocks' ? '<i class="bd">24</i>' : ''}</span>`).join('')}</nav>`;
+const tete = () => `<header class="app"><span class="logo">${CHOPE}</span><span class="marque">L'Affinée</span><span class="mois"><span>${ic('chevL', 18)}</span><span class="m">Nov.</span><span>${ic('chevR', 18)}</span></span><span class="rnd">${ic('search', 18)}</span><span class="av"><b>G</b><b>A</b></span></header>`;
 const onglets = (liste, actif) => `<div class="seg tabs">${liste.map((t) => `<span class="${t === actif ? 'on' : ''}">${t}</span>`).join('')}</div>`;
-const fab = () => `<span class="fab">${ic('plus', 28)}</span>`;
+const fab = () => `<span class="fab">${ic('plus', 24)}</span>`;
 const PILLS = [['manque', 6, 'br'], ['bas', 3, 'br'], ['épuisés', 17, 'r'], ['à compter', 1, 'cpt'], ['DDM', 0, '']];
 const pills = (o = {}) => PILLS.filter(([t, n]) => !(o.sansZero && !n)).map(([t, n, c]) => `<span class="pl ${n ? c : 'zero'}">${t} <b>${n}</b></span>`).join('');
-const page = (titre, corps, cls = '', css = '') => `<!doctype html><html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>${titre}</title><style>${CSS}${css}</style></head><body class="${cls}">${corps}</body></html>`;
+const page = (titre, corps, cls = '', css = '') => `<!doctype html><html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>${titre}</title>${FONTS}<style>${CSS}${css}</style></head><body class="${cls}">${corps}</body></html>`;
 
 const listeMalts = (n, o = {}) => triMalts().slice(0, n).map((a) => ligne(a, 'malt', o)).join('');
 const listeHops = (n, o = {}) => triHops().slice(0, n).map((a) => ligne(a, 'houblon', o)).join('');
@@ -254,7 +264,7 @@ V['d1a-repos'] = () => page('D1a', `${tete()}${onglets(['Articles', 'Recompter',
 <div style="margin:8px 10px 0" class="filt"><span class="rech">${ic('search', 18)}<span>Rechercher : nom, fournisseur…</span></span></div>
 <div class="filt" style="margin:6px 10px 0">${pills()}<span class="o" style="width:36px;height:36px;margin-left:auto">${ic('star', 18)}</span></div>
 <div class="seg clair" style="margin:8px 10px 0"><span class="on">Ingrédients</span><span>Autres stocks</span></div>
-${mur({ lien: true, legende: true })}
+${mur({ lien: true, legende: 'mot' })}
 ${enteteGroupe('Malts', NM, 'grain', `<span class="chip">couleur ${ic('chevD', 14)}</span>${ic('info', 20)}`)}
 ${echelleMalt}${listeMalts(4)}${fab()}${navBas()}`, '', '');
 
@@ -271,7 +281,7 @@ V['d1b-repos'] = () => page('D1b', `${tete()}${onglets(ongletsB, 'Articles')}
 <div style="margin:8px 10px 0" class="filt"><span class="rech">${ic('search', 18)}<span>Rechercher : nom, fournisseur…</span></span></div>
 <div class="filt" style="margin:6px 10px 0">${pills({ sansZero: true })}<span class="pl">★</span><span class="o" style="margin-left:auto">${ic('clip', 20)}<i class="bd">1</i></span></div>
 <div class="seg clair" style="margin:8px 10px 0"><span class="on">Ingrédients</span><span>Autres stocks</span></div>
-${mur({ lien: true, legende: true })}
+${mur({ lien: true, legende: 'mot' })}
 ${enteteGroupe('Malts', NM, 'grain', `<span class="chip">couleur ${ic('chevD', 14)}</span>${ic('info', 20)}`)}
 ${echelleMalt}${listeMalts(4)}${fab()}${navBas()}`);
 
@@ -286,7 +296,7 @@ const outilsC = (on) => `<div class="filt" style="margin:8px 10px 0;gap:8px"><sp
 <div class="filt" style="margin:6px 10px 0">${pills({ sansZero: true })}<span class="pl zero">DDM · ★</span></div>`;
 V['d1c-repos'] = () => page('D1c', `${tete()}${onglets(ongletsB, 'Articles')}${outilsC(false)}
 <div class="seg clair" style="margin:8px 10px 0"><span class="on">${ic('grain', 16)}Ingrédients</span><span>${ic('box', 16)}Autres stocks</span></div>
-${mur({ lien: true, legende: true })}
+${mur({ lien: true, legende: 'mot' })}
 ${enteteGroupe('Malts', NM, 'grain', `<span class="chip">couleur ${ic('chevD', 14)}</span>${ic('info', 20)}`)}
 ${echelleMalt}${listeMalts(5)}${fab()}${navBas()}`);
 V['d1c-recompter'] = () => page('D1c Recompter', `${tete()}${onglets(ongletsB, 'Articles')}${outilsC(true)}
@@ -303,9 +313,9 @@ const CSS_D2 = '.pl{height:30px}.tabs span{height:34px}';
 // D2a : le mur est l'en-tête de la liste. Toucher un rayon montre ses seuls articles ; le tri en pastille sur la même ligne.
 const barreRayon = (nom, n, tri, pic) => `<div class="d2a-b"><span>${ic(pic, 16)} <b>${nom}</b> <span class="mono">${n}</span></span><span class="chip">${ic('sort', 14)} ${tri}</span><span class="mono ech">0 · 1 · <b>5 kg</b> ⫽ 200</span></div>`;
 const CSS_D2A = `.d2a-b{display:flex;align-items:center;gap:6px;margin:4px 10px 0;padding:4px 0;border-bottom:2px solid #b88a4a;font-size:15px}.d2a-b .ech{margin-left:auto;font-size:13px;color:var(--mut)}
-.mur .ray.actif::after{content:"";position:absolute;left:50%;bottom:-8px;width:14px;height:14px;background:#fff;transform:rotate(45deg);border-right:2px solid var(--rc);border-bottom:2px solid var(--rc);z-index:2}`;
-V['d2a-repos-660'] = () => page('D2a', `${entreeD2()}${mur({ actif: 'malt', lien: true })}${barreRayon('Malts', NM, 'couleur', 'grain')}${listeMalts(6)}${fab()}${navBas()}`, 'h660', CSS_D2 + CSS_D2A);
-V['d2a-houblons-660'] = () => page('D2a Houblons', `${entreeD2()}${mur({ actif: 'houblon', lien: true })}${barreRayon('Houblons', NH, 'α', 'cone').replace('0 · 1 · <b>5 kg</b> ⫽ 200', '0 · 100 · <b>250 g</b> ⫽ 1 kg')}${listeHops(6)}${fab()}${navBas()}`, 'h660', CSS_D2 + CSS_D2A + '.li .jauge i{background:#7f8a5e}');
+.mur .ray.actif::after{content:"";position:absolute;left:26px;bottom:-8px;width:14px;height:14px;background:#fff;transform:rotate(45deg);border-right:2px solid var(--rc);border-bottom:2px solid var(--rc);z-index:2}`;
+V['d2a-repos-660'] = () => page('D2a', `${entreeD2()}${mur({ actif: 'malt', lien: true, legende: 'rond' })}${barreRayon('Malts', NM, 'couleur', 'grain')}${listeMalts(6)}${fab()}${navBas()}`, 'h660', CSS_D2 + CSS_D2A);
+V['d2a-houblons-660'] = () => page('D2a Houblons', `${entreeD2()}${mur({ actif: 'houblon', lien: true, legende: 'rond' })}${barreRayon('Houblons', NH, 'α', 'cone').replace('0 · 1 · <b>5 kg</b> ⫽ 200', '0 · 100 · <b>250 g</b> ⫽ 1 kg')}${listeHops(6)}${fab()}${navBas()}`, 'h660', CSS_D2 + CSS_D2A + '.li .jauge i{background:#7f8a5e}');
 
 // D2b : le mur mince. Trois lignes de 38 px, pictos au lieu des noms ; une seule bande collante tient rayon, tri et échelle.
 V['d2b-repos-660'] = () => page('D2b', `${entreeD2()}${mur({ mince: true })}
@@ -322,14 +332,14 @@ const agir = [
   { ...HOPS[0].l[2], sorte: 'houblon', dit: 'épuisé · NEIPA S50' },
   { ...MALTS[2].l[2], sorte: 'malt', dit: 'épuisé · Stout S51' },
 ];
-const ligneAgir = (a) => `<div class="li"><span class="jauge${a.c ? ' cpt' : ''}"><i style="height:${a.q ? 30 : 0}%;background:${a.sorte === 'malt' ? '#a97b3c' : '#7f8a5e'}"></i></span><span class="d2c-p">${ic(a.sorte === 'malt' ? 'grain' : 'cone', 18)}</span><div class="nm"><b>${a.n}</b><small class="${a.c ? '' : a.q ? 'brun' : 'rouge'}">${a.dit}</small></div><span class="qt mono">${a.c ? '1 Pck' : a.sorte === 'malt' ? kg(a.q) : a.q + ' g'}</span><span class="et">${ic('cart', 20)}</span></div>`;
+const ligneAgir = (a) => `<div class="li${!a.q && !a.c ? ' z' : ''}"><span class="jauge${a.c ? ' cpt' : ''}"><i style="height:${a.q ? 30 : 0}%;background:${a.sorte === 'malt' ? '#a97b3c' : '#7f8a5e'}"></i></span><span class="d2c-p">${ic(a.sorte === 'malt' ? 'grain' : 'cone', 18)}</span><div class="nm"><b>${a.n}</b><small class="${a.c ? '' : a.q ? 'brun' : 'rouge'}">${a.dit}</small></div><span class="qt mono">${a.c ? '1 Pck' : a.sorte === 'malt' ? kg(a.q) : a.q + NB + 'g'}</span><span class="et">${ic(a.c ? 'clip' : 'cart', 20)}</span></div>`;
 const CSS_D2C = `.d2c-h{display:flex;align-items:center;gap:8px;margin:8px 12px 2px;font-size:16px}.d2c-h b{font-size:17px}.d2c-h .n{background:#111;color:#fff;border-radius:999px;padding:0 8px;font-size:14px}
 .d2c-p{color:#8b7350}.tout{display:flex;align-items:center;justify-content:space-between;margin:0 12px;height:46px;font-size:16px;font-weight:600;color:var(--ink);border-bottom:1px solid var(--line)}`;
-V['d2c-repos-660'] = () => page('D2c', `${entreeD2()}${mur({ lien: true, legende: true })}
+V['d2c-repos-660'] = () => page('D2c', `${entreeD2()}${mur({ lien: true, legende: 'rond' })}
 <div class="d2c-h"><b>À faire</b><span class="n mono">4</span></div>${agir.slice(0, 3).map(ligneAgir).join('')}<div class="tout">Tout lister · ${NM + NH + NY} articles ${ic('chevR', 18)}</div>${fab()}${navBas()}`, 'h660', CSS_D2 + CSS_D2C);
 const bulleCitra = `<div class="d2c-bu"><span class="jauge" style="width:14px;height:36px;border:1.5px solid #8b7a5a;border-radius:2px;display:flex;align-items:flex-end"><i style="display:block;width:100%;height:95%;background:#7f8a5e"></i></span><div class="nm"><b style="font-weight:700">Citra</b><small>α 12,5 % · seuil 250 g · Hazy</small></div><span class="qt mono" style="font-size:20px">485 g</span><span class="o" style="width:40px;height:40px">${ic('chevR', 20)}</span></div>`;
-V['d2c-bulle-660'] = () => page('D2c touché', `${entreeD2()}${mur({ lien: true, legende: true, sel: 'Citra', entre: { houblon: bulleCitra } })}
-<div class="d2c-h"><b>À faire</b><span class="n mono">4</span></div>${agir.slice(0, 3).map(ligneAgir).join('')}${fab()}${navBas()}`, 'h660', CSS_D2 + CSS_D2C + `.mur{position:relative}.d2c-bu{display:flex;align-items:center;gap:8px;background:#fff;border:2px solid #111;border-radius:10px;margin:0;left:6px;right:6px;padding:3px 6px 3px 10px;position:absolute;z-index:3;box-shadow:0 8px 18px rgba(0,0,0,.22)}.d2c-bu::before{content:"";position:absolute;top:-8px;left:84px;width:12px;height:12px;background:#fff;border-left:2px solid #111;border-top:2px solid #111;transform:rotate(45deg)}`);
+V['d2c-bulle-660'] = () => page('D2c touché', `${entreeD2()}${mur({ lien: true, legende: 'rond', sel: 'Citra' })}${bulleCitra}
+<div class="d2c-h"><b>À faire</b><span class="n mono">4</span></div>${agir.slice(0, 3).map(ligneAgir).join('')}${fab()}${navBas()}`, 'h660', CSS_D2 + CSS_D2C + `.d2c-bu{display:flex;align-items:center;gap:8px;background:#fff;border:2px solid #111;border-radius:10px;margin:10px 10px 0;padding:3px 6px 3px 10px;position:relative;z-index:3;box-shadow:0 6px 14px rgba(0,0,0,.18)}.d2c-bu::before{content:"";position:absolute;top:-8px;left:74px;width:12px;height:12px;background:#fff;border-left:2px solid #111;border-top:2px solid #111;transform:rotate(45deg)}`);
 
 // D3 : légende et 1280.
 const LEG = [
@@ -347,9 +357,9 @@ V['d3a-repos'] = () => page('D3a', `${entreeD2()}${mur({ lien: true, apres: band
 ${enteteGroupe('Malts', NM, 'grain', `<span class="chip">${ic('sort', 14)} couleur</span>`)}${echelleMalt}${listeMalts(4)}${fab()}${navBas()}`, '', CSS_D2 + CSS_LEG + `.d3a-l{display:flex;justify-content:space-around;align-items:flex-end;padding:6px 4px 5px;border-top:1px solid #e4e1d8;font-size:14px;color:#333}.d3a-l>span{display:flex;align-items:flex-end;gap:5px}`);
 
 const bulleLeg = () => `<div class="bulle d3b-bu">${LEG.map(([s, t]) => `<div>${s}<span>${t}</span></div>`).join('')}<div><span class="d3b-h mono">⫽</span><span>échelle resserrée</span></div></div>`;
-V['d3b-legende'] = () => page('D3b légende', `${entreeD2()}${mur({ lien: true, avant: `<span class="o on d3b-q">${ic('help', 20)}</span>` })}${bulleLeg()}
+V['d3b-legende'] = () => page('D3b légende', `${entreeD2()}<div style="position:relative">${mur({ lien: true, legende: 'rond', legOn: true })}${bulleLeg()}</div>
 ${enteteGroupe('Malts', NM, 'grain', `<span class="chip">${ic('sort', 14)} couleur</span>`)}${echelleMalt}${listeMalts(4)}${fab()}${navBas()}`, '', CSS_D2 + CSS_LEG + `.mur{position:relative}.d3b-q{position:absolute;right:4px;top:4px;width:36px;height:36px;z-index:3}
-.d3b-bu{top:276px;right:12px;width:200px;display:flex;flex-direction:column;gap:7px;font-size:15px}.d3b-bu>div{display:flex;align-items:flex-end;gap:10px}.d3b-bu::before{content:"";position:absolute;top:-8px;right:14px;width:12px;height:12px;background:#fff;border-left:1.5px solid #111;border-top:1.5px solid #111;transform:rotate(45deg)}.d3b-h{width:14px;text-align:center;font-weight:700}`);
+.d3b-bu{top:calc(100% - 4px);left:12px;width:210px;display:flex;flex-direction:column;gap:7px;font-size:15px}.d3b-bu>div{display:flex;align-items:flex-end;gap:10px}.d3b-bu::before{content:"";position:absolute;top:-8px;left:20px;width:12px;height:12px;background:#fff;border-left:1.5px solid #111;border-top:1.5px solid #111;transform:rotate(45deg)}.d3b-h{width:14px;text-align:center;font-weight:700}`);
 
 // 1280 : rail à gauche (comme l'app), tout le reste de la largeur au stock.
 const RAIL = `<aside class="rail">${NAV.map(([k, t]) => `<span class="${t === 'Stocks' ? 'on' : ''}">${ic(k, 22)}${t}</span>`).join('')}</aside>`;
@@ -364,20 +374,19 @@ const CSS_1280 = `body.l1280 header.app{height:46px}.rail{position:absolute;left
 .tb .bar u{position:absolute;top:-3px;bottom:-3px;border-left:2px dashed #555}`;
 const ligneTb = (a, sorte, max) => {
   const q = sorte === 'malt' ? a.q : a.q / 1000, s = a.s ? (sorte === 'malt' ? a.s : a.s / 1000) : null;
-  return `<tr><td>${a.n}${!a.q ? ' <span class="rouge" style="font-size:14px">épuisé</span>' : a.c ? ' <span class="pt" style="font-size:14px">à compter</span>' : ''}</td><td class="mono" style="font-size:14px">${sorte === 'malt' ? `<span class="pt-e" style="width:9px;height:9px;border-radius:50%;display:inline-block;background:${ebcCoul(a.e)}"></span> ${fr(a.e)}` : `α ${fr(a.a)}`}</td><td class="q">${a.c ? '1 Pck' : sorte === 'malt' ? kg(a.q) : a.q + ' g'}</td><td style="width:40%"><span class="bar"><i style="width:${Math.min(100, (q / max) * 100)}%"></i>${s ? `<u style="left:${(s / max) * 100}%"></u>` : ''}</span></td></tr>`;
+  return `<tr><td>${a.n}${!a.q ? ' <span class="rouge" style="font-size:14px">épuisé</span>' : a.c ? ' <span class="pt" style="font-size:14px">à compter</span>' : ''}</td><td class="mono" style="font-size:14px">${sorte === 'malt' ? `<span class="pt-e" style="width:9px;height:9px;border-radius:50%;display:inline-block;background:${ebcCoul(a.e)}"></span> ${fr(a.e)}` : `α ${fr(a.a)}`}</td><td class="q">${a.c ? '1 Pck' : sorte === 'malt' ? kg(a.q) : a.q + NB + 'g'}</td><td style="width:40%"><span class="bar${sorte === 'houblon' ? ' h' : ''}"><i style="width:${Math.min(100, (q / max) * 100)}%"></i>${s ? `<u style="left:${(s / max) * 100}%"></u>` : ''}</span></td></tr>`;
 };
-const tete1280 = () => `<header class="app"><span class="logo">A</span><span class="marque">L'Affinée</span><span class="mois"><span>${ic('chevL', 18)}</span><span class="m">Nov.</span><span>${ic('chevR', 18)}</span></span><span class="rnd">${ic('search', 18)}</span><span class="av"><b>G</b><b>A</b></span></header>`;
+const tete1280 = () => `<header class="app"><span class="logo">${CHOPE}</span><span class="marque">L'Affinée</span><span class="mois"><span>${ic('chevL', 18)}</span><span class="m">Nov.</span><span>${ic('chevR', 18)}</span></span><span class="rnd">${ic('search', 18)}</span><span class="av"><b>G</b><b>A</b></span></header>`;
 const barre1280 = () => `${onglets(['Articles', 'Recompter', 'Courses', 'Fûts', 'Matériel'], 'Articles')}<div class="barre"><span class="rech">${ic('search', 18)}<span>Rechercher : nom, fournisseur…</span></span><span class="o">${ic('balance', 20)}</span>${pills()}<span class="o">${ic('star', 18)}</span><span class="seg clair" style="margin-left:auto;width:300px"><span class="on">Ingrédients</span><span>Autres stocks</span></span></div>`;
 
 // D3a 1280 : les trois rayons côte à côte, pleine largeur ; une liste par rayon dessous, sans colonne vide.
 V['d3a-1280'] = () => page('D3a 1280', `${tete1280()}${RAIL}<div class="zone">${barre1280()}
 <div class="d3-col" style="grid-template-columns:1.12fr 1fr 1.05fr">
-<div class="mur d3a-m grand">${rayon('Malts', NM, 'malt', MALTS, { w: 12, bh: 50 })}</div><div class="mur d3a-m grand">${rayon('Houblons', NH, 'houblon', HOPS, { w: 10, lien: true, bh: 50 })}</div><div class="mur d3a-m grand">${rayon('Levures', NY, 'levure', YEASTS, { w: 10, bh: 50 })}</div>
-<div style="grid-column:1/-1">${bandeLeg()}</div>
-<div><table class="tb"><tr><th>Malts</th><th>EBC</th><th style="text-align:right">stock</th><th>0 — 5 kg ⫽ 25</th></tr>${triMalts().slice(0, 9).map((a) => ligneTb(a, 'malt', 26)).join('')}</table></div>
-<div><table class="tb"><tr><th>Houblons</th><th>α</th><th style="text-align:right">stock</th><th>0 — 500 g</th></tr>${triHops().slice(0, 9).map((a) => ligneTb(a, 'houblon', 0.5)).join('')}</table></div>
+<div class="mur d3a-m grand">${rayon('Malts', NM, 'malt', MALTS, { w: 12, bh: 50 })}</div><div class="mur d3a-m grand">${rayon('Houblons', NH, 'houblon', HOPS, { w: 10, lien: true, bh: 50 })}</div><div class="mur d3a-m grand">${rayon('Levures', NY, 'levure', YEASTS, { w: 10, bh: 50, legende: 'rond' })}</div>
+<div><table class="tb"><tr><th>Malts</th><th>EBC</th><th style="text-align:right">stock</th><th>0 — 5 kg ⫽ 25</th></tr>${triMalts().map((a) => ligneTb(a, 'malt', 26)).join('')}</table></div>
+<div><table class="tb"><tr><th>Houblons</th><th>α</th><th style="text-align:right">stock</th><th>0 — 500 g</th></tr>${triHops().map((a) => ligneTb(a, 'houblon', 0.5)).join('')}</table></div>
 <div><table class="tb"><tr><th>Levures</th><th>sachets</th><th>DDM</th></tr>${YEASTS.flatMap((g) => g.l).map((a) => `<tr><td>${a.n}${a.q ? '' : ' <span class="rouge" style="font-size:14px">épuisé</span>'}</td><td class="mono">${'▮'.repeat(a.q) || '0'}</td><td class="mono" style="font-size:14px">${a.q ? '03.27' : '—'}</td></tr>`).join('')}</table></div>
-</div></div>${fab()}`, 'l1280', CSS_1280 + CSS_LEG + `.d3a-m{margin:0}.d3a-m .ray{min-height:86px;border-bottom:0}.d3a-m .bars{height:50px}.d3a-m .bars::before{bottom:31px!important}.d3a-m .rl{width:64px}.d3a-m .g em{line-height:15px}.d3a-m .tot{font-size:13px;line-height:16px}.d3a-l{display:flex;gap:28px;justify-content:center;align-items:flex-end;font-size:14px;color:#333;padding:2px 0}.d3a-l>span{display:flex;align-items:flex-end;gap:6px}.tb tr:first-child th:first-child{font-size:16px;color:#111}`);
+</div></div>${fab()}`, 'l1280', CSS_1280 + CSS_LEG + `.d3a-m{margin:0}.d3a-m .ray{min-height:86px;border-bottom:0}.d3a-m .bars{height:50px}.d3a-m .bars::before{bottom:31px!important}.d3a-m .rl{width:64px}.d3a-m .g em{line-height:15px}.d3a-m .tot{font-size:14px;line-height:17px}.tb td{padding:3px 6px}.tb .bar.h{background:#e3e8d6}.tb .bar.h i{background:#7f8a5e}.d3a-l{display:flex;gap:28px;justify-content:center;align-items:flex-end;font-size:14px;color:#333;padding:2px 0}.d3a-l>span{display:flex;align-items:flex-end;gap:6px}.tb tr:first-child th:first-child{font-size:16px;color:#111}`);
 
 // D3b 1280 : le mur en colonne collante à gauche, la liste à droite ; légende au rond « ? ».
 V['d3b-1280'] = () => page('D3b 1280', `${tete1280()}${RAIL}<div class="zone">${barre1280()}
@@ -389,10 +398,10 @@ V['d3b-1280'] = () => page('D3b 1280', `${tete1280()}${RAIL}<div class="zone">${
 
 // D8 : Matériel et Fûts.
 const MAT = [
-  { n: 'Fermenteur 120 L', p: 'ferm', prix: '900 CHF', d: 'Parc' },
-  { n: 'Cuve de brassage 70 L', p: 'pot', prix: '1 450 CHF', d: 'Parc' },
-  { n: 'Refroidisseur à plaques', p: 'snow', prix: '?', d: 'Parc' },
-  { n: 'Pompe magnétique', p: 'pump', prix: '160 CHF', d: 'Parc' },
+  { n: 'Fermenteur 120 L', p: 'ferm', prix: '900 CHF', d: 'Parc', pj: '2 projets' },
+  { n: 'Cuve de brassage 70 L', p: 'pot', prix: '1 450 CHF', d: 'Parc', pj: '1 projet' },
+  { n: 'Refroidisseur à plaques', p: 'snow', prix: '?', d: 'Parc', pj: 'prix à saisir' },
+  { n: 'Pompe magnétique', p: 'pump', prix: '160 CHF', d: 'Parc', pj: 'aucun projet' },
 ];
 const FUTS = { 'Pleins': ['#d9a23a', [['K1', 'IPA', 20], ['K4', 'NEIPA', 20], ['K7', 'Stout', 30]]], 'Livrés': ['#2b64a6', [['K2', 'Café du Pont', 20]]], 'À laver': ['#b3261e', [['K3', '', 20], ['K5', '', 30]]], 'Propres': ['#3f6b2e', [['K6', '', 20], ['K8', '', 20]]] };
 const keg = (col, t, plein = 1, s = 1) => `<svg width="${30 * s}" height="${40 * s}" viewBox="0 0 30 40" aria-hidden="true"><rect x="2" y="4" width="26" height="34" rx="6" fill="${plein ? col : '#fff'}" stroke="${col}" stroke-width="2.5"/><path d="M2 14h26M2 28h26" stroke="${plein ? '#fff' : col}" stroke-width="2" opacity=".7"/><rect x="11" y="0.5" width="8" height="4" rx="1" fill="${col}"/>${t ? `<text x="15" y="25" text-anchor="middle" font-size="9" font-weight="700" fill="${plein ? '#fff' : col}" font-family="system-ui">${t}</text>` : ''}</svg>`;
@@ -402,8 +411,8 @@ const CSS_D8 = `.m-l{display:flex;align-items:center;gap:10px;min-height:58px;ma
 .m-l .pr{font-family:Consolas,monospace;font-size:16px;color:#111}.m-l .pr.inc{color:#999;border-bottom:2px dotted #999}
 .m-h{display:flex;align-items:center;gap:8px;margin:10px 12px 2px;font-size:15px;color:var(--mut)}.m-h b{color:#111;font-size:17px}`;
 V['d8a-materiel'] = () => page('D8a Matériel', `${tete()}${onglets(['Articles', 'Recompter', 'Courses', 'Fûts', 'Matériel'], 'Matériel')}${segMat()}
-<div class="m-h"><b>Parc</b><span class="mono">2 515 CHF</span><span style="margin-left:auto;display:flex;gap:8px"><span class="o">${ic('search', 18)}</span><span class="o">${ic('cart', 18)}</span></span></div>
-${MAT.map((m) => `<div class="m-l"><span class="pi">${ic(m.p, 24)}</span><div class="nm"><b style="white-space:nowrap">${m.n}</b><small>${ic('wrench', 13)} 2 projets</small></div><span class="pr${m.prix === '?' ? ' inc' : ''}">${m.prix}</span>${ic('chevR', 18)}</div>`).join('')}
+<div class="m-h"><b>Parc</b><span class="mono">2 510 CHF</span><span class="mono" style="color:#999;border-bottom:2px dotted #999">+ 1 ?</span><span style="margin-left:auto;display:flex;gap:8px"><span class="o">${ic('search', 18)}</span><span class="o">${ic('cart', 18)}</span></span></div>
+${MAT.map((m) => `<div class="m-l"><span class="pi">${ic(m.p, 24)}</span><div class="nm"><b style="white-space:nowrap">${m.n}</b><small>${m.prix === '?' ? '' : ic('wrench', 13) + ' '}${m.pj}</small></div><span class="pr${m.prix === '?' ? ' inc' : ''}">${m.prix}</span>${ic('chevR', 18)}</div>`).join('')}
 <div class="m-h" style="margin-top:14px"><b>À venir</b><span class="mono">1</span></div>
 <div class="m-l"><span class="pi" style="background:#f6ecd8;color:#8a5212">${ic('snow', 24)}</span><div class="nm"><b>Chambre froide</b><small>carnet · 3 façons</small></div><span class="pr">dès 3 350</span>${ic('chevR', 18)}</div>
 ${fab()}${navBas()}`, '', CSS_D8 + '.seg>span{font-size:14px}');
@@ -420,13 +429,18 @@ V['d8b-materiel'] = () => page('D8b Matériel', `${tete()}${onglets(['Articles',
 .t b{font-size:16px;color:#111;font-weight:600}.t .pr{font-family:Consolas,monospace;font-size:16px;margin-top:auto}.t .pr.inc{color:#999}.t.a{border-style:dashed}.t.plus{align-items:center;justify-content:center;color:#555;border-style:dashed;background:var(--s1)}.seg>span{font-size:14px}`);
 
 V['d8b-futs'] = () => page('D8b Fûts', `${tete()}${onglets(['Articles', 'Recompter', 'Courses', 'Fûts', 'Matériel'], 'Fûts')}
-<div class="ra">${Object.entries(FUTS).map(([t, [c, l]]) => `<div class="ra-c"><div class="ra-k">${l.map(([k]) => keg(c, k, t === 'Pleins' || t === 'Livrés' ? 1 : 0, 1.25)).join('')}</div><div class="ra-s" style="border-color:${c}"></div><b style="color:${c}">${t} <span class="mono">${l.length}</span></b></div>`).join('')}</div>
-<div class="ra-leg"><span>${keg('#555', '', 1, 0.6)} plein</span><span>${keg('#555', '', 0, 0.6)} vide</span><span class="mono">20 L · 30 L</span></div>
-<div class="m-h"><b>Pleins</b><span class="mono">3</span></div>
-${FUTS.Pleins[1].map(([k, b, v]) => `<div class="m-l">${keg('#d9a23a', k, 1)}<div class="nm"><b>${b} · ${v} L</b><small>${k} · rempli le 12.11</small></div><span class="chip" style="background:#fff;border:1.5px solid #d9a23a;color:#8a5212">${ic('truck', 16)} Livrer</span></div>`).join('')}
+<div class="ra">${Object.entries(FUTS).map(([t, [c, l]]) => `<div class="ra-c"><div class="ra-k">${l.map(([k, , v]) => keg(c, k, t === 'Pleins' || t === 'Livrés' ? 1 : 0, v === 30 ? 1.4 : 1.1)).join('')}</div><div class="ra-s" style="border-color:${c}"></div><b style="color:${c}">${t} <span class="mono">${l.length}</span></b></div>`).join('')}</div>
+${[['Pleins', 'rempli le 12.11', 'truck', 'Livrer'], ['Livrés', 'livré le 03.11', 'back', 'Retour'], ['À laver', 'rentré le 18.11', 'drop', 'Lavé'], ['Propres', 'lavé le 19.11', 'plus', 'Remplir']].map(([t, quand, pic, act]) => { const [c, l] = FUTS[t]; return `<div class="m-h"><b>${t}</b><span class="mono">${l.length}</span></div>${l.map(([k, b, v]) => `<div class="m-l f-l">${keg(c, k, t === 'Pleins' || t === 'Livrés' ? 1 : 0)}<div class="nm"><b>${b ? `${b} · ` : ''}${v}${NB}L</b><small>${k} · ${quand}</small></div><span class="chip" style="background:#fff;border:1.5px solid ${c};color:${c}">${P[pic] ? ic(pic, 16) : ''} ${act}</span></div>`).join('')}`; }).join('')}
 ${fab()}${navBas()}`, '', CSS_D8 + `.ra{display:grid;grid-template-columns:1.4fr .8fr 1fr 1fr;gap:6px;margin:10px 10px 0;background:var(--mur);border-radius:12px;padding:12px 8px 8px}
 .ra-c{display:flex;flex-direction:column;align-items:center}.ra-k{display:flex;align-items:flex-end;justify-content:center;gap:2px;min-height:52px;flex-wrap:wrap}.ra-s{align-self:stretch;border-bottom:3px solid;margin:2px 0 4px}.ra-c b{font-size:14px;white-space:nowrap}
-.ra-leg{display:flex;gap:16px;justify-content:center;align-items:center;font-size:14px;color:var(--mut);margin:6px 0 0}.ra-leg span{display:flex;align-items:center;gap:4px}`);
+.f-l{min-height:47px;padding-top:2px;padding-bottom:2px}.m-h{margin-top:8px}`);
+
+// D7a (tour 2, rebâtie sur ce mur, C2) : les sucres en colonne au bout du rang Malts ; pots dorés à points (sucre, sans EBC).
+const MALTS_S = [...MALTS, { g: 'Sucres', su: 1, l: [{ n: 'Dextrose', q: 5, su: 1 }, { n: 'Resucrage', q: 1, su: 1 }] }];
+const ligneSucre = (n, q, dit) => `<div class="li"><span class="jauge"><i style="height:${Math.min(100, q * 14)}%;background:#e9cf7e"></i></span><div class="nm"><b>${n}</b><small>${dit}</small></div><span class="pil" style="border-color:#e0c46f">sucre</span><span class="qt mono">${kg(q)}</span><span class="et">${ic('star', 20)}</span></div>`;
+V['d7a-repos'] = () => page('D7a', `${entreeD2()}${mur({ lien: true, legende: 'rond', malts: MALTS_S, w: 8 })}
+${enteteGroupe('Malts et sucres', NM + 2, 'grain', `<span class="chip">couleur ${ic('chevD', 14)}</span>`)}
+${ligneSucre('Dextrose', 5, 'compté dans la densité')}${ligneSucre('Sucre de resucrage', 1, 'mise en bouteille')}${listeMalts(3)}${fab()}${navBas()}`, '', CSS_D2 + '.malt .rg{gap:3px}.malt .g em{font-size:12px;letter-spacing:-.25px}.malt .vides{white-space:nowrap}');
 
 let k = 0;
 for (const [id, f] of Object.entries(V)) { fs.writeFileSync(path.join(ICI, `st1-${id}.html`), f()); k++; }

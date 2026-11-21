@@ -45,7 +45,7 @@ header.app{height:58px;display:flex;align-items:center;gap:8px;padding:0 12px;bo
 .av{display:flex}.av b{width:34px;height:34px;border-radius:50%;display:grid;place-items:center;font-size:15px}
 .av b:first-child{background:#111;color:#fff}.av b:last-child{background:#e6e6e6;color:#111;margin-left:-8px}
 main{padding:8px 12px 0}
-.fab{position:absolute;right:12px;bottom:74px;width:62px;height:62px;border-radius:18px;background:#111;color:#fff;display:grid;place-items:center;border:0;box-shadow:0 4px 10px rgba(0,0,0,.25)}
+.fab{position:absolute;right:2px;bottom:70px;width:44px;height:44px;border-radius:14px;background:#111;color:#fff;display:grid;place-items:center;border:0;box-shadow:0 4px 10px rgba(0,0,0,.25)}
 nav.onglets{position:absolute;left:0;right:0;bottom:0;height:64px;border-top:1px solid var(--line);background:#fafafa;display:grid;grid-template-columns:repeat(6,1fr);z-index:5}
 nav.onglets a{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;font-size:14px;color:#333;text-decoration:none;position:relative}
 nav.onglets a.on{background:#eef2e8;color:#111;font-weight:600}
@@ -55,6 +55,7 @@ nav .t-fin{color:#1F64A3}nav .t-cal{color:#C87A2C}nav .t-bra{color:#A0522D}nav .
 .seg{display:flex;background:var(--s2);border-radius:14px;padding:3px;gap:2px}
 .seg a{flex:1;text-align:center;font-size:16px;color:#444;padding:9px 0;border-radius:11px;text-decoration:none;display:flex;align-items:center;justify-content:center;gap:4px}
 .seg a.on{background:#111;color:#fff;font-weight:600}
+.seg:not(.bl) a{flex:1 1 auto;padding:9px 7px;font-size:15px;letter-spacing:-.1px}
 .seg.bl a.on{background:#fff;color:#111;box-shadow:0 1px 3px rgba(0,0,0,.15)}
 .cherche{display:flex;align-items:center;gap:8px;height:44px;border:1.5px solid var(--line2);border-radius:12px;padding:0 12px;color:#777;font-size:16px;margin-top:8px}
 .pills{display:flex;gap:4px;margin-top:6px;flex-wrap:nowrap}
@@ -63,7 +64,7 @@ nav .t-fin{color:#1F64A3}nav .t-cal{color:#C87A2C}nav .t-bra{color:#A0522D}nav .
 .pills .z{color:#999;border-color:#e2e2e2}
 .r{color:var(--rge)}.m{color:var(--man)}.g{color:var(--mut)}.v{color:var(--ok)}
 `;
-const NAV = `<button class="fab" aria-label="Ajouter">${ic('plus', 30)}</button>
+const NAV = `<button class="fab" aria-label="Ajouter">${ic('plus', 24)}</button>
 <nav class="onglets"><a href="#"><svg class="ic" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/></svg>Bord</a><a href="#"><span class="t-fin"><svg class="ic" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 7V4a1 1 0 0 0-1-1H5a2 2 0 0 0 0 4h15a1 1 0 0 1 1 1v4h-3a2 2 0 0 0 0 4h3a1 1 0 0 0 1-1v-2a1 1 0 0 0-1-1"/><path d="M3 5v14a2 2 0 0 0 2 2h15a1 1 0 0 0 1-1v-4"/></svg></span>Finances</a><a href="#"><span class="t-cal">${ic('cal', 22)}</span>Calendrier</a><a href="#"><span class="t-bra"><svg class="ic" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 11h1a3 3 0 0 1 0 6h-1"/><path d="M9 12v6M13 12v6"/><path d="M5 8v12a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2V8"/><path d="M5 8c0-3 2-5 6-5s6 2 6 5"/></svg></span>Brassins</a><a class="on" href="#"><span class="t-sto">${ic('box', 22)}</span>Stocks<span class="bdg">24</span></a><a href="#"><svg class="ic" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></svg>Clients</a></nav>`;
 const ENTETE = `<header class="app"><span class="logo"><svg width="24" height="24" viewBox="0 0 24 24"><path d="M5 6h11v13a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2z" fill="#F2C14E"/><path d="M16 9h2a2 2 0 0 1 2 2v3a2 2 0 0 1-2 2h-2" fill="none" stroke="#F2C14E" stroke-width="2"/><path d="M5 6c0-2 2-3 5.5-3S16 4 16 6" fill="#fff"/></svg></span><span class="marque">L'Affinée</span><span class="mois"><span>${ic('back', 18)}</span><span class="m">Nov.</span><span>${ic('fwd', 18)}</span></span><span class="rond">${ic('search')}</span><span class="av"><b>G</b><b>A</b></span></header>`;
 const FONTS = `<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@500;600&family=Source+Sans+3:wght@400;600;700;800&display=swap" rel="stylesheet">`;
@@ -155,7 +156,8 @@ ${ligne('#4F7E9B', 'Acide lactique 80 %', 'épuisé · seuil 100 ml', '0 ml', 0,
 // D4b · Objets sur la planche (tiède) — chaque article dessiné comme il se range : sachet, flacon, bidon, seau, bouteille, carton.
 const FORMES = {
   sachet: 'M5 6h22l-2 34H7z', flacon: 'M12 3h8v7l4 5v25H8V15l4-5z', bidon: 'M5 10h6l2-6h8v6h6v30H5z', seau: 'M4 12h24l-3 28H7z',
-  bouteille: 'M13 2h6v9l3 5v24H10V16l3-5z', capsule: 'M4 22a12 12 0 0 1 24 0v14H4z', etiquette: 'M4 10h24v26H4z', carton: 'M3 14l13-6 13 6v26H3z', gants: 'M8 40V18l-3-8 4-1 3 7V4h4v12V2h4v14V5h4v15l3-5 3 2-6 12v11z',
+  // tour 2 : capsule couronne vue de dessus (bord denté) ; caisse à séparations (cloisons, rabats ouverts)
+  bouteille: 'M13 2h6v9l3 5v24H10V16l3-5z', capsule: Array.from({ length: 42 }, (_, i) => { const r = i % 2 ? 14.2 : 15.6, t = (i * Math.PI) / 21; return `${i ? 'L' : 'M'}${(16 + r * Math.sin(t)).toFixed(1)} ${(25 - r * Math.cos(t)).toFixed(1)}`; }).join('') + 'z', etiquette: 'M4 10h24v26H4z', carton: 'M3 16h26v24H3z M11.7 16v24 M20.3 16v24 M3 28h26 M3 16 0 9 M29 16 32 9', gants: 'M8 40V18l-3-8 4-1 3 7V4h4v12V2h4v14V5h4v15l3-5 3 2-6 12v11z',
 };
 function objet(forme, q, s, max, coul, id, vu = false) {
   const H = 40, ratio = q / max, y = H - ratio * 38, ys = s != null ? H - (s / max) * 38 : null, ep = q === 0;
@@ -173,31 +175,35 @@ function d4b(etat) {
 .grp:first-child{border-left:0;padding-left:0}
 .grp .u{font-size:14px;font-weight:700;text-align:left}
 .grp .ob{display:flex;gap:1px}
-.o{display:flex;flex-direction:column;align-items:center;width:52px}
-.o .nm{font-size:14px;line-height:1.05;color:#222;text-align:center;height:30px;display:flex;align-items:flex-end;justify-content:center;overflow:hidden}
+.o{display:flex;flex-direction:column;align-items:center;flex:1 1 54px;min-width:54px;max-width:86px;padding:0 1px}
+.grp .ob{display:flex}.o .nm{font-size:14px;line-height:1.05;color:#222;text-align:center;height:30px;width:100%;display:flex;align-items:flex-end;justify-content:center;overflow:hidden;overflow-wrap:anywhere;hyphens:auto}
+.grp .ob{gap:3px!important}
+.bas2{display:flex;flex-direction:column;gap:0;margin-top:6px}.bas2 a{display:flex;align-items:center;flex-wrap:wrap;gap:4px 10px;min-height:44px;padding:4px 0;border-top:1px solid var(--line);font-size:15px;color:#222;text-decoration:none}.bas2 a .fin{color:var(--mut)}
+.bul2{position:relative;margin:2px 0 6px;background:#111;color:#fff;border-radius:12px;padding:8px 10px;font-size:15px}.bul2::before{content:"";position:absolute;top:-7px;left:var(--px);width:12px;height:12px;background:#111;transform:rotate(45deg)}
+.bul2 .ac{display:flex;gap:6px;margin-top:6px}.bul2 .ac span{flex:1;display:flex;align-items:center;justify-content:center;gap:4px;min-height:40px;padding:0 10px;border-radius:9px;background:#F2C14E;color:#12100E;font-weight:700}.bul2 .ac span+span{background:#2c2c2a;color:#fff}
 .o .q{font-size:14px;margin-top:1px}
-.bulle{position:absolute;z-index:4;background:#111;color:#fff;border-radius:12px;padding:8px 10px;font-size:15px;width:226px;box-shadow:0 4px 10px rgba(0,0,0,.3)}
-.bulle .ac{display:flex;gap:6px;margin-top:6px}.bulle .ac span{flex:1;display:flex;align-items:center;justify-content:center;gap:4px;min-height:40px;border-radius:9px;background:#F2C14E;color:#12100E;font-weight:700}
+.bulle{position:absolute;z-index:4;background:#111;color:#fff;border-radius:12px;padding:8px 10px;font-size:15px;width:252px;box-shadow:0 4px 10px rgba(0,0,0,.3)}
+.bulle .ac{display:flex;gap:6px;margin-top:6px}.bulle .ac span{flex:1;display:flex;align-items:center;justify-content:center;gap:4px;min-height:40px;padding:0 10px;white-space:nowrap;border-radius:9px;background:#F2C14E;color:#12100E;font-weight:700}
 .bulle .ac span+span{background:#2c2c2a;color:#fff}`;
   let k = 0;
   const grp = (u, items, forme, coul, vu) => {
     const max = Math.max(...items.map((i) => Math.max(i[1], i[2] ?? 0)));
-    return `<div class="grp"><span class="u" style="color:${coul}">${u}</span><div class="ob">${items.map(([n, q, s], i) => {
+    return `<div class="grp" style="flex:${items.length} 1 0"><span class="u" style="color:${coul}">${u}</span><div class="ob">${items.map(([n, q, s], i) => {
       const f = Array.isArray(forme) ? forme[i] : forme;
-      const court = n.replace('Chlorure de calcium', 'Chlorure Ca').replace('Acide lactique 80 %', 'Acide lactique').replace('Acide phosphorique', 'Acide phospho.').replace('Acide peracétique', 'Acide peracét.').replace('Détergent alcalin', 'Détergent').replace('Soude caustique', 'Soude');
+      const court = n.replace('Chlorure de calcium', 'Chlorure Ca').replace('Acide lactique 80 %', 'Acide lactique').replace('Acide phosphorique', 'Acide phospho.').replace('Acide peracétique', 'Acide peracét.').replace('Détergent alcalin', 'Détergent').replace('Soude caustique', 'Soude').replace('Carton 6 × 33', 'Carton 6×33').replace('Capsule 26 mm', 'Capsule 26 mm').replace('Mousse d\'Irlande', 'Mousse irl.');
       const cl = q === 0 ? 'r' : s != null && q < s ? 'm' : '';
       return `<div class="o"><span class="nm">${court}</span>${objet(f, q, s, max, coul, 'c' + k++, vu === n)}<span class="q mono ${cl}">${String(q).replace('.', ',')}</span></div>`;
     }).join('')}</div></div>`;
   };
   const vu = etat === 'bulle' ? 'Étiquette IPA' : '';
-  const corps = `<main>${ONGLETS()}${CHERCHE}<div class="seg bl" style="margin-top:8px"><a href="#">Ingrédients</a><a class="on" href="#">Autres stocks</a></div>
+  const corps = `<main>${ONGLETS()}${CHERCHE}${PILLS}<div class="seg bl" style="margin-top:8px"><a href="#">Ingrédients</a><a class="on" href="#">Autres stocks</a></div>
 <div class="etg" style="position:relative">
 <div class="ray"><div class="t">Additifs <small>6</small><span class="al"><span class="r">1 épuisé</span> · <span class="m">0 bas</span></span></div><div class="planche">${grp('g', ADD.g, 'sachet', '#4F7E9B')}${grp('ml', ADD.ml, 'flacon', '#4F7E9B')}</div></div>
 <div class="ray"><div class="t">Emballage <small>4</small><span class="al"><span class="r">1 épuisé</span></span></div><div class="planche">${grp('pièces', EMB['pièces'], ['bouteille', 'capsule', 'etiquette', 'carton'], '#C87A2C', vu)}</div></div>
+${etat === 'bulle' ? `<div class="bul2" style="--px:226px"><b>Étiquette IPA</b> · <span style="color:#ffb4ae">0 pièce</span> · seuil 100 · dernier achat 02.10<div class="ac"><span>${ic('cart', 18)}Commander</span><span>Fiche ›</span></div></div>` : ''}
 <div class="ray"><div class="t">Nettoyage <small>4</small><span class="al m">1 sous le seuil</span></div><div class="planche">${grp('L', NET.L, 'bidon', '#2E8B88')}${grp('kg', NET.kg, 'seau', '#2E8B88')}${grp('pièces', NET['pièces'], 'gants', '#2E8B88')}</div></div>
-${etat === 'bulle' ? `<div class="bulle" style="left:118px;top:160px"><b>Étiquette IPA</b> · <span style="color:#ffb4ae">0 pièce</span><br>seuil 100 · dernier achat 02.10<div class="ac"><span>${ic('cart', 18)}Commander</span><span>Fiche ›</span></div></div>` : ''}
 </div>
-<div style="display:flex;gap:10px;align-items:center;margin-top:6px;font-size:14px;color:var(--mut)"><span style="display:flex;gap:2px">${futs}</span><span>Fûts 10 ›</span></div>
+<div class="bas2"><a href="#"><span><b>Fûts</b> <span class="mono">10</span></span><span class="fin">3 pleins · 2 à laver ›</span><span style="display:flex;gap:2px;flex-basis:100%">${futs}</span></a><a href="#"><span style="color:#4a5e72">${ic('box', 20)}</span><b>Matériel</b><span class="fin">rien à signaler ›</span></a></div>
 </main>`;
   ecrire(`d4b-${etat}`, `D4b ${etat}`, css, corps);
 }
@@ -261,6 +267,12 @@ const BARRE = `<div class="barre">${ic('back', 24)}<span style="color:#4C6B2A">$
 const TETE = `<div class="tete"><h1>Cryo Hops Citra 25g <span class="alpha">α 24,8 %</span></h1><div class="four">${houblon(18)}<span>Houblon ·</span><a>Brau- und Rauchshop GmbH</a>${ic('fwd', 16)}</div></div>`;
 const PIED = (on, txt = 'Enregistrer') => `<div class="pied"><span class="cmd">${ic('cart', 20)}Commander</span><span class="enr${on ? '' : ' off'}">${txt}</span></div>`;
 
+// Courbe « Ce qui a bougé » (acquis, tour 2 : commune à D5a et D5b ; deux +1 séparés).
+const FRISE = `<svg width="366" height="76" viewBox="0 0 366 76" aria-hidden="true"><line x1="6" x2="360" y1="58" y2="58" stroke="#ccc"/><line x1="6" x2="360" y1="26" y2="26" stroke="#eee" stroke-dasharray="3 3"/><text x="0" y="30" font-size="14" fill="#888" font-family="IBM Plex Mono">2</text><text x="0" y="62" font-size="14" fill="#888" font-family="IBM Plex Mono">0</text><path d="M14 58H40V42H58V26H300V42H360" fill="none" stroke="#567F45" stroke-width="2.5"/>
+<circle cx="40" cy="42" r="4" fill="#567F45"/><circle cx="58" cy="26" r="4" fill="#567F45"/><circle cx="300" cy="42" r="4" fill="#b3261e"/>
+<text x="18" y="38" font-size="14" fill="#3F6B2E" font-family="IBM Plex Mono">+1</text><text x="64" y="20" font-size="14" fill="#3F6B2E" font-family="IBM Plex Mono">+1</text><text x="306" y="36" font-size="14" fill="#b3261e" font-family="IBM Plex Mono">−1</text>
+<text x="30" y="74" font-size="14" fill="#666">27.04</text><text x="262" y="74" font-size="14" fill="#666">14.11 annulé</text></svg>`;
+
 // D5a · Pastilles chiffrées (froide, modèle v02 du Calendrier)
 function d5a(etat) {
   const css = FICHE_CSS + `
@@ -295,27 +307,34 @@ function d5a(etat) {
 .ch{display:flex;flex-direction:column;gap:2px;font-size:14px;color:var(--mut);min-width:0}
 .ch b{display:flex;align-items:center;height:46px;border:1.5px solid var(--line2);border-radius:10px;background:#fff;padding:0 10px;font-size:17px;font-weight:400;color:#111;justify-content:space-between;white-space:nowrap;overflow:hidden}
 .lr{display:grid;gap:8px;margin-top:8px}
-.facture{font-size:14px;color:var(--mut);margin-top:3px}`;
+.facture{font-size:14px;color:var(--mut);margin-top:3px}
+.bouge svg{display:block;margin:2px 0 2px}
+.ombre{position:absolute;inset:0;background:rgba(0,0,0,.42);z-index:6}
+.feuille{position:absolute;left:0;right:0;bottom:0;z-index:7;background:#fff;border-radius:20px 20px 0 0;padding:8px 14px 16px;box-shadow:0 -6px 18px rgba(0,0,0,.2)}
+.feuille .poi{width:44px;height:5px;border-radius:3px;background:#ccc;margin:0 auto 8px}
+.feuille .t{display:flex;align-items:center;gap:8px;font-size:19px;font-weight:800;color:#111;margin-bottom:6px}
+.feuille .t span{flex:1}
+.feuille .ok{display:flex;align-items:center;justify-content:center;min-height:52px;border-radius:12px;background:#111;color:#fff;font-weight:700;font-size:17px;margin-top:12px}`;
   const modif = etat === 'modif';
-  const haut = modif ? '' : `<div class="tuiles">
-  <div class="tu"><span class="gros">1 <small>Pck</small></span><span class="p">25 g</span><span class="jauge"><i style="width:20%"></i></span></div>
-  <div class="tu vide"><span class="gros">—</span><span class="p">seuil</span></div>
-  <div class="tu"><span style="color:#C87A2C">${ic('cal', 22)}</span><span class="gros" style="font-size:22px">0</span><span class="p">besoin</span></div>
-  <div class="tu"><span class="gros" style="font-size:20px">7,50</span><span class="p">CHF / Pck<br>27.04</span></div>
+  // tour 2 : pastilles = besoin et prix seulement ; stock et seuil vivent dans le pavé (plus de doublon).
+  const haut = `<div class="tuiles" style="grid-template-columns:1fr 1fr">
+  <div class="tu" style="min-height:64px;flex-direction:row;gap:10px"><span style="color:#C87A2C">${ic('cal', 24)}</span><span style="display:flex;flex-direction:column;align-items:flex-start"><span class="gros mono" style="font-size:24px">0</span><span class="p">besoin · aucun brassin</span></span></div>
+  <div class="tu" style="min-height:64px;flex-direction:row;gap:10px"><span style="display:flex;flex-direction:column;align-items:flex-start"><span class="gros mono" style="font-size:24px">7,50</span><span class="p">CHF / Pck · 27.04</span></span></div>
 </div>`;
   const geste = `<div class="geste">
-  <div class="l"><span class="lb">Stock</span><span class="pas"><span>${ic('minus', 22)}</span><b class="mono">1</b><span>${ic('plus', 22)}</span></span><span class="ap">Pck<br>il en reste</span></div>
+  <div class="l"><span class="lb">Stock</span><span class="pas"><span>${ic('minus', 22)}</span><b class="mono">1</b><span>${ic('plus', 22)}</span></span><span class="ap">Pck = 25 g<br>il en reste</span></div>
   <div class="l"><span class="lb">Seuil</span><span class="pas"><span>${ic('minus', 22)}</span><b class="mono q">aucun</b><span>${ic('plus', 22)}</span></span><span class="ap">alerte<br>sous ce compte</span></div>
 </div>`;
-  const bouge = `<div class="bouge"><div class="t"><span>Ce qui a bougé</span><a>Tout voir ›</a></div>
+  const bouge = `<div class="bouge"><div class="t"><span>Ce qui a bougé</span><a>Tout voir ›</a></div>${FRISE}
   <div class="mv"><span class="d mono">14.11</span><span class="n">Achat annulé</span><span class="g mono">2 → 1</span><span class="q mono r" style="width:28px;text-align:right">−1</span></div>
-  <div class="mv"><span class="d mono">27.04</span><span class="n">2 achats · ${ic('receipt', 16)} factures</span><span class="g mono">0 → 2</span><span class="q mono v" style="width:28px;text-align:right">+2</span></div></div>`;
+  <div class="mv"><span class="d mono">27.04</span><span class="n">2 achats ${ic('receipt', 16)}</span><span class="g mono">0 → 2</span><span class="q mono v" style="width:28px;text-align:right">+2</span></div></div>`;
   const ferme = `<div class="mod">${ic('pencil', 20)}<span>Modifier la fiche</span><small>nom · unité · α</small>${ic('down', 20)}</div>`;
-  const ouvert = `<div class="form"><div class="t">${ic('pencil', 20)}<span>Modifier la fiche</span>${ic('up', 20)}</div>
+  // tour 2 : Modifier s'ouvre en feuille (greffe de d5c) ; la fiche reste visible au-dessus.
+  const ouvert = `<div class="ombre"></div><div class="feuille"><div class="poi"></div><div class="t"><span>Modifier la fiche</span>${ic('x', 24)}</div>
   <label class="ch">Nom<b>Cryo Hops Citra 25g</b></label><div class="facture">Sur la facture : Cryo Hops Citra 24.8% 25g</div>
   <div class="lr" style="grid-template-columns:1.3fr .8fr .9fr"><label class="ch">Catégorie<b>Houblon ${ic('down', 18)}</b></label><label class="ch">Unité<b>Pck ${ic('down', 18)}</b></label><label class="ch">α %<b class="mono">24,8</b></label></div>
-  <div class="lr"><label class="ch">Fournisseur<b>Brau- und Rauchshop GmbH ${ic('down', 18)}</b></label></div></div>`;
-  const corps = `${BARRE}${TETE}${haut}${modif ? '' : geste}${modif ? '' : bouge}${modif ? ouvert : ferme}${PIED(modif, modif ? 'Enregistrer la fiche' : 'Enregistrer')}`;
+  <div class="lr"><label class="ch">Fournisseur<b>Brau- und Rauchshop GmbH ${ic('down', 18)}</b></label></div><div class="ok">Enregistrer la fiche</div></div>`;
+  const corps = `${BARRE}${TETE}${haut}${geste}${bouge}${ferme}${PIED(false)}${modif ? ouvert : ''}`;
   ecrire(`d5a-${etat}`, `D5a ${etat}`, css, corps, { app: false });
 }
 
@@ -334,7 +353,8 @@ function d5b(etat) {
 .piste .tiret{position:absolute;top:0;height:58px;width:0;border-left:3px dashed #222}
 .piste .tiret b{position:absolute;top:-2px;left:6px;font-size:14px;white-space:nowrap;color:#222}
 .piste .seuil0{position:absolute;top:2px;left:0;font-size:14px;color:var(--mut);display:flex;gap:4px;align-items:center}
-.grad{display:flex;justify-content:space-between;font-size:14px;color:var(--mut);margin:0 4px}
+.grad{position:relative;height:18px;font-size:14px;color:var(--mut);margin:0 4px}.grad span{position:absolute;top:0;transform:translateX(-50%)}
+.pied .enr{flex-direction:column;gap:0;line-height:1.1}.pied .enr small{font-size:14px;font-weight:600;opacity:.85}
 .aide{font-size:14px;color:var(--mut);margin-top:6px;display:flex;align-items:center;gap:6px}
 .motifs{display:flex;gap:6px;margin:10px 12px 0;align-items:center}
 .motifs .lb{font-size:15px;color:var(--mut);margin-right:2px}
@@ -347,19 +367,19 @@ function d5b(etat) {
 .id .md{display:inline-flex;align-items:center;gap:6px;min-height:40px;padding:0 12px;border-radius:999px;background:#111;color:#fff;font-weight:700;font-size:15px}`;
   const max = 4, x = (v) => `${(v / max) * 100}%`;
   const piste = `<div class="piste"><div class="fond"></div><div class="plein" style="width:${x(g ? 3 : 1)}"></div>
-${g ? `<div class="tiret" style="left:${x(2)}"><b>seuil 2</b></div>` : `<div class="seuil0">${ic('minus', 14)}seuil : tire depuis ici</div>`}
+${g ? `<div class="tiret" style="left:${x(2)}"><b>seuil 2</b></div>` : `<div class="seuil0" style="left:auto;right:0">aucun seuil</div>`}
 <div class="poig mono" style="left:${x(g ? 3 : 1)}">${g ? 3 : 1}</div></div>
-<div class="grad mono"><span>0</span><span>1</span><span>2</span><span>3</span><span>4 Pck</span></div>`;
+<div class="grad mono">${[0, 1, 2, 3, 4].map((v) => `<span style="left:${x(v)}">${v}</span>`).join('')}</div>`;
   const frise = `<svg width="366" height="70" viewBox="0 0 366 70" aria-hidden="true"><line x1="6" x2="360" y1="56" y2="56" stroke="#ccc"/><path d="M6 56H40V40H58V24H300V40H360" fill="none" stroke="#567F45" stroke-width="2.5"/>
 <circle cx="40" cy="40" r="4" fill="#567F45"/><circle cx="58" cy="24" r="4" fill="#567F45"/><circle cx="300" cy="40" r="4" fill="#b3261e"/>
 <text x="20" y="34" font-size="14" fill="#3F6B2E" font-family="IBM Plex Mono">+1+1</text><text x="290" y="18" font-size="14" fill="#b3261e" font-family="IBM Plex Mono">−1</text>
 <text x="32" y="70" font-size="14" fill="#666">27.04</text><text x="268" y="70" font-size="14" fill="#666">14.11 annulé</text></svg>`;
   const corps = `${BARRE}${TETE}<div class="regle"><div class="gros"><b class="mono">${g ? 3 : 1}</b>Pck · ${g ? 75 : 25} g${g ? '<span class="dt mono">+2</span>' : ''}</div>${piste}
-<div class="aide">${ic('hand', 16)}tire la barre : le stock · tire le tiret : le seuil</div></div>
+</div>
 <div class="motifs"><span class="lb">Pourquoi</span><span class="chip ${g ? 'on' : 'off'}">${g ? ic('check', 16) : ''}Compté</span><span class="chip ${g ? '' : 'off'}">Perte</span><span class="chip ${g ? '' : 'off'}">Autre</span></div>
-<div class="frise"><div class="t"><span>Ce qui a bougé</span><a>3 mouvements ›</a></div>${frise}</div>
-<div class="id"><span class="chip">${houblon(16)}Houblon</span><span class="chip">Pck</span><span class="chip mono">7,50 CHF · 27.04</span><span class="md">${ic('pencil', 16)}Modifier</span></div>
-${PIED(g, g ? 'Enregistrer · +2, seuil 2' : 'Enregistrer')}`;
+<div class="frise"><div class="t"><span>Ce qui a bougé</span><a>3 mouvements ›</a></div>${FRISE}</div>
+<div class="id"><span class="chip">${ic('cal', 16)}besoin <b class="mono">0</b></span><span class="chip">${houblon(16)}Houblon</span><span class="chip">Pck</span><span class="chip mono">7,50 CHF · 27.04</span><span class="md">${ic('pencil', 16)}Modifier</span></div>
+${PIED(g, g ? 'Enregistrer<small class="mono">+2 · seuil 2</small>' : 'Enregistrer')}`;
   ecrire(`d5b-${etat}`, `D5b ${etat}`, css, corps, { app: false });
 }
 
@@ -440,7 +460,8 @@ function d6(v) {
 .pt{width:12px;height:30px;border:1.5px solid #9a9a96;border-radius:2px;position:relative;flex:none}.pt i{position:absolute;left:0;right:0;bottom:0;background:#A0522Dcc}
 .pt.ep{border:2px solid var(--rge)}`;
     lignes = MALTS_R.map(([n, f, e, q, u, lv]) => `<div class="rl"><i class="sw${e == null ? ' u' : ''}" style="${e == null ? '' : `background:${ebcCoul(e)}`}">${e == null ? '?' : ''}</i><span class="nm">${n}<small>${f}${e != null ? ` · ${String(e).replace('.', ',')} EBC` : ''}</small></span><span class="pt${lv === 0 ? ' ep' : ''}"><i style="height:${[0, 22, 55, 100][lv]}%"></i></span><span class="chp mono ${q === '0' ? 'r' : ''}">${q}<small>${u}</small></span><span class="ck">${ic('check', 22)}</span></div>`).join('');
-    tete = `<div class="rh">Malts <small>7 · le pot comme sur l'étagère</small></div>`;
+    css += `.manq{display:flex;align-items:center;gap:8px;margin:8px 0 2px;padding:8px 10px;border-radius:12px;border:1.5px dashed #b9b9b4;font-size:15px;color:#333}.manq b{font-family:"IBM Plex Mono",monospace}.manq a{margin-left:auto;color:#1F64A3;font-weight:700;white-space:nowrap}.manq .sw.u{width:22px;height:22px}`;
+    tete = `<div class="rh">Malts <small>7</small></div><div class="manq"><i class="sw u">?</i>EBC inconnu sur <b>3</b> malts<a>Compléter ›</a></div>`;
   } else { // Groupé : l'inconnu dit une fois en tête de rayon ; barres gardées avec leur légende.
     css += `.lv{display:flex;gap:2px;align-items:flex-end;width:22px;flex:none}.lv i{width:6px;background:#d8d8d4;border-radius:1px}.lv i.f{background:#A0522D}
 .manq{display:flex;align-items:center;gap:8px;margin:8px 0 2px;padding:8px 10px;border-radius:12px;border:1.5px dashed #b9b9b4;font-size:15px;color:#333}
@@ -485,5 +506,5 @@ for (const e of ['repos', 'modif']) d5a(e);
 for (const e of ['repos', 'geste']) d5b(e);
 for (const e of ['repos', 'feuille']) d5c(e);
 for (const v of ['a', 'b', 'c']) d6(v);
-for (const v of ['a', 'b']) d7(v);
+// D7 : tour 2, d7a rebâtie dans st1-build.mjs sur le mur de st1 (C2) ; d7b écartée.
 console.log('écrit :', fs.readdirSync(ICI).filter((f) => /^st2-.*\.html$/.test(f)).length, 'maquettes');

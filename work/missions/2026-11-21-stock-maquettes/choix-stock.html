@@ -1,0 +1,281 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Stock · 12 mini maquettes à choisir · 21.11</title>
+<style>
+  :root { --fond:#f3f3f1; --carte:#fff; --trait:#b9b9b4; --pas:#e8e8e4; --encre:#2b2b29; --gris:#6a6a66; --fort:#1f1f1d; }
+  * { box-sizing:border-box; }
+  body { margin:0; background:var(--fond); color:var(--encre); font:16px/1.35 system-ui, -apple-system, "Segoe UI", sans-serif; }
+  main { max-width:1100px; margin:0 auto; padding:10px 8px 40px; }
+  h1 { font-size:22px; margin:4px 0 2px; }
+  .sous { color:var(--gris); margin:0 0 10px; font-size:15px; }
+  blockquote { margin:0 0 6px; padding:4px 0 4px 10px; border-left:3px solid var(--fort); font-style:italic; font-size:16px; }
+  blockquote.fort { font-size:18px; font-weight:700; }
+  #a-choisir { background:var(--carte); border:2px solid var(--fort); border-radius:10px; padding:10px; margin:10px 0 12px; }
+  #a-choisir h2 { font-size:17px; margin:0 0 6px; }
+  #a-choisir ol { list-style:none; margin:0; padding:0; display:grid; grid-template-columns:1fr 1fr; gap:6px; }
+  #a-choisir a { display:flex; gap:8px; align-items:baseline; color:inherit; text-decoration:none; min-height:44px; padding:6px 8px; border:1.5px solid var(--trait); border-radius:8px; background:var(--fond); font-size:15px; }
+  #a-choisir a b { font-size:18px; }
+  #a-choisir p { margin:8px 0 0; font-size:14px; color:var(--gris); }
+  section { background:var(--carte); border:1.5px solid var(--trait); border-radius:12px; padding:10px 8px; margin:0 0 14px; }
+  section h2 { font-size:19px; margin:0 0 4px; }
+  section h2 .code { display:inline-block; min-width:40px; text-align:center; background:var(--fort); color:#fff; border-radius:6px; margin-right:6px; padding:0 4px; }
+  .idee { margin:0 0 6px; font-size:16px; }
+  .chiffres { display:flex; flex-wrap:wrap; gap:6px; margin:0 0 8px; }
+  .chiffres span { background:var(--pas); border-radius:6px; padding:3px 7px; font-size:14px; }
+  .chiffres b { font-size:17px; }
+  .rang { display:flex; gap:8px; overflow-x:auto; padding-bottom:6px; scroll-snap-type:x mandatory; }
+  .rang figure { margin:0; flex:none; scroll-snap-align:start; }
+  .rang img { display:block; width:340px; height:auto; border:1px solid var(--trait); border-radius:8px; }
+  .rang img.large { width:620px; }
+  .rang figcaption { font-size:14px; color:var(--gris); margin-top:3px; }
+  .variante { border-top:1.5px dashed var(--trait); margin-top:10px; padding-top:8px; }
+  .variante h3 { font-size:17px; margin:0 0 4px; }
+  .variante h3 .code { display:inline-block; min-width:40px; text-align:center; background:var(--fort); color:#fff; border-radius:6px; margin-right:6px; padding:0 4px; }
+  .prendre { display:flex; align-items:center; justify-content:center; gap:8px; width:100%; min-height:48px; margin-top:8px; border:2px solid var(--fort); border-radius:10px; background:var(--carte); color:var(--fort); font:inherit; font-size:17px; font-weight:800; cursor:pointer; }
+  .prendre[aria-pressed="true"] { background:var(--fort); color:#fff; }
+  .prendre[aria-pressed="true"]::after { content:" ✓"; }
+  .ch-note { display:block; margin-top:8px; font-size:14px; color:var(--gris); }
+  .ch-note textarea { display:block; width:100%; min-height:56px; margin-top:4px; padding:8px; border:1px solid var(--trait); border-radius:6px; background:var(--carte); color:var(--encre); font:inherit; font-size:15px; }
+  .ch-etat { font-size:14px; color:var(--gris); margin-top:4px; min-height:1em; }
+  .ecartee { font-size:14px; color:var(--gris); margin:6px 0 0; }
+  .ch-barre { position:sticky; bottom:0; background:var(--carte); border-top:1px solid var(--trait); padding:10px 12px; margin-top:16px; font-size:15px; font-weight:700; }
+  @media (min-width:700px) { #a-choisir ol { grid-template-columns:repeat(4, 1fr); } }
+</style>
+</head>
+<body>
+<main>
+  <h1>Stock · 12 mini maquettes · 21.11</h1>
+  <p class="sous">Tes onglets et tes pièces, sur ton écran en ligne (tour 8). Un axe par section ; « Je prends » sous la version que tu retiens.</p>
+
+  <blockquote class="fort">« Il y a beaucoup de choses très bien pour le stock, mais beaucoup de moins bon, déjà il y a des vues et de l'espace gâché. »</blockquote>
+  <blockquote class="fort">« La vue type étagère est incroyablement, mais il y a un ou deux souci, et dans autre stock, j'ai pas cette vue.. »</blockquote>
+  <blockquote>« Faire passer plusieurs critique et autres agent pour voir tout les problèmes. Notamment l'autre vue de modification »</blockquote>
+
+  <nav id="a-choisir">
+    <h2>À choisir : une version par axe, d'un toucher sur « Je prends »</h2>
+    <ol>
+      <li><a href="#d1a"><b>D1</b>Articles, Recompter</a></li>
+      <li><a href="#d2a"><b>D2</b>Mur et liste</a></li>
+      <li><a href="#d3b"><b>D3</b>Légende 390</a></li>
+      <li><a href="#d3a"><b>D3</b>Tables à 1280</a></li>
+      <li><a href="#d4b"><b>D4</b>Autres stocks</a></li>
+      <li><a href="#d5a"><b>D5</b>Fiche d'un article</a></li>
+      <li><a href="#d6b"><b>D6</b>Recompter à tuiles</a></li>
+      <li><a href="#d7a"><b>D7</b>Sucres</a></li>
+      <li><a href="#d8a"><b>D8</b>Matériel</a></li>
+      <li><a href="#d8b"><b>D8</b>Fûts</a></li>
+      <li><a href="#ref"><b>Réf.</b>Tes captures</a></li>
+    </ol>
+    <p>D2 et D5 ont une alternative : prends l'une des deux. Mélanger marche aussi : dis-le dans la note.</p>
+  </nav>
+
+  <section id="ref">
+    <h2>Tes captures, la référence</h2>
+    <p class="idee">01 : Stocks › Articles, annotée de ta main. 02 : la fiche d'un article (Cryo Hops Citra).</p>
+    <div class="rang">
+      <figure><img src="st1-ref/st1-ref-01-annote.jpg" alt="Capture 01 annotée : Houblons barré, flèche depuis Recompter, bascule Étagère rayée, rond après DDM"><figcaption>01 · Articles, annotée</figcaption></figure>
+      <figure><img src="st2-ref/ref-02-fiche.jpg" alt="Capture 02 : fiche de Cryo Hops Citra"><figcaption>02 · Fiche d'un article</figcaption></figure>
+    </div>
+  </section>
+
+  <section id="d1">
+    <h2>D1 · Articles et Recompter</h2>
+    <div class="variante" id="d1a">
+      <h3><span class="code">d1a</span>Ton dessin, repris tel quel</h3>
+      <p class="idee">Recompter prend la place de l'onglet Houblons barré. La bascule Étagère est retirée, le rond reste après DDM. La rangée « Comparer » est gardée telle que tu l'as laissée.</p>
+      <div class="rang">
+        <figure><img src="st1-captures/st1-d1a-repos.jpg" alt="d1a au repos"><figcaption>Au repos</figcaption></figure>
+        <figure><img src="st1-captures/st1-d1a-recompter.jpg" alt="d1a, onglet Recompter"><figcaption>Recompter</figcaption></figure>
+      </div>
+      <button class="prendre" data-v="d1a" aria-pressed="false">Je prends d1a</button>
+      <label class="ch-note">Note sur d1a<textarea data-note="d1a"></textarea></label>
+      <div class="ch-etat" data-etat="d1a"></div>
+    </div>
+    <p class="ecartee">d1b écartée : Recompter dans le rond ; tu l'as dessiné en onglet.</p>
+    <p class="ecartee">d1c écartée : la pastille « DDM · ★ » est illisible.</p>
+  </section>
+
+  <section id="d2">
+    <h2>D2 · Le mur et la liste dessous</h2>
+    <div class="variante" id="d2a">
+      <h3><span class="code">d2a</span>Rayon actif pointé</h3>
+      <p class="idee">Le mur garde ses noms et ses totaux. La pointe du rayon touché descend sous le nom, la liste dessous se met à son rayon. Trois articles visibles à 660 px de haut.</p>
+      <div class="rang">
+        <figure><img src="st1-captures/st1-d2a-repos-660.jpg" alt="d2a au repos"><figcaption>Au repos, Malts</figcaption></figure>
+        <figure><img src="st1-captures/st1-d2a-houblons-660.jpg" alt="d2a, Houblons touché"><figcaption>Houblons touché</figcaption></figure>
+      </div>
+      <button class="prendre" data-v="d2a" aria-pressed="false">Je prends d2a</button>
+      <label class="ch-note">Note sur d2a<textarea data-note="d2a"></textarea></label>
+      <div class="ch-etat" data-etat="d2a"></div>
+    </div>
+    <div class="variante" id="d2c">
+      <h3><span class="code">d2c</span>Alternative : la bulle sous le mur</h3>
+      <p class="idee">Toucher un pot ouvre une bulle sous le mur, dans le flux, pointée vers lui. Les Levures restent visibles. « À compter » prend l'icône de compte ; le Galaxy épuisé, un pot rouge.</p>
+      <div class="rang">
+        <figure><img src="st1-captures/st1-d2c-repos-660.jpg" alt="d2c au repos"><figcaption>Au repos</figcaption></figure>
+        <figure><img src="st1-captures/st1-d2c-bulle-660.jpg" alt="d2c, bulle du Citra"><figcaption>Bulle du Citra</figcaption></figure>
+      </div>
+      <button class="prendre" data-v="d2c" aria-pressed="false">Je prends d2c</button>
+      <label class="ch-note">Note sur d2c<textarea data-note="d2c"></textarea></label>
+      <div class="ch-etat" data-etat="d2c"></div>
+    </div>
+    <p class="ecartee">d2b écartée : le mur perd ses noms et ses totaux.</p>
+  </section>
+
+  <section id="d3">
+    <h2>D3 · La légende</h2>
+    <p class="idee">Deux sous-choix séparés : le téléphone (390) et l'écran large (1280).</p>
+    <div class="variante" id="d3b">
+      <h3><span class="code">d3b</span>390 : le rond « ? »</h3>
+      <p class="idee">Un rond « ? » près du compte des Levures. Touché, il ouvre une bulle sous le mur, pointée vers lui. Rien d'écrit au repos.</p>
+      <div class="rang">
+        <figure><img src="st1-captures/st1-d3b-legende.jpg" alt="d3b, légende ouverte à 390"><figcaption>Légende ouverte</figcaption></figure>
+      </div>
+      <button class="prendre" data-v="d3b" aria-pressed="false">Je prends d3b</button>
+      <label class="ch-note">Note sur d3b<textarea data-note="d3b"></textarea></label>
+      <div class="ch-etat" data-etat="d3b"></div>
+    </div>
+    <div class="variante" id="d3a">
+      <h3><span class="code">d3a</span>1280 : le rond et les tables complètes</h3>
+      <p class="idee">Le même rond « ? ». Dessous, les tables complètes : 17 malts, 15 houblons, les levures. Barres de houblon vertes, « 0 kg » écrit.</p>
+      <div class="rang">
+        <figure><img class="large" src="st1-captures/st1-d3a-1280.jpg" alt="d3a à 1280"><figcaption>1280 px</figcaption></figure>
+      </div>
+      <button class="prendre" data-v="d3a" aria-pressed="false">Je prends d3a</button>
+      <label class="ch-note">Note sur d3a<textarea data-note="d3a"></textarea></label>
+      <div class="ch-etat" data-etat="d3a"></div>
+    </div>
+    <p class="ecartee">d3a à 390 écartée : la légende serait écrite au repos.</p>
+    <p class="ecartee">d3b à 1280 écartée : une colonne vide sous le mur.</p>
+  </section>
+
+  <section id="d4">
+    <h2>D4 · Autres stocks</h2>
+    <div class="variante" id="d4b">
+      <h3><span class="code">d4b</span>L'étagère, ses pots et sa bulle</h3>
+      <p class="idee">Additifs, Emballage et Nettoyage en étagère. Noms sur deux lignes, capsule à couronne dentée, caisse à cloisons. En pied : « Fûts 10 · 3 pleins · 2 à laver » et « Matériel rien à signaler ». La bulle propose Commander ou Fiche.</p>
+      <div class="rang">
+        <figure><img src="st2-captures/st2-d4b-repos.jpg" alt="d4b au repos"><figcaption>Au repos</figcaption></figure>
+        <figure><img src="st2-captures/st2-d4b-bulle.jpg" alt="d4b, bulle sous Emballage"><figcaption>Bulle sous Emballage</figcaption></figure>
+      </div>
+      <button class="prendre" data-v="d4b" aria-pressed="false">Je prends d4b</button>
+      <label class="ch-note">Note sur d4b<textarea data-note="d4b"></textarea></label>
+      <div class="ch-etat" data-etat="d4b"></div>
+    </div>
+    <p class="ecartee">d4a écartée : barres anonymes, et le mur serait à rebâtir.</p>
+    <p class="ecartee">d4c écartée : le mur serait à rebâtir sur l'étagère de st1 ; la structure se revoit après ton choix de D4.</p>
+  </section>
+
+  <section id="d5">
+    <h2>D5 · La fiche d'un article, et sa modification</h2>
+    <div class="variante" id="d5a">
+      <h3><span class="code">d5a</span>Pastilles et boutons − +</h3>
+      <p class="idee">Besoin et prix en pastilles seulement. Stock et Seuil se règlent avec − et +, « Pck = 25 g · il en reste » dans le pavé. La courbe « Ce qui a bougé » est commune. Modifier s'ouvre en feuille par-dessus la fiche.</p>
+      <div class="rang">
+        <figure><img src="st2-captures/st2-d5a-repos.jpg" alt="d5a au repos"><figcaption>Au repos</figcaption></figure>
+        <figure><img src="st2-captures/st2-d5a-modif.jpg" alt="d5a, Modifier la fiche"><figcaption>Modifier, par-dessus la fiche</figcaption></figure>
+      </div>
+      <button class="prendre" data-v="d5a" aria-pressed="false">Je prends d5a</button>
+      <label class="ch-note">Note sur d5a<textarea data-note="d5a"></textarea></label>
+      <div class="ch-etat" data-etat="d5a"></div>
+    </div>
+    <div class="variante" id="d5b">
+      <h3><span class="code">d5b</span>Alternative : la règle graduée</h3>
+      <p class="idee">Le stock se tire sur une règle, le seuil est un tiret sur le 2. « Aucun seuil » à droite ; le bouton Enregistrer écrit « +2 · seuil 2 ». Pourquoi : Compté, Perte, Autre.</p>
+      <div class="rang">
+        <figure><img src="st2-captures/st2-d5b-repos.jpg" alt="d5b au repos"><figcaption>Au repos</figcaption></figure>
+        <figure><img src="st2-captures/st2-d5b-geste.jpg" alt="d5b, règle tirée à 3"><figcaption>Règle tirée à 3</figcaption></figure>
+      </div>
+      <button class="prendre" data-v="d5b" aria-pressed="false">Je prends d5b</button>
+      <label class="ch-note">Note sur d5b<textarea data-note="d5b"></textarea></label>
+      <div class="ch-etat" data-etat="d5b"></div>
+    </div>
+    <p class="ecartee">d5c écartée : ne vaut que pour les unités comptées.</p>
+  </section>
+
+  <section id="d6">
+    <h2>D6 · Recompter, la version à tuiles</h2>
+    <p class="idee">Cette Recompter est à tuiles (Malts, Houblons, Levures). Celle de d1a garde la bande de rayon et la coche ronde.</p>
+    <div class="variante" id="d6b">
+      <h3><span class="code">d6b</span>Pot, EBC et champ de quantité</h3>
+      <p class="idee">Chaque malt montre sa pastille de couleur, son pot et son champ de quantité. Un bandeau « EBC inconnu sur 3 malts · Compléter › » signale ceux sans couleur.</p>
+      <div class="rang">
+        <figure><img src="st2-captures/st2-d6b-repos.jpg" alt="d6b au repos"><figcaption>Recompter, Malts</figcaption></figure>
+      </div>
+      <button class="prendre" data-v="d6b" aria-pressed="false">Je prends d6b</button>
+      <label class="ch-note">Note sur d6b<textarea data-note="d6b"></textarea></label>
+      <div class="ch-etat" data-etat="d6b"></div>
+    </div>
+    <p class="ecartee">d6a écartée : l'EBC en colonne, 120 px de large.</p>
+    <p class="ecartee">d6c écartée : des barres avec une légende au repos.</p>
+  </section>
+
+  <section id="d7">
+    <h2>D7 · Les sucres</h2>
+    <div class="variante" id="d7a">
+      <h3><span class="code">d7a</span>Un groupe « Sucres » au bout du rang Malts</h3>
+      <p class="idee">Sur ton mur : couleurs EBC, sachets, tirets. Les pots de sucre, dorés à points, sont au bout du rang Malts. La liste dessous : « Malts et sucres 19 ».</p>
+      <div class="rang">
+        <figure><img src="st1-captures/st1-d7a-repos.jpg" alt="d7a au repos"><figcaption>Au repos</figcaption></figure>
+      </div>
+      <button class="prendre" data-v="d7a" aria-pressed="false">Je prends d7a</button>
+      <label class="ch-note">Note sur d7a<textarea data-note="d7a"></textarea></label>
+      <div class="ch-etat" data-etat="d7a"></div>
+    </div>
+    <p class="ecartee">d7b écartée : une rangée de plus, en texte.</p>
+  </section>
+
+  <section id="d8">
+    <h2>D8 · Matériel et Fûts</h2>
+    <div class="variante" id="d8a">
+      <h3><span class="code">d8a</span>Matériel : la liste du parc</h3>
+      <p class="idee">« Parc 2 510 CHF + 1 ? ». Chaque pièce dit ses projets (2 projets, 1 projet, prix à saisir, aucun projet). Les pièces à venir sont dessous.</p>
+      <div class="rang">
+        <figure><img src="st1-captures/st1-d8a-materiel.jpg" alt="d8a, Matériel"><figcaption>Matériel</figcaption></figure>
+      </div>
+      <button class="prendre" data-v="d8a" aria-pressed="false">Je prends d8a</button>
+      <label class="ch-note">Note sur d8a<textarea data-note="d8a"></textarea></label>
+      <div class="ch-etat" data-etat="d8a"></div>
+    </div>
+    <div class="variante" id="d8b">
+      <h3><span class="code">d8b</span>Fûts : l'étagère et les listes</h3>
+      <p class="idee">Les fûts en étagère, K5 et K7 (30 L) plus grands. Dessous, une liste par état (Pleins, Livrés, À laver, Propres), chacune avec son action : Livrer, Retour, Lavé, Remplir.</p>
+      <div class="rang">
+        <figure><img src="st1-captures/st1-d8b-futs.jpg" alt="d8b, Fûts"><figcaption>Fûts</figcaption></figure>
+      </div>
+      <button class="prendre" data-v="d8b" aria-pressed="false">Je prends d8b</button>
+      <label class="ch-note">Note sur d8b<textarea data-note="d8b"></textarea></label>
+      <div class="ch-etat" data-etat="d8b"></div>
+    </div>
+    <p class="ecartee">d8b Matériel écartée : moins d'information.</p>
+    <p class="ecartee">d8a Fûts écartée : la tuile Pleins ne colle pas à la liste.</p>
+  </section>
+
+  <section id="general">
+    <h2>Note générale</h2>
+    <label class="ch-note">Un mélange, une idée à garder d'une version écartée…<textarea data-note="general"></textarea></label>
+    <div class="ch-etat" data-etat="general"></div>
+    <p class="ecartee">Le bouton + ne couvre plus les quantités. Il se cache quand tu défiles, comme dans l'app.</p>
+  </section>
+
+  <div class="ch-barre" id="ch-barre">Tes choix : aucun</div>
+</main>
+<script>
+(function(){
+  var L=['d1a','d2a','d2c','d3b','d3a','d4b','d5a','d5b','d6b','d7a','d8a','d8b'],etat={},db=null,minuteurs={};
+  function barre(){var p=L.filter(function(v){return etat[v]&&etat[v].pris});document.getElementById('ch-barre').textContent='Tes choix : '+(p.length?p.join(', '):'aucun')+(db?' · enregistré pour Claude':' · gardé sur cet appareil');}
+  function montrer(v){var b=document.querySelector('[data-v="'+v+'"]');if(b)b.setAttribute('aria-pressed',etat[v]&&etat[v].pris?'true':'false');var ta=document.querySelector('[data-note="'+v+'"]');if(ta&&document.activeElement!==ta)ta.value=(etat[v]&&etat[v].note)||'';}
+  function local(){try{localStorage.setItem('choix-stock',JSON.stringify(etat))}catch(e){}}
+  function ecrire(v){var e=document.querySelector('[data-etat="'+v+'"]');local();if(!db){if(e)e.textContent='Gardé sur cet appareil';return;}if(e)e.textContent='Enregistrement…';db.doc('choix/stock-'+v).set({pris:!!(etat[v]&&etat[v].pris),note:(etat[v]&&etat[v].note)||'',le:new Date().toISOString()}).then(function(){if(e)e.textContent='Enregistré';}).catch(function(){if(e)e.textContent='Pas enregistré (droits ou réseau) ; gardé sur cet appareil';});}
+  try{var g=JSON.parse(localStorage.getItem('choix-stock')||'{}');if(g&&typeof g==='object')etat=g;}catch(e){}
+  L.forEach(function(v){var b=document.querySelector('[data-v="'+v+'"]');if(b)b.addEventListener('click',function(){etat[v]=etat[v]||{};etat[v].pris=!etat[v].pris;montrer(v);barre();ecrire(v);});montrer(v);});
+  L.concat(['general']).forEach(function(v){var ta=document.querySelector('[data-note="'+v+'"]');if(!ta)return;ta.value=(etat[v]&&etat[v].note)||'';ta.addEventListener('input',function(){etat[v]=etat[v]||{};etat[v].note=ta.value;clearTimeout(minuteurs[v]);minuteurs[v]=setTimeout(function(){ecrire(v)},700);});});
+  barre();
+  if(window.claude&&window.claude.use){window.claude.use('db').then(function(d){if(!d)return;db=d;L.concat(['general']).forEach(function(v){d.doc('choix/stock-'+v).onSnapshot(function(s){if(!s.exists)return;var x=s.data()||{};etat[v]={pris:!!x.pris,note:x.note||''};montrer(v);barre();},function(){});});barre();}).catch(function(){});}
+})();
+</script>
+</body>
+</html>

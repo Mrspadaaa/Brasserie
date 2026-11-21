@@ -23,7 +23,8 @@ for (const f of pages) {
     }
     const w = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT);
     while (w.nextNode()) { const t = w.currentNode; if (!t.textContent.trim()) continue; const s = parseFloat(getComputedStyle(t.parentElement).fontSize); if (s < 14) petits.push(t.textContent.trim().slice(0, 20)); }
-    return { debord: document.documentElement.scrollWidth - 390, deb: [...new Set(deb)].slice(0, 3), fin: Math.round(fin), bas: Math.round(bas), petits };
+    const fb = document.querySelector('.fab')?.getBoundingClientRect(); const couvre = []; if (fb) { const w2 = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT); while (w2.nextNode()) { const t = w2.currentNode; if (!t.textContent.trim() || t.parentElement.closest('svg')) continue; const r = document.createRange(); r.selectNodeContents(t); const b = r.getBoundingClientRect(); if (b.width && b.left < fb.right + 3 && b.right > fb.left - 3 && b.top < fb.bottom + 3 && b.bottom > fb.top - 3) couvre.push(t.textContent.trim().slice(0, 14)); } }
+    return { couvre, debord: document.documentElement.scrollWidth - 390, deb: [...new Set(deb)].slice(0, 3), fin: Math.round(fin), bas: Math.round(bas), petits };
   });
   await p.screenshot({ path: path.join(ICI, 'st2-captures', f.replace('.html', '.jpg')), type: 'jpeg', quality: 84 });
   const pb = [];

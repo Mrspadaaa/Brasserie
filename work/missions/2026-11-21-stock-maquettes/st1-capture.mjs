@@ -26,10 +26,12 @@ for (const f of pages) {
     const debords = [...document.querySelectorAll('.rg,.filt,.seg,.ra,.f-t')].filter((e) => e.scrollWidth > e.clientWidth + 1).map((e) => e.className.split(' ')[0]);
     const rays = [...document.querySelectorAll(".mur:not(.d3a-m) .ray")].map((e) => Math.round(e.getBoundingClientRect().height));
     const filts = [...document.querySelectorAll(".filt")].map((e) => e.scrollWidth);
-    return { debord: document.documentElement.scrollWidth - innerWidth, petits, rangs, debords, rays, filts };
+    const fb = document.querySelector('.fab')?.getBoundingClientRect(); const couvre = []; if (fb) { const w2 = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT); while (w2.nextNode()) { const t = w2.currentNode; if (!t.textContent.trim() || t.parentElement.closest('svg')) continue; const r = document.createRange(); r.selectNodeContents(t); const b = r.getBoundingClientRect(); if (b.width && b.left < fb.right + 3 && b.right > fb.left - 3 && b.top < fb.bottom + 3 && b.bottom > fb.top - 3) couvre.push(t.textContent.trim().slice(0, 14)); } }
+    return { couvre, debord: document.documentElement.scrollWidth - innerWidth, petits, rangs, debords, rays, filts };
   });
   await p.screenshot({ path: path.join(ICI, 'st1-captures', f.replace('.html', '.jpg')), type: 'jpeg', quality: 86 });
   const pb = [];
+  if (m.couvre.length) pb.push(`+ couvre : ${m.couvre.join(' | ')}`);
   if (m.debord > 0) pb.push(`débord ${m.debord}px`);
   if (m.debords.length) pb.push(`coupé : ${[...new Set(m.debords)].join(',')}`);
   if (m.petits.length) pb.push(`texte <12 : ${m.petits.slice(0, 3).join(' | ')}`);
