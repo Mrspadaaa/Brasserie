@@ -84,3 +84,47 @@ Les 4 rouges transverses (fix114, designTokens, invoiceScanCache-d273c, virgule-
 1. « Suivant » à place fixe (`principes --seul assistant-recette` KO, VUE-SAUTE) : piste `endActionsCollant` pour toutes les étapes hors récap (PageShell l. 585).
 2. N3 (relierAuStock.ts), C1-RECETTE au récap (horizons existants), WFR-4 (B4) : chacun rouge sur `--ref en-ligne/2026-11-21-tour7`, vert sur l'arbre.
 3. Fin : `controle-choix.mjs` OK ; vitest assistant + levure ; `VITE_HOP_V4=on VITE_CARNET_IA=production npm run build` ; vision « sous le fabricant ».
+
+# Session 6 (21.11, arrêtée vers 155 k) — fait, commits par chemins (index temporaire, script `scratchpad/commit.sh` : read-tree HEAD, add, commit-tree, update-ref, puis `git reset -q -- <chemins>` pour que l'index réel suive HEAD)
+- Vision « sous le fabricant » à 390, recette avec OG (Pilsen 2,5 kg, PPG 37 posés au doigt → OG 1,024 ; 24 L ; US-05 posée puis 1 sachet) :
+  « 11,5 g · couvre le besoin » ; sous la barre « sous le fabricant 12–19 g : l'OG 1,024 en demande moins · taux ale 0,75 M/mL/°P · 24 L » sur 2 lignes,
+  lisible, clair et cave (captures `%TEMP%/vrecette/cap-fab/fab-clair.png`, `fab-cave.png`, ouvertes). OK. Note : les malts du stock ZZ TEST
+  n'ont pas de potentiel (OG « — ») ; le banc parcours n'a pas de catalogue de malts (un nom tapé reste « ? », potentiel —).
+- `b7b9b64e3` « Suivant » à place fixe : `endActionsCollant` à toutes les étapes (le récap n'a pas de rangée) + `setStep` en `startTransition`
+  (le Suspense du dessus cachait tout l'assistant ~75 ms au passage Levure → Paliers : la rangée passait à top 0). Mesure principes
+  `--controle VUE-SAUTE --seul assistant-recette` : les trois « Suivant » à 0 px (avant : 490, 655 px ; c'est le rouge sur l'état d'avant, même build).
+  vitest brewWizard*, bAssistant*, bugs-r3/w1-wizard, assistantPlusActions, companionRecipeWizard : 15 fichiers, 160 verts. tsc 0.
+- principes assistant-recette reste ECHEC (3), causes établies (trace layout-shift, `scratchpad/dbg-cls.mjs`) :
+  1. « Changer de fermenteur » : tuile Matériel ouverte passe sous Espace libre (`.idn-tuile.idn-ouvert { grid-column: 1 / -1 }`, 640 → 703 px,
+     CLS 0,029) = **comportement de SA maquette r4-a** (`work/missions/2026-10-31-ecran-identite/v1/r4-a/etat.html`, `ouvrirMat` + `grid-column:1/-1`) ;
+     plus le focus de `ouvrirFermenteur` (BrewWizard ~l. 1943) qui fait défiler 102 px. **DÉCISION au pilote** : règle n° 1 contre VUE-SAUTE ;
+     piste sans toucher son visuel au repos : la puce « fermenteur 30 L » devient le champ sur place (ChampNombre), sans ouvrir la tuile.
+  2. « ZZ TEST Munich » (2e malt) : la ligne ajoutée pousse Ajouter / Repères / Détail de 52 px (CLS 0,076, shifts à +24 ms). Piste : compenser le
+     défilement dans Ajout.tsx (useLayoutEffect, scrollBy du delta) ; insuffisant si la page n'a pas 52 px à défiler (cas du banc) → DÉCISION ou
+     réserve basse. Hors Possède (`src/ui/fermentescibles/`).
+  3. session CLS 0,109 (somme de 1 et 2).
+  Piège du banc : `trouver('ZZ TEST Citra', contient)` à l'étape Houblons trouve un élément couvert par le pont « levure ? » et le toucher ouvre
+  Levure (l'action « Citra » de principes navigue) ; sans effet sur le verdict.
+- WFR-4 : chaines `--etape B4` ok sur l'arbre (« le récap nomme le malt à 0 kg et son bouton ouvre l'étape Malts/sucres »). Rouge sur tour7 à
+  rejouer (`--build %TEMP%/chaines-build-YljAZX`, build tour7 gardé).
+- N3 : KO sur l'arbre (« ne propose pas Tout relier à ton stock ») ; rien codé. Relevé pour coder :
+  - maquette choisie `Brasserie/work/missions/2026-11-20-moins-de-gestes/v07.html` (NOTE en tête) : rangée sombre `.v07-relier` (min-height 52,
+    radius 12, titre 16 px gras + sous-texte 14 px, flèche) sous l'état (« Stock à vérifier ») de la fiche recette (CarnetRecettes.tsx `feuille()`,
+    l. ~233-246) ; après : chaque ligne reliée dit sa source (`.v07-src` : point, « nom exact » / « nom proche ? » à confirmer, × pour défaire),
+    barre noire `.v07-annuler` (« N reliées » + « Annuler »), ligne sans article = reste à lui ; recalcul α → dose montré à part, jamais appliqué.
+  - fixture `rebrasser` : « ZZ TEST Pale Ale v1 », lignes sans `stockItemRef`, Citra α 9 % ; stock ZZ-CITRA α 12,5 %. Les noms sont exacts, donc
+    `compareRecipeWithStock` (stockLevel.ts l. 181-191) les tient déjà pour « linked » par le nom : la rangée doit s'afficher dès qu'une ligne
+    cœur n'a pas de `stockItemRef` (et pas seulement sur « non relié »).
+  - module neuf `src/domain/recette/relierAuStock.ts` (Possède) : par ligne sans ref → exact (nom normalisé, unique) / proche (préfixe « zz test »,
+    casse, accents, mots inclus) / aucun ; houblon relié : `alphaPct` du lot posé (`StockItem.alphaPct`), ancien α gardé pour le dire ; rend la
+    recette neuve + le compte. Test unitaire. Persistance : chercher comment le carnet enregistre une recette (StorageService / onEditRecipe).
+  - chaine N3 attend `\d+ reliées?` et « 12,5 » dans la fiche après le toucher.
+- C1 au récap : non commencé. Spéc PORT.md l. 54 (Brasserie) : horizons aujourd'hui / 1 mois / 3 / 6 mois / 1 an (« vers févr. »), composant
+  existant `src/ui/saisie/Horizons.tsx` + `src/domain/horizons.ts` ; consommateurs BrewWizard l. ~759, 1447, 1753. Pas d'étape `C1-RECETTE` dans
+  chaines.mjs : à écrire (rouge tour7, vert arbre).
+
+## Reste, dans l'ordre (agent neuf)
+1. N3 (ci-dessus), commit. 2. C1 au récap + étape C1-RECETTE, commit. 3. DÉCISIONS au pilote : VUE-SAUTE « Changer de fermenteur » (r4-a) et
+   « Munich » (fermentescibles, hors Possède). 4. Fin : chaines `--etape N1,N3,C1-RECETTE,B4,VR-1` rouge tour7 (`--build %TEMP%/chaines-build-YljAZX`)
+   / vert arbre ; `controle-choix.mjs` ; vitest assistant + levure ; `VITE_HOP_V4=on VITE_CARNET_IA=production npm run build` ; vision 390 tactile
+   + 1280, deux thèmes, assistant entier (rangée fixe à toutes les étapes, `--build %TEMP%/vrecette/build-arbre` à reconstruire après N3/C1).
