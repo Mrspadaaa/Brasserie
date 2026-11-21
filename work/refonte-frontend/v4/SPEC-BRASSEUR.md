@@ -2574,3 +2574,7 @@ Classement de la page r3 de Ma levure (https://claude.ai/artifact/DKAJe8ESeMR4ig
 > Et même du travail et activités sont vide, les mettre en vertical pas les entassés à l'horizontal
 
 (21.11, capture-14 : « vides + Travaux + Activités » sur une seule ligne ; une rangée vide garde sa ligne, comme les autres.)
+
+> L'édition, detail est franchement mal fait. Pas compact, pas visuel, vraiment à revoir complète
+
+(21.11, tour 8, captures 15 à 17 : la fiche de détail d'une chose du Calendrier (brassin, fête) ; à refaire en mini maquettes.)
