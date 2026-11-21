@@ -224,6 +224,24 @@ function listeEtapes() { return [
       if (manque.length) return echec('B11', `la liste des brassins cache ce que la caisse vend : ${manque.join(', ')} (écran : ${t.slice(0, 160)})`);
       ok('B11', 'la Pale Ale (conditionnée) et la NEIPA (terminée) sont listées');
     }
+  },
+  {
+    id: 'WF2-1', titre: 'Jour de brassage : « Terminer et continuer » passe à l’étape suivante (levure liée au stock sans nom) (WF2-1)',
+    async joue(s) {
+      await s.onglet('Brassins'); await sleep(800);
+      await s.toucher('Brasser · B-ZZ-JOUR', { prefixe: true }); await sleep(1800);
+      await s.toucher('Commencer aujourd', { contient: true }); await sleep(1500);
+      await s.cap('WF2-1-1-compagnon');
+      for (let n = 0; n < 2; n++) {
+        await s.toucher('Terminer et continuer', { att: 3000 }); await sleep(900);
+        const t = await s.texte(2000);
+        if (/Écran indisponible/.test(t)) { await s.cap(`WF2-1-2-indisponible`); return echec('WF2-1', `« Écran indisponible » au « Terminer et continuer » n° ${n + 1} (${s.erreurs[0] ?? 'sans erreur lue'})`); }
+      }
+      await s.cap('WF2-1-3-apres');
+      const t = await s.texte(2000);
+      if (!/Empâtage/.test(t) || !/Terminer et continuer|Commencer la montée/.test(t)) return echec('WF2-1', `le déroulé n'avance pas (écran : ${t.slice(0, 160)})`);
+      ok('WF2-1', 'les deux premiers « Terminer et continuer » passent (Concassage puis Empâtage), levure liée au stock sans nom');
+    }
   }
 ]; }
 

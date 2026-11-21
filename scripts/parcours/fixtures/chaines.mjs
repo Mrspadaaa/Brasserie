@@ -32,6 +32,19 @@ export function fixtureChaines(aujourdhui) {
   add('batches', 'B-ZZ-PLAN', { id: 'B-ZZ-PLAN', name: 'ZZ TEST IPA', style: 'IPA', volumeL: 100, brewDate: '', plannedBrewDate: suisse(ajouter(aujourdhui, 10)), status: 'planifie', gravityLog: [], recipeRef: 'R-ZZ-IPA', stockAccountingVersion: 1, recipeSnapshot: recetteIPA });
   add('equipment', 'E-ZZ-FERM', { id: 'E-ZZ-FERM', name: 'ZZ TEST Fermenteur 120 L', category: 'Fermentation', status: 'ok', purchaseDate: ajouter(aujourdhui, -400), purchasePrice: 900 });
 
+  // brassin DU JOUR (WF2-1) : planifié aujourd'hui, levure liée au stock SANS nom (stockItemRef), sels d'eau prévus, deux malts du stock
+  const rsJ = { name: 'ZZ TEST Saison', volumeL: 100, ogTarget: 1.050, brewhouse: BH,
+    fermentables: [{ name: 'ZZ TEST Malt pilsner', weightKg: 18, kind: 'grain' }, { name: 'ZZ TEST Munich', weightKg: 2, kind: 'grain' }],
+    hops: [{ name: 'ZZ TEST Citra', weightG: 150, stage: 'boil', time: 60 }, { name: 'ZZ TEST Citra', weightG: 100, stage: 'whirlpool', time: 15 }],
+    yeast: { stockItemRef: 'ZZ-US05', qty: 2, unit: 'sachet' },
+    fermentation: [{ kind: 'primaire', name: 'Primaire', tempC: 19, days: 12 }] };
+  add('recipes', 'R-ZZ-SAISON', { id: 'R-ZZ-SAISON', name: 'ZZ TEST Saison', style: 'Saison', ingredients: [], ...rsJ });
+  add('batches', 'B-ZZ-JOUR', { id: 'B-ZZ-JOUR', name: 'ZZ TEST Saison', style: 'Saison', volumeL: 100, brewDate: '', plannedBrewDate: suisse(aujourdhui), status: 'planifie', gravityLog: [], recipeRef: 'R-ZZ-SAISON',
+    stockAccountingVersion: 1, recipeSnapshot: rsJ, waterSalts: { gypseG: 12, cacl2G: 6, mgso4G: 0, acidLacticMl: 4, isApplied: false } });
+  article('ZZ-GYPSE', 'ZZ TEST Gypse (CaSO4)', 'Sels', 'g', 500, { supplier: 'ZZ TEST', pricePerUnit: 0.02 });
+  article('ZZ-CACL2', 'ZZ TEST Chlorure de calcium', 'Sels', 'g', 400, { supplier: 'ZZ TEST', pricePerUnit: 0.02 });
+  article('ZZ-LACT', 'ZZ TEST Acide lactique 80 %', 'Sels', 'ml', 250, { supplier: 'ZZ TEST', pricePerUnit: 0.05 });
+
   // bières en vente (VENDRE, WFV-5) : une conditionnée, une terminée, hors de la période par défaut « mois courant + en cours »
   const rs = (nom) => ({ name: nom, volumeL: 100, ogTarget: 1.052, fermentables: [{ name: 'ZZ TEST Malt pilsner', weightKg: 20, kind: 'grain' }], hops: [{ name: 'ZZ TEST Citra', weightG: 200, stage: 'boil', time: 60 }], yeast: { name: 'ZZ TEST US-05', qty: 2, unit: 'sachet' }, fermentation: [{ kind: 'primaire', name: 'Primaire', tempC: 19, days: 14 }] });
   const lot = (id, name, jour, status, extra = {}) => ({ id, name, style: name, volumeL: 100, brewDate: suisse(jour), actualBrewDate: suisse(jour), plannedBrewDate: suisse(jour), status, gravityLog: [], recipeRef: `R-${id}`, stockAccountingVersion: 1, recipeSnapshot: rs(name), ...extra });

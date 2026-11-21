@@ -187,7 +187,8 @@ export function brewIngredients(recipe: RecipeSnapshot): BrewIngredient[] {
   if (recipe.yeast)
     items.push({
       id: 'yeast',
-      name: recipe.yeast.name,
+      // WF2-1 : une levure liée au stock (`stockItemRef`) peut n'avoir aucun nom dans la recette ; sans lui, le déroulé du jour tombait en « Écran indisponible ».
+      name: recipe.yeast.name?.trim() || 'Levure',
       planned: recipe.yeast.qty,
       unit: recipe.yeast.unit,
       area: 'finish',
