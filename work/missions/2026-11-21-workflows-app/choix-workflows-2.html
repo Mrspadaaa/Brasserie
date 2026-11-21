@@ -1,0 +1,278 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Workflows · page 2 · 3 choix · 21.11</title>
+<style>
+  :root { --fond:#f3f3f1; --carte:#fff; --trait:#b9b9b4; --pas:#e8e8e4; --encre:#2b2b29; --gris:#6a6a66; --fort:#1f1f1d; }
+  * { box-sizing:border-box; }
+  body { margin:0; background:var(--fond); color:var(--encre); font:16px/1.35 system-ui, -apple-system, "Segoe UI", sans-serif; }
+  main { max-width:980px; margin:0 auto; padding:10px 8px 40px; }
+  h1 { font-size:22px; margin:4px 0 2px; }
+  .sous { color:var(--gris); margin:0 0 10px; font-size:15px; }
+  #a-choisir { background:var(--carte); border:2px solid var(--fort); border-radius:10px; padding:10px; margin-bottom:12px; }
+  #a-choisir h2 { font-size:17px; margin:0 0 6px; }
+  #a-choisir ol { list-style:none; margin:0; padding:0; display:grid; gap:6px; }
+  #a-choisir a { display:flex; gap:8px; align-items:baseline; color:inherit; text-decoration:none; min-height:44px; padding:6px 8px; border:1.5px solid var(--trait); border-radius:8px; background:var(--fond); }
+  #a-choisir a b { font-size:18px; }
+  #a-choisir a.tranche { border-style:dashed; background:var(--carte); }
+  .rep { margin:8px 0 0; font-size:15px; }
+  .rep code { font:inherit; font-weight:700; }
+
+  /* Déjà tranché */
+  #tranche { background:var(--carte); border:1.5px solid var(--fort); border-radius:12px; padding:10px 8px; margin:0 0 14px; }
+  #tranche h2 { font-size:19px; margin:0 0 4px; }
+  .bilan { display:flex; gap:6px; margin:0 0 8px; }
+  .bilan div { flex:1; background:var(--fond); border-radius:8px; padding:4px 6px; font-size:14px; line-height:1.2; }
+  .bilan b { display:block; font-size:24px; color:var(--fort); }
+  #tranche h3 { font-size:15px; margin:10px 0 4px; color:var(--gris); }
+  .lignes { list-style:none; margin:0; padding:0; display:flex; flex-direction:column; gap:3px; }
+  .lignes li { display:grid; grid-template-columns:62px minmax(0,1fr) 74px; gap:6px; align-items:center; background:var(--pas); border-radius:6px; padding:4px 5px; font-size:14px; line-height:1.25; }
+  .lignes .id { font-weight:800; font-size:14px; }
+  .lignes .id small { display:block; font-weight:400; font-size:14px; color:var(--gris); }
+  .lignes .quoi { overflow-wrap:anywhere; }
+  .lignes .quoi i { font-style:normal; font-weight:700; }
+  .lignes .g { text-align:right; font-weight:800; font-size:15px; }
+  .note { margin:6px 0 0; font-size:14px; color:var(--gris); }
+
+  section.choix { background:var(--carte); border:1.5px solid var(--trait); border-radius:12px; padding:10px 8px; margin:0 0 14px; }
+  section.choix h2 { font-size:19px; margin:0 0 6px; }
+  section.choix h2 .lettre { display:inline-block; min-width:28px; text-align:center; background:var(--fort); color:#fff; border-radius:6px; margin-right:6px; }
+  blockquote { margin:0 0 8px; padding:4px 0 4px 10px; border-left:3px solid var(--fort); font-style:italic; font-size:15px; }
+  .gain { display:flex; gap:10px; align-items:center; margin:0 0 10px; padding:6px; background:var(--fond); border-radius:8px; }
+  .gain .vignette img { display:block; width:72px; height:auto; border:1px solid var(--trait); border-radius:4px; }
+  .gain p { margin:0; font-size:15px; }
+  .gain .gros { font-size:22px; font-weight:800; }
+  .options { display:grid; grid-template-columns:repeat(3, minmax(0, 1fr)); gap:6px; }
+  .opt { border:1.5px solid var(--trait); border-radius:10px; padding:6px 5px; display:flex; flex-direction:column; gap:6px; min-width:0; }
+  .opt h3 { font-size:15px; margin:0; line-height:1.2; }
+  .opt h3 .code { display:block; font-size:18px; font-weight:800; }
+  .compte { margin:0; font-size:14px; color:var(--gris); }
+  .compte b { font-size:24px; color:var(--fort); }
+  .pas { list-style:none; margin:0; padding:0; display:flex; flex-direction:column; gap:4px; counter-reset:n; }
+  .pas li { counter-increment:n; background:var(--pas); border-radius:6px; padding:4px 5px 4px 26px; position:relative; font-size:14px; line-height:1.25; overflow-wrap:anywhere; }
+  .pas li::before { content:counter(n); position:absolute; left:4px; top:4px; width:18px; height:18px; border-radius:50%; background:var(--fort); color:#fff; font-size:14px; line-height:18px; text-align:center; font-weight:700; }
+  .pas li.vu { counter-increment:none; background:#fff; border:1.5px solid var(--trait); }
+  .pas li.vu::before { content:"="; background:#fff; color:var(--gris); border:1.5px solid var(--trait); line-height:15px; }
+  .pas li.plus-tard { counter-increment:none; background:#fff; border:2px dashed var(--gris); color:var(--gris); }
+  .pas li.plus-tard::before { content:"+"; background:var(--gris); }
+  .pas i { font-style:normal; font-weight:700; }
+  .seul { margin:0; font-size:14px; border:1.5px dashed var(--fort); border-radius:6px; padding:4px 5px; overflow-wrap:anywhere; }
+  .seul b { display:block; }
+  .risque { margin:0; font-size:14px; color:var(--gris); overflow-wrap:anywhere; }
+  .commun { margin:8px 0 0; font-size:14px; color:var(--gris); }
+  footer { color:var(--gris); font-size:14px; margin-top:16px; }
+  @media (min-width:700px) {
+    main { padding:16px 16px 40px; }
+    #a-choisir ol { grid-template-columns:1fr 1fr; }
+    .lignes { display:grid; grid-template-columns:1fr 1fr; gap:4px 8px; }
+    .options { gap:12px; }
+    .opt { padding:10px; }
+    .pas li, .seul, .compte, .risque { font-size:15px; }
+    .gain .vignette img { width:110px; }
+  }
+</style>
+</head>
+<body>
+<main>
+  <h1>Workflows · page 2 · 3 choix</h1>
+  <p class="sous">21.11 · après A2 B1 C1 D2 · fil de fer : des gestes, pas un dessin d'écran</p>
+
+  <nav id="a-choisir">
+    <h2>À choisir : une option par lettre</h2>
+    <ol>
+      <li><a href="#E"><b>E</b> D'où part le relevé de densité</a></li>
+      <li><a href="#F"><b>F</b> Recompter : confirmer quoi d'un toucher</a></li>
+      <li><a href="#G"><b>G</b> Le nom d'une chose créée</a></li>
+      <li><a class="tranche" href="#tranche"><b>+11</b> gains déjà tranchés, sans ton choix</a></li>
+    </ol>
+    <p class="rep">Réponse : <code>E1 F2 G3</code>, par exemple. Mélanger deux options marche aussi.</p>
+    <p class="rep">Case grise = un geste. Case blanche = on lit. Pointillé = s'il veut.</p>
+  </nav>
+
+  <!-- Déjà tranché -->
+  <section id="tranche">
+    <h2>Déjà tranché, sera porté sans choix</h2>
+    <div class="bilan">
+      <div><b>11</b>gains tranchés</div>
+      <div><b>9</b>de tes versions classées</div>
+      <div><b>3</b>pannes corrigées</div>
+    </div>
+    <p class="note">Gestes : avant joué ou compté → après estimé. Chaque suite posée seule est dite, avec Annuler.</p>
+
+    <h3>Tes versions Moins de gestes, dans ton ordre</h3>
+    <ol class="lignes">
+      <li><span class="id">v03<small>1er</small></span><span class="quoi"><i>N1</i> houblon du style, ton stock d'abord, dose qui tient l'IBU, α du lot</span><span class="g">7 → 1</span></li>
+      <li><span class="id">v06<small>2e</small></span><span class="quoi"><i>N1</i> sels du profil du style, sur ton eau</span><span class="g">6 → 1</span></li>
+      <li><span class="id">v07<small>2e</small></span><span class="quoi"><i>N3</i> rebrasser relie la recette au stock, dose à l'α du lot</span><span class="g">12 → 2</span></li>
+      <li><span class="id">v11<small>2e</small></span><span class="quoi"><i>N4</i> les fûts reviennent depuis le client, tous d'un coup</span><span class="g">3 par fût → 3</span></li>
+      <li><span class="id">v14<small>2e</small></span><span class="quoi"><i>K2 K3</i> poser le brassin propose cuve, fin, garde, fûts ; ta vue du Calendrier reste</span><span class="g">4 + 1/étape → 1</span></li>
+      <li><span class="id">v02<small>3e</small></span><span class="quoi"><i>N1</i> une puce « pour ce style » par ingrédient, jamais l'étape entière</span><span class="g">comme v03</span></li>
+      <li><span class="id">v09<small>3e</small></span><span class="quoi"><i>N2</i> jour J : pesée d'un toucher, eau d'empâtage calculée</span><span class="g">5 → 3</span></li>
+      <li><span class="id">v10<small>3e</small></span><span class="quoi"><i>K7</i> les fûts qui tiennent le volume, lavage compris</span><span class="g">6 → 3</span></li>
+      <li><span class="id">v05<small>4e</small></span><span class="quoi"><i>N1</i> levure du style en stock, dose écrite</span><span class="g">4 → 1</span></li>
+    </ol>
+    <p class="note">N1 sur une recette entière : ≈ 34 → ≈ 14 gestes. Un malt arrive avec une quantité sensée : le lancement refusé à 0 kg devient impossible.</p>
+
+    <h3>Les autres, tranchées seules</h3>
+    <ol class="lignes">
+      <li><span class="id">N6</span><span class="quoi">coût du brassin au prix du stock, marge par 33 cl lisible</span><span class="g">4 → 0</span></li>
+      <li><span class="id">K4</span><span class="quoi">une seule caisse, le point le plus bas à venir au Bord</span><span class="g">3 chiffres → 1</span></li>
+      <li><span class="id">PI-4</span><span class="quoi">Mesurer sur la carte du lot (d'où part la valeur : choix E)</span><span class="g">5 à 7 → 3</span></li>
+      <li><span class="id">PI-2</span><span class="quoi">Entrée valide la création et ferme le clavier, partout</span><span class="g">6 → 4</span></li>
+      <li><span class="id">PI-5</span><span class="quoi">un titre se renomme en le touchant, le crayon des carnets</span><span class="g">7 → 4</span></li>
+    </ol>
+    <p class="note">Pannes corrigées d'office : compagnon qui tombe au 1er pas, coût « ? CHF/L » quand tout a un prix, écran vide hors ligne. Au passage de chaque écran : vue qui saute (4 écrans), phrases en double.</p>
+  </section>
+
+  <!-- E -->
+  <section class="choix" id="E">
+    <h2><span class="lettre">E</span>D'où part le relevé de densité</h2>
+    <blockquote>« proposer des actions instantané aussi, certains gest commun en demandant plusieurs »</blockquote>
+    <div class="gain">
+      <a class="vignette" data-vignette href="principes/captures/g-mesure-saisie.png"><img src="principes/captures/g-mesure-saisie.png" alt="Le relevé de densité aujourd'hui"></a>
+      <p><b>Gain :</b> <span class="gros">12 → 3 à 4</span> gestes. Joué : 1,022 → 1,014 = 8 crans d'un millième. 2 à 4 relevés par lot et par semaine.</p>
+    </div>
+    <div class="options">
+      <article class="opt">
+        <h3><span class="code">E1</span>Part de la prévision</h3>
+        <p class="compte"><b>4</b> gestes · écart de 5 : 8</p>
+        <ol class="pas">
+          <li><i>toucher</i> Brassins</li>
+          <li><i>toucher</i> Mesurer, sur la carte du lot</li>
+          <li class="vu">curseur à 1,013 « prévu »</li>
+          <li><i>toucher</i> +1 → 1,014</li>
+          <li><i>toucher</i> Enregistrer</li>
+        </ol>
+        <p class="seul"><b>Seul</b>alcool, atténuation, courbe du lot</p>
+      </article>
+      <article class="opt">
+        <h3><span class="code">E2</span>« Comme prévu » d'un toucher</h3>
+        <p class="compte"><b>3</b> si pile · sinon 5</p>
+        <ol class="pas">
+          <li><i>toucher</i> Brassins</li>
+          <li><i>toucher</i> Mesurer, sur la carte du lot</li>
+          <li class="vu">« 1,013 prévu : ton densimètre dit pareil ? »</li>
+          <li><i>toucher</i> ✓ : enregistré</li>
+          <li class="plus-tard">sinon <i>toucher</i> Autre, +1, Enregistrer</li>
+        </ol>
+        <p class="seul"><b>Seul</b>alcool, atténuation, courbe du lot</p>
+      </article>
+      <article class="opt">
+        <h3><span class="code">E3</span>Glisser sur la règle</h3>
+        <p class="compte"><b>4</b> gestes · tout écart : 4</p>
+        <ol class="pas">
+          <li><i>toucher</i> Brassins</li>
+          <li><i>toucher</i> Mesurer, sur la carte du lot</li>
+          <li class="vu">règle : dernière 1,022 et prévue 1,013 marquées</li>
+          <li><i>glisser</i> jusqu'à 1,014, la valeur suit le doigt</li>
+          <li><i>toucher</i> Enregistrer</li>
+        </ol>
+        <p class="seul"><b>Seul</b>alcool, atténuation, courbe du lot</p>
+      </article>
+    </div>
+    <p class="commun">Dans les trois : « prévu » vient de la courbe du lot, ne s'enregistre jamais sans ton toucher, et le clavier reste en repli.</p>
+  </section>
+
+  <!-- F -->
+  <section class="choix" id="F">
+    <h2><span class="lettre">F</span>Recompter : confirmer quoi d'un toucher</h2>
+    <blockquote>« Tout ce qui m'economise des gestes ou autre est bon à prendre au c'est pas au détriment de la qualité »</blockquote>
+    <div class="gain">
+      <p><b>Gain :</b> <span class="gros">38 → 12 à 18</span> gestes pour 12 articles en 6 rayons, 2 écarts (compté). Aujourd'hui chaque article se tape, même juste. Recompte du mois aussi.</p>
+    </div>
+    <div class="options">
+      <article class="opt">
+        <h3><span class="code">F1</span>Article par article</h3>
+        <p class="compte"><b>18</b> gestes · 1 par article juste</p>
+        <ol class="pas">
+          <li><i>toucher</i> Stocks</li>
+          <li><i>toucher</i> Recompter</li>
+          <li class="vu">chaque ligne : « 4 en stock »</li>
+          <li><i>toucher</i> ✓ × 10 articles justes</li>
+          <li><i>toucher</i> le chiffre, <i>taper</i>, Entrée × 2 écarts</li>
+        </ol>
+        <p class="seul"><b>Seul</b>chaque écart devient un mouvement daté ; la valeur du stock suit</p>
+      </article>
+      <article class="opt">
+        <h3><span class="code">F2</span>Rayon par rayon</h3>
+        <p class="compte"><b>14</b> gestes · 1 par rayon</p>
+        <ol class="pas">
+          <li><i>toucher</i> Stocks</li>
+          <li><i>toucher</i> Recompter</li>
+          <li><i>toucher</i> le chiffre, <i>taper</i>, Entrée × 2 écarts</li>
+          <li><i>toucher</i> « ✓ le reste du rayon » × 6</li>
+        </ol>
+        <p class="seul"><b>Seul</b>chaque écart devient un mouvement daté ; la valeur du stock suit</p>
+      </article>
+      <article class="opt">
+        <h3><span class="code">F3</span>Ce qui a bougé</h3>
+        <p class="compte"><b>12</b> gestes · 1 pour le reste</p>
+        <ol class="pas">
+          <li><i>toucher</i> Stocks</li>
+          <li><i>toucher</i> Recompter</li>
+          <li class="vu">5 articles qui ont bougé depuis le dernier compte</li>
+          <li><i>toucher</i> ✓ × 3 justes</li>
+          <li><i>toucher</i> le chiffre, <i>taper</i>, Entrée × 2 écarts</li>
+          <li><i>toucher</i> « ✓ les 7 autres »</li>
+        </ol>
+        <p class="seul"><b>Seul</b>idem</p>
+        <p class="risque">Coût : une casse sans mouvement ne se voit qu'au compte complet.</p>
+      </article>
+    </div>
+    <p class="commun">Dans les trois : un article non confirmé reste « non compté », jamais 0. L'inventaire de clôture et le recompte du mois prennent le même geste.</p>
+  </section>
+
+  <!-- G -->
+  <section class="choix" id="G">
+    <h2><span class="lettre">G</span>Le nom d'une chose créée</h2>
+    <blockquote>« Taper un nom pour valider, ensuite sortir du mode clavier ect... C'est des actions en plus »</blockquote>
+    <div class="gain">
+      <a class="vignette" data-vignette href="principes/captures/g-cal-ajout.png"><img src="principes/captures/g-cal-ajout.png" alt="Ajouter au Calendrier aujourd'hui : nom vide, refusé"></a>
+      <p><b>Gain :</b> <span class="gros">6 → 2 à 3</span> gestes pour un événement (joué : « Choisis un nom. »). Recette 6 → 3 ; matériel 7 → 4.</p>
+    </div>
+    <div class="options">
+      <article class="opt">
+        <h3><span class="code">G1</span>Nom posé, tu valides</h3>
+        <p class="compte"><b>3</b> gestes · nom changé : 5</p>
+        <ol class="pas">
+          <li><i>toucher</i> Calendrier</li>
+          <li><i>toucher</i> Ajouter dans Travaux</li>
+          <li class="vu">Nom : « Travaux · S47 »</li>
+          <li><i>toucher</i> Ajouter en S47</li>
+          <li class="plus-tard">changer : <i>toucher</i> le nom, <i>taper</i>, Entrée</li>
+        </ol>
+        <p class="seul"><b>Seul</b>la chose à sa semaine, Annuler 5 s</p>
+      </article>
+      <article class="opt">
+        <h3><span class="code">G2</span>Tes noms d'abord</h3>
+        <p class="compte"><b>3</b> gestes · nom neuf : 5</p>
+        <ol class="pas">
+          <li><i>toucher</i> Calendrier</li>
+          <li><i>toucher</i> Ajouter dans Travaux</li>
+          <li class="vu">tes noms de la rangée, le plus fréquent d'abord</li>
+          <li><i>toucher</i> « Nettoyage cuves » : ajouté</li>
+          <li class="plus-tard">nom neuf : <i>toucher</i> le champ, <i>taper</i>, Entrée</li>
+        </ol>
+        <p class="seul"><b>Seul</b>la chose à sa semaine, Annuler 5 s</p>
+      </article>
+      <article class="opt">
+        <h3><span class="code">G3</span>Créé d'abord, nommé après</h3>
+        <p class="compte"><b>2</b> gestes · renommé : 5</p>
+        <ol class="pas">
+          <li><i>toucher</i> Calendrier</li>
+          <li><i>toucher</i> la case S47 de Travaux : « Travaux · S47 » créé</li>
+          <li class="plus-tard">renommer : <i>toucher</i> le titre, <i>taper</i>, Entrée</li>
+        </ol>
+        <p class="seul"><b>Seul</b>la chose à sa semaine, Annuler 5 s</p>
+        <p class="risque">Coût : un toucher de trop crée une chose ; Annuler la retire.</p>
+      </article>
+    </div>
+    <p class="commun">Dans les trois : recette « IPA n° 3 », achat de matériel au nom du projet du carnet. Un client ou une idée se tape : Entrée valide.</p>
+  </section>
+
+  <footer>Détail et chiffres : SYNTHESE.md § 7 et 8, ANALYSE-passe2.md, ANALYSE-principes2.md, même dossier.</footer>
+</main>
+</body>
+</html>
