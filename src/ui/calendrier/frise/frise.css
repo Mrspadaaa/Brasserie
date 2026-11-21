@@ -102,6 +102,10 @@ button.cal-lie::before { content: ''; position: absolute; inset: -6px -2px; }
 
 .cal-lbl { position: absolute; z-index: 3; display: flex; align-items: center; gap: 6px; overflow: hidden; white-space: nowrap; pointer-events: none; font-size: 14px; line-height: 18px; font-weight: 600; color: rgb(var(--cave-50)); }
 .cal-lbl-gauche { justify-content: flex-end; }
+/* CHV-8 (21.11, « on ne voit pas à quelle barre va quel nom ») : posé à gauche, l'étiquette se lit en miroir : le NOM touche sa barre (ou son picto),
+   puis son montant, puis la durée plus loin (« J0 / 28 · prête 28 déc.  −69 +  Ttt ▌ ») ; avant, la durée s'intercalait et le nom flottait à
+   100 px et plus de sa barre. Sur deux lignes (`cal-lbl-2n`), le nom est déjà sur sa propre ligne. */
+.cal-lbl-gauche:not(.cal-lbl-2n) { flex-direction: row-reverse; justify-content: flex-start; }
 /* T2-2 : le nom posé à côté de sa chose s'ouvre au toucher comme elle ; la zone élargie d'une barre minuscule est invisible (44 × 24 px au moins) */
 .cal-lbl[data-nom-touchable] { pointer-events: auto; cursor: pointer; touch-action: pan-y; -webkit-touch-callout: none; user-select: none; -webkit-user-select: none; }
 .cal-zone-tactile { position: absolute; z-index: 0; background: transparent; pointer-events: auto; }
@@ -114,7 +118,9 @@ button.cal-lie::before { content: ''; position: absolute; inset: -6px -2px; }
 .cal-lbl-j { flex: none; margin-left: 2px; font-size: 14px; font-weight: 500; color: rgb(var(--cave-200)); }
 /* n° 27 : le nom posé dans la barre a le fond de la barre ; les ronds des jalons passent dessous, jamais dessus */
 .cal-lbl-dedans .cal-lbl-t, .cal-lbl-dedans .cal-lbl-m { position: relative; padding: 0 3px; border-radius: 4px; background: color-mix(in srgb, var(--c) 16%, rgb(var(--cave-950))); }
-.cal-barre .cal-duree-in { z-index: 3; width: max-content; left: auto; padding: 0 3px; border-radius: 4px; background: color-mix(in srgb, var(--c) 16%, rgb(var(--cave-950))); }
+/* CHV-10 (21.11) : la boîte (3 px de marge de chaque côté comprise) mesure le texte + 6 ; `largeurDuree` a compté ces 8 px, le plafond ne les reprend
+   pas (avant : « J0 / … » rogné dans une barre de 66 px alors que le texte tenait) */
+.cal-barre .cal-duree-in { box-sizing: border-box; max-width: calc(100% - 4px); z-index: 3; width: max-content; left: auto; padding: 0 3px; border-radius: 4px; background: color-mix(in srgb, var(--c) 16%, rgb(var(--cave-950))); }
 /* CRITIQUE-5 n° 26 et 28 : deux lignes « nom » seulement pour une chose liée : le nom et son montant, insécables, puis la pastille « lié à » ;
    plus aucun texte en flot (« Hotte / −900 ») */
 .cal-lbl-2n { flex-direction: column; justify-content: center; align-items: flex-start; gap: 1px; line-height: 14px; }
@@ -197,6 +203,9 @@ button.cal-lie::before { content: ''; position: absolute; inset: -6px -2px; }
 .cal-jalon.cal-jalon-vu { z-index: 5; box-shadow: 0 0 0 2px var(--e, var(--c)); transform: scale(1.15); }
 .cal-point-bulle { position: absolute; left: clamp(5px, var(--x, 0%), calc(100% - 5px)); top: calc(100% + 10px); z-index: 9; transform: translateX(-50%); display: flex; align-items: center; gap: 6px; width: max-content; max-width: 260px; padding: 4px 10px; border-radius: 10px; border: 1.5px solid var(--e, var(--c)); background: rgb(var(--cave-900)); color: rgb(var(--cave-50)); font-size: 14px; line-height: 18px; font-weight: 600; white-space: nowrap; pointer-events: none; box-shadow: 0 6px 16px rgb(var(--cave-950) / 0.3); }
 .cal-point-bulle > svg { flex: none; color: var(--e, var(--c)); }
+/* CHV-15 : sans place sous ni sur la barre, la bulle se pose sur la barre elle-même, en haut (là où s'écrit son nom) ; plus plate (23 px), elle ne
+   déborde pas sur la ligne du dessous (`placerBulle`, Barre.tsx) */
+.cal-point-bulle[data-place='sur-sa-barre'] { padding-block: 1px; border-radius: 8px; }
 /* la bulle passe au-dessus de la barre et du nom de la ligne du dessous (vu au banc à 390 : « Stout maison » la coupait) */
 .cal-barre:has(.cal-point-bulle) { z-index: 10; }
 .cal-pts { position: absolute; left: 6px; right: 6px; top: 3px; height: 7px; pointer-events: none; }

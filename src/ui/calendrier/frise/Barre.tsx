@@ -202,6 +202,42 @@ export function rectVolant(): DOMRect | null {
   return r && r.width > 0 && r.height > 0 ? r : null;
 }
 
+/**
+ * CHV-15 (21.11, « Brassage · 2 nov. » posée sur « Ttt » et son nom caché) : la bulle d'une étape se pose sous la barre, sinon au-dessus, sinon sur la
+ * barre elle-même (en haut, là où s'écrit son propre nom) ; jamais sur une autre barre, une marque ou le texte d'une autre étiquette. Mesuré au rendu,
+ * comme `placerDuree` : chaque essai se lit tout de suite (sans transition). Rend la place choisie (0 dessous, 1 dessus, 2 sur sa barre).
+ */
+export function placerBulle(b: HTMLElement, barre: HTMLElement): number {
+  const racine = barre.closest('[data-frise]');
+  if (!racine || typeof document === 'undefined') return 0;
+  const lbl = barre.nextElementSibling;
+  const voisins: DOMRect[] = [...racine.querySelectorAll<HTMLElement>('.cal-barre, .cal-marque')].filter(e => e !== barre && !barre.contains(e)).map(e => e.getBoundingClientRect());
+  for (const e of racine.querySelectorAll<HTMLElement>('.cal-lbl')) {
+    if (e === lbl || getComputedStyle(e).visibility === 'hidden') continue;
+    const rg = document.createRange(); rg.selectNodeContents(e);
+    if (typeof rg.getBoundingClientRect === 'function') voisins.push(rg.getBoundingClientRect());
+  }
+  const libres = voisins.filter(v => v.width > 0 && v.height > 0);
+  const places: Array<Record<'top' | 'bottom', string>> = [
+    { top: '', bottom: '' },
+    { top: 'auto', bottom: 'calc(100% + 10px)' },
+    { top: '0px', bottom: 'auto' }
+  ];
+  b.style.transition = 'none';
+  const frise = racine.getBoundingClientRect();
+  let choisie = 2;
+  for (let i = 0; i < places.length - 1; i++) {
+    b.style.top = places[i].top; b.style.bottom = places[i].bottom;
+    const q = b.getBoundingClientRect();
+    const dansFrise = q.top >= frise.top - 0.5 && q.bottom <= frise.bottom + 0.5;
+    const surVoisin = libres.some(v => Math.min(q.right, v.right) - Math.max(q.left, v.left) > 1 && Math.min(q.bottom, v.bottom) - Math.max(q.top, v.top) > 1);
+    if (dansFrise && !surVoisin) { choisie = i; break; }
+  }
+  b.style.top = places[choisie].top; b.style.bottom = places[choisie].bottom;
+  b.setAttribute('data-place', ['dessous', 'dessus', 'sur-sa-barre'][choisie]);
+  return choisie;
+}
+
 export function placerDuree(d: HTMLElement, barre: HTMLElement, nomCede = false): number {
   /* `nomCede` : le nom posé hors de la barre laisse sa place à la durée (il est caché le temps du geste) ; mesuré comme s'il l'était déjà, la place
      trouvée ne change pas quand la durée, sans place, le laisse revenir (CAL-PASSE voie S2, R2-2) */
@@ -276,6 +312,7 @@ export const Barre: React.FC<BarreProps> = props => {
     const b = bullePoint.current;
     if (!b || typeof window === 'undefined') return;
     b.style.marginLeft = '';
+    if (el.current) placerBulle(b, el.current);
     const r = b.getBoundingClientRect();
     if (!r.width) return;
     const deborde = r.right - (window.innerWidth - 8);
