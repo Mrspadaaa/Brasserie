@@ -11,6 +11,7 @@ import type { BrewBudgetSnapshot } from '../../domain/finance/brewBudget';
 import { isoDate, montantChf } from '../../domain/finance/ledger';
 import { nombreFr } from '../../domain/nombreAffiche';
 import './impot-biere.css';
+import { refCurseurNatif } from '../geste';
 
 // CP-14 (10.11, « Ça semble pas vraiment fonctionné ?? ») : chaque donnée manquante de la feuille renvoie où la saisir.
 const ProfileSheet = React.lazy(() => import('../finance/FinanceForms').then(m => ({ default: m.ProfileSheet })));
@@ -206,7 +207,7 @@ export function ImpotBiereSheet({ batch, onClose, onNoteDensity, onNoteLitres }:
               <i>{platoTexte}{mention ? ` · ${mention}` : ''}</i>
             </div>
           </div>
-          <input className="ibr-slider" type="range" min={0} max={REGLE_MAX_PLATO * 10} step={1} value={Math.round(Math.min(REGLE_MAX_PLATO, plato) * 10)}
+          <input ref={refCurseurNatif} className="ibr-slider" type="range" min={0} max={REGLE_MAX_PLATO * 10} step={1} value={Math.round(Math.min(REGLE_MAX_PLATO, plato) * 10)}
             aria-label="Degrés Plato du brassin" aria-valuetext={`${nombreFr(plato, 1)} degrés Plato${mention ? `, ${mention}` : ''}`}
             onChange={event => setDixiemes(Number(event.target.value))} />
           <div className="ibr-res">
