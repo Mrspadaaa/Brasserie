@@ -1,9 +1,21 @@
 # Déploiement A1 : lecture des liens du Carnet (21.11)
 
+## Suite : option A déployée (décision du pilote, 21.11 au soir)
+
+- Base : `dfdcd6977`, la version d'`aiTask` en ligne depuis le 18.11. Copie détachée dans `%TEMP%/deploy-a1-carnet`, avec des jonctions `node_modules` et `functions/node_modules` vers le worktree `port-carnet`. Aucun `.env` ni `.local` dans la copie : seul `functions/.env.example`, suivi par Git, y figure.
+- Fichiers repris de `e26a46f36`, et eux seuls : `functions/src/lireLien.ts`, `functions/src/carnetIA.ts`, plus le test `tests/unit/carnetsLireLien.test.ts` (non déployé). Les quatre changements de lecture des factures restent hors ligne.
+- Test : `npx vitest run tests/unit/carnetsLireLien.test.ts` donne 51 sur 51 au vert. Build de `functions` vert (`tsc`). Le build régénère `source4-portable-bundle-manifest-01.json` dans la copie, qui est jetée.
+- Déploiement : `firebase deploy --only functions:aiTask --project brasserie-l-affinee --non-interactive`, code de sortie 0. Sortie : « functions[aiTask(europe-west6)] Successful update operation. » puis « Deploy complete! ». Aucune autre fonction n'a été touchée.
+- Avertissement de l'analyse locale « AUTHORIZED_ACCOUNTS est vide » : il est connu et sans effet en production (`cerveau/agents/poste-windows-msix.md`). Il faut le chercher dans les journaux de production, voir ci-dessous.
+- Journaux, lus seulement (`functions_get_logs`, depuis 20:44 UTC) : l'audit `UpdateFunction` donne la révision `aitask-00081-dax`, ACTIVE, mise à jour à 20:46:24 UTC, `firebase-functions-hash` `6ae7014c…`, le secret `GEMINI_API_KEY` gardé, toujours 512 Mo, 300 s et 3 instances au plus. Nouvelle instance à 20:47:15 (DEPLOYMENT_ROLLOUT), sonde de démarrage réussie au premier essai à 20:47:19. Ces 4 entrées sont les seules depuis 20:44 : aucune WARNING ni ERROR. La phrase « AUTHORIZED_ACCOUNTS est vide » n'apparaît pas au démarrage de l'instance, qui l'écrirait au chargement si la liste manquait : la liste des comptes est gardée. Aucun appel réel n'a été lancé, donc le prix d'un vrai lien n'est pas encore vu en ligne. Il le sera au premier lien ajouté par le brasseur. Un premier essai de lecture des journaux a échoué (erreur interne de Cloud Logging, CLI comme MCP) ; le second a abouti.
+- Retour arrière : depuis une copie détachée sur `dfdcd6977`, lancer le build de `functions` puis `firebase deploy --only functions:aiTask --project brasserie-l-affinee`.
+- Aucun commit ne porte exactement la source déployée. Elle vaut `dfdcd6977` plus les deux fichiers de `e26a46f36`. La reconstruire ainsi : `git worktree add --detach <dossier> dfdcd6977`, puis `git checkout e26a46f36 -- functions/src/lireLien.ts functions/src/carnetIA.ts`.
+
+
 Accord du brasseur (21.11, « Oui évidemment ») : mettre en ligne la lecture des liens du Carnet (A1), pour que le prix arrive.
 Code : worktree `port-carnet`, branche `claude/port-carnet-1711`, commit `e26a46f36` (`functions/src/lireLien.ts`, `functions/src/carnetIA.ts`).
 
-## Verdict : NON DÉPLOYÉ (arrêt au point 3)
+## Premier verdict, avant la décision du pilote : `e26a46f36` non déployé tel quel (arrêt au point 3)
 
 Le diff de `functions/` entre la version en ligne et `e26a46f36` ne se limite pas à la lecture des liens et du carnet.
 Déployer `aiTask` depuis `e26a46f36` mettrait aussi en ligne quatre changements de la lecture des factures, que l'accord A1 ne couvre pas.
