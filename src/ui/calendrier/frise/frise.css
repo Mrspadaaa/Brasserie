@@ -207,7 +207,8 @@ button.cal-lie::before { content: ''; position: absolute; inset: -6px -2px; }
 .cal-duree.cal-duree-hors { left: calc(100% + 6px); right: auto; top: 0; width: max-content; overflow: visible; padding: 0 6px; border-radius: 6px; border: 1px solid var(--c); background: rgb(var(--cave-900)); }
 .cal-grip { position: absolute; top: 0; right: -3px; z-index: 3; width: 8px; height: 100%; cursor: ew-resize; touch-action: none; }
 /* CRITIQUE-5 n° 11 : la poignée ne déborde pas en hauteur (elle prenait le jalon de fin de la barre du dessus) */
-.cal-grip::before { content: ''; position: absolute; inset: -2px -12px -2px calc(5px - var(--bord-in, 17px)); }
+/* Frise B, R3 : 22 px hors du trait (la poignée dépasse déjà de 3 px), 22 dedans au plus le tiers (--bord-in) */
+.cal-grip::before { content: ''; position: absolute; inset: -2px -19px -2px calc(5px - var(--bord-in, 22px)); }
 .cal-grip::after { content: ''; position: absolute; top: 25%; bottom: 25%; left: 3px; width: 2px; border-radius: 1px; background: var(--c); }
 .cal-badges { position: absolute; top: -9px; right: -4px; display: flex; gap: 2px; padding: 1px 3px; border-radius: 9px; background: rgb(var(--cave-900)); box-shadow: 0 0 0 1.5px var(--c); color: var(--ct); pointer-events: none; }
 .cal-commander { position: absolute; z-index: 4; width: 18px; height: 18px; display: grid; place-items: center; border-radius: 50%; background: rgb(var(--cave-900)); box-shadow: 0 0 0 1.5px var(--c); color: var(--ct); }

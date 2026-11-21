@@ -146,7 +146,8 @@ export function dureeDansBarre(chose: ChoseCalendrier, w: number, nomDedans: boo
 export const largeurDuree = (t: string): number => Math.ceil(largeurTexte(t, 600)) + 8;
 
 /** CRITIQUE-9 doute f2-a : la zone de prise du bord d'une barre, de part et d'autre du bord, pour un doigt (une rangée de 18 px en paysage). */
-export const ZONE_BORD_PX = 12;
+/** Frise B, R3 : 22 px de chaque côté du trait (dedans borné au tiers par `surLeBord`). */
+export const ZONE_BORD_PX = 22;
 
 /**
  * Les segments de phases d'un brassin : brassage, fermentation, garde, conditionnement, lus dans les jalons de la recette figée (E25).
@@ -286,7 +287,7 @@ export const Barre: React.FC<BarreProps> = props => {
     borne: () => bornes,
     ...(props.marge ? { marge: props.marge } : {}),
     ...(props.defile ? { defile: props.defile } : {}),
-    /* doute f2-a (E29, D-47) : un doigt posé à 12 px du bord, dedans ou dehors, tire le bord, même sur une rangée de 18 px */
+    /* doute f2-a (E29, D-47) : un doigt posé à 22 px du bord (R3), dedans ou dehors, tire le bord, même sur une rangée de 18 px */
     zoneBord: peutBord ? ZONE_BORD_PX : 0,
     refuseGlisse: cible => {
       const id = cible?.closest?.('[data-jalon]')?.getAttribute('data-jalon');

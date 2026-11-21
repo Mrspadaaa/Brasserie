@@ -30,7 +30,8 @@ export function zoneToucher(largeur: number, hauteur: number, bordGauche = 5, bo
  * `dedans` : jusqu'où la poignée mord dans la barre (px depuis son bord droit). `jalonSup` : ce que la zone du jalon de fin ajoute à gauche de l'icône
  * (14 px). `jalonMuet` : l'icône de fin (14 px) dépasse déjà le tiers de la barre : elle ne reçoit plus aucun geste, la poignée et sa zone dehors restent.
  */
-export const PRISE_BORD_DEDANS_PX = 17;
+/** Frise B, R3 : le bord se prend sur 44 px, 22 de chaque côté du trait (dedans, au plus le tiers de la barre). */
+export const PRISE_BORD_DEDANS_PX = 22;
 export const PRISE_JALON_SUP_PX = 15;
 export const ICONE_JALON_PX = 14;
 export function prisesDuBord(largeur: number): { dedans: number; jalonSup: number; jalonMuet: boolean } {

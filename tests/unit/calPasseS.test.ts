@@ -16,11 +16,11 @@ describe('R2-1 : la zone du bord ne mange pas le corps d’une barre courte', ()
       expect(largeur / 2).toBeGreaterThan(Math.max(p.dedans, jalon));
     }
   });
-  it('une barre courte rend son icône de fin muette ; une barre large garde les zones d’origine (17 px et 29 px dedans)', () => {
+  it('une barre courte rend son icône de fin muette ; une barre large garde les zones d’origine (R3 : 22 px dedans pour la poignée, 29 px pour le jalon)', () => {
     expect(prisesDuBord(24).jalonMuet).toBe(true);
     expect(prisesDuBord(52).jalonMuet).toBe(false);
     const large = prisesDuBord(400);
-    expect(large.dedans).toBe(17);
+    expect(large.dedans).toBe(22);
     expect(large.jalonSup).toBe(15);
     expect(large.jalonMuet).toBe(false);
   });
