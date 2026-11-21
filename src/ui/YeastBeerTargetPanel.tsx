@@ -13,6 +13,7 @@ import { NumberInput } from './NumberInput';
 import { Input } from './Input';
 import { useNumericDraft } from './numericInput';
 import { Units } from '../services/units';
+import { refCurseurNatif } from './geste';
 
 const identityVariation = (): YeastBeerVariation => ({ fermentableScale: 1, hotHopScale: 1 });
 const unchangedVariation = identityVariation();
@@ -192,7 +193,7 @@ export function YeastBeerTargetPanel({ recipe, refs, onChange, onNavigate }: {
         {([{ key: 'fermentableScale', label: 'Tous les fermentescibles', max: 200 }, { key: 'hotHopScale', label: 'Houblons à chaud', max: 300 }] as const).map(control => {
           const pct = variation[control.key] * 100, valid = numeric(pct) && (control.key === 'fermentableScale' ? pct > 0 : pct >= 0);
           return <div className="yc-variation-control" key={control.key}>
-            <label htmlFor={`${id}-${control.key}`}>{control.label}</label><div><input id={`${id}-${control.key}`} aria-label={`${control.label}, variation en pourcent`} type="range" disabled={!valid} min={control.key === 'fermentableScale' ? Math.min(1, valid ? pct : 1) : 0} max={Math.max(control.max, valid ? pct : 100)} step="any" value={valid ? pct : 100} onChange={e => vary({ [control.key]: Number(e.target.value) / 100 })} /><PercentInput label={`${control.label}, pourcentage exact`} invalid={!valid} value={numeric(pct) ? pct : undefined} onValue={n => vary({ [control.key]: numeric(n) ? n / 100 : NaN })} /><span>%</span></div>
+            <label htmlFor={`${id}-${control.key}`}>{control.label}</label><div><input ref={refCurseurNatif} id={`${id}-${control.key}`} aria-label={`${control.label}, variation en pourcent`} type="range" disabled={!valid} min={control.key === 'fermentableScale' ? Math.min(1, valid ? pct : 1) : 0} max={Math.max(control.max, valid ? pct : 100)} step="any" value={valid ? pct : 100} onChange={e => vary({ [control.key]: Number(e.target.value) / 100 })} /><PercentInput label={`${control.label}, pourcentage exact`} invalid={!valid} value={numeric(pct) ? pct : undefined} onValue={n => vary({ [control.key]: numeric(n) ? n / 100 : NaN })} /><span>%</span></div>
             {!valid && <p className="yeast-error">{control.key === 'fermentableScale' ? 'Pourcentage positif requis.' : 'Pourcentage positif ou nul requis.'}</p>}
           </div>;
         })}
