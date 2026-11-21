@@ -471,7 +471,7 @@ export function CarnetOuvert(p: CarnetOuvertProps) {
       {/* n° 2 (g5:v04-4) : tout juste créé, « Ce qui compte » est une rubrique à filet comme les autres, jamais un encadré ; sans
           critère, « rien encore : l'IA le proposera » (sans promesse quand l'IA manque, n° 24). Ailleurs, la ligne Critère est en haut. */}
       {enAttente && <p className="cn-mut cn-attente" data-attente="hors-ligne">L'IA le range au retour du réseau : ce qui compte, façons, articles. Rien n'est perdu.</p>}
-      {!enAttente && (neuf || criteres.length === 0) && (
+      {!enAttente && neuf && criteres.length > 0 && (
         <section className={`cn-rubrique${neuf ? ' cn-rubrique-ligne' : ''}`} aria-label="Ce qui compte">
           {criteres.length === 0
             ? <p className="cn-rubrique-tete"><Target size={picto} aria-hidden /> <b>Ce qui compte</b> <span className="cn-mut">· rien encore{ia ? " : l'IA le proposera" : ''}</span></p>
@@ -483,7 +483,7 @@ export function CarnetOuvert(p: CarnetOuvertProps) {
       )}
 
       {/* Sans tableau : les façons en cartes (i06-4). Avec tableau : elles sont dans le tableau, avec leur pastille (h05-3). */}
-      {!enAttente && (!p.tableau || k.facons.length === 0) && (
+      {!enAttente && !p.tableau && k.facons.length > 0 && (
         <section className={`cn-rubrique${neuf ? ' cn-rubrique-ligne' : ''}`} aria-label="Façons">
           {k.facons.length === 0 ? (
             <p className="cn-rubrique-tete"><GitFork size={picto} aria-hidden /> <b>Façons</b> <span className="cn-mut">· aucune{ia ? " : l'IA les cherche" : ''}</span></p>
@@ -514,7 +514,7 @@ export function CarnetOuvert(p: CarnetOuvertProps) {
 
       {!enAttente && <section className={`cn-rubrique${neuf ? ' cn-rubrique-ligne' : ''}`} aria-label="Articles">
         {k.articles.length === 0 ? (
-          <p className="cn-rubrique-tete"><Tag size={picto} aria-hidden /> <b>Articles</b> <span className="cn-mut">· aucun : collez un lien</span></p>
+          <p className="cn-rubrique-tete"><Tag size={picto} aria-hidden /> <b>Articles</b> <span className="cn-mut">· collez un lien</span></p>
         ) : (
           <>
             {/* Critique 6, n° 8 (R03, D-99, h05-3) : une seule ligne, « Articles 6 ⌄ · Comparer › ». Le compte est le total de
@@ -579,11 +579,9 @@ export function CarnetOuvert(p: CarnetOuvertProps) {
       {/* tour 3, v1-neuf 6 : sous le tableau, « votre phrase en titre » flotterait seul, loin du titre : il ne se dit que sous le titre */}
       {p.tableau && !phraseEnTitre(c.title, k.phrase ?? '') && phraseCitee}
 
-      {enAttente ? null : neuf && k.photos.length === 0
-        ? <section className="cn-rubrique cn-rubrique-ligne" aria-label="Photos"><p className="cn-rubrique-tete"><ImageIcon size={20} aria-hidden /> <b>Photos</b> <span className="cn-mut">· aucune</span></p></section>
-        : <Photos photos={k.photos} />}
+      {enAttente || k.photos.length === 0 ? null : <Photos photos={k.photos} />}
 
-      {!enAttente && <section className={`cn-rubrique${neuf ? ' cn-rubrique-ligne' : ''}`} aria-label="Notes">
+      {!enAttente && (k.notes.length > 0 || p.noteSupprimee) && <section className={`cn-rubrique${neuf ? ' cn-rubrique-ligne' : ''}`} aria-label="Notes">
         {k.notes.length === 0 && !p.noteSupprimee ? (
           <p className="cn-rubrique-tete"><FileText size={picto} aria-hidden /> <b>Notes</b> <span className="cn-mut">· aucune</span></p>
         ) : (
@@ -634,11 +632,11 @@ function RubriqueQuand(p: { date?: string; precision?: 'semaine' | 'mois'; aujou
   const semblable = p.prix?.semblable;
   const garder = (x: number) => { p.onPrix?.(x); setChangerPrix(false); };
   return (
-    <section className={`cn-rubrique${p.neuf ? ' cn-rubrique-ligne' : ''}`} aria-label="Quand">
+    <section className={`cn-rubrique cn-quand${p.neuf ? ' cn-rubrique-ligne' : ''}`} aria-label="Quand">
       <p className="cn-rubrique-tete"><CalendarDays size={p.picto} aria-hidden /> <b>Quand</b> <span className="cn-mut">· {quand ?? 'pas encore daté'}</span>
         {quand && pose !== undefined && <span className="cn-mut"> · {montant(pose)} CHF estimé</span>}
         {quand && pose !== undefined && p.onPrix && <> <button type="button" className="cn-lien" aria-expanded={changerPrix} onClick={() => setChangerPrix(v => !v)}>Prix</button></>}</p>
-      <Horizons date={p.date} aujourdhui={p.aujourdhui} classePuce="cn-puce" onChoisir={(_, lundi) => p.onDater(lundi)} />
+      <Horizons date={p.date} aujourdhui={p.aujourdhui} classePuce="cn-puce" className="cn-horizons" onChoisir={(_, lundi) => p.onDater(lundi)} />
       {quand && p.onPrix && (pose === undefined || changerPrix) && (
         <div role="group" aria-label="Prix estimé" style={{ display: 'flex', flexWrap: 'wrap', alignItems: 'center', gap: 8, marginTop: 8 }}>
           {/* les montants seuls ne disaient pas ce qu'ils sont : le mot en gris, comme l'état d'une rubrique */}
@@ -648,7 +646,7 @@ function RubriqueQuand(p: { date?: string; precision?: 'semaine' | 'mois'; aujou
             : ORDRES_DE_GRANDEUR.map(x => <button key={x} type="button" className="cn-puce" aria-pressed={pose === x} onClick={() => garder(x)}>{montant(x)} CHF</button>)}
         </div>
       )}
-      {p.onAuCalendrier && <button type="button" className="cn-second" style={{ marginTop: 8 }} onClick={p.onAuCalendrier}>Au calendrier <ChevronRight size={16} aria-hidden /></button>}
+      {p.onAuCalendrier && <button type="button" className="cn-second cn-quand-cal" onClick={p.onAuCalendrier}>Au calendrier <ChevronRight size={16} aria-hidden /></button>}
     </section>
   );
 }

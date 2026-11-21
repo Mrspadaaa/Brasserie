@@ -133,7 +133,7 @@ describe('n° 5, 6, 7 : portés de g5:v04-4', () => {
   it('n° 6 : pictos des rubriques verts (couleur de la zone), 20 px, centrés sur leur libellé', () => {
     const c = monterNeuf();
     const svgs = [...c.querySelectorAll('.cn-rubrique-ligne .cn-rubrique-tete > svg')];
-    expect(svgs).toHaveLength(5);
+    expect(svgs.length).toBeGreaterThanOrEqual(1); /* V4 : plus de rubrique vide */
     for (const s of svgs) expect(s.getAttribute('width')).toBe('20');
     expect(regle('carnets.css', /^\.cn-rubrique-ligne \.cn-rubrique-tete$/, /align-items:\s*center/)).toBe(true);
     expect(regle('carnets.css', /^\.cn-rubrique-ligne \.cn-rubrique-tete > svg$/, /color:\s*var\(--c-zonet\)/)).toBe(true);

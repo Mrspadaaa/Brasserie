@@ -290,15 +290,16 @@ describe('Gestes : créer, ajouter, lien, note en vrac (R09 à R19)', () => {
       bandeau={<Bandeau bandeau={{ sorte: 'cree', phrase: 'embouteillage' }} onAnnuler={onAnnuler} />} />);
     expect(container.textContent).toContain('✓ Carnet créé, en tête des Carnets');
     expect(container.textContent).toContain('« embouteillage » · votre phrase en titre');
-    expect(container.textContent).toContain("Ce qui compte · rien encore : l'IA le proposera");
-    expect(container.textContent).toContain("aucune : l'IA les cherche");
-    expect(container.textContent).toContain('aucun : collez un lien');
+    /* V4 (21.11, CRB-7) : plus de rubrique vide, Façons/Photos/Notes/Ce qui compte n'apparaissent qu'avec un contenu */
+    expect(container.textContent).not.toContain('rien encore');
+    expect(container.textContent).not.toContain("aucune : l'IA les cherche");
+    expect(container.textContent).toContain('collez un lien');
     expect(container.textContent).toContain('Le champ en bas range tout ici');
     /* tour 3, f13 (PCN-27, règle n° 1) : sa maquette g5:v04-4 telle quelle, « ●○○○ idée » et l'encadré « Idée · 17 nov. / Ensuite… » ; la critique 6 (n° 16, 32) les avait retirés contre elle */
     expect(container.querySelector('.cn-encadre-idee .cn-att')?.textContent).toBe('Idée · 17 nov.');
     expect(container.textContent).toContain("Ensuite : l'IA cherche les façons");
     expect(container.querySelector('.cn-tete .cn-etapes')).not.toBeNull();
-    expect(container.textContent).toContain('Photos · aucune');
+    expect(container.textContent).not.toContain('Photos · aucune');
     fireEvent.click(screen.getByRole('button', { name: /Annuler/ }));
     expect(onAnnuler).toHaveBeenCalled();
     cleanup();

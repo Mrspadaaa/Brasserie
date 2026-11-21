@@ -665,3 +665,17 @@
 .cn-filtre { display: flex; align-items: center; gap: 6px; overflow-x: auto; scrollbar-width: none; }
 .cn-recherche { flex: 1 0 120px; min-width: 0; height: 32px; padding: 0 10px; border-radius: 999px; border: 1px solid var(--c-line2); background: var(--c-bg); color: var(--c-ink); font: inherit; font-size: 14px; }
 .cn-puce.cn-puce-filtre { min-height: 32px; padding: 0 10px; font-size: 13px; flex: none; }
+
+/* V4 fiche (21.11) : Quand sur une rangée (libellé, puces d'horizon défilantes, « Au calendrier » compact) */
+.cn-quand { flex-direction: row; align-items: center; flex-wrap: wrap; gap: 4px 8px; }
+.cn-quand > .cn-rubrique-tete { flex: none; }
+.cn-quand > .cn-horizons { flex: 1 1 0 !important; min-width: 0; flex-wrap: nowrap !important; overflow-x: auto; scrollbar-width: none; }
+.cn-quand .cn-puce { min-height: 32px; padding: 0 10px; font-size: 13px; flex: none; }
+.cn-quand .cn-quand-cal { flex: none; min-height: 32px; padding: 0 10px; font-size: 13px; }
+.cn-quand > [role=group][aria-label="Prix estimé"] { flex: 1 0 100%; }
+
+/* V4 fiche (21.11) : trois tailles (titre 18, corps 14, libellés 12) ; le critère « sans valeur à comparer » garde une cible de 24 px */
+.cn-ouvert :is(span, p, b, button, a, div, li, strong, em, small) { font-size: 14px !important; }
+.cn-ouvert h2.cn-titre { font-size: 18px !important; }
+.cn-ouvert .cn-puce, .cn-ouvert .cn-second, .cn-ouvert .cn-att, .cn-ouvert .cn-quand .cn-puce, .cn-ouvert .cn-quand .cn-quand-cal { font-size: 12px !important; }
+.cn-ouvert .cn-critere-plus { min-height: 24px; display: inline-flex; align-items: center; }

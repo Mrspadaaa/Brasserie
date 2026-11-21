@@ -90,7 +90,8 @@ describe('PCN-27 (R11, g5:v04-4) : Créer · après, porté de sa maquette', () 
 
   it('les rubriques de la maquette, Photos · aucune comprise', () => {
     const t = texte(monter(true));
-    for (const m of ["Ce qui compte · rien encore : l'IA le proposera", "Façons · aucune : l'IA les cherche", 'Articles · aucun : collez un lien', 'Photos · aucune', 'Notes · aucune']) expect(t).toContain(m);
+    expect(t).toContain('collez un lien');
+    for (const m of ["Ce qui compte · rien encore", 'Façons · aucune', 'Photos · aucune', 'Notes · aucune']) expect(t).not.toContain(m); /* V4 (21.11, CRB-7) : plus de rubrique vide */
   });
 
   it('IA indisponible : l’encadré ne promet rien de l’IA (« Ensuite : collez un lien »)', () => {

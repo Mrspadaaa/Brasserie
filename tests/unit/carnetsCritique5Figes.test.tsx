@@ -78,9 +78,8 @@ describe('2 · tout juste créé = g5:v04-4 : un bandeau, puis des rubriques à 
     const { container } = render(<CarnetOuvert carnet={neuf()} aides={AIDES_ETEINTES} liens={[]} tableau={null} vientDEtreCree
       bandeau={<div className="cn-bandeau-test">✓ Carnet créé</div>} onRetour={rien} onRenommer={rien} onSupprimer={rien} onNote={rien} onOuvrirArticle={rien} onComparer={rien} />);
     expect(container.querySelectorAll('.cn-bandeau-test')).toHaveLength(1);
-    const cqc = container.querySelector('.cn-rubrique-ligne[aria-label="Ce qui compte"]')!;
-    expect(texte(cqc).trim()).toBe("Ce qui compte · rien encore : l'IA le proposera");
-    expect(container.querySelectorAll('.cn-rubrique-ligne').length).toBeGreaterThanOrEqual(5);
+    expect(container.querySelector('.cn-rubrique-ligne[aria-label="Ce qui compte"]')).toBeNull(); /* V4 (21.11, CRB-7) : plus de rubrique vide */
+    expect(container.querySelectorAll('.cn-rubrique-ligne').length).toBeGreaterThanOrEqual(1);
     expect(container.querySelector('.cn-encart-critere')).toBeNull();
   });
   it('avec le critère tiré de sa phrase : une ligne à filet « Ce qui compte · 150 kg/h · de votre phrase », pas un encadré', () => {
@@ -102,12 +101,12 @@ describe('3 · IA indisponible : aucun « Ensuite : l’IA … » (n° 24)', () 
     expect(t).not.toContain("l'IA les cherche");
     /* critique 6, n° 16 : plus d'encadré « Ensuite… » ; les rubriques disent qui agit, sans promesse de l'IA */
     /* tour 3, PCN-113 : hors ligne, une ligne « au retour du réseau » remplace les rubriques vides */
-    expect(t).toContain(sorte === 'hors-ligne' ? 'au retour du réseau' : 'Façons · aucune');
+    if (sorte === 'hors-ligne') expect(t).toContain('au retour du réseau'); else expect(t).not.toContain('Façons · aucune');
   });
   /* tour 3, f13 (PCN-27, règle n° 1) : sa maquette g5:v04-4 telle quelle, « ●○○○ idée » et l'encadré « Idée · 17 nov. / Ensuite… » ; la critique 6 (n° 16, 32) les avait retirés contre elle */
   it('IA disponible : chaque rubrique dit qui agit (v04-4), et l’encadré « Ensuite : l’IA cherche les façons »', () => {
     const t = texte(monter(null).container);
-    expect(t).toContain("Façons · aucune : l'IA les cherche");
+    expect(t).not.toContain('Façons · aucune');
     expect(t).toContain("Ensuite : l'IA cherche les façons");
   });
 });

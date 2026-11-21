@@ -219,8 +219,9 @@ describe('P27 · en-tête du carnet créé (g5:v04-4), Photos', () => {
     expect(container.querySelector('.cn-encadre-idee')).not.toBeNull();
     expect(container.querySelector('.cn-tete .cn-etapes')).not.toBeNull();
     expect(texte(container.querySelector('.cn-encadre-idee .cn-att')!)).toBe('Idée · 17 nov.');
-    expect(texte(container)).toContain("Façons · aucune : l'IA les cherche");
-    expect(texte(container)).toContain('Photos · aucune');
+    /* V4 (21.11, CRB-7) : plus de rubrique vide, Façons/Photos/Notes/Ce qui compte n'apparaissent qu'avec un contenu */
+    expect(texte(container)).not.toContain('Façons · aucune');
+    expect(texte(container)).not.toContain('Photos · aucune');
   });
   it('ailleurs, la rubrique Photos vide reste masquée (MISSION « Rangé derrière »)', () => {
     const { container } = monter(false);

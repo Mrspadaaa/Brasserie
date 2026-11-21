@@ -86,13 +86,14 @@ export default async function (c) {
     const zone = document.querySelector('.cn-champ-zone')?.getBoundingClientRect();
     const basEcran = zone ? zone.top : innerHeight;
     const dansEcran = (r) => r.width > 0 && r.height > 0 && r.bottom > 0 && r.top < basEcran;
-    const tailles = new Set(); const vides = []; const petits = [];
+    const tailles = new Set(); const parTaille = {}; const vides = []; const petits = [];
     const w = document.createTreeWalker(fiche, NodeFilter.SHOW_TEXT);
     while (w.nextNode()) {
       const s = w.currentNode.textContent.replace(/\s+/g, ' ').trim(); if (!s) continue;
       const e = w.currentNode.parentElement; const r = e.getBoundingClientRect(); const cs = getComputedStyle(e);
       if (!dansEcran(r) || cs.visibility === 'hidden') continue;
       tailles.add(cs.fontSize);
+      (parTaille[cs.fontSize] ??= new Set()).add(`${e.tagName.toLowerCase()}.${String(e.className).split(' ')[0]}`);
     }
     const tx = fiche.innerText;
     for (const m of tx.matchAll(/[^\n]*(rien encore|· aucune|· aucun\b|aucune :)[^\n]*/g)) vides.push(m[0].trim());
@@ -102,7 +103,7 @@ export default async function (c) {
       if (r.height < 24 || r.width < 24) petits.push(`« ${(b.innerText || b.getAttribute('aria-label') || '').replace(/\s+/g, ' ').trim().slice(0, 30)} » ${Math.round(r.width)}×${Math.round(r.height)}`);
     }
     const quand = fiche.querySelector('section[aria-label="Quand"]');
-    return { tailles: [...tailles].sort(), vides, petits, quand: quand ? Math.round(quand.getBoundingClientRect().height) : null };
+    return { tailles: [...tailles].sort(), parTaille: Object.fromEntries(Object.entries(parTaille).map(([k, v]) => [k, [...v].slice(0, 6).join(' ')])), vides, petits, quand: quand ? Math.round(quand.getBoundingClientRect().height) : null };
   });
   for (const [l, h, tact] of [[390, 844, true], [1280, 800, false]]) {
     await c.etape(`V4-fiche-${l}`, async () => {
@@ -113,7 +114,7 @@ export default async function (c) {
         const m = await mesureFiche();
         await c.cap(`FICHE-${l}-${titre.includes('Chambre') ? 'chambre' : 'ventilation'}`);
         if (!m) { ko.push(`${titre} : aucune fiche`); continue; }
-        console.log(`  ${titre} ${l} : tailles ${m.tailles.join(' ')}, vides ${m.vides.length}, cibles < 24 : ${m.petits.length}, Quand ${m.quand} px`);
+        console.log(`  ${titre} ${l} : tailles ${m.tailles.join(' ')}, vides ${m.vides.length}, cibles < 24 : ${m.petits.length}, Quand ${m.quand} px ${JSON.stringify(m.parTaille)}`);
         if (m.vides.length) ko.push(`${titre} : lignes vides ${m.vides.map((v) => `« ${v.slice(0, 40)} »`).join(', ')}`);
         if (m.tailles.length > 3) ko.push(`${titre} : ${m.tailles.length} tailles de texte (${m.tailles.join(' ')})`);
         if (m.petits.length) ko.push(`${titre} : cibles < 24 px ${m.petits.slice(0, 4).join(', ')}`);

@@ -91,7 +91,7 @@ describe('PCN-113 : hors ligne, le carnet neuf dit que l’IA le range au retour
     for (const r of ['Ce qui compte · rien encore', 'Façons · aucune', 'Articles · aucun', 'Photos · aucune', 'Notes · aucune']) expect(t).not.toContain(r);
   });
   it('en ligne : les rubriques de g5:v04-4 restent', () => {
-    expect(texte(monter(null).container)).toContain('Façons · aucune');
+    expect(texte(monter(null).container)).not.toContain('Façons · aucune'); /* V4 (21.11, CRB-7) : plus de rubrique vide */
   });
 });
 
