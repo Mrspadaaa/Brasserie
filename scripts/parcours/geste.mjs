@@ -296,6 +296,16 @@ async function jouerCalendrier({ p, base, combo, tactile, glisser, pas }) {
     const col = b0.col;
     await geste('glisser +', (bb) => bb.l + bb.w / 2, 2 * col, (a, b) => (b.du > a.du && b.au > a.au) || 'plus tard attendu');
     await geste('glisser −', (bb) => bb.l + bb.w / 2, -2 * col, (a, b) => (b.du < a.du && b.au < a.au) || 'plus tôt attendu');
+    // R3 se joue sur une prise LIBRE. Un voisin visible à moins de 18 px de la fin reçoit l'appui, à bon droit : à 1280 la marque « Hotte »
+    // (9 déc., cercle de 28 px et marge de 8 px) commençait 6 px après le point d'appui quand la barre finissait le 5 déc. (fin inchangée,
+    // le parcours et non le code). La barre recule d'une semaine tant que le point d'appui tombe sur autre chose qu'elle.
+    for (let n = 0; n < 3; n++) {
+      const bb = await barre();
+      const voisin = await p.evaluate((x, y) => { const e = document.elementFromPoint(x, y); if (!e || e.closest('[aria-label^="ZZ TEST Geste,"]')) return null; return e.closest('[aria-label]')?.getAttribute('aria-label') ?? String(e.className); }, bb.r + 18, bb.y);
+      if (!voisin) break;
+      console.log(`  ..  ${B} prise R3 couverte par « ${voisin.slice(0, 60)} » : la barre recule d'une semaine`);
+      await geste("reculer d'une semaine (prise R3 libre)", (b) => b.l + b.w / 2, -col, (a, b) => (b.du < a.du && b.au < a.au) || 'plus tôt attendu');
+    }
     // R3 : la fin se prend à 18 px DEHORS (zone de 22 px de chaque côté du trait)
     await geste('étirer la fin prise à 18 px dehors (R3)', (bb) => bb.r + 18, 2 * col, (a, b) => (b.au > a.au && b.du === a.du) || 'fin plus tard, même début attendus');
     await cap('barre-etiree');
