@@ -732,6 +732,8 @@ export function CalendrierTab(props: CalendrierTabProps) {
       const etendue = etendueDuBrouillon(b);
       const premiere = colonnes[0]?.debut, derniere = colonnes[colonnes.length - 1]?.fin;
       if (etendue && premiere && derniere && (etendue.au < premiere || etendue.du > derniere)) {
+        /* C1 (D396) : posée par un horizon (« 3 mois »), la chose se montre d'office : sa semaine se règle au glisser, sur la frise */
+        if (b.parHorizon) { voirEtendue(etendue.du, etendue.au); return { ok: true }; }
         const lien = { texte: `Voir ${etiquetteS(etendue.du)} ›`, agir: () => voirEtendue(etendue.du, etendue.au) };
         setMessage(m => (m && !m.lien ? { ...m, lien } : m));
       }
