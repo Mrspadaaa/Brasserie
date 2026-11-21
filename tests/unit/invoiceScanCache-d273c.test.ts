@@ -7,7 +7,9 @@ import { describe, expect, it } from 'vitest';
 import * as core from '../../functions/src/invoiceScanCore';
 
 const file = { mimeType: 'image/jpeg', data: Buffer.from([255, 216, 255, 217]).toString('base64') };
-const source = (module: string) => readFileSync(new URL(`../../functions/src/${module}.ts`, import.meta.url), 'utf8');
+// `hopAdviceContentReference` n'a pas de `.ts` dans functions/src : le déploiement le génère depuis src/domain/hopDecision/adviceContentReference.ts
+// (seul son `.d.ts` est suivi, voir functions/src/invoiceScanCore.ts). `engineModuleUrl` renvoie donc la source partagée pour ce module.
+const source = (module: string) => readFileSync(core.engineModuleUrl(module, 'ts'), 'utf8');
 
 describe('D273c — le cache de lecture lié au moteur', () => {
   it('même pièce, même compte, autre moteur : autre identifiant', () => {

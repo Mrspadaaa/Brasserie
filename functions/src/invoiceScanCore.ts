@@ -120,6 +120,18 @@ export function validateInvoiceFile(file: unknown): InvoiceFile {
 }
 
 /**
+ * Modules de `lib/` que le déploiement GÉNÈRE (esbuild, `scripts/build-brewer-tools.mjs`) depuis le domaine partagé : il n'existe donc pas de
+ * `functions/src/<module>.ts` (seul son `.d.ts` est suivi, jamais un `.ts`, vérifié dans tout l'historique). Sous Vitest, l'empreinte lit
+ * leur source réelle, sans suivre leurs imports (ils sont relatifs à `src/`, pas à `functions/src/`) ; une fois déployé, `lib/<module>.js`
+ * est un paquet unique, imports compris.
+ */
+const GENERATED_FROM_SHARED_DOMAIN: Record<string, string> = {
+  hopAdviceContentReference: '../../src/domain/hopDecision/adviceContentReference.ts',
+  brewerHopAdviceSemanticSource4: '../../src/services/hopV55/brewerHopAdviceSemanticSource4.ts',
+  brewerTools: '../../src/domain/brewerTools.ts',
+};
+
+/**
  * D273c : l'empreinte du moteur de lecture. Les modules que l'entrée de la lecture (`ai`) importe, de proche en proche : un changement de
  * règle, de consigne, de vote, de réglage ou de modèle donne un autre identifiant, et une pièce déjà lue est relue (quelques centimes).
  */
@@ -131,9 +143,16 @@ export function engineDigestOf(read: (module: string) => string, entry = 'ai'): 
     seen.add(module);
     const text = read(module);
     hash.update(module).update('\0').update(text).update('\0');
+    if (Object.hasOwn(GENERATED_FROM_SHARED_DOMAIN, module)) continue;
     for (const [, next] of text.matchAll(/(?:from|import)\s*\(?\s*['"]\.\/([\w.-]+?)\.js['"]/g)) todo.push(next);
   }
   return { digest: hash.digest('hex').slice(0, 16), modules: [...seen] };
+}
+
+/** Où lire un module du moteur : à côté de ce module (`lib/*.js` déployés, `src/*.ts` sous Vitest), ou la source partagée d'un module généré. */
+export function engineModuleUrl(module: string, extension: 'ts' | 'js', base: string = import.meta.url): URL {
+  const shared = extension === 'ts' && Object.hasOwn(GENERATED_FROM_SHARED_DOMAIN, module) ? GENERATED_FROM_SHARED_DOMAIN[module] : undefined;
+  return new URL(shared ?? `./${module}.${extension}`, base);
 }
 
 let engineDigest: string | undefined;
@@ -142,7 +161,7 @@ export function invoiceEngineDigest(): string {
   if (engineDigest) return engineDigest;
   const extension = import.meta.url.endsWith('.ts') ? 'ts' : 'js';
   try {
-    engineDigest = engineDigestOf(module => readFileSync(new URL(`./${module}.${extension}`, import.meta.url), 'utf8')).digest;
+    engineDigest = engineDigestOf(module => readFileSync(engineModuleUrl(module, extension), 'utf8')).digest;
   } catch (error) {
     console.error('Empreinte du moteur de lecture illisible : le cache de lecture est ignoré sur cette instance.', error);
     engineDigest = randomUUID();
