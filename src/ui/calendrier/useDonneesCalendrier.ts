@@ -232,7 +232,7 @@ export function construireModele(e: EntreesModele): ModeleCalendrier {
   ];
 
   return {
-    aujourdhui, semaines, passe, mois: anneeEnMois(aujourdhui, NB_SEMAINES_COURBE + passe, passe), choses, courbe, soldeDepartInconnu: courbe === null, creux: courbe ? creuxDepuis(courbe, passe) : null, hypotheses, retards,
+    aujourdhui, semaines, passe, mois: anneeEnMois(aujourdhui, NB_SEMAINES_COURBE + passe, passe), choses, courbe, soldeDepartInconnu: courbe === null, causeSoldeInconnu: courbe === null ? (prevision.cashCause ?? null) : null, creux: courbe ? creuxDepuis(courbe, passe) : null, hypotheses, retards,
     propositions: choses.filter(c => c.proposition), sansDate: e.items.flatMap(i => { const c = choseSansDate(i); return c ? [c] : []; }), icones
   };
 }

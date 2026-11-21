@@ -186,7 +186,7 @@ describe('E01 : le chiffre clé et le creux', () => {
     render(<Banc {...espions()} onOuvrirFinances={onOuvrirFinances} />);
     const creux = creuxDepuis(courbe)!;
     // Le creux tombe en 2027, vu de S47 2026 : sa semaine porte son année (CRITIQUE-5 n° 2).
-    const cle = screen.getByRole('button', { name: new RegExp(`CHF à dépenser sans passer sous 0 \\(S${creux.numero} ’27\\)`) });
+    const cle = screen.getByRole('button', { name: new RegExp(`CHF à dépenser sans passer sous 0 \\(S${creux.numero} ’27(?:, sur tout l’horizon de la courbe)?\\)`) });
     fireEvent.click(cle);
     const carte = screen.getByLabelText(`Le creux de S${creux.numero} ’27 : ses causes`);
     expect(within(carte).getByText('Embouteilleuse')).toBeInTheDocument();
@@ -457,9 +457,10 @@ describe('E09, E10 : plein écran et paysage', () => {
     largeurFenetre(390);
     render(<Banc {...espions()} onMessage={onMessage} />);
     await act(async () => { fireEvent.click(screen.getByRole('button', { name: 'Plein écran' })); await vi.advanceTimersByTimeAsync(999); });
-    expect(onMessage).not.toHaveBeenCalled();
+    expect(screen.queryAllByText(/Tourne le téléphone/)).toHaveLength(0);
     await act(async () => { await vi.advanceTimersByTimeAsync(2); });
-    expect(onMessage).toHaveBeenCalledWith({ genre: 'invite', texte: 'Tourne le téléphone : 13 semaines' });
+    expect(screen.queryAllByText(/Tourne le téléphone : 13 semaines/).length).toBeGreaterThan(0); // CHN-10 : dans l'en-tête, pas dans le message flottant de l'onglet
+    expect(onMessage).not.toHaveBeenCalled();
     delete (document.documentElement as unknown as Record<string, unknown>).requestFullscreen;
     delete (window.screen as unknown as Record<string, unknown>).orientation;
   });
@@ -470,13 +471,13 @@ describe('E09, E10 : plein écran et paysage', () => {
     largeurFenetre(390);
     const { unmount } = render(<Banc {...espions()} onMessage={onMessage} />);
     await act(async () => { fireEvent.click(screen.getByRole('button', { name: 'Plein écran' })); });
-    await vi.waitFor(() => expect(onMessage).toHaveBeenCalledWith({ genre: 'invite', texte: 'Tourne le téléphone : 13 semaines' }));
+    await vi.waitFor(() => expect(screen.queryAllByText(/Tourne le téléphone : 13 semaines/).length).toBeGreaterThan(0));
     unmount();
     onMessage.mockClear();
     largeurFenetre(1280);
     render(<Banc {...espions()} onMessage={onMessage} />);
     await act(async () => { fireEvent.click(screen.getByRole('button', { name: 'Plein écran' })); await new Promise(r => setTimeout(r, 20)); });
-    expect(onMessage).not.toHaveBeenCalled();
+    expect(screen.queryAllByText(/Tourne le téléphone/)).toHaveLength(0);
     delete (document.documentElement as unknown as Record<string, unknown>).requestFullscreen;
   });
 
@@ -821,15 +822,15 @@ describe('CRITIQUE-3 n° 7 : les messages de l’en-tête passent par le canal u
     expect(onMessage).not.toHaveBeenCalledWith(expect.objectContaining({ genre: 'annee' }));
   });
 
-  it('« Tourne le téléphone » passe aussi par onMessage', async () => {
+  it('« Tourne le téléphone » reste dans l’en-tête, jamais dans le message flottant de l’onglet (CHN-10)', async () => {
     const onMessage = vi.fn();
     Object.defineProperty(document.documentElement, 'requestFullscreen', { value: vi.fn().mockResolvedValue(undefined), configurable: true });
     Object.defineProperty(window.screen, 'orientation', { value: { lock: vi.fn().mockRejectedValue(new Error('NotSupportedError')) }, configurable: true });
     largeurFenetre(390);
     render(<Banc {...espions()} onMessage={onMessage} />);
     await act(async () => { fireEvent.click(screen.getByRole('button', { name: 'Plein écran' })); });
-    expect(onMessage).toHaveBeenCalledWith({ genre: 'invite', texte: 'Tourne le téléphone : 13 semaines' });
-    expect(screen.queryByText(/Tourne le téléphone/)).toBeNull();
+    expect(onMessage).not.toHaveBeenCalledWith(expect.objectContaining({ genre: 'invite' }));
+    expect(screen.queryAllByText(/Tourne le téléphone : 13 semaines/).length).toBeGreaterThan(0);
     delete (document.documentElement as unknown as Record<string, unknown>).requestFullscreen;
   });
 
@@ -1186,7 +1187,7 @@ describe('CRITIQUE-5 (lot 1) : le creux et son année, l’An, la lecture, la gr
     const { unmount } = render(<Banc {...e} periodeInitiale={{ genre: 'mois', annee: 2026, mois: 12 }} />);
     // Décembre 2026 : du mardi 1er au jeudi 31 : de S49 (lundi 30 nov.) à S53 (lundi 28 déc.).
     expect(e.onFenetre).toHaveBeenLastCalledWith({ du: '2026-11-30', semaines: 5 });
-    expect((document.querySelector('[data-ent-periode]') as HTMLElement).textContent).toBe('Déc.');
+    expect((document.querySelector('[data-ent-periode]') as HTMLElement).textContent).toBe('Déc. · 5 sem.');
     expect(bande(document.body).textContent).toBe('S49S50S51S52S53');
     fireEvent.click(document.querySelector('[data-ent-periode]') as HTMLElement);
     fireEvent.click(screen.getByRole('button', { name: '3 mois' }));
@@ -1196,7 +1197,7 @@ describe('CRITIQUE-5 (lot 1) : le creux et son année, l’An, la lecture, la gr
     const e2 = espions();
     render(<Banc {...e2} periodeInitiale={{ genre: 'mois', annee: 2026, mois: 11 }} />);
     expect(e2.onFenetre).toHaveBeenLastCalledWith({ du: LUNDI0, semaines: 4 });
-    expect((document.querySelector('[data-ent-periode]') as HTMLElement).textContent).toBe('Nov.');
+    expect((document.querySelector('[data-ent-periode]') as HTMLElement).textContent).toBe('Nov. · 4 sem.');
   });
 
   it('n° 24 : un modèle vide n’a aucune pastille ⏰ ; « à régler dans Finances › Solde » garde son espace dans un seul élément en ligne', () => {
@@ -1430,7 +1431,7 @@ describe('CRITIQUE-6 (lot B-entete) : le chiffre clé entier, le creux et ses ca
     // Décision pilote (c), CRITIQUE-7 : le mois se lit dès aujourd'hui sur 4 semaines au moins (S47 – S50), jamais 3 ni 1.
     expect(bande(container).textContent).toBe('S47S48S49S50');
     const bouton = container.querySelector('[data-ent-periode]') as HTMLElement;
-    expect(bouton.textContent).toBe('Nov.');
+    expect(bouton.textContent).toBe('Nov. · 4 sem.');
     // Aucune fenêtre locale de 6 semaines n'a été écrite en période par-dessus.
     expect(e.onPeriode).not.toHaveBeenCalled();
     fireEvent.click(bouton);

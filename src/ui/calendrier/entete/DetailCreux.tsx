@@ -64,6 +64,8 @@ export function DetailCreux({ courbe, index, hypotheses, onOuvrirFinances, onFer
       <p className="ent-pop-t">
         {debut < index ? `${sem(courbe[debut].lundi)} → ${sem(s.lundi)}` : sem(s.lundi)} · <b className={s.libre < 0 ? 'ent-neg' : undefined}>{chf(s.libre)}</b> à dépenser
       </p>
+      {/* CHD-8 : le point bas se lit sur un horizon que l'écran dit (le Bord dit « horizon 90 j », Finances son segment 30 / 90 / 365). */}
+      {finHorizon && <p className="ent-pop-t" data-horizon>Horizon : jusqu’au {finHorizon}</p>}
       {causes.map((c, k) => (
         <div className="ent-pop-l" key={`${c.index}-${k}`} data-cause-semaine={c.numero} data-cause-index={c.index}>
           <span className="ent-w">{sem(c.lundi)}</span><span className="ent-nm">{c.nom}</span><b className="ent-m">{chf(c.centimes)}</b>

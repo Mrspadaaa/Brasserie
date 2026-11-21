@@ -47,7 +47,7 @@ const barre = (nom: RegExp) => screen.getAllByRole('button', { name: nom })[0];
 const semaineBande = (n: number) => document.querySelector<HTMLElement>(`[data-bande-semaines] [data-semaine="${n}"]`)!;
 
 describe('D385, variante D : l’échelle au menu de la période', () => {
-  it('Semaine par défaut ; Jour : 14 colonnes d’un jour, « 2 sem. · j » ; Mois : des mois, « 6 mois » ; Semaine : 6 semaines', () => {
+  it('Semaine par défaut ; Jour : 14 colonnes d’un jour, « 2 sem. » ; Mois : des mois, « 6 mois » ; Semaine : 6 semaines', () => {
     monter();
     expect(echelle()).toBe('semaine');
     expect(nbColonnes()).toBe(6);
@@ -58,7 +58,7 @@ describe('D385, variante D : l’échelle au menu de la période', () => {
     fireEvent.click(seg.querySelector<HTMLButtonElement>('[data-echelle="jour"]')!);
     expect(echelle()).toBe('jour');
     expect(nbColonnes()).toBe(14);
-    expect(boutonPeriode().textContent).toBe('2 sem. · j');
+    expect(boutonPeriode().textContent).toBe('2 sem.');
     /* la bande dit « S47 » au-dessus de ses sept jours, puis lettre et numéro ; aujourd'hui (lun. 16) est marqué */
     const bande = document.querySelector('[data-bande-colonnes="jours"]')!;
     expect(bande.querySelectorAll('[data-jour]')).toHaveLength(14);

@@ -339,7 +339,7 @@ export const DashboardTab: React.FC<DashboardTabProps> = ({
                 </span>
                 {pointBas && <span data-point-bas className="mt-0.5 flex flex-wrap justify-between gap-x-2 text-2xs">
                   <span className="text-cave-200">Point le plus bas</span>
-                  <span className={`font-mono ${pointBas.soldeCents < 0 ? 'text-alert-strong' : 'text-cave-50'}`}>{pointBas.partiel ? 'au plus ' : pointBas.estime ? '≈ ' : ''}{formatCHF(pointBas.soldeCents).replace('-', '−')} · {pointBas.date.slice(8, 10)}.{pointBas.date.slice(5, 7)}</span>
+                  <span className={`font-mono ${pointBas.soldeCents < 0 ? 'text-alert-strong' : 'text-cave-50'}`}>{pointBas.partiel ? 'au plus ' : pointBas.estime ? '≈ ' : ''}{formatCHF(pointBas.soldeCents).replace('-', '−')} · {pointBas.date.slice(8, 10)}.{pointBas.date.slice(5, 7)} · horizon 90 j</span>
                 </span>}
                 {materielCents > 0 && <span data-charges-materiel className="mt-0.5 block text-2xs text-cave-400">dont matériel {formatCHF(materielCents)}, à part dans Finances</span>}
               </span>

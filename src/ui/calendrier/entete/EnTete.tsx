@@ -33,7 +33,7 @@ import './entete.css';
 export type VueCalendrier = 'semaines' | 'annee' | 'graph' | 'liste';
 
 /** Ce que l'en-tête lit du modèle : `ModeleCalendrier` en entier convient. */
-export type ModeleEnTete = Pick<ModeleCalendrier, 'semaines' | 'courbe' | 'creux' | 'retards' | 'sansDate' | 'icones'> & Partial<Pick<ModeleCalendrier, 'mois' | 'choses' | 'hypotheses' | 'passe'>>;
+export type ModeleEnTete = Pick<ModeleCalendrier, 'semaines' | 'courbe' | 'creux' | 'retards' | 'sansDate' | 'icones'> & Partial<Pick<ModeleCalendrier, 'mois' | 'choses' | 'hypotheses' | 'passe' | 'causeSoldeInconnu'>>;
 
 /** La courbe recalculée pendant un geste de la frise (E02) : une `CourbeCaisse` (`courbeDecalee`, `courbeSans`…). */
 export type ApercuCourbe = CourbeCaisse | { courbe: CourbeCaisse; /** D388 : le jour où la chose tomberait si on lâchait (« si tu lâches en S51 »). */ lache?: string };
@@ -134,6 +134,18 @@ const plageDe = (du: string, au: string): string => {
   return `${d(du)} → ${d(au)}`;
 };
 const INVITATION = 'Tourne le téléphone : 13 semaines';
+/** Ce que dit l'en-tête quand la caisse est inconnue : la cause de `buildForecast` (`cashCause`), pas toujours le solde (CHD-1). */
+export function causeCaisseInconnue(c: ModeleCalendrier['causeSoldeInconnu']): { avant: string; lien: string } {
+  if (c === 'paiements') return { avant: 'Des pièces payées n’ont pas de paiement : à confirmer dans', lien: 'Finances › Confirmer les paiements' };
+  if (c === 'a-confirmer') return { avant: 'Solde de départ à confirmer dans', lien: 'Finances › Solde' };
+  if (c === 'autre') return { avant: 'Caisse à vérifier dans', lien: 'Finances › Solde' };
+  return { avant: 'Solde de départ inconnu : à régler dans', lien: 'Finances › Solde' };
+}
+/** CHV-5 : la pastille nomme la période ET ce que la frise montre. « Nov. » seul laissait croire à un mois, la frise montre 6 semaines (S44–S49). */
+export function libellePastille(libelle: string, nombre: number, annee: boolean): string {
+  const duree = libelleDuree(nombre, annee);
+  return libelle === duree || duree === 'An' || duree === '3 mois' || duree === '6 mois' ? libelle : `${libelle} · ${duree}`;
+}
 /** T3-4 : le navigateur refuse le plein écran (iPhone Safari, page dans un cadre) : jamais un bouton muet. */
 const REFUS_PLEIN = 'Plein écran refusé par ce navigateur';
 
@@ -328,14 +340,16 @@ export function EnTeteCalendrier(props: EnTeteCalendrierProps) {
   const emis = useRef<MessageEnTete['genre'] | null>(null);
   const dire = useCallback((m: MessageEnTete) => {
     const canal = onMessageRef.current;
-    if (canal) { emis.current = m.genre; canal(m); return; }
+    // CHN-10 : l'invitation « Tourne le téléphone » ne passe pas par le message flottant de l'onglet (il se posait sur « Loyer du local ») : elle vit ici, dans la page.
+    if (canal && m.genre !== 'invite') { emis.current = m.genre; canal(m); return; }
     montrer({ genre: m.genre === 'invite' ? 'invite' : 'message', texte: m.texte }, m.genre === 'invite' ? null : 4000);
   }, [montrer]);
   /** Retire le message de l'en-tête (`genre` donné : seulement celui-là). */
   const taire = useCallback((genre?: MessageEnTete['genre']) => {
     const canal = onMessageRef.current;
     if (canal) {
-      if (emis.current && (!genre || emis.current === genre)) { emis.current = null; canal(null); }
+      if (genre !== 'invite' && emis.current && (!genre || emis.current === genre)) { emis.current = null; canal(null); }
+      if (!genre || genre === 'invite') setInfo(i => (i && i.genre === 'invite' ? null : i));
       return;
     }
     setInfo(i => (i && i.genre !== 'date' && (!genre || (genre === 'invite' ? i.genre === 'invite' : i.genre === 'message')) ? null : i));
@@ -385,6 +399,7 @@ export function EnTeteCalendrier(props: EnTeteCalendrierProps) {
   /* Tour 2 n° 1 : en plein écran, l'en-tête de l'app s'efface (Header lit ce magasin) ; il revient au retour et quand le calendrier part. */
   useEffect(() => { poserPleinCalendrier(plein); }, [plein]);
   useEffect(() => () => poserPleinCalendrier(false), []);
+  useEffect(() => { if (!plein) taire('invite'); }, [plein, taire]); // CHN-10 : l'invitation vit dans la page ; le plein écran quitté, elle part
   const basculerPlein = async () => {
     if (plein) { await sortirPleinEcran(); setPlein(false); return; }
     // L'invitation est pour le téléphone tenu droit (CRITIQUE-4 n° 19) ; un écran large n'a rien à tourner. La largeur se lit AVANT le plein
@@ -527,6 +542,8 @@ export function EnTeteCalendrier(props: EnTeteCalendrierProps) {
   const premiereSemaine = visibles[0]?.debut ?? fenetre.du;
   const plage = plageDe(premiereSemaine, ajouterJours(premiereSemaine, nombre * 7 - 1));
   const libelle = total ? libellePeriode(periode, { du: semainesTot[index]?.debut ?? fenetre.du, semaines: nombre }, semainesTot[0].debut, total, annee) : libelleDuree(nombre, annee);
+  const pastille = libellePastille(libelle, nombre, annee);
+  const cause = causeCaisseInconnue(modele.causeSoldeInconnu);
   // La rangée d'un mouvement (sa couleur) et les noms mis de côté viennent des choses du modèle.
   const rangeeDe = useMemo(() => {
     const parMouvement = new Map<string, string>();
@@ -650,7 +667,7 @@ export function EnTeteCalendrier(props: EnTeteCalendrierProps) {
   }, [semaineCreux, creux?.centimes, orientation, vue, !!courbe, lecture === null]);
   const cle = courbe && creux ? (
     <button ref={refCle} type="button" className="ent-k" data-ent-cle data-empile={empile ? '' : undefined} data-serre={empile && serre ? '' : undefined} aria-expanded={creuxOuvert}
-      aria-label={`${chf(creux.centimes)} CHF à dépenser sans passer sous 0 (${semaineCreux}) : voir ses causes`} onClick={() => setCreuxOuvert(o => !o)}>
+      aria-label={`${chf(creux.centimes)} CHF à dépenser sans passer sous 0 (${semaineCreux}, sur tout l’horizon de la courbe) : voir ses causes`} onClick={() => setCreuxOuvert(o => !o)}>
       <b className={creux.centimes < 0 ? 'ent-neg' : undefined}>{chf(creux.centimes)}</b><span className="ent-k-u">CHF à dépenser</span><em><span className="ent-k-sep">· </span>{semaineCreux}</em>
     </button>
   ) : <span className="ent-k ent-k-vide" />;
@@ -705,8 +722,8 @@ export function EnTeteCalendrier(props: EnTeteCalendrierProps) {
         <span ref={boutonsTete} className="ent-t-b">
           <button type="button" className="ent-mb" aria-pressed={mouvements} title="Afficher les + et − et les icônes de chaque semaine" onClick={() => onMouvements(!mouvements)}>±</button>
           <button ref={boutonPeriode} type="button" className="ent-per" data-ent-periode aria-haspopup="dialog" aria-expanded={menuOuvert} title="Période, liste, tri et filtre"
-            aria-label={`${props.echelle === 'jour' && !annee ? `${libelle} · j` : libelle} · période, liste, tri et filtre`} onClick={() => setMenuOuvert(o => !o)}>
-            {props.echelle === 'jour' && !annee ? `${libelle} · j` : libelle}<ChevronDown size={14} strokeWidth={2.4} aria-hidden="true" />
+            aria-label={`${pastille} · période, liste, tri et filtre`} onClick={() => setMenuOuvert(o => !o)}>
+            {pastille}<ChevronDown size={14} strokeWidth={2.4} aria-hidden="true" />
           </button>
           {retards.length > 0 && (
             <button type="button" className="ent-ret-b" aria-label={titreRetards(retards.length)} onClick={() => setRetardsOuverts(true)}><Clock size={16} strokeWidth={2.4} aria-hidden="true" />{retards.length}</button>
@@ -765,8 +782,9 @@ export function EnTeteCalendrier(props: EnTeteCalendrierProps) {
           // phrase était retirée au rendu (« dansFinances › Solde »).
           <p className="ent-inconnu">
             <span>
-              Solde de départ inconnu : à régler dans{' '}
-              <a className="ent-lien" href="#finances" onClick={e => { e.preventDefault(); onOuvrirFinances?.(); }}>Finances › Solde</a>
+              {/* CHD-1 : le message dit la vraie cause. Un solde confirmé mais une pièce payée sans paiement n'est pas « un solde inconnu ». */}
+              {cause.avant}{' '}
+              <a className="ent-lien" href="#finances" onClick={e => { e.preventDefault(); onOuvrirFinances?.(); }}>{cause.lien}</a>
             </span>
           </p>
         ) : null}
@@ -792,7 +810,8 @@ export function EnTeteCalendrier(props: EnTeteCalendrierProps) {
       )}
 
       {lecture !== null && !graph && courbeC && <div className="ent-lu"><LectureDetail courbe={courbeC} index={lecture} rangeeDe={rangeeDe} /></div>}
-      <div className="ent-live" aria-live="polite">
+      {/* CHN-10 : « Tourne le téléphone » se pose dans la page, sous l'en-tête, et la pousse ; flottant, il couvrait « Loyer du local » sans geste pour le retirer. */}
+      <div className="ent-live" aria-live="polite" style={info?.genre === 'invite' ? { position: 'static', pointerEvents: 'auto' } : undefined}>
         {info && info.genre !== 'date' && <p className={`ent-info ent-info--${info.genre}`} data-info={info.genre}>{info.texte}</p>}
       </div>
 

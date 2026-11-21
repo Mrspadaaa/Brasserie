@@ -100,7 +100,7 @@ export const Header: React.FC<HeaderProps> = ({
   /* V-a : en-tête opaque. Un fond à 95 % et un flou laissaient voir à travers lui ce qui défile dessous (fantôme gris sous « L'Affinée » à 390). */
   /* APP-ENTETE-COLLE (19.11 : « le header n'a pas besoin d'être visible partout, en tout cas pas en mode "floatting" docked en haut ») : l'en-tête défile avec la page. */
   return (
-    <header ref={enTete} className={`relative z-40 bg-cave-950 border-b border-cave-800 pt-safe${plein ? ' hidden' : ''}`} data-entete-app={paysage ? 'paysage' : undefined} hidden={plein || undefined}>
+    <header ref={enTete} className={`relative z-40 bg-cave-950 border-b border-cave-800 pt-safe${plein && paysage ? ' hidden' : ''}`} data-entete-app={paysage ? 'paysage' : undefined} data-plein-allege={plein && !paysage ? '' : undefined} hidden={(plein && paysage) || undefined}>
       {/* La disposition compacte : 36 px, une seule ligne (CAL-ENTETE, 21.11 : nom, période, recherche et avatars ne passent plus à la ligne). */}
       <div
         className={`app-titlebar max-w-4xl ${large ? 'min-[900px]:max-w-[1264px]' : ''} mx-auto px-2 flex items-center ${
@@ -109,7 +109,8 @@ export const Header: React.FC<HeaderProps> = ({
       >
         {/* Identité — ramène à l'accueil. `min-w-0` : sans lui, un élément de flex refuse de descendre sous la largeur de son contenu
             et toute la page glissait latéralement (442 px pour 430). */}
-        <button
+        {/* CHN-10 : en plein écran tenu droit, « L'Affinée » et les avatars partent (Tour 2 n° 1) mais la période ‹ › et la loupe restent à portée. */}
+        {!plein && <button
           onClick={onGoHome}
           className={`flex items-center text-left group min-w-0 ${compactLayout ? 'min-h-7 shrink-0 gap-1 pr-1' : 'gap-2.5 min-h-touch pr-2'}`}
           aria-label="Retour au tableau de bord"
@@ -129,7 +130,7 @@ export const Header: React.FC<HeaderProps> = ({
               Villars-sur-Glâne
             </span>
           </span>
-        </button>
+        </button>}
 
         <div className="flex-1" />
 
@@ -142,7 +143,7 @@ export const Header: React.FC<HeaderProps> = ({
           <Search className={compactLayout ? 'w-4 h-4' : 'w-5 h-5'} />
         </IconButton>
         {/* Le duo d'avatars : qui saisit (devant) et l'autre. Il ouvre la page « Plus ». */}
-        <button
+        {!plein && <button
           type="button"
           onClick={onOpenPlus}
           aria-label={`Plus : saisie au nom de ${courant}`}
@@ -154,7 +155,7 @@ export const Header: React.FC<HeaderProps> = ({
           {/* Lettre = couleur de la page (blanc en clair, cave en cave) sur l'aplat d'encre : `text-cave-950` reste une encre sombre en clair (themes.css). */}
           <span aria-hidden="true" style={{ color: 'rgb(var(--cave-950))' }} className="absolute left-1 top-[6px] h-6 w-6 rounded-full bg-cave-50 grid place-items-center text-xs font-bold ring-2 ring-cave-950">{courant === 'Gaëtan' ? 'G' : 'A'}</span>
           {pendingTodosCount > 0 && <span aria-hidden="true" className="absolute right-0.5 top-0.5 h-2 w-2 rounded-full bg-ebc-straw" />}
-        </button>
+        </button>}
       </div>
     </header>
   );

@@ -1167,6 +1167,8 @@ export interface ModeleCalendrier {
   /** `null` quand le solde de départ est inconnu : jamais une courbe à 0 (E02). */
   courbe: CourbeCaisse | null;
   soldeDepartInconnu: boolean;
+  /** Pourquoi la caisse est inconnue : `paiements` = solde confirmé mais des pièces payées n'ont pas de paiement (« Confirmer les paiements »). Absent : le solde. */
+  causeSoldeInconnu?: 'absent' | 'a-confirmer' | 'paiements' | 'autre' | null;
   /** « À dépenser sans passer sous 0 » : le minimum de la courbe libre dès la semaine courante, avec sa semaine. */
   creux: Creux | null;
   hypotheses: HypotheseCaisse[];

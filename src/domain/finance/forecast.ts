@@ -1,6 +1,7 @@
 import type { Batch, StockItem } from '../../types';
 import type { FinanceTransaction, FinancialAsset, FinancialPayment, FinancialPlan, FinancialProfile } from './types';
 import { estimerBrassinsPlanifies, planBrewBatchId, type ReglagesBrewForecast, budgetsDeRecette, type BudgetRepris } from './brewForecast';
+import type { CashCause } from './ledger';
 import { formatCHF, isoDate, isActiveTransaction, paymentState, planInvoiceAllocation, summarizeLedger, todayISO, transactionAmount, transactionDirection, transactionKind } from './ledger';
 import { isUpgradePlan, upgradeReadiness } from './upgrades';
 import { retirerSoldees } from './soldeImpot';
@@ -40,6 +41,8 @@ export interface AvertissementCible {
 }
 export interface FinanceForecast {
   months: ForecastMonth[]; items: ForecastItem[]; warnings: string[]; avertissements: AvertissementCible[]; cashComplete: boolean; trendMonths: string[]; openingCashCents: number | null;
+  /** Pourquoi la caisse n'est pas complète (`null` quand elle l'est) : solde absent, à confirmer, pièces payées sans paiement… (CHD-1 : le message du Calendrier dit la vraie cause). */
+  cashCause?: CashCause | null;
   undated: UndatedForecastItem[]; undatedInCents: number; undatedOutCents: number;
 }
 /** Le point le plus bas à venir (K4) : le solde de fin de journée le plus bas, d'aujourd'hui à `fin` inclus, sur les mêmes sorties que Finances. */
@@ -245,7 +248,7 @@ function prevoirSansReprise(input: { transactions: FinanceTransaction[]; payment
       projectedCents: rows.filter(i => i.source === 'trend').reduce((sum, i) => sum + i.amountCents, 0), items: rows };
   });
   const undatedTotal = (direction: 'in' | 'out') => undated.filter(u => u.direction === direction).reduce((sum, u) => sum + u.amountCents, 0);
-  return { months, items, warnings: [...new Set(warnings)], avertissements: [...new Map(avertissements.map(a => [a.texte, a])).values()], cashComplete: ledger.cashComplete, trendMonths, openingCashCents: ledger.cashCents,
+  return { months, items, warnings: [...new Set(warnings)], avertissements: [...new Map(avertissements.map(a => [a.texte, a])).values()], cashComplete: ledger.cashComplete, cashCause: ledger.cashCause, trendMonths, openingCashCents: ledger.cashCents,
     undated, undatedInCents: undatedTotal('in'), undatedOutCents: undatedTotal('out') };
 }
 
