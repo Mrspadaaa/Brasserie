@@ -306,7 +306,8 @@ export function phraseListe(ctx: Contexte, resultats: CatalogEntry[]): PhraseLis
 
 // ---- La carte (e6a) ----
 export type TonCarte = 'cuve' | 'garde' | 'brasser' | 'retard' | 'cond' | 'fin' | 'annule';
-export interface ActionCarte { label: string; brew?: boolean; section?: 'measurements' | 'tasting' | 'overview' }
+/** `mesurer` (PI-4) : l'action ouvre la fiche et le geste « Mesurer » d'un toucher. */
+export interface ActionCarte { label: string; brew?: boolean; mesurer?: boolean; section?: 'measurements' | 'tasting' | 'overview' }
 export interface CarteModel {
   ton: TonCarte;
   pastille: string;
@@ -368,6 +369,8 @@ export function carteModel(entry: CatalogEntry, now = Date.now(), kegs: KegItem[
       ? { label: dh === 0 ? 'Dry hop aujourd’hui' : 'Dry hop demain', section: 'measurements' }
       : stable ? { label: 'Confirmer FG', section: 'measurements' }
       : missingBatchMeasurements(b).length ? { label: 'Compléter les mesures', section: 'measurements' }
+      // PI-4 : en fermentation, le geste du jour est la mesure ; en garde, la fiche n'a pas de geste « Mesurer » (relevé au pied du dossier).
+      : b.status === 'fermentation' ? { label: 'Mesurer', mesurer: true, section: 'measurements' }
       : { label: 'Voir les mesures', section: 'measurements' };
   } else if (b.status === 'conditionne' || b.status === 'termine') {
     ou = jjmm(b.bottlingDate);

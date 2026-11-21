@@ -8,6 +8,7 @@ import type { BatchDetailSection } from '../../../domain/productionInsights';
 import { BeerStyleTag } from '../../BeerStyleTag';
 import { CatalogItemMenu } from '../CatalogItemMenu';
 import { carteModel, styleCourt } from './listeModel';
+import { demanderMesure } from './mesureDemandee';
 import './liste.css';
 
 export function CarteBrassin({
@@ -60,7 +61,11 @@ export function CarteBrassin({
             type="button"
             className="lst-btn lst-go"
             aria-label={`${m.action.label} · ${entry.id}`}
-            onClick={() => (m.action.brew ? onBrew(batch) : onOpen(batch, m.action.section))}
+            onClick={() => {
+              if (m.action.brew) { onBrew(batch); return; }
+              if (m.action.mesurer) demanderMesure(batch.id);
+              onOpen(batch, m.action.section);
+            }}
           >
             {m.action.label}
             <ChevronRight aria-hidden />

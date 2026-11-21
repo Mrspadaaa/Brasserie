@@ -9,6 +9,7 @@ import { COULEURS, COURT } from '../../hopIndex/familyTokens';
 import { Cible, Curseur } from '../fiche/ui';
 import { GrapheTemps, geometrie, type Geometrie } from './GrapheTemps';
 import { bornesMesure, titreReponse, type EtatMesure, type Houblon, type ModeleFiche } from './modele';
+import { prendreMesureDemandee } from '../liste/mesureDemandee';
 
 /**
  * Corps de la fiche d'un brassin en fermentation : le port de gfc (choix du 15.11). Le titre répond d'abord (dry hop demain),
@@ -349,8 +350,13 @@ export const PanneauMesure: React.FC<{ m: ModeleFiche; etat: EtatMesure; onChang
 };
 
 /** Pied de la feuille : « Mesurer » au repos ; Annuler et Enregistrer pendant le geste. */
-export const PiedFermentation: React.FC<{ ouvert: boolean; ouvrir: () => void; annuler: () => void; enregistrer: () => void }> = ({ ouvert, ouvrir, annuler, enregistrer }) => (
-  ouvert
+export const PiedFermentation: React.FC<{ ouvert: boolean; ouvrir: () => void; annuler: () => void; enregistrer: () => void }> = ({ ouvert, ouvrir, annuler, enregistrer }) => {
+  // PI-4 : « Mesurer » touché sur la carte du lot ouvre le geste dès l'arrivée de la fiche.
+  React.useEffect(() => {
+    if (!ouvert && prendreMesureDemandee()) ouvrir();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+  return ouvert
     ? <div className="flex gap-2"><Cible onClick={annuler}>Annuler</Cible><Cible ton="prim" className="flex-1 min-h-12 text-base" onClick={enregistrer}>Enregistrer le relevé</Cible></div>
-    : <Cible ton="prim" plein onClick={ouvrir} className="min-h-12 flex-col gap-0 text-base leading-tight"><span>Mesurer</span><small className="text-xs font-normal opacity-85">densité · °C cuve</small></Cible>
-);
+    : <Cible ton="prim" plein onClick={ouvrir} className="min-h-12 flex-col gap-0 text-base leading-tight"><span>Mesurer</span><small className="text-xs font-normal opacity-85">densité · °C cuve</small></Cible>;
+};
