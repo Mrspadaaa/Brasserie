@@ -88,3 +88,28 @@ Ce sont des corrections (aucun geste gagné) : elles entrent au passage de l'éc
 - **Glisser une ligne pour la marquer faite** (`SwipeRow.tsx` existe, non branché) : la coche du Bord fait déjà 1 geste.
 - **Épingler en un geste** : il l'est déjà ; seule la vue qui saute après (WX2-2) est un défaut.
 - **Nom par défaut pour un client ou une idée** : le texte est la chose créée ; seule l'Entrée compte (tenue).
+
+## Compte final
+
+Banc : `node scripts/parcours/principes.mjs <dossier> --ref <ref>` lancé depuis port-carnet. Chaque ref est construite dans
+`os.tmpdir()` (copie `git worktree` détachée, `node_modules` en jonction), jamais depuis l'arbre de travail. Mêmes fixtures
+« ZZ TEST », 390×844 tactile. Deux passages :
+- **tour7** : `--ref en-ligne/2026-11-21-tour7` (d73f47040).
+- **HEAD** : `--ref HEAD` = port-carnet `92f9d870e` (branche claude/port-carnet-1711). L'analyse ci-dessus citait `cf945eaec`,
+  HEAD d'alors ; non remesuré.
+
+| Grille | tour7 | HEAD |
+|---|---|---|
+| VUE-SAUTE (R9) : actions KO | 18 | 18 |
+| VUE-SAUTE (R9) : sessions KO (plafond 0,02) | 4 (calendrier, brassins, stocks, assistant) | 4 (mêmes) |
+| VUE-SAUTE, total | 22 | 22 |
+| NOM-OBLIGE (R12) : créations KO | 5 (recette, Calendrier travaux / activités / papiers, matériel) | 5 (mêmes) |
+| **Total** | **27 (PRINCIPES ECHEC)** | **27 (PRINCIPES ECHEC)** |
+
+Détail VUE-SAUTE, tour7 : calendrier 7 actions KO (S48, S49, Cacher la courbe, ZZ TEST Commande de malt, Fermer, Période suivante et
+précédente) ; brassins « Tous » ; stocks 5 (Étagère, Autres stocks, Ingrédients, Épingler, Articles) ; assistant 5 (Changer de
+fermenteur, « Suivant » 490 et 655 px, ZZ TEST Caramünch, ZZ TEST Munich). Mêmes actions dans HEAD. Écarts de mesure seulement :
+CLS de session assistant 0,318 (tour7) contre 0,32 (HEAD) ; « Suivant » 0,041 contre 0,043.
+
+Lecture : le tag tour7 ne réduit aucune grille ; ses 27 KO sont ceux de HEAD. NOM-OBLIGE KO sur carnet et client : aucun (le
+script les relève « tenus » pour ces écrans). Journaux : scratchpad de la session (`log-tour7.txt`, `log-head.txt`).
