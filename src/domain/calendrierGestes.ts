@@ -372,14 +372,16 @@ export function choseAllongee(chose: ChoseCalendrier, jours: number, aujourdhui:
 
 /** Le texte de l'aperçu de f2-a : « J7 / 35 · prête 14 déc. » pour un brassin, « S47 → S50 » pour le reste. */
 export function dureeAllongee(chose: ChoseCalendrier, jours: number, aujourdhui: string): string {
-  if (chose.source.genre !== 'batch') return `${etiquetteS(chose.debut)} → ${etiquetteS(dimancheDe(decale(chose.fenetre?.au ?? chose.fin, jours)))}`;
+  /* CAL-JOUR (21.11) : le bord se règle au jour ; l'aperçu dit le jour, plus le dimanche de la semaine */
+  if (chose.source.genre !== 'batch') return `${jourLisible(chose.fenetre?.du ?? chose.debut)} → ${jourLisible(decale(chose.fenetre?.au ?? chose.fin, jours))}`;
   const apres = choseAllongee(chose, jours, aujourdhui);
   return apres.duree ?? (apres.preteLe ? `prête ${jourLisible(apres.preteLe)}` : chose.duree ?? '');
 }
 
 /**
  * f2-a (E29) : tirer le bord d'une barre de `jours` jours (négatif : la raccourcir). Brassin : la fin prévue (`finPrevue`) est retenue, la garde
- * s'allonge d'autant. Fête, activité, plan manuel : le dimanche de la fenêtre (`fenetre.au`), jamais avant sa première semaine.
+ * s'allonge d'autant. Fête, activité, plan manuel : le dernier jour de la fenêtre (`fenetre.au`), au jour près (CAL-JOUR, 21.11 : « pourquoi à
+ * certains événements je peux pas leur donner un jour précis… ? »), jamais avant son premier jour.
  */
 export function allonger(chose: ChoseCalendrier, jours: number, ctx: ContexteGestes): Resolution {
   if (!Number.isInteger(jours) || jours === 0) return refus('Rien ne change : tire le bord plus loin.');
@@ -389,10 +391,10 @@ export function allonger(chose: ChoseCalendrier, jours: number, ctx: ContexteGes
     return refus(chose.deplacable === true ? 'Cette chose ne s’allonge pas d’ici.' : chose.deplacable.raison, chose.ouvre);
   }
   const base = chose.fenetre?.au ?? chose.fin;
-  const au = dimancheDe(decale(base, jours));
-  if (au < dimancheDe(chose.debut)) return refus('Une chose dure au moins une semaine : tire moins loin.');
-  if (au === dimancheDe(base) && chose.fenetre) return refus('Rien ne change : tire jusqu’à une autre semaine.');
-  const fenetre = { du: chose.fenetre?.du ?? lundiDe(chose.debut), au, ...(chose.joursActifs ? { joursActifs: chose.joursActifs } : {}), ...(chose.miseDeCote ? { miseDeCote: true } : {}) };
+  const au = decale(base, jours);
+  const du = chose.fenetre?.du ?? chose.debut;
+  if (au < du) return refus('Une chose dure au moins un jour : tire moins loin.');
+  const fenetre = { du, au, ...(chose.joursActifs ? { joursActifs: chose.joursActifs } : {}), ...(chose.miseDeCote ? { miseDeCote: true } : {}) };
   /*
    * CRITIQUE-9 n° 6 (A6, « même règle pour tout geste ») : mise de côté, la réserve s'étale sur la nouvelle fenêtre et un plan manuel se paie à sa
    * nouvelle fin ; le libre bouge, le message dit l'effet. Sans mise de côté, rien ne change dans la caisse : le nom et le trajet.
@@ -403,7 +405,7 @@ export function allonger(chose: ChoseCalendrier, jours: number, ctx: ContexteGes
     courbeApres = courbeAvecMise(courbeApres, miseDe(chose, fenetre), chose.id);
   }
   const effet = effetCaisse(ctx.courbe, courbeApres);
-  const message = annuler(effet ? `${chose.titre} · ${effet.texte}` : `${chose.titre} : ${etiquetteS(chose.debut)} → ${etiquetteS(au)}`);
+  const message = annuler(effet ? `${chose.titre} · ${effet.texte}` : `${chose.titre} : ${jourLisible(du)} → ${jourLisible(au)}`);
   if (source.genre === 'creative') return { ok: true, ecritures: [{ op: 'patch', collection: 'creativeItems', id: source.id, patch: { fenetre } }], effet, promesse: null, courbeApres, message };
   const plan = planDe(chose, ctx);
   if (!plan) return refus('Cette prévision n’existe plus.', { ecran: 'finances' });

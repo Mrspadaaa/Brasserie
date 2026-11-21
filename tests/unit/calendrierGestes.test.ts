@@ -242,7 +242,7 @@ describe('A10, retirer, dupliquer, accepter, fait, lier : les écritures et leur
     expect(resoudre({ genre: 'retirer', chose }, c)).toEqual(retirer(chose, c));
     vi.useFakeTimers({ now: new Date('2026-11-18T12:00:00.000Z') });
     try { expect(resoudre({ genre: 'noter-idee', titre: 'x', lundi: '2026-12-07' }, c)).toEqual(noterIdee('x', '2026-12-07', c)); } finally { vi.useRealTimers(); }
-    expect(resoudre({ genre: 'allonger', chose, jours: 7 }, c)).toMatchObject({ ok: true, ecritures: [{ collection: 'financialPlans', patch: { fenetre: { du: '2026-12-21', au: '2027-01-03' } } }] });
+    expect(resoudre({ genre: 'allonger', chose, jours: 7 }, c)).toMatchObject({ ok: true, ecritures: [{ collection: 'financialPlans', patch: { fenetre: { du: '2026-12-21', au: '2026-12-28' } } }] }); // CAL-JOUR (21.11) : au jour, plus au dimanche
   });
   it('un seul message à la fois, deux lignes au plus : aucun message ne passe 140 caractères', () => {
     const { courbe, chose, p } = courbeMalt();
