@@ -25,9 +25,9 @@ header.app{height:50px;display:flex;align-items:center;gap:6px;padding:0 8px;bor
 .cmp small{font-weight:400;color:var(--mut);font-size:14px;display:flex;align-items:center;gap:3px}
 .rech{display:flex;align-items:center;gap:8px;height:40px;border:1.5px solid var(--line2);border-radius:12px;padding:0 12px;color:#777;font-size:15px;background:#fff;flex:1;min-width:0}
 .rech span{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.filt{display:flex;gap:5px;align-items:center}
-.pl{display:inline-flex;align-items:center;gap:4px;height:32px;padding:0 9px;border:1.5px solid var(--line2);border-radius:999px;font-size:14px;color:#333;background:#fff;white-space:nowrap}
-.pl b{font-family:"IBM Plex Mono",Consolas,monospace;font-size:15px;color:#111}
+.filt{display:flex;gap:4px;align-items:center}
+.pl{display:inline-flex;align-items:center;gap:3px;height:32px;padding:0 6px;border:1.5px solid var(--line2);border-radius:999px;font-size:14px;color:#333;background:#fff;white-space:nowrap}
+.pl b{font-family:"IBM Plex Mono",Consolas,monospace;font-size:14px;color:#111}
 .pl.r b{color:var(--rouge)}.pl.br b{color:var(--brun)}
 .pl.zero{color:#999;border-style:dashed}.pl.zero b{color:#aaa}
 .pl.cpt{border-style:dotted;border-width:2px}
@@ -36,18 +36,18 @@ header.app{height:50px;display:flex;align-items:center;gap:6px;padding:0 8px;bor
 .o .bd{position:absolute;top:-4px;right:-4px;min-width:18px;height:18px;border-radius:9px;background:#2b64a6;color:#fff;font-size:12px;font-weight:700;display:grid;place-items:center;padding:0 4px;font-family:Consolas,monospace}
 /* mur */
 .mur{margin:6px 10px 0;background:var(--mur);border-radius:10px;padding:2px 0;overflow:hidden}
-.ray{display:flex;border-left:4px solid var(--rc);border-bottom:1px solid #e4e1d8;padding:3px 6px 3px 5px;min-height:58px;position:relative}
+.ray{display:flex;border-left:4px solid var(--rc);border-bottom:1px solid #e4e1d8;padding:3px 6px 3px 5px;min-height:50px;position:relative}
 .ray:last-child{border-bottom:0}
 .ray.actif{background:#fff;box-shadow:inset 0 0 0 2px var(--rc)}
-.rl{width:62px;flex:none;display:flex;flex-direction:column;gap:1px}
+.rl{width:56px;flex:none;display:flex;flex-direction:column;gap:1px}
 .rl b{font-size:14px;color:var(--ink)}
 .rl small{font-size:13px;color:var(--mut)}
 .rl .cat{display:inline-flex;align-items:center;gap:2px;font-size:13px;color:var(--bleu);margin-top:2px;font-family:Consolas,monospace}
 .rl .leg-b{margin-top:4px;font-size:13px;border:1.5px solid var(--line2);border-radius:999px;padding:3px 6px;background:#fff;text-align:center}
-.rg{flex:1;display:flex;align-items:flex-end;gap:9px;position:relative;padding-top:15px;min-width:0}
+.rg{flex:1;display:flex;align-items:flex-end;gap:8px;position:relative;min-width:0}
 .rep{position:absolute;left:0;top:13px;font-size:12px;color:var(--mut);display:none}
 .g{display:flex;flex-direction:column;position:relative}
-.g em{font-style:normal;font-size:13px;font-weight:700;position:absolute;top:-15px;left:0;white-space:nowrap}
+.g em{font-style:normal;font-size:12.5px;font-weight:700;white-space:nowrap;display:block;line-height:15px}
 .malt .g em{color:#9a6a2a}.houblon .g em{color:#5b7d2a}.levure .g em{color:#7a6040}
 .bars{display:flex;align-items:flex-end;gap:2px;height:36px;border-bottom:2px solid #9c8a6b;position:relative}
 .malt .bars::before,.houblon .bars::before{content:"";position:absolute;left:-3px;right:-3px;bottom:22px;border-top:1.5px dashed #7d7d75}
@@ -61,7 +61,7 @@ header.app{height:50px;display:flex;align-items:center;gap:6px;padding:0 8px;bor
 .lv{display:flex;flex-direction:column;justify-content:flex-end;height:100%;gap:1px}
 .lv .sa{display:block;height:7px;border-radius:3px 3px 1px 1px;background:#b59a6a}
 .lv .sa[data-k]{height:13px;background:#6e5530;position:relative}
-.lv .sa[data-k]::after{content:attr(data-k);position:absolute;inset:0;color:#fff;font:700 11px/13px system-ui;text-align:center}
+.lv .sa[data-k]::after{content:attr(data-k);position:absolute;inset:0;color:#fff;font:700 12px/13px system-ui;text-align:center}
 .lv .ep{display:block;height:8px;border:1.5px solid var(--rouge);background:#fff}
 .levure .bars::before{display:none}
 .mur.mince .ray{min-height:38px;padding:2px 6px 2px 5px;align-items:center}

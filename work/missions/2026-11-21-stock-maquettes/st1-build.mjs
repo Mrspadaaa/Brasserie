@@ -56,8 +56,7 @@ const MALTS = [
 const HOPS = [
   { g: 'Hazy', l: [{ n: 'Citra', q: 485, s: 250, a: 12.5 }, { n: 'Mosaic', q: 120, s: 100, a: 11.8 }, { n: 'Galaxy', q: 0, a: 14.2 }, { n: 'Nelson Sauvin', q: 60, a: 12 }, { n: 'Strata', q: 0, a: 11 }, { n: 'Idaho 7', q: 30, a: 13 }, { n: 'Cryo Citra 25g', q: 25, a: 24.8, c: 1 }] },
   { g: 'W. Coast', l: [{ n: 'Simcoe', q: 0, a: 13 }, { n: 'Columbus', q: 0, a: 15 }] },
-  { g: 'Pale', l: [{ n: 'Cascade', q: 225, s: 100, a: 6.5 }, { n: 'Centennial', q: 0, a: 9.5 }, { n: 'Amarillo', q: 40, a: 8.6 }, { n: 'Chinook', q: 0, a: 12 }, { n: 'Saaz', q: 0, a: 3.5 }] },
-  { g: 'Stouts', l: [{ n: 'EKG', q: 0, a: 5 }] },
+  { g: 'Pale', l: [{ n: 'Cascade', q: 225, s: 100, a: 6.5 }, { n: 'Centennial', q: 0, a: 9.5 }, { n: 'Amarillo', q: 40, a: 8.6 }, { n: 'Chinook', q: 0, a: 12 }, { n: 'Saaz', q: 0, a: 3.5 }, { n: 'EKG', q: 0, a: 5 }] },
 ];
 const YEASTS = [
   { g: 'IPA', l: [{ n: 'US-05', q: 3, k: 'U' }, { n: 'Verdant', q: 4, k: 'V' }] },
@@ -86,14 +85,14 @@ function barre(a, sorte, opts = {}) {
   if (!a.q) return `<span class="b" style="width:${w}px"><i class="ep"></i></span>`;
   const h = sorte === 'malt' ? haut(a.q, 5) : haut(a.q, 250);
   const col = sorte === 'malt' ? ebcCoul(a.e) : hopCoul(a.a);
-  return `<span class="b${a.c ? ' cpt' : ''}${opts.sel === a.n ? ' sel' : ''}" style="width:${w}px"><i style="height:${h}px;background:${a.c ? 'transparent' : col}"></i></span>`;
+  return `<span class="b${a.c ? ' cpt' : ''}${opts.sel === a.n ? ' sel' : ''}" style="width:${w}px"><i style="height:${a.c ? 16 : h}px;background:${a.c ? 'transparent' : col}"></i></span>`;
 }
-const total = (g, sorte) => (sorte === 'malt' ? kg(g.l.reduce((s, a) => s + a.q, 0)) : sorte === 'houblon' ? `${g.l.reduce((s, a) => s + a.q, 0)} g` : `${g.l.reduce((s, a) => s + a.q, 0)} ▭`);
+const total = (g, sorte) => (sorte === 'malt' ? kg(g.l.reduce((s, a) => s + a.q, 0)) : sorte === 'houblon' ? `${g.l.reduce((s, a) => s + a.q, 0)} g` : `${g.l.reduce((s, a) => s + a.q, 0)}`);
 
 // Une rangée du mur. opts : mince (D2b), legende, sel (article touché), w (largeur de barre), lien (catalogue), actif.
 function rayon(nom, n, sorte, groupes, opts = {}) {
   const coul = { malt: '#a97b3c', houblon: '#6f9435', levure: '#8b7350' }[sorte];
-  const vides = { malt: ['Fumé'], houblon: ['Lager', 'Belge/Blé'], levure: ['Saison'] }[sorte];
+  const vides = { malt: ['Fumé'], houblon: ['Lager', 'Stouts'], levure: ['Saison'] }[sorte];
   const rep = { malt: '5 kg', houblon: '250 g', levure: '' }[sorte];
   const gs = groupes.map((g) => `<div class="g"><em>${g.g}</em><div class="bars">${g.l.map((a) => barre(a, sorte, opts)).join('')}</div>${opts.mince ? '' : `<span class="tot">${total(g, sorte)}</span>`}</div>`).join('');
   const lab = opts.mince
@@ -101,7 +100,7 @@ function rayon(nom, n, sorte, groupes, opts = {}) {
     : `<div class="rl"><b>${nom}</b><small class="mono">${n}</small>${opts.lien ? `<a class="cat">${ic('book', 14)}136</a>` : ''}${opts.legende ? '<span class="leg-b">Légende</span>' : ''}</div>`;
   return `<div class="ray ${sorte}${opts.mince ? ' mince' : ''}${opts.actif ? ' actif' : ''}" style="--rc:${coul}">${lab}<div class="rg">${rep && !opts.mince ? `<span class="rep mono">${rep} –</span>` : ''}${gs}${opts.mince ? '' : `<span class="vides">${vides.map((v) => `<span>○ ${v}</span>`).join('')}</span>`}</div></div>`;
 }
-const mur = (o = {}) => `<div class="mur${o.mince ? ' mince' : ''}${o.cls ? ' ' + o.cls : ''}">${o.avant ?? ''}${rayon('Malts', NM, 'malt', MALTS, { ...o, actif: o.actif === 'malt', lien: false })}${o.entre?.malt ?? ''}${rayon('Houblons', NH, 'houblon', HOPS, { ...o, actif: o.actif === 'houblon', lien: o.lien })}${o.entre?.houblon ?? ''}${rayon('Levures', NY, 'levure', YEASTS, { ...o, actif: o.actif === 'levure', legende: o.legende })}${o.apres ?? ''}</div>`;
+const mur = (o = {}) => { const b = { mince: o.mince, sel: o.sel, w: o.w }; return `<div class="mur${o.mince ? ' mince' : ''}${o.cls ? ' ' + o.cls : ''}">${o.avant ?? ''}${rayon('Malts', NM, 'malt', MALTS, { ...b, actif: o.actif === 'malt' })}${o.entre?.malt ?? ''}${rayon('Houblons', NH, 'houblon', HOPS, { ...b, actif: o.actif === 'houblon', lien: o.lien })}${o.entre?.houblon ?? ''}${rayon('Levures', NY, 'levure', YEASTS, { ...b, actif: o.actif === 'levure', legende: o.legende })}${o.apres ?? ''}</div>`; };
 
 // ---------- lignes de liste ----------
 function ligne(a, sorte, o = {}) {
@@ -142,9 +141,9 @@ header.app{height:50px;display:flex;align-items:center;gap:6px;padding:0 8px;bor
 .cmp small{font-weight:400;color:var(--mut);font-size:14px;display:flex;align-items:center;gap:3px}
 .rech{display:flex;align-items:center;gap:8px;height:40px;border:1.5px solid var(--line2);border-radius:12px;padding:0 12px;color:#777;font-size:15px;background:#fff;flex:1;min-width:0}
 .rech span{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.filt{display:flex;gap:5px;align-items:center}
-.pl{display:inline-flex;align-items:center;gap:4px;height:32px;padding:0 9px;border:1.5px solid var(--line2);border-radius:999px;font-size:14px;color:#333;background:#fff;white-space:nowrap}
-.pl b{font-family:"IBM Plex Mono",Consolas,monospace;font-size:15px;color:#111}
+.filt{display:flex;gap:4px;align-items:center}
+.pl{display:inline-flex;align-items:center;gap:3px;height:32px;padding:0 6px;border:1.5px solid var(--line2);border-radius:999px;font-size:14px;color:#333;background:#fff;white-space:nowrap}
+.pl b{font-family:"IBM Plex Mono",Consolas,monospace;font-size:14px;color:#111}
 .pl.r b{color:var(--rouge)}.pl.br b{color:var(--brun)}
 .pl.zero{color:#999;border-style:dashed}.pl.zero b{color:#aaa}
 .pl.cpt{border-style:dotted;border-width:2px}
@@ -153,18 +152,18 @@ header.app{height:50px;display:flex;align-items:center;gap:6px;padding:0 8px;bor
 .o .bd{position:absolute;top:-4px;right:-4px;min-width:18px;height:18px;border-radius:9px;background:#2b64a6;color:#fff;font-size:12px;font-weight:700;display:grid;place-items:center;padding:0 4px;font-family:Consolas,monospace}
 /* mur */
 .mur{margin:6px 10px 0;background:var(--mur);border-radius:10px;padding:2px 0;overflow:hidden}
-.ray{display:flex;border-left:4px solid var(--rc);border-bottom:1px solid #e4e1d8;padding:3px 6px 3px 5px;min-height:58px;position:relative}
+.ray{display:flex;border-left:4px solid var(--rc);border-bottom:1px solid #e4e1d8;padding:3px 6px 3px 5px;min-height:50px;position:relative}
 .ray:last-child{border-bottom:0}
 .ray.actif{background:#fff;box-shadow:inset 0 0 0 2px var(--rc)}
-.rl{width:62px;flex:none;display:flex;flex-direction:column;gap:1px}
+.rl{width:56px;flex:none;display:flex;flex-direction:column;gap:1px}
 .rl b{font-size:14px;color:var(--ink)}
 .rl small{font-size:13px;color:var(--mut)}
 .rl .cat{display:inline-flex;align-items:center;gap:2px;font-size:13px;color:var(--bleu);margin-top:2px;font-family:Consolas,monospace}
 .rl .leg-b{margin-top:4px;font-size:13px;border:1.5px solid var(--line2);border-radius:999px;padding:3px 6px;background:#fff;text-align:center}
-.rg{flex:1;display:flex;align-items:flex-end;gap:9px;position:relative;padding-top:15px;min-width:0}
+.rg{flex:1;display:flex;align-items:flex-end;gap:8px;position:relative;min-width:0}
 .rep{position:absolute;left:0;top:13px;font-size:12px;color:var(--mut);display:none}
 .g{display:flex;flex-direction:column;position:relative}
-.g em{font-style:normal;font-size:13px;font-weight:700;position:absolute;top:-15px;left:0;white-space:nowrap}
+.g em{font-style:normal;font-size:12.5px;font-weight:700;white-space:nowrap;display:block;line-height:15px}
 .malt .g em{color:#9a6a2a}.houblon .g em{color:#5b7d2a}.levure .g em{color:#7a6040}
 .bars{display:flex;align-items:flex-end;gap:2px;height:36px;border-bottom:2px solid #9c8a6b;position:relative}
 .malt .bars::before,.houblon .bars::before{content:"";position:absolute;left:-3px;right:-3px;bottom:22px;border-top:1.5px dashed #7d7d75}
@@ -178,7 +177,7 @@ header.app{height:50px;display:flex;align-items:center;gap:6px;padding:0 8px;bor
 .lv{display:flex;flex-direction:column;justify-content:flex-end;height:100%;gap:1px}
 .lv .sa{display:block;height:7px;border-radius:3px 3px 1px 1px;background:#b59a6a}
 .lv .sa[data-k]{height:13px;background:#6e5530;position:relative}
-.lv .sa[data-k]::after{content:attr(data-k);position:absolute;inset:0;color:#fff;font:700 11px/13px system-ui;text-align:center}
+.lv .sa[data-k]::after{content:attr(data-k);position:absolute;inset:0;color:#fff;font:700 12px/13px system-ui;text-align:center}
 .lv .ep{display:block;height:8px;border:1.5px solid var(--rouge);background:#fff}
 .levure .bars::before{display:none}
 .mur.mince .ray{min-height:38px;padding:2px 6px 2px 5px;align-items:center}
@@ -254,13 +253,13 @@ V['d1a-repos'] = () => page('D1a', `${tete()}${onglets(['Articles', 'Recompter',
 <div class="seg clair" style="margin:8px 10px 0"><span class="on">Ingrédients</span><span>Autres stocks</span></div>
 ${mur({ lien: true, legende: true })}
 ${enteteGroupe('Malts', NM, 'grain', `<span class="chip">couleur ${ic('chevD', 14)}</span>${ic('info', 20)}`)}
-${echelleMalt}${listeMalts(4)}${fab()}${navBas()}`, '', '.pl{padding:0 7px}');
+${echelleMalt}${listeMalts(4)}${fab()}${navBas()}`, '', '');
 
 V['d1a-recompter'] = () => page('D1a Recompter', `${tete()}${onglets(['Articles', 'Recompter', 'Courses', 'Fûts', 'Matériel'], 'Recompter')}
 <div style="margin:8px 10px 0" class="filt"><span class="rech">${ic('search', 18)}<span>Rechercher : nom, fournisseur…</span></span></div>
 <div class="filt" style="margin:6px 10px 0">${pills()}<span class="o" style="width:36px;height:36px;margin-left:auto">${ic('star', 18)}</span></div>
 <div class="seg clair" style="margin:8px 10px 0"><span class="on">Ingrédients</span><span>Autres stocks</span></div>
-${recompter()}${navBas()}`, '', CSS_RC + '.pl{padding:0 7px}');
+${recompter()}${navBas()}`, '', CSS_RC + '');
 
 // D1b : quatre onglets ; Recompter vit dans le rond, à droite des filtres (son rond), avec le compte « à compter ».
 const ongletsB = ['Articles', 'Courses', 'Fûts', 'Matériel'];
@@ -296,14 +295,14 @@ const entreeD2 = () => `${tete()}${onglets(['Articles', 'Recompter', 'Courses', 
 <div style="margin:6px 10px 0" class="filt"><span class="rech" style="height:38px">${ic('search', 18)}<span>Rechercher…</span></span><span class="o" style="width:38px;height:38px">${ic('balance', 19)}</span></div>
 <div class="filt" style="margin:5px 10px 0">${pills()}<span class="o" style="width:34px;height:34px;margin-left:auto">${ic('star', 17)}</span></div>
 <div class="seg clair" style="margin:6px 10px 0;padding:2px"><span class="on" style="height:32px">Ingrédients</span><span style="height:32px">Autres stocks</span></div>`;
-const CSS_D2 = '.pl{padding:0 7px;height:30px}.tabs span{height:34px}';
+const CSS_D2 = '.pl{height:30px}.tabs span{height:34px}';
 
 // D2a : le mur est l'en-tête de la liste. Toucher un rayon montre ses seuls articles ; le tri en pastille sur la même ligne.
 const barreRayon = (nom, n, tri, pic) => `<div class="d2a-b"><span>${ic(pic, 16)} <b>${nom}</b> <span class="mono">${n}</span></span><span class="chip">${ic('sort', 14)} ${tri}</span><span class="mono ech">0 · 1 · <b>5 kg</b> ⫽ 200</span></div>`;
 const CSS_D2A = `.d2a-b{display:flex;align-items:center;gap:6px;margin:4px 10px 0;padding:4px 0;border-bottom:2px solid #b88a4a;font-size:15px}.d2a-b .ech{margin-left:auto;font-size:13px;color:var(--mut)}
 .mur .ray.actif::after{content:"";position:absolute;left:50%;bottom:-8px;width:14px;height:14px;background:#fff;transform:rotate(45deg);border-right:2px solid var(--rc);border-bottom:2px solid var(--rc);z-index:2}`;
-V['d2a-repos-660'] = () => page('D2a', `${entreeD2()}${mur({ actif: 'malt', lien: true, legende: true })}${barreRayon('Malts', NM, 'couleur', 'grain')}${listeMalts(6)}${fab()}${navBas()}`, 'h660', CSS_D2 + CSS_D2A);
-V['d2a-houblons-660'] = () => page('D2a Houblons', `${entreeD2()}${mur({ actif: 'houblon', lien: true, legende: true })}${barreRayon('Houblons', NH, 'α', 'cone').replace('0 · 1 · <b>5 kg</b> ⫽ 200', '0 · 100 · <b>250 g</b> ⫽ 1 kg')}${listeHops(6)}${fab()}${navBas()}`, 'h660', CSS_D2 + CSS_D2A + '.li .jauge i{background:#7f8a5e}');
+V['d2a-repos-660'] = () => page('D2a', `${entreeD2()}${mur({ actif: 'malt', lien: true })}${barreRayon('Malts', NM, 'couleur', 'grain')}${listeMalts(6)}${fab()}${navBas()}`, 'h660', CSS_D2 + CSS_D2A);
+V['d2a-houblons-660'] = () => page('D2a Houblons', `${entreeD2()}${mur({ actif: 'houblon', lien: true })}${barreRayon('Houblons', NH, 'α', 'cone').replace('0 · 1 · <b>5 kg</b> ⫽ 200', '0 · 100 · <b>250 g</b> ⫽ 1 kg')}${listeHops(6)}${fab()}${navBas()}`, 'h660', CSS_D2 + CSS_D2A + '.li .jauge i{background:#7f8a5e}');
 
 // D2b : le mur mince. Trois lignes de 38 px, pictos au lieu des noms ; une seule bande collante tient rayon, tri et échelle.
 V['d2b-repos-660'] = () => page('D2b', `${entreeD2()}${mur({ mince: true })}
