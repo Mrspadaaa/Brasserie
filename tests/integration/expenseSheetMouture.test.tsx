@@ -73,7 +73,10 @@ describe('R1 (relecture) : le prix affiché « avec mouture » est celui du cata
     expect(maltLigne(view).querySelector('[data-dp-prixkg]')).toBeNull();
     expect(maltLigne(view).querySelector('[aria-label*="avec mouture"]')).toBeNull(); // toute la rangée : un aria-label n'est pas dans textContent
     expect(maltLigne(view).textContent).not.toMatch(/avec mouture/);
-    await enregistrer();
+    // M9-1 (BUGS.md, 20.11) : un ingrédient resté « hors stock » est refusé à « Confirmer » avec son message : rien ne s'écrit, donc aucun prix au catalogue.
+    fireEvent.click(screen.getByRole('button', { name: 'Confirmer et enregistrer' }));
+    await waitFor(() => expect(screen.queryAllByRole('alert').map(a => a.textContent).join(' | ')).toMatch(/Maris Otter : ingrédient hors stock/));
+    expect(state.transactions).toHaveLength(0);
     expect(latestBrewPrices(state.transactions)).toEqual({});
   });
 });

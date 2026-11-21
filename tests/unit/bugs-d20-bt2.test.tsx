@@ -3,7 +3,7 @@
 // Le Planning (GanttTask) quitte le code : type, prop de DashboardTab, état de App, lecture et écriture du stockage, exemples.
 // Test écrit avant le retrait (L13) : sur le code d'avant, DashboardTab exige `planning` et StorageService lit encore la collection.
 import React from 'react';
-import { readFileSync } from 'node:fs';
+import { existsSync, readFileSync } from 'node:fs';
 import { cleanup, render, screen, within } from '@testing-library/react';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import type { AppConfig } from '../../src/types';
@@ -22,7 +22,8 @@ vi.mock('../../src/services/financeService', () => ({
 
 const mount = (extra: Record<string, unknown> = {}) => render(<DashboardTab batches={[]} transactions={[]} stocks={{ rawMaterials: [], cleaning: [] }}
   config={{ fiscal: { isTvaRegistered: false } } as AppConfig} globalTimeFilter="this-month" onOpenBatch={vi.fn()} onNavigateTab={vi.fn()} onNavigateToCreativeLab={vi.fn()} {...extra} />);
-const source = (f: string) => readFileSync(f, 'utf8');
+// src/data/seedData.ts est ignoré par git (données réelles) : absent d'une copie propre du dépôt, il n'y a alors rien à lire ; seedData.example.ts est versionné et reste contrôlé.
+const source = (f: string) => (f === 'src/data/seedData.ts' && !existsSync(f) ? '' : readFileSync(f, 'utf8'));
 
 describe('BT-2 (décision 20.11) : plus de Planning dans le code', () => {
   afterEach(cleanup);
