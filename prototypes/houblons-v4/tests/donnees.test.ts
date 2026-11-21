@@ -141,7 +141,8 @@ describe('Penser comme un brasseur : alpha, rôle, recette vide construite', () 
       expect(a.moment).toBe('b10');
       expect(a.dose).toMatchObject({ grams: 20, gramsPerLitre: 1 });
       expect(['aromatique', 'double']).toContain(a.role.value);
-      expect(c.amerisants.some((b) => b.key === a.key)).toBe(false);
+      // D403 : le houblon du stock à α ≥ 10 % qui amérise reste proposé à l'arôme ; hors stock, jamais aux deux.
+      expect(c.amerisants.some((b) => b.key === a.key && !(b.stock.etat === 'en stock' && b.alpha!.value >= 10))).toBe(false);
       expect(a.ibu!.value).toBeLessThan(11); // d4 : Sun (α 14 %, double usage) entre parmi les aromatiques : 10,1 IBU à 20 g à 10′ (avant : moins de 10)
       expect(a.fiches).toHaveLength(12);
       expect(['en stock', 'épuisé', 'hors stock']).toContain(a.stock.etat);
