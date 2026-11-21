@@ -392,6 +392,53 @@ async function jouerCalendrier({ p, base, combo, tactile, glisser, pas }) {
     // la valeur après rechargement
     { const a = await etat(); await versCalendrier(); const b = await etat(); b?.cle === a.cle ? ok(`${F} rechargement`, a.cle) : echec(`${F} rechargement`, `${a.cle} → ${b?.cle}`); }
 
+    // CHV-1, CHV-2, CHV-3, CHV-11 (CHASSE-visuel 21.11) : les noms de la courbe, mesurés dans la page, libre puis alignée
+    const noms = (lieu) => p.evaluate(() => {
+      const cb = document.querySelector('.ent-cbz .ent-cb') ?? document.querySelector('.ent-cb'); if (!cb) return { pb: ['courbe introuvable'] };
+      const pb = [];
+      const vus = [...cb.querySelectorAll('text[data-nom-courbe]')].filter((t) => !t.closest('.ent-nom-cache')).map((t) => {
+        const r = t.getBoundingClientRect(), y = Number(t.getAttribute('y')), m = t.getScreenCTM(), yb = m ? m.f + y * m.d : r.bottom - 5;
+        return { nom: t.textContent.replace(/\s+/g, ' ').trim(), l: r.left, r: r.right, t: yb - 11, b: yb + 3 };
+      });
+      // CHV-1 : le tracé (libre, caisse) échantillonné au pixel ne passe dans l'encre d'aucun nom
+      for (const sel of ['.ent-libre', '.ent-caisse']) for (const path of cb.querySelectorAll(sel)) {
+        const m = path.getScreenCTM(); if (!m) continue; const L = path.getTotalLength();
+        for (let k = 0; k <= L; k += 1) {
+          const q = path.getPointAtLength(k), x = m.a * q.x + m.c * q.y + m.e, y = m.b * q.x + m.d * q.y + m.f;
+          const v = vus.find((n) => x > n.l + 1 && x < n.r - 1 && y > n.t + 1 && y < n.b - 1);
+          if (v) { pb.push(`le tracé ${sel} traverse « ${v.nom} »`); v.l = Infinity; }
+        }
+      }
+      // CHV-2 : ni sur la ligne zéro ni contre le « 0 »
+      const zl = cb.querySelector('[data-ligne-zero=visible]');
+      if (zl) {
+        const y0 = zl.getBoundingClientRect().top + zl.getBoundingClientRect().height / 2, zr = cb.querySelector('[data-sous-zero=repere]')?.getBoundingClientRect();
+        for (const n of vus) {
+          if (n.l !== Infinity && n.t <= y0 + 2 && n.b >= y0 - 2) pb.push(`« ${n.nom} » sur la ligne zéro`);
+          if (zr && n.r > zr.left - 6 && n.l < zr.right + 6 && n.b > zr.top - 2 && n.t < zr.bottom + 2) pb.push(`« ${n.nom} » collé au « 0 »`);
+        }
+      }
+      // CHV-3 : au plus deux noms l'un au-dessus de l'autre
+      for (const n of vus) for (const x of [n.l + 1, n.r - 1]) { const sur = vus.filter((o) => o.l < x && x < o.r); if (sur.length > 2 && !pb.some((m) => m.includes('empilés'))) pb.push(`${sur.length} noms empilés à x = ${Math.round(x)} : ${sur.map((o) => o.nom).join(' | ')}`); }
+      // CHV-1 : l'étiquette de la fenêtre a un fond opaque (aucun trait ne la traverse)
+      for (const e of document.querySelectorAll('.ent-cadre-l > span')) { const bg = getComputedStyle(e).backgroundColor; if (!/^rgb\(/.test(bg)) pb.push(`étiquette « ${e.textContent} » sans fond opaque (${bg})`); }
+      // CHV-11 : un « + » seul après un montant (barres, marques, détail) ne se lit pas
+      for (const e of document.querySelectorAll('.cal-barre, .cal-lbl, .cal-marque, .cal-det-h')) {
+        const t = `${e.getAttribute('aria-label') ?? ''} ${e.textContent ?? ''}`;
+        if (/\d \+(?! à venir)/.test(t)) { pb.push(`« + » sans « à venir » : ${t.trim().slice(0, 60)}`); break; }
+      }
+      return { pb, n: vus.length };
+    });
+    const aligner = async () => { const c = await p.evaluate(() => { const e = document.querySelector('[data-ent-aligne]'); if (!e) return null; const r = e.getBoundingClientRect(); return [r.x + r.width / 2, r.y + r.height / 2]; }); if (c) await toucherXY(c[0], c[1]); return !!c; };
+    for (const al of [false, true]) {
+      if (al && !(await aligner())) { echec(`${F} noms alignée`, 'interrupteur « Aligner » introuvable'); break; }
+      await sleep(500); await etat();
+      const r = await noms();
+      await cap(`noms-${al ? 'alignee' : 'libre'}`);
+      r.pb.length ? echec(`${F} noms ${al ? 'alignée' : 'libre'}`, r.pb.slice(0, 4).join(' ; ')) : ok(`${F} noms ${al ? 'alignée' : 'libre'}`, `${r.n} noms`);
+      if (al) await aligner();
+    }
+
     // CAL-ECHELLE-FIGEE (21.11) : dans l'An, la fin tirée au doigt pose une durée (≠ 52), « An » n'est plus coché, « 3 mois » se rechoisit
     try {
       await choisirPeriode('An'); await sleep(400);

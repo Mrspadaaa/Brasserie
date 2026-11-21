@@ -140,6 +140,8 @@
 /* Paquet G n° 1 : courbe plate (44 px, 24 px de cadre) : l'étiquette sur une ligne, les barres des poignées à la hauteur du cadre. */
 /* Centrée sur un cadre étroit (6 semaines sur 52 : 42 px), la ligne sortait par la gauche (« 7 – S52 », banc du 19.11) : elle se pose à droite du
    cadre, sur la courbe plate où rien d'autre ne s'écrit ; une place déjà calculée par Fenetre (style en ligne) reste la sienne. */
+/* CHV-1 : l'étiquette de la fenêtre a un fond opaque, aucun trait de la courbe ne la traverse (« S3 2027 » lu « 20Ʒ7 ») */
+.ent-cadre-l > span { background: rgb(var(--cave-950)); border-radius: 4px; padding: 0 3px; }
 .ent-cb[data-courbe-plate] .ent-cadre-l { flex-direction: row; gap: 4px; bottom: 3px; left: calc(100% + 6px); transform: none; }
 .ent-cb[data-courbe-plate] .ent-poi i { height: 18px; margin-top: -9px; }
 .ent-cadre-tir { position: absolute; top: 0; z-index: 2; box-sizing: border-box; height: 22px; display: flex; align-items: center; justify-content: center; font-size: 14px; font-weight: 700; line-height: 20px; white-space: nowrap; color: var(--ent-fin-t); background: rgb(var(--cave-950)); border: 1.5px solid var(--ent-fin); border-radius: 11px; pointer-events: none; }

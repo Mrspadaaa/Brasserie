@@ -229,7 +229,10 @@ const CARRE_MISE = 16;
 /** Le tracé (libre et caisse, marches comprises) touche-t-il cette boîte ? Un nom ne se pose jamais dessus (CRITIQUE-3 n° 17). */
 function toucheLeTrace(courbe: readonly SoldeSemaine[], g: Geo, b: Boite, marge = 0.5): boolean {
   const t = b.t - marge, bb = b.b + marge, l = b.l - marge, r = b.r + marge;
-  const j0 = Math.max(0, Math.floor(l / g.unit)), j1 = Math.min(courbe.length - 1, Math.floor(r / g.unit));
+  // CHV-1 : les semaines dont la colonne [x(j), x(j+1)] croise la boîte. Avec des abscisses lues dans la frise (avecAbscisses, courbe alignée),
+  // x(j) n'est pas j·unit : l'ancien floor(l / unit) regardait d'autres semaines et posait des noms sur le tracé.
+  let j0 = 0; while (j0 < courbe.length - 1 && g.x(j0 + 1) < l) j0++;
+  let j1 = j0; while (j1 < courbe.length - 1 && g.x(j1 + 1) <= r) j1++;
   for (const serie of ['libre', 'caisse'] as const) {
     for (let j = j0; j <= j1; j++) {
       const y = g.y(courbe[j][serie]);
@@ -336,6 +339,8 @@ export function placerNoms(courbe: readonly SoldeSemaine[], g: Geo, max: number,
         if (pris.some(p => croise(p, bo))) continue;
         const rendu: Boite = { l: bo.l, r: bo.r, t: c.y - HAUT_RENDU, b: c.y + BAS_RENDU };
         if (rendus.some(p => p.t < rendu.b && rendu.t < p.b && !(p.r + 8 <= rendu.l || rendu.r + 8 <= p.l))) continue;
+        // CHV-3 : jamais plus de deux noms l'un au-dessus de l'autre (l'escalier de sept noms sur la zone rose) ; le reste se lit au doigt
+        if (rendus.filter(p => p.l < rendu.r && rendu.l < p.r).length >= 2) continue;
         if (toucheLeTrace(courbe, g, bo)) continue;
         pose = { genre: m.genre, i: m.i, nom: f.nom, montant: f.montant, x, y: c.y, ancre: c.ancre, neg: (m.centimes ?? 0) < 0, boite: bo, semaines: m.semaines, etoile: m.etoile, complet: m.nom };
         break;
@@ -465,6 +470,15 @@ export const maxNoms = (largeur: number) => Math.max(4, Math.min(8, Math.floor(l
  * Les obstacles des noms : les barres des poignées (la zone de prise est transparente, un nom peut passer sous elle), les bords haut et bas du
  * cadre, son étiquette, et le point du creux. Un nom peut croiser le trait vertical du cadre : la marche d'une chose de la fenêtre est dedans.
  */
+/**
+ * CHV-2 : sous zéro, la ligne zéro et son repère « 0 » sont des obstacles. Un nom ne la traverse pas, et ne finit pas contre le « 0 »
+ * (« Emballage −45 » collé au « 0 » se lisait « −450 »). Le « 0 » : 14 px gras, ancré à droite à largeur − 3, ligne de base y0 − 3.
+ */
+export function obstaclesZero(g: Geo, largeur: number): Boite[] {
+  if (g.lo >= 0) return [];
+  const y0 = g.y(0);
+  return [{ l: 0, r: largeur, t: y0 - 2, b: y0 + 2 }, { l: largeur - 3 - 9 - 8, r: largeur, t: y0 - 3 - 11 - 4, b: y0 + 4 }];
+}
 export function obstaclesCourbe(g: Geo, cadre: CourbeProps['cadre'], creux: { index: number; centimes: number } | null): Boite[] {
   const obstacles: Boite[] = [];
   if (cadre) {
@@ -538,8 +552,8 @@ export function Courbe({ courbe, largeur, hauteur, curseur = null, reference, ge
   // Les mois d'abord : un nom peut se poser dans leur rangée, entre deux mois, à 8 px d'eux.
   const boitesMois = mois.map(m => ({ l: m.x - 8, r: m.x + largeurTexte(m.texte) + 8, t: yMois - HAUT_RENDU, b: yMois + BAS_RENDU + 2 }));
   // Un nom peut se poser dans la rangée des mois, entre deux mois (z2s « Six fûts inox −1 080 », w3s « Festival +2 450 »).
-  const noms = placerNoms(courbe, g, maxNoms(largeur), [...obstaclesCourbe(g, cadre, creux), ...boitesMois, ...reservesHaut], mise, etoiles, [yMois]);
   const y0 = g.y(0);
+  const noms = placerNoms(courbe, g, maxNoms(largeur), [...obstaclesCourbe(g, cadre, creux), ...obstaclesZero(g, largeur), ...boitesMois, ...reservesHaut], mise, etoiles, [yMois]);
   /* le solde passe sous zéro quelque part : la ligne zéro se lit et la zone en dessous se teinte */
   const sousZero = g.lo < 0;
   const marques = courbe.map((s, i) => ({ i, d: variation(courbe, i), nomme: s.mouvements.length > 0 })).filter(m => m.nomme && m.d !== null && m.d !== 0 && m.i > 0);

@@ -236,7 +236,7 @@ export interface MarqueProps {
   bornes?: [number, number];
   /** CAL-PASSE N1 n° 1 : colonnes hors fenêtre où elle peut se poser, et défilement de la fenêtre au bord (voir Barre). */
   marge?: [number, number];
-  defile?: (sens: -1 | 1) => boolean;
+  defile?: (sens: -1 | 1, mode: 'glisse' | 'bord') => false | number;
   onToucher: (chose: ChoseCalendrier, cible: HTMLElement) => void;
   /** Appui long d'une marque en 3 mois, 6 mois ou An : la vue 6 semaines centrée sur cette chose (E27, D-199). Absent : rien. */
   onSixSemaines?: (chose: ChoseCalendrier) => void;
@@ -254,7 +254,7 @@ export interface MarqueProps {
   pointLie?: Rangee;
 }
 
-const montantDe = (c: ChoseCalendrier): string | null => (c.centimes === undefined ? null : `${francsSignes(c.centimes)}${c.partiel ? ' +' : ''}`);
+const montantDe = (c: ChoseCalendrier): string | null => (c.centimes === undefined ? null : `${francsSignes(c.centimes)}${c.partiel ? ' + à venir' : ''}`);
 
 export const Marque: React.FC<MarqueProps> = props => {
   const { chose, centre, haut, hauteur = 28, largeurColonne, epinglee, etoilee, selectionnee, menuOuvert, libelle, decalage = 0, bornes } = props;

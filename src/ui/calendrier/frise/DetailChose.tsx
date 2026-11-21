@@ -259,7 +259,7 @@ export const DetailChose: React.FC<DetailChoseProps> = props => {
 
   return (
     <div ref={racine} role="region" aria-label={`Détail : ${chose.titre}`} className={`cal-det ${CLASSE_TEINTE[chose.rangee]}`} data-detail={chose.id}>
-      <h4 className="cal-det-h">{props.onRenommer ? <RenommerSurPlace as="span" valeur={chose.titre} onRenommer={props.onRenommer} quoi="le nom" /> : chose.titre}{montant && <span className={chose.centimes !== undefined && chose.centimes < 0 ? 'cal-neg' : 'cal-pos'}>{chose.reste ? 'reste ' : ''}{montant}{chose.partiel ? ' +' : ''}</span>}{chose.coutAVenir && <span>coût à venir</span>}</h4>
+      <h4 className="cal-det-h">{props.onRenommer ? <RenommerSurPlace as="span" valeur={chose.titre} onRenommer={props.onRenommer} quoi="le nom" /> : chose.titre}{montant && <span className={chose.centimes !== undefined && chose.centimes < 0 ? 'cal-neg' : 'cal-pos'}>{chose.reste ? 'reste ' : ''}{montant}{chose.partiel ? ' + à venir' : ''}</span>}{chose.coutAVenir && <span>coût à venir</span>}</h4>
       <button type="button" className="cal-det-x" aria-label="Fermer" onClick={props.onFermer}><X size={22} aria-hidden="true" /></button>
 
       {brassin ? (
