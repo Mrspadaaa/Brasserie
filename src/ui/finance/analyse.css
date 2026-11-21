@@ -141,7 +141,6 @@
 .ana-pastilles { display:flex; flex-wrap:wrap; gap:6px; }
 .ana-chip select { position:absolute; inset:0; width:100%; height:100%; opacity:0; cursor:pointer; font-size:16px; }
 .ana-chip-on { border-color:var(--ana-txt); }
-.ana .syn-plage { margin-top:2px; }
 /* PERIODE-PARTOUT (21.11) : la frise d'Opérations sous les tuiles, en mode « Du … au » */
 .ana .ana-frise { margin-top:8px; }
 @media (min-width:900px) { .ana { padding-top:10px; } .ana-h1 { font-size:20px; } }
