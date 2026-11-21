@@ -226,6 +226,25 @@ function listeEtapes() { return [
     }
   },
   {
+    id: 'DOSE', titre: 'Levure hors catalogue : le « + » ouvre le champ des grammes, la dose se pose au doigt (11 g) et se garde (mesure du 21.11 : par conception, pas un bug)',
+    async joue(s) {
+      await recetteNeuve(s);
+      await s.toucher('Suivant', { prefixe: true }); await sleep(700);
+      await s.toucher('Suivant', { prefixe: true }); await sleep(800);
+      await s.ecrire('textarea[placeholder="Chercher une levure"]', 'US-05'); await sleep(900);
+      await s.toucher('ZZ TEST US-05', { contient: true }); await sleep(900);
+      await s.toucher('Saisir la dose en grammes', { i: -1 }); await sleep(600);
+      const champ = await s.p.evaluate(() => { const c = document.querySelector('input[aria-label="Dose en grammes"]'); return c ? { focus: document.activeElement === c } : null; });
+      if (!champ) return echec('DOSE', 'le « + » de la dose (levure hors catalogue) n\'ouvre aucun champ : geste sans effet');
+      await s.ecrire('input[aria-label="Dose en grammes"]', '11'); await sleep(300);
+      await s.toucher('OK', { att: 1500 }); await sleep(700);
+      await s.cap('DOSE-1-onze-grammes');
+      const t = await s.texte(900);
+      if (!/\b11 g\b/.test(t)) return echec('DOSE', `la dose saisie (11 g) n'est pas gardée (écran : ${t.slice(0, 200)})`);
+      ok('DOSE', `le « + » ouvre le champ${champ.focus ? ' (au focus)' : ''}, 11 g saisis et gardés`);
+    }
+  },
+  {
     id: 'WF2-8', titre: 'Budget d\'un brassin planifié : un geste reprend les prix du stock (estimés) et le coût du brassin n\'est plus « pas encore chiffré » (WF2-8)',
     async joue(s) {
       await s.onglet('Brassins'); await sleep(800);
