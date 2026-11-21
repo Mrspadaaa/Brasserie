@@ -22,3 +22,21 @@ export function prixDuStockPropose(lines: BrewBudgetLine[], stockItems: StockIte
   }
   return propose;
 }
+
+/** Contenance d'une bouteille de 33 cl, en litres. */
+export const LITRES_33CL = 0.33;
+export interface Marge33cl {
+  /** Prix HT du tarif 33 cl de cette bière ; `null` si aucun tarif (à poser). */
+  prixHT: number | null;
+  /** Coût d'une 33 cl : coût du litre tout compris × 0,33 (emballage et impôt moyennés sur le brassin : une approximation, dite « ≈ »). */
+  cout: number | null;
+  /** Prix − coût ; `null` dès qu'un des deux manque : jamais 0 inventé. */
+  marge: number | null;
+}
+/** N6 (21.11) : la marge par 33 cl, au même endroit que le coût du litre. Coût du litre inconnu (litres nets, prix) : marge inconnue. */
+export function margePar33cl(input: { litreComplet: number | null | undefined; prixHT: number | null | undefined }): Marge33cl {
+  const ok = (n: unknown): n is number => typeof n === 'number' && Number.isFinite(n) && n > 0;
+  const prixHT = ok(input.prixHT) ? input.prixHT : null;
+  const cout = ok(input.litreComplet) ? Math.round(input.litreComplet * LITRES_33CL * 100) / 100 : null;
+  return { prixHT, cout, marge: prixHT !== null && cout !== null ? Math.round((prixHT - cout) * 100) / 100 : null };
+}

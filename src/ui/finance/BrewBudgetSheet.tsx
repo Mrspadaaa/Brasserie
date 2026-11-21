@@ -10,7 +10,10 @@ import { NumberInput } from '../NumberInput';
 import { DateField, swissToday, toSwissDate } from '../DateField';
 import { Units } from '../../services/units';
 import { scaleBrewBudgetRecipe } from '../../domain/finance/brewBudgetScaling';
-import { NOTE_PRIX_DU_STOCK, prixDuStockPropose } from '../../domain/finance/prixDuStock';
+import { NOTE_PRIX_DU_STOCK, margePar33cl, prixDuStockPropose } from '../../domain/finance/prixDuStock';
+import { StorageService } from '../../services/storage';
+import { useStorageValue } from '../../hooks/useLiveData';
+import { tarifsDuFormat } from '../prix/calculPrix';
 import { Field, inputClass } from '../FormNav';
 import { brewBudgetDateKey, estimateBrewBudget, netVolumeSaisi, reductionImpotPourAnnee, type BrewBudgetLine, type BrewBudgetSettings, type BrewBudgetSnapshot, type BrewCostKey, type BrewPrice, type BrewCashTreatment } from '../../domain/finance/brewBudget';
 import { coutLitre, litresNets, troisNotions } from '../../domain/finance/chaineLitre';
@@ -25,6 +28,8 @@ import { bandeDuBudget, groupesDuBudget } from './budget/piles';
 import { titrePrixManquant } from './budget/libelles';
 import './operations.css';
 
+/** Les tarifs (Clients › Tarifs), lus en direct : la marge par 33 cl suit un tarif changé. */
+const lireTarifs = () => StorageService.getTarifs();
 const ProfileSheet = React.lazy(() => import('./FinanceForms').then(m => ({ default: m.ProfileSheet })));
 const BrewerChat = React.lazy(() => import('../BrewerChat').then(m => ({ default: m.BrewerChat })));
 /** Un mot par poste, le même sur le flux et dans la feuille (constat 7) : « Emballage », « Impôt bière ». */
@@ -189,6 +194,11 @@ function BrewBudgetDraft({ recipe, batch, stockItems, batches, config, savedEsti
   }, [scaled, stockItems, batches, date, batch?.id, netConnu, ogUtilisee, abv, reductionPct, bindings, prices, cashTreatments, effectiveSettings, transactions, savedEstimates, config.fiscal.isTvaRegistered, volumeIssue, netInconnu, netInvalide]);
   const notions = useMemo(() => troisNotions(estimate), [estimate]);
   const litre = useMemo(() => coutLitre({ notions, litres: netConnu }), [notions, netConnu]);
+  /* N6 (21.11) : la marge par 33 cl se lit au même endroit que le coût du litre ; le tarif 33 cl de CETTE bière (Clients › Tarifs) ; un manque se dit, jamais 0 */
+  const tarifs = useStorageValue(lireTarifs);
+  const tarif33 = useMemo(() => tarifsDuFormat(tarifs, '33cl', batch?.name || recipe.name), [tarifs, batch?.name, recipe.name]);
+  const marge33 = useMemo(() => margePar33cl({ litreComplet: litre?.complet, prixHT: tarif33.kind === 'un' ? tarif33.tarif.priceHT : null }), [litre, tarif33]);
+  const raisonMarge = marge33.prixHT === null ? (tarif33.kind === 'plusieurs' ? 'plusieurs tarifs 33 cl' : 'tarif 33 cl à poser') : marge33.cout === null ? (netConnu ? 'coût du litre à compléter' : 'litres nets') : '';
   const requiredPrices = estimate.lines.filter(l => l.issues.length > 0);
   /* WF2-8 : les prix du stock (HT ou TTC non précisé) se reprennent d'un geste, estimés, corrigeables ligne par ligne ; jamais posés seuls. */
   const prixDuStock = useMemo(() => prixDuStockPropose(estimate.lines, stockItems, swissToday()), [estimate.lines, stockItems]);
@@ -308,6 +318,11 @@ function BrewBudgetDraft({ recipe, batch, stockItems, batches, config, savedEsti
       <button type="button" className="bbx-vol" onClick={aLitres} aria-label={netConnu ? `Volumes : ${frL(netConnu)} L nets` : 'Volumes : litres nets à renseigner'} data-inconnu={netConnu ? undefined : 'true'} data-booster="volumes">
         <b className="ops-m">{Number.isFinite(volume) ? frL(volume) : '?'} L</b> brassés · <b className="ops-m">{netConnu ? `${frL(netConnu)} L` : '? L'}</b> nets ›</button>
       <BudgetBande bande={bande} assujetti={config.fiscal.isTvaRegistered} onManque={manques[0]?.agir ?? aLitres} onVolumes={aLitres} onLitre={() => { setOrigine('flux'); setVue({ id: 'litre' }); }} />
+      <p className="brew-budget-hint" data-booster="marge-33cl" data-inconnu={marge33.marge === null ? 'true' : undefined}>
+        {marge33.prixHT !== null && <>33 cl vendue <b className="ops-m">{fr(marge33.prixHT)}</b> HT · </>}
+        {marge33.marge !== null ? <>coût ≈ <b className="ops-m">{fr(marge33.cout!)}</b> · marge par 33 cl ≈ <b className="ops-m">{fr(marge33.marge)}</b></> : <>marge par 33 cl <b className="ops-m">?</b> ({raisonMarge})</>}
+        {marge33.prixHT === null && onTarif && <> <button type="button" className="cbf-lien-champ" onClick={onTarif}>Tarifs ›</button></>}
+      </p>
       {nPrixDuStock > 0 && <section aria-label="Prix du stock" data-booster="prix-du-stock"><ul className="bbx-taches"><li><button type="button" className="bbx-tache" data-manque="prix-du-stock" onClick={reprendrePrixDuStock}><i aria-hidden="true">✓</i><span><b>Reprendre {nPrixDuStock === 1 ? 'le prix' : `les ${nPrixDuStock} prix`} du stock</b><small>Estimés, TTC supposé : tu {nPrixDuStock === 1 ? 'le' : 'les'} corriges ensuite ligne par ligne.</small></span><em aria-hidden="true">›</em></button></li></ul></section>}
       {reprisDuStock.length > 0 && <p className="brew-budget-hint" role="status" data-booster="prix-du-stock-repris">{reprisDuStock.length === 1 ? 'Prix du stock repris' : `${reprisDuStock.length} prix du stock repris`} (estimés, TTC supposé). <button type="button" className="cbf-lien-champ" onClick={annulerPrixDuStock}>Annuler</button></p>}
       {manques.length > 0 && <section aria-label="Données à compléter" data-booster="tache-filtrante"><p className="sr-only" role="status">{requiredPrices.length ? `${requiredPrices.length} ingrédient${requiredPrices.length > 1 ? 's' : ''} sans prix. ` : ''}Pour compléter ce coût :</p>
