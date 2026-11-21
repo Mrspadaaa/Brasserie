@@ -24,7 +24,9 @@
 .fe-btn:disabled,.fe-b2:disabled{opacity:.45;cursor:default}
 .fe-cap{font-weight:600;font-size:12px;color:var(--t2);margin:2px 0 6px;display:flex;justify-content:space-between;gap:8px}.fe-cap b{color:var(--t0)}
 .fe-gt{font-weight:700;font-size:12px;color:var(--c);text-transform:uppercase;letter-spacing:.06em;margin:12px 0 0;display:flex;justify-content:space-between}
-.fe-gt>span+span{font-size:12px;color:var(--t2);text-transform:none;letter-spacing:0;font-weight:500}
+/* CAL-LENT : « span:not(:first-child) » au lieu de « span + span » (même cible, ses enfants sont tous des span) ; un « + » fait recalculer
+   tout le sous-arbre du parent à chaque insertion, dans toute l'app */
+.fe-gt>span:not(:first-child){font-size:12px;color:var(--t2);text-transform:none;letter-spacing:0;font-weight:500}
 .fe-av{width:22px;height:22px;border-radius:50%;display:inline-grid;place-items:center;font-weight:700;font-size:11px;color:#fff;flex:none;font-style:normal}
 .fe-av[data-p=G]{background:var(--wat)}.fe-av[data-p=A]{background:var(--cop)}
 .fe-r{min-height:38px;display:flex;align-items:center;gap:6px;border-bottom:1px solid var(--b);padding:4px 0;width:100%;text-align:left;color:inherit}
@@ -123,7 +125,7 @@ button.fe-r{cursor:pointer}
 .fe-vat{font-size:12px;color:var(--t2);margin-top:4px}.fe-vat>b{font-size:12px;color:var(--t1);font-weight:500}
 .fe-tk{width:146px;flex:none;background:var(--pg);padding:8px 9px 12px;font-size:10.5px;line-height:1.4;color:var(--t1);box-shadow:0 4px 14px rgba(0,0,0,.18);transform:rotate(2.5deg);margin-top:-2px}
 .fe-tk>b{display:block;font-size:11px;color:var(--t0);border-bottom:1px dashed var(--bm);padding-bottom:3px;margin-bottom:3px}
-.fe-tk>p{display:flex;justify-content:space-between;gap:4px}.fe-tk>p>span+span{font-size:10px}
+.fe-tk>p{display:flex;justify-content:space-between;gap:4px}.fe-tk>p>span:not(:first-child){font-size:10px}
 .fe-tk>p.fe-tot{border-top:1px dashed var(--bm);margin-top:3px;padding-top:3px;font-weight:600;color:var(--t0)}
 .fe-pay{display:grid;gap:6px;margin-top:10px}
 .fe-pay>button{min-height:52px;border-radius:14px;border:1px solid var(--b);display:grid;justify-items:center;align-content:center;gap:3px;font-weight:600;font-size:12px;color:var(--t1)}
