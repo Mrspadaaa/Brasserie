@@ -621,7 +621,9 @@ function RubriqueQuand(p: { date?: string; aujourdhui: string; neuf: boolean; pi
         {quand && pose !== undefined && p.onPrix && <> <button type="button" className="cn-lien" aria-expanded={changerPrix} onClick={() => setChangerPrix(v => !v)}>Prix</button></>}</p>
       <Horizons date={p.date} aujourdhui={p.aujourdhui} classePuce="cn-puce" onChoisir={(_, lundi) => p.onDater(lundi)} />
       {quand && p.onPrix && (pose === undefined || changerPrix) && (
-        <div role="group" aria-label="Prix estimé" style={{ display: 'flex', flexWrap: 'wrap', gap: 8, marginTop: 8 }}>
+        <div role="group" aria-label="Prix estimé" style={{ display: 'flex', flexWrap: 'wrap', alignItems: 'center', gap: 8, marginTop: 8 }}>
+          {/* les montants seuls ne disaient pas ce qu'ils sont : le mot en gris, comme l'état d'une rubrique */}
+          <span className="cn-mut" aria-hidden>Prix estimé ?</span>
           {semblable
             ? <button type="button" className="cn-puce" onClick={() => garder(semblable.centimes)}>{semblable.source} : {montant(semblable.centimes)} CHF · garder</button>
             : ORDRES_DE_GRANDEUR.map(x => <button key={x} type="button" className="cn-puce" aria-pressed={pose === x} onClick={() => garder(x)}>{montant(x)} CHF</button>)}
