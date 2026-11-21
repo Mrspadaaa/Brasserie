@@ -544,9 +544,9 @@ function listeEtapes() { return [
       await s.onglet('Brassins'); await sleep(800);
       await s.toucher('Recettes', { prefixe: true }); await sleep(1000);
       await s.cap('N3-1-recettes');
-      await s.toucher('ZZ TEST Pale Ale v1', { contient: true }); await sleep(1000);
+      await s.toucher('ZZ TEST Blonde de juillet', { contient: true }); await sleep(1000);
       await s.cap('N3-2-recette');
-      if (!(await s.visible('Tout relier', { contient: true }))) return echec('N3', `la recette « ZZ TEST Pale Ale v1 » ne propose pas « Tout relier à ton stock » : ${(await s.texte(900)).match(/ZZ TEST Pale Ale v1[^|]{0,160}/)?.[0] ?? 'recette non ouverte'}`);
+      if (!(await s.visible('Tout relier', { contient: true }))) return echec('N3', `la recette « ZZ TEST Blonde de juillet » ne propose pas « Tout relier à ton stock » : ${(await s.texte(900)).match(/ZZ TEST Blonde de juillet[^|]{0,160}/)?.[0] ?? 'recette non ouverte'}`);
       await s.toucher('Tout relier', { contient: true, att: 1200 });
       await s.cap('N3-3-reliee');
       const t = await s.texte(5000);

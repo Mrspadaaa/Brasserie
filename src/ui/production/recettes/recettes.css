@@ -82,6 +82,25 @@
 .rcp-prete { display: flex; align-items: center; gap: 8px; padding: 10px 12px; border-radius: 10px; background: rgb(var(--hop) / 0.12); border: 1px solid rgb(var(--hop) / 0.4); font-size: 15px; color: rgb(var(--cave-texte-50)); }
 .rcp-averifier { display: flex; align-items: center; gap: 6px; font-size: 13px; color: rgb(var(--cave-texte-200)); }
 .rcp-averifier svg { width: 15px; height: 15px; color: rgb(var(--attention)); flex: none; }
+
+/* N3 (v07) : « Tout relier à ton stock », une rangée sombre sous l'état ; après, la barre « N reliées · Annuler » et la source de chaque ligne. */
+.rcp-relier { display: flex; align-items: center; gap: 10px; width: 100%; min-height: 52px; margin: 6px 0 2px; padding: 6px 12px; border-radius: 12px; background: rgb(var(--cave-texte-50)); color: rgb(var(--cave-950)); text-align: left; }
+.rcp-relier > svg { width: 20px; height: 20px; flex: none; }
+.rcp-relier > svg:last-child { margin-left: auto; }
+.rcp-relier b { display: block; font-size: 16px; font-weight: 600; line-height: 1.25; }
+.rcp-relier span span { display: block; font-size: 14px; line-height: 1.25; opacity: 0.8; }
+.rcp-relie-barre { display: flex; align-items: center; gap: 8px; min-height: 40px; margin: 0 0 6px; padding: 0 4px 0 12px; border-radius: 12px; background: rgb(var(--cave-texte-50)); color: rgb(var(--cave-950)); font-size: 15px; }
+.rcp-relie-barre svg { width: 18px; height: 18px; flex: none; }
+.rcp-relie-barre button { margin-left: auto; min-height: 40px; padding: 0 10px; font-weight: 600; text-decoration: underline; text-underline-offset: 3px; }
+.rcp-ingr-relie { padding-bottom: 3px; }
+.rcp-src { grid-column: 2 / 4; display: flex; align-items: center; gap: 6px; min-height: 22px; font-size: 14px; line-height: 1.2; color: rgb(var(--cave-texte-400)); white-space: nowrap; overflow: hidden; }
+.rcp-src .rcp-pt { width: 10px; height: 10px; border-radius: 50%; flex: none; border: 1px solid rgb(var(--cave-texte-400) / 0.4); background: #F2C14E; }
+.rcp-src .rcp-pt[data-genre="houblon"] { background: rgb(var(--hop)); }
+.rcp-src .rcp-pt[data-genre="levure"] { background: #BCA5E8; }
+.rcp-src .rcp-mono { font-family: var(--font-mono, ui-monospace, monospace); font-weight: 600; color: rgb(var(--cave-texte-200)); }
+.rcp-src .rcp-proche { color: rgb(var(--attention-texte)); font-weight: 600; text-decoration: underline dotted; text-underline-offset: 3px; }
+.rcp-src .rcp-defaire { margin-left: auto; display: grid; place-items: center; width: 40px; height: 28px; margin-right: -8px; color: rgb(var(--cave-texte-400)); flex: none; }
+.rcp-src .rcp-defaire svg { width: 16px; height: 16px; }
 .rcp-prete svg { width: 18px; height: 18px; color: rgb(var(--hop-texte)); flex: none; }
 .rcp-change { font-size: 13px; color: rgb(var(--cave-texte-200)); padding: 8px 2px 0; margin-top: 8px; border-top: 1px solid rgb(var(--cave-800)); }
 .rcp-change b { font-weight: 600; color: rgb(var(--cave-texte-50)); }

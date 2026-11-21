@@ -144,10 +144,10 @@ export function fixtureChaines(aujourdhui, { sansJour = false, cuve = false, gar
         lines: [{ id: 'L-ZZ-POMPE', description: 'ZZ TEST Pompe', kind: 'equipment', amountCents: 42000, quantity: 1, unit: 'pièce', unitPriceCents: 42000 }] } });
   }
   if (rebrasser) {
-    // une recette passée « ZZ TEST Pale Ale v1 » dont les lignes portent un nom, jamais le lien au stock ; son houblon à un α de 9 % alors que le stock en a 12,5
-    add('recipes', 'R-ZZ-PA-V1', { id: 'R-ZZ-PA-V1', name: 'ZZ TEST Pale Ale v1', style: 'Pale Ale', volumeL: 100, ogTarget: 1.052, brewhouse: bh, ingredients: [],
+    // une recette passée « ZZ TEST Blonde de juillet » dont les lignes portent un nom, jamais le lien au stock ; son houblon à un α de 9 % alors que le stock en a 12,5
+    add('recipes', 'R-ZZ-PA-V1', { id: 'R-ZZ-PA-V1', name: 'ZZ TEST Blonde de juillet', style: 'Pale Ale', volumeL: 100, ogTarget: 1.052, brewhouse: bh, ingredients: [],
       fermentables: [{ name: 'ZZ TEST Malt pilsner', weightKg: 20, kind: 'grain' }, { name: 'ZZ TEST Munich', weightKg: 4, kind: 'grain' }],
-      hops: [{ name: 'ZZ TEST Citra', weightG: 300, stage: 'boil', time: 60, alphaPct: 9 }], yeast: { name: 'ZZ TEST US-05', qty: 2, unit: 'sachet' }, fermentation: [{ kind: 'primaire', name: 'Primaire', tempC: 19, days: 12 }] });
+      hops: [{ name: 'ZZ TEST Citra', weightG: 300, stage: 'boil', time: 60, alpha: 9 }], yeast: { name: 'ZZ TEST US-05', qty: 2, unit: 'sachet' }, fermentation: [{ kind: 'primaire', name: 'Primaire', tempC: 19, days: 12 }] });
   }
   if (reprise) {
     // D405 : « ZZ TEST Pale » a un budget estimé (brassin d'il y a 60 j : énergie 18, nettoyage 6, emballage 45) ; son nouveau brassin, posé sans

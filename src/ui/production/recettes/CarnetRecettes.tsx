@@ -2,7 +2,7 @@
 // Aucune donnée inventée : « prête » vient du stock et des réservations (recettesModel). Un stock inconnu est « à vérifier ».
 // Ce que r2a n'a pas est retiré de l'écran (Comparer, bilan, favori, Ranger) ; leur code reste dans ProductionCatalog.
 import React, { useEffect, useMemo, useState } from 'react';
-import { Boxes, Check, ChevronRight, Plus, Search, SlidersHorizontal, Trash2, TriangleAlert } from 'lucide-react';
+import { Boxes, Check, ChevronRight, Link2, Plus, Search, SlidersHorizontal, Trash2, TriangleAlert, X } from 'lucide-react';
 import { ConfirmerSuppressionRecette } from '../../recette/ConfirmerSuppressionRecette';
 import type { Batch, Recipe, StockItem } from '../../../types';
 import { StorageService } from '../../../services/storage';
@@ -10,7 +10,9 @@ import { useStorageValue } from '../../../hooks/useLiveData';
 import { Sheet } from '../../Sheet';
 import { DEFAULT_CATALOG_FILTERS, catalogOptions, filterCatalog, recipeEntries, type CatalogEntry } from '../../../domain/productionCatalog';
 import { isArchived, isCurrent } from '../../../domain/catalogOrganization';
-import { changementsDepuis, dateCourte, grouper, lignees, versionPrecedente, type Lignee, type LigneBesoin } from './recettesModel';
+import { changementsDepuis, dateCourte, dire, grouper, lignees, versionPrecedente, type Lignee, type LigneBesoin } from './recettesModel';
+import { delier, relierAuStock, type Lien } from '../../../domain/recette/relierAuStock';
+import { memeNom } from '../../../services/stockLineMatching';
 import './recettes.css';
 
 const lireStock = (): StockItem[] => {
@@ -62,6 +64,24 @@ function Metro({ n, version }: { n: number; version: number }) {
   );
 }
 
+/** N3 (v07) : sous une ligne reliée d'un toucher, d'où vient le lien ; × le défait. Un nom proche se confirme d'un toucher. */
+function Source({ lien, onDefaire, onConfirmer }: { lien: Lien; onDefaire: () => void; onConfirmer: () => void }) {
+  const a = lien.article;
+  if (!a) return <span className="rcp-src">aucun article à ce nom · à toi</span>;
+  const alpha = lien.genre === 'houblon' && a.alphaPct ? a.alphaPct : null;
+  const avant = alpha && lien.alphaAvant && Math.abs(lien.alphaAvant - alpha) > 0.05 ? lien.alphaAvant : null;
+  return (
+    <span className="rcp-src">
+      <i className="rcp-pt" data-genre={lien.genre} aria-hidden="true" />
+      {lien.correspondance === 'proche'
+        ? <><button type="button" className="rcp-proche" onClick={onConfirmer}>nom proche, à confirmer</button> · « {a.name} »</>
+        : <>ton stock · {dire(Math.max(0, a.currentStock ?? 0), a.unit)}</>}
+      {alpha && lien.correspondance !== 'proche' && <> · α <b className="rcp-mono">{virgule(alpha, 1)}</b>{avant && <> (recette {virgule(avant, 1)})</>}</>}
+      <button type="button" className="rcp-defaire" aria-label={`Défaire le lien de ${lien.nom}`} onClick={onDefaire}><X aria-hidden="true" /></button>
+    </span>
+  );
+}
+
 export function CarnetRecettes({ recipes, batches, onOpenRecipe, onEditRecipe, onOpenBatch, onBrew, onNewRecipe, onDeleteRecipe }: Props) {
   // 36 (16.11) : la suppression ne se cache plus derrière « OG … › » puis la page ; la fiche la porte, avec la même confirmation.
   const [aSupprimer, setASupprimer] = useState<Recipe | null>(null);
@@ -73,6 +93,9 @@ export function CarnetRecettes({ recipes, batches, onOpenRecipe, onEditRecipe, o
   const [filtreOuvert, setFiltreOuvert] = useState(false);
   const [archives, setArchives] = useState(false);
   const [ouverte, setOuverte] = useState<string | null>(null);
+  // N3 (v07) : ce que « Tout relier à ton stock » vient de faire sur la recette ouverte (pour « Annuler » et le × de chaque ligne).
+  const [reliure, setReliure] = useState<{ id: string; avant: Recipe; liens: Lien[] } | null>(null);
+  useEffect(() => setReliure(null), [ouverte]);
 
   const entrees = useMemo(() => {
     const config = StorageService.getConfig();
@@ -216,6 +239,25 @@ export function CarnetRecettes({ recipes, batches, onOpenRecipe, onEditRecipe, o
     const reserve = l?.manques.find((m) => m.reservePar);
     const og = recette?.ogTarget ? virgule(recette.ogTarget, 3) : null;
     const ibu = l?.entree.ibu ? Math.round(l.entree.ibu) : null;
+    // N3 : la rangée se propose dès qu'une ligne de malt, houblon ou levure n'a pas de lien et que le stock a un article à son nom.
+    const reliee = recette && reliure?.id === recette.id ? reliure : null;
+    const apercu = recette && !reliee ? relierAuStock(recette, stock) : null;
+    const tout = () => {
+      if (!recette) return;
+      const r = relierAuStock(recette, stock);
+      StorageService.updateRecipe(r.recette);
+      setReliure({ id: recette.id, avant: recette, liens: r.liens });
+    };
+    const annuler = () => { if (reliee) StorageService.updateRecipe(reliee.avant); setReliure(null); };
+    const defaire = (lien: Lien) => {
+      if (!recette || !reliee) return;
+      StorageService.updateRecipe(delier(recette, lien));
+      setReliure({ ...reliee, liens: reliee.liens.filter((x) => x !== lien) });
+    };
+    const confirmer = (lien: Lien) => { if (reliee) setReliure({ ...reliee, liens: reliee.liens.map((x) => (x === lien ? { ...x, correspondance: 'exact' as const } : x)) }); };
+    const lienDe = (b: LigneBesoin) => reliee?.liens.find((x) => memeNom(x.nom, b.article) || (!!x.article && memeNom(x.article.name, b.article)));
+    const nbReliees = reliee ? reliee.liens.filter((x) => x.article).length : 0;
+    const nbProches = reliee ? reliee.liens.filter((x) => x.article && x.correspondance === 'proche').length : 0;
     const sousTitre = l ? [l.entree.style, l.entree.volumeL ? `${String(l.entree.volumeL).replace('.', ',')} L` : '', fois(l.brassees)].filter(Boolean).join(' · ') : undefined;
     return (
       <>
@@ -234,6 +276,12 @@ export function CarnetRecettes({ recipes, batches, onOpenRecipe, onEditRecipe, o
         >
           {l && recette && (
             <div ref={debutFeuille} tabIndex={-1} className="rcp-debut">
+              {reliee && (
+                <div className="rcp-relie-barre" role="status">
+                  <Check aria-hidden="true" />{nbReliees} {pluriel(nbReliees, 'reliée', 'reliées')}{nbProches > 0 ? ` · ${nbProches} à confirmer` : ''}
+                  <button type="button" onClick={annuler}>Annuler</button>
+                </div>
+              )}
               {l.manques.length > 0 ? (
                 <div className="rcp-alerte">
                   <p>Pour la rebrasser, il manque {l.manques.map((m, i) => <React.Fragment key={m.cle}>{i > 0 && ', '}{manqueDit(m)}</React.Fragment>)}.</p>
@@ -246,15 +294,26 @@ export function CarnetRecettes({ recipes, batches, onOpenRecipe, onEditRecipe, o
               ) : (
                 <p className="rcp-prete"><Check />Tout est en stock</p>
               )}
+              {apercu && apercu.reliees > 0 && (
+                <button type="button" className="rcp-relier" onClick={tout}>
+                  <Link2 aria-hidden="true" />
+                  <span><b>Tout relier à ton stock</b><span>{apercu.reliees} sur {apercu.aRelier} {pluriel(apercu.reliees, 'trouvée', 'trouvées')} par le nom</span></span>
+                  <ChevronRight aria-hidden="true" />
+                </button>
+              )}
               <div className="rcp-bloc">
                 <h3>Ce qu’elle demande</h3>
-                {l.besoins.map((b) => (
-                  <div className="rcp-ingr" key={b.cle}>
-                    <span className={b.etat === 'ok' ? 'rcp-vv' : 'rcp-x'}>{b.etat === 'ok' ? <Check /> : <TriangleAlert />}</span>
-                    <span>{b.texte}</span>
-                    <span className={`rcp-q${b.etat === 'manque' ? ' rcp-manque' : ''}`}>{b.droite}</span>
-                  </div>
-                ))}
+                {l.besoins.map((b) => {
+                  const lien = lienDe(b);
+                  return (
+                    <div className={`rcp-ingr${lien ? ' rcp-ingr-relie' : ''}`} key={b.cle}>
+                      <span className={b.etat === 'ok' ? 'rcp-vv' : 'rcp-x'}>{b.etat === 'ok' ? <Check /> : <TriangleAlert />}</span>
+                      <span>{b.texte}</span>
+                      <span className={`rcp-q${b.etat === 'manque' ? ' rcp-manque' : ''}`}>{b.droite}</span>
+                      {lien && <Source lien={lien} onDefaire={() => defaire(lien)} onConfirmer={() => confirmer(lien)} />}
+                    </div>
+                  );
+                })}
               </div>
               {change.length > 0 && precedente && <p className="rcp-change"><b>Depuis la v{versionPrecedente(l.entree, entrees)!.version}</b> : {change.join(', ')}</p>}
               {(og || ibu) && (

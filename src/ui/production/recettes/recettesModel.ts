@@ -51,7 +51,7 @@ const nombreFr = (n: number) => String(Math.round(n * 100) / 100).replace('.', '
 const MESURES = new Set(['g', 'kg', 'mg', 'l', 'ml', 'cl']);
 const estMesure = (unite?: string | null) => MESURES.has((unite ?? '').trim().toLowerCase());
 /** Une quantité à la française : « 0,6 kg » (le malt reste en kg, dans l'unité du stock), « 2 sachets » (le pluriel s'accorde). */
-function dire(q: number, unite: string): string {
+export function dire(q: number, unite: string): string {
   const u = unite.trim();
   if (u.toLowerCase() === 'kg') return `${nombreFr(q)} kg`;
   if (estMesure(u)) return Units.format(q, u);
