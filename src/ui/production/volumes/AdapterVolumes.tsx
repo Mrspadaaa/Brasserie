@@ -11,6 +11,7 @@ import { COULEURS } from '../../hopIndex/familyTokens';
 import { etapesDe, ecartAffiche, totauxDe, type Etape, type LigneEtape } from './etapes';
 import { famillesDe, type FamillesDuHoublon } from './familles';
 import './volumes.css';
+import { refCurseurNatif } from '../../geste';
 
 /** La règle du curseur (e10c : 5 à 60 L). Une valeur tapée peut aller au-delà, jusqu'aux bornes du procédé. */
 export const CURSEUR = { min: 5, max: 60, pas: 0.5 } as const;
@@ -195,7 +196,7 @@ export function AdapterVolumes({ recettes, brewhouses, activeBrewhouseId, onNouv
               {(trop || refuse || volumeL > CURSEUR.max) && cuveL !== undefined && cuveL < CURSEUR.max && <div className="pv-over" style={{ left: `${pc(cuveL)}%` }} />}
               {[10, 20, 30, 40, 50].map(x => <span key={x} className="pv-tic" style={{ left: `${pc(x)}%` }} />)}
               {cuveL !== undefined && <div className="pv-cible" style={{ left: 0, width: `${pc(Math.min(cuveL, CURSEUR.max))}%` }} />}
-              <input className="pv-range" type="range" name="production_target_volume_range" min={CURSEUR.min} max={CURSEUR.max} step={CURSEUR.pas} aria-label="Volume cible, curseur"
+              <input ref={refCurseurNatif} className="pv-range" type="range" name="production_target_volume_range" min={CURSEUR.min} max={CURSEUR.max} step={CURSEUR.pas} aria-label="Volume cible, curseur"
                 aria-valuetext={refuse ? 'refusé' : `${lit(volumeL, 1)} L`} value={pouce}
                 onChange={e => { setIllisible(undefined); setVolumeL(Number(e.target.value)); }} />
               <span className="pv-pouce" data-hors={hors ? '' : undefined} style={{ left: `${pc(pouce)}%` }} aria-hidden="true"><i /><b /></span>
