@@ -186,7 +186,7 @@ async function jouer(dir) {
       await p.waitForSelector('nav button', { timeout: 90000 }).catch(async (e) => { await cap('erreur-demarrage').catch(() => {}); throw new Error(`l'application ne démarre pas (${e.message.slice(0, 60)}) ; erreurs : ${erreursPage.slice(0, 2).join(' | ')}`); });
       await sleep(1500);
     };
-    const versAtelier = async () => { await toucher('Brassins', { exact: true, sel: 'nav button' }).catch(() => toucher('Brassins')); await toucher('Atelier', { exact: true }); };
+    const versAtelier = async () => { await toucher('Brassins', { exact: true, sel: 'nav button' }).catch(() => toucher('Brassins')); await toucher('Atelier', { exact: true }).catch(() => toucher('Atelier', { sel: '[data-t="atelier"]' })); };
     const surListe = () => p.evaluate(() => document.querySelector('[data-carnets]')?.getAttribute('data-vue') ?? null);
     const nomsListe = ['À comparer', 'Idée'];
     const attendreListe = async () => { for (let k = 0; k < 20; k++) { if ((await surListe()) === 'liste') return; await sleep(300); } throw new Error(`la liste du Carnet ne s'affiche pas (vue : ${await surListe()})`); };
