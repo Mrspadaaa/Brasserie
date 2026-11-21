@@ -1,7 +1,7 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import { Link2, Pin, Star } from 'lucide-react';
-import { ecartJours, etiquetteS, francsSignes, jourLisible, type ChoseCalendrier, type JalonBrassin } from '../../../domain/calendrier';
+import { COUT_A_VENIR, ecartJours, etiquetteS, francsSignes, jourLisible, type ChoseCalendrier, type JalonBrassin } from '../../../domain/calendrier';
 import { CLASSE_TEINTE, ContenuEtiquette, DureeTexte, PastilleLie, dureeVue, largeurTexte, nomAccessible, type ModeDeuxLignes } from './Marque';
 import { usePointeur } from './usePointeur';
 import { prisesDuBord, useToucherNom, zoneToucher } from './zoneToucher';
@@ -406,7 +406,8 @@ export const Barre: React.FC<BarreProps> = props => {
         {...(chose.debut ? { 'data-semaine': etiquetteS(chose.debut) } : {})}
         {...(chose.proposition ? { 'data-proposition': chose.proposition } : {})}
         {...(proposee ? { 'data-probable': '' } : {})}
-        aria-label={`${nomAccessible(chose)}${montant ? `, ${montant}` : ''}${duree ? `, ${duree}` : ''}${chose.lie ? `, ${chose.lie.texte}` : ''}${chose.courses ? `, courses : ${chose.courses}` : ''}`}
+        /* K3-SUITES : « coût à venir » n'entre pas dans la barre (Tour 2 n° 3, le titre seul) ; le nom accessible le dit, comme la rangée et le détail */
+        aria-label={`${nomAccessible(chose)}${montant ? `, ${montant}` : chose.coutAVenir ? `, ${COUT_A_VENIR}` : ''}${duree ? `, ${duree}` : ''}${chose.lie ? `, ${chose.lie.texte}` : ''}${chose.courses ? `, courses : ${chose.courses}` : ''}`}
         aria-haspopup="menu"
         aria-expanded={menuOuvert || undefined}
         className={`cal-barre ${CLASSE_TEINTE[chose.rangee]}${bas?.ou === 'barre' ? ' cal-barre-2l' : ''}${proposee ? ' cal-pointille' : ''}${chose.pasBrassee ? ' cal-prevu' : ''}${epinglee ? ' cal-epi' : ''}${selectionnee ? ' cal-sel' : ''}${decalage || allongement ? ' cal-glisse' : ''}${chose.deplacable === true ? '' : ' cal-fixe'}${chose.finInconnue ? ' cal-coupee' : ''}`}

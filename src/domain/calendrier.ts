@@ -757,6 +757,9 @@ export function jalonsBrassin(batch: Batch, options: { commanderLe?: string | nu
     jalons.push({ id, libelle, jour: ajouterJours(j0, ecart), ecart, glissable: false, raison: raisonRecette(libelle) });
   };
   if (total > 0) pose('fermentation', 'Fermentation', 1);
+  /* K3-SUITES (21.11) : la recette ne chiffre pas sa fermentation (posée par la feuille, recette sans profil), mais la fin est connue : la bière
+     fermente quand même dès le lendemain du brassage. Le jalon est posé, dit « proposé » (sa durée n'est pas connue), jamais glissable. */
+  else if (ecartFin !== null && ecartFin > 1) jalons.push({ id: 'fermentation', libelle: 'Fermentation', jour: ajouterJours(j0, 1), ecart: 1, glissable: false, raison: 'Proposé : la fermentation suit le brassage ; la recette ne dit pas sa durée' });
   const dry = (batch.recipeSnapshot?.hops ?? batch.hops ?? []).filter(h => h.stage === 'dryHop' && Number.isFinite(h.dayOffset) && (h.dayOffset ?? -1) >= 0).map(h => h.dayOffset as number);
   if (dry.length) pose('dry-hop', 'Dry hop', Math.min(...dry));
   let cumul = 0;
