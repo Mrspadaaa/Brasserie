@@ -2519,3 +2519,7 @@ Classement de la page r3 de Ma levure (https://claude.ai/artifact/DKAJe8ESeMR4ig
 > Aussi certaines actions comme avant le calendrier, fait bouger toute la vue, ce qui est assez désagréable
 
 (21.11 : grilles ajoutées à la passe 2 : actions instantanées, nom facultatif avec nom par défaut, renommer sur place, Entrée du clavier mobile confirme ; trop de texte ; décalage de vue après une action, partout.)
+
+> J'ai choisi
+
+(21.11, page https://claude.ai/artifact/44Sg2rBcG5WLDqKYmfXnLJ, relevé en base : E2 « Comme prévu » d'un toucher ; F2 rayon par rayon ; G3 créé d'abord, nommé après, avec sa note : « J'aime bien g1 et g3 ».)
