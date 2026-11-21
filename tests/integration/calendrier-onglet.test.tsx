@@ -179,6 +179,8 @@ describe('C16 (n° 35, E40, E46) : la vue Liste et la poche « Sans date »', ()
   it('Retirer une fête : « Sans date › » ouvre la Liste sur la poche, qui la contient ; un toucher ouvre son détail ; « Poser » la remet', async () => {
     const appels = monterBanc();
     toucher(boutonDe('[data-chose$="CR-NOEL"]'));
+    /* CAL-FICHE (D412) : « Ranger sans date » vit dans le volet « Plus d’actions » de la fiche */
+    fireEvent.click(await screen.findByRole('button', { name: 'Plus d’actions' }));
     fireEvent.click(await screen.findByRole('button', { name: /^(Ranger sans date|Annuler (la vente|l’achat|les travaux|le papier|la prévision))/ }));
     const lien = await screen.findByRole('button', { name: 'Sans date ›' });
     fireEvent.click(lien);
@@ -209,6 +211,7 @@ describe('C16 (n° 35, E40, E46) : la vue Liste et la poche « Sans date »', ()
       const b = await screen.findByRole('button', { name: /^Marché de Noël/ });
       expect(b.getAttribute('data-semaine')).toBe('S52');
       toucher(b);
+      fireEvent.click(await screen.findByRole('button', { name: 'Plus d’actions' }));
       fireEvent.click(await screen.findByRole('button', { name: /^(Ranger sans date|Annuler (la vente|l’achat|les travaux|le papier|la prévision))/ }));
       const m = await screen.findByRole('status');
       expect(m.textContent).toMatch(/Rangée sans date, plus en S52 · Sans date ›/);
@@ -302,7 +305,7 @@ describe('C19 (D-71) : le bloc calendrier de l’App ouvre le budget du brassin'
     const barre = await screen.findByRole('button', { name: /^Porter du budget/ }, { timeout: 10000 });
     fireEvent.pointerDown(barre, { clientX: 10, clientY: 10, pointerId: 1, button: 0 });
     fireEvent.pointerUp(barre, { clientX: 10, clientY: 10, pointerId: 1, button: 0 });
-    fireEvent.click(await screen.findByRole('button', { name: 'Budget ›' }));
+    fireEvent.click(await screen.findByRole('button', { name: 'Budget' }));
     /* CRITIQUE-4 n° 9 : la vraie feuille de budget (BrewBudgetSheet, titrée du nom de la recette du brassin), pas une feuille quelconque */
     const feuille = await screen.findByRole('dialog', { name: /Porter du budget/ }, { timeout: 10000 });
     await waitFor(() => expect(within(feuille).getAllByText(/Porter du budget/).length).toBeGreaterThan(0), { timeout: 10000 });

@@ -66,11 +66,16 @@ describe('paquet E n° 1 (PC-136) : une vente ou un achat d’un jour se glisse,
   it('vue Jour : Dédé glissé d’un jour en arrière va au ven. 4 déc.', async () => {
     const { appels } = monter();
     /* R6 (d5fae0f37) : la poignée de début n'avance plus la fenêtre, elle la réduit par l'avant (sa fin reste) : en Semaine, au clavier, elle la
-       ramène à S49, puis la vue Jour s'ouvre sur S49 */
+       ramène à S49. CHN-3 : « Jour » au menu s'ouvre sur la semaine d'aujourd'hui (S47) ; c'est écarter les doigts (le jour visé : S49) qui ouvre la
+       vue Jour sur S49 */
     const debut = () => screen.getByRole('button', { name: /^Poignée de début/ });
     for (let i = 0; i < 12 && !/commence en S49/.test(debut().getAttribute('aria-label') ?? ''); i++) fireEvent.keyDown(debut(), { key: 'ArrowRight' });
     expect(debut().getAttribute('aria-label')).toMatch(/commence en S49/);
-    choisirEchelle('jour');
+    const f = frise();
+    const doigt = (id: number, x: number) => ({ clientX: x, clientY: 40, pointerId: id, pointerType: 'touch' });
+    fireEvent.pointerDown(f, doigt(11, 100)); fireEvent.pointerDown(f, doigt(12, 200));
+    fireEvent.pointerMove(f, doigt(12, 240));
+    fireEvent.pointerUp(f, doigt(12, 240)); fireEvent.pointerUp(f, doigt(11, 100));
     expect(echelle()).toBe('jour');
     glisserSaut(chose(/^Dédé, 1 fût/), -largeurColonne());
     await waitFor(() => expect(dates(appels, 'P-DEDE')).toEqual(['2026-12-04']));

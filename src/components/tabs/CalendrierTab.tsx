@@ -232,7 +232,8 @@ export function CalendrierTab(props: CalendrierTabProps) {
   const periodeEnTete: Periode = periodeLocale && fenetreDePeriode(periodeLocale, premierLundi, modele.semaines.length || SEMAINES_ANNEE) ? periodeLocale : periodeDeFenetre(fenetre);
   const onPeriode = useCallback((p: Periode) => { setPeriodeLocale(p); props.onPeriode?.(p); // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [props.onPeriode]);
-  const [mouvements, setMouvements] = useState(false);
+  /* CHN-9 : le réglage ± se garde au rechargement, comme la courbe cachée et la rangée masquée */
+  const [mouvements, setMouvements] = useEtatGarde<boolean>('calendrier_mouvements', false);
   const [epingles, setEpingles] = useEtatGarde<string[]>('calendrier_epingles', []);
   const [etoiles, setEtoiles] = useEtatGarde<string[]>('calendrier_etoiles', []);
   const [masquees, setMasquees] = useEtatGarde<IdRangee[]>('calendrier_masquees', []);
@@ -601,7 +602,9 @@ export function CalendrierTab(props: CalendrierTabProps) {
     const lundis = modele.semaines.map(s => s.debut);
     const total = lundis.length || SEMAINES_ANNEE;
     const n = Math.min(PERIODE_DE_L_ECHELLE[e], total);
-    const voulu = e === 'jour' ? lundiDe(focus ?? fenetre.du) : e === 'semaine' && focus && echelleRef.current === 'mois' ? lundiDe(ajouterJours(focus, -14)) : fenetre.du;
+    /* CHN-3 : « Jour » (« 2 sem. ») sans jour visé (le menu) se pose toujours sur la semaine d'aujourd'hui, jamais sur le début de la fenêtre d'avant
+       (26 oct. → 8 nov. laissait « Maintenant » hors champ) ; avec un jour visé (le pincer), la semaine de ce jour */
+    const voulu = e === 'jour' ? (focus ? lundiDe(focus) : lundiAuj) : e === 'semaine' && focus && echelleRef.current === 'mois' ? lundiDe(ajouterJours(focus, -14)) : fenetre.du;
     const depart = voulu < premierLundi ? premierLundi : voulu;
     const i0 = Math.max(0, lundis.findIndex(l => l >= depart));
     const i = Math.min(i0, Math.max(0, total - n));

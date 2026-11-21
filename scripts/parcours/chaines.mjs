@@ -21,6 +21,7 @@ const { lancerBanc, pageNeuve, sleep } = await import(pathToFileURL(path.join(IC
 const { fixtureChaines } = await import(pathToFileURL(path.join(ICI, 'fixtures', 'chaines.mjs')).href);
 const { lecturesChaines } = await import(pathToFileURL(path.join(ICI, 'fixtures', 'lectures.mjs')).href);
 const { etapesV1 } = await import(pathToFileURL(path.join(ICI, 'chaines-calendrier-v1.mjs')).href); // V1 chasse Calendrier : CH-D1, CH-D9, CH-D10, CH-D11
+const { etapesV12 } = await import(pathToFileURL(path.join(ICI, 'chaines-calendrier-v12.mjs')).href); // V12 chasse Calendrier : CH-N3 (+ CH-N3-PASTILLE), CH-N13, CH-N9
 const { etapesV8 } = await import(pathToFileURL(path.join(ICI, 'chaines-calendrier-v8.mjs')).href); // V8 chasse Calendrier : CH-V4 (+ CH-D7), CH-N1, CH-G3, CH-G7
 const args = process.argv.slice(2);
 const opt = (n) => { const i = args.indexOf(`--${n}`); return i >= 0 ? args[i + 1] : null; };
@@ -157,6 +158,7 @@ async function venteComptoir33(s, n) {
 function listeEtapes() { return [
   ...etapesV1({ echec, ok, sleep, pageNeuve, sortie }),
   ...etapesV8({ echec, ok, sleep }),
+  ...etapesV12({ echec, ok, sleep }),
   {
     id: 'B1', titre: 'Recette neuve, brouillon repris → « Enregistrer et préparer » ouvre Brasser (WFR-1)',
     async joue(s) {

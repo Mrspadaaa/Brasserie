@@ -1,6 +1,6 @@
 import React, { useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
-import { ECHELLES, type Echelle } from '../echelle';
+import { ECHELLES, PERIODE_DE_L_ECHELLE, type Echelle } from '../echelle';
 
 /**
  * Le menu de la période (E07, E40, E46) : un bouton (« 6 sem. ») l'ouvre. On y règle la période (6 sem., 3 mois, 6 mois, An), on passe à la vue
@@ -102,7 +102,10 @@ export function MenuPeriode({ plage, semaines, annee, liste, sansDate, onChoisir
     return () => { document.removeEventListener('pointerdown', dehors, true); document.removeEventListener('keydown', touche); };
   }, [onFermer]);
 
-  const actif = (n: number) => (n === 52 ? annee || semaines >= 52 : !annee && semaines === n);
+  /* CHN-13 : « Jour », « Semaine » et « Mois » sont 2, 6 et 26 semaines. Quand la durée est exactement le cran de l'échelle, la ligne Échelle
+     la coche et la ligne des durées se tait : une seule coche, jamais « Jour » et « 2 sem. » ensemble. */
+  const echelleCochee = !!onEchelle && !!echelle && !annee && semaines === PERIODE_DE_L_ECHELLE[echelle];
+  const actif = (n: number) => !echelleCochee && (n === 52 ? annee || semaines >= 52 : !annee && semaines === n);
   const ligne = (texte: string, fn?: () => void, extra?: Record<string, string>) => (
     <button type="button" className="ent-menu-l" onClick={() => { fn?.(); onFermer(); }} {...extra}>{texte}</button>
   );
@@ -118,13 +121,13 @@ export function MenuPeriode({ plage, semaines, annee, liste, sansDate, onChoisir
           <p className="ent-ech-t" id="ent-ech-t">Échelle</p>
           <div className="ent-ech-seg" role="group" aria-labelledby="ent-ech-t">
             {ECHELLES.map(e => (
-              <button key={e.id} type="button" data-echelle={e.id} aria-pressed={!annee && echelle === e.id} onClick={() => { onEchelle(e.id); onFermer(); }}>{e.nom}</button>
+              <button key={e.id} type="button" data-echelle={e.id} aria-pressed={echelleCochee && echelle === e.id} onClick={() => { onEchelle(e.id); onFermer(); }}>{e.nom}</button>
             ))}
           </div>
         </div>
       )}
       <div className={`ent-seg${onEchelle ? ' ent-seg--5' : ''}`} role="group" aria-label="Période">
-        {onEchelle && <button type="button" aria-pressed={!annee && semaines === 2} onClick={() => { onEchelle('jour'); onFermer(); }}>2 sem.</button>}
+        {onEchelle && <button type="button" aria-pressed={!echelleCochee && !annee && semaines === 2} onClick={() => { onEchelle('jour'); onFermer(); }}>2 sem.</button>}
         {DUREES.map(d => (
           <button key={d.semaines} type="button" aria-pressed={actif(d.semaines)} onClick={() => { onChoisir(d.semaines); onFermer(); }}>{d.nom}</button>
         ))}
