@@ -392,6 +392,17 @@ async function jouerCalendrier({ p, base, combo, tactile, glisser, pas }) {
     // la valeur après rechargement
     { const a = await etat(); await versCalendrier(); const b = await etat(); b?.cle === a.cle ? ok(`${F} rechargement`, a.cle) : echec(`${F} rechargement`, `${a.cle} → ${b?.cle}`); }
 
+    // CAL-ECHELLE-FIGEE (21.11) : dans l'An, la fin tirée au doigt pose une durée (≠ 52), « An » n'est plus coché, « 3 mois » se rechoisit
+    try {
+      await choisirPeriode('An'); await sleep(400);
+      const a = await etat();
+      const b = await tirer('An : réduire la fin', 'fin', -d, (a, b) => (a.n === 52 && b.n !== null && b.n < 52 && b.n >= 30) || 'une durée tirée de moins de 52 semaines (pas l\'An, pas la fenêtre d\'avant) attendue');
+      const an = await p.evaluate(() => { const e = document.querySelector('[aria-label$="période, liste, tri et filtre"]'); e?.click(); return new Promise((r) => setTimeout(() => { const o = [...document.querySelectorAll('button[aria-pressed]')].find((x) => x.innerText.trim() === 'An'); r(o ? o.getAttribute('aria-pressed') : null); document.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape', bubbles: true })); }, 500)); });
+      await echap();
+      an === 'false' ? ok(`${F} An décoché`, `${a.cle} → ${b.cle}`) : echec(`${F} An décoché`, `« An » aria-pressed = ${an} après ${a.cle} → ${b.cle}`);
+      await choisirPeriode('3 mois'); const c = await etat();
+      c.n === 13 ? ok(`${F} 3 mois rechoisi`, c.cle) : echec(`${F} 3 mois rechoisi`, `${c.cle} (13 sem. attendues)`);
+    } catch (e) { echec(`${F} An`, String(e.message ?? e).slice(0, 160)); await echap(); }
 
   };
   const choisirPeriode = async (t) => {

@@ -499,6 +499,12 @@ export function EnTeteCalendrier(props: EnTeteCalendrierProps) {
     if (!liste) onVue('semaines');
     ecrire(f);
   };
+  // CAL-ECHELLE-FIGEE (21.11) : dans l'An, le cadre se tire comme ailleurs ; une durée de moins de 52 semaines quitte l'An (le menu ne coche plus
+  // « An », « 3 mois » se rechoisit). Le corps glissé garde 52 semaines : l'An reste, décalé.
+  const changerCadre = (c: { index: number; nombre: number }) => {
+    if (annee && c.nombre < SEMAINES_ANNEE) { fenAvantAnnee.current = null; if (!liste) onVue('semaines'); }
+    ecrire({ du: semainesTot[c.index].debut, semaines: c.nombre });
+  };
   const choisirDuree = (n: number) => {
     if (n >= SEMAINES_ANNEE) { versAnnee(); return; }
     const depart = annee ? (fenAvantAnnee.current ?? fenetre) : fenetre;
@@ -743,7 +749,7 @@ export function EnTeteCalendrier(props: EnTeteCalendrierProps) {
               </div>
             ) : (
               <Cadre numeros={semainesTot.map(s => s.numero)} lundis={lundis} index={index} nombre={nombre} largeur={largeur} annee={annee}
-                onChange={c => ecrire({ du: semainesTot[c.index].debut, semaines: c.nombre })} onAnnee={versAnnee} onRevient={quitterAnnee}
+                onChange={changerCadre} onAnnee={versAnnee} onRevient={quitterAnnee}
                 onTirage={setTirage} etiquetteAnnee={etiquetteAnnee} surface={cadreCourbe} onLire={cx => setLecture(cx === null ? null : indexSous(cx))} debutRamenee={(modele.passe ?? 0) > 0}
                 vue={vueC} onVue={setVueTirage} />
             )}
