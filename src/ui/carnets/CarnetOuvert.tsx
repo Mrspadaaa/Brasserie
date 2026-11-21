@@ -708,6 +708,9 @@ function TableauCarnet({ carnet: k, titre, tableau, aRelire, sep, sauf, onOuvrir
   const meilleurs = new Map(cols.map(c => [c.cle, meilleursDe(tableau, c)]));
   const lignes = lignesClassees(tableau, aRelire, sauf);
   const art = (id: string) => k.articles.find(a => a.id === id);
+  /* CRN-18 (critique carnet 21.11) : carnet réalisé ou archivé, la machine est achetée ; la ligne ne dit plus « veille » (la bascule reste dans sa fiche) */
+  const fini = k.sortie?.etat === 'realise' || !!k.archive;
+  const veille = (a?: ArticleV) => !fini && !!a?.veille?.active;
   /* l'ordre : les façons en lice, les articles sans façon, puis — après la conclusion (n° 20) — les façons écartées */
   const sansFacon = { facon: null as FaconV | null, lignes: lignes.filter(l => { const f = art(l.articleId)?.faconId; return !f || !k.facons.some(x => x.id === f); }) };
   const blocsDe = (fs: FaconV[]) => fs.map(f => ({ facon: f as FaconV | null, lignes: lignes.filter(l => art(l.articleId)?.faconId === f.id) }));
@@ -756,8 +759,8 @@ function TableauCarnet({ carnet: k, titre, tableau, aRelire, sep, sauf, onOuvrir
                     <span className="cn-mut">
                       {sous}
                       {/* h05-3 : « DE · délai 2 sem. · ⊙ veille » (n° 8 : la ligne tient sur 2 lignes au plus à 390) */}
-                      {a?.veille?.active && <span className="cn-nowrap" title="veille demandée">{sous ? ' ·' : ''}<Eye size={15} aria-hidden className="cn-inline" /> veille</span>}
-                      {!l.ecarte && moinsBien && <span className="cn-att">{sous || a?.veille?.active ? ' · ' : ''}{moinsBien}</span>}
+                      {veille(a) && <span className="cn-nowrap" title="veille demandée">{sous ? ' ·' : ''}<Eye size={15} aria-hidden className="cn-inline" /> veille</span>}
+                      {!l.ecarte && moinsBien && <span className="cn-att">{sous || veille(a) ? ' · ' : ''}{moinsBien}</span>}
                     </span>
                   </span>
                   {cols.map(c => {

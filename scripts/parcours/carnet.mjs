@@ -540,6 +540,13 @@ async function jouer(dir) {
       if (m) throw new Error(`« ${m[0]} » : le « oui » en queue`);
       ok('CRN-17', 'aucun « … °C oui »');
     });
+    await etape('CRN-18 un carnet réalisé ne dit plus « veille »', async () => {
+      await demarrer(); await versAtelier(); await attendreListe(); await ouvrirCarnetDeListe('ZZ TEST — Embouteillage'); await cap('crn18-realise');
+      const v = await p.evaluate(() => [...document.querySelectorAll('.cn-ouvert *')].filter((e) => !e.closest('.cn-supprimer') && e.getBoundingClientRect().width > 0
+        && [...e.childNodes].some((n) => n.nodeType === 3 && /\bveille\b/i.test(n.textContent))).map((e) => e.textContent.replace(/\s+/g, ' ').trim().slice(0, 60)));
+      if (v.length) throw new Error(`« veille » dans un carnet réalisé : ${v.join(' | ')}`);
+      ok('CRN-18', 'aucune veille sur la machine achetée');
+    });
     // CRN-suite
 
     // ══════════ thèmes et grand écran ══════════
