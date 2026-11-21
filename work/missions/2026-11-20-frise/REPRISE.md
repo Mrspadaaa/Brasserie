@@ -1,3 +1,46 @@
+# Session 6 — CAL-LENT suite (21.11, agent arrêté à ~170 k ; rien commité)
+
+## Mesure : le poste est partagé, la médiane de 3 ne suffit plus
+- Base `41fee647f`, `mesure.mjs` ×3 : semaine 232, frise 216 (tâche 157), barre 184 (tâche 126), courbe-lecture 0, cacher 72, ouvrir 72,
+  Modifier 328 (tâche 246), semaine (feuille) 32, Enregistrer 280 (tâche 263) ; ECHEC 7/6/8.
+- Le MÊME build rejoué donne 200 à 656 ms pour « semaine » : une autre session charge le poste (charge 4 à 32 %). Outil fait : scratchpad
+  session 6 `ab.mjs <buildA> <buildB> [n] [etiquette]` : A et B alternés n fois, médianes côte à côte. `build-base` = HEAD (FeuilleAjout de HEAD),
+  `build-puces` = remède 1. Résultat A/B puces : RESULTAT-AB (ci-dessous, à remplir si absent : `ab-puces.out` du scratchpad).
+- Traces (`lenteur.mjs --invalidations`, `trace2.mjs` du scratchpad : invalidations de style seules, par recalcul) :
+  1. Modifier : recalcul de **3 720 éléments** forcé par `focus` (FocusScope) ; cause unique dans la trace : « Inline CSS style declaration
+     was mutated BODY » = `body.style.pointerEvents = 'none'` de Radix (DismissableLayer, modal). `pointer-events` est HÉRITÉ : tout le
+     document se recalcule. Enregistrer (2 790) : le même à la fermeture (valeur rendue). Ce n'est pas le focus lui-même.
+     Remède à mesurer : `.cal-tab { pointer-events: auto }` (frise.css) : le changement hérité s'arrête au Calendrier. Sans effet visible
+     (le voile de la feuille, `pointer-events:auto`, couvre tout) ; le Calendrier n'a aucun menu Radix sans voile (seulement Sheet). À vérifier :
+     un menu Radix du Header ouvert au-dessus du Calendrier laisserait passer un toucher au Calendrier.
+  2. Modifier, 1er recalcul (134 ms) : 194 « Attribute rect » = le masque des fils (sélection allumée) ; frise : 750, barre : 313.
+  3. Semaine, frise, barre : 79 à 141 « Affected by :has() » sur les ancêtres (cal-tab, main, racine) : une règle `:has()` remonte à chaque
+     changement ; la sonde de session 5 la disait négligeable sans ralenti : à re-sonder sur trace.
+  4. `juger` (146 ms non minifié, session 5) = `EnTete.tsx` l. 616 (useLayoutEffect, offsetWidth) : le temps est la mise en page forcée
+     du Calendrier entier juste après le rendu du lâcher. Remède : le lire hors du commit (ResizeObserver seul, ou rAF + flushSync) ; mesurer.
+
+## Session 6 : fait
+- RÉSULTAT A/B puces (5 tours alternés, A = HEAD, B = puces fenêtrées) : semaine 360 → 200, frise 432 → 344, barre 312 → 296 (hors cible :
+  bruit), **Modifier 504 → 584, Enregistrer 344 → 600** (tâche 410 → 482, 311 → 556). Aucun gain sur la cible : **REJETÉ**, fichier remis
+  à HEAD (`git checkout`, copie gardée). Cohérent avec la trace : le coût est le recalcul hérité du `body` (point 1), pas les 485 éléments.
+  Le ref de rappel force aussi une mise en page de plus à l'ouverture. Bruit : les A de ce tour (504, 344) dépassent la base de 3 (328, 280).
+- Remède 1 (REJETÉ), `src/ui/calendrier/frise/FeuilleAjout.tsx` : puces de semaine fenêtrées (vue ± une vue, cales `data-cale` de part et d'autre,
+  `premiereVue` suivie au défilement) ; centrage par le rang (`iChoisie × pasSemaine`) et non plus par la boîte rendue ; ref de rappel
+  `poserRangee` (la rangée vit dans le portail, monté APRÈS la feuille : l'ancien useLayoutEffect `[]` ne la voyait jamais, la largeur venait
+  toujours du repli `innerWidth`, inchangé) ; sans mise en page (jsdom, clientWidth 0) toutes les puces sont rendues. Vitest Calendrier
+  47 fichiers, 785/785. Copie : scratchpad `FeuilleAjout.puces.tsx` ; HEAD : `FeuilleAjout.head.tsx`.
+
+## Session 7 : prochaine action, dans l'ordre
+1. (fait : puces rejetées.) Mesurer seulement quand la charge du poste est basse (`(Get-CimInstance Win32_Processor).LoadPercentage`),
+   ou passer `ab.mjs` à 7 tours.
+2. Remède `.cal-tab { pointer-events: auto }` ; build ; `ab.mjs build-base build-pe 5` ; captures 390/1280 identiques (`captures-cal.mjs`
+   puis `compare.mjs` du scratchpad session 5).
+3. `juger` hors du commit ; masque : `React.memo` du `<svg.cal-traits>` (clé des trous) et pas de `setTrous` pendant un glisser (au lâcher) ;
+   `ab.mjs` chaque fois ; puis `lenteur.mjs` jusqu'à OK.
+4. Bugs (inchangé, voir plus bas). Piste B3 : la pile passe par le chunk useLiveData appelé par forecast ; `brewBudget.ts:160`
+   `nameKey = s => s.trim()` (un nom absent) et `calendrier.ts:1055` `l.label.trim()` (ligne d'achat sans libellé) sont les candidats ;
+   reproduire en ajoutant l'élément incomplet à la fixture ZZ TEST du Calendrier (jamais seedData), étape rouge dans calendrier.mjs, puis garde.
+
 # Session 5 — CAL-LENT (21.11)
 
 ## État de l'art (L29) : invalidation de style
