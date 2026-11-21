@@ -540,9 +540,11 @@ async function jouerCalendrier({ p, base, combo, tactile, glisser, pas }) {
         await choisirPeriode(per); await sleep(400);
         const a = await valeurGeste(), b = await barreGeste();
         if (!a || !b) { echec(J, '« ZZ TEST Geste » introuvable'); continue; }
-        const x = b.r - Math.min(8, b.w / 4), dx = (3 * b.col) / 7;
+        const x = b.r - Math.min(8, b.w / 4);
+        /* CAL-BARRE-BORD : un doigt à moins de 40 px du cadre fait défiler (R7) : le bord proche du cadre se raccourcit de 3 jours au lieu de s'allonger */
+        const cadreD = await p.evaluate(() => document.querySelector('[data-frise]').getBoundingClientRect().right), sens = cadreD - (x + (3 * b.col) / 7) < 44 ? -1 : 1, dx = sens * (3 * b.col) / 7;
         await glisser(x, b.y, pas(x, x + dx)); await sleep(500); await echap();
-        const c = await valeurGeste(), vise = ajouter(a.au, 3);
+        const c = await valeurGeste(), vise = ajouter(a.au, 3 * sens);
         (c.au === vise && c.du === a.du) ? ok(`${J} 3 jours`, `${a.cle} → ${c.cle}`) : echec(`${J} 3 jours`, `${a.cle} → ${c.cle} (fin au ${vise}, même début attendus ; ${(dx / (b.col / 7)).toFixed(2)} jours tirés)`);
         if (per === '6 sem.') await cap('bord-au-jour');
         await versCalendrier(); const d = await valeurGeste();
@@ -600,6 +602,51 @@ async function jouerCalendrier({ p, base, combo, tactile, glisser, pas }) {
     } catch (e) { echec(J, String(e.message ?? e).slice(0, 160)); await echap(); }
     await choisirPeriode('3 mois'); await sleep(400);
   };
+  // ── CAL-BARRE-BORD (21.11, « tirer la barre hors du cadre ») : à 390 tactile, en vue 2 sem. (obtenue en pinçant-écartant sur la fin de
+  //    « ZZ TEST Geste »), le bord de la barre tiré jusqu'au bord du cadre agrandit la fenêtre (elle ne dit plus « 2 sem. »), et la fin est le
+  //    jour sous le doigt (±1 j), relue après rechargement. 1280 souris : pas de pincer, section sautée ──
+  const sectionBarreBord = async () => {
+    const B = `barre tirée hors du cadre ${combo}`;
+    const cdp = await p.createCDPSession();
+    if (!tactile) { ok(`${B} (sautée : pincer = tactile seul)`); return; }
+    try {
+      await choisirPeriode('3 mois'); await sleep(400);
+      const a = await valeurGeste(), b0 = await barreGeste();
+      if (!a || !b0) { echec(B, '« ZZ TEST Geste » introuvable'); return; }
+      const fr = await p.evaluate(() => { const f = document.querySelector('[data-frise]').getBoundingClientRect(); return { l: f.left, r: f.right }; });
+      const pt = (x, y) => [{ x: Math.round(x - 0), y: Math.round(y), id: 1 }];
+      const deux = (cx, y, d) => [{ x: Math.round(cx - d), y: Math.round(y), id: 1 }, { x: Math.round(cx + d), y: Math.round(y), id: 2 }];
+      const cx = fr.l + (Math.floor((b0.r - 4 - fr.l) / b0.col) + 0.5) * b0.col; /* le milieu de la colonne de la fin : la semaine visée, quel que soit le doigt lu */
+      const sem0 = await p.evaluate((x) => [...document.querySelectorAll('[data-bande-semaines] [data-semaine]')].map((e) => { const r = e.getBoundingClientRect(); return [e.getAttribute('data-semaine'), Math.round(r.left), Math.round(r.right)].join(':'); }), cx);
+      await cdp.send('Input.dispatchTouchEvent', { type: 'touchStart', touchPoints: deux(cx, b0.y, 6) }); await sleep(80);
+      for (const d of [20, 40, 60, 80]) { await cdp.send('Input.dispatchTouchEvent', { type: 'touchMove', touchPoints: deux(cx, b0.y, d) }); await sleep(40); }
+      await cdp.send('Input.dispatchTouchEvent', { type: 'touchEnd', touchPoints: [] }); await sleep(800);
+      const periode = () => p.evaluate(() => document.querySelector('[aria-label$="période, liste, tri et filtre"]')?.getAttribute('aria-label') ?? '');
+      const per0 = await periode();
+      if (!/2 sem/.test(per0)) { echec(`${B} vue 2 sem.`, `le pincer n'a pas donné 2 sem. : « ${per0} »`); await choisirPeriode('3 mois'); return; }
+      ok(`${B} vue 2 sem.`, per0);
+      const b = await barreGeste();
+      if (!b) { await cap('barre-bord-hors'); const dbg = await p.evaluate(() => ({ f: document.querySelector('[data-frise]')?.getBoundingClientRect().width, l: [...document.querySelectorAll('[aria-label*="ZZ"]')].map((e) => e.getAttribute('aria-label').slice(0, 60)), lu: [...document.querySelectorAll('[data-bande-semaines] [data-lundi]')].map((e) => e.getAttribute('data-lundi')).slice(0, 3) })); echec(B, 'barre hors champ en 2 sem. ' + JSON.stringify({ ...dbg, a: a.cle, b0, fr, cx, sem0 })); await choisirPeriode('3 mois'); return; }
+      const dur = () => p.evaluate(() => document.querySelector('[data-duree]')?.textContent ?? null);
+      const d0 = await dur();
+      const x0 = b.r - Math.min(8, b.w / 4), xf = fr.r - 10;
+      let pend = null;
+      await glisser(x0, b.y, pas(x0, xf, 20), { pendant: async () => { await sleep(1000); pend = { per: await periode(), dur: await dur() }; } });
+      await sleep(500); await cap('barre-bord');
+      (pend && !/2 sem/.test(pend.per)) ? ok(`${B} fenêtre agrandie`, `${per0} → ${pend.per} (durée ${d0} → ${pend.dur})`) : echec(`${B} fenêtre agrandie`, `« ${pend?.per} » : la fenêtre 2 sem. est restée fixe`);
+      const c = await valeurGeste();
+      const jour = await p.evaluate((x) => {
+        const e = [...document.querySelectorAll('[data-bande-semaines] [data-lundi]')].find((e) => { const r = e.getBoundingClientRect(); return x >= r.left && x < r.right; });
+        if (!e) return null; const r = e.getBoundingClientRect(); return { lundi: e.getAttribute('data-lundi'), k: Math.floor(((x - r.left) / r.width) * 7) };
+      }, xf);
+      const attendu = jour ? ajouter(jour.lundi, jour.k) : null;
+      const ecart = attendu && c ? Math.abs((new Date(c.au) - new Date(attendu)) / 864e5) : null;
+      (ecart != null && ecart <= 1) ? ok(`${B} fin sous le doigt`, `${a.cle} → ${c.cle} (doigt : ${attendu})`) : echec(`${B} fin sous le doigt`, `${a.cle} → ${c?.cle} (doigt : ${attendu ?? 'colonne introuvable'}, écart ${ecart} j)`);
+      await versCalendrier(); const d = await valeurGeste();
+      d?.cle === c?.cle ? ok(`${B} rechargement`, c.cle) : echec(`${B} rechargement`, `${c?.cle} → ${d?.cle}`);
+    } catch (e) { echec(B, String(e.message ?? e).slice(0, 160)); await echap(); }
+    await choisirPeriode('3 mois'); await sleep(400);
+  };
   // ── CAL-VIDE (21.11, « Il y a un espace vide énorme ici ??? ») et CAL-VIDES-EN-LIGNE (« les mettre en vertical pas les entassés à
   //    l'horizontal ») : en 6 sem., 3 mois et An, une rangée prend la hauteur de ses lignes (écart ≤ 24 px jusqu'à l'en-tête suivant) ; les
   //    rangées vides se posent l'une sous l'autre ──
@@ -635,6 +682,7 @@ async function jouerCalendrier({ p, base, combo, tactile, glisser, pas }) {
   await sectionFeuilleJour();
   await sectionModifier();
   await sectionRangees();
+  await sectionBarreBord();
   await cap('fin');
 }
 

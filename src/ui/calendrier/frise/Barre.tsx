@@ -78,7 +78,7 @@ export interface BarreProps {
   /** CAL-PASSE N1 n° 1 : les colonnes hors fenêtre où la barre peut se poser (`[avant, après]`) ; absent : aucune. */
   marge?: [number, number];
   /** CAL-PASSE N1 n° 1 : décale la fenêtre d'une colonne vers le passé (-1) ou le futur (1) quand le doigt tient le bord ; `false` : elle ne peut plus. */
-  defile?: (sens: -1 | 1) => boolean;
+  defile?: (sens: -1 | 1, mode: 'glisse' | 'bord') => false | number;
   epinglee?: boolean;
   etoilee?: boolean;
   selectionnee?: boolean;

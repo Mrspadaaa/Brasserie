@@ -20,7 +20,7 @@ import { FeuilleAjout, type ResultatAjout } from '../../ui/calendrier/frise/Feui
 import { VueListe } from '../../ui/calendrier/frise/VueListe';
 import { CLASSE_TEINTE } from '../../ui/calendrier/frise/Marque';
 import { positionDans, type Colonne, type DragEtat } from '../../ui/calendrier/frise/Rangee';
-import { aDesJours, ajouterMois, cibleDuGlisse, colonnesDeLAxe, ECHELLES, enMois, echelleApres, echelleEffective, glisseAuJour, peutDeplier, PERIODE_DE_L_ECHELLE, type Echelle, type SensPincement } from '../../ui/calendrier/echelle';
+import { aDesJours, ajouterMois, cibleDuGlisse, colonnesDeLAxe, ECHELLES, enMois, echelleApres, echelleEffective, GLISSE_JOUR_MIN, glisseAuJour, peutDeplier, PERIODE_DE_L_ECHELLE, type Echelle, type SensPincement } from '../../ui/calendrier/echelle';
 import {
   RANGEES, anneeEnMois, ajouterJours, barreLiee, dateDeSemaine, ecartJours, estPonctuel, etiquetteS, jourLisible, lundiDe, nomRangee, nomSeules, preparerChoses,
   type CibleOuverture, type ChoseCalendrier, type ModeleCalendrier, type Rangee as IdRangee
@@ -946,19 +946,36 @@ export function CalendrierTab(props: CalendrierTabProps) {
   parJourVuRef.current = parJourVu;
   const fenetreRef = useRef(fenetre);
   fenetreRef.current = fenetre;
-  const defilerFenetre = useCallback((sens: -1 | 1): boolean => {
+  /* CAL-BARRE-BORD : un bord se tire aussi sur l'axe en jours (2 sem.) ; un glisser y garde ses bornes */
+  const bordDefilable = !annee && echelle !== 'mois' && !deplieVu && modele.semaines.length > 0;
+  const largeurFrise = mesure.largeur;
+  /*
+   * CAL-BARRE-BORD (« une barre tirée hors du cadre agrandit l'échelle et se pose là où le doigt la lâche ») : pendant un geste, la fenêtre
+   * GRANDIT d'une semaine de ce côté (droite : même début, rend 0 ; gauche : une semaine plus tôt, rend 1), jusqu'à 6 mois et, pour un glisser
+   * au jour, tant qu'un jour garde 8 px ; au-delà elle défile comme avant (rend 1 vers le passé, -1 vers le futur). Rend les semaines dont son
+   * début a reculé (le pas sous le doigt se relit par la position), `false` quand elle ne peut plus aller de ce côté.
+   */
+  const defilerFenetre = useCallback((sens: -1 | 1, mode: 'glisse' | 'bord' = 'glisse'): false | number => {
     const f = fenetreRef.current;
-    const du = ajouterJours(f.du, sens * 7);
-    if (du < premierLundi || ajouterJours(du, (f.semaines - 1) * 7) > derniereSemaine) return false;
-    const fen: FenetreSemaines = { du, semaines: f.semaines };
+    if (mode === 'glisse' && aDesJours(colonnesRef.current)) return false;
+    const n = f.semaines + 1;
+    const peutGrandir = n <= PERIODE_DE_L_ECHELLE.mois && !(mode === 'glisse' && parJourRef.current && !(largeurFrise / (7 * n) >= GLISSE_JOUR_MIN));
+    let fen: FenetreSemaines, recul = 0;
+    if (peutGrandir && sens > 0 && ajouterJours(f.du, (n - 1) * 7) <= derniereSemaine) fen = { du: f.du, semaines: n };
+    else if (peutGrandir && sens < 0 && ajouterJours(f.du, -7) >= premierLundi) { fen = { du: ajouterJours(f.du, -7), semaines: n }; recul = 1; }
+    else {
+      const du = ajouterJours(f.du, sens * 7);
+      if (du < premierLundi || ajouterJours(du, (f.semaines - 1) * 7) > derniereSemaine) return false;
+      fen = { du, semaines: f.semaines }; recul = sens < 0 ? 1 : -1;
+    }
     fenetreRef.current = fen;
     /* B8 (WFP-4, 21.11) : « Nov. » devenu « 16 nov. → 27 déc. » après un glisser, et resté au rechargement. Le défilement au bord est celui du
        geste : la fenêtre suit la barre (elle reste où le doigt l'a lâchée), la période de l'app et de Finances ne bouge que par le brasseur. */
     setFenetre(fen);
-    return true;
-  }, [premierLundi, derniereSemaine]);
+    return recul;
+  }, [premierLundi, derniereSemaine, largeurFrise]);
   /* CAL-JOUR : `parJour` passe par `{...props.barre}` de Rangee jusqu'à Barre (une variable : le Pick de Rangee ne le nomme pas encore, voie V7) */
-  const actionsBarre = { onToucher: surToucher, onAppuiLong: surAppuiLong, onGlisse: surGlisse, onLacheGlisse: surLacheGlisse, onBord: surBord, onLacheBord: surLacheBord, onRefus: surRefus, ...(defilable ? { defile: defilerFenetre, marge } : {}), ...(parJourVu ? { parJour: true } : {}) };
+  const actionsBarre = { onToucher: surToucher, onAppuiLong: surAppuiLong, onGlisse: surGlisse, onLacheGlisse: surLacheGlisse, onBord: surBord, onLacheBord: surLacheBord, onRefus: surRefus, ...(bordDefilable ? { defile: defilerFenetre } : {}), ...(defilable ? { marge } : {}), ...(parJourVu ? { parJour: true } : {}) };
   /* E32 : « Livraison La Cigogne · S1 › » mène à la vente hors de la vue */
   const surRenvoi = (c: ChoseCalendrier) => {
     const n = Math.max(2, fenetre.semaines);

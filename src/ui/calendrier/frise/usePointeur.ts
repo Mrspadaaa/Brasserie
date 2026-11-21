@@ -9,7 +9,8 @@ import type React from 'react';
  *
  * Machine à états explicite, tenue dans une référence (un geste ne rend rien tant qu'il n'a pas de conséquence) :
  *   repos → appui → glisser | tirer le bord | appui long → lâché ou annulé.
- * Le pas est la semaine : `k = round(dx / largeurColonne)`, borné par l'appelant (`borne`).
+ * Le pas est la semaine, lu par la POSITION du doigt (CAL-BARRE-BORD) : `k = round((x - L) / w - (x0 - L) / w0) - recul`, L la gauche de la frise
+ * à l'appui, w et w0 la largeur d'une colonne maintenant et à l'appui (égales : `round(dx / w)`) ; borné par l'appelant (`borne`).
  * Un toucher (appui bref, sans mouvement) appelle `onToucher` ; un geste vertical rend la main au défilement.
  */
 
@@ -52,8 +53,11 @@ export interface OptionsPointeur {
    * défilement automatique au bord. Un doigt qui tient une barre près du bord de la frise, en allant vers lui, décale la fenêtre d'une colonne à
    * chaque pas (`defile(-1)` : vers le passé, `defile(1)` : vers le futur ; elle rend `false` quand la fenêtre ne peut plus aller de ce côté) ; la
    * barre reste sous le doigt et la cible lue est celle de la colonne sous le doigt.
+   * CAL-BARRE-BORD (« une barre tirée hors du cadre agrandit l'échelle ») : le bord tiré défile aussi (`mode` 'bord'), et la fenêtre peut grandir
+   * au lieu de glisser. Elle rend `false` (plus rien de ce côté) ou les semaines dont son début a reculé (1 : vers le passé, 0 : elle a grandi
+   * vers le futur, -1 : elle a avancé).
    */
-  defile?: (sens: -1 | 1) => boolean;
+  defile?: (sens: -1 | 1, mode: 'glisse' | 'bord') => false | number;
   /**
    * Les colonnes hors de la fenêtre où la barre peut encore se poser (`[avant, après]`) : un glisser de 4 semaines vers la gauche d'une barre au
    * bord gauche de la fenêtre vise la semaine d'avant, même si la fenêtre ne l'affiche pas (le fantôme et la bulle disent la date).
@@ -95,6 +99,10 @@ interface Etat {
   recul: number;
   /** CAL-JOUR : le pas du glisser est un jour (1/7 de colonne), figé à l'appui. */
   parJour: boolean;
+  /** CAL-BARRE-BORD : la gauche de la frise, la largeur d'une colonne et d'un jour, à l'appui (le pas se lit par la position). */
+  L: number;
+  w0: number;
+  d0: number;
   /** R1 : le bord ne suit qu'après 6 px. */
   bouge: boolean;
   /** R7 : sens du dernier mouvement (−1, 0, 1), dernière abscisse, colonnes accumulées, image en cours et son heure. */
@@ -185,16 +193,29 @@ export function usePointeur(options: OptionsPointeur) {
   /* la cible lue : le pas du doigt, moins les colonnes dont la fenêtre a bougé sous lui (la colonne sous le doigt est celle de la fenêtre d'ORIGINE moins le recul) */
   const pasDe = (s: Etat): number => {
     const w = opts.current.largeurColonne || 1;
+    /* CAL-BARRE-BORD : par la position (la fenêtre a pu grandir sous le doigt : la colonne d'origine n'a plus la même largeur) */
+    const cols = (s.xPrec - s.L) / w - (s.x0 - s.L) / (s.w0 || w);
     /* CAL-JOUR : au jour, le pas est 1/7 de colonne ; `k` reste en semaines (3 jours = 3/7), la barre et sa bulle se posent sans autre calcul */
-    const brut = s.parJour ? Math.round((s.dx * 7) / w) / 7 : Math.round(s.dx / w);
+    const brut = s.parJour ? Math.round(cols * 7) / 7 : Math.round(cols);
     return bornes(brut - s.recul, plage(opts.current.borne?.(), opts.current.marge));
+  };
+  /* le bord, au jour : les jours entre le doigt et l'appui, chacun lu dans sa fenêtre, moins les semaines dont le début a reculé */
+  const largeurJourDe = (o: OptionsPointeur) => (o.largeurJour && o.largeurJour > 0 ? o.largeurJour : o.largeurColonne / 7);
+  const joursDe = (s: Etat): number => {
+    const d = largeurJourDe(opts.current) || 1;
+    return Math.round((s.xPrec - s.L) / d - (s.x0 - s.L) / (s.d0 || d) - 7 * s.recul);
   };
   /* après chaque rendu de la barre (la fenêtre a pu bouger sous le doigt) : le pas est relu, la bulle et le fantôme suivent */
   useEffect(() => {
     const s = etat.current;
-    if (!s || s.mode !== 'glisse' || !(opts.current.largeurColonne > 0)) return;
-    const k = pasDe(s);
-    if (k !== s.k) { s.k = k; opts.current.onGlisse?.(k, s.dx); }
+    if (!s || !(opts.current.largeurColonne > 0)) return;
+    if (s.mode === 'glisse') {
+      const k = pasDe(s);
+      if (k !== s.k) { s.k = k; opts.current.onGlisse?.(k, s.dx); }
+    } else if (s.mode === 'bord' && s.bouge) {
+      const k = joursDe(s);
+      if (k !== s.k) { s.k = k; opts.current.onBord?.(k, s.dx); }
+    }
   });
 
   const capturer = (cible: Element, id: number) => {
@@ -205,7 +226,9 @@ export function usePointeur(options: OptionsPointeur) {
     if (e.button > 0) return;
     stopMinuterie();
     const bord = (e.target as HTMLElement | null)?.closest?.('[data-bord]') || surLeBord(e.currentTarget, e.clientX, opts.current.zoneBord ?? 0);
-    const s: Etat = { id: e.pointerId, cible: e.target instanceof Element ? e.target : null, x0: e.clientX, y0: e.clientY, t0: Date.now(), mode: bord ? 'bord' : 'appui', k: 0, minuterie: null, dx: 0, recul: 0, parJour: !!opts.current.parJour,
+    const o0 = opts.current, L = e.currentTarget.closest?.('[data-frise]')?.getBoundingClientRect().left ?? 0;
+    const s: Etat = { id: e.pointerId, cible: e.target instanceof Element ? e.target : null, x0: e.clientX, y0: e.clientY, t0: Date.now(), mode: bord ? 'bord' : 'appui', k: 0, minuterie: null, dx: 0, recul: 0, parJour: !!o0.parJour,
+      L, w0: o0.largeurColonne, d0: largeurJourDe(o0),
       bouge: false, arme: 0, xPrec: e.clientX, acc: 0, raf: 0, tPrec: 0, echap: null };
     etat.current = s;
     const annuler = () => {
@@ -259,21 +282,23 @@ export function usePointeur(options: OptionsPointeur) {
     if (!sensDefilement(x, s.arme, cadreDe(el))) return;
     const image = (t: number) => {
       s.raf = 0;
-      if (etat.current !== s || s.mode !== 'glisse') return;
+      if (etat.current !== s || (s.mode !== 'glisse' && s.mode !== 'bord')) return;
       const c = cadreDe(el), largeur = c.right - c.left;
       const { sens, vitesse } = vitesseBord(s.xPrec - c.left, largeur, s.arme);
       if (!sens || !Number.isFinite(largeur)) { s.tPrec = 0; s.acc = 0; return; }
       const dt = s.tPrec ? Math.min(0.05, (t - s.tPrec) / 1000) : 0;
       s.tPrec = t;
       const oo = opts.current;
-      s.acc += (vitesse * dt * largeur) / Math.max(1, oo.largeurColonne);
+      /* comptée en semaines (un axe en jours en a sept par semaine : le bord n'y avance pas sept fois plus vite) */
+      s.acc += (vitesse * dt * largeur) / Math.max(1, s.mode === 'bord' ? largeurJourDe(oo) * 7 : oo.largeurColonne);
       while (s.acc >= 1) {
         s.acc -= 1;
-        const dansLaVue = oo.borne?.();
-        /* la barre sortirait de la fenêtre : on attend (jamais une barre tenue qui disparaît sous le doigt) */
+        /* la barre sortirait de la fenêtre : on attend (jamais une barre tenue qui disparaît sous le doigt) ; un bord tiré la suit toujours */
+        const dansLaVue = s.mode === 'glisse' ? oo.borne?.() : undefined;
         if (dansLaVue && (sens < 0 ? dansLaVue[1] < 1 : dansLaVue[0] > -1)) break;
-        if (!oo.defile?.(sens)) { s.acc = 0; break; }
-        s.recul += sens < 0 ? 1 : -1;
+        const r = oo.defile?.(sens, s.mode);
+        if (r === false || r === undefined) { s.acc = 0; break; }
+        s.recul += r;
       }
       s.raf = requestAnimationFrame(image);
     };
@@ -313,9 +338,11 @@ export function usePointeur(options: OptionsPointeur) {
       // Frise B, R1 : le bord ne suit qu'après 6 px (en 6 mois, un jour fait 2 px : un doigt qui tremble ne le déplace pas)
       if (!s.bouge && !aBouge(dx)) return;
       s.bouge = true;
-      /* le bord se tire au jour : une semaine = 7 jours, le pas du bord est 1/7 de colonne (E29) */
-      s.k = Math.round(dx / (o.largeurJour && o.largeurJour > 0 ? o.largeurJour : o.largeurColonne / 7));
+      s.dx = dx;
+      /* le bord se tire au jour : une semaine = 7 jours, le pas du bord est 1/7 de colonne (E29) ; tenu au bord de la frise, la fenêtre grandit */
+      s.k = joursDe(s);
       o.onBord?.(s.k, dx);
+      majDefile(s, e.clientX, e.currentTarget);
     }
   }, []);
 
