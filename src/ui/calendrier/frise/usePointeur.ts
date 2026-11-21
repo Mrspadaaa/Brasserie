@@ -24,6 +24,8 @@ export interface OptionsPointeur {
   largeurColonne: number;
   /** D385 : la largeur d'un jour, pour tirer le bord (une colonne d'un jour : la colonne). Absente : 1/7 de colonne (une semaine). */
   largeurJour?: number;
+  /** CAL-JOUR (21.11) : le glisser se lit au jour, `k` compte des semaines par septièmes (3 jours : 3/7) ; lu à l'appui. Absent : à la semaine. */
+  parJour?: boolean;
   /** Plage de pas permise pour le glisser (par exemple `[-ia, nc - 1 - ia]`). */
   borne?: () => [number, number];
   /** Une chose qui ne se déplace pas : le glisser est refusé avec sa raison (la barre ne bouge pas). */
@@ -91,6 +93,8 @@ interface Etat {
   /** Le déplacement du doigt depuis l'appui, et le nombre de colonnes dont la fenêtre a reculé (>0) ou avancé (<0) depuis le début du geste. */
   dx: number;
   recul: number;
+  /** CAL-JOUR : le pas du glisser est un jour (1/7 de colonne), figé à l'appui. */
+  parJour: boolean;
   /** R1 : le bord ne suit qu'après 6 px. */
   bouge: boolean;
   /** R7 : sens du dernier mouvement (−1, 0, 1), dernière abscisse, colonnes accumulées, image en cours et son heure. */
@@ -179,7 +183,12 @@ export function usePointeur(options: OptionsPointeur) {
   };
   useEffect(() => () => { stopMinuterie(); stopDefile(etat.current); etat.current = null; }, []);
   /* la cible lue : le pas du doigt, moins les colonnes dont la fenêtre a bougé sous lui (la colonne sous le doigt est celle de la fenêtre d'ORIGINE moins le recul) */
-  const pasDe = (s: Etat): number => bornes(Math.round(s.dx / (opts.current.largeurColonne || 1)) - s.recul, plage(opts.current.borne?.(), opts.current.marge));
+  const pasDe = (s: Etat): number => {
+    const w = opts.current.largeurColonne || 1;
+    /* CAL-JOUR : au jour, le pas est 1/7 de colonne ; `k` reste en semaines (3 jours = 3/7), la barre et sa bulle se posent sans autre calcul */
+    const brut = s.parJour ? Math.round((s.dx * 7) / w) / 7 : Math.round(s.dx / w);
+    return bornes(brut - s.recul, plage(opts.current.borne?.(), opts.current.marge));
+  };
   /* après chaque rendu de la barre (la fenêtre a pu bouger sous le doigt) : le pas est relu, la bulle et le fantôme suivent */
   useEffect(() => {
     const s = etat.current;
@@ -196,7 +205,7 @@ export function usePointeur(options: OptionsPointeur) {
     if (e.button > 0) return;
     stopMinuterie();
     const bord = (e.target as HTMLElement | null)?.closest?.('[data-bord]') || surLeBord(e.currentTarget, e.clientX, opts.current.zoneBord ?? 0);
-    const s: Etat = { id: e.pointerId, cible: e.target instanceof Element ? e.target : null, x0: e.clientX, y0: e.clientY, t0: Date.now(), mode: bord ? 'bord' : 'appui', k: 0, minuterie: null, dx: 0, recul: 0,
+    const s: Etat = { id: e.pointerId, cible: e.target instanceof Element ? e.target : null, x0: e.clientX, y0: e.clientY, t0: Date.now(), mode: bord ? 'bord' : 'appui', k: 0, minuterie: null, dx: 0, recul: 0, parJour: !!opts.current.parJour,
       bouge: false, arme: 0, xPrec: e.clientX, acc: 0, raf: 0, tPrec: 0, echap: null };
     etat.current = s;
     const annuler = () => {

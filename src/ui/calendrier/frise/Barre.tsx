@@ -71,6 +71,8 @@ export interface BarreProps {
   largeurColonne: number;
   /** D385 : la largeur d'un jour pour tirer le bord (une colonne d'un jour, ou 1/7 de semaine) ; absente : 1/7 de colonne. */
   largeurJour?: number;
+  /** CAL-JOUR (21.11) : le corps se glisse au jour (`glisseAuJour`) ; `onGlisse` reçoit des semaines par septièmes. */
+  parJour?: boolean;
   /** Pas permis pour le glisser : `[min, max]` en semaines. */
   bornes: [number, number];
   /** CAL-PASSE N1 n° 1 : les colonnes hors fenêtre où la barre peut se poser (`[avant, après]`) ; absent : aucune. */
@@ -110,7 +112,7 @@ export const montantBarre = (chose: ChoseCalendrier): string | null => {
   if (chose.rangee === 'activites') return chose.joursActifs ? `${chose.joursActifs} j${chose.centimes ? ` ${francsSignes(chose.centimes)}` : ''}` : chose.centimes ? francsSignes(chose.centimes) : null;
   if (chose.centimes === undefined) return null;
   /* CRITIQUE-12, doute Papiers en An : une série mensuelle posée en une barre dit son montant par mois (as/cap/p-c1d : « −400 / mois ») */
-  return `${francsSignes(chose.centimes)}${chose.partiel ? ' +' : ''}${chose.parMois ? ' / mois' : ''}`;
+  return `${francsSignes(chose.centimes)}${chose.partiel ? ' + à venir' : ''}${chose.parMois ? ' / mois' : ''}`;
 };
 const montantDe = montantBarre;
 
@@ -323,6 +325,7 @@ export const Barre: React.FC<BarreProps> = props => {
   const gestes = usePointeur({
     largeurColonne,
     ...(props.largeurJour ? { largeurJour: props.largeurJour } : {}),
+    ...(props.parJour ? { parJour: true } : {}),
     borne: () => bornes,
     ...(props.marge ? { marge: props.marge } : {}),
     ...(props.defile ? { defile: props.defile } : {}),

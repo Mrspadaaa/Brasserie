@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import {
-  aDesJours, cibleDuGlisse, colonnesDeLAxe, echelleApres, echelleEffective, lettreDuJour, peutDeplier, sensPincement, uniteColonne
+  aDesJours, cibleDuGlisse, colonnesDeLAxe, echelleApres, echelleEffective, glisseAuJour, lettreDuJour, peutDeplier, sensPincement, uniteColonne
 } from '../../src/ui/calendrier/echelle';
 
 /* D385 : l'axe en jours, semaines, mois. Semaines du lun. 16 nov. 2026 (S47) au lun. 21 déc. (S52) ; mois de nov. 2026 à févr. 2027. */
@@ -20,6 +20,10 @@ describe('échelle de l’axe (D385)', () => {
     expect(echelleEffective('mois', 26, false)).toBe('mois');
     expect(echelleEffective('mois', 6, false)).toBe('semaine');
     expect(echelleEffective('semaine', 52, true)).toBe('mois');
+    // CAL-ECHELLE-FIGEE : tirée hors de l'An à 40 semaines, la fenêtre reste en mois
+    expect(echelleEffective('semaine', 40, false)).toBe('mois');
+    expect(echelleEffective('jour', 27, false)).toBe('mois');
+    expect(echelleEffective('semaine', 26, false)).toBe('semaine');
   });
 
   it('les colonnes : 14 jours en Jour, 6 semaines en Semaine, les mois touchés en Mois', () => {
@@ -74,6 +78,16 @@ describe('échelle de l’axe (D385)', () => {
     expect(echelleApres('semaine', 'pincer')).toBe('mois');
     expect(echelleApres('jour', 'ecarter')).toBeNull();
     expect(echelleApres('mois', 'pincer')).toBeNull();
+  });
+});
+
+describe('CAL-JOUR (21.11) : le glisser au jour', () => {
+  it('en semaines, au jour dès qu’un jour garde 8 px ; jamais sur un axe en jours ou en mois', () => {
+    const sem = colonnesDeLAxe({ echelle: 'semaine', semaines: SEM, mois: MOIS, du: '2026-11-16', nombre: 6 });
+    expect(glisseAuJour(sem, 59)).toBe(true);
+    expect(glisseAuJour(sem, 27)).toBe(false);
+    expect(glisseAuJour(colonnesDeLAxe({ echelle: 'mois', semaines: SEM, mois: MOIS, du: '2026-11-16', nombre: 6 }), 140)).toBe(false);
+    expect(glisseAuJour([], 59)).toBe(false);
   });
 });
 

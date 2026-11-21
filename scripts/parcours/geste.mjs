@@ -497,6 +497,24 @@ async function jouerCalendrier({ p, base, combo, tactile, glisser, pas }) {
       d?.cle === c?.cle ? ok(`${J} rechargement`, c.cle) : echec(`${J} rechargement`, `${c?.cle} → ${d?.cle}`);
     } catch (e) { echec(J, String(e.message ?? e).slice(0, 160)); await echap(); }
   };
+  // ── CAL-JOUR-GLISSE (21.11, « pourquoi à certains événements je peux pas leur donner un jour précis… ? ») : en 6 sem. à 390, le corps de
+  //    « ZZ TEST Geste » glissé de 3 jours pose son début et sa fin 3 jours plus loin (plus à la semaine : +0 ou +7), relu après rechargement ──
+  const sectionGlisseJour = async () => {
+    const J = `glisser au jour 6 sem. ${combo}`;
+    try {
+      await choisirPeriode('6 sem.'); await sleep(400);
+      const a = await valeurGeste(), b = await barreGeste();
+      if (!a || !b) { echec(J, '« ZZ TEST Geste » introuvable'); return; }
+      const x = b.l + b.w / 2, dx = (3 * b.col) / 7;
+      await glisser(x, b.y, pas(x, x + dx)); await sleep(500); await echap();
+      const c = await valeurGeste(), du = ajouter(a.du, 3), au = ajouter(a.au, 3);
+      (c?.du === du && c?.au === au) ? ok(`${J} 3 jours`, `${a.cle} → ${c.cle}`) : echec(`${J} 3 jours`, `${a.cle} → ${c?.cle} (${du}→${au} attendus ; un jour : ${(b.col / 7).toFixed(1)} px)`);
+      await cap('glisser-au-jour');
+      await versCalendrier(); const d = await valeurGeste();
+      d?.cle === c?.cle ? ok(`${J} rechargement`, c.cle) : echec(`${J} rechargement`, `${c?.cle} → ${d?.cle}`);
+    } catch (e) { echec(J, String(e.message ?? e).slice(0, 160)); await echap(); }
+    await choisirPeriode('3 mois'); await sleep(400);
+  };
   // ── CAL-VIDE (21.11, « Il y a un espace vide énorme ici ??? ») et CAL-VIDES-EN-LIGNE (« les mettre en vertical pas les entassés à
   //    l'horizontal ») : en 6 sem., 3 mois et An, une rangée prend la hauteur de ses lignes (écart ≤ 24 px jusqu'à l'en-tête suivant) ; les
   //    rangées vides se posent l'une sous l'autre ──
@@ -525,6 +543,7 @@ async function jouerCalendrier({ p, base, combo, tactile, glisser, pas }) {
     }
   };
   await sectionJourBord();
+  await sectionGlisseJour();
   await sectionBarre();
   await sectionCadre();
   await sectionFeuille();

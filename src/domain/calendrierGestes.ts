@@ -234,14 +234,15 @@ function departBrassin(chose: ChoseCalendrier, prevu: string, ctx: ContexteGeste
 /**
  * CAL-PASSE voie S, R2-4 (21.11, « S40 · 28 sept. · lâcher ici », puis Hefe tombait le mardi 29 : la date annoncée n'était pas celle qui s'écrit) : le
  * jour que `deplacer` ÉCRIRA pour un glisser de `semaines` colonnes (le jour de la semaine de la chose est gardé, sauf le brassin pas brassé de la semaine
- * courante, qui part du lundi de sa colonne). La bulle de glisse dit ce jour, jamais le lundi de la colonne visée.
+ * courante, qui part du lundi de sa colonne). La bulle de glisse dit ce jour, jamais le lundi de la colonne visée. CAL-JOUR (21.11) : `auJour`, le
+ * glisser se lit au jour (`semaines` par septièmes) ; ce brassin part alors du jour affiché, comme `deplacerJours`.
  */
-export function jourDuGlisse(chose: ChoseCalendrier, semaines: number, ctx: ContexteGestes): string {
-  const jours = semaines * SEMAINE;
+export function jourDuGlisse(chose: ChoseCalendrier, semaines: number, ctx: ContexteGestes, auJour = false): string {
+  const jours = Math.round(semaines * SEMAINE);
   if (chose.source.genre === 'batch') {
     const batch = batchDe(chose, ctx);
     const prevu = batch ? isoDate(plannedBrewDate(batch)) : null;
-    if (prevu) return decale(departBrassin(chose, prevu, ctx, false), jours);
+    if (prevu) return decale(departBrassin(chose, prevu, ctx, auJour), jours);
   }
   return decale(chose.debut, jours);
 }

@@ -31,6 +31,8 @@ export const LARGEUR_JOUR_MIN = 16;
 /** L'échelle montrée : celle voulue, si la période la permet ; l'An est toujours en mois, comme avant. */
 export function echelleEffective(voulue: Echelle, semaines: number, annee: boolean): Echelle {
   if (annee) return 'mois';
+  // CAL-ECHELLE-FIGEE : une fenêtre tirée au-delà de 6 mois (40 sem.) se lit en mois, comme l'An (40 colonnes de semaines ne tiennent pas à 390)
+  if (semaines > PERIODE_DE_L_ECHELLE.mois) return 'mois';
   if (voulue === 'jour' && semaines <= JOUR_SEMAINES_MAX) return 'jour';
   if (voulue === 'mois' && semaines >= MOIS_SEMAINES_MIN) return 'mois';
   return 'semaine';
@@ -61,6 +63,14 @@ export const enMois = (colonnes: readonly Colonne[]): boolean => colonnes.length
 
 /** L'axe porte-t-il au moins une colonne d'un jour (Jour, ou une semaine dépliée) ? */
 export const aDesJours = (colonnes: readonly Colonne[]): boolean => colonnes.some(c => c.debut === c.fin);
+/**
+ * CAL-JOUR (21.11, « pourquoi à certains événements je peux pas leur donner un jour précis… ? ») : sur un axe en semaines, une barre glissée se
+ * pose au jour dès qu'un jour garde `GLISSE_JOUR_MIN` px sous le doigt (6 sem. à 390) ; plus serré (3 mois, 6 mois), à la semaine. Un axe en
+ * jours se glisse déjà au jour (sa colonne), un axe en mois au mois.
+ */
+export const GLISSE_JOUR_MIN = 8;
+export const glisseAuJour = (colonnes: readonly Colonne[], largeurColonne: number): boolean =>
+  colonnes.length > 0 && !enMois(colonnes) && !aDesJours(colonnes) && largeurColonne / 7 >= GLISSE_JOUR_MIN;
 
 const LETTRES = ['L', 'M', 'M', 'J', 'V', 'S', 'D'] as const;
 /** « L », « M »… : la lettre du jour (lundi = 0), comme la bande de la maquette. */

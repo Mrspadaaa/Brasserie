@@ -20,7 +20,7 @@ import { FeuilleAjout, type ResultatAjout } from '../../ui/calendrier/frise/Feui
 import { VueListe } from '../../ui/calendrier/frise/VueListe';
 import { CLASSE_TEINTE } from '../../ui/calendrier/frise/Marque';
 import { positionDans, type Colonne, type DragEtat } from '../../ui/calendrier/frise/Rangee';
-import { aDesJours, ajouterMois, cibleDuGlisse, colonnesDeLAxe, ECHELLES, enMois, echelleApres, echelleEffective, peutDeplier, PERIODE_DE_L_ECHELLE, type Echelle, type SensPincement } from '../../ui/calendrier/echelle';
+import { aDesJours, ajouterMois, cibleDuGlisse, colonnesDeLAxe, ECHELLES, enMois, echelleApres, echelleEffective, glisseAuJour, peutDeplier, PERIODE_DE_L_ECHELLE, type Echelle, type SensPincement } from '../../ui/calendrier/echelle';
 import {
   RANGEES, anneeEnMois, ajouterJours, barreLiee, dateDeSemaine, ecartJours, estPonctuel, etiquetteS, jourLisible, lundiDe, nomRangee, nomSeules, preparerChoses,
   type CibleOuverture, type ChoseCalendrier, type ModeleCalendrier, type Rangee as IdRangee
@@ -253,6 +253,9 @@ export function CalendrierTab(props: CalendrierTabProps) {
   /** L'id du message posé dans le flux faute de place libre (PC-109). */
   const [fluxForce, setFluxForce] = useState<number | null>(null);
   const [drag, setDrag] = useState<DragEtat | null>(null);
+  /* CAL-JOUR (21.11) : le glisser au jour se lit au rendu (`parJourVu`, passé aux barres) et se fige au premier pas d'un geste */
+  const parJourVuRef = useRef(false);
+  const parJourRef = useRef<boolean | null>(null);
   const [ici, setIci] = useState<string | null>(null);
   const [apercuLundi, setApercu] = useState<{ courbe: CourbeCaisse; lache: string } | null>(null);
   /* D387 (interrupteur : courbe alignée sur la frise) et D389 (courbe cachée) : des choix gardés par appareil */
@@ -451,6 +454,7 @@ export function CalendrierTab(props: CalendrierTabProps) {
     return courbe ? { courbe, lache } : null;
   };
   const surGlisse = useCallback((chose: ChoseCalendrier, k: number) => {
+    if (parJourRef.current === null) parJourRef.current = parJourVuRef.current;
     setDrag({ id: chose.id, mode: 'glisse', k, jours: 0 });
     /* paquet E n° 3 : sur un axe en mois (Mois, An), une colonne est un mois ; le glisser va de `k` mois, au même jour du mois si possible */
     if (enMois(colonnesRef.current)) {
@@ -471,9 +475,19 @@ export function CalendrierTab(props: CalendrierTabProps) {
     }
     /* paquet D n° 2 (D385) : en Semaine, un jalon d'un jour se glisse à la semaine (`k` compte des colonnes) et garde son jour de la semaine */
     if (estPonctuel(chose)) {
-      const jour = ajouterJours(chose.debut, k * 7);
+      const jour = ajouterJours(chose.debut, Math.round(k * 7));
       setIci(k === 0 ? null : `${etiquetteS(jour)} · ${jourLisible(jour)} · lâcher ici`);
-      setApercu(apercuDe(chose, k * 7, true, jour, k));
+      setApercu(apercuDe(chose, Math.round(k * 7), true, jour, k));
+      setMessage(null); setMenu(null); setSelectionId(null);
+      return;
+    }
+    /* CAL-JOUR (21.11, « pourquoi à certains événements je peux pas leur donner un jour précis… ? ») : un jour garde 8 px (6 sem.), la barre se
+       glisse au jour (`k` en septièmes de semaine) ; la bulle dit le jour que `deplacerJours` écrira */
+    if (parJourRef.current) {
+      const jours = Math.round(k * 7);
+      const cible = jourDuGlisse(chose, k, ctxRef.current, true);
+      setIci(jours === 0 ? null : `${etiquetteS(cible)} · ${jourLisible(cible)} · lâcher ici`);
+      setApercu(apercuDe(chose, jours, true, cible, jours));
       setMessage(null); setMenu(null); setSelectionId(null);
       return;
     }
@@ -485,7 +499,7 @@ export function CalendrierTab(props: CalendrierTabProps) {
     setMessage(null); setMenu(null); setSelectionId(null);
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [modele.courbe]);
-  const finGeste = useCallback(() => { setDrag(null); setIci(null); setApercu(null); setDuree(null); }, []);
+  const finGeste = useCallback(() => { parJourRef.current = null; setDrag(null); setIci(null); setApercu(null); setDuree(null); }, []);
   /*
    * Paquet E n° 4 (PC-NOTE-11, décision du pilote) : une fête ou une activité glissée n'emmène pas seuls ses achats et ventes d'un jour liés (une
    * date réelle d'achat ne bouge pas toute seule). Le message le dit (« 1 achat lié reste au 4 déc. ») et offre « Le déplacer aussi », qui les
@@ -513,6 +527,7 @@ export function CalendrierTab(props: CalendrierTabProps) {
     };
   };
   const surLacheGlisse = useCallback((chose: ChoseCalendrier, k: number, annule: boolean) => {
+    const parJour = parJourRef.current;
     finGeste();
     if (annule || k === 0) return;
     const glisserDe = (jours: number) => { if (jours !== 0) void ecrire(deplacerJours(chose, jours, ctxRef.current), false, chose.id, false, suiviDesLies(chose, jours)); };
@@ -522,7 +537,7 @@ export function CalendrierTab(props: CalendrierTabProps) {
       if (r) glisserDe(r.jours);
       return;
     }
-    if (estPonctuel(chose)) { glisserDe(k * 7); return; }
+    if (estPonctuel(chose) || parJour) { glisserDe(Math.round(k * 7)); return; }
     void ecrire(deplacer(chose, k, ctxRef.current), false, chose.id, false, suiviDesLies(chose, k * 7));
   }, [ecrire, finGeste]);
   const surBord = useCallback((chose: ChoseCalendrier, jours: number) => {
@@ -927,6 +942,8 @@ export function CalendrierTab(props: CalendrierTabProps) {
   const derniereSemaine = modele.semaines[modele.semaines.length - 1]?.debut ?? premierLundi;
   const finFenetre = ajouterJours(fenetre.du, (fenetre.semaines - 1) * 7);
   const marge: [number, number] = defilable ? [Math.max(0, ecartJours(premierLundi, fenetre.du) / 7), Math.max(0, ecartJours(finFenetre, derniereSemaine) / 7)] : [0, 0];
+  const parJourVu = glisseAuJour(colonnes, mesure.largeurColonne);
+  parJourVuRef.current = parJourVu;
   const fenetreRef = useRef(fenetre);
   fenetreRef.current = fenetre;
   const defilerFenetre = useCallback((sens: -1 | 1): boolean => {
@@ -940,6 +957,8 @@ export function CalendrierTab(props: CalendrierTabProps) {
     setFenetre(fen);
     return true;
   }, [premierLundi, derniereSemaine]);
+  /* CAL-JOUR : `parJour` passe par `{...props.barre}` de Rangee jusqu'à Barre (une variable : le Pick de Rangee ne le nomme pas encore, voie V7) */
+  const actionsBarre = { onToucher: surToucher, onAppuiLong: surAppuiLong, onGlisse: surGlisse, onLacheGlisse: surLacheGlisse, onBord: surBord, onLacheBord: surLacheBord, onRefus: surRefus, ...(defilable ? { defile: defilerFenetre, marge } : {}), ...(parJourVu ? { parJour: true } : {}) };
   /* E32 : « Livraison La Cigogne · S1 › » mène à la vente hors de la vue */
   const surRenvoi = (c: ChoseCalendrier) => {
     const n = Math.max(2, fenetre.semaines);
@@ -1075,7 +1094,7 @@ export function CalendrierTab(props: CalendrierTabProps) {
           onPincer={surPincer}
           echelle={deplieVu ? 'semaine-depliee' : echelle}
           aujourdhui={aujourdhui}
-          barre={{ onToucher: surToucher, onAppuiLong: surAppuiLong, onGlisse: surGlisse, onLacheGlisse: surLacheGlisse, onBord: surBord, onLacheBord: surLacheBord, onRefus: surRefus, ...(defilable ? { defile: defilerFenetre, marge } : {}) }}
+          barre={actionsBarre}
         />
       )}
 
