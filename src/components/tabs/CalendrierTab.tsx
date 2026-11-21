@@ -86,6 +86,9 @@ interface CalendrierTabProps {
   donnees?: DonneesCalendrier;
 }
 
+/* WFV-14 : « Facturer » sur une vente prévue ouvre la caisse (chargée à la demande, comme depuis Clients) */
+const Caisse = React.lazy(() => import('../../ui/vente/Caisse').then(m => ({ default: m.Caisse })));
+
 const RANGEES_SECTION: Record<NonNullable<CalendrierTabProps['section']>, readonly IdRangee[]> = {
   finances: ['ventes', 'achats', 'travaux', 'papiers'], brassins: ['brassins', 'ventes'], materiel: ['travaux', 'achats', 'activites'], stocks: ['brassins', 'achats'], agenda: ['fetes', 'activites', 'brassins']
 };
@@ -236,6 +239,8 @@ export function CalendrierTab(props: CalendrierTabProps) {
   const [selectionId, setSelectionId] = useState<string | null>(null);
   const [menu, setMenu] = useState<{ id: string; ancre: HTMLElement } | null>(null);
   const [feuille, setFeuille] = useState<FeuilleEtat | null>(null);
+  /** WFV-14 : la caisse ouverte par « Facturer », sur le client de la vente prévue (s'il est noté). */
+  const [caisse, setCaisse] = useState<{ clientId?: string } | null>(null);
   const [idee, setIdee] = useState<string | null>(null);
   /* CAL-PASSE : une idée hors carnet touchée au Calendrier s'ouvre dans sa feuille, sur place (« Modifier », comme une fête) */
   const [ideeModif, setIdeeModif] = useState<{ id: string; titre: string; lundi: string; jour: string | null } | null>(null);
@@ -795,7 +800,12 @@ export function CalendrierTab(props: CalendrierTabProps) {
         {...(editable && !sansDate ? { onModifier: () => { setSelectionId(null); setFeuille({ mode: 'modifier', initial: brouillonDepuisChose(chose), chose, cle: ++compteur.current }); } } : {})}
         {...(editable && !sansDate ? { onRetirer: () => { void ecrire(retirer(chose, ctxRef.current)); } } : {})}
         {...(creative && chose.source.genre === 'creative' && chose.source.type !== 'recipe-idea' && (chose.rangee === 'activites' || sansDate) ? { onFait: () => { void ecrire(fait(chose)); } } : {})}
-        {...(chose.rangee === 'ventes' && chose.source.genre === 'plan' && !chose.probable ? { onFacturer: () => { setSelectionId(null); onOpenFinances(); } } : {})}
+        {...(chose.rangee === 'ventes' && chose.source.genre === 'plan' && !chose.probable ? { onFacturer: () => {
+          /* WFV-14 : la caisse, son client choisi ; elle propose de solder la vente promise de ce client (B5), au lieu de la liste de Finances */
+          const id = (chose.source as { id: string }).id;
+          const clientId = don.plans.find(p => p.id === id)?.clientId;
+          setSelectionId(null); setCaisse(clientId ? { clientId } : {});
+        } } : {})}
         {...(/* paquet F n° 1 (PC-142) : toute chose de la poche se supprime, sans dialogue ; le message garde Annuler (7 s) */ sansDate && creative ? { onSupprimer: () => { setSelectionId(null); void ecrire(supprimerSansDate(chose)); } } : {})}
         {...(sansDate ? { onPoser: () => { setSelectionId(null); setFeuille({ mode: 'modifier', initial: { ...brouillonDepuisChose(chose), debut: lundiAuj, debutChoisi: true }, chose, cle: ++compteur.current }); } } : {})}
         {...(chose.probable && chose.source.genre === 'plan' && !chose.proposition ? { onAccepter: () => { void ecrire(accepterVente(chose, ctxRef.current)); } } : {})}
@@ -1104,6 +1114,7 @@ export function CalendrierTab(props: CalendrierTabProps) {
       {/* Paquet G n° 7 : la place laissée sous la frise (barre d'onglets, + volant) est un bloc, plus une marge intérieure : une zone collée ne
           quitte son parent qu'à la fin de son contenu ; avec la marge, l'en-tête du calendrier remontait sous celui de l'app en bas de page
           (844 × 390, défilé de 600 px : 13 px au lieu de 49). */}
+      {caisse && <React.Suspense fallback={<p role="status">Ouverture de la caisse…</p>}><Caisse {...(caisse.clientId ? { clientIdInitial: caisse.clientId } : {})} onClose={() => setCaisse(null)} /></React.Suspense>}
       <div aria-hidden="true" className="cal-tab-fin" style={{ height: 'calc(var(--main-navigation-height, 2.5rem) + 6.5rem)', marginTop: 0 }} />
     </div>
   );

@@ -442,6 +442,30 @@ async function jouer(dir) {
         v.length ? ok('B11 vente du jour', `rangée Ventes : « ${v[0].slice(0, 60)} »`) : echec('B11 vente du jour', '« Vente 6 × Pale Ale », encaissée aujourd\'hui, absente de la rangée Ventes');
       }
 
+      // WFV-14 : « Facturer » sur une vente prévue ouvre la caisse, son client choisi (la caisse propose alors d'en solder la promesse, B5),
+      // jamais la liste de Finances (« à encaisser 420,00 », aucune vente créée)
+      await recharger(); await fermer();
+      {
+        const titre = 'La Cigogne, 3 fûts';
+        try {
+          await toucher(`${titre},`, { prefixe: true });
+          await cap('09b-wfv14-detail');
+          const boutons = await p.evaluate(() => [...document.querySelectorAll('[role=dialog] button')].filter((e) => e.getBoundingClientRect().width > 0).map((e) => e.innerText.replace(/\s+/g, ' ').trim()).filter(Boolean).join(' | '));
+          if (!(await visibleParTexte('Facturer', { prefixe: true }))) throw new Error(`détail de « ${titre} » sans « Facturer » (boutons : ${boutons.slice(0, 100)})`);
+          await toucher('Facturer', { prefixe: true });
+          const caisse = await p.waitForSelector('#caisse-titre', { timeout: 8000 }).then(() => true).catch(() => false);
+          await sleep(400);
+          const lu = await p.evaluate(() => ({
+            client: [...document.querySelectorAll('.cs-av[aria-pressed="true"]')].map((e) => e.innerText.replace(/\s+/g, ' ').trim()).join(' | '),
+            ecran: (document.querySelector('[role=dialog] h2, main h1, main h2')?.textContent ?? '').trim()
+          }));
+          await cap('09b-wfv14-facturer');
+          (caisse && /La Cigogne/.test(lu.client)) ? ok('WFV-14 Facturer', `la caisse s'ouvre, client « ${lu.client} »`)
+            : echec('WFV-14 Facturer', caisse ? `caisse ouverte sans son client (choisi : « ${lu.client || 'aucun'} »)` : `« Facturer » sur « ${titre} » n'ouvre pas la caisse (écran : « ${lu.ecran.slice(0, 50)} »)`);
+          if (caisse) await toucher('Fermer').catch(() => {});
+        } catch (e) { echec('WFV-14 Facturer', String(e.message).slice(0, 120)); }
+      }
+
       // B3 / WFR-11 : un brassin planifié dont la levure n'a pas de nom (recette figée avec la seule référence de stock, forme réelle) ne fait pas
       // tomber l'écran. Injecté dans le cache de la fixture le temps de l'étape, puis retiré.
       {
