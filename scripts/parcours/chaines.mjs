@@ -850,6 +850,58 @@ function listeEtapes() { return [
     }
   }
 ]; }
+  },
+  {
+    // V5 (chasse Calendrier 21.11, CHE-3 et CHE-4) : le champ CHF de la feuille d'ajout Papiers (ChampMontant, aussi dans Finances), au doigt, 390 tactile.
+    // Banc sans clavier logiciel : le « premier toucher perdu » du vrai téléphone est à confirmer sur un téléphone (le dire).
+    id: 'CH-E3', titre: 'Champ CHF : le premier toucher sur Nom après « 1000 » entre dans Nom, le nom tapé est gardé ; Entrée dans CHF passe à Nom (CHE-3, CHE-4)', fixture: { sansJour: true },
+    async joue(s) {
+      const CHF = 'textarea[aria-label="Montant en CHF"]'; const NOM = '[data-feuille-nom]';
+      const actif = () => s.p.evaluate((n) => { const a = document.activeElement; return { nom: !!a && a.matches(n), chf: !!a && a.matches('[aria-label="Montant en CHF"]'), tag: a ? a.tagName : '-' }; }, NOM);
+      const ouvrir = async () => { await s.onglet('Calendrier'); await sleep(1200); await s.toucher('Ajouter dans Papiers'); await sleep(900); };
+      const moins = async () => { if (await s.p.$('[aria-label^="Dépense (toucher"]') === null) await s.toucher('Rentrée (toucher : dépense)', { prefixe: true }); };
+
+      // CH-E3 : « 1000 » dans CHF, un toucher sur Nom
+      await ouvrir(); await moins();
+      await s.ecrire(CHF, '1000');
+      await s.cap('CH-E3-1-chf');
+      const c = await s.p.evaluate((n) => { const e = document.querySelector(n); if (!e) return null; e.scrollIntoView({ block: 'center' }); const r = e.getBoundingClientRect(); return [r.x + r.width / 2, r.y + r.height / 2]; }, NOM);
+      if (!c) return echec('CH-E3', 'le champ Nom de la feuille d\'ajout est introuvable');
+      await s.p.touchscreen.tap(c[0], c[1]); await sleep(500);
+      const a1 = await actif();
+      await s.cap('CH-E3-2-apres-toucher-nom');
+      if (!a1.nom) echec('CH-E3', `après « 1000 », le premier toucher sur Nom n'y entre pas (focus resté sur ${a1.tag})`);
+      else {
+        await s.p.keyboard.type('ZZ TEST Pompe E3', { delay: 20 }); await sleep(300);
+        const v = await s.p.evaluate((n) => document.querySelector(n)?.value ?? '', NOM);
+        if (!/ZZ TEST Pompe E3/.test(v)) echec('CH-E3', `le nom tapé après le toucher n'est pas gardé : « ${v} »`);
+        else {
+          await s.p.keyboard.press('Enter'); await sleep(1200);
+          const tout = JSON.stringify(await s.p.evaluate(() => JSON.parse(localStorage.getItem('parcours-chaines:cache') || '[]')));
+          if (!tout.includes('ZZ TEST Pompe E3')) echec('CH-E3', 'le nom tapé après le toucher sur Nom n\'est pas dans la chose créée (Entrée dans Nom)');
+          else ok('CH-E3', 'après « 1000 », le premier toucher entre dans Nom, le nom tapé est gardé et créé par Entrée');
+        }
+      }
+
+    }
+  },
+  {
+    id: 'CH-E4', titre: 'Champ CHF : Entrée passe à Nom (le clavier annonce « suivant »), et un nom tapé ensuite est gardé (CHE-4)', fixture: { sansJour: true },
+    async joue(s) {
+      const CHF = 'textarea[aria-label="Montant en CHF"]'; const NOM = '[data-feuille-nom]';
+      await s.onglet('Calendrier'); await sleep(1200); await s.toucher('Ajouter dans Papiers'); await sleep(900);
+      if (await s.p.$('[aria-label^="Dépense (toucher"]') === null) await s.toucher('Rentrée (toucher : dépense)', { prefixe: true });
+      await s.ecrire(CHF, '50');
+      await s.p.keyboard.press('Enter'); await sleep(700);
+      await s.cap('CH-E4-1-apres-entree');
+      const a = await s.p.evaluate((n) => { const e = document.activeElement; return { nom: !!e && e.matches(n), chf: !!e && e.matches('[aria-label="Montant en CHF"]'), tag: e ? e.tagName : '-' }; }, NOM);
+      if (a.chf) return echec('CH-E4', 'Entrée dans CHF ne fait rien : le focus reste dans CHF');
+      if (!a.nom) return echec('CH-E4', `Entrée dans CHF ne passe pas à Nom (focus sur ${a.tag})`);
+      await s.p.keyboard.type('ZZ TEST Pompe E4', { delay: 20 }); await sleep(300);
+      const v = await s.p.evaluate((n) => document.querySelector(n)?.value ?? '', NOM);
+      if (!/ZZ TEST Pompe E4/.test(v)) return echec('CH-E4', `le nom tapé après Entrée n'est pas gardé : « ${v} »`);
+      ok('CH-E4', 'Entrée dans CHF prend Nom ; le nom tapé est gardé');
+    }
 
 // ───────────── le parcours ─────────────
 async function jouer(dir) {

@@ -1,11 +1,21 @@
 // Un montant de Finances à l'affichage de la maquette : « 3 250,00 », « 1 800 » (espace insécable entre les milliers, virgule décimale) quand le champ est au repos,
 // le nombre brut « 3250,5 » pendant la frappe. Même lecture que `ChampNombre` (virgule ou point, espaces ignorés) et mêmes refus visibles : négatif, illisible, plafond, trop de décimales.
 // Le champ de l'app (`ChampNombre`, `NumberInput`) n'affiche pas les milliers ; on ne le change pas pour tous les écrans (t1, problème 4).
-import React, { useId, useRef, useState } from 'react';
-import { Input } from '../Input';
+import React, { useEffect, useId, useRef, useState } from 'react';
+import { Input, type ActionEntree } from '../Input';
 import { formatDecimal, parseDecimal } from '../numericInput';
 
 type Refus = 'negatif' | 'plafond' | 'illisible' | 'decimales' | null;
+
+const CHAMPS_TEXTE = 'input:not([type=hidden]):not([type=checkbox]):not([type=radio]):not([disabled]), textarea:not([disabled]), select:not([disabled])';
+
+/** F-ENTREE (PI-2) : Entrée prend le champ de saisie suivant de la même feuille ou du même formulaire (celui que « suivant » annonce) ; sans suivant, le clavier se ferme. */
+const champSuivant: ActionEntree = (champ) => {
+  const racine: ParentNode = champ.closest('[role=dialog], form') ?? document;
+  const suivant = [...racine.querySelectorAll<HTMLElement>(CHAMPS_TEXTE)]
+    .find(e => (champ.compareDocumentPosition(e) & Node.DOCUMENT_POSITION_FOLLOWING) !== 0 && e.getClientRects().length > 0);
+  if (suivant) suivant.focus(); else champ.blur();
+};
 
 /** « 1 800,00 » : espace insécable pleine entre les milliers (la même que `montant` de Prévisions), virgule décimale ; `fractionDigits` absent : les décimales utiles seulement. */
 export function montantGroupe(n: number | null | undefined, fractionDigits?: number): string {
@@ -26,12 +36,17 @@ export interface ChampMontantProps {
   min?: number;
   /** Un solde peut être négatif (découvert) : le signe moins est lu, pas refusé. */
   negatif?: boolean;
+  /** Ce que fait Entrée (valider la feuille). Par défaut : le champ de saisie suivant, ou fermer le clavier s'il n'y en a pas. */
+  onEntree?: ActionEntree;
 }
 
-export const ChampMontant: React.FC<ChampMontantProps> = ({ value, onValue, max, fractionDigits, maxDecimales, className = '', placeholder, 'aria-label': ariaLabel, id, dire = false, integer = false, min, negatif = false }) => {
+export const ChampMontant: React.FC<ChampMontantProps> = ({ value, onValue, max, fractionDigits, maxDecimales, className = '', placeholder, 'aria-label': ariaLabel, id, dire = false, integer = false, min, negatif = false, onEntree }) => {
   const [texte, setTexte] = useState<string | null>(null);
   const [refus, setRefus] = useState<Refus>(null);
   const debut = useRef<number | undefined>(value);
+  const enFocus = useRef(false);
+  const retard = useRef<number | undefined>(undefined);
+  useEffect(() => () => window.clearTimeout(retard.current), []);
   const [dit, setDit] = useState<string | null>(null);
   const idDit = useId();
   const phrase = (r: Exclude<Refus, null>, t: string) => {
@@ -45,11 +60,11 @@ export const ChampMontant: React.FC<ChampMontantProps> = ({ value, onValue, max,
   return <>
     <Input
       id={id} aria-label={ariaLabel} aria-invalid={refus || dit ? true : undefined} aria-describedby={dit ? idDit : undefined} title={motif} data-dp-refus={refus ?? undefined}
-      type="text" inputMode={integer ? 'numeric' : 'decimal'} enterKeyHint="next" autoComplete="off" autoCorrect="off" spellCheck={false}
+      type="text" inputMode={integer ? 'numeric' : 'decimal'} enterKeyHint={onEntree ? 'done' : 'next'} onEntree={onEntree ?? champSuivant} autoComplete="off" autoCorrect="off" spellCheck={false}
       data-form-type="other" data-lpignore="true" data-1p-ignore="true" data-bwignore="true"
       placeholder={placeholder} value={affiche} className={`${className}${refus ? ' !border-solid !border-alert !text-alert' : ''}`}
       // Au toucher le champ montre le nombre brut, prêt à retaper (« 3250,5 »), sans les espaces des milliers.
-      onFocus={e => { debut.current = value; setDit(null); setTexte(value == null ? '' : formatDecimal(value, fractionDigits)); const champ = e.currentTarget; requestAnimationFrame(() => champ.select?.()); }}
+      onFocus={e => { enFocus.current = true; window.clearTimeout(retard.current); debut.current = value; setDit(null); setTexte(value == null ? '' : formatDecimal(value, fractionDigits)); const champ = e.currentTarget; requestAnimationFrame(() => champ.select?.()); }}
       onChange={e => {
         const t = e.target.value;
         setTexte(t);
@@ -67,7 +82,13 @@ export const ChampMontant: React.FC<ChampMontantProps> = ({ value, onValue, max,
       onBlur={() => {
         if (refus && !Object.is(value, debut.current)) onValue(debut.current);
         else if (min !== undefined && value !== undefined && value < min) onValue(min);
-        setTexte(null); setRefus(null);
+        setRefus(null);
+        // CHE-3 : « 1000 » devient « 1 000 » : le texte du champ change DANS l'événement de sortie, pendant que le doigt prend déjà le champ voisin.
+        // Le piège du focus (Radix) voit alors le focus sur rien et un nœud remplacé, le rend à la feuille : le premier toucher sur Nom est perdu.
+        // Le texte au repos se redessine donc après l'événement, une fois le focus arrivé (sauf si le champ a été repris entre-temps).
+        enFocus.current = false;
+        window.clearTimeout(retard.current);
+        retard.current = window.setTimeout(() => { if (!enFocus.current) setTexte(null); }, 0);
       }}
     />
     {dit && <span id={idDit} role="alert" className="block text-xs text-alert leading-snug">{dit}</span>}
