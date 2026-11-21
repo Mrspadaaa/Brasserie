@@ -24,8 +24,8 @@ vi.mock('../../src/ui/atelier/dictee', () => ({ useDictee: () => ({ disponible: 
 beforeEach(() => { Element.prototype.scrollIntoView = function () {} as never; });
 afterEach(() => { cleanup(); vi.restoreAllMocks(); });
 
-function monter(o: { delai?: number; ouvrir?: string; mode?: ModeCarnetIA; horsLigne?: boolean; appels?: AppelsIA } = {}) {
-  const magasin = magasinMemoire(fixtureCarnets());
+function monter(o: { delai?: number; ouvrir?: string; mode?: ModeCarnetIA; horsLigne?: boolean; appels?: AppelsIA; items?: ReturnType<typeof fixtureCarnets> } = {}) {
+  const magasin = magasinMemoire(o.items ?? fixtureCarnets());
   render(<CarnetsVue magasin={magasin} finances={{ plans: [], transactions: [], payments: [] }} mode={o.mode ?? 'simule'}
     appels={o.appels ?? appelsSimules('normal', o.delai ?? 20)} aides={aidesCarnet('simule', {})} horsLigne={o.horsLigne}
     {...(o.ouvrir ? { ouvrir: { id: o.ouvrir, at: 1 } } : {})} ecrirePlan={() => {}} />);
@@ -229,12 +229,21 @@ describe('P11 (g5:v01-16) : note en vrac après', () => {
 
 describe('P28 (R09) et P33 (R20)', () => {
   it('Créer · avant : le champ de la liste pris montre la phrase, les exemples touchables et « Une note en vrac marche aussi. »', () => {
-    const { champ } = monter();
+    // CRN-12 : avec un seul carnet (le Frigo), l'aide apprend le geste, sans reproposer le Frigo
+    const { champ } = monter({ items: fixtureCarnets().filter(i => i.id === ID_FRIGO) });
     fireEvent.focus(champ());
     expect(document.body.textContent).toContain('on garde sa photo et son prix, pour comparer');
     expect(document.body.textContent).toContain('Une note en vrac marche aussi.');
-    fireEvent.click(screen.getByRole('button', { name: 'Frigo de garde' }));
-    expect(champ().value).toBe('Frigo de garde');
+    expect(screen.queryByRole('button', { name: 'Frigo de garde' })).toBeNull();
+    fireEvent.click(screen.getByRole('button', { name: 'Ventilation de la salle' }));
+    expect(champ().value).toBe('Ventilation de la salle');
+  });
+
+  it('CRN-12 : avec ses carnets (la fixture), « Nouvelle idée » ne pousse aucune aide ni exemple déjà là', () => {
+    const { champ } = monter();
+    fireEvent.focus(champ());
+    expect(document.body.textContent).not.toContain('Une note en vrac marche aussi.');
+    expect(screen.queryByRole('button', { name: 'Ventilation de la salle' })).toBeNull();
   });
 
   it('« Se modifie ici » s’ouvre à la place de la note, avec son texte', () => {

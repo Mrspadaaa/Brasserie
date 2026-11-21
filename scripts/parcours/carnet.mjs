@@ -508,6 +508,14 @@ async function jouer(dir) {
       if (fautes.length) throw new Error(fautes.join(' ; '));
       ok('CRN-10', `Plus « ${plus} », ⌘K « ${k.slice(0, 40)} », + « ${z} »`);
     });
+    await etape('CRN-12 « Nouvelle idée » sans aide ni exemple déjà là', async () => {
+      await demarrer(); await versAtelier(); await attendreListe();
+      await toucher('Actions rapides'); await toucher('Nouvelle idée'); await sleep(500); await cap('crn12-nouvelle-idee');
+      const r = await p.evaluate(() => ({ aide: /Une note en vrac marche aussi/.test(document.body.innerText),
+        ex: [...document.querySelectorAll('button')].filter((b) => b.getBoundingClientRect().width > 0).map((b) => b.innerText.trim()).filter((t) => ['Frigo de garde', 'Ventilation de la salle', 'Évier pour les fûts'].includes(t)) }));
+      if (r.aide || r.ex.length) throw new Error(`aide en pointillés avec ses carnets${r.ex.length ? `, exemples déjà là : ${r.ex.join(', ')}` : ''}`);
+      ok('CRN-12', 'aucune aide, la liste ne bouge pas');
+    });
     // CRN-suite
 
     // ══════════ thèmes et grand écran ══════════

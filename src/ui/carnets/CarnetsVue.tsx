@@ -324,6 +324,14 @@ export function rangDuLien(t: NonNullable<ReturnType<typeof tableauDe>>, article
 const PLIER_APRES_MS = 300;
 /** G1 (g5:v04-1) : les exemples de Créer · avant, touchables ; un toucher remplit le champ. */
 const EXEMPLES_CREER = ['Frigo de garde', 'Ventilation de la salle', 'Évier pour les fûts'];
+/** CRN-12 : l'aide « avant » apprend le geste ; passé ce nombre de carnets, il le connaît, et elle poussait la liste de 280 px. */
+const AIDE_AVANT_JUSQU_A = 4;
+const motCle = (s: string) => s.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase().replace(/^zz test\s*[—-]\s*/, '').split(/[^a-z0-9]+/).find(m => m.length > 2) ?? '';
+/** CRN-12 : un exemple qui existe déjà en carnet n'est pas reproposé (« Pourquoi il me repropose Ventilation, je l'ai déjà ? »). */
+function exemplesNeufs(exemples: readonly string[], titres: readonly string[]): string[] {
+  const pris = new Set(titres.map(motCle).filter(Boolean));
+  return exemples.filter(e => !pris.has(motCle(e)));
+}
 const RUBRIQUE_DE: Record<string, string> = { critere: 'Ce qui compte', facon: 'Façons', article: 'Articles', note: 'Notes', photo: 'Photos' };
 /**
  * P22 : ce qu'un message a rangé, et où, en une ligne (« Notes : « filtre à air G4 » · dans Frigo de garde »), lu sur ses effets tels
@@ -1087,8 +1095,9 @@ export function CarnetsVue(p: CarnetsVueProps) {
       /* P28 (R09) : Créer · avant, le champ de la liste pris, vide (g5:v03-2 ; G1 puces exemples ; G2 « Une note en vrac marche aussi. ») */
       /* jamais sous un retour affiché (une note en vrac rangée, un carnet supprimé) : une chose à la fois */
       /* la liste vide (figé p2:i02-2, lot B) dit déjà tout cela : rien en double */
-      if (!depuis && focusListe && carnets.length > 0 && !retour && !supprime && etatR.etape !== 'en-cours') {
-        return <CadreArrivee cadre={{ sorte: 'avant', exemples: EXEMPLES_CREER, onExemple: t => { setTexte(t); rangement.taper(t); champRef.current?.focus(); } }} onAnnuler={() => champRef.current?.blur()} aides={aides} />;
+      const neufs = exemplesNeufs(EXEMPLES_CREER, carnets.map(c => c.title));
+      if (!depuis && focusListe && carnets.length > 0 && carnets.length <= AIDE_AVANT_JUSQU_A && neufs.length > 0 && !retour && !supprime && etatR.etape !== 'en-cours') {
+        return <CadreArrivee cadre={{ sorte: 'avant', exemples: neufs, onExemple: t => { setTexte(t); rangement.taper(t); champRef.current?.focus(); } }} onAnnuler={() => champRef.current?.blur()} aides={aides} />;
       }
       return null;
     }
