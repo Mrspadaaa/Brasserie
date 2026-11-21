@@ -410,8 +410,11 @@ function listeEtapes() { return [
     id: 'A2-75', titre: 'Caisse : l\'appui long vaut aussi sur la tuile 75 cl (6 · 12 · 24, « généralisé pour chaque cas ») ; 12 pose 12 bouteilles, le toucher simple garde +1', fixture: { sansJour: true },
     async joue(s) {
       await s.toucher('Actions rapides'); await s.toucher('Vente'); await sleep(900);
+      await s.toucher('33 cl', { contient: true, att: 500 }); // une autre tuile au panier (badge 1) : le bloc ne doit pas sembler être le sien
       await appuiLong(s, '75 cl', { contient: true });
       await s.cap('A2-75-1-appui-long');
+      const etats = await s.p.evaluate(() => Object.fromEntries([...document.querySelectorAll('.cs-tiles .cs-t')].map((t) => [t.querySelector('b')?.textContent ?? '?', { actif: t.classList.contains('cs-has'), badge: !!t.querySelector('.cs-n') }])));
+      if (!etats['75 cl']?.actif || etats['33 cl']?.actif || etats['33 cl']?.badge) return echec('A2-75', `ouvert depuis 75 cl, le bloc quantité ne dit pas sa tuile : ${JSON.stringify(etats)}`);
       const dit = async (n) => s.visible(String(n), { dans: 'button,[role=menuitem],[role=option]' });
       const manque = []; for (const n of [6, 12, 24]) if (!(await dit(n))) manque.push(n);
       if (manque.length) return echec('A2-75', `l'appui long sur « 75 cl » ne propose pas ${manque.join(' · ')} (attendu 6 · 12 · 24)`);

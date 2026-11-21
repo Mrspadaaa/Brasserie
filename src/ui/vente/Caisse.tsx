@@ -393,15 +393,18 @@ export function CaisseContenu({ clientIdInitial, onClose, onSaved, onBusy, ferme
               const ligne = lignes.find(l => l.cle === cle(actifId, format.id));
               const note1 = suspect ? note?.raison : undefined;
               const toucher = () => { setQuantiteDe(null); ajouter(format.id, format.label, format.volumeL, prix, note1); };
+              // A2 : pendant que 6 · 12 · 24 est ouvert, seule la tuile d'origine porte l'état « dans le panier » (ambre) ; les autres perdent le leur et leur badge,
+              // pour que le bloc « quantité » se lise comme celui de cette tuile (aucun visuel neuf).
+              const ouverte = !!quantiteDe && !fieldsetOff && quantiteDe.id === format.id, eteinte = !!quantiteDe && !fieldsetOff && !ouverte;
               const gestes = format.id !== 'fut' ? lierAppui({ id: format.id, poser: n => ajouter(format.id, format.label, format.volumeL, prix, note1, n) }, toucher) : { onClick: toucher };
               return (
-                <button key={format.id} ref={i === 0 ? premiereTuile : undefined} type="button" className={`cs-t${ligne ? ' cs-has' : ''}${present ? '' : ' cs-off'}`} disabled={fieldsetOff}
+                <button key={format.id} ref={i === 0 ? premiereTuile : undefined} type="button" className={`cs-t${ouverte || (ligne && !eteinte) ? ' cs-has' : ''}${present || ouverte ? '' : ' cs-off'}`} disabled={fieldsetOff} aria-expanded={ouverte || undefined}
                   aria-label={`${format.label}${note ? `, ${note.mot}` : ''}${prix !== null ? `, ${montantChf(prix)} CHF` : ', prix à indiquer'}`} {...gestes}>
-                  {ligne && <span className="cs-n cs-m">{ligne.quantite}</span>}
+                  {ligne && !eteinte && <span className="cs-n cs-m">{ligne.quantite}</span>}
                   {format.id === 'fut' ? <Fut /> : <Bouteille grande={format.id === '75cl'} />}
                   <div><b>{format.label}</b>{note && <small> · {note.mot}</small>}{/* k3 n° 15 : un tarif hors plage n'est pas « prix ? » (inconnu) : la tuile dit le tarif et son prix au litre, une seule fois. */}
                   <div className="cs-p">{prix !== null ? <><span className="cs-m">{montantChf(prix)}</span> CHF</> : suspect && note ? <span className="cs-nc">{note.court}</span> : 'prix ?'}</div>{note && !(suspect && prix === null) && <div className="cs-p cs-nc">{note.court}</div>}</div>
-                  {ligne && <span className="cs-minus" role="button" tabIndex={0} aria-label={`Retirer un ${format.label}`} onClick={e => { e.stopPropagation(); retirer(ligne.cle); }} onKeyDown={e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); e.stopPropagation(); retirer(ligne.cle); } }}>−</span>}
+                  {ligne && !eteinte && <span className="cs-minus" role="button" tabIndex={0} aria-label={`Retirer un ${format.label}`} onClick={e => { e.stopPropagation(); retirer(ligne.cle); }} onKeyDown={e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); e.stopPropagation(); retirer(ligne.cle); } }}>−</span>}
                 </button>
               );
             })}
