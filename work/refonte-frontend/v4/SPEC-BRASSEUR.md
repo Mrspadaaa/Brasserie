@@ -2626,3 +2626,7 @@ Classement de la page r3 de Ma levure (https://claude.ai/artifact/DKAJe8ESeMR4ig
 > Il y a une vue lors de la création ??? Mais qui s'ouvre même pas automatiquement et qui change par la suite ??
 
 (21.11, en ligne tour 8, captures 05 à 07 de work/missions/2026-11-21-chasse-carnet/ : 05 et 06, carnet « Test eauds » juste créé, bandeau vert « Idée · 21 nov. Ensuite : l'IA cherche les façons », bandeau « L'IA range… », lignes vides Ce qui compte, Façons, Articles, Photos ; 07, une minute après, le même carnet devenu « Eau » (renommé par l'IA, « votre phrase en titre »), autre mise en page : pastille « Idée · 21 nov. » en haut, Notes, Quand et ses puces Aujourd'hui · 1 mois · 3 mois · 6 mois · 1 an ; compteur Carnets 17 puis 16.)
+
+> Et le fait qu'il y aille un trou, que on voie que 3 truc et que il y a pas de filtre, rien, personnes a vue ça ?
+
+(21.11, en ligne tour 8, Brassins › Atelier › Carnet, capture 08 de work/missions/2026-11-21-chasse-carnet/ : la liste entourée ne montre que 3 carnets (Chambre froide, Sol, Achat brasserie) ; un trou blanc entouré entre le champ « Une idée, un besoin… » et la barre d'onglets, à côté du « + » ; aucun filtre ni recherche.)
