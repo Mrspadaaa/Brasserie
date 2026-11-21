@@ -22,3 +22,9 @@ REPRISE-*.md dans ce dossier ; dans port-carnet, `work/missions/2026-11-20-frise
 ## Risques
 - Machine chargée : vitest entier au-delà de 25 min, mesures de lenteur bruitées.
 - 27 KO VUE-SAUTE et NOM-OBLIGE à suivre dans principes.mjs.
+
+## Mise à jour 21.11, fin d'après-midi (limite d'usage atteinte)
+- Faites : V-FUTS (K7, N4), V-JOUR (N2), V-LOT (B1, E2, PI-4, VUE-SAUTE), voie transverse, F-APPUI 33/75 cl ; Calendrier : D397, D398, WFV-14, toucher fantôme, W0c, G3, RENOMMER-EVT, C1 (D404), 22 tests réécrits.
+- En cours au moment de la coupure : V-RECETTE reprise 4 (levure vision, Ma levure 5-6, Suivant fixe, N3, C1, WFR-4) ; Calendrier session 16 (K3-SUITES, VUE-SAUTE, précision, parcours complet) ; V-COUT reprise (commits K3/K4/N6, D405 une seule caisse). Lire leurs REPRISE-*.md et Session 16 avant de relancer.
+- Reste : V-STOCK (F2), CAL-LENT (ab.mjs, machine calme), défauts du graphe de la fiche (REPRISE-V-LOT), geste restant, puis vision complète et mise en ligne tour8 (deploy-tour4.sh, PARCOURS CALENDRIER OK).
+- Décisions D392 à D405.
