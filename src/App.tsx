@@ -1255,7 +1255,6 @@ export const App: React.FC = () => {
       <Header
         compactLayout
         large={activeTab === 'stocks'}
-        colle={activeTab === 'calendrier'}
         globalTimeFilter={globalTimeFilter}
         onChangeGlobalTimeFilter={(p) => setGlobalTimeFilter(p)}
         transactions={transactions}

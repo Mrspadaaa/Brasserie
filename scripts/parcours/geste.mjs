@@ -14,7 +14,7 @@
 //   deux listes de mois ; le début tiré vers le passé change la période, relue après rechargement. Rouge sur en-ligne/2026-11-21-tour8.
 //   --ref <tag> : construit ce tag dans une copie temporaire (comme le parcours Calendrier) ; les étapes Calendrier y sont rouges sur
 //                 en-ligne/2026-11-21-tour7 (frise d'avant la frise B) et vertes sur l'arbre.
-//   navigation (V4, chasse Calendrier 21.11 : CH-N5, CH-N8, CH-N11, CH-N12 ; 390 tactile) : sauts vers une chose, retour, loupe, barre collée. Rouge sur tour8.
+//   navigation (V4, chasse Calendrier 21.11 : CH-N5, CH-N8, CH-N12 ; 390 tactile) : sauts vers une chose, retour, loupe. Rouge sur tour8. CHN-11 refusé (APP-ENTETE-COLLE) : pas de contrôle.
 // Calendrier (fixture `fixtures/calendrier.mjs`, données simulées, plus « ZZ TEST Geste », des travaux de deux semaines) : la frise du haut (le cadre de la
 // courbe : R4 au repos, toucher sans bouger, reculer et avancer le début, étirer et réduire la fin, Échap à 1280, valeur après rechargement)
 // et une barre (toucher sans bouger, glisser + et −, étirer la fin prise à 18 px DEHORS (R3), réduire, Échap à 1280, valeur après rechargement).
@@ -614,10 +614,10 @@ async function jouerPeriode({ nav, base, L, theme }) {
   }
 }
 
-// ───────────── V4 : sauts vers une chose, retour, recherche (chasse Calendrier 21.11 : CHN-5, 6, 8, 11, 12) ─────────────
+// ───────────── V4 : sauts vers une chose, retour, recherche (chasse Calendrier 21.11 : CHN-5, 6, 8, 12) ─────────────
 // 390 tactile seulement. Fixture du Calendrier (Jhhh, Hefe en retard, « Marché de Noël », « ZZ TEST Projet chambre froide » du Carnet), une
 // page neuve par étape. Rouge sur en-ligne/2026-11-21-tour8 : Calendrier en février sans la chose, « Févr. » dans la barre de l'app, la croix
-// de la fiche d'un retard sur Brassins, ‹ › et la loupe partis au défilement, la fête de la loupe ni sélectionnée ni ouverte.
+// de la fiche d'un retard sur Brassins, la fête de la loupe ni sélectionnée ni ouverte.
 function etapesNavigation() { return [
   {
     id: 'CH-N5',
@@ -654,24 +654,6 @@ function etapesNavigation() { return [
       await s.cliquer('button[aria-label="Fermer"]', ''); await sleep(1500); await s.cap('N8-apres-croix');
       const ou = await s.p.evaluate(() => ({ calendrier: [...document.querySelectorAll('[data-calendrier]')].some((e) => e.getBoundingClientRect().width > 0), titre: document.querySelector('h1,h2')?.textContent?.trim().slice(0, 40) ?? null }));
       ou.calendrier ? ok(`${N} N8 la croix ramène au Calendrier`) : echec(`${N} N8 la croix ramène au Calendrier`, `le Calendrier n'est plus là (écran : « ${ou.titre} »)`);
-    }
-  },
-  {
-    id: 'CH-N11',
-    jouer: async ({ s, N }) => {
-      await s.aller(); await s.cliquer('nav button', 'Calendrier'); await s.p.waitForSelector('[data-calendrier]', { timeout: 15000 }); await sleep(1000);
-      // la fixture est courte (58 px à défiler) : une cale sous la fin de page donne le défilement d'un vrai Calendrier chargé (268 px relevés), sans toucher à l'en-tête
-      await s.p.evaluate(() => { const cale = document.createElement('div'); cale.setAttribute('aria-hidden', 'true'); cale.style.height = '900px'; document.querySelector('[data-calendrier]').after(cale); });
-      await s.p.evaluate(() => window.scrollTo(0, 268)); await sleep(700); await s.cap('N11-defile');
-      const m = await s.p.evaluate(() => {
-        const y = Math.round(window.scrollY);
-        const boite = (sel) => { const e = [...document.querySelectorAll(sel)].find((x) => x.getBoundingClientRect().width > 0); if (!e) return null; const r = e.getBoundingClientRect(); return { top: Math.round(r.top), bas: Math.round(r.bottom) }; };
-        return { y, precedent: boite('button[aria-label="Période précédente"]'), suivant: boite('button[aria-label="Période suivante"]'), loupe: boite('button[aria-label^="Rechercher"]') };
-      });
-      if (m.y < 100) return echec(`${N} N11`, `la page ne défile que de ${m.y} px : rien à prouver`);
-      const dedans = (b) => b && b.top >= 0 && b.bas <= 844;
-      (dedans(m.precedent) && dedans(m.suivant) && dedans(m.loupe)) ? ok(`${N} N11 ‹ › et la loupe restent`, `défilé de ${m.y} px`)
-        : echec(`${N} N11 ‹ › et la loupe restent`, `défilé de ${m.y} px : ‹ ${JSON.stringify(m.precedent)}, › ${JSON.stringify(m.suivant)}, loupe ${JSON.stringify(m.loupe)}`);
     }
   },
   {
