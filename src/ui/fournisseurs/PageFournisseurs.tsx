@@ -2,6 +2,7 @@ import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { BellRing, Check, ChevronDown, ChevronLeft, GitMerge, ScanLine, X } from 'lucide-react';
 import type { StockItem, Transaction } from '../../types';
 import { Sheet } from '../Sheet';
+import { surEntree } from '../Input';
 import { montantChf, todayISO } from '../../domain/finance/ledger';
 import { vendorKey } from '../../domain/finance/duplicates';
 import { usePlusPage } from '../plusPage';
@@ -191,7 +192,11 @@ export const PageFournisseurs: React.FC<Props> = ({ transactions, stocks, onBack
       <div className="fo fo-feuille">
         {(['nom', 'pays', 'site'] as const).map(champ => (
           <label key={champ} className="fo-champ"><span>{champ === 'nom' ? 'Nom' : champ === 'pays' ? 'Pays (facultatif)' : 'Site web (facultatif)'}</span>
-            <input value={nouveau?.[champ] ?? ''} autoComplete="off" onChange={e => setNouveau(n => (n ? { ...n, [champ]: e.target.value } : n))} />
+            {/* Entrée (PI-2) : le nom et le site ajoutent, le pays prend le site ; un nom vide garde le clavier */}
+            <input value={nouveau?.[champ] ?? ''} autoComplete="off" onChange={e => setNouveau(n => (n ? { ...n, [champ]: e.target.value } : n))}
+              {...(champ === 'pays'
+                ? surEntree<HTMLInputElement>(c => { c.closest('.fo-feuille')?.querySelectorAll('input')[2]?.focus(); }, 'next')
+                : surEntree<HTMLInputElement>(() => { if (!nouveau?.nom.trim()) return false; ajouterFournisseur(); }))} />
           </label>
         ))}
       </div>

@@ -173,7 +173,7 @@ export const TodoTimeline: React.FC<Props> = ({ items, adding, onAdding, onCreat
           <div className="tl-grab" />
           <div className="tl-sh"><h2>Nouvelle tâche</h2><button type="button" className="tl-x" aria-label="Fermer" onClick={fermer}><X size={18} aria-hidden="true" /></button></div>
           <label className="tl-lbl" htmlFor="tl-quoi">Quoi</label>
-          <input id="tl-quoi" className="tl-in" type="text" autoFocus autoComplete="off" value={titre} onChange={(e) => setTitre(e.target.value)} placeholder="Commander les capsules…" />
+          <input id="tl-quoi" className="tl-in" type="text" autoFocus autoComplete="off" enterKeyHint="done" value={titre} onChange={(e) => setTitre(e.target.value)} placeholder="Commander les capsules…" />
           {montantDepart && <p className="tl-lbl" data-montant-repris>Montant repris du calendrier : {montantDepart}</p>}
           <div className="tl-row">
             <button type="button" className="tl-sec" disabled={!titre.trim()} onClick={() => poser(false)}>Sans date</button>
