@@ -1,4 +1,5 @@
 import React from 'react';
+import { etirerDuree, joursActifs, poserHorizon } from '../helpers/dureeFeuille';
 import { readdirSync, readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
@@ -167,9 +168,8 @@ describe('C13 (D-117) : « Mettre de côté » ne crée aucun plan dans Finances
     const d = dialogue('Activités');
     expect(d.queryByRole('button', { name: /Mettre de côté/ })).toBeNull();
     fireEvent.click(d.getByRole('button', { name: 'Inventaire du stock' }));
-    const semaines = within(d.getByRole('group', { name: 'Semaine' }));
-    fireEvent.click(semaines.getByRole('button', { name: /^S20/ }));
-    fireEvent.click(semaines.getByRole('button', { name: /^S40/ }));
+    poserHorizon('6 mois');
+    etirerDuree(22);
     const champ = d.getByLabelText('Montant en CHF');
     fireEvent.focus(champ); fireEvent.change(champ, { target: { value: '600' } }); fireEvent.blur(champ);
     const mise = d.getByRole('button', { name: /Mettre de côté/ });
@@ -177,7 +177,7 @@ describe('C13 (D-117) : « Mettre de côté » ne crée aucun plan dans Finances
     expect(mise).toHaveAttribute('aria-pressed', 'true');
     fireEvent.click(d.getByRole('button', { name: /^Ajouter/ }));
     await waitFor(() => expect(appels.filter(a => a.op === 'creer')).toHaveLength(1));
-    expect(appels[0]).toMatchObject({ collection: 'creativeItems', patch: { fenetre: { du: '2027-05-17', au: '2027-10-10', miseDeCote: true } } });
+    expect(appels[0]).toMatchObject({ collection: 'creativeItems', patch: { fenetre: { du: '2027-05-10', au: '2027-10-10', miseDeCote: true } } });
     expect(appels.filter(a => a.collection === 'financialPlans')).toHaveLength(0);
     expect(etat.savePlan).not.toHaveBeenCalled();
   });
@@ -186,9 +186,8 @@ describe('C13 (D-117) : « Mettre de côté » ne crée aucun plan dans Finances
     monter();
     fireEvent.click(document.querySelector('button[data-plus="achats"]')!);
     const d = dialogue('Achats');
-    const semaines = within(d.getByRole('group', { name: 'Semaine' }));
-    fireEvent.click(semaines.getByRole('button', { name: /^S49/ }));
-    fireEvent.click(semaines.getByRole('button', { name: /^S52/ }));
+    poserHorizon("Aujourd'hui");
+    etirerDuree(4);
     const champ = d.getByLabelText('Montant en CHF');
     fireEvent.focus(champ); fireEvent.change(champ, { target: { value: '300' } }); fireEvent.blur(champ);
     expect(d.getByRole('button', { name: /Mettre de côté/ })).toBeInTheDocument();
@@ -204,10 +203,10 @@ describe('C17 (D-68) : « Plus de détails › » ouvre Prévoir une dépense, d
     render(<Harnais />);
     fireEvent.click(document.querySelector('button[data-plus="achats"]')!);
     const d = dialogue('Achats');
-    fireEvent.click(within(d.getByRole('group', { name: 'Semaine' })).getByRole('button', { name: /^S50/ }));
+    poserHorizon('1 mois'); // D404 : l'horizon pose le lundi, S51 au banc (2026-12-14)
     fireEvent.click(d.getByRole('button', { name: 'Plus de détails ›' }));
     const plan = within(screen.getByRole('dialog', { name: 'Prévoir une dépense' }));
-    expect(plan.getByLabelText('Date de paiement prévue')).toHaveValue('2026-12-07');
+    expect(plan.getByLabelText('Date de paiement prévue')).toHaveValue('2026-12-14');
   });
 
   it('CRITIQUE-5 n° 3 (D-68, E34) : depuis Achats S50, « Plus de détails › » rend le lundi de S50 ET la rangée Achats (la catégorie en vient)', () => {
@@ -215,10 +214,10 @@ describe('C17 (D-68) : « Plus de détails › » ouvre Prévoir une dépense, d
     monter({ callbacks: { onPoserDepense } });
     fireEvent.click(document.querySelector('button[data-plus="achats"]')!);
     const d = dialogue('Achats');
-    fireEvent.click(within(d.getByRole('group', { name: 'Semaine' })).getByRole('button', { name: /^S50/ }));
+    poserHorizon('1 mois'); // D404 : l'horizon pose le lundi, S51 au banc (2026-12-14)
     fireEvent.click(d.getByRole('button', { name: 'Plus de détails ›' }));
     expect(onPoserDepense).toHaveBeenCalledTimes(1);
-    expect(onPoserDepense).toHaveBeenCalledWith('2026-12-07', 'achats', 'brassage');
+    expect(onPoserDepense).toHaveBeenCalledWith('2026-12-14', 'achats', 'brassage');
   });
 
   it('CRITIQUE-6 n° 3 (D-68, E34, E38) : Achats S50 › Plus de détails › Enregistrer : le service des plans reçoit « brassage » et le lundi de S50, jamais « Charges fixes »', async () => {
@@ -231,7 +230,7 @@ describe('C17 (D-68) : « Plus de détails › » ouvre Prévoir une dépense, d
     render(<Harnais />);
     fireEvent.click(document.querySelector('button[data-plus="achats"]')!);
     const d = dialogue('Achats');
-    fireEvent.click(within(d.getByRole('group', { name: 'Semaine' })).getByRole('button', { name: /^S50/ }));
+    poserHorizon('1 mois'); // D404 : l'horizon pose le lundi, S51 au banc (2026-12-14)
     fireEvent.click(d.getByRole('button', { name: 'Plus de détails ›' }));
     const plan = within(screen.getByRole('dialog', { name: 'Prévoir une dépense' }));
     /* la pastille de catégorie le dit avant l'enregistrement : « Brassage » */
@@ -243,7 +242,7 @@ describe('C17 (D-68) : « Plus de détails › » ouvre Prévoir une dépense, d
     fireEvent.click(plan.getByRole('button', { name: 'Enregistrer' }));
     await waitFor(() => expect(etat.savePlan).toHaveBeenCalledTimes(1));
     const ecrit = etat.savePlan.mock.calls[0][0] as { category: string; date: string; amountCents: number; source: string };
-    expect(ecrit).toMatchObject({ category: 'brassage', date: '2026-12-07', amountCents: 24000, source: 'manual' });
+    expect(ecrit).toMatchObject({ category: 'brassage', date: '2026-12-14', amountCents: 24000, source: 'manual' });
     /* relu par le calendrier : il tombe dans Achats */
     const m = construireModele({
       aujourdhui: JOUR, transactions: [], payments: [], plans: [ecrit] as never, profile: profilConnu, assets: [], batches: [],
@@ -392,9 +391,9 @@ describe('CRITIQUE-2 n° 40 (E34, D-68, C17) : les feuilles Ventes, Achats, Trav
     render(<Harnais />);
     fireEvent.click(document.querySelector('button[data-plus="travaux"]')!);
     const d = dialogue('Travaux');
-    fireEvent.click(within(d.getByRole('group', { name: 'Semaine' })).getByRole('button', { name: /^S49/ }));
+    poserHorizon('1 mois'); // D404 : l'horizon pose le lundi (S51 au banc)
     fireEvent.click(d.getByRole('button', { name: 'Plus de détails ›' }));
-    expect(within(screen.getByRole('dialog', { name: 'Prévoir une dépense' })).getByLabelText('Date de paiement prévue')).toHaveValue('2026-11-30');
+    expect(within(screen.getByRole('dialog', { name: 'Prévoir une dépense' })).getByLabelText('Date de paiement prévue')).toHaveValue('2026-12-14');
   });
 });
 

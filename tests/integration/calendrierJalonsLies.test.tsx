@@ -3,6 +3,7 @@
  * 1 fût » (Ventes, un jour) sans lien. Toucher la foire allume la tireuse (et son fil), pâlit Dédé ; Lier vers une fête écrit `evenementId`.
  */
 import React from 'react';
+import { choseFrise } from '../helpers/choseFrise';
 import { readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
@@ -27,7 +28,7 @@ const monter = () => {
   render(<BancCalendrier aujourdhui={JOUR} sansChrome onAppel={a => appels.push(a as Appel)} />);
   return { appels };
 };
-const bouton = (nom: RegExp) => screen.getByRole('button', { name: nom });
+const bouton = choseFrise;
 const down = (el: Element) => fireEvent.pointerDown(el, { clientX: 10, clientY: 10, pointerId: 1, button: 0 });
 const up = (el: Element) => fireEvent.pointerUp(el, { clientX: 10, clientY: 10, pointerId: 1 });
 const toucher = (el: Element) => { down(el); up(el); };

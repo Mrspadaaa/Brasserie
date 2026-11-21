@@ -1,5 +1,5 @@
 import React from 'react';
-import { etirerDuree, joursActifs, poserHorizon } from '../helpers/dureeFeuille';
+import { etirerDuree, joursActifs, lundiPose, poserHorizon } from '../helpers/dureeFeuille';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { act, cleanup, fireEvent, render, screen, waitFor, within } from '@testing-library/react';
 import type { Batch, StockItem } from '../../src/types';
@@ -11,7 +11,8 @@ import { BottomNav } from '../../src/components/BottomNav';
 import { plusMenuFor } from '../../src/domain/plusEcran';
 import { fabActionFor } from '../../src/domain/fabActions';
 import { StorageService, defaultConfig } from '../../src/services/storage';
-import { ajouterJours, lundiDe, numeroSemaine } from '../../src/domain/calendrier';
+import { ajouterJours, lundiDe } from '../../src/domain/calendrier';
+import { lundiDHorizon } from '../../src/domain/horizons';
 import { todayISO } from '../../src/domain/finance/ledger';
 import { recipe as recetteDeBanc } from '../fixtures/brewCompanion';
 import { BancCalendrier } from '../../src/design/CalendrierPreview';
@@ -308,10 +309,9 @@ describe('C19 (D-71) : le bloc calendrier de l’App ouvre le budget du brassin'
     expect(document.body.textContent).not.toMatch(/l’app ouvrirait/);
   }, 40000);
 
-  it('CRITIQUE-4 n° 9 (D-68, E34) : dans l’App, « Plus de détails › » de la feuille Achats en S50 ouvre PlanSheet « Prévoir une dépense » datée du lundi de S50', async () => {
-    const aujourdhui = todayISO();
-    let lundiS50 = '';
-    for (let k = 0; k <= 53 && !lundiS50; k++) { const l = ajouterJours(lundiDe(aujourdhui), 7 * k); if (numeroSemaine(l) === 50) lundiS50 = l; }
+  it('CRITIQUE-4 n° 9 (D-68, E34, D404) : dans l’App, « Plus de détails › » de la feuille Achats à « 1 mois » ouvre PlanSheet « Prévoir une dépense » datée du lundi posé', async () => {
+    /* D404 : plus de carrousel de semaines à l'ajout ; l'horizon « 1 mois » pose le lundi (domaine horizons) */
+    const lundiS50 = lundiDHorizon('1-mois', todayISO())!;
     window.history.replaceState(null, '', '/?dev-local');
     vi.spyOn(StorageService, 'startSync').mockImplementation(() => {});
     vi.spyOn(StorageService, 'isReady').mockReturnValue(true);
@@ -322,7 +322,8 @@ describe('C19 (D-71) : le bloc calendrier de l’App ouvre le budget du brassin'
     const plus = await waitFor(() => { const b = document.querySelector<HTMLButtonElement>('button[data-plus="achats"]'); expect(b).toBeTruthy(); return b!; }, { timeout: 10000 });
     fireEvent.click(plus);
     const achats = within(screen.getByRole('dialog', { name: 'Achats' }));
-    fireEvent.click(within(achats.getByRole('group', { name: 'Semaine' })).getByRole('button', { name: /^S50/ }));
+    poserHorizon('1 mois');
+    expect(lundiPose()).toBe(lundiS50);
     fireEvent.click(achats.getByRole('button', { name: 'Plus de détails ›' }));
     const plan = within(await screen.findByRole('dialog', { name: 'Prévoir une dépense' }, { timeout: 10000 }));
     expect(plan.getByLabelText('Date de paiement prévue')).toHaveValue(lundiS50);
@@ -387,8 +388,11 @@ describe('C19 (D-71) : le bloc calendrier de l’App ouvre le budget du brassin'
     expect(horizon).toEqual({ de: courante, a: courante + 3 });
   }, 40000);
 
-  it('CRITIQUE-5 n° 17 : date à la suisse (celle de l’app) — « Tout », qui contient les courses du brassin', async () => {
-    expect(await jouerCommander(true)).toBe('tout');
+  it('CRITIQUE-5 n° 17, K3 : date à la suisse (celle de l’app) — horizon.ts la lit : la même fenêtre qu’en ISO', async () => {
+    /* K3 (21.11) : horizon.ts lit « JJ.MM.AAAA » ; avant, la date suisse tombait au seuil et Courses passait à « Tout » */
+    const horizon = await jouerCommander(true);
+    const courante = indiceSemaine(Math.floor(Date.parse(`${aujourdhuiLocal()}T00:00:00Z`) / 86400000));
+    expect(horizon).toEqual({ de: courante, a: courante + 3 });
   }, 40000);
 });
 
@@ -439,48 +443,44 @@ const appuiLongSur = (el: Element) => {
   fireEvent.pointerUp(el, { clientX: 100, clientY: 10, pointerId: 1, button: 0 });
 };
 
-describe('CRITIQUE-10 n° 2 (E34, E45, D-200) : posée hors de la fenêtre, « Voir S20 › » la montre', () => {
-  it('Travaux, puce, S20, S40, 5 j, Ajouter : le message porte « Voir S20 › » ; son toucher règle 6 mois sur S20 → S40, la barre et ses 5 points', async () => {
+describe('CRITIQUE-10 n° 2 (E34, E45, D-200, D404) : posée par un horizon hors de la fenêtre, la frise s’étend d’office', () => {
+  it('Travaux, puce, 6 mois, durée 22 sem., 5 j, Ajouter : la période s’étend sans toucher, sur S19 → S40 ; la barre, ses 5 points ; le message garde Annuler', async () => {
     const onPeriode = vi.fn();
     const appels = monterBanc({ callbacks: { onPeriode } });
     expect(document.querySelector('[data-frise]')!.getAttribute('data-nb-colonnes')).toBe('6');
     fireEvent.click(document.querySelector('button[data-plus="travaux"]')!);
     const d = within(screen.getByRole('dialog', { name: 'Travaux' }));
     fireEvent.click(d.getByRole('button', { name: 'Sols : colle et joints' }));
-    const semaines = within(d.getByRole('group', { name: 'Semaine' }));
-    fireEvent.click(semaines.getByRole('button', { name: /^S20/ }));
-    fireEvent.click(semaines.getByRole('button', { name: /^S40/ }));
-    fireEvent.click(d.getByRole('button', { name: '5 j' }));
+    poserHorizon('6 mois');
+    etirerDuree(22);
+    fireEvent.click(joursActifs().getByRole('button', { name: '5 j' }));
+    onPeriode.mockClear();
     fireEvent.click(d.getByRole('button', { name: /^Ajouter/ }));
     await waitFor(() => expect(appels.filter(a => a.op === 'creer')).toHaveLength(1));
-    expect(appels[0]).toMatchObject({ collection: 'financialPlans', patch: { fenetre: { du: '2027-05-17', au: '2027-10-10', joursActifs: 5 } } });
-    /* posée hors de S47 – S52 : rien ne se voit, d'où le lien */
-    expect(screen.queryByRole('button', { name: /^Sols : colle et joints/ })).toBeNull();
-    const m = await screen.findByRole('status');
-    const lien = within(m).getByRole('button', { name: 'Voir S20 ›' });
-    expect(within(m).getByRole('button', { name: /Annuler/ })).toBeInTheDocument();
-    onPeriode.mockClear();
-    fireEvent.click(lien);
-    /* même chemin que le menu période : la période de l'app reçoit 6 mois, une semaine avant S20 (S19 ’27, 10 mai) */
-    expect(onPeriode).toHaveBeenCalledWith({ genre: 'dates', du: '2027-05-10', au: ajouterJours('2027-05-10', 26 * 7 - 1) });
+    expect(appels[0]).toMatchObject({ collection: 'financialPlans', patch: { fenetre: { du: '2027-05-10', au: '2027-10-10', joursActifs: 5 } } });
+    /* D404 : même chemin que le menu période, appelé sans aucun toucher ; la fenêtre affichée contient la chose entière, S19 à S40 */
+    await waitFor(() => expect(onPeriode).toHaveBeenCalledTimes(1));
+    const p = onPeriode.mock.calls[0][0] as { genre: string; du: string; au: string };
+    expect(p.genre).toBe('dates');
+    expect(p.du <= '2027-05-10' && p.au >= '2027-10-10').toBe(true);
     expect(document.querySelector('[data-frise]')!.getAttribute('data-nb-colonnes')).toBe('26');
     expect(document.querySelector('[data-calendrier]')!.getAttribute('data-vue')).toBe('semaines');
-    expect(screen.queryByRole('status')).toBeNull();
     const barre = await screen.findByRole('button', { name: /^Sols : colle et joints/ });
     expect(barre.getAttribute('data-rangee')).toBe('travaux');
-    expect(barre.getAttribute('data-semaine')).toBe('S20');
+    expect(barre.getAttribute('data-semaine')).toBe('S19');
     expect(barre.querySelectorAll('[data-point]')).toHaveLength(5);
-    /* la fenêtre affichée contient la chose entière : S19 à S44, donc S40 */
-    const p = onPeriode.mock.calls[0][0] as { du: string; au: string };
-    expect(p.du <= '2027-05-17' && p.au >= '2027-10-10').toBe(true);
+    /* le message reste, avec Annuler ; plus de lien « Voir » : la chose se voit déjà */
+    const m = await screen.findByRole('status');
+    expect(within(m).getByRole('button', { name: /Annuler/ })).toBeInTheDocument();
+    expect(within(m).queryByRole('button', { name: /^Voir/ })).toBeNull();
   });
 
-  it('posée dans la fenêtre (S48) : pas de lien « Voir »', async () => {
+  it('posée dans la fenêtre (Aujourd’hui) : pas de lien « Voir »', async () => {
     const appels = monterBanc();
     fireEvent.click(document.querySelector('button[data-plus="travaux"]')!);
     const d = within(screen.getByRole('dialog', { name: 'Travaux' }));
     fireEvent.click(d.getByRole('button', { name: 'Sols : colle et joints' }));
-    fireEvent.click(within(d.getByRole('group', { name: 'Semaine' })).getByRole('button', { name: /^S48/ }));
+    poserHorizon("Aujourd'hui");
     fireEvent.click(d.getByRole('button', { name: /^Ajouter/ }));
     await waitFor(() => expect(appels.filter(a => a.op === 'creer')).toHaveLength(1));
     const m = await screen.findByRole('status');
@@ -546,21 +546,20 @@ describe('CRITIQUE-11 n° 4 (E31, D-48, D-192) : le menu d’une fête dit l’e
   });
 });
 
-describe('CRITIQUE-11 décision (d) : « Voir S20 › » reste ; message de deux lignes au plus, Annuler retire la chose posée', () => {
-  it('Travaux S20 → S40 : le message garde une ligne de texte et ses boutons (Voir, Annuler) ; Annuler retire la chose créée', async () => {
+describe('CRITIQUE-11 décision (d), D404 : message de deux lignes au plus, Annuler retire la chose posée', () => {
+  it('Travaux 6 mois → S40 : le message garde une ligne de texte et Annuler (la frise s’étend d’office, plus de Voir) ; Annuler retire la chose créée', async () => {
     const appels = monterBanc();
     fireEvent.click(document.querySelector('button[data-plus="travaux"]')!);
     const d = within(screen.getByRole('dialog', { name: 'Travaux' }));
     fireEvent.click(d.getByRole('button', { name: 'Sols : colle et joints' }));
-    const semaines = within(d.getByRole('group', { name: 'Semaine' }));
-    fireEvent.click(semaines.getByRole('button', { name: /^S20/ }));
-    fireEvent.click(semaines.getByRole('button', { name: /^S40/ }));
+    poserHorizon('6 mois');
+    etirerDuree(22);
     fireEvent.click(d.getByRole('button', { name: /^Ajouter/ }));
     await waitFor(() => expect(appels.filter(a => a.op === 'creer')).toHaveLength(1));
     const m = await screen.findByRole('status');
     /* deux lignes au plus : une ligne de texte (bornée à deux lignes par le CSS), puis les boutons */
     expect(m.querySelectorAll('.cal-msg-ligne')).toHaveLength(1);
-    expect(m.querySelector('[data-msg-boutons]')!.textContent).toMatch(/^ · Voir S20 › · Annuler$/u);
+    expect(m.querySelector('[data-msg-boutons]')!.textContent).toMatch(/^ · Annuler$/u);
     const cree = appels.find(a => a.op === 'creer')!;
     await new Promise(r => setTimeout(r, 450));
     fireEvent.click(within(m).getByRole('button', { name: /Annuler/ }));

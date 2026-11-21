@@ -3,7 +3,7 @@ import type { Batch } from '../../src/types';
 import type { FinancialPlan, FinancialProfile } from '../../src/domain/finance/types';
 import { rangeeCreative, type ChoseCalendrier } from '../../src/domain/calendrier';
 import {
-  achatsPasses, avecNomPose, nomPose, appliquerPuce, brouillonDepuisChose, brouillonDepuisProposition, brouillonVide, choisirJours, demandeConfirmation, ecritureDeAjout, enregistrementIdee, nbSemaines, peutMettreDeCote,
+  achatsPasses, avecNomPose, nomPose, appliquerPuce, brouillonDepuisChose, brouillonDepuisProposition, brouillonVide, choisirJours, demandeConfirmation, ecritureDeAjout, enregistrementIdee, etirerFin, nbSemaines, peutMettreDeCote, poserHorizon,
   preteLe, puceJours, puces, resumeFenetre, toucherSemaine, valider, versEnregistrement, versModification, type BrouillonAjout, type ContexteAjout, type Enregistrement
 } from '../../src/domain/calendrierAjout';
 import { brassinsHabituels } from '../../src/domain/calendrierPropositions';
@@ -349,5 +349,47 @@ describe('V-CAL (21.11) : D401 Travaux sans montant, nom posé (G3), achats pass
       { date: '2025-02-01', category: 'sales', finance: { kind: 'income', lines: [{ description: 'Vente', amountCents: 9000 }] } },
     ];
     expect(achatsPasses(t)).toEqual([{ libelle: 'Pompe de brassage', centimes: 42000, date: '2025-01-20', categorie: 'equipment', ref: undefined }]);
+  });
+});
+
+describe('D404 : l’horizon pose le début, la durée s’étire (frise B)', () => {
+  const MAI = '2027-05-10'; // S19 ’27, lundi
+  it('poserHorizon ramène au lundi, marque le début choisi et « par horizon », sans fenêtre au départ', () => {
+    const b = poserHorizon(brouillonVide('travaux'), '2027-05-12');
+    expect(b).toMatchObject({ debut: MAI, fin: null, debutChoisi: true, parHorizon: true });
+    expect(nbSemaines(b)).toBe(1);
+  });
+
+  it('un autre horizon garde la durée étirée : la fenêtre glisse avec le début', () => {
+    const b = etirerFin(poserHorizon(brouillonVide('travaux'), MAI), '2027-10-04');
+    expect(nbSemaines(b)).toBe(22);
+    expect(resumeFenetre(b)).toBe('S19 → S40 · 22 sem.');
+    const c = poserHorizon(b, '2027-11-15');
+    expect(c.debut).toBe('2027-11-15');
+    expect(nbSemaines(c)).toBe(22);
+  });
+
+  it('poserHorizon retire le jour choisi d’une chose rouverte (la semaine change)', () => {
+    const b = poserHorizon({ ...brouillonVide('achats', '2026-11-16'), jour: '2026-11-18', jourChoisi: true }, MAI);
+    expect(b.jour).toBeUndefined();
+    expect(b.jourChoisi).toBeUndefined();
+  });
+
+  it('etirerFin : jamais avant le début (ou sur lui) : une seule semaine ; sans fenêtre (vente) ni début : rien ne change', () => {
+    const b = poserHorizon(brouillonVide('travaux'), MAI);
+    expect(etirerFin(b, '2027-04-05').fin).toBeNull();
+    expect(etirerFin(b, MAI).fin).toBeNull();
+    expect(etirerFin(b, '2027-05-20').fin).toBe('2027-05-17');
+    const vente = poserHorizon(brouillonVide('ventes'), MAI);
+    expect(etirerFin(vente, '2027-10-04')).toBe(vente);
+    const sansDebut = brouillonVide('travaux');
+    expect(etirerFin(sansDebut, '2027-10-04')).toBe(sansDebut);
+  });
+
+  it('etirerFin : des jours actifs qui ne tiennent plus partent (l’inconnu n’est pas 0) ; ceux qui tiennent restent', () => {
+    const large = choisirJours(etirerFin(poserHorizon(brouillonVide('travaux'), MAI), '2027-05-24'), 10);
+    expect(large.joursActifs).toBe(10);
+    expect(etirerFin(large, '2027-05-17').joursActifs).toBe(10);
+    expect('joursActifs' in etirerFin(large, MAI)).toBe(false);
   });
 });

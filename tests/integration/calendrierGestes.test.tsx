@@ -1,4 +1,5 @@
 import React from 'react';
+import { choseFrise } from '../helpers/choseFrise';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { act, cleanup, fireEvent, render, screen, waitFor, within } from '@testing-library/react';
 import { BancCalendrier, etatBanc, type EtatBanc } from '../../src/design/CalendrierPreview';
@@ -31,7 +32,7 @@ const appuiLong = (el: Element) => {
   up(el);
 };
 const colonne = () => Number(document.querySelector('[data-frise]')!.getAttribute('data-largeur-colonne'));
-const barre = (nom: RegExp) => screen.getByRole('button', { name: nom });
+const barre = choseFrise;
 const messages = () => [...document.querySelectorAll('[role="status"], [role="alert"]')];
 const monter = (props: React.ComponentProps<typeof BancCalendrier> = {}) => {
   const appels: Appel[] = [];

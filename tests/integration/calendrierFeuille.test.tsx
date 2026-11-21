@@ -1,4 +1,5 @@
 import React from 'react';
+import { etirerDuree, joursActifs, lundiPose, poserHorizon } from '../helpers/dureeFeuille';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { cleanup, fireEvent, render, screen, waitFor, within } from '@testing-library/react';
 import { BancCalendrier } from '../../src/design/CalendrierPreview';
@@ -32,37 +33,35 @@ const monter = () => {
 const dialogue = (nom: string) => within(screen.getByRole('dialog', { name: nom }));
 /** Le carré + de la rangée (le geste du brasseur, D-155). */
 const plusDe = (rangee: string) => fireEvent.click(document.querySelector(`button[data-plus="${rangee}"]`)!);
-const semaine = (d: ReturnType<typeof dialogue>, nom: RegExp) => fireEvent.click(within(d.getByRole('group', { name: 'Semaine' })).getByRole('button', { name: nom }));
 /** Aucune saisie au clavier : le test ne tape jamais (aucun `change` ni `keyDown`) ; aucun champ n'a le focus. */
 const sansClavier = () => !(document.activeElement instanceof HTMLInputElement);
 
 describe('n° 9 (E45) : la feuille Travaux, depuis le carré +, pose une fenêtre et des jours actifs sans clavier', () => {
-  it('nom récent, S20, S40, « 5 j » : « S20 → S40 · 21 sem. », puis l’écriture reçoit fenetre { du, au, joursActifs: 5 }', async () => {
+  it('nom récent, 6 mois, durée 22 sem., « 5 j » : « S19 → S40 · 22 sem. », puis l’écriture reçoit fenetre { du, au, joursActifs: 5 }', async () => {
     const appels = monter();
     plusDe('travaux');
     const d = dialogue('Travaux');
-    /* les 52 semaines de la courbe défilent dans la feuille, celles de l'an prochain comprises */
-    const semaines = within(d.getByRole('group', { name: 'Semaine' })).getAllByRole('button');
-    expect(semaines.length).toBeGreaterThanOrEqual(52);
+    /* D404 : plus de carrousel de semaines ; l'horizon pose le début, la durée s'étire au geste */
+    expect(d.queryByRole('group', { name: 'Semaine' })).toBeNull();
     const puce = within(d.getByRole('group', { name: 'Noms récents' })).getAllByRole('button')[0];
     fireEvent.click(puce);
     expect(puce).toHaveAttribute('aria-pressed', 'true');
-    semaine(d, /^S20, /);
+    poserHorizon('6 mois');
+    expect(lundiPose()).toBe('2027-05-10');
     /* une seule semaine : 7 jours, « 10 j » est grisée */
-    const jours = () => within(d.getByRole('group', { name: 'Jours actifs' }));
-    expect(jours().getAllByRole('button').map(b => b.textContent)).toEqual(['1 j', '2 j', '3 j', '5 j', '10 j']);
-    expect(jours().getByRole('button', { name: '10 j' })).toBeDisabled();
-    semaine(d, /^S40, /);
-    expect(jours().getByRole('button', { name: '10 j' })).not.toBeDisabled();
-    fireEvent.click(jours().getByRole('button', { name: '5 j' }));
-    expect(d.getByText('S20 → S40 · 21 sem.')).toBeInTheDocument();
+    expect(joursActifs().getAllByRole('button').map(b => b.textContent)).toEqual(['1 j', '2 j', '3 j', '5 j', '10 j']);
+    expect(joursActifs().getByRole('button', { name: '10 j' })).toBeDisabled();
+    expect(etirerDuree(22)).toBe(22);
+    expect(joursActifs().getByRole('button', { name: '10 j' })).not.toBeDisabled();
+    fireEvent.click(joursActifs().getByRole('button', { name: '5 j' }));
+    expect(d.getByText('S19 → S40 · 22 sem.')).toBeInTheDocument();
     expect(d.getByText(/5 j actifs/)).toBeInTheDocument();
     expect(sansClavier()).toBe(true);
     fireEvent.click(d.getByRole('button', { name: /^Ajouter/ }));
     await waitFor(() => expect(appels.filter(a => a.op === 'creer')).toHaveLength(1));
     const ecrit = appels.find(a => a.op === 'creer')!.patch as { fenetre?: { du: string; au: string; joursActifs?: number } };
-    /* S20 et S40 de 2027 : du lundi de S20 au dimanche de S40 */
-    expect(ecrit.fenetre).toEqual({ du: '2027-05-17', au: '2027-10-10', joursActifs: 5 });
+    /* S19 et S40 de 2027 : du lundi de S19 au dimanche de S40 */
+    expect(ecrit.fenetre).toEqual({ du: '2027-05-10', au: '2027-10-10', joursActifs: 5 });
     expect(screen.queryByText('Choisis un nom.')).toBeNull();
   });
 });
@@ -105,16 +104,16 @@ describe('n° 19 (E34, D-22) : poser une vente et une activité au banc', () => 
     const joursRangee = () => Number(/(\d+) j/.exec(document.querySelector('section[data-rangee="activites"]')?.textContent ?? '')?.[1] ?? 0);
     const avant = joursRangee();
     fireEvent.click(puce);
-    semaine(d, /^S50, /);
-    fireEvent.click(within(d.getByRole('group', { name: 'Jours actifs' })).getByRole('button', { name: '3 j' }));
+    poserHorizon('1 mois');
+    fireEvent.click(joursActifs().getByRole('button', { name: '3 j' }));
     fireEvent.click(d.getByRole('button', { name: /^Ajouter/ }));
     await waitFor(() => expect(appels.filter(a => a.op === 'creer')).toHaveLength(1));
     const ecrit = appels.find(a => a.op === 'creer')!.patch as { fenetre?: { joursActifs?: number } };
     expect(ecrit.fenetre?.joursActifs).toBe(3);
     await waitFor(() => expect(screen.queryByRole('dialog', { name: 'Activités' })).toBeNull());
     const activites = document.querySelector('section[data-rangee="activites"]') as HTMLElement;
-    /* posée en S50 (7 déc.), visible dans sa rangée, et comptée en jours : « avant + 3 j » */
-    expect(within(activites).getAllByRole('button', { name: /, 7 déc\., S50$/ }).length).toBeGreaterThan(0);
+    /* posée à « 1 mois » (S51, 14 déc.), visible dans sa rangée, et comptée en jours : « avant + 3 j » */
+    expect(within(activites).getAllByRole('button', { name: /, 14 déc\., S51$/ }).length).toBeGreaterThan(0);
     await waitFor(() => expect(joursRangee()).toBe(avant + 3));
   });
 });
@@ -136,19 +135,19 @@ describe('CRITIQUE-6 n° 3, part frise (D-68, E34) : « Plus de détails › » 
 });
 
 describe('CRITIQUE-7 n° 4 (E34, D-22) : la feuille Brassins compte « prête le » depuis le jour de pose, jamais depuis un lundi passé', () => {
-  it('le mercredi 18 nov., S47 : « S47, 18 nov. » et « prête le 16 déc. » (28 j) ; S48 garde son lundi', () => {
+  it('le mercredi 18 nov., Aujourd’hui : « S47, 18 nov. » et « prête le 16 déc. » (28 j) ; « 1 mois » garde son lundi', () => {
     const appels: Appel[] = [];
     render(<BancCalendrier aujourdhui="2026-11-18" sansChrome onAppel={a => appels.push(a as Appel)} callbacks={{ periode: plage(52) }} />);
     plusDe('brassins');
     const d = dialogue('Brassins');
-    semaine(d, /^S47, /);
+    poserHorizon("Aujourd'hui");
     expect(d.getByText('S47, 18 nov.')).toBeInTheDocument();
     expect(d.queryByText(/S47, 16 nov\./)).toBeNull();
     const prete = document.querySelector('[data-prete]');
     expect(prete?.textContent).toBe('prête le 16 déc.');
-    /* une semaine à venir garde son lundi : S48, 23 nov., prête le 21 déc. */
-    semaine(d, /^S48, /);
-    expect(d.getByText('S48, 23 nov.')).toBeInTheDocument();
-    expect(document.querySelector('[data-prete]')?.textContent).toBe('prête le 21 déc.');
+    /* D404 : une semaine à venir (horizon « 1 mois », S51) garde son lundi : 14 déc., prête le 11 janv. */
+    poserHorizon('1 mois');
+    expect(d.getByText('S51, 14 déc.')).toBeInTheDocument();
+    expect(document.querySelector('[data-prete]')?.textContent).toBe('prête le 11 janv.');
   });
 });

@@ -1,4 +1,8 @@
 import React from 'react';
+import { readFileSync } from 'node:fs';
+import { join } from 'node:path';
+import { etirerDuree, joursActifs, lundiPose, poserHorizon } from '../helpers/dureeFeuille';
+import { choseFrise } from '../helpers/choseFrise';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { act, cleanup, fireEvent, render, screen, waitFor, within } from '@testing-library/react';
 import { BancCalendrier, etatBanc, type EtatBanc } from '../../src/design/CalendrierPreview';
@@ -137,7 +141,7 @@ describe('C8 : une barre de moins de 24 px devient une marque (3 mois, 6 mois, A
     appuiLong(marque);
     expect(document.querySelector('[data-frise]')!.getAttribute('data-nb-colonnes')).toBe('6');
     /* la Hotte arrive un jour (30 nov.) : en 6 semaines, un jalon nommé à sa date, qui se tient et se glisse (menu), pas une barre */
-    const hotte = screen.getByRole('button', { name: /^Hotte/ });
+    const hotte = choseFrise(/^Hotte/);
     expect(hotte).not.toHaveAttribute('data-barre');
     expect(hotte).toHaveAttribute('data-ponctuel', '2026-11-30');
     expect(hotte).toHaveAttribute('aria-haspopup', 'menu');
@@ -205,17 +209,18 @@ describe('C14 : épingles, étoiles, rangées masquées, ordre : gardés ; le fi
 
 describe('C15 : la feuille Travaux : une fenêtre et des jours actifs, sans clavier', () => {
   const ouvrirTravaux = () => { fireEvent.click(document.querySelector('button[data-plus="travaux"]')!); return dialogue('Travaux'); };
-  const semaine = (d: ReturnType<typeof dialogue>, nom: RegExp) => fireEvent.click(d.getByRole('group', { name: 'Semaine' }).querySelector(`button[data-semaine]`) && within(d.getByRole('group', { name: 'Semaine' })).getByRole('button', { name: nom }));
+  /* D404 : plus de carrousel à l'ajout ; l'horizon pose le début, la durée s'étire au bord de fin (geste de la frise B) */
 
-  it('puce de nom, S20, S40, 5 j : « S20 → S40 · 21 sem. » ; « Ajouter » écrit la fenêtre ; la barre va de S20 à S40 avec 5 points', async () => {
+  it('puce de nom, 6 mois, durée 22 sem., 5 j : « S19 → S40 · 22 sem. » ; « Ajouter » écrit la fenêtre ; la barre va de S19 à S40 avec 5 points', async () => {
     const appels: Array<{ op: string; collection: string; patch?: Record<string, unknown> }> = [];
     monter({ onAppel: a => appels.push(a), callbacks: { periode: plage(52) } });
     const d = ouvrirTravaux();
+    expect(d.queryByRole('group', { name: 'Semaine' })).toBeNull();
     fireEvent.click(d.getByRole('button', { name: 'Sols : colle et joints' }));
-    semaine(d, /^S20/);
-    semaine(d, /^S40/);
-    fireEvent.click(d.getByRole('button', { name: '5 j' }));
-    expect(d.getByText('S20 → S40 · 21 sem.')).toBeInTheDocument();
+    poserHorizon('6 mois');
+    expect(etirerDuree(22)).toBe(22);
+    fireEvent.click(joursActifs().getByRole('button', { name: '5 j' }));
+    expect(d.getByText('S19 → S40 · 22 sem.')).toBeInTheDocument();
     const champ = d.getByLabelText('Montant en CHF');
     expect(champ).toHaveAttribute('inputmode', 'decimal');
     fireEvent.focus(champ); fireEvent.change(champ, { target: { value: '600' } }); fireEvent.blur(champ);
@@ -223,30 +228,33 @@ describe('C15 : la feuille Travaux : une fenêtre et des jours actifs, sans clav
     fireEvent.click(d.getByRole('button', { name: /^Ajouter/ }));
     await waitFor(() => expect(appels.some(a => a.op === 'creer' && a.collection === 'financialPlans')).toBe(true));
     const plan = appels.find(a => a.op === 'creer')!.patch as { fenetre: unknown; amountCents: number; category: string; date: string };
-    expect(plan.fenetre).toEqual({ du: '2027-05-17', au: '2027-10-10', joursActifs: 5 });
+    expect(plan.fenetre).toEqual({ du: '2027-05-10', au: '2027-10-10', joursActifs: 5 });
     expect(plan.amountCents).toBe(60000);
     expect(plan.category).toBe('renovation');
-    expect(plan.date).toBe('2027-05-17');
-    const barre = await screen.findByRole('button', { name: /^Sols : colle et joints, .*S20/ });
+    expect(plan.date).toBe('2027-05-10');
+    const barre = await screen.findByRole('button', { name: /^Sols : colle et joints, .*S19/ });
     expect(barre.querySelectorAll('[data-point]')).toHaveLength(5);
   });
 
-  it('toucher une semaine avant S20 repart d’une seule semaine ; une vente ne prend qu’une date', () => {
+  it('ramener la fin avant le début repart d’une seule semaine ; une vente ne prend qu’une date (pas de piste de durée)', () => {
     monter({ callbacks: { periode: plage(52) } });
     const d = ouvrirTravaux();
-    semaine(d, /^S20/); semaine(d, /^S40/);
-    expect(d.getByText('S20 → S40 · 21 sem.')).toBeInTheDocument();
-    semaine(d, /^S10/);
+    poserHorizon('6 mois'); etirerDuree(22);
+    expect(d.getByText('S19 → S40 · 22 sem.')).toBeInTheDocument();
+    expect(etirerDuree(-8)).toBe(1);
     expect(d.queryByText(/→/)).toBeNull();
     fireEvent.keyDown(screen.getByRole('dialog', { name: 'Travaux' }), { key: 'Escape' });
     cleanup();
     monter({ callbacks: { periode: plage(52) } });
     fireEvent.click(document.querySelector('button[data-plus="ventes"]')!);
     const v = dialogue('Ventes');
-    semaine(v, /^S20/); semaine(v, /^S40/);
+    poserHorizon('6 mois');
     expect(v.queryByText(/→/)).toBeNull();
+    expect(document.querySelector('.cal-f-duree-piste')).toBeNull();
+    expect(v.queryByRole('slider', { name: 'Fin' })).toBeNull();
     expect(v.queryByRole('group', { name: 'Jours actifs' })).toBeNull();
-    expect(within(v.getByRole('group', { name: 'Semaine' })).getByRole('button', { name: /^S40/ })).toHaveAttribute('aria-pressed', 'true');
+    expect(v.queryByRole('button', { name: /^Jours actifs/ })).toBeNull();
+    expect(lundiPose()).toBe('2027-05-10');
   });
 });
 
@@ -305,7 +313,8 @@ describe('C18 : propositions en pointillé, acceptées d’un toucher (E47)', ()
     toucher(p);
     const d = dialogue('Brassins');
     expect(d.getByRole('button', { name: 'Stout maison', pressed: true })).toBeInTheDocument();
-    expect(within(d.getByRole('group', { name: 'Semaine' })).getByRole('button', { name: /^S26/ })).toHaveAttribute('aria-pressed', 'true');
+    /* D404 : la semaine proposée est dite au-dessus des horizons (plus de carrousel à l'ajout) */
+    expect(lundiPose()).toBe('2026-06-22');
     expect(screen.queryByRole('button', { name: /Plus de détails/ })).toBeNull();
     expect(document.querySelector('[data-quick-action], [role="dialog"][aria-label="Nouvelle action"]')).toBeNull();
     fireEvent.click(d.getByRole('button', { name: /^Ajouter/ }));
@@ -411,24 +420,27 @@ describe('CRITIQUE-3 (lot t3-c-frise) : marque, détail, pastille « lié à »,
     expect(screen.queryByText(/Sans Date/)).toBeNull();
   });
 
-  it('c7 (n° 28, E34) : à 390, la feuille d’ajout montre 13 semaines dans sa largeur, cases de 24 px au moins, et défile jusqu’à S20 et au-delà', () => {
+  it('c7 (n° 28, E34), D404 : à 390, la piste de durée tient dans la feuille ; son bord de fin est une cible de 44 px ; S40 s’atteint au geste', () => {
     const W0 = window.innerWidth;
     Object.defineProperty(window, 'innerWidth', { configurable: true, writable: true, value: 390 });
     try {
       monter({ callbacks: { periode: plage(52) } });
       fireEvent.click(document.querySelector('button[data-plus="travaux"]')!);
-      const groupe = dialogue('Travaux').getByRole('group', { name: 'Semaine' });
-      expect(groupe).toHaveAttribute('data-visibles', '13');
-      const cases = [...groupe.querySelectorAll<HTMLElement>('button[data-semaine]')];
-      expect(cases.length).toBeGreaterThanOrEqual(52);
-      /* paquet D n° 3 : la cible est toute la colonne (case + écart), sans zone morte : plus de 24 px dessinés entre 4 px morts */
-      const w = parseFloat(cases[0].style.width);
-      expect(w).toBeGreaterThanOrEqual(27);
-      expect(13 * w).toBeLessThanOrEqual(390 - 24);
-      expect(groupe.style.gap).toBe('0px');
-      expect(cases[0].querySelector('.cal-f-sem-c')).not.toBeNull();
-      expect(within(groupe).getByRole('button', { name: /^S20,/ })).toBeInTheDocument();
-      expect(within(groupe).getByRole('button', { name: /^S40,/ })).toBeInTheDocument();
+      const d = dialogue('Travaux');
+      expect(d.queryByRole('group', { name: 'Semaine' })).toBeNull();
+      poserHorizon('6 mois');
+      const fin = d.getByRole('slider', { name: 'Fin' });
+      expect(fin).toHaveClass('cal-f-duree-fin');
+      /* la cible du doigt : 44 × 44 px (feuille.css), centrée sur le bord */
+      const css = readFileSync(join(process.cwd(), 'src/ui/calendrier/frise/feuille.css'), 'utf8');
+      const regle = /\.cal-f-duree-fin \{([^}]*)\}/.exec(css)?.[1] ?? '';
+      expect(regle).toMatch(/width: 44px/);
+      expect(regle).toMatch(/height: 44px/);
+      expect(etirerDuree(22)).toBe(22);
+      expect(d.getByText('S19 → S40 · 22 sem.')).toBeInTheDocument();
+      /* la fin reste dans la piste (366 px à 390) */
+      const piste = document.querySelector<HTMLElement>('.cal-f-duree-piste')!;
+      expect(Number(piste.dataset.xFin)).toBeLessThanOrEqual(366);
     } finally {
       Object.defineProperty(window, 'innerWidth', { configurable: true, writable: true, value: W0 });
     }
@@ -482,16 +494,18 @@ describe('CRITIQUE-4 (lot q3-donnees) : Lier, filtre, fenêtre au pied, vente ha
     expect(document.querySelector('[data-filtre]')).toBeNull();
   });
 
-  it('n° 10 (E45, D-8) : « S20 → S40 · 21 sem. » est au pied de la feuille, hors du corps qui défile ; puces 1, 2, 3, 5, 10 j', () => {
+  it('n° 10 (E45, D-8), D404 : « S19 → S40 · 22 sem. » est au pied de la feuille, hors du corps qui défile ; jours repliés, puis puces 1, 2, 3, 5, 10 j', () => {
     monter({ callbacks: { periode: plage(52) } });
     fireEvent.click(document.querySelector('button[data-plus="travaux"]')!);
     const d = dialogue('Travaux');
-    const sem = (nom: RegExp) => fireEvent.click(within(d.getByRole('group', { name: 'Semaine' })).getByRole('button', { name: nom }));
-    sem(/^S20/); sem(/^S40/);
-    const resume = d.getByText('S20 → S40 · 21 sem.');
+    poserHorizon('6 mois'); etirerDuree(22);
+    const resume = d.getByText('S19 → S40 · 22 sem.');
     expect(resume.closest('.cal-feuille-corps')).toBeNull();
     expect(resume.closest('[data-fenetre-pied]')).not.toBeNull();
-    expect(within(d.getByRole('group', { name: 'Jours actifs' })).getAllByRole('button').map(b => b.textContent)).toEqual(['1 j', '2 j', '3 j', '5 j', '10 j']);
+    /* D404 : les jours actifs sont repliés sous un bouton tant qu'on ne les ouvre pas */
+    expect(d.queryByRole('group', { name: 'Jours actifs' })).toBeNull();
+    expect(d.getByRole('button', { name: /^Jours actifs/ })).toHaveAttribute('aria-expanded', 'false');
+    expect(joursActifs().getAllByRole('button').map(b => b.textContent)).toEqual(['1 j', '2 j', '3 j', '5 j', '10 j']);
     fireEvent.click(d.getByRole('button', { name: '5 j' }));
     expect(d.getByText(/5 j actifs/)).toBeInTheDocument();
   });

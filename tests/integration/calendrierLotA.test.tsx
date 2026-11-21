@@ -6,6 +6,8 @@
  * 4. CAL-BARRE-HAUTE : un brassin pas brassé tient au format de la Stout (une ligne de texte, puis le pied d'étapes), jamais sa phrase sur une 2e ligne.
  */
 import React from 'react';
+import { etirerDuree, joursActifs, poserHorizon } from '../helpers/dureeFeuille';
+import { choseFrise } from '../helpers/choseFrise';
 import { readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
@@ -34,6 +36,8 @@ import { disposer, type Colonne } from '../../src/ui/calendrier/frise/Rangee';
 const JOUR = '2026-11-16';
 const L = lundiDe(JOUR);
 const S49 = ajouterJours(L, 14);
+/** D404 : l'horizon « 1 mois » au banc (16 nov.) pose S51, lundi 14 déc. */
+const S51 = ajouterJours(L, 28);
 type Appel = { op: string; collection: string; id: string; patch?: Record<string, unknown> };
 
 beforeEach(() => {
@@ -48,16 +52,16 @@ const monter = (props: React.ComponentProps<typeof BancCalendrier> = {}) => {
   render(<BancCalendrier aujourdhui={JOUR} sansChrome onAppel={a => appels.push(a as Appel)} {...props} />);
   return { appels };
 };
-const bouton = (nom: RegExp) => screen.getByRole('button', { name: nom });
+const bouton = choseFrise;
 const toucher = (el: Element) => {
   fireEvent.pointerDown(el, { clientX: 10, clientY: 10, pointerId: 1, button: 0 });
   fireEvent.pointerUp(el, { clientX: 10, clientY: 10, pointerId: 1 });
 };
-/** La feuille rapide d'une rangée, ouverte par son « + », une semaine, un nom et un montant tapés. */
-const feuilleRapide = (rangee: string, titre: string, semaine: string, nom: string, chf: string) => {
+/** La feuille rapide d'une rangée, ouverte par son « + », un horizon (D404 : il pose le lundi), un nom et un montant tapés. */
+const feuilleRapide = (rangee: string, titre: string, horizon: string, nom: string, chf: string) => {
   fireEvent.click(document.querySelector(`button[data-plus="${rangee}"]`)!);
   const d = within(screen.getByRole('dialog', { name: titre }));
-  fireEvent.click(within(d.getByRole('group', { name: 'Semaine' })).getByRole('button', { name: new RegExp(`^${semaine},`) }));
+  poserHorizon(horizon);
   fireEvent.change(d.getAllByRole('textbox').find(e => e.getAttribute('aria-label') !== 'Montant en CHF')!, { target: { value: nom } });
   const montant = d.getByLabelText('Montant en CHF');
   fireEvent.change(montant, { target: { value: chf } });
@@ -94,17 +98,17 @@ describe('1. CAL-JALON-UN-JOUR : un achat d’un jour, posé par le + de la rang
     expect(doc.fenetre).toMatchObject({ du: S49, au: ajouterJours(S49, 27) });
   });
 
-  it('au banc : « + » d’Achats, S49, Tireuse ZZ −150 (et « 1 j » s’il est proposé) : écrit sans fenêtre, posé en jalon le 30 nov.', async () => {
+  it('au banc : « + » d’Achats, 1 mois (S51), Tireuse ZZ −150 (et « 1 j » s’il est proposé) : écrit sans fenêtre, posé en jalon le 14 déc.', async () => {
     const { appels } = monter();
-    const d = feuilleRapide('achats', 'Achats', etiquetteS(S49), 'ZZ TEST — Tireuse', '150');
+    const d = feuilleRapide('achats', 'Achats', '1 mois', 'ZZ TEST — Tireuse', '150');
     const unJour = d.queryByRole('button', { name: '1 j' });
     if (unJour) fireEvent.click(unJour);
     fireEvent.click(d.getByRole('button', { name: /^Ajouter/ }));
     await waitFor(() => expect(appels.some(a => a.op === 'creer' && a.collection === 'financialPlans')).toBe(true));
     const ecrit = appels.find(a => a.op === 'creer')!.patch!;
     expect(ecrit.fenetre).toBeUndefined();
-    expect(ecrit.date).toBe(S49);
-    await waitFor(() => expect(bouton(/^ZZ TEST — Tireuse/)).toHaveAttribute('data-ponctuel', S49));
+    expect(ecrit.date).toBe(S51);
+    await waitFor(() => expect(bouton(/^ZZ TEST — Tireuse/)).toHaveAttribute('data-ponctuel', S51));
     expect(bouton(/^ZZ TEST — Tireuse/)).not.toHaveAttribute('data-barre');
   });
 });
@@ -161,7 +165,7 @@ describe('2. D386 : lier un achat ou une vente à une fête depuis sa fiche et d
 });
 
 describe('3. « Plus de détails › » garde le nom et le montant déjà tapés', () => {
-  it('Achats S49, « ZZ TEST — Tireuse » 150 : Prévoir une dépense s’ouvre avec ce libellé et 150 CHF, datée du lundi de S49, en Brassage', () => {
+  it('Achats 1 mois (S51), « ZZ TEST — Tireuse » 150 : Prévoir une dépense s’ouvre avec ce libellé et 150 CHF, datée du lundi posé, en Brassage', () => {
     function Harnais() {
       type P = { date: string; categorie?: string; saisie?: { titre?: string; centimes?: number; direction?: 'in' | 'out' } };
       const [p, setP] = React.useState<P | null>(null);
@@ -169,19 +173,19 @@ describe('3. « Plus de détails › » garde le nom et le montant déjà tapés
         {p && <PlanSheet date={p.date} {...(p.categorie ? { categorie: p.categorie as never } : {})} {...(p.saisie ? { saisie: p.saisie } : {})} onClose={() => setP(null)} />}</>;
     }
     render(<Harnais />);
-    const d = feuilleRapide('achats', 'Achats', etiquetteS(S49), 'ZZ TEST — Tireuse', '150');
+    const d = feuilleRapide('achats', 'Achats', '1 mois', 'ZZ TEST — Tireuse', '150');
     fireEvent.click(d.getByRole('button', { name: 'Plus de détails ›' }));
     const plan = within(screen.getByRole('dialog', { name: 'Prévoir une dépense' }));
     expect(plan.getByPlaceholderText(/Loyer, commande de malt/)).toHaveValue('ZZ TEST — Tireuse');
     expect((plan.getByLabelText('Montant (CHF)') as HTMLInputElement).value).toMatch(/^150([.,]00?)?$/);
-    expect(plan.getByLabelText('Date de paiement prévue')).toHaveValue(S49);
+    expect(plan.getByLabelText('Date de paiement prévue')).toHaveValue(S51);
     expect((plan.getByLabelText('Catégorie') as HTMLSelectElement).value).toBe('brassage');
   });
 
-  it('Fêtes S49, « ZZ TEST — Fête » +2400 : la fête part avec son nom et son montant ; « Nouvelle tâche » s’ouvre avec « Quoi » rempli et le montant rappelé', () => {
+  it('Fêtes 1 mois, « ZZ TEST — Fête » +2400 : la fête part avec son nom et son montant ; « Nouvelle tâche » s’ouvre avec « Quoi » rempli et le montant rappelé', () => {
     const fete = vi.fn();
     render(<BancCalendrier aujourdhui={JOUR} sansChrome callbacks={{ onPoserFete: fete }} />);
-    const d = feuilleRapide('fetes', 'Fêtes', etiquetteS(S49), 'ZZ TEST — Fête', '2400');
+    const d = feuilleRapide('fetes', 'Fêtes', '1 mois', 'ZZ TEST — Fête', '2400');
     /* k1 (21.11) : une fête n'a pas d'autre écran que sa feuille ; la donnée d'agenda reste au Calendrier, plus de « Plus de détails › » */
     expect(d.queryByRole('button', { name: 'Plus de détails ›' })).toBeNull();
     expect(fete).not.toHaveBeenCalled();

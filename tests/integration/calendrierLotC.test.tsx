@@ -7,6 +7,7 @@
  * 6. la fiche dit à quoi la chose est liée et permet de délier.
  */
 import React from 'react';
+import { choseFrise } from '../helpers/choseFrise';
 import { readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
@@ -32,7 +33,7 @@ const monter = () => {
   render(<BancCalendrier aujourdhui={JOUR} sansChrome onAppel={a => appels.push(a as Appel)} />);
   return { appels };
 };
-const bouton = (nom: RegExp) => screen.getByRole('button', { name: nom });
+const bouton = choseFrise;
 const toucher = (el: Element) => {
   fireEvent.pointerDown(el, { clientX: 10, clientY: 10, pointerId: 1, button: 0 });
   fireEvent.pointerUp(el, { clientX: 10, clientY: 10, pointerId: 1 });
