@@ -5,6 +5,7 @@ import {
   VOLUME_SAISIE_MAX, barreCuve, echelleBarre, partEvapDansCuve, etatVolume, etendreVolume, fr, pourcent, zonesPiste,
   type AvantEbullition, type RemedesCuve
 } from './regles';
+import { refCurseurNatif } from '../geste';
 
 const ICONE_FERMENTEUR = (
   <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
@@ -135,7 +136,7 @@ export function CarteVolume({ volumeL, onVolume, capaciteL, profilL, conseilL, c
           </>
         )}
         {Number.isFinite(capaciteL) && <span className="idn-tick idn-tcap" style={{ left: `${pourcent(capaciteL!, regle)}%` }} />}
-        <input
+        <input ref={refCurseurNatif}
           type="range"
           className="idn-range"
           min={1}
