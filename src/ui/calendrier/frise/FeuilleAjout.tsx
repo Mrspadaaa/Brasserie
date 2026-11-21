@@ -120,12 +120,23 @@ export const FeuilleAjout: React.FC<FeuilleAjoutProps> = ({ mode, initial, conte
   const casesEtroites = caseSemaine < 44;
 
   /* la semaine choisie (préréglée, proposée : S26) est dans l'écran à l'ouverture, centrée dans la rangée qui défile (comme le jouable) */
+  /* CAL-PASSE voie S, R2-5 (21.11, feuille Modifier : la rangée s'ouvrait sur S2, la semaine de la chose hors de vue) : le centrage se lit sur les boîtes
+     rendues (pas sur `offsetLeft`, qui dépend du parent de mise en page), à l'ouverture, au changement de taille ET une fois la feuille posée (elle glisse
+     à l'ouverture : la mesure du premier rendu était faite avant sa largeur finale). */
   useLayoutEffect(() => {
-    const rangee = rangeeSemaines.current;
-    const choisie = rangee?.querySelector<HTMLElement>('button[aria-pressed="true"]');
-    if (rangee && choisie) rangee.scrollLeft = Math.max(0, choisie.offsetLeft - (rangee.clientWidth - choisie.offsetWidth) / 2);
+    const centrer = () => {
+      const rangee = rangeeSemaines.current;
+      const choisie = rangee?.querySelector<HTMLElement>('button[aria-pressed="true"]');
+      if (!rangee || !choisie) return;
+      const gauche = choisie.getBoundingClientRect().left - rangee.getBoundingClientRect().left + rangee.scrollLeft;
+      rangee.scrollLeft = Math.max(0, gauche - (rangee.clientWidth - choisie.offsetWidth) / 2);
+    };
+    centrer();
+    const image = typeof requestAnimationFrame === 'function' ? requestAnimationFrame(centrer) : 0;
+    const tard = typeof setTimeout === 'function' ? setTimeout(centrer, 350) : 0;
+    return () => { if (image && typeof cancelAnimationFrame === 'function') cancelAnimationFrame(image); if (tard) clearTimeout(tard); };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [b.rangee, caseSemaine]);
+  }, [b.rangee, caseSemaine, pasSemaine, largeurVue]);
 
   const regler = (suite: BrouillonAjout) => { setConfirmation(null); setRefus(null); setB(suite); };
   const choisirRangee = (r: Rangee) => { if (r !== b.rangee) regler(avecDefauts(brouillonVide(r, b.debut))); };

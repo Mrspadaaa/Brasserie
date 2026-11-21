@@ -32,7 +32,7 @@ import {
 } from '../../domain/calendrierAjout';
 import {
   accepterVente, alignerCourbe, allonger, deplacer, deplacerJours, dupliquer, dureeAllongee, fait, lier, delier, livrer, mettreDeCote, modifierIdee, retirer, noterIdee, supprimerSansDate,
-  courbeDuGlisse, raisonNommee, type ContexteGestes, type Ecriture, type Message as MessageGeste, type Promesse, type Resolution
+  courbeDuGlisse, jourDuGlisse, raisonNommee, type ContexteGestes, type Ecriture, type Message as MessageGeste, type Promesse, type Resolution
 } from '../../domain/calendrierGestes';
 
 /**
@@ -453,7 +453,8 @@ export function CalendrierTab(props: CalendrierTabProps) {
       setMessage(null); setMenu(null); setSelectionId(null);
       return;
     }
-    const cible = lundiDe(ajouterJours(chose.debut, k * 7));
+    /* CAL-PASSE voie S, R2-4 : la bulle dit le jour que le geste écrira (le jour de la semaine de la barre est gardé), pas le lundi de la colonne visée */
+    const cible = jourDuGlisse(chose, k, ctxRef.current);
     setIci(k === 0 ? null : `${etiquetteS(cible)} · ${jourLisible(cible)} · lâcher ici`);
     setApercu(apercuDe(chose, k, false, cible, k));
     /* un glisser commencé ferme le menu ouvert et le détail (CRITIQUE-2 n° 1 a) */

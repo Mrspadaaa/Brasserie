@@ -3,7 +3,7 @@ import { Link2, Pin, Star } from 'lucide-react';
 import { ecartJours, etiquetteS, francsSignes, jourLisible, type ChoseCalendrier, type JalonBrassin } from '../../../domain/calendrier';
 import { CLASSE_TEINTE, ContenuEtiquette, DureeTexte, PastilleLie, dureeVue, largeurTexte, nomAccessible, type ModeDeuxLignes } from './Marque';
 import { usePointeur } from './usePointeur';
-import { useToucherNom, zoneToucher } from './zoneToucher';
+import { prisesDuBord, useToucherNom, zoneToucher } from './zoneToucher';
 import { ETAPE_BRASSIN, couleurEtape, encreEtape, estEtape, type EtapeBrassin } from './etapes';
 
 /**
@@ -206,12 +206,25 @@ export function placerDuree(d: HTMLElement, barre: HTMLElement): number {
   const racine = d.closest('[data-frise]');
   const voisins = racine ? [...racine.querySelectorAll<HTMLElement>('.cal-barre, .cal-marque, .cal-lbl-t')]
     .filter(e => !barre.contains(e) && !lbl?.contains(e) && e !== barre && !d.contains(e)).map(e => e.getBoundingClientRect()).filter(r => r.width > 0 && r.height > 0) : [];
+  /* CAL-PASSE voie S, R2-2 (21.11, 390 : « pas brassée · prête le 20 nov. » cachait « Jhhh −45 J34 / 34 » de la ligne du dessus) : le nom seul ne dit pas
+     tout le texte d'une étiquette ; son montant et sa durée comptent aussi. Chaque étiquette voisine se mesure à l'étendue de son TEXTE (un Range), pas à sa boîte. */
+  if (racine) {
+    for (const e of racine.querySelectorAll<HTMLElement>('.cal-lbl')) {
+      if (e === lbl || e.contains(d) || getComputedStyle(e).visibility === 'hidden') continue;
+      const rg = document.createRange(); rg.selectNodeContents(e);
+      if (typeof rg.getBoundingClientRect !== 'function') continue; /* jsdom : pas de mise en page */
+      const r = rg.getBoundingClientRect();
+      if (r.width > 0 && r.height > 0) voisins.push(r);
+    }
+  }
+  d.style.display = '';
   /* CAL-PASSE Q n° 8 : jamais sous le + volant (Annuler et les montants se lisent) */
   const plus = rectVolant();
   if (plus) voisins.push(plus);
   /* la transition globale (« all 0,01 ms ») ferait lire la mise en page de l'essai d'avant : sans elle, chaque essai se mesure tout de suite */
   d.style.transition = 'none';
-  let choisie = PLACES_DUREE.length - 1;
+  /* aucune place libre : l'étiquette ne se pose pas sur le texte d'une autre ligne ; la durée se lit dans le bandeau du bas (« Hefe : pas brassée · prête le … ») */
+  let choisie = -1;
   for (let i = 0; i < PLACES_DUREE.length; i++) {
     const p = PLACES_DUREE[i];
     d.style.left = p.left; d.style.right = p.right; d.style.top = p.top;
@@ -223,6 +236,11 @@ export function placerDuree(d: HTMLElement, barre: HTMLElement): number {
     /* CAL-PASSE N1 n° 4 (20.11, « pas brassée · prête le 20 nov. » posée sur la barre Ttt de la même ligne) : ni sur une barre voisine, ni sur un nom voisin */
     const surVoisin = voisins.some(v => Math.min(q.right, v.right) - Math.max(q.left, v.left) > 1 && Math.min(q.bottom, v.bottom) - Math.max(q.top, v.top) > 1);
     if (dansEcran && !surBarre && !surNom && !surVoisin) { choisie = i; break; }
+  }
+  if (choisie < 0) {
+    d.style.display = 'none';
+    d.setAttribute('data-place', 'bandeau');
+    return -1;
   }
   const p = PLACES_DUREE[choisie];
   d.style.left = p.left; d.style.right = p.right; d.style.top = p.top;
@@ -336,7 +354,12 @@ export const Barre: React.FC<BarreProps> = props => {
   /* PC-143, PC-NOTE-2 (paquet F) : sur un axe en jours, des points répartis sur la semaine passent pour des jours choisis (la feuille ne choisit
      que des semaines) : ils sont groupés au début de la barre, « 3 j » sans date inventée ; en semaines et en mois, répartis comme avant */
   const pointsGroupes = n > 0 && !!props.largeurJour && props.largeurJour >= props.largeurColonne - 0.5;
-  const style: React.CSSProperties = { left: gauche, top: haut, width: w, height: hauteur, transform: decalage ? `translateX(${decalage}px)` : undefined };
+  /* CAL-PASSE voie S, R2-1 : les zones de prise du bord se réduisent avec la barre (jamais plus du tiers : le milieu d'une barre courte la déplace) */
+  const prises = prisesDuBord(w);
+  const style: React.CSSProperties = {
+    left: gauche, top: haut, width: w, height: hauteur, transform: decalage ? `translateX(${decalage}px)` : undefined,
+    ['--bord-in' as string]: `${prises.dedans}px`, ['--fin-in' as string]: `${prises.jalonSup}px`,
+  };
   const lblStyle: React.CSSProperties = cote === 'gauche'
     ? { right: `calc(100% - ${gauche + decalage - (props.retrait ?? 0)}px + 6px)` }
     : cote === 'droite'
@@ -371,6 +394,7 @@ export const Barre: React.FC<BarreProps> = props => {
         data-chose={chose.id}
         data-chose-id={chose.id}
         data-barre
+        {...(prises.jalonMuet ? { 'data-fin-muet': '' } : {})}
         data-rangee={chose.rangee}
         data-titre={chose.titre}
         {...(chose.debut ? { 'data-semaine': etiquetteS(chose.debut) } : {})}

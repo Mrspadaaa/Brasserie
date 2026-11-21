@@ -224,6 +224,28 @@ export function deplacerJours(chose: ChoseCalendrier, jours: number, ctx: Contex
   return deplacerDe(chose, jours, ctx, jalon, true);
 }
 
+/** Le jour d'où un brassin se déplace : son jour prévu ; pas brassé et prévu dans la semaine courante, son jour affiché (aujourd'hui) ou le lundi de sa colonne. */
+function departBrassin(chose: ChoseCalendrier, prevu: string, ctx: ContexteGestes, auJour: boolean): string {
+  /* CAL-PASSE (20.11) : seul le jour prévu passé dans la semaine COURANTE se dessine depuis aujourd'hui ; plus loin dans le passé, la barre est à sa date */
+  const ancre = chose.pasBrassee && !brassagePoseAuPasse(prevu, ctx.aujourdhui);
+  return ancre ? (auJour ? chose.debut : lundiDe(chose.debut)) : prevu;
+}
+
+/**
+ * CAL-PASSE voie S, R2-4 (21.11, « S40 · 28 sept. · lâcher ici », puis Hefe tombait le mardi 29 : la date annoncée n'était pas celle qui s'écrit) : le
+ * jour que `deplacer` ÉCRIRA pour un glisser de `semaines` colonnes (le jour de la semaine de la chose est gardé, sauf le brassin pas brassé de la semaine
+ * courante, qui part du lundi de sa colonne). La bulle de glisse dit ce jour, jamais le lundi de la colonne visée.
+ */
+export function jourDuGlisse(chose: ChoseCalendrier, semaines: number, ctx: ContexteGestes): string {
+  const jours = semaines * SEMAINE;
+  if (chose.source.genre === 'batch') {
+    const batch = batchDe(chose, ctx);
+    const prevu = batch ? isoDate(plannedBrewDate(batch)) : null;
+    if (prevu) return decale(departBrassin(chose, prevu, ctx, false), jours);
+  }
+  return decale(chose.debut, jours);
+}
+
 function deplacerDe(chose: ChoseCalendrier, jours: number, ctx: ContexteGestes, jalon: JalonId | undefined, auJour: boolean): Resolution {
   const reperes = auJour ? jourLisible : etiquetteS;
   const source = chose.source;
@@ -245,9 +267,7 @@ function deplacerDe(chose: ChoseCalendrier, jours: number, ctx: ContexteGestes, 
      * annonce (« S48 · 23 nov. · lâcher ici »), jamais le jour prévu passé + n (qui retombait dans le passé et ramenait la barre à aujourd'hui).
      * Planifié dans le futur : jour prévu + n semaines, son jour de la semaine gardé. Une cible avant la semaine courante est refusée.
      */
-    /* CAL-PASSE (20.11) : seul le jour prévu passé dans la semaine COURANTE se dessine depuis aujourd'hui ; plus loin dans le passé, la barre est à sa date */
-    const ancre = chose.pasBrassee && !brassagePoseAuPasse(prevu, ctx.aujourdhui);
-    const depart = ancre ? (auJour ? chose.debut : lundiDe(chose.debut)) : prevu;
+    const depart = departBrassin(chose, prevu, ctx, auJour);
     const nouveau = decale(depart, jours);
     /* le passé se replanifie (décision du pilote, 20.11) ; seule borne : la frise n'a pas de colonne avant sa première semaine */
     if (ctx.debutHorizon && lundiDe(nouveau) < ctx.debutHorizon) return refus(`Avant ${etiquetteS(ctx.debutHorizon)}, la frise n’a pas de semaine : choisis ${etiquetteS(ctx.debutHorizon)} ou plus tard.`);

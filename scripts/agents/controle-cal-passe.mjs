@@ -22,9 +22,12 @@ const req = createRequire(new URL('../../package.json', import.meta.url));
 const puppeteer = req('puppeteer-core');
 const BASE = (process.argv[2] ?? 'http://localhost:5625').replace(/\/$/, '');
 const OUT = process.argv[3] ?? '.';
+/** `CAL_PASSE_SEUL=b1` : ne rejoue que les critères de la voie S (tour rapide d'un développeur) ; sans, le contrôle entier. */
+const SEUL = (process.env.CAL_PASSE_SEUL ?? '').split(',').filter(Boolean);
 mkdirSync(OUT, { recursive: true });
 const CHROME = process.env.CHROME ?? 'C:/Program Files/Google/Chrome/Application/chrome.exe';
 const z = ms => new Promise(r => setTimeout(r, ms));
+const { fixtureCalendrier } = await import(new URL('../parcours/fixtures/calendrier.mjs', import.meta.url).href);
 
 /** Regex du contrôle : exercées par `--test-regex` (jamais une barre inverse perdue en silence). */
 export const RE = {
@@ -52,10 +55,12 @@ const inter = (a, b) => Math.max(0, Math.min(a.right, b.right) - Math.max(a.left
 const navigateur = await puppeteer.launch({ executablePath: CHROME, headless: 'new', args: ['--lang=fr-CH'] });
 const CFG = { m390: { w: 390, h: 844, tactile: true }, p844: { w: 844, h: 340, tactile: true }, d1280: { w: 1280, h: 800, tactile: false } };
 
-async function page(cfgNom, theme, url, attente) {
+/** `fixture` : les entrées de `fixtureCalendrier` (la fixture du parcours : Hefe, Fruty, Ttt…), posées comme le fait le parcours (`?dev-local&finance-demo=parcours-calendrier`). */
+async function page(cfgNom, theme, url, attente, fixture = null) {
   const c = CFG[cfgNom], p = await navigateur.newPage();
   await p.setViewport({ width: c.w, height: c.h, isMobile: c.tactile, hasTouch: c.tactile, deviceScaleFactor: 1 });
   await p.evaluateOnNewDocument(t => { try { localStorage.setItem('laffinee.theme', t); } catch { /* sans stockage */ } }, theme);
+  if (fixture) await p.evaluateOnNewDocument(j => { try { if (!localStorage.getItem('parcours-calendrier:fixture')) localStorage.setItem('parcours-calendrier:fixture', j); } catch { /* sans stockage */ } }, JSON.stringify(fixture));
   await p.emulateMediaFeatures([{ name: 'prefers-color-scheme', value: theme === 'cave' ? 'dark' : 'light' }]);
   p.cdp = await p.createCDPSession(); p.cfg = c;
   p.recharger = async () => { await p.goto(url, { waitUntil: 'domcontentloaded', timeout: 180000 }); await p.waitForSelector(attente, { timeout: 120000 }); await z(1500); };
@@ -85,6 +90,49 @@ const entree = (p, sel) => p.evaluate(s => { const e = document.querySelector(s)
 for (const theme of ['clair', 'cave']) {
   const banc = await page('m390', theme, `${BASE}/?preview=calendrier`, '[data-ent-periode]');
   const sel = { poignee: '[data-poignee="debut"]' };
+  /* b1 (CAL-PASSE voie S, R2-1, 21.11) : le geste EXACT de la critique, sur la fixture du parcours (Hefe, brassin « pas brassé » : barre de 24 à 52 px en 3 mois à 390).
+     Le doigt est posé AU MILIEU de la barre courte, tenu au bord gauche de la frise : la barre se DÉPLACE vers le passé (« S44 → S40 »), jamais sa fin tirée
+     (« pas brassée · prête le 1 nov. » : une date de fin fausse écrite par un geste qui voulait déplacer). La zone du bord ne mange pas le corps d'une barre courte.
+     Annuler remet la barre. */
+  try {
+    const hefe = await page('m390', theme, `${BASE}/?dev-local&finance-demo=parcours-calendrier`, 'nav button', fixtureCalendrier(new Date().toISOString().slice(0, 10)).entrees);
+    if (!(await hefe.$('[data-calendrier]'))) {
+      const nav = await hefe.evaluate(() => { const b = [...document.querySelectorAll('nav button')].find(x => /Calendrier/.test(x.innerText)); if (!b) return null; const r = b.getBoundingClientRect(); return { x: r.x + r.width / 2, y: r.y + r.height / 2 }; });
+      if (nav) await taper(hefe, nav.x, nav.y);
+    }
+    await hefe.waitForSelector('[data-calendrier]', { timeout: 60000 }); await z(900);
+    const menu = await rect(hefe, '[data-ent-periode]'); await taper(hefe, menu.left + menu.width / 2, menu.top + menu.height / 2);
+    const trois = await hefe.evaluate(() => { const e = [...document.querySelectorAll('[data-menu-periode] button')].find(x => (x.textContent || '').trim() === '3 mois'); if (!e) return null; const r = e.getBoundingClientRect(); return { x: r.x + r.width / 2, y: r.y + r.height / 2 }; });
+    if (trois) { await taper(hefe, trois.x, trois.y); await z(900); }
+    const lire = () => hefe.evaluate(() => { const b = document.querySelector('[data-barre][data-titre="Hefe"]'); return b ? { label: b.getAttribute('aria-label'), sem: b.getAttribute('data-semaine') } : null; });
+    const avant = await lire();
+    await hefe.evaluate(() => { document.querySelector('[data-barre][data-titre="Hefe"]')?.scrollIntoView({ block: 'center' }); }); await z(400);
+    const hb = await rect(hefe, '[data-barre][data-titre="Hefe"]'), fr = await rect(hefe, '[data-frise]');
+    if (!avant || !hb || !fr) verdict('b1', theme, false, `Hefe ou la frise introuvable (${JSON.stringify({ avant, hb: !!hb, fr: !!fr })})`);
+    else {
+      const x0 = (hb.left + hb.right) / 2, y0 = (hb.top + hb.bottom) / 2, bord = Math.max(fr.left, 0) + 8;
+      const prise = await hefe.evaluate(([x, y]) => { const e = document.elementFromPoint(x, y); return e ? `${e.tagName}.${String(e.className?.baseVal ?? e.className).slice(0, 24)}${e.closest('[data-bord]') ? ' [BORD]' : ''}` : null; }, [x0, y0]);
+      const num = s => { const m = RE.semaine.exec(s ?? ''); return m ? Number(m[1]) : null; };
+      await doigt(hefe, 'touchStart', x0, y0); await z(180);
+      for (let i = 1; i <= 10; i++) { await doigt(hefe, 'touchMove', x0 + ((bord - x0) * i) / 10, y0); await z(25); }
+      let visee = null, recul = 0;
+      for (let t = 0; t < 30 && recul < 2; t++) { await z(300); visee = await hefe.evaluate(() => document.querySelector('[data-ici]')?.textContent ?? null); const n = num((/S(\d+)/.exec(visee ?? '') ?? [])[0]); if (n !== null && num(avant.sem) !== null) recul = modulo(num(avant.sem) - n); }
+      await photo(hefe, `b1-${theme}-pendant`);
+      await doigt(hefe, 'touchEnd'); await z(900);
+      await photo(hefe, `b1-${theme}-apres`);
+      const bandeau = await hefe.evaluate(() => { const l = document.body.innerText.split('\n').map(s => s.trim()).filter(s => /^Hefe :/.test(s)); return l[0] ?? null; });
+      const apres = await lire();
+      const annule = await hefe.evaluate(() => { const b = [...document.querySelectorAll('button')].find(x => /^Annuler$/.test((x.textContent || '').trim())); if (!b) return null; const q = b.getBoundingClientRect(); return { x: q.left + q.width / 2, y: q.top + q.height / 2 }; });
+      let retour = null;
+      if (annule) { await taper(hefe, annule.x, annule.y); await z(700); retour = (await lire())?.label ?? null; }
+      const deplace = /^Hefe : S\d+ → S\d+/.test(bandeau ?? ''), prete = /prête le [^,]+/.exec(avant.label ?? '')?.[0], preteApres = /prête le [^,]+/.exec(apres?.label ?? '')?.[0];
+      verdict('b1', theme, !!visee && recul >= 2 && deplace && !!annule && retour === avant.label,
+        `Hefe (largeur ${Math.round(hb.width)} px, doigt au milieu sur ${prise}) tenue au bord gauche : bulle « ${visee} » (recul visé ${recul} sem., 2 au moins) ; bandeau « ${bandeau} » (« Hefe : S44 → S40 » attendu, jamais « prête le … » seul) ; fin avant « ${prete} », après « ${preteApres ?? 'hors de la vue'} » ; Annuler ${annule ? (retour === avant.label ? 'remet la barre' : `ne la remet pas (« ${retour} »)`) : 'ABSENT'}`);
+    }
+    await hefe.close();
+  } catch (e) { verdict('b1', theme, false, `erreur : ${e.message}`); }
+  if (SEUL.length) { await banc.close(); continue; }
+
 
   /* a : la fenêtre de la frise recule de 4 semaines */
   try {
@@ -199,6 +247,7 @@ for (const theme of ['clair', 'cave']) {
         `${info.titre} ${info.sem} tenue au bord gauche : bulle « ${visee} » (recul visé ${recul} sem., 4 au moins) ; après le lâcher ${apres ?? 'hors de la vue (fenêtre reculée moins que la cible)'} (recul ${sem}) ; Annuler ${annule ? `→ ${retour}` : 'ABSENT'}`);
     }
   } catch (e) { verdict('b0', theme, false, `erreur : ${e.message}`); }
+
 
   /* e : le BORD d'une barre tiré au doigt (la plainte, capture 2-etiquette-sur-barre : « J0 / 55 · prête 13 févr. » posée sur la barre et son nom), puis le corps d'une barre :
      pendant et après, la durée tirée ne recouvre ni la barre ni son nom, et tient dans l'écran */

@@ -36,7 +36,10 @@
 /* CAL-FIL-SOUS-INFO (18.11, « La ligne doit pas être dessus l'info ») : la frise est isolée (son propre empilement) et le calque des traits est
    le premier peint, sous les titres, les noms, les icônes, les barres et la fiche ; le masque (Frise.tsx, `INFO_SOUS_FIL`) l'interrompt sous
    chaque info, qui laisserait sinon voir le fil entre ses lettres ou à travers un nom pâli. */
-.cal-frise { isolation: isolate; }
+/* CAL-PASSE voie S, R2-3 (21.11, 844×340, échelle Jour : scrollWidth 845 pour 844) : la zone de prise invisible de la poignée d'une barre qui finit au bord
+   droit (`.cal-grip::before`, 12 px dehors) dépassait la page d'un pixel. Rien de la frise ne se prend ni ne se lit hors d'elle : on la coupe à son bord
+   (`clip` ne crée ni défilement ni contexte de défilement, l'axe vertical reste libre pour les bulles et les menus). */
+.cal-frise { isolation: isolate; overflow-x: clip; }
 .cal-traits { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; pointer-events: none; z-index: -1; }
 .cal-traits path { fill: none; stroke: rgb(var(--area-production)); stroke-width: 1.5; stroke-dasharray: 4 3; opacity: 0.75; }
 /* la pastille « lié à La Cigogne » (D-113) : se lit en 3 s, cède sa place au nom si elle manque */
@@ -172,8 +175,11 @@ button.cal-lie::before { content: ''; position: absolute; inset: -6px -2px; }
    du bord (même geste : écrire `finPrevue`). En hauteur, elle reste dans la ligne de sa barre (30 px de pas) : jamais sur le jalon de la barre du
    dessus ni de celle du dessous. Le milieu de la barre reste à la barre (glisser). */
 .cal-jalon[data-glissable='fin'] { z-index: 4; }
-.cal-jalon[data-glissable='fin']::before { inset: -13px -15px -3px; }
-.cal-paysage .cal-jalon[data-glissable='fin']::before { inset: -5px -15.5px -2px; }
+.cal-jalon[data-glissable='fin']::before { inset: -13px -15px -3px calc(-1 * var(--fin-in, 15px)); }
+.cal-paysage .cal-jalon[data-glissable='fin']::before { inset: -5px -15.5px -2px calc(-1 * var(--fin-in, 15px)); }
+/* CAL-PASSE voie S, R2-1 : sur une barre courte (24 à 52 px en 3 mois à 390), le milieu déplace la barre. La zone du jalon de fin se réduit avec la barre
+   (`--fin-in`, Barre.tsx : jamais plus du tiers) ; si l'icône (14 px) dépasse déjà le tiers, elle ne reçoit plus de geste : la poignée dehors tire la fin. */
+.cal-barre[data-fin-muet] .cal-jalon[data-glissable='fin'] { pointer-events: none; }
 /* CAL-POINTS-MUETS (18.11) : l'icône touchée est cerclée de sa couleur, et sa bulle « Fermentation · 23 nov. » se pose sous la barre, jamais dessus */
 .cal-jalon.cal-jalon-vu { z-index: 5; box-shadow: 0 0 0 2px var(--e, var(--c)); transform: scale(1.15); }
 .cal-point-bulle { position: absolute; left: clamp(5px, var(--x, 0%), calc(100% - 5px)); top: calc(100% + 10px); z-index: 9; transform: translateX(-50%); display: flex; align-items: center; gap: 6px; width: max-content; max-width: 260px; padding: 4px 10px; border-radius: 10px; border: 1.5px solid var(--e, var(--c)); background: rgb(var(--cave-900)); color: rgb(var(--cave-50)); font-size: 14px; line-height: 18px; font-weight: 600; white-space: nowrap; pointer-events: none; box-shadow: 0 6px 16px rgb(var(--cave-950) / 0.3); }
@@ -187,7 +193,7 @@ button.cal-lie::before { content: ''; position: absolute; inset: -6px -2px; }
 .cal-duree.cal-duree-hors { left: calc(100% + 6px); right: auto; top: 0; width: max-content; overflow: visible; padding: 0 6px; border-radius: 6px; border: 1px solid var(--c); background: rgb(var(--cave-900)); }
 .cal-grip { position: absolute; top: 0; right: -3px; z-index: 3; width: 8px; height: 100%; cursor: ew-resize; touch-action: none; }
 /* CRITIQUE-5 n° 11 : la poignée ne déborde pas en hauteur (elle prenait le jalon de fin de la barre du dessus) */
-.cal-grip::before { content: ''; position: absolute; inset: -2px -12px; }
+.cal-grip::before { content: ''; position: absolute; inset: -2px -12px -2px calc(5px - var(--bord-in, 17px)); }
 .cal-grip::after { content: ''; position: absolute; top: 25%; bottom: 25%; left: 3px; width: 2px; border-radius: 1px; background: var(--c); }
 .cal-badges { position: absolute; top: -9px; right: -4px; display: flex; gap: 2px; padding: 1px 3px; border-radius: 9px; background: rgb(var(--cave-900)); box-shadow: 0 0 0 1.5px var(--c); color: var(--ct); pointer-events: none; }
 .cal-commander { position: absolute; z-index: 4; width: 18px; height: 18px; display: grid; place-items: center; border-radius: 50%; background: rgb(var(--cave-900)); box-shadow: 0 0 0 1.5px var(--c); color: var(--ct); }
