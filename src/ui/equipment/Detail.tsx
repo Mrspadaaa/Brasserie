@@ -9,6 +9,7 @@ import {
 import { ConfirmSheet } from '../Sheet';
 import { EquipmentPicto } from './ListPictos';
 import { EquipmentEditSheet } from './DetailEdit';
+import { RenommerSurPlace } from '../saisie/RenommerSurPlace';
 import {
   ETATS, RYTHMES, chf, decimalesLecture, etapesDe, filPanneau, filtrerSaisie, fmt, fmtEcart, historique, lireNombre,
   etiquetteTampon, prochain, rythmeActif, sousTitre, titreEtat,
@@ -188,7 +189,8 @@ export const EquipmentDetail: React.FC<EquipmentDetailProps> = ({
     <div className="eqd-titre">
       <span className="eqd-gpic"><EquipmentPicto name={item.name} /></span>
       <div className="eqd-nom">
-        <h1>{item.name}</h1>
+        {/* PI-5 (D396) : le titre se renomme en le touchant ; la suite se dit avec Annuler (R1) */}
+        <RenommerSurPlace valeur={item.name} quoi="l'appareil" onRenommer={nom => onChange({ ...item, name: nom }, `Renommé · ${nom}`)} />
         <div className="eqd-sous">
           {brassins.categorie}{brassins.brassins > 0 && <> · utilisé dans <span className="eqd-m">{brassins.brassins}</span> {brassins.brassins > 1 ? 'brassins' : 'brassin'}</>}
         </div>
