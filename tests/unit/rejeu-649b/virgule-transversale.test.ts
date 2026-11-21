@@ -65,7 +65,7 @@ describe('TE-23 : tout src/ passe le contrôle', () => {
     const violations = controler() as Array<{ fichier: string; ligne: number; expr: string; unite: string }>;
     const liste = violations.map(v => `${v.fichier}:${v.ligne} {${v.expr}} ${v.unite}`);
     expect(liste).toEqual([]);
-  });
+  }, 120_000); // le contrôle lit les ~1 400 fichiers de src/ : 18 s mesurées sous Vitest (21.11), plus que les 15 s par défaut
   it('les exports texte et les documents restent hors champ, listés', async () => {
     // @ts-ignore
     const { EXPORTS_TEXTE } = await import('../../../scripts/agents/controle-virgule.mjs');
