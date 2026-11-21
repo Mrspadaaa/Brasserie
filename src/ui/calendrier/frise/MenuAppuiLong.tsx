@@ -1,5 +1,5 @@
 import React from 'react';
-import { Ban, CalendarX, Copy, ExternalLink, Filter, Link2, Pin, Star } from 'lucide-react';
+import { Ban, Beer, CalendarX, Copy, EyeOff, Filter, Link2, PartyPopper, Pin, Star, UserRound } from 'lucide-react';
 import type { ChoseCalendrier } from '../../../domain/calendrier';
 import { libelleRetirer } from '../../../domain/calendrierGestes';
 import './feuille.css';
@@ -108,6 +108,15 @@ export function rectTenue(ancre: HTMLElement): Rect {
 }
 /** Deux rectangles se recouvrent-ils ? (bords qui se touchent : non) */
 export const serecouvrent = (a: Rect, b: Rect): boolean => a.left < b.right && a.right > b.left && a.top < b.bottom && a.bottom > b.top;
+/** CHV-9 : les barres et marques visibles des AUTRES choses (la chose tenue et ce qu'elle contient sont exclus). */
+function rectsVoisines(ancre: HTMLElement): Rect[] {
+  if (typeof document === 'undefined') return [];
+  return [...document.querySelectorAll<HTMLElement>('[data-chose-id]')]
+    .filter(e => e !== ancre && !e.contains(ancre) && !ancre.contains(e))
+    .map(e => e.getBoundingClientRect())
+    .filter(r => r.width > 0 && r.height > 0)
+    .map(r => ({ top: r.top, bottom: r.bottom, left: r.left, right: r.right }));
+}
 
 /** Le téléphone tourné (844 × 390) : plus large que haut, et bas (comme la règle `orientation: landscape and max-height: 520px` de la feuille). */
 const enPaysage = (): boolean => typeof window !== 'undefined' && window.innerWidth > window.innerHeight && window.innerHeight <= 520;
@@ -155,7 +164,8 @@ export const MenuAppuiLong: React.FC<MenuAppuiLongProps> = props => {
 
   const paysage = enPaysage();
   const vw = typeof window !== 'undefined' ? window.innerWidth : 390;
-  const largeur = paysage ? Math.min(600, vw - 32) : vw > 700 ? 440 : Math.min(300, vw - 96);
+  /* CHV-9 : trois tuiles d'un mot et d'un picto (« Brassins seuls » tient sur une ligne) : 352 px à 390, au lieu de 300 */
+  const largeur = paysage ? Math.min(600, vw - 32) : vw > 700 ? 440 : Math.min(352, vw - 32);
   const [pos, setPos] = React.useState<{ top: number; left: number; cote: 'bas' | 'haut' | 'cote'; maxHeight?: number; largeur?: number; une?: boolean } | null>(null);
   /* sous la barre ; si la place manque au-dessus des onglets, au-dessus de la barre ; sinon borné à l'écran, au plus près de la barre.
      Jamais une hauteur fixe (n° 4). Le menu passe au-dessus du + volant (z-index de FloatingActions : 51 ; le menu : 60, frise.css). */
@@ -206,7 +216,35 @@ export const MenuAppuiLong: React.FC<MenuAppuiLongProps> = props => {
       barre = ancre.getBoundingClientRect(); t = rectTenue(ancre);
       return null;
     };
-    const place = dessous() ?? defiler() ?? (paysage ? aCote() ?? dessus() : dessus() ?? aCote());
+    /* CHV-9 : sur un grand écran, les barres voisines se voient autour de la chose tenue (la frise est large) : le menu se pose, sous elle ou
+       au-dessus, à l'abscisse (à 360 px d'elle au plus) où il couvre le moins de barres ; à égalité, la place d'avant. */
+    const voisines = vw >= 700 && !paysage ? rectsVoisines(ancre) : [];
+    const gene = (r: Rect): number => voisines.reduce((n, v) => n + (serecouvrent(r, v) ? 1 : 0), 0);
+    const meilleureLibre = (): { top: number; left: number; cote: 'bas' | 'haut'; g: number } | null => {
+      if (!voisines.length) return null;
+      const cx = (barre.left + barre.right) / 2;
+      /* toutes les hauteurs entre l'en-tête et les onglets, jamais sur la chose tenue ; le plus près d'elle gagne */
+      let meilleur: { top: number; left: number; cote: 'bas' | 'haut'; g: number; d: number } | null = null;
+      for (let top = haut; top + mh <= bas; top += 12) {
+        const ecart = top >= t.bottom ? top - t.bottom : t.top - (top + mh);
+        if (ecart < 6 - 12) continue; // sur la chose tenue
+        for (let x = 8; x <= vw - largeur - 8; x += 16) {
+          const dx = Math.abs(x + largeur / 2 - cx);
+          if (dx > 360) continue;
+          const r = { top, bottom: top + mh, left: x, right: x + largeur };
+          if (serecouvrent(r, t)) continue;
+          const g = gene(r);
+          const d = ecart + dx / 2;
+          if (!meilleur || g < meilleur.g || (g === meilleur.g && d < meilleur.d)) meilleur = { top, left: x, cote: top >= t.bottom ? 'bas' : 'haut', g, d };
+        }
+      }
+      return meilleur;
+    };
+    const parDefaut = dessous();
+    const libre = meilleureLibre();
+    const gDefaut = parDefaut ? gene({ top: parDefaut.top, bottom: parDefaut.top + mh, left: parDefaut.left, right: parDefaut.left + largeur }) : Infinity;
+    if (libre && libre.g < gDefaut) { setPos({ top: libre.top, left: libre.left, cote: libre.cote }); return; }
+    const place = parDefaut ?? defiler() ?? (paysage ? aCote() ?? dessus() : dessus() ?? aCote());
     if (place) { setPos(place); return; }
     /* la plus grande bande libre, au-dessus ou au-dessous de la chose tenue, jamais sur elle */
     const placeBas = bas - (t.bottom + 6), placeHaut = t.top - 6 - haut;
@@ -223,20 +261,25 @@ export const MenuAppuiLong: React.FC<MenuAppuiLongProps> = props => {
   /* D386 : une fête ne se lie pas à elle-même */
   const evenementsLiables = (liens.evenements ?? []).filter(e => e.id !== (chose.source.genre === 'creative' ? chose.source.id : ''));
 
+  /* CHV-9 (« moins de texte et plus de visuel ») : une tuile = un picto et un mot (sa maquette f5-a). Ce que disait la petite ligne (« reste visible,
+     rangée masquée », « 6 rangées masquées ») passe dans le geste vu (picto plein quand c'est posé, nombre de rangées masquées sur le filtre) et dans
+     l'étiquette (lecteur d'écran, survol). Aucune fonction ne part. */
+  const masquees = `${autresRangees} rangée${autresRangees > 1 ? 's' : ''} masquée${autresRangees > 1 ? 's' : ''}`;
+  const dit = { epingler: 'Épingler : reste visible, rangée masquée', etoile: 'Étoile : sur la courbe', seules: `${nomRangee} : ${masquees}` };
   const epingler = (
-    <button type="button" role="menuitemcheckbox" aria-checked={epinglee} {...agir(props.onEpingler)} className={paysage ? 'cal-ml' : 'cal-m3b'}>
-      <Pin size={20} aria-hidden="true" />{paysage ? <span>Épingler <small>reste visible</small></span> : <>Épingler<small>reste visible, rangée masquée</small></>}
+    <button type="button" role="menuitemcheckbox" aria-checked={epinglee} aria-label={dit.epingler} title={dit.epingler} {...agir(props.onEpingler)} className={paysage ? 'cal-ml' : 'cal-m3b'}>
+      <Pin size={20} aria-hidden="true" fill={epinglee ? 'currentColor' : 'none'} /><span>Épingler</span>
     </button>
   );
   const etoile = (
-    <button type="button" role="menuitemcheckbox" aria-checked={etoilee} {...agir(props.onEtoile)} className={paysage ? 'cal-ml' : 'cal-m3b'}>
-      <Star size={20} aria-hidden="true" />{paysage ? <span>Étoile <small>sur la courbe</small></span> : <>Étoile<small>sur la courbe</small></>}
+    <button type="button" role="menuitemcheckbox" aria-checked={etoilee} aria-label={dit.etoile} title={dit.etoile} {...agir(props.onEtoile)} className={paysage ? 'cal-ml' : 'cal-m3b'}>
+      <Star size={20} aria-hidden="true" fill={etoilee ? 'currentColor' : 'none'} /><span>Étoile</span>
     </button>
   );
-  const masquees = `${autresRangees} rangée${autresRangees > 1 ? 's' : ''} masquée${autresRangees > 1 ? 's' : ''}`;
   const seules = (
-    <button type="button" role="menuitem" {...agir(props.onSeules)} className={paysage ? 'cal-ml' : 'cal-m3b'}>
-      <Filter size={20} aria-hidden="true" />{paysage ? <span>{nomRangee} <small>{masquees}</small></span> : <>{nomRangee}<small>{masquees}</small></>}
+    <button type="button" role="menuitem" aria-label={dit.seules} title={dit.seules} {...agir(props.onSeules)} className={paysage ? 'cal-ml' : 'cal-m3b'}>
+      <Filter size={20} aria-hidden="true" /><span>{nomRangee}</span>
+      {autresRangees > 0 && <i className="cal-m3b-n" aria-hidden="true"><EyeOff size={14} />{autresRangees}</i>}
     </button>
   );
   const droite = (
@@ -246,8 +289,9 @@ export const MenuAppuiLong: React.FC<MenuAppuiLongProps> = props => {
           <Copy size={20} aria-hidden="true" /><span>Dupliquer en {dupliquer.libelle}</span>{dupliquer.effet && <><span className="sr-only"> · </span><em data-effet-dupliquer>{effetVu(dupliquer.effet)}</em></>}
         </button>
       )}
-      <button type="button" role="menuitem" {...agir(() => setLier(true))} className="cal-ml">
-        <Link2 size={20} aria-hidden="true" /><span>Lier à un brassin, un client, une fête</span>
+      <button type="button" role="menuitem" aria-label="Lier à un brassin, un client, une fête" {...agir(() => setLier(true))} className="cal-ml cal-ml-lier">
+        <Link2 size={20} aria-hidden="true" /><span>Lier à<span className="sr-only"> un brassin, un client, une fête</span></span>
+        <i className="cal-ml-cibles" aria-hidden="true"><Beer size={20} /><UserRound size={20} /><PartyPopper size={20} /></i>
       </button>
       {retirable ? (
         <button type="button" role="menuitem" {...agir(props.onRetirer)} className={`cal-ml cal-ml-ret${enMots(retirable.effet) ? ' cal-ml-mots' : ''}`}>
@@ -256,12 +300,15 @@ export const MenuAppuiLong: React.FC<MenuAppuiLongProps> = props => {
         </button>
       ) : (
         <>
-          <p className="cal-mn">{'raison' in retirer ? retirer.raison : ''}</p>
-          {props.onOuvrirSource && (
-            <button type="button" role="menuitem" {...agir(props.onOuvrirSource)} className="cal-ml">
-              <ExternalLink size={20} aria-hidden="true" /><span>{props.libelleSource ?? 'Ouvrir ›'}</span>
+          {/* CHV-9 : le paragraphe de trois lignes (« Un brassin ne se retire pas d'ici : on ne supprime rien… ») devient une ligne : le picto
+              « interdit » dit que Retirer n'est pas ici, le lien ouvre l'endroit où la chose se règle. La raison entière reste dans l'étiquette, le
+              survol et le texte pour lecteur d'écran. Sans lien à ouvrir, elle reste écrite. */}
+          {props.onOuvrirSource ? (
+            <button type="button" role="menuitem" title={'raison' in retirer ? retirer.raison : undefined} {...agir(props.onOuvrirSource)} className="cal-ml cal-ml-source">
+              <Ban size={20} aria-hidden="true" /><span>{props.libelleSource ?? 'Ouvrir ›'}</span>
+              <span className="sr-only"> · {'raison' in retirer ? retirer.raison : ''}</span>
             </button>
-          )}
+          ) : <p className="cal-mn">{'raison' in retirer ? retirer.raison : ''}</p>}
         </>
       )}
     </>

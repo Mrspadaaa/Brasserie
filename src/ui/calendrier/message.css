@@ -78,3 +78,24 @@
    lignes au plus. (Le menu vit dans frise.css, au lot de la frise : seule cette règle est ici.) */
 .cal-ml.cal-ml-mots { flex-wrap: wrap; row-gap: 0; padding-top: 4px; padding-bottom: 4px; }
 .cal-ml.cal-ml-mots > em { flex-basis: 100%; padding-left: 30px; line-height: 18px; font-size: 14px; }
+
+/* CHV-9 (« moins de texte et plus de visuel », sa maquette f5-a) : le menu d'appui long tient ≤ un tiers des pistes et 4 lignes. Trois tuiles d'un
+   picto et d'un mot (le geste posé se voit : picto plein ; le filtre porte le nombre de rangées masquées), puis Dupliquer, Lier (trois pictos des
+   cibles : brassin, client, fête) et Retirer ou le lien de la source. Les règles du menu vivent dans frise.css (lot de la frise) : ici seulement
+   ce que CHV-9 en change, sous `.cal-menu` pour passer devant. */
+.cal-menu { padding: 6px; }
+.cal-menu .cal-m3 { gap: 6px; margin-bottom: 4px; }
+.cal-menu .cal-m3b { position: relative; min-height: 50px; padding: 5px 2px; gap: 1px; font-size: 15px; line-height: 18px; }
+.cal-menu .cal-m3b > span { white-space: nowrap; }
+.cal-menu .cal-m3b[aria-checked='true'] { background: rgb(var(--cave-50)); border-color: rgb(var(--cave-50)); color: rgb(var(--cave-950)); box-shadow: none; }
+.cal-menu .cal-m3b-n { position: absolute; top: 3px; right: 5px; display: inline-flex; align-items: center; gap: 2px; font-style: normal; font-size: 14px; line-height: 14px; font-weight: 700; color: rgb(var(--cave-200)); font-variant-numeric: tabular-nums; }
+.cal-menu .cal-ml { min-height: 44px; }
+.cal-menu .cal-ml-cibles { display: inline-flex; align-items: center; gap: 12px; margin-left: auto; padding-right: 6px; color: rgb(var(--cave-200)); }
+.cal-menu .cal-ml-lier > span { flex: none; }
+.cal-menu .cal-ml-source > svg { color: rgb(var(--cave-200)); }
+/* à la souris (1280), des lignes plus basses : le menu reste sous un tiers des pistes sans cacher ses voisines */
+@media (pointer: fine) { .cal-menu .cal-ml { min-height: 38px; } }
+
+/* CHV-7 : le message n'est plus coupé à deux lignes. « Brassin en cuve : le jour de brassage ne bouge pas. Seul le jalon de fin se glisse. » est
+   une consigne : ce qui ne marche, puis ce qui marche. Quatre lignes au plus (un texte plus long reste borné), les boutons dessous. */
+.cal-msg[data-message] .cal-msg-ligne { -webkit-line-clamp: 4; }
