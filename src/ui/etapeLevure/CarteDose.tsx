@@ -149,7 +149,7 @@ export function BandeDose({ etat, qty, unite, besoin, seul, stock, onPas, onEcri
         <span className="ml-mot" data-mot={mot}>{mot}</span><span className="ml-esp" />
         {(part < 100 || enG && part > 200) && remedeN !== undefined
           ? <button type="button" className="ml-remede" data-lv="remede" onClick={() => onEcrire(remedeN)}>→ {dec(remedeN)} {motUnite(unite, remedeN)}</button>
-          : <PuceStock qty={qty} stock={stock} apres onOffre={onOffre} g={enG} />}
+          : <PuceStock g={enG} qty={qty} stock={stock} apres onOffre={onOffre} />}
       </div>
       <div className="ml-regle ml-regle-apres">
         {moins}
@@ -213,7 +213,7 @@ export function BandeDose({ etat, qty, unite, besoin, seul, stock, onPas, onEcri
       {surDose && <button type="button" className="ml-remede" data-lv="remede" onClick={() => onEcrire(versBesoin)}>→ {dec(versBesoin)} g</button>}
       {etat === 'a-choisir' && auChoix !== undefined && <button type="button" className="ml-mettre" data-lv="mettre" onClick={() => onEcrire(auChoix)}>Mettre {dec(auChoix)} {motUnite(unite, auChoix)}</button>}
       {/* 390 px (20.11) : en sur-dosage, le remède remplace la puce stock, comme dans l'état après. */}
-      {!surDose && <PuceStock qty={etat === 'repos' ? qty : undefined} stock={stock} apres={false} onOffre={onOffre} g={enG} />}
+      {!surDose && <PuceStock g={enG} qty={etat === 'repos' ? qty : undefined} stock={stock} apres={false} onOffre={onOffre} />}
     </div>
     <div className="ml-regle">
       {moins}
@@ -256,7 +256,7 @@ export function LigneConduite({ paliers, mot, onToucher }: { paliers: ReadonlyAr
   const y = (t: number) => 2 + (1 - (t - tMin) / (tMax - tMin)) * 15;
   let x = 1;
   const marches = ok.map(p => { const w = Math.max(3, p.days / total * 52); const r = { x, w, y: y(p.tempC), chaud: p.tempC >= 10 }; x += w; return r; });
-  const trait = marches.map((m, i) => `${i ? 'L' : 'M'}${m.x.toFixed(1)} ${m.y.toFixed(1)} L${(m.x + m.w).toFixed(1)} ${m.y.toFixed(1)}`).join(' ');
+  const trait = marches.map((m, i) => `${i ? 'L' : 'M'}${m.x.toFixed(1)} ${m.y.toFixed(1)} L${(m.x + m.w).toFixed(1)} ${m.y.toFixed(1)}`).join(' '); // virgule-ok : chemin SVG (M, L), pas un affichage
   const texte = ok.map(p => `${dec(p.tempC, entier(p.tempC) ? 0 : 1)} °C · ${dec(p.days, entier(p.days) ? 0 : 1)} j`);
   return <button type="button" className="ml-conduite" data-lv="ligne-conduite" onClick={onToucher}
     aria-label={`Conduite : ${texte.join(', puis ')} ; fin au jour ${dec(total)}. Toucher pour régler la conduite`}>
