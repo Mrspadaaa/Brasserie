@@ -76,16 +76,16 @@ const kg = (q) => (q >= 1 ? `${fr(Math.round(q * 10) / 10)} kg` : `${Math.round(
 const haut = (q, rep, max = 34, base = 22) => (q <= 0 ? 0 : q <= rep ? Math.max(3, (q / rep) * base) : Math.min(max, base + (Math.log10(q / rep) / Math.log10(40)) * (max - base) * 1.6));
 
 function barre(a, sorte, opts = {}) {
-  const w = opts.w ?? 9;
+  const w = opts.w ?? 9, bh = opts.bh ?? 22, base = Math.round(bh * 0.62);
   if (sorte === 'levure') {
     if (!a.q) return `<span class="lv vide" style="width:${w + 3}px"><i class="ep"></i></span>`;
     const pile = Array.from({ length: Math.min(a.q, 4) }, (_, i) => `<i class="sa"${i === 0 ? ` data-k="${a.k}"` : ''}></i>`).reverse().join('');
     return `<span class="lv" style="width:${w + 3}px">${pile}</span>`;
   }
   if (!a.q) return `<span class="b" style="width:${w}px"><i class="ep"></i></span>`;
-  const h = sorte === 'malt' ? haut(a.q, 5) : haut(a.q, 250);
+  const h = sorte === 'malt' ? haut(a.q, 5, bh - 1, base) : haut(a.q, 250, bh - 1, base);
   const col = sorte === 'malt' ? ebcCoul(a.e) : hopCoul(a.a);
-  return `<span class="b${a.c ? ' cpt' : ''}${opts.sel === a.n ? ' sel' : ''}" style="width:${w}px"><i style="height:${a.c ? 16 : h}px;background:${a.c ? 'transparent' : col}"></i></span>`;
+  return `<span class="b${a.c ? ' cpt' : ''}${opts.sel === a.n ? ' sel' : ''}" style="width:${w}px"><i style="height:${a.c ? Math.round(base * 0.75) : h}px;background:${a.c ? 'transparent' : col}"></i></span>`;
 }
 const total = (g, sorte) => (sorte === 'malt' ? kg(g.l.reduce((s, a) => s + a.q, 0)) : sorte === 'houblon' ? `${g.l.reduce((s, a) => s + a.q, 0)} g` : `${g.l.reduce((s, a) => s + a.q, 0)}`);
 
@@ -97,10 +97,10 @@ function rayon(nom, n, sorte, groupes, opts = {}) {
   const gs = groupes.map((g) => `<div class="g"><em>${g.g}</em><div class="bars">${g.l.map((a) => barre(a, sorte, opts)).join('')}</div>${opts.mince ? '' : `<span class="tot">${total(g, sorte)}</span>`}</div>`).join('');
   const lab = opts.mince
     ? `<div class="rl mi">${ic({ malt: 'grain', houblon: 'cone', levure: 'flask' }[sorte], 18)}<b>${n}</b></div>`
-    : `<div class="rl"><b>${nom}</b><small class="mono">${n}</small>${opts.lien ? `<a class="cat">${ic('book', 14)}136</a>` : ''}${opts.legende ? '<span class="leg-b">Légende</span>' : ''}</div>`;
-  return `<div class="ray ${sorte}${opts.mince ? ' mince' : ''}${opts.actif ? ' actif' : ''}" style="--rc:${coul}">${lab}<div class="rg">${rep && !opts.mince ? `<span class="rep mono">${rep} –</span>` : ''}${gs}${opts.mince ? '' : `<span class="vides">${vides.map((v) => `<span>○ ${v}</span>`).join('')}</span>`}</div></div>`;
+    : `<div class="rl"><b>${nom}</b><span class="rl2"><small class="mono">${n}</small>${opts.lien ? `<a class="cat">${ic('book', 13)}136</a>` : ''}</span></div>`;
+  return `<div class="ray ${sorte}${opts.mince ? ' mince' : ''}${opts.actif ? ' actif' : ''}" style="--rc:${coul}">${lab}<div class="rg">${rep && !opts.mince ? `<span class="rep mono">${rep} –</span>` : ''}${gs}${opts.mince ? '' : `<span class="vides">${vides.map((v) => `<span>○ ${v}</span>`).join('')}${opts.legende ? '<span class="leg-b">Légende</span>' : ''}</span>`}</div></div>`;
 }
-const mur = (o = {}) => { const b = { mince: o.mince, sel: o.sel, w: o.w }; return `<div class="mur${o.mince ? ' mince' : ''}${o.cls ? ' ' + o.cls : ''}">${o.avant ?? ''}${rayon('Malts', NM, 'malt', MALTS, { ...b, actif: o.actif === 'malt' })}${o.entre?.malt ?? ''}${rayon('Houblons', NH, 'houblon', HOPS, { ...b, actif: o.actif === 'houblon', lien: o.lien })}${o.entre?.houblon ?? ''}${rayon('Levures', NY, 'levure', YEASTS, { ...b, actif: o.actif === 'levure', legende: o.legende })}${o.apres ?? ''}</div>`; };
+const mur = (o = {}) => { const b = { mince: o.mince, sel: o.sel, w: o.w, bh: o.bh }; return `<div class="mur${o.mince ? ' mince' : ''}${o.cls ? ' ' + o.cls : ''}">${o.avant ?? ''}${rayon('Malts', NM, 'malt', MALTS, { ...b, actif: o.actif === 'malt' })}${o.entre?.malt ?? ''}${rayon('Houblons', NH, 'houblon', HOPS, { ...b, actif: o.actif === 'houblon', lien: o.lien })}${o.entre?.houblon ?? ''}${rayon('Levures', NY, 'levure', YEASTS, { ...b, actif: o.actif === 'levure', legende: o.legende })}${o.apres ?? ''}</div>`; };
 
 // ---------- lignes de liste ----------
 function ligne(a, sorte, o = {}) {
@@ -142,42 +142,45 @@ header.app{height:50px;display:flex;align-items:center;gap:6px;padding:0 8px;bor
 .rech{display:flex;align-items:center;gap:8px;height:40px;border:1.5px solid var(--line2);border-radius:12px;padding:0 12px;color:#777;font-size:15px;background:#fff;flex:1;min-width:0}
 .rech span{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .filt{display:flex;gap:4px;align-items:center}
-.pl{display:inline-flex;align-items:center;gap:3px;height:32px;padding:0 6px;border:1.5px solid var(--line2);border-radius:999px;font-size:14px;color:#333;background:#fff;white-space:nowrap}
-.pl b{font-family:"IBM Plex Mono",Consolas,monospace;font-size:14px;color:#111}
+.pl{display:inline-flex;align-items:center;gap:2px;height:32px;padding:0 5px;border:1.5px solid var(--line2);border-radius:999px;font-size:13px;letter-spacing:-.2px;color:#333;background:#fff;white-space:nowrap}
+.pl b{font-family:"IBM Plex Mono",Consolas,monospace;font-size:13px;color:#111}
 .pl.r b{color:var(--rouge)}.pl.br b{color:var(--brun)}
 .pl.zero{color:#999;border-style:dashed}.pl.zero b{color:#aaa}
 .pl.cpt{border-style:dotted;border-width:2px}
 .o{width:40px;height:40px;border-radius:50%;border:1.5px solid var(--line2);display:grid;place-items:center;color:#111;background:#fff;position:relative;flex:none}
 .o.on{background:#111;color:#fff;border-color:#111}
+.o:has(.bd){margin-right:4px}
 .o .bd{position:absolute;top:-4px;right:-4px;min-width:18px;height:18px;border-radius:9px;background:#2b64a6;color:#fff;font-size:12px;font-weight:700;display:grid;place-items:center;padding:0 4px;font-family:Consolas,monospace}
 /* mur */
 .mur{margin:6px 10px 0;background:var(--mur);border-radius:10px;padding:2px 0;overflow:hidden}
-.ray{display:flex;border-left:4px solid var(--rc);border-bottom:1px solid #e4e1d8;padding:3px 6px 3px 5px;min-height:50px;position:relative}
+.ray{display:flex;border-left:4px solid var(--rc);border-bottom:1px solid #e4e1d8;padding:2px 6px 2px 5px;position:relative}
 .ray:last-child{border-bottom:0}
 .ray.actif{background:#fff;box-shadow:inset 0 0 0 2px var(--rc)}
-.rl{width:56px;flex:none;display:flex;flex-direction:column;gap:1px}
+.rl{width:58px;flex:none;display:flex;flex-direction:column;gap:2px;padding-top:2px}
+.rl2{display:flex;align-items:center;gap:4px;white-space:nowrap}
 .rl b{font-size:14px;color:var(--ink)}
 .rl small{font-size:13px;color:var(--mut)}
-.rl .cat{display:inline-flex;align-items:center;gap:2px;font-size:13px;color:var(--bleu);margin-top:2px;font-family:Consolas,monospace}
-.rl .leg-b{margin-top:4px;font-size:13px;border:1.5px solid var(--line2);border-radius:999px;padding:3px 6px;background:#fff;text-align:center}
+.rl .cat{display:inline-flex;align-items:center;gap:1px;font-size:13px;color:var(--bleu);font-family:Consolas,monospace}
+.leg-b{margin-top:2px;font-size:13px;line-height:16px;color:#333;border:1.5px solid var(--line2);border-radius:999px;padding:1px 7px;background:#fff;text-align:center}
 .rg{flex:1;display:flex;align-items:flex-end;gap:8px;position:relative;min-width:0}
 .rep{position:absolute;left:0;top:13px;font-size:12px;color:var(--mut);display:none}
 .g{display:flex;flex-direction:column;position:relative}
-.g em{font-style:normal;font-size:12.5px;font-weight:700;white-space:nowrap;display:block;line-height:15px}
+.g em{font-style:normal;font-size:12.5px;font-weight:700;white-space:nowrap;display:block;line-height:13px}
 .malt .g em{color:#9a6a2a}.houblon .g em{color:#5b7d2a}.levure .g em{color:#7a6040}
-.bars{display:flex;align-items:flex-end;gap:2px;height:36px;border-bottom:2px solid #9c8a6b;position:relative}
-.malt .bars::before,.houblon .bars::before{content:"";position:absolute;left:-3px;right:-3px;bottom:22px;border-top:1.5px dashed #7d7d75}
+.bars{display:flex;align-items:flex-end;gap:2px;height:22px;border-bottom:2px solid #9c8a6b;position:relative}
+.malt .bars::before,.houblon .bars::before{content:"";position:absolute;left:-3px;right:-3px;bottom:14px;border-top:1.5px dashed #7d7d75}
 .b{display:flex;align-items:flex-end;height:100%}
 .b i{display:block;width:100%;border-radius:2px 2px 0 0}
 .b .ep{height:8px;border:1.5px solid var(--rouge);background:#fff;border-radius:1px}
 .b.cpt i{border:2px dotted #333;border-bottom:0}
 .b.sel i{outline:2.5px solid #111;outline-offset:1px}
-.tot{font-size:13px;color:#444;font-family:Consolas,monospace;margin-top:1px;white-space:nowrap}
-.vides{display:flex;flex-direction:column;align-self:flex-start;font-size:12px;color:#999;margin-left:auto;gap:0}
+.tot{font-size:12px;line-height:13px;color:#444;font-family:Consolas,monospace;white-space:nowrap}
+.vides{display:flex;flex-direction:column;align-items:flex-end;align-self:flex-start;font-size:12px;line-height:14px;color:#999;margin-left:auto;gap:0;padding-top:2px}
 .lv{display:flex;flex-direction:column;justify-content:flex-end;height:100%;gap:1px}
-.lv .sa{display:block;height:7px;border-radius:3px 3px 1px 1px;background:#b59a6a}
-.lv .sa[data-k]{height:13px;background:#6e5530;position:relative}
-.lv .sa[data-k]::after{content:attr(data-k);position:absolute;inset:0;color:#fff;font:700 12px/13px system-ui;text-align:center}
+.lv .sa{display:block;height:3px;border-radius:2px 2px 1px 1px;background:#b59a6a}
+.lv .sa[data-k]{height:11px;background:#6e5530;position:relative}
+.lv .sa[data-k]::after{content:attr(data-k);position:absolute;inset:0;color:#fff;font:700 12px/11px system-ui;text-align:center}
+.grand .lv .sa{height:7px}.grand .lv .sa[data-k]{height:13px}.grand .lv .sa[data-k]::after{line-height:13px}
 .lv .ep{display:block;height:8px;border:1.5px solid var(--rouge);background:#fff}
 .levure .bars::before{display:none}
 .mur.mince .ray{min-height:38px;padding:2px 6px 2px 5px;align-items:center}
@@ -326,7 +329,7 @@ V['d2c-repos-660'] = () => page('D2c', `${entreeD2()}${mur({ lien: true, legende
 <div class="d2c-h"><b>À faire</b><span class="n mono">4</span></div>${agir.slice(0, 3).map(ligneAgir).join('')}<div class="tout">Tout lister · ${NM + NH + NY} articles ${ic('chevR', 18)}</div>${fab()}${navBas()}`, 'h660', CSS_D2 + CSS_D2C);
 const bulleCitra = `<div class="d2c-bu"><span class="jauge" style="width:14px;height:36px;border:1.5px solid #8b7a5a;border-radius:2px;display:flex;align-items:flex-end"><i style="display:block;width:100%;height:95%;background:#7f8a5e"></i></span><div class="nm"><b style="font-weight:700">Citra</b><small>α 12,5 % · seuil 250 g · Hazy</small></div><span class="qt mono" style="font-size:20px">485 g</span><span class="o" style="width:40px;height:40px">${ic('chevR', 20)}</span></div>`;
 V['d2c-bulle-660'] = () => page('D2c touché', `${entreeD2()}${mur({ lien: true, legende: true, sel: 'Citra', entre: { houblon: bulleCitra } })}
-<div class="d2c-h"><b>À faire</b><span class="n mono">4</span></div>${agir.slice(0, 2).map(ligneAgir).join('')}${fab()}${navBas()}`, 'h660', CSS_D2 + CSS_D2C + `.d2c-bu{display:flex;align-items:center;gap:8px;background:#fff;border:2px solid #111;border-radius:10px;margin:2px 6px 4px;padding:4px 6px 4px 10px;position:relative}.d2c-bu::before{content:"";position:absolute;top:-8px;left:84px;width:12px;height:12px;background:#fff;border-left:2px solid #111;border-top:2px solid #111;transform:rotate(45deg)}`);
+<div class="d2c-h"><b>À faire</b><span class="n mono">4</span></div>${agir.slice(0, 3).map(ligneAgir).join('')}${fab()}${navBas()}`, 'h660', CSS_D2 + CSS_D2C + `.mur{position:relative}.d2c-bu{display:flex;align-items:center;gap:8px;background:#fff;border:2px solid #111;border-radius:10px;margin:0;left:6px;right:6px;padding:3px 6px 3px 10px;position:absolute;z-index:3;box-shadow:0 8px 18px rgba(0,0,0,.22)}.d2c-bu::before{content:"";position:absolute;top:-8px;left:84px;width:12px;height:12px;background:#fff;border-left:2px solid #111;border-top:2px solid #111;transform:rotate(45deg)}`);
 
 // D3 : légende et 1280.
 const LEG = [
@@ -338,7 +341,7 @@ const LEG = [
 const CSS_LEG = `.lg-s{display:inline-flex;align-items:flex-end;width:14px;height:20px;position:relative;border-bottom:2px solid #9c8a6b}
 .lg-s i{display:block;width:10px;margin:0 2px}.lg-s u{position:absolute;left:-3px;right:-3px;bottom:9px;border-top:1.5px dashed #555}
 .lg-s .lg-ep{height:8px;border:1.5px solid var(--rouge);background:#fff}
-.lg-y{flex-direction:column;justify-content:flex-end;align-items:center;gap:1px}.lg-y i{height:5px;background:#b59a6a;border-radius:2px}.lg-y i.k{height:9px;background:#6e5530;color:#fff;font:700 8px/9px system-ui;text-align:center;font-style:normal}`;
+.lg-y{flex-direction:column;justify-content:flex-end;align-items:center;gap:1px}.lg-y i{height:5px;background:#b59a6a;border-radius:2px}.lg-y i.k{height:12px;width:12px;background:#6e5530;color:#fff;font:700 12px/12px system-ui;text-align:center;font-style:normal}`;
 const bandeLeg = () => `<div class="d3a-l">${LEG.map(([s, t]) => `<span>${s}${t}</span>`).join('')}</div>`;
 V['d3a-repos'] = () => page('D3a', `${entreeD2()}${mur({ lien: true, apres: bandeLeg() })}
 ${enteteGroupe('Malts', NM, 'grain', `<span class="chip">${ic('sort', 14)} couleur</span>`)}${echelleMalt}${listeMalts(4)}${fab()}${navBas()}`, '', CSS_D2 + CSS_LEG + `.d3a-l{display:flex;justify-content:space-around;align-items:flex-end;padding:6px 4px 5px;border-top:1px solid #e4e1d8;font-size:14px;color:#333}.d3a-l>span{display:flex;align-items:flex-end;gap:5px}`);
@@ -346,7 +349,7 @@ ${enteteGroupe('Malts', NM, 'grain', `<span class="chip">${ic('sort', 14)} coule
 const bulleLeg = () => `<div class="bulle d3b-bu">${LEG.map(([s, t]) => `<div>${s}<span>${t}</span></div>`).join('')}<div><span class="d3b-h mono">⫽</span><span>échelle resserrée</span></div></div>`;
 V['d3b-legende'] = () => page('D3b légende', `${entreeD2()}${mur({ lien: true, avant: `<span class="o on d3b-q">${ic('help', 20)}</span>` })}${bulleLeg()}
 ${enteteGroupe('Malts', NM, 'grain', `<span class="chip">${ic('sort', 14)} couleur</span>`)}${echelleMalt}${listeMalts(4)}${fab()}${navBas()}`, '', CSS_D2 + CSS_LEG + `.mur{position:relative}.d3b-q{position:absolute;right:4px;top:4px;width:36px;height:36px;z-index:3}
-.d3b-bu{top:246px;right:12px;width:200px;display:flex;flex-direction:column;gap:7px;font-size:15px}.d3b-bu>div{display:flex;align-items:flex-end;gap:10px}.d3b-bu::before{content:"";position:absolute;top:-8px;right:14px;width:12px;height:12px;background:#fff;border-left:1.5px solid #111;border-top:1.5px solid #111;transform:rotate(45deg)}.d3b-h{width:14px;text-align:center;font-weight:700}`);
+.d3b-bu{top:276px;right:12px;width:200px;display:flex;flex-direction:column;gap:7px;font-size:15px}.d3b-bu>div{display:flex;align-items:flex-end;gap:10px}.d3b-bu::before{content:"";position:absolute;top:-8px;right:14px;width:12px;height:12px;background:#fff;border-left:1.5px solid #111;border-top:1.5px solid #111;transform:rotate(45deg)}.d3b-h{width:14px;text-align:center;font-weight:700}`);
 
 // 1280 : rail à gauche (comme l'app), tout le reste de la largeur au stock.
 const RAIL = `<aside class="rail">${NAV.map(([k, t]) => `<span class="${t === 'Stocks' ? 'on' : ''}">${ic(k, 22)}${t}</span>`).join('')}</aside>`;
@@ -368,21 +371,21 @@ const barre1280 = () => `${onglets(['Articles', 'Recompter', 'Courses', 'Fûts',
 
 // D3a 1280 : les trois rayons côte à côte, pleine largeur ; une liste par rayon dessous, sans colonne vide.
 V['d3a-1280'] = () => page('D3a 1280', `${tete1280()}${RAIL}<div class="zone">${barre1280()}
-<div class="d3-col" style="grid-template-columns:1.35fr 1.1fr 0.9fr">
-<div class="mur d3a-m">${rayon('Malts', NM, 'malt', MALTS, { w: 12 })}</div><div class="mur d3a-m">${rayon('Houblons', NH, 'houblon', HOPS, { w: 10, lien: true })}</div><div class="mur d3a-m">${rayon('Levures', NY, 'levure', YEASTS, { w: 12 })}</div>
+<div class="d3-col" style="grid-template-columns:1.12fr 1fr 1.05fr">
+<div class="mur d3a-m grand">${rayon('Malts', NM, 'malt', MALTS, { w: 12, bh: 50 })}</div><div class="mur d3a-m grand">${rayon('Houblons', NH, 'houblon', HOPS, { w: 10, lien: true, bh: 50 })}</div><div class="mur d3a-m grand">${rayon('Levures', NY, 'levure', YEASTS, { w: 10, bh: 50 })}</div>
 <div style="grid-column:1/-1">${bandeLeg()}</div>
 <div><table class="tb"><tr><th>Malts</th><th>EBC</th><th style="text-align:right">stock</th><th>0 — 5 kg ⫽ 25</th></tr>${triMalts().slice(0, 9).map((a) => ligneTb(a, 'malt', 26)).join('')}</table></div>
 <div><table class="tb"><tr><th>Houblons</th><th>α</th><th style="text-align:right">stock</th><th>0 — 500 g</th></tr>${triHops().slice(0, 9).map((a) => ligneTb(a, 'houblon', 0.5)).join('')}</table></div>
 <div><table class="tb"><tr><th>Levures</th><th>sachets</th><th>DDM</th></tr>${YEASTS.flatMap((g) => g.l).map((a) => `<tr><td>${a.n}${a.q ? '' : ' <span class="rouge" style="font-size:14px">épuisé</span>'}</td><td class="mono">${'▮'.repeat(a.q) || '0'}</td><td class="mono" style="font-size:14px">${a.q ? '03.27' : '—'}</td></tr>`).join('')}</table></div>
-</div></div>${fab()}`, 'l1280', CSS_1280 + CSS_LEG + `.d3a-m{margin:0}.d3a-m .ray{min-height:86px;border-bottom:0}.d3a-m .bars{height:52px}.d3a-m .rl{width:70px}.d3a-l{display:flex;gap:28px;justify-content:center;align-items:flex-end;font-size:14px;color:#333;padding:2px 0}.d3a-l>span{display:flex;align-items:flex-end;gap:6px}.tb tr:first-child th:first-child{font-size:16px;color:#111}`);
+</div></div>${fab()}`, 'l1280', CSS_1280 + CSS_LEG + `.d3a-m{margin:0}.d3a-m .ray{min-height:86px;border-bottom:0}.d3a-m .bars{height:50px}.d3a-m .bars::before{bottom:31px!important}.d3a-m .rl{width:64px}.d3a-m .g em{line-height:15px}.d3a-m .tot{font-size:13px;line-height:16px}.d3a-l{display:flex;gap:28px;justify-content:center;align-items:flex-end;font-size:14px;color:#333;padding:2px 0}.d3a-l>span{display:flex;align-items:flex-end;gap:6px}.tb tr:first-child th:first-child{font-size:16px;color:#111}`);
 
 // D3b 1280 : le mur en colonne collante à gauche, la liste à droite ; légende au rond « ? ».
 V['d3b-1280'] = () => page('D3b 1280', `${tete1280()}${RAIL}<div class="zone">${barre1280()}
 <div class="d3-col" style="grid-template-columns:470px 1fr;align-items:start">
-<div style="position:relative">${mur({ lien: true, w: 10, avant: `<span class="o d3b-q">${ic('help', 20)}</span>` })}</div>
+<div style="position:relative">${mur({ lien: true, w: 10, bh: 48, cls: 'grand', avant: `<span class="o d3b-q">${ic('help', 20)}</span>` })}</div>
 <div><div class="gh" style="margin:0 0 4px"><span class="pic">${ic('grain', 18)}</span><b>Malts</b><small class="mono">${NM}</small><span class="dr"><span class="chip">${ic('sort', 14)} couleur</span><span class="chip">Brau- und Rauchshop</span></span></div>
 <table class="tb"><tr><th>Article</th><th>EBC</th><th style="text-align:right">en stock</th><th>0 — 5 kg ⫽ 25 kg</th></tr>${triMalts().slice(0, 13).map((a) => ligneTb(a, 'malt', 26)).join('')}</table></div>
-</div></div>${fab()}`, 'l1280', CSS_1280 + `.mur{margin:0;position:relative}.d3b-q{position:absolute;right:6px;top:6px;width:36px;height:36px;z-index:3}.mur .ray{min-height:96px}.mur .bars{height:50px}`);
+</div></div>${fab()}`, 'l1280', CSS_1280 + `.mur{margin:0;position:relative}.d3b-q{position:absolute;right:6px;top:6px;width:36px;height:36px;z-index:3}.mur .ray{min-height:90px}.mur .bars{height:48px}.mur .bars::before{bottom:30px!important}.mur .g em{line-height:15px}.mur .tot{font-size:13px;line-height:16px}`);
 
 // D8 : Matériel et Fûts.
 const MAT = [

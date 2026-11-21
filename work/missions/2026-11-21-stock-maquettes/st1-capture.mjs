@@ -24,13 +24,15 @@ for (const f of pages) {
     while (w.nextNode()) { const t = w.currentNode; if (!t.textContent.trim()) continue; const el = t.parentElement; if (el.closest('svg')) continue; const fs = parseFloat(getComputedStyle(el).fontSize); if (fs < 12) petits.push(t.textContent.trim().slice(0, 16)); }
     const rangs = [...document.querySelectorAll('.li,.rc-l')].filter((e) => e.getBoundingClientRect().bottom <= H).length;
     const debords = [...document.querySelectorAll('.rg,.filt,.seg,.ra,.f-t')].filter((e) => e.scrollWidth > e.clientWidth + 1).map((e) => e.className.split(' ')[0]);
-    return { debord: document.documentElement.scrollWidth - innerWidth, petits, rangs, debords };
+    const rays = [...document.querySelectorAll(".mur:not(.d3a-m) .ray")].map((e) => Math.round(e.getBoundingClientRect().height));
+    const filts = [...document.querySelectorAll(".filt")].map((e) => e.scrollWidth);
+    return { debord: document.documentElement.scrollWidth - innerWidth, petits, rangs, debords, rays, filts };
   });
   await p.screenshot({ path: path.join(ICI, 'st1-captures', f.replace('.html', '.jpg')), type: 'jpeg', quality: 86 });
   const pb = [];
   if (m.debord > 0) pb.push(`débord ${m.debord}px`);
   if (m.debords.length) pb.push(`coupé : ${[...new Set(m.debords)].join(',')}`);
   if (m.petits.length) pb.push(`texte <12 : ${m.petits.slice(0, 3).join(' | ')}`);
-  console.log(f.padEnd(26), pb.length ? 'PB ' + pb.join(' ; ') : 'ok', `rangées=${m.rangs}`);
+  console.log(f.padEnd(26), pb.length ? 'PB ' + pb.join(' ; ') : 'ok', `rangées=${m.rangs} ray=${m.rays.join("/")} filt=${m.filts.join("/")}`);
 }
 await nav.close();
