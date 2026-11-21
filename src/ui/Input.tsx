@@ -14,8 +14,40 @@ export const noAutofillProps = {
 } as const;
 
 export type InputElement = HTMLInputElement | HTMLTextAreaElement;
+
+/** Ce que fait Entrée (PI-2, R12) : valider la création, ou prendre le champ suivant. `false` : refusé, le clavier reste ouvert. */
+export type ActionEntree<E extends HTMLElement = InputElement> = (champ: E) => void | boolean;
+type ToucheEntree = 'done' | 'next' | 'go' | 'send';
+
+/** Entrée seule, hors composition IME (le kana ou le pinyin en cours se valide par Entrée sans rien envoyer). */
+export function estEntree(event: React.KeyboardEvent): boolean {
+  return event.key === 'Enter' && !event.shiftKey && !event.nativeEvent.isComposing && event.keyCode !== 229;
+}
+
+/** Joue l'action d'Entrée : la touche ne fait plus rien d'autre ; le clavier se ferme, sauf pour « suivant » (l'action prend le champ) ou un refus. */
+function jouerEntree<E extends HTMLElement>(event: React.KeyboardEvent<E>, action: ActionEntree<E>, touche: string | undefined): boolean {
+  if (event.defaultPrevented || !estEntree(event)) return false;
+  event.preventDefault();
+  const champ = event.currentTarget;
+  if (action(champ) !== false && touche !== 'next') champ.blur();
+  return true;
+}
+
+/**
+ * Entrée sur un champ natif (`<input>` stylé par sa feuille) : `enterkeyhint` et la touche, comme la prop `onEntree` d'`Input`.
+ * `touche` : « done » (défaut) valide et ferme le clavier ; « next » laisse l'action prendre le champ suivant.
+ */
+export function surEntree<E extends HTMLInputElement | HTMLTextAreaElement>(action: ActionEntree<E>, touche: ToucheEntree = 'done') {
+  return {
+    enterKeyHint: touche,
+    onKeyDown: (event: React.KeyboardEvent<E>) => { jouerEntree(event, action, touche); }
+  };
+}
+
 export type InputProps = Omit<React.InputHTMLAttributes<HTMLInputElement>, keyof React.DOMAttributes<HTMLInputElement> | 'type'> & React.DOMAttributes<InputElement> & {
   type?: 'text' | 'search' | 'tel' | 'email' | 'url';
+  /** Entrée valide ou prend le champ suivant (PI-2) ; donnée, elle prime sur le formulaire et pose `enterkeyhint="done"` par défaut. */
+  onEntree?: ActionEntree;
 };
 
 /**
@@ -29,7 +61,7 @@ export type InputProps = Omit<React.InputHTMLAttributes<HTMLInputElement>, keyof
  * and components/autofill/content/renderer/password_autofill_agent.cc in Chromium.
  */
 export const Input = forwardRef<InputElement, InputProps>(function Input(
-  { type = 'text', autoFocus, inputMode, enterKeyHint, onChange, onKeyDown, className, style, ...props }, ref
+  { type = 'text', autoFocus, inputMode, enterKeyHint, onChange, onKeyDown, onEntree, className, style, ...props }, ref
 ) {
   const coarse = useCoarsePointer();
   const singleLine = coarse;
@@ -84,7 +116,7 @@ export const Input = forwardRef<InputElement, InputProps>(function Input(
     'aria-label': props['aria-label'] ?? (props['aria-labelledby'] ? undefined : siblingLabel),
     autoFocus: !coarse && autoFocus,
     inputMode: inputMode ?? (type === 'search' ? 'search' : type === 'email' ? 'email' : type === 'tel' ? 'tel' : type === 'url' ? 'url' : 'text'),
-    enterKeyHint,
+    enterKeyHint: enterKeyHint ?? (onEntree ? 'done' : undefined),
     className,
     onChange: (event: React.ChangeEvent<InputElement>) => {
       if (singleLine && /[\r\n]/.test(event.currentTarget.value)) {
@@ -100,6 +132,7 @@ export const Input = forwardRef<InputElement, InputProps>(function Input(
     },
     onKeyDown: (event: React.KeyboardEvent<InputElement>) => {
       onKeyDown?.(event);
+      if (onEntree && jouerEntree(event, onEntree, enterKeyHint ?? 'done')) return;
       if (!singleLine || event.defaultPrevented || event.key !== 'Enter' || event.nativeEvent.isComposing || event.keyCode === 229) return;
       // These containers own Enter (next field / select a search result).
       if (event.currentTarget.closest('[data-form-nav], [cmdk-root]')) return;
