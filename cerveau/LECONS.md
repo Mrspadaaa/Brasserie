@@ -9,7 +9,7 @@ Erreurs de méthode déjà commises, cause, remède. Chargé par CLAUDE.md : rel
 ### L01 — Reformuler la portée d'une décision avant de la propager
 - Erreur : 12.10, « seul 3.8 » mis partout. 01.11 : « sans clavier » lu « sans focus ». 21.11 : « l'app dans sa totalité ».
 - Cause : portée (tests seuls, un usage, toute l'app) non écrite avant d'agir.
-- Faire : écrire portée et écran visé en une ligne. Ambiguë : lecture étroite, réversible, signalée. Mot mal tapé : terme du métier le plus proche, lecture dite. Plainte visuelle : plus petit sens, capture zoomée. Ses exemples illustrent une règle : le brief nomme la règle, pas ses exemples (15.11 : « C'est juste des exemples… !!! »). ([[maquettes-16-11]])
+- Faire : écrire portée et écran visé en une ligne. Ambiguë : lecture étroite, réversible, dite ; sa portée dite plus tôt prime. Mot mal tapé : terme du métier proche, dit. Plainte visuelle : plus petit sens, capture zoomée. Ses exemples illustrent une règle : le brief nomme la règle, pas ses exemples (15.11 : « C'est juste des exemples… !!! »). ([[maquettes-16-11]])
 - Rôles : pilote, conseil
 - Contrôle : aucun
 
