@@ -48,6 +48,7 @@ import { yeastReferences } from '../../domain/yeastReferences';
 import { resolveFermentationYeast } from '../../domain/fermentationScenario';
 import { masseLigneRetenue } from '../../domain/bornesMetier';
 import { EBULLITION_SAISIE_MAX, VOLUME_SAISIE_MAX } from '../identite/regles';
+import { refCurseurNatif } from '../geste';
 
 /** Preserve Units' conversion and rounding; only localize the displayed number. */
 const formatQuantity = (quantity: number, unit: string) =>
@@ -433,7 +434,7 @@ export const EtapeRecap: React.FC<EtapeRecapProps> = ({
         <div className="rc2-p2">
           <span className="rc2-lb">Quantité <b>2/2</b></span>
           <span className="rc2-sl">
-            <input type="range" aria-label="Curseur de quantité de levure" min={reglage.min} max={reglage.max} step={reglage.step}
+            <input ref={refCurseurNatif} type="range" aria-label="Curseur de quantité de levure" min={reglage.min} max={reglage.max} step={reglage.step}
               value={finie(yeast.qty) ? yeast.qty : 0} onChange={e => onYeast({ ...yeast, qty: Number(e.target.value) })} />
           </span>
         </div>
