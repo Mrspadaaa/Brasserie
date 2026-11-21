@@ -18,6 +18,9 @@ import { avecTendance, etatBanc } from '../../src/design/CalendrierPreview';
 import { preparerChoses } from '../../src/domain/calendrier';
 
 const AUJOURDHUI = '2026-11-16';
+/* D395 (B8, 21.11) : un brassin pas brassé prévu la semaine d'avant se dessine à sa date (tests/unit/bugsWorkflowsCalendrier.test.ts). Ces
+   tests jouent la règle qui reste : un jour prévu passé DANS la semaine courante (S47) part d'aujourd'hui ; il était le 10 nov. (S46). */
+const PREVU_SEMAINE_COURANTE = '16.11.2026';
 const etapes = (primaire: number, garde: number) => [{ kind: 'primaire', name: 'Primaire', tempC: 19, days: primaire }, { kind: 'garde', name: 'Garde', tempC: 4, days: garde }];
 const blonde = (p: Partial<Batch> = {}) => ({
   id: 'LOT-5', name: 'Blonde d’automne', style: 'Blonde', volumeL: 30, brewDate: '', plannedBrewDate: '08.12.2026', status: 'planifie',
@@ -262,15 +265,30 @@ describe('CRITIQUE-3 n° 30 : après allonger, la durée garde « J / n · prêt
     expect(texteDuree(choseBrassin({ ...ipa, finPrevue: '2026-12-14' } as Batch, AUJOURDHUI)!)).toBe('J7 / 35 · prête 14 déc.');
     /* un brassin pas brassé s'allonge sans « J » (CRITIQUE-5 n° 1, test dédié plus bas) */
     const saison = choseBrassin({ ...ipa, id: 'LOT-S', status: 'planifie', brewDate: '', actualBrewDate: undefined, plannedBrewDate: '10.11.2026' } as unknown as Batch, AUJOURDHUI)!;
-    /* CRITIQUE-6 n° 2 : pas brassée, elle est prête au plus tôt aujourd'hui (16 nov.) + 28 j + 7 j = 21 déc., jamais 10 nov. + 35 j */
-    expect(choseAllongee(saison, 7, AUJOURDHUI).duree).toBe('pas brassée · prête le 21 déc.');
+    /* D395 : prévue le 10 nov. (S46, la semaine d'avant), sa barre est posée à sa date (10 nov. → 8 déc., tirée : 15 déc.) ; D397 : « prête le »
+       vaut au plus tôt aujourd'hui + cycle, 16 nov. + 28 j + 7 j = 21 déc. */
+    expect(saison).toMatchObject({ debut: '2026-11-10', fin: '2026-12-08', pretePrevue: '2026-12-14' });
+    expect(choseAllongee(saison, 7, AUJOURDHUI)).toMatchObject({ debut: '2026-11-10', fin: '2026-12-15', pretePrevue: '2026-12-21', duree: 'pas brassée · prête le 21 déc.' });
+  });
+
+  it('D397 : prévue le 10 nov. (S46), tirée de 7 j le 16 nov. : finPrevue = 10 nov. + 28 + 7, le message dit « prête le 21 déc. » (au plus tôt), la barre reste à sa date', () => {
+    const saisonBatch = { id: 'LOT-S', name: 'Saison de ferme', style: 'Saison', volumeL: 50, brewDate: '', plannedBrewDate: '10.11.2026', status: 'planifie', recipeSnapshot: { fermentation: etapes(14, 14) } } as unknown as Batch;
+    const chose = choseBrassin(saisonBatch, AUJOURDHUI)!;
+    expect(chose.detail).toBe('pas brassée · brassage prévu le 10 nov. · prête le 14 déc. au plus tôt');
+    const r = bien(allonger(chose, 7, ctx({ batches: [saisonBatch] })));
+    expect(r.ecritures).toEqual([{ op: 'patch', collection: 'batches', id: 'LOT-S', patch: { finPrevue: '2026-12-15' } }]);
+    expect(r.message.texte).toBe('Saison de ferme : pas brassée · prête le 21 déc.');
+    expect(choseBrassin({ ...saisonBatch, finPrevue: '2026-12-15' } as Batch, AUJOURDHUI)).toMatchObject({ debut: '2026-11-10', fin: '2026-12-15', pretePrevue: '2026-12-21', duree: 'pas brassée · prête le 21 déc.' });
+    /* raccourcir sous le jour prévu : refus, comme tout brassin */
+    expect(allonger(chose, -28, ctx({ batches: [saisonBatch] }))).toMatchObject({ ok: false });
+    expect(choseAllongee(chose, -28, AUJOURDHUI)).toBe(chose);
   });
 });
 
 describe('CRITIQUE-5 n° 1 : tirer le bord d’une Saison pas brassée', () => {
   const JOUR = '2026-11-17';
-  const saison = { id: 'LOT-S', name: 'Saison de ferme', style: 'Saison', volumeL: 50, brewDate: '', plannedBrewDate: '10.11.2026', status: 'planifie', recipeSnapshot: { fermentation: etapes(10, 4) } } as unknown as Batch;
-  it('planifiée le 10 nov., jour 17 nov., cycle 14 j, +7 : « pas brassée · prête le 8 déc. » (CRITIQUE-6 n° 2 : depuis le 17 nov.), aucun « J », finPrevue = 24 nov. + 7 j ; Annuler rend le Batch identique', async () => {
+  const saison = { id: 'LOT-S', name: 'Saison de ferme', style: 'Saison', volumeL: 50, brewDate: '', plannedBrewDate: PREVU_SEMAINE_COURANTE, status: 'planifie', recipeSnapshot: { fermentation: etapes(10, 4) } } as unknown as Batch;
+  it('planifiée le 16 nov. (semaine courante), jour 17 nov., cycle 14 j, +7 : « pas brassée · prête le 8 déc. » (CRITIQUE-6 n° 2 : depuis le 17 nov.), aucun « J », finPrevue = 30 nov. + 7 j ; Annuler rend le Batch identique', async () => {
     const chose = choseBrassin(saison, JOUR)!;
     expect(chose.pasBrassee).toBe(true);
     // CRITIQUE-6 n° 2 : la base de « prête le » est max(jour prévu, aujourd'hui) + cycle : 17 nov. + 14 j = 1 déc. (jamais 10 nov. + 14 j)
@@ -284,11 +302,11 @@ describe('CRITIQUE-5 n° 1 : tirer le bord d’une Saison pas brassée', () => {
     expect(apercu).toMatchObject({ debut: JOUR, fin: '2026-12-08', pretePrevue: '2026-12-08', duree: 'pas brassée · prête le 8 déc.' });
     // L'écriture et son message.
     const r = bien(allonger(chose, 7, ctx({ aujourdhui: JOUR, batches: [saison] })));
-    expect(r.ecritures).toEqual([{ op: 'patch', collection: 'batches', id: 'LOT-S', patch: { finPrevue: '2026-12-01' } }]);
+    expect(r.ecritures).toEqual([{ op: 'patch', collection: 'batches', id: 'LOT-S', patch: { finPrevue: '2026-12-07' } }]);
     expect(r.message.texte).toBe('Saison de ferme : pas brassée · prête le 8 déc.');
     expect(r.message.texte).not.toMatch(/J\d/);
     // La chose relue après l'écriture dit la même chose, sa barre allongée d'autant (17 nov. + 7 j), toujours sans « J ».
-    const relue = choseBrassin({ ...saison, finPrevue: '2026-12-01' } as Batch, JOUR)!;
+    const relue = choseBrassin({ ...saison, finPrevue: '2026-12-07' } as Batch, JOUR)!;
     expect(relue).toMatchObject({ pasBrassee: true, debut: JOUR, fin: '2026-12-08', pretePrevue: '2026-12-08', duree: 'pas brassée · prête le 8 déc.' });
     expect(texteDuree(relue)).not.toMatch(/J\d/);
     // Annuler : l'inverse remet le Batch tel qu'avant.
@@ -303,7 +321,7 @@ describe('CRITIQUE-5 n° 1 : tirer le bord d’une Saison pas brassée', () => {
       creer: () => undefined, supprimer: () => undefined
     };
     const fait = await appliquer(r.ecritures, port);
-    expect(docs.get('LOT-S')!.finPrevue).toBe('2026-12-01');
+    expect(docs.get('LOT-S')!.finPrevue).toBe('2026-12-07');
     await fait.annuler();
     expect(docs.get('LOT-S')).toEqual(saison);
     expect('finPrevue' in docs.get('LOT-S')!).toBe(false);
@@ -319,8 +337,8 @@ describe('CRITIQUE-5 n° 1 : tirer le bord d’une Saison pas brassée', () => {
 
 describe('CRITIQUE-6 n° 2 (D-161, E25, E29) : une Saison pas brassée est prête au plus tôt aujourd’hui + cycle', () => {
   const JOUR = '2026-11-17';
-  /* prévue le 10 nov. (passé, pas brassée), cycle de 35 j (21 + 14) */
-  const saison = { id: 'LOT-S', name: 'Saison de ferme', style: 'Saison', volumeL: 50, brewDate: '', plannedBrewDate: '10.11.2026', status: 'planifie', recipeSnapshot: { fermentation: etapes(21, 14) } } as unknown as Batch;
+  /* prévue le 16 nov. (passé de la semaine courante, pas brassée), cycle de 35 j (21 + 14) ; la semaine d'avant : test D397 plus haut */
+  const saison = { id: 'LOT-S', name: 'Saison de ferme', style: 'Saison', volumeL: 50, brewDate: '', plannedBrewDate: PREVU_SEMAINE_COURANTE, status: 'planifie', recipeSnapshot: { fermentation: etapes(21, 14) } } as unknown as Batch;
   const cigogne = (date: string) => plan({ id: 'P-CIG', title: '3 fûts La Cigogne', direction: 'in', category: 'recettes', date, amountCents: 90000, batchId: 'LOT-S' });
 
   it('f2-a : « pas brassée · prête le 22 déc. » (17 nov. + 35 j), jamais « 15 déc. » (10 nov. + 35 j), dans l’aperçu, le message et la chose relue', () => {
@@ -335,10 +353,10 @@ describe('CRITIQUE-6 n° 2 (D-161, E25, E29) : une Saison pas brassée est prêt
     expect(pendant).not.toContain('15 déc.');
     /* tirer d'une semaine : 29 déc. ; l'écriture garde « jour prévu + cycle » (finPrevue = 15 déc. + 7 j), relue elle redit 29 déc. */
     const r = bien(allonger(chose, 7, ctx({ aujourdhui: JOUR, batches: [saison] })));
-    expect(r.ecritures).toEqual([{ op: 'patch', collection: 'batches', id: 'LOT-S', patch: { finPrevue: '2026-12-22' } }]);
+    expect(r.ecritures).toEqual([{ op: 'patch', collection: 'batches', id: 'LOT-S', patch: { finPrevue: '2026-12-28' } }]);
     expect(r.message.texte).toBe('Saison de ferme : pas brassée · prête le 29 déc.');
     expect(choseAllongee(chose, 7, JOUR).duree).toBe('pas brassée · prête le 29 déc.');
-    const relue = choseBrassin({ ...saison, finPrevue: '2026-12-22' } as Batch, JOUR)!;
+    const relue = choseBrassin({ ...saison, finPrevue: '2026-12-28' } as Batch, JOUR)!;
     expect(relue.duree).toBe('pas brassée · prête le 29 déc.');
     expect(texteDuree(relue)).not.toMatch(/J\d|15 déc/);
   });
@@ -367,8 +385,8 @@ describe('CRITIQUE-6 n° 2 (D-161, E25, E29) : une Saison pas brassée est prêt
 
 describe('CRITIQUE-7 n° 2 (D-47, D-190, E29) : la Saison pas brassée court jusqu’à « prête », et son bord tiré fait suivre la date', () => {
   const JOUR = '2026-11-18';
-  /* prévue le 10 nov. (passé, pas brassée), cycle de 35 j (21 + 14) */
-  const saison = { id: 'LOT-S', name: 'Saison de ferme', style: 'Saison', volumeL: 50, brewDate: '', plannedBrewDate: '10.11.2026', status: 'planifie', recipeSnapshot: { fermentation: etapes(21, 14) } } as unknown as Batch;
+  /* prévue le 16 nov. (passé de la semaine courante, pas brassée), cycle de 35 j (21 + 14) ; la semaine d'avant : test D397 plus haut */
+  const saison = { id: 'LOT-S', name: 'Saison de ferme', style: 'Saison', volumeL: 50, brewDate: '', plannedBrewDate: PREVU_SEMAINE_COURANTE, status: 'planifie', recipeSnapshot: { fermentation: etapes(21, 14) } } as unknown as Batch;
   const port = (docs: Map<string, Record<string, unknown>>) => ({
     lire: (_c: string, id: string) => docs.get(id),
     patcher: (_c: string, id: string, patch: Record<string, unknown>) => {
@@ -382,21 +400,21 @@ describe('CRITIQUE-7 n° 2 (D-47, D-190, E29) : la Saison pas brassée court jus
   it('au repos : de S47 (18 nov.) à « prête le 23 déc. » ; +7 j : « prête le 30 déc. », fin 30 déc., finPrevue décalée ; Annuler rend le Batch identique', async () => {
     const chose = choseBrassin(saison, JOUR)!;
     /* au repos : la barre dit le temps en cuve, d'aujourd'hui à « prête » */
-    expect(chose).toMatchObject({ pasBrassee: true, debut: '2026-11-18', fin: '2026-12-23', pretePrevue: '2026-12-23', brassagePrevu: '2026-11-10', duree: 'pas brassée · prête le 23 déc.' });
+    expect(chose).toMatchObject({ pasBrassee: true, debut: '2026-11-18', fin: '2026-12-23', pretePrevue: '2026-12-23', brassagePrevu: '2026-11-16', duree: 'pas brassée · prête le 23 déc.' });
     expect(texteDuree(chose)).toBe('pas brassée · prête le 23 déc.');
     /* pendant le geste (le texte en direct que le lot C lit) : la date suit le doigt */
     expect(dureeAllongee(chose, 7, JOUR)).toBe('pas brassée · prête le 30 déc.');
     expect(choseAllongee(chose, 7, JOUR)).toMatchObject({ debut: '2026-11-18', fin: '2026-12-30', pretePrevue: '2026-12-30', duree: 'pas brassée · prête le 30 déc.' });
-    /* le lâcher : finPrevue = jour prévu + cycle + 7 (15 déc. + 7 = 22 déc.) */
+    /* le lâcher : finPrevue = jour prévu + cycle + 7 (21 déc. + 7 = 28 déc.) */
     const r = bien(allonger(chose, 7, ctx({ aujourdhui: JOUR, batches: [saison] })));
-    expect(r.ecritures).toEqual([{ op: 'patch', collection: 'batches', id: 'LOT-S', patch: { finPrevue: '2026-12-22' } }]);
+    expect(r.ecritures).toEqual([{ op: 'patch', collection: 'batches', id: 'LOT-S', patch: { finPrevue: '2026-12-28' } }]);
     expect(r.message.texte).toBe('Saison de ferme : pas brassée · prête le 30 déc.');
     /* la chose relue après l'écriture : fin, durée et détail suivent la nouvelle date dite */
     const docs = new Map<string, Record<string, unknown>>([['LOT-S', structuredClone(saison) as unknown as Record<string, unknown>]]);
     const fait = await appliquer(r.ecritures, port(docs));
     const relue = choseBrassin(docs.get('LOT-S') as unknown as Batch, JOUR)!;
     expect(relue).toMatchObject({ debut: '2026-11-18', fin: '2026-12-30', pretePrevue: '2026-12-30', duree: 'pas brassée · prête le 30 déc.' });
-    expect(relue.detail).toBe('pas brassée · brassage prévu le 10 nov. · prête le 30 déc. au plus tôt');
+    expect(relue.detail).toBe('pas brassée · brassage prévu le 16 nov. · prête le 30 déc. au plus tôt');
     expect(`${relue.duree} ${relue.detail}`).not.toContain('23 déc.');
     /* Annuler : le Batch d'avant, à l'identique, et la chose redit 23 déc. */
     await fait.annuler();
@@ -411,13 +429,13 @@ describe('CRITIQUE-7 n° 2 (D-47, D-190, E29) : la Saison pas brassée court jus
     const chose = choseBrassin(saison, JOUR)!;
     const court = bien(allonger(chose, -7, ctx({ aujourdhui: JOUR, batches: [saison] })));
     expect(court.message.texte).toBe('Saison de ferme : pas brassée · prête le 16 déc.');
-    expect(court.ecritures).toEqual([{ op: 'patch', collection: 'batches', id: 'LOT-S', patch: { finPrevue: '2026-12-08' } }]);
+    expect(court.ecritures).toEqual([{ op: 'patch', collection: 'batches', id: 'LOT-S', patch: { finPrevue: '2026-12-14' } }]);
     const trop = allonger(chose, -35, ctx({ aujourdhui: JOUR, batches: [saison] }));
     expect(trop).toMatchObject({ ok: false, raison: 'Un brassin dure au moins un jour : tire moins loin.' });
     /* sans recette datée ni finPrevue : la barre est aujourd'hui seul, le bord refuse en le disant, avec le chemin vers la fiche */
     const sans = { ...saison, recipeSnapshot: undefined } as unknown as Batch;
     const c = choseBrassin(sans, JOUR)!;
-    expect(c).toMatchObject({ debut: JOUR, fin: JOUR, duree: 'pas brassée · prévue le 10 nov.' });
+    expect(c).toMatchObject({ debut: JOUR, fin: JOUR, duree: 'pas brassée · prévue le 16 nov.' });
     expect(choseAllongee(c, 7, JOUR)).toBe(c);
     const refus = allonger(c, 7, ctx({ aujourdhui: JOUR, batches: [sans] }));
     expect(refus.ok).toBe(false);
@@ -430,7 +448,7 @@ describe('CRITIQUE-7 n° 2 (D-47, D-190, E29) : la Saison pas brassée court jus
 
 describe('CRITIQUE-9 n° 6 et n° 8 : glisser et dupliquer un brassin disent leur effet sur la caisse (E28, E31, A6)', () => {
   /* Saison planifiée le 10 nov. (S46, passée : ses sorties sont ramenées au 16 nov.), 28 j en cuve ; budget −137 : courses −92, emballage −45 */
-  const saison = { id: 'LOT-S', name: 'Saison de ferme', style: 'Saison', volumeL: 50, brewDate: '', plannedBrewDate: '10.11.2026', status: 'planifie', recipeSnapshot: { fermentation: etapes(14, 14) } } as unknown as Batch;
+  const saison = { id: 'LOT-S', name: 'Saison de ferme', style: 'Saison', volumeL: 50, brewDate: '', plannedBrewDate: PREVU_SEMAINE_COURANTE, status: 'planifie', recipeSnapshot: { fermentation: etapes(14, 14) } } as unknown as Batch;
   const sorties = (chose: ChoseCalendrier, lignes: Array<[string, string, number]>) => courbeCaisse({
     depart: 506400, lundi0: AUJOURDHUI, mouvements: lignes.map(([poste, jour, centimes]) => ({ id: `brew:${chose.source.genre === 'batch' ? chose.source.id : ''}:${poste}`, jour, centimes, nom: chose.titre, choseId: chose.id }))
   })!;
@@ -512,7 +530,7 @@ describe('CRITIQUE-9 n° 6 et n° 8 : glisser et dupliquer un brassin disent leu
 describe('CRITIQUE-10 n° 1 (E28, D-46, D-189) : un brassin pas brassé, jour prévu passé, va où on le lâche', () => {
   const JOUR = '2026-11-18';
   /* prévue le 10 nov. (S46, passé, pas brassée), cycle de 28 j : affichée d'aujourd'hui (S47) à « prête » */
-  const saison = { id: 'LOT-S', name: 'Saison de ferme', style: 'Saison', volumeL: 50, brewDate: '', plannedBrewDate: '10.11.2026', status: 'planifie', recipeSnapshot: { fermentation: etapes(14, 14) } } as unknown as Batch;
+  const saison = { id: 'LOT-S', name: 'Saison de ferme', style: 'Saison', volumeL: 50, brewDate: '', plannedBrewDate: PREVU_SEMAINE_COURANTE, status: 'planifie', recipeSnapshot: { fermentation: etapes(14, 14) } } as unknown as Batch;
   const port = (docs: Map<string, Record<string, unknown>>) => ({
     lire: (_c: string, id: string) => docs.get(id),
     patcher: (_c: string, id: string, patch: Record<string, unknown>) => {
@@ -560,10 +578,10 @@ describe('CRITIQUE-10 n° 1 (E28, D-46, D-189) : un brassin pas brassé, jour pr
     expect('ecritures' in r).toBe(true);
   });
 
-  it('finPrevue écrite (bord tiré) : elle suit le vrai décalage du jour de brassage (10 nov. → 23 nov., +13 j), la longueur reste', () => {
+  it('finPrevue écrite (bord tiré) : elle suit le vrai décalage du jour de brassage (16 nov. → 23 nov., +7 j), la longueur reste', () => {
     const tiree = { ...saison, finPrevue: '2026-12-15' } as Batch;
     const r = bien(deplacer(choseBrassin(tiree, JOUR)!, 1, ctx({ aujourdhui: JOUR, batches: [tiree] })));
-    expect(r.ecritures).toEqual([{ op: 'patch', collection: 'batches', id: 'LOT-S', patch: { ...rescheduleBatchPatch(tiree, '2026-11-23'), finPrevue: '2026-12-28' } }]);
+    expect(r.ecritures).toEqual([{ op: 'patch', collection: 'batches', id: 'LOT-S', patch: { ...rescheduleBatchPatch(tiree, '2026-11-23'), finPrevue: '2026-12-22' } }]);
   });
 
   it('un brassin planifié dans le futur garde « prévu + n semaines » et son jour : mercredi 2 déc. +1 → mercredi 9 déc. ; −3 (S46) : refus', () => {

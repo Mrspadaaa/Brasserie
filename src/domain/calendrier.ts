@@ -720,11 +720,13 @@ export function finDeBrassin(batch: Batch): { jour: string; origine: 'finPrevue'
    où le doigt la lâche. Seul un jour prévu passé DANS la semaine courante se dessine depuis aujourd'hui. */
 export const brassagePoseAuPasse = (j0: string, aujourdhui: string): boolean => lundiDe(j0) < lundiDe(aujourdhui);
 
+/* D397 (complète D395) : posé à sa date dans le passé, il garde sa barre, mais « prête le » vaut au plus tôt aujourd'hui + cycle, comme la
+   prévision de caisse (`brewForecast`, conditionnement à max(jour prévu, aujourd'hui) + cycle). */
 export function preteAuPlusTot(batch: Batch, aujourdhui: string): string | null {
   const fin = finDeBrassin(batch);
   if (!fin) return null;
   const j0 = jourZero(batch);
-  if (!j0 || hasBrewStarted(batch) || j0 >= aujourdhui || brassagePoseAuPasse(j0, aujourdhui)) return fin.jour;
+  if (!j0 || hasBrewStarted(batch) || j0 >= aujourdhui) return fin.jour;
   return ajouterJours(aujourdhui, ecartJours(j0, fin.jour));
 }
 
@@ -796,11 +798,12 @@ export function choseBrassin(batch: Batch, aujourdhui: string, options: { comman
      * sa durée dit « pas brassée · prête le … » ; sans `finPrevue`, « pas brassée · prévue le … ».
      */
     if (brassagePoseAuPasse(j0, aujourdhui)) {
-      const prete = fin?.jour ?? null;
+      /* D397 : la barre reste à sa date (j0 → j0 + cycle) ; « prête le » dit au plus tôt aujourd'hui + cycle (`preteAuPlusTot`) */
+      const prete = preteAuPlusTot(batch, aujourdhui);
       return {
-        ...base, debut: j0, fin: prete ?? j0, pasBrassee: true, brassagePrevu: j0, ...(prete ? { pretePrevue: prete } : {}),
+        ...base, debut: j0, fin: fin?.jour ?? j0, pasBrassee: true, brassagePrevu: j0, ...(prete ? { pretePrevue: prete } : {}),
         duree: prete ? dureePasBrassee(prete) : `pas brassée · prévue le ${jourLisible(j0)}`,
-        detail: `pas brassée · brassage prévu le ${jourLisible(j0)}${prete ? ` · prête le ${jourLisible(prete)}` : ''}`, jalons: jalonsBrassin(batch, options), deplacable: true
+        detail: `pas brassée · brassage prévu le ${jourLisible(j0)}${prete ? ` · prête le ${jourLisible(prete)} au plus tôt` : ''}`, jalons: jalonsBrassin(batch, options), deplacable: true
       };
     }
     if (j0 < aujourdhui) {

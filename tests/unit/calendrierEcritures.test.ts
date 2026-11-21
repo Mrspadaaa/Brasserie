@@ -294,9 +294,10 @@ describe('Banc (?preview=calendrier) : la fixture et son port disent la même ch
     const prets = preparerChoses(mod.choses);
     const de = (id: string) => prets.find(c => c.id === id)!;
     expect(texteDuree(de('brassin-LOT-IPA'))).toBe('J7 / 28 · prête 7 déc.');
-    /* CRITIQUE-7 n° 2 : brassée au plus tôt aujourd'hui (16 nov.), cycle de la recette du banc 28 j : sa barre court jusqu'au 14 déc. */
+    /* D395 et D397 : prévue le 10 nov. (la semaine d'avant), sa barre reste à sa date (10 nov. + 28 j = 8 déc.) ; « prête le » au plus tôt
+       aujourd'hui (16 nov.) + 28 j = 14 déc. */
     expect(texteDuree(de('brassin-LOT-SAISON'))).toBe('pas brassée · prête le 14 déc.');
-    expect(de('brassin-LOT-SAISON')).toMatchObject({ debut: AUJOURDHUI, fin: '2026-12-14', brassagePrevu: '2026-11-10' });
+    expect(de('brassin-LOT-SAISON')).toMatchObject({ debut: '2026-11-10', fin: '2026-12-08', pretePrevue: '2026-12-14', brassagePrevu: '2026-11-10' });
     const stout = de('brassin-LOT-STOUT-4');
     expect(stout).toMatchObject({ debut: '2026-11-25', preteLe: '2026-12-23' });
     expect(texteDuree(stout)).toBe('J0 / 28 · prête 23 déc.');

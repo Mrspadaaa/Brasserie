@@ -50,7 +50,9 @@ describe('PC-145 : l’aperçu d’un glissé montre la courbe que le geste écr
 describe('PC-155 : le message d’un glissé nomme la chose', () => {
   it('le nom passe en tête, l’effet chiffré reste entier à part (le nom cède le premier)', () => {
     const res = deplacer(chose, 4, ctx());
-    expect(res.ok && res.message.texte).toBe('Saison de ferme · À dépenser 4 927 : creux S50 → S1');
+    /* D395 et D397 : posée à sa date (10 nov., S46), +4 colonnes = 8 déc. (S50) ; l'emballage, une semaine avant « prête » au plus tôt
+       (max(8 déc., aujourd'hui) + 28 j = 5 janv.), tombe le 29 déc. : S53 (2026 a 53 semaines ISO) */
+    expect(res.ok && res.message.texte).toBe('Saison de ferme · À dépenser 4 927 : creux S50 → S53');
     const avant = { semaines: [-66000, -65000, -65000, -66000].map((libre, index) => ({ index, lundi: `2026-12-${String(1 + 7 * index).padStart(2, '0')}`, numero: 47 + index, caisse: libre, libre, reserve: 0, variation: 0, mouvements: [], tendance: 0 })) } as unknown as CourbeCaisse;
     const apres = { semaines: avant.semaines.map((s, i) => (i === 3 ? { ...s, libre: -65900 } : s)) } as unknown as CourbeCaisse;
     const t = texteEffetCreux(avant, apres, effetCaisse(avant, apres), 'Hotte')!;

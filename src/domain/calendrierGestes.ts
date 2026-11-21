@@ -357,7 +357,12 @@ export function choseAllongee(chose: ChoseCalendrier, jours: number, aujourdhui:
     /* CRITIQUE-7 n° 2 : la barre court d'aujourd'hui à « prête » ; tirer de n jours repousse les deux d'autant. Sans cycle connu : rien ne bouge (le geste refuse) */
     if (!chose.pretePrevue) return chose;
     const prete = decale(chose.pretePrevue, jours);
-    const plancher = brassagePoseAuPasse(chose.brassagePrevu ?? chose.debut, aujourdhui) || aujourdhui <= chose.debut ? chose.debut : aujourdhui;
+    /* D397 : posé à sa date dans le passé, sa barre (j0 → j0 + cycle) et « prête le » (au plus tôt aujourd'hui + cycle) bougent d'autant */
+    if (brassagePoseAuPasse(chose.brassagePrevu ?? chose.debut, aujourdhui)) {
+      const fin = decale(chose.fin, jours);
+      return fin <= chose.debut ? chose : { ...chose, fin, pretePrevue: prete, duree: dureePasBrassee(prete) };
+    }
+    const plancher = aujourdhui <= chose.debut ? chose.debut : aujourdhui;
     if (prete <= plancher) return chose;
     return { ...chose, fin: prete, pretePrevue: prete, duree: dureePasBrassee(prete) };
   }
