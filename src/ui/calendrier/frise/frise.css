@@ -148,10 +148,12 @@ button.cal-lie::before { content: ''; position: absolute; inset: -6px -2px; }
    24 px de large au plus, centrée sur son icône, et n'atteint jamais le milieu de la barre : saisie par son milieu, la barre se déplace. */
 /* D384 (18.11, jeu C « Par cuve, phases visibles », `.phases` de choix-calendrier/couleurs) : le pied de la barre est coloré par phase, d'un bord
    extérieur à l'autre, chaque phase dans la couleur de son étape (jetons `--etape-…`, Barre.tsx) ; une chose proposée l'a pâli (0,55). */
-.cal-barre { --cal-bg: 5px; --cal-bd: 1.5px; }
-.cal-piste { position: absolute; left: calc(-1 * var(--cal-bg)); right: calc(-1 * var(--cal-bd)); bottom: -1.5px; height: 5px; border-radius: 0 0 6px 6px; overflow: hidden; pointer-events: none; }
+/* D406 : la barre et sa piste sont des conteneurs (`cqw`) ; phases et icônes s'y posent par `translate`, jamais par `left` : une semaine
+   dépliée ou une autre période les déplace sans décalage de mise en page (même rendu). */
+.cal-barre { --cal-bg: 5px; --cal-bd: 1.5px; container-type: inline-size; }
+.cal-piste { position: absolute; left: calc(-1 * var(--cal-bg)); right: calc(-1 * var(--cal-bd)); bottom: -1.5px; height: 5px; border-radius: 0 0 6px 6px; overflow: hidden; pointer-events: none; container-type: inline-size; }
 .cal-paysage .cal-piste { height: 4px; }
-.cal-ph { position: absolute; top: 0; bottom: 0; left: calc(var(--a)); width: calc(var(--b) - var(--a)); background: var(--p, var(--c)); }
+.cal-ph { position: absolute; top: 0; bottom: 0; left: 0; translate: calc(var(--a)) 0; width: calc(var(--b) - var(--a)); background: var(--p, var(--c)); }
 .cal-pointille .cal-ph, .cal-prevu .cal-ph { opacity: 0.55; }
 
 /* D385 : la grille des jours (variantes B et C) ; le pincer laisse le défilement vertical au navigateur */
@@ -179,10 +181,10 @@ button.cal-lie::before { content: ''; position: absolute; inset: -6px -2px; }
    prise gardent leur place d'avant (24 px de large, 44 px pour la fin, dans la ligne de 30 px). */
 /* D384 (« icône plus petit ») : 14 px (13 en paysage) au lieu des 17 de la maquette, picto de 8 px ; le disque est centré sur le pied coloré.
    L'encre du picto (`--ei`) est le jeton de son étape (blanc en clair ; sombre en cave, blanc sur la garde). */
-.cal-jalon { position: absolute; left: clamp(7px, var(--x, 0%), calc(100% - 7px)); bottom: -6px; z-index: 2; box-sizing: border-box; display: grid; place-items: center; width: 14px; height: 14px; margin-left: -7px; border-radius: 50%; border: 1.5px solid rgb(var(--cave-950)); background: var(--e, var(--c)); color: var(--ei, rgb(var(--cave-950))); font-style: normal; }
+.cal-jalon { position: absolute; left: 0; translate: clamp(7px, var(--x, 0cqw), calc(100cqw - 7px)) 0; bottom: -6px; z-index: 2; box-sizing: border-box; display: grid; place-items: center; width: 14px; height: 14px; margin-left: -7px; border-radius: 50%; border: 1.5px solid rgb(var(--cave-950)); background: var(--e, var(--c)); color: var(--ei, rgb(var(--cave-950))); font-style: normal; }
 .cal-jalon > svg { width: 8px; height: 8px; pointer-events: none; }
 .cal-jalon::before { content: ''; position: absolute; inset: -2px -5px -4px; }
-.cal-paysage .cal-jalon { left: clamp(6.5px, var(--x, 0%), calc(100% - 6.5px)); bottom: -5.5px; width: 13px; height: 13px; margin-left: -6.5px; border-width: 1px; }
+.cal-paysage .cal-jalon { translate: clamp(6.5px, var(--x, 0cqw), calc(100cqw - 6.5px)) 0; bottom: -5.5px; width: 13px; height: 13px; margin-left: -6.5px; border-width: 1px; }
 .cal-paysage .cal-jalon > svg { width: 8px; height: 8px; }
 .cal-paysage .cal-jalon::before { inset: 0 -5.5px -2px; }
 /* CRITIQUE-5 n° 11 (D-103, E25) : le jalon de fin se saisit au doigt : une zone de prise de 44 px de large, invisible, posée au-dessus de la poignée

@@ -6,6 +6,7 @@ import { CLASSE_TEINTE, ContenuEtiquette, DureeTexte, PastilleLie, dureeVue, lar
 import { usePointeur } from './usePointeur';
 import { prisesDuBord, useToucherNom, zoneToucher } from './zoneToucher';
 import { ETAPE_BRASSIN, couleurEtape, encreEtape, estEtape, type EtapeBrassin } from './etapes';
+import { posee, poseeADroite } from './posee';
 
 /**
  * Une barre de la frise (E24 à E32). Elle porte ses gestes : toucher (le détail), appui long (le menu), glisser (déplacer en direct, f1-a),
@@ -174,8 +175,9 @@ function phases(jalons: readonly JalonBrassin[] | undefined, total: number, o = 
  */
 export function posPiste(p: number): string {
   if (p <= 0) return '0px';
-  if (p >= 100) return '100%';
-  return `(var(--cal-bg) + (100% - var(--cal-bg) - var(--cal-bd)) * ${Number((p / 100).toFixed(4))})`;
+  /* D406 : en cqw (la piste est un conteneur), pour se poser par `translate` (frise.css, `.cal-ph`) */
+  if (p >= 100) return '100cqw';
+  return `(var(--cal-bg) + (100cqw - var(--cal-bg) - var(--cal-bd)) * ${Number((p / 100).toFixed(4))})`;
 }
 
 /**
@@ -360,22 +362,24 @@ export const Barre: React.FC<BarreProps> = props => {
   const pointsGroupes = n > 0 && !!props.largeurJour && props.largeurJour >= props.largeurColonne - 0.5;
   /* CAL-PASSE voie S, R2-1 : les zones de prise du bord se réduisent avec la barre (jamais plus du tiers : le milieu d'une barre courte la déplace) */
   const prises = prisesDuBord(w);
+  /* D406 : la barre et ce qui l'accompagne se posent par `transform` (posee.ts) ; le glissé s'ajoute à la translation */
   const style: React.CSSProperties = {
-    left: gauche, top: haut, width: w, height: hauteur, transform: decalage ? `translateX(${decalage}px)` : undefined,
+    ...posee(gauche + decalage, haut), width: w, height: hauteur,
     ['--bord-in' as string]: `${prises.dedans}px`, ['--fin-in' as string]: `${prises.jalonSup}px`,
   };
-  const lblStyle: React.CSSProperties = cote === 'gauche'
-    ? { right: `calc(100% - ${gauche + decalage - (props.retrait ?? 0)}px + 6px)` }
-    : cote === 'droite'
-      ? { left: gauche + w + decalage + 6 }
-      : { left: gauche + decalage + 6 };
   /* deux lignes (n° 31) : 2 × 14 px, la boîte prend la hauteur de la ligne, jamais une lettre rognée ; la barre haute garde son nom sur sa
      première ligne (la hauteur d'une barre simple) */
   const hautNom = bas?.ou === 'barre' ? Math.max(18, hauteur - Math.round(hauteur / 2) - 2) : hauteur;
   /* PC-158 : 34 px au moins, centrée sur la barre (14 + 3 d'air + 16 de pastille « lié à ») */
   const lblHaut = props.deuxLignes ? { top: haut - (Math.max(hauteur + 6, 34) - hauteur) / 2, height: Math.max(hauteur + 6, 34) } : { top: haut, height: hautNom };
   const dureeMemeLigne = dureeDedans && bas?.ou !== 'barre' ? dureeDedans.largeur + 4 : 0;
-  const lblPlace = { ...lblStyle, ...lblHaut, maxWidth: cote === 'dedans' ? Math.max(0, wTexte - 12 - dureeMemeLigne) : Math.max(16, placeEtiquette) };
+  const lblMax = cote === 'dedans' ? Math.max(0, wTexte - 12 - dureeMemeLigne) : Math.max(16, placeEtiquette);
+  const lblPlace: React.CSSProperties = {
+    height: lblHaut.height,
+    ...(cote === 'gauche'
+      ? poseeADroite(gauche + decalage - (props.retrait ?? 0) - 6, lblHaut.top, lblMax)
+      : { ...posee(cote === 'droite' ? gauche + w + decalage + 6 : gauche + decalage + 6, lblHaut.top), maxWidth: lblMax })
+  };
   /* pendant f2-a, la durée tirée remplace le nom d'une barre simple ; la barre haute et la phrase du dessous gardent le nom (elles ont leur ligne) */
   /* CAL-PASSE voie S2, R2-2 : sans place libre, la durée se lit dans la bande basse (`sansPlace`) et le nom reste où il est, lisible */
   const [sansPlace, setSansPlace] = React.useState(false);
@@ -443,7 +447,8 @@ export const Barre: React.FC<BarreProps> = props => {
               data-point-texte={`${j.libelle} · ${jourLisible(j.jour)}`}
               className={`cal-jalon${pointVu === j.id ? ' cal-jalon-vu' : ''}`}
               /* CRITIQUE-5 n° 29 : l'icône reste dans sa barre (borné par frise.css), jamais une demi-icône hors de la grille */
-              style={{ ['--x' as string]: `${total > 0 ? jalonVu(j.ecart) : 0}%`, ['--e' as string]: couleurEtape(j.id as EtapeBrassin), ['--ei' as string]: encreEtape(j.id as EtapeBrassin) }}
+              /* D406 : `--x` en cqw (la barre est un conteneur) : l'icône se pose par `translate` (frise.css) */
+              style={{ ['--x' as string]: `${total > 0 ? jalonVu(j.ecart) : 0}cqw`, ['--e' as string]: couleurEtape(j.id as EtapeBrassin), ['--ei' as string]: encreEtape(j.id as EtapeBrassin) }}
             >
               <etape.Icone aria-hidden="true" strokeWidth={2.5} />
             </i>
@@ -493,11 +498,11 @@ export const Barre: React.FC<BarreProps> = props => {
       {bas?.ou === 'dessous' && phraseDessous && (
         <span
           className={`cal-lbl cal-lbl-sous ${CLASSE_TEINTE[chose.rangee]}`} data-phrase-sous={chose.id} aria-hidden="true"
-          style={{ left: bas.x + decalage, top: haut + bas.dy, height: hauteur }}
+          style={{ ...posee(bas.x + decalage, haut + bas.dy), height: hauteur }}
         ><small className="cal-lbl-j"><DureeTexte texte={phraseDessous} /></small></span>
       )}
       {lienIcone && (
-        <span className={`cal-lie-coin ${CLASSE_TEINTE[chose.rangee]}`} style={{ left: gauche + w + decalage - 16, top: haut - 10 }}>
+        <span className={`cal-lie-coin ${CLASSE_TEINTE[chose.rangee]}`} style={posee(gauche + w + decalage - 16, haut - 10)}>
           <PastilleLie lie={lienIcone} icone={nom} />
         </span>
       )}

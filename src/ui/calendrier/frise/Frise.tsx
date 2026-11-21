@@ -3,6 +3,7 @@ import { RANGEES, barreLiee, ecartJours, estPonctuel, type ChoseCalendrier, type
 import { colonneCourante, MESURES_PAYSAGE, MESURES_PAYSAGE_BRASSINS, MESURES_PORTRAIT, Rangee, pastille, positionDans, texteRenvoi, type Colonne, type DragEtat, type Renvoi, type RangeeProps } from './Rangee';
 import { todayISO } from '../../../domain/finance/ledger';
 import { GrilleJours } from './GrilleJours';
+import { posee } from './posee';
 import { usePincement } from './usePincement';
 import { cheminDePoints, routerFil } from './routageFil';
 import { aDesJours, type SensPincement } from '../echelle';
@@ -388,6 +389,28 @@ export const Frise: React.FC<FriseProps> = props => {
     const vues = parRangee(r).filter(c => positionDans(colonnes, c));
     return (masquees.includes(r) || (!!filtre && filtre !== r) ? vues.filter(c => epingles.includes(c.id)) : vues).length > 0;
   }) : undefined;
+  /* D406 et D408 (21.11) : à une même échelle, chaque piste garde le plus grand nombre de lignes qu'elle a montré ; une
+     rangée qui a montré quelque chose ne se range plus parmi les vides. Changer de période ou déplier une semaine ne fait plus bouger le
+     calendrier ; changer d'échelle (un autre geste, un autre rendu) repart de zéro. */
+  /* la semaine dépliée (`semaine-depliee`) reste l'échelle d'où on l'a dépliée : la replier, ou passer à une période où elle n'est plus, n'est
+     pas un changement d'échelle */
+  const echelleBase = React.useRef(props.echelle);
+  if (props.echelle !== 'semaine-depliee') echelleBase.current = props.echelle;
+  const cleHauteurs = `${echelleBase.current ?? ''}:${paysage ? 'p' : ''}`;
+  /* la mémoire vaut pour une largeur mesurée : rien n'est retenu au premier rendu (largeur de repli, avant mesure : 2 lignes posées à
+     360 px gardaient une ligne vide de 30 px dans Travaux au repos) ; elle repart de zéro quand la largeur change vraiment (> 1 px,
+     rotation, fenêtre), jamais quand la mesure repasse à 0 */
+  const hauteurs = React.useRef<{ cle: string; largeur: number; lignes: Map<IdRangee, number> }>({ cle: cleHauteurs, largeur: mesuree, lignes: new Map() });
+  if (hauteurs.current.cle !== cleHauteurs || (mesuree > 0 && Math.abs(mesuree - hauteurs.current.largeur) > 1)) {
+    hauteurs.current = { cle: cleHauteurs, largeur: mesuree, lignes: new Map() };
+  }
+  const lignesGardees = hauteurs.current.lignes;
+  /* dépend de `mesuree` : une nouvelle mesure relance le relevé de chaque rangée, même si son nombre de lignes n'a pas changé */
+  const noterLignes = React.useCallback((r: IdRangee, n: number) => {
+    if (!mesuree) return;
+    const m = hauteurs.current.lignes;
+    if (n > (m.get(r) ?? 0)) m.set(r, n);
+  }, [mesuree]);
 
   return (
     <div
@@ -430,7 +453,7 @@ export const Frise: React.FC<FriseProps> = props => {
           </g>
         </svg>
       )}
-      {courante && <i className="cal-col-now" aria-hidden="true" data-col-now style={{ left: courante.debut * largeurColonne, width: courante.n * largeurColonne }} />}
+      {courante && <i className="cal-col-now" aria-hidden="true" data-col-now style={{ ...posee(courante.debut * largeurColonne), width: courante.n * largeurColonne }} />}
       {props.tete}
       {grouperVides(rangees.map(r => {
         const dedans = parRangee(r);
@@ -441,7 +464,7 @@ export const Frise: React.FC<FriseProps> = props => {
         /* un filtre sans rien d'épinglé ne laisse pas la rangée : « Tout afficher » la rend */
         if (filtreeParFiltre && !masqueeParOeil && epinglees.length === 0) return null;
         /* paquet G n° 3 : une rangée vide (rien dans la fenêtre, ni renvoi, ni alerte), affichée, se range avec ses voisines vides */
-        const vide = !masquee && !dedans.some(c => positionDans(colonnes, c)) && !(r === 'ventes' && renvois.length) && !(props.alerte && props.alerte.rangee === r);
+        const vide = !masquee && !dedans.some(c => positionDans(colonnes, c)) && !(r === 'ventes' && renvois.length) && !(props.alerte && props.alerte.rangee === r) && !lignesGardees.get(r);
         return { r, vide, noeud: (
           <Rangee
             key={r}
@@ -475,6 +498,8 @@ export const Frise: React.FC<FriseProps> = props => {
             alerte={props.alerte && props.alerte.rangee === r && !masquee ? props.alerte.noeud : undefined}
             eclairage={eclairage}
             rangeeDeBarre={rangeeDeBarre}
+            lignesMin={masquee ? 0 : lignesGardees.get(r) ?? 0}
+            onLignes={noterLignes}
             grille={avecJours ? <GrilleJours colonnes={colonnes} largeurColonne={largeurColonne} aujourdhui={props.aujourdhui} mot={r === derniereAvecPiste} /> : undefined}
           />
         ) };

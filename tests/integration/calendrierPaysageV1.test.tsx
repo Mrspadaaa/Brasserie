@@ -1,5 +1,6 @@
 import React from 'react';
 import { afterEach, describe, expect, it } from 'vitest';
+import { lirePosee } from '../../src/ui/calendrier/frise/posee';
 import { cleanup, render } from '@testing-library/react';
 import { ajouterJours, lundiDe, type ChoseCalendrier } from '../../src/domain/calendrier';
 import { Frise } from '../../src/ui/calendrier/frise/Frise';
@@ -30,7 +31,7 @@ const monter = (choses: ChoseCalendrier[], paysage: boolean) => render(
 afterEach(() => cleanup());
 
 const hautsDeBarres = (rangee: string): number[] => [...document.querySelectorAll<HTMLElement>(`section[data-rangee="${rangee}"] .cal-barre`)]
-  .map(b => parseFloat(b.style.top)).filter(Number.isFinite).sort((a, b) => a - b);
+  .map(b => lirePosee(b.style).y).filter(Number.isFinite).sort((a, b) => a - b);
 const ecarts = (h: number[]) => h.slice(1).map((x, i) => x - h[i]);
 
 describe('PC-147 : l’espace entre deux brassins en paysage', () => {

@@ -1,5 +1,6 @@
 import React from 'react';
 import { afterEach, describe, expect, it } from 'vitest';
+import { lirePosee } from '../../src/ui/calendrier/frise/posee';
 import { cleanup, render } from '@testing-library/react';
 import { ajouterJours, etiquetteS, type ChoseCalendrier } from '../../src/domain/calendrier';
 import { MESURES_PORTRAIT, Rangee, type Colonne, type DragEtat } from '../../src/ui/calendrier/frise/Rangee';
@@ -26,7 +27,7 @@ const rangee = (choses: ChoseCalendrier[], drag: DragEtat | null = null) => (
   <Rangee id="brassins" choses={choses} colonnes={COLS} largeurColonne={61} largeur={366} mesures={MESURES_PORTRAIT} vueLarge={false} reserveDroite={76}
     masquee={false} cause={null} epingles={[]} etoiles={[]} partMax={0} drag={drag} onAjouter={rien} onBasculerMasque={rien} barre={gestes} />
 );
-const haut = (container: HTMLElement, id: string) => parseFloat((container.querySelector(`[data-chose="${id}"]`) as HTMLElement).style.top);
+const haut = (container: HTMLElement, id: string) => lirePosee((container.querySelector(`[data-chose="${id}"]`) as HTMLElement).style).y;
 
 describe('CAL-PASSE Q n° 6 : le bord tiré, la barre garde sa ligne', () => {
   const ssr = brassin('SSR', 'Ssr', 0, 2);

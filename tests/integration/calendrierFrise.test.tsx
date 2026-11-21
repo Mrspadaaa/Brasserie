@@ -1,5 +1,6 @@
 import React from 'react';
 import { readFileSync } from 'node:fs';
+import { lirePosee } from '../../src/ui/calendrier/frise/posee';
 import { join } from 'node:path';
 import { etirerDuree, joursActifs, lundiPose, poserHorizon } from '../helpers/dureeFeuille';
 import { choseFrise } from '../helpers/choseFrise';
@@ -265,7 +266,7 @@ describe('CRITIQUE-2 (corr. 2, L2) : ventes sans chevauchement, caddies nommés,
     monter({ etat });
     const boites = [...rangee('Ventes').querySelectorAll<HTMLElement>('[data-marque], [data-barre]')]
       .filter(e => /^Noël/.test(e.getAttribute('aria-label') ?? ''))
-      .map(e => ({ g: parseFloat(e.style.left), h: parseFloat(e.style.top), l: parseFloat(e.style.width), t: parseFloat(e.style.height) }));
+      .map(e => ({ g: lirePosee(e.style).x, h: lirePosee(e.style).y, l: parseFloat(e.style.width), t: parseFloat(e.style.height) }));
     expect(boites).toHaveLength(2);
     const [a, b] = boites;
     expect(a.g + a.l <= b.g || b.g + b.l <= a.g || a.h + a.t <= b.h || b.h + b.t <= a.h).toBe(true);
@@ -610,7 +611,7 @@ describe('CRITIQUE-5 (lot2-frise-rangees) : noms entiers, durée, pastille, éch
       expect(nom.endsWith('…'), nom).toBe(false);
       /* la place libre de la piste, mesurée sur l'objet de l'étiquette (sa barre ou sa marque, juste avant elle) */
       const objet = l.previousElementSibling as HTMLElement;
-      const o0 = parseFloat(objet.style.left), w = parseFloat(objet.style.width), bord = Number(document.querySelector('[data-frise]')!.getAttribute('data-largeur'));
+      const o0 = lirePosee(objet.style).x, w = parseFloat(objet.style.width), bord = Number(document.querySelector('[data-frise]')!.getAttribute('data-largeur'));
       const placeLibre = Math.max(bord - (o0 + w) - 8, o0 - 8, objet.hasAttribute('data-barre') ? w - 16 : 0);
       if (placeLibre < besoin) continue;
       expect(max, `${nom} ${m}`).toBeGreaterThanOrEqual(besoin);
@@ -909,8 +910,8 @@ describe('CRITIQUE-7 (lot corr7-C-frise) : lien sans nom répété, points de la
       /* le nom dans la barre : la barre est haute, le nom sur sa ligne du haut, les points sur la ligne du dessous (bas : 8 px, 7 px de haut) */
       expect(b, vue).toHaveClass('cal-barre-2l');
       expect(pts, vue).toHaveClass('cal-pts-bas');
-      const basNom = parseFloat(lbl.style.top) + parseFloat(lbl.style.height);
-      const hautPoints = parseFloat(b.style.top) + parseFloat(b.style.height) - 8 - 7;
+      const basNom = lirePosee(lbl.style).y + parseFloat(lbl.style.height);
+      const hautPoints = lirePosee(b.style).y + parseFloat(b.style.height) - 8 - 7;
       expect(basNom, vue).toBeLessThanOrEqual(hautPoints);
     } else {
       /* à côté, du côté libre (E24) : hors de la barre */
@@ -968,7 +969,7 @@ describe('CRITIQUE-7 (lot corr7-C-frise) : lien sans nom répété, points de la
     try {
       render(<Frise choses={[malt]} colonnes={cols} paysage={false} ordre={[]} masquees={[]} filtre={null} epingles={[]} etoiles={[]} drag={null} largeurRepli={360} reserveDroite={76} onAjouter={rien} onBasculerMasque={rien} barre={gestes} />);
       const lbl = () => document.querySelector<HTMLElement>('[data-rangee="achats"] .cal-lbl')!;
-      const droite = (el: HTMLElement) => parseFloat(el.style.left) + parseFloat(el.style.maxWidth);
+      const droite = (el: HTMLElement) => lirePosee(el.style).x + parseFloat(el.style.maxWidth);
       /* au repos, la rangée Achats est loin du + : le nom se pose à droite de sa barre (S49), jusque dans la zone du + */
       expect(lbl().className).toMatch(/cal-lbl-droite/);
       expect(droite(lbl())).toBeGreaterThan(360 - 76);
@@ -1049,7 +1050,7 @@ describe('CRITIQUE-9 (lot corr9-C-frise) : « prête le … » jamais perdue, ic
     const stout = vues.find(b => /^Stout maison/.test(b.getAttribute('aria-label') ?? ''))!;
     expect(stout).toBeTruthy();
     for (const b of vues) expect(b.style.height, b.getAttribute('aria-label') ?? '').toBe(stout.style.height);
-    const hauts = [...new Set(vues.map(b => parseFloat(b.style.top)))].sort((a, b) => a - b);
+    const hauts = [...new Set(vues.map(b => lirePosee(b.style).y))].sort((a, b) => a - b);
     expect(hauts.length).toBeGreaterThanOrEqual(3);
     for (let i = 1; i < hauts.length; i++) {
       const ecart = hauts[i] - hauts[i - 1] - parseFloat(stout.style.height);
@@ -1194,7 +1195,8 @@ describe('CRITIQUE-12 (lot corr12-B-frise-domaine) : une fête hors courbe n’e
     const lbl = document.querySelector<HTMLElement>('.cal-lbl-gauche')!;
     expect(lbl.textContent).toMatch(/Noël privés\s*\+640/);
     /* jsdom réduit « calc(100% - 320px + 6px) » : le bord droit de l'étiquette est à `finEtiquette` */
-    expect(lbl.style.right).toBe(`calc(100% - ${finEtiquette}px)`);
+    /* D406 : ancrée par son bord droit, posée par `transform` (posee.ts) */
+    expect(lirePosee(lbl.style)).toMatchObject({ x: finEtiquette, droite: true });
   });
 
   /* l'An de la frise : les mois de la courbe, à 390 */
@@ -1264,7 +1266,7 @@ describe('CRITIQUE-12 (lot corr12-B-frise-domaine) : une fête hors courbe n’e
     const ronds = [...document.querySelectorAll<HTMLElement>('[data-jalon]')];
     /* la fenêtre montre J0 à J13 : seul le brassage est dessiné, à gauche ; la garde et le conditionnement sont rognés (absents) */
     expect(ronds.map(r => r.getAttribute('data-jalon'))).toEqual(['brassage']);
-    expect(ronds[0].style.getPropertyValue('--x')).toBe('0%');
+    expect(ronds[0].style.getPropertyValue('--x')).toBe('0cqw');
   });
 
   it('n° 4 : sans zone réservée (paysage sans + sur la frise), l’étiquette reste collée à sa pastille, du côté libre habituel', () => {

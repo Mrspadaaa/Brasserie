@@ -173,8 +173,8 @@ describe('CAL-POINTS-MUETS (« Les petits points là donne pas d’info ») : ch
     const v = (p: HTMLElement, k: string) => p.style.getPropertyValue(k);
     expect(v(phases[0], '--a')).toBe('0px');
     for (let i = 0; i < phases.length - 1; i++) expect(v(phases[i], '--b')).toBe(v(phases[i + 1], '--a'));
-    expect(v(phases[phases.length - 1], '--b')).toBe('100%');
-    expect(v(phases[2], '--a')).toMatch(/^\(var\(--cal-bg\) \+ \(100% - var\(--cal-bg\) - var\(--cal-bd\)\) \* 0\.3571\)$/);
+    expect(v(phases[phases.length - 1], '--b')).toBe('100cqw');
+    expect(v(phases[2], '--a')).toMatch(/^\(var\(--cal-bg\) \+ \(100cqw - var\(--cal-bg\) - var\(--cal-bd\)\) \* 0\.3571\)$/);
     /* chaque picto prend l'encre de son étape (blanc en clair ; sombre en cave, sauf la garde) */
     expect([...document.querySelectorAll<HTMLElement>('[data-jalon]')].map(p => p.style.getPropertyValue('--ei'))).toEqual(
       ['brassage', 'fermentation', 'dry-hop', 'garde', 'conditionnement'].map(id => `rgb(var(--etape-${id}-encre))`));

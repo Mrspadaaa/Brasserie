@@ -61,7 +61,7 @@ const ok = (c, m) => console.log(`  ok  ${c}${m ? ` : ${m}` : ''}`);
 function armer(x, y, ajoute) {
   if (!window.__pr) {
     window.__pr = { ls: [] };
-    new PerformanceObserver((l) => { for (const e of l.getEntries()) window.__pr.ls.push({ v: e.value, t: e.startTime, haut: Math.min(...(e.sources || []).map((s) => (s.previousRect ? s.previousRect.top : -1e9)), 1e9), src: (e.sources || []).slice(0, 3).map((s) => (s.node && s.node.nodeType === 1 ? (s.node.getAttribute('aria-label') || s.node.className || s.node.tagName).toString().slice(0, 40) : '#')) }); }).observe({ type: 'layout-shift', buffered: false });
+    new PerformanceObserver((l) => { for (const e of l.getEntries()) window.__pr.ls.push({ v: e.value, t: e.startTime, haut: Math.min(...(e.sources || []).map((s) => (s.previousRect ? s.previousRect.top + s.previousRect.height / 2 : -1e9)), 1e9), src: (e.sources || []).slice(0, 3).map((s) => (s.node && s.node.nodeType === 1 ? (s.node.getAttribute('aria-label') || s.node.className || s.node.tagName).toString().slice(0, 40) : '#')) }); }).observe({ type: 'layout-shift', buffered: false });
   }
   const vis = (e) => { const r = e.getBoundingClientRect(); const c = getComputedStyle(e); return r.width > 0 && r.height > 0 && c.visibility !== 'hidden' && c.opacity !== '0'; };
   // en-tête : le bas le plus bas des éléments fixes ou collants posés en haut de l'écran (barre du haut, sous-onglets collants)
@@ -107,8 +107,16 @@ function relever() {
   const t = (e) => (e && e.isConnected ? e.getBoundingClientRect().top : null);
   const toutes = p.ls.slice(p.n0); if (p.mo) p.mo.disconnect();
   p.ajout = null;
-  for (const n of p.ajouts || []) { if (!n.isConnected) continue; const r = n.getBoundingClientRect(); if (r.height > 0 && r.width > 0 && r.bottom > 0 && r.top < innerHeight) p.ajout = Math.min(p.ajout ?? 1e9, r.top); }
-  // D407 : un décalage dont toutes les sources étaient sous le haut du contenu ajouté vient du geste lui-même
+  // D408 : le contenu ajouté commence à sa marge du haut, même fondue avec celle de son premier enfant (la fiche du Calendrier, posée 6 px
+  // sous sa barre) : au bas de l'élément qui le précède quand il est juste au-dessus, sinon à son haut moins sa marge.
+  for (const n of p.ajouts || []) {
+    if (!n.isConnected) continue; const r = n.getBoundingClientRect(); if (!(r.height > 0 && r.width > 0 && r.bottom > 0 && r.top < innerHeight)) continue;
+    const avant = n.previousElementSibling && !/absolute|fixed/.test(getComputedStyle(n.previousElementSibling).position) ? n.previousElementSibling.getBoundingClientRect().bottom : null;
+    const debut = avant != null && avant <= r.top && r.top - avant <= 24 ? avant : r.top - (parseFloat(getComputedStyle(n).marginTop) || 0);
+    p.ajout = Math.min(p.ajout ?? 1e9, debut);
+  }
+  // D407 : un décalage dont toutes les sources étaient sous le haut du contenu ajouté vient du geste lui-même. D408 : une source est « sous »
+  // quand son milieu l'est (le + d'une rangée, 44 px au doigt, déborde de 10 px au-dessus de sa rangée)
   const duGeste = (e) => p.ajout != null && e.haut >= p.ajout - 1;
   const nouvelles = toutes.filter((e) => !duGeste(e));
   return {
@@ -144,9 +152,15 @@ const R4A_FERMENTEUR = 'r4-a : la puce ouvre Matériel pleine largeur et défile
    elles, restent à 0) ; au premier épinglé elle passe seule à la ligne. Les options B (« ★ épinglés 0 » toujours là, +38 px au
    repos) et C (« ★ 1 », encore à la ligne sous 380 px) changeaient le repos : écartées. */
 const STOCK_EPINGLER = 'la pastille « ★ épinglés » naît au premier épinglé (D407, option A du pilote, 21.11)';
+/* D408 (21.11), exceptions VUE-SAUTE du Calendrier : « Cacher la courbe » change l'en-tête exprès (le geste retire la courbe, la frise
+   remonte d'autant) ; toucher « ZZ TEST Commande de malt » ouvre sa fiche juste sous sa barre (CAL-FICHE-CACHE-BARRE) : contenu ajouté par
+   le geste, marqué `ajoute` (D407). */
+const CAL_COURBE = 'Cacher la courbe retire la courbe de l\'en-tête, la frise remonte d\'autant (D408)';
+/* Le pendant de l'ajout : « Fermer » retire la fiche que le toucher avait ouverte sous sa barre ; les rangées du dessous reprennent leur place. */
+const CAL_FICHE = 'la fiche ouverte sous sa barre se referme : le geste retire son propre contenu (D408, pendant de l\'ouverture)';
 /* Chaque écran : comment l'atteindre, puis ses actions principales (texte du bouton ; `p` : préfixe ; `nav` : l'action change d'écran). */
 const ECRANS = [
-  { id: 'calendrier', aller: [['Calendrier', { dans: 'nav button' }]], actions: [['S47', { p: 1 }], ['S48', { p: 1 }], ['S49', { p: 1 }], ['Masquer Fêtes'], ['Cacher la courbe'], ['ZZ TEST Commande de malt', { p: 1 }], ['Fermer'], ['Ajouter dans Travaux'], ['Fermer'], ['Période suivante'], ['Période précédente']] },
+  { id: 'calendrier', aller: [['Calendrier', { dans: 'nav button' }]], actions: [['S47', { p: 1 }], ['S48', { p: 1 }], ['S49', { p: 1 }], ['Masquer Fêtes'], ['Cacher la courbe', { exception: CAL_COURBE }], ['ZZ TEST Commande de malt', { p: 1, ajoute: 1 }], ['Fermer', { exception: CAL_FICHE }], ['Ajouter dans Travaux'], ['Fermer'], ['Période suivante'], ['Période précédente']] },
   { id: 'bord', aller: [['Bord', { dans: 'nav button' }]], actions: [['Échéances et démarches', { p: 1 }], ['Tous'], ['Période précédente'], ['Période suivante'], ['Actions rapides'], ['Actions rapides']] },
   { id: 'finances', aller: [['Finances', { dans: 'nav button' }]], actions: [['sept.'], ['oct.'], ['tout'], ['nov.'], ['Solde et paramètres financiers', { p: 1 }]] },
   { id: 'brassins', aller: [['Brassins', { dans: 'nav button' }]], actions: [['En cuve', { p: 1 }], ['À brasser', { p: 1 }], ['Tous', { p: 1 }], ['Filtrer'], ['Filtrer'], ['Épingler le brassin B-ZZ-PLAN'], ['Recettes', { p: 1, nav: 1 }], ['Atelier R&D', { nav: 1 }], ['Carnet', { nav: 1 }], ['Brassins (', { p: 1, nav: 1 }]] },

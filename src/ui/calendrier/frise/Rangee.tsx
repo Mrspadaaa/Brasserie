@@ -4,6 +4,7 @@ import { ajouterJours, barreLiee, ecartJours, estMarque, estPonctuel, etiquetteS
 import { Barre, rectVolant, dureeDansBarre, formesDuree, largeurDuree, montantBarre, type BarreProps, type CoteEtiquette } from './Barre';
 import { CLASSE_TEINTE, Marque, couperNom, dureeVue, largeurPastilleLie, largeurTexte, lieMontre, type ModeDeuxLignes } from './Marque';
 import { appuiCommenceSur } from './usePointeur';
+import { posee, poseeADroite } from './posee';
 import { aDesJours } from '../echelle';
 
 /**
@@ -667,6 +668,10 @@ export interface RangeeProps {
   alerte?: React.ReactNode;
   /** D385 : la grille des jours (vue Jour, semaine dépliée), posée sous les choses de la piste ; absente : les traits de semaine, comme avant. */
   grille?: React.ReactNode;
+  /** D406 et D408 : le plus grand nombre de lignes déjà montré à cette échelle (la piste ne raccourcit pas au changement de période). */
+  lignesMin?: number;
+  /** Le nombre de lignes posées, retenu par Frise pour `lignesMin`. */
+  onLignes?: (id: IdRangee, lignes: number) => void;
   /** D386 : une barre touchée qui a des jalons liés : leurs ids (ils s'allument, les autres jalons pâlissent) ; absent : rien. */
   eclairage?: ReadonlySet<string> | null;
   /** D390 : la rangée de chaque barre (id → rangée), pour le point d'un jalon lié ; absent : aucun point. */
@@ -822,7 +827,13 @@ export const Rangee: React.FC<RangeeProps> = props => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [montreesEnSeries, colonnes, largeurColonne, largeur, reserveDroite, zoneTitre, paysage, vueLarge, cleRenvois, lieCourt, auJourVue, cleGardes]
   );
-  const hauteurLane = lignes === 0 ? 0 : lignes * mesures.ligne + 2;
+  /* D406 et D408 (21.11, « il faudrait des tailles fix car SI non ça fait bouger le calendrier ») : à une même échelle, la piste garde le plus
+     grand nombre de lignes qu'elle a montré (Frise le retient) : une autre période ou une semaine dépliée ne la raccourcit pas, les rangées
+     du dessous ne remontent pas. Une rangée masquée garde son comportement (le geste de l'œil la replie exprès). */
+  const lignesPiste = masquee ? lignes : Math.max(lignes, props.lignesMin ?? 0);
+  const onLignes = props.onLignes;
+  React.useLayoutEffect(() => { if (!masquee) onLignes?.(id, lignes); }, [onLignes, id, lignes, masquee]);
+  const hauteurLane = lignesPiste === 0 ? 0 : lignesPiste * mesures.ligne + 2;
   /*
    * CAL-FICHE-CACHE-BARRE (paquet G n° 4, 19.11) : la fiche d'une chose touchée s'ouvrait en fin de rangée, d'autres barres entre elle et la
    * barre touchée. Elle s'ouvre juste sous la ligne de sa barre : la piste se coupe après cette ligne (et après toute chose qui la déborde,
@@ -885,13 +896,13 @@ export const Rangee: React.FC<RangeeProps> = props => {
           </span>
         )}
       </header>
-      {hauteurLane > 0 && (coupe < 0 || coupe >= lignes - 1
-        ? piste(0, lignes - 1, hauteurLane, false)
+      {hauteurLane > 0 && (coupe < 0 || coupe >= lignesPiste - 1
+        ? piste(0, lignesPiste - 1, hauteurLane, false)
         : piste(0, coupe, (coupe + 1) * mesures.ligne, false))}
       {choisie && (
         <div className="cal-det-sous" data-detail-sous={choisie.chose.id} data-detail-ligne={coupe}>{props.detail}</div>
       )}
-      {hauteurLane > 0 && coupe >= 0 && coupe < lignes - 1 && piste(coupe + 1, lignes - 1, (lignes - coupe - 1) * mesures.ligne + 2, true)}
+      {hauteurLane > 0 && coupe >= 0 && coupe < lignesPiste - 1 && piste(coupe + 1, lignesPiste - 1, (lignesPiste - coupe - 1) * mesures.ligne + 2, true)}
       {props.alerte}
       {!choisie && props.detail}
     </section>
@@ -913,7 +924,7 @@ export const Rangee: React.FC<RangeeProps> = props => {
     const y = (ligne: number) => (ligne - de) * mesures.ligne + 2;
     const dedansPiste = (ligne: number) => ligne >= de && ligne <= a;
     /* la grille des jours se pose dans chaque morceau ; son mot « auj. » au pied du dernier seulement */
-    const grille = props.grille && React.isValidElement<{ mot?: boolean }>(props.grille) && coupe >= 0 && !suite && a < lignes - 1
+    const grille = props.grille && React.isValidElement<{ mot?: boolean }>(props.grille) && coupe >= 0 && !suite && a < lignesPiste - 1
       ? React.cloneElement(props.grille, { mot: false }) : props.grille;
     return (
         <div className={`cal-lane${props.grille ? ' cal-lane-jours' : ''}`} style={{ height: hauteur }} data-lane={id} {...(suite ? { 'data-lane-suite': '' } : {})}
@@ -974,13 +985,18 @@ export const Rangee: React.FC<RangeeProps> = props => {
             const aria = `Commander avant le ${jourLisible(k.jour)} · ${k.texte ?? k.chose.titre}`;
             return (
               <React.Fragment key={`cmd-${k.chose.id}`}>
-                <span data-jalon="commander" data-caddie={k.chose.id} className="cal-commander" aria-label={aria} role="img" style={{ left: k.centre - 9, top }}>
+                <span data-jalon="commander" data-caddie={k.chose.id} className="cal-commander" aria-label={aria} role="img" style={posee(k.centre - 9, top)}>
                   <ShoppingCart size={12} aria-hidden="true" />
                 </span>
                 {k.texte && (
                   <span
                     className={`cal-lbl cal-lbl-${k.cote} cal-lbl-caddie${k.lignes ? ' cal-lbl-2n' : ''}`} aria-hidden="true"
-                    style={{ ...(k.lignes ? { top: y(k.ligne) - 2, height: mesures.barre + 4 } : { top: y(k.ligne), height: mesures.barre }), maxWidth: Math.max(40, k.place), ...(k.cote === 'droite' ? { left: k.centre + CADDIE_PX / 2 + 6 } : { right: `calc(100% - ${k.centre - CADDIE_PX / 2 - (k.retrait ?? 0)}px + 6px)` }) }}
+                    style={{
+                      height: k.lignes ? mesures.barre + 4 : mesures.barre,
+                      ...(k.cote === 'droite'
+                        ? { ...posee(k.centre + CADDIE_PX / 2 + 6, k.lignes ? y(k.ligne) - 2 : y(k.ligne)), maxWidth: Math.max(40, k.place) }
+                        : poseeADroite(k.centre - CADDIE_PX / 2 - (k.retrait ?? 0) - 6, k.lignes ? y(k.ligne) - 2 : y(k.ligne), Math.max(40, k.place)))
+                    }}
                   >
                     {k.lignes
                       ? <><span className="cal-lbl-l1"><span className="cal-lbl-t cal-lbl-ent">{k.lignes[0]}</span></span><span className="cal-lbl-l2"><span className="cal-lbl-t cal-lbl-ent">{k.lignes[1]}</span></span></>
@@ -996,7 +1012,7 @@ export const Rangee: React.FC<RangeeProps> = props => {
             return (
               <button
                 key={r.chose.id} type="button" className="cal-renvoi" data-renvoi={r.chose.id}
-                style={{ left: pos.x, top: y(pos.ligne) + Math.max(0, (mesures.barre - 24) / 2), maxWidth: largeursRenvois[i] }}
+                style={{ ...posee(pos.x, y(pos.ligne) + Math.max(0, (mesures.barre - 24) / 2)), maxWidth: largeursRenvois[i] }}
                 onClick={() => props.onRenvoi?.(r.chose)}
               >
                 {r.texte}<ChevronRight size={14} aria-hidden="true" />

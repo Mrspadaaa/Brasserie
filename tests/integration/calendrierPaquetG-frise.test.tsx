@@ -1,5 +1,6 @@
 import React from 'react';
 import { afterEach, describe, expect, it, vi } from 'vitest';
+import { lirePosee } from '../../src/ui/calendrier/frise/posee';
 import { cleanup, render } from '@testing-library/react';
 import { ajouterJours, lundiDe, type ChoseCalendrier } from '../../src/domain/calendrier';
 import { Frise } from '../../src/ui/calendrier/frise/Frise';
@@ -74,7 +75,7 @@ describe('n° 4 : la fiche s’ouvre juste sous la ligne de la barre touchée', 
   it('sélection du brassin de la ligne k : le détail suit la ligne k, avant toute barre d’une autre ligne plus bas', () => {
     monter(trois(), { selectionId: 'b', detail });
     const barres = [...document.querySelectorAll<HTMLElement>('section[data-rangee="brassins"] [data-barre]')];
-    const ligneDe = (el: HTMLElement) => Math.round((parseFloat(el.style.top) - 2) / 30) + (el.closest('[data-lane-suite]') ? 2 : 0);
+    const ligneDe = (el: HTMLElement) => Math.round((lirePosee(el.style).y - 2) / 30) + (el.closest('[data-lane-suite]') ? 2 : 0);
     const b = barres.find(x => x.getAttribute('data-chose') === 'b')!;
     const k = ligneDe(b);
     const sous = document.querySelector<HTMLElement>('[data-detail-sous]')!;
@@ -99,7 +100,7 @@ describe('n° 4 : la fiche s’ouvre juste sous la ligne de la barre touchée', 
     monter(trois(), { detail });
     expect(document.querySelector('[data-detail-sous]')).toBeNull();
     expect(document.querySelector('[data-lane-suite]')).toBeNull();
-    const tops = [...document.querySelectorAll<HTMLElement>('section[data-rangee="brassins"] [data-barre]')].map(x => parseFloat(x.style.top)).sort((a, b) => a - b);
+    const tops = [...document.querySelectorAll<HTMLElement>('section[data-rangee="brassins"] [data-barre]')].map(x => lirePosee(x.style).y).sort((a, b) => a - b);
     expect(tops).toEqual([2, 32, 62]);
   });
 

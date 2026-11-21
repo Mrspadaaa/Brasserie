@@ -1,5 +1,6 @@
 import React from 'react';
 import { choseFrise } from '../helpers/choseFrise';
+import { lirePosee } from '../../src/ui/calendrier/frise/posee';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { act, cleanup, fireEvent, render, screen, waitFor, within } from '@testing-library/react';
 import { BancCalendrier, etatBanc, type EtatBanc } from '../../src/design/CalendrierPreview';
@@ -125,16 +126,16 @@ describe('C12 (D-103) : glisser un brassin planifié, son jalon de fin, un jalon
   it('la barre de 1 colonne : +1 semaine ; ses jalons bougent avec elle ; Annuler la rend à sa place', async () => {
     const { appels } = monter({ etat: etat() });
     const b = barre(/^Mini/);
-    const avant = parseFloat((b as HTMLElement).style.left);
+    const avant = lirePosee((b as HTMLElement).style).x;
     expect(b.querySelectorAll('[data-jalon]').length).toBeGreaterThanOrEqual(3);
     glisser(b, colonne());
     await waitFor(() => expect(appels).toHaveLength(1));
     expect(appels[0]).toMatchObject({ op: 'patch', collection: 'batches', id: 'LOT-MINI' });
     expect(JSON.stringify(appels[0].patch)).toMatch(/2026-12-07|07\.12\.2026/);
-    await waitFor(() => expect(parseFloat((barre(/^Mini/) as HTMLElement).style.left)).toBeCloseTo(avant + colonne(), 0));
+    await waitFor(() => expect(lirePosee((barre(/^Mini/) as HTMLElement).style).x).toBeCloseTo(avant + colonne(), 0));
     expect(barre(/^Mini/).querySelectorAll('[data-jalon]').length).toBeGreaterThanOrEqual(3);
     fireEvent.click(within(await screen.findByRole('status')).getByRole('button', { name: /Annuler/ }));
-    await waitFor(() => expect(parseFloat((barre(/^Mini/) as HTMLElement).style.left)).toBeCloseTo(avant, 0));
+    await waitFor(() => expect(lirePosee((barre(/^Mini/) as HTMLElement).style).x).toBeCloseTo(avant, 0));
   });
 
   it('le jalon de fin glissé écrit finPrevue', async () => {

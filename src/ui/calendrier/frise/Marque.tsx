@@ -3,6 +3,7 @@ import { Barrel, Beer, BottleWine, FileText, Hammer, Link2, ListChecks, PartyPop
 import { etiquetteS, francsSignes, jourLisible, texteDuree, type ChoseCalendrier, type Rangee } from '../../../domain/calendrier';
 import { usePointeur } from './usePointeur';
 import { useToucherNom } from './zoneToucher';
+import { posee, poseeADroite } from './posee';
 
 /* ---------- la largeur réelle d'un texte (CRITIQUE-4 n° 24) ----------
    Problème d'école : mesurer un texte avant de le poser. Méthode standard du navigateur : `CanvasRenderingContext2D.measureText` avec la police
@@ -284,13 +285,17 @@ export const Marque: React.FC<MarqueProps> = props => {
   /* PC-151 : une facture dont l'échéance est passée (Hopfen) porte sa marque de retard sur la frise, comme « En retard » de la Liste */
   const enRetard = champ(chose, 'enRetard') === true;
   const montant = montantDe(chose);
-  const style: React.CSSProperties = { left: centre - hauteur / 2, top: haut, width: hauteur, height: hauteur, transform: decalage ? `translateX(${decalage}px)` : undefined };
+  /* D406 : posée par `transform` (posee.ts), le glissé s'ajoute à la translation */
+  const style: React.CSSProperties = { ...posee(centre - hauteur / 2 + decalage, haut), width: hauteur, height: hauteur };
   const lbl: React.CSSProperties | undefined = libelle
-    ? {
+    ? (() => {
       /* PC-158 : deux lignes (14 + 3 + 16 px avec la pastille « lié à »), la boîte centrée sur la marque ; 34 px au moins, la pastille ne touche pas le nom */
-      ...(libelle.deux ? { top: haut - (Math.max(hauteur + 6, 34) - hauteur) / 2, height: Math.max(hauteur + 6, 34) } : { top: haut, height: hauteur }), maxWidth: Math.max(40, libelle.place),
-      ...(libelle.cote === 'droite' ? { left: centre + 14 + decalage + 6 } : { right: `calc(100% - ${centre - 14 + decalage - (libelle.retrait ?? 0)}px + 6px)` })
-    }
+      const v = libelle.deux ? { top: haut - (Math.max(hauteur + 6, 34) - hauteur) / 2, height: Math.max(hauteur + 6, 34) } : { top: haut, height: hauteur };
+      const max = Math.max(40, libelle.place);
+      return libelle.cote === 'droite'
+        ? { ...posee(centre + 14 + decalage + 6, v.top), height: v.height, maxWidth: max }
+        : { ...poseeADroite(centre - 14 + decalage - (libelle.retrait ?? 0) - 6, v.top, max), height: v.height };
+    })()
     : undefined;
   return (
     <>

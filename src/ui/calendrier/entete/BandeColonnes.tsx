@@ -65,7 +65,7 @@ export function BandeColonnes({ colonnes, echelle, aujourdhui, deplie = null, on
   if (echelle === 'mois' && !colonnes.some(c => c.debut === c.fin)) {
     return (
       <div className="ent-bj ent-bj--mois" data-bande-colonnes="mois" role="group" aria-label="Mois" style={grille}>
-        {colonnes.map((c, i) => <span key={c.debut} className="ent-bj-m" style={{ gridColumn: `${i + 1}` }}>{c.etiquette}</span>)}
+        {colonnes.map((c, i) => <span key={i} className="ent-bj-m" style={{ gridColumn: `${i + 1}` }}>{c.etiquette}</span>)}
       </div>
     );
   }
@@ -81,7 +81,7 @@ export function BandeColonnes({ colonnes, echelle, aujourdhui, deplie = null, on
   const jourBouton = (c: Colonne, i: number) => {
     const auj = c.debut === aujourdhui;
     return (
-      <button key={c.debut} type="button" className={`ent-bj-j${auj ? ' ent-bj-auj' : ''}`} data-jour={c.debut} data-lundi={c.debut}
+      <button key={`j${i}`} type="button" className={`ent-bj-j${auj ? ' ent-bj-auj' : ''}`} data-jour={c.debut} data-lundi={c.debut}
         style={{ gridColumn: `${i + 1}`, gridRow: '2' }} aria-label={jourEntier(c.debut)} onClick={() => onJour?.(c.debut, i, n)}>
         <small aria-hidden="true">{lettreDuJour(c.debut)}</small><span aria-hidden="true">{Number(c.debut.slice(8, 10))}</span>
       </button>
@@ -90,12 +90,14 @@ export function BandeColonnes({ colonnes, echelle, aujourdhui, deplie = null, on
 
   return (
     <div className={`ent-bj ent-bj--${deplie ? 'deplie' : 'jours'}`} data-bande-colonnes={deplie ? 'deplie' : 'jours'} role="group" aria-label="Jours et semaines" style={grille}>
-      {semaines.map(s => {
+      {/* D406 et D408 : chaque case de la bande garde son nœud (clé = son rang, pas sa date) ; une autre période change ce qui y est
+          écrit, la case ne se déplace pas (aucun décalage de mise en page) */}
+      {semaines.map((s, rang) => {
         const col = `${s.de + 1} / ${s.a + 2}`;
         if (!s.jours) {
           /* une semaine fermée, à côté de la dépliée : la toucher déplie la sienne */
           return (
-            <button key={s.lundi} type="button" className="ent-bj-s" data-semaine-bande={s.lundi} data-lundi={s.lundi} style={{ gridColumn: col, gridRow: '1 / span 2' }}
+            <button key={rang} type="button" className="ent-bj-s" data-semaine-bande={s.lundi} data-lundi={s.lundi} style={{ gridColumn: col, gridRow: '1 / span 2' }}
               aria-label={`${etiquetteS(s.lundi)}, ${plageSemaine(s.lundi)} : déplier en jours`} {...appui(s.lundi, () => onDeplier?.(s.lundi))}>
               {etiquetteS(s.lundi)}
             </button>
@@ -103,7 +105,7 @@ export function BandeColonnes({ colonnes, echelle, aujourdhui, deplie = null, on
         }
         if (deplie && s.lundi === deplie) {
           return (
-            <React.Fragment key={s.lundi}>
+            <React.Fragment key={rang}>
               <button type="button" className="ent-bj-t ent-bj-replier" data-replier={s.lundi} style={{ gridColumn: col, gridRow: '1' }}
                 aria-label={`${etiquetteS(s.lundi)}, ${plageSemaine(s.lundi)} : replier`} {...appui(s.lundi, () => onDeplier?.(null))}>
                 {etiquetteS(s.lundi)} <small>{plageSemaine(s.lundi)} · toucher pour replier</small>
@@ -113,7 +115,7 @@ export function BandeColonnes({ colonnes, echelle, aujourdhui, deplie = null, on
           );
         }
         return (
-          <React.Fragment key={s.lundi}>
+          <React.Fragment key={rang}>
             <button type="button" className="ent-bj-t" data-semaine-bande={s.lundi} style={{ gridColumn: col, gridRow: '1' }}
               aria-label={`${etiquetteS(s.lundi)}, ${plageSemaine(s.lundi)}`} {...appui(s.lundi, () => onSemaine?.(s.lundi, s.de, n))}>
               {etiquetteS(s.lundi)}
