@@ -32,14 +32,34 @@ const echecs = [];
 const echec = (c, m) => { echecs.push(`${c} : ${m}`); console.log(`  KO  ${c} : ${m}`); };
 const ok = (c, m) => console.log(`  ok  ${c}${m ? ` : ${m}` : ''}`);
 
-// Les endroits atteints par le parcours : l'étape de la recette, l'élément tenu, la valeur lue.
+// Les endroits atteints par le parcours : le chemin dans la recette (textes à toucher ; « ^texte » = commence par ; une fonction = préparer
+// l'état, idempotente car rejouée au rechargement), l'élément tenu, la valeur lue.
+const ETAPE_EAU = ['Eau', 'Eau et sels'];
+// une ligne de sucre à créer d'abord (recette vierge) : famille « Sucre » (la bascule), nom, Entrée. Sa barre règle la MASSE (réglage
+// quantité, échelle vers le haut) ; celle d'un grain règle sa part du grain (immobile quand il est seul).
+const SUCRE = '.fer-bw:not([data-role=part-ligne])';
+const unMalt = async ({ p }) => {
+  if (await p.$(SUCRE)) return;
+  if (!(await p.evaluate(() => /^Sucre/.test(document.querySelector('[data-role=fam]')?.innerText.trim() ?? '')))) await p.click('[data-role=fam]');
+  await p.focus('[data-role=ajout]'); await p.keyboard.type('Dextrose'); await p.keyboard.press('Enter'); await sleep(900);
+  if (!(await p.$(SUCRE))) throw new Error('ligne de sucre non créée');
+};
+// une levure à choisir (la puce disparaît une fois choisie), puis la rangée Levure du Récap. ouverte
+const uneLevure = async ({ p, toucherTexte }) => { if (await p.evaluate(() => [...document.querySelectorAll('button')].some((b) => b.innerText.trim().startsWith('Pomona')))) await toucherTexte('^Pomona'); };
+const rangeeLevure = async ({ p }) => {
+  const c = await p.evaluate(() => {
+    const d = [...document.querySelectorAll('details')].find((d) => d.querySelector('summary .rc2-titre')?.textContent.trim() === 'Levure');
+    if (!d || d.open) return null; const s = d.querySelector('summary'); s.scrollIntoView({ block: 'center' }); const r = s.getBoundingClientRect(); return [r.x + 30, r.y + r.height / 2];
+  });
+  if (c) { await p.mouse.click(c[0], c[1]); await sleep(700); }
+};
 const ENDROITS = [
-  { nom: 'volume-identite', etape: null, tenu: '.idv input[type=range], [data-carte="volume"] input[type=range]', repli: 0 },
-  { nom: 'ebullition-identite', etape: null, tenu: 'input[type=range][aria-label*="bullition" i]', repli: 1 },
-  { nom: 'ratio-eau', etape: ['Eau', 'Eau et sels'], tenu: '.ratio-track', valeur: '.ratio-track input[type=range]' },
-  { nom: 'gradue-eau', etape: ['Eau', 'Eau et sels'], tenu: 'input[type=range]:not(.ratio-track input)', repli: 0 },
-  { nom: 'malt-ligne', etape: ['Malts/sucres', 'Fermentescibles'], tenu: '.fer-bw', valeur: '[data-role=masse-curseur]' },
-  { nom: 'levure-recap', etape: ['Récap.', 'Récap', 'Récapitulatif'], tenu: 'input[aria-label="Curseur de quantité de levure"]' },
+  { nom: 'volume-identite', etape: ['Identité'], tenu: '.idv input[type=range], [data-carte="volume"] input[type=range]', repli: 0 },
+  { nom: 'ebullition-identite', etape: ['Identité'], tenu: 'input[type=range][aria-label*="bullition" i]' },
+  { nom: 'ratio-eau', etape: [ETAPE_EAU, '^2. Sels'], tenu: '.ratio-track', valeur: '.ratio-track input[type=range]' },
+  { nom: 'gradue-eau', etape: [ETAPE_EAU], tenu: 'input[type=range]:not(.ratio-track input)', repli: 0 },
+  { nom: 'malt-ligne', etape: [['Malts/sucres', 'Fermentescibles'], unMalt], tenu: SUCRE, valeur: `${SUCRE} [data-role=masse-curseur]` },
+  { nom: 'levure-recap', etape: ['Levure', uneLevure, ['Récap.', 'Récap', 'Récapitulatif'], rangeeLevure], tenu: 'input[aria-label="Curseur de quantité de levure"]' },
 ];
 
 function construire(dehors) {
@@ -78,19 +98,25 @@ async function jouer(dir) {
       const toucherTexte = async (txts) => {
         for (const t of [].concat(txts)) {
           const c = await p.evaluate((t) => {
-            const e = [...document.querySelectorAll('button,a,[role=tab],[role=button]')].find((e) => { const r = e.getBoundingClientRect(); return r.width > 0 && r.height > 0 && ((e.getAttribute('aria-label') ?? '').trim() === t || e.innerText.trim().replace(/\s+/g, ' ') === t); });
+            const debut = t.startsWith('^'), m = debut ? t.slice(1) : t, egal = (x) => (debut ? x.startsWith(m) : x === m);
+            const e = [...document.querySelectorAll('button,a,[role=tab],[role=button]')].find((e) => { const r = e.getBoundingClientRect(); return r.width > 0 && r.height > 0 && (egal((e.getAttribute('aria-label') ?? '').trim()) || egal(e.innerText.trim().replace(/\s+/g, ' '))); });
             if (!e) return null; e.scrollIntoView({ block: 'center' }); const r = e.getBoundingClientRect(); return [r.x + r.width / 2, r.y + r.height / 2];
           }, t);
           if (c) { if (tactile) await p.touchscreen.tap(c[0], c[1]); else await p.mouse.click(c[0], c[1]); await sleep(900); return true; }
         }
         return false;
       };
-      const ouvrir = async (etape) => {
+      const ouvrir = async (etape, essai = 0) => {
         await p.goto(url, { waitUntil: 'load' }); await p.waitForSelector('nav button', { timeout: 90000 }); await sleep(800);
         if (!(await toucherTexte('Actions rapides')) || !(await toucherTexte(['Créer une recette', 'Recette']))) throw new Error('assistant de recette introuvable');
         await sleep(1200);
-        if (etape && !(await toucherTexte(etape))) throw new Error(`étape « ${[].concat(etape)[0]} » introuvable`);
-        await sleep(1200);
+        for (const pas of etape ?? []) {
+          if (typeof pas === 'function') { await pas({ p, toucherTexte }); continue; }
+          if (!(await toucherTexte(pas))) { if (!essai && (await p.evaluate(() => document.body.innerText.includes('Écran indisponible')))) return ouvrir(etape, 1); throw new Error(`« ${[].concat(pas)[0]} » introuvable`); }
+          await sleep(600);
+        }
+        await sleep(600);
+        if (!essai && (await p.evaluate(() => document.body.innerText.includes('Écran indisponible')))) { console.log('  (écran indisponible : rechargé)'); return ouvrir(etape, 1); }
       };
       // la boîte de l'élément tenu, mise au centre ; et la valeur
       const boite = (sel, i) => p.evaluate((s, i) => { const e = [...document.querySelectorAll(s)].filter((e) => e.getBoundingClientRect().width > 0)[i ?? 0]; if (!e) return null; e.scrollIntoView({ block: 'center' }); const r = e.getBoundingClientRect(); return { x: r.x, y: r.y, w: r.width, h: r.height }; }, sel, i);
