@@ -49,6 +49,12 @@ const TIMING_TO_MOMENT: Record<string, MomentId> = { boil: 'b10', whirlpool: 'wp
 const FIT_ORDER: Record<string, number> = { 'usage attesté': 0, cohérent: 1, 'peu documenté': 2, 'non documenté': 3, 'hors style': 4 };
 
 /** Ajouts rapides d'une recette vide : amérisants à 60′ puis aromatiques tardifs, chacun avec sa règle. */
+/** D402 (N1, v03 : « ton stock d’abord ») : le tri de la construction met le stock libre devant, puis un nom de variété devant un code
+ * d’essai sans nom (« X06297 ») ; le moteur (adéquation, rôle, α, doses) ne change pas, il départage à rang égal. */
+const CODE_SANS_NOM = /^[A-Z]{1,4}[\s-]?\d{3,}$/i;
+const rangStock = (r: QuickAdd) => (r.stock.status === 'à acheter' ? 2 : r.stock.free > 0 ? 0 : 1);
+const stockNommeDabord = (a: QuickAdd, b: QuickAdd) => rangStock(a) - rangStock(b) || Number(CODE_SANS_NOM.test(a.name.trim())) - Number(CODE_SANS_NOM.test(b.name.trim()));
+
 export function buildFromEmpty(recipe: Recipe, scale: StyleScale) {
   const q = quickAdds(recipe, scale, null, { catalogueLimit: 10000 });
   const all = [...q.disponibles, ...q.epuises, ...q.catalogue];
@@ -57,8 +63,9 @@ export function buildFromEmpty(recipe: Recipe, scale: StyleScale) {
   const base = (r: QuickAdd) => ({ key: r.key, name: r.name, alpha: r.alpha, role: r.role, fit: r.fit,
     stock: { etat: etat(r.key), grams: r.stock.grams, libre: r.stock.free }, fiches: ficheLevels(hopRef(r.key)!.varietyId, scale).map(({ family, level }) => ({ family, level })) });
   // 1. Amérisants à 60′.
-  const bitter = all.filter((r) => r.alpha && r.alpha.value >= 10 && (r.role.value === 'amérisant' || r.role.value === 'double'))
-    .sort((a, b) => FIT_ORDER[a.fit] - FIT_ORDER[b.fit] || Number(a.role.value === 'double') - Number(b.role.value === 'double') || a.offStyleWeight - b.offStyleWeight
+  // D402 : un houblon du stock à α ≥ 10 % amérise aussi (Citra à 60′ quand c’est ce qu’on a), quel que soit son rôle d’arôme.
+  const bitter = all.filter((r) => r.alpha && r.alpha.value >= 10 && (r.role.value === 'amérisant' || r.role.value === 'double' || rangStock(r) === 0))
+    .sort((a, b) => stockNommeDabord(a, b) || FIT_ORDER[a.fit] - FIT_ORDER[b.fit] || Number(a.role.value === 'double') - Number(b.role.value === 'double') || a.offStyleWeight - b.offStyleWeight
       || b.alpha!.value - a.alpha!.value || b.stock.free - a.stock.free || a.name.localeCompare(b.name, 'fr'))
     .slice(0, 2).map((r) => {
       const ref = hopRef(r.key)!;
@@ -74,10 +81,11 @@ export function buildFromEmpty(recipe: Recipe, scale: StyleScale) {
   const timing = policyStyle?.timings.find((t) => TIMING_TO_MOMENT[t]) ?? null;
   const moment: MomentId | null = timing ? TIMING_TO_MOMENT[timing] : null;
   const doseGL = timing ? POLICY.defaults[timing as keyof typeof POLICY.defaults].doseGL?.central ?? null : null;
-  const used = new Set(bitter.map((b) => b.key));
+  // Un houblon du stock proposé à l’amer reste proposé à l’arôme : l’amérisant est « au choix », l’arôme est son usage premier.
+  const used = new Set(bitter.filter((b) => rangStock(b) !== 0).map((b) => b.key));
   const aroma = moment && doseGL ? [...q.disponibles, ...q.epuises, ...q.catalogue]
     .filter((r) => !used.has(r.key) && (r.role.value === 'aromatique' || r.role.value === 'double'))
-    .sort((a, b) => { const ka = quickAddKey(a), kb = quickAddKey(b); for (let i = 0; i < ka.length; i++) if (ka[i] !== kb[i]) return ka[i] - kb[i]; return a.name.localeCompare(b.name, 'fr'); })
+    .sort((a, b) => { const st = stockNommeDabord(a, b); if (st) return st; const ka = quickAddKey(a), kb = quickAddKey(b); for (let i = 0; i < ka.length; i++) if (ka[i] !== kb[i]) return ka[i] - kb[i]; return a.name.localeCompare(b.name, 'fr'); })
     .slice(0, 3).map((r) => {
       const a: Addition = { id: 'a', hopKey: r.key, moment, grams: round1(doseGL * recipe.volumeL) };
       const ibu = additionIbu(a, recipe);
