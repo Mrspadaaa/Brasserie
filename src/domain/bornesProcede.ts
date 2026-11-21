@@ -160,7 +160,7 @@ export function rendementIssue(pct: number | undefined): IssueProcede | null {
 }
 
 /** Eau d'empâtage et de rinçage : rapport eau/grain, eau totale par litre de bière, doses de sels et d'acide, pH visé. */
-export function eauIssues(recipe: Pick<Recipe, 'waterPlan' | 'totalGristKg' | 'volumeL' | 'nolo' | 'fermentables'>): IssueProcede[] {
+export function eauIssues(recipe: Pick<Recipe, 'waterPlan' | 'totalGristKg' | 'volumeL' | 'nolo' | 'fermentables'> & { installation?: { manualWaterSplit?: boolean } }): IssueProcede[] {
   const plan = recipe.waterPlan;
   const out: IssueProcede[] = [];
   if (!plan) return out;
@@ -179,7 +179,9 @@ export function eauIssues(recipe: Pick<Recipe, 'waterPlan' | 'totalGristKg' | 'v
       out.push({ field: 'wz-mash-water', step: 'eau', live: true, message: `Eau d’empâtage 0 L pour ${fr(grain, 1)} kg de grain : sans eau, pas d’empâtage. Prévois au moins ${fr(grain * R.min, 1)} L.` });
     else if (rapport < R.min)
       out.push({ field: 'wz-mash-water', step: 'eau', live: true, message: `Eau d’empâtage ${fr(mash, 1)} L pour ${fr(grain, 1)} kg de grain, soit ${fr(rapport, 2)} L/kg : sous ${nombreFr(R.min, 1)} L/kg le grain n’est pas détrempé (il en retient ~1). Prévois au moins ${fr(grain * R.min, 1)} L.` });
-    else if (rapport > R.max)
+    // Trop d'eau : une « erreur de saisie » suppose une saisie. Des volumes calculés par l'installation (manualWaterSplit false) sur une
+    // facture encore partielle (un malt de spécialité seul, 0,35 kg) ne sont pas une saisie : l'alerte attend un plan d'eau posé (V-RECETTE).
+    else if (rapport > R.max && recipe.installation?.manualWaterSplit !== false)
       out.push({ field: 'wz-mash-water', step: 'eau', live: true, message: `Eau d’empâtage ${fr(mash, 1)} L pour ${fr(grain, 1)} kg de grain, soit ${fr(rapport, 1)} L/kg : au-delà de ${nombreFr(R.max, 1)} L/kg ce n’est plus une maische (pratique : 2,5 à 4 L/kg). Erreur de saisie probable.` });
   }
   if (finite(mash) && finite(sparge) && finite(recipe.volumeL) && recipe.volumeL > 0) {

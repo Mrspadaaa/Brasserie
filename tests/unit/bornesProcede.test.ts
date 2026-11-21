@@ -212,3 +212,13 @@ describe('AM-26 : une recette prête a un empâtage, une fermentation et un plan
     expect(procedeManques(r)).toEqual([]);
   });
 });
+
+describe('V-RECETTE : le plan d’eau calculé ne crie pas « erreur de saisie » sur une facture partielle', () => {
+  const base = { totalGristKg: 0.35, volumeL: 20, waterPlan: { mashWaterL: 11.3, spargeWaterL: 14, diRatioPct: 0, sourceId: '' } as never };
+  it('volumes calculés par l’installation (manualWaterSplit false) : aucune alerte sur 11,3 L pour 0,35 kg', () => {
+    expect(eauIssues({ ...base, installation: { manualWaterSplit: false } } as never).filter(i => i.field === 'wz-mash-water')).toEqual([]);
+  });
+  it('volumes posés par le brasseur : l’alerte reste', () => {
+    expect(eauIssues({ ...base, installation: { manualWaterSplit: true } } as never).some(i => /Erreur de saisie probable/.test(i.message))).toBe(true);
+  });
+});

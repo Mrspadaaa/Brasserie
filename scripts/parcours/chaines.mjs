@@ -477,6 +477,22 @@ function listeEtapes() { return [
     }
   },
   {
+    id: 'VR-1', titre: 'Recette neuve, un malt de spécialité seul (0,35 kg) : le plan d\'eau calculé par l\'installation ne crie pas « erreur de saisie » (VR-1, BUGS.md)', fixture: { sansJour: true },
+    async joue(s) {
+      await s.toucher('Actions rapides'); await s.toucher('Recette'); await sleep(800);
+      await s.ecrire('textarea[name=recipe_title_label]', 'ZZ TEST Brune');
+      await s.toucher('Suivant', { prefixe: true }); await sleep(900);
+      await s.toucher('ZZ TEST Caramünch', { contient: true }); await sleep(700);
+      // la masse que N1 propose aujourd'hui (0,35 kg), écrite pour que l'étape vaille aussi sur une version qui posait 0 kg
+      await s.ecrire('textarea[aria-label^="Masse de ZZ TEST Caramünch"]', '0.35'); await sleep(900);
+      const t = await s.texte(8000);
+      await s.cap('VR-1-malt-seul');
+      if (/Eau d.empâtage[^.]*Erreur de saisie probable|Une valeur à corriger/.test(t))
+        return echec('VR-1', `alerte d'eau sur une facture partielle : « ${(t.match(/Eau d.empâtage[^.]*\.[^.]*/) ?? t.match(/Une valeur à corriger[^\n]*/) ?? [''])[0].slice(0, 140)} »`);
+      ok('VR-1', 'aucune alerte d\'eau sur le plan calculé');
+    }
+  },
+  {
     id: 'N1', titre: 'Recette neuve : l\'ingrédient proposé par le contexte se pose juste d\'un toucher — malt avec une quantité, houblon du stock d\'abord, levure du stock (N1, v02-v06)', fixture: { sansJour: true },
     async joue(s) {
       const pb = [];
