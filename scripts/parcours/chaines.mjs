@@ -848,8 +848,6 @@ function listeEtapes() { return [
       if (!mois.test(t.match(/([^\n]{0,30})\s*la cuve et la cave/)?.[1] ?? t.slice(0, 400))) return echec('C1-RECETTE', `Brasser ne s'ouvre pas en ${attendu} : ${t.slice(0, 200)}`);
       ok('C1-RECETTE', `« 3 mois » → « vers ${attendu} » au récap, Brasser s'ouvre en ${attendu}`);
     }
-  }
-]; }
   },
   {
     // V5 (chasse Calendrier 21.11, CHE-3 et CHE-4) : le champ CHF de la feuille d'ajout Papiers (ChampMontant, aussi dans Finances), au doigt, 390 tactile.
@@ -904,6 +902,8 @@ function listeEtapes() { return [
     }
 
 // ───────────── le parcours ─────────────
+  }
+]; }
 async function jouer(dir) {
   const banc = await lancerBanc(dir);
   try {
