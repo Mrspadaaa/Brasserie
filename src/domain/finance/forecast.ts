@@ -1,6 +1,6 @@
 import type { Batch, StockItem } from '../../types';
 import type { FinanceTransaction, FinancialAsset, FinancialPayment, FinancialPlan, FinancialProfile } from './types';
-import { estimerBrassinsPlanifies, planBrewBatchId, type ReglagesBrewForecast } from './brewForecast';
+import { estimerBrassinsPlanifies, planBrewBatchId, type ReglagesBrewForecast, budgetsDeRecette, type BudgetRepris } from './brewForecast';
 import { formatCHF, isoDate, isActiveTransaction, paymentState, planInvoiceAllocation, summarizeLedger, todayISO, transactionAmount, transactionDirection, transactionKind } from './ledger';
 import { isUpgradePlan, upgradeReadiness } from './upgrades';
 
@@ -10,7 +10,9 @@ export interface ForecastItem { id: string; date: string; label: string; amountC
   /** Ce qui manque pour que le montant soit entier ; le montant affiché est le connu. */
   partial?: string[];
   /** D'où vient chaque montant (prix de facture, réglage, densité…). */
-  lines?: Array<{ label: string; amountCents: number; origin: string }> }
+  lines?: Array<{ label: string; amountCents: number; origin: string }>;
+  /** D405 : sortie d'un brassin sans budget à lui, chiffrée par la dernière estimation de sa recette (`budgetsDeRecette`) : un montant estimé. */
+  repriseRecette?: BudgetRepris }
 export interface ForecastMonth { month: string; incomeCents: number; expenseCents: number; committedCents: number; projectedCents: number; balanceCents: number | null; items: ForecastItem[] }
 /** Pièce à payer ou à encaisser dont l'échéance manque : jamais placée dans un mois, comptée à part (aucune date inventée). */
 export interface UndatedForecastItem { id: string; label: string; amountCents: number; direction: 'in' | 'out'; category: string; pieceDate: string | null; planId?: string; occurrenceId?: string; unconfirmed?: boolean }
@@ -114,7 +116,7 @@ export function isResidualExpense(tx: FinanceTransaction): boolean {
   return isActiveTransaction(tx) && transactionKind(tx) === 'expense' && !tx.finance?.planId && !tx.finance?.batchId && !tx.finance?.excludedFromTrend
     && !['materiel', 'renovation'].includes(tx.category) && !tx.finance?.lines.some(l => l.kind === 'equipment');
 }
-export function buildForecast(input: { transactions: FinanceTransaction[]; payments: FinancialPayment[]; plans: FinancialPlan[]; profile: FinancialProfile; asOf?: string; months?: number; includeEquipmentProjects?: boolean;
+function prevoirSansReprise(input: { transactions: FinanceTransaction[]; payments: FinancialPayment[]; plans: FinancialPlan[]; profile: FinancialProfile; asOf?: string; months?: number; includeEquipmentProjects?: boolean;
   /** Brassins et stock : avec eux, les brassins planifiés ajoutent leurs sorties DÉRIVÉES (jamais écrites) et remplacent leurs plans « Prévoir ». Sans eux : comportement inchangé. */
   batches?: Batch[]; stockItems?: StockItem[]; assets?: FinancialAsset[]; brewReglages?: Partial<ReglagesBrewForecast>; brewTaxReduction?: { pct?: number; annee?: number }; ignoreUpgradePlanId?: string }): FinanceForecast {
   const { transactions, payments, plans, profile } = input, asOf = isoDate(input.asOf) ?? todayISO();
@@ -242,4 +244,23 @@ export function buildForecast(input: { transactions: FinanceTransaction[]; payme
   const undatedTotal = (direction: 'in' | 'out') => undated.filter(u => u.direction === direction).reduce((sum, u) => sum + u.amountCents, 0);
   return { months, items, warnings: [...new Set(warnings)], avertissements: [...new Map(avertissements.map(a => [a.texte, a])).values()], cashComplete: ledger.cashComplete, trendMonths, openingCashCents: ledger.cashCents,
     undated, undatedInCents: undatedTotal('in'), undatedOutCents: undatedTotal('out') };
+}
+
+/**
+ * D405 (21.11) : une seule caisse. Un brassin planifié sans budget à lui (ni estimation enregistrée, ni ligne chiffrée) reprend la dernière
+ * estimation de sa recette (`budgetsDeRecette`) ; la prévision est refaite, seulement s'il y en a un, et ses sorties sont marquées estimées
+ * (libellé et `repriseRecette`). Le Bord, Finances, le calendrier et le compagnon lisent ce même calcul. Sans brassins : inchangé.
+ */
+export function buildForecast(input: Parameters<typeof prevoirSansReprise>[0]): FinanceForecast {
+  const brut = prevoirSansReprise(input);
+  if (!input.batches) return brut;
+  const chiffres = new Set(brut.items.filter(i => i.source === 'brew' && i.batchId && i.amountCents > 0 && !i.id.endsWith(':impot')).map(i => i.batchId as string));
+  const reprise = budgetsDeRecette(input.batches, input.plans, chiffres);
+  if (!reprise.repris.size) return brut;
+  const f = prevoirSansReprise({ ...input, plans: reprise.plans, batches: reprise.batches });
+  const marquer = (i: ForecastItem): ForecastItem => {
+    const r = i.batchId ? reprise.repris.get(i.batchId) : undefined;
+    return r ? { ...i, label: `${i.label} · budget de sa recette, estimé`, repriseRecette: r } : i;
+  };
+  return { ...f, items: f.items.map(marquer), months: f.months.map(m => ({ ...m, items: m.items.map(marquer) })) };
 }

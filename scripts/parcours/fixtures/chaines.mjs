@@ -19,8 +19,9 @@ const suisse = (j) => `${j.slice(8, 10)}.${j.slice(5, 7)}.${j.slice(0, 4)}`;
  *   marge     : un tarif 33 cl pour la bière du brassin planifié (N6)
  *   achatPompe: l'achat passé « ZZ TEST Pompe 2025 » à 420 (D2, prix « dernier achat semblable »)
  *   rebrasser : une recette passée dont les lignes ne sont pas reliées au stock (N3)
+ *   reprise   : un brassin planifié sans budget à lui, dont la recette a une estimation enregistrée (D405)
  */
-export function fixtureChaines(aujourdhui, { sansJour = false, cuve = false, garde = false, retours = false, rayons = false, manques = false, caisseBasse = false, marge = false, achatPompe = false, rebrasser = false } = {}) {
+export function fixtureChaines(aujourdhui, { sansJour = false, cuve = false, garde = false, retours = false, rayons = false, manques = false, caisseBasse = false, marge = false, achatPompe = false, rebrasser = false, reprise = false } = {}) {
   const at = `${ajouter(aujourdhui, -30)}T08:00:00.000Z`;
   const entrees = [];
   const add = (name, id, data) => entrees.push({ name, id, data: { ...data, id } });
@@ -147,6 +148,21 @@ export function fixtureChaines(aujourdhui, { sansJour = false, cuve = false, gar
     add('recipes', 'R-ZZ-PA-V1', { id: 'R-ZZ-PA-V1', name: 'ZZ TEST Pale Ale v1', style: 'Pale Ale', volumeL: 100, ogTarget: 1.052, brewhouse: bh, ingredients: [],
       fermentables: [{ name: 'ZZ TEST Malt pilsner', weightKg: 20, kind: 'grain' }, { name: 'ZZ TEST Munich', weightKg: 4, kind: 'grain' }],
       hops: [{ name: 'ZZ TEST Citra', weightG: 300, stage: 'boil', time: 60, alphaPct: 9 }], yeast: { name: 'ZZ TEST US-05', qty: 2, unit: 'sachet' }, fermentation: [{ kind: 'primaire', name: 'Primaire', tempC: 19, days: 12 }] });
+  }
+  if (reprise) {
+    // D405 : « ZZ TEST Pale » a un budget estimé (brassin d'il y a 60 j : énergie 18, nettoyage 6, emballage 45) ; son nouveau brassin, posé sans
+    // recette figée ni budget (comme par la feuille), reprend cette estimation : le Bord, Finances et le Calendrier comptent le même montant estimé
+    const rsR = { name: 'ZZ TEST Pale', volumeL: 100, ogTarget: 1.048, brewhouse: bh, fermentables: [{ name: 'ZZ TEST Malt pilsner', weightKg: 18, kind: 'grain' }],
+      hops: [{ name: 'ZZ TEST Citra', weightG: 150, stage: 'boil', time: 60 }], yeast: { name: 'ZZ TEST US-05', qty: 2, unit: 'sachet' }, fermentation: [{ kind: 'primaire', name: 'Primaire', tempC: 19, days: 12 }] };
+    add('recipes', 'R-ZZ-PALE', { id: 'R-ZZ-PALE', name: 'ZZ TEST Pale', style: 'Pale Ale', ingredients: [], ...rsR });
+    const jA = ajouter(aujourdhui, -60);
+    add('batches', 'B-ZZ-PALE-1', { id: 'B-ZZ-PALE-1', name: 'ZZ TEST Pale', style: 'Pale Ale', volumeL: 100, brewDate: suisse(jA), actualBrewDate: suisse(jA), plannedBrewDate: suisse(jA), status: 'termine', gravityLog: [], recipeRef: 'R-ZZ-PALE', stockAccountingVersion: 1, recipeSnapshot: rsR });
+    add('financialPlans', 'P-BREW-B-ZZ-PALE-1', { id: 'P-BREW-B-ZZ-PALE-1', title: 'ZZ TEST Pale · budget', date: jA, amountCents: 0, direction: 'out', category: 'brassage', source: 'brew', status: 'active', batchId: 'B-ZZ-PALE-1', createdAt: at,
+      brewEstimate: { id: 'EST-B-ZZ-PALE-1', createdAt: at, batchId: 'B-ZZ-PALE-1', recipeId: 'R-ZZ-PALE', title: 'ZZ TEST Pale', brewDate: jA, volumeL: 100, netVolumeL: 95, netVolumeSource: 'saisi',
+        recipeSnapshot: { ...rsR, sourceRecipeId: 'R-ZZ-PALE' }, bindings: {}, prices: {}, cashTreatments: {},
+        settings: { costs: { energy: { enabled: true, amountTTC: 18 }, cleaning: { enabled: true, amountTTC: 6 }, packaging: { enabled: true, amountTTC: 45 } } },
+        lines: [], ingredientsCost: 0, purchasesTTC: 0, operatingCashTTC: 0, operatingCost: 0, cashRequiredTTC: 0, fixedAllocation: 0, depreciationAllocation: 0, totalCost: 0, costPerL: null, complete: false, issues: [] } });
+    add('batches', 'B-ZZ-PALE-2', { id: 'B-ZZ-PALE-2', name: 'ZZ TEST Pale', style: 'Pale Ale', volumeL: 100, brewDate: '', plannedBrewDate: suisse(ajouter(aujourdhui, 5)), status: 'planifie', gravityLog: [], recipeRef: 'R-ZZ-PALE', stockAccountingVersion: 1 });
   }
   // la caisse basse (K4) : ni la facture « à confirmer » (le solde ne serait pas connu) ni la Pompe (son prévu est optionnel, deux points bas) ;
   // 600 − 420 (malt) + 280 (vente promise) − 900 (Hotte) : le point le plus bas est −440, au jour de la Hotte

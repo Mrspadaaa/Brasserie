@@ -138,7 +138,7 @@ export function buildFinanceAssistantContext(input: FinanceAssistantInput) {
   });
   // A rolling 12-month window needs thirteen calendar buckets when today is mid-month.
   const forecastProfile = complete('transactions') ? profile : { ...profile, historyCompleteFrom: undefined };
-  const forecast = buildForecast({ transactions, payments: input.payments, plans: plans, profile: forecastProfile, asOf, months: 13 });
+  const forecast = buildForecast({ transactions, payments: input.payments, plans: plans, profile: forecastProfile, asOf, months: 13, batches: input.batches, stockItems: input.stock, assets: input.assets }); // D405 : la caisse de Finances
   const windows = [
     { horizon: '30days', endExclusive: forecastHorizonEnd(asOf, 30) },
     { horizon: '90days', endExclusive: forecastHorizonEnd(asOf, 90) },

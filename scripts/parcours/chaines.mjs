@@ -681,6 +681,29 @@ function listeEtapes() { return [
     }
   },
   {
+    id: 'D405', titre: 'Une seule caisse : un brassin sans budget reprend l\'estimation de sa recette, et le Bord, Finances et le Calendrier disent le même point bas (D405)', fixture: { sansJour: true, caisseBasse: true, reprise: true },
+    async joue(s) {
+      const chf = (m) => (m ? -Math.abs(nombre(m[1])) : null); // les trois écrans disent un point bas sous zéro (−, ≈, « au plus » selon l'écran)
+      await s.onglet('Bord'); await sleep(1200);
+      await s.cap('D405-1-bord');
+      const bord = chf((await s.texte(6000)).match(/Point le plus bas[^\d]{0,30}([\d’' ]+(?:[.,]\d+)?)/));
+      await s.onglet('Finances'); await sleep(900);
+      await s.toucher('Prévisions', { prefixe: true }); await sleep(1500);
+      await s.cap('D405-2-previsions');
+      const tf = await s.texte(8000);
+      await s.onglet('Calendrier'); await sleep(1800);
+      await s.cap('D405-3-calendrier');
+      const tc = await s.texte(8000);
+      const fin = chf(tf.match(/Jusqu.au [^|]{0,40}?[−-]\s?([\d’' ]+[.,]\d{2})/));
+      const cal = chf(tc.match(/[−-]\s?([\d’' ]+)\s*CHF à dépenser/));
+      const vus = `Bord ${bord ?? '—'}, Finances ${fin ?? '—'}, Calendrier ${cal ?? '—'}`;
+      if ([bord, fin, cal].some((v) => v === null)) return echec('D405', `un écran ne dit pas son point bas (${vus})`);
+      if (Math.round(bord) !== Math.round(fin) || Math.round(fin) !== Math.round(cal)) return echec('D405', `trois chiffres pour une caisse : ${vus}`);
+      if (Math.round(fin) === -440) return echec('D405', `le budget repris de « ZZ TEST Pale » n'est compté nulle part (${vus})`);
+      ok('D405', `le même point bas partout, budget repris compris : ${vus}`);
+    }
+  },
+  {
     id: 'F2', titre: 'Recompter : rayon par rayon, « ✓ le reste du rayon » d\'un toucher ; les autres rayons restent « non comptés », jamais 0 (F2, N7)', fixture: { sansJour: true, rayons: true },
     async joue(s) {
       await s.onglet('Stocks'); await sleep(800);

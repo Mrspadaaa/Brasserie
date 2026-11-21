@@ -288,3 +288,57 @@ export function estimerBrassinsPlanifies(input: EntreeBrassinsPlanifies): Sortie
   return { brassins, items, warnings: [...new Set(warnings)], avertissements: [...new Map(avertissements.map(a => [a.texte, a])).values()], remplaces };
 }
 
+/** « 23.11.2026 » ou « 2026-11-23 » → « 2026-11-23 » ; illisible : `null`. */
+const isoDuJour = (texte: string | undefined): string | null => {
+  if (!texte) return null;
+  const suisse = /^(\d{2})\.(\d{2})\.(\d{4})$/.exec(texte.trim());
+  if (suisse) return `${suisse[3]}-${suisse[2]}-${suisse[1]}`;
+  return /^\d{4}-\d{2}-\d{2}/.test(texte) ? texte.slice(0, 10) : null;
+};
+
+/** Un brassin pas encore commencé : planifié, sans brassage réel. */
+const pasCommence = (b: Batch): boolean => b.status === 'planifie' && !hasBrewStarted(b);
+
+/** Un budget repris de la recette (CRITIQUE-4 n° 2) : de quel brassin, et quand il a été estimé. */
+export interface BudgetRepris { depuis: string; le: string }
+
+/**
+ * CRITIQUE-4 n° 2 (E23, E24) : un brassin posé (par la feuille, ou ailleurs) sans budget à lui — ni estimation enregistrée par `BrewBudgetSheet`,
+ * ni ligne chiffrée dans la prévision — reprend la DERNIÈRE estimation enregistrée de SA recette (même `recipeRef`) : mêmes ingrédients, mêmes prix,
+ * mêmes frais. Le coût passe ensuite par la même voie que tout brassin (`buildForecast` → `estimerBrassinsPlanifies` → `brewBudgetDemands`) :
+ * ses courses, ses frais, son emballage et son impôt entrent dans la courbe et dans « à dépenser ».
+ *
+ * Rien n'est écrit. D405 (21.11, une seule caisse) : déplacée ici depuis le calendrier, elle est appliquée par `buildForecast` lui-même :
+ * le Bord, Finances, le calendrier et le compagnon comptent le même budget repris, marqué estimé (`ForecastItem.repriseRecette`). Aucune estimation de la recette : rien n'est repris, la barre dit « coût à venir » (jamais 0).
+ */
+export function budgetsDeRecette(
+  batches: readonly Batch[], plans: readonly FinancialPlan[], chiffres: ReadonlySet<string>
+): { plans: FinancialPlan[]; batches: Batch[]; repris: Map<string, BudgetRepris> } {
+  const parId = new Map(batches.map(b => [b.id, b] as const));
+  const propres = new Set(plans.filter(p => p.status !== 'cancelled' && p.brewEstimate).map(p => planBrewBatchId(p)).filter((id): id is string => !!id));
+  type Snap = { id: string; createdAt?: string; batchId?: string; recipeId?: string; brewDate?: string; recipeSnapshot?: Batch['recipeSnapshot'] & { sourceRecipeId?: string } };
+  const recetteDe = (s: Snap) => s.recipeSnapshot?.sourceRecipeId ?? (s.batchId ? parId.get(s.batchId)?.recipeRef : undefined) ?? s.recipeId;
+  const sources = plans.filter(p => p.status !== 'cancelled' && p.brewEstimate).map(p => ({ plan: p, snap: p.brewEstimate as unknown as Snap }));
+  const virtuels: FinancialPlan[] = [];
+  const repris = new Map<string, BudgetRepris>();
+  const copies = new Map<string, Batch>();
+  for (const b of batches) {
+    if (b.archivedAt || !pasCommence(b) || propres.has(b.id) || chiffres.has(b.id)) continue;
+    const recette = b.recipeRef ?? (b.recipeSnapshot as { sourceRecipeId?: string } | undefined)?.sourceRecipeId;
+    if (!recette) continue;
+    const meilleure = sources.filter(s => s.snap.batchId !== b.id && recetteDe(s.snap) === recette)
+      .sort((x, y) => (y.snap.createdAt ?? y.plan.createdAt ?? '').localeCompare(x.snap.createdAt ?? x.plan.createdAt ?? ''))[0];
+    if (!meilleure) continue;
+    const jour = isoDuJour(b.plannedBrewDate) ?? meilleure.plan.date;
+    virtuels.push({
+      ...meilleure.plan, id: `${meilleure.plan.id}@${b.id}`, batchId: b.id, date: jour,
+      brewEstimate: { ...(meilleure.plan.brewEstimate as object), id: `${meilleure.snap.id}@${b.id}`, batchId: b.id, brewDate: jour } as FinancialPlan['brewEstimate']
+    });
+    /* le brassin posé sans recette figée (la feuille ne fige rien : c'est le service qui le fait) prend celle de l'estimation, pour ce calcul seul */
+    const sansRecette = !b.recipeSnapshot || brewBudgetDemands(b.recipeSnapshot as never).length === 0;
+    if (sansRecette && meilleure.snap.recipeSnapshot) copies.set(b.id, { ...b, recipeSnapshot: meilleure.snap.recipeSnapshot } as Batch);
+    const depuis = meilleure.snap.batchId ? parId.get(meilleure.snap.batchId)?.name ?? meilleure.plan.title : meilleure.plan.title;
+    repris.set(b.id, { depuis, le: (meilleure.snap.createdAt ?? meilleure.plan.createdAt ?? '').slice(0, 10) });
+  }
+  return { plans: [...plans, ...virtuels], batches: batches.map(b => copies.get(b.id) ?? b), repris };
+}
