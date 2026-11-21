@@ -44,8 +44,14 @@ const nomCourt = (nom: string) => nom.replace(/\s*\(.*\)\s*$/, '').replace(/^(Sa
  * Le nom de la carte : sans la marque de gamme en tête quand le fabricant est dit dessous et que le nom serait long (« LalBrew Verdant IPA » → « Verdant IPA » ;
  * « SafAle US-05 » reste entier, c'est son nom d'usage). Le nom complet reste dans le titre et le libellé du bouton ×.
  */
-export const nomDeCarte = (nom: string, fabricantDit: boolean): string => {
-  if (!fabricantDit || nom.length <= 18) return nom;
+/** « floculation moyenne », « élevée » : le niveau s'accorde avec la donnée qu'il qualifie. */
+const accordFeminin = (mot: string) => (mot === 'moyen' ? 'moyenne' : mot === 'élevé' ? 'élevée' : mot);
+export const nomDeCarte = (nomComplet: string, fabricantDit: boolean): string => {
+  if (!fabricantDit) return nomComplet;
+  // « SafAle US-05 (Fermentis) » : le fabricant entre parenthèses est déjà dit dessous ; le nom reste « SafAle US-05 » (21.11, N1).
+  const parenthese = nomComplet.match(/\s*\(([^)]+)\)\s*$/);
+  const nom = parenthese && LABOS.some(l => l.toLocaleLowerCase('fr') === parenthese[1].trim().toLocaleLowerCase('fr')) ? nomComplet.slice(0, parenthese.index).trim() || nomComplet : nomComplet;
+  if (nom.length <= 18) return nom;
   const court = nom.replace(/^(LalBrew|SafAle|SafLager|SafSpirit|Wyeast|White Labs)\s+/i, '').trim();
   return court || nom;
 };
@@ -313,7 +319,7 @@ function PoserDuStock({ item, levure, dose, style, styleId, aussi, onPoser, onAu
   aussi?: YeastReference; onPoser: () => void; onAussi?: () => void;
 }) {
   // « SafAle US-05 (Fermentis) » : le nom, puis le fabricant écrit entre parenthèses dans le catalogue.
-  const par = levure.name.match(/^(.*?)s*(([^)]+))s*$/);
+  const par = levure.name.match(/^(.*?)\s*\(([^)]+)\)\s*$/);
   const id = par ? { nom: par[1], marque: par[2] } : identiteLevure(levure.name);
   const forme = levure.form ?? formeDuCatalogue(levure);
   const n = dose?.qty, mot = dose ? motUnite(dose.unit, dose.qty) : '';
@@ -322,7 +328,7 @@ function PoserDuStock({ item, levure, dose, style, styleId, aussi, onPoser, onAu
   const haut = Math.max(4, Math.ceil(Math.max(dose?.besoin ?? 0, n ?? 0)) + 1);
   const pc = (v: number) => `${Math.min(100, Math.max(0, (v / haut) * 100))}%`;
   return <section className="lv-pz" data-lv="poser-stock" aria-label="Ton stock d’abord">
-    <div className="lv-pz-tete"><FlaskConical size={16} aria-hidden="true" /><span>Aucune levure encore</span>{styleId && /^d{1,2}[A-Z]$/.test(styleId) && <span className="lv-pz-style">style {styleId}</span>}</div>
+    <div className="lv-pz-tete"><FlaskConical size={16} aria-hidden="true" /><span>Aucune levure encore</span>{styleId && /^\d{1,2}[A-Z]$/.test(styleId) && <span className="lv-pz-style">style {styleId}</span>}</div>
     <p className="lv-pz-pour"><b>Pour {style?.trim() || 'cette recette'}</b> · ton stock d’abord</p>
     <div className="lv-pz-carte">
       <div className="lv-pz-l1">
@@ -371,7 +377,7 @@ function MaLevureVue({ recipe, refs, supply, levure, classement, onConduite, onC
   onConduite: (next: TrialRecipe) => TrialRecipe | void;
   onChercherDonnee: (axe: string | string[]) => void;
   onRetirer: () => void;
-  stock: StockItem[]; onStock: (item: StockItem, dose?: { qty: number; unit: string }) => void;
+  stock: StockItem[]; onStock: (item: StockItem, dose?: { qty: number; unit: string }, fiche?: YeastReference) => void;
   /** « Hors catalogue » ou une saisie sans résultat : ouvre « Mon stock ou saisie libre » (le texte tapé est donné quand il y en a un). */
   onHorsCatalogue: (texte?: string) => void;
   /** La saisie libre ouverte, rendue sous le champ de recherche. */
@@ -399,7 +405,7 @@ function MaLevureVue({ recipe, refs, supply, levure, classement, onConduite, onC
   const primaire = (recipe.fermentation ?? []).find(p => p.kind === 'primaire') ?? (recipe.fermentation ?? [])[0];
   const tConduite = Number.isFinite(primaire?.tempC) ? primaire!.tempC! : undefined;
   const fg = evaluation.fg.range, abv = evaluation.abv.range;
-  const enStock = stock.filter(i => i.category.toLocaleLowerCase('fr') === 'levure' && i.currentStock > 0)
+  const enStock = stock.filter(i => i.category.toLocaleLowerCase('fr') === 'levure' && i.currentStock > 0 && i.ref !== recipe.yeast.stockItemRef)
     .sort((a, b) => Number(!!b.favorite) - Number(!!a.favorite) || a.name.localeCompare(b.name, 'fr')).slice(0, 3);
   const idsStock = useMemo(() => new Set(stockIds ?? []), [stockIds]);
   // La fiche du catalogue de chaque levure du stock : sa fiche posée, sinon la correspondance unique et sûre de son nom (voie r4, 09.11).
@@ -512,7 +518,7 @@ function MaLevureVue({ recipe, refs, supply, levure, classement, onConduite, onC
         </div>
         <div className="lv-cel" data-cel="floculation">
           <span className="lv-ct">floculation</span>
-          {floc?.genre === 'jauge' && <><span className="lv-cv ml-fin">{NIVEAUX.find(n => n.id === floc.niveau)!.mot}</span><Jauge niveau={floc.niveau} couleur="#8C8C8C" /></>}
+          {floc?.genre === 'jauge' && <><span className="lv-cv ml-fin">{accordFeminin(NIVEAUX.find(n => n.id === floc.niveau)!.mot)}</span><Jauge niveau={floc.niveau} couleur="#8C8C8C" /></>}
           {floc?.genre === 'mot' && <span className="lv-cv ml-fin">{floc.texte}</span>}
           {(!floc || floc.genre === 'inconnu') && !floculationEtat && <button type="button" className="ml-floc-inc" onClick={() => onChercherDonnee('clarte')}
             aria-label="Floculation non documentée : chercher la donnée"><span className="lv-cv ml-fin">inconnue</span><span className="ml-crans-vides" aria-hidden="true"><i /><i /><i /></span></button>}
@@ -536,11 +542,11 @@ function MaLevureVue({ recipe, refs, supply, levure, classement, onConduite, onC
     </div>}
 
     {pose && <PoserDuStock item={pose.item} levure={pose.ref} dose={pose.dose} style={recipe.style} styleId={(recipe as { styleRef?: { styleId?: string } }).styleRef?.styleId}
-      aussi={aussi} onPoser={() => onStock(pose.item, pose.dose && { qty: pose.dose.qty, unit: pose.dose.unit })} onAussi={aussi && onProposee ? () => onProposee(aussi) : undefined} />}
+      aussi={aussi} onPoser={() => onStock(pose.item, pose.dose && { qty: pose.dose.qty, unit: pose.dose.unit }, pose.ref)} onAussi={aussi && onProposee ? () => onProposee(aussi) : undefined} />}
 
     <ChampLevure choisie={choisie} classement={classement ?? refs} stock={stock} stockIds={idsStock} fiches={fiches}
       enStock={pose ? enStock.filter(i => i.ref !== pose.item.ref) : enStock} proposees={aussi ? proposees.slice(1) : proposees} precedente={precedente} precedenteId={precedenteId} onPrecedente={onPrecedente}
-      onProposee={onProposee} onStock={onStock} onHorsCatalogue={onHorsCatalogue} libre={libre} />
+      onProposee={onProposee} onStock={item => { const fiche = refs.find(r => r.id === fiches.get(item.ref)); if (fiche) onStock(item, undefined, fiche); else onStock(item); }} onHorsCatalogue={onHorsCatalogue} libre={libre} />
 
     {avecConduite && <div className="yeast-workbench yeast-choice lv-base" data-lv="conduite-base" ref={conduite} hidden={conduiteCachee}>
       <YeastRecipePlan key={clePlan} recipe={recetteConduite} refs={refs} onChange={onConduite}

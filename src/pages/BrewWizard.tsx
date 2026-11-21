@@ -3195,7 +3195,15 @@ const BrewWizardEditor: React.FC<BrewWizardProps & {
               comparees={levuresComparees} onComparees={setLevuresComparees}
               onChoisir={choisirLevure} onChange={applyYeastChoice} onNavigate={setStep}
               stockItems={stockItems}
-              onStock={(item, dose) => { setYeastChange(startYeastChoiceChange(build(), 'stock')); selectYeast(item.name, item, dose); }}
+              onStock={(item, dose, fiche) => {
+                setYeastChange(startYeastChoiceChange(build(), 'stock'));
+                // La levure du stock reliée à sa fiche du catalogue (21.11, N1) : posée comme la fiche (nom, atténuation, floculation, plage), liée au lot.
+                if (!fiche) { selectYeast(item.name, item, dose); return; }
+                const avant = build();
+                const r = doseApresChoix(applyCatalogueYeast(avant, fiche, item.yeastForm ?? fiche.form), avant.yeast, yeastSupply);
+                applyYeastChoice({ ...r, yeast: { ...r.yeast, stockItemRef: item.ref, ...(dose ? { qty: dose.qty, unit: dose.unit } : {}) } }, 'replace-selection');
+                setYeastSelection(n => n + 1);
+              }}
               onRetirer={() => { setYeastChange(startYeastChoiceChange(build(), 'free')); selectYeast(''); }}
               yeastChange={yeastChange} onYeastChange={setYeastChange}
               identityEditor={<Suspense fallback={<p role="status" className="text-sm text-cave-400">Chargement des articles de levure…</p>}><YeastIngredientPicker items={stockItems} yeast={yeast} onStock={(name, item) => {

@@ -56,12 +56,12 @@ describe('Ma levure : un article du stock relié à sa fiche du catalogue', () =
     expect(carte().querySelectorAll('[data-axe-inconnu]').length).toBe(5);                        // 19.11 : en une rangée, une seule recherche
   });
 
-  it('une puce par levure : Verdant du stock ne s’affiche pas une seconde fois comme levure proposée', () => {
+  it('une fois par levure : Verdant du stock (« ton stock d’abord », N1) ne s’affiche pas une seconde fois comme levure proposée', () => {
     const recette = { ...(recetteApercuEtapeLevure() as unknown as TrialRecipe), yeast: { name: '' } } as unknown as TrialRecipe;
     render(<Banc depart={recette} stockItems={[verdantStock]} />);
-    const puces = [...document.querySelectorAll('.lv-puces-l .lv-puce')].map(p => p.textContent!.trim());
+    const puces = [...document.querySelectorAll('.lv-puces-l .lv-puce, .lv-pz-nom')].map(p => p.textContent!.trim());
     expect(puces.filter(t => /verdant/i.test(t)).length).toBe(1);
-    expect(puces).toContain('Levure LALLEMAND Verdant IPA');
+    expect(document.querySelector('[data-lv="poser-stock"]')?.textContent).toMatch(/Verdant/);
   });
 
   it('en tapant « verdant », une tuile par levure : celle du stock, pas aussi celle du catalogue', () => {

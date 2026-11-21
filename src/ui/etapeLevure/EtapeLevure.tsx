@@ -83,7 +83,7 @@ export interface PropsEtapeLevure {
   /** Écrit la recette (applyYeastChoice du wizard). */
   onChange: (next: TrialRecipe, intent?: YeastChoiceIntent) => TrialRecipe | void;
   onNavigate?: (destination: 'identite' | 'fermentescibles' | 'houblons' | 'paliers' | 'eau') => void;
-  stockItems: StockItem[]; onStock: (item: StockItem, dose?: { qty: number; unit: string }) => void; onRetirer: () => void;
+  stockItems: StockItem[]; onStock: (item: StockItem, dose?: { qty: number; unit: string }, fiche?: YeastReference) => void; onRetirer: () => void;
   yeastChange?: YeastChoiceChange; onYeastChange: (change?: YeastChoiceChange) => void;
   /** La quantité est refusée (zéro, négative, unité) : le wizard ramène ici, le repli « Dose » s'ouvre sur le champ à corriger. */
   doseInvalide?: boolean;
@@ -195,7 +195,7 @@ export function EtapeLevure(p: PropsEtapeLevure) {
   const maLevureRef = levure ?? ({ id: 'recette', name: recipe.yeast.name, form: recipe.yeast.form } as YeastReference);
   const chercherDeMaLevure = (axe: string | string[]) => crochet.chercher(maLevureRef, axe, recipe.yeast);
 
-  const onStock = (item: StockItem, dose?: { qty: number; unit: string }) => { p.onStock(item, dose); onVue('ma-levure'); };
+  const onStock = (item: StockItem, dose?: { qty: number; unit: string }, fiche?: YeastReference) => { if (fiche) p.onStock(item, dose, fiche); else if (dose) p.onStock(item, dose); else p.onStock(item); onVue('ma-levure'); };
   // Les levures proposées sous « Changer de levure » : vendues en CH · FR · DE, les plus proches de la recette (API de d1, jamais un filtre imposé).
   // Le catalogue rangé pour la recette, calculé une fois par repères et en différé (19.11, fluidité : choisir une levure peint d'abord la carte, le classement
   // suit) ; il sert aux puces proposées et à l'ordre des résultats de « Changer de levure ».
