@@ -2638,3 +2638,10 @@ Classement de la page r3 de Ma levure (https://claude.ai/artifact/DKAJe8ESeMR4ig
 > Et la plupart des petites improvement sont aussi sans la nécessité de mini maquettes, parcontre peut être attendre un certain temps car SI ont choisi des mini maquettes qui remplace complément certains actions, vue où autre, ça vaut pas la peine de résoudre certains "faux" problème
 
 (21.11, sur le Carnet et le Stock.)
+
+> Mode nuit, tout ce qui est du calendrier, tu es autonome et pas besoin de mon retour.
+> Porte le jusqu'au bout, et éprouve à fond surtout sur la vrai app avec des gestesnt au doigt.
+> Pour le reste fait jusqu'à ce que tu ailles besoin de mon retour demain matin.
+> Test et éprouve, tu peux faire 3 itération des mini maquettes workflow avec les persona de critique adapté pour avoir des vrais bonnes proposition( recommence ou améliore que si nécessaire) toujours en mode économie Max de token, tout pour la qualité !! Pas de gaspillage, SI ça doit prendre plus de temps, pas grave
+
+(21.11 soir : mode nuit.)
