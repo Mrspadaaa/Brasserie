@@ -25,6 +25,7 @@ import { yeastStrainInformation } from '../domain/yeastStrainInformation';
 import { YeastPitchingPanel, yeastPitchingSummary } from './YeastPitchingPanel';
 import './yeast-recipe.css';
 import { nombreFr } from '../domain/nombreAffiche';
+import { refCurseurNatif } from './geste';
 
 export type YeastRecipeDestination = 'identite' | 'fermentescibles' | 'houblons' | 'paliers' | 'eau';
 const number = (n?: number | null, digits = 1) => Number.isFinite(n)
@@ -204,7 +205,7 @@ export function YeastRecipeWorkbench({ recipe, onChange, onNavigate, simulationO
               <span>°C</span>
             </div>
             {selected.temperature && <>
-              {draft.temperatureC != null && draft.temperatureC >= selected.temperature.range.min && draft.temperatureC <= selected.temperature.range.max ? <input type="range" className="yeast-temperature-range" aria-label="Explorer la température de fermentation"
+              {draft.temperatureC != null && draft.temperatureC >= selected.temperature.range.min && draft.temperatureC <= selected.temperature.range.max ? <input ref={refCurseurNatif} type="range" className="yeast-temperature-range" aria-label="Explorer la température de fermentation"
                 min={selected.temperature.range.min} max={selected.temperature.range.max} step={0.5}
                 value={draft.temperatureC} onChange={e => patch({ temperatureC: Number(e.target.value) })} />
                 : <div className="yeast-range-unknown h-4" aria-hidden="true" />}
