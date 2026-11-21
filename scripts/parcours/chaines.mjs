@@ -89,7 +89,9 @@ async function leveureCatalogue(s) {
   await s.toucher('Suivant', { prefixe: true }); await sleep(700);
   await s.toucher('Suivant', { prefixe: true }); await sleep(800);
   await s.ecrire('textarea[placeholder="Chercher une levure"]', 'US-05'); await sleep(900);
-  await s.toucher('SafAle US-05', { contient: true }); await sleep(900);
+  // tour7 ne liste que la puce du stock « ZZ TEST US-05 » à cette recherche : elle pose la même levure, l'étape juge ensuite ce qui suit
+  const cat = await s.trouver('SafAle US-05', { contient: true }).catch(() => null);
+  await s.toucher(cat ? 'SafAle US-05' : 'ZZ TEST US-05', { contient: true }); await sleep(900);
 }
 /** Vente de 2 fûts de Pale Ale à La Cigogne (pro, facture QR) jusqu'au panier : « Actions rapides » → « Vente » → puce client → tuile « fût 20 L » ×2. */
 async function panierDeuxFuts(s) {
