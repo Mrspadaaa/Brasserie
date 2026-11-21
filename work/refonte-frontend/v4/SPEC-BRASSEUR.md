@@ -2557,3 +2557,7 @@ Classement de la page r3 de Ma levure (https://claude.ai/artifact/DKAJe8ESeMR4ig
 > Après en théorie, tout ce qui est vente, papier et tout devrait être automatique quand j'entre un document...
 
 (21.11, capture-12 : une chose à une date (Ventes, Papiers…) prend la même frise au doigt avec un seul repère, passé compris ; règle générale : un document entré (facture, ticket, vente) pose seul sa chose au Calendrier.)
+
+> Il y a un espace vide énorme ici ???
+
+(21.11, tour 8, capture-13 : grand vide sous la rangée Brassins, avant Fêtes ; probable effet des pistes à hauteur fixe (D406/D408).)
