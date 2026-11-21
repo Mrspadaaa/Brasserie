@@ -6,7 +6,7 @@
 //     sans option : construit l'arbre de travail dans un dossier temporaire (`vite build` avec scripts/parcours/vite.parcours.config.mjs) ;
 //     --build     : réutilise un build déjà fait par cette config ;
 //     --ref <tag> : construit ce tag dans une copie temporaire (git worktree dans os.tmpdir(), node_modules en jonction, retirée à la fin).
-//     --etape <a,b> : seules ces étapes V-CAL (G3, RENOMMER-EVT, C1-GLISSER, D2-CAL, K2, K3-SUITES, TRAVAUX-SANS-MONTANT, CRN-11, CRN-20), après la fixture.
+//     --etape <a,b> : seules ces étapes V-CAL (G3, RENOMMER-EVT, C1-GLISSER, D2-CAL, K2, K3-SUITES, TRAVAUX-SANS-MONTANT, CRN-11, CRN-20, CAL-ENTETE), après la fixture.
 //     G3_SEMAINE=<n> (variable d'environnement) : G3 ne cherche sa case vide que dans la semaine n (rejouer un cas vu, ex. S2 en 3 mois).
 //   Sortie : « PARCOURS CALENDRIER OK » (code 0) ou « PARCOURS CALENDRIER ECHEC » + la liste des échecs (code 1) ; captures dans le dossier.
 //
@@ -696,11 +696,22 @@ async function jouer(dir) {
               const b = await point('[aria-label^="ZZ TEST Horizon,"]');
               const [x0, x1] = prise(b, -1, f0);
               await cap('09c-c1-avant');
+              const nbCol = (t) => Number(/\((\d+) col\./.exec(t)?.[1] ?? 0), bornes = (t) => /S(\d+)–S(\d+)/.exec(t)?.slice(1, 3).join('–');
               await glisser([x0, b[1]], [x1, b[1]]);
               const sb = semaineDe(await labelDe('ZZ TEST Horizon,'));
+              const f1 = await fenetreLue();
+              const pose = (await lireCache()).find((e) => e.id === neuf.id)?.data.date ?? null;
+              const semIso = (d) => { const j = new Date(`${d}T12:00:00Z`); j.setUTCDate(j.getUTCDate() + 3 - ((j.getUTCDay() + 6) % 7)); const q = new Date(Date.UTC(j.getUTCFullYear(), 0, 4, 12)); q.setUTCDate(q.getUTCDate() + 3 - ((q.getUTCDay() + 6) % 7)); return 1 + Math.round((j - q) / (7 * 864e5)); };
               await cap('09c-c1-glisse');
-              (sb !== null && ((sa - sb + 53) % 53) === 1) ? ok('C1-GLISSER', `« 3 mois » → vers ${m}, posée S${sa}, glissée en S${sb}, sans carrousel`)
-                : echec('C1-GLISSER', `glissée d'une semaine vers la gauche : S${sa} → S${sb ?? '(absente)'} ; doigt ${Math.round(x0)} → ${Math.round(x1)} ; fenêtre avant ${f0.txt}, après ${(await fenetreLue()).txt}`);
+              /* CAL-BARRE-BORD (VISION-tour9 n° 2, 21.11 : « je tire un évènement en dehors ça doit agrandir l'échelle ») : une barre tirée vers le bord
+                 AGRANDIT la fenêtre au lieu de la faire glisser (plus de colonnes, côté opposé au glisser gardé, ici la fin) ; la date posée est celle de l'étiquette. */
+              const w0 = /S(\d+)–S(\d+)/.exec(f0.txt), w1 = /S(\d+)–S(\d+)/.exec(f1.txt);
+              const finGardee = !!(w0 && w1 && w0[2] === w1[2]);
+              const grandie = nbCol(f1.txt) > nbCol(f0.txt);
+              const dateOk = !!(pose && sb !== null && semIso(pose) === sb);
+              (sb !== null && sb < sa && grandie && finGardee && dateOk)
+                ? ok('C1-GLISSER', `« 3 mois » → vers ${m}, posée S${sa}, tirée vers la gauche : S${sb} (${pose}), fenêtre agrandie ${bornes(f0.txt)} → ${bornes(f1.txt)} (${nbCol(f0.txt)} → ${nbCol(f1.txt)} col.), sans carrousel`)
+                : echec('C1-GLISSER', `tirée vers la gauche : S${sa} → S${sb ?? '(absente)'} (posée le ${pose}) ; doigt ${Math.round(x0)} → ${Math.round(x1)} ; fenêtre avant ${f0.txt}, après ${f1.txt} ; attendu : agrandie, fin gardée, date = étiquette`);
             }
             await annulerSiPossible();
           }
@@ -915,7 +926,7 @@ async function jouer(dir) {
     // (Brassins) ne bouge pas de plus de 1 px entre le repos et 5 semaines lues au doigt, courbe visible puis cachée ; aucune rangée qui redit
     // un montant sous les mois ; en-tête ≤ 30 % de 844 (≤ 20 % courbe cachée) ; barre du haut sur une ligne à chaque onglet. Captures
     // 390 et 1280, clair et cave.
-    if (tout) try { await calEntete(); } catch (e) { echec('CAL-ENTETE', String(e.message).slice(0, 200)); }
+    if (tout || joue('CAL-ENTETE')) try { await calEntete(); } catch (e) { echec('CAL-ENTETE', String(e.message).slice(0, 200)); }
     async function calEntete() {
       const C = 'CAL-ENTETE';
       const mesurer = () => p.evaluate(() => {
@@ -932,7 +943,7 @@ async function jouer(dir) {
           haut: rg ? Math.round(rg.getBoundingClientRect().top * 10) / 10 : null, rangee: rg ? (rg.innerText ?? '').trim().split('\n')[0].slice(0, 20) : null,
           pointilles, rondsRepere: ent ? [...ent.querySelectorAll('[data-curseur] circle')].filter(vis).length : 0, repere: !!ent?.querySelector('[data-curseur]'),
           lit: !!ent?.querySelector('.ent-lit'), luLignes: lu ? (lu.innerText ?? '').split('\n').filter((l) => l.trim()).length : 0, luTexte: lu ? (lu.innerText ?? '').replace(/\s+/g, ' ').slice(0, 60) : '',
-          montantSousMois: /[−-]\s?\d/.test(an?.textContent ?? '') || /[−+]\s?\d/.test(texteBz), anTexte: (an?.textContent ?? '').slice(0, 40)
+          montantSousMois: /[−-]\s?\d/.test(an?.textContent ?? '') || /[−+]\s?\d/.test(texteBz), anTexte: (an?.textContent ?? '').slice(0, 40), bz: texteBz.replace(/\s+/g, ' ').slice(0, 90)
         };
       });
       const menuDuree = async (nom) => { const m = await point('[aria-label$="période, liste, tri et filtre"]'); await p.touchscreen.tap(m[0], m[1]); await sleep(650); await toucher(nom); await sleep(500); };
@@ -940,13 +951,16 @@ async function jouer(dir) {
       const boiteCourbe = () => p.evaluate(() => { const s = document.querySelector('[data-calendrier-entete] .ent-cbz svg'); if (!s) return null; window.scrollTo(0, 0); const r = s.getBoundingClientRect(); return { x: r.x, y: r.y, w: r.width, h: r.height }; });
 
       await recharger(); await fermer();
+      /* « ± » est un réglage du brasseur gardé par appareil (calendrier_mouvements) : K2 (« Au calendrier » d'une idée, T4) le met à « oui » et il
+         reste jusqu'ici. Rangée de montants (−63, +900…) et haut de 30 px de plus sont alors voulus ; ce contrôle part du défaut, ± éteint. */
+      if (await p.$('.ent-mb[aria-pressed="true"]')) { const c = await point('.ent-mb'); await p.touchscreen.tap(c[0], c[1]); await sleep(600); }
       for (const duree of ['An', '3 mois']) {
         await menuDuree(duree); await cacher(false); await sleep(300);
         // courbe visible : le repos, puis 6 semaines lues au doigt (un glissé horizontal court sur la courbe)
         const hauts = []; const lus = [];
         const repos = await mesurer(); hauts.push(repos.haut);
         if (duree === 'An') await cap('10-cal-entete-390-repos');
-        repos.montantSousMois ? echec(C, `${duree} : une rangée sous les mois redit un montant de la courbe (« ${repos.anTexte} »)`) : ok(C, `${duree} : aucune rangée de montant sous les mois`);
+        repos.montantSousMois ? echec(C, `${duree} : une rangée sous les mois redit un montant de la courbe (« ${repos.anTexte} » ; bande « ${repos.bz} »)`) : ok(C, `${duree} : aucune rangée de montant sous les mois`);
         const bc = await boiteCourbe();
         if (!bc) { echec(C, `${duree} : courbe introuvable`); continue; }
         for (const f of [0.12, 0.27, 0.41, 0.55, 0.7, 0.86]) {
@@ -956,7 +970,8 @@ async function jouer(dir) {
           if (!m.lit) notes.push(`${C} ${duree} : glissé à ${Math.round(f * 100)} % sans lecture (${m.luTexte})`);
           if (m.pointilles) echec(C, `${duree} : ${m.pointilles} rond(s) pointillé(s) sur la courbe, semaine lue à ${Math.round(f * 100)} %`);
           if (m.rondsRepere) echec(C, `${duree} : le repère de semaine est un rond (${m.rondsRepere} cercle(s) dans [data-curseur]), deuxième refus`);
-          if (m.lit && !m.repere) echec(C, `${duree} : semaine lue sans repère sur la courbe`);
+          /* CAL-BARRE-INUTILE (b17062ff5, 21.11 « barre inutile ») : le repère n'existe que pendant le geste (vérifié par geste.mjs) ; doigt levé, le détail reste, le repère disparaît */
+          if (m.repere) echec(C, `${duree} : le repère de semaine reste dessiné sur la courbe au doigt levé (CAL-BARRE-INUTILE)`);
           if (duree === 'An' && f === 0.7) await cap('10-cal-entete-390-lecture');
         }
         const ecart = Math.max(...hauts) - Math.min(...hauts);
