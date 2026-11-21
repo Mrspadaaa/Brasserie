@@ -217,16 +217,18 @@ describe('#97 V3 n°1 — tout geste réel du brasseur crée le brouillon (B1)',
     expect(readRecipeDraft(KEY)?.recipe.mash?.spargeType).toBeDefined();
   });
 
-  it('appui sur la piste SO₄ ⇄ Cl (RatioSlider) : brouillon écrit', async () => {
+  it('glisser sur la piste SO₄ ⇄ Cl (RatioSlider) : brouillon écrit', async () => {
     const view = wizard(saved());
     allerEtape(/^Eau$/);
     await wait(50);
     const track = document.querySelector('.ratio-track') as HTMLElement;
     expect(track).toBeTruthy();
     const before = (track.querySelector('input[type="range"]') as HTMLInputElement).value;
-    fireEvent.pointerDown(track, { button: 0, clientX: 400 });
-    fireEvent.pointerUp(track, { button: 0, clientX: 400 });
-    fireEvent.click(track);
+    // Frise B (20.11) : un toucher ne change rien ; le geste réel est un glisser (R1, R2).
+    track.getBoundingClientRect = () => ({ left: 0, top: 0, right: 280, bottom: 28, width: 280, height: 28, x: 0, y: 0, toJSON: () => ({}) });
+    fireEvent.pointerDown(track, { button: 0, clientX: 100 });
+    fireEvent.pointerMove(track, { button: 0, clientX: 160 });
+    fireEvent.pointerUp(track, { button: 0, clientX: 160 });
     await wait(0);
     const after = (document.querySelector('.ratio-track input[type="range"]') as HTMLInputElement).value;
     view.unmount();

@@ -53,7 +53,7 @@ describe('Interactive performance without stale calculations', () => {
     expect(solve.mock.calls.at(-1)?.[0].volumeL).toBe(22);
   });
 
-  it('solves once per ratio graduation and still applies the first press in manual mode', () => {
+  it('solves once per ratio graduation; a press alone changes nothing (frise B, R1)', () => {
     const changed = vi.fn();
     const { container } = render(<RatioSlider value={1} achieved={.8} followingTarget={false} onChange={changed} />);
     const track = container.querySelector<HTMLElement>('.ratio-track')!;
@@ -65,12 +65,14 @@ describe('Interactive performance without stale calculations', () => {
       fireEvent(track, event);
     };
     pointer('pointerdown', 140);
-    for (const x of [140, 140.1, 140.2, 140]) pointer('pointermove', x);
-    pointer('pointermove', 200);
+    for (const x of [140, 140.1, 140.2, 144, 140]) pointer('pointermove', x);
+    expect(changed).not.toHaveBeenCalled();                     // R1 : poser le doigt ne change rien, 6 px avant de bouger
+    pointer('pointermove', 200); pointer('pointermove', 200.1);
     pointer('pointerup', 200);
-    expect(changed.mock.calls.map(([ratio]) => ratio)).toEqual([.8, 2]);
-    pointer('pointerdown', 200); pointer('pointerup', 200);
-    expect(changed.mock.calls.map(([ratio]) => ratio)).toEqual([.8, 2, 2]);
+    expect(changed).toHaveBeenCalledTimes(1);                   // une résolution par graduation
+    expect(changed.mock.calls[0][0]).toBeGreaterThan(1);        // R2 : depuis 1, vers la droite
+    pointer('pointerdown', 30); pointer('pointerup', 30);
+    expect(changed).toHaveBeenCalledTimes(1);                   // R1 : un toucher ne change rien
     expect(screen.getByLabelText('Rapport obtenu')).toHaveTextContent('0,8');
   });
 });

@@ -3,6 +3,7 @@ import { IonRange } from '../domain/waterStyles';
 import { WaterIons } from '../types';
 import { ratioLabel, sulfateChlorideRatio } from '../domain/water/ions';
 import { ratioToShare, shareToRatio } from './water/ratioScale';
+import { borner, useGlisse } from './geste';
 export { ratioLabel } from '../domain/water/ions';
 
 interface RatioSliderProps {
@@ -25,7 +26,6 @@ export const RatioSlider: React.FC<RatioSliderProps> = ({
 }) => {
   const id = useId();
   const inputRef = useRef<HTMLInputElement>(null);
-  const activePointer = useRef<number | null>(null);
   const lastPointerRatio = useRef<number | null>(null);
   const limit = Number.isFinite(max) && max > 0 ? max : 9;
   const shareMax = ratioToShare(limit);
@@ -59,31 +59,23 @@ export const RatioSlider: React.FC<RatioSliderProps> = ({
   const changeSetting = (ratio: number) => onChange(Math.min(limit, Math.max(0, Math.round(ratio * 20) / 20)));
   // Le contrôle natif conserve une vraie valeur SO₄/Cl pour l'accessibilité.
   // Seuls la géométrie visuelle et le geste suivent la part de sulfate.
-  const pointerSetting = (event: React.PointerEvent<HTMLDivElement>) => {
-    const bounds = event.currentTarget.getBoundingClientRect();
-    const fraction = Math.max(0, Math.min(1, (event.clientX - bounds.left - 14) / Math.max(1, bounds.width - 28)));
-    const ratio = Math.min(limit, Math.max(0, Math.round(shareToRatio(fraction * shareMax) * 20) / 20));
-    // One solve per graduation, including the first press in manual mode.
-    if (ratio !== lastPointerRatio.current) {
-      lastPointerRatio.current = ratio;
-      onChange(ratio);
-    }
-  };
-  const pointerStart: React.PointerEventHandler<HTMLDivElement> = event => {
-    if (event.button !== 0 || activePointer.current !== null) return;
-    event.preventDefault();
-    inputRef.current?.focus();
-    activePointer.current = event.pointerId;
-    lastPointerRatio.current = null;
-    event.currentTarget.setPointerCapture(event.pointerId);
-    pointerSetting(event);
-  };
-  const pointerEnd: React.PointerEventHandler<HTMLDivElement> = event => {
-    if (activePointer.current !== event.pointerId) return;
-    if (event.type === 'pointerup') pointerSetting(event);
-    if (event.currentTarget.hasPointerCapture(event.pointerId)) event.currentTarget.releasePointerCapture(event.pointerId);
-    activePointer.current = null;
-  };
+  // Frise B (20.11, src/ui/geste) : le réglage suit le DÉPLACEMENT du doigt depuis la saisie (plus de saut à l'endroit touché), 6 px avant
+  // de bouger, un toucher ne change rien, Échap ou pointercancel rendent le réglage d'avant. Une résolution par graduation, comme avant.
+  const glisse = useGlisse<{ f0: number; w: number; avant: number }>({
+    saisir: (_x, e) => {
+      if (e.button !== 0) return null;
+      inputRef.current?.focus({ preventScroll: true });
+      lastPointerRatio.current = null;
+      const w = (e.currentTarget as HTMLElement).getBoundingClientRect().width - 28;
+      return w > 0 ? { f0: position(clampedSetting) / 100, w, avant: clampedSetting } : null;
+    },
+    suivre: (dx, s) => {
+      const fraction = borner(s.f0 + dx / s.w, 0, 1);
+      const ratio = Math.min(limit, Math.max(0, Math.round(shareToRatio(fraction * shareMax) * 20) / 20));
+      if (ratio !== lastPointerRatio.current) { lastPointerRatio.current = ratio; onChange(ratio); }
+    },
+    annuler: (s) => { lastPointerRatio.current = null; onChange(s.avant); },
+  });
   const keyboardChange: React.KeyboardEventHandler<HTMLInputElement> = event => {
     const steps: Record<string, number> = { ArrowRight: 0.05, ArrowUp: 0.05, ArrowLeft: -0.05, ArrowDown: -0.05, PageUp: 0.5, PageDown: -0.5 };
     if (event.key in steps) {
@@ -109,9 +101,7 @@ export const RatioSlider: React.FC<RatioSliderProps> = ({
         </div>
       </dl>
       <div className="ratio-track relative mt-1 touch-none cursor-pointer"
-        onPointerDown={pointerStart}
-        onPointerMove={event => { if (activePointer.current === event.pointerId) pointerSetting(event); }}
-        onPointerUp={pointerEnd} onPointerCancel={pointerEnd} onLostPointerCapture={() => { activePointer.current = null; }}>
+        ref={glisse}>
         <div className="pointer-events-none absolute inset-y-0 inset-x-3.5" aria-hidden>
           <div className="absolute inset-x-0 top-1/2 -translate-y-1/2 h-2 rounded-full bg-cave-700" />
           {target && <div className="absolute top-1/2 -translate-y-1/2 h-4 rounded-full border border-hop bg-hop/25"
