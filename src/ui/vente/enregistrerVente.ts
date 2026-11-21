@@ -18,6 +18,8 @@ export type Echeance = 'reception' | 10 | 30;
 export interface EntreeVente {
   mode: ModeVente; lignes: LignePanier[]; client: Client | null; dateIso: string; echeance: Echeance; moyen?: 'twint' | 'cash';
   config: AppConfig; numero: string; rasteriser?: Rasteriseur;
+  /** B5 : la vente promise (plan `in`) que cette vente solde ; la prévision ne la compte plus (`finance.planId`). */
+  planId?: string;
 }
 
 /** Une vente prête à être confirmée : aucune écriture n'a eu lieu. Le pdf se partage après l'enregistrement. */
@@ -81,7 +83,7 @@ export async function preparerVente(e: EntreeVente): Promise<VentePreparee> {
     const tx: Transaction = {
       id: e.numero, ...base, description: libelleFacture(e.client.name, items), subcategory: 'Facture client', proofNotes: `Client: ${e.client.name}`,
       proofFileName: pdf.fileName, proofType: 'application/pdf', syncedToDrive: true,
-      finance: { version: 1, kind: 'income', amountCents: totaux.totalCents, vendor: e.client.name, invoiceNumber: e.numero, dueDate, paymentStatus: 'unpaid', recordedAt, proofDocumentId: proof.id, ...(batchId ? { batchId } : {}), lines: lignesFinance(e.lignes, e.numero, totaux) }
+      finance: { version: 1, kind: 'income', amountCents: totaux.totalCents, vendor: e.client.name, invoiceNumber: e.numero, dueDate, paymentStatus: 'unpaid', recordedAt, proofDocumentId: proof.id, ...(batchId ? { batchId } : {}), ...(e.planId ? { planId: e.planId } : {}), lines: lignesFinance(e.lignes, e.numero, totaux) }
     };
     return { entry: { transaction: tx, proof }, pdf, numero: e.numero, totalCents: totaux.totalCents, mode: 'qr' };
   }
@@ -99,7 +101,7 @@ export async function preparerVente(e: EntreeVente): Promise<VentePreparee> {
     /* L'écart d'arrondi va au HT : HT + TVA = TTC reste vrai, la TVA des articles ne change pas. */
     id, ...base, amountHT: (encaisse - totaux.vatCents) / 100, amountTTC: encaisse / 100, description: `Vente ${resume} — ${nomClient}`, subcategory: 'Vente directe', proofNotes: `Client: ${nomClient} · Paiement: ${methode}`,
     proofFileName: proof.fileName, proofType: 'application/pdf', syncedToDrive: true,
-    finance: { version: 1, kind: 'income', amountCents: encaisse, ...(e.client ? { vendor: e.client.name } : {}), paymentStatus: 'paid', recordedAt, proofDocumentId: proof.id, ...(batchId ? { batchId } : {}), lines: lignesVente }
+    finance: { version: 1, kind: 'income', amountCents: encaisse, ...(e.client ? { vendor: e.client.name } : {}), paymentStatus: 'paid', recordedAt, proofDocumentId: proof.id, ...(batchId ? { batchId } : {}), ...(e.planId ? { planId: e.planId } : {}), lines: lignesVente }
   };
   const payment: FinancialPayment = { id: `PAY-${id}`, transactionId: id, date: e.dateIso, amountCents: encaisse, direction: 'in', method: e.moyen === 'twint' ? 'twint' : 'cash', recordedAt };
   return { entry: { transaction: tx, proof, payment }, pdf: recu, numero: id, totalCents: encaisse, mode: 'paye' };

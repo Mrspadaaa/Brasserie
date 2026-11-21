@@ -7,7 +7,10 @@ import type { LignePanier } from './panier';
  */
 export interface Brouillon {
   vente: VentePreparee; lignes: LignePanier[]; clientId: string | null; mode: ModeVente; dateIso: string; echeance: Echeance; moyen?: 'twint' | 'cash';
+  /** Les suites décidées avant l'écriture (B5/B6) : elles s'appliquent après elle, une seule fois, même si la confirmation est reprise. */
+  suites?: SuitesVente;
 }
+export interface SuitesVente { planId?: string; futs: string[]; client: { id?: string; name: string } }
 
 let courant: Brouillon | undefined;
 export const lireBrouillon = (): Brouillon | undefined => courant;

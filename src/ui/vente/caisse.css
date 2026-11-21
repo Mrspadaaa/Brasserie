@@ -72,6 +72,14 @@
 .cs-ticket { margin: 10px 10px 0; background: var(--cs-ticket); border-radius: 16px; padding: 10px 12px 12px; }
 .cs-tl { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 8px; font-size: 13px; color: var(--cs-t1); padding: 1px 0; }
 .cs-tl-alerte { flex: 0 0 100%; font-size: 12px; line-height: 16px; color: var(--cs-ambre-texte); }
+/* B5/B6 : les suites de la vente (fûts livrés, promesse soldée) : proposées, décochables ; cibles de 44 px au doigt */
+.cs-suite { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 8px; font-size: 13px; color: var(--cs-t1); padding: 4px 0; }
+.cs-suite > span:first-child { flex: 1 1 100%; }
+.cs-suite .cs-chip { min-height: 44px; min-width: 56px; padding: 0 12px; border-radius: 22px; border: 1px solid var(--cs-bord); background: var(--cs-panneau); font-size: 13px; text-align: center; }
+.cs-suite .cs-chip[aria-pressed='true'] { background: var(--cs-t0); color: var(--cs-sur); font-weight: 600; }
+.cs-solde { width: 100%; min-height: 44px; justify-content: space-between; text-align: left; border-top: 1px solid var(--cs-bord); }
+.cs-solde[aria-pressed='false'] { color: var(--cs-t2); text-decoration: line-through; }
+.cs-solde > span:first-child { flex: 1 1 auto; }
 .cs-tl .cs-x { margin-left: 4px; width: 22px; text-align: center; color: var(--cs-t2); }
 .cs-muted { color: var(--cs-t2); }
 .cs-tt { display: flex; justify-content: space-between; align-items: center; border-top: 1px dashed var(--cs-t2); margin-top: 6px; padding-top: 6px; }

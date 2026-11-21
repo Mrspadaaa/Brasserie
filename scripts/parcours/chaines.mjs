@@ -81,6 +81,17 @@ async function leveureCatalogue(s) {
   await s.ecrire('textarea[placeholder="Chercher une levure"]', 'US-05'); await sleep(900);
   await s.toucher('SafAle US-05', { contient: true }); await sleep(900);
 }
+/** Vente de 2 fûts de Pale Ale à La Cigogne (pro, facture QR) jusqu'au panier : « Actions rapides » → « Vente » → puce client → tuile « fût 20 L » ×2. */
+async function panierDeuxFuts(s) {
+  await s.toucher('Actions rapides'); await s.toucher('Vente'); await sleep(900);
+  await s.toucher('La Cigogne', { contient: true, dans: '.cs-av' }); await sleep(400);
+  await s.toucher('fût 20 L', { contient: true }); await s.toucher('fût 20 L', { contient: true });
+}
+/** Facturer (ou Encaisser) puis fermer ce qui reste ouvert. */
+async function facturer(s) {
+  await s.toucher('^Facturer', { regex: true, att: 3000 });
+  if (await s.visible('OK', {})) await s.toucher('OK', { att: 1200 });
+}
 async function versRecap(s) { for (let i = 0; i < 3; i++) { await s.toucher('Suivant', { prefixe: true }); await sleep(750); } }
 
 // ───────────── les étapes ─────────────
@@ -149,6 +160,43 @@ function listeEtapes() { return [
       const neuve = recettes.find((r) => /ZZ TEST Brune/.test(r.name ?? ''));
       if (!neuve || Math.abs(Number(neuve.volumeL) - 24) > 0.05) return echec('D394', `volume enregistré ${neuve?.volumeL ?? 'recette absente'} L au lieu de 24 L`);
       ok('D394', 'recette enregistrée à 24 L, la feuille Brasser s\'ouvre');
+    }
+  },
+  {
+    id: 'B6', titre: 'Vendre 2 fûts à La Cigogne : le panier dit quels fûts partent, la vente les livre (WFV-1)',
+    async joue(s) {
+      await panierDeuxFuts(s);
+      await s.cap('B6-1-panier');
+      const t0 = await s.texte(3000);
+      if (!/Livre F-001, F-002/.test(t0)) return echec('B6', `le panier ne dit pas quels fûts partent (attendu « Livre F-001, F-002 ») : ${t0.slice(0, 200)}`);
+      await facturer(s);
+      await s.cap('B6-2-apres');
+      const futs = await s.store('kegs');
+      const etat = (id) => futs.find((k) => k.id === id);
+      const mal = ['F-001', 'F-002'].filter((id) => etat(id)?.state !== 'livre' || etat(id)?.clientId !== 'CL-CIGOGNE' || !etat(id)?.deliveryDate);
+      if (mal.length) return echec('B6', `fûts restés en cave après la vente : ${mal.map((id) => `${id}=${etat(id)?.state}`).join(', ')}`);
+      if (etat('F-003')?.state !== 'plein') return echec('B6', `F-003 (autre bière) ne devait pas bouger : ${etat('F-003')?.state}`);
+      ok('B6', 'F-001 et F-002 livrés à La Cigogne, F-003 intact');
+    }
+  },
+  {
+    id: 'B5', titre: 'La vente réelle solde la vente promise (+280) : un seul +280 au Calendrier, plan soldé (WFV-2)',
+    async joue(s) {
+      await panierDeuxFuts(s);
+      const t0 = await s.texte(3000);
+      const propose = /Solde la vente promise/.test(t0); // la proposition se juge, mais la chaîne se joue jusqu'au Calendrier (le double compte s'y voit)
+      await s.cap('B5-1-panier');
+      await facturer(s);
+      await s.cap('B5-2-apres');
+      const plan = (await s.store('financialPlans')).find((p) => p.id === 'P-VENTE-CIG');
+      const tx = (await s.store('transactions')).find((t) => t.finance?.planId === 'P-VENTE-CIG');
+      await s.toucher('Fermer', { i: -1 }); await sleep(900);
+      await s.onglet('Calendrier'); await sleep(1800);
+      await s.cap('B5-3-calendrier');
+      const lignes = await s.p.evaluate(() => [...document.querySelectorAll('[data-rangee="ventes"] [data-chose-id]')].map((e) => (e.getAttribute('aria-label') || e.innerText || '').replace(/\s+/g, ' ').slice(0, 80)));
+      const promis = lignes.filter((l) => /Cigogne, 2 f/.test(l));
+      if (promis.length || plan?.status !== 'completed' || !tx || !propose) return echec('B5', `la vente réelle ne solde pas la promesse : plan « ${plan?.status} », facture liée ${tx ? 'oui' : 'non'}, proposée au panier ${propose ? 'oui' : 'non'}, au Calendrier : ${promis[0] ?? 'absente'}`);
+      ok('B5', `plan soldé, facture liée, rangée Ventes : ${lignes.length} chose(s), plus de « La Cigogne, 2 fûts »`);
     }
   }
 ]; }

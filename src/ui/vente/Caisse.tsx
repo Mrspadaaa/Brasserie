@@ -24,6 +24,7 @@ import { alertePrixLigne, noteDeTuile, prixDeTuile } from '../../domain/tarifs/t
 import { arrondiEspeces, messageBornes, PRIX_UNITAIRE_MAX, problemePanier, QUANTITE_MAX, totauxPanier, versArticles, type LignePanier } from './panier';
 import { debiteurDe, preparerVente, type Echeance, type ModeVente, type VentePreparee } from './enregistrerVente';
 import { effacerBrouillon, garderBrouillon, lireBrouillon } from './brouillon';
+import { futsLivrables, futsProposes, livrerFuts, planApresVente, planSoldeParVente } from '../../domain/venteSuites';
 import { IdentiteBrasserieFeuille } from './IdentiteBrasserie';
 import { QrExemple } from './QrExemple';
 import { BoutonMois, CarteMois } from '../finance/ongletMois/OngletMois';
@@ -38,6 +39,7 @@ const lireTarifs = () => StorageService.getTarifs();
 const lireTransactions = () => StorageService.getTransactions();
 const lireConfig = () => StorageService.getConfig();
 const lireFuts = () => StorageService.getStocks()?.kegs ?? [];
+const lirePlans = () => FinanceService.getPlans();
 const nomAnnexe0 = (c: Client | null) => `Vente · ${c ? c.name : 'Comptoir'}`;
 
 const MOIS = ['janv.', 'févr.', 'mars', 'avr.', 'mai', 'juin', 'juil.', 'août', 'sept.', 'oct.', 'nov.', 'déc.'];
@@ -98,6 +100,10 @@ export function CaisseContenu({ clientIdInitial, onClose, onSaved, onBusy, ferme
   const transactions = useStorageValue(lireTransactions);
   const config: AppConfig = useStorageValue(lireConfig);
   const futs = useStorageValue(lireFuts);
+  const plans = useStorageValue(lirePlans);
+  /* B5/B6 : la vente solde sa promesse et livre ses fûts. Proposé avec défaut oui ; le brasseur décoche ou change les fûts avant d'enregistrer. */
+  const [solder, setSolder] = useState(true);
+  const [futsChoisis, setFutsChoisis] = useState<Record<string, string[]>>({});
   const company = config.company ?? ({ name: '', owner: '', uid: '' } as AppConfig['company']);
   const assujetti = config.fiscal?.isTvaRegistered === true, taux = config.fiscal?.tvaNormalRate ?? 0;
   const demo = /Démonstration/i.test(company.name ?? '');
@@ -140,6 +146,15 @@ export function CaisseContenu({ clientIdInitial, onClose, onSaved, onBusy, ferme
   };
   const clientsTries = useMemo(() => clients.filter(c => !c.archivedAt || c.id === clientId).sort((a, b) => Number(Boolean(b.favorite)) - Number(Boolean(a.favorite)) || a.name.localeCompare(b.name, 'fr')), [clients, clientId]);
   const client = clients.find(c => c.id === clientId) ?? null;
+  const planPromis = useMemo(() => planSoldeParVente(plans, { clientId, batchIds: lignes.map(l => l.batchId), dateIso }), [plans, clientId, lignes, dateIso]);
+  const futsParLigne = useMemo(() => lignes.filter(l => l.formatId === 'fut').map(l => {
+    const livrables = futsLivrables(futs, l);
+    return { l, livrables, choisis: futsChoisis[l.cle] ?? futsProposes(livrables, l.quantite) };
+  }), [lignes, futs, futsChoisis]);
+  const basculerFut = (cle: string, id: string, livrables: { id: string }[], quantite: number) => setFutsChoisis(s => {
+    const actuels = s[cle] ?? futsProposes(livrables, quantite);
+    return { ...s, [cle]: actuels.includes(id) ? actuels.filter(x => x !== id) : [...actuels, id] };
+  });
 
   /* Le numéro est figé à l'ouverture (et suit l'année choisie) : celui de l'annexe est celui du PDF (REVUE-B 12). */
   const annee = Number(dateIso.slice(0, 4));
@@ -236,6 +251,20 @@ export function CaisseContenu({ clientIdInitial, onClose, onSaved, onBusy, ferme
     setLibre(null);
   };
 
+  /** B5/B6 : après l'écriture de la vente, la promesse soldée et les fûts livrés. Une erreur ici ne défait pas la vente (déjà écrite) : elle se dit. */
+  const appliquerSuites = (b: NonNullable<ReturnType<typeof lireBrouillon>>): string => {
+    const s = b.suites; if (!s) return '';
+    const dites: string[] = [];
+    try {
+      const plan = s.planId ? FinanceService.getPlans().find(p => p.id === s.planId) : undefined;
+      if (plan && plan.status === 'active') { FinanceService.savePlan(planApresVente(plan, b.vente.totalCents, new Date().toISOString())); dites.push(`La vente promise « ${plan.title} » est soldée.`); }
+      const livres = livrerFuts(lireFuts(), s.futs, s.client, b.dateIso);
+      for (const k of livres) StorageService.updateKeg(k);
+      if (livres.length) dites.push(`${livres.length > 1 ? 'Fûts livrés' : 'Fût livré'} : ${livres.map(k => k.id).join(', ')}.`);
+    } catch { dites.push('Vente enregistrée ; les fûts ou la promesse restent à régler à la main.'); }
+    return dites.length ? ` ${dites.join(' ')}` : '';
+  };
+
   const partager = async (pdf: VentePreparee['pdf']) => {
     try {
       const blob = (pdf.doc as { output?: (t: string) => unknown }).output?.('blob');
@@ -253,20 +282,23 @@ export function CaisseContenu({ clientIdInitial, onClose, onSaved, onBusy, ferme
     try {
       let b = lireBrouillon();
       if (!b) {
-        const vente = await preparerVente({ mode, lignes, client, dateIso, echeance, moyen, config, numero });
-        b = { vente, lignes, clientId, mode, dateIso, echeance, moyen };
+        const planId = solder && planPromis ? planPromis.id : undefined;
+        const vente = await preparerVente({ mode, lignes, client, dateIso, echeance, moyen, config, numero, ...(planId ? { planId } : {}) });
+        const futsALivrer = futsParLigne.flatMap(f => f.choisis);
+        b = { vente, lignes, clientId, mode, dateIso, echeance, moyen, suites: { ...(planId ? { planId } : {}), futs: futsALivrer, client: client ? { id: client.id, name: client.name } : { name: 'Client comptoir' } } };
         garderBrouillon(b); setEnAttente(true);
       }
       /* L'écriture d'abord, l'envoi au Drive ensuite, en arrière-plan : la caisse n'attend pas Drive (10.11, « faire le job en background »). */
       const { receipt, queued, confirmed } = await saveIncomeEntryInBackground(b.vente.entry);
       effacerBrouillon(); setEnAttente(false);
+      const suitesDites = appliquerSuites(b);
       const v = b.vente, ttc = v.totalCents / 100, piece = v.mode === 'paye' ? 'Quittance' : 'Facture';
       /* Jamais « conservée dans Drive » avant que ce soit vrai : en file, le justificatif est « en cours d'envoi ». */
       const drive = queued ? `${piece} en cours d’envoi vers Drive.` : receipt ? `${piece} conservée dans Drive.` : `${piece} gardée sur cet appareil, pas dans Drive.`;
       const sync = confirmed ? '' : ' Écrite sur cet appareil : elle se synchronise au retour du réseau.';
       onSaved?.(v.mode === 'paye'
-        ? `Vente de ${montantChf(ttc)} CHF enregistrée.${sync} ${drive}`
-        : `Facture ${v.numero} de ${montantChf(ttc)} CHF enregistrée à encaisser.${sync} ${drive}`);
+        ? `Vente de ${montantChf(ttc)} CHF enregistrée.${suitesDites}${sync} ${drive}`
+        : `Facture ${v.numero} de ${montantChf(ttc)} CHF enregistrée à encaisser.${suitesDites}${sync} ${drive}`);
       if (envoyer) await partager(v.pdf);
       if (v.mode === 'paye') { changerOccupe(false); onClose(); return; }
       setResultat({ numero: v.numero, totalCents: v.totalCents, mode: v.mode, pdf: v.pdf, txId: v.entry.transaction.id, envoi: queued ? 'file' : receipt ? 'drive' : 'local' });
@@ -275,7 +307,7 @@ export function CaisseContenu({ clientIdInitial, onClose, onSaved, onBusy, ferme
     } finally { changerOccupe(false); }
   };
 
-  const nouvelleVente = () => { setResultat(null); setLignes([]); setErreur(''); numeroRef.current = null; setDateIso(todayISO()); };
+  const nouvelleVente = () => { setResultat(null); setLignes([]); setSolder(true); setFutsChoisis({}); setErreur(''); numeroRef.current = null; setDateIso(todayISO()); };
 
   const peutPrimaire = !occupe && (enAttente || (Boolean(totaux) && !bornes && !dateErreur && !(mode === 'paye' && !moyen) && !(mode === 'qr' && (!client || bloqueQr || manqueQrHorsLigne))) && !manqueUid);
   /* AM-69 : en espèces, le montant encaissé est arrondi à 5 ct ; l'écart se voit en une ligne au ticket et à l'annexe. */
@@ -391,6 +423,18 @@ export function CaisseContenu({ clientIdInitial, onClose, onSaved, onBusy, ferme
                 {l.formatId === 'libre' && !fieldsetOff && <button type="button" className="cs-x" aria-label={`Retirer ${l.designation}`} onClick={() => setLignes(ls => ls.filter(x => x.cle !== l.cle))}>×</button>}
               </div>
             ))}
+            {/* B6 : les fûts vendus quittent la cave avec la vente (les plus anciens d'abord) ; chaque fût se décoche ou s'ajoute. */}
+            {!resultat && futsParLigne.map(({ l, livrables, choisis }) => (
+              <div className="cs-suite" key={`futs-${l.cle}`} role="group" aria-label="Fûts livrés avec cette vente" data-suite="futs">
+                <span>{choisis.length ? `Livre ${choisis.join(', ')}` : livrables.length ? 'Aucun fût livré' : 'Aucun fût plein de ce brassin en cave'}</span>
+                {livrables.map(k => <button type="button" key={k.id} className="cs-chip" aria-pressed={choisis.includes(k.id)} aria-label={`Fût ${k.id}`} disabled={fieldsetOff} onClick={() => basculerFut(l.cle, k.id, livrables, l.quantite)}>{k.id}</button>)}
+              </div>
+            ))}
+            {!resultat && planPromis && (
+              <button type="button" className="cs-suite cs-solde" data-suite="promesse" aria-pressed={solder} disabled={fieldsetOff} onClick={() => setSolder(s => !s)}>
+                <span>{solder ? '✓ Solde' : 'Ne solde pas'} la vente promise « {planPromis.title} »</span><span className="cs-m">{fr(planPromis.amountCents)} CHF</span>
+              </button>
+            )}
             {assujetti && totaux && <div className="cs-tl"><span>TVA {String((taux * 100).toFixed(1)).replace('.', ',')} %</span><span className="cs-m">{fr(totaux.vatCents)}</span></div>}
             {ecartRond !== 0 && ligneArrondi(ecartRond)}
             <div className="cs-tt">
