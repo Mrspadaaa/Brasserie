@@ -1,4 +1,5 @@
 import { useLayoutEffect, useRef, useState, type ReactNode } from "react";
+import { refCurseurNatif } from '../geste';
 
 export interface GradueLabel {
   /** Valeur où se pose le repère chiffré. */
@@ -64,7 +65,7 @@ export function reperesVisibles(labels: GradueLabel[], min: number, max: number,
 
 /**
  * Curseur gradué de la maquette w1b : piste remplie, zone du matériel hachurée, graduation et repères chiffrés.
- * Le geste reste celui d'un `<input type="range">` natif (clavier compris) ; les repères sont posés à leur valeur réelle.
+ * Le geste reste celui d'un `<input ref={refCurseurNatif} type="range">` natif (clavier compris) ; les repères sont posés à leur valeur réelle.
  */
 export function GradueSlider({
   value, min, max, step, onChange, ariaLabel, id, disabled, zoneFrom, major, minor, labels, marker, children,
@@ -94,7 +95,7 @@ export function GradueSlider({
         {marker != null && Number.isFinite(marker) && (
           <i className="ew-mk" aria-hidden="true" style={{ left: `${at(marker, min, max)}%` }} />
         )}
-        <input
+        <input ref={refCurseurNatif}
           id={id}
           className="ew-rg"
           type="range"
