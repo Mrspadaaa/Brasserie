@@ -146,7 +146,7 @@ describe('reschedule, begin and reopen', () => {
     const view = render(<Flow />);
     expect(saved.brewDate).toBe('');
     expect(screen.getByText('Prévu le 27.09.2026')).toBeInTheDocument();
-    fireEvent.click(screen.getByRole('button', { name: 'Commencer aujourd’hui' }));
+    fireEvent.click(screen.getByRole('button', { name: 'Terminer et continuer' }));
     expect(saved.brewDate).toBe('20.09.2026'); expect(saved.plannedBrewDate).toBe('27.09.2026');
     expect(saved.brewDay?.startedAt).toBe(Date.now());
     view.unmount(); render(<Flow />);

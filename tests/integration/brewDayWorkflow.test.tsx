@@ -301,7 +301,7 @@ describe('Assistant pendant le brassage', () => {
   it('le transfert reste en attente après réouverture ; seule la levure confirmée clôture une fois', async () => {
     const clock = vi.spyOn(Date, 'now').mockReturnValue(Date.UTC(2026, 8, 20, 18));
     const evening = mount({ currentIndex: 1 }, { status: 'planifie', brewDate: '', plannedBrewDate: '25.09.2026', recipeSnapshot: pitchingRecipe() as never });
-    expect(screen.getByRole('button', { name: 'Commencer aujourd’hui' })).toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: 'Commencer aujourd’hui' })).not.toBeInTheDocument();
     fireEvent.click(screen.getByRole('button', { name: 'Transfert effectué · sans levure' }));
     const pending = evening.latest();
     const pendingBatch = evening.save.mock.calls.at(-1)![0] as Batch;
