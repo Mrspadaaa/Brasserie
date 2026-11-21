@@ -360,7 +360,7 @@ export function FeuilleFiltres(p: FeuilleProps) {
             </div>
           )}
           <button type="button" role="switch" aria-checked={c.periode.enCours} className="lst-panneau lst-tg" onClick={() => set({ periode: { ...c.periode, enCours: !c.periode.enCours } })}>
-            <span className="lst-pt" aria-hidden />Les en cours, toujours<span className="lst-sw" aria-hidden />
+            <span className="lst-pt" aria-hidden />Les en cours et en vente, toujours<span className="lst-sw" aria-hidden />
           </button>
           <p className="lst-note">Même période que l’en-tête : la régler ici la règle partout dans l’app.</p>
         </div>

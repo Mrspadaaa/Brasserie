@@ -21,6 +21,7 @@ import {
 } from '../../../domain/productionInsights';
 import { dryHopDans, fgAConfirmer, retardDe } from '../volumes/phrase';
 import { estEnCours } from '../volumes/periode';
+import { brassinsVendables } from '../../vente/brassinsVendables';
 import { dansPeriode as dansLaPeriodeCommune, enPeriode, type PeriodeEntree } from '../../../components/periode/periode';
 import { modeleFiche } from '../fermentation/modele';
 
@@ -113,11 +114,12 @@ export function correspondAvancement(e: CatalogEntry, a: Avancement): boolean {
 
 const memeTexte = (a: string, b: string) => catalogText(a) === catalogText(b);
 
-/** La période de l'en-tête juge la date d'un brassin (même règle que partout : `dansPeriode` de `periode.ts`) ; « les en cours, toujours » les garde hors période. */
+/** La période de l'en-tête juge la date d'un brassin (même règle que partout : `dansPeriode` de `periode.ts`) ; « les en cours et en vente, toujours » les garde hors période. */
 function dansPeriode(e: CatalogEntry, enCours: boolean, periode: PeriodeEntree | undefined, now: number): boolean {
   const maintenant = new Date(now);
   if (!periode || enPeriode(periode, maintenant).genre === 'tout') return true;
-  if (enCours && e.batch && estEnCours(e.batch)) return true;
+  // B11 (WFV-5) : une bière que la caisse vend (conditionnée ou terminée, conditionnement noté) se montre quelle que soit la période.
+  if (enCours && e.batch && (estEnCours(e.batch) || brassinsVendables([e.batch]).length > 0)) return true;
   if (e.timestamp === undefined) return false;
   return dansLaPeriodeCommune(e.date ?? '', periode, maintenant);
 }

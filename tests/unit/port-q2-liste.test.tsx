@@ -87,7 +87,8 @@ describe('comptes à facettes (e6c)', () => {
 describe('période et alcool', () => {
   it('« Les en cuve, toujours » : un brassin en cours passe une période étroite', () => {
     const etroite: PeriodeEntree = { genre: 'dates', du: '2026-01-01', au: '2026-02-28' };
-    expect(ids(appliquer(ctx({ periode: { enCours: true } }, '', etroite)))).toEqual(['Z1', 'Z2', 'Z4', 'Z5']);
+    // B11 : Z3 (conditionné, conditionnement noté) est vendu par la caisse : il reste, même hors période.
+    expect(ids(appliquer(ctx({ periode: { enCours: true } }, '', etroite)))).toEqual(['Z1', 'Z2', 'Z3', 'Z4', 'Z5']);
     expect(ids(appliquer(ctx({ periode: { enCours: false } }, '', etroite)))).toEqual(['Z5']);
   });
   it('la plage d’alcool écarte ce qui n’a pas de valeur (jamais 0)', () => {

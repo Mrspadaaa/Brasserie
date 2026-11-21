@@ -47,11 +47,11 @@ function houblonsDesBrassins(entries: CatalogEntry[]): { nom: string; style: str
 }
 
 /* Une seule période dans l'app (m3r-a, 16.11 : « on peut le réglés à plusieurs endroits, attention à ce détails très important ») : celle de l'en-tête.
-   Ce bouton la lit (« Nov. », « T4 », « 2026 ») et la feuille qui s'ouvre l'écrit ; « + en cours » dit que les brassins en cours restent listés hors période. */
+   Ce bouton la lit (« Nov. », « T4 », « 2026 ») et la feuille qui s'ouvre l'écrit ; « + en cours, en vente » dit que les brassins en cours, et ceux que la caisse vend, restent listés hors période. */
 function libellePeriode(c: Criteres, appPeriode: PeriodeEntree, now: number): { texte: string; suite: string; actif: boolean } {
   const app = enPeriode(appPeriode, new Date(now));
   if (app.genre === 'tout') return { texte: 'Toutes', suite: '', actif: false };
-  return { texte: etiquetteCourte(app), suite: c.periode.enCours ? '+ en cours' : '', actif: true };
+  return { texte: etiquetteCourte(app), suite: c.periode.enCours ? '+ en cours, en vente' : '', actif: true };
 }
 
 export function ListeBrassins({
