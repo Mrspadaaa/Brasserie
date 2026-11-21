@@ -1,4 +1,4 @@
-import React, { lazy, Suspense, useEffect, useMemo, useRef, useState } from 'react';
+import React, { lazy, Suspense, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import { FileText, Tag, Wrench } from 'lucide-react';
 import type { CreativeLabSectionRequest } from '../../components/CreativeLabTab';
 import { useMobileLayout } from '../useViewport';
@@ -50,6 +50,21 @@ const ONGLETS = [['materiel', 'Matériel', Wrench], ['carnet', 'Carnet', FileTex
 export function AtelierPorte(p: AtelierPorteProps) {
   const mobile = useMobileLayout();
   const [onglet, setOnglet] = useState<OngletAtelier>(() => ongletDeDemande(p.demande?.section));
+  /* k1d (C8, R27 ; k2 à 390) : sous Carnet, la porte a la hauteur de l'écran moins ce qui est au-dessus d'elle et la barre d'onglets
+     (comme Stocks › Matériel) : le fil défile dedans, le champ du bas reste au-dessus de la barre au lieu de passer dessous. */
+  const racine = useRef<HTMLDivElement>(null);
+  useLayoutEffect(() => {
+    const el = racine.current;
+    if (!el || !mobile || onglet !== 'carnet' || typeof window === 'undefined') return;
+    const poser = () => {
+      const barre = document.querySelector('.nav-principale')?.getBoundingClientRect();
+      const bas = barre && barre.height > 0 && barre.top < window.innerHeight ? window.innerHeight - barre.top : 0;
+      el.style.setProperty('--atp-haut', `${Math.round(el.getBoundingClientRect().top + window.scrollY + bas + 12)}px`);
+    };
+    poser();
+    window.addEventListener('resize', poser);
+    return () => window.removeEventListener('resize', poser);
+  }, [onglet, mobile]);
   const ongletRef = useRef(onglet);
   ongletRef.current = onglet;
   const [carnetOuvert, setCarnetOuvert] = useState<{ id: string; at: number } | null>(null);
@@ -88,7 +103,7 @@ export function AtelierPorte(p: AtelierPorteProps) {
   const attente = (texte: string) => <div role="status" className="py-3 text-sm text-cave-400">{texte}</div>;
 
   return (
-    <div className="atp space-y-2 sm:space-y-4 text-sm">
+    <div ref={racine} className="atp space-y-2 sm:space-y-4 text-sm" data-onglet={mobile ? onglet : undefined}>
       {!mobile && <div className="finance-heading"><h2 className="text-2xl font-semibold">Atelier R&amp;D</h2></div>}
       <div className="nc-seg" role="group" aria-label="Mon atelier">
         {ONGLETS.map(([cle, nom, Icone]) => (

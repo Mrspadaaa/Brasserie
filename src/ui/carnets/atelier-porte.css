@@ -2,4 +2,6 @@
    et le titre propres à CreativeLabTab sont masqués (sa rubrique Carnet, l'ancien carnet, n'a plus de porte). Classes préfixées atp- (L26). */
 .atp-tarifs > div > .nc-seg,
 .atp-tarifs > div > .finance-heading { display: none; }
-.atp-carnets { min-height: 0; }
+/* k1d (C8, R27) : au téléphone, sous Carnet, une colonne bornée (--atp-haut mesuré par AtelierPorte) ; le Carnet prend le reste, son fil défile */
+.atp[data-onglet=carnet] { display: flex; flex-direction: column; height: calc(100dvh - var(--atp-haut, 182px)); }
+.atp-carnets { flex: 1; min-height: 0; }

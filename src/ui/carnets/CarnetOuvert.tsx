@@ -29,6 +29,7 @@ import { uniquesParTexte } from '../../domain/carnets/doublons';
 import { dateCourte, GENRE_LIBELLE, montant, Provenance, STATUT_LIBELLE, texteSortie, type AidesV, type ArticleV, type CarnetV, type ContenuCarnetV, type CritereV, type FaconV, type GenreNote, type NoteV } from './EtatIA';
 import { LigneRangee } from './LigneRangee';
 import { phraseEnTitre } from './ListeCarnets';
+import { PREFIXE_PLANNING } from '../../domain/carnets/anciens';
 import { Photos } from './Photos';
 import { titreAffiche } from './titre';
 import { VignetteObjet } from './pictos';
@@ -140,9 +141,15 @@ export function nomCourt(nom: string): { texte: string; feminin: boolean } {
   return { texte: t, feminin };
 }
 
+/** k1d (h05-3 « capte la buée ») : une pastille dit le critère en minuscule ; « Tient 2 °C » (mis en forme par l'IA) → « tient 2 °C ».
+ *  Un sigle (« CO2 », « SAV ») garde sa majuscule : seule une initiale suivie d'une minuscule baisse. */
+export function enMinuscule(t: string): string {
+  return /^\p{Lu}\p{Ll}/u.test(t) ? t.charAt(0).toLocaleLowerCase('fr') + t.slice(1) : t;
+}
+
 /** « tient 80 °C » → « ne tient pas 80 °C » ; « aspire … » → « n'aspire pas … » (un critère oui-non se dit par un verbe). */
 export function nier(texte: string): string {
-  const t = texte.trim();
+  const t = enMinuscule(texte.trim());
   const m = /^(\S+)(\s.*)?$/.exec(t);
   if (!m) return `pas : ${t}`;
   return `${/^[aeiouyéèêàâîôû]/i.test(m[1]) ? "n'" : 'ne '}${m[1]} pas${m[2] ?? ''}`;
@@ -185,7 +192,7 @@ function pastilleFacon(k: ContenuCarnetV, f: FaconV, sep: Separation | null): { 
   const v = cr ? (sep ? sep.verdicts[f.id] ?? null : verdictFacon(k, f, cr)) : null;
   if (cr && v !== null) {
     const oui = cr.caracteristique?.sens === 'oui-non';
-    return { texte: v ? cr.texte : oui ? nier(cr.texte) : 'hors critère', passe: v };
+    return { texte: v ? enMinuscule(cr.texte) : oui ? nier(cr.texte) : 'hors critère', passe: v };
   }
   return f.raison ? { texte: f.raison, passe: f.etat === 'retenue' ? true : null } : null;
 }
@@ -199,6 +206,11 @@ function Bande({ active, children }: { active: boolean; children: React.ReactNod
 
 export function CarnetOuvert(p: CarnetOuvertProps) {
   const c = p.carnet, k = c.carnet;
+  /* k1d (h05-3, i06-4) : un projet porté du Planning a pour titre le nom de la tâche, pas sa phrase ; son budget vient du Planning */
+  const duPlanning = c.id.startsWith(PREFIXE_PLANNING);
+  const provenance = (el: CritereV): string | null =>
+    duPlanning && String(el.origine) === 'vous' ? (/Planning/.test(el.texte) ? null : 'repris du Planning') : provenanceCritere(el);
+  const avecProv = (el: CritereV) => { const x = provenance(el); return x ? ` · ${x}` : ''; };
   /* tour 3, PCN-109 : la pastille R47 dit le lien vers À venir ; la ligne de sortie sous le choix ne le redit pas */
   const sortieEnPastille = !!k.sortie?.planId && p.liens.some(l => l.id === k.sortie!.planId);
   const [menu, setMenu] = useState(false);
@@ -251,7 +263,7 @@ export function CarnetOuvert(p: CarnetOuvertProps) {
   const classants = autres.filter(u => u.el.caracteristique);
   const tete = classants.length ? classants : autres.slice(0, 1);
   const derriere = autres.filter(u => !tete.includes(u));
-  const provsTete = [...new Set(tete.map(u => provenanceCritere(u.el)))];
+  const provsTete = [...new Set(tete.map(u => provenance(u.el)))];
   /* n° 34 : « 1 critère sans valeur à comparer ⌄ », compté sans le critère rangé ; pendant que l'IA range (un cadre de geste est
      posé), le compte reste celui d'avant l'envoi : il ne bouge pas sous les yeux. */
   const derriereAvant = useRef(derriere.length);
@@ -262,10 +274,10 @@ export function CarnetOuvert(p: CarnetOuvertProps) {
       {tete.map((u, i) => (
         <React.Fragment key={u.ids[0]}>
           {i > 0 ? ', puis ' : ''}<b>{u.el.texte}</b>
-          {provsTete.length > 1 && <span className="cn-mut"> · {provenanceCritere(u.el)}</span>}
+          {provsTete.length > 1 && avecProv(u.el) && <span className="cn-mut">{avecProv(u.el)}</span>}
         </React.Fragment>
       ))}
-      {provsTete.length === 1 && <span className="cn-mut"> · {provsTete[0]}</span>}
+      {provsTete.length === 1 && provsTete[0] && <span className="cn-mut"> · {provsTete[0]}</span>}
     </>
   );
   /* La phrase du critère rangé : citée une fois. Si le critère est sa phrase même (normalisée), « · de votre phrase » le dit déjà. */
@@ -278,7 +290,7 @@ export function CarnetOuvert(p: CarnetOuvertProps) {
   ) : null;
   const rangeeCritere = uRange && r ? (
     <LigneRangee phrase={phraseRangee} rangeSur={r.rangeSur} onAnnuler={r.onAnnuler} onVotreTexte={r.onVotreTexte} onDeplacer={r.onDeplacer} onChangerEnNote={r.onChangerEnNote}>
-      <p className="cn-critere cn-critere-court"><b>{uRange.el.texte}</b><span className="cn-mut"> · {provenanceCritere(uRange.el)}{uRange.el.caracteristique ? '' : ' · sans valeur à comparer'}</span></p>
+      <p className="cn-critere cn-critere-court"><b>{uRange.el.texte}</b><span className="cn-mut">{avecProv(uRange.el)}{uRange.el.caracteristique ? '' : ' · sans valeur à comparer'}</span></p>
     </LigneRangee>
   ) : null;
   const ligneCritere = criteres.length > 0 && (
@@ -296,7 +308,7 @@ export function CarnetOuvert(p: CarnetOuvertProps) {
           {derriere.map(u => (
             <p key={u.ids[0]} className="cn-critere cn-critere-court" role="listitem">
               <b>{u.el.texte}</b>
-              <span className="cn-mut"> · {provenanceCritere(u.el)}{u.el.raison ? ` · ${u.el.raison}` : ''}</span>
+              <span className="cn-mut">{avecProv(u.el)}{u.el.raison ? ` · ${u.el.raison}` : ''}</span>
             </p>
           ))}
         </div>
@@ -319,7 +331,7 @@ export function CarnetOuvert(p: CarnetOuvertProps) {
   /* tout juste créé, le bandeau cite déjà sa phrase (g5:v04-4 ; n° 39 : jamais deux fois). Critique 6, n° 30 (R25) : la phrase citée
      dit ce qu'elle est, « votre phrase : « … » », jamais des guillemets seuls qui flottent ; n° 14 : pas une seconde fois si la ligne
      rangée la cite déjà. */
-  const phraseCitee = k.phrase && !p.vientDEtreCree && !(r?.phrase && normaliser(r.phrase) === normaliser(k.phrase)) ? (phraseEnTitre(c.title, k.phrase)
+  const phraseCitee = k.phrase && !duPlanning && !p.vientDEtreCree && !(r?.phrase && normaliser(r.phrase) === normaliser(k.phrase)) ? (phraseEnTitre(c.title, k.phrase)
     ? <p className="cn-cite" data-en-titre>votre phrase en titre</p>
     : <p className="cn-cite">{estLienSeul(k.phrase) ? 'votre lien' : 'votre phrase'} : « {k.phrase} »</p>) : null; /* f5d n° 11 */
 
