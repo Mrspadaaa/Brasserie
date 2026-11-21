@@ -2561,3 +2561,7 @@ Classement de la page r3 de Ma levure (https://claude.ai/artifact/DKAJe8ESeMR4ig
 > Il y a un espace vide énorme ici ???
 
 (21.11, tour 8, capture-13 : grand vide sous la rangée Brassins, avant Fêtes ; probable effet des pistes à hauteur fixe (D406/D408).)
+
+> Aussi beaucoup de vues peuvent descendre beaucoup plus bas que le contenu, ça peut être pratique de descendre un tout petit peu au cas ou le bouton+ gênerai mais pas autant ??
+
+(21.11, capture-14 : environ 500 px vides sous le contenu, sur beaucoup de vues.)
