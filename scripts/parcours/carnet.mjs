@@ -186,7 +186,7 @@ async function jouer(dir) {
       await p.waitForSelector('nav button', { timeout: 90000 }).catch(async (e) => { await cap('erreur-demarrage').catch(() => {}); throw new Error(`l'application ne démarre pas (${e.message.slice(0, 60)}) ; erreurs : ${erreursPage.slice(0, 2).join(' | ')}`); });
       await sleep(1500);
     };
-    const versAtelier = async () => { await toucher('Brassins', { exact: true, sel: 'nav button' }).catch(() => toucher('Brassins')); await toucher('Atelier R&D'); };
+    const versAtelier = async () => { await toucher('Brassins', { exact: true, sel: 'nav button' }).catch(() => toucher('Brassins')); await toucher('Atelier', { exact: true }); };
     const surListe = () => p.evaluate(() => document.querySelector('[data-carnets]')?.getAttribute('data-vue') ?? null);
     const nomsListe = ['À comparer', 'Idée'];
     const attendreListe = async () => { for (let k = 0; k < 20; k++) { if ((await surListe()) === 'liste') return; await sleep(300); } throw new Error(`la liste du Carnet ne s'affiche pas (vue : ${await surListe()})`); };
@@ -233,7 +233,7 @@ async function jouer(dir) {
     });
     await etape('03 porte Menu Plus', async () => {
       await demarrer(); await toucher('Plus : saisie'); await cap('03a-menu-plus');
-      await toucher('Atelier R&D', { sel: 'button' }); await attendreListe(); await cap('03b-porte-plus');
+      await toucher('Atelier', { sel: '[data-t="atelier"]' }); await attendreListe(); await cap('03b-porte-plus');
       await verifier('03 porte Menu Plus', { contient: contenuListe, carnets: true });
     });
     await etape('04 porte ⌘K', async () => {
@@ -492,6 +492,21 @@ async function jouer(dir) {
       if (!s) throw new Error('aucune pastille « à faire »');
       if (s.pad < 6 || s.r < 6) throw new Error(`pastille collée au texte : marge ${s.pad} px, coins ${s.r} px`);
       ok('CRN-16', `marge ${s.pad} px, coins ${s.r} px`);
+    });
+    await etape('CRN-10 un lieu, un nom : « Atelier » partout', async () => {
+      const fautes = [];
+      await demarrer(); await toucher('Plus : saisie'); await sleep(400);
+      const plus = await p.evaluate(() => document.querySelector('[data-t="atelier"]')?.innerText.replace(/\s+/g, ' ').trim() ?? '');
+      if (/R&D/.test(plus)) fautes.push(`menu Plus : « ${plus} »`);
+      if (/Aucune idée nouvelle/.test(plus)) fautes.push(`menu Plus : « ${plus} », alors que le Carnet montre ses carnets`);
+      await demarrer(); await toucher('Rechercher'); await sleep(500); await taper('carnet'); await sleep(600);
+      const k = await p.evaluate(() => [...document.querySelectorAll('div,button,[role=option],li')].map((e) => (e.innerText ?? '').replace(/\s+/g, ' ').trim()).find((t) => t.startsWith('Aller à · Carnet')) ?? '');
+      if (/R&D/.test(k)) fautes.push(`⌘K : « ${k.slice(0, 60)} »`);
+      await demarrer(); await versAtelier(); await attendreListe(); await toucher('Actions rapides'); await sleep(400); await cap('crn10-menu-plus');
+      const z = await p.evaluate(() => document.querySelector('.plus-pile-zone')?.innerText.replace(/\s+/g, ' ').trim() ?? '');
+      if (/R&D/.test(z)) fautes.push(`menu + : « ${z} »`);
+      if (fautes.length) throw new Error(fautes.join(' ; '));
+      ok('CRN-10', `Plus « ${plus} », ⌘K « ${k.slice(0, 40)} », + « ${z} »`);
     });
     // CRN-suite
 
