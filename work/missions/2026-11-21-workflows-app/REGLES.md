@@ -2,7 +2,7 @@
 
 Tirées de ses mots du 20 et du 21.11 (`work/refonte-frontend/v4/SPEC-BRASSEUR.md`, l. 2340 à la fin) et de leurs
 antécédents. Elles reprennent et complètent les sept règles de `work/missions/2026-11-20-workflows/CADRAGE.md` § 3
-(numéros R1 à R7 identiques), puis ajoutent R8 à R10.
+(numéros R1 à R7 identiques), puis ajoutent R8 à R10, et R11, R12 (passe 2 par principes, 21.11).
 
 Ses mots sur la méthode, qui valent pour toutes :
 - « J'ai donné des grandes lignes et des exemples très précis… pas prend ces exemples à la lettre, mais bien généralisé pour chaque cas » ;
@@ -118,6 +118,25 @@ Chaque règle couvre au moins deux de ses exemples (colonne « ses cas »). Un c
 - **Règle** : une proposition n'est candidate que si elle passe `GAIN.md` : règle citée, chaîne jouée, fréquence au
   moins mensuelle, et au moins 30 % de gestes en moins, une ressaisie supprimée ou une erreur rendue impossible.
   Le reste va en annexe « gimmicks écartés ».
+
+## R11 — Le geste fréquent se fait d'un toucher, là où l'objet se voit
+- **Ses mots** : « proposer des actions instantané aussi, certains gest commun en demandant plusieurs » (21.11).
+- **Ses cas** : aucun nommé ; la règle les cherche seule.
+- **Règle** : une action faite chaque semaine sur un objet (mesurer, compter, cocher, confirmer) part de l'objet là où il s'affiche,
+  avec la valeur attendue déjà posée ; on ne touche que pour confirmer ou pour l'écart. Un geste caché (appui long) ne remplace pas
+  un bouton visible, sauf là où il l'a choisi.
+- **Hors de ses cas** : relevé de densité depuis la carte du lot, recomptage « comme prévu », confirmation d'un paiement depuis le solde.
+- **Contrôle** : aucun ; chaîne jouée et gestes comptés (GAIN).
+
+## R12 — Un nom se propose, se change sur place, et Entrée confirme
+- **Ses mots** : « Pour valider certains actions il faut un nom ou autre. Taper un nom pour valider, ensuite sortir du mode clavier
+  ect... C'est des actions en plus » ; « facilité le renomage et un entré (retour à la ligne( du clavier sur mobile confirme) » (21.11).
+- **Ses cas** : événements, activités, tâches, suggestions, bières.
+- **Règle** : une création a un nom sensé par défaut (tiré de sa rangée, sa date, son style, sa catégorie) et se valide sans clavier ;
+  un nom se renomme en touchant le titre ; dans un champ d'une ligne, Entrée valide ou prend le champ suivant. Exception : quand le
+  texte est la chose créée (une idée, le nom d'un client), seule Entrée compte.
+- **Hors de ses cas** : achat de matériel, fournisseur, carnet, tarif.
+- **Contrôle** : NOM-OBLIGE, `scripts/parcours/principes.mjs` (port-carnet).
 
 ## Ce que ces règles ne ramènent pas
 - Ses refus : pa3, pe2, pe5 (vue « toute ta chaîne »), pb4.

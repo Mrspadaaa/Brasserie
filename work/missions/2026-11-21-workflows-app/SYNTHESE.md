@@ -144,3 +144,16 @@ en production). Lenteurs WF2-3, WF2-4 : à profiler seules.
 | 13 | N7 : l'inventaire confirme d'un toucher ce qui est juste | neuve, chaîne rare | ≈ 38 → ≈ 20 (compté) | annuel | seule ; forme à dessiner |
 
 Restent écartées : v01, v04 (hors la quantité), v08, v12, v13, et les 19 gimmicks sauf P5 vendre (repêchée en N4). Non joué : `REPRISE-passe2.md`.
+
+## 8. Passe 2 principes (21.11)
+
+Détail : `ANALYSE-principes2.md`, constats `BUGS-principes2.md` (WX2-1 à WX2-12), règles neuves R11 et R12 dans `REGLES.md`.
+Contrôles mécaniques : `scripts/parcours/principes.mjs` de port-carnet, VUE-SAUTE et NOM-OBLIGE ; ils échouent sur
+en-ligne/2026-11-21-tour7 comme sur HEAD cf945eaec (29 KO, mêmes lignes).
+- **Vue qui saute** : 4 écrans au-dessus du plafond (CLS de session : assistant recette 0,318, Stocks 0,264, Calendrier 0,248,
+  Brassins 0,039) ; « Suivant » de l'assistant sans place fixe (saute de 490 et 655 px). Bord, Finances, Clients tenus.
+- **Nom obligé** : 3 créations jouées exigent un nom tapé sans proposition (événement, recette, achat de matériel) ; Entrée n'y valide
+  pas ; seuls les carnets se renomment sur place. Code : 70 champs de nom sur 74 sans `enterKeyHint`.
+- **Propositions (filtre GAIN)** : PI-1 nom proposé (−50 %, hebdomadaire), PI-2 Entrée confirme (−33 %), PI-3 recompter « comme
+  prévu » (−44 %, mensuel), PI-4 mesurer depuis la carte du lot (−50 %, hebdomadaire), PI-5 renommer sur place (−43 %, à mesurer).
+- **Trop de texte** : 3 corrections (Finances en double, légende de l'épicerie, Bord), sans geste gagné : au passage de l'écran.
