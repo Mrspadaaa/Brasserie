@@ -112,7 +112,7 @@ export const EquipmentList: React.FC<EquipmentListProps> = ({ equipment, batches
           </>
         )}
       </section>
-      <NewEquipment open={adding} today={today} refs={equipment.map(e => e.ref)} wide={wide} onClose={() => setAdding(false)} onAdd={item => { setAdding(false); onAdd(item); }}
+      <NewEquipment open={adding} today={today} refs={equipment.map(e => e.ref)} noms={equipment.map(e => e.name)} wide={wide} onClose={() => setAdding(false)} onAdd={item => { setAdding(false); onAdd(item); }}
         onBuy={() => { setAdding(false); onBuy(); }} onProjects={onProjects ? () => { setAdding(false); onProjects(); } : undefined} />
     </div>
   );
