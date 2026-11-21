@@ -3,7 +3,7 @@ import { Sheet } from '../../Sheet';
 import { Input } from '../../Input';
 import { ChampMontant } from '../../finance/ChampMontant';
 import {
-  appliquerPuce, aDesJoursActifs, aUneFenetre, aUnMontant, avecNomPose, brouillonVide, choisirJour, etirerFin, etirerPlage, poserHorizon, choisirJours, peutChoisirJour, jourPose, libelleMontant, peutMettreDeCote, preteLe, puceJours, puces, resumeFenetre, toucherSemaine,
+  appliquerPuce, aDesJoursActifs, aUneFenetre, aUnMontant, avecNomPose, brouillonVide, choisirJour, etirerFin, etirerPlage, poserHorizon, choisirJours, peutChoisirJour, choisirJourFin, jourDebutPlage, jourFinPlage, peutChoisirJoursPlage, jourPose, libelleMontant, peutMettreDeCote, preteLe, puceJours, puces, resumeFenetre, toucherSemaine,
   type BrouillonAjout, type Confirmation, type ContexteAjout, type Puce
 } from '../../../domain/calendrierAjout';
 import { prixSemblable, texteIntention } from '../../../domain/horizons';
@@ -331,10 +331,33 @@ export const FeuilleAjout: React.FC<FeuilleAjoutProps> = ({ mode, initial, conte
               })}
             </div>
           )}
+          {/* CAL-JOUR (21.11, « pourquoi à certains événements je peux pas leur donner un jour précis… ? ») : une fenêtre rouverte choisit son
+              jour de début et son jour de fin, chacun dans sa semaine ; jamais une fin avant le début */}
+          {peutChoisirJoursPlage(b) && (['debut', 'fin'] as const).map(bord => {
+            const lundi = (bord === 'debut' ? b.debut : b.fin) as string;
+            const du = jourDebutPlage(b) as string, au = jourFinPlage(b) as string, pose = bord === 'debut' ? du : au;
+            return (
+              <div key={bord} role="group" aria-label={bord === 'debut' ? 'Jour du début' : 'Jour de la fin'} data-feuille-jours={bord} className="mt-1 flex items-center gap-1" data-vaul-no-drag>
+                <span className="w-10 shrink-0 text-xs text-cave-200">{bord === 'debut' ? 'Début' : 'Fin'}</span>
+                {JOURS_INITIALES.map((nom, i) => {
+                  const iso = ajouterJours(lundi, i);
+                  return (
+                    <button key={iso} type="button" data-jour={iso} aria-pressed={iso === pose} aria-label={`${bord === 'debut' ? 'Début' : 'Fin'} ${NOMS_JOURS[i]} ${jourLisible(iso)}`}
+                      disabled={bord === 'debut' ? iso > au : iso < du}
+                      onClick={() => regler(bord === 'debut' ? choisirJour(b, iso) : choisirJourFin(b, iso))}
+                      className="cal-f-jour flex min-h-11 min-w-0 flex-1 flex-col items-center justify-center rounded-control border border-cave-700 text-cave-50 disabled:opacity-40 aria-pressed:border-cave-50 aria-pressed:bg-cave-850 aria-pressed:font-bold">
+                      <b className="text-xs font-semibold">{nom}</b>
+                      <small className="text-xs text-cave-200">{Number(iso.slice(8))}</small>
+                    </button>
+                  );
+                })}
+              </div>
+            );
+          })}
           {/* D404 : l'horizon pose le début ; la durée s'étire au geste de la frise B (fêtes, achats, travaux, activités) */}
           {horizons && fenetre && b.debut && (
             <div className="mt-2">
-              <DureeFenetre rangee={b.rangee} debut={b.debut} fin={b.fin} onFin={f => regler(etirerFin(b, f))} onPlage={(d, f) => regler(etirerPlage(b, d, f))} />
+              <DureeFenetre rangee={b.rangee} debut={b.debut} fin={b.fin} jourFin={peutChoisirJoursPlage(b) ? jourFinPlage(b) : null} onFin={f => regler(etirerFin(b, f))} onPlage={(d, f) => regler(etirerPlage(b, d, f))} />
             </div>
           )}
           {/* capture-12 (21.11) : une chose à une seule date (vente, papier…) prend la même frise, un seul repère, tirable dans le passé */}

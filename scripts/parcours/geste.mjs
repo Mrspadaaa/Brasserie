@@ -466,6 +466,37 @@ async function jouerCalendrier({ p, base, combo, tactile, glisser, pas }) {
     }
     await choisirPeriode('3 mois'); await sleep(400);
   };
+  // ── CAL-JOUR-FEUILLE (21.11, « pourquoi à certains événements je peux pas leur donner un jour précis… ? ») : « ZZ TEST Geste » rouverte par
+  //    Modifier montre deux rangées des jours (Début, Fin) ; un autre jour touché dans chacune, Enregistrer : la fenêtre écrite commence et
+  //    finit à ces jours (plus au lundi ni au dimanche), relue après rechargement ──
+  const sectionFeuilleJour = async () => {
+    const J = `feuille au jour ${combo}`;
+    try {
+      const a = await valeurGeste(), b = await barreGeste();
+      if (!a || !b) { echec(J, '« ZZ TEST Geste » introuvable'); return; }
+      await toucherXY(b.l + b.w / 2, b.y); await sleep(600);
+      await toucherTexte('Modifier'); await sleep(700);
+      /* une rangée des jours, défilée puis lue (l'autre rangée peut bouger au défilement : chacune se relit avant son toucher) */
+      const rangee = (bord) => p.evaluate((bord) => {
+        const g = document.querySelector(`[data-mode="modifier"] [data-feuille-jours="${bord}"]`); if (!g) return null;
+        g.scrollIntoView({ block: 'center' });
+        return [...g.querySelectorAll('[data-jour]')].map((x) => { const r = x.getBoundingClientRect(); return { j: x.getAttribute('data-jour'), on: x.getAttribute('aria-pressed') === 'true', off: x.disabled, x: r.left + r.width / 2, y: r.top + r.height / 2 }; });
+      }, bord);
+      if (!(await rangee('debut')) || !(await rangee('fin'))) { await cap('feuille-jour-absente'); echec(J, `aucune rangée des jours Début et Fin dans Modifier (fenêtre ${a.cle})`); await echap(); return; }
+      /* un autre jour : le voisin du jour posé (après pour le début, avant pour la fin), sinon de l'autre côté */
+      const autre = (l, sens) => { const i = l.findIndex((d) => d.on); return [l[i + sens], l[i - sens]].find((d) => d && !d.off) ?? null; };
+      const d0 = autre(await rangee('debut'), 1); if (!d0) { echec(J, 'aucun autre jour de début à toucher'); await echap(); return; }
+      await toucherXY(d0.x, d0.y); await sleep(400);
+      const f0 = autre(await rangee('fin'), -1); if (!f0) { echec(J, 'aucun autre jour de fin à toucher'); await echap(); return; }
+      await toucherXY(f0.x, f0.y); await sleep(400);
+      await cap('feuille-jour');
+      await toucherTexte('Enregistrer'); await sleep(900);
+      const c = await valeurGeste();
+      (c?.du === d0.j && c?.au === f0.j) ? ok(`${J} début et fin`, `${a.cle} → ${c.cle}`) : echec(`${J} début et fin`, `${a.cle} → ${c?.cle} (${d0.j}→${f0.j} attendus)`);
+      await versCalendrier(); const d = await valeurGeste();
+      d?.cle === c?.cle ? ok(`${J} rechargement`, c.cle) : echec(`${J} rechargement`, `${c?.cle} → ${d?.cle}`);
+    } catch (e) { echec(J, String(e.message ?? e).slice(0, 160)); await echap(); }
+  };
   // ── CAL-VIDE (21.11, « Il y a un espace vide énorme ici ??? ») et CAL-VIDES-EN-LIGNE (« les mettre en vertical pas les entassés à
   //    l'horizontal ») : en 6 sem., 3 mois et An, une rangée prend la hauteur de ses lignes (écart ≤ 24 px jusqu'à l'en-tête suivant) ; les
   //    rangées vides se posent l'une sous l'autre ──
@@ -497,6 +528,7 @@ async function jouerCalendrier({ p, base, combo, tactile, glisser, pas }) {
   await sectionBarre();
   await sectionCadre();
   await sectionFeuille();
+  await sectionFeuilleJour();
   await sectionModifier();
   await sectionRangees();
   await cap('fin');

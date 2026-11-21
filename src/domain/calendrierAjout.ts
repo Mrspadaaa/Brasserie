@@ -53,6 +53,13 @@ export interface BrouillonAjout {
   /** Le jour a été choisi au doigt (rangée des jours) : il s'écrit tel quel, même dans la semaine en cours. Sinon, une autre semaine garde le rang du jour (mardi → mardi). */
   jourChoisi?: boolean;
   /**
+   * CAL-JOUR (21.11, « pourquoi à certains événements je peux pas leur donner un jour précis… ? ») : le JOUR de fin d'une fenêtre rouverte.
+   * Tant que la semaine de fin est `fin`, c'est ce jour qui s'écrit (plus le dimanche) ; une autre semaine de fin s'écrit au dimanche.
+   */
+  jourFin?: string;
+  /** Le jour de fin a été choisi au doigt (rangée « Fin ») : il s'écrit tel quel, même dans les semaines d'origine. */
+  jourFinChoisi?: boolean;
+  /**
    * CAL-PASSE : le brouillon vient d'une chose qui existe déjà (Modifier, Poser depuis « Sans date »). Le PREMIER toucher d'une semaine la DÉPLACE
    * (sa longueur reste, comme au glisser) ; il n'étend pas une fenêtre : « modifier un évènement ne l'update pas à la bonne date » (toucher
    * une semaine plus tard n'écrivait que la fin, la date de début restait où elle était). Les touchers suivants règlent la fin, comme à l'ajout.
@@ -136,7 +143,9 @@ export function brouillonDepuisChose(chose: ChoseCalendrier): BrouillonAjout {
     signe: chose.centimes !== undefined && chose.centimes > 0 ? '+' : chose.rangee === 'ventes' || chose.rangee === 'fetes' ? '+' : '-',
     ...(chose.centimes !== undefined ? { centimes: Math.abs(chose.centimes) } : {}),
     ...(chose.joursActifs ? { joursActifs: chose.joursActifs } : {}), ...(chose.miseDeCote ? { miseDeCote: true } : {}), ...(chose.liens ? { liens: chose.liens } : {}),
-    rouvert: true, ...(isoDate(chose.debut) ? { jour: chose.debut } : {})
+    rouvert: true, ...(isoDate(chose.debut) ? { jour: chose.debut } : {}),
+    /* CAL-JOUR : une fenêtre rouverte garde ses deux jours (du, au), jamais réalignés sur lundi et dimanche */
+    ...(fenetre && chose.rangee !== 'brassins' && isoDate(fenetre.du) && isoDate(fenetre.au) ? { jour: fenetre.du, jourFin: fenetre.au } : {})
   };
 }
 
@@ -253,7 +262,9 @@ export function appliquerPuce(b: BrouillonAjout, puce: Puce): BrouillonAjout {
  */
 export function toucherSemaine(b: BrouillonAjout, lundi: string): BrouillonAjout {
   const r = toucherSemaineBrut(b, lundi);
-  return b.jour && r.debut !== null && lundiDe(b.jour) !== r.debut ? { ...r, jour: ajouterJours(r.debut, rangDuJour(b.jour)), jourChoisi: undefined } : r;
+  const s = b.jour && r.debut !== null && lundiDe(b.jour) !== r.debut ? { ...r, jour: ajouterJours(r.debut, rangDuJour(b.jour)), jourChoisi: undefined } : r;
+  /* CAL-JOUR : la fin déplacée garde le rang de son jour (un mercredi reste mercredi), comme le début */
+  return b.jourFin && s.fin && lundiDe(b.jourFin) !== s.fin ? { ...s, jourFin: ajouterJours(s.fin, rangDuJour(b.jourFin)), jourFinChoisi: undefined } : s;
 }
 
 /** Le rang du jour dans sa semaine : 0 le lundi, 6 le dimanche. */
@@ -266,6 +277,22 @@ export const rangDuJour = (iso: string): number => Math.round((Date.parse(`${iso
 export function choisirJour(b: BrouillonAjout, jour: string): BrouillonAjout {
   return { ...b, jour, jourChoisi: true, debut: lundiDe(jour), debutChoisi: true };
 }
+
+/** CAL-JOUR (21.11) : le doigt choisit le jour de FIN d'une fenêtre rouverte, dans sa semaine de fin (rangée « Fin »). */
+export function choisirJourFin(b: BrouillonAjout, jour: string): BrouillonAjout {
+  return { ...b, jourFin: jour, jourFinChoisi: true };
+}
+
+/** CAL-JOUR : la feuille propose deux rangées des jours (« Début », « Fin ») à une fenêtre rouverte (fête, achat, travaux, activité). */
+export const peutChoisirJoursPlage = (b: BrouillonAjout): boolean => !!b.rouvert && !!b.debut && !!b.fin && aUneFenetre(b.rangee);
+
+/** Le premier jour écrit : le jour du brouillon s'il est dans la semaine de début, sinon son lundi. */
+export const jourDebutPlage = (b: BrouillonAjout): string | null => (!b.debut ? null : b.jour && lundiDe(b.jour) === lundiDe(b.debut) ? b.jour : lundiDe(b.debut));
+/** Le dernier jour écrit : le jour de fin du brouillon s'il est dans la semaine de fin, sinon son dimanche. */
+export const jourFinPlage = (b: BrouillonAjout): string | null => {
+  const f = b.fin ?? b.debut;
+  return !f ? null : b.fin && b.jourFin && lundiDe(b.jourFin) === lundiDe(b.fin) ? b.jourFin : dimancheDe(f);
+};
 
 /** La feuille propose la rangée des jours : une chose rouverte sur un jour précis, qui n'est pas posée sur plusieurs semaines. */
 export const peutChoisirJour = (b: BrouillonAjout): boolean => !!b.jour && !!b.debut && !b.fin && b.rangee !== 'brassins' && !b.joursActifs;
@@ -359,14 +386,17 @@ export function preteLe(b: BrouillonAjout, aujourdhui?: string): string | null {
   return `prête le ${jourLisible(ajouterJours(aujourdhui ? jourPose(b.debut, aujourdhui) : b.debut, b.tempsEnCuve))}`;
 }
 
-/** La fenêtre écrite : du lundi du début au dimanche de la fin ; jours actifs seulement si une puce est touchée. Sans fin ni jours actifs : aucune fenêtre. */
+/**
+ * La fenêtre écrite : du lundi du début au dimanche de la fin ; jours actifs seulement si une puce est touchée. Sans fin ni jours actifs : aucune
+ * fenêtre. CAL-JOUR (21.11) : une fenêtre rouverte écrit ses jours (début dans sa semaine de début, fin dans sa semaine de fin), plus lundi et dimanche.
+ */
 export function fenetreDuBrouillon(b: BrouillonAjout): FenetreCalendrier | null {
   if (!b.debut || !aUneFenetre(b.rangee)) return null;
   /* un achat : ses jours actifs ne comptent pas (CAL-JALON-UN-JOUR) ; sans fin, il s'écrit à une date, comme la vente, et se pose en jalon */
   const jours = aDesJoursActifs(b.rangee) ? b.joursActifs : undefined;
   if (!b.fin && !jours) return null;
   return {
-    du: lundiDe(b.debut), au: dimancheDe(b.fin ?? b.debut),
+    du: jourDebutPlage(b) as string, au: jourFinPlage(b) as string,
     ...(jours ? { joursActifs: jours } : {}), ...(b.miseDeCote && b.centimes ? { miseDeCote: true } : {})
   };
 }
@@ -521,7 +551,7 @@ export function versModification(b: BrouillonAjout, chose: ChoseCalendrier, aujo
      et le JOUR d'une chose sans fenêtre est celui d'avant (un mercredi reste ce mercredi), sinon le lundi de la semaine choisie, ou aujourd'hui
      dans la semaine en cours (comme « Ajouter » : une chose posée cette semaine n'est jamais déjà passée) */
   const memeSemaine = !!chose.debut && lundiDe(chose.debut) === debut;
-  if (fenetre && chose.fenetre && memeSemaine && (b.fin ?? debut) === lundiDe(chose.fenetre.au)) fenetre = { ...fenetre, du: chose.fenetre.du, au: chose.fenetre.au };
+  if (fenetre && chose.fenetre && memeSemaine && (b.fin ?? debut) === lundiDe(chose.fenetre.au) && !b.jourChoisi && !b.jourFinChoisi) fenetre = { ...fenetre, du: chose.fenetre.du, au: chose.fenetre.au };
   /* CAL-PASSE (21.11, n° 2, « mardi 22 déc. → S51 : mardi 15, pas le 14 ») : le jour du brouillon (celui d'origine, ou celui d'une autre semaine au même rang, ou
      celui que le doigt a choisi) s'écrit tel quel ; dans la semaine en cours, un jour déduit (non choisi) déjà passé devient aujourd'hui */
   const jourBrouillon = b.jour && lundiDe(b.jour) === debut ? b.jour : undefined;

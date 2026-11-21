@@ -27,6 +27,8 @@ export interface DureeFenetreProps {
   onPlage?: (debut: string, fin: string | null) => void;
   /** Une seule date (vente, papier…) : un seul repère, sans durée. */
   seule?: boolean;
+  /** CAL-JOUR (21.11) : le dernier jour écrit (fenêtre rouverte au jour) ; dans la semaine de fin, « jusqu’à » le dit à la place du dimanche. */
+  jourFin?: string | null;
   /** Le plus long, en semaines. */
   max?: number;
 }
@@ -59,7 +61,7 @@ function cadrer(a: number, b: number, w: number, seule: boolean): Vue {
   return { span, v0: a - marge * span / w };
 }
 
-export function DureeFenetre({ rangee, debut, fin, onFin, onPlage, seule = false, max = 104 }: DureeFenetreProps) {
+export function DureeFenetre({ rangee, debut, fin, onFin, onPlage, seule = false, jourFin, max = 104 }: DureeFenetreProps) {
   const piste = useRef<HTMLDivElement | null>(null);
   const [largeur, setLargeur] = useState(0);
   useLayoutEffect(() => {
@@ -180,7 +182,7 @@ export function DureeFenetre({ rangee, debut, fin, onFin, onPlage, seule = false
         <div className="mb-1 flex items-baseline gap-2">
           <span className="text-sm text-cave-200">Durée</span>
           <b className="text-sm font-semibold text-cave-50" data-duree-texte>{n === 1 ? '1 semaine' : `${n} sem.`}</b>
-          <span className="text-sm text-cave-50">jusqu’à {etiquetteS(finTexte)}, {jourLisible(ajouterJours(finTexte, 6))}</span>
+          <span className="text-sm text-cave-50">jusqu’à {etiquetteS(finTexte)}, {jourLisible(jourFin && lundiDe(jourFin) === lundiDe(finTexte) ? jourFin : ajouterJours(finTexte, 6))}</span>
         </div>
       )}
       <div
