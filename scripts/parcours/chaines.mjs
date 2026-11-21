@@ -20,6 +20,7 @@ const RACINE = path.resolve(ICI, '..', '..');
 const { lancerBanc, pageNeuve, sleep } = await import(pathToFileURL(path.join(ICI, 'chaines-outils.mjs')).href);
 const { fixtureChaines } = await import(pathToFileURL(path.join(ICI, 'fixtures', 'chaines.mjs')).href);
 const { lecturesChaines } = await import(pathToFileURL(path.join(ICI, 'fixtures', 'lectures.mjs')).href);
+const { etapesV1 } = await import(pathToFileURL(path.join(ICI, 'chaines-calendrier-v1.mjs')).href); // V1 chasse Calendrier : CH-D1, CH-D9, CH-D10, CH-D11
 const args = process.argv.slice(2);
 const opt = (n) => { const i = args.indexOf(`--${n}`); return i >= 0 ? args[i + 1] : null; };
 const sortie = path.resolve(args.find((a, i) => !a.startsWith('--') && !['--build', '--ref', '--etape'].includes(args[i - 1])) ?? path.join(os.tmpdir(), 'parcours-chaines'));
@@ -153,6 +154,7 @@ async function venteComptoir33(s, n) {
 
 // ───────────── les étapes ─────────────
 function listeEtapes() { return [
+  ...etapesV1({ echec, ok, sleep, pageNeuve, sortie }),
   {
     id: 'B1', titre: 'Recette neuve, brouillon repris → « Enregistrer et préparer » ouvre Brasser (WFR-1)',
     async joue(s) {
@@ -911,7 +913,7 @@ async function jouer(dir) {
     for (const e of listeEtapes()) {
       if (seules && !seules.includes(e.id)) continue;
       console.log(`${e.id} — ${e.titre}`);
-      const s = await pageNeuve(banc, fixtureChaines(aujourdhui, { sansJour: e.id !== 'WF2-1', ...(e.fixture ?? {}) }).entrees, sortie, e.lecture ? { lecture: lecturesChaines(aujourdhui)[e.lecture] } : {});
+      const s = await pageNeuve(banc, e.entrees ? e.entrees(aujourdhui) : fixtureChaines(aujourdhui, { sansJour: e.id !== 'WF2-1', ...(e.fixture ?? {}) }).entrees, sortie, e.lecture ? { lecture: lecturesChaines(aujourdhui)[e.lecture] } : {});
       s.banc = banc;
       try {
         await s.demarrer();

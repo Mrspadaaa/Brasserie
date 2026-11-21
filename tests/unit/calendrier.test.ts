@@ -6,9 +6,12 @@ import {
   RANGEES, ajouterJours, anneeEnMois, choseArgent, choseBrassin, choseCreative, choseSansDate, choseVenteProbable, dateDeSemaine, dimancheDe, duneSemaine, echelleSemaines, ecartSemaines, estMarque, evenementsAgenda,
   evenementsArgent, evenementsBrassins, fenetreSemaines, finDeBrassin, francs, iconesIdees, indexMois, indexSemaine, jalonsBrassin, livraisonsAttendues, lundiDe, numeroSemaine, positionChose,
   retardsDe, semainesDe, totalVoie, budgetBrassin, francsSignes, idChoseArgent, preparerChoses, texteDuree, etiquetteListe, dureeBrassin, type Rangee,
-  semaineAvecAn, choseCoutAVenir, COUT_A_VENIR, preteAuPlusTot, CATEGORIE_MATIERES, estFactureDeMatieres, fournisseurDePiece, fusionnerFacturesLivraisons, contientNom
+  semaineAvecAn, coutRestantInconnu, choseCoutAVenir, COUT_A_VENIR, preteAuPlusTot, CATEGORIE_MATIERES, estFactureDeMatieres, fournisseurDePiece, fusionnerFacturesLivraisons, contientNom
 } from '../../src/domain/calendrier';
 import type { ChoseCalendrier } from '../../src/domain/calendrier';
+import type { FinancialProfile } from '../../src/domain/finance/types';
+import type { Transaction } from '../../src/types';
+import { construireModele, semainesPassees, type EntreesModele } from '../../src/ui/calendrier/useDonneesCalendrier';
 import { deplacer } from '../../src/domain/calendrierGestes';
 import { REGLAGES_VIDES } from '../../src/domain/fournisseurs';
 
@@ -51,7 +54,10 @@ describe('voie Brassins', () => {
     const porter = sortie.find(e => e.batchId === 'B-032')!;
     expect(porter).toMatchObject({ a: 3, b: 3, voie: 'brassins', detail: 'brassage prévu le 08.12' });
     const ipa = sortie.find(e => e.batchId === 'B-031')!;
-    expect(ipa).toMatchObject({ a: 0, b: 0, titre: 'B-031 IPA Nelson' });
+    expect(ipa).toMatchObject({ a: 0, b: 0, titre: 'IPA Nelson' });
+    /* CHD-10 : le Bord nomme comme le Calendrier, par le nom, jamais par l'id ; l'id seulement sans nom */
+    expect(sortie.map(e => e.titre).join(' ')).not.toMatch(/B-03/);
+    expect(evenementsBrassins([lot({ id: 'B-041', name: '' })], semaines, AUJOURDHUI, () => 1)[0].titre).toBe('B-041');
     expect(ipa.detail).toContain('en cuve · J+4');
   });
   it('sans date de brassage connue, un brassin planifié ne pose rien (aucune date supposée)', () => {
@@ -448,8 +454,8 @@ describe('CRITIQUE-3 (17.11) : J réel, pas brassée, courses / frais / impôt, 
     const c = choseBrassin(lot({ id: 'LOT-IPA', status: 'fermentation', brewDate: '09.11.2026', actualBrewDate: '09.11.2026', recipeSnapshot: recette }), '2026-11-16')!;
     expect(texteDuree(c)).toBe('J7 / 28 · prête 7 déc.');
     expect(c.preteLe).toBe('2026-12-07');
-    /* J borné : après la fin, J = n ; jamais au-delà */
-    expect(texteDuree(choseBrassin(lot({ status: 'garde', brewDate: '09.11.2026', actualBrewDate: '09.11.2026', recipeSnapshot: recette }), '2026-12-20')!)).toBe('J28 / 28 · prête 7 déc.');
+    /* CHD-9 (21.11) : après la fin, le jour n'est plus plafonné (« J28 / 28 » cachait le retard) : J41, prête depuis 13 j */
+    expect(texteDuree(choseBrassin(lot({ status: 'garde', brewDate: '09.11.2026', actualBrewDate: '09.11.2026', recipeSnapshot: recette }), '2026-12-20')!)).toBe('J41 · prête depuis 13 j');
   });
 
   it('t2 : planifiée le 10 nov., pas brassée, le 16 nov. : « pas brassée », jamais « J0 » ; un planifié futur garde « J0 / n »', () => {
@@ -591,6 +597,14 @@ describe('CRITIQUE-4, doute IPA J8 : J0 est le jour du brassage', () => {
     // CRITIQUE-5 n° 1 : pas brassé, jamais de « Jn », même quand le jour prévu est passé.
     expect(dureeBrassin('2026-11-09', '2026-12-07', '2026-11-17', false)).toBe('J0 / 28 · prête 7 déc.');
   });
+  it('CHD-9 : passé le jour « prête », le jour n’est plus plafonné à la durée : J40 pour un brassin de 34 j brassé il y a 40 j', () => {
+    expect(dureeBrassin('2026-10-12', '2026-11-15', '2026-11-21')).toBe('J40 · prête depuis 6 j');
+    expect(dureeBrassin('2026-10-12', '2026-11-15', '2026-11-16')).toBe('J35 · prête depuis 1 j');
+    /* le jour même : dans la durée, pas de retard */
+    expect(dureeBrassin('2026-10-12', '2026-11-15', '2026-11-15')).toBe('J34 / 34 · prête 15 nov.');
+    /* pas brassé : jamais « Jn », jamais de retard */
+    expect(dureeBrassin('2026-10-12', '2026-11-15', '2026-11-21', false)).toBe('J0 / 34 · prête 15 nov.');
+  });
 });
 
 describe('CRITIQUE-5 n° 2, 19 : la semaine avec son année, le coût à venir', () => {
@@ -724,5 +738,35 @@ describe('CRITIQUE-6 (18.11) : prête au plus tôt, factures de matières dans A
     expect(de('P-AUT').lie).toMatchObject({ texte: 'lié à Café du Pont', client: 'Café du Pont' });
     /* la quantité vient de la source (le titre de la vente) : rien n'est ajouté */
     expect(de('P-CIG').titre).toBe('3 fûts La Cigogne');
+  });
+});
+
+describe('CHD-1, CHD-11 (chasse Calendrier 21.11) : le chiffre dit l’inconnu', () => {
+  const aujourdhui = '2026-11-21';
+  const profil = { id: 'current', canton: 'FR', legalForm: 'sole-proprietor', accounting: 'simplified', vatRegistered: false, openingCash: { date: '2026-01-01', amountCents: 100_000, confirmed: true } } as FinancialProfile;
+  /* une pièce payée (date de paiement écrite) sans AUCUN paiement : Finances dit « solde pas connu » (cashComplete faux) */
+  const pompe = { id: 'T-ZZ-POMPE', date: '2026-01-20', description: 'ZZ TEST Pompe', category: 'materiel', subcategory: '', amountHT: 420, amountTTC: 420, tvaAmount: 0, tvaRate: 0, finance: { version: 1, kind: 'expense', amountCents: 42000, lines: [{ id: 'L1', description: 'ZZ TEST Pompe', kind: 'equipment', amountCents: 42000 }], paymentStatus: 'paid', paymentDate: '2026-01-20', recordedAt: '2026-01-20T09:00:00.000Z' } } as unknown as Transaction;
+  const entrees = (transactions: Transaction[], plus: Partial<EntreesModele> = {}): EntreesModele => ({ aujourdhui, transactions, payments: [], plans: [], profile: profil, assets: [], batches: [], stockItems: [], items: [], recettes: [], reglages: REGLAGES_VIDES, ...plus });
+  it('CHD-1 : sans paiement pour une pièce payée, la caisse est incomplète : pas de courbe, solde de départ inconnu, aucune hypothèse « Solde de départ » ; sans la pièce, la courbe est là', () => {
+    const inconnu = construireModele(entrees([pompe]));
+    expect(inconnu.courbe).toBeNull();
+    expect(inconnu.soldeDepartInconnu).toBe(true);
+    expect(inconnu.creux).toBeNull();
+    expect(inconnu.hypotheses.some(h => h.id === 'depart')).toBe(false);
+    const connu = construireModele(entrees([]));
+    expect(connu.courbe).not.toBeNull();
+    expect(connu.hypotheses.some(h => h.id === 'depart')).toBe(true);
+  });
+  it('CHD-1, doute : la fenêtre du passé est celle de « pas de solde » (tout le passé permis), la même quand le solde devient inconnu', () => {
+    expect(construireModele(entrees([pompe])).passe).toBe(semainesPassees(aujourdhui, profil, false));
+    expect(construireModele(entrees([])).passe).toBe(semainesPassees(aujourdhui, profil, true));
+  });
+  it('CHD-11 : un brassin en cuve dont la prévision a une ligne sans montant dit « coût à venir » (jamais 0) ; sans aucune ligne, il ne dit rien', () => {
+    const ligne = (c: Partial<ChoseCalendrier>) => ({ id: 'argent-x', rangee: 'achats', titre: 'Emballage · neipa v3', debut: '2026-11-25', fin: '2026-11-25', source: { genre: 'prevision-brassin', id: 'B-ZZ-1' }, ouvre: { ecran: 'brassin', id: 'B-ZZ-1' }, posteBrassin: 'frais', ...c }) as ChoseCalendrier;
+    expect(coutRestantInconnu('B-ZZ-1', [ligne({})])).toBe(true);
+    expect(coutRestantInconnu('B-ZZ-1', [ligne({ centimes: -4500 })])).toBe(false);
+    expect(coutRestantInconnu('B-ZZ-1', [ligne({ posteBrassin: 'impot' })])).toBe(false);
+    expect(coutRestantInconnu('B-ZZ-1', [])).toBe(false);
+    expect(coutRestantInconnu('B-AUTRE', [ligne({})])).toBe(false);
   });
 });

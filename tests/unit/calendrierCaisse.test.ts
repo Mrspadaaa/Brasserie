@@ -22,7 +22,7 @@ const plan = (p: Partial<FinancialPlan>): FinancialPlan => ({ id: 'P', title: 'P
 const planifie = { id: 'LOT-7', name: 'Porter', style: 'Porter', volumeL: 30, brewDate: '', plannedBrewDate: '08.12.2026', status: 'planifie', recipeSnapshot: { fermentation: [{ kind: 'primaire', name: 'P', tempC: 19, days: 14 }] } } as unknown as Batch;
 
 /** Trois mois : une facture à payer, une à encaisser, un plan d'achat, un récurrent, une TVA et un brassin planifié. */
-const entrees = (opening: number | null, p: Partial<EntreesModele> = {}): EntreesModele => ({
+const entreesBrutes = (opening: number | null, p: Partial<EntreesModele> = {}): EntreesModele => ({
   aujourdhui: '2026-11-16', transactions: [facture('F-OUT', '2026-11-24', 42000), facture('F-IN', '2026-12-10', 120000, { kind: 'income' })],
   payments: [], plans: [
     plan({ id: 'P-ACHAT', title: 'Bouchons', date: '2026-12-03', amountCents: 15000 }),
@@ -30,6 +30,14 @@ const entrees = (opening: number | null, p: Partial<EntreesModele> = {}): Entree
     plan({ id: 'P-TVA', title: 'TVA T3', date: '2026-12-20', amountCents: 30000, category: 'chargesFixes', source: 'tax' })
   ], profile: profile(opening), assets: [], batches: [planifie], stockItems: [] as StockItem[], items: [] as CreativeItem[], recettes: [], reglages: REGLAGES_VIDES, ...p
 });
+/* CHD-1 (21.11) : une pièce payée sans paiement rend la caisse incomplète (Finances : « solde pas connu ») et le Calendrier ne trace plus de courbe ; ces fixtures
+   disent donc le paiement de chaque pièce payée, comme Finances l'écrit */
+const entrees = (opening: number | null, p: Partial<EntreesModele> = {}): EntreesModele => {
+  const e = entreesBrutes(opening, p);
+  if (p.payments) return e;
+  const payes = e.transactions.filter(x => x.finance?.paymentStatus === 'paid');
+  return { ...e, payments: payes.map(x => ({ id: `PAY-${x.id}`, transactionId: x.id, date: x.date, amountCents: x.finance!.amountCents, direction: x.finance!.kind === 'income' ? 'in' : 'out', method: 'bank', recordedAt: `${x.date}T10:00:00.000Z` }) as unknown as EntreesModele['payments'][number]) };
+};
 
 describe('A2 : vérité croisée avec buildForecast', () => {
   it('en fin de chaque mois, la courbe égale months[i].balanceCents ; sur 3 mois, factures, plans, récurrent et brassin', () => {

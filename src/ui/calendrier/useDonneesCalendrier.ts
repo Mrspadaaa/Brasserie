@@ -16,7 +16,7 @@ import { planBrewBatchId, type BudgetRepris } from '../../domain/finance/brewFor
 import { brewBudgetDemands } from '../../domain/finance/brewBudget';
 import { hasBrewStarted } from '../../domain/batchSchedule';
 import {
-  NB_SEMAINES_COURBE, SEMAINES_PASSEES_MAX, ajouterJours, ecartJours, anneeEnMois, budgetBrassin, choseArgent, choseHorsCourbe, choseBrassin, choseCoutAVenir, choseCreative, choseSansDate, choseVenteProbable, estFactureDeMatieres,
+  NB_SEMAINES_COURBE, SEMAINES_PASSEES_MAX, ajouterJours, ecartJours, anneeEnMois, budgetBrassin, coutRestantInconnu, choseArgent, choseHorsCourbe, choseBrassin, choseCoutAVenir, choseCreative, choseSansDate, choseVenteProbable, estFactureDeMatieres,
   fournisseurDePiece, francs, francsSignes, fusionnerFacturesLivraisons, iconesIdees, jourLisible,
   livraisonsAttendues, lundiDe, numeroSemaine, positionChose, retardsDe, semainesDe,
   type ChoseCalendrier, type EstimationBudget, type HypotheseCaisse, type IconeSemaine, type ModeleCalendrier
@@ -112,7 +112,10 @@ export function construireModele(e: EntreesModele): ModeleCalendrier {
      marque ses sorties `repriseRecette` : le calendrier lit cette marque, sans refaire le calcul */
   const repris = new Map<string, BudgetRepris>();
   for (const i of prevision.items) if (i.batchId && i.repriseRecette && !repris.has(i.batchId)) repris.set(i.batchId, i.repriseRecette);
-  const passe = semainesPassees(aujourdhui, e.profile, prevision.openingCashCents !== null);
+  /* CHD-1 (21.11) : « une seule caisse » (K4) : le solde est connu comme Finances et le Bord le disent, la caisse COMPLÈTE (`cashComplete`, `pointBasAVenir`) ;
+     une pièce payée sans paiement le rend inconnu : pas de courbe ni de « CHF à dépenser » chiffré, jamais un solde posé comme sûr */
+  const soldeConnu = prevision.cashComplete && prevision.openingCashCents !== null;
+  const passe = semainesPassees(aujourdhui, e.profile, soldeConnu);
   const semaines = semainesDe(aujourdhui, NB_SEMAINES_COURBE + passe, passe);
   const lundi0 = semaines[0].debut;
   const marques = new Set(echeancesProposees(prevision.items).filter(i => i.proposition === 'echeance').map(i => `argent-${i.id}`));
@@ -166,8 +169,9 @@ export function construireModele(e: EntreesModele): ModeleCalendrier {
     const batch = batchDe.get(c.source.id);
     const commence = !!batch && !pasCommence(batch);
     const b = budgetBrassin(c.source.id, posees, estimations);
-    /* CRITIQUE-4 n° 2 : sans budget, un brassin à venir dit « coût à venir » en mots, sans `centimes` (jamais 0) ; un brassin commencé n'a rien à dire */
-    if (!b) return commence ? c : choseCoutAVenir(c);
+    /* CRITIQUE-4 n° 2 : sans budget, un brassin à venir dit « coût à venir » en mots, sans `centimes` (jamais 0) ; un brassin commencé n'a rien à
+       dire, sauf CHD-11 (21.11) : sa prévision a un emballage ou des courses sans montant, l'inconnu se dit aussi (jamais 0) */
+    if (!b) return commence && !coutRestantInconnu(c.source.id, posees) ? c : choseCoutAVenir(c);
     const r = repris.get(c.source.id);
     return {
       ...c, centimes: b.centimes, ...(b.partiel ? { partiel: true as const } : {}),
@@ -187,7 +191,7 @@ export function construireModele(e: EntreesModele): ModeleCalendrier {
   const mises = misesDe(chosesBudget);
   /* le passé : le départ de la courbe est la caisse d'aujourd'hui moins les paiements réels d'entre-temps (même formule que le solde de Finances) */
   const reels = (passe ? mouvementsPasses(e.payments, e.transactions, lundi0, aujourdhui) : []).map(m => (chosesBudget.some(c => c.id === m.id) ? { ...m, choseId: m.id } : m));
-  const depart = prevision.openingCashCents === null ? null : prevision.openingCashCents - reels.reduce((s, m) => s + m.centimes, 0);
+  const depart = !soldeConnu || prevision.openingCashCents === null ? null : prevision.openingCashCents - reels.reduce((s, m) => s + m.centimes, 0);
   const courbe = courbeCaisse({ depart, lundi0, nbSemaines: NB_SEMAINES_COURBE + passe, passe, mouvements: [...reels, ...mouvements], mises });
   /* CRITIQUE-12 n° 2 (E23, A2) : la règle de l'effet en mots (`effetEnMots`) posée sur la chose : une fête ou une activité chiffrée que la
      courbe ne compte pas est « hors courbe » ; sa rangée la dit « estimé », jamais « confirmé ». Les mouvements, pas la courbe : le marquage
@@ -201,7 +205,7 @@ export function construireModele(e: EntreesModele): ModeleCalendrier {
   const retards = retardsDe({ aujourdhui, restes: [...synthese.aPayer, ...synthese.aEncaisser], batches: e.batches, items: e.items, sansDensite, commandes, courses: e.courses ?? null });
 
   const hypotheses: HypotheseCaisse[] = [];
-  if (prevision.openingCashCents !== null) hypotheses.push({ id: 'depart', texte: `Solde de départ : ${francs(prevision.openingCashCents)} CHF`, source: 'Finances › Solde', ouvre: { ecran: 'solde' } });
+  if (soldeConnu && prevision.openingCashCents !== null) hypotheses.push({ id: 'depart', texte: `Solde de départ : ${francs(prevision.openingCashCents)} CHF`, source: 'Finances › Solde', ouvre: { ecran: 'solde' } });
   /* n° 32, E01 : la tendance de Finances (lignes `trend` de la prévision), par mois, avec sa source ; sans tendance, rien */
   const tendance = new Map<string, number>();
   for (const i of prevision.items) if (i.source === 'trend') tendance.set(i.date.slice(0, 7), (tendance.get(i.date.slice(0, 7)) ?? 0) + (i.direction === 'in' ? i.amountCents : -i.amountCents));

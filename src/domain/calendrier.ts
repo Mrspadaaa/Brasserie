@@ -120,7 +120,8 @@ export function evenementsBrassins(batches: readonly Batch[], semaines: readonly
   const sortie: EvenementCalendrier[] = [];
   for (const batch of batches) {
     if (batch.status === 'annule' || batch.archivedAt) continue;
-    const nom = `${batch.id} ${batch.name}`.trim();
+    /* CHD-10 (21.11) : le Bord nomme un brassin comme le Calendrier, par son nom (« neipa v3 »), jamais par son id (« B-NEIPA-1 neipa v3 ») ; l'id seulement sans nom */
+    const nom = batch.name?.trim() || batch.id;
     if (batch.status === 'planifie') {
       const prevu = isoDate(plannedBrewDate(batch));
       const i = indexSemaine(semaines, prevu);
@@ -501,8 +502,11 @@ export function dureeBrassin(brassage: string, prete: string, aujourdhui: string
   const n = ecartJours(brassage, prete);
   if (!(n > 0)) return null;
   /* CRITIQUE-5 n° 1 : pas de « Jn » tant que le brassin n'est pas brassé (`brewDate`/`actualBrewDate` vides) : J reste 0 */
-  const j = brasse ? Math.max(0, Math.min(n, ecartJours(brassage, aujourdhui))) : 0;
-  return `J${j} / ${n} · prête ${jourLisible(prete)}`;
+  const vu = brasse ? Math.max(0, ecartJours(brassage, aujourdhui)) : 0;
+  /* CHD-9 (21.11) : passé le jour « prête », le jour n'est plus plafonné à la durée (« J34 / 34 » pour un brassin à J+40 ne disait pas le retard) :
+     « J40 · prête depuis 6 j » ; le Bord compte pareil (« Fermentation J+40 ») */
+  if (vu > n) return `J${vu} · prête depuis ${vu - n} j`;
+  return `J${vu} / ${n} · prête ${jourLisible(prete)}`;
 }
 
 /** « pas brassée · prête le 1 déc. » : un brassin pas brassé dont on a tiré le bord (CRITIQUE-5 n° 1). Jamais de « J ». */
@@ -545,6 +549,14 @@ export function budgetBrassin(batchId: string, choses: readonly ChoseCalendrier[
     return e && Number.isFinite(e.centimes) && e.centimes !== 0 ? { centimes: e.centimes, partiel: e.partiel || lignes.length > 0 } : null;
   }
   return { centimes: chiffrees.reduce((s, c) => s + (c.centimes as number), 0), partiel: chiffrees.length < lignes.length || chiffrees.some(c => c.partiel) };
+}
+
+/**
+ * CHD-11 (21.11) : un brassin commencé dont la prévision a une ligne de courses ou de frais (l'emballage) sans montant : son coût à venir est
+ * inconnu, ce que `budgetBrassin` (`null`) ne distingue pas d'un brassin sans aucune ligne. L'inconnu se dit, il n'est jamais 0.
+ */
+export function coutRestantInconnu(batchId: string, choses: readonly ChoseCalendrier[]): boolean {
+  return choses.some(c => c.source.genre === 'prevision-brassin' && c.posteBrassin !== 'impot' && c.centimes === undefined && (c.source.id === batchId || (c.ouvre.ecran === 'brassin' && c.ouvre.id === batchId)));
 }
 
 /** Le mot d'un coût qu'on ne sait pas encore estimer (E23, D-22) : jamais rien, jamais 0. */
