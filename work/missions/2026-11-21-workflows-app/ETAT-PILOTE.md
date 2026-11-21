@@ -29,3 +29,11 @@ REPRISE-*.md dans ce dossier ; dans port-carnet, `work/missions/2026-11-20-frise
 - Reste : V-STOCK (F2), CAL-LENT (ab.mjs, machine calme), défauts du graphe de la fiche (REPRISE-V-LOT), geste restant, puis vision complète et mise en ligne tour8 (deploy-tour4.sh, PARCOURS CALENDRIER OK).
 - Décisions D392 à D405.
 - V-COUT fini (une seule caisse : −533 au Bord, en Finances et au Calendrier). À faire par la voie Calendrier : rebrancher la barre et « budget repris de sa recette » sur item.repriseRecette, retirer « pas encore dans Finances ». À verser : « seuil NaN kg » au Bord (fixture manques) ; 2 erreurs de console à 1280.
+
+## Mise à jour 21.11, 18:00 (avant compaction)
+- En ligne : tour 8 (en-ligne/2026-11-21-tour8, 5fb61c580). Mise en ligne par scratchpad/deploy-tour4.sh, D409 : bloque sur types, build, parcours calendrier, chaînes, carnet, geste (vitest à part, TESTS_UNITAIRES=1). Prochain tag : tour9 (changer T= ligne 20+).
+- Test en ligne : session t3-test-chrome (local_88ff3621…) dans son Chrome du PC ; consigne envoyée (tous onglets, ZZ TEST, CAL-FRISE-PRIX en priorité).
+- Agents en cours : Calendrier 24 (a0c8…, défauts CAL-VIDE, CAL-VIDES-EN-LIGNE, CAL-MODIFIER, CAL-ECHELLE-FIGEE, CAL-FRISE-PRIX + même mécanisme que Finances, CAL-JOUR, CAL-BARRE-BORD, durée/date passé, D410) ; PERIODE-PARTOUT reprise (FrisePeriode partagé, Synthèse, Revoir le mois, filtres Brassins) ; VUE-FOND (24 px sous le contenu) ; PD-2 (la pièce solde son prévu) ; maquettes de la fiche du Calendrier (work/missions/2026-11-21-calendrier-fiche/, page de choix à publier) ; 5 chasseurs Calendrier (work/missions/2026-11-21-chasse-calendrier/CHASSE-*.md, à verser au registre puis corriger).
+- Faits : Carnet CRN-1 à 21 ; V-RECETTE, V-STOCK, V-LOT, V-FUTS, V-JOUR, V-COUT, F-* ; 72 rouges (0 vrai rouge) ; TESTS-A-RETIRER.md à montrer au brasseur.
+- Décisions jusqu'à D410. Défauts ouverts du 21.11 : voir DEFAUTS-RECURRENTS (CAL-*, VUE-FOND, PERIODE-PARTOUT).
+- À faire ensuite : verser les CHASSE au registre, correction ; PD-1 et PD-4 côté Calendrier ; PD-5 au conseil ; registre controle-choix cassé (8 fautes) ; CAL-LENT ; geste restant ; tour 9.
