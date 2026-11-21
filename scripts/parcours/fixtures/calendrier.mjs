@@ -120,6 +120,8 @@ export function fixtureCalendrier(aujourdhui) {
       id: 'T-ZZ-POMPE', date: d, description: 'ZZ TEST Pompe de brassage', vendor: 'ZZ TEST', category: 'materiel', subcategory: '', amountHT: 420, amountTTC: 420, tvaAmount: 0, tvaRate: 0,
       finance: { version: 1, kind: 'expense', amountCents: 42000, lines: [{ id: 'L-ZZ-POMPE', description: 'ZZ TEST Pompe de brassage', kind: 'equipment', amountCents: 42000 }], paymentStatus: 'paid', paymentDate: d, recordedAt: `${d}T09:00:00.000Z` }
     });
+    /* son paiement (CHD-1, 21.11) : une pièce payée sans paiement rend la caisse incomplète, donc solde et courbe inconnus */
+    add('financialPayments', 'PAY-T-ZZ-POMPE', { transactionId: 'T-ZZ-POMPE', date: d, amountCents: 42000, direction: 'out', method: 'card', recordedAt: `${d}T10:00:00.000Z` });
   }
   // K2 (W0c) : un projet du Carnet daté à +3 mois (son lundi), forme de `carnetDepuisPhrase` (src/domain/carnets/modele.ts) : il va
   // « Au calendrier » depuis Brassins › Atelier R&D.
