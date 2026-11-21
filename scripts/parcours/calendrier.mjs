@@ -321,6 +321,116 @@ async function jouer(dir) {
       }
     } catch (e) { echec('maquette choisie', String(e.message).slice(0, 200)); }
 
+    // 10. CAL-ENTETE (21.11, tour 7 : « Avec le point qui bouge toujours pas super fan » ; « Il y a vraiment un immense header » ; « il faudrait
+    // des tailles fix car SI non ça fait bouger le calendrier » ; « beaucoup de place inutile, et l'info ont l'a déjà sur le graph »).
+    // À 390 tactile, dans l'An (sa capture) puis en 3 mois : aucun rond pointillé ni rond de repère sur la courbe ; le haut de la première rangée
+    // (Brassins) ne bouge pas de plus de 1 px entre le repos et 5 semaines lues au doigt, courbe visible puis cachée ; aucune rangée qui redit
+    // un montant sous les mois ; en-tête ≤ 30 % de 844 (≤ 20 % courbe cachée) ; barre du haut sur une ligne à chaque onglet. Captures
+    // 390 et 1280, clair et cave.
+    try { await calEntete(); } catch (e) { echec('CAL-ENTETE', String(e.message).slice(0, 200)); }
+    async function calEntete() {
+      const C = 'CAL-ENTETE';
+      const mesurer = () => p.evaluate(() => {
+        window.scrollTo(0, 0); for (const e of document.querySelectorAll('main, [data-calendrier]')) if (e.scrollTop) e.scrollTop = 0;
+        const vis = (e) => { const r = e.getBoundingClientRect(); return r.width > 0 && r.height > 0; };
+        const ent = document.querySelector('[data-calendrier-entete]');
+        const rg = [...document.querySelectorAll('[data-calendrier] [data-rangee]')].find((e) => vis(e) && !ent?.contains(e));
+        const pointilles = ent ? [...ent.querySelectorAll('circle')].filter((c) => { const s = getComputedStyle(c).strokeDasharray; return vis(c) && s && s !== 'none'; }).length : 0;
+        const lu = ent?.querySelector('.ent-lu');
+        const an = document.querySelector('[data-bande-annee]');
+        const bz = ent?.querySelector('.ent-bz'); let texteBz = '';
+        if (bz) { const c = bz.cloneNode(true); c.querySelectorAll('.ent-live').forEach((x) => x.remove()); texteBz = c.textContent ?? ''; }
+        return {
+          haut: rg ? Math.round(rg.getBoundingClientRect().top * 10) / 10 : null, rangee: rg ? (rg.innerText ?? '').trim().split('\n')[0].slice(0, 20) : null,
+          pointilles, rondsRepere: ent ? [...ent.querySelectorAll('[data-curseur] circle')].filter(vis).length : 0, repere: !!ent?.querySelector('[data-curseur]'),
+          lit: !!ent?.querySelector('.ent-lit'), luLignes: lu ? (lu.innerText ?? '').split('\n').filter((l) => l.trim()).length : 0, luTexte: lu ? (lu.innerText ?? '').replace(/\s+/g, ' ').slice(0, 60) : '',
+          montantSousMois: /[−-]\s?\d/.test(an?.textContent ?? '') || /[−+]\s?\d/.test(texteBz), anTexte: (an?.textContent ?? '').slice(0, 40)
+        };
+      });
+      const menuDuree = async (nom) => { const m = await point('[aria-label$="période, liste, tri et filtre"]'); await p.touchscreen.tap(m[0], m[1]); await sleep(650); await toucher(nom); await sleep(500); };
+      const cacher = async (oui) => { const b = await p.$('[data-ent-cacher]'); if (!b) throw new Error('bouton « Cacher la courbe » introuvable'); const pressé = await b.evaluate((e) => e.getAttribute('aria-pressed') === 'true'); if (pressé !== oui) { const c = await point('[data-ent-cacher]'); await p.touchscreen.tap(c[0], c[1]); await sleep(700); } };
+      const boiteCourbe = () => p.evaluate(() => { const s = document.querySelector('[data-calendrier-entete] .ent-cbz svg'); if (!s) return null; window.scrollTo(0, 0); const r = s.getBoundingClientRect(); return { x: r.x, y: r.y, w: r.width, h: r.height }; });
+
+      await recharger(); await fermer();
+      for (const duree of ['An', '3 mois']) {
+        await menuDuree(duree); await cacher(false); await sleep(300);
+        // courbe visible : le repos, puis 6 semaines lues au doigt (un glissé horizontal court sur la courbe)
+        const hauts = []; const lus = [];
+        const repos = await mesurer(); hauts.push(repos.haut);
+        if (duree === 'An') await cap('10-cal-entete-390-repos');
+        repos.montantSousMois ? echec(C, `${duree} : une rangée sous les mois redit un montant de la courbe (« ${repos.anTexte} »)`) : ok(C, `${duree} : aucune rangée de montant sous les mois`);
+        const bc = await boiteCourbe();
+        if (!bc) { echec(C, `${duree} : courbe introuvable`); continue; }
+        for (const f of [0.12, 0.27, 0.41, 0.55, 0.7, 0.86]) {
+          const x = bc.x + bc.w * f, y = bc.y + bc.h * 0.55;
+          await glisser([x - 16, y], [x, y], 6);
+          const m = await mesurer(); hauts.push(m.haut); lus.push(`${m.luLignes} l.`);
+          if (!m.lit) notes.push(`${C} ${duree} : glissé à ${Math.round(f * 100)} % sans lecture (${m.luTexte})`);
+          if (m.pointilles) echec(C, `${duree} : ${m.pointilles} rond(s) pointillé(s) sur la courbe, semaine lue à ${Math.round(f * 100)} %`);
+          if (m.rondsRepere) echec(C, `${duree} : le repère de semaine est un rond (${m.rondsRepere} cercle(s) dans [data-curseur]), deuxième refus`);
+          if (m.lit && !m.repere) echec(C, `${duree} : semaine lue sans repère sur la courbe`);
+          if (duree === 'An' && f === 0.7) await cap('10-cal-entete-390-lecture');
+        }
+        const ecart = Math.max(...hauts) - Math.min(...hauts);
+        ecart <= 1 ? ok(C, `${duree}, courbe visible : « ${repos.rangee} » tient (écart ${ecart} px sur ${hauts.length} états ; panneau ${lus.join(', ')})`)
+          : echec(C, `${duree}, courbe visible : le haut de « ${repos.rangee} » bouge de ${ecart} px (${hauts.join(' / ')} ; panneau ${lus.join(', ')})`);
+        repos.haut !== null && repos.haut <= 0.3 * 844 ? ok(C, `${duree} : en-tête ${repos.haut} px (≤ ${Math.round(0.3 * 844)})`) : echec(C, `${duree} : en-tête ${repos.haut} px, plus de 30 % de 844 (${Math.round(0.3 * 844)})`);
+        // courbe cachée : le repos, puis 5 touchers sur la bande de l'axe (date d'une semaine) ; le haut ne bouge pas
+        await fermer(); await cacher(true);
+        const h2 = []; const r2 = await mesurer(); h2.push(r2.haut);
+        if (duree === 'An') await cap('10-cal-entete-390-cachee');
+        const bande = await p.evaluate(() => { const b = document.querySelector('[data-calendrier-entete] .ent-bz'); if (!b) return null; const r = b.getBoundingClientRect(); return { x: r.x, y: r.y, w: r.width, h: r.height }; });
+        if (bande) for (const f of [0.1, 0.3, 0.5, 0.7, 0.9]) { await p.touchscreen.tap(bande.x + bande.w * f, bande.y + Math.min(bande.h / 2, 14)); await sleep(500); h2.push((await mesurer()).haut); }
+        const e2 = Math.max(...h2) - Math.min(...h2);
+        e2 <= 1 ? ok(C, `${duree}, courbe cachée : « ${r2.rangee} » tient (écart ${e2} px sur ${h2.length} états)`) : echec(C, `${duree}, courbe cachée : le haut bouge de ${e2} px (${h2.join(' / ')})`);
+        r2.haut !== null && r2.haut <= 0.2 * 844 ? ok(C, `${duree}, courbe cachée : en-tête ${r2.haut} px (≤ ${Math.round(0.2 * 844)})`) : echec(C, `${duree}, courbe cachée : en-tête ${r2.haut} px, plus de 20 % de 844 (${Math.round(0.2 * 844)})`);
+        await fermer(); await cacher(false);
+      }
+
+      // la barre du haut sur une seule ligne, à chaque onglet (elle est commune à toute l'app)
+      const barre = () => p.evaluate(() => {
+        window.scrollTo(0, 0);
+        const h = document.querySelector('header'); if (!h || h.hidden || !h.getBoundingClientRect().height) return null;
+        const vis = (e) => { if (!e) return null; const b = e.getBoundingClientRect(); return b.width > 0 && b.height > 0 ? { c: Math.round(b.top + b.height / 2), d: Math.round(b.right) } : null; };
+        return { h: Math.round(h.getBoundingClientRect().height), W: innerWidth, nom: vis(h.querySelector('.app-brand-name')), periode: vis(h.querySelector('[data-periode-pastille]')), recherche: vis(h.querySelector('[aria-label^="Rechercher"]')), avatars: vis(h.querySelector('[data-plus-duo]')), deborde: h.scrollWidth > h.clientWidth + 1 };
+      });
+      for (const onglet of ['Bord', 'Finances', 'Calendrier', 'Brassins', 'Stocks', 'Clients']) {
+        const b0 = await p.evaluate((t) => { const b = [...document.querySelectorAll('nav button')].find((e) => (e.innerText ?? '').includes(t) && e.getBoundingClientRect().width > 0); if (!b) return null; const r = b.getBoundingClientRect(); return [r.x + r.width / 2, r.y + r.height / 2]; }, onglet);
+        if (!b0) { echec(C, `onglet « ${onglet} » introuvable`); continue; }
+        await p.touchscreen.tap(b0[0], b0[1]); await sleep(900);
+        const b = await barre();
+        if (!b) { notes.push(`${C} : pas de barre du haut sur ${onglet}`); continue; }
+        const parts = Object.entries({ nom: b.nom, periode: b.periode, recherche: b.recherche, avatars: b.avatars }).filter(([, v]) => v);
+        const centres = parts.map(([, v]) => v.c);
+        const uneLigne = b.nom && b.recherche && b.avatars && Math.max(...centres) - Math.min(...centres) <= 6 && b.h <= 52 && !b.deborde && Math.max(...parts.map(([, v]) => v.d)) <= b.W;
+        if (onglet === 'Calendrier' || !uneLigne) await cap(`10-barre-${onglet}`);
+        uneLigne ? ok(C, `barre du haut sur une ligne (${onglet}, ${b.h} px)`) : echec(C, `barre du haut (${onglet}) : ${b.h} px de haut, ${parts.map(([k, v]) => `${k} y${v.c}`).join(', ')}${b.nom ? '' : ', nom absent'}${b.deborde ? ', déborde' : ''}`);
+      }
+
+      // captures : 390 cave et clair, 1280 clair et cave (repos, lecture, courbe cachée)
+      for (const [L, theme] of [[390, 'cave'], [390, 'clair'], [1280, 'clair'], [1280, 'cave']]) {
+        const tactile = L < 600;
+        await p.setViewport({ width: L, height: 844, isMobile: tactile, hasTouch: tactile, deviceScaleFactor: 1 });
+        await p.evaluate((t) => localStorage.setItem('laffinee.theme', t), theme);
+        await p.goto(url, { waitUntil: 'load' }); await sleep(1200);
+        await p.waitForSelector('nav button', { timeout: 90000 });
+        const nv = await p.evaluate(() => { const b = [...document.querySelectorAll('nav button')].find((e) => (e.innerText ?? '').includes('Calendrier') && e.getBoundingClientRect().width > 0); const r = b?.getBoundingClientRect(); return r ? [r.x + r.width / 2, r.y + r.height / 2] : null; });
+        if (!(await p.$('[data-calendrier]')) && nv) { tactile ? await p.touchscreen.tap(nv[0], nv[1]) : await p.mouse.click(nv[0], nv[1]); }
+        await p.waitForSelector('[data-calendrier]', { timeout: 30000 }); await sleep(700);
+        const nom = `10-cal-entete-${L}-${theme}`;
+        await cap(`${nom}-repos`);
+        const bc = await boiteCourbe();
+        if (bc) {
+          const x = bc.x + bc.w * 0.7, y = bc.y + bc.h * 0.55;
+          if (tactile) await glisser([x - 16, y], [x, y], 6);
+          else { await p.mouse.move(x - 16, y); await p.mouse.down(); for (let k = 1; k <= 6; k++) { await p.mouse.move(x - 16 + (16 * k) / 6, y); await sleep(16); } await p.mouse.up(); await sleep(600); }
+          await cap(`${nom}-lecture`);
+          if (L === 1280) { const m = await mesurer(); if (m.pointilles || m.rondsRepere) echec(C, `1280 ${theme} : rond sur la courbe (${m.pointilles} pointillé(s), ${m.rondsRepere} au repère)`); }
+        }
+      }
+      await p.setViewport({ width: 390, height: 844, isMobile: true, hasTouch: true, deviceScaleFactor: 1 });
+    }
+
     if (erreursPage.length) notes.push(`erreurs de page (${erreursPage.length}) : ${erreursPage[0]}`);
     await p.evaluate(() => document.documentElement.scrollWidth <= innerWidth) || echec('débordement', 'scrollWidth > innerWidth à 390');
   } finally { await nav.close(); srv.close(); }
