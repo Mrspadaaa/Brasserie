@@ -20,6 +20,7 @@ import { FeuilleAjout, type ResultatAjout } from '../../ui/calendrier/frise/Feui
 import { VueListe } from '../../ui/calendrier/frise/VueListe';
 import { CLASSE_TEINTE } from '../../ui/calendrier/frise/Marque';
 import { positionDans, type Colonne, type DragEtat } from '../../ui/calendrier/frise/Rangee';
+import type { CoteBord } from '../../ui/calendrier/frise/usePointeur';
 import { aDesJours, ajouterMois, cibleDuGlisse, colonnesDeLAxe, ECHELLES, enMois, echelleApres, echelleEffective, GLISSE_JOUR_MIN, glisseAuJour, peutDeplier, PERIODE_DE_L_ECHELLE, type Echelle, type SensPincement } from '../../ui/calendrier/echelle';
 import {
   RANGEES, anneeEnMois, ajouterJours, barreLiee, dateDeSemaine, ecartJours, estPonctuel, etiquetteS, jourLisible, lundiDe, nomRangee, nomSeules, preparerChoses,
@@ -31,7 +32,7 @@ import {
   type BrouillonAjout, type ContexteAjout
 } from '../../domain/calendrierAjout';
 import {
-  accepterVente, alignerCourbe, allonger, allongerDebut, deplacer, deplacerJours, dupliquer, dureeAllongee, fait, lier, delier, livrer, mettreDeCote, modifierIdee, retirer, noterIdee, supprimer, supprimerSansDate,
+  accepterVente, alignerCourbe, allonger, allongerDebut, deplacer, deplacerJours, dupliquer, dureeAllongee, dureeDebutTiree, fait, lier, delier, livrer, mettreDeCote, modifierIdee, retirer, noterIdee, supprimer, supprimerSansDate,
   courbeDuGlisse, jourDuGlisse, raisonNommee, type ContexteGestes, type Ecriture, type Message as MessageGeste, type Promesse, type Resolution
 } from '../../domain/calendrierGestes';
 
@@ -499,7 +500,14 @@ export function CalendrierTab(props: CalendrierTabProps) {
     setMessage(null); setMenu(null); setSelectionId(null);
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [modele.courbe]);
-  const finGeste = useCallback(() => { parJourRef.current = null; setDrag(null); setIci(null); setApercu(null); setDuree(null); }, []);
+  /* CHG-5 : la fenêtre d'avant le premier défilement du geste ; un geste annulé la rend (rien n'est écrit, la fenêtre non plus) */
+  const fenetreAvant = useRef<FenetreSemaines | null>(null);
+  const rendreFenetre = (annule: boolean) => {
+    const avant = fenetreAvant.current;
+    fenetreAvant.current = null;
+    if (annule && avant) { fenetreRef.current = avant; setFenetre(avant); }
+  };
+  const finGeste = useCallback(() => { parJourRef.current = null; fenetreAvant.current = null; setDrag(null); setIci(null); setApercu(null); setDuree(null); }, []);
   /*
    * Paquet E n° 4 (PC-NOTE-11, décision du pilote) : une fête ou une activité glissée n'emmène pas seuls ses achats et ventes d'un jour liés (une
    * date réelle d'achat ne bouge pas toute seule). Le message le dit (« 1 achat lié reste au 4 déc. ») et offre « Le déplacer aussi », qui les
@@ -528,6 +536,7 @@ export function CalendrierTab(props: CalendrierTabProps) {
   };
   const surLacheGlisse = useCallback((chose: ChoseCalendrier, k: number, annule: boolean) => {
     const parJour = parJourRef.current;
+    rendreFenetre(annule);
     finGeste();
     if (annule || k === 0) return;
     const glisserDe = (jours: number) => { if (jours !== 0) void ecrire(deplacerJours(chose, jours, ctxRef.current), false, chose.id, false, suiviDesLies(chose, jours)); };
@@ -540,15 +549,16 @@ export function CalendrierTab(props: CalendrierTabProps) {
     if (estPonctuel(chose) || parJour) { glisserDe(Math.round(k * 7)); return; }
     void ecrire(deplacer(chose, k, ctxRef.current), false, chose.id, false, suiviDesLies(chose, k * 7));
   }, [ecrire, finGeste]);
-  const surBord = useCallback((chose: ChoseCalendrier, jours: number) => {
+  const surBord = useCallback((chose: ChoseCalendrier, jours: number, cote: CoteBord = 'fin') => {
     setDrag({ id: chose.id, mode: 'bord', k: 0, jours });
-    setDuree({ id: chose.id, texte: dureeAllongee(chose, jours, aujourdhui) });
+    setDuree({ id: chose.id, texte: cote === 'debut' ? dureeDebutTiree(chose, jours) : dureeAllongee(chose, jours, aujourdhui) });
     setMessage(null); setMenu(null);
   }, [aujourdhui]);
-  const surLacheBord = useCallback((chose: ChoseCalendrier, jours: number, annule: boolean) => {
+  const surLacheBord = useCallback((chose: ChoseCalendrier, jours: number, annule: boolean, cote: CoteBord = 'fin') => {
+    rendreFenetre(annule);
     finGeste();
     if (annule || jours === 0) return;
-    void ecrire(allonger(chose, jours, ctxRef.current), false, chose.id);
+    void ecrire((cote === 'debut' ? allongerDebut : allonger)(chose, jours, ctxRef.current), false, chose.id);
   }, [ecrire, finGeste]);
   const surToucher = useCallback((chose: ChoseCalendrier, _cible: HTMLElement) => {
     setMenu(null);
@@ -614,7 +624,7 @@ export function CalendrierTab(props: CalendrierTabProps) {
         }
       });
     }
-  }, [modele.semaines, fenetre, vue, echelleVoulue, periodeLocale, premierLundi, onPeriode, montrer]);
+  }, [modele.semaines, fenetre, vue, echelleVoulue, periodeLocale, premierLundi, lundiAuj, onPeriode, montrer]);
   /* D385 (variante B) : écarter les doigts ouvre l'échelle plus fine, les pincer la plus large ; un cran par geste, autour du jour visé */
   const surPincer = useCallback((sens: SensPincement, x: number) => {
     const suivante = echelleApres(echelleRef.current, sens);
@@ -974,6 +984,7 @@ export function CalendrierTab(props: CalendrierTabProps) {
   const defilerFenetre = useCallback((sens: -1 | 1, mode: 'glisse' | 'bord' = 'glisse'): false | number => {
     const f = fenetreRef.current;
     if (mode === 'glisse' && aDesJours(colonnesRef.current)) return false;
+    if (!fenetreAvant.current) fenetreAvant.current = f;
     const n = f.semaines + 1;
     const peutGrandir = n <= PERIODE_DE_L_ECHELLE.mois && !(mode === 'glisse' && parJourRef.current && !(largeurFrise / (7 * n) >= GLISSE_JOUR_MIN));
     let fen: FenetreSemaines, recul = 0;

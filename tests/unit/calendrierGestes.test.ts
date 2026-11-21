@@ -6,6 +6,7 @@ import { rescheduleBatchPatch } from '../../src/domain/batchSchedule';
 import { choseArgent, choseBrassin, choseCreative, choseVenteProbable, jalonsBrassin, type ChoseCalendrier } from '../../src/domain/calendrier';
 import { courbeCaisse, type CourbeCaisse } from '../../src/domain/calendrierCaisse';
 import { accepterVente, allonger, choseAllongee, deplacer, /* CRITIQUE-6 n° 2 */ dupliquer, dureeAllongee, ecartsDeJalons, fait, lier, livrer, mettreDeCote, noterIdee, peutDeplacer, promesseTouchee, resoudre, retirer, type ContexteGestes, type Resolution } from '../../src/domain/calendrierGestes';
+import { allongerDebut, dureeDebutTiree } from '../../src/domain/calendrierGestes';
 import { texteDuree } from '../../src/domain/calendrier';
 import { appliquer } from '../../src/ui/calendrier/ecritures';
 import { alignerCourbe } from '../../src/domain/calendrierGestes';
@@ -692,5 +693,31 @@ describe('CRITIQUE-11 n° 4 (E31, D-48, D-192) : Dupliquer et Retirer une fête 
     const r = bien(retirer(chose, ctx({ plans: [p], courbe: c })));
     expect(r.effet?.texte).toMatch(/^S52 : /);
     expect(r.effetMots).toBeUndefined();
+  });
+});
+
+describe('CHG-4, CHG-6 (21.11) : le bord début se tire et la fin reste ; un brassin en cuve sans fin pose sa fin', () => {
+  it('fête : fenetre.du et la date reculent de 14 jours, au est gardé', () => {
+    const f: CreativeItem = { id: 'CR-1', type: 'event', title: 'Sols', status: 'todo', date: '2026-12-07', fenetre: { du: '2026-12-07', au: '2026-12-27', joursActifs: 3 } };
+    const r = bien(allongerDebut(choseCreative(f)!, -14, ctx()));
+    expect(r.ecritures).toEqual([{ op: 'patch', collection: 'creativeItems', id: 'CR-1', patch: { date: '2026-11-23', fenetre: { du: '2026-11-23', au: '2026-12-27', joursActifs: 3 } } }]);
+    expect(dureeDebutTiree(choseCreative(f)!, -14)).toBe('23 nov. → 27 déc.');
+    expect(allongerDebut(choseCreative(f)!, 30, ctx())).toMatchObject({ ok: false });
+  });
+  it('brassin planifié : plannedBrewDate recule de 14 jours, finPrevue garde la fin d’avant', () => {
+    const b = blonde();
+    const chose = choseBrassin(b, AUJOURDHUI)!;
+    const r = bien(allongerDebut(chose, -14, ctx({ batches: [b] })));
+    expect(r.ecritures[0]).toMatchObject({ op: 'patch', collection: 'batches', id: 'LOT-5', patch: { plannedBrewDate: '24.11.2026', finPrevue: '2027-01-12' } });
+    expect(allongerDebut(chose, 60, ctx({ batches: [b] }))).toMatchObject({ ok: false });
+  });
+  it('brassin en cuve : le début ne bouge pas, la fin se pose (aujourd’hui + 14)', () => {
+    const b = blonde({ brewDate: '10.11.2026', plannedBrewDate: '10.11.2026', status: 'fermentation', recipeSnapshot: {} as never });
+    const chose = choseBrassin(b, AUJOURDHUI)!;
+    expect(chose.finInconnue).toBe(true);
+    expect(allongerDebut(chose, -3, ctx({ batches: [b] }))).toMatchObject({ ok: false });
+    expect(chose.deplacable).toMatchObject({ raison: expect.stringContaining('Tire son bord droit') });
+    const r = bien(allonger(chose, 14, ctx({ batches: [b] })));
+    expect(r.ecritures).toEqual([{ op: 'patch', collection: 'batches', id: 'LOT-5', patch: { finPrevue: '2026-11-30' } }]);
   });
 });

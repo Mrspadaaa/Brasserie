@@ -38,9 +38,12 @@ export interface OptionsPointeur {
   onGlisse?: (k: number, dx: number) => void;
   /** Lâché : `k` pas, `annule` si le geste a été interrompu. */
   onLacheGlisse?: (k: number, annule: boolean) => void;
-  onDebutBord?: () => void;
-  onBord?: (k: number, dx: number) => void;
-  onLacheBord?: (k: number, annule: boolean) => void;
+  onDebutBord?: (cote: CoteBord) => void;
+  /** CHG-4 : `cote` dit quel bord se tire ; `'debut'` : le bord gauche (la fin reste), `'fin'` : le droit. */
+  onBord?: (k: number, dx: number, cote: CoteBord) => void;
+  onLacheBord?: (k: number, annule: boolean, cote: CoteBord) => void;
+  /** CHG-4 : la zone de prise du bord gauche, en px (0 : pas de bord gauche) ; jamais plus du quart de la barre, dont le corps se glisse. */
+  zoneBordDebut?: number;
   /** Le glisser est refusé : la raison, une fois. */
   onRefus?: (raison: string, cible: Element | null) => void;
   /**
@@ -85,6 +88,17 @@ export function surLeBord(el: Element, x: number, zone: number): boolean {
   return x >= r.right - Math.min(zone, r.width / 3) && x <= r.right + zone;
 }
 
+/** CHG-4 : le bord tiré, la fin (droit) ou le début (gauche). */
+export type CoteBord = 'fin' | 'debut';
+
+/** CHG-4 : le doigt est-il sur la zone du bord gauche de `el` ? Au plus le quart de la barre : le corps garde au moins 5/12 de sa largeur. */
+export function surLeBordDebut(el: Element, x: number, zone: number): boolean {
+  if (!zone) return false;
+  const r = el.getBoundingClientRect();
+  if (!(r.width > 0)) return false;
+  return x >= r.left - zone && x <= r.left + Math.min(zone, r.width / 4);
+}
+
 interface Etat {
   id: number;
   cible: Element | null;
@@ -92,6 +106,8 @@ interface Etat {
   y0: number;
   t0: number;
   mode: ModeGeste;
+  /** CHG-4 : le bord tiré. */
+  cote: CoteBord;
   k: number;
   minuterie: ReturnType<typeof setTimeout> | null;
   /** Le déplacement du doigt depuis l'appui, et le nombre de colonnes dont la fenêtre a reculé (>0) ou avancé (<0) depuis le début du geste. */
@@ -214,7 +230,7 @@ export function usePointeur(options: OptionsPointeur) {
       if (k !== s.k) { s.k = k; opts.current.onGlisse?.(k, s.dx); }
     } else if (s.mode === 'bord' && s.bouge) {
       const k = joursDe(s);
-      if (k !== s.k) { s.k = k; opts.current.onBord?.(k, s.dx); }
+      if (k !== s.k) { s.k = k; opts.current.onBord?.(k, s.dx, s.cote); }
     }
   });
 
@@ -225,9 +241,14 @@ export function usePointeur(options: OptionsPointeur) {
   const onPointerDown = useCallback((e: React.PointerEvent<HTMLElement>) => {
     if (e.button > 0) return;
     stopMinuterie();
-    const bord = (e.target as HTMLElement | null)?.closest?.('[data-bord]') || surLeBord(e.currentTarget, e.clientX, opts.current.zoneBord ?? 0);
+    /* CHG-4 : `[data-bord="debut"]` > bord droit > (hors jalon) bord gauche */
+    const cibleEl = e.target as HTMLElement | null;
+    const marque = cibleEl?.closest?.('[data-bord]');
+    let cote: CoteBord = marque?.getAttribute('data-bord') === 'debut' ? 'debut' : 'fin';
+    let bord = !!marque || surLeBord(e.currentTarget, e.clientX, opts.current.zoneBord ?? 0);
+    if (!bord && !cibleEl?.closest?.('[data-jalon]') && surLeBordDebut(e.currentTarget, e.clientX, opts.current.zoneBordDebut ?? 0)) { bord = true; cote = 'debut'; }
     const o0 = opts.current, L = e.currentTarget.closest?.('[data-frise]')?.getBoundingClientRect().left ?? 0;
-    const s: Etat = { id: e.pointerId, cible: e.target instanceof Element ? e.target : null, x0: e.clientX, y0: e.clientY, t0: Date.now(), mode: bord ? 'bord' : 'appui', k: 0, minuterie: null, dx: 0, recul: 0, parJour: !!o0.parJour,
+    const s: Etat = { id: e.pointerId, cible: e.target instanceof Element ? e.target : null, x0: e.clientX, y0: e.clientY, t0: Date.now(), mode: bord ? 'bord' : 'appui', cote, k: 0, minuterie: null, dx: 0, recul: 0, parJour: !!o0.parJour,
       L, w0: o0.largeurColonne, d0: largeurJourDe(o0),
       bouge: false, arme: 0, xPrec: e.clientX, acc: 0, raf: 0, tPrec: 0, echap: null };
     etat.current = s;
@@ -238,7 +259,7 @@ export function usePointeur(options: OptionsPointeur) {
       etat.current = null;
       if (s.mode === 'glisse' || s.mode === 'bord') { avalerClic.current = Date.now(); poserGardeClic(); }
       if (s.mode === 'glisse') opts.current.onLacheGlisse?.(s.k, true);
-      else if (s.mode === 'bord') opts.current.onLacheBord?.(s.k, true);
+      else if (s.mode === 'bord') opts.current.onLacheBord?.(s.k, true, s.cote);
     };
     /* Frise B, R10 : Échap pendant un glisser ou un bord tiré rend la barre d'avant, exactement (rien n'est écrit) */
     s.echap = (ev: KeyboardEvent) => {
@@ -254,7 +275,7 @@ export function usePointeur(options: OptionsPointeur) {
     if (bord) {
       e.stopPropagation();
       capturer(e.currentTarget, e.pointerId);
-      opts.current.onDebutBord?.();
+      opts.current.onDebutBord?.(s.cote);
       return;
     }
     /* paquet E n° 1 (PC-136, « la vente reste au 7 déc. ») : un doigt est capturé d'office par le navigateur (capture implicite des
@@ -341,7 +362,7 @@ export function usePointeur(options: OptionsPointeur) {
       s.dx = dx;
       /* le bord se tire au jour : une semaine = 7 jours, le pas du bord est 1/7 de colonne (E29) ; tenu au bord de la frise, la fenêtre grandit */
       s.k = joursDe(s);
-      o.onBord?.(s.k, dx);
+      o.onBord?.(s.k, dx, s.cote);
       majDefile(s, e.clientX, e.currentTarget);
     }
   }, []);
@@ -359,7 +380,11 @@ export function usePointeur(options: OptionsPointeur) {
     const o = opts.current;
     if (s.mode === 'long' || s.mode === 'glisse' || s.mode === 'bord') { avalerClic.current = Date.now(); poserGardeClic(); }
     if (s.mode === 'glisse') o.onLacheGlisse?.(s.k, annule);
-    else if (s.mode === 'bord') o.onLacheBord?.(s.k, annule);
+    else if (s.mode === 'bord') {
+      o.onLacheBord?.(s.k, annule, s.cote);
+      /* CHG-4 : un toucher sur le bord gauche, sans mouvement, ouvre encore le détail (comme sur le corps) */
+      if (s.cote === 'debut' && !s.bouge && !annule && Date.now() - s.t0 < APPUI_LONG_MS) o.onToucher?.(s.cible);
+    }
     else if (s.mode === 'appui' && !annule && Date.now() - s.t0 < APPUI_LONG_MS) {
       /* TOUCHER-FANTOME (21.11, tour7 : toucher « La Cigogne, 3 fûts » a annulé la vente) : le toucher ouvre le détail au lâcher ; le `click`
          que le navigateur émet ensuite au même point tombait sur « Annuler la vente », apparu sous le doigt. Ce clic est avalé s'il tombe hors de

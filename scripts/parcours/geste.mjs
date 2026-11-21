@@ -647,6 +647,55 @@ async function jouerCalendrier({ p, base, combo, tactile, glisser, pas }) {
     } catch (e) { echec(B, String(e.message ?? e).slice(0, 160)); await echap(); }
     await choisirPeriode('3 mois'); await sleep(400);
   };
+  // ── CHG-4 (21.11, « tirer le début d'une barre ») : 3 mois, 390. Le doigt posé au bord gauche de « ZZ TEST Geste » (à l + min(4, w/5)) et tiré
+  //    de 2 colonnes vers la gauche allonge le début de 14 j, la fin reste ; relu après rechargement. Avant : la barre entière partait ──
+  const sectionChg4 = async () => {
+    const C4 = `bord de début ${combo}`;
+    try {
+      await choisirPeriode('3 mois'); await sleep(400);
+      const fr = await p.evaluate(() => { const f = document.querySelector('[data-frise]').getBoundingClientRect(); return { l: f.left, r: f.right }; });
+      let b = await barreGeste();
+      if (!b) { echec(C4, '« ZZ TEST Geste » introuvable'); return; }
+      for (let k = 0; k < 6 && b && b.l - fr.l < 110; k++) { const x = (Math.max(fr.l, b.l) + Math.min(fr.r, b.r)) / 2; await glisser(x, b.y, pas(x, x + 4 * b.col)); await sleep(500); await echap(); b = await barreGeste(); }
+      const a = await valeurGeste();
+      if (!b || !a) { echec(C4, '« ZZ TEST Geste » perdue après l’avoir ramenée'); return; }
+      const x0 = b.l + Math.min(4, b.w / 5);
+      await glisser(x0, b.y, pas(x0, x0 - 2 * b.col, 16)); await sleep(700);
+      const c = await valeurGeste();
+      const jours = (u, v) => Math.round((new Date(u) - new Date(v)) / 864e5);
+      (c && c.du === ajouter(a.du, -14) && c.au === a.au) ? ok(`${C4} début allongé`, `${a.cle} → ${c.cle}`) : echec(`${C4} début allongé`, `${a.cle} → ${c?.cle} (doigt à ${Math.round(x0 - fr.l)} px du cadre, attendu début −14 j, fin gardée${c ? `, vu début ${jours(c.du, a.du)} j, fin ${jours(c.au, a.au)} j` : ''})`);
+      await versCalendrier(); const d = await valeurGeste();
+      d?.cle === c?.cle ? ok(`${C4} rechargement`, c.cle) : echec(`${C4} rechargement`, `${c?.cle} → ${d?.cle}`);
+    } catch (e) { echec(C4, String(e.message ?? e).slice(0, 160)); await echap(); }
+    await choisirPeriode('3 mois'); await sleep(400);
+  };
+  // ── CHG-5 (21.11, « annuler une marque en bord de cadre ») : tactile seul. La marque « Café du Pont » tirée jusqu'au bord droit du cadre
+  //    (la fenêtre défile), tenue 1 s puis le geste annulé (touchCancel) : la date, la période et la place de la marque sont celles d'avant ──
+  const sectionChg5 = async () => {
+    const C5 = `annuler en bord de cadre ${combo}`;
+    if (!tactile) { ok(`${C5} (sauté : touchCancel = tactile seul)`); return; }
+    const cdp = await p.createCDPSession();
+    try {
+      await choisirPeriode('3 mois'); await sleep(400);
+      const periode = () => p.evaluate(() => document.querySelector('[aria-label$="période, liste, tri et filtre"]')?.getAttribute('aria-label') ?? '');
+      const marque = () => p.evaluate(() => { const e = document.querySelector('[aria-label^="Café du Pont,"]'); if (!e) return null; e.scrollIntoView({ block: 'center', inline: 'center' }); const r = e.getBoundingClientRect(); return { l: r.left, x: r.left + r.width / 2, y: r.top + r.height / 2 }; });
+      const cache = () => p.evaluate((k) => JSON.stringify(JSON.parse(localStorage.getItem(k) ?? '[]').find((x) => x.id === 'P-VENTE-1')?.data ?? null), CLE_CACHE);
+      const fr = await p.evaluate(() => { const f = document.querySelector('[data-frise]').getBoundingClientRect(); return { l: f.left, r: f.right }; });
+      const m0 = await marque(), per0 = await periode(), c0 = await cache();
+      if (!m0) { echec(C5, '« Café du Pont » introuvable : ' + await p.evaluate(() => [...document.querySelectorAll('[data-chose]')].map((e) => (e.getAttribute('aria-label') ?? e.getAttribute('data-chose')).slice(0, 22) + '@' + Math.round(e.getBoundingClientRect().left)).join(' | '))); return; }
+      const pt = (x) => [{ x: Math.round(x), y: Math.round(m0.y), id: 1 }];
+      await cdp.send('Input.dispatchTouchEvent', { type: 'touchStart', touchPoints: pt(m0.x) }); await sleep(80);
+      for (let k = 1; k <= 12; k++) { await cdp.send('Input.dispatchTouchEvent', { type: 'touchMove', touchPoints: pt(m0.x + ((fr.r - 12 - m0.x) * k) / 12) }); await sleep(30); }
+      await sleep(1000);
+      await cdp.send('Input.dispatchTouchEvent', { type: 'touchCancel', touchPoints: [] }); await sleep(800);
+      const m1 = await marque(), per1 = await periode(), c1 = await cache();
+      const ecart = m1 ? Math.abs(m1.l - m0.l) : null;
+      (c1 === c0) ? ok(`${C5} date inchangée`) : echec(`${C5} date inchangée`, `${c0} → ${c1}`);
+      (per1 === per0) ? ok(`${C5} période inchangée`, per1) : echec(`${C5} période inchangée`, `« ${per0} » → « ${per1} »`);
+      (ecart != null && ecart <= 2) ? ok(`${C5} place inchangée`, `${Math.round(m0.l)} → ${Math.round(m1.l)}`) : echec(`${C5} place inchangée`, `gauche ${Math.round(m0.l)} → ${m1 ? Math.round(m1.l) : 'introuvable'} (écart ${ecart} px)`);
+    } catch (e) { echec(C5, String(e.message ?? e).slice(0, 160)); try { await cdp.send('Input.dispatchTouchEvent', { type: 'touchCancel', touchPoints: [] }); } catch { /* geste déjà clos */ } await echap(); }
+    await choisirPeriode('3 mois'); await sleep(400);
+  };
   // ── CAL-VIDE (21.11, « Il y a un espace vide énorme ici ??? ») et CAL-VIDES-EN-LIGNE (« les mettre en vertical pas les entassés à
   //    l'horizontal ») : en 6 sem., 3 mois et An, une rangée prend la hauteur de ses lignes (écart ≤ 24 px jusqu'à l'en-tête suivant) ; les
   //    rangées vides se posent l'une sous l'autre ──
@@ -683,6 +732,8 @@ async function jouerCalendrier({ p, base, combo, tactile, glisser, pas }) {
   await sectionModifier();
   await sectionRangees();
   await sectionBarreBord();
+  await sectionChg4();
+  await sectionChg5();
   await cap('fin');
 }
 

@@ -3,7 +3,7 @@ import ReactDOM from 'react-dom';
 import { Link2, Pin, Star } from 'lucide-react';
 import { COUT_A_VENIR, ecartJours, etiquetteS, francsSignes, jourLisible, type ChoseCalendrier, type JalonBrassin } from '../../../domain/calendrier';
 import { CLASSE_TEINTE, ContenuEtiquette, DureeTexte, PastilleLie, dureeVue, largeurTexte, nomAccessible, type ModeDeuxLignes } from './Marque';
-import { usePointeur } from './usePointeur';
+import { usePointeur, type CoteBord } from './usePointeur';
 import { prisesDuBord, useToucherNom, zoneToucher } from './zoneToucher';
 import { ETAPE_BRASSIN, couleurEtape, encreEtape, estEtape, type EtapeBrassin } from './etapes';
 import { posee, poseeADroite } from './posee';
@@ -100,8 +100,9 @@ export interface BarreProps {
   onAppuiLong: (chose: ChoseCalendrier, cible: HTMLElement) => void;
   onGlisse: (chose: ChoseCalendrier, k: number) => void;
   onLacheGlisse: (chose: ChoseCalendrier, k: number, annule: boolean, jalon?: string) => void;
-  onBord: (chose: ChoseCalendrier, jours: number) => void;
-  onLacheBord: (chose: ChoseCalendrier, jours: number, annule: boolean) => void;
+  /** CHG-4 : `cote` dit quel bord se tire (absent : la fin). */
+  onBord: (chose: ChoseCalendrier, jours: number, cote?: CoteBord) => void;
+  onLacheBord: (chose: ChoseCalendrier, jours: number, annule: boolean, cote?: CoteBord) => void;
   onRefus: (chose: ChoseCalendrier, raison: string, jalon?: JalonBrassin) => void;
 }
 
@@ -293,7 +294,11 @@ export function placerDuree(d: HTMLElement, barre: HTMLElement, nomCede = false)
 }
 
 export const Barre: React.FC<BarreProps> = props => {
-  const { chose, gauche, largeur, haut, hauteur, cote, placeEtiquette, largeurColonne, bornes, epinglee, etoilee, selectionnee, menuOuvert, decalage = 0, allongement = 0, etiquetteDuree } = props;
+  const { chose, gauche, largeur, haut, hauteur, cote, placeEtiquette, largeurColonne, bornes, epinglee, etoilee, selectionnee, menuOuvert, etiquetteDuree } = props;
+  /* CHG-4 : le bord tiré. Le début tiré de `allongement` : la barre part de ce côté et la fin reste (décalage + allongement, largeur − allongement) */
+  const [coteBord, setCoteBord] = React.useState<CoteBord>('fin');
+  const decalage = (props.decalage ?? 0) + (coteBord === 'debut' ? props.allongement ?? 0 : 0);
+  const allongement = coteBord === 'debut' ? -(props.allongement ?? 0) : props.allongement ?? 0;
   const el = React.useRef<HTMLDivElement | null>(null);
   const dureeEl = React.useRef<HTMLElement | null>(null);
   const proposee = !!(chose.proposition || chose.probable);
@@ -331,6 +336,7 @@ export const Barre: React.FC<BarreProps> = props => {
     ...(props.defile ? { defile: props.defile } : {}),
     /* doute f2-a (E29, D-47) : un doigt posé à 22 px du bord (R3), dedans ou dehors, tire le bord, même sur une rangée de 18 px */
     zoneBord: peutBord ? ZONE_BORD_PX : 0,
+    zoneBordDebut: peutBordDebut ? ZONE_BORD_PX : 0,
     refuseGlisse: cible => {
       const id = cible?.closest?.('[data-jalon]')?.getAttribute('data-jalon');
       const jalon = id ? chose.jalons?.find(j => j.id === id) : undefined;
@@ -354,8 +360,9 @@ export const Barre: React.FC<BarreProps> = props => {
     onGlisse: k => props.onGlisse(chose, k),
     onLacheGlisse: (k, annule) => props.onLacheGlisse(chose, k, annule),
     /* le bord (et le jalon de fin) se tire au jour : une semaine = 7 jours, le pas du bord est 1/7 de colonne */
-    onBord: k => props.onBord(chose, k),
-    onLacheBord: (k, annule) => props.onLacheBord(chose, k, annule)
+    onDebutBord: c => setCoteBord(c),
+    onBord: (k, _dx, c) => props.onBord(chose, k, c),
+    onLacheBord: (k, annule, c) => { setCoteBord('fin'); props.onLacheBord(chose, k, annule, c); }
   });
 
   /* T2-2 : le nom posé à côté de la barre s'ouvre au toucher comme elle (ni glisser, ni menu) */
