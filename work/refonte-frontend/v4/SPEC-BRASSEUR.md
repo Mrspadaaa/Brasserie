@@ -2481,3 +2481,7 @@ Classement de la page r3 de Ma levure (https://claude.ai/artifact/DKAJe8ESeMR4ig
 > Beaucoup de place gâché pour rien et surtout il faudrait des tailles fix car SI non ça fait bouger le calendrier
 
 (21.11, Calendrier en ligne tour 7, 5 captures dans work/missions/2026-11-21-calendrier-entete/ : rond pointillé entouré sur la courbe ; panneau de semaine « S32 rien cette semaine » / « S47 lol −600 +4 autres » de hauteur variable ; en-tête haut même courbe cachée.)
+
+> Il y a vraiment beaucoup de place inutile, et l'info ont l'a déjà sur le graph...
+
+(21.11, capture-6 : entourés, la barre du haut « L'Affinée » avec les avatars G A sur une seconde ligne, et la rangée « −683 » sous les mois, reliée à « lol −600 » déjà écrit sur la courbe.)
