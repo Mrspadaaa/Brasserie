@@ -25,6 +25,7 @@ import { BrewWortPair, type WortPairDraft } from './BrewWortPair';
 import { nombreFr } from '../domain/nombreAffiche';
 import { bornesPlausibles, bornesCurseur, formatCurseur, pasCurseur, poserSurPas, departCurseur, traitsCurseur, quoiMesure } from '../domain/measureSlider';
 import { grandeursOuvertes, mesureDue, raisonMesure } from '../domain/brewMeasures';
+import { refCurseurNatif } from './geste';
 
 export const brewControl =
   'min-h-touch-lg whitespace-nowrap rounded-control border border-cave-700 bg-cave-850 px-2 text-sm text-cave-200 hover:bg-cave-800 disabled:opacity-40 focus-visible:outline focus-visible:outline-2 focus-visible:outline-ebc-straw';
@@ -342,7 +343,7 @@ export function ecartCible(scale: MeasureScale, value: number): number | null {
 }
 
 /**
- * Le geste (m2, 10.11) : le pouce sur l'échelle cible. Un <input type="range"> natif, transparent, couvre l'échelle (44 px de haut) : il porte
+ * Le geste (m2, 10.11) : le pouce sur l'échelle cible. Un <input ref={refCurseurNatif} type="range"> natif, transparent, couvre l'échelle (44 px de haut) : il porte
  * le glisser, le toucher de piste, les flèches et le lecteur d'écran. Le pouce dessiné suit ; en pointillé tant qu'aucune valeur n'est posée.
  */
 export function MeasureSlider({ scale, kind, value, depart, label, onPose }: {
@@ -368,7 +369,7 @@ export function MeasureSlider({ scale, kind, value, depart, label, onPose }: {
         {traitsCurseur(kind, scale.min, scale.max).map((t, i) => <span key={i} className="bz-tic" aria-hidden="true" style={{ left: at(t) }} />)}
         {scale.cible && <div className="bz-echelle-cible" style={{ left: at(scale.bandMin), width: `${((scale.bandMax - scale.bandMin) / span) * 100}%` }} />}
         <span className="bz-pouce" data-vide={pose ? undefined : ''} data-hors={hors ? '' : undefined} style={{ left: at(pos) }} aria-hidden="true"><i /><b /></span>
-        <input
+        <input ref={refCurseurNatif}
           type="range"
           className="bz-range"
           min={bornes.min}
