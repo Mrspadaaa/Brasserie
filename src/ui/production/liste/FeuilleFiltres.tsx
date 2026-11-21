@@ -26,6 +26,7 @@ import {
   type TonCarte
 } from './listeModel';
 import './liste.css';
+import { refCurseurNatif } from '../../geste';
 
 export const OPTIONS_TRI: { value: CatalogFilters['sort']; label: string }[] = [
   { value: 'work', label: 'À suivre d’abord' },
@@ -333,8 +334,8 @@ export function FeuilleFiltres(p: FeuilleProps) {
                 })}
               </div>
               <div className="lst-rin">
-                <input type="range" aria-label="Alcool minimum" min={alcool.min} max={alcool.max} step={0.1} value={lo} onChange={(e) => posAlcool(Number(e.target.value), hi)} />
-                <input type="range" aria-label="Alcool maximum" min={alcool.min} max={alcool.max} step={0.1} value={hi} onChange={(e) => posAlcool(lo, Number(e.target.value))} />
+                <input ref={refCurseurNatif} type="range" aria-label="Alcool minimum" min={alcool.min} max={alcool.max} step={0.1} value={lo} onChange={(e) => posAlcool(Number(e.target.value), hi)} />
+                <input ref={refCurseurNatif} type="range" aria-label="Alcool maximum" min={alcool.min} max={alcool.max} step={0.1} value={hi} onChange={(e) => posAlcool(lo, Number(e.target.value))} />
               </div>
               <span className="lst-lab" style={{ left: 22 }}>{fr(alcool.min)} %</span>
               <span className="lst-lab" style={{ left: `calc(22px + ${(pct(eLo) + pct(eHi)) / 200} * (100% - 44px))`, transform: 'translateX(-50%)' }}>{fr(eLo)} – {fr(eHi)}</span>
