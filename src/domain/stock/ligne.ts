@@ -113,6 +113,16 @@ export function etatDit(item: StockItem, info: InfoLigne, cmd: ArticleACommander
   return { texte, classe };
 }
 
+/**
+ * STC-17 : « à compter » se dit une seule fois par ligne. À droite, la colonne de la quantité l'écrit (en gras) ; sous le nom, l'état ne le redit pas :
+ * « manque inconnu » quand un besoin pèse sur l'article, sinon « quantité inconnue ». Les autres états sont dits tels quels.
+ */
+export function texteSousLeNom(dit: EtatDit): string {
+  if (dit.classe !== 'compter') return dit.texte;
+  const reste = dit.texte.replace(/^à compter(?: · )?/, '');
+  return reste || 'quantité inconnue';
+}
+
 export interface RepereLigne { texte: string; couleur: string | null; inconnu: boolean; alerte: boolean; /** D'où vient la valeur quand ce n'est pas la saisie du brasseur (survol). */ titre?: string }
 /** La pastille de repère : EBC (malts), α (houblons), DDM (levures) ; null pour les autres rayons. L'inconnu se dit « non connu ». */
 export function repereLigne(item: StockItem, info: InfoLigne, couleurMalt: (ebc: number) => string): RepereLigne | null {

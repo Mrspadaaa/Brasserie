@@ -4,6 +4,7 @@ import type { StockItem } from '../../types';
 import { rayonDuMur, type RayonMurNom } from './murRayon';
 import { statutDurabilite } from './regles';
 import type { ArticleACommander } from '../stockLevel';
+import { poidsDePiece } from '../../ui/depense/poidsPiece';
 
 /* ───────────── Barres à deux régimes (g6 : « à l'échelle jusqu'au coude, resserrée au-delà ») ───────────── */
 
@@ -52,13 +53,24 @@ export function coupeBarre(q: number, e: Echelle): number | null {
   return PART_COUDE / xBarre(q, e) * 100;
 }
 
+/**
+ * STC-2 (chasse du Stock, 21.11) : un houblon compté en paquets (« 1 Pck », nom de facture « Cryo Hops Citra 25g ») pèse paquets × le poids lu dans son nom.
+ * La lecture du poids est celle de la dépense (`poidsDePiece` : une seule mesure en g ou Kg, jamais deux, jamais « 10 x 100 g ») ; rien n'est écrit sur l'article.
+ * Un nom qui ne dit pas le poids ne donne rien : jamais deviné, jamais 0.
+ */
+export function grammesDesPaquets(item: Pick<StockItem, 'name' | 'unit' | 'currentStock'>): number | null {
+  if (!Number.isFinite(item.currentStock)) return null;
+  const poids = poidsDePiece({ description: item.name, unit: item.unit });
+  return poids ? item.currentStock * poids.grammes : null;
+}
+
 /** La quantité d'un article dans l'unité de sa règle ; null quand elle est inconnue (jamais 0). */
 export function quantiteBarre(item: StockItem): number | null {
   const rayon = rayonDuMur(item);
   if (!rayon || !Number.isFinite(item.currentStock)) return null;
   const u = item.unit.trim().toLowerCase();
   if (rayon === 'Malts') return u === 'kg' ? item.currentStock : u === 'g' ? item.currentStock / 1000 : null;
-  if (rayon === 'Houblons') return u === 'g' ? item.currentStock : u === 'kg' ? item.currentStock * 1000 : null;
+  if (rayon === 'Houblons') return u === 'g' ? item.currentStock : u === 'kg' ? item.currentStock * 1000 : grammesDesPaquets(item);
   return item.currentStock; // levures : en sachets ou fioles
 }
 

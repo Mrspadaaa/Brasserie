@@ -3,11 +3,10 @@ import { Batch, StockItem } from '../types';
 import { Units } from '../services/units';
 import { computeStockLevel, pendingStockSummary, type ArticleACommander, type RecipeStockComparison } from '../domain/stockLevel';
 import { infoLigne, type InfoLigne } from '../domain/stock/liste';
-import { LigneStock } from './stock/LigneStock';
 import { libelleDurabilite, quantiteLue } from '../domain/stock/regles';
 import { libellesSources } from '../domain/stock/disponibilite';
 import { todayISO } from '../domain/finance/ledger';
-import { FavoriteToggle } from './EntityList';
+import { EtoileStock, LigneStock } from './stock/LigneStock';
 import { LevelGauge, stockLevelLabel } from './LevelGauge';
 import { annulerGesteDepuisTrace } from './BandeauEffets';
 
@@ -111,7 +110,7 @@ export const StockRow: React.FC<StockRowProps> = ({ item, batches, stockItems, o
         {durabilite && <p data-stock-durabilite className={`px-2 pb-1.5 text-xs ${durabilite.perime ? 'text-alert-strong' : 'text-attention'}`}>{durabilite.texte}</p>}
       </div>
       <span id={descriptionId} className="sr-only">{Units.format(item.currentStock, item.unit)} · {comparisonDescription || stockLevelLabel(level)}{!comparison && pendingDescription ? ` · ${pendingDescription}` : ''}</span>
-      <div className="pt-1 pr-1"><FavoriteToggle active={!!item.favorite} onToggle={() => onToggleFavorite(item)} label={item.name} /></div>
+      <div className="pt-1 pr-1"><EtoileStock active={!!item.favorite} onToggle={() => onToggleFavorite(item)} label={item.name} /></div>
     </article>
   );
 };

@@ -2,12 +2,25 @@ import React, { useId } from 'react';
 import type { StockItem } from '../../types';
 import type { StockLevel } from '../../domain/stockLevel';
 import type { InfoLigne } from '../../domain/stock/liste';
-import { barreLigne, etatDit, familleTeinte, quantiteDeLigne, repereLigne } from '../../domain/stock/ligne';
+import { barreLigne, etatDit, familleTeinte, quantiteDeLigne, repereLigne, texteSousLeNom } from '../../domain/stock/ligne';
+import { Star } from 'lucide-react';
 import type { ArticleACommander } from '../../domain/stockLevel';
 import { rayonDuMur } from '../../domain/stock/murRayon';
 import { couleurMalt } from '../../domain/stock/mur';
-import { FavoriteToggle } from '../EntityList';
 import './liste.css';
+
+/**
+ * L'étoile d'épinglage de l'article (STG-NOTE-1) : le même dessin que `FavoriteToggle` (étoile de 16 px, mêmes couleurs, même geste, même libellé), avec une zone de
+ * toucher de 44 × 44 px au lieu des 28 du jeton `touch`. Le dessin ne change pas ; seule la zone qui reçoit le doigt s'agrandit.
+ */
+export const EtoileStock: React.FC<{ active: boolean; onToggle: () => void; label: string }> = ({ active, onToggle, label }) => (
+  <button type="button" data-etoile onClick={(e) => { e.stopPropagation(); onToggle(); }}
+    aria-label={active ? `Retirer ${label} des favoris` : `Épingler ${label}`} aria-pressed={active}
+    style={{ minWidth: 44, minHeight: 44 }}
+    className="rounded-control shrink-0 inline-flex items-center justify-center transition-colors text-cave-400 hover:text-ebc-straw">
+    <Star className={`w-4 h-4 transition-colors ${active ? 'fill-ebc-straw text-ebc-straw' : ''}`} />
+  </button>
+);
 
 interface LigneStockProps {
   item: StockItem;
@@ -63,7 +76,7 @@ export const LigneStock: React.FC<LigneStockProps> = ({ item, info, cmd, level, 
         </span>
         <span className="l1-nm">
           <span className="l1-n1">{item.name}</span>
-          <span className={`l1-n2 l1-s-${dit.classe}`}>{dit.texte}</span>
+          <span className={`l1-n2 l1-s-${dit.classe}`}>{texteSousLeNom(dit)}</span>
         </span>
         {repere
           ? <span title={repere.titre} className={`l1-rp${repere.inconnu ? ' l1-rp-q' : ''}${repere.alerte ? ' l1-rp-w' : ''}`}>
@@ -91,7 +104,7 @@ export const LigneStock: React.FC<LigneStockProps> = ({ item, info, cmd, level, 
         {durabilite && !info.etats.includes('ddm') && <p data-stock-durabilite className={durabilite.perime ? 'l1-plus-a' : 'l1-plus-w'}>{durabilite.texte}</p>}
       </div>}
       <span id={descriptionId} className="sr-only">{description}</span>
-      <div className="l1-fav"><FavoriteToggle active={!!item.favorite} onToggle={() => onToggleFavorite(item)} label={item.name} /></div>
+      <div className="l1-fav"><EtoileStock active={!!item.favorite} onToggle={() => onToggleFavorite(item)} label={item.name} /></div>
     </article>
   );
 };

@@ -65,6 +65,10 @@ interface Props {
 
 export function RecompterStock({ items, retenus, infos, aCommander, mouvements, filtre, onFiltre, filtreActif, onOuvrir, onCompterRayon }: Props) {
   const comptes = useMemo(() => comptesRecompter(items, mouvements), [items, mouvements]);
+  // STG-9 : les tuiles suivent la recherche et les pastilles d'état (les lignes dessous les suivent déjà). Une tuile de famille choisie garde les comptes de tous
+  // les rayons (on y bascule d'un toucher) ; une famille sans article n'a pas de tuile (STE-9 : « Nettoyage 0 · 0/0 » vide).
+  const filtreFamille = filtre !== null && (FAMILLES_RECOMPTER as ReadonlyArray<string>).includes(filtre);
+  const comptesVus = useMemo(() => (filtreActif && !filtreFamille ? comptesRecompter(retenus, mouvements) : comptes), [filtreActif, filtreFamille, retenus, mouvements, comptes]);
   const jours = useMemo(() => derniersComptages(mouvements), [mouvements]);
   // Sens du tri par nom (bouton ⇅ de la maquette q-a3s) : A → Z, ou Z → A ; les épuisés restent en fin de rayon dans les deux sens.
   const [zVersA, setZVersA] = useState(false);
@@ -101,7 +105,8 @@ export function RecompterStock({ items, retenus, infos, aCommander, mouvements, 
     <div className="stock-recompter sz-r-sc" data-testid="recompter">
       <div className="sz-r-som" role="group" aria-label="Familles">
         {FAMILLES_RECOMPTER.map((f, k) => {
-          const c = comptes[f];
+          const c = comptesVus[f];
+          if (c.total === 0 && filtre !== f) return null;
           return (
             <button key={f} type="button" data-fam-btn={k} className={filtre === f ? 'sz-r-on' : ''} aria-pressed={filtre === f} aria-label={`${LIBELLE_FAMILLE[f]} : ${c.total} article${c.total > 1 ? 's' : ''}, ${c.compte} compté${c.compte > 1 ? 's' : ''}`}
               onClick={() => onFiltre(filtre === f ? null : f)}>
