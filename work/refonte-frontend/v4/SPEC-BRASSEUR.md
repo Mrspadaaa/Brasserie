@@ -2535,3 +2535,7 @@ Classement de la page r3 de Ma levure (https://claude.ai/artifact/DKAJe8ESeMR4ig
 > Claude in Chrome était déconnecté. Oui c'est normal, c'est pas possible, les test s'effectue avec la session chrome ouvert sur l'ordinateur, c'est juste la 50eme fois que je le dis..
 
 (21.11 : le test en ligne passe par la session locale t3-test-chrome, dans son Chrome du PC, après chaque mise en ligne.)
+
+> Combien de % ? On peut enlever des test si ça apporte rien et créé juste de la lenteur en mise en prod
+
+(21.11 : D409.)
