@@ -15,7 +15,6 @@ vi.mock('../../src/services/aiClient', () => ({ AiClient: { run: vi.fn() } }));
 import { destinationsPourRequete } from '../../src/components/recherche/modele';
 import { CommandPalette, type CommandGroup } from '../../src/ui/CommandPalette';
 import { BancCalendrier, etatBrasseur } from '../../src/design/CalendrierPreview';
-import { ajouterJours, etiquetteS, lundiDe } from '../../src/domain/calendrier';
 import type { CreativeItem } from '../../src/types';
 import { plusMenuFor } from '../../src/domain/plusEcran';
 
@@ -72,14 +71,14 @@ describe('k1 · ⌘K propose le Carnet quand on tape', () => {
 
 describe('k1 · Calendrier : la fête et l’agenda restent au Calendrier', () => {
   const JOUR = '2026-11-16';
-  const S49 = ajouterJours(lundiDe(JOUR), 14);
 
   it('feuille d’une fête : pas de « Plus de détails › » (elle n’a pas d’autre écran ; le nom et le montant restent dans la feuille)', () => {
     const fete = vi.fn();
     render(<BancCalendrier aujourdhui={JOUR} sansChrome callbacks={{ onPoserFete: fete }} />);
     fireEvent.click(document.querySelector('button[data-plus="fetes"]')!);
     const d = within(screen.getByRole('dialog', { name: 'Fêtes' }));
-    fireEvent.click(within(d.getByRole('group', { name: 'Semaine' })).getByRole('button', { name: new RegExp(`^${etiquetteS(S49)},`) }));
+    // D404 : à l'ajout, plus de carrousel de semaines ; l'horizon (« Quand ») pose le début.
+    fireEvent.click(within(d.getByRole('group', { name: 'Quand' })).getAllByRole('button')[1]);
     expect(d.queryByRole('button', { name: 'Plus de détails ›' })).toBeNull();
     expect(fete).not.toHaveBeenCalled();
   });

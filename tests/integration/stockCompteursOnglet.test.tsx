@@ -124,20 +124,22 @@ describe('filtres du stock (pastilles, ligne de filtre, Recompter)', () => {
     expect(screen.getByRole('status', { name: 'Filtre en cours' })).toHaveTextContent('Filtre Houblons et recherche « malt »');
   });
 
-  it('un comptage de Recompter met le stock à la quantité lue (virgule ou point) et écrit un mouvement « comptage » ; un champ vide n\'écrit rien', async () => {
+  // F2 (D396, 21.11) : un champ laissé vide = « comme prévu » (la quantité connue) ; le bouton du pied devient « Compter le reste du rayon comme prévu : N articles » ;
+  // chaque ligne du rayon devient un comptage daté. Remplace « un champ vide n'écrit rien » (Enregistrer 1 comptage).
+  it('un comptage de Recompter met le stock à la quantité lue (virgule ou point), écrit un mouvement « comptage » ; un champ vide vaut « comme prévu » (stock inchangé)', async () => {
     render(<Catalogue/>);
     fireEvent.click(await screen.findByRole('tab', { name: 'Recompter' }));
     const vue = await screen.findByTestId('recompter');
     const rayon = within(vue).getByRole('region', { name: 'Malts' });
     fireEvent.click(within(rayon).getByRole('button', { name: 'Compter' }));
     fireEvent.change(within(rayon).getByLabelText('Il en reste, Malt Pilsner'), { target: { value: '1,5' } });
-    fireEvent.click(within(rayon).getByRole('button', { name: 'Enregistrer 1 comptage' }));
+    fireEvent.click(within(rayon).getByRole('button', { name: /^Compter le reste du rayon comme prévu : \d+ articles?$/ }));
     await waitFor(() => expect(StorageService.getStocks().rawMaterials.find(r => r.ref === 'pils')?.currentStock).toBe(1.5));
     expect(StorageService.getStocks().rawMaterials.find(r => r.ref === 'pale')?.currentStock).toBe(18);
     const mv = StorageService.getStockMovements().filter((m: any) => m.reasonCode === 'comptage');
-    expect(mv).toHaveLength(1);
-    expect(mv[0]).toMatchObject({ stockItemRef: 'pils', newStock: 1.5, delta: -0.5 });
-    expect(await within(vue).findByRole('button', { name: /^Malts : 4 articles, 1 compté$/ })).toBeVisible();
+    expect(mv.find((m: any) => m.stockItemRef === 'pils')).toMatchObject({ newStock: 1.5, delta: -0.5 });
+    expect(mv.filter((m: any) => m.delta !== 0)).toHaveLength(1); // seul l'écart tapé bouge le stock ; le reste du rayon est « comme prévu »
+    expect(await within(vue).findByRole('button', { name: /^Malts : 4 articles, \d compt/ })).toBeVisible();
   });
 
   it('Autres stocks : le sucre est rangé une fois (dans Malts), l\'Emballage est présent', async () => {

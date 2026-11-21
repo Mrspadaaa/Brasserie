@@ -32,7 +32,8 @@ export default defineConfig({
     { find: './brewerHopAdviceSemanticSource4.js', replacement: fileURLToPath(new URL('./src/services/hopV55/brewerHopAdviceSemanticSource4.ts', import.meta.url)) },
     { find: /^\.\.\/\.\.\/domain\/(.+)\.js$/, replacement: `${fileURLToPath(new URL('./src/domain/', import.meta.url))}$1.ts` },
     { find: /^\.\.\/\.\.\/\.\.\/functions\/src\/(.+)\.js$/, replacement: `${fileURLToPath(new URL('./functions/src/', import.meta.url))}$1.ts` },
-    { find: '../data/seedData', replacement: fileURLToPath(new URL('./src/data/seedData.example.ts', import.meta.url)) },
+    // seedData.ts (données réelles) est hors dépôt : tout import du fichier, relatif ou absolu, lit le gabarit versionné.
+    { find: /^.*\/data\/seedData(?:\.ts)?$/, replacement: fileURLToPath(new URL('./src/data/seedData.example.ts', import.meta.url)) },
     { find: './yeastCompanion.js', replacement: fileURLToPath(new URL('./src/domain/yeastCompanion.ts', import.meta.url)) },
     { find: './brewerTools.js', replacement: fileURLToPath(new URL('./src/domain/brewerTools.ts', import.meta.url)) },
     { find: './financeContext.js', replacement: fileURLToPath(new URL('./src/domain/finance/assistantContext.ts', import.meta.url)) }

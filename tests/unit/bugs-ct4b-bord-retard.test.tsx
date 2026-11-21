@@ -18,7 +18,7 @@ vi.mock('../../src/services/storage', () => ({
   },
 }));
 vi.mock('../../src/services/financeService', () => ({
-  FinanceService: { getProfile: () => ({ id: 'current', canton: 'FR', legalForm: 'sole-proprietor', vatRegistered: false, accounting: 'simplified' }), getPayments: () => [] },
+  FinanceService: { getProfile: () => ({ id: 'current', canton: 'FR', legalForm: 'sole-proprietor', vatRegistered: false, accounting: 'simplified' }), getPayments: () => [], getPlans: () => [], getAssets: () => [] },
 }));
 
 const evenement = (id: string, title: string, date: string, status: 'todo' | 'done' = 'todo') =>

@@ -14,7 +14,7 @@ vi.mock('../../src/services/storage', () => ({
   },
 }));
 vi.mock('../../src/services/financeService', () => ({
-  FinanceService: { getProfile: () => ({ id: 'current', canton: 'FR', legalForm: 'sole-proprietor', vatRegistered: false, accounting: 'simplified' }), getPayments: () => [] },
+  FinanceService: { getProfile: () => ({ id: 'current', canton: 'FR', legalForm: 'sole-proprietor', vatRegistered: false, accounting: 'simplified' }), getPayments: () => [], getPlans: () => [], getAssets: () => [] },
 }));
 
 // AM-56 (08.11) : un sachet de levure périmé était brassé sans alerte. Le champ DDM et « Périmé depuis N j » existent dans le Stock (8c1490eb2) ;

@@ -17,7 +17,7 @@ vi.mock('../../src/services/storage', () => ({
   },
 }));
 vi.mock('../../src/services/financeService', () => ({
-  FinanceService: { getProfile: () => ({ id: 'current', canton: 'FR', legalForm: 'sole-proprietor', vatRegistered: false, accounting: 'simplified' }), getPayments: () => [] },
+  FinanceService: { getProfile: () => ({ id: 'current', canton: 'FR', legalForm: 'sole-proprietor', vatRegistered: false, accounting: 'simplified' }), getPayments: () => [], getPlans: () => [], getAssets: () => [] },
 }));
 
 const mount = (extra: Record<string, unknown> = {}) => render(<DashboardTab batches={[]} transactions={[]} stocks={{ rawMaterials: [], cleaning: [] }}

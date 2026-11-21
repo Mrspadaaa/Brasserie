@@ -131,7 +131,8 @@ describe('Penser comme un brasseur : alpha, rôle, recette vide construite', () 
     for (const b of c.amerisants) {
       expect(b.moment).toBe('b60');
       expect(b.alpha!.value).toBeGreaterThanOrEqual(10);
-      expect(['amérisant', 'double']).toContain(b.role.value);
+      // D403 (21.11) : un houblon du stock à α ≥ 10 % amérise même classé aromatique (Citra) ; il reste proposé à l'arôme.
+      expect(['amérisant', 'double', 'aromatique']).toContain(b.role.value);
       expect(Math.abs(b.ibu!.value - 60)).toBeLessThanOrEqual(0.5);
     }
     expect(c.preset).toMatchObject({ id: 'stout', timings: ['boil', 'whirlpool'] });

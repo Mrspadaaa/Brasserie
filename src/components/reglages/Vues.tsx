@@ -89,7 +89,7 @@ function LigneIban({ company, onChange, erreur, ibanDeConfig }: { company: AppCo
   const valeur = company.iban || COMPANY_FALLBACK.iban;
   const diag = erreur ? diagnosticIban(valeur) : null;
   /* Le miroir est une seule ligne, comme d3p2 : « CH44 0076 … 4920 1 › » (début et fin) ; les chiffres de contrôle sont surlignés. Le champ entier reste à la saisie. */
-  const compact = ibanCompact(valeur);
+  const compact = ibanCompact(valeur) ?? ''; // aucun IBAN (ni saisi ni de gabarit) : la ligne se rend vide, sans planter
   const groupes = compact.match(/.{1,4}/g) ?? [];
   const court = groupes.length > 4 ? [groupes[0], groupes[1], '…', ...groupes.slice(-2)] : groupes;
   const miroir = court.map((g, gi) => {

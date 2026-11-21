@@ -23,7 +23,8 @@ vi.mock('../../src/services/storage', () => ({
 vi.mock('../../src/services/financeService', () => ({
   FinanceService: {
     getProfile: () => ({ id: 'current', canton: 'FR', legalForm: 'sole-proprietor', vatRegistered: false, accounting: 'simplified' }),
-    getPayments: () => []
+    getPayments: () => [],
+    getPlans: () => [], getAssets: () => [] // K4 : le point le plus bas se lit sur la prévision de Finances
   }
 }));
 
