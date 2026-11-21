@@ -82,7 +82,7 @@ export function buildFromEmpty(recipe: Recipe, scale: StyleScale) {
   const moment: MomentId | null = timing ? TIMING_TO_MOMENT[timing] : null;
   const doseGL = timing ? POLICY.defaults[timing as keyof typeof POLICY.defaults].doseGL?.central ?? null : null;
   // Un houblon du stock proposé à l’amer reste proposé à l’arôme : l’amérisant est « au choix », l’arôme est son usage premier.
-  const used = new Set(bitter.filter((b) => rangStock(b) !== 0).map((b) => b.key));
+  const used = new Set(bitter.filter((b) => !(b.stock.libre > 0)).map((b) => b.key));
   const aroma = moment && doseGL ? [...q.disponibles, ...q.epuises, ...q.catalogue]
     .filter((r) => !used.has(r.key) && (r.role.value === 'aromatique' || r.role.value === 'double'))
     .sort((a, b) => { const st = stockNommeDabord(a, b); if (st) return st; const ka = quickAddKey(a), kb = quickAddKey(b); for (let i = 0; i < ka.length; i++) if (ka[i] !== kb[i]) return ka[i] - kb[i]; return a.name.localeCompare(b.name, 'fr'); })
