@@ -1,3 +1,75 @@
+# Session 5 — CAL-LENT (21.11)
+
+## État de l'art (L29) : invalidation de style
+- Problème type : **invalidation de style** du navigateur (Blink). Une mutation du DOM (insertion d'un enfant, attribut, classe) marque des
+  éléments « à recalculer » ; la lecture suivante de la géométrie (getBoundingClientRect, offsetHeight, focus) force le recalcul
+  (UpdateStyleAndLayoutTree) avant de répondre. Coût ≈ nombre d'éléments marqués × règles candidates.
+- Mécanisme Blink (Rune Lillesveen, « Style Invalidation in Blink » ; web.dev « Reduce the scope and complexity of style calculations ») :
+  1. Classe, id, attribut changés : ensembles d'invalidation par trait (`.a .b` ne marque que les `.b` sous l'élément) ; un sélecteur
+     dont le sujet n'a aucun trait (`[x] :focus-visible`, `.a *`) marque **tout le sous-arbre**.
+  2. Insertion ou retrait d'un enfant : si le parent porte un drapeau « structurel » (posé pendant le filtrage par tout sélecteur
+     `:nth-*`, `~`, `+`, `:last-child`, `:only-child`, `*-of-type` dont le sujet est universel, p. ex. `.space-y-2 > :not([hidden]) ~
+     :not([hidden])`, testé sur **chaque** élément de la page), Chrome applique l'ensemble global « nth » ou « frère universel » ; si une
+     seule règle de l'app y met une descendance universelle, c'est **tout le sous-arbre du parent** (« allDescendantsMightBeInvalid »).
+  3. `:has()` : invalidation vers le haut, chère si l'argument est large.
+- Remèdes connus, du plus sûr au plus large :
+  a. Sélecteurs structurels universels → classes posées par le code (`cal-pile` au lieu de `space-y`), ou sujet qualifié par une classe.
+  b. Sortir les insertions des parents chargés : surcouches (toast, feuille, menu, panneau) dans un **portail** (`createPortal` vers
+     `document.body`), calques toujours montés (vides ou `hidden` au repos) au lieu d'insérés.
+  c. `contain: layout style` / `content-visibility: auto` : borne la mise en page et les compteurs ; **ne borne pas** l'invalidation de
+     style (Chrome recalcule quand même le sous-arbre marqué) ; `content-visibility: auto` saute le style des parties hors écran.
+  d. Moins d'éléments par semaine (moins d'éléments marqués).
+  e. Glisser : `transform` dans `requestAnimationFrame`, sans rendu React par mouvement ; aucune lecture de géométrie après écriture
+     (pas de mise en page forcée) ; mesurer une fois au début du geste.
+- Décision : mesurer, puis a et b d'abord (cause mesurée) ; c et d seulement si la mesure le demande ; e pour frise et barre.
+  Chaque remède : build de production, `lenteur.mjs` ×3 (médiane) + sonde ; gardé seulement s'il fait gagner.
+
+## Mesures (build de production, 390 tactile, CPU ×4, médiane de 3 ; script `mesure.mjs` du scratchpad session 5)
+| action | base `062b6375f` | + PostCSS `ed6afbc20` | + masque en un chemin (REJETÉ : plus lent) |
+|---|---|---|---|
+| semaine | 296 (tâche 252) | 160 (120) | 392 (284) |
+| frise (glisser) | 456 (356) | 224 (158) | 264 (223) |
+| barre (glisser) | 368 (380) | 152 (116) | 240 (203) |
+| courbe-lecture | 24 | 0 | |
+| courbe-cacher | 112 | 128 | |
+| événement ouvrir | 152 | 104 | |
+| Modifier | 376 (285) | 288 (204) | 296 (210) |
+| semaine (feuille) | 64 | 48 | |
+| Enregistrer | 416 (389) | 200 (165) | 328 (292) |
+Verdicts : base ECHEC (8/7/7) ; PostCSS ECHEC (4/6/5) ; masque ECHEC (7/5/7). Le chemin unique est plus lent (rastérisation du masque ?) : remède rejeté, fichiers remis à ed6afbc20 ; copie dans le scratchpad session 5 « masque-rejete/ ».
+
+## Session 5 : fait
+- `062b6375f` : data-doigt + cal-pile (calendrierTour3 + calendrierEntete 123/123).
+- `ed6afbc20` : **cause principale**. Sonde 2 (retirer les 86 règles structurelles, puis les remettre une à une) : 26 coupables, chacune
+  SEULE suffit : tous les `space-x/y-*` et `divide-*` de Tailwind v3 (`> :not([hidden]) ~ :not([hidden])`) + `.fe-gt>span+span`,
+  `.fe-tk>p>span+span`. Sonde 3 : insérer un enfant ailleurs qu'en dernier coûte tout le sous-arbre du parent (7,8 ms .cal-tab,
+  5,8 ms .cal-frise sans ralenti) ; en dernier ou dans body, 0,03 ms. Remède : plugin PostCSS (`postcss.config.js`) qui réécrit
+  ` > :not([hidden]) ~ :not([hidden])` en ` > :not([hidden]):not(:first-child)` (même marge, même élément ; écart seulement si le 1er
+  enfant porte l'attribut `hidden` : aucun cas sur Production, Stocks, Finances, Calendrier à 390 et 1280, scan). Après : 0,03 ms partout.
+  Captures 390 et 1280 (repos, + volant) : **0 pixel de différence** (comparaison canvas), ouvertes. Calendrier vitest 518/518.
+  Remède « portail » donc inutile (l'insertion ne coûte plus rien) ; `:has()` sondé : négligeable (0,08 ms).
+- Masque (ESSAYÉ PUIS REJETÉ, non commité) : trace avec `--invalidations` : 400 à 750 « StyleRecalc Attribute rect » par geste = les
+  `<rect data-trou>` du masque des fils (deux masques, un rect par trou, re-rendus à chaque mesure). `Frise.tsx` : trous en UN
+  `<path data-trou>` (`cheminTrous`, `boitesDuChemin` exportés) ; lecteurs mis à jour : `calendrierJalonsLies.test.tsx`,
+  `calendrierLotC.test.tsx`, `scripts/agents/vision-calendrier.mjs` (node --check OK). Calendrier vitest 515/515 (30 fichiers).
+- Restant mesuré (trace) : Modifier = `focus` de Radix (FocusScope → focusFirst) force le style de 3 720 éléments : la feuille rend
+  97 puces de semaine × 5 éléments (`cal-f-sem`, FeuilleAjout.tsx l. 262) ; Enregistrer = leur retrait (2 790). Remède suivant :
+  moins d'éléments par puce, ou `content-visibility: auto` sur les puces hors écran (rangée qui défile), mesurer. Frise : `juger`
+  (CalendrierTab, pur JS, 146 ms non minifié, au lâcher) ; `mesurerTraits` (useLayoutEffect sans dépendances, chaque rendu).
+
+## Session 6 : prochaine action, dans l'ordre
+1. Masque : rejeté (mesuré). Piste à mesurer : ne re-rendre les trous que si les fils existent ET ont changé (aujourd'hui mesurerTraits les
+   recalcule à chaque rendu, useLayoutEffect sans dépendances), plutôt que changer leur forme.
+2. Puces de la feuille (Modifier, Enregistrer), puis `juger` au lâcher de la frise ; `lenteur.mjs` jusqu'à LENTEUR CALENDRIER OK ×2.
+3. Rejouer `calendrier.mjs` (PARCOURS CALENDRIER OK), `geste.mjs`, vitest Calendrier, `npm run build`.
+4. **Bugs du coordinateur (après CAL-LENT)** — Brasserie `work/missions/2026-11-21-workflows-app/SYNTHESE.md` § 1 ; pour chacun, une
+   étape de `calendrier.mjs` ROUGE sur tour7 d'abord, fixture ZZ TEST seulement (jamais seedData.ts), un commit par correctif :
+   - B3 / WFR-11 (BUGS-produire.md l. 116) : « Impossible de charger cet écran » sans brassin démarré ; attendu : s'ouvre sur tout état.
+   - B8 / WFP-3, WFP-4 (BUGS-projets.md) : barre lâchée en S46 dessinée en S47 ; la période change seule après un glisser hors fenêtre
+     (et reste après rechargement) ; attendu : la barre va où le doigt la lâche, la période ne bouge que par lui (R9).
+   - B9 / WFP-2 : glisser sur la courbe (vue 6 sem., S47–S52) lit « S31 · 2 août » ; attendu : la lecture reste dans la fenêtre (R4).
+   - B11 / WFV-3 (BUGS-vendre.md) : la vente encaissée du jour absente de la rangée Ventes ; attendu : une chose de sa rangée.
+
 # REPRISE — session 4 (21.11, agent arrêté à ~170 k)
 
 ## Session 4 : fait
