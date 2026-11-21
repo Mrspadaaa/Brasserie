@@ -19,6 +19,12 @@ export function fixturePrincipes(aujourdhui) {
   const entrees = fixtureChaines(aujourdhui).entrees.filter((e) => !retirer.has(e.id));
   const add = (name, id, data) => entrees.push({ name, id, data: { ...data, id } });
   add('creativeItems', 'CR-ZZ-CAVE', { type: 'event', title: NOM_EVENEMENT, status: 'todo', activite: true, date: ajouter(aujourdhui, 2) });
+  // F-NOM (21.11) : le fermenteur porte sa référence (la fiche matériel l'enregistre par `ref` : sans elle, le renommage ne trouve pas l'appareil) ;
+  // un achat passé « ZZ TEST Pompe de brassage » à 420 CHF : le prix proposé du matériel (D2, dernier achat semblable).
+  const ferm = entrees.find((e) => e.name === 'equipment' && e.id === 'E-ZZ-FERM'); if (ferm) ferm.data = { ...ferm.data, ref: 'E-ZZ-FERM' };
+  const pompe = ajouter(aujourdhui, -300);
+  add('transactions', 'T-ZZ-POMPE', { date: pompe, description: 'ZZ TEST Pompe de brassage', vendor: 'ZZ TEST', category: 'materiel', subcategory: '', amountHT: 420, amountTTC: 420, tvaAmount: 0, tvaRate: 0,
+    finance: { version: 1, kind: 'expense', amountCents: 42000, lines: [{ id: 'L-ZZ-POMPE', description: 'ZZ TEST Pompe de brassage', kind: 'equipment', amountCents: 42000 }], paymentStatus: 'paid', paymentDate: pompe, recordedAt: `${pompe}T09:00:00.000Z` } });
   for (const k of [1, 2]) add('recipes', `R-ZZ-IPA-${k}`, { name: `ZZ TEST IPA n° ${k}`, style: 'IPA', volumeL: 100, ingredients: [] });
   return { entrees };
 }
