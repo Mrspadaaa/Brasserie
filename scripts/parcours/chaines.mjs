@@ -28,6 +28,15 @@ const echecs = [];
 const echec = (c, m) => { echecs.push(`${c} : ${m}`); console.log(`  KO  ${c} : ${m}`); };
 const ok = (c, m) => console.log(`  ok  ${c}${m ? ` : ${m}` : ''}`);
 
+// Helpers des étapes « port » : déclarés AVANT le parcours, qui s'exécute au chargement du module (sinon TDZ sur les const).
+/** Libellés (aria-label ou texte) de tout ce qui se touche dans la page, dans l'ordre du document, hors de la fenêtre aussi. */
+const libelles = (s, debut) => s.p.evaluate((d) => [...document.querySelectorAll('button,[role=button],[role=menuitem],[role=option]')]
+  .filter((e) => { const r = e.getBoundingClientRect(); return r.width > 0 && r.height > 0; })
+  .map((e) => (e.getAttribute('aria-label') || e.innerText || '').replace(/\s+/g, ' ').trim()).filter((t) => t.startsWith(d)), debut);
+const MOIS_COURTS = ['janv.', 'févr.', 'mars', 'avr.', 'mai', 'juin', 'juil.', 'août', 'sept.', 'oct.', 'nov.', 'déc.'];
+const moisPlus = (aujourdhui, n) => MOIS_COURTS[(((Number(aujourdhui.slice(5, 7)) - 1 + n) % 12) + 12) % 12];
+const nombre = (t) => Number(String(t).replace(/[’' ]/g, '').replace(',', '.'));
+
 // ───────────── le build ─────────────
 function construire(racine, dehors) {
   const r = spawnSync('npx', ['vite', 'build', '--config', path.join(ICI, 'vite.parcours.config.mjs'), '--outDir', dehors, '--emptyOutDir', '--logLevel', 'error'],
@@ -93,6 +102,25 @@ async function facturer(s) {
   if (await s.visible('OK', {})) await s.toucher('OK', { att: 1200 });
 }
 async function versRecap(s) { for (let i = 0; i < 3; i++) { await s.toucher('Suivant', { prefixe: true }); await sleep(750); } }
+/** Appui long (≥ 650 ms, au même point) sur un élément : touchStart, attente, touchEnd par CDP — un doigt qui reste, comme `usePointeur.ts` (500 ms) l'attend. */
+async function appuiLong(s, txt, o = {}, ms = 700) {
+  const c = await s.trouver(txt, o);
+  if (!c) throw new Error(`introuvable pour l'appui long : « ${txt} » (écran : ${(await s.texte(200))})`);
+  const cdp = await s.p.createCDPSession();
+  await cdp.send('Input.dispatchTouchEvent', { type: 'touchStart', touchPoints: [{ x: c[0], y: c[1] }] });
+  await sleep(ms);
+  await cdp.send('Input.dispatchTouchEvent', { type: 'touchEnd', touchPoints: [] });
+  await cdp.detach().catch(() => {});
+  await sleep(600);
+}
+/** La vente de `n` fois la tuile « 33 cl » au comptoir, payée en espèces. */
+async function venteComptoir33(s, n) {
+  await s.toucher('Actions rapides'); await s.toucher('Vente'); await sleep(900);
+  for (let i = 0; i < n; i++) await s.toucher('33 cl', { contient: true, att: 250 });
+  await s.toucher('Espèces', { att: 500 });
+  await s.toucher('^Encaisser', { regex: true, att: 3000 });
+  for (const f of ['OK', 'Fermer']) { if (await s.visible(f, {})) await s.toucher(f, { i: -1, att: 900 }); }
+}
 
 // ───────────── les étapes ─────────────
 function listeEtapes() { return [
@@ -357,6 +385,258 @@ function listeEtapes() { return [
       if (!/Pompe de transfert/.test(await dit())) return echec('WFA-12', 'la Pompe a quitté le Calendrier alors qu’elle est gardée au prévu');
       ok('WFA-12', 'le geste demande (« aucun achat lié »), « Garder » laisse le plan actif et la Pompe au Calendrier');
     }
+  },
+
+  // ═════════ La file « port » (W0b, 21.11) : les workflows tranchés (D393, D396), rouges sur tour7 et sur HEAD tant que rien n'est porté ═════════
+  {
+    id: 'A2', titre: 'Caisse : l\'appui long sur la tuile 33 cl propose 6 · 12 · 24 ; le toucher simple garde +1 (D393 A2, K5)', fixture: { sansJour: true },
+    async joue(s) {
+      await s.toucher('Actions rapides'); await s.toucher('Vente'); await sleep(900);
+      await appuiLong(s, '33 cl', { contient: true });
+      await s.cap('A2-1-appui-long');
+      const dit = async (n) => s.visible(String(n), { dans: 'button,[role=menuitem],[role=option]' });
+      const manque = []; for (const n of [6, 12, 24]) if (!(await dit(n))) manque.push(n);
+      if (manque.length) return echec('A2', `l'appui long sur « 33 cl » ne propose pas ${manque.join(' · ')} (attendu 6 · 12 · 24) ; panier : ${((await s.texte(1500)).match(/rien dans le panier|\d+ × 33 cl/) ?? ['?'])[0]}`);
+      const g0 = s.gestes();
+      await s.toucher('24', { dans: 'button,[role=menuitem],[role=option]', att: 600 });
+      await s.cap('A2-2-vingt-quatre');
+      if (!/24 × 33 cl/.test(await s.texte(2500))) return echec('A2', 'le choix « 24 » ne pose pas 24 × 33 cl au panier');
+      await s.toucher('33 cl', { contient: true, att: 500 }); // le toucher simple garde +1
+      if (!/25 × 33 cl/.test(await s.texte(2500))) return echec('A2', 'le toucher simple n\'ajoute plus 1 bouteille (attendu 25 × 33 cl)');
+      ok('A2', `24 bouteilles en ${s.gestes() - g0 + 1} geste(s) depuis l'appui long ; +1 au toucher simple`);
+    }
+  },
+  {
+    id: 'B1-CARTE', titre: 'Brassins : la carte du brassin dit le reste à vendre (« 120 × 33 cl · 2 fûts »), la vente le baisse (114), le toucher sur le reste ouvre la vente (D393 B1, K6)', fixture: { sansJour: true },
+    async joue(s) {
+      const carte = async () => { const t = await s.texte(6000); return t.match(/LOT-PA\s*—?\s*(\d+) × 33 cl · (\d+) fûts?/); };
+      await s.onglet('Brassins'); await sleep(1000);
+      await s.cap('B1-1-avant');
+      const a = await carte(); const pb = [];
+      if (!a || Number(a[1]) !== 120 || Number(a[2]) !== 2) pb.push(`la carte de LOT-PA ne dit pas le reste à vendre « 120 × 33 cl · 2 fûts » (F-004 est livré) : « ${(await s.texte(6000)).match(/LOT-PA[^|]{0,60}/)?.[0] ?? 'carte absente'} »`);
+      await venteComptoir33(s, 6);
+      await s.onglet('Brassins'); await sleep(1000);
+      await s.cap('B1-2-apres-vente');
+      const b = await carte();
+      if (!b || Number(b[1]) !== 114) pb.push(`après 6 × 33 cl vendues, la carte ne dit pas 114 × 33 cl (lu : ${b ? `${b[1]} × 33 cl` : 'rien'})`);
+      if (pb.length) return echec('B1', pb.join(' ; '));
+      await s.toucher('114 × 33 cl', { contient: true, att: 1200 });
+      await s.cap('B1-3-reste-touche');
+      if (!/Vendre/.test(await s.texte(3000)) || !(await s.visible('Encaisser', { prefixe: true }))) return echec('B1', 'toucher le reste n\'ouvre pas la vente');
+      ok('B1', 'reste lu sur la carte (120 → 114 × 33 cl · 2 fûts), le toucher ouvre la vente');
+    }
+  },
+  {
+    id: 'E2', titre: 'Mesurer : « 1,0xx prévu » vient de la courbe du lot, « Comme prévu » l\'enregistre d\'un toucher (D396 E2, N5)', fixture: { sansJour: true, cuve: true },
+    async joue(s) {
+      await s.onglet('Brassins'); await sleep(900);
+      await s.toucher('Voir les mesures · B-ZZ-FERM', { prefixe: true }); await sleep(1200);
+      await s.toucher('Mesurer', { prefixe: true, att: 900 });
+      await s.cap('E2-1-mesurer');
+      const t = await s.texte(4000);
+      const prevu = t.match(/(1[.,]\d{3})\s+prévu/);
+      if (!(await s.visible('Comme prévu', { contient: true }))) return echec('E2', `le geste Mesurer ne propose pas « Comme prévu » (prévu lu : ${prevu ? prevu[1] : 'aucun'}) ; boutons : ${(await s.boutons()).slice(-8).join(' · ')}`);
+      const p = prevu ? nombre(prevu[1]) : null;
+      if (p == null || p < 1.010 || p > 1.022) return echec('E2', `« prévu » absent ou hors de la courbe (1,010 à 1,022) : ${prevu ? prevu[1] : 'rien lu'}`);
+      await s.toucher('Comme prévu', { contient: true, att: 1200 });
+      await s.cap('E2-2-enregistre');
+      const lot = (await s.store('batches')).find((b) => b.id === 'B-ZZ-FERM');
+      const dernier = lot?.gravityLog?.at(-1);
+      if ((lot?.gravityLog?.length ?? 0) !== 3 || Math.abs(Number(dernier?.sg) - p) > 0.0006) return echec('E2', `« Comme prévu » n'a pas enregistré ${p} (relevés : ${JSON.stringify(lot?.gravityLog?.map((g) => g.sg))})`);
+      ok('E2', `« ${prevu[1]} prévu » enregistré d'un toucher (3 relevés)`);
+    }
+  },
+  {
+    id: 'N1', titre: 'Recette neuve : l\'ingrédient proposé par le contexte se pose juste d\'un toucher — malt avec une quantité, houblon du stock d\'abord, levure du stock (N1, v02-v06)', fixture: { sansJour: true },
+    async joue(s) {
+      const pb = [];
+      await s.toucher('Actions rapides'); await s.toucher('Recette'); await sleep(800);
+      await s.ecrire('textarea[name=recipe_title_label]', 'ZZ TEST Brune');
+      await s.ecrire('textarea[aria-label="Style de la bière"]', 'American IPA'); await sleep(500);
+      await s.toucher('American IPA'); await sleep(500);
+      await s.toucher('Suivant', { prefixe: true }); await sleep(900);
+      // malt : une quantité qui fait sens (v04)
+      await s.toucher('ZZ TEST Caramünch', { contient: true }); await sleep(700);
+      const masse = await s.p.evaluate(() => document.querySelector('textarea[aria-label^="Masse de ZZ TEST Caramünch"]')?.value ?? null);
+      await s.cap('N1-1-malt');
+      if (masse == null) pb.push('la ligne « ZZ TEST Caramünch » n\'apparaît pas après un toucher');
+      else if (!(nombre(masse) > 0)) pb.push(`le malt du stock entre à ${masse || '0'} kg (une quantité sensée est attendue : le lancement est bloqué sinon)`);
+      await s.toucher('Suivant', { prefixe: true }); await sleep(900);
+      // houblon : ton stock d'abord, dose qui tient l'IBU (v03)
+      const ajouts = await libelles(s, 'Ajouter ');
+      await s.cap('N1-2-houblons');
+      if (!/^Ajouter ZZ TEST Citra/.test(ajouts[0] ?? '')) pb.push(`le houblon proposé en premier n'est pas celui du stock (ZZ TEST Citra, α 12,5) : « ${(ajouts[0] ?? 'aucune proposition').slice(0, 70)} »`);
+      else {
+        const g = nombre((ajouts[0].match(/(\d+(?:[.,]\d+)?)\s*g\b/) ?? [])[1]);
+        if (!(g > 0)) pb.push(`la proposition « ${ajouts[0].slice(0, 60)} » ne porte pas de dose`);
+        await s.toucher(ajouts[0], { prefixe: true, att: 900 });
+        if (!/12[,.]5/.test(await s.texte(5000))) pb.push('l\'α du lot en stock (12,5 %) n\'est pas posé sur la ligne de houblon');
+      }
+      await s.toucher('Suivant', { prefixe: true }); await sleep(900);
+      // levure : la levure du style que tu as, posée d'un toucher (v05)
+      await s.cap('N1-3-levure');
+      const tl = await s.texte(5000);
+      if (!/ton stock d.abord/i.test(tl) || !(await s.visible('Poser', { prefixe: true }))) pb.push('l\'étape Levure ne propose pas « ton stock d\'abord » avec un « Poser »');
+      if (pb.length) return echec('N1', pb.join(' ; '));
+      ok('N1', 'malt avec quantité, houblon du stock d\'abord (α 12,5), levure à « Poser »');
+    }
+  },
+  {
+    id: 'N3', titre: 'Rebrasser : « Tout relier à ton stock » relie les lignes d\'une recette passée d\'un toucher, α du lot posé (N3, v07)', fixture: { sansJour: true, rebrasser: true },
+    async joue(s) {
+      await s.onglet('Brassins'); await sleep(800);
+      await s.toucher('Recettes', { prefixe: true }); await sleep(1000);
+      await s.cap('N3-1-recettes');
+      await s.toucher('ZZ TEST Pale Ale v1', { contient: true }); await sleep(1000);
+      await s.cap('N3-2-recette');
+      if (!(await s.visible('Tout relier', { contient: true }))) return echec('N3', `la recette « ZZ TEST Pale Ale v1 » ne propose pas « Tout relier à ton stock » : ${(await s.texte(900)).match(/ZZ TEST Pale Ale v1[^|]{0,160}/)?.[0] ?? 'recette non ouverte'}`);
+      await s.toucher('Tout relier', { contient: true, att: 1200 });
+      await s.cap('N3-3-reliee');
+      const t = await s.texte(5000);
+      if (!/\d+ reliées?/.test(t)) return echec('N3', 'après « Tout relier », la recette ne dit pas combien de lignes sont reliées');
+      if (!/12[,.]5/.test(t)) return echec('N3', 'l\'α du lot (12,5 %) n\'est pas posé sur le houblon relié (la recette porte 9 %)');
+      ok('N3', 'lignes reliées d\'un toucher, α du lot posé');
+    }
+  },
+  {
+    id: 'N4', titre: 'Fût livré : « Ses 3 fûts sont revenus » rentre d\'un toucher tous les fûts du client, à la date du jour (N4, v11)', fixture: { sansJour: true, retours: true },
+    async joue(s) {
+      await s.onglet('Stocks'); await sleep(800);
+      await s.toucher('Fûts', { dans: 'button,[role=tab]' }); await sleep(900);
+      await s.toucher('Ouvrir le fût F-004'); await sleep(1000);
+      await s.cap('N4-1-fut');
+      if (!(await s.visible('^Ses \\d+ fûts sont revenus', { regex: true }))) return echec('N4', `la fiche du fût F-004 (livré à La Cigogne, 3 fûts dehors) ne propose pas « Ses 3 fûts sont revenus » ; boutons : ${(await s.boutons()).slice(-6).join(' · ')}`);
+      const g0 = s.gestes();
+      await s.toucher('^Ses \\d+ fûts sont revenus', { regex: true, att: 1200 });
+      await s.cap('N4-2-revenus');
+      const auj = (() => { const d = new Date(); return `${String(d.getDate()).padStart(2, '0')}.${String(d.getMonth() + 1).padStart(2, '0')}.${d.getFullYear()}`; })();
+      const futs = await s.store('kegs');
+      const pas = ['F-004', 'F-009', 'F-010'].filter((id) => { const k = futs.find((x) => x.id === id); const h = k?.historique?.at(-1); return !k || k.state === 'livre' || k.clientId || h?.quoi !== 'retour-vide' || h?.date !== auj; });
+      if (pas.length) return echec('N4', `fûts pas rentrés (à laver, sans client, retour daté du ${auj}) : ${pas.join(', ')}`);
+      ok('N4', `les 3 fûts de La Cigogne rentrés en ${s.gestes() - g0} geste, retour du ${auj}`);
+    }
+  },
+  {
+    id: 'K7', titre: 'Conditionner : la feuille propose les fûts qui tiennent le volume, lavage compris (« 2 à laver · marquer propres ») (K7, v10)', fixture: { sansJour: true, garde: true },
+    async joue(s) {
+      await s.onglet('Brassins'); await sleep(800);
+      await s.toucher('Ouvrir le brassin B-ZZ-GARDE'); await sleep(1200);
+      await s.toucher('Conditionner', { contient: true, att: 1200 });
+      await s.cap('K7-1-feuille');
+      const t = await s.texte(4000);
+      if (!/2 à laver · marquer propres?/.test(t)) return echec('K7', `la feuille Conditionner (96 L, 2 fûts propres, 2 à laver) ne dit pas « 2 à laver · marquer propres » ; fûts proposés : ${[...new Set(t.match(/F-00\d/g) ?? [])].join(', ') || 'aucun'}`);
+      await s.toucher('marquer propre', { contient: true, att: 1000 });
+      await s.cap('K7-2-propres');
+      const futs = await s.store('kegs');
+      const mal = ['F-007', 'F-008'].filter((id) => futs.find((k) => k.id === id)?.state !== 'propre');
+      if (mal.length) return echec('K7', `« marquer propres » n'a pas lavé ${mal.join(', ')}`);
+      const apres = await s.texte(4000);
+      const manque = ['F-005', 'F-006', 'F-007', 'F-008'].filter((id) => !apres.includes(id));
+      if (manque.length) return echec('K7', `les quatre fûts ne sont pas proposés ensemble (absents : ${manque.join(', ')})`);
+      ok('K7', 'la ligne « à laver · marquer propres » rend les 4 fûts proposés');
+    }
+  },
+  {
+    id: 'N2', titre: 'Jour J : commencer d\'office, « Tout pesé », eau d\'empâtage calculée pour 67 °C (70 à 78 °C, pas 55) (N2, v09)', fixture: { sansJour: false },
+    async joue(s) {
+      const pb = [];
+      await s.onglet('Brassins'); await sleep(800);
+      await s.toucher('Brasser · B-ZZ-JOUR', { prefixe: true }); await sleep(1800);
+      await s.cap('N2-1-ouverture');
+      const lance = !(await s.visible('Commencer aujourd', { contient: true }));
+      if (!lance) { pb.push('la page du jour attend « Commencer aujourd\'hui » : le brassin du jour ne commence pas d\'office'); await s.toucher('Commencer aujourd', { contient: true }); await sleep(1500); }
+      const t = await s.texte(6000);
+      const bloc = t.slice(Math.max(0, t.indexOf('Eau d’empâtage')), t.indexOf('Enregistrer') > 0 ? t.indexOf('Enregistrer') : undefined);
+      const degres = [...bloc.matchAll(/pose (\d{2}[,.]\d)|(\d{2}[,.]\d)\s*°C/g)].map((m) => nombre(m[1] ?? m[2]));
+      if (!degres.some((d) => d >= 70 && d <= 78)) pb.push(`l'eau d'empâtage n'est pas calculée pour 67 °C (grain 20 kg, 3 L/kg : ≈ 73 °C) : ${degres.length ? `proposée à ${degres.join(' / ')} °C` : '« ?°C », aucune valeur'}`);
+      await s.p.evaluate(() => window.scrollBy(0, 400)); await sleep(400);
+      await s.cap('N2-2-eau-et-pesee');
+      if (!(await s.visible('Tout pesé', { contient: true }))) pb.push('aucun « Tout pesé » pour la pesée du jour');
+      if (pb.length) return echec('N2', pb.join(' ; '));
+      ok('N2', 'commence d\'office, eau ≈ 73 °C, « Tout pesé » présent');
+    }
+  },
+  {
+    id: 'N6', titre: 'Budget d\'un brassin : le coût du litre et la marge par 33 cl se lisent au même endroit (N6)', fixture: { sansJour: true, marge: true },
+    async joue(s) {
+      await s.onglet('Brassins'); await sleep(800);
+      await s.toucher('Ouvrir le brassin B-ZZ-PLAN'); await sleep(1200);
+      await s.toucher('Dossier'); await sleep(800);
+      await s.toucher('Estimer le budget de ce brassin'); await sleep(1500);
+      await s.toucher('Coût du brassin', { contient: true }); await sleep(1500);
+      // la reprise des prix du stock (WF2-8) n'est pas ce que N6 juge : si elle est offerte, on la prend ; sinon le manque reste « marge » ou « CHF / L »
+      if (await s.visible('Reprendre les', { contient: true })) { await s.toucher('Reprendre les', { contient: true }); await sleep(1000); }
+      await s.cap('N6-1-budget');
+      const t = await s.texte(6000);
+      const pb = [];
+      if (!/CHF\s*\/\s*L/.test(t)) pb.push('pas de coût du litre');
+      if (!/marge/i.test(t) || !/par 33 cl/.test(t)) pb.push('aucune marge par 33 cl (tarif « ZZ TEST IPA 33 cl » à 4,80 HT au catalogue)');
+      if (pb.length) return echec('N6', `${pb.join(' ; ')} ; écran : ${t.slice(0, 160)}`);
+      ok('N6', 'coût du litre et marge par 33 cl lus ensemble');
+    }
+  },
+  {
+    id: 'K3-COURSES', titre: 'Courses : le manque d\'un brassin planifié (3 kg de Caramünch pour 0,6 au stock) est dit jusqu\'au prochain brassin, pas « rien cette semaine » (K3)', fixture: { sansJour: true, manques: true },
+    async joue(s) {
+      await s.onglet('Stocks'); await sleep(800);
+      await s.toucher('Courses', { dans: 'button,[role=tab]' }); await sleep(1000);
+      await s.cap('K3-1-courses');
+      const t = await s.texte(5000);
+      if (/rien cette semaine/.test(t) || !/Caramünch/.test(t)) return echec('K3-COURSES', `Courses ne dit pas le manque de « ZZ TEST Caramünch Typ 2 » (brassin « ZZ TEST Brune » dans 9 jours) : ${t.match(/\d+ manquent?[^|]{0,60}/)?.[0] ?? t.slice(120, 260)}`);
+      if (!/2[,.]4\s*kg/.test(t)) return echec('K3-COURSES', 'Courses ne dit pas combien manque (2,4 kg)');
+      ok('K3-COURSES', 'le manque du prochain brassin est dans Courses (2,4 kg de Caramünch)');
+    }
+  },
+  {
+    id: 'K4', titre: 'Une seule caisse : le Bord montre le point le plus bas à venir (−440 CHF), Finances lit le même chiffre (K4)', fixture: { sansJour: true, caisseBasse: true },
+    async joue(s) {
+      await s.onglet('Bord'); await sleep(1200);
+      await s.cap('K4-1-bord');
+      const bord = await s.texte(6000); const pb = [];
+      if (!/plus bas/i.test(bord) || !/440/.test(bord)) pb.push(`le Bord ne montre pas le point le plus bas à venir (−440 CHF) : ${bord.match(/Finances[^|]{0,80}\|?[^|]{0,60}/)?.[0] ?? '…'}`);
+      await s.onglet('Finances'); await sleep(900);
+      await s.toucher('Prévisions', { prefixe: true }); await sleep(1500);
+      await s.cap('K4-2-previsions');
+      if (!/440/.test(await s.texte(6000))) pb.push('Finances › Prévisions ne dit pas le même point bas (−440)');
+      if (pb.length) return echec('K4', pb.join(' ; '));
+      ok('K4', 'Bord et Finances disent le même point le plus bas (−440)');
+    }
+  },
+  {
+    id: 'F2', titre: 'Recompter : rayon par rayon, « ✓ le reste du rayon » d\'un toucher ; les autres rayons restent « non comptés », jamais 0 (F2, N7)', fixture: { sansJour: true, rayons: true },
+    async joue(s) {
+      await s.onglet('Stocks'); await sleep(800);
+      await s.toucher('Recompter'); await sleep(1000);
+      await s.toucher('Compter', { i: 0, att: 900 });
+      await s.cap('F2-1-rayon');
+      if (!(await s.visible('le reste du rayon', { contient: true }))) return echec('F2', `le rayon ouvert ne propose pas « ✓ le reste du rayon » ; boutons : ${(await s.boutons()).slice(-8).join(' · ')}`);
+      await s.toucher('le reste du rayon', { contient: true, att: 1000 });
+      await s.cap('F2-2-rayon-fini');
+      const t = await s.texte(5000);
+      if (!/5\/5 comptés/.test(t)) return echec('F2', `« ✓ le reste du rayon » ne compte pas les 5 articles du rayon Malts (écran : ${t.match(/\d+\/\d+ compt[^|]{0,20}/g)?.join(' · ') ?? t.slice(0, 120)})`);
+      if (!/0\/3 comptés/.test(t)) return echec('F2', 'le rayon Houblons (non touché) ne reste pas « 0/3 comptés »');
+      ok('F2', 'le reste du rayon Malts compté d\'un toucher, Houblons toujours non compté');
+    }
+  },
+  {
+    id: 'C1-RECETTE', titre: 'Recette neuve : l\'horizon se pose d\'un toucher au 1er écran (« 3 mois » → « vers <mois+3> »), plus de carrousel de jours (D393 C1, K1)', fixture: { sansJour: true },
+    async joue(s) {
+      const aujourdhui = new Date().toISOString().slice(0, 10);
+      await s.toucher('Actions rapides'); await s.toucher('Recette'); await sleep(900);
+      await s.ecrire('textarea[name=recipe_title_label]', 'ZZ TEST Brune');
+      await s.cap('C1-1-premier-ecran');
+      let amorce = null;
+      if (!(await s.visible('3 mois', { contient: true }))) {
+        for (const a of ['Au calendrier', 'Quand', 'Date', 'Horizon', 'Échéance', 'Planifier']) if (await s.visible(a, { prefixe: true })) { amorce = a; break; }
+        if (amorce) { await s.toucher(amorce, { prefixe: true }); await sleep(500); }
+      }
+      if (!(await s.visible('3 mois', { contient: true }))) return echec('C1-RECETTE', `le 1er écran de la recette n'offre aucun horizon « 3 mois »${amorce ? ` (même après « ${amorce} »)` : ''} ; boutons : ${(await s.boutons()).slice(-8).join(' · ')}`);
+      await s.toucher('3 mois', { contient: true, att: 1000 });
+      await s.cap('C1-2-trois-mois');
+      const attendu = moisPlus(aujourdhui, 3);
+      if (!new RegExp(`vers\\s+${attendu.replace('.', '\\.')}`, 'i').test(await s.texte(6000))) return echec('C1-RECETTE', `« vers ${attendu} » n'apparaît pas après « 3 mois »`);
+      ok('C1-RECETTE', `« 3 mois » → « vers ${attendu} » au 1er écran`);
+    }
   }
 ]; }
 
@@ -368,7 +648,7 @@ async function jouer(dir) {
     for (const e of listeEtapes()) {
       if (seules && !seules.includes(e.id)) continue;
       console.log(`${e.id} — ${e.titre}`);
-      const s = await pageNeuve(banc, fixtureChaines(aujourdhui, { sansJour: e.id !== 'WF2-1' }).entrees, sortie);
+      const s = await pageNeuve(banc, fixtureChaines(aujourdhui, { sansJour: e.id !== 'WF2-1', ...(e.fixture ?? {}) }).entrees, sortie);
       s.banc = banc;
       try {
         await s.demarrer();
