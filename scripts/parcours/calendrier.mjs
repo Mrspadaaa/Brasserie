@@ -114,6 +114,26 @@ async function jouer(dir) {
       for (let k = 1; k <= pas; k++) { await cdp.send('Input.dispatchTouchEvent', { type: 'touchMove', touchPoints: pt(x0 + ((x1 - x0) * k) / pas, y0 + ((y1 - y0) * k) / pas) }); await sleep(16); }
       await sleep(60); await cdp.send('Input.dispatchTouchEvent', { type: 'touchEnd', touchPoints: [] }); await sleep(700);
     }
+    /** La fenêtre de la frise : première et dernière semaine, largeur de colonne, bords. */
+    const fenetreLue = () => p.evaluate(() => {
+      const s = [...document.querySelectorAll('[data-bande-semaines] [data-semaine]')]; const f = document.querySelector('[data-frise]')?.getBoundingClientRect();
+      const col = s.length > 1 ? s[1].getBoundingClientRect().x - s[0].getBoundingClientRect().x : 26;
+      const l = Math.max(0, f?.left ?? 0), r = Math.min(innerWidth, f?.right ?? innerWidth);
+      return { col, left: l, right: r, txt: `S${s[0]?.getAttribute('data-semaine')}–S${s.at(-1)?.getAttribute('data-semaine')} (${s.length} col. de ${col.toFixed(1)} px, ${Math.round(l)}–${Math.round(r)})` };
+    });
+    /**
+     * Le point de prise d'une barre `b` ([cx, cy, w, h]) et celui du lâcher, pour la glisser de `n` colonnes sans que le doigt entre dans la
+     * bande de défilement (R7 : 40 px de chaque bord de la frise ; y lâcher le doigt fait défiler la fenêtre, comme le veut la frise B).
+     * Prise au centre moins 10 px si possible, sinon décalée dans la barre (6 px de son bord au moins) ; marge de 8 px avant la bande.
+     */
+    const prise = (b, n, f) => {
+      const BANDE = 40 + 8, dx = n * f.col, gauche = b[0] - b[2] / 2 + 6, droite = b[0] + b[2] / 2 - 6;
+      let x0 = b[0] - Math.min(b[2] / 2 - 6, 10);
+      if (x0 + dx > f.right - BANDE) x0 = f.right - BANDE - dx;
+      if (x0 + dx < f.left + BANDE) x0 = f.left + BANDE - dx;
+      x0 = Math.max(gauche, Math.min(droite, x0));
+      return [x0, x0 + dx];
+    };
     const labelDe = (prefixe) => p.evaluate((t) => { const e = [...document.querySelectorAll('[aria-label]')].find((x) => x.getAttribute('aria-label').startsWith(t) && x.getBoundingClientRect().width > 0); return e ? e.getAttribute('aria-label') : null; }, prefixe);
     const semaineDe = (l) => { const m = /, S(\d+)/.exec(l ?? ''); return m ? Number(m[1]) : null; };
     const fermer = async () => { for (const t of ['Fermer', '×']) { if (await visibleParTexte(t).catch(() => null)) { await toucher(t).catch(() => {}); } } };
@@ -192,12 +212,14 @@ async function jouer(dir) {
         const c = await point(`[aria-label^="${titre},"]`);
         await p.evaluate((t) => { document.querySelector(`[aria-label^="${t},"]`)?.scrollIntoView({ block: 'center' }); }, titre);
         const c2 = await point(`[aria-label^="${titre},"]`);
-        await glisser([c2[0] - Math.min(c2[2] / 2 - 6, 10), c2[1]], [c2[0] - Math.min(c2[2] / 2 - 6, 10) + semaines * colonne, c2[1]]);
+        const f0 = await fenetreLue();
+        const [x0, x1] = prise(c2, semaines, { ...f0, col: colonne });
+        await glisser([x0, c2[1]], [x1, c2[1]]);
         const apres = await labelDe(`${titre},`); const sb = semaineDe(apres);
         const dif = sb === null ? null : ((sb - sa) + 53) % 53;
         const voulu = semaines < 0 ? 53 + semaines : semaines;
         const bon = dif !== null && Math.abs(dif - voulu) <= 1;
-        bon ? ok(nom, `« ${titre} » S${sa} → S${sb}`) : echec(nom, `« ${titre} » glissé de ${semaines} semaines (${Math.round(semaines * colonne)} px) : S${sa} → S${sb ?? '(absent)'} (${dif} au lieu de ${voulu}±1) ; avant « ${avant?.slice(0, 60)} », après « ${apres?.slice(0, 60) ?? 'absent'} »`);
+        bon ? ok(nom, `« ${titre} » S${sa} → S${sb}`) : echec(nom, `« ${titre} » glissé de ${semaines} semaines (${Math.round(semaines * colonne)} px, doigt ${Math.round(x0)} → ${Math.round(x1)}) : S${sa} → S${sb ?? '(absent)'} (${dif} au lieu de ${voulu}±1) ; fenêtre avant ${f0.txt}, après ${(await fenetreLue()).txt} ; avant « ${avant?.slice(0, 60)} », après « ${apres?.slice(0, 60) ?? 'absent'} »`);
         return { sa, sb, bon };
       }
       const passe = await essai('Hefe', -4, 'glisser une barre 4 semaines au passé');
@@ -580,7 +602,7 @@ async function jouer(dir) {
                 if (window.__G3_SEMAINE && b[k].getAttribute('data-semaine') !== window.__G3_SEMAINE) continue;
                 /* la case est vide sous tout le doigt, diagonales comprises : Chrome ajuste un toucher vers la cible voisine (touch adjustment).
                    21.11 : en S2 (3 mois), le point était à 2 px en diagonale de la zone de la poignée de « Sols : colle et joints »
-                   (.cal-grip::before, 12 px hors de la barre) ; la croix de 5 points la manquait, le toucher la prenait. Grille 7 × 5. */
+                   (.cal-grip::before, alors 12 px hors de la barre ; 22 px depuis R3) ; la croix de 5 points la manquait, le toucher la prenait. Grille 7 × 5. */
                 const pas = [-22, -15, -8, 0, 8, 15, 22].flatMap((dx) => [-12, -6, 0, 6, 12].map((dy) => [dx, dy]));
                 if (pas.some(([dx, dy]) => document.elementFromPoint(x + dx, y + dy) !== lane)) continue;
                 return { x, y, n: Number(b[k].getAttribute('data-semaine')) };
@@ -666,15 +688,16 @@ async function jouer(dir) {
             const sa = semaineDe(await labelDe('ZZ TEST Horizon,'));
             if (sa === null) echec('C1-GLISSER', `« ZZ TEST Horizon » posée le ${neuf.data.date} mais absente de la frise : sa semaine ne se règle pas au glisser`);
             else {
-              const col = await p.evaluate(() => { const b = [...document.querySelectorAll('[data-bande-semaines] [data-semaine]')]; return b.length > 1 ? b[1].getBoundingClientRect().x - b[0].getBoundingClientRect().x : 26; });
-              await p.evaluate(() => document.querySelector('[aria-label^="ZZ TEST Horizon,"]')?.scrollIntoView({ block: 'center' }));
+              await p.evaluate(() => document.querySelector('[aria-label^="ZZ TEST Horizon,"]')?.scrollIntoView({ block: 'center' })); await sleep(300);
+              const f0 = await fenetreLue();
               const b = await point('[aria-label^="ZZ TEST Horizon,"]');
-              const x0 = b[0] - Math.min(b[2] / 2 - 6, 10);
-              await glisser([x0, b[1]], [x0 - col, b[1]]);
+              const [x0, x1] = prise(b, -1, f0);
+              await cap('09c-c1-avant');
+              await glisser([x0, b[1]], [x1, b[1]]);
               const sb = semaineDe(await labelDe('ZZ TEST Horizon,'));
               await cap('09c-c1-glisse');
               (sb !== null && ((sa - sb + 53) % 53) === 1) ? ok('C1-GLISSER', `« 3 mois » → vers ${m}, posée S${sa}, glissée en S${sb}, sans carrousel`)
-                : echec('C1-GLISSER', `glissée d'une semaine vers la gauche : S${sa} → S${sb ?? '(absente)'}`);
+                : echec('C1-GLISSER', `glissée d'une semaine vers la gauche : S${sa} → S${sb ?? '(absente)'} ; doigt ${Math.round(x0)} → ${Math.round(x1)} ; fenêtre avant ${f0.txt}, après ${(await fenetreLue()).txt}`);
             }
             await annulerSiPossible();
           }

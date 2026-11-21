@@ -254,7 +254,14 @@
 .ent-seg.ent-seg--5 button { padding: 0; }
 /* D385 : la bande d'un axe en jours (B : « S47 » puis lettre et numéro), dépliée (C) ou en mois ; une colonne par colonne de la frise */
 .ent-bj { display: grid; grid-template-columns: repeat(var(--n), minmax(0, 1fr)); grid-template-rows: 18px 28px; height: 46px; border-bottom: 1px solid rgb(var(--cave-800)); }
-.ent-bj--deplie { grid-template-rows: 18px 30px; height: 48px; }
+/* D406 (21.11, « il faudrait des tailles fix car SI non ça fait bouger le calendrier ») : la semaine dépliée tient dans la hauteur de la
+   bande des semaines (29 px, comme .ent-bd) : rien ne bouge dessous. Titre « replier » sur 12 px, jours en chiffres (la lettre reste dans
+   l'aria-label, jourEntier), les semaines voisines centrées. */
+.ent-bj--deplie { grid-template-rows: 12px 16px; height: 29px; }
+.ent-bj--deplie .ent-bj-t, .ent-bj--deplie .ent-bj-t small { font-size: 11px; line-height: 12px; }
+.ent-bj--deplie .ent-bj-j { justify-content: center; font-size: 12.5px; }
+.ent-bj--deplie .ent-bj-j small { display: none; }
+.ent-bj--deplie .ent-bj-s { padding-top: 0 !important; align-self: center; }
 .ent-bj--mois { grid-template-rows: 30px; height: 30px; }
 .ent-bj button { min-width: 0; padding: 0; background: none; border: 0; color: inherit; font: inherit; -webkit-touch-callout: none; user-select: none; -webkit-user-select: none; }
 .ent-bj-t { text-align: left; padding-left: 4px !important; font-size: 13px; font-weight: 700; color: rgb(var(--cave-50)); border-left: 1.5px solid rgb(var(--cave-700)) !important; white-space: nowrap; overflow: hidden; line-height: 18px; }
