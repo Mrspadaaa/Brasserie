@@ -156,8 +156,11 @@ function listeEtapes() { return [
       await s.cap('B2-2-apres');
       const t = await s.texte(8000);
       if (/Écran indisponible/.test(t)) return echec('B2', `« Écran indisponible » (${s.erreurs[0] ?? 'sans erreur lue'})`);
-      if (!/ZZ TEST IPA/.test(t) || !/Commencer aujourd/.test(t)) return echec('B2', `la page du jour de brassage ne s'ouvre pas (écran : ${t.slice(0, 160)})`);
-      ok('B2', 'la page du jour de brassage s\'ouvre (Conduite, « Commencer aujourd’hui »)');
+      // N2 (21.11) : plus de « Commencer aujourd'hui » ; le jour J s'ouvre sur la Conduite (« Maintenant · relevé dû », « Terminer et continuer »)
+      // et ne pose son début qu'au premier vrai geste. Un brassin planifié dans dix jours s'ouvre donc, intact, sans rien commencer.
+      if (!/ZZ TEST IPA/.test(t) || !/Conduite/.test(t) || !/Terminer et continuer/.test(t)) return echec('B2', `la page du jour de brassage ne s'ouvre pas (écran : ${t.slice(0, 160)})`);
+      if (/Commencer aujourd/.test(t)) return echec('B2', 'l\'ancien « Commencer aujourd’hui » est revenu (N2 le retire)');
+      ok('B2', 'la page du jour de brassage s\'ouvre (Conduite, « Terminer et continuer », sans « Commencer aujourd’hui »)');
     }
   },
   {
@@ -274,8 +277,13 @@ function listeEtapes() { return [
       await recetteNeuve(s);
       await s.toucher('Suivant', { prefixe: true }); await sleep(700);
       await s.toucher('Suivant', { prefixe: true }); await sleep(800);
-      await s.ecrire('textarea[placeholder="Chercher une levure"]', 'US-05'); await sleep(900);
-      await s.toucher('ZZ TEST US-05', { contient: true }); await sleep(900);
+      // N1 levure (21.11) : la levure du stock « ZZ TEST US-05 » est reliée au catalogue (fiche SafAle US-05) ; elle se pose comme cette fiche, avec
+      // sa dose en sachets. Une levure HORS catalogue est donc ce qui ne se trouve ni au catalogue ni au stock : le texte tapé sans résultat
+      // ouvre « Mon stock ou saisie libre », « Utiliser cette levure » la pose, et la dose se saisit alors en grammes.
+      await s.ecrire('textarea[placeholder="Chercher une levure"]', 'ZZ Levure Libre'); await sleep(900);
+      await s.toucher('Mon stock ou saisie libre', { contient: true }); await sleep(900);
+      await s.cap('DOSE-0-saisie-libre');
+      await s.toucher('Utiliser cette levure', { att: 1200 }); await sleep(900);
       await s.toucher('Saisir la dose en grammes', { i: -1 }); await sleep(600);
       const champ = await s.p.evaluate(() => { const c = document.querySelector('input[aria-label="Dose en grammes"]'); return c ? { focus: document.activeElement === c } : null; });
       if (!champ) return echec('DOSE', 'le « + » de la dose (levure hors catalogue) n\'ouvre aucun champ : geste sans effet');
