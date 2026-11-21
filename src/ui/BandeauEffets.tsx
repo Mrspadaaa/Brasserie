@@ -4,6 +4,7 @@ import { EffetsGeste, useEffetsGeste } from '../services/effetsGeste';
 import { Units } from '../services/units';
 import { nombreFr } from '../domain/nombreAffiche';
 import { GESTES_CONNUS, type ParBase, type RegleConsommation } from '../domain/consommation/gestes';
+import { refCurseurNatif } from './geste';
 
 /**
  * L'onglet du bas après un geste (pe1, forme « lignes serrées » v6a) : chaque article usé, avant → après, et Annuler.
@@ -58,7 +59,7 @@ function FeuilleDoses({ regles, type, onRetenir, onReporter }: { regles: RegleCo
             <span className="min-w-0 truncate text-sm font-semibold text-cave-50">{nom}</span>
             <span className="shrink-0 font-mono text-sm tabular-nums text-cave-50">{v == null ? '—' : v === 0 ? '0 · pas utilisé' : `${nombreFr(v)} ${r.unite}`}</span>
           </div>
-          <input type="range" min={0} max={max} step={step} value={v ?? 0} aria-label={`Dose de ${nom} en ${r.unite}`}
+          <input ref={refCurseurNatif} type="range" min={0} max={max} step={step} value={v ?? 0} aria-label={`Dose de ${nom} en ${r.unite}`}
             onChange={e => setValeurs(o => ({ ...o, [r.id]: Number(e.target.value) }))} className="block w-full accent-ebc-straw" />
         </li>;
       })}
