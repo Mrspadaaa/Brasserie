@@ -125,7 +125,7 @@
 .cn-choisi-ligne .cn-sp { display: flex; flex-direction: column; }
 .cn-avenir-ligne { display: flex; align-items: center; gap: 8px; color: var(--c-zonet); font-weight: 600; }
 .cn-carte { border: 1px solid var(--c-line); border-radius: 16px; background: var(--c-bg); }
-.cn-notes { display: flex; flex-direction: column; border: 1px solid var(--c-line); border-radius: 16px; overflow: hidden; }
+.cn-notes { display: flex; flex-direction: column; border: 1px solid var(--c-line); border-radius: 16px; }
 .cn-notes > * + * { border-top: 1px solid var(--c-line); }
 .cn-note { display: flex; align-items: center; gap: 10px; padding: 8px 4px 8px 12px; min-height: 60px; }
 .cn-note-picto { display: grid; place-items: center; width: 40px; height: 40px; border-radius: 10px; background: var(--c-attbg); color: var(--c-att); flex: none; }
@@ -249,6 +249,12 @@
 .cn-genre-a-faire { background: var(--c-attbg); color: var(--c-att); }
 .cn-origine { padding: 0 12px; }
 .cn-feuille { display: flex; flex-direction: column; gap: 4px; padding: 8px; border: 1px solid var(--c-line2); border-radius: 14px; background: var(--c-bg); box-shadow: 0 6px 20px rgb(0 0 0 / var(--ombre-sheet, .18)); }
+/* CRN-1 : la feuille ··· d'une note flotte sous son « … » (v02-12), par-dessus les notes suivantes ; FeuilleNote la garde entière */
+.cn-notes > :first-child { border-top-left-radius: 15px; border-top-right-radius: 15px; }
+.cn-notes > :last-child { border-bottom-left-radius: 15px; border-bottom-right-radius: 15px; }
+.cn-notes > .cn-feuille-ancre { position: relative; height: 0; border-top: 0; z-index: 6; }
+.cn-feuille-ancre > .cn-feuille { position: absolute; right: 6px; top: -10px; width: min(260px, calc(100% - 12px)); }
+.cn-feuille-ancre[data-haut] > .cn-feuille { top: auto; bottom: 54px; }
 .cn-feuille-item { display: flex; align-items: center; gap: 10px; min-height: 48px; padding: 0 10px; border-radius: 10px; }
 .cn-menu { align-self: flex-end; min-width: 220px; }
 .cn-supprimer { display: flex; flex-direction: column; gap: 10px; padding: 12px; border: 1.5px solid var(--c-rouge); border-radius: 16px; background: var(--c-rougebg); }

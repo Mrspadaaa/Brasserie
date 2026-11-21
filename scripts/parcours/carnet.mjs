@@ -193,6 +193,18 @@ async function jouer(dir) {
     const contenuListe = [nomsListe[0], /Idée\s*\d+/, /Faits\s*5/];
     const ouvrirCarnetDeListe = async (titre) => { await toucher(titre); for (let k = 0; k < 20; k++) { if ((await surListe()) === 'carnet') return; await sleep(300); } throw new Error(`le carnet « ${titre} » ne s'ouvre pas (vue : ${await surListe()})`); };
     const noteBouton = (t) => `Note : ${t}`;
+    /** Visible tel quel, sans défiler : dans l'écran, au-dessus du champ du bas, et c'est lui qui reçoit le doigt (CRN). */
+    const visibleTel = (txt, sel = 'button,[role=menuitem]') => p.evaluate((t, s) => {
+      const n = (x) => String(x).replace(/s+/g, ' ').trim();
+      const e = [...document.querySelectorAll(s)].find((x) => n(x.innerText) === t && x.getBoundingClientRect().width > 0);
+      if (!e) return { ok: false, pourquoi: 'absent' };
+      const r = e.getBoundingClientRect(); const champ = document.querySelector('.cn-champ-zone')?.getBoundingClientRect();
+      const bas = Math.min(innerHeight, champ ? champ.top : innerHeight);
+      const h = document.elementFromPoint(r.x + r.width / 2, Math.min(r.y + r.height / 2, innerHeight - 1));
+      const dessus = !!h && (h === e || e.contains(h));
+      return { ok: r.bottom <= bas + 1 && r.top >= 0 && dessus, pourquoi: `y ${Math.round(r.top)}–${Math.round(r.bottom)}, champ du bas à ${Math.round(bas)}, au doigt : ${h ? h.tagName.toLowerCase() + '.' + String(h.className).slice(0, 24) : 'rien'}` };
+    }, txt, sel);
+    const nbBoutons = (txt) => p.evaluate((t) => [...document.querySelectorAll('button')].filter((b) => b.innerText.replace(/s+/g, ' ').trim() === t && b.getBoundingClientRect().width > 0).length, txt);
 
     // ══════════ 390 ══════════
     await ouvrirPage(390, 844, true);
@@ -298,12 +310,12 @@ async function jouer(dir) {
     await etape('14 supprimer une note puis Annuler', async () => {
       await demarrer(); await versAtelier(); await attendreListe(); await ouvrirCarnetDeListe('Frigo + congel');
       await focaliserChamp(); await taper('acheter des clayettes'); await entree();
-      await toucher('Note : Acheter des clayettes'); await toucher('Supprimer', { exact: true }); await sleep(500); await cap('14a-note-supprimee');
+      await toucher('Note : Acheter des clayettes'); await toucher('Supprimer', { exact: true, sel: '[role=menuitem]' }); await sleep(500); await cap('14a-note-supprimee');
       if (await present('Note : Acheter des clayettes')) throw new Error('la note supprimée est encore là');
       if (!(await present('Annuler', { exact: true, parent: 'Note supprimée' }))) throw new Error('aucun « Annuler » dans la bande « Note supprimée »');
       // le brasseur voit alors deux « Annuler » (celui de « Note ajoutée » reste en haut) : on touche celui de la suppression
       const nAnnuler = await p.evaluate(() => [...document.querySelectorAll('button')].filter((b) => b.innerText.trim() === 'Annuler' && b.getBoundingClientRect().width > 0).length);
-      if (nAnnuler > 1) notes.push(`14 : ${nAnnuler} boutons « Annuler » visibles en même temps après la suppression d'une note (celui de l'ajout reste en haut)`);
+      void nAnnuler; /* CRN-3 : un seul Annuler, contrôlé par son étape */
       await toucher('Annuler', { exact: true, parent: 'Note supprimée' }); await sleep(600); await cap('14b-note-rendue');
       if (!(await present('Note : Acheter des clayettes'))) throw new Error('Annuler ne rend pas la note');
       await verifier('14 supprimer une note puis Annuler', { contient: ['Acheter des clayettes'], carnets: true });
@@ -383,6 +395,24 @@ async function jouer(dir) {
       await sleep(800); await cap('23-finances');
       await verifier('23 dépense aux Finances', { contient: [/Brouwland/] });
     });
+
+    // ══════════ CRN : les défauts de la vision au doigt (critique carnet 21.11, BUGS.md CRN-1 à CRN-21) ══════════
+    await etape('CRN-1 menu d'une note entier, Supprimer visible', async () => {
+      await demarrer(); await versAtelier(); await attendreListe(); await ouvrirCarnetDeListe('Frigo + congel');
+      await focaliserChamp(); await taper('prendre un modèle à 2 portes'); await entree();
+      await toucher('Note : Prendre un modèle à 2 portes'); await sleep(500); await cap('crn01-menu-note');
+      for (const m of ['Modifier', 'Supprimer']) { const v = await visibleTel(m, '[role=menu] [role=menuitem]'); if (!v.ok) throw new Error(`« ${m} » du menu de la note n'est pas visible au doigt (${v.pourquoi})`); }
+      ok('CRN-1', 'Modifier et Supprimer visibles, au-dessus du champ');
+    });
+    await etape('CRN-3 un seul Annuler après la suppression d'une note', async () => {
+      await demarrer(); await versAtelier(); await attendreListe(); await ouvrirCarnetDeListe('Frigo + congel');
+      await focaliserChamp(); await taper('acheter des clayettes'); await entree();
+      await toucher('Note : Acheter des clayettes'); await toucher('Supprimer', { exact: true, sel: '[role=menuitem]' }); await sleep(600); await cap('crn03-un-annuler');
+      const n = await nbBoutons('Annuler');
+      if (n !== 1) throw new Error(`${n} boutons « Annuler » visibles après la suppression d'une note`);
+      ok('CRN-3', 'un seul Annuler, celui de « Note supprimée »');
+    });
+    // CRN-suite
 
     // ══════════ thèmes et grand écran ══════════
     const theme = async (nom) => { await toucher('Plus : saisie'); await toucher(nom, { exact: true }); await sleep(500); };

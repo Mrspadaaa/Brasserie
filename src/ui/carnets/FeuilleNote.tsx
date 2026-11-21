@@ -27,11 +27,40 @@ export interface FeuilleNoteProps {
   onDeplacer?: (vers: string) => void;
 }
 
+/**
+ * CRN-1 (critique carnet 21.11, G) : la feuille flotte sous le « … » de sa note, par-dessus les notes suivantes (sa maquette v02-12), et se
+ * montre entière : si le champ du bas (ou le bas de l'écran) la coupe, la page défile d'autant ; s'il n'y a plus de quoi défiler, elle
+ * s'ouvre au-dessus. Supprimer, en rouge, n'est jamais caché.
+ */
+function useEntiere(ref: React.RefObject<HTMLDivElement | null>, deps: unknown[]) {
+  const [haut, setHaut] = React.useState(false);
+  React.useLayoutEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+    const limite = () => {
+      const champ = document.querySelector('.cn-champ-zone');
+      const bas = champ ? champ.getBoundingClientRect().top : window.innerHeight;
+      return Math.min(bas, window.innerHeight) - 8;
+    };
+    const trop = el.getBoundingClientRect().bottom - limite();
+    if (trop <= 0) return;
+    let s: HTMLElement | null = el.parentElement;
+    while (s && !(/(auto|scroll)/.test(getComputedStyle(s).overflowY) && s.scrollHeight > s.clientHeight)) s = s.parentElement;
+    if (s) s.scrollTop += trop; else window.scrollBy(0, trop);
+    if (el.getBoundingClientRect().bottom > limite() + 1) setHaut(true);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, deps);
+  return haut;
+}
+
 export function FeuilleNote(p: FeuilleNoteProps) {
   const [vers, setVers] = React.useState(false);
   const autres = p.onDeplacer ? p.carnets ?? [] : [];
+  const ref = React.useRef<HTMLDivElement>(null);
+  const haut = useEntiere(ref, [vers]);
   return (
-    <div className="cn-feuille" role="menu" aria-label={`Note : ${p.note.texte}`}>
+    <div className="cn-feuille-ancre" data-haut={haut || undefined}>
+    <div ref={ref} className="cn-feuille" role="menu" aria-label={`Note : ${p.note.texte}`}>
       {p.aides.noteEnCritere && p.ressembleCritere && p.onPasserCritere && (
         <div className="cn-aide">
           <span className="cn-sp"><Provenance origine="ia" /> Ressemble à un critère · Passer en Ce qui compte</span>
@@ -49,6 +78,7 @@ export function FeuilleNote(p: FeuilleNoteProps) {
       ))}
       <button type="button" role="menuitem" className="cn-feuille-item cn-rouge" onClick={p.onSupprimer}><Trash2 size={18} aria-hidden /> Supprimer</button>
       <button type="button" className="cn-feuille-item cn-mut" onClick={p.onFermer}><X size={18} aria-hidden /> Fermer</button>
+    </div>
     </div>
   );
 }
