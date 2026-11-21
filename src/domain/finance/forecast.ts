@@ -3,6 +3,7 @@ import type { FinanceTransaction, FinancialAsset, FinancialPayment, FinancialPla
 import { estimerBrassinsPlanifies, planBrewBatchId, type ReglagesBrewForecast, budgetsDeRecette, type BudgetRepris } from './brewForecast';
 import { formatCHF, isoDate, isActiveTransaction, paymentState, planInvoiceAllocation, summarizeLedger, todayISO, transactionAmount, transactionDirection, transactionKind } from './ledger';
 import { isUpgradePlan, upgradeReadiness } from './upgrades';
+import { retirerSoldees } from './soldeImpot';
 
 export interface ForecastItem { id: string; date: string; label: string; amountCents: number; direction: 'in' | 'out'; source: 'invoice' | 'plan' | 'recurring' | 'brew' | 'trend' | 'equipment'; category: string; planId?: string; occurrenceId?: string;
   /** Sortie dérivée d'un brassin (d2) : identifiant du brassin, pour ouvrir sa ligne. */
@@ -164,7 +165,9 @@ function prevoirSansReprise(input: { transactions: FinanceTransaction[]; payment
     if (date <= end) items.push({ id: `invoice:${tx.id}`, date, label: state.state === 'unknown' ? `${tx.description} · paiement à confirmer` : tx.description, amountCents: state.remainingCents, direction: transactionDirection(tx, transactions), source: 'invoice', category: tx.category, planId: tx.finance?.planId, occurrenceId: tx.finance?.occurrenceId });
   }
   const derived = input.batches ? estimerBrassinsPlanifies({ batches: input.batches, stockItems: input.stockItems ?? [], transactions, plans, profile, assets: input.assets, asOf, fin: end, reglages: input.brewReglages, reductionImpot: input.brewTaxReduction, ignorerPlanId: input.ignoreUpgradePlanId }) : undefined;
-  if (derived) { items.push(...derived.items); warnings.push(...derived.warnings); avertissements.push(...derived.avertissements); }
+  /* PD-2 : une pièce active qui dit avoir soldé une sortie dérivée (la facture de l'impôt, `finance.soldeIds`) la retire : réelle, elle est seule à compter. */
+  const soldees = new Set(active.filter(t => transactionKind(t) === 'expense').flatMap(t => t.finance?.soldeIds ?? []));
+  if (derived) { items.push(...retirerSoldees(derived.items, soldees)); warnings.push(...derived.warnings); avertissements.push(...derived.avertissements); }
   for (const plan of plans) {
     if (plan.status !== 'active') continue;
     // Le brassin porte ses sorties dérivées (ou n'en a plus : annulé, conditionné, terminé) : son plan « Prévoir » reste lisible, jamais compté.

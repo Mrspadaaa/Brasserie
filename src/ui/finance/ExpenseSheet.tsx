@@ -23,8 +23,10 @@ import { normalize } from '../../services/search';
 import type { DriveProofReceipt } from '../../services/financeDocuments';
 import type { FinanceCategory,StockItem } from '../../types';
 import { FinanceService } from '../../services/financeService';
-import { planOccurrences } from '../../domain/finance/forecast';
+import { planOccurrences,buildForecast } from '../../domain/finance/forecast';
 import { planSoldeParDepense } from '../../domain/venteSuites';
+import { echeanceImpotSoldeePar,estPieceImpot } from '../../domain/finance/soldeImpot';
+import { soldeLeVuPlan } from './soldePrevu';
 import { lineMathCheck, peserPoint, type InvoicePoint } from '../../domain/finance/invoicePoints';
 import { tvaImprimee } from '../depense/tva';
 import { DriveConnection } from './DriveConnection';
@@ -34,7 +36,7 @@ import { lireQrDuFichier,type ResultatQr } from '../../services/qrLecture';
 import { retenirNomBrasseur,traduireLignes } from '../../services/nomsFr';
 import { lireOptions } from '../depense/optionsDuNom';
 import { invoiceTotalProposal,invoiceFieldHints,patchPurchaseDraft,applyScannedDescription,applyScannedPayment } from '../../services/purchasePrefill';
-import { formatCHF } from '../../domain/finance/ledger';
+import { formatCHF,montantChf,todayISO } from '../../domain/finance/ledger';
 import { useCoarsePointer,useKeyboardInset } from '../useViewport';
 import { compterEnGrammes,erreursPoidsManquant,estUnitePiece,pieceSansPoids,poidsDePiece } from '../depense/poidsPiece';
 import { casseUnites,motRelire,chipsDeLecture,compteLiens,articleDeMemeNom,candidatsDuNom,libelleDeLigne,conversionDe,effetStock,etiquetteVoisin,memeProduit,nomAffiche,parentDeLaMouture,phraseRelation,pireStatut,prixAvecMouture,recalculerLecture,sansAlphaDoublon,statutAffiche,voisinEtMarque,type Chip } from '../depense/etat';
@@ -316,8 +318,26 @@ export function ExpenseSheet({onClose,onSaved,initialIntent='expense',existingEq
   const achatsPasses=useMemo<AchatPasse[]>(()=>initialIntent!=='equipment'?[]:(transactions as unknown as FinanceTransaction[]).flatMap(t=>t.finance?.kind==='income'?[]:(t.finance?.lines??[]).filter(l=>l.amountCents>0).map(l=>({libelle:l.description,centimes:l.amountCents,date:String(t.date).slice(0,10),categorie:t.category,ref:(l as {stockItemRef?:string}).stockItemRef}))),[transactions,initialIntent]);
   const prixPropose=initialIntent==='equipment'&&!scan&&draft.amount===undefined&&draft.description.trim()?prixSemblable({nom:draft.description,categorie:draft.category},achatsPasses):null;
   const [prixGarde,setPrixGarde]=useState<{centimes:number;source:string}|null>(null);
-  const planSolde=useMemo(()=>draft.planId?null:planSoldeParDepense(plans,{vendor:draft.vendor,category:draft.category,amountCents:draft.amount?Math.round(draft.amount*100):0}),[draft.planId,draft.vendor,draft.category,draft.amount,plans.length]);
+  const dateSolde=isoDeLaSaisie(draft.date)||undefined;
+  const planSolde=useMemo(()=>draft.planId?null:planSoldeParDepense(plans,{vendor:draft.vendor,category:draft.category,amountCents:draft.amount?Math.round(draft.amount*100):0,dateIso:dateSolde}),[draft.planId,draft.vendor,draft.category,draft.amount,dateSolde,plans.length]);
   useEffect(()=>{if(planSolde&&!lienRefuse.current){setLienAuto(planSolde.id);setDraft(previous=>previous.planId?previous:{...previous,planId:planSolde.id,occurrenceId:undefined});}},[planSolde?.id]);
+  /* PD-2 : UNE règle de rapprochement, celle de la caisse (« ✓ Solde la vente promise »). Le prévu soldé par cette pièce (achat prévu, projet de matériel) ou, pour la facture de l'impôt sur la bière,
+     l'échéance d'impôt que la prévision dérive des brassins : proposé, coché d'office, décochable ; rien n'est lié sans que la ligne le dise. */
+  const CLASSE_SOLDE='flex min-h-11 w-full items-center justify-between gap-2 rounded-panel border border-cave-700 px-3 py-1 text-left text-sm';
+  const planPropose=lienAuto&&draft.planId===lienAuto?selectedPlan:planSolde;
+  const solderPlan=!!planPropose&&draft.planId===planPropose.id;
+  const basculerPlan=()=>{if(!planPropose)return;if(solderPlan){lienRefuse.current=true;setLienAuto(undefined);patch({planId:undefined,occurrenceId:undefined});}else{lienRefuse.current=false;setLienAuto(planPropose.id);patch({planId:planPropose.id,occurrenceId:undefined});}};
+  const [impotRefuse,setImpotRefuse]=useState(false);
+  const pieceImpot=useMemo(()=>estPieceImpot({vendor:draft.vendor,description:draft.description}),[draft.vendor,draft.description]);
+  const echeanceImpot=useMemo(()=>{
+    if(!pieceImpot||apercu)return null;
+    try{const prevision=buildForecast({transactions:transactions as unknown as FinanceTransaction[],payments:FinanceService.getPayments(),plans:FinanceService.getPlans(),profile:FinanceService.getProfile(),assets:FinanceService.getAssets(),asOf:todayISO(),months:13,batches:StorageService.getBatches(),stockItems:[...stocks.rawMaterials,...stocks.cleaning]});
+      return echeanceImpotSoldeePar(prevision.items,{vendor:draft.vendor,description:draft.description,dateIso:dateSolde});}catch{return null;}
+  },[pieceImpot,dateSolde,transactions.length]);
+  const idsImpot=echeanceImpot&&!impotRefuse?echeanceImpot.ids:undefined,clefImpot=(idsImpot??[]).join();
+  useEffect(()=>{setDraft(previous=>(previous.soldeIds??[]).join()===clefImpot?previous:{...previous,soldeIds:idsImpot});},[clefImpot]);
+  const lignePrevu=planPropose?<button type="button" data-suite="prevu" className={`${CLASSE_SOLDE} ${solderPlan?'text-cave-200':'text-cave-400 line-through'}`} aria-pressed={solderPlan} onClick={basculerPlan}><span>{solderPlan?'✓ Solde':'Ne solde pas'} l’achat prévu « {planPropose.title} »</span><span className="shrink-0 font-mono tabular-nums">−{montantChf(planPropose.amountCents/100)} CHF</span></button>
+    :echeanceImpot?<button type="button" data-suite="prevu" className={`${CLASSE_SOLDE} ${impotRefuse?'text-cave-400 line-through':'text-cave-200'}`} aria-pressed={!impotRefuse} onClick={()=>setImpotRefuse(v=>!v)}><span>{impotRefuse?'Ne solde pas':'✓ Solde'} l’impôt prévu « {echeanceImpot.titre} »</span>{echeanceImpot.amountCents>0?<span className="shrink-0 font-mono tabular-nums">−{montantChf(echeanceImpot.amountCents/100)} CHF</span>:null}</button>:null;
   const occurrences=selectedPlan?.recurrence?planOccurrences(selectedPlan,`${new Date().getFullYear()-1}-01-01`,`${new Date().getFullYear()+2}-12-31`):[];
   const patch=(value:Partial<PurchaseDraft>)=>{setDraft(previous=>patchPurchaseDraft(previous,value,swissToday()));};
   /* CT3-52 (f14) : une liste de lignes se calcule sur le brouillon COURANT (`previous`), jamais sur celui du rendu : « pièce » touché puis « Ajouter une ligne » avant le rendu effaçait l'unité posée (`patch({lines:[...draft.lines,…]})` réécrit les lignes du rendu). */
@@ -759,7 +779,7 @@ export function ExpenseSheet({onClose,onSaved,initialIntent='expense',existingEq
       /* `proofSent` ne se pose qu'à un signal sûr : le retour du service (original confirmé dans Drive) ou `drive/in-progress` (plus bas). Jamais avant l'appel. */
       let acked=false;
       if(!pendingId){
-        const saved=await savePurchaseWithProofReceipt(draftEff);if(draft.proofDataUrl)proofSent.current=true;pendingRef.current=true;setPendingId(saved.transactionId);setReceipt(saved.proof);proof=saved.proof;
+        const saved=await savePurchaseWithProofReceipt(draftEff);soldeLeVuPlan(draftEff.planId,draftEff.amount);if(draft.proofDataUrl)proofSent.current=true;pendingRef.current=true;setPendingId(saved.transactionId);setReceipt(saved.proof);proof=saved.proof;
         /* Le fichier part au Drive en arrière-plan (file locale) : aucun reçu à l'écran. Hors ligne, l'écriture en file locale suffit à fermer ; son accusé est attendu hors de la feuille (T5). */
         if(saved.queued){queuedRef.current=true;if(canCloseWithoutAck(saved.transactionId)){watchPurchaseConfirmation(draftEff);acked=true;}}
       }
@@ -1718,7 +1738,7 @@ export function ExpenseSheet({onClose,onSaved,initialIntent='expense',existingEq
     {draft.proofDataUrl&&!busy&&!attached&&!apercu&&!dejaTx?<DriveConnection always={driveAuthError} onConnected={()=>{setDriveAuthError(false);setError('');setDriveTick(t=>t+1);}}/>:null}
   </>;
   const recu=done?<div data-dp="recu" role="status" className="min-w-0 rounded-panel border border-hop/40 bg-hop/5 p-2 text-xs text-cave-200"><p className="flex items-center gap-1.5"><Check size={14} className="shrink-0 text-hop"/><span className="break-words font-mono text-cave-50">{done.fileName??draft.proofFileName}</span></p><p className="flex flex-wrap gap-x-2"><span>{done.folder??'ton Drive'}</span>{receiptSentence(done).link?<a href={receiptSentence(done).link} target="_blank" rel="noopener noreferrer" className="font-semibold text-cave-50 underline underline-offset-2">Ouvrir dans Drive</a>:null}{done.verified===true&&done.bytes?<span>{done.bytes.toLocaleString('fr-CH').replace(/[\s ]/g,' ')} octets · taille vérifiée</span>:null}</p>{restantA_revoir.length?<p className="text-attention">À revoir : {restantA_revoir.join(' · ')}</p>:null}</div>:null;
-  const rubriquesScan=<Rubriques items={[itemQuoi,...itemsRub]}/>;
+  const rubriquesScan=<>{lignePrevu}<Rubriques items={[itemQuoi,...itemsRub]}/></>;
   /* D358 : l'arrondi suisse à 5 centimes est SA ligne neutre (celle que l'enregistrement ajoute, `arrondiDuTotal` : même règle) ; avec elle le détail égale le total et rien n'est signalé. Tout autre écart reste signalé. Elle n'est pas dans le brouillon : rien n'est compté deux fois. */
   const arrondiCents=arrondiDuTotal(draft)||0,sommeCents=draft.lines.reduce((s,l)=>s+(l.amount===undefined?0:Math.round(l.amount*100)),0);
   /* SM (08.11, « Détail 56,80 / 51,80 c'est assez trompeur… On a l'impression que c'est faux alors que c'est juste ») : le pied dit ce que sont les nombres et d'où vient l'écart ; une ligne ajoutée à la main qui l'explique exactement n'est pas une erreur. */
@@ -1768,6 +1788,7 @@ export function ExpenseSheet({onClose,onSaved,initialIntent='expense',existingEq
     {tuiles}{panneaux}
     {lignesBloc}
     <Field label="Pour quoi ?" htmlFor="purchase-description">{descriptionChamp}</Field>
+    {lignePrevu}
     <Rubriques items={itemsRub}/>
     {phraseRecu}
     {/* 18.11 : « cette coche peut être utilisé lors que l'entrée d'une facture à la main aussi » : seulement sans document joint. */}

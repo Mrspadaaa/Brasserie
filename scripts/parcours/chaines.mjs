@@ -19,6 +19,7 @@ const ICI = path.dirname(fileURLToPath(import.meta.url));
 const RACINE = path.resolve(ICI, '..', '..');
 const { lancerBanc, pageNeuve, sleep } = await import(pathToFileURL(path.join(ICI, 'chaines-outils.mjs')).href);
 const { fixtureChaines } = await import(pathToFileURL(path.join(ICI, 'fixtures', 'chaines.mjs')).href);
+const { lecturesChaines } = await import(pathToFileURL(path.join(ICI, 'fixtures', 'lectures.mjs')).href);
 const args = process.argv.slice(2);
 const opt = (n) => { const i = args.indexOf(`--${n}`); return i >= 0 ? args[i + 1] : null; };
 const sortie = path.resolve(args.find((a, i) => !a.startsWith('--') && !['--build', '--ref', '--etape'].includes(args[i - 1])) ?? path.join(os.tmpdir(), 'parcours-chaines'));
@@ -92,6 +93,30 @@ async function leveureCatalogue(s) {
   // tour7 ne liste que la puce du stock « ZZ TEST US-05 » à cette recherche : elle pose la même levure, l'étape juge ensuite ce qui suit
   const cat = await s.trouver('SafAle US-05', { contient: true }).catch(() => null);
   await s.toucher(cat ? 'SafAle US-05' : 'ZZ TEST US-05', { contient: true }); await sleep(900);
+}
+/** PD-2 : « Actions rapides » → « Facture, photo ou PDF » → « Photographier » : la pièce simulée de l'étape est lue (aucun Gemini), la feuille s'ouvre sur la lecture. */
+async function lirePiece(s) {
+  await s.toucher('Actions rapides'); await s.toucher('Facture', { prefixe: true }); await sleep(600);
+  await s.piece('Photographier', { prefixe: true });
+}
+/** PD-2 : Confirmer la lecture, fermer l'accusé s'il reste. */
+async function confirmerPiece(s) {
+  await s.toucher('Confirmer', { prefixe: true, att: 3500 }); await sleep(1500);
+  if (await s.visible('OK', {})) await s.toucher('OK', { att: 1200 });
+}
+/** PD-2 : tout ce que la page dit, textes et étiquettes (un libellé de rangée du Calendrier est une étiquette). */
+function ditPage(s) { return s.p.evaluate(() => [document.body.innerText, ...[...document.querySelectorAll('[aria-label]')].map((e) => e.getAttribute('aria-label'))].join(' | ')); }
+/** PD-2 : le chiffre du Calendrier, « 1 010 CHF à dépenser sans passer sous 0 », en CHF ; null s'il manque. */
+async function aDepenser(s) {
+  await s.onglet('Calendrier'); await sleep(1500);
+  const m = /([\d’'\s  ]+)\s*CHF à dépenser/.exec(await ditPage(s));
+  return m ? nombre(m[1].replace(/[  ]/g, ' ')) : null;
+}
+/** PD-2 : le Calendrier sur 6 mois (menu de période), pour voir ce qui tombe en janvier. */
+async function calendrierSurSixMois(s) {
+  await s.onglet('Calendrier'); await sleep(1200);
+  await s.toucher('période, liste, tri et filtre', { dans: '[aria-label$="période, liste, tri et filtre"]', contient: true }); await sleep(650);
+  await s.toucher('6 mois'); await sleep(900);
 }
 /** Vente de 2 fûts de Pale Ale à La Cigogne (pro, facture QR) jusqu'au panier : « Actions rapides » → « Vente » → puce client → tuile « fût 20 L » ×2. */
 async function panierDeuxFuts(s) {
@@ -396,6 +421,84 @@ function listeEtapes() { return [
       await s.cap('WFA-12-4-calendrier');
       if (!/Pompe de transfert/.test(await dit())) return echec('WFA-12', 'la Pompe a quitté le Calendrier alors qu’elle est gardée au prévu');
       ok('WFA-12', 'le geste demande (« aucun achat lié »), « Garder » laisse le plan actif et la Pompe au Calendrier');
+    }
+  },
+
+  // ═════════ PD-2 (21.11) : une pièce solde son prévu, pour tous les genres, comme la caisse le fait pour la vente (WFD-1, WFD-3, WFD-4) ═════════
+  {
+    id: 'PD2-MALT', lecture: 'facture', titre: 'Facture d\'achat prévu (421,57) : la feuille propose « ✓ Solde l\'achat prévu », décochable ; enregistrée, « Commande de malt −420 » quitte le Calendrier (WFD-3, WFA-15)',
+    async joue(s) {
+      await lirePiece(s);
+      await s.cap('PD2-MALT-1-lue');
+      const sel = '[data-suite="prevu"]';
+      if (!(await s.visible('achat prévu', { dans: sel, contient: true }))) return echec('PD2-MALT', `la feuille ne propose pas « ✓ Solde l'achat prévu » : la facture de 421,57 et la « Commande de malt » (−420) restent côte à côte (écran : ${(await s.texte(300))})`);
+      const ligne = () => s.p.evaluate((q) => (document.querySelector(q)?.innerText ?? '').replace(/\s+/g, ' ').trim(), sel);
+      const avant = await ligne();
+      if (!/^✓ Solde l.achat prévu\s*«\s*ZZ TEST Commande de malt/.test(avant)) return echec('PD2-MALT', `la ligne ne nomme pas la Commande de malt, coche d'office : « ${avant} »`);
+      await s.toucher('achat prévu', { dans: sel, contient: true }); await sleep(400);
+      const decochee = await ligne();
+      if (!/^Ne solde pas/.test(decochee)) return echec('PD2-MALT', `un toucher ne décoche pas la ligne : « ${decochee} »`);
+      await s.toucher('achat prévu', { dans: sel, contient: true }); await sleep(400);
+      if (!/^✓ Solde/.test(await ligne())) return echec('PD2-MALT', 'un second toucher ne la recoche pas');
+      await s.cap('PD2-MALT-2-ligne');
+      await confirmerPiece(s);
+      const pb = [];
+      const tx = (await s.store('transactions')).find((t) => /ZZ-BW-1142/.test(t.description ?? '') || t.finance?.invoiceNumber === 'ZZ-BW-1142');
+      if (!tx) return echec('PD2-MALT', 'la facture n\'est pas enregistrée');
+      if (tx.finance?.planId !== 'P-MALT') pb.push(`la facture n'est pas liée à P-MALT (planId : ${tx.finance?.planId ?? 'aucun'})`);
+      const plan = (await s.store('financialPlans')).find((p) => p.id === 'P-MALT');
+      if (plan?.status !== 'completed') pb.push(`la « Commande de malt » n'est pas soldée (état : ${plan?.status})`);
+      await s.onglet('Calendrier'); await sleep(1800);
+      await s.cap('PD2-MALT-3-calendrier');
+      if (/Commande de malt/.test(await ditPage(s))) pb.push('le Calendrier garde « Commande de malt » (−420) à côté de la facture de 421,57');
+      if (pb.length) return echec('PD2-MALT', pb.join(' ; '));
+      ok('PD2-MALT', 'ligne « ✓ Solde l\'achat prévu » cochée d\'office et décochable ; facture liée à P-MALT, plan soldé, plus de « Commande de malt » au Calendrier');
+    }
+  },
+  {
+    id: 'PD2-POMPE', lecture: 'pompe', titre: 'Facture de matériel payée (pompe 450) : le projet passe dans Réalisés, « Pompe −450 » quitte le Calendrier, la caisse ne baisse pas deux fois (WFD-1)',
+    async joue(s) {
+      const caisse0 = await aDepenser(s);
+      await s.onglet('Bord'); await sleep(500);
+      await lirePiece(s);
+      await s.cap('PD2-POMPE-1-lue');
+      const sel = '[data-suite="prevu"]';
+      if (!(await s.visible('achat prévu', { dans: sel, contient: true }))) return echec('PD2-POMPE', `la feuille ne propose pas « ✓ Solde l'achat prévu » pour le projet « Pompe de transfert » (450) (écran : ${(await s.texte(300))})`);
+      const ligne = await s.p.evaluate((q) => (document.querySelector(q)?.innerText ?? '').replace(/\s+/g, ' ').trim(), sel);
+      if (!/Pompe de transfert/.test(ligne)) return echec('PD2-POMPE', `la ligne ne nomme pas la Pompe de transfert : « ${ligne} »`);
+      await confirmerPiece(s);
+      const pb = [];
+      const caisse1 = await aDepenser(s);
+      await s.cap('PD2-POMPE-2-calendrier');
+      if (/Pompe de transfert/.test(await ditPage(s))) pb.push('le Calendrier garde « Pompe de transfert −450 » en Travaux');
+      if (caisse0 != null && caisse1 !== caisse0) pb.push(`« à dépenser » passe de ${caisse0} à ${caisse1} CHF : les 450 CHF sont comptés deux fois (la pièce payée et le prévu)`);
+      await s.onglet('Stocks'); await sleep(800); await s.toucher('Matériel'); await sleep(900);
+      await s.cap('PD2-POMPE-3-materiel');
+      const t = await s.texte(1500);
+      const venir = /À venir\s*(\d+)/.exec(t)?.[1], faits = /Réalisés\s*(\d+)/.exec(t)?.[1];
+      if (venir !== '0') pb.push(`Matériel dit « À venir ${venir} » : le projet reste à venir (attendu 0)`);
+      if (faits !== '1') pb.push(`Matériel dit « Réalisés ${faits} » (attendu 1)`);
+      if (pb.length) return echec('PD2-POMPE', pb.join(' ; '));
+      ok('PD2-POMPE', `projet réalisé (À venir 0 · Réalisés 1), plus de Pompe au Calendrier, « à dépenser » inchangé (${caisse1} CHF)`);
+    }
+  },
+  {
+    id: 'PD2-IMPOT', lecture: 'impot', titre: 'Facture de l\'impôt sur la bière (OFDF, payée) : elle solde l\'échéance d\'impôt de Papiers (WFD-4)',
+    async joue(s) {
+      await calendrierSurSixMois(s);
+      if (!/Impôt sur la bière/.test(await ditPage(s))) return echec('PD2-IMPOT', 'avant la pièce, le Calendrier sur 6 mois n\'a aucun « Impôt sur la bière » : la fixture ne pose pas l\'échéance à solder');
+      await s.onglet('Bord'); await sleep(500);
+      await lirePiece(s);
+      await s.cap('PD2-IMPOT-1-lue');
+      const sel = '[data-suite="prevu"]';
+      if (!(await s.visible('prévu', { dans: sel, contient: true }))) return echec('PD2-IMPOT', `la feuille ne propose pas de solder l'échéance d'impôt (écran : ${(await s.texte(300))})`);
+      const ligne = await s.p.evaluate((q) => (document.querySelector(q)?.innerText ?? '').replace(/\s+/g, ' ').trim(), sel);
+      if (!/Impôt sur la bière/.test(ligne)) return echec('PD2-IMPOT', `la ligne ne nomme pas l'impôt sur la bière : « ${ligne} »`);
+      await confirmerPiece(s);
+      await calendrierSurSixMois(s);
+      await s.cap('PD2-IMPOT-2-calendrier');
+      if (/Impôt sur la bière/.test(await ditPage(s))) return echec('PD2-IMPOT', 'le Calendrier garde « Impôt sur la bière » en Papiers alors que la facture de l\'impôt est payée');
+      ok('PD2-IMPOT', 'la facture OFDF solde l\'échéance : plus d\'« Impôt sur la bière » en Papiers');
     }
   },
 
@@ -756,7 +859,7 @@ async function jouer(dir) {
     for (const e of listeEtapes()) {
       if (seules && !seules.includes(e.id)) continue;
       console.log(`${e.id} — ${e.titre}`);
-      const s = await pageNeuve(banc, fixtureChaines(aujourdhui, { sansJour: e.id !== 'WF2-1', ...(e.fixture ?? {}) }).entrees, sortie);
+      const s = await pageNeuve(banc, fixtureChaines(aujourdhui, { sansJour: e.id !== 'WF2-1', ...(e.fixture ?? {}) }).entrees, sortie, e.lecture ? { lecture: lecturesChaines(aujourdhui)[e.lecture] } : {});
       s.banc = banc;
       try {
         await s.demarrer();

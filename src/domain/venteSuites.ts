@@ -24,18 +24,35 @@ export function planSoldeParVente(plans: readonly FinancialPlan[], v: { clientId
   return candidats[0] ?? null;
 }
 
-const nom = (s?: string) => (s ?? '').trim().toLocaleLowerCase('fr-CH');
+/** Les mots d'un nom de fournisseur, sans accents ni formes juridiques : « ZZ TEST Brouwland BVBA » → zz, test, brouwland. */
+const FORMES = new Set(['sa', 'sarl', 'gmbh', 'ag', 'bvba', 'bv', 'srl', 'sas', 'ltd', 'inc', 'co', 'de', 'du', 'la', 'le', 'les', 'des', 'et', 'the']);
+const mots = (s?: string): string[] => (s ?? '').normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase().split(/[^a-z0-9]+/).filter(t => t && !FORMES.has(t));
+/** Le même fournisseur, écrit à peine autrement : tous les mots du plus court se retrouvent dans l'autre (« Brouwland » et « Brouwland BVBA »). Un nom vide ne ressemble à rien. */
+const memesMots = (a?: string, b?: string): boolean => { const x = mots(a), y = mots(b); return x.length > 0 && x.length === y.length && x.every(m => y.includes(m)); };
+export const memeFournisseur = (a?: string, b?: string): boolean => {
+  const x = mots(a), y = mots(b);
+  if (!x.length || !y.length) return false;
+  const [court, long] = x.length <= y.length ? [x, y] : [y, x];
+  return court.every(m => long.includes(m));
+};
 /**
- * WFA-15 : la dépense prévue (un plan `out` manuel, actif, non récurrent) que cette facture solde : même fournisseur si le plan en a un, sinon même catégorie ;
- * montant à ±10 %. Un seul candidat, sinon rien (jamais deux soldées d'un coup, jamais une devinette entre plusieurs). Le lien posé s'écrit `finance.planId` :
- * la prévision retire alors le montant prévu et compte la facture (forecast.ts), le malt n'est plus compté deux fois.
+ * PD-2 (21.11) : la dépense prévue qu'une pièce de dépense solde, par la règle de la caisse (`planSoldeParVente`) : le prévu `out` actif ou en projet (manuel ou
+ * matériel, jamais récurrent ni dérivé d'un brassin) du même fournisseur (au plan, sinon la même catégorie), montant à ±10 %. Plusieurs : le plus proche de la date de la
+ * pièce, puis du montant. Jamais deux soldés d'un coup. Proposé avec défaut oui, décochable ; le lien s'écrit `finance.planId`, la prévision retire alors le prévu et compte la pièce.
  */
-export function planSoldeParDepense(plans: readonly FinancialPlan[], d: { vendor?: string; category?: string; amountCents: number }): FinancialPlan | null {
+export function planSoldeParDepense(plans: readonly FinancialPlan[], d: { vendor?: string; category?: string; amountCents: number; dateIso?: string }): FinancialPlan | null {
   if (!(d.amountCents > 0)) return null;
-  const candidats = plans.filter(p => p.direction === 'out' && p.status === 'active' && p.source === 'manual' && !p.recurrence && p.amountCents > 0
-    && Math.abs(p.amountCents - d.amountCents) <= p.amountCents * 0.1
-    && (p.vendor ? nom(p.vendor) === nom(d.vendor) : !!d.category && p.category === d.category));
-  return candidats.length === 1 ? candidats[0] : null;
+  const jour = (j: string) => Date.parse(`${j}T12:00:00Z`);
+  const ref = d.dateIso ? jour(d.dateIso) : null;
+  const ecartDate = (p: FinancialPlan) => (ref === null ? 0 : Math.abs(jour(iso(p.date) ?? d.dateIso!) - ref));
+  // Fournisseur écrit pareil d'abord, puis un sous-ensemble de mots, puis un plan sans fournisseur (la catégorie seule).
+  const rang = (p: FinancialPlan) => (!p.vendor ? 2 : memesMots(p.vendor, d.vendor) ? 0 : 1);
+  const candidats = plans
+    .filter(p => p.direction === 'out' && (p.status === 'active' || p.source === 'equipment' && p.status === 'draft') && (p.source === 'manual' || p.source === 'equipment') && !p.recurrence && p.amountCents > 0
+      && Math.abs(p.amountCents - d.amountCents) <= p.amountCents * 0.1
+      && (p.vendor ? memeFournisseur(p.vendor, d.vendor) : !!d.category && p.category === d.category))
+    .sort((a, b) => rang(a) - rang(b) || (a.category === d.category ? 0 : 1) - (b.category === d.category ? 0 : 1) || ecartDate(a) - ecartDate(b) || Math.abs(a.amountCents - d.amountCents) - Math.abs(b.amountCents - d.amountCents) || a.id.localeCompare(b.id));
+  return candidats[0] ?? null;
 }
 
 /** Le plan soldé par la vente : `completed` s'il est couvert en entier, sinon il reste actif (le reste à venir se lit dans la prévision, par `finance.planId`). */

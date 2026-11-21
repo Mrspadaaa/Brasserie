@@ -57,14 +57,38 @@ describe('WFA-15 : la facture solde la dépense prévue', () => {
   it('même fournisseur, montant à ±10 % : le plan est lié (421,57 pour 420)', () => {
     expect(planSoldeParDepense([plan('P-MALT')], { vendor: 'zz test', category: 'brassage', amountCents: 42157 })?.id).toBe('P-MALT');
   });
-  it('autre fournisseur, montant éloigné, plan récurrent ou équipement : rien', () => {
+  it('autre fournisseur, montant éloigné, plan récurrent, dérivé d\'un brassin ou annulé : rien', () => {
     expect(planSoldeParDepense([plan('P')], { vendor: 'Autre', category: 'brassage', amountCents: 42157 })).toBeNull();
     expect(planSoldeParDepense([plan('P')], { vendor: 'ZZ TEST', amountCents: 60000 })).toBeNull();
     expect(planSoldeParDepense([plan('P', { recurrence: { frequency: 'monthly' } })], { vendor: 'ZZ TEST', amountCents: 42000 })).toBeNull();
-    expect(planSoldeParDepense([plan('P', { source: 'equipment' })], { vendor: 'ZZ TEST', amountCents: 42000 })).toBeNull();
+    expect(planSoldeParDepense([plan('P', { source: 'brew' })], { vendor: 'ZZ TEST', amountCents: 42000 })).toBeNull();
+    expect(planSoldeParDepense([plan('P', { status: 'cancelled' })], { vendor: 'ZZ TEST', amountCents: 42000 })).toBeNull();
   });
-  it('sans fournisseur au plan : la catégorie ; deux candidats : rien (jamais une devinette)', () => {
+  it('sans fournisseur au plan : la catégorie', () => {
     expect(planSoldeParDepense([plan('P', { vendor: undefined })], { category: 'brassage', amountCents: 41000 })?.id).toBe('P');
-    expect(planSoldeParDepense([plan('A'), plan('B')], { vendor: 'ZZ TEST', amountCents: 42000 })).toBeNull();
+    expect(planSoldeParDepense([plan('P', { vendor: undefined })], { category: 'materiel', amountCents: 41000 })).toBeNull();
+  });
+  it('PD-2 : le fournisseur de la facture s\'écrit un peu plus long que celui du plan (formes juridiques, accents)', () => {
+    expect(planSoldeParDepense([plan('P')], { vendor: 'ZZ TEST Brouwland', category: 'brassage', amountCents: 42157 })?.id).toBe('P');
+    expect(planSoldeParDepense([plan('P', { vendor: 'Brouwland' })], { vendor: 'Brouwland BVBA', amountCents: 42157 })?.id).toBe('P');
+    expect(planSoldeParDepense([plan('P', { vendor: 'Brasserie Müller' })], { vendor: 'Brasserie Muller SA', amountCents: 42157 })?.id).toBe('P');
+    expect(planSoldeParDepense([plan('P', { vendor: 'Brouwland' })], { vendor: 'Brouw', amountCents: 42157 })).toBeNull();
+    expect(planSoldeParDepense([plan('P')], { amountCents: 42157 })).toBeNull();
+  });
+  it('PD-2 : un projet de matériel prévu (actif ou en projet) est soldé comme un prévu manuel', () => {
+    const pompe = (o: object = {}) => plan('P-POMPE', { title: 'Pompe de transfert', amountCents: 45000, category: 'materiel', source: 'equipment', vendor: 'ZZ TEST Brewferm', ...o });
+    expect(planSoldeParDepense([pompe()], { vendor: 'ZZ TEST Brewferm', category: 'materiel', amountCents: 45000 })?.id).toBe('P-POMPE');
+    expect(planSoldeParDepense([pompe({ status: 'draft' })], { vendor: 'ZZ TEST Brewferm', category: 'materiel', amountCents: 45000 })?.id).toBe('P-POMPE');
+    expect(planSoldeParDepense([plan('P', { source: 'manual', status: 'draft' })], { vendor: 'ZZ TEST', amountCents: 42000 })).toBeNull();
+  });
+  it('PD-2 : la pompe et la commande de malt partagent « ZZ TEST » : le fournisseur écrit pareil passe avant le sous-ensemble', () => {
+    const pompe = plan('P-POMPE', { title: 'Pompe', amountCents: 45000, category: 'materiel', source: 'equipment', vendor: 'ZZ TEST Brewferm', date: '2026-12-20' });
+    expect(planSoldeParDepense([plan('P-MALT', { amountCents: 45000, date: '2026-11-26' }), pompe], { vendor: 'ZZ TEST Brewferm', category: 'materiel', amountCents: 45000, dateIso: '2026-11-24' })?.id).toBe('P-POMPE');
+  });
+  it('PD-2 : plusieurs candidats, comme à la caisse : le plus proche de la date de la pièce, puis du montant (jamais deux soldés)', () => {
+    const d = { vendor: 'ZZ TEST', amountCents: 42000, dateIso: '2026-11-24' };
+    expect(planSoldeParDepense([plan('LOIN', { date: '2027-02-01' }), plan('PROCHE', { date: '2026-11-26' })], d)?.id).toBe('PROCHE');
+    expect(planSoldeParDepense([plan('A', { amountCents: 43000 }), plan('B', { amountCents: 42100 })], d)?.id).toBe('B');
+    expect(planSoldeParDepense([plan('B'), plan('A')], d)?.id).toBe('A');
   });
 });

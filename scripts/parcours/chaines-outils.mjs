@@ -32,14 +32,34 @@ export async function lancerBanc(dir) {
 const SEL_ACTIF = 'button,[role=button],[role=menuitem],[role=option],[role=tab],a,[data-chose-id],label,summary,li';
 
 /** Une page neuve (contexte jetable) chargée sur la fixture, avec ses gestes. */
-export async function pageNeuve(banc, entrees, sortie) {
+export async function pageNeuve(banc, entrees, sortie, { lecture = null, delaiLecture = 1500 } = {}) {
   const ctx = await banc.nav.createBrowserContext();
   const p = await ctx.newPage();
   await p.setViewport({ width: 390, height: 844, isMobile: true, hasTouch: true, deviceScaleFactor: 1 });
   await p.evaluateOnNewDocument((j) => { if (!localStorage.getItem(`parcours-chaines:fixture`)) localStorage.setItem(`parcours-chaines:fixture`, j); }, JSON.stringify(entrees));
+  /* PD-2 (21.11) : la lecture de pièce est SIMULÉE dans la page (jamais Gemini) et tout ce qui sort de localhost est coupé. */
+  if (lecture) {
+    await p.setRequestInterception(true);
+    p.on('request', (q) => { if (/^(http:\/\/127\.0\.0\.1|data:|blob:)/.test(q.url())) q.continue(); else q.abort(); });
+    await p.evaluateOnNewDocument((lec, delai) => {
+      const vrai = window.fetch.bind(window);
+      window.__ai = [];
+      window.fetch = async (input, init = {}) => {
+        const u = typeof input === 'string' ? input : input.url ?? String(input);
+        if (!/\/aiTask(\?|$)/.test(u)) return vrai(input, init);
+        let task = '?'; try { task = JSON.parse(init.body).data.task; } catch { /* corps illisible */ }
+        window.__ai.push(task);
+        await new Promise((r) => setTimeout(r, delai));
+        const result = task === 'scanInvoice' ? { ok: true, data: JSON.parse(lec), model: 'simule-banc', elapsedMs: delai } : { ok: false, error: 'Banc : tâche non simulée.' };
+        const accept = new Headers(init.headers || {}).get('accept') || '';
+        if (/event-stream/.test(accept)) return new Response('data: ' + JSON.stringify({ result }) + '\n\n', { status: 200, headers: { 'Content-Type': 'text/event-stream' } });
+        return new Response(JSON.stringify({ result }), { status: 200, headers: { 'Content-Type': 'application/json' } });
+      };
+    }, JSON.stringify(lecture), delaiLecture);
+  }
   const erreurs = [];
   p.on('pageerror', (e) => erreurs.push(String(e).slice(0, 200)));
-  p.on('console', (m) => { if (m.type() === 'error' && !/Failed to load resource|favicon/.test(m.text())) erreurs.push(`console: ${m.text().slice(0, 220)}`); });
+  p.on('console', (m) => { if (m.type() === 'error' && !/Failed to load resource|favicon|wasm streaming compile failed|falling back to ArrayBuffer/.test(m.text())) erreurs.push(`console: ${m.text().slice(0, 220)}`); });
   const norm = (s) => String(s ?? '').replace(/\s+/g, ' ').trim();
   const cap = async (nom) => { fs.mkdirSync(sortie, { recursive: true }); await p.screenshot({ path: path.join(sortie, `${nom}.png`) }); };
   const texte = (max = 4000) => p.evaluate((m) => document.body.innerText.replace(/\s+/g, ' ').slice(0, m), max);
@@ -91,6 +111,12 @@ export async function pageNeuve(banc, entrees, sortie) {
     await p.waitForSelector('nav button', { timeout: 90000 }).catch(async () => { await cap('erreur-demarrage').catch(() => {}); throw new Error(`l'application ne démarre pas : ${erreurs.slice(0, 2).join(' | ')}`); });
     await sleep(1200);
   }
+  /** Touche un bouton qui ouvre le sélecteur de fichier et lui donne l'image de la pièce (la lecture simulée répond ensuite). */
+  async function piece(txt, o = {}) {
+    const [fc] = await Promise.all([p.waitForFileChooser({ timeout: 8000 }).catch(() => null), toucher(txt, o)]);
+    if (!fc) throw new Error('aucun sélecteur de fichier');
+    await fc.accept([path.join(ICI, 'fixtures', 'piece-simulee.png')]); await sleep(3500);
+  }
   const onglet = (nom) => toucher(nom, { dans: 'nav button' });
-  return { p, ctx, cap, texte, trouver, toucher, visible, ecrire, boutons, store, attendre, demarrer, onglet, erreurs, gestes: () => gestes, fermer: () => ctx.close() };
+  return { p, ctx, cap, texte, trouver, toucher, visible, ecrire, piece, boutons, store, attendre, demarrer, onglet, erreurs, gestes: () => gestes, fermer: () => ctx.close() };
 }

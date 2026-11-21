@@ -29,6 +29,8 @@ export interface TransactionFinance {
   invoiceNumber?: string;
   dueDate?: string;
   planId?: string;
+  /** PD-2 : les sorties que la prévision DÉRIVE (impôt de brassin, `brew:<brassin>:impot`) et que cette pièce solde ; elle les retire de la prévision. */
+  soldeIds?: string[];
   planAllocatedCents?: number;
   occurrenceId?: string;
   batchId?: string;
