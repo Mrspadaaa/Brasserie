@@ -7,6 +7,7 @@
 //     --build     : réutilise un build déjà fait par cette config ;
 //     --ref <tag> : construit ce tag dans une copie temporaire (git worktree dans os.tmpdir(), node_modules en jonction, retirée à la fin).
 //     --etape <a,b> : seules ces étapes V-CAL (G3, RENOMMER-EVT, C1-GLISSER, D2-CAL, K2, K3-SUITES, TRAVAUX-SANS-MONTANT), après la fixture.
+//     G3_SEMAINE=<n> (variable d'environnement) : G3 ne cherche sa case vide que dans la semaine n (rejouer un cas vu, ex. S2 en 3 mois).
 //   Sortie : « PARCOURS CALENDRIER OK » (code 0) ou « PARCOURS CALENDRIER ECHEC » + la liste des échecs (code 1) ; captures dans le dossier.
 //
 // Le build de test est un build avec `import.meta.env.DEV` vrai : c'est ce qui ouvre `?dev-local` ; la fixture entre par
@@ -559,6 +560,7 @@ async function jouer(dir) {
         for (let k = 0; k < 3; k++) { await p.keyboard.press('Escape').catch(() => {}); await sleep(150); }
         await fermer();
         const avant = await lireCache();
+        if (process.env.G3_SEMAINE) await p.evaluate((s) => { window.__G3_SEMAINE = s; }, process.env.G3_SEMAINE);
         const chercher = () => p.evaluate(() => {
           const vis = (e) => { const r = e.getBoundingClientRect(); return r.width > 0 && r.height > 0; };
           const lanes = [...document.querySelectorAll('[data-lane="travaux"]')].filter((l) => vis(l) && !l.classList.contains('cal-lane-jours'));
@@ -575,7 +577,12 @@ async function jouer(dir) {
               for (let k = Math.max(1, i + 1); k < b.length; k++) {
                 const r = b[k].getBoundingClientRect(); const x = r.left + r.width / 2;
                 if (x < L.left + 4 || x > L.right - 4) continue;
-                if (document.elementFromPoint(x, y) !== lane) continue;
+                if (window.__G3_SEMAINE && b[k].getAttribute('data-semaine') !== window.__G3_SEMAINE) continue;
+                /* la case est vide sous tout le doigt, diagonales comprises : Chrome ajuste un toucher vers la cible voisine (touch adjustment).
+                   21.11 : en S2 (3 mois), le point était à 2 px en diagonale de la zone de la poignée de « Sols : colle et joints »
+                   (.cal-grip::before, 12 px hors de la barre) ; la croix de 5 points la manquait, le toucher la prenait. Grille 7 × 5. */
+                const pas = [-22, -15, -8, 0, 8, 15, 22].flatMap((dx) => [-12, -6, 0, 6, 12].map((dy) => [dx, dy]));
+                if (pas.some(([dx, dy]) => document.elementFromPoint(x + dx, y + dy) !== lane)) continue;
                 return { x, y, n: Number(b[k].getAttribute('data-semaine')) };
               }
             }
@@ -592,7 +599,8 @@ async function jouer(dir) {
         const titre = neuf?.data.title ?? `Travaux · S${cible.n}`;
         const ecran = neuf ? await labelDe(`${titre},`) : null;
         await cap('09c-g3-case-touchee');
-        if (!neuf) echec('G3', `toucher la case vide S${cible.n} de Travaux ne crée rien${f ? ` (une feuille s'ouvre : « ${f.slice(0, 60)} »)` : ''}`);
+        const autres = nouveaux(avant, apres, 'creativeItems', 'financialPlans').map((e) => `${e.name}:${e.data.title ?? e.data.name ?? e.id}@${e.data.date ?? e.data.startDate ?? e.data.dueDate ?? '?'}`);
+        if (!neuf) echec('G3', `toucher la case vide S${cible.n} de Travaux ne crée rien${f ? ` (une feuille s'ouvre : « ${f.slice(0, 60)} »)` : ''}${autres.length ? ` ; créé : ${autres.join(', ').slice(0, 120)}` : ''}${msg ? ` ; message : « ${msg.slice(0, 80)} »` : ''}`);
         else if (!ecran) echec('G3', `créé « ${titre} » (${neuf.name}), absent de la frise`);
         else if (!/Annuler/.test(msg) && !(await visibleParTexte('Annuler').catch(() => null))) echec('G3', `« ${titre} » créé sans message Annuler (message : « ${msg.slice(0, 60)} »)`);
         else {
