@@ -311,7 +311,9 @@ export function usePointeur(options: OptionsPointeur) {
       s.tPrec = t;
       const oo = opts.current;
       /* comptée en semaines (un axe en jours en a sept par semaine : le bord n'y avance pas sept fois plus vite) */
-      s.acc += (vitesse * dt * largeur) / Math.max(1, s.mode === 'bord' ? largeurJourDe(oo) * 7 : oo.largeurColonne);
+      /* VISION-tour9 n° 2 : comptée en colonnes de l'APPUI (une fenêtre qui grandit rétrécit ses colonnes : comptée en colonnes du moment, elle
+         allait de 6 à 23 semaines en 1,5 s et la bulle ne suivait plus) */
+      s.acc += (vitesse * dt * largeur) / Math.max(1, s.mode === 'bord' ? (s.d0 || largeurJourDe(oo)) * 7 : (s.w0 || oo.largeurColonne));
       while (s.acc >= 1) {
         s.acc -= 1;
         /* la barre sortirait de la fenêtre : on attend (jamais une barre tenue qui disparaît sous le doigt) ; un bord tiré la suit toujours */

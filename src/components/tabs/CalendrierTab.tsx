@@ -21,7 +21,7 @@ import { VueListe } from '../../ui/calendrier/frise/VueListe';
 import { CLASSE_TEINTE } from '../../ui/calendrier/frise/Marque';
 import { positionDans, type Colonne, type DragEtat } from '../../ui/calendrier/frise/Rangee';
 import type { CoteBord } from '../../ui/calendrier/frise/usePointeur';
-import { aDesJours, ajouterMois, cibleDuGlisse, colonnesDeLAxe, ECHELLES, enMois, echelleApres, echelleEffective, GLISSE_JOUR_MIN, glisseAuJour, peutDeplier, PERIODE_DE_L_ECHELLE, type Echelle, type SensPincement } from '../../ui/calendrier/echelle';
+import { aDesJours, ajouterMois, cibleDuGlisse, colonnesDeLAxe, ECHELLES, enMois, echelleApres, echelleEffective, glisseAuJour, peutDeplier, PERIODE_DE_L_ECHELLE, type Echelle, type SensPincement } from '../../ui/calendrier/echelle';
 import {
   RANGEES, anneeEnMois, ajouterJours, barreLiee, dateDeSemaine, ecartJours, estPonctuel, etiquetteS, jourLisible, lundiDe, nomRangee, nomSeules, preparerChoses,
   type CibleOuverture, type ChoseCalendrier, type ModeleCalendrier, type Rangee as IdRangee
@@ -986,7 +986,6 @@ export function CalendrierTab(props: CalendrierTabProps) {
   fenetreRef.current = fenetre;
   /* CAL-BARRE-BORD : un bord se tire aussi sur l'axe en jours (2 sem.) ; un glisser y garde ses bornes */
   const bordDefilable = !annee && echelle !== 'mois' && !deplieVu && modele.semaines.length > 0;
-  const largeurFrise = mesure.largeur;
   /*
    * CAL-BARRE-BORD (« une barre tirée hors du cadre agrandit l'échelle et se pose là où le doigt la lâche ») : pendant un geste, la fenêtre
    * GRANDIT d'une semaine de ce côté (droite : même début, rend 0 ; gauche : une semaine plus tôt, rend 1), jusqu'à 6 mois et, pour un glisser
@@ -998,7 +997,9 @@ export function CalendrierTab(props: CalendrierTabProps) {
     if (mode === 'glisse' && aDesJours(colonnesRef.current)) return false;
     if (!fenetreAvant.current) fenetreAvant.current = f;
     const n = f.semaines + 1;
-    const peutGrandir = n <= PERIODE_DE_L_ECHELLE.mois && !(mode === 'glisse' && parJourRef.current && !(largeurFrise / (7 * n) >= GLISSE_JOUR_MIN));
+    /* VISION-tour9 n° 2 (CAL-BARRE-BORD, « ça doit agrandir l'échelle ») : une chose glissée au jour faisait GLISSER la fenêtre dès qu'un jour
+       passait sous 8 px (390, 6 sem. : S47–S52 devenait S49–S1). Elle grandit comme un bord tiré ; le pas reste celui figé à l'appui. */
+    const peutGrandir = n <= PERIODE_DE_L_ECHELLE.mois;
     let fen: FenetreSemaines, recul = 0;
     if (peutGrandir && sens > 0 && ajouterJours(f.du, (n - 1) * 7) <= derniereSemaine) fen = { du: f.du, semaines: n };
     else if (peutGrandir && sens < 0 && ajouterJours(f.du, -7) >= premierLundi) { fen = { du: ajouterJours(f.du, -7), semaines: n }; recul = 1; }
@@ -1012,7 +1013,7 @@ export function CalendrierTab(props: CalendrierTabProps) {
        geste : la fenêtre suit la barre (elle reste où le doigt l'a lâchée), la période de l'app et de Finances ne bouge que par le brasseur. */
     setFenetre(fen);
     return recul;
-  }, [premierLundi, derniereSemaine, largeurFrise]);
+  }, [premierLundi, derniereSemaine]);
   /* CAL-JOUR : `parJour` passe par `{...props.barre}` de Rangee jusqu'à Barre (une variable : le Pick de Rangee ne le nomme pas encore, voie V7) */
   const actionsBarre = { onToucher: surToucher, onAppuiLong: surAppuiLong, onGlisse: surGlisse, onLacheGlisse: surLacheGlisse, onBord: surBord, onLacheBord: surLacheBord, onRefus: surRefus, ...(bordDefilable ? { defile: defilerFenetre } : {}), ...(defilable ? { marge } : {}), ...(parJourVu ? { parJour: true } : {}) };
   /* E32 : « Livraison La Cigogne · S1 › » mène à la vente hors de la vue */

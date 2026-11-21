@@ -9,6 +9,7 @@
 // presser loin du pouce et bouger de 8 px (pas de saut, R2), avancer/étirer (+), reculer/réduire (−), Échap pendant le glisser (retour
 // exact, R10), et la valeur après rechargement.
 //
+//   --sections sectionBarreHors,… : seulement ces sections du Calendrier (itération).
 //   --endroits recette,calendrier,periode : les endroits joués (défaut : recette et calendrier).
 //   periode (PERIODE-PARTOUT, 21.11) : chaque écran qui choisit une période libre monte LA frise d'Opérations (`FrisePeriode`), jamais
 //   deux listes de mois ; le début tiré vers le passé change la période, relue après rechargement. Rouge sur en-ligne/2026-11-21-tour8.
@@ -726,6 +727,49 @@ async function jouerCalendrier({ p, base, combo, tactile, glisser, pas }) {
   };
   // ── CHG-6 (21.11, « poser la fin d'un brassin en cuve ») : 3 mois, 390. Le bord droit de « NEIPA Test » (en cuve, sans fin) tiré de 6 jours pose sa
   //    fin à aujourd'hui + 6 j ; un brassin en cuve sans fin glissé par le corps ne parle plus de « jalon de fin » ──
+  // ── CAL-BARRE-BORD, la chose glissée (VISION-tour9 n° 2, 21.11 : « je tire un évènement en dehors ça doit agrandir l'échelle … à un endroit, ça
+  //    doit d'ajuster pour de vrai ») : en 6 sem., « lol » (Papiers, un jour) tirée jusqu'au bord droit du cadre et tenue 1,5 s. La fenêtre
+  //    GRANDIT (même début, plus de 6 semaines) au lieu de glisser ; la date posée est celle que la bulle disait au lâcher, et elle est dans la
+  //    fenêtre ; relue après rechargement. Rouge sur b17062ff5 : la fenêtre glissait de S47–S52 à S49–S1, bulle « S1 · 7 janv. », posée au 14 janv. ──
+  const sectionBarreHors = async () => {
+    const H = `chose tirée hors du cadre ${combo}`;
+    const MOIS = ['janv', 'févr', 'mars', 'avr', 'mai', 'juin', 'juil', 'août', 'sept', 'oct', 'nov', 'déc'];
+    const datePapier = () => p.evaluate((k) => JSON.parse(localStorage.getItem(k) ?? '[]').find((x) => x.id === 'P-PAPIER')?.data.date ?? null, CLE_CACHE);
+    const lundis = () => p.evaluate(() => [...document.querySelectorAll('[data-bande-semaines] [data-lundi]')].map((e) => e.getAttribute('data-lundi')));
+    try {
+      /* la fenêtre de la vision : « 2 sem. » la pose sur la semaine d'aujourd'hui (CHN-3), « 6 sem. » garde ce début (S47–S52 le 21.11) */
+      await choisirPeriode('2 sem.'); await sleep(400); await choisirPeriode('6 sem.'); await sleep(500);
+      const l0 = await lundis(), d0 = await datePapier();
+      if (l0[0] !== lundiDe(new Date().toISOString().slice(0, 10))) { echec(H, `la fenêtre 6 sem. ne part pas de cette semaine : ${l0[0]}`); await choisirPeriode('3 mois'); return; }
+      const m = await p.evaluate(() => { const e = document.querySelector('[data-frise] [data-chose$="P-PAPIER"]'); if (!e) return null; e.scrollIntoView({ block: 'center', inline: 'center' }); const r = e.getBoundingClientRect(); return { x: r.left + r.width / 2, y: r.top + r.height / 2 }; });
+      if (!m || !l0.length || !d0) { echec(H, `« lol » introuvable (${l0.length} semaines, date ${d0})`); return; }
+      const fr = await p.evaluate(() => { const f = document.querySelector('[data-frise]').getBoundingClientRect(); return { l: f.left, r: f.right }; });
+      /* tenu 1,5 s au bord, puis le doigt revient hors de la bande du bord (le défilement s'arrête) : la bulle lue est celle du lâcher */
+      let pend = null;
+      const lirePend = async () => { pend = { ici: await p.evaluate(() => document.querySelector('[data-ici]')?.textContent ?? null), l: await lundis() }; };
+      const xs = pas(m.x, fr.r - 10, 20);
+      if (tactile) {
+        const cdpH = await p.createCDPSession(), pt = (x) => [{ x: Math.round(x), y: Math.round(m.y), id: 1 }];
+        await cdpH.send('Input.dispatchTouchEvent', { type: 'touchStart', touchPoints: pt(m.x) }); await sleep(50);
+        for (const x of xs) { await cdpH.send('Input.dispatchTouchEvent', { type: 'touchMove', touchPoints: pt(x) }); await sleep(16); }
+        await sleep(1500); await cdpH.send('Input.dispatchTouchEvent', { type: 'touchMove', touchPoints: pt(fr.r - 60) }); await sleep(400); await lirePend();
+        await cdpH.send('Input.dispatchTouchEvent', { type: 'touchEnd', touchPoints: [] });
+      } else await glisser(m.x, m.y, xs, { pendant: async () => { await sleep(1500); await p.mouse.move(fr.r - 60, m.y); await sleep(400); await lirePend(); } });
+      await sleep(700); await cap('chose-hors');
+      const l1 = await lundis(), d1 = await datePapier();
+      const vu = `${l0[0]}+${l0.length} sem. → ${l1[0]}+${l1.length} sem. ; ${d0} → ${d1} ; bulle « ${pend?.ici} »`;
+      (l1[0] === l0[0] && l1.length > l0.length) ? ok(`${H} fenêtre agrandie`, vu) : echec(`${H} fenêtre agrandie`, `${vu} (même début, plus de ${l0.length} semaines attendus)`);
+      const b = /(\d{1,2})\s+([a-zéû]+)\.?\s+·\s+lâcher/i.exec(pend?.ici ?? '');
+      const dit = b ? { j: Number(b[1]), m: MOIS.findIndex((x) => b[2].toLowerCase().startsWith(x.slice(0, 3))) } : null;
+      const pose = d1 ? { j: Number(d1.slice(8, 10)), m: Number(d1.slice(5, 7)) - 1 } : null;
+      (dit && pose && dit.j === pose.j && dit.m === pose.m) ? ok(`${H} posée où la bulle le dit`, vu) : echec(`${H} posée où la bulle le dit`, vu);
+      const fin = l1.length ? ajouter(l1[l1.length - 1], 6) : null;
+      (d1 && d1 !== d0 && d1 >= l1[0] && d1 <= fin) ? ok(`${H} dans la fenêtre`, `${d1} dans ${l1[0]} → ${fin}`) : echec(`${H} dans la fenêtre`, `${d1} hors de ${l1[0]} → ${fin} (ou pas déplacée)`);
+      await versCalendrier(); const d2 = await datePapier();
+      d2 === d1 ? ok(`${H} rechargement`, d1) : echec(`${H} rechargement`, `${d1} → ${d2}`);
+    } catch (e) { echec(H, String(e.message ?? e).slice(0, 160)); await echap(); }
+    await choisirPeriode('3 mois'); await sleep(400);
+  };
   const sectionChg6 = async () => {
     const C6 = `fin d’un brassin en cuve ${combo}`;
     const auj = new Date().toISOString().slice(0, 10);
@@ -814,19 +858,9 @@ async function jouerCalendrier({ p, base, combo, tactile, glisser, pas }) {
       (parti && revenu) ? ok(`${F} Supprimer puis Annuler`) : echec(`${F} Supprimer puis Annuler`, `retirée ${parti}, rendue ${revenu}`);
     } catch (e) { echec(F, String(e.message ?? e).slice(0, 160)); await echap(); }
   };
-  await sectionJourBord();
-  await sectionGlisseJour();
-  await sectionBarre();
-  await sectionCadre();
-  await sectionFeuille();
-  await sectionFeuilleJour();
-  await sectionModifier();
-  await sectionFiche();
-  await sectionRangees();
-  await sectionBarreBord();
-  await sectionChg4();
-  await sectionChg5();
-  await sectionChg6();
+  // --sections a,b : seulement ces sections du Calendrier (itération ; le défaut les joue toutes)
+  const SECTIONS = opt('sections', null)?.split(',');
+  for (const [nom, f] of Object.entries({ sectionJourBord, sectionGlisseJour, sectionBarre, sectionCadre, sectionFeuille, sectionFeuilleJour, sectionModifier, sectionFiche, sectionRangees, sectionBarreBord, sectionChg4, sectionChg5, sectionChg6, sectionBarreHors })) if (!SECTIONS || SECTIONS.includes(nom)) await f();
   await cap('fin');
 }
 
