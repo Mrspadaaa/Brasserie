@@ -1,5 +1,5 @@
 import React from 'react';
-import { allerEtape } from '../helpers/wizard';
+import { allerEtape, libelle } from '../helpers/wizard';
 import { describe, it, expect, vi, afterEach } from 'vitest';
 import { cleanup, fireEvent, render, screen, waitFor, within } from '@testing-library/react';
 import { BrewWizard } from '../../src/pages/BrewWizard';
@@ -114,7 +114,7 @@ const openCatalogue = () => {
 };
 /** Folded stations open through their visible toggle before any action inside them. */
 const openStation = (fold: 'objectives' | 'conduct') => {
-  const toggle = document.querySelector<HTMLButtonElement>(`[data-station-toggle="${fold}"]`)!;
+  const toggle = [...document.querySelectorAll<HTMLButtonElement>(`[data-station-toggle="${fold}"]`)].find(t => !t.closest('[hidden]'))!;
   expect(toggle).toBeVisible();
   if (toggle.getAttribute('aria-expanded') !== 'true') fireEvent.click(toggle);
   expect(document.getElementById(toggle.getAttribute('aria-controls')!)).toBeVisible();
@@ -122,7 +122,7 @@ const openStation = (fold: 'objectives' | 'conduct') => {
 const openScenario = () => { openStation('conduct'); expect(screen.getByRole('region', { name: 'Scénario de levure' })).toBeVisible(); };
 const proposeGoal = (value: string) => {
   openStation('objectives');
-  const select = screen.getByLabelText('Profil recherché'); expect(select).toBeVisible();
+  const select = libelle('Profil recherché'); expect(select).toBeVisible();
   fireEvent.change(select, { target: { value } });
   const propose = screen.getByRole('button', { name: 'Proposer une conduite' }); expect(propose).toBeVisible();
   fireEvent.click(propose);
@@ -189,8 +189,8 @@ describe('Recipe data entry regressions', () => {
     expect(save.mock.calls[0][0].waterPlan.wortIons).toEqual(applied.waterPlan.wortIons);
     step(/^Eau/);
     fireEvent.click(screen.getByText(/Osmosée : 10 L disponibles/));
-    change(screen.getByLabelText('Osmosée disponible au total (L)'), '5');
-    expect(screen.getByLabelText('Sels et acides suivent la recette')).toBeChecked();
+    change(libelle('Osmosée disponible au total (L)'), '5');
+    expect(libelle('Sels et acides suivent la recette')).toBeChecked();
     step(/^Récapitulatif$/);
     fireEvent.click(screen.getByRole('button', { name: /^Enregistrer la recette$/ }));
     const saved = save.mock.calls[1][0];
@@ -211,9 +211,9 @@ describe('Recipe data entry regressions', () => {
     const save = vi.fn();
     wizard(original, save);
     step(/^Eau/);
-    change(screen.getByLabelText(/Dose de Gypse en grammes/), '1.2');
+    change(libelle(/Dose de Gypse en grammes/), '1.2');
     fireEvent.click(screen.getByText('Osmosée disponible · sans limite'));
-    change(screen.getByLabelText('Osmosée disponible au total (L)'), '5');
+    change(libelle('Osmosée disponible au total (L)'), '5');
     step(/^Récapitulatif$/);
     fireEvent.click(screen.getByRole('button', { name: /^Enregistrer la recette$/ }));
     expect(save.mock.calls[0][0].waterPlan.mash.gypse).toBe(1.2);
@@ -224,7 +224,7 @@ describe('Recipe data entry regressions', () => {
     wizard();
     step(/^Eau/);
     fireEvent.click(screen.getByRole('button', { name: 'Modifier' }));
-    change(screen.getByLabelText('Nom du réseau ou de la source'), 'Analyse corrigée');
+    change(libelle('Nom du réseau ou de la source'), 'Analyse corrigée');
     fireEvent.click(screen.getByRole('button', { name: 'Enregistrer l’analyse' }));
     step(/^Récapitulatif$/);
     run.mockResolvedValue({ ok: true, data: { verdict: 'Source à jour', findings: [] } });
@@ -297,11 +297,10 @@ describe('Recipe data entry regressions', () => {
     expect(screen.getByRole('option', { name: /LalBrew Verdant IPA/ })).toHaveTextContent('Fabricant Lallemand Brewing · sèche');
     expect(screen.getByText('Catalogue documenté')).toBeVisible();
     fireEvent.keyDown(picker, { key: 'Enter' });
-    expect(screen.getByLabelText('Quantité de levure')).toHaveValue('');
-    expect(screen.getByLabelText('Unité de la quantité de levure')).toHaveValue('');
-    fireEvent.change(screen.getByLabelText('Unité de la quantité de levure'), { target: { value: 'g' } });
-    expect(screen.getByLabelText('Quantité de levure, en g')).toHaveValue('');
-    change(screen.getByLabelText('Quantité de levure, en g'), '16');
+    // #132 : la dose se recalcule pour Verdant (doseApresChoix) ; rien n'est repris de la levure précédente.
+    fireEvent.change(libelle('Unité de la quantité de levure'), { target: { value: 'g' } });
+    expect(libelle('Quantité de levure, en g')).toHaveValue('');
+    change(libelle('Quantité de levure, en g'), '16');
     dossier();
     fireEvent.click(screen.getByText('Programme détaillé et guides enregistrés'));
     expect(screen.getByRole('region', { name: 'Résultat de ma fermentation' })).toHaveTextContent('Verdant');
@@ -323,13 +322,14 @@ describe('Recipe data entry regressions', () => {
     expect(screen.getByRole('region', { name: 'Programme proposé' })).toBeVisible();
     expect(screen.getByRole('region', { name: 'Proposition de conduite' })).toHaveTextContent('20 °C → 18 °C');
     expect(screen.getByRole('textbox', { name: /^Température du palier 1 ·/ })).toHaveValue('18');
-    expect(screen.getByLabelText('Effets attendus de la stratégie')).toBeVisible(); expect(save).not.toHaveBeenCalled();
+    expect(libelle('Effets attendus de la stratégie')).toBeVisible(); expect(save).not.toHaveBeenCalled();
     openYeastDetails('Hypothèses et réglages complémentaires'); openYeastDetails('Ensemencement, durée et pression');
     changeYeast('Contre-pression du scénario en bar', '0');
     fireEvent.click(screen.getByRole('button', { name: 'Appliquer au brouillon' }));
     expect(screen.queryByText(/La recette a changé pendant la comparaison/)).not.toBeInTheDocument();
     step(/^Paliers$/);
-    expect(screen.getByLabelText('Nom du palier 1')).toHaveValue('Repos férulique · proposition L’Affinée');
+    fireEvent.click(screen.getByRole('button', { name: /^Palier 1 / }));   // Paliers r2 : le nom se règle dans le bandeau du palier touché
+    expect(libelle('Nom du palier 1')).toHaveValue('Repos férulique · proposition L’Affinée');
     step(/^Récapitulatif$/);
     fireEvent.click(screen.getByRole('button', { name: 'Enregistrer la recette' }));
     const saved = save.mock.calls[0][0];
@@ -339,7 +339,7 @@ describe('Recipe data entry regressions', () => {
     expect(saved.hops).toEqual(original.hops); expect(saved.waterPlan.mash).toEqual(original.waterPlan.mash);
     view.unmount(); wizard(saved); step(/^Levure$/);
     openScenario();
-    expect(screen.getByLabelText('Profil recherché')).toHaveValue('clove');
+    expect(libelle('Profil recherché')).toHaveValue('clove');
     expect(screen.getByRole('textbox', { name: /^Température du palier 1 ·/ })).toBeVisible(); expect(screen.getByRole('textbox', { name: /^Température du palier 1 ·/ })).toHaveValue('18');
   });
   it('propose sur demande la finition d’une Lager puis conserve uniquement le programme explicitement appliqué', () => {
@@ -378,7 +378,7 @@ describe('Recipe data entry regressions', () => {
     expect(screen.getByRole('region', { name: 'Programme proposé' })).toHaveTextContent('39 j indicatifs');
     expect(screen.getByRole('region', { name: 'Modifier le palier sélectionné' })).toHaveTextContent('Refroidissement progressif : J15 → J16 (+1 j)');
     expect(screen.getByRole('region', { name: 'Modifier le palier sélectionné' })).toHaveTextContent('Garde lager : J17 → J18 (+1 j)');
-    const changes = screen.getByLabelText('Tous les changements réels');
+    const changes = libelle('Tous les changements réels');
     expect(changes.querySelector('summary')).toBeVisible(); fireEvent.click(changes.querySelector('summary')!);
     expect(changes).toHaveTextContent('14 °C');
     fireEvent.click(screen.getByRole('button', { name: 'Appliquer au brouillon' }));
@@ -398,7 +398,7 @@ describe('Recipe data entry regressions', () => {
     expect(restored.fermentation).toEqual(saved.fermentation); expect(restored.yeastDesign).toEqual(saved.yeastDesign);
     const again = vi.fn(); view.unmount(); wizard(restored, again); step(/^Levure$/);
     openScenario();
-    expect(screen.getByLabelText('Profil recherché')).toHaveValue('low-sulfur');
+    expect(libelle('Profil recherché')).toHaveValue('low-sulfur');
     fireEvent.click(screen.getByRole('region', { name: 'Programme proposé' }).querySelector('[data-phase-choice="1"]')!);
     expect(screen.getByRole('textbox', { name: /^Durée du palier 2 ·/ })).toBeVisible(); expect(screen.getByRole('textbox', { name: /^Durée du palier 2 ·/ })).toHaveValue('6');
     fireEvent.click(screen.getByRole('region', { name: 'Programme proposé' }).querySelector('[data-phase-choice="3"]')!);
@@ -425,12 +425,12 @@ describe('Recipe data entry regressions', () => {
     const current = screen.getByRole('region', { name: 'Aperçu de la fermentation de cette recette' });
     expect(current).toHaveTextContent('78 %'); expect(current).toHaveTextContent('hypothèse de recette');
     expect(current).toHaveTextContent('Procédé acidulé non précisé');
-    expect(screen.getByLabelText('Forme de la levure')).toHaveValue('');
+    expect(libelle('Forme de la levure')).toHaveValue('');
     openScenario();
     openYeastDetails('Hypothèses et réglages complémentaires');
     changeYeast('Atténuation retenue pour le scénario', '80');
     changeYeast('Température du palier 1', '21');
-    fireEvent.change(screen.getByLabelText('Procédé de fermentation'), { target: { value: 'preacidified' } });
+    fireEvent.change(libelle('Procédé de fermentation'), { target: { value: 'preacidified' } });
     openYeastDetails('Ensemencement, durée et pression');
     changeYeast('Température d’ensemencement du scénario', '20');
     changeYeast('Durée principale du scénario en jours', '14');
@@ -457,13 +457,13 @@ describe('Recipe data entry regressions', () => {
     expect(restored.yeastDesign).toEqual(JSON.parse(JSON.stringify(saved.yeastDesign)));
     view.unmount(); wizard(restored); step(/^Levure$/);
     expect(screen.getByRole('region', { name: 'Aperçu de la fermentation de cette recette' })).toHaveTextContent('80 %');
-    expect(screen.getByLabelText('Quantité de levure, en mL')).toHaveValue('125');
+    expect(libelle('Quantité de levure, en mL')).toHaveValue('125');
     openScenario();
     openYeastDetails('Hypothèses et réglages complémentaires'); openYeastDetails('Ensemencement, durée et pression');
-    expect(screen.getByLabelText('Ancien taux de cellules du scénario par mL et degré Plato')).toHaveValue('0,75');
-    expect(screen.getByLabelText('Anciennes cellules viables du scénario en milliards')).toHaveValue('200');
-    expect(screen.getByLabelText('Contre-pression du scénario en bar')).toHaveValue('0,5');
-    expect(screen.getByLabelText('Procédé de fermentation')).toHaveValue('preacidified');
+    expect(libelle('Ancien taux de cellules du scénario par mL et degré Plato')).toHaveValue('0,75');
+    expect(libelle('Anciennes cellules viables du scénario en milliards')).toHaveValue('200');
+    expect(libelle('Contre-pression du scénario en bar')).toHaveValue('0,5');
+    expect(libelle('Procédé de fermentation')).toHaveValue('preacidified');
   });
   it('reconnaît une Sour par son référentiel malgré un nom libre et conserve la DI retenue quand le procédé change', () => {
     const original: Recipe = { ...structuredClone(base), name: 'Lot expérimental 231', style: 'Essai maison',
@@ -478,7 +478,7 @@ describe('Recipe data entry regressions', () => {
     // Opening a saved recipe alone preserves its author's target, while the projection stays unknown.
     expect(save.mock.lastCall![0].ogTarget).toBe(1.05); expect(save.mock.lastCall![0].abvTarget).toBe(original.abvTarget);
     step(/^Levure$/); openScenario();
-    fireEvent.change(screen.getByLabelText('Procédé de fermentation'), { target: { value: 'preacidified' } });
+    fireEvent.change(libelle('Procédé de fermentation'), { target: { value: 'preacidified' } });
     expect(screen.getByRole('figure', { name: 'Alcool estimé' })).toHaveTextContent('5,2 % vol') /* ASBC (CF-6) */;
     fireEvent.click(screen.getByRole('button', { name: 'Appliquer au brouillon' }));
     step(/^Récapitulatif$/); fireEvent.click(screen.getByRole('button', { name: 'Enregistrer la recette' }));
@@ -488,11 +488,11 @@ describe('Recipe data entry regressions', () => {
     const again = vi.fn(); view.unmount(); wizard(saved, again); step(/^Levure$/);
     expect(screen.getByRole('region', { name: 'Aperçu de la fermentation de cette recette' })).toHaveTextContent('5,2'); // ASBC (CF-6)
     openScenario();
-    fireEvent.change(screen.getByLabelText('Procédé de fermentation'), { target: { value: 'acidifying-yeast' } });
+    fireEvent.change(libelle('Procédé de fermentation'), { target: { value: 'acidifying-yeast' } });
     fireEvent.click(screen.getByRole('button', { name: 'Appliquer au brouillon' }));
-    expect(screen.getByLabelText('Procédé de fermentation')).toHaveValue('acidifying-yeast');
+    expect(libelle('Procédé de fermentation')).toHaveValue('acidifying-yeast');
     step(/^Récapitulatif$/); step(/^Levure$/);
-    expect(screen.getByLabelText('Procédé de fermentation')).toHaveValue('acidifying-yeast');
+    expect(libelle('Procédé de fermentation')).toHaveValue('acidifying-yeast');
     step(/^Récapitulatif$/); fireEvent.click(screen.getByRole('button', { name: 'Enregistrer la recette' }));
     expect(again).toHaveBeenCalledTimes(1);
     expect(again.mock.lastCall![0].yeastDesign.process).toBe('acidifying-yeast');
@@ -504,8 +504,8 @@ describe('Recipe data entry regressions', () => {
       unit: 'mL', attenuationPct: 78, fermTempMinC: 18, fermTempMaxC: 24 } };
     const save = vi.fn(); wizard(original, save); step(/^Levure$/);
     expect(screen.getByRole('group', { name: 'Quantité prévue de levure' })).toBeVisible();
-    fireEvent.change(screen.getByLabelText('Unité de la quantité de levure'), { target: { value: 'flacon' } });
-    expect(screen.getByLabelText('Quantité de levure, en flacon')).toHaveValue('');
+    fireEvent.change(libelle('Unité de la quantité de levure'), { target: { value: 'flacon' } });
+    expect(libelle('Quantité de levure, en flacon')).toHaveValue('');
     expect(screen.getByText(/aucune conversion depuis mL/)).toBeVisible();
     step(/^Récapitulatif$/);
     expect(screen.getByRole('status', { name: 'État de la recette' })).toHaveTextContent('À compléter');
@@ -516,7 +516,7 @@ describe('Recipe data entry regressions', () => {
     fireEvent.click(screen.getByRole('button', { name: 'Enregistrer et préparer un brassin' }));
     expect(save).toHaveBeenCalledOnce();
     expect(screen.getByRole('alert')).toHaveTextContent('Quantité de levure');
-    change(screen.getByLabelText('Quantité de levure, en flacon'), '2');
+    change(libelle('Quantité de levure, en flacon'), '2');
     step(/^Récapitulatif$/); fireEvent.click(screen.getByRole('button', { name: 'Enregistrer la recette' }));
     expect(save).toHaveBeenCalledTimes(2); expect(save.mock.calls[1][0].yeast).toMatchObject({ qty: 2, unit: 'flacon', form: 'liquide' });
   });
@@ -540,9 +540,9 @@ describe('Recipe data entry regressions', () => {
     const original = structuredClone(base);
     original.hops.push({ name: 'Mosaic', weightG: 30, alpha: 10, stage: 'whirlpool', timeMin: 20, tempC: 82 });
     const save = vi.fn(); wizard(original, save); step(/^Houblons$/);
-    change(screen.getByLabelText('Minutes avant la fin pour Citra'), '');
-    change(screen.getByLabelText('Durée de contact de Mosaic'), '');
-    change(screen.getByLabelText('Température de whirlpool pour Mosaic'), '');
+    change(libelle('Minutes avant la fin pour Citra'), '');
+    change(libelle('Durée de contact de Mosaic'), '');
+    change(libelle('Température de whirlpool pour Mosaic'), '');
     step(/^Récapitulatif$/);
     expect(screen.getByRole('status', { name: 'État de la recette' })).toHaveTextContent('À compléter');
     fireEvent.click(screen.getByRole('button', { name: 'Enregistrer la recette' }));
@@ -563,12 +563,13 @@ describe('Recipe data entry regressions', () => {
     original.hops = [{ name: 'Cru test', weightG: 40, alpha: 10, stage: 'dryHop', dayOffset: 3,
       aromaTiming: 'fermentation', aromaContactHours: 48, aromaTemperatureC: 18 }];
     const save = vi.fn(); wizard(original, save); step(/^Houblons$/);
-    change(screen.getByLabelText('Alpha facultatif, hors du calcul IBU à cru de Cru test en pourcent'), '');
-    change(screen.getByLabelText('Jour en cuve pour Cru test'), '');
-    change(screen.getByLabelText('Contact à cru de Cru test, en heures'), '');
-    change(screen.getByLabelText('Température à cru de Cru test'), '');
+    change(libelle('Alpha facultatif, hors du calcul IBU à cru de Cru test en pourcent'), '');
+    change(libelle('Jour en cuve pour Cru test'), '');
+    change(libelle('Contact à cru de Cru test, en heures'), '');
+    change(libelle('Température à cru de Cru test'), '');
     step(/^Récapitulatif$/);
-    expect(screen.getByRole('status', { name: 'État de la recette' })).toHaveTextContent('Données prêtes pour le brassin');
+    // WFR-4 (B4) : le matériel non figé de la fixture est dit au récap ; il n'empêche pas d'enregistrer.
+    expect(screen.getByRole('status', { name: 'État de la recette' })).toHaveTextContent('Prêt à enregistrer');
     fireEvent.click(screen.getByRole('button', { name: 'Enregistrer la recette' }));
     expect(save).toHaveBeenCalledOnce();
     // Decision 5: the erased dry-hop marks are absent from the declared recipe; an erased alpha stays 0 (unknown lot alpha).
@@ -580,13 +581,13 @@ describe('Recipe data entry regressions', () => {
     const original: Recipe = { ...structuredClone(base), yeast: { name: 'Culture liquide rare', form: 'liquide', qty: 125, unit: 'mL', attenuationPct: 78 } };
     const save = vi.fn(); wizard(original, save); step(/^Levure$/);
     expect(screen.getByRole('group', { name: 'Quantité prévue de levure' })).toBeVisible();
-    change(screen.getByLabelText('Quantité de levure, en mL'), '-1');
-    expect(screen.getByLabelText('Quantité de levure, en mL')).toHaveValue('-1');
+    change(libelle('Quantité de levure, en mL'), '-1');
+    expect(libelle('Quantité de levure, en mL')).toHaveValue('-1');
     step(/^Récapitulatif$/); fireEvent.click(screen.getByRole('button', { name: 'Enregistrer la recette' }));
     expect(save).not.toHaveBeenCalled();
-    expect(screen.getByLabelText('Quantité de levure, en mL')).toBeVisible();
-    expect(screen.getByLabelText('Quantité de levure, en mL')).toHaveValue('-1');
-    change(screen.getByLabelText('Quantité de levure, en mL'), '125');
+    expect(libelle('Quantité de levure, en mL')).toBeVisible();
+    expect(libelle('Quantité de levure, en mL')).toHaveValue('-1');
+    change(libelle('Quantité de levure, en mL'), '125');
     step(/^Récapitulatif$/); fireEvent.click(screen.getByRole('button', { name: 'Enregistrer la recette' }));
     expect(save).toHaveBeenCalledTimes(1); expect(save.mock.calls[0][0].yeast.qty).toBe(125);
   });
@@ -612,7 +613,7 @@ describe('Recipe data entry regressions', () => {
     expect(screen.queryByRole('alert')).not.toBeInTheDocument();
     expect(screen.getByRole('region', { name: 'Levure de la recette' })).toHaveTextContent('77,25–82,75 %');
     expect(screen.getByRole('region', { name: 'Aperçu de la fermentation de cette recette' })).toHaveTextContent('1,009–1,011');
-    expect(screen.getByLabelText('Atténuation retenue pour cette recette, en pourcent')).toHaveValue('');
+    expect(libelle('Atténuation retenue pour cette recette, en pourcent')).toHaveValue('');
     step(/^Récapitulatif$/); fireEvent.click(screen.getByRole('button', { name: 'Enregistrer la recette' }));
     const saved: Recipe = save.mock.lastCall![0];
     expect(saved.yeast.attenuationPct).toBeUndefined();
@@ -713,8 +714,8 @@ describe('Recipe data entry regressions', () => {
     expect(balance).toHaveTextContent('Amer test : alpha du lot');
     expect(balance).not.toHaveTextContent('Cru test : alpha du lot');
     expect(screen.getAllByRole('button', { name: 'Compléter les données manquantes avec l’IA' })).toHaveLength(1);
-    expect(screen.getByLabelText('Alpha de Amer test en pourcent')).toHaveClass('border-ebc-amber/60');
-    expect(screen.getByLabelText('Alpha facultatif, hors du calcul IBU à cru de Cru test en pourcent')).toHaveClass('border-cave-700');
+    expect(libelle('Alpha de Amer test en pourcent')).toHaveClass('border-ebc-amber/60');
+    expect(libelle('Alpha facultatif, hors du calcul IBU à cru de Cru test en pourcent')).toHaveClass('border-cave-700');
   });
   it('#32 : un alpha inconnu (0 hérité, ligne neuve sans alpha de stock) s’affiche vide avec le repère ambre, jamais « 0 »', () => {
     const original: Recipe = { ...structuredClone(base), hops: [
@@ -722,10 +723,10 @@ describe('Recipe data entry regressions', () => {
       { name: 'Ancien cru', weightG: 40, alpha: 0, stage: 'dryHop', dayOffset: 3 }
     ] };
     wizard(original, vi.fn(), []); step(/^Houblons$/);
-    const bitter = screen.getByLabelText('Alpha de Ancien amer en pourcent');
+    const bitter = libelle('Alpha de Ancien amer en pourcent');
     expect(bitter).toHaveValue('');
     expect(bitter).toHaveClass('border-ebc-amber/60');
-    expect(screen.getByLabelText('Alpha facultatif, hors du calcul IBU à cru de Ancien cru en pourcent')).toHaveValue('');
+    expect(libelle('Alpha facultatif, hors du calcul IBU à cru de Ancien cru en pourcent')).toHaveValue('');
     const balance = screen.getByRole('region', { name: 'Bilan de houblonnage de la recette' });
     expect(balance).toHaveTextContent('Ancien amer : alpha du lot');
     expect(screen.getByText(/Pour calculer les IBU à chaud, documenter l’alpha du lot/)).toBeInTheDocument();
@@ -762,10 +763,10 @@ describe('Recipe data entry regressions', () => {
     // D226 : à cette étape, la fiche technique du malt (couleur, PPG) est la ligne « PPG — · fiche › » du plateau, plus le résumé « Base · 4 EBC · modifier » sous la ligne.
     // Mêmes valeurs saisies (9,5 EBC) et même recette vérifiée à l'enregistrement ; le récapitulatif garde `MaltDetails` (« Base · 9.5 EBC »).
     fireEvent.click(screen.getByRole('button', { name: /^Fiche technique de Pilsner : potentiel d’extrait/ }));
-    change(screen.getByLabelText('Couleur de Pilsner en EBC'), '9,5');
+    change(libelle('Couleur de Pilsner en EBC'), '9,5');
     step(/^Récapitulatif$/);
     fireEvent.click(screen.getByText(/Base · 9.5 EBC/));
-    change(screen.getByLabelText('Potentiel de Pilsner en PPG'), '38');
+    change(libelle('Potentiel de Pilsner en PPG'), '38');
     fireEvent.click(screen.getByRole('button', { name: /^Enregistrer la recette$/ }));
     expect(save).toHaveBeenCalled();
     const saved = save.mock.calls[0][0];
@@ -797,7 +798,7 @@ describe('Recipe data entry regressions', () => {
     expect(context.fiche.waterTreatment.style.ions.hco3).toBeDefined();
     expect(context.recette).toMatch(/Empâtage après acide/);
     expect(context.recette).toMatch(/Gypse/);
-    change(screen.getByLabelText('Masse de Pilsner'), '5.5');
+    change(libelle('Masse de Pilsner'), '5.5');
     expect(screen.queryByText('À jour')).toBeNull();
   });
   it('retains a sparge-only acid change in the graph, recap and reopened recipe', () => {
@@ -808,9 +809,9 @@ describe('Recipe data entry regressions', () => {
     const view = wizard(original, save);
     step(/^Eau/);
     expect(radar()).toMatch(/Alcalinité .*207,1 ppm/);
-    change(screen.getByLabelText(/Dose d’acide lactique .*au rinçage/), '1');
+    change(libelle(/Dose d’acide lactique .*au rinçage/), '1');
     // 25 L at 250 ppm + 10 L at (100 − 600 / 10) ppm = 190 ppm overall.
-    expect(screen.getByLabelText('HCO₃ après acide — rinçage')).toHaveTextContent('40');
+    expect(libelle('HCO₃ après acide — rinçage')).toHaveTextContent('40');
     expect(radar()).toMatch(/Alcalinité .*190 ppm/);
     const changed = radar();
     step(/^Récapitulatif$/);
@@ -823,7 +824,7 @@ describe('Recipe data entry regressions', () => {
     wizard(saved);
     step(/^Eau/);
     expect(radar()).toBe(changed);
-    expect(screen.getByLabelText('HCO₃ après acide — rinçage')).toHaveTextContent('40');
+    expect(libelle('HCO₃ après acide — rinçage')).toHaveTextContent('40');
   });
   it('keeps optional empty numbers missing while quantities default to zero', () => {
     const optional = vi.fn(),
@@ -834,8 +835,8 @@ describe('Recipe data entry regressions', () => {
         <NumberInput aria-label="Dose" value={6} onValue={quantity} />
       </>
     );
-    change(screen.getByLabelText('EBC'), '');
-    change(screen.getByLabelText('Dose'), '');
+    change(libelle('EBC'), '');
+    change(libelle('Dose'), '');
     expect(optional).toHaveBeenLastCalledWith(undefined);
     expect(quantity).toHaveBeenLastCalledWith(0);
   });

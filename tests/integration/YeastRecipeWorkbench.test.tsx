@@ -34,13 +34,14 @@ function Host({ initial, changed }: { initial: Recipe; changed: (r: Recipe) => v
 describe('Levure : style, comparaison et application', () => {
   it('choisit directement la levure sèche, conserve sa quantité inconnue puis enregistre sa correction', () => {
     const initial: Recipe = { ...wheat(), style: 'American Pale Ale', name: 'Première application',
-      yeast: { name: '', form: 'sèche', qty: 1, unit: 'sachet' },
+      // 20.11 : sans levure, l'étape montre la recherche de Ma levure ; l'atelier (ancienne étape) s'ouvre depuis la carte d'une levure posée.
+      yeast: { name: 'SafAle S-04', hopIndexId: 'fermentis-s04', form: 'sèche' },
       fermentation: [{ kind: 'primaire', name: 'Primaire', tempC: 19, days: 10 }, { kind: 'garde', name: 'Garde', tempC: 4, days: 5 }] };
     const onSave = vi.fn();
     render(<BrewWizard seed={{ recipe: initial }} stockItems={[]} config={defaultConfig} knownStyles={[]}
       onClose={vi.fn()} onSave={onSave} onCreateStockItem={vi.fn()} onLearnIngredient={vi.fn()} onSaveWaterSource={vi.fn()} />);
     allerEtape(/^Levure/);
-    fireEvent.change(screen.getByLabelText('Rechercher une levure'), { target: { value: 'US-05' } });
+    fireEvent.change(screen.getByLabelText('Chercher une autre levure'), { target: { value: 'US-05' } });
     fireEvent.click(screen.getByRole('button', { name: 'Choisir SafAle US-05 pour le brouillon' }));
     expect(screen.queryByRole('button', { name: 'Appliquer au brouillon' })).not.toBeInTheDocument();
     expect(screen.queryByText(/Essai de conduite/)).not.toBeInTheDocument();

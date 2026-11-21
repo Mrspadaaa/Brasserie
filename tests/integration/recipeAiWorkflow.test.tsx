@@ -5,7 +5,7 @@ import { RecipeAutoComplete, applyYeastReview, reviewYeastFacts } from '../../sr
 import { BrewWizard } from '../../src/pages/BrewWizard';
 import { StorageService, defaultConfig } from '../../src/services/storage';
 import type { Fermentable, HopIngredient, Recipe, StockItem, YeastSpec } from '../../src/types';
-import { allerEtape } from '../helpers/wizard';
+import { allerEtape, libelle } from '../helpers/wizard';
 import { FirestoreRepo } from '../../src/services/firestoreRepo';
 import { factsFromStock, applyYeastFacts, type IngredientFacts } from '../../src/domain/ingredientFacts';
 import { YeastRecipeDossier } from '../../src/ui/YeastRecipeDossier';
@@ -593,10 +593,10 @@ describe('Révision de fiche des levures rares', () => {
     expect(correctedDays.accepted).toBe(true);
     cleanup();
     render(<YeastRecipeDossier yeast={correctedDays.yeast} onChange={() => {}} reference={null} />);
-    expect(screen.getByLabelText('Durée indicative de la fiche, en jours')).toHaveValue('10');
+    expect(libelle('Durée indicative de la fiche, en jours')).toHaveValue('10');
     expect(screen.getByText(/^Fiche : 14 jours/)).toBeInTheDocument();
     expect(screen.getByText('Non repris dans les champs ni le calcul : milieu ou condition non attribuable à la bière.')).toBeInTheDocument();
-    const observations = screen.getByLabelText('Données documentaires conservées');
+    const observations = libelle('Données documentaires conservées');
     fireEvent.click(within(observations).getByText(/Toutes les observations/));
     const preparation = within(observations).getByRole('region', { name: 'Préparer et ensemencer' });
     expect(within(preparation).getByText('50–80 g/hl · plage')).toBeVisible();
@@ -742,14 +742,14 @@ describe('IA dans les étapes d’une recette enregistrée', () => {
     const plannedQuantity = screen.getByRole('group', { name: 'Quantité prévue de levure' });
     expect(plannedQuantity).toHaveAttribute('data-yeast-quantity', 'missing');
     expect(within(plannedQuantity).getByRole('textbox', { name: 'Quantité de levure' })).toHaveValue('');
-    const state = screen.getByLabelText('État du choix de levure');
+    const state = libelle('État du choix de levure');
     expect(state.querySelector('[data-difference="quantity"] [data-side="draft"]')).not.toHaveTextContent('125 mL');
     // The saved 3068 pack stays readable as the saved side of the exact difference, never as the draft value.
     expect(state.querySelector('[data-difference="quantity"] [data-side="saved"]')).toHaveTextContent('125 mL');
     expect(state.querySelector('[data-difference="quantity"] [data-side="draft"]')).toHaveTextContent('quantité à renseigner');
     fireEvent.change(screen.getByRole('combobox', { name: 'Unité de la quantité de levure' }), { target: { value: 'g' } });
-    fireEvent.change(screen.getByLabelText('Quantité de levure, en g'), { target: { value: '12' } });
-    fireEvent.blur(screen.getByLabelText('Quantité de levure, en g'));
+    fireEvent.change(libelle('Quantité de levure, en g'), { target: { value: '12' } });
+    fireEvent.blur(libelle('Quantité de levure, en g'));
     allerEtape('Récapitulatif');
     fireEvent.click(screen.getByRole('button', { name: 'Enregistrer la recette' }));
     expect(save).toHaveBeenCalledTimes(1);
@@ -771,8 +771,8 @@ describe('IA dans les étapes d’une recette enregistrée', () => {
     const reopenedSheet = screen.getByRole('group', { name: `Fiche de ${M20}` });
     expect(reopenedSheet).toHaveTextContent('Fiche M20 contrôlée');
     expect(within(reopenedSheet).getByRole('group', { name: 'Température de fermentation' }).querySelector('[data-fact-reading]')).toHaveTextContent('18–28 °C');
-    expect(screen.getByLabelText('État du choix de levure')).toHaveTextContent('identiques à la recette enregistrée');
-    expect(screen.getByLabelText('Quantité de levure, en g')).toHaveValue('12');
+    expect(libelle('État du choix de levure')).toHaveTextContent('identiques à la recette enregistrée');
+    expect(libelle('Quantité de levure, en g')).toHaveValue('12');
     // 16.11 : ce parcours dure 14 à 15,3 s (14,5 s déjà avant la période unique) ; le plafond de 15 s le coupait au hasard de la charge.
   }, 30000);
 
@@ -822,8 +822,8 @@ describe('IA dans les étapes d’une recette enregistrée', () => {
     expect(learn).not.toHaveBeenCalled(); expect(save).not.toHaveBeenCalled();
     fireEvent.click(screen.getByRole('button', { name: 'Appliquer au brouillon' }));
     fireEvent.change(screen.getByRole('combobox', { name: 'Unité de la quantité de levure' }), { target: { value: 'g' } });
-    fireEvent.change(screen.getByLabelText('Quantité de levure, en g'), { target: { value: '12' } });
-    fireEvent.blur(screen.getByLabelText('Quantité de levure, en g'));
+    fireEvent.change(libelle('Quantité de levure, en g'), { target: { value: '12' } });
+    fireEvent.blur(libelle('Quantité de levure, en g'));
     allerEtape('Récapitulatif');
     fireEvent.click(screen.getByRole('button', { name: 'Enregistrer la recette' }));
     expect(save).toHaveBeenCalledTimes(1);
@@ -836,8 +836,8 @@ describe('IA dans les étapes d’une recette enregistrée', () => {
     wizard(saved);
     allerEtape('Levure');
     expect(screen.getByRole('group', { name: `Fiche de ${M20}` })).toHaveAttribute('data-sheet-scope', 'recipe');
-    expect(screen.getByLabelText('État du choix de levure')).toHaveTextContent('identiques à la recette enregistrée');
-    expect(screen.getByLabelText('Quantité de levure, en g')).toHaveValue('12');
+    expect(libelle('État du choix de levure')).toHaveTextContent('identiques à la recette enregistrée');
+    expect(libelle('Quantité de levure, en g')).toHaveValue('12');
   });
 
   it('garde sous M20 sa réponse tardive sans l’appliquer à 3638, puis la périme après une correction manuelle de M20', async () => {
@@ -870,7 +870,7 @@ describe('IA dans les étapes d’une recette enregistrée', () => {
     expect(within(back).getByRole('group', { name: 'Tolérance à l’alcool' }).querySelector('[data-fact-reading]')).toHaveTextContent('9 % vol · valeur ponctuelle');
     fireEvent.click(screen.getByRole('button', { name: 'Annuler l’essai' }));
     expect(screen.getByRole('group', { name: 'Fiche de Wyeast 3068' })).toBeInTheDocument();
-    expect(screen.getByLabelText('Quantité de levure, en mL')).toHaveValue('125');
+    expect(libelle('Quantité de levure, en mL')).toHaveValue('125');
     expect(learn).not.toHaveBeenCalled(); expect(save).not.toHaveBeenCalled();
     expect(run).toHaveBeenCalledTimes(1);
   });
@@ -882,14 +882,14 @@ describe('IA dans les étapes d’une recette enregistrée', () => {
     const trial = tryM20();
     expect(within(trial).queryByLabelText('Atténuation retenue pour cette recette, en pourcent')).not.toBeInTheDocument();
     fireEvent.click(screen.getByText('Hypothèses et réglages complémentaires', { selector: 'summary' }));
-    const scenario = screen.getByLabelText('Atténuation retenue pour le scénario');
+    const scenario = libelle('Atténuation retenue pour le scénario');
     fireEvent.change(scenario, { target: { value: '80' } }); fireEvent.blur(scenario);
     fireEvent.click(screen.getByRole('button', { name: 'Utiliser la plage de la fiche' }));
     expect(scenario).toHaveValue('');
     fireEvent.click(screen.getByRole('button', { name: 'Appliquer au brouillon' }));
-    fireEvent.change(screen.getByLabelText('Unité de la quantité de levure'), { target: { value: 'g' } });
-    fireEvent.change(screen.getByLabelText('Quantité de levure, en g'), { target: { value: '12' } });
-    fireEvent.blur(screen.getByLabelText('Quantité de levure, en g'));
+    fireEvent.change(libelle('Unité de la quantité de levure'), { target: { value: 'g' } });
+    fireEvent.change(libelle('Quantité de levure, en g'), { target: { value: '12' } });
+    fireEvent.blur(libelle('Quantité de levure, en g'));
     allerEtape('Récapitulatif');
     fireEvent.click(screen.getByRole('button', { name: 'Enregistrer la recette' }));
     expect(save).toHaveBeenCalledTimes(1);
@@ -918,7 +918,7 @@ describe('IA dans les étapes d’une recette enregistrée', () => {
     const planned = screen.getByRole('group', { name: 'Quantité prévue de levure' });
     expect(planned).toHaveAttribute('data-yeast-quantity', 'missing');
     expect(within(planned).getByRole('textbox', { name: 'Quantité de levure' })).toHaveValue('');
-    expect(screen.getByLabelText('Forme de la levure')).toHaveValue('liquide');
+    expect(libelle('Forme de la levure')).toHaveValue('liquide');
     expect(learn).not.toHaveBeenCalled(); expect(save).not.toHaveBeenCalled();
   });
 
@@ -929,18 +929,18 @@ describe('IA dans les étapes d’une recette enregistrée', () => {
     allerEtape('Levure');
     const trial = tryM20();
     fireEvent.click(screen.getByText('Hypothèses et réglages complémentaires', { selector: 'summary' }));
-    const scenario = screen.getByLabelText('Atténuation retenue pour le scénario');
+    const scenario = libelle('Atténuation retenue pour le scénario');
     fireEvent.change(scenario, { target: { value: '70' } }); fireEvent.blur(scenario);
     searchSheet(trial);
     const panel = await within(trial).findByRole('region', { name: `Proposition IA pour ${M20}` });
     const independent = within(panel).queryByRole('button', { name: /^(Tout valider|Valider les données sans conflit)$/ });
     if (independent) fireEvent.click(independent);
     decideGaps(trial, ['Atténuation annoncée']);
-    expect(screen.getByLabelText('Atténuation retenue pour le scénario')).toHaveValue('70');
+    expect(libelle('Atténuation retenue pour le scénario')).toHaveValue('70');
     fireEvent.click(screen.getByRole('button', { name: 'Appliquer au brouillon' }));
-    fireEvent.change(screen.getByLabelText('Unité de la quantité de levure'), { target: { value: 'g' } });
-    fireEvent.change(screen.getByLabelText('Quantité de levure, en g'), { target: { value: '12' } });
-    fireEvent.blur(screen.getByLabelText('Quantité de levure, en g'));
+    fireEvent.change(libelle('Unité de la quantité de levure'), { target: { value: 'g' } });
+    fireEvent.change(libelle('Quantité de levure, en g'), { target: { value: '12' } });
+    fireEvent.blur(libelle('Quantité de levure, en g'));
     allerEtape('Récapitulatif');
     fireEvent.click(screen.getByRole('button', { name: 'Enregistrer la recette' }));
     expect(save).toHaveBeenCalledTimes(1);

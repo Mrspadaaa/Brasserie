@@ -21,7 +21,8 @@ import { recipeWaterExport } from '../../src/domain/recipeWaterExport';
 import { writeRecipeText } from '../../src/domain/recipeTransfer';
 import fixture from '../fixtures/hopScientific/test-houb.json';
 import type { Recipe } from '../../src/types';
-import { allerEtape } from '../helpers/wizard';
+// L'atelier de Ma levure montre le simulateur NOLO ouvert : ces parcours touchent l'étape sans l'ouvrir (20.11, volet non rendu fermé).
+import { allerEtapeSeule as allerEtape } from '../helpers/wizard';
 
 vi.mock('../../src/services/aiClient', () => ({ AiClient: { run: vi.fn() } }));
 afterEach(() => { cleanup(); localStorage.clear(); vi.restoreAllMocks(); });
