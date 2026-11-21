@@ -10,6 +10,7 @@ import type { BrewerMode } from '../../functions/src/companionTypes';
 import { nombreFr } from '../domain/nombreAffiche';
 import { MODES, NBSP, nombreTexte, partDe, renouvellement, statutsConversations } from './companion/derive';
 import './companion/limites.css';
+import { refCurseurNatif } from './geste';
 
 /** Ce que le serveur dit du budget : usage du jour, limites, mois en micro-CHF, suspension. */
 export type BrewerBudgetStatus = BrewerAiBudget;
@@ -605,7 +606,7 @@ export function BrewerBudgetCapView({
                   {UNITE_CHF}
                 </span>
               </span>
-              <input
+              <input ref={refCurseurNatif}
                 type="range"
                 min={min}
                 max={max}
