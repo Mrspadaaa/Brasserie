@@ -97,5 +97,24 @@ f();if(document.fonts)document.fonts.ready.then(function(){setTimeout(f,10);});}
 l.style.left=(a.left-P.left-3).toFixed(1)+'px';l.style.width=(b.right-a.left+6).toFixed(1)+'px';l.style.top=(a.bottom-2-hc-P.top).toFixed(1)+'px';});};
 f();if(document.fonts)document.fonts.ready.then(f);addEventListener('load',f);addEventListener('resize',f);})();
   })(doc, W, addEventListener, setTimeout);
-  return { arreter: () => { ecouteurs.forEach(([t, f]) => window.removeEventListener(t, f)); timers.forEach((id) => window.clearTimeout(id)); }, repose: () => { if (W.swRep) W.swRep(); if (W.sySo) W.sySo(); } };
+  // STG-1 : une rangée que les scripts de la maquette n'arrivent pas à faire tenir (colonne « Autres » des Levures) défile au lieu d'être coupée ;
+  // l'indice « › » (`[data-suite]`, posé par MurStock) dit qu'il y a une suite, tant que la planche n'est pas au bout. Les rangées qui tiennent ne changent pas.
+  const majIndice = (pl: HTMLElement) => {
+    const r = pl.closest('.l1e-r'); const i = r?.querySelector<HTMLElement>('[data-suite]'); if (!i) return;
+    const reste = pl.hasAttribute('data-defile') && pl.scrollLeft + pl.clientWidth < pl.scrollWidth - 2;
+    if (reste) i.setAttribute('data-on', ''); else i.removeAttribute('data-on');
+  };
+  const marquer = () => {
+    racine.querySelectorAll<HTMLElement>('.l1e-r[data-f] .l1e-pl').forEach((pl) => {
+      const gs = [...pl.querySelectorAll<HTMLElement>(':scope > .l1e-g')]; const R = pl.getBoundingClientRect();
+      const coupe = gs.length > 0 && R.width > 0 && gs[gs.length - 1].getBoundingClientRect().right + pl.scrollLeft > R.right + 0.5;
+      pl.toggleAttribute('data-defile', coupe);
+      if (!(pl as any).__suite) { (pl as any).__suite = true; pl.addEventListener('scroll', () => majIndice(pl), { passive: true }); }
+      majIndice(pl);
+    });
+  };
+  marquer();
+  if ((document as any).fonts) (document as any).fonts.ready.then(() => { setTimeout(marquer, 150); setTimeout(marquer, 600); });
+  addEventListener('resize', () => { setTimeout(marquer, 150); });
+  return { arreter: () => { ecouteurs.forEach(([t, f]) => window.removeEventListener(t, f)); timers.forEach((id) => window.clearTimeout(id)); }, repose: () => { if (W.swRep) W.swRep(); if (W.sySo) W.sySo(); marquer(); } };
 }

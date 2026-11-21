@@ -9,6 +9,10 @@ import { EquipmentPicto } from './ListPictos';
 const mono = (texte: string): React.ReactNode =>
   texte.split(/(\d{2}\.\d{2}|\d+)/).map((p, i) => (i % 2 ? <span key={i} className="mt-m">{p}</span> : p));
 
+/** STC-16 : « Fermenteur 120 L » ne se coupe pas entre le nombre et son unité (espace insécable, U+00A0) ; le reste du nom se plie comme avant. */
+const UNITE_APRES_NOMBRE = /(\d)\s+(L|l|ml|cl|dl|hl|kg|g|mm|cm|m|W|kW|V|bar|°C|°)(?![\p{L}\d])/gu;
+export const nomInsecable = (nom: string): string => nom.replace(UNITE_APRES_NOMBRE, (_t, n: string, u: string) => `${n} ${u}`);
+
 /** « fuit au raccord · depuis le 05.11 » : le verbe en encre, la suite en gris, les dates en chiffres tabulaires. */
 export const SousLigne: React.FC<{ line: string }> = ({ line }) => {
   const [verbe, ...reste] = line.split(' · ');
@@ -58,7 +62,7 @@ export const FilHaut: React.FC<FilProps> = ({ fil, mode, aJour, recent, selected
             <div key={r.item.ref} className={`mt-r${selectedRef === r.item.ref ? ' mt-choisi' : ''}`}>
               <span className={`mt-noeud${r.status.kind === 'panne' ? ' mt-al' : r.status.kind === 'jamais' ? ' mt-tir' : ''}`}><EquipmentPicto name={r.item.name} /></span>
               <button type="button" className="mt-txt" aria-label={`Ouvrir ${r.item.name}`} onClick={() => onOpen(r.item)}>
-                <span className="mt-nom">{r.item.name}</span>
+                <span className="mt-nom">{nomInsecable(r.item.name)}</span>
                 <SousLigne line={r.status.line} />
               </button>
               <button type="button" className="mt-fait" data-geste={geste} aria-label={`${LIBELLE[geste]} : ${r.item.name}`} onClick={() => onGeste(r, geste)}>
@@ -89,7 +93,7 @@ export const FilHaut: React.FC<FilProps> = ({ fil, mode, aJour, recent, selected
               {decalage > 2 && <span className="mt-rappel" style={{ top: a.y, height: decalage }} aria-hidden="true" />}
               <button type="button" className={`mt-ar${flash ? ' mt-flash' : ''}${selectedRef === a.item.ref ? ' mt-choisi' : ''}`} style={{ top: posY(a) }} aria-label={`Ouvrir ${a.item.name}`} onClick={() => onOpen(a.item)}>
                 <span className={`mt-pn${flash ? ' mt-okn' : ''}`}><EquipmentPicto name={a.item.name} /></span>
-                <span className="mt-t"><b>{a.item.name}</b><span className={flash && recent?.lectures ? 'mt-m' : undefined}>{flash && recent?.lectures ? recent.lectures : a.sansDate ? a.status.line : a.status.verb}</span></span>
+                <span className="mt-t"><b>{nomInsecable(a.item.name)}</b><span className={flash && recent?.lectures ? 'mt-m' : undefined}>{flash && recent?.lectures ? recent.lectures : a.sansDate ? a.status.line : a.status.verb}</span></span>
                 <span className="mt-j">{a.status.dueDate ? dateCourte(a.status.dueDate) : ''}</span>
               </button>
               </React.Fragment>
@@ -110,7 +114,7 @@ export const FilSans: React.FC<{ rows: StatusRow[]; onOpen: (item: EquipmentItem
         {rows.map(r => (
           <button key={r.item.ref} type="button" className="mt-c" aria-label={`Ouvrir ${r.item.name}`} onClick={() => onOpen(r.item)}>
             <EquipmentPicto name={r.item.name} />
-            <span>{r.item.name}</span>
+            <span>{nomInsecable(r.item.name)}</span>
           </button>
         ))}
       </div>

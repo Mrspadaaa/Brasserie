@@ -82,9 +82,10 @@ function TotalLevure({ g }: { g: GroupeMur }) {
   const lab = [s ? `${s} sachet${s > 1 ? 's' : ''}` : '', f ? `${f} fiole${f > 1 ? 's' : ''}` : ''].filter(Boolean).join(', ') || '0';
   // CT4C (g1, tour 2) n° 4 : la lettre de la brique ne dit pas la souche ; son nom court s'écrit à côté du compte (deux au plus, puis « +n »).
   const noms = [...new Set(g.marques.map((m) => m.souche).filter((x): x is string => !!x))];
-  const nomsLus = noms.length > 2 ? `${noms.slice(0, 2).join(' · ')} +${noms.length - 2}` : noms.join(' · ');
+  // STG-6 : « US-05 · S-04 +1 10 » se lisait « +110 » : le nombre d'autres souches s'écrit « (+1) », jamais collé au compte de sachets.
+  const nomsLus = noms.length > 2 ? `${noms.slice(0, 2).join(' · ')} (+${noms.length - 2})` : noms.join(' · ');
   return (
-    <span className="l1e-t">{nomsLus && <span className="sx-sn">{nomsLus}</span>}<span className="sx-tk" aria-label={lab} title={lab}><span aria-hidden="true">
+    <span className="l1e-t">{nomsLus && <><span className="sx-sn">{nomsLus}</span>{' '}</>}<span className="sx-tk" aria-label={lab} title={lab}><span aria-hidden="true">
       {s ? <>{s}<i className="sx-ks" /></> : null}{s && f ? <i className="sx-kp"> · </i> : null}{f ? <>{f}<i className="sx-kf" /></> : null}
     </span></span></span>
   );
@@ -214,9 +215,14 @@ function Mur({ m, parRef, onOpen, onFiltre, filtre, retenus, ouvertLegende, onLe
         cur = a; a.classList.add('l1e-on');
         bul.innerHTML = `<span>${esc(titre(a))}</span><span class="l1x-b2">${glisse ? 'relâcher : la fiche ›' : 'toucher ici : la fiche ›'}</span>`;
         bul.hidden = false;
-        const r = a.getBoundingClientRect(); const w = bul.offsetWidth;
+        const r = a.getBoundingClientRect(); const w = bul.offsetWidth; const h = bul.offsetHeight;
         bul.style.left = `${Math.max(8, Math.min(window.innerWidth - w - 8, r.left + r.width / 2 - w / 2))}px`;
-        bul.style.top = `${Math.max(8, r.top - bul.offsetHeight - 8)}px`;
+        // STG-2 : la bulle ne se pose sur aucune rangée (elle cachait la rangée du dessus et les marques voisines pendant la visée) :
+        // au-dessus du mur, à la hauteur des sous-onglets ; sous le mur quand il n'y a pas la place en haut ; en dernier recours contre le bord de l'écran.
+        const mur = root.querySelector('.l1-mur')?.getBoundingClientRect();
+        let top = mur ? mur.top - h - 6 : r.top - h - 8;
+        if (mur && top < 8) top = mur.bottom + 6;
+        bul.style.top = `${Math.max(8, Math.min(window.innerHeight - h - 8, top))}px`;
       };
       const ouvrir = (a: HTMLElement) => { const it = refs.current.get(a.dataset.ref ?? ''); cacher(); if (it) ouvrirRef.current(it); };
       const down = (e: PointerEvent) => { on = true; gl = false; x0 = e.clientX; try { pl.setPointerCapture(e.pointerId); } catch { /* sans effet */ } const a = proche(e.clientX); if (vu === a) { on = false; ouvrir(a); return; } montrer(a, true); };
@@ -255,6 +261,8 @@ function Mur({ m, parRef, onOpen, onFiltre, filtre, retenus, ouvertLegende, onLe
                 {r.vides.length > 0 && <span className="sx-vd" role="note" aria-label={`Aucun en stock : ${r.vides.join(', ')}`}>{r.vides.map((v) => <span key={v} className="sx-v"><i className="sx-o" />{v}</span>)}</span>}
                 {r.id === 'f0' && <i className="sw-rln" aria-hidden="true" />}
               </div>
+              {/* STG-1 : quand la rangée ne tient pas, la planche défile et cet indice dit qu'il y a une suite (posé par murMiseEnPage) */}
+              <i className="sx-suite" data-suite aria-hidden="true">›</i>
             </div>
             {r.id === 'f0' ? <LegendeMalts /> : r.id === 'f1' ? <LegendeHoublons /> : <LegendeLevures r={r} />}
           </Fragment>

@@ -93,3 +93,11 @@ html[data-theme="cave"] .stock-mur .l1e-r:not(.l1e-sansc) .l1e-gb::after{border-
 
 /* CT4C (g1, tour 2) n° 4 : la lettre de la brique ne dit pas la souche ; son nom court (US-05, S-04) s'écrit à côté du compte de la colonne, sans la Légende. */
 .stock-mur .sx-sn{font-size:12px;font-weight:600;margin-right:4px}
+
+/* STG-1 : une rangée qui ne tient pas défile (la colonne « Autres » des Levures n'est plus coupée) ; l'indice « › » dit qu'il y a une suite. Les autres rangées ne changent pas. */
+.stock-mur .l1e-r .l1e-pl[data-defile]{overflow-x:auto;overflow-y:hidden;padding-top:3px;padding-bottom:3px;scrollbar-width:none;overscroll-behavior-x:contain;touch-action:pan-x pan-y!important}
+.stock-mur .l1e-r .l1e-pl[data-defile]::-webkit-scrollbar{display:none}
+.stock-mur .sx-suite{display:none;position:absolute;right:0;top:0;bottom:0;width:22px;align-items:center;justify-content:flex-end;padding-right:4px;font:700 20px/1 var(--l1-sans,inherit);font-style:normal;color:var(--l1-t0);background:linear-gradient(90deg,transparent,var(--l1-panel) 65%);pointer-events:none}
+.stock-mur .sx-suite[data-on]{display:flex}
+/* STG-2 et STG-3 : la bulle qui confirme (« toucher ici : la fiche ») se touche au pouce : 44 px de haut au moins */
+.l1x-bul{min-height:44px;justify-content:center}
