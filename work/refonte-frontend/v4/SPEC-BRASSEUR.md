@@ -2539,3 +2539,7 @@ Classement de la page r3 de Ma levure (https://claude.ai/artifact/DKAJe8ESeMR4ig
 > Combien de % ? On peut enlever des test si ça apporte rien et créé juste de la lenteur en mise en prod
 
 (21.11 : D409.)
+
+> Et le l'action du temps sur le graph des prix fonctionne extrêmement mal ???
+
+(21.11, 17:26, tour 8 en ligne, captures 8 et 9 : le cadre de période sur la courbe des prix ; le bandeau « Enregistrement sur le serveur… » décale toute la vue de 66 px ; étiquettes posées sur la ligne zéro.)
