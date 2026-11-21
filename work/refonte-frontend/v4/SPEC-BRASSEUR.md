@@ -2603,3 +2603,8 @@ Classement de la page r3 de Ma levure (https://claude.ai/artifact/DKAJe8ESeMR4ig
 > v04Carte à volets est bien aussi dans son idée de sous menu. Avoir toutes les dates exactes comme v09Fil des dates est aussi un plus mais pas toujours nécessaire...
 
 (21.11, page de choix de la fiche du Calendrier : v02 « Pastilles chiffrées » prise, avec cette note.)
+
+> Je l'ajoute ? Yes
+> SI ça augmente la fluidité
+
+(21.11, accord pour vite-plugin-pwa, hors ligne V6 / CHN-7.)
