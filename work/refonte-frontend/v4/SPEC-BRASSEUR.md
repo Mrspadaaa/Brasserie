@@ -2543,3 +2543,7 @@ Classement de la page r3 de Ma levure (https://claude.ai/artifact/DKAJe8ESeMR4ig
 > Et le l'action du temps sur le graph des prix fonctionne extrêmement mal ???
 
 (21.11, 17:26, tour 8 en ligne, captures 8 et 9 : le cadre de période sur la courbe des prix ; le bandeau « Enregistrement sur le serveur… » décale toute la vue de 66 px ; étiquettes posées sur la ligne zéro.)
+
+> Cette vue semble fixer l'échelle... Ce qui est vraiment pas ce que j'ai demandé. C'est juste ça met à cette échelle mais en aucun cas ça la fix..
+
+(21.11, tour 8, capture-10 : le menu de période (2 sem., 6 sem., 3 mois, 6 mois, An) pose une durée de départ ; le geste de la frise doit rester libre ensuite.)
