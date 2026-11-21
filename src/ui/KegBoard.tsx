@@ -1,4 +1,4 @@
-import React, { useEffect, useId, useMemo, useRef, useState } from 'react';
+import React, { useEffect, useId, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import { Beer, ChevronRight, CircleHelp, Droplets, Sparkles, Truck, Trash2 } from 'lucide-react';
 import { KegItem, KegState, Batch, Client } from '../types';
 import { StorageService } from '../services/storage';
@@ -102,6 +102,15 @@ export const KegBoard: React.FC<KegBoardProps> = ({
   const [fill, setFill] = useState<{ kegId?: string } | null>(null);
   /** Choix multiple : aucun état choisi = tout le parc. */
   const [filtre, setFiltre] = useState<EtatFut[]>([]);
+  // VUE-SAUTE (21.11) : à l'arrivée, la liste en sections (GroupedVirtuoso) mesure son en-tête collant une image après son rendu et descend d'autant (24 px).
+  // Elle reste invisible, à sa place, le temps de cette mesure (trois images) : elle paraît posée, jamais en train de sauter.
+  const [pose, setPose] = useState(false);
+  useLayoutEffect(() => {
+    let id = 0; let n = 0;
+    const image = () => { if (++n >= 3) setPose(true); else id = requestAnimationFrame(image); };
+    id = requestAnimationFrame(image);
+    return () => cancelAnimationFrame(id);
+  }, []);
   const [confirmeLavage, setConfirmeLavage] = useState(false);
   const [marquage, setMarquage] = useState<Marquage | null>(null);
   const confirmeRef = useRef<HTMLDivElement>(null);
@@ -166,7 +175,7 @@ export const KegBoard: React.FC<KegBoardProps> = ({
   return (
     <>
       <EntityList
-        className={`equipment-list ${className}`}
+        className={`equipment-list ${className}${pose ? '' : ' invisible'}`}
         items={range}
         keyOf={keg => keg.id}
         searchKeys={SEARCH_KEYS}

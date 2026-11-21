@@ -1,4 +1,4 @@
-import React, { lazy, Suspense, useState, useMemo, useEffect, useRef, useCallback } from 'react';
+import React, { lazy, Suspense, useState, useMemo, useEffect, useLayoutEffect, useRef, useCallback } from 'react';
 import { Plus, ShoppingCart, Copy, Check, Boxes, Beer, Wrench, Hop, Undo2 } from 'lucide-react';
 import { StockItem, EquipmentItem, KegItem, Batch, Recipe, Client } from '../../types';
 import { StorageService } from '../../services/storage';
@@ -505,6 +505,17 @@ export const StocksTab: React.FC<StocksTabProps> = ({
   // descendu, on remonte juste assez pour que le champ soit en haut de l'écran ; si le champ est déjà visible, rien ne bouge.
   const refPanneau = useRef<HTMLDivElement>(null);
   const refHaut = useRef<HTMLDivElement>(null);
+  // VUE-SAUTE : la liste en rayons (GroupedVirtuoso) mesure son en-tête de rayon collant une image après son rendu et remonte d'autant (72 px à 390).
+  // Elle reste invisible, à sa place, le temps de cette mesure (trois images) : elle paraît posée, jamais en train de sauter. D'un onglet du mur
+  // à l'autre, elle renaît (key) au lieu de faire glisser ses lignes.
+  const [listeMesuree, setListeMesuree] = useState(false);
+  useLayoutEffect(() => {
+    setListeMesuree(false);
+    let id = 0; let n = 0;
+    const image = () => { if (++n >= 3) setListeMesuree(true); else id = requestAnimationFrame(image); };
+    id = requestAnimationFrame(image);
+    return () => cancelAnimationFrame(id);
+  }, [vue, subTab, ongletMur]);
   const filtreDejaLu = useRef(false);
   useEffect(() => {
     if (!filtreDejaLu.current) { filtreDejaLu.current = true; return; }
@@ -647,7 +658,8 @@ export const StocksTab: React.FC<StocksTabProps> = ({
         </Suspense>
         </div>
         <EntityList
-          className={mobile ? 'pb-16' : 'pb-10'}
+          key={ongletMur}
+          className={`${mobile ? 'pb-16' : 'pb-10'}${listeMesuree ? '' : ' invisible'}`}
           repartDuHaut={false}
           defileFenetre
           items={visibleItems}

@@ -154,6 +154,9 @@ export function EntityList<T>({
     };
   }, [filtered, groupOf, groupOrder, groupesPlies]);
 
+  // VUE-SAUTE (21.11) : un filtre changé (resetKey) pose des lignes neuves au lieu de faire glisser les anciennes d'une place à l'autre.
+  const cleLigne = React.useCallback((index: number) => `${String(resetKey ?? '')}:${index}`, [resetKey]);
+
   const showSearch = Boolean(searchKeys && searchKeys.length > 0);
   const isEmpty = items.length === 0;
   const noResults = !isEmpty && filtered.length === 0;
@@ -219,6 +222,7 @@ export function EntityList<T>({
           ref={defilement as never}
           className={defileFenetre ? undefined : "flex-1 min-h-0"}
           useWindowScroll={defileFenetre}
+          computeItemKey={cleLigne}
           components={COMPOSANTS_LISTE as never}
           context={{ pied: footer } as never}
           groupCounts={grouped.counts}
@@ -248,6 +252,7 @@ export function EntityList<T>({
           ref={defilement as never}
           className={defileFenetre ? undefined : "flex-1 min-h-0"}
           useWindowScroll={defileFenetre}
+          computeItemKey={cleLigne}
           components={COMPOSANTS_LISTE as never}
           context={{ pied: footer } as never}
           data={filtered}
