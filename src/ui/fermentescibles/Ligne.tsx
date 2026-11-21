@@ -1,10 +1,11 @@
-import React, { useRef, useState } from 'react';
+import React, { useState } from 'react';
+import { borner, etendreEchelle, suivreDeplacement, useGlisse } from '../geste';
 import type { Fermentable, FermentableKind } from '../../types';
 import { ChampLigne } from './ChampLigne';
 import { CouleurChamp } from './CouleurChamp';
 import { Croix, Cube, Remettre, Tour } from './icones';
 import {
-  arrondiKg, autresKg, cran, cranPas, etiquetteFermentescibilite, gesteMoment, grainEmpate, grainHorsEmpatage, grainKg, kgPourPart, kgTxt, momentPermis, momentTourne, MOT_MOMENT, nu,
+  arrondiKg, autresKg, cran, cranPas, MASSE_MAX_KG, etiquetteFermentescibilite, gesteMoment, grainEmpate, grainHorsEmpatage, grainKg, kgPourPart, kgTxt, momentPermis, momentTourne, MOT_MOMENT, nu,
   estEpice, estSombre, pas, partN, teinte, voile,
 } from './modele';
 
@@ -69,7 +70,6 @@ function Pastille({ f, i, ouverte, a }: { f: Fermentable; i: number; ouverte: bo
 /** Une ligne du ticket (s1) : le nom, la masse tapée, le moment sans pilule, la part, et la barre qui porte la masse. */
 export const Ligne: React.FC<LigneProps> = ({ f, i, fermentables, selectionnee, neuf, couleurOuverte, annMom, nolo, etiquetteFamille, echelle, invalide, decrit, a }) => {
   const [tire, setTire] = useState(false);
-  const geste = useRef<{ id: number; x0: number; g: number; w: number; av: number; bouge: boolean; part: boolean } | null>(null);
   const grain = f.kind === 'grain';
   const part = enPart(f, i, fermentables);
   const total = grainKg(fermentables);
@@ -83,12 +83,23 @@ export const Ligne: React.FC<LigneProps> = ({ f, i, fermentables, selectionnee, 
   const jour = f.dayOffset ?? 0;
   const ann = annMom && annMom.i === i ? annMom : null;
 
-  const poser = (x: number) => {
-    const g = geste.current;
-    if (!g || !(g.w > 0) || !Number.isFinite(x)) return;
-    const kg = g.part ? kgPourPart(fermentables, i, Math.round(Math.min(0.95, x) * 100)) : x * echelle;
-    if (kg != null) a.setKg(i, cran(kg));
-  };
+  /* Frise B (20.11, réglage quantité) : la masse suit le DÉPLACEMENT du doigt (jamais sa position), 6 px avant de bouger, Échap ou
+     pointercancel rendent la masse d'avant ; au bord droit, l'échelle s'étend vers le haut seulement, 0 reste à gauche (src/ui/geste). */
+  const glisse = useGlisse<{ av: number; w: number; part: boolean; ech: number; f0: number }>({
+    saisir: (_x, e) => {
+      const larg = (e.currentTarget as HTMLElement | null)?.getBoundingClientRect().width ?? 0;
+      return larg > 0 ? { av: f.weightKg, w: larg, part, ech: echelle, f0: largeur / 100 } : null;
+    },
+    suivre: (dx, s) => {
+      if (!tire) setTire(true);
+      const kg = s.part ? kgPourPart(fermentables, i, Math.round(borner(s.f0 + dx / s.w, 0, 0.95) * 100))
+        : borner(suivreDeplacement(s.av, dx, s.ech / s.w), 0, MASSE_MAX_KG);
+      if (kg != null && Number.isFinite(kg)) a.setKg(i, cran(kg));
+    },
+    bord: (sens, v, dt, s) => { if (!s.part && sens > 0) s.ech = etendreEchelle(s.ech, v, dt, MASSE_MAX_KG); },
+    lacher: () => setTire(false),
+    annuler: (s) => { setTire(false); a.setKg(i, s.av); },
+  });
   const clic = (e: React.MouseEvent) => {
     if ((e.target as HTMLElement).closest('button, input, textarea, label, .fer-bw')) return;
     a.selectionner(i);
@@ -150,28 +161,10 @@ export const Ligne: React.FC<LigneProps> = ({ f, i, fermentables, selectionnee, 
           </button>
         )}
         <span className="fer-bw" data-role={grain ? 'part-ligne' : undefined} data-bw={i} data-booster="masse-barre-tiree"
-          onPointerDown={(e) => {
-            const r = e.currentTarget.getBoundingClientRect();
-            geste.current = { id: e.pointerId, x0: e.clientX, g: r.left, w: r.width, av: f.weightKg, bouge: false, part };
-            try { e.currentTarget.setPointerCapture(e.pointerId); } catch { /* le doigt a déjà quitté */ }
-          }}
-          onPointerMove={(e) => {
-            const g = geste.current;
-            if (!g || e.pointerId !== g.id) return;
-            if (!g.bouge && Math.abs(e.clientX - g.x0) < 4) return;
-            if (!g.bouge) { g.bouge = true; setTire(true); }
-            poser(Math.max(0, Math.min(1, (e.clientX - g.g) / g.w)));
-          }}
-          onPointerUp={(e) => { if (geste.current && e.pointerId === geste.current.id) { geste.current = null; setTire(false); } }}
-          onPointerCancel={(e) => {
-            const g = geste.current;
-            if (!g || e.pointerId !== g.id) return;
-            geste.current = null; setTire(false); a.setKg(i, g.av);
-          }}>
+          ref={glisse}>
           <span className="fer-cur" data-role="masse-curseur" data-mk={i} role="slider" tabIndex={0} aria-label={`Masse de ${f.name}`}
             aria-valuemin={0} aria-valuemax={maxCur} aria-valuenow={f.weightKg} aria-valuetext={`${kgTxt(f.weightKg)} kg`}
             onKeyDown={(e) => {
-              if (e.key === 'Escape' && geste.current) { e.preventDefault(); const g = geste.current; geste.current = null; setTire(false); a.setKg(i, g.av); return; }
               const d = ({ ArrowRight: 1, ArrowUp: 1, ArrowLeft: -1, ArrowDown: -1 } as Record<string, number>)[e.key];
               if (!d) return;
               e.preventDefault();
