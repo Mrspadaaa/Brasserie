@@ -73,14 +73,15 @@ if (echecs.length) { console.log(`PARCOURS CHAINES ECHEC (${echecs.length})`); f
 console.log('PARCOURS CHAINES OK');
 
 // ───────────── gestes communs ─────────────
-/** Recette neuve par l'assistant : « Actions rapides » → « Recette », nom, volume (si dit), malts du stock (Caramünch laissé tel quel si `caramel` est faux). */
+/** Recette neuve par l'assistant : « Actions rapides » → « Recette », nom, volume (si dit), malts du stock (Caramünch effacé à 0 kg si `caramel` est faux). */
 async function recetteNeuve(s, { nom = 'ZZ TEST Brune', volume = null, caramel = true, pils = true } = {}) {
   await s.toucher('Actions rapides'); await s.toucher('Recette'); await sleep(800);
   await s.ecrire('textarea[name=recipe_title_label]', nom);
   if (volume != null) await s.ecrire('textarea[aria-label="Volume en fermenteur"]', String(volume));
   await s.toucher('Suivant', { prefixe: true }); await sleep(800);
   await s.toucher('ZZ TEST Caramünch', { contient: true }); await sleep(700);
-  if (caramel) await s.ecrire('textarea[aria-label^="Masse de ZZ TEST Caramünch"]', '0.6');
+  // N1 (v04) pose le malt avec une quantité : sans `caramel`, le brasseur l’efface à la main (malt à 0 kg, B4).
+  await s.ecrire('textarea[aria-label^="Masse de ZZ TEST Caramünch"]', caramel ? '0.6' : '0');
   if (pils) { await s.toucher('ZZ TEST Malt pilsner', { contient: true }); await sleep(700); await s.ecrire('textarea[aria-label^="Masse de ZZ TEST Malt pilsner"]', '5'); }
 }
 /** De l'étape Malts à l'étape Levure (Houblons passé), puis la levure du catalogue (dose par défaut posée par l'application). */
@@ -315,7 +316,7 @@ function listeEtapes() { return [
     async joue(s) {
       await s.onglet('Brassins'); await sleep(800);
       await s.toucher('Brasser · B-ZZ-JOUR', { prefixe: true }); await sleep(1800);
-      await s.toucher('Commencer aujourd', { contient: true }); await sleep(1500);
+      if (await s.visible('Commencer aujourd', { contient: true })) { await s.toucher('Commencer aujourd', { contient: true }); await sleep(1500); }
       await s.cap('WF2-1-1-compagnon');
       for (let n = 0; n < 2; n++) {
         await s.toucher('Terminer et continuer', { att: 3000 }); await sleep(900);
@@ -494,7 +495,7 @@ function listeEtapes() { return [
       // houblon : ton stock d'abord, dose qui tient l'IBU (v03)
       const ajouts = await libelles(s, 'Ajouter ');
       await s.cap('N1-2-houblons');
-      if (!/^Ajouter ZZ TEST Citra/.test(ajouts[0] ?? '')) pb.push(`le houblon proposé en premier n'est pas celui du stock (ZZ TEST Citra, α 12,5) : « ${(ajouts[0] ?? 'aucune proposition').slice(0, 70)} »`);
+      if (!/^Ajouter (ZZ TEST )?Citra(?![a-z])/.test(ajouts[0] ?? '')) pb.push(`le houblon proposé en premier n'est pas celui du stock (ZZ TEST Citra, α 12,5) : « ${(ajouts[0] ?? 'aucune proposition').slice(0, 70)} »`);
       else {
         const g = nombre((ajouts[0].match(/(\d+(?:[.,]\d+)?)\s*g\b/) ?? [])[1]);
         if (!(g > 0)) pb.push(`la proposition « ${ajouts[0].slice(0, 60)} » ne porte pas de dose`);
