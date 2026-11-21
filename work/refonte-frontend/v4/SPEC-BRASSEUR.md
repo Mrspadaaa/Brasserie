@@ -2485,3 +2485,7 @@ Classement de la page r3 de Ma levure (https://claude.ai/artifact/DKAJe8ESeMR4ig
 > Il y a vraiment beaucoup de place inutile, et l'info ont l'a déjà sur le graph...
 
 (21.11, capture-6 : entourés, la barre du haut « L'Affinée » avec les avatars G A sur une seconde ligne, et la rangée « −683 » sous les mois, reliée à « lol −600 » déjà écrit sur la courbe.)
+
+> Il y a beaucoup de lenteur sur les actions du calendrier...
+
+(21.11, en ligne tour 7, téléphone.)
