@@ -2474,3 +2474,10 @@ Classement de la page r3 de Ma levure (https://claude.ai/artifact/DKAJe8ESeMR4ig
 > Fait le partout !!!
 
 (20.11 : frise B validée, https://claude.ai/artifact/CYworN1pL87XZtdvH7CaEC. Son comportement (règles R1 à R14 du fichier work/missions/2026-11-20-frise/frise-interactive.html) se porte dans toutes les frises et tous les curseurs de l'app, chaque écran gardant son visuel.)
+
+> Avec le point qui bouge toujours pas super fan ...
+> Ça fait bouger tout le calendrier aussi et même avec le graph des prix caché. Il y a vraiment un immense header ???
+>
+> Beaucoup de place gâché pour rien et surtout il faudrait des tailles fix car SI non ça fait bouger le calendrier
+
+(21.11, Calendrier en ligne tour 7, 5 captures dans work/missions/2026-11-21-calendrier-entete/ : rond pointillé entouré sur la courbe ; panneau de semaine « S32 rien cette semaine » / « S47 lol −600 +4 autres » de hauteur variable ; en-tête haut même courbe cachée.)
