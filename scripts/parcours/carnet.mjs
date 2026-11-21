@@ -565,6 +565,12 @@ async function jouer(dir) {
       await focaliserChamp(); await taper('mesurer la niche'); await entree(); await cap('40e-note-1280');
       await verifier('40 note ajoutée à 1280', { contient: ['Mesurer la niche'], carnets: true });
     });
+    await etape('CRN-13 pas de titre « Atelier » redit sous les onglets à 1280', async () => {
+      await demarrer(); await versAtelier(); await attendreListe(); await cap('crn13-1280');
+      const h = await p.evaluate(() => [...document.querySelectorAll('h1,h2')].filter((e) => e.getBoundingClientRect().width > 0).map((e) => e.innerText.trim()).filter((t) => /^Atelier/.test(t)));
+      if (h.length) throw new Error(`titre « ${h.join(' / ')} » sous les onglets, il redit l'onglet actif`);
+      ok('CRN-13', 'aucun titre redit');
+    });
     if (erreursPage.length) console.log(`  note : ${erreursPage.length} erreur(s) de page, la première : ${erreursPage[0]}`);
     void attendu; void noteBouton;
   } finally { await nav.close().catch(() => {}); srv.close(); }

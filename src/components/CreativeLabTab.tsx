@@ -275,7 +275,7 @@ export const CreativeLabTab: React.FC<CreativeLabTabProps> = ({
 
   return (
     <div className="space-y-2 sm:space-y-4 animate-in fade-in text-sm">
-      {!mobile&&<div className="finance-heading"><h2 className="text-2xl font-semibold">Atelier R&D</h2></div>}
+      {/* CRN-13 : à 1280, « Atelier R&D » redisait l'onglet actif, collé à 6 px sous la barre ; absent à 390, absent ici aussi */}
       <div className="nc-seg" role="group" aria-label="Mon atelier">
         {([['materiel', 'Matériel', Wrench], ['carnet', 'Carnet', FileText], ['tarifs', 'Tarifs', Tag]] as const).map(([cle, nom, Icone]) => <button key={cle} type="button" aria-pressed={onglet === cle} onClick={() => { setOnglet(cle); setIsAdding(false); }}><Icone size={18} aria-hidden="true" />{nom}</button>)}
       </div>
