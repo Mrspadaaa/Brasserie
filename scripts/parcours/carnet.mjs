@@ -516,6 +516,13 @@ async function jouer(dir) {
       if (r.aide || r.ex.length) throw new Error(`aide en pointillés avec ses carnets${r.ex.length ? `, exemples déjà là : ${r.ex.join(', ')}` : ''}`);
       ok('CRN-12', 'aucune aide, la liste ne bouge pas');
     });
+    await etape('CRN-15 pas d’aide de clavier au doigt en renommant', async () => {
+      await demarrer(); await versAtelier(); await attendreListe(); await ouvrirCarnetDeListe('Frigo + congel');
+      await toucher('Renommer', { exact: true }); await sleep(500); await cap('crn15-renommer');
+      const vu = await p.evaluate(() => [...document.querySelectorAll('span')].some((e) => (e.innerText ?? '').trim() === 'Entrée = renommer' && e.getBoundingClientRect().width > 0));
+      if (vu) throw new Error('« Entrée = renommer » affiché à 390 tactile');
+      ok('CRN-15', 'aide de clavier absente au doigt');
+    });
     // CRN-suite
 
     // ══════════ thèmes et grand écran ══════════

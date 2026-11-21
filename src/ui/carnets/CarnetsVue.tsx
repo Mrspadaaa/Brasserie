@@ -1242,7 +1242,7 @@ export function CarnetsVue(p: CarnetsVueProps) {
     /* n° 26 (g4:v01-13) : le titre dans le champ du bas, « Renommer », puis « Annuler · Entrée = renommer » */
     <ChampCarnet valeur={titreEdite} inputRef={champRef} onChange={setTitreEdite} onEnvoyer={() => renommerOuvert(renomme, titreEdite)}
       titreCarnet={renomme.title} libelleEnvoi="Renommer"
-      pied={<div className="cnf-renommer-pied"><button type="button" className="cn-lien" onClick={() => setVue({ sorte: 'carnet', id: renomme.id })}>Annuler</button><span className="cn-sp" /><span className="cn-mut">Entrée = renommer</span></div>} />
+      pied={<div className="cnf-renommer-pied"><button type="button" className="cn-lien" onClick={() => setVue({ sorte: 'carnet', id: renomme.id })}>Annuler</button><span className="cn-sp" /><span className="cn-mut cn-aide-clavier">Entrée = renommer</span></div>} />
   ) : (
     <ChampCarnet valeur={texte} inputRef={champRef}
       onChange={t => { setTexte(t); if (!t.trim()) { setCorrige(null); setCorrigeCarnet(null); } if (!edition) rangement.taper(t); }}

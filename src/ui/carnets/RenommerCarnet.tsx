@@ -68,7 +68,7 @@ export function RenommerCarnet(p: RenommerCarnetProps) {
       />
       <div className="cn-rang-boutons">
         <button type="button" className="cn-lien" onClick={p.onAnnuler}>Annuler</button>
-        <span className="cn-mut cn-sp">Entrée = renommer</span>
+        <span className="cn-sp"><span className="cn-mut cn-aide-clavier">Entrée = renommer</span></span>
         <button type="submit" className="cn-action" disabled={!pret}>Renommer</button>
       </div>
     </form>
