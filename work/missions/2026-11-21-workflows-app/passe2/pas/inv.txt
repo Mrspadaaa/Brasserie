@@ -1,0 +1,4 @@
+t=Stocks
+t=Recompter
+ci=0|Compter
+d
