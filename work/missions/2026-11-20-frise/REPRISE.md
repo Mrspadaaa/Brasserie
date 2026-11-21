@@ -27,7 +27,8 @@ indexés). Désormais commit par `<S>/commit-chemins.sh <msg> <chemin>[=<source>
    `planRecipeBatch` pose-t-il `brewDate` → `pasCommence` faux, useDonneesCalendrier l. 222 ?). Piste : poser « Fermentation » à J+1 dès que le
    cycle est connu ; coût par `estimateBrewBudget` (brewBudget.ts l. 318) ou « coût à venir ». Capture `<S>/v1/09c-k3-brassin-pose.png`.
 3. VUE-SAUTE, précision semaine/mois de la date du carnet (spécifications à relire dans BUGS.md).
-4. Parcours complet lancé en arrière-plan : `<S>/full.out` (« == FIN code n » à la fin), captures `<S>/full/`. Puis vision 390 et 1280, deux
+4. Parcours complet fini : ECHEC (2) : K3-SUITES, et G3 (« toucher la case vide S48 de Travaux ne crée rien ») alors que G3 est vert seul :
+   après les sections 1 à 10, une chose reste choisie ou S48 n'est plus vide ; lire `<S>/full/09c-g3-*.png`. Captures `<S>/full/`. Puis vision 390 et 1280, deux
    thèmes ; build `VITE_HOP_V4=on VITE_CARNET_IA=production npm run build` (tsc a une erreur V-RECETTE : `src/domain/hopIndex/v4/cases.ts:85`).
 5. `EnTete.tsx` (juger) toujours non commité ; TRANSVERSE-RESTE.md (Calendrier) pas traité.
 `<S>` = `C:/Users/mrspa/AppData/Local/Temp/claude/2574149e6fd34767/16fc09ec-4e69-48a9-9744-5912b6ef6552/scratchpad`.
