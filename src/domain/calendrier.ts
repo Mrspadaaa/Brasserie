@@ -1052,7 +1052,7 @@ export function choseArgent(
   const notesDit = notes.length ? ` · ${notes.join(' · ')}` : '';
   const poste = item.source === 'brew' && !entree ? posteBrassin(item) : undefined;
   /* les ingrédients à acheter, lus dans la prévision (une ligne par ingrédient chiffré) ; inconnus : rien, jamais inventés */
-  const articles = poste === 'courses' ? [...new Set((item.lines ?? []).map(l => l.label.trim()).filter(Boolean))] : [];
+  const articles = poste === 'courses' ? [...new Set((item.lines ?? []).map(l => (l.label ?? '').trim()).filter(Boolean))] : [];
   return {
     id: idChoseArgent(item), rangee, titre, debut: f?.du ?? jour, fin: f?.au ?? jour, ...montant,
     ...(poste ? { posteBrassin: poste } : {}), ...(articles.length ? { articles } : {}),

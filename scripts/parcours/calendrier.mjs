@@ -321,6 +321,42 @@ async function jouer(dir) {
       }
     } catch (e) { echec('maquette choisie', String(e.message).slice(0, 200)); }
 
+    // 9b. Bugs des workflows du 21.11 (Brasserie work/missions/2026-11-21-workflows-app/SYNTHESE.md § 1) : B8, B9, B11, puis B3.
+    try { await bugsWorkflows(); } catch (e) { echec('bugs workflows', String(e.message).slice(0, 200)); }
+    async function bugsWorkflows() {
+      const pastille = () => p.evaluate(() => (document.querySelector('[data-periode-pastille]')?.innerText ?? '').replace(/\s+/g, ' ').trim());
+      const semainesVues = () => p.evaluate(() => [...document.querySelectorAll('[data-bande-semaines] [data-semaine]')].filter((e) => e.getBoundingClientRect().width > 0).map((e) => Number(e.getAttribute('data-semaine'))));
+      const colonne = () => p.evaluate(() => { const b = [...document.querySelectorAll('[data-bande-semaines] [data-semaine]')]; return b.length > 1 ? b[1].getBoundingClientRect().x - b[0].getBoundingClientRect().x : 26; });
+      const menuDuree = async (nom) => { const m = await point('[aria-label$="période, liste, tri et filtre"]'); await p.touchscreen.tap(m[0], m[1]); await sleep(650); await toucher(nom); await sleep(500); };
+      // chaque étape part de la période par défaut (« ce mois »), quelle que soit celle laissée par les étapes d'avant
+      const periodeNeuve = () => p.evaluate(() => { for (const k of Object.keys(localStorage)) { try { const o = JSON.parse(localStorage.getItem(k)); if (o && typeof o === 'object' && 'app_global_time_filter' in o) { delete o.app_global_time_filter; localStorage.setItem(k, JSON.stringify(o)); } } catch { /* pas du JSON */ } } });
+      const recharger = async () => { await periodeNeuve(); await p.goto(url, { waitUntil: 'load' }); await sleep(1200); await versCalendrier(); };
+
+      // B3 / WFR-11 : un brassin planifié dont la levure n'a pas de nom (recette figée avec la seule référence de stock, forme réelle) ne fait pas
+      // tomber l'écran. Injecté dans le cache de la fixture le temps de l'étape, puis retiré.
+      {
+        const CLE = 'parcours-calendrier:cache';
+        const avant = await p.evaluate((k) => localStorage.getItem(k), CLE);
+        const jour = new Date(Date.now() + 14 * 86400000).toISOString().slice(0, 10);
+        const suisse = `${jour.slice(8, 10)}.${jour.slice(5, 7)}.${jour.slice(0, 4)}`;
+        const lot = { id: 'B-ZZ-LEVURE', name: 'ZZ TEST levure sans nom', style: 'IPA', volumeL: 100, brewDate: '', plannedBrewDate: suisse, status: 'planifie', gravityLog: [], recipeRef: 'R-ZZ-LEVURE', stockAccountingVersion: 1,
+          recipeSnapshot: { name: 'ZZ TEST levure sans nom', volumeL: 100, ogTarget: 1.055, fermentables: [{ name: 'Malt pilsner', weightKg: 20, kind: 'grain' }], hops: [], yeast: { stockItemRef: 'ZZ-US05', qty: 2, unit: 'sachet' }, fermentation: [{ kind: 'primaire', name: 'Primaire', tempC: 19, days: 12 }] } };
+        await p.evaluate((k, l) => { const t = JSON.parse(localStorage.getItem(k) ?? '[]'); t.push({ name: 'batches', id: l.id, data: l }); localStorage.setItem(k, JSON.stringify(t)); }, CLE, lot);
+        try {
+          await p.goto(url, { waitUntil: 'load' }); await sleep(1200);
+          await p.waitForSelector('nav button', { timeout: 90000 });
+          if (!(await p.$('[data-calendrier]'))) await toucher('Calendrier').catch(() => {});
+          const ouvert = await p.waitForSelector('[data-calendrier]', { timeout: 15000 }).then(() => true).catch(() => false);
+          const texte = await p.evaluate(() => document.body.innerText.replace(/\s+/g, ' ').slice(0, 120));
+          await cap('09b-b3-levure-sans-nom');
+          const nomme = ouvert && (await p.evaluate(() => [...document.querySelectorAll('[aria-label]')].some((e) => e.getAttribute('aria-label').startsWith('ZZ TEST levure sans nom'))));
+          ouvert ? ok('B3 écran ouvert', `levure sans nom : Calendrier ouvert${nomme ? ', le brassin y est' : ' (brassin hors de la fenêtre)'}`) : echec('B3 écran ouvert', `brassin dont la levure n'a pas de nom : « ${texte} »`);
+        } finally {
+          await p.evaluate((k, a) => { if (a === null) localStorage.removeItem(k); else localStorage.setItem(k, a); }, CLE, avant);
+        }
+      }
+    }
+
     // 10. CAL-ENTETE (21.11, tour 7 : « Avec le point qui bouge toujours pas super fan » ; « Il y a vraiment un immense header » ; « il faudrait
     // des tailles fix car SI non ça fait bouger le calendrier » ; « beaucoup de place inutile, et l'info ont l'a déjà sur le graph »).
     // À 390 tactile, dans l'An (sa capture) puis en 3 mois : aucun rond pointillé ni rond de repère sur la courbe ; le haut de la première rangée

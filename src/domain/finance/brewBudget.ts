@@ -157,19 +157,22 @@ export interface EstimateBrewBudgetInput {
 }
 const finite = (v: number | undefined): v is number => typeof v === 'number' && Number.isFinite(v) && v >= 0;
 const money = (v: number) => Math.round((v + Number.EPSILON) * 100) / 100;
-const nameKey = (s: string) => s.trim().toLocaleLowerCase('fr-CH');
-export const demandKey = (name: string, unit: string, stockItemRef?: string) => `${nameKey(name)}|${unit.trim().toLowerCase()}${stockItemRef ? `|ref:${stockItemRef}` : ''}`;
+/* B3 (WFR-11) : une recette figée peut porter une levure sans nom (la seule référence de stock) ; un texte absent ne fait jamais tomber l'écran */
+const nameKey = (s: string | undefined) => (s ?? '').trim().toLocaleLowerCase('fr-CH');
+export const demandKey = (name: string | undefined, unit: string | undefined, stockItemRef?: string) => `${nameKey(name)}|${(unit ?? '').trim().toLowerCase()}${stockItemRef ? `|ref:${stockItemRef}` : ''}`;
 
 /** Whole-recipe requirements, including additions after the brew day. */
 export function brewBudgetDemands(source: Recipe | RecipeSnapshot): BrewBudgetDemand[] {
   const recipe = normalizeRecipe(source as Recipe);
   const demands = new Map<string, BrewBudgetDemand>();
-  const add = (name: string, quantity: number, unit: string, kind: BrewBudgetDemand['kind'], ref?: string) => {
+  const add = (nom: string | undefined, quantity: number, unit: string, kind: BrewBudgetDemand['kind'], ref?: string, repli?: string) => {
+    /* sans nom, une ligne liée au stock (référence) reste une demande, sous son nom générique (« Levure ») ; sans nom ni référence, rien */
+    const name = nom?.trim() ? nom : ref && repli ? repli : '';
     if (!name.trim() || !finite(quantity) || quantity === 0) return;
     const key = demandKey(name, unit, ref);
     const previous = demands.get(key);
     if (previous) previous.quantity += quantity;
-    else demands.set(key, { key, name, quantity, unit, kind, ...(ref ? { stockItemRef: ref } : {}) });
+    else demands.set(key, { key, name, quantity, unit: unit ?? '', kind, ...(ref ? { stockItemRef: ref } : {}) });
   };
   recipe.fermentables.forEach(f => {
     // Recovered mash grain belongs to the source brew, not a new purchase.
@@ -177,7 +180,7 @@ export function brewBudgetDemands(source: Recipe | RecipeSnapshot): BrewBudgetDe
     add(f.name, f.weightKg, 'kg', 'ingredient', (f as { stockItemRef?: string }).stockItemRef);
   });
   recipe.hops.forEach(h => add(h.name, h.weightG, 'g', 'ingredient', (h as { stockItemRef?: string }).stockItemRef));
-  if (recipe.yeast) add(recipe.yeast.name, recipe.yeast.qty, recipe.yeast.unit, 'ingredient', (recipe.yeast as { stockItemRef?: string }).stockItemRef);
+  if (recipe.yeast) add(recipe.yeast.name, recipe.yeast.qty, recipe.yeast.unit, 'ingredient', (recipe.yeast as { stockItemRef?: string }).stockItemRef, 'Levure');
   recipe.adjuncts?.forEach(a => add(a.name, a.amount, a.unit, 'ingredient', (a as { stockItemRef?: string }).stockItemRef));
   const plan = recipe.waterPlan;
   if (plan) {
