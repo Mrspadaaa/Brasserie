@@ -637,7 +637,9 @@ const BrewWizardEditor: React.FC<BrewWizardProps & {
   }, [config.brewhouses,config.activeBrewhouseId]);
   // A saved/imported plan keeps its calibration until an explicit adaptation.
   const brewhouse = details.brewhouse ?? configuredBrewhouse;
-  const installationNeedsAdoption = !!base && !!recipeInstallationAdoptionIssue(details, configuredBrewhouse);
+  // WFR-1 : un brouillon repris garde `details` (ce que le brasseur a saisi), sans le matériel que `build()` figeait : le matériel figé
+  // se lit aussi dans la recette du brouillon (`base`), sinon une recette neuve reprise passait pour une recette ancienne « à adopter ».
+  const installationNeedsAdoption = !!base && !!recipeInstallationAdoptionIssue({ brewhouse: details.brewhouse ?? base.brewhouse }, configuredBrewhouse);
   const equipmentDiffers = details.brewhouse && configuredBrewhouse &&
     (['id', 'volumeL', 'efficiencyPct', 'boilOffRatePct', 'deadSpaceL', 'equipment', 'preferences'] as const)
       .some(key => JSON.stringify(details.brewhouse![key]) !== JSON.stringify(configuredBrewhouse[key]));
