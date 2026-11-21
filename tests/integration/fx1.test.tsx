@@ -170,7 +170,7 @@ describe('fx1-2 et fx1-5 dans FinancesTab', () => {
   it('la plage du … au … survit à un changement d\'onglet', () => {
     annee(); render(<Ecran/>);
     fireEvent.click(screen.getByRole('button', { name: 'Autre période' }));
-    fireEvent.change(screen.getByLabelText('Du mois'), { target: { value: '2026-06' } });
+    fireEvent.change(screen.getByLabelText('Du'), { target: { value: '2026-06-01' } });
     expect(screen.getByRole('heading', { level: 2, name: 'Juin – nov. 2026' })).toBeVisible();
     fireEvent.click(screen.getByRole('tab', { name: 'Opérations' }));
     fireEvent.click(screen.getByRole('tab', { name: 'Synthèse' }));
@@ -180,7 +180,7 @@ describe('fx1-2 et fx1-5 dans FinancesTab', () => {
   it('un mois touché après coup remplace la plage, aussi après le changement d\'onglet', () => {
     annee(); render(<Ecran/>);
     fireEvent.click(screen.getByRole('button', { name: 'Autre période' }));
-    fireEvent.change(screen.getByLabelText('Du mois'), { target: { value: '2026-06' } });
+    fireEvent.change(screen.getByLabelText('Du'), { target: { value: '2026-06-01' } });
     fireEvent.click(screen.getByRole('tab', { name: 'Opérations' }));
     fireEvent.click(screen.getByRole('tab', { name: 'Synthèse' }));
     fireEvent.click(within(screen.getByRole('group', { name: 'Période' })).getByRole('button', { name: 'oct.' }));

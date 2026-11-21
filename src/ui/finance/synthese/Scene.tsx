@@ -2,7 +2,6 @@ import React, { useState } from 'react';
 import { formatCHF } from '../../../domain/finance/ledger';
 import { echelle, regrouperPetits, type PeriodeSynthese, type Reste } from '../../../domain/finance/periodeSynthese';
 import { amountOnly, de, shortDate } from '../financeFormat';
-import { PlageMois } from '../PlageMois';
 import { couleur, hachure, libelleCategorie, libelleVente, fenetreMois, moisCourt, texteSur, titreMois, titrePlage } from './libelles';
 
 /** Hauteur de la plus haute pile, en px : celle de la maquette g3a. */
@@ -20,22 +19,23 @@ export function titrePeriode(choix: PeriodeChoix, anneeCourante: string): string
 }
 
 /**
- * E1 : titre de la période et segment « sept. oct. nov. tout … » (g3a). Le dernier élément « … » montre, sous le segment, la rangée
- * « du [mois] au [mois] » (champs mois natifs, bornés au mois courant, du ≤ au). Un mois ou « tout » touché la referme.
+ * E1 : titre de la période et segment « sept. oct. nov. tout … » (g3a). Le dernier élément « … » ouvre, sous le segment, la frise
+ * d'Opérations (PERIODE-PARTOUT, 21.11 : `frise`, la `FrisePeriode` de l'app ; plus jamais deux listes de mois). Un mois ou « tout » touché la referme.
+ * `libre` : la période vient de la frise (une plage, des jours) ; « … » est alors pressé, aucun mois.
  */
-export function Periode({ courant, choix, onMois, onTout, onPlage }: { courant: string; choix: PeriodeChoix; onMois: (mois: string) => void; onTout: () => void; onPlage: (du: string, au: string) => void }) {
+export function Periode({ courant, choix, onMois, onTout, frise, libre = !!choix.plage }: { courant: string; choix: PeriodeChoix; onMois: (mois: string) => void; onTout: () => void; frise: React.ReactNode; libre?: boolean }) {
   const annee = courant.slice(0, 4);
   const [ouvert, setOuvert] = useState(false);
   return <>
     <div className="syn-top">
       <h2>{titrePeriode(choix, annee)}</h2>
       <div className="syn-seg" role="group" aria-label="Période">
-        {fenetreMois(courant, choix.mois).map(mois => <button type="button" key={mois} aria-pressed={!choix.tout && !choix.plage && mois === choix.mois} onClick={() => { setOuvert(false); onMois(mois); }}>{moisCourt(mois, annee)}</button>)}
-        <button type="button" aria-pressed={choix.tout} onClick={() => { setOuvert(false); onTout(); }}>tout</button>
-        <button type="button" className="syn-seg-plus" aria-label="Autre période" aria-expanded={ouvert} aria-pressed={!!choix.plage} onClick={() => setOuvert(!ouvert)}>…</button>
+        {fenetreMois(courant, choix.mois).map(mois => <button type="button" key={mois} aria-pressed={!choix.tout && !libre && mois === choix.mois} onClick={() => { setOuvert(false); onMois(mois); }}>{moisCourt(mois, annee)}</button>)}
+        <button type="button" aria-pressed={choix.tout && !libre} onClick={() => { setOuvert(false); onTout(); }}>tout</button>
+        <button type="button" className="syn-seg-plus" aria-label="Autre période" aria-expanded={ouvert} aria-pressed={libre} onClick={() => setOuvert(!ouvert)}>…</button>
       </div>
     </div>
-    {ouvert && <PlageMois courant={courant} du={choix.plage?.du ?? (choix.tout ? courant : choix.mois)} au={choix.plage?.au ?? courant} onPlage={onPlage}/>}
+    {ouvert && frise}
   </>;
 }
 

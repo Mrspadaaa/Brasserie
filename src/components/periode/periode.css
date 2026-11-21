@@ -26,6 +26,8 @@
 /* `.ops` devient, dès 900 px, la grille à deux colonnes de l'écran Opérations (liste | frise) : ici une seule colonne, la frise d'Opérations à sa hauteur de téléphone. */
 .ops.pr-plage{grid-template-columns:minmax(0,1fr);gap:8px;--ops-haut:96px}
 .ops.pr-plage>*{grid-column:1}
+/* PERIODE-PARTOUT : la FrisePeriode d'un écran (Synthèse, Revoir le mois, filtres Brassins) aussi : une colonne, jamais la grille d'Opérations (1 px de large à 1280). */
+.ops.fp{display:block;--ops-haut:88px}
 .pr-gt{display:flex;align-items:baseline;justify-content:space-between;gap:8px}
 .pr-gt>span{font-size:12px;font-weight:600;color:var(--t2)}
 .pr-gt>b{font-size:15px;color:var(--t0);font-weight:700}

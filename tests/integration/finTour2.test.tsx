@@ -15,7 +15,6 @@ import { serialiser, type Periode } from '../../src/components/periode/periode';
 import { StorageService, defaultConfig } from '../../src/services/storage';
 import { FinancesTab, journalApresEntete } from '../../src/components/tabs/FinancesTab';
 import { Frise } from '../../src/ui/finance/operations/Frise';
-import { PlageMois } from '../../src/ui/finance/PlageMois';
 import { de } from '../../src/ui/finance/financeFormat';
 import type { Plage } from '../../src/ui/finance/operations/plage';
 
@@ -65,7 +64,7 @@ describe('FIN-PERIODE-PERDUE : la période de la Synthèse (août → nov.) est 
     const journal = vi.fn();
     render(<App2 initiale={NOV} journal={journal}/>);
     fireEvent.click(screen.getByRole('button', { name: 'Autre période' }));
-    fireEvent.change(screen.getByLabelText('Du mois'), { target: { value: '2026-08' } });
+    fireEvent.change(screen.getByLabelText('Du'), { target: { value: '2026-08-01' } });
     expect(serialiser(journal.mock.lastCall![0])).toBe('range-2026-08-01_2026-11-30');
     const avant = journal.mock.calls.length;
     const barre = screen.getAllByRole('button').find(b => /^Autres frais .*voir ces opérations d’août/.test(b.getAttribute('aria-label') ?? ''));
@@ -97,17 +96,6 @@ describe('Exercice ouvert : effacé quand l’en-tête change', () => {
 });
 
 describe('Neuf n° 5 : « d’août », jamais « du août »', () => {
-  it('la rangée du / au élide devant une voyelle', () => {
-    const { container } = render(<PlageMois courant="2026-11" du="2026-08" au="2026-11" onPlage={vi.fn()}/>);
-    const t = container.textContent ?? '';
-    expect(t).not.toMatch(/du août/);
-    expect(t).toMatch(/d’août 2026/);
-    expect(t).toMatch(/au novembre 2026/);
-    cleanup();
-    const { container: c2 } = render(<PlageMois courant="2026-11" du="2026-06" au="2026-08" onPlage={vi.fn()}/>);
-    expect(c2.textContent).toMatch(/du juin 2026/);
-    expect(c2.textContent).toMatch(/à août 2026/);
-  });
   it('de / d’ : la préposition suit le mot', () => {
     expect(de('août – nov. 2026')).toBe('d’août – nov. 2026');
     expect(de('octobre 2026')).toBe('d’octobre 2026');

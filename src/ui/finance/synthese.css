@@ -109,6 +109,8 @@
 @media (min-width:900px) { .syn-wrap { display:grid; grid-template-columns:1.1fr 1fr; gap:0 40px; align-items:start; } }
 /* CP-9 : « … » au bout du segment (même taille que ses voisins) et la rangée « du [mois] au [mois] » dessous */
 .syn-seg .syn-seg-plus { padding:0 8px; letter-spacing:1px; }
+/* PERIODE-PARTOUT (21.11) : « … » ouvre la frise d'Opérations (FrisePeriode), sous le segment, sur toute la largeur. */
+.syn .syn-frise { margin:10px -26px 4px; }
 .syn-plage { display:flex; align-items:center; justify-content:flex-end; gap:12px; margin-top:6px; font-size:12px; color:var(--syn-t2); }
 .syn-plage label { display:flex; align-items:center; gap:6px; }
 /* 19.11 : le mois s'écrit en français dans la boîte ; le champ natif, transparent, la couvre et ouvre le sélecteur du téléphone. */

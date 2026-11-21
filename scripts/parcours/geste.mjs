@@ -9,7 +9,9 @@
 // presser loin du pouce et bouger de 8 px (pas de saut, R2), avancer/étirer (+), reculer/réduire (−), Échap pendant le glisser (retour
 // exact, R10), et la valeur après rechargement.
 //
-//   --endroits recette,calendrier : les endroits joués (défaut : les deux).
+//   --endroits recette,calendrier,periode : les endroits joués (défaut : recette et calendrier).
+//   periode (PERIODE-PARTOUT, 21.11) : chaque écran qui choisit une période libre monte LA frise d'Opérations (`FrisePeriode`), jamais
+//   deux listes de mois ; le début tiré vers le passé change la période, relue après rechargement. Rouge sur en-ligne/2026-11-21-tour8.
 //   --ref <tag> : construit ce tag dans une copie temporaire (comme le parcours Calendrier) ; les étapes Calendrier y sont rouges sur
 //                 en-ligne/2026-11-21-tour7 (frise d'avant la frise B) et vertes sur l'arbre.
 // Calendrier (fixture `fixtures/calendrier.mjs`, données simulées, plus « ZZ TEST Geste », des travaux de deux semaines) : la frise du haut (le cadre de la
@@ -209,6 +211,7 @@ async function jouer(dir) {
         try { await jouerCalendrier({ p, base: url, combo, tactile, glisser, pas }); }
         catch (e) { echec(`calendrier ${combo}`, String(e.message ?? e).slice(0, 200)); await p.screenshot({ path: path.join(sortie, `calendrier-${combo}-erreur.png`) }).catch(() => {}); }
       }
+      if (ENDROITS_JOUES.includes('periode')) await jouerPeriode({ nav, base: url, L, theme });
       if (erreurs.length) echec(`erreurs de page ${combo}`, erreurs.slice(0, 2).join(' | '));
       await p.close();
     }
@@ -464,4 +467,97 @@ async function jouerCalendrier({ p, base, combo, tactile, glisser, pas }) {
   await sectionModifier();
   await sectionRangees();
   await cap('fin');
+}
+
+// ───────────── PERIODE-PARTOUT (21.11, « ça trigger pas la frise editavlble de l'autre vue ») ─────────────
+// Chaque écran qui choisit une période libre monte la frise d'Opérations (`[data-frise-periode] [data-testid=frise]`), sans champ mois ni
+// liste ; la poignée « Début » tirée vers le passé change la période (titre et valeur gardée), et la période tient au rechargement.
+// Une page à part par écran et combinaison (sa fixture, son stockage) : rien ne passe au Calendrier ni à la recette.
+// une fonction, pas une constante : jouer() tourne (await de haut niveau) avant que la fin du module soit évaluée
+function lieuxPeriode() { return [
+  {
+    nom: 'synthese', racine: '.syn',
+    aller: async ({ toucherTexte }) => { await toucherTexte(['Finances']); await toucherTexte(['Synthèse'], false); },
+    ouvrir: async ({ toucherTexte }) => toucherTexte(['Autre période']),
+    titre: () => document.querySelector('.syn h2')?.innerText.trim() ?? null,
+    garde: () => { try { return JSON.parse(localStorage.getItem('laffinee_ui_state') ?? '{}').app_global_time_filter ?? null; } catch { return null; } },
+  },
+]; }
+
+async function jouerPeriode({ nav, base, L, theme }) {
+  const tactile = L < 600, combo = `${L}-${theme}`, url = `${base}&finance-demo=parcours-calendrier`;
+  for (const lieu of lieuxPeriode()) {
+    const N = `période ${lieu.nom} ${combo}`;
+    const p = await nav.newPage();
+    const erreurs = []; p.on('pageerror', (e) => erreurs.push(String(e).slice(0, 160)));
+    try {
+      await p.setViewport({ width: L, height: tactile ? 844 : 900, isMobile: tactile, hasTouch: tactile, deviceScaleFactor: 1 });
+      await p.evaluateOnNewDocument((kf, kc, j, tag, t) => {
+        if (localStorage.getItem('geste:fixture-posee') === tag) return;
+        localStorage.clear(); sessionStorage.clear(); localStorage.setItem('laffinee.theme', t);
+        localStorage.removeItem(kc); localStorage.setItem(kf, j); localStorage.setItem('geste:fixture-posee', tag);
+      }, CLE_FIXTURE, CLE_CACHE, JSON.stringify(fixtureCalendrier(new Date().toISOString().slice(0, 10)).entrees), `periode-${lieu.nom}-${combo}-${Date.now()}`, theme);
+      const cdp = await p.createCDPSession();
+      const cap = (n) => p.screenshot({ path: path.join(sortie, `periode-${lieu.nom}-${combo}-${n}.png`) });
+      const toucherXY = async (x, y) => { if (tactile) await p.touchscreen.tap(x, y); else await p.mouse.click(x, y); await sleep(700); };
+      const toucherTexte = async (txts, exige = true) => {
+        for (const t of [].concat(txts)) {
+          const c = await p.evaluate((t) => {
+            const e = [...document.querySelectorAll('button,a,[role=tab],[role=button]')].find((e) => { const r = e.getBoundingClientRect(); return r.width > 0 && r.height > 0 && ((e.getAttribute('aria-label') ?? '').trim() === t || e.innerText.trim().replace(/\s+/g, ' ') === t); });
+            if (!e) return null; e.scrollIntoView({ block: 'center' }); const r = e.getBoundingClientRect(); return [r.x + r.width / 2, r.y + r.height / 2];
+          }, t);
+          if (c) { await toucherXY(c[0], c[1]); return true; }
+        }
+        if (exige) throw new Error(`« ${[].concat(txts)[0]} » introuvable`);
+        return false;
+      };
+      const glisser = async (x0, y, x1) => {
+        const xs = Array.from({ length: 12 }, (_, k) => x0 + ((x1 - x0) * (k + 1)) / 12);
+        if (tactile) {
+          const pt = (x) => [{ x: Math.round(x), y: Math.round(y), id: 1 }];
+          await cdp.send('Input.dispatchTouchEvent', { type: 'touchStart', touchPoints: pt(x0) }); await sleep(50);
+          for (const x of xs) { await cdp.send('Input.dispatchTouchEvent', { type: 'touchMove', touchPoints: pt(x) }); await sleep(16); }
+          await sleep(60); await cdp.send('Input.dispatchTouchEvent', { type: 'touchEnd', touchPoints: [] });
+        } else {
+          await p.mouse.move(x0, y); await p.mouse.down(); await sleep(40);
+          for (const x of xs) { await p.mouse.move(x, y); await sleep(16); }
+          await p.mouse.up();
+        }
+        await sleep(700);
+      };
+      const aller = async () => {
+        await p.goto(url, { waitUntil: 'load' }); await p.waitForSelector('nav button', { timeout: 90000 }); await sleep(1000);
+        await lieu.aller({ p, toucherTexte }); await p.waitForSelector(lieu.racine, { timeout: 30000 }); await sleep(600);
+      };
+      const lire = () => p.evaluate((racine, titreSrc, gardeSrc) => {
+        const R = document.querySelector(racine);
+        const f = R?.querySelector('[data-frise-periode] [data-testid=frise]');
+        const h = R?.querySelector('[data-frise-periode] [role=slider][aria-label="Début"]');
+        let hb = null; if (h) { h.scrollIntoView({ block: 'center' }); const r = h.getBoundingClientRect(); hb = { x: r.left + r.width / 2, y: r.top + r.height / 2 }; }
+        const fb = f?.getBoundingClientRect();
+        const anciens = R ? [...R.querySelectorAll('input[type=month], select')].filter((e) => e.getClientRects().length).length : 0;
+        return { frise: !!f, anciens, debut: h?.getAttribute('aria-valuetext') ?? null, n: Number(h?.getAttribute('aria-valuenow') ?? NaN), hb, fw: fb?.width ?? 0,
+          deborde: fb ? Math.round(Math.max(0, fb.right - document.documentElement.clientWidth, -fb.left)) : 0,
+          titre: (0, eval)(`(${titreSrc})`)(), garde: (0, eval)(`(${gardeSrc})`)() };
+      }, lieu.racine, lieu.titre.toString(), lieu.garde.toString());
+      await aller();
+      await lieu.ouvrir({ p, toucherTexte }); await sleep(600);
+      const a = await lire(); await cap('ouverte');
+      if (!a.frise) { echec(`${N} frise`, `aucune frise d'Opérations${a.anciens ? ` (${a.anciens} champ(s) mois ou liste à la place)` : ''}`); continue; }
+      a.anciens ? echec(`${N} sans liste de mois`, `${a.anciens} champ(s) mois ou liste encore visibles`) : ok(`${N} frise`, `${Math.round(a.fw)} px, aucun champ mois`);
+      a.deborde > 1 ? echec(`${N} débord`, `la frise sort de l'écran de ${a.deborde} px`) : ok(`${N} dans l'écran`);
+      if (!a.hb) { echec(`${N} poignée`, 'poignée « Début » introuvable'); continue; }
+      await glisser(a.hb.x, a.hb.y, a.hb.x - Math.min(90, a.fw * 0.25));
+      const b = await lire(); await cap('tiree');
+      (b.n < a.n && b.titre !== a.titre && JSON.stringify(b.garde) !== JSON.stringify(a.garde))
+        ? ok(`${N} début tiré vers le passé`, `${a.debut} → ${b.debut} ; « ${a.titre} » → « ${b.titre} »`)
+        : echec(`${N} début tiré vers le passé`, `${a.debut} → ${b.debut} ; « ${a.titre} » → « ${b.titre} » ; gardé ${JSON.stringify(a.garde)} → ${JSON.stringify(b.garde)}`);
+      await aller(); await lieu.ouvrir({ p, toucherTexte }); await sleep(600);
+      const c = await lire();
+      (c.titre === b.titre && c.debut === b.debut && JSON.stringify(c.garde) === JSON.stringify(b.garde))
+        ? ok(`${N} rechargement`, `« ${c.titre} », début ${c.debut}`)
+        : echec(`${N} rechargement`, `« ${b.titre} » / ${b.debut} → « ${c.titre} » / ${c.debut}`);
+    } catch (e) { echec(N, String(e.message ?? e).slice(0, 200)); await p.screenshot({ path: path.join(sortie, `periode-${lieu.nom}-${combo}-erreur.png`) }).catch(() => {}); }
+    finally { if (erreurs.length) echec(`erreurs de page ${N}`, erreurs.slice(0, 2).join(' | ')); await p.close(); }
+  }
 }

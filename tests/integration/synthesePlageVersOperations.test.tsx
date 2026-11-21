@@ -3,7 +3,6 @@
    2) Les champs « du / au » disent le mois en français (« août 2026 »), jamais la langue du téléphone (« August 2026 »).
    Données simulées (dev-local), aucune écriture réelle. */
 import React from 'react';
-import { readFileSync } from 'node:fs';
 import { cleanup, fireEvent, render, screen, within } from '@testing-library/react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 vi.mock('../../src/services/firebase', () => ({ db: {}, functions: {} }));
@@ -15,7 +14,6 @@ import { StorageService, defaultConfig } from '../../src/services/storage';
 import { FinanceService } from '../../src/services/financeService';
 import { useStorageValue } from '../../src/hooks/useLiveData';
 import { FinancesTab } from '../../src/components/tabs/FinancesTab';
-import { PlageMois } from '../../src/ui/finance/PlageMois';
 import type { Transaction } from '../../src/types';
 
 afterEach(cleanup);
@@ -46,8 +44,8 @@ describe('Synthèse › barre › Opérations : la plage choisie est gardée', (
   it('août – nov. : la barre « Autres frais » ouvre Opérations sur août – nov., filtré, sans les autres frais de mars', () => {
     render(<Ecran/>);
     fireEvent.click(screen.getByRole('button', { name: 'Autre période' }));
-    fireEvent.change(screen.getByLabelText('Du mois'), { target: { value: '2026-08' } });
-    fireEvent.change(screen.getByLabelText('Au mois'), { target: { value: '2026-11' } });
+    fireEvent.change(screen.getByLabelText('Du'), { target: { value: '2026-08-01' } });
+    fireEvent.change(screen.getByLabelText('Au'), { target: { value: '2026-11-30' } });
     fireEvent.click(screen.getByRole('button', { name: /^Autres frais .*voir ces opérations/ }));
     expect(screen.getByRole('tab', { name: 'Opérations' })).toHaveAttribute('aria-selected', 'true');
     expect(screen.queryByText('Toutes les dates')).toBeNull();
@@ -56,18 +54,12 @@ describe('Synthèse › barre › Opérations : la plage choisie est gardée', (
     expect(screen.queryByText('ZZ TEST divers mars')).toBeNull();
     expect(screen.queryByText('ZZ TEST malt avril')).toBeNull();
   });
-});
 
-describe('Les champs « du / au » en français', () => {
-  it('« août 2026 » et « novembre 2026 » se lisent, jamais « August »', () => {
-    render(<PlageMois courant="2026-11" du="2026-08" au="2026-11" onPlage={() => {}}/>);
-    const groupe = screen.getByRole('group', { name: 'Plage de mois' });
-    expect(groupe.textContent).toContain('août 2026');
-    expect(groupe.textContent).toContain('novembre 2026');
-    expect(groupe.textContent).not.toMatch(/August|November/);
-  });
-  it('le champ natif reste là (le sélecteur du téléphone s’ouvre au toucher) mais ne s’affiche plus', () => {
-    const css = readFileSync('src/ui/finance/synthese.css', 'utf8');
-    expect(css).toMatch(/\.syn-plage input \{[^}]*opacity:\s*0/);
+  it('PERIODE-PARTOUT : « … » ouvre la frise d’Opérations : aucun champ mois, ni liste', () => {
+    render(<Ecran/>);
+    fireEvent.click(screen.getByRole('button', { name: 'Autre période' }));
+    expect(document.querySelector('input[type="month"]')).toBeNull();
+    expect(screen.queryByRole('group', { name: 'Plage de mois' })).toBeNull();
+    expect(screen.getByTestId('frise')).toBeTruthy();
   });
 });

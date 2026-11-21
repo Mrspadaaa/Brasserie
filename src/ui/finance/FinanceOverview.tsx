@@ -12,6 +12,8 @@ import { AlerteTva, LigneLitre, Replie, Verifier } from './synthese/Lignes';
 import { Pourquoi } from './synthese/Pourquoi';
 import { Analyse } from './analyse/Analyse';
 import { finDuMois } from './operations/plage';
+import { FrisePeriode } from '../../components/periode/FrisePeriode';
+import { depuisMois, depuisPlageFinances, moisCouverts, type Periode as PeriodeApp } from '../../components/periode/periode';
 import './synthese.css';
 
 interface Props {
@@ -35,6 +37,9 @@ interface Props {
   /** La plage du … au … (CP-9), gardée par FinancesTab pour survivre au changement d'onglet (fx1) ; sans elle, l'écran la garde en local. */
   plage?: { du: string; au: string } | null;
   onPlage?: (plage: { du: string; au: string } | null) => void;
+  /** PERIODE-PARTOUT (21.11) : la période de l'app, au jour, que la frise de « … » montre et pose ; sans elle, la frise pose une plage de mois. */
+  periode?: PeriodeApp;
+  onPeriode?: (p: PeriodeApp) => void;
   /** Ligne « Compagnon brasseur » (le composant de l'assistant, question préparée). */
   assistant?: React.ReactNode;
   onProfile: () => void;
@@ -92,6 +97,14 @@ export function FinanceOverview(props: Props) {
   const choisirPlage = (du: string, au: string) => {
     if (du === au) { setPlage(null); props.onMonth(du); } else setPlage({ du, au });
   };
+  /* PERIODE-PARTOUT : « … » ouvre la frise d'Opérations (la même pour toute l'app). Elle pose la période de l'app au jour ; la Synthèse compte au mois (mention « Arrondi »). */
+  const periodeFrise: PeriodeApp = props.periode ?? (plage ? depuisPlageFinances(plage.du, plage.au) : allDates ? { genre: 'tout' } : depuisMois(month));
+  const choisirPeriode = (p: PeriodeApp) => {
+    if (props.onPeriode) return props.onPeriode(p);
+    const c = moisCouverts(p);
+    if (!c) { setPlage(null); props.onAllDates(); } else choisirPlage(c.du, c.au);
+  };
+  const libre = props.periode ? props.periode.genre !== 'mois' && props.periode.genre !== 'tout' : !!plage;
 
   if (analyse && props.profile) {
     return <Analyse entree={{ transactions, payments, plans, profile: props.profile, assets, batches, stockItems: props.stockItems, aujourdhui }}
@@ -103,7 +116,8 @@ export function FinanceOverview(props: Props) {
     <div className="syn-wrap">
       <section aria-label="Entré et dépensé">
         <Periode courant={aujourdhui.slice(0, 7)} choix={choix}
-          onMois={m => { setPlage(null); props.onMonth(m); }} onTout={() => { setPlage(null); props.onAllDates(); }} onPlage={choisirPlage}/>
+          onMois={m => { setPlage(null); props.onMonth(m); }} onTout={() => { setPlage(null); props.onAllDates(); }} libre={libre}
+          frise={<FrisePeriode className="syn-frise" periode={periodeFrise} onChoisir={choisirPeriode} transactions={transactions}/>}/>
         <Scene periode={periode} nomPeriode={nomPeriode}
           onCategorie={categorie => ouvrir({ category: categorie, ...portee })}
           onPiece={props.onTransaction}

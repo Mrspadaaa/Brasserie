@@ -1,8 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { ArrowRight, CalendarDays } from 'lucide-react';
 import type { Transaction } from '../../types';
-import { Frise } from '../../ui/finance/operations/Frise';
-import { jourMaxi } from '../../ui/finance/operations/plage';
+import { FriseDePeriode } from './FrisePeriode';
 import { useDonneesFrise } from './useDonneesFrise';
 import {
   aujourdhuiISO, bornes, depuisJours, enPeriode, jourSaisi, memePeriode, moisDe,
@@ -30,16 +29,11 @@ const VIDE: Transaction[] = [];
 export const ChoixPlage: React.FC<Props> = ({ periode, onChoisir, transactions = VIDE, maintenant = new Date() }) => {
   const p = enPeriode(periode, maintenant);
   const aujourdhui = aujourdhuiISO();
-  const { donnees, nombre, etendue } = useDonneesFrise(transactions);
+  const frise = useDonneesFrise(transactions);
+  const { etendue } = frise;
   const { du: debut, au: fin } = bornes(p);
-  /* « Tout » n'a pas de jours : la frise montre alors le mois en cours, et les poignées posent une plage. */
   const mois = (debut ?? aujourdhui).slice(0, 7);
-  /* v2 (1) : « Tout l'historique » : la frise couvre l'étendue réelle (de la première à la dernière opération), poignées aux deux bouts, jamais un seul mois. */
-  const plage = p.genre === 'tout' ? (etendue ?? null) : p.genre === 'mois' ? null : { du: debut as string, au: fin as string };
-  const montree = plage ?? { du: `${mois}-01`, au: `${mois}-${String(new Date(Number(mois.slice(0, 4)), Number(mois.slice(5, 7)), 0).getDate()).padStart(2, '0')}` };
   const annee = Number(mois.slice(0, 4));
-  /* v1 (33) : « Tout l'historique » se dit comme tel (toutes les opérations, d'où à où), jamais par les « 30 jours » du mois que la frise montre pour poser une plage. */
-  const nTout = p.genre === 'tout' ? nombre(null, null) : 0;
   const jjAaaa = (iso: string) => `${iso.slice(8)}.${iso.slice(5, 7)}.${iso.slice(0, 4)}`;
 
   /* CAL-PASSE (21.11, n° 3) : une période à cheval sur deux années (26.10.2026 → 24.01.2027) : chaque jour se lit dans SON année ; avec l'année de la frise
@@ -83,9 +77,7 @@ export const ChoixPlage: React.FC<Props> = ({ periode, onChoisir, transactions =
           <button key={r.cle} type="button" aria-pressed={memePeriode(p, r.valeur)} onClick={() => onChoisir(r.valeur)}>{r.texte}</button>
         ))}
       </div>
-      <Frise key={p.genre === 'tout' ? 'tout' : 'jours'} mois={mois} plage={plage} aujourdhui={aujourdhui} jourMax={jourMaxi(aujourdhui)} nbOperations={nombre(montree.du, montree.au)} donnees={donnees}
-        resume={p.genre === 'tout' ? <span>Tout l’historique · {nTout === 0 ? 'aucune opération' : <><b className="ops-m">{nTout}</b> opération{nTout > 1 ? 's' : ''}</>}</span> : undefined}
-        onPlage={(a, b) => onChoisir(depuisJours(a, b))} onMois={() => onChoisir({ genre: 'mois', annee, mois: Number(mois.slice(5, 7)) })} />
+      <FriseDePeriode periode={p} onChoisir={onChoisir} frise={frise} maintenant={maintenant} />
       <div className={`pr-lib${p.genre === 'tout' && etendue ? ' pr-tout' : ''}${croise ? ' pr-croise' : ''}`}>
         <span className="pr-lbl"><CalendarDays size={18} aria-hidden="true" />Du … au</span>
         <input aria-label="Du (jj.mm)" inputMode="numeric" autoComplete="off" placeholder={p.genre === 'tout' && etendue ? jjAaaa(etendue.du) : 'jj.mm'} value={du} aria-invalid={invalide && !jourDu && du !== '' ? true : undefined} {...evSaisie}

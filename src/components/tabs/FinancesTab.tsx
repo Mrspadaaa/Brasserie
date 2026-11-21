@@ -148,7 +148,7 @@ export function FinancesTab({transactions,config,globalTimeFilter,onChangeGlobal
     {mentionMois&&view==='overview'&&<p className="finance-muted" data-finance-arrondi style={{margin:'0 0 0.5rem'}}>{mentionMois}</p>}
     <section role="tabpanel" id={`finance-${view}`} aria-labelledby={`finance-tab-${view}`}>
       {view==='overview'&&<FinanceOverview transactions={transactions} payments={data.payments} plans={data.plans} assets={data.assets} batches={batches} recipes={recipes} ledger={ledger} tvaThreshold={tvaThreshold} openingCashReady={openingCashReady} openingCash={data.profile.openingCash}
-        month={month} allDates={allDates} onMonth={value=>changerPeriode(depuisMois(value))} onAllDates={()=>changerPeriode({genre:'tout'})} plage={plage} onPlage={value=>{if(value)changerPeriode(depuisPlageFinances(value.du,value.au));}} assistant={financeAssistant}
+        month={month} allDates={allDates} onMonth={value=>changerPeriode(depuisMois(value))} onAllDates={()=>changerPeriode({genre:'tout'})} plage={plage} onPlage={value=>{if(value)changerPeriode(depuisPlageFinances(value.du,value.au));}} periode={periodeApp} onPeriode={changerPeriode} assistant={financeAssistant}
         onProfile={()=>setProfileOpen(true)} onJournal={openJournal} onTransaction={id=>setSelected(transactions.find(t=>t.id===id)??null)} onPayment={id=>{setRemplace(null);setPaying(transactions.find(t=>t.id===id)??null);}}
         onOpenBudget={setBudget} onBudgetPicker={()=>setBudgetPicker(true)} onUpgrade={setUpgrade} onBrowseProjects={showProjects} onNotice={setNotice}
         profile={data.profile} stockItems={stockItems} onPrevisions={()=>selectView('forecast')}/>}

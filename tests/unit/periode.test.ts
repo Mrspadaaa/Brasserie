@@ -122,7 +122,9 @@ describe('période de l’app (ET-PER) : Finances n’a plus de période à lui'
     /* Le journal d'Opérations non plus : sa plage est celle de l'app, et le choix de plage est celui de Finances (frise s2ap2), pas une grille à part. */
     expect(finances).toMatch(/enJournal\(periodeApp\)/);
     const choix = readFileSync('src/components/periode/ChoixPlage.tsx', 'utf8');
-    expect(choix).toMatch(/from '\.\.\/\.\.\/ui\/finance\/operations\/Frise'/);
+    expect(choix).toMatch(/from '\.\/FrisePeriode'/);
+    /* PERIODE-PARTOUT (21.11) : la frise partagée est celle d'Opérations, réemployée. */
+    expect(readFileSync('src/components/periode/FrisePeriode.tsx', 'utf8')).toMatch(/from '\.\.\/\.\.\/ui\/finance\/operations\/Frise'/);
     expect(readFileSync('src/components/plus/PagePlus.tsx', 'utf8')).toMatch(/<ChoixPlage /);
     expect(readFileSync('src/components/periode/PastillePeriode.tsx', 'utf8')).toMatch(/<ChoixPlage /);
     const app = readFileSync('src/App.tsx', 'utf8');
