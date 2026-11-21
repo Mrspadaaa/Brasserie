@@ -63,7 +63,8 @@ describe('1. D387 : la courbe alignée sur la frise, ou l’année', () => {
     const { container, rerender } = render(<Banc aligne={false} onAligne={onAligne} />);
     const inter = screen.getByRole('button', { name: 'Aligner la courbe sur la frise' });
     expect(inter.getAttribute('aria-pressed')).toBe('false');
-    expect(semainesCourbe(container)).toHaveLength(52);
+    // Frise B, R4 : éteint, la courbe se trace dans la vue de la fenêtre (ses deux bouts à 56 px des bords), ses semaines comprises.
+    expect(semainesCourbe(container)).toEqual(expect.arrayContaining(['47', '48', '49', '50', '51', '52']));
     expect(container.querySelector('.ent-cadre')).not.toBeNull();
     const chiffre = cle();
     fireEvent.click(inter);

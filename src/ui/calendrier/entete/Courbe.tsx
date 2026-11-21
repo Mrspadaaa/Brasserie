@@ -437,6 +437,9 @@ export interface CourbeProps {
   rangeeHaute?: { hauteur: number; reserves: ReadonlyArray<readonly [number, number]> };
   /** D387 : les bords des semaines lus dans la frise (n + 1 valeurs, px de la courbe) ; absent : largeur / n. */
   abscisses?: readonly number[];
+  /** D387 : la courbe suit la frise (`data-courbe-alignee`) ; défaut : des abscisses données. Frise B (R4) : la vue de la fenêtre a ses
+   *  abscisses sans être alignée. */
+  alignee?: boolean;
   /** D387 : le creux à marquer (index dans `courbe`) quand la courbe n'est qu'une part de l'année ; `null` : il est hors de la part. */
   creuxIndex?: number | null;
   /** Paquet G n° 1 : la courbe est plate (solde constant) ; l'en-tête la réduit, le cadre et ses poignées se serrent (`data-courbe-plate`). */
@@ -501,7 +504,7 @@ export function moisHorsReserves(
   return sortie;
 }
 
-export function Courbe({ courbe, largeur, hauteur, curseur = null, reference, gestes, cadre, mise = null, mois: avecMois = true, etoiles, masque = null, children, moisEnHaut = false, abscisses, creuxIndex, rangeeHaute, plate = false }: CourbeProps) {
+export function Courbe({ courbe, largeur, hauteur, curseur = null, reference, gestes, cadre, mise = null, mois: avecMois = true, etoiles, masque = null, children, moisEnHaut = false, abscisses, alignee = !!abscisses, creuxIndex, rangeeHaute, plate = false }: CourbeProps) {
   const uid = useId().replace(/[^a-zA-Z0-9]/g, '');
   // La police réelle arrive après le premier rendu : les noms se replacent avec ses vraies largeurs.
   const [, setPolice] = useState(0);
@@ -545,7 +548,7 @@ export function Courbe({ courbe, largeur, hauteur, curseur = null, reference, ge
   const marquesEtoiles = (etoiles ?? []).filter(e => courbe[e.i] && !noms.some(x => x.etoile && x.i === e.i))
     .map(e => ({ ...e, x: g.x(e.i) + g.unit / 2, y: Math.max(g.haut + 14, Math.min(g.bas - 2, g.y(courbe[e.i].libre) - 5)) }));
   return (
-    <div ref={reference} className="ent-cb" style={{ height: hauteur }} data-courbe-alignee={abscisses ? '' : undefined} data-courbe-semaines={courbe.map(s => s.numero).join(' ')}
+    <div ref={reference} className="ent-cb" style={{ height: hauteur }} data-courbe-alignee={alignee ? '' : undefined} data-courbe-semaines={courbe.map(s => s.numero).join(' ')}
       data-mois-haut={moisEnHaut ? '' : undefined} data-courbe-plate={plate ? '' : undefined} {...gestes}>
       <svg className="ent-svg" width={largeur} height={hauteur} viewBox={`0 0 ${largeur} ${hauteur}`} role="img"
         aria-label={`Libre et caisse sur ${n} semaines${creux ? ` ; au plus serré en S${creux.numero} : ${chf(creux.centimes)} CHF` : ''} ; les mouvements sont nommés avec leur montant`}>

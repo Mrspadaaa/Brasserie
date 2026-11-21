@@ -68,10 +68,10 @@ const modele = (extra: Partial<ModeleEnTete> = {}): ModeleEnTete => ({
 
 type Espions = { onFenetre: ReturnType<typeof vi.fn>; onPeriode: ReturnType<typeof vi.fn>; onVue: ReturnType<typeof vi.fn> };
 /** Un banc qui garde l'état comme le fera CalendrierTab : fenêtre, période, vue, ±. Les espions voient chaque appel. */
-function Banc(p: Partial<EnTeteCalendrierProps> & Espions & { vueInitiale?: VueCalendrier; periodeInitiale?: Periode }) {
-  const { onFenetre, onPeriode, onVue, vueInitiale = 'semaines', periodeInitiale, ...reste } = p;
-  const [fen, setFen] = useState<FenetreSemaines>({ du: LUNDI0, semaines: 6 });
-  const [per, setPer] = useState<Periode>(periodeInitiale ?? periodeDeFenetre({ du: LUNDI0, semaines: 6 }));
+function Banc(p: Partial<EnTeteCalendrierProps> & Espions & { vueInitiale?: VueCalendrier; periodeInitiale?: Periode; fenetreInitiale?: FenetreSemaines }) {
+  const { onFenetre, onPeriode, onVue, vueInitiale = 'semaines', periodeInitiale, fenetreInitiale, ...reste } = p;
+  const [fen, setFen] = useState<FenetreSemaines>(fenetreInitiale ?? { du: LUNDI0, semaines: 6 });
+  const [per, setPer] = useState<Periode>(periodeInitiale ?? periodeDeFenetre(fenetreInitiale ?? { du: LUNDI0, semaines: 6 }));
   const [vue, setVue] = useState<VueCalendrier>(vueInitiale);
   const [mv, setMv] = useState(false);
   return (
@@ -80,6 +80,24 @@ function Banc(p: Partial<EnTeteCalendrierProps> & Espions & { vueInitiale?: VueC
   );
 }
 const espions = (): Espions => ({ onFenetre: vi.fn(), onPeriode: vi.fn(), onVue: vi.fn() });
+/** Les images d'animation simulées (R7 au bord, recalage R10 de 200 ms) : rAF, performance et minuteries. */
+const imagesSimulees = () => vi.useFakeTimers({ toFake: ['requestAnimationFrame', 'cancelAnimationFrame', 'performance', 'setTimeout', 'clearTimeout', 'setInterval', 'clearInterval', 'Date'] });
+/**
+ * Frise B, R7 : la fin (posée à 334 px, R4 : 56 px du bord droit de 390) tenue dans la bande des 40 px du bord, en allant vers lui, resserre
+ * l'échelle ; le début reste à sa place et la fin suit le doigt, jusqu'à l'année. `pendant` regarde l'écran avant le lâcher.
+ */
+function tirerFinAuBout(fin: HTMLElement, pointerId: number, pendant?: () => void) {
+  imagesSimulees();
+  try {
+    fireEvent.pointerDown(fin, { pointerId, clientX: 334, button: 0 });
+    fireEvent.pointerMove(window, { pointerId, clientX: 360 });
+    fireEvent.pointerMove(window, { pointerId, clientX: 385 });
+    act(() => { vi.advanceTimersByTime(5000); });
+    pendant?.();
+    fireEvent.pointerUp(window, { pointerId, clientX: 385 });
+    act(() => { vi.advanceTimersByTime(300); });
+  } finally { vi.useRealTimers(); }
+}
 const bande = (c: HTMLElement) => c.querySelector('[data-bande-semaines]') as HTMLElement;
 
 describe('E04, E05 : la bande des semaines et le bouton ±', () => {
@@ -121,9 +139,9 @@ describe('E04, E05 : la bande des semaines et le bouton ±', () => {
 
 describe('E02 : la courbe', () => {
   it('B3 : un point par semaine, les noms des mouvements avec leur montant', () => {
-    const { container } = render(<Banc {...espions()} />);
+    const { container } = render(<Banc {...espions()} fenetreInitiale={{ du: LUNDI0, semaines: 52 }} />);
     expect(container.querySelectorAll('[data-point-semaine]')).toHaveLength(52);
-    const svg = screen.getByRole('img', { name: /Libre et caisse sur 52 semaines/ });
+    const svg = screen.getByRole('img', { name: /Libre et caisse sur \d+ semaines/ });
     // CRITIQUE-3 n° 17 : chaque nom sur sa marche, jamais sur le tracé ; celui qui ne tient pas est omis (Embouteilleuse, ici, se lit au doigt).
     const noms = Array.from(container.querySelectorAll('[data-nom-courbe]')).map(t => t.textContent);
     expect(noms.length).toBeGreaterThanOrEqual(3);
@@ -240,36 +258,40 @@ describe('E07 : la période, la même que celle de l’app (ET-PER)', () => {
 describe('E06, E13 : la fenêtre et l’année', () => {
   const poignee = () => screen.getByRole('button', { name: /Poignée de fin/ });
 
-  it('B5 : la poignée tirée au-delà de 80 % donne l’année', () => {
+  it('B5 (frise B, R7) : la fin tenue au bord droit resserre l’échelle jusqu’à l’année', () => {
     const e = espions();
     render(<Banc {...e} />);
-    fireEvent.pointerDown(poignee(), { pointerId: 1, clientX: 45, button: 0 });
-    fireEvent.pointerMove(window, { pointerId: 1, clientX: 345 });
+    tirerFinAuBout(poignee(), 1, () => {
     // L'étiquette suit le doigt : la fenêtre grandit pendant le geste.
     // Une semaine de l'année suivante porte son année (CRITIQUE-3 n° 24) : « S47 – S40 2027 ».
-    expect(screen.getByLabelText(/^Fenêtre : S47 – S\d+ 2027$/).getAttribute('aria-label')).not.toBe('Fenêtre : S47 – S52');
-    fireEvent.pointerUp(window, { pointerId: 1, clientX: 345 });
+      expect(screen.getByLabelText(/^Fenêtre : S47 – S\d+ 2027$/).getAttribute('aria-label')).not.toBe('Fenêtre : S47 – S52');
+    });
     expect(e.onVue).toHaveBeenCalledWith('annee');
   });
 
   it('CAL-PERIODE-LIBRE (18.11, « Je peux pas choisir une période donnée ») : lâchée avant 80 %, la fin posée au doigt devient la période ; plus courte aussi', () => {
     const e = espions();
     render(<Banc {...e} />);
-    /* 390 px pour 52 semaines : 7,5 px la semaine ; la fin (S52, x 45) posée à x 150 : 20 semaines, S47 – S13 2027 (2026 a 53 semaines ISO) */
-    fireEvent.pointerDown(poignee(), { pointerId: 1, clientX: 45, button: 0 });
-    fireEvent.pointerMove(window, { pointerId: 1, clientX: 150 });
-    fireEvent.pointerUp(window, { pointerId: 1, clientX: 150 });
+    /* Frise B, R4 : 6 semaines entre 56 et 334 px (46,3 px la semaine) ; la fin (S52, x 334) posée à x 370 : 7 semaines, S47 – S53 (2026 a
+       53 semaines ISO). Le recalage (R10) se joue en images simulées. */
+    imagesSimulees();
+    fireEvent.pointerDown(poignee(), { pointerId: 1, clientX: 334, button: 0 });
+    fireEvent.pointerMove(window, { pointerId: 1, clientX: 370 });
+    fireEvent.pointerUp(window, { pointerId: 1, clientX: 370 });
+    act(() => { vi.advanceTimersByTime(300); });
     expect(e.onVue).not.toHaveBeenCalled();
-    expect(e.onFenetre).toHaveBeenLastCalledWith({ du: LUNDI0, semaines: 20 });
-    expect(e.onPeriode).toHaveBeenLastCalledWith({ genre: 'dates', du: LUNDI0, au: ajouterJours(LUNDI0, 20 * 7 - 1) });
+    expect(e.onFenetre).toHaveBeenLastCalledWith({ du: LUNDI0, semaines: 7 });
+    expect(e.onPeriode).toHaveBeenLastCalledWith({ genre: 'dates', du: LUNDI0, au: ajouterJours(LUNDI0, 7 * 7 - 1) });
     /* l'étiquette de la fenêtre dit la même période que la frise (ses colonnes : `onFenetre`) */
-    expect(document.querySelector('.ent-cadre')?.getAttribute('aria-label')).toBe('Fenêtre : S47 – S13 2027');
+    expect(document.querySelector('.ent-cadre')?.getAttribute('aria-label')).toBe('Fenêtre : S47 – S53');
     expect(screen.queryByText('Tire jusqu’au bout : l’année')).toBeNull();
-    /* plus courte : la fin ramenée à 3 semaines. Sans mesure (jsdom), la courbe vaut 65 px × 20 colonnes = 1 300 px, 25 px la semaine :
-       la fin (500 px) ramenée de 425 px tombe sur 75 px, 3 semaines */
-    fireEvent.pointerDown(poignee(), { pointerId: 2, clientX: 500, button: 0 });
-    fireEvent.pointerMove(window, { pointerId: 2, clientX: 75 });
-    fireEvent.pointerUp(window, { pointerId: 2, clientX: 75 });
+    /* plus courte : la fin ramenée à 3 semaines. Sans mesure (jsdom), la courbe vaut 65 px × 7 colonnes = 455 px ; recalée (R4), la fin est à
+       399 px, 49 px la semaine : ramenée à 205 px, 3 semaines */
+    fireEvent.pointerDown(poignee(), { pointerId: 2, clientX: 399, button: 0 });
+    fireEvent.pointerMove(window, { pointerId: 2, clientX: 205 });
+    fireEvent.pointerUp(window, { pointerId: 2, clientX: 205 });
+    act(() => { vi.advanceTimersByTime(300); });
+    vi.useRealTimers();
     expect(e.onFenetre).toHaveBeenLastCalledWith({ du: LUNDI0, semaines: 3 });
     expect(screen.getByLabelText('Fenêtre : S47 – S49')).toBeInTheDocument();
   });
@@ -295,10 +317,10 @@ describe('E06, E13 : la fenêtre et l’année', () => {
     const e = espions();
     render(<Banc {...e} />);
     const debut = screen.getByRole('button', { name: /Poignée de début/ });
-    fireEvent.pointerDown(debut, { pointerId: 2, clientX: 0, button: 0 });
-    // 52 semaines sur 390 px : 7,5 px la semaine ; 30 px = 4 semaines.
-    fireEvent.pointerMove(window, { pointerId: 2, clientX: 30 });
-    fireEvent.pointerUp(window, { pointerId: 2, clientX: 30 });
+    fireEvent.pointerDown(debut, { pointerId: 2, clientX: 56, button: 0 });
+    // Frise B, R4 : 6 semaines entre 56 et 334 px, 46,3 px la semaine ; 185 px = 4 semaines (R2 : le déplacement, jamais la position).
+    fireEvent.pointerMove(window, { pointerId: 2, clientX: 241 });
+    fireEvent.pointerUp(window, { pointerId: 2, clientX: 241 });
     expect(e.onFenetre).toHaveBeenCalledWith({ du: ajouterJours(LUNDI0, 28), semaines: 6 });
     expect(e.onPeriode).toHaveBeenCalledWith({ genre: 'dates', du: ajouterJours(LUNDI0, 28), au: ajouterJours(LUNDI0, 28 + 41) });
   });
@@ -329,7 +351,7 @@ describe('E11, E12 : lire la courbe au doigt, et la courbe en grand', () => {
   it('B7 : glisser la lit semaine par semaine ; un toucher ailleurs ramène l’état d’avant', () => {
     const onLectureSemaine = vi.fn();
     const { container } = render(<Banc {...espions()} onLectureSemaine={onLectureSemaine} />);
-    const svg = screen.getByRole('img', { name: /Libre et caisse sur 52 semaines/ });
+    const svg = screen.getByRole('img', { name: /Libre et caisse sur \d+ semaines/ });
     fireEvent.pointerDown(svg, { pointerId: 1, clientX: 100, clientY: 20, button: 0 });
     fireEvent.pointerMove(window, { pointerId: 1, clientX: 280, clientY: 22 });
     // B9 (D395) : le doigt lit les semaines de la fenêtre (6 sem., S47 – S52, 65 px chacune sur 390) : 280 px, la 5e (index 4), le lundi
@@ -353,7 +375,7 @@ describe('E11, E12 : lire la courbe au doigt, et la courbe en grand', () => {
   it('B7 : un appui long de 500 ms ouvre la vue graph ; × ramène la vue d’avant', () => {
     const e = espions();
     const { container } = render(<Banc {...e} />);
-    const svg = screen.getByRole('img', { name: /Libre et caisse sur 52 semaines/ });
+    const svg = screen.getByRole('img', { name: /Libre et caisse sur \d+ semaines/ });
     fireEvent.pointerDown(svg, { pointerId: 1, clientX: 100, clientY: 20, button: 0 });
     act(() => { vi.advanceTimersByTime(499); });
     expect(e.onVue).not.toHaveBeenCalled();
@@ -517,8 +539,7 @@ describe('CRITIQUE-2 n° 7, 8, 10 : la tête lisible, les noms comme z2s', () =>
     expect(loyer[0].i).toBe(3);
     expect(loyer[0].semaines).toHaveLength(4);
     // Rendu, fenêtre posée après les loyers (S1 – S6) : le SVG ne l'écrit qu'une fois, et son titre dit les 4 fois.
-    const { container } = render(<Banc {...espions()} modele={modele({ courbe: c, creux: creuxDepuis(c) })} largeurColonne={1280 / 6}
-      periodeInitiale={periodeDeFenetre({ du: ajouterJours(LUNDI0, 7 * 7), semaines: 6 })} />);
+    const { container } = render(<Banc {...espions()} modele={modele({ courbe: c, creux: creuxDepuis(c) })} largeurColonne={1280 / 52} fenetreInitiale={{ du: LUNDI0, semaines: 52 }} />);
     const ecrits = Array.from(container.querySelectorAll('[data-nom-courbe]')).filter(t => /^Loyer du local/.test(t.textContent ?? ''));
     expect(ecrits).toHaveLength(1);
     expect(ecrits[0].textContent).toBe('Loyer du local −400');
@@ -542,7 +563,7 @@ describe('CRITIQUE-2 n° 7, 8, 10 : la tête lisible, les noms comme z2s', () =>
   });
 
   it('les noms rendus à 390 : au moins 4 avec la mise de côté, chacun sur une ligne (aucun tspan qui passe à la ligne)', () => {
-    const { container } = render(<Banc {...espions()} modele={modele({ courbe: cz, creux: creuxDepuis(cz) })} />);
+    const { container } = render(<Banc {...espions()} modele={modele({ courbe: cz, creux: creuxDepuis(cz) })} fenetreInitiale={{ du: LUNDI0, semaines: 52 }} />);
     const noms = container.querySelectorAll('[data-nom-courbe]');
     // Paquet G n° 1 (CAL-PLACE-GACHEE) : la courbe portrait passe de 110 à 88 px (tracé de 68 px) ; à 390 (largeurs estimées hors navigateur), « Hotte » ne tient plus
     // à côté de la mise de côté : 3 au moins, lus au doigt pour les autres (c2-b). Avant : 4.
@@ -553,7 +574,7 @@ describe('CRITIQUE-2 n° 7, 8, 10 : la tête lisible, les noms comme z2s', () =>
 
 describe('CRITIQUE-2 n° 6 et 36 : la mise de côté sur la courbe', () => {
   it('une courbe avec une mise de côté rend [data-mise-de-cote] et le texte « mis de côté »', () => {
-    const { container } = render(<Banc {...espions()} />);
+    const { container } = render(<Banc {...espions()} fenetreInitiale={{ du: LUNDI0, semaines: 52 }} />);
     expect(container.querySelector('[data-mise-de-cote]')).not.toBeNull();
     const etiquette = container.querySelector('[data-mise-de-cote="etiquette"]') as Element;
     expect(etiquette).not.toBeNull();
@@ -691,8 +712,9 @@ describe('CRITIQUE-3 n° 6 (c2-b) et n° 25 (c3-a) : le doigt sur la courbe', ()
     expect(parseFloat((screen.getByRole('button', { name: /Poignée de fin/ }) as HTMLElement).style.width)).toBe(44);
 
     const cb = container.querySelector('.ent-cb') as HTMLElement;
-    fireEvent.pointerDown(cb, { pointerId: 1, clientX: 30, clientY: 50, button: 0 });
-    fireEvent.pointerMove(window, { pointerId: 1, clientX: 90, clientY: 52 });
+    // Frise B, R4 : la fenêtre va de 56 à 334 px ; ses prises de 22 à 66 et de 324 à 368 px ; le doigt part du corps, à 100 px.
+    fireEvent.pointerDown(cb, { pointerId: 1, clientX: 100, clientY: 50, button: 0 });
+    fireEvent.pointerMove(window, { pointerId: 1, clientX: 120, clientY: 52 });
     fireEvent.pointerMove(window, { pointerId: 1, clientX: 280, clientY: 52 });
     // Pendant : la tête lit la semaine de la fenêtre sous le doigt (B9 : 280 px, S51), ses boutons restent, le cadre n'a pas bougé.
     expect(container.querySelector('.ent-t')!.textContent).toMatch(/CHF · S51 · 14 déc\. [+−]/);
@@ -716,9 +738,9 @@ describe('CRITIQUE-3 n° 6 (c2-b) et n° 25 (c3-a) : le doigt sur la courbe', ()
     const e = espions();
     const { container } = render(<Banc {...e} />);
     const cb = container.querySelector('.ent-cb') as HTMLElement;
-    fireEvent.pointerDown(cb, { pointerId: 1, clientX: 70, clientY: 50, button: 0 });
-    fireEvent.pointerMove(window, { pointerId: 1, clientX: 160, clientY: 50 });
-    expect(screen.getByLabelText(/^Fenêtre : S47 – S\d+ 2027$/)).toBeInTheDocument();
+    fireEvent.pointerDown(cb, { pointerId: 1, clientX: 360, clientY: 50, button: 0 });
+    fireEvent.pointerMove(window, { pointerId: 1, clientX: 395, clientY: 50 });
+    expect(screen.getByLabelText('Fenêtre : S47 – S53')).toBeInTheDocument();
     expect(container.querySelector('.ent-lu')).toBeNull();
     fireEvent.pointerUp(window, { pointerId: 1, clientX: 160 });
   });
@@ -784,10 +806,7 @@ describe('CRITIQUE-3 n° 7 : les messages de l’en-tête passent par le canal u
     // Le canal l'affiche : l'en-tête ne le rend pas lui-même (un seul message à la fois).
     expect(screen.queryByText('Tire jusqu’au bout : l’année')).toBeNull();
     onMessage.mockClear();
-    fireEvent.pointerDown(fin(), { pointerId: 2, clientX: 45, button: 0 });
-    fireEvent.pointerMove(window, { pointerId: 2, clientX: 351 });
-    expect(onMessage).not.toHaveBeenCalled();
-    fireEvent.pointerUp(window, { pointerId: 2, clientX: 351 });
+    tirerFinAuBout(fin(), 2, () => expect(onMessage).not.toHaveBeenCalled());
     expect(e.onVue).toHaveBeenCalledWith('annee');
     expect(onMessage).not.toHaveBeenCalledWith(expect.objectContaining({ genre: 'annee' }));
     expect(onMessage).toHaveBeenLastCalledWith(null);
@@ -834,12 +853,13 @@ describe('CRITIQUE-3 n° 17 et 24 : les noms sur leur marche, l’étiquette du 
     // Aucun trait de rappel : les seules lignes sont le zéro et les marches colorées.
     // Paquet G n° 2 : le trait « |déc. » des mois en haut (w3s, et le portrait) n'est pas un trait de rappel.
     for (const l of Array.from(svg.querySelectorAll('line'))) expect(l.classList.contains('ent-zero') || l.classList.contains('ent-mk') || l.classList.contains('ent-mois-t')).toBe(true);
-    const n = svg.querySelectorAll('[data-point-semaine]').length, u = Number(svg.getAttribute('width')) / n;
+    // Frise B, R4 : les semaines se posent dans la vue de la fenêtre ; leur centre est celui de leur point.
+    const pts = Array.from(svg.querySelectorAll('[data-point-semaine]')).map(p => Number(p.getAttribute('cx'))), n = pts.length, u = (pts[n - 1] - pts[0]) / Math.max(1, n - 1);
     const noms = nomsCourbe(container);
     expect(noms.length).toBeGreaterThan(0);
     for (const t of noms) {
       const i = Number(t.closest('g')!.getAttribute('data-nom-index'));
-      expect(Math.abs(Number(t.getAttribute('x')) - i * u)).toBeLessThanOrEqual(u);
+      expect(Math.abs(Number(t.getAttribute('x')) - (pts[i] - u / 2))).toBeLessThanOrEqual(u);
     }
   };
 
@@ -876,7 +896,7 @@ describe('CRITIQUE-3 n° 17 et 24 : les noms sur leur marche, l’étiquette du 
 
 describe('CRITIQUE-3 n° 23 et 34 : l’étoile sur la courbe, l’espace de « dans Finances »', () => {
   it('b6 : une chose étoilée se voit sur sa marche, « ★ » dans le groupe de son nom ; aucune ★ hors de la courbe', () => {
-    const { container } = render(<Banc {...espions()} etoiles={['c-fes']} />);
+    const { container } = render(<Banc {...espions()} etoiles={['c-fes']} fenetreInitiale={{ du: LUNDI0, semaines: 52 }} />);
     const svg = courbeSvg(container);
     const etoile = svg.querySelector('[data-etoile="oui"]') as SVGGElement;
     expect(etoile).not.toBeNull();
@@ -887,7 +907,7 @@ describe('CRITIQUE-3 n° 23 et 34 : l’étoile sur la courbe, l’espace de « 
 
   it('b6 : une chose étoilée sans montant sur la courbe garde son libellé à sa semaine (« ★ Brassage », jamais une ★ seule)', () => {
     const choses = [...(modele().choses ?? []), { id: 'c-br', rangee: 'brassins', titre: 'Brassage', debut: ajouterJours(LUNDI0, 9 * 7 + 1), mouvements: [] }] as unknown as ModeleEnTete['choses'];
-    const { container } = render(<Banc {...espions()} modele={modele({ choses })} etoiles={['c-br']} />);
+    const { container } = render(<Banc {...espions()} modele={modele({ choses })} etoiles={['c-br']} fenetreInitiale={{ du: LUNDI0, semaines: 52 }} />);
     const t = courbeSvg(container).querySelector('[data-etoile="oui"] [data-nom-courbe]') as SVGTextElement;
     expect(t.textContent).toBe('★ Brassage');
     expect(t.closest('g')!.getAttribute('data-nom-index')).toBe('9');
@@ -968,7 +988,7 @@ describe('CRITIQUE-4 (lot q1-entete) : le doigt à 390, le paysage, le menu, le 
   });
 
   it('n° 25 : les points de la courbe sont dans un groupe coupé à la zone de tracé (clip-path)', () => {
-    const { container } = render(<Banc {...espions()} />);
+    const { container } = render(<Banc {...espions()} fenetreInitiale={{ du: LUNDI0, semaines: 52 }} />);
     const svg = courbeSvg(container);
     const groupe = svg.querySelector('g.ent-pts')!;
     expect(groupe.querySelectorAll('[data-point-semaine]')).toHaveLength(52);
@@ -981,8 +1001,8 @@ describe('CRITIQUE-4 (lot q1-entete) : le doigt à 390, le paysage, le menu, le 
   /* Tour 2 n° 1 et 2 (19.11, capture b19e2698 en paysage 844 × 340, la frise à 212 px sur 340) : la courbe descend à 60 px, la hauteur de la
      colonne du chiffre et des boutons, et n'a plus de rangée de mois (la bande des semaines est la seule échelle). Avant : 90 px, mois en haut. */
   it('n° 11 (tour 2) : en paysage, la courbe fait 60 px, sans mois ; le tracé dessous la rangée des noms, de 18 à 58 px', () => {
-    const props = { modele: modele(), fenetre: { du: LUNDI0, semaines: 13 }, onFenetre: vi.fn(), periode: periodeDeFenetre({ du: LUNDI0, semaines: 13 }), onPeriode: vi.fn(), vue: 'semaines' as const,
-      onVue: vi.fn(), mouvements: false, onMouvements: vi.fn(), largeurColonne: 48 };
+    const props = { modele: modele(), fenetre: { du: LUNDI0, semaines: 52 }, onFenetre: vi.fn(), periode: periodeDeFenetre({ du: LUNDI0, semaines: 52 }), onPeriode: vi.fn(), vue: 'semaines' as const,
+      onVue: vi.fn(), mouvements: false, onMouvements: vi.fn(), largeurColonne: 12 };
     const { container } = render(<EnTeteCalendrier {...props} orientation="paysage" />);
     const svg = courbeSvg(container);
     expect(Number(svg.getAttribute('height'))).toBe(60);
@@ -1566,15 +1586,15 @@ describe('CRITIQUE-9 (lot corr9-B) : le creux ancré sur son point, le glissé �
     const e = espions();
     const { container } = render(<Banc {...e} onLectureSemaine={vi.fn()} />);
     const cb = container.querySelector('.ent-cb') as HTMLElement;
-    fireEvent.pointerDown(cb, { pointerId: 8, clientX: 22, clientY: 50, button: 0 });
-    fireEvent.pointerMove(window, { pointerId: 8, clientX: 120, clientY: 50 });
-    fireEvent.pointerUp(window, { pointerId: 8, clientX: 120 });
+    fireEvent.pointerDown(cb, { pointerId: 8, clientX: 150, clientY: 50, button: 0 });
+    fireEvent.pointerMove(window, { pointerId: 8, clientX: 250, clientY: 50 });
+    fireEvent.pointerUp(window, { pointerId: 8, clientX: 250 });
     expect(container.querySelector('.ent-t')!.textContent).toMatch(/CHF · S\d+ · \d+ \p{L}+/u);
     expect(e.onFenetre).not.toHaveBeenCalled();
-    // La poignée de début (0 à 10 px) : la fenêtre glisse de 8 semaines.
-    fireEvent.pointerDown(cb, { pointerId: 9, clientX: 5, clientY: 50, button: 0 });
-    fireEvent.pointerMove(window, { pointerId: 9, clientX: 65, clientY: 50 });
-    fireEvent.pointerUp(window, { pointerId: 9, clientX: 65 });
+    // La prise de début (R4 : 22 à 66 px) : la fenêtre glisse de 2 semaines.
+    fireEvent.pointerDown(cb, { pointerId: 9, clientX: 40, clientY: 50, button: 0 });
+    fireEvent.pointerMove(window, { pointerId: 9, clientX: 140, clientY: 50 });
+    fireEvent.pointerUp(window, { pointerId: 9, clientX: 140 });
     expect(e.onFenetre).toHaveBeenCalled();
     expect(e.onFenetre.mock.calls.at(-1)![0].du).not.toBe(LUNDI0);
   });

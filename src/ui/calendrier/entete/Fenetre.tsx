@@ -2,7 +2,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import { bornes, etiquetteCourte, type Periode } from '../../../components/periode/periode';
 import { lundiDe } from '../../../domain/calendrier';
 import { ajouterJours, largeurTexte, placeEtiquette, type Boite } from './Courbe';
-import { aBouge } from '../../geste';
+import { aBouge, cadrerDeuxBouts, MARGE_BOUTS_PX, RECALAGE_MS, vitesseBord } from '../../geste';
 
 /**
  * La fenêtre (E06, c1-d) : le cadre posé sur la courbe, ses deux poignées, l'étiquette « S47 – S52 » qui suit le doigt ; et le lien avec la
@@ -95,6 +95,10 @@ export interface CadreProps {
   etiquetteAnnee?: string;
   /** CAL-PASSE : la courbe commence avant aujourd'hui ; la prise de la poignée de début reste dans l'écran même à la première semaine. */
   debutRamenee?: boolean;
+  /** R4 : la vue de la courbe (semaines), celle où se posent le cadre et ses poignées. */
+  vue: VueCourbe;
+  /** R7, R10 : pendant le tirage, la vue qui défile ou se resserre, puis son recalage ; `null` : la vue du repos. */
+  onVue?: (v: VueCourbe | null) => void;
 }
 
 /** L'année ISO d'une semaine : celle de son jeudi. */
@@ -139,19 +143,43 @@ export function boiteTirage(texte: string, bord: number, largeur: number): Boite
   return { l, r: l + w, t: 0, b: 22 };
 }
 
+/**
+ * Frise B, R4 (le brasseur, 20.11 : « sur la frise du temps, l'échelle doit changer pour toujours voir les 2 bouts ») : la vue de la courbe, en
+ * semaines (`v0` : la semaine au bord gauche, fractionnaire ; `span` : les semaines sur la largeur). Au repos, le début de la fenêtre est à 56 px
+ * du bord gauche et sa fin à 56 px du bord droit, quelle que soit sa durée (1 semaine à l'année).
+ */
+export interface VueCourbe { v0: number; span: number }
+export const vueDeFenetre = (index: number, nombre: number, largeur: number): VueCourbe => cadrerDeuxBouts(index, index + Math.max(1, nombre), Math.max(1, largeur));
+
+/**
+ * Les semaines de la courbe que la vue montre, et leurs bords en px de la courbe (bornés à la largeur) : la même forme que l'alignement sur la
+ * frise (D387), pour que la courbe se trace par le même chemin. `null` : aucune semaine dans la largeur.
+ */
+export function semainesDeVue(total: number, vue: VueCourbe, largeur: number): { debut: number; abscisses: number[] } | null {
+  if (!(total > 0) || !(largeur > 0) || !(vue.span > 0)) return null;
+  const debut = clamp(Math.floor(vue.v0), 0, total - 1), fin = clamp(Math.ceil(vue.v0 + vue.span) - 1, 0, total - 1);
+  if (fin < debut || vue.v0 + vue.span <= 0 || vue.v0 >= total) return null;
+  const x = (i: number) => Math.round(clamp((i - vue.v0) * largeur / vue.span, 0, largeur) * 10) / 10;
+  const abscisses: number[] = [];
+  for (let i = debut; i <= fin + 1; i++) abscisses.push(x(i));
+  return { debut, abscisses };
+}
+
 /** Ce que la courbe sait des poignées pour leur donner le doigt : leurs zones de prise, et le geste à lancer. */
 export interface PriseCadre {
   zones: ReturnType<typeof zonesPoignees>;
   tirer: (genre: 'debut' | 'fin', e: React.PointerEvent<Element>) => void;
 }
 
-export function Cadre({ numeros, lundis, index, nombre, largeur, annee, onChange, onAnnee, onRevient, onTropCourt, onTirage, etiquetteAnnee, prise, debutRamenee }: CadreProps) {
+export function Cadre({ numeros, lundis, index, nombre, largeur, annee, onChange, onAnnee, onRevient, onTropCourt, onTirage, etiquetteAnnee, prise, debutRamenee, vue, onVue }: CadreProps) {
   const total = numeros.length;
-  const unit = largeur / Math.max(1, total);
+  // R4 : une semaine fait `unit` px dans la vue ; la semaine i commence en (i − v0) × unit.
+  const unit = largeur / Math.max(1e-6, vue.span);
+  const xDe = (i: number) => (i - vue.v0) * unit;
   const [drag, setDrag] = useState<{ index: number; nombre: number; bord: number } | null>(null);
-  const cur = drag ?? (annee ? { index: 0, nombre: total } : { index, nombre });
+  const cur = drag ?? { index, nombre };
   const etiquette = etiquetteCadre(numeros, cur.index, cur.nombre, annee && !drag, etiquetteAnnee, lundis);
-  const gauche = cur.index * unit, droite = (cur.index + cur.nombre) * unit;
+  const gauche = xDe(cur.index), droite = xDe(cur.index + cur.nombre);
   // Plus large que le cadre (fenêtre de 2 semaines), l'étiquette passe à côté du cadre, sur une ligne, jamais hors de l'écran (placeEtiquette).
   const place = placeEtiquette(etiquette, gauche, cur.nombre * unit, largeur);
   const lignes = place.lignes;
@@ -165,49 +193,126 @@ export function Cadre({ numeros, lundis, index, nombre, largeur, annee, onChange
   useEffect(() => { onTirageRef.current?.(tirage); }, [cleTirage]); // eslint-disable-line react-hooks/exhaustive-deps
   useEffect(() => () => onTirageRef.current?.(null), []);
 
+  // R10 : le recalage de la vue après le lâcher (200 ms, sans animation si le mouvement est réduit) ; un nouveau tirage l'arrête.
+  const recalage = useRef(0);
+  const onVueRef = useRef(onVue);
+  onVueRef.current = onVue;
+  useEffect(() => () => { if (recalage.current) cancelAnimationFrame(recalage.current); }, []);
+  const recaler = (de: VueCourbe, vers: VueCourbe) => {
+    if (recalage.current) cancelAnimationFrame(recalage.current);
+    recalage.current = 0;
+    const reduit = typeof window !== 'undefined' && typeof window.matchMedia === 'function' && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    if (reduit || typeof requestAnimationFrame !== 'function' || (Math.abs(de.v0 - vers.v0) < 1e-3 && Math.abs(de.span - vers.span) < 1e-3)) { onVueRef.current?.(null); return; }
+    const t0 = typeof performance !== 'undefined' ? performance.now() : Date.now();
+    const pas = (t: number) => {
+      const k = Math.min(1, (t - t0) / RECALAGE_MS), e = 1 - Math.pow(1 - k, 3);
+      if (k >= 1) { recalage.current = 0; onVueRef.current?.(null); return; }
+      onVueRef.current?.({ v0: de.v0 + (vers.v0 - de.v0) * e, span: de.span + (vers.span - de.span) * e });
+      recalage.current = requestAnimationFrame(pas);
+    };
+    recalage.current = requestAnimationFrame(pas);
+  };
+
+  /*
+   * Frise B sur la courbe (R1, R2, R4, R5, R6, R7, R10). Le début déplace la fenêtre entière (c1-d : sa durée reste) ; la fin l'étire ou la
+   * réduit, une semaine au moins. Rien ne bouge avant 6 px (R1) ; la valeur suit le DÉPLACEMENT du doigt (R2). Quand la fenêtre arrive à 56 px
+   * d'un bord, c'est la courbe qui défile sous elle (R5). Doigt à moins de 40 px d'un bord en allant vers lui (R7) : le début fait défiler la
+   * fenêtre et la courbe ; la fin tirée vers la droite resserre l'échelle, le début reste où il est à l'écran. Lâcher : la fenêtre reste, la vue
+   * se recale sur les deux bouts (R4, R10). Échap ou pointercancel : la fenêtre et la vue d'avant, exactement.
+   */
   const demarrer = (genre: 'debut' | 'fin') => (e: React.PointerEvent<Element>) => {
     if (e.button > 0 || total === 0) return;
     e.stopPropagation();
+    if (recalage.current) { cancelAnimationFrame(recalage.current); recalage.current = 0; }
     // Le doigt reste à la poignée même s'il sort du cadre (vrai toucher : Pointer Events, capture ; `touch-action: none` en CSS).
     try { e.currentTarget.setPointerCapture?.(e.pointerId); } catch { /* jsdom, pointeur déjà levé */ }
-    const id = e.pointerId, x0 = e.clientX;
-    const gauche0 = index * unit, w0 = nombre * unit;
-    const gauche = gauche0;
-    let bouge = false, droite = gauche0 + w0, dernier = index;
+    const id = e.pointerId;
+    // px de la courbe : la boîte de l'élément tenu (la courbe) ; son échelle d'affichage peut différer de `largeur` (zoom CSS)
+    const r0 = e.currentTarget.getBoundingClientRect?.();
+    const kx = r0 && r0.width ? largeur / r0.width : 1, gauche0 = r0?.left ?? 0;
+    const xEcran = (cx: number) => (cx - gauche0) * kx;
+    let v: VueCourbe = { ...vue };
+    const ppu = () => largeur / v.span;
+    const px = (u: number) => (u - v.v0) * ppu();
+    const un = (x: number) => v.v0 + x / ppu();
+    const ppu0 = ppu();
+    const a0 = index, b0 = index + nombre;
+    const x0 = xEcran(e.clientX);
+    const off = (genre === 'debut' ? px(a0) : px(b0)) - x0;
+    let x = x0, arme = 0, bouge = false, pan = 0, a = a0, b = b0, raf = 0, tPrec = 0;
+    const M = Math.min(MARGE_BOUTS_PX, largeur / 3);
+
+    const poser = () => {
+      if (genre === 'debut') {
+        // R5 : la durée reste ; le déplacement se lit à l'échelle de la saisie, plus ce que R7 a fait défiler
+        const d = clamp(Math.round((x - x0) / ppu0 + pan), -a0, Math.max(0, total - b0));
+        a = a0 + d; b = b0 + d;
+        const q = ppu();
+        if (px(a) < M) v = { ...v, v0: a - M / q };
+        else if (px(b) > largeur - M) v = { ...v, v0: b - (largeur - M) / q };
+      } else {
+        // R6 : la fin seule, une semaine au moins, jamais au-delà de la courbe
+        b = clamp(Math.round(un(x + off)), a0 + 1, total);
+      }
+      setDrag({ index: a, nombre: b - a, bord: px(genre === 'debut' ? a : b) });
+      onVueRef.current?.(v);
+    };
+    const image = (t: number) => {
+      raf = 0;
+      if (!bouge) return;
+      const { sens, vitesse } = vitesseBord(x, largeur, arme);
+      if (!sens) { tPrec = 0; return; }
+      const dt = tPrec ? Math.min(0.05, (t - tPrec) / 1000) : 0;
+      tPrec = t;
+      if (dt > 0) {
+        if (genre === 'debut') pan += sens * vitesse * v.span * dt;
+        else if (sens > 0) {
+          // la fin tirée dehors : l'échelle se resserre autour du début, qui ne bouge pas à l'écran
+          const xa = px(a), span = Math.min(total * 1.3, v.span * (1 + vitesse * 0.6 * dt));
+          v = { span, v0: a - xa * span / largeur };
+        } else { tPrec = 0; return; }
+        poser();
+      }
+      raf = requestAnimationFrame(image);
+    };
     const suit = (ev: PointerEvent) => {
       if (ev.pointerId !== id) return;
-      const dx = ev.clientX - x0;
+      const xn = xEcran(ev.clientX), d = xn - x;
+      x = xn;
       // Frise B, R1 : rien ne bouge avant 6 px ; un toucher ne change rien
-      if (!bouge && !aBouge(dx)) return;
+      if (!bouge && !aBouge(x - x0)) return;
       bouge = true;
       if (annee) return;
-      if (genre === 'fin') {
-        /* CAL-PERIODE-LIBRE (18.11) : la fin se pose au doigt, plus courte ou plus longue, une semaine au moins */
-        const w = clamp(w0 + dx, unit, largeur - gauche);
-        droite = gauche + w;
-        setDrag({ index, nombre: clamp(Math.round(w / unit), 1, total - index), bord: droite });
-      } else {
-        dernier = clamp(index + Math.round(dx / unit), 0, Math.max(0, total - nombre));
-        setDrag({ index: dernier, nombre, bord: dernier * unit });
-      }
+      if (d < -0.5) arme = -1; else if (d > 0.5) arme = 1;
+      poser();
+      if (!raf && vitesseBord(x, largeur, arme).sens && typeof requestAnimationFrame === 'function') raf = requestAnimationFrame(image);
     };
-    const nettoie = () => { window.removeEventListener('pointermove', suit); window.removeEventListener('pointerup', fin); window.removeEventListener('pointercancel', annule); window.removeEventListener('keydown', echap, true); };
-    const annule = (ev: PointerEvent) => { if (ev.pointerId !== id) return; nettoie(); setDrag(null); };
-    // Frise B, R10 : Échap pendant le tirage rend la fenêtre d'avant (rien n'est posé)
-    const echap = (ev: KeyboardEvent) => { if (ev.key !== 'Escape') return; ev.preventDefault(); ev.stopPropagation(); nettoie(); setDrag(null); };
+    const nettoie = () => {
+      if (raf) cancelAnimationFrame(raf);
+      raf = 0;
+      window.removeEventListener('pointermove', suit); window.removeEventListener('pointerup', fin); window.removeEventListener('pointercancel', annule); window.removeEventListener('keydown', echap, true);
+    };
+    // R10 : pointercancel ou Échap rend la fenêtre ET la vue d'avant, exactement (rien n'est posé)
+    const retour = () => { nettoie(); setDrag(null); onVueRef.current?.(null); };
+    const annule = (ev: PointerEvent) => { if (ev.pointerId === id) retour(); };
+    const echap = (ev: KeyboardEvent) => { if (ev.key !== 'Escape') return; ev.preventDefault(); ev.stopPropagation(); retour(); };
     const fin = (ev: PointerEvent) => {
       if (ev.pointerId !== id) return;
       nettoie();
       setDrag(null);
-      if (annee) { if (!bouge) onRevient?.(); return; }
-      if (genre === 'fin') {
-        /* CAL-PERIODE-LIBRE (« Je peux pas choisir une période donnée ») : lâchée au-delà de 80 %, l'année (c1-d) ; sinon la fenêtre prend la
-           fin posée, et la frise, Finances et l'étiquette disent la même période. Un toucher sans glisser garde l'invite d'avant. */
-        const n = clamp(Math.round((droite - gauche) / unit), 1, total - index);
-        if (bouge && droite >= SEUIL_ANNEE * largeur) onAnnee();
-        else if (bouge && n !== nombre) onChange({ index, nombre: n });
-        else if (!bouge) onTropCourt?.();
-      } else if (bouge && dernier !== index) onChange({ index: dernier, nombre });
+      if (annee) { onVueRef.current?.(null); if (!bouge) onRevient?.(); return; }
+      if (!bouge) {
+        onVueRef.current?.(null);
+        /* un toucher sur la fin garde l'invite d'avant ; rien ne change */
+        if (genre === 'fin') onTropCourt?.();
+        return;
+      }
+      const n = b - a;
+      /* CAL-PERIODE-LIBRE (« Je peux pas choisir une période donnée ») : la fenêtre prend la plage posée ; tirée jusqu'à une année, l'An (c1-d). */
+      if (genre === 'fin' && n >= Math.min(SEMAINES_ANNEE, total)) onAnnee();
+      else if (a !== a0 || n !== nombre) onChange({ index: a, nombre: n });
+      // R10 : seule la vue se recale, en 200 ms, sur les deux bouts de la plage posée
+      recaler(v, vueDeFenetre(a, genre === 'fin' && n >= Math.min(SEMAINES_ANNEE, total) ? Math.min(SEMAINES_ANNEE, total - a) : n, largeur));
     };
     window.addEventListener('pointermove', suit);
     window.addEventListener('pointerup', fin);

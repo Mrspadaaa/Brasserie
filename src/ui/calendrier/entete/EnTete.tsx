@@ -1,4 +1,5 @@
 import React, { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
+import { flushSync } from 'react-dom';
 import { ChartLine, ChevronDown, Clock, EyeOff, Maximize2, Minimize2, Ruler } from 'lucide-react';
 import { alignerSemaines, colonnesDeSemaines, semaineSous } from './alignement';
 import type { Periode } from '../../../components/periode/periode';
@@ -8,7 +9,7 @@ import type { Orientation } from '../useOrientation';
 import { demanderPleinEcran, estPleinEcran, poserPleinCalendrier, sortirPleinEcran } from '../pleinEcran';
 import { usePointeurCourbe } from '../usePointeurCourbe';
 import { Courbe, CourbeZoom, HAUTEUR_MOIS, MOIS_MIN, ajouterJours, chf, courbePlate, jourCourt, moisDeSemaine, semaineCourte, type Boite, type EtoileCourbe } from './Courbe';
-import { Cadre, etiquetteCadre, fenetreDePeriode, libelleDuree, libellePeriode, periodeDeFenetre, SEMAINES_ANNEE, type FenetreSemaines, type PriseCadre } from './Fenetre';
+import { Cadre, etiquetteCadre, fenetreDePeriode, libelleDuree, libellePeriode, periodeDeFenetre, semainesDeVue, SEMAINES_ANNEE, vueDeFenetre, type FenetreSemaines, type PriseCadre, type VueCourbe } from './Fenetre';
 import { BandeSemaines } from './BandeSemaines';
 import { BandeColonnes, jourEntier } from './BandeColonnes';
 import type { Echelle } from '../echelle';
@@ -201,6 +202,10 @@ export function EnTeteCalendrier(props: EnTeteCalendrierProps) {
   const repliTotal = largeurColonne > 0 ? largeurColonne * Math.max(1, nombre) : 390;
   const repli = paysage && !graph && !paysageAligne ? Math.max(200, repliTotal - COLONNE_T - 8) : repliTotal;
   const largeur = mesure || repli;
+  // Frise B, R4 (20.11, « l'échelle doit changer pour toujours voir les 2 bouts ») : la vue de la petite courbe pose le début de la fenêtre à
+  // 56 px du bord gauche et sa fin à 56 px du bord droit. Pendant un tirage (R7) et son recalage (R10), la vue vient de la poignée.
+  const [vueTirage, setVueTirage] = useState<VueCourbe | null>(null);
+  const vueC = useMemo(() => vueTirage ?? vueDeFenetre(index, nombre, largeur), [vueTirage, index, nombre, largeur]);
   // La platitude se lit sur la courbe du modèle, jamais sur l'aperçu d'un geste : la hauteur ne saute pas pendant un glisser.
   const plate = !!base && courbePlate(base.semaines);
   const hauteur = paysageAligne ? HAUTEUR_COURBE.paysageAlignee : paysage ? HAUTEUR_COURBE.paysage
@@ -405,11 +410,11 @@ export function EnTeteCalendrier(props: EnTeteCalendrierProps) {
       const x = (clientX - (r?.left ?? 0)) * (r && r.width ? largeur / r.width : 1);
       return clamp(alignement.debut + semaineSous(alignement, x), 0, n - 1);
     }
-    /* B9 (WFP-2, 21.11) : en 6 semaines (S47–S52), un glissé à 30 % lisait « S31 · 2 août », hors de la fenêtre. La petite courbe montre
-       l'année et son cadre ; le doigt, lui, lit les semaines de la fenêtre, réparties sur la largeur comme les colonnes de la frise dessous. */
+    /* B9 (WFP-2, 21.11) : en 6 semaines (S47–S52), un glissé à 30 % lisait « S31 · 2 août », hors de la fenêtre. Frise B, R4 : la courbe se
+       trace dans la vue de la fenêtre ; le doigt lit la semaine sous lui, bornée aux semaines de la fenêtre (les marges de 56 px lisent ses bouts). */
     const debutFenetre = clamp(index, 0, n - 1), dansFenetre = Math.max(1, Math.min(nombre, n - debutFenetre));
-    const fraction = ((clientX - (r?.left ?? 0)) * (r && r.width ? largeur / r.width : 1)) / Math.max(1, largeur);
-    return clamp(debutFenetre + Math.floor(fraction * dansFenetre), debutFenetre, debutFenetre + dansFenetre - 1);
+    const x = (clientX - (r?.left ?? 0)) * (r && r.width ? largeur / r.width : 1);
+    return clamp(Math.floor(vueC.v0 + (x * vueC.span) / Math.max(1, largeur)), debutFenetre, debutFenetre + dansFenetre - 1);
   };
   const { props: gestes, attacher } = usePointeurCourbe({
     indexSous,
@@ -629,13 +634,17 @@ export function EnTeteCalendrier(props: EnTeteCalendrierProps) {
          osciller) : le montant serré se rapporte à sa taille de 21 px. */
       setSerre(ligne > el.clientWidth && bN + Math.max(u.offsetWidth, em.offsetWidth) + 4 + 4 > el.clientWidth);
     };
-    juger();
-    if (typeof ResizeObserver === 'undefined') return undefined;
+    /* CAL-LENT (21.11) : lu dans le commit, `offsetWidth` forçait la mise en page de tout le Calendrier juste après le rendu d'un lâcher. Lu
+       dans l'image suivante, la mise en page est celle de l'image, faite une fois (A/B apparié 7 tours, session 8 : frise 416 → 312 ms, barre
+       232 → 184, Modifier 552 → 440). `flushSync` applique un changement de forme avant que l'image se peigne : aucun saut visible. */
+    const image = typeof requestAnimationFrame === 'function' ? requestAnimationFrame(() => flushSync(juger)) : (juger(), 0);
+    if (typeof ResizeObserver === 'undefined') return () => { if (image) cancelAnimationFrame(image); };
     const ro = new ResizeObserver(juger);
     ro.observe(el);
-    return () => ro.disconnect();
-    // Le bouton est remonté quand la lecture au doigt se ferme : il se rejuge alors (lecture dans les dépendances).
-  }, [semaineCreux, creux?.centimes, orientation, vue, courbe, lecture === null]);
+    return () => { if (image) cancelAnimationFrame(image); ro.disconnect(); };
+    // Le bouton est remonté quand la lecture au doigt se ferme : il se rejuge alors (lecture dans les dépendances). La courbe ne compte que
+    // présente ou absente (le bouton n'existe qu'avec elle) ; ses valeurs passent par le creux.
+  }, [semaineCreux, creux?.centimes, orientation, vue, !!courbe, lecture === null]);
   const cle = courbe && creux ? (
     <button ref={refCle} type="button" className="ent-k" data-ent-cle data-empile={empile ? '' : undefined} data-serre={empile && serre ? '' : undefined} aria-expanded={creuxOuvert}
       aria-label={`${chf(creux.centimes)} CHF à dépenser sans passer sous 0 (${semaineCreux}) : voir ses causes`} onClick={() => setCreuxOuvert(o => !o)}>
@@ -649,6 +658,18 @@ export function EnTeteCalendrier(props: EnTeteCalendrierProps) {
     const dedans = (i: number) => i >= d && i < d + m;
     return {
       d, m, sem: base.semaines.slice(d, d + m), ap: zoomee && apercuC ? apercuC.semaines.slice(d, d + m) : null,
+      creuxIndex: creux && dedans(creux.index) ? creux.index - d : null,
+      mise: miseCourbe && dedans(miseCourbe.i) ? { ...miseCourbe, i: miseCourbe.i - d } : null,
+      etoiles: etoilesCourbe.filter(e => dedans(e.i)).map(e => ({ ...e, i: e.i - d }))
+    };
+  })() : null;
+  // Frise B, R4 : hors alignement, la courbe se trace dans la vue de la fenêtre, par le même chemin que l'alignement (bords des semaines en px).
+  const echelleR4 = !alignement && courbe && base && !graph ? semainesDeVue(courbe.length, vueC, largeur) : null;
+  const vueR4 = echelleR4 && courbe ? (() => {
+    const d = echelleR4.debut, m = echelleR4.abscisses.length - 1;
+    const dedans = (i: number) => i >= d && i < d + m;
+    return {
+      d, m, sem: courbe.slice(d, d + m),
       creuxIndex: creux && dedans(creux.index) ? creux.index - d : null,
       mise: miseCourbe && dedans(miseCourbe.i) ? { ...miseCourbe, i: miseCourbe.i - d } : null,
       etoiles: etoilesCourbe.filter(e => dedans(e.i)).map(e => ({ ...e, i: e.i - d }))
@@ -721,9 +742,10 @@ export function EnTeteCalendrier(props: EnTeteCalendrierProps) {
             )}
           </Courbe>
         ) : courbe && base ? (
-          <Courbe courbe={courbe} largeur={largeur} hauteur={hauteur} curseur={lecture} reference={refCourbe} gestes={apercuC ? undefined : gestesCourbe} mise={miseCourbe}
-            mois={false} moisEnHaut plate={plate && !paysage} etoiles={etoilesCourbe} masque={apercuC ? null : tirage}
-            cadre={apercuC ? undefined : { index, nombre, etiquette: etiquetteCadre(semainesTot.map(s => s.numero), index, nombre, annee, etiquetteAnnee, lundis) }}>
+          <Courbe courbe={vueR4 ? vueR4.sem : courbe} abscisses={echelleR4?.abscisses} alignee={false} creuxIndex={vueR4 ? vueR4.creuxIndex : undefined} largeur={largeur} hauteur={hauteur}
+            curseur={lecture !== null && vueR4 ? lecture - vueR4.d : lecture} reference={refCourbe} gestes={apercuC ? undefined : gestesCourbe} mise={vueR4 ? vueR4.mise : miseCourbe}
+            mois={false} moisEnHaut plate={plate && !paysage} etoiles={vueR4 ? vueR4.etoiles : etoilesCourbe} masque={apercuC ? null : tirage}
+            cadre={apercuC ? undefined : { index: index - (vueR4?.d ?? 0), nombre, etiquette: etiquetteCadre(semainesTot.map(s => s.numero), index, nombre, annee, etiquetteAnnee, lundis) }}>
             {apercuC ? (
               <div className="ent-zoom-c" style={{ height: hauteur }}>
                 <CourbeZoom avant={base.semaines.slice(index, index + nombre).map(s => s.libre)} apres={apercuC.semaines.slice(index, index + nombre).map(s => s.libre)} largeur={largeur} hauteur={hauteur - HAUTEUR_MOIS + 8} />
@@ -731,7 +753,8 @@ export function EnTeteCalendrier(props: EnTeteCalendrierProps) {
             ) : (
               <Cadre numeros={semainesTot.map(s => s.numero)} lundis={lundis} index={index} nombre={nombre} largeur={largeur} annee={annee}
                 onChange={c => ecrire({ du: semainesTot[c.index].debut, semaines: c.nombre })} onAnnee={versAnnee} onRevient={quitterAnnee}
-                onTropCourt={() => dire({ genre: 'annee', texte: MESSAGE_ANNEE })} onTirage={setTirage} etiquetteAnnee={etiquetteAnnee} prise={prise} debutRamenee={(modele.passe ?? 0) > 0} />
+                onTropCourt={() => dire({ genre: 'annee', texte: MESSAGE_ANNEE })} onTirage={setTirage} etiquetteAnnee={etiquetteAnnee} prise={prise} debutRamenee={(modele.passe ?? 0) > 0}
+                vue={vueC} onVue={setVueTirage} />
             )}
           </Courbe>
         ) : base === null ? (
