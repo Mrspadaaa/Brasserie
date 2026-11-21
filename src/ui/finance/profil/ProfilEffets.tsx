@@ -12,6 +12,7 @@ import { useStorageValue } from '../../../hooks/useLiveData';
 import { litreFr, montant, montantEntier, moisCourt } from '../previsions/format';
 import { FormSheet } from '../prevision/base';
 import './profil.css';
+import { refCurseurNatif } from '../../geste';
 
 /**
  * Solde et paramètres = m4pf-c (choix du 15.11) : chaque réglage montre ce qu'il change.
@@ -159,7 +160,7 @@ export function ProfilEffets({ profile, onClose, parametres = false }: { profile
 
       <section className="pfc-card" aria-label="Production prévue" data-booster="curseur-production">
         <div className="pfc-top"><h3>Production prévue</h3><span className="pfc-val"><ChampMontant aria-label="Production annuelle prévue (litres conditionnés)" className="pfc-nb pfc-m" value={draft.annualProductionL} onValue={v => setDraft(d => ({ ...d, annualProductionL: v ?? undefined }))} min={1} max={1_000_000} integer /> <small>L/an</small></span></div>
-        <input type="range" className="pfc-range" min={0} max={PRODUCTION_MAX} step={50} aria-label="Production annuelle, curseur" aria-valuetext={litres == null ? 'non renseignée' : `${montantEntier(litres * 100)} litres par an`}
+        <input ref={refCurseurNatif} type="range" className="pfc-range" min={0} max={PRODUCTION_MAX} step={50} aria-label="Production annuelle, curseur" aria-valuetext={litres == null ? 'non renseignée' : `${montantEntier(litres * 100)} litres par an`}
           value={Math.min(PRODUCTION_MAX, litres ?? 0)} style={{ ['--pos' as string]: `${(Math.min(PRODUCTION_MAX, litres ?? 0) / PRODUCTION_MAX) * 100}%` }}
           onChange={e => { const v = Number(e.target.value); setDraft(d => ({ ...d, annualProductionL: v > 0 ? v : undefined })); }} />
         <div className="pfc-ticks pfc-m" aria-hidden="true"><span>0</span><span>2 000</span><span>4 000 L</span></div>
