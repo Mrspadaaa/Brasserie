@@ -12,6 +12,9 @@
 //              posé) : les décalages des éléments qui étaient sous le haut du contenu ajouté (MutationObserver) sortent du CLS ; le
 //              premier bloc et l'élément touché restent suivis. Une action marquée `exception` (règle n° 1 : sa maquette choisie fait
 //              ce mouvement) est mesurée et dite « exception », jamais comptée en échec ni dans la session.
+//              D411 (21.11) : une action marquée `periode` (« Période suivante », « Période précédente », choix d'échelle) change
+//              la période, donc le contenu, par le geste même : son CLS ne compte ni pour l'action ni pour la session ; le premier
+//              bloc et l'élément touché restent suivis (≤ 1 px).
 //   VUE-FOND   (21.11 : « beaucoup de vues peuvent descendre beaucoup plus bas que le contenu… » puis « le bouton+ disparaît quand on interagit avec la
 //              vue… même pas besoin de descendre + bas ») : chaque onglet, sous-vue et feuille longue, à 390 tactile et à 1280, défilé tout en bas ;
 //              KO si l'espace sous le dernier contenu visible dépasse 24 px (jusqu'à la barre d'onglets au 390, au bord de la fenêtre au 1280,
@@ -166,7 +169,7 @@ const CAL_COURBE = 'Cacher la courbe retire la courbe de l\'en-tête, la frise r
 const CAL_FICHE = 'la fiche ouverte sous sa barre se referme : le geste retire son propre contenu (D408, pendant de l\'ouverture)';
 /* Chaque écran : comment l'atteindre, puis ses actions principales (texte du bouton ; `p` : préfixe ; `nav` : l'action change d'écran). */
 const ECRANS = [
-  { id: 'calendrier', aller: [['Calendrier', { dans: 'nav button' }]], actions: [['S47', { p: 1 }], ['S48', { p: 1 }], ['S49', { p: 1 }], ['Masquer Fêtes'], ['Cacher la courbe', { exception: CAL_COURBE }], ['ZZ TEST Commande de malt', { p: 1, ajoute: 1 }], ['Fermer', { exception: CAL_FICHE }], ['Ajouter dans Travaux'], ['Fermer'], ['Période suivante'], ['Période précédente']] },
+  { id: 'calendrier', aller: [['Calendrier', { dans: 'nav button' }]], actions: [['S47', { p: 1 }], ['S48', { p: 1 }], ['S49', { p: 1 }], ['Masquer Fêtes'], ['Cacher la courbe', { exception: CAL_COURBE }], ['ZZ TEST Commande de malt', { p: 1, ajoute: 1 }], ['Fermer', { exception: CAL_FICHE }], ['Ajouter dans Travaux'], ['Fermer'], ['Période suivante', { periode: 1 }], ['Période précédente', { periode: 1 }]] },
   { id: 'bord', aller: [['Bord', { dans: 'nav button' }]], actions: [['Échéances et démarches', { p: 1 }], ['Tous'], ['Période précédente'], ['Période suivante'], ['Actions rapides'], ['Actions rapides']] },
   { id: 'finances', aller: [['Finances', { dans: 'nav button' }]], actions: [['sept.'], ['oct.'], ['tout'], ['nov.'], ['Solde et paramètres financiers', { p: 1 }]] },
   { id: 'brassins', aller: [['Brassins', { dans: 'nav button' }]], actions: [['En cuve', { p: 1 }], ['À brasser', { p: 1 }], ['Tous', { p: 1 }], ['Filtrer'], ['Filtrer'], ['Épingler le brassin B-ZZ-PLAN'], ['Recettes', { p: 1, nav: 1 }], ['Atelier R&D', { nav: 1 }], ['Carnet', { nav: 1 }], ['Brassins (', { p: 1, nav: 1 }]] },
@@ -207,14 +210,16 @@ async function vueSaute(banc, aujourdhui) {
         await s.p.touchscreen.tap(c[0], c[1]);
         await sleep(1100);
         const m = await s.p.evaluate(relever);
-        if (!o.exception) session += m.cls;
+        // D411 : le changement de période remplace le contenu par le geste même ; seul son CLS sort de la mesure.
+        const clsCompte = o.periode ? 0 : m.cls;
+        if (!o.exception) session += clsCompte;
         const nav = !!o.nav;
         const sautBloc = !m.bloc.remplace && !nav ? m.bloc.max : 0;
         const sautDoigt = !m.doigt.remplace && !m.feuille ? m.doigt.max : 0;
-        const ligne = { ecran: ecran.id, action: t, ...avant, ...m, nav };
+        const ligne = { ecran: ecran.id, action: t, ...avant, ...m, nav, ...(o.periode ? { periode: true } : {}) };
         mesures.vue.push(ligne);
-        const d = `bloc ${m.bloc.remplace ? 'remplacé' : `${m.bloc.max} px`} · doigt ${m.doigt.remplace ? 'remplacé' : `${m.doigt.max} px`} · CLS ${m.cls}${m.clsAjout ? ` · CLS du contenu ajouté ${m.clsAjout} (D407)` : ''}${m.feuille ? ' · feuille' : ''}${m.sources.length ? ` · ${m.sources.join(', ')}` : ''}`;
-        const saute = sautBloc > SEUIL_PX || sautDoigt > SEUIL_PX || m.cls > SEUIL_CLS;
+        const d = `bloc ${m.bloc.remplace ? 'remplacé' : `${m.bloc.max} px`} · doigt ${m.doigt.remplace ? 'remplacé' : `${m.doigt.max} px`} · CLS ${m.cls}${m.clsAjout ? ` · CLS du contenu ajouté ${m.clsAjout} (D407)` : ''}${m.feuille ? ' · feuille' : ''}${o.periode ? ' · période changée, CLS hors mesure (D411)' : ''}${m.sources.length ? ` · ${m.sources.join(', ')}` : ''}`;
+        const saute = sautBloc > SEUIL_PX || sautDoigt > SEUIL_PX || clsCompte > SEUIL_CLS;
         if (saute && o.exception) { ligne.exception = o.exception; ok(`${ecran.id} « ${t} » exception`, `${d} · ${o.exception}`); }
         else if (saute) { echec(`VUE-SAUTE ${ecran.id} « ${t} »`, d); await s.cap(`vue-${ecran.id}-${k}-saut`); }
         else ok(`${ecran.id} « ${t} »`, d);
