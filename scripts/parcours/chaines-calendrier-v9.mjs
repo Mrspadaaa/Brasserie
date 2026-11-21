@@ -10,8 +10,10 @@ const { fixtureCalendrier } = await import(pathToFileURL(path.join(ICI, 'fixture
 /** `sansPompe` : la même fixture sans la pièce payée sans paiement : la caisse est complète, le point bas existe (Bord, Finances, Calendrier). */
 const calendrier = (sansPompe) => (aujourdhui) => {
   const e = fixtureCalendrier(aujourdhui).entrees;
-  return sansPompe ? e.filter((x) => x.id !== 'T-ZZ-POMPE') : e;
+  return sansPompe ? e.filter((x) => x.id !== 'T-ZZ-POMPE' && x.id !== 'PAY-T-ZZ-POMPE') : e;
 };
+/** La pièce payée SANS paiement (CHD-1) : la fixture donne désormais son paiement à la pompe ; ici on le retire, c'est le cas testé. */
+const pompeSansPaiement = (aujourdhui) => fixtureCalendrier(aujourdhui).entrees.filter((x) => x.id !== 'PAY-T-ZZ-POMPE');
 const dit = (s) => s.p.evaluate(() => document.body.innerText.replace(/\s+/g, ' '));
 const versCalendrier = async (s, sleep) => { await s.onglet('Calendrier'); await sleep(1800); };
 const HORIZON = /horizon|\b\d+ ?(j|jours|sem\.|semaines|mois)\b|12 mois/i;
@@ -121,7 +123,7 @@ export function etapesV9({ echec, ok, sleep }) {
     },
     {
       id: 'CH-MSG', titre: 'Solde confirmé mais pièce payée sans paiement : l’en-tête ne dit pas « Solde de départ inconnu », il dit la pièce sans paiement (EnTete.tsx:756)',
-      entrees: calendrier(false),
+      entrees: pompeSansPaiement,
       async joue(s) {
         await versCalendrier(s, sleep);
         const t = await s.p.evaluate(() => document.querySelector('.ent-inconnu')?.innerText.replace(/\s+/g, ' ') ?? null);

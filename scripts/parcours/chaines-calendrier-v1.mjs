@@ -9,8 +9,10 @@ const { fixtureCalendrier } = await import(pathToFileURL(path.join(ICI, 'fixture
 
 const calendrier = (sansPompe = false) => (aujourdhui) => {
   const e = fixtureCalendrier(aujourdhui).entrees;
-  return sansPompe ? e.filter((x) => x.id !== 'T-ZZ-POMPE') : e;
+  return sansPompe ? e.filter((x) => x.id !== 'T-ZZ-POMPE' && x.id !== 'PAY-T-ZZ-POMPE') : e;
 };
+/** La pièce payée SANS paiement (CHD-1) : la fixture donne désormais son paiement à la pompe ; ici on le retire, c'est le cas testé. */
+const pompeSansPaiement = (aujourdhui) => fixtureCalendrier(aujourdhui).entrees.filter((x) => x.id !== 'PAY-T-ZZ-POMPE');
 const dit = (s) => s.p.evaluate(() => [document.body.innerText.replace(/\s+/g, ' '), ...[...document.querySelectorAll('[aria-label]')].map((e) => e.getAttribute('aria-label'))].join(' | '));
 /** Les aria-label qui commencent par ce nom (une barre, une rangée) : ce que dit la barre. */
 const labels = (s, re) => s.p.evaluate((src) => { const r = new RegExp(src, 'i'); return [...document.querySelectorAll('[aria-label]')].map((e) => e.getAttribute('aria-label').replace(/\s+/g, ' ')).filter((t) => r.test(t)); }, re.source);
@@ -20,7 +22,7 @@ export function etapesV1({ echec, ok, sleep, pageNeuve, sortie }) {
   return [
     {
       id: 'CH-D1', titre: 'Solde pas connu (pièce payée sans paiement) : le titre du Calendrier ne chiffre pas « CHF à dépenser » ; sans la pièce, le chiffre reste (CHD-1)',
-      entrees: calendrier(false),
+      entrees: pompeSansPaiement,
       async joue(s) {
         await versCalendrier(s, sleep);
         await s.cap('CH-D1-1-calendrier');
