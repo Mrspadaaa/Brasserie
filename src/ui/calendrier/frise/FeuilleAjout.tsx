@@ -153,8 +153,9 @@ export const FeuilleAjout: React.FC<FeuilleAjoutProps> = ({ mode, initial, conte
 
   const regler = (suite: BrouillonAjout) => { setConfirmation(null); setRefus(null); setB(mode === 'ajouter' ? avecNomPose(suite, contexte.choses) : suite); };
   /* C1 (D393, K1) : à l'ajout, la date se pose en horizons (aujourd'hui, 1 mois, 3 mois…) ; la semaine exacte se règle ensuite au glisser sur
-     la frise. Le carrousel des semaines ne reste qu'à Modifier (la chose est déjà posée, sa semaine se lit et se touche). */
-  const horizons = mode === 'ajouter';
+     la frise. CAL-MODIFIER (21.11, « la modification est horrible ») : Modifier reprend la même feuille, horizons puis frise (durée ou date
+     seule, passé compris) ; plus de carrousel des semaines. Un brassin rouvert prend la date seule (sa semaine se règle au doigt). */
+  const horizons = true;
   const intention = horizons && b.debut ? texteIntention(b.debut, contexte.aujourdhui) : null;
   /* D2 (D393) : le dernier achat semblable au nom tapé, montant non encore donné ; rien de semblable : aucune puce (jamais 0) */
   const prixPropose = argent && (b.rangee === 'travaux' || b.rangee === 'achats') && b.centimes === undefined && !b.nomPose && b.titre.trim().length >= 3 && contexte.achats?.length
@@ -337,7 +338,7 @@ export const FeuilleAjout: React.FC<FeuilleAjoutProps> = ({ mode, initial, conte
             </div>
           )}
           {/* capture-12 (21.11) : une chose à une seule date (vente, papier…) prend la même frise, un seul repère, tirable dans le passé */}
-          {horizons && !fenetre && !brassin && b.debut && (
+          {horizons && !fenetre && (!brassin || mode === 'modifier') && b.debut && (
             <div className="mt-2">
               <DureeFenetre seule rangee={b.rangee} debut={b.debut} fin={null} onFin={() => undefined} onPlage={d => regler(etirerPlage(b, d, null))} />
             </div>

@@ -399,6 +399,38 @@ async function jouerCalendrier({ p, base, combo, tactile, glisser, pas }) {
       } catch (e) { echec(nom, String(e.message ?? e).slice(0, 160)); await echap(); }
     }
   };
+  // ── CAL-MODIFIER (21.11, « Pareil, la modification est horrible ») : Modifier reprend la feuille d'ajout. « ZZ TEST Geste » rouverte :
+  //    aucun carrousel de semaines (.cal-f-semaines), la frise Durée présente ; le début tiré dans le passé, Enregistrer : la fenêtre écrite
+  //    commence plus tôt et finit au même endroit, relue après rechargement ──
+  const sectionModifier = async () => {
+    const M = `modifier ${combo}`;
+    const valeur = () => p.evaluate((k, id) => { const e = JSON.parse(localStorage.getItem(k) ?? '[]').find((x) => x.id === id); if (!e) return null; const f = e.data.fenetre; return { du: f?.du ?? e.data.date, au: f?.au ?? e.data.date, cle: `${f?.du ?? e.data.date}→${f?.au ?? e.data.date}` }; }, CLE_CACHE, ID_GESTE);
+    try {
+      const v0 = await valeur();
+      const b = await p.evaluate(() => { const e = document.querySelector('[aria-label^="ZZ TEST Geste,"]'); if (!e) return null; e.scrollIntoView({ block: 'center', inline: 'center' }); const r = e.getBoundingClientRect(); return [r.left + r.width / 2, r.top + r.height / 2]; });
+      if (!v0 || !b) { echec(M, '« ZZ TEST Geste » introuvable'); return; }
+      await toucherXY(b[0], b[1]); await sleep(600);
+      await toucherTexte('Modifier'); await sleep(700);
+      const f = await p.evaluate(() => {
+        const pi = document.querySelector('[data-mode="modifier"] .cal-f-duree-piste');
+        const r = pi?.getBoundingClientRect(); if (pi) pi.scrollIntoView({ block: 'center' });
+        const deb = document.querySelector('[data-mode="modifier"] [data-debut-duree]')?.getBoundingClientRect();
+        return { mode: !!document.querySelector('[data-mode="modifier"]'), carrousel: document.querySelectorAll('[data-mode="modifier"] .cal-f-semaines').length, piste: !!r, x: deb ? deb.left + deb.width / 2 : null, y: deb ? deb.top + deb.height / 2 : null, px: Number(pi?.getAttribute('data-px-semaine') ?? 0) };
+      });
+      await cap('modifier-ouvert');
+      if (!f.mode) { echec(M, 'la feuille Modifier ne s\'ouvre pas'); await echap(); return; }
+      f.carrousel ? echec(`${M} sans carrousel`, `${f.carrousel} carrousel de semaines (S36 31, S37 7…)`) : ok(`${M} sans carrousel`);
+      if (!f.piste || f.x == null) { echec(`${M} frise Durée`, 'aucune frise Durée avec un début à tirer'); await echap(); return; }
+      ok(`${M} frise Durée`);
+      await glisser(f.x, f.y, pas(f.x, f.x - 2.2 * f.px)); await sleep(500);
+      await cap('modifier-passe');
+      await toucherTexte('Enregistrer'); await sleep(900);
+      const v1 = await valeur();
+      (v1.du < v0.du && v1.au === v0.au) ? ok(`${M} début dans le passé`, `${v0.cle} → ${v1.cle}`) : echec(`${M} début dans le passé`, `${v0.cle} → ${v1.cle} (début plus tôt, même fin attendus)`);
+      await versCalendrier(); const v2 = await valeur();
+      v2?.cle === v1.cle ? ok(`${M} rechargement`, v1.cle) : echec(`${M} rechargement`, `${v1.cle} → ${v2?.cle}`);
+    } catch (e) { echec(M, String(e.message ?? e).slice(0, 160)); await echap(); }
+  };
   // ── CAL-VIDE (21.11, « Il y a un espace vide énorme ici ??? ») et CAL-VIDES-EN-LIGNE (« les mettre en vertical pas les entassés à
   //    l'horizontal ») : en 6 sem., 3 mois et An, une rangée prend la hauteur de ses lignes (écart ≤ 24 px jusqu'à l'en-tête suivant) ; les
   //    rangées vides se posent l'une sous l'autre ──
@@ -429,6 +461,7 @@ async function jouerCalendrier({ p, base, combo, tactile, glisser, pas }) {
   await sectionBarre();
   await sectionCadre();
   await sectionFeuille();
+  await sectionModifier();
   await sectionRangees();
   await cap('fin');
 }

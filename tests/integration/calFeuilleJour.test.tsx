@@ -45,7 +45,9 @@ describe('CAL-PASSE n° 2 : Modifier garde le jour et le laisse choisir', () => 
 
   it('une autre semaine (S50) : le samedi suit (12 déc.), écrit tel quel à « Enregistrer »', async () => {
     const { appels, d } = await ouvrirModifierDede();
-    fireEvent.click(within(d.getByRole('group', { name: 'Semaine' })).getByRole('button', { name: /^S50,/ }));
+    // CAL-MODIFIER (21.11) : plus de carrousel ; la semaine se règle sur la frise de la date (un repère), ici au clavier
+    expect(d.queryByRole('group', { name: 'Semaine' })).toBeNull();
+    fireEvent.keyDown(d.getByRole('slider', { name: 'Date' }), { key: 'ArrowRight' });
     expect(within(d.getByRole('group', { name: 'Jour' })).getByRole('button', { name: /^samedi 12 déc\./ })).toHaveAttribute('aria-pressed', 'true');
     fireEvent.click(d.getByRole('button', { name: 'Enregistrer' }));
     await waitFor(() => expect(appels.some(a => a.id === 'P-DEDE')).toBe(true));
