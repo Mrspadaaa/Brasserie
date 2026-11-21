@@ -2598,3 +2598,8 @@ Classement de la page r3 de Ma levure (https://claude.ai/artifact/DKAJe8ESeMR4ig
 > Et pareil au je tire un évènement en dehors ça doit agrandir l'échelle mais aussi du je tire un évènement à un endroit, ça doit d'ajuster pour de vrai
 
 (21.11, tour 8, captures 25 et 26 : tirer « vi » au-delà de la fenêtre n'agrandit pas l'échelle ; lâché, la barre ne prend pas la place montrée (« S42 → S7 » affiché, barre inchangée).)
+
+> J'aime beaucoup l'action à la volée, parcontre plus de couleur et icône. Mais beaucoup plus petit et compacte, surtout en hauteur, la largeur peut être totalement sur toute la ligne. Et peut être laissé plus de place aux actions. Dans l'idée j'aime aussi assez v07Ticket mais il y a trop d'espace gâché.
+> v04Carte à volets est bien aussi dans son idée de sous menu. Avoir toutes les dates exactes comme v09Fil des dates est aussi un plus mais pas toujours nécessaire...
+
+(21.11, page de choix de la fiche du Calendrier : v02 « Pastilles chiffrées » prise, avec cette note.)
