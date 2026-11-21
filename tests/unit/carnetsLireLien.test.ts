@@ -7,7 +7,7 @@ const passerelle = vi.hoisted(() => ({ call: vi.fn() }));
 vi.mock('firebase/functions', () => ({ httpsCallable: () => passerelle.call }));
 vi.mock('../../src/services/firebase', () => ({ functions: {} }));
 import { AiClient } from '../../src/services/aiClient';
-import { lirePage, lireLien, robotsPermet, urlLisible, LIEN_TAILLE_MAX } from '../../functions/src/lireLien';
+import { lirePage, lireLien, robotsPermet, urlLisible, prixLocalise, LIEN_TAILLE_MAX } from '../../functions/src/lireLien';
 import { DELAI_LECTURE_BANC, LIEN_ILLISIBLE_BANC, lireLienSimule, nomDeLienTest, pageSimulee } from '../../src/domain/carnets/iaSimulee';
 
 const espion = vi.spyOn(AiClient, 'run');
@@ -53,14 +53,7 @@ describe('lirePage (B4)', () => {
     expect(p).toEqual({ url: 'https://hottes-exemple.ch/', domaine: 'hottes-exemple.ch', statut: 'illisible', luLe: 1 });
   });
 
-  it('AggregateOffer ou offres de prix différents : aucun prix choisi à sa place', () => {
-    const page = (offers: unknown) => `<html><head><script type="application/ld+json">${JSON.stringify({ '@type': 'Product', name: 'Hotte', offers })}</script></head><body><h1>Hotte</h1></body></html>`;
-    const agg = lirePage(page({ '@type': 'AggregateOffer', lowPrice: 300, highPrice: 900, priceCurrency: 'CHF' }), new URL('https://x-exemple.ch/h'));
-    expect(agg.nom).toBe('Hotte');
-    expect(agg.prix).toBeUndefined();
-    const deux = lirePage(page([{ '@type': 'Offer', price: 300, priceCurrency: 'CHF' }, { '@type': 'Offer', price: 450, priceCurrency: 'CHF' }]), new URL('https://x-exemple.ch/h'));
-    expect(deux.prix).toBeUndefined();
-  });
+  // « AggregateOffer ou offres de prix différents » : le plus bas, dit « dès » (Chasse Carnet V1, tests plus bas).
 
   it('Open Graph product:price : un prix seulement avec sa devise', () => {
     const p = lirePage(fixture('robots-refuse.html'), new URL('https://extracteur-exemple.ch/mural'));
@@ -171,5 +164,105 @@ describe('P2 (vision 3, m390-18) : au banc, un lien « ZZ TEST » est lu (page s
       await vi.advanceTimersByTimeAsync(1500);
       expect((await p).statut).toBe('lue');
     } finally { vi.useRealTimers(); }
+  });
+});
+
+// ───────────── Chasse Carnet (21.11), V1 : CRP-1 maillon 1 (le prix lu), CRP-2 / CRB-4 (entités, libellé) ─────────────
+// Écrits avant le code : rouges sur le `lireLien.ts` du tag en-ligne/2026-11-21-tour8, verts après. Aucun réseau, aucun modèle.
+const pageJson = (produit: unknown, entete = '') => `<html><head>${entete}<script type="application/ld+json">${JSON.stringify(produit)}</script></head><body><h1>Chambre froide</h1></body></html>`;
+const lire = (produit: unknown, entete = '') => lirePage(pageJson({ '@type': 'Product', name: 'Chambre froide', ...(produit as object) }, entete), new URL('https://froid-exemple.ch/chambre'), 1);
+
+describe('prixLocalise : « 4\'890.00 », « 4 890,00 », « 4,890.00 » (CRP-1)', () => {
+  it.each([
+    ['4\'890.00', 4890], ['4’890.00', 4890], ['4 890,00', 4890], ['4 890,00', 4890], ['4 890,00', 4890], ['4,890.00', 4890], ['4.890,00', 4890],
+    ['1\'250.5', 1250.5], ['690', 690], ['690.5', 690.5], ['199,90', 199.9], ['4,890', 4890], ['4.890', 4890], ['1,234,567', 1234567],
+    ['4 890 000,50', 4890000.5], ['0.89', 0.89], [4890, 4890], [690.5, 690.5]
+  ])('%j → %d', (entree, attendu) => { expect(prixLocalise(entree)?.montant).toBe(attendu); });
+
+  it('la devise écrite avec le prix est lue : « CHF 4\'890.00 », « 4 890,00 € », « Fr. 1\'250.– »', () => {
+    expect(prixLocalise('CHF 4\'890.00')).toEqual({ montant: 4890, devise: 'CHF' });
+    expect(prixLocalise('4 890,00 €')).toEqual({ montant: 4890, devise: 'EUR' });
+    expect(prixLocalise('Fr. 1\'250.–')).toEqual({ montant: 1250, devise: 'CHF' });
+  });
+
+  it('l\'inconnu n\'est jamais 0 ni un nombre deviné : rien, zéro, deux nombres, groupes faux, texte', () => {
+    for (const v of ['', '  ', 'sur demande', '0', '0.00', '-12', '12 x 3', '4\'89.00', '1,2345', '1.234,567', '4 89', null, undefined, {}, Number.NaN, 0])
+      expect(prixLocalise(v), String(v)).toBeUndefined();
+  });
+});
+
+describe('lirePage : le prix d\'une page de vendeur (CRP-1, maillon 1)', () => {
+  it('offre simple avec « 4\'890.00 » (apostrophe suisse) : 4890 CHF', () => {
+    expect(lire({ offers: { '@type': 'Offer', price: '4\'890.00', priceCurrency: 'CHF' } })).toMatchObject({ prix: 4890, devise: 'CHF' });
+  });
+  it('« 4 890,00 » et « 4,890.00 » : 4890 CHF', () => {
+    expect(lire({ offers: { '@type': 'Offer', price: '4 890,00', priceCurrency: 'CHF' } })).toMatchObject({ prix: 4890, devise: 'CHF' });
+    expect(lire({ offers: { '@type': 'Offer', price: '4,890.00', priceCurrency: 'CHF' } })).toMatchObject({ prix: 4890, devise: 'CHF' });
+  });
+  it('AggregateOffer : le prix le plus bas, dit « dès » ; jamais la variante choisie à sa place', () => {
+    const p = lire({ offers: { '@type': 'AggregateOffer', lowPrice: '2\'400.00', highPrice: '3100', priceCurrency: 'CHF', offerCount: 3 } });
+    expect(p).toMatchObject({ prix: 2400, devise: 'CHF', prixDes: true });
+  });
+  it('AggregateOffer à prix unique : ce prix, sans « dès »', () => {
+    const p = lire({ offers: { '@type': 'AggregateOffer', lowPrice: 890, highPrice: 890, priceCurrency: 'CHF' } });
+    expect(p).toMatchObject({ prix: 890, devise: 'CHF' });
+    expect(p.prixDes).toBeUndefined();
+  });
+  it('deux offres de prix différents : le plus bas, « dès » ; deux offres au même prix : ce prix', () => {
+    const deux = lire({ offers: [{ '@type': 'Offer', price: 450, priceCurrency: 'CHF' }, { '@type': 'Offer', price: 300, priceCurrency: 'CHF' }] });
+    expect(deux).toMatchObject({ prix: 300, devise: 'CHF', prixDes: true });
+    const memes = lire({ offers: [{ '@type': 'Offer', price: 300, priceCurrency: 'CHF' }, { '@type': 'Offer', price: '300.00', priceCurrency: 'CHF' }] });
+    expect(memes).toMatchObject({ prix: 300, devise: 'CHF' });
+    expect(memes.prixDes).toBeUndefined();
+  });
+  it('variantes d\'un ProductGroup (hasVariant) : le plus bas, « dès »', () => {
+    const p = lire({ '@type': 'ProductGroup', hasVariant: [{ '@type': 'Product', offers: { '@type': 'Offer', price: 1800, priceCurrency: 'CHF' } }, { '@type': 'Product', offers: { '@type': 'Offer', price: 2400, priceCurrency: 'CHF' } }] });
+    expect(p).toMatchObject({ prix: 1800, devise: 'CHF', prixDes: true });
+  });
+  it('priceSpecification : le prix et la devise y sont lus', () => {
+    expect(lire({ offers: { '@type': 'Offer', priceSpecification: { '@type': 'UnitPriceSpecification', price: '1 250,00', priceCurrency: 'CHF' } } })).toMatchObject({ prix: 1250, devise: 'CHF' });
+  });
+  it('devise absente de l\'offre : celle de l\'en-tête Open Graph, sinon celle écrite avec le prix ; sinon aucun prix (jamais une devise devinée)', () => {
+    const og = '<meta property="product:price:currency" content="CHF">';
+    expect(lire({ offers: { '@type': 'Offer', price: '4\'890.00' } }, og)).toMatchObject({ prix: 4890, devise: 'CHF' });
+    expect(lire({ offers: { '@type': 'Offer', price: 'CHF 4\'890.00' } })).toMatchObject({ prix: 4890, devise: 'CHF' });
+    const sans = lire({ offers: { '@type': 'Offer', price: '4\'890.00' } });
+    expect(sans.statut).toBe('lue');
+    expect(sans.prix).toBeUndefined();
+    expect(sans.devise).toBeUndefined();
+  });
+  it('deux devises différentes : aucun prix ; prix à zéro ou absent : aucun prix, jamais 0', () => {
+    expect(lire({ offers: [{ '@type': 'Offer', price: 300, priceCurrency: 'CHF' }, { '@type': 'Offer', price: 310, priceCurrency: 'EUR' }] }).prix).toBeUndefined();
+    expect(lire({ offers: { '@type': 'Offer', price: '0.00', priceCurrency: 'CHF' } }).prix).toBeUndefined();
+    expect(lire({ offers: { '@type': 'Offer', priceCurrency: 'CHF' } }).prix).toBeUndefined();
+  });
+  it('Open Graph : « 4\'890.00 » lu aussi, avec sa devise', () => {
+    const p = lirePage('<html><head><meta property="og:title" content="Chambre froide"><meta property="product:price:amount" content="4\'890.00"><meta property="product:price:currency" content="CHF"></head></html>', new URL('https://froid-exemple.ch/c'), 1);
+    expect(p).toMatchObject({ prix: 4890, devise: 'CHF' });
+  });
+});
+
+describe('lirePage : entités et libellés des caractéristiques (CRP-2, CRB-4)', () => {
+  const valeurs = (additionalProperty: unknown[]) => lire({ additionalProperty }).valeurs;
+
+  it('« l&apos;isolation » du JSON-LD ressort « l\'isolation » (nom, valeur, unité)', () => {
+    expect(valeurs([{ '@type': 'PropertyValue', name: 'Épaisseur de l&apos;isolation', value: 'panneau PIR de l&apos;usine', unitText: 'mm' }]))
+      .toEqual([{ nom: 'Épaisseur de l\'isolation', valeur: 'panneau PIR de l\'usine', unite: 'mm' }]);
+  });
+  it('autres entités : &amp; &quot; &#39; &#x27; &eacute; ; une entité inconnue ou un « & » seul restent tels quels', () => {
+    expect(valeurs([{ name: 'Groupe &amp; évaporateur', value: '&quot;A+&quot; &#39;e&#x27; caf&eacute;' }, { name: 'R&D', value: 'AT&T &inconnue;' }]))
+      .toEqual([{ nom: 'Groupe & évaporateur', valeur: '"A+" \'e\' café' }, { nom: 'R&D', valeur: 'AT&T &inconnue;' }]);
+  });
+  it('le nom du produit et le vendeur du JSON-LD sont décodés aussi', () => {
+    const p = lire({ name: 'Chambre froide 1800 x 1500 mm &amp; groupe', offers: { '@type': 'Offer', price: 100, priceCurrency: 'CHF', seller: { name: 'L&apos;Atelier du froid' } } });
+    expect(p.nom).toBe('Chambre froide 1800 x 1500 mm & groupe');
+    expect(p.vendeur).toBe('L\'Atelier du froid');
+  });
+  it('« Couleur : » perd ses deux-points ; ceux du milieu restent', () => {
+    expect(valeurs([{ name: 'Couleur :', value: 'blanc' }, { name: 'Poids :', value: '12', unitText: 'kg' }, { name: 'Ratio 1:2', value: 'x' }]))
+      .toEqual([{ nom: 'Couleur', valeur: 'blanc' }, { nom: 'Poids', valeur: '12', unite: 'kg' }, { nom: 'Ratio 1:2', valeur: 'x' }]);
+  });
+  it('un libellé vide après nettoyage n\'est pas gardé', () => {
+    expect(valeurs([{ name: ' : ', value: 'x' }, { name: 'Débit', value: '40' }])).toEqual([{ nom: 'Débit', valeur: '40' }]);
   });
 });

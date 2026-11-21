@@ -81,6 +81,63 @@ export function robotsPermet(texte: string, url: URL, agent = AGENT_CARNET): boo
 }
 
 type Json = Record<string, unknown>;
+
+/**
+ * État de l'art (Chasse Carnet, V1, L29) : lire un montant écrit sans locale (« 4'890.00 », « 4 890,00 », « 4,890.00 », « CHF 1'250.– »).
+ * Problème d'école : l'extraction de prix. `Intl.NumberFormat` ne lit pas ; `@internationalized/number` exige une locale que la page ne
+ * donne pas (et un paquet de plus à déployer) ; schema.org dit « point décimal, sans séparateur de milliers » mais les boutiques
+ * l'enfreignent. Méthode standard des extracteurs de prix : l'heuristique du dernier séparateur, écrite ici une fois :
+ *  - groupes d'apostrophes, d'espaces, NBSP ou U+202F : milliers, de 3 chiffres (le premier de 1 à 3) ;
+ *  - le dernier « . » ou « , » est décimal s'il est suivi de 1 ou 2 chiffres, ou si l'autre séparateur le précède ;
+ *  - un seul séparateur suivi de 3 chiffres, après un entier de 1 à 3 chiffres non nul : milliers (« 4,890 », « 4.890 ») ;
+ *  - tout le reste (zéro, négatif, deux nombres, groupes faux, texte) : `undefined`, jamais un nombre deviné.
+ * La devise écrite avec le prix (CHF, EUR, USD, GBP, Fr., SFr, €, £) est rendue ; deux devises différentes : `undefined`.
+ */
+const DEVISES_ECRITES: Array<[RegExp, string]> = [[/CHF|SFr\.?|Fr\./gi, 'CHF'], [/EUR|€/gi, 'EUR'], [/USD/gi, 'USD'], [/GBP|£/gi, 'GBP']];
+export function prixLocalise(v: unknown): { montant: number; devise?: string } | undefined {
+  if (typeof v === 'number') return Number.isFinite(v) && v > 0 ? { montant: v } : undefined;
+  if (typeof v !== 'string' || v.length > 60) return undefined;
+  let s = v.replace(/[  \s]+/g, ' ').replace(/’/g, "'").trim();
+  const devs = new Set<string>();
+  for (const [re, code] of DEVISES_ECRITES) { if (re.test(s)) devs.add(code); re.lastIndex = 0; s = s.replace(re, ' '); }
+  if (devs.size > 1) return undefined;
+  s = s.replace(/\s+/g, ' ').replace(/[.,]?\s*[–—-]+\s*$/, '').trim();
+  if (!/^\d[\d.,' ]*$/.test(s)) return undefined;
+  const groupesOk = (t: string, sep: string | null) => {
+    if (sep === null) return /^\d+$/.test(t);
+    const g = t.split(sep);
+    return /^\d{1,3}$/.test(g[0]) && g.slice(1).every((x) => /^\d{3}$/.test(x));
+  };
+  const dernier = Math.max(s.lastIndexOf('.'), s.lastIndexOf(','));
+  let entier: string, frac = '';
+  if (dernier < 0) {
+    const seps = new Set(s.replace(/\d/g, ''));
+    if (seps.size > 1 || !groupesOk(s, seps.size ? [...seps][0] : null)) return undefined;
+    entier = s.replace(/\D/g, '');
+  } else {
+    const c = s[dernier], reste = s.slice(dernier + 1);
+    if (reste.length === 3 && new RegExp(`^[1-9]\\d{0,2}(?:\\${c}\\d{3})+$`).test(s)) entier = s.replace(/\D/g, '');
+    else {
+      if (!/^\d{1,2}$/.test(reste)) return undefined;
+      const partie = s.slice(0, dernier), seps = new Set(partie.replace(/\d/g, ''));
+      if (seps.size > 1 || seps.has(c) || !groupesOk(partie, seps.size ? [...seps][0] : null)) return undefined;
+      entier = partie.replace(/\D/g, ''); frac = reste;
+    }
+  }
+  const montant = Number(frac ? `${entier}.${frac}` : entier);
+  if (!Number.isFinite(montant) || montant <= 0) return undefined;
+  return devs.size ? { montant, devise: [...devs][0] } : { montant };
+}
+
+/** Décode les entités HTML d'une chaîne du JSON-LD (« l&apos;isolation »), une fois, après `JSON.parse` ; l'inconnu reste tel quel. */
+const decoder = (t: string) => t.includes('&') ? load('<i>' + t.replace(/</g, '&lt;') + '</i>').text() : t;
+function decoderJson(v: unknown, prof = 0): unknown {
+  if (typeof v === 'string') return decoder(v);
+  if (prof > 6 || !v || typeof v !== 'object') return v;
+  if (Array.isArray(v)) return v.map((x) => decoderJson(x, prof + 1));
+  return Object.fromEntries(Object.entries(v).map(([k, x]) => [k, decoderJson(x, prof + 1)]));
+}
+
 const types = (v: Json) => [v['@type']].flat().map(String);
 
 /** Les `Product` de la page (ld+json, `@graph` et `mainEntity` compris), jamais ceux d'une liste de catégorie. */
@@ -97,7 +154,7 @@ function produits($: ReturnType<typeof load>): Json[] {
     if (o.mainEntity) parcourir(o.mainEntity, prof + 1);
   };
   $('script[type="application/ld+json"]').slice(0, 20).each((_, el) => {
-    try { parcourir(JSON.parse($(el).text())); } catch { /* Un schéma invalide n'est pas une preuve. */ }
+    try { parcourir(decoderJson(JSON.parse($(el).text()))); } catch { /* Un schéma invalide n'est pas une preuve. */ }
   });
   return out;
 }
@@ -117,8 +174,8 @@ function image(v: unknown, base: URL): string | undefined {
 
 /**
  * Lecture pure d'une page (testée sur des fichiers HTML locaux). Ordre : schema.org d'abord, Open Graph ensuite, `<title>` seulement en
- * repli du nom quand la page porte d'autres métadonnées produit. Une `AggregateOffer` ou plusieurs offres de prix différents ne donnent
- * aucun prix : on ne choisit pas une variante à sa place.
+ * repli du nom quand la page porte d'autres métadonnées produit. Plusieurs prix (`AggregateOffer`, offres ou variantes de prix différents) : le plus bas
+ * avec `prixDes` (« dès »), jamais une variante choisie à sa place ; deux devises ou aucune devise : aucun prix.
  */
 export function lirePage(html: string, url: URL, luLe = Date.now()): PageLue {
   const $ = load(html);
@@ -130,23 +187,38 @@ export function lirePage(html: string, url: URL, luLe = Date.now()): PageLue {
   const p = tous.length === 1 ? tous[0]
     : tous.find((x) => typeof x.name === 'string' && [titreH1, normal(ogTitre ?? '')].includes(normal(x.name))) ?? null;
 
-  let prix: number | undefined, dev: string | undefined, dispoSchema = '', vendeur: string | undefined;
+  const metaDev = devise(meta('product:price:currency') ?? meta('og:price:currency'));
+  let prix: number | undefined, dev: string | undefined, dispoSchema = '', vendeur: string | undefined, prixDes = false;
   if (p) {
-    const offres = [p.offers].flat().filter((o): o is Json => !!o && typeof o === 'object');
-    const simples = offres.filter((o) => !types(o).includes('AggregateOffer'));
-    const prixs = new Set(simples.map((o) => `${nombre(o.price)}|${devise(o.priceCurrency)}`));
-    if (simples.length && simples.length === offres.length && prixs.size === 1) {
-      prix = nombre(simples[0].price); dev = devise(simples[0].priceCurrency);
-      if (prix === undefined || dev === undefined) { prix = undefined; dev = undefined; }
+    const liste = (v: unknown) => [v].flat().filter((o): o is Json => !!o && typeof o === 'object');
+    const offres = [...liste(p.offers), ...liste(p.hasVariant).flatMap((x) => liste(x.offers))];
+    const montants: Array<{ montant: number; devise?: string }> = [];
+    let sansPlafond = false;
+    const lireOffre = (o: Json, profondeur = 0) => {
+      const spec = liste(o.priceSpecification);
+      const devOffre = devise(o.priceCurrency) ?? spec.map((x) => devise(x.priceCurrency)).find(Boolean);
+      for (const b of [o.price, o.lowPrice, o.highPrice, ...spec.map((x) => x.price)]) {
+        const m = prixLocalise(b);
+        if (m) montants.push({ montant: m.montant, devise: devOffre ?? m.devise ?? metaDev });
+      }
+      if (types(o).includes('AggregateOffer') && o.highPrice === undefined && o.offers === undefined) sansPlafond = true;
+      if (profondeur < 2) liste(o.offers).forEach((x) => lireOffre(x, profondeur + 1));
+    };
+    offres.forEach((o) => lireOffre(o));
+    const devises = new Set(montants.map((m) => m.devise)), unique = [...devises][0];
+    if (montants.length && devises.size === 1 && unique !== undefined) {
+      prix = Math.min(...montants.map((m) => m.montant)); dev = unique;
+      prixDes = sansPlafond || new Set(montants.map((m) => m.montant)).size > 1;
     }
+    const simples = offres.filter((o) => !types(o).includes('AggregateOffer'));
     const dispos = new Set(simples.map((o) => String(o.availability ?? '')));
     if (dispos.size === 1) dispoSchema = [...dispos][0];
     const s = simples[0]?.seller as Json | undefined;
     vendeur = chaine(s?.name, 80);
   }
   if (prix === undefined) {
-    const a = nombre(meta('product:price:amount') ?? meta('og:price:amount')), d = devise(meta('product:price:currency') ?? meta('og:price:currency'));
-    if (a !== undefined && d !== undefined) { prix = a; dev = d; }
+    const m = prixLocalise(meta('product:price:amount') ?? meta('og:price:amount')), d = m?.devise ?? metaDev;
+    if (m && d !== undefined) { prix = m.montant; dev = d; }
   }
   if (!dispoSchema) dispoSchema = meta('product:availability') ?? meta('og:availability') ?? '';
   const statutStock = dispoSchema ? stockStatus('', dispoSchema.replace(/\s+/g, '')) : 'unknown';
@@ -157,7 +229,7 @@ export function lirePage(html: string, url: URL, luLe = Date.now()): PageLue {
 
   const valeurs = p && Array.isArray(p.additionalProperty) ? (p.additionalProperty as unknown[]).slice(0, 12).flatMap((v) => {
     const o = v as Json | null;
-    const n = chaine(o?.name, 60);
+    const n = chaine(chaine(o?.name, 80)?.replace(/s*[:：]s*$/, ''), 60);
     const val = typeof o?.value === 'number' || typeof o?.value === 'boolean' ? String(o.value) : chaine(o?.value, 60);
     const unite = chaine(o?.unitText, 12);
     return n && val ? [{ nom: n, valeur: val, ...(unite ? { unite } : {}) }] : [];
@@ -166,7 +238,7 @@ export function lirePage(html: string, url: URL, luLe = Date.now()): PageLue {
   return {
     ...base, statut: 'lue',
     ...(nom ? { nom } : {}),
-    ...(prix !== undefined && dev ? { prix, devise: dev } : {}),
+    ...(prix !== undefined && dev ? { prix, devise: dev, ...(prixDes ? { prixDes: true } : {}) } : {}),
     ...(statutStock === 'in_stock' ? { dispo: 'en-stock' as const } : statutStock === 'out_of_stock' ? { dispo: 'rupture' as const } : {}),
     ...(vendeur ? { vendeur } : {}),
     ...(photo ? { photo } : {}),

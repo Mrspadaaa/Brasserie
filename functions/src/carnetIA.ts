@@ -39,6 +39,8 @@ export interface PageLue {
   /** Prix en unités de la devise (690, 1450.5), lu dans schema.org `Offer` ou Open Graph `product:price`. */
   prix?: number;
   devise?: string;
+  /** « dès » : plusieurs prix sont publiés, le plus bas est donné. */
+  prixDes?: boolean;
   dispo?: 'en-stock' | 'rupture';
   vendeur?: string;
   photo?: string;
