@@ -48,6 +48,7 @@ import { useCarnet } from './production/carnet/useCarnet';
 import { CarnetFil, CarnetPied } from './production/carnet/CarnetFil';
 import { DossierFil, DossierPied, rappelDryHop } from './production/carnet/DossierFil';
 import { FicheFermentation, PanneauMesure, PiedFermentation } from './production/fermentation/FicheFermentation';
+import { milliPrevu } from '../domain/fermentation/prevision';
 import { avecTacheFaite, mesureInitiale, modeleFiche, plageFgDeLaLevure, releveDepuisEtat, sansTacheFaite, type ContexteStock, type EtatMesure, type Houblon } from './production/fermentation/modele';
 import { planDestockageHoublon } from './production/fermentation/destockage';
 import { FirestoreRepo } from '../services/firestoreRepo';
@@ -164,6 +165,8 @@ export const BatchDetailSheet: React.FC<BatchDetailSheetProps> = ({
   const [plusOpen, setPlusOpen] = useState(false);
   /** gfc : le geste « Mesurer » de la fiche en fermentation (curseur m2) ; `null` = fermé. */
   const [mesure, setMesure] = useState<EtatMesure | null>(null);
+  /** E2 : « Autre » touché, le geste quitte la question « Comme prévu » pour le curseur. */
+  const [autre, setAutre] = useState(false);
   useEffect(() => { setMesure(null); }, [batch?.id]);
   const [kegList, setKegList] = useState<import('../types').KegItem[]>([]);
   const [gesteFut, setGesteFut] = useState<{ quoi: GesteFutLot; n: number } | null>(null);
@@ -316,6 +319,9 @@ export const BatchDetailSheet: React.FC<BatchDetailSheetProps> = ({
   // CT4-B-11 : sans FG visée dans la recette, le repère de la saisie est la plage de la levure (même calcul que la fiche recette).
   // Pas de hook ici : la feuille a un retour anticipé plus haut (`batch` absent), un hook après lui lève « Rendered fewer hooks » à la fermeture.
   const fgPlage = ficheM && !ficheM.fg ? plageFgMemo(draft) : null;
+  // E2 (D396, N5) : la prévision de la courbe du lot ; « Comme prévu » tant que le curseur y reste.
+  const prevuM = ficheM ? milliPrevu(ficheM) : null;
+  const commePrevu = mesure && prevuM !== null && !autre && !mesure.taper && mesure.milli === prevuM ? prevuM : null;
   // gfc n° 10 : les mesures de dossier se rangent sous le Dossier d'un brassin en fermentation, plus sous la fiche.
   const mesuresDansDossier = draft.status === 'fermentation' && section === 'overview';
   const Enveloppe: React.ElementType = post || ficheM || mesuresDansDossier ? 'details' : React.Fragment;
@@ -431,8 +437,9 @@ export const BatchDetailSheet: React.FC<BatchDetailSheetProps> = ({
         className={ficheM ? 'md:max-w-2xl md:mx-auto lg:!max-w-6xl' : 'md:max-w-2xl md:mx-auto h-[88dvh]'}
         footer={fermentation && section === 'tasting' ? <CarnetPied c={carnet} /> : rappel ? <DossierPied batch={draft} now={nowMs} ajoute={() => setConfirmStock('remaining')} /> : ficheM ? (
           <div className="space-y-2">
-            {mesure && <div className="max-h-[55dvh] overflow-y-auto"><PanneauMesure m={ficheM} etat={mesure} onChange={setMesure} fgPlage={fgPlage} /></div>}
-            <PiedFermentation ouvert={mesure !== null} ouvrir={() => setMesure(mesureInitiale(ficheM, draft.recipeSnapshot?.fgTarget))}
+            {mesure && <div className="max-h-[55dvh] overflow-y-auto"><PanneauMesure m={ficheM} etat={mesure} onChange={setMesure} fgPlage={fgPlage} prevu={prevuM} question={commePrevu !== null} onAutre={() => setAutre(true)} /></div>}
+            <PiedFermentation ouvert={mesure !== null} commePrevu={commePrevu}
+              ouvrir={() => { const i = mesureInitiale(ficheM, draft.recipeSnapshot?.fgTarget); setAutre(false); setMesure(prevuM === null ? i : { ...i, milli: prevuM }); }}
               annuler={() => setMesure(null)} enregistrer={enregistrerReleve} />
           </div>
         ) : planned ? (

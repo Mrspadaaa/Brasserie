@@ -460,8 +460,7 @@ function listeEtapes() { return [
     id: 'E2', titre: 'Mesurer : « 1,0xx prévu » vient de la courbe du lot, « Comme prévu » l\'enregistre d\'un toucher (D396 E2, N5)', fixture: { sansJour: true, cuve: true },
     async joue(s) {
       await s.onglet('Brassins'); await sleep(900);
-      await s.toucher('Voir les mesures · B-ZZ-FERM', { prefixe: true }); await sleep(1200);
-      await s.toucher('Mesurer', { prefixe: true, att: 900 });
+      await s.toucher('Mesurer · B-ZZ-FERM', { prefixe: true }); await sleep(1500);
       await s.cap('E2-1-mesurer');
       const t = await s.texte(4000);
       const prevu = t.match(/(1[.,]\d{3})\s+prévu/);

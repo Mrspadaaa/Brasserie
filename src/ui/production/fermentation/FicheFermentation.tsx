@@ -312,7 +312,14 @@ const ChampTemp: React.FC<{ titre: string; label: string; valeur: string; depart
 };
 
 /** Le geste « Mesurer » (m2) : curseur de densité sur la bande FG, « Taper » au clavier, °C de l'échantillon et °C de la cuve, chacun au curseur et facultatif. Jamais `type="number"`. */
-export const PanneauMesure: React.FC<{ m: ModeleFiche; etat: EtatMesure; onChange: (e: EtatMesure) => void; /** CT4-B-11 : sans FG visée dans la recette, la plage de la levure (même calcul que la fiche recette). */ fgPlage?: [number, number] | null }> = ({ m, etat, onChange, fgPlage }) => {
+export const PanneauMesure: React.FC<{
+  m: ModeleFiche; etat: EtatMesure; onChange: (e: EtatMesure) => void;
+  /** CT4-B-11 : sans FG visée dans la recette, la plage de la levure (même calcul que la fiche recette). */ fgPlage?: [number, number] | null;
+  /** E2 (D396, N5) : densité prévue par la courbe du lot, en millièmes (`milliPrevu`) ; le geste part de là, jamais enregistré sans un toucher. */
+  prevu?: number | null;
+  /** E2 : le pied pose « Comme prévu » ; le panneau pose la question et son « Autre » rend le curseur. */
+  question?: boolean; onAutre?: () => void;
+}> = ({ m, etat, onChange, fgPlage, prevu: pm = null, question = false, onAutre }) => {
   const [min, max] = bornesMesure(m);
   const bande = m.fg ?? fgPlage ?? null;
   const cible: [number, number] | null = bande ? [Math.round(bande[0] * 1000), Math.round(bande[1] * 1000)] : null;
@@ -331,8 +338,17 @@ export const PanneauMesure: React.FC<{ m: ModeleFiche; etat: EtatMesure; onChang
         ? <Input aria-label="Densité du relevé" inputMode="decimal" autoFocus value={etat.saisie} placeholder="1,016"
             onChange={e => onChange({ ...etat, saisie: e.target.value, erreur: '' })}
             className="w-full min-h-touch px-3 rounded-control bg-cave-950 border border-cave-700 font-mono text-2xl text-cave-50" />
+        : question && pm !== null
+        ? <div className="flex items-center justify-between gap-3">
+            <div className="min-w-0">
+              <p className="text-cave-50"><span className="font-mono text-3xl font-semibold tabular-nums">{sg(pm)}</span> <span className="text-base text-cave-200">prévu</span></p>
+              <p className="text-sm text-cave-200">Ton densimètre dit pareil ?</p>
+              <p className="text-xs text-cave-400">lu sur la courbe du lot</p>
+            </div>
+            <Cible onClick={onAutre} className="shrink-0 px-4">Autre</Cible>
+          </div>
         : <>
-            <p className="font-mono text-3xl font-semibold tabular-nums text-cave-50" aria-live="polite">{sg(etat.milli)}</p>
+            <p className="font-mono text-3xl font-semibold tabular-nums text-cave-50" aria-live="polite">{sg(etat.milli)}{pm !== null && <span className="ml-2 font-sans text-sm font-normal text-cave-400">prévu {sg(pm)}</span>}</p>
             <Curseur label="Densité du relevé" min={min} max={max} step={1} value={etat.milli} cible={cible} grads={grads} format={sg}
               onChange={v => onChange({ ...etat, milli: v, erreur: '' })} />
             <div className="flex items-center justify-between gap-2 text-sm text-cave-400">
@@ -349,14 +365,18 @@ export const PanneauMesure: React.FC<{ m: ModeleFiche; etat: EtatMesure; onChang
   );
 };
 
-/** Pied de la feuille : « Mesurer » au repos ; Annuler et Enregistrer pendant le geste. */
-export const PiedFermentation: React.FC<{ ouvert: boolean; ouvrir: () => void; annuler: () => void; enregistrer: () => void }> = ({ ouvert, ouvrir, annuler, enregistrer }) => {
+/** Pied de la feuille : « Mesurer » au repos ; Annuler et Enregistrer pendant le geste (« Comme prévu · 1,0xx » quand le curseur est sur la prévision, E2). */
+export const PiedFermentation: React.FC<{ ouvert: boolean; ouvrir: () => void; annuler: () => void; enregistrer: () => void; commePrevu?: number | null }> = ({ ouvert, ouvrir, annuler, enregistrer, commePrevu = null }) => {
   // PI-4 : « Mesurer » touché sur la carte du lot ouvre le geste dès l'arrivée de la fiche.
   React.useEffect(() => {
     if (!ouvert && prendreMesureDemandee()) ouvrir();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
   return ouvert
-    ? <div className="flex gap-2"><Cible onClick={annuler}>Annuler</Cible><Cible ton="prim" className="flex-1 min-h-12 text-base" onClick={enregistrer}>Enregistrer le relevé</Cible></div>
+    ? <div className="flex gap-2"><Cible onClick={annuler}>Annuler</Cible>
+        {commePrevu !== null
+          ? <Cible ton="prim" className="flex-1 min-h-12 gap-1.5 text-base" onClick={enregistrer}><Check size={18} aria-hidden />Comme prévu · {(commePrevu / 1000).toFixed(3).replace('.', ',')}</Cible>
+          : <Cible ton="prim" className="flex-1 min-h-12 text-base" onClick={enregistrer}>Enregistrer le relevé</Cible>}
+      </div>
     : <Cible ton="prim" plein onClick={ouvrir} className="min-h-12 flex-col gap-0 text-base leading-tight"><span>Mesurer</span><small className="text-xs font-normal opacity-85">densité · °C cuve</small></Cible>;
 };
