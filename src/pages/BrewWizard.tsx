@@ -1,6 +1,8 @@
 import { RecipeDisclosure } from '../ui/RecipeDisclosure';
 import { WizardStepName, WizardStepRail } from '../ui/WizardStepBar';
 import './recipe-wizard.css';
+import { Horizons } from '../ui/saisie/Horizons';
+import { texteIntention } from '../domain/horizons';
 import '../ui/wizard/cadre.css';
 import React, { lazy, startTransition, Suspense, useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState, type Dispatch, type SetStateAction } from 'react';
 import { NumberInput } from '../ui/NumberInput';
@@ -528,7 +530,8 @@ interface BrewWizardProps {
    * lui qui représente le produit, indépendamment de la recette qui l'emploie.
    */
   onLearnIngredient: (name: string, facts: Partial<StockItem>) => void;
-  onSave: (recipe: Recipe, thenBrew: boolean) => void | Promise<void>;
+  /** `semaine` : C1, le lundi ISO de l'horizon choisi au récap (« 3 mois ») ; la feuille Brasser s'ouvre à cette semaine. */
+  onSave: (recipe: Recipe, thenBrew: boolean, semaine?: string) => void | Promise<void>;
   /** Supprime la recette enregistrée qu'on modifie (36, 16.11), après la feuille de confirmation commune. */
   onDelete?: (recipe: Recipe) => void;
   /** Other writes made from this screen remain visible without covering its navigation. */
@@ -1938,6 +1941,9 @@ const BrewWizardEditor: React.FC<BrewWizardProps & {
     setDetails(d => ({ ...d, brewhouse: { ...snapshotBrewhouse(source), equipment: { ...source.equipment!, fermenterCapacityL: capaciteL } } }));
   };
   const [materielOuvert, setMaterielOuvert] = useState(false);
+  // C1 (K1, PORT) : quand la brasser, en horizons (aujourd'hui, 1 mois, 3, 6 mois, 1 an) ; rien de choisi = au plus tôt (comme avant).
+  const [quandBrasser, setQuandBrasser] = useState<string | null>(null);
+  const jourIso = (() => { const d = new Date(); return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`; })();
   const ouvrirFermenteur = () => {
     setMaterielOuvert(true);
     requestAnimationFrame(() => document.getElementById('wz-fermenteur')?.focus());
@@ -2260,7 +2266,7 @@ const BrewWizardEditor: React.FC<BrewWizardProps & {
       setSaveError(error instanceof Error ? error.message : 'La recette n’a pas pu être enregistrée. Réessaie.');
     };
     try {
-      const result = onSave(recipe, thenBrew);
+      const result = thenBrew && quandBrasser ? onSave(recipe, thenBrew, quandBrasser) : onSave(recipe, thenBrew);
       if (result) { setSaving(true); result.then(finish, fail); }
       else finish();
     } catch (error) { fail(error); }
@@ -3437,6 +3443,12 @@ const BrewWizardEditor: React.FC<BrewWizardProps & {
           */
           onExportText={texteRecette}
         /></Suspense>
+        {/* C1 : la semaine du brassin se pose ici d'un toucher ; « Enregistrer et préparer un brassin » ouvre Brasser à cette semaine, le jour s'y choisit. */}
+        {!draftReadOnly && <section className="wz-quand" aria-label="Quand la brasser">
+          <p className="wz-quand-tete"><span>Quand la brasser</span><b>{quandBrasser ? texteIntention(quandBrasser, jourIso) : 'au plus tôt'}</b></p>
+          <Horizons date={quandBrasser ?? undefined} aujourdhui={jourIso} classePuce="wz-quand-puce" sansPlusTard etiquette="Horizon du brassin"
+            onChoisir={(_, lundi) => setQuandBrasser(q => (q === lundi ? null : lundi))} />
+        </section>}
         </>
       )}
 

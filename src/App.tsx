@@ -272,6 +272,8 @@ export const App: React.FC = () => {
     return () => { cancelAnimationFrame(frame); observer.disconnect(); };
   }, [quickAction]);
   const [brewRecipeId, setBrewRecipeId] = useState<string>();
+  /** C1 : la semaine choisie au récap de la recette (lundi ISO) ; la feuille Brasser s'y ouvre. */
+  const [brewSemaine, setBrewSemaine] = useState<string>();
   const [isPaletteOpen, setIsPaletteOpen] = useState(false);
   const [financeOpenRequest, setFinanceOpenRequest] = useState<{ id: string; at: number; retour?: 'calendrier' } | null>(null);
   const [batchOpenRequest, setBatchOpenRequest] = useState<{ id: string; at: number } | null>(null);
@@ -888,7 +890,7 @@ export const App: React.FC = () => {
   };
 
   /** Enregistre la recette, et lance éventuellement le brassin dans la foulée. */
-  const saveFromWizard = async (recipe: Recipe, thenBrew: boolean) => {
+  const saveFromWizard = async (recipe: Recipe, thenBrew: boolean, semaine?: string) => {
     const sourceRoute = route.route;
     const activeProfile = config.brewhouses.find(b => b.id === config.activeBrewhouseId) ?? config.brewhouses[0];
     if (thenBrew) {
@@ -915,6 +917,7 @@ export const App: React.FC = () => {
     if (currentRoute.current === sourceRoute) {
       route.open({ view: 'recipe', recipeId: recipe.id });
       setBrewRecipeId(recipe.id);
+      setBrewSemaine(semaine);
       setQuickAction('brew-batch');
     }
   };
@@ -1513,8 +1516,9 @@ export const App: React.FC = () => {
       <ModalOpenerContext.Provider value={quickActionOpener.current}><DeferredSurface active={quickAction !== null} fallback={<Sheet open={quickAction !== null} title="Chargement…" onClose={() => setQuickAction(null)}><p role="status">Ouverture…</p></Sheet>}><QuickActionModal
         isOpen={quickAction !== null}
         initialScreen={quickAction ?? 'menu'}
-        onClose={() => { setQuickAction(null); setBrewRecipeId(undefined); }}
+        onClose={() => { setQuickAction(null); setBrewRecipeId(undefined); setBrewSemaine(undefined); }}
         initialRecipeId={brewRecipeId}
+        initialBrewWeek={brewSemaine}
         onBatchCreated={batch => {
           // c2a « après » : le brassin créé arrive en tête de la liste des brassins, avec ses effets et « Défaire » (plus de saut au jour de brassage).
           setProductionSubTab('batches');

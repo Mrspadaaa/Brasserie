@@ -39,6 +39,8 @@ interface Props {
   planifierBloque?: boolean;
   /** Le brassin est déjà écrit à ce jour (« 21.11.2026 ») mais sa confirmation n'est pas reçue : le jour est figé, « Confirmer l'enregistrement » rejoue la confirmation. */
   jourFige?: string;
+  /** C1 : le lundi ISO de l'horizon choisi au récap (« 3 mois ») ; la fenêtre s'ouvre à cette semaine. Absent ou passé : aujourd'hui. */
+  semaine?: string;
   maintenant?: number;
   onAnnuler: () => void;
   /** Le jour choisi, en « 21.11.2026 ». */
@@ -61,17 +63,22 @@ export function joursDepuis(n: number): string {
   return n === 0 ? "aujourd'hui" : `${n} jour${Math.abs(n) > 1 ? 's' : ''} depuis aujourd'hui`;
 }
 
-export function FeuilleBrasser({ recipe, batches, stock, capaciteL, volumeL: volumeAdapte, avertissement, erreur, enCours = false, planifierBloque = false, jourFige, maintenant, onAnnuler, onPlanifier }: Props) {
+export function FeuilleBrasser({ recipe, batches, stock, capaciteL, volumeL: volumeAdapte, avertissement, erreur, enCours = false, planifierBloque = false, jourFige, semaine, maintenant, onAnnuler, onPlanifier }: Props) {
   const aujourdhui = debutDeJour(maintenant ?? Date.now());
   const volumeL = volumeAdapte ?? recipe.volumeL;
   const ctx: Contexte = useMemo(() => ({ occ: occupations(batches), evts: evenements(batches), capaciteL, volumeL, aujourdhui }), [batches, capaciteL, volumeL, aujourdhui]);
-  const propose = useMemo(() => premierLibre(ctx), [ctx]);
+  const depuis = useMemo(() => {
+    const m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(semaine ?? '');
+    const t = m ? new Date(Number(m[1]), Number(m[2]) - 1, Number(m[3])).getTime() : NaN;
+    return Number.isFinite(t) && t > aujourdhui ? t : aujourdhui;
+  }, [semaine, aujourdhui]);
+  const propose = useMemo(() => premierLibre(ctx, depuis), [ctx, depuis]);
   // Cuve inconnue : aucun jour n'est dit libre ; demain est proposé, sans raison inventée.
-  const [choisiLibre, setChoisi] = useState<number>(() => propose ?? plusJours(aujourdhui, 1));
+  const [choisiLibre, setChoisi] = useState<number>(() => propose ?? (depuis > aujourdhui ? depuis : plusJours(aujourdhui, 1)));
   const figeLe = jourFige && /^\d{2}\.\d{2}\.\d{4}$/.test(jourFige) ? new Date(Number(jourFige.slice(6)), Number(jourFige.slice(3, 5)) - 1, Number(jourFige.slice(0, 2))).getTime() : undefined;
   const choisi = figeLe ?? choisiLibre;
   const verrou = enCours || figeLe !== undefined;
-  const [decalage, setDecalage] = useState(0);
+  const [decalage, setDecalage] = useState(() => Math.max(0, Math.round((lundiDe(depuis) - lundiDe(aujourdhui)) / (7 * 864e5))));
   const [stockOuvert, setStockOuvert] = useState(false);
 
   const besoins = useMemo(() => besoinsDe(recipe, batches, stock), [recipe, batches, stock]);

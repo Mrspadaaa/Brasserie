@@ -699,23 +699,25 @@ function listeEtapes() { return [
     }
   },
   {
-    id: 'C1-RECETTE', titre: 'Recette neuve : l\'horizon se pose d\'un toucher au 1er écran (« 3 mois » → « vers <mois+3> »), plus de carrousel de jours (D393 C1, K1)', fixture: { sansJour: true },
+    id: 'C1-RECETTE', titre: 'Récap de la recette : « 3 mois » d\'un toucher dit « vers <mois+3> », et « Enregistrer et préparer » ouvre Brasser à ce mois (D393 C1, K1)', fixture: { sansJour: true },
     async joue(s) {
       const aujourdhui = new Date().toISOString().slice(0, 10);
-      await s.toucher('Actions rapides'); await s.toucher('Recette'); await sleep(900);
-      await s.ecrire('textarea[name=recipe_title_label]', 'ZZ TEST Brune');
-      await s.cap('C1-1-premier-ecran');
-      let amorce = null;
-      if (!(await s.visible('3 mois', { contient: true }))) {
-        for (const a of ['Au calendrier', 'Quand', 'Date', 'Horizon', 'Échéance', 'Planifier']) if (await s.visible(a, { prefixe: true })) { amorce = a; break; }
-        if (amorce) { await s.toucher(amorce, { prefixe: true }); await sleep(500); }
-      }
-      if (!(await s.visible('3 mois', { contient: true }))) return echec('C1-RECETTE', `le 1er écran de la recette n'offre aucun horizon « 3 mois »${amorce ? ` (même après « ${amorce} »)` : ''} ; boutons : ${(await s.boutons()).slice(-8).join(' · ')}`);
+      await recetteNeuve(s, {});
+      await leveureCatalogue(s);
+      await versRecap(s);
+      await s.cap('C1-1-recap');
+      if (!(await s.visible('3 mois', { contient: true }))) return echec('C1-RECETTE', `le récap n'offre aucun horizon « 3 mois » pour brasser ; boutons : ${(await s.boutons()).slice(-8).join(' · ')}`);
       await s.toucher('3 mois', { contient: true, att: 1000 });
       await s.cap('C1-2-trois-mois');
       const attendu = moisPlus(aujourdhui, 3);
+      const mois = new RegExp(attendu.replace('.', '\\.'), 'i');
       if (!new RegExp(`vers\\s+${attendu.replace('.', '\\.')}`, 'i').test(await s.texte(6000))) return echec('C1-RECETTE', `« vers ${attendu} » n'apparaît pas après « 3 mois »`);
-      ok('C1-RECETTE', `« 3 mois » → « vers ${attendu} » au 1er écran`);
+      await s.toucher('Enregistrer et préparer un brassin'); await sleep(2500);
+      await s.cap('C1-3-brasser');
+      const t = await s.texte(3000);
+      if (!/Planifier/.test(t)) return echec('C1-RECETTE', `la feuille Brasser ne s'ouvre pas (écran : ${t.slice(0, 160)})`);
+      if (!mois.test(t.match(/([^\n]{0,30})\s*la cuve et la cave/)?.[1] ?? t.slice(0, 400))) return echec('C1-RECETTE', `Brasser ne s'ouvre pas en ${attendu} : ${t.slice(0, 200)}`);
+      ok('C1-RECETTE', `« 3 mois » → « vers ${attendu} » au récap, Brasser s'ouvre en ${attendu}`);
     }
   }
 ]; }

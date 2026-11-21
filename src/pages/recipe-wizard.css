@@ -426,3 +426,10 @@
 .fer .fer-fi-champs label { display: flex; align-items: center; gap: 4px; margin: 0; }
 .fer .fer-fi-classe { font-size: 12px; color: var(--f-t1); background: var(--f-haut); border-radius: 10px; padding: 0 6px; line-height: 16px; }
 @media (prefers-reduced-motion: reduce) { .fer * { animation: none !important; transition: none !important; } }
+
+/* C1 (K1) : « Quand la brasser », à la fin du récap. Les puces de la rangée d'horizons partagée (Horizons.tsx), l'état choisi par aria-pressed. */
+.wz-quand { display: flex; flex-direction: column; gap: 8px; margin-top: 12px; padding: 10px 12px 12px; border: 1px solid rgb(var(--cave-700)); border-radius: 12px; }
+.wz-quand-tete { display: flex; align-items: baseline; gap: 8px; margin: 0; font-size: 15px; color: rgb(var(--cave-texte-200)); }
+.wz-quand-tete b { margin-left: auto; font-weight: 600; color: rgb(var(--cave-texte-50)); }
+.wz-quand-puce { min-height: 40px; padding: 0 12px; border: 1px solid rgb(var(--cave-700)); border-radius: 999px; font-size: 15px; color: rgb(var(--cave-texte-50)); background: transparent; }
+.wz-quand-puce[aria-pressed="true"] { background: rgb(var(--cave-texte-50)); border-color: rgb(var(--cave-texte-50)); color: rgb(var(--cave-950)); font-weight: 600; }

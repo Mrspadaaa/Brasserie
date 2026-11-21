@@ -67,6 +67,8 @@ interface QuickActionModalProps {
   onOpenCreateBatch?: () => void;
   initialScreen?: QuickActionScreen;
   initialRecipeId?: string;
+  /** C1 : lundi ISO de l'horizon choisi au récap de la recette ; la feuille Brasser s'ouvre à cette semaine. */
+  initialBrewWeek?: string;
   onBatchCreated?: (batch: Batch) => void;
   /** c2a : « Brasser LOT-xxx » sur une recette déjà prévue ouvre ce brassin. */
   onOpenBatch?: (batch: Batch) => void;
@@ -102,6 +104,7 @@ export const QuickActionModal: React.FC<QuickActionModalProps> = ({
   onOpenCreateBatch,
   initialScreen = 'menu',
   initialRecipeId,
+  initialBrewWeek,
   onBatchCreated,
   onOpenBatch,
   onOpenExpense
@@ -1266,7 +1269,7 @@ export const QuickActionModal: React.FC<QuickActionModalProps> = ({
               onNouvelleRecette={() => { if (onOpenCreateBatch) { onClose(); onOpenCreateBatch(); } }} />
           )}
           {screen === 'brew-batch' && !!recipes.length && recettePosee && recetteChoisie && (
-            <FeuilleBrasser key={recetteChoisie.id} recipe={recetteChoisie} batches={lots} stock={articles} capaciteL={capaciteCuveL} volumeL={batchVolumeL}
+            <FeuilleBrasser key={recetteChoisie.id} recipe={recetteChoisie} semaine={initialBrewWeek} batches={lots} stock={articles} capaciteL={capaciteCuveL} volumeL={batchVolumeL}
               erreur={brewError} enCours={brewSaving} jourFige={jourAttente} planifierBloque={!!adoption}
               avertissement={(materielActuel || adoption || adopteePourCeBrassin) && (
                 <div role="status" aria-label="Volume et matériel actuel" className="space-y-1 border-l-2 border-ebc-straw pl-2 text-footnote font-normal text-cave-200">
