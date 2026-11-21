@@ -336,6 +336,12 @@ export const FeuilleAjout: React.FC<FeuilleAjoutProps> = ({ mode, initial, conte
               <DureeFenetre rangee={b.rangee} debut={b.debut} fin={b.fin} onFin={f => regler(etirerFin(b, f))} onPlage={(d, f) => regler(etirerPlage(b, d, f))} />
             </div>
           )}
+          {/* capture-12 (21.11) : une chose à une seule date (vente, papier…) prend la même frise, un seul repère, tirable dans le passé */}
+          {horizons && !fenetre && !brassin && b.debut && (
+            <div className="mt-2">
+              <DureeFenetre seule rangee={b.rangee} debut={b.debut} fin={null} onFin={() => undefined} onPlage={d => regler(etirerPlage(b, d, null))} />
+            </div>
+          )}
         </div>
 
         {/* D404 : les jours actifs restent, repliés sous le choix de période ; ouverts d'emblée quand un nombre est choisi */}

@@ -251,7 +251,10 @@ describe('C15 : la feuille Travaux : une fenêtre et des jours actifs, sans clav
     const v = dialogue('Ventes');
     poserHorizon('6 mois');
     expect(v.queryByText(/→/)).toBeNull();
-    expect(document.querySelector('.cal-f-duree-piste')).toBeNull();
+    // capture-12 (21.11) : une date, pas une durée ; la même frise avec un seul repère, sans « Durée »
+    expect(document.querySelector('[data-date-seule] .cal-f-duree-piste')).not.toBeNull();
+    expect(document.querySelector('[data-duree]')).toBeNull();
+    expect(v.getByRole('slider', { name: 'Date' })).toBeInTheDocument();
     expect(v.queryByRole('slider', { name: 'Fin' })).toBeNull();
     expect(v.queryByRole('group', { name: 'Jours actifs' })).toBeNull();
     expect(v.queryByRole('button', { name: /^Jours actifs/ })).toBeNull();
