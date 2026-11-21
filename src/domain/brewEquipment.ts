@@ -87,6 +87,17 @@ export function defaultBrewVolume(profile?: BrewhouseProfile) {
   return profile?.volumeL ?? 30;
 }
 
+/**
+ * D394 (21.11) : le volume d'une recette NEUVE part du repère conseillé de l'installation (capacité du fermenteur moins la réserve de mousse,
+ * ≈ 24 L pour 30 L), jamais de la capacité elle-même que le lancement refuse. Le volume habituel du profil l'emporte seulement s'il est plus
+ * petit. Ne sert qu'à une recette sans volume : une recette existante garde le sien (`defaultBrewVolume` reste le défaut des adaptations).
+ */
+export function defaultNewRecipeVolume(profile?: BrewhouseProfile) {
+  const usual = defaultBrewVolume(profile);
+  const advised = fermenterLimit(profile?.equipment);
+  return advised !== undefined && advised > 0 && advised < usual ? advised : usual;
+}
+
 export function brewingPreferenceErrors(p?: BrewingPreferences): string[] {
   if (!p) return [];
   const errors: string[] = [];

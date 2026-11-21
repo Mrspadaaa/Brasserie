@@ -2,6 +2,7 @@ import { describe, it, expect } from 'vitest';
 import {
   practicalEquipment,
   fermenterLimit,
+  defaultNewRecipeVolume,
   equipmentCheck,
   equipmentErrors,
   roPackages
@@ -158,5 +159,18 @@ describe('Matériel réel : capacités, conservation et paquets', () => {
     });
     const result = boilScenario(r, s, 60)!;
     expect(result.finalL).toBeCloseTo(r.preBoilL! - 3 * 0.96, 5);
+  });
+});
+
+describe('D394 : volume par défaut d’une recette neuve', () => {
+  const installation = { id: 'personal', name: 'Mon installation', volumeL: 30, efficiencyPct: 75, boilOffRatePct: 10, deadSpaceL: 1.5, mashRatioLPerKg: 4.2, equipment: { ...practicalEquipment } };
+  it('part du repère conseillé (30 L moins 20 % de mousse = 24 L), pas de la capacité du fermenteur', () => {
+    expect(defaultNewRecipeVolume(installation)).toBe(24);
+    expect(equipmentCheck(practicalEquipment, { volumeL: defaultNewRecipeVolume(installation), grainKg: 5, mashL: 21, spargeL: 12 })!.fermenterTooFull).toBe(false);
+  });
+  it('garde le volume habituel s’il est déjà plus petit, et sans matériel valide', () => {
+    expect(defaultNewRecipeVolume({ ...installation, volumeL: 20 })).toBe(20);
+    expect(defaultNewRecipeVolume({ ...installation, equipment: undefined })).toBe(30);
+    expect(defaultNewRecipeVolume(undefined)).toBe(30);
   });
 });

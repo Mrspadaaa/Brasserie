@@ -131,6 +131,25 @@ function listeEtapes() { return [
       if (!/Malts\/sucres — étape 2 sur 7/.test(await s.texte(1800))) return echec('B4', 'le bouton du récap n\'ouvre pas l\'étape Malts/sucres');
       ok('B4', 'le récap nomme le malt à 0 kg et son bouton ouvre l\'étape Malts/sucres');
     }
+  },
+  {
+    id: 'D394', titre: 'Recette neuve sans toucher au volume : le défaut est le repère conseillé (24 L), « Enregistrer et préparer » ouvre Brasser',
+    async joue(s) {
+      await recetteNeuve(s, {}); // aucun volume écrit : c'est le défaut de l'application qui est jugé
+      await leveureCatalogue(s);
+      await versRecap(s);
+      await s.cap('D394-1-recap');
+      await s.toucher('Enregistrer et préparer un brassin'); await sleep(2500);
+      await s.cap('D394-2-apres');
+      const t = await s.texte(2500);
+      if (/capacité physique du fermenteur/.test(t)) return echec('D394', `le volume par défaut atteint la capacité du fermenteur : ${t.match(/Avant de lancer[^F]{0,160}/)?.[0] ?? ''}`);
+      if (/Avant de lancer/.test(t)) return echec('D394', `refus au lancement : ${t.match(/Avant de lancer[^F]{0,120}/)?.[0] ?? ''}`);
+      if (!/Planifier/.test(t)) return echec('D394', `la feuille Brasser ne s'ouvre pas (écran : ${t.slice(0, 160)})`);
+      const recettes = await s.store('recipes');
+      const neuve = recettes.find((r) => /ZZ TEST Brune/.test(r.name ?? ''));
+      if (!neuve || Math.abs(Number(neuve.volumeL) - 24) > 0.05) return echec('D394', `volume enregistré ${neuve?.volumeL ?? 'recette absente'} L au lieu de 24 L`);
+      ok('D394', 'recette enregistrée à 24 L, la feuille Brasser s\'ouvre');
+    }
   }
 ]; }
 

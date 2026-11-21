@@ -29,7 +29,7 @@ import { adoptedDocumentaryFromCandidateSheet, clearRecipeDraft, extractYeastCan
   tryAcceptYeastCandidateSheet, tryAdoptYeastDocumentary, writeRecipeDraft, readRecipeDraftState, yeastWithAdoptedDocumentary,
   recipeDraftResumeCheck, recipeServerBase, RecipeDraftWriteBlockedError, type RecipeDraftReadState, type RecipeWizardDraft, type YeastCandidateSheets, type YeastDocumentaryIntent } from '../services/recipeDraft';
 import { BrewingMath, kettleHopGrams } from '../services/brewingMath';
-import { defaultBrewVolume, equipmentCheck } from '../domain/brewEquipment';
+import { defaultBrewVolume, defaultNewRecipeVolume, equipmentCheck } from '../domain/brewEquipment';
 import { RecipeInstallationChoice } from '../ui/RecipeInstallationChoice';
 import { EtapePaliers } from '../ui/paliers/EtapePaliers';
 import { recipeInstallationAdoptionIssue, recipeInstallationIssues } from '../domain/recipeInstallation';
@@ -747,7 +747,7 @@ const BrewWizardEditor: React.FC<BrewWizardProps & {
   const styleDeBase = useMemo(() => styleNomme(base?.style ?? '', styles), [base?.style, styles]);
   const [style, setStyleRaw] = useState(styleDeBase);
   const matchingStyles = useMemo(() => matchBrewingStyles(style, styles), [style, styles]);
-  const [volumeL, setVolumeLRaw] = useState(base?.volumeL ?? defaultBrewVolume(brewhouse));
+  const [volumeL, setVolumeLRaw] = useState(base?.volumeL ?? defaultNewRecipeVolume(brewhouse));
   const [equipmentNotice,setEquipmentNotice]=useState('');
   /**
    * Carbonatation visée, en volumes de CO2.
