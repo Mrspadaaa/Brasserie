@@ -2,6 +2,7 @@ import React from 'react';
 import { ChampNombre } from './ChampNombre';
 import { Regle, useRegleFigee } from './Regle';
 import { EBULLITION_PAS, EBULLITION_SAISIE_MAX, etendreEbullition, etiquetteEbullition, fr, pourcent, type Evaporation } from './regles';
+import { refCurseurNatif } from '../geste';
 
 const ICONE_FLAMME = (
   <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
@@ -64,7 +65,7 @@ export function CarteEbullition({ minutes, onMinutes, evaporation, invalide, dec
             <b data-role="evap">{evaporation.litres > 0 ? `~${fr(evaporation.litres)} L` : '0 L'}</b> évaporés
           </span>
         )}
-        <input
+        <input ref={refCurseurNatif}
           type="range"
           className="idn-range"
           min={0}
