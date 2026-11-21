@@ -4,8 +4,14 @@ import type { EquipmentItem, EquipmentRhythm } from '../../types';
 import { dateCourte, daysBetween, lireDate, nextDueAfter } from '../../domain/equipment';
 import { nextUniqueRef } from '../../services/refs';
 import { Sheet } from '../Sheet';
+import { Input } from '../Input';
+import { nomParDefaut } from '../../domain/nomParDefaut';
 
-/** Nouveau matériel (za3, « ajout ») : trois voies, puis nom, catégorie, état, entretien et dernier fait. Jamais `type="number"`. */
+/**
+ * Nouveau matériel (za3, « ajout ») : trois voies, puis nom, catégorie, état, entretien et dernier fait. Jamais `type="number"`.
+ * G1 et G3 (D396) : le nom est posé d'office (« Matériel de brassage », suivant la catégorie tant qu'il n'est pas tapé ; `projet` le
+ * remplace), « Ajouter » vaut sans clavier, Entrée ajoute ; il se renomme ensuite en touchant le titre de la fiche (PI-5).
+ */
 const CATEGORIES = ['Brassage', 'Mesure', 'Embouteillage', 'Stockage', 'Atelier'];
 const ETATS = ['Neuf', 'Bon', 'À entretenir', 'À réparer'];
 const ENTRETIENS: { label: string; rhythm: EquipmentRhythm | null }[] = [
@@ -42,15 +48,19 @@ const Reglette: React.FC<{ dernier: string; prochain: string; today: string }> =
 
 export const NewEquipment: React.FC<{
   open: boolean; today: string; refs: string[]; wide?: boolean;
+  /** Noms du parc, pour que le nom posé soit libre (« Matériel de mesure 2 ») ; le projet du carnet, s'il y en a un, donne le nom. */
+  noms?: string[]; projet?: string;
   onClose: () => void; onAdd: (item: EquipmentItem) => void; onBuy: () => void; onProjects?: () => void;
-}> = ({ open, today, refs, onClose, onAdd, onBuy, onProjects }) => {
-  const [nom, setNom] = useState('');
+}> = ({ open, today, refs, noms, projet, onClose, onAdd, onBuy, onProjects }) => {
+  const [tape, setTape] = useState<string | null>(null);
   const [categorie, setCategorie] = useState('Brassage');
   const [etat, setEtat] = useState('Bon');
   const [entretien, setEntretien] = useState(0);
   const [dernier, setDernier] = useState(swiss(today));
-  useEffect(() => { if (open) { setNom(''); setCategorie('Brassage'); setEtat('Bon'); setEntretien(0); setDernier(swiss(today)); } }, [open, today]);
+  useEffect(() => { if (open) { setTape(null); setCategorie('Brassage'); setEtat('Bon'); setEntretien(0); setDernier(swiss(today)); } }, [open, today]);
 
+  // Le nom posé suit la catégorie tant que rien n'est tapé ; un nom tapé (même vidé) est le sien.
+  const nom = tape ?? nomParDefaut({ genre: 'materiel', projet, categorie }, noms ?? []) ?? '';
   const rhythm = ENTRETIENS[entretien].rhythm;
   const dernierIso = lireDate(dernier);
   const prochain = rhythm && dernierIso ? nextDueAfter({ rhythm } as EquipmentItem, dernierIso) : null;
@@ -80,7 +90,7 @@ export const NewEquipment: React.FC<{
           {onProjects && <button type="button" className="mt-ch" onClick={onProjects}><ExternalLink size={20} aria-hidden="true" />Projets d'équipement</button>}
         </div>
         <label className="mt-lab" htmlFor="mt-nom">Nom</label>
-        <input id="mt-nom" className="mt-in" type="text" autoComplete="off" value={nom} onChange={e => setNom(e.target.value)} onKeyDown={e => { if (e.key === 'Enter') ajouter(); }} />
+        <Input id="mt-nom" className="mt-in" value={nom} enterKeyHint="done" onFocus={e => { if (tape === null) e.currentTarget.select(); }} onChange={e => setTape(e.target.value)} onKeyDown={e => { if (e.key === 'Enter' && !e.nativeEvent.isComposing) { e.preventDefault(); ajouter(); } }} />
         <div className="mt-lab">Catégorie</div>
         <div className="mt-pills" role="radiogroup" aria-label="Catégorie">{CATEGORIES.map(c => puce(c, categorie === c, () => setCategorie(c), 'Catégorie'))}</div>
         <div className="mt-lab">État</div>
