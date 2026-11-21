@@ -18,7 +18,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import { normaliser } from '../../domain/carnets/analyseLocale';
 import { comptesCarnet, pluriel } from '../../domain/carnets/comptes';
 import { estLienSeul, sourceDuCritere } from '../../domain/carnets/modele';
-import { CalendarCheck, ChevronDown, ChevronLeft, ChevronRight, Ellipsis, ExternalLink, Eye, FileText, GitFork, Image as ImageIcon, Lightbulb, Link2, ListTodo, Pencil, ShoppingBasket, Tag, Target, X } from 'lucide-react';
+import { CalendarCheck, CalendarDays, ChevronDown, ChevronLeft, ChevronRight, Ellipsis, ExternalLink, Eye, FileText, GitFork, Image as ImageIcon, Lightbulb, Link2, ListTodo, Pencil, ShoppingBasket, Tag, Target, X } from 'lucide-react';
 import { Bandeau } from './Bandeau';
 import { CarteArticle, CarteClassee, estExemple, nombreValeur } from './CarteArticle';
 import { colonnesVue, meilleursDe, moinsBienQueDe, sansApercu, texteCellule, type ColonneVue, type TableauV } from './Comparer';
@@ -33,6 +33,8 @@ import { PREFIXE_PLANNING } from '../../domain/carnets/anciens';
 import { Photos } from './Photos';
 import { titreAffiche } from './titre';
 import { VignetteObjet } from './pictos';
+import { Horizons } from '../saisie/Horizons';
+import { ORDRES_DE_GRANDEUR, texteIntention } from '../../domain/horizons';
 
 /** Lien « lié à » (R47), calculé par `liensDe` (lot A) : jamais de montant. */
 export interface LienV { sorte: 'a-venir' | 'realise'; id: string; libelle: string; etat: 'present' | 'supprime'; le?: string }
@@ -87,6 +89,18 @@ export interface CarnetOuvertProps {
   onVoirChoix?: () => void;
   onEnvoyerAVenir?: () => void;
   onOuvrirLien?: (lien: LienV) => void;
+  /**
+   * C1 (D393, 21.11) : dater le projet d'un toucher, en horizon (« vers févr. ») ; `lundi` ISO, `null` = plus tard (sans date). Absent :
+   * pas de rubrique Quand. La date lue est `carnet.date` (l'icône de sa semaine au Calendrier, `iconesIdees`).
+   */
+  onDater?: (lundi: string | null) => void;
+  /** K2 (côté Carnet) : « Au calendrier › », la chose posée à aujourd'hui si elle n'a pas de date, puis la bascule au Calendrier. */
+  onAuCalendrier?: () => void;
+  /** D2 : le prix du projet (`estimatedCost`, centimes ici) et le dernier achat semblable proposé ; `semblable: null` = rien, D1. */
+  prix?: { centimes?: number; semblable?: { centimes: number; source: string } | null };
+  onPrix?: (centimes: number) => void;
+  /** Le jour (ISO) ; défaut : aujourd'hui (local). Injecté par le banc et les tests. */
+  aujourdhui?: string;
 }
 
 function etiquetteStatut(c: CarnetV): string {
@@ -571,6 +585,9 @@ export function CarnetOuvert(p: CarnetOuvertProps) {
         )}
       </section>}
 
+      {!enAttente && p.onDater && <RubriqueQuand date={c.date} aujourdhui={p.aujourdhui ?? jourLocal()} neuf={neuf} picto={picto}
+        onDater={p.onDater} onAuCalendrier={p.onAuCalendrier} prix={p.prix} onPrix={p.onPrix} />}
+
       {p.vientDEtreCree && <p className="cn-mut cn-g6">Le champ en bas range tout ici : une phrase, un lien collé, une photo.</p>}
 
       {cartes && p.tableau && (
@@ -578,6 +595,40 @@ export function CarnetOuvert(p: CarnetOuvertProps) {
           onOuvrir={id => { setCartes(false); p.onOuvrirArticle(id); }} onVeille={p.onVeille} />
       )}
     </article>
+  );
+}
+
+/* ---------- Quand et prix (C1, K2, D2 ; 21.11) ---------- */
+
+const jourLocal = (d = new Date()) => `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+
+/**
+ * « juste, aujourd'hui, dans 1 mois, dans 3 mois… 6m 1 ans » : une rubrique à filet comme les autres (aucun élément neuf : picto, mot,
+ * état en gris, puces du carnet). Un toucher date le projet (« vers févr. »), un autre le reporte. Daté, le prix : le dernier achat
+ * semblable à garder d'un toucher (« Pompe 2025 : 420 CHF »), sinon les ordres de grandeur ; posé, « estimé » jusqu'à la facture.
+ */
+function RubriqueQuand(p: { date?: string; aujourdhui: string; neuf: boolean; picto: number; onDater: (lundi: string | null) => void; onAuCalendrier?: () => void;
+  prix?: CarnetOuvertProps['prix']; onPrix?: (centimes: number) => void }) {
+  const quand = texteIntention(p.date, p.aujourdhui);
+  const [changerPrix, setChangerPrix] = useState(false);
+  const pose = p.prix?.centimes;
+  const semblable = p.prix?.semblable;
+  const garder = (x: number) => { p.onPrix?.(x); setChangerPrix(false); };
+  return (
+    <section className={`cn-rubrique${p.neuf ? ' cn-rubrique-ligne' : ''}`} aria-label="Quand">
+      <p className="cn-rubrique-tete"><CalendarDays size={p.picto} aria-hidden /> <b>Quand</b> <span className="cn-mut">· {quand ?? 'pas encore daté'}</span>
+        {quand && pose !== undefined && <span className="cn-mut"> · {montant(pose)} CHF estimé</span>}
+        {quand && pose !== undefined && p.onPrix && <> <button type="button" className="cn-lien" aria-expanded={changerPrix} onClick={() => setChangerPrix(v => !v)}>Prix</button></>}</p>
+      <Horizons date={p.date} aujourdhui={p.aujourdhui} classePuce="cn-puce" onChoisir={(_, lundi) => p.onDater(lundi)} />
+      {quand && p.onPrix && (pose === undefined || changerPrix) && (
+        <div role="group" aria-label="Prix estimé" style={{ display: 'flex', flexWrap: 'wrap', gap: 8, marginTop: 8 }}>
+          {semblable
+            ? <button type="button" className="cn-puce" onClick={() => garder(semblable.centimes)}>{semblable.source} : {montant(semblable.centimes)} CHF · garder</button>
+            : ORDRES_DE_GRANDEUR.map(x => <button key={x} type="button" className="cn-puce" aria-pressed={pose === x} onClick={() => garder(x)}>{montant(x)} CHF</button>)}
+        </div>
+      )}
+      {p.onAuCalendrier && <button type="button" className="cn-second" style={{ marginTop: 8 }} onClick={p.onAuCalendrier}>Au calendrier <ChevronRight size={16} aria-hidden /></button>}
+    </section>
   );
 }
 
