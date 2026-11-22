@@ -3,30 +3,30 @@ import { CalendarDays, ChevronRight, Ellipsis } from 'lucide-react';
 import type { Batch } from '../../../types';
 import { breweryDay, plannedBrewDate } from '../../../domain/batchSchedule';
 import type { YeastPreparationPlan } from '../../../../functions/src/yeastSupplySchema';
-import { titreDeDate, jourCourt, ecartJours, joursDuCurseur, faisabilite, jourPropose } from './ficheModel';
-import { Cible, Curseur, Mono, Pas, Puce, type Segment } from './ui';
+import { titreDeDate, jourCourt, ecartJours, faisabilite, jourPropose } from './ficheModel';
+import { Cible, Mono, Puce } from './ui';
+import { ChoixDate } from '../../ChoixDate';
+import { toIsoDate, toSwissDate } from '../../DateField';
 
 /** Le plan de starter du brassin : celui de l'exécution, sinon celui de la recette figée. */
 export const planDeStarter = (b: Batch): YeastPreparationPlan | undefined => b.yeastPreparation?.plan ?? b.recipeSnapshot?.yeast?.pitching?.preparation;
 
 /**
  * e1a, le bloc de date d'un brassin planifié : la date en titre, trois façons de la poser (À définir, Aujourd'hui, Reporter),
- * trois jours rapides, et le geste Reporter : un curseur de 8 jours dont la bande dit si le starter tient (m2).
- * `geste` = l'index du jour choisi au curseur, `null` au repos.
+ * trois jours rapides, et le geste Reporter : GESTE-DATE-PARTOUT (22.11), la frise partagée du Calendrier au jour (`ChoixDate`, la même que la fiche v02),
+ * à la place de la réglette de 8 jours et de ses ‹ ›. Une ligne dit si le starter tient le jour tiré (m2).
+ * `geste` = le jour tiré (`JJ.MM.AAAA`), `null` au repos.
  */
 export const PlannedDate: React.FC<{
-  batch: Batch; now: number; geste: number | null; onGeste: (jour: number | null) => void; onSave: (date: string) => void; erreur?: string;
+  batch: Batch; now: number; geste: string | null; onGeste: (jour: string | null) => void; onSave: (date: string) => void; erreur?: string;
 }> = ({ batch, now, geste, onGeste, onSave, erreur }) => {
   const prevue = plannedBrewDate(batch) ?? null;
   const aujourdhui = breweryDay(now);
   const retard = prevue ? ecartJours(prevue, aujourdhui) : null;
   const enRetard = retard !== null && retard > 0;
-  const jours = joursDuCurseur(now);
   const plan = planDeStarter(batch);
-  const choisi = geste !== null ? jours[geste] : null;
-  const segments: Segment[] | undefined = plan
-    ? jours.map(j => { const f = faisabilite(plan, j, now); return { de: 0, a: 0, ton: f === 'non' ? 'alert' : f === 'court' ? 'attention' : 'hop' }; })
-    : undefined;
+  const choisi = geste;
+  const tient = plan && choisi ? faisabilite(plan, choisi, now) : null;
   const mode = prevue === null ? 'definir' : prevue === aujourdhui ? 'aujourdhui' : 'reporter';
   const ton = enRetard ? 'border-attention/50 bg-attention/10' : 'border-cave-700 bg-cave-850';
   const demain = breweryDay(now, 1), plus7 = breweryDay(now, 7);
@@ -51,7 +51,7 @@ export const PlannedDate: React.FC<{
           <div role="group" aria-label="Quand brasser ?" className="mt-2 flex gap-1 rounded-control border border-cave-700 bg-cave-950 p-0.5">
             {([['definir', 'À définir'], ['aujourdhui', 'Aujourd’hui'], ['reporter', 'Reporter']] as const).map(([k, l]) => (
               <button key={k} type="button" aria-pressed={mode === k}
-                onClick={() => k === 'definir' ? onSave('') : k === 'aujourdhui' ? onSave(aujourdhui) : onGeste(Math.max(0, jours.indexOf(jourActif ?? aujourdhui)))}
+                onClick={() => k === 'definir' ? onSave('') : k === 'aujourdhui' ? onSave(aujourdhui) : onGeste(jourActif ?? aujourdhui)}
                 className={`relative flex-1 min-h-8 rounded-[8px] text-sm after:content-[''] after:absolute after:inset-x-0 after:top-1/2 after:h-11 after:-translate-y-1/2 ${mode === k ? 'bg-ebc-straw font-semibold text-cave-950' : 'text-cave-400'}`}>{l}</button>
             ))}
           </div>
@@ -69,12 +69,11 @@ export const PlannedDate: React.FC<{
           <div className="mb-1 flex items-baseline gap-2">
             <Mono className="text-lg font-semibold text-cave-50">{choisi ? `${jourCourt(choisi).nom} ${choisi.slice(0, 5)}` : '—'}</Mono>
             {dansJ !== null && <span className="text-sm font-semibold text-hop">{dansJ === 0 ? 'aujourd’hui' : `dans ${dansJ} j`}</span>}
-            <span className="ml-auto"><Pas chevrons moins="Un jour plus tôt" plus="Un jour plus tard" onMoins={() => onGeste(Math.max(0, geste - 1))} onPlus={() => onGeste(Math.min(7, geste + 1))} /></span>
           </div>
-          <Curseur label="Jour de brassage" min={0} max={7} value={geste} onChange={onGeste} segments={segments} gradsSans
-            format={v => titreDeDate(jours[v])}
-            grads={[...new Set([0, 1, geste, 5, 7])].filter(i => i === geste || Math.abs(i - geste) > 0).map(i => ({ at: i, text: `${jourCourt(jours[i]).nom} ${jourCourt(jours[i]).n}`, cible: i === geste }))} />
-          {!plan && <p className="mt-1 text-xs text-cave-400">Pas de plan de starter : aucune faisabilité à montrer sur ces jours.</p>}
+          <ChoixDate ouvert label="Jour de brassage" valeur={toIsoDate(choisi ?? '')} depart={toIsoDate(aujourdhui)} onChange={iso => onGeste(toSwissDate(iso))} onBrouillon={iso => onGeste(toSwissDate(iso))} />
+          {plan
+            ? tient && <p data-starter-tient={tient} className={`mt-1 text-xs ${tient === 'non' ? 'text-alert-strong' : tient === 'court' ? 'text-attention' : 'text-hop'}`}>{tient === 'non' ? 'Le starter ne tient pas ce jour.' : tient === 'court' ? 'Le starter tient juste ce jour.' : 'Le starter tient ce jour.'}</p>
+            : <p className="mt-1 text-xs text-cave-400">Pas de plan de starter : aucune faisabilité à montrer sur ces jours.</p>}
         </div>
       )}
     </section>
@@ -83,9 +82,9 @@ export const PlannedDate: React.FC<{
 
 /** Pied de la fiche planifiée : au repos « ⋯ » et « Commencer le brassage », au geste « Annuler » et « Enregistrer lu 16.11 ». */
 export const PiedPlanifie: React.FC<{
-  geste: number | null; now: number; plus: () => void; commencer?: () => void; annuler: () => void; enregistrer: () => void;
+  geste: string | null; now: number; plus: () => void; commencer?: () => void; annuler: () => void; enregistrer: () => void;
 }> = ({ geste, now, plus, commencer, annuler, enregistrer }) => {
-  const jour = geste !== null ? joursDuCurseur(now)[geste] : null;
+  const jour = geste;
   return geste === null ? (
     <div className="flex items-center gap-2">
       <Cible aria-label="Budget, compagnon, supprimer" onClick={plus} className="w-10 px-0 shrink-0"><Ellipsis size={18} aria-hidden="true" /></Cible>

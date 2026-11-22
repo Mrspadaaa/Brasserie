@@ -42,7 +42,7 @@ import { HeroEtat, CarteDensite, CurseurFg, TuilesFg, Contenants, LignesCuve, Et
 import { StageLadder, type Conditionnement } from './production/fiche/StageLadder';
 import { accrocherDefaireLavage, enregistrerLavage } from './KegFillSheet';
 import { Cible, Mono, Panneau, Pastille } from './production/fiche/ui';
-import { MARCHES, releves, joursDuCurseur, planDecale, faisabilite, jourPropose } from './production/fiche/ficheModel';
+import { MARCHES, releves, planDecale, faisabilite, jourPropose } from './production/fiche/ficheModel';
 import { Ellipsis, ChevronRight, Package } from 'lucide-react';
 import { useCarnet } from './production/carnet/useCarnet';
 import { CarnetFil, CarnetPied } from './production/carnet/CarnetFil';
@@ -156,7 +156,7 @@ export const BatchDetailSheet: React.FC<BatchDetailSheetProps> = ({
   const [packaging, setPackaging] = useState<{ target: Batch['status'] | null } | null>(null);
   const [pendingStatus, setPendingStatus] = useState<Batch['status'] | null>(null);
   /** p1 : geste Reporter de e1a (index du jour au curseur), échelle e4c ouverte, FG au curseur (millièmes) et son annulation, « ⋯ ». */
-  const [datePlan, setDatePlan] = useState<number | null>(null);
+  const [datePlan, setDatePlan] = useState<string | null>(null);
   const [dateError, setDateError] = useState('');
   const [ladder, setLadder] = useState(false);
   const [fgMilli, setFgMilli] = useState<number | null>(null);
@@ -445,7 +445,7 @@ export const BatchDetailSheet: React.FC<BatchDetailSheetProps> = ({
         ) : planned ? (
           <PiedPlanifie geste={datePlan} now={nowMs} plus={() => setPlusOpen(open => !open)}
             commencer={onOpenBrewDay ? () => onOpenBrewDay(draft) : undefined}
-            annuler={() => { setDatePlan(null); setDateError(''); }} enregistrer={() => datePlan !== null && saveDate(joursDuCurseur(nowMs)[datePlan])} />
+            annuler={() => { setDatePlan(null); setDateError(''); }} enregistrer={() => datePlan !== null && saveDate(datePlan)} />
         ) : post ? (
           <div className="flex items-center gap-2">
             <Cible aria-label="Plus" onClick={() => setPlusOpen(open => !open)} className="w-10 shrink-0 px-0"><Ellipsis size={18} aria-hidden="true" /></Cible>
@@ -579,7 +579,7 @@ export const BatchDetailSheet: React.FC<BatchDetailSheetProps> = ({
           )}
           {section === 'measurements' && planned && (
             <>
-              <YeastPreparationPanel batch={draft} onSave={save} carte apercu={datePlan !== null ? joursDuCurseur(nowMs)[datePlan] : jourPropose(planDeStarter(draft), plannedBrewDate(draft) ?? null, nowMs)} />
+              <YeastPreparationPanel batch={draft} onSave={save} carte apercu={datePlan !== null ? datePlan : jourPropose(planDeStarter(draft), plannedBrewDate(draft) ?? null, nowMs)} />
               <div className="grid grid-cols-3 gap-1.5" data-cibles>
                 <Panneau className="px-2.5 py-1.5"><small className="block text-xs text-cave-400">OG visée</small><span className="font-mono text-xl font-semibold text-cave-50">{draft.recipeSnapshot?.ogTarget != null ? formatDecimal(draft.recipeSnapshot.ogTarget, 3) : '—'}</span><i className="block text-xs not-italic text-cave-400">mesurée {og !== null ? formatDecimal(og, 3) : '—'}</i></Panneau>
                 <Panneau className="px-2.5 py-1.5"><small className="block text-xs text-cave-400">FG cible</small><span className="font-mono text-xl font-semibold text-cave-50">{draft.recipeSnapshot?.fgTarget != null ? formatDecimal(draft.recipeSnapshot.fgTarget, 3) : '—'}</span><i className="block text-xs not-italic text-cave-400">mesurée {fg !== null ? formatDecimal(fg, 3) : '—'}</i></Panneau>
