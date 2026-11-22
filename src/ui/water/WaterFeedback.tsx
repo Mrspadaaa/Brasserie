@@ -190,7 +190,7 @@ export function WaterFeedback({
         </p>
       ))}
       <p className="text-2xs text-cave-400 leading-snug px-1">
-        {formatWaterMessage(ACIDS[state.acidId].note)}
+        {ACIDS[state.acidId].name} : {formatWaterMessage(ACIDS[state.acidId].note)}
         {phEstimate !== null && seuilGoutProche && ` ${formatWaterMessage(ACIDS[state.acidId].taste!.text)}`}
       </p>
       {!state.customTarget && (

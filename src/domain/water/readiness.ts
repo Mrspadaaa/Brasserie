@@ -6,6 +6,6 @@ export function mashPhDiagnostic(estimate:ReturnType<typeof estimateMashPh>|null
   const outside=Math.abs(delta)>estimate.uncertainty;
   return {status:outside?'outside' as const:'unverified' as const,delta,
     message:'pH estimé '+estimate.phPredicted.toFixed(2).replace('.',',')+' ± '+estimate.uncertainty.toString().replace('.',',')+
-      ' ; consigne '+target.toString().replace('.',',')+'. '+(outside?'Consigne hors de la plage estimée. Mesurer puis titrer la maische avant de corriger.':'À mesurer au brassage.'),
+      ' ; consigne '+target.toString().replace('.',',')+'. '+(outside?'Consigne hors de la plage estimée : l’acide neutralise l’alcalinité ; le pH se corrige au brassage, sur la mesure.':'À mesurer au brassage.'),
     limitation:'Les acides calculés neutralisent l’alcalinité ; ces doses ne garantissent pas la consigne de pH.'};
 }

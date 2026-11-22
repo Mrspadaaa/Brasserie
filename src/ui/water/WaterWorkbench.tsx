@@ -336,7 +336,6 @@ export function WaterWorkbench({
                   onEditEnd={endEdit}
                   onDetails={setDetailsSalt}
                   onDose={(v) => setDose(id, v)}
-                  onToggle={toggleSalt}
                   onActivate={setActiveSalt}
                 />
               );

@@ -258,7 +258,7 @@ export const ACIDS: Record<AcidId, AcidDef> = {
     note: 'Le plus courant, et le moins cher.',
     taste: {
       gPerL: LACTATE_TASTE_THRESHOLD,
-      text: 'son goût commence à se percevoir vers 0.3 g par litre de bière — empâtage et rinçage CUMULÉS.'
+      text: 'Son goût commence à se percevoir vers 0.3 g par litre de bière, empâtage et rinçage cumulés.'
     }
   },
   phosphorique: {
