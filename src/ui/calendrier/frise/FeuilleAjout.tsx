@@ -357,7 +357,7 @@ export const FeuilleAjout: React.FC<FeuilleAjoutProps> = ({ mode, initial, conte
           {/* D404 : l'horizon pose le début ; la durée s'étire au geste de la frise B (fêtes, achats, travaux, activités) */}
           {horizons && fenetre && b.debut && (
             <div className="mt-2">
-              <DureeFenetre rangee={b.rangee} debut={b.debut} fin={b.fin} jourFin={peutChoisirJoursPlage(b) ? jourFinPlage(b) : null} onFin={f => regler(etirerFin(b, f))} onPlage={(d, f) => regler(etirerPlage(b, d, f))} />
+              <DureeFenetre rangee={b.rangee} debut={b.debut} fin={b.fin} jourFin={peutChoisirJoursPlage(b) ? jourFinPlage(b) : null} jourSeul={!b.fin && !b.joursActifs ? jourDit : null} onFin={f => regler(etirerFin(b, f))} onPlage={(d, f) => regler(etirerPlage(b, d, f))} />
             </div>
           )}
           {/* capture-12 (21.11) : une chose à une seule date (vente, papier…) prend la même frise, un seul repère, tirable dans le passé */}

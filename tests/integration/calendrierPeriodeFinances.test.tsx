@@ -85,21 +85,15 @@ describe('Décision pilote (c), CRITIQUE-7 : la période « mois » se lit dès 
 });
 
 describe('ET-PER : calendrier → Finances', () => {
-  it('« 6 sem. » au calendrier : Finances affiche la plage et ne liste que l’opération de cette plage', async () => {
+  it('CAL-PERIODE-APP-FIXE (22.11, « Cette période là reste fixe ») : « 6 sem. » au calendrier règle sa fenêtre locale ; la période de l’app et Finances restent', async () => {
     const journal = vi.fn();
     render(<App2 initiale={{ genre: 'mois', annee: Number(JOUR.slice(0, 4)), mois: Number(JOUR.slice(5, 7)) }} journal={journal} />);
-    /* au départ (le mois en cours, réglé par Finances) : la fenêtre du calendrier ne suit pas un mois, elle garde ses 6 semaines */
     fireEvent.click(calendrier().querySelector('[data-ent-periode]')!);
     fireEvent.click(within(screen.getByRole('dialog', { name: 'Période et vue' })).getByRole('button', { name: /^6 sem/ }));
-    const plage = { genre: 'dates', du: DEBUT_MOIS, au: ajouterJours(DEBUT_MOIS, 6 * 7 - 1) };
-    expect(journal).toHaveBeenLastCalledWith(plage);
-    const titre = titreJours({ du: plage.du, au: plage.au }, JOUR);
-    await waitFor(() => expect(finances().getByLabelText(`Plage du ${titre}`)).toBeInTheDocument());
-    expect(finances().getByLabelText('Du')).toHaveValue(plage.du);
-    expect(finances().getByLabelText('Au')).toHaveValue(plage.au);
-    await waitFor(() => expect(finances().getAllByText(/Malt dans la plage/).length).toBeGreaterThan(0));
-    expect(finances().queryByRole('button', { name: /Houblon hors plage/ })).toBeNull();
-    expect(document.querySelector('[data-onglet="finances"]')!.textContent).not.toMatch(/Houblon hors plage/);
+    await waitFor(() => expect(calendrier().querySelector('[data-frise]')!.getAttribute('data-nb-colonnes')).toBe('6'));
+    expect(journal).not.toHaveBeenCalled();
+    const plage = { du: DEBUT_MOIS, au: ajouterJours(DEBUT_MOIS, 6 * 7 - 1) };
+    expect(finances().queryByLabelText(`Plage du ${titreJours(plage, JOUR)}`)).toBeNull();
   });
 });
 
@@ -115,15 +109,15 @@ describe('CRITIQUE-4 n° 5 (D-14) : FinancesTab seul, monté sur une période «
     expect(document.body.textContent).not.toMatch(/Fût après la plage/);
   });
 
-  it('« 3 mois » au calendrier écrit la plage de 13 semaines que Finances affiche', async () => {
+  it('CAL-PERIODE-APP-FIXE (22.11) : « 3 mois » au calendrier montre 13 semaines ; Finances garde la plage de 6 semaines de l’app', async () => {
     const journal = vi.fn();
-    render(<App2 initiale={{ genre: 'dates', du: LUNDI, au: ajouterJours(LUNDI, 6 * 7 - 1) }} journal={journal} />);
+    const au6 = ajouterJours(LUNDI, 6 * 7 - 1);
+    render(<App2 initiale={{ genre: 'dates', du: LUNDI, au: au6 }} journal={journal} />);
     fireEvent.click(calendrier().querySelector('[data-ent-periode]')!);
     fireEvent.click(within(screen.getByRole('dialog', { name: 'Période et vue' })).getByRole('button', { name: /^3 mois/ }));
-    const au = ajouterJours(LUNDI, 13 * 7 - 1);
-    expect(journal).toHaveBeenLastCalledWith({ genre: 'dates', du: LUNDI, au });
-    await waitFor(() => expect(finances().getByLabelText('Au')).toHaveValue(au));
-    expect(calendrier().querySelector('[data-frise]')!.getAttribute('data-nb-colonnes')).toBe('13');
+    await waitFor(() => expect(calendrier().querySelector('[data-frise]')!.getAttribute('data-nb-colonnes')).toBe('13'));
+    expect(journal).not.toHaveBeenCalled();
+    expect(finances().getByLabelText('Au')).toHaveValue(au6);
   });
 });
 
@@ -144,17 +138,14 @@ describe('CRITIQUE-6 n° 11 (E07 ET-PER, D-12, D-13) : à 390, la barre de l’a
     expect(journal).not.toHaveBeenCalled();
   });
 
-  it('« 6 sem. » au calendrier : la barre de l’app reçoit la même plage, et le calendrier dit « 6 sem. »', async () => {
+  it('CAL-PERIODE-APP-FIXE (22.11) : « 6 sem. » au calendrier, le calendrier dit « 6 sem. » ; la barre de l’app garde son mois', async () => {
     const journal = vi.fn();
     render(<App2 initiale={MOIS} journal={journal} />);
     fireEvent.click(calendrier().querySelector('[data-ent-periode]')!);
     fireEvent.click(within(screen.getByRole('dialog', { name: 'Période et vue' })).getByRole('button', { name: /^6 sem/ }));
-    const plage: Periode = { genre: 'dates', du: DEBUT_MOIS, au: ajouterJours(DEBUT_MOIS, 6 * 7 - 1) };
-    expect(journal).toHaveBeenLastCalledWith(plage);
     await waitFor(() => expect(calendrier().querySelector('[data-frise]')!.getAttribute('data-nb-colonnes')).toBe('6'));
     expect((calendrier().querySelector('[data-ent-periode]') as HTMLElement).textContent).toMatch(/6 sem\./);
-    /* la barre de l'app lit la même période : son libellé est celui de cette plage */
-    expect(etiquetteCourte(plage)).not.toBe(etiquetteCourte(MOIS));
+    expect(journal).not.toHaveBeenCalled();
   });
 });
 

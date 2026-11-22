@@ -632,10 +632,8 @@ describe('CRITIQUE-4 (lot q2-frise) : jalon et milieu, marque en paysage, Livrer
       appuiLong(marque!);
       expect(screen.queryByRole('menu')).toBeNull();
       await waitFor(() => expect(document.querySelector('[data-frise]')).toHaveAttribute('data-nb-colonnes', '6'));
-      expect(onPeriode).toHaveBeenCalledTimes(1);
-      const p = onPeriode.mock.calls[0][0] as { genre: string; du: string; au: string };
-      expect(p.genre).toBe('dates');
-      expect((Date.parse(p.au) - Date.parse(p.du)) / 86400000).toBe(41);
+      /* CAL-PERIODE-APP-FIXE (22.11) : les 6 semaines sont la fenêtre locale du Calendrier ; la période de l'app (pastille) reste */
+      expect(onPeriode).not.toHaveBeenCalled();
       expect(document.querySelector(`[data-chose="${id}"]`)).not.toBeNull();
     } finally { window.matchMedia = vrai; }
   });

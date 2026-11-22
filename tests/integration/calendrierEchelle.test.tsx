@@ -78,20 +78,22 @@ describe('D385, variante D : l’échelle au menu de la période', () => {
     const { appels } = monter();
     choisirEchelle('mois');
     const msg = screen.getByRole('status');
-    expect(msg.textContent).toMatch(/^Échelle Mois : période 6 sem\. → 6 mois, Finances aussi/);
+    /* CAL-PERIODE-APP-FIXE (22.11) : la fenêtre est locale, le message ne dit plus « Finances aussi » */
+    expect(msg.textContent).toMatch(/^Échelle Mois : période 6 sem\. → 6 mois/);
+    expect(msg.textContent).not.toMatch(/Finances/);
     fireEvent.click(within(msg).getByRole('button', { name: /Annuler/ }));
     expect(echelle()).toBe('semaine');
     expect(boutonPeriode().textContent).toBe('6 sem.');
     expect(appels.length).toBeGreaterThanOrEqual(0);
   });
 
-  it('PC-144, rejeu en ligne (20.11) : Annuler rend à Finances sa période d’avant (« Tout l’historique »), pas la fenêtre du calendrier', () => {
+  it('PC-144, rejeu en ligne (20.11) ; CAL-PERIODE-APP-FIXE (22.11) : l’échelle et son Annuler ne touchent jamais la période de l’app (« Tout l’historique » reste)', () => {
     const vues: Periode[] = [];
     render(<BancCalendrier aujourdhui={JOUR} sansChrome callbacks={{ periode: { genre: 'tout' }, onPeriode: p => vues.push(p) }} />);
     choisirEchelle('mois');
-    expect(vues.at(-1)?.genre).not.toBe('tout');
+    expect(vues).toEqual([]);
     fireEvent.click(within(screen.getByRole('status')).getByRole('button', { name: /Annuler/ }));
-    expect(vues.at(-1)).toEqual({ genre: 'tout' });
+    expect(vues).toEqual([]);
     expect(echelle()).toBe('semaine');
   });
 

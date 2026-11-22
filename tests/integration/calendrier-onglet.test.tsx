@@ -90,9 +90,12 @@ describe('E07, ET-PER : la période de l’onglet est la période de l’app', (
     expect(onPeriode).not.toHaveBeenCalled();
     fireEvent.click(document.querySelector('[data-ent-periode]')!);
     fireEvent.click(within(screen.getByRole('dialog', { name: 'Période et vue' })).getByRole('button', { name: /^3 mois/ }));
-    /* « 3 mois » garde le départ de la fenêtre (le lundi du 1er du mois) : le passé est visible */
-    expect(onPeriode).toHaveBeenCalledWith({ genre: 'dates', du: debutMois, au: ajouterJours(debutMois, 13 * 7 - 1) });
+    /* CAL-PERIODE-APP-FIXE (22.11, « Cette période là reste fixe, le reste peut être mobile ») : « 3 mois » règle la fenêtre LOCALE du
+       Calendrier, qui garde son départ (le lundi du 1er du mois, le passé visible) ; la période de l'app (pastille) n'est pas écrite */
+    expect(onPeriode).not.toHaveBeenCalled();
     expect(document.querySelector('[data-frise]')!.getAttribute('data-nb-colonnes')).toBe('13');
+    const lundis = [...document.querySelectorAll('[data-bande-semaines] [data-lundi]')].map(e => e.getAttribute('data-lundi'));
+    if (lundis.length) expect(lundis[0]).toBe(debutMois);
   });
 
   it('une période « du … au » de Finances règle la fenêtre', () => {
@@ -418,9 +421,11 @@ describe('d3 (CRITIQUE-3 n° 5, D-199, E27) : l’appui long sur une marque ouvr
     vi.useRealTimers();
     fireEvent.pointerUp(marque!, { clientX: 10, clientY: 10, pointerId: 1, button: 0 });
     expect(screen.queryByRole('menu')).toBeNull();
-    expect(onPeriode).toHaveBeenCalled();
-    const p = onPeriode.mock.calls[onPeriode.mock.calls.length - 1][0] as { genre: string; du: string; au: string };
-    expect(p.genre).toBe('dates');
+    /* CAL-PERIODE-APP-FIXE (22.11) : la fenêtre de 6 semaines est locale ; la période de l'app (pastille) reste */
+    expect(onPeriode).not.toHaveBeenCalled();
+    const vus = [...document.querySelectorAll('[data-bande-semaines] [data-lundi]')].map(e => e.getAttribute('data-lundi')!);
+    expect(vus).toHaveLength(6);
+    const p = { du: vus[0], au: ajouterJours(vus[5], 6) };
     expect(ajouterJours(p.du, 41)).toBe(p.au);
     expect(lundiDe(p.du)).toBe(p.du);
     expect(p.du >= lundiCourant).toBe(true);
@@ -461,12 +466,12 @@ describe('CRITIQUE-10 n° 2 (E34, E45, D-200, D404) : posée par un horizon hors
     fireEvent.click(d.getByRole('button', { name: /^Ajouter/ }));
     await waitFor(() => expect(appels.filter(a => a.op === 'creer')).toHaveLength(1));
     expect(appels[0]).toMatchObject({ collection: 'financialPlans', patch: { fenetre: { du: '2027-05-10', au: '2027-10-10', joursActifs: 5 } } });
-    /* D404 : même chemin que le menu période, appelé sans aucun toucher ; la fenêtre affichée contient la chose entière, S19 à S40 */
-    await waitFor(() => expect(onPeriode).toHaveBeenCalledTimes(1));
-    const p = onPeriode.mock.calls[0][0] as { genre: string; du: string; au: string };
-    expect(p.genre).toBe('dates');
-    expect(p.du <= '2027-05-10' && p.au >= '2027-10-10').toBe(true);
-    expect(document.querySelector('[data-frise]')!.getAttribute('data-nb-colonnes')).toBe('26');
+    /* D404 : la fenêtre s'étend sans aucun toucher et contient la chose entière, S19 à S40 ; CAL-PERIODE-APP-FIXE (22.11) : cette fenêtre
+       est locale, la période de l'app (pastille) n'est pas écrite */
+    await waitFor(() => expect(document.querySelector('[data-frise]')!.getAttribute('data-nb-colonnes')).toBe('26'));
+    expect(onPeriode).not.toHaveBeenCalled();
+    const vus = [...document.querySelectorAll('[data-bande-semaines] [data-lundi]')].map(e => e.getAttribute('data-lundi')!);
+    if (vus.length) expect(vus[0] <= '2027-05-10' && ajouterJours(vus[vus.length - 1], 6) >= '2027-10-10').toBe(true);
     expect(document.querySelector('[data-calendrier]')!.getAttribute('data-vue')).toBe('semaines');
     const barre = await screen.findByRole('button', { name: /^Sols : colle et joints/ });
     expect(barre.getAttribute('data-rangee')).toBe('travaux');

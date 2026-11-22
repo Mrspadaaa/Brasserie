@@ -30,6 +30,9 @@ export interface DureeFenetreProps {
   seule?: boolean;
   /** CAL-JOUR (21.11) : le dernier jour écrit (fenêtre rouverte au jour) ; dans la semaine de fin, « jusqu’à » le dit à la place du dimanche. */
   jourFin?: string | null;
+  /** T9-3 (22.11, la fiche d'une Fête dit « 1 j », Modifier disait « 1 semaine · jusqu'à S52, 27 déc. ») : sans fin, la chose s'écrit sur ce SEUL
+   *  jour ; la durée le dit comme la fiche (« 1 j · le S52, mar. 22 déc. »), jamais une semaine jusqu'au dimanche. */
+  jourSeul?: string | null;
   /** Le plus long, en semaines. */
   max?: number;
   /** CAL-FICHE-FRISE (22.11) : l'unité de la frise. `semaine` (défaut, la feuille) ; `jour` (la fiche d'une chose, `seule`) : un repère par jour, 8 px au moins. */
@@ -67,7 +70,7 @@ function cadrer(a: number, b: number, w: number, seule: boolean, spanMin: number
   return { span, v0: a - marge * span / w };
 }
 
-export function DureeFenetre({ rangee, debut, fin, onFin, onPlage, seule = false, jourFin, max = 104, pas = 'semaine', onLacher }: DureeFenetreProps) {
+export function DureeFenetre({ rangee, debut, fin, onFin, onPlage, seule = false, jourFin, jourSeul = null, max = 104, pas = 'semaine', onLacher }: DureeFenetreProps) {
   const jour = pas === 'jour';
   const u = jour ? 1 : 7, spanMin = jour ? SPAN_MIN_JOUR : SPAN_MIN, K_MAX = kMax(u);
   const kDe = (d: string) => unitesEntre(EPOQUE, d, u);
@@ -199,8 +202,17 @@ export function DureeFenetre({ rangee, debut, fin, onFin, onPlage, seule = false
       {!seule && (
         <div className="mb-1 flex items-baseline gap-2">
           <span className="text-sm text-cave-200">Durée</span>
-          <b className="text-sm font-semibold text-cave-50" data-duree-texte>{n === 1 ? '1 semaine' : `${n} sem.`}</b>
-          <span className="text-sm text-cave-50">jusqu’à {etiquetteS(finTexte)}, {jourLisible(jourFin && lundiDe(jourFin) === lundiDe(finTexte) ? jourFin : ajouterJours(finTexte, 6))}</span>
+          {n === 1 && !fin && jourSeul ? (
+            <>
+              <b className="text-sm font-semibold text-cave-50" data-duree-texte>1 j</b>
+              <span className="text-sm text-cave-50">le {etiquetteS(lundiDe(jourSeul))}, {jourLisible(jourSeul)}</span>
+            </>
+          ) : (
+            <>
+              <b className="text-sm font-semibold text-cave-50" data-duree-texte>{n === 1 ? '1 semaine' : `${n} sem.`}</b>
+              <span className="text-sm text-cave-50">jusqu’à {etiquetteS(finTexte)}, {jourLisible(jourFin && lundiDe(jourFin) === lundiDe(finTexte) ? jourFin : ajouterJours(finTexte, 6))}</span>
+            </>
+          )}
         </div>
       )}
       <div

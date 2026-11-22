@@ -651,7 +651,7 @@ export function CalendrierTab(props: CalendrierTabProps) {
     if (avant.annee || avant.fenetre.semaines !== fen.semaines) {
       const nom = ECHELLES.find(x => x.id === e)?.nom ?? e;
       montrer({
-        role: 'status', texte: `Échelle ${nom} : période ${libelleDuree(avant.fenetre.semaines, avant.annee)} → ${libelleDuree(fen.semaines, false)}, Finances aussi`,
+        role: 'status', texte: `Échelle ${nom} : période ${libelleDuree(avant.fenetre.semaines, avant.annee)} → ${libelleDuree(fen.semaines, false)}`, /* CAL-PERIODE-APP-FIXE (22.11) : la fenêtre est locale, Finances ne suit plus : le message ne le dit plus */
         annuler: () => {
           setMessage(null); setEchelleVoulue(avant.echelle); setDeplie(null);
           setVueEtat(avant.annee ? 'annee' : 'semaines'); setFenetre(avant.fenetre);

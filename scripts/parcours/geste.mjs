@@ -992,6 +992,81 @@ async function jouerCalendrier({ p, base, combo, tactile, glisser, pas }) {
       }
     } catch (e) { echec(F, String(e.message ?? e).slice(0, 200)); }
   };
+  /* T9 (tour 9 au doigt, en ligne, 22.11, BUGS.md T9-1 à T9-3), joués comme le testeur : le doigt TENU au bord puis levé AU BORD (pas ramené).
+     T9-1 : une chose tirée hors du bord droit du cadre et tenue 2,1 s agrandit la fenêtre (même début) et reste dans la vue.
+     T9-2 : la poignée de début tenue 3,6 s au bord gauche de la courbe recule d'au moins 8 semaines en un seul geste (elle butait sur S47).
+     T9-3 : la fiche d'une Fête et sa feuille Modifier disent la même durée (« 1 j » contre « 1 semaine »). */
+  const tenirAuBord = async (x0, y, x1, ms) => {
+    const xs = pas(x0, x1, 20);
+    if (tactile) {
+      const cdpT = await p.createCDPSession(), pt = (x) => [{ x: Math.round(x), y: Math.round(y), id: 1 }];
+      await cdpT.send('Input.dispatchTouchEvent', { type: 'touchStart', touchPoints: pt(x0) }); await sleep(50);
+      for (const x of xs) { await cdpT.send('Input.dispatchTouchEvent', { type: 'touchMove', touchPoints: pt(x) }); await sleep(16); }
+      /* le doigt tenu bouge à peine (un vrai doigt n'est jamais immobile) : un toucher par 100 ms au même endroit */
+      for (let t = 0; t < ms; t += 100) { await sleep(100); await cdpT.send('Input.dispatchTouchEvent', { type: 'touchMove', touchPoints: pt(x1 + ((t / 100) % 2)) }); }
+      await cdpT.send('Input.dispatchTouchEvent', { type: 'touchEnd', touchPoints: [] });
+    } else {
+      await p.mouse.move(x0, y); await p.mouse.down(); await sleep(40);
+      for (const x of xs) { await p.mouse.move(x, y); await sleep(16); }
+      for (let t = 0; t < ms; t += 100) { await sleep(100); await p.mouse.move(x1 + ((t / 100) % 2), y); }
+      await p.mouse.up();
+    }
+    await sleep(800);
+  };
+  const sectionT9 = async () => {
+    const F = `T9 ${combo}`;
+    const lundisT = () => p.evaluate(() => [...document.querySelectorAll('[data-bande-semaines] [data-lundi]')].map((e) => e.getAttribute('data-lundi')));
+    const datePapierT = () => p.evaluate((k) => JSON.parse(localStorage.getItem(k) ?? '[]').find((x) => x.id === 'P-PAPIER')?.data.date ?? null, CLE_CACHE);
+    // T9-1
+    try {
+      await versCalendrier(); await choisirPeriode('2 sem.'); await sleep(400); await choisirPeriode('6 sem.'); await sleep(500);
+      const l0 = await lundisT(), d0 = await datePapierT();
+      const m = await p.evaluate(() => { const e = document.querySelector('[data-frise] [data-chose$="P-PAPIER"]'); if (!e) return null; e.scrollIntoView({ block: 'center', inline: 'center' }); const r = e.getBoundingClientRect(); return { x: r.left + Math.min(r.width / 2, 12), y: r.top + r.height / 2 }; });
+      const fr = await p.evaluate(() => { const f = document.querySelector('[data-frise]').getBoundingClientRect(); return { l: f.left, r: Math.min(f.right, innerWidth) }; });
+      if (!m || !d0) echec(`${F} T9-1`, `« lol » introuvable (date ${d0})`);
+      else {
+        await tenirAuBord(m.x, m.y, fr.r - 6, 2100);
+        await cap('t9-1-barre-au-bord');
+        const l1 = await lundisT(), d1 = await datePapierT(), fin = l1.length ? ajouter(l1[l1.length - 1], 6) : null;
+        const vu = await p.evaluate(() => { const e = document.querySelector('[data-frise] [data-chose$="P-PAPIER"]'), f = document.querySelector('[data-frise]'); if (!e || !f) return null; const r = e.getBoundingClientRect(), g = f.getBoundingClientRect(); return r.width > 0 && r.left >= g.left - 1 && r.left < Math.min(g.right, innerWidth) - 4; });
+        const dit = `${l0[0]}+${l0.length} sem. → ${l1[0]}+${l1.length} sem. ; ${d0} → ${d1} ; dans la vue : ${vu}`;
+        (l1[0] === l0[0] && l1.length > l0.length) ? ok(`${F} T9-1 fenêtre agrandie`, dit) : echec(`${F} T9-1 fenêtre agrandie`, `${dit} (même début, plus de ${l0.length} semaines attendus)`);
+        (d1 && d1 !== d0 && d1 >= l1[0] && d1 <= fin && vu) ? ok(`${F} T9-1 posée dans la vue`, dit) : echec(`${F} T9-1 posée dans la vue`, `${dit} (fenêtre ${l1[0]} → ${fin})`);
+      }
+    } catch (e) { echec(`${F} T9-1`, String(e.message ?? e).slice(0, 160)); await echap(); }
+    // T9-2
+    try {
+      await versCalendrier(); await choisirPeriode('2 sem.'); await sleep(400); await choisirPeriode('6 sem.'); await sleep(500);
+      const c0 = await lireCoherence(), g = await boiteCadre();
+      const cbL = await p.evaluate(() => (document.querySelector('.ent-cbz .ent-cb') ?? document.querySelector('.ent-cb'))?.getBoundingClientRect().left ?? null);
+      if (!g || !c0.etiquette || cbL === null) echec(`${F} T9-2`, `cadre illisible (« ${c0.label} »)`);
+      else {
+        await tenirAuBord(g.l + 1, g.y, Math.max(2, cbL + 2), 3600);
+        await cap('t9-2-debut-tenu');
+        const c1 = await verifierCoherence(`${F} T9-2`, 'après le début tenu au bord', c0.pt);
+        const recul = c1.etiquette ? (c0.etiquette.a - c1.etiquette.a + 53) % 53 : 0;
+        recul >= 8 && recul < 40 ? ok(`${F} T9-2 recul en un geste`, `« ${c0.label} » → « ${c1.label} » (${recul} sem.)`) : echec(`${F} T9-2 recul en un geste`, `« ${c0.label} » → « ${c1.label} » : ${recul} semaine(s) de recul en 3,6 s tenues (8 au moins attendues)`);
+      }
+    } catch (e) { echec(`${F} T9-2`, String(e.message ?? e).slice(0, 160)); await echap(); }
+    // T9-3
+    try {
+      await versCalendrier(); await choisirPeriode('3 mois'); await sleep(500);
+      const b = await p.evaluate(() => { const e = document.querySelector('[aria-label^="Marché de Noël,"]') ?? document.querySelector('[data-chose$="CR-NOEL"]'); if (!e) return null; e.scrollIntoView({ block: 'center', inline: 'center' }); const r = e.getBoundingClientRect(); return [r.left + Math.min(r.width / 2, 12), r.top + r.height / 2]; });
+      if (!b) echec(`${F} T9-3`, '« Marché de Noël » introuvable');
+      else {
+        await toucherXY(b[0], b[1]); await sleep(600);
+        const fiche = await p.evaluate(() => document.querySelector('[data-detail] [data-souche] span')?.textContent?.trim() ?? null);
+        await cap('t9-3-fiche');
+        await toucherTexte('Modifier'); await sleep(700);
+        const feuille = await p.evaluate(() => { const e = document.querySelector('[data-mode="modifier"] [data-duree-texte]'); return e ? `${e.textContent.trim()} ${e.nextElementSibling?.textContent?.trim() ?? ''}` : null; });
+        await cap('t9-3-modifier');
+        const jours = (t) => { if (!t) return null; let m = /(\d+)\s*j\b/.exec(t); if (m) return Number(m[1]); m = /(\d+)\s*sem/.exec(t); if (m) return 7 * Number(m[1]); return /1 semaine/.test(t) ? 7 : null; };
+        (jours(fiche) !== null && jours(fiche) === jours(feuille)) ? ok(`${F} T9-3 même durée`, `fiche « ${fiche} », Modifier « ${feuille} »`) : echec(`${F} T9-3 même durée`, `fiche « ${fiche} », Modifier « ${feuille} »`);
+        await echap(); await echap();
+      }
+    } catch (e) { echec(`${F} T9-3`, String(e.message ?? e).slice(0, 160)); await echap(); }
+    await versCalendrier(); await choisirPeriode('3 mois'); await sleep(400);
+  };
   const sectionCuve = async () => {
     const CU = `brassin en cuve, fiche ${combo}`;
     const lire = () => p.evaluate((k) => { const e = JSON.parse(localStorage.getItem(k) ?? '[]').find((x) => x.id === 'B-NEIPA-TEST'); const d = e?.data ?? e ?? {}; return { brew: d.brewDate ?? null, fin: d.finPrevue ?? null, vu: JSON.stringify(e ?? null).slice(0, 260) }; }, CLE_CACHE);
@@ -1130,7 +1205,7 @@ async function jouerCalendrier({ p, base, combo, tactile, glisser, pas }) {
   // --sections a,b : seulement ces sections du Calendrier (itération ; le défaut les joue toutes)
   const SECTIONS = opt('sections', null)?.split(',');
   let ptApp0 = await p.evaluate(() => document.querySelector('[data-periode-pastille] .pr-court')?.textContent?.trim() ?? null);
-  for (const [nom, f] of Object.entries({ sectionJourBord, sectionGlisseJour, sectionBarre, sectionCadre, sectionFeuille, sectionFeuilleJour, sectionModifier, sectionFiche, sectionRangees, sectionBarreBord, sectionChg4, sectionChg5, sectionChg6, sectionBarreHors, sectionCuve, sectionFicheFrise, sectionPasseLibre, sectionEchelles, sectionEtiquettes, sectionAn390 })) if (!SECTIONS || SECTIONS.includes(nom)) { await f(); const pt1 = await p.evaluate(() => document.querySelector('[data-periode-pastille] .pr-court')?.textContent?.trim() ?? null); if (ptApp0 === undefined) ptApp0 = pt1; else if (pt1 !== ptApp0) echec(`CAL-PERIODE-APP-FIXE ${combo} après ${nom}`, `la période de l'app a changé : « ${ptApp0} » → « ${pt1} »`); }
+  for (const [nom, f] of Object.entries({ sectionJourBord, sectionGlisseJour, sectionBarre, sectionCadre, sectionFeuille, sectionFeuilleJour, sectionModifier, sectionFiche, sectionRangees, sectionBarreBord, sectionChg4, sectionChg5, sectionChg6, sectionBarreHors, sectionCuve, sectionFicheFrise, sectionPasseLibre, sectionEchelles, sectionEtiquettes, sectionAn390, sectionT9 })) if (!SECTIONS || SECTIONS.includes(nom)) { await f(); const pt1 = await p.evaluate(() => document.querySelector('[data-periode-pastille] .pr-court')?.textContent?.trim() ?? null); if (ptApp0 === undefined) ptApp0 = pt1; else if (pt1 !== ptApp0) echec(`CAL-PERIODE-APP-FIXE ${combo} après ${nom}`, `la période de l'app a changé : « ${ptApp0} » → « ${pt1} »`); }
   await cap('fin');
 }
 
