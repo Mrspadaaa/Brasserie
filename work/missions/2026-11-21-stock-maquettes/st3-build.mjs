@@ -166,18 +166,18 @@ const CSS_B = `.b3-r{margin:6px 10px 0;background:var(--mur);border-radius:10px;
 .b3-g{display:grid;gap:0 4px;padding:0 6px 5px 6px}.b3-col{display:flex;flex-direction:column;min-width:0}
 .b3-col em{font-style:normal;font-weight:700;font-size:12.5px;color:var(--rc);border-bottom:2px solid #9c8a6b;line-height:15px;padding-bottom:1px;margin-bottom:1px;white-space:nowrap;display:flex;align-items:center;gap:2px}
 .b3-col .b3-c+em{margin-top:5px}
-.b3-c{display:flex;gap:4px;align-items:center;height:31px;min-width:0;border-bottom:1px solid #ebe7dd}.b3-c:last-child{border-bottom:0}
+.b3-c{display:flex;gap:3px;align-items:center;height:31px;min-width:0;border-bottom:1px solid #ebe7dd}.b3-c:last-child{border-bottom:0}
 .b3-j{width:7px;height:24px;border:1.3px solid #8b7a5a;border-radius:1.5px;display:flex;align-items:flex-end;position:relative;flex:none;background:#fff}
 .b3-j i{display:block;width:100%}.b3-j.s::after{content:"";position:absolute;left:-3px;right:-3px;top:50%;border-top:1.5px dashed #444}
 .b3-j.cpt{border-style:dotted;border-width:1.5px}.b3-c.z .b3-j{border:1.5px solid var(--rouge)}
-.b3-t{min-width:0;display:flex;flex-direction:column}.b3-t b{font-size:13px;font-weight:500;letter-spacing:-.35px;line-height:15px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:var(--ink)}
+.b3-t{min-width:0;display:flex;flex-direction:column}.b3-t b{font-size:13px;font-weight:500;letter-spacing:-.45px;line-height:15px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:var(--ink)}
 .b3-t small{font-size:12.5px;line-height:14px;color:#333;white-space:nowrap;display:flex;align-items:center;gap:1px}
 .b3-c.z b,.b3-c.z small{color:var(--rouge)}.b3-c.bas small{color:var(--brun);font-weight:600}.b3-ne{color:#8a5212;display:grid;margin-left:2px}
 .b3-x{color:var(--mut);font-weight:400;font-family:"Source Sans 3",system-ui;font-size:13px;margin-left:7px}
 .b3-r.ferme header{padding-bottom:2px}.b3-mini{display:flex;align-items:flex-end;gap:6px;margin-left:auto;height:18px;border-bottom:1.5px solid #9c8a6b;padding:0 2px}
 .b3-mini span{display:flex;align-items:flex-end;gap:1.5px}.b3-mini i{display:block;width:5px;border-radius:1px 1px 0 0}.b3-mini i.z{border:1.3px solid var(--rouge);width:6px}
 .b3-m{padding:0 8px 6px 31px;font-size:14px;display:flex;flex-wrap:wrap;gap:0 5px}.b3-m>i{color:#aaa;font-style:normal}`;
-const COLS_ADD = 'minmax(0,.84fr) minmax(0,1.04fr) minmax(0,1.02fr) minmax(0,1.08fr) minmax(0,1.02fr)';
+const COLS_ADD = 'minmax(0,.82fr) minmax(0,1.03fr) minmax(0,1.01fr) minmax(0,1.09fr) minmax(0,1.05fr)';
 const B390 = (net) => page(`st3 B · casier nommé${net ? ' · Nettoyage ouvert' : ''}`, `${entree(4)}${casierB(RAY[0], { cols: COLS_ADD, court: 1 })}${net ? replieB(RAY[1]) + casierB(RAY[2]) : casierB(RAY[1], { flow: [[0, 1], [2, 4], [3]] }) + replieB(RAY[2])}${fab()}${navBas()}`, '', CSS_D2 + CSS_FX + CSS_COM + CSS_FX + CSS_B);
 
 // 1280 : Additifs en tête sur toute la largeur (comme le premier rang de d3a), Emballage et Nettoyage côte à côte dessous.
@@ -216,6 +216,7 @@ const CSS_C = `.c3-b{display:flex;flex-direction:column}.c3-bt{display:flex;alig
 const agir1 = (k) => `<div class="c3-ag1"><b>À agir <span class="mono">${AGIR.length}</span></b>${AGIR.slice(0, k).map((a) => `<span class="rouge">${a.sh} <span class="mono">0</span></span>`).join('<i>·</i>')}<span class="c3-plus">+${AGIR.length - k} ›</span></div>`;
 const C390 = (sel) => page(`st3 C · tableau périodique${sel ? ' · case touchée' : ''}`, `${entree(4)}
 <div class="c3-p">${agir1(3)}${blocC(RAY[0], { leg: 1, sel: sel ? LACT.n : '' })}${blocC(RAY[1])}${blocC(RAY[2])}</div>${sel ? `<div class="c3-sh">${teteC(false)}</div>` : fab()}${navBas()}`, '', CSS_D2 + CSS_FX + CSS_COM + CSS_FX + CSS_C + `.c3-p{margin:6px 10px 0;background:var(--mur);border-radius:10px;padding:4px 6px 8px;display:flex;flex-direction:column;gap:6px}
+.c3-cols{gap:3px}.c3-col,.c3-t{width:62px}.c3-t em{letter-spacing:-.6px}
 .c3-sh{position:absolute;left:0;right:0;bottom:62px;z-index:6;background:#fff;border-top:1.5px solid #111;border-radius:16px 16px 0 0;padding:8px 12px 10px;display:flex;flex-direction:column;gap:4px;box-shadow:0 -6px 18px rgba(0,0,0,.16)}`);
 
 const C1280 = () => page('st3 C 1280', `${tete1280()}${RAIL}<div class="zone">${barre1280()}
